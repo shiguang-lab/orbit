@@ -4,6 +4,7 @@ import { createStyles } from "antd-style";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { MaterialIcon } from "@/app/nav";
+import { PageSkeleton } from "@/shared/components/PageSkeleton";
 import {
   Alert,
   Button,
@@ -20,7 +21,6 @@ import {
   Select,
   Segmented,
   Space,
-  Spin,
   Switch,
   Tag,
   Typography,
@@ -653,7 +653,7 @@ export default function ProviderDetailPage() {
 
   const filtersValue = filtersQuery.data ? JSON.stringify(filtersQuery.data, null, 2) : filtersText;
   const interceptionValue = interceptionQuery.data ? JSON.stringify(interceptionQuery.data, null, 2) : interceptionText;
-  if (providerQuery.isLoading || catalogQuery.isLoading) return <Spin style={{ display: "block", margin: "80px auto" }} />;
+  if (providerQuery.isLoading || catalogQuery.isLoading) return <PageSkeleton />;
   if (providerQuery.isError || catalogQuery.isError) return <Alert type="error" showIcon title="Provider 数据加载失败" description={(providerQuery.error ?? catalogQuery.error) instanceof Error ? (providerQuery.error ?? catalogQuery.error)?.message : "无法读取 Provider 数据"} action={<Button onClick={() => { void providerQuery.refetch(); void catalogQuery.refetch(); }}>重试</Button>} />;
   if (!info && connections.length === 0) return <Alert type="warning" title="未找到提供者" description={<Button type="link" onClick={() => navigate("/dashboard/providers")}>返回 Providers</Button>} />;
 

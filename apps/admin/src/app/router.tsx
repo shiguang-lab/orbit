@@ -1,15 +1,15 @@
 /** 路由表：createBrowserRouter + 按域懒加载分包 */
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import { lazy, Suspense, type ComponentType, createElement } from "react";
 import { Shell } from "@/shell/layout";
-import { Spin } from "antd";
+import { PageSkeleton } from "@/shared/components/PageSkeleton";
 import { flattenNav } from "@/app/nav";
 import { translate, useI18n } from "@/i18n";
 
 function withSuspense(Cmp: ComponentType): ComponentType {
   return function LazyWrapper() {
     return (
-      <Suspense fallback={<Spin style={{ display: "block", margin: "80px auto" }} />}>
+      <Suspense fallback={<PageSkeleton />}>
         <Cmp />
       </Suspense>
     );
@@ -36,8 +36,12 @@ const ProvidersPage = withSuspense(lazy(() => import("@/features/providers/provi
 const ProviderEditorPage = withSuspense(lazy(() => import("@/features/providers/provider-editor")));
 const ProviderDetailPage = withSuspense(lazy(() => import("@/features/providers/provider-detail")));
 const CombosPage = withSuspense(lazy(() => import("@/features/combos/combos")));
+const CombosLivePage = withSuspense(lazy(() => import("@/features/combos/combos-live")));
 const ComboControlCenter = withSuspense(lazy(() => import("@/features/combos/combo-control-center")));
-const CostsPage = withSuspense(lazy(() => import("@/features/costs/costs")));
+const AnalyticsPage = withSuspense(lazy(() => import("@/features/analytics/analytics")));
+const QuotaPage = withSuspense(lazy(() => import("@/features/quota/quota")));
+const QuotaSharePage = withSuspense(lazy(() => import("@/features/quota-share/quota-share")));
+const ActivityPage = withSuspense(lazy(() => import("@/features/activity/activity")));
 const P = (navKey: string, title: string) => placeholder(navKey, title);
 
 const migratedPaths = new Set([
@@ -46,10 +50,12 @@ const migratedPaths = new Set([
   "/dashboard/providers",
   "/dashboard/endpoint",
   "/dashboard/combos",
+  "/dashboard/combos/live",
   "/dashboard/quota",
+  "/dashboard/costs/quota-share",
+  "/dashboard/quota-share",
   "/dashboard/analytics",
-  "/dashboard/costs",
-  "/costs",
+  "/analytics",
   "/dashboard/cache",
   "/dashboard/provider-stats",
   "/dashboard/activity",
@@ -84,16 +90,22 @@ export const router = createBrowserRouter([
       { path: "dashboard/providers/:providerId/connections/:id", element: <ProviderEditorPage /> },
       { path: "dashboard/providers/:id", element: <ProviderDetailPage /> },
       { path: "dashboard/combos", element: <CombosPage /> },
+      { path: "dashboard/combos/live", element: <CombosLivePage /> },
       { path: "dashboard/combos/:id", element: <ComboControlCenter /> },
-      { path: "dashboard/quota", element: createElement(P("quota", "Provider Quota")) },
+      { path: "dashboard/quota", element: <QuotaPage /> },
+      { path: "dashboard/costs/quota-share", element: <QuotaSharePage /> },
+      { path: "dashboard/quota-share", element: <QuotaSharePage /> },
       // 分析
-      { path: "dashboard/analytics", element: createElement(P("analytics", "Usage")) },
-      { path: "dashboard/costs", element: <CostsPage /> },
-      { path: "costs", element: <CostsPage /> },
+      { path: "dashboard/analytics", element: <AnalyticsPage /> },
+      { path: "analytics", element: <AnalyticsPage /> },
+      { path: "dashboard/costs", element: <Navigate to="/dashboard/analytics" replace /> },
+      { path: "costs", element: <Navigate to="/dashboard/analytics" replace /> },
       { path: "dashboard/cache", element: createElement(P("cache", "Cache")) },
       { path: "dashboard/provider-stats", element: createElement(P("provider-stats", "Provider Stats")) },
       // 监控
-      { path: "dashboard/activity", element: createElement(P("activity", "Activity")) },
+      { path: "dashboard/activity", element: <ActivityPage /> },
+      { path: "activity", element: <ActivityPage /> },
+      { path: "dashboard/logs/activity", element: <Navigate to="/dashboard/activity" replace /> },
       { path: "dashboard/logs", element: createElement(P("logs", "Request Logs")) },
       { path: "dashboard/health", element: createElement(P("health", "Health")) },
       { path: "dashboard/runtime", element: createElement(P("runtime", "Runtime")) },

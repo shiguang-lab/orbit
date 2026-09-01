@@ -72,8 +72,12 @@ export const useAdminStyles = createStyles(({ token }) => ({
       display: "flex",
       flexDirection: "column",
       minHeight: 0,
-      padding: "20px 0 18px 12px",
+      padding: "16px 6px",
       boxSizing: "border-box",
+      transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+    },
+    "& .sidebar-sider.ant-layout-sider-collapsed": {
+      padding: "16px 0",
     },
     "& .sidebar-sider > .ant-layout-sider-children": {
       display: "flex",
@@ -82,12 +86,17 @@ export const useAdminStyles = createStyles(({ token }) => ({
       height: "100%",
     },
     "& .sidebar-header": {
-      minHeight: 60,
-      padding: "4px 13px 24px",
+      minHeight: 52,
+      padding: "4px 18px 16px",
       display: "flex",
       alignItems: "center",
       gap: 12,
       flex: "none",
+    },
+    "& .sidebar-sider.ant-layout-sider-collapsed .sidebar-header": {
+      justifyContent: "center",
+      padding: "4px 0 16px",
+      minHeight: 52,
     },
     "& .sidebar-brand-mark": {
       width: 34,
@@ -118,7 +127,7 @@ export const useAdminStyles = createStyles(({ token }) => ({
       fontSize: 11,
     },
     "& .sidebar-menu-search": {
-      padding: "0 13px 10px",
+      padding: "0 6px 10px",
       flex: "none",
     },
     "& .sidebar-menu-search .ant-input-affix-wrapper": {
@@ -135,16 +144,49 @@ export const useAdminStyles = createStyles(({ token }) => ({
     "& .sidebar-menu-search .ant-input-prefix, & .sidebar-menu-search .ant-input-clear-icon": {
       color: token.colorTextSecondary,
     },
-    "& .sidebar-sider.ant-layout-sider-collapsed .sidebar-header": {
-      justifyContent: "center",
-      paddingInline: 0,
-    },
     "& .sidebar-menu .sidebar-menu-icon": {
-      fontSize: 16,
-      lineHeight: 1,
+      fontSize: 18,
+      lineHeight: "18px",
+      width: 18,
+      height: 18,
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      flexShrink: 0,
+      marginInlineEnd: 10,
     },
-    "& .sidebar-menu": { marginTop: 10, marginRight: 12 },
-    "& .sidebar-menu.ant-menu-inline-collapsed .sidebar-menu-icon": { fontSize: 20 },
+    "& .sidebar-menu": {
+      marginTop: 4,
+    },
+    "& .sidebar-menu .ant-menu-item, & .sidebar-menu .ant-menu-submenu-title": {
+      borderRadius: 8,
+      marginInline: 4,
+      width: "calc(100% - 8px)",
+      display: "flex",
+      alignItems: "center",
+    },
+    "& .sidebar-sider.ant-layout-sider-collapsed .sidebar-menu": {
+      marginInline: 0,
+      width: "100%",
+    },
+    "& .sidebar-menu.ant-menu-inline-collapsed .ant-menu-item, & .sidebar-menu.ant-menu-inline-collapsed .ant-menu-submenu-title": {
+      width: 38,
+      height: 38,
+      lineHeight: "38px",
+      margin: "4px auto !important",
+      padding: "0 !important",
+      display: "flex !important",
+      alignItems: "center !important",
+      justifyContent: "center !important",
+      borderRadius: 8,
+    },
+    "& .sidebar-menu.ant-menu-inline-collapsed .sidebar-menu-icon": {
+      fontSize: 20,
+      width: 20,
+      height: 20,
+      lineHeight: "20px",
+      margin: "0 !important",
+    },
     "& .app-header": {
       height: 60,
       minHeight: 60,

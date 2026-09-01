@@ -478,13 +478,13 @@ export default function ApiManagerPage() {
       width: 140,
       render: (_: unknown, k: ApiKeyView) => (
         <Space size={2}>
-          <Tooltip title={`查看 ${k.name} 的费用明细 (Costs)`}>
+          <Tooltip title={`查看 ${k.name} 的用量分析 (Analytics)`}>
             <Button
               type="text"
               size="small"
               icon={<MaterialIcon name="payments" size={15} style={{ color: "#10B981" }} />}
               onClick={() =>
-                navigate(`/dashboard/costs?range=all&apiKeyIds=${encodeURIComponent(k.id)}&groupBy=model`)
+                navigate(`/dashboard/analytics?range=all&apiKeyIds=${encodeURIComponent(k.id)}&groupBy=model`)
               }
             />
           </Tooltip>

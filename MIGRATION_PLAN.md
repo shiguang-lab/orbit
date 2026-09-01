@@ -9,7 +9,7 @@
 
 ## 当前状态
 
-- **已迁移**：`/home`(首页基础页面，按 Orbit 首页结构接入 BFF)、`/dashboard/api-manager`、`/dashboard/combos`(模型组合全量 CRUD、向导/专家模式、Auto 组合目录、Kimi 预设、LKGP/智能路由面板、链路测试及 `/dashboard/combos/:id` 控制中心监控)
+- **已迁移**：`/home`(首页基础页面，按 Orbit 首页结构接入 BFF)、`/dashboard/api-manager`、`/dashboard/combos`(模型组合全量 CRUD、向导/专家模式、Auto 组合目录、Kimi 预设、LKGP/智能路由面板、链路测试及 `/dashboard/combos/:id` 控制中心监控)、`/dashboard/quota` + `/dashboard/costs/quota-share`(提供者配额与限额监控、余量告警、USD/速率限额、共享池向导)
 - **进行中**：`/dashboard/providers` 列表与按 Provider 类型分流的详情页已接入 Orbit catalog/连接/模型/过滤器 BFF；OAuth/CLI/浏览器授权向导、节点编辑、模型同步高级操作和其余 Providers 子路由仍按本规范补齐后再标记完成
 - **待迁移**：其余菜单入口按本规范逐个完成 Web+BFF 联合迁移；未完成页面不得以“已迁移”标记
 - **迁移单元模式**：见 `README.md`「迁移新增一个路由组的模式」
@@ -23,7 +23,7 @@
 | 2 | API Manager | `/dashboard/api-manager` | `/api/keys*`, `/api/keys/groups*` | key 全生命周期+弹窗 [已迁移] |
 | 3 | Providers | `/dashboard/providers` + `/[id]` + `/services` + `/new` | `/api/providers*`(全量), `/api/provider-nodes`, `/api/provider-models`, `/api/provider-metrics` | **最重**: 列表/详情/14+弹窗/onboarding 向导 |
 | 4 | Combos | `/dashboard/combos` + `/[id]` | `/api/combos*`, `/api/combos/builder/options`, `/api/combos/metrics`, `/api/combos/duplicate`, `/api/combos/test`, `/api/combos/auto` | **已迁移**: 列表/向导与专家编辑器/Auto目录/Kimi预设/LKGP面板/链路测试/控制中心监控 |
-| 5 | Provider Quota | `/dashboard/quota` + `/dashboard/costs/quota-share` | `/api/quota/*`, `/api/usage/provider-limits`, `/api/usage/quota` | 配额+Pool 向导 |
+| 5 | Provider Quota | `/dashboard/quota` + `/dashboard/costs/quota-share` | `/api/quota/*`, `/api/usage/provider-limits`, `/api/usage/quota` | **已迁移**: 配额监控/USD与速率约束/双视图/共享池向导 |
 
 ### P2 分析/成本组(数据驱动)
 | # | 菜单入口 | 页面(路由) | BFF 路由组 | 说明 |

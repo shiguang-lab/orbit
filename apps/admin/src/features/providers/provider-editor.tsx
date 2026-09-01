@@ -13,7 +13,6 @@ import {
   Modal,
   Select,
   Space,
-  Spin,
   Tabs,
   Switch,
   Table,
@@ -23,6 +22,7 @@ import {
 import { providersApi } from "@/entities/api";
 import { MaterialIcon } from "@/app/nav";
 import { useI18n } from "@/i18n";
+import { PageSkeleton } from "@/shared/components/PageSkeleton";
 
 const useStyles = createStyles(({ token }) => ({
   page: { maxWidth: 860, margin: "0 auto", paddingBottom: 32 },
@@ -167,7 +167,7 @@ export default function ProviderEditorPage() {
     onError: (error) => messageApi.error(error instanceof Error ? error.message : "模型操作失败"),
   });
 
-  if (isEdit && connectionQuery.isLoading) return <Spin style={{ display: "block", margin: "80px auto" }} />;
+  if (isEdit && connectionQuery.isLoading) return <PageSkeleton />;
   if (isEdit && connectionQuery.isError) return <Alert type="error" title="Provider 加载失败" description={connectionQuery.error instanceof Error ? connectionQuery.error.message : "无法读取连接"} />;
 
   return (

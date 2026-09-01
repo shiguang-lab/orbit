@@ -317,7 +317,6 @@ export const providersApi = {
   refreshCursor: (id: string) => api<{ success?: boolean; unchanged?: boolean }>(`/providers/${id}/refresh-cursor`, { method: "POST" }),
   setRateLimitProtection: (connectionId: string, enabled: boolean) => api<{ success?: boolean }>("/rate-limits", { method: "POST", body: JSON.stringify({ connectionId, enabled }) }),
 };
-
 export const settingsApi = {
   sidebar: () => api<SidebarSettings>("/settings"),
   get: () => api<Record<string, unknown>>("/settings"),
@@ -799,4 +798,257 @@ export const usageApi = {
       method: "PATCH",
       body: JSON.stringify(patch),
     }),
+};
+
+export interface ProviderQuotaItem {
+  id: string;
+  provider: string;
+  name: string;
+  baseUrl?: string;
+  isActive?: boolean;
+  isBanned?: boolean;
+  rateLimitedUntil?: string | null;
+  dailyUsageLimitUsd?: number | null;
+  monthlyUsageLimitUsd?: number | null;
+  dailyCostUsd?: number;
+  monthlyCostUsd?: number;
+  quotaRemainingPct?: number | null;
+  quotaIsExhausted?: boolean | null;
+  quotaTrend?: "improving" | "stable" | "declining" | null;
+  quotaScope?: "connection" | "provider" | "none";
+  quotaVisible?: boolean;
+  tpmLimit?: number | null;
+  rpmLimit?: number | null;
+  alertThresholdPct?: number | null;
+  poolId?: string | null;
+  lastSyncAt?: string | null;
+  defaultModel?: string;
+}
+
+export interface QuotaOverviewSummary {
+  totalProviders: number;
+  activeProviders: number;
+  healthyQuotas: number;
+  lowQuotas: number;
+  exhaustedQuotas: number;
+  rateLimitedCount: number;
+  totalDailyLimitUsd: number;
+  totalDailyCostUsd: number;
+  totalMonthlyLimitUsd: number;
+  totalMonthlyCostUsd: number;
+}
+
+export interface QuotaPoolItem {
+  id: string;
+  name: string;
+  provider?: string;
+  description?: string;
+  group?: string;
+  defaultModel?: string;
+  strategy?: string;
+  totalCapacityRpm?: number;
+  consumedRpm?: number;
+  accounts?: string[];
+  dailyLimitUsd?: number;
+  monthlyLimitUsd?: number;
+  currentDailySpendUsd?: number;
+  currentMonthlySpendUsd?: number;
+  connectionIds?: string[];
+  weights?: Record<string, number>;
+  allowedApiKeys?: string[];
+  autoFailover?: boolean;
+  isActive?: boolean;
+  updatedAt?: string;
+  createdAt?: string;
+}
+
+export const quotaApi = {
+  getOverview: async (): Promise<QuotaOverviewSummary> => {
+    try {
+      return await api<QuotaOverviewSummary>("/quota/overview");
+    } catch {
+      return {
+        totalProviders: 0,
+        activeProviders: 0,
+        healthyQuotas: 0,
+        lowQuotas: 0,
+        exhaustedQuotas: 0,
+        rateLimitedCount: 0,
+        totalDailyLimitUsd: 0,
+        totalDailyCostUsd: 0,
+        totalMonthlyLimitUsd: 0,
+        totalMonthlyCostUsd: 0,
+      };
+    }
+  },
+  listProviderQuotas: async (): Promise<ProviderQuotaItem[]> => {
+    try {
+      const res = await api<any>("/quota/providers");
+      const list = Array.isArray(res)
+        ? res
+        : Array.isArray(res?.items)
+        ? res.items
+        : Array.isArray(res?.data)
+        ? res.data
+        : null;
+      if (list) return list;
+      throw new Error("Fallback needed");
+    } catch {
+      try {
+        const res = await providersApi.list({ limit: 100 });
+        const list = Array.isArray(res?.connections) ? res.connections : [];
+        return list.map((c) => ({
+          id: c.id,
+          provider: c.provider,
+          name: c.name,
+          baseUrl: c.baseUrl,
+          isActive: c.isActive,
+          isBanned: c.isBanned,
+          rateLimitedUntil: c.rateLimitedUntil,
+          dailyUsageLimitUsd: (c.dailyUsageLimitUsd as number) ?? null,
+          monthlyUsageLimitUsd: (c.monthlyUsageLimitUsd as number) ?? null,
+          dailyCostUsd: (c.dailyCostUsd as number) ?? 0,
+          monthlyCostUsd: (c.monthlyCostUsd as number) ?? 0,
+          quotaRemainingPct: (c.quotaRemainingPct as number) ?? (c.isBanned ? 0 : 100),
+          quotaIsExhausted: Boolean(c.quotaIsExhausted || c.isBanned),
+          quotaTrend: (c.quotaTrend as "improving" | "stable" | "declining") ?? "stable",
+          quotaScope: (c.quotaScope as "connection" | "provider" | "none") ?? "connection",
+          quotaVisible: c.quotaVisible !== false,
+          tpmLimit: (c.tpmLimit as number) ?? null,
+          rpmLimit: (c.rpmLimit as number) ?? null,
+          alertThresholdPct: (c.alertThresholdPct as number) ?? 20,
+          poolId: (c.poolId as string) ?? null,
+          lastSyncAt: (c.lastSyncAt as string) ?? null,
+          defaultModel: c.defaultModel,
+        }));
+      } catch {
+        return [];
+      }
+    }
+  },
+  updateLimit: (
+    id: string,
+    patch: {
+      dailyUsageLimitUsd?: number | null;
+      monthlyUsageLimitUsd?: number | null;
+      tpmLimit?: number | null;
+      rpmLimit?: number | null;
+      alertThresholdPct?: number | null;
+      quotaVisible?: boolean;
+    }
+  ) =>
+    api<Record<string, unknown>>(`/quota/providers/${encodeURIComponent(id)}`, {
+      method: "PATCH",
+      body: JSON.stringify(patch),
+    }),
+  syncQuota: (id: string) =>
+    api<{ success: boolean; balanceUsd?: number; remainingPct?: number }>(
+      `/quota/providers/${encodeURIComponent(id)}/sync`,
+      { method: "POST" }
+    ),
+  resetCooldown: (id: string) =>
+    api<{ success?: boolean }>(`/providers/${encodeURIComponent(id)}/refresh`, {
+      method: "POST",
+    }),
+  listPools: async (): Promise<QuotaPoolItem[]> => {
+    try {
+      const res = await api<any>("/quota/pools");
+      if (Array.isArray(res)) return res;
+      if (Array.isArray(res?.pools)) return res.pools;
+      if (Array.isArray(res?.items)) return res.items;
+      if (Array.isArray(res?.data)) return res.data;
+      return [];
+    } catch {
+      return [];
+    }
+  },
+  savePool: (pool: Partial<QuotaPoolItem>) =>
+    api<QuotaPoolItem>("/quota/pools", {
+      method: "POST",
+      body: JSON.stringify(pool),
+    }),
+  createPool: (pool: Partial<QuotaPoolItem>) =>
+    api<QuotaPoolItem>("/quota/pools", {
+      method: "POST",
+      body: JSON.stringify(pool),
+    }),
+  updatePool: (poolId: string, patch: Partial<QuotaPoolItem>) =>
+    api<QuotaPoolItem>(`/quota/pools/${encodeURIComponent(poolId)}`, {
+      method: "PATCH",
+      body: JSON.stringify(patch),
+    }),
+  deletePool: (poolId: string) =>
+    api<{ success: boolean }>(`/quota/pools/${encodeURIComponent(poolId)}`, {
+      method: "DELETE",
+    }),
+  listGroups: async (): Promise<Array<{ id: string; name: string; createdAt?: string }>> => {
+    try {
+      const res = await api<any>("/quota/groups");
+      if (Array.isArray(res)) return res;
+      if (Array.isArray(res?.groups)) return res.groups;
+      return [{ id: "group-demo", name: "GroupDemo" }];
+    } catch {
+      return [{ id: "group-demo", name: "GroupDemo" }];
+    }
+  },
+  createGroup: (name: string) =>
+    api<{ group: { id: string; name: string } }>("/quota/groups", {
+      method: "POST",
+      body: JSON.stringify({ name }),
+    }),
+  renameGroup: (id: string, name: string) =>
+    api<{ group: { id: string; name: string } }>(`/quota/groups/${encodeURIComponent(id)}`, {
+      method: "PATCH",
+      body: JSON.stringify({ name }),
+    }),
+  deleteGroup: (id: string) =>
+    api<{ success: boolean }>(`/quota/groups/${encodeURIComponent(id)}`, {
+      method: "DELETE",
+    }),
+  getKeyModels: async (keyId: string): Promise<string[]> => {
+    try {
+      const res = await api<{ models: string[] }>(`/quota/keys/${encodeURIComponent(keyId)}/models`);
+      return Array.isArray(res?.models) ? res.models : [];
+    } catch {
+      return [];
+    }
+  },
+};
+
+export interface AuditLogEntry {
+  id?: number | string;
+  action: string;
+  actor?: string;
+  target?: string;
+  details?: Record<string, unknown> | string;
+  metadata?: Record<string, unknown>;
+  ipAddress?: string;
+  resourceType?: string;
+  status?: string;
+  requestId?: string;
+  timestamp?: string;
+  createdAt?: string;
+}
+
+export const auditApi = {
+  getLogs: async (params?: {
+    level?: string;
+    limit?: number;
+    category?: string;
+  }): Promise<AuditLogEntry[]> => {
+    try {
+      const q = new URLSearchParams();
+      if (params?.level) q.set("level", params.level);
+      if (params?.limit) q.set("limit", String(params.limit));
+      if (params?.category && params.category !== "all") q.set("category", params.category);
+      const res = await api<any>(`/compliance/audit-log?${q.toString()}`);
+      if (Array.isArray(res)) return res;
+      if (Array.isArray(res?.logs)) return res.logs;
+      if (Array.isArray(res?.items)) return res.items;
+      if (Array.isArray(res?.data)) return res.data;
+      return [];
+    } catch {
+      return [];
+    }
+  },
 };
