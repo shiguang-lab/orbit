@@ -38,7 +38,6 @@ export async function buildApp(): Promise<FastifyInstance> {
     await app.register(fastifyStatic, {
       root: adminRoot,
       wildcard: false,
-      decorateReply: false,
     });
   }
 
