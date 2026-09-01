@@ -33,8 +33,8 @@ omniroute-monorepo/
 
 - 本地开发形态只有 admin + BFF 在本机；BFF 通过 `OMNIROUTE_NAS_API_TARGET` 代理 NAS Orbit 的业务 API，
   不打开或读取本机 `~/.omniroute/storage.sqlite`。
-- NAS target 只允许 `NODE_ENV=development` 且 BFF 监听 loopback，避免生产环境意外形成公开代理；生产 BFF
-  应与 Orbit 同机运行并使用 engine adapter。
+- NAS target 默认只允许 `NODE_ENV=development` 且 BFF 监听 loopback；生产镜像部署必须显式设置
+  `OMNIROUTE_NAS_PROXY_ENABLED=true`，避免环境残留变量意外形成公开代理。
 - BFF 使用服务端 `OMNIROUTE_NAS_MANAGEMENT_API_KEY`（manage/admin scope）或显式启用的 SSO broker
   访问 NAS，凭证不会下发到浏览器。未配置 NAS target 时才允许同机 Orbit 引擎模式。
 

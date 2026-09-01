@@ -75,4 +75,5 @@
 为 `omniroute` 配置 local-broker policy 后使用 `SG_LOCAL_BROKER_ENABLED=true`。两者都未配置时，
 BFF 返回 503，不会回退本地数据库或放开匿名代理。
 
-NAS 代理仅允许开发环境且 BFF 监听 loopback，生产环境不会因误带该变量产生公开转发入口。
+NAS 代理默认仅允许开发环境且 BFF 监听 loopback；生产镜像部署必须显式设置
+`OMNIROUTE_NAS_PROXY_ENABLED=true`，生产 compose 已包含该开关，避免误带 target 变量形成公开转发入口。
