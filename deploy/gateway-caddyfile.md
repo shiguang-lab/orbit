@@ -17,14 +17,14 @@
 # ─────────────────────────────────────────────────────────────
 @omniroute host omniroute.shiguanglab.com
 handle @omniroute {
-    # 前端 SPA 静态资源(公开)
-    @omnirouteStatic path /assets/* /favicon.ico /favicon.svg /healthz /index.html
+    # 前端 SPA 静态资源(公开，Admin 与 BFF 已合并为同一个镜像/进程)
+    @omnirouteStatic path /assets/* /favicon.ico /favicon.svg /index.html
     handle @omnirouteStatic {
         route {
             request_header -X-SG-Identity
             request_header -X-SG-*
             request_header -X-User-*
-            reverse_proxy omniroute-admin:8080 {
+            reverse_proxy orbit-gateway:8787 {
                 header_up -Cookie
                 header_up -Authorization
                 header_down -Set-Cookie
@@ -62,7 +62,7 @@ handle @omniroute {
                 header_up X-SG-Required-Entitlements omniroute:access
                 copy_headers X-SG-Identity
             }
-            reverse_proxy omniroute-bff:8787 {
+            reverse_proxy orbit-gateway:8787 {
                 header_up -Cookie
                 header_up -Authorization
                 header_down -Set-Cookie
@@ -86,7 +86,7 @@ handle @omniroute {
                 header_up X-SG-Required-Entitlements omniroute:access
                 copy_headers X-SG-Identity
             }
-            reverse_proxy omniroute-admin:8080 {
+            reverse_proxy orbit-gateway:8787 {
                 header_up -Cookie
                 header_up -Authorization
                 header_down -Set-Cookie
@@ -121,6 +121,7 @@ OmniRoute 实时通道默认走独立端口 20132(live server)，前端通过
 ## 4. 部署步骤
 
 1. 把上面 host 块并入生产 Caddyfile(`/Users/yanxianliang/shiguang/deploy/access-gateway/Caddyfile`)
-2. 在 docker-compose 网络加入 `omniroute-admin`、`omniroute-bff` 服务(与网关同网段)
+2. 将 NAS 上的 `orbit-gateway` 容器加入网关所在 Docker network，Caddy upstream 使用
+   `orbit-gateway:8787`(Admin 与 BFF 是同一个镜像/服务)
 3. 执行 `cd /Users/yanxianliang/shiguang/deploy/access-gateway && ./deploy.sh`
 4. 验证：`curl -I https://omniroute.shiguanglab.com/` 未登录应 302 到 shiguanglab.com/login
