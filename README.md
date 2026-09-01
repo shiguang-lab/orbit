@@ -75,6 +75,9 @@ Broker 模式只在本地 dev server 生效，生产启动会拒绝任何本地�
 ghcr.io/shiguang-lab/orbit-gateway:<tag>
 ```
 
+推送 `v*` tag 还会自动创建 GitHub Release，附带源码 tar/zip、NAS 部署包和
+`SHA256SUMS.txt` 校验文件；Release 中的镜像 tag 与 Git tag 一致。
+
 镜像内包含 Admin 静态文件和 BFF 单进程服务，生产不读取镜像内数据库，也不需要在 NAS
 安装 Node/pnpm。NAS 直接执行 `docker compose pull && docker compose up -d`，通过
 `OMNIROUTE_NAS_API_TARGET` 访问 NAS 上现有的 Orbit，并以服务端

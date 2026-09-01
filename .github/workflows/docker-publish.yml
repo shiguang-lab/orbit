@@ -81,3 +81,53 @@ jobs:
             org.opencontainers.image.revision=${{ github.sha }}
           cache-from: type=gha,scope=orbit-gateway
           cache-to: type=gha,scope=orbit-gateway,mode=max
+
+  release:
+    name: Build GitHub Release assets
+    needs: publish
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout release tag
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build source and NAS deployment archives
+        env:
+          VERSION: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          mkdir -p release-assets/nas-deploy
+          git archive --format=tar.gz --prefix="orbit-gateway-${VERSION}/" HEAD \
+            -o "release-assets/orbit-gateway-${VERSION}.source.tar.gz"
+          git archive --format=zip --prefix="orbit-gateway-${VERSION}/" HEAD \
+            -o "release-assets/orbit-gateway-${VERSION}.source.zip"
+          cp docker-compose.yml .env.example deploy/NAS-DEPLOY.md release-assets/nas-deploy/
+          tar -czf "release-assets/orbit-gateway-${VERSION}-nas-deploy.tar.gz" \
+            -C release-assets/nas-deploy .
+          (cd release-assets && sha256sum orbit-gateway-*.source.tar.gz orbit-gateway-*.source.zip orbit-gateway-*-nas-deploy.tar.gz > SHA256SUMS.txt)
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true
+          body: |
+            ## Orbit Gateway
+
+            Container image:
+
+            `ghcr.io/shiguang-lab/orbit-gateway:${{ github.ref_name }}`
+
+            NAS deployment only requires downloading the `-nas-deploy.tar.gz` asset,
+            setting `OMNIROUTE_NAS_API_TARGET` and
+            `OMNIROUTE_NAS_MANAGEMENT_API_KEY`, then running `docker compose pull`.
+          files: |
+            release-assets/orbit-gateway-${{ github.ref_name }}.source.tar.gz
+            release-assets/orbit-gateway-${{ github.ref_name }}.source.zip
+            release-assets/orbit-gateway-${{ github.ref_name }}-nas-deploy.tar.gz
+            release-assets/SHA256SUMS.txt
+          fail_on_unmatched_files: true

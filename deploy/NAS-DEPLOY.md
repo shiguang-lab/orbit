@@ -16,6 +16,10 @@ GitHub Actions 在 `shiguang-lab/orbit-gateway` 的 `main` 或 `v*` tag 推送�
 
 ## 首次部署
 
+正式版本可以直接从 GitHub Release 下载 `orbit-gateway-vX.Y.Z-nas-deploy.tar.gz`，其中
+包含 compose、环境变量模板和本部署说明；也可以直接下载仓库中的
+`docker-compose.yml` 与 `.env.example`。
+
 ```bash
 mkdir -p /volume1/docker/orbit-gateway
 cd /volume1/docker/orbit-gateway
