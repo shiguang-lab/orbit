@@ -31,6 +31,11 @@ ENV NODE_ENV=production \
 # config/contracts packages). No database, .env, or build toolchain is included.
 COPY --from=build /tmp/bff-runtime ./
 COPY --from=build /app/apps/admin/dist ./apps/admin/dist
+# The proxy deployment serves the static provider registry locally. Keep the
+# generated registry data beside the compiled BFF because pnpm deploy only
+# copies package runtime files and does not include source-side JSON assets.
+COPY --from=build /app/apps/bff/src/lib/static-catalog.json ./dist/lib/static-catalog.json
+COPY --from=build /app/apps/bff/src/lib/static-models.json ./dist/lib/static-models.json
 USER node
 
 EXPOSE 8787

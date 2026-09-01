@@ -17,6 +17,8 @@ import type { SettingsEngine } from "../routes/settings.js";
 import type { KeyEngine, ApiKeyView } from "../routes/keys.js";
 import type { HomeEngine } from "../routes/home.js";
 import type { ComboEngine } from "../routes/combos.js";
+import bundledCatalog from "./static-catalog.json" with { type: "json" };
+import bundledModels from "./static-models.json" with { type: "json" };
 
 /**
  * Build the provider catalog from Orbit's static registry without opening the
@@ -24,78 +26,7 @@ import type { ComboEngine } from "../routes/combos.js";
  * a NAS instance whose older API does not expose /api/providers/catalog.
  */
 export async function getStaticProviderCatalog(): Promise<ProviderCatalogResponse> {
-  const providerCatalog = await import("@/lib/providers/catalog");
-  const providerConstants = await import("@/shared/constants/providers");
-  type CatalogProvider = {
-    id: string;
-    name: string;
-    color?: string;
-    icon?: string;
-    textIcon?: string;
-    apiType?: string;
-    hasFree?: boolean;
-    freeNote?: string;
-    hiddenFromDashboard?: boolean;
-    serviceKinds?: string[];
-    deprecated?: boolean;
-    deprecationReason?: string;
-    subscriptionRisk?: boolean;
-    riskNoticeVariant?: "oauth" | "webCookie" | "deprecated" | "embedded-service";
-    website?: string;
-    authHint?: string;
-    baseUrl?: string;
-    notice?: { text?: string; apiKeyUrl?: string; signupUrl?: string };
-    passthroughModels?: boolean;
-  };
-  const groups = providerCatalog.STATIC_PROVIDER_CATALOG_GROUPS as Record<string, {
-    displayAuthType: string;
-    toggleAuthType: string;
-    providers: Record<string, CatalogProvider>;
-  }>;
-
-  return {
-    categories: (providerCatalog.STATIC_PROVIDER_CATALOG_RESOLUTION_ORDER as string[]).map((category) => {
-      const group = groups[category];
-      return {
-        key: category,
-        displayAuthType: group.displayAuthType,
-        toggleAuthType: group.toggleAuthType,
-        providers: Object.values(group.providers).map((provider) => ({
-          id: provider.id,
-          name: provider.name,
-          color: provider.color,
-          icon: provider.icon,
-          textIcon: provider.textIcon,
-          apiType: provider.apiType,
-          hasFree: provider.hasFree,
-          freeNote: provider.freeNote,
-          hiddenFromDashboard: provider.hiddenFromDashboard,
-          serviceKinds: provider.serviceKinds,
-          deprecated: provider.deprecated,
-          deprecationReason: provider.deprecationReason,
-          subscriptionRisk: provider.subscriptionRisk,
-          riskNoticeVariant: provider.riskNoticeVariant,
-          isIde: providerConstants.IDE_PROVIDER_IDS.has(provider.id),
-          website: provider.website,
-          authHint: provider.authHint,
-          baseUrl: provider.baseUrl,
-          notice: provider.notice,
-          passthroughModels: provider.passthroughModels,
-          dashboardSection: providerConstants.AGGREGATOR_PROVIDER_IDS.has(provider.id)
-            ? "aggregator"
-            : providerConstants.ENTERPRISE_CLOUD_PROVIDER_IDS.has(provider.id)
-              ? "enterprise"
-              : providerConstants.IMAGE_ONLY_PROVIDER_IDS.has(provider.id)
-                ? "image"
-                : providerConstants.EMBEDDING_RERANK_PROVIDER_IDS.has(provider.id)
-                  ? "embedding"
-                  : providerConstants.VIDEO_PROVIDER_IDS.has(provider.id)
-                    ? "video"
-                    : "llm",
-        })),
-      };
-    }),
-  };
+  return bundledCatalog as ProviderCatalogResponse;
 }
 
 /**
@@ -104,9 +35,8 @@ export async function getStaticProviderCatalog(): Promise<ProviderCatalogRespons
  * matching Orbit's own dashboard behavior.
  */
 export async function getStaticProviderModels(providerId: string): Promise<Array<Record<string, unknown>>> {
-  const providerModels = await import("@/shared/constants/models");
-  const models = providerModels.getModelsByProviderId(providerId);
-  return Array.isArray(models) ? models.map((model: Record<string, unknown>) => ({ ...model })) : [];
+  const models = (bundledModels as Record<string, unknown>)[providerId];
+  return Array.isArray(models) ? models.map((model) => ({ ...(model as Record<string, unknown>) })) : [];
 }
 
 /**
