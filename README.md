@@ -65,6 +65,22 @@ Broker 模式只在本地 dev server 生效，生产启动会拒绝任何本地�
 未配置时才通过引擎 shim 读取同机真实数据。
 长连接 `/live-ws` 代理指向 Orbit 的 live server(20132)。
 
+## 镜像发布与 NAS 部署
+
+仓库已提供与 Orbit 一致的 GHCR 发布流程：推送 `main` 会更新 `latest`，推送 `v*` tag
+会发布版本 tag、提交 SHA tag，并同步更新 `latest`。工作流构建 `linux/amd64` 与
+`linux/arm64` 多架构镜像：
+
+```text
+ghcr.io/shiguang-lab/orbit-gateway:<tag>
+```
+
+镜像内包含 Admin 静态文件和 BFF 单进程服务，生产不读取镜像内数据库，也不需要在 NAS
+安装 Node/pnpm。NAS 直接执行 `docker compose pull && docker compose up -d`，通过
+`OMNIROUTE_NAS_API_TARGET` 访问 NAS 上现有的 Orbit，并以服务端
+`OMNIROUTE_NAS_MANAGEMENT_API_KEY` 完成管理 API 认证。完整步骤见
+[`deploy/NAS-DEPLOY.md`](./deploy/NAS-DEPLOY.md)。
+
 ## BFF 结构
 
 ```
