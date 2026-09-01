@@ -1,0 +1,17 @@
+{
+  "name": "omniroute-monorepo",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.28.0",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "typecheck": "turbo run typecheck",
+    "dev:admin": "pnpm --filter @omniroute/admin dev",
+    "dev:bff": "pnpm --filter @omniroute/bff dev"
+  },
+  "devDependencies": {
+    "turbo": "^2.6.1",
+    "typescript": "~5.8.0"
+  }
+}

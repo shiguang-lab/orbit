@@ -1,0 +1,29 @@
+services:
+  orbit-gateway:
+    image: ${ORBIT_GATEWAY_IMAGE:-ghcr.io/shiguang-lab/orbit-gateway:latest}
+    container_name: orbit-gateway
+    restart: unless-stopped
+    init: true
+    ports:
+      - "${ORBIT_GATEWAY_PORT:-8787}:8787"
+    environment:
+      NODE_ENV: production
+      BFF_HOST: 0.0.0.0
+      BFF_PORT: 8787
+      # Existing Orbit API on this NAS. Use the compose service name if Orbit
+      # is in the same Docker network, or the NAS host address otherwise.
+      OMNIROUTE_NAS_API_TARGET: ${OMNIROUTE_NAS_API_TARGET:?Set OMNIROUTE_NAS_API_TARGET to the NAS Orbit URL}
+      OMNIROUTE_NAS_PROXY_ENABLED: "true"
+      OMNIROUTE_NAS_MANAGEMENT_API_KEY: ${OMNIROUTE_NAS_MANAGEMENT_API_KEY:?Set a manage/admin-scoped Orbit API key}
+      SG_IDENTITY_ISSUER: ${SG_IDENTITY_ISSUER:-https://shiguanglab.com}
+      SG_IDENTITY_AUDIENCE: ${SG_IDENTITY_AUDIENCE:-omniroute-api}
+      SG_IDENTITY_ENTITLEMENT: ${SG_IDENTITY_ENTITLEMENT:-omniroute:access}
+      SG_IDENTITY_JWKS_URL: ${SG_IDENTITY_JWKS_URL:-https://shiguanglab.com/.well-known/sg-identity-jwks.json}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      OMNIROUTE_NAS_API_TIMEOUT_MS: ${OMNIROUTE_NAS_API_TIMEOUT_MS:-30000}
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8787/api/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
