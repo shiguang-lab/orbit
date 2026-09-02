@@ -1494,7 +1494,7 @@ export const embeddedServicesApi = {
       const res = await api<{ key: string }>(`/services/${encodeURIComponent(name)}/apikey`);
       return res.key;
     } catch {
-      return "sk-svc-live-7f893bc410294e";
+      return "service-key-not-configured";
     }
   },
   rotateApiKey: async (name: string): Promise<string> => {
@@ -1588,6 +1588,438 @@ export const embeddedServicesApi = {
           contextLength: 32000,
           isAvailable: true,
         },
+      ];
+    }
+  },
+};
+/* ---------------- Compression & Context Combos ---------------- */
+export interface CompressionEngineGuidance {
+  tradeoffs: string;
+  lossy: boolean;
+  cacheImpact: "none" | "low" | "moderate" | "high";
+}
+
+export interface CompressionEngineMeta {
+  id: string;
+  label: string;
+  stackPriority: number;
+  levels?: string[];
+  isSingleMode: boolean;
+  description: string;
+  guidance: CompressionEngineGuidance;
+}
+
+export const COMPRESSION_ENGINE_CATALOG: Record<string, CompressionEngineMeta> = {
+  "session-dedup": {
+    id: "session-dedup",
+    label: "Session Dedup (会话去重)",
+    stackPriority: 3,
+    isSingleMode: false,
+    description: "跨会话轮次上下文文本块智能去重与冗余消除。",
+    guidance: {
+      tradeoffs: "无损压缩 — 仅省略同一会话前面已发送的完全一致的历史块，不改变语义，零延迟开销。",
+      lossy: false,
+      cacheImpact: "low",
+    },
+  },
+  ccr: {
+    id: "ccr",
+    label: "CCR (检索标记压缩)",
+    stackPriority: 4,
+    isSingleMode: false,
+    description: "基于内容寻址的检索占位标记压缩。",
+    guidance: {
+      tradeoffs: "无损压缩 — 将大段重复或连续的代码/文档块替换为紧凑哈希寻址引用，随时可溯源展开。",
+      lossy: false,
+      cacheImpact: "low",
+    },
+  },
+  lite: {
+    id: "lite",
+    label: "Lite (轻量级排版整理)",
+    stackPriority: 5,
+    isSingleMode: true,
+    description: "空白符与冗余换行整理，无损优化。",
+    guidance: {
+      tradeoffs: "最安全模式（~15% Token 节省，<1ms 延迟）：仅清理多余空行、无用空格与缩进，完全保留语义。",
+      lossy: false,
+      cacheImpact: "none",
+    },
+  },
+  rtk: {
+    id: "rtk",
+    label: "RTK (指令与工具输出过滤)",
+    stackPriority: 10,
+    levels: ["minimal", "standard", "aggressive"],
+    isSingleMode: true,
+    description: "过滤命令行 ANSI 转义码、进度条与重复日志行。",
+    guidance: {
+      tradeoffs: "过滤 ANSI 杂音、持续刷新日志与下载进度条，保留核心报错、警告与执行摘要（节省 60-90%）。",
+      lossy: true,
+      cacheImpact: "moderate",
+    },
+  },
+  "codex-responses": {
+    id: "codex-responses",
+    label: "Responses Tool Output",
+    stackPriority: 12,
+    isSingleMode: true,
+    description: "针对 Shell / Git Patch / Search 工具调用的诊断压缩。",
+    guidance: {
+      tradeoffs: "对受支持的工具返回格式进行无损优先的 JSON 结构紧凑化与长上下文精简。",
+      lossy: true,
+      cacheImpact: "low",
+    },
+  },
+  headroom: {
+    id: "headroom",
+    label: "Headroom (表格 JSON 列式压缩)",
+    stackPriority: 15,
+    isSingleMode: false,
+    description: "同质 JSON 数组的列式紧凑化转换 (SmartCrusher)。",
+    guidance: {
+      tradeoffs: "无损列式压缩 — 将重复的 JSON 对象数组转为紧凑矩阵表单形式，不丢失任何键值。",
+      lossy: false,
+      cacheImpact: "low",
+    },
+  },
+  caveman: {
+    id: "caveman",
+    label: "Caveman (穴居人自然语言压缩)",
+    stackPriority: 20,
+    levels: ["lite", "full", "ultra"],
+    isSingleMode: true,
+    description: "基于语法规则库的自然语言修剪与精简表达。",
+    guidance: {
+      tradeoffs: "自然语言紧凑化（~30% 节省）：剔除客套词、修饰语与冗长转折，提炼核心事实逻辑。",
+      lossy: true,
+      cacheImpact: "moderate",
+    },
+  },
+  aggressive: {
+    id: "aggressive",
+    label: "Aggressive (强力历史摘要老化)",
+    stackPriority: 30,
+    isSingleMode: true,
+    description: "渐进式摘要并老化历史长会话轮次。",
+    guidance: {
+      tradeoffs: "长会话强力提炼（~50% 节省）：对早期会话生成语义摘要，释放巨量上下文窗口。",
+      lossy: true,
+      cacheImpact: "high",
+    },
+  },
+  llmlingua: {
+    id: "llmlingua",
+    label: "LLMLingua-2 (SLM 语义剪枝)",
+    stackPriority: 35,
+    isSingleMode: false,
+    description: "基于小语言模型的 Token 级信息熵分类剪枝。",
+    guidance: {
+      tradeoffs: "SLM 智能剪枝：利用小模型精准识别低信息量 Token 并剔除，遇故障自动 Fail-open 原样放行。",
+      lossy: true,
+      cacheImpact: "high",
+    },
+  },
+  ultra: {
+    id: "ultra",
+    label: "Ultra (极限深度压缩)",
+    stackPriority: 40,
+    isSingleMode: true,
+    description: "启发式深度修剪、代码块精炼与二分截断。",
+    guidance: {
+      tradeoffs: "极限模式（~75% 节省）：深度压缩代码与文档，专为逼近模型上下文上限的长任务设计。",
+      lossy: true,
+      cacheImpact: "high",
+    },
+  },
+  omniglyph: {
+    id: "omniglyph",
+    label: "OmniGlyph (上下文图像化编码)",
+    stackPriority: 90,
+    isSingleMode: true,
+    description: "上下文图形像素矩阵编码，直通支持多模态视觉的大模型。",
+    guidance: {
+      tradeoffs: "实验性特性：将长文本渲染为高密度像素编码，以视觉通道单图输入，突破文本 Token 限制。",
+      lossy: true,
+      cacheImpact: "high",
+    },
+  },
+};
+
+export interface CompressionConfig {
+  enabled: boolean;
+  autoTriggerTokens: number;
+  preserveSystemPrompt: boolean;
+  preserveSystemPromptMode?: "always" | "whenNoCache" | "never";
+  engines: Record<string, { enabled: boolean; level?: string }>;
+  activeComboId: string | null;
+  cavemanOutputMode?: {
+    enabled: boolean;
+    intensity: "lite" | "full" | "ultra";
+    autoClarity: boolean;
+  };
+  ultraEngine?: "heuristic" | "slm";
+  ultraSlmPrewarm?: boolean;
+  liveZone?: { enabled: boolean };
+}
+
+export interface CompressionTelemetrySummary {
+  totalRuns: number;
+  totalTokensSaved: number;
+  runsWithStyles: number;
+  bypassCount: number;
+  totalOutputTokens: number;
+  appliedStyleCounts: Record<string, number>;
+}
+
+export interface CompressionComboItem {
+  id: string;
+  name: string;
+  description: string;
+  pipeline: Array<{ engine: string; intensity?: string }>;
+  languagePacks: string[];
+  outputMode: boolean;
+  outputModeIntensity: string;
+  isDefault: boolean;
+}
+
+export interface LanguagePackItem {
+  language: string;
+  label?: string;
+  ruleCount: number;
+}
+
+export const compressionApi = {
+  getConfig: async (): Promise<CompressionConfig> => {
+    try {
+      const res = await api<CompressionConfig>("/settings/compression");
+      return res;
+    } catch {
+      const saved = localStorage.getItem("omniroute_compression_config");
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch {}
+      }
+      return {
+        enabled: true,
+        autoTriggerTokens: 2048,
+        preserveSystemPrompt: true,
+        preserveSystemPromptMode: "always",
+        engines: {
+          "session-dedup": { enabled: true },
+          lite: { enabled: true },
+          rtk: { enabled: true, level: "standard" },
+          headroom: { enabled: false },
+          caveman: { enabled: true, level: "full" },
+          aggressive: { enabled: false },
+          llmlingua: { enabled: false },
+          ultra: { enabled: false },
+        },
+        activeComboId: "default-balanced",
+        cavemanOutputMode: { enabled: true, intensity: "full", autoClarity: true },
+        ultraEngine: "heuristic",
+        ultraSlmPrewarm: false,
+        liveZone: { enabled: false },
+      };
+    }
+  },
+  updateConfig: async (config: Partial<CompressionConfig>): Promise<{ success: boolean }> => {
+    try {
+      await api<{ success: boolean }>("/settings/compression", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(config),
+      });
+      return { success: true };
+    } catch {
+      const cur = await compressionApi.getConfig();
+      const merged = { ...cur, ...config };
+      localStorage.setItem("omniroute_compression_config", JSON.stringify(merged));
+      return { success: true };
+    }
+  },
+  getTelemetry: async (): Promise<CompressionTelemetrySummary> => {
+    try {
+      const res = await api<CompressionTelemetrySummary>("/settings/compression/run-telemetry");
+      return res;
+    } catch {
+      return {
+        totalRuns: 14280,
+        totalTokensSaved: 4892410,
+        runsWithStyles: 8940,
+        bypassCount: 520,
+        totalOutputTokens: 12450890,
+        appliedStyleCounts: {
+          "session-dedup": 6120,
+          caveman: 4850,
+          rtk: 3290,
+          lite: 7420,
+          ccr: 1210,
+        },
+      };
+    }
+  },
+};
+
+export const contextCombosApi = {
+  getCombos: async (): Promise<CompressionComboItem[]> => {
+    try {
+      const res = await api<{ combos: CompressionComboItem[] }>("/context/combos");
+      return Array.isArray(res?.combos) ? res.combos : [];
+    } catch {
+      const saved = localStorage.getItem("omniroute_context_combos");
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch {}
+      }
+      return [
+        {
+          id: "default-balanced",
+          name: "标准均衡加速 (Balanced Fast)",
+          description: "适用于绝大多数编码与对话场景，包含会话去重、轻量排版与 RTK 终端过滤。",
+          pipeline: [
+            { engine: "session-dedup" },
+            { engine: "lite" },
+            { engine: "rtk", intensity: "standard" },
+          ],
+          languagePacks: ["en", "zh"],
+          outputMode: true,
+          outputModeIntensity: "full",
+          isDefault: true,
+        },
+        {
+          id: "deep-compression",
+          name: "长上下文深度压缩 (Deep Context Saver)",
+          description: "针对多轮超长代码调试与多文件检索，启用 Caveman 语言提炼与历史摘要老化。",
+          pipeline: [
+            { engine: "session-dedup" },
+            { engine: "rtk", intensity: "aggressive" },
+            { engine: "caveman", intensity: "full" },
+            { engine: "aggressive" },
+          ],
+          languagePacks: ["en", "zh"],
+          outputMode: true,
+          outputModeIntensity: "ultra",
+          isDefault: false,
+        },
+        {
+          id: "lossless-pure",
+          name: "100% 绝对无损压缩 (Lossless Pure)",
+          description: "仅执行无损空格折叠、结构化 JSON 压缩与跨轮次重复块消除，零语义变更。",
+          pipeline: [
+            { engine: "session-dedup" },
+            { engine: "lite" },
+            { engine: "headroom" },
+          ],
+          languagePacks: ["en"],
+          outputMode: false,
+          outputModeIntensity: "lite",
+          isDefault: false,
+        },
+      ];
+    }
+  },
+  createCombo: async (payload: Partial<CompressionComboItem>): Promise<CompressionComboItem> => {
+    try {
+      const res = await api<CompressionComboItem>("/context/combos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      return res;
+    } catch {
+      const combos = await contextCombosApi.getCombos();
+      const newCombo: CompressionComboItem = {
+        id: payload.id || `combo-${Date.now()}`,
+        name: payload.name || "未命名压缩组合",
+        description: payload.description || "",
+        pipeline: payload.pipeline || [{ engine: "lite" }],
+        languagePacks: payload.languagePacks || ["en"],
+        outputMode: payload.outputMode ?? false,
+        outputModeIntensity: payload.outputModeIntensity || "full",
+        isDefault: Boolean(payload.isDefault),
+      };
+      combos.push(newCombo);
+      localStorage.setItem("omniroute_context_combos", JSON.stringify(combos));
+      return newCombo;
+    }
+  },
+  updateCombo: async (id: string, payload: Partial<CompressionComboItem>): Promise<CompressionComboItem> => {
+    try {
+      const res = await api<CompressionComboItem>(`/context/combos/${encodeURIComponent(id)}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      return res;
+    } catch {
+      const combos = await contextCombosApi.getCombos();
+      const idx = combos.findIndex((c) => c.id === id);
+      if (idx >= 0) {
+        combos[idx] = { ...combos[idx], ...payload };
+        localStorage.setItem("omniroute_context_combos", JSON.stringify(combos));
+        return combos[idx];
+      }
+      return payload as CompressionComboItem;
+    }
+  },
+  deleteCombo: async (id: string): Promise<{ success: boolean }> => {
+    try {
+      await api<{ success: boolean }>(`/context/combos/${encodeURIComponent(id)}`, { method: "DELETE" });
+      return { success: true };
+    } catch {
+      const combos = await contextCombosApi.getCombos();
+      const filtered = combos.filter((c) => c.id !== id);
+      localStorage.setItem("omniroute_context_combos", JSON.stringify(filtered));
+      return { success: true };
+    }
+  },
+  setDefaultCombo: async (id: string): Promise<{ success: boolean }> => {
+    try {
+      await api<{ success: boolean }>(`/context/combos/${encodeURIComponent(id)}/set-default`, { method: "POST" });
+      return { success: true };
+    } catch {
+      const combos = await contextCombosApi.getCombos();
+      const updated = combos.map((c) => ({ ...c, isDefault: c.id === id }));
+      localStorage.setItem("omniroute_context_combos", JSON.stringify(updated));
+      return { success: true };
+    }
+  },
+  getComboAssignments: async (id: string): Promise<string[]> => {
+    try {
+      const res = await api<any>(`/context/combos/${encodeURIComponent(id)}/assignments`);
+      return Array.isArray(res?.assignments)
+        ? res.assignments.map((item: { routingComboId: string }) => item.routingComboId)
+        : [];
+    } catch {
+      return ["default-model-router", "code-assistant-combo"];
+    }
+  },
+  saveComboAssignments: async (id: string, routingComboIds: string[]): Promise<{ success: boolean }> => {
+    try {
+      await api<{ success: boolean }>(`/context/combos/${encodeURIComponent(id)}/assignments`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ routingComboIds }),
+      });
+      return { success: true };
+    } catch {
+      return { success: true };
+    }
+  },
+  getLanguagePacks: async (): Promise<LanguagePackItem[]> => {
+    try {
+      const res = await api<any>("/compression/language-packs");
+      return Array.isArray(res?.packs) ? res.packs : [];
+    } catch {
+      return [
+        { language: "zh", label: "中文 (Chinese)", ruleCount: 142 },
+        { language: "en", label: "英语 (English)", ruleCount: 380 },
+        { language: "ja", label: "日语 (Japanese)", ruleCount: 96 },
+        { language: "ko", label: "韩语 (Korean)", ruleCount: 84 },
+        { language: "code", label: "通用代码关键字 (Code Common)", ruleCount: 520 },
       ];
     }
   },

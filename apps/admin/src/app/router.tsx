@@ -49,6 +49,17 @@ const LogTimelinePage = withSuspense(lazy(() => import("@/features/logs/log-time
 const ConversationsPage = withSuspense(lazy(() => import("@/features/conversations/conversations")));
 const HealthPage = withSuspense(lazy(() => import("@/features/health/health")));
 const EmbeddedServicesPage = withSuspense(lazy(() => import("@/features/services/embedded-services")));
+const CompressionSettingsPage = withSuspense(lazy(() => import("@/features/compression/compression-settings")));
+const CompressionCombosPage = withSuspense(lazy(() => import("@/features/compression/compression-combos")));
+const CavemanContextPage = withSuspense(lazy(() => import("@/features/context/caveman")));
+const RtkContextPage = withSuspense(lazy(() => import("@/features/context/rtk")));
+const HeadroomContextPage = withSuspense(lazy(() => import("@/features/context/engine-detail").then((m) => ({ default: m.HeadroomContextPage }))));
+const SessionDedupContextPage = withSuspense(lazy(() => import("@/features/context/engine-detail").then((m) => ({ default: m.SessionDedupContextPage }))));
+const CcrContextPage = withSuspense(lazy(() => import("@/features/context/engine-detail").then((m) => ({ default: m.CcrContextPage }))));
+const LlmlinguaContextPage = withSuspense(lazy(() => import("@/features/context/engine-detail").then((m) => ({ default: m.LlmlinguaContextPage }))));
+const LiteContextPage = withSuspense(lazy(() => import("@/features/context/engine-detail").then((m) => ({ default: m.LiteContextPage }))));
+const AggressiveContextPage = withSuspense(lazy(() => import("@/features/context/engine-detail").then((m) => ({ default: m.AggressiveContextPage }))));
+const UltraContextPage = withSuspense(lazy(() => import("@/features/context/engine-detail").then((m) => ({ default: m.UltraContextPage }))));
 const P = (navKey: string, title: string) => placeholder(navKey, title);
 
 const migratedPaths = new Set([
@@ -63,6 +74,19 @@ const migratedPaths = new Set([
   "/dashboard/quota",
   "/dashboard/costs/quota-share",
   "/dashboard/quota-share",
+  "/dashboard/context/settings",
+  "/dashboard/compression/settings",
+  "/dashboard/context/combos",
+  "/dashboard/compression/combos",
+  "/dashboard/context/caveman",
+  "/dashboard/context/rtk",
+  "/dashboard/context/headroom",
+  "/dashboard/context/session-dedup",
+  "/dashboard/context/ccr",
+  "/dashboard/context/llmlingua",
+  "/dashboard/context/lite",
+  "/dashboard/context/aggressive",
+  "/dashboard/context/ultra",
   "/dashboard/analytics",
   "/analytics",
   "/dashboard/cache",
@@ -110,6 +134,20 @@ export const router = createBrowserRouter([
       { path: "dashboard/quota", element: <QuotaPage /> },
       { path: "dashboard/costs/quota-share", element: <QuotaSharePage /> },
       { path: "dashboard/quota-share", element: <QuotaSharePage /> },
+      // 压缩与上下文
+      { path: "dashboard/context/settings", element: <CompressionSettingsPage /> },
+      { path: "dashboard/compression/settings", element: <Navigate to="/dashboard/context/settings" replace /> },
+      { path: "dashboard/context/combos", element: <CompressionCombosPage /> },
+      { path: "dashboard/compression/combos", element: <Navigate to="/dashboard/context/combos" replace /> },
+      { path: "dashboard/context/caveman", element: <CavemanContextPage /> },
+      { path: "dashboard/context/rtk", element: <RtkContextPage /> },
+      { path: "dashboard/context/headroom", element: <HeadroomContextPage /> },
+      { path: "dashboard/context/session-dedup", element: <SessionDedupContextPage /> },
+      { path: "dashboard/context/ccr", element: <CcrContextPage /> },
+      { path: "dashboard/context/llmlingua", element: <LlmlinguaContextPage /> },
+      { path: "dashboard/context/lite", element: <LiteContextPage /> },
+      { path: "dashboard/context/aggressive", element: <AggressiveContextPage /> },
+      { path: "dashboard/context/ultra", element: <UltraContextPage /> },
       // 分析
       { path: "dashboard/analytics", element: <AnalyticsPage /> },
       { path: "analytics", element: <AnalyticsPage /> },
