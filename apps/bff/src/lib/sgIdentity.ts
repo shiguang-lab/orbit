@@ -32,6 +32,7 @@ interface IdentityClaims {
   name?: unknown;
   org_id?: unknown;
   roles?: unknown;
+  sid?: unknown;
   sub?: unknown;
 }
 
@@ -49,6 +50,7 @@ export interface SgIdentityOptions {
 
 export interface ResolvedSgIdentity {
   sub: string;
+  sessionId: string;
   displayName?: string;
   organizationId?: string;
   roles: string[];
@@ -96,6 +98,7 @@ export class SgIdentityVerifier {
     const orgId = typeof claims.org_id === "string" ? claims.org_id : undefined;
     return {
       sub: subject,
+      sessionId: String(claims.sid),
       displayName: typeof claims.name === "string" ? claims.name : undefined,
       organizationId: orgId && orgId !== "" ? orgId : undefined,
       roles: stringArray(claims.roles),
@@ -112,6 +115,8 @@ export class SgIdentityVerifier {
       audience.includes(this.options.audience) &&
       typeof claims.sub === "string" &&
       claims.sub.length > 0 &&
+      typeof claims.sid === "string" &&
+      claims.sid.length > 0 &&
       typeof claims.exp === "number" &&
       claims.exp >= now - CLOCK_TOLERANCE_SECONDS &&
       typeof claims.nbf === "number" &&

@@ -44,6 +44,7 @@ const verifier = new SgIdentityVerifier({
     "https://shiguanglab.com/.well-known/sg-identity-jwks.json",
   jwksFile: process.env.SG_IDENTITY_JWKS_FILE,
 });
+const identityResolutionCache = new WeakMap<FastifyRequest, Promise<ResolvedSgIdentity | null>>();
 
 /** 校验断言是否具备管理权限(system:admin 或 omniroute 管理角色/entitlement) */
 export function isAdminIdentity(identity: ResolvedSgIdentity | null): boolean {
@@ -55,19 +56,22 @@ export function isAdminIdentity(identity: ResolvedSgIdentity | null): boolean {
 export async function resolveGatewayIdentity(
   request: FastifyRequest,
 ): Promise<ResolvedSgIdentity | null> {
+  const cached = identityResolutionCache.get(request);
+  if (cached) return cached;
+
   const raw = request.headers["x-sg-identity"];
   const headerValue = Array.isArray(raw) ? raw[0] : raw;
   if (!headerValue) return null;
-  // 生产：JWKS 签名校验
-  const verified = await verifier.verify(headerValue);
-  if (verified) return verified;
-  // 校验失败：不信任未验证的明文断言
-  return null;
+  // 生产：JWKS 签名校验。同一个请求中的鉴权与 CSRF 共享验签结果。
+  const resolution = verifier.verify(headerValue);
+  identityResolutionCache.set(request, resolution);
+  return resolution;
 }
 
 function resolveDevIdentity(): ResolvedSgIdentity {
   return {
     sub: "dev-admin",
+    sessionId: "dev-session",
     displayName: "开发管理员",
     roles: ["system:admin"],
     entitlements: ["omniroute:access"],

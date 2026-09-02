@@ -103,7 +103,7 @@ export function authRoutes(
 
   /** GET /api/auth/csrf */
   app.get("/auth/csrf", async (request, reply) => {
-    const token = issueDashboardCsrfToken(request);
+    const token = await issueDashboardCsrfToken(request);
     if (!token) {
       return reply.status(401).send({ error: { type: "invalid_request", message: "Not authenticated" } });
     }
