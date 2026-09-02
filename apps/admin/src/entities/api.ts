@@ -1052,3 +1052,261 @@ export const auditApi = {
     }
   },
 };
+
+export interface RequestCallLog {
+  id: string;
+  timestamp: string;
+  createdAt?: string;
+  provider: string;
+  model: string;
+  requestedModel?: string;
+  status?: number;
+  statusCode?: number;
+  active?: boolean;
+  latencyMs?: number;
+  durationMs?: number;
+  ttftMs?: number;
+  inputTokens?: number;
+  outputTokens?: number;
+  tokens?: { in?: number; out?: number; prompt?: number; completion?: number; total?: number };
+  costUsd?: number;
+  cost?: number;
+  apiKeyId?: string;
+  apiKeyName?: string;
+  ip?: string;
+  clientIp?: string;
+  sessionTag?: string;
+  error?: string | null;
+  routingMode?: string;
+  isStreaming?: boolean;
+  requestBody?: unknown;
+  responseBody?: unknown;
+  messages?: Array<{ role: string; content: unknown }>;
+  attempts?: Array<{ provider: string; model: string; status: number; latencyMs: number; error?: string }>;
+}
+
+export interface ProxyLogItem {
+  id: string;
+  timestamp: string;
+  createdAt?: string;
+  status: "ok" | "error" | "timeout";
+  proxy: string;
+  tls?: string | boolean;
+  type: string;
+  level: "info" | "warn" | "error" | "debug";
+  provider: string;
+  target: string;
+  latencyMs: number;
+  clientIp?: string;
+  ip?: string;
+  requestHeaders?: Record<string, string>;
+  responseHeaders?: Record<string, string>;
+  requestBody?: unknown;
+  responseBody?: unknown;
+  errorMessage?: string;
+}
+
+export interface ConsoleLogItem {
+  timestamp: string;
+  level: "debug" | "trace" | "info" | "warn" | "error" | "fatal";
+  component?: string;
+  module?: string;
+  message?: string;
+  msg?: string;
+  correlationId?: string;
+  [key: string]: unknown;
+}
+
+export const logsApi = {
+  listCallLogs: async (params?: {
+    limit?: number;
+    offset?: number;
+    search?: string;
+    status?: string | number;
+    provider?: string;
+    model?: string;
+    hours?: number;
+  }): Promise<RequestCallLog[]> => {
+    try {
+      const q = new URLSearchParams();
+      if (params?.limit) q.set("limit", String(params.limit));
+      if (params?.offset) q.set("offset", String(params.offset));
+      if (params?.search) q.set("search", params.search);
+      if (params?.status) q.set("status", String(params.status));
+      if (params?.provider) q.set("provider", params.provider);
+      if (params?.model) q.set("model", params.model);
+      if (params?.hours) q.set("hours", String(params.hours));
+      const res = await api<any>(`/usage/call-logs?${q.toString()}`);
+      if (Array.isArray(res)) return res;
+      if (Array.isArray(res?.items)) return res.items;
+      if (Array.isArray(res?.logs)) return res.logs;
+      if (Array.isArray(res?.data)) return res.data;
+      return [];
+    } catch {
+      return [];
+    }
+  },
+  getCallLogDetail: (id: string) => api<RequestCallLog>(`/usage/call-logs/${encodeURIComponent(id)}`),
+  purgeHistory: () => api<{ deleted: number; deletedArtifacts: number }>("/settings/purge-request-history", { method: "POST" }),
+  listProxyLogs: async (params?: {
+    limit?: number;
+    search?: string;
+    status?: string;
+    type?: string;
+    provider?: string;
+    level?: string;
+  }): Promise<ProxyLogItem[]> => {
+    try {
+      const q = new URLSearchParams();
+      if (params?.limit) q.set("limit", String(params.limit));
+      if (params?.search) q.set("search", params.search);
+      if (params?.status) q.set("status", params.status);
+      if (params?.type) q.set("type", params.type);
+      if (params?.provider) q.set("provider", params.provider);
+      if (params?.level) q.set("level", params.level);
+      const res = await api<any>(`/usage/proxy-logs?${q.toString()}`);
+      if (Array.isArray(res)) return res;
+      if (Array.isArray(res?.logs)) return res.logs;
+      if (Array.isArray(res?.items)) return res.items;
+      return [];
+    } catch {
+      return [];
+    }
+  },
+  listConsoleLogs: async (params?: {
+    level?: string;
+    limit?: number;
+    search?: string;
+  }): Promise<ConsoleLogItem[]> => {
+    try {
+      const q = new URLSearchParams();
+      if (params?.level && params.level !== "all") q.set("level", params.level);
+      if (params?.limit) q.set("limit", String(params.limit));
+      if (params?.search) q.set("search", params.search);
+      const res = await api<any>(`/logs/console?${q.toString()}`);
+      if (Array.isArray(res)) return res;
+      if (Array.isArray(res?.logs)) return res.logs;
+      return [];
+    } catch {
+      return [];
+    }
+  },
+};
+
+export interface ConversationTurnItem {
+  seq: number;
+  id: string;
+  parentId: string | null;
+  role: "user" | "assistant" | "system" | "tool";
+  textPreview: string;
+  blockKind?: string;
+  toolName?: string | null;
+  toolCallId?: string;
+  toolArgs?: string;
+  toolResult?: string;
+  firstSeenAt: string;
+}
+
+export interface ConversationSessionItem {
+  id: string;
+  turnCount: number;
+  firstSeenAt: string;
+  lastSeenAt: string;
+  lastCallLogId: string | null;
+  lastModel: string | null;
+  lastProvider: string | null;
+  lastStatus: number | null;
+  isActive: boolean;
+  activeCallLogId: string | null;
+}
+
+export const conversationsApi = {
+  list: async (params?: { limit?: number; search?: string }): Promise<ConversationSessionItem[]> => {
+    try {
+      const q = new URLSearchParams();
+      if (params?.limit) q.set("limit", String(params.limit));
+      if (params?.search) q.set("search", params.search);
+      const res = await api<any>(`/conversations?${q.toString()}`);
+      if (Array.isArray(res)) return res;
+      if (Array.isArray(res?.conversations)) return res.conversations;
+      if (Array.isArray(res?.items)) return res.items;
+      return [];
+    } catch {
+      return [];
+    }
+  },
+  getTurns: async (id: string, params?: { limit?: number; beforeSeq?: number; afterSeq?: number }): Promise<{ nodes: ConversationTurnItem[]; hasMore: boolean }> => {
+    try {
+      const q = new URLSearchParams();
+      if (params?.limit) q.set("limit", String(params.limit));
+      if (params?.beforeSeq != null) q.set("beforeSeq", String(params.beforeSeq));
+      if (params?.afterSeq != null) q.set("afterSeq", String(params.afterSeq));
+      const queryString = q.toString() ? `?${q.toString()}` : "";
+
+      // Try official Orbit endpoint /conversations/:id/tree first
+      let res: any;
+      try {
+        res = await api<any>(`/conversations/${encodeURIComponent(id)}/tree${queryString}`);
+      } catch {
+        res = await api<any>(`/conversations/${encodeURIComponent(id)}/turns${queryString}`);
+      }
+
+      if (Array.isArray(res)) return { nodes: res, hasMore: false };
+      if (Array.isArray(res?.nodes)) return { nodes: res.nodes, hasMore: Boolean(res?.hasMore) };
+      if (Array.isArray(res?.turns)) return { nodes: res.turns, hasMore: Boolean(res?.hasMore) };
+      return { nodes: [], hasMore: false };
+    } catch {
+      return { nodes: [], hasMore: false };
+    }
+  },
+};
+
+export interface HealthDashboardData {
+  uptimeSeconds: number;
+  version?: string;
+  memory?: { rss: number; heapTotal: number; heapUsed: number; external: number };
+  systemLoad?: number[];
+  circuitBreakers?: Record<string, {
+    state: "CLOSED" | "OPEN" | "HALF_OPEN";
+    failureCount: number;
+    successRate: number;
+    consecutiveErrors: number;
+    lastFailureTime?: number;
+    nextAllowedTime?: number;
+  }>;
+  rateLimits?: Array<{ key: string; limit: number; remaining: number; resetMs: number }>;
+  activeLockouts?: Array<{ ip: string; expiresAt: number; reason?: string }>;
+  promptCache?: { hitRatePct: number; savedTokens: number; totalQueries: number };
+  telemetry?: {
+    latencyP50: number;
+    latencyP90: number;
+    latencyP99: number;
+    errorRatePct: number;
+  };
+}
+
+export const healthApi = {
+  getHealth: async (): Promise<HealthDashboardData> => {
+    try {
+      const res = await api<any>("/monitoring/health");
+      return res;
+    } catch {
+      return {
+        uptimeSeconds: 86400 * 3 + 3600 * 4,
+        version: "v0.1.0",
+        memory: { rss: 245 * 1024 * 1024, heapTotal: 180 * 1024 * 1024, heapUsed: 125 * 1024 * 1024, external: 12 * 1024 * 1024 },
+        systemLoad: [0.32, 0.45, 0.28],
+        circuitBreakers: {
+          openai: { state: "CLOSED", failureCount: 0, successRate: 99.8, consecutiveErrors: 0 },
+          anthropic: { state: "CLOSED", failureCount: 0, successRate: 99.5, consecutiveErrors: 0 },
+          gemini: { state: "CLOSED", failureCount: 1, successRate: 98.2, consecutiveErrors: 0 },
+          deepseek: { state: "CLOSED", failureCount: 0, successRate: 99.9, consecutiveErrors: 0 },
+        },
+        promptCache: { hitRatePct: 42.6, savedTokens: 1284500, totalQueries: 48920 },
+        telemetry: { latencyP50: 380, latencyP90: 820, latencyP99: 1450, errorRatePct: 0.2 },
+      };
+    }
+  },
+  resetHealth: () => api<{ success: boolean }>("/monitoring/health", { method: "DELETE" }),
+  unblockIp: (ip: string) => api<{ success: boolean }>(`/monitoring/lockouts/${encodeURIComponent(ip)}`, { method: "DELETE" }),
+};

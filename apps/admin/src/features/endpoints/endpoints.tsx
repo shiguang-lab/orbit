@@ -21,6 +21,7 @@ import { OpenAiApiTab } from "./openai-api-tab";
 import { McpDashboard } from "./mcp-dashboard";
 import { A2aDashboard } from "./a2a-dashboard";
 import { ContextSources } from "./context-sources";
+import { PageSkeleton } from "@/shared/components/PageSkeleton";
 
 const { Text, Title, Paragraph } = Typography;
 
@@ -182,6 +183,10 @@ export default function EndpointsPage() {
     navigator.clipboard.writeText(text);
     message.success(tip);
   };
+
+  if (networkQuery.isLoading && !networkQuery.data) {
+    return <PageSkeleton />;
+  }
 
   return (
     <Flex vertical gap={16}>

@@ -42,6 +42,12 @@ const AnalyticsPage = withSuspense(lazy(() => import("@/features/analytics/analy
 const QuotaPage = withSuspense(lazy(() => import("@/features/quota/quota")));
 const QuotaSharePage = withSuspense(lazy(() => import("@/features/quota-share/quota-share")));
 const ActivityPage = withSuspense(lazy(() => import("@/features/activity/activity")));
+const RequestLogsPage = withSuspense(lazy(() => import("@/features/logs/request-logs")));
+const ProxyLogsPage = withSuspense(lazy(() => import("@/features/logs/proxy-logs")));
+const ConsoleLogsPage = withSuspense(lazy(() => import("@/features/logs/console-logs")));
+const LogTimelinePage = withSuspense(lazy(() => import("@/features/logs/log-timeline")));
+const ConversationsPage = withSuspense(lazy(() => import("@/features/conversations/conversations")));
+const HealthPage = withSuspense(lazy(() => import("@/features/health/health")));
 const P = (navKey: string, title: string) => placeholder(navKey, title);
 
 const migratedPaths = new Set([
@@ -60,6 +66,10 @@ const migratedPaths = new Set([
   "/dashboard/provider-stats",
   "/dashboard/activity",
   "/dashboard/logs",
+  "/dashboard/logs/proxy",
+  "/dashboard/logs/console",
+  "/dashboard/logs/timeline",
+  "/dashboard/conversations",
   "/dashboard/health",
   "/dashboard/runtime",
   "/dashboard/audit",
@@ -106,8 +116,14 @@ export const router = createBrowserRouter([
       { path: "dashboard/activity", element: <ActivityPage /> },
       { path: "activity", element: <ActivityPage /> },
       { path: "dashboard/logs/activity", element: <Navigate to="/dashboard/activity" replace /> },
-      { path: "dashboard/logs", element: createElement(P("logs", "Request Logs")) },
-      { path: "dashboard/health", element: createElement(P("health", "Health")) },
+      { path: "dashboard/logs", element: <RequestLogsPage /> },
+      { path: "logs", element: <RequestLogsPage /> },
+      { path: "dashboard/logs/proxy", element: <ProxyLogsPage /> },
+      { path: "dashboard/logs/console", element: <ConsoleLogsPage /> },
+      { path: "dashboard/logs/timeline", element: <LogTimelinePage /> },
+      { path: "dashboard/conversations", element: <ConversationsPage /> },
+      { path: "dashboard/health", element: <HealthPage /> },
+      { path: "health", element: <HealthPage /> },
       { path: "dashboard/runtime", element: createElement(P("runtime", "Runtime")) },
       { path: "dashboard/audit", element: createElement(P("audit", "Audit")) },
       // 代理能力

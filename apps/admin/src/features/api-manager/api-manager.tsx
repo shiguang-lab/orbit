@@ -29,6 +29,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { keysApi, type ApiKeyView, type ApiKeyCreateInput } from "@/entities/api";
 import { MaterialIcon } from "@/app/nav";
+import { PageSkeleton } from "@/shared/components/PageSkeleton";
 import dayjs from "dayjs";
 
 const { Text, Title, Paragraph } = Typography;
@@ -533,6 +534,10 @@ export default function ApiManagerPage() {
     },
   ];
 
+  if (keysQuery.isLoading && !keysQuery.data) {
+    return <PageSkeleton />;
+  }
+
   return (
     <Flex vertical gap={16}>
       {/* Header */}
@@ -641,7 +646,7 @@ export default function ApiManagerPage() {
             <Select
               value={featureFilter}
               onChange={setFeatureFilter}
-              style={{ width: 140 }}
+              style={{ minWidth: 155 }}
               options={[
                 { label: "全部特性", value: "all" },
                 { label: "管理访问", value: "manage" },

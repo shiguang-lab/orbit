@@ -232,10 +232,16 @@ export const useAdminStyles = createStyles(({ token }) => ({
       background: token.colorBgContainer,
     },
     "& .app-global-search .ant-input": { fontSize: 14 },
-    // Ant Design only adds the icon-to-label gap for its own `.anticon`
-    // wrapper. Material Symbols are plain spans, so keep the same rhythm for
-    // tags that receive an icon through the `icon` prop.
     "& .ant-tag > .material-symbols-outlined + span": { marginInlineStart: token.paddingXS },
+    "& .shell-content-scrollbar": {
+      height: "100%",
+    },
+    "& .shell-content-scrollbar > div": {
+      minHeight: "100%",
+      display: "flex",
+      flexDirection: "column",
+      boxSizing: "border-box",
+    },
   },
 }));
 

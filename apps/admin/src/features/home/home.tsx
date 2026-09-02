@@ -19,6 +19,7 @@ import { MaterialIcon } from "@/app/nav";
 import { api, providersApi, settingsApi, type ProviderCatalogEntry, type ProviderConnection, type ProviderNode } from "@/entities/api";
 import { useLiveRequests } from "@/entities/live";
 import { useI18n } from "@/i18n";
+import { PageSkeleton } from "@/shared/components/PageSkeleton";
 
 const useStyles = createStyles(({ token }) => ({
   page: { width: "100%" },
@@ -197,6 +198,9 @@ export default function HomePage() {
     { id: "cheaper", color: "#16a34a", icon: <span style={{ width: 36, height: 36, display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: 8, background: "#31f88918", color: "#31f889" }}><span style={{ width: 21, height: 21, display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: "50%", border: "1px solid #31f88999" }}><MaterialIcon name="add" size={15} /></span></span>, title: t("home.banner.cheaperTitle"), description: t("home.banner.cheaperDescription"), note: t("home.banner.cheaperNote"), link: "https://link.omniroute.online/cheaper", linkText: t("home.banner.cheaperAction") },
     { id: "copilot", color: "#1677ff", icon: <span style={{ width: 36, height: 36, display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: 8, background: "#007acc18", color: "#007acc" }}><MaterialIcon name="extension" /></span>, title: t("home.banner.copilotTitle"), description: t("home.banner.copilotDescription"), note: t("home.banner.copilotNote"), link: "https://link.omniroute.online/vsx", linkText: t("home.banner.copilotAction") },
   ];
+  if (providersQuery.isLoading && !providersQuery.data) {
+    return <PageSkeleton />;
+  }
   return <div className={styles.page}><Space direction="vertical" size={16} style={{ width: "100%" }}>
     {versionQuery.data?.updateAvailable && <Alert type="info" showIcon message={t("home.updateAvailable", { version: versionQuery.data.latest ?? "" })} description={t("home.updateDescription")} />}
     {banners.filter((banner) => !dismissed.includes(banner.id)).map((banner) => <Alert key={banner.id} showIcon className={styles.banner} style={{ borderColor: `${banner.color}66`, background: `${banner.color}12` }} icon={banner.icon} message={<Flex align="center" gap={12}><div className={styles.bannerCopy}><Typography.Text strong>{banner.title}</Typography.Text><br /><Typography.Text type="secondary" ellipsis>{banner.description}</Typography.Text></div><Space><div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 2 }}><a href={banner.link} target="_blank" rel="noreferrer">{banner.linkText} <MaterialIcon name="open_in_new" size={16} /></a><Typography.Text type="secondary" style={{ fontSize: 10, opacity: .7 }}>{banner.note}</Typography.Text></div><Button type="text" size="small" icon={<MaterialIcon name="close" />} onClick={() => setDismissed((previous) => { const next = [...previous, banner.id]; try { window.localStorage.setItem("omniroute-home-banners-dismissed", JSON.stringify(next)); } catch { /* optional */ } return next; })} aria-label={t("home.close")} /></Space></Flex>} />)}

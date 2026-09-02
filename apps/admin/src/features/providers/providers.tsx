@@ -46,6 +46,7 @@ import {
   type ProviderConnection,
 } from "@/entities/api";
 import { useI18n } from "@/i18n";
+import { PageSkeleton } from "@/shared/components/PageSkeleton";
 
 interface ProviderGroup {
   key: string;
@@ -465,6 +466,10 @@ export default function ProvidersPage() {
       ),
     },
   ];
+
+  if (providersQuery.isLoading && !providersQuery.data) {
+    return <PageSkeleton />;
+  }
 
   return (
     <>

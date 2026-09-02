@@ -21,6 +21,7 @@ import { ComboModal } from "./combo-modal";
 import { TestResultsModal } from "./test-results-modal";
 import { ProxyModal } from "./proxy-modal";
 import { IntelligentComboPanel } from "./intelligent-combo-panel";
+import { PageSkeleton } from "@/shared/components/PageSkeleton";
 import {
   hasKimiCodingPreset,
   isIntelligentStrategy,
@@ -344,6 +345,10 @@ export function CombosPage() {
     () => combos.find((c) => isIntelligentStrategy(c.strategy)),
     [combos],
   );
+
+  if (loading && combos.length === 0) {
+    return <PageSkeleton />;
+  }
 
   return (
     <Flex vertical gap={16}>

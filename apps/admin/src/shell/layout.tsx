@@ -372,8 +372,8 @@ export function Shell() {
           </div>
         </Header>
 
-        <Content style={{ minHeight: 0 }}>
-          <Scrollbar className="shell-content-scrollbar" scrollX={false} style={{ height: "100%", padding: 16 }}>
+        <Content style={{ minHeight: 0, display: "flex", flexDirection: "column", flex: 1 }}>
+          <Scrollbar className="shell-content-scrollbar" scrollX={false} style={{ height: "100%", padding: 16, display: "flex", flexDirection: "column" }}>
             <Outlet />
           </Scrollbar>
         </Content>

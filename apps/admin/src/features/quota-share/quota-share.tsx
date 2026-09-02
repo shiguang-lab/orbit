@@ -910,7 +910,7 @@ export function QuotaSharePage() {
             <Select
               value={selectedGroupId}
               onChange={setSelectedGroupId}
-              style={{ minWidth: 140 }}
+              style={{ minWidth: 160 }}
               options={[
                 { label: "全部分组 (All)", value: "all" },
                 ...allGroups.map((g) => ({ label: g, value: g })),
@@ -925,7 +925,7 @@ export function QuotaSharePage() {
                   value={newGroupInput}
                   onChange={(e) => setNewGroupInput(e.target.value)}
                   onPressEnter={handleAddGroup}
-                  style={{ width: 140 }}
+                  style={{ minWidth: 150 }}
                   autoFocus
                 />
                 <Button size="small" type="primary" onClick={handleAddGroup}>

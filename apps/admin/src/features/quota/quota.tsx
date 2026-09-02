@@ -686,7 +686,7 @@ export function QuotaPage() {
                 setAutoRefreshInterval(val);
                 setSecondsRemaining(val);
               }}
-              style={{ width: 110 }}
+              style={{ minWidth: 140 }}
               options={[
                 { value: 30, label: "30秒刷新" },
                 { value: 60, label: "60秒刷新" },
