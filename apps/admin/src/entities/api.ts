@@ -1443,7 +1443,6 @@ export interface EmbeddedServiceStatus {
   latestVersion: string | null;
   updateAvailable: boolean;
   autoStart: boolean;
-  apiKeyMasked?: string | null;
   providerExpose?: boolean;
   adopted: boolean;
   autoRestartAdopted: boolean;
@@ -1518,14 +1517,6 @@ export const embeddedServicesApi = {
   },
   clearLogs: (name: string) =>
     api<{ success: boolean }>(`/services/${encodeURIComponent(name)}/logs`, { method: "DELETE" }),
-  getApiKey: async (name: string): Promise<string> => {
-    const res = await api<{ key: string }>(`/services/${encodeURIComponent(name)}/apikey`);
-    return res.key;
-  },
-  rotateApiKey: async (name: string): Promise<string> => {
-    const res = await api<{ key: string }>(`/services/${encodeURIComponent(name)}/apikey`, { method: "POST" });
-    return res.key;
-  },
   getCliproxyAccounts: async (): Promise<CliproxyAccountItem[]> => {
     const res = await api<any>("/services/cliproxy/accounts");
     return Array.isArray(res) ? res : res?.accounts || [];
