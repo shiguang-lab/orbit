@@ -81,9 +81,9 @@ export function EvalsPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  评估、盲测与基准测试 (Evals & Benchmarks)
+                  模型评测与基准实验
                 </Title>
-                <Tag color="purple">A/B 盲测基准</Tag>
+                <Tag color="purple">自动化基准对比</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
                 多模型输出质量 A/B 盲测评分、压缩算法前后语义保真度测试 (Exact Match & AST) 与性能跑分。

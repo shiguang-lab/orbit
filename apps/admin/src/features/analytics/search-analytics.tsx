@@ -89,9 +89,9 @@ export function SearchAnalyticsPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  搜索分析与混合检索统计 (Search Analytics)
+                  语义搜索与向量召回分析
                 </Title>
-                <Tag color="cyan">混合命中率 {data.hybridHitRate}%</Tag>
+                <Tag color="cyan">向量与搜索分析</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
                 分析语义向量检索（Vector Search）与 BM25 关键词检索的查询延迟、高频搜索词热度与知识库匹配度。

@@ -35,10 +35,12 @@ import {
   type ComboMetrics,
   type ComboTestResponse,
 } from "@/entities/api";
+import { useI18n } from "@/i18n";
 
 const { Title } = Typography;
 
 export function CombosPage() {
+  const { tt } = useI18n();
   const [loading, setLoading] = useState(true);
   const [combos, setCombos] = useState<ComboItem[]>([]);
   const [metrics, setMetrics] = useState<Record<string, ComboMetrics>>({});
@@ -356,10 +358,13 @@ export function CombosPage() {
       <Flex align="center" justify="space-between" wrap gap={12}>
         <div>
           <Title level={2} style={{ margin: 0, fontSize: 20 }}>
-            模型组合
+            {tt("模型组合", "Model Combos")}
           </Title>
           <Typography.Paragraph type="secondary" style={{ margin: 0, fontSize: 13 }}>
-            创建支持权重路由、故障自动回退与智能自愈的模型虚拟聚合管道
+            {tt(
+              "创建支持权重路由、故障自动回退与智能自愈的模型虚拟聚合管道",
+              "Create virtual aggregation pipelines with weighted routing, auto-failover, and self-healing"
+            )}
           </Typography.Paragraph>
         </div>
 
@@ -368,7 +373,7 @@ export function CombosPage() {
             icon={<MaterialIcon name="help_outline" size={16} />}
             onClick={() => setForceShowGuide((prev) => !prev)}
           >
-            {forceShowGuide ? "收起使用指南" : "查看使用指南"}
+            {forceShowGuide ? tt("收起使用指南", "Hide Guide") : tt("查看使用指南", "Usage Guide")}
           </Button>
 
           <Button
@@ -380,7 +385,7 @@ export function CombosPage() {
               setModalOpen(true);
             }}
           >
-            新建组合
+            {tt("新建组合", "Create Combo")}
           </Button>
         </Space>
       </Flex>
@@ -417,7 +422,7 @@ export function CombosPage() {
             message={
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span>
-                  刚刚创建了组合 <b>{recentlyCreated.name}</b>，建议立即进行链路可用性测试。
+                  {tt(`刚刚创建了组合 ${recentlyCreated.name}，建议立即进行链路可用性测试。`, `Created combo ${recentlyCreated.name}. Recommend running a test now.`)}
                 </span>
                 <Space>
                   <Button
@@ -427,10 +432,10 @@ export function CombosPage() {
                     onClick={() => handleTestCombo(recentlyCreated)}
                     loading={activeTestingId === recentlyCreated.id}
                   >
-                    立即测试
+                    {tt("立即测试", "Test Now")}
                   </Button>
                   <Button size="small" type="text" onClick={() => setRecentlyCreated(null)}>
-                    忽略
+                    {tt("忽略", "Dismiss")}
                   </Button>
                 </Space>
               </div>
@@ -452,15 +457,15 @@ export function CombosPage() {
             <Segmented
               value={filter}
               options={[
-                { label: `全部 (${combos.length})`, value: "all" },
-                { label: `智能路由 (${intelligentCount})`, value: "intelligent" },
-                { label: `确定性路由 (${deterministicCount})`, value: "deterministic" },
+                { label: `${tt("全部", "All")} (${combos.length})`, value: "all" },
+                { label: `${tt("智能路由", "Intelligent")} (${intelligentCount})`, value: "intelligent" },
+                { label: `${tt("确定性路由", "Deterministic")} (${deterministicCount})`, value: "deterministic" },
               ]}
               onChange={(val) => setFilter(val as any)}
             />
 
             <Input
-              placeholder="按名称、描述或候选模型搜索..."
+              placeholder={tt("按名称、描述或候选模型搜索...", "Search by name, description, or model...")}
               prefix={<MaterialIcon name="search" size={16} style={{ color: "#9CA3AF" }} />}
               allowClear
               value={searchQuery}
@@ -499,12 +504,12 @@ export function CombosPage() {
             <Empty
               description={
                 searchQuery
-                  ? "未找到匹配的组合"
-                  : "尚未创建任何模型组合，点击下方按钮开始创建"
+                  ? tt("未找到匹配的组合", "No matching combos found")
+                  : tt("尚未创建任何模型组合，点击下方按钮开始创建", "No combos created yet. Click below to start.")
               }
             >
               {searchQuery ? (
-                <Button onClick={() => setSearchQuery("")}>清空搜索词</Button>
+                <Button onClick={() => setSearchQuery("")}>{tt("清空搜索词", "Clear Search")}</Button>
               ) : (
                 <Button
                   type="primary"
@@ -514,7 +519,7 @@ export function CombosPage() {
                     setModalOpen(true);
                   }}
                 >
-                  创建第一个组合
+                  {tt("创建第一个组合", "Create First Combo")}
                 </Button>
               )}
             </Empty>

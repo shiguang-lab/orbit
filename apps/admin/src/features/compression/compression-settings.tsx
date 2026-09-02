@@ -177,10 +177,10 @@ export function CompressionSettingsPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  上下文压缩设置 (Context Compression Engine)
+                  上下文压缩引擎全局配置
                 </Title>
                 <Tag color={localConfig.enabled ? "success" : "default"}>
-                  {localConfig.enabled ? "● 压缩引擎已全局启用" : "已休眠 / 旁路透传"}
+                  {localConfig.enabled ? "● 压缩引擎运行中" : "已停用"}
                 </Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
@@ -255,7 +255,7 @@ export function CompressionSettingsPage() {
                 <MaterialIcon name="pie_chart" size={18} style={{ color: "#f59e0b" }} />
               </Flex>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 6 }}>
-                {Object.entries(telemetry.appliedStyleCounts).slice(0, 3).map(([k, v]) => (
+                {Object.entries(telemetry?.appliedStyleCounts || {}).slice(0, 3).map(([k, v]) => (
                   <Tag key={k} color="orange" style={{ margin: 0, fontSize: 10 }}>
                     {k}: {v}
                   </Tag>

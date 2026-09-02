@@ -24,6 +24,7 @@ import { McpDashboard } from "./mcp-dashboard";
 import { A2aDashboard } from "./a2a-dashboard";
 import { ContextSources } from "./context-sources";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Text, Title, Paragraph } = Typography;
 
@@ -60,19 +61,10 @@ const useStyles = createStyles(({ token }) => ({
   },
 }));
 
-function extractTunnelUrl(tunnel?: { running?: boolean; publicUrl?: string | null; apiUrl?: string | null; [key: string]: unknown } | null): string | null {
-  if (!tunnel || !tunnel.running) return null;
-  const raw = tunnel.publicUrl || tunnel.apiUrl || (tunnel["tunnelUrl"] as string | undefined);
-  if (typeof raw === "string" && raw.trim()) {
-    const trimmed = raw.trim().replace(/\/$/, "");
-    return trimmed.endsWith("/v1") ? trimmed : `${trimmed}/v1`;
-  }
-  return null;
-}
-
 export default function EndpointsPage() {
   const { styles } = useStyles();
   const queryClient = useQueryClient();
+  const { tt } = useI18n();
 
   const [activeTab, setActiveTab] = useState<string>("apis");
   const [customPublicUrl, setCustomPublicUrl] = useState<string>("");
@@ -125,10 +117,10 @@ export default function EndpointsPage() {
         : endpointsApi.startCloudflaredTunnel(),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["tunnel-cloudflared"] });
-      message.success("Cloudflared 状态已更新");
+      message.success(tt("Cloudflared 状态已更新", "Cloudflared status updated"));
     },
     onError: (err: unknown) =>
-      message.error(err instanceof Error ? err.message : "操作 Cloudflared 失败"),
+      message.error(err instanceof Error ? err.message : tt("操作 Cloudflared 失败", "Cloudflared operation failed")),
   });
 
   const toggleTailscale = useMutation({
@@ -138,101 +130,84 @@ export default function EndpointsPage() {
         : endpointsApi.startTailscaleTunnel(),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["tunnel-tailscale"] });
-      message.success("Tailscale Funnel 状态已更新");
+      message.success(tt("Tailscale Funnel 状态已更新", "Tailscale Funnel status updated"));
     },
     onError: (err: unknown) =>
-      message.error(err instanceof Error ? err.message : "操作 Tailscale 失败"),
+      message.error(err instanceof Error ? err.message : tt("操作 Tailscale Funnel 失败", "Tailscale Funnel operation failed")),
   });
 
   const startNgrok = useMutation({
     mutationFn: (token: string) => endpointsApi.startNgrokTunnel(token),
     onSuccess: () => {
-      setNgrokModalOpen(false);
       void queryClient.invalidateQueries({ queryKey: ["tunnel-ngrok"] });
-      message.success("Ngrok 隧道已启动");
+      message.success(tt("Ngrok 隧道已启动", "Ngrok tunnel started"));
+      setNgrokModalOpen(false);
     },
     onError: (err: unknown) =>
-      message.error(err instanceof Error ? err.message : "启动 Ngrok 失败"),
+      message.error(err instanceof Error ? err.message : tt("启动 Ngrok 失败", "Failed to start Ngrok")),
   });
 
   const stopNgrok = useMutation({
-    mutationFn: () => endpointsApi.stopNgrokTunnel(),
+    mutationFn: endpointsApi.stopNgrokTunnel,
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["tunnel-ngrok"] });
-      message.success("Ngrok 隧道已停止");
+      message.success(tt("Ngrok 隧道已停止", "Ngrok tunnel stopped"));
     },
     onError: (err: unknown) =>
-      message.error(err instanceof Error ? err.message : "停止 Ngrok 失败"),
+      message.error(err instanceof Error ? err.message : tt("停止 Ngrok 失败", "Failed to stop Ngrok")),
   });
 
+  // Tsnet Node Mutations
   const connectTailscale = useMutation({
     mutationFn: (payload: { authKey: string; hostname?: string; ephemeral?: boolean }) =>
       endpointsApi.connectTailscaleAuthKey(payload),
-    onSuccess: (res) => {
-      message.success(`已成功接入 Tailscale 专网！分配 IP: ${res.ip || "100.x.x.x"}`);
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["tailscale-status"] });
+      message.success(tt("已成功接入 Tailscale 专网！", "Connected to Tailscale network!"));
       setTailscaleModalOpen(false);
       setTailscaleAuthKey("");
-      void queryClient.invalidateQueries({ queryKey: ["tailscale-status"] });
-      void queryClient.invalidateQueries({ queryKey: ["network-info"] });
     },
-    onError: (err: unknown) => {
-      message.error(err instanceof Error ? err.message : "接入 Tailscale 失败，请检查 Auth Key 是否有效");
-    },
+    onError: (err: unknown) =>
+      message.error(err instanceof Error ? err.message : tt("接入 Tailscale 失败", "Failed to connect to Tailscale")),
   });
 
   const disconnectTailscale = useMutation({
-    mutationFn: () => endpointsApi.disconnectTailscale(),
+    mutationFn: endpointsApi.disconnectTailscale,
     onSuccess: () => {
-      message.success("已断开 Tailscale 专网连接");
-      setTailscaleModalOpen(false);
       void queryClient.invalidateQueries({ queryKey: ["tailscale-status"] });
-      void queryClient.invalidateQueries({ queryKey: ["network-info"] });
+      message.success(tt("已断开 Tailscale 专网连接", "Disconnected from Tailscale"));
+      setTailscaleModalOpen(false);
     },
-    onError: () => message.error("断开连接失败"),
+    onError: (err: unknown) =>
+      message.error(err instanceof Error ? err.message : tt("断开 Tailscale 失败", "Failed to disconnect Tailscale")),
   });
 
+  const copyToClipboard = (text: string, successMsg: string) => {
+    navigator.clipboard.writeText(text);
+    message.success(successMsg);
+  };
+
+  // Compute addresses
+  const port = networkQuery.data?.port || (typeof window !== "undefined" && window.location.port ? window.location.port : "20128");
   const localBaseUrl = networkQuery.data?.localUrl || "http://localhost:20128/v1";
   const lanUrls = networkQuery.data?.lanUrls || [];
 
-  const isTailscaleConnected = Boolean(
-    tailscaleStatusQuery.data?.connected ||
-    networkQuery.data?.tailscaleUrl ||
-    tailscaleQuery.data?.running
-  );
-
-  const effectiveTailscaleUrl =
-    tailscaleStatusQuery.data?.tailscaleUrl ||
-    networkQuery.data?.tailscaleUrl ||
-    (tailscaleStatusQuery.data?.ip ? `http://${tailscaleStatusQuery.data.ip}:20128/v1` : null);
-
-  // Active public URL calculation
   const publicBaseUrl = useMemo(() => {
-    if (customPublicUrl.trim()) {
-      const url = customPublicUrl.trim().replace(/\/$/, "");
-      return url.endsWith("/v1") ? url : `${url}/v1`;
-    }
-    const cfUrl = extractTunnelUrl(cloudflaredQuery.data);
-    if (cfUrl) return cfUrl;
-    const tsUrl = extractTunnelUrl(tailscaleQuery.data);
-    if (tsUrl) return tsUrl;
-    const ngrokUrl = extractTunnelUrl(ngrokQuery.data);
-    if (ngrokUrl) return ngrokUrl;
-    if (
-      typeof window !== "undefined" &&
-      window.location.hostname !== "localhost" &&
-      window.location.hostname !== "127.0.0.1"
-    ) {
-      return `${window.location.origin}/v1`;
-    }
-    return null;
+    if (customPublicUrl.trim()) return customPublicUrl.trim();
+    if (cloudflaredQuery.data?.publicUrl) return `${cloudflaredQuery.data.publicUrl}/v1`;
+    if (tailscaleQuery.data?.publicUrl) return `${tailscaleQuery.data.publicUrl}/v1`;
+    if (ngrokQuery.data?.publicUrl) return `${ngrokQuery.data.publicUrl}/v1`;
+    return "";
   }, [customPublicUrl, cloudflaredQuery.data, tailscaleQuery.data, ngrokQuery.data]);
 
-  const effectiveBaseUrl = publicBaseUrl || localBaseUrl;
+  const isTailscaleConnected = Boolean(tailscaleStatusQuery.data?.connected);
+  const effectiveTailscaleUrl = tailscaleStatusQuery.data?.magicDns
+    ? `https://${tailscaleStatusQuery.data.magicDns}/v1`
+    : tailscaleStatusQuery.data?.ip
+      ? `http://${tailscaleStatusQuery.data.ip}:${port}/v1`
+      : "";
 
-  const copyToClipboard = (text: string, tip = "已复制到剪贴板") => {
-    navigator.clipboard.writeText(text);
-    message.success(tip);
-  };
+  const effectiveBaseUrl = publicBaseUrl || localBaseUrl;
 
   if (networkQuery.isLoading && !networkQuery.data) {
     return <PageSkeleton />;
@@ -244,10 +219,13 @@ export default function EndpointsPage() {
       <Flex align="center" justify="space-between" wrap gap={12}>
         <div>
           <Title level={2} style={{ margin: 0, fontSize: 20 }}>
-            端点与连接网关
+            {tt("端点与连接网关", "Endpoints & Gateway")}
           </Title>
           <Paragraph type="secondary" style={{ margin: "4px 0 0", fontSize: 13 }}>
-            查看服务基准地址、配置公网安全穿透隧道及探索全量 OpenAI / MCP / A2A 协议 API 端点
+            {tt(
+              "查看服务基准地址、配置公网安全穿透隧道及探索全量 OpenAI / MCP / A2A 协议 API 端点",
+              "View service base URLs, configure secure tunnels, and explore OpenAI, MCP, and A2A endpoints."
+            )}
           </Paragraph>
         </div>
 
@@ -258,10 +236,10 @@ export default function EndpointsPage() {
             void queryClient.invalidateQueries({ queryKey: ["tunnel-cloudflared"] });
             void queryClient.invalidateQueries({ queryKey: ["tunnel-tailscale"] });
             void queryClient.invalidateQueries({ queryKey: ["tunnel-ngrok"] });
-            message.success("端点连接状态已刷新");
+            message.success(tt("端点连接状态已刷新", "Endpoint status refreshed"));
           }}
         >
-          刷新网关状态
+          {tt("刷新网关状态", "Refresh Gateway")}
         </Button>
       </Flex>
 
@@ -275,14 +253,14 @@ export default function EndpointsPage() {
                 <Flex align="center" gap={6}>
                   <MaterialIcon name="language" size={16} style={{ color: "#F59E0B" }} />
                   <Text strong style={{ fontSize: 13, lineHeight: 1 }}>
-                    公网访问基址
+                    {tt("公网访问基址", "Public Base URL")}
                   </Text>
                 </Flex>
                 <Tag
                   color={publicBaseUrl ? "success" : "default"}
                   style={{ margin: 0, fontSize: 10 }}
                 >
-                  {publicBaseUrl ? "在线 (HTTPS)" : "未开启"}
+                  {publicBaseUrl ? tt("在线 (HTTPS)", "Online (HTTPS)") : tt("未开启", "Disabled")}
                 </Tag>
               </Flex>
 
@@ -296,13 +274,13 @@ export default function EndpointsPage() {
                       type="text"
                       size="small"
                       icon={<MaterialIcon name="content_copy" size={14} />}
-                      onClick={() => copyToClipboard(publicBaseUrl, "已复制公网端点基址")}
+                      onClick={() => copyToClipboard(publicBaseUrl, tt("已复制公网端点基址", "Copied public URL"))}
                     />
                   </>
                 ) : (
                   <>
                     <Text type="secondary" ellipsis style={{ fontSize: 11 }}>
-                      尚未开启公网隧道
+                      {tt("尚未开启公网隧道", "No public tunnel enabled")}
                     </Text>
                     <Button
                       type="link"
@@ -311,7 +289,7 @@ export default function EndpointsPage() {
                       onClick={() => toggleCloudflared.mutate()}
                       style={{ padding: 0, height: "auto", fontSize: 11 }}
                     >
-                      开启隧道
+                      {tt("开启隧道", "Enable Tunnel")}
                     </Button>
                   </>
                 )}
@@ -328,11 +306,11 @@ export default function EndpointsPage() {
                 <Flex align="center" gap={6}>
                   <MaterialIcon name="computer" size={16} style={{ color: "#10B981" }} />
                   <Text strong style={{ fontSize: 13, lineHeight: 1 }}>
-                    本地访问基址
+                    {tt("本地访问基址", "Local Base URL")}
                   </Text>
                 </Flex>
                 <Tag color="success" style={{ margin: 0, fontSize: 10 }}>
-                  在线
+                  {tt("在线", "Online")}
                 </Tag>
               </Flex>
               <div className={styles.urlCodeBox}>
@@ -343,7 +321,7 @@ export default function EndpointsPage() {
                   type="text"
                   size="small"
                   icon={<MaterialIcon name="content_copy" size={14} />}
-                  onClick={() => copyToClipboard(localBaseUrl, "已复制本地基址")}
+                  onClick={() => copyToClipboard(localBaseUrl, tt("已复制本地基址", "Copied local URL"))}
                 />
               </div>
             </Flex>
@@ -358,14 +336,14 @@ export default function EndpointsPage() {
                 <Flex align="center" gap={6}>
                   <MaterialIcon name="lan" size={16} style={{ color: "#3B82F6" }} />
                   <Text strong style={{ fontSize: 13, lineHeight: 1 }}>
-                    局域网内网基址
+                    {tt("局域网内网基址", "LAN Base URL")}
                   </Text>
                 </Flex>
                 <Tag
                   color={lanUrls.length > 0 ? "blue" : "default"}
                   style={{ margin: 0, fontSize: 10 }}
                 >
-                  {lanUrls.length > 0 ? `${lanUrls.length} 个地址` : "未分配"}
+                  {lanUrls.length > 0 ? `${lanUrls.length} ${tt("个地址", "URLs")}` : tt("未分配", "Unassigned")}
                 </Tag>
               </Flex>
               <div className={styles.urlCodeBox}>
@@ -377,7 +355,7 @@ export default function EndpointsPage() {
                   size="small"
                   icon={<MaterialIcon name="content_copy" size={14} />}
                   onClick={() =>
-                    copyToClipboard(lanUrls[0] || "http://192.168.x.x:20128/v1", "已复制局域网基址")
+                    copyToClipboard(lanUrls[0] || "http://192.168.x.x:20128/v1", tt("已复制局域网基址", "Copied LAN URL"))
                   }
                 />
               </div>
@@ -820,7 +798,7 @@ export default function EndpointsPage() {
             label: (
               <Flex align="center" gap={6}>
                 <MaterialIcon name="api" size={16} />
-                <span>OpenAI 兼容 API</span>
+                <span>{tt("OpenAI 兼容 API", "OpenAI Compatible API")}</span>
               </Flex>
             ),
             children: <OpenAiApiTab baseUrl={effectiveBaseUrl} />,
@@ -850,7 +828,7 @@ export default function EndpointsPage() {
             label: (
               <Flex align="center" gap={6}>
                 <MaterialIcon name="database" size={16} />
-                <span>上下文源</span>
+                <span>{tt("上下文源", "Context Sources")}</span>
               </Flex>
             ),
             children: <ContextSources />,

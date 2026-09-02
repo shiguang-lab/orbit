@@ -81,9 +81,9 @@ export function UtilizationPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  提供者利用率与配额水位 (Provider Utilization)
+                  资源利用率与吞吐负载
                 </Title>
-                <Tag color="gold">TPM / RPM 水位监控</Tag>
+                <Tag color="gold">配额与速率水位</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
                 监控各模型提供商每分钟 Token (TPM) 与请求数 (RPM) 水位，防止触发上游 429 速率限制。
@@ -143,7 +143,7 @@ export function UtilizationPage() {
               key: "trend",
               render: (trend) => (
                 <Tag color={trend === "improving" ? "green" : trend === "stable" ? "blue" : "orange"}>
-                  {trend.toUpperCase()}
+                  {String(trend || "stable").toUpperCase()}
                 </Tag>
               ),
             },

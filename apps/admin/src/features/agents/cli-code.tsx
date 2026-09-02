@@ -69,7 +69,7 @@ export function CliCodePage() {
   const [executing, setExecuting] = useState(false);
   const [terminalLines, setTerminalLines] = useState<string[]>([
     "$ agy code --ready",
-    "OmniRoute CLI Code Engine v2.4 initialized. Ready to execute code refactoring & generation tasks.",
+    "Orbit CLI Code Engine v2.4 initialized. Ready to execute code refactoring & generation tasks.",
   ]);
 
   const handleRunCode = () => {
@@ -77,10 +77,11 @@ export function CliCodePage() {
     setTerminalLines((prev) => [
       ...prev,
       `\n$ agy code --model ${model} "${prompt}"`,
-      `[OmniRoute] 路由至本地网关端点 -> 上游模型: ${model}`,
+      `[Orbit] 路由至本地网关端点 -> 上游模型: ${model}`,
       `[Context] 已激活 RTK 终端过滤与 Caveman 压缩 (Token 节省 38%)`,
       `[Planner] 正在分析项目结构与依赖关系...`,
     ]);
+
 
     setTimeout(() => {
       setTerminalLines((prev) => [
@@ -119,13 +120,14 @@ export function CliCodePage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  CLI 代码管理与执行 (CLI Code)
+                  命令行代码助手
                 </Title>
                 <Tag color="gold">终端代码引擎</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                直接通过 OmniRoute 网关向本地及远程 CLI 命令行代码助手下发自然语言编程任务，自动应用上下文压缩与协议转换。
+                直接通过智枢网关向本地及远程 CLI 命令行代码助手下发自然语言编程任务，自动应用上下文压缩与协议转换。
               </Text>
+
             </div>
           </Flex>
 

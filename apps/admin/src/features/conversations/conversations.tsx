@@ -27,6 +27,7 @@ import {
   type RequestCallLog,
 } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Text } = Typography;
 
@@ -216,6 +217,7 @@ export function ConversationsPage() {
   const { styles } = useStyles();
   const queryClient = useQueryClient();
   const [messageApi, contextHolder] = message.useMessage();
+  const { tt } = useI18n();
 
   const [search, setSearch] = useState("");
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
@@ -241,7 +243,7 @@ export function ConversationsPage() {
       const found = sessions.find((s) => s.id === selectedSessionId);
       if (found) return found;
     }
-    return sessions[0];
+    return sessions[0] ?? null;
   }, [sessions, selectedSessionId]);
 
   const currentId = activeSession?.id;
@@ -277,7 +279,7 @@ export function ConversationsPage() {
         setSelectedLog(log);
       }
     } catch {
-      messageApi.error("未能找到对应的请求审计明细");
+      messageApi.error(tt("未能找到对应的请求审计明细", "Could not find call log detail"));
     }
   };
 
@@ -290,7 +292,7 @@ export function ConversationsPage() {
       })
       .join("\n\n---\n\n");
     void navigator.clipboard.writeText(transcript);
-    messageApi.success("已复制全量会话对话流");
+    messageApi.success(tt("已复制全量会话对话流", "Copied full chat transcript"));
   };
 
   if (sessionsQuery.isLoading && !sessionsQuery.data) {
@@ -321,17 +323,20 @@ export function ConversationsPage() {
             </div>
             <div>
               <Text strong style={{ fontSize: 16 }}>
-                会话对话流 (Conversations)
+                {tt("会话对话流 (Conversations)", "Conversations Stream")}
               </Text>
               <div style={{ fontSize: 12, color: "var(--ant-color-text-secondary)" }}>
-                按客户端 SessionTag 还原端到端多轮交互上下文、工具调用链与思维推理
+                {tt(
+                  "按客户端 SessionTag 还原端到端多轮交互上下文、工具调用链与思维推理",
+                  "Restore multi-turn context, tool invocations, and reasoning trace by client SessionTag"
+                )}
               </div>
             </div>
           </Flex>
 
           <Space wrap size={8}>
             <Tag color="cyan" style={{ margin: 0, fontFamily: "monospace" }}>
-              共 {sessions.length} 个活跃会话
+              {tt(`共 ${sessions.length} 个活跃会话`, `${sessions.length} Active Sessions`)}
             </Tag>
             <Button
               icon={<MaterialIcon name="refresh" size={16} className={sessionsQuery.isFetching ? "spin" : ""} />}
@@ -340,7 +345,7 @@ export function ConversationsPage() {
                 void queryClient.invalidateQueries({ queryKey: ["conversation-turns"] });
               }}
             >
-              刷新
+              {tt("刷新", "Refresh")}
             </Button>
           </Space>
         </Flex>
@@ -353,7 +358,7 @@ export function ConversationsPage() {
           <Card className={styles.sessionListCard} styles={{ body: { padding: 10, height: "100%", display: "flex", flexDirection: "column" } }}>
             <div style={{ marginBottom: 10 }}>
               <Input.Search
-                placeholder="搜索会话 ID 或模型..."
+                placeholder={tt("搜索会话 ID 或模型...", "Search session ID or model...")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 allowClear
@@ -364,7 +369,7 @@ export function ConversationsPage() {
             <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 6 }}>
               {sessions.length === 0 ? (
                 <div style={{ padding: "40px 0", textAlign: "center" }}>
-                  <Empty description="暂无符合条件的会话" />
+                  <Empty description={tt("暂无符合条件的会话", "No matching sessions")} />
                 </div>
               ) : (
                 sessions.map((sess) => {
@@ -385,7 +390,7 @@ export function ConversationsPage() {
                           {sess.id}
                         </Text>
                         {sess.isActive && (
-                          <span title="实时流式生成中">
+                          <span title={tt("实时流式生成中", "Streaming in real time")}>
                             <Badge status="processing" color="#f59e0b" />
                           </span>
                         )}
@@ -406,7 +411,7 @@ export function ConversationsPage() {
                             {theme.label}
                           </Tag>
                           <Tag style={{ fontSize: 10, margin: 0, fontFamily: "monospace" }}>
-                            {sess.turnCount} 轮
+                            {sess.turnCount} {tt("轮", "turns")}
                           </Tag>
                         </Space>
                         <Text type="secondary" style={{ fontSize: 10, fontFamily: "monospace" }}>
@@ -429,7 +434,7 @@ export function ConversationsPage() {
               <Flex justify="space-between" align="center" wrap gap={8}>
                 <Flex align="center" gap={8}>
                   <Text strong style={{ fontSize: 14, fontFamily: "monospace" }}>
-                    {activeSession?.id || "未选择会话"}
+                    {activeSession?.id || tt("未选择会话", "No session selected")}
                   </Text>
                   {activeSession?.lastModel && (
                     <Tag color="cyan" style={{ margin: 0, fontFamily: "monospace" }}>
@@ -438,7 +443,7 @@ export function ConversationsPage() {
                   )}
                   {activeSession?.isActive && (
                     <Tag color="warning" icon={<MaterialIcon name="sync" size={12} className="spin" />} style={{ margin: 0 }}>
-                      正在生成...
+                      {tt("正在生成...", "Generating...")}
                     </Tag>
                   )}
                 </Flex>

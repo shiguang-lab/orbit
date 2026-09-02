@@ -294,7 +294,7 @@ export function OpenAiApiTab({ baseUrl }: OpenAiApiTabProps) {
                 maxLength={2000}
                 value={customSystemPrompt}
                 onChange={(e) => setCustomSystemPrompt(e.target.value)}
-                placeholder="例如：你是由 OmniRoute 智能调度网关提供的高性能 AI 助手。请始终保持严谨、客观、详实的回答风格，并在代码输出中附带清晰的注释..."
+                placeholder="例如：你是由智枢智能调度网关提供的高性能 AI 助手。请始终保持严谨、客观、详实的回答风格，并在代码输出中附带清晰的注释..."
                 style={{ fontFamily: "monospace", fontSize: 12 }}
               />
 
@@ -306,10 +306,11 @@ export function OpenAiApiTab({ baseUrl }: OpenAiApiTabProps) {
                     style={{ padding: 0, height: "auto", fontSize: 11 }}
                     onClick={() =>
                       setCustomSystemPrompt(
-                        "你是由 OmniRoute 统一智能网关调度的高性能 AI 助手。请在回答时保持专业、准确与高效，所有代码块需包含完整的语言标识与清晰说明。"
+                        "你是由智枢统一智能网关调度的高性能 AI 助手。请在回答时保持专业、准确与高效，所有代码块需包含完整的语言标识与清晰说明。"
                       )
                     }
                   >
+
                     填入默认助手模板
                   </Button>
                   <Button

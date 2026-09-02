@@ -93,7 +93,7 @@ export function ComboHealthPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  组合健康度与自动驾驶 (Combo Health & Autopilot)
+                  组合健康度与链路监控
                 </Title>
                 <Tag color={overall > 90 ? "success" : "warning"}>综合健康分 {overall}%</Tag>
               </Flex>
@@ -209,7 +209,7 @@ export function ComboHealthPage() {
               key: "issues",
               render: (_, record) => (
                 <div>
-                  {record.issues.map((iss, i) => (
+                  {(record.issues || []).map((iss, i) => (
                     <Text key={i} type={iss.severity === "warning" ? "warning" : "secondary"} style={{ fontSize: 11 }}>
                       {iss.message}
                     </Text>

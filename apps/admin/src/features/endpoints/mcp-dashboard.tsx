@@ -104,8 +104,9 @@ export function McpDashboard() {
           lastCallAt: new Date().toISOString(),
           lastCallTool: "query_database",
         },
-        heartbeatPath: "/tmp/omniroute-mcp-heartbeat.sock",
+        heartbeatPath: "/tmp/orbit-mcp-heartbeat.sock",
       };
+
     },
     staleTime: 15_000,
   });
@@ -389,8 +390,9 @@ export function McpDashboard() {
                 <div>
                   <Text type="secondary" style={{ fontSize: 11, display: "block" }}>心跳管道路径:</Text>
                   <Text code style={{ fontSize: 11, wordBreak: "break-all" }}>
-                    {status?.heartbeatPath || "/tmp/omniroute-mcp.sock"}
+                    {status?.heartbeatPath || "/tmp/orbit-mcp.sock"}
                   </Text>
+
                 </div>
               </Flex>
             </div>

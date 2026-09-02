@@ -16,8 +16,9 @@ const EN_MESSAGES = {
   "shell.toggleTheme": "Toggle theme",
   "shell.currentLocation": "Current location",
   "shell.dashboard": "Dashboard",
-  "shell.homeWelcome": "Welcome to OmniRoute",
+  "shell.homeWelcome": "Welcome to Orbit",
   "shell.logout": "Sign out",
+
   "shell.admin": "Admin",
   "placeholder.migrating": "This page is being migrated. Its features will be available in a later phase.",
   "placeholder.notFound": "Page not found",
@@ -149,16 +150,17 @@ const EN_MESSAGES = {
   "home.viewAll": "View all",
   "home.loading": "Loading…",
   "home.noRequests": "No requests",
-  "home.banner.kimiTitle": "Kimi (Moonshot AI) is an original open-source friend of OmniRoute",
-  "home.banner.kimiDescription": "New users receive 15% extra API credits on their first top-up. Use Kimi K3 in OmniRoute through the official Kimi API.",
+  "home.banner.kimiTitle": "Kimi (Moonshot AI) is an original open-source friend of Orbit",
+  "home.banner.kimiDescription": "New users receive 15% extra API credits on their first top-up. Use Kimi K3 in Orbit through the official Kimi API.",
   "home.banner.kimiNote": "Partner link",
   "home.banner.kimiAction": "Get a Kimi API key",
-  "home.banner.cheaperTitle": "Cheaper Inference is an OmniRoute open-source friend",
+  "home.banner.cheaperTitle": "Cheaper Inference is an Orbit open-source friend",
   "home.banner.cheaperDescription": "A cost-ranked gateway for frontier models behind one OpenAI-compatible endpoint, routing each request to the cheapest eligible provider without exceeding list price.",
   "home.banner.cheaperNote": "Partner link",
   "home.banner.cheaperAction": "Get an API key",
-  "home.banner.copilotTitle": "OmniRoute now works in VS Code Copilot Chat",
-  "home.banner.copilotDescription": "Install the free OmniCopilot extension to use every OmniRoute model directly in the Copilot Chat model picker.",
+  "home.banner.copilotTitle": "Orbit now works in VS Code Copilot Chat",
+  "home.banner.copilotDescription": "Install the free Orbit extension to use every Orbit model directly in the Copilot Chat model picker.",
+
   "home.banner.copilotNote": "Also supports Open VSX (Cursor, Windsurf, VSCodium…)",
   "home.banner.copilotAction": "Get the extension",
   "providers.back": "Back to providers",
@@ -322,8 +324,9 @@ const EN_MESSAGES = {
   "providersPage.addAnthropicCompatible": "Add Anthropic compatible endpoint",
   "providersPage.addOpenAiCompatible": "Add OpenAI compatible",
   "providersPage.oauthTitle": "OAuth providers",
-  "providersPage.oauthDescription": "Sign in once with OAuth and OmniRoute handles token rotation.",
+  "providersPage.oauthDescription": "Sign in once with OAuth and Orbit handles token rotation.",
   "providersPage.ideTitle": "IDE providers",
+
   "providersPage.ideDescription": "Providers backed by editor and IDE subscriptions.",
   "providersPage.webCookieTitle": "Web cookie providers",
   "providersPage.webCookieDescription": "Providers authenticated with browser sessions, cookies, or web tokens instead of API keys.",
@@ -423,27 +426,28 @@ const ZH_MESSAGES: Record<MessageKey, string> = {
   "shell.dashboard": "仪表盘",
   "shell.homeWelcome": "欢迎使用智枢",
   "shell.logout": "退出登录",
+
   "shell.admin": "管理员",
   "placeholder.migrating": "此页面正在迁移中，功能将在后续阶段补齐。",
   "placeholder.notFound": "页面不存在",
   "nav.section.home": "首页",
   "nav.section.omni-proxy": "网关代理",
-  "nav.section.analytics": "分析",
-  "nav.section.costs": "成本",
-  "nav.section.monitoring": "监控",
+  "nav.section.analytics": "分析中心",
+  "nav.section.costs": "成本中心",
+  "nav.section.monitoring": "监控中心",
   "nav.section.devtools": "开发工具",
   "nav.section.capabilities": "智能体能力",
   "nav.section.other-features": "其它功能",
   "nav.section.configuration": "系统配置",
   "nav.section.help": "帮助与支持",
   "nav.item.home": "首页",
-  "nav.item.endpoints": "端点",
+  "nav.item.endpoints": "API 端点",
   "nav.item.api-manager": "API 密钥管理",
-  "nav.item.providers": "提供者",
-  "nav.item.embedded-services": "内嵌服务",
-  "nav.item.combos": "组合",
-  "nav.item.combos-live": "组合工作室",
-  "nav.item.quota": "提供者配额",
+  "nav.item.providers": "模型提供商",
+  "nav.item.embedded-services": "嵌入式服务",
+  "nav.item.combos": "模型组合",
+  "nav.item.combos-live": "组合实时调试",
+  "nav.item.quota": "提供商配额",
   "nav.item.costs-quota-share": "配额共享",
   "nav.item.context-settings": "压缩设置",
   "nav.item.context-combos": "压缩组合",
@@ -456,65 +460,65 @@ const ZH_MESSAGES: Record<MessageKey, string> = {
   "nav.item.context-lite": "轻度压缩",
   "nav.item.context-aggressive": "强力压缩",
   "nav.item.context-ultra": "极限压缩",
-  "nav.item.context-omniglyph": "OmniGlyph 压缩",
+  "nav.item.context-omniglyph": "OmniGlyph 点阵压缩",
   "nav.item.compression-studio": "压缩工作室",
   "nav.item.compression-exclusions": "压缩排除项",
   "nav.item.cli-code": "CLI 代码",
   "nav.item.cli-agents": "CLI 智能体",
   "nav.item.acp-agents": "ACP 智能体",
   "nav.item.cloud-agents": "云端智能体",
-  "nav.item.conductor": "调度器",
+  "nav.item.conductor": "智能体编排器",
   "nav.item.agent-bridge": "智能体桥接",
   "nav.item.traffic-inspector": "流量检查器",
-  "nav.item.discovery": "发现",
-  "nav.item.api-endpoints": "API 端点",
-  "nav.item.webhooks": "Webhook",
-  "nav.item.proxy": "代理",
-  "nav.item.analytics": "用量",
+  "nav.item.discovery": "服务发现",
+  "nav.item.api-endpoints": "API 端点列表",
+  "nav.item.webhooks": "Webhook 钩子",
+  "nav.item.proxy": "出站代理",
+  "nav.item.analytics": "用量分析",
   "nav.item.analytics-combo-health": "组合健康度",
-  "nav.item.analytics-utilization": "利用率",
-  "nav.item.cache": "缓存",
-  "nav.item.analytics-compression": "压缩",
-  "nav.item.analytics-search": "搜索",
-  "nav.item.analytics-evals": "评估",
-  "nav.item.provider-stats": "提供者统计",
-  "nav.item.costs-pricing": "定价",
-  "nav.item.costs-budget": "预算",
+  "nav.item.analytics-utilization": "资源利用率",
+  "nav.item.cache": "缓存分析",
+  "nav.item.analytics-compression": "压缩分析",
+  "nav.item.analytics-search": "搜索分析",
+  "nav.item.analytics-evals": "评估测试",
+  "nav.item.provider-stats": "提供商性能统计",
+  "nav.item.costs-pricing": "模型定价库",
+  "nav.item.costs-budget": "预算管理",
   "nav.item.costs-free-tiers": "免费额度",
-  "nav.item.free-provider-rankings": "免费提供者排行",
-  "nav.item.radar": "雷达",
-  "nav.item.activity": "活动",
+  "nav.item.free-provider-rankings": "免费提供商排行",
+  "nav.item.radar": "模型雷达",
+  "nav.item.activity": "实时活动",
   "nav.item.logs": "请求日志",
   "nav.item.logs-proxy": "代理日志",
   "nav.item.logs-console": "控制台日志",
   "nav.item.logs-timeline": "日志时间线",
-  "nav.item.conversations": "对话",
-  "nav.item.health": "健康状态",
-  "nav.item.runtime": "运行时",
-  "nav.item.resilience-connections": "弹性连接",
-  "nav.item.audit": "审计",
+  "nav.item.conversations": "会话历史",
+  "nav.item.health": "系统健康",
+  "nav.item.runtime": "运行时监控",
+  "nav.item.resilience-connections": "弹性连接池",
+  "nav.item.audit": "安全审计",
   "nav.item.audit-mcp": "MCP 审计",
   "nav.item.audit-a2a": "A2A 审计",
-  "nav.item.translator": "转换器",
-  "nav.item.playground": "游乐场",
-  "nav.item.search-tools": "搜索工具",
-  "nav.item.mcp": "MCP 管理",
-  "nav.item.a2a": "A2A 协作",
-  "nav.item.memory": "记忆",
+  "nav.item.translator": "协议转换器",
+  "nav.item.playground": "推演游乐场",
+  "nav.item.search-tools": "知识搜索工具",
+  "nav.item.mcp": "MCP 服务",
+  "nav.item.a2a": "A2A 智能体",
+  "nav.item.memory": "长期记忆",
   "nav.item.agent-skills": "智能体技能",
-  "nav.item.chaos-config": "混沌模式",
+  "nav.item.chaos-config": "混沌演练",
   "nav.item.skills": "Omni 技能",
-  "nav.item.plugins": "插件",
-  "nav.item.leaderboard": "排行榜",
-  "nav.item.profile": "个人资料",
-  "nav.item.tokens": "令牌",
-  "nav.item.media": "媒体",
-  "nav.item.batch": "批处理",
+  "nav.item.plugins": "扩展插件",
+  "nav.item.leaderboard": "模型排行榜",
+  "nav.item.profile": "个人中心",
+  "nav.item.tokens": "令牌管理",
+  "nav.item.media": "媒体缓存",
+  "nav.item.batch": "批处理任务",
   "nav.item.batch-files": "批处理文件",
   "nav.item.settings-general": "通用设置",
   "nav.item.settings-appearance": "外观设置",
   "nav.item.settings-ai": "AI 设置",
-  "nav.item.settings-modality-bridge": "模态桥接",
+  "nav.item.settings-modality-bridge": "多模态桥接",
   "nav.item.settings-security": "安全设置",
   "nav.item.settings-routing": "路由设置",
   "nav.item.settings-resilience": "弹性设置",
@@ -523,7 +527,7 @@ const ZH_MESSAGES: Record<MessageKey, string> = {
   "nav.item.settings-feature-flags": "功能开关",
   "nav.item.settings-cache": "缓存设置",
   "nav.item.settings-sidebar": "侧边栏设置",
-  "nav.item.docs": "文档",
+  "nav.item.docs": "使用文档",
   "nav.item.issues": "问题反馈",
   "nav.item.changelog": "更新日志",
   "home.updateAvailable": "发现新版本 {version}",
@@ -554,16 +558,17 @@ const ZH_MESSAGES: Record<MessageKey, string> = {
   "home.viewAll": "查看全部",
   "home.loading": "加载中…",
   "home.noRequests": "暂无请求",
-  "home.banner.kimiTitle": "Kimi（Moonshot AI）是 OmniRoute 的创始开源伙伴",
-  "home.banner.kimiDescription": "新用户首次充值可获得 15% 额外 API 额度。通过官方 Kimi API 在 OmniRoute 中使用 Kimi K3。",
+  "home.banner.kimiTitle": "Kimi（Moonshot AI）是智枢的创始开源伙伴",
+  "home.banner.kimiDescription": "新用户首次充值可获得 15% 额外 API 额度。通过官方 Kimi API 在智枢中使用 Kimi K3。",
   "home.banner.kimiNote": "合作伙伴链接",
   "home.banner.kimiAction": "获取 Kimi API 密钥",
-  "home.banner.cheaperTitle": "Cheaper Inference 是 OmniRoute 的开源伙伴",
+  "home.banner.cheaperTitle": "Cheaper Inference 是智枢的开源伙伴",
   "home.banner.cheaperDescription": "通过一个 OpenAI 兼容端点提供多个前沿模型，并将每个请求路由到价格最低且符合条件的提供者，价格不高于官方定价。",
   "home.banner.cheaperNote": "合作伙伴链接",
   "home.banner.cheaperAction": "获取 API 密钥",
-  "home.banner.copilotTitle": "OmniRoute 现已支持 VS Code Copilot Chat",
-  "home.banner.copilotDescription": "安装免费的 OmniCopilot 扩展，即可在 Copilot Chat 模型选择器中直接使用所有 OmniRoute 模型。",
+  "home.banner.copilotTitle": "智枢现已支持 VS Code Copilot Chat",
+  "home.banner.copilotDescription": "安装免费的扩展，即可在 Copilot Chat 模型选择器中直接使用所有智枢模型。",
+
   "home.banner.copilotNote": "同时支持 Open VSX（Cursor、Windsurf、VSCodium…）",
   "home.banner.copilotAction": "获取扩展",
   "providers.back": "返回提供者",
@@ -729,6 +734,7 @@ const ZH_MESSAGES: Record<MessageKey, string> = {
   "providersPage.oauthTitle": "OAuth 提供者",
   "providersPage.oauthDescription": "通过 OAuth 登录一次，智枢会自动处理令牌轮换。",
   "providersPage.ideTitle": "IDE 提供者",
+
   "providersPage.ideDescription": "使用编辑器和 IDE 内置订阅的提供者。",
   "providersPage.webCookieTitle": "Web Cookie 提供者",
   "providersPage.webCookieDescription": "这些提供者使用浏览器会话、Cookie 或 Web Token，而不是 API 密钥。",
@@ -811,10 +817,12 @@ const ZH_MESSAGES: Record<MessageKey, string> = {
   "providerEditor.requestBehavior": "请求行为",
   "providerEditor.source": "来源",
 };
+import flatEn from "./locales/en.json";
+import flatZh from "./locales/zh-CN.json";
 
-const MESSAGES: Record<AppLocale, Record<MessageKey, string>> = {
-  "en-US": EN_MESSAGES,
-  "zh-CN": ZH_MESSAGES,
+const MESSAGES: Record<AppLocale, Record<string, string>> = {
+  "en-US": { ...(flatEn as Record<string, string>), ...EN_MESSAGES },
+  "zh-CN": { ...(flatZh as Record<string, string>), ...ZH_MESSAGES },
 };
 
 function detectLocale(): AppLocale {
@@ -834,14 +842,53 @@ export const useLocaleStore = create<LocaleState>()(
   ),
 );
 
-export function translate(locale: AppLocale, key: string, values?: Record<string, string | number>, fallback?: string): string {
-  const template = (MESSAGES[locale] as Record<string, string>)[key] ?? (MESSAGES["en-US"] as Record<string, string>)[key] ?? fallback ?? key;
-  return Object.entries(values ?? {}).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, String(value)), template);
+export function translate(
+  locale: AppLocale,
+  keyOrZh: string,
+  valuesOrEn?: Record<string, string | number> | string,
+  fallback?: string
+): string {
+  const dict = MESSAGES[locale] ?? MESSAGES["zh-CN"];
+  const enDict = MESSAGES["en-US"];
+
+  if (dict && keyOrZh in dict) {
+    const template = dict[keyOrZh];
+    const values = typeof valuesOrEn === "object" && valuesOrEn !== null ? valuesOrEn : undefined;
+    if (!values) return template;
+    return Object.entries(values).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, String(value)), template);
+  }
+
+  if (enDict && keyOrZh in enDict) {
+    const template = dict?.[keyOrZh] ?? enDict[keyOrZh];
+    const values = typeof valuesOrEn === "object" && valuesOrEn !== null ? valuesOrEn : undefined;
+    if (!values) return template;
+    return Object.entries(values).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, String(value)), template);
+  }
+
+  if (typeof valuesOrEn === "string") {
+    if (locale === "zh-CN") {
+      return keyOrZh;
+    }
+    return valuesOrEn || fallback || keyOrZh;
+  }
+
+  if (fallback) return fallback;
+  return keyOrZh;
 }
 
 export function useI18n() {
   const locale = useLocaleStore((state) => state.locale);
   const setLocale = useLocaleStore((state) => state.setLocale);
-  const t = useCallback((key: string, values?: Record<string, string | number>, fallback?: string) => translate(locale, key, values, fallback), [locale]);
-  return { locale, setLocale, t };
+  const isZh = locale === "zh-CN";
+  const isEn = locale === "en-US";
+  const t = useCallback(
+    (keyOrZh: string, valuesOrEn?: Record<string, string | number> | string, fallback?: string) =>
+      translate(locale, keyOrZh, valuesOrEn, fallback),
+    [locale]
+  );
+  const tt = useCallback(
+    (zh: string, en: string) => (locale === "zh-CN" ? zh : en),
+    [locale]
+  );
+  return { locale, setLocale, isZh, isEn, t, tt };
 }

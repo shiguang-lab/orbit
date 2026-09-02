@@ -80,7 +80,7 @@ export function ApiEndpointsPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  API 开放端点配置 (API Endpoints)
+                  API 开放端点配置
                 </Title>
                 <Tag color="teal">网关对外服务路由</Tag>
               </Flex>
@@ -134,7 +134,7 @@ export function ApiEndpointsPage() {
               title: "状态",
               dataIndex: "status",
               key: "status",
-              render: (st) => <Tag color={st === "active" ? "success" : "default"}>{st.toUpperCase()}</Tag>,
+              render: (st) => <Tag color={st === "active" ? "success" : "default"}>{String(st || "active").toUpperCase()}</Tag>,
             },
           ]}
         />

@@ -202,8 +202,9 @@ export function ComboUsageGuide({ forceOpen = false, onClose, onCreateCombo }: C
           <code>auto</code> 和 <code>auto/*</code> 是独立的零配置路由器，不会使用您自定义的组合（除非组合名称本身就叫 auto）。
         </Paragraph>
         <Paragraph type="secondary" style={{ fontSize: 11, lineHeight: "18px", margin: "3px 0 0" }}>
-          <code>openrouter/auto</code> 是真实的 OpenRouter 付费产品（Auto Best Available），并非 OmniRoute 别名 — 如需排除可在 设置 → 路由 → 隐藏付费模型 中配置。
+          <code>openrouter/auto</code> 是真实的 OpenRouter 付费产品（Auto Best Available），并非智枢别名 — 如需排除可在 设置 → 路由 → 隐藏付费模型 中配置。
         </Paragraph>
+
       </div>
 
       {/* Bottom Action */}

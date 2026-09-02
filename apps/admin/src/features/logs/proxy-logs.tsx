@@ -19,6 +19,7 @@ import { useQuery } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
 import { logsApi, type ProxyLogItem } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Text } = Typography;
 
@@ -122,6 +123,7 @@ const useStyles = createStyles(({ token }) => ({
 
 export function ProxyLogsPage() {
   const { styles } = useStyles();
+  const { tt } = useI18n();
 
   // Control State
   const [recording, setRecording] = useState<boolean>(true);
@@ -164,7 +166,7 @@ export function ProxyLogsPage() {
     return Array.from(new Set(logs.map((l) => l.level).filter(Boolean))).sort();
   }, [logs]);
 
-  // Filtered Logs
+  // Filter logs
   const filteredLogs = useMemo(() => {
     let list = [...logs];
 
@@ -179,12 +181,12 @@ export function ProxyLogsPage() {
 
     // Type filter
     if (selectedType) {
-      list = list.filter((l) => getProxyType(l) === selectedType);
+      list = list.filter((l) => getProxyType(l).toLowerCase() === selectedType.toLowerCase());
     }
 
     // Level filter
     if (selectedLevel) {
-      list = list.filter((l) => l.level === selectedLevel);
+      list = list.filter((l) => l.level?.toLowerCase() === selectedLevel.toLowerCase());
     }
 
     // Provider filter
@@ -200,33 +202,28 @@ export function ProxyLogsPage() {
           l.target?.toLowerCase().includes(q) ||
           formatProxyNode(l.proxy).toLowerCase().includes(q) ||
           l.provider?.toLowerCase().includes(q) ||
+          (l as unknown as { error?: string }).error?.toLowerCase().includes(q) ||
           l.clientIp?.toLowerCase().includes(q) ||
           l.ip?.toLowerCase().includes(q) ||
           l.id?.toLowerCase().includes(q)
       );
     }
 
-    return list;
-  }, [logs, activeStatusFilter, selectedType, selectedLevel, selectedProvider, search]);
-
-  // Sorted Logs
-  const sortedLogs = useMemo(() => {
-    const arr = [...filteredLogs];
-    arr.sort((a, b) => {
-      switch (sortBy) {
-        case "oldest":
-          return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
-        case "latency_desc":
-          return (b.latencyMs || 0) - (a.latencyMs || 0);
-        case "latency_asc":
-          return (a.latencyMs || 0) - (b.latencyMs || 0);
-        case "newest":
-        default:
-          return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
-      }
+    // Sorting
+    list.sort((a, b) => {
+      if (sortBy === "newest") return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+      if (sortBy === "oldest") return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
+      if (sortBy === "latency_desc") return ((b as unknown as { durationMs?: number }).durationMs ?? b.latencyMs ?? 0) - ((a as unknown as { durationMs?: number }).durationMs ?? a.latencyMs ?? 0);
+      if (sortBy === "latency_asc") return ((a as unknown as { durationMs?: number }).durationMs ?? a.latencyMs ?? 0) - ((b as unknown as { durationMs?: number }).durationMs ?? b.latencyMs ?? 0);
+      if (sortBy === "provider_asc") return (a.provider || "").localeCompare(b.provider || "");
+      if (sortBy === "provider_desc") return (b.provider || "").localeCompare(a.provider || "");
+      return 0;
     });
-    return arr;
-  }, [filteredLogs, sortBy]);
+
+    return list;
+  }, [logs, activeStatusFilter, selectedType, selectedLevel, selectedProvider, search, sortBy]);
+
+  const sortedLogs = filteredLogs;
 
   // Stats Counters
   const { totalCount, okCount, errorCount, timeoutCount, directCount, tlsCount } = useMemo(() => {
@@ -240,12 +237,16 @@ export function ProxyLogsPage() {
     };
   }, [logs]);
 
-  // Table Columns
+  // Table Columns Definition
   const columns: TableColumnsType<ProxyLogItem> = [
     ...(visibleColumns.status
       ? [
           {
-            title: "状态",
+            title: (
+              <span style={{ cursor: "pointer", userSelect: "none" }}>
+                {tt("状态", "Status")}
+              </span>
+            ),
             key: "status",
             width: 100,
             render: (_: unknown, record: ProxyLogItem) => {
@@ -276,13 +277,13 @@ export function ProxyLogsPage() {
     ...(visibleColumns.proxy
       ? [
           {
-            title: "代理节点",
+            title: tt("代理节点", "Proxy Node"),
             key: "proxy",
             minWidth: 160,
             render: (_: unknown, record: ProxyLogItem) => {
               const proxyStr = formatProxyNode(record.proxy);
               if (!proxyStr || proxyStr === "direct") {
-                return <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>— 直连 —</span>;
+                return <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{tt("— 直连 —", "— Direct —")}</span>;
               }
               return (
                 <Text strong style={{ fontFamily: "monospace", color: "#818cf8", fontSize: 12 }}>
@@ -297,7 +298,7 @@ export function ProxyLogsPage() {
     ...(visibleColumns.tls
       ? [
           {
-            title: "TLS 指纹",
+            title: tt("TLS 指纹", "TLS"),
             key: "tls",
             width: 90,
             render: (_: unknown, record: ProxyLogItem) => {
@@ -327,7 +328,7 @@ export function ProxyLogsPage() {
     ...(visibleColumns.type
       ? [
           {
-            title: "类型",
+            title: tt("类型", "Type"),
             key: "type",
             width: 90,
             render: (_: unknown, record: ProxyLogItem) => {
@@ -359,7 +360,7 @@ export function ProxyLogsPage() {
     ...(visibleColumns.level
       ? [
           {
-            title: "层级",
+            title: tt("层级", "Level"),
             dataIndex: "level",
             key: "level",
             width: 90,
@@ -391,7 +392,7 @@ export function ProxyLogsPage() {
     ...(visibleColumns.provider
       ? [
           {
-            title: "提供商",
+            title: tt("提供商", "Provider"),
             dataIndex: "provider",
             key: "provider",
             width: 110,
@@ -424,7 +425,7 @@ export function ProxyLogsPage() {
     ...(visibleColumns.target
       ? [
           {
-            title: "目标地址",
+            title: tt("目标地址", "Target"),
             dataIndex: "target",
             key: "target",
             minWidth: 180,
@@ -450,7 +451,7 @@ export function ProxyLogsPage() {
                 style={{ cursor: "pointer", userSelect: "none" }}
                 onClick={() => setSortBy(sortBy === "latency_desc" ? "latency_asc" : "latency_desc")}
               >
-                延迟 {sortBy.startsWith("latency") ? (sortBy === "latency_desc" ? "↓" : "↑") : ""}
+                {tt("延迟", "Latency")} {sortBy.startsWith("latency") ? (sortBy === "latency_desc" ? "↓" : "↑") : ""}
               </span>
             ),
             dataIndex: "latencyMs",
@@ -472,7 +473,7 @@ export function ProxyLogsPage() {
     ...(visibleColumns.ip
       ? [
           {
-            title: "客户端 IP",
+            title: tt("客户端 IP", "Client IP"),
             key: "ip",
             width: 120,
             render: (_: unknown, record: ProxyLogItem) => {
@@ -496,7 +497,7 @@ export function ProxyLogsPage() {
                 style={{ cursor: "pointer", userSelect: "none" }}
                 onClick={() => setSortBy(sortBy === "newest" ? "oldest" : "newest")}
               >
-                时间 {sortBy === "newest" ? "↓" : sortBy === "oldest" ? "↑" : ""}
+                {tt("时间", "Time")} {sortBy === "newest" ? "↓" : sortBy === "oldest" ? "↑" : ""}
               </span>
             ),
             dataIndex: "timestamp",
@@ -544,12 +545,12 @@ export function ProxyLogsPage() {
                 />
               }
             >
-              {recording ? "录制中" : "已暂停"}
+              {recording ? tt("录制中", "Live") : tt("已暂停", "Paused")}
             </Button>
 
             {/* Search Input */}
             <Input.Search
-              placeholder="搜索目标 URL、节点名称、IP 或状态..."
+              placeholder={tt("搜索目标 URL、节点名称、IP 或状态...", "Search target URL, node, IP or status...")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               style={{ flex: "1 1 220px", minWidth: 200, maxWidth: 360 }}
@@ -562,7 +563,7 @@ export function ProxyLogsPage() {
               onChange={setSelectedType}
               style={{ minWidth: 130 }}
               options={[
-                { label: "全部代理类型", value: "" },
+                { label: tt("全部代理类型", "All Proxy Types"), value: "" },
                 ...uniqueTypes.map((t) => ({ label: (TYPE_THEMES[t.toLowerCase()]?.label || t).toUpperCase(), value: t })),
               ]}
             />
@@ -573,7 +574,7 @@ export function ProxyLogsPage() {
               onChange={setSelectedLevel}
               style={{ minWidth: 130 }}
               options={[
-                { label: "全部代理层级", value: "" },
+                { label: tt("全部代理层级", "All Proxy Levels"), value: "" },
                 ...uniqueLevels.map((l) => ({ label: LEVEL_THEMES[l.toLowerCase()]?.label || l, value: l })),
               ]}
             />
@@ -584,7 +585,7 @@ export function ProxyLogsPage() {
               onChange={setSelectedProvider}
               style={{ minWidth: 140 }}
               options={[
-                { label: "全部提供商", value: "" },
+                { label: tt("全部提供商", "All Providers"), value: "" },
                 ...uniqueProviders.map((p) => ({ label: p.toUpperCase(), value: p })),
               ]}
             />
@@ -677,11 +678,11 @@ export function ProxyLogsPage() {
 
           {/* Stats Badges */}
           <Space size={6} wrap>
-            <Tag style={{ margin: 0, fontFamily: "monospace" }}>总计: {totalCount}</Tag>
-            <Tag color="success" style={{ margin: 0, fontFamily: "monospace" }}>成功: {okCount}</Tag>
-            {errorCount > 0 && <Tag color="error" style={{ margin: 0, fontFamily: "monospace" }}>错误: {errorCount}</Tag>}
-            {timeoutCount > 0 && <Tag color="warning" style={{ margin: 0, fontFamily: "monospace" }}>超时: {timeoutCount}</Tag>}
-            {directCount > 0 && <Tag style={{ margin: 0, fontFamily: "monospace" }}>直连: {directCount}</Tag>}
+            <Tag style={{ margin: 0, fontFamily: "monospace" }}>{tt("总计", "Total")}: {totalCount}</Tag>
+            <Tag color="success" style={{ margin: 0, fontFamily: "monospace" }}>{tt("成功", "OK")}: {okCount}</Tag>
+            {errorCount > 0 && <Tag color="error" style={{ margin: 0, fontFamily: "monospace" }}>{tt("错误", "Error")}: {errorCount}</Tag>}
+            {timeoutCount > 0 && <Tag color="warning" style={{ margin: 0, fontFamily: "monospace" }}>{tt("超时", "Timeout")}: {timeoutCount}</Tag>}
+            {directCount > 0 && <Tag style={{ margin: 0, fontFamily: "monospace" }}>{tt("直连", "Direct")}: {directCount}</Tag>}
             {tlsCount > 0 && <Tag color="cyan" style={{ margin: 0, fontFamily: "monospace" }}>🔒 {tlsCount} TLS</Tag>}
           </Space>
         </Flex>
@@ -689,7 +690,7 @@ export function ProxyLogsPage() {
         {/* Column Visibility Toggles */}
         <Flex align="center" gap={6} wrap style={{ marginTop: 10 }}>
           <span style={{ fontSize: 11, color: "var(--ant-color-text-tertiary)", textTransform: "uppercase", fontWeight: 700 }}>
-            显示列:
+            {tt("显示列:", "Columns:")}
           </span>
           {PROXY_COLUMNS.map((col) => {
             const isVisible = visibleColumns[col.key];
@@ -723,7 +724,7 @@ export function ProxyLogsPage() {
             pageSize: 20,
             showSizeChanger: true,
             pageSizeOptions: ["20", "50", "100"],
-            showTotal: (total) => `共 ${total} 条代理事件`,
+            showTotal: (total) => tt(`共 ${total} 条代理事件`, `Total ${total} proxy events`),
           }}
           size="small"
           onRow={(record) => ({
@@ -731,7 +732,7 @@ export function ProxyLogsPage() {
             style: { cursor: "pointer" },
           })}
           locale={{
-            emptyText: <Empty description="暂无符合条件的代理日志" style={{ padding: "48px 0" }} />,
+            emptyText: <Empty description={tt("暂无符合条件的代理日志", "No proxy logs found")} style={{ padding: "48px 0" }} />,
           }}
         />
       </Card>

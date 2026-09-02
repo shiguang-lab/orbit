@@ -86,7 +86,7 @@ export function ProviderStatsPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  提供者统计与延迟性能天梯 (Provider Stats)
+                  提供商性能统计与延迟天梯
                 </Title>
                 <Tag color="gold">模型端到端测速</Tag>
               </Flex>

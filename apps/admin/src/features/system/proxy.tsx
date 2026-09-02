@@ -116,7 +116,7 @@ export function SystemProxyPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  系统出站网络代理 (Outbound System Proxy)
+                  系统出站网络代理
                 </Title>
                 <Tag color={config?.enabled ? "success" : "default"}>
                   {config?.enabled ? "● 代理连接池运行中" : "已直连"}

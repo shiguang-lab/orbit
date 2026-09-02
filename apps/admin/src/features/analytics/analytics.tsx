@@ -27,6 +27,7 @@ import {
   usageApi,
   type UsageAnalyticsPayload,
 } from "@/entities/api";
+import { useI18n } from "@/i18n";
 import {
   ResponsiveContainer,
   LineChart,
@@ -54,23 +55,6 @@ export type CostExplorerSortKey =
   | "avgCostPerRequest"
   | "sharePct";
 export type CostExplorerSortDirection = "asc" | "desc";
-
-const RANGE_OPTIONS: Array<{ value: CostRange; label: string }> = [
-  { value: "7d", label: "近 7 天" },
-  { value: "30d", label: "近 30 天" },
-  { value: "90d", label: "近 90 天" },
-  { value: "180d", label: "近 180 天" },
-  { value: "365d", label: "近 1 年" },
-  { value: "all", label: "全部时间" },
-];
-
-const EXPLORER_GROUP_OPTIONS: Array<{ value: CostExplorerGroupBy; label: string }> = [
-  { value: "provider", label: "按提供商" },
-  { value: "model", label: "按模型" },
-  { value: "apiKey", label: "按 API 密钥" },
-  { value: "account", label: "按账户" },
-  { value: "serviceTier", label: "按服务层级" },
-];
 
 const PALETTE = [
   "#10B981",
@@ -155,8 +139,9 @@ function downloadFile(content: string, filename: string, mimeType: string) {
 
 function exportCsvReport(data: UsageAnalyticsPayload, range: string) {
   const lines: string[] = [];
-  lines.push("# OmniRoute 成本与消耗分析报告");
+  lines.push("# 智枢成本与消耗分析报告");
   lines.push(`# 导出时间: ${new Date().toISOString()}`);
+
   lines.push(`# 统计周期: ${range}`);
   lines.push("");
 
@@ -193,8 +178,9 @@ function exportCsvReport(data: UsageAnalyticsPayload, range: string) {
   }
 
   const dateStr = dayjs().format("YYYYMMDD-HHmmss");
-  downloadFile(lines.join("\n"), `omniroute-costs-${range}-${dateStr}.csv`, "text/csv;charset=utf-8");
+  downloadFile(lines.join("\n"), `orbit-costs-${range}-${dateStr}.csv`, "text/csv;charset=utf-8");
 }
+
 
 /* ───────────── Chart Components ───────────── */
 
@@ -586,6 +572,24 @@ export default function AnalyticsPage() {
   const { token } = theme.useToken();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { tt } = useI18n();
+
+  const rangeOptions: Array<{ value: CostRange; label: string }> = [
+    { value: "7d", label: tt("近 7 天", "Last 7 Days") },
+    { value: "30d", label: tt("近 30 天", "Last 30 Days") },
+    { value: "90d", label: tt("近 90 天", "Last 90 Days") },
+    { value: "180d", label: tt("近 180 天", "Last 180 Days") },
+    { value: "365d", label: tt("近 1 年", "Last 1 Year") },
+    { value: "all", label: tt("全部时间", "All Time") },
+  ];
+
+  const explorerGroupOptions: Array<{ value: CostExplorerGroupBy; label: string }> = [
+    { value: "provider", label: tt("按提供商", "By Provider") },
+    { value: "model", label: tt("按模型", "By Model") },
+    { value: "apiKey", label: tt("按 API 密钥", "By API Key") },
+    { value: "account", label: tt("按账户", "By Account") },
+    { value: "serviceTier", label: tt("按服务层级", "By Service Tier") },
+  ];
 
   // URL Parameters
   const initialRange = (searchParams.get("range") as CostRange) || "30d";
@@ -776,7 +780,7 @@ export default function AnalyticsPage() {
   // Explorer Table Columns
   const explorerColumns = [
     {
-      title: "维度名称",
+      title: tt("维度名称", "Dimension"),
       dataIndex: "name",
       key: "name",
       sorter: true,
@@ -794,7 +798,7 @@ export default function AnalyticsPage() {
       ),
     },
     {
-      title: "消耗金额 (USD)",
+      title: tt("消耗金额 (USD)", "Cost (USD)"),
       dataIndex: "cost",
       key: "cost",
       sorter: true,
@@ -813,19 +817,19 @@ export default function AnalyticsPage() {
       ),
     },
     {
-      title: "请求次数",
+      title: tt("请求次数", "Requests"),
       dataIndex: "requests",
       key: "requests",
       sorter: true,
       align: "right" as const,
       render: (reqs: number) => (
         <Text style={{ fontFamily: "monospace", fontSize: 12 }}>
-          {reqs.toLocaleString()} 次
+          {reqs.toLocaleString()} {tt("次", "reqs")}
         </Text>
       ),
     },
     {
-      title: "Token 吞吐量",
+      title: tt("Token 吞吐量", "Token Volume"),
       dataIndex: "totalTokens",
       key: "totalTokens",
       sorter: true,
@@ -837,7 +841,7 @@ export default function AnalyticsPage() {
       ),
     },
     {
-      title: "单次均价",
+      title: tt("单次均价", "Avg Cost / Req"),
       dataIndex: "avgCostPerRequest",
       key: "avgCostPerRequest",
       sorter: true,
@@ -849,7 +853,7 @@ export default function AnalyticsPage() {
       ),
     },
     {
-      title: "占比份额",
+      title: tt("占比份额", "Share"),
       dataIndex: "sharePct",
       key: "sharePct",
       sorter: true,
@@ -863,7 +867,7 @@ export default function AnalyticsPage() {
             showInfo={false}
             style={{ width: 80, margin: 0 }}
           />
-          <Text style={{ fontFamily: "monospace", fontSize: 11, width: 45, textAlign: "right" }}>
+          <Text style={{ fontFamily: "monospace", fontSize: 12, minWidth: 42, textAlign: "right" }}>
             {sharePct.toFixed(1)}%
           </Text>
         </Flex>
@@ -884,14 +888,14 @@ export default function AnalyticsPage() {
         ? `${singleApiKeyId.slice(0, 8)}...${singleApiKeyId.slice(-6)}`
         : singleApiKeyId;
       const label = matchedKey?.apiKeyName
-        ? `密钥: ${matchedKey.apiKeyName}`
-        : `密钥: ${truncatedId}`;
+        ? `${tt("密钥", "Key")}: ${matchedKey.apiKeyName}`
+        : `${tt("密钥", "Key")}: ${truncatedId}`;
       setCustomTitle(label);
     } else {
       setCustomTitle(null);
     }
     return () => setCustomTitle(null);
-  }, [singleApiKeyId, matchedKey, setCustomTitle]);
+  }, [singleApiKeyId, matchedKey, setCustomTitle, tt]);
 
   if (analyticsQuery.isLoading && !data) {
     return <PageSkeleton />;
@@ -906,16 +910,19 @@ export default function AnalyticsPage() {
             <Flex align="center" gap={8}>
               <MaterialIcon name="analytics" size={22} style={{ color: "#06B6D4" }} />
               <Title level={2} style={{ margin: 0, fontSize: 20 }}>
-                用量分析
+                {tt("用量分析", "Usage Analytics")}
               </Title>
               {summary.streak > 0 && (
                 <Tag color="gold" icon={<MaterialIcon name="local_fire_department" size={14} />}>
-                  已连续活跃 {summary.streak} 天
+                  {tt(`已连续活跃 ${summary.streak} 天`, `${summary.streak} Days Streak`)}
                 </Tag>
               )}
             </Flex>
             <Paragraph type="secondary" style={{ margin: "4px 0 0", fontSize: 12 }}>
-              实时追踪全路由网关的 API 调用开销、Token 吞吐、模型级消费分布与多维探索。
+              {tt(
+                "实时追踪全路由网关的 API 调用开销、Token 吞吐、模型级消费分布与多维探索。",
+                "Realtime tracking of gateway API expenditure, Token throughput, model distributions and analytics."
+              )}
             </Paragraph>
           </div>
 
@@ -928,17 +935,18 @@ export default function AnalyticsPage() {
                   icon={<MaterialIcon name="download" size={15} />}
                   onClick={() => exportCsvReport(data, range)}
                 >
-                  导出 CSV
+                  {tt("导出 CSV", "Export CSV")}
                 </Button>
                 <Button
                   size="middle"
                   icon={<MaterialIcon name="code" size={15} />}
                   onClick={() => {
                     const jsonStr = JSON.stringify(data, null, 2);
-                    downloadFile(jsonStr, `omniroute-costs-${range}-${dayjs().format("YYYYMMDD")}.json`, "application/json");
+                    downloadFile(jsonStr, `orbit-costs-${range}-${dayjs().format("YYYYMMDD")}.json`, "application/json");
                   }}
+
                 >
-                  导出 JSON
+                  {tt("导出 JSON", "Export JSON")}
                 </Button>
               </Space>
             )}
@@ -951,7 +959,7 @@ export default function AnalyticsPage() {
                 searchParams.set("range", nextRange);
                 setSearchParams(searchParams);
               }}
-              options={RANGE_OPTIONS}
+              options={rangeOptions}
             />
           </Flex>
         </Flex>
@@ -972,25 +980,25 @@ export default function AnalyticsPage() {
               <Flex align="center" gap={6}>
                 <MaterialIcon name="tune" size={18} style={{ color: "#0284C7" }} />
                 <Text strong style={{ fontSize: 14 }}>
-                  API 密钥独立限额监控 · ID: {singleApiKeyId}
+                  {tt("API 密钥独立限额监控", "API Key Quota Monitor")} · ID: {singleApiKeyId}
                 </Text>
               </Flex>
               <Text type="secondary" style={{ fontSize: 11, display: "block", marginTop: 2 }}>
-                今日已消耗:{" "}
+                {tt("今日已消耗", "Today Used")}:{" "}
                 <Text strong style={{ color: "#10B981" }}>
                   {formatUsd(apiKeyLimitsQuery.data.dailyCostUsd || 0)}
                 </Text>
                 {apiKeyLimitsQuery.data.dailyUsageLimitUsd
-                  ? ` / 上限 ${formatUsd(apiKeyLimitsQuery.data.dailyUsageLimitUsd)}`
-                  : " (无限制)"}
+                  ? ` / ${tt("上限", "Limit")} ${formatUsd(apiKeyLimitsQuery.data.dailyUsageLimitUsd)}`
+                  : ` (${tt("无限制", "Unlimited")})`}
                 {" · "}
-                本周已消耗:{" "}
+                {tt("本周已消耗", "Weekly Used")}:{" "}
                 <Text strong style={{ color: "#10B981" }}>
                   {formatUsd(apiKeyLimitsQuery.data.weeklyCostUsd || 0)}
                 </Text>
                 {apiKeyLimitsQuery.data.weeklyUsageLimitUsd
-                  ? ` / 上限 ${formatUsd(apiKeyLimitsQuery.data.weeklyUsageLimitUsd)}`
-                  : " (无限制)"}
+                  ? ` / ${tt("上限", "Limit")} ${formatUsd(apiKeyLimitsQuery.data.weeklyUsageLimitUsd)}`
+                  : ` (${tt("无限制", "Unlimited")})`}
               </Text>
             </div>
 
@@ -999,7 +1007,7 @@ export default function AnalyticsPage() {
               size="middle"
               onClick={() => navigate("/dashboard/api-manager")}
             >
-              返回密钥管理
+              {tt("返回密钥管理", "Back to API Keys")}
             </Button>
           </Flex>
         </Card>
@@ -1010,13 +1018,13 @@ export default function AnalyticsPage() {
         <Col xs={12} sm={6} className={styles.stretchCol}>
           <Card size="small" className={styles.metricCard}>
             <Text type="secondary" style={{ fontSize: 11, textTransform: "uppercase" }}>
-              今日支出
+              {tt("今日支出", "Today's Cost")}
             </Text>
             <Title level={3} style={{ margin: "4px 0 0", color: "#10B981" }}>
               {formatUsd(presetCosts["1d"])}
             </Title>
             <Text type="secondary" style={{ fontSize: 11 }}>
-              当天实时计费消耗
+              {tt("当天实时计费消耗", "Realtime cost today")}
             </Text>
           </Card>
         </Col>
@@ -1024,13 +1032,13 @@ export default function AnalyticsPage() {
         <Col xs={12} sm={6} className={styles.stretchCol}>
           <Card size="small" className={styles.metricCard}>
             <Text type="secondary" style={{ fontSize: 11, textTransform: "uppercase" }}>
-              近 7 天支出
+              {tt("近 7 天支出", "Last 7 Days Cost")}
             </Text>
             <Title level={3} style={{ margin: "4px 0 0", color: "#0EA5E9" }}>
               {formatUsd(presetCosts["7d"])}
             </Title>
             <Text type="secondary" style={{ fontSize: 11 }}>
-              周维度累计支出
+              {tt("周维度累计支出", "Weekly cumulative cost")}
             </Text>
           </Card>
         </Col>
@@ -1038,13 +1046,13 @@ export default function AnalyticsPage() {
         <Col xs={12} sm={6} className={styles.stretchCol}>
           <Card size="small" className={styles.metricCard}>
             <Text type="secondary" style={{ fontSize: 11, textTransform: "uppercase" }}>
-              近 30 天支出
+              {tt("近 30 天支出", "Last 30 Days Cost")}
             </Text>
             <Title level={3} style={{ margin: "4px 0 0", color: "#8B5CF6" }}>
               {formatUsd(presetCosts["30d"])}
             </Title>
             <Text type="secondary" style={{ fontSize: 11 }}>
-              月度消耗总览
+              {tt("月度消耗总览", "Monthly cost summary")}
             </Text>
           </Card>
         </Col>
@@ -1052,13 +1060,13 @@ export default function AnalyticsPage() {
         <Col xs={12} sm={6} className={styles.stretchCol}>
           <Card size="small" className={styles.metricCard}>
             <Text type="secondary" style={{ fontSize: 11, textTransform: "uppercase" }}>
-              选定窗口总支出
+              {tt("选定窗口总支出", "Window Total Cost")}
             </Text>
             <Title level={3} style={{ margin: "4px 0 0", color: "#F59E0B" }}>
               {formatUsd(summary.totalCost)}
             </Title>
             <Text type="secondary" style={{ fontSize: 11 }}>
-              当前选择: {RANGE_OPTIONS.find((r) => r.value === range)?.label}
+              {tt("当前选择", "Selection")}: {rangeOptions.find((r) => r.value === range)?.label}
             </Text>
           </Card>
         </Col>
@@ -1161,10 +1169,10 @@ export default function AnalyticsPage() {
                   searchParams.set("groupBy", nextGroup);
                   setSearchParams(searchParams);
                 }}
-                options={EXPLORER_GROUP_OPTIONS}
+                options={explorerGroupOptions}
               />
               <Input
-                placeholder="搜索维度名称或 ID..."
+                placeholder={tt("搜索维度名称或 ID...", "Search dimension name or ID...")}
                 prefix={<MaterialIcon name="search" size={15} />}
                 allowClear
                 value={explorerSearch}
@@ -1178,10 +1186,10 @@ export default function AnalyticsPage() {
             dataSource={explorerRows}
             columns={explorerColumns}
             rowKey="id"
-            pagination={{ pageSize: 10, showTotal: (total) => `共 ${total} 条明细` }}
+            pagination={{ pageSize: 10, showTotal: (total) => tt(`共 ${total} 条明细`, `Total ${total} items`) }}
             loading={analyticsQuery.isLoading}
             size="middle"
-            locale={{ emptyText: "当前维度暂无消耗数据" }}
+            locale={{ emptyText: tt("当前维度暂无消耗数据", "No cost data for current dimension") }}
             onChange={(_, __, sorter) => {
               if (!Array.isArray(sorter) && sorter.field) {
                 setExplorerSortKey(sorter.field as CostExplorerSortKey);

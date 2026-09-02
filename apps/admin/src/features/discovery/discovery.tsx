@@ -89,9 +89,9 @@ export function DiscoveryPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  服务发现 (Local & LAN Service Discovery)
+                  本地与局域网服务发现
                 </Title>
-                <Tag color="cyan">局域网与本地自动探测</Tag>
+                <Tag color="cyan">自动探测与导入</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
                 自动扫描本地及局域网内运行的 Ollama、vLLM、LMStudio、LocalAI 端点与挂载模型，支持一键导入为上游提供者。
@@ -139,7 +139,7 @@ export function DiscoveryPage() {
               key: "models",
               render: (models: string[]) => (
                 <Flex gap={4} wrap>
-                  {models.map((m) => (
+                  {(models || []).map((m) => (
                     <Tag key={m} color="purple" style={{ margin: 0, fontSize: 11 }}>
                       {m}
                     </Tag>
@@ -153,7 +153,7 @@ export function DiscoveryPage() {
               key: "status",
               render: (status) => (
                 <Tag color={status === "reachable" ? "success" : "default"}>
-                  {status.toUpperCase()}
+                  {String(status || "unknown").toUpperCase()}
                 </Tag>
               ),
             },

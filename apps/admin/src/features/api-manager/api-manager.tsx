@@ -31,6 +31,7 @@ import { keysApi, type ApiKeyView, type ApiKeyCreateInput } from "@/entities/api
 import { MaterialIcon } from "@/app/nav";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
 import dayjs from "dayjs";
+import { useI18n } from "@/i18n";
 
 const { Text, Title, Paragraph } = Typography;
 
@@ -75,6 +76,7 @@ export default function ApiManagerPage() {
   const { token } = theme.useToken();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { tt } = useI18n();
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -294,7 +296,7 @@ export default function ApiManagerPage() {
 
   const columns = [
     {
-      title: "密钥名称与归属",
+      title: tt("密钥名称与归属", "Key Name & Owner"),
       key: "name",
       width: 200,
       render: (_: unknown, k: ApiKeyView) => (
@@ -311,19 +313,19 @@ export default function ApiManagerPage() {
           </Space>
           {k.machineId && (
             <Text type="secondary" style={{ fontSize: 11, marginLeft: 22 }}>
-              设备: {k.machineId.slice(0, 10)}
+              {tt("设备", "Device")}: {k.machineId.slice(0, 10)}
             </Text>
           )}
           {k.createdAt && (
             <Text type="secondary" style={{ fontSize: 10, marginLeft: 22 }}>
-              创建于 {dayjs(k.createdAt).format("YYYY-MM-DD HH:mm")}
+              {tt("创建于", "Created at")} {dayjs(k.createdAt).format("YYYY-MM-DD HH:mm")}
             </Text>
           )}
         </Flex>
       ),
     },
     {
-      title: "密钥令牌",
+      title: tt("密钥令牌", "Token Key"),
       key: "key",
       width: 240,
       render: (_: unknown, k: ApiKeyView) => {
@@ -335,7 +337,7 @@ export default function ApiManagerPage() {
               {isShown ? displayValue : maskKeyClient(displayValue)}
             </span>
             {allowReveal && (
-              <Tooltip title={isShown ? "隐藏明文" : "显示完整明文"}>
+              <Tooltip title={isShown ? tt("隐藏明文", "Hide Plaintext") : tt("显示完整明文", "Reveal Plaintext")}>
                 <Button
                   type="text"
                   size="small"
@@ -344,7 +346,7 @@ export default function ApiManagerPage() {
                 />
               </Tooltip>
             )}
-            <Tooltip title="复制密钥">
+            <Tooltip title={tt("复制密钥", "Copy Key")}>
               <Button
                 type="text"
                 size="small"
@@ -357,27 +359,27 @@ export default function ApiManagerPage() {
       },
     },
     {
-      title: "权限与安全特性",
+      title: tt("权限与安全特性", "Permissions & Features"),
       key: "permissions",
       render: (_: unknown, k: ApiKeyView) => {
         const scopes = k.scopes ?? [];
         return (
           <Space wrap size={[4, 4]}>
-            {scopes.includes("manage") && <Tag color="magenta">管理访问</Tag>}
-            {k.noLog && <Tag color="purple">免日志审计</Tag>}
-            {k.autoResolve && <Tag color="blue">自动解析</Tag>}
-            {k.compressionEnabled && <Tag color="cyan">压缩加速</Tag>}
-            {k.chaosModeEnabled && <Tag color="volcano">混沌测试</Tag>}
-            {k.usageLimitEnabled && <Tag color="green">额度限制</Tag>}
+            {scopes.includes("manage") && <Tag color="magenta">{tt("管理访问", "Manage")}</Tag>}
+            {k.noLog && <Tag color="purple">{tt("免日志审计", "No Log")}</Tag>}
+            {k.autoResolve && <Tag color="blue">{tt("自动解析", "Auto-Resolve")}</Tag>}
+            {k.compressionEnabled && <Tag color="cyan">{tt("压缩加速", "Compression")}</Tag>}
+            {k.chaosModeEnabled && <Tag color="volcano">{tt("混沌测试", "Chaos Test")}</Tag>}
+            {k.usageLimitEnabled && <Tag color="green">{tt("额度限制", "Quota")}</Tag>}
             {!scopes.includes("manage") && !k.noLog && !k.autoResolve && !k.compressionEnabled && (
-              <Tag color="default">标准推理</Tag>
+              <Tag color="default">{tt("标准推理", "Standard")}</Tag>
             )}
           </Space>
         );
       },
     },
     {
-      title: "用量与消耗",
+      title: tt("用量与消耗", "Usage & Cost"),
       key: "usage",
       width: 140,
       render: (_: unknown, k: ApiKeyView) => {
@@ -393,7 +395,7 @@ export default function ApiManagerPage() {
                 {totalRequests}
               </Text>
               <Text type="secondary" style={{ fontSize: 11, lineHeight: 1 }}>
-                次请求
+                {tt("次请求", "requests")}
               </Text>
             </Flex>
             {totalCost > 0 ? (
@@ -406,11 +408,11 @@ export default function ApiManagerPage() {
               </Text>
             ) : null}
             <Text type="secondary" style={{ fontSize: 10 }}>
-              {lastUsed ? `最后活跃: ${dayjs(lastUsed).format("MM-DD HH:mm")}` : "从未调用"}
+              {lastUsed ? `${tt("最后活跃", "Last used")}: ${dayjs(lastUsed).format("MM-DD HH:mm")}` : tt("从未调用", "Never used")}
             </Text>
             {k.usageLimitEnabled && (k.dailyUsageLimitUsd || k.weeklyUsageLimitUsd) && (
               <Tag color="cyan" style={{ fontSize: 10, margin: "2px 0 0", width: "fit-content" }}>
-                限额: ${k.dailyUsageLimitUsd || k.weeklyUsageLimitUsd}/日
+                {tt("限额", "Limit")}: ${k.dailyUsageLimitUsd || k.weeklyUsageLimitUsd}/d
               </Tag>
             )}
           </Flex>
@@ -418,7 +420,7 @@ export default function ApiManagerPage() {
       },
     },
     {
-      title: "模型范围",
+      title: tt("模型范围", "Model Scope"),
       key: "models",
       width: 140,
       render: (_: unknown, k: ApiKeyView) => {
@@ -426,7 +428,7 @@ export default function ApiManagerPage() {
           return (
             <Tooltip title={k.allowedModels.join(", ")}>
               <Tag color="geekblue" style={{ cursor: "pointer" }}>
-                限定 {k.allowedModels.length} 个模型
+                {tt(`限定 ${k.allowedModels.length} 个模型`, `${k.allowedModels.length} models allowed`)}
               </Tag>
             </Tooltip>
           );
@@ -435,16 +437,16 @@ export default function ApiManagerPage() {
           return (
             <Tooltip title={k.blockedModels.join(", ")}>
               <Tag color="orange" style={{ cursor: "pointer" }}>
-                排除 {k.blockedModels.length} 个模型
+                {tt(`排除 ${k.blockedModels.length} 个模型`, `${k.blockedModels.length} models blocked`)}
               </Tag>
             </Tooltip>
           );
         }
-        return <Tag color="default">全部模型 (All)</Tag>;
+        return <Tag color="default">{tt("全部模型 (All)", "All Models")}</Tag>;
       },
     },
     {
-      title: "有效期与状态",
+      title: tt("有效期与状态", "Status & Expiry"),
       key: "status",
       width: 160,
       render: (_: unknown, k: ApiKeyView) => {
@@ -544,16 +546,19 @@ export default function ApiManagerPage() {
       <Flex align="center" justify="space-between" wrap gap={12}>
         <div>
           <Title level={2} style={{ margin: 0, fontSize: 20 }}>
-            API 密钥管理
+            {tt("API 密钥管理", "API Keys Management")}
           </Title>
           <Paragraph type="secondary" style={{ margin: "4px 0 0", fontSize: 13 }}>
-            创建与分发大模型客户端访问令牌，配置细粒度模型白名单、并发限流、免日志审计与额度消耗控制
+            {tt(
+              "创建与分发大模型客户端访问令牌，配置细粒度模型白名单、并发限流、免日志审计与额度消耗控制",
+              "Create and distribute LLM client access tokens with fine-grained model whitelist, rate limits, no-log privacy, and usage quotas"
+            )}
           </Paragraph>
         </div>
 
         <Space wrap>
           <Button icon={<MaterialIcon name="refresh" size={14} />} onClick={invalidate}>
-            刷新
+            {tt("刷新", "Refresh")}
           </Button>
           <Button
             type="primary"
@@ -561,7 +566,7 @@ export default function ApiManagerPage() {
             onClick={() => setAddModalOpen(true)}
             style={{ background: "#8B5CF6", borderColor: "#8B5CF6" }}
           >
-            新建 API 密钥
+            {tt("新建 API 密钥", "Create API Key")}
           </Button>
         </Space>
       </Flex>
@@ -571,13 +576,13 @@ export default function ApiManagerPage() {
         <Col xs={12} sm={6}>
           <Card size="small" className={styles.metricCard}>
             <Text type="secondary" style={{ fontSize: 11, textTransform: "uppercase" }}>
-              密钥总量
+              {tt("密钥总量", "Total Keys")}
             </Text>
             <Title level={3} style={{ margin: "4px 0 0" }}>
               {metrics.total}
             </Title>
             <Text type="secondary" style={{ fontSize: 11 }}>
-              系统已发放访问凭据
+              {tt("系统已发放访问凭据", "Total issued credentials")}
             </Text>
           </Card>
         </Col>
@@ -585,13 +590,13 @@ export default function ApiManagerPage() {
         <Col xs={12} sm={6}>
           <Card size="small" className={styles.metricCard}>
             <Text type="secondary" style={{ fontSize: 11, textTransform: "uppercase" }}>
-              活跃中密钥
+              {tt("活跃中密钥", "Active Keys")}
             </Text>
             <Title level={3} style={{ margin: "4px 0 0", color: "#10B981" }}>
               {metrics.active}
             </Title>
             <Text type="secondary" style={{ fontSize: 11 }}>
-              占总量 {metrics.total > 0 ? Math.round((metrics.active / metrics.total) * 100) : 100}%
+              {tt(`占总量 ${metrics.total > 0 ? Math.round((metrics.active / metrics.total) * 100) : 100}%`, `${metrics.total > 0 ? Math.round((metrics.active / metrics.total) * 100) : 100}% of total`)}
             </Text>
           </Card>
         </Col>
@@ -599,13 +604,13 @@ export default function ApiManagerPage() {
         <Col xs={12} sm={6}>
           <Card size="small" className={styles.metricCard}>
             <Text type="secondary" style={{ fontSize: 11, textTransform: "uppercase" }}>
-              免日志模式
+              {tt("免日志模式", "No-Log Mode")}
             </Text>
             <Title level={3} style={{ margin: "4px 0 0", color: "#8B5CF6" }}>
               {metrics.noLog}
             </Title>
             <Text type="secondary" style={{ fontSize: 11 }}>
-              高隐私脱敏密钥数
+              {tt("高隐私脱敏密钥数", "High privacy keys")}
             </Text>
           </Card>
         </Col>
@@ -613,7 +618,7 @@ export default function ApiManagerPage() {
         <Col xs={12} sm={6}>
           <Card size="small" className={styles.metricCard}>
             <Text type="secondary" style={{ fontSize: 11, textTransform: "uppercase" }}>
-              已过期 / 封禁
+              {tt("已过期 / 封禁", "Expired / Banned")}
             </Text>
             <Title
               level={3}
@@ -625,7 +630,7 @@ export default function ApiManagerPage() {
               {metrics.banned + metrics.expired}
             </Title>
             <Text type="secondary" style={{ fontSize: 11 }}>
-              封禁 {metrics.banned} · 过期 {metrics.expired}
+              {tt(`封禁 ${metrics.banned} · 过期 ${metrics.expired}`, `Banned ${metrics.banned} · Expired ${metrics.expired}`)}
             </Text>
           </Card>
         </Col>
@@ -636,7 +641,7 @@ export default function ApiManagerPage() {
         <Flex align="center" justify="space-between" wrap gap={12}>
           <Space size={8} wrap>
             <Input
-              placeholder="搜索密钥名称、前缀或设备..."
+              placeholder={tt("搜索密钥名称、前缀或设备...", "Search key name, prefix, or device...")}
               prefix={<MaterialIcon name="search" size={16} />}
               allowClear
               value={search}
@@ -648,11 +653,11 @@ export default function ApiManagerPage() {
               onChange={setFeatureFilter}
               style={{ minWidth: 155 }}
               options={[
-                { label: "全部特性", value: "all" },
-                { label: "管理访问", value: "manage" },
-                { label: "免日志审计", value: "noLog" },
-                { label: "额度限制", value: "quota" },
-                { label: "混沌测试", value: "chaos" },
+                { label: tt("全部特性", "All Features"), value: "all" },
+                { label: tt("管理访问", "Manage Scope"), value: "manage" },
+                { label: tt("免日志审计", "No-Log"), value: "noLog" },
+                { label: tt("额度限制", "Quota"), value: "quota" },
+                { label: tt("混沌测试", "Chaos"), value: "chaos" },
               ]}
             />
           </Space>
@@ -661,11 +666,11 @@ export default function ApiManagerPage() {
             value={statusFilter}
             onChange={(val) => setStatusFilter(val as never)}
             options={[
-              { label: "全部", value: "all" },
-              { label: "活跃", value: "active" },
-              { label: "已停用", value: "disabled" },
-              { label: "已过期", value: "expired" },
-              { label: "已封禁", value: "banned" },
+              { label: tt("全部", "All"), value: "all" },
+              { label: tt("活跃", "Active"), value: "active" },
+              { label: tt("已停用", "Disabled"), value: "disabled" },
+              { label: tt("已过期", "Expired"), value: "expired" },
+              { label: tt("已封禁", "Banned"), value: "banned" },
             ]}
           />
         </Flex>

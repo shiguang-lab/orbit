@@ -226,10 +226,11 @@ export function Shell() {
           </div>
           {!collapsed && (
             <div className="sidebar-brand-copy">
-              <Typography.Text strong>智枢</Typography.Text>
+              <Typography.Text strong>{locale === "zh-CN" ? "智枢" : "Orbit"}</Typography.Text>
               <Typography.Text type="secondary">{t("shell.brandSubtitle")}</Typography.Text>
             </div>
           )}
+
         </div>
         {!collapsed && (
           <div className="sidebar-menu-search">
@@ -372,9 +373,11 @@ export function Shell() {
           </div>
         </Header>
 
-        <Content style={{ minHeight: 0, display: "flex", flexDirection: "column", flex: 1 }}>
-          <Scrollbar className="shell-content-scrollbar" scrollX={false} style={{ height: "100%", padding: 16, display: "flex", flexDirection: "column" }}>
-            <Outlet />
+        <Content style={{ minHeight: 0, display: "flex", flexDirection: "column", flex: 1, overflow: "hidden" }}>
+          <Scrollbar className="shell-content-scrollbar" scrollX={false} style={{ height: "100%", width: "100%" }}>
+            <div className="shell-content-inner" style={{ padding: "20px 24px 32px", minHeight: "100%", boxSizing: "border-box", display: "flex", flexDirection: "column", flex: 1 }}>
+              <Outlet />
+            </div>
           </Scrollbar>
         </Content>
       </Layout>

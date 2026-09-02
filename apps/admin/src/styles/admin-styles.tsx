@@ -72,12 +72,12 @@ export const useAdminStyles = createStyles(({ token }) => ({
       display: "flex",
       flexDirection: "column",
       minHeight: 0,
-      padding: "16px 6px",
+      padding: "16px 6px 0",
       boxSizing: "border-box",
       transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
     },
     "& .sidebar-sider.ant-layout-sider-collapsed": {
-      padding: "16px 0",
+      padding: "16px 0 0",
     },
     "& .sidebar-sider > .ant-layout-sider-children": {
       display: "flex",
@@ -157,6 +157,7 @@ export const useAdminStyles = createStyles(({ token }) => ({
     },
     "& .sidebar-menu": {
       marginTop: 4,
+      paddingBottom: 24,
     },
     "& .sidebar-menu .ant-menu-item, & .sidebar-menu .ant-menu-submenu-title": {
       borderRadius: 8,
@@ -235,12 +236,21 @@ export const useAdminStyles = createStyles(({ token }) => ({
     "& .ant-tag > .material-symbols-outlined + span": { marginInlineStart: token.paddingXS },
     "& .shell-content-scrollbar": {
       height: "100%",
+      width: "100%",
     },
     "& .shell-content-scrollbar > div": {
       minHeight: "100%",
       display: "flex",
       flexDirection: "column",
       boxSizing: "border-box",
+    },
+    "& .shell-content-inner": {
+      padding: "20px 24px 32px",
+      minHeight: "100%",
+      display: "flex",
+      flexDirection: "column",
+      boxSizing: "border-box",
+      width: "100%",
     },
   },
 }));

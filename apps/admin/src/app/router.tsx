@@ -3,7 +3,6 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import { lazy, Suspense, type ComponentType, createElement } from "react";
 import { Shell } from "@/shell/layout";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
-import { flattenNav } from "@/app/nav";
 import { translate, useI18n } from "@/i18n";
 
 function withSuspense(Cmp: ComponentType): ComponentType {
@@ -81,77 +80,58 @@ const CompressionAnalyticsPage = withSuspense(lazy(() => import("@/features/anal
 const SearchAnalyticsPage = withSuspense(lazy(() => import("@/features/analytics/search-analytics")));
 const EvalsPage = withSuspense(lazy(() => import("@/features/analytics/evals")));
 const ProviderStatsPage = withSuspense(lazy(() => import("@/features/analytics/provider-stats")));
-const P = (navKey: string, title: string) => placeholder(navKey, title);
 
-const migratedPaths = new Set([
-  "/home",
-  "/dashboard/api-manager",
-  "/dashboard/providers",
-  "/dashboard/providers/services",
-  "/dashboard/services",
-  "/dashboard/endpoint",
-  "/dashboard/combos",
-  "/dashboard/combos/live",
-  "/dashboard/quota",
-  "/dashboard/costs/quota-share",
-  "/dashboard/quota-share",
-  "/dashboard/context/settings",
-  "/dashboard/compression/settings",
-  "/dashboard/context/combos",
-  "/dashboard/compression/combos",
-  "/dashboard/context/caveman",
-  "/dashboard/context/rtk",
-  "/dashboard/context/headroom",
-  "/dashboard/context/session-dedup",
-  "/dashboard/context/ccr",
-  "/dashboard/context/llmlingua",
-  "/dashboard/context/lite",
-  "/dashboard/context/aggressive",
-  "/dashboard/context/ultra",
-  "/dashboard/context/omniglyph",
-  "/dashboard/compression/studio",
-  "/dashboard/compression/exclusions",
-  "/dashboard/cli-code",
-  "/dashboard/cli-agents",
-  "/dashboard/acp-agents",
-  "/dashboard/cloud-agents",
-  "/dashboard/conductor",
-  "/dashboard/tools/agent-bridge",
-  "/dashboard/tools/traffic-inspector",
-  "/dashboard/discovery",
-  "/dashboard/api-endpoints",
-  "/dashboard/webhooks",
-  "/dashboard/system/proxy",
-  "/dashboard/analytics",
-  "/analytics",
-  "/dashboard/analytics/combo-health",
-  "/dashboard/analytics/utilization",
-  "/dashboard/cache",
-  "/dashboard/analytics/compression",
-  "/dashboard/analytics/search",
-  "/dashboard/analytics/evals",
-  "/dashboard/provider-stats",
-  "/dashboard/activity",
-  "/dashboard/logs",
-  "/dashboard/logs/proxy",
-  "/dashboard/logs/console",
-  "/dashboard/logs/timeline",
-  "/dashboard/conversations",
-  "/dashboard/health",
-  "/dashboard/runtime",
-  "/dashboard/audit",
-  "/dashboard/mcp",
-  "/dashboard/a2a",
-  "/dashboard/memory",
-  "/dashboard/plugins",
-  "/dashboard/batch",
-  "/dashboard/settings/general",
-  "/dashboard/settings/security",
-  "/dashboard/settings/routing",
-]);
-const migratedMenuRoutes = flattenNav()
-  .filter((item) => !migratedPaths.has(item.to) && !item.to.startsWith("http"))
-  .map((item) => ({ path: item.to.replace(/^\//, ""), element: createElement(P(item.key, item.label)) }));
+// 成本
+const PricingPage = withSuspense(lazy(() => import("@/features/costs/pricing")));
+const BudgetPage = withSuspense(lazy(() => import("@/features/costs/budget")));
+const FreeTiersPage = withSuspense(lazy(() => import("@/features/costs/free-tiers")));
+const FreeProviderRankingsPage = withSuspense(lazy(() => import("@/features/costs/free-provider-rankings")));
+const RadarPage = withSuspense(lazy(() => import("@/features/costs/radar")));
+
+// 监控
+const RuntimePage = withSuspense(lazy(() => import("@/features/runtime/runtime")));
+const ResilienceConnectionsPage = withSuspense(lazy(() => import("@/features/resilience/resilience-connections")));
+const AuditPage = withSuspense(lazy(() => import("@/features/audit/audit")));
+const AuditMcpPage = withSuspense(lazy(() => import("@/features/audit/audit-mcp")));
+const AuditA2aPage = withSuspense(lazy(() => import("@/features/audit/audit-a2a")));
+
+// 开发工具
+const TranslatorPage = withSuspense(lazy(() => import("@/features/devtools/translator")));
+const PlaygroundPage = withSuspense(lazy(() => import("@/features/devtools/playground")));
+const SearchToolsPage = withSuspense(lazy(() => import("@/features/devtools/search-tools")));
+
+// 智能体能力
+const McpPage = withSuspense(lazy(() => import("@/features/capabilities/mcp")));
+const A2aPage = withSuspense(lazy(() => import("@/features/capabilities/a2a")));
+const MemoryPage = withSuspense(lazy(() => import("@/features/capabilities/memory")));
+const AgentSkillsPage = withSuspense(lazy(() => import("@/features/capabilities/agent-skills")));
+const ChaosPage = withSuspense(lazy(() => import("@/features/capabilities/chaos")));
+const OmniSkillsPage = withSuspense(lazy(() => import("@/features/capabilities/omni-skills")));
+const PluginsPage = withSuspense(lazy(() => import("@/features/capabilities/plugins")));
+
+// 其它功能
+const LeaderboardPage = withSuspense(lazy(() => import("@/features/other/leaderboard")));
+const ProfilePage = withSuspense(lazy(() => import("@/features/other/profile")));
+const TokensPage = withSuspense(lazy(() => import("@/features/other/tokens")));
+const MediaPage = withSuspense(lazy(() => import("@/features/other/media")));
+const BatchPage = withSuspense(lazy(() => import("@/features/other/batch")));
+const BatchFilesPage = withSuspense(lazy(() => import("@/features/other/batch-files")));
+
+// 系统配置
+const SettingsGeneralPage = withSuspense(lazy(() => import("@/features/settings/settings-general")));
+const SettingsAppearancePage = withSuspense(lazy(() => import("@/features/settings/settings-appearance")));
+const SettingsAiPage = withSuspense(lazy(() => import("@/features/settings/settings-ai")));
+const SettingsModalityBridgePage = withSuspense(lazy(() => import("@/features/settings/settings-modality-bridge")));
+const SettingsSecurityPage = withSuspense(lazy(() => import("@/features/settings/settings-security")));
+const SettingsRoutingPage = withSuspense(lazy(() => import("@/features/settings/settings-routing")));
+const SettingsResiliencePage = withSuspense(lazy(() => import("@/features/settings/settings-resilience")));
+const SettingsAdvancedPage = withSuspense(lazy(() => import("@/features/settings/settings-advanced")));
+const SettingsAccessTokensPage = withSuspense(lazy(() => import("@/features/settings/settings-access-tokens")));
+const SettingsFeatureFlagsPage = withSuspense(lazy(() => import("@/features/settings/settings-feature-flags")));
+const SettingsCachePage = withSuspense(lazy(() => import("@/features/settings/settings-cache")));
+const SettingsSidebarPage = withSuspense(lazy(() => import("@/features/settings/settings-sidebar")));
+
+const P = (navKey: string, title: string) => placeholder(navKey, title);
 
 export const router = createBrowserRouter([
   {
@@ -215,6 +195,12 @@ export const router = createBrowserRouter([
       { path: "dashboard/provider-stats", element: <ProviderStatsPage /> },
       { path: "dashboard/costs", element: <Navigate to="/dashboard/analytics" replace /> },
       { path: "costs", element: <Navigate to="/dashboard/analytics" replace /> },
+      // 成本
+      { path: "dashboard/costs/pricing", element: <PricingPage /> },
+      { path: "dashboard/costs/budget", element: <BudgetPage /> },
+      { path: "dashboard/free-tiers", element: <FreeTiersPage /> },
+      { path: "dashboard/free-provider-rankings", element: <FreeProviderRankingsPage /> },
+      { path: "dashboard/radar", element: <RadarPage /> },
       // 监控
       { path: "dashboard/activity", element: <ActivityPage /> },
       { path: "activity", element: <ActivityPage /> },
@@ -227,19 +213,43 @@ export const router = createBrowserRouter([
       { path: "dashboard/conversations", element: <ConversationsPage /> },
       { path: "dashboard/health", element: <HealthPage /> },
       { path: "health", element: <HealthPage /> },
-      { path: "dashboard/runtime", element: createElement(P("runtime", "Runtime")) },
-      { path: "dashboard/audit", element: createElement(P("audit", "Audit")) },
-      // 代理能力
-      { path: "dashboard/mcp", element: createElement(P("mcp", "MCP")) },
-      { path: "dashboard/a2a", element: createElement(P("a2a", "A2A")) },
-      { path: "dashboard/memory", element: createElement(P("memory", "Memory")) },
-      { path: "dashboard/plugins", element: createElement(P("plugins", "Plugins")) },
-      { path: "dashboard/batch", element: createElement(P("batch", "Batch")) },
-      // 配置
-      { path: "dashboard/settings/general", element: createElement(P("settings-general", "General Settings")) },
-      { path: "dashboard/settings/security", element: createElement(P("settings-security", "Security")) },
-      { path: "dashboard/settings/routing", element: createElement(P("settings-routing", "Routing")) },
-      ...migratedMenuRoutes,
+      { path: "dashboard/runtime", element: <RuntimePage /> },
+      { path: "dashboard/resilience/connections", element: <ResilienceConnectionsPage /> },
+      { path: "dashboard/audit", element: <AuditPage /> },
+      { path: "dashboard/audit/mcp", element: <AuditMcpPage /> },
+      { path: "dashboard/audit/a2a", element: <AuditA2aPage /> },
+      // 开发工具
+      { path: "dashboard/translator", element: <TranslatorPage /> },
+      { path: "dashboard/playground", element: <PlaygroundPage /> },
+      { path: "dashboard/search-tools", element: <SearchToolsPage /> },
+      // 智能体能力
+      { path: "dashboard/mcp", element: <McpPage /> },
+      { path: "dashboard/a2a", element: <A2aPage /> },
+      { path: "dashboard/memory", element: <MemoryPage /> },
+      { path: "dashboard/agent-skills", element: <AgentSkillsPage /> },
+      { path: "dashboard/chaos", element: <ChaosPage /> },
+      { path: "dashboard/omni-skills", element: <OmniSkillsPage /> },
+      { path: "dashboard/plugins", element: <PluginsPage /> },
+      // 其它功能
+      { path: "dashboard/leaderboard", element: <LeaderboardPage /> },
+      { path: "dashboard/profile", element: <ProfilePage /> },
+      { path: "dashboard/tokens", element: <TokensPage /> },
+      { path: "dashboard/cache/media", element: <MediaPage /> },
+      { path: "dashboard/batch", element: <BatchPage /> },
+      { path: "dashboard/batch/files", element: <BatchFilesPage /> },
+      // 系统配置
+      { path: "dashboard/settings/general", element: <SettingsGeneralPage /> },
+      { path: "dashboard/settings/appearance", element: <SettingsAppearancePage /> },
+      { path: "dashboard/settings/ai", element: <SettingsAiPage /> },
+      { path: "dashboard/settings/modality-bridge", element: <SettingsModalityBridgePage /> },
+      { path: "dashboard/settings/security", element: <SettingsSecurityPage /> },
+      { path: "dashboard/settings/routing", element: <SettingsRoutingPage /> },
+      { path: "dashboard/settings/resilience", element: <SettingsResiliencePage /> },
+      { path: "dashboard/settings/advanced", element: <SettingsAdvancedPage /> },
+      { path: "dashboard/settings/access-tokens", element: <SettingsAccessTokensPage /> },
+      { path: "dashboard/settings/feature-flags", element: <SettingsFeatureFlagsPage /> },
+      { path: "dashboard/settings/cache", element: <SettingsCachePage /> },
+      { path: "dashboard/settings/sidebar", element: <SettingsSidebarPage /> },
       // 兜底
       { path: "*", element: createElement(P("not-found", "Page not found")) },
     ],

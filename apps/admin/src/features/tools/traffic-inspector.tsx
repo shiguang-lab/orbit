@@ -99,9 +99,9 @@ export function TrafficInspectorPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  实时流量检查器与探针 (Traffic Inspector)
+                  实时流量检查器与探针
                 </Title>
-                <Tag color="cyan">实时抓包与 Payload 审计</Tag>
+                <Tag color="cyan">实时抓包与报文审计</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
                 实时捕获流经网关的请求与响应 Payload、压缩衰减指标、响应耗时及上游 Token 计费。

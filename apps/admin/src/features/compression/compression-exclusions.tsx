@@ -116,9 +116,9 @@ export function CompressionExclusionsPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  压缩排除项 (Compression Exclusions)
+                  压缩排除规则与白名单
                 </Title>
-                <Tag color="error">黑名单机制</Tag>
+                <Tag color="error">黑白名单机制</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
                 配置必须跳过任何压缩算子、严格原样透传的模型 ID、Provider 前缀或通配符规则（支持 * 通配）。

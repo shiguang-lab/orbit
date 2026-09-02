@@ -80,7 +80,7 @@ export function ConductorPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  多 Agent 任务调度器 (Conductor)
+                  智能体任务编排器
                 </Title>
                 <Tag color="purple">DAG 拓扑编排</Tag>
               </Flex>
@@ -117,12 +117,12 @@ export function ConductorPage() {
               key: "steps",
               render: (_, record) => (
                 <Flex align="center" gap={6} wrap>
-                  {record.steps.map((step, idx) => (
+                  {(record.steps || []).map((step, idx) => (
                     <span key={idx} style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
                       <Tag color="blue" style={{ margin: 0 }}>
                         {step.role} ({step.agentId})
                       </Tag>
-                      {idx < record.steps.length - 1 && <span style={{ color: "rgba(255,255,255,0.3)" }}>→</span>}
+                      {idx < (record.steps?.length ?? 0) - 1 && <span style={{ color: "rgba(255,255,255,0.3)" }}>→</span>}
                     </span>
                   ))}
                 </Flex>
@@ -134,7 +134,7 @@ export function ConductorPage() {
               key: "status",
               render: (status) => (
                 <Tag color={status === "running" ? "processing" : "default"}>
-                  {status.toUpperCase()}
+                  {String(status || "idle").toUpperCase()}
                 </Tag>
               ),
             },

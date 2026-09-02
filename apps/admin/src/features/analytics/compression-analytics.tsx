@@ -66,11 +66,11 @@ export function CompressionAnalyticsPage() {
 
   const tel = telemetryQuery.data;
 
-  const engineBreakdown = Object.entries(tel.appliedStyleCounts).map(([engine, count]) => ({
+  const engineBreakdown = Object.entries(tel?.appliedStyleCounts || {}).map(([engine, count]) => ({
     engine,
     count,
     savingsPct: engine === "caveman" ? 32 : engine === "rtk" ? 74 : engine === "session-dedup" ? 45 : 15,
-    tokensSaved: Math.round((tel.totalTokensSaved * count) / (tel.runsWithStyles || 1)),
+    tokensSaved: Math.round(((tel?.totalTokensSaved || 0) * (count || 0)) / (tel?.runsWithStyles || 1)),
   }));
 
   return (
@@ -96,7 +96,7 @@ export function CompressionAnalyticsPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  压缩多维分析与能效统计 (Compression Analytics)
+                  上下文压缩效能深度分析
                 </Title>
                 <Tag color="orange">已节约 {(tel.totalTokensSaved / 1000000).toFixed(2)}M Tokens</Tag>
               </Flex>

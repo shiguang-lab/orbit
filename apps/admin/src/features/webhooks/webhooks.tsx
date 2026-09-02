@@ -80,7 +80,7 @@ export function WebhooksPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  Webhook 事件回调管理 (Webhooks)
+                  Webhook 事件回调管理
                 </Title>
                 <Tag color="pink">异步事件分发</Tag>
               </Flex>
@@ -112,7 +112,7 @@ export function WebhooksPage() {
               key: "events",
               render: (evs: string[]) => (
                 <Flex gap={4} wrap>
-                  {evs.map((e) => (
+                  {(evs || []).map((e) => (
                     <Tag key={e} color="blue" style={{ margin: 0, fontSize: 10 }}>
                       {e}
                     </Tag>
@@ -136,7 +136,7 @@ export function WebhooksPage() {
               title: "状态",
               dataIndex: "status",
               key: "status",
-              render: (st) => <Tag color={st === "active" ? "success" : "error"}>{st.toUpperCase()}</Tag>,
+              render: (st) => <Tag color={st === "active" ? "success" : "error"}>{String(st || "active").toUpperCase()}</Tag>,
             },
           ]}
         />

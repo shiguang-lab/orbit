@@ -170,9 +170,10 @@ export const OFFICIAL_ENDPOINTS: EndpointCardDef[] = [
     description: "提供跨搜索引擎（Tavily、Google、Bing 等）的实时网页搜索中继。",
     defaultModel: "tavily-search",
     exampleBody: {
-      query: "OmniRoute AI Gateway 最新特性",
+      query: "智枢 AI Gateway 最新特性",
       max_results: 5,
     },
+
   },
 
   // 通用与管理端点

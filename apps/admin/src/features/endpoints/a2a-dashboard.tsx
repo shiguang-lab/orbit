@@ -109,8 +109,9 @@ export function A2aDashboard() {
           lastTaskAt: new Date().toISOString(),
         },
         agent: {
-          name: "OmniRoute-A2A-Coordinator",
+          name: "Orbit-A2A-Coordinator",
           version: "1.4.0",
+
           url: "http://localhost:20128/a2a",
         },
         skills: [
@@ -360,8 +361,9 @@ export function A2aDashboard() {
           <Flex align="center" justify="space-between" wrap gap={8}>
             <Space size={8}>
               <MaterialIcon name="smart_toy" size={18} style={{ color: "#3B82F6" }} />
-              <span>A2A 协调智能体 ({status?.agent?.name || "OmniRoute Coordinator"})</span>
+              <span>A2A 协调智能体 ({status?.agent?.name || "Orbit Coordinator"})</span>
               <Tag color="purple">v{status?.agent?.version || "1.4.0"}</Tag>
+
             </Space>
             <Space size={8}>
               <Button

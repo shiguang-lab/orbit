@@ -266,7 +266,7 @@ export function CompressionCombosPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  压缩组合流水线 (Compression Combos & Hub)
+                  压缩算子组合流水线
                 </Title>
                 <Tag color="purple">流水线编排引擎</Tag>
               </Flex>
@@ -325,7 +325,7 @@ export function CompressionCombosPage() {
               流水线执行流序 (Pipeline Flow)：
             </Text>
             <Flex align="center" gap={8} wrap>
-              {activeCombo.pipeline.map((step, idx) => {
+              {(activeCombo?.pipeline || []).map((step, idx) => {
                 const meta = COMPRESSION_ENGINE_CATALOG[step.engine];
                 return (
                   <Flex key={idx} align="center" gap={6}>
@@ -336,7 +336,7 @@ export function CompressionCombosPage() {
                         <Tag color="blue" style={{ margin: 0, fontSize: 10 }}>{step.intensity.toUpperCase()}</Tag>
                       )}
                     </div>
-                    {idx < activeCombo.pipeline.length - 1 && (
+                    {idx < (activeCombo?.pipeline?.length ?? 0) - 1 && (
                       <MaterialIcon name="arrow_forward" size={14} style={{ color: "rgba(255,255,255,0.3)" }} />
                     )}
                   </Flex>

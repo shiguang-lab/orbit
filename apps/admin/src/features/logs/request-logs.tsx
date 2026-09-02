@@ -23,6 +23,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
 import { logsApi, type RequestCallLog } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Text } = Typography;
 
@@ -139,6 +140,7 @@ export function RequestLogsPage() {
   const { styles } = useStyles();
   const queryClient = useQueryClient();
   const [messageApi, contextHolder] = message.useMessage();
+  const { tt } = useI18n();
 
   // Control State
   const [recording, setRecording] = useState<boolean>(true);
@@ -432,7 +434,7 @@ export function RequestLogsPage() {
     ...(visibleColumns.cacheSource
       ? [
           {
-            title: "缓存",
+            title: tt("缓存", "Cache"),
             key: "cacheSource",
             width: 80,
             render: (_: unknown, record: RequestCallLog) => {
@@ -443,7 +445,7 @@ export function RequestLogsPage() {
               }
               return (
                 <Tag color={isSemantic ? "emerald" : "blue"} style={{ margin: 0, fontSize: 10, fontWeight: 700 }}>
-                  {isSemantic ? "语义缓存" : "上游缓存"}
+                  {isSemantic ? tt("语义缓存", "Semantic") : tt("上游缓存", "Upstream")}
                 </Tag>
               );
             },
@@ -459,7 +461,7 @@ export function RequestLogsPage() {
                 style={{ cursor: "pointer", userSelect: "none" }}
                 onClick={() => setSortBy(sortBy === "model_desc" ? "model_asc" : "model_desc")}
               >
-                模型 {sortBy.startsWith("model") ? (sortBy === "model_desc" ? "↓" : "↑") : ""}
+                {tt("模型", "Model")} {sortBy.startsWith("model") ? (sortBy === "model_desc" ? "↓" : "↑") : ""}
               </span>
             ),
             dataIndex: "model",
@@ -475,13 +477,13 @@ export function RequestLogsPage() {
                     </Text>
                     {record.groupStatus === "healed" && !record.isRetry && (
                       <Tag color="success" style={{ margin: 0, fontSize: 9, padding: "0 4px" }}>
-                        已自愈
+                        {tt("已自愈", "Healed")}
                       </Tag>
                     )}
                   </Flex>
                   {cid && (
                     <Text type="secondary" style={{ fontSize: 10, fontFamily: "monospace" }}>
-                      CID: {cid.slice(0, 10)}… {record.groupSize && record.groupSize > 1 ? `(${record.groupSize}次尝试)` : ""}
+                      CID: {cid.slice(0, 10)}… {record.groupSize && record.groupSize > 1 ? `(${record.groupSize}${tt("次尝试", " attempts")})` : ""}
                     </Text>
                   )}
                 </Flex>
@@ -494,7 +496,7 @@ export function RequestLogsPage() {
     ...(visibleColumns.requestedModel
       ? [
           {
-            title: "请求模型",
+            title: tt("请求模型", "Requested Model"),
             dataIndex: "requestedModel",
             key: "requestedModel",
             width: 140,
@@ -508,7 +510,7 @@ export function RequestLogsPage() {
                     fontSize: 11,
                     color: isRewritten ? "#f59e0b" : "var(--ant-color-text-secondary)",
                   }}
-                  title={isRewritten ? `重写路由：请求 ${requestedModel} → 分发 ${record.model}` : requestedModel}
+                  title={isRewritten ? `${tt("重写路由：请求", "Rewritten: Req")} ${requestedModel} → ${tt("分发", "Route")} ${record.model}` : requestedModel}
                 >
                   {requestedModel}
                 </Text>
@@ -521,7 +523,7 @@ export function RequestLogsPage() {
     ...(visibleColumns.provider
       ? [
           {
-            title: "提供商",
+            title: tt("提供商", "Provider"),
             dataIndex: "provider",
             key: "provider",
             width: 110,
@@ -553,7 +555,7 @@ export function RequestLogsPage() {
     ...(visibleColumns.account
       ? [
           {
-            title: "账号",
+            title: tt("账号", "Account"),
             key: "account",
             width: 110,
             render: (_: unknown, record: RequestCallLog) => {
@@ -591,7 +593,7 @@ export function RequestLogsPage() {
     ...(visibleColumns.combo
       ? [
           {
-            title: "套餐",
+            title: tt("套餐", "Combo"),
             key: "combo",
             width: 90,
             render: (_: unknown, record: RequestCallLog) => {
@@ -686,7 +688,7 @@ export function RequestLogsPage() {
                 style={{ cursor: "pointer", userSelect: "none" }}
                 onClick={() => setSortBy(sortBy === "duration_desc" ? "duration_asc" : "duration_desc")}
               >
-                耗时 {sortBy.startsWith("duration") ? (sortBy === "duration_desc" ? "↓" : "↑") : ""}
+                {tt("耗时", "Latency")} {sortBy.startsWith("duration") ? (sortBy === "duration_desc" ? "↓" : "↑") : ""}
               </span>
             ),
             key: "duration",
@@ -719,7 +721,7 @@ export function RequestLogsPage() {
                 style={{ cursor: "pointer", userSelect: "none" }}
                 onClick={() => setSortBy(sortBy === "newest" ? "oldest" : "newest")}
               >
-                时间 {sortBy === "newest" ? "↓" : sortBy === "oldest" ? "↑" : ""}
+                {tt("时间", "Time")} {sortBy === "newest" ? "↓" : sortBy === "oldest" ? "↑" : ""}
               </span>
             ),
             dataIndex: "timestamp",
@@ -740,7 +742,7 @@ export function RequestLogsPage() {
     ...(visibleColumns.conversation
       ? [
           {
-            title: "会话链路",
+            title: tt("会话链路", "Session"),
             key: "conversation",
             width: 100,
             render: (_: unknown, record: RequestCallLog) => {
@@ -790,7 +792,7 @@ export function RequestLogsPage() {
                 />
               }
             >
-              {recording ? "录制中" : "已暂停"}
+              {recording ? tt("录制中", "Live") : tt("已暂停", "Paused")}
             </Button>
 
             {/* Pipeline Logs Toggle */}
@@ -814,12 +816,12 @@ export function RequestLogsPage() {
                 />
               }
             >
-              {detailLoggingEnabled ? "管道日志 (开)" : "管道日志 (关)"}
+              {detailLoggingEnabled ? tt("管道日志 (开)", "Pipeline (On)") : tt("管道日志 (关)", "Pipeline (Off)")}
             </Button>
 
             {/* Search Input */}
             <Input.Search
-              placeholder="搜索路径、模型、Key、IP 或请求 ID..."
+              placeholder={tt("搜索路径、模型、Key、IP 或请求 ID...", "Search path, model, key, IP or ID...")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               style={{ flex: "1 1 200px", minWidth: 180, maxWidth: 320 }}
@@ -829,7 +831,7 @@ export function RequestLogsPage() {
             {/* Correlation ID Input */}
             <Input
               prefix={<MaterialIcon name="tag" size={14} />}
-              placeholder="关联 ID (CID)..."
+              placeholder={tt("关联 ID (CID)...", "Correlation ID...")}
               value={correlationIdFilter}
               onChange={(e) => setCorrelationIdFilter(e.target.value)}
               style={{ width: 150, fontFamily: "monospace" }}
@@ -842,7 +844,7 @@ export function RequestLogsPage() {
               icon={<MaterialIcon name={groupedView ? "unfold_less" : "unfold_more"} size={16} />}
               onClick={() => setGroupedView(!groupedView)}
             >
-              {groupedView ? "聚合视图" : "平铺视图"}
+              {groupedView ? tt("聚合视图", "Grouped") : tt("平铺视图", "Flat")}
             </Button>
 
             {/* Provider Filter */}
@@ -851,7 +853,7 @@ export function RequestLogsPage() {
               onChange={setSelectedProvider}
               style={{ minWidth: 140 }}
               options={[
-                { label: "全部提供商", value: "" },
+                { label: tt("全部提供商", "All Providers"), value: "" },
                 ...uniqueProviders.map((p) => ({ label: p.toUpperCase(), value: p })),
               ]}
             />
@@ -862,11 +864,10 @@ export function RequestLogsPage() {
               onChange={setSelectedModel}
               style={{ minWidth: 160 }}
               options={[
-                { label: "全部模型", value: "" },
+                { label: tt("全部模型", "All Models"), value: "" },
                 ...uniqueModels.map((m) => ({ label: m, value: m })),
               ]}
             />
-
             {/* Account Filter */}
             {uniqueAccounts.length > 0 && (
               <Select
@@ -874,7 +875,7 @@ export function RequestLogsPage() {
                 onChange={setSelectedAccount}
                 style={{ minWidth: 140 }}
                 options={[
-                  { label: "全部账号", value: "" },
+                  { label: tt("全部账号", "All Accounts"), value: "" },
                   ...uniqueAccounts.map((a) => ({ label: a, value: a })),
                 ]}
               />
@@ -887,7 +888,7 @@ export function RequestLogsPage() {
                 onChange={setSelectedApiKey}
                 style={{ minWidth: 150 }}
                 options={[
-                  { label: "全部 API Key", value: "" },
+                  { label: tt("全部 API Key", "All API Keys"), value: "" },
                   ...uniqueApiKeys.map((k) => ({ label: k, value: k })),
                 ]}
               />
@@ -901,18 +902,18 @@ export function RequestLogsPage() {
               onChange={setSortBy}
               style={{ minWidth: 135 }}
               options={[
-                { label: "最新优先", value: "newest" },
-                { label: "最早优先", value: "oldest" },
-                { label: "Tokens 降序", value: "tokens_desc" },
-                { label: "Tokens 升序", value: "tokens_asc" },
-                { label: "耗时 降序", value: "duration_desc" },
-                { label: "耗时 升序", value: "duration_asc" },
-                { label: "TPS 降序", value: "tps_desc" },
-                { label: "TPS 升序", value: "tps_asc" },
-                { label: "状态码 降序", value: "status_desc" },
-                { label: "状态码 升序", value: "status_asc" },
-                { label: "模型名称 A-Z", value: "model_asc" },
-                { label: "模型名称 Z-A", value: "model_desc" },
+                { label: tt("最新优先", "Newest First"), value: "newest" },
+                { label: tt("最早优先", "Oldest First"), value: "oldest" },
+                { label: tt("Tokens 降序", "Tokens High-to-Low"), value: "tokens_desc" },
+                { label: tt("Tokens 升序", "Tokens Low-to-High"), value: "tokens_asc" },
+                { label: tt("耗时 降序", "Duration High-to-Low"), value: "duration_desc" },
+                { label: tt("耗时 升序", "Duration Low-to-High"), value: "duration_asc" },
+                { label: tt("TPS 降序", "TPS High-to-Low"), value: "tps_desc" },
+                { label: tt("TPS 升序", "TPS Low-to-High"), value: "tps_asc" },
+                { label: tt("状态码 降序", "Status High-to-Low"), value: "status_desc" },
+                { label: tt("状态码 升序", "Status Low-to-High"), value: "status_asc" },
+                { label: tt("模型名称 A-Z", "Model A-Z"), value: "model_asc" },
+                { label: tt("模型名称 Z-A", "Model Z-A"), value: "model_desc" },
               ]}
             />
 

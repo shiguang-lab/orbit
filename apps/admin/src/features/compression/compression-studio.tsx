@@ -128,7 +128,7 @@ export function CompressionStudioPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  压缩工作室 (Compression Studio & Cockpit)
+                  压缩算子演练工作室
                 </Title>
                 <Tag color="purple">可视化算子流序诊断</Tag>
               </Flex>

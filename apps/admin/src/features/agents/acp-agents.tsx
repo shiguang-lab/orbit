@@ -80,9 +80,9 @@ export function AcpAgentsPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  ACP 智能体协议管理 (Agent Client Protocol)
+                  ACP 智能体协议管理
                 </Title>
-                <Tag color="purple">ACP v1 规范</Tag>
+                <Tag color="purple">标准协议规范</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
                 管理对接 Zed、VSCode Cline 等符合 ACP 标准协议的智能体客户端与守护进程，实现跨 IDE 协同。
@@ -121,8 +121,8 @@ export function AcpAgentsPage() {
               key: "capabilities",
               render: (caps: string[]) => (
                 <Flex gap={4} wrap>
-                  {caps.map((c) => (
-                    <Tag key={c} color="cyan" style={{ margin: 0, fontSize: 10 }}>
+                  {(caps || []).map((c) => (
+                    <Tag key={c} color="blue" style={{ margin: 0, fontSize: 10 }}>
                       {c}
                     </Tag>
                   ))}
@@ -141,7 +141,7 @@ export function AcpAgentsPage() {
               key: "status",
               render: (status) => (
                 <Tag color={status === "online" ? "success" : "default"}>
-                  {status.toUpperCase()}
+                  {String(status || "offline").toUpperCase()}
                 </Tag>
               ),
             },

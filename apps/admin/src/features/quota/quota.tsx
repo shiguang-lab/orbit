@@ -32,6 +32,7 @@ import {
   type QuotaPoolItem,
 } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 import {
   parseQuotaData,
   hasCanonicalWindowOrder,
@@ -147,6 +148,7 @@ export function QuotaPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [messageApi, contextHolder] = message.useMessage();
+  const { tt } = useI18n();
 
   // Expanded Model rows per account
   const [expandedAccounts, setExpandedAccounts] = useState<Record<string, boolean>>({});
@@ -513,13 +515,13 @@ export function QuotaPage() {
     }
     if (counts.size === 0) return [];
     return [
-      { value: "all", label: `全部层级 (${baseConnections.length})` },
+      { value: "all", label: `${tt("全部层级", "All Tiers")} (${baseConnections.length})` },
       ...Array.from(counts.entries()).map(([plan, count]) => ({
         value: plan,
         label: `${plan} (${count})`,
       })),
     ];
-  }, [baseConnections, quotaStateMap]);
+  }, [baseConnections, quotaStateMap, tt]);
 
   // Dynamic Status options
   const statusOptions = useMemo(() => {
@@ -530,22 +532,22 @@ export function QuotaPage() {
       counts[st]++;
     }
     const opts: Array<{ value: StatusKey; label: string }> = [
-      { value: "all", label: `全部状态 (${baseConnections.length})` },
+      { value: "all", label: `${tt("全部状态", "All Statuses")} (${baseConnections.length})` },
     ];
     if (counts.ok > 0) {
-      opts.push({ value: "ok", label: `充足 >50% (${counts.ok})` });
+      opts.push({ value: "ok", label: `${tt("充足", "Healthy")} >50% (${counts.ok})` });
     }
     if (counts.alert > 0) {
-      opts.push({ value: "alert", label: `预警 20%~50% (${counts.alert})` });
+      opts.push({ value: "alert", label: `${tt("预警", "Warning")} 20%~50% (${counts.alert})` });
     }
     if (counts.critical > 0) {
-      opts.push({ value: "critical", label: `告急 ≤20% (${counts.critical})` });
+      opts.push({ value: "critical", label: `${tt("告急", "Critical")} ≤20% (${counts.critical})` });
     }
     if (counts.empty > 0) {
-      opts.push({ value: "empty", label: `未获取到数据 (${counts.empty})` });
+      opts.push({ value: "empty", label: `${tt("未获取到数据", "No Data")} (${counts.empty})` });
     }
     return opts;
-  }, [baseConnections, quotaStateMap]);
+  }, [baseConnections, quotaStateMap, tt]);
 
   // Auto-reset invalid filter values when options change
   useEffect(() => {
@@ -660,23 +662,26 @@ export function QuotaPage() {
                 <MaterialIcon name="tune" size={18} />
               </div>
               <Title level={4} style={{ margin: 0 }}>
-                提供者配额与限制监控 (Provider Limits & Quota)
+                {tt("提供者配额与限制监控 (Provider Limits & Quota)", "Provider Limits & Quota Monitoring")}
               </Title>
-              <Tag color="magenta">实时监测</Tag>
+              <Tag color="magenta">{tt("实时监测", "Live")}</Tag>
             </Flex>
             <Text type="secondary" style={{ fontSize: 13, marginTop: 4, display: "block" }}>
-              按提供商类型分组聚合，多维度追踪上游各账号的时间窗口、额度余量、重置倒计时与智能降级切流阈值。
+              {tt(
+                "按提供商类型分组聚合，多维度追踪上游各账号的时间窗口、额度余量、重置倒计时与智能降级切流阈值。",
+                "Grouped by provider to track account windows, remaining quotas, reset countdowns, and automatic failover thresholds."
+              )}
             </Text>
           </div>
 
           <Space wrap size={8}>
-            <Tooltip title="自动刷新倒计时，点击可立即全量同步">
+            <Tooltip title={tt("自动刷新倒计时，点击可立即全量同步", "Auto-refresh countdown. Click to sync all immediately.")}>
               <Button
                 icon={<MaterialIcon name="refresh" size={16} />}
                 loading={refreshingAll}
                 onClick={() => void handleRefreshAll()}
               >
-                {refreshingAll ? "正在同步..." : `全量同步 (${secondsRemaining}s)`}
+                {refreshingAll ? tt("正在同步...", "Syncing...") : `${tt("全量同步", "Sync All")} (${secondsRemaining}s)`}
               </Button>
             </Tooltip>
             <Select
@@ -688,18 +693,18 @@ export function QuotaPage() {
               }}
               style={{ minWidth: 140 }}
               options={[
-                { value: 30, label: "30秒刷新" },
-                { value: 60, label: "60秒刷新" },
-                { value: 180, label: "3分钟刷新" },
-                { value: 300, label: "5分钟刷新" },
-                { value: 0, label: "暂停轮询" },
+                { value: 30, label: tt("30秒刷新", "Every 30s") },
+                { value: 60, label: tt("60秒刷新", "Every 60s") },
+                { value: 180, label: tt("3分钟刷新", "Every 3m") },
+                { value: 300, label: tt("5分钟刷新", "Every 5m") },
+                { value: 0, label: tt("暂停轮询", "Paused") },
               ]}
             />
             <Button
               icon={<MaterialIcon name="pie_chart" size={16} />}
               onClick={() => setPoolDrawerVisible(true)}
             >
-              配额共享池 ({pools.length})
+              {tt("配额共享池", "Quota Pools")} ({pools.length})
             </Button>
           </Space>
         </Flex>
@@ -712,13 +717,13 @@ export function QuotaPage() {
             <Flex justify="space-between" align="flex-start">
               <div>
                 <Text type="secondary" style={{ fontSize: 12 }}>
-                  提供商连接总数
+                  {tt("提供商连接总数", "Total Connections")}
                 </Text>
                 <Title level={3} style={{ margin: "4px 0 0" }}>
                   {kpi.total}
                 </Title>
               </div>
-              <Tag color="blue">{kpi.active} 启用</Tag>
+              <Tag color="blue">{kpi.active} {tt("启用", "Active")}</Tag>
             </Flex>
             <Progress
               percent={kpi.total > 0 ? (kpi.active / kpi.total) * 100 : 100}
@@ -735,16 +740,16 @@ export function QuotaPage() {
             <Flex justify="space-between" align="flex-start">
               <div>
                 <Text type="secondary" style={{ fontSize: 12 }}>
-                  充裕状态 (&gt; 50%)
+                  {tt("充裕状态 (> 50%)", "Healthy (> 50%)")}
                 </Text>
                 <Title level={3} style={{ margin: "4px 0 0", color: "#22c55e" }}>
                   {kpi.ok}
                 </Title>
               </div>
-              <Tag color="success">稳定运行</Tag>
+              <Tag color="success">{tt("稳定运行", "Stable")}</Tag>
             </Flex>
             <Text type="secondary" style={{ fontSize: 11, marginTop: 8, display: "block" }}>
-              高配额冗余保障
+              {tt("高配额冗余保障", "High quota redundancy")}
             </Text>
           </Card>
         </Col>
@@ -754,18 +759,18 @@ export function QuotaPage() {
             <Flex justify="space-between" align="flex-start">
               <div>
                 <Text type="secondary" style={{ fontSize: 12 }}>
-                  低额度预警 (20%~50%)
+                  {tt("低额度预警 (20%~50%)", "Warning (20%~50%)")}
                 </Text>
                 <Title level={3} style={{ margin: "4px 0 0", color: kpi.alert > 0 ? "#f59e0b" : undefined }}>
                   {kpi.alert}
                 </Title>
               </div>
               <Tag color={kpi.alert > 0 ? "warning" : "default"}>
-                {kpi.alert > 0 ? "需关注" : "无预警"}
+                {kpi.alert > 0 ? tt("需关注", "Attention") : tt("无预警", "Normal")}
               </Tag>
             </Flex>
             <Text type="secondary" style={{ fontSize: 11, marginTop: 8, display: "block" }}>
-              建议监控消耗速率
+              {tt("建议监控消耗速率", "Monitor consumption rate")}
             </Text>
           </Card>
         </Col>
@@ -775,7 +780,7 @@ export function QuotaPage() {
             <Flex justify="space-between" align="flex-start">
               <div>
                 <Text type="secondary" style={{ fontSize: 12 }}>
-                  严重不足 / 耗尽 (&le; 20%)
+                  {tt("配额告急 / 耗尽 (≤ 20%)", "Critical / Exhausted (≤ 20%)")}
                 </Text>
                 <Title
                   level={3}
@@ -784,12 +789,12 @@ export function QuotaPage() {
                   {kpi.critical}
                 </Title>
               </div>
-              <Tag color={kpi.critical > 0 ? "error" : "success"}>
-                {kpi.critical > 0 ? "自动切流中" : "零耗尽"}
+              <Tag color={kpi.critical > 0 ? "error" : "default"}>
+                {kpi.critical > 0 ? tt("紧急", "Urgent") : tt("正常", "OK")}
               </Tag>
             </Flex>
             <Text type="secondary" style={{ fontSize: 11, marginTop: 8, display: "block" }}>
-              {kpi.empty} 个暂无配额上报
+              {tt("需及时充值或切换备选", "Top up or switch backup")}
             </Text>
           </Card>
         </Col>

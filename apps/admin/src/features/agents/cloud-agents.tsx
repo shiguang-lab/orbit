@@ -80,7 +80,7 @@ export function CloudAgentsPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  云端智能体 (Cloud Agents)
+                  云端智能体服务集群
                 </Title>
                 <Tag color="cyan">远程智能体协同</Tag>
               </Flex>
@@ -107,33 +107,33 @@ export function CloudAgentsPage() {
                 <div>
                   <Flex align="center" gap={6}>
                     <Text strong>{record.name}</Text>
-                    <Tag color="purple">{record.type.toUpperCase()}</Tag>
+                    <Tag color="purple">{String(record.type || "agent").toUpperCase()}</Tag>
                   </Flex>
-                  <div style={{ fontSize: 11, color: "var(--ant-color-text-secondary)" }}>
-                    提供方: {record.provider} · 模型: {record.model}
-                  </div>
+                  <code style={{ fontSize: 11, color: "var(--ant-color-text-secondary)" }}>
+                    {record.endpoint}
+                  </code>
                 </div>
               ),
             },
             {
-              title: "回调端点 (Endpoint)",
-              dataIndex: "endpoint",
-              key: "endpoint",
-              render: (ep) => <code style={{ fontSize: 11 }}>{ep}</code>,
+              title: "运行区域",
+              dataIndex: "region",
+              key: "region",
+              render: (region) => <Tag color="geekblue">{region}</Tag>,
             },
             {
-              title: "24h 请求调度量",
-              dataIndex: "requests24h",
-              key: "requests24h",
-              render: (reqs) => <Tag color="blue">{reqs.toLocaleString()} 次调用</Tag>,
+              title: "已处理任务数",
+              dataIndex: "tasksProcessed",
+              key: "tasksProcessed",
+              render: (tasks) => <Text strong>{tasks.toLocaleString()} 次</Text>,
             },
             {
-              title: "健康度",
+              title: "状态",
               dataIndex: "status",
               key: "status",
               render: (status) => (
-                <Tag color={status === "healthy" ? "success" : "default"}>
-                  {status.toUpperCase()}
+                <Tag color={status === "active" ? "success" : "default"}>
+                  {String(status || "idle").toUpperCase()}
                 </Tag>
               ),
             },

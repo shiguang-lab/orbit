@@ -80,7 +80,7 @@ export function AgentBridgePage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  智能体协议桥接 (Agent Bridge)
+                  智能体协议桥接中枢
                 </Title>
                 <Tag color="teal">跨协议双向转译</Tag>
               </Flex>
@@ -130,7 +130,7 @@ export function AgentBridgePage() {
               key: "status",
               render: (status) => (
                 <Tag color={status === "active" ? "success" : "default"}>
-                  {status.toUpperCase()}
+                  {String(status || "active").toUpperCase()}
                 </Tag>
               ),
             },

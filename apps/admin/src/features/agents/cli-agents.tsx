@@ -114,9 +114,9 @@ export function CliAgentsPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  CLI 智能体管控 (CLI Agents)
+                  命令行智能体管控
                 </Title>
-                <Tag color="blue">{agents.length} 个活跃智能体</Tag>
+                <Tag color="blue">本地子进程与终端会话</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
                 监控、拉起与管理宿主机及容器内的命令行智能体（如 agy, cursor-agent, claude-code），统一网关凭证与通讯隧道。
@@ -174,8 +174,8 @@ export function CliAgentsPage() {
               dataIndex: "status",
               key: "status",
               render: (status) => (
-                <Tag color={status === "running" ? "success" : status === "idle" ? "processing" : "default"}>
-                  {status.toUpperCase()}
+                <Tag color={status === "running" ? "processing" : "default"}>
+                  {String(status || "stopped").toUpperCase()}
                 </Tag>
               ),
             },
