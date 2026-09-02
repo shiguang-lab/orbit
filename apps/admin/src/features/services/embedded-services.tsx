@@ -266,44 +266,6 @@ export function EmbeddedServicesPage() {
       messageApi.error(error instanceof Error ? error.message : "更新服务失败"),
   });
 
-  // API Key State & Reveal
-  const [apiKeyRevealed, setApiKeyRevealed] = useState<string | null>(null);
-  const [revealCountdown, setRevealCountdown] = useState<number>(0);
-  const countdownTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const handleRevealApiKey = async () => {
-    try {
-      const key = await embeddedServicesApi.getApiKey(activeTab);
-      setApiKeyRevealed(key);
-      setRevealCountdown(30);
-      if (countdownTimerRef.current) clearInterval(countdownTimerRef.current);
-      countdownTimerRef.current = setInterval(() => {
-        setRevealCountdown((prev) => {
-          if (prev <= 1) {
-            if (countdownTimerRef.current) clearInterval(countdownTimerRef.current);
-            setApiKeyRevealed(null);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-      messageApi.info("已解密显示服务 API 密钥（30 秒后自动隐藏）");
-    } catch {
-      messageApi.error("获取服务密钥失败");
-    }
-  };
-
-  const handleRotateApiKey = async () => {
-    try {
-      const newKey = await embeddedServicesApi.rotateApiKey(activeTab);
-      setApiKeyRevealed(newKey);
-      messageApi.success("服务密钥已轮换并自动应用");
-      void queryClient.invalidateQueries({ queryKey: ["service-status", activeTab] });
-    } catch {
-      messageApi.error("轮换密钥失败");
-    }
-  };
-
   // Cliproxy State
   const cliproxyAccountsQuery = useQuery({
     queryKey: ["cliproxy-accounts"],
@@ -729,50 +691,6 @@ export function EmbeddedServicesPage() {
                 />
               </Flex>
 
-              {/* Service API Key */}
-              <div style={{ padding: "6px 10px", borderRadius: 6, background: "rgba(255,255,255,0.02)", border: "1px solid var(--ant-color-border-secondary)" }}>
-                <Flex justify="space-between" align="center" style={{ marginBottom: 4 }}>
-                  <Text strong style={{ fontSize: 12 }}>服务通信 API Key</Text>
-                  {activeTab !== "cliproxy" && revealCountdown > 0 && (
-                    <Tag color="warning" style={{ fontSize: 10, margin: 0 }}>
-                      {revealCountdown}s
-                    </Tag>
-                  )}
-                </Flex>
-                {activeTab === "cliproxy" ? (
-                  <Text type="secondary" style={{ fontSize: 11, lineHeight: 1.5 }}>
-                    由服务管理器自动生成并注入，仅用于网关与 CLIProxyAPI 的内部通信；它不是用户登录凭据，也不用于模型调用。
-                  </Text>
-                ) : (
-                  <Flex justify="space-between" align="center" gap={8}>
-                    <Text code copyable={Boolean(apiKeyRevealed)} style={{ fontSize: 12, margin: 0 }}>
-                      {apiKeyRevealed || status?.apiKeyMasked || "未配置"}
-                    </Text>
-                    <Space size={6}>
-                      {!apiKeyRevealed ? (
-                        <Button size="small" icon={<MaterialIcon name="visibility" size={14} />} onClick={handleRevealApiKey}>
-                          显示
-                        </Button>
-                      ) : (
-                        <Button size="small" onClick={() => setApiKeyRevealed(null)}>
-                          隐藏
-                        </Button>
-                      )}
-                      <Popconfirm
-                        title="确认轮换服务 API Key？"
-                        description="轮换后将自动更新网关与该服务的通信握手凭据。"
-                        onConfirm={handleRotateApiKey}
-                        okText="确认轮换"
-                        cancelText="取消"
-                      >
-                        <Button size="small" danger icon={<MaterialIcon name="key" size={14} />}>
-                          轮换 Key
-                        </Button>
-                      </Popconfirm>
-                    </Space>
-                  </Flex>
-                )}
-              </div>
             </Space>
           </Card>
         </Col>
