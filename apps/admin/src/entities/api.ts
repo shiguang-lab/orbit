@@ -365,12 +365,55 @@ export const providersApi = {
   refreshCursor: (id: string) => api<{ success?: boolean; unchanged?: boolean }>(`/providers/${id}/refresh-cursor`, { method: "POST" }),
   setRateLimitProtection: (connectionId: string, enabled: boolean) => api<{ success?: boolean }>("/rate-limits", { method: "POST", body: JSON.stringify({ connectionId, enabled }) }),
 };
+export interface FeatureFlagItem {
+  key: string;
+  label: string;
+  description: string;
+  category: string;
+  type: "boolean" | "enum";
+  enumValues?: string[] | null;
+  defaultValue: string;
+  effectiveValue: string;
+  source: "db" | "env" | "default";
+  requiresRestart: boolean;
+  warningLevel?: "info" | "caution" | "danger";
+}
+
+export interface FeatureFlagsResponse {
+  flags: FeatureFlagItem[];
+  summary: {
+    total: number;
+    active: number;
+    inactive: number;
+    overriddenByDb: number;
+    overriddenByEnv: number;
+  };
+}
+
+export interface FeatureFlagUpdateResponse {
+  key: string;
+  effectiveValue: string;
+  source: "db" | "env" | "default";
+  previousValue: string;
+  previousSource: "db" | "env" | "default";
+  requiresRestart: boolean;
+}
+
 export const settingsApi = {
   sidebar: () => api<SidebarSettings>("/settings"),
   get: () => api<Record<string, unknown>>("/settings"),
   getSettings: () => api<Record<string, unknown>>("/settings"),
   patch: (patch: Record<string, unknown>) => api<Record<string, unknown>>("/settings", { method: "PATCH", body: JSON.stringify(patch) }),
   updateSettings: (patch: Record<string, unknown>) => api<Record<string, unknown>>("/settings", { method: "PATCH", body: JSON.stringify(patch) }),
+  featureFlags: () =>
+    api<FeatureFlagsResponse>("/settings/feature-flags"),
+  updateFeatureFlag: (key: string, value?: string) =>
+    api<FeatureFlagUpdateResponse>("/settings/feature-flags", {
+      method: "PUT",
+      body: JSON.stringify(value === undefined ? { key } : { key, value }),
+    }),
+  clearFeatureFlagOverrides: () =>
+    api<{ cleared: number; message: string }>("/settings/feature-flags", { method: "DELETE" }),
   proxyConfig: (params?: Record<string, string>) => {
     const q = params ? "?" + new URLSearchParams(params).toString() : "";
     return api<Record<string, unknown>>(`/settings/proxy${q}`);
