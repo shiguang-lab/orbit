@@ -741,7 +741,7 @@ export function EmbeddedServicesPage() {
                 </Flex>
                 <Flex justify="space-between" align="center" gap={8}>
                   <Text code copyable={Boolean(apiKeyRevealed)} style={{ fontSize: 12, margin: 0 }}>
-                    {apiKeyRevealed || status?.apiKeyMasked || "sk-svc-••••••••4a8f"}
+                    {apiKeyRevealed || status?.apiKeyMasked || "未配置"}
                   </Text>
                   <Space size={6}>
                     {!apiKeyRevealed ? (
