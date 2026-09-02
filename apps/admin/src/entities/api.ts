@@ -1501,6 +1501,39 @@ export interface CliproxyAccountItem {
   errorMessage?: string;
 }
 
+function normalizeCliproxyAccount(value: unknown): CliproxyAccountItem | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const raw = value as Record<string, unknown>;
+  const id = typeof raw.id === "string" && raw.id.trim()
+    ? raw.id.trim()
+    : typeof raw.authIndex === "string" && raw.authIndex.trim()
+      ? raw.authIndex.trim()
+      : "";
+  if (!id) return null;
+
+  const provider = typeof raw.provider === "string" ? raw.provider : "unknown";
+  const name = [raw.name, raw.label, raw.email]
+    .find((candidate): candidate is string => typeof candidate === "string" && candidate.trim().length > 0)
+    ?.trim() ?? `${provider} account`;
+  const statusValue = typeof raw.status === "string" ? raw.status : "error";
+  const status: CliproxyAccountItem["status"] =
+    statusValue === "active" || statusValue === "expired" || statusValue === "rate_limited"
+      ? statusValue
+      : "error";
+  const lastTestedAt = [raw.lastTestedAt, raw.updatedAt, raw.updated_at]
+    .find((candidate): candidate is string => typeof candidate === "string" && candidate.trim().length > 0);
+  const latencyMs = typeof raw.latencyMs === "number" && Number.isFinite(raw.latencyMs)
+    ? raw.latencyMs
+    : undefined;
+  const errorMessage = typeof raw.errorMessage === "string"
+    ? raw.errorMessage
+    : typeof raw.error_message === "string"
+      ? raw.error_message
+      : undefined;
+
+  return { id, name, provider, status, lastTestedAt, latencyMs, errorMessage };
+}
+
 export interface NinerouterModelItem {
   id: string;
   name: string;
@@ -1562,7 +1595,11 @@ export const embeddedServicesApi = {
     api<{ success: boolean }>(`/services/${encodeURIComponent(name)}/logs`, { method: "DELETE" }),
   getCliproxyAccounts: async (): Promise<CliproxyAccountItem[]> => {
     const res = await api<any>("/services/cliproxy/accounts");
-    return Array.isArray(res) ? res : res?.accounts || [];
+    const rawAccounts = Array.isArray(res) ? res : res?.accounts;
+    if (!Array.isArray(rawAccounts)) return [];
+    return rawAccounts
+      .map(normalizeCliproxyAccount)
+      .filter((account): account is CliproxyAccountItem => account !== null);
   },
   testCliproxyAccount: (id: string) =>
     api<{ success: boolean; latencyMs?: number; error?: string }>(
