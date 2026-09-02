@@ -27,6 +27,62 @@ import { PageSkeleton } from "@/shared/components/PageSkeleton";
 import { useI18n } from "@/i18n";
 
 const { Text, Title, Paragraph } = Typography;
+const CUSTOM_PUBLIC_URL_STORAGE_KEY = "omniroute.endpoints.customPublicUrl";
+
+function readStoredCustomPublicUrl(): string {
+  if (typeof window === "undefined") return "";
+  try {
+    return window.localStorage.getItem(CUSTOM_PUBLIC_URL_STORAGE_KEY)?.trim() ?? "";
+  } catch {
+    return "";
+  }
+}
+
+function persistCustomPublicUrl(value: string): boolean {
+  try {
+    if (value) {
+      window.localStorage.setItem(CUSTOM_PUBLIC_URL_STORAGE_KEY, value);
+    } else {
+      window.localStorage.removeItem(CUSTOM_PUBLIC_URL_STORAGE_KEY);
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function isLocalNetworkHostname(hostname: string): boolean {
+  const host = hostname.toLowerCase().replace(/^\[|\]$/g, "");
+  const isPrivateIpv6 = host.includes(":") && (/^f[cd]/.test(host) || /^fe[89ab]/.test(host));
+  if (
+    host === "localhost" ||
+    host === "::1" ||
+    host.endsWith(".localhost") ||
+    host.endsWith(".local") ||
+    isPrivateIpv6
+  ) {
+    return true;
+  }
+
+  const octets = host.split(".").map(Number);
+  if (octets.length !== 4 || octets.some((octet) => !Number.isInteger(octet))) return false;
+  const [first, second] = octets;
+  return (
+    first === 10 ||
+    first === 127 ||
+    (first === 169 && second === 254) ||
+    (first === 172 && second >= 16 && second <= 31) ||
+    (first === 192 && second === 168) ||
+    (first === 100 && second >= 64 && second <= 127)
+  );
+}
+
+function getCurrentPublicBaseUrl(): string {
+  if (typeof window === "undefined") return "";
+  const { protocol, hostname, origin } = window.location;
+  if (protocol !== "https:" || isLocalNetworkHostname(hostname)) return "";
+  return `${origin.replace(/\/$/, "")}/v1`;
+}
 
 const useStyles = createStyles(({ token }) => ({
   networkCard: {
@@ -67,7 +123,8 @@ export default function EndpointsPage() {
   const { tt } = useI18n();
 
   const [activeTab, setActiveTab] = useState<string>("apis");
-  const [customPublicUrl, setCustomPublicUrl] = useState<string>("");
+  const [customPublicUrl, setCustomPublicUrl] = useState<string>(readStoredCustomPublicUrl);
+  const [customPublicUrlDraft, setCustomPublicUrlDraft] = useState<string>(customPublicUrl);
   const [customUrlModalOpen, setCustomUrlModalOpen] = useState(false);
 
   const [ngrokToken, setNgrokToken] = useState("");
@@ -191,14 +248,15 @@ export default function EndpointsPage() {
   const port = networkQuery.data?.port || (typeof window !== "undefined" && window.location.port ? window.location.port : "20128");
   const localBaseUrl = networkQuery.data?.localUrl || "http://localhost:20128/v1";
   const lanUrls = networkQuery.data?.lanUrls || [];
+  const currentPublicBaseUrl = getCurrentPublicBaseUrl();
 
   const publicBaseUrl = useMemo(() => {
     if (customPublicUrl.trim()) return customPublicUrl.trim();
     if (cloudflaredQuery.data?.publicUrl) return `${cloudflaredQuery.data.publicUrl}/v1`;
     if (tailscaleQuery.data?.publicUrl) return `${tailscaleQuery.data.publicUrl}/v1`;
     if (ngrokQuery.data?.publicUrl) return `${ngrokQuery.data.publicUrl}/v1`;
-    return "";
-  }, [customPublicUrl, cloudflaredQuery.data, tailscaleQuery.data, ngrokQuery.data]);
+    return currentPublicBaseUrl;
+  }, [customPublicUrl, cloudflaredQuery.data, tailscaleQuery.data, ngrokQuery.data, currentPublicBaseUrl]);
 
   const isTailscaleConnected = Boolean(tailscaleStatusQuery.data?.connected);
   const effectiveTailscaleUrl = tailscaleStatusQuery.data?.magicDns
@@ -439,7 +497,10 @@ export default function EndpointsPage() {
               <Button
                 size="small"
                 type="dashed"
-                onClick={() => setCustomUrlModalOpen(true)}
+                onClick={() => {
+                  setCustomPublicUrlDraft(customPublicUrl);
+                  setCustomUrlModalOpen(true);
+                }}
               >
                 {customPublicUrl ? "修改自定义公网域名" : "配置自定义公网域名"}
               </Button>
@@ -590,10 +651,25 @@ export default function EndpointsPage() {
         onCancel={() => setCustomUrlModalOpen(false)}
         title="设置自定义公开域名 / 反向代理基址"
         onOk={() => {
-          setCustomUrlModalOpen(false);
-          if (customPublicUrl.trim()) {
-            message.success("已设置自定义公开域名");
+          const nextUrl = customPublicUrlDraft.trim().replace(/\/+$/, "");
+          if (nextUrl) {
+            try {
+              const parsedUrl = new URL(nextUrl);
+              if (parsedUrl.protocol !== "http:" && parsedUrl.protocol !== "https:") {
+                throw new Error("unsupported protocol");
+              }
+            } catch {
+              message.error("请输入有效的 HTTP 或 HTTPS 地址");
+              return;
+            }
           }
+          if (!persistCustomPublicUrl(nextUrl)) {
+            message.error("浏览器无法保存自定义公网域名");
+            return;
+          }
+          setCustomPublicUrl(nextUrl);
+          setCustomUrlModalOpen(false);
+          message.success(nextUrl ? "已保存自定义公开域名" : "已清除自定义公开域名");
         }}
         okText="保存"
         cancelText="取消"
@@ -605,8 +681,8 @@ export default function EndpointsPage() {
           </Text>
           <Input
             placeholder="https://api.example.com"
-            value={customPublicUrl}
-            onChange={(e) => setCustomPublicUrl(e.target.value)}
+            value={customPublicUrlDraft}
+            onChange={(e) => setCustomPublicUrlDraft(e.target.value)}
           />
         </Flex>
       </Modal>
