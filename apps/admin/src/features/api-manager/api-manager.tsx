@@ -261,9 +261,40 @@ export default function ApiManagerPage() {
     }
   };
 
-  const copyToClipboard = (text: string, tip = "已复制到剪贴板") => {
-    navigator.clipboard.writeText(text);
-    message.success(tip);
+  const copyToClipboard = async (text: string, tip = "已复制到剪贴板") => {
+    if (!text) {
+      message.error(tt("没有可复制的密钥", "No key is available to copy"));
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(text);
+      message.success(tip);
+    } catch (err) {
+      message.error(err instanceof Error ? err.message : tt("复制密钥失败", "Failed to copy key"));
+    }
+  };
+
+  const copyKey = async (k: ApiKeyView) => {
+    const existingPlainKey = revealed[k.id];
+    if (existingPlainKey) {
+      await copyToClipboard(existingPlainKey);
+      return;
+    }
+    if (!allowReveal) {
+      message.error(tt("系统已禁用明文密钥复制", "Plaintext key copying is disabled"));
+      return;
+    }
+    try {
+      const res = await keysApi.reveal(k.id);
+      if (!res.key) {
+        message.error(tt("无法获取明文密钥", "The plaintext key is unavailable"));
+        return;
+      }
+      setRevealed((prev) => ({ ...prev, [k.id]: res.key! }));
+      await copyToClipboard(res.key);
+    } catch (err) {
+      message.error(err instanceof Error ? err.message : tt("获取明文密钥失败", "Failed to reveal key"));
+    }
   };
 
   const openEditModal = (k: ApiKeyView) => {
@@ -351,7 +382,7 @@ export default function ApiManagerPage() {
                 type="text"
                 size="small"
                 icon={<MaterialIcon name="content_copy" size={14} />}
-                onClick={() => copyToClipboard(revealed[k.id] ?? (k.key ?? ""))}
+                onClick={() => void copyKey(k)}
               />
             </Tooltip>
           </Space>
