@@ -6,8 +6,10 @@ import {
   Flex,
   Input,
   Modal,
+  Popconfirm,
   Row,
   Space,
+  Switch,
   Tabs,
   Tag,
   Typography,
@@ -79,11 +81,23 @@ export default function EndpointsPage() {
   const [ngrokToken, setNgrokToken] = useState("");
   const [ngrokModalOpen, setNgrokModalOpen] = useState(false);
 
+  // Tailscale Tsnet State
+  const [tailscaleModalOpen, setTailscaleModalOpen] = useState(false);
+  const [tailscaleAuthKey, setTailscaleAuthKey] = useState("");
+  const [tailscaleHostname, setTailscaleHostname] = useState("omniroute-gateway");
+  const [tailscaleEphemeral, setTailscaleEphemeral] = useState(false);
+
   // Network info query
   const networkQuery = useQuery({
     queryKey: ["network-info"],
     queryFn: endpointsApi.networkInfo,
     staleTime: 30_000,
+  });
+
+  const tailscaleStatusQuery = useQuery({
+    queryKey: ["tailscale-status"],
+    queryFn: endpointsApi.getTailscaleStatus,
+    staleTime: 10_000,
   });
 
   // Tunnels queries
@@ -151,9 +165,45 @@ export default function EndpointsPage() {
       message.error(err instanceof Error ? err.message : "停止 Ngrok 失败"),
   });
 
+  const connectTailscale = useMutation({
+    mutationFn: (payload: { authKey: string; hostname?: string; ephemeral?: boolean }) =>
+      endpointsApi.connectTailscaleAuthKey(payload),
+    onSuccess: (res) => {
+      message.success(`已成功接入 Tailscale 专网！分配 IP: ${res.ip || "100.x.x.x"}`);
+      setTailscaleModalOpen(false);
+      setTailscaleAuthKey("");
+      void queryClient.invalidateQueries({ queryKey: ["tailscale-status"] });
+      void queryClient.invalidateQueries({ queryKey: ["network-info"] });
+    },
+    onError: (err: unknown) => {
+      message.error(err instanceof Error ? err.message : "接入 Tailscale 失败，请检查 Auth Key 是否有效");
+    },
+  });
+
+  const disconnectTailscale = useMutation({
+    mutationFn: () => endpointsApi.disconnectTailscale(),
+    onSuccess: () => {
+      message.success("已断开 Tailscale 专网连接");
+      setTailscaleModalOpen(false);
+      void queryClient.invalidateQueries({ queryKey: ["tailscale-status"] });
+      void queryClient.invalidateQueries({ queryKey: ["network-info"] });
+    },
+    onError: () => message.error("断开连接失败"),
+  });
+
   const localBaseUrl = networkQuery.data?.localUrl || "http://localhost:20128/v1";
   const lanUrls = networkQuery.data?.lanUrls || [];
-  const tailscaleUrl = networkQuery.data?.tailscaleUrl;
+
+  const isTailscaleConnected = Boolean(
+    tailscaleStatusQuery.data?.connected ||
+    networkQuery.data?.tailscaleUrl ||
+    tailscaleQuery.data?.running
+  );
+
+  const effectiveTailscaleUrl =
+    tailscaleStatusQuery.data?.tailscaleUrl ||
+    networkQuery.data?.tailscaleUrl ||
+    (tailscaleStatusQuery.data?.ip ? `http://${tailscaleStatusQuery.data.ip}:20128/v1` : null);
 
   // Active public URL calculation
   const publicBaseUrl = useMemo(() => {
@@ -347,24 +397,50 @@ export default function EndpointsPage() {
                   </Text>
                 </Flex>
                 <Tag
-                  color={tailscaleUrl ? "purple" : "default"}
-                  style={{ margin: 0, fontSize: 10 }}
+                  color={isTailscaleConnected ? "purple" : "default"}
+                  style={{ margin: 0, fontSize: 10, cursor: "pointer" }}
+                  onClick={() => setTailscaleModalOpen(true)}
                 >
-                  {tailscaleUrl ? "已连接" : "未启动"}
+                  {isTailscaleConnected ? "在线 (Tailnet)" : "未接入"}
                 </Tag>
               </Flex>
               <div className={styles.urlCodeBox}>
-                <Text ellipsis code strong style={{ fontSize: 12 }}>
-                  {tailscaleUrl || "http://100.x.x.x:20128/v1"}
-                </Text>
-                <Button
-                  type="text"
-                  size="small"
-                  icon={<MaterialIcon name="content_copy" size={14} />}
-                  onClick={() =>
-                    copyToClipboard(tailscaleUrl || "http://100.x.x.x:20128/v1", "已复制专网基址")
-                  }
-                />
+                {isTailscaleConnected && effectiveTailscaleUrl ? (
+                  <>
+                    <Text ellipsis code strong style={{ fontSize: 12, color: "#a855f7" }}>
+                      {effectiveTailscaleUrl}
+                    </Text>
+                    <Space size={2}>
+                      <Button
+                        type="text"
+                        size="small"
+                        icon={<MaterialIcon name="content_copy" size={14} />}
+                        onClick={() => copyToClipboard(effectiveTailscaleUrl, "已复制专网基址")}
+                      />
+                      <Button
+                        type="text"
+                        size="small"
+                        icon={<MaterialIcon name="settings" size={14} />}
+                        onClick={() => setTailscaleModalOpen(true)}
+                        title="管理专网连接"
+                      />
+                    </Space>
+                  </>
+                ) : (
+                  <>
+                    <Text type="secondary" ellipsis style={{ fontSize: 11 }}>
+                      未接入 Tailnet 专网
+                    </Text>
+                    <Button
+                      type="link"
+                      size="small"
+                      onClick={() => setTailscaleModalOpen(true)}
+                      style={{ padding: 0, height: "auto", fontSize: 11, fontWeight: 600 }}
+                    >
+                      🔑 填入 Auth Key
+                    </Button>
+                  </>
+                )}
               </div>
             </Flex>
           </Card>
@@ -577,6 +653,160 @@ export default function EndpointsPage() {
             onChange={(e) => setNgrokToken(e.target.value)}
           />
         </Flex>
+      </Modal>
+
+      {/* Tailscale Tsnet Auth Key Modal */}
+      <Modal
+        open={tailscaleModalOpen}
+        onCancel={() => setTailscaleModalOpen(false)}
+        title={
+          <Flex align="center" gap={8}>
+            <MaterialIcon name="vpn_lock" size={20} style={{ color: "#8B5CF6" }} />
+            <span>接入 Tailscale 专网 (Tsnet 免特权直连)</span>
+          </Flex>
+        }
+        footer={null}
+        width={560}
+      >
+        {isTailscaleConnected ? (
+          <Flex vertical gap={16} style={{ marginTop: 16 }}>
+            <div
+              style={{
+                padding: "12px 16px",
+                borderRadius: 8,
+                background: "rgba(139, 92, 246, 0.08)",
+                border: "1px solid rgba(139, 92, 246, 0.25)",
+              }}
+            >
+              <Flex
+                align="center"
+                gap={8}
+                style={{ color: "#8B5CF6", fontWeight: 700, marginBottom: 8 }}
+              >
+                <MaterialIcon name="check_circle" size={16} />
+                <span>网关已成功加入 Tailnet 专网</span>
+              </Flex>
+              <Space direction="vertical" size={6} style={{ width: "100%", fontSize: 13 }}>
+                <Flex justify="space-between">
+                  <Text type="secondary">专网分配 IP:</Text>
+                  <Text code copyable>{tailscaleStatusQuery.data?.ip || "100.x.x.x"}</Text>
+                </Flex>
+                <Flex justify="space-between">
+                  <Text type="secondary">MagicDNS 域名:</Text>
+                  <Text code copyable>
+                    {tailscaleStatusQuery.data?.magicDns ||
+                      `${tailscaleStatusQuery.data?.hostname || "omniroute"}.ts.net`}
+                  </Text>
+                </Flex>
+                <Flex justify="space-between">
+                  <Text type="secondary">接入模式:</Text>
+                  <Tag color="purple">纯用户态 (Tsnet 免特权运行)</Tag>
+                </Flex>
+                <Flex justify="space-between">
+                  <Text type="secondary">完整接入基址:</Text>
+                  <Text strong style={{ fontFamily: "monospace", color: "#8B5CF6" }}>
+                    {effectiveTailscaleUrl}
+                  </Text>
+                </Flex>
+              </Space>
+            </div>
+
+            <Flex justify="flex-end" gap={8}>
+              <Button onClick={() => setTailscaleModalOpen(false)}>关闭</Button>
+              <Popconfirm
+                title="确认断开 Tailscale 专网？"
+                description="断开后将无法再通过 Tailscale 专网地址访问此网关。"
+                onConfirm={() => disconnectTailscale.mutate()}
+                okText="断开"
+                cancelText="取消"
+              >
+                <Button danger loading={disconnectTailscale.isPending}>
+                  断开专网连接
+                </Button>
+              </Popconfirm>
+            </Flex>
+          </Flex>
+        ) : (
+          <Flex vertical gap={14} style={{ marginTop: 16 }}>
+            <div
+              style={{
+                padding: "10px 14px",
+                borderRadius: 8,
+                background: "rgba(255,255,255,0.03)",
+                border: "1px solid var(--ant-color-border-secondary)",
+                fontSize: 12,
+                lineHeight: 1.6,
+              }}
+            >
+              💡 <b>免特权一键直连</b>：通过提供 Tailscale Auth Key，网关将在内存中直接启动纯用户态节点加入您的 Tailnet，<b>无需在 NAS 宿主机上安装任何驱动、无需 root 特权，也无需单独维护容器</b>。
+            </div>
+
+            <Flex vertical gap={6}>
+              <Flex justify="space-between" align="center">
+                <Text strong style={{ fontSize: 13 }}>
+                  Tailscale Auth Key *
+                </Text>
+                <a
+                  href="https://login.tailscale.com/admin/settings/keys"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ fontSize: 12 }}
+                >
+                  获取 Auth Key ↗
+                </a>
+              </Flex>
+              <Input.Password
+                placeholder="tskey-auth-kXXXXX-XXXXXXXXXXXX"
+                value={tailscaleAuthKey}
+                onChange={(e) => setTailscaleAuthKey(e.target.value)}
+              />
+              <Text type="secondary" style={{ fontSize: 11 }}>
+                请在 Tailscale 控制台 Settings → Keys 中生成一个 Reusable（可复用）或 Pre-authorized 密钥。
+              </Text>
+            </Flex>
+
+            <Flex vertical gap={6}>
+              <Text strong style={{ fontSize: 13 }}>
+                自定义节点主机名 (Hostname)
+              </Text>
+              <Input
+                placeholder="omniroute-gateway"
+                value={tailscaleHostname}
+                onChange={(e) => setTailscaleHostname(e.target.value)}
+              />
+            </Flex>
+
+            <Flex justify="space-between" align="center" style={{ paddingTop: 4 }}>
+              <div>
+                <Text strong style={{ fontSize: 13 }}>
+                  临时节点 (Ephemeral)
+                </Text>
+                <div style={{ fontSize: 11, color: "var(--ant-color-text-secondary)" }}>
+                  网关容器离线或重启时自动从 Tailnet 中注销该节点
+                </div>
+              </div>
+              <Switch checked={tailscaleEphemeral} onChange={setTailscaleEphemeral} />
+            </Flex>
+
+            <Flex justify="flex-end" gap={8} style={{ marginTop: 8 }}>
+              <Button onClick={() => setTailscaleModalOpen(false)}>取消</Button>
+              <Button
+                type="primary"
+                loading={connectTailscale.isPending}
+                disabled={!tailscaleAuthKey.trim()}
+                onClick={() =>
+                  connectTailscale.mutate({
+                    authKey: tailscaleAuthKey.trim(),
+                    hostname: tailscaleHostname.trim() || "omniroute-gateway",
+                    ephemeral: tailscaleEphemeral,
+                  })
+                }
+              >
+                立即接入 Tailscale
+              </Button>
+            </Flex>
+          </Flex>
+        )}
       </Modal>
 
       {/* Main Tabs */}

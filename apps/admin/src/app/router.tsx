@@ -48,12 +48,15 @@ const ConsoleLogsPage = withSuspense(lazy(() => import("@/features/logs/console-
 const LogTimelinePage = withSuspense(lazy(() => import("@/features/logs/log-timeline")));
 const ConversationsPage = withSuspense(lazy(() => import("@/features/conversations/conversations")));
 const HealthPage = withSuspense(lazy(() => import("@/features/health/health")));
+const EmbeddedServicesPage = withSuspense(lazy(() => import("@/features/services/embedded-services")));
 const P = (navKey: string, title: string) => placeholder(navKey, title);
 
 const migratedPaths = new Set([
   "/home",
   "/dashboard/api-manager",
   "/dashboard/providers",
+  "/dashboard/providers/services",
+  "/dashboard/services",
   "/dashboard/endpoint",
   "/dashboard/combos",
   "/dashboard/combos/live",
@@ -96,6 +99,8 @@ export const router = createBrowserRouter([
       { path: "dashboard/endpoint", element: <EndpointsPage /> },
       { path: "dashboard/api-manager", element: <ApiManagerPage /> },
       { path: "dashboard/providers", element: <ProvidersPage /> },
+      { path: "dashboard/providers/services", element: <EmbeddedServicesPage /> },
+      { path: "dashboard/services", element: <Navigate to="/dashboard/providers/services" replace /> },
       { path: "dashboard/providers/new", element: <ProviderEditorPage /> },
       { path: "dashboard/providers/:providerId/connections/:id", element: <ProviderEditorPage /> },
       { path: "dashboard/providers/:id", element: <ProviderDetailPage /> },

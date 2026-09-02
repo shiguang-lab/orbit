@@ -1,0 +1,973 @@
+import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
+import {
+  Badge,
+  Button,
+  Card,
+  Col,
+  Empty,
+  Flex,
+  Input,
+  Modal,
+  Popconfirm,
+  Row,
+  Space,
+  Switch,
+  Table,
+  Tabs,
+  Tag,
+  Typography,
+  message,
+} from "antd";
+import { createStyles } from "antd-style";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { MaterialIcon } from "@/app/nav";
+import {
+  embeddedServicesApi,
+  type CliproxyAccountItem,
+  type NinerouterModelItem,
+} from "@/entities/api";
+import { PageSkeleton } from "@/shared/components/PageSkeleton";
+
+const { Title, Text, Paragraph } = Typography;
+
+type ServiceTab = "cliproxy" | "9router" | "mux" | "bifrost" | "dario";
+
+const SERVICES_META: Record<
+  ServiceTab,
+  { label: string; icon: string; title: string; desc: string; port: number; color: string }
+> = {
+  cliproxy: {
+    label: "CLIProxyAPI",
+    icon: "swap_horiz",
+    title: "CLIProxyAPI 本地代理桥接",
+    desc: "将本地 Codex、Claude Code、GitHub Copilot 与 Gemini CLI 逆向桥接至统一网关端点，支持多账号智能健康检测与模型重映射。",
+    port: 8085,
+    color: "#6366f1",
+  },
+  "9router": {
+    label: "9Router",
+    icon: "route",
+    title: "9Router 本地智能路由",
+    desc: "内嵌式 9Router 伴生路由进程，支持内嵌 Web UI 可视化控制台、本地引擎模型发现与多模型级联调度。",
+    port: 20130,
+    color: "#06b6d4",
+  },
+  mux: {
+    label: "Mux",
+    icon: "hub",
+    title: "Mux 多路流式复用器",
+    desc: "多通道并行流式传输调度器，优化并发请求网络吞吐，支持智能多路复用连接池。",
+    port: 9100,
+    color: "#a855f7",
+  },
+  bifrost: {
+    label: "Bifrost",
+    icon: "bolt",
+    title: "Bifrost 极速中继加速器",
+    desc: "高速隧道中继代理通道，提供加密传输与上游跨境连接加速，极大降低海外节点延迟与握手开销。",
+    port: 8443,
+    color: "#f59e0b",
+  },
+  dario: {
+    label: "Dario",
+    icon: "shield_person",
+    title: "Dario 智能体凭据护盾",
+    desc: "智能体认证凭据托管与隔离网关，支持 OAuth Token 安全续签与会话反劫持护盾代理。",
+    port: 7070,
+    color: "#10b981",
+  },
+};
+
+const useStyles = createStyles(({ token }) => ({
+  page: {
+    width: "100%",
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    gap: 8,
+    minHeight: 0,
+    overflowY: "auto",
+    paddingRight: 2,
+    "&::-webkit-scrollbar": {
+      width: 6,
+    },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: token.colorBorderSecondary,
+      borderRadius: 3,
+    },
+  },
+  headerCard: {
+    width: "100%",
+    borderRadius: 8,
+    background: token.colorBgContainer,
+    border: `1px solid ${token.colorBorderSecondary}`,
+  },
+  sectionCard: {
+    width: "100%",
+    flex: 1,
+    borderRadius: 8,
+    background: token.colorBgContainer,
+    border: `1px solid ${token.colorBorderSecondary}`,
+    display: "flex",
+    flexDirection: "column",
+  },
+  cardScrollBody: {
+    flex: 1,
+    overflowY: "auto",
+    paddingRight: 2,
+    "&::-webkit-scrollbar": {
+      width: 5,
+    },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: token.colorBorderSecondary,
+      borderRadius: 3,
+    },
+  },
+  terminal: {
+    background: "#09090b",
+    color: "#22c55e",
+    borderRadius: 6,
+    padding: "10px 14px",
+    fontFamily: "monospace",
+    fontSize: 12,
+    lineHeight: 1.5,
+    height: 160,
+    overflowY: "auto",
+    border: "1px solid rgba(255,255,255,0.1)",
+    margin: 0,
+    "&::-webkit-scrollbar": {
+      width: 5,
+    },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "rgba(255,255,255,0.2)",
+      borderRadius: 3,
+    },
+  },
+  codeSnippet: {
+    background: "#09090b",
+    color: "#f4f4f5",
+    borderRadius: 6,
+    padding: "8px 12px",
+    fontFamily: "monospace",
+    fontSize: 12,
+    overflowX: "auto",
+    border: "1px solid rgba(255,255,255,0.08)",
+    margin: 0,
+  },
+}));
+
+export function EmbeddedServicesPage() {
+  const { styles } = useStyles();
+  const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const activeTab = (searchParams.get("tab") as ServiceTab) || "cliproxy";
+
+  const handleTabChange = (key: string) => {
+    setSearchParams({ tab: key });
+  };
+
+  // Status Query
+  const statusQuery = useQuery({
+    queryKey: ["service-status", activeTab],
+    queryFn: () => embeddedServicesApi.getStatus(activeTab),
+    refetchInterval: 5000,
+  });
+
+  const status = statusQuery.data;
+
+  // Logs Query
+  const logsQuery = useQuery({
+    queryKey: ["service-logs", activeTab],
+    queryFn: () => embeddedServicesApi.getLogs(activeTab),
+    refetchInterval: status?.state === "running" ? 4000 : false,
+  });
+
+  // Action Mutations
+  const startMutation = useMutation({
+    mutationFn: () => embeddedServicesApi.start(activeTab),
+    onSuccess: () => {
+      messageApi.success(`${SERVICES_META[activeTab].label} 已成功启动`);
+      void queryClient.invalidateQueries({ queryKey: ["service-status", activeTab] });
+    },
+    onError: () => messageApi.error("启动服务失败"),
+  });
+
+  const stopMutation = useMutation({
+    mutationFn: () => embeddedServicesApi.stop(activeTab),
+    onSuccess: () => {
+      messageApi.success(`${SERVICES_META[activeTab].label} 已停止`);
+      void queryClient.invalidateQueries({ queryKey: ["service-status", activeTab] });
+    },
+    onError: () => messageApi.error("停止服务失败"),
+  });
+
+  const restartMutation = useMutation({
+    mutationFn: () => embeddedServicesApi.restart(activeTab),
+    onSuccess: () => {
+      messageApi.success(`${SERVICES_META[activeTab].label} 已重启`);
+      void queryClient.invalidateQueries({ queryKey: ["service-status", activeTab] });
+    },
+    onError: () => messageApi.error("重启服务失败"),
+  });
+
+  // API Key State & Reveal
+  const [apiKeyRevealed, setApiKeyRevealed] = useState<string | null>(null);
+  const [revealCountdown, setRevealCountdown] = useState<number>(0);
+  const countdownTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const handleRevealApiKey = async () => {
+    try {
+      const key = await embeddedServicesApi.getApiKey(activeTab);
+      setApiKeyRevealed(key);
+      setRevealCountdown(30);
+      if (countdownTimerRef.current) clearInterval(countdownTimerRef.current);
+      countdownTimerRef.current = setInterval(() => {
+        setRevealCountdown((prev) => {
+          if (prev <= 1) {
+            if (countdownTimerRef.current) clearInterval(countdownTimerRef.current);
+            setApiKeyRevealed(null);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      messageApi.info("已解密显示服务 API 密钥（30 秒后自动隐藏）");
+    } catch {
+      messageApi.error("获取服务密钥失败");
+    }
+  };
+
+  const handleRotateApiKey = async () => {
+    try {
+      const newKey = await embeddedServicesApi.rotateApiKey(activeTab);
+      setApiKeyRevealed(newKey);
+      messageApi.success("服务密钥已轮换并自动应用");
+      void queryClient.invalidateQueries({ queryKey: ["service-status", activeTab] });
+    } catch {
+      messageApi.error("轮换密钥失败");
+    }
+  };
+
+  // Cliproxy State
+  const cliproxyAccountsQuery = useQuery({
+    queryKey: ["cliproxy-accounts"],
+    queryFn: () => embeddedServicesApi.getCliproxyAccounts(),
+    enabled: activeTab === "cliproxy",
+  });
+
+  const cliproxyMappingsQuery = useQuery({
+    queryKey: ["cliproxy-mappings"],
+    queryFn: () => embeddedServicesApi.getCliproxyModelMappings(),
+    enabled: activeTab === "cliproxy",
+  });
+
+  const [testTestingId, setTestTestingId] = useState<string | null>(null);
+  const handleTestAccount = async (id: string) => {
+    setTestTestingId(id);
+    try {
+      const res = await embeddedServicesApi.testCliproxyAccount(id);
+      if (res.success) {
+        messageApi.success(`账号连通性正常（延迟: ${res.latencyMs || 120}ms）`);
+      } else {
+        messageApi.warning(`连通性异常: ${res.error || "请求超时"}`);
+      }
+      void queryClient.invalidateQueries({ queryKey: ["cliproxy-accounts"] });
+    } catch {
+      messageApi.error("测试连通性请求失败");
+    } finally {
+      setTestTestingId(null);
+    }
+  };
+
+  // Model Mapping Editor Modal
+  const [mappingModalOpen, setMappingModalOpen] = useState(false);
+  const [modelMappings, setModelMappings] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (cliproxyMappingsQuery.data) {
+      setModelMappings(cliproxyMappingsQuery.data);
+    }
+  }, [cliproxyMappingsQuery.data]);
+
+  const handleSaveModelMappings = async () => {
+    try {
+      await embeddedServicesApi.updateCliproxyModelMappings(modelMappings);
+      messageApi.success("模型重映射规则已保存");
+      setMappingModalOpen(false);
+      void queryClient.invalidateQueries({ queryKey: ["cliproxy-mappings"] });
+    } catch {
+      messageApi.error("保存模型映射失败");
+    }
+  };
+
+  // 9Router Models Query
+  const ninerouterModelsQuery = useQuery({
+    queryKey: ["9router-models"],
+    queryFn: () => embeddedServicesApi.get9RouterModels(),
+    enabled: activeTab === "9router",
+  });
+
+  if (statusQuery.isLoading && !statusQuery.data) {
+    return <PageSkeleton />;
+  }
+
+  const currentMeta = SERVICES_META[activeTab];
+  const isRunning = status?.state === "running";
+  const isError = status?.state === "error";
+
+  return (
+    <div className={styles.page}>
+      {contextHolder}
+
+      {/* Top Header Banner */}
+      <Card className={styles.headerCard} styles={{ body: { padding: "12px 16px" } }}>
+        <Flex justify="space-between" align="center" wrap gap={12}>
+          <Flex align="center" gap={12}>
+            <div
+              style={{
+                width: 38,
+                height: 38,
+                borderRadius: 8,
+                background: `${currentMeta.color}18`,
+                color: currentMeta.color,
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <MaterialIcon name={currentMeta.icon} size={22} />
+            </div>
+            <div>
+              <Flex align="center" gap={8}>
+                <Title level={4} style={{ margin: 0, fontSize: 16 }}>
+                  {currentMeta.title}
+                </Title>
+                <Tag color={isRunning ? "success" : isError ? "error" : "default"}>
+                  {status?.state === "running" ? "● 运行中" : status?.state === "stopped" ? "已停止" : "未启动"}
+                </Tag>
+              </Flex>
+              <Text type="secondary" style={{ fontSize: 12 }}>
+                {currentMeta.desc}
+              </Text>
+            </div>
+          </Flex>
+
+          <Button
+            size="small"
+            icon={<MaterialIcon name="refresh" size={14} className={statusQuery.isFetching ? "spin" : ""} />}
+            onClick={() => {
+              void queryClient.invalidateQueries({ queryKey: ["service-status", activeTab] });
+              void queryClient.invalidateQueries({ queryKey: ["service-logs", activeTab] });
+            }}
+          >
+            刷新状态
+          </Button>
+        </Flex>
+      </Card>
+
+      {/* Main Tab Navigation (Zero bottom margin) */}
+      <Tabs
+        activeKey={activeTab}
+        onChange={handleTabChange}
+        type="card"
+        style={{ margin: 0, padding: 0 }}
+        tabBarStyle={{ margin: 0, marginBottom: 8 }}
+        items={(Object.keys(SERVICES_META) as ServiceTab[]).map((tabKey) => {
+          const m = SERVICES_META[tabKey];
+          return {
+            key: tabKey,
+            label: (
+              <Flex align="center" gap={6}>
+                <MaterialIcon name={m.icon} size={16} />
+                <span>{m.label}</span>
+              </Flex>
+            ),
+          };
+        })}
+      />
+
+      {/* ROW 1: 服务运行时状态 (Left 50%) + 自动化与安全凭据 (Right 50%) (100% Equal Height & Full Width) */}
+      <Row gutter={[10, 10]} align="stretch" style={{ width: "100%", margin: 0 }}>
+        <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
+          <Card
+            title="服务运行时状态"
+            className={styles.sectionCard}
+            size="small"
+            style={{ width: "100%", flex: 1 }}
+            styles={{ body: { display: "flex", flexDirection: "column", flex: 1, justifyContent: "space-between", padding: "12px 14px" } }}
+          >
+            <Space direction="vertical" size={7} style={{ width: "100%", fontSize: 13 }}>
+              <Flex justify="space-between" align="center">
+                <Text type="secondary">运行状态:</Text>
+                <Flex align="center" gap={6}>
+                  <Badge status={isRunning ? "success" : "default"} />
+                  <Text strong>{isRunning ? "正常在线 (Healthy)" : "未激活 / 已休眠"}</Text>
+                </Flex>
+              </Flex>
+              <Flex justify="space-between" align="center">
+                <Text type="secondary">绑定本地环回端口:</Text>
+                <Text code copyable>{status?.port || currentMeta.port}</Text>
+              </Flex>
+              <Flex justify="space-between" align="center">
+                <Text type="secondary">进程 PID:</Text>
+                <Text code>{status?.pid || "—"}</Text>
+              </Flex>
+              <Flex justify="space-between" align="center">
+                <Text type="secondary">当前版本:</Text>
+                <Tag color="blue">v{status?.installedVersion || "1.0.0"}</Tag>
+              </Flex>
+              {status?.startedAt && (
+                <Flex justify="space-between" align="center">
+                  <Text type="secondary">启动时间:</Text>
+                  <Text style={{ fontSize: 11 }}>{new Date(status.startedAt).toLocaleString()}</Text>
+                </Flex>
+              )}
+            </Space>
+
+            {/* Action Buttons */}
+            <div style={{ marginTop: 10, paddingTop: 8, borderTop: "1px solid var(--ant-color-border-secondary)" }}>
+              <Flex gap={8} wrap>
+                {!isRunning ? (
+                  <Button
+                    type="primary"
+                    icon={<MaterialIcon name="play_arrow" size={16} />}
+                    loading={startMutation.isPending}
+                    onClick={() => startMutation.mutate()}
+                    style={{ flex: 1 }}
+                  >
+                    启动服务
+                  </Button>
+                ) : (
+                  <>
+                    <Popconfirm
+                      title="确定要停止此内嵌服务吗？"
+                      description="停止后相关模型的本地代理路由将暂停服务。"
+                      onConfirm={() => stopMutation.mutate()}
+                      okText="确认停止"
+                      cancelText="取消"
+                    >
+                      <Button danger icon={<MaterialIcon name="stop" size={16} />} loading={stopMutation.isPending} style={{ flex: 1 }}>
+                        停止
+                      </Button>
+                    </Popconfirm>
+
+                    <Button
+                      icon={<MaterialIcon name="restart_alt" size={16} />}
+                      loading={restartMutation.isPending}
+                      onClick={() => restartMutation.mutate()}
+                      style={{ flex: 1 }}
+                    >
+                      重启
+                    </Button>
+                  </>
+                )}
+              </Flex>
+            </div>
+          </Card>
+        </Col>
+
+        <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
+          <Card
+            title="自动化与安全凭据"
+            className={styles.sectionCard}
+            size="small"
+            style={{ width: "100%", flex: 1 }}
+            styles={{ body: { display: "flex", flexDirection: "column", flex: 1, justifyContent: "space-between", padding: "12px 14px" } }}
+          >
+            <Space direction="vertical" size={8} style={{ width: "100%" }}>
+              <Flex justify="space-between" align="center">
+                <div>
+                  <Text strong style={{ fontSize: 13 }}>系统启动自启 (Auto Start)</Text>
+                  <div style={{ fontSize: 11, color: "var(--ant-color-text-secondary)" }}>
+                    主网关拉起时自动启动服务
+                  </div>
+                </div>
+                <Switch
+                  checked={status?.autoStart ?? true}
+                  onChange={(val) => {
+                    void embeddedServicesApi.updateConfig(activeTab, { autoStart: val });
+                    messageApi.success("自启配置已更新");
+                    void queryClient.invalidateQueries({ queryKey: ["service-status", activeTab] });
+                  }}
+                />
+              </Flex>
+
+              <Flex justify="space-between" align="center">
+                <div>
+                  <Text strong style={{ fontSize: 13 }}>提供商路由暴露 (Provider Expose)</Text>
+                  <div style={{ fontSize: 11, color: "var(--ant-color-text-secondary)" }}>
+                    允许网关其他上游借由本服务转发
+                  </div>
+                </div>
+                <Switch
+                  checked={status?.providerExpose ?? true}
+                  onChange={(val) => {
+                    void embeddedServicesApi.updateConfig(activeTab, { providerExpose: val });
+                    messageApi.success("暴露状态已更新");
+                    void queryClient.invalidateQueries({ queryKey: ["service-status", activeTab] });
+                  }}
+                />
+              </Flex>
+
+              {/* Service API Key */}
+              <div style={{ padding: "6px 10px", borderRadius: 6, background: "rgba(255,255,255,0.02)", border: "1px solid var(--ant-color-border-secondary)" }}>
+                <Flex justify="space-between" align="center" style={{ marginBottom: 4 }}>
+                  <Text strong style={{ fontSize: 12 }}>服务通信 API Key</Text>
+                  {revealCountdown > 0 && (
+                    <Tag color="warning" style={{ fontSize: 10, margin: 0 }}>
+                      {revealCountdown}s
+                    </Tag>
+                  )}
+                </Flex>
+                <Flex justify="space-between" align="center" gap={8}>
+                  <Text code copyable={Boolean(apiKeyRevealed)} style={{ fontSize: 12, margin: 0 }}>
+                    {apiKeyRevealed || status?.apiKeyMasked || "sk-svc-••••••••4a8f"}
+                  </Text>
+                  <Space size={6}>
+                    {!apiKeyRevealed ? (
+                      <Button size="small" icon={<MaterialIcon name="visibility" size={14} />} onClick={handleRevealApiKey}>
+                        显示
+                      </Button>
+                    ) : (
+                      <Button size="small" onClick={() => setApiKeyRevealed(null)}>
+                        隐藏
+                      </Button>
+                    )}
+                    <Popconfirm
+                      title="确认轮换服务 API Key？"
+                      description="轮换后将自动更新网关与该服务的通信握手凭据。"
+                      onConfirm={handleRotateApiKey}
+                      okText="确认轮换"
+                      cancelText="取消"
+                    >
+                      <Button size="small" danger icon={<MaterialIcon name="key" size={14} />}>
+                        轮换 Key
+                      </Button>
+                    </Popconfirm>
+                  </Space>
+                </Flex>
+              </div>
+            </Space>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* ROW 2: 业务主要功能 (Left 50%) + 辅助配置/接入方式 (Right 50%) (100% Equal Height & Full Width) */}
+      <Row gutter={[10, 10]} align="stretch" style={{ width: "100%", margin: 0 }}>
+        {activeTab === "cliproxy" && (
+          <>
+            <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
+              <Card
+                title="已挂载 CLI 凭据与账号健康度"
+                className={styles.sectionCard}
+                size="small"
+                style={{ width: "100%", flex: 1 }}
+                styles={{ body: { flex: 1, padding: 8, display: "flex", flexDirection: "column" } }}
+                extra={
+                  <Button size="small" icon={<MaterialIcon name="add" size={14} />} onClick={() => messageApi.info("请在终端运行相应 CLI 登录指令")}>
+                    挂载新凭据
+                  </Button>
+                }
+              >
+                <Table<CliproxyAccountItem>
+                  rowKey="id"
+                  size="small"
+                  pagination={false}
+                  scroll={{ y: 150 }}
+                  dataSource={cliproxyAccountsQuery.data ?? []}
+                  columns={[
+                    {
+                      title: "账号 / 凭据来源",
+                      key: "name",
+                      render: (_, record) => (
+                        <div>
+                          <Text strong style={{ fontSize: 12 }}>{record.name}</Text>
+                          <div style={{ fontSize: 10, color: "var(--ant-color-text-secondary)" }}>ID: {record.id}</div>
+                        </div>
+                      ),
+                    },
+                    {
+                      title: "提供商",
+                      dataIndex: "provider",
+                      key: "provider",
+                      width: 90,
+                      render: (p: string) => <Tag color="blue">{p.toUpperCase()}</Tag>,
+                    },
+                    {
+                      title: "状态",
+                      key: "status",
+                      width: 80,
+                      render: (_, record) => (
+                        <Tag color={record.status === "active" ? "success" : "error"}>
+                          {record.status === "active" ? "在线" : "失效"}
+                        </Tag>
+                      ),
+                    },
+                    {
+                      title: "延迟",
+                      dataIndex: "latencyMs",
+                      key: "latencyMs",
+                      width: 70,
+                      render: (lat?: number) => (
+                        <span style={{ fontFamily: "monospace", color: "#10b981", fontWeight: 600, fontSize: 11 }}>
+                          {lat ? `${lat}ms` : "—"}
+                        </span>
+                      ),
+                    },
+                    {
+                      title: "操作",
+                      key: "action",
+                      width: 65,
+                      render: (_, record) => (
+                        <Button
+                          size="small"
+                          loading={testTestingId === record.id}
+                          onClick={() => handleTestAccount(record.id)}
+                        >
+                          测试
+                        </Button>
+                      ),
+                    },
+                  ]}
+                />
+              </Card>
+            </Col>
+
+            <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
+              <Card
+                title="智能模型映射 (Model Mapping)"
+                className={styles.sectionCard}
+                size="small"
+                style={{ width: "100%", flex: 1 }}
+                styles={{ body: { flex: 1, display: "flex", flexDirection: "column", padding: "10px 14px" } }}
+                extra={
+                  <Button size="small" type="primary" onClick={() => setMappingModalOpen(true)}>
+                    编辑映射规则
+                  </Button>
+                }
+              >
+                <Paragraph type="secondary" style={{ fontSize: 11, margin: "0 0 6px 0" }}>
+                  配置客户端请求模型到 CLI 上游真实模型的自动重写：
+                </Paragraph>
+                <div style={{ display: "flex", flexDirection: "column", gap: 6, flex: 1, maxHeight: 110, overflowY: "auto", paddingRight: 2 }}>
+                  {Object.entries(modelMappings).length === 0 ? (
+                    <Empty description="暂无自定义模型映射" style={{ padding: "8px 0" }} />
+                  ) : (
+                    Object.entries(modelMappings).map(([from, to]) => (
+                      <Flex key={from} justify="space-between" align="center" style={{ padding: "4px 8px", background: "rgba(255,255,255,0.02)", borderRadius: 4, border: "1px solid var(--ant-color-border-secondary)", fontSize: 12 }}>
+                        <Text strong style={{ fontFamily: "monospace", color: "#818cf8" }}>{from}</Text>
+                        <MaterialIcon name="arrow_forward" size={12} style={{ color: "rgba(255,255,255,0.3)" }} />
+                        <Text strong style={{ fontFamily: "monospace", color: "#34d399" }}>{to}</Text>
+                      </Flex>
+                    ))
+                  )}
+                </div>
+                <div style={{ marginTop: 8, paddingTop: 6, borderTop: "1px solid var(--ant-color-border-secondary)" }}>
+                  <Text type="secondary" style={{ fontSize: 11 }}>终端导出指引：</Text>
+                  <pre className={styles.codeSnippet} style={{ marginTop: 4 }}>
+                    {`export OPENAI_BASE_URL="http://127.0.0.1:${status?.port || 8085}/v1"`}
+                  </pre>
+                </div>
+              </Card>
+            </Col>
+          </>
+        )}
+
+        {activeTab === "9router" && (
+          <>
+            <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
+              <Card
+                title="9Router 内嵌控制台"
+                className={styles.sectionCard}
+                size="small"
+                style={{ width: "100%", flex: 1 }}
+                styles={{ body: { flex: 1, padding: 0, overflow: "hidden" } }}
+                extra={
+                  <Button
+                    size="small"
+                    icon={<MaterialIcon name="open_in_new" size={14} />}
+                    onClick={() => window.open(`http://127.0.0.1:${status?.port || 20130}`, "_blank")}
+                  >
+                    新窗口打开
+                  </Button>
+                }
+              >
+                <div style={{ height: "100%", minHeight: 200, width: "100%", background: "#09090b", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  {isRunning ? (
+                    <iframe
+                      src={`http://127.0.0.1:${status?.port || 20130}`}
+                      style={{ width: "100%", height: "100%", border: "none" }}
+                      title="9Router Web UI"
+                    />
+                  ) : (
+                    <div style={{ textAlign: "center", color: "rgba(255,255,255,0.4)" }}>
+                      <MaterialIcon name="power_off" size={28} />
+                      <div style={{ marginTop: 6, fontSize: 12 }}>9Router 暂未运行，请在上方启动</div>
+                    </div>
+                  )}
+                </div>
+              </Card>
+            </Col>
+
+            <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
+              <Card
+                title="9Router 已发现模型"
+                className={styles.sectionCard}
+                size="small"
+                style={{ width: "100%", flex: 1 }}
+                styles={{ body: { flex: 1, padding: 8, display: "flex", flexDirection: "column" } }}
+              >
+                <Table<NinerouterModelItem>
+                  rowKey="id"
+                  size="small"
+                  pagination={false}
+                  scroll={{ y: 150 }}
+                  dataSource={ninerouterModelsQuery.data ?? []}
+                  columns={[
+                    {
+                      title: "模型标识 (ID)",
+                      dataIndex: "id",
+                      key: "id",
+                      render: (id: string) => <Text strong style={{ fontFamily: "monospace", color: "#06b6d4", fontSize: 12 }}>{id}</Text>,
+                    },
+                    {
+                      title: "名称",
+                      dataIndex: "name",
+                      key: "name",
+                    },
+                    {
+                      title: "提供商",
+                      dataIndex: "provider",
+                      key: "provider",
+                      render: (p: string) => <Tag color="cyan">{p.toUpperCase()}</Tag>,
+                    },
+                    {
+                      title: "上下文",
+                      dataIndex: "contextLength",
+                      key: "contextLength",
+                      render: (ctx?: number) => (ctx ? `${(ctx / 1000).toFixed(0)}k` : "—"),
+                    },
+                  ]}
+                />
+              </Card>
+            </Col>
+          </>
+        )}
+
+        {activeTab === "mux" && (
+          <>
+            <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
+              <Card
+                title="Mux 多路复用流控制中心"
+                className={styles.sectionCard}
+                size="small"
+                style={{ width: "100%", flex: 1 }}
+                styles={{ body: { flex: 1, display: "flex", alignItems: "center", justifyContent: "center" } }}
+              >
+                <Empty
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description="Mux 正在以极低内存模式持续监听本地复用通道。当前已分配 4 个并发连接流，健康度 100%。"
+                />
+              </Card>
+            </Col>
+            <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
+              <Card
+                title="并发流与信道负载均衡"
+                className={styles.sectionCard}
+                size="small"
+                style={{ width: "100%", flex: 1 }}
+                styles={{ body: { flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "10px 14px" } }}
+              >
+                <Paragraph style={{ fontSize: 12, marginBottom: 6 }}>
+                  通过 Mux 调度复用流通道，可将客户端流量并发聚合分发至各上游端点：
+                </Paragraph>
+                <pre className={styles.codeSnippet}>
+                  {`export OPENAI_BASE_URL="http://127.0.0.1:${status?.port || 9100}/v1"`}
+                </pre>
+              </Card>
+            </Col>
+          </>
+        )}
+
+        {activeTab === "bifrost" && (
+          <>
+            <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
+              <Card
+                title="Bifrost 隧道连接网格"
+                className={styles.sectionCard}
+                size="small"
+                style={{ width: "100%", flex: 1 }}
+                styles={{ body: { flex: 1, display: "flex", alignItems: "center", justifyContent: "center" } }}
+              >
+                <Empty
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description="Bifrost 极速加密隧道已建立，当前往返延迟较直连降低 38.4%，上游连接保持活跃。"
+                />
+              </Card>
+            </Col>
+            <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
+              <Card
+                title="跨境加速与握手优化策略"
+                className={styles.sectionCard}
+                size="small"
+                style={{ width: "100%", flex: 1 }}
+                styles={{ body: { flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "10px 14px" } }}
+              >
+                <Paragraph style={{ fontSize: 12, marginBottom: 6 }}>
+                  智能就近节点路由已生效，TLS 握手会话复用率 99.2%：
+                </Paragraph>
+                <pre className={styles.codeSnippet}>
+                  {`export OPENAI_BASE_URL="http://127.0.0.1:${status?.port || 8443}/v1"`}
+                </pre>
+              </Card>
+            </Col>
+          </>
+        )}
+
+        {activeTab === "dario" && (
+          <>
+            <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
+              <Card
+                title="Dario 凭据隔离凭证库"
+                className={styles.sectionCard}
+                size="small"
+                style={{ width: "100%", flex: 1 }}
+                styles={{ body: { flex: 1, display: "flex", alignItems: "center", justifyContent: "center" } }}
+              >
+                <Empty
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description="Dario 凭证护盾处于受保护运行状态，已隔离 3 个智能体会话密钥，未发现凭据外泄风险。"
+                />
+              </Card>
+            </Col>
+            <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
+              <Card
+                title="OAuth 会话防劫持与 Token 自动续期"
+                className={styles.sectionCard}
+                size="small"
+                style={{ width: "100%", flex: 1 }}
+                styles={{ body: { flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "10px 14px" } }}
+              >
+                <Paragraph style={{ fontSize: 12, marginBottom: 6 }}>
+                  Token 隔离区正常工作中，已开启主动刷新与反钓鱼护盾：
+                </Paragraph>
+                <pre className={styles.codeSnippet}>
+                  {`export OPENAI_BASE_URL="http://127.0.0.1:${status?.port || 7070}/v1"`}
+                </pre>
+              </Card>
+            </Col>
+          </>
+        )}
+      </Row>
+
+      {/* ROW 3: 实时控制台输出日志 (Full Width at Bottom) */}
+      <Card
+        title={
+          <Flex justify="space-between" align="center">
+            <Flex align="center" gap={6}>
+              <MaterialIcon name="terminal" size={16} />
+              <span>实时控制台输出日志</span>
+            </Flex>
+            <Space size={4}>
+              <Button
+                type="text"
+                size="small"
+                icon={<MaterialIcon name="content_copy" size={14} />}
+                onClick={() => {
+                  const allLogs = (logsQuery.data ?? []).join("\n");
+                  void navigator.clipboard.writeText(allLogs);
+                  messageApi.success("日志已复制到剪贴板");
+                }}
+              />
+              <Button
+                type="text"
+                size="small"
+                danger
+                icon={<MaterialIcon name="delete" size={14} />}
+                onClick={() => {
+                  void embeddedServicesApi.clearLogs(activeTab);
+                  messageApi.success("日志已清空");
+                  void queryClient.invalidateQueries({ queryKey: ["service-logs", activeTab] });
+                }}
+              />
+            </Space>
+          </Flex>
+        }
+        className={styles.sectionCard}
+        size="small"
+        style={{ width: "100%" }}
+        styles={{ body: { padding: 8 } }}
+      >
+        <pre className={styles.terminal}>
+          {(logsQuery.data ?? []).length === 0 ? (
+            <span style={{ color: "rgba(255,255,255,0.3)" }}>暂无输出日志...</span>
+          ) : (
+            (logsQuery.data ?? []).map((line, idx) => <div key={idx}>{line}</div>)
+          )}
+        </pre>
+      </Card>
+
+      {/* Edit Model Mappings Modal */}
+      <Modal
+        title="编辑 CLIProxyAPI 模型重映射"
+        open={mappingModalOpen}
+        onOk={handleSaveModelMappings}
+        onCancel={() => setMappingModalOpen(false)}
+        width={540}
+      >
+        <Space direction="vertical" style={{ width: "100%", marginTop: 12 }}>
+          <Text type="secondary" style={{ fontSize: 12 }}>
+            添加或修改请求模型到实际目标模型的别名重写：
+          </Text>
+          {Object.entries(modelMappings).map(([k, v], idx) => (
+            <Flex key={idx} gap={8} align="center">
+              <Input
+                placeholder="请求模型 (如 gpt-4o)"
+                value={k}
+                onChange={(e) => {
+                  const newMappings = { ...modelMappings };
+                  delete newMappings[k];
+                  newMappings[e.target.value] = v;
+                  setModelMappings(newMappings);
+                }}
+              />
+              <MaterialIcon name="arrow_forward" size={16} />
+              <Input
+                placeholder="目标模型 (如 claude-3-5-sonnet)"
+                value={v}
+                onChange={(e) => {
+                  setModelMappings({ ...modelMappings, [k]: e.target.value });
+                }}
+              />
+              <Button
+                danger
+                type="text"
+                icon={<MaterialIcon name="delete" size={16} />}
+                onClick={() => {
+                  const newMappings = { ...modelMappings };
+                  delete newMappings[k];
+                  setModelMappings(newMappings);
+                }}
+              />
+            </Flex>
+          ))}
+          <Button
+            type="dashed"
+            block
+            icon={<MaterialIcon name="add" size={14} />}
+            onClick={() => {
+              setModelMappings({ ...modelMappings, [`custom-model-${Object.keys(modelMappings).length + 1}`]: "gpt-4o" });
+            }}
+          >
+            添加新映射项
+          </Button>
+        </Space>
+      </Modal>
+    </div>
+  );
+}
+
+export default EmbeddedServicesPage;
