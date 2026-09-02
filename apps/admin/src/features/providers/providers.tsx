@@ -593,10 +593,10 @@ export default function ProvidersPage() {
               emptyText={t("providersPage.noCompatible")}
               actions={(
                 <Space wrap>
-                  {groups.length > 0 && <Button size="small" icon={<MaterialIcon name="play_circle" />} onClick={() => testMutation.mutate({ mode: "compatible" })} loading={testMutation.isPending && testMutation.variables.mode === "compatible"}>{t("providers.testAll")}</Button>}
-                  {nodesQuery.data?.ccCompatibleProviderEnabled && <Button type="primary" size="small" icon={<MaterialIcon name="add" />} onClick={() => navigate("/dashboard/providers/new?kind=cc-compatible")}>{t("providersPage.addCcCompatible")}</Button>}
-                  <Button type="primary" size="small" icon={<MaterialIcon name="add" />} onClick={() => navigate("/dashboard/providers/new?kind=anthropic-compatible")}>{t("providersPage.addAnthropicCompatible")}</Button>
-                  <Button type="primary" size="small" icon={<MaterialIcon name="add" />} onClick={() => navigate("/dashboard/providers/new?kind=openai-compatible")}>{t("providersPage.addOpenAiCompatible")}</Button>
+                  {groups.length > 0 && <Button icon={<MaterialIcon name="play_circle" />} onClick={() => testMutation.mutate({ mode: "compatible" })} loading={testMutation.isPending && testMutation.variables.mode === "compatible"}>{t("providers.testAll")}</Button>}
+                  {nodesQuery.data?.ccCompatibleProviderEnabled && <Button type="primary" icon={<MaterialIcon name="add" />} onClick={() => navigate("/dashboard/providers/new?kind=cc-compatible")}>{t("providersPage.addCcCompatible")}</Button>}
+                  <Button type="primary" icon={<MaterialIcon name="add" />} onClick={() => navigate("/dashboard/providers/new?kind=anthropic-compatible")}>{t("providersPage.addAnthropicCompatible")}</Button>
+                  <Button type="primary" icon={<MaterialIcon name="add" />} onClick={() => navigate("/dashboard/providers/new?kind=openai-compatible")}>{t("providersPage.addOpenAiCompatible")}</Button>
                 </Space>
               )}
               navigate={navigate}
@@ -739,7 +739,7 @@ function ProviderSection({
           />
         </Flex>
         <Space wrap>
-          {category !== "compatible" && groups.length > 0 && <Button size="small" icon={<MaterialIcon name="play_circle" />} onClick={() => (onBatchTest ? onBatchTest(testMode ?? category) : onTest(category))} loading={testingProvider === (testMode ?? category)}>{t("providers.testAll")}</Button>}
+          {category !== "compatible" && groups.length > 0 && <Button icon={<MaterialIcon name="play_circle" />} onClick={() => (onBatchTest ? onBatchTest(testMode ?? category) : onTest(category))} loading={testingProvider === (testMode ?? category)}>{t("providers.testAll")}</Button>}
           {actions}
         </Space>
       </Flex>

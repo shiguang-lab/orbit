@@ -74,6 +74,15 @@ export function Shell() {
     }
   }, [activeSectionKey]);
 
+  // Reset content scrollbar position to top on navigation
+  useEffect(() => {
+    const scrollEl = document.querySelector(".shell-content-scrollbar");
+    if (scrollEl) scrollEl.scrollTop = 0;
+    const innerScroll = document.querySelector(".shell-content-scrollbar > div");
+    if (innerScroll) innerScroll.scrollTop = 0;
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   const selectedKeys = useMemo(() => {
     const pathname = location.pathname;
     const flat = flattenNav(navSections);
@@ -192,9 +201,10 @@ export function Shell() {
     }
     if (/^\/dashboard\/providers\/[^/]+$/.test(pathname)) {
       const parent = flat.find((it) => it.to === "/dashboard/providers");
+      const providerSlug = pathname.split("/").pop() || "";
       return [
         { label: parent ? parent.label : "提供者", to: "/dashboard/providers" },
-        { label: "提供者详情" },
+        { label: customTitle || providerSlug },
       ];
     }
 

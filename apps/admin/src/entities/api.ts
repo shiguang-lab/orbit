@@ -291,6 +291,54 @@ export const providersApi = {
   chat: (input: { model: string; messages: Array<{ role: "user" | "assistant"; content: string }> }) => api<Record<string, unknown>>("/v1/chat/completions", { method: "POST", body: JSON.stringify({ ...input, stream: false }) }),
   addModel: (id: string, modelId: string, modelName?: string) => api<{ model: Record<string, unknown> }>(`/providers/${id}/models`, { method: "POST", body: JSON.stringify({ modelId, modelName }) }),
   removeModel: (id: string, modelId: string) => api<{ success: boolean }>(`/providers/${id}/models?modelId=${encodeURIComponent(modelId)}`, { method: "DELETE" }),
+  addCustomModel: (data: Record<string, unknown>) =>
+    api<{ model: Record<string, unknown> }>("/provider-models", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  updateCustomModel: (data: Record<string, unknown>) =>
+    api<{ model?: Record<string, unknown>; success: boolean }>("/provider-models", {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }),
+  removeCustomModel: (provider: string, modelId?: string, resetOverride?: boolean) =>
+    api<{ success: boolean }>(`/provider-models?provider=${encodeURIComponent(provider)}${modelId ? `&model=${encodeURIComponent(modelId)}` : ""}${resetOverride ? "&resetOverride=true" : ""}`, {
+      method: "DELETE",
+    }),
+  clearAllCustomModels: (provider: string) =>
+    api<{ success: boolean }>(`/provider-models?provider=${encodeURIComponent(provider)}&all=true`, {
+      method: "DELETE",
+    }),
+  aliases: () => api<{ aliases: Record<string, string> }>("/models/alias"),
+  setAlias: (model: string, alias: string) =>
+    api<{ success?: boolean }>("/models/alias", {
+      method: "PUT",
+      body: JSON.stringify({ model, alias }),
+    }),
+  deleteAlias: (alias: string) =>
+    api<{ success?: boolean }>(`/models/alias?alias=${encodeURIComponent(alias)}`, {
+      method: "DELETE",
+    }),
+  testModel: (data: { providerId: string; modelId: string; connectionId?: string }) =>
+    api<{ status: "ok" | "error"; latencyMs?: number; responseText?: string; error?: string }>("/models/test", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  ccAlias: (providerId: string) =>
+    api<{ provider: "on" | "off" | null; models: Record<string, "on" | "off"> }>(`/providers/${encodeURIComponent(providerId)}/cc-alias`),
+  updateCcAlias: (providerId: string, data: { scope: "provider" | "model"; value: "on" | "off" | null; modelId?: string }) =>
+    api<{ success: boolean }>(`/providers/${encodeURIComponent(providerId)}/cc-alias`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }),
+  webSearch: (input: { query: string; provider?: string }) =>
+    api<Record<string, unknown>>("/v1/search", { method: "POST", body: JSON.stringify(input) }),
+  embeddings: (input: { model: string; input: string }) =>
+    api<Record<string, unknown>>("/v1/embeddings", { method: "POST", body: JSON.stringify(input) }),
+  imageGeneration: (input: { model: string; prompt: string; size?: string }) =>
+    api<Record<string, unknown>>("/v1/images/generations", { method: "POST", body: JSON.stringify(input) }),
+  audioSpeech: (input: { model: string; input: string; voice?: string }) =>
+    api<Record<string, unknown>>("/v1/audio/speech", { method: "POST", body: JSON.stringify(input) }),
   paramFilters: (id: string) => api<Record<string, unknown>>(`/providers/${id}/param-filters`),
   updateParamFilters: (id: string, config: Record<string, unknown>) => api<{ success: boolean }>(`/providers/${id}/param-filters`, { method: "PUT", body: JSON.stringify(config) }),
   deleteParamFilters: (id: string) => api<{ success: boolean }>(`/providers/${id}/param-filters`, { method: "DELETE" }),
@@ -1419,6 +1467,19 @@ export interface NinerouterModelItem {
   isAvailable?: boolean;
 }
 
+export interface CliproxyLoginJob {
+  id: string;
+  provider: "codex" | "claude" | "antigravity" | "kimi" | "xai" | "gemini" | "qwen" | "github-copilot";
+  status: "starting" | "awaiting_user" | "success" | "failed" | "timeout" | "canceled";
+  authUrl?: string;
+  userCode?: string;
+  prompt?: string;
+  error?: string;
+  startedAt: number;
+  expiresAt: number;
+  terminalCommand: string;
+}
+
 export const embeddedServicesApi = {
   getStatus: (name: string): Promise<EmbeddedServiceStatus> =>
     api<EmbeddedServiceStatus>(`/services/${encodeURIComponent(name)}/status`),
@@ -1449,88 +1510,46 @@ export const embeddedServicesApi = {
       body: JSON.stringify(payload),
     }),
   getLogs: async (name: string): Promise<string[]> => {
-    try {
-      const res = await api<any>(`/services/${encodeURIComponent(name)}/logs`);
-      if (Array.isArray(res)) return res;
-      if (Array.isArray(res?.logs)) return res.logs;
-      if (typeof res?.logs === "string") return res.logs.split("\n");
-      return [];
-    } catch {
-      return [
-        `[${new Date().toISOString()}] INFO [${name}] Service supervisor initialized on loopback`,
-        `[${new Date().toISOString()}] INFO [${name}] HTTP server listening for upstream bridge requests`,
-        `[${new Date().toISOString()}] INFO [${name}] Health check probe OK (latency: 1.2ms)`,
-        `[${new Date().toISOString()}] INFO [${name}] Provider exposure routes registered successfully`,
-      ];
-    }
+    const res = await api<any>(`/services/${encodeURIComponent(name)}/logs`);
+    if (Array.isArray(res)) return res;
+    if (Array.isArray(res?.logs)) return res.logs;
+    if (typeof res?.logs === "string") return res.logs.split("\n");
+    return [];
   },
   clearLogs: (name: string) =>
     api<{ success: boolean }>(`/services/${encodeURIComponent(name)}/logs`, { method: "DELETE" }),
   getApiKey: async (name: string): Promise<string> => {
-    try {
-      const res = await api<{ key: string }>(`/services/${encodeURIComponent(name)}/apikey`);
-      return res.key;
-    } catch {
-      return "service-key-not-configured";
-    }
+    const res = await api<{ key: string }>(`/services/${encodeURIComponent(name)}/apikey`);
+    return res.key;
   },
   rotateApiKey: async (name: string): Promise<string> => {
-    try {
-      const res = await api<{ key: string }>(`/services/${encodeURIComponent(name)}/apikey`, { method: "POST" });
-      return res.key;
-    } catch {
-      return `sk-svc-${Math.random().toString(36).slice(2, 12)}`;
-    }
+    const res = await api<{ key: string }>(`/services/${encodeURIComponent(name)}/apikey`, { method: "POST" });
+    return res.key;
   },
   getCliproxyAccounts: async (): Promise<CliproxyAccountItem[]> => {
-    try {
-      const res = await api<any>("/services/cliproxy/accounts");
-      return Array.isArray(res) ? res : res?.accounts || [];
-    } catch {
-      return [
-        {
-          id: "codex-main",
-          name: "Codex CLI (Pro)",
-          provider: "openai",
-          status: "active",
-          latencyMs: 142,
-          lastTestedAt: new Date().toISOString(),
-        },
-        {
-          id: "claude-sub",
-          name: "Claude Code CLI",
-          provider: "anthropic",
-          status: "active",
-          latencyMs: 210,
-          lastTestedAt: new Date().toISOString(),
-        },
-        {
-          id: "gemini-dev",
-          name: "Gemini CLI Dev",
-          provider: "gemini",
-          status: "active",
-          latencyMs: 185,
-          lastTestedAt: new Date().toISOString(),
-        },
-      ];
-    }
+    const res = await api<any>("/services/cliproxy/accounts");
+    return Array.isArray(res) ? res : res?.accounts || [];
   },
   testCliproxyAccount: (id: string) =>
     api<{ success: boolean; latencyMs?: number; error?: string }>(
       `/services/cliproxy/accounts/${encodeURIComponent(id)}/test`,
       { method: "POST" }
     ),
+  startCliproxyLogin: (provider: string): Promise<CliproxyLoginJob> =>
+    api<CliproxyLoginJob>("/services/cliproxy/login/start", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ provider }),
+    }),
+  getCliproxyLoginJob: (jobId: string): Promise<CliproxyLoginJob> =>
+    api<CliproxyLoginJob>(`/services/cliproxy/login/${encodeURIComponent(jobId)}`),
+  cancelCliproxyLogin: (jobId: string): Promise<{ success: boolean }> =>
+    api<{ success: boolean }>(`/services/cliproxy/login/${encodeURIComponent(jobId)}/cancel`, {
+      method: "POST",
+    }),
   getCliproxyModelMappings: async (): Promise<Record<string, string>> => {
-    try {
-      const res = await api<any>("/services/cliproxy/model-mappings");
-      return res?.mappings || res || {};
-    } catch {
-      return {
-        "gpt-4o": "claude-3-5-sonnet-20241022",
-        "o1-preview": "o1-mini",
-        "claude-3-7-sonnet": "claude-3-5-sonnet",
-      };
-    }
+    const res = await api<any>("/services/cliproxy/model-mappings");
+    return res?.mappings || res || {};
   },
   updateCliproxyModelMappings: (mappings: Record<string, string>) =>
     api<{ success: boolean }>("/services/cliproxy/model-mappings", {

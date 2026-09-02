@@ -218,6 +218,11 @@ const EN_MESSAGES = {
   "providers.visible": "Visible",
   "providers.hidden": "Hidden",
   "providers.syncModels": "Sync models",
+  "providers.importedDesc": "Dynamically imported model: pulled and synchronized via API Key from upstream endpoint.",
+  "providers.systemDesc": "Built-in model: static registry catalog included in OmniRoute gateway, ready to use out-of-the-box.",
+  "providers.customDesc": "Custom model: user-defined or parameter-overridden model entry.",
+  "providers.fallbackDesc": "Fallback model: standby catalog entry used when dynamic discovery is unavailable.",
+  "providers.modelNameClickToSetAlias": "Model display name: {name} (click to assign an alias)",
   "providers.modelId": "Model ID",
   "providers.displayNameOptional": "Display name (optional)",
   "providers.add": "Add",
@@ -408,6 +413,8 @@ const EN_MESSAGES = {
   "providerEditor.models": "Models ({count})",
   "providerEditor.requestBehavior": "Request behavior",
   "providerEditor.source": "Source",
+  "providers.backToProviders": "Back to Providers",
+  "providers.banned": "Banned",
 } as const;
 
 type MessageKey = keyof typeof EN_MESSAGES;
@@ -646,6 +653,11 @@ const ZH_MESSAGES: Record<MessageKey, string> = {
   "providers.connectionProxyConfig": "连接代理配置",
   "providers.proxyConfigDescription": "选择 {target} 使用的代理。选择“无代理”会清除当前绑定。",
   "providers.currentTarget": "当前目标",
+  "providers.importedDesc": "动态导入模型：通过 API Key 从上游提供者端点拉取同步的模型",
+  "providers.systemDesc": "系统内置模型：网关预置的标准静态模型名录，开箱即用",
+  "providers.customDesc": "自定义模型：用户手动配置或覆盖参数的模型",
+  "providers.fallbackDesc": "兜底模型：动态接口不可用时启用的备选模型",
+  "providers.modelNameClickToSetAlias": "显示名称：{name}（未设置独立别名，点击可绑定快捷别名）",
   "providers.addConnectionTitle": "添加 {provider} 连接",
   "providers.newConnectionDisabled": "新连接默认停用",
   "providers.newConnectionHint": "添加后先执行连接测试，测试通过后再启用。",
@@ -816,6 +828,8 @@ const ZH_MESSAGES: Record<MessageKey, string> = {
   "providerEditor.models": "模型（{count}）",
   "providerEditor.requestBehavior": "请求行为",
   "providerEditor.source": "来源",
+  "providers.backToProviders": "返回提供者",
+  "providers.banned": "已封禁",
 };
 import flatEn from "./locales/en.json";
 import flatZh from "./locales/zh-CN.json";
@@ -846,33 +860,58 @@ export function translate(
   locale: AppLocale,
   keyOrZh: string,
   valuesOrEn?: Record<string, string | number> | string,
-  fallback?: string
+  fallback?: string | Record<string, string | number>
 ): string {
   const dict = MESSAGES[locale] ?? MESSAGES["zh-CN"];
   const enDict = MESSAGES["en-US"];
 
   if (dict && keyOrZh in dict) {
     const template = dict[keyOrZh];
-    const values = typeof valuesOrEn === "object" && valuesOrEn !== null ? valuesOrEn : undefined;
-    if (!values) return template;
-    return Object.entries(values).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, String(value)), template);
+    const values =
+      typeof valuesOrEn === "object" && valuesOrEn !== null
+        ? valuesOrEn
+        : typeof fallback === "object" && fallback !== null
+        ? fallback
+        : undefined;
+    if (values) {
+      return Object.entries(values).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, String(value)), template);
+    }
+    // If no values provided, check if a formatted fallback string was provided
+    if (typeof valuesOrEn === "string" && /\{[a-zA-Z0-9_]+\}/.test(template)) {
+      return valuesOrEn;
+    }
+    return template;
   }
 
   if (enDict && keyOrZh in enDict) {
     const template = dict?.[keyOrZh] ?? enDict[keyOrZh];
-    const values = typeof valuesOrEn === "object" && valuesOrEn !== null ? valuesOrEn : undefined;
-    if (!values) return template;
-    return Object.entries(values).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, String(value)), template);
+    const values =
+      typeof valuesOrEn === "object" && valuesOrEn !== null
+        ? valuesOrEn
+        : typeof fallback === "object" && fallback !== null
+        ? fallback
+        : undefined;
+    if (values) {
+      return Object.entries(values).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, String(value)), template);
+    }
+    if (typeof valuesOrEn === "string" && /\{[a-zA-Z0-9_]+\}/.test(template)) {
+      return valuesOrEn;
+    }
+    return template;
   }
 
   if (typeof valuesOrEn === "string") {
-    if (locale === "zh-CN") {
-      return keyOrZh;
-    }
-    return valuesOrEn || fallback || keyOrZh;
+    const values = typeof fallback === "object" && fallback !== null ? fallback : undefined;
+    if (!values) return valuesOrEn;
+    return Object.entries(values).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, String(value)), valuesOrEn);
   }
 
-  if (fallback) return fallback;
+  if (typeof fallback === "string") {
+    const values = typeof valuesOrEn === "object" && valuesOrEn !== null ? valuesOrEn : undefined;
+    if (!values) return fallback;
+    return Object.entries(values).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, String(value)), fallback);
+  }
+
   return keyOrZh;
 }
 

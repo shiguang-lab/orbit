@@ -12,7 +12,9 @@ import {
   Modal,
   Popconfirm,
   Row,
+  Select,
   Space,
+  Spin,
   Switch,
   Table,
   Tabs,
@@ -26,6 +28,7 @@ import { MaterialIcon } from "@/app/nav";
 import {
   embeddedServicesApi,
   type CliproxyAccountItem,
+  type CliproxyLoginJob,
   type NinerouterModelItem,
 } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
@@ -79,6 +82,17 @@ const SERVICES_META: Record<
     color: "#10b981",
   },
 };
+
+const CLIPROXY_LOGIN_PROVIDERS = [
+  { value: "codex", label: "OpenAI Codex" },
+  { value: "claude", label: "Claude Code" },
+  { value: "antigravity", label: "Google / Antigravity" },
+  { value: "kimi", label: "Kimi / Moonshot" },
+  { value: "xai", label: "xAI / Grok" },
+  { value: "gemini", label: "Google Gemini" },
+  { value: "qwen", label: "Qwen / 通义千问" },
+  { value: "github-copilot", label: "GitHub Copilot" },
+] as const;
 
 const useStyles = createStyles(({ token }) => ({
   page: {
@@ -341,6 +355,83 @@ export function EmbeddedServicesPage() {
       messageApi.error("保存模型映射失败");
     }
   };
+
+  // Controlled Web Login State
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [loginProvider, setLoginProvider] = useState<string>("codex");
+  const [loginJob, setLoginJob] = useState<CliproxyLoginJob | null>(null);
+  const [loginStarting, setLoginStarting] = useState(false);
+  const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const handleStartLogin = async () => {
+    setLoginStarting(true);
+    try {
+      const job = await embeddedServicesApi.startCliproxyLogin(loginProvider);
+      setLoginJob(job);
+      if (job.status === "failed") {
+        messageApi.error(job.error || "启动登录失败");
+      }
+    } catch (err) {
+      messageApi.error(err instanceof Error ? err.message : "请求发起登录失败");
+    } finally {
+      setLoginStarting(false);
+    }
+  };
+
+  const handleCancelLogin = async () => {
+    if (!loginJob) return;
+    try {
+      await embeddedServicesApi.cancelCliproxyLogin(loginJob.id);
+      messageApi.info("已取消登录流程");
+      setLoginJob((prev) => (prev ? { ...prev, status: "canceled" } : null));
+    } catch {
+      messageApi.error("取消登录失败");
+    }
+  };
+
+  useEffect(() => {
+    if (
+      loginModalOpen &&
+      loginJob &&
+      (loginJob.status === "starting" || loginJob.status === "awaiting_user")
+    ) {
+      pollTimerRef.current = setInterval(async () => {
+        if (Date.now() >= loginJob.expiresAt) {
+          setLoginJob((prev) => prev ? {
+            ...prev,
+            status: "timeout",
+            error: "登录流程已超时（5 分钟未完成）。请重试。",
+          } : null);
+          void embeddedServicesApi.cancelCliproxyLogin(loginJob.id).catch(() => undefined);
+          return;
+        }
+        try {
+          const updated = await embeddedServicesApi.getCliproxyLoginJob(loginJob.id);
+          setLoginJob(updated);
+          if (updated.status === "success") {
+            messageApi.success("登录成功！新凭据已自动持久化并导入系统。");
+            void queryClient.invalidateQueries({ queryKey: ["cliproxy-accounts"] });
+            void queryClient.invalidateQueries({ queryKey: ["providers"] });
+          } else if (updated.status === "failed" || updated.status === "timeout") {
+            messageApi.error(updated.error || "登录未完成或超时");
+          }
+        } catch {
+          // Continue polling
+        }
+      }, 2000);
+    } else {
+      if (pollTimerRef.current) {
+        clearInterval(pollTimerRef.current);
+        pollTimerRef.current = null;
+      }
+    }
+    return () => {
+      if (pollTimerRef.current) {
+        clearInterval(pollTimerRef.current);
+        pollTimerRef.current = null;
+      }
+    };
+  }, [loginModalOpen, loginJob, queryClient, messageApi]);
 
   // 9Router Models Query
   const ninerouterModelsQuery = useQuery({
@@ -693,7 +784,15 @@ export function EmbeddedServicesPage() {
                 style={{ width: "100%", flex: 1 }}
                 styles={{ body: { flex: 1, padding: 8, display: "flex", flexDirection: "column" } }}
                 extra={
-                  <Button size="small" icon={<MaterialIcon name="add" size={14} />} onClick={() => messageApi.info("请在终端运行相应 CLI 登录指令")}>
+                  <Button
+                    size="small"
+                    icon={<MaterialIcon name="add" size={14} />}
+                    disabled={!isInstalled || lifecyclePending}
+                    onClick={() => {
+                      setLoginJob(null);
+                      setLoginModalOpen(true);
+                    }}
+                  >
                     挂载新凭据
                   </Button>
                 }
@@ -1090,6 +1189,92 @@ export function EmbeddedServicesPage() {
           >
             添加新映射项
           </Button>
+        </Space>
+      </Modal>
+
+      <Modal
+        title="挂载 CLI 凭据"
+        open={loginModalOpen}
+        onCancel={() => setLoginModalOpen(false)}
+        footer={null}
+        width={560}
+        destroyOnClose={false}
+      >
+        <Space direction="vertical" size={12} style={{ width: "100%", marginTop: 12 }}>
+          <Text type="secondary">
+            登录进程运行在 CLIProxyAPI 所在主机。凭据会由 CLIProxyAPI 写入其持久化凭据目录，浏览器不会接触 access token。
+          </Text>
+          <Flex gap={8} align="center">
+            <Select
+              value={loginProvider}
+              onChange={(value: string) => setLoginProvider(value)}
+              options={[...CLIPROXY_LOGIN_PROVIDERS]}
+              style={{ flex: 1 }}
+              disabled={loginStarting || Boolean(loginJob && ["starting", "awaiting_user"].includes(loginJob.status))}
+            />
+            <Button type="primary" onClick={() => void handleStartLogin()} loading={loginStarting}>
+              开始登录
+            </Button>
+          </Flex>
+
+          {loginJob && (
+            <Card size="small" title="登录状态" styles={{ body: { padding: 12 } }}>
+              <Space direction="vertical" size={8} style={{ width: "100%" }}>
+                <Flex justify="space-between" align="center">
+                  <Text>
+                    {loginJob.status === "starting" && "正在启动登录进程…"}
+                    {loginJob.status === "awaiting_user" && "等待你在浏览器中完成授权"}
+                    {loginJob.status === "success" && "登录成功，凭据已导入"}
+                    {loginJob.status === "failed" && "登录失败"}
+                    {loginJob.status === "timeout" && "登录超时"}
+                    {loginJob.status === "canceled" && "登录已取消"}
+                  </Text>
+                  {(loginJob.status === "starting" || loginJob.status === "awaiting_user") && <Spin size="small" />}
+                </Flex>
+
+                {loginJob.authUrl && (
+                  <Button
+                    type="link"
+                    icon={<MaterialIcon name="open_in_new" size={14} />}
+                    href={loginJob.authUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ padding: 0, textAlign: "left", whiteSpace: "normal", height: "auto" }}
+                  >
+                    打开授权页面
+                  </Button>
+                )}
+                {loginJob.userCode && (
+                  <Flex justify="space-between" align="center" gap={8}>
+                    <Text>设备码：</Text>
+                    <Text code copyable>{loginJob.userCode}</Text>
+                  </Flex>
+                )}
+                {loginJob.prompt && !loginJob.authUrl && !loginJob.userCode && (
+                  <Text type="secondary" style={{ whiteSpace: "pre-wrap" }}>{loginJob.prompt}</Text>
+                )}
+                {loginJob.error && <Alert type="error" showIcon message={loginJob.error} />}
+                {(loginJob.status === "starting" || loginJob.status === "awaiting_user") && (
+                  <Flex justify="space-between" align="center">
+                    <Text type="secondary" style={{ fontSize: 12 }}>
+                      有效期至 {new Date(loginJob.expiresAt).toLocaleTimeString()}
+                    </Text>
+                    <Button danger size="small" onClick={() => void handleCancelLogin()}>
+                      取消登录
+                    </Button>
+                  </Flex>
+                )}
+                {loginJob.terminalCommand && loginJob.status !== "success" && (
+                  <div>
+                    <Text type="secondary" style={{ fontSize: 12 }}>无法使用浏览器时，可在 CLIProxyAPI 主机执行：</Text>
+                    <Text code copyable={{ text: loginJob.terminalCommand }} style={{ display: "block", marginTop: 4, fontSize: 11 }}>
+                      {loginJob.terminalCommand}
+                    </Text>
+                  </div>
+                )}
+              </Space>
+            </Card>
+          )}
         </Space>
       </Modal>
     </div>

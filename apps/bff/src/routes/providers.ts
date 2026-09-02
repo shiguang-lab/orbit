@@ -39,7 +39,21 @@ export interface ProviderEngine {
   /** Resolve the catalog auth category for a provider id (used by batch-test filters). */
   getProviderCategory?: (providerId: string) => string | undefined;
   getProviderModels?: (connectionId: string) => Promise<{ models: unknown[]; customModels: unknown[] }>;
-  getModelsForProvider?: (providerId: string) => Promise<{ models: unknown[]; customModels: unknown[]; source?: string }>;
+  getModelsForProvider?: (providerId: string) => Promise<{ models: unknown[]; customModels: unknown[]; modelCompatOverrides?: unknown[]; hiddenModelsByProvider?: Record<string, string[]>; source?: string }>;
+  addCustomModel?: (data: Record<string, unknown>) => Promise<{ model: unknown }>;
+  updateCustomModel?: (data: Record<string, unknown>) => Promise<{ model?: unknown; success: boolean }>;
+  removeCustomModel?: (provider: string, modelId?: string, options?: { resetOverride?: boolean; clearAll?: boolean }) => Promise<{ success: boolean }>;
+  setModelVisibility?: (provider: string, modelIds: string[], isHidden: boolean) => Promise<{ ok: boolean; updated: number }>;
+  getCcAlias?: (providerId: string) => Promise<{ provider: "on" | "off" | null; models: Record<string, "on" | "off"> }>;
+  setCcAlias?: (providerId: string, data: { scope: "provider" | "model"; value: "on" | "off" | null; modelId?: string }) => Promise<{ success: boolean }>;
+  getModelAliases?: () => Promise<Record<string, string>>;
+  setModelAlias?: (model: string, alias: string) => Promise<boolean>;
+  deleteModelAlias?: (alias: string) => Promise<boolean>;
+  testModel?: (data: { providerId: string; modelId: string; connectionId?: string }) => Promise<{ status: "ok" | "error"; latencyMs?: number; responseText?: string; error?: string }>;
+  webSearch?: (body: Record<string, unknown>) => Promise<{ status: number; payload: unknown }>;
+  embeddings?: (body: Record<string, unknown>) => Promise<{ status: number; payload: unknown }>;
+  imageGenerations?: (body: Record<string, unknown>) => Promise<{ status: number; payload: unknown }>;
+  audioSpeech?: (body: Record<string, unknown>) => Promise<{ status: number; payload: unknown }>;
   addProviderModel?: (connectionId: string, modelId: string, modelName?: string) => unknown;
   removeProviderModel?: (connectionId: string, modelId: string) => unknown;
   getParamFilters?: (providerId: string) => unknown;
@@ -361,6 +375,151 @@ export function providerRoutes(
       return reply.status(200).send(await engine.getModelsForProvider(providerId));
     } catch (error) { app.log.error(error); return reply.status(500).send({ error: "Failed to fetch provider model catalog" }); }
   });
+
+  app.post("/provider-models", async (request, reply) => {
+    try {
+      const body = (request.body ?? {}) as Record<string, unknown>;
+      if (!body.provider || !body.modelId) {
+        return reply.status(400).send({ error: { type: "invalid_request", message: "provider and modelId are required" } });
+      }
+      if (!engine?.addCustomModel) return reply.status(501).send({ error: "Custom model management unavailable" });
+      const result = await engine.addCustomModel(body);
+      return reply.status(201).send(result);
+    } catch (error) { app.log.error(error); return reply.status(500).send({ error: error instanceof Error ? error.message : "Failed to add custom model" }); }
+  });
+
+  app.put("/provider-models", async (request, reply) => {
+    try {
+      const body = (request.body ?? {}) as Record<string, unknown>;
+      if (!body.provider || !body.modelId) {
+        return reply.status(400).send({ error: { type: "invalid_request", message: "provider and modelId are required" } });
+      }
+      if (!engine?.updateCustomModel) return reply.status(501).send({ error: "Custom model management unavailable" });
+      const result = await engine.updateCustomModel(body);
+      return reply.status(200).send(result);
+    } catch (error) { app.log.error(error); return reply.status(500).send({ error: error instanceof Error ? error.message : "Failed to update custom model" }); }
+  });
+
+  app.delete("/provider-models", async (request, reply) => {
+    try {
+      const url = new URL(request.url, "http://bff");
+      const provider = url.searchParams.get("provider")?.trim() ?? "";
+      const model = url.searchParams.get("model")?.trim() ?? url.searchParams.get("modelId")?.trim();
+      const all = url.searchParams.get("all") === "true" || url.searchParams.get("clearAll") === "true";
+      const resetOverride = url.searchParams.get("resetOverride") === "true";
+      if (!provider) return reply.status(400).send({ error: { type: "invalid_request", message: "provider is required" } });
+      if (!engine?.removeCustomModel) return reply.status(501).send({ error: "Custom model management unavailable" });
+      const result = await engine.removeCustomModel(provider, model, { resetOverride, clearAll: all });
+      return reply.status(200).send(result);
+    } catch (error) { app.log.error(error); return reply.status(500).send({ error: error instanceof Error ? error.message : "Failed to delete custom model" }); }
+  });
+
+  app.patch("/provider-models", async (request, reply) => {
+    try {
+      const url = new URL(request.url, "http://bff");
+      const body = (request.body ?? {}) as { modelIds?: unknown; modelId?: unknown; isHidden?: unknown };
+      const provider = url.searchParams.get("provider")?.trim() ?? "";
+      if (!provider) return reply.status(400).send({ error: { type: "invalid_request", message: "provider is required" } });
+      const isHidden = body.isHidden === true;
+      let modelIds: string[] = [];
+      if (Array.isArray(body.modelIds)) {
+        modelIds = body.modelIds.filter((id): id is string => typeof id === "string" && Boolean(id.trim()));
+      } else if (typeof body.modelId === "string" && body.modelId.trim()) {
+        modelIds = [body.modelId.trim()];
+      }
+      if (!engine?.setModelVisibility) return reply.status(501).send({ error: "Model visibility management unavailable" });
+      const result = await engine.setModelVisibility(provider, modelIds, isHidden);
+      return reply.status(200).send(result);
+    } catch (error) { app.log.error(error); return reply.status(500).send({ error: error instanceof Error ? error.message : "Failed to update model visibility" }); }
+  });
+
+  app.get("/providers/:id/cc-alias", async (request, reply) => {
+    try {
+      const { id } = request.params as { id: string };
+      if (!engine?.getCcAlias) return reply.status(200).send({ provider: null, models: {} });
+      return reply.status(200).send(await engine.getCcAlias(id));
+    } catch (error) { app.log.error(error); return reply.status(500).send({ error: "Failed to fetch cc-alias settings" }); }
+  });
+
+  app.put("/providers/:id/cc-alias", async (request, reply) => {
+    try {
+      const { id } = request.params as { id: string };
+      const body = (request.body ?? {}) as { scope: "provider" | "model"; value: "on" | "off" | null; modelId?: string };
+      if (!engine?.setCcAlias) return reply.status(501).send({ error: "cc-alias management unavailable" });
+      return reply.status(200).send(await engine.setCcAlias(id, body));
+    } catch (error) { app.log.error(error); return reply.status(500).send({ error: "Failed to save cc-alias settings" }); }
+  });
+
+  app.get("/models/alias", async (_request, reply) => {
+    try {
+      if (!engine?.getModelAliases) return reply.status(200).send({ aliases: {} });
+      return reply.status(200).send({ aliases: await engine.getModelAliases() });
+    } catch (error) { app.log.error(error); return reply.status(500).send({ error: "Failed to fetch model aliases" }); }
+  });
+
+  app.put("/models/alias", async (request, reply) => {
+    try {
+      const body = (request.body ?? {}) as { model?: string; alias?: string };
+      if (!body.model || !body.alias) return reply.status(400).send({ error: "model and alias are required" });
+      if (!engine?.setModelAlias) return reply.status(501).send({ error: "Model alias management unavailable" });
+      await engine.setModelAlias(body.model, body.alias);
+      return reply.status(200).send({ success: true });
+    } catch (error) { app.log.error(error); return reply.status(500).send({ error: "Failed to set model alias" }); }
+  });
+
+  app.delete("/models/alias", async (request, reply) => {
+    try {
+      const url = new URL(request.url, "http://bff");
+      const alias = url.searchParams.get("alias")?.trim() ?? "";
+      if (!alias) return reply.status(400).send({ error: "alias is required" });
+      if (!engine?.deleteModelAlias) return reply.status(501).send({ error: "Model alias management unavailable" });
+      await engine.deleteModelAlias(alias);
+      return reply.status(200).send({ success: true });
+    } catch (error) { app.log.error(error); return reply.status(500).send({ error: "Failed to delete model alias" }); }
+  });
+
+  app.post("/models/test", async (request, reply) => {
+    try {
+      const body = (request.body ?? {}) as { providerId?: string; modelId?: string; connectionId?: string };
+      if (!body.providerId || !body.modelId) return reply.status(400).send({ error: "providerId and modelId are required" });
+      if (!engine?.testModel) return reply.status(501).send({ error: "Model testing unavailable" });
+      const result = await engine.testModel({ providerId: body.providerId, modelId: body.modelId, connectionId: body.connectionId });
+      return reply.status(result.status === "ok" ? 200 : 400).send(result);
+    } catch (error) { app.log.error(error); return reply.status(500).send({ error: "Failed to test model" }); }
+  });
+
+  app.post("/v1/search", async (request, reply) => {
+    try {
+      if (!engine?.webSearch) return reply.status(501).send({ error: "Web search is unavailable" });
+      const result = await engine.webSearch((request.body ?? {}) as Record<string, unknown>);
+      return reply.status(result.status).send(result.payload);
+    } catch (error) { app.log.error(error); return reply.status(500).send({ error: "Failed to execute search" }); }
+  });
+
+  app.post("/v1/embeddings", async (request, reply) => {
+    try {
+      if (!engine?.embeddings) return reply.status(501).send({ error: "Embeddings unavailable" });
+      const result = await engine.embeddings((request.body ?? {}) as Record<string, unknown>);
+      return reply.status(result.status).send(result.payload);
+    } catch (error) { app.log.error(error); return reply.status(500).send({ error: "Failed to generate embeddings" }); }
+  });
+
+  app.post("/v1/images/generations", async (request, reply) => {
+    try {
+      if (!engine?.imageGenerations) return reply.status(501).send({ error: "Image generation unavailable" });
+      const result = await engine.imageGenerations((request.body ?? {}) as Record<string, unknown>);
+      return reply.status(result.status).send(result.payload);
+    } catch (error) { app.log.error(error); return reply.status(500).send({ error: "Failed to generate image" }); }
+  });
+
+  app.post("/v1/audio/speech", async (request, reply) => {
+    try {
+      if (!engine?.audioSpeech) return reply.status(501).send({ error: "Speech generation unavailable" });
+      const result = await engine.audioSpeech((request.body ?? {}) as Record<string, unknown>);
+      return reply.status(result.status).send(result.payload);
+    } catch (error) { app.log.error(error); return reply.status(500).send({ error: "Failed to generate speech" }); }
+  });
+
   app.post("/providers/:id/models", async (request, reply) => {
     try {
       const { id } = request.params as { id: string };

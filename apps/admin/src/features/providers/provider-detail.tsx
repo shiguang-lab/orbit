@@ -33,6 +33,14 @@ import AwsColorIcon from "@lobehub/icons/es/Aws/components/Color";
 import ClineMonoIcon from "@lobehub/icons/es/Cline/components/Mono";
 import QoderColorIcon from "@lobehub/icons/es/Qoder/components/Color";
 import TencentColorIcon from "@lobehub/icons/es/Tencent/components/Color";
+import { ProviderModelsSection, type ModelRowItem } from "./components/ProviderModelsSection";
+import { CustomModelsSection, type CustomModelItem } from "./components/CustomModelsSection";
+import { SearchProviderCard } from "./components/SearchProviderCard";
+import { ProviderPlaygroundPanel } from "./components/ProviderPlaygroundPanel";
+import { ProviderParamFilterSection } from "./components/ProviderParamFilterSection";
+import { ProviderInterceptionSection } from "./components/ProviderInterceptionSection";
+import { ProviderCcAliasSection } from "./components/ProviderCcAliasSection";
+import { useBreadcrumbTitle } from "@/shell/useBreadcrumbTitle";
 
 const useStyles = createStyles(({ token }) => ({
   // Orbit's dashboard is fluid (capped only by the shell at very wide
@@ -47,19 +55,18 @@ const useStyles = createStyles(({ token }) => ({
     "& .ant-tag > .material-symbols-outlined": { flex: "none" },
     "& .ant-tag > .material-symbols-outlined + span": { marginInlineStart: 4 },
   },
-  header: { display: "flex", alignItems: "center", gap: 16, marginBottom: 8 },
-  title: { margin: 0, letterSpacing: "-0.02em" },
-  titleLink: { color: "inherit", display: "inline-flex", alignItems: "center", gap: 6 },
-  headerIcon: { width: 48, height: 48, borderRadius: 10, display: "inline-flex", alignItems: "center", justifyContent: "center", overflow: "hidden", flex: "none", position: "relative" },
-  headerIconImage: { width: 42, height: 42, objectFit: "contain" as const, position: "relative" as const, zIndex: 1 },
-  headerBody: { minWidth: 0, flex: 1 },
-  headerMeta: { display: "flex", alignItems: "center", flexWrap: "wrap" as const, gap: 8, marginTop: 2 },
+  header: { display: "flex", alignItems: "center", gap: 12, marginBottom: 0, minHeight: 38 },
+  title: { margin: "0 !important", fontSize: 20, lineHeight: "1 !important", letterSpacing: "-0.01em", display: "inline-flex", alignItems: "center" },
+  titleLink: { color: "inherit", display: "inline-flex", alignItems: "center", gap: 6, lineHeight: 1 },
+  headerIcon: { width: 38, height: 38, borderRadius: 8, display: "inline-flex", alignItems: "center", justifyContent: "center", overflow: "hidden", flex: "none", position: "relative" },
+  headerIconImage: { width: 32, height: 32, objectFit: "contain" as const, position: "relative" as const, zIndex: 1 },
+  headerRow: { display: "flex", alignItems: "center", flexWrap: "wrap" as const, gap: 10, minWidth: 0, flex: 1 },
   muted: { color: token.colorTextSecondary },
   section: { marginBottom: 0 },
   protocol: { borderLeft: `3px solid ${token.colorPrimary}` },
   formGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 },
   connectionRow: { display: "flex", alignItems: "center", flexWrap: "wrap", gap: 12, width: "100%", minWidth: 0 },
-  connectionToolbar: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, width: "100%", flexWrap: "wrap" as const, marginBottom: 16 },
+  connectionToolbar: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, width: "100%", flexWrap: "wrap" as const, marginBottom: 8 },
   connectionToolbarFilters: { display: "flex", alignItems: "center", flexWrap: "wrap" as const, gap: 12, minWidth: 0 },
   bulkActions: { display: "flex", alignItems: "center", justifyContent: "flex-end", flexWrap: "wrap" as const, gap: 8, marginInlineStart: "auto" },
   bulkActionButton: { minHeight: 32, paddingInline: 12, fontWeight: 500 },
@@ -120,11 +127,11 @@ function classify(providerId: string, info: (ProviderCatalogEntry & { category: 
   return "standard";
 }
 
-function connectionStatus(connection: ProviderConnection, t: (key: string) => string, className?: string) {
-  if (connection.isActive === false) return <Tag className={className}>{t("providers.statusDisabled")}</Tag>;
-  if (connection.testStatus === "error" || connection.lastError) return <Tag className={className} color="error">{t("providers.statusError")}</Tag>;
-  if (connection.testStatus === "active" || connection.testStatus === "success") return <Tag className={className} color="success">{t("providers.statusConnected")}</Tag>;
-  return <Tag className={className} color="processing">{t("providers.statusUntested")}</Tag>;
+function connectionStatus(connection: ProviderConnection, t: (key: string, fallback?: string) => string, className?: string) {
+  if (connection.isActive === false) return <Tag className={className}>{t("providers.statusDisabled", "已禁用")}</Tag>;
+  if (connection.testStatus === "error" || connection.lastError) return <Tag className={className} color="error">{t("providers.statusError", "异常")}</Tag>;
+  if (connection.testStatus === "active" || connection.testStatus === "success") return <Tag className={className} color="success">{t("providers.statusConnected", "已连接")}</Tag>;
+  return <Tag className={className} color="processing">{t("providers.statusUntested", "未测试")}</Tag>;
 }
 
 function maskAccountName(value: string | null | undefined): string {
@@ -139,35 +146,6 @@ function maskAccountName(value: string | null | undefined): string {
   return `${maskedUser}@${maskedDomain}`;
 }
 
-type ProviderModelRow = Record<string, unknown> & { id?: unknown; name?: unknown; source?: unknown };
-
-function mergeProviderModelRows(
-  registryModels: ProviderModelRow[],
-  syncedModels: ProviderModelRow[],
-  metadata: { models?: ProviderModelRow[]; customModels?: ProviderModelRow[]; source?: string },
-): ProviderModelRow[] {
-  const merged = new Map<string, ProviderModelRow>();
-  for (const model of registryModels) {
-    const id = String(model.id ?? "").trim();
-    if (id) merged.set(id, { ...model, id, name: model.name || id, source: "system" });
-  }
-  for (const model of syncedModels) {
-    const id = String(model.id ?? "").trim();
-    if (id && !merged.has(id)) merged.set(id, { ...model, id, name: model.name || id, source: "imported" });
-  }
-
-  // Orbit's /provider-models route returns user-managed rows in `models`.
-  // The local engine adapter instead labels its `models` projection as synced
-  // or catalog data, so only its explicit customModels belong in this layer.
-  const metadataModels = metadata.source === "synced" || metadata.source === "catalog" ? [] : metadata.models ?? [];
-  for (const model of [...metadataModels, ...(metadata.customModels ?? [])]) {
-    const id = String(model.id ?? "").trim();
-    if (!id) continue;
-    const source = model.source === "imported" ? "imported" : "custom";
-    merged.set(id, { ...model, id, name: model.name || id, source });
-  }
-  return [...merged.values()];
-}
 
 export default function ProviderDetailPage() {
   const { styles } = useStyles();
@@ -176,17 +154,6 @@ export default function ProviderDetailPage() {
   const { id: providerId = "" } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
   const [messageApi, contextHolder] = message.useMessage();
-  const [modelId, setModelId] = useState("");
-  const [modelName, setModelName] = useState("");
-  const [playgroundUrl, setPlaygroundUrl] = useState("https://example.com");
-  const [playgroundFormat, setPlaygroundFormat] = useState("markdown");
-  const [playgroundDepth, setPlaygroundDepth] = useState("0");
-  const [playgroundResult, setPlaygroundResult] = useState<string | null>(null);
-  const [filtersText, setFiltersText] = useState("");
-  const [interceptionText, setInterceptionText] = useState("");
-  const [chatModel, setChatModel] = useState("");
-  const [chatInput, setChatInput] = useState("");
-  const [chatOutput, setChatOutput] = useState<string | null>(null);
   const [oauthOpen, setOauthOpen] = useState(false);
   const [oauthBusy, setOauthBusy] = useState(false);
   const [oauthError, setOauthError] = useState<string | null>(null);
@@ -196,8 +163,6 @@ export default function ProviderDetailPage() {
   const [accountSearch, setAccountSearch] = useState("");
   const [healthFilter, setHealthFilter] = useState<"all" | "active" | "error" | "disabled" | "banned" | "exhausted">("all");
   const [selectedConnectionIds, setSelectedConnectionIds] = useState<string[]>([]);
-  const [modelFilter, setModelFilter] = useState("");
-  const [visibilityFilter, setVisibilityFilter] = useState<"all" | "visible" | "hidden">("all");
   const [routingStrategy, setRoutingStrategy] = useState("");
   const [stickyLimit, setStickyLimit] = useState(3);
   const [routingBusy, setRoutingBusy] = useState(false);
@@ -221,18 +186,35 @@ export default function ProviderDetailPage() {
     queryKey: ["providers", "provider-models", providerId, connectionIds],
     queryFn: async () => {
       const [metadata, registry, synced] = await Promise.all([
-        providersApi.providerModels(providerId).catch(() => ({ models: [], customModels: [], hiddenModelsByProvider: {} })),
-        providersApi.catalogModels(providerId),
+        providersApi.providerModels(providerId).catch(() => ({ models: [], customModels: [], modelCompatOverrides: [], hiddenModelsByProvider: {} })),
+        providersApi.catalogModels(providerId).catch(() => ({ models: [] })),
         providersApi.syncedModels(providerId).catch(() => ({ models: [] })),
       ]);
+      const compatMap = new Map<string, any>();
+      for (const override of ((metadata as any).modelCompatOverrides || []) as any[]) {
+        if (override?.id) compatMap.set(override.id, override);
+      }
       return {
         ...metadata,
-        models: mergeProviderModelRows(registry.models, synced.models, metadata),
-        customModels: [],
-        source: "merged",
+        registryModels: registry.models || [],
+        syncedModels: synced.models || [],
+        customModels: (metadata as any).customModels || [],
+        compatMap,
       };
     },
     enabled: Boolean(providerId) && providerQuery.isSuccess,
+  });
+  const aliasesQuery = useQuery({
+    queryKey: ["models", "aliases"],
+    queryFn: async () => {
+      const res = await providersApi.aliases().catch(() => ({ aliases: {} }));
+      return res.aliases || {};
+    },
+  });
+  const ccAliasQuery = useQuery({
+    queryKey: ["providers", providerId, "cc-alias"],
+    queryFn: () => providersApi.ccAlias(providerId).catch(() => ({ provider: null, models: {} })),
+    enabled: Boolean(providerId),
   });
   const filtersQuery = useQuery({ queryKey: ["providers", providerId, "param-filters"], queryFn: () => providersApi.paramFilters(providerId), enabled: Boolean(providerId) });
   const interceptionQuery = useQuery({ queryKey: ["providers", providerId, "interception-rules"], queryFn: () => providersApi.interceptionRules(providerId), enabled: Boolean(providerId) });
@@ -246,6 +228,7 @@ export default function ProviderDetailPage() {
   const node = nodesQuery.data?.nodes.find((item) => item.id === providerId);
   const providerProxy = (proxyConfigQuery.data as Record<string, unknown> | undefined)?.providers as Record<string, { host?: string; name?: string }> | undefined;
   const providerProxyHost = providerProxy?.[providerId]?.host;
+  const providerDisplayAlias = node?.prefix || (info as any)?.alias || providerId;
   const headerIconId = (HEADER_ICON_ALIASES[providerId.toLowerCase()] ?? info?.icon ?? providerId).toLowerCase();
   const HeaderIcon = HEADER_LOBE_ICONS[headerIconId];
   const visibleConnections = useMemo(() => {
@@ -257,8 +240,6 @@ export default function ProviderDetailPage() {
       return matchesQuery && matchesHealth;
     });
   }, [accountSearch, connections, healthFilter]);
-  const hiddenModelsByProvider = modelsQuery.data?.hiddenModelsByProvider as Record<string, string[]> | undefined;
-  const hiddenModelIds = useMemo(() => new Set(hiddenModelsByProvider?.[providerId] ?? []), [hiddenModelsByProvider, providerId]);
   useEffect(() => {
     const overrides = settingsQuery.data?.providerStrategies as Record<string, { fallbackStrategy?: string; stickyRoundRobinLimit?: number }> | undefined;
     const override = overrides?.[providerId];
@@ -269,6 +250,38 @@ export default function ProviderDetailPage() {
     const blocked = settingsQuery.data?.blockedProviders;
     setNoAuthEnabled(!(Array.isArray(blocked) && blocked.includes(providerId)));
   }, [providerId, settingsQuery.data]);
+
+  const setCustomTitle = useBreadcrumbTitle((s) => s.setCustomTitle);
+  useEffect(() => {
+    const title = info?.name || providerId;
+    if (title) setCustomTitle(title);
+    return () => setCustomTitle(null);
+  }, [info?.name, providerId, setCustomTitle]);
+
+  useEffect(() => {
+    const resetScroll = () => {
+      const targets = [
+        document.querySelector(".shell-content-scrollbar"),
+        document.querySelector(".shell-content-scrollbar .os-viewport"),
+        document.querySelector(".shell-content-scrollbar > div"),
+        document.querySelector(".shell-content-scrollbar [data-overlayscrollbars-viewport]"),
+        document.documentElement,
+        document.body,
+      ];
+      targets.forEach((el) => {
+        if (el) el.scrollTop = 0;
+      });
+      window.scrollTo(0, 0);
+    };
+
+    resetScroll();
+    const frameId = requestAnimationFrame(resetScroll);
+    const timerId = setTimeout(resetScroll, 100);
+    return () => {
+      cancelAnimationFrame(frameId);
+      clearTimeout(timerId);
+    };
+  }, [providerId, providerQuery.isLoading]);
 
   const startOAuth = useCallback(async () => {
     setOauthBusy(true);
@@ -410,16 +423,12 @@ export default function ProviderDetailPage() {
   }, [messageApi, oauthDevice, oauthOpen, providerId, queryClient]);
 
   const openAddConnection = useCallback(() => {
-    if (kind === "oauth" || kind === "ide" || kind === "web-cookie") {
-      void startOAuth();
-      return;
-    }
     setConnectionName(`${info?.name ?? providerId} Primary`);
     setConnectionApiKey("");
     setConnectionBaseUrl(node?.baseUrl ?? info?.baseUrl ?? "");
     setConnectionPriority(1);
     setAddConnectionOpen(true);
-  }, [info?.baseUrl, info?.name, kind, node?.baseUrl, providerId, startOAuth]);
+  }, [info?.baseUrl, info?.name, node?.baseUrl, providerId]);
 
   const createConnectionMutation = useMutation({
     mutationFn: () => providersApi.create({
@@ -427,7 +436,7 @@ export default function ProviderDetailPage() {
       name: connectionName.trim() || `${info?.name ?? providerId} Primary`,
       apiKey: connectionApiKey.trim() || undefined,
       baseUrl: connectionBaseUrl.trim() || undefined,
-      authType: kind === "compatible" ? "compatible" : "apikey",
+      authType: kind === "compatible" ? "compatible" : kind === "oauth" ? "oauth" : kind === "web-cookie" ? "web-cookie" : "apikey",
       priority: connectionPriority,
       isActive: false,
       testStatus: "unknown",
@@ -436,9 +445,13 @@ export default function ProviderDetailPage() {
       await queryClient.invalidateQueries({ queryKey: ["providers", "detail", providerId] });
       await queryClient.invalidateQueries({ queryKey: ["providers"] });
       setAddConnectionOpen(false);
+      setConnectionApiKey("");
       messageApi.success("连接已添加，请测试通过后启用");
     },
-    onError: (error) => messageApi.error(error instanceof Error ? error.message : "连接添加失败"),
+    onError: (error: any) => {
+      const msg = error?.response?.data?.error?.message || error?.message || "连接添加失败";
+      messageApi.error(msg);
+    },
   });
 
   const testMutation = useMutation({
@@ -477,11 +490,293 @@ export default function ProviderDetailPage() {
     onSuccess: (result) => { void queryClient.invalidateQueries({ queryKey: ["providers", "provider-models", providerId] }); messageApi.success(`模型同步完成（${String(result.availableModelsCount ?? result.syncedModels ?? 0)} 个）`); },
     onError: (error) => messageApi.error(error instanceof Error ? error.message : "模型同步失败"),
   });
-  const visibilityMutation = useMutation({
-    mutationFn: ({ modelId, isHidden }: { modelId: string; isHidden: boolean }) => providersApi.setModelVisibility(providerId, [modelId], isHidden),
-    onSuccess: () => { void queryClient.invalidateQueries({ queryKey: ["providers", "provider-models", providerId] }); },
-    onError: (error) => messageApi.error(error instanceof Error ? error.message : "模型可见性更新失败"),
+  const [testingModelId, setTestingModelId] = useState<string | null>(null);
+  const [modelTestStatus, setModelTestStatus] = useState<Record<string, "ok" | "error" | "quota">>({});
+  const [modelTestLatencies, setModelTestLatencies] = useState<Record<string, number>>({});
+  const [testingAll, setTestingAll] = useState(false);
+  const [testProgress, setTestProgress] = useState<{ done: number; total: number } | null>(null);
+
+  const setAliasMutation = useMutation({
+    mutationFn: ({ modelId, alias }: { modelId: string; alias: string }) =>
+      providersApi.setAlias(`${providerId}/${modelId}`, alias),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["models", "aliases"] });
+      messageApi.success("别名已设置");
+    },
+    onError: () => messageApi.error("设置别名失败"),
   });
+
+  const deleteAliasMutation = useMutation({
+    mutationFn: (alias: string) => providersApi.deleteAlias(alias),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["models", "aliases"] });
+      messageApi.success("别名已删除");
+    },
+    onError: () => messageApi.error("删除别名失败"),
+  });
+
+  const toggleVisibilityMutation = useMutation({
+    mutationFn: ({ modelIds, isHidden }: { modelIds: string[]; isHidden: boolean }) =>
+      providersApi.setModelVisibility(providerId, modelIds, isHidden),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["providers", "provider-models", providerId] });
+    },
+    onError: () => messageApi.error("保存模型可见性失败"),
+  });
+
+  const saveModelCompatMutation = useMutation({
+    mutationFn: ({ modelId, patch }: { modelId: string; patch: any }) =>
+      providersApi.updateCustomModel({ provider: providerId, modelId, ...patch }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["providers", "provider-models", providerId] });
+    },
+    onError: () => messageApi.error("保存兼容性配置失败"),
+  });
+
+  const addCustomModelMutation = useMutation({
+    mutationFn: (data: any) => providersApi.addCustomModel(data),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["providers", "provider-models", providerId] });
+    },
+  });
+
+  const updateCustomModelMutation = useMutation({
+    mutationFn: (data: any) => providersApi.updateCustomModel(data),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["providers", "provider-models", providerId] });
+    },
+  });
+
+  const removeCustomModelMutation = useMutation({
+    mutationFn: ({ modelId, resetOverride }: { modelId: string; resetOverride?: boolean }) =>
+      providersApi.removeCustomModel(providerId, modelId, resetOverride),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["providers", "provider-models", providerId] });
+      messageApi.success("模型已删除");
+    },
+    onError: () => messageApi.error("删除模型失败"),
+  });
+
+  const clearAllCustomModelsMutation = useMutation({
+    mutationFn: () => providersApi.clearAllCustomModels(providerId),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["providers", "provider-models", providerId] });
+      void queryClient.invalidateQueries({ queryKey: ["models", "aliases"] });
+      messageApi.success("模型已清空");
+    },
+    onError: () => messageApi.error("清空模型失败"),
+  });
+
+  const updateCcAliasMutation = useMutation({
+    mutationFn: (data: { scope: "provider" | "model"; value: "on" | "off" | null; modelId?: string }) =>
+      providersApi.updateCcAlias(providerId, data),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["providers", providerId, "cc-alias"] });
+    },
+  });
+
+  const saveParamFiltersMutation = useMutation({
+    mutationFn: (cfg: any) => providersApi.updateParamFilters(providerId, cfg),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["providers", providerId, "param-filters"] });
+    },
+  });
+
+  const resetParamFiltersMutation = useMutation({
+    mutationFn: () => providersApi.deleteParamFilters(providerId),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["providers", providerId, "param-filters"] });
+    },
+  });
+
+  const updateInterceptionMutation = useMutation({
+    mutationFn: (cfg: any) => providersApi.updateInterceptionRules(providerId, cfg),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["providers", providerId, "interception-rules"] });
+    },
+  });
+
+  const handleTestModel = async (modelId: string, fullModel: string) => {
+    setTestingModelId(modelId);
+    try {
+      const res = await providersApi.testModel({
+        providerId,
+        modelId: fullModel,
+        connectionId: connections[0]?.id,
+      });
+      if (res.status === "ok") {
+        setModelTestStatus((prev) => ({ ...prev, [modelId]: "ok" }));
+        if (res.latencyMs) setModelTestLatencies((prev) => ({ ...prev, [modelId]: res.latencyMs! }));
+        messageApi.success(`模型 ${modelId} 测试通过 (${res.latencyMs || 0}ms)`);
+      } else {
+        setModelTestStatus((prev) => ({ ...prev, [modelId]: "error" }));
+        messageApi.error(res.error || "测试失败");
+      }
+    } catch (err: any) {
+      setModelTestStatus((prev) => ({ ...prev, [modelId]: "error" }));
+      messageApi.error(err?.message || "测试失败");
+    } finally {
+      setTestingModelId(null);
+    }
+  };
+
+  const handleTestAll = async (
+    targets: Array<{ modelId: string; fullModel: string }>,
+    autoHideFailed?: boolean
+  ) => {
+    if (testingAll || targets.length === 0) return;
+    setTestingAll(true);
+    setTestProgress({ done: 0, total: targets.length });
+
+    let doneCount = 0;
+    const failedModelIds: string[] = [];
+
+    for (let i = 0; i < targets.length; i += 3) {
+      const chunk = targets.slice(i, i + 3);
+      await Promise.all(
+        chunk.map(async ({ modelId, fullModel }) => {
+          try {
+            const res = await providersApi.testModel({
+              providerId,
+              modelId: fullModel,
+              connectionId: connections[0]?.id,
+            });
+            if (res.status === "ok") {
+              setModelTestStatus((prev) => ({ ...prev, [modelId]: "ok" }));
+              if (res.latencyMs) setModelTestLatencies((prev) => ({ ...prev, [modelId]: res.latencyMs! }));
+            } else {
+              setModelTestStatus((prev) => ({ ...prev, [modelId]: "error" }));
+              failedModelIds.push(modelId);
+            }
+          } catch {
+            setModelTestStatus((prev) => ({ ...prev, [modelId]: "error" }));
+            failedModelIds.push(modelId);
+          } finally {
+            doneCount++;
+            setTestProgress({ done: doneCount, total: targets.length });
+          }
+        })
+      );
+    }
+
+    if (autoHideFailed && failedModelIds.length > 0) {
+      await toggleVisibilityMutation.mutateAsync({
+        modelIds: failedModelIds,
+        isHidden: true,
+      }).catch(() => {});
+      messageApi.warning(`测试完成，已自动隐藏 ${failedModelIds.length} 个失败模型`);
+    } else {
+      messageApi.success("全部模型测试完成");
+    }
+
+    setTestingAll(false);
+    setTestProgress(null);
+  };
+
+  const autoFetchModelsEnabled = useMemo(() => {
+    const activeConnections = connections.filter((c) => c.isActive !== false);
+    return activeConnections.length > 0 && activeConnections.every((c) => (c as any).providerSpecificData?.autoFetchModels === true);
+  }, [connections]);
+
+  const handleToggleAutoFetchModels = async (enabled: boolean) => {
+    const activeConnections = connections.filter((c) => c.isActive !== false);
+    for (const c of activeConnections) {
+      const curData = (c as any).providerSpecificData || {};
+      await providersApi.update(c.id, {
+        providerSpecificData: { ...curData, autoFetchModels: enabled },
+      } as any).catch(() => {});
+    }
+    void queryClient.invalidateQueries({ queryKey: ["providers", "detail", providerId] });
+    messageApi.success(enabled ? "已开启自动拉取上游模型" : "已关闭自动拉取上游模型");
+  };
+
+  const autoSyncEnabled = useMemo(() => {
+    const activeConnections = connections.filter((c) => c.isActive !== false);
+    return activeConnections.length > 0 && activeConnections.every((c) => (c as any).providerSpecificData?.autoSync === true);
+  }, [connections]);
+
+  const handleToggleAutoSync = async (enabled: boolean) => {
+    const activeConnections = connections.filter((c) => c.isActive !== false);
+    for (const c of activeConnections) {
+      const curData = (c as any).providerSpecificData || {};
+      await providersApi.update(c.id, {
+        providerSpecificData: { ...curData, autoSync: enabled },
+      } as any).catch(() => {});
+    }
+    void queryClient.invalidateQueries({ queryKey: ["providers", "detail", providerId] });
+    messageApi.success(enabled ? "已开启自动同步" : "已关闭自动同步");
+  };
+
+  const availableModelRows: ModelRowItem[] = useMemo(() => {
+    const map = new Map<string, ModelRowItem>();
+    const compatMap = (modelsQuery.data as any)?.compatMap || new Map();
+    const hiddenSet = new Set((modelsQuery.data as any)?.hiddenModelsByProvider?.[providerId] || []);
+
+    for (const m of ((modelsQuery.data as any)?.registryModels || []) as any[]) {
+      const id = String(m.id ?? "").trim();
+      if (!id) continue;
+      map.set(id, {
+        id,
+        name: m.name || id,
+        source: "system",
+        isFree: Boolean(m.isFree),
+        isHidden: hiddenSet.has(id),
+        compat: compatMap.get(id),
+        testStatus: modelTestStatus[id],
+        latencyMs: modelTestLatencies[id],
+      });
+    }
+
+    for (const m of ((modelsQuery.data as any)?.syncedModels || []) as any[]) {
+      const id = String(m.id ?? "").trim();
+      if (!id) continue;
+      const existing = map.get(id);
+      if (!existing) {
+        map.set(id, {
+          id,
+          name: m.name || id,
+          source: "imported",
+          isFree: Boolean(m.isFree),
+          isHidden: hiddenSet.has(id),
+          compat: compatMap.get(id),
+          testStatus: modelTestStatus[id],
+          latencyMs: modelTestLatencies[id],
+        });
+      } else {
+        // Retain built-in system source, enrich with any newly discovered attributes
+        map.set(id, {
+          ...existing,
+          name: existing.name || m.name || id,
+          isFree: existing.isFree || Boolean(m.isFree),
+        });
+      }
+    }
+
+    return [...map.values()];
+  }, [modelsQuery.data, providerId, modelTestStatus, modelTestLatencies]);
+
+  const customModelRows: CustomModelItem[] = useMemo(() => {
+    const compatMap = (modelsQuery.data as any)?.compatMap || new Map();
+    const hiddenSet = new Set((modelsQuery.data as any)?.hiddenModelsByProvider?.[providerId] || []);
+    const registrySet = new Set(((modelsQuery.data as any)?.registryModels || []).map((m: any) => String(m.id)));
+
+    return ((modelsQuery.data as any)?.customModels || []).map((m: any) => {
+      const id = String(m.id ?? "").trim();
+      return {
+        id,
+        name: m.name || id,
+        apiFormat: m.apiFormat,
+        targetFormat: m.targetFormat,
+        supportedEndpoints: m.supportedEndpoints,
+        supportsVision: m.supportsVision,
+        isFree: m.isFree,
+        contextWindowOverride: m.contextWindowOverride,
+        isHidden: hiddenSet.has(id),
+        isOverride: registrySet.has(id),
+        compat: compatMap.get(id),
+      };
+    });
+  }, [modelsQuery.data, providerId]);
   const saveRouting = useCallback(async (strategy: string, nextStickyLimit: number) => {
     setRoutingBusy(true);
     try {
@@ -609,97 +904,52 @@ export default function ProviderDetailPage() {
     onSuccess: () => { void queryClient.invalidateQueries({ queryKey: ["providers", "detail", providerId] }); void queryClient.invalidateQueries({ queryKey: ["providers"] }); messageApi.success("连接已删除"); },
     onError: (error) => messageApi.error(error instanceof Error ? error.message : "删除失败"),
   });
-  const modelMutation = useMutation({
-    mutationFn: async ({ action, id, name }: { action: "add" | "remove"; id: string; name?: string }) => {
-      const connectionId = connections[0]?.id;
-      if (!connectionId) throw new Error("请先添加连接后再管理模型");
-      if (action === "add") return providersApi.addModel(connectionId, id, name);
-      await providersApi.removeModel(connectionId, id);
-      return { model: {} };
-    },
-    onSuccess: () => { void queryClient.invalidateQueries({ queryKey: ["providers", "provider-models", providerId] }); setModelId(""); setModelName(""); messageApi.success("模型配置已更新"); },
-    onError: (error) => messageApi.error(error instanceof Error ? error.message : "模型操作失败"),
-  });
-  const saveConfigMutation = useMutation({
-    mutationFn: ({ type, text }: { type: "filters" | "interception"; text: string }) => {
-      let parsed: unknown;
-      try { parsed = JSON.parse(text); } catch { throw new Error("配置必须是有效 JSON"); }
-      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error("配置必须是 JSON 对象");
-      return type === "filters" ? providersApi.updateParamFilters(providerId, parsed as Record<string, unknown>) : providersApi.updateInterceptionRules(providerId, parsed as Record<string, unknown>);
-    },
-    onSuccess: (_value, variables) => { void queryClient.invalidateQueries({ queryKey: ["providers", providerId, variables.type === "filters" ? "param-filters" : "interception-rules"] }); messageApi.success("配置已保存"); },
-    onError: (error) => messageApi.error(error instanceof Error ? error.message : "配置保存失败"),
-  });
-  const playgroundMutation = useMutation({
-    mutationFn: () => providersApi.webFetch({ url: playgroundUrl, provider: providerId, format: playgroundFormat, depth: Number(playgroundDepth) }),
-    onSuccess: (result) => setPlaygroundResult(JSON.stringify(result, null, 2)),
-    onError: (error) => setPlaygroundResult(error instanceof Error ? error.message : "网页抓取失败"),
-  });
-  const chatMutation = useMutation({
-    mutationFn: () => {
-      if (!chatModel || !chatInput.trim()) throw new Error("请选择模型并输入消息");
-      const qualifiedModel = chatModel.includes("/") ? chatModel : `${providerId}/${chatModel}`;
-      return providersApi.chat({ model: qualifiedModel, messages: [{ role: "user", content: chatInput.trim() }] });
-    },
-    onSuccess: (result) => {
-      const choices = Array.isArray(result.choices) ? result.choices : [];
-      const first = choices[0] as Record<string, unknown> | undefined;
-      const message = first?.message as Record<string, unknown> | undefined;
-      setChatOutput(typeof message?.content === "string" ? message.content : JSON.stringify(result, null, 2));
-      setChatInput("");
-    },
-    onError: (error) => setChatOutput(error instanceof Error ? error.message : "请求失败"),
-  });
-
-  const filtersValue = filtersQuery.data ? JSON.stringify(filtersQuery.data, null, 2) : filtersText;
-  const interceptionValue = interceptionQuery.data ? JSON.stringify(interceptionQuery.data, null, 2) : interceptionText;
   if (providerQuery.isLoading || catalogQuery.isLoading) return <PageSkeleton />;
   if (providerQuery.isError || catalogQuery.isError) return <Alert type="error" showIcon title="Provider 数据加载失败" description={(providerQuery.error ?? catalogQuery.error) instanceof Error ? (providerQuery.error ?? catalogQuery.error)?.message : "无法读取 Provider 数据"} action={<Button onClick={() => { void providerQuery.refetch(); void catalogQuery.refetch(); }}>重试</Button>} />;
   if (!info && connections.length === 0) return <Alert type="warning" title="未找到提供者" description={<Button type="link" onClick={() => navigate("/dashboard/providers")}>返回 Providers</Button>} />;
 
-  const modelRows: Array<Record<string, unknown> & { _key: string; _custom: boolean }> = [...(modelsQuery.data?.models ?? []), ...(modelsQuery.data?.customModels ?? [])].map((item, index) => ({ ...item, _key: `${String(item.id ?? index)}-${index}`, _custom: Boolean((item as Record<string, unknown>)._custom || (item as Record<string, unknown>).source === "custom") }));
-  const visibleModelRows = modelRows.filter((row) => {
-    const query = modelFilter.trim().toLocaleLowerCase();
-    const isHidden = hiddenModelIds.has(String(row.id));
-    const matchesVisibility = visibilityFilter === "all" || (visibilityFilter === "hidden" ? isHidden : !isHidden);
-    return matchesVisibility && (!query || `${String(row.id ?? "")} ${String(row.name ?? "")}`.toLocaleLowerCase().includes(query));
-  });
-
   return (
     <div className={styles.page}>
       {contextHolder}
-      <Space orientation="vertical" size={32} style={{ width: "100%" }}>
-        <div>
-          <Button type="link" icon={<MaterialIcon name="arrow_back" />} onClick={() => navigate("/dashboard/providers")} style={{ paddingInline: 0, marginBottom: 16 }}>{t("providers.back")}</Button>
-          <div className={styles.header}>
+      <Space orientation="vertical" size={16} style={{ width: "100%" }}>
+        <div className={styles.header}>
           <div
             className={styles.headerIcon}
             style={{ background: `${info?.color ?? "#1677ff"}18` }}
             aria-hidden="true"
           >
-            {HeaderIcon ? createElement(HeaderIcon, { size: 32, style: { color: info?.color ?? "#1677ff", position: "relative", zIndex: 1 }, "aria-label": info?.name ?? providerId }) : <img
+            {HeaderIcon ? createElement(HeaderIcon, { size: 24, style: { color: info?.color ?? "#1677ff", position: "relative", zIndex: 1 }, "aria-label": info?.name ?? providerId }) : <img
               className={styles.headerIconImage}
               src={`/providers/${headerIconId}.svg`}
               alt=""
               onError={(event) => { event.currentTarget.style.display = "none"; }}
             />}
-            <span style={{ position: "absolute", color: info?.color ?? "#1677ff", fontWeight: 600, fontSize: 14 }}>
+            <span style={{ position: "absolute", color: info?.color ?? "#1677ff", fontWeight: 600, fontSize: 13 }}>
               {info?.textIcon ?? providerId.slice(0, 2).toUpperCase()}
             </span>
           </div>
-          <div className={styles.headerBody}>
-            <Typography.Title level={2} className={styles.title} style={{ color: info?.color ?? undefined }}>
+          <div className={styles.headerRow}>
+            <Typography.Title level={4} className={styles.title} style={{ color: info?.color ?? undefined }}>
               {info?.website ? (
                 <a href={info.website} target="_blank" rel="noreferrer" className={styles.titleLink}>
-                  <span>{info?.name ?? providerId}</span><MaterialIcon name="open_in_new" size={16} />
+                  <span>{info?.name ?? providerId}</span><MaterialIcon name="open_in_new" size={15} />
                 </a>
               ) : (info?.name ?? providerId)}
             </Typography.Title>
-            <div className={styles.headerMeta}>
-              <Typography.Text className={styles.muted}>{t("providers.connectionsCount", { count: connections.length })}</Typography.Text>
-              {info?.notice?.apiKeyUrl && <a href={info.notice.apiKeyUrl} target="_blank" rel="noreferrer">{t("providers.getApiKey")}</a>}
-            </div>
-          </div>
+            <Tag bordered={false} style={{ fontSize: 12, padding: "2px 8px", background: "var(--ant-color-fill-secondary)" }}>
+              {t("providers.connectionsCount", { count: connections.length })}
+            </Tag>
+            {info?.notice?.apiKeyUrl && (
+              <a
+                href={info.notice.apiKeyUrl}
+                target="_blank"
+                rel="noreferrer"
+                style={{ fontSize: 13, display: "inline-flex", alignItems: "center", gap: 3, marginInlineStart: 4 }}
+              >
+                <span>{t("providers.getApiKey", "获取 API Key")}</span>
+                <MaterialIcon name="open_in_new" size={13} />
+              </a>
+            )}
           </div>
         </div>
 
@@ -715,25 +965,15 @@ export default function ProviderDetailPage() {
         {kind === "no-auth" && <Card title="免鉴权提供者"><Space align="start" style={{ width: "100%", justifyContent: "space-between" }}><Alert type="info" showIcon message="此提供者不需要 API Key 或 OAuth 连接。" description="关闭后，路由不会再向该提供者发送匿名请求。" style={{ flex: 1 }} /><Switch checked={noAuthEnabled} loading={noAuthBusy} onChange={(checked) => void toggleNoAuth(checked)} /></Space></Card>}
         {/* OAuth/Web-cookie/IDE flows are exposed from the Connections toolbar in
             the official page; do not add a generic warning card here. */}
-        {(kind === "search" || kind === "webfetch") && <Card title={kind === "webfetch" ? "搜索与网页抓取" : "搜索提供者"}>
-          <Typography.Paragraph className={styles.muted}>按名称、能力或类别查找提供者。该类型不提供模型目录。</Typography.Paragraph>
-          {kind === "webfetch" && <Card type="inner" title="游乐场 · 网页获取">
-            <Space orientation="vertical" style={{ width: "100%" }}>
-              <Typography.Text code>/api/v1/web/fetch</Typography.Text>
-              <Input value={playgroundUrl} onChange={(event) => setPlaygroundUrl(event.target.value)} placeholder="https://example.com/article" />
-              <Space wrap>
-                <Select value={playgroundFormat} onChange={setPlaygroundFormat} options={["markdown", "html", "links", "screenshot"].map((value) => ({ label: value, value }))} />
-                <Select value={playgroundDepth} onChange={setPlaygroundDepth} options={[0, 1, 2, 3].map((value) => ({ label: `深度 ${value}`, value: String(value) }))} />
-                <Button type="primary" icon={<MaterialIcon name="open_in_new" />} loading={playgroundMutation.isPending} onClick={() => playgroundMutation.mutate()}>运行</Button>
-              </Space>
-              {playgroundResult && <Alert type={playgroundMutation.isError ? "error" : "info"} message={<pre style={{ maxHeight: 280, overflow: "auto", whiteSpace: "pre-wrap", margin: 0 }}>{playgroundResult}</pre>} />}
-            </Space>
-          </Card>}
-        </Card>}
+        {(kind === "search" || kind === "webfetch") && (
+          <Card title={kind === "webfetch" ? "搜索与网页抓取" : "搜索提供者"}>
+            <Typography.Paragraph className={styles.muted}>按名称、能力或类别查找提供者。该类型不提供模型目录。</Typography.Paragraph>
+          </Card>
+        )}
         {kind === "upstream-proxy" && <Card title="由上游代理管理"><Typography.Paragraph className={styles.muted}>该条目由 CLIProxyAPI/上游代理层管理，不建立普通直连。请在代理设置中配置运行时和路由。</Typography.Paragraph><Button onClick={() => navigate("/dashboard/settings/routing")}>打开路由设置</Button></Card>}
 
-        {kind !== "no-auth" && kind !== "upstream-proxy" && <Card className={styles.section} title={<div className={styles.cardTitleRow}><span>{t("providers.connections")}</span><Button className={styles.providerProxyButton} size="small" color={providerProxyHost ? "orange" : "default"} variant="filled" icon={<MaterialIcon name="vpn_lock" />} loading={proxyBusy && proxyTarget?.scope === "provider" && !proxyModalOpen} onClick={() => void openProviderProxyConfig()}>{providerProxyHost ?? t("providers.providerProxy")}</Button></div>} extra={<Space size={8}>{connections.length > 0 && <Button className={styles.headerActionButton} icon={<MaterialIcon name="swap_horiz" />} loading={distributeProxyMutation.isPending} onClick={() => distributeProxyMutation.mutate()}>{t("providers.distributeProxies")}</Button>}<Button className={styles.headerActionButton} icon={<MaterialIcon name="refresh" />} onClick={() => { void providerQuery.refetch(); void modelsQuery.refetch(); }}>{t("providers.refresh")}</Button>{providerId === "qoder" && <Button className={styles.headerActionButton} onClick={() => void startOAuth()}>{t("providers.experimentalOAuth")}</Button>}<Button className={styles.headerActionButton} type="primary" icon={<MaterialIcon name="add" />} onClick={openAddConnection}>{kind === "oauth" ? t("providers.oauthAuthorize") : kind === "web-cookie" ? t("providers.addCookie") : kind === "ide" ? t("providers.connectIde") : t("providers.addConnection")}</Button></Space>}>
-          {connections.length > 1 && <Card type="inner" size="small" title={t("providers.accountRouting")} style={{ marginBottom: 16 }}>
+        {kind !== "no-auth" && kind !== "upstream-proxy" && <Card className={styles.section} styles={{ body: { padding: 16 } }} title={<div className={styles.cardTitleRow}><span>{t("providers.connections")}</span><Button className={styles.providerProxyButton} color={providerProxyHost ? "orange" : "default"} variant="filled" icon={<MaterialIcon name="vpn_lock" />} loading={proxyBusy && proxyTarget?.scope === "provider" && !proxyModalOpen} onClick={() => void openProviderProxyConfig()}>{providerProxyHost ?? t("providers.providerProxy")}</Button></div>} extra={<Space size={8} wrap>{connections.length > 0 && <Button className={styles.headerActionButton} icon={<MaterialIcon name="swap_horiz" />} loading={distributeProxyMutation.isPending} onClick={() => distributeProxyMutation.mutate()}>{t("providers.distributeProxies")}</Button>}<Button className={styles.headerActionButton} icon={<MaterialIcon name="refresh" />} onClick={() => { void providerQuery.refetch(); void modelsQuery.refetch(); }}>{t("providers.refresh")}</Button>{(providerId === "github-copilot" || providerId === "agy" || providerId === "antigravity") && <Button className={styles.headerActionButton} type="primary" icon={<MaterialIcon name="passkey" />} loading={oauthBusy} onClick={() => void startOAuth()}>{t("providers.oauthAuthorize", "授权登录")}</Button>}{providerId === "qoder" && <Button className={styles.headerActionButton} onClick={() => void startOAuth()}>{t("providers.experimentalOAuth", "试验性 OAuth")}</Button>}<Button className={styles.headerActionButton} type={(providerId === "github-copilot" || providerId === "agy" || providerId === "antigravity") ? "default" : "primary"} icon={<MaterialIcon name="add" />} onClick={openAddConnection}>{(providerId === "github-copilot" || providerId === "agy" || providerId === "antigravity") ? t("providers.manualApiKey", "手动添加凭据") : t("providers.addConnection", "添加连接")}</Button></Space>}>
+          {connections.length > 1 && <Card type="inner" size="small" title={t("providers.accountRouting")} style={{ marginBottom: 12 }}>
             <Space wrap align="center">
               <Typography.Text type="secondary">{t("providers.accountRoutingDescription")}</Typography.Text>
               <Select
@@ -774,8 +1014,8 @@ export default function ProviderDetailPage() {
           </div>}
           {connections.length === 0 ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<><Typography.Text>{t("providers.noConnections")}</Typography.Text><br /><Typography.Text type="secondary">{t("providers.noConnectionsDescription")}</Typography.Text><br /><Button type="link" icon={<MaterialIcon name="add" />} onClick={openAddConnection}>{t("providers.addConnection")}</Button></>} /> : <List
             dataSource={visibleConnections}
-            pagination={{ pageSize: 10, hideOnSinglePage: true }}
-            renderItem={(row) => <List.Item style={{ paddingBlock: 12, paddingInline: 0, border: 0 }}>
+            pagination={visibleConnections.length > 10 ? { pageSize: 10, hideOnSinglePage: true } : false}
+            renderItem={(row) => <List.Item style={{ paddingBlock: 4, paddingInline: 0, border: 0 }}>
               <div className={styles.connectionRow}>
                 <Checkbox checked={selectedConnectionIds.includes(row.id)} onChange={(event) => setSelectedConnectionIds((current) => event.target.checked ? [...new Set([...current, row.id])] : current.filter((id) => id !== row.id))} />
                 <Space orientation="vertical" size={0} className={styles.connectionIdentity}>
@@ -796,7 +1036,7 @@ export default function ProviderDetailPage() {
                 <Space size={[4, 4]} wrap className={styles.connectionActions}>
                   <Button className={styles.actionButton} size="small" color="blue" variant="filled" loading={testMutation.isPending} icon={<MaterialIcon name="refresh" />} onClick={() => testMutation.mutate(row.id)}>{t("providers.retest")}</Button>
                   {(row.authType === "oauth" || kind === "oauth" || kind === "ide") && <Button className={styles.actionButton} size="small" color="orange" variant="filled" loading={refreshTokenMutation.isPending} icon={<MaterialIcon name="token" />} onClick={() => refreshTokenMutation.mutate(row)}>{t("providers.token")}</Button>}
-                  <Switch size="small" checked={row.isActive !== false} loading={statusMutation.isPending} onChange={(checked) => statusMutation.mutate({ id: row.id, isActive: checked })} />
+                  <Switch checked={row.isActive !== false} loading={statusMutation.isPending} onChange={(checked) => statusMutation.mutate({ id: row.id, isActive: checked })} />
                   {(row.authType === "oauth" || kind === "oauth" || kind === "ide") && <Button className={styles.actionButton} size="small" color="gold" variant="filled" icon={<MaterialIcon name="passkey" />} onClick={() => void startOAuth()}>{t("providers.reauthorize")}</Button>}
                   <Button className={styles.actionButton} size="small" variant="filled" icon={<MaterialIcon name="edit" />} onClick={() => navigate(`/dashboard/providers/${providerId}/connections/${row.id}`)}>{t("providers.edit")}</Button>
                   <Button className={styles.actionButton} size="small" variant="filled" icon={<MaterialIcon name="vpn_lock" />} onClick={() => void openProxyConfig(row)}>{t("providers.proxyConfig")}</Button>
@@ -807,55 +1047,86 @@ export default function ProviderDetailPage() {
           />}
         </Card>}
 
-        {kind !== "search" && kind !== "webfetch" && kind !== "upstream-proxy" && <Card className={styles.section} title={<Space size={8}><span>{t("providers.availableModels")}</span><Tag>{modelRows.length}</Tag></Space>} loading={modelsQuery.isLoading} extra={<Space wrap><Input.Search size="small" allowClear value={modelFilter} onChange={(event) => setModelFilter(event.target.value)} placeholder={t("providers.searchModels")} style={{ width: 150 }} /><Select size="small" value={visibilityFilter} onChange={setVisibilityFilter} style={{ minWidth: 120 }} options={[{ label: t("providers.allModels"), value: "all" }, { label: t("providers.visible"), value: "visible" }, { label: t("providers.hidden"), value: "hidden" }]} /><Button size="small" icon={<MaterialIcon name="refresh" />} loading={syncModelsMutation.isPending} disabled={connections.length === 0} onClick={() => syncModelsMutation.mutate()}>{t("providers.syncModels")}</Button><Input size="small" value={modelId} onChange={(event) => setModelId(event.target.value)} placeholder={t("providers.modelId")} /><Input size="small" value={modelName} onChange={(event) => setModelName(event.target.value)} placeholder={t("providers.displayNameOptional")} /><Button size="small" type="primary" icon={<MaterialIcon name="add" />} disabled={!modelId.trim() || connections.length === 0} loading={modelMutation.isPending} onClick={() => modelMutation.mutate({ action: "add", id: modelId.trim(), name: modelName.trim() || undefined })}>{t("providers.add")}</Button></Space>}>
-          {connections.length === 0 && <Alert type="info" showIcon message={t("providers.modelsNeedConnection")} style={{ marginBottom: 12 }} />}
-          <List
-            grid={{ gutter: 12, xs: 1, sm: 2, lg: 3 }}
-            pagination={{ pageSize: 12, hideOnSinglePage: true }}
-            dataSource={visibleModelRows}
-            locale={{ emptyText: <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={t("providers.noModels")} /> }}
-            renderItem={(row) => {
-              const id = String(row.id ?? "-");
-              const hidden = hiddenModelIds.has(id);
-              return <List.Item>
-                <Card size="small" style={{ height: "100%" }}>
-                  <Space orientation="vertical" size={8} style={{ width: "100%" }}>
-                    <Space style={{ width: "100%", justifyContent: "space-between" }}>
-                      <Typography.Text code ellipsis={{ tooltip: id }}>{id}</Typography.Text>
-                      <Tag>{String(row.source || (row._custom ? "Custom" : "Built-in"))}</Tag>
-                    </Space>
-                    <Typography.Text type="secondary" ellipsis={{ tooltip: String(row.name || id) }}>{String(row.name || id)}</Typography.Text>
-                    <Space style={{ width: "100%", justifyContent: "flex-end" }}>
-                      <Button size="small" type="text" icon={<MaterialIcon name={hidden ? "visibility_off" : "visibility"} />} onClick={() => visibilityMutation.mutate({ modelId: id, isHidden: !hidden })}>{hidden ? t("providers.hidden") : t("providers.visible")}</Button>
-                      {row._custom && <Button size="small" type="link" danger onClick={() => modelMutation.mutate({ action: "remove", id })}>{t("providers.delete")}</Button>}
-                    </Space>
-                  </Space>
-                </Card>
-              </List.Item>;
-            }}
+        {kind === "search" ? (
+          <SearchProviderCard providerId={providerId} />
+        ) : (
+          <>
+            {kind !== "upstream-proxy" && (
+              <>
+                <ProviderModelsSection
+                  providerId={providerId}
+                  providerDisplayAlias={providerDisplayAlias}
+                  models={availableModelRows}
+                  modelAliases={aliasesQuery.data || {}}
+                  allowModelImport={Boolean(connections.length > 0)}
+                  autoFetchModels={autoFetchModelsEnabled}
+                  onToggleAutoFetchModels={handleToggleAutoFetchModels}
+                  autoSync={autoSyncEnabled}
+                  onToggleAutoSync={handleToggleAutoSync}
+                  onImportModels={() => syncModelsMutation.mutateAsync().then(() => {})}
+                  importingModels={syncModelsMutation.isPending}
+                  onClearAllModels={() => clearAllCustomModelsMutation.mutateAsync().then(() => {})}
+                  clearingModels={clearAllCustomModelsMutation.isPending}
+                  onSetAlias={(mId, alias) => setAliasMutation.mutateAsync({ modelId: mId, alias }).then(() => {})}
+                  onDeleteAlias={(alias) => deleteAliasMutation.mutateAsync(alias).then(() => {})}
+                  onToggleModelHidden={(mId, hidden) => toggleVisibilityMutation.mutateAsync({ modelIds: [mId], isHidden: hidden }).then(() => {})}
+                  onSaveModelCompat={(mId, patch) => saveModelCompatMutation.mutateAsync({ modelId: mId, patch }).then(() => {})}
+                  onTestModel={handleTestModel}
+                  testingModelId={testingModelId}
+                  onTestAll={handleTestAll}
+                  testingAll={testingAll}
+                  testProgress={testProgress}
+                />
+
+                <CustomModelsSection
+                  providerId={providerId}
+                  providerDisplayAlias={providerDisplayAlias}
+                  customModels={customModelRows}
+                  onAddCustomModel={(m) => addCustomModelMutation.mutateAsync(m).then(() => {})}
+                  onUpdateCustomModel={(m) => updateCustomModelMutation.mutateAsync(m).then(() => {})}
+                  onRemoveCustomModel={(mId, resetOverride) => removeCustomModelMutation.mutateAsync({ modelId: mId, resetOverride }).then(() => {})}
+                  onToggleModelHidden={(mId, hidden) => toggleVisibilityMutation.mutateAsync({ modelIds: [mId], isHidden: hidden }).then(() => {})}
+                  onSaveModelCompat={(mId, patch) => saveModelCompatMutation.mutateAsync({ modelId: mId, patch }).then(() => {})}
+                />
+              </>
+            )}
+          </>
+        )}
+
+        {kind !== "upstream-proxy" && (
+          <ProviderPlaygroundPanel
+            providerId={providerId}
+            providerDisplayAlias={providerDisplayAlias}
+            serviceKinds={info?.serviceKinds || ["llm"]}
+            availableModels={availableModelRows.map((m) => ({ id: m.id, name: m.name }))}
           />
-        </Card>}
+        )}
 
-        {kind !== "search" && kind !== "webfetch" && kind !== "upstream-proxy" && <Card title={t("providers.playground")}>
-          <Space orientation="vertical" style={{ width: "100%" }}>
-            <Space wrap>
-              <Typography.Text>{t("providers.model")}</Typography.Text>
-              <Select style={{ minWidth: 260 }} placeholder={t("providers.selectModel")} value={chatModel || undefined} onChange={setChatModel} options={modelRows.map((row) => ({ label: String(row.name || row.id), value: String(row.id) }))} disabled={modelRows.length === 0} />
-            </Space>
-            <Input.TextArea value={chatInput} onChange={(event) => setChatInput(event.target.value)} placeholder={t("providers.sendPlaceholder")} autoSize={{ minRows: 2, maxRows: 6 }} />
-            <Button type="primary" loading={chatMutation.isPending} disabled={!chatModel || !chatInput.trim() || connections.length === 0} onClick={() => chatMutation.mutate()}>{t("providers.send")}</Button>
-            {chatOutput && <Alert type={chatMutation.isError ? "error" : "info"} message={<pre style={{ margin: 0, whiteSpace: "pre-wrap" }}>{chatOutput}</pre>} />}
-          </Space>
-        </Card>}
+        {(kind === "standard" || kind === "compatible" || kind === "oauth" || kind === "web-cookie" || kind === "ide" || kind === "search" || kind === "webfetch") && (
+          <>
+            <ProviderParamFilterSection
+              providerId={providerId}
+              config={(filtersQuery.data as any) || {}}
+              onSave={(cfg) => saveParamFiltersMutation.mutateAsync(cfg).then(() => {})}
+              onReset={() => resetParamFiltersMutation.mutateAsync().then(() => {})}
+              loading={saveParamFiltersMutation.isPending}
+            />
 
-        {(kind === "standard" || kind === "compatible" || kind === "oauth" || kind === "web-cookie" || kind === "ide" || kind === "search" || kind === "webfetch") && <Space orientation="vertical" style={{ width: "100%" }} size={16}>
-          <Card title={t("providers.parameterFilters")} extra={<Space><Button onClick={() => { setFiltersText(JSON.stringify({ block: [], allow: [], autoLearn: false }, null, 2)); }}>{t("providers.reset")}</Button><Button type="primary" icon={<MaterialIcon name="save" />} loading={saveConfigMutation.isPending} onClick={() => saveConfigMutation.mutate({ type: "filters", text: filtersText || filtersValue || "{}" })}>{t("providers.save")}</Button></Space>}>
-            <Input.TextArea value={filtersText || filtersValue} onChange={(event) => setFiltersText(event.target.value)} autoSize={{ minRows: 4, maxRows: 10 }} placeholder='{"block":[],"allow":[],"autoLearn":false}' />
-          </Card>
-          <Card title={t("providers.webInterceptionRules")} extra={<Space><Button onClick={() => setInterceptionText(JSON.stringify({ interceptSearch: undefined, interceptFetch: undefined }, null, 2))}>{t("providers.reset")}</Button><Button type="primary" icon={<MaterialIcon name="save" />} loading={saveConfigMutation.isPending} onClick={() => saveConfigMutation.mutate({ type: "interception", text: interceptionText || interceptionValue || "{}" })}>{t("providers.save")}</Button></Space>}>
-            <Input.TextArea value={interceptionText || interceptionValue} onChange={(event) => setInterceptionText(event.target.value)} autoSize={{ minRows: 4, maxRows: 10 }} placeholder='{"interceptSearch":false,"interceptFetch":false}' />
-          </Card>
-        </Space>}
+            <ProviderInterceptionSection
+              providerId={providerId}
+              config={(interceptionQuery.data as any) || {}}
+              onUpdate={(cfg) => updateInterceptionMutation.mutateAsync(cfg).then(() => {})}
+              loading={updateInterceptionMutation.isPending}
+            />
+
+            <ProviderCcAliasSection
+              providerId={providerId}
+              data={(ccAliasQuery.data as any) || { provider: null, models: {} }}
+              onUpdateSetting={(scope, value, modelId) => updateCcAliasMutation.mutateAsync({ scope, value, modelId }).then(() => {})}
+              loading={updateCcAliasMutation.isPending}
+            />
+          </>
+        )}
       </Space>
       <Modal title={proxyTarget?.scope === "provider" ? t("providers.providerProxyConfig") : t("providers.connectionProxyConfig")} open={proxyModalOpen} onCancel={() => { if (!proxyBusy) setProxyModalOpen(false); }} onOk={() => void saveProxyConfig()} confirmLoading={proxyBusy} okText={t("providers.save")} cancelText={t("providers.cancel")}>
         <Space orientation="vertical" style={{ width: "100%" }}>
@@ -870,14 +1141,25 @@ export default function ProviderDetailPage() {
         okText={t("providers.add")}
         cancelText={t("providers.cancel")}
         confirmLoading={createConnectionMutation.isPending}
-        okButtonProps={{ disabled: !connectionName.trim() || (kind !== "no-auth" && !connectionApiKey.trim() && !connectionBaseUrl.trim()) }}
+        okButtonProps={{ disabled: !connectionName.trim() || (kind !== "no-auth" && kind !== "compatible" && !connectionApiKey.trim() && !connectionBaseUrl.trim()) }}
         onOk={() => createConnectionMutation.mutate()}
       >
         <Space orientation="vertical" size={16} style={{ width: "100%" }}>
-          <Alert type="info" showIcon message={t("providers.newConnectionDisabled")} description={t("providers.newConnectionHint")} />
+          <Alert
+            type="info"
+            showIcon
+            message={t("providers.newConnectionDisabled")}
+            description={
+              providerId === "deepseek-web"
+                ? "请在 chat.deepseek.com 登录后，从浏览器开发者工具中复制 userToken 填入下方凭据中。"
+                : kind === "web-cookie"
+                ? "Web 会话凭据：请将登录后的 Session Token 或 Cookie 粘贴到下方凭据输入框。"
+                : t("providers.newConnectionHint")
+            }
+          />
           <label><Typography.Text>{t("providers.connectionName")}</Typography.Text><Input value={connectionName} onChange={(event) => setConnectionName(event.target.value)} placeholder="Primary" style={{ marginTop: 6 }} /></label>
-          <label><Typography.Text>{kind === "compatible" ? "API Key" : "API Key / PAT"}</Typography.Text><Input.Password value={connectionApiKey} onChange={(event) => setConnectionApiKey(event.target.value)} placeholder={t("providers.enterCredential")} style={{ marginTop: 6 }} /></label>
-          {(kind === "compatible" || connectionBaseUrl) && <label><Typography.Text>Base URL</Typography.Text><Input value={connectionBaseUrl} onChange={(event) => setConnectionBaseUrl(event.target.value)} placeholder="https://api.example.com/v1" style={{ marginTop: 6 }} /></label>}
+          <label><Typography.Text>{providerId === "deepseek-web" ? "userToken (Web 会话 Token)" : kind === "web-cookie" ? "Cookie / Session Token" : kind === "oauth" || kind === "ide" ? "Access Token / API Key" : kind === "compatible" ? "API Key" : "API Key / PAT"}</Typography.Text><Input.Password value={connectionApiKey} onChange={(event) => setConnectionApiKey(event.target.value)} placeholder={providerId === "deepseek-web" ? "userToken=... 或粘贴 raw userToken" : kind === "web-cookie" ? "粘贴 Cookie 或 Session 凭据..." : kind === "oauth" || kind === "ide" ? "输入 Access Token 或 API Key..." : kind === "compatible" ? "输入 API Key (可为空)..." : t("providers.enterCredential")} style={{ marginTop: 6 }} /></label>
+          {(kind === "compatible" || connectionBaseUrl || Boolean(node?.baseUrl)) && <label><Typography.Text>Base URL</Typography.Text><Input value={connectionBaseUrl} onChange={(event) => setConnectionBaseUrl(event.target.value)} placeholder={node?.baseUrl ?? info?.baseUrl ?? "https://api.example.com/v1"} style={{ marginTop: 6 }} /></label>}
           <label><Typography.Text>{t("providers.priority")}</Typography.Text><br /><InputNumber min={0} value={connectionPriority} onChange={(value) => setConnectionPriority(value ?? 1)} style={{ marginTop: 6, width: 140 }} /></label>
         </Space>
       </Modal>

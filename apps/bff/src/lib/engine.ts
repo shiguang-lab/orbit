@@ -194,16 +194,208 @@ export async function createEngineAdapters(): Promise<{
           }
         },
         getModelsForProvider: async (providerId: string) => {
-          // The original route is authenticated independently of the BFF hook;
-          // use its DB projections plus the same static registry used by Orbit
-          // so a provider with no connection still has its official catalog.
-          const [synced, customModels] = await Promise.all([
+          const [synced, customModels, compatOverrides] = await Promise.all([
             providerModels.getSyncedAvailableModels(providerId),
             providerModels.getCustomModels(providerId),
+            providerModels.getModelCompatOverrides(providerId),
           ]);
           const staticModels = staticProviderModels.getStaticModelsForProvider(providerId) ?? [];
           const models = (Array.isArray(synced) && synced.length > 0 ? synced : staticModels) as unknown[];
-          return { models, customModels: Array.isArray(customModels) ? customModels : [], source: Array.isArray(synced) && synced.length > 0 ? "synced" : "catalog" };
+          let modelContextOverrides: any = null;
+          try {
+            modelContextOverrides = await import("@/lib/db/modelContextOverrides");
+          } catch {}
+          const customWithContext = (Array.isArray(customModels) ? customModels : []).map((m: any) => {
+            if (modelContextOverrides && m?.id) {
+              const rec = modelContextOverrides.getModelContextOverrideRecord(providerId, m.id);
+              if (rec) return { ...m, contextWindowOverride: rec.realContext, contextWindowOverrideSource: rec.source };
+            }
+            return m;
+          });
+          const hiddenModelsMap = providerModels.getHiddenModelsByProvider?.();
+          const hiddenModelsByProvider: Record<string, string[]> = {};
+          if (hiddenModelsMap) {
+            for (const [pId, set] of hiddenModelsMap) {
+              if (set && set.size > 0) hiddenModelsByProvider[pId] = [...set];
+            }
+          }
+          return {
+            models,
+            customModels: customWithContext,
+            modelCompatOverrides: compatOverrides || [],
+            hiddenModelsByProvider,
+            source: Array.isArray(synced) && synced.length > 0 ? "synced" : "catalog",
+          };
+        },
+        addCustomModel: async (data: Record<string, unknown>) => {
+          const provider = String(data.provider || "");
+          const modelId = String(data.modelId || "");
+          const modelName = typeof data.modelName === "string" ? data.modelName : undefined;
+          const source = typeof data.source === "string" ? data.source : "manual";
+          const apiFormat = typeof data.apiFormat === "string" ? data.apiFormat : "chat-completions";
+          const supportedEndpoints = Array.isArray(data.supportedEndpoints) ? data.supportedEndpoints : ["chat"];
+          const targetFormat = typeof data.targetFormat === "string" ? data.targetFormat : undefined;
+          const supportsVision = typeof data.supportsVision === "boolean" ? data.supportsVision : undefined;
+          const isFree = typeof data.isFree === "boolean" ? data.isFree : undefined;
+          const generationConfig = data.generationConfig && typeof data.generationConfig === "object" ? data.generationConfig : undefined;
+          const limits = (data.max_input_tokens != null || data.max_output_tokens != null) ? {
+            ...(data.max_input_tokens != null ? { inputTokenLimit: Number(data.max_input_tokens) } : {}),
+            ...(data.max_output_tokens != null ? { outputTokenLimit: Number(data.max_output_tokens) } : {}),
+          } : undefined;
+          const model = await providerModels.addCustomModel(
+            provider, modelId, modelName, source, apiFormat, supportedEndpoints, targetFormat, limits, supportsVision, generationConfig, isFree
+          );
+          return { model };
+        },
+        updateCustomModel: async (data: Record<string, unknown>) => {
+          const provider = String(data.provider || "");
+          const modelId = String(data.modelId || "");
+          const updates: Record<string, unknown> = {};
+          for (const key of ["modelName", "apiFormat", "supportedEndpoints", "targetFormat", "supportsVision", "isFree", "generationConfig", "compatByProtocol"]) {
+            if (key in data) updates[key] = data[key];
+          }
+          if ("normalizeToolCallId" in data || "preserveOpenAIDeveloperRole" in data || "upstreamHeaders" in data || "compatByProtocol" in data) {
+            await providerModels.mergeModelCompatOverride(provider, modelId, {
+              ...(typeof data.normalizeToolCallId === "boolean" ? { normalizeToolCallId: data.normalizeToolCallId } : {}),
+              ...(typeof data.preserveOpenAIDeveloperRole === "boolean" ? { preserveOpenAIDeveloperRole: data.preserveOpenAIDeveloperRole } : {}),
+              ...(data.upstreamHeaders && typeof data.upstreamHeaders === "object" ? { upstreamHeaders: data.upstreamHeaders as Record<string, string> } : {}),
+              ...(data.compatByProtocol && typeof data.compatByProtocol === "object" ? { compatByProtocol: data.compatByProtocol as any } : {}),
+            });
+          }
+          if ("contextWindowOverride" in data) {
+            try {
+              const modelContextOverrides = await import("@/lib/db/modelContextOverrides");
+              if (data.contextWindowOverride === null) {
+                modelContextOverrides.removeModelContextOverride(provider, modelId);
+              } else if (typeof data.contextWindowOverride === "number") {
+                modelContextOverrides.setModelContextOverride(provider, modelId, data.contextWindowOverride, "manual");
+              }
+            } catch {}
+          }
+          const model = await providerModels.updateCustomModel(provider, modelId, updates);
+          return { model, success: true };
+        },
+        removeCustomModel: async (provider: string, modelId?: string, options?: { resetOverride?: boolean; clearAll?: boolean }) => {
+          if (options?.clearAll) {
+            await providerModels.replaceCustomModels(provider, []);
+            await providerModels.deleteSyncedAvailableModelsForProvider(provider);
+            return { success: true };
+          }
+          if (!modelId) return { success: false };
+          if (options?.resetOverride) {
+            await providerModels.removeModelCompatOverride(provider, modelId);
+            try {
+              const modelContextOverrides = await import("@/lib/db/modelContextOverrides");
+              modelContextOverrides.removeModelContextOverride(provider, modelId);
+            } catch {}
+            return { success: true };
+          }
+          await providerModels.removeCustomModel(provider, modelId);
+          try {
+            const modelContextOverrides = await import("@/lib/db/modelContextOverrides");
+            modelContextOverrides.removeModelContextOverride(provider, modelId);
+          } catch {}
+          return { success: true };
+        },
+        setModelVisibility: async (provider: string, modelIds: string[], isHidden: boolean) => {
+          for (const modelId of modelIds) {
+            await providerModels.setModelIsHidden(provider, modelId, isHidden);
+          }
+          return { ok: true, updated: modelIds.length };
+        },
+        getCcAlias: async (providerId: string) => {
+          const ccDiscoveryAliases = await import("@/lib/db/ccDiscoveryAliases");
+          const provider = ccDiscoveryAliases.getCcAliasProviderSetting(providerId);
+          const { models: allModels } = ccDiscoveryAliases.getCcAliasSettingsBulk();
+          const prefix = `${providerId}/`;
+          const models: Record<string, "on" | "off"> = {};
+          for (const [key, value] of allModels) {
+            if (key.startsWith(prefix)) {
+              models[key.slice(prefix.length)] = value;
+            }
+          }
+          return { provider, models };
+        },
+        setCcAlias: async (providerId: string, data: { scope: "provider" | "model"; value: "on" | "off" | null; modelId?: string }) => {
+          const ccDiscoveryAliases = await import("@/lib/db/ccDiscoveryAliases");
+          if (data.scope === "provider") {
+            ccDiscoveryAliases.setCcAliasProviderSetting(providerId, data.value);
+          } else if (data.modelId) {
+            ccDiscoveryAliases.setCcAliasModelSetting(providerId, data.modelId, data.value);
+          }
+          return { success: true };
+        },
+        getModelAliases: async () => {
+          const modelsModule = await import("@/models");
+          return modelsModule.getModelAliases();
+        },
+        setModelAlias: async (model: string, alias: string) => {
+          const modelsModule = await import("@/models");
+          await modelsModule.setModelAlias(model, alias);
+          return true;
+        },
+        deleteModelAlias: async (alias: string) => {
+          const modelsModule = await import("@/models");
+          await modelsModule.deleteModelAlias(alias);
+          return true;
+        },
+        testModel: async (data: { providerId: string; modelId: string; connectionId?: string }) => {
+          const modelTestRunner = await import("@/lib/api/modelTestRunner");
+          const result = await modelTestRunner.runSingleModelTest({
+            providerId: data.providerId,
+            modelId: data.modelId,
+            ...(data.connectionId ? { connectionId: data.connectionId } : {}),
+            timeoutMs: data.providerId.trim().toLowerCase() === "nvidia" ? 180_000 : modelTestRunner.DEFAULT_MODEL_TEST_TIMEOUT_MS,
+            streamChat: true,
+          });
+          if (result.status === "ok") {
+            return { status: "ok", latencyMs: result.latencyMs, responseText: result.responseText };
+          }
+          return { status: "error", latencyMs: result.latencyMs, error: result.error || "Model test failed" };
+        },
+        webSearch: async (body: Record<string, unknown>) => {
+          const searchRoute = await import("@/app/api/v1/search/route");
+          const response = await searchRoute.POST(new Request("http://bff/api/v1/search", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(body),
+          }));
+          let payload: unknown = null;
+          try { payload = await response.json(); } catch { payload = { error: "Invalid search response" }; }
+          return { status: response.status, payload };
+        },
+        embeddings: async (body: Record<string, unknown>) => {
+          const embeddingsRoute = await import("@/app/api/v1/embeddings/route");
+          const response = await embeddingsRoute.POST(new Request("http://bff/api/v1/embeddings", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(body),
+          }));
+          let payload: unknown = null;
+          try { payload = await response.json(); } catch { payload = { error: "Invalid embeddings response" }; }
+          return { status: response.status, payload };
+        },
+        imageGenerations: async (body: Record<string, unknown>) => {
+          const imagesRoute = await import("@/app/api/v1/images/generations/route");
+          const response = await imagesRoute.POST(new Request("http://bff/api/v1/images/generations", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(body),
+          }));
+          let payload: unknown = null;
+          try { payload = await response.json(); } catch { payload = { error: "Invalid image generations response" }; }
+          return { status: response.status, payload };
+        },
+        audioSpeech: async (body: Record<string, unknown>) => {
+          const speechRoute = await import("@/app/api/v1/audio/speech/route");
+          const response = await speechRoute.POST(new Request("http://bff/api/v1/audio/speech", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(body),
+          }));
+          let payload: unknown = null;
+          try { payload = await response.json(); } catch { payload = { error: "Invalid audio speech response" }; }
+          return { status: response.status, payload };
         },
         addProviderModel: async (connectionId: string, modelId: string, modelName?: string) => {
           const connection = await providers.getProviderConnectionById(connectionId) as ProviderRow | null;
