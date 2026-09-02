@@ -197,6 +197,7 @@ export interface ModelRowItem {
   compat?: ModelCompatData;
   latencyMs?: number;
   testStatus?: "ok" | "error" | "quota";
+  testError?: string;
 }
 
 interface Props {
@@ -726,9 +727,9 @@ export function ProviderModelsSection({
                           model.testStatus === "ok"
                             ? `测试通过 (${model.latencyMs || 0}ms)`
                             : model.testStatus === "quota"
-                            ? "配额超限"
+                            ? (model.testError ? `配额超限: ${model.testError}` : "配额超限")
                             : model.testStatus === "error"
-                            ? "测试失败"
+                            ? (model.testError ? `测试失败: ${model.testError}` : "测试失败")
                             : t("providers.testModel", "测试此模型")
                         }
                       >
@@ -902,9 +903,9 @@ export function ProviderModelsSection({
                         model.testStatus === "ok"
                           ? `测试通过 (${model.latencyMs || 0}ms)`
                           : model.testStatus === "quota"
-                          ? "配额超限"
+                          ? (model.testError ? `配额超限: ${model.testError}` : "配额超限")
                           : model.testStatus === "error"
-                          ? "测试失败"
+                          ? (model.testError ? `测试失败: ${model.testError}` : "测试失败")
                           : t("providers.testModel", "测试此模型")
                       }
                     >

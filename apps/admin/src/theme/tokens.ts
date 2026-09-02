@@ -27,6 +27,11 @@ export const themeConfig: Record<"light" | "dark", ThemeConfig> = {
       ...sharedToken,
     },
     components: {
+      Button: {
+        defaultShadow: "none",
+        primaryShadow: "none",
+        dangerShadow: "none",
+      },
       Layout: {
         siderBg: palette.scheme.light.surface,
         headerBg: palette.scheme.light.surface,
@@ -49,6 +54,11 @@ export const themeConfig: Record<"light" | "dark", ThemeConfig> = {
       ...sharedToken,
     },
     components: {
+      Button: {
+        defaultShadow: "none",
+        primaryShadow: "none",
+        dangerShadow: "none",
+      },
       Layout: {
         siderBg: palette.scheme.dark.surface,
         headerBg: palette.scheme.dark.surface,

@@ -20,6 +20,7 @@ import {
 import { createStyles } from "antd-style";
 import { MaterialIcon } from "@/app/nav";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { api } from "@/entities/api";
 
 const { Text, Title, Paragraph } = Typography;
 
@@ -193,8 +194,7 @@ export function A2aDashboard() {
   // Cancel Task Mutation
   const cancelTask = useMutation({
     mutationFn: async (taskId: string) => {
-      const res = await fetch(`/api/a2a/tasks/${encodeURIComponent(taskId)}/cancel`, { method: "POST" });
-      if (!res.ok) throw new Error("取消任务失败");
+      await api(`/a2a/tasks/${encodeURIComponent(taskId)}/cancel`, { method: "POST" });
     },
     onSuccess: () => {
       message.success("任务已取消");

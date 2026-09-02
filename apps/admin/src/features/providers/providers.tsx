@@ -41,6 +41,7 @@ import ClineMonoIcon from "@lobehub/icons/es/Cline/components/Mono";
 import QoderColorIcon from "@lobehub/icons/es/Qoder/components/Color";
 import TencentColorIcon from "@lobehub/icons/es/Tencent/components/Color";
 import {
+  embeddedServicesApi,
   providersApi,
   settingsApi,
   type ProviderConnection,
@@ -73,6 +74,7 @@ interface ProviderGroup {
   popularityRank?: number;
   blocked?: boolean;
   codexServiceTier?: string;
+  upstreamProxyStatus?: { running: boolean; accountCount?: number; label: string };
 }
 
 type DisplayMode = "all" | "configured" | "compact";
@@ -215,16 +217,72 @@ export default function ProvidersPage() {
     queryFn: () => providersApi.openRouterStats(),
     staleTime: 24 * 60 * 60_000,
   });
+  const cliproxyServiceQuery = useQuery({
+    queryKey: ["embedded-services", "cliproxy"],
+    queryFn: () => embeddedServicesApi.getStatus("cliproxy").catch(() => null),
+    staleTime: 30_000,
+  });
+  const ninerouterServiceQuery = useQuery({
+    queryKey: ["embedded-services", "9router"],
+    queryFn: () => embeddedServicesApi.getStatus("9router").catch(() => null),
+    staleTime: 30_000,
+  });
+  const cliproxyAccountsQuery = useQuery({
+    queryKey: ["cliproxy-accounts"],
+    queryFn: () => embeddedServicesApi.getCliproxyAccounts().catch(() => []),
+    staleTime: 30_000,
+  });
 
   const connections = providersQuery.data?.connections ?? [];
   const catalogCategories = catalogQuery.data?.categories ?? [];
   const groups = useMemo(() => {
     const map = new Map<string, ProviderGroup>();
+    const cliproxyService = cliproxyServiceQuery.data;
+    const ninerouterService = ninerouterServiceQuery.data;
+    const cliproxyAccounts = cliproxyAccountsQuery.data ?? [];
 
     for (const category of catalogCategories) {
       for (const provider of category.providers) {
         if (provider.hiddenFromDashboard) continue;
         const key = `${category.key}:${provider.id}`;
+
+        let upstreamProxyStatus: { running: boolean; accountCount?: number; label: string } | undefined;
+        if (provider.id === "cliproxyapi" || provider.id === "cliproxy") {
+          const isRunning = cliproxyService?.state === "running";
+          if (cliproxyAccounts.length > 0) {
+            upstreamProxyStatus = {
+              running: true,
+              accountCount: cliproxyAccounts.length,
+              label: t("providersPage.connectedCount", { count: cliproxyAccounts.length }),
+            };
+          } else if (isRunning) {
+            upstreamProxyStatus = {
+              running: true,
+              accountCount: 1,
+              label: t("providersPage.connectedCount", { count: 1 }),
+            };
+          } else if (cliproxyService?.state && cliproxyService.state !== "not_installed") {
+            upstreamProxyStatus = { running: false, label: t("providersPage.notConnected") };
+          } else {
+            upstreamProxyStatus = { running: false, label: t("providersPage.noConnections") };
+          }
+        } else if (provider.id === "9router" || provider.id === "ninerouter") {
+          const isRunning = ninerouterService?.state === "running";
+          if (isRunning) {
+            upstreamProxyStatus = {
+              running: true,
+              accountCount: 1,
+              label: t("providersPage.connectedCount", { count: 1 }),
+            };
+          } else if (ninerouterService?.state && ninerouterService.state !== "not_installed") {
+            upstreamProxyStatus = { running: false, label: t("providersPage.notConnected") };
+          } else {
+            upstreamProxyStatus = { running: false, label: t("providersPage.noConnections") };
+          }
+        } else if (category.key === "upstream-proxy") {
+          upstreamProxyStatus = { running: false, label: t("providersPage.noConnections") };
+        }
+
         map.set(key, {
           key,
           provider: provider.id,
@@ -246,6 +304,7 @@ export default function ProvidersPage() {
           connected: 0,
           errorCount: 0,
           blocked: category.key === "no-auth" && (settingsQuery.data?.blockedProviders ?? []).includes(provider.id),
+          upstreamProxyStatus,
           codexServiceTier:
             provider.id === "codex"
               ? typeof settingsQuery.data?.codexServiceTier === "string"
@@ -306,12 +365,18 @@ export default function ProvidersPage() {
     }
 
     return [...map.values()].sort((a, b) => a.displayName.localeCompare(b.displayName));
-  }, [catalogCategories, connections, expirationQuery.data?.list, nodesQuery.data?.nodes, openRouterStatsQuery.data?.data, settingsQuery.data?.blockedProviders]);
+  }, [catalogCategories, connections, expirationQuery.data?.list, nodesQuery.data?.nodes, openRouterStatsQuery.data?.data, settingsQuery.data?.blockedProviders, cliproxyServiceQuery.data, ninerouterServiceQuery.data, cliproxyAccountsQuery.data, t]);
+
+  const isGroupConfigured = (group: ProviderGroup): boolean => {
+    if (group.category === "no-auth") return !group.blocked;
+    if (group.category === "upstream-proxy") return Boolean(group.upstreamProxyStatus?.running);
+    return group.connections.length > 0;
+  };
 
   const categoryMenu = useMemo(() => {
     const connectionCounts = new Map<string, number>();
     for (const group of groups) {
-      if (group.connections.length > 0) {
+      if (isGroupConfigured(group)) {
         connectionCounts.set(group.category, (connectionCounts.get(group.category) ?? 0) + 1);
       }
     }
@@ -349,7 +414,7 @@ export default function ProvidersPage() {
         group.provider.toLowerCase().includes(query) ||
         group.displayName.toLowerCase().includes(query) ||
         group.connections.some((connection) => connection.name.toLowerCase().includes(query));
-      const matchesMode = mode !== "configured" || group.connections.length > 0 || group.category === "no-auth";
+      const matchesMode = mode !== "configured" || isGroupConfigured(group);
       const matchesCategory = !activeCategory || (
         activeCategory === "ide"
           ? group.isIde === true
@@ -733,7 +798,7 @@ function ProviderSection({
             color={sectionDotColor}
             text={(
               <span style={{ color: sectionDotColor }}>
-                {groups.filter((group) => group.connections.length > 0).length}/{groups.length}
+                {groups.filter((group) => group.category === "no-auth" ? !group.blocked : group.category === "upstream-proxy" ? Boolean(group.upstreamProxyStatus?.running) : group.connections.length > 0).length}/{groups.length}
               </span>
             )}
           />
@@ -830,20 +895,54 @@ function ProviderCard({ group, onOpen, onTest, testing, onToggle, togglingId }: 
           style={{ marginTop: 10 }}
         />
       )}
-      <Flex align="center" justify="space-between" gap={8} style={{ marginTop: "auto", paddingTop: 10, borderTop: "1px solid var(--ant-color-border-secondary)" }} onClick={(event) => event.stopPropagation()}>
-        <Space size={6} wrap>
-          {group.connections.length > 0 ? (
-            <Tag color={group.errorCount > 0 ? "error" : group.connected > 0 ? "success" : "default"}>
+      <Flex align="center" justify="space-between" gap={8} style={{ marginTop: "auto", paddingTop: 10, borderTop: "1px solid var(--ant-color-border-secondary)", minHeight: 34 }} onClick={(event) => event.stopPropagation()}>
+        <Flex align="center" gap={6} wrap style={{ minHeight: 24, lineHeight: "24px" }}>
+          {group.category === "upstream-proxy" ? (
+            <Tag color={group.upstreamProxyStatus?.running ? "success" : "default"} style={{ margin: 0 }}>
+              {group.upstreamProxyStatus?.label || "由上游代理管理"}
+            </Tag>
+          ) : group.category === "no-auth" ? (
+            <Tag color={group.blocked ? "error" : "success"} style={{ margin: 0 }}>
+              {group.blocked ? "已禁用" : "免鉴权可用"}
+            </Tag>
+          ) : group.connections.length > 0 ? (
+            <Tag color={group.errorCount > 0 ? "error" : group.connected > 0 ? "success" : "default"} style={{ margin: 0 }}>
               {group.errorCount > 0 ? t("providersPage.errorCount", { count: group.errorCount }) : group.connected > 0 ? t("providersPage.connectedCount", { count: group.connected }) : t("providersPage.notConnected")}
             </Tag>
-          ) : <Typography.Text type="secondary" style={{ fontSize: 12 }}>{t("providersPage.noConnections")}</Typography.Text>}
-          {group.expiryStatus === "expired" && <Tag color="error">{t("apiKeys.expired")}</Tag>}
-          {group.expiryStatus === "expiring_soon" && <Tag color="warning">{t("providers.expiringSoonBadge", undefined, "Expiring soon")}</Tag>}
-        </Space>
-        <Space size={6}>
-          {group.connections.length > 0 && <Switch size="small" checked={!allDisabled} loading={Boolean(togglingId)} onChange={(checked) => group.connections.forEach((connection) => onToggle(connection.id, checked))} aria-label={`${group.displayName} ${t("providersPage.status")}`} />}
-          {isLlmProvider && <Button size="small" icon={<MaterialIcon name="play_circle" />} loading={testing} onClick={onTest} style={{ boxShadow: "none" }}>{t("providersPage.test")}</Button>}
-        </Space>
+          ) : <Typography.Text type="secondary" style={{ fontSize: 12, lineHeight: "24px" }}>{t("providersPage.noConnections")}</Typography.Text>}
+          {group.expiryStatus === "expired" && <Tag color="error" style={{ margin: 0 }}>{t("apiKeys.expired")}</Tag>}
+          {group.expiryStatus === "expiring_soon" && <Tag color="warning" style={{ margin: 0 }}>{t("providers.expiringSoonBadge", undefined, "Expiring soon")}</Tag>}
+        </Flex>
+        <Flex align="center" gap={8} style={{ minHeight: 24 }}>
+          {group.connections.length > 0 && (
+            <Switch
+              size="small"
+              checked={!allDisabled}
+              loading={Boolean(togglingId)}
+              onChange={(checked) => group.connections.forEach((connection) => onToggle(connection.id, checked))}
+              aria-label={`${group.displayName} ${t("providersPage.status")}`}
+              style={{ display: "inline-flex", alignItems: "center" }}
+            />
+          )}
+          {isLlmProvider && (
+            <Button
+              size="small"
+              icon={<MaterialIcon name="play_circle" style={{ fontSize: 13, verticalAlign: "middle" }} />}
+              loading={testing}
+              onClick={onTest}
+              style={{
+                boxShadow: "none",
+                display: "inline-flex",
+                alignItems: "center",
+                height: 24,
+                lineHeight: "22px",
+                padding: "0 8px",
+              }}
+            >
+              {t("providersPage.test")}
+            </Button>
+          )}
+        </Flex>
       </Flex>
     </Card>
   );

@@ -12,7 +12,9 @@ import {
   Checkbox,
   Descriptions,
   Divider,
+  Dropdown,
   Empty,
+  Flex,
   Input,
   InputNumber,
   List,
@@ -22,11 +24,13 @@ import {
   Segmented,
   Space,
   Switch,
+  Table,
   Tag,
   Typography,
   message,
 } from "antd";
-import { providersApi, settingsApi, type ProviderCatalogEntry, type ProviderConnection } from "@/entities/api";
+import type { MenuProps } from "antd";
+import { api, embeddedServicesApi, providersApi, settingsApi, type CliproxyAccountItem, type ProviderCatalogEntry, type ProviderConnection } from "@/entities/api";
 import { useI18n } from "@/i18n";
 import AntigravityColorIcon from "@lobehub/icons/es/Antigravity/components/Color";
 import AwsColorIcon from "@lobehub/icons/es/Aws/components/Color";
@@ -76,7 +80,7 @@ const useStyles = createStyles(({ token }) => ({
   connectionIdentity: { width: 220, minWidth: 220 },
   connectionNameRow: { display: "flex", alignItems: "center", gap: 8, minWidth: 0, lineHeight: "22px" },
   connectionNameIcon: { flex: "none" },
-  connectionDivider: { height: 32, marginInline: 0, borderInlineStartColor: token.colorBorderSecondary },
+  connectionDivider: { height: 16, marginInline: 4, opacity: 0.5, borderInlineStartColor: token.colorBorderSecondary },
   connectionFeatures: { flex: "1 1 280px", minWidth: 240 },
   connectionActions: { flex: "0 1 auto", marginInlineStart: "auto", justifyContent: "flex-end" },
   actionButton: { minHeight: 28, paddingInline: 10, fontSize: 13, fontWeight: 500 },
@@ -103,7 +107,6 @@ const HEADER_LOBE_ICONS: Record<string, HeaderProviderIcon> = {
   tencent: TencentColorIcon,
 };
 const DEVICE_CODE_PROVIDERS = new Set(["github", "kiro", "amazon-q", "kimi-coding", "kilocode", "codebuddy-cn", "ghe-copilot", "grok-cli"]);
-const ROUTING_STRATEGIES = ["fill-first", "round-robin", "priority", "p2c", "random", "least-used"];
 
 function resolveProvider(catalog: { categories?: Array<{ key: string; providers: ProviderCatalogEntry[] }> } | undefined, id: string) {
   for (const category of catalog?.categories ?? []) {
@@ -178,17 +181,68 @@ export default function ProviderDetailPage() {
   const [proxyOptions, setProxyOptions] = useState<Array<{ value: string; label: string }>>([]);
   const [proxySelection, setProxySelection] = useState<string>("");
   const [proxyBusy, setProxyBusy] = useState(false);
+  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggingIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", String(index));
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    if (dragOverIndex !== index) {
+      setDragOverIndex(index);
+    }
+  };
+
+  const handleDrop = async (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    if (draggingIndex === null || draggingIndex === targetIndex) {
+      setDraggingIndex(null);
+      setDragOverIndex(null);
+      return;
+    }
+    const currentList = [...visibleConnections];
+    const [draggedItem] = currentList.splice(draggingIndex, 1);
+    currentList.splice(targetIndex, 0, draggedItem);
+    setDraggingIndex(null);
+    setDragOverIndex(null);
+
+    try {
+      for (let i = 0; i < currentList.length; i++) {
+        const newPriority = i + 1;
+        if (currentList[i].priority !== newPriority) {
+          await providersApi.update(currentList[i].id, { priority: newPriority });
+        }
+      }
+      messageApi.success("已更新账号排序与优先级");
+      await queryClient.invalidateQueries({ queryKey: ["providers", "detail", providerId] });
+      await queryClient.invalidateQueries({ queryKey: ["providers"] });
+    } catch {
+      messageApi.error("更新账号排序失败");
+    }
+  };
 
   const catalogQuery = useQuery({ queryKey: ["providers", "catalog"], queryFn: providersApi.catalog, staleTime: 300_000 });
   const providerQuery = useQuery({ queryKey: ["providers", "detail", providerId], queryFn: () => providersApi.list({ provider: providerId }), enabled: Boolean(providerId) });
+  const cliproxyAccountsQuery = useQuery({
+    queryKey: ["cliproxy-accounts"],
+    queryFn: () => embeddedServicesApi.getCliproxyAccounts().catch(() => []),
+    enabled: providerId === "cliproxyapi" || providerId === "cliproxy",
+    staleTime: 30_000,
+  });
   const connectionIds = (providerQuery.data?.connections ?? []).map((connection) => connection.id).sort();
   const modelsQuery = useQuery({
     queryKey: ["providers", "provider-models", providerId, connectionIds],
     queryFn: async () => {
-      const [metadata, registry, synced] = await Promise.all([
+      const [metadata, registry, synced, pluginManifest] = await Promise.all([
         providersApi.providerModels(providerId).catch(() => ({ models: [], customModels: [], modelCompatOverrides: [], hiddenModelsByProvider: {} })),
         providersApi.catalogModels(providerId).catch(() => ({ models: [] })),
         providersApi.syncedModels(providerId).catch(() => ({ models: [] })),
+        providerId === "cliproxyapi" ? providersApi.providerPluginManifest().catch(() => null) : Promise.resolve(null),
       ]);
       const compatMap = new Map<string, any>();
       for (const override of ((metadata as any).modelCompatOverrides || []) as any[]) {
@@ -198,6 +252,7 @@ export default function ProviderDetailPage() {
         ...metadata,
         registryModels: registry.models || [],
         syncedModels: synced.models || [],
+        manifestModels: pluginManifest?.providers?.find((provider) => provider.id === providerId)?.models || [],
         customModels: (metadata as any).customModels || [],
         compatMap,
       };
@@ -291,9 +346,10 @@ export default function ProviderDetailPage() {
     try {
       const port = window.location.port || "20128";
       if (DEVICE_CODE_PROVIDERS.has(providerId)) {
-        const response = await fetch(`/api/oauth/${encodeURIComponent(providerId)}/device-code`);
-        const payload = await response.json().catch(() => ({})) as { device_code?: string; verification_uri?: string; verification_uri_complete?: string; codeVerifier?: string; interval?: number; error?: string };
-        if (!response.ok || !payload.device_code) throw new Error(payload.error || "无法启动设备授权流程");
+        const payload = await api<{ device_code?: string; verification_uri?: string; verification_uri_complete?: string; codeVerifier?: string; interval?: number; error?: string }>(
+          `/oauth/${encodeURIComponent(providerId)}/device-code`
+        );
+        if (!payload?.device_code) throw new Error(payload?.error || "无法启动设备授权流程");
         const verificationUrl = payload.verification_uri_complete || payload.verification_uri;
         if (!verificationUrl) throw new Error("授权服务没有返回验证地址");
         setOauthSession({ redirectUri: "", codeVerifier: payload.codeVerifier });
@@ -306,9 +362,10 @@ export default function ProviderDetailPage() {
       const redirectUri = isGoogleLoopback
         ? `http://127.0.0.1:${port}/callback`
         : `${window.location.origin}/callback`;
-      const response = await fetch(`/api/oauth/${encodeURIComponent(providerId)}/authorize?redirect_uri=${encodeURIComponent(redirectUri)}`);
-      const payload = await response.json().catch(() => ({})) as { authUrl?: string; redirectUri?: string; codeVerifier?: string; error?: string };
-      if (!response.ok || !payload.authUrl) throw new Error(payload.error || "无法启动授权流程");
+      const payload = await api<{ authUrl?: string; redirectUri?: string; codeVerifier?: string; error?: string }>(
+        `/oauth/${encodeURIComponent(providerId)}/authorize?redirect_uri=${encodeURIComponent(redirectUri)}`
+      );
+      if (!payload?.authUrl) throw new Error(payload?.error || "无法启动授权流程");
       setOauthSession({ redirectUri: payload.redirectUri || redirectUri, codeVerifier: payload.codeVerifier });
       setOauthOpen(true);
       window.open(payload.authUrl, "omniroute-oauth", "width=600,height=720");
@@ -337,13 +394,13 @@ export default function ProviderDetailPage() {
         // Accept a pasted authorization code as well as the full callback URL.
       }
       if (!code) throw new Error("回调地址中没有授权码");
-      const response = await fetch(`/api/oauth/${encodeURIComponent(providerId)}/exchange`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code, state, redirectUri: oauthSession.redirectUri, codeVerifier: oauthSession.codeVerifier }),
-      });
-      const payload = await response.json().catch(() => ({})) as { error?: string | { message?: string } };
-      if (!response.ok) throw new Error(typeof payload.error === "string" ? payload.error : payload.error?.message || "授权交换失败");
+      await api<{ error?: string | { message?: string } }>(
+        `/oauth/${encodeURIComponent(providerId)}/exchange`,
+        {
+          method: "POST",
+          body: JSON.stringify({ code, state, redirectUri: oauthSession.redirectUri, codeVerifier: oauthSession.codeVerifier }),
+        }
+      );
       await queryClient.invalidateQueries({ queryKey: ["providers", "detail", providerId] });
       await queryClient.invalidateQueries({ queryKey: ["providers"] });
       setOauthOpen(false);
@@ -396,21 +453,22 @@ export default function ProviderDetailPage() {
     let active = true;
     const poll = async () => {
       try {
-        const response = await fetch(`/api/oauth/${encodeURIComponent(providerId)}/poll`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ deviceCode: oauthDevice.deviceCode, codeVerifier: oauthDevice.codeVerifier }),
-        });
-        const payload = await response.json().catch(() => ({})) as { success?: boolean; pending?: boolean; error?: string; errorDescription?: string };
+        const payload = await api<{ success?: boolean; pending?: boolean; error?: string; errorDescription?: string }>(
+          `/oauth/${encodeURIComponent(providerId)}/poll`,
+          {
+            method: "POST",
+            body: JSON.stringify({ deviceCode: oauthDevice.deviceCode, codeVerifier: oauthDevice.codeVerifier }),
+          }
+        );
         if (!active) return;
-        if (payload.success) {
+        if (payload?.success) {
           await queryClient.invalidateQueries({ queryKey: ["providers", "detail", providerId] });
           await queryClient.invalidateQueries({ queryKey: ["providers"] });
           setOauthDevice(null);
           setOauthSession(null);
           setOauthOpen(false);
           messageApi.success("授权连接已添加");
-        } else if (!payload.pending && payload.error && payload.error !== "authorization_pending" && payload.error !== "slow_down") {
+        } else if (!payload?.pending && payload?.error && payload.error !== "authorization_pending" && payload.error !== "slow_down") {
           setOauthError(payload.errorDescription || payload.error);
           setOauthDevice(null);
         }
@@ -493,8 +551,27 @@ export default function ProviderDetailPage() {
   const [testingModelId, setTestingModelId] = useState<string | null>(null);
   const [modelTestStatus, setModelTestStatus] = useState<Record<string, "ok" | "error" | "quota">>({});
   const [modelTestLatencies, setModelTestLatencies] = useState<Record<string, number>>({});
+  const [modelTestErrors, setModelTestErrors] = useState<Record<string, string>>({});
   const [testingAll, setTestingAll] = useState(false);
   const [testProgress, setTestProgress] = useState<{ done: number; total: number } | null>(null);
+  const [testingCliproxyId, setTestingCliproxyId] = useState<string | null>(null);
+
+  const handleTestCliproxyAccount = async (id: string) => {
+    setTestingCliproxyId(id);
+    try {
+      const res = await embeddedServicesApi.testCliproxyAccount(id);
+      if (res.success) {
+        messageApi.success(`账号连通性正常（延迟: ${res.latencyMs || 120}ms）`);
+      } else {
+        messageApi.warning(`连通性异常: ${res.error || "请求超时"}`);
+      }
+      void queryClient.invalidateQueries({ queryKey: ["cliproxy-accounts"] });
+    } catch {
+      messageApi.error("测试连通性请求失败");
+    } finally {
+      setTestingCliproxyId(null);
+    }
+  };
 
   const setAliasMutation = useMutation({
     mutationFn: ({ modelId, alias }: { modelId: string; alias: string }) =>
@@ -599,22 +676,32 @@ export default function ProviderDetailPage() {
   const handleTestModel = async (modelId: string, fullModel: string) => {
     setTestingModelId(modelId);
     try {
+      const targetConnectionId = selectedConnectionIds.length === 1 ? selectedConnectionIds[0] : undefined;
       const res = await providersApi.testModel({
         providerId,
         modelId: fullModel,
-        connectionId: connections[0]?.id,
+        ...(targetConnectionId ? { connectionId: targetConnectionId } : {}),
       });
       if (res.status === "ok") {
         setModelTestStatus((prev) => ({ ...prev, [modelId]: "ok" }));
         if (res.latencyMs) setModelTestLatencies((prev) => ({ ...prev, [modelId]: res.latencyMs! }));
+        setModelTestErrors((prev) => {
+          const next = { ...prev };
+          delete next[modelId];
+          return next;
+        });
         messageApi.success(`模型 ${modelId} 测试通过 (${res.latencyMs || 0}ms)`);
       } else {
+        const errMsg = res.error || "测试失败";
         setModelTestStatus((prev) => ({ ...prev, [modelId]: "error" }));
-        messageApi.error(res.error || "测试失败");
+        setModelTestErrors((prev) => ({ ...prev, [modelId]: errMsg }));
+        messageApi.error(`模型 ${modelId} 测试失败: ${errMsg}`);
       }
     } catch (err: any) {
+      const errMsg = err?.message || "测试失败";
       setModelTestStatus((prev) => ({ ...prev, [modelId]: "error" }));
-      messageApi.error(err?.message || "测试失败");
+      setModelTestErrors((prev) => ({ ...prev, [modelId]: errMsg }));
+      messageApi.error(`模型 ${modelId} 测试失败: ${errMsg}`);
     } finally {
       setTestingModelId(null);
     }
@@ -630,6 +717,7 @@ export default function ProviderDetailPage() {
 
     let doneCount = 0;
     const failedModelIds: string[] = [];
+    const targetConnectionId = selectedConnectionIds.length === 1 ? selectedConnectionIds[0] : undefined;
 
     for (let i = 0; i < targets.length; i += 3) {
       const chunk = targets.slice(i, i + 3);
@@ -639,17 +727,26 @@ export default function ProviderDetailPage() {
             const res = await providersApi.testModel({
               providerId,
               modelId: fullModel,
-              connectionId: connections[0]?.id,
+              ...(targetConnectionId ? { connectionId: targetConnectionId } : {}),
             });
             if (res.status === "ok") {
               setModelTestStatus((prev) => ({ ...prev, [modelId]: "ok" }));
               if (res.latencyMs) setModelTestLatencies((prev) => ({ ...prev, [modelId]: res.latencyMs! }));
+              setModelTestErrors((prev) => {
+                const next = { ...prev };
+                delete next[modelId];
+                return next;
+              });
             } else {
+              const errMsg = res.error || "测试失败";
               setModelTestStatus((prev) => ({ ...prev, [modelId]: "error" }));
+              setModelTestErrors((prev) => ({ ...prev, [modelId]: errMsg }));
               failedModelIds.push(modelId);
             }
-          } catch {
+          } catch (err: any) {
+            const errMsg = err?.message || "测试失败";
             setModelTestStatus((prev) => ({ ...prev, [modelId]: "error" }));
+            setModelTestErrors((prev) => ({ ...prev, [modelId]: errMsg }));
             failedModelIds.push(modelId);
           } finally {
             doneCount++;
@@ -665,8 +762,10 @@ export default function ProviderDetailPage() {
         isHidden: true,
       }).catch(() => {});
       messageApi.warning(`测试完成，已自动隐藏 ${failedModelIds.length} 个失败模型`);
+    } else if (failedModelIds.length > 0) {
+      messageApi.warning(`测试完成：${targets.length - failedModelIds.length} 个通过，${failedModelIds.length} 个失败（鼠标悬浮 ❌ 可查看具体报错）`);
     } else {
-      messageApi.success("全部模型测试完成");
+      messageApi.success(`所有 ${targets.length} 个模型测试通过！`);
     }
 
     setTestingAll(false);
@@ -723,6 +822,7 @@ export default function ProviderDetailPage() {
         isHidden: hiddenSet.has(id),
         compat: compatMap.get(id),
         testStatus: modelTestStatus[id],
+        testError: modelTestErrors[id],
         latencyMs: modelTestLatencies[id],
       });
     }
@@ -740,6 +840,7 @@ export default function ProviderDetailPage() {
           isHidden: hiddenSet.has(id),
           compat: compatMap.get(id),
           testStatus: modelTestStatus[id],
+          testError: modelTestErrors[id],
           latencyMs: modelTestLatencies[id],
         });
       } else {
@@ -748,12 +849,41 @@ export default function ProviderDetailPage() {
           ...existing,
           name: existing.name || m.name || id,
           isFree: existing.isFree || Boolean(m.isFree),
+          testError: modelTestErrors[id],
+        });
+      }
+    }
+
+    // Embedded services publish their live catalog through Orbit's official
+    // provider-plugin manifest. Keep the public provider prefix out of the
+    // row id because ProviderModelsSection adds it when routing/testing.
+    for (const m of [
+      ...(((modelsQuery.data as any)?.manifestModels || []) as any[]),
+    ]) {
+      const rawId = String(m.id ?? "").trim();
+      if (!rawId) continue;
+      const prefixes = [`${providerDisplayAlias}/`, `${providerId}/`, "cliproxy/"];
+      const prefix = prefixes.find((candidate) => rawId.startsWith(candidate));
+      const id = prefix ? rawId.slice(prefix.length) : rawId;
+      if (!id) continue;
+      const existing = map.get(id);
+      if (!existing) {
+        map.set(id, {
+          id,
+          name: m.name || id,
+          source: "imported",
+          isFree: Boolean(m.isFree),
+          isHidden: hiddenSet.has(id),
+          compat: compatMap.get(id),
+          testStatus: modelTestStatus[id],
+          testError: modelTestErrors[id],
+          latencyMs: modelTestLatencies[id],
         });
       }
     }
 
     return [...map.values()];
-  }, [modelsQuery.data, providerId, modelTestStatus, modelTestLatencies]);
+  }, [modelsQuery.data, providerId, providerDisplayAlias, modelTestStatus, modelTestLatencies, modelTestErrors]);
 
   const customModelRows: CustomModelItem[] = useMemo(() => {
     const compatMap = (modelsQuery.data as any)?.compatMap || new Map();
@@ -936,9 +1066,17 @@ export default function ProviderDetailPage() {
                 </a>
               ) : (info?.name ?? providerId)}
             </Typography.Title>
-            <Tag bordered={false} style={{ fontSize: 12, padding: "2px 8px", background: "var(--ant-color-fill-secondary)" }}>
-              {t("providers.connectionsCount", { count: connections.length })}
-            </Tag>
+            {kind === "upstream-proxy" ? (
+              <Tag bordered={false} color="success" style={{ fontSize: 12, padding: "2px 8px" }}>
+                {(cliproxyAccountsQuery.data?.length ?? 0) > 0
+                  ? t("providers.connectionsCount", { count: cliproxyAccountsQuery.data!.length })
+                  : "由上游代理管理"}
+              </Tag>
+            ) : (
+              <Tag bordered={false} style={{ fontSize: 12, padding: "2px 8px", background: "var(--ant-color-fill-secondary)" }}>
+                {t("providers.connectionsCount", { count: connections.length })}
+              </Tag>
+            )}
             {info?.notice?.apiKeyUrl && (
               <a
                 href={info.notice.apiKeyUrl}
@@ -970,25 +1108,207 @@ export default function ProviderDetailPage() {
             <Typography.Paragraph className={styles.muted}>按名称、能力或类别查找提供者。该类型不提供模型目录。</Typography.Paragraph>
           </Card>
         )}
-        {kind === "upstream-proxy" && <Card title="由上游代理管理"><Typography.Paragraph className={styles.muted}>该条目由 CLIProxyAPI/上游代理层管理，不建立普通直连。请在代理设置中配置运行时和路由。</Typography.Paragraph><Button onClick={() => navigate("/dashboard/settings/routing")}>打开路由设置</Button></Card>}
-
-        {kind !== "no-auth" && kind !== "upstream-proxy" && <Card className={styles.section} styles={{ body: { padding: 16 } }} title={<div className={styles.cardTitleRow}><span>{t("providers.connections")}</span><Button className={styles.providerProxyButton} color={providerProxyHost ? "orange" : "default"} variant="filled" icon={<MaterialIcon name="vpn_lock" />} loading={proxyBusy && proxyTarget?.scope === "provider" && !proxyModalOpen} onClick={() => void openProviderProxyConfig()}>{providerProxyHost ?? t("providers.providerProxy")}</Button></div>} extra={<Space size={8} wrap>{connections.length > 0 && <Button className={styles.headerActionButton} icon={<MaterialIcon name="swap_horiz" />} loading={distributeProxyMutation.isPending} onClick={() => distributeProxyMutation.mutate()}>{t("providers.distributeProxies")}</Button>}<Button className={styles.headerActionButton} icon={<MaterialIcon name="refresh" />} onClick={() => { void providerQuery.refetch(); void modelsQuery.refetch(); }}>{t("providers.refresh")}</Button>{(providerId === "github-copilot" || providerId === "agy" || providerId === "antigravity") && <Button className={styles.headerActionButton} type="primary" icon={<MaterialIcon name="passkey" />} loading={oauthBusy} onClick={() => void startOAuth()}>{t("providers.oauthAuthorize", "授权登录")}</Button>}{providerId === "qoder" && <Button className={styles.headerActionButton} onClick={() => void startOAuth()}>{t("providers.experimentalOAuth", "试验性 OAuth")}</Button>}<Button className={styles.headerActionButton} type={(providerId === "github-copilot" || providerId === "agy" || providerId === "antigravity") ? "default" : "primary"} icon={<MaterialIcon name="add" />} onClick={openAddConnection}>{(providerId === "github-copilot" || providerId === "agy" || providerId === "antigravity") ? t("providers.manualApiKey", "手动添加凭据") : t("providers.addConnection", "添加连接")}</Button></Space>}>
-          {connections.length > 1 && <Card type="inner" size="small" title={t("providers.accountRouting")} style={{ marginBottom: 12 }}>
-            <Space wrap align="center">
-              <Typography.Text type="secondary">{t("providers.accountRoutingDescription")}</Typography.Text>
-              <Select
-                value={routingStrategy}
-                disabled={routingBusy || settingsQuery.isLoading}
-                onChange={(value: string) => { setRoutingStrategy(value); void saveRouting(value, stickyLimit); }}
-                options={[{ label: t("providers.inheritGlobal"), value: "" }, ...ROUTING_STRATEGIES.map((value) => ({ label: value, value }))]}
-                style={{ minWidth: 180 }}
+        {kind === "upstream-proxy" && (
+          <Card
+            className={styles.section}
+            styles={{ body: { padding: 16 } }}
+            title={
+              <div className={styles.cardTitleRow}>
+                <span>CLIProxyAPI 上游代理账号</span>
+                <Tag color="cyan">嵌入式服务</Tag>
+              </div>
+            }
+            extra={
+              <Space size={8} wrap>
+                <Button
+                  className={styles.headerActionButton}
+                  icon={<MaterialIcon name="refresh" />}
+                  onClick={() => {
+                    void cliproxyAccountsQuery.refetch();
+                    void modelsQuery.refetch();
+                  }}
+                >
+                  {t("providers.refresh")}
+                </Button>
+                <Button
+                  className={styles.headerActionButton}
+                  icon={<MaterialIcon name="settings" />}
+                  onClick={() => navigate("/dashboard/settings/routing")}
+                >
+                  打开路由设置
+                </Button>
+                <Button
+                  className={styles.headerActionButton}
+                  type="primary"
+                  icon={<MaterialIcon name="terminal" />}
+                  onClick={() => navigate("/dashboard/services")}
+                >
+                  管理嵌入式服务与账号
+                </Button>
+              </Space>
+            }
+          >
+            {(cliproxyAccountsQuery.data?.length ?? 0) > 0 ? (
+              <Table<CliproxyAccountItem>
+                rowKey="id"
+                size="middle"
+                pagination={false}
+                dataSource={cliproxyAccountsQuery.data ?? []}
+                columns={[
+                  {
+                    title: "账号 / 凭据来源",
+                    key: "name",
+                    render: (_, record) => (
+                      <div>
+                        <Typography.Text strong style={{ fontSize: 13 }}>
+                          {record.name}
+                        </Typography.Text>
+                        <div style={{ fontSize: 11, color: "var(--ant-color-text-secondary)" }}>
+                          ID: {record.id}
+                        </div>
+                      </div>
+                    ),
+                  },
+                  {
+                    title: "所属平台",
+                    dataIndex: "provider",
+                    key: "provider",
+                    width: 140,
+                    render: (p: string) => {
+                      const colors: Record<string, string> = {
+                        codex: "purple",
+                        claude: "volcano",
+                        gemini: "blue",
+                        antigravity: "geekblue",
+                        kimi: "cyan",
+                        qwen: "orange",
+                        "github-copilot": "green",
+                      };
+                      return <Tag color={colors[p.toLowerCase()] || "blue"}>{p.toUpperCase()}</Tag>;
+                    },
+                  },
+                  {
+                    title: "状态",
+                    key: "status",
+                    width: 100,
+                    render: (_, record) => (
+                      <Tag color={record.status === "active" ? "success" : "error"}>
+                        {record.status === "active" ? "在线" : "失效"}
+                      </Tag>
+                    ),
+                  },
+                  {
+                    title: "延迟",
+                    dataIndex: "latencyMs",
+                    key: "latencyMs",
+                    width: 100,
+                    render: (lat?: number) => (
+                      <span style={{ fontFamily: "monospace", color: "#10b981", fontWeight: 600, fontSize: 12 }}>
+                        {lat ? `${lat}ms` : "—"}
+                      </span>
+                    ),
+                  },
+                  {
+                    title: "连通性测试",
+                    key: "action",
+                    width: 110,
+                    align: "right",
+                    render: (_, record) => (
+                      <Button
+                        size="small"
+                        icon={<MaterialIcon name="play_arrow" style={{ fontSize: 14 }} />}
+                        loading={testingCliproxyId === record.id}
+                        onClick={() => void handleTestCliproxyAccount(record.id)}
+                        style={{ boxShadow: "none" }}
+                      >
+                        测试
+                      </Button>
+                    ),
+                  },
+                ]}
               />
-              {routingStrategy === "round-robin" && <InputNumber min={1} max={10} value={stickyLimit} disabled={routingBusy} onChange={(value) => setStickyLimit(value ?? 3)} onBlur={() => void saveRouting(routingStrategy, stickyLimit)} addonBefore={t("providers.stickyLimit")} />}
-            </Space>
-          </Card>}
+            ) : (
+              <div style={{ padding: "20px 0", textAlign: "center" }}>
+                <Typography.Paragraph className={styles.muted} style={{ margin: 0 }}>
+                  CLIProxyAPI 运行中但暂未配置任何登录账号。您可点击右上角「管理嵌入式服务与账号」进行添加与授权。
+                </Typography.Paragraph>
+              </div>
+            )}
+          </Card>
+        )}
+
+        {kind !== "no-auth" && kind !== "upstream-proxy" && <Card className={styles.section} styles={{ body: { padding: 16 } }} title={<div className={styles.cardTitleRow}><span>{t("providers.connections")}</span><Button className={styles.providerProxyButton} color={providerProxyHost ? "orange" : "default"} variant="filled" icon={<MaterialIcon name="vpn_lock" />} loading={proxyBusy && proxyTarget?.scope === "provider" && !proxyModalOpen} onClick={() => void openProviderProxyConfig()}>{providerProxyHost ?? t("providers.providerProxy")}</Button></div>} extra={<Space size={8} wrap>{connections.length > 0 && <Button className={styles.headerActionButton} icon={<MaterialIcon name="swap_horiz" />} loading={distributeProxyMutation.isPending} onClick={() => distributeProxyMutation.mutate()}>{t("providers.distributeProxies")}</Button>}<Button className={styles.headerActionButton} icon={<MaterialIcon name="refresh" />} onClick={() => { void providerQuery.refetch(); void modelsQuery.refetch(); }}>{t("providers.refresh")}</Button>{(providerId === "github-copilot" || providerId === "agy" || providerId === "antigravity") ? <Button className={styles.headerActionButton} type="primary" icon={<MaterialIcon name="passkey" />} loading={oauthBusy} onClick={() => void startOAuth()}>{t("providers.oauthAuthorize", "OAuth 授权")}</Button> : providerId === "qoder" ? <Button className={styles.headerActionButton} onClick={() => void startOAuth()}>{t("providers.experimentalOAuth", "试验性 OAuth")}</Button> : <Button className={styles.headerActionButton} type="primary" icon={<MaterialIcon name="add" />} onClick={openAddConnection}>{t("providers.addConnection", "添加连接")}</Button>}</Space>}>
           {connections.length > 0 && <div className={styles.connectionToolbar}>
             <Space className={styles.connectionToolbarFilters} wrap>
               <Checkbox checked={visibleConnections.length > 0 && visibleConnections.every((row) => selectedConnectionIds.includes(row.id))} indeterminate={selectedConnectionIds.length > 0 && selectedConnectionIds.length < visibleConnections.length} onChange={(event) => setSelectedConnectionIds(event.target.checked ? visibleConnections.map((row) => row.id) : [])}>{selectedConnectionIds.length > 0 ? t("providers.selectedCount", { count: selectedConnectionIds.length }) : t("providers.accountsCount", { count: connections.length })}</Checkbox>
+
+              {/* Direct Dropdown for Account Routing */}
+              {connections.length > 1 && (() => {
+                const items: MenuProps["items"] = [
+                  {
+                    key: "default",
+                    label: (
+                      <Flex align="center" justify="space-between" gap={16} style={{ minWidth: 160 }}>
+                        <span style={{ fontWeight: !routingStrategy ? 600 : 400 }}>{t("providers.inheritGlobal", "继承全局设置")}</span>
+                        {!routingStrategy && <MaterialIcon name="check" size={16} style={{ color: "var(--ant-color-primary)" }} />}
+                      </Flex>
+                    ),
+                    onClick: () => {
+                      setRoutingStrategy("");
+                      void saveRouting("", stickyLimit);
+                    },
+                  },
+                  { type: "divider" },
+                  ...[
+                    { key: "fill-first", label: "fill-first (按序填满)" },
+                    { key: "round-robin", label: "round-robin (轮询分发)" },
+                    { key: "priority", label: "priority (固定优先级)" },
+                    { key: "p2c", label: "p2c (双随机选优)" },
+                    { key: "random", label: "random (完全随机)" },
+                    { key: "least-used", label: "least-used (最少使用)" },
+                  ].map((opt) => ({
+                    key: opt.key,
+                    label: (
+                      <Flex align="center" justify="space-between" gap={16} style={{ minWidth: 160 }}>
+                        <span style={{ fontWeight: routingStrategy === opt.key ? 600 : 400 }}>{opt.label}</span>
+                        {routingStrategy === opt.key && <MaterialIcon name="check" size={16} style={{ color: "var(--ant-color-primary)" }} />}
+                      </Flex>
+                    ),
+                    onClick: () => {
+                      setRoutingStrategy(opt.key);
+                      void saveRouting(opt.key, stickyLimit);
+                    },
+                  })),
+                ];
+                return (
+                  <Dropdown
+                    trigger={["click"]}
+                    placement="bottomLeft"
+                    menu={{ items }}
+                  >
+                  <Button
+                    size="small"
+                    icon={<MaterialIcon name="alt_route" size={14} />}
+                    loading={routingBusy}
+                    style={{
+                      fontSize: 12,
+                      height: 28,
+                      paddingInline: 10,
+                      borderRadius: 6,
+                      background: routingStrategy ? "rgba(59, 130, 246, 0.12)" : "rgba(255, 255, 255, 0.05)",
+                      borderColor: routingStrategy ? "var(--ant-color-primary-border)" : "var(--ant-color-border-secondary)",
+                      color: routingStrategy ? "var(--ant-color-primary)" : "var(--ant-color-text-secondary)",
+                    }}
+                  >
+                    <span>
+                      {t("providers.accountRouting", "账号路由")}: {routingStrategy || t("providers.inheritGlobal", "继承全局设置")}
+                    </span>
+                    <MaterialIcon name="arrow_drop_down" size={14} />
+                  </Button>
+                  </Dropdown>
+                );
+              })()}
+
               <Input.Search allowClear value={accountSearch} onChange={(event) => setAccountSearch(event.target.value)} placeholder={t("providers.searchAccounts")} style={{ width: 180 }} />
               <Segmented
                 value={healthFilter}
@@ -1001,22 +1321,64 @@ export default function ProviderDetailPage() {
                   { label: t("providers.quotaExhausted"), value: "exhausted" },
                 ]}
               />
-              {connections.length > 1 && selectedConnectionIds.length === 0 && <Button icon={<MaterialIcon name="play_arrow" />} loading={batchTestMutation.isPending} onClick={() => void batchTestMutation.mutateAsync()}>{t("providers.testAll")}</Button>}
             </Space>
-            {selectedConnectionIds.length > 0 && <Space className={styles.bulkActions} wrap size={[8, 8]}>
-              <Button className={styles.bulkActionButton} color="default" variant="filled" icon={<MaterialIcon name="toggle_on" />} loading={batchStatusMutation.isPending} onClick={() => void batchStatusMutation.mutateAsync(true)}>{t("providers.enableSelected")}</Button>
-              <Button className={styles.bulkActionButton} color="default" variant="filled" icon={<MaterialIcon name="toggle_off" />} loading={batchStatusMutation.isPending} onClick={() => void batchStatusMutation.mutateAsync(false)}>{t("providers.disableSelected")}</Button>
-              <Button className={styles.bulkActionButton} color="default" variant="filled" icon={<MaterialIcon name="play_arrow" />} loading={batchTestMutation.isPending} onClick={() => void batchTestMutation.mutateAsync(selectedConnectionIds)}>{t("providers.testSelected")}</Button>
-              <Popconfirm title={t("providers.deleteSelectedConfirm")} onConfirm={() => void batchDeleteMutation.mutateAsync()}>
-                <Button className={styles.bulkActionButton} color="danger" variant="filled" loading={batchDeleteMutation.isPending} icon={<MaterialIcon name="delete" />}>{t("providers.deleteSelected", { count: selectedConnectionIds.length })}</Button>
-              </Popconfirm>
-            </Space>}
+            <Space className={styles.bulkActions} wrap size={[8, 8]}>
+              {selectedConnectionIds.length > 0 ? (
+                <>
+                  <Button className={styles.bulkActionButton} color="default" variant="filled" icon={<MaterialIcon name="toggle_on" />} loading={batchStatusMutation.isPending} onClick={() => void batchStatusMutation.mutateAsync(true)}>{t("providers.enableSelected")}</Button>
+                  <Button className={styles.bulkActionButton} color="default" variant="filled" icon={<MaterialIcon name="toggle_off" />} loading={batchStatusMutation.isPending} onClick={() => void batchStatusMutation.mutateAsync(false)}>{t("providers.disableSelected")}</Button>
+                  <Button className={styles.bulkActionButton} color="default" variant="filled" icon={<MaterialIcon name="play_arrow" />} loading={batchTestMutation.isPending} onClick={() => void batchTestMutation.mutateAsync(selectedConnectionIds)}>{t("providers.testSelected")}</Button>
+                  <Popconfirm title={t("providers.deleteSelectedConfirm")} onConfirm={() => void batchDeleteMutation.mutateAsync()}>
+                    <Button className={styles.bulkActionButton} color="danger" variant="filled" loading={batchDeleteMutation.isPending} icon={<MaterialIcon name="delete" />}>{t("providers.deleteSelected", { count: selectedConnectionIds.length })}</Button>
+                  </Popconfirm>
+                </>
+              ) : (
+                connections.length > 1 && (
+                  <Button icon={<MaterialIcon name="play_arrow" />} loading={batchTestMutation.isPending} onClick={() => void batchTestMutation.mutateAsync()}>
+                    {t("providers.testAll", "测试全部")}
+                  </Button>
+                )
+              )}
+            </Space>
           </div>}
           {connections.length === 0 ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<><Typography.Text>{t("providers.noConnections")}</Typography.Text><br /><Typography.Text type="secondary">{t("providers.noConnectionsDescription")}</Typography.Text><br /><Button type="link" icon={<MaterialIcon name="add" />} onClick={openAddConnection}>{t("providers.addConnection")}</Button></>} /> : <List
             dataSource={visibleConnections}
             pagination={visibleConnections.length > 10 ? { pageSize: 10, hideOnSinglePage: true } : false}
-            renderItem={(row) => <List.Item style={{ paddingBlock: 4, paddingInline: 0, border: 0 }}>
-              <div className={styles.connectionRow}>
+            renderItem={(row, index) => <List.Item style={{ paddingBlock: 3, paddingInline: 0, border: 0 }}>
+              <div
+                className={styles.connectionRow}
+                onDragOver={(e) => handleDragOver(e, index)}
+                onDrop={(e) => void handleDrop(e, index)}
+                style={{
+                  padding: "4px 8px",
+                  borderRadius: 6,
+                  transition: "all 0.2s",
+                  border: dragOverIndex === index ? "1px dashed var(--ant-color-primary)" : "1px solid transparent",
+                  backgroundColor: dragOverIndex === index ? "rgba(59, 130, 246, 0.06)" : undefined,
+                  opacity: draggingIndex === index ? 0.4 : 1,
+                }}
+              >
+                {/* Drag Handle */}
+                {visibleConnections.length > 1 && (
+                  <div
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, index)}
+                    style={{
+                      cursor: "grab",
+                      display: "flex",
+                      alignItems: "center",
+                      color: "var(--ant-color-text-quaternary)",
+                      padding: "2px 0",
+                      marginRight: 2,
+                      transition: "color 0.2s",
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = "var(--ant-color-text-secondary)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = "var(--ant-color-text-quaternary)"; }}
+                    title="拖动调整优先级与排序"
+                  >
+                    <MaterialIcon name="drag_indicator" size={16} />
+                  </div>
+                )}
                 <Checkbox checked={selectedConnectionIds.includes(row.id)} onChange={(event) => setSelectedConnectionIds((current) => event.target.checked ? [...new Set([...current, row.id])] : current.filter((id) => id !== row.id))} />
                 <Space orientation="vertical" size={0} className={styles.connectionIdentity}>
                   <div className={styles.connectionNameRow}><MaterialIcon className={styles.connectionNameIcon} name="lock" size={16} /><Typography.Text strong ellipsis={{ tooltip: maskAccountName(row.name) }}>{maskAccountName(row.name)}</Typography.Text></div>
@@ -1033,10 +1395,16 @@ export default function ProviderDetailPage() {
                   {row.defaultModel && <Tag color="blue">{row.defaultModel}</Tag>}
                   {row.lastError && <Tag color="error">{row.lastError}</Tag>}
                 </Space>
-                <Space size={[4, 4]} wrap className={styles.connectionActions}>
+                <Space size={[6, 4]} wrap align="center" className={styles.connectionActions}>
+                  {/* Switch placed as the FIRST action on the right */}
+                  <Switch
+                    size="small"
+                    checked={row.isActive !== false}
+                    loading={statusMutation.isPending}
+                    onChange={(checked) => statusMutation.mutate({ id: row.id, isActive: checked })}
+                  />
                   <Button className={styles.actionButton} size="small" color="blue" variant="filled" loading={testMutation.isPending} icon={<MaterialIcon name="refresh" />} onClick={() => testMutation.mutate(row.id)}>{t("providers.retest")}</Button>
                   {(row.authType === "oauth" || kind === "oauth" || kind === "ide") && <Button className={styles.actionButton} size="small" color="orange" variant="filled" loading={refreshTokenMutation.isPending} icon={<MaterialIcon name="token" />} onClick={() => refreshTokenMutation.mutate(row)}>{t("providers.token")}</Button>}
-                  <Switch checked={row.isActive !== false} loading={statusMutation.isPending} onChange={(checked) => statusMutation.mutate({ id: row.id, isActive: checked })} />
                   {(row.authType === "oauth" || kind === "oauth" || kind === "ide") && <Button className={styles.actionButton} size="small" color="gold" variant="filled" icon={<MaterialIcon name="passkey" />} onClick={() => void startOAuth()}>{t("providers.reauthorize")}</Button>}
                   <Button className={styles.actionButton} size="small" variant="filled" icon={<MaterialIcon name="edit" />} onClick={() => navigate(`/dashboard/providers/${providerId}/connections/${row.id}`)}>{t("providers.edit")}</Button>
                   <Button className={styles.actionButton} size="small" variant="filled" icon={<MaterialIcon name="vpn_lock" />} onClick={() => void openProxyConfig(row)}>{t("providers.proxyConfig")}</Button>
@@ -1051,17 +1419,17 @@ export default function ProviderDetailPage() {
           <SearchProviderCard providerId={providerId} />
         ) : (
           <>
-            {kind !== "upstream-proxy" && (
+            {(kind !== "upstream-proxy" || providerId === "cliproxyapi") && (
               <>
                 <ProviderModelsSection
                   providerId={providerId}
                   providerDisplayAlias={providerDisplayAlias}
                   models={availableModelRows}
                   modelAliases={aliasesQuery.data || {}}
-                  allowModelImport={Boolean(connections.length > 0)}
-                  autoFetchModels={autoFetchModelsEnabled}
+                  allowModelImport={kind !== "upstream-proxy" && Boolean(connections.length > 0)}
+                  autoFetchModels={kind !== "upstream-proxy" && autoFetchModelsEnabled}
                   onToggleAutoFetchModels={handleToggleAutoFetchModels}
-                  autoSync={autoSyncEnabled}
+                  autoSync={kind !== "upstream-proxy" && autoSyncEnabled}
                   onToggleAutoSync={handleToggleAutoSync}
                   onImportModels={() => syncModelsMutation.mutateAsync().then(() => {})}
                   importingModels={syncModelsMutation.isPending}

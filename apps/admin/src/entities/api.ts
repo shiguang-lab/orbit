@@ -256,6 +256,16 @@ export interface ProviderModelsResponse {
   hiddenModelsByProvider?: Record<string, string[]>;
 }
 
+export interface ProviderPluginManifestResponse {
+  schemaVersion?: number;
+  providers: Array<{
+    id: string;
+    alias?: string;
+    models?: Array<Record<string, unknown>>;
+    [key: string]: unknown;
+  }>;
+}
+
 export const providersApi = {
   list: (params?: { provider?: string; limit?: number; offset?: number }) => {
     const q = new URLSearchParams();
@@ -281,6 +291,7 @@ export const providersApi = {
   catalogModels: (providerId: string) => api<{ models: Array<Record<string, unknown>>; source: "registry" }>(`/providers/${encodeURIComponent(providerId)}/catalog-models`),
   syncedModels: (providerId: string) => api<{ models: Array<Record<string, unknown>> }>(`/synced-available-models?provider=${encodeURIComponent(providerId)}`),
   providerModels: (providerId: string) => api<ProviderModelsResponse & { source?: string }>(`/provider-models?provider=${encodeURIComponent(providerId)}`),
+  providerPluginManifest: () => api<ProviderPluginManifestResponse>('/v1/provider-plugin-manifest'),
   setModelVisibility: (providerId: string, modelIds: string[], isHidden: boolean) =>
     api<{ ok: boolean; updated: number }>(`/provider-models?provider=${encodeURIComponent(providerId)}`, {
       method: "PATCH",

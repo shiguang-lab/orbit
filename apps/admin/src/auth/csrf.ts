@@ -18,7 +18,7 @@ let cachedExpiresAt = 0;
 let pendingToken: Promise<string> | null = null;
 
 /** 公开/免 CSRF 的路径前缀与精确路径（与后端 publicApiRoutes.ts 对齐，取核心部分） */
-const PUBLIC_PREFIXES = ["/api/auth/oidc/", "/api/v1/", "/api/oauth/"];
+const PUBLIC_PREFIXES = ["/api/auth/oidc/", "/api/v1/"];
 const PUBLIC_EXACT = new Set([
   "/api/auth/login",
   "/api/auth/logout",
