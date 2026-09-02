@@ -733,39 +733,45 @@ export function EmbeddedServicesPage() {
               <div style={{ padding: "6px 10px", borderRadius: 6, background: "rgba(255,255,255,0.02)", border: "1px solid var(--ant-color-border-secondary)" }}>
                 <Flex justify="space-between" align="center" style={{ marginBottom: 4 }}>
                   <Text strong style={{ fontSize: 12 }}>服务通信 API Key</Text>
-                  {revealCountdown > 0 && (
+                  {activeTab !== "cliproxy" && revealCountdown > 0 && (
                     <Tag color="warning" style={{ fontSize: 10, margin: 0 }}>
                       {revealCountdown}s
                     </Tag>
                   )}
                 </Flex>
-                <Flex justify="space-between" align="center" gap={8}>
-                  <Text code copyable={Boolean(apiKeyRevealed)} style={{ fontSize: 12, margin: 0 }}>
-                    {apiKeyRevealed || status?.apiKeyMasked || "未配置"}
+                {activeTab === "cliproxy" ? (
+                  <Text type="secondary" style={{ fontSize: 11, lineHeight: 1.5 }}>
+                    由服务管理器自动生成并注入，仅用于网关与 CLIProxyAPI 的内部通信；它不是用户登录凭据，也不用于模型调用。
                   </Text>
-                  <Space size={6}>
-                    {!apiKeyRevealed ? (
-                      <Button size="small" icon={<MaterialIcon name="visibility" size={14} />} onClick={handleRevealApiKey}>
-                        显示
-                      </Button>
-                    ) : (
-                      <Button size="small" onClick={() => setApiKeyRevealed(null)}>
-                        隐藏
-                      </Button>
-                    )}
-                    <Popconfirm
-                      title="确认轮换服务 API Key？"
-                      description="轮换后将自动更新网关与该服务的通信握手凭据。"
-                      onConfirm={handleRotateApiKey}
-                      okText="确认轮换"
-                      cancelText="取消"
-                    >
-                      <Button size="small" danger icon={<MaterialIcon name="key" size={14} />}>
-                        轮换 Key
-                      </Button>
-                    </Popconfirm>
-                  </Space>
-                </Flex>
+                ) : (
+                  <Flex justify="space-between" align="center" gap={8}>
+                    <Text code copyable={Boolean(apiKeyRevealed)} style={{ fontSize: 12, margin: 0 }}>
+                      {apiKeyRevealed || status?.apiKeyMasked || "未配置"}
+                    </Text>
+                    <Space size={6}>
+                      {!apiKeyRevealed ? (
+                        <Button size="small" icon={<MaterialIcon name="visibility" size={14} />} onClick={handleRevealApiKey}>
+                          显示
+                        </Button>
+                      ) : (
+                        <Button size="small" onClick={() => setApiKeyRevealed(null)}>
+                          隐藏
+                        </Button>
+                      )}
+                      <Popconfirm
+                        title="确认轮换服务 API Key？"
+                        description="轮换后将自动更新网关与该服务的通信握手凭据。"
+                        onConfirm={handleRotateApiKey}
+                        okText="确认轮换"
+                        cancelText="取消"
+                      >
+                        <Button size="small" danger icon={<MaterialIcon name="key" size={14} />}>
+                          轮换 Key
+                        </Button>
+                      </Popconfirm>
+                    </Space>
+                  </Flex>
+                )}
               </div>
             </Space>
           </Card>
