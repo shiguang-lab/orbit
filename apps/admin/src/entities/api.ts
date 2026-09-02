@@ -1575,15 +1575,35 @@ export const embeddedServicesApi = {
     }),
   uninstall: (name: string) =>
     api<{ success: boolean }>(`/services/${encodeURIComponent(name)}/uninstall`, { method: "POST" }),
-  updateConfig: (
+  updateConfig: async (
     name: string,
     payload: { autoStart?: boolean; autoRestartAdopted?: boolean; providerExpose?: boolean }
-  ) =>
-    api<{ success: boolean }>(`/services/${encodeURIComponent(name)}/config`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    }),
+  ): Promise<{ success: boolean }> => {
+    const requests: Promise<unknown>[] = [];
+    const encodedName = encodeURIComponent(name);
+    const postToggle = (endpoint: string, enabled: boolean) =>
+      api<void>(`/services/${encodedName}/${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ enabled }),
+      });
+
+    if (payload.autoStart !== undefined) {
+      requests.push(postToggle("auto-start", payload.autoStart));
+    }
+    if (payload.autoRestartAdopted !== undefined) {
+      requests.push(postToggle("auto-restart-adopted", payload.autoRestartAdopted));
+    }
+    if (payload.providerExpose !== undefined) {
+      if (name !== "cliproxy" && name !== "9router") {
+        throw new Error(`${name} 不支持提供商路由暴露配置`);
+      }
+      requests.push(postToggle("provider-expose", payload.providerExpose));
+    }
+
+    await Promise.all(requests);
+    return { success: true };
+  },
   getLogs: async (name: string): Promise<string[]> => {
     const res = await api<any>(`/services/${encodeURIComponent(name)}/logs`);
     if (Array.isArray(res)) return res;

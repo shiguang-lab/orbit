@@ -266,6 +266,19 @@ export function EmbeddedServicesPage() {
       messageApi.error(error instanceof Error ? error.message : "更新服务失败"),
   });
 
+  const configMutation = useMutation({
+    mutationFn: (input: {
+      payload: { autoStart?: boolean; autoRestartAdopted?: boolean; providerExpose?: boolean };
+      successMessage: string;
+    }) => embeddedServicesApi.updateConfig(activeTab, input.payload),
+    onSuccess: async (_result, input) => {
+      messageApi.success(input.successMessage);
+      await queryClient.invalidateQueries({ queryKey: ["service-status", activeTab] });
+    },
+    onError: (error) =>
+      messageApi.error(error instanceof Error ? error.message : "更新服务配置失败"),
+  });
+
   // Cliproxy State
   const cliproxyAccountsQuery = useQuery({
     queryKey: ["cliproxy-accounts"],
@@ -433,7 +446,8 @@ export function EmbeddedServicesPage() {
     startMutation.isPending ||
     stopMutation.isPending ||
     restartMutation.isPending ||
-    updateMutation.isPending;
+    updateMutation.isPending ||
+    configMutation.isPending;
   const lifecycleLabel = !isInstalled
     ? "未安装"
     : status?.state === "running"
@@ -665,11 +679,13 @@ export function EmbeddedServicesPage() {
                 <Switch
                   checked={status?.autoStart ?? false}
                   disabled={!isInstalled || lifecyclePending}
-                  onChange={(val) => {
-                    void embeddedServicesApi.updateConfig(activeTab, { autoStart: val });
-                    messageApi.success("自启配置已更新");
-                    void queryClient.invalidateQueries({ queryKey: ["service-status", activeTab] });
-                  }}
+                  loading={configMutation.isPending}
+                  onChange={(val) =>
+                    configMutation.mutate({
+                      payload: { autoStart: val },
+                      successMessage: "自启配置已更新",
+                    })
+                  }
                 />
               </Flex>
 
@@ -682,12 +698,14 @@ export function EmbeddedServicesPage() {
                 </div>
                 <Switch
                   checked={status?.providerExpose ?? false}
-                  disabled={!isInstalled || lifecyclePending}
-                  onChange={(val) => {
-                    void embeddedServicesApi.updateConfig(activeTab, { providerExpose: val });
-                    messageApi.success("暴露状态已更新");
-                    void queryClient.invalidateQueries({ queryKey: ["service-status", activeTab] });
-                  }}
+                  disabled={!isInstalled || lifecyclePending || (activeTab !== "cliproxy" && activeTab !== "9router")}
+                  loading={configMutation.isPending}
+                  onChange={(val) =>
+                    configMutation.mutate({
+                      payload: { providerExpose: val },
+                      successMessage: "暴露状态已更新",
+                    })
+                  }
                 />
               </Flex>
 
