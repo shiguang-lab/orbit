@@ -60,6 +60,27 @@ const LlmlinguaContextPage = withSuspense(lazy(() => import("@/features/context/
 const LiteContextPage = withSuspense(lazy(() => import("@/features/context/engine-detail").then((m) => ({ default: m.LiteContextPage }))));
 const AggressiveContextPage = withSuspense(lazy(() => import("@/features/context/engine-detail").then((m) => ({ default: m.AggressiveContextPage }))));
 const UltraContextPage = withSuspense(lazy(() => import("@/features/context/engine-detail").then((m) => ({ default: m.UltraContextPage }))));
+const OmniglyphContextPage = withSuspense(lazy(() => import("@/features/context/omniglyph")));
+const CompressionStudioPage = withSuspense(lazy(() => import("@/features/compression/compression-studio")));
+const CompressionExclusionsPage = withSuspense(lazy(() => import("@/features/compression/compression-exclusions")));
+const CliCodePage = withSuspense(lazy(() => import("@/features/agents/cli-code")));
+const CliAgentsPage = withSuspense(lazy(() => import("@/features/agents/cli-agents")));
+const AcpAgentsPage = withSuspense(lazy(() => import("@/features/agents/acp-agents")));
+const CloudAgentsPage = withSuspense(lazy(() => import("@/features/agents/cloud-agents")));
+const ConductorPage = withSuspense(lazy(() => import("@/features/agents/conductor")));
+const AgentBridgePage = withSuspense(lazy(() => import("@/features/tools/agent-bridge")));
+const TrafficInspectorPage = withSuspense(lazy(() => import("@/features/tools/traffic-inspector")));
+const DiscoveryPage = withSuspense(lazy(() => import("@/features/discovery/discovery")));
+const ApiEndpointsPage = withSuspense(lazy(() => import("@/features/endpoints/api-endpoints")));
+const WebhooksPage = withSuspense(lazy(() => import("@/features/webhooks/webhooks")));
+const SystemProxyPage = withSuspense(lazy(() => import("@/features/system/proxy")));
+const ComboHealthPage = withSuspense(lazy(() => import("@/features/analytics/combo-health")));
+const UtilizationPage = withSuspense(lazy(() => import("@/features/analytics/utilization")));
+const CachePage = withSuspense(lazy(() => import("@/features/cache/cache")));
+const CompressionAnalyticsPage = withSuspense(lazy(() => import("@/features/analytics/compression-analytics")));
+const SearchAnalyticsPage = withSuspense(lazy(() => import("@/features/analytics/search-analytics")));
+const EvalsPage = withSuspense(lazy(() => import("@/features/analytics/evals")));
+const ProviderStatsPage = withSuspense(lazy(() => import("@/features/analytics/provider-stats")));
 const P = (navKey: string, title: string) => placeholder(navKey, title);
 
 const migratedPaths = new Set([
@@ -87,9 +108,28 @@ const migratedPaths = new Set([
   "/dashboard/context/lite",
   "/dashboard/context/aggressive",
   "/dashboard/context/ultra",
+  "/dashboard/context/omniglyph",
+  "/dashboard/compression/studio",
+  "/dashboard/compression/exclusions",
+  "/dashboard/cli-code",
+  "/dashboard/cli-agents",
+  "/dashboard/acp-agents",
+  "/dashboard/cloud-agents",
+  "/dashboard/conductor",
+  "/dashboard/tools/agent-bridge",
+  "/dashboard/tools/traffic-inspector",
+  "/dashboard/discovery",
+  "/dashboard/api-endpoints",
+  "/dashboard/webhooks",
+  "/dashboard/system/proxy",
   "/dashboard/analytics",
   "/analytics",
+  "/dashboard/analytics/combo-health",
+  "/dashboard/analytics/utilization",
   "/dashboard/cache",
+  "/dashboard/analytics/compression",
+  "/dashboard/analytics/search",
+  "/dashboard/analytics/evals",
   "/dashboard/provider-stats",
   "/dashboard/activity",
   "/dashboard/logs",
@@ -148,13 +188,33 @@ export const router = createBrowserRouter([
       { path: "dashboard/context/lite", element: <LiteContextPage /> },
       { path: "dashboard/context/aggressive", element: <AggressiveContextPage /> },
       { path: "dashboard/context/ultra", element: <UltraContextPage /> },
+      { path: "dashboard/context/omniglyph", element: <OmniglyphContextPage /> },
+      { path: "dashboard/compression/studio", element: <CompressionStudioPage /> },
+      { path: "dashboard/compression/exclusions", element: <CompressionExclusionsPage /> },
+      // 智能体与网关工具
+      { path: "dashboard/cli-code", element: <CliCodePage /> },
+      { path: "dashboard/cli-agents", element: <CliAgentsPage /> },
+      { path: "dashboard/acp-agents", element: <AcpAgentsPage /> },
+      { path: "dashboard/cloud-agents", element: <CloudAgentsPage /> },
+      { path: "dashboard/conductor", element: <ConductorPage /> },
+      { path: "dashboard/tools/agent-bridge", element: <AgentBridgePage /> },
+      { path: "dashboard/tools/traffic-inspector", element: <TrafficInspectorPage /> },
+      { path: "dashboard/discovery", element: <DiscoveryPage /> },
+      { path: "dashboard/api-endpoints", element: <ApiEndpointsPage /> },
+      { path: "dashboard/webhooks", element: <WebhooksPage /> },
+      { path: "dashboard/system/proxy", element: <SystemProxyPage /> },
       // 分析
       { path: "dashboard/analytics", element: <AnalyticsPage /> },
       { path: "analytics", element: <AnalyticsPage /> },
+      { path: "dashboard/analytics/combo-health", element: <ComboHealthPage /> },
+      { path: "dashboard/analytics/utilization", element: <UtilizationPage /> },
+      { path: "dashboard/cache", element: <CachePage /> },
+      { path: "dashboard/analytics/compression", element: <CompressionAnalyticsPage /> },
+      { path: "dashboard/analytics/search", element: <SearchAnalyticsPage /> },
+      { path: "dashboard/analytics/evals", element: <EvalsPage /> },
+      { path: "dashboard/provider-stats", element: <ProviderStatsPage /> },
       { path: "dashboard/costs", element: <Navigate to="/dashboard/analytics" replace /> },
       { path: "costs", element: <Navigate to="/dashboard/analytics" replace /> },
-      { path: "dashboard/cache", element: createElement(P("cache", "Cache")) },
-      { path: "dashboard/provider-stats", element: createElement(P("provider-stats", "Provider Stats")) },
       // 监控
       { path: "dashboard/activity", element: <ActivityPage /> },
       { path: "activity", element: <ActivityPage /> },
