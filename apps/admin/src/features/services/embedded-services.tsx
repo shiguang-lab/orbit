@@ -170,7 +170,83 @@ const useStyles = createStyles(({ token }) => ({
     border: "1px solid rgba(255,255,255,0.08)",
     margin: 0,
   },
+  statusRow: {
+    width: "100%",
+    minWidth: 0,
+  },
+  statusLabel: {
+    flex: "0 0 auto",
+  },
+  statusValue: {
+    minWidth: 0,
+    flex: "1 1 auto",
+    justifyContent: "flex-end",
+    marginInlineStart: 12,
+  },
+  statusText: {
+    minWidth: 0,
+    maxWidth: "100%",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+  },
+  errorDetail: {
+    display: "block",
+    marginTop: 6,
+    padding: "8px 10px",
+    borderRadius: 6,
+    background: "rgba(0, 0, 0, 0.16)",
+    whiteSpace: "pre-wrap",
+    overflowWrap: "anywhere",
+    fontSize: 12,
+    lineHeight: 1.5,
+  },
 }));
+
+type ServiceErrorView = {
+  statusLabel: string;
+  title: string;
+  description: string;
+  tone: "warning" | "error";
+};
+
+function getServiceErrorView(error: string | null | undefined, port: number): ServiceErrorView | null {
+  const raw = error?.trim();
+  if (!raw) return null;
+
+  if (/already serving a healthy response/i.test(raw) || /OMNIROUTE_ADOPT_EXISTING_SERVICE/i.test(raw)) {
+    return {
+      statusLabel: "端口已有服务",
+      title: "检测到已有 CLIProxyAPI 实例",
+      description:
+        `端口 ${port} 已经有健康服务在响应。为避免误接管其他进程，网关默认不会自动接管它。` +
+        "如果这是你之前启动的 CLIProxyAPI，请在 Orbit 进程环境中设置 OMNIROUTE_ADOPT_EXISTING_SERVICE=1 后重启 Orbit；否则先停止占用该端口的旧进程，再重试。",
+      tone: "warning",
+    };
+  }
+
+  if (/already in use|EADDRINUSE/i.test(raw)) {
+    return {
+      statusLabel: "端口被占用",
+      title: `端口 ${port} 被占用`,
+      description: "服务无法绑定本地端口。请停止占用该端口的进程后再启动 CLIProxyAPI。",
+      tone: "error",
+    };
+  }
+
+  return {
+    statusLabel: "启动失败",
+    title: "CLIProxyAPI 启动失败",
+    description: "服务没有成功启动，请查看日志中的技术详情。",
+    tone: "error",
+  };
+}
+
+function getFriendlyServiceError(error: unknown, port: number, fallback: string): string {
+  const raw = error instanceof Error ? error.message : typeof error === "string" ? error : "";
+  const view = getServiceErrorView(raw, port);
+  return view ? `${view.title}：${view.description}` : raw || fallback;
+}
 
 export function EmbeddedServicesPage() {
   const { styles } = useStyles();
@@ -229,7 +305,7 @@ export function EmbeddedServicesPage() {
       await refreshLifecycle();
     },
     onError: (error) =>
-      messageApi.error(error instanceof Error ? error.message : "启动服务失败"),
+      messageApi.error(getFriendlyServiceError(error, SERVICES_META[activeTab].port, "启动服务失败")),
   });
 
   const stopMutation = useMutation({
@@ -253,7 +329,7 @@ export function EmbeddedServicesPage() {
       await refreshLifecycle();
     },
     onError: (error) =>
-      messageApi.error(error instanceof Error ? error.message : "重启服务失败"),
+      messageApi.error(getFriendlyServiceError(error, SERVICES_META[activeTab].port, "重启服务失败")),
   });
 
   const updateMutation = useMutation({
@@ -441,6 +517,9 @@ export function EmbeddedServicesPage() {
   const isInstalled = Boolean(status?.installedVersion);
   const isRunning = status?.state === "running";
   const isError = status?.state === "error";
+  const serviceError = isError
+    ? getServiceErrorView(status?.lastError, status?.port || currentMeta.port)
+    : null;
   const lifecyclePending =
     installMutation.isPending ||
     startMutation.isPending ||
@@ -542,31 +621,31 @@ export function EmbeddedServicesPage() {
             styles={{ body: { display: "flex", flexDirection: "column", flex: 1, justifyContent: "space-between", padding: "12px 14px" } }}
           >
             <Space direction="vertical" size={7} style={{ width: "100%", fontSize: 13 }}>
-              <Flex justify="space-between" align="center">
-                <Text type="secondary">运行状态:</Text>
-                <Flex align="center" gap={6}>
+              <Flex className={styles.statusRow} justify="space-between" align="center">
+                <Text className={styles.statusLabel} type="secondary">运行状态:</Text>
+                <Flex className={styles.statusValue} align="center" gap={6}>
                   <Badge status={isRunning ? "success" : isError ? "error" : "default"} />
-                  <Text strong>
+                  <Text strong className={styles.statusText} title={serviceError?.title}>
                     {!isInstalled
                       ? "未安装"
                       : isRunning
                         ? "正常在线 (Healthy)"
                         : isError
-                          ? status?.lastError || "运行异常"
+                          ? serviceError?.statusLabel || "运行异常"
                           : "已停止"}
                   </Text>
                 </Flex>
               </Flex>
-              <Flex justify="space-between" align="center">
-                <Text type="secondary">绑定本地环回端口:</Text>
+              <Flex className={styles.statusRow} justify="space-between" align="center">
+                <Text className={styles.statusLabel} type="secondary">绑定本地环回端口:</Text>
                 <Text code copyable>{status?.port || currentMeta.port}</Text>
               </Flex>
-              <Flex justify="space-between" align="center">
-                <Text type="secondary">进程 PID:</Text>
+              <Flex className={styles.statusRow} justify="space-between" align="center">
+                <Text className={styles.statusLabel} type="secondary">进程 PID:</Text>
                 <Text code>{status?.pid || "—"}</Text>
               </Flex>
-              <Flex justify="space-between" align="center">
-                <Text type="secondary">当前版本:</Text>
+              <Flex className={styles.statusRow} justify="space-between" align="center">
+                <Text className={styles.statusLabel} type="secondary">当前版本:</Text>
                 {status?.installedVersion ? (
                   <Tag color="blue">v{status.installedVersion}</Tag>
                 ) : (
@@ -574,12 +653,32 @@ export function EmbeddedServicesPage() {
                 )}
               </Flex>
               {status?.startedAt && (
-                <Flex justify="space-between" align="center">
-                  <Text type="secondary">启动时间:</Text>
+                <Flex className={styles.statusRow} justify="space-between" align="center">
+                  <Text className={styles.statusLabel} type="secondary">启动时间:</Text>
                   <Text style={{ fontSize: 11 }}>{new Date(status.startedAt).toLocaleString()}</Text>
                 </Flex>
               )}
             </Space>
+
+            {isError && serviceError && (
+              <Alert
+                type={serviceError.tone}
+                showIcon
+                message={serviceError.title}
+                description={
+                  <div>
+                    <div>{serviceError.description}</div>
+                    {status?.lastError && (
+                      <details>
+                        <summary>查看技术详情</summary>
+                        <Text code className={styles.errorDetail}>{status.lastError}</Text>
+                      </details>
+                    )}
+                  </div>
+                }
+                style={{ marginTop: 12 }}
+              />
+            )}
 
             {/* Action Buttons */}
             <div style={{ marginTop: 10, paddingTop: 8, borderTop: "1px solid var(--ant-color-border-secondary)" }}>

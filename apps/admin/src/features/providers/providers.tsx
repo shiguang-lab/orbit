@@ -110,6 +110,12 @@ const CATEGORY_DOT_COLORS: Record<string, string> = {
 const PROVIDER_TITLE_COLOR = "#3B82F6";
 
 const useProviderStyles = createStyles(({ token }) => ({
+  page: {
+    width: "100%",
+    // Keep the last provider row clear of the viewport edge when the shell
+    // scrollbar is scrolled all the way down.
+    paddingBottom: 24,
+  },
   card: {
     "&.ant-card-hoverable:hover": {
       borderColor: token.colorPrimary,
@@ -171,6 +177,7 @@ function SummaryChip({
 }
 
 export default function ProvidersPage() {
+  const { styles } = useProviderStyles();
   const { t } = useI18n();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -539,7 +546,7 @@ export default function ProvidersPage() {
   return (
     <>
       {contextHolder}
-      <Flex vertical gap={16}>
+      <Flex className={styles.page} vertical gap={16}>
         <Card styles={{ body: { padding: 12 } }}>
           <Flex vertical gap={12}>
             <Flex align="center" gap={12} wrap>
