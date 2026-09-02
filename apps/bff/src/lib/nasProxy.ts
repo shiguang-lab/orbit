@@ -22,6 +22,27 @@ export interface NasProxyOptions {
   broker?: LocalAuthBroker;
 }
 
+const DEFAULT_NAS_TIMEOUT_MS = 30_000;
+const LONG_OPERATION_TIMEOUT_MS = 300_000;
+
+export function resolveNasProxyTimeoutMs(
+  pathname: string,
+  configuredTimeout = process.env.OMNIROUTE_NAS_API_TIMEOUT_MS,
+): number {
+  const parsed = Number(configuredTimeout ?? DEFAULT_NAS_TIMEOUT_MS);
+  const baseTimeout = Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_NAS_TIMEOUT_MS;
+  const isLongOperation =
+    /^\/api\/services\/[^/]+\/(install|update)\/?$/.test(pathname) ||
+    pathname === "/api/version-manager/install";
+  return isLongOperation ? Math.max(baseTimeout, LONG_OPERATION_TIMEOUT_MS) : baseTimeout;
+}
+
+function isTimeoutError(error: unknown): boolean {
+  if (!error || typeof error !== "object" || !("name" in error)) return false;
+  const name = (error as { name?: unknown }).name;
+  return name === "TimeoutError" || name === "AbortError";
+}
+
 /** Paths owned by the local BFF and never forwarded to NAS. */
 export function isLocalBffPath(pathname: string): boolean {
   return (
@@ -66,6 +87,8 @@ export async function proxyToNas(
 
   const pathname = request.url.startsWith("/") ? request.url : `/${request.url}`;
   const target = `${options.target.replace(/\/$/, "")}${pathname}`;
+  const requestPath = new URL(request.url, "http://bff").pathname;
+  const timeoutMs = resolveNasProxyTimeoutMs(requestPath);
   const headers = new Headers();
   const contentType = request.headers["content-type"];
   if (typeof contentType === "string") headers.set("content-type", contentType);
@@ -84,11 +107,17 @@ export async function proxyToNas(
       headers,
       body,
       redirect: "manual",
-      signal: AbortSignal.timeout(Number(process.env.OMNIROUTE_NAS_API_TIMEOUT_MS ?? 30_000)),
+      signal: AbortSignal.timeout(timeoutMs),
     });
   } catch (error) {
-    reply.status(502).send({
-      error: { type: "upstream_unavailable", message: "NAS API is unavailable" },
+    const timedOut = isTimeoutError(error);
+    reply.status(timedOut ? 504 : 502).send({
+      error: {
+        type: timedOut ? "upstream_timeout" : "upstream_unavailable",
+        message: timedOut
+          ? `NAS API request timed out after ${timeoutMs}ms`
+          : "NAS API is unavailable",
+      },
       requestId: request.id,
     });
     request.log.warn({ err: error }, "NAS API request failed");

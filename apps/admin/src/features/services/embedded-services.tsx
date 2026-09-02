@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
+  Alert,
   Badge,
   Button,
   Card,
@@ -42,7 +43,7 @@ const SERVICES_META: Record<
     icon: "swap_horiz",
     title: "CLIProxyAPI 本地代理桥接",
     desc: "将本地 Codex、Claude Code、GitHub Copilot 与 Gemini CLI 逆向桥接至统一网关端点，支持多账号智能健康检测与模型重映射。",
-    port: 8085,
+    port: 8317,
     color: "#6366f1",
   },
   "9router": {
@@ -178,6 +179,13 @@ export function EmbeddedServicesPage() {
 
   const status = statusQuery.data;
 
+  const refreshLifecycle = async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["service-status", activeTab] }),
+      queryClient.invalidateQueries({ queryKey: ["service-logs", activeTab] }),
+    ]);
+  };
+
   // Logs Query
   const logsQuery = useQuery({
     queryKey: ["service-logs", activeTab],
@@ -186,31 +194,62 @@ export function EmbeddedServicesPage() {
   });
 
   // Action Mutations
-  const startMutation = useMutation({
-    mutationFn: () => embeddedServicesApi.start(activeTab),
-    onSuccess: () => {
-      messageApi.success(`${SERVICES_META[activeTab].label} 已成功启动`);
-      void queryClient.invalidateQueries({ queryKey: ["service-status", activeTab] });
+  const installMutation = useMutation({
+    mutationFn: () => embeddedServicesApi.install(activeTab),
+    onSuccess: async () => {
+      messageApi.success(`${SERVICES_META[activeTab].label} 已安装，可以启动服务`);
+      await refreshLifecycle();
     },
-    onError: () => messageApi.error("启动服务失败"),
+    onError: (error) =>
+      messageApi.error(error instanceof Error ? error.message : "安装服务失败"),
+  });
+
+  const startMutation = useMutation({
+    mutationFn: async () => {
+      const result = await embeddedServicesApi.start(activeTab);
+      if (result.state === "error") throw new Error(result.lastError || "服务启动失败");
+      return result;
+    },
+    onSuccess: async () => {
+      messageApi.success(`${SERVICES_META[activeTab].label} 已成功启动`);
+      await refreshLifecycle();
+    },
+    onError: (error) =>
+      messageApi.error(error instanceof Error ? error.message : "启动服务失败"),
   });
 
   const stopMutation = useMutation({
     mutationFn: () => embeddedServicesApi.stop(activeTab),
-    onSuccess: () => {
+    onSuccess: async () => {
       messageApi.success(`${SERVICES_META[activeTab].label} 已停止`);
-      void queryClient.invalidateQueries({ queryKey: ["service-status", activeTab] });
+      await refreshLifecycle();
     },
-    onError: () => messageApi.error("停止服务失败"),
+    onError: (error) =>
+      messageApi.error(error instanceof Error ? error.message : "停止服务失败"),
   });
 
   const restartMutation = useMutation({
-    mutationFn: () => embeddedServicesApi.restart(activeTab),
-    onSuccess: () => {
-      messageApi.success(`${SERVICES_META[activeTab].label} 已重启`);
-      void queryClient.invalidateQueries({ queryKey: ["service-status", activeTab] });
+    mutationFn: async () => {
+      const result = await embeddedServicesApi.restart(activeTab);
+      if (result.state === "error") throw new Error(result.lastError || "服务重启失败");
+      return result;
     },
-    onError: () => messageApi.error("重启服务失败"),
+    onSuccess: async () => {
+      messageApi.success(`${SERVICES_META[activeTab].label} 已重启`);
+      await refreshLifecycle();
+    },
+    onError: (error) =>
+      messageApi.error(error instanceof Error ? error.message : "重启服务失败"),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: () => embeddedServicesApi.update(activeTab),
+    onSuccess: async () => {
+      messageApi.success(`${SERVICES_META[activeTab].label} 已更新`);
+      await refreshLifecycle();
+    },
+    onError: (error) =>
+      messageApi.error(error instanceof Error ? error.message : "更新服务失败"),
   });
 
   // API Key State & Reveal
@@ -314,9 +353,45 @@ export function EmbeddedServicesPage() {
     return <PageSkeleton />;
   }
 
+  if (statusQuery.isError && !status) {
+    return (
+      <Alert
+        type="error"
+        showIcon
+        message="无法读取服务状态"
+        description={
+          statusQuery.error instanceof Error ? statusQuery.error.message : "服务状态请求失败"
+        }
+        action={
+          <Button size="small" onClick={() => void statusQuery.refetch()}>
+            重试
+          </Button>
+        }
+      />
+    );
+  }
+
   const currentMeta = SERVICES_META[activeTab];
+  const isInstalled = Boolean(status?.installedVersion);
   const isRunning = status?.state === "running";
   const isError = status?.state === "error";
+  const lifecyclePending =
+    installMutation.isPending ||
+    startMutation.isPending ||
+    stopMutation.isPending ||
+    restartMutation.isPending ||
+    updateMutation.isPending;
+  const lifecycleLabel = !isInstalled
+    ? "未安装"
+    : status?.state === "running"
+      ? "● 运行中"
+      : status?.state === "starting"
+        ? "启动中"
+        : status?.state === "stopping"
+          ? "停止中"
+          : status?.state === "error"
+            ? "运行异常"
+            : "已停止";
 
   return (
     <div className={styles.page}>
@@ -345,8 +420,8 @@ export function EmbeddedServicesPage() {
                 <Title level={4} style={{ margin: 0, fontSize: 16 }}>
                   {currentMeta.title}
                 </Title>
-                <Tag color={isRunning ? "success" : isError ? "error" : "default"}>
-                  {status?.state === "running" ? "● 运行中" : status?.state === "stopped" ? "已停止" : "未启动"}
+                <Tag color={isRunning ? "success" : isError ? "error" : isInstalled ? "default" : "warning"}>
+                  {lifecycleLabel}
                 </Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
@@ -403,8 +478,16 @@ export function EmbeddedServicesPage() {
               <Flex justify="space-between" align="center">
                 <Text type="secondary">运行状态:</Text>
                 <Flex align="center" gap={6}>
-                  <Badge status={isRunning ? "success" : "default"} />
-                  <Text strong>{isRunning ? "正常在线 (Healthy)" : "未激活 / 已休眠"}</Text>
+                  <Badge status={isRunning ? "success" : isError ? "error" : "default"} />
+                  <Text strong>
+                    {!isInstalled
+                      ? "未安装"
+                      : isRunning
+                        ? "正常在线 (Healthy)"
+                        : isError
+                          ? status?.lastError || "运行异常"
+                          : "已停止"}
+                  </Text>
                 </Flex>
               </Flex>
               <Flex justify="space-between" align="center">
@@ -417,7 +500,11 @@ export function EmbeddedServicesPage() {
               </Flex>
               <Flex justify="space-between" align="center">
                 <Text type="secondary">当前版本:</Text>
-                <Tag color="blue">v{status?.installedVersion || "1.0.0"}</Tag>
+                {status?.installedVersion ? (
+                  <Tag color="blue">v{status.installedVersion}</Tag>
+                ) : (
+                  <Tag>未安装</Tag>
+                )}
               </Flex>
               {status?.startedAt && (
                 <Flex justify="space-between" align="center">
@@ -430,16 +517,41 @@ export function EmbeddedServicesPage() {
             {/* Action Buttons */}
             <div style={{ marginTop: 10, paddingTop: 8, borderTop: "1px solid var(--ant-color-border-secondary)" }}>
               <Flex gap={8} wrap>
-                {!isRunning ? (
+                {!isInstalled ? (
                   <Button
                     type="primary"
-                    icon={<MaterialIcon name="play_arrow" size={16} />}
-                    loading={startMutation.isPending}
-                    onClick={() => startMutation.mutate()}
+                    icon={<MaterialIcon name="download" size={16} />}
+                    loading={installMutation.isPending}
+                    disabled={lifecyclePending && !installMutation.isPending}
+                    onClick={() => installMutation.mutate()}
                     style={{ flex: 1 }}
                   >
-                    启动服务
+                    安装服务
                   </Button>
+                ) : !isRunning ? (
+                  <>
+                    <Button
+                      type="primary"
+                      icon={<MaterialIcon name="play_arrow" size={16} />}
+                      loading={startMutation.isPending}
+                      disabled={lifecyclePending && !startMutation.isPending}
+                      onClick={() => startMutation.mutate()}
+                      style={{ flex: 1 }}
+                    >
+                      启动服务
+                    </Button>
+                    {status?.updateAvailable && (
+                      <Button
+                        icon={<MaterialIcon name="system_update" size={16} />}
+                        loading={updateMutation.isPending}
+                        disabled={lifecyclePending && !updateMutation.isPending}
+                        onClick={() => updateMutation.mutate()}
+                        style={{ flex: 1 }}
+                      >
+                        更新
+                      </Button>
+                    )}
+                  </>
                 ) : (
                   <>
                     <Popconfirm
@@ -449,7 +561,7 @@ export function EmbeddedServicesPage() {
                       okText="确认停止"
                       cancelText="取消"
                     >
-                      <Button danger icon={<MaterialIcon name="stop" size={16} />} loading={stopMutation.isPending} style={{ flex: 1 }}>
+                      <Button danger icon={<MaterialIcon name="stop" size={16} />} loading={stopMutation.isPending} disabled={lifecyclePending && !stopMutation.isPending} style={{ flex: 1 }}>
                         停止
                       </Button>
                     </Popconfirm>
@@ -457,11 +569,23 @@ export function EmbeddedServicesPage() {
                     <Button
                       icon={<MaterialIcon name="restart_alt" size={16} />}
                       loading={restartMutation.isPending}
+                      disabled={lifecyclePending && !restartMutation.isPending}
                       onClick={() => restartMutation.mutate()}
                       style={{ flex: 1 }}
                     >
                       重启
                     </Button>
+                    {status?.updateAvailable && (
+                      <Button
+                        icon={<MaterialIcon name="system_update" size={16} />}
+                        loading={updateMutation.isPending}
+                        disabled={lifecyclePending && !updateMutation.isPending}
+                        onClick={() => updateMutation.mutate()}
+                        style={{ flex: 1 }}
+                      >
+                        更新
+                      </Button>
+                    )}
                   </>
                 )}
               </Flex>
@@ -486,7 +610,8 @@ export function EmbeddedServicesPage() {
                   </div>
                 </div>
                 <Switch
-                  checked={status?.autoStart ?? true}
+                  checked={status?.autoStart ?? false}
+                  disabled={!isInstalled || lifecyclePending}
                   onChange={(val) => {
                     void embeddedServicesApi.updateConfig(activeTab, { autoStart: val });
                     messageApi.success("自启配置已更新");
@@ -503,7 +628,8 @@ export function EmbeddedServicesPage() {
                   </div>
                 </div>
                 <Switch
-                  checked={status?.providerExpose ?? true}
+                  checked={status?.providerExpose ?? false}
+                  disabled={!isInstalled || lifecyclePending}
                   onChange={(val) => {
                     void embeddedServicesApi.updateConfig(activeTab, { providerExpose: val });
                     messageApi.success("暴露状态已更新");
@@ -668,7 +794,7 @@ export function EmbeddedServicesPage() {
                 <div style={{ marginTop: 8, paddingTop: 6, borderTop: "1px solid var(--ant-color-border-secondary)" }}>
                   <Text type="secondary" style={{ fontSize: 11 }}>终端导出指引：</Text>
                   <pre className={styles.codeSnippet} style={{ marginTop: 4 }}>
-                    {`export OPENAI_BASE_URL="http://127.0.0.1:${status?.port || 8085}/v1"`}
+                    {`export OPENAI_BASE_URL="http://127.0.0.1:${status?.port || 8317}/v1"`}
                   </pre>
                 </div>
               </Card>

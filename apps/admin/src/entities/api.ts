@@ -1388,7 +1388,7 @@ export interface EmbeddedServiceStatus {
   state: "running" | "stopped" | "starting" | "stopping" | "error" | "not_installed" | "unknown";
   pid: number | null;
   port: number;
-  health: "ok" | "degraded" | "error" | "unknown";
+  health: "healthy" | "unhealthy" | "unknown";
   startedAt: string | null;
   lastError: string | null;
   installedVersion: string | null;
@@ -1420,40 +1420,16 @@ export interface NinerouterModelItem {
 }
 
 export const embeddedServicesApi = {
-  getStatus: async (name: string): Promise<EmbeddedServiceStatus> => {
-    try {
-      const res = await api<any>(`/services/${encodeURIComponent(name)}/status`);
-      return res;
-    } catch {
-      const defaultPorts: Record<string, number> = {
-        cliproxy: 8085,
-        "9router": 20130,
-        mux: 9100,
-        bifrost: 8443,
-        dario: 7070,
-      };
-      return {
-        tool: name,
-        state: "running",
-        pid: 34120 + Math.floor(Math.random() * 50),
-        port: defaultPorts[name] || 8080,
-        health: "ok",
-        startedAt: new Date(Date.now() - 3600 * 1000 * 4).toISOString(),
-        lastError: null,
-        installedVersion: "1.4.2",
-        latestVersion: "1.4.2",
-        updateAvailable: false,
-        autoStart: true,
-        apiKeyMasked: "sk-svc-••••••••4a8f",
-        providerExpose: true,
-        adopted: false,
-        autoRestartAdopted: true,
-      };
-    }
-  },
-  start: (name: string) => api<{ success: boolean }>(`/services/${encodeURIComponent(name)}/start`, { method: "POST" }),
-  stop: (name: string) => api<{ success: boolean }>(`/services/${encodeURIComponent(name)}/stop`, { method: "POST" }),
-  restart: (name: string) => api<{ success: boolean }>(`/services/${encodeURIComponent(name)}/restart`, { method: "POST" }),
+  getStatus: (name: string): Promise<EmbeddedServiceStatus> =>
+    api<EmbeddedServiceStatus>(`/services/${encodeURIComponent(name)}/status`),
+  start: (name: string) =>
+    api<EmbeddedServiceStatus>(`/services/${encodeURIComponent(name)}/start`, { method: "POST" }),
+  stop: (name: string) =>
+    api<EmbeddedServiceStatus>(`/services/${encodeURIComponent(name)}/stop`, { method: "POST" }),
+  restart: (name: string) =>
+    api<EmbeddedServiceStatus>(`/services/${encodeURIComponent(name)}/restart`, {
+      method: "POST",
+    }),
   update: (name: string) => api<{ success: boolean }>(`/services/${encodeURIComponent(name)}/update`, { method: "POST" }),
   install: (name: string, payload?: unknown) =>
     api<{ success: boolean }>(`/services/${encodeURIComponent(name)}/install`, {
