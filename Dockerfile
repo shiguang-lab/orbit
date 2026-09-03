@@ -15,6 +15,8 @@ COPY packages/ui/package.json packages/ui/package.json
 RUN pnpm install --frozen-lockfile
 
 COPY . .
+ARG VITE_AUTH_MODE=shiguang
+ENV VITE_AUTH_MODE=${VITE_AUTH_MODE}
 RUN pnpm build \
   && pnpm deploy --legacy --filter @omniroute/bff --prod /tmp/bff-runtime
 
