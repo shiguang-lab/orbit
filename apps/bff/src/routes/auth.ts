@@ -112,18 +112,4 @@ export function authRoutes(
     return reply.status(200).send(token);
   });
 
-  /** GET /api/settings/require-login */
-  app.get("/settings/require-login", async (_request, reply) => {
-    if (!engine) {
-      return reply.status(200).send({
-        authenticated: false,
-        requireLogin: true,
-        hasPassword: false,
-        setupComplete: false,
-        oidcEnabled: false,
-        oidcDisablePasswordLogin: false,
-      });
-    }
-    return reply.status(200).send(await engine.getRequireLogin());
-  });
 }
