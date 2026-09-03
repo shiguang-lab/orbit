@@ -20,6 +20,7 @@ export interface NasProxyOptions {
   target: string;
   managementApiKey?: string;
   broker?: LocalAuthBroker;
+  forwardSessionCookie?: boolean;
 }
 
 const DEFAULT_NAS_TIMEOUT_MS = 30_000;
@@ -50,8 +51,6 @@ export function isLocalBffPath(pathname: string): boolean {
     pathname === "/api/healthz" ||
     pathname === "/api/livez" ||
     pathname === "/api/readyz" ||
-    pathname.startsWith("/api/auth/") ||
-    pathname === "/api/settings/require-login" ||
     // Provider metadata is the static Orbit catalog. Keep this endpoint local
     // so a NAS deployment with an older API cannot turn it into a 404.
     pathname === "/api/providers/catalog" ||
@@ -59,12 +58,39 @@ export function isLocalBffPath(pathname: string): boolean {
   );
 }
 
+export function isNativeAuthPath(pathname: string): boolean {
+  return pathname.startsWith("/api/auth/") || pathname === "/api/settings/require-login";
+}
+
+export async function checkNasSession(
+  request: FastifyRequest,
+  target: string,
+  managementApiKey?: string,
+): Promise<boolean> {
+  const cookie = request.headers.cookie;
+  if (!cookie) return false;
+  const headers = new Headers({ cookie, accept: "application/json" });
+  if (managementApiKey?.trim()) headers.set("authorization", `Bearer ${managementApiKey.trim()}`);
+  try {
+    const response = await fetch(`${target.replace(/\/$/, "")}/api/auth/session`, {
+      headers,
+      redirect: "manual",
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!response.ok) return false;
+    const body = (await response.json()) as { authenticated?: boolean };
+    return body.authenticated === true;
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Forward a dashboard API request to the NAS-hosted Orbit instance.
  * Authentication is server-side: prefer the short-lived SSO identity issued
- * by the local broker, otherwise use a management-scoped API key configured on
- * the BFF. Browser cookies and arbitrary client authorization headers are not
- * forwarded, preventing the local proxy from becoming a credential relay.
+ * by the optional local broker, otherwise use a management-scoped API key
+ * configured on the BFF. The native Orbit session cookie is forwarded only for
+ * official auth routes; arbitrary client authorization headers are not forwarded.
  */
 export async function proxyToNas(
   request: FastifyRequest,
@@ -96,6 +122,20 @@ export async function proxyToNas(
   if (typeof accept === "string") headers.set("accept", accept);
   const csrf = request.headers["x-omniroute-csrf"];
   if (typeof csrf === "string") headers.set("x-omniroute-csrf", csrf);
+  if (options.forwardSessionCookie) {
+    const cookie = request.headers.cookie;
+    if (typeof cookie === "string" && cookie) headers.set("cookie", cookie);
+    const forwardedHost = request.headers["x-forwarded-host"] ?? request.headers.host;
+    if (typeof forwardedHost === "string" && forwardedHost) {
+      headers.set("x-forwarded-host", forwardedHost);
+      // Orbit's native OIDC handlers use Host when constructing callback URLs.
+      // Preserve the public gateway host instead of the private NAS address.
+      headers.set("host", forwardedHost);
+    }
+    const forwardedProto = request.headers["x-forwarded-proto"];
+    if (typeof forwardedProto === "string" && forwardedProto) headers.set("x-forwarded-proto", forwardedProto);
+    else if (request.protocol) headers.set("x-forwarded-proto", request.protocol);
+  }
   if (identity) headers.set("x-sg-identity", identity);
   if (!identity && apiKey) headers.set("authorization", `Bearer ${apiKey}`);
 
@@ -128,6 +168,11 @@ export async function proxyToNas(
   response.headers.forEach((value, key) => {
     if (!HOP_BY_HOP_HEADERS.has(key.toLowerCase())) reply.header(key, value);
   });
+  if (options.forwardSessionCookie) {
+    const getSetCookie = (response.headers as Headers & { getSetCookie?: () => string[] }).getSetCookie;
+    const cookies = getSetCookie ? getSetCookie.call(response.headers) : [];
+    if (cookies.length > 0) reply.header("set-cookie", cookies);
+  }
   const payload = Buffer.from(await response.arrayBuffer());
   const requestUrl = new URL(request.url, "http://bff");
   if (request.method === "GET" && requestUrl.pathname === "/api/v1/ws" && requestUrl.searchParams.get("handshake") === "1") {

@@ -1,7 +1,7 @@
 /**
  * 认证路由：迁移自 src/app/api/auth/{login,logout,status,csrf,oidc}。
  * 密码校验/暴力破解守卫通过引擎适配器注入(指向 vendor/orbit)。
- * 会话(/api/auth/session)由 shiguang 统一身份终结(shiguang 登录，登录页在 website)。
+ * 会话默认使用 Orbit 原生 auth_token；仅在显式 SSO 模式下由 shiguang 身份终结。
  */
 import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { SignJWT } from "jose";
@@ -23,18 +23,20 @@ export function authRoutes(
     engine?: AuthEngine & Partial<EngineAuthAdapter>;
     devBypass?: boolean;
     broker?: LocalAuthBroker;
+    officialAuth?: boolean;
   } = {},
 ): void {
   const engine = opts.engine;
   const devBypass = opts.devBypass ?? false;
   const broker = opts.broker;
+  const officialAuth = opts.officialAuth ?? false;
 
-  /** GET /api/auth/session —— shiguang 统一会话(登录页在 shiguang website) */
+  /** GET /api/auth/session —— native Orbit session or opt-in shiguang session */
   app.get("/auth/session", async (request, reply) => {
-    return handleSession(request, reply, devBypass, broker);
+    return handleSession(request, reply, devBypass, broker, officialAuth);
   });
 
-  /** POST /api/auth/login —— 保留为降级/兼容(正常走 shiguang SSO) */
+  /** POST /api/auth/login —— Orbit's official password login */
   app.post("/auth/login", async (request, reply) => {
     const body = (request.body ?? {}) as { password?: unknown };
     const password = body.password;

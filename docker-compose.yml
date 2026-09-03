@@ -21,6 +21,8 @@ services:
       SG_IDENTITY_JWKS_URL: ${SG_IDENTITY_JWKS_URL:-https://shiguanglab.com/.well-known/sg-identity-jwks.json}
       LOG_LEVEL: ${LOG_LEVEL:-info}
       OMNIROUTE_NAS_API_TIMEOUT_MS: ${OMNIROUTE_NAS_API_TIMEOUT_MS:-30000}
+      # official = Orbit password/OIDC login; shiguang is opt-in for a separate SSO web.
+      ORBIT_AUTH_MODE: ${ORBIT_AUTH_MODE:-official}
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8787/api/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 30s

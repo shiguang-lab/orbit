@@ -15,6 +15,7 @@
  *  - devAuth → 本地演示身份
  */
 import type { FastifyRequest, FastifyReply } from "fastify";
+import { jwtVerify } from "jose";
 import { SgIdentityVerifier, type ResolvedSgIdentity } from "./sgIdentity.js";
 import type { LocalBrokerSession } from "./broker.js";
 
@@ -84,6 +85,7 @@ export async function handleSession(
   reply: FastifyReply,
   devBypass: boolean,
   broker?: { enabled: boolean; session(): Promise<LocalBrokerSession | null> },
+  officialAuth = false,
 ): Promise<FastifyReply> {
   // 1. 生产/网关形态：X-SG-Identity(JWKS 验签)
   let identity = await resolveGatewayIdentity(request);
@@ -118,6 +120,26 @@ export async function handleSession(
       authenticated: false,
       error: "local_broker_unavailable",
     });
+  }
+
+  // Native Orbit mode: the official login endpoint issues auth_token. Verify
+  // that cookie locally when the BFF runs beside the engine.
+  if (officialAuth) {
+    const rawCookie = request.headers.cookie;
+    const token = rawCookie
+      ?.split(";")
+      .map((part) => part.trim())
+      .find((part) => part.startsWith("auth_token="))
+      ?.slice("auth_token=".length);
+    if (token && process.env.JWT_SECRET?.trim()) {
+      try {
+        await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET));
+        return reply.status(200).send({ authenticated: true, subject: "admin", displayName: "Admin", roles: ["system:admin"], platformRoles: ["system:admin"], entitlements: [] });
+      } catch {
+        // Fall through to the normal unauthenticated response.
+      }
+    }
+    return reply.status(401).send({ authenticated: false });
   }
 
   // 3. 本地默认：SG_DEV_IDENTITY=1 注入 dev 身份(仅本地)

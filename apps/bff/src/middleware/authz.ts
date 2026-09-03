@@ -42,6 +42,7 @@ export interface AuthzOptions {
   alwaysRequireAuth?: boolean;
   /** 本地开发模式(SG_DEV_IDENTITY=1 或 broker 已配置)：放行管理端点(仅本地，生产绝不可用) */
   devMode?: boolean;
+  remoteSession?: (request: FastifyRequest) => Promise<boolean>;
 }
 
 /** 从 Cookie 头解析 auth_token(与原 getCookieValueFromHeader 一致) */
@@ -119,6 +120,8 @@ export function authzPlugin(app: FastifyInstance, opts: AuthzOptions = {}): void
     // X-SG-Identity header rather than the local auth_token cookie.
     const gatewayIdentity = await resolveGatewayIdentity(request);
     if (isAdminIdentity(gatewayIdentity)) return;
+
+    if (opts.remoteSession && (await opts.remoteSession(request))) return;
 
     // 2. CLI token(需引擎)
     const engine = opts.engine;

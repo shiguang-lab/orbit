@@ -1,7 +1,6 @@
 /**
  * 入口：启动守卫(完全仿 asset-hub main.tsx)。
- * bootstrap → requireAuthSession()：已登录渲染应用；未登录由 session.ts 内部整页跳 shiguang 统一登录。
- * 应用本身不渲染任何登录页(登录页属于 shiguang website)。
+ * bootstrap → requireAuthSession()：已登录渲染应用；未登录进入 Orbit 原生登录页。
  */
 import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
@@ -27,11 +26,16 @@ const queryClient = new QueryClient({
 });
 
 function AppRoot() {
+  const isLoginRoute = window.location.pathname === "/login";
   // undefined=探测中(SSO 跳转前), AuthSession=已登录
   const [session, setSession] = useState<AuthSession | null | undefined>(undefined);
   const [brokerError, setBrokerError] = useState(false);
 
   useEffect(() => {
+    if (isLoginRoute) {
+      setSession(null);
+      return;
+    }
     let cancelled = false;
     void requireAuthSession()
       .then((s) => {
@@ -46,7 +50,9 @@ function AppRoot() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [isLoginRoute]);
+
+  if (isLoginRoute) return <RouterProvider router={router} />;
 
   if (session === undefined) {
     return (
@@ -70,7 +76,7 @@ function AppRoot() {
     );
   }
 
-  // 未登录时 requireAuthSession 已跳转 shiguang 登录；这里兜底不再渲染登录表单
+  // 未登录时 requireAuthSession 已跳转当前模式的登录页。
   if (!session) {
     return null;
   }

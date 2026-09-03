@@ -1,14 +1,16 @@
 /**
- * 认证/SSO 层：纯 shiguang 统一登录(完全仿 asset-hub apps/web/src/auth/session.ts)。
+ * Dashboard authentication.
  *
  * 流程：
  *  1. requireAuthSession() 调 /api/auth/session(带 cookie，由 BFF/网关注入身份)
- *  2. 未登录 → 整页跳转 shiguanglab.com/login?return_to=<当前URL>(登录页属于 shiguang website)
- *  3. 登录成功后父域 cookie(__Secure-sg_session) 对子域生效，回跳后 session 可用
+ *  2. 默认未登录 → Orbit 自己的 /login，使用官方 password/OIDC flow。
+ *  3. 只有显式启用 VITE_AUTH_MODE=shiguang 时才跳转统一登录站点。
  *
- * 登录页由 shiguang website 提供，本应用不渲染任何登录表单。
+ * 官方模式的登录页由本应用渲染，凭证仍由 Orbit API 处理。
  */
 const DEFAULT_LOGIN_ORIGIN = "https://shiguanglab.com";
+const AUTH_MODE = import.meta.env.VITE_AUTH_MODE ?? "official";
+const USE_UNIFIED_LOGIN = AUTH_MODE === "shiguang";
 
 type BrowserLocation = Pick<
   Location,
@@ -54,8 +56,12 @@ export function currentReturnTo(location: BrowserLocation): string {
   return `${location.pathname}${location.search}${location.hash}`;
 }
 
-/** 统一登录页地址：本机回环走同源 /login(vite proxy 转发到 shiguang)，线上跳 shiguanglab.com */
+/** Resolve the login page for the selected authentication mode. */
 export function unifiedLoginUrl(location: BrowserLocation = window.location): string {
+  if (!USE_UNIFIED_LOGIN) {
+    const returnTo = currentReturnTo(location);
+    return `${location.origin}/login?return_to=${encodeURIComponent(returnTo)}`;
+  }
   const local = isLoopbackHost(location.hostname);
   const loginOrigin = local
     ? location.origin
@@ -88,7 +94,7 @@ export class BrokerUnavailableError extends Error {
 /**
  * 会话探测：render 前调用。
  *  - /api/auth/session 返回 authenticated → 返回 session
- *  - 未登录(401/非200) → 整页跳转 shiguang 统一登录页，返回 null
+ *  - 未登录(401/非200) → 跳转当前模式的登录页，返回 null
  */
 export async function requireAuthSession(): Promise<AuthSession | null> {
   let body: UnifiedSessionResponse | null = null;

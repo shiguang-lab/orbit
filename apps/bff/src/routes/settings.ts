@@ -33,6 +33,22 @@ export async function settingsRoutes(
   app: FastifyInstance,
   opts: { engine?: SettingsEngine } = {},
 ): Promise<void> {
+  app.get("/settings/require-login", async (_request, reply) => {
+    try {
+      const settings = opts.engine ? await opts.engine.getSettings() : {};
+      return reply.status(200).send({
+        authenticated: false,
+        requireLogin: settings.requireLogin !== false,
+        hasPassword: typeof settings.password === "string" && settings.password.length > 0,
+        setupComplete: settings.setupComplete === true,
+        oidcEnabled: settings.oidcEnabled === true,
+        oidcDisablePasswordLogin: settings.oidcDisablePasswordLogin === true,
+      });
+    } catch {
+      return reply.status(200).send({ authenticated: false, requireLogin: true, hasPassword: true, setupComplete: true, oidcEnabled: false, oidcDisablePasswordLogin: false });
+    }
+  });
+
   const sidebarSettings = async (_request: FastifyRequest, reply: FastifyReply) => {
     try {
       const settings = opts.engine ? await opts.engine.getSettings() : {};

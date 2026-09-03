@@ -29,6 +29,8 @@ export interface RouteOptions {
   devBypass?: boolean;
   /** 本地 SSO broker(用真实 shiguang 账号换身份) */
   broker?: LocalAuthBroker;
+  officialRemoteAuth?: boolean;
+  officialAuth?: boolean;
 }
 
 export async function routes(app: FastifyInstance, opts: RouteOptions = {}): Promise<void> {
@@ -36,7 +38,9 @@ export async function routes(app: FastifyInstance, opts: RouteOptions = {}): Pro
 
   // 无引擎依赖的路由
   await app.register(healthRoutes, { prefix: "/api" });
-  await app.register(authRoutes, { prefix: "/api", engine: engines.auth, devBypass, broker });
+  if (!opts.officialRemoteAuth) {
+    await app.register(authRoutes, { prefix: "/api", engine: engines.auth, devBypass, broker, officialAuth: opts.officialAuth });
+  }
   await app.register(providerRoutes, { prefix: "/api", engine: engines.providers });
   await app.register(providerNodeRoutes, { prefix: "/api", engine: engines.providerNodes });
   await app.register(settingsRoutes, { prefix: "/api", engine: engines.settings });
