@@ -72,7 +72,7 @@ export async function checkNasSession(
   const headers = new Headers({ cookie, accept: "application/json" });
   if (managementApiKey?.trim()) headers.set("authorization", `Bearer ${managementApiKey.trim()}`);
   try {
-    const response = await fetch(`${target.replace(/\/$/, "")}/api/auth/session`, {
+    const response = await fetch(`${target.replace(/\/$/, "")}/api/auth/status`, {
       headers,
       redirect: "manual",
       signal: AbortSignal.timeout(5000),
@@ -111,9 +111,12 @@ export async function proxyToNas(
     return;
   }
 
-  const pathname = request.url.startsWith("/") ? request.url : `/${request.url}`;
-  const target = `${options.target.replace(/\/$/, "")}${pathname}`;
-  const requestPath = new URL(request.url, "http://bff").pathname;
+  const incomingUrl = new URL(request.url, "http://bff");
+  const requestPath = incomingUrl.pathname;
+  // The official Orbit API calls this endpoint /api/auth/status. Keep the
+  // migrated Web contract (/api/auth/session) stable at the gateway edge.
+  const upstreamPath = requestPath === "/api/auth/session" ? "/api/auth/status" : requestPath;
+  const target = `${options.target.replace(/\/$/, "")}${upstreamPath}${incomingUrl.search}`;
   const timeoutMs = resolveNasProxyTimeoutMs(requestPath);
   const headers = new Headers();
   const contentType = request.headers["content-type"];
