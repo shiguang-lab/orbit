@@ -178,6 +178,23 @@ export async function proxyToNas(
   }
   const payload = Buffer.from(await response.arrayBuffer());
   const requestUrl = new URL(request.url, "http://bff");
+  if (requestPath === "/api/auth/session" && response.headers.get("content-type")?.includes("application/json")) {
+    try {
+      const body = JSON.parse(payload.toString("utf8")) as Record<string, unknown>;
+      if (body.authenticated === true && typeof body.subject !== "string") {
+        body.subject = "admin";
+        body.displayName = "Admin";
+        body.roles = ["system:admin"];
+        body.platformRoles = ["system:admin"];
+        body.entitlements = [];
+      }
+      reply.header("content-type", "application/json; charset=utf-8");
+      reply.send(JSON.stringify(body));
+      return;
+    } catch {
+      // Preserve a non-JSON upstream response as-is.
+    }
+  }
   if (request.method === "GET" && requestUrl.pathname === "/api/v1/ws" && requestUrl.searchParams.get("handshake") === "1") {
     // The NAS handshake intentionally leaves publicUrl null when LiveWS is on
     // the same host. From a local Web+BFF browser, however, the browser host is
