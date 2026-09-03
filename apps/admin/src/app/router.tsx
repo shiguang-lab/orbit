@@ -240,6 +240,7 @@ export const router = createBrowserRouter([
       { path: "dashboard/batch", element: <BatchPage /> },
       { path: "dashboard/batch/files", element: <BatchFilesPage /> },
       // 系统配置
+      { path: "dashboard/settings", element: <Navigate to="/dashboard/settings/general" replace /> },
       { path: "dashboard/settings/general", element: <SettingsGeneralPage /> },
       { path: "dashboard/settings/appearance", element: <SettingsAppearancePage /> },
       { path: "dashboard/settings/ai", element: <SettingsAiPage /> },
@@ -252,6 +253,7 @@ export const router = createBrowserRouter([
       { path: "dashboard/settings/feature-flags", element: <SettingsFeatureFlagsPage /> },
       { path: "dashboard/settings/cache", element: <SettingsCachePage /> },
       { path: "dashboard/settings/sidebar", element: <SettingsSidebarPage /> },
+      { path: "dashboard/settings/pricing", element: <Navigate to="/dashboard/costs/pricing" replace /> },
       // 兜底
       { path: "*", element: createElement(P("not-found", "Page not found")) },
     ],

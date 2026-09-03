@@ -17,20 +17,10 @@ const { Title, Text } = Typography;
 const useStyles = createStyles(({ token }) => ({
   page: {
     width: "100%",
-    flex: 1,
+    maxWidth: "100%",
     display: "flex",
     flexDirection: "column",
     gap: 12,
-    minHeight: 0,
-    overflowY: "auto",
-    paddingRight: 2,
-    "&::-webkit-scrollbar": {
-      width: 6,
-    },
-    "&::-webkit-scrollbar-thumb": {
-      backgroundColor: token.colorBorderSecondary,
-      borderRadius: 3,
-    },
   },
   headerCard: {
     borderRadius: 10,

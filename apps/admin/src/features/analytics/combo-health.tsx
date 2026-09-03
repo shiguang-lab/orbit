@@ -1,7 +1,9 @@
 import {
+  Alert,
   Button,
   Card,
   Col,
+  Empty,
   Flex,
   Progress,
   Row,
@@ -20,20 +22,9 @@ const { Title, Text } = Typography;
 const useStyles = createStyles(({ token }) => ({
   page: {
     width: "100%",
-    flex: 1,
     display: "flex",
     flexDirection: "column",
     gap: 12,
-    minHeight: 0,
-    overflowY: "auto",
-    paddingRight: 2,
-    "&::-webkit-scrollbar": {
-      width: 6,
-    },
-    "&::-webkit-scrollbar-thumb": {
-      backgroundColor: token.colorBorderSecondary,
-      borderRadius: 3,
-    },
   },
   headerCard: {
     borderRadius: 10,
@@ -66,9 +57,27 @@ export function ComboHealthPage() {
     return <PageSkeleton />;
   }
 
+  if (healthQuery.isError || !healthQuery.data) {
+    return (
+      <div className={styles.page}>
+        <Alert
+          type="error"
+          showIcon
+          message="加载模型组合健康监控失败"
+          description={healthQuery.error instanceof Error ? healthQuery.error.message : "无法获取组合健康与链路自愈指标。"}
+          action={
+            <Button size="small" type="primary" danger onClick={() => healthQuery.refetch()}>
+              重试
+            </Button>
+          }
+        />
+      </div>
+    );
+  }
+
   const data = healthQuery.data;
   const combos = data?.combos ?? [];
-  const overall = data?.overallHealth ?? 98;
+  const overall = data?.overallHealth ?? 100;
 
   return (
     <div className={styles.page}>
@@ -155,11 +164,18 @@ export function ComboHealthPage() {
 
       {/* 3. Combos Health Table */}
       <Card title="各路由组合实时健康评级" className={styles.sectionCard} size="small">
-        <Table<ComboHealthItem>
-          rowKey="id"
-          size="small"
-          pagination={false}
-          dataSource={combos}
+        {combos.length === 0 ? (
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description="暂无模型组合健康数据。配置并调用组合路由后将自动开启自愈监控。"
+            style={{ margin: "24px 0" }}
+          />
+        ) : (
+          <Table<ComboHealthItem>
+            rowKey="id"
+            size="small"
+            pagination={false}
+            dataSource={combos}
           columns={[
             {
               title: "组合名称",
@@ -219,6 +235,7 @@ export function ComboHealthPage() {
             },
           ]}
         />
+        )}
       </Card>
     </div>
   );

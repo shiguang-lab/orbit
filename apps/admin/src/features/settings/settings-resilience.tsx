@@ -6,8 +6,6 @@ import {
   Form,
   InputNumber,
   Row,
-  Select,
-  Slider,
   Switch,
   Tag,
   Typography,
@@ -27,18 +25,17 @@ const useStyles = createStyles(({ token }) => ({
     width: "100%",
     display: "flex",
     flexDirection: "column",
-    gap: 14,
+    gap: 12,
   },
   headerCard: {
-    borderRadius: 10,
+    borderRadius: 8,
     background: token.colorBgContainer,
     border: `1px solid ${token.colorBorderSecondary}`,
   },
   sectionCard: {
-    borderRadius: 10,
+    borderRadius: 8,
     background: token.colorBgContainer,
     border: `1px solid ${token.colorBorderSecondary}`,
-    marginBottom: 10,
   },
 }));
 
@@ -127,134 +124,178 @@ export function SettingsResiliencePage() {
         form={form}
         layout="vertical"
         initialValues={{
-          maxRetries: s.maxRetries ?? 3,
-          initialBackoffMs: s.initialBackoffMs || 300,
-          maxBackoffMs: s.maxBackoffMs || 5000,
-          backoffMultiplier: s.backoffMultiplier || 2.0,
-          retryJitter: s.retryJitter ?? true,
-          retryableStatusCodes: s.retryableStatusCodes || ["429", "500", "502", "503", "504"],
-          circuitBreakerEnabled: s.circuitBreakerEnabled ?? true,
-          circuitFailureThresholdPct: s.circuitFailureThresholdPct || 40,
-          circuitSlidingWindowRequests: s.circuitSlidingWindowRequests || 50,
-          circuitCooldownSec: s.circuitCooldownSec || 30,
-          halfOpenProbeCount: s.halfOpenProbeCount || 3,
-          requestHedgingEnabled: s.requestHedgingEnabled ?? false,
-          hedgingDelayMs: s.hedgingDelayMs || 1500,
+          autoDisableOn401: s.autoDisableOn401 ?? true,
+          autoDisableOnQuotaExhausted: s.autoDisableOnQuotaExhausted ?? true,
+          maxConsecutiveFailures: s.maxConsecutiveFailures || 5,
+          lockoutCooldownMinutes: s.lockoutCooldownMinutes || 15,
+          requestsPerMinute: s.requestQueue?.requestsPerMinute || 120,
+          concurrentRequests: s.requestQueue?.concurrentRequests || 20,
+          globalConcurrentRequests: s.requestQueue?.globalConcurrentRequests || 100,
+          maxWaitMs: s.requestQueue?.maxWaitMs || 10000,
+          baseCooldownMs: s.connectionCooldown?.baseCooldownMs || 3000,
+          useUpstreamRetryHints: s.connectionCooldown?.useUpstreamRetryHints ?? true,
+          maxBackoffSteps: s.connectionCooldown?.maxBackoffSteps || 5,
+          comboCooldownWaitEnabled: s.comboCooldownWait?.enabled ?? true,
+          comboCooldownMaxWaitMs: s.comboCooldownWait?.maxWaitMs || 8000,
         }}
-        onFinish={handleSave}
+        onFinish={(v) => {
+          handleSave({
+            autoDisableOn401: v.autoDisableOn401,
+            autoDisableOnQuotaExhausted: v.autoDisableOnQuotaExhausted,
+            maxConsecutiveFailures: v.maxConsecutiveFailures,
+            lockoutCooldownMinutes: v.lockoutCooldownMinutes,
+            requestQueue: {
+              requestsPerMinute: v.requestsPerMinute,
+              concurrentRequests: v.concurrentRequests,
+              globalConcurrentRequests: v.globalConcurrentRequests,
+              maxWaitMs: v.maxWaitMs,
+            },
+            connectionCooldown: {
+              baseCooldownMs: v.baseCooldownMs,
+              useUpstreamRetryHints: v.useUpstreamRetryHints,
+              maxBackoffSteps: v.maxBackoffSteps,
+            },
+            comboCooldownWait: {
+              enabled: v.comboCooldownWaitEnabled,
+              maxWaitMs: v.comboCooldownMaxWaitMs,
+            },
+          });
+        }}
       >
-        {/* 2. Retry & Exponential Backoff */}
-        <Card title={tt("失败自动重试与指数退避 (Retry & Backoff)", "Automated Retries & Exponential Backoff")} className={styles.sectionCard} size="small">
-          <Row gutter={[16, 0]}>
-            <Col xs={24} sm={8}>
-              <Form.Item label={tt("单次请求最大重试次数", "Max Retries per Request")} name="maxRetries">
-                <InputNumber min={0} max={10} style={{ width: "100%" }} addonAfter={tt("次", "times")} />
+        <Flex vertical gap={12}>
+        {/* 2. Provider Auto Disable */}
+        <Card title={tt("提供商异常自动下线 (Auto Disable)", "Provider Circuit Breaking & Auto-Disable")} className={styles.sectionCard} size="small">
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={12}>
+              <Flex justify="space-between" align="center" style={{ padding: "8px 0" }}>
+                <div>
+                  <Text strong>{tt("401 / 403 鉴权失败自动下线", "Auto-disable on 401/403 Auth Failure")}</Text>
+                  <br />
+                  <Text type="secondary" style={{ fontSize: 12 }}>
+                    {tt("当凭证失效被上游拒绝时立即隔离该提供商连接", "Isolate provider connection on credential failure")}
+                  </Text>
+                </div>
+                <Form.Item name="autoDisableOn401" valuePropName="checked" noStyle>
+                  <Switch checkedChildren={tt("开启", "ON")} unCheckedChildren={tt("关闭", "OFF")} />
+                </Form.Item>
+              </Flex>
+            </Col>
+
+            <Col xs={24} sm={12}>
+              <Flex justify="space-between" align="center" style={{ padding: "8px 0" }}>
+                <div>
+                  <Text strong>{tt("配额耗尽 (429 / Quota) 自动避让", "Auto-backoff on 429 / Quota Exhaustion")}</Text>
+                  <br />
+                  <Text type="secondary" style={{ fontSize: 12 }}>
+                    {tt("当提供商额度用尽时自动将流量分流至备用节点", "Bypass provider automatically on quota exhaustion")}
+                  </Text>
+                </div>
+                <Form.Item name="autoDisableOnQuotaExhausted" valuePropName="checked" noStyle>
+                  <Switch checkedChildren={tt("开启", "ON")} unCheckedChildren={tt("关闭", "OFF")} />
+                </Form.Item>
+              </Flex>
+            </Col>
+          </Row>
+        </Card>
+
+        {/* 3. Model Lockout */}
+        <Card title={tt("模型熔断与连续故障隔离 (Model Lockout)", "Model Lockout & Cooldown Protection")} className={styles.sectionCard} size="small">
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={12}>
+              <Form.Item
+                label={tt("连续故障触发熔断阈值 (次)", "Consecutive Failure Threshold")}
+                name="maxConsecutiveFailures"
+                tooltip={tt("单模型连续遭遇故障多少次后触发自动隔离", "Trips circuit breaker after consecutive errors")}
+              >
+                <InputNumber min={1} max={50} style={{ width: "100%" }} addonAfter={tt("次", "times")} />
               </Form.Item>
             </Col>
-            <Col xs={24} sm={8}>
-              <Form.Item label={tt("初始退避基数 (Initial Backoff)", "Initial Backoff")} name="initialBackoffMs">
-                <InputNumber min={50} max={5000} step={50} style={{ width: "100%" }} addonAfter="ms" />
+
+            <Col xs={24} sm={12}>
+              <Form.Item
+                label={tt("熔断节点自动冷却恢复等待 (分钟)", "Lockout Cooldown Minutes")}
+                name="lockoutCooldownMinutes"
+                tooltip={tt("隔离期过后自动重新允许试探性请求进入", "Cooldown wait time before probing upstream")}
+              >
+                <InputNumber min={1} max={1440} style={{ width: "100%" }} addonAfter={tt("分钟", "mins")} />
               </Form.Item>
             </Col>
+          </Row>
+        </Card>
+
+        {/* 4. Request Queue */}
+        <Card title={tt("请求排队与并发流控 (Request Queue)", "Request Queue & Concurrency Limits")} className={styles.sectionCard} size="small">
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={12} md={6}>
+              <Form.Item label={tt("每分钟最大请求数 (RPM)", "Max Requests per Minute")} name="requestsPerMinute">
+                <InputNumber min={10} max={100000} step={50} style={{ width: "100%" }} addonAfter="RPM" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <Form.Item label={tt("单提供商最大并发数", "Max Concurrent per Provider")} name="concurrentRequests">
+                <InputNumber min={1} max={500} style={{ width: "100%" }} />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <Form.Item label={tt("全局最大并发连接数", "Global Max Concurrency")} name="globalConcurrentRequests">
+                <InputNumber min={5} max={2000} style={{ width: "100%" }} />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <Form.Item label={tt("排队最长等待时间", "Max Queue Wait Time")} name="maxWaitMs">
+                <InputNumber min={500} max={60000} step={500} style={{ width: "100%" }} addonAfter="ms" />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Card>
+
+        {/* 5. Cooldown & Backoff Profile */}
+        <Card title={tt("连接冷却与重试退避 (Connection Cooldown)", "Connection Cooldown & Retry Backoff")} className={styles.sectionCard} size="small">
+          <Row gutter={[16, 16]}>
             <Col xs={24} sm={8}>
-              <Form.Item label={tt("最大退避上限 (Max Backoff)", "Max Backoff Limit")} name="maxBackoffMs">
+              <Form.Item label={tt("基础冷却时间 (Base Cooldown)", "Base Cooldown")} name="baseCooldownMs">
                 <InputNumber min={500} max={30000} step={500} style={{ width: "100%" }} addonAfter="ms" />
               </Form.Item>
             </Col>
-          </Row>
-
-          <Row gutter={[16, 0]}>
             <Col xs={24} sm={8}>
-              <Form.Item label={tt("退避倍数 (Multiplier)", "Backoff Multiplier")} name="backoffMultiplier">
-                <Select
-                  options={[
-                    { label: "1.5x", value: 1.5 },
-                    { label: "2.0x", value: 2.0 },
-                    { label: "3.0x", value: 3.0 },
-                  ]}
-                />
+              <Form.Item label={tt("使用上游 Retry-After 建议", "Use Upstream Retry Hints")} name="useUpstreamRetryHints" valuePropName="checked">
+                <Switch checkedChildren={tt("遵循上游", "Yes")} unCheckedChildren={tt("忽略", "No")} />
               </Form.Item>
             </Col>
             <Col xs={24} sm={8}>
-              <Form.Item label={tt("添加随机抖动 (Jitter - 避免雷鸣群体效应)", "Full Jitter (Prevent thundering herd)")} name="retryJitter" valuePropName="checked">
-                <Switch checkedChildren={tt("已开启随机抖动", "Enabled")} unCheckedChildren={tt("固定退避", "Fixed")} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={8}>
-              <Form.Item label={tt("允许自动重试的 HTTP 状态码", "Retryable HTTP Status Codes")} name="retryableStatusCodes">
-                <Select
-                  mode="tags"
-                  options={[
-                    { label: "429 (Too Many Requests)", value: "429" },
-                    { label: "500 (Internal Server Error)", value: "500" },
-                    { label: "502 (Bad Gateway)", value: "502" },
-                    { label: "503 (Service Unavailable)", value: "503" },
-                    { label: "504 (Gateway Timeout)", value: "504" },
-                  ]}
-                />
+              <Form.Item label={tt("最大指数退避阶梯数", "Max Backoff Steps")} name="maxBackoffSteps">
+                <InputNumber min={1} max={10} style={{ width: "100%" }} addonAfter={tt("阶", "steps")} />
               </Form.Item>
             </Col>
           </Row>
         </Card>
 
-        {/* 3. Circuit Breaker Configuration */}
-        <Card title={tt("智能断路器与熔断隔离 (Circuit Breaker)", "Circuit Breakers & Outlier Isolation")} className={styles.sectionCard} size="small">
-          <Row gutter={[16, 0]}>
+        {/* 6. Combo Cooldown Wait */}
+        <Card title={tt("组合路由冷却等待 (Combo Cooldown Wait)", "Combo Cooldown Wait Settings")} className={styles.sectionCard} size="small">
+          <Row gutter={[16, 16]}>
             <Col xs={24} sm={12}>
-              <Form.Item label={tt("启用节点级智能断路器", "Enable Circuit Breaker")} name="circuitBreakerEnabled" valuePropName="checked">
-                <Switch checkedChildren={tt("已开启熔断保护", "Enabled")} unCheckedChildren={tt("已关闭", "Disabled")} />
-              </Form.Item>
+              <Flex justify="space-between" align="center" style={{ padding: "8px 0" }}>
+                <div>
+                  <Text strong>{tt("启用冷却等待 (避免立即报失败)", "Wait for Cooldown Instead of Failing")}</Text>
+                  <br />
+                  <Text type="secondary" style={{ fontSize: 12 }}>
+                    {tt("当所有节点处于短暂冷却时挂起请求稍候重试，而非直接抛错", "Hold request briefly until cooldown expires")}
+                  </Text>
+                </div>
+                <Form.Item name="comboCooldownWaitEnabled" valuePropName="checked" noStyle>
+                  <Switch checkedChildren={tt("开启", "ON")} unCheckedChildren={tt("关闭", "OFF")} />
+                </Form.Item>
+              </Flex>
             </Col>
-            <Col xs={24} sm={12}>
-              <Form.Item label={tt("滑动评估窗口请求数样本", "Sliding Window Sample Count")} name="circuitSlidingWindowRequests">
-                <InputNumber min={10} max={500} step={10} style={{ width: "100%" }} addonAfter={tt("次请求", "requests")} />
-              </Form.Item>
-            </Col>
-          </Row>
 
-          <Row gutter={[16, 0]}>
             <Col xs={24} sm={12}>
-              <Form.Item
-                label={tt("触发熔断错误率阈值 (Failure Rate %)", "Failure Rate Threshold %")}
-                name="circuitFailureThresholdPct"
-                tooltip={tt("在滑动窗口内异常比例超过该百分比时自动切断此连接流量", "Trips circuit breaker when failure rate in sliding window exceeds this")}
-              >
-                <Slider min={10} max={90} step={5} marks={{ 20: "20%", 40: "40%", 60: "60%", 80: "80%" }} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={6}>
-              <Form.Item label={tt("熔断隔离冷却时长", "Isolation Cooldown")} name="circuitCooldownSec">
-                <InputNumber min={5} max={300} style={{ width: "100%" }} addonAfter={tt("秒", "s")} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={6}>
-              <Form.Item label={tt("半开状态探测放行数", "Half-Open Probe Count")} name="halfOpenProbeCount">
-                <InputNumber min={1} max={10} style={{ width: "100%" }} addonAfter={tt("次", "probes")} />
+              <Form.Item label={tt("最大等待超时预算", "Max Wait Budget")} name="comboCooldownMaxWaitMs">
+                <InputNumber min={1000} max={30000} step={1000} style={{ width: "100%" }} addonAfter="ms" />
               </Form.Item>
             </Col>
           </Row>
         </Card>
-
-        {/* 4. Request Hedging (Advanced Resilience) */}
-        <Card title={tt("对冲竞速请求机制 (Request Hedging)", "Request Hedging & Tail Latency")} className={styles.sectionCard} size="small">
-          <Row gutter={[16, 0]}>
-            <Col xs={24} sm={12}>
-              <Form.Item
-                label={tt("启用对冲请求 (对长尾高延迟请求并行打向备用节点)", "Enable Request Hedging on Tail Latency")}
-                name="requestHedgingEnabled"
-                valuePropName="checked"
-                tooltip={tt("当主节点在预设延迟时间内未返回首包时，并发向备用节点发送对冲请求，先到先用", "Sends parallel duplicate request to backup node when primary response is delayed")}
-              >
-                <Switch checkedChildren={tt("开启对冲竞速", "Enabled")} unCheckedChildren={tt("关闭", "Disabled")} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12}>
-              <Form.Item label={tt("触发对冲延迟等待阈值", "Hedging Delay Threshold")} name="hedgingDelayMs">
-                <InputNumber min={500} max={10000} step={500} style={{ width: "100%" }} addonAfter="ms" />
-              </Form.Item>
-            </Col>
-          </Row>
-        </Card>
+        </Flex>
       </Form>
     </div>
   );

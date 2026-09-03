@@ -11,6 +11,11 @@ import { settingsRoutes, type SettingsEngine } from "./settings.js";
 import { keyRoutes, type KeyEngine } from "./keys.js";
 import { homeRoutes, type HomeEngine } from "./home.js";
 import { comboRoutes, type ComboEngine } from "./combos.js";
+import { analyticsRoutes, type AnalyticsEngine } from "./analytics.js";
+import { gamificationRoutes } from "./gamification.js";
+import { batchRoutes } from "./batch.js";
+import { mediaRoutes } from "./media.js";
+import { runtimeRoutes } from "./runtime.js";
 import type { LocalAuthBroker } from "../lib/broker.js";
 
 export interface RouteEngines {
@@ -21,6 +26,7 @@ export interface RouteEngines {
   keys?: KeyEngine;
   home?: HomeEngine;
   combos?: ComboEngine;
+  analytics?: AnalyticsEngine;
 }
 
 export interface RouteOptions {
@@ -47,4 +53,9 @@ export async function routes(app: FastifyInstance, opts: RouteOptions = {}): Pro
   await app.register(keyRoutes, { prefix: "/api", engine: engines.keys });
   await app.register(homeRoutes, { prefix: "/api", engine: engines.home });
   await app.register(comboRoutes, { prefix: "/api", engine: engines.combos });
+  await app.register(analyticsRoutes, { prefix: "/api", engine: engines.analytics });
+  await app.register(gamificationRoutes, { prefix: "/api" });
+  await app.register(batchRoutes, { prefix: "/api" });
+  await app.register(mediaRoutes, { prefix: "/api" });
+  await app.register(runtimeRoutes, { prefix: "/api" });
 }

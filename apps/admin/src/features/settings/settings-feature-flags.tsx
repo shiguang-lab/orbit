@@ -10,10 +10,10 @@ const { Title, Text, Paragraph } = Typography;
 
 const useStyles = createStyles(({ token }) => ({
   page: { width: "100%", display: "flex", flexDirection: "column", gap: 12 },
-  headerCard: { borderRadius: 10, background: token.colorBgContainer, border: `1px solid ${token.colorBorderSecondary}` },
-  sectionCard: { borderRadius: 10, background: token.colorBgContainer, border: `1px solid ${token.colorBorderSecondary}` },
+  headerCard: { borderRadius: 8, background: token.colorBgContainer, border: `1px solid ${token.colorBorderSecondary}` },
+  sectionCard: { borderRadius: 8, background: token.colorBgContainer, border: `1px solid ${token.colorBorderSecondary}` },
   flagCard: {
-    borderRadius: 10,
+    borderRadius: 8,
     background: token.colorBgContainer,
     border: `1px solid ${token.colorBorderSecondary}`,
     transition: "all 0.2s ease",

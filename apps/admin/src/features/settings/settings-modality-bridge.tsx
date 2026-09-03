@@ -1,25 +1,27 @@
+import { useState } from "react";
 import {
   Button,
   Card,
   Col,
+  Divider,
   Flex,
   Form,
+  Input,
   InputNumber,
+  Radio,
   Row,
-  Select,
-  Slider,
   Switch,
   Tabs,
   Tag,
   Typography,
   message,
 } from "antd";
-
 import { createStyles } from "antd-style";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
 import { settingsApi } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Title, Text } = Typography;
 
@@ -28,18 +30,17 @@ const useStyles = createStyles(({ token }) => ({
     width: "100%",
     display: "flex",
     flexDirection: "column",
-    gap: 14,
+    gap: 12,
   },
   headerCard: {
-    borderRadius: 10,
+    borderRadius: 8,
     background: token.colorBgContainer,
     border: `1px solid ${token.colorBorderSecondary}`,
   },
   sectionCard: {
-    borderRadius: 10,
+    borderRadius: 8,
     background: token.colorBgContainer,
     border: `1px solid ${token.colorBorderSecondary}`,
-    marginBottom: 10,
   },
 }));
 
@@ -48,6 +49,8 @@ export function SettingsModalityBridgePage() {
   const queryClient = useQueryClient();
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
+  const [activeTab, setActiveTab] = useState<string>("vision");
+  const { tt } = useI18n();
 
   const settingsQuery = useQuery({
     queryKey: ["settings-modality-full"],
@@ -57,11 +60,11 @@ export function SettingsModalityBridgePage() {
   const saveMutation = useMutation({
     mutationFn: (values: any) => settingsApi.updateSettings(values),
     onSuccess: () => {
-      messageApi.success("多模态桥接策略已成功保存");
+      messageApi.success(tt("多模态桥接策略已成功保存", "Modality bridge settings saved"));
       void queryClient.invalidateQueries({ queryKey: ["settings-modality-full"] });
       void queryClient.invalidateQueries({ queryKey: ["settings"] });
     },
-    onError: () => messageApi.error("保存多模态桥接设置失败"),
+    onError: () => messageApi.error(tt("保存多模态桥接设置失败", "Failed to save modality bridge settings")),
   });
 
   if (settingsQuery.isLoading) {
@@ -73,6 +76,261 @@ export function SettingsModalityBridgePage() {
   const handleSave = (values: any) => {
     saveMutation.mutate(values);
   };
+
+  const tabItems = [
+    {
+      key: "vision",
+      label: (
+        <Flex align="center" gap={6}>
+          <MaterialIcon name="visibility" size={16} />
+          <span>{tt("视觉桥接 (Vision)", "Vision Bridge")}</span>
+        </Flex>
+      ),
+      children: (
+        <Flex vertical gap={12}>
+          <Card title={tt("视觉理解核心配置", "Vision Bridge Core Settings")} className={styles.sectionCard} size="small">
+            <Row gutter={[16, 16]}>
+              <Col xs={24} sm={12}>
+                <Flex justify="space-between" align="center" style={{ padding: "6px 0" }}>
+                  <div>
+                    <Text strong>{tt("启用视觉跨模态桥接", "Enable Vision Bridge")}</Text>
+                    <br />
+                    <Text type="secondary" style={{ fontSize: 12 }}>
+                      {tt("对纯文本上游模型自动接入图像分析器", "Reroute images through vision models")}
+                    </Text>
+                  </div>
+                  <Form.Item name="modalityBridgeVisionEnabled" valuePropName="checked" noStyle>
+                    <Switch checkedChildren={tt("开启", "ON")} unCheckedChildren={tt("关闭", "OFF")} />
+                  </Form.Item>
+                </Flex>
+              </Col>
+              <Col xs={24} sm={12}>
+                <Flex justify="space-between" align="center" style={{ padding: "6px 0" }}>
+                  <div>
+                    <Text strong>{tt("仅重路由纯文本模型", "Reroute Text-Only Models")}</Text>
+                    <br />
+                    <Text type="secondary" style={{ fontSize: 12 }}>
+                      {tt("当目标模型原生不支持图像时才触发视觉桥接", "Only bridge when target model lacks vision")}
+                    </Text>
+                  </div>
+                  <Form.Item name="visionBridgeRerouteTextOnly" valuePropName="checked" noStyle>
+                    <Switch checkedChildren={tt("开启", "ON")} unCheckedChildren={tt("关闭", "OFF")} />
+                  </Form.Item>
+                </Flex>
+              </Col>
+            </Row>
+
+            <Divider style={{ margin: "10px 0" }} />
+
+            <Row gutter={[16, 16]}>
+              <Col xs={24} sm={12}>
+                <Form.Item
+                  label={tt("视觉分析模式 (Vision Mode)", "Vision Analysis Mode")}
+                  name="modalityBridgeVisionMode"
+                  tooltip={tt("OCR 提取文字、Caption 生成简短摘要、Describe 详细描述画面、Reroute 转发给专用模型", "Vision transformation mode")}
+                >
+                  <Radio.Group buttonStyle="solid">
+                    <Radio.Button value="describe">{tt("详细描述 (Describe)", "Describe")}</Radio.Button>
+                    <Radio.Button value="caption">{tt("简短摘要 (Caption)", "Caption")}</Radio.Button>
+                    <Radio.Button value="ocr">{tt("文字提取 (OCR)", "OCR")}</Radio.Button>
+                    <Radio.Button value="reroute">{tt("重路由 (Reroute)", "Reroute")}</Radio.Button>
+                  </Radio.Group>
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={12}>
+                <Form.Item
+                  label={tt("默认视觉代理模型", "Vision Bridge Model")}
+                  name="modalityBridgeVisionModel"
+                  tooltip={tt("负责执行视觉理解的前置模型标识，如 openai/gpt-4o 或 google/gemini-2.0-flash", "Upstream vision model")}
+                >
+                  <Input placeholder="openai/gpt-4o or gemini/gemini-1.5-flash" />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Row gutter={[16, 16]}>
+              <Col xs={24} sm={8}>
+                <Form.Item label={tt("超时时间 (ms)", "Timeout (ms)")} name="modalityBridgeVisionTimeout">
+                  <InputNumber min={1000} max={120000} step={1000} style={{ width: "100%" }} addonAfter="ms" />
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={8}>
+                <Form.Item label={tt("单次请求最大图片数", "Max Images per Request")} name="modalityBridgeVisionMaxImages">
+                  <InputNumber min={1} max={30} style={{ width: "100%" }} addonAfter={tt("张", "images")} />
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={8}>
+                <Form.Item label={tt("描述文本最大字符数", "Max Output Characters")} name="modalityBridgeVisionMaxChars">
+                  <InputNumber min={100} max={20000} step={500} style={{ width: "100%" }} addonAfter="chars" />
+                </Form.Item>
+              </Col>
+            </Row>
+          </Card>
+
+          <Card title={tt("视觉理解缓存 (Vision Cache)", "Vision Cache & Prompt Template")} className={styles.sectionCard} size="small">
+            <Row gutter={[16, 16]}>
+              <Col xs={24} sm={8}>
+                <Form.Item label={tt("启用视觉理解结果缓存", "Enable Vision Cache")} name="modalityBridgeCacheEnabled" valuePropName="checked">
+                  <Switch checkedChildren={tt("启用缓存", "ON")} unCheckedChildren={tt("关闭", "OFF")} />
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={8}>
+                <Form.Item label={tt("缓存过期时间 (TTL)", "Cache TTL Minutes")} name="modalityBridgeCacheTtlMinutes">
+                  <InputNumber min={5} max={10080} style={{ width: "100%" }} addonAfter={tt("分钟", "mins")} />
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={8}>
+                <Form.Item label={tt("最大缓存条目数", "Max Cache Entries")} name="modalityBridgeCacheMaxEntries">
+                  <InputNumber min={100} max={50000} step={500} style={{ width: "100%" }} />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Form.Item
+              label={tt("自定义视觉解析 Prompt 模版", "Custom Vision Prompt Template")}
+              name="modalityBridgeVisionPrompt"
+              tooltip={tt("留空则使用网关内置的高精度视觉理解系统提示词", "Leave empty for gateway default")}
+            >
+              <Input.TextArea rows={3} placeholder={tt("请详细描述图像中可见的主要内容、图表文字与关键信息...", "Describe visual details...")} />
+            </Form.Item>
+          </Card>
+        </Flex>
+      ),
+    },
+    {
+      key: "audio",
+      label: (
+        <Flex align="center" gap={6}>
+          <MaterialIcon name="mic" size={16} />
+          <span>{tt("音频转录桥接 (Audio)", "Audio Bridge")}</span>
+        </Flex>
+      ),
+      children: (
+        <Card title={tt("音频语音转录配置 (Speech-to-Text)", "Speech-to-Text Audio Bridge")} className={styles.sectionCard} size="small">
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={12}>
+              <Flex justify="space-between" align="center" style={{ padding: "6px 0" }}>
+                <div>
+                  <Text strong>{tt("启用音频语音桥接", "Enable Audio Bridge")}</Text>
+                  <br />
+                  <Text type="secondary" style={{ fontSize: 12 }}>
+                    {tt("入站语音片段自动转录为文本注入提示词", "Auto-transcribe input audio into text prompt")}
+                  </Text>
+                </div>
+                <Form.Item name="modalityBridgeAudioEnabled" valuePropName="checked" noStyle>
+                  <Switch checkedChildren={tt("开启", "ON")} unCheckedChildren={tt("关闭", "OFF")} />
+                </Form.Item>
+              </Flex>
+            </Col>
+            <Col xs={24} sm={12}>
+              <Form.Item
+                label={tt("默认语音转录模型 (STT)", "Speech-to-Text Model")}
+                name="modalityBridgeAudioModel"
+              >
+                <Input placeholder="openai/whisper-1 or groq/whisper-large-v3" />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Divider style={{ margin: "10px 0" }} />
+
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={12}>
+              <Form.Item label={tt("转录超时时间 (ms)", "Timeout (ms)")} name="modalityBridgeAudioTimeout">
+                <InputNumber min={1000} max={180000} step={1000} style={{ width: "100%" }} addonAfter="ms" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12}>
+              <Form.Item label={tt("单请求最大语音片段数", "Max Audio Clips")} name="modalityBridgeAudioMaxClips">
+                <InputNumber min={1} max={20} style={{ width: "100%" }} addonAfter={tt("段", "clips")} />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Form.Item label={tt("转录前置提示词 (Audio Prompt)", "Transcription Prompt")} name="modalityBridgeAudioPrompt">
+            <Input placeholder={tt("输入术语或专有名词以提高转录准确率...", "Specify specialized terminology...")} />
+          </Form.Item>
+        </Card>
+      ),
+    },
+    {
+      key: "video",
+      label: (
+        <Flex align="center" gap={6}>
+          <MaterialIcon name="videocam" size={16} />
+          <span>{tt("视频分析桥接 (Video)", "Video Bridge")}</span>
+        </Flex>
+      ),
+      children: (
+        <Card title={tt("视频抽帧与分析配置 (Video Analysis)", "Video Analysis & Keyframe Extraction")} className={styles.sectionCard} size="small">
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={12}>
+              <Flex justify="space-between" align="center" style={{ padding: "6px 0" }}>
+                <div>
+                  <Text strong>{tt("启用视频跨模态桥接", "Enable Video Bridge")}</Text>
+                  <br />
+                  <Text type="secondary" style={{ fontSize: 12 }}>
+                    {tt("通过 FFmpeg 抽帧将视频片段转换为视觉序列输入", "Extract keyframes and analyze video via vision")}
+                  </Text>
+                </div>
+                <Form.Item name="modalityBridgeVideoEnabled" valuePropName="checked" noStyle>
+                  <Switch checkedChildren={tt("开启", "ON")} unCheckedChildren={tt("关闭", "OFF")} />
+                </Form.Item>
+              </Flex>
+            </Col>
+            <Col xs={24} sm={12}>
+              <Form.Item
+                label={tt("视频分析策略", "Video Analysis Mode")}
+                name="modalityBridgeVideoAnalysisMode"
+              >
+                <Radio.Group buttonStyle="solid">
+                  <Radio.Button value="frame-extraction">{tt("智能抽帧 (Frame Extraction)", "Frame Extraction")}</Radio.Button>
+                  <Radio.Button value="native">{tt("原生解析 (Native)", "Native")}</Radio.Button>
+                </Radio.Group>
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Divider style={{ margin: "10px 0" }} />
+
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={12}>
+              <Form.Item label={tt("视频分析视觉模型", "Video Vision Model")} name="modalityBridgeVideoModel">
+                <Input placeholder="google/gemini-2.0-flash or openai/gpt-4o" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12}>
+              <Form.Item label={tt("抽帧采样策略", "Sampling Policy")} name="modalityBridgeVideoSamplingPolicy">
+                <Radio.Group buttonStyle="solid">
+                  <Radio.Button value="uniform">{tt("均匀采样 (Uniform)", "Uniform")}</Radio.Button>
+                  <Radio.Button value="scene-change">{tt("场景变化 (Scene Change)", "Scene Change")}</Radio.Button>
+                  <Radio.Button value="fps">{tt("固定帧率 (FPS)", "Fixed FPS")}</Radio.Button>
+                </Radio.Group>
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={8}>
+              <Form.Item label={tt("最大采样关键帧数", "Max Sampled Keyframes")} name="modalityBridgeVideoFrameCount">
+                <InputNumber min={2} max={64} style={{ width: "100%" }} addonAfter={tt("帧", "frames")} />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={8}>
+              <Form.Item label={tt("单请求最大视频数", "Max Videos per Request")} name="modalityBridgeVideoMaxVideos">
+                <InputNumber min={1} max={5} style={{ width: "100%" }} addonAfter={tt("个", "videos")} />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={8}>
+              <Form.Item label={tt("超时时间 (ms)", "Timeout (ms)")} name="modalityBridgeVideoTimeout">
+                <InputNumber min={2000} max={300000} step={2000} style={{ width: "100%" }} addonAfter="ms" />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Card>
+      ),
+    },
+  ];
 
   return (
     <div className={styles.page}>
@@ -99,12 +357,15 @@ export function SettingsModalityBridgePage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  多模态桥接与跨模态转译
+                  {tt("多模态跨架构桥接 (Modality Bridge)", "Modality Bridge & Multimodal Translation")}
                 </Title>
-                <Tag color="green">视觉 / 音频 / 视频适配</Tag>
+                <Tag color="green">{tt("视觉 OCR / 语音 STT / 视频抽帧", "Vision / Audio / Video")}</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                针对纯文本模型自动接入视觉 OCR、语音转录与视频抽帧，实现异构模型间无缝跨模态兼容。
+                {tt(
+                  "配置异构模型间的跨模态桥接策略，自动针对不支持图片、音频或视频的上游模型进行前置代理转译与重路由。",
+                  "Configure multimodal translation policies to automatically bridge images, audio, and video for text-only LLMs."
+                )}
               </Text>
             </div>
           </Flex>
@@ -115,7 +376,7 @@ export function SettingsModalityBridgePage() {
             loading={saveMutation.isPending}
             onClick={() => form.submit()}
           >
-            保存多模态设置
+            {tt("保存多模态配置", "Save Settings")}
           </Button>
         </Flex>
       </Card>
@@ -124,155 +385,36 @@ export function SettingsModalityBridgePage() {
         form={form}
         layout="vertical"
         initialValues={{
-          visionBridgeEnabled: s.visionBridgeEnabled ?? true,
-          visionFallbackModel: s.visionFallbackModel || "gpt-4o-mini",
-          imageAutoDownscale: s.imageAutoDownscale ?? true,
-          imageMaxDimension: s.imageMaxDimension || 2048,
-          imageQuality: s.imageQuality || 85,
-          imageFormatTranscode: s.imageFormatTranscode ?? true,
-          audioBridgeEnabled: s.audioBridgeEnabled ?? true,
-          audioSttModel: s.audioSttModel || "whisper-large-v3",
-          audioChunkDurationSec: s.audioChunkDurationSec || 60,
-          audioAutoTranscode: s.audioAutoTranscode ?? true,
-          videoBridgeEnabled: s.videoBridgeEnabled ?? true,
-          videoSamplingFps: s.videoSamplingFps || 1,
-          videoMaxKeyframes: s.videoMaxKeyframes || 30,
+          // Vision
+          modalityBridgeVisionEnabled: s.modalityBridgeVisionEnabled ?? true,
+          visionBridgeRerouteTextOnly: s.visionBridgeRerouteTextOnly ?? true,
+          modalityBridgeVisionMode: s.modalityBridgeVisionMode || "describe",
+          modalityBridgeVisionModel: s.modalityBridgeVisionModel || "openai/gpt-4o",
+          modalityBridgeVisionTimeout: s.modalityBridgeVisionTimeout || 30000,
+          modalityBridgeVisionMaxImages: s.modalityBridgeVisionMaxImages || 8,
+          modalityBridgeVisionMaxChars: s.modalityBridgeVisionMaxChars || 2000,
+          modalityBridgeCacheEnabled: s.modalityBridgeCacheEnabled ?? true,
+          modalityBridgeCacheTtlMinutes: s.modalityBridgeCacheTtlMinutes || 1440,
+          modalityBridgeCacheMaxEntries: s.modalityBridgeCacheMaxEntries || 1000,
+          modalityBridgeVisionPrompt: s.modalityBridgeVisionPrompt || "",
+          // Audio
+          modalityBridgeAudioEnabled: s.modalityBridgeAudioEnabled ?? true,
+          modalityBridgeAudioModel: s.modalityBridgeAudioModel || "openai/whisper-1",
+          modalityBridgeAudioTimeout: s.modalityBridgeAudioTimeout || 60000,
+          modalityBridgeAudioMaxClips: s.modalityBridgeAudioMaxClips || 5,
+          modalityBridgeAudioPrompt: s.modalityBridgeAudioPrompt || "",
+          // Video
+          modalityBridgeVideoEnabled: s.modalityBridgeVideoEnabled ?? true,
+          modalityBridgeVideoAnalysisMode: s.modalityBridgeVideoAnalysisMode || "frame-extraction",
+          modalityBridgeVideoModel: s.modalityBridgeVideoModel || "google/gemini-2.0-flash",
+          modalityBridgeVideoSamplingPolicy: s.modalityBridgeVideoSamplingPolicy || "uniform",
+          modalityBridgeVideoFrameCount: s.modalityBridgeVideoFrameCount || 16,
+          modalityBridgeVideoMaxVideos: s.modalityBridgeVideoMaxVideos || 1,
+          modalityBridgeVideoTimeout: s.modalityBridgeVideoTimeout || 90000,
         }}
         onFinish={handleSave}
       >
-        <Card className={styles.sectionCard} size="small">
-          <Tabs
-            defaultActiveKey="vision"
-            items={[
-              {
-                key: "vision",
-                label: (
-                  <Flex align="center" gap={6}>
-                    <MaterialIcon name="image" size={16} /> 视觉与图像桥接 (Vision)
-                  </Flex>
-                ),
-                children: (
-                  <div style={{ padding: "8px 0" }}>
-                    <Row gutter={[16, 0]}>
-                      <Col xs={24} sm={12}>
-                        <Form.Item label="启用非视觉模型图像自动转译 (OCR/描述回填)" name="visionBridgeEnabled" valuePropName="checked">
-                          <Switch checkedChildren="已开启转译" unCheckedChildren="关闭" />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} sm={12}>
-                        <Form.Item label="指定视觉识别转译模型" name="visionFallbackModel">
-                          <Select
-                            options={[
-                              { label: "GPT-4o Mini (极速轻量)", value: "gpt-4o-mini" },
-                              { label: "Claude 3.5 Sonnet (高精图文)", value: "claude-3-5-sonnet" },
-                              { label: "Gemini 2.0 Flash (大图低成本)", value: "gemini-2.0-flash" },
-                            ]}
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-
-                    <Row gutter={[16, 0]}>
-                      <Col xs={24} sm={8}>
-                        <Form.Item label="超大图片自动降采样缩放" name="imageAutoDownscale" valuePropName="checked">
-                          <Switch checkedChildren="自动缩放" unCheckedChildren="原始尺寸" />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} sm={8}>
-                        <Form.Item label="单边最大像素尺寸 (Max Dimension)" name="imageMaxDimension">
-                          <Select
-                            options={[
-                              { label: "1024 px (极速节约 Token)", value: 1024 },
-                              { label: "1536 px (均衡推荐)", value: 1536 },
-                              { label: "2048 px (高清解析)", value: 2048 },
-                            ]}
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} sm={8}>
-                        <Form.Item label="JPEG 压缩质量" name="imageQuality">
-                          <Slider min={50} max={100} step={5} marks={{ 50: "50%", 85: "85%", 100: "100%" }} />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                  </div>
-                ),
-              },
-              {
-                key: "audio",
-                label: (
-                  <Flex align="center" gap={6}>
-                    <MaterialIcon name="mic" size={16} /> 语音与音频桥接 (Audio)
-                  </Flex>
-                ),
-                children: (
-                  <div style={{ padding: "8px 0" }}>
-                    <Row gutter={[16, 0]}>
-                      <Col xs={24} sm={12}>
-                        <Form.Item label="启用语音输入自动 STT 转录" name="audioBridgeEnabled" valuePropName="checked">
-                          <Switch checkedChildren="已开启转录" unCheckedChildren="关闭" />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} sm={12}>
-                        <Form.Item label="STT 语音转录后端模型" name="audioSttModel">
-                          <Select
-                            options={[
-                              { label: "Whisper Large V3 (高准确率多语言)", value: "whisper-large-v3" },
-                              { label: "Groq Whisper (百毫秒极速)", value: "groq-whisper" },
-                              { label: "OpenAI Whisper-1", value: "whisper-1" },
-                            ]}
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-
-                    <Row gutter={[16, 0]}>
-                      <Col xs={24} sm={12}>
-                        <Form.Item label="长音频分块切片时长 (秒)" name="audioChunkDurationSec">
-                          <InputNumber min={10} max={300} style={{ width: "100%" }} addonAfter="秒" />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} sm={12}>
-                        <Form.Item label="异构音频格式自动转码 (WAV / MP3)" name="audioAutoTranscode" valuePropName="checked">
-                          <Switch checkedChildren="自动转码" unCheckedChildren="原样透传" />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                  </div>
-                ),
-              },
-              {
-                key: "video",
-                label: (
-                  <Flex align="center" gap={6}>
-                    <MaterialIcon name="videocam" size={16} /> 视频帧抽样与处理 (Video)
-                  </Flex>
-                ),
-                children: (
-                  <div style={{ padding: "8px 0" }}>
-                    <Row gutter={[16, 0]}>
-                      <Col xs={24} sm={12}>
-                        <Form.Item label="启用视频输入自动抽帧分析" name="videoBridgeEnabled" valuePropName="checked">
-                          <Switch checkedChildren="已开启视频抽帧" unCheckedChildren="关闭" />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} sm={6}>
-                        <Form.Item label="视频抽帧采样率 (FPS)" name="videoSamplingFps">
-                          <InputNumber min={0.2} max={5} step={0.2} style={{ width: "100%" }} addonAfter="FPS" />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} sm={6}>
-                        <Form.Item label="单次请求最大关键帧上限" name="videoMaxKeyframes">
-                          <InputNumber min={5} max={100} style={{ width: "100%" }} addonAfter="帧" />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                  </div>
-                ),
-              },
-            ]}
-          />
-        </Card>
+        <Tabs activeKey={activeTab} onChange={setActiveTab} items={tabItems} />
       </Form>
     </div>
   );

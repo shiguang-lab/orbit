@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   Card,
   Col,
@@ -82,6 +83,28 @@ export function HealthPage() {
     onError: () => messageApi.error("重置失败"),
   });
 
+  if (healthQuery.isLoading) {
+    return <PageSkeleton />;
+  }
+
+  if (healthQuery.isError || !healthQuery.data) {
+    return (
+      <div className={styles.page}>
+        <Alert
+          type="error"
+          showIcon
+          message="加载系统健康监控失败"
+          description={healthQuery.error instanceof Error ? healthQuery.error.message : "无法获取网关健康探针与熔断器指标。"}
+          action={
+            <Button size="small" type="primary" danger onClick={() => healthQuery.refetch()}>
+              重试
+            </Button>
+          }
+        />
+      </div>
+    );
+  }
+
   const data = healthQuery.data;
 
   // Circuit Breaker Table Rows
@@ -154,10 +177,6 @@ export function HealthPage() {
       render: (v) => <span style={{ color: v > 0 ? "#EF4444" : undefined }}>{v}</span>,
     },
   ];
-
-  if (healthQuery.isLoading && !healthQuery.data) {
-    return <PageSkeleton />;
-  }
 
   return (
     <div className={styles.page}>

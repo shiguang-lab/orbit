@@ -67,10 +67,14 @@ export async function buildApp(): Promise<FastifyInstance> {
   // 本地管理台只运行 Web+BFF；业务数据和写操作统一走 NAS 上的 Orbit。
   // 未配置 NAS target 时才启用旧的同机引擎模式（生产部署在 Orbit 同机时使用）。
   const nasTarget = process.env.OMNIROUTE_NAS_API_TARGET?.trim();
+  // 本地开发模式：SG_DEV_IDENTITY=1 或 broker 已配置(身份来自线上 shiguang)。
+  // 本地身份必须优先于 NAS 的官方登录模式，否则 /api/auth/session 会被
+  // 转发到 NAS，而本机 dev identity 永远不会生效。
+  const devMode = process.env.SG_DEV_IDENTITY === "1" || broker.enabled;
   // Orbit's native password/OIDC login is the default. shiguang SSO is opt-in
   // for separately branded web deployments.
   const shiguangAuth = process.env.ORBIT_AUTH_MODE === "shiguang";
-  const officialRemoteAuth = Boolean(nasTarget && !shiguangAuth);
+  const officialRemoteAuth = Boolean(nasTarget && !shiguangAuth && !devMode);
   const officialLocalAuth = !shiguangAuth && !broker.enabled && process.env.SG_DEV_IDENTITY !== "1";
   const engine = nasTarget ? null : await createEngineAdapters();
 
@@ -108,9 +112,6 @@ export async function buildApp(): Promise<FastifyInstance> {
       }
     : undefined;
 
-  // 本地开发模式：SG_DEV_IDENTITY=1 或 broker 已配置(身份来自线上 shiguang)
-  const devMode = process.env.SG_DEV_IDENTITY === "1" || broker.enabled;
-
   // 注意：authz/csrf 的 hook 必须挂在根 app 上才能对后续 register(routes) 的子上下文生效。
   // 直接调用插件函数(而非 app.register(plugin))，避免 Fastify 封装隔离。
   authzPlugin(app, {
@@ -145,7 +146,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   registerErrorHandler(app);
 
   const routeEngines: RouteEngines = engine
-    ? { auth: engine.auth, providers: engine.providers, providerNodes: engine.providerNodes, settings: engine.settings, keys: engine.keys, home: engine.home, combos: engine.combos }
+    ? { auth: engine.auth, providers: engine.providers, providerNodes: engine.providerNodes, settings: engine.settings, keys: engine.keys, home: engine.home, combos: engine.combos, analytics: engine.analytics }
     : {};
   const devBypass = process.env.SG_DEV_IDENTITY === "1";
   await app.register(routes, { engines: routeEngines, devBypass, broker, officialRemoteAuth, officialAuth: officialLocalAuth });

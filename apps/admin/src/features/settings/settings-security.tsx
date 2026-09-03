@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
+  Alert,
   Button,
   Card,
   Col,
@@ -7,7 +8,7 @@ import {
   Flex,
   Form,
   Input,
-  InputNumber,
+  Modal,
   Radio,
   Row,
   Space,
@@ -30,18 +31,17 @@ const useStyles = createStyles(({ token }) => ({
     width: "100%",
     display: "flex",
     flexDirection: "column",
-    gap: 14,
+    gap: 12,
   },
   headerCard: {
-    borderRadius: 10,
+    borderRadius: 8,
     background: token.colorBgContainer,
     border: `1px solid ${token.colorBorderSecondary}`,
   },
   sectionCard: {
-    borderRadius: 10,
+    borderRadius: 8,
     background: token.colorBgContainer,
     border: `1px solid ${token.colorBorderSecondary}`,
-    marginBottom: 10,
   },
 }));
 
@@ -49,45 +49,183 @@ export function SettingsSecurityPage() {
   const { styles } = useStyles();
   const queryClient = useQueryClient();
   const [messageApi, contextHolder] = message.useMessage();
-  const [form] = Form.useForm();
-  const [keyVisible, setKeyVisible] = useState(false);
   const { tt } = useI18n();
 
+  const [passwordForm] = Form.useForm();
+  const [ipFilterForm] = Form.useForm();
+  const [newCidr, setNewCidr] = useState("");
+  const [newKeyword, setNewKeyword] = useState("");
+
+  // Require Login Modal
+  const [requireLoginModalOpen, setRequireLoginModalOpen] = useState(false);
+  const [pendingRequireLogin, setPendingRequireLogin] = useState<boolean | null>(null);
+
+  // Queries
   const settingsQuery = useQuery({
-    queryKey: ["settings-security-full"],
+    queryKey: ["settings-security-all"],
     queryFn: () => settingsApi.getSettings(),
   });
 
-  const saveMutation = useMutation({
-    mutationFn: (values: any) => settingsApi.updateSettings(values),
+  const requireLoginQuery = useQuery({
+    queryKey: ["settings-require-login"],
+    queryFn: async () => {
+      const res = await fetch("/api/settings/require-login");
+      if (!res.ok) throw new Error("Failed to load require-login status");
+      return res.json();
+    },
+  });
+
+  const ipFilterQuery = useQuery({
+    queryKey: ["settings-ip-filter"],
+    queryFn: async () => {
+      const res = await fetch("/api/settings/ip-filter");
+      if (!res.ok) throw new Error("Failed to load IP filter");
+      return res.json();
+    },
+  });
+
+  // Mutations
+  const updateSettingsMutation = useMutation({
+    mutationFn: (patch: Record<string, unknown>) => settingsApi.updateSettings(patch),
     onSuccess: () => {
-      messageApi.success(tt("安全合规与防火墙策略已成功保存", "Security and firewall policies saved successfully"));
-      void queryClient.invalidateQueries({ queryKey: ["settings-security-full"] });
+      messageApi.success(tt("安全设置已保存并生效", "Security settings saved"));
+      void queryClient.invalidateQueries({ queryKey: ["settings-security-all"] });
       void queryClient.invalidateQueries({ queryKey: ["settings"] });
     },
     onError: () => messageApi.error(tt("保存安全设置失败", "Failed to save security settings")),
   });
 
-  if (settingsQuery.isLoading) {
+  const updateRequireLoginMutation = useMutation({
+    mutationFn: async (requireLogin: boolean) => {
+      const res = await fetch("/api/settings/require-login", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ requireLogin }),
+      });
+      if (!res.ok) throw new Error("Failed to update require-login");
+      return res.json();
+    },
+    onSuccess: () => {
+      setRequireLoginModalOpen(false);
+      messageApi.success(tt("登录强制鉴权策略已更新", "Require login policy updated"));
+      void queryClient.invalidateQueries({ queryKey: ["settings-require-login"] });
+    },
+    onError: () => messageApi.error(tt("更新登录鉴权策略失败", "Failed to update require login")),
+  });
+
+  const updateIpFilterMutation = useMutation({
+    mutationFn: async (body: any) => {
+      const res = await fetch("/api/settings/ip-filter", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error("Failed to update IP filter");
+      return res.json();
+    },
+    onSuccess: () => {
+      messageApi.success(tt("IP 访问控制规则已保存", "IP filter rules saved"));
+      void queryClient.invalidateQueries({ queryKey: ["settings-ip-filter"] });
+    },
+    onError: () => messageApi.error(tt("保存 IP 过滤规则失败", "Failed to save IP filter")),
+  });
+
+  const changePasswordMutation = useMutation({
+    mutationFn: async (values: any) => {
+      const res = await fetch("/api/settings/password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: values.newPassword }),
+      });
+      if (!res.ok) throw new Error("Failed to change password");
+      return res.json();
+    },
+    onSuccess: () => {
+      passwordForm.resetFields();
+      messageApi.success(tt("管理密码已成功修改", "Management password updated successfully"));
+      void queryClient.invalidateQueries({ queryKey: ["settings-require-login"] });
+    },
+    onError: () => messageApi.error(tt("修改管理密码失败", "Failed to change password")),
+  });
+
+  // Init form
+  useEffect(() => {
+    if (ipFilterQuery.data) {
+      ipFilterForm.setFieldsValue({
+        enabled: ipFilterQuery.data.enabled === true,
+        mode: ipFilterQuery.data.mode || "blacklist",
+      });
+    }
+  }, [ipFilterQuery.data, ipFilterForm]);
+
+  if (settingsQuery.isLoading || requireLoginQuery.isLoading || ipFilterQuery.isLoading) {
     return <PageSkeleton />;
   }
 
   const s = (settingsQuery.data as any) || {};
+  const requireLoginInfo = requireLoginQuery.data || {};
+  const ipFilterInfo = ipFilterQuery.data || { whitelist: [], blacklist: [] };
+  const bannedKeywords: string[] = Array.isArray(s.bannedKeywords) ? s.bannedKeywords : [];
 
-  const handleSave = (values: any) => {
-    saveMutation.mutate(values);
+  const handleToggleRequireLogin = (checked: boolean) => {
+    if (requireLoginInfo.hasPassword) {
+      setPendingRequireLogin(checked);
+      setRequireLoginModalOpen(true);
+    } else {
+      updateRequireLoginMutation.mutate(checked);
+    }
   };
 
-  const handleCopyKey = () => {
-    navigator.clipboard.writeText(s.managementApiKey || "management-key-not-configured");
-    messageApi.success(tt("管理端 API Key 已复制到剪贴板", "Management API key copied to clipboard"));
+  const handleAddCidr = () => {
+    if (!newCidr.trim()) return;
+    const mode = ipFilterForm.getFieldValue("mode") || "blacklist";
+    const currentList = mode === "whitelist" ? (ipFilterInfo.whitelist || []) : (ipFilterInfo.blacklist || []);
+    if (currentList.includes(newCidr.trim())) {
+      messageApi.warning(tt("该 IP/CIDR 规则已存在", "IP/CIDR already exists"));
+      return;
+    }
+    const updated = [...currentList, newCidr.trim()];
+    updateIpFilterMutation.mutate({
+      ...ipFilterInfo,
+      enabled: ipFilterForm.getFieldValue("enabled"),
+      mode,
+      [mode]: updated,
+    });
+    setNewCidr("");
+  };
+
+  const handleRemoveCidr = (cidr: string) => {
+    const mode = ipFilterForm.getFieldValue("mode") || "blacklist";
+    const currentList = mode === "whitelist" ? (ipFilterInfo.whitelist || []) : (ipFilterInfo.blacklist || []);
+    const updated = currentList.filter((item: string) => item !== cidr);
+    updateIpFilterMutation.mutate({
+      ...ipFilterInfo,
+      enabled: ipFilterForm.getFieldValue("enabled"),
+      mode,
+      [mode]: updated,
+    });
+  };
+
+  const handleAddKeyword = () => {
+    if (!newKeyword.trim()) return;
+    if (bannedKeywords.includes(newKeyword.trim())) {
+      messageApi.warning(tt("该违禁词已存在", "Keyword already exists"));
+      return;
+    }
+    const updated = [...bannedKeywords, newKeyword.trim()];
+    updateSettingsMutation.mutate({ bannedKeywords: updated });
+    setNewKeyword("");
+  };
+
+  const handleRemoveKeyword = (keyword: string) => {
+    const updated = bannedKeywords.filter((k) => k !== keyword);
+    updateSettingsMutation.mutate({ bannedKeywords: updated });
   };
 
   return (
     <div className={styles.page}>
       {contextHolder}
 
-      {/* 1. Header Banner */}
       <Card className={styles.headerCard} styles={{ body: { padding: "14px 18px" } }}>
         <Flex justify="space-between" align="center" wrap gap={12}>
           <Flex align="center" gap={12}>
@@ -108,173 +246,251 @@ export function SettingsSecurityPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  {tt("网关安全防御与合规管控", "Gateway Security & Compliance")}
+                  {tt("网关安全防护与鉴权设置", "Gateway Security & Access Control")}
                 </Title>
-                <Tag color="red">{tt("零信任与 PII 隐私脱敏", "Zero Trust & PII")}</Tag>
+                <Tag color="red">{tt("零信任安全", "Zero Trust")}</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
                 {tt(
-                  "配置管理员鉴权凭证、IP 访问黑白名单、敏感信息脱敏与反越狱防注入规则。",
-                  "Configure admin master key, IP whitelist/blacklist, PII masking, and anti-jailbreak guardrails."
+                  "配置管理端强制密码鉴权、安全密码重置、IP CIDR 黑白名单网络防火墙与请求违禁词拦截体系。",
+                  "Configure management password authentication, IP CIDR network firewall rules, and prompt banned keywords filtering."
                 )}
               </Text>
             </div>
           </Flex>
-
-          <Button
-            type="primary"
-            icon={<MaterialIcon name="save" size={16} />}
-            loading={saveMutation.isPending}
-            onClick={() => form.submit()}
-          >
-            {tt("保存安全设置", "Save Security Settings")}
-          </Button>
         </Flex>
       </Card>
 
-      <Form
-        form={form}
-        layout="vertical"
-        initialValues={{
-          ipFilterMode: s.ipFilterMode || "whitelist",
-          ipFilterList: s.ipFilterList || "127.0.0.1/32\n192.168.0.0/16\n10.0.0.0/8",
-          ipFilterEnabled: s.ipFilterEnabled ?? false,
-          promptGuardEnabled: s.promptGuardEnabled ?? true,
-          piiMaskingEnabled: s.piiMaskingEnabled ?? true,
-          maskPhoneNumbers: s.maskPhoneNumbers ?? true,
-          maskEmails: s.maskEmails ?? true,
-          maskCreditCards: s.maskCreditCards ?? true,
-          maskIdCards: s.maskIdCards ?? true,
-          bruteForceProtection: s.bruteForceProtection ?? true,
-          maxRpmPerIp: s.maxRpmPerIp || 120,
-          maxTpmPerIp: s.maxTpmPerIp || 500000,
-          corsOrigins: s.corsOrigins || "*",
-          enforceHttps: s.enforceHttps ?? false,
-        }}
-        onFinish={handleSave}
-      >
-        {/* 2. Management Auth Key */}
-        <Card title={tt("管理员主鉴权凭证 (Management API Key)", "Management Master API Key")} className={styles.sectionCard} size="small">
-          <Flex justify="space-between" align="center" style={{ marginBottom: 8 }}>
-            <Text type="secondary" style={{ fontSize: 12 }}>
-              {tt(
-                "用于调用网关 /api/* 管理端点与 CLI 远程配额控制的最高权限凭证",
-                "Root credential for invoking gateway /api/* control plane and CLI management"
-              )}
-            </Text>
-            <Space>
-              <Button size="small" icon={<MaterialIcon name={keyVisible ? "visibility_off" : "visibility"} size={14} />} onClick={() => setKeyVisible((v) => !v)}>
-                {keyVisible ? tt("隐藏", "Hide") : tt("查看", "View")}
-              </Button>
-              <Button size="small" icon={<MaterialIcon name="content_copy" size={14} />} onClick={handleCopyKey}>
-                {tt("复制", "Copy")}
-              </Button>
-            </Space>
-          </Flex>
-          <Input
-            value={keyVisible ? (s.managementApiKey || "management-key-not-configured") : "••••••••••••••••"}
-            readOnly
-            style={{ fontFamily: "monospace" }}
-          />
-        </Card>
-
-        {/* 3. IP Filter & Firewall */}
-        <Card title={tt("IP 访问控制与黑白名单", "IP Access Control & Firewall")} className={styles.sectionCard} size="small">
-          <Row gutter={[16, 0]}>
-            <Col xs={24} sm={12}>
-              <Form.Item label={tt("启用 IP 过滤防火墙", "Enable IP Firewall")} name="ipFilterEnabled" valuePropName="checked">
-                <Switch checkedChildren={tt("已开启", "Enabled")} unCheckedChildren={tt("停用 (允许所有 IP)", "Disabled (Allow All)")} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12}>
-              <Form.Item label={tt("过滤模式", "Filter Mode")} name="ipFilterMode">
-                <Radio.Group buttonStyle="solid">
-                  <Radio.Button value="whitelist">{tt("白名单模式 (仅允许列表 IP 访问)", "Whitelist (Allow only listed)")}</Radio.Button>
-                  <Radio.Button value="blacklist">{tt("黑名单模式 (阻断列表 IP 访问)", "Blacklist (Block listed)")}</Radio.Button>
-                </Radio.Group>
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Form.Item
-            label={tt("IP / CIDR 网段规则列表 (每行一条)", "IP / CIDR Rules (One per line)")}
-            name="ipFilterList"
-            tooltip={tt("支持单 IP (如 1.2.3.4) 或标准 CIDR 格式 (如 192.168.1.0/24)", "Supports single IPs (e.g. 1.2.3.4) or CIDR blocks (e.g. 192.168.1.0/24)")}
+      {/* 2. Login Requirement & Management Password */}
+      <Row gutter={[12, 12]}>
+        <Col xs={24} md={12}>
+          <Card
+            title={tt("管理后台强制密码登录", "Management Login Authentication")}
+            className={styles.sectionCard}
+            style={{ height: "100%" }}
+            styles={{ body: { display: "flex", flexDirection: "column", height: "calc(100% - 39px)", justifyContent: "space-between" } }}
+            size="small"
           >
-            <Input.TextArea rows={3} placeholder="127.0.0.1/32&#10;192.168.1.0/24&#10;10.0.0.0/8" />
-          </Form.Item>
-        </Card>
+            <Flex vertical gap={12}>
+              <Flex justify="space-between" align="center">
+                <div>
+                  <Text strong>{tt("启用登录密码验证 (Require Login)", "Require Password Login")}</Text>
+                  <br />
+                  <Text type="secondary" style={{ fontSize: 12 }}>
+                    {tt("访问控制台与管理接口必须验证密码凭据", "Require authentication for dashboard and admin APIs")}
+                  </Text>
+                </div>
+                <Switch
+                  checked={requireLoginInfo.requireLogin !== false}
+                  onChange={handleToggleRequireLogin}
+                  loading={updateRequireLoginMutation.isPending}
+                />
+              </Flex>
 
-        {/* 4. Sensitive Data Masking (PII) */}
-        <Card title={tt("敏感数据自动脱敏 (PII Masking & Privacy)", "PII Masking & Privacy Guardrails")} className={styles.sectionCard} size="small">
-          <Row gutter={[16, 0]}>
-            <Col xs={24} sm={12}>
-              <Form.Item label={tt("全局启用 PII 脱敏拦截管道", "Enable PII Masking Pipeline")} name="piiMaskingEnabled" valuePropName="checked">
-                <Switch checkedChildren={tt("已开启脱敏", "Enabled")} unCheckedChildren={tt("未启用", "Disabled")} />
+              <Alert
+                type={requireLoginInfo.hasPassword ? "success" : "warning"}
+                showIcon
+                icon={<MaterialIcon name={requireLoginInfo.hasPassword ? "verified_user" : "gpp_maybe"} size={16} />}
+                message={
+                  requireLoginInfo.hasPassword
+                    ? tt("已配置管理员主密码（安全保护中）", "Master password is set and protecting console")
+                    : tt("尚未配置主密码，建议尽快在右侧设置", "No password configured. Please set one on the right.")
+                }
+                style={{ fontSize: 12, padding: "8px 12px" }}
+              />
+            </Flex>
+
+            <Text type="secondary" style={{ fontSize: 11, marginTop: 12, display: "block" }}>
+              {tt("💡 提示：开启登录验证后，Cookie 会话默认维持 7 天活跃状态。", "Tip: Active sessions are maintained for 7 days upon login.")}
+            </Text>
+          </Card>
+        </Col>
+
+        <Col xs={24} md={12}>
+          <Card
+            title={tt("重置管理密码", "Change Management Password")}
+            className={styles.sectionCard}
+            style={{ height: "100%" }}
+            size="small"
+          >
+            <Form
+              form={passwordForm}
+              layout="vertical"
+              onFinish={(v) => changePasswordMutation.mutate(v)}
+            >
+              <Form.Item
+                label={tt("新管理密码", "New Password")}
+                name="newPassword"
+                rules={[{ required: true, min: 6, message: tt("密码至少 6 位", "Password must be >= 6 characters") }]}
+                style={{ marginBottom: 16 }}
+              >
+                <Input.Password placeholder="••••••••" />
+              </Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={changePasswordMutation.isPending}
+                icon={<MaterialIcon name="key" size={14} />}
+              >
+                {tt("更新密码", "Update Password")}
+              </Button>
+            </Form>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* 3. IP Access Control (IP Filter) */}
+      <Card
+        title={
+          <Flex justify="space-between" align="center">
+            <Flex align="center" gap={8}>
+              <MaterialIcon name="fence" size={18} />
+              <span>{tt("IP 访问控制网络防火墙 (IP Filter)", "IP Access Control & CIDR Firewall")}</span>
+            </Flex>
+            <Button
+              type="primary"
+              size="small"
+              loading={updateIpFilterMutation.isPending}
+              onClick={() => {
+                const vals = ipFilterForm.getFieldsValue();
+                updateIpFilterMutation.mutate({
+                  ...ipFilterInfo,
+                  enabled: vals.enabled,
+                  mode: vals.mode,
+                });
+              }}
+            >
+              {tt("保存防火墙状态", "Save Filter State")}
+            </Button>
+          </Flex>
+        }
+        className={styles.sectionCard}
+        size="small"
+      >
+        <Form form={ipFilterForm} layout="vertical">
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={8}>
+              <Form.Item label={tt("启用 IP 防火墙", "Enable IP Filter")} name="enabled" valuePropName="checked">
+                <Switch checkedChildren={tt("开启", "Enabled")} unCheckedChildren={tt("关闭", "Disabled")} />
               </Form.Item>
             </Col>
-            <Col xs={24} sm={12}>
-              <Form.Item label={tt("Prompt 注入与越狱恶意行为防御", "Prompt Injection & Jailbreak Defense")} name="promptGuardEnabled" valuePropName="checked">
-                <Switch checkedChildren={tt("开启实时扫描", "Enabled")} unCheckedChildren={tt("关闭", "Disabled")} />
+            <Col xs={24} sm={16}>
+              <Form.Item label={tt("过滤模式", "Filter Mode")} name="mode">
+                <Radio.Group>
+                  <Radio.Button value="blacklist">{tt("黑名单模式 (Block listed)", "Blacklist")}</Radio.Button>
+                  <Radio.Button value="whitelist">{tt("白名单模式 (Allow only listed)", "Whitelist")}</Radio.Button>
+                </Radio.Group>
               </Form.Item>
             </Col>
           </Row>
 
           <Divider style={{ margin: "10px 0" }} />
 
-          <Row gutter={[16, 0]}>
-            <Col xs={24} sm={6}>
-              <Form.Item label={tt("手机号码脱敏 (138****1234)", "Mask Phone Numbers")} name="maskPhoneNumbers" valuePropName="checked">
-                <Switch checkedChildren={tt("脱敏", "Mask")} unCheckedChildren={tt("放行", "Pass")} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={6}>
-              <Form.Item label={tt("电子邮箱脱敏 (a***@domain)", "Mask Email Addresses")} name="maskEmails" valuePropName="checked">
-                <Switch checkedChildren={tt("脱敏", "Mask")} unCheckedChildren={tt("放行", "Pass")} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={6}>
-              <Form.Item label={tt("银行卡号脱敏 (6222 **** **** 1234)", "Mask Credit Cards")} name="maskCreditCards" valuePropName="checked">
-                <Switch checkedChildren={tt("脱敏", "Mask")} unCheckedChildren={tt("放行", "Pass")} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={6}>
-              <Form.Item label={tt("身份证件号码脱敏", "Mask ID Numbers")} name="maskIdCards" valuePropName="checked">
-                <Switch checkedChildren={tt("脱敏", "Mask")} unCheckedChildren={tt("放行", "Pass")} />
-              </Form.Item>
-            </Col>
-          </Row>
-        </Card>
+          <Flex vertical gap={8}>
+            <Text strong>{tt("规则列表 (IP / CIDR)", "Rules List")}</Text>
+            <Space wrap>
+              {((ipFilterForm.getFieldValue("mode") === "whitelist"
+                ? ipFilterInfo.whitelist
+                : ipFilterInfo.blacklist) || []
+              ).map((cidr: string) => (
+                <Tag
+                  key={cidr}
+                  closable
+                  onClose={() => handleRemoveCidr(cidr)}
+                  color={ipFilterForm.getFieldValue("mode") === "whitelist" ? "green" : "red"}
+                >
+                  {cidr}
+                </Tag>
+              ))}
+            </Space>
 
-        {/* 5. Rate Limits & Network */}
-        <Card title={tt("客户端速率限制与跨域安全", "Rate Limiting & Network Security")} className={styles.sectionCard} size="small">
-          <Row gutter={[16, 0]}>
-            <Col xs={24} sm={12}>
-              <Form.Item label={tt("单 IP 每分钟最大请求数 (RPM 阈值)", "Max Requests Per Minute per IP (RPM)")} name="maxRpmPerIp">
-                <InputNumber min={10} max={10000} style={{ width: "100%" }} addonAfter="RPM" />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12}>
-              <Form.Item label={tt("单 IP 每分钟最大 Token 吞吐 (TPM 阈值)", "Max Tokens Per Minute per IP (TPM)")} name="maxTpmPerIp">
-                <InputNumber min={1000} max={10000000} step={10000} style={{ width: "100%" }} addonAfter="TPM" />
-              </Form.Item>
-            </Col>
-          </Row>
+            <Space style={{ marginTop: 8 }}>
+              <Input
+                placeholder="192.168.1.0/24 or 10.0.0.1"
+                value={newCidr}
+                onChange={(e) => setNewCidr(e.target.value)}
+                onPressEnter={handleAddCidr}
+                style={{ width: 260 }}
+              />
+              <Button icon={<MaterialIcon name="add" size={14} />} onClick={handleAddCidr}>
+                {tt("添加规则", "Add Rule")}
+              </Button>
+            </Space>
+          </Flex>
+        </Form>
+      </Card>
 
-          <Row gutter={[16, 0]}>
-            <Col xs={24} sm={12}>
-              <Form.Item label={tt("跨域 CORS 允许的域名 (Origins)", "CORS Allowed Origins")} name="corsOrigins">
-                <Input placeholder="* or https://app.example.com" />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12}>
-              <Form.Item label={tt("强制 HTTPS / TLS 加密通道", "Enforce HTTPS / TLS")} name="enforceHttps" valuePropName="checked">
-                <Switch checkedChildren={tt("强制 HTTPS", "Enforce HTTPS")} unCheckedChildren={tt("允许 HTTP", "Allow HTTP")} />
-              </Form.Item>
-            </Col>
-          </Row>
-        </Card>
-      </Form>
+      {/* 4. Banned Keywords */}
+      <Card
+        title={
+          <Flex align="center" gap={8}>
+            <MaterialIcon name="block" size={18} />
+            <span>{tt("请求违禁词内容审查 (Banned Keywords)", "Banned Keywords & Prompt Interception")}</span>
+          </Flex>
+        }
+        className={styles.sectionCard}
+        size="small"
+      >
+        <Text type="secondary" style={{ fontSize: 12, display: "block", marginBottom: 10 }}>
+          {tt(
+            "当客户端提示词中包含命中词时，网关将立即拒绝请求并返回合规性拦截错误。",
+            "Requests containing banned keywords will be blocked immediately by gateway."
+          )}
+        </Text>
+
+        <Flex vertical gap={8}>
+          <Space wrap>
+            {bannedKeywords.length === 0 ? (
+              <Text type="secondary" style={{ fontSize: 12 }}>
+                {tt("暂无违禁词规则", "No banned keywords defined")}
+              </Text>
+            ) : (
+              bannedKeywords.map((word) => (
+                <Tag key={word} closable onClose={() => handleRemoveKeyword(word)} color="volcano">
+                  {word}
+                </Tag>
+              ))
+            )}
+          </Space>
+
+          <Space style={{ marginTop: 8 }}>
+            <Input
+              placeholder={tt("输入违禁词...", "Enter keyword...")}
+              value={newKeyword}
+              onChange={(e) => setNewKeyword(e.target.value)}
+              onPressEnter={handleAddKeyword}
+              style={{ width: 240 }}
+            />
+            <Button icon={<MaterialIcon name="add" size={14} />} onClick={handleAddKeyword}>
+              {tt("添加违禁词", "Add Keyword")}
+            </Button>
+          </Space>
+        </Flex>
+      </Card>
+
+      {/* Require Login Confirmation Modal */}
+      <Modal
+        title={tt("确认修改登录鉴权策略？", "Confirm Require Login Change?")}
+        open={requireLoginModalOpen}
+        onCancel={() => setRequireLoginModalOpen(false)}
+        confirmLoading={updateRequireLoginMutation.isPending}
+        onOk={() => pendingRequireLogin !== null && updateRequireLoginMutation.mutate(pendingRequireLogin)}
+        okText={tt("确认修改", "Confirm")}
+      >
+        <Alert
+          type="info"
+          showIcon
+          style={{ marginBottom: 12 }}
+          message={tt(
+            pendingRequireLogin
+              ? "开启后访问控制台将必须输入管理密码"
+              : "关闭后任何人无需密码即可直接访问网关控制台",
+            pendingRequireLogin
+              ? "Enabling require login will enforce password checks for dashboard access"
+              : "Disabling require login allows unauthenticated dashboard access"
+          )}
+        />
+      </Modal>
     </div>
   );
 }

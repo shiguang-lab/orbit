@@ -1,24 +1,21 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import {
   Button,
   Card,
   Col,
+  Divider,
   Flex,
   Form,
   Input,
-  Modal,
-  Popconfirm,
+  InputNumber,
   Radio,
   Row,
   Select,
-  Slider,
   Switch,
-  Table,
   Tag,
   Typography,
   message,
 } from "antd";
-
 import { createStyles } from "antd-style";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
@@ -27,97 +24,142 @@ import { PageSkeleton } from "@/shared/components/PageSkeleton";
 import { useI18n } from "@/i18n";
 
 const { Title, Text } = Typography;
+const { TextArea } = Input;
 
 const useStyles = createStyles(({ token }) => ({
   page: {
     width: "100%",
     display: "flex",
     flexDirection: "column",
-    gap: 14,
+    gap: 12,
   },
   headerCard: {
-    borderRadius: 10,
+    borderRadius: 8,
     background: token.colorBgContainer,
     border: `1px solid ${token.colorBorderSecondary}`,
   },
   sectionCard: {
-    borderRadius: 10,
+    borderRadius: 8,
     background: token.colorBgContainer,
     border: `1px solid ${token.colorBorderSecondary}`,
-    marginBottom: 10,
   },
 }));
-
-interface ModelAlias {
-  id: string;
-  alias: string;
-  target: string;
-  enabled: boolean;
-  notes?: string;
-}
 
 export function SettingsAiPage() {
   const { styles } = useStyles();
   const queryClient = useQueryClient();
   const [messageApi, contextHolder] = message.useMessage();
-  const [form] = Form.useForm();
-  const [aliasModalOpen, setAliasModalOpen] = useState(false);
-  const [aliasForm] = Form.useForm();
   const { tt } = useI18n();
 
+  const [thinkingForm] = Form.useForm();
+  const [promptForm] = Form.useForm();
+  const [generalAiForm] = Form.useForm();
+
+  // Queries
   const settingsQuery = useQuery({
-    queryKey: ["settings-ai-full"],
+    queryKey: ["settings-ai-all"],
     queryFn: () => settingsApi.getSettings(),
   });
 
-  const [aliases, setAliases] = useState<ModelAlias[]>([
-    { id: "1", alias: "gpt-4o", target: "deepseek-chat", enabled: true, notes: "将前端 GPT-4o 请求静默重定向至 DeepSeek-V3" },
-    { id: "2", alias: "claude-3-5-sonnet-20241022", target: "claude-3-7-sonnet-thinking", enabled: true, notes: "升级 Sonnet 3.5 请求至 3.7" },
-    { id: "3", alias: "text-embedding-ada-002", target: "text-embedding-3-small", enabled: true, notes: "嵌入模型现代换代" },
-  ]);
-
-  const saveMutation = useMutation({
-    mutationFn: (values: any) => settingsApi.updateSettings(values),
-    onSuccess: () => {
-      messageApi.success(tt("AI 全局推理设置已成功保存", "AI inference settings saved successfully"));
-      void queryClient.invalidateQueries({ queryKey: ["settings-ai-full"] });
-      void queryClient.invalidateQueries({ queryKey: ["settings"] });
+  const thinkingQuery = useQuery({
+    queryKey: ["settings-thinking-budget"],
+    queryFn: async () => {
+      const res = await fetch("/api/settings/thinking-budget");
+      if (!res.ok) throw new Error("Failed to load thinking budget");
+      return res.json();
     },
-    onError: () => messageApi.error(tt("保存 AI 设置失败", "Failed to save AI settings")),
   });
 
-  if (settingsQuery.isLoading) {
+  const promptQuery = useQuery({
+    queryKey: ["settings-system-prompt"],
+    queryFn: async () => {
+      const res = await fetch("/api/settings/system-prompt");
+      if (!res.ok) throw new Error("Failed to load system prompt");
+      return res.json();
+    },
+  });
+
+  // Mutations
+  const updateSettingsMutation = useMutation({
+    mutationFn: (patch: Record<string, unknown>) => settingsApi.updateSettings(patch),
+    onSuccess: () => {
+      messageApi.success(tt("AI 运行策略已成功更新", "AI policies updated successfully"));
+      void queryClient.invalidateQueries({ queryKey: ["settings-ai-all"] });
+      void queryClient.invalidateQueries({ queryKey: ["settings"] });
+    },
+    onError: () => messageApi.error(tt("更新 AI 运行策略失败", "Failed to update AI policies")),
+  });
+
+  const updateThinkingMutation = useMutation({
+    mutationFn: async (values: any) => {
+      const res = await fetch("/api/settings/thinking-budget", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+      if (!res.ok) throw new Error("Failed to update thinking budget");
+      return res.json();
+    },
+    onSuccess: () => {
+      messageApi.success(tt("思考预算 (Thinking Budget) 配置已保存", "Thinking budget settings saved"));
+      void queryClient.invalidateQueries({ queryKey: ["settings-thinking-budget"] });
+    },
+    onError: () => messageApi.error(tt("保存思考预算配置失败", "Failed to save thinking budget")),
+  });
+
+  const updatePromptMutation = useMutation({
+    mutationFn: async (values: any) => {
+      const res = await fetch("/api/settings/system-prompt", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+      if (!res.ok) throw new Error("Failed to update system prompt");
+      return res.json();
+    },
+    onSuccess: () => {
+      messageApi.success(tt("全局系统提示词 (System Prompt) 策略已保存", "System prompt policy saved"));
+      void queryClient.invalidateQueries({ queryKey: ["settings-system-prompt"] });
+    },
+    onError: () => messageApi.error(tt("保存系统提示词策略失败", "Failed to save system prompt")),
+  });
+
+  // Form synch
+  useEffect(() => {
+    if (thinkingQuery.data) {
+      thinkingForm.setFieldsValue({
+        mode: thinkingQuery.data.mode || "passthrough",
+        customBudget: thinkingQuery.data.customBudget || 10240,
+        effortLevel: thinkingQuery.data.effortLevel || "medium",
+      });
+    }
+  }, [thinkingQuery.data, thinkingForm]);
+
+  useEffect(() => {
+    if (promptQuery.data) {
+      promptForm.setFieldsValue({
+        mode: promptQuery.data.mode || "passthrough",
+        customPrompt: promptQuery.data.customPrompt || "",
+      });
+    }
+  }, [promptQuery.data, promptForm]);
+
+  useEffect(() => {
+    if (settingsQuery.data) {
+      const s = settingsQuery.data as any;
+      generalAiForm.setFieldsValue({
+        responsesStatePolicy: s.responsesStatePolicy || "passthrough",
+        usageTokenBuffer: s.usageTokenBuffer || 1000,
+        codexFastTier: s.codexFastTier === true,
+        codexAutoPing: s.codexAutoPing === true,
+        claudeFastMode: s.claudeFastMode === true,
+      });
+    }
+  }, [settingsQuery.data, generalAiForm]);
+
+  if (settingsQuery.isLoading || thinkingQuery.isLoading || promptQuery.isLoading) {
     return <PageSkeleton />;
   }
-
-  const s = (settingsQuery.data as any) || {};
-
-  const handleSave = (values: any) => {
-    saveMutation.mutate({ ...values, modelAliases: aliases });
-  };
-
-  const handleAddAlias = (values: any) => {
-    const newAlias: ModelAlias = {
-      id: String(Date.now()),
-      alias: values.alias.trim(),
-      target: values.target.trim(),
-      enabled: true,
-      notes: values.notes,
-    };
-    setAliases((prev) => [...prev, newAlias]);
-    setAliasModalOpen(false);
-    aliasForm.resetFields();
-    messageApi.success(tt("已添加模型重定向别名", "Added model alias redirection"));
-  };
-
-  const handleDeleteAlias = (id: string) => {
-    setAliases((prev) => prev.filter((a) => a.id !== id));
-    messageApi.success(tt("已删除模型别名", "Deleted model alias"));
-  };
-
-  const handleToggleAlias = (id: string, enabled: boolean) => {
-    setAliases((prev) => prev.map((a) => (a.id === id ? { ...a, enabled } : a)));
-  };
 
   return (
     <div className={styles.page}>
@@ -132,239 +174,261 @@ export function SettingsAiPage() {
                 width: 42,
                 height: 42,
                 borderRadius: 10,
-                background: "rgba(245, 158, 11, 0.12)",
-                color: "#f59e0b",
+                background: "rgba(168, 85, 247, 0.12)",
+                color: "#a855f7",
                 display: "inline-flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <MaterialIcon name="auto_awesome" size={24} />
+              <MaterialIcon name="psychology" size={24} />
             </div>
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  {tt("AI 推理与全局模型默认配置", "AI Inference & Model Defaults")}
+                  {tt("AI 推理与行为治理设置", "AI Reasoning & Governance Settings")}
                 </Title>
-                <Tag color="gold">{tt("模型重定向与推理链", "Model Aliases & Reasoning")}</Tag>
+                <Tag color="purple">{tt("模型推理中枢", "Inference Core")}</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
                 {tt(
-                  "配置全局默认模型映射、别名重定向、Thinking 深度思考预算与系统级前置提示词注入。",
-                  "Configure default models, alias mapping, reasoning budgets, and system prompt injection."
+                  "配置模型思考预算 (Thinking Budget)、全局 Prompt 拦截注入、上下文会话状态策略及 Codex/Claude 极速模式通道。",
+                  "Configure model reasoning/thinking token budgets, system prompt injection policies, conversation state, and fast-mode tiers."
                 )}
               </Text>
             </div>
           </Flex>
-
-          <Button
-            type="primary"
-            icon={<MaterialIcon name="save" size={16} />}
-            loading={saveMutation.isPending}
-            onClick={() => form.submit()}
-          >
-            {tt("保存 AI 设置", "Save AI Settings")}
-          </Button>
         </Flex>
       </Card>
 
-      <Form
-        form={form}
-        layout="vertical"
-        initialValues={{
-          defaultModel: s.defaultModel || "deepseek-chat",
-          stripThinkingTags: s.stripThinkingTags ?? false,
-          enableReasoningBudget: s.enableReasoningBudget ?? true,
-          reasoningEffort: s.reasoningEffort || "medium",
-          maxReasoningTokens: s.maxReasoningTokens || 8192,
-          codexFastTierEnabled: s.codexFastTierEnabled ?? false,
-          claudeFastModeEnabled: s.claudeFastModeEnabled ?? false,
-          systemPromptInjectionMode: s.systemPromptInjectionMode || "prefix",
-          globalSystemPrompt: s.globalSystemPrompt || "",
-        }}
-        onFinish={handleSave}
+      {/* 2. Thinking Budget */}
+      <Card
+        title={
+          <Flex justify="space-between" align="center">
+            <Flex align="center" gap={8}>
+              <MaterialIcon name="auto_awesome" size={18} />
+              <span>{tt("思考预算治理 (Thinking Budget)", "Thinking Budget Management")}</span>
+            </Flex>
+            <Button
+              type="primary"
+              size="small"
+              loading={updateThinkingMutation.isPending}
+              onClick={() => thinkingForm.submit()}
+            >
+              {tt("保存思考配置", "Save Budget")}
+            </Button>
+          </Flex>
+        }
+        className={styles.sectionCard}
+        size="small"
       >
-        {/* 2. Default Model & Global Reasoning Config */}
-        <Card title={tt("默认兜底模型与深度思考 (Reasoning) 配置", "Default Models & Reasoning Settings")} className={styles.sectionCard} size="small">
-          <Row gutter={[16, 0]}>
-            <Col xs={24} sm={12}>
-              <Form.Item label={tt("网关全局默认模型 (Default Fallback Model)", "Gateway Default Fallback Model")} name="defaultModel">
+        <Form
+          form={thinkingForm}
+          layout="vertical"
+          onFinish={(v) => updateThinkingMutation.mutate(v)}
+        >
+          <Row gutter={[16, 16]}>
+            <Col xs={24} md={12}>
+              <Form.Item
+                label={tt("推理预算控制模式 (Thinking Mode)", "Thinking Mode")}
+                name="mode"
+                tooltip={tt("passthrough: 完全由客户端参数决定; auto: 网关自适应; custom: 固定 Tokens; adaptive: 深度渐进", "Thinking budget allocation strategy")}
+              >
                 <Select
                   options={[
-                    { label: "DeepSeek-V3 (推荐)", value: "deepseek-chat" },
-                    { label: "DeepSeek-R1 (深度长思考推理)", value: "deepseek-reasoner" },
-                    { label: "Claude 3.7 Sonnet (Thinking)", value: "claude-3-7-sonnet" },
-                    { label: "Claude 3.5 Sonnet", value: "claude-3-5-sonnet" },
-                    { label: "GPT-4o", value: "gpt-4o" },
-                    { label: "Gemini 2.5 Pro", value: "gemini-2.5-pro" },
+                    { label: tt("透传客户端指定 (Passthrough)", "Passthrough (Client decides)"), value: "passthrough" },
+                    { label: tt("自动适配模型 (Auto)", "Auto (Gateway manages)"), value: "auto" },
+                    { label: tt("自定义全局预算 (Custom Budget)", "Custom Budget"), value: "custom" },
+                    { label: tt("渐进式深度推理 (Adaptive)", "Adaptive"), value: "adaptive" },
                   ]}
                 />
               </Form.Item>
             </Col>
-            <Col xs={24} sm={12}>
+
+            <Col xs={24} md={6}>
               <Form.Item
-                label={tt("自动剥离 DeepSeek-R1 / o1 <think> 思考标签", "Strip <think> Reasoning Tags for R1 / o1")}
-                name="stripThinkingTags"
-                valuePropName="checked"
-                tooltip={tt("开启后将在返回给客户端前剔除 <think>...</think>，仅保留最终回答正文", "Remove <think> blocks before returning response to client")}
+                label={tt("自定义 Token 预算上限", "Custom Budget Tokens")}
+                name="customBudget"
+                tooltip={tt("仅在模式为 Custom 时生效，范围 1024 - 65536 Tokens", "Token limit for custom mode (1024 - 65536)")}
               >
-                <Switch checkedChildren={tt("自动剥离", "Strip")} unCheckedChildren={tt("完整输出", "Preserve")} />
+                <InputNumber min={1024} max={65536} step={1024} style={{ width: "100%" }} addonAfter="Tokens" />
+              </Form.Item>
+            </Col>
+
+            <Col xs={24} md={6}>
+              <Form.Item
+                label={tt("思考努力程度 (Reasoning Effort)", "Reasoning Effort Level")}
+                name="effortLevel"
+                tooltip={tt("对应 OpenAI o1/o3 reasoning_effort 参数", "Effort parameter for OpenAI o-series models")}
+              >
+                <Select
+                  options={[
+                    { label: tt("关闭思考 (None)", "None"), value: "none" },
+                    { label: tt("轻度 (Low)", "Low"), value: "low" },
+                    { label: tt("中度 (Medium)", "Medium"), value: "medium" },
+                    { label: tt("深度 (High)", "High"), value: "high" },
+                  ]}
+                />
               </Form.Item>
             </Col>
           </Row>
+        </Form>
+      </Card>
 
-          <Row gutter={[16, 0]}>
-            <Col xs={24} sm={8}>
-              <Form.Item label={tt("思考强度 (Reasoning Effort)", "Reasoning Effort")} name="reasoningEffort">
-                <Radio.Group buttonStyle="solid">
-                  <Radio.Button value="low">{tt("低 (Low)", "Low")}</Radio.Button>
-                  <Radio.Button value="medium">{tt("中 (Medium)", "Medium")}</Radio.Button>
-                  <Radio.Button value="high">{tt("高 (High)", "High")}</Radio.Button>
-                </Radio.Group>
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={16}>
-              <Form.Item label={tt("思考预算 Token 上限 (Thinking Budget Tokens)", "Max Thinking Budget Tokens")} name="maxReasoningTokens">
-                <Slider min={1024} max={64000} step={1024} marks={{ 1024: "1k", 8192: "8k", 32000: "32k", 64000: "64k" }} />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={[16, 0]}>
-            <Col xs={24} sm={12}>
-              <Form.Item label={tt("开启 Codex Fast Tier 极速通道", "Enable Codex Fast Tier")} name="codexFastTierEnabled" valuePropName="checked">
-                <Switch checkedChildren={tt("已开启", "Enabled")} unCheckedChildren={tt("标准通道", "Standard")} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={12}>
-              <Form.Item label={tt("开启 Claude Fast Mode 提速", "Enable Claude Fast Mode")} name="claudeFastModeEnabled" valuePropName="checked">
-                <Switch checkedChildren={tt("已开启", "Enabled")} unCheckedChildren={tt("标准通道", "Standard")} />
-              </Form.Item>
-            </Col>
-          </Row>
-        </Card>
-
-        {/* 3. Global Model Aliases */}
-        <Card
-          title={tt("全局虚拟模型别名与请求重定向 (Model Aliases)", "Virtual Model Aliases & Request Rewriting")}
-          className={styles.sectionCard}
-          size="small"
-          extra={
+      {/* 3. Global System Prompt Injection */}
+      <Card
+        title={
+          <Flex justify="space-between" align="center">
+            <Flex align="center" gap={8}>
+              <MaterialIcon name="terminal" size={18} />
+              <span>{tt("全局系统提示词策略 (System Prompt)", "Global System Prompt Policy")}</span>
+            </Flex>
             <Button
               type="primary"
               size="small"
-              icon={<MaterialIcon name="add" size={14} />}
-              onClick={() => setAliasModalOpen(true)}
+              loading={updatePromptMutation.isPending}
+              onClick={() => promptForm.submit()}
             >
-              {tt("添加模型别名映射", "Add Model Alias")}
+              {tt("保存提示词", "Save Prompt")}
             </Button>
-          }
+          </Flex>
+        }
+        className={styles.sectionCard}
+        size="small"
+      >
+        <Form
+          form={promptForm}
+          layout="vertical"
+          onFinish={(v) => updatePromptMutation.mutate(v)}
         >
-          <Table<ModelAlias>
-            rowKey="id"
-            size="small"
-            pagination={false}
-            dataSource={aliases}
-            columns={[
-              {
-                title: tt("虚拟别名 (请求模型 ID)", "Requested Alias ID"),
-                dataIndex: "alias",
-                key: "alias",
-                render: (val) => <code>{val}</code>,
-              },
-              {
-                title: tt("重定向目标模型 (Target Model)", "Target Model"),
-                dataIndex: "target",
-                key: "target",
-                render: (val) => <Tag color="blue">{val}</Tag>,
-              },
-              {
-                title: tt("备注说明", "Notes"),
-                dataIndex: "notes",
-                key: "notes",
-                render: (n) => <span style={{ fontSize: 12, color: "var(--ant-color-text-secondary)" }}>{n || "-"}</span>,
-              },
-              {
-                title: tt("状态", "Status"),
-                dataIndex: "enabled",
-                key: "enabled",
-                render: (enabled, record) => (
-                  <Switch
-                    size="small"
-                    checked={enabled}
-                    onChange={(checked) => handleToggleAlias(record.id, checked)}
-                  />
-                ),
-              },
-              {
-                title: tt("操作", "Action"),
-                key: "action",
-                render: (_, record) => (
-                  <Popconfirm
-                    title={tt("确定删除此别名重定向规则吗？", "Delete this alias rule?")}
-                    onConfirm={() => handleDeleteAlias(record.id)}
-                    okText={tt("删除", "Delete")}
-                    cancelText={tt("取消", "Cancel")}
-                  >
-                    <Button type="text" danger size="small" icon={<MaterialIcon name="delete" size={14} />} />
-                  </Popconfirm>
-                ),
-              },
-            ]}
-          />
-        </Card>
-
-        {/* 4. Global System Prompt Injection */}
-        <Card title={tt("全局前置系统提示词注入 (System Prompt & Persona)", "System Prompt & Persona Injection")} className={styles.sectionCard} size="small">
-          <Form.Item label={tt("注入位置模式", "Injection Position Mode")} name="systemPromptInjectionMode">
+          <Form.Item
+            label={tt("注入生效模式", "Injection Mode")}
+            name="mode"
+            tooltip={tt("passthrough: 不修改; prepend: 前置追加; replace: 强制覆盖客户端第一条 system", "Prompt behavior")}
+          >
             <Radio.Group>
-              <Radio value="prefix">{tt("前置注入 (Prefix - 拼接到原始 System Prompt 之前)", "Prefix (Prepend before incoming system prompt)")}</Radio>
-              <Radio value="suffix">{tt("后置追加 (Suffix - 拼接到原始 System Prompt 之后)", "Suffix (Append after incoming system prompt)")}</Radio>
-              <Radio value="override">{tt("强制覆盖 (Override - 替换所有客户端传递的 System 消息)", "Override (Replace all client system messages)")}</Radio>
+              <Radio.Button value="passthrough">{tt("原始透传 (Passthrough)", "Passthrough")}</Radio.Button>
+              <Radio.Button value="prepend">{tt("前置追加 (Prepend)", "Prepend")}</Radio.Button>
+              <Radio.Button value="replace">{tt("强制覆盖 (Replace)", "Replace")}</Radio.Button>
             </Radio.Group>
           </Form.Item>
 
-          <Form.Item label={tt("提示词内容模板", "Prompt Template")} name="globalSystemPrompt">
-            <Input.TextArea
+          <Form.Item
+            label={tt("系统提示词内容 (Custom System Prompt)", "Custom System Prompt Content")}
+            name="customPrompt"
+          >
+            <TextArea
               rows={4}
-              placeholder={tt(
-                "在此处输入对所有流经网关请求强制生效的系统级守则（如代码规范、合规要求、安全约束等，留空则不注入）...",
-                "Enter system-wide rules enforced across all gateway traffic (leave empty to skip)..."
-              )}
+              placeholder={tt("输入要全局注入给上游 LLM 的通用约束或安全规范...", "Enter system prompt instructions injected to upstream models...")}
             />
           </Form.Item>
-        </Card>
-      </Form>
-
-      {/* Add Alias Modal */}
-      <Modal
-        title={tt("添加虚拟模型别名映射", "Add Model Alias")}
-        open={aliasModalOpen}
-        onOk={() => aliasForm.submit()}
-        onCancel={() => setAliasModalOpen(false)}
-        okText={tt("确认添加", "Add Alias")}
-        cancelText={tt("取消", "Cancel")}
-      >
-        <Form form={aliasForm} layout="vertical" onFinish={handleAddAlias} style={{ marginTop: 12 }}>
-          <Form.Item
-            label={tt("客户端请求的模型名称 (Alias ID)", "Requested Model Alias ID")}
-            name="alias"
-            rules={[{ required: true, message: tt("请输入请求别名，例如 gpt-4o", "Please input alias, e.g. gpt-4o") }]}
-          >
-            <Input placeholder="gpt-4o" />
-          </Form.Item>
-          <Form.Item
-            label={tt("实际路由转发生效的目标模型 (Target ID)", "Actual Target Model ID")}
-            name="target"
-            rules={[{ required: true, message: tt("请输入实际模型，例如 deepseek-chat", "Please input target model, e.g. deepseek-chat") }]}
-          >
-            <Input placeholder="deepseek-chat" />
-          </Form.Item>
-          <Form.Item label={tt("规则备注说明", "Notes")} name="notes">
-            <Input placeholder={tt("例如：将前端老旧 GPT-4 请求平滑转译至低成本模型", "e.g., Rewrite legacy GPT-4 calls to cost-efficient model")} />
-          </Form.Item>
         </Form>
-      </Modal>
+      </Card>
+
+      {/* 4. Responses State, Buffer & Codex/Claude Fast Mode */}
+      <Card
+        title={
+          <Flex justify="space-between" align="center">
+            <Flex align="center" gap={8}>
+              <MaterialIcon name="speed" size={18} />
+              <span>{tt("会话状态与极速加速通道", "Session State & Fast-Tier Channels")}</span>
+            </Flex>
+            <Button
+              type="primary"
+              size="small"
+              loading={updateSettingsMutation.isPending}
+              onClick={() => generalAiForm.submit()}
+            >
+              {tt("保存加速设置", "Save Fast-Tier")}
+            </Button>
+          </Flex>
+        }
+        className={styles.sectionCard}
+        size="small"
+      >
+        <Form
+          form={generalAiForm}
+          layout="vertical"
+          onFinish={(v) => updateSettingsMutation.mutate(v)}
+        >
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={12}>
+              <Form.Item
+                label={tt("多轮会话状态策略 (Responses State Policy)", "Responses State Policy")}
+                name="responsesStatePolicy"
+                tooltip={tt("控制网关对会话中间轮次历史与多轮状态的暂存或裁剪机制", "Stateless vs stateful session handling")}
+              >
+                <Select
+                  options={[
+                    { label: tt("无感透传 (Passthrough)", "Passthrough"), value: "passthrough" },
+                    { label: tt("无状态剥离 (Stateless)", "Stateless"), value: "stateless" },
+                    { label: tt("状态保活暂存 (Stateful)", "Stateful"), value: "stateful" },
+                  ]}
+                />
+              </Form.Item>
+            </Col>
+
+            <Col xs={24} sm={12}>
+              <Form.Item
+                label={tt("用量预警缓冲池 (Usage Token Buffer)", "Usage Token Buffer")}
+                name="usageTokenBuffer"
+                tooltip={tt("在配额接近耗尽时预留的安全缓冲 Token 数量", "Buffer tokens reserved before hard stop")}
+              >
+                <InputNumber min={0} max={100000} step={500} style={{ width: "100%" }} addonAfter="Tokens" />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Divider style={{ margin: "12px 0" }} />
+
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={8}>
+              <Flex justify="space-between" align="center" style={{ padding: "4px 0" }}>
+                <div>
+                  <Text strong>{tt("Codex 极速通道 (Fast Tier)", "Codex Fast Tier")}</Text>
+                  <br />
+                  <Text type="secondary" style={{ fontSize: 11 }}>
+                    {tt("优先调度至超低延迟 Codex 上游", "Low-latency tier for Codex")}
+                  </Text>
+                </div>
+                <Form.Item name="codexFastTier" valuePropName="checked" noStyle>
+                  <Switch />
+                </Form.Item>
+              </Flex>
+            </Col>
+
+            <Col xs={24} sm={8}>
+              <Flex justify="space-between" align="center" style={{ padding: "4px 0" }}>
+                <div>
+                  <Text strong>{tt("Codex 探活保活 (Auto Ping)", "Codex Auto Ping")}</Text>
+                  <br />
+                  <Text type="secondary" style={{ fontSize: 11 }}>
+                    {tt("定时心跳防长连接冷启动", "Heartbeat to prevent cold starts")}
+                  </Text>
+                </div>
+                <Form.Item name="codexAutoPing" valuePropName="checked" noStyle>
+                  <Switch />
+                </Form.Item>
+              </Flex>
+            </Col>
+
+            <Col xs={24} sm={8}>
+              <Flex justify="space-between" align="center" style={{ padding: "4px 0" }}>
+                <div>
+                  <Text strong>{tt("Claude 极速模式 (Fast Mode)", "Claude Fast Mode")}</Text>
+                  <br />
+                  <Text type="secondary" style={{ fontSize: 11 }}>
+                    {tt("启用 Claude 3.5/3.7 快速响应参数", "Fast mode flags for Claude models")}
+                  </Text>
+                </div>
+                <Form.Item name="claudeFastMode" valuePropName="checked" noStyle>
+                  <Switch />
+                </Form.Item>
+              </Flex>
+            </Col>
+          </Row>
+        </Form>
+      </Card>
     </div>
   );
 }

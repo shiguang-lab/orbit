@@ -251,6 +251,8 @@ export const useAdminStyles = createStyles(({ token }) => ({
       flexDirection: "column",
       boxSizing: "border-box",
       width: "100%",
+      maxWidth: "100%",
+      overflowX: "hidden",
     },
   },
 }));

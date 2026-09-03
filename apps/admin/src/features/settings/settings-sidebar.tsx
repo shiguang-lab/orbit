@@ -30,15 +30,15 @@ const useStyles = createStyles(({ token }) => ({
     width: "100%",
     display: "flex",
     flexDirection: "column",
-    gap: 14,
+    gap: 12,
   },
   headerCard: {
-    borderRadius: 10,
+    borderRadius: 8,
     background: token.colorBgContainer,
     border: `1px solid ${token.colorBorderSecondary}`,
   },
   presetCard: {
-    borderRadius: 10,
+    borderRadius: 8,
     cursor: "pointer",
     transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
     border: `1px solid ${token.colorBorderSecondary}`,
@@ -53,10 +53,9 @@ const useStyles = createStyles(({ token }) => ({
     background: token.colorPrimaryBg,
   },
   sectionCard: {
-    borderRadius: 10,
+    borderRadius: 8,
     background: token.colorBgContainer,
     border: `1px solid ${token.colorBorderSecondary}`,
-    marginBottom: 10,
   },
   itemRow: {
     padding: "9px 14px",
@@ -302,9 +301,15 @@ export function SettingsSidebarPage() {
     onError: () => messageApi.error(tt("保存侧边栏设置失败", "Failed to save sidebar settings")),
   });
 
-  if (settingsQuery.isLoading) {
-    return <PageSkeleton />;
-  }
+  const totalItemCount = useMemo(() => {
+    return NAV_SECTIONS.reduce((acc, s) => acc + s.items.length, 0);
+  }, []);
+
+  const visibleItemCount = useMemo(() => {
+    return NAV_SECTIONS.reduce((acc, s) => {
+      return acc + s.items.filter((i) => !hiddenItems.has(i.key)).length;
+    }, 0);
+  }, [hiddenItems]);
 
   const handleApplyPreset = (preset: SidebarPreset) => {
     setActivePreset(preset.id);
@@ -420,15 +425,9 @@ export function SettingsSidebarPage() {
 
   const queryClean = searchQuery.trim().toLowerCase();
 
-  const totalItemCount = useMemo(() => {
-    return NAV_SECTIONS.reduce((acc, s) => acc + s.items.length, 0);
-  }, []);
-
-  const visibleItemCount = useMemo(() => {
-    return NAV_SECTIONS.reduce((acc, s) => {
-      return acc + s.items.filter((i) => !hiddenItems.has(i.key)).length;
-    }, 0);
-  }, [hiddenItems]);
+  if (settingsQuery.isLoading) {
+    return <PageSkeleton />;
+  }
 
   return (
     <div className={styles.page}>

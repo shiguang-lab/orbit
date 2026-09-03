@@ -1,14 +1,25 @@
+import { useMemo, useState } from "react";
 import {
+  Alert,
+  Button,
   Card,
+  Col,
+  Empty,
   Flex,
+  Row,
   Table,
   Tag,
   Typography,
 } from "antd";
+import type { ColumnsType } from "antd/es/table";
 import { createStyles } from "antd-style";
 import { useQuery } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
-import { providerStatsApi, type ProviderStatRow } from "@/entities/api";
+import {
+  providerStatsApi,
+  type ModelStat,
+  type ProviderStat,
+} from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
 
 const { Title, Text } = Typography;
@@ -16,20 +27,9 @@ const { Title, Text } = Typography;
 const useStyles = createStyles(({ token }) => ({
   page: {
     width: "100%",
-    flex: 1,
     display: "flex",
     flexDirection: "column",
-    gap: 12,
-    minHeight: 0,
-    overflowY: "auto",
-    paddingRight: 2,
-    "&::-webkit-scrollbar": {
-      width: 6,
-    },
-    "&::-webkit-scrollbar-thumb": {
-      backgroundColor: token.colorBorderSecondary,
-      borderRadius: 3,
-    },
+    gap: 16,
   },
   headerCard: {
     borderRadius: 10,
@@ -41,27 +41,217 @@ const useStyles = createStyles(({ token }) => ({
     background: token.colorBgContainer,
     border: `1px solid ${token.colorBorderSecondary}`,
   },
-  statBox: {
-    padding: "12px 16px",
-    borderRadius: 8,
-    background: "rgba(255,255,255,0.02)",
+  statCard: {
+    borderRadius: 10,
+    background: token.colorBgContainer,
     border: `1px solid ${token.colorBorderSecondary}`,
+    height: "100%",
   },
 }));
 
+function formatNumber(n: number | null | undefined): string {
+  if (n == null) return "0";
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+  return n.toLocaleString();
+}
+
+function formatLatency(ms: number | null | undefined): string {
+  if (ms == null) return "—";
+  if (ms >= 1000) return `${(ms / 1000).toFixed(1)}s`;
+  return `${Math.round(ms)}ms`;
+}
+
+function formatSuccessRate(successful: number, total: number): string {
+  if (!total) return "—";
+  return `${((successful / total) * 100).toFixed(1)}%`;
+}
+
 export function ProviderStatsPage() {
   const { styles } = useStyles();
+  const [lastRefreshedAt, setLastRefreshedAt] = useState<Date>(new Date());
 
-  const statsQuery = useQuery({
-    queryKey: ["provider-stats-list"],
-    queryFn: () => providerStatsApi.getStats(),
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    isFetching,
+  } = useQuery({
+    queryKey: ["provider-stats-data"],
+    queryFn: async () => {
+      const res = await providerStatsApi.getStats();
+      setLastRefreshedAt(new Date());
+      return res;
+    },
+    refetchInterval: 30000,
   });
 
-  if (statsQuery.isLoading) {
+  const providers = data?.providers ?? [];
+  const models = data?.models ?? [];
+  const toolLatency = data?.toolLatency ?? {};
+
+  // Summary stats
+  const totalRequests = useMemo(
+    () => providers.reduce((acc, p) => acc + (p.totalRequests || 0), 0),
+    [providers],
+  );
+  const totalSuccessful = useMemo(
+    () => providers.reduce((acc, p) => acc + (p.successfulRequests || 0), 0),
+    [providers],
+  );
+  const avgLatency = useMemo(() => {
+    if (!providers.length) return 0;
+    return Math.round(
+      providers.reduce((acc, p) => acc + (p.avgLatencyMs || 0), 0) / providers.length,
+    );
+  }, [providers]);
+
+  // Group models by provider
+  const modelsByProvider = useMemo(() => {
+    const map = new Map<string, ModelStat[]>();
+    for (const m of models) {
+      const list = map.get(m.provider) || [];
+      list.push(m);
+      map.set(m.provider, list);
+    }
+    return map;
+  }, [models]);
+
+  if (isLoading) {
     return <PageSkeleton />;
   }
 
-  const rows = statsQuery.data ?? [];
+  if (isError || !data) {
+    return (
+      <div className={styles.page}>
+        <Alert
+          type="error"
+          showIcon
+          message="加载提供商性能统计失败"
+          description={error instanceof Error ? error.message : "无法获取提供商与模型性能聚合数据。"}
+          action={
+            <Button size="small" type="primary" danger onClick={() => refetch()}>
+              重试
+            </Button>
+          }
+        />
+      </div>
+    );
+  }
+
+  const columns: ColumnsType<ProviderStat> = [
+    {
+      title: "提供商 (Provider)",
+      dataIndex: "provider",
+      key: "provider",
+      render: (text: string) => <Text strong>{text}</Text>,
+    },
+    {
+      title: "总请求数",
+      dataIndex: "totalRequests",
+      key: "totalRequests",
+      sorter: (a, b) => a.totalRequests - b.totalRequests,
+      defaultSortOrder: "descend",
+      render: (val: number) => formatNumber(val),
+    },
+    {
+      title: "成功率",
+      key: "successRate",
+      render: (_, r) => {
+        const rate = r.totalRequests > 0 ? (r.successfulRequests / r.totalRequests) * 100 : 0;
+        const color = rate >= 99 ? "green" : rate >= 90 ? "orange" : "red";
+        return <Tag color={color}>{formatSuccessRate(r.successfulRequests, r.totalRequests)}</Tag>;
+      },
+      sorter: (a, b) => {
+        const rateA = a.totalRequests > 0 ? a.successfulRequests / a.totalRequests : 0;
+        const rateB = b.totalRequests > 0 ? b.successfulRequests / b.totalRequests : 0;
+        return rateA - rateB;
+      },
+    },
+    {
+      title: "平均延迟",
+      dataIndex: "avgLatencyMs",
+      key: "avgLatencyMs",
+      sorter: (a, b) => a.avgLatencyMs - b.avgLatencyMs,
+      render: (ms: number) => formatLatency(ms),
+    },
+    {
+      title: "输入 Token (In)",
+      dataIndex: "totalTokensIn",
+      key: "totalTokensIn",
+      sorter: (a, b) => (a.totalTokensIn || 0) - (b.totalTokensIn || 0),
+      render: (val: number) => formatNumber(val),
+    },
+    {
+      title: "输出 Token (Out)",
+      dataIndex: "totalTokensOut",
+      key: "totalTokensOut",
+      sorter: (a, b) => (a.totalTokensOut || 0) - (b.totalTokensOut || 0),
+      render: (val: number) => formatNumber(val),
+    },
+    {
+      title: "工具后首字 (TTFT)",
+      key: "toolTtft",
+      render: (_, r) => {
+        const t = toolLatency[r.provider];
+        return t?.avgTtftAfterToolMs ? formatLatency(t.avgTtftAfterToolMs) : "—";
+      },
+    },
+  ];
+
+  const expandedRowRender = (record: ProviderStat) => {
+    const subModels = modelsByProvider.get(record.provider) || [];
+    if (!subModels.length) {
+      return (
+        <div style={{ padding: "8px 16px", color: "var(--ant-color-text-secondary)", fontSize: 12 }}>
+          暂无该提供商具体模型的详细细分数据
+        </div>
+      );
+    }
+
+    const subColumns: ColumnsType<ModelStat> = [
+      {
+        title: "模型名称 (Model)",
+        dataIndex: "model",
+        key: "model",
+        render: (name: string) => <Text code>{name}</Text>,
+      },
+      {
+        title: "请求数",
+        dataIndex: "requests",
+        key: "requests",
+        render: (r: number) => formatNumber(r),
+      },
+      {
+        title: "成功率",
+        key: "successRate",
+        render: (_, m) => (
+          <Tag color={m.requests > 0 && m.successfulRequests === m.requests ? "green" : "orange"}>
+            {formatSuccessRate(m.successfulRequests, m.requests)}
+          </Tag>
+        ),
+      },
+      {
+        title: "平均延迟",
+        dataIndex: "avgLatencyMs",
+        key: "avgLatencyMs",
+        render: (ms: number) => formatLatency(ms),
+      },
+    ];
+
+    return (
+      <Table
+        rowKey="model"
+        size="small"
+        pagination={false}
+        columns={subColumns}
+        dataSource={subModels}
+        style={{ margin: "4px 0" }}
+      />
+    );
+  };
 
   return (
     <div className={styles.page}>
@@ -84,74 +274,122 @@ export function ProviderStatsPage() {
               <MaterialIcon name="speed" size={24} />
             </div>
             <div>
-              <Flex align="center" gap={8}>
-                <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  提供商性能统计与延迟天梯
-                </Title>
-                <Tag color="gold">模型端到端测速</Tag>
-              </Flex>
+              <Title level={4} style={{ margin: 0, fontSize: 17 }}>
+                提供商性能统计 (Provider Stats)
+              </Title>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                多维度度量各上游提供商与具体模型的 P50 / P95 / P99 响应延迟、Token 生成速率 (TPS) 与可用性。
+                来自真实调用日志聚合的提供商与模型性能表现，包含吞吐量、响应延迟、成功率及工具调用指标。
               </Text>
             </div>
+          </Flex>
+          <Flex align="center" gap={12}>
+            <Text type="secondary" style={{ fontSize: 12 }}>
+              上次更新：{lastRefreshedAt.toLocaleTimeString()}
+            </Text>
+            <Button
+              icon={<MaterialIcon name="refresh" size={16} />}
+              loading={isFetching}
+              onClick={() => refetch()}
+            >
+              刷新
+            </Button>
           </Flex>
         </Flex>
       </Card>
 
-      {/* 2. Leaderboard Table */}
-      <Card title="各上游模型实时性能指标排行榜" className={styles.sectionCard} size="small">
-        <Table<ProviderStatRow>
-          rowKey="id"
-          size="small"
-          pagination={false}
-          dataSource={rows}
-          columns={[
-            {
-              title: "提供商与模型",
-              key: "model",
-              render: (_, record) => (
-                <div>
-                  <Flex align="center" gap={6}>
-                    <Text strong>{record.model}</Text>
-                    <Tag color="blue">{record.provider}</Tag>
-                  </Flex>
-                  <div style={{ fontSize: 11, color: "var(--ant-color-text-secondary)" }}>
-                    累计调用量: {record.totalCalls.toLocaleString()} 次
-                  </div>
-                </div>
-              ),
-            },
-            {
-              title: "延迟分位数 (P50 / P95 / P99)",
-              key: "latencies",
-              render: (_, record) => (
-                <Flex gap={4}>
-                  <Tag color="green" style={{ margin: 0 }}>P50: {record.p50LatencyMs}ms</Tag>
-                  <Tag color="blue" style={{ margin: 0 }}>P95: {record.p95LatencyMs}ms</Tag>
-                  <Tag color="orange" style={{ margin: 0 }}>P99: {record.p99LatencyMs}ms</Tag>
-                </Flex>
-              ),
-            },
-            {
-              title: "生成速率 (TPS)",
-              dataIndex: "tokensPerSec",
-              key: "tps",
-              render: (tps) => <Tag color="purple">{tps} tokens/s</Tag>,
-            },
-            {
-              title: "错误率",
-              dataIndex: "errorRate",
-              key: "errorRate",
-              render: (err) => <Tag color={err > 1 ? "error" : "default"}>{err}%</Tag>,
-            },
-            {
-              title: "可用率 SLA",
-              dataIndex: "availability",
-              key: "sla",
-              render: (sla) => <Tag color="success">{sla}%</Tag>,
-            },
-          ]}
-        />
+      {/* 2. KPI Cards */}
+      <Row gutter={[12, 12]}>
+        <Col xs={24} sm={12} md={6}>
+          <Card className={styles.statCard} styles={{ body: { padding: 16 } }}>
+            <Flex align="center" gap={6} style={{ color: "var(--ant-color-text-secondary)", fontSize: 13, marginBottom: 4 }}>
+              <MaterialIcon name="analytics" size={18} />
+              <span>总请求量 (Total Requests)</span>
+            </Flex>
+            <div style={{ fontSize: 24, fontWeight: 700, color: "#38bdf8" }}>
+              {formatNumber(totalRequests)}
+            </div>
+            <Text type="secondary" style={{ fontSize: 12 }}>
+              累计已记录的网关请求总数
+            </Text>
+          </Card>
+        </Col>
+
+        <Col xs={24} sm={12} md={6}>
+          <Card className={styles.statCard} styles={{ body: { padding: 16 } }}>
+            <Flex align="center" gap={6} style={{ color: "var(--ant-color-text-secondary)", fontSize: 13, marginBottom: 4 }}>
+              <MaterialIcon name="timer" size={18} />
+              <span>全局平均延迟</span>
+            </Flex>
+            <div style={{ fontSize: 24, fontWeight: 700, color: "#a855f7" }}>
+              {formatLatency(avgLatency)}
+            </div>
+            <Text type="secondary" style={{ fontSize: 12 }}>
+              所有活跃提供商平均响应时间
+            </Text>
+          </Card>
+        </Col>
+
+        <Col xs={24} sm={12} md={6}>
+          <Card className={styles.statCard} styles={{ body: { padding: 16 } }}>
+            <Flex align="center" gap={6} style={{ color: "var(--ant-color-text-secondary)", fontSize: 13, marginBottom: 4 }}>
+              <MaterialIcon name="check_circle" size={18} />
+              <span>整体成功率</span>
+            </Flex>
+            <div style={{ fontSize: 24, fontWeight: 700, color: "#10b981" }}>
+              {formatSuccessRate(totalSuccessful, totalRequests)}
+            </div>
+            <Text type="secondary" style={{ fontSize: 12 }}>
+              成功请求：{formatNumber(totalSuccessful)}
+            </Text>
+          </Card>
+        </Col>
+
+        <Col xs={24} sm={12} md={6}>
+          <Card className={styles.statCard} styles={{ body: { padding: 16 } }}>
+            <Flex align="center" gap={6} style={{ color: "var(--ant-color-text-secondary)", fontSize: 13, marginBottom: 4 }}>
+              <MaterialIcon name="dns" size={18} />
+              <span>活跃提供商数</span>
+            </Flex>
+            <div style={{ fontSize: 24, fontWeight: 700, color: "#fbbf24" }}>
+              {providers.length}
+            </div>
+            <Text type="secondary" style={{ fontSize: 12 }}>
+              有流量记录的上游连接数
+            </Text>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* 3. Provider Breakdown Table */}
+      <Card
+        title={
+          <Flex align="center" gap={8}>
+            <MaterialIcon name="table_chart" size={20} style={{ color: "#38bdf8" }} />
+            <span>提供商与模型指标明细 (Provider & Model Breakdown)</span>
+          </Flex>
+        }
+        className={styles.sectionCard}
+        size="small"
+      >
+        {providers.length === 0 ? (
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description="暂无提供商调用性能数据。当有流量经过网关后，此处将按提供商与模型自动统计。"
+            style={{ margin: "24px 0" }}
+          />
+        ) : (
+          <Table
+            rowKey="provider"
+            size="small"
+            columns={columns}
+            dataSource={providers}
+            expandable={{
+              expandedRowRender,
+              rowExpandable: (record) => Boolean(modelsByProvider.get(record.provider)?.length),
+            }}
+            pagination={{ pageSize: 20, showSizeChanger: true }}
+          />
+        )}
       </Card>
     </div>
   );

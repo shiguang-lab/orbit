@@ -19,28 +19,18 @@ const { Title, Text } = Typography;
 const useStyles = createStyles(({ token }) => ({
   page: {
     width: "100%",
-    flex: 1,
+    maxWidth: "100%",
     display: "flex",
     flexDirection: "column",
     gap: 12,
-    minHeight: 0,
-    overflowY: "auto",
-    paddingRight: 2,
-    "&::-webkit-scrollbar": {
-      width: 6,
-    },
-    "&::-webkit-scrollbar-thumb": {
-      backgroundColor: token.colorBorderSecondary,
-      borderRadius: 3,
-    },
   },
   headerCard: {
-    borderRadius: 10,
+    borderRadius: 8,
     background: token.colorBgContainer,
     border: `1px solid ${token.colorBorderSecondary}`,
   },
   sectionCard: {
-    borderRadius: 10,
+    borderRadius: 8,
     background: token.colorBgContainer,
     border: `1px solid ${token.colorBorderSecondary}`,
   },

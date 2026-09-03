@@ -78,6 +78,7 @@ const NAV_ICON_ACCENTS: Record<string, string> = {
   webhooks: "#EC4899",
   proxy: "#A3E635",
   analytics: "#06B6D4",
+  "analytics-usage": "#06B6D4",
   "analytics-combo-health": "#34D399",
   "analytics-utilization": "#FBBF24",
   costs: "#FB923C",
@@ -225,7 +226,7 @@ export const NAV_SECTIONS: NavSection[] = [
     title: "分析中心",
     icon: "analytics",
     items: [
-      { key: "analytics", label: "用量分析", to: "/dashboard/analytics", icon: "analytics" },
+      { key: "analytics-usage", label: "用量分析", to: "/dashboard/analytics", icon: "analytics" },
       { key: "analytics-combo-health", label: "组合健康度", to: "/dashboard/analytics/combo-health", icon: "monitor_heart" },
       { key: "analytics-utilization", label: "资源利用率", to: "/dashboard/analytics/utilization", icon: "bar_chart" },
       { key: "cache", label: "缓存分析", to: "/dashboard/cache", icon: "cached" },

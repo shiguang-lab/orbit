@@ -17,6 +17,7 @@ import type { SettingsEngine } from "../routes/settings.js";
 import type { KeyEngine, ApiKeyView } from "../routes/keys.js";
 import type { HomeEngine } from "../routes/home.js";
 import type { ComboEngine } from "../routes/combos.js";
+import type { AnalyticsEngine } from "../routes/analytics.js";
 import bundledCatalog from "./static-catalog.json" with { type: "json" };
 import bundledModels from "./static-models.json" with { type: "json" };
 
@@ -51,6 +52,7 @@ export async function createEngineAdapters(): Promise<{
   keys: KeyEngine;
   home: HomeEngine;
   combos: ComboEngine;
+  analytics: AnalyticsEngine;
 } | null> {
   try {
     const apiAuth = await import("@/shared/utils/apiAuth");
@@ -87,6 +89,15 @@ export async function createEngineAdapters(): Promise<{
     const reorderRoute = await import("@/app/api/combos/reorder/route");
     const comboDefaultsRoute = await import("@/app/api/settings/combo-defaults/route");
     const compressionSettings = await import("@/lib/db/compression");
+    const databaseSettings = await import("@/lib/db/databaseSettings");
+    const dbSettings = await import("@/lib/db/settings");
+    const vacuumScheduler = await import("@/lib/db/vacuumScheduler");
+    const dbCleanup = await import("@/lib/db/cleanup");
+    const dataPaths = await import("@/lib/dataPaths");
+    const dbBackup = (await import("@/lib/db/backup")) as any;
+    const fs = await import("fs");
+    const path = await import("path");
+    const logEnv = await import("@/lib/logEnv");
 
     return {
       auth: {
@@ -433,6 +444,19 @@ export async function createEngineAdapters(): Promise<{
       },
       settings: {
         getSettings: () => localDb.getSettings(),
+        updateSettings: async (patch: Record<string, unknown>) => {
+          return (await dbSettings.updateSettings(patch)) as Record<string, unknown>;
+        },
+        getCacheConfig: async () => ({
+          modelCatalogCacheTtlMs: databaseSettings.getUserDatabaseSettings().cache.modelCatalogCacheTtlMs,
+        }),
+        updateCacheConfig: async (modelCatalogCacheTtlMs: number) => {
+          const current = databaseSettings.getUserDatabaseSettings();
+          const updated = databaseSettings.updateDatabaseSettings({
+            cache: { ...current.cache, modelCatalogCacheTtlMs },
+          });
+          return { modelCatalogCacheTtlMs: updated.cache.modelCatalogCacheTtlMs };
+        },
         getComboDefaults: async () => {
           try {
             const response = await comboDefaultsRoute.GET(new Request("http://bff/api/settings/combo-defaults"));
@@ -447,6 +471,215 @@ export async function createEngineAdapters(): Promise<{
           } catch {
             return { enabled: false };
           }
+        },
+        listDbBackups: async () => {
+          try {
+            return (await (localDb as any).listDbBackups()) as unknown[];
+          } catch {
+            return [];
+          }
+        },
+        createDbBackup: async () => {
+          return await (localDb as any).backupDbFile("manual");
+        },
+        restoreDbBackup: async (backupFile: string) => {
+          return await (localDb as any).restoreDbBackup(backupFile);
+        },
+        cleanupDbBackups: async (keepLatest?: number, retentionDays?: number) => {
+          return await (localDb as any).cleanupDbBackups(keepLatest, retentionDays);
+        },
+        getStorageHealth: async () => {
+          const dataDir = dataPaths.resolveDataDir({});
+          const dbFilePath = path.join(dataDir, "storage.sqlite");
+          const backupsDir = path.join(dataDir, "db_backups");
+          let sizeBytes = 0;
+          try {
+            if (fs.existsSync(dbFilePath)) {
+              sizeBytes = fs.statSync(dbFilePath).size;
+            }
+          } catch {}
+          let lastBackupAt: string | null = null;
+          let backupCount = 0;
+          try {
+            if (fs.existsSync(backupsDir)) {
+              const files = fs
+                .readdirSync(backupsDir)
+                .filter((f: string) => f.startsWith("db_") && f.endsWith(".sqlite"))
+                .sort()
+                .reverse();
+              backupCount = files.length;
+              if (files.length > 0) {
+                lastBackupAt = fs.statSync(path.join(backupsDir, files[0])).mtime.toISOString();
+              }
+            }
+          } catch {}
+          const homeDir = process.env.HOME || process.env.USERPROFILE || "";
+          const displayPath = dbFilePath.startsWith(homeDir) ? "~" + dbFilePath.slice(homeDir.length) : dbFilePath;
+          return {
+            driver: "sqlite",
+            dbPath: displayPath,
+            sizeBytes,
+            backupCount,
+            lastBackupAt,
+            retentionDays: dbBackup.getDbBackupRetentionDays(),
+            maxBackups: dbBackup.getDbBackupMaxFiles(),
+          };
+        },
+        getDatabaseSettings: async () => {
+          return databaseSettings.getDatabaseSettings() as Record<string, unknown>;
+        },
+        updateDatabaseSettings: async (patch: Record<string, unknown>) => {
+          databaseSettings.updateDatabaseSettings(patch);
+          return databaseSettings.getDatabaseSettings() as Record<string, unknown>;
+        },
+        vacuumDatabase: async () => {
+          const res = await vacuumScheduler.runNow();
+          return {
+            success: res.success,
+            message: res.success ? `VACUUM completed in ${res.durationMs}ms` : (res.error || "VACUUM failed"),
+            duration: res.durationMs,
+            error: res.error,
+          };
+        },
+        purgeLogs: async () => {
+          const retentionMs = logEnv.getCallLogRetentionDays() * 24 * 60 * 60 * 1000;
+          const cutoff = new Date(Date.now() - retentionMs).toISOString();
+          const res = callLogs.deleteCallLogsBefore(cutoff);
+          return { deleted: res.deletedRows, deletedArtifacts: res.deletedArtifacts };
+        },
+        purgeQuotaSnapshots: async () => {
+          return { deleted: 0 };
+        },
+        purgeCallLogs: async () => {
+          const retentionMs = logEnv.getCallLogRetentionDays() * 24 * 60 * 60 * 1000;
+          const cutoff = new Date(Date.now() - retentionMs).toISOString();
+          const res = callLogs.deleteCallLogsBefore(cutoff);
+          return { deleted: res.deletedRows, deletedArtifacts: res.deletedArtifacts };
+        },
+        purgeDetailedLogs: async () => {
+          return { deleted: 0 };
+        },
+        resetUsageHistory: async (period: string) => {
+          return (await dbCleanup.resetUsageHistory(period as any)) as Record<string, unknown>;
+        },
+        exportJson: async () => {
+          const db = localDb as any;
+          const [settings, providerConnections, providerNodes, combosList, keyList] = await Promise.all([
+            localDb.getSettings(),
+            db.getProviderConnections ? db.getProviderConnections() : [],
+            db.getCachedProviderNodes ? db.getCachedProviderNodes() : [],
+            db.getCombos ? db.getCombos() : [],
+            db.getApiKeys ? db.getApiKeys() : [],
+          ]);
+          return {
+            version: 1,
+            exportedAt: new Date().toISOString(),
+            settings,
+            providers: providerConnections,
+            providerNodes,
+            combos: combosList,
+            apiKeys: keyList,
+          };
+        },
+        importJson: async (data: Record<string, unknown>) => {
+          if (data.settings && typeof data.settings === "object") {
+            await dbSettings.updateSettings(data.settings as Record<string, unknown>);
+          }
+          return { success: true, imported: true };
+        },
+        getFeatureFlags: async () => {
+          const { FEATURE_FLAG_DEFINITIONS } = await import("@/shared/constants/featureFlagDefinitions");
+          const { resolveAllFeatureFlags } = await import("@/shared/utils/featureFlags");
+          const resolved = resolveAllFeatureFlags();
+          const flags = resolved.map((item: any) => ({
+            key: item.definition.key,
+            label: item.definition.label,
+            description: item.definition.description,
+            category: item.definition.category,
+            type: item.definition.type,
+            enumValues: item.definition.enumValues ?? null,
+            defaultValue: item.definition.defaultValue,
+            effectiveValue: item.effectiveValue,
+            source: item.source,
+            requiresRestart: item.definition.requiresRestart,
+            warningLevel: item.definition.warningLevel,
+          }));
+          const total = flags.length;
+          const active = flags.filter((f: any) => ["true", "1", "yes"].includes(String(f.effectiveValue).toLowerCase())).length;
+          const inactive = total - active;
+          const overriddenByDb = flags.filter((f: any) => f.source === "db").length;
+          const overriddenByEnv = flags.filter((f: any) => f.source === "env").length;
+          return {
+            flags,
+            summary: { total, active, inactive, overriddenByDb, overriddenByEnv },
+          };
+        },
+        updateFeatureFlag: async (key: string, value?: string) => {
+          const featureFlagsDb = await import("@/lib/db/featureFlags");
+          const { FEATURE_FLAG_DEFINITIONS } = await import("@/shared/constants/featureFlagDefinitions");
+          const { resolveAllFeatureFlags } = await import("@/shared/utils/featureFlags");
+          const definition = FEATURE_FLAG_DEFINITIONS.find((d: any) => d.key === key);
+          if (!definition) throw new Error(`Unknown feature flag: ${key}`);
+
+          const allFlagsBefore = resolveAllFeatureFlags();
+          const prev = allFlagsBefore.find((f: any) => f.key === key);
+          const previousValue = prev?.effectiveValue ?? definition.defaultValue;
+          const previousSource = prev?.source ?? "default";
+
+          if (value === undefined) {
+            featureFlagsDb.removeFeatureFlagOverride(key);
+          } else {
+            featureFlagsDb.setFeatureFlagOverride(key, value);
+          }
+
+          const allFlagsAfter = resolveAllFeatureFlags();
+          const updated = allFlagsAfter.find((f: any) => f.key === key);
+          const effectiveValue = updated?.effectiveValue ?? definition.defaultValue;
+          const source = updated?.source ?? "default";
+
+          return {
+            key,
+            effectiveValue,
+            source,
+            previousValue,
+            previousSource,
+            requiresRestart: definition.requiresRestart,
+          };
+        },
+        clearFeatureFlagOverrides: async () => {
+          const featureFlagsDb = await import("@/lib/db/featureFlags");
+          featureFlagsDb.clearAllFeatureFlagOverrides();
+          return { success: true };
+        },
+        listAccessTokens: async () => {
+          const accessTokensDb = await import("@/lib/db/accessTokens");
+          return accessTokensDb.listAccessTokens();
+        },
+        createAccessToken: async (input: { name: string; scope?: string; expiresInDays?: number }) => {
+          const accessTokensDb = await import("@/lib/db/accessTokens");
+          const expiresAt =
+            typeof input.expiresInDays === "number" && input.expiresInDays > 0
+              ? new Date(Date.now() + input.expiresInDays * 86_400_000).toISOString()
+              : null;
+          const { record, secret } = accessTokensDb.createAccessToken({
+            name: input.name,
+            scope: input.scope as any,
+            expiresAt,
+          });
+          return {
+            success: true,
+            token: secret,
+            id: record.id,
+            name: record.name,
+            scope: record.scope,
+            tokenPrefix: record.tokenPrefix,
+            createdAt: record.createdAt,
+            expiresAt: record.expiresAt,
+          };
+        },
+        revokeAccessToken: async (id: string) => {
+          const accessTokensDb = await import("@/lib/db/accessTokens");
+          return accessTokensDb.revokeAccessToken(id);
         },
       },
       keys: {
@@ -630,6 +863,127 @@ export async function createEngineAdapters(): Promise<{
           } catch {
             return [];
           }
+        },
+      },
+      analytics: {
+        getSearchAnalytics: async () => {
+          const callLogStats = await import("@/lib/db/callLogStats");
+          const searchRegistry = (await import(("@omniroute/open-sse/config/searchRegistry.ts" + "") as string)) as Record<string, any>;
+          const SEARCH_PROVIDERS = (searchRegistry.SEARCH_PROVIDERS || {}) as Record<string, { costPerQuery?: number }>;
+
+          const todayStart = new Date();
+          todayStart.setUTCHours(0, 0, 0, 0);
+          const todayIso = todayStart.toISOString();
+
+          const statsRow = callLogStats.getSearchAggregateStats(todayIso);
+          const total = statsRow?.total ?? 0;
+          const today = statsRow?.today ?? 0;
+          const errors = statsRow?.errors ?? 0;
+          const avgDurationMs = Math.round(statsRow?.avg_duration ?? 0);
+          const cached = statsRow?.cached ?? 0;
+
+          const provRows = callLogStats.getSearchProviderCounts();
+          const byProvider: Record<string, { count: number; costUsd: number }> = {};
+          let totalCostUsd = 0;
+          for (const row of provRows) {
+            const costPerQuery = SEARCH_PROVIDERS[row.provider]?.costPerQuery ?? 0;
+            const cost = costPerQuery * row.cnt;
+            byProvider[row.provider] = { count: row.cnt, costUsd: cost };
+            totalCostUsd += cost;
+          }
+
+          const cacheHitRate = total > 0 ? Math.round((cached / total) * 100) : 0;
+          return {
+            total,
+            today,
+            cached,
+            errors,
+            totalCostUsd,
+            byProvider,
+            cacheHitRate,
+            avgDurationMs,
+            last24h: [],
+          };
+        },
+        getProviderStats: async () => {
+          const providerStats = await import("@/lib/db/providerStats");
+          const { AI_PROVIDERS } = await import("@/shared/constants/providers");
+
+          const pStats = providerStats.getProviderCallStats();
+          const mStats = providerStats.getModelCallStats();
+
+          let comboMetrics: Record<string, unknown> = {};
+          try {
+            const comboMetricsMod = (await import(("@omniroute/open-sse/services/comboMetrics.ts" + "") as string)) as Record<string, any>;
+            comboMetrics = comboMetricsMod.getAllComboMetrics ? (comboMetricsMod.getAllComboMetrics() as Record<string, unknown>) : {};
+          } catch {}
+
+          let telemetry: Record<string, unknown> = {};
+          try {
+            const { getTelemetrySummary } = await import("@/shared/utils/requestTelemetry");
+            telemetry = getTelemetrySummary(300000) as Record<string, unknown>;
+          } catch {}
+
+          let toolLatency: Record<string, unknown> = {};
+          try {
+            const toolLatencyMod = (await import(("@omniroute/open-sse/services/toolLatencyTracker.ts" + "") as string)) as Record<string, any>;
+            toolLatency = toolLatencyMod.getToolLatencyByProvider ? (toolLatencyMod.getToolLatencyByProvider() as Record<string, unknown>) : {};
+          } catch {}
+
+          const resolveName = (provider: string, nodeName: string | null) => {
+            if (nodeName?.trim()) return nodeName.trim();
+            const info = (AI_PROVIDERS as Record<string, { name?: string }>)[provider];
+            return info?.name || provider;
+          };
+
+          const providersList = pStats.map((p: any) => ({
+            ...p,
+            provider: resolveName(p.provider, p.nodeName),
+          }));
+
+          const modelsList = mStats.map((m: any) => ({
+            ...m,
+            provider: resolveName(m.provider, m.nodeName),
+          }));
+
+          return {
+            providers: providersList,
+            models: modelsList,
+            comboMetrics,
+            telemetry,
+            toolLatency,
+          };
+        },
+        getComboHealthDashboard: async (query: {
+          range?: "1h" | "24h" | "7d" | "30d";
+          horizon?: "24h" | "7d" | "30d";
+          comboId?: string;
+          taskType?: string;
+        }) => {
+          const comboHealthDashboard = await import("@/lib/usage/comboHealthDashboard");
+          return comboHealthDashboard.buildComboHealthDashboardResponse(query);
+        },
+        getUtilization: async (query: {
+          range: "1h" | "24h" | "7d" | "30d";
+          provider?: string;
+          aggregateBy?: "provider" | "connection";
+        }) => {
+          const quotaSnapshots = await import("@/lib/db/quotaSnapshots");
+          const { BUCKET_SIZES } = await import("@/shared/types/utilization");
+          const end = new Date();
+          const start = new Date(end);
+          if (query.range === "1h") start.setHours(start.getHours() - 1);
+          else if (query.range === "24h") start.setDate(start.getDate() - 1);
+          else if (query.range === "7d") start.setDate(start.getDate() - 7);
+          else if (query.range === "30d") start.setDate(start.getDate() - 30);
+
+          const bucketMinutes = BUCKET_SIZES[query.range] ?? 60;
+          return quotaSnapshots.getAggregatedSnapshots({
+            provider: query.provider || undefined,
+            since: start.toISOString(),
+            bucketMinutes,
+            aggregateBy: query.aggregateBy === "connection" ? "connection" : "provider",
+          });
         },
       },
     };

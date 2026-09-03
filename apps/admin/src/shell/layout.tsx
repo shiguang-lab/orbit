@@ -59,10 +59,18 @@ export function Shell() {
   const activeSectionKey = useMemo(() => {
     const pathname = location.pathname;
     const flat = flattenNav(navSections);
-    const hit = flat.find((item) => pathname.startsWith(item.to));
-    if (!hit) return "analytics";
-    const parent = navSections.find((s) => s.items.some((i) => i.key === hit.key));
-    return parent ? parent.key : "analytics";
+    // 1. Exact match first
+    let hit = flat.find((item) => item.to === pathname);
+    // 2. Longest prefix match
+    if (!hit) {
+      const sorted = [...flat].sort((a, b) => b.to.length - a.to.length);
+      hit = sorted.find(
+        (item) => item.to !== "/" && item.to !== "/home" && pathname.startsWith(item.to)
+      );
+    }
+    if (!hit) return "home";
+    const parent = navSections.find((s) => s.items.some((i) => i.key === hit!.key));
+    return parent ? parent.key : "home";
   }, [location.pathname, navSections]);
 
   const [openKeys, setOpenKeys] = useState<string[]>(() => [activeSectionKey]);
@@ -385,7 +393,7 @@ export function Shell() {
 
         <Content style={{ minHeight: 0, display: "flex", flexDirection: "column", flex: 1, overflow: "hidden" }}>
           <Scrollbar className="shell-content-scrollbar" scrollX={false} style={{ height: "100%", width: "100%" }}>
-            <div className="shell-content-inner" style={{ padding: "20px 24px 32px", minHeight: "100%", boxSizing: "border-box", display: "flex", flexDirection: "column", flex: 1 }}>
+            <div className="shell-content-inner" style={{ padding: "20px 24px 32px", minHeight: "100%", boxSizing: "border-box", display: "flex", flexDirection: "column", flex: 1, width: "100%", maxWidth: "100%", overflowX: "hidden" }}>
               <Outlet />
             </div>
           </Scrollbar>

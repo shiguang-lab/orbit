@@ -410,12 +410,94 @@ export interface FeatureFlagUpdateResponse {
   requiresRestart: boolean;
 }
 
+export interface StorageHealthInfo {
+  driver: string;
+  dbPath: string;
+  sizeBytes: number;
+  backupCount: number;
+  lastBackupAt?: string | null;
+  retentionDays?: number;
+  maxBackups?: number;
+}
+
+export interface DbBackupItem {
+  filename: string;
+  sizeBytes: number;
+  createdAt: string;
+  type?: "manual" | "auto";
+}
+
+export interface DatabaseSettingsConfig {
+  autoBackupEnabled?: boolean;
+  backupIntervalHours?: number;
+  maxBackups?: number;
+  retentionDays?: number;
+  autoVacuumEnabled?: boolean;
+  stats?: {
+    lastVacuumAt?: string | null;
+    lastVacuumDurationMs?: number | null;
+  };
+}
+
+export const storageApi = {
+  getHealth: () => api<StorageHealthInfo>("/storage/health"),
+  getBackups: () => api<{ backups?: DbBackupItem[] }>("/db-backups"),
+  createBackup: () => api<{ created: boolean; filename?: string }>("/db-backups", { method: "PUT" }),
+  restoreBackup: (filename: string) =>
+    api<{ restored: boolean }>("/db-backups", {
+      method: "POST",
+      body: JSON.stringify({ action: "restore", filename, backupFile: filename }),
+    }),
+  cleanupBackups: (params?: { keepLatest?: number; retentionDays?: number }) =>
+    api<{ cleaned: boolean }>("/db-backups", {
+      method: "DELETE",
+      body: JSON.stringify(params || {}),
+    }),
+  getDatabaseSettings: () => api<DatabaseSettingsConfig>("/settings/database"),
+  updateDatabaseSettings: (patch: DatabaseSettingsConfig) =>
+    api<DatabaseSettingsConfig>("/settings/database", {
+      method: "PATCH",
+      body: JSON.stringify(patch),
+    }),
+  vacuum: () => api<{ success: boolean; message?: string; duration?: number }>("/settings/database/vacuum", { method: "POST" }),
+  purgeCallLogs: () => api<{ deleted: number }>("/settings/purge-call-logs", { method: "POST" }),
+  purgeDetailedLogs: () => api<{ deleted: number }>("/settings/purge-detailed-logs", { method: "POST" }),
+  purgeQuotaSnapshots: () => api<{ deleted: number }>("/settings/purge-quota-snapshots", { method: "POST" }),
+  resetUsage: (period: string) => api<Record<string, unknown>>("/settings/purge-usage-history", {
+    method: "POST",
+    body: JSON.stringify({ period }),
+  }),
+  importJson: (config: Record<string, unknown>) =>
+    api<{ success: boolean }>("/settings/import-json", {
+      method: "POST",
+      body: JSON.stringify(config),
+    }),
+  getDatabaseSettingsFull: () => api<any>("/settings/database"),
+  updateDatabaseSettingsFull: (patch: any) =>
+    api<any>("/settings/database", {
+      method: "PATCH",
+      body: JSON.stringify(patch),
+    }),
+  refreshDatabaseStats: () =>
+    api<{ success: boolean; stats?: any }>("/settings/database/refresh-stats", { method: "POST" }),
+  saveBackupRetention: (params: { keepLatest: number; retentionDays: number }) =>
+    api<any>("/db-backups", { method: "PATCH", body: JSON.stringify(params) }),
+  clearCache: () => api<{ success: boolean }>("/cache", { method: "DELETE" }),
+  purgeExpiredLogs: () => api<{ deleted: number }>("/settings/purge-logs", { method: "POST" }),
+};
+
 export const settingsApi = {
-  sidebar: () => api<SidebarSettings>("/settings"),
+  sidebar: () => api<SidebarSettings>("/settings?sidebar=true"),
   get: () => api<Record<string, unknown>>("/settings"),
   getSettings: () => api<Record<string, unknown>>("/settings"),
-  patch: (patch: Record<string, unknown>) => api<Record<string, unknown>>("/settings", { method: "PATCH", body: JSON.stringify(patch) }),
-  updateSettings: (patch: Record<string, unknown>) => api<Record<string, unknown>>("/settings", { method: "PATCH", body: JSON.stringify(patch) }),
+  patch: (patch: Record<string, unknown>) => api<Record<string, unknown>>("/settings", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch) }),
+  updateSettings: (patch: Record<string, unknown>) => api<Record<string, unknown>>("/settings", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch) }),
+  changePassword: (password: string) =>
+    api<{ success: boolean }>("/settings/password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password }),
+    }),
   featureFlags: () =>
     api<FeatureFlagsResponse>("/settings/feature-flags"),
   updateFeatureFlag: (key: string, value?: string) =>
@@ -480,7 +562,37 @@ export const settingsApi = {
       method: "PATCH",
       body: JSON.stringify(payload),
     }),
+  getThinkingBudget: () =>
+    api<{ mode: string; customBudget: number; effortLevel: string }>("/settings/thinking-budget"),
+  updateThinkingBudget: (payload: { mode: string; customBudget: number; effortLevel: string }) =>
+    api<Record<string, unknown>>("/settings/thinking-budget", {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    }),
+  getPayloadRules: () =>
+    api<{ default?: any[]; override?: any[]; filter?: any[]; defaultRaw?: any[] }>("/settings/payload-rules"),
+  updatePayloadRules: (payload: Record<string, unknown>) =>
+    api<Record<string, unknown>>("/settings/payload-rules", {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    }),
 };
+
+export interface CacheConfig {
+  modelCatalogCacheTtlMs: number;
+}
+
+export const cacheConfigApi = {
+  get: () => api<CacheConfig>("/settings/cache-config"),
+  update: (config: CacheConfig) =>
+    api<{ ok?: boolean; modelCatalogCacheTtlMs?: number }>("/settings/cache-config", {
+      method: "PUT",
+      body: JSON.stringify(config),
+    }).then((response) => ({
+      modelCatalogCacheTtlMs: response.modelCatalogCacheTtlMs ?? config.modelCatalogCacheTtlMs,
+    })),
+};
+
 export interface CallLogEntry {
   id: string;
   model?: string;
@@ -781,23 +893,9 @@ export const endpointsApi = {
     error?: string | null;
   }> => {
     try {
-      const res = await api<any>("/tunnels/tailscale/status");
+      const res = await api<any>("/tunnels/tailscale");
       return res;
     } catch {
-      const saved = localStorage.getItem("omniroute_tailscale_config");
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          return {
-            connected: true,
-            ip: parsed.ip || "100.88.92.14",
-            hostname: parsed.hostname || "omniroute-gateway",
-            magicDns: parsed.magicDns || `${parsed.hostname || "omniroute-gateway"}.ts.net`,
-            tailscaleUrl: `http://${parsed.magicDns || parsed.ip || "100.88.92.14"}:20128/v1`,
-            mode: "tsnet",
-          };
-        } catch {}
-      }
       return { connected: false };
     }
   },
@@ -813,35 +911,14 @@ export const endpointsApi = {
     tailscaleUrl?: string | null;
     mode?: string;
   }> => {
-    try {
-      const res = await api<any>("/tunnels/tailscale/connect", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      return res;
-    } catch {
-      const hostname = payload.hostname || "omniroute-gateway";
-      const randomIp = `100.${Math.floor(64 + Math.random() * 60)}.${Math.floor(Math.random() * 250)}.${Math.floor(Math.random() * 250)}`;
-      const result = {
-        connected: true,
-        ip: randomIp,
-        hostname,
-        magicDns: `${hostname}.tailnet-xyz.ts.net`,
-        tailscaleUrl: `http://${randomIp}:20128/v1`,
-        mode: "tsnet",
-      };
-      localStorage.setItem("omniroute_tailscale_config", JSON.stringify(result));
-      return result;
-    }
+    return await api<any>("/tunnels/tailscale/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
   },
   disconnectTailscale: async (): Promise<{ success: boolean }> => {
-    try {
-      await api<{ success: boolean }>("/tunnels/tailscale/disconnect", { method: "POST" });
-    } catch {
-      localStorage.removeItem("omniroute_tailscale_config");
-    }
-    return { success: true };
+    return await api<{ success: boolean }>("/tunnels/tailscale/disable", { method: "POST" });
   },
   ngrokTunnel: () => api<TunnelStatus>("/tunnels/ngrok"),
   startNgrokTunnel: (token?: string) =>
@@ -1461,25 +1538,7 @@ export interface HealthDashboardData {
 
 export const healthApi = {
   getHealth: async (): Promise<HealthDashboardData> => {
-    try {
-      const res = await api<any>("/monitoring/health");
-      return res;
-    } catch {
-      return {
-        uptimeSeconds: 86400 * 3 + 3600 * 4,
-        version: "v0.1.0",
-        memory: { rss: 245 * 1024 * 1024, heapTotal: 180 * 1024 * 1024, heapUsed: 125 * 1024 * 1024, external: 12 * 1024 * 1024 },
-        systemLoad: [0.32, 0.45, 0.28],
-        circuitBreakers: {
-          openai: { state: "CLOSED", failureCount: 0, successRate: 99.8, consecutiveErrors: 0 },
-          anthropic: { state: "CLOSED", failureCount: 0, successRate: 99.5, consecutiveErrors: 0 },
-          gemini: { state: "CLOSED", failureCount: 1, successRate: 98.2, consecutiveErrors: 0 },
-          deepseek: { state: "CLOSED", failureCount: 0, successRate: 99.9, consecutiveErrors: 0 },
-        },
-        promptCache: { hitRatePct: 42.6, savedTokens: 1284500, totalQueries: 48920 },
-        telemetry: { latencyP50: 380, latencyP90: 820, latencyP99: 1450, errorRatePct: 0.2 },
-      };
-    }
+    return await api<HealthDashboardData>("/monitoring/health");
   },
   resetHealth: () => api<{ success: boolean }>("/monitoring/health", { method: "DELETE" }),
   unblockIp: (ip: string) => api<{ success: boolean }>(`/monitoring/lockouts/${encodeURIComponent(ip)}`, { method: "DELETE" }),
@@ -2166,61 +2225,18 @@ export interface CliAgentSession {
 
 export const cliAgentsApi = {
   list: async (): Promise<CliAgentSession[]> => {
-    try {
-      const res = await api<{ agents?: CliAgentSession[] }>("/cli/agents");
-      return Array.isArray(res?.agents) ? res.agents : [];
-    } catch {
-      return [
-        {
-          id: "cli-agent-1",
-          name: "Orbit Code Assistant (Claude)",
-          command: "agy coder --model claude-3-5-sonnet",
-
-          cwd: "/workspace/orbiot",
-          status: "running",
-          pid: 48921,
-          lastActive: "2 分钟前",
-          protocol: "STDIO",
-        },
-        {
-          id: "cli-agent-2",
-          name: "DeepSeek Terminal Reviewer",
-          command: "cursor-agent --bridge",
-          cwd: "/workspace/backend",
-          status: "idle",
-          pid: 47210,
-          lastActive: "15 分钟前",
-          protocol: "MCP",
-        },
-      ];
-    }
+    const res = await api<{ agents?: CliAgentSession[] }>("/cli/agents");
+    return Array.isArray(res?.agents) ? res.agents : [];
   },
   spawn: async (payload: { name: string; command: string; cwd?: string }): Promise<CliAgentSession> => {
-    try {
-      return await api<CliAgentSession>("/cli/agents", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-    } catch {
-      return {
-        id: `cli-${Date.now()}`,
-        name: payload.name,
-        command: payload.command,
-        cwd: payload.cwd || "/workspace",
-        status: "running",
-        pid: Math.floor(Math.random() * 50000 + 10000),
-        lastActive: "刚刚",
-        protocol: "STDIO",
-      };
-    }
+    return await api<CliAgentSession>("/cli/agents", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
   },
   terminate: async (id: string): Promise<{ success: boolean }> => {
-    try {
-      return await api(`/cli/agents/${encodeURIComponent(id)}/terminate`, { method: "POST" });
-    } catch {
-      return { success: true };
-    }
+    return await api(`/cli/agents/${encodeURIComponent(id)}/terminate`, { method: "POST" });
   },
 };
 
@@ -2237,31 +2253,8 @@ export interface AcpAgentItem {
 
 export const acpAgentsApi = {
   list: async (): Promise<AcpAgentItem[]> => {
-    try {
-      const res = await api<{ agents?: AcpAgentItem[] }>("/acp/agents");
-      return Array.isArray(res?.agents) ? res.agents : [];
-    } catch {
-      return [
-        {
-          id: "acp-zed-editor",
-          name: "Zed Editor ACP Daemon",
-          endpoint: "http://127.0.0.1:8765/acp/v1",
-          version: "0.4.2",
-          capabilities: ["code_completion", "inline_edits", "diagnostics"],
-          status: "online",
-          activeSessions: 3,
-        },
-        {
-          id: "acp-cline-vscode",
-          name: "Cline VSCode Extension Agent",
-          endpoint: "http://127.0.0.1:8766/acp/v1",
-          version: "1.0.0",
-          capabilities: ["file_write", "terminal_exec", "browser_mcp"],
-          status: "online",
-          activeSessions: 1,
-        },
-      ];
-    }
+    const res = await api<{ agents?: AcpAgentItem[] }>("/acp/agents");
+    return Array.isArray(res?.agents) ? res.agents : [];
   },
 };
 
@@ -2279,33 +2272,8 @@ export interface CloudAgentItem {
 
 export const cloudAgentsApi = {
   list: async (): Promise<CloudAgentItem[]> => {
-    try {
-      const res = await api<{ agents?: CloudAgentItem[] }>("/cloud/agents");
-      return Array.isArray(res?.agents) ? res.agents : [];
-    } catch {
-      return [
-        {
-          id: "cloud-github-reviewer",
-          name: "GitHub PR Reviewer Bot",
-          provider: "Anthropic / AWS Bedrock",
-          type: "hosted",
-          endpoint: "https://agent.shiguang.io/pr-review",
-          model: "claude-3-5-sonnet",
-          status: "healthy",
-          requests24h: 382,
-        },
-        {
-          id: "cloud-sentry-debugger",
-          name: "Sentry Alert Auto-Triage Agent",
-          provider: "OpenAI",
-          type: "webhook",
-          endpoint: "https://agent.shiguang.io/sentry-triage",
-          model: "gpt-4o",
-          status: "healthy",
-          requests24h: 1240,
-        },
-      ];
-    }
+    const res = await api<{ agents?: CloudAgentItem[] }>("/cloud/agents");
+    return Array.isArray(res?.agents) ? res.agents : [];
   },
 };
 
@@ -2321,25 +2289,8 @@ export interface ConductorWorkflow {
 
 export const conductorApi = {
   list: async (): Promise<ConductorWorkflow[]> => {
-    try {
-      const res = await api<{ workflows?: ConductorWorkflow[] }>("/conductor/workflows");
-      return Array.isArray(res?.workflows) ? res.workflows : [];
-    } catch {
-      return [
-        {
-          id: "wf-code-review-and-fix",
-          name: "代码评审与自动化修复流水线",
-          description: "规划者(Planner) -> 评审者(Reviewer) -> 编码者(Coder) -> 测试执行者(Tester)",
-          steps: [
-            { role: "Planner", agentId: "cloud-github-reviewer" },
-            { role: "Coder", agentId: "cli-agent-1", dependsOn: ["Planner"] },
-            { role: "Tester", agentId: "acp-cline-vscode", dependsOn: ["Coder"] },
-          ],
-          status: "idle",
-          lastRunAt: "1 小时前",
-        },
-      ];
-    }
+    const res = await api<{ workflows?: ConductorWorkflow[] }>("/conductor/workflows");
+    return Array.isArray(res?.workflows) ? res.workflows : [];
   },
 };
 
@@ -2355,29 +2306,8 @@ export interface AgentBridgeRoute {
 
 export const agentBridgeApi = {
   list: async (): Promise<AgentBridgeRoute[]> => {
-    try {
-      const res = await api<{ routes?: AgentBridgeRoute[] }>("/tools/agent-bridge/routes");
-      return Array.isArray(res?.routes) ? res.routes : [];
-    } catch {
-      return [
-        {
-          id: "bridge-1",
-          sourceProtocol: "OpenAI",
-          targetEndpoint: "Anthropic Messages API v1",
-          mapping: "OpenAI /v1/chat/completions -> Claude Messages",
-          status: "active",
-          transformedRequests: 18490,
-        },
-        {
-          id: "bridge-2",
-          sourceProtocol: "Ollama",
-          targetEndpoint: "DeepSeek OpenAI Compatible API",
-          mapping: "Ollama /api/generate -> OpenAI Chat Completion",
-          status: "active",
-          transformedRequests: 6210,
-        },
-      ];
-    }
+    const res = await api<{ routes?: AgentBridgeRoute[] }>("/tools/agent-bridge/routes");
+    return Array.isArray(res?.routes) ? res.routes : [];
   },
 };
 
@@ -2400,43 +2330,8 @@ export interface TrafficInspectorRecord {
 
 export const trafficInspectorApi = {
   list: async (limit = 20): Promise<TrafficInspectorRecord[]> => {
-    try {
-      const res = await api<{ records?: TrafficInspectorRecord[] }>(`/tools/traffic-inspector?limit=${limit}`);
-      return Array.isArray(res?.records) ? res.records : [];
-    } catch {
-      return [
-        {
-          id: "req-inspector-001",
-          timestamp: new Date(Date.now() - 1000 * 12).toLocaleTimeString(),
-          method: "POST",
-          path: "/v1/chat/completions",
-          status: 200,
-          durationMs: 842,
-          model: "claude-3-5-sonnet-20241022",
-          promptTokens: 3820,
-          completionTokens: 490,
-          compressed: true,
-          compressionSavings: "34.2% (Caveman + RTK)",
-          requestPayload: { model: "claude-3-5-sonnet-20241022", messages: [{ role: "user", content: "帮我重构认证中间件..." }] },
-          responsePayload: { choices: [{ message: { role: "assistant", content: "好的，以下是重构方案..." } }] },
-        },
-        {
-          id: "req-inspector-002",
-          timestamp: new Date(Date.now() - 1000 * 45).toLocaleTimeString(),
-          method: "POST",
-          path: "/v1/chat/completions",
-          status: 200,
-          durationMs: 1230,
-          model: "deepseek-r1",
-          promptTokens: 6140,
-          completionTokens: 820,
-          compressed: true,
-          compressionSavings: "52.8% (Session Dedup + RTK)",
-          requestPayload: { model: "deepseek-r1", messages: [{ role: "user", content: "测试构建日志报错..." }] },
-          responsePayload: { choices: [{ message: { role: "assistant", content: "分析错误原因为..." } }] },
-        },
-      ];
-    }
+    const res = await api<{ records?: TrafficInspectorRecord[] }>(`/tools/traffic-inspector?limit=${limit}`);
+    return Array.isArray(res?.records) ? res.records : [];
   },
 };
 
@@ -2453,40 +2348,8 @@ export interface DiscoveredEndpoint {
 
 export const discoveryApi = {
   scan: async (): Promise<DiscoveredEndpoint[]> => {
-    try {
-      const res = await api<{ endpoints?: DiscoveredEndpoint[] }>("/discovery/scan");
-      return Array.isArray(res?.endpoints) ? res.endpoints : [];
-    } catch {
-      return [
-        {
-          id: "disc-ollama-local",
-          service: "Ollama",
-          host: "127.0.0.1",
-          port: 11434,
-          status: "reachable",
-          latencyMs: 4,
-          discoveredModels: ["deepseek-r1:14b", "qwen2.5-coder:7b", "llama3.2:3b"],
-        },
-        {
-          id: "disc-vllm-server",
-          service: "vLLM",
-          host: "192.168.1.120",
-          port: 8000,
-          status: "reachable",
-          latencyMs: 12,
-          discoveredModels: ["Qwen/Qwen2.5-72B-Instruct-AWQ"],
-        },
-        {
-          id: "disc-lmstudio",
-          service: "LMStudio",
-          host: "127.0.0.1",
-          port: 1234,
-          status: "reachable",
-          latencyMs: 2,
-          discoveredModels: ["meta-llama-3.1-8b-instruct"],
-        },
-      ];
-    }
+    const res = await api<{ endpoints?: DiscoveredEndpoint[] }>("/discovery/scan");
+    return Array.isArray(res?.endpoints) ? res.endpoints : [];
   },
 };
 
@@ -2504,43 +2367,8 @@ export interface ApiEndpointItem {
 
 export const apiEndpointsApi = {
   list: async (): Promise<ApiEndpointItem[]> => {
-    try {
-      const res = await api<{ endpoints?: ApiEndpointItem[] }>("/api-endpoints");
-      return Array.isArray(res?.endpoints) ? res.endpoints : [];
-    } catch {
-      return [
-        {
-          id: "ep-v1-chat",
-          path: "/v1/chat/completions",
-          targetProvider: "Default Balanced Combo",
-          protocol: "OpenAI",
-          rateLimitPerMin: 120,
-          corsEnabled: true,
-          authRequired: true,
-          status: "active",
-        },
-        {
-          id: "ep-v1-messages",
-          path: "/v1/messages",
-          targetProvider: "Claude 3.5 Sonnet Direct",
-          protocol: "Anthropic",
-          rateLimitPerMin: 60,
-          corsEnabled: true,
-          authRequired: true,
-          status: "active",
-        },
-        {
-          id: "ep-v1-models",
-          path: "/v1/models",
-          targetProvider: "All Registered Providers Pool",
-          protocol: "OpenAI",
-          rateLimitPerMin: 300,
-          corsEnabled: true,
-          authRequired: false,
-          status: "active",
-        },
-      ];
-    }
+    const res = await api<{ endpoints?: ApiEndpointItem[] }>("/api-endpoints");
+    return Array.isArray(res?.endpoints) ? res.endpoints : [];
   },
 };
 
@@ -2557,33 +2385,11 @@ export interface WebhookSubscription {
 
 export const webhooksApi = {
   list: async (): Promise<WebhookSubscription[]> => {
-    try {
-      const res = await api<{ webhooks?: WebhookSubscription[] }>("/webhooks");
-      return Array.isArray(res?.webhooks) ? res.webhooks : [];
-    } catch {
-      return [
-        {
-          id: "wh-slack-alerts",
-          url: "https://hooks.slack.com/services/T00/B00/XXXX",
-          events: ["quota.warning", "provider.error", "gateway.down"],
-          secret: "whsec_984f981240182",
-          status: "active",
-          successRate: 99.4,
-          lastDeliveredAt: "10 分钟前",
-        },
-        {
-          id: "wh-audit-logs",
-          url: "https://siem.shiguang.io/api/v1/omniroute-events",
-          events: ["auth.failed", "api_key.rotated", "compression.anomaly"],
-          secret: "whsec_2039481029384",
-          status: "active",
-          successRate: 100.0,
-          lastDeliveredAt: "2 分钟前",
-        },
-      ];
-    }
+    const res = await api<{ webhooks?: WebhookSubscription[] }>("/webhooks");
+    return Array.isArray(res?.webhooks) ? res.webhooks : [];
   },
 };
+
 // 11. System Outbound Proxy
 export interface SystemProxyConfig {
   enabled: boolean;
@@ -2599,32 +2405,14 @@ export interface SystemProxyConfig {
 
 export const systemProxyApi = {
   getConfig: async (): Promise<SystemProxyConfig> => {
-    try {
-      const res = await api<SystemProxyConfig>("/system/proxy");
-      return res;
-    } catch {
-      return {
-        enabled: true,
-        type: "http",
-        server: "127.0.0.1",
-        port: 7890,
-        authRequired: false,
-        bypassHosts: ["localhost", "127.0.0.1", "*.internal", "192.168.*"],
-        activeConnections: 14,
-      };
-    }
+    return await api<SystemProxyConfig>("/system/proxy");
   },
   updateConfig: async (config: Partial<SystemProxyConfig>): Promise<{ success: boolean }> => {
-    try {
-      await api("/system/proxy", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(config),
-      });
-      return { success: true };
-    } catch {
-      return { success: true };
-    }
+    return await api("/system/proxy", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(config),
+    });
   },
 };
 
@@ -2645,51 +2433,46 @@ export interface ComboHealthItem {
 }
 
 export const comboHealthApi = {
-  getOverview: async (): Promise<{ combos: ComboHealthItem[]; overallHealth: number }> => {
-    try {
-      const res = await api<any>("/analytics/combo-health");
-      return res;
-    } catch {
+  getOverview: async (params?: { range?: string; horizon?: string }): Promise<{ combos: ComboHealthItem[]; overallHealth: number }> => {
+    const sp = new URLSearchParams();
+    if (params?.range) sp.set("range", params.range);
+    if (params?.horizon) sp.set("horizon", params.horizon);
+    const qs = sp.toString() ? `?${sp.toString()}` : "";
+    const res = await api<any>(`/usage/combo-health-dashboard${qs}`);
+
+    const autopilotCombos = res?.autopilot?.combos || [];
+    const healthCombos = res?.health?.combos || [];
+    const healthMap = new Map<string, any>(healthCombos.map((c: any) => [c.comboId, c]));
+
+    const items: ComboHealthItem[] = autopilotCombos.map((ac: any) => {
+      const hc = healthMap.get(ac.comboId);
+      const perf = hc?.performance || {};
+      const score = Math.round(ac.score ?? (perf.successRate != null ? perf.successRate * 100 : 100));
       return {
-        overallHealth: 96.4,
-        combos: [
-          {
-            id: "default-model-router",
-            name: "默认均衡多模型调度 (Default Fast Router)",
-            score: 98,
-            state: "healthy",
-            latencyMs: 380,
-            successRate: 99.8,
-            activeRoutes: 4,
-            riskLevel: "low",
-            issues: [{ severity: "info", message: "备用链路就绪，无活跃告警" }],
-          },
-          {
-            id: "code-assistant-combo",
-            name: "代码编程助手 (Claude 3.5 + DeepSeek Coder)",
-            score: 94,
-            state: "healthy",
-            latencyMs: 720,
-            successRate: 99.1,
-            activeRoutes: 2,
-            riskLevel: "low",
-            issues: [{ severity: "info", message: "主节点 Claude 响应平稳" }],
-          },
-          {
-            id: "cheap-fallback-combo",
-            name: "经济型高并发路由 (Cheap High-Throughput)",
-            score: 82,
-            state: "degraded",
-            latencyMs: 1450,
-            successRate: 96.2,
-            activeRoutes: 3,
-            riskLevel: "medium",
-            lastIncident: "20 分钟前",
-            issues: [{ severity: "warning", message: "节点 3 发生偶发 429 限流重试" }],
-          },
-        ],
+        id: ac.comboId,
+        name: ac.comboName,
+        score,
+        state: ac.state || "healthy",
+        latencyMs: Math.round(ac.signals?.avgLatencyMs ?? perf.avgLatencyMs ?? 0),
+        successRate: Number(((perf.successRate != null ? perf.successRate * 100 : 100)).toFixed(1)),
+        activeRoutes: ac.signals?.targetCount ?? (hc?.models?.length || 0),
+        riskLevel: ac.signals?.forecastRisk === "critical" ? "critical" : ac.signals?.forecastRisk === "high" ? "high" : ac.signals?.forecastRisk === "medium" ? "medium" : "low",
+        issues: (ac.issues || []).map((iss: any) => ({
+          severity: iss.severity || "info",
+          message: iss.message || iss.kind || "告警",
+        })),
       };
-    }
+    });
+
+    const summary = res?.autopilot?.summary;
+    const totalCount = summary?.comboCount || items.length;
+    const healthyCount = summary?.healthyCount || items.filter((i) => i.state === "healthy").length;
+    const overallHealth = totalCount > 0 ? Math.round((healthyCount / totalCount) * 100) : 100;
+
+    return {
+      combos: items,
+      overallHealth,
+    };
   },
 };
 
@@ -2708,50 +2491,37 @@ export interface UtilizationProviderMetric {
 }
 
 export const utilizationApi = {
-  getMetrics: async (): Promise<UtilizationProviderMetric[]> => {
-    try {
-      const res = await api<any>("/analytics/utilization");
-      return Array.isArray(res?.metrics) ? res.metrics : [];
-    } catch {
-      return [
-        {
-          providerId: "anthropic-main",
-          providerName: "Anthropic Claude (Tier 4)",
-          tpmUtilization: 42.5,
-          rpmUtilization: 38.0,
-          budgetUtilization: 54.2,
-          currentRpm: 152,
-          maxRpm: 400,
-          currentTpm: 340000,
-          maxTpm: 800000,
-          trend: "stable",
-        },
-        {
-          providerId: "openai-main",
-          providerName: "OpenAI Platform (Tier 3)",
-          tpmUtilization: 68.4,
-          rpmUtilization: 72.1,
-          budgetUtilization: 79.0,
-          currentRpm: 360,
-          maxRpm: 500,
-          currentTpm: 684000,
-          maxTpm: 1000000,
-          trend: "improving",
-        },
-        {
-          providerId: "deepseek-local",
-          providerName: "DeepSeek-V3 / R1 (Direct High-Speed)",
-          tpmUtilization: 24.1,
-          rpmUtilization: 18.5,
-          budgetUtilization: 12.0,
-          currentRpm: 92,
-          maxRpm: 500,
-          currentTpm: 241000,
-          maxTpm: 1000000,
-          trend: "stable",
-        },
-      ];
+  getMetrics: async (params?: { range?: string; aggregateBy?: string }): Promise<UtilizationProviderMetric[]> => {
+    const sp = new URLSearchParams();
+    sp.set("range", params?.range || "24h");
+    sp.set("aggregateBy", params?.aggregateBy || "provider");
+    const res = await api<any>(`/usage/utilization?${sp.toString()}`);
+
+    if (Array.isArray(res?.metrics)) {
+      return res.metrics;
     }
+
+    const providers: string[] = res?.providers || [];
+    const points: Array<{ provider: string; remainingPct: number; isExhausted: boolean }> = res?.data || [];
+
+    return providers.map((prov) => {
+      const provPoints = points.filter((p) => p.provider === prov);
+      const latestPoint = provPoints[provPoints.length - 1];
+      const remainingPct = latestPoint?.remainingPct ?? 100;
+      const usedPct = Math.max(0, Math.min(100, Math.round(100 - remainingPct)));
+      return {
+        providerId: prov,
+        providerName: prov,
+        tpmUtilization: usedPct,
+        rpmUtilization: usedPct,
+        budgetUtilization: usedPct,
+        currentRpm: latestPoint?.isExhausted ? 100 : 0,
+        maxRpm: 100,
+        currentTpm: usedPct * 1000,
+        maxTpm: 100000,
+        trend: latestPoint?.isExhausted ? "degrading" : "stable",
+      };
+    });
   },
 };
 
@@ -2772,132 +2542,56 @@ export interface CacheStatsSummary {
 
 export const cacheAnalyticsApi = {
   getStats: async (): Promise<CacheStatsSummary> => {
-    try {
-      let raw: any;
-      try {
-        raw = await api<any>("/cache");
-      } catch {
-        raw = await api<any>("/cache/stats");
-      }
+    const raw = await api<any>("/cache");
+    const semantic = raw?.semanticCache ?? {};
+    const prompt = raw?.promptCache ?? {};
 
-      const semantic = raw?.semanticCache ?? {};
-      const prompt = raw?.promptCache ?? {};
+    const entriesCount = Number(raw?.entriesCount ?? semantic.dbEntries ?? semantic.memoryEntries ?? raw?.size ?? 0) || 0;
+    const totalTokensSaved = Number(raw?.totalTokensSaved ?? prompt.tokensSaved ?? semantic.tokensSaved ?? 0) || 0;
+    const costSavedUsd = Number(raw?.costSavedUsd ?? prompt.estimatedCostSaved ?? 0) || 0;
+    const hitRate = Number(raw?.hitRate ?? semantic.hitRate ?? (prompt.totalInputTokens > 0 ? (prompt.totalCachedTokens / prompt.totalInputTokens) * 100 : 0)) || 0;
+    const totalHits = Number(raw?.totalHits ?? semantic.hits ?? 0) || 0;
+    const totalMisses = Number(raw?.totalMisses ?? semantic.misses ?? 0) || 0;
+    const memoryUsedMb = Number(raw?.memoryUsedMb ?? 0) || 0;
+    const maxMemoryMb = Number(raw?.maxMemoryMb ?? 2048) || 2048;
+    const reasoningCacheHitRate = Number(raw?.reasoningCacheHitRate ?? 0) || 0;
+    const reasoningTokensSaved = Number(raw?.reasoningTokensSaved ?? 0) || 0;
 
-      const entriesCount = Number(
-        raw?.entriesCount ?? semantic.dbEntries ?? semantic.memoryEntries ?? raw?.size ?? 14200
-      ) || 0;
-
-      const totalTokensSaved = Number(
-        raw?.totalTokensSaved ?? prompt.tokensSaved ?? semantic.tokensSaved ?? 18940000
-      ) || 0;
-
-      const costSavedUsd = Number(
-        raw?.costSavedUsd ?? prompt.estimatedCostSaved ?? 142.85
-      ) || 0;
-
-      const hitRate = Number(
-        raw?.hitRate ?? semantic.hitRate ?? (prompt.totalInputTokens > 0 ? (prompt.totalCachedTokens / prompt.totalInputTokens) * 100 : 41.8)
-      ) || 0;
-
-      const totalHits = Number(raw?.totalHits ?? semantic.hits ?? 48290) || 0;
-      const totalMisses = Number(raw?.totalMisses ?? semantic.misses ?? 67210) || 0;
-      const memoryUsedMb = Number(raw?.memoryUsedMb ?? 642) || 0;
-      const maxMemoryMb = Number(raw?.maxMemoryMb ?? 2048) || 2048;
-      const reasoningCacheHitRate = Number(raw?.reasoningCacheHitRate ?? 28.4) || 0;
-      const reasoningTokensSaved = Number(raw?.reasoningTokensSaved ?? 6120000) || 0;
-
-      return {
-        hitRate: Number.isFinite(hitRate) ? parseFloat(hitRate.toFixed(1)) : 41.8,
-        totalHits,
-        totalMisses,
-        totalTokensSaved,
-        costSavedUsd: Number.isFinite(costSavedUsd) ? parseFloat(costSavedUsd.toFixed(2)) : 142.85,
-        memoryUsedMb,
-        maxMemoryMb,
-        entriesCount,
-        reasoningCacheHitRate: Number.isFinite(reasoningCacheHitRate) ? parseFloat(reasoningCacheHitRate.toFixed(1)) : 28.4,
-        reasoningTokensSaved,
-        promptCache: prompt,
-      };
-    } catch {
-      return {
-        hitRate: 41.8,
-        totalHits: 48290,
-        totalMisses: 67210,
-        totalTokensSaved: 18940000,
-        costSavedUsd: 142.85,
-        memoryUsedMb: 642,
-        maxMemoryMb: 2048,
-        entriesCount: 14200,
-        reasoningCacheHitRate: 28.4,
-        reasoningTokensSaved: 6120000,
-      };
-    }
-  },
-  clearCache: async (): Promise<{ success: boolean }> => {
-    try {
-      return await api("/cache", { method: "DELETE" });
-    } catch {
-      try {
-        return await api("/cache/clear", { method: "POST" });
-      } catch {
-        return { success: true };
-      }
-    }
-  },
-};
-
-
-export const cacheApi = {
-  getStats: async () => {
-    const stats = await cacheAnalyticsApi.getStats();
     return {
-      memoryEntries: 128,
-      dbEntries: stats.entriesCount,
-      hitRate: String(stats.hitRate),
-      tokensSaved: stats.totalTokensSaved,
-      costSavedUsd: stats.costSavedUsd,
-      promptCacheHitRatePct: 42.1,
-      catalogTtlMs: 1500,
+      hitRate: Number.isFinite(hitRate) ? parseFloat(hitRate.toFixed(1)) : 0,
+      totalHits,
+      totalMisses,
+      totalTokensSaved,
+      costSavedUsd: Number.isFinite(costSavedUsd) ? parseFloat(costSavedUsd.toFixed(2)) : 0,
+      memoryUsedMb,
+      maxMemoryMb,
+      entriesCount,
+      reasoningCacheHitRate: Number.isFinite(reasoningCacheHitRate) ? parseFloat(reasoningCacheHitRate.toFixed(1)) : 0,
+      reasoningTokensSaved,
+      promptCache: prompt,
     };
   },
-  clear: async (_type?: string) => {
-    return await cacheAnalyticsApi.clearCache();
+  clearCache: async (): Promise<{ success: boolean }> => {
+    return await api("/cache", { method: "DELETE" });
   },
 };
 
-
 // 4. Search Analytics
-export interface SearchAnalyticsData {
-  totalQueries: number;
-  avgLatencyMs: number;
-  hybridHitRate: number;
-  topSearchTerms: Array<{ term: string; count: number; avgScore: number }>;
-  byCollection: Array<{ name: string; vectorCount: number; queries: number }>;
+export interface SearchStats {
+  total: number;
+  today: number;
+  cached: number;
+  errors: number;
+  totalCostUsd: number;
+  byProvider: Record<string, { count: number; costUsd: number }>;
+  last24h: Array<{ hour: string; count: number }>;
+  cacheHitRate: number;
+  avgDurationMs: number;
 }
 
 export const searchAnalyticsApi = {
-  getData: async (): Promise<SearchAnalyticsData> => {
-    try {
-      const res = await api<SearchAnalyticsData>("/analytics/search");
-      return res;
-    } catch {
-      return {
-        totalQueries: 18450,
-        avgLatencyMs: 14.8,
-        hybridHitRate: 88.6,
-        topSearchTerms: [
-          { term: "JWT 鉴权拦截器", count: 1420, avgScore: 0.94 },
-          { term: "Tailscale Docker 组网", count: 980, avgScore: 0.91 },
-          { term: "Ant Design 自定义主题", count: 850, avgScore: 0.89 },
-          { term: "Prompt 上下文压缩算法", count: 720, avgScore: 0.96 },
-        ],
-        byCollection: [
-          { name: "codebase-knowledge", vectorCount: 48200, queries: 12400 },
-          { name: "api-doc-chunks", vectorCount: 18600, queries: 6050 },
-        ],
-      };
-    }
+  getData: async (): Promise<SearchStats> => {
+    return await api<SearchStats>("/v1/search/analytics");
   },
 };
 
@@ -2920,117 +2614,46 @@ export interface EvalBenchmarkResult {
 
 export const evalsApi = {
   list: async (): Promise<EvalBenchmarkResult[]> => {
-    try {
-      const res = await api<{ evals?: EvalBenchmarkResult[] }>("/analytics/evals");
-      return Array.isArray(res?.evals) ? res.evals : [];
-    } catch {
-      return [
-        {
-          id: "eval-001",
-          name: "TypeScript 代码重构与修复能力盲测",
-          dataset: "HumanEval-TS-Cleaned (200 题)",
-          modelA: "Claude 3.5 Sonnet",
-          modelB: "DeepSeek-R1 (Thinking)",
-          winRateA: 46.5,
-          winRateB: 48.0,
-          tieRate: 5.5,
-          avgScoreA: 91.2,
-          avgScoreB: 92.4,
-          totalSamples: 200,
-          completedAt: "2 小时前",
-          metric: "Pass@1 & AST Similarity",
-        },
-        {
-          id: "eval-002",
-          name: "上下文压缩后语义保真度测试",
-          dataset: "LongBench-QA (1000 样本)",
-          modelA: "Caveman + RTK (Compressed)",
-          modelB: "Original Uncompressed",
-          winRateA: 48.8,
-          winRateB: 50.2,
-          tieRate: 1.0,
-          avgScoreA: 89.6,
-          avgScoreB: 90.1,
-          totalSamples: 1000,
-          completedAt: "昨天",
-          metric: "Rouge-L & Exact Match (99.4% 保真)",
-        },
-      ];
-    }
+    const res = await api<{ evals?: EvalBenchmarkResult[] }>("/analytics/evals");
+    return Array.isArray(res?.evals) ? res.evals : [];
   },
 };
 
-// 6. Provider Stats & Latency Leaderboard
-export interface ProviderStatRow {
-  id: string;
+// 6. Provider Stats & Latency
+export interface ProviderStat {
+  provider: string;
+  totalRequests: number;
+  successfulRequests: number;
+  avgLatencyMs: number;
+  totalTokensIn: number;
+  totalTokensOut: number;
+}
+
+export interface ModelStat {
   provider: string;
   model: string;
-  totalCalls: number;
-  p50LatencyMs: number;
-  p95LatencyMs: number;
-  p99LatencyMs: number;
-  tokensPerSec: number;
-  errorRate: number; // %
-  availability: number; // %
+  requests: number;
+  avgLatencyMs: number;
+  successfulRequests: number;
+}
+
+export interface ToolLatencyStat {
+  avgTtftAfterToolMs: number;
+  avgGapAfterToolMs: number;
+  measurementCount: number;
+}
+
+export interface ProviderStatsResponse {
+  providers: ProviderStat[];
+  models: ModelStat[];
+  comboMetrics?: Record<string, unknown>;
+  telemetry?: Record<string, unknown>;
+  toolLatency?: Record<string, ToolLatencyStat>;
 }
 
 export const providerStatsApi = {
-  getStats: async (): Promise<ProviderStatRow[]> => {
-    try {
-      const res = await api<{ stats?: ProviderStatRow[] }>("/provider-stats");
-      return Array.isArray(res?.stats) ? res.stats : [];
-    } catch {
-      return [
-        {
-          id: "stat-claude-35",
-          provider: "Anthropic",
-          model: "claude-3-5-sonnet-20241022",
-          totalCalls: 48200,
-          p50LatencyMs: 420,
-          p95LatencyMs: 890,
-          p99LatencyMs: 1420,
-          tokensPerSec: 74.2,
-          errorRate: 0.12,
-          availability: 99.98,
-        },
-        {
-          id: "stat-deepseek-r1",
-          provider: "DeepSeek",
-          model: "deepseek-r1 (Reasoning)",
-          totalCalls: 36400,
-          p50LatencyMs: 650,
-          p95LatencyMs: 1200,
-          p99LatencyMs: 2100,
-          tokensPerSec: 62.8,
-          errorRate: 0.28,
-          availability: 99.85,
-        },
-        {
-          id: "stat-gpt4o",
-          provider: "OpenAI",
-          model: "gpt-4o",
-          totalCalls: 62100,
-          p50LatencyMs: 380,
-          p95LatencyMs: 740,
-          p99LatencyMs: 1100,
-          tokensPerSec: 92.4,
-          errorRate: 0.08,
-          availability: 99.99,
-        },
-        {
-          id: "stat-qwen25",
-          provider: "Alibaba / Local",
-          model: "qwen-2.5-coder-32b",
-          totalCalls: 18900,
-          p50LatencyMs: 240,
-          p95LatencyMs: 480,
-          p99LatencyMs: 720,
-          tokensPerSec: 118.0,
-          errorRate: 0.04,
-          availability: 100.0,
-        },
-      ];
-    }
+  getStats: async (): Promise<ProviderStatsResponse> => {
+    return await api<ProviderStatsResponse>("/provider-stats");
   },
 };
 
@@ -3050,76 +2673,38 @@ export interface PricingModelEntry {
 
 export const pricingApi = {
   list: async (): Promise<{ models: PricingModelEntry[]; lastSync: string; sourceCount: number }> => {
-    try {
-      const res = await api<any>("/pricing");
+    const res = await api<any>("/pricing");
+    if (Array.isArray(res?.models)) {
       return res;
-    } catch {
-      return {
-        lastSync: "10 分钟前 (自动同步已启用)",
-        sourceCount: 3,
-        models: [
-          {
-            id: "claude-3-5-sonnet",
-            name: "Claude 3.5 Sonnet",
-            provider: "anthropic",
-            inputCostPerM: 3.0,
-            outputCostPerM: 15.0,
-            cachedCostPerM: 0.3,
-            reasoningCostPerM: 15.0,
-            source: "litellm",
-            lastUpdated: "2026-09-01",
-          },
-          {
-            id: "gpt-4o",
-            name: "GPT-4o (Omni)",
-            provider: "openai",
-            inputCostPerM: 2.5,
-            outputCostPerM: 10.0,
-            cachedCostPerM: 1.25,
-            source: "modelsDev",
-            lastUpdated: "2026-09-01",
-          },
-          {
-            id: "deepseek-chat",
-            name: "DeepSeek-V3",
-            provider: "deepseek",
-            inputCostPerM: 0.14,
-            outputCostPerM: 0.28,
-            cachedCostPerM: 0.014,
-            source: "default",
-            lastUpdated: "2026-09-01",
-          },
-          {
-            id: "deepseek-reasoner",
-            name: "DeepSeek-R1",
-            provider: "deepseek",
-            inputCostPerM: 0.55,
-            outputCostPerM: 2.19,
-            cachedCostPerM: 0.14,
-            reasoningCostPerM: 2.19,
-            source: "default",
-            lastUpdated: "2026-09-01",
-          },
-          {
-            id: "gemini-1.5-pro",
-            name: "Gemini 1.5 Pro",
-            provider: "google",
-            inputCostPerM: 1.25,
-            outputCostPerM: 5.0,
-            cachedCostPerM: 0.31,
-            source: "litellm",
-            lastUpdated: "2026-09-01",
-          },
-        ],
-      };
     }
+    const models: PricingModelEntry[] = [];
+    if (res && typeof res === "object") {
+      for (const [provider, modelMap] of Object.entries(res)) {
+        if (modelMap && typeof modelMap === "object") {
+          for (const [modelId, p] of Object.entries(modelMap as Record<string, any>)) {
+            models.push({
+              id: modelId,
+              name: modelId,
+              provider,
+              inputCostPerM: p?.input ?? 0,
+              outputCostPerM: p?.output ?? 0,
+              cachedCostPerM: p?.cached ?? 0,
+              reasoningCostPerM: p?.reasoning,
+              source: p?.source || "default",
+              lastUpdated: p?.updatedAt || "系统内置",
+            });
+          }
+        }
+      }
+    }
+    return {
+      models,
+      lastSync: "已同步最新定价规则",
+      sourceCount: Object.keys(res || {}).length,
+    };
   },
   sync: async (): Promise<{ success: boolean; syncedModels: number }> => {
-    try {
-      return await api("/pricing/sync", { method: "POST" });
-    } catch {
-      return { success: true, syncedModels: 1420 };
-    }
+    return await api("/pricing/sync", { method: "POST" });
   },
 };
 
@@ -3137,42 +2722,8 @@ export interface BudgetRuleItem {
 
 export const budgetApi = {
   list: async (): Promise<BudgetRuleItem[]> => {
-    try {
-      const res = await api<{ budgets?: BudgetRuleItem[] }>("/budget");
-      return Array.isArray(res?.budgets) ? res.budgets : [];
-    } catch {
-      return [
-        {
-          id: "b-all-monthly",
-          name: "全局月度安全消费上限",
-          period: "monthly",
-          limitUsd: 500,
-          currentUsd: 148.65,
-          actionOnExceed: "warn",
-          status: "active",
-        },
-        {
-          id: "b-openai-daily",
-          name: "OpenAI 每日防击穿预算",
-          period: "daily",
-          limitUsd: 50,
-          currentUsd: 12.3,
-          targetProvider: "OpenAI",
-          actionOnExceed: "throttle",
-          status: "active",
-        },
-        {
-          id: "b-dev-team",
-          name: "开发测试组单周配额",
-          period: "weekly",
-          limitUsd: 100,
-          currentUsd: 84.2,
-          targetUser: "Dev-Team",
-          actionOnExceed: "block",
-          status: "active",
-        },
-      ];
-    }
+    const res = await api<{ budgets?: BudgetRuleItem[] }>("/budget");
+    return Array.isArray(res?.budgets) ? res.budgets : [];
   },
 };
 
@@ -3189,53 +2740,8 @@ export interface FreeTierItem {
 
 export const freeTiersApi = {
   list: async (): Promise<FreeTierItem[]> => {
-    try {
-      const res = await api<{ tiers?: FreeTierItem[] }>("/free-tiers");
-      return Array.isArray(res?.tiers) ? res.tiers : [];
-    } catch {
-      return [
-        {
-          provider: "Google AI Studio",
-          model: "gemini-1.5-flash",
-          dailyFreeRequests: 1500,
-          usedToday: 320,
-          monthlyFreeTokens: 30000000,
-          monthlyUsedTokens: 6400000,
-          resetTime: "08:00 (UTC+8)",
-          status: "available",
-        },
-        {
-          provider: "Groq Cloud",
-          model: "llama-3.3-70b-versatile",
-          dailyFreeRequests: 14400,
-          usedToday: 8900,
-          monthlyFreeTokens: 50000000,
-          monthlyUsedTokens: 31000000,
-          resetTime: "00:00 (UTC)",
-          status: "available",
-        },
-        {
-          provider: "Cloudflare Workers AI",
-          model: "meta/llama-3-8b-instruct",
-          dailyFreeRequests: 10000,
-          usedToday: 10000,
-          monthlyFreeTokens: 20000000,
-          monthlyUsedTokens: 20000000,
-          resetTime: "12:00 (UTC+8)",
-          status: "exhausted",
-        },
-        {
-          provider: "Together AI",
-          model: "Qwen/Qwen2.5-Coder-32B-Instruct",
-          dailyFreeRequests: 2000,
-          usedToday: 410,
-          monthlyFreeTokens: 10000000,
-          monthlyUsedTokens: 2100000,
-          resetTime: "00:00 (UTC)",
-          status: "available",
-        },
-      ];
-    }
+    const res = await api<{ tiers?: FreeTierItem[] }>("/free-tiers");
+    return Array.isArray(res?.tiers) ? res.tiers : [];
   },
 };
 
@@ -3254,61 +2760,8 @@ export interface RadarModelRanking {
 
 export const radarApi = {
   getRankings: async (): Promise<RadarModelRanking[]> => {
-    try {
-      const res = await api<{ rankings?: RadarModelRanking[] }>("/radar");
-      return Array.isArray(res?.rankings) ? res.rankings : [];
-    } catch {
-      return [
-        {
-          rank: 1,
-          name: "DeepSeek-R1",
-          provider: "DeepSeek",
-          eloScore: 1360,
-          codingScore: 98,
-          reasoningScore: 99,
-          priceScore: 96,
-          speedScore: 84,
-          compositeScore: 96.4,
-          pricePerM: "$0.55 / $2.19",
-        },
-        {
-          rank: 2,
-          name: "Claude 3.5 Sonnet",
-          provider: "Anthropic",
-          eloScore: 1345,
-          codingScore: 99,
-          reasoningScore: 94,
-          priceScore: 78,
-          speedScore: 89,
-          compositeScore: 94.2,
-          pricePerM: "$3.00 / $15.00",
-        },
-        {
-          rank: 3,
-          name: "GPT-4o",
-          provider: "OpenAI",
-          eloScore: 1320,
-          codingScore: 92,
-          reasoningScore: 91,
-          priceScore: 82,
-          speedScore: 95,
-          compositeScore: 92.1,
-          pricePerM: "$2.50 / $10.00",
-        },
-        {
-          rank: 4,
-          name: "Qwen 2.5 Coder 32B",
-          provider: "Alibaba / Self-Hosted",
-          eloScore: 1280,
-          codingScore: 94,
-          reasoningScore: 88,
-          priceScore: 99,
-          speedScore: 98,
-          compositeScore: 93.8,
-          pricePerM: "$0.10 / $0.20",
-        },
-      ];
-    }
+    const res = await api<{ rankings?: RadarModelRanking[] }>("/radar");
+    return Array.isArray(res?.rankings) ? res.rankings : [];
   },
 };
 
@@ -3329,23 +2782,98 @@ export interface RuntimeSystemStats {
 
 export const runtimeApi = {
   getStats: async (): Promise<RuntimeSystemStats> => {
-    try {
-      const res = await api<RuntimeSystemStats>("/runtime/stats");
-      return res;
-    } catch {
-      return {
-        uptimeSeconds: 864200,
-        eventLoopLagMs: 0.8,
-        activeRequests: 14,
-        heapUsedMb: 182,
-        heapTotalMb: 340,
-        rssMb: 412,
-        cpuUsagePct: 12.4,
-        gcPauseMs: 1.2,
-        goroutinesOrThreads: 48,
-        version: "v2.14.0 (Node 22 LTS / V8)",
-      };
-    }
+    return await api<RuntimeSystemStats>("/runtime/stats");
+  },
+};
+
+export type KnownBreakerState = "CLOSED" | "OPEN" | "HALF_OPEN" | "DEGRADED";
+
+export interface ProviderBreakerItem {
+  provider: string;
+  state: KnownBreakerState | string;
+  failureCount: number;
+  lastFailure: string | null;
+  retryAfterMs: number;
+}
+
+export interface RuntimeConnectionItem {
+  id: string;
+  provider: string;
+  name?: string;
+  displayName?: string;
+  email?: string;
+  authType?: string;
+  rateLimitedUntil?: string | null;
+  testStatus?: string;
+  lastError?: string;
+  lastErrorType?: string;
+  errorCode?: string | number;
+  backoffLevel?: number;
+}
+
+export interface RuntimeHealthPayload {
+  status: string;
+  timestamp: string;
+  providerBreakers: ProviderBreakerItem[];
+  connections: RuntimeConnectionItem[];
+  lockouts: Record<string, { reason?: string; until?: number | string | null; remainingMs?: number; model?: string; accountId?: string }>;
+  quotaMonitor: {
+    active: number;
+    alerting: number;
+    exhausted: number;
+    errors: number;
+    monitors: Array<{
+      sessionId?: string;
+      accountId?: string;
+      provider?: string;
+      window?: string;
+      status?: "ok" | "alerting" | "exhausted" | "error" | string;
+      remainingPercent?: number;
+    }>;
+  };
+  sessions: {
+    activeCount: number;
+    stickyBoundCount: number;
+    byApiKey: Record<string, number>;
+    top: Array<{
+      sessionId: string;
+      requestCount: number;
+      connectionId?: string | null;
+      ageMs: number;
+      idleMs: number;
+      createdAt?: string;
+      lastActiveAt?: string;
+    }>;
+  };
+}
+
+export interface ModelCooldownItem {
+  provider: string;
+  model: string;
+  reason: string;
+  remainingMs: number;
+  unavailableSince: string;
+}
+
+export const monitoringHealthApi = {
+  getHealth: async (): Promise<RuntimeHealthPayload> => {
+    return await api<RuntimeHealthPayload>("/monitoring/health");
+  },
+  getModelCooldowns: async (): Promise<ModelCooldownItem[]> => {
+    const res = await api<{ items?: ModelCooldownItem[] }>("/resilience/model-cooldowns");
+    return Array.isArray(res?.items) ? res.items : [];
+  },
+  clearModelCooldown: async (provider: string, model: string): Promise<void> => {
+    await api("/resilience/model-cooldowns", {
+      method: "DELETE",
+      body: JSON.stringify({ provider, model }),
+    });
+  },
+  clearAllModelCooldowns: async (): Promise<void> => {
+    await api("/resilience/model-cooldowns", {
+      method: "DELETE",
+      body: JSON.stringify({ all: true }),
+    });
   },
 };
 
@@ -3362,43 +2890,8 @@ export interface ResilienceConnectionItem {
 
 export const resilienceApi = {
   list: async (): Promise<ResilienceConnectionItem[]> => {
-    try {
-      const res = await api<{ connections?: ResilienceConnectionItem[] }>("/resilience/connections");
-      return Array.isArray(res?.connections) ? res.connections : [];
-    } catch {
-      return [
-        {
-          id: "res-anthropic",
-          provider: "Anthropic API Gateway",
-          circuitState: "closed",
-          consecutiveFailures: 0,
-          maxFailuresAllowed: 5,
-          cooldownRemainingSec: 0,
-          retryBudgetTokens: 100,
-          fallbackChain: ["Claude-3.5-Sonnet", "DeepSeek-V3", "GPT-4o-Mini"],
-        },
-        {
-          id: "res-openai",
-          provider: "OpenAI Upstream",
-          circuitState: "closed",
-          consecutiveFailures: 1,
-          maxFailuresAllowed: 5,
-          cooldownRemainingSec: 0,
-          retryBudgetTokens: 80,
-          fallbackChain: ["GPT-4o", "DeepSeek-Chat", "Gemini-1.5-Pro"],
-        },
-        {
-          id: "res-openrouter",
-          provider: "OpenRouter Community Relay",
-          circuitState: "half-open",
-          consecutiveFailures: 3,
-          maxFailuresAllowed: 5,
-          cooldownRemainingSec: 14,
-          retryBudgetTokens: 20,
-          fallbackChain: ["DeepSeek-V3 Direct", "Local Ollama"],
-        },
-      ];
-    }
+    const res = await api<{ connections?: ResilienceConnectionItem[] }>("/resilience/connections");
+    return Array.isArray(res?.connections) ? res.connections : [];
   },
 };
 
@@ -3415,43 +2908,8 @@ export interface AuditRecordItem {
 
 export const auditRecordsApi = {
   list: async (type?: "all" | "mcp" | "a2a"): Promise<AuditRecordItem[]> => {
-    try {
-      const res = await api<{ audits?: AuditRecordItem[] }>(`/audit?type=${type || "all"}`);
-      return Array.isArray(res?.audits) ? res.audits : [];
-    } catch {
-      return [
-        {
-          id: "aud-001",
-          timestamp: "刚刚",
-          actor: "Admin (yanxianliang)",
-          action: "UPDATE_SYSTEM_PROXY",
-          resource: "/system/proxy",
-          clientIp: "127.0.0.1",
-          status: "allowed",
-          detail: "更新出站 HTTP 代理端口为 7890",
-        },
-        {
-          id: "aud-002",
-          timestamp: "5 分钟前",
-          actor: "API_KEY (sk-dev-***)",
-          action: "CALL_MCP_TOOL",
-          resource: "mcp://github/create_pull_request",
-          clientIp: "192.168.1.108",
-          status: "allowed",
-          detail: "执行 GitHub MCP PR 创建动作",
-        },
-        {
-          id: "aud-003",
-          timestamp: "18 分钟前",
-          actor: "ANONYMOUS",
-          action: "AUTH_FAILURE",
-          resource: "/v1/chat/completions",
-          clientIp: "45.142.12.9",
-          status: "denied",
-          detail: "无效的 Bearer API Key 尝试访问",
-        },
-      ];
-    }
+    const res = await api<{ audits?: AuditRecordItem[] }>(`/audit?type=${type || "all"}`);
+    return Array.isArray(res?.audits) ? res.audits : [];
   },
 };
 
@@ -3472,58 +2930,8 @@ export interface McpServerItem {
 
 export const mcpApi = {
   list: async (): Promise<McpServerItem[]> => {
-    try {
-      const res = await api<{ servers?: McpServerItem[] }>("/mcp/servers");
-      return Array.isArray(res?.servers) ? res.servers : [];
-    } catch {
-      return [
-        {
-          id: "mcp-filesystem",
-          name: "Local Filesystem MCP",
-          transport: "stdio",
-          commandOrUrl: "npx -y @modelcontextprotocol/server-filesystem /workspace",
-          toolsCount: 6,
-          promptsCount: 0,
-          resourcesCount: 1,
-          status: "connected",
-          pingMs: 2,
-          tools: [
-            { name: "read_file", description: "读取本地指定文件内容" },
-            { name: "write_file", description: "向本地写入指定文件" },
-            { name: "list_directory", description: "列出目录内容" },
-          ],
-        },
-        {
-          id: "mcp-github",
-          name: "GitHub Official MCP",
-          transport: "stdio",
-          commandOrUrl: "npx -y @modelcontextprotocol/server-github",
-          toolsCount: 14,
-          promptsCount: 2,
-          resourcesCount: 4,
-          status: "connected",
-          pingMs: 42,
-          tools: [
-            { name: "create_or_update_file", description: "在 GitHub 仓库中创建或更新文件" },
-            { name: "search_repositories", description: "搜索 GitHub 仓库" },
-          ],
-        },
-        {
-          id: "mcp-brave-search",
-          name: "Brave Web Search MCP",
-          transport: "sse",
-          commandOrUrl: "http://localhost:3001/sse",
-          toolsCount: 2,
-          promptsCount: 0,
-          resourcesCount: 0,
-          status: "connected",
-          pingMs: 8,
-          tools: [
-            { name: "brave_web_search", description: "执行 Brave 全网实时搜索" },
-          ],
-        },
-      ];
-    }
+    const res = await api<{ servers?: McpServerItem[] }>("/mcp/servers");
+    return Array.isArray(res?.servers) ? res.servers : [];
   },
 };
 
@@ -3540,33 +2948,8 @@ export interface A2aSessionItem {
 
 export const a2aApi = {
   list: async (): Promise<A2aSessionItem[]> => {
-    try {
-      const res = await api<{ sessions?: A2aSessionItem[] }>("/a2a/sessions");
-      return Array.isArray(res?.sessions) ? res.sessions : [];
-    } catch {
-      return [
-        {
-          id: "a2a-sess-001",
-          initiatorAgent: "Planner-Agent (Claude 3.5)",
-          targetAgent: "Coder-Agent (DeepSeek-Coder)",
-          protocol: "a2a-v1",
-          messagesCount: 12,
-          status: "active",
-          lastActive: "刚刚",
-          topic: "分布式路由架构代码生成与接口设计",
-        },
-        {
-          id: "a2a-sess-002",
-          initiatorAgent: "Coder-Agent",
-          targetAgent: "Reviewer-Agent (GPT-4o)",
-          protocol: "a2a-v1",
-          messagesCount: 6,
-          status: "completed",
-          lastActive: "15 分钟前",
-          topic: "代码评审与单元测试校验",
-        },
-      ];
-    }
+    const res = await api<{ sessions?: A2aSessionItem[] }>("/a2a/sessions");
+    return Array.isArray(res?.sessions) ? res.sessions : [];
   },
 };
 
@@ -3581,29 +2964,8 @@ export interface MemoryBankItem {
 
 export const memoryApi = {
   list: async (): Promise<MemoryBankItem[]> => {
-    try {
-      const res = await api<{ banks?: MemoryBankItem[] }>("/memory/banks");
-      return Array.isArray(res?.banks) ? res.banks : [];
-    } catch {
-      return [
-        {
-          id: "mem-user-profile",
-          namespace: "user-preferences",
-          totalEntries: 240,
-          vectorIndexSizeKb: 1280,
-          lastRecalledAt: "刚刚",
-          description: "持久化存储用户编程习惯、技术栈偏好与常用命令参数",
-        },
-        {
-          id: "mem-project-context",
-          namespace: "orbit-arch",
-          totalEntries: 1820,
-          vectorIndexSizeKb: 8900,
-          lastRecalledAt: "2 分钟前",
-          description: "智枢核心网关架构设计意图、模块依赖与历史重构记录",
-        },
-      ];
-    }
+    const res = await api<{ banks?: MemoryBankItem[] }>("/memory/banks");
+    return Array.isArray(res?.banks) ? res.banks : [];
   },
 };
 
@@ -3619,41 +2981,8 @@ export interface AgentSkillItem {
 
 export const agentSkillsApi = {
   list: async (): Promise<AgentSkillItem[]> => {
-    try {
-      const res = await api<{ skills?: AgentSkillItem[] }>("/agent-skills");
-      return Array.isArray(res?.skills) ? res.skills : [];
-    } catch {
-      return [
-        {
-          id: "skill-code-refactor",
-          name: "代码智能重构 (Code Refactor)",
-          description: "分析 AST 依赖并执行符合 Clean Code 规范的安全重构",
-          author: "Orbit Team",
-          version: "1.2.0",
-          tags: ["Coding", "AST", "TypeScript"],
-          enabled: true,
-        },
-        {
-          id: "skill-sql-optimizer",
-          name: "SQL 查询优化器",
-          description: "分析执行计划 EXPLAIN 并针对慢查询生成索引建议",
-          author: "Community",
-          version: "1.0.4",
-          tags: ["Database", "SQL", "Performance"],
-          enabled: true,
-        },
-        {
-          id: "skill-doc-gen",
-          name: "API 自动文档生成器",
-          description: "根据 OpenAPI / TypeScript 接口提取生成完整 Markdown 文档",
-          author: "Orbit Team",
-          version: "2.0.1",
-          tags: ["Docs", "OpenAPI"],
-          enabled: true,
-        },
-      ];
-
-    }
+    const res = await api<{ skills?: AgentSkillItem[] }>("/agent-skills");
+    return Array.isArray(res?.skills) ? res.skills : [];
   },
 };
 
@@ -3668,31 +2997,14 @@ export interface ChaosConfig {
 
 export const chaosApi = {
   getConfig: async (): Promise<ChaosConfig> => {
-    try {
-      const res = await api<ChaosConfig>("/chaos/config");
-      return res;
-    } catch {
-      return {
-        enabled: false,
-        injectedLatencyMinMs: 500,
-        injectedLatencyMaxMs: 3000,
-        errorInjectionRatePct: 5,
-        injectedErrorStatusCodes: [429, 500, 503],
-        targetProviders: [],
-      };
-    }
+    return await api<ChaosConfig>("/chaos/config");
   },
   updateConfig: async (config: Partial<ChaosConfig>): Promise<{ success: boolean }> => {
-    try {
-      await api("/chaos/config", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(config),
-      });
-      return { success: true };
-    } catch {
-      return { success: true };
-    }
+    return await api("/chaos/config", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(config),
+    });
   },
 };
 
@@ -3709,48 +3021,12 @@ export interface PluginItem {
 
 export const pluginsApi = {
   list: async (): Promise<PluginItem[]> => {
-    try {
-      const res = await api<{ plugins?: PluginItem[] }>("/plugins");
-      return Array.isArray(res?.plugins) ? res.plugins : [];
-    } catch {
-      return [
-        {
-          id: "plugin-prompt-guard",
-          name: "Prompt 注入安全防御拦截器",
-          version: "1.4.0",
-          author: "SecOps",
-          description: "在请求发往 LLM 之前检测恶意越狱与 Prompt Injection 攻击",
-          category: "security",
-          enabled: true,
-          hooks: ["pre_request_transform", "validate_payload"],
-        },
-        {
-          id: "plugin-pii-masker",
-          name: "敏感信息 (PII) 自动脱敏",
-          version: "2.1.0",
-          author: "DataCompliance",
-          description: "自动识别并遮蔽手机号、身份证、邮箱及 API Key 等机密数据",
-          category: "security",
-          enabled: true,
-          hooks: ["pre_request_transform", "post_response_transform"],
-        },
-        {
-          id: "plugin-semantic-router",
-          name: "语义意图动态路由插件",
-          version: "1.0.8",
-          author: "Orbit Team",
-
-          description: "基于小模型快速对用户 Prompt 分类并自动分发至专用模型",
-          category: "routing",
-          enabled: true,
-          hooks: ["route_selection"],
-        },
-      ];
-    }
+    const res = await api<{ plugins?: PluginItem[] }>("/plugins");
+    return Array.isArray(res?.plugins) ? res.plugins : [];
   },
 };
 
-/* ---------------- Other Features APIs (Batch, Tokens, Media, Profile) ---------------- */
+/* ---------------- Other Features APIs (Batch, Tokens, Media, Profile, Leaderboard) ---------------- */
 
 export interface BatchTaskItem {
   id: string;
@@ -3759,41 +3035,148 @@ export interface BatchTaskItem {
   completedRequests: number;
   failedRequests: number;
   targetModel: string;
-  status: "queued" | "in_progress" | "completed" | "failed";
+  status: "validating" | "in_progress" | "finalizing" | "completed" | "failed" | "cancelled";
+  inputFileId: string;
+  outputFileId?: string | null;
+  errorFileId?: string | null;
   createdAt: string;
+  completedAt?: string | null;
   discountPct: number;
+}
+
+export interface BatchFileItem {
+  id: string;
+  filename: string;
+  bytes: number;
+  lineCount: number;
+  purpose: string;
+  status: "uploaded" | "processed" | "error";
+  createdAt: string;
 }
 
 export const batchApi = {
   list: async (): Promise<BatchTaskItem[]> => {
-    try {
-      const res = await api<{ tasks?: BatchTaskItem[] }>("/batch/tasks");
-      return Array.isArray(res?.tasks) ? res.tasks : [];
-    } catch {
-      return [
-        {
-          id: "batch-20260901-01",
-          name: "代码库全量注释补全与类型推导",
-          totalRequests: 2400,
-          completedRequests: 2400,
-          failedRequests: 0,
-          targetModel: "deepseek-chat",
-          status: "completed",
-          createdAt: "2026-09-01 22:00",
-          discountPct: 50,
-        },
-        {
-          id: "batch-20260902-01",
-          name: "英文技术文档多语言批量本地化",
-          totalRequests: 800,
-          completedRequests: 420,
-          failedRequests: 0,
-          targetModel: "gpt-4o-mini",
-          status: "in_progress",
-          createdAt: "2026-09-02 09:30",
-          discountPct: 50,
-        },
-      ];
-    }
+    const res = await api<{ tasks?: BatchTaskItem[] }>("/batch/tasks");
+    return Array.isArray(res?.tasks) ? res.tasks : [];
+  },
+  create: async (data: { name?: string; targetModel: string; inputFileId: string }): Promise<BatchTaskItem> => {
+    return api<BatchTaskItem>("/batch/tasks", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+  },
+  cancel: async (id: string): Promise<BatchTaskItem> => {
+    return api<BatchTaskItem>(`/batch/tasks/${encodeURIComponent(id)}/cancel`, { method: "POST" });
+  },
+  listFiles: async (): Promise<BatchFileItem[]> => {
+    const res = await api<{ files?: BatchFileItem[] }>("/batch/files");
+    return Array.isArray(res?.files) ? res.files : [];
+  },
+  uploadFile: async (data: { filename: string; lineCount: number; bytes?: number }): Promise<BatchFileItem> => {
+    return api<BatchFileItem>("/batch/files", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+  },
+  deleteFile: async (id: string): Promise<{ success: boolean }> => {
+    return api<{ success: boolean }>(`/batch/files/${encodeURIComponent(id)}`, { method: "DELETE" });
+  },
+};
+
+export interface LeaderboardEntry {
+  apiKeyId: string;
+  score: number;
+}
+
+export interface UserLevelInfo {
+  apiKeyId: string;
+  totalXp: number;
+  currentLevel: number;
+  updatedAt: string;
+}
+
+export interface BadgeItem {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  category: string;
+  rarity: "common" | "uncommon" | "rare" | "epic" | "legendary";
+}
+
+export interface UserBadgeItem {
+  apiKeyId: string;
+  badgeId: string;
+  unlockedAt: string;
+}
+
+export interface TokenLedgerEntry {
+  id: number;
+  fromApiKeyId: string;
+  toApiKeyId: string;
+  amount: number;
+  reason: string;
+  createdAt: string;
+}
+
+export interface InviteItem {
+  id: string;
+  code: string;
+  serverUrl: string | null;
+  maxUses: number;
+  useCount: number;
+  expiresAt: string | null;
+  revokedAt: string | null;
+  createdAt: string;
+}
+
+export interface ServerConnection {
+  id: string;
+  name: string;
+  url: string;
+  status: string;
+  lastSyncAt: string | null;
+  errorMessage: string | null;
+}
+
+export const gamificationApi = {
+  getLeaderboard: async (scope: string = "global", limit: number = 50): Promise<{ scope: string; entries: LeaderboardEntry[]; myRank?: number }> => {
+    return api(`/gamification/leaderboard?scope=${encodeURIComponent(scope)}&limit=${limit}`);
+  },
+  getLevel: async (): Promise<{ level: UserLevelInfo }> => {
+    return api("/gamification/level");
+  },
+  getBadges: async (): Promise<{ badges: BadgeItem[] }> => {
+    return api("/gamification/badges");
+  },
+  getEarnedBadges: async (): Promise<{ badges: UserBadgeItem[] }> => {
+    return api("/gamification/badges/earned");
+  },
+  getTransferLedger: async (): Promise<{ balance: number; history: TokenLedgerEntry[] }> => {
+    return api("/gamification/transfer");
+  },
+  transferTokens: async (data: { toApiKeyId: string; amount: number; reason?: string }): Promise<{ success: boolean; idempotencyKey: string }> => {
+    return api("/gamification/transfer", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+  },
+  getInvites: async (): Promise<{ invites: InviteItem[] }> => {
+    return api("/gamification/invite");
+  },
+  createInvite: async (data: { maxUses?: number }): Promise<InviteItem> => {
+    return api("/gamification/invite", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+  },
+  revokeInvite: async (id: string): Promise<{ success: boolean }> => {
+    return api(`/gamification/invite?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+  },
+  redeemInvite: async (code: string): Promise<{ success: boolean; serverUrl?: string }> => {
+    return api("/gamification/invite/redeem", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code }) });
+  },
+  getServers: async (): Promise<{ servers: ServerConnection[] }> => {
+    return api("/gamification/servers");
+  },
+  connectServer: async (data: { name: string; url: string; apiKey?: string }): Promise<ServerConnection> => {
+    return api("/gamification/servers", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+  },
+};
+
+export const mediaApi = {
+  getStats: async (): Promise<{ totalBytes: number; totalFiles: number; byModality: Record<string, { files: number; bytes: number }> }> => {
+    return api("/media/cache/stats");
+  },
+  purgeCache: async (modality: string = "all"): Promise<{ success: boolean; freedBytes: number }> => {
+    return api("/media/cache/purge", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ modality }) });
   },
 };
