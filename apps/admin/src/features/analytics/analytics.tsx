@@ -9,6 +9,7 @@ import {
   Progress,
   Row,
   Segmented,
+  Select,
   Space,
   Table,
   Tag,
@@ -25,9 +26,10 @@ import { useBreadcrumbTitle } from "@/shell/useBreadcrumbTitle";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
 import {
   usageApi,
+  keysApi,
   type UsageAnalyticsPayload,
+  type DiversityReport,
 } from "@/entities/api";
-import { useI18n } from "@/i18n";
 import {
   ResponsiveContainer,
   LineChart,
@@ -55,6 +57,23 @@ export type CostExplorerSortKey =
   | "avgCostPerRequest"
   | "sharePct";
 export type CostExplorerSortDirection = "asc" | "desc";
+
+const RANGE_OPTIONS: Array<{ value: CostRange; label: string }> = [
+  { value: "7d", label: "近 7 天" },
+  { value: "30d", label: "近 30 天" },
+  { value: "90d", label: "近 90 天" },
+  { value: "180d", label: "近 180 天" },
+  { value: "365d", label: "近 1 年" },
+  { value: "all", label: "全部时间" },
+];
+
+const EXPLORER_GROUP_OPTIONS: Array<{ value: CostExplorerGroupBy; label: string }> = [
+  { value: "provider", label: "按提供商" },
+  { value: "model", label: "按模型" },
+  { value: "apiKey", label: "按 API 密钥" },
+  { value: "account", label: "按账户" },
+  { value: "serviceTier", label: "按服务层级" },
+];
 
 const PALETTE = [
   "#10B981",
@@ -139,9 +158,8 @@ function downloadFile(content: string, filename: string, mimeType: string) {
 
 function exportCsvReport(data: UsageAnalyticsPayload, range: string) {
   const lines: string[] = [];
-  lines.push("# 智枢成本与消耗分析报告");
+  lines.push("# OmniRoute 成本与消耗分析报告");
   lines.push(`# 导出时间: ${new Date().toISOString()}`);
-
   lines.push(`# 统计周期: ${range}`);
   lines.push("");
 
@@ -178,9 +196,8 @@ function exportCsvReport(data: UsageAnalyticsPayload, range: string) {
   }
 
   const dateStr = dayjs().format("YYYYMMDD-HHmmss");
-  downloadFile(lines.join("\n"), `orbit-costs-${range}-${dateStr}.csv`, "text/csv;charset=utf-8");
+  downloadFile(lines.join("\n"), `omniroute-costs-${range}-${dateStr}.csv`, "text/csv;charset=utf-8");
 }
-
 
 /* ───────────── Chart Components ───────────── */
 
@@ -572,24 +589,6 @@ export default function AnalyticsPage() {
   const { token } = theme.useToken();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { tt } = useI18n();
-
-  const rangeOptions: Array<{ value: CostRange; label: string }> = [
-    { value: "7d", label: tt("近 7 天", "Last 7 Days") },
-    { value: "30d", label: tt("近 30 天", "Last 30 Days") },
-    { value: "90d", label: tt("近 90 天", "Last 90 Days") },
-    { value: "180d", label: tt("近 180 天", "Last 180 Days") },
-    { value: "365d", label: tt("近 1 年", "Last 1 Year") },
-    { value: "all", label: tt("全部时间", "All Time") },
-  ];
-
-  const explorerGroupOptions: Array<{ value: CostExplorerGroupBy; label: string }> = [
-    { value: "provider", label: tt("按提供商", "By Provider") },
-    { value: "model", label: tt("按模型", "By Model") },
-    { value: "apiKey", label: tt("按 API 密钥", "By API Key") },
-    { value: "account", label: tt("按账户", "By Account") },
-    { value: "serviceTier", label: tt("按服务层级", "By Service Tier") },
-  ];
 
   // URL Parameters
   const initialRange = (searchParams.get("range") as CostRange) || "30d";
@@ -597,21 +596,40 @@ export default function AnalyticsPage() {
   const initialGroupBy = (searchParams.get("groupBy") as CostExplorerGroupBy) || "provider";
 
   const [range, setRange] = useState<CostRange>(initialRange);
+  const [selectedApiKeyIds, setSelectedApiKeyIds] = useState<string[]>(
+    apiKeyIdsParam ? apiKeyIdsParam.split(",").filter(Boolean) : []
+  );
   const [explorerGroupBy, setExplorerGroupBy] = useState<CostExplorerGroupBy>(initialGroupBy);
   const [explorerSearch, setExplorerSearch] = useState("");
   const [explorerSortKey, setExplorerSortKey] = useState<CostExplorerSortKey>("cost");
   const [explorerSortDirection, setExplorerSortDirection] = useState<CostExplorerSortDirection>("desc");
 
+  // Fetch API Keys list for filtering
+  const keysListQuery = useQuery({
+    queryKey: ["keys-list-analytics"],
+    queryFn: () => keysApi.list(),
+    staleTime: 60_000,
+  });
+
+  const effectiveApiKeyIdsParam = selectedApiKeyIds.join(",");
+
   // Fetch Usage Analytics Data
   const analyticsQuery = useQuery({
-    queryKey: ["costs-analytics", range, apiKeyIdsParam],
+    queryKey: ["costs-analytics", range, effectiveApiKeyIdsParam],
     queryFn: () =>
       usageApi.getAnalytics({
         range,
         presets: "1d,7d,30d",
-        apiKeyIds: apiKeyIdsParam || undefined,
+        apiKeyIds: effectiveApiKeyIdsParam || undefined,
       }),
     staleTime: 15_000,
+  });
+
+  // Fetch Provider Diversity Report
+  const diversityQuery = useQuery<DiversityReport>({
+    queryKey: ["analytics-diversity"],
+    queryFn: () => usageApi.getDiversity(),
+    staleTime: 30_000,
   });
 
   const data = analyticsQuery.data;
@@ -639,7 +657,7 @@ export default function AnalyticsPage() {
   }, [data]);
 
   // Fetch API Key Limits if filtered by a single Key
-  const singleApiKeyId = apiKeyIdsParam && !apiKeyIdsParam.includes(",") ? apiKeyIdsParam : null;
+  const singleApiKeyId = selectedApiKeyIds.length === 1 ? selectedApiKeyIds[0] : null;
   const apiKeyLimitsQuery = useQuery({
     queryKey: ["api-key-usage-limits", singleApiKeyId],
     queryFn: () => usageApi.getApiKeyUsageLimits(singleApiKeyId!),
@@ -733,19 +751,32 @@ export default function AnalyticsPage() {
         totalTokens: row.totalTokens,
         cost: row.cost,
       }));
-    } else {
-      sourceList = [
-        {
-          id: "tier-std",
-          name: "标准推理 (Standard)",
-          detail: "标准路由与推理服务",
-          requests: summary.totalRequests,
-          promptTokens: summary.promptTokens,
-          completionTokens: summary.completionTokens,
-          totalTokens: summary.totalTokens,
-          cost: summary.totalCost,
-        },
-      ];
+    } else if (explorerGroupBy === "serviceTier") {
+      if (data.byServiceTier && data.byServiceTier.length > 0) {
+        sourceList = data.byServiceTier.map((tier, idx) => ({
+          id: `tier-${idx}`,
+          name: tier.label || tier.serviceTier || "标准层级",
+          detail: `服务层级标识: ${tier.serviceTier}`,
+          requests: tier.requests,
+          promptTokens: tier.promptTokens,
+          completionTokens: tier.completionTokens,
+          totalTokens: tier.totalTokens,
+          cost: tier.cost,
+        }));
+      } else {
+        sourceList = [
+          {
+            id: "tier-std",
+            name: "标准推理 (Standard)",
+            detail: "默认标准路由与推理服务",
+            requests: summary.totalRequests,
+            promptTokens: summary.promptTokens,
+            completionTokens: summary.completionTokens,
+            totalTokens: summary.totalTokens,
+            cost: summary.totalCost,
+          },
+        ];
+      }
     }
 
     const q = explorerSearch.trim().toLowerCase();
@@ -780,7 +811,7 @@ export default function AnalyticsPage() {
   // Explorer Table Columns
   const explorerColumns = [
     {
-      title: tt("维度名称", "Dimension"),
+      title: "维度名称",
       dataIndex: "name",
       key: "name",
       sorter: true,
@@ -798,7 +829,7 @@ export default function AnalyticsPage() {
       ),
     },
     {
-      title: tt("消耗金额 (USD)", "Cost (USD)"),
+      title: "消耗金额 (USD)",
       dataIndex: "cost",
       key: "cost",
       sorter: true,
@@ -817,19 +848,19 @@ export default function AnalyticsPage() {
       ),
     },
     {
-      title: tt("请求次数", "Requests"),
+      title: "请求次数",
       dataIndex: "requests",
       key: "requests",
       sorter: true,
       align: "right" as const,
       render: (reqs: number) => (
         <Text style={{ fontFamily: "monospace", fontSize: 12 }}>
-          {reqs.toLocaleString()} {tt("次", "reqs")}
+          {reqs.toLocaleString()} 次
         </Text>
       ),
     },
     {
-      title: tt("Token 吞吐量", "Token Volume"),
+      title: "Token 吞吐量",
       dataIndex: "totalTokens",
       key: "totalTokens",
       sorter: true,
@@ -841,7 +872,7 @@ export default function AnalyticsPage() {
       ),
     },
     {
-      title: tt("单次均价", "Avg Cost / Req"),
+      title: "单次均价",
       dataIndex: "avgCostPerRequest",
       key: "avgCostPerRequest",
       sorter: true,
@@ -853,7 +884,7 @@ export default function AnalyticsPage() {
       ),
     },
     {
-      title: tt("占比份额", "Share"),
+      title: "占比份额",
       dataIndex: "sharePct",
       key: "sharePct",
       sorter: true,
@@ -867,7 +898,7 @@ export default function AnalyticsPage() {
             showInfo={false}
             style={{ width: 80, margin: 0 }}
           />
-          <Text style={{ fontFamily: "monospace", fontSize: 12, minWidth: 42, textAlign: "right" }}>
+          <Text style={{ fontFamily: "monospace", fontSize: 11, width: 45, textAlign: "right" }}>
             {sharePct.toFixed(1)}%
           </Text>
         </Flex>
@@ -888,65 +919,103 @@ export default function AnalyticsPage() {
         ? `${singleApiKeyId.slice(0, 8)}...${singleApiKeyId.slice(-6)}`
         : singleApiKeyId;
       const label = matchedKey?.apiKeyName
-        ? `${tt("密钥", "Key")}: ${matchedKey.apiKeyName}`
-        : `${tt("密钥", "Key")}: ${truncatedId}`;
+        ? `密钥: ${matchedKey.apiKeyName}`
+        : `密钥: ${truncatedId}`;
       setCustomTitle(label);
     } else {
       setCustomTitle(null);
     }
     return () => setCustomTitle(null);
-  }, [singleApiKeyId, matchedKey, setCustomTitle, tt]);
+  }, [singleApiKeyId, matchedKey, setCustomTitle]);
+
+  const apiKeySelectOptions = useMemo(() => {
+    const rawKeys = keysListQuery.data?.keys || [];
+    if (rawKeys.length > 0) {
+      return rawKeys.map((k) => ({
+        label: `${k.name || "未命名"} (${k.id.slice(0, 8)}...)`,
+        value: k.id,
+      }));
+    }
+    return (data?.byApiKey || []).map((k) => ({
+      label: `${k.apiKeyName || k.apiKey} ${k.apiKeyId ? `(${k.apiKeyId.slice(0, 8)}...)` : ""}`,
+      value: k.apiKeyId || k.apiKey,
+    }));
+  }, [keysListQuery.data?.keys, data?.byApiKey]);
 
   if (analyticsQuery.isLoading && !data) {
     return <PageSkeleton />;
   }
 
+  const diversityScore = diversityQuery.data?.score ?? null;
+
   return (
     <Flex vertical gap={16}>
       {/* Header Banner */}
-      <Card size="small" className={styles.cardSection}>
+      <Card className={styles.cardSection}>
         <Flex align="center" justify="space-between" wrap gap={12}>
           <div>
-            <Flex align="center" gap={8}>
-              <MaterialIcon name="analytics" size={22} style={{ color: "#06B6D4" }} />
+            <Flex align="center" gap={8} wrap>
+              <MaterialIcon name="analytics" size={24} style={{ color: "#06B6D4" }} />
               <Title level={2} style={{ margin: 0, fontSize: 20 }}>
-                {tt("用量分析", "Usage Analytics")}
+                用量分析
               </Title>
               {summary.streak > 0 && (
                 <Tag color="gold" icon={<MaterialIcon name="local_fire_department" size={14} />}>
-                  {tt(`已连续活跃 ${summary.streak} 天`, `${summary.streak} Days Streak`)}
+                  已连续活跃 {summary.streak} 天
                 </Tag>
               )}
-            </Flex>
-            <Paragraph type="secondary" style={{ margin: "4px 0 0", fontSize: 12 }}>
-              {tt(
-                "实时追踪全路由网关的 API 调用开销、Token 吞吐、模型级消费分布与多维探索。",
-                "Realtime tracking of gateway API expenditure, Token throughput, model distributions and analytics."
+              {diversityScore !== null && (
+                <AntTooltip title="Shannon Entropy 供应商多样性评分，满分 100 分。分值越高代表模型与供应商调用越均衡，容灾容错能力越强。">
+                  <Tag
+                    color={diversityScore >= 70 ? "green" : diversityScore >= 40 ? "blue" : "orange"}
+                    icon={<MaterialIcon name="hub" size={14} />}
+                  >
+                    供应商多样性: {diversityScore.toFixed(0)} 分
+                  </Tag>
+                </AntTooltip>
               )}
+            </Flex>
+            <Paragraph type="secondary" style={{ margin: "4px 0 0", fontSize: 13 }}>
+              实时追踪全路由网关的 API 调用开销、Token 吞吐、模型级消费分布与多维探索。
             </Paragraph>
           </div>
 
-          <Flex align="center" gap={8} wrap>
+          <Flex align="center" gap={10} wrap>
+            <Select
+              mode="multiple"
+              allowClear
+              placeholder="按 API 密钥筛选..."
+              value={selectedApiKeyIds}
+              onChange={(vals) => {
+                setSelectedApiKeyIds(vals);
+                if (vals.length > 0) {
+                  searchParams.set("apiKeyIds", vals.join(","));
+                } else {
+                  searchParams.delete("apiKeyIds");
+                }
+                setSearchParams(searchParams);
+              }}
+              options={apiKeySelectOptions}
+              maxTagCount={1}
+              style={{ minWidth: 200, maxWidth: 280 }}
+            />
 
             {data && summary.totalCost > 0 && (
-              <Space size={6}>
+              <Space size={8}>
                 <Button
-                  size="middle"
-                  icon={<MaterialIcon name="download" size={15} />}
+                  icon={<MaterialIcon name="download" size={16} />}
                   onClick={() => exportCsvReport(data, range)}
                 >
-                  {tt("导出 CSV", "Export CSV")}
+                  导出 CSV
                 </Button>
                 <Button
-                  size="middle"
-                  icon={<MaterialIcon name="code" size={15} />}
+                  icon={<MaterialIcon name="code" size={16} />}
                   onClick={() => {
                     const jsonStr = JSON.stringify(data, null, 2);
-                    downloadFile(jsonStr, `orbit-costs-${range}-${dayjs().format("YYYYMMDD")}.json`, "application/json");
+                    downloadFile(jsonStr, `omniroute-costs-${range}-${dayjs().format("YYYYMMDD")}.json`, "application/json");
                   }}
-
                 >
-                  {tt("导出 JSON", "Export JSON")}
+                  导出 JSON
                 </Button>
               </Space>
             )}
@@ -959,7 +1028,7 @@ export default function AnalyticsPage() {
                 searchParams.set("range", nextRange);
                 setSearchParams(searchParams);
               }}
-              options={rangeOptions}
+              options={RANGE_OPTIONS}
             />
           </Flex>
         </Flex>
@@ -968,7 +1037,6 @@ export default function AnalyticsPage() {
       {/* Single Key Quota Limit Banner (When accessed via specific apiKeyIds) */}
       {singleApiKeyId && apiKeyLimitsQuery.data && (
         <Card
-          size="small"
           style={{
             borderRadius: 8,
             border: "1px solid #38BDF8",
@@ -980,34 +1048,33 @@ export default function AnalyticsPage() {
               <Flex align="center" gap={6}>
                 <MaterialIcon name="tune" size={18} style={{ color: "#0284C7" }} />
                 <Text strong style={{ fontSize: 14 }}>
-                  {tt("API 密钥独立限额监控", "API Key Quota Monitor")} · ID: {singleApiKeyId}
+                  API 密钥独立限额监控 · ID: {singleApiKeyId}
                 </Text>
               </Flex>
-              <Text type="secondary" style={{ fontSize: 11, display: "block", marginTop: 2 }}>
-                {tt("今日已消耗", "Today Used")}:{" "}
+              <Text type="secondary" style={{ fontSize: 12, display: "block", marginTop: 4 }}>
+                今日已消耗:{" "}
                 <Text strong style={{ color: "#10B981" }}>
                   {formatUsd(apiKeyLimitsQuery.data.dailyCostUsd || 0)}
                 </Text>
                 {apiKeyLimitsQuery.data.dailyUsageLimitUsd
-                  ? ` / ${tt("上限", "Limit")} ${formatUsd(apiKeyLimitsQuery.data.dailyUsageLimitUsd)}`
-                  : ` (${tt("无限制", "Unlimited")})`}
+                  ? ` / 上限 ${formatUsd(apiKeyLimitsQuery.data.dailyUsageLimitUsd)}`
+                  : " (无限制)"}
                 {" · "}
-                {tt("本周已消耗", "Weekly Used")}:{" "}
+                本周已消耗:{" "}
                 <Text strong style={{ color: "#10B981" }}>
                   {formatUsd(apiKeyLimitsQuery.data.weeklyCostUsd || 0)}
                 </Text>
                 {apiKeyLimitsQuery.data.weeklyUsageLimitUsd
-                  ? ` / ${tt("上限", "Limit")} ${formatUsd(apiKeyLimitsQuery.data.weeklyUsageLimitUsd)}`
-                  : ` (${tt("无限制", "Unlimited")})`}
+                  ? ` / 上限 ${formatUsd(apiKeyLimitsQuery.data.weeklyUsageLimitUsd)}`
+                  : " (无限制)"}
               </Text>
             </div>
 
             <Button
               type="primary"
-              size="middle"
               onClick={() => navigate("/dashboard/api-manager")}
             >
-              {tt("返回密钥管理", "Back to API Keys")}
+              返回密钥管理
             </Button>
           </Flex>
         </Card>
@@ -1016,101 +1083,101 @@ export default function AnalyticsPage() {
       {/* Primary KPI Metrics */}
       <Row gutter={[12, 12]} style={{ alignItems: "stretch" }}>
         <Col xs={12} sm={6} className={styles.stretchCol}>
-          <Card size="small" className={styles.metricCard}>
-            <Text type="secondary" style={{ fontSize: 11, textTransform: "uppercase" }}>
-              {tt("今日支出", "Today's Cost")}
+          <Card className={styles.metricCard}>
+            <Text type="secondary" style={{ fontSize: 12, textTransform: "uppercase" }}>
+              今日支出
             </Text>
-            <Title level={3} style={{ margin: "4px 0 0", color: "#10B981" }}>
+            <Title level={3} style={{ margin: "6px 0 2px", color: "#10B981" }}>
               {formatUsd(presetCosts["1d"])}
             </Title>
             <Text type="secondary" style={{ fontSize: 11 }}>
-              {tt("当天实时计费消耗", "Realtime cost today")}
+              当天实时计费消耗
             </Text>
           </Card>
         </Col>
 
         <Col xs={12} sm={6} className={styles.stretchCol}>
-          <Card size="small" className={styles.metricCard}>
-            <Text type="secondary" style={{ fontSize: 11, textTransform: "uppercase" }}>
-              {tt("近 7 天支出", "Last 7 Days Cost")}
+          <Card className={styles.metricCard}>
+            <Text type="secondary" style={{ fontSize: 12, textTransform: "uppercase" }}>
+              近 7 天支出
             </Text>
-            <Title level={3} style={{ margin: "4px 0 0", color: "#0EA5E9" }}>
+            <Title level={3} style={{ margin: "6px 0 2px", color: "#0EA5E9" }}>
               {formatUsd(presetCosts["7d"])}
             </Title>
             <Text type="secondary" style={{ fontSize: 11 }}>
-              {tt("周维度累计支出", "Weekly cumulative cost")}
+              周维度累计支出
             </Text>
           </Card>
         </Col>
 
         <Col xs={12} sm={6} className={styles.stretchCol}>
-          <Card size="small" className={styles.metricCard}>
-            <Text type="secondary" style={{ fontSize: 11, textTransform: "uppercase" }}>
-              {tt("近 30 天支出", "Last 30 Days Cost")}
+          <Card className={styles.metricCard}>
+            <Text type="secondary" style={{ fontSize: 12, textTransform: "uppercase" }}>
+              近 30 天支出
             </Text>
-            <Title level={3} style={{ margin: "4px 0 0", color: "#8B5CF6" }}>
+            <Title level={3} style={{ margin: "6px 0 2px", color: "#8B5CF6" }}>
               {formatUsd(presetCosts["30d"])}
             </Title>
             <Text type="secondary" style={{ fontSize: 11 }}>
-              {tt("月度消耗总览", "Monthly cost summary")}
+              月度消耗总览
             </Text>
           </Card>
         </Col>
 
         <Col xs={12} sm={6} className={styles.stretchCol}>
-          <Card size="small" className={styles.metricCard}>
-            <Text type="secondary" style={{ fontSize: 11, textTransform: "uppercase" }}>
-              {tt("选定窗口总支出", "Window Total Cost")}
+          <Card className={styles.metricCard}>
+            <Text type="secondary" style={{ fontSize: 12, textTransform: "uppercase" }}>
+              选定窗口总支出
             </Text>
-            <Title level={3} style={{ margin: "4px 0 0", color: "#F59E0B" }}>
+            <Title level={3} style={{ margin: "6px 0 2px", color: "#F59E0B" }}>
               {formatUsd(summary.totalCost)}
             </Title>
             <Text type="secondary" style={{ fontSize: 11 }}>
-              {tt("当前选择", "Selection")}: {rangeOptions.find((r) => r.value === range)?.label}
+              当前选择: {RANGE_OPTIONS.find((r) => r.value === range)?.label}
             </Text>
           </Card>
         </Col>
       </Row>
 
       {/* Secondary Metrics Bar */}
-      <Card size="small" className={styles.cardSection}>
+      <Card className={styles.cardSection}>
         <Row gutter={[16, 12]}>
           <Col xs={12} sm={6}>
             <Flex vertical gap={2}>
-              <Text type="secondary" style={{ fontSize: 11 }}>
+              <Text type="secondary" style={{ fontSize: 12 }}>
                 窗口内总请求数
               </Text>
-              <Text strong style={{ fontSize: 16, fontFamily: "monospace" }}>
+              <Text strong style={{ fontSize: 18, fontFamily: "monospace" }}>
                 {summary.totalRequests.toLocaleString()} 次
               </Text>
             </Flex>
           </Col>
           <Col xs={12} sm={6}>
             <Flex vertical gap={2}>
-              <Text type="secondary" style={{ fontSize: 11 }}>
+              <Text type="secondary" style={{ fontSize: 12 }}>
                 活跃提供商数
               </Text>
-              <Text strong style={{ fontSize: 16, fontFamily: "monospace" }}>
+              <Text strong style={{ fontSize: 18, fontFamily: "monospace" }}>
                 {(data?.byProvider || []).length} 个
               </Text>
             </Flex>
           </Col>
           <Col xs={12} sm={6}>
             <Flex vertical gap={2}>
-              <Text type="secondary" style={{ fontSize: 11 }}>
+              <Text type="secondary" style={{ fontSize: 12 }}>
                 活跃推理模型数
               </Text>
-              <Text strong style={{ fontSize: 16, fontFamily: "monospace" }}>
+              <Text strong style={{ fontSize: 18, fontFamily: "monospace" }}>
                 {summary.uniqueModels || (data?.byModel || []).length} 个
               </Text>
             </Flex>
           </Col>
           <Col xs={12} sm={6}>
             <Flex vertical gap={2}>
-              <Text type="secondary" style={{ fontSize: 11 }}>
+              <Text type="secondary" style={{ fontSize: 12 }}>
                 单次请求平均成本
               </Text>
-              <Text strong style={{ fontSize: 16, fontFamily: "monospace", color: "#10B981" }}>
+              <Text strong style={{ fontSize: 18, fontFamily: "monospace", color: "#10B981" }}>
                 {summary.totalRequests > 0
                   ? formatUsd(summary.totalCost / summary.totalRequests, 6)
                   : "$0.00"}
@@ -1124,19 +1191,19 @@ export default function AnalyticsPage() {
       {summary.totalCost > 0 && (
         <Row gutter={[12, 12]} style={{ alignItems: "stretch" }}>
           <Col xs={24} lg={14} className={styles.stretchCol}>
-            <Card size="small" className={styles.cardSection}>
+            <Card className={styles.cardSection}>
               <Flex align="center" gap={6} style={{ marginBottom: 12 }}>
-                <MaterialIcon name="show_chart" size={16} style={{ color: "#10B981" }} />
-                <Text strong style={{ fontSize: 13 }}>每日消耗趋势 (Daily Trend)</Text>
+                <MaterialIcon name="show_chart" size={18} style={{ color: "#10B981" }} />
+                <Text strong style={{ fontSize: 14 }}>每日消耗趋势 (Daily Trend)</Text>
               </Flex>
               <CostTrendChart rows={data?.dailyTrend || []} />
             </Card>
           </Col>
           <Col xs={24} lg={10} className={styles.stretchCol}>
-            <Card size="small" className={styles.cardSection}>
+            <Card className={styles.cardSection}>
               <Flex align="center" gap={6} style={{ marginBottom: 12 }}>
-                <MaterialIcon name="donut_large" size={16} style={{ color: "#06B6D4" }} />
-                <Text strong style={{ fontSize: 13 }}>提供商消费占比 (Provider Share)</Text>
+                <MaterialIcon name="donut_large" size={18} style={{ color: "#06B6D4" }} />
+                <Text strong style={{ fontSize: 14 }}>提供商消费占比 (Provider Share)</Text>
               </Flex>
               <ProviderPieChart rows={data?.byProvider || []} />
             </Card>
@@ -1145,22 +1212,22 @@ export default function AnalyticsPage() {
       )}
 
       {/* Cost Explorer Card */}
-      <Card size="small" className={styles.cardSection}>
+      <Card className={styles.cardSection}>
         <Flex vertical gap={12}>
           <Flex align="center" justify="space-between" wrap gap={12}>
             <div>
               <Flex align="center" gap={6}>
-                <MaterialIcon name="travel_explore" size={18} style={{ color: "#10B981" }} />
-                <Title level={4} style={{ margin: 0, fontSize: 15 }}>
+                <MaterialIcon name="travel_explore" size={20} style={{ color: "#10B981" }} />
+                <Title level={4} style={{ margin: 0, fontSize: 16 }}>
                   成本与多维探索器 (Cost Explorer)
                 </Title>
               </Flex>
-              <Text type="secondary" style={{ fontSize: 11 }}>
+              <Text type="secondary" style={{ fontSize: 12 }}>
                 灵活按提供商、模型、API 密钥与服务层级交叉探索费用与请求明细。
               </Text>
             </div>
 
-            <Flex align="center" gap={8} wrap>
+            <Flex align="center" gap={10} wrap>
               <Segmented
                 value={explorerGroupBy}
                 onChange={(val) => {
@@ -1169,15 +1236,15 @@ export default function AnalyticsPage() {
                   searchParams.set("groupBy", nextGroup);
                   setSearchParams(searchParams);
                 }}
-                options={explorerGroupOptions}
+                options={EXPLORER_GROUP_OPTIONS}
               />
               <Input
-                placeholder={tt("搜索维度名称或 ID...", "Search dimension name or ID...")}
-                prefix={<MaterialIcon name="search" size={15} />}
+                placeholder="搜索维度名称或 ID..."
+                prefix={<MaterialIcon name="search" size={16} />}
                 allowClear
                 value={explorerSearch}
                 onChange={(e) => setExplorerSearch(e.target.value)}
-                style={{ width: 200 }}
+                style={{ width: 220 }}
               />
             </Flex>
           </Flex>
@@ -1186,10 +1253,10 @@ export default function AnalyticsPage() {
             dataSource={explorerRows}
             columns={explorerColumns}
             rowKey="id"
-            pagination={{ pageSize: 10, showTotal: (total) => tt(`共 ${total} 条明细`, `Total ${total} items`) }}
+            pagination={{ pageSize: 10, showTotal: (total) => `共 ${total} 条明细` }}
             loading={analyticsQuery.isLoading}
             size="middle"
-            locale={{ emptyText: tt("当前维度暂无消耗数据", "No cost data for current dimension") }}
+            locale={{ emptyText: "当前维度暂无消耗数据" }}
             onChange={(_, __, sorter) => {
               if (!Array.isArray(sorter) && sorter.field) {
                 setExplorerSortKey(sorter.field as CostExplorerSortKey);
@@ -1203,26 +1270,26 @@ export default function AnalyticsPage() {
       {/* Token Usage & Routing Efficiency */}
       <Row gutter={[12, 12]} style={{ alignItems: "stretch" }}>
         <Col xs={24} md={12} className={styles.stretchCol}>
-          <Card size="small" className={styles.cardSection}>
+          <Card className={styles.cardSection}>
             <Flex align="center" gap={6} style={{ marginBottom: 12 }}>
-              <MaterialIcon name="data_usage" size={16} style={{ color: "#3B82F6" }} />
-              <Text strong style={{ fontSize: 13 }}>
+              <MaterialIcon name="data_usage" size={18} style={{ color: "#3B82F6" }} />
+              <Text strong style={{ fontSize: 14 }}>
                 Token 吞吐与输入输出比 (Token Usage)
               </Text>
             </Flex>
             <Row gutter={[12, 12]} style={{ alignItems: "stretch" }}>
               <Col span={12}>
                 <Flex vertical gap={2}>
-                  <Text type="secondary" style={{ fontSize: 11 }}>总 Token 消耗</Text>
-                  <Text strong style={{ fontSize: 18, fontFamily: "monospace" }}>
+                  <Text type="secondary" style={{ fontSize: 12 }}>总 Token 消耗</Text>
+                  <Text strong style={{ fontSize: 20, fontFamily: "monospace" }}>
                     {formatTokens(summary.totalTokens)}
                   </Text>
                 </Flex>
               </Col>
               <Col span={12}>
                 <Flex vertical gap={2}>
-                  <Text type="secondary" style={{ fontSize: 11 }}>输入 / 输出比</Text>
-                  <Text strong style={{ fontSize: 18, fontFamily: "monospace", color: "#8B5CF6" }}>
+                  <Text type="secondary" style={{ fontSize: 12 }}>输入 / 输出比</Text>
+                  <Text strong style={{ fontSize: 20, fontFamily: "monospace", color: "#8B5CF6" }}>
                     {summary.completionTokens > 0
                       ? `${(summary.promptTokens / summary.completionTokens).toFixed(1)}:1`
                       : "—"}
@@ -1231,16 +1298,16 @@ export default function AnalyticsPage() {
               </Col>
               <Col span={12}>
                 <Flex vertical gap={2}>
-                  <Text type="secondary" style={{ fontSize: 11 }}>输入 Prompt Tokens</Text>
-                  <Text strong style={{ fontSize: 14, fontFamily: "monospace", color: "#0EA5E9" }}>
+                  <Text type="secondary" style={{ fontSize: 12 }}>输入 Prompt Tokens</Text>
+                  <Text strong style={{ fontSize: 15, fontFamily: "monospace", color: "#0EA5E9" }}>
                     {formatTokens(summary.promptTokens)}
                   </Text>
                 </Flex>
               </Col>
               <Col span={12}>
                 <Flex vertical gap={2}>
-                  <Text type="secondary" style={{ fontSize: 11 }}>输出 Completion Tokens</Text>
-                  <Text strong style={{ fontSize: 14, fontFamily: "monospace", color: "#10B981" }}>
+                  <Text type="secondary" style={{ fontSize: 12 }}>输出 Completion Tokens</Text>
+                  <Text strong style={{ fontSize: 15, fontFamily: "monospace", color: "#10B981" }}>
                     {formatTokens(summary.completionTokens)}
                   </Text>
                 </Flex>
@@ -1250,48 +1317,48 @@ export default function AnalyticsPage() {
         </Col>
 
         <Col xs={24} md={12} className={styles.stretchCol}>
-          <Card size="small" className={styles.cardSection}>
+          <Card className={styles.cardSection}>
             <Flex align="center" gap={6} style={{ marginBottom: 12 }}>
-              <MaterialIcon name="speed" size={16} style={{ color: "#F59E0B" }} />
-              <Text strong style={{ fontSize: 13 }}>
+              <MaterialIcon name="speed" size={18} style={{ color: "#F59E0B" }} />
+              <Text strong style={{ fontSize: 14 }}>
                 路由与容灾效率 (Routing Efficiency)
               </Text>
             </Flex>
             <Row gutter={[12, 12]} style={{ alignItems: "stretch" }}>
               <Col span={8}>
                 <Flex vertical gap={2}>
-                  <Text type="secondary" style={{ fontSize: 11 }}>降级发生次数</Text>
-                  <Text strong style={{ fontSize: 18, fontFamily: "monospace" }}>
+                  <Text type="secondary" style={{ fontSize: 12 }}>降级发生次数</Text>
+                  <Text strong style={{ fontSize: 20, fontFamily: "monospace" }}>
                     {summary.fallbackCount.toLocaleString()}
                   </Text>
-                  <Text type="secondary" style={{ fontSize: 10 }}>次自动故障转移</Text>
+                  <Text type="secondary" style={{ fontSize: 11 }}>次自动故障转移</Text>
                 </Flex>
               </Col>
               <Col span={8}>
                 <Flex vertical gap={2}>
-                  <Text type="secondary" style={{ fontSize: 11 }}>降级请求率</Text>
+                  <Text type="secondary" style={{ fontSize: 12 }}>降级请求率</Text>
                   <Text
                     strong
                     style={{
-                      fontSize: 18,
+                      fontSize: 20,
                       fontFamily: "monospace",
                       color: summary.fallbackRatePct > 5 ? "#EF4444" : "#10B981",
                     }}
                   >
                     {(summary.fallbackRatePct || 0).toFixed(1)}%
                   </Text>
-                  <Text type="secondary" style={{ fontSize: 10 }}>
+                  <Text type="secondary" style={{ fontSize: 11 }}>
                     {summary.fallbackRatePct <= 5 ? "健康稳定" : "存在重试波动"}
                   </Text>
                 </Flex>
               </Col>
               <Col span={8}>
                 <Flex vertical gap={2}>
-                  <Text type="secondary" style={{ fontSize: 11 }}>模型覆盖度</Text>
-                  <Text strong style={{ fontSize: 18, fontFamily: "monospace", color: "#3B82F6" }}>
+                  <Text type="secondary" style={{ fontSize: 12 }}>模型覆盖度</Text>
+                  <Text strong style={{ fontSize: 20, fontFamily: "monospace", color: "#3B82F6" }}>
                     {(summary.requestedModelCoveragePct || 100).toFixed(1)}%
                   </Text>
-                  <Text type="secondary" style={{ fontSize: 10 }}>请求按预期命中</Text>
+                  <Text type="secondary" style={{ fontSize: 11 }}>请求按预期命中</Text>
                 </Flex>
               </Col>
             </Row>
@@ -1303,36 +1370,36 @@ export default function AnalyticsPage() {
       {summary.totalCost > 0 && (
         <Row gutter={[12, 12]} style={{ alignItems: "stretch" }}>
           <Col xs={24} md={12} className={styles.stretchCol}>
-            <Card size="small" className={styles.cardSection}>
+            <Card className={styles.cardSection}>
               <Flex align="center" gap={6} style={{ marginBottom: 8 }}>
                 <MaterialIcon name="trending_up" size={18} style={{ color: "#0EA5E9" }} />
-                <Text strong style={{ fontSize: 13 }}>
+                <Text strong style={{ fontSize: 14 }}>
                   月末支出智能预测 (Monthly Forecast)
                 </Text>
               </Flex>
-              <Flex align="baseline" gap={8}>
+              <Flex align="baseline" gap={10}>
                 <Title level={2} style={{ margin: 0, color: "#0EA5E9", fontFamily: "monospace" }}>
                   {formatUsd(projectedMonthEnd, 2)}
                 </Title>
-                <Text type="secondary" style={{ fontSize: 11 }}>
+                <Text type="secondary" style={{ fontSize: 12 }}>
                   基于近 {recentDays.length} 天日均消耗推算
                 </Text>
               </Flex>
-              <Text type="secondary" style={{ fontSize: 11, display: "block", marginTop: 4 }}>
+              <Text type="secondary" style={{ fontSize: 12, display: "block", marginTop: 6 }}>
                 日均支出: {formatUsd(avgDailyCost)} · 本月剩余: {daysRemainingInMonth} 天
               </Text>
             </Card>
           </Col>
 
           <Col xs={24} md={12} className={styles.stretchCol}>
-            <Card size="small" className={styles.cardSection}>
+            <Card className={styles.cardSection}>
               <Flex align="center" gap={6} style={{ marginBottom: 8 }}>
                 <MaterialIcon name="compare_arrows" size={18} style={{ color: "#8B5CF6" }} />
-                <Text strong style={{ fontSize: 13 }}>
+                <Text strong style={{ fontSize: 14 }}>
                   同期环比分析 (Period Comparison)
                 </Text>
               </Flex>
-              <Flex align="baseline" gap={8}>
+              <Flex align="baseline" gap={10}>
                 <Title
                   level={2}
                   style={{
@@ -1347,7 +1414,7 @@ export default function AnalyticsPage() {
                   {costChangePct > 0 ? "支出上升" : "支出下降或平稳"}
                 </Tag>
               </Flex>
-              <Text type="secondary" style={{ fontSize: 11, display: "block", marginTop: 4 }}>
+              <Text type="secondary" style={{ fontSize: 12, display: "block", marginTop: 6 }}>
                 前周期支出: {formatUsd(firstHalfCost)} · 当前周期: {formatUsd(secondHalfCost)}
               </Text>
             </Card>
@@ -1358,15 +1425,15 @@ export default function AnalyticsPage() {
       {/* Top Providers & Top Models Rankings */}
       <Row gutter={[12, 12]} style={{ alignItems: "stretch" }}>
         <Col xs={24} md={12} className={styles.stretchCol}>
-          <Card size="small" className={styles.cardSection}>
+          <Card className={styles.cardSection}>
             <Flex align="center" justify="space-between" style={{ marginBottom: 12 }}>
               <Flex align="center" gap={6}>
-                <MaterialIcon name="corporate_fare" size={16} style={{ color: "#10B981" }} />
-                <Text strong style={{ fontSize: 13 }}>
+                <MaterialIcon name="corporate_fare" size={18} style={{ color: "#10B981" }} />
+                <Text strong style={{ fontSize: 14 }}>
                   Top 提供商消耗排行
                 </Text>
               </Flex>
-              <Text type="secondary" style={{ fontSize: 11 }}>
+              <Text type="secondary" style={{ fontSize: 12 }}>
                 前 6 位提供商
               </Text>
             </Flex>
@@ -1386,18 +1453,17 @@ export default function AnalyticsPage() {
                       >
                         {idx + 1}
                       </span>
-                      <Text strong style={{ fontSize: 12, minWidth: 100 }} ellipsis>
+                      <Text strong style={{ fontSize: 13, minWidth: 100 }} ellipsis>
                         {item.provider}
                       </Text>
                       <Progress
                         percent={pct}
-                        size="small"
                         strokeColor={PALETTE[idx % PALETTE.length]}
                         showInfo={false}
                         style={{ flex: 1, margin: 0 }}
                       />
                     </Flex>
-                    <Text strong style={{ fontFamily: "monospace", fontSize: 12, color: "#10B981" }}>
+                    <Text strong style={{ fontFamily: "monospace", fontSize: 13, color: "#10B981" }}>
                       {formatUsd(item.cost)}
                     </Text>
                   </Flex>
@@ -1411,15 +1477,15 @@ export default function AnalyticsPage() {
         </Col>
 
         <Col xs={24} md={12} className={styles.stretchCol}>
-          <Card size="small" className={styles.cardSection}>
+          <Card className={styles.cardSection}>
             <Flex align="center" justify="space-between" style={{ marginBottom: 12 }}>
               <Flex align="center" gap={6}>
-                <MaterialIcon name="neurology" size={16} style={{ color: "#8B5CF6" }} />
-                <Text strong style={{ fontSize: 13 }}>
+                <MaterialIcon name="neurology" size={18} style={{ color: "#8B5CF6" }} />
+                <Text strong style={{ fontSize: 14 }}>
                   Top 模型消耗排行
                 </Text>
               </Flex>
-              <Text type="secondary" style={{ fontSize: 11 }}>
+              <Text type="secondary" style={{ fontSize: 12 }}>
                 前 6 位模型
               </Text>
             </Flex>
@@ -1439,18 +1505,17 @@ export default function AnalyticsPage() {
                       >
                         {idx + 1}
                       </span>
-                      <Text strong style={{ fontSize: 12, minWidth: 120 }} ellipsis>
+                      <Text strong style={{ fontSize: 13, minWidth: 120 }} ellipsis>
                         {item.model}
                       </Text>
                       <Progress
                         percent={pct}
-                        size="small"
                         strokeColor={PALETTE[idx % PALETTE.length]}
                         showInfo={false}
                         style={{ flex: 1, margin: 0 }}
                       />
                     </Flex>
-                    <Text strong style={{ fontFamily: "monospace", fontSize: 12, color: "#10B981" }}>
+                    <Text strong style={{ fontFamily: "monospace", fontSize: 13, color: "#10B981" }}>
                       {formatUsd(item.cost)}
                     </Text>
                   </Flex>
@@ -1469,17 +1534,17 @@ export default function AnalyticsPage() {
         <Row gutter={[12, 12]} style={{ alignItems: "stretch" }}>
           {(data?.byApiKey || []).length > 0 && (
             <Col xs={24} md={12} className={styles.stretchCol}>
-              <Card size="small" className={styles.cardSection}>
+              <Card className={styles.cardSection}>
                 <Flex align="center" justify="space-between" style={{ marginBottom: 10 }}>
                   <Flex align="center" gap={6}>
-                    <MaterialIcon name="key" size={16} style={{ color: "#F59E0B" }} />
-                    <Text strong style={{ fontSize: 13 }}>API 密钥消耗明细</Text>
+                    <MaterialIcon name="key" size={18} style={{ color: "#F59E0B" }} />
+                    <Text strong style={{ fontSize: 14 }}>API 密钥消耗明细</Text>
                   </Flex>
-                  <Text type="secondary" style={{ fontSize: 11 }}>
+                  <Text type="secondary" style={{ fontSize: 12 }}>
                     共 {(data?.byApiKey || []).length} 条明细
                   </Text>
                 </Flex>
-                <div style={{ maxHeight: 220, overflowY: "auto", width: "100%", scrollbarWidth: "thin" }}>
+                <div style={{ maxHeight: 240, overflowY: "auto", width: "100%", scrollbarWidth: "thin" }}>
                   <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
                     <thead style={{ position: "sticky", top: 0, background: token.colorBgContainer, zIndex: 1 }}>
                       <tr style={{ borderBottom: `1px solid ${token.colorBorderSecondary}` }}>
@@ -1487,11 +1552,11 @@ export default function AnalyticsPage() {
                           <th
                             key={h}
                             style={{
-                              padding: "4px 8px 8px 0",
+                              padding: "6px 8px 8px 0",
                               textAlign: h === "密钥名称" ? "left" : "right",
                               color: "#94A3B8",
                               fontWeight: 600,
-                              fontSize: 11,
+                              fontSize: 12,
                               textTransform: "uppercase",
                               background: token.colorBgContainer,
                             }}
@@ -1516,16 +1581,16 @@ export default function AnalyticsPage() {
                             e.currentTarget.style.background = "transparent";
                           }}
                         >
-                          <td style={{ padding: "7px 8px 7px 0", color: "#E2E8F0", maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          <td style={{ padding: "8px 8px 8px 0", color: "#E2E8F0", maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                             {row.apiKeyName || row.apiKey}
                           </td>
-                          <td style={{ padding: "7px 0", textAlign: "right", fontFamily: "monospace", color: "#94A3B8" }}>
+                          <td style={{ padding: "8px 0", textAlign: "right", fontFamily: "monospace", color: "#94A3B8" }}>
                             {row.requests.toLocaleString()}
                           </td>
-                          <td style={{ padding: "7px 0", textAlign: "right", fontFamily: "monospace", color: "#94A3B8" }}>
+                          <td style={{ padding: "8px 0", textAlign: "right", fontFamily: "monospace", color: "#94A3B8" }}>
                             {formatTokens(row.totalTokens)}
                           </td>
-                          <td style={{ padding: "7px 0", textAlign: "right", fontFamily: "monospace", color: row.cost > 0 ? "#10B981" : "#94A3B8" }}>
+                          <td style={{ padding: "8px 0", textAlign: "right", fontFamily: "monospace", color: row.cost > 0 ? "#10B981" : "#94A3B8" }}>
                             {formatUsd(row.cost)}
                           </td>
                         </tr>
@@ -1538,17 +1603,17 @@ export default function AnalyticsPage() {
           )}
           {(data?.byAccount || []).length > 0 && (
             <Col xs={24} md={12} className={styles.stretchCol}>
-              <Card size="small" className={styles.cardSection}>
+              <Card className={styles.cardSection}>
                 <Flex align="center" justify="space-between" style={{ marginBottom: 10 }}>
                   <Flex align="center" gap={6}>
-                    <MaterialIcon name="manage_accounts" size={16} style={{ color: "#8B5CF6" }} />
-                    <Text strong style={{ fontSize: 13 }}>账户消耗明细</Text>
+                    <MaterialIcon name="manage_accounts" size={18} style={{ color: "#8B5CF6" }} />
+                    <Text strong style={{ fontSize: 14 }}>账户消耗明细</Text>
                   </Flex>
-                  <Text type="secondary" style={{ fontSize: 11 }}>
+                  <Text type="secondary" style={{ fontSize: 12 }}>
                     共 {(data?.byAccount || []).length} 条明细
                   </Text>
                 </Flex>
-                <div style={{ maxHeight: 220, overflowY: "auto", width: "100%", scrollbarWidth: "thin" }}>
+                <div style={{ maxHeight: 240, overflowY: "auto", width: "100%", scrollbarWidth: "thin" }}>
                   <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
                     <thead style={{ position: "sticky", top: 0, background: token.colorBgContainer, zIndex: 1 }}>
                       <tr style={{ borderBottom: `1px solid ${token.colorBorderSecondary}` }}>
@@ -1556,11 +1621,11 @@ export default function AnalyticsPage() {
                           <th
                             key={h}
                             style={{
-                              padding: "4px 8px 8px 0",
+                              padding: "6px 8px 8px 0",
                               textAlign: h === "账户" ? "left" : "right",
                               color: "#94A3B8",
                               fontWeight: 600,
-                              fontSize: 11,
+                              fontSize: 12,
                               textTransform: "uppercase",
                               background: token.colorBgContainer,
                             }}
@@ -1585,16 +1650,16 @@ export default function AnalyticsPage() {
                             e.currentTarget.style.background = "transparent";
                           }}
                         >
-                          <td style={{ padding: "7px 8px 7px 0", color: "#E2E8F0", maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          <td style={{ padding: "8px 8px 8px 0", color: "#E2E8F0", maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                             {row.account}
                           </td>
-                          <td style={{ padding: "7px 0", textAlign: "right", fontFamily: "monospace", color: "#94A3B8" }}>
+                          <td style={{ padding: "8px 0", textAlign: "right", fontFamily: "monospace", color: "#94A3B8" }}>
                             {row.requests.toLocaleString()}
                           </td>
-                          <td style={{ padding: "7px 0", textAlign: "right", fontFamily: "monospace", color: "#94A3B8" }}>
+                          <td style={{ padding: "8px 0", textAlign: "right", fontFamily: "monospace", color: "#94A3B8" }}>
                             {formatTokens(row.totalTokens)}
                           </td>
-                          <td style={{ padding: "7px 0", textAlign: "right", fontFamily: "monospace", color: row.cost > 0 ? "#10B981" : "#94A3B8" }}>
+                          <td style={{ padding: "8px 0", textAlign: "right", fontFamily: "monospace", color: row.cost > 0 ? "#10B981" : "#94A3B8" }}>
                             {formatUsd(row.cost)}
                           </td>
                         </tr>
@@ -1612,19 +1677,19 @@ export default function AnalyticsPage() {
       {summary.totalRequests > 0 && (
         <Row gutter={[12, 12]} style={{ alignItems: "stretch" }}>
           <Col xs={24} md={12} className={styles.stretchCol}>
-            <Card size="small" className={styles.cardSection}>
+            <Card className={styles.cardSection}>
               <Flex align="center" gap={6} style={{ marginBottom: 12 }}>
-                <MaterialIcon name="calendar_view_week" size={16} style={{ color: "#8B5CF6" }} />
-                <Text strong style={{ fontSize: 13 }}>周使用模式 (Weekly Pattern)</Text>
+                <MaterialIcon name="calendar_view_week" size={18} style={{ color: "#8B5CF6" }} />
+                <Text strong style={{ fontSize: 14 }}>周使用模式 (Weekly Pattern)</Text>
               </Flex>
               <WeeklyBarChart rows={data?.weeklyPattern || []} />
             </Card>
           </Col>
           <Col xs={24} md={12} className={styles.stretchCol}>
-            <Card size="small" className={styles.cardSection}>
+            <Card className={styles.cardSection}>
               <Flex align="center" gap={6} style={{ marginBottom: 12 }}>
-                <MaterialIcon name="grid_on" size={16} style={{ color: "#10B981" }} />
-                <Text strong style={{ fontSize: 13 }}>活动热力图 (Activity Heatmap · 近 365 天)</Text>
+                <MaterialIcon name="grid_on" size={18} style={{ color: "#10B981" }} />
+                <Text strong style={{ fontSize: 14 }}>活动热力图 (Activity Heatmap · 近 365 天)</Text>
               </Flex>
               <ActivityHeatmapGrid activityMap={data?.activityMap || {}} />
             </Card>

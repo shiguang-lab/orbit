@@ -258,12 +258,40 @@ export default function EndpointsPage() {
     return currentPublicBaseUrl;
   }, [customPublicUrl, cloudflaredQuery.data, tailscaleQuery.data, ngrokQuery.data, currentPublicBaseUrl]);
 
-  const isTailscaleConnected = Boolean(tailscaleStatusQuery.data?.connected);
-  const effectiveTailscaleUrl = tailscaleStatusQuery.data?.magicDns
-    ? `https://${tailscaleStatusQuery.data.magicDns}/v1`
-    : tailscaleStatusQuery.data?.ip
-      ? `http://${tailscaleStatusQuery.data.ip}:${port}/v1`
-      : "";
+  const clientIsOverTailscale = useMemo(() => {
+    if (typeof window === "undefined") return false;
+    const host = window.location.hostname.toLowerCase();
+    if (host.endsWith(".ts.net") || host.endsWith(".tailscale.net")) return true;
+    const octets = host.split(".").map(Number);
+    if (octets.length === 4 && octets.every((o) => Number.isInteger(o))) {
+      const [first, second] = octets;
+      if (first === 100 && second >= 64 && second <= 127) return true;
+    }
+    return false;
+  }, []);
+
+  const clientTailscaleUrl = useMemo(() => {
+    if (typeof window === "undefined" || !clientIsOverTailscale) return "";
+    return `${window.location.origin.replace(/\/$/, "")}/v1`;
+  }, [clientIsOverTailscale]);
+
+  const isTailscaleConnected =
+    Boolean(tailscaleStatusQuery.data?.connected) ||
+    Boolean(networkQuery.data?.tailscaleUrl) ||
+    Boolean(networkQuery.data?.tailscaleIpUrl) ||
+    Boolean(tailscaleQuery.data?.running) ||
+    clientIsOverTailscale;
+
+  const effectiveTailscaleUrl = useMemo(() => {
+    if (networkQuery.data?.tailscaleUrl) return networkQuery.data.tailscaleUrl;
+    if (tailscaleStatusQuery.data?.magicDns) return `https://${tailscaleStatusQuery.data.magicDns}/v1`;
+    if (tailscaleStatusQuery.data?.tailscaleUrl) return `${tailscaleStatusQuery.data.tailscaleUrl.replace(/\/$/, "")}/v1`;
+    if (tailscaleStatusQuery.data?.ip) return `http://${tailscaleStatusQuery.data.ip}:${port}/v1`;
+    if (networkQuery.data?.tailscaleIpUrl) return networkQuery.data.tailscaleIpUrl;
+    if (tailscaleQuery.data?.publicUrl) return `${tailscaleQuery.data.publicUrl.replace(/\/$/, "")}/v1`;
+    if (clientTailscaleUrl) return clientTailscaleUrl;
+    return "";
+  }, [networkQuery.data, tailscaleStatusQuery.data, tailscaleQuery.data, clientTailscaleUrl, port]);
 
   const effectiveBaseUrl = publicBaseUrl || localBaseUrl;
 
@@ -291,6 +319,7 @@ export default function EndpointsPage() {
           icon={<MaterialIcon name="refresh" size={14} />}
           onClick={() => {
             void queryClient.invalidateQueries({ queryKey: ["network-info"] });
+            void queryClient.invalidateQueries({ queryKey: ["tailscale-status"] });
             void queryClient.invalidateQueries({ queryKey: ["tunnel-cloudflared"] });
             void queryClient.invalidateQueries({ queryKey: ["tunnel-tailscale"] });
             void queryClient.invalidateQueries({ queryKey: ["tunnel-ngrok"] });

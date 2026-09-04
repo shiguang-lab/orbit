@@ -1,0 +1,10 @@
+# OmniRoute UI & Code Standards
+
+- **Ant Design Component Sizing**:
+  All Ant Design components (Buttons, Inputs, Select, Segmented, Form Controls) must use the default size (`middle` / default). NEVER configure `size="small"` on buttons, segmented controls, or input fields.
+
+- **Data Sourcing**:
+  Always connect to real SQLite DB and official BFF Fastify endpoints. Never introduce fake mock fallback seeds.
+
+- **Internationalization (i18n)**:
+  Always use `useI18n()` with `tt("中文", "English")` for UI texts and titles.

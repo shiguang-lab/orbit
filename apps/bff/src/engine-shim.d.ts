@@ -76,6 +76,13 @@ declare module "@/lib/providers/requestDefaults" {
 
 declare module "@/lib/localDb" {
   export function getSettings(): Promise<Record<string, unknown>>;
+  export function getPricing(): Promise<Record<string, any>>;
+  export function getPricingWithSources(): Promise<{ pricing: Record<string, any>; sourceMap: Record<string, any> }>;
+  export function updatePricing(pricingData: Record<string, any>): Promise<Record<string, any>>;
+  export function resetPricing(provider: string, model?: string): Promise<Record<string, any>>;
+  export function resetAllPricing(): Promise<Record<string, any>>;
+  export function getAllCustomModels(): Promise<Record<string, any>>;
+  export function getAllSyncedAvailableModels(): Promise<Record<string, any>>;
 }
 
 declare module "@/lib/auth/managementPassword" {

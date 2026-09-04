@@ -248,7 +248,7 @@ export async function settingsRoutes(
     }
   });
 
-  app.delete("/cache", async (_request, reply) => {
+  app.delete("/settings/cache", async (_request, reply) => {
     try {
       const { invalidateDbCache } = await import("@/lib/db/readCache");
       invalidateDbCache();

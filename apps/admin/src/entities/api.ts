@@ -701,48 +701,6 @@ export type {
   ComboTestResponse,
 } from "@omniroute/contracts";
 
-export interface ComboHealthResponse {
-  combos?: Array<{
-    comboId?: string;
-    comboName?: string;
-    performance?: {
-      avgLatencyMs?: number;
-      successRate?: number;
-      totalRequests?: number;
-    };
-    quotaHealth?: {
-      worstRemainingPct?: number;
-      providers?: Array<{
-        provider: string;
-        remainingPct: number;
-        isExhausted: boolean;
-        trend: "improving" | "stable" | "declining";
-      }>;
-    };
-    usageSkew?: {
-      giniCoefficient?: number;
-      modelDistribution?: Array<{ model: string; requestShare: number; tokenShare: number }>;
-    };
-    targetHealth?: Array<{
-      executionKey?: string;
-      stepId?: string | null;
-      model?: string;
-      provider?: string;
-      connectionId?: string | null;
-      label?: string | null;
-      requests?: number;
-      successRate?: number;
-      avgLatencyMs?: number;
-      lastStatus?: "ok" | "error" | null;
-      lastUsedAt?: string | null;
-      quotaRemainingPct?: number | null;
-      quotaIsExhausted?: boolean | null;
-      quotaTrend?: "improving" | "stable" | "declining" | null;
-      quotaScope?: "connection" | "provider" | "none";
-    }>;
-  }>;
-}
-
 export const combosApi = {
   list: () => api<import("@omniroute/contracts").ComboListResponse>("/combos"),
   get: (id: string) => api<import("@omniroute/contracts").ComboItem>(`/combos/${encodeURIComponent(id)}`),
@@ -836,9 +794,17 @@ export interface NetworkInfoResponse {
   localUrl: string;
   lanUrls: string[];
   tailscaleUrl?: string | null;
+  tailscaleIpUrl?: string | null;
   publicIp?: string | null;
   machineId?: string;
   port?: number;
+  tailscaleDetails?: {
+    connected?: boolean;
+    ip?: string | null;
+    magicDns?: string | null;
+    hostname?: string | null;
+    source?: string;
+  };
 }
 
 export interface TunnelStatus {
@@ -958,23 +924,42 @@ export interface UsageAnalyticsSummary {
   fallbackRatePct: number;
   requestedModelCoveragePct: number;
   streak: number;
+  fastRequests?: number;
+  standardRequests?: number;
   flexRequests?: number;
+  fastCost?: number;
+  standardCost?: number;
   flexCost?: number;
   flexSavings?: number;
   flexUsageSavingsTokens?: number;
+  fastRequestSharePct?: number;
+  successfulRequests?: number;
+  successRatePct?: number;
+  avgLatencyMs?: number;
+  firstRequest?: string;
+  lastRequest?: string;
 }
 
 export interface UsageAnalyticsProviderRow {
   provider: string;
   requests: number;
   totalTokens: number;
+  promptTokens?: number;
+  completionTokens?: number;
   cost: number;
+  sharePct?: number;
 }
 
 export interface UsageAnalyticsModelRow {
   model: string;
+  provider?: string;
   requests: number;
+  promptTokens?: number;
+  completionTokens?: number;
   totalTokens: number;
+  avgLatencyMs?: number;
+  successRatePct?: string | number;
+  lastUsed?: string;
   cost: number;
 }
 
@@ -982,6 +967,7 @@ export interface UsageAnalyticsApiKeyRow {
   apiKey: string;
   apiKeyId: string | null;
   apiKeyName: string;
+  historicalApiKeyNames?: string[];
   requests: number;
   promptTokens: number;
   completionTokens: number;
@@ -993,12 +979,39 @@ export interface UsageAnalyticsAccountRow {
   account: string;
   totalTokens: number;
   requests: number;
+  promptTokens?: number;
+  completionTokens?: number;
+  avgLatencyMs?: number;
+  lastUsed?: string;
   cost: number;
 }
 
 export interface UsageAnalyticsTrendRow {
   date: string;
+  requests?: number;
+  promptTokens?: number;
+  completionTokens?: number;
+  totalTokens?: number;
   cost: number;
+}
+
+export interface UsageAnalyticsServiceTierRow {
+  serviceTier: string;
+  label?: string;
+  requests: number;
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+  cost: number;
+  savings?: number;
+  usageSavingsTokens?: number;
+}
+
+export interface DiversityReport {
+  score: number;
+  providers: Record<string, { share: number }>;
+  windowSize: number;
+  ttlMs: number;
 }
 
 export interface UsageAnalyticsPayload {
@@ -1007,20 +1020,32 @@ export interface UsageAnalyticsPayload {
   byModel: UsageAnalyticsModelRow[];
   byApiKey: UsageAnalyticsApiKeyRow[];
   byAccount: UsageAnalyticsAccountRow[];
+  byServiceTier?: UsageAnalyticsServiceTierRow[];
   dailyTrend: UsageAnalyticsTrendRow[];
-  weeklyPattern: Array<{ day: string; avgTokens: number; totalTokens: number }>;
+  dailyByModel?: Record<string, Record<string, number>>;
+  modelNames?: string[];
+  weeklyPattern: Array<{ day: string; avgTokens: number; totalTokens?: number }>;
   activityMap: Record<string, number>;
-  presetSummaries?: Record<string, { totalCost: number }>;
+  presetSummaries?: Record<string, { totalCost: number; totalRequests?: number }>;
 }
 
 export const usageApi = {
-  getAnalytics: (params: { range?: string; presets?: string; apiKeyIds?: string }) => {
+  getAnalytics: (params: {
+    range?: string;
+    presets?: string;
+    apiKeyIds?: string;
+    startDate?: string;
+    endDate?: string;
+  }) => {
     const q = new URLSearchParams();
     if (params.range) q.set("range", params.range);
     if (params.presets) q.set("presets", params.presets);
     if (params.apiKeyIds) q.set("apiKeyIds", params.apiKeyIds);
+    if (params.startDate) q.set("startDate", params.startDate);
+    if (params.endDate) q.set("endDate", params.endDate);
     return api<UsageAnalyticsPayload>(`/usage/analytics?${q.toString()}`);
   },
+  getDiversity: () => api<DiversityReport>("/analytics/diversity"),
   getCallLogs: (params: { limit?: number; search?: string; apiKeyId?: string }) => {
     const q = new URLSearchParams();
     if (params.limit) q.set("limit", String(params.limit));
@@ -1920,6 +1945,38 @@ export interface CompressionConfig {
   liveZone?: { enabled: boolean };
 }
 
+export interface CompressionAnalyticsSummary {
+  totalRequests: number;
+  totalTokensSaved: number;
+  avgSavingsPct: number;
+  avgDurationMs: number;
+  byMode: Record<
+    string,
+    { count: number; tokensSaved: number; avgSavingsPct: number; skipped?: number }
+  >;
+  byEngine?: Record<string, { count: number; tokensSaved: number; avgSavingsPct: number }>;
+  byCompressionCombo?: Record<string, { count: number; tokensSaved: number }>;
+  byProvider: Record<string, { count: number; tokensSaved: number }>;
+  last24h: Array<{ hour: string; count: number; tokensSaved: number }>;
+  totalSkipped?: number;
+  bySkipReason?: Record<string, number>;
+  validationFallbacks: number;
+  realUsage: {
+    requestsWithReceipts: number;
+    promptTokens: number;
+    completionTokens: number;
+    totalTokens: number;
+    cacheReadTokens: number;
+    cacheWriteTokens: number;
+    estimatedUsdSaved: number;
+    bySource: Record<string, number>;
+  };
+  mcpDescriptionCompression?: {
+    snapshots: number;
+    estimatedTokensSaved: number;
+  };
+}
+
 export interface CompressionTelemetrySummary {
   totalRuns: number;
   totalTokensSaved: number;
@@ -2016,6 +2073,9 @@ export const compressionApi = {
         },
       };
     }
+  },
+  getAnalytics: async (since: "24h" | "7d" | "30d" | "all" = "24h"): Promise<CompressionAnalyticsSummary> => {
+    return api<CompressionAnalyticsSummary>(`/analytics/compression?since=${since}`);
   },
 };
 
@@ -2432,7 +2492,271 @@ export interface ComboHealthItem {
   issues: Array<{ severity: "info" | "warning" | "critical"; message: string }>;
 }
 
+export type UtilizationTimeRange = "1h" | "24h" | "7d" | "30d";
+export type ComboForecastHorizon = "24h" | "7d" | "30d";
+export type ComboForecastConfidence = "high" | "medium" | "low" | "no_data";
+export type ComboForecastRiskLevel = "low" | "medium" | "high" | "critical" | "unknown";
+export type ComboAutopilotSeverity = "info" | "warning" | "critical";
+export type ComboAutopilotStatus = "healthy" | "warning" | "critical";
+export type ComboAutopilotState = "healthy" | "degraded" | "down";
+
+export interface ComboHealthMetrics {
+  comboId: string;
+  comboName: string;
+  strategy: string;
+  models: string[];
+  targetHealth?: Array<{
+    executionKey: string;
+    stepId: string;
+    model: string;
+    provider: string;
+    connectionId: string | null;
+    label: string | null;
+    requests: number;
+    successRate: number;
+    avgLatencyMs: number;
+    lastStatus: "ok" | "error" | null;
+    lastUsedAt: string | null;
+    quotaRemainingPct: number | null;
+    quotaIsExhausted: boolean | null;
+    quotaTrend: "improving" | "stable" | "declining" | null;
+    quotaScope: "connection" | "provider" | "none";
+  }>;
+  quotaHealth: {
+    providers: Array<{
+      provider: string;
+      remainingPct: number;
+      isExhausted: boolean;
+      trend: "improving" | "stable" | "declining";
+    }>;
+    worstRemainingPct: number;
+  };
+  usageSkew: {
+    modelDistribution: Array<{
+      model: string;
+      requestShare: number;
+      tokenShare: number;
+    }>;
+    giniCoefficient: number;
+  };
+  performance: {
+    avgLatencyMs: number;
+    successRate: number;
+    totalRequests: number;
+  };
+}
+
+export interface ComboHealthResponse {
+  timeRange: UtilizationTimeRange;
+  combos: ComboHealthMetrics[];
+}
+
+export interface ComboForecastTarget {
+  executionKey: string;
+  stepId: string | null;
+  provider: string;
+  model: string;
+  connectionId: string | null;
+  label: string | null;
+  trafficShare: number;
+  history: {
+    requests: number;
+    costUsd: number;
+    totalTokens: number;
+  };
+  forecast: {
+    projectedRequests: number;
+    projectedCostUsd: number;
+    projectedTokens: number;
+  };
+  quota: {
+    scope: "connection" | "provider" | "none";
+    remainingPct: number | null;
+    depletionPctPerDay: number | null;
+    projectedRemainingPct: number | null;
+    timeToExhaustDays: number | null;
+    risk: ComboForecastRiskLevel;
+  };
+}
+
+export interface ComboForecastMetrics {
+  comboId: string;
+  comboName: string;
+  strategy: string;
+  confidence: ComboForecastConfidence;
+  history: {
+    requests: number;
+    inputTokens: number;
+    outputTokens: number;
+    cacheReadTokens: number;
+    cacheCreationTokens: number;
+    reasoningTokens: number;
+    totalTokens: number;
+    costUsd: number;
+    avgDailyCostUsd: number;
+  };
+  forecast: {
+    projectedRequests: number;
+    projectedTokens: number;
+    projectedCostUsd: number;
+  };
+  quotaRisk: {
+    level: ComboForecastRiskLevel;
+    projectedWorstRemainingPct: number | null;
+    timeToExhaustDays: number | null;
+    worstTargetExecutionKey: string | null;
+  };
+  targets: ComboForecastTarget[];
+  dataQuality: {
+    pricingCoveragePct: number;
+    quotaCoverage: "connection" | "provider" | "partial" | "none";
+    notes: string[];
+  };
+}
+
+export interface ComboForecastResponse {
+  timeRange: UtilizationTimeRange;
+  horizon: ComboForecastHorizon;
+  asOf: string;
+  method: "linear_history";
+  combos: ComboForecastMetrics[];
+}
+
+export interface ComboAutopilotIssue {
+  id: string;
+  severity: ComboAutopilotSeverity;
+  kind: string;
+  title: string;
+  recommendation: string;
+  evidence: Record<string, unknown>;
+  target: {
+    comboId: string;
+    comboName: string;
+    provider?: string;
+    connectionId?: string | null;
+    executionKey?: string;
+    model?: string;
+  };
+  actions: Array<{
+    type: string;
+    mode: "manual";
+    label: string;
+    href?: string;
+  }>;
+}
+
+export interface ComboAutopilotCombo {
+  comboId: string;
+  comboName: string;
+  strategy: string;
+  state: ComboAutopilotState;
+  score: number;
+  signals: {
+    totalRequests: number;
+    successRate: number;
+    avgLatencyMs: number;
+    worstQuotaRemainingPct: number | null;
+    forecastRisk: ComboForecastRiskLevel;
+    forecastConfidence: ComboForecastConfidence;
+    usageSkew: number;
+    targetCount: number;
+    providerIssueCount: number;
+    dataQualityNotes: string[];
+  };
+  issues: ComboAutopilotIssue[];
+}
+
+export interface ComboAutopilotReport {
+  status: ComboAutopilotStatus;
+  checkedAt: string;
+  timeRange: UtilizationTimeRange;
+  horizon: ComboForecastHorizon;
+  summary: {
+    comboCount: number;
+    healthyCount: number;
+    degradedCount: number;
+    downCount: number;
+    issueCount: number;
+    suggestionCount: number;
+    actionableCount?: number;
+  };
+  combos: ComboAutopilotCombo[];
+}
+
+export interface ComboScoringInspectorFactor {
+  key: string;
+  value: number;
+  weight: number;
+  contribution: number;
+  source: string;
+  note?: string;
+}
+
+export interface ComboScoringInspectorTarget {
+  executionKey: string;
+  stepId: string | null;
+  provider: string;
+  model: string;
+  connectionId: string | null;
+  label: string | null;
+  rank: number;
+  score: number;
+  factors: ComboScoringInspectorFactor[];
+  signals: {
+    quotaRemainingPct: number | null;
+    projectedQuotaRemainingPct: number | null;
+    successRate: number | null;
+    avgLatencyMs: number | null;
+    forecastRisk: ComboForecastRiskLevel | null;
+    autopilotIssueCount: number;
+    resilience?: any;
+  };
+}
+
+export interface ComboScoringInspectorCombo {
+  comboId: string;
+  comboName: string;
+  strategy: string;
+  taskType: string;
+  weights: Record<string, number>;
+  weightSource: string;
+  modePack: string | null;
+  selectedExecutionKey: string | null;
+  targets: ComboScoringInspectorTarget[];
+  warnings: string[];
+}
+
+export interface ComboScoringInspectorResponse {
+  asOf: string;
+  timeRange: UtilizationTimeRange;
+  horizon: ComboForecastHorizon;
+  method: "read_only_recompute";
+  combos: ComboScoringInspectorCombo[];
+}
+
+export interface ComboHealthDashboardResponse {
+  health: ComboHealthResponse;
+  forecast: ComboForecastResponse | null;
+  autopilot: ComboAutopilotReport | null;
+  scoring: ComboScoringInspectorResponse | null;
+  errors: Partial<Record<"forecast" | "autopilot" | "scoring", string>>;
+}
+
 export const comboHealthApi = {
+  getDashboard: (params?: {
+    range?: UtilizationTimeRange;
+    horizon?: ComboForecastHorizon;
+    comboId?: string;
+    taskType?: string;
+  }) => {
+    const sp = new URLSearchParams();
+    if (params?.range) sp.set("range", params.range);
+    if (params?.horizon) sp.set("horizon", params.horizon);
+    if (params?.comboId) sp.set("comboId", params.comboId);
+    if (params?.taskType) sp.set("taskType", params.taskType);
+    const qs = sp.toString() ? `?${sp.toString()}` : "";
+    return api<ComboHealthDashboardResponse>(`/usage/combo-health-dashboard${qs}`);
+  },
   getOverview: async (params?: { range?: string; horizon?: string }): Promise<{ combos: ComboHealthItem[]; overallHealth: number }> => {
     const sp = new URLSearchParams();
     if (params?.range) sp.set("range", params.range);
@@ -2477,6 +2801,28 @@ export const comboHealthApi = {
 };
 
 // 2. Provider Utilization & Heatmap
+export interface ProviderUtilizationPoint {
+  timestamp: string;
+  provider: string;
+  remainingPct: number;
+  isExhausted: boolean;
+  windowKey: string;
+}
+
+export interface ConnectionMetaEntry {
+  email?: string | null;
+  name?: string | null;
+  displayName?: string | null;
+}
+
+export interface ProviderUtilizationResponse {
+  timeRange: UtilizationTimeRange;
+  bucketSizeMinutes: number;
+  providers: string[];
+  data: ProviderUtilizationPoint[];
+  connectionMeta?: Record<string, ConnectionMetaEntry>;
+}
+
 export interface UtilizationProviderMetric {
   providerId: string;
   providerName: string;
@@ -2491,6 +2837,18 @@ export interface UtilizationProviderMetric {
 }
 
 export const utilizationApi = {
+  getUtilization: (params?: {
+    range?: UtilizationTimeRange;
+    provider?: string;
+    aggregateBy?: "provider" | "connection";
+  }) => {
+    const sp = new URLSearchParams();
+    if (params?.range) sp.set("range", params.range);
+    if (params?.provider) sp.set("provider", params.provider);
+    if (params?.aggregateBy) sp.set("aggregateBy", params.aggregateBy);
+    const qs = sp.toString() ? `?${sp.toString()}` : "";
+    return api<ProviderUtilizationResponse>(`/usage/utilization${qs}`);
+  },
   getMetrics: async (params?: { range?: string; aggregateBy?: string }): Promise<UtilizationProviderMetric[]> => {
     const sp = new URLSearchParams();
     sp.set("range", params?.range || "24h");
@@ -2526,6 +2884,149 @@ export const utilizationApi = {
 };
 
 // 3. Cache Performance & Reasoning Cache
+export interface SemanticCacheStats {
+  memoryEntries: number;
+  dbEntries: number;
+  hits: number;
+  misses: number;
+  hitRate: string;
+  tokensSaved: number;
+}
+
+export interface CacheHealthModel {
+  model: string;
+  calls: number;
+  cacheReadTotal: number;
+  cacheWriteTotal: number;
+  writeReadRatio: number;
+  heavyWriteCalls: number;
+}
+
+export type CacheHealthVerdict = "healthy" | "degraded" | "thrash" | "no-data";
+
+export interface CacheHealthResponse {
+  totalCalls: number;
+  cacheReadTotal: number;
+  cacheWriteTotal: number;
+  writeReadRatio: number;
+  warmCalls: number;
+  coldCalls: number;
+  rewriteCalls: number;
+  uncachedCalls: number;
+  writeP50: number;
+  writeP90: number;
+  writeP99: number;
+  writeMax: number;
+  heavyWriteCalls: number;
+  heavyWriteCallShare: number;
+  heavyWriteTokenShare: number;
+  heavyWriteThreshold: number;
+  verdict: CacheHealthVerdict;
+  byModel: CacheHealthModel[];
+  timeRange: "1h" | "24h" | "7d" | "30d";
+  since: string;
+  truncated: boolean;
+}
+
+export interface PromptCacheProviderStats {
+  requests: number;
+  totalRequests?: number;
+  cachedRequests?: number;
+  inputTokens: number;
+  cachedTokens: number;
+  cacheCreationTokens: number;
+}
+
+export interface PromptCacheMetrics {
+  totalRequests: number;
+  requestsWithCacheControl: number;
+  totalInputTokens: number;
+  totalCachedTokens: number;
+  totalCacheCreationTokens: number;
+  tokensSaved: number;
+  estimatedCostSaved: number;
+  byProvider: Record<string, PromptCacheProviderStats>;
+  byStrategy: Record<string, PromptCacheProviderStats>;
+  health?: CacheHealthResponse;
+  lastUpdated: string;
+}
+
+export interface CacheTrendPoint {
+  timestamp: string;
+  requests: number;
+  cachedRequests: number;
+  inputTokens: number;
+  cachedTokens: number;
+  cacheCreationTokens: number;
+}
+
+export interface IdempotencyStats {
+  activeKeys: number;
+  windowMs: number;
+}
+
+export interface CacheConfigData {
+  semanticCacheEnabled: boolean;
+}
+
+export interface FullCacheStatsResponse {
+  semanticCache: SemanticCacheStats;
+  promptCache: PromptCacheMetrics | null;
+  trend: CacheTrendPoint[];
+  idempotency: IdempotencyStats;
+  config?: CacheConfigData;
+}
+
+export interface SemanticCacheItem {
+  id: string;
+  signature: string;
+  model: string;
+  hit_count: number;
+  tokens_saved: number;
+  created_at: string;
+  expires_at: string;
+}
+
+export interface SemanticCacheEntriesResponse {
+  entries: SemanticCacheItem[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface ReasoningCacheEntry {
+  toolCallId: string;
+  provider: string;
+  model: string;
+  reasoning: string;
+  charCount: number;
+  createdAt: string;
+  expiresAt: string;
+}
+
+export interface ReasoningCacheStats {
+  memoryEntries: number;
+  dbEntries: number;
+  totalEntries: number;
+  totalChars: number;
+  hits: number;
+  misses: number;
+  replays: number;
+  replayRate: string;
+  byProvider: Record<string, { entries: number; chars: number }>;
+  byModel: Record<string, { entries: number; chars: number }>;
+  oldestEntry: string | null;
+  newestEntry: string | null;
+}
+
+export interface ReasoningCacheResponse {
+  stats: ReasoningCacheStats;
+  entries: ReasoningCacheEntry[];
+}
+
 export interface CacheStatsSummary {
   hitRate: number;
   totalHits: number;
@@ -2541,6 +3042,17 @@ export interface CacheStatsSummary {
 }
 
 export const cacheAnalyticsApi = {
+  getFullStats: (params?: { trendHours?: number }) => {
+    const q = params?.trendHours ? `?trendHours=${params.trendHours}` : "";
+    return api<FullCacheStatsResponse>(`/cache${q}`);
+  },
+  getCacheHealth: (params?: { range?: "1h" | "24h" | "7d" | "30d"; model?: string }) => {
+    const q = new URLSearchParams();
+    if (params?.range) q.set("range", params.range);
+    if (params?.model) q.set("model", params.model);
+    const qs = q.toString();
+    return api<CacheHealthResponse>(`/usage/cache-health${qs ? `?${qs}` : ""}`);
+  },
   getStats: async (): Promise<CacheStatsSummary> => {
     const raw = await api<any>("/cache");
     const semantic = raw?.semanticCache ?? {};
@@ -2571,8 +3083,62 @@ export const cacheAnalyticsApi = {
       promptCache: prompt,
     };
   },
-  clearCache: async (): Promise<{ success: boolean }> => {
-    return await api("/cache", { method: "DELETE" });
+  clearCache: async (params?: { model?: string; signature?: string; staleMs?: number }): Promise<{ ok?: boolean; cleared?: number; scope?: string }> => {
+    const q = new URLSearchParams();
+    if (params?.model) q.set("model", params.model);
+    if (params?.signature) q.set("signature", params.signature);
+    if (params?.staleMs) q.set("staleMs", String(params.staleMs));
+    const qs = q.toString();
+    return await api(`/cache${qs ? `?${qs}` : ""}`, { method: "DELETE" });
+  },
+  getEntries: (params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    model?: string;
+    sortBy?: string;
+    sortOrder?: string;
+  }) => {
+    const q = new URLSearchParams();
+    if (params?.page) q.set("page", String(params.page));
+    if (params?.limit) q.set("limit", String(params.limit));
+    if (params?.search) q.set("search", params.search);
+    if (params?.model) q.set("model", params.model);
+    if (params?.sortBy) q.set("sortBy", params.sortBy);
+    if (params?.sortOrder) q.set("sortOrder", params.sortOrder);
+    const qs = q.toString();
+    return api<SemanticCacheEntriesResponse>(`/cache/entries${qs ? `?${qs}` : ""}`);
+  },
+  deleteEntry: (signature: string) =>
+    api<{ ok: boolean; deleted: number }>(`/cache/entries?signature=${encodeURIComponent(signature)}`, {
+      method: "DELETE",
+    }),
+  deleteEntryByModel: (model: string) =>
+    api<{ ok: boolean; deleted: number }>(`/cache/entries?model=${encodeURIComponent(model)}`, {
+      method: "DELETE",
+    }),
+  getReasoning: (params?: {
+    provider?: string;
+    model?: string;
+    limit?: number;
+    offset?: number;
+  }) => {
+    const q = new URLSearchParams();
+    if (params?.provider) q.set("provider", params.provider);
+    if (params?.model) q.set("model", params.model);
+    if (params?.limit) q.set("limit", String(params.limit));
+    if (params?.offset) q.set("offset", String(params.offset));
+    const qs = q.toString();
+    return api<ReasoningCacheResponse>(`/cache/reasoning${qs ? `?${qs}` : ""}`);
+  },
+  clearReasoning: (params?: { toolCallId?: string; provider?: string }) => {
+    const q = new URLSearchParams();
+    if (params?.toolCallId) q.set("toolCallId", params.toolCallId);
+    if (params?.provider) q.set("provider", params.provider);
+    const qs = q.toString();
+    return api<{ ok: boolean; cleared: number; scope: string }>(`/cache/reasoning${qs ? `?${qs}` : ""}`, {
+      method: "DELETE",
+    });
   },
 };
 
@@ -2612,9 +3178,141 @@ export interface EvalBenchmarkResult {
   metric: string;
 }
 
+export interface EvalTargetOption {
+  key: string;
+  type: "suite-default" | "model" | "combo";
+  id: string | null;
+  label: string;
+  description: string;
+}
+
+export interface EvalApiKeyOption {
+  id: string;
+  name: string;
+  isActive: boolean;
+}
+
+export interface EvalCasePreview {
+  id: string;
+  name: string;
+  model?: string;
+  input?: {
+    messages?: Array<{ role: string; content: string }>;
+  };
+  expected?: {
+    strategy?: string;
+    value?: string;
+  };
+  tags?: string[];
+}
+
+export interface EvalSuite {
+  id: string;
+  name: string;
+  description?: string;
+  source?: "built-in" | "custom";
+  caseCount?: number;
+  cases?: EvalCasePreview[];
+  updatedAt?: string;
+}
+
+export interface EvalResult {
+  caseId: string;
+  caseName: string;
+  passed: boolean;
+  durationMs: number;
+  error?: string;
+  details?: {
+    expected?: string;
+    actual?: string;
+    actualSnippet?: string;
+    searchTerm?: string;
+    pattern?: string;
+  };
+}
+
+export interface EvalRunSummary {
+  total: number;
+  passed: number;
+  failed: number;
+  passRate: number;
+}
+
+export interface EvalRun {
+  id: string;
+  runGroupId: string | null;
+  suiteId: string;
+  suiteName: string;
+  target: {
+    type: "suite-default" | "model" | "combo";
+    id: string | null;
+    key: string;
+    label: string;
+  };
+  avgLatencyMs: number;
+  summary: EvalRunSummary;
+  results: EvalResult[];
+  outputs: Record<string, string>;
+  createdAt: string;
+}
+
+export interface EvalScorecard {
+  suites: number;
+  totalCases: number;
+  totalPassed: number;
+  overallPassRate: number;
+  perSuite: Array<{ id: string; name: string; passRate: number }>;
+}
+
+export interface EvalsDashboardPayload {
+  suites: EvalSuite[];
+  recentRuns: EvalRun[];
+  scorecard: EvalScorecard | null;
+  targets: EvalTargetOption[];
+  apiKeys: EvalApiKeyOption[];
+}
+
 export const evalsApi = {
+  getDashboard: async (): Promise<EvalsDashboardPayload> => {
+    return api("/evals");
+  },
+  runSuite: async (params: {
+    suiteId: string;
+    target?: { type: "suite-default" | "model" | "combo"; id: string | null };
+    compareTarget?: { type: "suite-default" | "model" | "combo"; id: string | null };
+    apiKeyId?: string;
+  }): Promise<{ runs: EvalRun[]; scorecard: EvalScorecard | null }> => {
+    return api("/evals", {
+      method: "POST",
+      body: JSON.stringify(params),
+    });
+  },
+  saveSuite: async (suite: {
+    id?: string;
+    name: string;
+    description?: string;
+    cases: Array<{
+      name: string;
+      model?: string;
+      userPrompt?: string;
+      systemPrompt?: string;
+      strategy?: string;
+      expectedValue?: string;
+      tags?: string;
+    }>;
+  }): Promise<EvalSuite> => {
+    return api("/evals/suites", {
+      method: "POST",
+      body: JSON.stringify(suite),
+    });
+  },
+  deleteSuite: async (suiteId: string): Promise<{ success: boolean }> => {
+    return api(`/evals/suites/${encodeURIComponent(suiteId)}`, {
+      method: "DELETE",
+    });
+  },
   list: async (): Promise<EvalBenchmarkResult[]> => {
-    const res = await api<{ evals?: EvalBenchmarkResult[] }>("/analytics/evals");
+    const res = await api<{ evals?: EvalBenchmarkResult[] }>("/analytics/evals").catch(() => ({ evals: [] }));
     return Array.isArray(res?.evals) ? res.evals : [];
   },
 };
@@ -2659,6 +3357,41 @@ export const providerStatsApi = {
 
 /* ---------------- Pricing & Costs APIs ---------------- */
 
+export type PricingSource = "default" | "litellm" | "modelsDev" | "user";
+
+export interface PricingSyncStatus {
+  enabled: boolean;
+  lastSync: string | null;
+  lastSyncModelCount: number;
+  nextSync: string | null;
+  intervalMs: number;
+  sources: string[];
+}
+
+export interface PricingCatalogModel {
+  id: string;
+  name: string;
+  custom?: boolean;
+}
+
+export interface PricingCatalogProvider {
+  id: string;
+  alias: string;
+  name?: string;
+  authType: string;
+  format: string;
+  modelCount: number;
+  models: PricingCatalogModel[];
+  pricingKey?: string;
+  displayPrefix?: string;
+  modelOverrideEligible?: boolean;
+}
+
+export interface PricingDataResponse {
+  pricing?: Record<string, Record<string, Record<string, number>>>;
+  sourceMap?: Record<string, Record<string, PricingSource>>;
+}
+
 export interface PricingModelEntry {
   id: string;
   name: string;
@@ -2667,11 +3400,31 @@ export interface PricingModelEntry {
   outputCostPerM: number;
   cachedCostPerM: number;
   reasoningCostPerM?: number;
-  source: "default" | "litellm" | "modelsDev" | "user";
+  source: PricingSource;
   lastUpdated: string;
 }
 
 export const pricingApi = {
+  getCatalog: () => api<Record<string, PricingCatalogProvider>>("/pricing/models"),
+  getPricingWithSources: () => api<PricingDataResponse>("/pricing?includeSources=1"),
+  getSyncStatus: () => api<PricingSyncStatus>("/pricing/sync"),
+  saveProviderPricing: (pricingKey: string, providerData: Record<string, Record<string, number>>) =>
+    api<Record<string, unknown>>("/pricing", {
+      method: "PATCH",
+      body: JSON.stringify({ [pricingKey]: providerData }),
+    }),
+  resetProviderPricing: (provider: string, model?: string) => {
+    const q = new URLSearchParams({ provider });
+    if (model) q.set("model", model);
+    return api<Record<string, unknown>>(`/pricing?${q.toString()}`, { method: "DELETE" });
+  },
+  resetAllPricing: () => api<Record<string, unknown>>("/pricing", { method: "DELETE" }),
+  sync: (sources?: string[]) =>
+    api<{ success: boolean; modelCount?: number; providerCount?: number; error?: string }>(
+      "/pricing/sync",
+      { method: "POST", body: JSON.stringify(sources ? { sources } : {}) }
+    ),
+  clearSynced: () => api<{ success: boolean; message: string }>("/pricing/sync", { method: "DELETE" }),
   list: async (): Promise<{ models: PricingModelEntry[]; lastSync: string; sourceCount: number }> => {
     const res = await api<any>("/pricing");
     if (Array.isArray(res?.models)) {
@@ -2703,10 +3456,45 @@ export const pricingApi = {
       sourceCount: Object.keys(res || {}).length,
     };
   },
-  sync: async (): Promise<{ success: boolean; syncedModels: number }> => {
-    return await api("/pricing/sync", { method: "POST" });
-  },
 };
+
+export interface BudgetSummary {
+  dailyLimitUsd?: number;
+  weeklyLimitUsd?: number;
+  monthlyLimitUsd?: number;
+  warningThreshold?: number | null;
+  resetInterval?: "daily" | "weekly" | "monthly" | null;
+  resetTime?: string | null;
+  totalCostToday?: number;
+  totalCostMonth?: number;
+  totalCostPeriod?: number;
+  activeLimitUsd?: number;
+  budgetResetAt?: number | null;
+  nextResetAt?: number | null;
+  periodStartAt?: number | null;
+  budgetCheck?: { allowed: boolean; remaining?: number };
+}
+
+export interface BulkBudgetResponse {
+  budgets: Record<string, BudgetSummary>;
+}
+
+export interface SetBudgetPayload {
+  apiKeyId: string;
+  dailyLimitUsd?: number;
+  weeklyLimitUsd?: number;
+  monthlyLimitUsd?: number;
+  warningThreshold?: number;
+  warningThresholdPct?: number;
+  resetInterval?: "daily" | "weekly" | "monthly";
+  resetTime?: string;
+}
+
+export interface ProviderCostBreakdown {
+  provider: string;
+  cost: number;
+  pct: number;
+}
 
 export interface BudgetRuleItem {
   id: string;
@@ -2721,11 +3509,77 @@ export interface BudgetRuleItem {
 }
 
 export const budgetApi = {
+  getBulk: async (): Promise<Record<string, BudgetSummary>> => {
+    const res = await api<BulkBudgetResponse>("/usage/budget/bulk");
+    return res?.budgets ?? {};
+  },
+  getBudget: async (apiKeyId: string): Promise<BudgetSummary> => {
+    return api<BudgetSummary>(`/usage/budget?apiKeyId=${encodeURIComponent(apiKeyId)}`);
+  },
+  setBudget: async (payload: SetBudgetPayload): Promise<{ success: boolean; apiKeyId?: string; budget?: BudgetSummary }> => {
+    return api("/usage/budget", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+  deleteBudget: async (apiKeyId: string): Promise<{ success: boolean }> => {
+    return api(`/usage/budget?apiKeyId=${encodeURIComponent(apiKeyId)}`, {
+      method: "DELETE",
+    });
+  },
+  getProviderBreakdown: async (apiKeyId: string): Promise<ProviderCostBreakdown[]> => {
+    try {
+      const data = await api<{ byProvider?: Array<{ provider?: string; totalCost?: number; cost?: number }> }>(
+        `/usage/analytics?range=30d&apiKeyIds=${encodeURIComponent(apiKeyId)}`
+      );
+      const arr = Array.isArray(data?.byProvider) ? data.byProvider : [];
+      const total = arr.reduce((s, p) => s + Number(p?.totalCost ?? p?.cost ?? 0), 0) || 0;
+      return arr
+        .map((p) => {
+          const cost = Number(p?.totalCost ?? p?.cost ?? 0);
+          return {
+            provider: String(p?.provider ?? "未知提供商"),
+            cost,
+            pct: total > 0 ? (cost / total) * 100 : 0,
+          };
+        })
+        .filter((p) => p.cost > 0)
+        .sort((a, b) => b.cost - a.cost);
+    } catch {
+      return [];
+    }
+  },
   list: async (): Promise<BudgetRuleItem[]> => {
-    const res = await api<{ budgets?: BudgetRuleItem[] }>("/budget");
+    const res = await api<{ budgets?: BudgetRuleItem[] }>("/budget").catch(() => ({ budgets: [] }));
     return Array.isArray(res?.budgets) ? res.budgets : [];
   },
 };
+
+export interface FreeBudgetPerModel {
+  provider: string;
+  modelId: string;
+  displayName: string;
+  monthlyTokens: number;
+  creditTokens: number;
+  freeType: string;
+  poolKey: string | null;
+  tos: string;
+}
+
+export interface FreeBudgetSummaryData {
+  steadyRecurringTokens: number;
+  steadyWithRecurringCreditsTokens: number;
+  firstMonthRealisticTokens: number;
+  usedThisMonth: number;
+  remaining: number;
+  modelCount: number;
+  poolCount: number;
+  perModel: FreeBudgetPerModel[];
+  boostMonthlyTokens?: number;
+  uncappedProviders?: string[];
+  catalogUpdatedAt?: string | null;
+  noCredentialProviders?: string[];
+}
 
 export interface FreeTierItem {
   provider: string;
@@ -2743,6 +3597,73 @@ export const freeTiersApi = {
     const res = await api<{ tiers?: FreeTierItem[] }>("/free-tiers");
     return Array.isArray(res?.tiers) ? res.tiers : [];
   },
+  getSummary: async (params?: { excludeTosAvoid?: boolean }): Promise<FreeBudgetSummaryData> => {
+    const qs = params?.excludeTosAvoid ? "?excludeTosAvoid=1" : "";
+    return await api<FreeBudgetSummaryData>(`/free-tier/summary${qs}`);
+  },
+};
+
+export type ProviderAuthType = "noauth" | "oauth" | "apikey";
+
+export interface ProviderModelScore {
+  modelId: string;
+  modelName: string;
+  score: number;
+  eloRaw: number | null;
+  confidence: string | null;
+  category: string;
+}
+
+export interface ProviderReliabilityUsage {
+  requests: number;
+  successes: number;
+  windowHours: number;
+  rate?: number;
+}
+
+export interface ProviderReliability {
+  connections: Array<{
+    testStatus: string | null;
+    rateLimitedUntil: string | null;
+    state: string;
+  }>;
+  state: string;
+  usage?: ProviderReliabilityUsage;
+}
+
+export interface FreeProviderRankingItem {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  textIcon?: string;
+  category: ProviderAuthType;
+  topModel: ProviderModelScore | null;
+  averageScore: number;
+  modelCount: number;
+  reliability?: ProviderReliability;
+}
+
+export const freeProviderRankingsApi = {
+  getRankings: async (params?: {
+    category?: string;
+    limit?: number;
+    configuredOnly?: boolean;
+    availableOnly?: boolean;
+    withUsage?: boolean;
+    usageRange?: string;
+  }): Promise<FreeProviderRankingItem[]> => {
+    const sp = new URLSearchParams();
+    if (params?.category) sp.set("category", params.category);
+    if (params?.limit) sp.set("limit", String(params.limit));
+    if (params?.configuredOnly) sp.set("configuredOnly", "1");
+    if (params?.availableOnly) sp.set("availableOnly", "1");
+    if (params?.withUsage ?? true) sp.set("withUsage", "1");
+    if (params?.usageRange) sp.set("usageRange", params.usageRange);
+    const qs = sp.toString();
+    const res = await api<{ rankings?: FreeProviderRankingItem[] }>(`/free-provider-rankings${qs ? `?${qs}` : ""}`);
+    return Array.isArray(res?.rankings) ? res.rankings : [];
+  },
 };
 
 export interface RadarModelRanking {
@@ -2758,9 +3679,174 @@ export interface RadarModelRanking {
   pricePerM: string;
 }
 
+export interface RadarMergedEntry {
+  provider: string;
+  modelId: string;
+  displayName: string;
+  familyId?: string | null;
+  monthlyTokens: number;
+  creditTokens: number;
+  freeType: string;
+  poolKey: string | null;
+  tos: string;
+  trainsOnPrompts?: boolean;
+  enabled?: boolean;
+  origin: "baseline" | "radar" | "local";
+  disabledBy?: "radar";
+  contextWindow?: number | null;
+  capabilities?: {
+    tools: boolean | null;
+    vision: boolean | null;
+    thinking: boolean | null;
+  };
+  metadataEvidenceUrls?: string[];
+  budget?: { kind: string; tokensPerMonth?: number; poolId?: string };
+  limits?: { rpm: number | null; rpd: number | null; tpm: number | null; tpd: number | null };
+  setup?: { keyUrl: string | null; steps: Array<string | { en: string; zh?: string; pt?: string }> } | null;
+}
+
+export interface RadarMeta {
+  version: string;
+  generatedAt?: string | null;
+  tier: string;
+  fetchedAt: string;
+}
+
+export interface RadarReferralItem {
+  provider: string;
+  url: string;
+  kind: "fixo" | "campanha";
+  validUntil: string | null;
+  requiredAction: string | null;
+  isDefault: boolean;
+}
+
+export interface RadarOffer {
+  id: string;
+  provider: string;
+  title: { en: string; zh?: string; pt?: string } | string;
+  description: { en: string; zh?: string; pt?: string } | string;
+  benefit: { kind: string; [k: string]: any };
+  publicBenefit: { kind: string; [k: string]: any } | null;
+  conditions: { en: string; zh?: string; pt?: string } | string;
+  validUntil: string | null;
+  url: string;
+  partner?: boolean;
+}
+
+export interface RadarIntelData {
+  feed: string;
+  version: string;
+  tier: string;
+  methodology?: { kind: string; initialRating: number; kFactor: number };
+  rankings: Array<{
+    rank: number;
+    provider: string;
+    modelId: string;
+    category: string;
+    rating: number;
+    matches: number;
+    wins: number;
+    losses: number;
+    draws: number;
+  }>;
+  catalog?: {
+    currentVersion: string;
+    previousVersion?: string;
+    currentGeneratedAt?: string;
+    ageDays: number;
+    freshness: string;
+    providers: { current: number; added: number; removed: number };
+    models: { current: number; added: number; removed: number };
+    trend: string;
+  };
+}
+
+export interface RadarLocalModelState {
+  provider: string;
+  modelId: string;
+  displayName: string | null;
+  enabled: boolean | null;
+  tombstoned: boolean;
+  updatedAt: string;
+}
+
 export const radarApi = {
+  getSettings: async (): Promise<{
+    optIn: boolean;
+    hasSupporterKey: boolean;
+    supporterKeyMasked: string | null;
+    contributorClaimUrl?: string;
+    supporterPlansUrl?: string;
+  }> => {
+    return api("/radar/settings");
+  },
+  saveSettings: async (settings: { optIn?: boolean; supporterKey?: string | null }): Promise<{
+    optIn: boolean;
+    hasSupporterKey: boolean;
+    supporterKey: string | null;
+  }> => {
+    return api("/radar/settings", {
+      method: "POST",
+      body: JSON.stringify(settings),
+    });
+  },
+  getCatalog: async (): Promise<{ entries: RadarMergedEntry[]; meta: RadarMeta | null }> => {
+    return api("/radar/catalog");
+  },
+  sync: async (): Promise<{ status: string; version?: string; tier?: string }> => {
+    return api("/radar/sync", { method: "POST" });
+  },
+  getReferrals: async (): Promise<{
+    fixed: RadarReferralItem[];
+    campaigns: RadarReferralItem[];
+    tier: string | null;
+  }> => {
+    return api("/radar/referrals");
+  },
+  getLocalModelState: async (): Promise<{ states: RadarLocalModelState[] }> => {
+    return api("/radar/local-model-state");
+  },
+  saveLocalModelOverride: async (patch: {
+    provider: string;
+    modelId: string;
+    displayName?: string | null;
+    enabled?: boolean | null;
+  }): Promise<{ states: RadarLocalModelState[] }> => {
+    return api("/radar/local-model-state", {
+      method: "PATCH",
+      body: JSON.stringify(patch),
+    });
+  },
+  resetLocalModelOverride: async (provider: string, modelId: string): Promise<{ states: RadarLocalModelState[] }> => {
+    return api(`/radar/local-model-state?provider=${encodeURIComponent(provider)}&modelId=${encodeURIComponent(modelId)}`, {
+      method: "DELETE",
+    });
+  },
+  setLocalModelTombstone: async (
+    provider: string,
+    modelId: string,
+    tombstoned: boolean,
+  ): Promise<{ states: RadarLocalModelState[] }> => {
+    return api("/radar/local-model-state", {
+      method: "PUT",
+      body: JSON.stringify({ provider, modelId, tombstoned }),
+    });
+  },
+  getOffers: async (): Promise<{ offers: RadarOffer[]; meta: any }> => {
+    return api("/radar/offers");
+  },
+  syncOffers: async (): Promise<{ status: string; version?: string }> => {
+    return api("/radar/offers/sync", { method: "POST" });
+  },
+  getIntel: async (): Promise<{ intel: RadarIntelData | null; meta: any }> => {
+    return api("/radar/intel");
+  },
+  syncIntel: async (): Promise<{ status: string }> => {
+    return api("/radar/intel/sync", { method: "POST" });
+  },
   getRankings: async (): Promise<RadarModelRanking[]> => {
-    const res = await api<{ rankings?: RadarModelRanking[] }>("/radar");
+    const res = await api<{ rankings?: RadarModelRanking[] }>("/free-provider-rankings");
     return Array.isArray(res?.rankings) ? res.rankings : [];
   },
 };

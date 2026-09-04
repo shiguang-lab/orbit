@@ -16,6 +16,15 @@ import { gamificationRoutes } from "./gamification.js";
 import { batchRoutes } from "./batch.js";
 import { mediaRoutes } from "./media.js";
 import { runtimeRoutes } from "./runtime.js";
+import { freeProviderRankingsRoutes } from "./freeProviderRankings.js";
+import { freeTierRoutes } from "./freeTier.js";
+import { budgetRoutes } from "./budget.js";
+import { pricingRoutes } from "./pricing.js";
+import { radarRoutes } from "./radar.js";
+import { evalsRoutes } from "./evals.js";
+import { cacheRoutes } from "./cache.js";
+import { networkRoutes } from "./network.js";
+import { tunnelRoutes } from "./tunnels.js";
 import type { LocalAuthBroker } from "../lib/broker.js";
 
 export interface RouteEngines {
@@ -58,4 +67,13 @@ export async function routes(app: FastifyInstance, opts: RouteOptions = {}): Pro
   await app.register(batchRoutes, { prefix: "/api" });
   await app.register(mediaRoutes, { prefix: "/api" });
   await app.register(runtimeRoutes, { prefix: "/api" });
+  await app.register(freeProviderRankingsRoutes, { prefix: "/api" });
+  await app.register(freeTierRoutes, { prefix: "/api" });
+  await app.register(budgetRoutes, { prefix: "/api" });
+  await app.register(pricingRoutes, { prefix: "/api" });
+  await app.register(radarRoutes, { prefix: "/api" });
+  await app.register(evalsRoutes, { prefix: "/api" });
+  await app.register(cacheRoutes, { prefix: "/api" });
+  await app.register(networkRoutes, { prefix: "/api" });
+  await app.register(tunnelRoutes, { prefix: "/api" });
 }
