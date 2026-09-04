@@ -51,6 +51,9 @@ export function isLocalBffPath(pathname: string): boolean {
     pathname === "/api/healthz" ||
     pathname === "/api/livez" ||
     pathname === "/api/readyz" ||
+    pathname === "/api/network/info" ||
+    pathname === "/api/tunnels" ||
+    pathname.startsWith("/api/tunnels/") ||
     // Provider metadata is the static Orbit catalog. Keep this endpoint local
     // so a NAS deployment with an older API cannot turn it into a 404.
     pathname === "/api/providers/catalog" ||

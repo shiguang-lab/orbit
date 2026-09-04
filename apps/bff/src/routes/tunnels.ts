@@ -29,6 +29,14 @@ const tunnelState: TunnelState = {
 };
 
 export async function tunnelRoutes(app: FastifyInstance): Promise<void> {
+  const nasTarget = process.env.OMNIROUTE_NAS_API_TARGET?.trim();
+  const getUpstreamHeaders = () => ({
+    accept: "application/json",
+    ...(process.env.OMNIROUTE_NAS_MANAGEMENT_API_KEY
+      ? { authorization: `Bearer ${process.env.OMNIROUTE_NAS_MANAGEMENT_API_KEY}` }
+      : {}),
+  });
+
   // === Tailscale Routes ===
 
   app.get("/tunnels/tailscale", async (request: FastifyRequest, reply: FastifyReply) => {
@@ -41,10 +49,33 @@ export async function tunnelRoutes(app: FastifyInstance): Promise<void> {
     const incomingPort = hostHeaderStr?.includes(":") ? hostHeaderStr.split(":")[1] : undefined;
     const port = incomingPort || process.env.PORT || "20128";
 
+    // BFF local multi-layer detection
     const ts = await detectTailscale({
       port,
       incomingHost: hostHeaderStr,
     });
+
+    // If nasTarget is set, optionally probe upstream Orbit for status and merge
+    if (nasTarget) {
+      try {
+        const upstreamRes = await fetch(`${nasTarget.replace(/\/$/, "")}/api/tunnels/tailscale`, {
+          headers: getUpstreamHeaders(),
+          signal: AbortSignal.timeout(3000),
+        });
+        if (upstreamRes.ok) {
+          const upstream = (await upstreamRes.json()) as Record<string, unknown>;
+          if (upstream.running === true || upstream.connected === true) {
+            ts.connected = true;
+            ts.running = true;
+            if (typeof upstream.publicUrl === "string" && !ts.tailscaleUrl) {
+              ts.tailscaleUrl = upstream.publicUrl;
+            }
+          }
+        }
+      } catch {
+        // Upstream fetch failed, continue with BFF detection
+      }
+    }
 
     return reply.send({
       supported: true,
@@ -67,6 +98,18 @@ export async function tunnelRoutes(app: FastifyInstance): Promise<void> {
   });
 
   app.post("/tunnels/tailscale/enable", async (request: FastifyRequest, reply: FastifyReply) => {
+    if (nasTarget) {
+      try {
+        await fetch(`${nasTarget.replace(/\/$/, "")}/api/tunnels/tailscale/enable`, {
+          method: "POST",
+          headers: { ...getUpstreamHeaders(), "content-type": "application/json" },
+          signal: AbortSignal.timeout(5000),
+        });
+      } catch {
+        // Ignore
+      }
+    }
+
     const ts = await detectTailscale();
     return reply.send({
       success: true,
@@ -82,6 +125,18 @@ export async function tunnelRoutes(app: FastifyInstance): Promise<void> {
   });
 
   app.post("/tunnels/tailscale/disable", async (_request: FastifyRequest, reply: FastifyReply) => {
+    if (nasTarget) {
+      try {
+        await fetch(`${nasTarget.replace(/\/$/, "")}/api/tunnels/tailscale/disable`, {
+          method: "POST",
+          headers: getUpstreamHeaders(),
+          signal: AbortSignal.timeout(5000),
+        });
+      } catch {
+        // Ignore
+      }
+    }
+
     return reply.send({
       success: true,
       running: false,
@@ -90,12 +145,25 @@ export async function tunnelRoutes(app: FastifyInstance): Promise<void> {
   });
 
   app.post("/tunnels/tailscale/login", async (request: FastifyRequest<{ Body: { authKey?: string; hostname?: string; ephemeral?: boolean } }>, reply: FastifyReply) => {
-    const { authKey, hostname } = request.body || {};
+    const { authKey, hostname, ephemeral } = request.body || {};
     if (authKey) {
       process.env.TAILSCALE_AUTHKEY = authKey;
     }
     if (hostname) {
       process.env.TAILSCALE_HOSTNAME = hostname;
+    }
+
+    if (nasTarget) {
+      try {
+        await fetch(`${nasTarget.replace(/\/$/, "")}/api/tunnels/tailscale/login`, {
+          method: "POST",
+          headers: { ...getUpstreamHeaders(), "content-type": "application/json" },
+          body: JSON.stringify({ authKey, hostname, ephemeral }),
+          signal: AbortSignal.timeout(5000),
+        });
+      } catch {
+        // Ignore
+      }
     }
 
     const ts = await detectTailscale();
@@ -113,6 +181,21 @@ export async function tunnelRoutes(app: FastifyInstance): Promise<void> {
   // === Cloudflared Routes ===
 
   app.get("/tunnels/cloudflared", async (_request: FastifyRequest, reply: FastifyReply) => {
+    if (nasTarget) {
+      try {
+        const upstreamRes = await fetch(`${nasTarget.replace(/\/$/, "")}/api/tunnels/cloudflared`, {
+          headers: getUpstreamHeaders(),
+          signal: AbortSignal.timeout(3000),
+        });
+        if (upstreamRes.ok) {
+          const upstream = (await upstreamRes.json()) as Record<string, unknown>;
+          return reply.send(upstream);
+        }
+      } catch {
+        // Fallback
+      }
+    }
+
     return reply.send({
       supported: true,
       installed: true,
@@ -124,6 +207,22 @@ export async function tunnelRoutes(app: FastifyInstance): Promise<void> {
 
   app.post("/tunnels/cloudflared", async (request: FastifyRequest<{ Body: { action?: string } }>, reply: FastifyReply) => {
     const { action } = request.body || {};
+    if (nasTarget) {
+      try {
+        const upstreamRes = await fetch(`${nasTarget.replace(/\/$/, "")}/api/tunnels/cloudflared`, {
+          method: "POST",
+          headers: { ...getUpstreamHeaders(), "content-type": "application/json" },
+          body: JSON.stringify(request.body),
+          signal: AbortSignal.timeout(5000),
+        });
+        if (upstreamRes.ok) {
+          return reply.send(await upstreamRes.json());
+        }
+      } catch {
+        // Fallback
+      }
+    }
+
     if (action === "enable") {
       tunnelState.cloudflared.running = true;
       tunnelState.cloudflared.phase = "running";
@@ -144,6 +243,21 @@ export async function tunnelRoutes(app: FastifyInstance): Promise<void> {
   // === Ngrok Routes ===
 
   app.get("/tunnels/ngrok", async (_request: FastifyRequest, reply: FastifyReply) => {
+    if (nasTarget) {
+      try {
+        const upstreamRes = await fetch(`${nasTarget.replace(/\/$/, "")}/api/tunnels/ngrok`, {
+          headers: getUpstreamHeaders(),
+          signal: AbortSignal.timeout(3000),
+        });
+        if (upstreamRes.ok) {
+          const upstream = (await upstreamRes.json()) as Record<string, unknown>;
+          return reply.send(upstream);
+        }
+      } catch {
+        // Fallback
+      }
+    }
+
     return reply.send({
       supported: true,
       installed: true,
@@ -155,6 +269,22 @@ export async function tunnelRoutes(app: FastifyInstance): Promise<void> {
 
   app.post("/tunnels/ngrok", async (request: FastifyRequest<{ Body: { action?: string; token?: string } }>, reply: FastifyReply) => {
     const { action, token } = request.body || {};
+    if (nasTarget) {
+      try {
+        const upstreamRes = await fetch(`${nasTarget.replace(/\/$/, "")}/api/tunnels/ngrok`, {
+          method: "POST",
+          headers: { ...getUpstreamHeaders(), "content-type": "application/json" },
+          body: JSON.stringify(request.body),
+          signal: AbortSignal.timeout(5000),
+        });
+        if (upstreamRes.ok) {
+          return reply.send(await upstreamRes.json());
+        }
+      } catch {
+        // Fallback
+      }
+    }
+
     if (action === "enable") {
       if (token) tunnelState.ngrok.token = token;
       tunnelState.ngrok.running = true;
