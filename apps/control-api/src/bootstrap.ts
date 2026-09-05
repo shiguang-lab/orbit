@@ -9,8 +9,14 @@ export async function bootstrapControlApi() {
     logger: { level: process.env.LOG_LEVEL ?? "info" },
     bodyLimit: 512 * 1024 * 1024,
   });
+  const fastify = adapter.getInstance() as FastifyInstance;
+  fastify.addContentTypeParser(
+    "multipart/form-data",
+    { parseAs: "buffer" },
+    (_request, body, done) => done(null, body),
+  );
   const nestApp = await NestFactory.create(AppModule, adapter, { bufferLogs: true });
-  const fastify = nestApp.getHttpAdapter().getInstance() as FastifyInstance;
+  nestApp.enableCors({ origin: true, credentials: true });
   await nestApp.init();
   nestApp.enableShutdownHooks(["SIGINT", "SIGTERM"]);
   return { nestApp, fastify };

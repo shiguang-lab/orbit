@@ -1,14 +1,23 @@
-/** Transport primitives shared by the HTTP deployables. */
+/** Nest transport module shared by the HTTP deployables. */
+export { HttpKernelModule } from "./http-kernel.module.js";
+export { HttpHealthController } from "./health/http-health.controller.js";
+export { ApiExceptionFilter } from "./filters/api-exception.filter.js";
+export { RequestIdInterceptor } from "./interceptors/request-id.interceptor.js";
+export { RequestIdMiddleware } from "./middleware/request-id.middleware.js";
+// Temporary app-auth adapters remain exported for control-api's explicit
+// security integration. They are not part of HttpKernelModule's transport
+// surface and should move to a dedicated auth package in the next migration.
 export {
-  registerHttpInfrastructure,
   authzPlugin,
-  csrfPlugin,
-  LocalAuthBroker,
   type AuthzOptions,
   type EngineAuthAdapter,
+} from "./middleware/authz.js";
+export { csrfPlugin } from "./middleware/csrf.js";
+export {
+  LocalAuthBroker,
   type LocalAuthBrokerOptions,
   type LocalBrokerSession,
-} from "./app.js";
+} from "./lib/broker.js";
 export {
   registerCompatDispatcher,
   dispatchWebRoute,

@@ -9,6 +9,8 @@
     "noEmit": false,
     "declaration": true,
     "declarationMap": false,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["../core-domain/src/*"],

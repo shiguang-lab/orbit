@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { HttpKernelModule } from "@shiguang-gateway/http-kernel";
 import { AuthModule } from "./auth/auth.module.js";
 import { GatewayModule } from "./gateway/gateway.module.js";
 import { HealthModule } from "./health/health.module.js";
@@ -15,6 +16,7 @@ import { QuotaModule } from "./quota/quota.module.js";
 
 @Module({
   imports: [
+    HttpKernelModule,
     InfrastructureModule,
     HealthModule,
     AuthModule,

@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { HttpKernelModule } from "@shiguang-gateway/http-kernel";
 import { HttpInfrastructureModule } from "./infrastructure/http-infrastructure.module.js";
 import { EdgeRuntimeModule } from "./runtime/edge-runtime.module.js";
 import { EdgeRoutesModule } from "./routes/edge-routes.module.js";
@@ -15,6 +16,7 @@ import { WsModule } from "./ws/ws.module.js";
 
 @Module({
   imports: [
+    HttpKernelModule,
     HttpInfrastructureModule,
     EdgeRuntimeModule,
     EdgeRoutesModule,

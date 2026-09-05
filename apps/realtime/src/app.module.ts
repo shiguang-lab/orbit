@@ -1,8 +1,8 @@
 import { Module } from "@nestjs/common";
-import { HealthModule } from "./modules/health/health.module.js";
+import { HttpKernelModule } from "@shiguang-gateway/http-kernel";
 import { LiveModule } from "./modules/live/live.module.js";
 
 @Module({
-  imports: [HealthModule, LiveModule],
+  imports: [HttpKernelModule, LiveModule],
 })
 export class AppModule {}
