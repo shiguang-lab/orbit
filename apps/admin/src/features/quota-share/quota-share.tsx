@@ -10,10 +10,8 @@ import {
   Input,
   Modal,
   Popconfirm,
-  Progress,
   Row,
   Select,
-  Slider,
   Space,
   Table,
   Tag,
@@ -220,7 +218,7 @@ function QuotaConceptCard() {
   );
 }
 
-// 2. Available Endpoints Card (matching Orbit's QuotaEndpointsCard)
+// 2. Available Endpoints Card (matching Shiguang Gateway's QuotaEndpointsCard)
 function QuotaEndpointsCard({
   groups,
   pools,
@@ -253,29 +251,14 @@ function QuotaEndpointsCard({
     }
   };
 
-  // Default models grouped by group -> provider -> model
-  const defaultModelsByGroup = useMemo(() => {
-    return groups.map((g) => {
-      const groupPools = pools.filter((p) => (p.group || "default") === g.id || (p.group || "default") === g.name);
-      const entries = [
-        {
-          provider: "openai",
-          models: [
-            `qtSd/${g.name}/openai/gpt-4o`,
-            `qtSd/${g.name}/openai/gpt-4o-mini`,
-            `qtSd/${g.name}/openai/o3`,
-          ],
-        },
-        {
-          provider: "anthropic",
-          models: [
-            `qtSd/${g.name}/anthropic/claude-3-5-sonnet`,
-            `qtSd/${g.name}/anthropic/claude-3-5-haiku`,
-          ],
-        },
-      ];
-      return { group: g, entries, hasPools: groupPools.length > 0 };
-    });
+  // Without a selected key the server cannot know which virtual models are
+  // visible. Show only persisted pool metadata here; the authoritative model
+  // list is loaded above through /quota/keys/:id/models.
+  const poolsByGroup = useMemo(() => {
+    return groups.map((group) => ({
+      group,
+      pools: pools.filter((pool) => pool.groupId === group.id || pool.groupId === group.name),
+    }));
   }, [groups, pools]);
 
   return (
@@ -420,7 +403,7 @@ function QuotaEndpointsCard({
             ) : (
               /* Default view grouped by group */
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                {defaultModelsByGroup.map(({ group, entries }) => (
+                {poolsByGroup.map(({ group, pools: groupPools }) => (
                   <div key={group.id}>
                     <Flex align="center" gap={6} style={{ marginBottom: 6 }}>
                       <MaterialIcon name="folder" size={14} style={{ color: "rgba(255,255,255,0.4)" }} />
@@ -437,29 +420,14 @@ function QuotaEndpointsCard({
                       </span>
                     </Flex>
                     <div style={{ paddingLeft: 20, display: "flex", flexDirection: "column", gap: 6 }}>
-                      {entries.map(({ provider, models }) => (
-                        <Flex key={provider} align="center" gap={8} wrap>
-                          <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", minWidth: 65 }}>
-                            {provider}:
-                          </span>
-                          <Space wrap size={6}>
-                            {models.map((m) => (
-                              <code
-                                key={m}
-                                style={{
-                                  fontSize: 11,
-                                  fontFamily: "monospace",
-                                  padding: "2px 8px",
-                                  borderRadius: 4,
-                                  background: "rgba(255,255,255,0.06)",
-                                  border: "1px solid rgba(255,255,255,0.1)",
-                                  color: "#f4f4f5",
-                                }}
-                              >
-                                {m}
-                              </code>
-                            ))}
-                          </Space>
+                      {groupPools.length === 0 ? (
+                        <Text type="secondary" style={{ fontSize: 12 }}>该分组暂无已配置配额池</Text>
+                      ) : groupPools.map((pool) => (
+                        <Flex key={pool.id} align="center" gap={8} wrap>
+                          <code style={{ fontSize: 11, fontFamily: "monospace" }}>{pool.name}</code>
+                          <Text type="secondary" style={{ fontSize: 11 }}>
+                            {pool.allocations.length} 个 API Key · {pool.connectionIds.length} 个上游账号
+                          </Text>
                         </Flex>
                       ))}
                     </div>
@@ -553,43 +521,7 @@ function StackedAllocationBar({
   );
 }
 
-// 4. Dimension Bars
-function DimensionBar({
-  unit,
-  window,
-  limit,
-  consumed,
-}: {
-  unit: string;
-  window: string;
-  limit: number;
-  consumed: number;
-}) {
-  const pct = limit > 0 ? Math.min(Math.round((consumed / limit) * 100), 100) : 0;
-  const color = pct >= 90 ? "#ef4444" : pct >= 70 ? "#f59e0b" : "#22c55e";
-
-  return (
-    <div style={{ flex: 1, minWidth: 120 }}>
-      <Flex justify="space-between" align="center" style={{ fontSize: 11, marginBottom: 2 }}>
-        <Text type="secondary" style={{ fontSize: 10, textTransform: "uppercase", fontWeight: 600 }}>
-          {unit} / {window}
-        </Text>
-        <span style={{ fontSize: 11, fontWeight: 700, color, fontFamily: "monospace" }}>
-          {pct}%
-        </span>
-      </Flex>
-      <Progress
-        percent={pct}
-        showInfo={false}
-        strokeColor={color}
-        size={["100%", 5]}
-        style={{ margin: 0 }}
-      />
-    </div>
-  );
-}
-
-// 5. Allocation Table inside Card
+// 4. Allocation Table inside Card
 function AllocationTable({
   allocations,
   keyLabels,
@@ -729,45 +661,35 @@ export function QuotaSharePage() {
     queryKey: ["quota-groups"],
     queryFn: async () => {
       const list = await quotaApi.listGroups();
-      return Array.isArray(list) && list.length > 0 ? list : [{ id: "group-demo", name: "GroupDemo" }];
+      return Array.isArray(list) ? list : [];
     },
     staleTime: 30_000,
   });
-  const groups = groupsQuery.data ?? [{ id: "group-demo", name: "GroupDemo" }];
+  const groups = groupsQuery.data ?? [];
   const allGroups = useMemo(() => {
     const set = new Set<string>();
     for (const g of groups) set.add(g.name || g.id);
-    for (const p of pools) if (p.group) set.add(p.group);
+    for (const p of pools) set.add(p.groupId || "ungrouped");
     return Array.from(set);
   }, [groups, pools]);
 
   // KPIs
   const stats = useMemo(() => {
-    const activePools = pools.filter((p) => p.isActive !== false).length;
+    const activePools = pools.length;
     let totalKeysAllocated = 0;
-    let totalCapacity = 0;
-    let totalConsumed = 0;
-
-    for (const p of pools) {
-      const keysCount = Object.keys(p.weights || {}).length || p.allowedApiKeys?.length || 1;
-      totalKeysAllocated += keysCount;
-      totalCapacity += p.totalCapacityRpm || 10000;
-      totalConsumed += p.consumedRpm || 0;
-    }
-
-    const avgUtilization = totalCapacity > 0 ? Math.round((totalConsumed / totalCapacity) * 100) : 42;
+    for (const p of pools) totalKeysAllocated += p.allocations.length;
     return {
       activePools,
       keysAllocated: totalKeysAllocated,
-      avgUtilization,
-      borrowingNow: 1,
+      avgUtilization: null,
+      borrowingNow: null,
     };
   }, [pools]);
 
   // Filtered Pools
   const filteredPools = useMemo(() => {
     if (selectedGroupId === "all") return pools;
-    return pools.filter((p) => (p.group || "default") === selectedGroupId);
+    return pools.filter((p) => (p.groupId || "ungrouped") === selectedGroupId);
   }, [pools, selectedGroupId]);
 
   // Groups to render in view
@@ -778,7 +700,21 @@ export function QuotaSharePage() {
 
   // Mutations
   const createMutation = useMutation({
-    mutationFn: (data: Partial<QuotaPoolItem>) => quotaApi.createPool(data),
+    mutationFn: (values: { name: string; groupId?: string; connectionIds: string[]; allowedApiKeys?: string[] }) => {
+      const connectionIds = Array.isArray(values.connectionIds) ? values.connectionIds : [];
+      const apiKeyIds = Array.isArray(values.allowedApiKeys) ? values.allowedApiKeys : [];
+      const weight = apiKeyIds.length > 0 ? 100 / apiKeyIds.length : 0;
+      const group = groups.find((candidate) => candidate.id === values.groupId || candidate.name === values.groupId);
+      const payload = {
+        name: values.name,
+        groupId: group?.id,
+        connectionIds,
+        allocations: apiKeyIds.map((apiKeyId) => ({ apiKeyId, weight, policy: "hard" as const })),
+      };
+      return editingPool
+        ? quotaApi.updatePool(editingPool.id, payload)
+        : quotaApi.createPool({ connectionId: connectionIds[0] ?? "", ...payload });
+    },
     onSuccess: () => {
       messageApi.success("配额池创建成功");
       queryClient.invalidateQueries({ queryKey: ["quota-pools"] });
@@ -824,15 +760,9 @@ export function QuotaSharePage() {
     form.resetFields();
     form.setFieldsValue({
       name: "",
-      group: selectedGroupId !== "all" ? selectedGroupId : "default",
-      strategy: "weighted",
-      defaultModel: "gpt-4o",
-      totalCapacityRpm: 10000,
-      accounts: connections.slice(0, 2).map((c) => c.id),
-      allowedApiKeys: apiKeys.slice(0, 3).map((k) => k.id),
-      weight1: 50,
-      weight2: 30,
-      weight3: 20,
+      groupId: selectedGroupId !== "all" ? selectedGroupId : undefined,
+      connectionIds: [],
+      allowedApiKeys: [],
     });
     setWizardVisible(true);
   };
@@ -844,12 +774,9 @@ export function QuotaSharePage() {
     form.setFieldsValue({
       name: pool.name,
       description: pool.description,
-      group: pool.group || "default",
-      strategy: pool.strategy || "weighted",
-      defaultModel: pool.defaultModel || "gpt-4o",
-      totalCapacityRpm: pool.totalCapacityRpm || 10000,
-      accounts: pool.accounts || [],
-      allowedApiKeys: pool.allowedApiKeys || Object.keys(pool.weights || {}),
+      groupId: pool.groupId,
+      connectionIds: pool.connectionIds,
+      allowedApiKeys: pool.allocations.map((allocation) => allocation.apiKeyId),
     });
     setWizardVisible(true);
   };
@@ -988,10 +915,10 @@ export function QuotaSharePage() {
                 fontWeight: 700,
                 fontFamily: "monospace",
                 marginTop: 2,
-                color: stats.avgUtilization > 80 ? "#EF4444" : stats.avgUtilization > 50 ? "#F59E0B" : "#10B981",
+                color: stats.avgUtilization == null ? "rgba(255,255,255,0.55)" : stats.avgUtilization > 80 ? "#EF4444" : stats.avgUtilization > 50 ? "#F59E0B" : "#10B981",
               }}
             >
-              {stats.avgUtilization}%
+              {stats.avgUtilization == null ? "—" : `${stats.avgUtilization}%`}
             </div>
           </div>
         </Col>
@@ -1001,10 +928,9 @@ export function QuotaSharePage() {
               正在借用配额
             </Text>
             <Flex align="center" gap={6} style={{ marginTop: 2 }}>
-              <span style={{ fontSize: 24, fontWeight: 700, fontFamily: "monospace", color: stats.borrowingNow > 0 ? "#F59E0B" : "#fff" }}>
-                {stats.borrowingNow}
+              <span style={{ fontSize: 24, fontWeight: 700, fontFamily: "monospace", color: "rgba(255,255,255,0.55)" }}>
+                {stats.borrowingNow == null ? "—" : stats.borrowingNow}
               </span>
-              {stats.borrowingNow > 0 && <Tag color="warning">动态借用中</Tag>}
             </Flex>
           </div>
         </Col>
@@ -1017,7 +943,7 @@ export function QuotaSharePage() {
         </Card>
       ) : (
         groupsToRender.map((groupName) => {
-          const groupPools = filteredPools.filter((p) => (p.group || "default") === groupName);
+          const groupPools = filteredPools.filter((p) => (p.groupId || "ungrouped") === groupName);
           if (groupPools.length === 0) return null;
 
           return (
@@ -1034,22 +960,11 @@ export function QuotaSharePage() {
               {/* Pool Cards Grid */}
               <Row gutter={[16, 16]}>
                 {groupPools.map((pool) => {
-                  const allocations = pool.weights
-                    ? Object.entries(pool.weights).map(([kId, weight]) => ({
-                        apiKeyId: kId,
-                        weight,
-                        borrowing: kId === "key_agent_engine",
-                        consumed: Math.round(((pool.consumedRpm || 10000) * weight) / 100),
-                      }))
-                    : (pool.allowedApiKeys || []).map((kId) => ({
-                        apiKeyId: kId,
-                        weight: Math.round(100 / (pool.allowedApiKeys?.length || 1)),
-                        borrowing: false,
-                        consumed: 2400,
-                      }));
-
-                  const totalRpm = pool.totalCapacityRpm || 10000;
-                  const consumedRpm = pool.consumedRpm || 3500;
+                  const allocations = pool.allocations.map((allocation) => ({
+                    apiKeyId: allocation.apiKeyId,
+                    weight: allocation.weight,
+                    borrowing: false,
+                  }));
 
                   return (
                     <Col xs={24} lg={12} key={pool.id}>
@@ -1077,8 +992,8 @@ export function QuotaSharePage() {
                                 <Text strong style={{ fontSize: 15 }}>
                                   {pool.name}
                                 </Text>
-                                <Tag color={pool.isActive !== false ? "success" : "default"} style={{ margin: 0, fontSize: 10 }}>
-                                  {pool.isActive !== false ? "已激活" : "已暂停"}
+                                <Tag color="success" style={{ margin: 0, fontSize: 10 }}>
+                                  已配置
                                 </Tag>
                               </Flex>
                               <Text type="secondary" style={{ fontSize: 11 }}>
@@ -1109,21 +1024,9 @@ export function QuotaSharePage() {
                           </Space>
                         </Flex>
 
-                        {/* Dimensions Progress */}
-                        <div style={{ display: "flex", gap: 16, marginBottom: 14 }}>
-                          <DimensionBar
-                            unit="RPM"
-                            window="1m"
-                            limit={totalRpm}
-                            consumed={consumedRpm}
-                          />
-                          <DimensionBar
-                            unit="TPM"
-                            window="1m"
-                            limit={totalRpm * 20}
-                            consumed={consumedRpm * 18}
-                          />
-                        </div>
+                        <Text type="secondary" style={{ display: "block", marginBottom: 12, fontSize: 11 }}>
+                          {pool.connectionIds.length} 个上游账号 · {pool.allocations.length} 个 API Key · 用量请通过配额详情接口查看
+                        </Text>
 
                         {/* Stacked Allocation Bar */}
                         <StackedAllocationBar allocations={allocations} keyLabels={keyLabels} />
@@ -1190,7 +1093,7 @@ export function QuotaSharePage() {
 
               <Row gutter={16}>
                 <Col span={12}>
-                  <Form.Item name="group" label="所属分组">
+                  <Form.Item name="groupId" label="所属分组">
                     <Select
                       options={allGroups.map((g) => ({ label: g, value: g }))}
                       placeholder="选择分组"
@@ -1214,7 +1117,7 @@ export function QuotaSharePage() {
                 <Input.TextArea rows={2} placeholder="简述该配额池的用途与服务对象" />
               </Form.Item>
 
-              <Form.Item name="accounts" label="绑定上游账号 (多账号容量自动汇聚)">
+              <Form.Item name="connectionIds" label="绑定上游账号 (多账号容量自动汇聚)" rules={[{ required: true, type: "array", min: 1, message: "至少选择一个上游账号" }]}>
                 <Select
                   mode="multiple"
                   placeholder="选择要聚合的上游账号"
@@ -1247,24 +1150,12 @@ export function QuotaSharePage() {
                 />
               </Form.Item>
 
-              <div style={{ marginTop: 12 }}>
-                <Text strong style={{ fontSize: 12, display: "block", marginBottom: 6 }}>
-                  权重比例分配滑块 (保证份额)
-                </Text>
-                <div style={{ padding: "8px 12px", background: "rgba(255,255,255,0.04)", borderRadius: 8 }}>
-                  <Flex align="center" justify="space-between" style={{ marginBottom: 4 }}>
-                    <Text style={{ fontSize: 12 }}>主要后端密钥</Text>
-                    <Text strong style={{ fontFamily: "monospace" }}>60%</Text>
-                  </Flex>
-                  <Slider defaultValue={60} />
-
-                  <Flex align="center" justify="space-between" style={{ marginBottom: 4, marginTop: 8 }}>
-                    <Text style={{ fontSize: 12 }}>Agent 智能体引擎</Text>
-                    <Text strong style={{ fontFamily: "monospace" }}>40%</Text>
-                  </Flex>
-                  <Slider defaultValue={40} />
-                </div>
-              </div>
+              <Alert
+                type="info"
+                showIcon
+                message="权重分配"
+                description="当前向导会将选中的 API Key 按等权重写入服务端配额池；保存后可通过服务端配额 API 调整每个 Key 的权重和策略。"
+              />
             </div>
           )}
 
@@ -1283,7 +1174,7 @@ export function QuotaSharePage() {
                   生成的虚拟模型名称:
                 </div>
                 <div style={{ fontSize: 14, fontFamily: "monospace", color: "#10B981", fontWeight: 700 }}>
-                  qtSd/{form.getFieldValue("group") || "default"}/{form.getFieldValue("defaultModel") || "gpt-4o"}
+                  qtSd/{form.getFieldValue("groupId") || "group"}/&lt;provider&gt;/&lt;model&gt;
                 </div>
               </div>
             </div>

@@ -1,0 +1,53 @@
+import type { SupportedBatchEndpoint } from "../../shared/constants/batchEndpoints.ts";
+
+type BatchRouteHandler = (request: Request) => Promise<Response> | Response;
+
+const handlerLoaders: Record<SupportedBatchEndpoint, () => Promise<BatchRouteHandler>> = {
+  "/v1/responses": async () => (await import("../../app/api/v1/responses/route.ts")).POST,
+  "/v1/chat/completions": async () => (await import("../../app/api/v1/chat/completions/route.ts")).POST,
+  "/v1/embeddings": async () => (await import("../../app/api/v1/embeddings/route.ts")).POST,
+  "/v1/completions": async () => (await import("../../app/api/v1/completions/route.ts")).POST,
+  "/v1/moderations": async () => (await import("../../app/api/v1/moderations/route.ts")).POST,
+  "/v1/images/generations": async () =>
+    (await import("../../app/api/v1/images/generations/route.ts")).POST,
+  "/v1/videos/generations": async () =>
+    (await import("../../app/api/v1/videos/generations/route.ts")).POST,
+};
+
+const handlerCache = new Map<SupportedBatchEndpoint, BatchRouteHandler>();
+
+async function getHandler(endpoint: SupportedBatchEndpoint): Promise<BatchRouteHandler> {
+  const cached = handlerCache.get(endpoint);
+  if (cached) return cached;
+
+  const handler = await handlerLoaders[endpoint]();
+  handlerCache.set(endpoint, handler);
+  return handler;
+}
+
+async function dispatchBatchApiRequest({
+  endpoint,
+  body,
+  apiKey,
+}: {
+  endpoint: SupportedBatchEndpoint;
+  body: Record<string, unknown>;
+  apiKey?: string | null;
+}): Promise<Response> {
+  const headers = new Headers({ "Content-Type": "application/json" });
+  if (apiKey) {
+    headers.set("Authorization", `Bearer ${apiKey}`);
+  }
+
+  const handler = await getHandler(endpoint);
+  const request = new Request(`http://localhost${endpoint}`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+  });
+  return await handler(request);
+}
+
+export const dispatch = {
+  dispatchBatchApiRequest,
+};

@@ -27,7 +27,7 @@ import { PageSkeleton } from "@/shared/components/PageSkeleton";
 import { useI18n } from "@/i18n";
 
 const { Text, Title, Paragraph } = Typography;
-const CUSTOM_PUBLIC_URL_STORAGE_KEY = "omniroute.endpoints.customPublicUrl";
+const CUSTOM_PUBLIC_URL_STORAGE_KEY = "shiguangGateway.endpoints.customPublicUrl";
 
 function readStoredCustomPublicUrl(): string {
   if (typeof window === "undefined") return "";
@@ -133,7 +133,7 @@ export default function EndpointsPage() {
   // Tailscale Tsnet State
   const [tailscaleModalOpen, setTailscaleModalOpen] = useState(false);
   const [tailscaleAuthKey, setTailscaleAuthKey] = useState("");
-  const [tailscaleHostname, setTailscaleHostname] = useState("omniroute-gateway");
+  const [tailscaleHostname, setTailscaleHostname] = useState("shiguangGateway-gateway");
   const [tailscaleEphemeral, setTailscaleEphemeral] = useState(false);
 
   // Network info query
@@ -245,8 +245,8 @@ export default function EndpointsPage() {
   };
 
   // Compute addresses
-  const port = networkQuery.data?.port || (typeof window !== "undefined" && window.location.port ? window.location.port : "20128");
-  const localBaseUrl = networkQuery.data?.localUrl || "http://localhost:20128/v1";
+  const port = networkQuery.data?.port || (typeof window !== "undefined" && window.location.port ? window.location.port : "8787");
+  const localBaseUrl = networkQuery.data?.localUrl || "http://127.0.0.1:8787/v1";
   const lanUrls = networkQuery.data?.lanUrls || [];
   const currentPublicBaseUrl = getCurrentPublicBaseUrl();
 
@@ -435,14 +435,14 @@ export default function EndpointsPage() {
               </Flex>
               <div className={styles.urlCodeBox}>
                 <Text ellipsis code strong style={{ fontSize: 12 }}>
-                  {lanUrls[0] || "http://192.168.x.x:20128/v1"}
+                  {lanUrls[0] || "http://192.168.x.x:8787/v1"}
                 </Text>
                 <Button
                   type="text"
                   size="small"
                   icon={<MaterialIcon name="content_copy" size={14} />}
                   onClick={() =>
-                    copyToClipboard(lanUrls[0] || "http://192.168.x.x:20128/v1", tt("已复制局域网基址", "Copied LAN URL"))
+                    copyToClipboard(lanUrls[0] || "http://192.168.x.x:8787/v1", tt("已复制局域网基址", "Copied LAN URL"))
                   }
                 />
               </div>
@@ -480,21 +480,21 @@ export default function EndpointsPage() {
                         type="text"
                         size="small"
                         icon={<MaterialIcon name="content_copy" size={14} />}
-                        onClick={() => copyToClipboard(effectiveTailscaleUrl, "已复制专网基址")}
+                        onClick={() => copyToClipboard(effectiveTailscaleUrl, tt("已复制专网基址", "Copied Tailscale URL"))}
                       />
                       <Button
                         type="text"
                         size="small"
                         icon={<MaterialIcon name="settings" size={14} />}
                         onClick={() => setTailscaleModalOpen(true)}
-                        title="管理专网连接"
+                        title={tt("管理专网连接", "Manage Tailnet Connection")}
                       />
                     </Space>
                   </>
                 ) : (
                   <>
                     <Text type="secondary" ellipsis style={{ fontSize: 11 }}>
-                      未接入 Tailnet 专网
+                      {tt("未接入 Tailnet 专网", "Not connected to Tailnet")}
                     </Text>
                     <Button
                       type="link"
@@ -502,7 +502,7 @@ export default function EndpointsPage() {
                       onClick={() => setTailscaleModalOpen(true)}
                       style={{ padding: 0, height: "auto", fontSize: 11, fontWeight: 600 }}
                     >
-                      🔑 填入 Auth Key
+                      🔑 {tt("填入 Auth Key", "Enter Auth Key")}
                     </Button>
                   </>
                 )}
@@ -519,7 +519,7 @@ export default function EndpointsPage() {
             <Flex align="center" gap={8}>
               <MaterialIcon name="hub" size={18} style={{ color: "#F59E0B" }} />
               <Text strong style={{ fontSize: 14, lineHeight: 1 }}>
-                公网安全穿透隧道 (Tunnels & Gateways)
+                {tt("公网安全穿透隧道", "Secure Tunnels & Gateways")}
               </Text>
             </Flex>
             <Space size={8}>
@@ -531,10 +531,10 @@ export default function EndpointsPage() {
                   setCustomUrlModalOpen(true);
                 }}
               >
-                {customPublicUrl ? "修改自定义公网域名" : "配置自定义公网域名"}
+                {customPublicUrl ? tt("修改自定义公网域名", "Edit Custom Domain") : tt("配置自定义公网域名", "Configure Custom Domain")}
               </Button>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                支持免公网 IP 安全对外提供 HTTPS 访问
+                {tt("支持免公网 IP 安全对外提供 HTTPS 访问", "Expose HTTPS securely without a public IP")}
               </Text>
             </Space>
           </Flex>
@@ -548,11 +548,11 @@ export default function EndpointsPage() {
                     Cloudflare Tunnel
                   </Text>
                   <Tag color={cloudflaredQuery.data?.running ? "success" : "default"}>
-                    {cloudflaredQuery.data?.running ? "运行中" : "未启动"}
+                    {cloudflaredQuery.data?.running ? tt("运行中", "Running") : tt("未启动", "Disabled")}
                   </Tag>
                 </Flex>
                 <Paragraph type="secondary" style={{ fontSize: 11, marginBottom: 8, minHeight: 28 }}>
-                  {cloudflaredQuery.data?.publicUrl || "基于 Cloudflare 边缘节点快速免费穿透"}
+                  {cloudflaredQuery.data?.publicUrl || tt("基于 Cloudflare 边缘节点快速免费穿透", "Fast & free tunneling via Cloudflare Edge")}
                 </Paragraph>
                 <Flex justify="space-between" align="center">
                   <Button
@@ -561,7 +561,7 @@ export default function EndpointsPage() {
                     loading={toggleCloudflared.isPending}
                     onClick={() => toggleCloudflared.mutate()}
                   >
-                    {cloudflaredQuery.data?.running ? "停止隧道" : "启动隧道"}
+                    {cloudflaredQuery.data?.running ? tt("停止隧道", "Stop Tunnel") : tt("启动隧道", "Start Tunnel")}
                   </Button>
                   {cloudflaredQuery.data?.publicUrl && (
                     <Button
@@ -571,11 +571,11 @@ export default function EndpointsPage() {
                       onClick={() =>
                         copyToClipboard(
                           `${cloudflaredQuery.data?.publicUrl}/v1`,
-                          "已复制 Cloudflare 公网地址"
+                          tt("已复制 Cloudflare 公网地址", "Copied Cloudflare URL")
                         )
                       }
                     >
-                      复制公网 URL
+                      {tt("复制公网 URL", "Copy URL")}
                     </Button>
                   )}
                 </Flex>
@@ -590,11 +590,11 @@ export default function EndpointsPage() {
                     Tailscale Funnel
                   </Text>
                   <Tag color={tailscaleQuery.data?.running ? "success" : "default"}>
-                    {tailscaleQuery.data?.running ? "运行中" : "未启动"}
+                    {tailscaleQuery.data?.running ? tt("运行中", "Running") : tt("未启动", "Disabled")}
                   </Tag>
                 </Flex>
                 <Paragraph type="secondary" style={{ fontSize: 11, marginBottom: 8, minHeight: 28 }}>
-                  {tailscaleQuery.data?.publicUrl || "基于 Tailscale MagicDNS 与 Funnel 安全公开"}
+                  {tailscaleQuery.data?.publicUrl || tt("基于 Tailscale MagicDNS 与 Funnel 安全公开", "Expose securely via Tailscale MagicDNS & Funnel")}
                 </Paragraph>
                 <Flex justify="space-between" align="center">
                   <Button
@@ -603,7 +603,7 @@ export default function EndpointsPage() {
                     loading={toggleTailscale.isPending}
                     onClick={() => toggleTailscale.mutate()}
                   >
-                    {tailscaleQuery.data?.running ? "关闭 Funnel" : "开启 Funnel"}
+                    {tailscaleQuery.data?.running ? tt("关闭 Funnel", "Disable Funnel") : tt("开启 Funnel", "Enable Funnel")}
                   </Button>
                   {tailscaleQuery.data?.publicUrl && (
                     <Button
@@ -613,11 +613,11 @@ export default function EndpointsPage() {
                       onClick={() =>
                         copyToClipboard(
                           `${tailscaleQuery.data?.publicUrl}/v1`,
-                          "已复制 Tailscale 公网地址"
+                          tt("已复制 Tailscale 公网地址", "Copied Tailscale URL")
                         )
                       }
                     >
-                      复制公网 URL
+                      {tt("复制公网 URL", "Copy URL")}
                     </Button>
                   )}
                 </Flex>
@@ -632,11 +632,11 @@ export default function EndpointsPage() {
                     Ngrok Tunnel
                   </Text>
                   <Tag color={ngrokQuery.data?.running ? "success" : "default"}>
-                    {ngrokQuery.data?.running ? "运行中" : "未启动"}
+                    {ngrokQuery.data?.running ? tt("运行中", "Running") : tt("未启动", "Disabled")}
                   </Tag>
                 </Flex>
                 <Paragraph type="secondary" style={{ fontSize: 11, marginBottom: 8, minHeight: 28 }}>
-                  {ngrokQuery.data?.publicUrl || "通用反向代理通道 (需提供 Auth Token)"}
+                  {ngrokQuery.data?.publicUrl || tt("通用反向代理通道 (需提供 Auth Token)", "Universal reverse proxy tunnel (Auth Token required)")}
                 </Paragraph>
                 <Flex justify="space-between" align="center">
                   {ngrokQuery.data?.running ? (
@@ -645,11 +645,11 @@ export default function EndpointsPage() {
                       loading={stopNgrok.isPending}
                       onClick={() => stopNgrok.mutate()}
                     >
-                      停止 Ngrok
+                      {tt("停止 Ngrok", "Stop Ngrok")}
                     </Button>
                   ) : (
                     <Button size="small" onClick={() => setNgrokModalOpen(true)}>
-                      配置并启动
+                      {tt("配置并启动", "Configure & Start")}
                     </Button>
                   )}
                   {ngrokQuery.data?.publicUrl && (
@@ -660,11 +660,11 @@ export default function EndpointsPage() {
                       onClick={() =>
                         copyToClipboard(
                           `${ngrokQuery.data?.publicUrl}/v1`,
-                          "已复制 Ngrok 公网地址"
+                          tt("已复制 Ngrok 公网地址", "Copied Ngrok URL")
                         )
                       }
                     >
-                      复制公网 URL
+                      {tt("复制公网 URL", "Copy URL")}
                     </Button>
                   )}
                 </Flex>
@@ -678,7 +678,7 @@ export default function EndpointsPage() {
       <Modal
         open={customUrlModalOpen}
         onCancel={() => setCustomUrlModalOpen(false)}
-        title="设置自定义公开域名 / 反向代理基址"
+        title={tt("设置自定义公开域名 / 反向代理基址", "Configure Custom Public Domain / Proxy URL")}
         onOk={() => {
           const nextUrl = customPublicUrlDraft.trim().replace(/\/+$/, "");
           if (nextUrl) {
@@ -688,24 +688,27 @@ export default function EndpointsPage() {
                 throw new Error("unsupported protocol");
               }
             } catch {
-              message.error("请输入有效的 HTTP 或 HTTPS 地址");
+              message.error(tt("请输入有效的 HTTP 或 HTTPS 地址", "Please enter a valid HTTP or HTTPS URL"));
               return;
             }
           }
           if (!persistCustomPublicUrl(nextUrl)) {
-            message.error("浏览器无法保存自定义公网域名");
+            message.error(tt("浏览器无法保存自定义公网域名", "Unable to save custom domain to browser storage"));
             return;
           }
           setCustomPublicUrl(nextUrl);
           setCustomUrlModalOpen(false);
-          message.success(nextUrl ? "已保存自定义公开域名" : "已清除自定义公开域名");
+          message.success(nextUrl ? tt("已保存自定义公开域名", "Saved custom domain") : tt("已清除自定义公开域名", "Cleared custom domain"));
         }}
-        okText="保存"
-        cancelText="取消"
+        okText={tt("保存", "Save")}
+        cancelText={tt("取消", "Cancel")}
       >
         <Flex vertical gap={12} style={{ marginTop: 12 }}>
           <Text type="secondary" style={{ fontSize: 12 }}>
-            若您使用 Nginx / Caddy 反向代理或已有独立域名，可在此填入公开访问前缀（例如：
+            {tt(
+              "若您使用 Nginx / Caddy 反向代理或已有独立域名，可在此填入公开访问前缀（例如：",
+              "If you use Nginx / Caddy reverse proxy or custom domain, enter your public base URL (e.g. "
+            )}
             <Text code>https://api.mycompany.com</Text>）：
           </Text>
           <Input
@@ -720,15 +723,15 @@ export default function EndpointsPage() {
       <Modal
         open={ngrokModalOpen}
         onCancel={() => setNgrokModalOpen(false)}
-        title="启动 Ngrok 隧道"
+        title={tt("启动 Ngrok 隧道", "Start Ngrok Tunnel")}
         onOk={() => startNgrok.mutate(ngrokToken)}
         confirmLoading={startNgrok.isPending}
-        okText="启动"
-        cancelText="取消"
+        okText={tt("启动", "Start")}
+        cancelText={tt("取消", "Cancel")}
       >
         <Flex vertical gap={12} style={{ marginTop: 12 }}>
           <Text type="secondary" style={{ fontSize: 12 }}>
-            请输入您的 Ngrok Auth Token（可从 ngrok.com 控制台获取）：
+            {tt("请输入您的 Ngrok Auth Token（可从 ngrok.com 控制台获取）：", "Enter your Ngrok Auth Token (from ngrok.com dashboard):")}
           </Text>
           <Input.Password
             placeholder="2N... (AuthToken)"
@@ -745,7 +748,7 @@ export default function EndpointsPage() {
         title={
           <Flex align="center" gap={8}>
             <MaterialIcon name="vpn_lock" size={20} style={{ color: "#8B5CF6" }} />
-            <span>接入 Tailscale 专网 (Tsnet 免特权直连)</span>
+            <span>{tt("接入 Tailscale 专网", "Connect to Tailscale Network")}</span>
           </Flex>
         }
         footer={null}
@@ -767,26 +770,26 @@ export default function EndpointsPage() {
                 style={{ color: "#8B5CF6", fontWeight: 700, marginBottom: 8 }}
               >
                 <MaterialIcon name="check_circle" size={16} />
-                <span>网关已成功加入 Tailnet 专网</span>
+                <span>{tt("网关已成功加入 Tailnet 专网", "Gateway is connected to Tailnet")}</span>
               </Flex>
               <Space direction="vertical" size={6} style={{ width: "100%", fontSize: 13 }}>
                 <Flex justify="space-between">
-                  <Text type="secondary">专网分配 IP:</Text>
+                  <Text type="secondary">{tt("专网分配 IP:", "Tailscale IP:")}</Text>
                   <Text code copyable>{tailscaleStatusQuery.data?.ip || "100.x.x.x"}</Text>
                 </Flex>
                 <Flex justify="space-between">
-                  <Text type="secondary">MagicDNS 域名:</Text>
+                  <Text type="secondary">{tt("MagicDNS 域名:", "MagicDNS Domain:")}</Text>
                   <Text code copyable>
                     {tailscaleStatusQuery.data?.magicDns ||
-                      `${tailscaleStatusQuery.data?.hostname || "omniroute"}.ts.net`}
+                      `${tailscaleStatusQuery.data?.hostname || "shiguangGateway"}.ts.net`}
                   </Text>
                 </Flex>
                 <Flex justify="space-between">
-                  <Text type="secondary">接入模式:</Text>
-                  <Tag color="purple">纯用户态 (Tsnet 免特权运行)</Tag>
+                  <Text type="secondary">{tt("接入模式:", "Access Mode:")}</Text>
+                  <Tag color="purple">{tt("纯用户态 (Tsnet 免特权运行)", "Userspace (Tsnet unprivileged)")}</Tag>
                 </Flex>
                 <Flex justify="space-between">
-                  <Text type="secondary">完整接入基址:</Text>
+                  <Text type="secondary">{tt("完整接入基址:", "Base Access URL:")}</Text>
                   <Text strong style={{ fontFamily: "monospace", color: "#8B5CF6" }}>
                     {effectiveTailscaleUrl}
                   </Text>
@@ -795,16 +798,16 @@ export default function EndpointsPage() {
             </div>
 
             <Flex justify="flex-end" gap={8}>
-              <Button onClick={() => setTailscaleModalOpen(false)}>关闭</Button>
+              <Button onClick={() => setTailscaleModalOpen(false)}>{tt("关闭", "Close")}</Button>
               <Popconfirm
-                title="确认断开 Tailscale 专网？"
-                description="断开后将无法再通过 Tailscale 专网地址访问此网关。"
+                title={tt("确认断开 Tailscale 专网？", "Disconnect from Tailscale?")}
+                description={tt("断开后将无法再通过 Tailscale 专网地址访问此网关。", "Clients in your Tailnet will no longer be able to access this gateway.")}
                 onConfirm={() => disconnectTailscale.mutate()}
-                okText="断开"
-                cancelText="取消"
+                okText={tt("断开", "Disconnect")}
+                cancelText={tt("取消", "Cancel")}
               >
                 <Button danger loading={disconnectTailscale.isPending}>
-                  断开专网连接
+                  {tt("断开专网连接", "Disconnect Tailscale")}
                 </Button>
               </Popconfirm>
             </Flex>
@@ -821,7 +824,10 @@ export default function EndpointsPage() {
                 lineHeight: 1.6,
               }}
             >
-              💡 <b>免特权一键直连</b>：通过提供 Tailscale Auth Key，网关将在内存中直接启动纯用户态节点加入您的 Tailnet，<b>无需在 NAS 宿主机上安装任何驱动、无需 root 特权，也无需单独维护容器</b>。
+              💡 <b>{tt("免特权一键直连", "Unprivileged 1-Click Connect")}</b>：{tt(
+                "通过提供 Tailscale Auth Key，网关将在内存中直接启动纯用户态节点加入您的 Tailnet，无需在 NAS 宿主机上安装任何驱动、无需 root 特权，也无需单独维护容器。",
+                "By providing a Tailscale Auth Key, the gateway starts an in-memory userspace node in your Tailnet without root privileges or host drivers."
+              )}
             </div>
 
             <Flex vertical gap={6}>
@@ -835,7 +841,7 @@ export default function EndpointsPage() {
                   rel="noopener noreferrer"
                   style={{ fontSize: 12 }}
                 >
-                  获取 Auth Key ↗
+                  {tt("获取 Auth Key ↗", "Get Auth Key ↗")}
                 </a>
               </Flex>
               <Input.Password
@@ -844,16 +850,19 @@ export default function EndpointsPage() {
                 onChange={(e) => setTailscaleAuthKey(e.target.value)}
               />
               <Text type="secondary" style={{ fontSize: 11 }}>
-                请在 Tailscale 控制台 Settings → Keys 中生成一个 Reusable（可复用）或 Pre-authorized 密钥。
+                {tt(
+                  "请在 Tailscale 控制台 Settings → Keys 中生成一个 Reusable 或 Pre-authorized 密钥。",
+                  "Generate a Reusable or Pre-authorized key in Tailscale Admin Console Settings → Keys."
+                )}
               </Text>
             </Flex>
 
             <Flex vertical gap={6}>
               <Text strong style={{ fontSize: 13 }}>
-                自定义节点主机名 (Hostname)
+                {tt("自定义节点主机名", "Custom Hostname")}
               </Text>
               <Input
-                placeholder="omniroute-gateway"
+                placeholder="shiguangGateway-gateway"
                 value={tailscaleHostname}
                 onChange={(e) => setTailscaleHostname(e.target.value)}
               />
@@ -862,17 +871,17 @@ export default function EndpointsPage() {
             <Flex justify="space-between" align="center" style={{ paddingTop: 4 }}>
               <div>
                 <Text strong style={{ fontSize: 13 }}>
-                  临时节点 (Ephemeral)
+                  {tt("临时节点 (Ephemeral)", "Ephemeral Node")}
                 </Text>
                 <div style={{ fontSize: 11, color: "var(--ant-color-text-secondary)" }}>
-                  网关容器离线或重启时自动从 Tailnet 中注销该节点
+                  {tt("网关容器离线或重启时自动从 Tailnet 中注销该节点", "Auto-deregister node from Tailnet when gateway restarts")}
                 </div>
               </div>
               <Switch checked={tailscaleEphemeral} onChange={setTailscaleEphemeral} />
             </Flex>
 
             <Flex justify="flex-end" gap={8} style={{ marginTop: 8 }}>
-              <Button onClick={() => setTailscaleModalOpen(false)}>取消</Button>
+              <Button onClick={() => setTailscaleModalOpen(false)}>{tt("取消", "Cancel")}</Button>
               <Button
                 type="primary"
                 loading={connectTailscale.isPending}
@@ -880,12 +889,12 @@ export default function EndpointsPage() {
                 onClick={() =>
                   connectTailscale.mutate({
                     authKey: tailscaleAuthKey.trim(),
-                    hostname: tailscaleHostname.trim() || "omniroute-gateway",
+                    hostname: tailscaleHostname.trim() || "shiguangGateway-gateway",
                     ephemeral: tailscaleEphemeral,
                   })
                 }
               >
-                立即接入 Tailscale
+                {tt("立即接入 Tailscale", "Connect to Tailscale")}
               </Button>
             </Flex>
           </Flex>

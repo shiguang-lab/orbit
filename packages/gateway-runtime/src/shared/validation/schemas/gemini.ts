@@ -1,0 +1,59 @@
+import { z } from "zod";
+import {
+  ACCOUNT_FALLBACK_STRATEGY_VALUES,
+  ROUTING_STRATEGY_VALUES,
+} from "../../constants/routingStrategies.ts";
+import { SUPPORTED_BATCH_ENDPOINTS } from "../../constants/batchEndpoints.ts";
+import { MAX_REQUEST_BODY_LIMIT_MB, MIN_REQUEST_BODY_LIMIT_MB } from "../../constants/bodySize.ts";
+import { COMBO_CONFIG_MODES } from "../../constants/comboConfigMode.ts";
+import { providerAllowsOptionalApiKey } from "../../constants/providers.ts";
+import { HIDEABLE_SIDEBAR_ITEM_IDS } from "../../constants/sidebarVisibility.ts";
+import {
+  isForbiddenUpstreamHeaderName,
+  isForbiddenCustomHeaderName,
+} from "../../constants/upstreamHeaders.ts";
+import { MAX_TIMER_TIMEOUT_MS } from "../../utils/runtimeTimeouts.ts";
+
+
+export const geminiPartSchema = z
+  .object({
+    text: z.string().optional(),
+  })
+  .catchall(z.unknown());
+
+export const geminiContentSchema = z
+  .object({
+    role: z.string().optional(),
+    parts: z.array(geminiPartSchema).optional(),
+  })
+  .catchall(z.unknown());
+
+export const v1betaGeminiGenerateSchema = z
+  .object({
+    contents: z.array(geminiContentSchema).optional(),
+    systemInstruction: z
+      .object({
+        parts: z.array(geminiPartSchema).optional(),
+      })
+      .catchall(z.unknown())
+      .optional(),
+    generationConfig: z
+      .object({
+        stream: z.boolean().optional(),
+        maxOutputTokens: z.coerce.number().int().min(1).optional(),
+        temperature: z.coerce.number().optional(),
+        topP: z.coerce.number().optional(),
+      })
+      .catchall(z.unknown())
+      .optional(),
+  })
+  .catchall(z.unknown())
+  .superRefine((value, ctx) => {
+    if (!value.contents && !value.systemInstruction) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "contents or systemInstruction is required",
+        path: [],
+      });
+    }
+  });

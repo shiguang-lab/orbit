@@ -4,8 +4,6 @@ import {
   Card,
   Flex,
   Form,
-  Input,
-  InputNumber,
   Modal,
   Popconfirm,
   Space,
@@ -51,6 +49,7 @@ export function BatchFilesPage() {
   const [messageApi, contextHolder] = message.useMessage();
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [uploadForm] = Form.useForm();
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const filesQuery = useQuery({
     queryKey: ["batch-files-list"],
@@ -58,11 +57,15 @@ export function BatchFilesPage() {
   });
 
   const uploadMutation = useMutation({
-    mutationFn: (values: any) => batchApi.uploadFile(values),
+    mutationFn: async () => {
+      if (!selectedFile) throw new Error(tt("请选择 JSONL 文件", "Select a JSONL file first"));
+      return batchApi.uploadFile({ file: selectedFile, purpose: "batch" });
+    },
     onSuccess: (file) => {
       messageApi.success(tt(`文件 ${file.filename} 上传成功！`, `File ${file.filename} uploaded successfully!`));
       setUploadModalOpen(false);
       uploadForm.resetFields();
+      setSelectedFile(null);
       void queryClient.invalidateQueries({ queryKey: ["batch-files-list"] });
     },
     onError: () => messageApi.error(tt("上传文件失败", "Failed to upload file")),
@@ -170,7 +173,7 @@ export function BatchFilesPage() {
               title: tt("数据行数 / 请求数", "Line Count"),
               dataIndex: "lineCount",
               key: "lines",
-              render: (lines) => <Tag color="geekblue">{lines} {tt("行", "lines")}</Tag>,
+              render: (lines) => lines == null ? <Text type="secondary">—</Text> : <Tag color="geekblue">{lines} {tt("行", "lines")}</Tag>,
             },
             {
               title: tt("文件大小", "File Size"),
@@ -222,22 +225,17 @@ export function BatchFilesPage() {
         okText={tt("确认上传", "Upload")}
         cancelText={tt("取消", "Cancel")}
       >
-        <Form form={uploadForm} layout="vertical" onFinish={(v) => uploadMutation.mutate(v)} style={{ marginTop: 12 }}>
+        <Form form={uploadForm} layout="vertical" onFinish={() => uploadMutation.mutate()} style={{ marginTop: 12 }}>
           <Form.Item
-            label={tt("文件名称 (需以 .jsonl 结尾)", "Filename")}
-            name="filename"
-            rules={[{ required: true, message: tt("请输入文件名称", "Please enter filename") }]}
-            initialValue="dataset_batch_requests.jsonl"
+            label={tt("选择 JSONL 文件", "JSONL file")}
+            required
           >
-            <Input placeholder="input_prompts.jsonl" />
-          </Form.Item>
-          <Form.Item
-            label={tt("数据集请求总行数 (Lines)", "Total Line Count")}
-            name="lineCount"
-            rules={[{ required: true, message: tt("请输入行数", "Please enter line count") }]}
-            initialValue={250}
-          >
-            <InputNumber min={1} max={50000} style={{ width: "100%" }} addonAfter={tt("行", "lines")} />
+            <input
+              type="file"
+              accept=".jsonl,application/jsonl,application/json"
+              onChange={(event) => setSelectedFile(event.target.files?.[0] ?? null)}
+            />
+            {selectedFile && <Text type="secondary" style={{ display: "block", marginTop: 8 }}>{selectedFile.name} · {(selectedFile.size / 1024).toFixed(1)} KB</Text>}
           </Form.Item>
         </Form>
       </Modal>

@@ -15,6 +15,7 @@ import { MaterialIcon } from "@/app/nav";
 import { keysApi } from "@/entities/api";
 import { useQuery } from "@tanstack/react-query";
 import type { EndpointCardDef } from "./constants";
+import { useI18n } from "@/i18n";
 
 const { Text, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -42,6 +43,7 @@ interface QuickTestModalProps {
 
 export function QuickTestModal({ endpoint, baseUrl, onClose }: QuickTestModalProps) {
   const { styles } = useStyles();
+  const { tt, isZh } = useI18n();
 
   const [testBody, setTestBody] = useState("");
   const [selectedKeyId, setSelectedKeyId] = useState<string>("");
@@ -84,6 +86,8 @@ export function QuickTestModal({ endpoint, baseUrl, onClose }: QuickTestModalPro
 
   const fullEndpointUrl = `${baseUrl.replace(/\/$/, "")}${endpoint.path}`;
   const method = endpoint.path === "/v1/models" ? "GET" : "POST";
+  const titleText = isZh ? endpoint.titleZh : endpoint.titleEn;
+  const descText = isZh ? endpoint.descriptionZh : endpoint.descriptionEn;
 
   const handleExecute = async () => {
     setTesting(true);
@@ -94,7 +98,7 @@ export function QuickTestModal({ endpoint, baseUrl, onClose }: QuickTestModalPro
       try {
         parsedBody = JSON.parse(testBody);
       } catch {
-        message.error("请求体不是有效的 JSON 格式");
+        message.error(tt("请求体不是有效的 JSON 格式", "Request body is not valid JSON"));
         setTesting(false);
         return;
       }
@@ -153,14 +157,14 @@ export function QuickTestModal({ endpoint, baseUrl, onClose }: QuickTestModalPro
         statusText: "Network Error",
         latencyMs,
         headers: {},
-        body: { error: err instanceof Error ? err.message : "无法连接至网关端点" },
+        body: { error: err instanceof Error ? err.message : tt("无法连接至网关端点", "Cannot connect to gateway endpoint") },
       });
     } finally {
       setTesting(false);
     }
   };
 
-  const copyToClipboard = (text: string, tip = "已复制到剪贴板") => {
+  const copyToClipboard = (text: string, tip = tt("已复制到剪贴板", "Copied to clipboard")) => {
     navigator.clipboard.writeText(text);
     message.success(tip);
   };
@@ -185,7 +189,7 @@ export function QuickTestModal({ endpoint, baseUrl, onClose }: QuickTestModalPro
           >
             <MaterialIcon name={endpoint.icon} size={16} style={{ color: endpoint.iconColor }} />
           </div>
-          <span style={{ fontSize: 15, fontWeight: 600 }}>在线调试端点 · {endpoint.title}</span>
+          <span style={{ fontSize: 15, fontWeight: 600 }}>{tt("在线调试端点", "Live Test Endpoint")} · {titleText}</span>
           <Tag style={{ fontFamily: "monospace", fontSize: 11, margin: 0 }}>
             {endpoint.path}
           </Tag>
@@ -193,7 +197,7 @@ export function QuickTestModal({ endpoint, baseUrl, onClose }: QuickTestModalPro
       }
       footer={[
         <Button key="close" onClick={onClose}>
-          关闭
+          {tt("关闭", "Close")}
         </Button>,
         <Button
           key="curl"
@@ -206,10 +210,10 @@ export function QuickTestModal({ endpoint, baseUrl, onClose }: QuickTestModalPro
             if (manualKey) curlHeaders.push(`-H "Authorization: Bearer ${manualKey}"`);
             const curlBody = testBody ? `-d '${testBody.replace(/'/g, "\\'")}'` : "";
             const curlCmd = `curl ${fullEndpointUrl} \\\n  ${curlHeaders.join(" \\\n  ")} ${curlBody ? `\\\n  ${curlBody}` : ""}`;
-            copyToClipboard(curlCmd, "已复制 cURL 请求代码");
+            copyToClipboard(curlCmd, tt("已复制 cURL 请求代码", "Copied cURL command"));
           }}
         >
-          复制 cURL
+          {tt("复制 cURL", "Copy cURL")}
         </Button>,
         <Button
           key="send"
@@ -218,19 +222,19 @@ export function QuickTestModal({ endpoint, baseUrl, onClose }: QuickTestModalPro
           loading={testing}
           onClick={() => void handleExecute()}
         >
-          发起实时请求
+          {tt("发起实时请求", "Send Request")}
         </Button>,
       ]}
     >
       <Flex vertical gap={12} style={{ marginTop: 12 }}>
         <Paragraph type="secondary" style={{ fontSize: 12, margin: 0 }}>
-          {endpoint.description}
+          {descText}
         </Paragraph>
 
         {/* Auth Selection */}
         <div>
           <Text type="secondary" style={{ fontSize: 12, display: "block", marginBottom: 4 }}>
-            API 密钥认证 (Bearer Token):
+            {tt("API 密钥认证 (Bearer Token):", "API Key Authentication (Bearer Token):")}
           </Text>
           <Flex gap={8} wrap>
             {availableKeys.length > 0 && !manualKey && (
@@ -245,7 +249,7 @@ export function QuickTestModal({ endpoint, baseUrl, onClose }: QuickTestModalPro
               />
             )}
             <Input
-              placeholder="或输入自定义 Bearer Token..."
+              placeholder={tt("或输入自定义 Bearer Token...", "Or enter custom Bearer Token...")}
               value={manualKey}
               onChange={(e) => setManualKey(e.target.value)}
               style={{ flex: 1, minWidth: 200 }}
@@ -258,7 +262,7 @@ export function QuickTestModal({ endpoint, baseUrl, onClose }: QuickTestModalPro
           <div>
             <Flex align="center" justify="space-between" style={{ marginBottom: 4 }}>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                请求体 JSON Payload:
+                {tt("请求体 JSON Payload:", "Request Body JSON Payload:")}
               </Text>
               {endpoint.exampleBody && (
                 <Button
@@ -269,7 +273,7 @@ export function QuickTestModal({ endpoint, baseUrl, onClose }: QuickTestModalPro
                     setTestBody(JSON.stringify(endpoint.exampleBody, null, 2))
                   }
                 >
-                  重置为示例
+                  {tt("重置为示例", "Reset to Example")}
                 </Button>
               )}
             </Flex>
@@ -278,7 +282,7 @@ export function QuickTestModal({ endpoint, baseUrl, onClose }: QuickTestModalPro
               value={testBody}
               onChange={(e) => setTestBody(e.target.value)}
               style={{ fontFamily: "monospace", fontSize: 12 }}
-              placeholder="输入有效的 JSON 请求参数..."
+              placeholder={tt("输入有效的 JSON 请求参数...", "Enter valid JSON payload...")}
             />
           </div>
         )}
@@ -299,7 +303,7 @@ export function QuickTestModal({ endpoint, baseUrl, onClose }: QuickTestModalPro
                   HTTP {testResult.status} {testResult.statusText}
                 </Tag>
                 <Text strong style={{ fontSize: 12 }}>
-                  耗时: {testResult.latencyMs}ms
+                  {tt("耗时", "Latency")}: {testResult.latencyMs}ms
                 </Text>
               </Space>
               <Button
@@ -311,11 +315,11 @@ export function QuickTestModal({ endpoint, baseUrl, onClose }: QuickTestModalPro
                     typeof testResult.body === "string"
                       ? testResult.body
                       : JSON.stringify(testResult.body, null, 2),
-                    "已复制响应结果"
+                    tt("已复制响应结果", "Copied response")
                   )
                 }
               >
-                复制响应
+                {tt("复制响应", "Copy Response")}
               </Button>
             </Flex>
             <pre className={styles.codeViewer}>

@@ -1,5 +1,6 @@
 import {
   Card,
+  Button,
   Flex,
   Switch,
   Table,
@@ -7,10 +8,12 @@ import {
   Typography,
 } from "antd";
 import { createStyles } from "antd-style";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 import { MaterialIcon } from "@/app/nav";
 import { pluginsApi, type PluginItem } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Title, Text } = Typography;
 
@@ -36,6 +39,8 @@ const useStyles = createStyles(({ token }) => ({
 
 export function PluginsPage() {
   const { styles } = useStyles();
+  const { tt } = useI18n();
+  const client = useQueryClient();
 
   const pluginsQuery = useQuery({
     queryKey: ["plugins-list"],
@@ -47,6 +52,10 @@ export function PluginsPage() {
   }
 
   const plugins = pluginsQuery.data ?? [];
+  const toggle = useMutation({
+    mutationFn: ({ name, enabled }: { name: string; enabled: boolean }) => enabled ? pluginsApi.activate(name) : pluginsApi.deactivate(name),
+    onSuccess: () => void client.invalidateQueries({ queryKey: ["plugins-list"] }),
+  });
 
   return (
     <div className={styles.page}>
@@ -71,12 +80,15 @@ export function PluginsPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  扩展插件生态中心
+                  {tt("扩展插件生态中心", "Extension Plugin Ecosystem")}
                 </Title>
-                <Tag color="purple">生命周期拦截器</Tag>
+                <Tag color="purple">{tt("生命周期拦截器", "Lifecycle Interceptors")}</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                管理请求前置注入防护、敏感数据 (PII) 脱敏、语义动态路由与响应后置转换插件。
+                {tt(
+                  "管理请求前置注入防护、敏感数据 (PII) 脱敏、语义动态路由与响应后置转换插件。",
+                  "Manage pre-request guardrails, PII masking, semantic routing, and post-response transformation plugins."
+                )}
               </Text>
             </div>
           </Flex>
@@ -84,15 +96,14 @@ export function PluginsPage() {
       </Card>
 
       {/* 2. Plugins Table */}
-      <Card title="已安装网关插件列表" className={styles.sectionCard} size="small">
+      <Card title={tt("已安装网关插件列表", "Installed Gateway Plugins")} className={styles.sectionCard}>
         <Table<PluginItem>
           rowKey="id"
-          size="small"
           pagination={false}
           dataSource={plugins}
           columns={[
             {
-              title: "插件名称与分类",
+              title: tt("插件名称与分类", "Plugin Name & Category"),
               key: "name",
               render: (_, record) => (
                 <div>
@@ -108,7 +119,7 @@ export function PluginsPage() {
               ),
             },
             {
-              title: "挂载 Hook 钩子点",
+              title: tt("挂载 Hook 钩子点", "Mounted Hook Points"),
               dataIndex: "hooks",
               key: "hooks",
               render: (hooks: string[]) => (
@@ -122,16 +133,21 @@ export function PluginsPage() {
               ),
             },
             {
-              title: "开发者",
+              title: tt("开发者", "Author"),
               dataIndex: "author",
               key: "author",
               render: (author) => <Text style={{ fontSize: 12 }}>{author}</Text>,
             },
             {
-              title: "启用开关",
+              title: tt("启用开关", "Enabled"),
               dataIndex: "enabled",
               key: "enabled",
-              render: (enabled) => <Switch defaultChecked={enabled} />,
+              render: (enabled, record) => <Switch checked={Boolean(enabled)} loading={toggle.isPending && toggle.variables?.name === record.name} onChange={(value) => toggle.mutate({ name: record.name, enabled: value })} />,
+            },
+            {
+              title: tt("配置", "Configure"),
+              key: "config",
+              render: (_, record) => <Button type="link"><Link to={`/dashboard/plugins/${encodeURIComponent(record.name)}/config`}>{tt("配置", "Configure")}</Link></Button>,
             },
           ]}
         />

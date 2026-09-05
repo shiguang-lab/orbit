@@ -11,6 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
 import { agentSkillsApi, type AgentSkillItem } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Title, Text } = Typography;
 
@@ -36,6 +37,7 @@ const useStyles = createStyles(({ token }) => ({
 
 export function AgentSkillsPage() {
   const { styles } = useStyles();
+  const { tt } = useI18n();
 
   const skillsQuery = useQuery({
     queryKey: ["agent-skills-list"],
@@ -71,12 +73,15 @@ export function AgentSkillsPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  智能体专业技能库
+                  {tt("智能体专业技能库", "Agent Skills Library")}
                 </Title>
-                <Tag color="teal">可插拔专业技能</Tag>
+                <Tag color="teal">{tt("可插拔专业技能", "Pluggable Skills")}</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                管理面向特定领域（代码重构、SQL 查询分析、API 文档提取）的智能体预置指令与工具规则包。
+                {tt(
+                  "管理面向特定领域（代码重构、SQL 查询分析、API 文档提取）的智能体预置指令与工具规则包。",
+                  "Manage domain-specific agent skills, system prompts, and tool bundles (refactoring, SQL analysis, docs extraction)."
+                )}
               </Text>
             </div>
           </Flex>
@@ -84,7 +89,7 @@ export function AgentSkillsPage() {
       </Card>
 
       {/* 2. Skills Table */}
-      <Card title="已注册智能体技能清单" className={styles.sectionCard} size="small">
+      <Card title={tt("已注册智能体技能清单", "Registered Agent Skills")} className={styles.sectionCard} size="small">
         <Table<AgentSkillItem>
           rowKey="id"
           size="small"
@@ -92,7 +97,7 @@ export function AgentSkillsPage() {
           dataSource={skills}
           columns={[
             {
-              title: "技能名称与版本",
+              title: tt("技能名称与版本", "Skill Name & Version"),
               key: "name",
               render: (_, record) => (
                 <div>
@@ -107,7 +112,7 @@ export function AgentSkillsPage() {
               ),
             },
             {
-              title: "领域标签",
+              title: tt("领域标签", "Domain Tags"),
               dataIndex: "tags",
               key: "tags",
               render: (tags: string[]) => (
@@ -121,13 +126,13 @@ export function AgentSkillsPage() {
               ),
             },
             {
-              title: "作者",
+              title: tt("作者", "Author"),
               dataIndex: "author",
               key: "author",
               render: (author) => <Text style={{ fontSize: 12 }}>{author}</Text>,
             },
             {
-              title: "启用状态",
+              title: tt("启用状态", "Status"),
               dataIndex: "enabled",
               key: "enabled",
               render: (enabled) => <Switch defaultChecked={enabled} />,

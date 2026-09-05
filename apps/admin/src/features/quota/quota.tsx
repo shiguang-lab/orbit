@@ -7,9 +7,7 @@ import {
   Drawer,
   Empty,
   Flex,
-  Form,
   Input,
-  InputNumber,
   Popconfirm,
   Progress,
   Row,
@@ -29,7 +27,6 @@ import {
   providersApi,
   quotaApi,
   type ProviderConnection,
-  type QuotaPoolItem,
 } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
 import { useI18n } from "@/i18n";
@@ -174,7 +171,6 @@ export function QuotaPage() {
   const [cutoffTarget, setCutoffTarget] = useState<ProviderConnection | null>(null);
   const [costModalConnection, setCostModalConnection] = useState<ProviderConnection | null>(null);
   const [poolDrawerVisible, setPoolDrawerVisible] = useState(false);
-  const [editingPool, setEditingPool] = useState<Partial<QuotaPoolItem> | null>(null);
 
   // Per-operator Quota Visibility
   const [quotaVisibility, setQuotaVisibility] = useState<Record<string, { hidden?: string[] }>>({});
@@ -220,7 +216,6 @@ export function QuotaPage() {
     [quotaVisibility, messageApi]
   );
 
-  const [poolForm] = Form.useForm();
 
   // Quota Windows Defaults
   const [providerWindowDefaults, setProviderWindowDefaults] = useState<Record<string, Record<string, number>>>({});
@@ -428,19 +423,6 @@ export function QuotaPage() {
       messageApi.error("保存切流阈值失败");
     }
   };
-
-  // Pool mutations
-  const savePoolMutation = useMutation({
-    mutationFn: (pool: Partial<QuotaPoolItem>) => quotaApi.savePool(pool),
-    onSuccess: () => {
-      messageApi.success("共享池配置已保存");
-      setEditingPool(null);
-      void queryClient.invalidateQueries({ queryKey: ["quota-pools"] });
-    },
-    onError: (err: unknown) => {
-      messageApi.error(err instanceof Error ? err.message : "保存共享池失败");
-    },
-  });
 
   const deletePoolMutation = useMutation({
     mutationFn: (poolId: string) => quotaApi.deletePool(poolId),
@@ -1298,24 +1280,10 @@ export function QuotaPage() {
         extra={
           <Button
             type="primary"
-            size="small"
             icon={<MaterialIcon name="add" size={15} />}
             onClick={() => {
-              setEditingPool({
-                name: "",
-                provider: "openai",
-                dailyLimitUsd: 100,
-                monthlyLimitUsd: 1000,
-                autoFailover: true,
-                connectionIds: [],
-              });
-              poolForm.setFieldsValue({
-                name: "",
-                provider: "openai",
-                dailyLimitUsd: 100,
-                monthlyLimitUsd: 1000,
-                autoFailover: true,
-              });
+              setPoolDrawerVisible(false);
+              navigate("/dashboard/costs/quota-share");
             }}
           >
             新建共享池
@@ -1330,63 +1298,7 @@ export function QuotaPage() {
           style={{ marginBottom: 16 }}
         />
 
-        {editingPool && (
-          <Card
-            size="small"
-            title={editingPool.id ? "编辑共享池" : "新建共享池"}
-            style={{ marginBottom: 16, borderColor: "#3b82f6" }}
-          >
-            <Form form={poolForm} layout="vertical">
-              <Form.Item
-                name="name"
-                label="池名称"
-                rules={[{ required: true, message: "请输入共享池名称" }]}
-              >
-                <Input placeholder="如: OpenAI 生产级共享池" />
-              </Form.Item>
-
-              <Row gutter={12}>
-                <Col span={12}>
-                  <Form.Item name="dailyLimitUsd" label="每日预算上限 (USD)">
-                    <InputNumber min={0} style={{ width: "100%" }} addonBefore="$" />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item name="monthlyLimitUsd" label="每月预算上限 (USD)">
-                    <InputNumber min={0} style={{ width: "100%" }} addonBefore="$" />
-                  </Form.Item>
-                </Col>
-              </Row>
-
-              <Form.Item name="autoFailover" valuePropName="checked" label="单 Key 耗尽时自动切流至备用 Key">
-                <Switch />
-              </Form.Item>
-
-              <Flex justify="flex-end" gap={8}>
-                <Button size="small" onClick={() => setEditingPool(null)}>
-                  取消
-                </Button>
-                <Button
-                  size="small"
-                  type="primary"
-                  loading={savePoolMutation.isPending}
-                  onClick={async () => {
-                    try {
-                      const vals = await poolForm.validateFields();
-                      savePoolMutation.mutate({ ...editingPool, ...vals });
-                    } catch {
-                      // validate error
-                    }
-                  }}
-                >
-                  保存
-                </Button>
-              </Flex>
-            </Form>
-          </Card>
-        )}
-
-        {pools.length === 0 && !editingPool ? (
+        {pools.length === 0 ? (
           <Empty description="暂无配额共享池，点击右上角新建" />
         ) : (
           pools.map((pool) => (
@@ -1395,11 +1307,11 @@ export function QuotaPage() {
                 <div>
                   <Text strong>{pool.name}</Text>
                   <Tag color="cyan" style={{ marginLeft: 8 }}>
-                    {pool.provider}
+                    {pool.groupId}
                   </Tag>
                   <div style={{ marginTop: 4 }}>
                     <Text type="secondary" style={{ fontSize: 12 }}>
-                      日限: ${pool.dailyLimitUsd} · 月限: ${pool.monthlyLimitUsd}
+                      {pool.connectionIds.length} 个上游账号 · {pool.allocations.length} 个 API Key
                     </Text>
                   </div>
                 </div>
@@ -1408,10 +1320,7 @@ export function QuotaPage() {
                     size="small"
                     type="text"
                     icon={<MaterialIcon name="edit" size={15} />}
-                    onClick={() => {
-                      setEditingPool(pool);
-                      poolForm.setFieldsValue(pool);
-                    }}
+                    onClick={() => navigate("/dashboard/costs/quota-share")}
                   />
                   <Popconfirm
                     title="确定删除此共享池？"

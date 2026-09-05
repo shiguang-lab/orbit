@@ -112,12 +112,9 @@ const PROVIDER_TITLE_COLOR = "#3B82F6";
 const useProviderStyles = createStyles(({ token }) => ({
   page: {
     width: "100%",
-    // Keep the last provider row clear of the viewport edge when the shell
-    // scrollbar is scrolled all the way down.
-    paddingBottom: 24,
   },
   card: {
-    "&.ant-card-hoverable:hover": {
+    "&:hover": {
       borderColor: token.colorPrimary,
       boxShadow: "none",
     },
@@ -207,7 +204,7 @@ export default function ProvidersPage() {
     staleTime: 30_000,
   });
 
-  // Orbit's Providers page reads these as independent, best-effort sources.
+  // Shiguang Gateway's Providers page reads these as independent, best-effort sources.
   // Keep them separate so an unavailable enrichment never hides real connections.
   const expirationQuery = useQuery({
     queryKey: ["providers", "expiration"],

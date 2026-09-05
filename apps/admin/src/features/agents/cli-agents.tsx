@@ -17,6 +17,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
 import { cliAgentsApi, type CliAgentSession } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Title, Text } = Typography;
 
@@ -42,6 +43,7 @@ const useStyles = createStyles(({ token }) => ({
 
 export function CliAgentsPage() {
   const { styles } = useStyles();
+  const { tt } = useI18n();
   const queryClient = useQueryClient();
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -56,21 +58,21 @@ export function CliAgentsPage() {
   const spawnMutation = useMutation({
     mutationFn: (values: any) => cliAgentsApi.spawn(values),
     onSuccess: () => {
-      messageApi.success("CLI 智能体已成功拉起");
+      messageApi.success(tt("CLI 智能体已成功拉起", "CLI agent spawned successfully"));
       setSpawnModalOpen(false);
       form.resetFields();
       void queryClient.invalidateQueries({ queryKey: ["cli-agents-list"] });
     },
-    onError: () => messageApi.error("拉起智能体失败"),
+    onError: () => messageApi.error(tt("拉起智能体失败", "Failed to spawn agent")),
   });
 
   const terminateMutation = useMutation({
     mutationFn: (id: string) => cliAgentsApi.terminate(id),
     onSuccess: () => {
-      messageApi.success("智能体进程已终止");
+      messageApi.success(tt("智能体进程已终止", "Agent process terminated"));
       void queryClient.invalidateQueries({ queryKey: ["cli-agents-list"] });
     },
-    onError: () => messageApi.error("终止智能体失败"),
+    onError: () => messageApi.error(tt("终止智能体失败", "Failed to terminate agent")),
   });
 
   if (agentsQuery.isLoading) {
@@ -104,12 +106,15 @@ export function CliAgentsPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  命令行智能体管控
+                  {tt("命令行智能体管控", "CLI Agent Management")}
                 </Title>
-                <Tag color="blue">本地子进程与终端会话</Tag>
+                <Tag color="blue">{tt("本地子进程与终端会话", "Local Processes & Sessions")}</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                监控、拉起与管理宿主机及容器内的命令行智能体（如 agy, cursor-agent, claude-code），统一网关凭证与通讯隧道。
+                {tt(
+                  "监控、拉起与管理宿主机及容器内的命令行智能体（如 agy, cursor-agent, claude-code），统一网关凭证与通讯隧道。",
+                  "Monitor, spawn, and manage host/container CLI agents (agy, cursor-agent, claude-code) with unified gateway tunnels."
+                )}
               </Text>
             </div>
           </Flex>
@@ -119,13 +124,13 @@ export function CliAgentsPage() {
             icon={<MaterialIcon name="add" size={16} />}
             onClick={() => setSpawnModalOpen(true)}
           >
-            拉起新智能体
+            {tt("拉起新智能体", "Spawn Agent")}
           </Button>
         </Flex>
       </Card>
 
       {/* 2. Agents Table */}
-      <Card title="已注册 CLI 智能体列表" className={styles.sectionCard} size="small">
+      <Card title={tt("已注册 CLI 智能体列表", "Registered CLI Agents")} className={styles.sectionCard} size="small">
         <Table<CliAgentSession>
           rowKey="id"
           size="small"
@@ -133,7 +138,7 @@ export function CliAgentsPage() {
           dataSource={agents}
           columns={[
             {
-              title: "智能体名称与指令",
+              title: tt("智能体名称与指令", "Agent Name & Command"),
               key: "name",
               render: (_, record) => (
                 <div>
@@ -148,19 +153,19 @@ export function CliAgentsPage() {
               ),
             },
             {
-              title: "工作目录",
+              title: tt("工作目录", "Working Directory"),
               dataIndex: "cwd",
               key: "cwd",
               render: (cwd) => <code style={{ fontSize: 11 }}>{cwd}</code>,
             },
             {
-              title: "通信协议",
+              title: tt("通信协议", "Protocol"),
               dataIndex: "protocol",
               key: "protocol",
-              render: (proto) => <Tag color="cyan">{proto || "STDIO"}</Tag>,
+              render: (proto) => <Tag color="cyan">{proto || "UNKNOWN"}</Tag>,
             },
             {
-              title: "状态",
+              title: tt("状态", "Status"),
               dataIndex: "status",
               key: "status",
               render: (status) => (
@@ -170,24 +175,24 @@ export function CliAgentsPage() {
               ),
             },
             {
-              title: "最近活动",
+              title: tt("最近活动", "Last Active"),
               dataIndex: "lastActive",
               key: "lastActive",
               render: (act) => <Text type="secondary" style={{ fontSize: 12 }}>{act}</Text>,
             },
             {
-              title: "操作",
+              title: tt("操作", "Actions"),
               key: "actions",
               width: 120,
               render: (_, record) => (
                 <Popconfirm
-                  title="确定要终止该 CLI 智能体进程吗？"
+                  title={tt("确定要终止该 CLI 智能体进程吗？", "Confirm terminating this CLI agent process?")}
                   onConfirm={() => terminateMutation.mutate(record.id)}
-                  okText="终止"
-                  cancelText="取消"
+                  okText={tt("终止", "Terminate")}
+                  cancelText={tt("取消", "Cancel")}
                 >
                   <Button size="small" danger type="text" icon={<MaterialIcon name="stop" size={14} />}>
-                    终止
+                    {tt("终止", "Terminate")}
                   </Button>
                 </Popconfirm>
               ),
@@ -198,20 +203,20 @@ export function CliAgentsPage() {
 
       {/* 3. Spawn Modal */}
       <Modal
-        title="拉起新 CLI 智能体"
+        title={tt("拉起新 CLI 智能体", "Spawn New CLI Agent")}
         open={spawnModalOpen}
         onOk={() => form.submit()}
         confirmLoading={spawnMutation.isPending}
         onCancel={() => setSpawnModalOpen(false)}
       >
         <Form form={form} layout="vertical" onFinish={(v) => spawnMutation.mutate(v)} style={{ marginTop: 12 }}>
-          <Form.Item name="name" label="智能体名称" rules={[{ required: true, message: "请输入名称" }]}>
-            <Input placeholder="例如：Claude Code Terminal Daemon" />
+          <Form.Item name="name" label={tt("智能体名称", "Agent Name")} rules={[{ required: true, message: tt("请输入名称", "Please enter name") }]}>
+            <Input placeholder={tt("例如：Claude Code Terminal Daemon", "e.g. Claude Code Terminal Daemon")} />
           </Form.Item>
-          <Form.Item name="command" label="执行指令" rules={[{ required: true, message: "请输入启动指令" }]}>
+          <Form.Item name="command" label={tt("执行指令", "Command")} rules={[{ required: true, message: tt("请输入启动指令", "Please enter command") }]}>
             <Input placeholder="例如：agy coder --port 9000" />
           </Form.Item>
-          <Form.Item name="cwd" label="工作目录 (CWD)">
+          <Form.Item name="cwd" label={tt("工作目录", "Working Directory (CWD)")}>
             <Input placeholder="/workspace/my-project" />
           </Form.Item>
         </Form>

@@ -205,7 +205,7 @@ export function SettingsAccessTokensPage() {
                 <Tag color="blue">{tt("远程管理", "Remote CLI")}</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                {tt("用于通过 omniroute CLI 命令行远程管理本服务的限定权限令牌。不同于模型调用 API 密钥。", "Scoped tokens that let the omniroute CLI manage this server remotely. Distinct from inference API keys.")}
+                {tt("用于通过 shiguangGateway CLI 命令行远程管理本服务的限定权限令牌。不同于模型调用 API 密钥。", "Scoped tokens that let the shiguangGateway CLI manage this server remotely. Distinct from inference API keys.")}
               </Text>
             </div>
           </Flex>

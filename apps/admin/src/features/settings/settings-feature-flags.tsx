@@ -251,7 +251,7 @@ export function SettingsFeatureFlagsPage() {
                 <Tag color="blue">{tt("实时配置", "Live configuration")}</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                {tt("配置会写入 Orbit 的真实设置接口；数据库覆盖优先于环境变量。", "Changes are saved through Orbit's settings API; database overrides take precedence over environment variables.")}
+                {tt("配置会写入 Shiguang Gateway 的真实设置接口；数据库覆盖优先于环境变量。", "Changes are saved through Shiguang Gateway's settings API; database overrides take precedence over environment variables.")}
               </Text>
             </div>
           </Flex>

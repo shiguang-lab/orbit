@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
 import { cloudAgentsApi, type CloudAgentItem } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Title, Text } = Typography;
 
@@ -35,6 +36,7 @@ const useStyles = createStyles(({ token }) => ({
 
 export function CloudAgentsPage() {
   const { styles } = useStyles();
+  const { tt } = useI18n();
 
   const cloudQuery = useQuery({
     queryKey: ["cloud-agents-list"],
@@ -70,12 +72,15 @@ export function CloudAgentsPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  云端智能体服务集群
+                  {tt("云端智能体服务集群", "Cloud Agent Service Cluster")}
                 </Title>
-                <Tag color="cyan">远程智能体协同</Tag>
+                <Tag color="cyan">{tt("远程智能体协同", "Remote Agent Swarm")}</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                注册与调度托管在云端、Serverless 或 GitHub / Sentry Webhook 回调的远程 AI 智能体。
+                {tt(
+                  "注册与调度托管在云端、Serverless 或 GitHub / Sentry Webhook 回调的远程 AI 智能体。",
+                  "Register and coordinate remote AI agents hosted on Cloud, Serverless, or Webhooks."
+                )}
               </Text>
             </div>
           </Flex>
@@ -83,7 +88,7 @@ export function CloudAgentsPage() {
       </Card>
 
       {/* 2. Table */}
-      <Card title="云端智能体服务实例" className={styles.sectionCard} size="small">
+      <Card title={tt("云端智能体服务实例", "Cloud Agent Instances")} className={styles.sectionCard} size="small">
         <Table<CloudAgentItem>
           rowKey="id"
           size="small"
@@ -91,7 +96,7 @@ export function CloudAgentsPage() {
           dataSource={agents}
           columns={[
             {
-              title: "智能体名称与类型",
+              title: tt("智能体名称与类型", "Agent Name & Type"),
               key: "name",
               render: (_, record) => (
                 <div>
@@ -106,19 +111,19 @@ export function CloudAgentsPage() {
               ),
             },
             {
-              title: "运行区域",
+              title: tt("运行区域", "Region"),
               dataIndex: "region",
               key: "region",
               render: (region) => <Tag color="geekblue">{region}</Tag>,
             },
             {
-              title: "已处理任务数",
+              title: tt("已处理任务数", "Tasks Processed"),
               dataIndex: "tasksProcessed",
               key: "tasksProcessed",
-              render: (tasks) => <Text strong>{tasks.toLocaleString()} 次</Text>,
+              render: (tasks) => <Text strong>{tasks.toLocaleString()} {tt("次", "tasks")}</Text>,
             },
             {
-              title: "状态",
+              title: tt("状态", "Status"),
               dataIndex: "status",
               key: "status",
               render: (status) => (

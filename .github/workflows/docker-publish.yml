@@ -1,4 +1,4 @@
-name: Publish Orbit Gateway image
+name: Publish ShiguangGateway Independent image
 
 on:
   push:
@@ -16,15 +16,71 @@ permissions:
   contents: read
 
 concurrency:
-  group: orbit-gateway-publish-${{ github.ref }}
+  group: shiguang-gateway-publish-${{ github.ref }}
   cancel-in-progress: true
 
 env:
-  IMAGE_NAME: ghcr.io/shiguang-lab/orbit-gateway
+  IMAGE_PREFIX: ghcr.io/shiguang-lab/shiguang-gateway
 
 jobs:
-  publish:
+  verify:
+    name: Verify independent runtime
     runs-on: ubuntu-latest
+    env:
+      # Release validation must not silently depend on a sibling official
+      # checkout; the route/HTTP contract hashes are committed in this repo.
+      SHIGUANG_GATEWAY_REFERENCE_DIR: /tmp/no-official-orbit
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Enable pnpm
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck and build
+        run: |
+          pnpm typecheck
+          pnpm build
+
+      - name: Run independence and runtime smoke gates
+        run: |
+          pnpm audit:gateway-independence
+          pnpm audit:route-contracts
+          pnpm audit:brand
+          pnpm --filter @shiguang-gateway/server-runtime test
+          pnpm smoke:route-imports
+          pnpm smoke:split-deployment
+          pnpm smoke:worker
+          pnpm smoke:agent-skills
+
+  publish:
+    needs: verify
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: admin
+            image: admin
+          - target: edge-gateway
+            image: edge
+          - target: control-api
+            image: control
+          - target: realtime
+            image: realtime
+          - target: worker
+            image: worker
+          - target: importer
+            image: importer
     permissions:
       contents: read
       packages: write
@@ -46,6 +102,7 @@ jobs:
         id: meta
         shell: bash
         env:
+          IMAGE_NAME: ${{ env.IMAGE_PREFIX }}-${{ matrix.image }}
           EVENT_NAME: ${{ github.event_name }}
           REF_TYPE: ${{ github.ref_type }}
           REF_NAME: ${{ github.ref_name }}
@@ -68,19 +125,20 @@ jobs:
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Build and push multi-platform image
+      - name: Build and push ${{ matrix.target }} image
         uses: docker/build-push-action@v6
         with:
           context: .
+          target: ${{ matrix.target }}
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: |
-            org.opencontainers.image.title=Orbit Gateway
-            org.opencontainers.image.source=https://github.com/shiguang-lab/orbit-gateway
+            org.opencontainers.image.title=ShiguangGateway Independent
+            org.opencontainers.image.source=https://github.com/shiguang-lab/shiguang-gateway
             org.opencontainers.image.revision=${{ github.sha }}
-          cache-from: type=gha,scope=orbit-gateway
-          cache-to: type=gha,scope=orbit-gateway,mode=max
+          cache-from: type=gha,scope=shiguang-gateway-${{ matrix.target }}
+          cache-to: type=gha,scope=shiguang-gateway-${{ matrix.target }},mode=max
 
   release:
     name: Build GitHub Release assets
@@ -101,14 +159,17 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p release-assets/nas-deploy
-          git archive --format=tar.gz --prefix="orbit-gateway-${VERSION}/" HEAD \
-            -o "release-assets/orbit-gateway-${VERSION}.source.tar.gz"
-          git archive --format=zip --prefix="orbit-gateway-${VERSION}/" HEAD \
-            -o "release-assets/orbit-gateway-${VERSION}.source.zip"
+          git archive --format=tar.gz --prefix="shiguang-gateway-${VERSION}/" HEAD \
+            -o "release-assets/shiguang-gateway-${VERSION}.source.tar.gz"
+          git archive --format=zip --prefix="shiguang-gateway-${VERSION}/" HEAD \
+            -o "release-assets/shiguang-gateway-${VERSION}.source.zip"
           cp docker-compose.yml .env.example deploy/NAS-DEPLOY.md release-assets/nas-deploy/
-          tar -czf "release-assets/orbit-gateway-${VERSION}-nas-deploy.tar.gz" \
+          mkdir -p release-assets/nas-deploy/deploy/postgres-init
+          cp deploy/docker-compose.infrastructure.yml deploy/.env.infrastructure.example release-assets/nas-deploy/deploy/
+          cp deploy/postgres-init/*.sql release-assets/nas-deploy/deploy/postgres-init/
+          tar -czf "release-assets/shiguang-gateway-${VERSION}-nas-deploy.tar.gz" \
             -C release-assets/nas-deploy .
-          (cd release-assets && sha256sum orbit-gateway-*.source.tar.gz orbit-gateway-*.source.zip orbit-gateway-*-nas-deploy.tar.gz > SHA256SUMS.txt)
+          (cd release-assets && sha256sum shiguang-gateway-*.source.tar.gz shiguang-gateway-*.source.zip shiguang-gateway-*-nas-deploy.tar.gz > SHA256SUMS.txt)
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -116,18 +177,23 @@ jobs:
           tag_name: ${{ github.ref_name }}
           generate_release_notes: true
           body: |
-            ## Orbit Gateway
+            ## Shiguang Gateway
 
-            Container image:
+            Container images (one per deployable service):
 
-            `ghcr.io/shiguang-lab/orbit-gateway:${{ github.ref_name }}`
+            `ghcr.io/shiguang-lab/shiguang-gateway-admin:${{ github.ref_name }}`
+            `ghcr.io/shiguang-lab/shiguang-gateway-edge:${{ github.ref_name }}`
+            `ghcr.io/shiguang-lab/shiguang-gateway-control:${{ github.ref_name }}`
+            `ghcr.io/shiguang-lab/shiguang-gateway-realtime:${{ github.ref_name }}`
+            `ghcr.io/shiguang-lab/shiguang-gateway-worker:${{ github.ref_name }}`
+            `ghcr.io/shiguang-lab/shiguang-gateway-importer:${{ github.ref_name }}`
 
-            NAS deployment only requires downloading the `-nas-deploy.tar.gz` asset,
-            setting `OMNIROUTE_NAS_API_TARGET` and
-            `OMNIROUTE_NAS_MANAGEMENT_API_KEY`, then running `docker compose pull`.
+            NAS deployment downloads the `-nas-deploy.tar.gz` asset, sets all six
+            `SHIGUANG_GATEWAY_*_IMAGE` variables and the stable encryption/auth secrets,
+            then runs `docker compose pull && docker compose up -d`.
           files: |
-            release-assets/orbit-gateway-${{ github.ref_name }}.source.tar.gz
-            release-assets/orbit-gateway-${{ github.ref_name }}.source.zip
-            release-assets/orbit-gateway-${{ github.ref_name }}-nas-deploy.tar.gz
+            release-assets/shiguang-gateway-${{ github.ref_name }}.source.tar.gz
+            release-assets/shiguang-gateway-${{ github.ref_name }}.source.zip
+            release-assets/shiguang-gateway-${{ github.ref_name }}-nas-deploy.tar.gz
             release-assets/SHA256SUMS.txt
           fail_on_unmatched_files: true

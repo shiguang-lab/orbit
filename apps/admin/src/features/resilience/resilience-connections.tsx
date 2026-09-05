@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
 import { resilienceApi, type ResilienceConnectionItem } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Title, Text } = Typography;
 
@@ -35,6 +36,7 @@ const useStyles = createStyles(({ token }) => ({
 
 export function ResilienceConnectionsPage() {
   const { styles } = useStyles();
+  const { tt } = useI18n();
 
   const resQuery = useQuery({
     queryKey: ["resilience-connections-list"],
@@ -70,12 +72,15 @@ export function ResilienceConnectionsPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  弹性连接与熔断降级链
+                  {tt("弹性连接与熔断降级链", "Resilience Connections & Fallback Chains")}
                 </Title>
-                <Tag color="green">智能断路器与重试预算</Tag>
+                <Tag color="green">{tt("智能断路器与重试预算", "Circuit Breakers & Retry Budgets")}</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                管理各上游连接池断路器状态 (Closed / Open / Half-Open)、失败阈值计数与多级 Fallback 容灾链。
+                {tt(
+                  "管理各上游连接池断路器状态、失败阈值计数与多级容灾链路。",
+                  "Manage upstream circuit breaker states, failure thresholds and multi-tier fallback chains."
+                )}
               </Text>
             </div>
           </Flex>
@@ -83,7 +88,7 @@ export function ResilienceConnectionsPage() {
       </Card>
 
       {/* 2. Resilience Table */}
-      <Card title="上游服务断路器与故障转移状态" className={styles.sectionCard} size="small">
+      <Card title={tt("上游服务断路器与故障转移状态", "Upstream Circuit Breakers & Failover Status")} className={styles.sectionCard} size="small">
         <Table<ResilienceConnectionItem>
           rowKey="id"
           size="small"
@@ -91,38 +96,42 @@ export function ResilienceConnectionsPage() {
           dataSource={connections}
           columns={[
             {
-              title: "上游提供商与连接池",
+              title: tt("上游提供商与连接池", "Upstream Provider & Connection Pool"),
               dataIndex: "provider",
               key: "provider",
               render: (p) => <Text strong>{p}</Text>,
             },
             {
-              title: "断路器状态 (Circuit State)",
+              title: tt("断路器状态", "Circuit State"),
               dataIndex: "circuitState",
               key: "state",
               render: (state) => (
                 <Tag color={state === "closed" ? "success" : state === "half-open" ? "warning" : "error"}>
-                  {state === "closed" ? "● 正常闭合 (CLOSED)" : state === "half-open" ? "▲ 半开试探 (HALF-OPEN)" : "✖ 熔断开启 (OPEN)"}
+                  {state === "closed"
+                    ? tt("● 正常闭合", "● Closed")
+                    : state === "half-open"
+                    ? tt("▲ 半开试探", "▲ Half-Open")
+                    : tt("✖ 熔断开启", "✖ Open")}
                 </Tag>
               ),
             },
             {
-              title: "连续失败计数 / 上限",
+              title: tt("连续失败计数 / 上限", "Failure Count / Max"),
               key: "failures",
               render: (_, record) => (
                 <Tag color={record.consecutiveFailures > 0 ? "orange" : "default"}>
-                  {record.consecutiveFailures} / {record.maxFailuresAllowed} 次
+                  {record.consecutiveFailures} / {record.maxFailuresAllowed} {tt("次", "times")}
                 </Tag>
               ),
             },
             {
-              title: "重试预算配额 (Retry Budget)",
+              title: tt("重试预算配额", "Retry Budget"),
               dataIndex: "retryBudgetTokens",
               key: "retryBudget",
               render: (tokens) => <Tag color="blue">{tokens} Tokens</Tag>,
             },
             {
-              title: "容灾回退链路 (Fallback Chain)",
+              title: tt("容灾回退链路", "Fallback Chain"),
               dataIndex: "fallbackChain",
               key: "fallback",
               render: (chain: string[]) => (

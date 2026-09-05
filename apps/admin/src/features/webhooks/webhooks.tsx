@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
 import { webhooksApi, type WebhookSubscription } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Title, Text } = Typography;
 
@@ -35,6 +36,7 @@ const useStyles = createStyles(({ token }) => ({
 
 export function WebhooksPage() {
   const { styles } = useStyles();
+  const { tt } = useI18n();
 
   const whQuery = useQuery({
     queryKey: ["webhooks-list"],
@@ -70,12 +72,15 @@ export function WebhooksPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  Webhook 事件回调管理
+                  {tt("Webhook 事件回调管理", "Webhook Subscriptions & Events")}
                 </Title>
-                <Tag color="pink">异步事件分发</Tag>
+                <Tag color="pink">{tt("异步事件分发", "Async Event Dispatch")}</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                订阅网关关键事件（配额预警、节点故障降级、鉴权失败、审计日志异常），实时推送到 Slack、飞书或自建 SIEM。
+                {tt(
+                  "订阅网关关键事件（配额预警、节点故障降级、鉴权失败、审计日志异常），实时推送到 Slack、飞书或自建 SIEM。",
+                  "Subscribe to gateway events (quota alerts, node failovers, auth failures, audit anomalies) and push to Slack, Lark or SIEM."
+                )}
               </Text>
             </div>
           </Flex>
@@ -83,7 +88,7 @@ export function WebhooksPage() {
       </Card>
 
       {/* 2. Webhooks Table */}
-      <Card title="已注册 Webhook 订阅通道" className={styles.sectionCard} size="small">
+      <Card title={tt("已注册 Webhook 订阅通道", "Registered Webhook Channels")} className={styles.sectionCard} size="small">
         <Table<WebhookSubscription>
           rowKey="id"
           size="small"
@@ -91,13 +96,13 @@ export function WebhooksPage() {
           dataSource={webhooks}
           columns={[
             {
-              title: "回调接收地址 (Target URL)",
+              title: tt("回调接收地址", "Target URL"),
               dataIndex: "url",
               key: "url",
               render: (url) => <code style={{ fontSize: 12 }}>{url}</code>,
             },
             {
-              title: "订阅事件",
+              title: tt("订阅事件", "Subscribed Events"),
               dataIndex: "events",
               key: "events",
               render: (evs: string[]) => (
@@ -111,22 +116,22 @@ export function WebhooksPage() {
               ),
             },
             {
-              title: "投递成功率",
+              title: tt("投递成功率", "Delivery Rate"),
               dataIndex: "successRate",
               key: "successRate",
               render: (rate) => <Tag color="green">{rate}%</Tag>,
             },
             {
-              title: "最近投递时间",
+              title: tt("最近投递时间", "Last Delivered At"),
               dataIndex: "lastDeliveredAt",
               key: "lastDeliveredAt",
               render: (t) => <Text type="secondary" style={{ fontSize: 12 }}>{t}</Text>,
             },
             {
-              title: "状态",
+              title: tt("状态", "Status"),
               dataIndex: "status",
               key: "status",
-              render: (st) => <Tag color={st === "active" ? "success" : "error"}>{String(st || "active").toUpperCase()}</Tag>,
+              render: (st) => <Tag color={st === "active" ? "success" : "error"}>{String(st || "unknown").toUpperCase()}</Tag>,
             },
           ]}
         />

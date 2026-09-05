@@ -1,0 +1,249 @@
+/**
+ * catalog.ts — single source of truth for the 46-entry Agent Skills catalog.
+ *
+ * Consumers: REST routes (/api/agent-skills/*), MCP tools, A2A skill, Generator.
+ * Do NOT import this from UI components directly — use the REST API instead.
+ */
+
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import type { AgentSkill, SkillCoverage, SkillMarkdown } from "./types";
+import {
+  CURATED_SKILLS,
+  getAgentSkillRawUrl,
+  getAgentSkillBlobUrl,
+} from "../../shared/constants/agentSkills.ts";
+
+// ── Canonical ID lists (D28) ────────────────────────────────────────────────
+
+/** 23 canonical API skill IDs, in spec order. */
+export const API_SKILL_IDS: readonly string[] = [
+  "omni-auth",
+  "omni-providers",
+  "omni-models",
+  "omni-combos-routing",
+  "omni-api-keys",
+  "omni-usage-logs",
+  "omni-budget",
+  "omni-settings",
+  "omni-proxies",
+  "omni-cache",
+  "omni-compression",
+  "omni-context-rtk",
+  "omni-resilience",
+  "omni-cli-tools",
+  "omni-tunnels",
+  "omni-sync-cloud",
+  "omni-db-backups",
+  "omni-webhooks",
+  "omni-mcp",
+  "omni-agents-a2a",
+  "omni-version-manager",
+  "omni-inference",
+  "omni-github-skills",
+] as const;
+
+/** Config skill IDs. */
+export const CONFIG_SKILL_IDS: readonly string[] = ["config-codex-cli"] as const;
+
+/** 21 canonical CLI skill IDs, in spec order. */
+export const CLI_SKILL_IDS: readonly string[] = [
+  "cli-serve",
+  "cli-health",
+  "cli-providers",
+  "cli-keys",
+  "cli-models",
+  "cli-chat",
+  "cli-routing",
+  "cli-resilience",
+  "cli-compression",
+  "cli-contexts",
+  "cli-cost-usage",
+  "cli-mcp",
+  "cli-a2a",
+  "cli-tunnel",
+  "cli-backup-sync",
+  "cli-policy-audit",
+  "cli-batches",
+  "cli-eval",
+  "cli-plugins-skills",
+  "cli-setup",
+  "cli-skill-collector",
+] as const;
+
+// ── Module-scope cache ──────────────────────────────────────────────────────
+
+let _cache: AgentSkill[] | null = null;
+
+const PACKAGE_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
+
+/** Resolve the packaged skill directory in both source and container layouts. */
+export function getSkillsDir(): string {
+  const configured = process.env.SHIGUANG_GATEWAY_SKILLS_DIR?.trim();
+  if (configured) return path.resolve(configured);
+  const packaged = path.join(PACKAGE_ROOT, "skills");
+  if (fs.existsSync(packaged)) return packaged;
+  return path.resolve(process.cwd(), "skills");
+}
+
+// ── Helpers ─────────────────────────────────────────────────────────────────
+
+function buildFullSkill(curated: (typeof CURATED_SKILLS)[number]): AgentSkill {
+  return {
+    ...curated,
+    endpoints: curated.category === "api" ? [] : undefined,
+    cliCommands: curated.category === "cli" ? [] : undefined,
+    rawUrl: getAgentSkillRawUrl(curated.id),
+    githubUrl: getAgentSkillBlobUrl(curated.id),
+  };
+}
+
+function deriveCatalog(): AgentSkill[] {
+  return CURATED_SKILLS.map(buildFullSkill);
+}
+
+// ── Public API ───────────────────────────────────────────────────────────────
+
+/**
+ * Returns the full catalog (46 entries). Cached in module scope after first call.
+ * Safe to call multiple times — re-derives only after `refreshCatalog()`.
+ */
+export function getCatalog(): AgentSkill[] {
+  if (!_cache) {
+    _cache = deriveCatalog();
+  }
+  return _cache;
+}
+
+/** Returns single skill metadata or null. */
+export function getSkillById(id: string): AgentSkill | null {
+  return getCatalog().find((s) => s.id === id) ?? null;
+}
+
+/** Filters catalog by category and/or area. */
+export function filterCatalog(opts: {
+  category?: "api" | "cli" | "config";
+  area?: string;
+}): AgentSkill[] {
+  let skills = getCatalog();
+  if (opts.category) {
+    skills = skills.filter((s) => s.category === opts.category);
+  }
+  if (opts.area) {
+    skills = skills.filter((s) => s.area === opts.area);
+  }
+  return skills;
+}
+
+/**
+ * Computes coverage stats: filesystem has SKILL.md vs the 46-entry catalog.
+ * Reads the skills shipped with the runtime package.
+ */
+export function computeCoverage(): SkillCoverage {
+  const catalog = getCatalog();
+  const skillsDir = getSkillsDir();
+
+  let presentIds: Set<string>;
+  try {
+    const entries = fs.readdirSync(skillsDir, { withFileTypes: true });
+    presentIds = new Set(
+      entries
+        .filter((e) => e.isDirectory())
+        .filter((e) => fs.existsSync(path.join(skillsDir, e.name, "SKILL.md")))
+        .map((e) => e.name)
+    );
+  } catch {
+    // Directory doesn't exist yet — zero coverage
+    presentIds = new Set();
+  }
+
+  const apiHave = catalog.filter((s) => s.category === "api" && presentIds.has(s.id)).length;
+  const cliHave = catalog.filter((s) => s.category === "cli" && presentIds.has(s.id)).length;
+  const configTotal = CONFIG_SKILL_IDS.length;
+  const configHave = catalog.filter((s) => s.category === "config" && presentIds.has(s.id)).length;
+
+  return {
+    // Totals derive from the canonical id lists so catalog additions cannot
+    // leave the coverage contract behind.
+    api: { have: apiHave, total: API_SKILL_IDS.length },
+    cli: { have: cliHave, total: CLI_SKILL_IDS.length },
+    config: { have: configHave, total: configTotal },
+    totalSkills: apiHave + cliHave + configHave,
+    generatedAt: new Date().toISOString(),
+  };
+}
+
+/**
+ * Forces re-derivation of the catalog on next `getCatalog()` call.
+ * Used by tests and by the generator after writing new SKILL.md files.
+ */
+export function refreshCatalog(): void {
+  _cache = null;
+}
+
+/**
+ * Fetches the SKILL.md content for a given skill ID.
+ *
+ * Resolution order:
+ *  1. Local filesystem `skills/{id}/SKILL.md` shipped in this package.
+ *  2. No network fallback: a standalone deployment must not depend on an upstream service.
+ *
+ * Returns a `SkillMarkdown` shape. Throws if both sources fail.
+ * Used by: F4 `/api/agent-skills/[id]/raw` route.
+ */
+export async function fetchSkillMarkdown(id: string): Promise<SkillMarkdown> {
+  const localPath = path.join(getSkillsDir(), id, "SKILL.md");
+
+  // 1. Try filesystem first
+  try {
+    const raw = fs.readFileSync(localPath, "utf-8");
+    const parsed = parseMarkdownFrontmatter(raw);
+    return {
+      id,
+      frontmatter: parsed.frontmatter,
+      body: parsed.body,
+      source: "filesystem",
+      fetchedAt: new Date().toISOString(),
+    };
+  } catch {
+    throw new Error(`Skill file not found in packaged runtime: ${localPath}`);
+  }
+}
+
+// ── Internal helpers ─────────────────────────────────────────────────────────
+
+/**
+ * Parses YAML frontmatter from a markdown string.
+ * Expects: `---\nkey: value\n---\n<body>` format.
+ * Returns default values if frontmatter is absent or malformed.
+ */
+function parseMarkdownFrontmatter(content: string): {
+  frontmatter: { name: string; description: string };
+  body: string;
+} {
+  const FM_REGEX = /^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/;
+  const match = FM_REGEX.exec(content);
+
+  if (!match) {
+    return {
+      frontmatter: { name: "", description: "" },
+      body: content,
+    };
+  }
+
+  const yamlBlock = match[1];
+  const body = match[2] ?? "";
+
+  // Simple key: value extraction (avoids importing js-yaml here to stay lightweight)
+  const nameMatch = /^name:\s*(.+)$/m.exec(yamlBlock);
+  const descMatch = /^description:\s*(.+)$/m.exec(yamlBlock);
+
+  return {
+    frontmatter: {
+      name: nameMatch ? nameMatch[1].trim().replace(/^["']|["']$/g, "") : "",
+      description: descMatch ? descMatch[1].trim().replace(/^["']|["']$/g, "") : "",
+    },
+    body,
+  };
+}

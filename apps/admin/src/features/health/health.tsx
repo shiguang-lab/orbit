@@ -20,6 +20,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
 import { healthApi } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Title, Text } = Typography;
 
@@ -48,24 +49,30 @@ const useStyles = createStyles(({ token }) => ({
   },
 }));
 
-function formatUptime(seconds: number) {
-  const d = Math.floor(seconds / 86400);
-  const h = Math.floor((seconds % 86400) / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  if (d > 0) return `${d}天 ${h}小时 ${m}分`;
-  if (h > 0) return `${h}小时 ${m}分`;
-  return `${m}分钟`;
-}
-
-function formatBytes(bytes: number) {
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
-
 export function HealthPage() {
   const { styles } = useStyles();
+  const { tt, isZh } = useI18n();
   const queryClient = useQueryClient();
   const [messageApi, contextHolder] = message.useMessage();
+
+  const formatUptime = (seconds: number) => {
+    const d = Math.floor(seconds / 86400);
+    const h = Math.floor((seconds % 86400) / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    if (isZh) {
+      if (d > 0) return `${d}天 ${h}小时 ${m}分`;
+      if (h > 0) return `${h}小时 ${m}分`;
+      return `${m}分钟`;
+    }
+    if (d > 0) return `${d}d ${h}h ${m}m`;
+    if (h > 0) return `${h}h ${m}m`;
+    return `${m}m`;
+  };
+
+  const formatBytes = (bytes: number) => {
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
 
   const healthQuery = useQuery({
     queryKey: ["health-dashboard"],
@@ -77,10 +84,10 @@ export function HealthPage() {
   const resetMutation = useMutation({
     mutationFn: healthApi.resetHealth,
     onSuccess: () => {
-      messageApi.success("健康统计指标与熔断器状态已重置");
+      messageApi.success(tt("健康统计指标与熔断器状态已重置", "Health metrics and circuit breakers reset"));
       queryClient.invalidateQueries({ queryKey: ["health-dashboard"] });
     },
-    onError: () => messageApi.error("重置失败"),
+    onError: () => messageApi.error(tt("重置失败", "Reset failed")),
   });
 
   if (healthQuery.isLoading) {
@@ -93,11 +100,11 @@ export function HealthPage() {
         <Alert
           type="error"
           showIcon
-          message="加载系统健康监控失败"
-          description={healthQuery.error instanceof Error ? healthQuery.error.message : "无法获取网关健康探针与熔断器指标。"}
+          message={tt("加载系统健康监控失败", "Failed to load health monitoring")}
+          description={healthQuery.error instanceof Error ? healthQuery.error.message : tt("无法获取网关健康探针与熔断器指标。", "Unable to retrieve health probe and circuit breaker metrics.")}
           action={
             <Button size="small" type="primary" danger onClick={() => healthQuery.refetch()}>
-              重试
+              {tt("重试", "Retry")}
             </Button>
           }
         />
@@ -118,7 +125,7 @@ export function HealthPage() {
 
   const cbColumns: TableColumnsType<(typeof cbRows)[number]> = [
     {
-      title: "提供者 (Provider)",
+      title: tt("提供者", "Provider"),
       key: "provider",
       render: (_, r) => (
         <Space>
@@ -129,32 +136,32 @@ export function HealthPage() {
       ),
     },
     {
-      title: "熔断状态 (Circuit Breaker)",
+      title: tt("熔断状态", "Circuit Breaker State"),
       key: "state",
       render: (_, r) => {
         if (r.state === "CLOSED") {
           return (
             <Tag color="success" style={{ fontWeight: 600 }}>
-              🟢 CLOSED (正常服务)
+              {isZh ? "🟢 CLOSED (正常服务)" : "🟢 CLOSED (Normal)"}
             </Tag>
           );
         }
         if (r.state === "OPEN") {
           return (
             <Tag color="error" style={{ fontWeight: 600 }}>
-              🔴 OPEN (熔断隔离)
+              {isZh ? "🔴 OPEN (熔断隔离)" : "🔴 OPEN (Isolated)"}
             </Tag>
           );
         }
         return (
           <Tag color="warning" style={{ fontWeight: 600 }}>
-            🟡 HALF_OPEN (探测恢复中)
+            {isZh ? "🟡 HALF_OPEN (探测恢复中)" : "🟡 HALF_OPEN (Probing)"}
           </Tag>
         );
       },
     },
     {
-      title: "成功率",
+      title: tt("成功率", "Success Rate"),
       key: "successRate",
       render: (_, r) => (
         <Progress
@@ -166,12 +173,12 @@ export function HealthPage() {
       ),
     },
     {
-      title: "失败计数",
+      title: tt("失败计数", "Failure Count"),
       dataIndex: "failureCount",
       key: "failureCount",
     },
     {
-      title: "连续错误",
+      title: tt("连续错误", "Consecutive Errors"),
       dataIndex: "consecutiveErrors",
       key: "consecutiveErrors",
       render: (v) => <span style={{ color: v > 0 ? "#EF4444" : undefined }}>{v}</span>,
@@ -202,21 +209,24 @@ export function HealthPage() {
             </div>
             <div>
               <Title level={4} style={{ margin: 0, fontSize: 18 }}>
-                健康状态 (Health & Resiliency)
+                {tt("系统健康与弹性状态", "Health & Resiliency")}
               </Title>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                监控运行时内核负载、提供商熔断器状态、提示词缓存节省与网络时延指标
+                {tt(
+                  "监控运行时内核负载、提供商熔断器状态、提示词缓存节省与网络时延指标",
+                  "Monitor runtime kernel load, provider circuit breaker states, prompt cache savings, and network latency."
+                )}
               </Text>
             </div>
           </Flex>
 
           <Space size={8}>
             <Popconfirm
-              title="确认重置熔断器与健康统计？"
+              title={tt("确认重置熔断器与健康统计？", "Confirm resetting circuit breakers and health metrics?")}
               onConfirm={() => resetMutation.mutate()}
             >
               <Button danger icon={<MaterialIcon name="restart_alt" size={15} />} loading={resetMutation.isPending}>
-                重置状态
+                {tt("重置状态", "Reset State")}
               </Button>
             </Popconfirm>
 
@@ -224,7 +234,7 @@ export function HealthPage() {
               icon={<MaterialIcon name="refresh" size={15} />}
               onClick={() => queryClient.invalidateQueries({ queryKey: ["health-dashboard"] })}
             >
-              刷新
+              {tt("刷新", "Refresh")}
             </Button>
           </Space>
         </Flex>
@@ -235,7 +245,7 @@ export function HealthPage() {
         <Col xs={12} sm={6}>
           <Card size="small" className={styles.metricCard}>
             <Statistic
-              title="运行时间 (Uptime)"
+              title={tt("运行时间", "Uptime")}
               value={formatUptime(data?.uptimeSeconds ?? 0)}
               valueStyle={{ fontSize: 18, color: "#10B981" }}
               prefix={<MaterialIcon name="timer" size={18} style={{ color: "#10B981" }} />}
@@ -246,7 +256,7 @@ export function HealthPage() {
         <Col xs={12} sm={6}>
           <Card size="small" className={styles.metricCard}>
             <Statistic
-              title="内存占用 (RSS)"
+              title={tt("内存占用", "Memory RSS")}
               value={formatBytes(data?.memory?.rss ?? 0)}
               valueStyle={{ fontSize: 18, color: "#3B82F6" }}
               prefix={<MaterialIcon name="memory" size={18} style={{ color: "#3B82F6" }} />}
@@ -257,7 +267,7 @@ export function HealthPage() {
         <Col xs={12} sm={6}>
           <Card size="small" className={styles.metricCard}>
             <Statistic
-              title="P90 时延 (Latency)"
+              title={tt("P90 时延", "P90 Latency")}
               value={`${data?.telemetry?.latencyP90 ?? 0} ms`}
               valueStyle={{ fontSize: 18, color: "#F59E0B" }}
               prefix={<MaterialIcon name="speed" size={18} style={{ color: "#F59E0B" }} />}
@@ -268,7 +278,7 @@ export function HealthPage() {
         <Col xs={12} sm={6}>
           <Card size="small" className={styles.metricCard}>
             <Statistic
-              title="提示词缓存节省"
+              title={tt("提示词缓存节省", "Prompt Cache Saved")}
               value={`${((data?.promptCache?.savedTokens ?? 0) / 1000).toFixed(1)}k Tokens`}
               valueStyle={{ fontSize: 18, color: "#8B5CF6" }}
               prefix={<MaterialIcon name="savings" size={18} style={{ color: "#8B5CF6" }} />}
@@ -283,7 +293,7 @@ export function HealthPage() {
         title={
           <Flex align="center" gap={8}>
             <MaterialIcon name="shield" size={18} style={{ color: "#EF4444" }} />
-            <span>上游提供商熔断器状态 (Circuit Breakers)</span>
+            <span>{tt("上游提供商熔断器状态", "Upstream Circuit Breaker States")}</span>
           </Flex>
         }
         styles={{ body: { padding: 0 } }}

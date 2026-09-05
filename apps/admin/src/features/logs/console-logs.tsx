@@ -206,7 +206,7 @@ export function ConsoleLogsPage() {
           <Flex align="center" gap={8}>
             <MaterialIcon name="terminal" size={16} style={{ color: "#FACC15" }} />
             <span style={{ fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.7)" }}>
-              orbit.server.stdout
+              gateway.server.stdout
             </span>
             <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>
               ({rawLogs.length} 条记录)

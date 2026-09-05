@@ -1,0 +1,19 @@
+{
+  "status": "ok",
+  "source": "NAS:/volume1/docker/shiguang-gateway-acceptance-20260905/source-refresh/storage.sqlite",
+  "target": "NAS:shiguang-gateway-postgres/gateway",
+  "sourceSha256": "4b5f12c8f41f854102ed71459580db6b27f4c5fd36600200450db0adc68257d5",
+  "tables": 133,
+  "rows": 59982,
+  "rowChecksumsVerified": true,
+  "skippedVirtualTables": [
+    {
+      "table": "memory_fts",
+      "reason": "PostgreSQL-native full-text index must be rebuilt before runtime cutover"
+    }
+  ],
+  "redisPing": "PONG",
+  "postgresHealth": "healthy",
+  "runtimeAuthority": "sqlite",
+  "note": "PostgreSQL conversion is an audited staging database; runtime cutover remains gated on native repository, transaction, FTS/vector, and full route/worker acceptance."
+}

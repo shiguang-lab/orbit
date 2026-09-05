@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
 import { memoryApi, type MemoryBankItem } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Title, Text } = Typography;
 
@@ -35,6 +36,7 @@ const useStyles = createStyles(({ token }) => ({
 
 export function MemoryPage() {
   const { styles } = useStyles();
+  const { tt } = useI18n();
 
   const memoryQuery = useQuery({
     queryKey: ["memory-banks-list"],
@@ -70,12 +72,15 @@ export function MemoryPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  智能体持久记忆中心
+                  {tt("智能体持久记忆中心", "Agent Persistent Memory Hub")}
                 </Title>
-                <Tag color="pink">分层命名空间记忆</Tag>
+                <Tag color="pink">{tt("分层命名空间记忆", "Layered Namespace Memory")}</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                管理跨会话持久记忆库（用户偏好、项目上下文、架构决议），基于向量召回自动注入上下文。
+                {tt(
+                  "管理跨会话持久记忆库（用户偏好、项目上下文、架构决议），基于向量召回自动注入上下文。",
+                  "Manage cross-session persistent memory stores (user preferences, project context, architectural decisions) with vector recall context injection."
+                )}
               </Text>
             </div>
           </Flex>
@@ -83,7 +88,7 @@ export function MemoryPage() {
       </Card>
 
       {/* 2. Memory Banks Table */}
-      <Card title="已挂载长期记忆命名空间 (Memory Banks)" className={styles.sectionCard} size="small">
+      <Card title={tt("已挂载长期记忆命名空间", "Mounted Memory Banks")} className={styles.sectionCard} size="small">
         <Table<MemoryBankItem>
           rowKey="id"
           size="small"
@@ -91,7 +96,7 @@ export function MemoryPage() {
           dataSource={banks}
           columns={[
             {
-              title: "记忆空间与命名空间",
+              title: tt("记忆空间与命名空间", "Namespace & Bank"),
               key: "namespace",
               render: (_, record) => (
                 <div>
@@ -106,19 +111,19 @@ export function MemoryPage() {
               ),
             },
             {
-              title: "已持久化条目",
+              title: tt("已持久化条目", "Persisted Entries"),
               dataIndex: "totalEntries",
               key: "entries",
-              render: (count) => <Tag color="purple">{count} 条记录</Tag>,
+              render: (count) => <Tag color="purple">{count} {tt("条记录", "records")}</Tag>,
             },
             {
-              title: "向量索引空间",
+              title: tt("向量索引空间", "Vector Index Size"),
               dataIndex: "vectorIndexSizeKb",
               key: "size",
               render: (kb) => <Text style={{ fontSize: 12 }}>{(kb / 1024).toFixed(2)} MB</Text>,
             },
             {
-              title: "最近召回命中",
+              title: tt("最近召回命中", "Last Recalled"),
               dataIndex: "lastRecalledAt",
               key: "recalled",
               render: (t) => <Text type="secondary" style={{ fontSize: 12 }}>{t}</Text>,

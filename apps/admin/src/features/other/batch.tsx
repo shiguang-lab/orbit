@@ -19,7 +19,7 @@ import { createStyles } from "antd-style";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { MaterialIcon } from "@/app/nav";
-import { batchApi, type BatchTaskItem } from "@/entities/api";
+import { batchApi, modelsApi, type BatchTaskItem } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
 import { useI18n } from "@/i18n";
 
@@ -70,6 +70,11 @@ export function BatchPage() {
   const filesQuery = useQuery({
     queryKey: ["batch-files-list"],
     queryFn: batchApi.listFiles,
+  });
+  const modelsQuery = useQuery({
+    queryKey: ["models-catalog"],
+    queryFn: modelsApi.list,
+    staleTime: 30_000,
   });
 
   const createMutation = useMutation({
@@ -208,7 +213,7 @@ export function BatchPage() {
               title: tt("折扣优惠", "Discount"),
               dataIndex: "discountPct",
               key: "discount",
-              render: (pct) => <Tag color="green">{tt(`立省 ${pct}%`, `${pct}% Off`)}</Tag>,
+              render: (pct) => pct == null ? <Text type="secondary">—</Text> : <Tag color="green">{tt(`立省 ${pct}%`, `${pct}% Off`)}</Tag>,
             },
             {
               title: tt("提交时间", "Created"),
@@ -275,7 +280,7 @@ export function BatchPage() {
             <Select
               placeholder={tt("选择已上传的 JSONL 文件...", "Select uploaded JSONL file...")}
               options={files.map((f) => ({
-                label: `${f.filename} (${f.lineCount} 行 / ${(f.bytes / 1024).toFixed(1)} KB)`,
+                label: `${f.filename} (${f.lineCount != null ? `${f.lineCount} 行 / ` : ""}${(f.bytes / 1024).toFixed(1)} KB)`,
                 value: f.id,
               }))}
             />
@@ -284,15 +289,10 @@ export function BatchPage() {
             label={tt("目标推理模型", "Target Model")}
             name="targetModel"
             rules={[{ required: true, message: tt("请输入目标模型", "Please input target model") }]}
-            initialValue="openai/text-embedding-3-small"
           >
             <Select
-              options={[
-                { label: "openai/text-embedding-3-small (嵌入向量)", value: "openai/text-embedding-3-small" },
-                { label: "deepseek/deepseek-chat (通用对话)", value: "deepseek/deepseek-chat" },
-                { label: "anthropic/claude-3-5-haiku (快速分类)", value: "anthropic/claude-3-5-haiku" },
-                { label: "google/gemini-2.0-flash (轻量推理)", value: "google/gemini-2.0-flash" },
-              ]}
+              loading={modelsQuery.isLoading}
+              options={(modelsQuery.data?.models ?? []).map((item) => ({ label: item.name || item.id, value: item.id }))}
             />
           </Form.Item>
         </Form>

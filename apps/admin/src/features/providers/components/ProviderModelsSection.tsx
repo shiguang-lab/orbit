@@ -262,7 +262,7 @@ export function ProviderModelsSection({
   // View mode: card grid vs full-width list (defaults to card)
   const [viewMode, setViewMode] = useState<"card" | "list">(() => {
     try {
-      const saved = localStorage.getItem("omniroute_provider_models_view");
+      const saved = localStorage.getItem("shiguangGateway_provider_models_view");
       if (saved === "card" || saved === "list") return saved;
     } catch {}
     return "card";
@@ -271,7 +271,7 @@ export function ProviderModelsSection({
   const handleViewModeChange = (next: "card" | "list") => {
     setViewMode(next);
     try {
-      localStorage.setItem("omniroute_provider_models_view", next);
+      localStorage.setItem("shiguangGateway_provider_models_view", next);
     } catch {}
   };
 

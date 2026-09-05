@@ -252,7 +252,7 @@ function FlowResponseNode({ data }: NodeProps) {
         {resolvedProvider || "Resolved"}
       </div>
       <div style={{ fontSize: 10, color: "rgba(255,255,255,0.6)" }}>
-        {latencyMs || 142} ms
+        {latencyMs != null ? `${latencyMs} ms` : "—"}
       </div>
     </div>
   );
@@ -293,14 +293,6 @@ const useStyles = createStyles(({ token }) => ({
     display: "flex",
     flexDirection: "column",
     overflow: "hidden",
-    "& .ant-card-body": {
-      padding: 0,
-      height: "100%",
-      flex: "1 1 0%",
-      minHeight: 0,
-      display: "flex",
-      flexDirection: "column",
-    },
     "& .react-flow": {
       width: "100%",
       height: "100%",
@@ -343,12 +335,15 @@ export function CombosLivePage() {
   // State
   const [selectedComboId, setSelectedComboId] = useState<string>("");
   const [viewMode, setViewMode] = useState<"cascade" | "fleet">("cascade");
-  const [isLiveConnected] = useState<boolean>(true);
+  // The dashboard currently consumes the local HTTP snapshot APIs. Do not claim a
+  // WebSocket connection until a real subscription is established.
+  const isLiveConnected = false;
 
   // Simulation modal
   const [simulateModalVisible, setSimulateModalVisible] = useState(false);
   const [simulating, setSimulating] = useState(false);
   const [testPrompt, setTestPrompt] = useState("Explain quantum computing in one sentence.");
+  const [testResult, setTestResult] = useState<import("@shiguang-gateway/contracts").ComboTestResponse | null>(null);
 
   // 1. Fetch Combos
   const combosQuery = useQuery({
@@ -422,7 +417,7 @@ export function CombosLivePage() {
       animated: true,
     });
 
-    // 3. Target Cascade Nodes (horizontal cascade matching Orbit)
+    // 3. Target Cascade Nodes (horizontal cascade matching Shiguang Gateway)
     let prevId = "node-strategy";
     // Show active targets in pipeline (top 3-5 or full list)
     const displayModels = models.slice(0, 6);
@@ -436,9 +431,8 @@ export function CombosLivePage() {
       };
 
       const nodeId = `node-target-${idx}`;
-      const isFirst = idx === 0;
-      const isSecond = idx === 1;
-      const state = isFirst ? "succeeded" : isSecond ? "failed" : "idle";
+      const result = testResult?.results?.find((item) => item.connectionId === stepConnId || item.model === stepModel);
+      const state = result?.status === "ok" ? "succeeded" : result?.status === "error" ? "failed" : "idle";
 
       flowNodes.push({
         id: nodeId,
@@ -448,9 +442,9 @@ export function CombosLivePage() {
           provider: conn.name || String(stepModel),
           model: String(stepModel),
           state,
-          latencyMs: isFirst ? 142 : 45,
+          latencyMs: result?.latencyMs,
           targetIndex: idx,
-          cbState: isSecond ? "OPEN" : "CLOSED",
+          cbState: undefined,
         },
       });
 
@@ -459,10 +453,10 @@ export function CombosLivePage() {
         source: prevId,
         target: nodeId,
         style: {
-          stroke: isFirst ? "#22c55e" : isSecond ? "#ef4444" : "rgba(255,255,255,0.2)",
-          strokeWidth: isFirst ? 2.5 : 1.5,
+          stroke: state === "succeeded" ? "#22c55e" : state === "failed" ? "#ef4444" : "rgba(255,255,255,0.2)",
+          strokeWidth: state === "succeeded" ? 2.5 : 1.5,
         },
-        animated: isFirst,
+        animated: state === "succeeded",
       });
 
       prevId = nodeId;
@@ -475,9 +469,9 @@ export function CombosLivePage() {
       type: "response",
       position: { x: responseX, y: 0 },
       data: {
-        outcome: "succeeded",
-        latencyMs: 142,
-        resolvedProvider: flowNodes[2]?.data?.provider || "Target #1",
+        outcome: testResult?.resolvedBy ? "succeeded" : "failed",
+        latencyMs: testResult?.results?.find((item) => item.status === "ok")?.latencyMs,
+        resolvedProvider: testResult?.resolvedBy || "尚未执行真实测试",
       },
     });
 
@@ -485,14 +479,14 @@ export function CombosLivePage() {
       id: `edge-${prevId}-response`,
       source: prevId,
       target: "node-response",
-      style: { stroke: "#22c55e", strokeWidth: 2.5 },
-      animated: true,
+      style: { stroke: testResult?.resolvedBy ? "#22c55e" : "rgba(255,255,255,0.2)", strokeWidth: 2.5 },
+      animated: Boolean(testResult?.resolvedBy),
     });
 
     return { nodes: flowNodes, edges: flowEdges };
-  }, [activeCombo, connectionMap]);
+  }, [activeCombo, connectionMap, testResult]);
 
-  // Fleet Statistics (matching Orbit's 3 sets: active / error / inactive)
+  // Fleet Statistics (matching Shiguang Gateway's 3 sets: active / error / inactive)
   const fleetStats = useMemo(() => {
     const healthyList: string[] = [];
     const errorList: string[] = [];
@@ -518,11 +512,20 @@ export function CombosLivePage() {
   }, [connections]);
 
   const handleRunSimulation = async () => {
+    if (!activeCombo) return;
     setSimulating(true);
     try {
-      await new Promise((r) => setTimeout(r, 600));
-      messageApi.success(`组合 [${activeCombo?.name || "默认"}] 实时路由流水线演练完成`);
-      setSimulateModalVisible(false);
+      const result = await combosApi.test(activeCombo.name, testPrompt);
+      setTestResult(result);
+      const passed = result.results?.filter((item) => item.status === "ok").length ?? 0;
+      if (passed > 0) {
+        messageApi.success(`组合 [${activeCombo.name}] 真实测试完成：${passed}/${result.results?.length ?? 0} 个目标可用`);
+        setSimulateModalVisible(false);
+      } else {
+        messageApi.error(`组合 [${activeCombo.name}] 真实测试失败：没有目标返回可用响应`);
+      }
+    } catch (error) {
+      messageApi.error(error instanceof Error ? error.message : "组合真实测试失败");
     } finally {
       setSimulating(false);
     }
@@ -562,7 +565,7 @@ export function CombosLivePage() {
                   </Title>
                   <Tag color="success" style={{ margin: 0, fontSize: 11 }}>
                     <Badge status="processing" color="#22C55E" style={{ marginRight: 4 }} />
-                    {isLiveConnected ? "WS 实时在线" : "离线回放"}
+                    {isLiveConnected ? "WS 实时在线" : "本地实时快照"}
                   </Tag>
                 </Flex>
                 <Text type="secondary" style={{ fontSize: 12 }}>
@@ -608,7 +611,7 @@ export function CombosLivePage() {
               icon={<MaterialIcon name="play_arrow" size={16} />}
               onClick={() => setSimulateModalVisible(true)}
             >
-              模拟演练
+              真实测试
             </Button>
           </Space>
         </Flex>
@@ -616,7 +619,19 @@ export function CombosLivePage() {
 
       {/* Main Studio Canvas Card */}
       {viewMode === "cascade" ? (
-        <Card className={styles.canvasCard}>
+        <Card
+          className={styles.canvasCard}
+          styles={{
+            body: {
+              padding: 0,
+              height: "100%",
+              flex: "1 1 0%",
+              minHeight: 0,
+              display: "flex",
+              flexDirection: "column",
+            },
+          }}
+        >
           {!activeCombo ? (
             <div style={{ padding: 48, textAlign: "center", margin: "auto" }}>
               <Empty description="暂无可用组合，请先在「组合」页面创建路由组合" />
@@ -643,7 +658,7 @@ export function CombosLivePage() {
           )}
         </Card>
       ) : (
-        /* Fleet Overview Mode: Exact match with Orbit's active/error/inactive pill aggregation */
+        /* Fleet Overview Mode: Exact match with Shiguang Gateway's active/error/inactive pill aggregation */
         <Card className={styles.canvasCard} styles={{ body: { padding: "24px 28px", minHeight: 480 } }}>
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
             {/* Active Set */}
@@ -763,7 +778,7 @@ export function CombosLivePage() {
         title={
           <Flex align="center" gap={8}>
             <MaterialIcon name="play_arrow" size={20} style={{ color: "#A855F7" }} />
-            <span>模拟调用组合流水线</span>
+            <span>真实调用组合流水线</span>
           </Flex>
         }
         onOk={handleRunSimulation}
@@ -777,12 +792,12 @@ export function CombosLivePage() {
             <Text strong>
               {activeCombo?.name}
             </Text>{" "}
-            发送模拟流量，观测首选上游故障切流与备选上游承接的全过程。
+            发送真实健康检查请求，结果来自本地网关及各目标 provider；不会伪造成功状态。
           </Paragraph>
 
           <div style={{ marginTop: 12 }}>
             <Text strong style={{ fontSize: 12, display: "block", marginBottom: 6 }}>
-              模拟请求 Prompt:
+              测试请求 Prompt:
             </Text>
             <Input.TextArea
               rows={3}

@@ -19,6 +19,7 @@ import { createStyles } from "antd-style";
 import { MaterialIcon } from "@/app/nav";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { combosApi } from "@/entities/api";
+import { useI18n } from "@/i18n";
 
 const { Text, Title } = Typography;
 
@@ -64,6 +65,7 @@ interface McpAuditEntry {
 export function McpDashboard() {
   const { styles } = useStyles();
   const { token } = theme.useToken();
+  const { tt } = useI18n();
   const queryClient = useQueryClient();
 
   const [toolFilter, setToolFilter] = useState("");
@@ -77,36 +79,9 @@ export function McpDashboard() {
   const mcpStatusQuery = useQuery({
     queryKey: ["mcp-status-full"],
     queryFn: async () => {
-      try {
-        const res = await fetch("/api/mcp/status");
-        if (res.ok) return await res.json();
-      } catch {}
-      return {
-        online: true,
-        status: "online",
-        transport: "stdio",
-        heartbeat: {
-          pid: 48210,
-          uptimeMs: 7200000,
-          heartbeatAgeMs: 1200,
-          scopesEnforced: true,
-        },
-        activity: {
-          totalCalls24h: 342,
-          successRate: 0.985,
-          avgDurationMs: 145,
-          topTools: [
-            { tool: "query_database", count: 128 },
-            { tool: "read_file", count: 96 },
-            { tool: "web_search", count: 64 },
-            { tool: "run_shell_cmd", count: 54 },
-          ],
-          lastCallAt: new Date().toISOString(),
-          lastCallTool: "query_database",
-        },
-        heartbeatPath: "/tmp/orbit-mcp-heartbeat.sock",
-      };
-
+      const res = await fetch("/api/mcp/status");
+      if (!res.ok) throw new Error(tt("MCP 状态不可用", "MCP status unavailable"));
+      return await res.json();
     },
     staleTime: 15_000,
   });
@@ -115,20 +90,10 @@ export function McpDashboard() {
   const mcpToolsQuery = useQuery({
     queryKey: ["mcp-tools-list"],
     queryFn: async () => {
-      try {
-        const res = await fetch("/api/mcp/tools");
-        if (res.ok) {
-          const json = await res.json();
-          if (Array.isArray(json.tools)) return json.tools as McpTool[];
-        }
-      } catch {}
-      return [
-        { name: "query_database", description: "执行只读 SQL 语义查询", scopes: ["data:read"], phase: 1, auditLevel: "full" },
-        { name: "read_file", description: "读取工作区指定文件内容", scopes: ["fs:read"], phase: 1, auditLevel: "basic" },
-        { name: "web_search", description: "联网检索外部公开信息", scopes: ["web:search"], phase: 1, auditLevel: "basic" },
-        { name: "run_shell_cmd", description: "在沙箱中执行受限终端指令", scopes: ["sys:exec"], phase: 2, auditLevel: "full" },
-        { name: "list_directory", description: "遍历列出指定目录结构", scopes: ["fs:list"], phase: 1, auditLevel: "none" },
-      ] as McpTool[];
+      const res = await fetch("/api/mcp/tools");
+      if (!res.ok) throw new Error(tt("MCP 工具目录不可用", "MCP tools catalog unavailable"));
+      const json = await res.json();
+      return Array.isArray(json.tools) ? (json.tools as McpTool[]) : [];
     },
     staleTime: 30_000,
   });
@@ -147,30 +112,16 @@ export function McpDashboard() {
   const auditQuery = useQuery({
     queryKey: ["mcp-audit-logs", auditPage, toolFilter, successFilter, apiKeyFilter],
     queryFn: async () => {
-      try {
-        const params = new URLSearchParams();
-        params.set("limit", "10");
-        params.set("offset", String((auditPage - 1) * 10));
-        if (toolFilter) params.set("tool", toolFilter);
-        if (successFilter !== "all") params.set("success", successFilter);
-        if (apiKeyFilter) params.set("apiKeyId", apiKeyFilter);
+      const params = new URLSearchParams();
+      params.set("limit", "10");
+      params.set("offset", String((auditPage - 1) * 10));
+      if (toolFilter) params.set("tool", toolFilter);
+      if (successFilter !== "all") params.set("success", successFilter);
+      if (apiKeyFilter) params.set("apiKeyId", apiKeyFilter);
 
-        const res = await fetch(`/api/mcp/audit?${params.toString()}`);
-        if (res.ok) return await res.json();
-      } catch {}
-      // Fallback mock audit records
-      const mockEntries: McpAuditEntry[] = [
-        { id: 101, toolName: "query_database", durationMs: 120, apiKeyId: "sk-omni-...9a8b", success: true, errorCode: null, createdAt: new Date(Date.now() - 120000).toISOString() },
-        { id: 102, toolName: "read_file", durationMs: 45, apiKeyId: "sk-omni-...9a8b", success: true, errorCode: null, createdAt: new Date(Date.now() - 360000).toISOString() },
-        { id: 103, toolName: "run_shell_cmd", durationMs: 310, apiKeyId: "sk-omni-...f12a", success: false, errorCode: "E_PERM_DENIED", createdAt: new Date(Date.now() - 840000).toISOString() },
-        { id: 104, toolName: "web_search", durationMs: 230, apiKeyId: "sk-omni-...3c4d", success: true, errorCode: null, createdAt: new Date(Date.now() - 1200000).toISOString() },
-      ];
-      return {
-        entries: mockEntries,
-        total: 4,
-        limit: 10,
-        offset: (auditPage - 1) * 10,
-      };
+      const res = await fetch(`/api/mcp/audit?${params.toString()}`);
+      if (!res.ok) throw new Error(tt("MCP 审计日志不可用", "MCP audit logs unavailable"));
+      return await res.json();
     },
     staleTime: 10_000,
   });
@@ -183,20 +134,20 @@ export function McpDashboard() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ profile }),
       });
-      if (!res.ok) throw new Error("应用韧性策略失败");
+      if (!res.ok) throw new Error(tt("应用韧性策略失败", "Failed to apply resilience profile"));
     },
-    onSuccess: () => message.success("韧性限流与熔断策略已生效"),
-    onError: (err) => message.error(err instanceof Error ? err.message : "应用失败"),
+    onSuccess: () => message.success(tt("韧性限流与熔断策略已生效", "Resilience and rate limit profile applied")),
+    onError: (err) => message.error(err instanceof Error ? err.message : tt("应用失败", "Apply failed")),
   });
 
   // Reset Breakers Mutation
   const resetBreakers = useMutation({
     mutationFn: async () => {
       const res = await fetch("/api/monitoring/health", { method: "DELETE" });
-      if (!res.ok) throw new Error("重置熔断器失败");
+      if (!res.ok) throw new Error(tt("重置熔断器失败", "Failed to reset circuit breakers"));
     },
-    onSuccess: () => message.success("所有提供商熔断器状态已重置恢复"),
-    onError: (err) => message.error(err instanceof Error ? err.message : "重置失败"),
+    onSuccess: () => message.success(tt("所有提供商熔断器状态已重置恢复", "All provider circuit breakers reset")),
+    onError: (err) => message.error(err instanceof Error ? err.message : tt("重置失败", "Reset failed")),
   });
 
   const status = mcpStatusQuery.data;
@@ -211,14 +162,14 @@ export function McpDashboard() {
 
   const auditColumns = [
     {
-      title: "调用时间",
+      title: tt("调用时间", "Invocation Time"),
       dataIndex: "createdAt",
       key: "createdAt",
       width: 170,
       render: (v: string) => <Text style={{ fontSize: 12 }}>{new Date(v).toLocaleString()}</Text>,
     },
     {
-      title: "工具名称",
+      title: tt("工具名称", "Tool Name"),
       dataIndex: "toolName",
       key: "toolName",
       render: (v: string) => (
@@ -228,25 +179,25 @@ export function McpDashboard() {
       ),
     },
     {
-      title: "执行耗时",
+      title: tt("执行耗时", "Latency"),
       dataIndex: "durationMs",
       key: "durationMs",
       width: 100,
       render: (v: number) => <Text style={{ fontSize: 12 }}>{v}ms</Text>,
     },
     {
-      title: "结果状态",
+      title: tt("结果状态", "Status"),
       dataIndex: "success",
       key: "success",
       width: 120,
       render: (succ: boolean, row: McpAuditEntry) => (
         <Tag color={succ ? "success" : "error"} style={{ margin: 0 }}>
-          {succ ? "执行成功" : row.errorCode || "失败"}
+          {succ ? tt("执行成功", "Success") : row.errorCode || tt("失败", "Failed")}
         </Tag>
       ),
     },
     {
-      title: "鉴权密钥",
+      title: tt("鉴权密钥", "Auth Key"),
       dataIndex: "apiKeyId",
       key: "apiKeyId",
       width: 160,
@@ -265,7 +216,7 @@ export function McpDashboard() {
         <Col xs={12} sm={6}>
           <div className={styles.statCard}>
             <Text type="secondary" style={{ fontSize: 11 }}>
-              MCP 服务进程
+              {tt("MCP 服务进程", "MCP Daemon Process")}
             </Text>
             <Flex align="center" gap={6} style={{ marginTop: 4 }}>
               <div
@@ -277,7 +228,7 @@ export function McpDashboard() {
                 }}
               />
               <Text strong style={{ fontSize: 16 }}>
-                {status?.online ? "正常在线" : "已离线"}
+                {status?.online ? tt("正常在线", "Online") : tt("已离线", "Offline")}
               </Text>
             </Flex>
           </div>
@@ -286,10 +237,10 @@ export function McpDashboard() {
         <Col xs={12} sm={6}>
           <div className={styles.statCard}>
             <Text type="secondary" style={{ fontSize: 11 }}>
-              进程 PID
+              {tt("进程 PID", "Process PID")}
             </Text>
             <Title level={4} style={{ margin: "4px 0 0", fontSize: 16 }}>
-              {status?.heartbeat?.pid || "48210"}
+                  {status?.heartbeat?.pid ?? "—"}
             </Title>
           </div>
         </Col>
@@ -297,10 +248,10 @@ export function McpDashboard() {
         <Col xs={12} sm={6}>
           <div className={styles.statCard}>
             <Text type="secondary" style={{ fontSize: 11 }}>
-              持续运行时间
+              {tt("持续运行时间", "Uptime")}
             </Text>
             <Title level={4} style={{ margin: "4px 0 0", fontSize: 16 }}>
-              {formatDuration(status?.heartbeat?.uptimeMs || 7200000)}
+              {status?.heartbeat?.uptimeMs != null ? formatDuration(status.heartbeat.uptimeMs) : "—"}
             </Title>
           </div>
         </Col>
@@ -308,44 +259,44 @@ export function McpDashboard() {
         <Col xs={12} sm={6}>
           <div className={styles.statCard}>
             <Text type="secondary" style={{ fontSize: 11 }}>
-              心跳响应延时
+              {tt("心跳响应延时", "Heartbeat Latency")}
             </Text>
             <Title level={4} style={{ margin: "4px 0 0", fontSize: 16, color: "#10B981" }}>
-              {formatDuration(status?.heartbeat?.heartbeatAgeMs || 1200)}
+              {status?.heartbeat?.heartbeatAgeMs != null ? formatDuration(status.heartbeat.heartbeatAgeMs) : "—"}
             </Title>
           </div>
         </Col>
       </Row>
 
       {/* 24h Activity Analysis Card */}
-      <Card size="small" className={styles.sectionCard} title="MCP 24 小时活动分析">
+      <Card size="small" className={styles.sectionCard} title={tt("MCP 24 小时活动分析", "MCP 24h Activity Analysis")}>
         <Row gutter={[16, 16]}>
           <Col xs={24} md={8}>
             <Flex vertical gap={12}>
               <div className={styles.statCard}>
                 <Text type="secondary" style={{ fontSize: 11 }}>
-                  24小时总调用量
+                  {tt("24小时总调用量", "24h Total Invocations")}
                 </Text>
                 <Title level={3} style={{ margin: "4px 0 0", fontSize: 20 }}>
-                  {status?.activity?.totalCalls24h ?? 342} 次
+                  {status?.activity?.totalCalls24h ?? "—"} {status?.activity?.totalCalls24h != null ? tt("次", "calls") : ""}
                 </Title>
               </div>
 
               <div className={styles.statCard}>
                 <Text type="secondary" style={{ fontSize: 11 }}>
-                  调用成功率
+                  {tt("调用成功率", "Success Rate")}
                 </Text>
                 <Title level={3} style={{ margin: "4px 0 0", fontSize: 20, color: "#10B981" }}>
-                  {((status?.activity?.successRate ?? 0.985) * 100).toFixed(1)}%
+                  {status?.activity?.successRate != null ? `${(status.activity.successRate * 100).toFixed(1)}%` : "—"}
                 </Title>
               </div>
 
               <div className={styles.statCard}>
                 <Text type="secondary" style={{ fontSize: 11 }}>
-                  平均执行耗时
+                  {tt("平均执行耗时", "Avg Execution Latency")}
                 </Text>
                 <Title level={3} style={{ margin: "4px 0 0", fontSize: 20 }}>
-                  {status?.activity?.avgDurationMs ?? 145} ms
+                  {status?.activity?.avgDurationMs != null ? `${status.activity.avgDurationMs} ms` : "—"}
                 </Title>
               </div>
             </Flex>
@@ -354,7 +305,7 @@ export function McpDashboard() {
           <Col xs={24} md={8}>
             <div style={{ height: "100%", padding: 12, borderRadius: 8, border: `1px solid ${token.colorBorderSecondary}` }}>
               <Text strong style={{ fontSize: 13, display: "block", marginBottom: 8 }}>
-                🔥 高频调用工具排行
+                🔥 {tt("高频调用工具排行", "Top Invocated Tools")}
               </Text>
               <Flex vertical gap={8}>
                 {(status?.activity?.topTools || []).map((t: { tool: string; count: number }) => (
@@ -362,7 +313,7 @@ export function McpDashboard() {
                     <Text code style={{ fontSize: 12 }}>
                       {t.tool}
                     </Text>
-                    <Tag color="blue">{t.count} 次</Tag>
+                    <Tag color="blue">{t.count} {tt("次", "calls")}</Tag>
                   </Flex>
                 ))}
               </Flex>
@@ -372,27 +323,26 @@ export function McpDashboard() {
           <Col xs={24} md={8}>
             <div style={{ height: "100%", padding: 12, borderRadius: 8, border: `1px solid ${token.colorBorderSecondary}` }}>
               <Text strong style={{ fontSize: 13, display: "block", marginBottom: 8 }}>
-                ⚙️ 运行时配置与安全
+                ⚙️ {tt("运行时配置与安全", "Runtime Config & Security")}
               </Text>
               <Flex vertical gap={6}>
                 <Flex justify="space-between">
-                  <Text type="secondary" style={{ fontSize: 12 }}>传输通道 (Transport):</Text>
-                  <Text code style={{ fontSize: 12 }}>{status?.transport || "stdio"}</Text>
+                  <Text type="secondary" style={{ fontSize: 12 }}>{tt("传输通道:", "Transport:")}</Text>
+                  <Text code style={{ fontSize: 12 }}>{status?.transport || "—"}</Text>
                 </Flex>
                 <Flex justify="space-between">
-                  <Text type="secondary" style={{ fontSize: 12 }}>权限范围审计:</Text>
-                  <Tag color="success">已强制校验</Tag>
+                  <Text type="secondary" style={{ fontSize: 12 }}>{tt("权限范围审计:", "Scope Enforcement:")}</Text>
+                  <Tag color="success">{tt("已强制校验", "Enforced")}</Tag>
                 </Flex>
                 <Flex justify="space-between">
-                  <Text type="secondary" style={{ fontSize: 12 }}>最近调用工具:</Text>
-                  <Text code style={{ fontSize: 12 }}>{status?.activity?.lastCallTool || "query_database"}</Text>
+                  <Text type="secondary" style={{ fontSize: 12 }}>{tt("最近调用工具:", "Last Tool Called:")}</Text>
+                  <Text code style={{ fontSize: 12 }}>{status?.activity?.lastCallTool || "—"}</Text>
                 </Flex>
                 <div>
-                  <Text type="secondary" style={{ fontSize: 11, display: "block" }}>心跳管道路径:</Text>
+                  <Text type="secondary" style={{ fontSize: 11, display: "block" }}>{tt("心跳管道路径:", "Heartbeat Socket:")}</Text>
                   <Text code style={{ fontSize: 11, wordBreak: "break-all" }}>
-                    {status?.heartbeatPath || "/tmp/orbit-mcp.sock"}
+                    {status?.heartbeatPath || "—"}
                   </Text>
-
                 </div>
               </Flex>
             </div>
@@ -401,16 +351,16 @@ export function McpDashboard() {
       </Card>
 
       {/* Operational Controls */}
-      <Card size="small" className={styles.sectionCard} title="MCP 运维与韧性管控">
+      <Card size="small" className={styles.sectionCard} title={tt("MCP 运维与韧性管控", "MCP Operations & Resilience")}>
         <Row gutter={[12, 12]}>
           {/* Switch Combo */}
           <Col xs={24} md={8}>
             <div className={styles.controlBox}>
               <Text strong style={{ fontSize: 13, display: "block", marginBottom: 4 }}>
-                默认调度模型组合
+                {tt("默认调度模型组合", "Default Routing Combo")}
               </Text>
               <Text type="secondary" style={{ fontSize: 11, display: "block", marginBottom: 8 }}>
-                为 MCP 工具执行分派默认的主力模型组合
+                {tt("为 MCP 工具执行分派默认的主力模型组合", "Assign default combo for MCP tool execution")}
               </Text>
               <Flex gap={8}>
                 <Select
@@ -418,14 +368,14 @@ export function McpDashboard() {
                   value={activeCombo?.id || ""}
                   onChange={setSelectedComboId}
                   options={combos.map((c) => ({
-                    label: `${c.name} (${c.isActive !== false ? "活跃" : "已停用"})`,
+                    label: `${c.name} (${c.isActive !== false ? tt("活跃", "Active") : tt("已停用", "Disabled")})`,
                     value: c.id,
                   }))}
                 />
                 <Button
-                  onClick={() => message.success(`MCP 默认模型组合已切换为 ${activeCombo?.name}`)}
+                  onClick={() => message.success(tt(`MCP 默认模型组合已切换为 ${activeCombo?.name}`, `MCP default combo switched to ${activeCombo?.name}`))}
                 >
-                  应用
+                  {tt("应用", "Apply")}
                 </Button>
               </Flex>
             </div>
@@ -435,10 +385,10 @@ export function McpDashboard() {
           <Col xs={24} md={8}>
             <div className={styles.controlBox}>
               <Text strong style={{ fontSize: 13, display: "block", marginBottom: 4 }}>
-                韧性与限流策略预设
+                {tt("韧性与限流策略预设", "Resilience & Rate Limit Profile")}
               </Text>
               <Text type="secondary" style={{ fontSize: 11, display: "block", marginBottom: 8 }}>
-                调节并发数、请求冷却与熔断重试敏感度
+                {tt("调节并发数、请求冷却与熔断重试敏感度", "Configure concurrency, cooldown and breaker thresholds")}
               </Text>
               <Flex gap={8}>
                 <Select
@@ -446,9 +396,9 @@ export function McpDashboard() {
                   value={selectedProfile}
                   onChange={setSelectedProfile}
                   options={[
-                    { label: "均衡模式 (Balanced)", value: "balanced" },
-                    { label: "激进高吞吐 (Aggressive)", value: "aggressive" },
-                    { label: "保守稳定 (Conservative)", value: "conservative" },
+                    { label: tt("均衡模式", "Balanced"), value: "balanced" },
+                    { label: tt("激进高吞吐", "Aggressive"), value: "aggressive" },
+                    { label: tt("保守稳定", "Conservative"), value: "conservative" },
                   ]}
                 />
                 <Button
@@ -456,7 +406,7 @@ export function McpDashboard() {
                   loading={applyResilience.isPending}
                   onClick={() => applyResilience.mutate(selectedProfile)}
                 >
-                  应用策略
+                  {tt("应用策略", "Apply Profile")}
                 </Button>
               </Flex>
             </div>
@@ -466,17 +416,17 @@ export function McpDashboard() {
           <Col xs={24} md={8}>
             <div className={styles.controlBox}>
               <Text strong style={{ fontSize: 13, display: "block", marginBottom: 4 }}>
-                提供商故障熔断器
+                {tt("提供商故障熔断器", "Provider Circuit Breakers")}
               </Text>
               <Text type="secondary" style={{ fontSize: 11, display: "block", marginBottom: 8 }}>
-                若上游节点因网络抖动触发了熔断封锁，可手动一键恢复
+                {tt("若上游节点因网络抖动触发了熔断封锁，可手动一键恢复", "Manually reset breakers if triggered by upstream network jitter")}
               </Text>
               <Popconfirm
-                title="确认重置所有提供商熔断器状态？"
+                title={tt("确认重置所有提供商熔断器状态？", "Confirm resetting all circuit breaker states?")}
                 onConfirm={() => resetBreakers.mutate()}
               >
                 <Button danger loading={resetBreakers.isPending} style={{ width: "100%" }}>
-                  一键重置所有熔断器
+                  {tt("一键重置所有熔断器", "Reset All Breakers")}
                 </Button>
               </Popconfirm>
             </div>
@@ -485,7 +435,7 @@ export function McpDashboard() {
       </Card>
 
       {/* Tools and Scopes Table */}
-      <Card size="small" className={styles.sectionCard} title={`MCP 工具与权限范围清单 (${tools.length} 个工具)`}>
+      <Card size="small" className={styles.sectionCard} title={tt(`MCP 工具与权限范围清单 (${tools.length} 个工具)`, `MCP Tools & Permission Scopes (${tools.length} Tools)`)}>
         <Table
           size="small"
           rowKey="name"
@@ -493,19 +443,19 @@ export function McpDashboard() {
           pagination={false}
           columns={[
             {
-              title: "工具标识",
+              title: tt("工具标识", "Tool Name"),
               dataIndex: "name",
               key: "name",
               render: (v: string) => <Text code strong style={{ fontSize: 12 }}>{v}</Text>,
             },
             {
-              title: "描述说明",
+              title: tt("描述说明", "Description"),
               dataIndex: "description",
               key: "description",
               render: (v: string) => <Text style={{ fontSize: 12 }}>{v}</Text>,
             },
             {
-              title: "所需权限 Scope",
+              title: tt("所需权限 Scope", "Required Scopes"),
               dataIndex: "scopes",
               key: "scopes",
               render: (sc: string[]) => (
@@ -517,7 +467,7 @@ export function McpDashboard() {
               ),
             },
             {
-              title: "审计级别",
+              title: tt("审计级别", "Audit Level"),
               dataIndex: "auditLevel",
               key: "auditLevel",
               width: 100,
@@ -532,11 +482,11 @@ export function McpDashboard() {
       </Card>
 
       {/* Audit Log Table */}
-      <Card size="small" className={styles.sectionCard} title="MCP 工具调用审计日志 (Audit Log)">
+      <Card size="small" className={styles.sectionCard} title={tt("MCP 工具调用审计日志", "MCP Tool Invocation Audit Logs")}>
         {/* Filters */}
         <Flex gap={8} wrap style={{ marginBottom: 12 }}>
           <Input
-            placeholder="按工具名过滤..."
+            placeholder={tt("按工具名过滤...", "Filter by tool name...")}
             value={toolFilter}
             onChange={(e) => {
               setToolFilter(e.target.value);
@@ -552,13 +502,13 @@ export function McpDashboard() {
             }}
             style={{ width: 130 }}
             options={[
-              { label: "全部结果", value: "all" },
-              { label: "执行成功", value: "true" },
-              { label: "执行失败", value: "false" },
+              { label: tt("全部结果", "All Results"), value: "all" },
+              { label: tt("执行成功", "Success"), value: "true" },
+              { label: tt("执行失败", "Failed"), value: "false" },
             ]}
           />
           <Input
-            placeholder="按 API Key 过滤..."
+            placeholder={tt("按 API Key 过滤...", "Filter by API Key...")}
             value={apiKeyFilter}
             onChange={(e) => {
               setApiKeyFilter(e.target.value);
@@ -570,7 +520,7 @@ export function McpDashboard() {
             icon={<MaterialIcon name="refresh" size={14} />}
             onClick={() => void queryClient.invalidateQueries({ queryKey: ["mcp-audit-logs"] })}
           >
-            刷新日志
+            {tt("刷新日志", "Refresh")}
           </Button>
         </Flex>
 
@@ -585,7 +535,7 @@ export function McpDashboard() {
             pageSize: 10,
             total: auditData.total,
             onChange: (p) => setAuditPage(p),
-            showTotal: (total) => `共 ${total} 条审计记录`,
+            showTotal: (total) => tt(`共 ${total} 条审计记录`, `Total ${total} entries`),
           }}
         />
       </Card>

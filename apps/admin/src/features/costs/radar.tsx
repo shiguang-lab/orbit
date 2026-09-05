@@ -21,6 +21,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
 import { radarApi, type RadarMergedEntry } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -49,15 +50,9 @@ const useStyles = createStyles(({ token }) => ({
   },
 }));
 
-function formatTokens(value: number): string {
-  if (value === 0) return "免密/按速率 (rate-only)";
-  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M / 月`;
-  if (value >= 1_000) return `${(value / 1_000).toFixed(0)}K / 月`;
-  return `${value} / 月`;
-}
-
 export function RadarPage() {
   const { styles } = useStyles();
+  const { tt, isZh } = useI18n();
   const queryClient = useQueryClient();
 
   const [activeTab, setActiveTab] = useState<string>("catalog");
@@ -65,6 +60,13 @@ export function RadarPage() {
   const [editingName, setEditingName] = useState("");
   const [editingEnabled, setEditingEnabled] = useState(true);
   const [keyInput, setKeyInput] = useState("");
+
+  const formatTokens = (value: number): string => {
+    if (value === 0) return tt("免密 / 按速率", "Keyless / Rate-only");
+    if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M / ${tt("月", "mo")}`;
+    if (value >= 1_000) return `${(value / 1_000).toFixed(0)}K / ${tt("月", "mo")}`;
+    return `${value} / ${tt("月", "mo")}`;
+  };
 
   // 1. Settings query (optIn, supporter key)
   const settingsQuery = useQuery({
@@ -102,25 +104,25 @@ export function RadarPage() {
   const activateMutation = useMutation({
     mutationFn: (vars: { optIn: boolean; supporterKey?: string | null }) => radarApi.saveSettings(vars),
     onSuccess: () => {
-      message.success("雷达设置已更新");
+      message.success(tt("雷达设置已更新", "Radar settings updated"));
       queryClient.invalidateQueries({ queryKey: ["radar-settings"] });
       queryClient.invalidateQueries({ queryKey: ["radar-catalog"] });
       queryClient.invalidateQueries({ queryKey: ["radar-referrals"] });
     },
     onError: (err: any) => {
-      message.error(err.message || "更新失败");
+      message.error(err.message || tt("更新失败", "Update failed"));
     },
   });
 
   const syncMutation = useMutation({
     mutationFn: () => radarApi.sync(),
     onSuccess: () => {
-      message.success("雷达目录同步完成");
+      message.success(tt("雷达目录同步完成", "Radar catalog synced"));
       queryClient.invalidateQueries({ queryKey: ["radar-catalog"] });
       queryClient.invalidateQueries({ queryKey: ["radar-referrals"] });
     },
     onError: (err: any) => {
-      message.error(err.message || "同步失败");
+      message.error(err.message || tt("同步失败", "Sync failed"));
     },
   });
 
@@ -128,13 +130,13 @@ export function RadarPage() {
     mutationFn: (patch: { provider: string; modelId: string; displayName?: string; enabled?: boolean }) =>
       radarApi.saveLocalModelOverride(patch),
     onSuccess: () => {
-      message.success("本地模型配置已保存");
+      message.success(tt("本地模型配置已保存", "Local model override saved"));
       setEditingKey(null);
       queryClient.invalidateQueries({ queryKey: ["radar-catalog"] });
       queryClient.invalidateQueries({ queryKey: ["radar-local-model-state"] });
     },
     onError: (err: any) => {
-      message.error(err.message || "保存失败");
+      message.error(err.message || tt("保存失败", "Save failed"));
     },
   });
 
@@ -142,12 +144,12 @@ export function RadarPage() {
     mutationFn: (params: { provider: string; modelId: string }) =>
       radarApi.resetLocalModelOverride(params.provider, params.modelId),
     onSuccess: () => {
-      message.success("已恢复为雷达默认配置");
+      message.success(tt("已恢复为雷达默认配置", "Reset to Radar defaults"));
       queryClient.invalidateQueries({ queryKey: ["radar-catalog"] });
       queryClient.invalidateQueries({ queryKey: ["radar-local-model-state"] });
     },
     onError: (err: any) => {
-      message.error(err.message || "重置失败");
+      message.error(err.message || tt("重置失败", "Reset failed"));
     },
   });
 
@@ -183,14 +185,21 @@ export function RadarPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 18 }}>
-                  模型雷达与社区目录 (Radar)
+                  {tt("模型雷达与社区目录", "Model Radar & Directory")}
                 </Title>
                 <Tag color={settings.optIn ? (meta?.tier === "live" ? "green" : "purple") : "default"}>
-                  {settings.optIn ? (meta?.tier === "live" ? "💎 Supporter 实时订阅" : "🌐 社区版本") : "未激活订阅"}
+                  {settings.optIn
+                    ? (meta?.tier === "live"
+                        ? tt("💎 Supporter 实时订阅", "💎 Supporter Live")
+                        : tt("🌐 社区版本", "🌐 Community Edition"))
+                    : tt("未激活订阅", "Not Subscribed")}
                 </Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 13 }}>
-                实时汇聚全球免费大模型目录、每日配额、免密 Endpoint 及社区返利与优惠情报。
+                {tt(
+                  "实时汇聚全球免费大模型目录、每日配额、免密 Endpoint 及社区返利与优惠情报。",
+                  "Real-time catalog of global free LLMs, daily quotas, keyless endpoints, referral bonuses, and deal intelligence."
+                )}
               </Text>
             </div>
           </Flex>
@@ -202,7 +211,7 @@ export function RadarPage() {
                 loading={syncMutation.isPending}
                 onClick={() => syncMutation.mutate()}
               >
-                立即同步雷达
+                {tt("立即同步雷达", "Sync Radar Now")}
               </Button>
             )}
             <Button
@@ -211,7 +220,7 @@ export function RadarPage() {
               loading={activateMutation.isPending}
               onClick={() => activateMutation.mutate({ optIn: !settings.optIn })}
             >
-              {settings.optIn ? "关闭雷达订阅" : "激活雷达订阅"}
+              {settings.optIn ? tt("关闭雷达订阅", "Disable Radar") : tt("激活雷达订阅", "Enable Radar")}
             </Button>
           </Space>
         </Flex>
@@ -219,21 +228,21 @@ export function RadarPage() {
         {meta && (
           <Flex gap={24} style={{ marginTop: 14, paddingTop: 12, borderTop: "1px solid var(--ant-color-border-secondary)" }} wrap>
             <Text type="secondary" style={{ fontSize: 12 }}>
-              目录版本: <Text strong style={{ fontFamily: "monospace" }}>{meta.version}</Text>
+              {tt("目录版本", "Catalog Version")}: <Text strong style={{ fontFamily: "monospace" }}>{meta.version}</Text>
             </Text>
             <Text type="secondary" style={{ fontSize: 12 }}>
-              上次获取: <Text strong>{new Date(meta.fetchedAt).toLocaleString()}</Text>
+              {tt("上次获取", "Last Fetched")}: <Text strong>{new Date(meta.fetchedAt).toLocaleString()}</Text>
             </Text>
             <Text type="secondary" style={{ fontSize: 12 }}>
-              收录免费模型: <Text strong style={{ color: "#8b5cf6" }}>{entries.length} 个</Text>
+              {tt("收录免费模型", "Indexed Models")}: <Text strong style={{ color: "#8b5cf6" }}>{entries.length} {tt("个", "models")}</Text>
             </Text>
             {settings.supporterKeyMasked ? (
               <Text type="secondary" style={{ fontSize: 12 }}>
-                赞助密钥: <Text code>{settings.supporterKeyMasked}</Text>
+                {tt("赞助密钥", "Supporter Key")}: <Text code>{settings.supporterKeyMasked}</Text>
               </Text>
             ) : (
               <Text type="secondary" style={{ fontSize: 12 }}>
-                模式: <Text strong>社区开放版</Text>
+                {tt("模式", "Mode")}: <Text strong>{tt("社区开放版", "Community Open")}</Text>
               </Text>
             )}
           </Flex>
@@ -245,14 +254,17 @@ export function RadarPage() {
         <Alert
           type="info"
           showIcon
-          message="雷达订阅尚未开启"
+          message={tt("雷达订阅尚未开启", "Radar Subscription Inactive")}
           description={
             <Flex justify="space-between" align="center" wrap gap={12} style={{ marginTop: 6 }}>
               <div>
-                开启后，OmniRoute 将定期通过数字签名下载全球最新免费模型元数据与配额规则（完全本地隐私，绝不上传任何请求与密钥）。
+                {tt(
+                  "开启后，ShiguangGateway 将定期通过数字签名下载全球最新免费模型元数据与配额规则（完全本地隐私，绝不上传任何请求与密钥）。",
+                  "When enabled, ShiguangGateway periodically fetches digitally signed global free LLM metadata and quota rules (strictly local privacy, no requests or keys uploaded)."
+                )}
               </div>
               <Button type="primary" size="middle" loading={activateMutation.isPending} onClick={() => activateMutation.mutate({ optIn: true })}>
-                立即免费开启
+                {tt("立即免费开启", "Enable for Free")}
               </Button>
             </Flex>
           }
@@ -261,23 +273,23 @@ export function RadarPage() {
         <Card className={styles.infoCard} styles={{ body: { padding: "12px 18px" } }}>
           <Flex justify="space-between" align="center" wrap gap={12}>
             <Flex align="center" gap={12} wrap>
-              <Text strong style={{ fontSize: 13 }}>Supporter 密钥授权：</Text>
+              <Text strong style={{ fontSize: 13 }}>{tt("Supporter 密钥授权：", "Supporter Key Authorization:")}</Text>
               {settings.hasSupporterKey ? (
                 <Flex align="center" gap={8}>
-                  <Tag color="green">已接入: {settings.supporterKeyMasked}</Tag>
+                  <Tag color="green">{tt("已接入", "Connected")}: {settings.supporterKeyMasked}</Tag>
                   <Button
                     type="link"
                     size="middle"
                     style={{ padding: 0 }}
                     onClick={() => activateMutation.mutate({ optIn: true, supporterKey: null })}
                   >
-                    清除密钥
+                    {tt("清除密钥", "Clear Key")}
                   </Button>
                 </Flex>
               ) : (
                 <Flex gap={8} align="center">
                   <Input
-                    placeholder="输入 omr_... (40位密钥)"
+                    placeholder={tt("输入 omr_... (40位密钥)", "Enter omr_... key")}
                     value={keyInput}
                     onChange={(e) => setKeyInput(e.target.value)}
                     style={{ width: 260, fontFamily: "monospace" }}
@@ -291,21 +303,21 @@ export function RadarPage() {
                       setKeyInput("");
                     }}
                   >
-                    绑定密钥
+                    {tt("绑定密钥", "Bind Key")}
                   </Button>
                 </Flex>
               )}
             </Flex>
 
             <Space size={16}>
-              <a href={settings.contributorClaimUrl || "https://radar.omniroute.online/auth/github"} target="_blank" rel="noreferrer">
+              <a href={settings.contributorClaimUrl || "https://radar.shiguangGateway.online/auth/github"} target="_blank" rel="noreferrer">
                 <Text type="secondary" style={{ fontSize: 12 }}>
-                  🎁 贡献者免费领取 Key →
+                  {tt("🎁 贡献者免费领取 Key →", "🎁 Contributor Free Key →")}
                 </Text>
               </a>
-              <a href={settings.supporterPlansUrl || "https://radar.omniroute.online/planos"} target="_blank" rel="noreferrer">
+              <a href={settings.supporterPlansUrl || "https://radar.shiguangGateway.online/planos"} target="_blank" rel="noreferrer">
                 <Text type="secondary" style={{ fontSize: 12 }}>
-                  💎 了解 Supporter 赞助权益 →
+                  {tt("💎 了解 Supporter 赞助权益 →", "💎 Supporter Perks →")}
                 </Text>
               </a>
             </Space>
@@ -318,23 +330,23 @@ export function RadarPage() {
         value={activeTab}
         onChange={(val) => setActiveTab(val as string)}
         options={[
-          { label: "免费模型目录 (Catalog)", value: "catalog", icon: <MaterialIcon name="list" size={16} /> },
-          { label: "专属返利与赠金 (Free Credits)", value: "referrals", icon: <MaterialIcon name="card_giftcard" size={16} /> },
-          { label: "限时优惠 (Offers)", value: "offers", icon: <MaterialIcon name="local_offer" size={16} /> },
-          { label: "雷达情报 (Intel)", value: "intel", icon: <MaterialIcon name="insights" size={16} /> },
+          { label: tt("免费模型目录", "Catalog"), value: "catalog", icon: <MaterialIcon name="list" size={16} /> },
+          { label: tt("专属返利与赠金", "Free Credits"), value: "referrals", icon: <MaterialIcon name="card_giftcard" size={16} /> },
+          { label: tt("限时优惠", "Offers"), value: "offers", icon: <MaterialIcon name="local_offer" size={16} /> },
+          { label: tt("雷达情报", "Intel"), value: "intel", icon: <MaterialIcon name="insights" size={16} /> },
         ]}
       />
 
       {/* 4. Catalog Tab */}
       {activeTab === "catalog" && (
-        <Card className={styles.sectionCard} title="社区收录免费模型列表">
+        <Card className={styles.sectionCard} title={tt("社区收录免费模型列表", "Community Free Models")}>
           <Table<RadarMergedEntry>
             rowKey={(r) => `${r.provider}:${r.modelId}`}
             dataSource={entries}
             pagination={{ pageSize: 10 }}
             columns={[
               {
-                title: "提供商",
+                title: tt("提供商", "Provider"),
                 dataIndex: "provider",
                 key: "provider",
                 width: 160,
@@ -342,19 +354,19 @@ export function RadarPage() {
                   <Space direction="vertical" size={2}>
                     <Flex align="center" gap={6}>
                       <Text strong>{provider}</Text>
-                      {record.origin === "radar" && <Tag color="purple">新收录</Tag>}
-                      {record.origin === "local" && <Tag color="blue">自定义</Tag>}
+                      {record.origin === "radar" && <Tag color="purple">{tt("新收录", "Radar")}</Tag>}
+                      {record.origin === "local" && <Tag color="blue">{tt("自定义", "Custom")}</Tag>}
                     </Flex>
                     {record.setup?.keyUrl && (
                       <a href={record.setup.keyUrl} target="_blank" rel="noreferrer" style={{ fontSize: 11, color: "#8b5cf6" }}>
-                        获取密钥 →
+                        {tt("获取密钥 →", "Get Key →")}
                       </a>
                     )}
                   </Space>
                 ),
               },
               {
-                title: "模型 ID 与显示名称",
+                title: tt("模型与显示名称", "Model & Display Name"),
                 key: "model",
                 render: (_, record) => {
                   const key = `${record.provider}:${record.modelId}`;
@@ -364,13 +376,13 @@ export function RadarPage() {
                       <Input
                         value={editingName}
                         onChange={(e) => setEditingName(e.target.value)}
-                        placeholder="本地显示名称"
+                        placeholder={tt("本地显示名称", "Local display name")}
                       />
                       <Checkbox
                         checked={editingEnabled}
                         onChange={(e) => setEditingEnabled(e.target.checked)}
                       >
-                        本地启用此模型
+                        {tt("本地启用此模型", "Enable model locally")}
                       </Checkbox>
                       <Space>
                         <Button
@@ -385,16 +397,16 @@ export function RadarPage() {
                             })
                           }
                         >
-                          保存
+                          {tt("保存", "Save")}
                         </Button>
-                        <Button onClick={() => setEditingKey(null)}>取消</Button>
+                        <Button onClick={() => setEditingKey(null)}>{tt("取消", "Cancel")}</Button>
                       </Space>
                     </Space>
                   ) : (
                     <div>
                       <Flex align="center" gap={6}>
                         <Text strong>{record.displayName}</Text>
-                        {!record.enabled && <Tag color="error">已停用</Tag>}
+                        {!record.enabled && <Tag color="error">{tt("已停用", "Disabled")}</Tag>}
                       </Flex>
                       <Text type="secondary" style={{ fontSize: 12, fontFamily: "monospace" }}>
                         {record.modelId}
@@ -404,7 +416,7 @@ export function RadarPage() {
                 },
               },
               {
-                title: "免费额度 / 周期",
+                title: tt("免费额度 / 周期", "Free Quota / Period"),
                 key: "budget",
                 width: 180,
                 render: (_, record) => (
@@ -419,26 +431,26 @@ export function RadarPage() {
                 ),
               },
               {
-                title: "上下文 (Context)",
+                title: tt("上下文", "Context Window"),
                 dataIndex: "contextWindow",
                 key: "context",
                 width: 120,
                 render: (ctx) => (ctx ? `${(ctx / 1000).toFixed(0)}K` : "—"),
               },
               {
-                title: "模型能力",
+                title: tt("模型能力", "Capabilities"),
                 key: "capabilities",
                 width: 180,
                 render: (_, record) => (
                   <Space wrap size={4}>
-                    {record.capabilities?.tools && <Tag color="blue">工具调用</Tag>}
-                    {record.capabilities?.vision && <Tag color="purple">视觉多模态</Tag>}
-                    {record.capabilities?.thinking && <Tag color="gold">深度推理</Tag>}
+                    {record.capabilities?.tools && <Tag color="blue">{tt("工具调用", "Tools")}</Tag>}
+                    {record.capabilities?.vision && <Tag color="purple">{tt("视觉多模态", "Vision")}</Tag>}
+                    {record.capabilities?.thinking && <Tag color="gold">{tt("深度推理", "Thinking")}</Tag>}
                   </Space>
                 ),
               },
               {
-                title: "操作",
+                title: tt("操作", "Actions"),
                 key: "actions",
                 width: 140,
                 align: "right",
@@ -454,7 +466,7 @@ export function RadarPage() {
                           setEditingEnabled(record.enabled !== false);
                         }}
                       >
-                        编辑
+                        {tt("编辑", "Edit")}
                       </Button>
                       {record.origin === "local" && (
                         <Button
@@ -467,7 +479,7 @@ export function RadarPage() {
                             })
                           }
                         >
-                          重置
+                          {tt("重置", "Reset")}
                         </Button>
                       )}
                     </Space>
@@ -482,7 +494,7 @@ export function RadarPage() {
       {/* 5. Referrals Tab */}
       {activeTab === "referrals" && (
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <Card className={styles.sectionCard} title="官方收录的提供商注册与免密通道">
+          <Card className={styles.sectionCard} title={tt("官方收录的提供商注册与免密通道", "Free Provider Portals & Onboarding")}>
             <Row gutter={[16, 16]}>
               {referrals.fixed.map((item) => (
                 <Col xs={24} sm={12} md={8} key={item.provider}>
@@ -491,14 +503,14 @@ export function RadarPage() {
                       <div>
                         <Text strong style={{ fontSize: 15 }}>{item.provider}</Text>
                         <Paragraph type="secondary" style={{ fontSize: 12, marginTop: 4, marginBottom: 8 }}>
-                          {item.requiredAction || "注册并领取免费模型额度"}
+                          {item.requiredAction || tt("注册并领取免费模型额度", "Sign up to claim free credits")}
                         </Paragraph>
                       </div>
-                      <Tag color="geekblue">稳定有效</Tag>
+                      <Tag color="geekblue">{tt("稳定有效", "Verified")}</Tag>
                     </Flex>
                     <a href={item.url} target="_blank" rel="noreferrer">
                       <Button type="primary" style={{ width: "100%" }}>
-                        前往领取额度 →
+                        {tt("前往领取额度 →", "Claim Credits →")}
                       </Button>
                     </a>
                   </Card>
@@ -507,9 +519,9 @@ export function RadarPage() {
             </Row>
           </Card>
 
-          <Card className={styles.sectionCard} title="限时福利与赠金活动 (Campaigns)">
+          <Card className={styles.sectionCard} title={tt("限时福利与赠金活动", "Campaigns & Offers")}>
             {referrals.campaigns.length === 0 ? (
-              <Empty description="暂无限时活动或需 Supporter 权限" />
+              <Empty description={tt("暂无限时活动或需 Supporter 权限", "No active campaigns or supporter tier required")} />
             ) : (
               <Row gutter={[16, 16]}>
                 {referrals.campaigns.map((item, idx) => (
@@ -523,15 +535,15 @@ export function RadarPage() {
                           </Paragraph>
                           {item.validUntil && (
                             <Text type="warning" style={{ fontSize: 11 }}>
-                              截止时间: {new Date(item.validUntil).toLocaleDateString()}
+                              {tt("截止时间", "Expires")}: {new Date(item.validUntil).toLocaleDateString()}
                             </Text>
                           )}
                         </div>
-                        <Tag color="gold">限时活动</Tag>
+                        <Tag color="gold">{tt("限时活动", "Limited")}</Tag>
                       </Flex>
                       <a href={item.url} target="_blank" rel="noreferrer" style={{ marginTop: 8, display: "block" }}>
                         <Button type="primary" style={{ width: "100%", background: "#fa8c16" }}>
-                          立即参与活动 →
+                          {tt("立即参与活动 →", "Join Campaign →")}
                         </Button>
                       </a>
                     </Card>
@@ -545,7 +557,7 @@ export function RadarPage() {
 
       {/* 6. Offers Tab */}
       {activeTab === "offers" && (
-        <Card className={styles.sectionCard} title="雷达精选折扣与特别计划">
+        <Card className={styles.sectionCard} title={tt("雷达精选折扣与特别计划", "Radar Deals & Special Offers")}>
           {offersQuery.isLoading ? (
             <PageSkeleton />
           ) : (
@@ -556,17 +568,17 @@ export function RadarPage() {
                     <Flex justify="space-between" align="start">
                       <div>
                         <Text strong style={{ fontSize: 15 }}>
-                          {typeof offer.title === "object" ? (offer.title as any).zh || (offer.title as any).en : offer.title}
+                          {typeof offer.title === "object" ? (offer.title as any)[isZh ? "zh" : "en"] || (offer.title as any).zh || (offer.title as any).en : offer.title}
                         </Text>
                         <Tag color="purple" style={{ marginLeft: 8 }}>{offer.provider}</Tag>
                       </div>
-                      <Tag color="green">特惠</Tag>
+                      <Tag color="green">{tt("特惠", "Deal")}</Tag>
                     </Flex>
                     <Paragraph type="secondary" style={{ fontSize: 12, marginTop: 8 }}>
-                      {typeof offer.description === "object" ? (offer.description as any).zh || (offer.description as any).en : offer.description}
+                      {typeof offer.description === "object" ? (offer.description as any)[isZh ? "zh" : "en"] || (offer.description as any).zh || (offer.description as any).en : offer.description}
                     </Paragraph>
                     <a href={offer.url} target="_blank" rel="noreferrer">
-                      <Button style={{ width: "100%" }}>查看优惠详情 →</Button>
+                      <Button style={{ width: "100%" }}>{tt("查看优惠详情 →", "View Details →")}</Button>
                     </a>
                   </Card>
                 </Col>
@@ -578,7 +590,7 @@ export function RadarPage() {
 
       {/* 7. Intel Tab */}
       {activeTab === "intel" && (
-        <Card className={styles.sectionCard} title="雷达情报与 ELO 评测">
+        <Card className={styles.sectionCard} title={tt("雷达情报与 ELO 评测", "Radar Intel & ELO Leaderboard")}>
           {intelQuery.isLoading ? (
             <PageSkeleton />
           ) : (
@@ -587,15 +599,18 @@ export function RadarPage() {
               dataSource={intelQuery.data?.intel?.rankings || []}
               pagination={false}
               columns={[
-                { title: "排名", dataIndex: "rank", key: "rank", width: 80, render: (r) => <Tag color="gold">#{r}</Tag> },
-                { title: "提供商", dataIndex: "provider", key: "provider", width: 140 },
-                { title: "模型 ID", dataIndex: "modelId", key: "modelId" },
-                { title: "分类", dataIndex: "category", key: "category", render: (c) => <Tag>{c}</Tag> },
-                { title: "ELO 天梯分", dataIndex: "rating", key: "rating", render: (score) => <Text strong style={{ color: "#8b5cf6" }}>{score}</Text> },
+                { title: tt("排名", "Rank"), dataIndex: "rank", key: "rank", width: 80, render: (r) => <Tag color="gold">#{r}</Tag> },
+                { title: tt("提供商", "Provider"), dataIndex: "provider", key: "provider", width: 140 },
+                { title: tt("模型 ID", "Model ID"), dataIndex: "modelId", key: "modelId" },
+                { title: tt("分类", "Category"), dataIndex: "category", key: "category", render: (c) => <Tag>{c}</Tag> },
+                { title: tt("ELO 天梯分", "ELO Rating"), dataIndex: "rating", key: "rating", render: (score) => <Text strong style={{ color: "#8b5cf6" }}>{score}</Text> },
                 {
-                  title: "战绩 (胜/平/负)",
+                  title: tt("战绩（胜 / 平 / 负）", "Record (W / D / L)"),
                   key: "record",
-                  render: (_, r) => `${r.wins} 胜 / ${r.draws} 平 / ${r.losses} 负 (共 ${r.matches} 场)`,
+                  render: (_, r) =>
+                    isZh
+                      ? `${r.wins} 胜 / ${r.draws} 平 / ${r.losses} 负 (共 ${r.matches} 场)`
+                      : `${r.wins}W / ${r.draws}D / ${r.losses}L (${r.matches} total)`,
                 },
               ]}
             />

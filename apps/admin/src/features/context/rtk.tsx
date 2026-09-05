@@ -81,15 +81,6 @@ FAIL tests/auth.test.ts
     Received: false
       at tests/auth.test.ts:32:24`;
 
-const SAMPLE_RTK_FILTERED = `FAIL tests/auth.test.ts
-  ● Auth Flow › verify token expiration
-    expect(received).toBe(expected) // Object.is equality
-    Expected: true
-    Received: false
-      at tests/auth.test.ts:32:24
-
-Coverage: auth.service.ts (66.66% uncovered lines 45-52)`;
-
 const RTK_PRESET_FILTERS = [
   { id: "filter-npm-pnpm", name: "Node.js (NPM / Yarn / PNPM)", desc: "过滤进度条、Resolving 冗余包下载日志与重复依赖树", enabled: true, category: "package_manager" },
   { id: "filter-git-diff", name: "Git 终端与 Diff", desc: "精简 Git 状态统计、保留冲突行与增删关键行", enabled: true, category: "vcs" },
@@ -107,9 +98,15 @@ export function RtkContextPage() {
     queryKey: ["compression-config"],
     queryFn: () => compressionApi.getConfig(),
   });
+  const telemetryQuery = useQuery({
+    queryKey: ["compression-telemetry", "rtk"],
+    queryFn: () => compressionApi.getTelemetry(),
+    refetchInterval: 15000,
+  });
 
   const [rawSample, setRawSample] = useState(SAMPLE_RTK_RAW);
-  const [filteredOutput, setFilteredOutput] = useState<string | null>(SAMPLE_RTK_FILTERED);
+  const [filteredOutput, setFilteredOutput] = useState<string | null>(null);
+  const [previewStats, setPreviewStats] = useState<{ originalTokens: number; compressedTokens: number; savingsPct: number } | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const updateMutation = useMutation({
@@ -152,23 +149,35 @@ export function RtkContextPage() {
     updateMutation.mutate({ engines: updatedEngines });
   };
 
-  const handleTestFilter = () => {
+  const handleTestFilter = async () => {
     setIsProcessing(true);
-    setTimeout(() => {
-      let filtered = rawSample
-        .split("\n")
-        .filter((line) => !line.includes("Resolving") && !line.includes("Fetching") && !line.startsWith("---") && !line.includes("100 |     100"))
-        .join("\n")
-        .trim();
-      setFilteredOutput(filtered || rawSample);
-      setIsProcessing(false);
+    try {
+      const result = await compressionApi.preview({
+        messages: [{ role: "tool", content: rawSample }],
+        mode: "rtk",
+        engineId: "rtk",
+      });
+      if (typeof result.compressed !== "string") throw new Error("runtime 未返回过滤结果");
+      setFilteredOutput(result.compressed);
+      setPreviewStats({
+        originalTokens: Number(result.originalTokens ?? 0),
+        compressedTokens: Number(result.compressedTokens ?? 0),
+        savingsPct: Number(result.savingsPct ?? 0),
+      });
       messageApi.success("RTK 过滤测试完成");
-    }, 200);
+    } catch (cause) {
+      setFilteredOutput(null);
+      setPreviewStats(null);
+      messageApi.error(`过滤测试失败：${cause instanceof Error ? cause.message : String(cause)}`);
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
-  const origLen = rawSample.length;
-  const compLen = filteredOutput ? filteredOutput.length : origLen;
-  const savingsPct = Math.round(((origLen - compLen) / origLen) * 100);
+  const origLen = previewStats?.originalTokens;
+  const compLen = previewStats?.compressedTokens;
+  const savingsPct = previewStats?.savingsPct;
+  const telemetry = telemetryQuery.data;
 
   return (
     <div className={styles.page}>
@@ -226,16 +235,16 @@ export function RtkContextPage() {
           <div className={styles.statBox}>
             <Text type="secondary" style={{ fontSize: 12 }}>累计节省 Token</Text>
             <div style={{ fontSize: 20, fontWeight: 700, color: "#10b981", marginTop: 2 }}>
-              3,290,400
+              {telemetry ? telemetry.totalTokensSaved.toLocaleString() : "—"}
             </div>
-            <Text type="secondary" style={{ fontSize: 11 }}>过滤 142k+ 行日志杂音</Text>
+            <Text type="secondary" style={{ fontSize: 11 }}>处理请求 {telemetry ? telemetry.totalRuns.toLocaleString() : "—"} 次</Text>
           </div>
         </Col>
         <Col xs={24} sm={12} md={6}>
           <div className={styles.statBox}>
             <Text type="secondary" style={{ fontSize: 12 }}>平均过滤缩减率</Text>
             <div style={{ fontSize: 20, fontWeight: 700, color: "#6366f1", marginTop: 2 }}>
-              74.2%
+              —
             </div>
             <Text type="secondary" style={{ fontSize: 11 }}>针对 Tool Call 执行结果</Text>
           </div>
@@ -244,7 +253,7 @@ export function RtkContextPage() {
           <div className={styles.statBox}>
             <Text type="secondary" style={{ fontSize: 12 }}>处理延迟开销</Text>
             <div style={{ fontSize: 20, fontWeight: 700, color: "#06b6d4", marginTop: 2 }}>
-              &lt; 0.5ms
+              —
             </div>
             <Text type="secondary" style={{ fontSize: 11 }}>流式正则匹配加速</Text>
           </div>
@@ -253,7 +262,7 @@ export function RtkContextPage() {
           <div className={styles.statBox}>
             <Text type="secondary" style={{ fontSize: 12 }}>缓存影响评级</Text>
             <div style={{ fontSize: 20, fontWeight: 700, color: "#f59e0b", marginTop: 2 }}>
-              MODERATE
+              —
             </div>
             <Text type="secondary" style={{ fontSize: 11 }}>根据指令动态修剪</Text>
           </div>
@@ -353,12 +362,12 @@ export function RtkContextPage() {
           <Col xs={24} md={12}>
             <Flex justify="space-between" align="center" style={{ marginBottom: 4 }}>
               <Text strong style={{ fontSize: 12 }}>RTK 过滤提炼结果 (Clean Output):</Text>
-              {savingsPct > 0 && (
+              {savingsPct !== undefined && savingsPct > 0 && (
                 <Tag color="success">字符精简 {savingsPct}% ({origLen} → {compLen} 字符)</Tag>
               )}
             </Flex>
             <pre className={styles.terminal}>
-              {filteredOutput || "点击上方按钮执行测试..."}
+              {filteredOutput || "点击上方按钮执行真实过滤预览..."}
             </pre>
           </Col>
         </Row>

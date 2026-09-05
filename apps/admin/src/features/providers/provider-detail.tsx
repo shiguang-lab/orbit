@@ -47,17 +47,13 @@ import { ProviderCcAliasSection } from "./components/ProviderCcAliasSection";
 import { useBreadcrumbTitle } from "@/shell/useBreadcrumbTitle";
 
 const useStyles = createStyles(({ token }) => ({
-  // Orbit's dashboard is fluid (capped only by the shell at very wide
+  // Shiguang Gateway's dashboard is fluid (capped only by the shell at very wide
   // viewports). A local max-width here made the detail page visibly narrower
   // than the Providers list and the official page.
   page: {
     width: "100%",
     maxWidth: "none",
     margin: 0,
-    paddingBottom: 24,
-    "& .ant-tag": { display: "inline-flex", alignItems: "center" },
-    "& .ant-tag > .material-symbols-outlined": { flex: "none" },
-    "& .ant-tag > .material-symbols-outlined + span": { marginInlineStart: 4 },
   },
   header: { display: "flex", alignItems: "center", gap: 12, marginBottom: 0, minHeight: 38 },
   title: { margin: "0 !important", fontSize: 20, lineHeight: "1 !important", letterSpacing: "-0.01em", display: "inline-flex", alignItems: "center" },
@@ -344,7 +340,7 @@ export default function ProviderDetailPage() {
     setOauthCallbackUrl("");
     setOauthDevice(null);
     try {
-      const port = window.location.port || "20128";
+      const port = window.location.port || "8787";
       if (DEVICE_CODE_PROVIDERS.has(providerId)) {
         const payload = await api<{ device_code?: string; verification_uri?: string; verification_uri_complete?: string; codeVerifier?: string; interval?: number; error?: string }>(
           `/oauth/${encodeURIComponent(providerId)}/device-code`
@@ -355,7 +351,7 @@ export default function ProviderDetailPage() {
         setOauthSession({ redirectUri: "", codeVerifier: payload.codeVerifier });
         setOauthDevice({ deviceCode: payload.device_code, verificationUrl, codeVerifier: payload.codeVerifier, interval: Math.max(3, payload.interval || 5) });
         setOauthOpen(true);
-        window.open(verificationUrl, "omniroute-oauth", "width=600,height=720");
+        window.open(verificationUrl, "shiguangGateway-oauth", "width=600,height=720");
         return;
       }
       const isGoogleLoopback = providerId === "agy" || providerId === "antigravity";
@@ -368,7 +364,7 @@ export default function ProviderDetailPage() {
       if (!payload?.authUrl) throw new Error(payload?.error || "无法启动授权流程");
       setOauthSession({ redirectUri: payload.redirectUri || redirectUri, codeVerifier: payload.codeVerifier });
       setOauthOpen(true);
-      window.open(payload.authUrl, "omniroute-oauth", "width=600,height=720");
+      window.open(payload.authUrl, "shiguangGateway-oauth", "width=600,height=720");
     } catch (error) {
       const message = error instanceof Error ? error.message : "无法启动授权流程";
       setOauthError(message);
@@ -854,7 +850,7 @@ export default function ProviderDetailPage() {
       }
     }
 
-    // Embedded services publish their live catalog through Orbit's official
+    // Embedded services publish their live catalog through Shiguang Gateway's official
     // provider-plugin manifest. Keep the public provider prefix out of the
     // row id because ProviderModelsSection adds it when routing/testing.
     for (const m of [
@@ -1544,7 +1540,7 @@ export default function ProviderDetailPage() {
               value={oauthCallbackUrl}
               onChange={(event) => setOauthCallbackUrl(event.target.value)}
               autoSize={{ minRows: 3, maxRows: 5 }}
-              placeholder="粘贴 http://127.0.0.1:20128/callback?code=...&state=..."
+              placeholder="粘贴 http://127.0.0.1:8787/callback?code=...&state=..."
             />
           </>}
           {oauthError && <Alert showIcon type="error" message={oauthError} />}

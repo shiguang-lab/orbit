@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
 import { conductorApi, type ConductorWorkflow } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Title, Text } = Typography;
 
@@ -35,6 +36,7 @@ const useStyles = createStyles(({ token }) => ({
 
 export function ConductorPage() {
   const { styles } = useStyles();
+  const { tt } = useI18n();
 
   const conductorQuery = useQuery({
     queryKey: ["conductor-workflows"],
@@ -70,12 +72,15 @@ export function ConductorPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  智能体任务编排器
+                  {tt("智能体任务编排器", "Agent Conductor & Workflows")}
                 </Title>
-                <Tag color="purple">DAG 拓扑编排</Tag>
+                <Tag color="purple">{tt("DAG 拓扑编排", "DAG Orchestration")}</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                编排多智能体流水线任务（Planner → Coder → Reviewer → Tester），跨模型分工协同与流水线状态追溯。
+                {tt(
+                  "编排多智能体流水线任务（Planner → Coder → Reviewer → Tester），跨模型分工协同与流水线状态追溯。",
+                  "Orchestrate multi-agent task pipelines (Planner → Coder → Reviewer → Tester) with cross-model collaboration and lifecycle tracking."
+                )}
               </Text>
             </div>
           </Flex>
@@ -83,7 +88,7 @@ export function ConductorPage() {
       </Card>
 
       {/* 2. Workflows Table */}
-      <Card title="已编排任务流水线 (Workflows)" className={styles.sectionCard} size="small">
+      <Card title={tt("已编排任务流水线", "Orchestrated Workflows")} className={styles.sectionCard} size="small">
         <Table<ConductorWorkflow>
           rowKey="id"
           size="small"
@@ -91,7 +96,7 @@ export function ConductorPage() {
           dataSource={workflows}
           columns={[
             {
-              title: "流水线名称与描述",
+              title: tt("流水线名称与描述", "Workflow Name & Description"),
               key: "name",
               render: (_, record) => (
                 <div>
@@ -103,7 +108,7 @@ export function ConductorPage() {
               ),
             },
             {
-              title: "拓扑阶段 (Stages)",
+              title: tt("拓扑阶段", "Topology Stages"),
               key: "steps",
               render: (_, record) => (
                 <Flex align="center" gap={6} wrap>
@@ -119,7 +124,7 @@ export function ConductorPage() {
               ),
             },
             {
-              title: "状态",
+              title: tt("状态", "Status"),
               dataIndex: "status",
               key: "status",
               render: (status) => (
@@ -129,10 +134,10 @@ export function ConductorPage() {
               ),
             },
             {
-              title: "最近执行",
+              title: tt("最近执行", "Last Run"),
               dataIndex: "lastRunAt",
               key: "lastRunAt",
-              render: (time) => <Text type="secondary" style={{ fontSize: 12 }}>{time || "从未执行"}</Text>,
+              render: (time) => <Text type="secondary" style={{ fontSize: 12 }}>{time || tt("从未执行", "Never")}</Text>,
             },
           ]}
         />

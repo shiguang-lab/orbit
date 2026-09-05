@@ -24,6 +24,7 @@ import {
 import { QuickTestModal } from "./quick-test-modal";
 import { useQuery } from "@tanstack/react-query";
 import { providersApi } from "@/entities/api";
+import { useI18n } from "@/i18n";
 
 const { Text, Title, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -70,6 +71,7 @@ interface OpenAiApiTabProps {
 export function OpenAiApiTab({ baseUrl }: OpenAiApiTabProps) {
   const { styles } = useStyles();
   const { token } = theme.useToken();
+  const { tt, isZh } = useI18n();
 
   const [testingEndpoint, setTestingEndpoint] = useState<EndpointCardDef | null>(null);
   const [customSystemPromptEnabled, setCustomSystemPromptEnabled] = useState(false);
@@ -91,7 +93,7 @@ export function OpenAiApiTab({ baseUrl }: OpenAiApiTabProps) {
     0
   );
 
-  const copyToClipboard = (text: string, tip = "已复制到剪贴板") => {
+  const copyToClipboard = (text: string, tip = tt("已复制到剪贴板", "Copied to clipboard")) => {
     navigator.clipboard.writeText(text);
     message.success(tip);
   };
@@ -103,15 +105,24 @@ export function OpenAiApiTab({ baseUrl }: OpenAiApiTabProps) {
         <Flex align="center" justify="space-between" wrap gap={12}>
           <div>
             <Title level={5} style={{ margin: 0, fontSize: 15 }}>
-              标准 OpenAI 兼容协议接入端点
+              {tt("标准 OpenAI 兼容协议接入端点", "Standard OpenAI Compatible Endpoints")}
             </Title>
             <Text type="secondary" style={{ fontSize: 12, display: "block", marginTop: 4 }}>
-              系统提供 100% 兼容 OpenAI 格式的统一标准 API 入口，当前网关汇聚支持{" "}
-              <Text strong>{totalModelsCount > 0 ? totalModelsCount : "40+"}</Text> 个模型与多模态能力
+              {isZh ? (
+                <>
+                  系统提供 100% 兼容 OpenAI 格式的统一标准 API 入口，当前网关汇聚支持{" "}
+                  <Text strong>{totalModelsCount > 0 ? totalModelsCount : "40+"}</Text> 个模型与多模态能力
+                </>
+              ) : (
+                <>
+                  Provides 100% OpenAI-compatible unified API endpoints, aggregating{" "}
+                  <Text strong>{totalModelsCount > 0 ? totalModelsCount : "40+"}</Text> models and multimodal capabilities
+                </>
+              )}
             </Text>
           </div>
           <Tag color="blue" style={{ fontSize: 12, padding: "2px 8px" }}>
-            OpenAI API v1 规范
+            {tt("OpenAI API v1 规范", "OpenAI API v1 Spec")}
           </Tag>
         </Flex>
       </Card>
@@ -127,11 +138,11 @@ export function OpenAiApiTab({ baseUrl }: OpenAiApiTabProps) {
             <Flex align="center" gap={8} style={{ marginBottom: 10, marginTop: 4 }}>
               <MaterialIcon name={cat.icon} size={16} style={{ color: cat.color }} />
               <Text strong style={{ fontSize: 13, textTransform: "uppercase", letterSpacing: 0.5 }}>
-                {cat.title}
+                {isZh ? cat.titleZh : cat.titleEn}
               </Text>
               <div style={{ flex: 1, height: 1, background: token.colorBorderSecondary, opacity: 0.6 }} />
               <Text type="secondary" style={{ fontSize: 11 }}>
-                {categoryEndpoints.length} 个端点
+                {tt(`${categoryEndpoints.length} 个端点`, `${categoryEndpoints.length} Endpoints`)}
               </Text>
             </Flex>
 
@@ -139,6 +150,8 @@ export function OpenAiApiTab({ baseUrl }: OpenAiApiTabProps) {
             <Row gutter={[12, 12]}>
               {categoryEndpoints.map((ep) => {
                 const fullUrl = `${baseUrl.replace(/\/$/, "")}${ep.path}`;
+                const titleText = isZh ? ep.titleZh : ep.titleEn;
+                const descText = isZh ? ep.descriptionZh : ep.descriptionEn;
 
                 return (
                   <Col xs={24} sm={12} lg={8} xl={6} key={ep.id}>
@@ -156,7 +169,7 @@ export function OpenAiApiTab({ baseUrl }: OpenAiApiTabProps) {
                             </div>
                             <div>
                               <Text strong style={{ fontSize: 13, display: "block", lineHeight: 1.2 }}>
-                                {ep.title}
+                                {titleText}
                               </Text>
                             </div>
                           </Space>
@@ -181,7 +194,7 @@ export function OpenAiApiTab({ baseUrl }: OpenAiApiTabProps) {
                             overflow: "hidden",
                           }}
                         >
-                          {ep.description}
+                          {descText}
                         </Paragraph>
                       </div>
 
@@ -191,13 +204,13 @@ export function OpenAiApiTab({ baseUrl }: OpenAiApiTabProps) {
                           <Text ellipsis style={{ fontSize: 11, fontFamily: "monospace" }}>
                             {ep.path}
                           </Text>
-                          <Tooltip title="复制完整 URL">
+                          <Tooltip title={tt("复制完整 URL", "Copy Full URL")}>
                             <Button
                               type="text"
                               size="small"
                               style={{ padding: "0 2px", height: "auto" }}
                               icon={<MaterialIcon name="content_copy" size={13} />}
-                              onClick={() => copyToClipboard(fullUrl, `已复制 ${ep.title} 地址`)}
+                              onClick={() => copyToClipboard(fullUrl, tt(`已复制 ${titleText} 地址`, `Copied ${titleText} URL`))}
                             />
                           </Tooltip>
                         </div>
@@ -210,7 +223,7 @@ export function OpenAiApiTab({ baseUrl }: OpenAiApiTabProps) {
                             style={{ padding: 0, height: "auto", fontSize: 12 }}
                             onClick={() => setTestingEndpoint(ep)}
                           >
-                            在线调试
+                            {tt("在线调试", "Live Test")}
                           </Button>
                         </div>
                       </div>
@@ -230,12 +243,12 @@ export function OpenAiApiTab({ baseUrl }: OpenAiApiTabProps) {
             <Flex align="center" gap={8} wrap>
               <MaterialIcon name="terminal" size={20} style={{ color: "#3B82F6" }} />
               <Text strong style={{ fontSize: 13, lineHeight: 1 }}>
-                VS Code / 智能体插件兼容端点 (Cline / Roo Code / Continue)
+                {tt("VS Code 与客户端插件兼容端点", "VS Code & Client Plugin Endpoints")} (Cline / Roo Code / Continue)
               </Text>
-              <Tag color="blue" style={{ margin: 0 }}>免配置鉴权头</Tag>
+              <Tag color="blue" style={{ margin: 0 }}>{tt("免配置鉴权头", "Headerless Auth")}</Tag>
             </Flex>
             <Text type="secondary" style={{ fontSize: 12, display: "block", marginTop: 4 }}>
-              将 API Token 直接嵌入 URL 路径中，适用于不支持自定义 Header 请求头的客户端插件：
+              {tt("将 API Token 直接嵌入 URL 路径中，适用于不支持自定义 Header 请求头的客户端插件：", "Embeds API Token directly in the URL path for clients without custom header support:")}
             </Text>
             <div style={{ marginTop: 6 }}>
               <Text code strong style={{ fontSize: 12 }}>
@@ -249,11 +262,11 @@ export function OpenAiApiTab({ baseUrl }: OpenAiApiTabProps) {
             onClick={() =>
               copyToClipboard(
                 `${baseUrl.replace(/\/$/, "")}/api/v1/vscode/{token}/chat/completions`,
-                "已复制 VS Code 兼容基址"
+                tt("已复制 VS Code 兼容基址", "Copied VS Code URL template")
               )
             }
           >
-            复制基址模板
+            {tt("复制基址模板", "Copy URL Template")}
           </Button>
         </Flex>
       </Card>
@@ -266,10 +279,10 @@ export function OpenAiApiTab({ baseUrl }: OpenAiApiTabProps) {
               <MaterialIcon name="tune" size={18} style={{ color: "#8B5CF6" }} />
               <div>
                 <Text strong style={{ fontSize: 13, display: "block", lineHeight: 1.2 }}>
-                  全局自定义系统提示词 (Global Custom System Prompt)
+                  {tt("全局自定义系统提示词", "Global Custom System Prompt")}
                 </Text>
                 <Text type="secondary" style={{ fontSize: 12, display: "block", marginTop: 2 }}>
-                  开启后，所有经过此网关的对话补全请求将自动在前缀中合并注入全局指导指令
+                  {tt("开启后，所有经过此网关的对话补全请求将自动在前缀中合并注入全局指导指令", "When enabled, all chat completion requests will prepend this global instruction")}
                 </Text>
               </div>
             </Flex>
@@ -279,7 +292,7 @@ export function OpenAiApiTab({ baseUrl }: OpenAiApiTabProps) {
               checked={customSystemPromptEnabled}
               onChange={(checked) => {
                 setCustomSystemPromptEnabled(checked);
-                message.success(checked ? "已启用全局系统提示词" : "已停用全局系统提示词");
+                message.success(checked ? tt("已启用全局系统提示词", "Global system prompt enabled") : tt("已停用全局系统提示词", "Global system prompt disabled"));
               }}
             />
           </Flex>
@@ -294,7 +307,10 @@ export function OpenAiApiTab({ baseUrl }: OpenAiApiTabProps) {
                 maxLength={2000}
                 value={customSystemPrompt}
                 onChange={(e) => setCustomSystemPrompt(e.target.value)}
-                placeholder="例如：你是由智枢智能调度网关提供的高性能 AI 助手。请始终保持严谨、客观、详实的回答风格，并在代码输出中附带清晰的注释..."
+                placeholder={tt(
+                  "例如：你是由智枢智能调度网关提供的高性能 AI 助手。请始终保持严谨、客观、详实的回答风格，并在代码输出中附带清晰的注释...",
+                  "e.g. You are a high-performance AI assistant routed via ShiguangGateway. Please maintain professional, rigorous responses..."
+                )}
                 style={{ fontFamily: "monospace", fontSize: 12 }}
               />
 
@@ -306,12 +322,14 @@ export function OpenAiApiTab({ baseUrl }: OpenAiApiTabProps) {
                     style={{ padding: 0, height: "auto", fontSize: 11 }}
                     onClick={() =>
                       setCustomSystemPrompt(
-                        "你是由智枢统一智能网关调度的高性能 AI 助手。请在回答时保持专业、准确与高效，所有代码块需包含完整的语言标识与清晰说明。"
+                        tt(
+                          "你是由智枢统一智能网关调度的高性能 AI 助手。请在回答时保持专业、准确与高效，所有代码块需包含完整的语言标识与清晰说明。",
+                          "You are a high-performance AI assistant routed via ShiguangGateway gateway. Please keep responses concise, accurate and helpful."
+                        )
                       )
                     }
                   >
-
-                    填入默认助手模板
+                    {tt("填入默认助手模板", "Use Default Template")}
                   </Button>
                   <Button
                     size="small"
@@ -320,16 +338,16 @@ export function OpenAiApiTab({ baseUrl }: OpenAiApiTabProps) {
                     style={{ padding: 0, height: "auto", fontSize: 11 }}
                     onClick={() => setCustomSystemPrompt("")}
                   >
-                    清空内容
+                    {tt("清空内容", "Clear")}
                   </Button>
                 </Space>
 
                 <Button
                   type="primary"
                   icon={<MaterialIcon name="save" size={14} />}
-                  onClick={() => message.success("全局自定义系统提示词已保存生效")}
+                  onClick={() => message.success(tt("全局自定义系统提示词已保存生效", "Global system prompt saved"))}
                 >
-                  保存并生效
+                  {tt("保存并生效", "Save & Apply")}
                 </Button>
               </Flex>
             </Flex>

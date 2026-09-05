@@ -18,7 +18,7 @@ import {
 import { createStyles } from "antd-style";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
-import { mediaApi } from "@/entities/api";
+import { mediaApi, providersApi } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
 import { useI18n } from "@/i18n";
 
@@ -107,7 +107,7 @@ export function MediaPage() {
   const [modality, setModality] = useState<Modality>("image");
   const [form] = Form.useForm();
   const [generating, setGenerating] = useState(false);
-  const [generatedMedia, setGeneratedMedia] = useState<{ url?: string; prompt?: string } | null>(null);
+  const [generatedMedia, setGeneratedMedia] = useState<{ url?: string; prompt?: string; kind: "image" | "audio" } | null>(null);
 
   const statsQuery = useQuery({
     queryKey: ["media-cache-stats"],
@@ -126,19 +126,33 @@ export function MediaPage() {
     return <PageSkeleton />;
   }
 
-  const stats = statsQuery.data || { totalBytes: 340 * 1024 * 1024, totalFiles: 84, byModality: {} };
+  const stats = statsQuery.data;
 
-  const handleGenerate = (values: any) => {
+  const handleGenerate = async (values: any) => {
     setGenerating(true);
     setGeneratedMedia(null);
-    setTimeout(() => {
+    try {
+      if (modality === "image") {
+        const response = await providersApi.imageGeneration({ model: values.model, prompt: values.prompt, size: values.aspectRatio });
+        const payload = response as { data?: Array<{ url?: string; b64_json?: string }> };
+        const asset = payload.data?.[0];
+        if (!asset?.url && !asset?.b64_json) throw new Error("上游未返回图像资产");
+        setGeneratedMedia({ kind: "image", prompt: values.prompt, url: asset.url ?? `data:image/png;base64,${asset.b64_json}` });
+      } else if (modality === "speech") {
+        const response = await providersApi.audioSpeech({ model: values.model, input: values.prompt, voice: values.voice });
+        const payload = response as { url?: string; audio_url?: string; data?: string };
+        const url = payload.url ?? payload.audio_url ?? (payload.data ? `data:audio/mpeg;base64,${payload.data}` : undefined);
+        if (!url) throw new Error("上游未返回音频资产");
+        setGeneratedMedia({ kind: "audio", prompt: values.prompt, url });
+      } else {
+        throw new Error(`${modality} 当前没有可用的本地 runtime 生成契约`);
+      }
+      messageApi.success(tt("媒体生成成功", "Media generated successfully"));
+    } catch (cause) {
+      messageApi.error(`${tt("媒体生成失败", "Media generation failed")}：${cause instanceof Error ? cause.message : String(cause)}`);
+    } finally {
       setGenerating(false);
-      setGeneratedMedia({
-        prompt: values.prompt,
-        url: modality === "image" ? "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop" : undefined,
-      });
-      messageApi.success(tt("媒体生成成功并已写入多模态持久缓存", "Media generated and cached successfully"));
-    }, 1500);
+    }
   };
 
   const modalityOptions = [
@@ -190,7 +204,7 @@ export function MediaPage() {
           <Space wrap>
             <div className={styles.statBadge}>
               <Text type="secondary" style={{ fontSize: 11 }}>{tt("总缓存体积", "Total Cache Size")}: </Text>
-              <Text strong>{(stats.totalBytes / 1024 / 1024).toFixed(1)} MB</Text>
+              <Text strong>{stats ? `${(stats.totalBytes / 1024 / 1024).toFixed(1)} MB` : "—"}</Text>
             </div>
             <Popconfirm title={tt("确定清空全部媒体缓存资产吗？", "Purge all media cache?")} onConfirm={() => purgeMutation.mutate("all")}>
               <Button danger icon={<MaterialIcon name="delete_sweep" size={16} />} loading={purgeMutation.isPending}>
@@ -290,12 +304,14 @@ export function MediaPage() {
                 </Flex>
               ) : generatedMedia ? (
                 <Flex vertical align="center" gap={12} style={{ width: "100%" }}>
-                  {generatedMedia.url ? (
+                  {generatedMedia.kind === "image" && generatedMedia.url ? (
                     <img
                       src={generatedMedia.url}
                       alt="Generated"
                       style={{ maxWidth: "100%", maxHeight: 220, borderRadius: 8, objectFit: "cover" }}
                     />
+                  ) : generatedMedia.kind === "audio" && generatedMedia.url ? (
+                    <audio controls src={generatedMedia.url} style={{ width: "100%" }} />
                   ) : (
                     <div style={{ padding: 24, textAlign: "center" }}>
                       <MaterialIcon name="audio_file" size={48} style={{ color: "#10b981" }} />

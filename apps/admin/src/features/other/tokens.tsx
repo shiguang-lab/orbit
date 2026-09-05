@@ -247,7 +247,7 @@ export function TokensPage() {
                     name="code"
                     rules={[{ required: true, message: tt("请输入邀请码", "Please input code") }]}
                   >
-                    <Input placeholder="ORBIT-XXXX-YYYY" />
+                    <Input placeholder="SGW-XXXX-YYYY" />
                   </Form.Item>
                   <Button type="primary" htmlType="submit" loading={redeemMutation.isPending} icon={<MaterialIcon name="redeem" size={14} />}>
                     {tt("立即兑换", "Redeem Now")}

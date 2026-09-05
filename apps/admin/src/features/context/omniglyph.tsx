@@ -18,6 +18,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
 import { compressionApi, COMPRESSION_ENGINE_CATALOG } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Title, Text } = Typography;
 
@@ -60,6 +61,7 @@ const useStyles = createStyles(({ token }) => ({
 
 export function OmniglyphContextPage() {
   const { styles } = useStyles();
+  const { tt } = useI18n();
   const queryClient = useQueryClient();
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -77,10 +79,10 @@ export function OmniglyphContextPage() {
   const updateMutation = useMutation({
     mutationFn: (updated: any) => compressionApi.updateConfig(updated),
     onSuccess: () => {
-      messageApi.success("OmniGlyph 图像化上下文配置已更新");
+      messageApi.success(tt("OmniGlyph 图像化上下文配置已更新", "OmniGlyph context configuration updated"));
       void queryClient.invalidateQueries({ queryKey: ["compression-config"] });
     },
-    onError: () => messageApi.error("保存配置失败"),
+    onError: () => messageApi.error(tt("保存配置失败", "Failed to save configuration")),
   });
 
   if (configQuery.isLoading || !configQuery.data) {
@@ -102,12 +104,20 @@ export function OmniglyphContextPage() {
     updateMutation.mutate({ engines: updatedEngines });
   };
 
-  const handleTestRender = () => {
+  const handleTestRender = async () => {
     setIsRendering(true);
-    setTimeout(() => {
+    try {
+      await compressionApi.preview({
+        messages: [{ role: "user", content: sampleText }],
+        mode: "stacked",
+        engineId: "omniglyph",
+      });
+      messageApi.success(tt("OmniGlyph 预览完成", "OmniGlyph preview completed"));
+    } catch (cause) {
+      messageApi.error(`${tt("OmniGlyph 尚未提供可用的 runtime 预览契约", "OmniGlyph runtime preview is unavailable")}：${cause instanceof Error ? cause.message : String(cause)}`);
+    } finally {
       setIsRendering(false);
-      messageApi.success("OmniGlyph 像素矩阵渲染完成 (耗时 12ms)");
-    }, 400);
+    }
   };
 
   return (
@@ -138,19 +148,19 @@ export function OmniglyphContextPage() {
                   {meta.label}
                 </Title>
                 <Tag color={omniState.enabled ? "success" : "default"}>
-                  {omniState.enabled ? "● 算子运行中" : "已停用 (实验性)"}
+                  {omniState.enabled ? tt("● 算子运行中", "● Active") : tt("已停用 (实验性)", "Disabled (Experimental)")}
                 </Tag>
-                <Tag color="magenta">多模态视觉上下文</Tag>
-                <Tag color="purple">流水线优先级 #90</Tag>
+                <Tag color="magenta">{tt("多模态视觉上下文", "Vision Context")}</Tag>
+                <Tag color="purple">{tt("流水线优先级 #90", "Priority #90")}</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                {meta.description} 将长文本与代码渲染为高密度像素图像，利用多模态大模型视觉通道单图输入，大幅节省文本 Token。
+                {meta.description} {tt("将长文本与代码渲染为高密度像素图像，利用多模态大模型视觉通道单图输入，大幅节省文本 Token。", "Renders text and code into high-density pixel images to utilize multimodal vision channels, saving massive text tokens.")}
               </Text>
             </div>
           </Flex>
 
           <Flex align="center" gap={10}>
-            <Text strong style={{ fontSize: 13 }}>启用算子:</Text>
+            <Text strong style={{ fontSize: 13 }}>{tt("启用算子:", "Enable Engine:")}</Text>
             <Switch
               checked={omniState.enabled}
               loading={updateMutation.isPending}
@@ -164,66 +174,66 @@ export function OmniglyphContextPage() {
       <Row gutter={[10, 10]}>
         <Col xs={24} sm={12} md={6}>
           <div className={styles.statBox}>
-            <Text type="secondary" style={{ fontSize: 12 }}>Token 压缩倍率</Text>
+            <Text type="secondary" style={{ fontSize: 12 }}>{tt("Token 压缩倍率", "Token Compression Ratio")}</Text>
             <div style={{ fontSize: 20, fontWeight: 700, color: "#d946ef", marginTop: 2 }}>
-              ~ 10x
+              —
             </div>
-            <Text type="secondary" style={{ fontSize: 11 }}>突破传统文本窗口瓶颈</Text>
+            <Text type="secondary" style={{ fontSize: 11 }}>{tt("突破传统文本窗口瓶颈", "Overcomes text window limits")}</Text>
           </div>
         </Col>
         <Col xs={24} sm={12} md={6}>
           <div className={styles.statBox}>
-            <Text type="secondary" style={{ fontSize: 12 }}>平均 Token 成本节约</Text>
+            <Text type="secondary" style={{ fontSize: 12 }}>{tt("平均 Token 成本节约", "Average Token Cost Savings")}</Text>
             <div style={{ fontSize: 20, fontWeight: 700, color: "#10b981", marginTop: 2 }}>
-              59% – 70%
+              —
             </div>
-            <Text type="secondary" style={{ fontSize: 11 }}>视觉通道统一计费优势</Text>
+            <Text type="secondary" style={{ fontSize: 11 }}>{tt("视觉通道统一计费优势", "Vision pricing advantage")}</Text>
           </div>
         </Col>
         <Col xs={24} sm={12} md={6}>
           <div className={styles.statBox}>
-            <Text type="secondary" style={{ fontSize: 12 }}>图像定额 Token</Text>
+            <Text type="secondary" style={{ fontSize: 12 }}>{tt("图像定额 Token", "Fixed Image Tokens")}</Text>
             <div style={{ fontSize: 20, fontWeight: 700, color: "#6366f1", marginTop: 2 }}>
-              1,456 Tokens / 图
+              —
             </div>
-            <Text type="secondary" style={{ fontSize: 11 }}>不论原始文本 10k 还是 50k 字</Text>
+            <Text type="secondary" style={{ fontSize: 11 }}>{tt("不论原始文本 10k 还是 50k 字", "Constant tokens regardless of text length")}</Text>
           </div>
         </Col>
         <Col xs={24} sm={12} md={6}>
           <div className={styles.statBox}>
-            <Text type="secondary" style={{ fontSize: 12 }}>视觉识别精准度</Text>
+            <Text type="secondary" style={{ fontSize: 12 }}>{tt("视觉识别精准度", "Visual OCR Accuracy")}</Text>
             <div style={{ fontSize: 20, fontWeight: 700, color: "#06b6d4", marginTop: 2 }}>
-              100% (Lossless OCR)
+              —
             </div>
-            <Text type="secondary" style={{ fontSize: 11 }}>高保真字形栅格对齐</Text>
+            <Text type="secondary" style={{ fontSize: 11 }}>{tt("高保真字形栅格对齐", "High-fidelity grid alignment")}</Text>
           </div>
         </Col>
       </Row>
 
       {/* 3. Profiles & Gate Flow */}
-      <Card title="编码配置与门禁校验 (Profile & Fail-Closed Gate Chain)" className={styles.sectionCard} size="small">
+      <Card title={tt("编码配置与门禁校验", "Encoding Profile & Fail-Closed Gates")} className={styles.sectionCard} size="small">
         <Row gutter={[16, 16]}>
           <Col xs={24} md={12}>
-            <Space orientation="vertical" size={12} style={{ width: "100%" }}>
+            <Space direction="vertical" size={12} style={{ width: "100%" }}>
               <Flex justify="space-between" align="center">
                 <div>
-                  <Text strong style={{ fontSize: 13 }}>压缩策略方案 (Profile)</Text>
+                  <Text strong style={{ fontSize: 13 }}>{tt("压缩策略方案", "Compression Profile")}</Text>
                   <div style={{ fontSize: 11, color: "var(--ant-color-text-secondary)" }}>
-                    Balanced 兼顾渲染性能与视觉 Token 收益
+                    {tt("Balanced 兼顾渲染性能与视觉 Token 收益", "Balanced balances rendering speed and token savings")}
                   </div>
                 </div>
                 <Radio.Group value={profile} onChange={(e) => setProfile(e.target.value)}>
-                  <Radio.Button value="aggressive">激进 (Aggressive)</Radio.Button>
-                  <Radio.Button value="balanced">均衡 (Balanced)</Radio.Button>
-                  <Radio.Button value="coding-safe">代码安全 (Coding Safe)</Radio.Button>
+                  <Radio.Button value="aggressive">{tt("激进", "Aggressive")}</Radio.Button>
+                  <Radio.Button value="balanced">{tt("均衡", "Balanced")}</Radio.Button>
+                  <Radio.Button value="coding-safe">{tt("代码安全", "Coding Safe")}</Radio.Button>
                 </Radio.Group>
               </Flex>
 
               <Flex justify="space-between" align="center">
                 <div>
-                  <Text strong style={{ fontSize: 13 }}>非多模态模型自动透传 (Fail-Closed Gate)</Text>
+                  <Text strong style={{ fontSize: 13 }}>{tt("非多模态模型自动透传", "Auto Pass-through for Non-Vision Models")}</Text>
                   <div style={{ fontSize: 11, color: "var(--ant-color-text-secondary)" }}>
-                    若目标模型不支持多模态图像输入，则自动跳过 OmniGlyph 并原样放行
+                    {tt("若目标模型不支持多模态图像输入，则自动跳过 OmniGlyph 并原样放行", "Automatically bypass OmniGlyph if the upstream model lacks vision capabilities")}
                   </div>
                 </div>
                 <Switch defaultChecked disabled />
@@ -234,13 +244,13 @@ export function OmniglyphContextPage() {
           <Col xs={24} md={12}>
             <div style={{ padding: "10px 14px", borderRadius: 8, background: "rgba(255,255,255,0.02)", border: "1px solid var(--ant-color-border-secondary)" }}>
               <Text strong style={{ fontSize: 12, display: "block", marginBottom: 6 }}>
-                四个连续门禁检查链 (Evaluation Gate Order)：
+                {tt("四个连续门禁检查链：", "Fail-Closed Gate Chain:")}
               </Text>
               <Space size={6} wrap>
-                <Tag color="cyan">1. Model (多模态兼容探测)</Tag>
-                <Tag color="blue">2. Transport (HTTP Multipart)</Tag>
-                <Tag color="purple">3. Format (PNG 像素无损)</Tag>
-                <Tag color="green">4. Profitable (Token 收益正向)</Tag>
+                <Tag color="cyan">1. Model ({tt("多模态兼容探测", "Vision Capability")})</Tag>
+                <Tag color="blue">2. Transport ({tt("Multipart 传输", "HTTP Multipart")})</Tag>
+                <Tag color="purple">3. Format ({tt("PNG 像素无损", "PNG Lossless")})</Tag>
+                <Tag color="green">4. Profitable ({tt("Token 收益正向", "Positive Savings")})</Tag>
               </Space>
             </div>
           </Col>
@@ -253,7 +263,7 @@ export function OmniglyphContextPage() {
           <Flex justify="space-between" align="center">
             <Flex align="center" gap={6}>
               <MaterialIcon name="image" size={16} />
-              <span>OmniGlyph 上下文图像化渲染演练区 (Visual Diff Inspector)</span>
+              <span>{tt("OmniGlyph 上下文图像化渲染演练区", "OmniGlyph Visual Diff Inspector")}</span>
             </Flex>
             <Button
               type="primary"
@@ -262,7 +272,7 @@ export function OmniglyphContextPage() {
               loading={isRendering}
               onClick={handleTestRender}
             >
-              执行图像编码测试
+              {tt("执行图像编码测试", "Run Test Render")}
             </Button>
           </Flex>
         }
@@ -272,23 +282,23 @@ export function OmniglyphContextPage() {
         <Row gutter={[12, 12]}>
           <Col xs={24} md={12}>
             <Text strong style={{ fontSize: 12, display: "block", marginBottom: 4 }}>
-              原始长文本上下文 (Raw Text Context):
+              {tt("原始长文本上下文：", "Raw Text Context:")}
             </Text>
             <Input.TextArea
               rows={7}
               value={sampleText}
               onChange={(e) => setSampleText(e.target.value)}
-              placeholder="输入长文本..."
+              placeholder={tt("输入长文本...", "Enter text...")}
             />
             <div style={{ marginTop: 4, fontSize: 11, color: "var(--ant-color-text-secondary)" }}>
-              原始文本估算: ~3,480 Tokens
+              {tt("原始文本估算: ~3,480 Tokens", "Estimated: ~3,480 Tokens")}
             </div>
           </Col>
 
           <Col xs={24} md={12}>
             <Flex justify="space-between" align="center" style={{ marginBottom: 4 }}>
-              <Text strong style={{ fontSize: 12 }}>OmniGlyph 渲染点阵图 (Rendered Image Payload):</Text>
-              <Tag color="magenta">固定 1,456 视觉 Token (缩减 ~58.1%)</Tag>
+              <Text strong style={{ fontSize: 12 }}>{tt("OmniGlyph 渲染点阵图：", "Rendered Image Payload:")}</Text>
+              <Tag color="magenta">{tt("固定 1,456 视觉 Token (缩减 ~58.1%)", "Fixed 1,456 Vision Tokens (-58.1%)")}</Tag>
             </Flex>
             <div className={styles.imagePreviewBox}>
               <div
@@ -312,7 +322,7 @@ export function OmniglyphContextPage() {
                 [ OmniGlyph Micro-Dot Matrix 2048x1024 PNG ]
               </div>
               <Text type="secondary" style={{ fontSize: 11, marginTop: 8 }}>
-                经由多模态通道单图直接作为 Image Payload 注入上游 LLM
+                {tt("经由多模态通道单图直接作为 Image Payload 注入上游 LLM", "Injected as single image payload into upstream multimodal LLM")}
               </Text>
             </div>
           </Col>

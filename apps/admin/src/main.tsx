@@ -1,6 +1,6 @@
 /**
  * 入口：启动守卫(完全仿 asset-hub main.tsx)。
- * bootstrap → requireAuthSession()：已登录渲染应用；未登录进入 Orbit 原生登录页。
+ * bootstrap → requireAuthSession()：已登录渲染应用；未登录进入 Shiguang Gateway 原生登录页。
  */
 import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
@@ -9,6 +9,7 @@ import { RouterProvider } from "react-router-dom";
 import { App, Spin } from "antd";
 import { ThemeProvider } from "@/theme/ThemeProvider";
 import { router } from "@/app/router";
+import "@/styles/global.css";
 import {
   BrokerUnavailableError,
   requireAuthSession,

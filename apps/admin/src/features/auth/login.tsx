@@ -23,7 +23,7 @@ function safeReturnTo(): string {
   }
 }
 
-/** Orbit's native management login. Provider OAuth login is handled separately by CLIProxyAPI. */
+/** Shiguang Gateway's native management login. Provider OAuth login is handled separately by CLIProxyAPI. */
 export default function LoginPage() {
   const [settings, setSettings] = useState<LoginSettings | null>(null);
   const [password, setPassword] = useState("");
@@ -67,7 +67,7 @@ export default function LoginPage() {
       });
       const body = (await response.json().catch(() => ({}))) as { error?: string; needsSetup?: boolean };
       if (!response.ok) {
-        setError(body.needsSetup ? "尚未配置管理密码，请先完成 Orbit 初始化。" : body.error || "登录失败");
+        setError(body.needsSetup ? "尚未配置管理密码，请先完成 Shiguang Gateway 初始化。" : body.error || "登录失败");
         return;
       }
       window.location.replace(safeReturnTo());
@@ -88,7 +88,7 @@ export default function LoginPage() {
       <Card style={{ width: "min(100%, 420px)" }}>
         <Space direction="vertical" size="large" style={{ width: "100%" }}>
           <div>
-            <Typography.Title level={2} style={{ marginBottom: 8 }}>Orbit</Typography.Title>
+            <Typography.Title level={2} style={{ marginBottom: 8 }}>Shiguang Gateway</Typography.Title>
             <Typography.Text type="secondary">管理控制台登录</Typography.Text>
           </div>
           {error && <Alert type="error" showIcon message={error} />}

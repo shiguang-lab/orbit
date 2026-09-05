@@ -27,6 +27,7 @@ import {
   type EvalResult,
 } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Title, Text } = Typography;
 
@@ -68,6 +69,7 @@ const useStyles = createStyles(({ token }) => ({
 
 export function EvalsPage() {
   const { styles } = useStyles();
+  const { tt } = useI18n();
   const queryClient = useQueryClient();
 
   const [selectedSuiteId, setSelectedSuiteId] = useState<string>("golden-set");
@@ -461,13 +463,13 @@ export function EvalsPage() {
                 render: (ms) => <Text strong style={{ color: "#8b5cf6" }}>{ms} ms</Text>,
               },
               {
-                title: "通过率 (Pass / Total)",
+                title: tt("通过率", "Pass Rate"),
                 key: "summary",
                 width: 200,
                 render: (_, record) => (
                   <div>
                     <Flex justify="space-between" style={{ fontSize: 12 }}>
-                      <Text>{record.summary.passed} / {record.summary.total} 通过</Text>
+                      <Text>{record.summary.passed} / {record.summary.total} {tt("通过", "passed")}</Text>
                       <Text strong style={{ color: record.summary.passRate === 100 ? "#10b981" : "#f59e0b" }}>
                         {record.summary.passRate}%
                       </Text>

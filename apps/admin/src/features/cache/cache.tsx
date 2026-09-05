@@ -172,7 +172,7 @@ export function CachePage() {
     refetchInterval: 10000,
   });
 
-  // 1.2 Cache Health Query (Orbit parity)
+  // 1.2 Cache Health Query (Shiguang Gateway parity)
   const healthQuery = useQuery({
     queryKey: ["cache-health-summary", timeRange],
     queryFn: () => cacheAnalyticsApi.getCacheHealth({ range: timeRange }),
@@ -595,7 +595,7 @@ export function CachePage() {
                   </Col>
                 </Row>
 
-                {/* Orbit Parity: Where the writes are concentrated (Outlier Analysis) */}
+                {/* Shiguang Gateway Parity: Where the writes are concentrated (Outlier Analysis) */}
                 {healthData && (
                   <div className={styles.concentrationCard}>
                     <Flex vertical gap={12}>
@@ -723,7 +723,7 @@ export function CachePage() {
                   </Flex>
                 </div>
 
-                {/* By Model Table (Worst Ratio First - Orbit Feature) */}
+                {/* By Model Table (Worst Ratio First - Shiguang Gateway Feature) */}
                 {healthData && healthData.byModel.length > 0 && (
                   <div className={styles.subCard}>
                     <Flex vertical gap={12}>
@@ -745,20 +745,20 @@ export function CachePage() {
                         dataSource={healthData.byModel}
                         columns={[
                           {
-                            title: "模型 (Model)",
+                            title: tt("模型", "Model"),
                             dataIndex: "model",
                             key: "model",
                             render: (m: string) => <Text code strong>{m}</Text>,
                           },
                           {
-                            title: "调用数 (Calls)",
+                            title: tt("调用数", "Calls"),
                             dataIndex: "calls",
                             key: "calls",
                             align: "right",
                             render: (c: number) => <Text>{formatNumber(c)}</Text>,
                           },
                           {
-                            title: "缓存读取 (Tokens Read)",
+                            title: tt("缓存读取", "Tokens Read"),
                             dataIndex: "cacheReadTotal",
                             key: "read",
                             align: "right",
@@ -769,7 +769,7 @@ export function CachePage() {
                             ),
                           },
                           {
-                            title: "缓存写入 (Tokens Written)",
+                            title: tt("缓存写入", "Tokens Written"),
                             dataIndex: "cacheWriteTotal",
                             key: "write",
                             align: "right",
@@ -780,7 +780,7 @@ export function CachePage() {
                             ),
                           },
                           {
-                            title: "写读比率 (W/R)",
+                            title: tt("写读比率", "Write/Read Ratio"),
                             dataIndex: "writeReadRatio",
                             key: "ratio",
                             align: "right",
@@ -794,7 +794,7 @@ export function CachePage() {
                             },
                           },
                           {
-                            title: "重写离群调用 (Heavy)",
+                            title: tt("重写离群调用", "Heavy Write Calls"),
                             dataIndex: "heavyWriteCalls",
                             key: "heavy",
                             align: "right",
@@ -950,7 +950,7 @@ export function CachePage() {
                   {t(
                     "cache.semanticCacheSectionDesc",
                     undefined,
-                    "OmniRoute 本地维护的确定性响应缓存。开启后，重复的非流式、temperature=0 请求可以直接在本地极速命中，不再访问上游 provider，节省 100% 费用与延迟。"
+                    "ShiguangGateway 本地维护的确定性响应缓存。开启后，重复的非流式、temperature=0 请求可以直接在本地极速命中，不再访问上游 provider，节省 100% 费用与延迟。"
                   )}
                 </Text>
               </div>
@@ -976,7 +976,7 @@ export function CachePage() {
                 {t(
                   "cache.semanticCacheDisabledDesc",
                   undefined,
-                  "Semantic Cache 当前已禁用。重新在设置中开启之前，OmniRoute 不会再做本地响应复用。"
+                  "Semantic Cache 当前已禁用。重新在设置中开启之前，ShiguangGateway 不会再做本地响应复用。"
                 )}
               </div>
             )}
@@ -1136,8 +1136,8 @@ export function CachePage() {
                         <span>
                           {t(
                             "cache.behaviorBypass",
-                            { header: "X-OmniRoute-No-Cache: true" },
-                            "通过请求头 X-OmniRoute-No-Cache: true 可强制绕过缓存直达上游。"
+                            { header: "X-ShiguangGateway-No-Cache: true" },
+                            "通过请求头 X-ShiguangGateway-No-Cache: true 可强制绕过缓存直达上游。"
                           )}
                         </span>
                       </div>

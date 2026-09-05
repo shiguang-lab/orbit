@@ -607,7 +607,7 @@ export function SettingsAdvancedPage() {
         >
           <Text type="secondary" style={{ fontSize: 12 }}>
             {tt(
-              "自动扫描本地路径 ~/.cli-proxy-api 下存储的 Claude CLI、OpenAI CLI 及 Cursor 凭据并将其转换为 OmniRoute 供应商连接。",
+              "自动扫描本地路径 ~/.cli-proxy-api 下存储的 Claude CLI、OpenAI CLI 及 Cursor 凭据并将其转换为 ShiguangGateway 供应商连接。",
               "Scan local ~/.cli-proxy-api storage directory to import existing OAuth tokens and credentials."
             )}
           </Text>

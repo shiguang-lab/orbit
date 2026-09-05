@@ -14,7 +14,7 @@ import {
 import { createStyles } from "antd-style";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
-import { settingsApi } from "@/entities/api";
+import { resilienceApi } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
 import { useI18n } from "@/i18n";
 
@@ -48,15 +48,14 @@ export function SettingsResiliencePage() {
 
   const settingsQuery = useQuery({
     queryKey: ["settings-resilience-full"],
-    queryFn: () => settingsApi.getSettings(),
+    queryFn: () => resilienceApi.get(),
   });
 
   const saveMutation = useMutation({
-    mutationFn: (values: any) => settingsApi.updateSettings(values),
+    mutationFn: (values: any) => resilienceApi.update(values),
     onSuccess: () => {
       messageApi.success(tt("系统弹性与重试断路器策略已成功保存", "Resilience and retry policies saved successfully"));
       void queryClient.invalidateQueries({ queryKey: ["settings-resilience-full"] });
-      void queryClient.invalidateQueries({ queryKey: ["settings"] });
     },
     onError: () => messageApi.error(tt("保存弹性设置失败", "Failed to save resilience settings")),
   });
@@ -65,7 +64,12 @@ export function SettingsResiliencePage() {
     return <PageSkeleton />;
   }
 
-  const s = (settingsQuery.data as any) || {};
+  const s = settingsQuery.data || {};
+  const requestQueue = (s.requestQueue as any) || {};
+  const oauthCooldown = ((s.connectionCooldown as any)?.oauth as any) || {};
+  const oauthBreaker = ((s.providerBreaker as any)?.oauth as any) || {};
+  const waitForCooldown = (s.waitForCooldown as any) || {};
+  const comboCooldownWait = (s.comboCooldownWait as any) || {};
 
   const handleSave = (values: any) => {
     saveMutation.mutate(values);
@@ -124,26 +128,23 @@ export function SettingsResiliencePage() {
         form={form}
         layout="vertical"
         initialValues={{
-          autoDisableOn401: s.autoDisableOn401 ?? true,
-          autoDisableOnQuotaExhausted: s.autoDisableOnQuotaExhausted ?? true,
-          maxConsecutiveFailures: s.maxConsecutiveFailures || 5,
-          lockoutCooldownMinutes: s.lockoutCooldownMinutes || 15,
-          requestsPerMinute: s.requestQueue?.requestsPerMinute || 120,
-          concurrentRequests: s.requestQueue?.concurrentRequests || 20,
-          globalConcurrentRequests: s.requestQueue?.globalConcurrentRequests || 100,
-          maxWaitMs: s.requestQueue?.maxWaitMs || 10000,
-          baseCooldownMs: s.connectionCooldown?.baseCooldownMs || 3000,
-          useUpstreamRetryHints: s.connectionCooldown?.useUpstreamRetryHints ?? true,
-          maxBackoffSteps: s.connectionCooldown?.maxBackoffSteps || 5,
-          comboCooldownWaitEnabled: s.comboCooldownWait?.enabled ?? true,
-          comboCooldownMaxWaitMs: s.comboCooldownWait?.maxWaitMs || 8000,
+          maxConsecutiveFailures: oauthBreaker.failureThreshold || 5,
+          lockoutCooldownMinutes: Math.round((oauthBreaker.resetTimeoutMs || 900000) / 60000),
+          requestsPerMinute: requestQueue.requestsPerMinute || 120,
+          concurrentRequests: requestQueue.concurrentRequests || 20,
+          globalConcurrentRequests: requestQueue.globalConcurrentRequests || 0,
+          maxWaitMs: requestQueue.maxWaitMs || 10000,
+          baseCooldownMs: oauthCooldown.baseCooldownMs || 3000,
+          useUpstreamRetryHints: oauthCooldown.useUpstreamRetryHints ?? true,
+          maxBackoffSteps: oauthCooldown.maxBackoffSteps || 5,
+          waitForCooldownEnabled: waitForCooldown.enabled ?? true,
+          waitForCooldownMaxRetries: waitForCooldown.maxRetries || 5,
+          waitForCooldownMaxWaitSec: waitForCooldown.maxRetryWaitSec || 90,
+          comboCooldownWaitEnabled: comboCooldownWait.enabled ?? true,
+          comboCooldownMaxWaitMs: comboCooldownWait.maxWaitMs || 90000,
         }}
         onFinish={(v) => {
           handleSave({
-            autoDisableOn401: v.autoDisableOn401,
-            autoDisableOnQuotaExhausted: v.autoDisableOnQuotaExhausted,
-            maxConsecutiveFailures: v.maxConsecutiveFailures,
-            lockoutCooldownMinutes: v.lockoutCooldownMinutes,
             requestQueue: {
               requestsPerMinute: v.requestsPerMinute,
               concurrentRequests: v.concurrentRequests,
@@ -151,9 +152,17 @@ export function SettingsResiliencePage() {
               maxWaitMs: v.maxWaitMs,
             },
             connectionCooldown: {
-              baseCooldownMs: v.baseCooldownMs,
-              useUpstreamRetryHints: v.useUpstreamRetryHints,
-              maxBackoffSteps: v.maxBackoffSteps,
+              oauth: { baseCooldownMs: v.baseCooldownMs, useUpstreamRetryHints: v.useUpstreamRetryHints, maxBackoffSteps: v.maxBackoffSteps },
+              apikey: { baseCooldownMs: v.baseCooldownMs, useUpstreamRetryHints: v.useUpstreamRetryHints, maxBackoffSteps: v.maxBackoffSteps },
+            },
+            providerBreaker: {
+              oauth: { failureThreshold: v.maxConsecutiveFailures, resetTimeoutMs: v.lockoutCooldownMinutes * 60000 },
+              apikey: { failureThreshold: v.maxConsecutiveFailures, resetTimeoutMs: v.lockoutCooldownMinutes * 60000 },
+            },
+            waitForCooldown: {
+              enabled: v.waitForCooldownEnabled,
+              maxRetries: v.waitForCooldownMaxRetries,
+              maxRetryWaitSec: v.waitForCooldownMaxWaitSec,
             },
             comboCooldownWait: {
               enabled: v.comboCooldownWaitEnabled,
@@ -163,42 +172,7 @@ export function SettingsResiliencePage() {
         }}
       >
         <Flex vertical gap={12}>
-        {/* 2. Provider Auto Disable */}
-        <Card title={tt("提供商异常自动下线 (Auto Disable)", "Provider Circuit Breaking & Auto-Disable")} className={styles.sectionCard} size="small">
-          <Row gutter={[16, 16]}>
-            <Col xs={24} sm={12}>
-              <Flex justify="space-between" align="center" style={{ padding: "8px 0" }}>
-                <div>
-                  <Text strong>{tt("401 / 403 鉴权失败自动下线", "Auto-disable on 401/403 Auth Failure")}</Text>
-                  <br />
-                  <Text type="secondary" style={{ fontSize: 12 }}>
-                    {tt("当凭证失效被上游拒绝时立即隔离该提供商连接", "Isolate provider connection on credential failure")}
-                  </Text>
-                </div>
-                <Form.Item name="autoDisableOn401" valuePropName="checked" noStyle>
-                  <Switch checkedChildren={tt("开启", "ON")} unCheckedChildren={tt("关闭", "OFF")} />
-                </Form.Item>
-              </Flex>
-            </Col>
-
-            <Col xs={24} sm={12}>
-              <Flex justify="space-between" align="center" style={{ padding: "8px 0" }}>
-                <div>
-                  <Text strong>{tt("配额耗尽 (429 / Quota) 自动避让", "Auto-backoff on 429 / Quota Exhaustion")}</Text>
-                  <br />
-                  <Text type="secondary" style={{ fontSize: 12 }}>
-                    {tt("当提供商额度用尽时自动将流量分流至备用节点", "Bypass provider automatically on quota exhaustion")}
-                  </Text>
-                </div>
-                <Form.Item name="autoDisableOnQuotaExhausted" valuePropName="checked" noStyle>
-                  <Switch checkedChildren={tt("开启", "ON")} unCheckedChildren={tt("关闭", "OFF")} />
-                </Form.Item>
-              </Flex>
-            </Col>
-          </Row>
-        </Card>
-
-        {/* 3. Model Lockout */}
+        {/* 2. Provider circuit breaker */}
         <Card title={tt("模型熔断与连续故障隔离 (Model Lockout)", "Model Lockout & Cooldown Protection")} className={styles.sectionCard} size="small">
           <Row gutter={[16, 16]}>
             <Col xs={24} sm={12}>
@@ -270,7 +244,28 @@ export function SettingsResiliencePage() {
           </Row>
         </Card>
 
-        {/* 6. Combo Cooldown Wait */}
+        {/* 6. Per-request cooldown wait */}
+        <Card title={tt("请求级冷却等待 (Wait for Cooldown)", "Per-request Cooldown Wait")} className={styles.sectionCard} size="small">
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={8}>
+              <Form.Item label={tt("启用请求级等待", "Enable Request-level Wait")} name="waitForCooldownEnabled" valuePropName="checked">
+                <Switch checkedChildren={tt("开启", "ON")} unCheckedChildren={tt("关闭", "OFF")} />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={8}>
+              <Form.Item label={tt("最大重试次数", "Maximum Retries")} name="waitForCooldownMaxRetries">
+                <InputNumber min={0} max={20} style={{ width: "100%" }} />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={8}>
+              <Form.Item label={tt("单次最长等待", "Maximum Retry Wait")} name="waitForCooldownMaxWaitSec">
+                <InputNumber min={1} max={600} style={{ width: "100%" }} addonAfter={tt("秒", "sec")} />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Card>
+
+        {/* 7. Combo Cooldown Wait */}
         <Card title={tt("组合路由冷却等待 (Combo Cooldown Wait)", "Combo Cooldown Wait Settings")} className={styles.sectionCard} size="small">
           <Row gutter={[16, 16]}>
             <Col xs={24} sm={12}>

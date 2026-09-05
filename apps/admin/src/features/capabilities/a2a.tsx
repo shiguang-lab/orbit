@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
 import { a2aApi, type A2aSessionItem } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Title, Text } = Typography;
 
@@ -35,6 +36,7 @@ const useStyles = createStyles(({ token }) => ({
 
 export function A2aPage() {
   const { styles } = useStyles();
+  const { tt } = useI18n();
 
   const a2aQuery = useQuery({
     queryKey: ["a2a-sessions-list"],
@@ -70,12 +72,15 @@ export function A2aPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  A2A 智能体互联协议总线
+                  {tt("A2A 智能体互联协议总线", "A2A Agent Bus & Interconnect")}
                 </Title>
-                <Tag color="purple">异步消息总线</Tag>
+                <Tag color="purple">{tt("异步消息总线", "Async Message Bus")}</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                支持多智能体之间点对点 (P2P) 与发布订阅 (Pub/Sub) 模式的结构化通信与协同任务流转。
+                {tt(
+                  "支持多智能体之间点对点与发布订阅模式的结构化通信与协同任务流转。",
+                  "Support peer-to-peer and pub/sub structured communication and workflow orchestration across agents."
+                )}
               </Text>
             </div>
           </Flex>
@@ -83,7 +88,7 @@ export function A2aPage() {
       </Card>
 
       {/* 2. Sessions Table */}
-      <Card title="活跃 A2A 跨智能体协作会话" className={styles.sectionCard} size="small">
+      <Card title={tt("活跃 A2A 跨智能体协作会话", "Active A2A Collaboration Sessions")} className={styles.sectionCard} size="small">
         <Table<A2aSessionItem>
           rowKey="id"
           size="small"
@@ -91,19 +96,19 @@ export function A2aPage() {
           dataSource={sessions}
           columns={[
             {
-              title: "会话主题与标识",
+              title: tt("会话主题与标识", "Session Topic & ID"),
               key: "topic",
               render: (_, record) => (
                 <div>
                   <Text strong>{record.topic}</Text>
                   <div style={{ fontSize: 11, color: "var(--ant-color-text-secondary)" }}>
-                    ID: {record.id} · 协议: {record.protocol}
+                    ID: {record.id} · {tt("协议", "Protocol")}: {record.protocol}
                   </div>
                 </div>
               ),
             },
             {
-              title: "发起方 → 协作目标 (Initiator → Target)",
+              title: tt("发起方 → 协作目标", "Initiator → Target"),
               key: "agents",
               render: (_, record) => (
                 <Flex align="center" gap={6}>
@@ -114,24 +119,24 @@ export function A2aPage() {
               ),
             },
             {
-              title: "流转消息数",
+              title: tt("流转消息数", "Messages"),
               dataIndex: "messagesCount",
               key: "messages",
-              render: (count) => <Tag color="cyan">{count} 条报文</Tag>,
+              render: (count) => <Tag color="cyan">{count} {tt("条报文", "msgs")}</Tag>,
             },
             {
-              title: "最近活跃时间",
+              title: tt("最近活跃时间", "Last Active"),
               dataIndex: "lastActive",
               key: "lastActive",
               render: (t) => <Text type="secondary" style={{ fontSize: 12 }}>{t}</Text>,
             },
             {
-              title: "会话状态",
+              title: tt("会话状态", "Status"),
               dataIndex: "status",
               key: "status",
               render: (st) => (
-                <Tag color={st === "active" ? "processing" : "default"}>
-                  {String(st || "active").toUpperCase()}
+                <Tag color={st === "active" ? "success" : "default"}>
+                  {String(st || "unknown").toUpperCase()}
                 </Tag>
               ),
             },

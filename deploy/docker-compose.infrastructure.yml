@@ -1,0 +1,45 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: shiguang-gateway-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-shiguang_gateway}
+      POSTGRES_USER: ${POSTGRES_USER:-shiguang_gateway}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    ports:
+      - "${INFRA_BIND_ADDRESS:-127.0.0.1}:${POSTGRES_HOST_PORT:-25432}:5432"
+    volumes:
+      - shiguang-gateway-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [gateway-infra]
+
+  redis:
+    image: redis:8-alpine
+    container_name: shiguang-gateway-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "${INFRA_BIND_ADDRESS:-127.0.0.1}:${REDIS_HOST_PORT:-26379}:6379"
+    volumes:
+      - shiguang-gateway-redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [gateway-infra]
+
+volumes:
+  shiguang-gateway-postgres:
+    name: shiguang-gateway-postgres
+  shiguang-gateway-redis:
+    name: shiguang-gateway-redis
+
+networks:
+  gateway-infra:
+    name: shiguang-gateway-infra

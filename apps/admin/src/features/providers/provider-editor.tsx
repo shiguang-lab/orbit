@@ -25,7 +25,7 @@ import { useI18n } from "@/i18n";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
 
 const useStyles = createStyles(({ token }) => ({
-  page: { maxWidth: 860, margin: "0 auto", paddingBottom: 32 },
+  page: { maxWidth: 860, margin: "0 auto" },
   actions: { display: "flex", justifyContent: "space-between", gap: 12, marginBottom: 16 },
   hint: { color: token.colorTextSecondary, marginTop: -6 },
 }));

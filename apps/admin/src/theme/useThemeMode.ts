@@ -16,6 +16,6 @@ export const useThemeMode = create<ThemeModeState>()(
       toggle: () => set({ mode: get().mode === "dark" ? "light" : "dark" }),
       setMode: (mode) => set({ mode }),
     }),
-    { name: "omniroute-admin-theme" },
+    { name: "shiguangGateway-admin-theme" },
   ),
 );

@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
 import { agentBridgeApi, type AgentBridgeRoute } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Title, Text } = Typography;
 
@@ -35,6 +36,7 @@ const useStyles = createStyles(({ token }) => ({
 
 export function AgentBridgePage() {
   const { styles } = useStyles();
+  const { tt } = useI18n();
 
   const bridgeQuery = useQuery({
     queryKey: ["agent-bridge-routes"],
@@ -70,12 +72,15 @@ export function AgentBridgePage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  智能体协议桥接中枢
+                  {tt("智能体协议桥接中枢", "Agent Protocol Bridge")}
                 </Title>
-                <Tag color="teal">跨协议双向转译</Tag>
+                <Tag color="teal">{tt("跨协议双向转译", "Cross-Protocol Relay")}</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                实时透明转换 OpenAI Chat Completions、Claude Messages、Ollama 与 STDIO 协议格式，实现无缝互通。
+                {tt(
+                  "实时透明转换 OpenAI Chat Completions、Claude Messages、Ollama 与 STDIO 协议格式，实现无缝互通。",
+                  "Transparently translate OpenAI Chat Completions, Claude Messages, Ollama, and STDIO protocols for seamless interoperation."
+                )}
               </Text>
             </div>
           </Flex>
@@ -83,7 +88,7 @@ export function AgentBridgePage() {
       </Card>
 
       {/* 2. Routes Table */}
-      <Card title="协议桥接中继路由规则" className={styles.sectionCard} size="small">
+      <Card title={tt("协议桥接中继路由规则", "Protocol Bridge Routing Rules")} className={styles.sectionCard} size="small">
         <Table<AgentBridgeRoute>
           rowKey="id"
           size="small"
@@ -91,38 +96,40 @@ export function AgentBridgePage() {
           dataSource={routes}
           columns={[
             {
-              title: "源协议 (Source)",
+              title: tt("源协议", "Source Protocol"),
               dataIndex: "sourceProtocol",
               key: "sourceProtocol",
               render: (proto) => <Tag color="blue">{proto}</Tag>,
             },
             {
-              title: "转译映射与目标端点 (Mapping & Target)",
+              title: tt("转译映射与目标端点", "Mapping & Target"),
               key: "mapping",
               render: (_, record) => (
                 <div>
                   <Text strong>{record.mapping}</Text>
                   <div style={{ fontSize: 11, color: "var(--ant-color-text-secondary)" }}>
-                    目标: {record.targetEndpoint}
+                    {tt("目标", "Target")}: {record.targetEndpoint}
                   </div>
                 </div>
               ),
             },
             {
-              title: "已转译请求量",
+              title: tt("已转译请求量", "Transformed Requests"),
               dataIndex: "transformedRequests",
               key: "transformedRequests",
-              render: (count) => <Tag color="cyan">{count.toLocaleString()} 次</Tag>,
+              render: (count) => <Tag color="cyan">{count.toLocaleString()} {tt("次", "calls")}</Tag>,
             },
             {
-              title: "状态",
+              title: tt("平均转译耗时", "Avg Latency"),
+              dataIndex: "avgLatencyMs",
+              key: "avgLatencyMs",
+              render: (ms) => <Text style={{ fontSize: 12 }}>{ms}ms</Text>,
+            },
+            {
+              title: tt("状态", "Status"),
               dataIndex: "status",
               key: "status",
-              render: (status) => (
-                <Tag color={status === "active" ? "success" : "default"}>
-                  {String(status || "active").toUpperCase()}
-                </Tag>
-              ),
+              render: (st) => <Tag color={st === "active" ? "success" : "default"}>{String(st || "unknown").toUpperCase()}</Tag>,
             },
           ]}
         />

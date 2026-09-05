@@ -38,7 +38,9 @@ const ProviderDetailPage = withSuspense(lazy(() => import("@/features/providers/
 const CombosPage = withSuspense(lazy(() => import("@/features/combos/combos")));
 const CombosLivePage = withSuspense(lazy(() => import("@/features/combos/combos-live")));
 const ComboControlCenter = withSuspense(lazy(() => import("@/features/combos/combo-control-center")));
+const ComboPlaygroundPage = withSuspense(lazy(() => import("@/features/combos/combo-playground")));
 const AnalyticsPage = withSuspense(lazy(() => import("@/features/analytics/analytics")));
+const CostsPage = withSuspense(lazy(() => import("@/features/costs/costs")));
 const QuotaPage = withSuspense(lazy(() => import("@/features/quota/quota")));
 const QuotaSharePage = withSuspense(lazy(() => import("@/features/quota-share/quota-share")));
 const ActivityPage = withSuspense(lazy(() => import("@/features/activity/activity")));
@@ -109,6 +111,8 @@ const AgentSkillsPage = withSuspense(lazy(() => import("@/features/capabilities/
 const ChaosPage = withSuspense(lazy(() => import("@/features/capabilities/chaos")));
 const OmniSkillsPage = withSuspense(lazy(() => import("@/features/capabilities/omni-skills")));
 const PluginsPage = withSuspense(lazy(() => import("@/features/capabilities/plugins")));
+const PluginConfigPage = withSuspense(lazy(() => import("@/features/capabilities/plugin-config")));
+const GamificationAdminPage = withSuspense(lazy(() => import("@/features/gamification/admin")));
 
 // 其它功能
 const LeaderboardPage = withSuspense(lazy(() => import("@/features/other/leaderboard")));
@@ -131,6 +135,8 @@ const SettingsAccessTokensPage = withSuspense(lazy(() => import("@/features/sett
 const SettingsFeatureFlagsPage = withSuspense(lazy(() => import("@/features/settings/settings-feature-flags")));
 const SettingsCachePage = withSuspense(lazy(() => import("@/features/settings/settings-cache")));
 const SettingsSidebarPage = withSuspense(lazy(() => import("@/features/settings/settings-sidebar")));
+const RelayPage = withSuspense(lazy(() => import("@/features/system/relay")));
+const ChangelogPage = withSuspense(lazy(() => import("@/features/system/changelog")));
 
 const P = (navKey: string, title: string) => placeholder(navKey, title);
 
@@ -141,6 +147,7 @@ export const router = createBrowserRouter([
     element: <Shell />,
     children: [
       { index: true, element: <HomePage /> },
+      { path: "dashboard", element: <HomePage /> },
       { path: "home", element: <HomePage /> },
       { path: "dashboard/endpoint", element: <EndpointsPage /> },
       { path: "dashboard/api-manager", element: <ApiManagerPage /> },
@@ -153,11 +160,14 @@ export const router = createBrowserRouter([
       { path: "dashboard/combos", element: <CombosPage /> },
       { path: "dashboard/combos/live", element: <CombosLivePage /> },
       { path: "dashboard/combos/:id", element: <ComboControlCenter /> },
+      { path: "dashboard/combos/playground", element: <ComboPlaygroundPage /> },
+      { path: "dashboard/auto-combo", element: <Navigate to="/dashboard/combos?filter=intelligent" replace /> },
       { path: "dashboard/quota", element: <QuotaPage /> },
       { path: "dashboard/costs/quota-share", element: <QuotaSharePage /> },
       { path: "dashboard/quota-share", element: <QuotaSharePage /> },
       // 压缩与上下文
       { path: "dashboard/context/settings", element: <CompressionSettingsPage /> },
+      { path: "dashboard/context", element: <Navigate to="/dashboard/context/settings" replace /> },
       { path: "dashboard/compression/settings", element: <Navigate to="/dashboard/context/settings" replace /> },
       { path: "dashboard/context/combos", element: <CompressionCombosPage /> },
       { path: "dashboard/compression/combos", element: <Navigate to="/dashboard/context/combos" replace /> },
@@ -172,10 +182,14 @@ export const router = createBrowserRouter([
       { path: "dashboard/context/ultra", element: <UltraContextPage /> },
       { path: "dashboard/context/omniglyph", element: <OmniglyphContextPage /> },
       { path: "dashboard/compression/studio", element: <CompressionStudioPage /> },
+      { path: "dashboard/compression", element: <Navigate to="/dashboard/context/settings" replace /> },
+      { path: "dashboard/compression/live", element: <CompressionStudioPage /> },
       { path: "dashboard/compression/exclusions", element: <CompressionExclusionsPage /> },
       // 智能体与网关工具
       { path: "dashboard/cli-code", element: <CliCodePage /> },
+      { path: "dashboard/cli-code/:id", element: <CliCodePage /> },
       { path: "dashboard/cli-agents", element: <CliAgentsPage /> },
+      { path: "dashboard/cli-agents/:id", element: <CliAgentsPage /> },
       { path: "dashboard/acp-agents", element: <AcpAgentsPage /> },
       { path: "dashboard/cloud-agents", element: <CloudAgentsPage /> },
       { path: "dashboard/conductor", element: <ConductorPage /> },
@@ -195,14 +209,18 @@ export const router = createBrowserRouter([
       { path: "dashboard/analytics/search", element: <SearchAnalyticsPage /> },
       { path: "dashboard/analytics/evals", element: <EvalsPage /> },
       { path: "dashboard/provider-stats", element: <ProviderStatsPage /> },
-      { path: "dashboard/costs", element: <Navigate to="/dashboard/analytics" replace /> },
-      { path: "costs", element: <Navigate to="/dashboard/analytics" replace /> },
+      { path: "dashboard/costs", element: <CostsPage /> },
+      { path: "costs", element: <CostsPage /> },
       // 成本
       { path: "dashboard/costs/pricing", element: <PricingPage /> },
       { path: "dashboard/costs/budget", element: <BudgetPage /> },
       { path: "dashboard/free-tiers", element: <FreeTiersPage /> },
       { path: "dashboard/free-provider-rankings", element: <FreeProviderRankingsPage /> },
       { path: "dashboard/radar", element: <RadarPage /> },
+      { path: "dashboard/radar/setup", element: <RadarPage /> },
+      { path: "dashboard/radar/combos", element: <RadarPage /> },
+      { path: "dashboard/radar/offers", element: <RadarPage /> },
+      { path: "dashboard/radar/intel", element: <RadarPage /> },
       // 监控
       { path: "dashboard/activity", element: <ActivityPage /> },
       { path: "activity", element: <ActivityPage /> },
@@ -213,6 +231,7 @@ export const router = createBrowserRouter([
       { path: "dashboard/logs/console", element: <ConsoleLogsPage /> },
       { path: "dashboard/logs/timeline", element: <LogTimelinePage /> },
       { path: "dashboard/conversations", element: <ConversationsPage /> },
+      { path: "dashboard/usage", element: <Navigate to="/dashboard/logs" replace /> },
       { path: "dashboard/health", element: <HealthPage /> },
       { path: "health", element: <HealthPage /> },
       { path: "dashboard/runtime", element: <RuntimePage /> },
@@ -232,11 +251,22 @@ export const router = createBrowserRouter([
       { path: "dashboard/chaos", element: <ChaosPage /> },
       { path: "dashboard/omni-skills", element: <OmniSkillsPage /> },
       { path: "dashboard/plugins", element: <PluginsPage /> },
+      { path: "dashboard/plugins/:name/config", element: <PluginConfigPage /> },
+      { path: "dashboard/gamification/admin", element: <GamificationAdminPage /> },
       // 其它功能
       { path: "dashboard/leaderboard", element: <LeaderboardPage /> },
       { path: "dashboard/profile", element: <ProfilePage /> },
       { path: "dashboard/tokens", element: <TokensPage /> },
       { path: "dashboard/cache/media", element: <MediaPage /> },
+      { path: "dashboard/media-providers", element: <Navigate to="/dashboard/providers" replace /> },
+      { path: "dashboard/media-providers/:kind", element: <Navigate to="/dashboard/providers" replace /> },
+      { path: "dashboard/media-providers/:kind/:id", element: <ProviderDetailPage /> },
+      { path: "dashboard/onboarding", element: <Navigate to="/dashboard/providers/new" replace /> },
+      { path: "dashboard/limits", element: <Navigate to="/dashboard/quota" replace /> },
+      { path: "dashboard/changelog", element: <ChangelogPage /> },
+      { path: "dashboard/relay", element: <RelayPage /> },
+      { path: "dashboard/system/1proxy", element: <SystemProxyPage /> },
+      { path: "dashboard/system/mitm-proxy", element: <SystemProxyPage /> },
       { path: "dashboard/batch", element: <BatchPage /> },
       { path: "dashboard/batch/files", element: <BatchFilesPage /> },
       // 系统配置

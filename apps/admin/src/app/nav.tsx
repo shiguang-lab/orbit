@@ -1,6 +1,6 @@
 /**
  * 侧栏导航配置：模块级常量，路由匹配 selectedKeys。
- * 图标名称与线上 OmniRoute Orbit 侧栏保持一致，使用本地 Material Symbols 字体渲染。
+ * 图标名称与线上 ShiguangGateway Shiguang Gateway 侧栏保持一致，使用本地 Material Symbols 字体渲染。
  */
 import type { CSSProperties } from "react";
 import { translate, type AppLocale } from "@/i18n";
@@ -139,9 +139,23 @@ const NAV_ICON_ACCENTS: Record<string, string> = {
 };
 
 export function NavIcon({ name, itemKey }: { name: string; itemKey: string }) {
-  const style: CSSProperties = { color: NAV_ICON_ACCENTS[itemKey] };
   return (
-    <span className="material-symbols-outlined sidebar-menu-icon" style={style} aria-hidden="true">
+    <span
+      className="material-symbols-outlined"
+      style={{
+        color: NAV_ICON_ACCENTS[itemKey],
+        fontSize: 18,
+        lineHeight: "18px",
+        width: 18,
+        height: 18,
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexShrink: 0,
+        marginInlineEnd: 10,
+      }}
+      aria-hidden="true"
+    >
       {name}
     </span>
   );
@@ -172,7 +186,7 @@ export function MaterialIcon({ name, size = 16, className, style }: { name: stri
 }
 
 /**
- * Complete dashboard inventory mirrored from Orbit's sidebar source.
+ * Complete dashboard inventory mirrored from Shiguang Gateway's sidebar source.
  */
 export const NAV_SECTIONS: NavSection[] = [
   {

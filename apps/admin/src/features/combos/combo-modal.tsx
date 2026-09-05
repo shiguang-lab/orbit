@@ -2299,7 +2299,7 @@ export function ComboModal({
                 💡 调用示例:
               </Text>
               <div className={styles.apiSnippetCode}>
-                curl https://api.omniroute.com/v1/chat/completions \<br />
+                curl {window.location.origin}/v1/chat/completions \<br />
                 &nbsp;&nbsp;-H &quot;Authorization: Bearer $OMNI_KEY&quot; \<br />
                 &nbsp;&nbsp;-d &apos;&#123;&quot;model&quot;: &quot;{name || "my-combo"}&quot;, &quot;messages&quot;: [&#123;&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Hello&quot;&#125;]&#125;&apos;
               </div>

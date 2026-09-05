@@ -1,0 +1,7 @@
+{
+  "name": "@shiguang-gateway/open-sse",
+  "version": "3.8.51",
+  "description": "ShiguangGateway streaming engine — handles provider dispatch, protocol translation, and SSE streaming",
+  "type": "module",
+  "private": true
+}

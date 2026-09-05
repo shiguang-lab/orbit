@@ -32,6 +32,7 @@ import {
   type CompressionComboItem,
 } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -73,6 +74,7 @@ const useStyles = createStyles(({ token }) => ({
 
 export function CompressionCombosPage() {
   const { styles } = useStyles();
+  const { tt } = useI18n();
   const queryClient = useQueryClient();
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -380,7 +382,7 @@ export function CompressionCombosPage() {
               ),
             },
             {
-              title: "压缩流水线 (Pipeline Steps)",
+              title: tt("压缩流水线", "Pipeline Steps"),
               key: "pipeline",
               render: (_, record) => (
                 <Flex align="center" gap={6} wrap>
@@ -602,7 +604,10 @@ export function CompressionCombosPage() {
       >
         <div style={{ marginTop: 12 }}>
           <Paragraph type="secondary" style={{ fontSize: 12, marginBottom: 12 }}>
-            选择将此压缩流水线绑定至哪些网关路由组合（Routing Combos）。绑定后，请求这些模型组合时将自动借由该流水线进行前置 Token 压缩：
+            {tt(
+              "选择将此压缩流水线绑定至哪些网关路由组合。绑定后，请求这些模型组合时将自动借由该流水线进行前置 Token 压缩：",
+              "Select which routing combos to bind to this compression pipeline. Requests to these combos will automatically perform token compression:"
+            )}
           </Paragraph>
 
           <Checkbox.Group
@@ -611,11 +616,7 @@ export function CompressionCombosPage() {
             style={{ width: "100%" }}
           >
             <Space orientation="vertical" size={8} style={{ width: "100%" }}>
-              {(routingCombosQuery.data?.combos ?? [
-                { id: "default-model-router", name: "默认多模型调度组合 (Default Router)" },
-                { id: "code-assistant-combo", name: "代码编程助手 (Claude 3.5 Sonnet / DeepSeek Coder)" },
-                { id: "cheap-fallback-combo", name: "经济型高并发备用路由 (Cheap High-Throughput)" },
-              ]).map((rc: any) => (
+              {(routingCombosQuery.data?.combos ?? []).map((rc: any) => (
                 <div
                   key={rc.id}
                   style={{
@@ -637,6 +638,9 @@ export function CompressionCombosPage() {
                   )}
                 </div>
               ))}
+              {!routingCombosQuery.isLoading && (routingCombosQuery.data?.combos ?? []).length === 0 && (
+                <Empty description="暂无可关联的网关路由组合" />
+              )}
             </Space>
           </Checkbox.Group>
         </div>

@@ -1,14 +1,43 @@
 {
-  "name": "omniroute-monorepo",
+  "name": "shiguang-gateway-monorepo",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.28.0",
+  "pnpm": {
+    "overrides": {
+      "fastify": "5.12.1"
+    }
+  },
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
     "typecheck": "turbo run typecheck",
-    "dev:admin": "pnpm --filter @omniroute/admin dev",
-    "dev:bff": "pnpm --filter @omniroute/bff dev"
+    "audit:gateway-independence": "node scripts/audit-gateway-independence.mjs --strict",
+    "audit:brand": "node scripts/audit-brand-independence.mjs",
+    "audit:admin-routes": "node scripts/audit-admin-routes.mjs --strict",
+    "audit:route-contracts": "node scripts/audit-route-contracts.mjs --strict",
+    "verify:external-state": "node scripts/verify-external-state.mjs",
+    "audit:provider-config": "node scripts/audit-provider-config.mjs",
+    "audit:release-readiness": "node scripts/release-readiness.mjs",
+    "smoke:provider-matrix": "node scripts/smoke-provider-matrix.mjs",
+    "verify:imported-data": "node scripts/verify-imported-data.mjs",
+    "import:source-data": "node scripts/import-source-data.mjs",
+    "infra:migrate-postgres": "pnpm --filter @shiguang-gateway/importer infra:migrate-postgres",
+    "smoke:split-deployment": "node scripts/smoke-split-deployment.mjs",
+    "smoke:worker": "node scripts/smoke-worker-start.mjs",
+    "smoke:real-data": "node scripts/smoke-real-data-deployment.mjs",
+    "smoke:container-deployment": "node scripts/smoke-container-deployment.mjs",
+    "smoke:agent-skills": "pnpm --filter @shiguang-gateway/runtime exec tsx --tsconfig tsconfig.json ../../scripts/smoke-agent-skills.mjs",
+    "smoke:route-imports": "pnpm --filter @shiguang-gateway/runtime exec tsx --tsconfig tsconfig.json ../../scripts/smoke-route-imports.mjs",
+    "dev:admin": "pnpm --filter @shiguang-gateway/admin dev",
+    "dev:edge": "pnpm --filter @shiguang-gateway/edge-gateway dev",
+    "dev:control": "pnpm --filter @shiguang-gateway/control-api dev",
+    "dev:realtime": "pnpm --filter @shiguang-gateway/realtime dev",
+    "dev:worker": "pnpm --filter @shiguang-gateway/worker dev",
+    "start:edge": "pnpm --filter @shiguang-gateway/edge-gateway start",
+    "start:control": "pnpm --filter @shiguang-gateway/control-api start",
+    "start:realtime": "pnpm --filter @shiguang-gateway/realtime start",
+    "start:worker": "pnpm --filter @shiguang-gateway/worker start"
   },
   "devDependencies": {
     "turbo": "^2.6.1",

@@ -1,0 +1,32 @@
+{
+  "common": {
+    "error": "Virhe: {message}",
+    "serverOffline": "ShiguangGateway-palvelin on offline. Käynnistä komennolla: shiguang-gateway serve",
+    "authRequired": "Todennus vaaditaan. Aseta SHIGUANG_GATEWAY_API_KEY tai suorita: shiguang-gateway setup",
+    "rateLimited": "Pyyntöraja ylitetty. Yritä uudelleen {seconds}s kuluttua.",
+    "timeout": "Pyyntö aikakatkaistiin {ms}ms jälkeen.",
+    "success": "Valmis.",
+    "yes": "kyllä",
+    "no": "ei",
+    "confirm": "Oletko varma? (kyllä/ei)",
+    "dryRun": "[simulointi] tekisi: {action}",
+    "cancelled": "Peruutettu.",
+    "jsonOpt": "Tulosta JSON-muodossa",
+    "yesOpt": "Ohita vahvistuspyyntö"
+  },
+  "program": {
+    "description": "ShiguangGateway — Älykäs AI-reititin automaattisella fallbackilla",
+    "version": "Tulosta versio ja poistu",
+    "output": "Tulostusmuoto (table, json, jsonl, csv)",
+    "quiet": "Piilota epäolennaiset tulosteet",
+    "no_color": "Poista väritulostus käytöstä",
+    "timeout": "HTTP-pyyntöjen aikakatkaisu millisekunteina",
+    "api_key": "API-avain ShiguangGateway-palvelimelle",
+    "base_url": "ShiguangGateway-palvelimen perus-URL",
+    "context": "Palvelimen konteksti/profiili tälle komennolle",
+    "lang": "Aseta CLI-näyttökieli (ohittaa SHIGUANG_GATEWAY_LANG)"
+  },
+  "redis": {
+    "description": "Käynnistä paikallinen Redis-säiliö yhdellä napsautuksella (Podman tai Docker) ShiguangGateway-välimuistia ja kiintiöiden seurantaa varten"
+  }
+}

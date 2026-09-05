@@ -63,20 +63,18 @@ const useStyles = createStyles(({ token }) => ({
     background: token.colorBgContainer,
     border: `1px solid ${token.colorBorderSecondary}`,
     height: "100%",
+    flex: 1,
   },
   statCard: {
     borderRadius: 8,
     background: token.colorBgContainer,
     border: `1px solid ${token.colorBorderSecondary}`,
     height: "100%",
+    flex: 1,
   },
   stretchCol: {
     display: "flex",
     flexDirection: "column" as const,
-    "& > .ant-card": {
-      flex: 1,
-      height: "100%",
-    },
   },
   barContainer: {
     display: "flex",

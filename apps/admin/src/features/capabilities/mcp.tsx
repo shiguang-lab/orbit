@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
 import { mcpApi, type McpServerItem } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Title, Text } = Typography;
 
@@ -35,6 +36,7 @@ const useStyles = createStyles(({ token }) => ({
 
 export function McpPage() {
   const { styles } = useStyles();
+  const { tt } = useI18n();
 
   const mcpQuery = useQuery({
     queryKey: ["mcp-servers-list"],
@@ -70,12 +72,15 @@ export function McpPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  MCP 服务与工具集管理
+                  {tt("MCP 服务与工具集管理", "MCP Server & Tools Management")}
                 </Title>
-                <Tag color="purple">协议中枢</Tag>
+                <Tag color="purple">{tt("协议中枢", "Protocol Hub")}</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                注册并管理本地 STDIO / 远程 SSE 架构的 MCP 服务，对外统一暴露结构化工具 (Tools)、提示词 (Prompts) 与资源 (Resources)。
+                {tt(
+                  "注册并管理本地 STDIO / 远程 SSE 架构的 MCP 服务，对外统一暴露结构化工具、提示词与资源。",
+                  "Register and manage STDIO/SSE MCP servers, exposing unified structured tools, prompts, and resources."
+                )}
               </Text>
             </div>
           </Flex>
@@ -83,7 +88,7 @@ export function McpPage() {
       </Card>
 
       {/* 2. MCP Servers Table */}
-      <Card title="已挂载 MCP 服务实例" className={styles.sectionCard} size="small">
+      <Card title={tt("已挂载 MCP 服务实例", "Mounted MCP Server Instances")} className={styles.sectionCard} size="small">
         <Table<McpServerItem>
           rowKey="id"
           size="small"
@@ -91,20 +96,20 @@ export function McpPage() {
           dataSource={servers}
           columns={[
             {
-              title: "服务名称与启动命令",
+              title: tt("服务名称与启动命令", "Server Name & Command"),
               key: "name",
               render: (_, record) => (
                 <div>
                   <Flex align="center" gap={6}>
                     <Text strong>{record.name}</Text>
-                    <Tag color="blue">{String(record.transport || "stdio").toUpperCase()}</Tag>
+                    <Tag color="blue">{String(record.transport || "unknown").toUpperCase()}</Tag>
                   </Flex>
                   <code style={{ fontSize: 11, color: "var(--ant-color-text-secondary)" }}>{record.commandOrUrl}</code>
                 </div>
               ),
             },
             {
-              title: "已声明工具 (Tools)",
+              title: tt("已声明工具", "Declared Tools"),
               key: "tools",
               render: (_, record) => (
                 <Flex gap={4} wrap>
@@ -117,29 +122,25 @@ export function McpPage() {
               ),
             },
             {
-              title: "声明容量 (T/P/R)",
+              title: tt("声明容量", "Declared Capacities"),
               key: "counts",
               render: (_, record) => (
                 <Text style={{ fontSize: 12 }}>
-                  {record.toolsCount} 工具 / {record.promptsCount} 提示词 / {record.resourcesCount} 资源
+                  {record.toolsCount} {tt("工具", "Tools")} / {record.promptsCount} {tt("提示词", "Prompts")} / {record.resourcesCount} {tt("资源", "Resources")}
                 </Text>
               ),
             },
             {
-              title: "通信延迟",
+              title: tt("通信延迟", "Ping Latency"),
               dataIndex: "pingMs",
-              key: "ping",
-              render: (ms) => <Tag color="green">{ms}ms</Tag>,
+              key: "pingMs",
+              render: (ms) => <Text style={{ fontSize: 12 }}>{ms}ms</Text>,
             },
             {
-              title: "连接状态",
+              title: tt("服务状态", "Status"),
               dataIndex: "status",
               key: "status",
-              render: (st) => (
-                <Tag color={st === "connected" ? "success" : "error"}>
-                  {String(st || "connected").toUpperCase()}
-                </Tag>
-              ),
+              render: (st) => <Tag color={st === "connected" ? "success" : "default"}>{String(st || "unknown").toUpperCase()}</Tag>,
             },
           ]}
         />

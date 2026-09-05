@@ -15,6 +15,7 @@ import { useQuery } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
 import { trafficInspectorApi, type TrafficInspectorRecord } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Title, Text } = Typography;
 
@@ -52,6 +53,7 @@ const useStyles = createStyles(({ token }) => ({
 
 export function TrafficInspectorPage() {
   const { styles } = useStyles();
+  const { tt } = useI18n();
   const [selectedRecord, setSelectedRecord] = useState<TrafficInspectorRecord | null>(null);
 
   const trafficQuery = useQuery({
@@ -89,12 +91,15 @@ export function TrafficInspectorPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  实时流量检查器与探针
+                  {tt("实时流量检查器与探针", "Live Traffic Inspector")}
                 </Title>
-                <Tag color="cyan">实时抓包与报文审计</Tag>
+                <Tag color="cyan">{tt("实时抓包与报文审计", "Live Sniffer & Audit")}</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                实时捕获流经网关的请求与响应 Payload、压缩衰减指标、响应耗时及上游 Token 计费。
+                {tt(
+                  "实时捕获流经网关的请求与响应 Payload、压缩衰减指标、响应耗时及上游 Token 计费。",
+                  "Inspect live request and response payloads, compression metrics, latency, and upstream token usage."
+                )}
               </Text>
             </div>
           </Flex>
@@ -104,13 +109,13 @@ export function TrafficInspectorPage() {
             icon={<MaterialIcon name="refresh" size={16} />}
             onClick={() => void trafficQuery.refetch()}
           >
-            刷新流量
+            {tt("刷新流量", "Refresh Traffic")}
           </Button>
         </Flex>
       </Card>
 
       {/* 2. Requests Table */}
-      <Card title="最新网关抓包流 (Live Request Sniffer)" className={styles.sectionCard} size="small">
+      <Card title={tt("最新网关抓包流", "Live Request Sniffer")} className={styles.sectionCard} size="small">
         <Table<TrafficInspectorRecord>
           rowKey="id"
           size="small"
@@ -118,14 +123,14 @@ export function TrafficInspectorPage() {
           dataSource={records}
           columns={[
             {
-              title: "请求时间",
+              title: tt("请求时间", "Timestamp"),
               dataIndex: "timestamp",
               key: "timestamp",
               width: 110,
               render: (t) => <Text style={{ fontSize: 12 }}>{t}</Text>,
             },
             {
-              title: "请求方法与路径",
+              title: tt("请求方法与路径", "Method & Path"),
               key: "path",
               render: (_, record) => (
                 <Flex align="center" gap={6}>
@@ -135,13 +140,13 @@ export function TrafficInspectorPage() {
               ),
             },
             {
-              title: "目标模型",
+              title: tt("目标模型", "Target Model"),
               dataIndex: "model",
               key: "model",
               render: (m) => <Text strong style={{ fontSize: 12 }}>{m}</Text>,
             },
             {
-              title: "状态 / 耗时",
+              title: tt("状态 / 耗时", "Status / Latency"),
               key: "status",
               render: (_, record) => (
                 <Flex align="center" gap={6}>
@@ -152,7 +157,7 @@ export function TrafficInspectorPage() {
               ),
             },
             {
-              title: "Token / 压缩节省",
+              title: tt("Token / 压缩节省", "Tokens / Savings"),
               key: "tokens",
               render: (_, record) => (
                 <div>
@@ -164,7 +169,7 @@ export function TrafficInspectorPage() {
               ),
             },
             {
-              title: "操作",
+              title: tt("操作", "Actions"),
               key: "actions",
               width: 100,
               render: (_, record) => (
@@ -174,7 +179,7 @@ export function TrafficInspectorPage() {
                   icon={<MaterialIcon name="visibility" size={14} />}
                   onClick={() => setSelectedRecord(record)}
                 >
-                  探查
+                  {tt("探查", "Inspect")}
                 </Button>
               ),
             },
@@ -184,7 +189,7 @@ export function TrafficInspectorPage() {
 
       {/* 3. Detail Drawer */}
       <Drawer
-        title={`流量探针详情 — ${selectedRecord?.id || ""}`}
+        title={`${tt("流量探针详情", "Traffic Inspector Details")} — ${selectedRecord?.id || ""}`}
         open={Boolean(selectedRecord)}
         onClose={() => setSelectedRecord(null)}
         width={600}
@@ -193,7 +198,7 @@ export function TrafficInspectorPage() {
           <Space orientation="vertical" size={14} style={{ width: "100%" }}>
             <div>
               <Text strong style={{ fontSize: 13, display: "block", marginBottom: 4 }}>
-                请求 Payload (Request Body):
+                {tt("请求 Payload (Request Body):", "Request Payload (Request Body):")}
               </Text>
               <pre className={styles.payloadBox}>
                 {JSON.stringify(selectedRecord.requestPayload, null, 2)}
@@ -202,7 +207,7 @@ export function TrafficInspectorPage() {
 
             <div>
               <Text strong style={{ fontSize: 13, display: "block", marginBottom: 4 }}>
-                响应 Payload (Response Body):
+                {tt("响应 Payload (Response Body):", "Response Payload (Response Body):")}
               </Text>
               <pre className={styles.payloadBox}>
                 {JSON.stringify(selectedRecord.responsePayload, null, 2)}

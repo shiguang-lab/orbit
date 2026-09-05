@@ -24,6 +24,7 @@ import {
   type CompressionEngineMeta,
 } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -66,6 +67,7 @@ const useStyles = createStyles(({ token }) => ({
 
 export function CompressionSettingsPage() {
   const { styles } = useStyles();
+  const { tt } = useI18n();
   const queryClient = useQueryClient();
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -436,7 +438,7 @@ export function CompressionSettingsPage() {
       {/* 5. Caveman Output & Ultra Advanced Settings */}
       <Row gutter={[10, 10]}>
         <Col xs={24} md={12}>
-          <Card title="Caveman 输出精简模式 (Output Prose Mode)" className={styles.sectionCard} size="small">
+          <Card title={tt("Caveman 输出精简模式", "Caveman Output Prose Mode")} className={styles.sectionCard} size="small">
             <Space orientation="vertical" size={10} style={{ width: "100%" }}>
               <Flex justify="space-between" align="center">
                 <div>

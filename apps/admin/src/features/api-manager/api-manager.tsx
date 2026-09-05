@@ -77,6 +77,7 @@ export default function ApiManagerPage() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { tt } = useI18n();
+  const edgeBaseUrl = (import.meta.env.VITE_EDGE_BASE_URL ?? "http://127.0.0.1:8787").replace(/\/$/, "");
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -941,7 +942,6 @@ export default function ApiManagerPage() {
                   {createdKey?.key}
                 </Text>
                 <Button
-                  size="small"
                   type="primary"
                   icon={<MaterialIcon name="content_copy" size={14} />}
                   onClick={() => copyToClipboard(createdKey?.key || "")}
@@ -957,7 +957,7 @@ export default function ApiManagerPage() {
               cURL 快速接入调用示例:
             </Text>
             <pre className={styles.codeSnippet}>
-{`curl http://localhost:20128/v1/chat/completions \\
+{`curl ${edgeBaseUrl}/v1/chat/completions \\
   -H "Content-Type: application/json" \\
   -H "Authorization: Bearer ${createdKey?.key || "YOUR_KEY"}" \\
   -d '{

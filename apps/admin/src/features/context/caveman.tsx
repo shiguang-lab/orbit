@@ -80,12 +80,16 @@ export function CavemanContextPage() {
     queryKey: ["compression-language-packs"],
     queryFn: () => contextCombosApi.getLanguagePacks(),
   });
+  const telemetryQuery = useQuery({
+    queryKey: ["compression-telemetry", "caveman"],
+    queryFn: () => compressionApi.getTelemetry(),
+    refetchInterval: 15000,
+  });
 
   // Playground State
   const [sampleText, setSampleText] = useState(SAMPLE_CAVEMAN_INPUT);
-  const [compressedResult, setCompressedResult] = useState<string | null>(
-    `分析代码库，推荐将认证模块改为标准 JWT 校验机制，提升安全性与性能。需同步执行数据库迁移脚本。`
-  );
+  const [compressedResult, setCompressedResult] = useState<string | null>(null);
+  const [previewStats, setPreviewStats] = useState<{ originalTokens: number; compressedTokens: number; savingsPct: number } | null>(null);
   const [isCompressing, setIsCompressing] = useState(false);
 
   const updateMutation = useMutation({
@@ -128,26 +132,35 @@ export function CavemanContextPage() {
     updateMutation.mutate({ engines: updatedEngines });
   };
 
-  const handleTestCompress = () => {
+  const handleTestCompress = async () => {
     setIsCompressing(true);
-    setTimeout(() => {
-      // Simulate Caveman prose pruning
-      let result = sampleText
-        .replace(/你好！关于您刚刚询问的|经过我对整个项目代码库的深入仔细分析，我认为我们非常推荐您/g, "")
-        .replace(/这样可以显著提升系统的/g, "提升")
-        .replace(/另外需要注意的是，/g, "")
-        .replace(/也需要/g, "需")
-        .trim();
-      if (!result) result = sampleText;
-      setCompressedResult(result);
-      setIsCompressing(false);
+    try {
+      const result = await compressionApi.preview({
+        messages: [{ role: "user", content: sampleText }],
+        mode: "caveman",
+        engineId: "caveman",
+      });
+      if (typeof result.compressed !== "string") throw new Error("runtime 未返回压缩文本");
+      setCompressedResult(result.compressed);
+      setPreviewStats({
+        originalTokens: Number(result.originalTokens ?? 0),
+        compressedTokens: Number(result.compressedTokens ?? 0),
+        savingsPct: Number(result.savingsPct ?? 0),
+      });
       messageApi.success("测试压缩完成");
-    }, 250);
+    } catch (cause) {
+      setCompressedResult(null);
+      setPreviewStats(null);
+      messageApi.error(`测试压缩失败：${cause instanceof Error ? cause.message : String(cause)}`);
+    } finally {
+      setIsCompressing(false);
+    }
   };
 
-  const origTokens = Math.ceil(sampleText.length * 0.8);
-  const compTokens = compressedResult ? Math.ceil(compressedResult.length * 0.8) : origTokens;
-  const savingsPct = origTokens > 0 ? Math.round(((origTokens - compTokens) / origTokens) * 100) : 0;
+  const origTokens = previewStats?.originalTokens;
+  const compTokens = previewStats?.compressedTokens;
+  const savingsPct = previewStats?.savingsPct;
+  const telemetry = telemetryQuery.data;
 
   return (
     <div className={styles.page}>
@@ -205,16 +218,16 @@ export function CavemanContextPage() {
           <div className={styles.statBox}>
             <Text type="secondary" style={{ fontSize: 12 }}>累计节省 Token</Text>
             <div style={{ fontSize: 20, fontWeight: 700, color: "#10b981", marginTop: 2 }}>
-              1,842,500
+              {telemetry ? telemetry.totalTokensSaved.toLocaleString() : "—"}
             </div>
-            <Text type="secondary" style={{ fontSize: 11 }}>处理请求 4,850 次</Text>
+            <Text type="secondary" style={{ fontSize: 11 }}>处理请求 {telemetry ? telemetry.totalRuns.toLocaleString() : "—"} 次</Text>
           </div>
         </Col>
         <Col xs={24} sm={12} md={6}>
           <div className={styles.statBox}>
             <Text type="secondary" style={{ fontSize: 12 }}>平均压缩比例</Text>
             <div style={{ fontSize: 20, fontWeight: 700, color: "#6366f1", marginTop: 2 }}>
-              32.8%
+              —
             </div>
             <Text type="secondary" style={{ fontSize: 11 }}>语言语法特征模式</Text>
           </div>
@@ -223,7 +236,7 @@ export function CavemanContextPage() {
           <div className={styles.statBox}>
             <Text type="secondary" style={{ fontSize: 12 }}>执行延迟开销</Text>
             <div style={{ fontSize: 20, fontWeight: 700, color: "#06b6d4", marginTop: 2 }}>
-              &lt; 0.8ms
+              —
             </div>
             <Text type="secondary" style={{ fontSize: 11 }}>纯内存规则匹配机</Text>
           </div>
@@ -232,7 +245,7 @@ export function CavemanContextPage() {
           <div className={styles.statBox}>
             <Text type="secondary" style={{ fontSize: 12 }}>缓存影响评级</Text>
             <div style={{ fontSize: 20, fontWeight: 700, color: "#f59e0b", marginTop: 2 }}>
-              MODERATE
+              —
             </div>
             <Text type="secondary" style={{ fontSize: 11 }}>改写自然语言表述</Text>
           </div>
@@ -334,19 +347,19 @@ export function CavemanContextPage() {
               placeholder="输入待压缩文本..."
             />
             <div style={{ marginTop: 4, fontSize: 11, color: "var(--ant-color-text-secondary)" }}>
-              预计 Token: ~{origTokens}
+              预计 Token: {origTokens ?? "—"}
             </div>
           </Col>
 
           <Col xs={24} md={12}>
             <Flex justify="space-between" align="center" style={{ marginBottom: 4 }}>
               <Text strong style={{ fontSize: 12 }}>Caveman 压缩结果 (Compressed Output):</Text>
-              {savingsPct > 0 && (
+              {savingsPct !== undefined && savingsPct > 0 && (
                 <Tag color="success">Token 缩减 {savingsPct}% ({origTokens} → {compTokens})</Tag>
               )}
             </Flex>
             <div className={styles.diffBox}>
-              {compressedResult || "点击上方按钮执行测试压缩..."}
+              {compressedResult || "点击上方按钮执行真实压缩预览..."}
             </div>
           </Col>
         </Row>

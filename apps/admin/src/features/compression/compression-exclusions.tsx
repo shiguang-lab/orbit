@@ -14,6 +14,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
 import { compressionExclusionsApi } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -39,6 +40,7 @@ const useStyles = createStyles(({ token }) => ({
 
 export function CompressionExclusionsPage() {
   const { styles } = useStyles();
+  const { tt } = useI18n();
   const queryClient = useQueryClient();
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -58,10 +60,10 @@ export function CompressionExclusionsPage() {
   const saveMutation = useMutation({
     mutationFn: (patterns: string[]) => compressionExclusionsApi.saveExclusions(patterns),
     onSuccess: () => {
-      messageApi.success("压缩排除规则已保存并热重载");
+      messageApi.success(tt("压缩排除规则已保存并热重载", "Exclusion rules saved and hot-reloaded"));
       void queryClient.invalidateQueries({ queryKey: ["compression-exclusions"] });
     },
-    onError: () => messageApi.error("保存排除项失败"),
+    onError: () => messageApi.error(tt("保存排除项失败", "Failed to save exclusion rules")),
   });
 
   if (exclusionsQuery.isLoading) {
@@ -106,12 +108,15 @@ export function CompressionExclusionsPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  压缩排除规则与白名单
+                  {tt("压缩排除规则与白名单", "Compression Exclusion Rules")}
                 </Title>
-                <Tag color="error">黑白名单机制</Tag>
+                <Tag color="error">{tt("黑白名单机制", "Blocklist & Whitelist")}</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                配置必须跳过任何压缩算子、严格原样透传的模型 ID、Provider 前缀或通配符规则（支持 * 通配）。
+                {tt(
+                  "配置必须跳过任何压缩算子、严格原样透传的模型 ID、Provider 前缀或通配符规则（支持 * 通配）。",
+                  "Configure model IDs, provider prefixes, or wildcard patterns that must bypass compression and be forwarded intact."
+                )}
               </Text>
             </div>
           </Flex>
@@ -122,15 +127,18 @@ export function CompressionExclusionsPage() {
             loading={saveMutation.isPending}
             onClick={handleSave}
           >
-            保存排除规则
+            {tt("保存排除规则", "Save Rules")}
           </Button>
         </Flex>
       </Card>
 
       {/* 2. Editor Card */}
-      <Card title="排除项匹配规则列表 (每行一条规则)" className={styles.sectionCard} size="small">
+      <Card title={tt("排除项匹配规则列表", "Exclusion Match Rules")} className={styles.sectionCard} size="small">
         <Paragraph type="secondary" style={{ fontSize: 12, marginBottom: 10 }}>
-          当客户端请求的模型名称与以下任一模式匹配时，网关将自动旁路所有压缩引擎。例如：<code>openai/o1-preview</code> 或 <code>*/*-embed*</code>。
+          {tt(
+            "当客户端请求的模型名称与以下任一模式匹配时，网关将自动旁路所有压缩引擎。例如：openai/o1-preview 或 */*-embed*（每行一条规则）。",
+            "When the model name requested matches any of the patterns below, all compression engines will be bypassed. E.g.: openai/o1-preview or */*-embed* (one rule per line)."
+          )}
         </Paragraph>
 
         <Input.TextArea
@@ -143,7 +151,7 @@ export function CompressionExclusionsPage() {
 
         <div>
           <Text strong style={{ fontSize: 12, display: "block", marginBottom: 6 }}>
-            已解析生效规则 ({parsedList.length} 条)：
+            {tt("已解析生效规则", "Active Rules")} ({parsedList.length} {tt("条", "rules")})：
           </Text>
           <Space wrap size={6}>
             {parsedList.map((p, idx) => (

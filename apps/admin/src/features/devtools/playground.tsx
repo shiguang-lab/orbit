@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Button,
   Card,
@@ -14,6 +14,8 @@ import {
 } from "antd";
 import { createStyles } from "antd-style";
 import { MaterialIcon } from "@/app/nav";
+import { modelsApi, providersApi, type ModelCatalogItem } from "@/entities/api";
+import { useQuery } from "@tanstack/react-query";
 
 const { Title, Text } = Typography;
 
@@ -58,33 +60,46 @@ const useStyles = createStyles(({ token }) => ({
 
 export function PlaygroundPage() {
   const { styles } = useStyles();
-  const [model, setModel] = useState("claude-3-5-sonnet");
+  const [model, setModel] = useState("");
   const [temperature, setTemperature] = useState(0.7);
   const [maxTokens, setMaxTokens] = useState(2048);
   const [prompt, setPrompt] = useState("");
-  const [messages, setMessages] = useState<Array<{ role: "user" | "assistant"; content: string }>>([
-    { role: "assistant", content: "你好！我是智枢调试游乐场。你可以随时输入 Prompt 与任意挂载的上游模型进行实时推演对话。" },
-  ]);
+  const [messages, setMessages] = useState<Array<{ role: "user" | "assistant"; content: string }>>([]);
 
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const modelsQuery = useQuery({ queryKey: ["playground-models"], queryFn: modelsApi.list });
+  const models: ModelCatalogItem[] = Array.isArray(modelsQuery.data?.models) ? modelsQuery.data.models : [];
 
-  const handleSend = () => {
-    if (!prompt.trim()) return;
+  useEffect(() => {
+    if (!model && models[0]?.id) setModel(models[0].id);
+  }, [model, models]);
+
+  const handleSend = async () => {
+    if (!prompt.trim() || !model || loading) return;
     const userMsg = prompt.trim();
     setPrompt("");
     setMessages((prev) => [...prev, { role: "user", content: userMsg }]);
     setLoading(true);
-
-    setTimeout(() => {
+    setError(null);
+    try {
+      const response = await providersApi.chat({ model, messages: [...messages, { role: "user", content: userMsg }], temperature, max_tokens: maxTokens });
+      const payload = response as {
+        choices?: Array<{ message?: { content?: string }; text?: string }>;
+        output_text?: string;
+      };
+      const content = payload.output_text ?? payload.choices?.[0]?.message?.content ?? payload.choices?.[0]?.text;
+      if (!content) throw new Error("上游返回中没有可显示的文本");
       setMessages((prev) => [
         ...prev,
-        {
-          role: "assistant",
-          content: `【模型 ${model} 返回】响应已就绪。\n\n针对您的输入：「${userMsg}」，系统通过智枢透明网关完成路由转发，耗时 342ms，输入消耗 24 tokens，输出消耗 68 tokens。`,
-        },
+        { role: "assistant", content: String(content) },
       ]);
+    } catch (cause) {
+      const message = cause instanceof Error ? cause.message : String(cause);
+      setError(message);
+    } finally {
       setLoading(false);
-    }, 600);
+    }
   };
 
   return (
@@ -144,7 +159,7 @@ export function PlaygroundPage() {
                     }}
                   >
                     <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", marginBottom: 4 }}>
-                      {m.role === "user" ? "您" : `助手 (${model})`}
+                      {m.role === "user" ? "您" : `助手 (${model || "未选择模型"})`}
                     </div>
                     <div style={{ whiteSpace: "pre-wrap" }}>{m.content}</div>
                   </div>
@@ -183,16 +198,12 @@ export function PlaygroundPage() {
               <div>
                 <Text strong style={{ fontSize: 12, display: "block", marginBottom: 4 }}>目标模型：</Text>
                 <Select
-                  value={model}
+                  value={model || undefined}
                   onChange={setModel}
                   style={{ width: "100%" }}
-                  options={[
-                    { label: "Claude 3.5 Sonnet", value: "claude-3-5-sonnet" },
-                    { label: "DeepSeek-R1 (Reasoning)", value: "deepseek-reasoner" },
-                    { label: "DeepSeek-V3", value: "deepseek-chat" },
-                    { label: "GPT-4o (Omni)", value: "gpt-4o" },
-                    { label: "Qwen 2.5 Coder 32B (Local)", value: "qwen-2.5-coder-32b" },
-                  ]}
+                  loading={modelsQuery.isLoading}
+                  placeholder="选择已配置的模型"
+                  options={models.map((item) => ({ label: item.name ? `${item.name} (${item.id})` : item.id, value: item.id }))}
                 />
               </div>
 
@@ -211,10 +222,13 @@ export function PlaygroundPage() {
                 </Flex>
                 <Slider min={256} max={8192} step={256} value={maxTokens} onChange={setMaxTokens} />
               </div>
+              {modelsQuery.isError && <Text type="danger">模型目录加载失败，请检查控制面连接。</Text>}
+              {models.length === 0 && !modelsQuery.isLoading && <Text type="secondary">当前没有可用模型，请先配置 Provider。</Text>}
             </Space>
           </Card>
         </Col>
       </Row>
+      {error && <Text type="danger">请求失败：{error}</Text>}
     </div>
   );
 }

@@ -8,8 +8,10 @@ export default defineConfig(({ command, mode }) => {
   // credentials regardless of whether Vite is started from the package or root.
   const repoRoot = resolve(fileURLToPath(new URL("../..", import.meta.url)));
   const env = { ...loadEnv(mode, repoRoot, ""), ...loadEnv(mode, ".", ""), ...process.env };
-  // 新 BFF(Fastify)地址，复用引擎；本地起 BFF 后指向它
-  const bffTarget = env.OMNIROUTE_ADMIN_BFF_TARGET ?? "http://127.0.0.1:8787";
+  // Independent service targets. The existing BFF remains a compatibility
+  // launcher, but new development uses the split control/edge/realtime apps.
+  const controlTarget = env.SHIGUANG_GATEWAY_CONTROL_API_TARGET ?? "http://127.0.0.1:8788";
+  const edgeTarget = env.SHIGUANG_GATEWAY_EDGE_GATEWAY_TARGET ?? "http://127.0.0.1:8787";
   // shiguang 统一登录(auth-service)
   const authTarget = env.VITE_UNIFIED_LOGIN_ORIGIN ?? "https://shiguanglab.com";
   const brokerRequested = env.SG_LOCAL_BROKER_ENABLED === "true";
@@ -38,16 +40,18 @@ export default defineConfig(({ command, mode }) => {
       port: 5173,
       proxy: {
         // Authentication/session is handled by the local BFF in every dev mode.
-        "/api/auth": { target: bffTarget, changeOrigin: true },
-        // 业务 API → 新 BFF(Fastify, 复用引擎)
-        "/api": { target: bffTarget, changeOrigin: true },
+        "/api/v1": { target: edgeTarget, changeOrigin: true },
+        "/api/v1beta": { target: edgeTarget, changeOrigin: true },
+        "/api/auth": { target: controlTarget, changeOrigin: true },
+        // 管理 API → control-api(Fastify + 本地 runtime)
+        "/api": { target: controlTarget, changeOrigin: true },
         // shiguang 统一登录页(asset-hub 同款)
         "/login": unifiedLoginProxy(),
         "/register": unifiedLoginProxy(),
         "/auth": unifiedLoginProxy(),
-        // 长连接 WS（live server 独立端口，默认 20132）
+        // 长连接 WS；生产环境由同源反向代理转发到本地 realtime 服务。
         "/live-ws": {
-          target: "ws://100.87.115.78:20132",
+          target: env.SHIGUANG_GATEWAY_LIVE_WS_TARGET ?? "ws://127.0.0.1:20132",
           ws: true,
           changeOrigin: true,
         },

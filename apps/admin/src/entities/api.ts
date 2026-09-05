@@ -50,7 +50,7 @@ export async function api<T>(
 ): Promise<T> {
   const url = path.startsWith("http") ? path : `${API_BASE}${path}`;
   const headers = new Headers(options.headers);
-  if (options.body !== undefined && !headers.has("Content-Type")) {
+  if (options.body !== undefined && !(options.body instanceof FormData) && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
   }
   headers.set("Accept", "application/json");
@@ -299,7 +299,7 @@ export const providersApi = {
     }),
   syncModels: (connectionId: string) => api<Record<string, unknown>>(`/providers/${encodeURIComponent(connectionId)}/sync-models?mode=import`, { method: "POST" }),
   webFetch: (input: { url: string; provider?: string; format?: string; depth?: number }) => api<Record<string, unknown>>("/v1/web/fetch", { method: "POST", body: JSON.stringify(input) }),
-  chat: (input: { model: string; messages: Array<{ role: "user" | "assistant"; content: string }> }) => api<Record<string, unknown>>("/v1/chat/completions", { method: "POST", body: JSON.stringify({ ...input, stream: false }) }),
+  chat: (input: { model: string; messages: Array<{ role: "user" | "assistant"; content: string }>; temperature?: number; max_tokens?: number }) => api<Record<string, unknown>>("/v1/chat/completions", { method: "POST", body: JSON.stringify({ ...input, stream: false }) }),
   addModel: (id: string, modelId: string, modelName?: string) => api<{ model: Record<string, unknown> }>(`/providers/${id}/models`, { method: "POST", body: JSON.stringify({ modelId, modelName }) }),
   removeModel: (id: string, modelId: string) => api<{ success: boolean }>(`/providers/${id}/models?modelId=${encodeURIComponent(modelId)}`, { method: "DELETE" }),
   addCustomModel: (data: Record<string, unknown>) =>
@@ -375,6 +375,17 @@ export const providersApi = {
   refresh: (id: string) => api<{ success?: boolean }>(`/providers/${id}/refresh`, { method: "POST" }),
   refreshCursor: (id: string) => api<{ success?: boolean; unchanged?: boolean }>(`/providers/${id}/refresh-cursor`, { method: "POST" }),
   setRateLimitProtection: (connectionId: string, enabled: boolean) => api<{ success?: boolean }>("/rate-limits", { method: "POST", body: JSON.stringify({ connectionId, enabled }) }),
+};
+
+export interface ModelCatalogItem {
+  id: string;
+  name?: string;
+  provider?: string;
+  [key: string]: unknown;
+}
+
+export const modelsApi = {
+  list: () => api<{ models?: ModelCatalogItem[] }>("/models"),
 };
 export interface FeatureFlagItem {
   key: string;
@@ -699,23 +710,23 @@ export type {
   ComboBuilderOptions,
   ComboTestResultItem,
   ComboTestResponse,
-} from "@omniroute/contracts";
+} from "@shiguang-gateway/contracts";
 
 export const combosApi = {
-  list: () => api<import("@omniroute/contracts").ComboListResponse>("/combos"),
-  get: (id: string) => api<import("@omniroute/contracts").ComboItem>(`/combos/${encodeURIComponent(id)}`),
-  create: (data: Partial<import("@omniroute/contracts").ComboItem>) =>
-    api<import("@omniroute/contracts").ComboItem>("/combos", {
+  list: () => api<import("@shiguang-gateway/contracts").ComboListResponse>("/combos"),
+  get: (id: string) => api<import("@shiguang-gateway/contracts").ComboItem>(`/combos/${encodeURIComponent(id)}`),
+  create: (data: Partial<import("@shiguang-gateway/contracts").ComboItem>) =>
+    api<import("@shiguang-gateway/contracts").ComboItem>("/combos", {
       method: "POST",
       body: JSON.stringify(data),
     }),
-  update: (id: string, data: Partial<import("@omniroute/contracts").ComboItem>) =>
-    api<import("@omniroute/contracts").ComboItem>(`/combos/${encodeURIComponent(id)}`, {
+  update: (id: string, data: Partial<import("@shiguang-gateway/contracts").ComboItem>) =>
+    api<import("@shiguang-gateway/contracts").ComboItem>(`/combos/${encodeURIComponent(id)}`, {
       method: "PUT",
       body: JSON.stringify(data),
     }),
-  patch: (id: string, data: Partial<import("@omniroute/contracts").ComboItem>) =>
-    api<import("@omniroute/contracts").ComboItem>(`/combos/${encodeURIComponent(id)}`, {
+  patch: (id: string, data: Partial<import("@shiguang-gateway/contracts").ComboItem>) =>
+    api<import("@shiguang-gateway/contracts").ComboItem>(`/combos/${encodeURIComponent(id)}`, {
       method: "PATCH",
       body: JSON.stringify(data),
     }),
@@ -724,26 +735,26 @@ export const combosApi = {
       method: "DELETE",
     }),
   reorder: (comboIds: string[]) =>
-    api<{ combos: import("@omniroute/contracts").ComboItem[] }>("/combos/reorder", {
+    api<{ combos: import("@shiguang-gateway/contracts").ComboItem[] }>("/combos/reorder", {
       method: "POST",
       body: JSON.stringify({ comboIds }),
     }),
   duplicate: (name: string, strategy?: string) =>
-    api<import("@omniroute/contracts").ComboItem>("/combos/duplicate", {
+    api<import("@shiguang-gateway/contracts").ComboItem>("/combos/duplicate", {
       method: "POST",
       body: JSON.stringify({ name, strategy }),
     }),
-  test: (comboName: string) =>
-    api<import("@omniroute/contracts").ComboTestResponse>("/combos/test", {
+  test: (comboName: string, prompt?: string) =>
+    api<import("@shiguang-gateway/contracts").ComboTestResponse>("/combos/test", {
       method: "POST",
-      body: JSON.stringify({ comboName }),
+      body: JSON.stringify({ comboName, ...(prompt?.trim() ? { prompt: prompt.trim() } : {}) }),
     }),
   metrics: (comboName?: string) =>
-    api<{ metrics: Record<string, import("@omniroute/contracts").ComboMetrics> | import("@omniroute/contracts").ComboMetrics | null }>(
+    api<{ metrics: Record<string, import("@shiguang-gateway/contracts").ComboMetrics> | import("@shiguang-gateway/contracts").ComboMetrics | null }>(
       comboName ? `/combos/metrics?combo=${encodeURIComponent(comboName)}` : "/combos/metrics",
     ),
   builderOptions: () =>
-    api<import("@omniroute/contracts").ComboBuilderOptions>("/combos/builder/options"),
+    api<import("@shiguang-gateway/contracts").ComboBuilderOptions>("/combos/builder/options"),
   defaults: () =>
     api<{ comboDefaults?: Record<string, unknown>; providerOverrides?: Record<string, unknown> }>(
       "/settings/combo-defaults",
@@ -857,14 +868,7 @@ export const endpointsApi = {
     tailscaleUrl?: string | null;
     mode?: "tsnet" | "daemon" | "external" | "manual";
     error?: string | null;
-  }> => {
-    try {
-      const res = await api<any>("/tunnels/tailscale");
-      return res;
-    } catch {
-      return { connected: false };
-    }
-  },
+  }> => api<any>("/tunnels/tailscale"),
   connectTailscaleAuthKey: async (payload: {
     authKey: string;
     hostname?: string;
@@ -900,10 +904,12 @@ export const endpointsApi = {
   mcpStatus: () =>
     api<{
       online: boolean;
-      servers?: Array<{ id: string; name: string; status: string; toolsCount?: number }>;
+      enabled?: boolean;
+      transport?: string;
+      activity?: Record<string, unknown>;
     }>("/mcp/status"),
   a2aStatus: () =>
-    api<{ online: boolean; agents?: Array<{ id: string; name: string; status: string }> }>(
+    api<{ online: boolean; enabled?: boolean; tasks?: Record<string, unknown>; agent?: Record<string, unknown> }>(
       "/a2a/status",
     ),
   vscodeKeys: () =>
@@ -1116,91 +1122,51 @@ export interface QuotaOverviewSummary {
 
 export interface QuotaPoolItem {
   id: string;
+  connectionId: string;
+  connectionIds: string[];
   name: string;
+  groupId: string | null;
+  createdAt: string;
+  /** Optional provider metadata used by the quota overview page. */
   provider?: string;
   description?: string;
-  group?: string;
-  defaultModel?: string;
-  strategy?: string;
-  totalCapacityRpm?: number;
-  consumedRpm?: number;
-  accounts?: string[];
-  dailyLimitUsd?: number;
-  monthlyLimitUsd?: number;
-  currentDailySpendUsd?: number;
-  currentMonthlySpendUsd?: number;
-  connectionIds?: string[];
-  weights?: Record<string, number>;
-  allowedApiKeys?: string[];
+  dailyLimitUsd?: number | null;
+  monthlyLimitUsd?: number | null;
   autoFailover?: boolean;
-  isActive?: boolean;
-  updatedAt?: string;
-  createdAt?: string;
+  allocations: Array<{
+    apiKeyId: string;
+    weight: number;
+    capValue?: number;
+    capUnit?: "percent" | "requests" | "tokens" | "usd";
+    policy: "hard" | "soft" | "burst";
+  }>;
+}
+
+export interface QuotaPoolUsage {
+  poolId: string;
+  generatedAt: string;
+  dimensions: Array<{
+    unit: "percent" | "requests" | "tokens" | "usd";
+    window: "5h" | "hourly" | "daily" | "weekly" | "monthly";
+    limit: number;
+    consumedTotal: number;
+    perKey: Array<{
+      apiKeyId: string;
+      consumed: number;
+      fairShare: number;
+      deficit: number;
+      borrowing: boolean;
+    }>;
+  }>;
+  burnRate?: { tokensPerSecond: number; timeToExhaustionMs: number | null };
 }
 
 export const quotaApi = {
-  getOverview: async (): Promise<QuotaOverviewSummary> => {
-    try {
-      return await api<QuotaOverviewSummary>("/quota/overview");
-    } catch {
-      return {
-        totalProviders: 0,
-        activeProviders: 0,
-        healthyQuotas: 0,
-        lowQuotas: 0,
-        exhaustedQuotas: 0,
-        rateLimitedCount: 0,
-        totalDailyLimitUsd: 0,
-        totalDailyCostUsd: 0,
-        totalMonthlyLimitUsd: 0,
-        totalMonthlyCostUsd: 0,
-      };
-    }
-  },
+  getOverview: (): Promise<QuotaOverviewSummary> => api<QuotaOverviewSummary>("/quota/overview"),
   listProviderQuotas: async (): Promise<ProviderQuotaItem[]> => {
-    try {
-      const res = await api<any>("/quota/providers");
-      const list = Array.isArray(res)
-        ? res
-        : Array.isArray(res?.items)
-        ? res.items
-        : Array.isArray(res?.data)
-        ? res.data
-        : null;
-      if (list) return list;
-      throw new Error("Fallback needed");
-    } catch {
-      try {
-        const res = await providersApi.list({ limit: 100 });
-        const list = Array.isArray(res?.connections) ? res.connections : [];
-        return list.map((c) => ({
-          id: c.id,
-          provider: c.provider,
-          name: c.name,
-          baseUrl: c.baseUrl,
-          isActive: c.isActive,
-          isBanned: c.isBanned,
-          rateLimitedUntil: c.rateLimitedUntil,
-          dailyUsageLimitUsd: (c.dailyUsageLimitUsd as number) ?? null,
-          monthlyUsageLimitUsd: (c.monthlyUsageLimitUsd as number) ?? null,
-          dailyCostUsd: (c.dailyCostUsd as number) ?? 0,
-          monthlyCostUsd: (c.monthlyCostUsd as number) ?? 0,
-          quotaRemainingPct: (c.quotaRemainingPct as number) ?? (c.isBanned ? 0 : 100),
-          quotaIsExhausted: Boolean(c.quotaIsExhausted || c.isBanned),
-          quotaTrend: (c.quotaTrend as "improving" | "stable" | "declining") ?? "stable",
-          quotaScope: (c.quotaScope as "connection" | "provider" | "none") ?? "connection",
-          quotaVisible: c.quotaVisible !== false,
-          tpmLimit: (c.tpmLimit as number) ?? null,
-          rpmLimit: (c.rpmLimit as number) ?? null,
-          alertThresholdPct: (c.alertThresholdPct as number) ?? 20,
-          poolId: (c.poolId as string) ?? null,
-          lastSyncAt: (c.lastSyncAt as string) ?? null,
-          defaultModel: c.defaultModel,
-        }));
-      } catch {
-        return [];
-      }
-    }
+    const res = await api<any>("/quota/providers");
+    const list = Array.isArray(res) ? res : Array.isArray(res?.items) ? res.items : res?.data;
+    return Array.isArray(list) ? list : [];
   },
   updateLimit: (
     id: string,
@@ -1227,22 +1193,12 @@ export const quotaApi = {
       method: "POST",
     }),
   listPools: async (): Promise<QuotaPoolItem[]> => {
-    try {
-      const res = await api<any>("/quota/pools");
-      if (Array.isArray(res)) return res;
-      if (Array.isArray(res?.pools)) return res.pools;
-      if (Array.isArray(res?.items)) return res.items;
-      if (Array.isArray(res?.data)) return res.data;
-      return [];
-    } catch {
-      return [];
-    }
+    const res = await api<any>("/quota/pools");
+    const pools = Array.isArray(res) ? res : Array.isArray(res?.pools) ? res.pools : Array.isArray(res?.items) ? res.items : res?.data;
+    return Array.isArray(pools) ? pools : [];
   },
-  savePool: (pool: Partial<QuotaPoolItem>) =>
-    api<QuotaPoolItem>("/quota/pools", {
-      method: "POST",
-      body: JSON.stringify(pool),
-    }),
+  getPoolUsage: (poolId: string) =>
+    api<{ usage: QuotaPoolUsage }>(`/quota/pools/${encodeURIComponent(poolId)}/usage`),
   createPool: (pool: Partial<QuotaPoolItem>) =>
     api<QuotaPoolItem>("/quota/pools", {
       method: "POST",
@@ -1258,14 +1214,9 @@ export const quotaApi = {
       method: "DELETE",
     }),
   listGroups: async (): Promise<Array<{ id: string; name: string; createdAt?: string }>> => {
-    try {
-      const res = await api<any>("/quota/groups");
-      if (Array.isArray(res)) return res;
-      if (Array.isArray(res?.groups)) return res.groups;
-      return [{ id: "group-demo", name: "GroupDemo" }];
-    } catch {
-      return [{ id: "group-demo", name: "GroupDemo" }];
-    }
+    const res = await api<any>("/quota/groups");
+    if (Array.isArray(res)) return res;
+    return Array.isArray(res?.groups) ? res.groups : [];
   },
   createGroup: (name: string) =>
     api<{ group: { id: string; name: string } }>("/quota/groups", {
@@ -1282,12 +1233,8 @@ export const quotaApi = {
       method: "DELETE",
     }),
   getKeyModels: async (keyId: string): Promise<string[]> => {
-    try {
-      const res = await api<{ models: string[] }>(`/quota/keys/${encodeURIComponent(keyId)}/models`);
-      return Array.isArray(res?.models) ? res.models : [];
-    } catch {
-      return [];
-    }
+    const res = await api<{ models: string[] }>(`/quota/keys/${encodeURIComponent(keyId)}/models`);
+    return Array.isArray(res?.models) ? res.models : [];
   },
 };
 
@@ -1312,20 +1259,16 @@ export const auditApi = {
     limit?: number;
     category?: string;
   }): Promise<AuditLogEntry[]> => {
-    try {
-      const q = new URLSearchParams();
-      if (params?.level) q.set("level", params.level);
-      if (params?.limit) q.set("limit", String(params.limit));
-      if (params?.category && params.category !== "all") q.set("category", params.category);
-      const res = await api<any>(`/compliance/audit-log?${q.toString()}`);
-      if (Array.isArray(res)) return res;
-      if (Array.isArray(res?.logs)) return res.logs;
-      if (Array.isArray(res?.items)) return res.items;
-      if (Array.isArray(res?.data)) return res.data;
-      return [];
-    } catch {
-      return [];
-    }
+    const q = new URLSearchParams();
+    if (params?.level) q.set("level", params.level);
+    if (params?.limit) q.set("limit", String(params.limit));
+    if (params?.category && params.category !== "all") q.set("category", params.category);
+    const res = await api<any>(`/compliance/audit-log?${q.toString()}`);
+    if (Array.isArray(res)) return res;
+    if (Array.isArray(res?.logs)) return res.logs;
+    if (Array.isArray(res?.items)) return res.items;
+    if (Array.isArray(res?.data)) return res.data;
+    return [];
   },
 };
 
@@ -1403,24 +1346,20 @@ export const logsApi = {
     model?: string;
     hours?: number;
   }): Promise<RequestCallLog[]> => {
-    try {
-      const q = new URLSearchParams();
-      if (params?.limit) q.set("limit", String(params.limit));
-      if (params?.offset) q.set("offset", String(params.offset));
-      if (params?.search) q.set("search", params.search);
-      if (params?.status) q.set("status", String(params.status));
-      if (params?.provider) q.set("provider", params.provider);
-      if (params?.model) q.set("model", params.model);
-      if (params?.hours) q.set("hours", String(params.hours));
-      const res = await api<any>(`/usage/call-logs?${q.toString()}`);
-      if (Array.isArray(res)) return res;
-      if (Array.isArray(res?.items)) return res.items;
-      if (Array.isArray(res?.logs)) return res.logs;
-      if (Array.isArray(res?.data)) return res.data;
-      return [];
-    } catch {
-      return [];
-    }
+    const q = new URLSearchParams();
+    if (params?.limit) q.set("limit", String(params.limit));
+    if (params?.offset) q.set("offset", String(params.offset));
+    if (params?.search) q.set("search", params.search);
+    if (params?.status) q.set("status", String(params.status));
+    if (params?.provider) q.set("provider", params.provider);
+    if (params?.model) q.set("model", params.model);
+    if (params?.hours) q.set("hours", String(params.hours));
+    const res = await api<any>(`/usage/call-logs?${q.toString()}`);
+    if (Array.isArray(res)) return res;
+    if (Array.isArray(res?.items)) return res.items;
+    if (Array.isArray(res?.logs)) return res.logs;
+    if (Array.isArray(res?.data)) return res.data;
+    return [];
   },
   getCallLogDetail: (id: string) => api<RequestCallLog>(`/usage/call-logs/${encodeURIComponent(id)}`),
   purgeHistory: () => api<{ deleted: number; deletedArtifacts: number }>("/settings/purge-request-history", { method: "POST" }),
@@ -1432,40 +1371,32 @@ export const logsApi = {
     provider?: string;
     level?: string;
   }): Promise<ProxyLogItem[]> => {
-    try {
-      const q = new URLSearchParams();
-      if (params?.limit) q.set("limit", String(params.limit));
-      if (params?.search) q.set("search", params.search);
-      if (params?.status) q.set("status", params.status);
-      if (params?.type) q.set("type", params.type);
-      if (params?.provider) q.set("provider", params.provider);
-      if (params?.level) q.set("level", params.level);
-      const res = await api<any>(`/usage/proxy-logs?${q.toString()}`);
-      if (Array.isArray(res)) return res;
-      if (Array.isArray(res?.logs)) return res.logs;
-      if (Array.isArray(res?.items)) return res.items;
-      return [];
-    } catch {
-      return [];
-    }
+    const q = new URLSearchParams();
+    if (params?.limit) q.set("limit", String(params.limit));
+    if (params?.search) q.set("search", params.search);
+    if (params?.status) q.set("status", params.status);
+    if (params?.type) q.set("type", params.type);
+    if (params?.provider) q.set("provider", params.provider);
+    if (params?.level) q.set("level", params.level);
+    const res = await api<any>(`/usage/proxy-logs?${q.toString()}`);
+    if (Array.isArray(res)) return res;
+    if (Array.isArray(res?.logs)) return res.logs;
+    if (Array.isArray(res?.items)) return res.items;
+    return [];
   },
   listConsoleLogs: async (params?: {
     level?: string;
     limit?: number;
     search?: string;
   }): Promise<ConsoleLogItem[]> => {
-    try {
-      const q = new URLSearchParams();
-      if (params?.level && params.level !== "all") q.set("level", params.level);
-      if (params?.limit) q.set("limit", String(params.limit));
-      if (params?.search) q.set("search", params.search);
-      const res = await api<any>(`/logs/console?${q.toString()}`);
-      if (Array.isArray(res)) return res;
-      if (Array.isArray(res?.logs)) return res.logs;
-      return [];
-    } catch {
-      return [];
-    }
+    const q = new URLSearchParams();
+    if (params?.level && params.level !== "all") q.set("level", params.level);
+    if (params?.limit) q.set("limit", String(params.limit));
+    if (params?.search) q.set("search", params.search);
+    const res = await api<any>(`/logs/console?${q.toString()}`);
+    if (Array.isArray(res)) return res;
+    if (Array.isArray(res?.logs)) return res.logs;
+    return [];
   },
 };
 
@@ -1498,42 +1429,26 @@ export interface ConversationSessionItem {
 
 export const conversationsApi = {
   list: async (params?: { limit?: number; search?: string }): Promise<ConversationSessionItem[]> => {
-    try {
-      const q = new URLSearchParams();
-      if (params?.limit) q.set("limit", String(params.limit));
-      if (params?.search) q.set("search", params.search);
-      const res = await api<any>(`/conversations?${q.toString()}`);
-      if (Array.isArray(res)) return res;
-      if (Array.isArray(res?.conversations)) return res.conversations;
-      if (Array.isArray(res?.items)) return res.items;
-      return [];
-    } catch {
-      return [];
-    }
+    const q = new URLSearchParams();
+    if (params?.limit) q.set("limit", String(params.limit));
+    if (params?.search) q.set("search", params.search);
+    const res = await api<any>(`/conversations?${q.toString()}`);
+    if (Array.isArray(res)) return res;
+    if (Array.isArray(res?.conversations)) return res.conversations;
+    if (Array.isArray(res?.items)) return res.items;
+    throw new ApiError(502, "会话接口返回了无法识别的数据格式");
   },
   getTurns: async (id: string, params?: { limit?: number; beforeSeq?: number; afterSeq?: number }): Promise<{ nodes: ConversationTurnItem[]; hasMore: boolean }> => {
-    try {
-      const q = new URLSearchParams();
-      if (params?.limit) q.set("limit", String(params.limit));
-      if (params?.beforeSeq != null) q.set("beforeSeq", String(params.beforeSeq));
-      if (params?.afterSeq != null) q.set("afterSeq", String(params.afterSeq));
-      const queryString = q.toString() ? `?${q.toString()}` : "";
-
-      // Try official Orbit endpoint /conversations/:id/tree first
-      let res: any;
-      try {
-        res = await api<any>(`/conversations/${encodeURIComponent(id)}/tree${queryString}`);
-      } catch {
-        res = await api<any>(`/conversations/${encodeURIComponent(id)}/turns${queryString}`);
-      }
-
-      if (Array.isArray(res)) return { nodes: res, hasMore: false };
-      if (Array.isArray(res?.nodes)) return { nodes: res.nodes, hasMore: Boolean(res?.hasMore) };
-      if (Array.isArray(res?.turns)) return { nodes: res.turns, hasMore: Boolean(res?.hasMore) };
-      return { nodes: [], hasMore: false };
-    } catch {
-      return { nodes: [], hasMore: false };
-    }
+    const q = new URLSearchParams();
+    if (params?.limit) q.set("limit", String(params.limit));
+    if (params?.beforeSeq != null) q.set("beforeSeq", String(params.beforeSeq));
+    if (params?.afterSeq != null) q.set("afterSeq", String(params.afterSeq));
+    const queryString = q.toString() ? `?${q.toString()}` : "";
+    const res = await api<any>(`/conversations/${encodeURIComponent(id)}/tree${queryString}`);
+    if (Array.isArray(res)) return { nodes: res, hasMore: false };
+    if (Array.isArray(res?.nodes)) return { nodes: res.nodes, hasMore: Boolean(res?.hasMore) };
+    if (Array.isArray(res?.turns)) return { nodes: res.turns, hasMore: Boolean(res?.hasMore) };
+    throw new ApiError(502, "会话详情接口返回了无法识别的数据格式");
   },
 };
 
@@ -1744,34 +1659,8 @@ export const embeddedServicesApi = {
       body: JSON.stringify({ mappings }),
     }),
   get9RouterModels: async (): Promise<NinerouterModelItem[]> => {
-    try {
-      const res = await api<any>("/services/9router/models");
-      return Array.isArray(res) ? res : res?.models || [];
-    } catch {
-      return [
-        {
-          id: "9r-deepseek-r1",
-          name: "DeepSeek-R1 (Local Engine)",
-          provider: "deepseek",
-          contextLength: 64000,
-          isAvailable: true,
-        },
-        {
-          id: "9r-qwen-max",
-          name: "Qwen 2.5 Max (High-Speed)",
-          provider: "alibaba",
-          contextLength: 128000,
-          isAvailable: true,
-        },
-        {
-          id: "9r-llama-3.3-70b",
-          name: "Llama 3.3 70B Instruct",
-          provider: "meta",
-          contextLength: 32000,
-          isAvailable: true,
-        },
-      ];
-    }
+    const res = await api<any>("/services/9router/models");
+    return Array.isArray(res) ? res : Array.isArray(res?.models) ? res.models : [];
   },
 };
 /* ---------------- Compression & Context Combos ---------------- */
@@ -2004,76 +1893,34 @@ export interface LanguagePackItem {
 }
 
 export const compressionApi = {
-  getConfig: async (): Promise<CompressionConfig> => {
-    try {
-      const res = await api<CompressionConfig>("/settings/compression");
-      return res;
-    } catch {
-      const saved = localStorage.getItem("omniroute_compression_config");
-      if (saved) {
-        try {
-          return JSON.parse(saved);
-        } catch {}
-      }
-      return {
-        enabled: true,
-        autoTriggerTokens: 2048,
-        preserveSystemPrompt: true,
-        preserveSystemPromptMode: "always",
-        engines: {
-          "session-dedup": { enabled: true },
-          lite: { enabled: true },
-          rtk: { enabled: true, level: "standard" },
-          headroom: { enabled: false },
-          caveman: { enabled: true, level: "full" },
-          aggressive: { enabled: false },
-          llmlingua: { enabled: false },
-          ultra: { enabled: false },
-        },
-        activeComboId: "default-balanced",
-        cavemanOutputMode: { enabled: true, intensity: "full", autoClarity: true },
-        ultraEngine: "heuristic",
-        ultraSlmPrewarm: false,
-        liveZone: { enabled: false },
-      };
-    }
-  },
+  preview: (input: {
+    messages: Array<{ role: string; content: string }>;
+    mode?: "off" | "lite" | "standard" | "aggressive" | "ultra" | "rtk" | "stacked" | "caveman";
+    engineId?: string;
+    pipeline?: string[];
+    heatmap?: "ultra" | "universal";
+  }) => api<Record<string, unknown>>("/compression/preview", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  }),
+  compare: (input: { messages: Array<{ role: string; content: string }>; engineIds?: string[] }) =>
+    api<Record<string, unknown>>("/compression/compare", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    }),
+  getConfig: (): Promise<CompressionConfig> => api<CompressionConfig>("/settings/compression"),
   updateConfig: async (config: Partial<CompressionConfig>): Promise<{ success: boolean }> => {
-    try {
-      await api<{ success: boolean }>("/settings/compression", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(config),
-      });
-      return { success: true };
-    } catch {
-      const cur = await compressionApi.getConfig();
-      const merged = { ...cur, ...config };
-      localStorage.setItem("omniroute_compression_config", JSON.stringify(merged));
-      return { success: true };
-    }
+    await api<CompressionConfig>("/settings/compression", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(config),
+    });
+    return { success: true };
   },
-  getTelemetry: async (): Promise<CompressionTelemetrySummary> => {
-    try {
-      const res = await api<CompressionTelemetrySummary>("/settings/compression/run-telemetry");
-      return res;
-    } catch {
-      return {
-        totalRuns: 14280,
-        totalTokensSaved: 4892410,
-        runsWithStyles: 8940,
-        bypassCount: 520,
-        totalOutputTokens: 12450890,
-        appliedStyleCounts: {
-          "session-dedup": 6120,
-          caveman: 4850,
-          rtk: 3290,
-          lite: 7420,
-          ccr: 1210,
-        },
-      };
-    }
-  },
+  getTelemetry: (): Promise<CompressionTelemetrySummary> =>
+    api<CompressionTelemetrySummary>("/settings/compression/run-telemetry"),
   getAnalytics: async (since: "24h" | "7d" | "30d" | "all" = "24h"): Promise<CompressionAnalyticsSummary> => {
     return api<CompressionAnalyticsSummary>(`/analytics/compression?since=${since}`);
   },
@@ -2081,164 +1928,46 @@ export const compressionApi = {
 
 export const contextCombosApi = {
   getCombos: async (): Promise<CompressionComboItem[]> => {
-    try {
-      const res = await api<{ combos: CompressionComboItem[] }>("/context/combos");
-      return Array.isArray(res?.combos) ? res.combos : [];
-    } catch {
-      const saved = localStorage.getItem("omniroute_context_combos");
-      if (saved) {
-        try {
-          return JSON.parse(saved);
-        } catch {}
-      }
-      return [
-        {
-          id: "default-balanced",
-          name: "标准均衡加速 (Balanced Fast)",
-          description: "适用于绝大多数编码与对话场景，包含会话去重、轻量排版与 RTK 终端过滤。",
-          pipeline: [
-            { engine: "session-dedup" },
-            { engine: "lite" },
-            { engine: "rtk", intensity: "standard" },
-          ],
-          languagePacks: ["en", "zh"],
-          outputMode: true,
-          outputModeIntensity: "full",
-          isDefault: true,
-        },
-        {
-          id: "deep-compression",
-          name: "长上下文深度压缩 (Deep Context Saver)",
-          description: "针对多轮超长代码调试与多文件检索，启用 Caveman 语言提炼与历史摘要老化。",
-          pipeline: [
-            { engine: "session-dedup" },
-            { engine: "rtk", intensity: "aggressive" },
-            { engine: "caveman", intensity: "full" },
-            { engine: "aggressive" },
-          ],
-          languagePacks: ["en", "zh"],
-          outputMode: true,
-          outputModeIntensity: "ultra",
-          isDefault: false,
-        },
-        {
-          id: "lossless-pure",
-          name: "100% 绝对无损压缩 (Lossless Pure)",
-          description: "仅执行无损空格折叠、结构化 JSON 压缩与跨轮次重复块消除，零语义变更。",
-          pipeline: [
-            { engine: "session-dedup" },
-            { engine: "lite" },
-            { engine: "headroom" },
-          ],
-          languagePacks: ["en"],
-          outputMode: false,
-          outputModeIntensity: "lite",
-          isDefault: false,
-        },
-      ];
-    }
+    const res = await api<{ combos: CompressionComboItem[] }>("/context/combos");
+    return Array.isArray(res?.combos) ? res.combos : [];
   },
   createCombo: async (payload: Partial<CompressionComboItem>): Promise<CompressionComboItem> => {
-    try {
-      const res = await api<CompressionComboItem>("/context/combos", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      return res;
-    } catch {
-      const combos = await contextCombosApi.getCombos();
-      const newCombo: CompressionComboItem = {
-        id: payload.id || `combo-${Date.now()}`,
-        name: payload.name || "未命名压缩组合",
-        description: payload.description || "",
-        pipeline: payload.pipeline || [{ engine: "lite" }],
-        languagePacks: payload.languagePacks || ["en"],
-        outputMode: payload.outputMode ?? false,
-        outputModeIntensity: payload.outputModeIntensity || "full",
-        isDefault: Boolean(payload.isDefault),
-      };
-      combos.push(newCombo);
-      localStorage.setItem("omniroute_context_combos", JSON.stringify(combos));
-      return newCombo;
-    }
+    return api<CompressionComboItem>("/context/combos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
   },
   updateCombo: async (id: string, payload: Partial<CompressionComboItem>): Promise<CompressionComboItem> => {
-    try {
-      const res = await api<CompressionComboItem>(`/context/combos/${encodeURIComponent(id)}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      return res;
-    } catch {
-      const combos = await contextCombosApi.getCombos();
-      const idx = combos.findIndex((c) => c.id === id);
-      if (idx >= 0) {
-        combos[idx] = { ...combos[idx], ...payload };
-        localStorage.setItem("omniroute_context_combos", JSON.stringify(combos));
-        return combos[idx];
-      }
-      return payload as CompressionComboItem;
-    }
+    return api<CompressionComboItem>(`/context/combos/${encodeURIComponent(id)}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
   },
   deleteCombo: async (id: string): Promise<{ success: boolean }> => {
-    try {
-      await api<{ success: boolean }>(`/context/combos/${encodeURIComponent(id)}`, { method: "DELETE" });
-      return { success: true };
-    } catch {
-      const combos = await contextCombosApi.getCombos();
-      const filtered = combos.filter((c) => c.id !== id);
-      localStorage.setItem("omniroute_context_combos", JSON.stringify(filtered));
-      return { success: true };
-    }
+    return api<{ success: boolean }>(`/context/combos/${encodeURIComponent(id)}`, { method: "DELETE" });
   },
   setDefaultCombo: async (id: string): Promise<{ success: boolean }> => {
-    try {
-      await api<{ success: boolean }>(`/context/combos/${encodeURIComponent(id)}/set-default`, { method: "POST" });
-      return { success: true };
-    } catch {
-      const combos = await contextCombosApi.getCombos();
-      const updated = combos.map((c) => ({ ...c, isDefault: c.id === id }));
-      localStorage.setItem("omniroute_context_combos", JSON.stringify(updated));
-      return { success: true };
-    }
+    return api<{ success: boolean }>(`/context/combos/${encodeURIComponent(id)}/set-default`, { method: "POST" });
   },
   getComboAssignments: async (id: string): Promise<string[]> => {
-    try {
-      const res = await api<any>(`/context/combos/${encodeURIComponent(id)}/assignments`);
-      return Array.isArray(res?.assignments)
-        ? res.assignments.map((item: { routingComboId: string }) => item.routingComboId)
-        : [];
-    } catch {
-      return ["default-model-router", "code-assistant-combo"];
-    }
+    const res = await api<any>(`/context/combos/${encodeURIComponent(id)}/assignments`);
+    return Array.isArray(res?.assignments)
+      ? res.assignments.map((item: { routingComboId: string }) => item.routingComboId)
+      : [];
   },
   saveComboAssignments: async (id: string, routingComboIds: string[]): Promise<{ success: boolean }> => {
-    try {
-      await api<{ success: boolean }>(`/context/combos/${encodeURIComponent(id)}/assignments`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ routingComboIds }),
-      });
-      return { success: true };
-    } catch {
-      return { success: true };
-    }
+    await api<{ success: boolean }>(`/context/combos/${encodeURIComponent(id)}/assignments`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ routingComboIds }),
+    });
+    return { success: true };
   },
   getLanguagePacks: async (): Promise<LanguagePackItem[]> => {
-    try {
-      const res = await api<any>("/compression/language-packs");
-      return Array.isArray(res?.packs) ? res.packs : [];
-    } catch {
-      return [
-        { language: "zh", label: "中文 (Chinese)", ruleCount: 142 },
-        { language: "en", label: "英语 (English)", ruleCount: 380 },
-        { language: "ja", label: "日语 (Japanese)", ruleCount: 96 },
-        { language: "ko", label: "韩语 (Korean)", ruleCount: 84 },
-        { language: "code", label: "通用代码关键字 (Code Common)", ruleCount: 520 },
-      ];
-    }
+    const res = await api<any>("/compression/language-packs");
+    return Array.isArray(res?.packs) ? res.packs : [];
   },
 };
 
@@ -2247,26 +1976,16 @@ export const contextCombosApi = {
 // 1. Compression Exclusions
 export const compressionExclusionsApi = {
   getExclusions: async (): Promise<string[]> => {
-    try {
-      const res = await api<{ exclusions?: string[] }>("/settings/compression");
-      return Array.isArray(res?.exclusions) ? res.exclusions : [];
-    } catch {
-      const saved = localStorage.getItem("omniroute_compression_exclusions");
-      return saved ? JSON.parse(saved) : ["openai/o1-preview", "anthropic/claude-3-opus", "*/*-embed*"];
-    }
+    const res = await api<{ exclusions?: string[] }>("/settings/compression");
+    return Array.isArray(res?.exclusions) ? res.exclusions : [];
   },
   saveExclusions: async (exclusions: string[]): Promise<{ success: boolean }> => {
-    try {
-      await api("/settings/compression", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ exclusions }),
-      });
-      return { success: true };
-    } catch {
-      localStorage.setItem("omniroute_compression_exclusions", JSON.stringify(exclusions));
-      return { success: true };
-    }
+    await api("/settings/compression", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ exclusions }),
+    });
+    return { success: true };
   },
 };
 
@@ -2285,18 +2004,37 @@ export interface CliAgentSession {
 
 export const cliAgentsApi = {
   list: async (): Promise<CliAgentSession[]> => {
-    const res = await api<{ agents?: CliAgentSession[] }>("/cli/agents");
-    return Array.isArray(res?.agents) ? res.agents : [];
+    const res = await api<{ agents?: Array<Record<string, unknown>> }>("/acp/agents");
+    return (Array.isArray(res?.agents) ? res.agents : []).map((agent) => ({
+      id: String(agent.id ?? ""),
+      name: String(agent.name ?? agent.id ?? "Unnamed agent"),
+      command: String(agent.binary ?? agent.command ?? ""),
+      cwd: String(agent.cwd ?? ""),
+      status: agent.installed === true ? "idle" : "error",
+      lastActive: new Date().toISOString(),
+      protocol: String(agent.protocol ?? "stdio"),
+    }));
   },
   spawn: async (payload: { name: string; command: string; cwd?: string }): Promise<CliAgentSession> => {
-    return await api<CliAgentSession>("/cli/agents", {
+    const [binary, ...spawnArgs] = payload.command.trim().split(/\s+/);
+    const res = await api<{ agents?: Array<Record<string, unknown>> }>("/acp/agents", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        id: payload.name,
+        name: payload.name,
+        binary,
+        versionCommand: `${binary} --version`,
+        spawnArgs,
+        protocol: "stdio",
+      }),
     });
+    const agent = res.agents?.find((item) => String(item.name ?? item.id) === payload.name) ?? res.agents?.[0];
+    return { id: String(agent?.id ?? payload.name), name: payload.name, command: payload.command, cwd: payload.cwd ?? "", status: "idle", lastActive: new Date().toISOString(), protocol: "stdio" };
   },
   terminate: async (id: string): Promise<{ success: boolean }> => {
-    return await api(`/cli/agents/${encodeURIComponent(id)}/terminate`, { method: "POST" });
+    await api(`/acp/agents?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+    return { success: true };
   },
 };
 
@@ -2332,8 +2070,17 @@ export interface CloudAgentItem {
 
 export const cloudAgentsApi = {
   list: async (): Promise<CloudAgentItem[]> => {
-    const res = await api<{ agents?: CloudAgentItem[] }>("/cloud/agents");
-    return Array.isArray(res?.agents) ? res.agents : [];
+    const res = await api<{ data?: Array<Record<string, unknown>> }>("/v1/agents/tasks?limit=100");
+    return (Array.isArray(res?.data) ? res.data : []).map((task) => ({
+      id: String(task.id ?? ""),
+      name: String(task.providerId ?? task.provider_id ?? task.id ?? "Cloud task"),
+      provider: String(task.providerId ?? task.provider_id ?? "unknown"),
+      type: "hosted",
+      endpoint: String(task.externalId ?? task.external_id ?? ""),
+      model: String((task.options as Record<string, unknown> | undefined)?.model ?? ""),
+      status: task.status === "completed" ? "healthy" : task.status === "failed" ? "degraded" : "inactive",
+      requests24h: 0,
+    }));
   },
 };
 
@@ -2349,8 +2096,15 @@ export interface ConductorWorkflow {
 
 export const conductorApi = {
   list: async (): Promise<ConductorWorkflow[]> => {
-    const res = await api<{ workflows?: ConductorWorkflow[] }>("/conductor/workflows");
-    return Array.isArray(res?.workflows) ? res.workflows : [];
+    const res = await api<{ tasks?: Array<Record<string, unknown>> }>("/conductor/fleet");
+    return (Array.isArray(res?.tasks) ? res.tasks : []).map((task) => ({
+      id: String(task.id ?? ""),
+      name: String(task.mode ?? "Conductor task"),
+      description: String(task.summary ?? ""),
+      steps: [],
+      status: task.status === "completed" ? "completed" : task.status === "failed" ? "failed" : task.status === "running" ? "running" : "idle",
+      lastRunAt: typeof task.updated_at === "string" ? task.updated_at : undefined,
+    }));
   },
 };
 
@@ -2390,8 +2144,11 @@ export interface TrafficInspectorRecord {
 
 export const trafficInspectorApi = {
   list: async (limit = 20): Promise<TrafficInspectorRecord[]> => {
-    const res = await api<{ records?: TrafficInspectorRecord[] }>(`/tools/traffic-inspector?limit=${limit}`);
-    return Array.isArray(res?.records) ? res.records : [];
+    const res = await api<{ requests?: Array<Record<string, unknown>> }>(`/tools/traffic-inspector/requests?limit=${limit}`);
+    return (Array.isArray(res?.requests) ? res.requests : []).map((record) => ({
+      id: String(record.id ?? ""), timestamp: String(record.timestamp ?? record.createdAt ?? ""), method: String(record.method ?? ""), path: String(record.path ?? ""),
+      status: Number(record.status ?? record.statusCode ?? 0), durationMs: Number(record.durationMs ?? record.latencyMs ?? 0), model: String(record.model ?? ""), promptTokens: Number(record.promptTokens ?? 0), completionTokens: Number(record.completionTokens ?? 0), compressed: record.compressed === true, requestPayload: record.requestPayload, responsePayload: record.responsePayload,
+    }));
   },
 };
 
@@ -2407,9 +2164,13 @@ export interface DiscoveredEndpoint {
 }
 
 export const discoveryApi = {
-  scan: async (): Promise<DiscoveredEndpoint[]> => {
-    const res = await api<{ endpoints?: DiscoveredEndpoint[] }>("/discovery/scan");
-    return Array.isArray(res?.endpoints) ? res.endpoints : [];
+  results: async (): Promise<DiscoveredEndpoint[]> => {
+    const res = await api<{ results?: DiscoveredEndpoint[] }>("/discovery/results");
+    return Array.isArray(res?.results) ? res.results : [];
+  },
+  scan: async (providerId: string): Promise<DiscoveredEndpoint[]> => {
+    const res = await api<{ results?: DiscoveredEndpoint[] }>("/discovery/scan", { method: "POST", body: JSON.stringify({ providerId }) });
+    return Array.isArray(res?.results) ? res.results : [];
   },
 };
 
@@ -2417,18 +2178,31 @@ export const discoveryApi = {
 export interface ApiEndpointItem {
   id: string;
   path: string;
-  targetProvider: string;
+  targetProvider: string | null;
   protocol: "OpenAI" | "Anthropic" | "Gemini" | "Native";
-  rateLimitPerMin: number;
-  corsEnabled: boolean;
+  rateLimitPerMin: number | null;
+  corsEnabled: boolean | null;
   authRequired: boolean;
   status: "active" | "disabled";
 }
 
 export const apiEndpointsApi = {
   list: async (): Promise<ApiEndpointItem[]> => {
-    const res = await api<{ endpoints?: ApiEndpointItem[] }>("/api-endpoints");
-    return Array.isArray(res?.endpoints) ? res.endpoints : [];
+    // The independent runtime exposes its registered inbound contract through
+    // OpenAPI; there is no separate `/api-endpoints` persistence table. Keep
+    // this view derived from the live contract so it cannot drift or invent
+    // endpoint rows.
+    const res = await api<OpenApiCatalog>("/openapi/spec");
+    return (Array.isArray(res?.endpoints) ? res.endpoints : []).map((endpoint) => ({
+      id: `${endpoint.method}:${endpoint.path}`,
+      path: endpoint.path,
+      targetProvider: endpoint.tags?.length ? endpoint.tags.join(", ") : null,
+      protocol: /anthropic/i.test(endpoint.path) ? "Anthropic" : /gemini/i.test(endpoint.path) ? "Gemini" : /openai|v1/i.test(endpoint.path) ? "OpenAI" : "Native",
+      rateLimitPerMin: null,
+      corsEnabled: null,
+      authRequired: endpoint.security || endpoint.alwaysProtected === true,
+      status: "active",
+    }));
   },
 };
 
@@ -2465,10 +2239,10 @@ export interface SystemProxyConfig {
 
 export const systemProxyApi = {
   getConfig: async (): Promise<SystemProxyConfig> => {
-    return await api<SystemProxyConfig>("/system/proxy");
+    return await api<SystemProxyConfig>("/settings/proxy");
   },
   updateConfig: async (config: Partial<SystemProxyConfig>): Promise<{ success: boolean }> => {
-    return await api("/system/proxy", {
+    return await api("/settings/proxy", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(config),
@@ -3312,7 +3086,7 @@ export const evalsApi = {
     });
   },
   list: async (): Promise<EvalBenchmarkResult[]> => {
-    const res = await api<{ evals?: EvalBenchmarkResult[] }>("/analytics/evals").catch(() => ({ evals: [] }));
+    const res = await api<{ evals?: EvalBenchmarkResult[] }>("/evals");
     return Array.isArray(res?.evals) ? res.evals : [];
   },
 };
@@ -3528,29 +3302,25 @@ export const budgetApi = {
     });
   },
   getProviderBreakdown: async (apiKeyId: string): Promise<ProviderCostBreakdown[]> => {
-    try {
-      const data = await api<{ byProvider?: Array<{ provider?: string; totalCost?: number; cost?: number }> }>(
-        `/usage/analytics?range=30d&apiKeyIds=${encodeURIComponent(apiKeyId)}`
-      );
-      const arr = Array.isArray(data?.byProvider) ? data.byProvider : [];
-      const total = arr.reduce((s, p) => s + Number(p?.totalCost ?? p?.cost ?? 0), 0) || 0;
-      return arr
-        .map((p) => {
-          const cost = Number(p?.totalCost ?? p?.cost ?? 0);
-          return {
-            provider: String(p?.provider ?? "未知提供商"),
-            cost,
-            pct: total > 0 ? (cost / total) * 100 : 0,
-          };
-        })
-        .filter((p) => p.cost > 0)
-        .sort((a, b) => b.cost - a.cost);
-    } catch {
-      return [];
-    }
+    const data = await api<{ byProvider?: Array<{ provider?: string; totalCost?: number; cost?: number }> }>(
+      `/usage/analytics?range=30d&apiKeyIds=${encodeURIComponent(apiKeyId)}`
+    );
+    const arr = Array.isArray(data?.byProvider) ? data.byProvider : [];
+    const total = arr.reduce((s, p) => s + Number(p?.totalCost ?? p?.cost ?? 0), 0) || 0;
+    return arr
+      .map((p) => {
+        const cost = Number(p?.totalCost ?? p?.cost ?? 0);
+        return {
+          provider: String(p?.provider ?? "未知提供商"),
+          cost,
+          pct: total > 0 ? (cost / total) * 100 : 0,
+        };
+      })
+      .filter((p) => p.cost > 0)
+      .sort((a, b) => b.cost - a.cost);
   },
   list: async (): Promise<BudgetRuleItem[]> => {
-    const res = await api<{ budgets?: BudgetRuleItem[] }>("/budget").catch(() => ({ budgets: [] }));
+    const res = await api<{ budgets?: BudgetRuleItem[] }>("/budget");
     return Array.isArray(res?.budgets) ? res.budgets : [];
   },
 };
@@ -3975,6 +3745,13 @@ export interface ResilienceConnectionItem {
 }
 
 export const resilienceApi = {
+  get: async (): Promise<Record<string, unknown>> => api<Record<string, unknown>>("/resilience"),
+  update: async (patch: Record<string, unknown>): Promise<Record<string, unknown>> =>
+    api<Record<string, unknown>>("/resilience", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(patch),
+    }),
   list: async (): Promise<ResilienceConnectionItem[]> => {
     const res = await api<{ connections?: ResilienceConnectionItem[] }>("/resilience/connections");
     return Array.isArray(res?.connections) ? res.connections : [];
@@ -3994,8 +3771,23 @@ export interface AuditRecordItem {
 
 export const auditRecordsApi = {
   list: async (type?: "all" | "mcp" | "a2a"): Promise<AuditRecordItem[]> => {
-    const res = await api<{ audits?: AuditRecordItem[] }>(`/audit?type=${type || "all"}`);
-    return Array.isArray(res?.audits) ? res.audits : [];
+    if (type === "mcp") {
+      const res = await api<{ entries?: Array<Record<string, unknown>> }>("/mcp/audit?limit=100");
+      return (Array.isArray(res?.entries) ? res.entries : []).map((item) => ({
+        id: String(item.id ?? ""), timestamp: String(item.createdAt ?? ""), actor: String(item.apiKeyId ?? "system"),
+        action: "mcp.invoke", resource: String(item.toolName ?? ""), clientIp: "—",
+        status: item.success === true ? "allowed" : "denied", detail: String(item.errorCode ?? ""),
+      }));
+    }
+    const res = await api<any>(`/compliance/audit-log?limit=100${type === "a2a" ? "&category=a2a" : ""}`);
+    const entries = Array.isArray(res) ? res : Array.isArray(res?.logs) ? res.logs : Array.isArray(res?.items) ? res.items : [];
+    return entries.map((item: Record<string, unknown>, index: number) => ({
+      id: String(item.id ?? index), timestamp: String(item.timestamp ?? item.createdAt ?? ""),
+      actor: String(item.actor ?? item.actorId ?? "system"), action: String(item.action ?? item.event ?? "audit"),
+      resource: String(item.resource ?? item.resourceType ?? ""), clientIp: String(item.ipAddress ?? "—"),
+      status: item.status === "denied" || item.status === "flagged" ? item.status : "allowed",
+      detail: typeof item.details === "string" ? item.details : JSON.stringify(item.details ?? item.metadata ?? ""),
+    }));
   },
 };
 
@@ -4016,8 +3808,16 @@ export interface McpServerItem {
 
 export const mcpApi = {
   list: async (): Promise<McpServerItem[]> => {
-    const res = await api<{ servers?: McpServerItem[] }>("/mcp/servers");
-    return Array.isArray(res?.servers) ? res.servers : [];
+    const [status, toolCatalog] = await Promise.all([
+      api<Record<string, unknown>>("/mcp/status"),
+      api<{ tools?: Array<{ name: string; description: string }> }>("/mcp/tools"),
+    ]);
+    const tools = Array.isArray(toolCatalog.tools) ? toolCatalog.tools : [];
+    return [{
+      id: "local-mcp", name: "ShiguangGateway MCP", transport: String(status.transport ?? "stdio") as McpServerItem["transport"],
+      commandOrUrl: String(status.heartbeatPath ?? "in-process"), toolsCount: tools.length, promptsCount: 0, resourcesCount: 0,
+      status: status.online === true ? "connected" : "disconnected", pingMs: 0, tools,
+    }];
   },
 };
 
@@ -4034,8 +3834,16 @@ export interface A2aSessionItem {
 
 export const a2aApi = {
   list: async (): Promise<A2aSessionItem[]> => {
-    const res = await api<{ sessions?: A2aSessionItem[] }>("/a2a/sessions");
-    return Array.isArray(res?.sessions) ? res.sessions : [];
+    const res = await api<{ tasks?: Array<Record<string, unknown>> }>("/a2a/tasks?limit=100");
+    return (Array.isArray(res?.tasks) ? res.tasks : []).map((task) => {
+      const input = (task.input ?? {}) as Record<string, unknown>;
+      const messages = Array.isArray(input.messages) ? input.messages : [];
+      return {
+        id: String(task.id ?? ""), initiatorAgent: "local", targetAgent: String(input.skill ?? task.skill ?? ""),
+        protocol: "a2a-v1", messagesCount: messages.length, status: (task.state === "working" ? "active" : task.state === "completed" ? "completed" : "terminated") as A2aSessionItem["status"],
+        lastActive: String(task.updatedAt ?? task.createdAt ?? ""), topic: String(input.skill ?? task.skill ?? "A2A task"),
+      };
+    });
   },
 };
 
@@ -4050,8 +3858,19 @@ export interface MemoryBankItem {
 
 export const memoryApi = {
   list: async (): Promise<MemoryBankItem[]> => {
-    const res = await api<{ banks?: MemoryBankItem[] }>("/memory/banks");
-    return Array.isArray(res?.banks) ? res.banks : [];
+    const res = await api<{ data?: Array<Record<string, unknown>>; stats?: { byType?: Record<string, number> } }>("/memory?limit=100");
+    const items = Array.isArray(res?.data) ? res.data : [];
+    const byNamespace = new Map<string, MemoryBankItem>();
+    for (const item of items) {
+      const namespace = String(item.sessionId ?? item.apiKeyId ?? "default");
+      const existing = byNamespace.get(namespace);
+      if (existing) { existing.totalEntries += 1; continue; }
+      byNamespace.set(namespace, {
+        id: namespace, namespace, totalEntries: 1, vectorIndexSizeKb: 0,
+        lastRecalledAt: String(item.updatedAt ?? item.createdAt ?? "—"), description: "本地 SQLite memory namespace",
+      });
+    }
+    return [...byNamespace.values()];
   },
 };
 
@@ -4105,11 +3924,33 @@ export interface PluginItem {
   hooks: string[];
 }
 
+export interface PluginConfigField {
+  type: "string" | "number" | "boolean" | "select";
+  default?: unknown;
+  min?: number;
+  max?: number;
+  enum?: string[];
+  description?: string;
+}
+
+export interface PluginConfigResponse {
+  config: Record<string, unknown>;
+  configSchema: Record<string, PluginConfigField>;
+}
+
 export const pluginsApi = {
   list: async (): Promise<PluginItem[]> => {
     const res = await api<{ plugins?: PluginItem[] }>("/plugins");
     return Array.isArray(res?.plugins) ? res.plugins : [];
   },
+  getConfig: async (name: string): Promise<PluginConfigResponse> => api(`/plugins/${encodeURIComponent(name)}/config`),
+  updateConfig: async (name: string, config: Record<string, unknown>): Promise<PluginConfigResponse & { success: boolean }> =>
+    api(`/plugins/${encodeURIComponent(name)}/config`, {
+      method: "PUT",
+      body: JSON.stringify({ config }),
+    }),
+  activate: async (name: string): Promise<{ success: boolean }> => api(`/plugins/${encodeURIComponent(name)}/activate`, { method: "POST" }),
+  deactivate: async (name: string): Promise<{ success: boolean }> => api(`/plugins/${encodeURIComponent(name)}/deactivate`, { method: "POST" }),
 };
 
 /* ---------------- Other Features APIs (Batch, Tokens, Media, Profile, Leaderboard) ---------------- */
@@ -4127,39 +3968,107 @@ export interface BatchTaskItem {
   errorFileId?: string | null;
   createdAt: string;
   completedAt?: string | null;
-  discountPct: number;
+  discountPct?: number;
 }
 
 export interface BatchFileItem {
   id: string;
   filename: string;
   bytes: number;
-  lineCount: number;
+  lineCount?: number;
   purpose: string;
-  status: "uploaded" | "processed" | "error";
+  status?: "uploaded" | "processed" | "error";
   createdAt: string;
 }
 
 export const batchApi = {
   list: async (): Promise<BatchTaskItem[]> => {
-    const res = await api<{ tasks?: BatchTaskItem[] }>("/batch/tasks");
-    return Array.isArray(res?.tasks) ? res.tasks : [];
+    const res = await api<{ data?: Array<Record<string, unknown>> }>("/v1/batches?limit=100");
+    return (Array.isArray(res?.data) ? res.data : []).map((item) => {
+      const counts = (item.request_counts ?? {}) as Record<string, unknown>;
+      const metadata = (item.metadata ?? {}) as Record<string, unknown>;
+      return {
+        id: String(item.id ?? ""),
+        name: String(metadata.name ?? item.id ?? "Batch"),
+        totalRequests: Number(counts.total ?? 0),
+        completedRequests: Number(counts.completed ?? 0),
+        failedRequests: Number(counts.failed ?? 0),
+        targetModel: String(item.model ?? item.endpoint ?? ""),
+        status: String(item.status ?? "validating") as BatchTaskItem["status"],
+        inputFileId: String(item.input_file_id ?? ""),
+        outputFileId: item.output_file_id ? String(item.output_file_id) : null,
+        errorFileId: item.error_file_id ? String(item.error_file_id) : null,
+        createdAt: new Date(Number(item.created_at ?? 0) * 1000).toISOString(),
+        completedAt: item.completed_at ? new Date(Number(item.completed_at) * 1000).toISOString() : null,
+      };
+    });
   },
   create: async (data: { name?: string; targetModel: string; inputFileId: string }): Promise<BatchTaskItem> => {
-    return api<BatchTaskItem>("/batch/tasks", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+    const item = await api<Record<string, unknown>>("/v1/batches", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        input_file_id: data.inputFileId,
+        endpoint: "/v1/chat/completions",
+        completion_window: "24h",
+        metadata: { ...(data.name ? { name: data.name } : {}), model: data.targetModel },
+      }),
+    });
+    const counts = (item.request_counts ?? {}) as Record<string, unknown>;
+    return {
+      id: String(item.id ?? ""),
+      name: String(data.name ?? item.id ?? "Batch"),
+      totalRequests: Number(counts.total ?? 0),
+      completedRequests: Number(counts.completed ?? 0),
+      failedRequests: Number(counts.failed ?? 0),
+      targetModel: data.targetModel,
+      status: String(item.status ?? "validating") as BatchTaskItem["status"],
+      inputFileId: String(item.input_file_id ?? data.inputFileId),
+      outputFileId: item.output_file_id ? String(item.output_file_id) : null,
+      errorFileId: item.error_file_id ? String(item.error_file_id) : null,
+      createdAt: new Date(Number(item.created_at ?? 0) * 1000).toISOString(),
+    };
   },
   cancel: async (id: string): Promise<BatchTaskItem> => {
-    return api<BatchTaskItem>(`/batch/tasks/${encodeURIComponent(id)}/cancel`, { method: "POST" });
+    const item = await api<Record<string, unknown>>(`/v1/batches/${encodeURIComponent(id)}/cancel`, { method: "POST" });
+    return {
+      id: String(item.id ?? id),
+      name: String(((item.metadata ?? {}) as Record<string, unknown>).name ?? item.id ?? id),
+      totalRequests: Number(((item.request_counts ?? {}) as Record<string, unknown>).total ?? 0),
+      completedRequests: Number(((item.request_counts ?? {}) as Record<string, unknown>).completed ?? 0),
+      failedRequests: Number(((item.request_counts ?? {}) as Record<string, unknown>).failed ?? 0),
+      targetModel: String(item.model ?? item.endpoint ?? ""),
+      status: String(item.status ?? "cancelling") as BatchTaskItem["status"],
+      inputFileId: String(item.input_file_id ?? ""),
+      outputFileId: item.output_file_id ? String(item.output_file_id) : null,
+      errorFileId: item.error_file_id ? String(item.error_file_id) : null,
+      createdAt: new Date(Number(item.created_at ?? 0) * 1000).toISOString(),
+    };
   },
   listFiles: async (): Promise<BatchFileItem[]> => {
-    const res = await api<{ files?: BatchFileItem[] }>("/batch/files");
-    return Array.isArray(res?.files) ? res.files : [];
+    const res = await api<{ data?: Array<Record<string, unknown>> }>("/v1/files?limit=100");
+    return (Array.isArray(res?.data) ? res.data : []).map((item) => ({
+      id: String(item.id ?? ""),
+      filename: String(item.filename ?? item.id ?? "file"),
+      bytes: Number(item.bytes ?? 0),
+      purpose: String(item.purpose ?? "batch"),
+      status: "uploaded" as const,
+      createdAt: new Date(Number(item.created_at ?? 0) * 1000).toISOString(),
+    }));
   },
-  uploadFile: async (data: { filename: string; lineCount: number; bytes?: number }): Promise<BatchFileItem> => {
-    return api<BatchFileItem>("/batch/files", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+  uploadFile: async (data: { file: File; purpose?: string }): Promise<BatchFileItem> => {
+    const body = new FormData();
+    body.append("file", data.file);
+    body.append("purpose", data.purpose ?? "batch");
+    const item = await api<Record<string, unknown>>("/v1/files", { method: "POST", body });
+    return {
+      id: String(item.id ?? ""), filename: String(item.filename ?? data.file.name), bytes: Number(item.bytes ?? data.file.size),
+      purpose: String(item.purpose ?? data.purpose ?? "batch"), status: "uploaded", createdAt: new Date(Number(item.created_at ?? 0) * 1000).toISOString(),
+    };
   },
   deleteFile: async (id: string): Promise<{ success: boolean }> => {
-    return api<{ success: boolean }>(`/batch/files/${encodeURIComponent(id)}`, { method: "DELETE" });
+    await api(`/v1/files/${encodeURIComponent(id)}`, { method: "DELETE" });
+    return { success: true };
   },
 };
 
@@ -4256,6 +4165,33 @@ export const gamificationApi = {
   connectServer: async (data: { name: string; url: string; apiKey?: string }): Promise<ServerConnection> => {
     return api("/gamification/servers", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
   },
+  getAnomalies: async (): Promise<{ anomalies: Array<{ apiKeyId: string; xpLastHour: number; zScore: number }> }> => {
+    return api("/gamification/anomalies");
+  },
+};
+
+export interface RelayTokenItem {
+  id: string;
+  name: string;
+  tokenPrefix: string;
+  description?: string;
+  maxRequestsPerMinute: number;
+  maxRequestsPerDay: number;
+  enabled: boolean;
+  createdAt: number;
+  lastUsedAt?: number | null;
+}
+
+export const relayApi = {
+  list: async (): Promise<RelayTokenItem[]> => {
+    const value = await api<unknown>("/relay/tokens");
+    return Array.isArray(value) ? value as RelayTokenItem[] : [];
+  },
+  create: (data: { name: string; description?: string; maxRequestsPerMinute: number; maxRequestsPerDay: number }) =>
+    api<RelayTokenItem & { rawToken: string }>("/relay/tokens", { method: "POST", body: JSON.stringify(data) }),
+  update: (id: string, patch: { enabled?: boolean }) =>
+    api<RelayTokenItem>(`/relay/tokens/${encodeURIComponent(id)}`, { method: "PATCH", body: JSON.stringify(patch) }),
+  remove: (id: string) => api<{ success: boolean }>(`/relay/tokens/${encodeURIComponent(id)}`, { method: "DELETE" }),
 };
 
 export const mediaApi = {

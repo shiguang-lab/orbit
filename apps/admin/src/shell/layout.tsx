@@ -1,6 +1,6 @@
 /**
  * 应用外壳：antd Layout（Sider 菜单 + Header + Content/Outlet）。
- * 菜单图标与线上 OmniRoute Orbit 侧栏保持一致。
+ * 菜单图标与线上 ShiguangGateway Shiguang Gateway 侧栏保持一致。
  */
 import {
   Layout,
@@ -12,6 +12,7 @@ import {
   type MenuProps,
 } from "antd";
 import { useEffect, useMemo, useState } from "react";
+import { createStyles } from "antd-style";
 import { useQuery } from "@tanstack/react-query";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { NAV_SECTIONS, MaterialIcon, NavIcon, applySidebarSettings, flattenNav, localizeNav, navTitleForPath } from "@/app/nav";
@@ -24,7 +25,145 @@ import { useBreadcrumbTitle } from "@/shell/useBreadcrumbTitle";
 
 const { Sider, Header, Content } = Layout;
 
+const useStyles = createStyles(({ token }) => ({
+  sider: {
+    borderRight: `1px solid ${token.colorBorderSecondary}`,
+    display: "flex",
+    flexDirection: "column",
+    minHeight: 0,
+    padding: "16px 6px 0",
+    boxSizing: "border-box",
+    transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+    "& > div": {
+      display: "flex",
+      flexDirection: "column",
+      minHeight: 0,
+      height: "100%",
+    },
+  },
+  siderCollapsed: {
+    padding: "16px 0 0",
+  },
+  sidebarHeader: {
+    minHeight: 52,
+    padding: "4px 18px 16px",
+    display: "flex",
+    alignItems: "center",
+    gap: 12,
+    flex: "none",
+  },
+  sidebarHeaderCollapsed: {
+    justifyContent: "center",
+    padding: "4px 0 16px",
+    minHeight: 52,
+  },
+  sidebarBrandMark: {
+    width: 34,
+    height: 34,
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flex: "none",
+    borderRadius: 9,
+    color: "#fff",
+    background: "linear-gradient(145deg, #6d59ff, #4d35d7)",
+    boxShadow: "0 0 20px rgba(92, 69, 255, 0.25)",
+    "& .material-symbols-outlined": {
+      fontSize: 19,
+    },
+  },
+  sidebarBrandCopy: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 3,
+    minWidth: 0,
+    lineHeight: 1.15,
+  },
+  brandTitle: {
+    color: token.colorText,
+    fontSize: 16,
+  },
+  brandSubtitle: {
+    color: token.colorTextSecondary,
+    fontSize: 11,
+  },
+  sidebarMenuSearch: {
+    padding: "0 6px 10px",
+    flex: "none",
+  },
+  sidebarMenuSearchInput: {
+    minHeight: 34,
+    borderColor: token.colorBorder,
+    borderRadius: 7,
+    background: token.colorBgContainer,
+    fontSize: 13,
+  },
+  sidebarMenu: {
+    marginTop: 4,
+    paddingBottom: 24,
+    borderInlineEnd: "none !important",
+    background: "transparent !important",
+  },
+  appHeader: {
+    height: 60,
+    minHeight: 60,
+    display: "flex",
+    alignItems: "center",
+    gap: 14,
+    padding: "0 24px",
+    lineHeight: "normal",
+    boxSizing: "border-box",
+    borderBottom: `1px solid ${token.colorBorderSecondary}`,
+    background: token.colorBgContainer,
+    backdropFilter: "blur(14px)",
+  },
+  appHeaderLeft: {
+    minWidth: 0,
+    flex: 1,
+    display: "flex",
+    alignItems: "center",
+    gap: 12,
+  },
+  appBreadcrumb: {
+    minWidth: 130,
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
+    color: token.colorTextSecondary,
+  },
+  appBreadcrumbCurrent: {
+    color: token.colorText,
+    fontWeight: 600,
+  },
+  appHeaderTools: {
+    display: "flex",
+    alignItems: "center",
+    gap: 12,
+    flex: "none",
+  },
+  appGlobalSearch: {
+    width: "min(340px, 30vw)",
+    minHeight: 36,
+    borderRadius: 7,
+    borderColor: token.colorBorder,
+    background: token.colorBgContainer,
+    "& input": { fontSize: 14 },
+  },
+  shellContentInner: {
+    padding: "20px 24px 32px",
+    minHeight: "100%",
+    boxSizing: "border-box",
+    display: "flex",
+    flexDirection: "column",
+    flex: 1,
+    width: "100%",
+    maxWidth: "100%",
+    overflowX: "hidden",
+  },
+}));
+
 export function Shell() {
+  const { styles, cx } = useStyles();
   const [collapsed, setCollapsed] = useState(false);
   const [menuSearch, setMenuSearch] = useState("");
   const [globalSearch, setGlobalSearch] = useState("");
@@ -236,22 +375,25 @@ export function Shell() {
         trigger={null}
         width={250}
         collapsedWidth={64}
-        className="sidebar-sider"
+        className={cx(styles.sider, collapsed && styles.siderCollapsed)}
       >
-        <div className="sidebar-header" role="banner">
-          <div className="sidebar-brand-mark" aria-hidden="true">
+        <div className={cx(styles.sidebarHeader, collapsed && styles.sidebarHeaderCollapsed)} role="banner">
+          <div className={styles.sidebarBrandMark} aria-hidden="true">
             <MaterialIcon name="hub" />
           </div>
           {!collapsed && (
-            <div className="sidebar-brand-copy">
-              <Typography.Text strong>{locale === "zh-CN" ? "智枢" : "Orbit"}</Typography.Text>
-              <Typography.Text type="secondary">{t("shell.brandSubtitle")}</Typography.Text>
+            <div className={styles.sidebarBrandCopy}>
+              <Typography.Text strong className={styles.brandTitle}>
+                {locale === "zh-CN" ? "时光网关" : "Shiguang Gateway"}
+              </Typography.Text>
+              <Typography.Text type="secondary" className={styles.brandSubtitle}>
+                {t("shell.brandSubtitle")}
+              </Typography.Text>
             </div>
           )}
-
         </div>
         {!collapsed && (
-          <div className="sidebar-menu-search">
+          <div className={styles.sidebarMenuSearch}>
             <Input
               allowClear
               value={menuSearch}
@@ -259,18 +401,18 @@ export function Shell() {
               prefix={<MaterialIcon name="search" />}
               placeholder={t("shell.menuSearch")}
               aria-label={t("shell.menuSearch")}
+              className={styles.sidebarMenuSearchInput}
             />
           </div>
         )}
         <Scrollbar
-          className="sidebar-scrollbar"
           scrollX={false}
           style={{ flex: "1 1 0%", minHeight: 0, height: 0 }}
         >
           <Menu
             mode="inline"
             theme="dark"
-            className="sidebar-menu"
+            className={styles.sidebarMenu}
             inlineIndent={14}
             inlineCollapsed={collapsed}
             selectedKeys={selectedKeys}
@@ -287,27 +429,24 @@ export function Shell() {
                 }
               }
             }}
-            style={{ borderInlineEnd: "none", background: "transparent" }}
           />
         </Scrollbar>
       </Sider>
 
       <Layout style={{ minHeight: 0 }}>
-        <Header
-          className="app-header"
-        >
-          <div className="app-header-left">
+        <Header className={styles.appHeader}>
+          <div className={styles.appHeaderLeft}>
             <Button
               type="text"
               icon={<MaterialIcon name={collapsed ? "menu" : "menu_open"} />}
               onClick={() => setCollapsed((c) => !c)}
               aria-label={t("shell.toggleSidebar")}
             />
-            <div className="app-breadcrumb" aria-label={t("shell.currentLocation")}>
+            <div className={styles.appBreadcrumb} aria-label={t("shell.currentLocation")}>
               {location.pathname === "/home" || location.pathname === "/" ? (
                 <>
                   <MaterialIcon name="home" />
-                  <span className="app-breadcrumb-current">{t("nav.item.home")}</span>
+                  <span className={styles.appBreadcrumbCurrent}>{t("nav.item.home")}</span>
                   <Typography.Text type="secondary">{t("shell.homeWelcome")}</Typography.Text>
                 </>
               ) : (
@@ -321,7 +460,7 @@ export function Shell() {
                           {crumb.label}
                         </Link>
                       ) : (
-                        <span className="app-breadcrumb-current">{crumb.label}</span>
+                        <span className={styles.appBreadcrumbCurrent}>{crumb.label}</span>
                       )}
                     </span>
                   ))}
@@ -330,9 +469,9 @@ export function Shell() {
             </div>
           </div>
 
-          <div className="app-header-tools">
+          <div className={styles.appHeaderTools}>
             <Input
-              className="app-global-search"
+              className={styles.appGlobalSearch}
               allowClear
               value={globalSearch}
               onChange={(event) => setGlobalSearch(event.target.value)}
@@ -393,7 +532,7 @@ export function Shell() {
 
         <Content style={{ minHeight: 0, display: "flex", flexDirection: "column", flex: 1, overflow: "hidden" }}>
           <Scrollbar className="shell-content-scrollbar" scrollX={false} style={{ height: "100%", width: "100%" }}>
-            <div className="shell-content-inner" style={{ padding: "20px 24px 32px", minHeight: "100%", boxSizing: "border-box", display: "flex", flexDirection: "column", flex: 1, width: "100%", maxWidth: "100%", overflowX: "hidden" }}>
+            <div className={styles.shellContentInner}>
               <Outlet />
             </div>
           </Scrollbar>

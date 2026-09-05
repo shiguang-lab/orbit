@@ -21,6 +21,7 @@ import { createStyles } from "antd-style";
 import { MaterialIcon } from "@/app/nav";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/entities/api";
+import { useI18n } from "@/i18n";
 
 const { Text, Title, Paragraph } = Typography;
 
@@ -80,6 +81,7 @@ interface A2ATask {
 export function A2aDashboard() {
   const { styles } = useStyles();
   const { token } = theme.useToken();
+  const { tt } = useI18n();
   const queryClient = useQueryClient();
 
   const [stateFilter, setStateFilter] = useState<string>("all");
@@ -91,36 +93,9 @@ export function A2aDashboard() {
   const statusQuery = useQuery({
     queryKey: ["a2a-status-full"],
     queryFn: async () => {
-      try {
-        const res = await fetch("/api/a2a/status");
-        if (res.ok) return await res.json();
-      } catch {}
-      return {
-        status: "ok",
-        tasks: {
-          total: 86,
-          counts: {
-            submitted: 2,
-            working: 3,
-            completed: 78,
-            failed: 2,
-            cancelled: 1,
-          },
-          activeStreams: 1,
-          lastTaskAt: new Date().toISOString(),
-        },
-        agent: {
-          name: "Orbit-A2A-Coordinator",
-          version: "1.4.0",
-
-          url: "http://localhost:20128/a2a",
-        },
-        skills: [
-          { id: "quota-management", name: "额度管理与查询", description: "智能体额度、费率与并发查询分配" },
-          { id: "rag-doc-retrieval", name: "RAG 文档召回", description: "跨知识库多路混合召回与精排中继" },
-          { id: "code-execution-sandbox", name: "代码沙箱执行", description: "受限容器化多语言代码运行评估" },
-        ],
-      };
+      const res = await fetch("/api/a2a/status");
+      if (!res.ok) throw new Error(tt("A2A 状态不可用", "A2A status unavailable"));
+      return await res.json();
     },
     staleTime: 15_000,
   });
@@ -129,64 +104,15 @@ export function A2aDashboard() {
   const tasksQuery = useQuery({
     queryKey: ["a2a-tasks-list", taskPage, stateFilter, skillFilter],
     queryFn: async () => {
-      try {
-        const params = new URLSearchParams();
-        params.set("limit", "10");
-        params.set("offset", String((taskPage - 1) * 10));
-        if (stateFilter !== "all") params.set("state", stateFilter);
-        if (skillFilter) params.set("skill", skillFilter);
+      const params = new URLSearchParams();
+      params.set("limit", "10");
+      params.set("offset", String((taskPage - 1) * 10));
+      if (stateFilter !== "all") params.set("state", stateFilter);
+      if (skillFilter) params.set("skill", skillFilter);
 
-        const res = await fetch(`/api/a2a/tasks?${params.toString()}`);
-        if (res.ok) return await res.json();
-      } catch {}
-      // Fallback mock tasks
-      const mockTasks: A2ATask[] = [
-        {
-          id: "task-a2a-9821",
-          skill: "rag-doc-retrieval",
-          state: "working",
-          input: { skill: "rag-doc-retrieval", messages: [{ role: "user", content: "检索 2026 架构升级白皮书" }] },
-          events: [
-            { timestamp: new Date(Date.now() - 60000).toISOString(), state: "submitted", message: "任务已接收并分配队列" },
-            { timestamp: new Date(Date.now() - 30000).toISOString(), state: "working", message: "正在请求向量索引节点" },
-          ],
-          artifacts: [],
-          createdAt: new Date(Date.now() - 60000).toISOString(),
-          updatedAt: new Date(Date.now() - 30000).toISOString(),
-        },
-        {
-          id: "task-a2a-9820",
-          skill: "quota-management",
-          state: "completed",
-          input: { skill: "quota-management", messages: [{ role: "user", content: "查询 team-ai 当前用量" }] },
-          events: [
-            { timestamp: new Date(Date.now() - 180000).toISOString(), state: "submitted" },
-            { timestamp: new Date(Date.now() - 170000).toISOString(), state: "working" },
-            { timestamp: new Date(Date.now() - 150000).toISOString(), state: "completed", message: "查询已完成并生成报告" },
-          ],
-          artifacts: [{ type: "json", content: JSON.stringify({ currentUsd: 14.82, hardLimitUsd: 100 }, null, 2) }],
-          createdAt: new Date(Date.now() - 180000).toISOString(),
-          updatedAt: new Date(Date.now() - 150000).toISOString(),
-        },
-        {
-          id: "task-a2a-9819",
-          skill: "code-execution-sandbox",
-          state: "completed",
-          input: { skill: "code-execution-sandbox", messages: [{ role: "user", content: "运行单元测试" }] },
-          events: [
-            { timestamp: new Date(Date.now() - 600000).toISOString(), state: "completed" },
-          ],
-          artifacts: [{ type: "text", content: "PASSED: 18 tests, 0 failures." }],
-          createdAt: new Date(Date.now() - 600000).toISOString(),
-          updatedAt: new Date(Date.now() - 580000).toISOString(),
-        },
-      ];
-      return {
-        tasks: mockTasks,
-        total: 3,
-        limit: 10,
-        offset: (taskPage - 1) * 10,
-      };
+      const res = await fetch(`/api/a2a/tasks?${params.toString()}`);
+      if (!res.ok) throw new Error(tt("A2A 任务列表不可用", "A2A task list unavailable"));
+      return await res.json();
     },
     staleTime: 10_000,
   });
@@ -197,11 +123,11 @@ export function A2aDashboard() {
       await api(`/a2a/tasks/${encodeURIComponent(taskId)}/cancel`, { method: "POST" });
     },
     onSuccess: () => {
-      message.success("任务已取消");
+      message.success(tt("任务已取消", "Task cancelled"));
       void queryClient.invalidateQueries({ queryKey: ["a2a-tasks-list"] });
       void queryClient.invalidateQueries({ queryKey: ["a2a-status-full"] });
     },
-    onError: (err) => message.error(err instanceof Error ? err.message : "操作失败"),
+    onError: (err) => message.error(err instanceof Error ? err.message : tt("操作失败", "Operation failed")),
   });
 
   // Smoke Test Mutation (Send)
@@ -217,65 +143,65 @@ export function A2aDashboard() {
           params: { skill: "quota-management", messages: [{ role: "user", content: "Ping test" }] },
         }),
       });
-      if (!res.ok) throw new Error("分发测试失败");
+      if (!res.ok) throw new Error(tt("分发测试失败", "Dispatch test failed"));
       return await res.json();
     },
     onSuccess: (data) => {
-      message.success(`A2A 同步分发测试成功 (Task: ${data?.result?.task?.id || "OK"})`);
+      message.success(tt(`A2A 同步分发测试成功 (Task: ${data?.result?.task?.id || "OK"})`, `A2A smoke dispatch test succeeded (Task: ${data?.result?.task?.id || "OK"})`));
       void queryClient.invalidateQueries({ queryKey: ["a2a-tasks-list"] });
     },
-    onError: (err) => message.error(err instanceof Error ? err.message : "分发失败"),
+    onError: (err) => message.error(err instanceof Error ? err.message : tt("分发失败", "Dispatch failed")),
   });
 
   const status = statusQuery.data;
-  const counts = status?.tasks?.counts || { submitted: 0, working: 0, completed: 0, failed: 0, cancelled: 0 };
+  const counts = status?.tasks?.counts;
   const skills = status?.skills || [];
   const tasksData = tasksQuery.data ?? { tasks: [], total: 0 };
 
   const getStateTag = (state: A2ATaskState) => {
     switch (state) {
       case "working":
-        return <Tag color="processing">执行中</Tag>;
+        return <Tag color="processing">{tt("执行中", "Working")}</Tag>;
       case "completed":
-        return <Tag color="success">已完成</Tag>;
+        return <Tag color="success">{tt("已完成", "Completed")}</Tag>;
       case "failed":
-        return <Tag color="error">执行失败</Tag>;
+        return <Tag color="error">{tt("执行失败", "Failed")}</Tag>;
       case "cancelled":
-        return <Tag color="default">已取消</Tag>;
+        return <Tag color="default">{tt("已取消", "Cancelled")}</Tag>;
       default:
-        return <Tag color="warning">排队就绪</Tag>;
+        return <Tag color="warning">{tt("排队就绪", "Submitted")}</Tag>;
     }
   };
 
   const taskColumns = [
     {
-      title: "任务标识 ID",
+      title: tt("任务标识 ID", "Task ID"),
       dataIndex: "id",
       key: "id",
       render: (v: string) => <Text code strong style={{ fontSize: 12 }}>{v}</Text>,
     },
     {
-      title: "调度技能 (Skill)",
+      title: tt("调度技能", "Skill"),
       dataIndex: "skill",
       key: "skill",
       render: (v: string) => <Tag color="blue">{v}</Tag>,
     },
     {
-      title: "当前状态",
+      title: tt("当前状态", "Status"),
       dataIndex: "state",
       key: "state",
       width: 110,
       render: (st: A2ATaskState) => getStateTag(st),
     },
     {
-      title: "创建时间",
+      title: tt("创建时间", "Created At"),
       dataIndex: "createdAt",
       key: "createdAt",
       width: 170,
       render: (v: string) => <Text style={{ fontSize: 12 }}>{new Date(v).toLocaleString()}</Text>,
     },
     {
-      title: "操作",
+      title: tt("操作", "Actions"),
       key: "actions",
       width: 140,
       render: (_: unknown, task: A2ATask) => (
@@ -286,15 +212,15 @@ export function A2aDashboard() {
             style={{ padding: 0 }}
             onClick={() => setSelectedTask(task)}
           >
-            详情轨迹
+            {tt("详情轨迹", "Details")}
           </Button>
           {(task.state === "working" || task.state === "submitted") && (
             <Popconfirm
-              title="确定取消该任务？"
+              title={tt("确定取消该任务？", "Confirm canceling this task?")}
               onConfirm={() => cancelTask.mutate(task.id)}
             >
               <Button size="small" type="link" danger style={{ padding: 0 }}>
-                取消
+                {tt("取消", "Cancel")}
               </Button>
             </Popconfirm>
           )}
@@ -309,45 +235,45 @@ export function A2aDashboard() {
       <Row gutter={[12, 12]}>
         <Col xs={12} sm={8} lg={4}>
           <div className={styles.statCard}>
-            <Text type="secondary" style={{ fontSize: 11 }}>任务总数</Text>
+            <Text type="secondary" style={{ fontSize: 11 }}>{tt("任务总数", "Total Tasks")}</Text>
             <Title level={3} style={{ margin: "4px 0 0", fontSize: 18 }}>
-              {status?.tasks?.total ?? 86}
+              {status?.tasks?.total ?? "—"}
             </Title>
           </div>
         </Col>
 
         <Col xs={12} sm={8} lg={5}>
           <div className={styles.statCard}>
-            <Text type="secondary" style={{ fontSize: 11 }}>当前执行中</Text>
+            <Text type="secondary" style={{ fontSize: 11 }}>{tt("当前执行中", "Working")}</Text>
             <Title level={3} style={{ margin: "4px 0 0", fontSize: 18, color: "#1677FF" }}>
-              {counts.working}
+              {counts?.working ?? "—"}
             </Title>
           </div>
         </Col>
 
         <Col xs={12} sm={8} lg={5}>
           <div className={styles.statCard}>
-            <Text type="secondary" style={{ fontSize: 11 }}>已成功完成</Text>
+            <Text type="secondary" style={{ fontSize: 11 }}>{tt("已成功完成", "Completed")}</Text>
             <Title level={3} style={{ margin: "4px 0 0", fontSize: 18, color: "#10B981" }}>
-              {counts.completed}
+              {counts?.completed ?? "—"}
             </Title>
           </div>
         </Col>
 
         <Col xs={12} sm={8} lg={5}>
           <div className={styles.statCard}>
-            <Text type="secondary" style={{ fontSize: 11 }}>失败与异常</Text>
-            <Title level={3} style={{ margin: "4px 0 0", fontSize: 18, color: counts.failed > 0 ? "#EF4444" : undefined }}>
-              {counts.failed}
+            <Text type="secondary" style={{ fontSize: 11 }}>{tt("失败与异常", "Failed")}</Text>
+            <Title level={3} style={{ margin: "4px 0 0", fontSize: 18, color: (counts?.failed ?? 0) > 0 ? "#EF4444" : undefined }}>
+              {counts?.failed ?? "—"}
             </Title>
           </div>
         </Col>
 
         <Col xs={12} sm={8} lg={5}>
           <div className={styles.statCard}>
-            <Text type="secondary" style={{ fontSize: 11 }}>实时活动流</Text>
+            <Text type="secondary" style={{ fontSize: 11 }}>{tt("实时活动流", "Active Streams")}</Text>
             <Title level={3} style={{ margin: "4px 0 0", fontSize: 18, color: "#8B5CF6" }}>
-              {status?.tasks?.activeStreams ?? 1} 条
+              {status?.tasks?.activeStreams ?? "—"} {status?.tasks?.activeStreams != null ? tt("条", "") : ""}
             </Title>
           </div>
         </Col>
@@ -361,9 +287,8 @@ export function A2aDashboard() {
           <Flex align="center" justify="space-between" wrap gap={8}>
             <Space size={8}>
               <MaterialIcon name="smart_toy" size={18} style={{ color: "#3B82F6" }} />
-              <span>A2A 协调智能体 ({status?.agent?.name || "Orbit Coordinator"})</span>
-              <Tag color="purple">v{status?.agent?.version || "1.4.0"}</Tag>
-
+              <span>{tt("A2A 协调智能体", "A2A Coordinator Agent")} ({status?.agent?.name || "—"})</span>
+              <Tag color="purple">v{status?.agent?.version || "—"}</Tag>
             </Space>
             <Space size={8}>
               <Button
@@ -372,14 +297,14 @@ export function A2aDashboard() {
                 loading={smokeSend.isPending}
                 onClick={() => smokeSend.mutate()}
               >
-                发起同步冒烟分发
+                {tt("发起同步冒烟分发", "Run Smoke Test Dispatch")}
               </Button>
             </Space>
           </Flex>
         }
       >
         <Text strong style={{ fontSize: 13, display: "block", marginBottom: 8 }}>
-          注册智能体技能能力库 ({skills.length} 个):
+          {tt(`注册智能体技能能力库 (${skills.length} 个):`, `Registered Agent Skills (${skills.length}):`)}
         </Text>
         <Row gutter={[12, 12]}>
           {skills.map((sk: { id: string; name: string; description: string }) => (
@@ -397,7 +322,7 @@ export function A2aDashboard() {
       </Card>
 
       {/* Task Queue & Execution Audit Table */}
-      <Card size="small" className={styles.sectionCard} title="A2A 智能体任务分发与执行审计">
+      <Card size="small" className={styles.sectionCard} title={tt("A2A 智能体任务分发与执行审计", "A2A Task Dispatch & Execution Logs")}>
         {/* Filter Bar */}
         <Flex gap={8} wrap style={{ marginBottom: 12 }}>
           <Select
@@ -408,15 +333,15 @@ export function A2aDashboard() {
             }}
             style={{ width: 160 }}
             options={[
-              { label: "全部状态", value: "all" },
-              { label: "执行中 (working)", value: "working" },
-              { label: "已完成 (completed)", value: "completed" },
-              { label: "失败 (failed)", value: "failed" },
-              { label: "排队中 (submitted)", value: "submitted" },
+              { label: tt("全部状态", "All States"), value: "all" },
+              { label: tt("执行中", "Working"), value: "working" },
+              { label: tt("已完成", "Completed"), value: "completed" },
+              { label: tt("失败", "Failed"), value: "failed" },
+              { label: tt("排队中", "Submitted"), value: "submitted" },
             ]}
           />
           <Input
-            placeholder="按技能名称过滤..."
+            placeholder={tt("按技能名称过滤...", "Filter by skill...")}
             value={skillFilter}
             onChange={(e) => {
               setSkillFilter(e.target.value);
@@ -428,7 +353,7 @@ export function A2aDashboard() {
             icon={<MaterialIcon name="refresh" size={14} />}
             onClick={() => void queryClient.invalidateQueries({ queryKey: ["a2a-tasks-list"] })}
           >
-            刷新任务
+            {tt("刷新任务", "Refresh")}
           </Button>
         </Flex>
 
@@ -443,7 +368,7 @@ export function A2aDashboard() {
             pageSize: 10,
             total: tasksData.total,
             onChange: (p) => setTaskPage(p),
-            showTotal: (total) => `共 ${total} 个智能体任务`,
+            showTotal: (total) => tt(`共 ${total} 个智能体任务`, `Total ${total} agent tasks`),
           }}
         />
       </Card>
@@ -456,13 +381,13 @@ export function A2aDashboard() {
         title={
           <Space size={8}>
             <MaterialIcon name="receipt_long" size={18} style={{ color: "#3B82F6" }} />
-            <span>智能体任务详情 · {selectedTask?.id}</span>
+            <span>{tt("智能体任务详情", "Agent Task Details")} · {selectedTask?.id}</span>
             {selectedTask && getStateTag(selectedTask.state)}
           </Space>
         }
         footer={[
           <Button key="close" onClick={() => setSelectedTask(null)}>
-            关闭
+            {tt("关闭", "Close")}
           </Button>,
         ]}
       >
@@ -470,7 +395,7 @@ export function A2aDashboard() {
           <Flex vertical gap={14} style={{ marginTop: 12 }}>
             <div>
               <Text strong style={{ fontSize: 13, display: "block", marginBottom: 4 }}>
-                任务输入载荷 (Input Payload):
+                {tt("任务输入载荷:", "Input Payload:")}
               </Text>
               <pre className={styles.jsonViewer}>
                 {JSON.stringify(selectedTask.input, null, 2)}
@@ -479,7 +404,7 @@ export function A2aDashboard() {
 
             <div>
               <Text strong style={{ fontSize: 13, display: "block", marginBottom: 8 }}>
-                执行轨迹事件时间轴 (Events):
+                {tt("执行轨迹事件时间轴:", "Execution Events Timeline:")}
               </Text>
               <Timeline
                 items={(selectedTask.events || []).map((ev) => ({
@@ -502,7 +427,7 @@ export function A2aDashboard() {
             {selectedTask.artifacts && selectedTask.artifacts.length > 0 && (
               <div>
                 <Text strong style={{ fontSize: 13, display: "block", marginBottom: 4 }}>
-                  产出物结果 (Artifacts):
+                  {tt("产出物结果:", "Output Artifacts:")}
                 </Text>
                 {selectedTask.artifacts.map((art, idx) => (
                   <div key={idx} style={{ marginBottom: 6 }}>

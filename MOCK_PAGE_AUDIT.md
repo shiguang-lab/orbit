@@ -1,17 +1,27 @@
-# OmniRoute Web 官方对齐审计与下一阶段任务书
+# ShiguangGateway Web 官方对齐审计与下一阶段任务书
 
-> 审计日期：2026-09-04
-> 当前实现：`orbiot/apps/admin` + `orbiot/apps/bff`，本地 `http://127.0.0.1:5173`
+> **归档文档**：本文件只保留 2026-09-04 的页面差异记录，不是当前实现或发布验收依据。
+> 当前验收以 [`INDEPENDENT_GATEWAY_REFACTOR.md`](./INDEPENDENT_GATEWAY_REFACTOR.md) 和自动 smoke 结果为准；
+> 当前 Admin 仅访问本地 `control-api`，模型流量仅访问本地 `edge-gateway`。
+
+> 审计日期：2026-09-04（历史基线，以下问题清单不是最终发布状态）
+> 归档时的实现快照包含 `apps/admin`、`apps/control-api`、`apps/edge-gateway`、`apps/realtime` 和 `apps/worker`；仓库当前不包含 BFF 或兼容启动器。
 > 官方基准：`https://model.publib.cn`（实机版本 v3.8.51）与同级源码 `../Orbit`
 > 目标：逐菜单、逐子页面识别真实接入、部分 Mock、纯 Mock、接口契约错误和页面缺失，并给出下一阶段可直接执行的任务拆分。
 
+**最新修订**：批处理页面已改用 `/v1/files` multipart 上传、`/v1/batches` 创建/列表/取消；MCP、A2A、Memory、Audit 页面 helper 已改用本地 `/mcp/status`、`/mcp/tools`、`/a2a/tasks`、`/memory`、`/compliance/audit-log`；成本根路由已恢复为真实成本驾驶舱入口；Resilience 设置改用 `/resilience` 专用 GET/PATCH 契约。下表保留历史基线，未列出的官方字段和子路由仍需继续完成。
+
+**当前代码复核（2026-09-04）**：历史表格不应直接作为当前缺陷清单使用。当前发布审查已对本地 689 个 API route、9 个根 route、Admin helper、容器部署、worker scheduler 和真实数据导入重新执行；代码扫描未发现生产 mock fallback 文件，真实容器/接口结果以 `INDEPENDENT_SHIGUANG_GATEWAY_REFACTOR.md` 的最新门禁记录为准。仍然不能把“路由存在”当作所有页面交互已通过浏览器对拍；Provider 上游配置、外部登录状态和 clean-room 重写仍是发布前置条件。
+
 ## 1. 结论先行
 
-当前 Web 不是“只差少量接口”。首页、提供商、组合、主要用量分析和多数日志页已经使用真实数据，但工具链、成本中心、Agentic、批处理、媒体、压缩测试、审计以及部分系统设置存在成片的错误实现。
+当前 Web 不是“只差少量接口”。本文件记录的历史基线中，工具链、成本中心、Agentic、批处理、媒体、压缩测试、审计以及部分系统设置存在成片的错误实现；修复必须以当前源码和严格发布门禁结果为准。
+
+本轮已关闭的真实性问题包括：Playground 改为调用 `/v1/chat/completions`，Compression Studio/Caveman/RTK/OmniGlyph/引擎详情改为调用本地 `/compression/preview`，媒体图像/语音改为真实 `/v1/images/generations`、`/v1/audio/speech`，Discovery 改为读取 `/discovery/results` 并通过 Provider 创建接口导入，CLI/Cloud/Conductor/Traffic Inspector/System Proxy helper 改为对应本地 route，CLI Code 改为真实本地网关请求，组合演练改为真实 `/combos/test`（支持用户输入 Prompt）。仍未关闭的历史条目不得标记为已迁移。
 
 最需要避免的误判是把“能渲染出页面”当成“已迁移完成”：
 
-1. **完全或接近完全由前端模拟**：CLI Code、Playground、Search Tools、Compression Studio，以及媒体生成流程。
+1. **完全或接近完全由前端模拟（历史基线）**：CLI Code、Search Tools，以及部分媒体/压缩高级流程。
 2. **部分数据真实，但关键交互仍是假执行**：组合实时调试、缓存条目、十个压缩引擎测试、压缩配置/组合/排除项、配额共享、MCP/A2A Dashboard。
 3. **页面有 UI，但实际调用链请求了不存在或错误的 endpoint**：Evals、Memory、MCP、A2A、Cloud Agents、Conductor、CLI Agents、Traffic Inspector、Discovery、Batch、Media 等。预算、免费额度和免费提供商排行已确认使用真实官方接口，不属于此类；Radar 的问题则是 feature flag 和本地假目录，不是路径误写。
 4. **页面实现对象与官方完全不同**：当前 CLI Code 被做成“AI 写代码终端”，官方实际是 CLI 工具检测、配置文件生成、同步、备份与详情管理；当前 Translator 只是浏览器内 JSON 转换，官方是网关协议转换与真实发送；当前 `/dashboard/costs` 直接跳到用量分析，官方是完整成本驾驶舱。
@@ -42,19 +52,19 @@
 
 1. 对照当前路由和菜单：`apps/admin/src/app/nav.tsx`、`apps/admin/src/app/router.tsx`。
 2. 对照官方菜单、页面、组件和请求：`../Orbit/src/shared/constants/sidebarVisibility/sections.ts`、`../Orbit/src/app/(dashboard)`。
-3. 在 2026-09-04 对本地 Web/BFF 做 endpoint smoke test，并在官方 Web 实机打开关键页面做结构对拍。
+3. 在 2026-09-04 对本地 Web/API 做 endpoint smoke test，并在参考 Web 实机打开关键页面做结构对拍。
 
 当前开发环境的数据链路是：
 
 ```text
 Admin Web :5173
     -> /api
-Local BFF :8787
-    -> NAS proxy
-Official Orbit API
+Local control-api/edge-gateway
+    -> local domain services
+Configured Provider upstreams
 ```
 
-这意味着“BFF 本地注册了一个同名 route”不等于当前页面实际使用它；NAS 代理模式下可能直接转发。反过来，当前 helper 使用了错误路径时，即使 BFF 中存在相似能力也仍然会 404。
+该历史链路中的 endpoint 结果仅用于定位页面契约差异；不得据此恢复远程代理或新增兼容别名。当前 helper 必须直接调用本地 API 的正式路径。
 
 本次实测中，以下核心接口返回真实数据：
 
@@ -84,7 +94,7 @@ Official Orbit API
 
 相对地，复核确认 `/api/usage/budget/bulk`、`/api/free-tier/summary`、`/api/free-provider-rankings`、`/api/evals`、`/api/discovery/results`、`/api/mcp/status`、`/api/a2a/status`、`/api/v1/agents/tasks`、`/api/v1/agents/health`、`/api/conductor/fleet`、`/api/tools/traffic-inspector/capture-modes` 均存在。部分当前页面没有使用这些正确接口。
 
-注意：仓库当前工作树还新增了 `apps/bff/src/routes/budget.ts`、`freeTier.ts`、`freeProviderRankings.ts`、`pricing.ts`、`radar.ts` 等本地路由，但本次运行中的 BFF/NAS target 未加载或未转发到这些实现；而 `radar.ts` 本身使用进程内状态、固定 baseline、固定 referrals/offers/intel，不能把“源码中有 route”当成真实官方接入。下一阶段必须先重启并明确验证实际部署链路，再做页面验收。
+注意：归档时曾存在未加载的本地路由和固定数据实现；这些记录只用于解释当时的验收结论。当前实现不得恢复进程内固定 baseline、referrals/offers/intel 或任何兼容别名；新增能力必须接入真实领域服务并重新执行发布门禁。
 
 ## 4. 逐菜单与页面对比
 
@@ -163,12 +173,12 @@ Official Orbit API
 
 | 当前/官方路由 | 结论 | 当前问题/官方差异 | 差异性质 | 优先级 |
 |---|---|---|---|---|
-| `/dashboard/costs` | `U/X` | 当前直接重定向到 `/dashboard/analytics`。官方是独立成本驾驶舱：时间窗、CSV/JSON 导出、provider/model/key/account/tier 探索、Token、预测、趋势和热力图 | 页面缺失，不是 UI 优化 | P0 |
+| `/dashboard/costs` | `P` | 已恢复独立成本路由，复用真实 `usage/analytics` 驱动的成本驾驶舱（时间窗、CSV 导出、provider/model/key/account/tier 探索、Token、趋势）；仍需逐字段对拍官方预测/热力图 | 功能仍需补齐 | P1 |
 | `/dashboard/costs/pricing` | `P` | `/api/pricing` 真实；当前缺官方 sources、model detail/edit、clear/sync 状态等能力 | 功能不完整 | P1 |
 | `/dashboard/costs/budget` | `R/P` | 当前页面已使用 keys、`/api/usage/budget/bulk` 和 `/api/usage/budget`；本地预算模板只影响表单快捷项。需补官方批量操作和全部边界状态 | 核心真实，功能不完整 | P1 |
 | `/dashboard/free-tiers` | `R/P` | 当前已使用 `/api/free-tier/summary` 并展示真实模型/额度；需对齐官方说明、筛选和空/超额状态 | 主要为 UI 优化 | P2 |
 | `/dashboard/free-provider-rankings` | `R/P` | 当前已使用 `/api/free-provider-rankings`，分类、认证方式、配置/可用筛选和榜单字段均已覆盖大部 | 主要为 UI 优化，仍需逐字段验收 | P2 |
-| `/dashboard/radar` | `M/X/U` | 目标官方实例未启用 Radar，相关接口返回 404；本地 BFF route 虽存在，但使用进程内 settings/cache、固定 baseline/referrals/offers/intel，不是 DB/官方数据；当前导航无条件展示，且 setup/combos/offers/intel 子路由缺失 | Feature flag 不一致 + 本地假目录 + 子页缺失 | P0 |
+| `/dashboard/radar` | `M/X/U` | 目标参考实例未启用 Radar，相关接口返回 404；历史 API route 使用进程内 settings/cache、固定 baseline/referrals/offers/intel，不是 DB/真实数据；当前导航无条件展示，且 setup/combos/offers/intel 子路由缺失 | Feature flag 不一致 + 本地假目录 + 子页缺失 | P0 |
 
 ### 4.7 监控中心
 
@@ -181,7 +191,7 @@ Official Orbit API
 | `/dashboard/logs/timeline` | `R/P` | 真实日志驱动；localStorage 只保存视图偏好，不属于业务 Mock | 主要为 UI 优化 | P2 |
 | `/dashboard/conversations` | `R/P` | 真实数据驱动；需补官方会话详情和关联追踪 | 功能不完整 | P2 |
 | `/dashboard/health` | `P` | 当前主要展示 monitoring health；官方还聚合 db、cache、rate-limit、degradation、telemetry、autopilot、health matrix | 功能明显不完整 | P1 |
-| `/dashboard/runtime` | `P` | 当前使用 monitoring health/model cooldown 等真实数据；本地 BFF runtime route 内含常量遥测，不能作为 fallback 发布 | 部分实现风险 | P1 |
+| `/dashboard/runtime` | `P` | 当前使用 monitoring health/model cooldown 等真实数据；历史 API route 内含常量遥测，不能作为 fallback 发布 | 部分实现风险 | P1 |
 | `/dashboard/resilience/connections` | `R/P` | `/api/resilience/connections` 真实；需对齐官方筛选和连接操作 | 主要为 UI 优化 | P2 |
 | `/dashboard/audit` | `X` | 当前 `/api/audit` 404；官方使用 `/api/compliance/audit-log` | 错误契约 | P0 |
 | `/dashboard/audit/mcp` | `X/M` | 当前错误契约；另有 MCP Dashboard 在错误时注入固定 audit records | 错误契约 + fallback Mock | P0 |
@@ -215,7 +225,7 @@ Official Orbit API
 |---|---|---|---|---|
 | `/dashboard/leaderboard` | `R/P` | leaderboard 接口真实；缺官方 SSE/实时更新和部分字段 | 功能不完整 | P2 |
 | `/dashboard/profile` | `R/P` | 已不再是旧版硬编码用户，当前可读取 Gamification 数据；需对齐官方账户与资料边界 | 功能不完整 | P2 |
-| `/dashboard/tokens` | `P/X` | 主要 endpoint 存在，但 transfer/invite 请求缺当前 key/身份选择时返回 400；本地 BFF 还有硬编码 `admin` 身份风险 | 契约不完整 | P1 |
+| `/dashboard/tokens` | `P/X` | 主要 endpoint 存在，但 transfer/invite 请求缺当前 key/身份选择时返回 400；历史实现还有硬编码 `admin` 身份风险 | 契约不完整 | P1 |
 | `/dashboard/cache/media` | `M/X` | cache stats/purge helper 存在但当前路径 404；生成流程用 `setTimeout`、硬编码模型和 Unsplash 图片伪造成功 | 关键流程 Mock | P0 |
 | `/dashboard/batch` | `X` | 当前 `/api/batch/tasks` 404；官方使用 `/api/v1/batches` 和 `/api/v1/files`，支持真实创建、状态和详情 | 错误契约 | P0 |
 | `/dashboard/batch/files` | `X` | 当前 `/api/batch/files` 404；官方支持 multipart upload、download、detail、delete | 错误契约 | P0 |
@@ -266,13 +276,11 @@ Official Orbit API
 
 ### 5.1 明确前端模拟
 
-- `apps/admin/src/features/agents/cli-code.tsx`：`setTimeout` 生成固定终端过程。
-- `apps/admin/src/features/devtools/playground.tsx`：`setTimeout` 生成固定回答和 token。
-- `apps/admin/src/features/devtools/search-tools.tsx`：固定搜索结果，无真实搜索请求。
-- `apps/admin/src/features/compression/compression-studio.tsx`：固定流水线日志。
-- `apps/admin/src/features/other/media.tsx`：固定模型、延迟和 Unsplash 图片。
-- `apps/admin/src/features/combos/combos-live.tsx`：模拟按钮只等待 600ms。
-- `apps/admin/src/features/context/caveman.tsx`、`rtk.tsx`、`engine-detail.tsx`、`omniglyph.tsx`：本地生成压缩结果。
+- `apps/admin/src/features/agents/cli-code.tsx`：已改为真实 `/v1/chat/completions`；仍未实现官方 CLI 工具检测/配置向导，见 WEB-P1-01。
+- `apps/admin/src/features/devtools/search-tools.tsx`：历史版本固定搜索结果，无真实搜索请求（当前已改为调用 `/v1/search`）。
+- `apps/admin/src/features/other/media.tsx`：历史版本用固定模型、延迟和 Unsplash 图片（当前图像/语音已调用真实 Provider API；视频/音乐/转录无契约时会明确失败）。
+- `apps/admin/src/features/combos/combos-live.tsx`：已改为调用本地 `/combos/test`；拓扑在真实测试前保持待命，不伪造 200/熔断状态；尚未接入 WebSocket 订阅。
+- `apps/admin/src/features/context/engine-detail.tsx`：已改为调用本地 `/compression/preview`，并从本地遥测读取统计；样例原文仍用于用户输入初始值，不代表压缩结果。
 - `apps/admin/src/features/cache/cache.tsx`：`MOCK_SEMANTIC_ENTRIES` 和本地删除。
 
 ### 5.2 失败时伪装成功或返回固定数据
@@ -282,7 +290,7 @@ Official Orbit API
 - `apps/admin/src/features/quota-share/quota-share.tsx`：固定 `GroupDemo`。
 - `apps/admin/src/features/endpoints/mcp-dashboard.tsx`：固定 audit records fallback。
 - `apps/admin/src/features/endpoints/a2a-dashboard.tsx`：固定 tasks fallback。
-- `apps/bff/src/routes/radar.ts`：进程内 `radarSettings`、`radar*Cache`、`getBaselineEntries()` 及固定 referral/offer/intel 数据；即使页面请求成功，也不能视为真实 Radar 数据。
+- 历史 Radar 路由曾使用进程内 `radarSettings`、`radar*Cache`、`getBaselineEntries()` 及固定 referral/offer/intel 数据；该实现不属于当前发布代码。
 
 视图偏好类 localStorage（主题、表格布局、提示关闭状态）不属于业务 Mock，不应一刀切删除。
 
@@ -340,7 +348,7 @@ Official Orbit API
 交付：
 
 - 新增可重复运行的 contract smoke test，不只测 HTTP 200，还校验最小响应结构。
-- 测试覆盖 NAS proxy 模式和无 NAS proxy 模式。
+- 测试覆盖历史代理模式记录和当前本地直连模式。
 - 删除当前错误路径，禁止为错误 helper 再加兼容 alias。
 
 验收：所有菜单页使用的 endpoint 在目标部署模式下存在；GET/POST/PUT/DELETE 与官方一致；404/405 清零。
@@ -399,7 +407,7 @@ Official Orbit API
 
 #### WEB-P1-06 Audit、Health、Runtime
 
-交付：Audit 改用 compliance/MCP/A2A 正确源；Health 聚合官方全部健康源；Runtime 移除 BFF 常量遥测，明确本机 BFF 与 Orbit server 的观测对象。
+交付：Audit 改用 compliance/MCP/A2A 正确源；Health 聚合全部本地健康源；Runtime 移除常量遥测，明确本地服务的观测对象。
 
 验收：页面每个指标都能追溯到响应字段；断开任一子源时只标记对应区域失败。
 
@@ -464,16 +472,16 @@ CLI/Devtools  Compression  Costs  Agentic  Audit  Batch/Media
 - Ant Design Button、Input、Select、Segmented、DatePicker 等交互控件使用默认 `middle` 尺寸；除微型徽标外不新增 `size="small"`。
 - 所有用户可见文案通过 `useI18n()`/`tt()` 提供；中文模式不直接拼接括号英文。
 - `.shell-content-inner` 保持 `overflowX: "hidden"` 与 `maxWidth: "100%"`，桌面和窄屏均无非预期横向滚动。
-- 通过 Admin/BFF typecheck、BFF tests 和 production build。
+- 通过 Admin、control-api typecheck、API tests 和 production build。
 - 在官方 Web 与当前 Web 完成桌面截图/AX 结构对拍，并记录保留的 UI 优化。
 
 建议验证命令：
 
 ```bash
-pnpm --filter @omniroute/admin typecheck
-pnpm --filter @omniroute/bff typecheck
-pnpm --filter @omniroute/bff test
-pnpm --filter @omniroute/admin build
+pnpm --filter @shiguang-gateway/admin typecheck
+pnpm --filter @shiguang-gateway/control-api typecheck
+pnpm --filter @shiguang-gateway/server-runtime test
+pnpm --filter @shiguang-gateway/admin build
 ```
 
 ## 10. 第一批可直接领取的任务包

@@ -14,6 +14,9 @@ import {
 } from "antd";
 import { createStyles } from "antd-style";
 import { MaterialIcon } from "@/app/nav";
+import { useI18n } from "@/i18n";
+import { modelsApi, providersApi } from "@/entities/api";
+import { useQuery } from "@tanstack/react-query";
 
 const { Title, Text } = Typography;
 
@@ -52,37 +55,52 @@ const useStyles = createStyles(({ token }) => ({
 
 export function CliCodePage() {
   const { styles } = useStyles();
+  const { tt } = useI18n();
   const [messageApi, contextHolder] = message.useMessage();
 
   const [prompt, setPrompt] = useState("重构 src/auth 模块中的 JWT 校验逻辑");
-  const [model, setModel] = useState("claude-3-5-sonnet");
+  const [model, setModel] = useState("");
   const [executing, setExecuting] = useState(false);
-  const [terminalLines, setTerminalLines] = useState<string[]>([
-    "$ agy code --ready",
-    "Orbit CLI Code Engine v2.4 initialized. Ready to execute code refactoring & generation tasks.",
-  ]);
+  const [terminalLines, setTerminalLines] = useState<string[]>([]);
 
-  const handleRunCode = () => {
+  const modelsQuery = useQuery({
+    queryKey: ["models-catalog"],
+    queryFn: modelsApi.list,
+    staleTime: 30_000,
+  });
+  const models = modelsQuery.data?.models ?? [];
+  const selectedModel = model || models[0]?.id || "";
+
+  const handleRunCode = async () => {
+    if (!selectedModel) {
+      messageApi.error(tt("没有可用模型，请先配置 provider", "No model is available; configure a provider first"));
+      return;
+    }
+    if (!prompt.trim()) {
+      messageApi.error(tt("请输入代码任务", "Enter a coding task first"));
+      return;
+    }
     setExecuting(true);
-    setTerminalLines((prev) => [
-      ...prev,
-      `\n$ agy code --model ${model} "${prompt}"`,
-      `[Orbit] 路由至本地网关端点 -> 上游模型: ${model}`,
-      `[Context] 已激活 RTK 终端过滤与 Caveman 压缩 (Token 节省 38%)`,
-      `[Planner] 正在分析项目结构与依赖关系...`,
-    ]);
-
-
-    setTimeout(() => {
-      setTerminalLines((prev) => [
-        ...prev,
-        `[Coder] 成功生成修改补丁: src/auth/jwt.ts (+24 lines, -8 lines)`,
-        `[Verifier] TypeScript 语法检查通过: 0 错误, 0 警告`,
-        `✓ 代码任务执行完成 (耗时 1.4s)`,
-      ]);
+    setTerminalLines([`$ local code-assistant --model ${selectedModel}`, `> ${prompt}`]);
+    try {
+      const response = await providersApi.chat({
+        model: selectedModel,
+        messages: [
+          { role: "user", content: "Act as a coding assistant. Return an actionable patch or precise implementation guidance, and do not claim files were changed unless a tool actually changed them.\n\n" + prompt },
+        ],
+      });
+      const choices = Array.isArray(response?.choices) ? response.choices : [];
+      const content = choices[0]?.message?.content ?? response?.output_text ?? response?.content;
+      if (typeof content !== "string" || !content.trim()) throw new Error("Provider returned no text");
+      setTerminalLines((prev) => [...prev, content]);
+      messageApi.success(tt("代码任务已由本地网关完成响应", "Coding task response received from the local gateway"));
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : String(error);
+      setTerminalLines((prev) => [...prev, `ERROR: ${detail}`]);
+      messageApi.error(tt("代码任务执行失败", "Coding task failed"));
+    } finally {
       setExecuting(false);
-      messageApi.success("CLI 代码任务执行完成！");
-    }, 1200);
+    }
   };
 
   return (
@@ -110,14 +128,16 @@ export function CliCodePage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  命令行代码助手
+                  {tt("命令行代码助手", "CLI Code Assistant")}
                 </Title>
-                <Tag color="gold">终端代码引擎</Tag>
+                <Tag color="gold">{tt("终端代码引擎", "Terminal Code Engine")}</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                直接通过智枢网关向本地及远程 CLI 命令行代码助手下发自然语言编程任务，自动应用上下文压缩与协议转换。
+                {tt(
+                  "直接通过智枢网关向本地及远程 CLI 命令行代码助手下发自然语言编程任务，自动应用上下文压缩与协议转换。",
+                  "Dispatch natural-language programming tasks directly to local and remote CLI code agents with context compression and protocol translation."
+                )}
               </Text>
-
             </div>
           </Flex>
 
@@ -127,7 +147,7 @@ export function CliCodePage() {
             loading={executing}
             onClick={handleRunCode}
           >
-            下发执行任务
+            {tt("下发执行任务", "Dispatch Task")}
           </Button>
         </Flex>
       </Card>
@@ -135,33 +155,30 @@ export function CliCodePage() {
       {/* 2. Interactive Workspace */}
       <Row gutter={[12, 12]}>
         <Col xs={24} md={10}>
-          <Card title="代码指令与参数配置" className={styles.sectionCard} size="small">
-            <Space orientation="vertical" size={12} style={{ width: "100%" }}>
+          <Card title={tt("代码指令与参数配置", "Task Instruction & Parameters")} className={styles.sectionCard} size="small">
+            <Space direction="vertical" size={12} style={{ width: "100%" }}>
               <div>
                 <Text strong style={{ fontSize: 12, display: "block", marginBottom: 4 }}>
-                  选择代码调度模型：
+                  {tt("选择代码调度模型：", "Select Coding Model:")}
                 </Text>
                 <Select
                   value={model}
                   onChange={setModel}
                   style={{ width: "100%" }}
-                  options={[
-                    { label: "Claude 3.5 Sonnet (高智能架构师)", value: "claude-3-5-sonnet" },
-                    { label: "DeepSeek-R1 (极速深度推理)", value: "deepseek-r1" },
-                    { label: "Qwen 2.5 Coder 32B", value: "qwen-2.5-coder" },
-                  ]}
+                  loading={modelsQuery.isLoading}
+                  options={models.map((item) => ({ label: item.name || item.id, value: item.id }))}
                 />
               </div>
 
               <div>
                 <Text strong style={{ fontSize: 12, display: "block", marginBottom: 4 }}>
-                  编程指令与任务描述：
+                  {tt("编程指令与任务描述：", "Instruction & Task Description:")}
                 </Text>
                 <Input.TextArea
                   rows={5}
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
-                  placeholder="例如：为用户注册接口添加邮箱格式校验与密码强度检测..."
+                  placeholder={tt("例如：为用户注册接口添加邮箱格式校验与密码强度检测...", "e.g., Add email validation and password strength checks...")}
                 />
               </div>
             </Space>
@@ -169,9 +186,9 @@ export function CliCodePage() {
         </Col>
 
         <Col xs={24} md={14}>
-          <Card title="实时 CLI 终端输出流 (Terminal Session)" className={styles.sectionCard} size="small">
+          <Card title={tt("实时 CLI 终端输出流", "Live CLI Terminal Session")} className={styles.sectionCard} size="small">
             <pre className={styles.terminal}>
-              {terminalLines.map((line, idx) => (
+              {terminalLines.length === 0 ? <span style={{ color: "#a1a1aa" }}>{tt("尚未执行任务", "No task has been executed")}</span> : terminalLines.map((line, idx) => (
                 <div key={idx} style={{ color: line.startsWith("✓") ? "#4ade80" : line.startsWith("$") ? "#facc15" : "#e4e4e7" }}>
                   {line}
                 </div>

@@ -19,6 +19,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
 import { chaosApi } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Title, Text } = Typography;
 
@@ -44,6 +45,7 @@ const useStyles = createStyles(({ token }) => ({
 
 export function ChaosPage() {
   const { styles } = useStyles();
+  const { tt } = useI18n();
   const queryClient = useQueryClient();
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
@@ -62,10 +64,10 @@ export function ChaosPage() {
   const updateMutation = useMutation({
     mutationFn: (values: any) => chaosApi.updateConfig(values),
     onSuccess: () => {
-      messageApi.success("混沌工程注入规则已更新生效");
+      messageApi.success(tt("混沌工程注入规则已更新生效", "Chaos injection configuration updated"));
       void queryClient.invalidateQueries({ queryKey: ["chaos-config"] });
     },
-    onError: () => messageApi.error("更新混沌配置失败"),
+    onError: () => messageApi.error(tt("更新混沌配置失败", "Failed to update chaos config")),
   });
 
   if (chaosQuery.isLoading) {
@@ -99,14 +101,17 @@ export function ChaosPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  混沌工程与容灾演练模式
+                  {tt("混沌工程与容灾演练模式", "Chaos Engineering & Drill Mode")}
                 </Title>
                 <Tag color={cfg?.enabled ? "error" : "default"}>
-                  {cfg?.enabled ? "● 故障注入活跃中" : "已关闭"}
+                  {cfg?.enabled ? tt("● 故障注入活跃中", "● Active") : tt("已关闭", "Disabled")}
                 </Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                向特定上游提供者或模型注入随机延迟、HTTP 429 限流及 500 异常，主动检验熔断器与重试策略的稳健性。
+                {tt(
+                  "向特定上游提供者或模型注入随机延迟、HTTP 429 限流及 500 异常，主动检验熔断器与重试策略的稳健性。",
+                  "Inject random latency, HTTP 429 rate limits, and 500 errors into upstream providers to proactively verify circuit breakers and retry policies."
+                )}
               </Text>
             </div>
           </Flex>
@@ -118,23 +123,23 @@ export function ChaosPage() {
             loading={updateMutation.isPending}
             onClick={() => form.submit()}
           >
-            保存演练配置
+            {tt("保存演练配置", "Save Config")}
           </Button>
         </Flex>
       </Card>
 
       {/* 2. Form */}
-      <Card title="故障注入参数配置" className={styles.sectionCard} size="small">
+      <Card title={tt("故障注入参数配置", "Fault Injection Parameters")} className={styles.sectionCard} size="small">
         <Form form={form} layout="vertical" onFinish={(v) => updateMutation.mutate(v)}>
           <Row gutter={[16, 0]}>
             <Col xs={24} sm={12}>
-              <Form.Item name="enabled" valuePropName="checked" label="启用混沌演练模式">
-                <Switch checkedChildren="演练中" unCheckedChildren="关闭" />
+              <Form.Item name="enabled" valuePropName="checked" label={tt("启用混沌演练模式", "Enable Chaos Drill Mode")}>
+                <Switch checkedChildren={tt("演练中", "Active")} unCheckedChildren={tt("关闭", "Off")} />
               </Form.Item>
             </Col>
 
             <Col xs={24} sm={12}>
-              <Form.Item name="errorInjectionRatePct" label="故障注入概率 (Error Rate %)">
+              <Form.Item name="errorInjectionRatePct" label={tt("故障注入概率", "Fault Injection Rate (%)")}>
                 <Slider min={0} max={100} marks={{ 0: "0%", 10: "10%", 50: "50%", 100: "100%" }} />
               </Form.Item>
             </Col>
@@ -142,19 +147,19 @@ export function ChaosPage() {
 
           <Row gutter={[16, 0]}>
             <Col xs={24} sm={12}>
-              <Form.Item name="injectedLatencyMinMs" label="注入最小延迟 (ms)">
+              <Form.Item name="injectedLatencyMinMs" label={tt("注入最小延迟 (ms)", "Min Injected Latency (ms)")}>
                 <InputNumber min={0} max={10000} style={{ width: "100%" }} />
               </Form.Item>
             </Col>
 
             <Col xs={24} sm={12}>
-              <Form.Item name="injectedLatencyMaxMs" label="注入最大延迟 (ms)">
+              <Form.Item name="injectedLatencyMaxMs" label={tt("注入最大延迟 (ms)", "Max Injected Latency (ms)")}>
                 <InputNumber min={0} max={30000} style={{ width: "100%" }} />
               </Form.Item>
             </Col>
           </Row>
 
-          <Form.Item name="injectedErrorStatusCodes" label="模拟抛出的 HTTP 错误状态码">
+          <Form.Item name="injectedErrorStatusCodes" label={tt("模拟抛出的 HTTP 错误状态码", "Simulated HTTP Error Status Codes")}>
             <Select
               mode="tags"
               style={{ width: "100%" }}

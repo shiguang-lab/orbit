@@ -14,7 +14,8 @@ import {
 } from "antd";
 import { createStyles } from "antd-style";
 import { MaterialIcon } from "@/app/nav";
-import { COMPRESSION_ENGINE_CATALOG } from "@/entities/api";
+import { COMPRESSION_ENGINE_CATALOG, compressionApi } from "@/entities/api";
+import { useI18n } from "@/i18n";
 
 const { Title, Text } = Typography;
 
@@ -60,6 +61,7 @@ const useStyles = createStyles(({ token }) => ({
 
 export function CompressionStudioPage() {
   const { styles } = useStyles();
+  const { tt } = useI18n();
   const [messageApi, contextHolder] = message.useMessage();
 
   const [testPrompt, setTestPrompt] = useState(
@@ -70,27 +72,37 @@ export function CompressionStudioPage() {
     "[Studio] 压缩工作室就绪。选择上游模型与测试 Prompt，点击【开始流水线执行重放】即可可视化观察每一阶算子的压缩收益。",
   ]);
 
-  const handleRunReplay = () => {
+  const handleRunReplay = async () => {
     setRunning(true);
-    setPipelineLogs(["[Studio] 启动实时压缩流水线仿真执行..."]);
-
-    const steps = [
-      { engine: "Session Dedup", delay: 200, log: "Step 1: Session Dedup (无损去重) -> 扫描历史轮次，命中 0 个跨轮次重复块，放行。" },
-      { engine: "Lite", delay: 400, log: "Step 2: Lite (排版压缩) -> 清理冗余连续空行与首尾空白，Tokens: 142 -> 138 (节省 2.8%)。" },
-      { engine: "RTK", delay: 650, log: "Step 3: RTK (终端与工具提炼) -> 扫描 Tool Call 块，未发现 ANSI 逃逸序列。" },
-      { engine: "Caveman", delay: 900, log: "Step 4: Caveman (语法事实精炼) -> 提取修饰语，Tokens: 138 -> 92 (节省 33.3%)。" },
-      { engine: "Complete", delay: 1100, log: "✓ 流水线执行完毕！端到端累计节省 35.2% Tokens，执行总耗时 1.2ms，安全性评分: 100/100。" },
-    ];
-
-    steps.forEach((s) => {
-      setTimeout(() => {
-        setPipelineLogs((prev) => [...prev, s.log]);
-        if (s.engine === "Complete") {
-          setRunning(false);
-          messageApi.success("压缩工作室仿真执行完成！");
-        }
-      }, s.delay);
-    });
+    setPipelineLogs(["[Studio] 正在调用本地 compression/preview…"]);
+    try {
+      const result = await compressionApi.preview({
+        messages: [{ role: "user", content: testPrompt }],
+        mode: "stacked",
+        pipeline: ["session-dedup", "lite", "rtk", "caveman"],
+      });
+      const breakdown = Array.isArray(result.engineBreakdown) ? result.engineBreakdown : [];
+      const lines = breakdown.map((step, index) => {
+        const row = step as Record<string, unknown>;
+        const engine = String(row.engine ?? row.id ?? `stage-${index + 1}`);
+        const before = row.inputTokens ?? row.beforeTokens;
+        const after = row.outputTokens ?? row.afterTokens;
+        return `Step ${index + 1}: ${engine}${before !== undefined && after !== undefined ? ` (${before} -> ${after} tokens)` : ""}`;
+      });
+      const saved = Number(result.tokensSaved ?? 0);
+      const savings = Number(result.savingsPct ?? 0);
+      setPipelineLogs([
+        "[Studio] 本地 runtime 返回真实压缩结果。",
+        ...lines,
+        `✓ 完成：${result.originalTokens ?? "?"} -> ${result.compressedTokens ?? "?"} tokens，节省 ${Number.isFinite(savings) ? savings.toFixed(1) : "?"}%（${saved} tokens）。`,
+      ]);
+      messageApi.success("真实压缩预览完成");
+    } catch (cause) {
+      setPipelineLogs([`[Studio] 压缩预览失败：${cause instanceof Error ? cause.message : String(cause)}`]);
+      messageApi.error("压缩预览失败");
+    } finally {
+      setRunning(false);
+    }
   };
 
   return (
@@ -176,7 +188,7 @@ export function CompressionStudioPage() {
                   style={{ width: 220 }}
                   options={[
                     { label: "Claude 3.5 Sonnet (Direct)", value: "claude-3-5-sonnet" },
-                    { label: "DeepSeek-R1 (Local Engine)", value: "deepseek-r1" },
+                    { label: "DeepSeek-R1", value: "deepseek-r1" },
                     { label: "GPT-4o (OpenAI)", value: "gpt-4o" },
                   ]}
                 />
@@ -193,7 +205,7 @@ export function CompressionStudioPage() {
         </Col>
 
         <Col xs={24} md={12}>
-          <Card title="逐阶流序执行诊断日志 (Waterfall Execution Logs)" className={styles.sectionCard} size="small">
+          <Card title={tt("逐阶流序执行诊断日志", "Waterfall Execution Logs")} className={styles.sectionCard} size="small">
             <div className={styles.consoleBox}>
               {pipelineLogs.map((log, i) => (
                 <div key={i} style={{ marginBottom: 4, color: log.startsWith("✓") ? "#22c55e" : log.startsWith("Step") ? "#38bdf8" : "#a1a1aa" }}>

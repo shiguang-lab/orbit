@@ -21,6 +21,7 @@ import {
   type ProviderStat,
 } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Title, Text } = Typography;
 
@@ -69,6 +70,7 @@ function formatSuccessRate(successful: number, total: number): string {
 
 export function ProviderStatsPage() {
   const { styles } = useStyles();
+  const { tt } = useI18n();
   const [lastRefreshedAt, setLastRefreshedAt] = useState<Date>(new Date());
 
   const {
@@ -79,36 +81,19 @@ export function ProviderStatsPage() {
     refetch,
     isFetching,
   } = useQuery({
-    queryKey: ["provider-stats-data"],
+    queryKey: ["provider-stats"],
     queryFn: async () => {
       const res = await providerStatsApi.getStats();
       setLastRefreshedAt(new Date());
       return res;
     },
-    refetchInterval: 30000,
+    refetchInterval: 30_000,
   });
 
-  const providers = data?.providers ?? [];
-  const models = data?.models ?? [];
-  const toolLatency = data?.toolLatency ?? {};
+  const providers = useMemo(() => data?.providers ?? [], [data?.providers]);
+  const models = useMemo(() => data?.models ?? [], [data?.models]);
+  const toolLatency = useMemo(() => data?.toolLatency ?? {}, [data?.toolLatency]);
 
-  // Summary stats
-  const totalRequests = useMemo(
-    () => providers.reduce((acc, p) => acc + (p.totalRequests || 0), 0),
-    [providers],
-  );
-  const totalSuccessful = useMemo(
-    () => providers.reduce((acc, p) => acc + (p.successfulRequests || 0), 0),
-    [providers],
-  );
-  const avgLatency = useMemo(() => {
-    if (!providers.length) return 0;
-    return Math.round(
-      providers.reduce((acc, p) => acc + (p.avgLatencyMs || 0), 0) / providers.length,
-    );
-  }, [providers]);
-
-  // Group models by provider
   const modelsByProvider = useMemo(() => {
     const map = new Map<string, ModelStat[]>();
     for (const m of models) {
@@ -119,21 +104,36 @@ export function ProviderStatsPage() {
     return map;
   }, [models]);
 
+  const { totalRequests, totalSuccessful, avgLatency } = useMemo(() => {
+    let reqs = 0;
+    let succ = 0;
+    let totalLatency = 0;
+    for (const p of providers) {
+      reqs += p.totalRequests;
+      succ += p.successfulRequests;
+      totalLatency += p.avgLatencyMs * p.totalRequests;
+    }
+    return {
+      totalRequests: reqs,
+      totalSuccessful: succ,
+      avgLatency: reqs > 0 ? Math.round(totalLatency / reqs) : 0,
+    };
+  }, [providers]);
+
   if (isLoading) {
     return <PageSkeleton />;
   }
 
-  if (isError || !data) {
+  if (isError) {
     return (
       <div className={styles.page}>
         <Alert
           type="error"
-          showIcon
-          message="加载提供商性能统计失败"
-          description={error instanceof Error ? error.message : "无法获取提供商与模型性能聚合数据。"}
+          message={tt("数据获取失败", "Failed to fetch data")}
+          description={error instanceof Error ? error.message : tt("加载提供商性能数据时出错", "Error loading provider performance statistics")}
           action={
-            <Button size="small" type="primary" danger onClick={() => refetch()}>
-              重试
+            <Button size="small" onClick={() => refetch()}>
+              {tt("重试", "Retry")}
             </Button>
           }
         />
@@ -143,13 +143,13 @@ export function ProviderStatsPage() {
 
   const columns: ColumnsType<ProviderStat> = [
     {
-      title: "提供商 (Provider)",
+      title: tt("提供商", "Provider"),
       dataIndex: "provider",
       key: "provider",
       render: (text: string) => <Text strong>{text}</Text>,
     },
     {
-      title: "总请求数",
+      title: tt("总请求数", "Total Requests"),
       dataIndex: "totalRequests",
       key: "totalRequests",
       sorter: (a, b) => a.totalRequests - b.totalRequests,
@@ -157,7 +157,7 @@ export function ProviderStatsPage() {
       render: (val: number) => formatNumber(val),
     },
     {
-      title: "成功率",
+      title: tt("成功率", "Success Rate"),
       key: "successRate",
       render: (_, r) => {
         const rate = r.totalRequests > 0 ? (r.successfulRequests / r.totalRequests) * 100 : 0;
@@ -171,28 +171,28 @@ export function ProviderStatsPage() {
       },
     },
     {
-      title: "平均延迟",
+      title: tt("平均延迟", "Avg Latency"),
       dataIndex: "avgLatencyMs",
       key: "avgLatencyMs",
       sorter: (a, b) => a.avgLatencyMs - b.avgLatencyMs,
       render: (ms: number) => formatLatency(ms),
     },
     {
-      title: "输入 Token (In)",
+      title: tt("输入 Token", "Input Tokens"),
       dataIndex: "totalTokensIn",
       key: "totalTokensIn",
       sorter: (a, b) => (a.totalTokensIn || 0) - (b.totalTokensIn || 0),
       render: (val: number) => formatNumber(val),
     },
     {
-      title: "输出 Token (Out)",
+      title: tt("输出 Token", "Output Tokens"),
       dataIndex: "totalTokensOut",
       key: "totalTokensOut",
       sorter: (a, b) => (a.totalTokensOut || 0) - (b.totalTokensOut || 0),
       render: (val: number) => formatNumber(val),
     },
     {
-      title: "工具后首字 (TTFT)",
+      title: tt("工具后首字", "Tool TTFT"),
       key: "toolTtft",
       render: (_, r) => {
         const t = toolLatency[r.provider];
@@ -206,26 +206,26 @@ export function ProviderStatsPage() {
     if (!subModels.length) {
       return (
         <div style={{ padding: "8px 16px", color: "var(--ant-color-text-secondary)", fontSize: 12 }}>
-          暂无该提供商具体模型的详细细分数据
+          {tt("暂无该提供商具体模型的详细细分数据", "No detailed model breakdown available for this provider")}
         </div>
       );
     }
 
     const subColumns: ColumnsType<ModelStat> = [
       {
-        title: "模型名称 (Model)",
+        title: tt("模型名称", "Model Name"),
         dataIndex: "model",
         key: "model",
         render: (name: string) => <Text code>{name}</Text>,
       },
       {
-        title: "请求数",
+        title: tt("请求数", "Requests"),
         dataIndex: "requests",
         key: "requests",
         render: (r: number) => formatNumber(r),
       },
       {
-        title: "成功率",
+        title: tt("成功率", "Success Rate"),
         key: "successRate",
         render: (_, m) => (
           <Tag color={m.requests > 0 && m.successfulRequests === m.requests ? "green" : "orange"}>
@@ -234,7 +234,7 @@ export function ProviderStatsPage() {
         ),
       },
       {
-        title: "平均延迟",
+        title: tt("平均延迟", "Avg Latency"),
         dataIndex: "avgLatencyMs",
         key: "avgLatencyMs",
         render: (ms: number) => formatLatency(ms),
@@ -275,23 +275,26 @@ export function ProviderStatsPage() {
             </div>
             <div>
               <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                提供商性能统计 (Provider Stats)
+                {tt("提供商性能统计", "Provider Performance Statistics")}
               </Title>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                来自真实调用日志聚合的提供商与模型性能表现，包含吞吐量、响应延迟、成功率及工具调用指标。
+                {tt(
+                  "来自真实调用日志聚合的提供商与模型性能表现，包含吞吐量、响应延迟、成功率及工具调用指标。",
+                  "Aggregated provider and model metrics from live logs, including throughput, latency, success rate and tool metrics."
+                )}
               </Text>
             </div>
           </Flex>
           <Flex align="center" gap={12}>
             <Text type="secondary" style={{ fontSize: 12 }}>
-              上次更新：{lastRefreshedAt.toLocaleTimeString()}
+              {tt("上次更新", "Last Updated")}：{lastRefreshedAt.toLocaleTimeString()}
             </Text>
             <Button
               icon={<MaterialIcon name="refresh" size={16} />}
               loading={isFetching}
               onClick={() => refetch()}
             >
-              刷新
+              {tt("刷新", "Refresh")}
             </Button>
           </Flex>
         </Flex>
@@ -303,13 +306,13 @@ export function ProviderStatsPage() {
           <Card className={styles.statCard} styles={{ body: { padding: 16 } }}>
             <Flex align="center" gap={6} style={{ color: "var(--ant-color-text-secondary)", fontSize: 13, marginBottom: 4 }}>
               <MaterialIcon name="analytics" size={18} />
-              <span>总请求量 (Total Requests)</span>
+              <span>{tt("总请求量", "Total Requests")}</span>
             </Flex>
             <div style={{ fontSize: 24, fontWeight: 700, color: "#38bdf8" }}>
               {formatNumber(totalRequests)}
             </div>
             <Text type="secondary" style={{ fontSize: 12 }}>
-              累计已记录的网关请求总数
+              {tt("累计已记录的网关请求总数", "Cumulative recorded gateway requests")}
             </Text>
           </Card>
         </Col>
@@ -318,13 +321,13 @@ export function ProviderStatsPage() {
           <Card className={styles.statCard} styles={{ body: { padding: 16 } }}>
             <Flex align="center" gap={6} style={{ color: "var(--ant-color-text-secondary)", fontSize: 13, marginBottom: 4 }}>
               <MaterialIcon name="timer" size={18} />
-              <span>全局平均延迟</span>
+              <span>{tt("全局平均延迟", "Global Avg Latency")}</span>
             </Flex>
             <div style={{ fontSize: 24, fontWeight: 700, color: "#a855f7" }}>
               {formatLatency(avgLatency)}
             </div>
             <Text type="secondary" style={{ fontSize: 12 }}>
-              所有活跃提供商平均响应时间
+              {tt("所有活跃提供商平均响应时间", "Average response latency across active providers")}
             </Text>
           </Card>
         </Col>
@@ -333,13 +336,13 @@ export function ProviderStatsPage() {
           <Card className={styles.statCard} styles={{ body: { padding: 16 } }}>
             <Flex align="center" gap={6} style={{ color: "var(--ant-color-text-secondary)", fontSize: 13, marginBottom: 4 }}>
               <MaterialIcon name="check_circle" size={18} />
-              <span>整体成功率</span>
+              <span>{tt("整体成功率", "Overall Success Rate")}</span>
             </Flex>
             <div style={{ fontSize: 24, fontWeight: 700, color: "#10b981" }}>
               {formatSuccessRate(totalSuccessful, totalRequests)}
             </div>
             <Text type="secondary" style={{ fontSize: 12 }}>
-              成功请求：{formatNumber(totalSuccessful)}
+              {tt("成功请求", "Successful requests")}：{formatNumber(totalSuccessful)}
             </Text>
           </Card>
         </Col>
@@ -348,13 +351,13 @@ export function ProviderStatsPage() {
           <Card className={styles.statCard} styles={{ body: { padding: 16 } }}>
             <Flex align="center" gap={6} style={{ color: "var(--ant-color-text-secondary)", fontSize: 13, marginBottom: 4 }}>
               <MaterialIcon name="dns" size={18} />
-              <span>活跃提供商数</span>
+              <span>{tt("活跃提供商数", "Active Providers")}</span>
             </Flex>
             <div style={{ fontSize: 24, fontWeight: 700, color: "#fbbf24" }}>
               {providers.length}
             </div>
             <Text type="secondary" style={{ fontSize: 12 }}>
-              有流量记录的上游连接数
+              {tt("有流量记录的上游连接数", "Upstream connections with recorded traffic")}
             </Text>
           </Card>
         </Col>
@@ -365,7 +368,7 @@ export function ProviderStatsPage() {
         title={
           <Flex align="center" gap={8}>
             <MaterialIcon name="table_chart" size={20} style={{ color: "#38bdf8" }} />
-            <span>提供商与模型指标明细 (Provider & Model Breakdown)</span>
+            <span>{tt("提供商与模型指标明细", "Provider & Model Breakdown")}</span>
           </Flex>
         }
         className={styles.sectionCard}
@@ -374,7 +377,7 @@ export function ProviderStatsPage() {
         {providers.length === 0 ? (
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
-            description="暂无提供商调用性能数据。当有流量经过网关后，此处将按提供商与模型自动统计。"
+            description={tt("暂无提供商调用性能数据。当有流量经过网关后，此处将按提供商与模型自动统计。", "No provider performance data yet. Stats will appear once traffic flows through.")}
             style={{ margin: "24px 0" }}
           />
         ) : (

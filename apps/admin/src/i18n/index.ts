@@ -16,7 +16,7 @@ const EN_MESSAGES = {
   "shell.toggleTheme": "Toggle theme",
   "shell.currentLocation": "Current location",
   "shell.dashboard": "Dashboard",
-  "shell.homeWelcome": "Welcome to Orbit",
+  "shell.homeWelcome": "Welcome to Shiguang Gateway",
   "shell.logout": "Sign out",
 
   "shell.admin": "Admin",
@@ -151,16 +151,16 @@ const EN_MESSAGES = {
   "home.viewAll": "View all",
   "home.loading": "Loading…",
   "home.noRequests": "No requests",
-  "home.banner.kimiTitle": "Kimi (Moonshot AI) is an original open-source friend of Orbit",
-  "home.banner.kimiDescription": "New users receive 15% extra API credits on their first top-up. Use Kimi K3 in Orbit through the official Kimi API.",
+  "home.banner.kimiTitle": "Kimi (Moonshot AI) is an original open-source friend of Shiguang Gateway",
+  "home.banner.kimiDescription": "New users receive 15% extra API credits on their first top-up. Use Kimi K3 in Shiguang Gateway through the official Kimi API.",
   "home.banner.kimiNote": "Partner link",
   "home.banner.kimiAction": "Get a Kimi API key",
-  "home.banner.cheaperTitle": "Cheaper Inference is an Orbit open-source friend",
+  "home.banner.cheaperTitle": "Cheaper Inference is an Shiguang Gateway open-source friend",
   "home.banner.cheaperDescription": "A cost-ranked gateway for frontier models behind one OpenAI-compatible endpoint, routing each request to the cheapest eligible provider without exceeding list price.",
   "home.banner.cheaperNote": "Partner link",
   "home.banner.cheaperAction": "Get an API key",
-  "home.banner.copilotTitle": "Orbit now works in VS Code Copilot Chat",
-  "home.banner.copilotDescription": "Install the free Orbit extension to use every Orbit model directly in the Copilot Chat model picker.",
+  "home.banner.copilotTitle": "Shiguang Gateway now works in VS Code Copilot Chat",
+  "home.banner.copilotDescription": "Install the free Shiguang Gateway extension to use every Shiguang Gateway model directly in the Copilot Chat model picker.",
 
   "home.banner.copilotNote": "Also supports Open VSX (Cursor, Windsurf, VSCodium…)",
   "home.banner.copilotAction": "Get the extension",
@@ -220,7 +220,7 @@ const EN_MESSAGES = {
   "providers.hidden": "Hidden",
   "providers.syncModels": "Sync models",
   "providers.importedDesc": "Dynamically imported model: pulled and synchronized via API Key from upstream endpoint.",
-  "providers.systemDesc": "Built-in model: static registry catalog included in OmniRoute gateway, ready to use out-of-the-box.",
+  "providers.systemDesc": "Built-in model: static registry catalog included in ShiguangGateway gateway, ready to use out-of-the-box.",
   "providers.customDesc": "Custom model: user-defined or parameter-overridden model entry.",
   "providers.fallbackDesc": "Fallback model: standby catalog entry used when dynamic discovery is unavailable.",
   "providers.modelNameClickToSetAlias": "Model display name: {name} (click to assign an alias)",
@@ -330,7 +330,7 @@ const EN_MESSAGES = {
   "providersPage.addAnthropicCompatible": "Add Anthropic compatible endpoint",
   "providersPage.addOpenAiCompatible": "Add OpenAI compatible",
   "providersPage.oauthTitle": "OAuth providers",
-  "providersPage.oauthDescription": "Sign in once with OAuth and Orbit handles token rotation.",
+  "providersPage.oauthDescription": "Sign in once with OAuth and Shiguang Gateway handles token rotation.",
   "providersPage.ideTitle": "IDE providers",
 
   "providersPage.ideDescription": "Providers backed by editor and IDE subscriptions.",
@@ -854,7 +854,7 @@ interface LocaleState {
 export const useLocaleStore = create<LocaleState>()(
   persist(
     (set) => ({ locale: detectLocale(), setLocale: (locale) => set({ locale }) }),
-    { name: "omniroute-admin-locale" },
+    { name: "shiguangGateway-admin-locale" },
   ),
 );
 

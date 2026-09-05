@@ -13,6 +13,7 @@ import {
 } from "antd";
 import { createStyles } from "antd-style";
 import { MaterialIcon } from "@/app/nav";
+import { useI18n } from "@/i18n";
 
 const { Title, Text } = Typography;
 
@@ -38,6 +39,7 @@ const useStyles = createStyles(({ token }) => ({
 
 export function TranslatorPage() {
   const { styles } = useStyles();
+  const { tt } = useI18n();
   const [messageApi, contextHolder] = message.useMessage();
   const [sourceFormat, setSourceFormat] = useState("openai");
   const [targetFormat, setTargetFormat] = useState("claude");
@@ -79,9 +81,9 @@ export function TranslatorPage() {
         };
       }
       setOutputPayload(JSON.stringify(converted, null, 2));
-      messageApi.success("Payload 协议转换成功！");
+      messageApi.success(tt("Payload 协议转换成功！", "Payload translated successfully!"));
     } catch {
-      messageApi.error("输入的 JSON 格式不合法");
+      messageApi.error(tt("输入的 JSON 格式不合法", "Invalid JSON format"));
     }
   };
 
@@ -110,25 +112,28 @@ export function TranslatorPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  协议与提示词转换器
+                  {tt("协议与提示词转换器", "Protocol & Prompt Translator")}
                 </Title>
-                <Tag color="cyan">双向透明格式转译</Tag>
+                <Tag color="cyan">{tt("双向透明格式转译", "Bidirectional Translation")}</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                在 OpenAI / Anthropic Messages / Ollama / Gemini 等异构 LLM 协议之间双向转换请求与响应结构。
+                {tt(
+                  "在 OpenAI / Anthropic Messages / Ollama / Gemini 等异构 LLM 协议之间双向转换请求与响应结构。",
+                  "Translate requests and responses between OpenAI, Anthropic, Ollama, and Gemini protocols."
+                )}
               </Text>
             </div>
           </Flex>
 
           <Button type="primary" icon={<MaterialIcon name="play_arrow" size={16} />} onClick={handleTranslate}>
-            执行转换
+            {tt("执行转换", "Translate")}
           </Button>
         </Flex>
       </Card>
 
       {/* 2. Format Selectors */}
       <Flex gap={12} align="center">
-        <span>源格式：</span>
+        <span>{tt("源格式：", "Source:")}</span>
         <Select
           value={sourceFormat}
           onChange={setSourceFormat}
@@ -143,7 +148,7 @@ export function TranslatorPage() {
 
         <MaterialIcon name="arrow_forward" size={18} style={{ color: "var(--ant-color-text-secondary)" }} />
 
-        <span>目标格式：</span>
+        <span>{tt("目标格式：", "Target:")}</span>
         <Select
           value={targetFormat}
           onChange={setTargetFormat}
@@ -160,7 +165,7 @@ export function TranslatorPage() {
       {/* 3. Editors */}
       <Row gutter={[12, 12]}>
         <Col xs={24} md={12}>
-          <Card title="源输入 Payload (Source JSON)" className={styles.sectionCard} size="small">
+          <Card title={tt("源输入 Payload", "Source JSON Payload")} className={styles.sectionCard} size="small">
             <Input.TextArea
               rows={16}
               value={inputPayload}
@@ -171,12 +176,12 @@ export function TranslatorPage() {
         </Col>
 
         <Col xs={24} md={12}>
-          <Card title="转换后 Payload (Target JSON)" className={styles.sectionCard} size="small">
+          <Card title={tt("转换后 Payload", "Target JSON Payload")} className={styles.sectionCard} size="small">
             <Input.TextArea
               rows={16}
               value={outputPayload}
               readOnly
-              placeholder="点击上方「执行转换」后在此查看转换结果..."
+              placeholder={tt("点击上方「执行转换」后在此查看转换结果...", "Click 'Translate' above to view translated payload...")}
               style={{ fontFamily: "monospace", fontSize: 12, background: "rgba(0,0,0,0.2)" }}
             />
           </Card>

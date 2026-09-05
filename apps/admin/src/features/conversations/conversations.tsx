@@ -1,6 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import {
   Badge,
+  Alert,
   Button,
   Card,
   Col,
@@ -302,6 +303,22 @@ export function ConversationsPage() {
   return (
     <div className={styles.page}>
       {contextHolder}
+      {sessionsQuery.isError && (
+        <Alert
+          type="error"
+          showIcon
+          message={tt("无法读取会话数据", "Unable to load conversations")}
+          description={sessionsQuery.error instanceof Error ? sessionsQuery.error.message : String(sessionsQuery.error)}
+        />
+      )}
+      {turnsQuery.isError && (
+        <Alert
+          type="error"
+          showIcon
+          message={tt("无法读取会话详情", "Unable to load conversation turns")}
+          description={turnsQuery.error instanceof Error ? turnsQuery.error.message : String(turnsQuery.error)}
+        />
+      )}
 
       {/* Header Control Bar */}
       <Card className={styles.headerCard} styles={{ body: { padding: "12px 16px" } }}>

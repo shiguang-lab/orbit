@@ -1,5 +1,5 @@
 /**
- * 实时 WebSocket client：移植自 OmniRoute Orbit src/hooks/useLiveDashboard.ts 的核心逻辑。
+ * 实时 WebSocket client：移植自 ShiguangGateway Shiguang Gateway src/hooks/useLiveDashboard.ts 的核心逻辑。
  *
  * 链路：GET /api/v1/ws?handshake=1 发现 live.publicUrl/path/port → new WebSocket →
  * 发 {type:"subscribe", channels} → 收 {type:"event", channel, event, data} / {type:"welcome", data:backlog} →

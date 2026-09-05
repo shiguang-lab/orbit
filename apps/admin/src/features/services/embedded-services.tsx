@@ -32,6 +32,7 @@ import {
   type NinerouterModelItem,
 } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -214,13 +215,13 @@ function getServiceErrorView(error: string | null | undefined, port: number): Se
   const raw = error?.trim();
   if (!raw) return null;
 
-  if (/already serving a healthy response/i.test(raw) || /OMNIROUTE_ADOPT_EXISTING_SERVICE/i.test(raw)) {
+  if (/already serving a healthy response/i.test(raw) || /SHIGUANG_GATEWAY_ADOPT_EXISTING_SERVICE/i.test(raw)) {
     return {
       statusLabel: "端口已有服务",
       title: "检测到已有 CLIProxyAPI 实例",
       description:
         `端口 ${port} 已经有健康服务在响应。为避免误接管其他进程，网关默认不会自动接管它。` +
-        "如果这是你之前启动的 CLIProxyAPI，请在 Orbit 进程环境中设置 OMNIROUTE_ADOPT_EXISTING_SERVICE=1 后重启 Orbit；否则先停止占用该端口的旧进程，再重试。",
+        "如果这是你之前启动的 CLIProxyAPI，请在 Shiguang Gateway 进程环境中设置 SHIGUANG_GATEWAY_ADOPT_EXISTING_SERVICE=1 后重启 Shiguang Gateway；否则先停止占用该端口的旧进程，再重试。",
       tone: "warning",
     };
   }
@@ -250,6 +251,7 @@ function getFriendlyServiceError(error: unknown, port: number, fallback: string)
 
 export function EmbeddedServicesPage() {
   const { styles } = useStyles();
+  const { tt } = useI18n();
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
   const [messageApi, contextHolder] = message.useMessage();
@@ -904,7 +906,7 @@ export function EmbeddedServicesPage() {
 
             <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
               <Card
-                title="智能模型映射 (Model Mapping)"
+                title={tt("智能模型映射", "Model Mapping")}
                 className={styles.sectionCard}
                 size="small"
                 style={{ width: "100%", flex: 1 }}
@@ -994,7 +996,7 @@ export function EmbeddedServicesPage() {
                   dataSource={ninerouterModelsQuery.data ?? []}
                   columns={[
                     {
-                      title: "模型标识 (ID)",
+                      title: tt("模型标识", "Model ID"),
                       dataIndex: "id",
                       key: "id",
                       render: (id: string) => <Text strong style={{ fontFamily: "monospace", color: "#06b6d4", fontSize: 12 }}>{id}</Text>,

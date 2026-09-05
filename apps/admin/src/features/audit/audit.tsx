@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
 import { auditRecordsApi, type AuditRecordItem } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Title, Text } = Typography;
 
@@ -35,6 +36,7 @@ const useStyles = createStyles(({ token }) => ({
 
 export function AuditPage({ auditType = "all" }: { auditType?: "all" | "mcp" | "a2a" }) {
   const { styles } = useStyles();
+  const { tt } = useI18n();
 
   const auditQuery = useQuery({
     queryKey: ["audit-records-list", auditType],
@@ -48,7 +50,11 @@ export function AuditPage({ auditType = "all" }: { auditType?: "all" | "mcp" | "
   const records = auditQuery.data ?? [];
 
   const titleText =
-    auditType === "mcp" ? "MCP 工具调用安全审计" : auditType === "a2a" ? "A2A 智能体交互审计" : "全链路安全审计日志";
+    auditType === "mcp"
+      ? tt("MCP 工具调用安全审计", "MCP Tool Invocation Security Audit")
+      : auditType === "a2a"
+      ? tt("A2A 智能体交互审计", "A2A Agent Interaction Audit")
+      : tt("全链路安全审计日志", "Full-Chain Security Audit Logs");
 
   return (
     <div className={styles.page}>
@@ -75,10 +81,13 @@ export function AuditPage({ auditType = "all" }: { auditType?: "all" | "mcp" | "
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
                   {titleText}
                 </Title>
-                <Tag color="cyan">审计留痕与追溯</Tag>
+                <Tag color="cyan">{tt("审计留痕与追溯", "Audit Trail & Provenance")}</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                记录每一次配置变更、敏感工具调用 (MCP)、智能体互联通信 (A2A) 与鉴权拦截详情。
+                {tt(
+                  "记录每一次配置变更、敏感工具调用 (MCP)、智能体互联通信 (A2A) 与鉴权拦截详情。",
+                  "Record configuration updates, sensitive MCP tool calls, A2A inter-agent communications, and authorization blocks."
+                )}
               </Text>
             </div>
           </Flex>
@@ -86,7 +95,7 @@ export function AuditPage({ auditType = "all" }: { auditType?: "all" | "mcp" | "
       </Card>
 
       {/* 2. Audit Table */}
-      <Card title="最新审计审计流记录" className={styles.sectionCard} size="small">
+      <Card title={tt("最新审计流记录", "Latest Audit Records")} className={styles.sectionCard} size="small">
         <Table<AuditRecordItem>
           rowKey="id"
           size="small"
@@ -94,20 +103,20 @@ export function AuditPage({ auditType = "all" }: { auditType?: "all" | "mcp" | "
           dataSource={records}
           columns={[
             {
-              title: "时间",
+              title: tt("时间", "Timestamp"),
               dataIndex: "timestamp",
               key: "timestamp",
               width: 100,
               render: (t) => <Text style={{ fontSize: 12 }}>{t}</Text>,
             },
             {
-              title: "操作主体 (Actor)",
+              title: tt("操作主体", "Actor"),
               dataIndex: "actor",
               key: "actor",
               render: (act) => <Tag color="blue">{act}</Tag>,
             },
             {
-              title: "动作与资源 (Action & Resource)",
+              title: tt("动作与资源", "Action & Resource"),
               key: "action",
               render: (_, record) => (
                 <div>
@@ -122,18 +131,18 @@ export function AuditPage({ auditType = "all" }: { auditType?: "all" | "mcp" | "
               ),
             },
             {
-              title: "客户端 IP",
+              title: tt("客户端 IP", "Client IP"),
               dataIndex: "clientIp",
               key: "ip",
               render: (ip) => <code style={{ fontSize: 11 }}>{ip}</code>,
             },
             {
-              title: "判定结果",
+              title: tt("判定结果", "Verdict"),
               dataIndex: "status",
               key: "status",
               render: (st) => (
                 <Tag color={st === "allowed" ? "success" : st === "flagged" ? "warning" : "error"}>
-                  {String(st || "allowed").toUpperCase()}
+                  {String(st || "unknown").toUpperCase()}
                 </Tag>
               ),
             },

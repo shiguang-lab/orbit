@@ -1,12 +1,12 @@
 /**
- * CSRF 保护：移植自 OmniRoute Orbit src/shared/utils/dashboardCsrf.ts。
+ * CSRF 保护：移植自 ShiguangGateway Shiguang Gateway src/shared/utils/dashboardCsrf.ts。
  *
- * OmniRoute 管理接口在本地用 httpOnly cookie(auth_token)，生产经网关使用
- * X-SG-Identity 会话；两种模式的 mutating 请求都需带 x-omniroute-csrf 头。
+ * ShiguangGateway 管理接口在本地用 httpOnly cookie(auth_token)，生产经网关使用
+ * X-SG-Identity 会话；两种模式的 mutating 请求都需带 x-shiguangGateway-csrf 头。
  * token 从 GET /api/auth/csrf 获取，按 expiresAt 缓存 + 单飞去重。
  */
 
-export const DASHBOARD_CSRF_HEADER = "x-omniroute-csrf";
+export const DASHBOARD_CSRF_HEADER = "x-shiguangGateway-csrf";
 
 interface CsrfResponse {
   token: string;

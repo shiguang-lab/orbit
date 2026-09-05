@@ -1,5 +1,6 @@
 import {
   Card,
+  Alert,
   Flex,
   Table,
   Tag,
@@ -10,6 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
 import { apiEndpointsApi, type ApiEndpointItem } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Title, Text } = Typography;
 
@@ -35,6 +37,7 @@ const useStyles = createStyles(({ token }) => ({
 
 export function ApiEndpointsPage() {
   const { styles } = useStyles();
+  const { tt } = useI18n();
 
   const epQuery = useQuery({
     queryKey: ["api-endpoints-list"],
@@ -43,6 +46,10 @@ export function ApiEndpointsPage() {
 
   if (epQuery.isLoading) {
     return <PageSkeleton />;
+  }
+
+  if (epQuery.isError) {
+    return <Alert type="error" showIcon message={tt("无法读取实时端点契约", "Unable to load the live endpoint contract")} description={epQuery.error instanceof Error ? epQuery.error.message : String(epQuery.error)} />;
   }
 
   const endpoints = epQuery.data ?? [];
@@ -70,12 +77,15 @@ export function ApiEndpointsPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  API 开放端点配置
+                  {tt("API 开放端点配置", "API Endpoints Configuration")}
                 </Title>
-                <Tag color="teal">网关对外服务路由</Tag>
+                <Tag color="teal">{tt("网关对外服务路由", "Gateway Inbound Routes")}</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                配置网关对外暴露的 OpenAI / Anthropic 标准协议端点路由映射、限流速率与鉴权控制。
+                {tt(
+                  "配置网关对外暴露的 OpenAI / Anthropic 标准协议端点路由映射、限流速率与鉴权控制。",
+                  "Configure gateway-exposed OpenAI / Anthropic standard endpoint mappings, rate limits, and authentication policies."
+                )}
               </Text>
             </div>
           </Flex>
@@ -83,48 +93,47 @@ export function ApiEndpointsPage() {
       </Card>
 
       {/* 2. Endpoints Table */}
-      <Card title="已注册 API 端点路由" className={styles.sectionCard} size="small">
+      <Card title={tt("已注册 API 端点路由", "Registered API Endpoint Routes")} className={styles.sectionCard}>
         <Table<ApiEndpointItem>
           rowKey="id"
-          size="small"
           pagination={false}
           dataSource={endpoints}
           columns={[
             {
-              title: "对外路由路径",
+              title: tt("对外路由路径", "Route Path"),
               dataIndex: "path",
               key: "path",
               render: (path) => <code style={{ fontSize: 13, color: "#38bdf8" }}>{path}</code>,
             },
             {
-              title: "协议规范",
+              title: tt("协议规范", "Protocol"),
               dataIndex: "protocol",
               key: "protocol",
               render: (proto) => <Tag color="blue">{proto}</Tag>,
             },
             {
-              title: "目标上游转发池",
+              title: tt("目标上游转发池", "Target Upstream Pool"),
               dataIndex: "targetProvider",
               key: "targetProvider",
-              render: (tp) => <Text strong>{tp}</Text>,
+              render: (tp) => <Text strong>{tp ?? tt("未分类", "Unclassified")}</Text>,
             },
             {
-              title: "限流速率 (Rate Limit)",
+              title: tt("限流速率", "Rate Limit"),
               dataIndex: "rateLimitPerMin",
               key: "rateLimit",
-              render: (rate) => <Tag color="orange">{rate} req/min</Tag>,
+              render: (rate) => <Tag color={rate == null ? "default" : "orange"}>{rate == null ? tt("未配置", "Not configured") : `${rate} req/min`}</Tag>,
             },
             {
-              title: "鉴权要求",
+              title: tt("鉴权要求", "Auth Requirement"),
               dataIndex: "authRequired",
               key: "auth",
-              render: (auth) => (auth ? <Tag color="red">强制 Bearer Key</Tag> : <Tag color="green">公开访问</Tag>),
+              render: (auth) => (auth ? <Tag color="red">{tt("强制 Bearer Key", "Require Bearer Key")}</Tag> : <Tag color="green">{tt("公开访问", "Public")}</Tag>),
             },
             {
-              title: "状态",
+              title: tt("状态", "Status"),
               dataIndex: "status",
               key: "status",
-              render: (st) => <Tag color={st === "active" ? "success" : "default"}>{String(st || "active").toUpperCase()}</Tag>,
+              render: (st) => <Tag color={st === "active" ? "success" : "default"}>{String(st || "unknown").toUpperCase()}</Tag>,
             },
           ]}
         />

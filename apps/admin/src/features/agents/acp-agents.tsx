@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
 import { acpAgentsApi, type AcpAgentItem } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Title, Text } = Typography;
 
@@ -35,6 +36,7 @@ const useStyles = createStyles(({ token }) => ({
 
 export function AcpAgentsPage() {
   const { styles } = useStyles();
+  const { tt } = useI18n();
 
   const acpQuery = useQuery({
     queryKey: ["acp-agents-list"],
@@ -70,12 +72,15 @@ export function AcpAgentsPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  ACP 智能体协议管理
+                  {tt("ACP 智能体协议管理", "ACP Agent Protocol Management")}
                 </Title>
-                <Tag color="purple">标准协议规范</Tag>
+                <Tag color="purple">{tt("标准协议规范", "Standard Protocol")}</Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                管理对接 Zed、VSCode Cline 等符合 ACP 标准协议的智能体客户端与守护进程，实现跨 IDE 协同。
+                {tt(
+                  "管理对接 Zed、VSCode Cline 等符合 ACP 标准协议的智能体客户端与守护进程，实现跨 IDE 协同。",
+                  "Manage ACP-compliant agent clients and daemons (Zed, VSCode Cline) for cross-IDE orchestration."
+                )}
               </Text>
             </div>
           </Flex>
@@ -83,7 +88,7 @@ export function AcpAgentsPage() {
       </Card>
 
       {/* 2. Table */}
-      <Card title="已连接 ACP 智能体守护进程" className={styles.sectionCard} size="small">
+      <Card title={tt("已连接 ACP 智能体守护进程", "Connected ACP Agent Daemons")} className={styles.sectionCard} size="small">
         <Table<AcpAgentItem>
           rowKey="id"
           size="small"
@@ -91,7 +96,7 @@ export function AcpAgentsPage() {
           dataSource={agents}
           columns={[
             {
-              title: "智能体名称与端点",
+              title: tt("智能体名称与端点", "Agent Name & Endpoint"),
               key: "name",
               render: (_, record) => (
                 <div>
@@ -106,7 +111,7 @@ export function AcpAgentsPage() {
               ),
             },
             {
-              title: "已声明能力清单",
+              title: tt("已声明能力清单", "Declared Capabilities"),
               dataIndex: "capabilities",
               key: "capabilities",
               render: (caps: string[]) => (
@@ -120,13 +125,13 @@ export function AcpAgentsPage() {
               ),
             },
             {
-              title: "活跃会话数",
+              title: tt("活跃会话数", "Active Sessions"),
               dataIndex: "activeSessions",
               key: "activeSessions",
-              render: (sessions) => <Tag color="geekblue">{sessions} 个会话</Tag>,
+              render: (sessions) => <Tag color="geekblue">{sessions} {tt("个会话", "sessions")}</Tag>,
             },
             {
-              title: "连接状态",
+              title: tt("连接状态", "Connection Status"),
               dataIndex: "status",
               key: "status",
               render: (status) => (

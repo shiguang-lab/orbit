@@ -24,6 +24,7 @@ import dayjs from "dayjs";
 import { MaterialIcon } from "@/app/nav";
 import { useBreadcrumbTitle } from "@/shell/useBreadcrumbTitle";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 import {
   usageApi,
   keysApi,
@@ -95,21 +96,19 @@ const useStyles = createStyles(({ token }) => ({
     background: token.colorBgContainer,
     transition: "box-shadow 0.2s, border-color 0.2s",
     height: "100%",
+    flex: 1,
   },
   cardSection: {
     borderRadius: 8,
     border: `1px solid ${token.colorBorderSecondary}`,
     background: token.colorBgContainer,
     height: "100%",
+    flex: 1,
   },
   // Makes a Col flex so its Card child stretches to full row height
   stretchCol: {
     display: "flex",
     flexDirection: "column" as const,
-    "& > .ant-card": {
-      flex: 1,
-      height: "100%",
-    },
   },
   chartContainer: {
     width: "100%",
@@ -158,7 +157,7 @@ function downloadFile(content: string, filename: string, mimeType: string) {
 
 function exportCsvReport(data: UsageAnalyticsPayload, range: string) {
   const lines: string[] = [];
-  lines.push("# OmniRoute 成本与消耗分析报告");
+  lines.push("# ShiguangGateway 成本与消耗分析报告");
   lines.push(`# 导出时间: ${new Date().toISOString()}`);
   lines.push(`# 统计周期: ${range}`);
   lines.push("");
@@ -196,7 +195,7 @@ function exportCsvReport(data: UsageAnalyticsPayload, range: string) {
   }
 
   const dateStr = dayjs().format("YYYYMMDD-HHmmss");
-  downloadFile(lines.join("\n"), `omniroute-costs-${range}-${dateStr}.csv`, "text/csv;charset=utf-8");
+  downloadFile(lines.join("\n"), `shiguangGateway-costs-${range}-${dateStr}.csv`, "text/csv;charset=utf-8");
 }
 
 /* ───────────── Chart Components ───────────── */
@@ -587,6 +586,7 @@ function ActivityHeatmapGrid({ activityMap }: { activityMap: Record<string, numb
 export default function AnalyticsPage() {
   const { styles } = useStyles();
   const { token } = theme.useToken();
+  const { tt } = useI18n();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -811,7 +811,7 @@ export default function AnalyticsPage() {
   // Explorer Table Columns
   const explorerColumns = [
     {
-      title: "维度名称",
+      title: tt("维度名称", "Dimension"),
       dataIndex: "name",
       key: "name",
       sorter: true,
@@ -829,7 +829,7 @@ export default function AnalyticsPage() {
       ),
     },
     {
-      title: "消耗金额 (USD)",
+      title: tt("消耗金额", "Cost"),
       dataIndex: "cost",
       key: "cost",
       sorter: true,
@@ -1012,7 +1012,7 @@ export default function AnalyticsPage() {
                   icon={<MaterialIcon name="code" size={16} />}
                   onClick={() => {
                     const jsonStr = JSON.stringify(data, null, 2);
-                    downloadFile(jsonStr, `omniroute-costs-${range}-${dayjs().format("YYYYMMDD")}.json`, "application/json");
+                    downloadFile(jsonStr, `shiguangGateway-costs-${range}-${dayjs().format("YYYYMMDD")}.json`, "application/json");
                   }}
                 >
                   导出 JSON

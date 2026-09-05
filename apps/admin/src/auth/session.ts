@@ -3,13 +3,13 @@
  *
  * 流程：
  *  1. requireAuthSession() 调 /api/auth/session(带 cookie，由 BFF/网关注入身份)
- *  2. 默认未登录 → Orbit 自己的 /login，使用官方 password/OIDC flow。
+ *  2. 默认未登录 → 本地运行时自己的 /login，使用本地 password/OIDC flow。
  *  3. 只有显式启用 VITE_AUTH_MODE=shiguang 时才跳转统一登录站点。
  *
- * 官方模式的登录页由本应用渲染，凭证仍由 Orbit API 处理。
+ * 本地模式的登录页由本应用渲染，凭证由独立 Shiguang Gateway runtime 处理。
  */
 const DEFAULT_LOGIN_ORIGIN = "https://shiguanglab.com";
-const AUTH_MODE = import.meta.env.VITE_AUTH_MODE ?? "official";
+const AUTH_MODE = import.meta.env.VITE_AUTH_MODE ?? "local";
 const USE_UNIFIED_LOGIN = AUTH_MODE === "shiguang";
 
 type BrowserLocation = Pick<

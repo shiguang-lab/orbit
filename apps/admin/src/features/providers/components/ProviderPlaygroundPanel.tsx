@@ -294,7 +294,7 @@ export function ProviderPlaygroundPanel({
   };
 
   // Web Search State
-  const [searchQuery, setSearchQuery] = useState("OmniRoute AI Gateway");
+  const [searchQuery, setSearchQuery] = useState("ShiguangGateway AI Gateway");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [searching, setSearching] = useState(false);
 

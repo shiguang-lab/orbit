@@ -127,6 +127,11 @@ export function GenericEngineDetailPage({ engineId }: { engineId: string }) {
     queryKey: ["compression-config"],
     queryFn: () => compressionApi.getConfig(),
   });
+  const telemetryQuery = useQuery({
+    queryKey: ["compression-telemetry"],
+    queryFn: () => compressionApi.getTelemetry(),
+    staleTime: 30_000,
+  });
 
   const meta: CompressionEngineMeta = COMPRESSION_ENGINE_CATALOG[engineId] || {
     id: engineId,
@@ -145,7 +150,7 @@ export function GenericEngineDetailPage({ engineId }: { engineId: string }) {
   };
 
   const [sampleText, setSampleText] = useState(sampleMeta.raw);
-  const [compressedResult, setCompressedResult] = useState<string | null>(sampleMeta.compressed);
+  const [compressedResult, setCompressedResult] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const updateMutation = useMutation({
@@ -187,13 +192,23 @@ export function GenericEngineDetailPage({ engineId }: { engineId: string }) {
     updateMutation.mutate({ engines: updatedEngines });
   };
 
-  const handleTestCompress = () => {
+  const handleTestCompress = async () => {
     setIsProcessing(true);
-    setTimeout(() => {
-      setCompressedResult(sampleMeta.compressed);
-      setIsProcessing(false);
+    try {
+      const result = await compressionApi.preview({
+        messages: [{ role: "user", content: sampleText }],
+        mode: "stacked",
+        engineId,
+      });
+      if (typeof result.compressed !== "string") throw new Error("压缩服务未返回结果");
+      setCompressedResult(result.compressed);
       messageApi.success("测试处理完成");
-    }, 200);
+    } catch (error) {
+      setCompressedResult(null);
+      messageApi.error(error instanceof Error ? error.message : "测试处理失败");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const origLen = sampleText.length;
@@ -260,27 +275,29 @@ export function GenericEngineDetailPage({ engineId }: { engineId: string }) {
           <div className={styles.statBox}>
             <Text type="secondary" style={{ fontSize: 12 }}>累计节省 Token</Text>
             <div style={{ fontSize: 20, fontWeight: 700, color: "#10b981", marginTop: 2 }}>
-              {meta.guidance.lossy ? "2,420,800" : "890,100"}
+              {telemetryQuery.data ? telemetryQuery.data.totalTokensSaved.toLocaleString() : "—"}
             </div>
-            <Text type="secondary" style={{ fontSize: 11 }}>处理请求 6,120 次</Text>
+            <Text type="secondary" style={{ fontSize: 11 }}>处理请求 {telemetryQuery.data?.totalRuns ?? "—"} 次</Text>
           </div>
         </Col>
         <Col xs={24} sm={12} md={6}>
           <div className={styles.statBox}>
             <Text type="secondary" style={{ fontSize: 12 }}>平均压缩比例</Text>
             <div style={{ fontSize: 20, fontWeight: 700, color: "#6366f1", marginTop: 2 }}>
-              {engineId === "ultra" ? "74.8%" : engineId === "aggressive" ? "52.4%" : engineId === "lite" ? "15.2%" : "38.6%"}
+              {telemetryQuery.data && telemetryQuery.data.totalOutputTokens > 0
+                ? `${Math.round((telemetryQuery.data.totalTokensSaved / (telemetryQuery.data.totalTokensSaved + telemetryQuery.data.totalOutputTokens)) * 100)}%`
+                : "—"}
             </div>
-            <Text type="secondary" style={{ fontSize: 11 }}>算子特征加速比</Text>
+            <Text type="secondary" style={{ fontSize: 11 }}>基于本地运行遥测</Text>
           </div>
         </Col>
         <Col xs={24} sm={12} md={6}>
           <div className={styles.statBox}>
             <Text type="secondary" style={{ fontSize: 12 }}>执行延迟开销</Text>
             <div style={{ fontSize: 20, fontWeight: 700, color: "#06b6d4", marginTop: 2 }}>
-              &lt; 0.6ms
+              {"—"}
             </div>
-            <Text type="secondary" style={{ fontSize: 11 }}>内存流式调度</Text>
+            <Text type="secondary" style={{ fontSize: 11 }}>当前未采集延迟遥测</Text>
           </div>
         </Col>
         <Col xs={24} sm={12} md={6}>
@@ -355,7 +372,6 @@ export function GenericEngineDetailPage({ engineId }: { engineId: string }) {
             </Flex>
             <Button
               type="primary"
-              size="small"
               icon={<MaterialIcon name="bolt" size={14} />}
               loading={isProcessing}
               onClick={handleTestCompress}
