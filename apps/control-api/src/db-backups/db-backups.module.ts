@@ -5,6 +5,5 @@ import { DbBackupsService } from "./db-backups.service.js";
 @Module({
   controllers: [DbBackupsController],
   providers: [DbBackupsService],
-  exports: [DbBackupsService],
 })
 export class DbBackupsModule {}

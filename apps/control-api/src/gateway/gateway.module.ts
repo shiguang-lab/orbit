@@ -5,6 +5,5 @@ import { GatewayService } from "./gateway.service.js";
 @Module({
   controllers: [GatewayController],
   providers: [GatewayService],
-  exports: [GatewayService],
 })
 export class GatewayModule {}

@@ -5,6 +5,5 @@ import { QuotaService } from "./quota.service.js";
 @Module({
   controllers: [QuotaController],
   providers: [QuotaService],
-  exports: [QuotaService],
 })
 export class QuotaModule {}
