@@ -15,7 +15,8 @@ port or selecting a surface at runtime.
 
 ## Shared package rule
 
-`packages/contracts`, `packages/config`, `packages/db-schema` and `packages/network-guard` are dependency leaves.
+`packages/contracts`, `packages/config`, `packages/db-schema`, `packages/network-guard`,
+`packages/http-kernel` and `packages/web-route-compat` are shared dependency leaves.
 `db-schema` contains table names and ownership metadata only; SQL queries and mutations stay in the owning domain
 service. `network-guard` contains pure outbound URL parsing, host classification and SSRF error contracts; it has no
 database, framework or application lifecycle dependency. Configuration-backed guard policy remains in the owning
@@ -26,6 +27,11 @@ live only in `apps/worker/src/jobs`; the package exports implementations, not a
 process-wide scheduler registry. `packages/http-kernel` contains only transport-level
 Fastify middleware and the compatibility dispatch protocol. Each HTTP app constructs
 Nest/Fastify itself; the shared package has no app factory and accepts no app selector.
+
+The package rule is enforced by `pnpm audit:package-boundaries --strict`: a package must
+have at least two workspace consumers and must not contain app-owned route trees. The
+legacy `core-domain` and `open-sse` packages currently fail this gate and remain an
+explicit migration backlog; new app-only code must not be added to them.
 
 Route migration is physical: handlers already accepted by an app live below
 that app's `src/routes` tree. The parity audits aggregate those app-owned trees
