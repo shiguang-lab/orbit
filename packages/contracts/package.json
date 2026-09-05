@@ -17,6 +17,10 @@
     "./realtime-events": {
       "types": "./src/realtime-events.ts",
       "import": "./src/realtime-events.ts"
+    },
+    "./cors": {
+      "types": "./src/cors.ts",
+      "import": "./src/cors.ts"
     }
   },
   "scripts": {

@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Inject, Options, Param, Post, Put, Query
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { PluginsService } from "./plugins.service.js";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { CORS_HEADERS } from "@shiguang-gateway/core-domain/shared/cors";
+import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
 import { z } from "zod";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);

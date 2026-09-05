@@ -138,6 +138,9 @@ importers:
       '@shiguang-gateway/auth':
         specifier: workspace:*
         version: link:../../packages/auth
+      '@shiguang-gateway/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
       '@shiguang-gateway/core-domain':
         specifier: workspace:*
         version: link:../../packages/core-domain

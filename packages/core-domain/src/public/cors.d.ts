@@ -1,2 +1,1 @@
-export const CORS_HEADERS: Record<string, string>;
-export function handleCorsOptions(): Response;
+export { CORS_HEADERS, handleCorsOptions } from "@shiguang-gateway/contracts/cors";
