@@ -84,6 +84,24 @@ export interface CallLogEntry {
   [key: string]: unknown;
 }
 
+/**
+ * Stable error envelope used when every credential for a model is cooling down.
+ * Keep this transport contract independent from the persistence/domain packages
+ * so edge applications can use the streaming error helper without importing
+ * the legacy core-domain source tree.
+ */
+export interface ModelCooldownErrorPayload {
+  error: {
+    message: string;
+    type: "rate_limit_error";
+    code: "model_cooldown";
+    model?: string;
+    reset_seconds: number;
+    retry_after?: string;
+    credentials_cooling?: number;
+  };
+}
+
 /* ---------------- 系统 ---------------- */
 
 export interface SystemVersionInfo {

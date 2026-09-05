@@ -1,8 +1,8 @@
 import { CORS_HEADERS } from "./cors.ts";
 import { unwrapClinepassEnvelope } from "./clinepassEnvelope.ts";
 import { getDefaultErrorMessage, getErrorInfo } from "../config/errorConfig.ts";
-import { normalizePayloadForLog } from "../../src/lib/logPayloads.ts";
-import type { ModelCooldownErrorPayload } from "../../src/types/index.ts";
+import { normalizePayloadForLog } from "./logPayload.ts";
+import type { ModelCooldownErrorPayload } from "@shiguang-gateway/contracts";
 import { buildPassthroughErrorResponse } from "./upstreamErrorPassthrough.ts";
 
 /**

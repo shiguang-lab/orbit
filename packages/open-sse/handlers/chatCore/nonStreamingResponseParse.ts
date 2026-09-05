@@ -11,7 +11,7 @@
  * block. Pure with respect to handler state (only buffering debug/warn logs as a side effect).
  */
 
-import { normalizePayloadForLog } from "../../../src/lib/logPayloads.ts";
+import { normalizePayloadForLog } from "../../utils/logPayload.ts";
 import { extractSSEErrorMessage } from "../sseParser.ts";
 import { readNonStreamingResponseBody } from "./nonStreamingResponseBody.ts";
 import {

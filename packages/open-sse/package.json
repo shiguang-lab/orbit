@@ -3,5 +3,26 @@
   "version": "3.8.51",
   "description": "ShiguangGateway streaming engine — handles provider dispatch, protocol translation, and SSE streaming",
   "type": "module",
-  "private": true
+  "private": true,
+  "exports": {
+    ".": {
+      "types": "./index.ts",
+      "import": "./index.ts"
+    },
+    "./*": {
+      "types": "./*",
+      "import": "./*"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit --pretty false"
+  },
+  "dependencies": {
+    "@shiguang-gateway/config": "workspace:*",
+    "@shiguang-gateway/contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "typescript": "catalog:"
+  }
 }

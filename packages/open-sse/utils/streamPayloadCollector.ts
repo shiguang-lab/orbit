@@ -1,4 +1,4 @@
-import { cloneLogPayload } from "../../src/lib/logPayloads.ts";
+import { cloneLogPayload } from "./logPayload.ts";
 import { FORMATS } from "../translator/formats.ts";
 
 type StructuredSSEEvent = {
