@@ -1,5 +1,5 @@
 {
-  "name": "@shiguang-gateway/http-kernel",
+  "name": "@shiguang-gateway/web-route-compat",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -11,18 +11,13 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json --pretty false",
-    "typecheck": "tsc -p tsconfig.json --noEmit --pretty false",
-    "test": "node --import tsx --test test/*.test.ts"
+    "typecheck": "tsc -p tsconfig.json --noEmit --pretty false"
   },
   "dependencies": {
-    "@nestjs/common": "^11.2.3",
-    "@nestjs/core": "^11.2.3",
-    "fastify": "catalog:",
-    "rxjs": "^7.8.2"
+    "fastify": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",
-    "tsx": "catalog:",
     "typescript": "catalog:"
   }
 }

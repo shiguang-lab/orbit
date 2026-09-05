@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { registerCompatDispatcher } from "@shiguang-gateway/http-kernel";
+import { registerCompatDispatcher } from "@shiguang-gateway/web-route-compat";
 import { controlRouteCatalog } from "./catalog.js";
 
 /** Register only management compatibility routes on the control process. */

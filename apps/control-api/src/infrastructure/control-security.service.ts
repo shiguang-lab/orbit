@@ -8,7 +8,7 @@ import {
   csrfPlugin,
   type EngineAuthAdapter,
   LocalAuthBroker,
-} from "@shiguang-gateway/http-kernel";
+} from "@shiguang-gateway/auth";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
 

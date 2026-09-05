@@ -16,8 +16,8 @@
  */
 import type { FastifyRequest, FastifyReply } from "fastify";
 import { jwtVerify } from "jose";
-import { SgIdentityVerifier, type ResolvedSgIdentity } from "./sgIdentity.js";
-import type { LocalBrokerSession } from "./broker.js";
+import { SgIdentityVerifier, type ResolvedSgIdentity } from "./sg-identity.verifier.js";
+import type { LocalBrokerSession } from "./local-auth-broker.js";
 
 export interface SessionOptions {
   issuer: string;

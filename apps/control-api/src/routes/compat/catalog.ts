@@ -1,7 +1,7 @@
 import { existsSync, readdirSync } from "node:fs";
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { CompatRouteDefinition } from "@shiguang-gateway/http-kernel";
+import type { CompatRouteDefinition } from "@shiguang-gateway/web-route-compat";
 
 function walk(dir: string, out: string[] = []): string[] {
   if (!existsSync(dir)) return out;

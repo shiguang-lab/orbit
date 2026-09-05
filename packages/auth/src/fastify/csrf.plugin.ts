@@ -5,7 +5,7 @@
  */
 import { createHash, createHmac } from "node:crypto";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import { resolveGatewayIdentity } from "../lib/session.js";
+import { resolveGatewayIdentity } from "../gateway-session.js";
 
 export const DASHBOARD_CSRF_HEADER = "x-shiguangGateway-csrf";
 

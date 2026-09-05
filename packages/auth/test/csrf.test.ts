@@ -29,7 +29,7 @@ const {
   DASHBOARD_CSRF_HEADER,
   csrfPlugin,
   issueDashboardCsrfToken,
-} = await import("../src/middleware/csrf.js");
+} = await import("../src/fastify/csrf.plugin.js");
 
 const app = Fastify({ logger: false });
 csrfPlugin(app);

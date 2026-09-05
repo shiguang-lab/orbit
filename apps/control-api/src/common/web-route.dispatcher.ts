@@ -3,7 +3,7 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import {
   dispatchWebRoute,
   type WebRouteHandler,
-} from "@shiguang-gateway/http-kernel";
+} from "@shiguang-gateway/web-route-compat";
 
 /** Bridges app-owned Web Request handlers to Nest's Fastify transport. */
 @Injectable()

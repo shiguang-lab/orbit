@@ -2,7 +2,7 @@ import { readdirSync } from "node:fs";
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { FastifyInstance } from "fastify";
-import { registerCompatDispatcher, type CompatRouteDefinition } from "@shiguang-gateway/http-kernel";
+import { registerCompatDispatcher, type CompatRouteDefinition } from "@shiguang-gateway/web-route-compat";
 import { ownedEdgeRoutes, ownedEdgeRouteKeys } from "../owned-routes.manifest.js";
 
 function walk(dir: string, out: string[] = []): string[] {

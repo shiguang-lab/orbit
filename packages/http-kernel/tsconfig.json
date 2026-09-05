@@ -14,8 +14,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["../core-domain/src/*"],
-      "@shiguang-gateway/open-sse": ["../core-domain/open-sse"],
-      "@shiguang-gateway/open-sse/*": ["../core-domain/open-sse/*"]
+      "@shiguang-gateway/open-sse": ["../open-sse"],
+      "@shiguang-gateway/open-sse/*": ["../open-sse/*"]
     }
   },
   "include": ["src"]

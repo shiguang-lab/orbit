@@ -9,7 +9,7 @@
  */
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { jwtVerify } from "jose";
-import { isAdminIdentity, resolveGatewayIdentity } from "../lib/session.js";
+import { isAdminIdentity, resolveGatewayIdentity } from "../gateway-session.js";
 
 /** 与引擎 src/shared/constants/managementScopes.ts 保持同步 */
 export const MANAGE_SCOPE = "manage";

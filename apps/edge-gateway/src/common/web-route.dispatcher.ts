@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { dispatchWebRoute, type WebRouteHandler } from "@shiguang-gateway/http-kernel";
+import { dispatchWebRoute, type WebRouteHandler } from "@shiguang-gateway/web-route-compat";
 
 @Injectable()
 export class WebRouteDispatcher {
