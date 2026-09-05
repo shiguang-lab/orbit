@@ -14,8 +14,9 @@ boundary while those areas are migrated to the deployable apps and focused packa
   new server modules.
 - Consumers should use an explicit `package.json#exports` subpath. Do not import
   `src/**` files directly or add new wildcard exports.
-- The package must not import app source trees. Deployable apps may temporarily use
-  the existing explicit compatibility exports while a domain is being migrated.
+- Deployable apps and focused packages must not import this package's `src/**` paths
+  directly. They may temporarily use the existing explicit compatibility exports while
+  a domain is being migrated.
 - Shared contracts and schema definitions belong in `@shiguang-gateway/contracts`
   or `@shiguang-gateway/db-schema`; environment/config primitives belong in
   `@shiguang-gateway/config`.
@@ -26,4 +27,3 @@ Migrate one domain at a time: define its public contract, move implementation in
 focused package or app module, update consumers to the public export, then delete the
 legacy export. Keep this package free of new dependencies so the legacy surface can
 shrink monotonically.
-
