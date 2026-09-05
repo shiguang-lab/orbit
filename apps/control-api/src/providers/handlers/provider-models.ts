@@ -11,26 +11,25 @@ import {
   mergeModelCompatOverride,
   getHiddenModelsByProvider,
   type ModelCompatPatch,
-} from "../lib/localDb.ts";
+} from "@shiguang-gateway/core-domain/control/provider-model-store";
 import {
   getModelContextOverrideRecord,
   setModelContextOverride,
   removeModelContextOverride,
-} from "../lib/db/modelContextOverrides.ts";
+} from "@shiguang-gateway/core-domain/control/model-context-overrides";
 import {
   deleteManagedAvailableModelAliases,
   deleteManagedAvailableModelAliasesForProvider,
   syncManagedAvailableModelAliases,
-} from "../lib/providerModels/managedAvailableModels.ts";
+} from "@shiguang-gateway/core-domain/control/provider-model-aliases";
 import {
   AI_PROVIDERS,
   isOpenAICompatibleProvider,
   isAnthropicCompatibleProvider,
-} from "../shared/constants/providers.ts";
-import { isAuthenticated } from "../shared/utils/apiAuth.ts";
-export const dynamic = "force-dynamic";
-import { providerModelMutationSchema } from "../shared/validation/schemas.ts";
-import { isValidationFailure, validateBody } from "../shared/validation/helpers.ts";
+} from "@shiguang-gateway/core-domain/catalog/provider-metadata";
+import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
+import { providerModelMutationSchema } from "@shiguang-gateway/core-domain/control/provider-validation-schemas";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 
 function normalizeRequestedModelIds(
   searchParams: URLSearchParams,
@@ -51,7 +50,7 @@ function normalizeRequestedModelIds(
  * GET /api/provider-models?provider=<id>
  * List custom models (all providers if no provider param)
  */
-export async function GET(request) {
+export async function GET(request: Request) {
   try {
     // Require authentication for security
     if (!(await isAuthenticated(request))) {
@@ -110,7 +109,7 @@ export async function GET(request) {
  * POST /api/provider-models
  * Body: { provider, modelId, modelName? }
  */
-export async function POST(request) {
+export async function POST(request: Request) {
   let rawBody;
   try {
     rawBody = await request.json();
@@ -182,7 +181,7 @@ export async function POST(request) {
  * PUT /api/provider-models
  * Body: { provider, modelId, modelName?, apiFormat?, supportedEndpoints? }
  */
-export async function PUT(request) {
+export async function PUT(request: Request) {
   let rawBody;
   try {
     rawBody = await request.json();
@@ -372,7 +371,7 @@ export async function PUT(request) {
  * PATCH /api/provider-models?provider=<id>&modelId=<modelId>
  * Body: { isHidden: boolean, modelIds?: string[] }
  */
-export async function PATCH(request) {
+export async function PATCH(request: Request) {
   let rawBody;
   try {
     rawBody = await request.json();
@@ -461,7 +460,7 @@ export async function PATCH(request) {
 /**
  * DELETE /api/provider-models?provider=<id>&model=<modelId>
  */
-export async function DELETE(request) {
+export async function DELETE(request: Request) {
   try {
     // Require authentication for security
     if (!(await isAuthenticated(request))) {

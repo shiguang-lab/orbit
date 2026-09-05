@@ -249,13 +249,21 @@
       "types": "./src/public/requestTelemetry.d.ts",
       "import": "./src/shared/utils/requestTelemetry.ts"
     },
-    "./control/provider-node-by-id-route": {
-      "types": "./src/public/providerNodeByIdRoute.d.ts",
-      "import": "./src/control/providerNodeByIdRoute.ts"
+    "./control/provider-model-store": {
+      "types": "./src/public/providerModelsStore.d.ts",
+      "import": "./src/control/providerModelsStore.ts"
     },
-    "./control/provider-models-route": {
-      "types": "./src/public/providerModelsRoute.d.ts",
-      "import": "./src/control/providerModelsRoute.ts"
+    "./control/provider-model-aliases": {
+      "types": "./src/public/providerModelAliases.d.ts",
+      "import": "./src/control/providerModelAliases.ts"
+    },
+    "./control/model-context-overrides": {
+      "types": "./src/public/modelContextOverrides.d.ts",
+      "import": "./src/control/modelContextOverrides.ts"
+    },
+    "./db/model-aliases": {
+      "types": "./src/public/modelAliasesDb.d.ts",
+      "import": "./src/lib/db/models/aliases.ts"
     },
     "./domain/degradation": {
       "types": "./src/public/degradation.d.ts",

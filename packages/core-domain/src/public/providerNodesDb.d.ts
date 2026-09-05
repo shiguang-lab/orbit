@@ -17,3 +17,9 @@ export function getProviderNodes(
 ): Promise<ProviderNode[]>;
 export function getProviderNodesCount(filter?: Record<string, unknown>): number;
 export function createProviderNode(data: Record<string, unknown>): Promise<ProviderNode>;
+export function getProviderNodeById(id: string): Promise<ProviderNode | null>;
+export function updateProviderNode(
+  id: string,
+  data: Record<string, unknown>,
+): Promise<ProviderNode>;
+export function deleteProviderNode(id: string): Promise<unknown>;

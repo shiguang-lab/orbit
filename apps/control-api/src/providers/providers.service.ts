@@ -18,7 +18,7 @@ import {
   PUT as updateProviderModelHandler,
   PATCH as patchProviderModelHandler,
   DELETE as deleteProviderModelHandler,
-} from "@shiguang-gateway/core-domain/control/provider-models-route";
+} from "./handlers/provider-models.js";
 import {
   GET as getProviderNodesHandler,
   POST as createProviderNodeHandler,
@@ -26,7 +26,7 @@ import {
 import {
   DELETE as deleteProviderNodeHandler,
   PUT as updateProviderNodeHandler,
-} from "@shiguang-gateway/core-domain/control/provider-node-by-id-route";
+} from "./handlers/provider-node-by-id.js";
 import { POST as validateProviderNodeHandler } from "./handlers/provider-nodes-validate.js";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
