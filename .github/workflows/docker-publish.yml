@@ -59,6 +59,7 @@ jobs:
           pnpm --filter @shiguang-gateway/server-runtime test
           pnpm smoke:route-imports
           pnpm smoke:split-deployment
+          node --test scripts/smoke-worker-start.test.mjs
           pnpm smoke:worker
           pnpm smoke:agent-skills
 
