@@ -3,12 +3,17 @@
 /** Import every local API and root route module to catch missing dependencies. */
 import { mkdtemp, rm, readdir } from "node:fs/promises";
 import { join, relative } from "node:path";
+import { existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { pathToFileURL } from "node:url";
 
-const appRoot = new URL("../packages/gateway-runtime/src/app/", import.meta.url);
+const appRoot = new URL("../packages/core-domain/src/app/", import.meta.url);
 const appRootPath = appRoot.pathname.replace(/\/$/, "");
 const apiRootPath = join(appRootPath, "api");
+const migratedApiRoots = [
+  join(new URL("../apps/control-api/src/routes/api/", import.meta.url).pathname.replace(/\/$/, "")),
+  join(new URL("../apps/edge-gateway/src/routes/api/", import.meta.url).pathname.replace(/\/$/, "")),
+].filter(existsSync);
 const dataDir = await mkdtemp(join(tmpdir(), "shiguangGateway-route-import-"));
 process.env.NODE_ENV = "test";
 process.env.JWT_SECRET ??= "route-import-jwt-secret-1234567890";
@@ -26,7 +31,12 @@ async function walk(dir, out = []) {
   return out;
 }
 
-const files = await walk(appRootPath);
+const files = [
+  ...(await walk(appRootPath)),
+  ...(
+    await Promise.all(migratedApiRoots.map((root) => walk(root)))
+  ).flat(),
+];
 const failures = [];
 for (const file of files) {
   try {
@@ -36,5 +46,6 @@ for (const file of files) {
   }
 }
 await rm(dataDir, { recursive: true, force: true });
-console.log(JSON.stringify({ routeFiles: files.length, importedRouteFiles: files.length, apiRouteFiles: files.filter((file) => file.startsWith(`${apiRootPath}/`)).length, rootRouteFiles: files.filter((file) => !file.startsWith(`${apiRootPath}/`)).length, failures, status: failures.length ? "FAIL" : "PASS" }, null, 2));
+const apiFiles = files.filter((file) => file.startsWith(`${apiRootPath}/`) || migratedApiRoots.some((root) => file.startsWith(`${root}/`)));
+console.log(JSON.stringify({ routeFiles: files.length, importedRouteFiles: files.length, apiRouteFiles: apiFiles.length, rootRouteFiles: files.length - apiFiles.length, failures, status: failures.length ? "FAIL" : "PASS" }, null, 2));
 if (failures.length) process.exitCode = 1;

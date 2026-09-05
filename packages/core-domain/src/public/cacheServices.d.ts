@@ -1,0 +1,15 @@
+export function getCacheStats(): any;
+export function clearCache(): boolean;
+export function invalidateByModel(model: string): number;
+export function invalidateBySignature(signature: string): boolean;
+export function invalidateStale(maxAgeMs: number): number;
+export function clearMemoryCache(): void;
+export function getMemoryCacheStats(): any;
+export function getIdempotencyStats(): Promise<any>;
+export function getCacheMetrics(): Promise<any>;
+export function getCacheTrend(hours: number): Promise<any>;
+export function getCachedSettings(): Promise<any>;
+export function clearReasoningCacheAll(provider?: string): number;
+export function deleteReasoningCacheEntry(toolCallId: string): boolean;
+export function getReasoningCacheServiceEntries(options: { limit?: number; offset?: number; provider?: string; model?: string }): any[];
+export function getReasoningCacheServiceStats(): any;

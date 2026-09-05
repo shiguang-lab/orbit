@@ -11971,7 +11971,7 @@
   "featureFlags.definitions.SHIGUANG_GATEWAY_ENABLE_RUNTIME_BACKGROUND_TASKS.description": "Enable background-task processing at runtime.",
   "featureFlags.definitions.SHIGUANG_GATEWAY_DISABLE_BACKGROUND_SERVICES.description": "Disable all background services, including quota refresh and synchronization.",
   "featureFlags.definitions.SHIGUANG_GATEWAY_RTK_TRUST_PROJECT_FILTERS.description": "Trust project-level RTK filters without validation.",
-  "featureFlags.definitions.SHIGUANG_GATEWAY_ENABLE_LIVE_WS.description": "Start the real-time dashboard WebSocket server on import at loopback port 20132. Set the flag to 0 or false to disable it. LAN exposure also requires LIVE_WS_HOST=0.0.0.0 and LIVE_WS_ALLOWED_ORIGINS.",
+  "featureFlags.definitions.SHIGUANG_GATEWAY_ENABLE_LIVE_WS.description": "Enable the realtime app's dashboard WebSocket server on port 20132. Set the flag to 0 or false to disable it. LAN exposure also requires LIVE_WS_HOST=0.0.0.0 and LIVE_WS_ALLOWED_ORIGINS.",
   "featureFlags.definitions.SHIGUANG_GATEWAY_CODEX_WS_ENABLED.description": "Allow Codex to use Responses over WebSocket. When disabled, Codex falls back to HTTP Responses.",
   "featureFlags.definitions.SHIGUANG_GATEWAY_EMERGENCY_FALLBACK.description": "Route budget-exhausted requests to the emergency free fallback provider and model.",
   "featureFlags.definitions.STREAM_RECOVERY_ENABLED.description": "Retry truncated upstream SSE streams transparently before any response bytes reach the client.",

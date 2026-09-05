@@ -28,7 +28,7 @@ RUN --mount=type=cache,id=shiguang-gateway-pnpm-store,target=/root/.local/share/
 FROM node:22-bookworm-slim AS runtime-base
 WORKDIR /app
 ENV NODE_ENV=production \
-    TSX_TSCONFIG_PATH=/app/packages/server-runtime/tsconfig.json \
+    TSX_TSCONFIG_PATH=/app/packages/http-kernel/tsconfig.json \
     APP_NAME=edge-gateway \
     EDGE_GATEWAY_HOST=0.0.0.0 \
     EDGE_GATEWAY_PORT=8787 \
@@ -56,22 +56,24 @@ COPY --from=build --chown=node:node /app/apps/realtime/node_modules ./apps/realt
 COPY --from=build --chown=node:node /app/apps/worker/node_modules ./apps/worker/node_modules
 # The compiled OpenAPI route reads this path from process.cwd(). Keep the
 # single runtime asset while leaving the rest of the 158 MB source/docs tree out.
-COPY --from=build --chown=node:node /app/packages/gateway-runtime/docs/openapi.yaml ./packages/gateway-runtime/docs/openapi.yaml
-# tsx follows the server package tsconfig while resolving its remaining
+COPY --from=build --chown=node:node /app/packages/core-domain/docs/openapi.yaml ./packages/core-domain/docs/openapi.yaml
+# tsx follows the HTTP kernel tsconfig while resolving its remaining
 # TypeScript source imports, so retain only the small config files it needs.
 COPY --from=build --chown=node:node /app/tsconfig.base.json ./tsconfig.base.json
-COPY --from=build --chown=node:node /app/packages/server-runtime/tsconfig.json ./packages/server-runtime/tsconfig.json
-COPY --from=build --chown=node:node /app/packages/gateway-runtime/tsconfig.json ./packages/gateway-runtime/tsconfig.json
-COPY --from=build --chown=node:node /app/packages/server-runtime/src ./packages/server-runtime/src
-COPY --from=build --chown=node:node /app/packages/gateway-runtime/src ./packages/gateway-runtime/src
-COPY --from=build --chown=node:node /app/packages/gateway-runtime/open-sse ./packages/gateway-runtime/open-sse
-COPY --from=build --chown=node:node /app/packages/server-runtime/package.json ./packages/server-runtime/package.json
-COPY --from=build --chown=node:node /app/packages/gateway-runtime/package.json ./packages/gateway-runtime/package.json
-COPY --from=build --chown=node:node /app/packages/server-runtime/node_modules ./packages/server-runtime/node_modules
-COPY --from=build --chown=node:node /app/packages/gateway-runtime/node_modules ./packages/gateway-runtime/node_modules
-RUN rm -f /app/node_modules/@shiguang-gateway/server-runtime /app/node_modules/@shiguang-gateway/runtime \
-    && ln -s /app/packages/server-runtime /app/node_modules/@shiguang-gateway/server-runtime \
-    && ln -s /app/packages/gateway-runtime /app/node_modules/@shiguang-gateway/runtime
+COPY --from=build --chown=node:node /app/packages/http-kernel/tsconfig.json ./packages/http-kernel/tsconfig.json
+COPY --from=build --chown=node:node /app/packages/core-domain/tsconfig.json ./packages/core-domain/tsconfig.json
+COPY --from=build --chown=node:node /app/packages/http-kernel/src ./packages/http-kernel/src
+COPY --from=build --chown=node:node /app/packages/core-domain/src ./packages/core-domain/src
+COPY --from=build --chown=node:node /app/packages/core-domain/open-sse ./packages/core-domain/open-sse
+# Edge-owned route modules are loaded from source by the tsx catch-all loader.
+COPY --from=build --chown=node:node /app/apps/edge-gateway/src/routes ./apps/edge-gateway/src/routes
+COPY --from=build --chown=node:node /app/packages/http-kernel/package.json ./packages/http-kernel/package.json
+COPY --from=build --chown=node:node /app/packages/core-domain/package.json ./packages/core-domain/package.json
+COPY --from=build --chown=node:node /app/packages/http-kernel/node_modules ./packages/http-kernel/node_modules
+COPY --from=build --chown=node:node /app/packages/core-domain/node_modules ./packages/core-domain/node_modules
+RUN rm -f /app/node_modules/@shiguang-gateway/http-kernel /app/node_modules/@shiguang-gateway/core-domain \
+    && ln -s /app/packages/http-kernel /app/node_modules/@shiguang-gateway/http-kernel \
+    && ln -s /app/packages/core-domain /app/node_modules/@shiguang-gateway/core-domain
 RUN mkdir -p /app/data && chown node:node /app/data
 USER node
 EXPOSE 8787 8788 8790 20132
@@ -80,15 +82,15 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
 
 FROM runtime-base AS edge-gateway
 ENV APP_NAME=edge-gateway
-CMD ["node", "--import", "tsx", "apps/edge-gateway/dist/index.js"]
+CMD ["node", "--import", "tsx", "apps/edge-gateway/dist/main.js"]
 
 FROM runtime-base AS control-api
 ENV APP_NAME=control-api
-CMD ["node", "--import", "tsx", "apps/control-api/dist/index.js"]
+CMD ["node", "--import", "tsx", "apps/control-api/dist/main.js"]
 
 FROM runtime-base AS realtime
 ENV APP_NAME=realtime
-CMD ["node", "--import", "tsx", "apps/realtime/dist/index.js"]
+CMD ["node", "--import", "tsx", "apps/realtime/dist/main.js"]
 
 FROM runtime-base AS worker
 ENV APP_NAME=worker

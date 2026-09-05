@@ -141,10 +141,12 @@ export function ProviderPlaygroundPanel({
   const [streaming, setStreaming] = useState(false);
   const [stats, setStats] = useState<{ latencyMs?: number; inTokens?: number; outTokens?: number } | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesBoxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messages.length > 0 && messagesBoxRef.current) {
+      messagesBoxRef.current.scrollTop = messagesBoxRef.current.scrollHeight;
+    }
   }, [messages]);
 
   const handleSendChat = async () => {
@@ -389,7 +391,7 @@ export function ProviderPlaygroundPanel({
             />
           )}
 
-          <div className={styles.messagesBox}>
+          <div ref={messagesBoxRef} className={styles.messagesBox}>
             {messages.length === 0 ? (
               <div style={{ textAlign: "center", color: "#888", marginTop: 60 }}>
                 <MaterialIcon name="forum" size={32} style={{ opacity: 0.5, marginBottom: 8 }} />
@@ -410,7 +412,6 @@ export function ProviderPlaygroundPanel({
                 </div>
               ))
             )}
-            <div ref={messagesEndRef} />
           </div>
 
           <div className={styles.inputArea}>

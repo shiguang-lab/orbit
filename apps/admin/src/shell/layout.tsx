@@ -225,6 +225,8 @@ export function Shell() {
   useEffect(() => {
     const scrollEl = document.querySelector(".shell-content-scrollbar");
     if (scrollEl) scrollEl.scrollTop = 0;
+    const osViewport = document.querySelector(".shell-content-scrollbar [data-overlayscrollbars-viewport], .shell-content-scrollbar .os-viewport");
+    if (osViewport) osViewport.scrollTop = 0;
     const innerScroll = document.querySelector(".shell-content-scrollbar > div");
     if (innerScroll) innerScroll.scrollTop = 0;
     window.scrollTo(0, 0);

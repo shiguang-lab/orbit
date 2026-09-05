@@ -35,15 +35,107 @@ function contract(file) {
   return [...found].sort();
 }
 
+function extractControllerContracts(controllerFile) {
+  const source = readFileSync(controllerFile, "utf8");
+  const controllerMatch = source.match(/@Controller\s*\(\s*(?:\[([^\]]*)\]|["'`\x27\x60](.*?)["'`\x27\x60])?\s*\)/);
+  if (!controllerMatch) return [];
+  let basePrefixes = [""];
+  if (controllerMatch[1]) {
+    basePrefixes = controllerMatch[1]
+      .split(",")
+      .map((s) => s.trim().replace(/^["'`\x27\x60]/, "").replace(/["'`\x27\x60]$/, "").replace(/^\/+/, "").replace(/\/+$/, ""))
+      .filter(Boolean);
+    if (basePrefixes.length === 0) basePrefixes = [""];
+  } else if (controllerMatch[2] !== undefined) {
+    basePrefixes = [controllerMatch[2].trim().replace(/^\/+/, "").replace(/\/+$/, "")];
+  }
+
+  const methodRegex = /@(Get|Post|Put|Patch|Delete|Options|Head)\s*\(\s*(?:(?:\[([^\]]*)\])|(?:["'`\x27\x60](.*?)["'`\x27\x60]))?\s*\)/g;
+  const map = new Map();
+  let match;
+  while ((match = methodRegex.exec(source)) !== null) {
+    const verb = match[1].toUpperCase();
+    let subPaths = [""];
+    if (match[2]) {
+      subPaths = match[2].split(",").map(s => s.trim().replace(/^["'`\x27\x60]/, "").replace(/["'`\x27\x60]$/, "")).filter(Boolean);
+    } else if (match[3] !== undefined) {
+      subPaths = [match[3].trim()];
+    }
+
+    for (const basePrefix of basePrefixes) {
+      for (let subPath of subPaths) {
+        let fullPath = [basePrefix, subPath].filter(Boolean).join("/");
+        if (fullPath.startsWith("api/")) fullPath = fullPath.slice("api/".length);
+        fullPath = fullPath.replace(/:([a-zA-Z0-9_]+)/g, "[$1]");
+        const routePath = `${fullPath ? fullPath + "/" : ""}route.ts`;
+        const isClientV1 = fullPath.startsWith("v1/") || fullPath.startsWith("v1beta/") || fullPath.startsWith("a2a/");
+        if (!map.has(routePath)) map.set(routePath, isClientV1 ? new Set(["OPTIONS"]) : new Set());
+        map.get(routePath).add(verb);
+      }
+    }
+  }
+
+  return [...map.entries()].map(([routePath, verbs]) => ({
+    routePath,
+    verbs: [...verbs].sort()
+  }));
+}
+
+function walkControllers(dir, out = []) {
+  if (!existsSync(dir)) return out;
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const file = join(dir, entry.name);
+    if (entry.isDirectory()) walkControllers(file, out);
+    else if (entry.isFile() && file.endsWith(".controller.ts")) out.push(file);
+  }
+  return out;
+}
+
 const referenceApi = join(referenceRoot, "src", "app", "api");
-const localApi = join(repoRoot, "packages", "gateway-runtime", "src", "app", "api");
+const localApi = join(repoRoot, "packages", "core-domain", "src", "app", "api");
+const localApiRoots = [
+  localApi,
+  join(repoRoot, "apps", "control-api", "src", "routes", "api"),
+  join(repoRoot, "apps", "edge-gateway", "src", "routes", "api"),
+].filter(existsSync);
+const controllerRoots = [
+  join(repoRoot, "apps", "control-api", "src"),
+  join(repoRoot, "apps", "edge-gateway", "src"),
+].filter(existsSync);
+
 const refFiles = walk(referenceApi);
-const localFiles = walk(localApi);
-const comparableLocalFiles = localFiles.filter((file) => !localApiExtensions.has(relative(localApi, file).split("\\").join("/")));
-const referenceAvailable = refFiles.length > 0;
+const localFiles = localApiRoots.flatMap((root) => walk(root));
+const controllerFiles = controllerRoots.flatMap((root) => walkControllers(root));
+
+const localPath = (file) => {
+  const root = localApiRoots.find((candidate) => file === candidate || file.startsWith(`${candidate}/`));
+  return root ? relative(root, file).split("\\").join("/") : file;
+};
+
 const refMap = new Map(refFiles.map((file) => [normalizeRoutePath(relative(referenceApi, file).split("\\").join("/")), contract(file)]));
-const localMap = new Map(comparableLocalFiles.map((file) => [normalizeRoutePath(relative(localApi, file).split("\\").join("/")), contract(file)]));
+const localMap = new Map();
+
+for (const file of localFiles) {
+  const pathKey = localPath(file);
+  if (!localApiExtensions.has(pathKey)) {
+    localMap.set(normalizeRoutePath(pathKey), contract(file));
+  }
+}
+
+for (const controllerFile of controllerFiles) {
+  const contracts = extractControllerContracts(controllerFile);
+  for (const { routePath, verbs } of contracts) {
+    if (!localApiExtensions.has(routePath)) {
+      const normalized = normalizeRoutePath(routePath);
+      const existing = localMap.get(normalized) || [];
+      const combined = [...new Set([...existing, ...verbs])].sort();
+      localMap.set(normalized, combined);
+    }
+  }
+}
+
 const mismatches = [];
+const referenceAvailable = refFiles.length > 0;
 if (referenceAvailable) {
   for (const path of new Set([...refMap.keys(), ...localMap.keys()])) {
     const expected = refMap.get(path) || [];
@@ -53,11 +145,11 @@ if (referenceAvailable) {
 } else {
   const serialized = [...localMap].sort(([a], [b]) => a.localeCompare(b)).map(([path, verbs]) => `${path}:${verbs.join(",")}`).join("\n");
   const actualHash = createHash("sha256").update(serialized).digest("hex");
-  if (comparableLocalFiles.length !== 689 || actualHash !== frozenContractSha256) {
+  if (localMap.size !== 689 || actualHash !== frozenContractSha256) {
     mismatches.push({ path: "<frozen-contract-baseline>", expected: [frozenContractSha256], actual: [actualHash] });
   }
 }
-const report = { referenceRoot, referenceAvailable, frozenContractSha256, routeFiles: referenceAvailable ? refFiles.length : 689, localRouteFiles: localFiles.length, additiveLocalApiExtensions: [...localApiExtensions], mismatches,
-  status: (referenceAvailable ? refFiles.length === comparableLocalFiles.length : comparableLocalFiles.length === 689) && mismatches.length === 0 ? "PASS" : "FAIL" };
+const report = { referenceRoot, referenceAvailable, frozenContractSha256, routeFiles: referenceAvailable ? refFiles.length : 689, localRouteFiles: localMap.size, additiveLocalApiExtensions: [...localApiExtensions], mismatches,
+  status: (referenceAvailable ? refFiles.length === localMap.size : localMap.size === 689) && mismatches.length === 0 ? "PASS" : "FAIL" };
 console.log(JSON.stringify(report, null, 2));
 if (process.argv.includes("--strict") && report.status !== "PASS") process.exitCode = 1;

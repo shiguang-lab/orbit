@@ -31,11 +31,15 @@ SQLite 快照、白名单外部状态和每个启用 Provider 的真实上游 sm
 4. 切换期间进行官方 Orbit 与独立实例的只读/影子对比；切换后在网络层阻断官方地址，
    CI 继续用自动审查脚本防止依赖回流。
 
-当前实现将 689 个 API 加 9 个根 `route.ts` 文件纳入 `packages/gateway-runtime`，由本地
-dispatcher 承载；当前有 22 个
- Fastify 适配文件（193 个显式 handler），其余 route 通过同一进程的本地路由
- dispatcher 执行。`pnpm audit:gateway-independence`、`pnpm audit:brand`、数据校验和容器 smoke
+当前实现将剩余 666 个官方 API route 保留在 `packages/core-domain`（另有 2 个本地
+media-cache 扩展），并已将控制面的
+auth status/health/gateway status/process-control/token-health/synced-models/provider-stats/provider-metrics/provider-nodes list/provider-nodes validation/provider-models 路由组物理迁入 `apps/control-api/src/routes/api`，以及 edge 的
+music generation/speech-to-text/embeddings/audio-transcriptions/audio-speech/audio-translations/text-to-speech/image edits/image generations/image upscale/ElevenLabs voices/WS handshake/moderations/rerank 迁入 `apps/edge-gateway/src/routes/api`；9 个根
+`route.ts` 仍由各 app 的 compat catalog 承载；当前有 45 个 app-owned route 文件（18 个显式
+Fastify handler），其余 route 通过 app 注册的本地 compat dispatcher 执行。`pnpm audit:gateway-independence`、`pnpm audit:brand`、数据校验和容器 smoke
 均已通过；Provider 真实上游可用性仍取决于部署环境提供的凭据和网络。
+
+Provider node 的详情更新/删除（`/api/provider-nodes/:id`）及其余 666 个官方 route 仍在后续批次中迁移，当前 dispatcher 仅作为等价性过渡承载。
 
 ## 2. 官方 Orbit 能力盘点
 
@@ -48,13 +52,13 @@ OpenAI 兼容入口，负责 Provider 翻译、流式输出、fallback、token �
 
 | 能力域 | 协议/入口 | 目标实现包 |
 |---|---|---|
-| 聊天与代码代理 | `/v1/chat/completions`、`/v1/messages`、`/v1/responses`、流式 SSE | `packages/gateway-core`、`packages/translation` |
+| 聊天与代码代理 | `/v1/chat/completions`、`/v1/messages`、`/v1/responses`、流式 SSE | `apps/edge-gateway` + `packages/core-domain` |
 | 实时协议 | `/v1/ws`、Responses WebSocket、live dashboard WS（默认 20132） | `apps/realtime` |
-| 模型与多模态 | `/v1/models`、`/v1/embeddings`、`/v1/images/generations`、`/v1/audio/transcriptions`、`/v1/audio/speech`、`/v1/videos/generations`、`/v1/music/generations`、OCR | `packages/provider-runtime` |
-| 工具型 API | `/v1/search`、web fetch、rerank、moderations、文件/批处理 | `packages/gateway-core`、`packages/jobs` |
-| 兼容协议 | `/v1beta` Gemini、Ollama aliases、provider 专用路由、CLI/VS Code aliases | `packages/protocol-adapters` |
-| 路由决策 | 19 种策略、Auto Combo、模型/Provider/账号 fallback、配额预检、工作流阶段路由 | `packages/routing-domain` |
-| 请求处理 | role normalization、structured output 转换、think tag、token 计数、响应清洗、系统 prompt、请求去重/缓存 | `packages/request-pipeline` |
+| 模型与多模态 | `/v1/models`、`/v1/embeddings`、`/v1/images/generations`、`/v1/audio/transcriptions`、`/v1/audio/speech`、`/v1/videos/generations`、`/v1/music/generations`、OCR | `apps/edge-gateway` + `packages/provider-runtime` |
+| 工具型 API | `/v1/search`、web fetch、rerank、moderations、文件/批处理 | `apps/edge-gateway` + `packages/core-domain` |
+| 兼容协议 | `/v1beta` Gemini、Ollama aliases、provider 专用路由、CLI/VS Code aliases | `packages/core-domain` |
+| 路由决策 | 19 种策略、Auto Combo、模型/Provider/账号 fallback、配额预检、工作流阶段路由 | `packages/core-domain` |
+| 请求处理 | role normalization、structured output 转换、think tag、token 计数、响应清洗、系统 prompt、请求去重/缓存 | `packages/core-domain` |
 
 ### 2.2 Provider 与凭据
 
@@ -75,7 +79,7 @@ OpenAI 兼容入口，负责 Provider 翻译、流式输出、fallback、token �
 1. **Auth/Security**：`auth`、`admin`、`policies`、CSRF、JWT/OIDC、API key scope、
    IP filter、SSRF/outbound URL guard、guardrails、审计。
 2. **Providers/Models**：`providers`、`provider-nodes`、`provider-models`、`models`、
-   `provider-metrics`、`provider-stats`、`synced-available-models`、`oauth`、`codex`、
+   `provider-metrics`、`provider-stats`、`synced-available-models` 已进入 control-api，`oauth`、`codex`、
    `cursor-cli`、`dahl`、`upstream-proxy`。
 3. **Routing/Resilience**：`combos`、`model-combo-mappings`、`fallback`、`routing`、
    `resilience`、`rate-limit`、`rate-limits`、`headroom`、`session-pools`、`token-health`。
@@ -169,8 +173,8 @@ sqlite-vec 对应索引重建、全量 route 与 worker 验收，并完成 SQLit
 
 | 发现 | 证据 | 影响 |
 |---|---|---|
-| 源代码来源 | 已将 `src/app/api`、领域、DB、协议和 middleware 纳入 `packages/gateway-runtime`，并将本地 import 重写为相对路径 | 运行时只加载本仓库内容；发布前仍需完成许可证/来源审查 |
-| 路由覆盖 | `runtimeCatchall.ts` 动态匹配并执行全部本地 route，审查脚本逐路径和 HTTP method 比较参考/本地集合 | 仍需按发布清单补齐每个 route 的行为契约和真实 provider smoke |
+| 源代码来源 | 已将 `src/app/api`、领域、DB、协议和 middleware 纳入 `packages/core-domain`，并将本地 import 重写为相对路径 | 运行时只加载本仓库内容；发布前仍需完成许可证/来源审查 |
+| 路由覆盖 | edge/control app 各自维护 compat catalog 并调用 `packages/http-kernel/src/routes/compatDispatcher.ts` 的纯 transport dispatcher；审查脚本逐路径和 HTTP method 比较参考/本地集合 | 仍需按发布清单补齐每个 route 的行为契约和真实 provider smoke |
 | 数据同步 | `scripts/import-source-data.mjs` 支持冷快照复制、SQLite integrity check、逐文件 SHA-256 manifest 和可恢复替换；`verify-imported-data.mjs` 校验源/目标文件集合、不可变文件 hash、SQLite 和关键表 | 本机快照及 Docker acceptance 已完成；生产目标仍需执行同一校验 |
 | 凭据与外部状态 | importer 不复制进程锁/内存队列；CLI、keychain、浏览器 profile、隧道 token 需要单独导入或重新授权 | 目标机必须逐 Provider 记录解密/刷新/smoke 结果 |
 | 运行时依赖 | NAS proxy、旧官方 host、兼容路由和 sibling import 已删除；Admin live WS 默认同源本地地址 | Provider 上游 API 仍按用户配置访问，这不属于官方 Orbit 运行时依赖 |
@@ -181,8 +185,8 @@ sqlite-vec 对应索引重建、全量 route 与 worker 验收，并完成 SQLit
 
 说明：下表中的 `apps/admin` 是仓库当前已有的管理台，原地保留并继续演进，不新建第二套
 Admin。其余应用均是独立进程：端口、信号处理和 surface 配置由各自 `apps/*/src/index.ts`
-负责；`packages/server-runtime` 只提供 NestJS/Fastify 应用工厂与共享 HTTP 装配，业务实现
-由 `packages/gateway-runtime` 提供。
+负责；`packages/http-kernel` 只提供 NestJS/Fastify 应用工厂与共享 HTTP 装配，业务实现
+由 `packages/core-domain` 提供。
 
 | 应用 | 首要职责 | 对外端口/边界 | 依赖 |
 |---|---|---|---|
@@ -204,8 +208,8 @@ packages/
   config/             # 环境变量与运行配置
   contracts/          # 前后端共享 API 类型/契约
   ui/                 # 管理台共享 UI 导出
-  gateway-runtime/    # 当前领域实现、API route handlers、DB、协议、后台服务
-  server-runtime/     # NestJS/Fastify 应用工厂、中间件、路由装配、引擎适配
+  core-domain/        # 当前领域实现、API route handlers、DB、协议、后台服务
+  http-kernel/        # NestJS/Fastify 应用工厂、中间件、路由装配、引擎适配
 ```
 
 包内禁止引用 `apps/*`，应用只能通过包接口组合；Provider executor 不允许直接写管理
@@ -337,14 +341,14 @@ P1 之后应继续增加以下门禁：
    过期时间、是否可刷新和最后一次真实 smoke 结果；任何“需要手工重新登录”的项都必须在
    发布清单中显式列出并由负责人签字。
 
-### 当前自动审查结果（2026-09-04）
+### 当前自动审查结果（2026-09-05）
 
 ```text
 official API route files: 689
 official root route files: 9
 official API groups: 102
-target API route files: 22 implementation files
-target Fastify handlers: 185
+app-owned route files: 37 implementation files
+app Fastify handlers: 16
 local runtime API route files: 691 (689 parity + 2 additive media-cache routes)
 local runtime root route files: 9
 route path mismatches: 0
@@ -405,14 +409,14 @@ DashScope 兼容 HTTP 接口，不经过 CLI。可执行文件通过 PATH 或 `C
 
 ### 7.2 本轮自动门禁
 
-- `pnpm audit:gateway-independence`：PASS（689 API parity + 2 个登记的本地 media-cache 扩展、9 根路由，102 组，0 外部/NAS 引用）。
+- `pnpm audit:gateway-independence`：PASS（689 API parity + 2 个登记的本地 media-cache 扩展、9 根路由，102 组；37 个 app-owned route 文件、16 个 app Fastify handlers，0 外部/NAS 引用）。
 - `pnpm audit:route-contracts`：PASS（689 个 parity route 文件的 HTTP method export 集合与参考快照一致；2 个 media-cache 扩展单独登记）。
 - `pnpm audit:admin-routes`：PASS（官方 116 个 dashboard 页面全部有本地 React Router 入口；本地共 131 条路由，包含兼容别名和本地扩展）。插件配置页已接入真实 GET/PUT 配置接口，插件启用/停用使用真实 activate/deactivate 接口。
 - 上述两个 parity gate 已内置冻结的 route-path/root-path/HTTP-method SHA-256 基线；CI、镜像发布机
   或生产主机不存在同级 `../Orbit` 时仍可独立验收并检测路由漂移。本地显式提供参考源码时继续
   逐文件对比，发布流程不再对官方 checkout 存在构建时依赖。
 - `pnpm typecheck`、`pnpm build`：PASS（12 个 typecheck 任务、8 个 build 任务）。
-- `pnpm --filter @shiguang-gateway/server-runtime test`：PASS（5/5 CSRF 会话轮换、组织隔离和本地 cookie 隔离用例）。
+- `pnpm --filter @shiguang-gateway/http-kernel test`：PASS（5/5 CSRF 会话轮换、组织隔离和本地 cookie 隔离用例）。
 - `pnpm audit:brand`：PASS（源码、部署配置、镜像/容器命名和可发布目录无旧项目标识）。
 - `pnpm smoke:route-imports`：PASS（700 个本地 route 文件全部可导入；`docs/api/search`
   已改为本地 Markdown 文件索引，不依赖 Next/Fumadocs 虚拟 loader）。
@@ -478,7 +482,7 @@ DashScope 兼容 HTTP 接口，不经过 CLI。可执行文件通过 PATH 或 `C
 - `README.md`：改为独立镜像和 importer 说明。
 - `MIGRATION_PLAN.md`、`MIGRATION_SPEC.md`：从“底层 Orbit 不动”改为“clean-room domain package + parity gate”。
 - `docker-compose.yml`、`deploy/NAS-DEPLOY.md`、`deploy/gateway-caddyfile.md`：移除 `SHIGUANG_GATEWAY_NAS_*`，加入 DB/Redis/object-store、egress deny、health/readiness。
-- `packages/server-runtime/tsconfig.json`、`packages/server-runtime/src/lib/engine.ts`、`app.ts`：替换为自有领域包导入，删除快照依赖和兼容启动器。
+- `packages/http-kernel/tsconfig.json`、`packages/http-kernel/src/app.ts`：收敛为纯 transport foundation，删除领域引擎适配器与兼容启动器。
 - `apps/admin/vite.config.ts`、`entities/live.ts`：只使用同源 live endpoint，不保留 `100.87.115.78:20132`。
 - `packages/config/src/index.ts`：移除 `orbitApiUrl`，改成 `publicBaseUrl`、`internalServiceUrls` 和显式 Provider endpoints。
 

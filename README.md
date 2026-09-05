@@ -4,6 +4,8 @@ ShiguangGateway 独立部署 monorepo（管理台 + 网关 + 控制面 + 实时�
 
 页面迁移必须遵守 [`MIGRATION_SPEC.md`](./MIGRATION_SPEC.md)：Web 与本地 API 作为一个单元联合迁移，保持既有数据源、业务逻辑和 UI 行为。运行时使用仓库内的独立能力实现，不依赖外部同级源码或远程服务。
 
+应用边界、表所有权与逐域验收命令见 [`DOMAIN_BOUNDARIES.md`](./DOMAIN_BOUNDARIES.md)。
+
 ## 目标架构
 
 ```
@@ -16,23 +18,24 @@ shiguang-gateway-monorepo/
 │   ├── worker/        # 同步、定时任务和后台作业
 │   └── importer/      # 冷快照导入与数据库转换 CLI
 ├── packages/
-│   ├── gateway-runtime/ # 领域实现、API handlers、DB、协议和后台能力
-│   ├── server-runtime/ # NestJS/Fastify 应用工厂、middleware 与路由装配
+│   ├── core-domain/ # 无端口监听的领域实现与协议能力
+│   ├── db-schema/   # 跨 app 共享的表名与所有权元数据
+│   ├── http-kernel/ # 仅承载 HTTP 基础设施；路由由 app 负责装配
 │   ├── contracts/    # 前后端共享的 API 类型/契约
 │   ├── config/       # 共享配置
-│   └── ui/           # 共享主题 token；通用组件优先复用 @shiguang2/components
 ├── turbo.json        # 任务编排
 └── pnpm-workspace.yaml
 ```
 
-## 核心设计：独立 runtime 与服务拆分
+## 核心设计：按 app 边界拆分
 
 - 生产入口拆为 **edge-gateway**（模型协议）、**control-api**（管理面）、**realtime**（SSE/WS）
   和 **worker**（定时任务/后台作业）；每个 `apps/*` 都拥有自己的进程 bootstrap，
   只通过包接口复用实现。
 - 服务只从 `edge-gateway`、`control-api`、`realtime`、`worker` 和 `importer` 启动；仓库不包含旧 BFF 启动器或兼容入口。
-- `packages/gateway-runtime` 固化当前 API routes、领域模块、DB、SSE、MCP/A2A、安全 middleware、CLI `bin/` 和 46 个本地 skills；它是本仓库内可独立构建、运行和发布的自有源码。
-- `routes/runtimeCatchall.ts` 对本地 689 个 parity API 加 2 个独立 media-cache API 和 9 个根 `route.ts` 做统一本地路由分发，显式 Fastify 适配器优先处理高频管理接口。
+- `packages/core-domain` 只提供无端口监听的领域模块与协议能力；HTTP 端口、生命周期和 surface 选择由所属 app 的固定 bootstrap 负责，`http-kernel` 仅提供传输适配。数据库表结构放在 `packages/db-schema`，不得把 app 启动逻辑放回公共包。
+- app 之间只能通过网络 API 或 `packages/contracts` 交互；禁止跨 app workspace 依赖、跨 app 相对路径和直接引用其他 app 的 `src`。
+- 每次迁移一个领域后，运行 `pnpm audit:app-boundaries` 验证依赖边界，再运行该 app 自己的 typecheck/build 与 smoke 测试。
 - `apps/importer` 将冻结快照导入独立 `shiguang-gateway_data` volume；`scripts/smoke-container-deployment.mjs` 自动验收接口隔离、数据表、原生 SQLite/vector、实时端口和全部 worker scheduler。
 - 参考仓库仅作为审查基线；升级必须重新复制快照并通过 `pnpm audit:gateway-independence`。
 - 发布机不需要 checkout 官方仓库：独立性/路由契约审查内置冻结 SHA-256 基线；设置
@@ -108,42 +111,50 @@ ghcr.io/shiguang-lab/shiguang-gateway-importer:<tag-or-digest>
 ## 服务结构
 
 ```
-apps/edge-gateway/src/index.ts   # edge 进程 bootstrap 与端口/信号配置
-apps/control-api/src/index.ts    # control 进程 bootstrap 与端口/信号配置
+apps/edge-gateway/src/main.ts       # edge 进程入口、端口与信号
+apps/edge-gateway/src/app.module.ts # edge 根模块
+apps/edge-gateway/src/*/*.module.ts # audio/images/files 等 feature modules
 
-packages/server-runtime/src/
-├── index.ts              # 仅导出 Nest 应用工厂，不负责进程启动
-├── app.ts                # Fastify 装配(插件/中间件/引擎/路由)
-├── engine-shim.d.ts      # 本地 runtime 类型声明(tsc 用)
-├── middleware/
-│   ├── authz.ts          # 鉴权(复刻 requireManagementAuth: JWT cookie/API key/CLI token)
-│   ├── csrf.ts           # CSRF(HMAC, 复刻 src/server/authz/csrf.ts)
-│   └── requestId.ts      # requestId 生成
-├── plugins/
-│   └── error.ts          # 错误信封 {error:{type,message,details}, requestId}
-├── routes/
-│   ├── index.ts          # 路由注册中心(按原 src/app/api/ 一级目录组织)
-│   ├── health.ts         # /api/health, /api/healthz, /api/livez, /api/readyz
-│   ├── auth.ts           # /api/auth/{login,logout,status,csrf} + require-login
-│   └── providers.ts      # /api/providers(首批迁移的 CRUD 代表)
-└── lib/
-    └── engine.ts         # 本地 runtime 适配器
+apps/control-api/src/main.ts        # control 进程入口、端口与信号
+apps/control-api/src/app.module.ts  # control 根模块
+apps/control-api/src/*/*.module.ts  # health/providers/keys/pricing 等 feature modules
+
+apps/realtime/src/main.ts           # realtime 进程入口与端口
+apps/realtime/src/app.module.ts     # realtime 根模块
+apps/worker/src/main.ts              # 后台作业进程入口
+apps/importer/src/main.ts            # 一次性导入进程入口
+
+packages/http-kernel/src/
+├── app.ts                # 纯 Fastify transport 基础设施
+├── middleware/           # 可复用的底层 transport middleware
+├── plugins/              # 可复用的底层 Fastify plugins
+└── routes/compatDispatcher.ts # Request/Response 与 Fastify 的传输适配
 ```
+
+每个服务端 app 都由自己的 `AppModule` 组合模块并通过 Nest lifecycle 注册基础设施、路由和 provider。
+`http-kernel` 不创建 Nest 应用、不监听端口、不持有业务路由，也不接受 edge/control surface 参数。
 
 ## 迁移进度
 
 | 组 | 状态 |
 |---|---|
-| health | ✅ 已迁移 |
-| auth (login/logout/status/csrf/require-login) | ✅ 已迁移 |
-| providers (GET 列表) | ✅ 已迁移 |
-| 其余官方 route | ✅ 本地 runtime 快照 + dispatcher 覆盖（689 API parity + 2 个 media-cache 扩展 + 9 根路径） |
+| control health (`/api/health*`) | ✅ 物理迁入 `apps/control-api/src/routes` |
+| control auth status (`/api/auth/status`) | ✅ 物理迁入 `apps/control-api/src/routes` |
+| control gateway status (`/api/gateway/status`) | ✅ 物理迁入 `apps/control-api/src/routes` |
+| control process control (`/api/shutdown`, `/api/restart`) | ✅ 物理迁入 `apps/control-api/src/routes` |
+| control token health (`/api/token-health`) | ✅ 物理迁入 `apps/control-api/src/routes` |
+| control synced models (`/api/synced-available-models`) | ✅ 物理迁入 `apps/control-api/src/routes` |
+| control provider stats/metrics/nodes/models/validation (`/api/provider-stats`, `/api/provider-metrics`, `/api/provider-nodes`, `/api/provider-nodes/validate`, `/api/provider-models`) | ✅ 物理迁入 `apps/control-api/src/routes` |
+| edge music + speech-to-text + embeddings + audio-transcriptions + audio-speech + audio-translations + text-to-speech + ElevenLabs voices + WS handshake | ✅ 物理迁入 `apps/edge-gateway/src/routes` |
+| edge images (`/api/v1/images/edits`, `/generations`, `/upscale`) | ✅ 完整小域物理迁入 `apps/edge-gateway/src/routes`，领域 handler 由 `core-domain/edge/*` 显式导出 |
+| edge moderations + rerank (`/api/v1/moderations`, `/api/v1/rerank`) | ✅ 物理迁入 `apps/edge-gateway/src/routes` |
+| 其余 auth/providers/官方 route | ⏳ dispatcher parity 覆盖，按依赖风险逐组物理迁移 |
 
 ## 迁移新增一个路由组的模式
 
 开始迁移前先按 [`MIGRATION_SPEC.md`](./MIGRATION_SPEC.md) 完成原页面、数据源和交互清单盘点。
 
-1. 高频管理接口在 `routes/` 下用 `app.get/post(..., handler)` 定义路由，响应形状/错误格式与原 `route.ts` 一致。
-2. 数据访问通过 `lib/engine.ts` 暴露的本地 runtime 适配器调用；未显式适配的参考 route 由 `runtimeCatchall.ts` 执行。
-3. 在 `routes/index.ts` 注册。
-4. 在 `src/engine-shim.d.ts` 补充该引擎模块的类型声明。
+1. 为该领域在所属 app 下创建 feature module、controller 和 service，由 `AppModule` 显式导入；HTTP 方法使用 Nest 官方装饰器声明。
+2. 数据访问由所属 app 的领域 service 调用 `core-domain` 显式导出；请求 DTO、guards、interceptors 和 providers 跟随该 feature module 注册。
+3. 未显式迁移的参考 route 仅由所属 app 的 `routes/compat` 注册器接管，禁止新增 all-surface 分支；`http-kernel` 只提供 transport dispatcher。
+4. 更新 owned-route manifest 后，依次运行边界审计、route parity、所属 app 的 typecheck/build 和 split-deployment smoke。

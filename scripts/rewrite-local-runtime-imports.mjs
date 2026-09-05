@@ -2,7 +2,7 @@
 import { readFileSync, writeFileSync, readdirSync, statSync } from "node:fs";
 import { dirname, join, relative, sep } from "node:path";
 
-const root = join(process.cwd(), "packages", "gateway-runtime");
+const root = join(process.cwd(), "packages", "core-domain");
 const files = [];
 function walk(dir) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {

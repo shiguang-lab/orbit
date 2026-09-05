@@ -104,6 +104,19 @@ const HEADER_LOBE_ICONS: Record<string, HeaderProviderIcon> = {
 };
 const DEVICE_CODE_PROVIDERS = new Set(["github", "kiro", "amazon-q", "kimi-coding", "kilocode", "codebuddy-cn", "ghe-copilot", "grok-cli"]);
 
+const FREE_APIKEY_PROVIDER_IDS = new Set([
+  "qoder",
+  "opencode",
+  "dahl",
+  "auggie",
+  "zcode",
+  "aihorde",
+]);
+
+function supportsApiKeyOnFreeProvider(providerId: string): boolean {
+  return FREE_APIKEY_PROVIDER_IDS.has(providerId);
+}
+
 function resolveProvider(catalog: { categories?: Array<{ key: string; providers: ProviderCatalogEntry[] }> } | undefined, id: string) {
   for (const category of catalog?.categories ?? []) {
     const found = category.providers.find((provider) => provider.id === id);
@@ -273,6 +286,7 @@ export default function ProviderDetailPage() {
 
   const info = useMemo(() => resolveProvider(catalogQuery.data, providerId), [catalogQuery.data, providerId]);
   const kind = classify(providerId, info);
+  const providerSupportsPat = supportsApiKeyOnFreeProvider(providerId);
   const connections = providerQuery.data?.connections ?? [];
   const settingsQuery = useQuery({ queryKey: ["settings", "provider-routing"], queryFn: settingsApi.get, staleTime: 30_000, enabled: connections.length > 1 || kind === "no-auth" });
   const proxyConfigQuery = useQuery({ queryKey: ["settings", "proxy"], queryFn: () => settingsApi.proxyConfig(), staleTime: 30_000, enabled: Boolean(providerId) });
@@ -1096,7 +1110,24 @@ export default function ProviderDetailPage() {
           </Descriptions>
           <Alert type="info" showIcon style={{ marginTop: 12 }} message="兼容端点的连接凭证和模型列表由端点配置决定；先添加连接，再导入或添加模型。" />
         </Card>}
-        {kind === "no-auth" && <Card title="免鉴权提供者"><Space align="start" style={{ width: "100%", justifyContent: "space-between" }}><Alert type="info" showIcon message="此提供者不需要 API Key 或 OAuth 连接。" description="关闭后，路由不会再向该提供者发送匿名请求。" style={{ flex: 1 }} /><Switch checked={noAuthEnabled} loading={noAuthBusy} onChange={(checked) => void toggleNoAuth(checked)} /></Space></Card>}
+        {kind === "no-auth" && (
+          <Card title="免鉴权提供者">
+            <Space align="start" style={{ width: "100%", justifyContent: "space-between" }}>
+              <Alert
+                type="info"
+                showIcon
+                message="此提供者支持免鉴权/匿名调用。"
+                description={
+                  providerSupportsPat
+                    ? "开启后允许匿名调用；也可在下方添加 PAT 以使用专属额度与账号权限。"
+                    : "关闭后，路由不会再向该提供者发送匿名请求。"
+                }
+                style={{ flex: 1 }}
+              />
+              <Switch checked={noAuthEnabled} loading={noAuthBusy} onChange={(checked) => void toggleNoAuth(checked)} />
+            </Space>
+          </Card>
+        )}
         {/* OAuth/Web-cookie/IDE flows are exposed from the Connections toolbar in
             the official page; do not add a generic warning card here. */}
         {(kind === "search" || kind === "webfetch") && (
@@ -1233,7 +1264,89 @@ export default function ProviderDetailPage() {
           </Card>
         )}
 
-        {kind !== "no-auth" && kind !== "upstream-proxy" && <Card className={styles.section} styles={{ body: { padding: 16 } }} title={<div className={styles.cardTitleRow}><span>{t("providers.connections")}</span><Button className={styles.providerProxyButton} color={providerProxyHost ? "orange" : "default"} variant="filled" icon={<MaterialIcon name="vpn_lock" />} loading={proxyBusy && proxyTarget?.scope === "provider" && !proxyModalOpen} onClick={() => void openProviderProxyConfig()}>{providerProxyHost ?? t("providers.providerProxy")}</Button></div>} extra={<Space size={8} wrap>{connections.length > 0 && <Button className={styles.headerActionButton} icon={<MaterialIcon name="swap_horiz" />} loading={distributeProxyMutation.isPending} onClick={() => distributeProxyMutation.mutate()}>{t("providers.distributeProxies")}</Button>}<Button className={styles.headerActionButton} icon={<MaterialIcon name="refresh" />} onClick={() => { void providerQuery.refetch(); void modelsQuery.refetch(); }}>{t("providers.refresh")}</Button>{(providerId === "github-copilot" || providerId === "agy" || providerId === "antigravity") ? <Button className={styles.headerActionButton} type="primary" icon={<MaterialIcon name="passkey" />} loading={oauthBusy} onClick={() => void startOAuth()}>{t("providers.oauthAuthorize", "OAuth 授权")}</Button> : providerId === "qoder" ? <Button className={styles.headerActionButton} onClick={() => void startOAuth()}>{t("providers.experimentalOAuth", "试验性 OAuth")}</Button> : <Button className={styles.headerActionButton} type="primary" icon={<MaterialIcon name="add" />} onClick={openAddConnection}>{t("providers.addConnection", "添加连接")}</Button>}</Space>}>
+        {(kind !== "no-auth" || providerSupportsPat) && kind !== "upstream-proxy" && (
+          <Card
+            className={styles.section}
+            styles={{ body: { padding: 16 } }}
+            title={
+              <div className={styles.cardTitleRow}>
+                <span>{t("providers.connections")}</span>
+                <Button
+                  className={styles.providerProxyButton}
+                  color={providerProxyHost ? "orange" : "default"}
+                  variant="filled"
+                  icon={<MaterialIcon name="vpn_lock" />}
+                  loading={proxyBusy && proxyTarget?.scope === "provider" && !proxyModalOpen}
+                  onClick={() => void openProviderProxyConfig()}
+                >
+                  {providerProxyHost ?? t("providers.providerProxy")}
+                </Button>
+              </div>
+            }
+            extra={
+              <Space size={8} wrap>
+                {connections.length > 0 && (
+                  <Button
+                    className={styles.headerActionButton}
+                    icon={<MaterialIcon name="swap_horiz" />}
+                    loading={distributeProxyMutation.isPending}
+                    onClick={() => distributeProxyMutation.mutate()}
+                  >
+                    {t("providers.distributeProxies", "分配代理")}
+                  </Button>
+                )}
+                <Button
+                  className={styles.headerActionButton}
+                  icon={<MaterialIcon name="refresh" />}
+                  onClick={() => {
+                    void providerQuery.refetch();
+                    void modelsQuery.refetch();
+                  }}
+                >
+                  {t("providers.refresh")}
+                </Button>
+                {providerSupportsPat ? (
+                  <>
+                    <Button
+                      className={styles.headerActionButton}
+                      type="primary"
+                      icon={<MaterialIcon name="add" />}
+                      onClick={openAddConnection}
+                    >
+                      {t("providers.addPat", "添加 PAT")}
+                    </Button>
+                    {providerId === "qoder" && (
+                      <Button
+                        className={styles.headerActionButton}
+                        onClick={() => void startOAuth()}
+                      >
+                        {t("providers.experimentalOAuth", "实验性 OAuth")}
+                      </Button>
+                    )}
+                  </>
+                ) : (providerId === "github-copilot" || providerId === "agy" || providerId === "antigravity") ? (
+                  <Button
+                    className={styles.headerActionButton}
+                    type="primary"
+                    icon={<MaterialIcon name="passkey" />}
+                    loading={oauthBusy}
+                    onClick={() => void startOAuth()}
+                  >
+                    {t("providers.oauthAuthorize", "OAuth 授权")}
+                  </Button>
+                ) : (
+                  <Button
+                    className={styles.headerActionButton}
+                    type="primary"
+                    icon={<MaterialIcon name="add" />}
+                    onClick={openAddConnection}
+                  >
+                    {t("providers.addConnection", "添加连接")}
+                  </Button>
+                )}
+              </Space>
+            }
+          >
           {connections.length > 0 && <div className={styles.connectionToolbar}>
             <Space className={styles.connectionToolbarFilters} wrap>
               <Checkbox checked={visibleConnections.length > 0 && visibleConnections.every((row) => selectedConnectionIds.includes(row.id))} indeterminate={selectedConnectionIds.length > 0 && selectedConnectionIds.length < visibleConnections.length} onChange={(event) => setSelectedConnectionIds(event.target.checked ? visibleConnections.map((row) => row.id) : [])}>{selectedConnectionIds.length > 0 ? t("providers.selectedCount", { count: selectedConnectionIds.length }) : t("providers.accountsCount", { count: connections.length })}</Checkbox>
@@ -1337,10 +1450,39 @@ export default function ProviderDetailPage() {
               )}
             </Space>
           </div>}
-          {connections.length === 0 ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<><Typography.Text>{t("providers.noConnections")}</Typography.Text><br /><Typography.Text type="secondary">{t("providers.noConnectionsDescription")}</Typography.Text><br /><Button type="link" icon={<MaterialIcon name="add" />} onClick={openAddConnection}>{t("providers.addConnection")}</Button></>} /> : <List
-            dataSource={visibleConnections}
-            pagination={visibleConnections.length > 10 ? { pageSize: 10, hideOnSinglePage: true } : false}
-            renderItem={(row, index) => <List.Item style={{ paddingBlock: 3, paddingInline: 0, border: 0 }}>
+          {connections.length === 0 ? (
+            <Empty
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              description={
+                <>
+                  <Typography.Text>{t("providers.noConnections")}</Typography.Text>
+                  <br />
+                  <Typography.Text type="secondary">
+                    {providerId === "qoder"
+                      ? "添加 Qoder PAT 或使用实验性 OAuth 登录。"
+                      : providerSupportsPat
+                      ? "添加 PAT (Personal Access Token) 以便以此凭证调用上游。"
+                      : t("providers.noConnectionsDescription")}
+                  </Typography.Text>
+                  <br />
+                  <Space style={{ marginTop: 8 }}>
+                    <Button type="primary" icon={<MaterialIcon name="add" />} onClick={openAddConnection}>
+                      {providerSupportsPat ? t("providers.addPat", "添加 PAT") : t("providers.addConnection")}
+                    </Button>
+                    {providerId === "qoder" && (
+                      <Button onClick={() => void startOAuth()}>
+                        {t("providers.experimentalOAuth", "实验性 OAuth")}
+                      </Button>
+                    )}
+                  </Space>
+                </>
+              }
+            />
+          ) : (
+            <List
+              dataSource={visibleConnections}
+              pagination={visibleConnections.length > 10 ? { pageSize: 10, hideOnSinglePage: true } : false}
+              renderItem={(row, index) => <List.Item style={{ paddingBlock: 3, paddingInline: 0, border: 0 }}>
               <div
                 className={styles.connectionRow}
                 onDragOver={(e) => handleDragOver(e, index)}
@@ -1408,8 +1550,10 @@ export default function ProviderDetailPage() {
                 </Space>
               </div>
             </List.Item>}
-          />}
-        </Card>}
+          />
+        )}
+      </Card>
+    )}
 
         {kind === "search" ? (
           <SearchProviderCard providerId={providerId} />
@@ -1499,22 +1643,24 @@ export default function ProviderDetailPage() {
         </Space>
       </Modal>
       <Modal
-        title={t("providers.addConnectionTitle", { provider: info?.name ?? providerId })}
+        title={providerSupportsPat ? `添加 ${info?.name ?? providerId} PAT` : t("providers.addConnectionTitle", { provider: info?.name ?? providerId })}
         open={addConnectionOpen}
         onCancel={() => { if (!createConnectionMutation.isPending) setAddConnectionOpen(false); }}
-        okText={t("providers.add")}
+        okText={providerSupportsPat ? t("providers.addPat", "添加 PAT") : t("providers.add")}
         cancelText={t("providers.cancel")}
         confirmLoading={createConnectionMutation.isPending}
-        okButtonProps={{ disabled: !connectionName.trim() || (kind !== "no-auth" && kind !== "compatible" && !connectionApiKey.trim() && !connectionBaseUrl.trim()) }}
+        okButtonProps={{ disabled: !connectionName.trim() || (kind !== "no-auth" && kind !== "compatible" && !providerSupportsPat && !connectionApiKey.trim() && !connectionBaseUrl.trim()) }}
         onOk={() => createConnectionMutation.mutate()}
       >
-        <Space orientation="vertical" size={16} style={{ width: "100%" }}>
+        <Space direction="vertical" size={16} style={{ width: "100%" }}>
           <Alert
             type="info"
             showIcon
             message={t("providers.newConnectionDisabled")}
             description={
-              providerId === "deepseek-web"
+              providerId === "qoder"
+                ? "请粘贴你的 Qoder Personal Access Token (PAT)。可在 Qoder → Settings → Personal Access Tokens 中生成。"
+                : providerId === "deepseek-web"
                 ? "请在 chat.deepseek.com 登录后，从浏览器开发者工具中复制 userToken 填入下方凭据中。"
                 : kind === "web-cookie"
                 ? "Web 会话凭据：请将登录后的 Session Token 或 Cookie 粘贴到下方凭据输入框。"
@@ -1522,7 +1668,7 @@ export default function ProviderDetailPage() {
             }
           />
           <label><Typography.Text>{t("providers.connectionName")}</Typography.Text><Input value={connectionName} onChange={(event) => setConnectionName(event.target.value)} placeholder="Primary" style={{ marginTop: 6 }} /></label>
-          <label><Typography.Text>{providerId === "deepseek-web" ? "userToken (Web 会话 Token)" : kind === "web-cookie" ? "Cookie / Session Token" : kind === "oauth" || kind === "ide" ? "Access Token / API Key" : kind === "compatible" ? "API Key" : "API Key / PAT"}</Typography.Text><Input.Password value={connectionApiKey} onChange={(event) => setConnectionApiKey(event.target.value)} placeholder={providerId === "deepseek-web" ? "userToken=... 或粘贴 raw userToken" : kind === "web-cookie" ? "粘贴 Cookie 或 Session 凭据..." : kind === "oauth" || kind === "ide" ? "输入 Access Token 或 API Key..." : kind === "compatible" ? "输入 API Key (可为空)..." : t("providers.enterCredential")} style={{ marginTop: 6 }} /></label>
+          <label><Typography.Text>{providerId === "qoder" ? "Qoder PAT" : providerId === "deepseek-web" ? "userToken (Web 会话 Token)" : kind === "web-cookie" ? "Cookie / Session Token" : kind === "oauth" || kind === "ide" ? "Access Token / API Key" : kind === "compatible" ? "API Key" : providerSupportsPat ? "PAT (Personal Access Token)" : "API Key / PAT"}</Typography.Text><Input.Password value={connectionApiKey} onChange={(event) => setConnectionApiKey(event.target.value)} placeholder={providerId === "qoder" ? "粘贴 Qoder PAT (例如 pat_...)" : providerId === "deepseek-web" ? "userToken=... 或粘贴 raw userToken" : kind === "web-cookie" ? "粘贴 Cookie 或 Session 凭据..." : kind === "oauth" || kind === "ide" ? "输入 Access Token 或 API Key..." : kind === "compatible" ? "输入 API Key (可为空)..." : t("providers.enterCredential")} style={{ marginTop: 6 }} /></label>
           {(kind === "compatible" || connectionBaseUrl || Boolean(node?.baseUrl)) && <label><Typography.Text>Base URL</Typography.Text><Input value={connectionBaseUrl} onChange={(event) => setConnectionBaseUrl(event.target.value)} placeholder={node?.baseUrl ?? info?.baseUrl ?? "https://api.example.com/v1"} style={{ marginTop: 6 }} /></label>}
           <label><Typography.Text>{t("providers.priority")}</Typography.Text><br /><InputNumber min={0} value={connectionPriority} onChange={(value) => setConnectionPriority(value ?? 1)} style={{ marginTop: 6, width: 140 }} /></label>
         </Space>

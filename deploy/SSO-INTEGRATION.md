@@ -21,11 +21,11 @@
 |---|---|---|---|
 | 1 | **网关 Caddyfile** | 新增 `llm-gateway.shiguanglab.com` host 块(forward_auth + X-SG-Audience/Entitlement + copy_headers) | `deploy/gateway-caddyfile.md` |
 | 2 | **auth-service env** | `DEFAULT_ENTITLEMENTS` 加 `shiguang-gateway:access`；`ALLOWED_RETURN_ORIGINS` 加新域 | `deploy/auth-service-config.md` |
-| 3 | **control-api/edge-gateway 身份校验** | 已实现：共享 `server-runtime` 的 JWKS/session/authz 中间件 | 本仓库代码 |
+| 3 | **control-api/edge-gateway 身份校验** | 已实现：共享 `http-kernel` 的 JWKS/session/authz 中间件 | 本仓库代码 |
 
 ## 已完成(代码侧)
 
-- ✅ `server-runtime` `SgIdentityVerifier`：RS256 + `typ=sg-identity+jwt` + kid 查 JWKS + iss/aud/exp/nbf/iat/entitlement 校验(JWKS 缓存 5min)
+- ✅ `http-kernel` `SgIdentityVerifier`：RS256 + `typ=sg-identity+jwt` + kid 查 JWKS + iss/aud/exp/nbf/iat/entitlement 校验(JWKS 缓存 5min)
 - ✅ control-api `/api/auth/session`：终结 X-SG-Identity，校验 `system:admin`/`shiguang-gateway:admin`/`shiguang-gateway:access`，返回统一会话
 - ✅ 本地开发：dev 启动默认使用 loopback-only `SG_DEV_IDENTITY=1`
 - ✅ 真实账号联调：显式开启 `SG_LOCAL_BROKER_ENABLED=true`

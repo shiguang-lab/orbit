@@ -1,0 +1,33 @@
+import { Module } from "@nestjs/common";
+import { AuthModule } from "./auth/auth.module.js";
+import { GatewayModule } from "./gateway/gateway.module.js";
+import { HealthModule } from "./health/health.module.js";
+import { InfrastructureModule } from "./infrastructure/infrastructure.module.js";
+import { KeysModule } from "./keys/keys.module.js";
+import { AnalyticsModule } from "./analytics/analytics.module.js";
+import { DbBackupsModule } from "./db-backups/db-backups.module.js";
+import { CacheModule } from "./cache/cache.module.js";
+import { PricingModule } from "./pricing/pricing.module.js";
+import { ProvidersModule } from "./providers/providers.module.js";
+import { EvalsModule } from "./evals/evals.module.js";
+import { PluginsModule } from "./plugins/plugins.module.js";
+import { QuotaModule } from "./quota/quota.module.js";
+
+@Module({
+  imports: [
+    InfrastructureModule,
+    HealthModule,
+    AuthModule,
+    GatewayModule,
+    ProvidersModule,
+    KeysModule,
+    AnalyticsModule,
+    DbBackupsModule,
+    CacheModule,
+    PricingModule,
+    EvalsModule,
+    PluginsModule,
+    QuotaModule,
+  ],
+})
+export class AppModule {}

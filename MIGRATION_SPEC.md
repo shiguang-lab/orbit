@@ -69,7 +69,7 @@
 标准数据链路（独立部署）：
 
 ```text
-Admin Web -> control-api/edge-gateway/realtime -> server-runtime -> 本地领域包 -> 数据库/Provider
+Admin Web -> control-api/edge-gateway/realtime -> http-kernel -> 本地领域包 -> 数据库/Provider
 ```
 
 源数据迁移通过 `pnpm import:source-data` 冷快照导入；不得把导入源地址、管理 key 或外部 host 写入运行时配置。
@@ -143,7 +143,7 @@ Admin Web -> control-api/edge-gateway/realtime -> server-runtime -> 本地领域
 - **原页面源码**：`Orbit/src/app/(dashboard)/home/page.tsx`、`dashboard/HomePageClient.tsx`、`home/HomeRecentRequests.tsx`、`dashboard/HomeProviderTopologySection.tsx`。
 - **线上结构**：顶部合作伙伴/公告 Banner、Quick Start 四步卡片、Provider Topology 拓扑、Recent Requests 实时列表；拓扑和请求列表受 Appearance 设置控制，并使用轮询与 WebSocket 请求流。
 - **当前实现**：`apps/admin/src/features/home/home.tsx` 使用 antd + antd-style 复刻上述结构；公告 Banner 支持本地持久化关闭，Quick Start 保持四步 2×2 布局，Provider Topology 使用 `@xyflow/react` 按既有布局、Handle/Edge 状态优先级、Provider/catalog/provider-nodes 图标与标签、实时指标和自动 fitView 进行实现，节点可点击进入 Provider 详情；连接健康状态遵循领域服务语义，最近使用只由全局 `lastProvider` 标记；Recent Requests 使用 control-api 日志数据与公共 Scrollbar，左右卡片等高且列表内部滚动。首页不额外添加非需求的系统状态卡片，也不渲染重复的页面标题。
-- **服务链路**：`packages/server-runtime/src/routes/home.ts` 从本地 runtime 投影 `/api/models`、`/api/provider-metrics`、`/api/usage/call-logs`、`/api/system/version`；Web 永远不得直连 runtime 或数据库。
+- **服务链路**：首页投影由所属 app 注册的 route adapter 暴露，并通过 `http-kernel` transport 调用 `core-domain` 的 `/api/models`、`/api/provider-metrics`、`/api/usage/call-logs`、`/api/system/version`；`http-kernel/src/routes` 不是运行时路由根，Web 永远不得直连领域模块或数据库。
 - **安全边界**：版本接口只返回版本投影，日志/指标不返回敏感凭证；首页实时 WS 仅在拓扑开启时建立，避免无条件连接和后台轮询。
 - **有意差异**：Orbit 的 Electron 自动更新和服务端升级 SSE 依赖桌面/部署运行时，Admin Web 当前仅展示版本状态，不提供升级按钮；接入前必须单独迁移并增加确认和权限校验。
 
@@ -214,7 +214,7 @@ API 实现要求：
 
 1. 只暴露 `/api/*`，Web 不得直连 Orbit、数据库或第三方管理接口；
 2. 路由必须复刻原接口的方法、参数校验、默认值、分页、筛选、排序和错误语义；
-3. 通过 `packages/server-runtime/src/lib/engine.ts` 调用当前本地 runtime，不能在服务入口重复实现业务规则；
+3. 业务 handler 由所属 app 直接装配；`http-kernel` 只提供 Fastify transport 基础设施与兼容调度协议，不负责加载领域引擎；
 4. 只投影页面需要的字段，API Key、Token、Cookie、Header 和完整 settings 默认不得返回；
 5. 批处理必须保留逐项结果、部分失败和统计信息；
 6. 需要新增或变更的前后端类型优先写入 `packages/contracts`，再由 Admin/API 引用；

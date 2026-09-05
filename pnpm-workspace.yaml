@@ -1,6 +1,7 @@
 packages:
   - apps/*
   - packages/*
+  - packages/core-domain/open-sse
 
 catalog:
   '@types/node': ^22.19.0

@@ -9,6 +9,18 @@
 
 ## 当前状态
 
+### App 边界迁移（2026-09-05）
+
+- ✅ 已移除两个混合运行时包；目录与 workspace 包名均已退役。
+- ✅ `edge-gateway` 与 `control-api` 使用各自固定的 bootstrap，不再由入口传入 `surface` 参数。
+- ✅ `realtime`、`worker` 只通过 `core-domain` 的显式子路径加载实时能力和后台调度器。
+- ✅ control-api 的 health 路由组（`/api/health`、`/api/health/ping`、`/api/health/degradation`）已物理迁入 `apps/control-api/src/routes/api`，并由 app 自己注册与验收。
+- ✅ control-api 的 `/api/auth/status`、`/api/gateway/status`、`/api/shutdown`、`/api/restart`、`/api/token-health` 已物理迁入 `apps/control-api/src/routes/api`；edge 的 `/api/v1/music/generations`、`/api/v1/speech-to-text`、`/api/v1/voices` 与 `/api/v1/ws` 已物理迁入 `apps/edge-gateway/src/routes/api`。
+- ✅ control-api 的 `/api/provider-stats`、`/api/provider-metrics`、`/api/provider-nodes`、`/api/provider-nodes/validate`、`/api/provider-models` 与 edge 的 `/api/v1/embeddings`、`/api/v1/audio/transcriptions`、`/api/v1/text-to-speech/*`、`/api/v1/moderations`、`/api/v1/rerank` 已物理迁入各自 app 路由树，并完成独立鉴权/路径验收。
+- ✅ control-api 的完整 `/api/keys/**` 管理域（密钥 CRUD、设备、重生成、明文查看、用量限制、分组、成员与权限）已物理迁入 `apps/control-api/src/routes/api/keys`；业务 handler 由 `core-domain/control/*` 显式子路径提供，并完成 control 401 / edge 404 的拆分部署验收。
+- ✅ `db-schema` 收敛跨 app 的表名/所有权元数据；查询与写入仍由所属 app 的领域服务负责。
+- ✅ 每个 app 的 typecheck、部署 smoke 与边界审计已纳入逐域验收；详见 [`DOMAIN_BOUNDARIES.md`](./DOMAIN_BOUNDARIES.md)。
+
 - **已迁移**：`/home`、`/dashboard/api-manager`、`/dashboard/combos`（模型组合全量 CRUD、向导/专家模式、Auto 组合目录、Kimi 预设、LKGP/智能路由面板、链路测试及控制中心监控）、`/dashboard/quota` + `/dashboard/costs/quota-share`（提供者配额与限额监控、余量告警、USD/速率限额、共享池向导）。
 - **进行中**：`/dashboard/providers` 列表与按 Provider 类型分流的详情页；OAuth/CLI/浏览器授权向导、节点编辑、模型同步高级操作和其余 Providers 子路由仍需补齐后再标记完成。
 - **待迁移**：其余菜单入口按本规范逐个完成 Web + control-api 联合迁移；未完成页面不得以“已迁移”标记。

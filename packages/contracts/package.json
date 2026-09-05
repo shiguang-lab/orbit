@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./realtime": "./src/realtime.ts",
+    "./realtime-events": "./src/realtime-events.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

@@ -48,13 +48,25 @@ const officialRoutes = walk(join(orbitRoot, "src", "app", "api"), (p) => p.endsW
 const referenceAvailable = officialRoutes.length > 0;
 const officialGroups = new Set(officialRoutes.map((p) => relative(join(orbitRoot, "src", "app", "api"), p).split("/")[0]));
 const officialRoutePaths = new Set(officialRoutes.map((p) => normalizeRoutePath(relative(join(orbitRoot, "src", "app", "api"), p).split("\\").join("/"))));
-const serverRoutesDir = join(repoRoot, "packages", "server-runtime", "src", "routes");
-const serverRouteFiles = walk(serverRoutesDir, (p) => p.endsWith(".ts") && !p.endsWith("index.ts"));
-const serverHandlers = serverRouteFiles.reduce((sum, p) => sum + (text(p).match(/app\.(?:get|post|put|patch|delete|options|head)\(/g) || []).length, 0);
-const localRuntimeRoutesDir = join(repoRoot, "packages", "gateway-runtime", "src", "app", "api");
-const localRuntimeRoutes = walk(localRuntimeRoutesDir, (p) => p.endsWith("route.ts"));
+// Runtime route roots belong to deployable apps. The HTTP kernel only exposes
+// transport primitives; its source tree must never be counted as a route
+// catalog or parity source.
+const appRouteRoots = ["edge-gateway", "control-api", "realtime"].
+  map((name) => join(repoRoot, "apps", name, "src", "routes"))
+  .filter(existsSync);
+const appRouteFiles = appRouteRoots.flatMap((root) => walk(root, (p) => p.endsWith(".ts") && !p.endsWith("index.ts")));
+const appHandlers = appRouteFiles.reduce((sum, p) => sum + (text(p).match(/app\.(?:get|post|put|patch|delete|options|head)\(/g) || []).length, 0);
+const localRuntimeRoutesDir = join(repoRoot, "packages", "core-domain", "src", "app", "api");
+// Route handlers migrate one domain at a time. Compare normalized API paths
+// across both the remaining domain tree and handlers already owned by apps.
+const localRouteSources = [
+  { root: localRuntimeRoutesDir, pathRoot: localRuntimeRoutesDir },
+  { root: join(repoRoot, "apps", "control-api", "src", "routes", "api"), pathRoot: join(repoRoot, "apps", "control-api", "src", "routes", "api") },
+  { root: join(repoRoot, "apps", "edge-gateway", "src", "routes", "api"), pathRoot: join(repoRoot, "apps", "edge-gateway", "src", "routes", "api") },
+].filter(({ root }) => existsSync(root));
+const localRuntimeRoutes = localRouteSources.flatMap(({ root }) => walk(root, (p) => p.endsWith("route.ts")));
 const officialRootDir = join(orbitRoot, "src", "app");
-const localRootDir = join(repoRoot, "packages", "gateway-runtime", "src", "app");
+const localRootDir = join(repoRoot, "packages", "core-domain", "src", "app");
 const officialRootRoutes = walk(officialRootDir, (p) => p.endsWith("route.ts") && !p.startsWith(`${join(officialRootDir, "api")}/`));
 const localRootRoutes = walk(localRootDir, (p) => p.endsWith("route.ts") && !p.startsWith(`${join(localRootDir, "api")}/`));
 const rootRoutePaths = (dir, files) => new Set(files.map((p) => relative(dir, p).split("\\").join("/")));
@@ -66,14 +78,69 @@ const rootRouteMismatches = referenceAvailable ? [
   ...[...localRootPaths].filter((p) => !officialRootPaths.has(p)).map((path) => ({ path, side: "extra-local" })),
 ].sort((a, b) => a.path.localeCompare(b.path)) :
   (localRootRoutes.length === frozenBaseline.rootRouteFiles && hashPaths(localRootPaths) === frozenBaseline.rootPathSha256 ? [] : [{ path: "<frozen-root-route-baseline>", side: "hash-mismatch" }]);
-const localRoutePaths = new Set(localRuntimeRoutes.map((p) => normalizeRoutePath(relative(localRuntimeRoutesDir, p).split("\\").join("/"))));
+function extractControllerRoutes(controllerFile) {
+  const source = readFileSync(controllerFile, "utf8");
+  const controllerMatch = source.match(/@Controller\s*\(\s*(?:\[([^\]]*)\]|["'`\x27\x60](.*?)["'`\x27\x60])?\s*\)/);
+  if (!controllerMatch) return [];
+  let basePrefixes = [""];
+  if (controllerMatch[1]) {
+    basePrefixes = controllerMatch[1]
+      .split(",")
+      .map((s) => s.trim().replace(/^["'`\x27\x60]/, "").replace(/["'`\x27\x60]$/, "").replace(/^\/+/, "").replace(/\/+$/, ""))
+      .filter(Boolean);
+    if (basePrefixes.length === 0) basePrefixes = [""];
+  } else if (controllerMatch[2] !== undefined) {
+    basePrefixes = [controllerMatch[2].trim().replace(/^\/+/, "").replace(/\/+$/, "")];
+  }
+
+  const methodRegex = /@(Get|Post|Put|Patch|Delete|Options|Head)\s*\(\s*(?:(?:\[([^\]]*)\])|(?:["'`\x27\x60](.*?)["'`\x27\x60]))?\s*\)/g;
+  const routes = new Set();
+  let match;
+  while ((match = methodRegex.exec(source)) !== null) {
+    let subPaths = [""];
+    if (match[2]) {
+      subPaths = match[2].split(",").map(s => s.trim().replace(/^["'`\x27\x60]/, "").replace(/["'`\x27\x60]$/, "")).filter(Boolean);
+    } else if (match[3] !== undefined) {
+      subPaths = [match[3].trim()];
+    }
+    for (const basePrefix of basePrefixes) {
+      for (let subPath of subPaths) {
+        let fullPath = [basePrefix, subPath].filter(Boolean).join("/");
+        if (fullPath.startsWith("api/")) fullPath = fullPath.slice("api/".length);
+        fullPath = fullPath.replace(/:([a-zA-Z0-9_]+)/g, "[$1]");
+        const routePath = `${fullPath ? fullPath + "/" : ""}route.ts`;
+        routes.add(routePath);
+      }
+    }
+  }
+  return routes;
+}
+
+const controllerFiles = ["control-api", "edge-gateway"].flatMap((name) =>
+  walk(join(repoRoot, "apps", name, "src"), (p) => p.endsWith(".controller.ts"))
+);
+const controllerRoutePaths = controllerFiles.flatMap((f) => [...extractControllerRoutes(f)]);
+
+const localRoutePaths = new Set([
+  ...localRouteSources.flatMap(({ root, pathRoot }) =>
+    walk(root, (p) => p.endsWith("route.ts")).map((p) => normalizeRoutePath(relative(pathRoot, p).split("\\").join("/")))
+  ),
+  ...controllerRoutePaths.map(normalizeRoutePath),
+]);
 const comparableLocalRoutePaths = new Set([...localRoutePaths].filter((path) => !localApiExtensions.has(path)));
 const routePathMismatches = referenceAvailable ? [
   ...[...officialRoutePaths].filter((p) => !comparableLocalRoutePaths.has(p)).map((path) => ({ path, side: "missing-local" })),
   ...[...comparableLocalRoutePaths].filter((p) => !officialRoutePaths.has(p)).map((path) => ({ path, side: "extra-local" })),
 ].sort((a, b) => a.path.localeCompare(b.path)) :
   (comparableLocalRoutePaths.size === frozenBaseline.apiRouteFiles && hashPaths(comparableLocalRoutePaths) === frozenBaseline.apiPathSha256 ? [] : [{ path: "<frozen-api-route-baseline>", side: "hash-mismatch" }]);
-const dynamicDispatcher = existsSync(join(serverRoutesDir, "runtimeCatchall.ts"));
+const compatDispatcherFile = join(repoRoot, "packages", "http-kernel", "src", "routes", "compatDispatcher.ts");
+const appCompatDispatcherFiles = [
+  join(repoRoot, "apps", "edge-gateway", "src", "routes", "compat", "runtimeCatchall.ts"),
+  join(repoRoot, "apps", "control-api", "src", "routes", "compat", "dispatcher.ts"),
+];
+const appCompatDispatcherReady = existsSync(compatDispatcherFile) &&
+  text(compatDispatcherFile).includes("registerCompatDispatcher") &&
+  appCompatDispatcherFiles.every((path) => existsSync(path) && text(path).includes("registerCompatDispatcher"));
 const requiredApps = ["admin", "edge-gateway", "control-api", "realtime", "worker", "importer"];
 const missingApps = requiredApps.filter((name) => !existsSync(join(repoRoot, "apps", name, "package.json")));
 
@@ -95,7 +162,7 @@ for (const path of allSourceFiles) {
   const rel = relative(repoRoot, path);
   if (rel === "scripts/audit-gateway-independence.mjs") continue;
   for (const rule of forbidden) {
-    if (rule.name === "runtime sibling Orbit import" && !rel.startsWith("packages/server-runtime/") && !rel.startsWith("apps/")) continue;
+    if (rule.name === "runtime sibling Orbit import" && !rel.startsWith("apps/")) continue;
     if (rule.allow?.test(rel)) continue;
     if (rule.re.test(text(path))) violations.push({ file: rel, rule: rule.name });
   }
@@ -104,9 +171,10 @@ for (const path of allSourceFiles) {
 // A local `@/*` alias is valid only when the BFF tsconfig resolves it inside
 // this repository. Keep the check explicit so a future sibling-path shim
 // cannot be reintroduced under the same alias name.
-const runtimeTsconfig = text(join(repoRoot, "packages", "server-runtime", "tsconfig.json"));
-if (/\.\.\/\.\.\/\.\.\/Orbit|\.\.\/[^\"']*Orbit/.test(runtimeTsconfig)) {
-  violations.push({ file: "packages/server-runtime/tsconfig.json", rule: "runtime sibling Orbit import" });
+for (const tsconfig of walk(join(repoRoot, "apps"), (p) => p.endsWith("tsconfig.json"))) {
+  if (/\.\.\/\.\.\/\.\.\/Orbit|\.\.\/[^\"']*Orbit/.test(text(tsconfig))) {
+    violations.push({ file: relative(repoRoot, tsconfig), rule: "runtime sibling Orbit import" });
+  }
 }
 
 const mockFallbacks = [];
@@ -130,19 +198,19 @@ for (const path of allSourceFiles) {
   }
 }
 
-const serverGroups = new Set(serverRouteFiles.map((p) => p.split("/").pop().replace(/\.ts$/, "")));
+const appGroups = new Set(appRouteFiles.map((p) => p.split("/").pop().replace(/\.ts$/, "")));
 const localGroups = new Set([...comparableLocalRoutePaths].map((path) => path.split("/")[0]));
-const missingGroups = dynamicDispatcher && routePathMismatches.length === 0 &&
+const missingGroups = appCompatDispatcherReady && routePathMismatches.length === 0 &&
   (referenceAvailable ? officialRoutes.length > 0 : localGroups.size === frozenBaseline.apiGroups)
   ? []
-  : referenceAvailable ? [...officialGroups].filter((group) => !serverGroups.has(group)).sort() : ["<frozen-api-group-baseline>"];
+  : referenceAvailable ? [...officialGroups].filter((group) => !appGroups.has(group)).sort() : ["<frozen-api-group-baseline>"];
 
 const report = {
   reference: orbitRoot,
   referenceAvailable,
   frozenBaseline,
   official: referenceAvailable ? { routeFiles: officialRoutes.length, apiGroups: officialGroups.size, rootRouteFiles: officialRootRoutes.length } : null,
-    target: { serverRouteFiles: serverRouteFiles.length, fastifyHandlers: serverHandlers, localRuntimeRouteFiles: localRuntimeRoutes.length, localRootRouteFiles: localRootRoutes.length, additiveLocalApiExtensions: [...localApiExtensions], dynamicDispatcher },
+    target: { appRouteFiles: appRouteFiles.length, appFastifyHandlers: appHandlers, localRuntimeRouteFiles: localRuntimeRoutes.length, localRootRouteFiles: localRootRoutes.length, additiveLocalApiExtensions: [...localApiExtensions], appCompatDispatcherReady },
   routePathMismatches,
   rootRouteMismatches,
   missingApiGroups: missingGroups,

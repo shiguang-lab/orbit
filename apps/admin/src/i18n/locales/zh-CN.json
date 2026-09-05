@@ -11964,7 +11964,7 @@
   "featureFlags.definitions.SHIGUANG_GATEWAY_ENABLE_RUNTIME_BACKGROUND_TASKS.description": "在运行时启用后台任务处理。",
   "featureFlags.definitions.SHIGUANG_GATEWAY_DISABLE_BACKGROUND_SERVICES.description": "禁用所有后台服务，包括配额刷新和同步。",
   "featureFlags.definitions.SHIGUANG_GATEWAY_RTK_TRUST_PROJECT_FILTERS.description": "信任项目级 RTK 过滤器而无需验证。",
-  "featureFlags.definitions.SHIGUANG_GATEWAY_ENABLE_LIVE_WS.description": "导入时在环回端口 20132 上启动实时仪表板 WebSocket 服务器。将该标志设置为 0 或 false 可禁用它。局域网暴露还需要 LIVE_WS_HOST=0.0.0.0 和 LIVE_WS_ALLOWED_ORIGINS。",
+  "featureFlags.definitions.SHIGUANG_GATEWAY_ENABLE_LIVE_WS.description": "启用 realtime app 在 20132 端口提供的实时仪表板 WebSocket 服务。将该标志设置为 0 或 false 可禁用它。局域网暴露还需要 LIVE_WS_HOST=0.0.0.0 和 LIVE_WS_ALLOWED_ORIGINS。",
   "featureFlags.definitions.SHIGUANG_GATEWAY_CODEX_WS_ENABLED.description": "允许 Codex 通过 WebSocket 使用 Responses。禁用时，Codex 将回退到 HTTP Responses。",
   "featureFlags.definitions.SHIGUANG_GATEWAY_EMERGENCY_FALLBACK.description": "将预算耗尽的请求路由到紧急免费备用提供者和模型。",
   "featureFlags.definitions.STREAM_RECOVERY_ENABLED.description": "在任何响应字节到达客户端之前，透明地重试被截断的上游 SSE 流。",

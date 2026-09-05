@@ -1,0 +1,18 @@
+export function listDbBackups(): Promise<any[]>;
+export function restoreDbBackup(backupId: string): Promise<any>;
+export function backupDbFile(reason?: string): any;
+export function cleanupDbBackups(options?: { maxFiles?: number; retentionDays?: number }): any;
+export function getDbBackupMaxFiles(): number;
+export function setDbBackupMaxFiles(val: number): void;
+export function getDbBackupRetentionDays(): number;
+export function setDbBackupRetentionDays(val: number): void;
+export function getDbInstance(): any;
+export function resetDbInstance(): void;
+export const SQLITE_FILE: string | null;
+export function exportAllSummaryRows(): any;
+export const CALL_LOGS_DIR: string | null;
+export function openDatabaseAsync(path: string, options?: any): Promise<any>;
+export function getTableNamesFromAdapter(db: any): string[];
+export function countImportedRows(): { connCount: number; nodeCount: number; comboCount: number; keyCount: number };
+export function unlinkFileWithRetry(filePath: string): Promise<void>;
+export function setSystemPromptConfig(prompt: any): void;

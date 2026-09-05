@@ -114,6 +114,18 @@ export interface WsHandshakeLiveInfo {
   heartbeatMs?: number;
 }
 
+export type {
+  WsAuthResult,
+  WsClientMessage,
+  WsErrorMessage,
+  WsEventMessage,
+  WsPingMessage,
+  WsPongMessage,
+  WsServerMessage,
+  WsSubscribeMessage,
+  WsWelcomeMessage,
+} from "./realtime.js";
+
 /* ---------------- Combos ---------------- */
 
 export interface ComboModelStep {

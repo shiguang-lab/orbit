@@ -480,7 +480,7 @@ CLI/Devtools  Compression  Costs  Agentic  Audit  Batch/Media
 ```bash
 pnpm --filter @shiguang-gateway/admin typecheck
 pnpm --filter @shiguang-gateway/control-api typecheck
-pnpm --filter @shiguang-gateway/server-runtime test
+pnpm --filter @shiguang-gateway/http-kernel test
 pnpm --filter @shiguang-gateway/admin build
 ```
 

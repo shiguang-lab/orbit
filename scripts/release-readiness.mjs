@@ -33,6 +33,7 @@ function run(label, script, args = [], env = {}) {
 }
 
 run("source-independent", "audit-gateway-independence.mjs", ["--strict"]);
+run("app-boundaries", "audit-app-boundaries.mjs", ["--strict"]);
 run("admin-route-parity", "audit-admin-routes.mjs", ["--strict"]);
 run("route-contracts", "audit-route-contracts.mjs", ["--strict"]);
 
