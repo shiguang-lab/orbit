@@ -1,6 +1,6 @@
 /**
- * liveServerAllowList — extract of the host/origin allow-list logic from
- * `apps/realtime/src/live-ws/liveServer.ts`.
+ * Live-server allow-list policy extracted from
+ * `apps/realtime/src/live-ws/live-server.ts`.
  *
  * Lives in its own module so unit tests can exercise it without booting the
  * full WebSocket server. The behaviour here MUST match the one used by the

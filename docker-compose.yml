@@ -123,7 +123,7 @@ services:
     build: { context: ., target: importer }
     container_name: shiguang-gateway-importer
     profiles: [migration]
-    entrypoint: ["node", "apps/importer/dist/index.js"]
+    entrypoint: ["node", "apps/importer/dist/main.js"]
     command: ["--source-data-dir", "/source", "--target-data-dir", "/app/data", "--replace", "--source-home-dir", "/source-home", "--target-home-dir", "/home/node"]
     environment:
       NODE_ENV: production

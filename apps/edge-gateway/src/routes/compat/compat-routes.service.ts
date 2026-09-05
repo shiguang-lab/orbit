@@ -1,7 +1,7 @@
 import { Inject, Injectable, type OnApplicationBootstrap } from "@nestjs/common";
 import { HttpAdapterHost } from "@nestjs/core";
 import type { FastifyInstance } from "fastify";
-import { registerEdgeCompatRoutes } from "./runtimeCatchall.js";
+import { registerEdgeCompatRoutes } from "./runtime-catchall.js";
 
 @Injectable()
 export class CompatRoutesService implements OnApplicationBootstrap {

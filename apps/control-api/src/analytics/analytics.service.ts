@@ -5,7 +5,8 @@ import {
   getAutoRoutingTopProviders,
 } from "@shiguang-gateway/core-domain/analytics/auto-routing-db";
 import { getCompressionAnalyticsSummary } from "@shiguang-gateway/core-domain/db/compression-analytics";
-import { getDiversityReport } from "@shiguang-gateway/core-domain/analytics/diversity";
+
+const load = (specifier: string): Promise<any> => import(specifier as string);
 
 @Injectable()
 export class AnalyticsService {
@@ -41,7 +42,10 @@ export class AnalyticsService {
     return getCompressionAnalyticsSummary(validSince === "all" ? undefined : validSince);
   }
 
-  getDiversityAnalytics() {
+  async getDiversityAnalytics() {
+    const { getDiversityReport } = await load(
+      "@shiguang-gateway/open-sse/services/autoCombo/providerDiversity.ts",
+    );
     return getDiversityReport();
   }
 }

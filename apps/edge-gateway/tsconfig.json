@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": { "module": "NodeNext", "moduleResolution": "NodeNext", "types": ["node"], "outDir": "dist", "rootDir": "src", "experimentalDecorators": true, "emitDecoratorMetadata": true, "baseUrl": ".", "paths": { "@/*": ["../../packages/core-domain/src/*"] } },
+  "compilerOptions": { "module": "NodeNext", "moduleResolution": "NodeNext", "types": ["node"], "outDir": "dist", "rootDir": "src", "experimentalDecorators": true, "emitDecoratorMetadata": true },
   "include": ["src"],
   "exclude": ["src/routes/api"]
 }

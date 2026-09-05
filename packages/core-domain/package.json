@@ -134,10 +134,6 @@
       "types": "./src/public/numeric.d.ts",
       "import": "./src/shared/utils/numeric.ts"
     },
-    "./open-sse/utils/error.ts": {
-      "types": "./src/public/errorResponse.d.ts",
-      "import": "./open-sse/utils/error.ts"
-    },
     "./db/ping": {
       "types": "./src/public/ping.d.ts",
       "import": "./src/lib/db/core.ts"
@@ -180,10 +176,6 @@
       "types": "./src/public/providerMetadata.d.ts",
       "import": "./src/shared/constants/providers.ts"
     },
-    "./catalog/provider-registry": {
-      "types": "./src/public/providerRegistry.d.ts",
-      "import": "./open-sse/config/providerRegistry.ts"
-    },
     "./pricing/db": {
       "types": "./src/public/pricingDb.d.ts",
       "import": "./src/lib/db/settings/pricing.ts"
@@ -204,17 +196,9 @@
       "types": "./src/public/pricingValidation.d.ts",
       "import": "./src/shared/validation/pricingExports.ts"
     },
-    "./metrics/combo": {
-      "types": "./src/public/comboMetrics.d.ts",
-      "import": "./open-sse/services/comboMetrics.ts"
-    },
     "./metrics/request-telemetry": {
       "types": "./src/public/requestTelemetry.d.ts",
       "import": "./src/shared/utils/requestTelemetry.ts"
-    },
-    "./metrics/tool-latency": {
-      "types": "./src/public/toolLatency.d.ts",
-      "import": "./open-sse/services/toolLatencyTracker.ts"
     },
     "./control/provider-nodes-route": {
       "types": "./src/public/providerNodesRoute.d.ts",
@@ -305,17 +289,10 @@
     "./worker/lib/jobs/backupScheduleJob.ts": "./src/lib/jobs/backupScheduleJob.ts",
     "./worker/lib/proxyHealth/scheduler.ts": "./src/lib/proxyHealth/scheduler.ts",
     "./worker/lib/freeProxyProviders/scheduler.ts": "./src/lib/freeProxyProviders/scheduler.ts",
-    "./open-sse/services/batchProcessor.ts": "./open-sse/services/batchProcessor.ts",
-    "./open-sse/services/autoRefreshDaemon.ts": "./open-sse/services/autoRefreshDaemon.ts",
-    "./open-sse/*": "./open-sse/*",
     "./middleware/*": "./src/middleware/*",
     "./edge/*": "./src/edge/*",
     "./sse/*": "./src/sse/*",
     "./shared/*": "./src/shared/*",
-    "./open-sse/handlers/moderations.ts": {
-      "types": "./src/public/edgeModerations.d.ts",
-      "import": "./open-sse/handlers/moderations.ts"
-    },
     "./cache/db": {
       "types": "./src/public/cacheDb.d.ts",
       "import": "./src/lib/db/semanticCache.ts"
@@ -327,10 +304,6 @@
     "./analytics/auto-routing-db": {
       "types": "./src/public/autoRoutingDb.d.ts",
       "import": "./src/lib/db/usageLogs.ts"
-    },
-    "./analytics/diversity": {
-      "types": "./src/public/diversity.d.ts",
-      "import": "./open-sse/services/autoCombo/providerDiversity.ts"
     },
     "./db-backups/db": {
       "types": "./src/public/dbBackupsDb.d.ts",

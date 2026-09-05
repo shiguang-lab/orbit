@@ -42,8 +42,8 @@ const EXTENSIONS = [".ts", ".tsx", ".js", ".mjs", ".cjs", ".json"];
  */
 const ALIAS_TABLE = [
   { prefix: "@/", target: "src", exact: false },
-  { prefix: "@shiguang-gateway/open-sse/", target: "open-sse", exact: false },
-  { prefix: "@shiguang-gateway/open-sse", target: "open-sse", exact: true },
+  { prefix: "@shiguang-gateway/open-sse/", target: "../open-sse", exact: false },
+  { prefix: "@shiguang-gateway/open-sse", target: "../open-sse", exact: true },
 ];
 
 function tryResolveAliasFsPath(specifier) {

@@ -13,7 +13,7 @@ export type WorkerJob =
 const domainModule = (path: string) =>
   `@shiguang-gateway/core-domain/worker/${path}.ts`;
 const sseModule = (path: string) =>
-  `@shiguang-gateway/core-domain/open-sse/${path}.ts`;
+  `@shiguang-gateway/open-sse/${path}.ts`;
 
 export const WORKER_JOBS: readonly WorkerJob[] = [
   { name: "cloud-sync-and-job-registry", mode: "call", modulePath: domainModule("lib/initCloudSync"), exportName: "ensureCloudSyncInitialized" },

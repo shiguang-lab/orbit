@@ -45,7 +45,7 @@ import {
   buildAllowedOrigins,
   buildAllowedHosts,
   isOriginAllowed as isOriginAllowedPure,
-} from "./liveServerAllowList.js";
+} from "./live-server-allow-list.js";
 
 // ── Config ────────────────────────────────────────────────────────────────
 
@@ -67,7 +67,7 @@ const ALLOWED_HOSTS = buildAllowedHosts();
 /**
  * Whether the given Origin is acceptable for a WS upgrade.
  *
- * Delegates to `liveServerAllowList` for the actual policy; this wrapper
+ * Delegates to `live-server-allow-list` for the actual policy; this wrapper
  * exists so the connection handler can read the closure-bound allow-lists
  * without re-parsing env on every connection.
  */

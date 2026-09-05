@@ -31,10 +31,10 @@ export class MusicService {
         { isAllRateLimitedCredentials, rateLimitedProviderResponse },
         log,
       ] = await Promise.all([
-        load("@shiguang-gateway/core-domain/open-sse/handlers/musicGeneration.ts"),
+        load("@shiguang-gateway/open-sse/handlers/musicGeneration.ts"),
         load("@shiguang-gateway/core-domain/sse/auth"),
-        load("@shiguang-gateway/core-domain/open-sse/config/musicRegistry.ts"),
-        load("@shiguang-gateway/core-domain/open-sse/utils/error.ts"),
+        load("@shiguang-gateway/open-sse/config/musicRegistry.ts"),
+        load("@shiguang-gateway/open-sse/utils/error.ts"),
         load("@shiguang-gateway/core-domain/edge/media-generation"),
         load("@shiguang-gateway/core-domain/shared/api-key-policy"),
         load("@shiguang-gateway/core-domain/edge/rate-limit"),

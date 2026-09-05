@@ -6,9 +6,7 @@ import {
   getProviderCallStats,
 } from "@shiguang-gateway/core-domain/db/provider-stats";
 import { AI_PROVIDERS } from "@shiguang-gateway/core-domain/catalog/provider-metadata";
-import { getAllComboMetrics } from "@shiguang-gateway/core-domain/metrics/combo";
 import { getTelemetrySummary } from "@shiguang-gateway/core-domain/metrics/request-telemetry";
-import { getToolLatencyByProvider } from "@shiguang-gateway/core-domain/metrics/tool-latency";
 import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
 import {
   getSyncedAvailableModels,
@@ -30,6 +28,8 @@ import {
   PUT as updateProviderNodeHandler,
 } from "@shiguang-gateway/core-domain/control/provider-node-by-id-route";
 import { POST as validateProviderNodeHandler } from "@shiguang-gateway/core-domain/control/provider-nodes-validate-route";
+
+const load = (specifier: string): Promise<any> => import(specifier as string);
 
 @Injectable()
 export class ProvidersService {
@@ -102,7 +102,11 @@ export class ProvidersService {
     };
   }
 
-  getStats() {
+  async getStats() {
+    const [{ getAllComboMetrics }, { getToolLatencyByProvider }] = await Promise.all([
+      load("@shiguang-gateway/open-sse/services/comboMetrics.ts"),
+      load("@shiguang-gateway/open-sse/services/toolLatencyTracker.ts"),
+    ]);
     const resolveName = (provider: string, nodeName: string | null) => {
       if (nodeName?.trim()) return nodeName.trim();
       return (AI_PROVIDERS as any)[provider]?.name ?? provider;

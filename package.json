@@ -17,6 +17,8 @@
     "audit:admin-routes": "node scripts/audit-admin-routes.mjs --strict",
     "audit:route-contracts": "node scripts/audit-route-contracts.mjs --strict",
     "audit:app-boundaries": "node scripts/audit-app-boundaries.mjs --strict",
+    "audit:architecture": "node scripts/audit-architecture.mjs --strict",
+    "audit:open-sse-boundary": "node scripts/audit-open-sse-boundary.mjs --strict",
     "verify:external-state": "node scripts/verify-external-state.mjs",
     "audit:provider-config": "node scripts/audit-provider-config.mjs",
     "audit:release-readiness": "node scripts/release-readiness.mjs",

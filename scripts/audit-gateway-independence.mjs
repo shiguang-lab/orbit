@@ -133,14 +133,14 @@ const routePathMismatches = referenceAvailable ? [
   ...[...comparableLocalRoutePaths].filter((p) => !officialRoutePaths.has(p)).map((path) => ({ path, side: "extra-local" })),
 ].sort((a, b) => a.path.localeCompare(b.path)) :
   (comparableLocalRoutePaths.size === frozenBaseline.apiRouteFiles && hashPaths(comparableLocalRoutePaths) === frozenBaseline.apiPathSha256 ? [] : [{ path: "<frozen-api-route-baseline>", side: "hash-mismatch" }]);
-const compatDispatcherFile = join(repoRoot, "packages", "http-kernel", "src", "routes", "compatDispatcher.ts");
+const compatDispatcherFile = join(repoRoot, "packages", "web-route-compat", "src", "compat-dispatcher.ts");
 const appCompatDispatcherFiles = [
-  join(repoRoot, "apps", "edge-gateway", "src", "routes", "compat", "runtimeCatchall.ts"),
+  join(repoRoot, "apps", "edge-gateway", "src", "routes", "compat", "runtime-catchall.ts"),
   join(repoRoot, "apps", "control-api", "src", "routes", "compat", "dispatcher.ts"),
 ];
 const appCompatDispatcherReady = existsSync(compatDispatcherFile) &&
   text(compatDispatcherFile).includes("registerCompatDispatcher") &&
-  appCompatDispatcherFiles.every((path) => existsSync(path) && text(path).includes("registerCompatDispatcher"));
+  appCompatDispatcherFiles.every((path) => existsSync(path) && text(path).includes("@shiguang-gateway/web-route-compat"));
 const requiredApps = ["admin", "edge-gateway", "control-api", "realtime", "worker", "importer"];
 const missingApps = requiredApps.filter((name) => !existsSync(join(repoRoot, "apps", name, "package.json")));
 

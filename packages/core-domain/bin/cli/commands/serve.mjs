@@ -306,7 +306,7 @@ function runDaemon(serverJs, env, memoryLimit, dashboardPort, apiPort) {
     process.versions.bun ? process.execPath : "node",
     [
       ...(process.versions.bun
-        ? ["--preload", join(APP_DIR, "open-sse/utils/setupPolyfill.ts")]
+        ? ["--preload", join(APP_DIR, "../open-sse/utils/setupPolyfill.ts")]
         : buildNodeHeapArgs(process.env, memoryLimit)),
       serverJs,
     ],
@@ -331,7 +331,7 @@ function runWithoutRecovery(serverJs, env, memoryLimit, dashboardPort, apiPort, 
     process.versions.bun ? process.execPath : "node",
     [
       ...(process.versions.bun
-        ? ["--preload", join(APP_DIR, "open-sse/utils/setupPolyfill.ts")]
+        ? ["--preload", join(APP_DIR, "../open-sse/utils/setupPolyfill.ts")]
         : buildNodeHeapArgs(process.env, memoryLimit)),
       serverJs,
     ],

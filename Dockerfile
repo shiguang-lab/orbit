@@ -84,7 +84,7 @@ COPY --from=build --chown=node:node /app/packages/http-kernel/tsconfig.json ./pa
 COPY --from=build --chown=node:node /app/packages/core-domain/tsconfig.json ./packages/core-domain/tsconfig.json
 COPY --from=build --chown=node:node /app/packages/http-kernel/src ./packages/http-kernel/src
 COPY --from=build --chown=node:node /app/packages/core-domain/src ./packages/core-domain/src
-COPY --from=build --chown=node:node /app/packages/core-domain/open-sse ./packages/core-domain/open-sse
+COPY --from=build --chown=node:node /app/packages/open-sse ./packages/open-sse
 # Worker scheduler jobs invoke the packaged CLI backup command at runtime.
 COPY --from=build --chown=node:node /app/packages/core-domain/bin ./packages/core-domain/bin
 # Edge-owned route modules are loaded from source by the tsx catch-all loader.
@@ -93,6 +93,8 @@ COPY --from=build --chown=node:node /app/packages/http-kernel/package.json ./pac
 COPY --from=build --chown=node:node /app/packages/core-domain/package.json ./packages/core-domain/package.json
 COPY --from=build --chown=node:node /app/packages/http-kernel/node_modules ./packages/http-kernel/node_modules
 COPY --from=build --chown=node:node /app/packages/core-domain/node_modules ./packages/core-domain/node_modules
+COPY --from=build --chown=node:node /app/packages/auth/node_modules ./packages/auth/node_modules
+COPY --from=build --chown=node:node /app/packages/web-route-compat/node_modules ./packages/web-route-compat/node_modules
 COPY --from=build --chown=node:node /app/packages/contracts/src ./packages/contracts/src
 COPY --from=build --chown=node:node /app/packages/contracts/package.json ./packages/contracts/package.json
 COPY --from=build --chown=node:node /app/packages/contracts/tsconfig.json ./packages/contracts/tsconfig.json
@@ -102,11 +104,21 @@ COPY --from=build --chown=node:node /app/packages/config/tsconfig.json ./package
 COPY --from=build --chown=node:node /app/packages/db-schema/src ./packages/db-schema/src
 COPY --from=build --chown=node:node /app/packages/db-schema/package.json ./packages/db-schema/package.json
 COPY --from=build --chown=node:node /app/packages/db-schema/tsconfig.json ./packages/db-schema/tsconfig.json
-RUN rm -f /app/node_modules/@shiguang-gateway/http-kernel /app/node_modules/@shiguang-gateway/core-domain \
+COPY --from=build --chown=node:node /app/packages/auth/src ./packages/auth/src
+COPY --from=build --chown=node:node /app/packages/auth/package.json ./packages/auth/package.json
+COPY --from=build --chown=node:node /app/packages/auth/tsconfig.json ./packages/auth/tsconfig.json
+COPY --from=build --chown=node:node /app/packages/web-route-compat/src ./packages/web-route-compat/src
+COPY --from=build --chown=node:node /app/packages/web-route-compat/package.json ./packages/web-route-compat/package.json
+COPY --from=build --chown=node:node /app/packages/web-route-compat/tsconfig.json ./packages/web-route-compat/tsconfig.json
+RUN rm -f /app/node_modules/@shiguang-gateway/http-kernel /app/node_modules/@shiguang-gateway/core-domain /app/node_modules/@shiguang-gateway/open-sse \
+    /app/node_modules/@shiguang-gateway/auth /app/node_modules/@shiguang-gateway/web-route-compat \
     /app/node_modules/@shiguang-gateway/contracts /app/node_modules/@shiguang-gateway/config \
     /app/node_modules/@shiguang-gateway/db-schema \
     && ln -s /app/packages/http-kernel /app/node_modules/@shiguang-gateway/http-kernel \
     && ln -s /app/packages/core-domain /app/node_modules/@shiguang-gateway/core-domain \
+    && ln -s /app/packages/open-sse /app/node_modules/@shiguang-gateway/open-sse \
+    && ln -s /app/packages/auth /app/node_modules/@shiguang-gateway/auth \
+    && ln -s /app/packages/web-route-compat /app/node_modules/@shiguang-gateway/web-route-compat \
     && ln -s /app/packages/contracts /app/node_modules/@shiguang-gateway/contracts \
     && ln -s /app/packages/config /app/node_modules/@shiguang-gateway/config \
     && ln -s /app/packages/db-schema /app/node_modules/@shiguang-gateway/db-schema
@@ -130,11 +142,11 @@ CMD ["node", "--import", "tsx", "apps/realtime/dist/main.js"]
 
 FROM runtime-base AS worker
 ENV APP_NAME=worker
-CMD ["node", "--import", "tsx", "apps/worker/dist/index.js"]
+CMD ["node", "--import", "tsx", "apps/worker/dist/main.js"]
 
 FROM runtime-base AS importer
 ENV APP_NAME=importer
-ENTRYPOINT ["node", "--import", "tsx", "apps/importer/dist/index.js"]
+ENTRYPOINT ["node", "--import", "tsx", "apps/importer/dist/main.js"]
 
 # The published single tag is the edge image. Production compose uses the
 # explicit targets above for each independently deployable service.

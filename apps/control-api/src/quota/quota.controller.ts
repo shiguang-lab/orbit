@@ -11,7 +11,9 @@ import {
   QuotaPreviewQuerySchema,
 } from "@shiguang-gateway/core-domain/quota/schemas";
 import { logAuditEvent, getAuditRequestContext } from "@shiguang-gateway/core-domain/compliance";
-import { buildErrorBody } from "@shiguang-gateway/core-domain/open-sse/utils/error.ts";
+
+const load = (specifier: string): Promise<any> => import(specifier as string);
+const { buildErrorBody } = await load("@shiguang-gateway/open-sse/utils/error.ts");
 
 @Controller("api/quota")
 export class QuotaController {

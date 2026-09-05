@@ -8,7 +8,9 @@ import {
   isValidationFailure,
   validateBody,
 } from "@shiguang-gateway/core-domain/evals/validation";
-import { sanitizeErrorMessage } from "@shiguang-gateway/core-domain/open-sse/utils/error.ts";
+
+const load = (specifier: string): Promise<any> => import(specifier as string);
+const { sanitizeErrorMessage } = await load("@shiguang-gateway/open-sse/utils/error.ts");
 
 @Controller("api/evals")
 export class EvalsController {

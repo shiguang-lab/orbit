@@ -18,9 +18,9 @@ const ROOT = join(__dirname, "..");
 export function resolveMcpEntry(rootDir = ROOT, existsSyncFn = existsSync) {
   const candidates = [
     // Preferred distributable JS entry (npm publish artifact, built by prepublish.ts)
-    join(rootDir, "dist", "open-sse", "mcp-server", "server.js"),
+    join(rootDir, "..", "open-sse", "dist", "mcp-server", "server.js"),
     // Local workspace TypeScript source fallback
-    join(rootDir, "open-sse", "mcp-server", "server.ts"),
+    join(rootDir, "..", "open-sse", "mcp-server", "server.ts"),
   ];
 
   for (const entry of candidates) {

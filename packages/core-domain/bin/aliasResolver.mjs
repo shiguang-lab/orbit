@@ -40,8 +40,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
  */
 export const ALIAS_MAP = [
   { prefix: "@/", target: "src", exact: false },
-  { prefix: "@shiguang-gateway/open-sse/", target: "open-sse", exact: false },
-  { prefix: "@shiguang-gateway/open-sse", target: "open-sse", exact: true },
+  { prefix: "@shiguang-gateway/open-sse/", target: "../open-sse", exact: false },
+  { prefix: "@shiguang-gateway/open-sse", target: "../open-sse", exact: true },
 ];
 
 /** @deprecated Use ALIAS_MAP instead. Kept for backward compat. */

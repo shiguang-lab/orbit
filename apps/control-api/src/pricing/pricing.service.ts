@@ -7,7 +7,6 @@ import {
   resetAllPricing,
 } from "@shiguang-gateway/core-domain/pricing/db";
 import { getDefaultPricing } from "@shiguang-gateway/core-domain/pricing/defaults";
-import { REGISTRY } from "@shiguang-gateway/core-domain/catalog/provider-registry";
 import { getProviderPrefixIndex } from "@shiguang-gateway/core-domain/pricing/provider-prefixes";
 import { getAllCustomModels, getAllSyncedAvailableModels } from "@shiguang-gateway/core-domain/control/synced-models";
 import {
@@ -29,6 +28,8 @@ function asModelArray(value: unknown): Array<{ id?: string; name?: string }> {
     name?: string;
   }>;
 }
+
+const load = (specifier: string): Promise<any> => import(specifier as string);
 
 @Injectable()
 export class PricingService {
@@ -60,11 +61,15 @@ export class PricingService {
 
   async getModelsCatalog() {
     const catalog: Record<string, any> = {};
+    const { REGISTRY } = await load(
+      "@shiguang-gateway/open-sse/config/providerRegistry.ts",
+    );
+    const registry = REGISTRY as Record<string, any>;
 
     const { nodeToPrefix, prefixToNode, eligibleNodeIds, compatibleNodeIds } =
       await getProviderPrefixIndex();
 
-    for (const entry of Object.values(REGISTRY)) {
+    for (const entry of Object.values(registry)) {
       const alias = entry.alias || entry.id;
       if (!entry.models || entry.models.length === 0) continue;
 
@@ -74,7 +79,7 @@ export class PricingService {
         name: entry.id.charAt(0).toUpperCase() + entry.id.slice(1),
         authType: entry.authType || "unknown",
         format: entry.format || "openai",
-        models: entry.models.map((m) => ({
+        models: entry.models.map((m: any) => ({
           id: m.id,
           name: m.name || m.id,
           custom: false,
@@ -83,7 +88,7 @@ export class PricingService {
     }
 
     const resolveAlias = (providerId: string) => {
-      for (const entry of Object.values(REGISTRY)) {
+      for (const entry of Object.values(registry)) {
         if (entry.id === providerId) return entry.alias || entry.id;
       }
       return providerId;

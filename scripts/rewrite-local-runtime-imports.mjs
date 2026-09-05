@@ -24,8 +24,8 @@ function targetSpecifier(from, target) {
 for (const file of files) {
   const original = readFileSync(file, "utf8");
   const updated = original.replace(/((?:from\s+|import\s*\(|export\s+from\s+|require\s*\()\s*["'])@\/([^"']+)(["'])/g, (_match, prefix, subpath, suffix) => `${prefix}${targetSpecifier(file, join(root, "src", subpath))}${suffix}`)
-    .replace(/((?:from\s+|import\s*\(|export\s+from\s+|require\s*\()\s*["'])@shiguang-gateway\/open-sse\/([^"']+)(["'])/g, (_match, prefix, subpath, suffix) => `${prefix}${targetSpecifier(file, join(root, "open-sse", subpath))}${suffix}`)
-    .replace(/((?:from\s+|import\s*\(|export\s+from\s+|require\s*\()\s*["'])@shiguang-gateway\/open-sse(["'])/g, (_match, prefix, suffix) => `${prefix}${targetSpecifier(file, join(root, "open-sse"))}${suffix}`);
+    .replace(/((?:from\s+|import\s*\(|export\s+from\s+|require\s*\()\s*["'])@shiguang-gateway\/open-sse\/([^"']+)(["'])/g, (_match, prefix, subpath, suffix) => `${prefix}${targetSpecifier(file, join(root, "../open-sse", subpath))}${suffix}`)
+    .replace(/((?:from\s+|import\s*\(|export\s+from\s+|require\s*\()\s*["'])@shiguang-gateway\/open-sse(["'])/g, (_match, prefix, suffix) => `${prefix}${targetSpecifier(file, join(root, "../open-sse"))}${suffix}`);
   if (updated !== original) writeFileSync(file, updated);
 }
 console.log(`rewrote local runtime imports in ${files.length} files`);

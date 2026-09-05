@@ -67,7 +67,7 @@ if (process.argv.includes("--mcp")) {
 // TypeScript conventions) resolve correctly. The build never emits .js for
 // src/lib/cli-helper/, so tsx handles the .ts → .js resolution at runtime.
 await import("tsx/esm");
-await import("../open-sse/utils/setupPolyfill.ts");
+await import("../../open-sse/utils/setupPolyfill.ts");
 
 // #7791: tsx's tsconfig-path resolution does not apply when ShiguangGateway is
 // installed globally (files live under node_modules/shiguangGateway/), so bare

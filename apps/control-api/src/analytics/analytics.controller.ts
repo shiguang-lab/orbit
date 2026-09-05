@@ -39,7 +39,7 @@ export class AnalyticsController {
   @Get("diversity")
   async getDiversity(@Res() reply: FastifyReply) {
     try {
-      const report = this.analyticsService.getDiversityAnalytics();
+      const report = await this.analyticsService.getDiversityAnalytics();
       return reply.send(report);
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);

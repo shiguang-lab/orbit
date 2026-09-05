@@ -3,8 +3,10 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import { PluginsService } from "./plugins.service.js";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { CORS_HEADERS } from "@shiguang-gateway/core-domain/shared/cors";
-import { buildErrorBody } from "@shiguang-gateway/core-domain/open-sse/utils/error.ts";
 import { z } from "zod";
+
+const load = (specifier: string): Promise<any> => import(specifier as string);
+const { buildErrorBody } = await load("@shiguang-gateway/open-sse/utils/error.ts");
 
 const StatusSchema = z.enum(["installed", "active", "inactive", "error"]).optional();
 const InstallPathSchema = z.object({

@@ -24,10 +24,10 @@ export class ModerationsService {
         { enforceApiKeyPolicy },
         { isAllRateLimitedCredentials, rateLimitedProviderResponse },
       ] = await Promise.all([
-        load("@shiguang-gateway/core-domain/open-sse/handlers/moderations.ts"),
+        load("@shiguang-gateway/open-sse/handlers/moderations.ts"),
         load("@shiguang-gateway/core-domain/sse/auth"),
-        load("@shiguang-gateway/core-domain/open-sse/config/moderationRegistry.ts"),
-        load("@shiguang-gateway/core-domain/open-sse/utils/error.ts"),
+        load("@shiguang-gateway/open-sse/config/moderationRegistry.ts"),
+        load("@shiguang-gateway/open-sse/utils/error.ts"),
         load("@shiguang-gateway/core-domain/edge/moderation-validation-schemas"),
         load("@shiguang-gateway/core-domain/edge/moderation-validation-helpers"),
         load("@shiguang-gateway/core-domain/shared/api-key-policy"),

@@ -35,9 +35,9 @@ export class ProvidersController {
   }
 
   @Get("provider-stats")
-  stats(@Res() reply: FastifyReply) {
+  async stats(@Res() reply: FastifyReply) {
     try {
-      const data = this.providersService.getStats();
+      const data = await this.providersService.getStats();
       return reply.send(data);
     } catch (error) {
       console.error("Error fetching provider stats:", error);

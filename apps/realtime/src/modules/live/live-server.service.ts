@@ -39,10 +39,10 @@ export class LiveServerService implements OnApplicationBootstrap, OnApplicationS
   }
 
   private async start(): Promise<void> {
-    const { startLiveDashboardServer } = await import("../../live-ws/liveServer.js");
+    const { startLiveDashboardServer } = await import("../../live-ws/live-server.js");
     this.server = await startLiveDashboardServer(
       Number(process.env.LIVE_WS_PORT ?? 20132),
-      process.env.LIVE_WS_HOST ?? "0.0.0.0",
+      process.env.LIVE_WS_HOST ?? "127.0.0.1",
     );
   }
 }
