@@ -1,6 +1,6 @@
 import { MiddlewareConsumer, Module, type NestModule } from "@nestjs/common";
 import { APP_FILTER, APP_INTERCEPTOR } from "@nestjs/core";
-import { HttpHealthController } from "./health/http-health.controller.js";
+import { HealthModule } from "./health/health.module.js";
 import { ApiExceptionFilter } from "./filters/api-exception.filter.js";
 import { RequestIdInterceptor } from "./interceptors/request-id.interceptor.js";
 import { RequestIdMiddleware } from "./middleware/request-id.middleware.js";
@@ -12,7 +12,7 @@ import { RequestIdMiddleware } from "./middleware/request-id.middleware.js";
  * transport concerns; authentication and domain routes remain app-owned.
  */
 @Module({
-  controllers: [HttpHealthController],
+  imports: [HealthModule],
   providers: [
     { provide: APP_FILTER, useClass: ApiExceptionFilter },
     { provide: APP_INTERCEPTOR, useClass: RequestIdInterceptor },
