@@ -1,4 +1,4 @@
-import type { OutboundUrlGuardMode } from "./outboundUrlGuardPolicy";
+import type { OutboundUrlGuardMode } from "@shiguang-gateway/network-guard";
 
 export type SafeOutboundFetchGuard = OutboundUrlGuardMode;
 export type SafeOutboundFetchErrorCode =

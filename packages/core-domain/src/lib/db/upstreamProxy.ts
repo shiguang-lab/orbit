@@ -4,7 +4,7 @@ import {
   isCloudMetadataHost,
   isPrivateHost as isPrivateNetworkHost,
   mappedIpv4Host,
-} from "../../shared/network/outboundUrlGuard.ts";
+} from "@shiguang-gateway/network-guard";
 import { ipVersion, normalizeHost } from "@shiguang-gateway/config/network/private-host";
 
 /** Which embedded proxy handles the retry leg when mode === "fallback". */

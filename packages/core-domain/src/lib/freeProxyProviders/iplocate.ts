@@ -1,5 +1,5 @@
 import type { FreeProxyItem, FreeProxySyncResult, FreeProxyProvider } from "./types";
-import { isPrivateHost } from "../../shared/network/outboundUrlGuard.ts";
+import { isPrivateHost } from "@shiguang-gateway/network-guard";
 
 const BASE_URL = "https://raw.githubusercontent.com/iplocate/free-proxy-list/main/protocols";
 const PROTOCOLS = ["http", "https", "socks4", "socks5"] as const;

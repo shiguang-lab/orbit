@@ -2,7 +2,7 @@ import type { EmbeddingProvider } from "../../../../../open-sse/config/embedding
 import {
   parseAndValidateNonMetadataUrl,
   parseAndValidatePublicUrl,
-} from "../../../shared/network/outboundUrlGuard.ts";
+} from "@shiguang-gateway/network-guard";
 import { getProviderValidationGuard } from "../../../shared/network/outboundUrlGuardPolicy.ts";
 
 type CustomEmbeddingSettings = {

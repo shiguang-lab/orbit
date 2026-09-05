@@ -112,7 +112,7 @@ import { isProbeContext } from "../../core-domain/src/shared/utils/probeOrigin.t
 import {
   parseAndValidatePublicUrl,
   parseAndValidateNonMetadataUrl,
-} from "../../core-domain/src/shared/network/outboundUrlGuard.ts";
+} from "@shiguang-gateway/network-guard";
 import { getProviderValidationGuard } from "../../core-domain/src/shared/network/outboundUrlGuardPolicy.ts";
 import { isLocalProvider, isSelfHostedChatProvider } from "../../core-domain/src/shared/constants/providers.ts";
 // Header helpers extracted to a pure leaf; re-exported for external importers

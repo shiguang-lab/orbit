@@ -27,7 +27,7 @@ import {
   formatMissingEmbeddingCredentialsError,
   formatUnknownEmbeddingProviderError,
 } from "./errors";
-import { isPrivateHost, isCloudMetadataHost } from "../../shared/network/outboundUrlGuard.ts";
+import { isPrivateHost, isCloudMetadataHost } from "@shiguang-gateway/network-guard";
 import { calculateCost } from "../usage/costCalculator.ts";
 import { attachShiguangGatewayMetaHeaders } from "../../domain/gatewayResponseMeta.ts";
 import { generateRequestId } from "../../shared/utils/requestId.ts";

@@ -20,6 +20,7 @@
 - ✅ control-api 的完整 `/api/keys/**` 管理域（密钥 CRUD、设备、重生成、明文查看、用量限制、分组、成员与权限）已物理迁入 `apps/control-api/src/keys`；root GET/POST handler 已由 app-owned `keys/handlers/keys.ts` 闭环，其余业务 handler 通过 `core-domain/control/*` 显式子路径提供，并完成 control 401 / edge 404 的拆分部署验收。
 - ✅ edge-gateway 的 `/api/v1/files*` handler 已物理迁入 `apps/edge-gateway/src/files/handlers`，改用 app-owned Response/CORS 适配层；文件持久化仍通过显式 core-domain DB 合约提供。
 - ✅ `db-schema` 收敛跨 app 的表名/所有权元数据；查询与写入仍由所属 app 的领域服务负责。
+- ✅ 纯出站 URL/SSRF 校验原语已从 `core-domain/shared/network` 提取到 `packages/network-guard`；依赖数据库/feature flag 的 guard policy 仍由领域包持有。
 - ✅ 每个 app 的 typecheck、部署 smoke 与边界审计已纳入逐域验收；详见 [`DOMAIN_BOUNDARIES.md`](./DOMAIN_BOUNDARIES.md)。
 
 - **已迁移**：`/home`、`/dashboard/api-manager`、`/dashboard/combos`（模型组合全量 CRUD、向导/专家模式、Auto 组合目录、Kimi 预设、LKGP/智能路由面板、链路测试及控制中心监控）、`/dashboard/quota` + `/dashboard/costs/quota-share`（提供者配额与限额监控、余量告警、USD/速率限额、共享池向导）。

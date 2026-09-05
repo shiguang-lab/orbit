@@ -9,6 +9,14 @@
       "types": "./index.ts",
       "import": "./index.ts"
     },
+    "./utils/error": {
+      "types": "./public/error.d.ts",
+      "import": "./utils/error.ts"
+    },
+    "./services/deviceTracker": {
+      "types": "./public/deviceTracker.d.ts",
+      "import": "./services/deviceTracker.ts"
+    },
     "./*": {
       "types": "./*",
       "import": "./*"
@@ -20,7 +28,8 @@
   },
   "dependencies": {
     "@shiguang-gateway/config": "workspace:*",
-    "@shiguang-gateway/contracts": "workspace:*"
+    "@shiguang-gateway/contracts": "workspace:*",
+    "@shiguang-gateway/network-guard": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "catalog:",

@@ -4,7 +4,7 @@ import {
   parseOutboundUrl,
   isCloudMetadataHost,
   OutboundUrlGuardError,
-} from "../../../shared/network/outboundUrlGuard";
+} from "@shiguang-gateway/network-guard";
 import { resolveOpencodeConfigPath } from "../../../shared/services/opencodeConfigPath";
 
 const JSON_FORMATTING_OPTIONS = { insertSpaces: true, tabSize: 2 } as const;

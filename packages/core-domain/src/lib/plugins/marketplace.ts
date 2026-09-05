@@ -1,6 +1,6 @@
 import { getSettings } from "../db/settings";
 import dns from "node:dns/promises";
-import { isPrivateHost } from "../../shared/network/outboundUrlGuard.ts";
+import { isPrivateHost } from "@shiguang-gateway/network-guard";
 import { safeOutboundFetch } from "../../shared/network/safeOutboundFetch.ts";
 import { pluginManager } from "./manager";
 import { createHash } from "node:crypto";

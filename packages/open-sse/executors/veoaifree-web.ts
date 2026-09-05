@@ -14,7 +14,7 @@ import {
   OutboundUrlGuardError,
   isPrivateHost,
   parseAndValidatePublicUrl,
-} from "../../core-domain/src/shared/network/outboundUrlGuard.ts";
+} from "@shiguang-gateway/network-guard";
 
 const BASE_URL = "https://veoaifree.com";
 const AJAX_URL = `${BASE_URL}/wp-admin/admin-ajax.php`;

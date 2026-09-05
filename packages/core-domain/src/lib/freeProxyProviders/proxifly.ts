@@ -1,5 +1,5 @@
 import type { FreeProxyItem, FreeProxySyncResult, FreeProxyProvider } from "./types";
-import { isPrivateHost } from "../../shared/network/outboundUrlGuard.ts";
+import { isPrivateHost } from "@shiguang-gateway/network-guard";
 
 const DEFAULT_QUANTITY = 100;
 const DEFAULT_ANONYMITY = "elite";

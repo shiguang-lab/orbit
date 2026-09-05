@@ -6,7 +6,7 @@
 import { z } from "zod";
 import { NextResponse } from "next/server";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
-import { OutboundUrlGuardError } from "../../../../shared/network/outboundUrlGuard.ts";
+import { OutboundUrlGuardError } from "@shiguang-gateway/network-guard";
 import { parseAndValidateWebhookUrl } from "../../../../shared/network/outboundUrlGuardPolicy.ts";
 import { validateBody, isValidationFailure } from "../../../../shared/validation/helpers.ts";
 

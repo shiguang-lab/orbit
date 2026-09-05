@@ -13,7 +13,7 @@ import { buildDiscordPayload } from "../../../../../lib/webhooks/integrations/di
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
 import { insertDelivery } from "../../../../../lib/db/webhookDeliveries.ts";
 import { recordWebhookDelivery } from "../../../../../lib/localDb.ts";
-import { isPrivateHost, OutboundUrlGuardError } from "../../../../../shared/network/outboundUrlGuard.ts";
+import { isPrivateHost, OutboundUrlGuardError } from "@shiguang-gateway/network-guard";
 import { parseAndValidateWebhookUrl } from "../../../../../shared/network/outboundUrlGuardPolicy.ts";
 import crypto from "crypto";
 

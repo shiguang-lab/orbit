@@ -27,7 +27,7 @@ import {
   parseAndValidatePublicUrl,
   isPrivateHost,
   OutboundUrlGuardError,
-} from "../../core-domain/src/shared/network/outboundUrlGuard.ts";
+} from "@shiguang-gateway/network-guard";
 import type { EncodedImage } from "./cursorAgentProtobuf.ts";
 
 type SharpFactory = (typeof import("sharp"))["default"];

@@ -6,7 +6,7 @@ import {
   isPrivateHost,
   parseOutboundUrl,
   type OutboundUrlGuardMode,
-} from "./outboundUrlGuard";
+} from "@shiguang-gateway/network-guard";
 
 // #7682: this module is the DB/feature-flag-backed half of the outbound URL guard, split out
 // of `./outboundUrlGuard.ts` so the CLI (`shiguangGateway setup-opencode`, loaded via tsx with no

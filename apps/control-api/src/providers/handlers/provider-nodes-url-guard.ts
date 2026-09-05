@@ -3,7 +3,7 @@ import {
   parseAndValidateNonMetadataUrl,
   parseAndValidatePublicUrl,
   parseOutboundUrl,
-} from "@shiguang-gateway/core-domain/network/outbound-url-guard";
+} from "@shiguang-gateway/network-guard";
 import { getProviderValidationGuard } from "@shiguang-gateway/core-domain/network/outbound-url-guard-policy";
 
 function guardProviderNodeBaseUrl(baseUrl: string): void {

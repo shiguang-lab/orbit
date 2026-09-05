@@ -23,6 +23,7 @@ shiguang-gateway-monorepo/
 │   ├── http-kernel/ # 仅承载 HTTP 基础设施；路由由 app 负责装配
 │   ├── contracts/    # 前后端共享的 API 类型/契约
 │   ├── config/       # 共享配置
+│   ├── network-guard/ # 纯出站 URL/SSRF 校验原语
 ├── turbo.json        # 任务编排
 └── pnpm-workspace.yaml
 ```
@@ -33,7 +34,7 @@ shiguang-gateway-monorepo/
   和 **worker**（定时任务/后台作业）；每个 `apps/*` 都拥有自己的进程 bootstrap，
   只通过包接口复用实现。
 - 服务只从 `edge-gateway`、`control-api`、`realtime`、`worker` 和 `importer` 启动；仓库不包含旧 BFF 启动器或兼容入口。
-- `packages/core-domain` 只提供无端口监听的领域模块与协议能力；HTTP 端口、生命周期和 surface 选择由所属 app 的固定 bootstrap 负责，`http-kernel` 仅提供传输适配。数据库表结构放在 `packages/db-schema`，不得把 app 启动逻辑放回公共包。
+- `packages/core-domain` 只提供无端口监听的领域模块与协议能力；HTTP 端口、生命周期和 surface 选择由所属 app 的固定 bootstrap 负责，`http-kernel` 仅提供传输适配。数据库表结构放在 `packages/db-schema`，纯出站 URL/SSRF 校验放在无框架依赖的 `packages/network-guard`，不得把 app 启动逻辑放回公共包。
 - app 之间只能通过网络 API 或 `packages/contracts` 交互；禁止跨 app workspace 依赖、跨 app 相对路径和直接引用其他 app 的 `src`。
 - 每次迁移一个领域后，运行 `pnpm audit:app-boundaries` 验证依赖边界，再运行该 app 自己的 typecheck/build 与 smoke 测试。
 - `apps/importer` 将冻结快照导入独立 `shiguang-gateway_data` volume；`scripts/smoke-container-deployment.mjs` 自动验收接口隔离、数据表、原生 SQLite/vector、实时端口和全部 worker scheduler。

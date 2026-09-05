@@ -11,7 +11,7 @@ import { z } from "zod";
 import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 import { validateBody, isValidationFailure } from "../../../../shared/validation/helpers.ts";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
-import { isPrivateHost } from "../../../../shared/network/outboundUrlGuard.ts";
+import { isPrivateHost } from "@shiguang-gateway/network-guard";
 import { arePrivateProviderUrlsAllowed } from "../../../../shared/network/outboundUrlGuardPolicy.ts";
 import {
   testProxiesAgainstTarget,

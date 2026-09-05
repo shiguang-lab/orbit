@@ -36,7 +36,7 @@ import * as anysearchSearch from "./search/anysearchSearch.ts";
 import { freeWebSearch } from "../services/freeWebSearch.ts";
 import { saveCallLog } from "../../core-domain/src/lib/usageDb.ts";
 import { safeOutboundFetch } from "../../core-domain/src/shared/network/safeOutboundFetch.ts";
-import { parseAndValidateNonMetadataUrl } from "../../core-domain/src/shared/network/outboundUrlGuard.ts";
+import { parseAndValidateNonMetadataUrl } from "@shiguang-gateway/network-guard";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { z } from "zod";

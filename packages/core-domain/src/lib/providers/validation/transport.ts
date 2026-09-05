@@ -7,7 +7,7 @@ import {
   getSafeOutboundFetchErrorStatus,
   safeOutboundFetch,
 } from "../../../shared/network/safeOutboundFetch.ts";
-import { isPrivateHost } from "../../../shared/network/outboundUrlGuard.ts";
+import { isPrivateHost } from "@shiguang-gateway/network-guard";
 import { getProviderValidationGuard } from "../../../shared/network/outboundUrlGuardPolicy.ts";
 import { selectProxyForValidation } from "../../../../../open-sse/services/proxyAutoSelector.ts";
 

@@ -6,7 +6,7 @@ import {
   isPrivateHost,
   parseAndValidatePublicUrl,
   parseOutboundUrl,
-} from "./outboundUrlGuard.ts";
+} from "@shiguang-gateway/network-guard";
 import { getProviderOutboundGuard } from "./outboundUrlGuardPolicy.ts";
 
 const DEFAULT_MAX_REMOTE_IMAGE_BYTES = 20 * 1024 * 1024;

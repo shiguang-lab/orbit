@@ -6,7 +6,7 @@ import {
   parseAndValidateNonMetadataUrl,
   parseAndValidatePublicUrl,
   parseOutboundUrl,
-} from "./outboundUrlGuard.ts";
+} from "@shiguang-gateway/network-guard";
 
 const DEFAULT_IDEMPOTENT_METHODS = ["GET", "HEAD", "OPTIONS", "PUT", "DELETE"];
 

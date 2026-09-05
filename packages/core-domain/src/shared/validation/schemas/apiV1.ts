@@ -13,7 +13,7 @@ import {
   isForbiddenCustomHeaderName,
 } from "../../constants/upstreamHeaders.ts";
 import { MAX_TIMER_TIMEOUT_MS } from "@shiguang-gateway/config/timeouts";
-import { parseAndValidatePublicUrl } from "../../network/outboundUrlGuard.ts";
+import { parseAndValidatePublicUrl } from "@shiguang-gateway/network-guard";
 import {
   effortRequestSchema,
   thinkingRequestSchema,

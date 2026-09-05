@@ -322,7 +322,7 @@ The config bundle is built by `src/lib/sync/bundle.ts`. Consumers compare the `E
 
 All provider validation and model discovery calls now go through a two-layer outbound guard:
 
-1. **URL guard** (`src/shared/network/outboundUrlGuard.ts`) — Blocks private/loopback/link-local IP ranges before the socket is opened.
+1. **URL guard** (`@shiguang-gateway/network-guard`) — Blocks private/loopback/link-local IP ranges before the socket is opened.
 2. **Safe fetch wrapper** (`src/shared/network/safeOutboundFetch.ts`) — Applies the URL guard, normalises timeouts, and retries transient errors with exponential backoff.
 
 Guard violations surface as HTTP 422 (`URL_GUARD_BLOCKED`) and are written to the compliance audit log via `providerAudit.ts`.

@@ -15,9 +15,11 @@ port or selecting a surface at runtime.
 
 ## Shared package rule
 
-`packages/contracts`, `packages/config` and `packages/db-schema` are dependency leaves. `db-schema` contains table names and
-ownership metadata only; SQL queries and mutations stay in the owning domain
-service. `packages/core-domain` contains the provider/protocol domain
+`packages/contracts`, `packages/config`, `packages/db-schema` and `packages/network-guard` are dependency leaves.
+`db-schema` contains table names and ownership metadata only; SQL queries and mutations stay in the owning domain
+service. `network-guard` contains pure outbound URL parsing, host classification and SSRF error contracts; it has no
+database, framework or application lifecycle dependency. Configuration-backed guard policy remains in the owning
+domain service. `packages/core-domain` contains the provider/protocol domain
 implementation and exposes only allow-listed subpaths for app-owned workers,
 realtime adapters, and the remaining migration seams. Worker scheduling policy and task ordering
 live only in `apps/worker/src/jobs`; the package exports implementations, not a

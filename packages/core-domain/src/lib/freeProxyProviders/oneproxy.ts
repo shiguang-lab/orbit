@@ -1,5 +1,5 @@
 import type { FreeProxyItem, FreeProxySyncResult, FreeProxyProvider } from "./types";
-import { isPrivateHost } from "../../shared/network/outboundUrlGuard.ts";
+import { isPrivateHost } from "@shiguang-gateway/network-guard";
 
 const DEFAULT_API_URL = "https://1proxy-api.aitradepulse.com/api/v1/proxies/advanced";
 const DEFAULT_MAX = 500;

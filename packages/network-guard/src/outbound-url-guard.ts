@@ -153,4 +153,5 @@ export function parseAndValidateNonMetadataUrl(input: string | URL) {
 // opencode.ts) where no `tsconfig.json` is present to resolve the `@/*` path alias. Keeping
 // this module free of ANY `@/`-aliased import is what makes it safe to load from the CLI.
 // Do not add a `@/`-aliased import here — see docs/security/… (packaging) and #7682.
-// The same rule binds `./privateHost.ts`, which this module re-exports from.
+// Host classification lives in `@shiguang-gateway/config/network/private-host`, which this
+// module re-exports for callers that need the same verdict as the URL parser.
