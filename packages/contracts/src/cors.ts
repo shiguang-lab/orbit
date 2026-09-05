@@ -4,7 +4,3 @@ export const CORS_HEADERS: Readonly<Record<string, string>> = {
   "Access-Control-Allow-Headers":
     "Content-Type, Authorization, x-api-key, anthropic-version, x-shiguangGateway-connection, X-ShiguangGateway-Lease-Owner, X-ShiguangGateway-Lease-Generation, x-internal-test, accept",
 };
-
-export function handleCorsOptions(): Response {
-  return new Response(null, { status: 204, headers: CORS_HEADERS });
-}
