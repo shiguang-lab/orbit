@@ -5,15 +5,19 @@ Orbit 不在运行时依赖链中。应用当前仍以导入的 SQLite 快照作
 独立数据平面的迁移落库，待仓储层切换门禁通过后再将其设为权威库。
 
 ```text
-浏览器 → Access Gateway/反向代理 → shiguang-gateway-control:8788 (管理 API)
-                                  ├→ shiguang-gateway-edge:8787 (模型 API)
-                                  └→ shiguang-gateway-realtime:20132 (WS/SSE)
+浏览器 → Access Gateway/反向代理 → NAS:8787 → 独立 Admin nginx:8080
+                                             ├→ control-api:8788 (管理 API)
+                                             ├→ edge-gateway:8787 (模型 API)
+                                             └→ realtime:20132 (WS/SSE)
                                       ├→ /app/data/storage.sqlite (当前快照权威库)
                                       ├→ PostgreSQL（独立持久化服务）
                                       └→ Redis（限流/配额/事件缓存）
 ```
 
 ## 首次部署
+
+先按“独立基础设施（NAS）”章节启动 PostgreSQL/Redis 项目，确保 external 网络
+`shiguang-gateway-infra` 已存在；再执行以下应用部署命令。
 
 ```bash
 mkdir -p /volume1/docker/shiguang-gateway
@@ -53,7 +57,8 @@ docker exec -i shiguang-gateway-postgres psql -U shiguang_gateway -d shiguang_ga
 ```
 
 该 compose 使用独立 named volume（`shiguang-gateway-postgres`、`shiguang-gateway-redis`）
-和同名内网 `shiguang-gateway-infra`。应用 compose 与它加入同一网络；应用通过
+和同名内网 `shiguang-gateway-infra`。应用 compose 将该网络声明为 external，必须先启动本基础设施
+项目再启动应用；应用通过
 `REDIS_URL=redis://redis:6379` 和 `QUOTA_STORE_REDIS_URL=redis://redis:6379` 使用 Redis。
 Redis 只存限流、配额和事件等可重建状态，不替代数据库权威数据。
 
@@ -143,10 +148,15 @@ docker compose up -d --remove-orphans
 
 ## 反向代理与 SSO
 
-反向代理将 `/api/*` 指向 `127.0.0.1:${SHIGUANG_GATEWAY_CONTROL_PORT:-8788}`，将 `/api/v1/*`、`/v1/*` 指向
-`127.0.0.1:${SHIGUANG_GATEWAY_EDGE_PORT:-8787}`，WebSocket/SSE 指向 `127.0.0.1:${SHIGUANG_GATEWAY_LIVE_WS_PORT:-20132}`。
-健康检查使用各服务的 `/healthz`。
-如接入 shiguang SSO，继续使用 `deploy/gateway-caddyfile.md` 的 JWKS 配置；生产绝不可设置
+生产域名为 `llm-gateway.shiguanglab.com`，Caddy 只连接 NAS 主机的统一入口
+`100.87.115.78:8787`：Web、`/api/*`、`/v1` 与 `/v1/*` 均由该入口转发到独立 Admin nginx
+（其内部再连接 control-api/edge/realtime）。`8788`、`20132` 仅 Docker 内网可达，不能写入
+生产 Caddy upstream。健康检查和切换前端到后端的逐端口验收见
+[`gateway-caddyfile.md`](./gateway-caddyfile.md)。
+
+统一认证标识固定为产品 `shiguang-gateway`、Audience `shiguang-gateway-api`、授权项
+`shiguang-gateway:access`。上线前必须确认 auth-service 已追加授权项并通过真实 forward-auth
+验证；当前 NAS `DEFAULT_ENTITLEMENTS` 尚未包含该授权项，认证配置未完成前阻塞切换。生产绝不可设置
 `SG_DEV_IDENTITY` 或 `SG_LOCAL_BROKER_ENABLED`。
 
 ## 运维边界

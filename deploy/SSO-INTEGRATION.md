@@ -6,10 +6,10 @@
 ## 全链路
 
 ```
-用户访问 shiguang-gateway.shiguanglab.com
+用户访问 llm-gateway.shiguanglab.com
   → 网关 forward-auth 无会话 → 302 https://shiguanglab.com/login?return_to=...
   → 用户在 shiguang website 登录(拾光) → 种父域 cookie __Secure-sg_session
-  → 回跳 shiguang-gateway.shiguanglab.com
+  → 回跳 llm-gateway.shiguanglab.com
   → 前端 fetch /api/auth/session (网关→auth-service 共享会话)
   → 前端调 /api/* → 网关注入 X-SG-Identity(RS256 JWT) → control-api JWKS 校验
   → control-api 校验 system:admin → 返回统一会话/放行管理操作
@@ -19,7 +19,7 @@
 
 | # | 位置 | 改动 | 文档 |
 |---|---|---|---|
-| 1 | **网关 Caddyfile** | 新增 `shiguang-gateway.shiguanglab.com` host 块(forward_auth + X-SG-Audience/Entitlement + copy_headers) | `deploy/gateway-caddyfile.md` |
+| 1 | **网关 Caddyfile** | 新增 `llm-gateway.shiguanglab.com` host 块(forward_auth + X-SG-Audience/Entitlement + copy_headers) | `deploy/gateway-caddyfile.md` |
 | 2 | **auth-service env** | `DEFAULT_ENTITLEMENTS` 加 `shiguang-gateway:access`；`ALLOWED_RETURN_ORIGINS` 加新域 | `deploy/auth-service-config.md` |
 | 3 | **control-api/edge-gateway 身份校验** | 已实现：共享 `server-runtime` 的 JWKS/session/authz 中间件 | 本仓库代码 |
 
@@ -36,7 +36,7 @@
 
 - [ ] 网关 host 块合入生产 Caddyfile 并 `./deploy.sh`
 - [ ] auth-service env 变更并重启
-- [ ] `shiguang-gateway-control`、`shiguang-gateway-edge`、`shiguang-gateway-realtime` 加入网关 compose 网络（Admin 静态资源由 control-api 提供）
+- [ ] 新 Admin nginx、control-api、edge-gateway、realtime 接入受控 Docker 网络（Admin 静态资源由独立 Admin nginx 提供，control-api 不托管静态资源）
 - [ ] control-api/edge-gateway 生产环境变量：
   ```bash
   SG_IDENTITY_ISSUER=https://shiguanglab.com
@@ -62,7 +62,7 @@
 
 ## 本地 Web/服务数据链路
 
-本地开发可以启动 admin（5173）与兼容 BFF（8787）；生产使用拆分后的 edge-gateway（8787）、
+本地开发可以启动 admin（5173）与本地 API（8787）；生产使用拆分后的 edge-gateway（8787）、
 control-api（8788）、realtime（8790）和 worker。Provider、首页统计、设置及其他业务接口
 直接读取本项目自己的 `DATA_DIR`；不存在 NAS 代理或旧 live server：
 

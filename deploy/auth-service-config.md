@@ -3,6 +3,11 @@
 > auth-service 是 shiguang 统一会话/OIDC/JWKS 服务。
 > ShiguangGateway 接入无需改 auth-service 代码，只需新增环境变量(按产品约定)。
 
+**上线阻塞（已核实 NAS 当前配置）**：`ALLOWED_RETURN_ORIGINS` 已包含
+`https://llm-gateway.shiguanglab.com`，但 `DEFAULT_ENTITLEMENTS` 当前只有
+`omniroute:access` 等旧项，尚未包含 `shiguang-gateway:access`。必须由 auth-service
+负责人独立追加并重启/验证；在此之前不得把新域名、镜像或 Caddy 配置宣称为已切流。
+
 ## 1. 环境变量变更
 
 文件：auth-service 部署 env(对应 `auth-service/.env.example`，部署值在 `shiguang/deploy` 下)
@@ -16,18 +21,18 @@ DEFAULT_ENTITLEMENTS=superagents:access,huiguang:access,platform:access,asset-hu
 说明：`X-SG-Required-Entitlements: shiguang-gateway:access` 的 entitlement 必须出现在
 DEFAULT_ENTITLEMENTS 里，否则 forward-auth 决策会把所有用户判为无权限。
 
-### ALLOWED_RETURN_ORIGINS(追加 `https://shiguang-gateway.shiguanglab.com`)
+### ALLOWED_RETURN_ORIGINS(追加 `https://llm-gateway.shiguanglab.com`)
 
 ```bash
 ALLOWED_RETURN_ORIGINS=https://shiguanglab.com,https://www.shiguanglab.com,\
-https://opc.shiguanglab.com,https://shiguang-gateway.shiguanglab.com
+https://opc.shiguanglab.com,https://llm-gateway.shiguanglab.com
 ```
 
 说明：登录成功后回跳 `return_to` 的 origin 白名单，不加则 `safeReturnTo` 拒绝回跳。
 
 ### LOCAL_BROKER_POLICIES(本地 SSO Broker 必需)
 
-本地开发走 asset-hub 同款的 LocalAuthBroker：BFF 用真实 shiguang 账号调
+本地开发走 asset-hub 同款的 LocalAuthBroker：本地开发工具用真实 shiguang 账号调
 `POST /api/auth/local-broker` 换身份。**前提是线上 auth-service 必须启用 broker**，
 因为该路由仅在 `LOCAL_BROKER_ENABLED=true` 时注册(否则 404)。
 
@@ -51,7 +56,7 @@ LOCAL_BROKER_POLICIES=[{"productId":"asset-hub","audience":"asset-hub-api","requ
   ShiguangGateway 默认本地 dev identity 不受影响；显式 Broker 模式会显示不可用错误，
   不会伪装成线上身份。
 - `LOCAL_BROKER_POLICIES` 里**必须含 shiguang-gateway** 条目，否则返回 `invalid_product`。
-- 配好后，本地 BFF/admin 显式设置 `SG_LOCAL_BROKER_ENABLED=true`，再配置真实 shiguang
+- 配好后，本地 admin/API 开发环境显式设置 `SG_LOCAL_BROKER_ENABLED=true`，再配置真实 shiguang
   账号(`SG_BROKER_USERNAME/PASSWORD`)即可用线上身份登录；未开启时本地使用 dev identity。
 - 本地 broker 请求的 Origin 与 asset-hub 一致用 `authTarget`(shiguanglab.com)，匹配全局 PUBLIC_ORIGIN。
 
@@ -62,7 +67,7 @@ LOCAL_BROKER_POLICIES=[{"productId":"asset-hub","audience":"asset-hub-api","requ
 | asset-hub | `asset-hub-api` | `asset-hub:access` |
 | **shiguang-gateway(新增)** | **`shiguang-gateway-api`** | **`shiguang-gateway:access`** |
 
-BFF 侧已按此约定默认(可通过环境变量覆盖)：
+API 服务侧已按此约定默认(可通过环境变量覆盖)：
 - `SG_IDENTITY_ISSUER=https://shiguanglab.com`
 - `SG_IDENTITY_AUDIENCE=shiguang-gateway-api`
 - `SG_IDENTITY_ENTITLEMENT=shiguang-gateway:access`
@@ -72,13 +77,13 @@ BFF 侧已按此约定默认(可通过环境变量覆盖)：
 
 ShiguangGateway 是单管理员系统(无 org/多用户)。接入后：
 - **网关层**：`shiguang-gateway:access` entitlement(所有已登录 shiguang 用户默认具备)
-- **BFF 层**：校验 `system:admin` / `shiguang-gateway:admin` / `shiguang-gateway:access` 才放行管理会话
+- **control-api 层**：校验 `system:admin` / `shiguang-gateway:admin` / `shiguang-gateway:access` 才放行管理会话
 
-若只想让白名单用户管理 ShiguangGateway，可在 BFF 加 subject/email 白名单
+若只想让白名单用户管理 ShiguangGateway，应在 auth-service 策略层配置 subject/email 白名单
 (类似原后端 `oidcAllowedSubjects` 机制)，后续可配。
 
 ## 4. 部署步骤
 
 1. 在 auth-service 部署 env 追加上述变量
 2. 重启 auth-service(网关 token 不变，签名密钥不变)
-3. 网关配置更新后验证：登录 shiguanglab.com → 访问 shiguang-gateway.shiguanglab.com → 放行
+3. 网关配置更新后验证：登录 shiguanglab.com → 访问 llm-gateway.shiguanglab.com → 放行

@@ -5,11 +5,18 @@ services:
     container_name: shiguang-gateway-admin
     restart: unless-stopped
     ports:
-      - "${SHIGUANG_GATEWAY_ADMIN_PORT:-8080}:8080"
+      - "${SHIGUANG_GATEWAY_ADMIN_PORT:-8787}:8080"
     networks: [gateway-infra]
     depends_on:
       shiguang-gateway-control:
-        condition: service_started
+        condition: service_healthy
+      shiguang-gateway-realtime:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
   shiguang-gateway-edge:
     image: ${SHIGUANG_GATEWAY_EDGE_IMAGE:-shiguang-gateway-edge:local}
@@ -42,8 +49,6 @@ services:
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
       QUOTA_STORE_REDIS_URL: ${QUOTA_STORE_REDIS_URL:-redis://redis:6379}
       QUOTA_STORE_DRIVER: ${QUOTA_STORE_DRIVER:-redis}
-    ports:
-      - "${SHIGUANG_GATEWAY_EDGE_PORT:-8787}:8787"
     volumes:
       - shiguang-gateway_data:/app/data
       - shiguang-gateway_home:/home/node
@@ -67,8 +72,6 @@ services:
       CONTROL_API_HOST: 0.0.0.0
       CONTROL_API_PORT: 8788
       INTERNAL_BASE_URL: ${INTERNAL_BASE_URL:-http://shiguang-gateway-control:8788}
-    ports:
-      - "${SHIGUANG_GATEWAY_CONTROL_PORT:-8788}:8788"
     volumes:
       - shiguang-gateway_data:/app/data
       - shiguang-gateway_home:/home/node
@@ -90,9 +93,6 @@ services:
       REALTIME_PORT: 8790
       LIVE_WS_HOST: 0.0.0.0
       LIVE_WS_PORT: 20132
-    ports:
-      - "${SHIGUANG_GATEWAY_REALTIME_PORT:-8790}:8790"
-      - "${SHIGUANG_GATEWAY_LIVE_WS_PORT:-20132}:20132"
     volumes:
       - shiguang-gateway_data:/app/data
       - shiguang-gateway_home:/home/node
@@ -140,3 +140,4 @@ volumes:
 networks:
   gateway-infra:
     name: shiguang-gateway-infra
+    external: true
