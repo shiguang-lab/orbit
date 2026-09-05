@@ -366,6 +366,14 @@
       "types": "./src/public/apiKeysDb.d.ts",
       "import": "./src/lib/db/apiKeys.ts"
     },
+    "./db/files": {
+      "types": "./src/public/filesDb.d.ts",
+      "import": "./src/lib/db/files.ts"
+    },
+    "./db/batches": {
+      "types": "./src/public/batchesDb.d.ts",
+      "import": "./src/lib/db/batches.ts"
+    },
     "./plugins/db": {
       "types": "./src/public/pluginsDb.d.ts",
       "import": "./src/lib/db/plugins.ts"

@@ -1,5 +1,5 @@
 import { extractApiKey } from "@shiguang-gateway/core-domain/sse/auth";
-import { getApiKeyMetadata } from "@shiguang-gateway/core-domain/edge/local-db";
+import { getApiKeyMetadata } from "@shiguang-gateway/core-domain/db/api-keys";
 import { isDashboardSessionAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 
 export interface ApiKeyRequestScope {

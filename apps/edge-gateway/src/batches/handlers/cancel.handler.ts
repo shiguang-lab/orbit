@@ -1,4 +1,4 @@
-import { getBatch, updateBatch } from "@shiguang-gateway/core-domain/edge/local-db";
+import { getBatch, updateBatch } from "@shiguang-gateway/core-domain/db/batches";
 import { getApiKeyRequestScope } from "./api-key-scope.js";
 import { CORS_HEADERS, handleCorsOptions, jsonResponse } from "./cors.js";
 import { formatBatchResponse } from "./format-batch-response.js";

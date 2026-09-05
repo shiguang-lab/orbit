@@ -1,4 +1,5 @@
-import { createBatch, getFile, listBatches, countBatches } from "@shiguang-gateway/core-domain/edge/local-db";
+import { createBatch, listBatches, countBatches } from "@shiguang-gateway/core-domain/db/batches";
+import { getFile } from "@shiguang-gateway/core-domain/db/files";
 import { v1BatchCreateSchema } from "@shiguang-gateway/core-domain/edge/batches-validation-schemas";
 import { getApiKeyRequestScope } from "./api-key-scope.js";
 import { CORS_HEADERS, handleCorsOptions, jsonResponse } from "./cors.js";

@@ -1,4 +1,4 @@
-import { createFile, listFiles, formatFileResponse, countFiles } from "@shiguang-gateway/core-domain/edge/local-db";
+import { createFile, listFiles, formatFileResponse, countFiles } from "@shiguang-gateway/core-domain/db/files";
 import { getApiKeyRequestScope } from "./api-key-scope.js";
 import { CORS_HEADERS, handleCorsOptions, jsonResponse } from "./cors.js";
 
