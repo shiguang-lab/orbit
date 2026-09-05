@@ -12,3 +12,7 @@ if (response.status !== 200 || response.headers.get("X-Skill-Source") !== "files
   throw new Error(`agent skills local smoke failed: status=${response.status} source=${response.headers.get("X-Skill-Source")}`);
 }
 console.log(`agent skills local smoke: PASS (${body.length} bytes)`);
+// Route modules may initialize runtime resources while being imported. This
+// is a one-shot verification command, so terminate explicitly after the
+// assertion instead of waiting on unrelated handles in CI.
+process.exit(0);
