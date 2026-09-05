@@ -3,7 +3,6 @@ import { bootstrapRealtime } from "./bootstrap.js";
 
 async function main(): Promise<void> {
   await ensureSecrets();
-  process.env.SHIGUANG_GATEWAY_MANAGED_LIVE_WS = "1";
 
   const host = process.env.REALTIME_HOST ?? "0.0.0.0";
   const port = Number(process.env.REALTIME_PORT ?? 8790);

@@ -34,8 +34,6 @@ import {
 
 import { emit, on, onAny, getEventHistory, type HistoryEntry } from "@shiguang-gateway/core-domain/events/eventBus";
 
-import { isAutomatedTestProcess, isBuildProcess } from "@shiguang-gateway/core-domain/shared/test-process";
-
 import {
   attachRequestStreamGuards,
   installProcessCrashGuard,
@@ -629,33 +627,11 @@ export async function startLiveDashboardServer(
   });
 }
 
-// ── Auto-start on import ──────────────────────────────────────────────────
-//
-// Default: ON, bound to loopback (127.0.0.1). The live dashboard WebSocket
-// starts automatically unless explicitly disabled. To disable, set:
-//   SHIGUANG_GATEWAY_ENABLE_LIVE_WS=0   (or "false")
-//
-// LAN exposure remains opt-in via LIVE_WS_HOST=0.0.0.0 combined with
-// LIVE_WS_ALLOWED_ORIGINS. DEFAULT_HOST stays "127.0.0.1".
-//
-// Build/test environments never auto-start regardless of the flag.
-
-function isBuildOrTest(): boolean {
-  return isBuildProcess() || isAutomatedTestProcess();
-}
-
+// The Nest `LiveModule` owns startup/shutdown through `LiveServerService`.
+// Keep this module side-effect free: importing transport code must never bind a
+// port, subscribe to the event bus, or start background timers.
 export function isLiveWsEnabled(): boolean {
   const v = process.env.SHIGUANG_GATEWAY_ENABLE_LIVE_WS;
   if (v === undefined) return true; // default ON (loopback-bound)
   return v === "1" || v.toLowerCase() === "true";
-}
-
-// The standalone BFF starts this server explicitly after Fastify binds. Keep
-// the historical auto-start for callers that import this module directly.
-if (!isBuildOrTest() && isLiveWsEnabled() && process.env.SHIGUANG_GATEWAY_MANAGED_LIVE_WS !== "1") {
-  const port = parseInt(process.env.LIVE_WS_PORT || String(DEFAULT_PORT), 10);
-  const host = process.env.LIVE_WS_HOST || DEFAULT_HOST;
-  startLiveDashboardServer(port, host).catch((err) => {
-    console.error("[LiveWS] Failed to start: %s", err instanceof Error ? err.message : String(err));
-  });
 }

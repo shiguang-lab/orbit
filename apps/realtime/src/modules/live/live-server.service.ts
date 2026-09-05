@@ -39,7 +39,11 @@ export class LiveServerService implements OnApplicationBootstrap, OnApplicationS
   }
 
   private async start(): Promise<void> {
-    const { startLiveDashboardServer } = await import("../../live-ws/live-server.js");
+    const { isLiveWsEnabled, startLiveDashboardServer } = await import("../../live-ws/live-server.js");
+    // The realtime app owns the listener lifecycle. Respect the feature flag
+    // here instead of relying on import-time side effects in the transport
+    // implementation, so tests and embedders can construct AppModule safely.
+    if (!isLiveWsEnabled()) return;
     this.server = await startLiveDashboardServer(
       Number(process.env.LIVE_WS_PORT ?? 20132),
       process.env.LIVE_WS_HOST ?? "127.0.0.1",
