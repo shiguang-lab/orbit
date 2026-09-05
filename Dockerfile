@@ -85,6 +85,8 @@ COPY --from=build --chown=node:node /app/packages/core-domain/tsconfig.json ./pa
 COPY --from=build --chown=node:node /app/packages/http-kernel/src ./packages/http-kernel/src
 COPY --from=build --chown=node:node /app/packages/core-domain/src ./packages/core-domain/src
 COPY --from=build --chown=node:node /app/packages/core-domain/open-sse ./packages/core-domain/open-sse
+# Worker scheduler jobs invoke the packaged CLI backup command at runtime.
+COPY --from=build --chown=node:node /app/packages/core-domain/bin ./packages/core-domain/bin
 # Edge-owned route modules are loaded from source by the tsx catch-all loader.
 COPY --from=build --chown=node:node /app/apps/edge-gateway/src/routes ./apps/edge-gateway/src/routes
 COPY --from=build --chown=node:node /app/packages/http-kernel/package.json ./packages/http-kernel/package.json
