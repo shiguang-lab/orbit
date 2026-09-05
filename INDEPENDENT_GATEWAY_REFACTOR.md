@@ -360,7 +360,7 @@ status: PASS
 
 ### 7.1 NAS 真实冷快照验证记录（2026-09-05）
 
-已从 NAS `/volume1/docker/omniroute/data` 在维护窗口停写后制作冷快照，并对冻结源数据目录执行：
+已从 NAS 官方实例数据目录在维护窗口停写后制作冷快照，并对冻结源数据目录执行：
 
 ```bash
 node scripts/import-source-data.mjs \
@@ -393,7 +393,7 @@ worker 运行增长），不覆盖源表已有内容。
 DashScope 兼容 HTTP 接口，不经过 CLI。可执行文件通过 PATH 或 `CLI_QODER_BIN` 查找。
 
 标准官方 `orbit` 镜像和当前 NAS 官方容器均未发现 `qodercli`。NAS 历史配置曾引用自定义镜像
-`local/omniroute-qodercli:3.8.50-qodercli-1.1.34-r1`，快照日志记录过 `cli_version=1.1.34`、
+历史 qodercli 定制镜像，快照日志记录过 `cli_version=1.1.34`、
 `/usr/local/bin/qodercli` 的运行；该二进制不在 SQLite、数据快照或普通 Compose volume 中，
 当前官方镜像也不含它。因此迁移 importer 只能迁移 Qoder 配置、token、缓存和日志，不能凭快照
 恢复 CLI 程序本身。独立发布必须把经许可取得的 qodercli 安装到镜像/宿主机并固定版本，或设置
