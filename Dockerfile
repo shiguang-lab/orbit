@@ -19,6 +19,11 @@ RUN --mount=type=cache,id=shiguang-gateway-pnpm-store,target=/root/.local/share/
 # Remove it before compiling so stale legacy route bundles cannot enter the image.
 RUN find apps packages -type d -name dist -prune -exec rm -rf {} +
 RUN pnpm build
+# Create a deployable production tree instead of copying the complete workspace
+# (including admin/docs/build tooling) into every server image. The legacy mode
+# is required because this workspace uses linked, rather than injected, packages.
+RUN --mount=type=cache,id=shiguang-gateway-pnpm-store,target=/root/.local/share/pnpm/store \
+    pnpm deploy --legacy --filter @shiguang-gateway/worker --prod /app/runtime
 
 FROM node:22-bookworm-slim AS runtime-base
 WORKDIR /app
@@ -36,15 +41,30 @@ ENV NODE_ENV=production \
     DATA_DIR=/app/data \
     SQLITE_FILE=/app/data/storage.sqlite \
     NODE_OPTIONS=--enable-source-maps
-COPY --from=build --chown=node:node /app/package.json /app/pnpm-lock.yaml /app/pnpm-workspace.yaml /app/turbo.json /app/tsconfig.base.json ./
-COPY --from=build --chown=node:node /app/node_modules ./node_modules
-COPY --from=build --chown=node:node /app/apps/edge-gateway ./apps/edge-gateway
-COPY --from=build --chown=node:node /app/apps/control-api ./apps/control-api
-COPY --from=build --chown=node:node /app/apps/realtime ./apps/realtime
-COPY --from=build --chown=node:node /app/apps/worker ./apps/worker
-COPY --from=build --chown=node:node /app/apps/importer ./apps/importer
-COPY --from=build --chown=node:node /app/packages ./packages
-COPY --from=build --chown=node:node /app/scripts ./scripts
+COPY --from=build --chown=node:node /app/runtime/ ./
+COPY --from=build --chown=node:node /app/apps/edge-gateway/dist ./apps/edge-gateway/dist
+COPY --from=build --chown=node:node /app/apps/control-api/dist ./apps/control-api/dist
+COPY --from=build --chown=node:node /app/apps/realtime/dist ./apps/realtime/dist
+COPY --from=build --chown=node:node /app/apps/worker/dist ./apps/worker/dist
+COPY --from=build --chown=node:node /app/apps/importer/dist ./apps/importer/dist
+# The compiled OpenAPI route reads this path from process.cwd(). Keep the
+# single runtime asset while leaving the rest of the 158 MB source/docs tree out.
+COPY --from=build --chown=node:node /app/packages/gateway-runtime/docs/openapi.yaml ./packages/gateway-runtime/docs/openapi.yaml
+# tsx follows the server package tsconfig while resolving its remaining
+# TypeScript source imports, so retain only the small config files it needs.
+COPY --from=build --chown=node:node /app/tsconfig.base.json ./tsconfig.base.json
+COPY --from=build --chown=node:node /app/packages/server-runtime/tsconfig.json ./packages/server-runtime/tsconfig.json
+COPY --from=build --chown=node:node /app/packages/gateway-runtime/tsconfig.json ./packages/gateway-runtime/tsconfig.json
+COPY --from=build --chown=node:node /app/packages/server-runtime/src ./packages/server-runtime/src
+COPY --from=build --chown=node:node /app/packages/gateway-runtime/src ./packages/gateway-runtime/src
+COPY --from=build --chown=node:node /app/packages/gateway-runtime/open-sse ./packages/gateway-runtime/open-sse
+COPY --from=build --chown=node:node /app/packages/server-runtime/package.json ./packages/server-runtime/package.json
+COPY --from=build --chown=node:node /app/packages/gateway-runtime/package.json ./packages/gateway-runtime/package.json
+COPY --from=build --chown=node:node /app/packages/server-runtime/node_modules ./packages/server-runtime/node_modules
+COPY --from=build --chown=node:node /app/packages/gateway-runtime/node_modules ./packages/gateway-runtime/node_modules
+RUN rm -f /app/node_modules/@shiguang-gateway/server-runtime /app/node_modules/@shiguang-gateway/runtime \
+    && ln -s /app/packages/server-runtime /app/node_modules/@shiguang-gateway/server-runtime \
+    && ln -s /app/packages/gateway-runtime /app/node_modules/@shiguang-gateway/runtime
 RUN mkdir -p /app/data && chown node:node /app/data
 USER node
 EXPOSE 8787 8788 8790 20132
@@ -53,23 +73,23 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
 
 FROM runtime-base AS edge-gateway
 ENV APP_NAME=edge-gateway
-CMD ["node", "--import", "/app/node_modules/.pnpm/tsx@4.23.13/node_modules/tsx/dist/loader.mjs", "apps/edge-gateway/dist/index.js"]
+CMD ["node", "--import", "tsx", "apps/edge-gateway/dist/index.js"]
 
 FROM runtime-base AS control-api
 ENV APP_NAME=control-api
-CMD ["node", "--import", "/app/node_modules/.pnpm/tsx@4.23.13/node_modules/tsx/dist/loader.mjs", "apps/control-api/dist/index.js"]
+CMD ["node", "--import", "tsx", "apps/control-api/dist/index.js"]
 
 FROM runtime-base AS realtime
 ENV APP_NAME=realtime
-CMD ["node", "--import", "/app/node_modules/.pnpm/tsx@4.23.13/node_modules/tsx/dist/loader.mjs", "apps/realtime/dist/index.js"]
+CMD ["node", "--import", "tsx", "apps/realtime/dist/index.js"]
 
 FROM runtime-base AS worker
 ENV APP_NAME=worker
-CMD ["node", "--import", "/app/node_modules/.pnpm/tsx@4.23.13/node_modules/tsx/dist/loader.mjs", "apps/worker/dist/index.js"]
+CMD ["node", "--import", "tsx", "apps/worker/dist/index.js"]
 
 FROM runtime-base AS importer
 ENV APP_NAME=importer
-ENTRYPOINT ["node", "--import", "/app/node_modules/.pnpm/tsx@4.23.13/node_modules/tsx/dist/loader.mjs", "apps/importer/dist/index.js"]
+ENTRYPOINT ["node", "--import", "tsx", "apps/importer/dist/index.js"]
 
 # The published single tag is the edge image. Production compose uses the
 # explicit targets above for each independently deployable service.
