@@ -705,7 +705,7 @@ Recognized pattern: `{PROVIDER_ID}_API_KEY`
 
 ## 15. Timeout Settings
 
-All values are in **milliseconds**. Centralized resolution in `src/shared/utils/runtimeTimeouts.ts`.
+All values are in **milliseconds**. Centralized resolution in `@shiguang-gateway/config/timeouts`.
 
 ### Timeout Hierarchy
 
