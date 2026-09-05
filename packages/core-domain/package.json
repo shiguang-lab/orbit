@@ -144,6 +144,14 @@
       "types": "./src/public/apiKeyExposure.d.ts",
       "import": "./src/lib/apiKeyExposure.ts"
     },
+    "./db/api-key-groups": {
+      "types": "./src/public/apiKeyGroupsDb.d.ts",
+      "import": "./src/lib/db/apiKeyGroups.ts"
+    },
+    "./control/api-key-usage-limits": {
+      "types": "./src/public/apiKeyUsageLimits.d.ts",
+      "import": "./src/lib/usage/apiKeyUsageLimits.ts"
+    },
     "./shared/utils/machineId": {
       "types": "./src/public/machineId.d.ts",
       "import": "./src/shared/utils/machineId.ts"
@@ -248,42 +256,6 @@
     "./control/provider-models-route": {
       "types": "./src/public/providerModelsRoute.d.ts",
       "import": "./src/control/providerModelsRoute.ts"
-    },
-    "./control/keys-by-id-route": {
-      "types": "./src/public/keysByIdRoute.d.ts",
-      "import": "./src/control/keysByIdRoute.ts"
-    },
-    "./control/key-devices-route": {
-      "types": "./src/public/keyDevicesRoute.d.ts",
-      "import": "./src/control/keyDevicesRoute.ts"
-    },
-    "./control/key-regenerate-route": {
-      "types": "./src/public/keyRegenerateRoute.d.ts",
-      "import": "./src/control/keyRegenerateRoute.ts"
-    },
-    "./control/key-reveal-route": {
-      "types": "./src/public/keyRevealRoute.d.ts",
-      "import": "./src/control/keyRevealRoute.ts"
-    },
-    "./control/key-usage-limits-route": {
-      "types": "./src/public/keyUsageLimitsRoute.d.ts",
-      "import": "./src/control/keyUsageLimitsRoute.ts"
-    },
-    "./control/key-groups-route": {
-      "types": "./src/public/keyGroupsRoute.d.ts",
-      "import": "./src/control/keyGroupsRoute.ts"
-    },
-    "./control/key-group-by-id-route": {
-      "types": "./src/public/keyGroupByIdRoute.d.ts",
-      "import": "./src/control/keyGroupByIdRoute.ts"
-    },
-    "./control/key-group-keys-route": {
-      "types": "./src/public/keyGroupKeysRoute.d.ts",
-      "import": "./src/control/keyGroupKeysRoute.ts"
-    },
-    "./control/key-group-permissions-route": {
-      "types": "./src/public/keyGroupPermissionsRoute.d.ts",
-      "import": "./src/control/keyGroupPermissionsRoute.ts"
     },
     "./domain/degradation": {
       "types": "./src/public/degradation.d.ts",

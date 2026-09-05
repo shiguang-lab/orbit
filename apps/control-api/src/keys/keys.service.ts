@@ -7,30 +7,30 @@ import {
   GET as getKeyByIdHandler,
   PATCH as patchKeyByIdHandler,
   DELETE as deleteKeyByIdHandler,
-} from "@shiguang-gateway/core-domain/control/keys-by-id-route";
-import { GET as getKeyDevicesHandler } from "@shiguang-gateway/core-domain/control/key-devices-route";
-import { POST as regenerateKeyHandler } from "@shiguang-gateway/core-domain/control/key-regenerate-route";
-import { GET as revealKeyHandler } from "@shiguang-gateway/core-domain/control/key-reveal-route";
-import { GET as getKeyUsageLimitsHandler } from "@shiguang-gateway/core-domain/control/key-usage-limits-route";
+} from "./handlers/key-by-id.js";
+import { GET as getKeyDevicesHandler } from "./handlers/key-devices.js";
+import { POST as regenerateKeyHandler } from "./handlers/key-regenerate.js";
+import { GET as revealKeyHandler } from "./handlers/key-reveal.js";
+import { GET as getKeyUsageLimitsHandler } from "./handlers/key-usage-limits.js";
 import {
   GET as getKeyGroupsHandler,
   POST as createKeyGroupHandler,
-} from "@shiguang-gateway/core-domain/control/key-groups-route";
+} from "./handlers/key-groups.js";
 import {
   GET as getKeyGroupByIdHandler,
   PUT as updateKeyGroupByIdHandler,
   DELETE as deleteKeyGroupByIdHandler,
-} from "@shiguang-gateway/core-domain/control/key-group-by-id-route";
+} from "./handlers/key-group-by-id.js";
 import {
   GET as getKeyGroupKeysHandler,
   POST as addKeyToGroupHandler,
   DELETE as removeKeyFromGroupHandler,
-} from "@shiguang-gateway/core-domain/control/key-group-keys-route";
+} from "./handlers/key-group-keys.js";
 import {
   GET as getKeyGroupPermissionsHandler,
   POST as addKeyGroupPermissionHandler,
   DELETE as removeKeyGroupPermissionHandler,
-} from "@shiguang-gateway/core-domain/control/key-group-permissions-route";
+} from "./handlers/key-group-permissions.js";
 
 @Injectable()
 export class KeysService {
