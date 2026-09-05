@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { buildErrorBody } from "../../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
 import { getCcDiscoveryMetrics } from "../../../../lib/db/ccDiscoveryMetrics.ts";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
 

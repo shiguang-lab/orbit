@@ -17,7 +17,7 @@ import {
   isCredentialHealthy,
   isCredentialStale,
   getCredentialHealthSummary,
-} from "../../src/lib/credentialHealth/cache.ts";
+} from "../../core-domain/src/lib/credentialHealth/cache.ts";
 
 export interface CredentialGateResult {
   /** true = healthy, false = skip (bad), undefined = unknown */
@@ -81,4 +81,4 @@ export function logCredentialSkip(log: any, modelStr: string, reason: string): v
 }
 
 // Re-export cache functions for convenience
-export { getCredentialHealthSummary } from "../../src/lib/credentialHealth/cache.ts";
+export { getCredentialHealthSummary } from "../../core-domain/src/lib/credentialHealth/cache.ts";

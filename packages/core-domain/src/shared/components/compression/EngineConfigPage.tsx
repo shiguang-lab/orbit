@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import type { EngineConfigField } from "../../../../open-sse/services/compression/engines/types.ts";
+import type { EngineConfigField } from "../../../../../open-sse/services/compression/engines/types.ts";
 import { EngineConfigForm } from "./EngineConfigForm.tsx";
 
 // ── Types ─────────────────────────────────────────────────────────────────

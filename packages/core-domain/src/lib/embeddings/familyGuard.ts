@@ -1,5 +1,5 @@
-import { resolveComboTargets } from "../../../open-sse/services/combo.ts";
-import { detectEmbeddingDimensionConflict } from "../../../open-sse/config/embeddingRegistry.ts";
+import { resolveComboTargets } from "../../../../open-sse/services/combo.ts";
+import { detectEmbeddingDimensionConflict } from "../../../../open-sse/config/embeddingRegistry.ts";
 
 /**
  * Embedding-combo family guard.

@@ -5,7 +5,7 @@ import {
   isSocks5ProxyEnabled,
   proxyConfigToUrl,
   proxyUrlForLogs,
-} from "../../../../../../open-sse/utils/proxyDispatcher.ts";
+} from "../../../../../../../open-sse/utils/proxyDispatcher.ts";
 import { probeEchoTargets } from "../../../../../lib/proxyEchoTarget.ts";
 import { testProxySchema } from "../../../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../../../shared/validation/helpers.ts";
@@ -13,7 +13,7 @@ import { createErrorResponse, createErrorResponseFromUnknown } from "../../../..
 import { getProxyById } from "../../../../../lib/localDb.ts";
 import { extractRelayAuth } from "../../../../../lib/db/proxies.ts";
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 import { buildRelayTestResult } from "./relayTestResult";
 import { recordRelayProbe } from "../../../../../lib/db/relayProbeStats.ts";
 

@@ -16,7 +16,7 @@ import {
   getCliRuntimeStatus,
   getKnownToolPaths,
   shouldUseShellForCommand,
-} from "../../src/shared/services/cliRuntime.ts";
+} from "../../core-domain/src/shared/services/cliRuntime.ts";
 
 export function getQoderCliCommand(): string {
   const explicit = String(process.env.CLI_QODER_BIN || "").trim();

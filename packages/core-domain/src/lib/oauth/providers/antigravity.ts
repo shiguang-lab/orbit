@@ -5,8 +5,8 @@ import {
   getAntigravityIdeNodeHeaders,
   getAntigravityLoadCodeAssistMetadata,
   getAntigravityOAuthUserAgent,
-} from "../../../../open-sse/services/antigravityHeaders.ts";
-import { extractCodeAssistOnboardTierId } from "../../../../open-sse/services/codeAssistSubscription.ts";
+} from "../../../../../open-sse/services/antigravityHeaders.ts";
+import { extractCodeAssistOnboardTierId } from "../../../../../open-sse/services/codeAssistSubscription.ts";
 
 const POSTEXCHANGE_TIMEOUT_MS = 8_000;
 

@@ -18,8 +18,8 @@
  * it — once you invoke preflight, it runs the fetcher and evaluates.
  */
 
-import { isCompatibleProviderConnectionId } from "../../src/shared/utils/compatibleProviderId.ts";
-import { isFeatureFlagEnabled } from "../../src/shared/utils/featureFlags.ts";
+import { isCompatibleProviderConnectionId } from "../../core-domain/src/shared/utils/compatibleProviderId.ts";
+import { isFeatureFlagEnabled } from "../../core-domain/src/shared/utils/featureFlags.ts";
 import { fetchNewApiAggregatorQuota } from "./newApiAggregatorQuotaFetcher.ts";
 
 export interface PreflightQuotaResult {

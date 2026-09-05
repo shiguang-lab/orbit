@@ -12,10 +12,10 @@
  * everything else.
  */
 
-import { NOAUTH_PROVIDERS } from "../../src/shared/constants/providers.ts";
-import { APIKEY_PROVIDERS } from "../../src/shared/constants/providers.ts";
-import { WEB_COOKIE_PROVIDERS } from "../../src/shared/constants/providers.ts";
-import { WEB_SESSION_CREDENTIAL_REQUIREMENTS } from "../../src/shared/providers/webSessionCredentials.ts";
+import { NOAUTH_PROVIDERS } from "../../core-domain/src/shared/constants/providers.ts";
+import { APIKEY_PROVIDERS } from "../../core-domain/src/shared/constants/providers.ts";
+import { WEB_COOKIE_PROVIDERS } from "../../core-domain/src/shared/constants/providers.ts";
+import { WEB_SESSION_CREDENTIAL_REQUIREMENTS } from "../../core-domain/src/shared/providers/webSessionCredentials.ts";
 
 const DEFAULT_THRESHOLD_MS = 2_000;
 const SLOW_THRESHOLD_MS = 15_000;

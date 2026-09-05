@@ -27,10 +27,10 @@ import type {
   HistoricalLatencyStatsEntry,
   ResolvedComboTarget,
 } from "./types.ts";
-import { extractSessionAffinityKey } from "../../../src/sse/services/auth.ts";
-import { isMicrosoftDesignerWebRetiredProviderId } from "../../../src/shared/constants/designerWebRetirement.ts";
-import { isRuntimeRetiredProviderId } from "../../../src/shared/constants/providerRetirement.ts";
-import { isCommonChatGptWebRetiredProviderId } from "../../../src/shared/constants/chatgptWebRetirement.ts";
+import { extractSessionAffinityKey } from "../../../core-domain/src/sse/services/auth.ts";
+import { isMicrosoftDesignerWebRetiredProviderId } from "../../../core-domain/src/shared/constants/designerWebRetirement.ts";
+import { isRuntimeRetiredProviderId } from "../../../core-domain/src/shared/constants/providerRetirement.ts";
+import { isCommonChatGptWebRetiredProviderId } from "../../../core-domain/src/shared/constants/chatgptWebRetirement.ts";
 import { filterChatSelectableModels } from "../modelEndpointPolicy.ts";
 import { DEFAULT_INTENT_CONFIG, type IntentClassifierConfig } from "../intentClassifier.ts";
 import { getTaskFitness } from "../autoCombo/taskFitness.ts";
@@ -42,18 +42,18 @@ import {
   type ScoringWeights,
 } from "../autoCombo/scoring.ts";
 import type { RoutingHint } from "../manifestAdapter";
-import { getCachedProviderConnections } from "../../../src/lib/db/readCache";
+import { getCachedProviderConnections } from "../../../core-domain/src/lib/db/readCache";
 import {
   getSyncedAvailableModels,
   getCustomModels,
   getHiddenModelsByProvider,
-} from "../../../src/lib/db/models";
+} from "../../../core-domain/src/lib/db/models";
 import { getProviderModels } from "../../config/providerModels.ts";
 import {
   getConnectionRoutingTags,
   matchesRoutingTags,
   resolveRequestRoutingTags,
-} from "../../../src/domain/tagRouter.ts";
+} from "../../../core-domain/src/domain/tagRouter.ts";
 
 // Quota Share soft-policy deprioritization factor (B17).
 // When a candidate has quotaSoftPenalty === true, its auto-combo score is

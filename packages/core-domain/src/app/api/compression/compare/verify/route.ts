@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
-import { judgeFidelityBatch } from "../../../../../../open-sse/services/compression/eval/fidelityCheck.ts";
+import { judgeFidelityBatch } from "../../../../../../../open-sse/services/compression/eval/fidelityCheck.ts";
 import { createPricedJudgeClient } from "../../../../../lib/compression/judgeModelClient.ts";
-import type { ProviderCredentials } from "../../../../../../open-sse/executors/base.ts";
+import type { ProviderCredentials } from "../../../../../../../open-sse/executors/base.ts";
 import { getProviderCredentials } from "../../../../../sse/services/auth.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 
 export const dynamic = "force-dynamic";
 

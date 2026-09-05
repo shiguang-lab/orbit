@@ -17,7 +17,7 @@
  */
 import { NextResponse } from "next/server";
 
-import { buildErrorBody } from "../../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
 import { GenerateBodySchema } from "../../../../lib/agentSkills/schemas.ts";
 

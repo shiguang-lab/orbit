@@ -12,7 +12,7 @@
 // (regression-safe). Wired at the OpenAI-format dispatch chokepoint in
 // chatCore.ts, after model resolution, so the *upstream* model's default is
 // used even when a combo/route substituted it.
-import { getModelSpec } from "../../src/shared/constants/modelSpecs.ts";
+import { getModelSpec } from "../../core-domain/src/shared/constants/modelSpecs.ts";
 
 /** True when `body` already expresses a reasoning-effort choice, in any known shape. */
 function hasExplicitReasoningField(body: Record<string, unknown>): boolean {

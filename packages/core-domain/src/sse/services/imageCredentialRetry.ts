@@ -1,4 +1,4 @@
-import { sanitizeErrorMessage } from "../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
 
 import { getProviderCredentialsWithQuotaPreflight } from "./auth";
 import { checkAndRefreshToken } from "./tokenRefresh";

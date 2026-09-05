@@ -1,5 +1,5 @@
-import { supportsXHighEffort } from "../../../open-sse/config/providerModels.ts";
-import { parseModel } from "../../../open-sse/services/model.ts";
+import { supportsXHighEffort } from "../../../../open-sse/config/providerModels.ts";
+import { parseModel } from "../../../../open-sse/services/model.ts";
 import { stripVscodeServiceTierVariantModelId } from "./serviceTierVariants.ts";
 import { extendCodexGpt56EffortValues } from "../../shared/reasoning/effortStandardization.ts";
 

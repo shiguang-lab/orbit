@@ -1,12 +1,12 @@
-import { handleRerank } from "@shiguang-gateway/core-domain/open-sse/handlers/rerank.ts";
+import { handleRerank } from "@shiguang-gateway/open-sse/handlers/rerank.ts";
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
 } from "@shiguang-gateway/core-domain/sse/auth";
 import { withInjectionGuard } from "@shiguang-gateway/core-domain/middleware/prompt-injection";
-import { parseRerankModel, getRerankProvider } from "@shiguang-gateway/core-domain/open-sse/config/rerankRegistry.ts";
-import { errorResponse } from "@shiguang-gateway/core-domain/open-sse/utils/error.ts";
-import { HTTP_STATUS } from "@shiguang-gateway/core-domain/open-sse/config/constants.ts";
+import { parseRerankModel, getRerankProvider } from "@shiguang-gateway/open-sse/config/rerankRegistry.ts";
+import { errorResponse } from "@shiguang-gateway/open-sse/utils/error.ts";
+import { HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants.ts";
 import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/shared/api-key-policy";
 import { v1RerankSchema } from "@shiguang-gateway/core-domain/edge/rerank-validation-schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/edge/rerank-validation-helpers";
@@ -18,7 +18,7 @@ import {
 import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
 import { attachShiguangGatewayMetaHeaders } from "@shiguang-gateway/core-domain/edge/gateway-response-meta";
 import { generateRequestId } from "@shiguang-gateway/core-domain/edge/request-id";
-import { CORS_HEADERS } from "@shiguang-gateway/core-domain/open-sse/utils/cors.ts";
+import { CORS_HEADERS } from "@shiguang-gateway/open-sse/utils/cors.ts";
 
 /**
  * Handle CORS preflight

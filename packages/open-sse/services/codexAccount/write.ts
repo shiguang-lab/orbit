@@ -1,5 +1,5 @@
 import { getCodexModelScope, type CodexQuotaScope } from "../../config/codexQuotaScopes.ts";
-import { updateCodexScopeCooldown } from "../../../src/lib/db/providers.ts";
+import { updateCodexScopeCooldown } from "../../../core-domain/src/lib/db/providers.ts";
 
 export interface PersistCodexChildCooldownResult {
   readonly scope: CodexQuotaScope;

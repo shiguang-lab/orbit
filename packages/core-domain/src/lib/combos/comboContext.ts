@@ -9,9 +9,9 @@
  * catalog's `minKnownNumber` semantics that excludes unsourced models.
  */
 
-import { resolveNestedComboTargets } from "../../../open-sse/services/combo.ts";
+import { resolveNestedComboTargets } from "../../../../open-sse/services/combo.ts";
 import { getCanonicalModelMetadata } from "../modelMetadataRegistry.ts";
-import { getSourcedTokenLimit } from "../../../open-sse/services/contextManager.ts";
+import { getSourcedTokenLimit } from "../../../../open-sse/services/contextManager.ts";
 import { buildAliasMaps, getComboTargetModelId } from "../../app/api/v1/models/catalogProviderMaps.ts";
 
 /* ─── helpers ───────────────────────────────────────────────── */

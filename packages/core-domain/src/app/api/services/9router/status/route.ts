@@ -3,7 +3,7 @@ import { getServiceRow } from "../../../../../lib/db/versionManager.ts";
 import { getInstalledVersion, getLatestVersion } from "../../../../../lib/services/installers/ninerouter.ts";
 import { getOrCreateApiKey, maskApiKey } from "../../../../../lib/services/apiKey.ts";
 import { createErrorResponse } from "../../../../../lib/api/errorResponse.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 import { logAuditEvent } from "../../../../../lib/compliance/index.ts";
 
 const TOOL = "9router";

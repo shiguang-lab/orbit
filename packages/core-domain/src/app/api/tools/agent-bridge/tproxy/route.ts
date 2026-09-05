@@ -19,7 +19,7 @@ import {
   getCaptureStatus,
 } from "../../../../../mitm/tproxy/captureManager.ts";
 import { installTproxyCa, uninstallTproxyCa } from "../../../../../mitm/tproxy/caTrust.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 import { createErrorResponse } from "../../../../../lib/api/errorResponse.ts";
 
 // Exported for unit testing. Next.js only treats GET/POST/DELETE as route

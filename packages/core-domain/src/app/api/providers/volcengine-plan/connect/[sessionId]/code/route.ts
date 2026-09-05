@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireManagementAuth } from "../../../../../../../lib/api/requireManagementAuth.ts";
 import { bindVolcenginePlansFromConsoleCredentials } from "../../../../../../../lib/providers/volcenginePlanBinding.ts";
-import { sanitizeErrorMessage } from "../../../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../../../open-sse/utils/error.ts";
 import { formatValidationMessage, validateBody } from "../../../../../../../shared/validation/helpers.ts";
 import { volcenginePlanCodeSchema } from "../../../../../../../shared/validation/schemas/volcenginePlan.ts";
 
@@ -34,7 +34,7 @@ export async function POST(
 
   try {
     const { volcengineConsoleAutoLoginService } = await import(
-      "../../../../../../../../open-sse/services/volcengineConsoleAutoLogin.ts"
+      "../../../../../../../../../open-sse/services/volcengineConsoleAutoLogin.ts"
     );
 
     if (!volcengineConsoleAutoLoginService.getStatus(sessionId)) {

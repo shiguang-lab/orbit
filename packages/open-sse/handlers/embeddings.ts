@@ -21,31 +21,31 @@ import {
   type EmbeddingModality,
   type EmbeddingProvider,
 } from "../config/embeddingRegistry.ts";
-import { saveCallLog } from "../../src/lib/usageDb.ts";
+import { saveCallLog } from "../../core-domain/src/lib/usageDb.ts";
 import { createRequestLogger } from "../utils/requestLogger.ts";
-import { isDetailedLoggingEnabled } from "../../src/lib/db/detailedLogs.ts";
-import { getCallLogPipelineCaptureStreamChunks } from "../../src/lib/logEnv.ts";
-import { toJsonErrorPayload } from "../../src/shared/utils/upstreamError.ts";
+import { isDetailedLoggingEnabled } from "../../core-domain/src/lib/db/detailedLogs.ts";
+import { getCallLogPipelineCaptureStreamChunks } from "../../core-domain/src/lib/logEnv.ts";
+import { toJsonErrorPayload } from "../../core-domain/src/shared/utils/upstreamError.ts";
 import { stripStaleEncodingHeaders } from "../utils/upstreamResponseHeaders.ts";
 import { sanitizeErrorMessage } from "../utils/error.ts";
 import { stripTrailingSlashes } from "../utils/urlSanitize.ts";
-import { fetchRemoteImage } from "../../src/shared/network/remoteImageFetch.ts";
+import { fetchRemoteImage } from "../../core-domain/src/shared/network/remoteImageFetch.ts";
 import {
   hasStructuredEmbeddingInput,
   prepareJinaMixedEmbeddingInput,
   prepareStructuredEmbeddingRequest,
 } from "./embeddingStructuredInput.ts";
-import { MAX_EMBEDDING_INLINE_ITEM_BYTES } from "../../src/shared/validation/schemas/apiV1.ts";
-import { markAccountUnavailable } from "../../src/sse/services/auth.ts";
+import { MAX_EMBEDDING_INLINE_ITEM_BYTES } from "../../core-domain/src/shared/validation/schemas/apiV1.ts";
+import { markAccountUnavailable } from "../../core-domain/src/sse/services/auth.ts";
 import {
   collectJinaNativeModalities,
   isJinaNativeEmbeddingInput,
-} from "../../src/shared/validation/jinaNativeEmbeddingInput.ts";
+} from "../../core-domain/src/shared/validation/jinaNativeEmbeddingInput.ts";
 import {
   collectGeminiNativeModalities,
   isGeminiEmbedding2Family,
   isGeminiNativeEmbeddingInput,
-} from "../../src/shared/validation/geminiNativeEmbeddingInput.ts";
+} from "../../core-domain/src/shared/validation/geminiNativeEmbeddingInput.ts";
 
 interface ClientRawRequest {
   endpoint: string;
@@ -385,7 +385,7 @@ export async function handleEmbedding({
     // Quota share enforcement (fail-open: errors allow the request through)
     if (apiKeyId && connectionId && provider) {
       try {
-        const { enforceQuotaShare } = await import("../../src/lib/quota/enforce.ts");
+        const { enforceQuotaShare } = await import("../../core-domain/src/lib/quota/enforce.ts");
         const quotaDecision = await enforceQuotaShare({
           apiKeyId,
           connectionId,
@@ -535,7 +535,7 @@ export async function handleEmbedding({
     // Record quota consumption (fire-and-forget, never blocks)
     if (apiKeyId && connectionId && provider) {
       try {
-        const { scheduleRecordConsumption } = await import("../../src/lib/quota/spendRecorder.ts");
+        const { scheduleRecordConsumption } = await import("../../core-domain/src/lib/quota/spendRecorder.ts");
         scheduleRecordConsumption({
           apiKeyId,
           connectionId,

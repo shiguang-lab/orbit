@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { createObsidianClient, createSyncServerClient, getSyncToken } from "../../../src/lib/obsidian/api.ts";
+import { createObsidianClient, createSyncServerClient, getSyncToken } from "../../../core-domain/src/lib/obsidian/api.ts";
 import {
   getObsidianToken,
   getObsidianBaseUrl,
   getObsidianConfigForApiKey,
-} from "../../../src/lib/db/obsidian.ts";
-import type { ObsidianClient, SyncServerClient } from "../../../src/lib/obsidian/api.ts";
+} from "../../../core-domain/src/lib/db/obsidian.ts";
+import type { ObsidianClient, SyncServerClient } from "../../../core-domain/src/lib/obsidian/api.ts";
 
 type McpExtra = {
   authInfo?: { clientId?: string; scopes?: string[] };

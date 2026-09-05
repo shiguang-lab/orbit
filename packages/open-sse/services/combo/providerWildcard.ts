@@ -31,7 +31,7 @@
 
 import { wildcardMatch } from "../wildcardRouter.ts";
 import { getProviderModels } from "../../config/providerModels.ts";
-import { getActiveSyncedCatalog } from "../../../src/lib/db/models/activeSyncedCatalog.ts";
+import { getActiveSyncedCatalog } from "../../../core-domain/src/lib/db/models/activeSyncedCatalog.ts";
 import { filterAlibabaFreeTierModels, isAlibabaModelStudioProvider } from "../alibabaFreeTier.ts";
 import {
   filterAlibabaFreeEligibleModels,
@@ -160,7 +160,7 @@ async function filterAlibabaFreeDrainedModelIds(
     return modelIds;
   }
   try {
-    const { getProviderConnections } = await import("../../../src/lib/db/providers.ts");
+    const { getProviderConnections } = await import("../../../core-domain/src/lib/db/providers.ts");
     const connections = await getProviderConnections({ provider: providerId });
     const connection = connections.find((entry) => entry.id === connectionId);
     if (!connection) return modelIds;

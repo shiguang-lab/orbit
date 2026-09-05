@@ -17,7 +17,7 @@ import {
   EXPLICIT_ONLY_WEB_FETCH_PROVIDERS,
   ANONYMOUS_CAPABLE_WEB_FETCH_PROVIDERS,
   type WebFetchProviderId,
-} from "../../../open-sse/handlers/webFetch.ts";
+} from "../../../../open-sse/handlers/webFetch.ts";
 
 // Providers that only understand their own URL shape (context7 takes a library
 // reference, not a generic web URL): explicit requests only, never auto-selected.

@@ -7,7 +7,7 @@ import {
   writeCodexAuthFileToLocalCliIfNeeded,
 } from "../../../../../../lib/oauth/utils/codexAuthFile.ts";
 import { getAuditRequestContext, logAuditEvent } from "../../../../../../lib/compliance/index.ts";
-import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../../open-sse/utils/error.ts";
 
 // Optional body { force?: boolean }. Unknown keys are stripped rather than
 // rejected so the endpoint stays tolerant of the empty/no-body calls it

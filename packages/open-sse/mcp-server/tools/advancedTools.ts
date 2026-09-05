@@ -18,18 +18,18 @@
 
 import { logToolCall } from "../audit.ts";
 import { getMcpHttpAuthHeadersForInternalFetch } from "../httpAuthContext.ts";
-import { normalizeQuotaResponse } from "../../../src/shared/contracts/quota.ts";
-import { resolveGatewayBaseUrl } from "../../../src/shared/utils/resolveGatewayBaseUrl.ts";
+import { normalizeQuotaResponse } from "../../../core-domain/src/shared/contracts/quota.ts";
+import { resolveGatewayBaseUrl } from "../../../core-domain/src/shared/utils/resolveGatewayBaseUrl.ts";
 import {
   getComboModelProvider,
   getComboModelString,
   getComboStepTarget,
-} from "../../../src/lib/combos/steps.ts";
+} from "../../../core-domain/src/lib/combos/steps.ts";
 import type {
   AutoRoutingStrategyValue,
   RoutingStrategyValue,
-} from "../../../src/shared/constants/routingStrategies.ts";
-import { normalizeRoutingStrategy } from "../../../src/shared/constants/routingStrategies.ts";
+} from "../../../core-domain/src/shared/constants/routingStrategies.ts";
+import { normalizeRoutingStrategy } from "../../../core-domain/src/shared/constants/routingStrategies.ts";
 
 const SHIGUANG_GATEWAY_BASE_URL = resolveGatewayBaseUrl();
 const SHIGUANG_GATEWAY_API_KEY = process.env.SHIGUANG_GATEWAY_API_KEY || "";
@@ -893,7 +893,7 @@ export async function handleDbHealthCheck(args: { autoRepair?: boolean }) {
   const autoRepair = args.autoRepair === true;
 
   try {
-    const { runManagedDbHealthCheck } = await import("../../../src/lib/db/core.ts");
+    const { runManagedDbHealthCheck } = await import("../../../core-domain/src/lib/db/core.ts");
     const result = runManagedDbHealthCheck({ autoRepair });
 
     await logToolCall(

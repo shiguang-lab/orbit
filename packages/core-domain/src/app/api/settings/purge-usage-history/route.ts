@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { buildErrorBody } from "../../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
 import { RESET_USAGE_HISTORY_PERIODS, resetUsageHistory } from "../../../../lib/db/cleanup.ts";
 import { isAuthenticated } from "../../../../shared/utils/apiAuth.ts";
 import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";

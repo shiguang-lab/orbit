@@ -86,7 +86,7 @@ async function resolveRawCutoffDate(): Promise<string> {
 function errorResponse(error: unknown): Promise<Response> {
   console.error("Error computing requests-by-provider-date:", error);
   const message = error instanceof Error ? error.message : String(error);
-  return import("../../../../../open-sse/utils/error.ts").then(({ buildErrorBody }) =>
+  return import("../../../../../../open-sse/utils/error.ts").then(({ buildErrorBody }) =>
     NextResponse.json(buildErrorBody(500, message || "Failed to compute requests-by-provider-date"), {
       status: 500,
     })

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../../../../open-sse/utils/error.ts";
 
 /**
  * #6148 — Stale STORAGE_ENCRYPTION_KEY guard for model-discovery.

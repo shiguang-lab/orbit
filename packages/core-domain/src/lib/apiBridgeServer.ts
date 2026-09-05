@@ -2,7 +2,7 @@ import http from "http";
 import type { IncomingMessage, ServerResponse } from "http";
 import net from "net";
 import { getRuntimePorts } from "./runtime/ports.ts";
-import { getApiBridgeTimeoutConfig } from "../shared/utils/runtimeTimeouts.ts";
+import { getApiBridgeTimeoutConfig } from "@shiguang-gateway/config/timeouts";
 import {
   attachRequestStreamGuards,
   installProcessCrashGuard,

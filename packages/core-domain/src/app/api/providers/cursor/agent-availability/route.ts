@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCachedCursorAgentAvailability } from "../../../../../lib/cursor/renewal.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 
 /**
  * GET /api/providers/cursor/agent-availability

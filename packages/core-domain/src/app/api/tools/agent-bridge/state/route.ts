@@ -9,7 +9,7 @@
  */
 import { getMitmStatus, getAllAgentsStatus, getCachedPassword } from "../../../../../mitm/manager.ts";
 import { isSudoPasswordRequired, checkDNSEntryForAgent } from "../../../../../mitm/dns/dnsConfig.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 import { createErrorResponse } from "../../../../../lib/api/errorResponse.ts";
 import { getAllAgentBridgeStates } from "../../../../../lib/db/agentBridgeState.ts";
 import { getAllBypassPatterns } from "../../../../../lib/db/agentBridgeBypass.ts";

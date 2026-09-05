@@ -21,7 +21,7 @@ import {
   toClientAntigravityQuotaModelId,
 } from "../../config/antigravityModelAliases.ts";
 import { isUserCallableAgyModelId } from "../../config/agyModels.ts";
-import { getDbInstance } from "../../../src/lib/db/core.ts";
+import { getDbInstance } from "../../../core-domain/src/lib/db/core.ts";
 import {
   applyAntigravityClientProfileHeaders,
   getAntigravityClientProfile,

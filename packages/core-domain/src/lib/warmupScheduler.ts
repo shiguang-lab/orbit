@@ -3,8 +3,8 @@ import { getSettings } from "./db/settings.ts";
 import { resolveProxyForConnection } from "./db/settings.ts";
 import { extractResolvedProxyConfig } from "./tokenHealthCheck.ts";
 import { refreshAndUpdateCredentials } from "./usage/providerLimits.ts";
-import { runWithProxyContext } from "../../open-sse/utils/proxyFetch.ts";
-import { logger } from "../../open-sse/utils/logger.ts";
+import { runWithProxyContext } from "../../../open-sse/utils/proxyFetch.ts";
+import { logger } from "../../../open-sse/utils/logger.ts";
 import { matchesCron } from "./jobs/cronMatch.ts";
 import { getCircuitBreakerStore } from "./warmupScheduler/circuitBreakerFactory";
 import { TERMINAL_CONNECTION_STATUSES } from "./quota/connectionRecovery.ts";
@@ -237,7 +237,7 @@ async function executeWarmup(): Promise<void> {
 }
 
 async function getWarmupHeaders(): Promise<Record<string, string>> {
-  const { getClaudeCliHeaders } = await import("../../open-sse/config/providers/shared.ts");
+  const { getClaudeCliHeaders } = await import("../../../open-sse/config/providers/shared.ts");
   return getClaudeCliHeaders();
 }
 

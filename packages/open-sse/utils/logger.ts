@@ -21,7 +21,7 @@
  *   APP_LOG_LEVEL  — minimum level: debug | info | warn | error (default: info)
  *   APP_LOG_FORMAT — output format: text | json (default: text)
  */
-import { getAppLogFormat, getAppLogLevel } from "../../src/lib/logEnv";
+import { getAppLogFormat, getAppLogLevel } from "../../core-domain/src/lib/logEnv";
 
 const LEVELS = { debug: 0, info: 1, warn: 2, error: 3 } as const;
 

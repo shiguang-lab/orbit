@@ -1,9 +1,9 @@
-import { saveCallLog } from "../../../src/lib/usageDb.ts";
+import { saveCallLog } from "../../../core-domain/src/lib/usageDb.ts";
 import {
   FetchTimeoutError,
   fetchWithTimeout,
   getConfiguredTimeout,
-} from "../../../src/shared/utils/fetchTimeout.ts";
+} from "../../../core-domain/src/shared/utils/fetchTimeout.ts";
 import { sanitizeErrorMessage } from "../../utils/error.ts";
 
 type MediaKind = "video" | "music";

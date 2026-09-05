@@ -1,5 +1,5 @@
 import { join } from "node:path";
-import { resolveDataDir } from "../../src/lib/dataPaths.ts";
+import { resolveDataDir } from "../../core-domain/src/lib/dataPaths.ts";
 
 /**
  * Writable cache directory for tls-client-node's native binary.

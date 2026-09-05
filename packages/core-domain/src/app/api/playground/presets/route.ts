@@ -7,8 +7,8 @@
  * Hard Rule #12: all error paths via buildErrorBody.
  */
 
-import { buildErrorBody, sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../../../open-sse/config/constants.ts";
+import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { HTTP_STATUS } from "../../../../../../open-sse/config/constants.ts";
 import { extractApiKey, isValidApiKey } from "../../../../sse/services/auth.ts";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
 import { listPlaygroundPresets, createPlaygroundPreset } from "../../../../lib/db/playgroundPresets.ts";

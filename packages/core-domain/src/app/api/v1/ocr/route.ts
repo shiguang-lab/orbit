@@ -3,15 +3,15 @@ import {
   resolveVertexOcrAccessToken,
   resolveVertexOcrBaseUrl,
   VERTEX_DEEPSEEK_OCR_PROVIDER_ID,
-} from "../../../../../open-sse/handlers/ocr.ts";
+} from "../../../../../../open-sse/handlers/ocr.ts";
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
 } from "../../../../sse/services/auth.ts";
 import { withInjectionGuard } from "../../../../middleware/promptInjectionGuard.ts";
-import { parseOcrModel } from "../../../../../open-sse/config/ocrRegistry.ts";
-import { errorResponse } from "../../../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../../../open-sse/config/constants.ts";
+import { parseOcrModel } from "../../../../../../open-sse/config/ocrRegistry.ts";
+import { errorResponse } from "../../../../../../open-sse/utils/error.ts";
+import { HTTP_STATUS } from "../../../../../../open-sse/config/constants.ts";
 import { enforceApiKeyPolicy } from "../../../../shared/utils/apiKeyPolicy.ts";
 import { v1OcrSchema } from "../../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";

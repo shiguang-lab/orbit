@@ -9,7 +9,7 @@ import {
   stopSession,
   type VncSession,
 } from "../../../../lib/vncSession/service.ts";
-import { buildErrorBody, sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 function publicSession(session: VncSession | undefined | null) {
   if (!session) return null;

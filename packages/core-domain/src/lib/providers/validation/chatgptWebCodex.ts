@@ -1,13 +1,13 @@
 import { randomBytes } from "node:crypto";
 
-import { inspectBrowserLoginCapabilities } from "../../../../open-sse/vendor/codex-chatgpt-web/browser-login.ts";
-import { decodeChatGptWebCodexSecrets } from "../../../../open-sse/executors/chatgpt-web-codex/credentials.ts";
-import { detectChromeExecutable } from "../../../../open-sse/executors/chatgpt-web-codex.ts";
+import { inspectBrowserLoginCapabilities } from "../../../../../open-sse/vendor/codex-chatgpt-web/browser-login.ts";
+import { decodeChatGptWebCodexSecrets } from "../../../../../open-sse/executors/chatgpt-web-codex/credentials.ts";
+import { detectChromeExecutable } from "../../../../../open-sse/executors/chatgpt-web-codex.ts";
 import {
   connectionRuntimePaths,
   ensureConnectionStorageState,
-} from "../../../../open-sse/executors/chatgpt-web-codex/storageState.ts";
-import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+} from "../../../../../open-sse/executors/chatgpt-web-codex/storageState.ts";
+import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
 
 export async function validateChatGptWebCodexProvider({
   apiKey,

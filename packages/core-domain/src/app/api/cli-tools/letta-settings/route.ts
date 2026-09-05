@@ -9,7 +9,7 @@ import { promisify } from "util";
 import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
 import { cliAuthOnlyConfigSchema } from "../../../../shared/validation/schemas/cli.ts";
 import { requireCliToolsAuth } from "../../../../lib/api/requireCliToolsAuth.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 const execAsync = promisify(exec);
 

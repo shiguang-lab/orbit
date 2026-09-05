@@ -26,7 +26,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { validateBody, isValidationFailure } from "../../../../../shared/validation/helpers.ts";
-import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 import { validateApiKey, getApiKeyMetadata } from "../../../../../lib/localDb.ts";
 import { getChaosConfig } from "../../../../../lib/chaos/chaosConfig.ts";
 import { executeChaosRun, type ChaosRunResult } from "../../../../../lib/chaos/chaosExecutor.ts";

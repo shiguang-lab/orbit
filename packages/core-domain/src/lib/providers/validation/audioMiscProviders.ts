@@ -2,8 +2,8 @@
 // inworld, kie, aws-polly, bailian-coding-plan, reka, maritalk, nlpcloud, runwayml, nous-research,
 // poe. Extracted from validation.ts (god-file decomposition) — top-level functions with no
 // dispatcher-state captures; behavior is byte-identical to the original inline defs.
-import { getRegistryEntry } from "../../../../open-sse/config/providerRegistry.ts";
-import { POE_DEFAULT_BASE_URL } from "../../../../open-sse/config/providers/registry/poe/index.ts";
+import { getRegistryEntry } from "../../../../../open-sse/config/providerRegistry.ts";
+import { POE_DEFAULT_BASE_URL } from "../../../../../open-sse/config/providers/registry/poe/index.ts";
 import { normalizeBaseUrl } from "./urlHelpers";
 import {
   applyCustomUserAgent,
@@ -18,12 +18,12 @@ import {
   buildRunwayApiUrl,
   buildRunwayHeaders,
   normalizeRunwayBaseUrl,
-} from "../../../../open-sse/config/runway.ts";
+} from "../../../../../open-sse/config/runway.ts";
 import {
   buildMaritalkChatUrl,
   buildMaritalkModelsUrl,
-} from "../../../../open-sse/config/maritalk.ts";
-import { signAwsRequest } from "../../../../open-sse/utils/awsSigV4.ts";
+} from "../../../../../open-sse/config/maritalk.ts";
+import { signAwsRequest } from "../../../../../open-sse/utils/awsSigV4.ts";
 import { resolveAlibabaProviderBaseUrl } from "../../../shared/constants/alibabaProviderRegions.ts";
 
 export async function validateDeepgramProvider({ apiKey, providerSpecificData = {} }: any) {

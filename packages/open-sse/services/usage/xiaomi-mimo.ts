@@ -32,7 +32,7 @@ export async function getXiaomiMimoUsage(connectionId: string) {
     return { message: "Xiaomi MiMo: connection id unavailable for self-tracked quota." };
   }
   try {
-    const { getMonthlyProviderTokensForConnection } = await import("../../../src/lib/usage/usageStats.ts");
+    const { getMonthlyProviderTokensForConnection } = await import("../../../core-domain/src/lib/usage/usageStats.ts");
     const used = getMonthlyProviderTokensForConnection("xiaomi-mimo", connectionId);
     const total = XIAOMI_MIMO_MONTHLY_TOKEN_LIMIT;
     const now = new Date();

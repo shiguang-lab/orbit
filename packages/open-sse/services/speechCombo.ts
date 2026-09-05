@@ -11,20 +11,20 @@
  * off `response.ok` and the upstream body is passed through untouched — only
  * ADD-only meta headers are attached, matching the direct route.
  */
-import { getComboByName, getCombos } from "../../src/lib/db/combos.ts";
+import { getComboByName, getCombos } from "../../core-domain/src/lib/db/combos.ts";
 import { resolveComboTargets } from "./combo.ts";
 import { parseSpeechModel, getSpeechProvider } from "../config/audioRegistry.ts";
-import { resolveDynamicAudioProviders } from "../../src/app/api/v1/_shared/audioProviderNodes.ts";
+import { resolveDynamicAudioProviders } from "../../core-domain/src/app/api/v1/_shared/audioProviderNodes.ts";
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
-} from "../../src/sse/services/auth.ts";
-import { isAllRateLimitedCredentials } from "../../src/app/api/v1/_shared/rateLimit.ts";
+} from "../../core-domain/src/sse/services/auth.ts";
+import { isAllRateLimitedCredentials } from "../../core-domain/src/app/api/v1/_shared/rateLimit.ts";
 import { handleAudioSpeech } from "../handlers/audioSpeech.ts";
-import { attachShiguangGatewayMetaToResponse } from "../../src/domain/gatewayResponseMeta.ts";
-import { generateRequestId } from "../../src/shared/utils/requestId.ts";
-import { calculateModalCost } from "../../src/lib/usage/costCalculator.ts";
-import { toJsonErrorPayload } from "../../src/shared/utils/upstreamError.ts";
+import { attachShiguangGatewayMetaToResponse } from "../../core-domain/src/domain/gatewayResponseMeta.ts";
+import { generateRequestId } from "../../core-domain/src/shared/utils/requestId.ts";
+import { calculateModalCost } from "../../core-domain/src/lib/usage/costCalculator.ts";
+import { toJsonErrorPayload } from "../../core-domain/src/shared/utils/upstreamError.ts";
 import { HTTP_STATUS } from "../config/constants.ts";
 import { errorResponse } from "../utils/error.ts";
 

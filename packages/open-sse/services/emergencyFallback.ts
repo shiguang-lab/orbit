@@ -12,7 +12,7 @@
  * `SHIGUANG_GATEWAY_EMERGENCY_FALLBACK=false` (or `0`). Default remains enabled.
  */
 
-import { isFeatureFlagEnabled } from "../../src/shared/utils/featureFlags.ts";
+import { isFeatureFlagEnabled } from "../../core-domain/src/shared/utils/featureFlags.ts";
 
 const EMERGENCY_FALLBACK_FLAG_KEY = "SHIGUANG_GATEWAY_EMERGENCY_FALLBACK";
 const EMERGENCY_FALLBACK_FLAG_CACHE_MS = 500;

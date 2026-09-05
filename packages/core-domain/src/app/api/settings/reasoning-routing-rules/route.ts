@@ -7,7 +7,7 @@ import {
 import { reasoningRuleDataToInput } from "../../../../lib/reasoningRouting/input.ts";
 import { createReasoningRoutingRuleSchema } from "../../../../shared/validation/schemas.ts";
 import { validatedJsonBody } from "../../../../shared/validation/helpers.ts";
-import { buildErrorBody, sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 export async function GET(request: Request) {
   const authError = await requireManagementAuth(request);

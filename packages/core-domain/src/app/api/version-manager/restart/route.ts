@@ -3,7 +3,7 @@
 import { NextResponse } from "next/server";
 import { getServiceRow } from "../../../../lib/db/versionManager.ts";
 import { getOrInitSupervisor } from "../../services/cliproxy/_lib.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 import { parseVersionManagerToolRequest } from "../request";
 

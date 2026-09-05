@@ -15,7 +15,7 @@ import { readFileSync, existsSync } from "fs";
 import { getAppLogFilePath } from "../../../../lib/logEnv.ts";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
 import { matchesSearch } from "../../../../shared/utils/turkishText.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 const LEVEL_ORDER: Record<string, number> = {
   trace: 5,

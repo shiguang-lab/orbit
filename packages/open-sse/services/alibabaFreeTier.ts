@@ -142,7 +142,7 @@ export async function isAlibabaFreeTierModelRoutable(
   if (!isAlibabaModelStudioProvider(provider) || !model) return true;
   if (isModelLocked(provider, connectionId, model)) return false;
   try {
-    const { getProviderConnections } = await import("../../src/lib/db/providers.ts");
+    const { getProviderConnections } = await import("../../core-domain/src/lib/db/providers.ts");
     const { buildAlibabaFreeTierFilterContext, isAlibabaFreeTierCapableModel } =
       await import("./alibabaFreeTierDiscovery.ts");
     const connections = await getProviderConnections({ provider });

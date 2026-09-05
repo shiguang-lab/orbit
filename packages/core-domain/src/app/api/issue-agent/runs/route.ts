@@ -9,7 +9,7 @@ import { normalizeGitHubIssueExport } from "../../../../lib/issueAgent/githubExp
 import { createRecordedTriageRun } from "../../../../lib/issueAgent/recordedTriage.ts";
 import { POST as postChatCompletion } from "../../v1/chat/completions/route.ts";
 import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 const issueAgentRunRequestSchema = z.object({
   mode: z.string().optional(),

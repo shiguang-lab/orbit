@@ -3,7 +3,7 @@
  * Reads/writes memories as Markdown files with YAML frontmatter
  */
 
-import { logger } from "../../../open-sse/utils/logger.ts";
+import { logger } from "../../../../open-sse/utils/logger.ts";
 import type {
   MemoryBackend,
   CreateMemoryInput,

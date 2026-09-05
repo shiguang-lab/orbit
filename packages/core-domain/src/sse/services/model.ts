@@ -18,10 +18,10 @@ import {
   getModelInfoCore,
   splitSyncedEffortSuffix,
   stripContextWindowSuffix,
-} from "../../../open-sse/services/model.ts";
-import { getLearnedReasoningEffortForModel } from "../../../open-sse/services/learnedReasoningEffortCaps.ts";
-import { REGISTRY } from "../../../open-sse/config/providerRegistry.ts";
-import { getRegisteredProviderEffortBaseModelId } from "../../../open-sse/utils/registeredEffortVariants.ts";
+} from "../../../../open-sse/services/model.ts";
+import { getLearnedReasoningEffortForModel } from "../../../../open-sse/services/learnedReasoningEffortCaps.ts";
+import { REGISTRY } from "../../../../open-sse/config/providerRegistry.ts";
+import { getRegisteredProviderEffortBaseModelId } from "../../../../open-sse/utils/registeredEffortVariants.ts";
 import { getReservedProviderPrefixes } from "../../shared/constants/reservedProviderPrefixes.ts";
 import {
   assertMicrosoftDesignerWebProviderAvailable,
@@ -37,8 +37,8 @@ import {
   isCommonChatGptWebRetirementError,
 } from "../../shared/constants/chatgptWebRetirement.ts";
 import { commonChatGptWebRetirementResponse } from "../../lib/providers/chatgptWebRetirementResponse.ts";
-import { errorResponse } from "../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../open-sse/config/constants.ts";
+import { errorResponse } from "../../../../open-sse/utils/error.ts";
+import { HTTP_STATUS } from "../../../../open-sse/config/constants.ts";
 
 export { parseModel, stripContextWindowSuffix };
 

@@ -5,8 +5,8 @@ import {
   type SyncedAvailableModel,
 } from "../db/models.ts";
 import { CANONICAL_EFFORT_VALUES } from "../../shared/reasoning/effortStandardization.ts";
-import { isObsoleteKiroModelAlias } from "../../../open-sse/services/kiroModels.ts";
-import { filterSelectableModels } from "../../../open-sse/services/modelLifecycle.ts";
+import { isObsoleteKiroModelAlias } from "../../../../open-sse/services/kiroModels.ts";
+import { filterSelectableModels } from "../../../../open-sse/services/modelLifecycle.ts";
 
 type JsonRecord = Record<string, unknown>;
 

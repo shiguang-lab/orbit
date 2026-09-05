@@ -1,7 +1,7 @@
 import { SEARCH_PROVIDERS } from "../config/searchRegistry.ts";
-import { assertMicrosoftDesignerWebProviderAvailable } from "../../src/shared/constants/designerWebRetirement.ts";
-import { assertRuntimeProviderAvailable } from "../../src/shared/constants/providerRetirement.ts";
-import { assertCommonChatGptWebProviderAvailable } from "../../src/shared/constants/chatgptWebRetirement.ts";
+import { assertMicrosoftDesignerWebProviderAvailable } from "../../core-domain/src/shared/constants/designerWebRetirement.ts";
+import { assertRuntimeProviderAvailable } from "../../core-domain/src/shared/constants/providerRetirement.ts";
+import { assertCommonChatGptWebProviderAvailable } from "../../core-domain/src/shared/constants/chatgptWebRetirement.ts";
 import {
   registerLazyExecutor,
   loadRegisteredExecutor,

@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
 import { getModelLatencyStats } from "../../../../lib/usageDb.ts";
-import { buildErrorBody } from "../../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
 
 const querySchema = z.object({
   windowHours: z.coerce

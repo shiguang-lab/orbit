@@ -16,7 +16,7 @@
 import http from "node:http";
 import net from "node:net";
 import { randomUUID } from "node:crypto";
-import { sanitizeErrorMessage } from "../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
 import { sanitizeHeaders } from "../sanitizeHeaders.ts";
 import { maskSecret } from "../maskSecrets.ts";
 import { applyIdleTimeout, MITM_IDLE_TIMEOUT_MS } from "../socketTimeouts.ts";

@@ -11,7 +11,7 @@
  */
 import { NextResponse } from "next/server";
 
-import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../../../../open-sse/utils/error.ts";
 import { getJobRegistry } from "../../../../../lib/jobRegistry/index.ts";
 
 export const dynamic = "force-dynamic";

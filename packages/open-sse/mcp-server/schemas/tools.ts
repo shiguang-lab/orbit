@@ -18,7 +18,7 @@ import { radarCatalogTool } from "./radarCatalog.ts";
 import {
   AUTO_ROUTING_STRATEGY_VALUES,
   ROUTING_STRATEGY_VALUES,
-} from "../../../src/shared/constants/routingStrategies.ts";
+} from "../../../core-domain/src/shared/constants/routingStrategies.ts";
 // ============ Shared Types ============
 // AuditLevel + McpToolDefinition live in the leaf ./toolDefinition.ts so that
 // toolSearch.ts can import the type without forming a tools.ts ↔ toolSearch.ts cycle.

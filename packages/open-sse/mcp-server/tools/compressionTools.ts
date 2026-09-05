@@ -11,10 +11,10 @@ import { logToolCall } from "../audit.ts";
 import {
   getCompressionSettings,
   updateCompressionSettings,
-} from "../../../src/lib/db/compression.ts";
-import { getCompressionAnalyticsSummary } from "../../../src/lib/db/compressionAnalytics.ts";
-import { getCacheStatsSummary } from "../../../src/lib/db/compressionCacheStats.ts";
-import { listCompressionCombos } from "../../../src/lib/db/compressionCombos.ts";
+} from "../../../core-domain/src/lib/db/compression.ts";
+import { getCompressionAnalyticsSummary } from "../../../core-domain/src/lib/db/compressionAnalytics.ts";
+import { getCacheStatsSummary } from "../../../core-domain/src/lib/db/compressionCacheStats.ts";
+import { listCompressionCombos } from "../../../core-domain/src/lib/db/compressionCombos.ts";
 import type { McpToolExtraLike } from "../scopeEnforcement.ts";
 import {
   getMcpDescriptionCompressionStats,

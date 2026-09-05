@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCachedProviderConnectionById } from "../../../../../lib/db/readCache.ts";
 import { updateProviderConnection } from "../../../../../lib/db/providers.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 import { tryIdeAuth } from "../../../../../lib/cursor/tokenExtractor.ts";
 import {
   renewCursorConnection,

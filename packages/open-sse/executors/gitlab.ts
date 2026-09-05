@@ -10,7 +10,7 @@ import {
 } from "./base.ts";
 import { FETCH_TIMEOUT_MS } from "../config/constants.ts";
 import { getAccessToken } from "../services/tokenRefresh.ts";
-import { isProbeContext } from "../../src/shared/utils/probeOrigin.ts";
+import { isProbeContext } from "../../core-domain/src/shared/utils/probeOrigin.ts";
 import { prepareToolMessages, buildToolAwareResult } from "../translator/webTools.ts";
 import {
   buildStreamingResponse,
@@ -26,7 +26,7 @@ import {
   parseGitLabDirectAccessDetails,
   resolveGitLabOAuthBaseUrl,
   type GitLabDirectAccessDetails,
-} from "../../src/lib/oauth/gitlab.ts";
+} from "../../core-domain/src/lib/oauth/gitlab.ts";
 
 type OpenAIToolCall = {
   id?: string;

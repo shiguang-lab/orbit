@@ -1,7 +1,7 @@
 import { getUnifiedModelsResponse } from "../../../models/catalog.ts";
 import { getServiceModels } from "../../../../../../lib/db/serviceModels.ts";
 import { isServiceBackendPluginId } from "../../../../../../lib/services/serviceBackends.ts";
-import { getRegistryEntry } from "../../../../../../../open-sse/config/providerRegistry.ts";
+import { getRegistryEntry } from "../../../../../../../../open-sse/config/providerRegistry.ts";
 import { getProviderById, getProviderByAlias } from "../../../../../../shared/constants/providers.ts";
 import { isCompatibleProviderConnectionId } from "../../../../../../shared/utils/compatibleProviderId.ts";
 

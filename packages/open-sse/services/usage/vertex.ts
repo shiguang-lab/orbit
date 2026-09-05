@@ -28,7 +28,7 @@ export async function getVertexUsage(connectionId: string, provider: string) {
     return { message: "Vertex connected. Connection id unavailable for usage tracking." };
   }
   try {
-    const { getConnectionSpendUsdSinceAdded } = await import("../../../src/lib/usage/usageStats.ts");
+    const { getConnectionSpendUsdSinceAdded } = await import("../../../core-domain/src/lib/usage/usageStats.ts");
     const { costUsd, requests } = await getConnectionSpendUsdSinceAdded(provider, connectionId);
 
     const spend: JsonRecord = {

@@ -8,7 +8,7 @@
 
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 import { validateBody, isValidationFailure } from "../../../../shared/validation/helpers.ts";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
 import { isPrivateHost } from "../../../../shared/network/outboundUrlGuard.ts";
@@ -16,7 +16,7 @@ import { arePrivateProviderUrlsAllowed } from "../../../../shared/network/outbou
 import {
   testProxiesAgainstTarget,
   getProxyCandidates,
-} from "../../../../../open-sse/utils/proxyFallback.ts";
+} from "../../../../../../open-sse/utils/proxyFallback.ts";
 
 const testSchema = z.object({
   targetUrl: z.string().url("Invalid target URL"),

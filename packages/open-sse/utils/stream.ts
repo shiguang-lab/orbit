@@ -1,6 +1,6 @@
 import { translateResponse, initState } from "../translator/index.ts";
 import { FORMATS } from "../translator/formats.ts";
-import { trackPendingRequest, appendRequestLog } from "../../src/lib/usageDb.ts";
+import { trackPendingRequest, appendRequestLog } from "../../core-domain/src/lib/usageDb.ts";
 import {
   extractUsage,
   hasValidUsage,
@@ -27,8 +27,8 @@ import {
   injectThinkingSignature,
 } from "./streamHelpers.ts";
 import { rejectEmptyChoicesStream, buildEmptyChoicesStreamError } from "./streamEmptyChoices.ts";
-import { calculateCost } from "../../src/lib/usage/costCalculator.ts";
-import { buildShiguangGatewaySseMetadataComment } from "../../src/domain/gatewayResponseMeta.ts";
+import { calculateCost } from "../../core-domain/src/lib/usage/costCalculator.ts";
+import { buildShiguangGatewaySseMetadataComment } from "../../core-domain/src/domain/gatewayResponseMeta.ts";
 import { sseCommentsEnabled } from "./sseHeartbeat.ts";
 import {
   createStructuredSSECollector,
@@ -40,7 +40,7 @@ import {
   isResponsesCommentaryMessageItem,
   sanitizeStreamingChunk,
 } from "../handlers/responseSanitizer.ts";
-import { isFeatureFlagEnabled } from "../../src/shared/utils/featureFlags.ts";
+import { isFeatureFlagEnabled } from "../../core-domain/src/shared/utils/featureFlags.ts";
 import {
   shouldDropResponsesCommentaryEvent,
   createTranslateCommentaryFilter,

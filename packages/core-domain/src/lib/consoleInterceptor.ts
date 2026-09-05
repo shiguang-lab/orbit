@@ -122,7 +122,7 @@ function extractComponent(msg: string): string {
  * Convert arguments to a string message, handling objects and errors.
  *
  * `console.*` takes a printf-style format string, and first-party callers rely on it:
- * apps/realtime/src/live-ws/liveServer.ts passes `%s`/`%d` deliberately, to keep client-supplied values out
+ * apps/realtime/src/live-ws/live-server.ts passes `%s`/`%d` deliberately, to keep client-supplied values out
  * of the format slot (CWE-134). Joining the arguments instead of formatting them left the
  * placeholders literal and the values trailing without their labels, so a reader had to open the
  * source to know which value was which. `util.format` appends surplus arguments exactly like the

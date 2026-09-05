@@ -35,7 +35,7 @@ import {
   getDefaultThinkingBudget,
   getResolvedModelCapabilities,
   supportsReasoning,
-} from "../../src/lib/modelCapabilities.ts";
+} from "../../core-domain/src/lib/modelCapabilities.ts";
 
 // Effort → budget token mapping
 export const EFFORT_BUDGETS: Record<string, number> = {

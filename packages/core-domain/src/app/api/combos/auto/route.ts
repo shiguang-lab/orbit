@@ -3,13 +3,13 @@ import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth
 import {
   VALID_VARIANTS,
   type AutoVariant,
-} from "../../../../../open-sse/services/autoCombo/autoPrefix.ts";
+} from "../../../../../../open-sse/services/autoCombo/autoPrefix.ts";
 import {
   AUTO_SUFFIX_VARIANTS,
   AUTO_TEMPLATE_VARIANTS,
   AUTO_FAMILY_IDS,
-} from "../../../../../open-sse/services/autoCombo/builtinCatalog.ts";
-import { parseAutoSuffix } from "../../../../../open-sse/services/autoCombo/suffixComposition.ts";
+} from "../../../../../../open-sse/services/autoCombo/builtinCatalog.ts";
+import { parseAutoSuffix } from "../../../../../../open-sse/services/autoCombo/suffixComposition.ts";
 
 const ALL_VARIANTS: Array<{ variant: AutoVariant | undefined; name: string }> = [
   { variant: undefined, name: "Auto" },
@@ -26,7 +26,7 @@ export async function GET(request: Request) {
 
   try {
     const { createVirtualAutoCombo } =
-      await import("../../../../../open-sse/services/autoCombo/virtualFactory.ts");
+      await import("../../../../../../open-sse/services/autoCombo/virtualFactory.ts");
 
     const combos = [];
     const seenIds = new Set<string>();

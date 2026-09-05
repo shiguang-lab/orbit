@@ -8,13 +8,13 @@ import { CORS_HEADERS } from "../utils/cors.ts";
 
 import { getRerankProvider, parseRerankModel, RERANK_PROVIDERS } from "../config/rerankRegistry.ts";
 import { errorResponse } from "../utils/error.ts";
-import { attachShiguangGatewayMetaHeaders } from "../../src/domain/gatewayResponseMeta.ts";
-import { calculateModalCost } from "../../src/lib/usage/costCalculator.ts";
-import { generateRequestId } from "../../src/shared/utils/requestId.ts";
-import { saveCallLog } from "../../src/lib/usageDb.ts";
-import { resolveProxyForConnection } from "../../src/lib/db/settings.ts";
+import { attachShiguangGatewayMetaHeaders } from "../../core-domain/src/domain/gatewayResponseMeta.ts";
+import { calculateModalCost } from "../../core-domain/src/lib/usage/costCalculator.ts";
+import { generateRequestId } from "../../core-domain/src/shared/utils/requestId.ts";
+import { saveCallLog } from "../../core-domain/src/lib/usageDb.ts";
+import { resolveProxyForConnection } from "../../core-domain/src/lib/db/settings.ts";
 import { runWithProxyContext } from "../utils/proxyFetch.ts";
-import * as log from "../../src/sse/utils/logger.ts";
+import * as log from "../../core-domain/src/sse/utils/logger.ts";
 
 /** A document as the Cohere-compatible rerank API accepts it: a bare string or `{ text }`. */
 type RerankDocument = string | { text?: string };

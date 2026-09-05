@@ -3,7 +3,7 @@
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 import { requireCliToolsAuth } from "../../../../lib/api/requireCliToolsAuth.ts";
 import { cliMitmStartSchema, cliMitmStopSchema } from "../../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";

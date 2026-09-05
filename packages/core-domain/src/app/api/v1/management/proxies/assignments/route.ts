@@ -3,7 +3,7 @@ import { proxyAssignmentSchema } from "../../../../../../shared/validation/schem
 import { isValidationFailure, validateBody } from "../../../../../../shared/validation/helpers.ts";
 import { createErrorResponse, createErrorResponseFromUnknown } from "../../../../../../lib/api/errorResponse.ts";
 import { requireManagementAuth } from "../../../../../../lib/api/requireManagementAuth.ts";
-import { clearDispatcherCache } from "../../../../../../../open-sse/utils/proxyDispatcher.ts";
+import { clearDispatcherCache } from "../../../../../../../../open-sse/utils/proxyDispatcher.ts";
 
 function toPagination(searchParams: URLSearchParams) {
   const limit = Math.max(1, Math.min(200, Number(searchParams.get("limit") || 100)));

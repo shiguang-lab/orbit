@@ -1,4 +1,4 @@
-import type { ModelCapabilityResolutionSnapshot } from "../../../src/lib/modelCapabilities.ts";
+import type { ModelCapabilityResolutionSnapshot } from "../../../core-domain/src/lib/modelCapabilities.ts";
 
 import type { AutoVariant } from "./autoPrefix";
 import { VALID_VARIANTS } from "./autoPrefix";

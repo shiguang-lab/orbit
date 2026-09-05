@@ -5,25 +5,25 @@
 import {
   getGitHubCopilotInternalUserHeaders,
   getKiroServiceHeaders,
-} from "../../../open-sse/config/providerHeaderProfiles.ts";
+} from "../../../../open-sse/config/providerHeaderProfiles.ts";
 import {
   applyAntigravityClientProfileHeaders,
   getAntigravityClientProfile,
-} from "../../../open-sse/services/antigravityClientProfile.ts";
-import { getAntigravityContentHeaders } from "../../../open-sse/services/antigravityHeaders.ts";
+} from "../../../../open-sse/services/antigravityClientProfile.ts";
+import { getAntigravityContentHeaders } from "../../../../open-sse/services/antigravityHeaders.ts";
 import {
   getAntigravityFetchAvailableModelsUrls,
   ANTIGRAVITY_RUNTIME_BASE_URLS,
-} from "../../../open-sse/config/antigravityUpstream.ts";
+} from "../../../../open-sse/config/antigravityUpstream.ts";
 import {
   getAntigravityRemainingCredits,
   updateAntigravityRemainingCredits,
-} from "../../../open-sse/executors/antigravity.ts";
-import { getCreditsMode } from "../../../open-sse/services/antigravityCredits.ts";
+} from "../../../../open-sse/executors/antigravity.ts";
+import { getCreditsMode } from "../../../../open-sse/services/antigravityCredits.ts";
 import {
   generateAntigravityRequestId,
   getAntigravitySessionId,
-} from "../../../open-sse/services/antigravityIdentity.ts";
+} from "../../../../open-sse/services/antigravityIdentity.ts";
 
 /**
  * Get usage data for a provider connection

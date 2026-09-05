@@ -4,7 +4,7 @@ import { generateServiceApiKey } from "../../../../../lib/services/apiKey.ts";
 import { updateServiceField } from "../../../../../lib/db/versionManager.ts";
 import { encrypt } from "../../../../../lib/db/encryption.ts";
 import { createErrorResponse } from "../../../../../lib/api/errorResponse.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 
 export async function POST(): Promise<Response> {
   try {

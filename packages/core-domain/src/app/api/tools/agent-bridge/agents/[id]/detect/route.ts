@@ -5,7 +5,7 @@
  */
 import { detectAgent } from "../../../../../../../mitm/detection/index.ts";
 import type { AgentId } from "../../../../../../../mitm/types.ts";
-import { sanitizeErrorMessage } from "../../../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../../../open-sse/utils/error.ts";
 import { createErrorResponse } from "../../../../../../../lib/api/errorResponse.ts";
 
 const VALID_IDS = new Set<AgentId>([

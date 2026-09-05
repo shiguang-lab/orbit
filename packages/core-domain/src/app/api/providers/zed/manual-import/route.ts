@@ -11,7 +11,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
 import { createProviderConnection } from "../../../../../lib/db/providers.ts";
-import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../../../../open-sse/utils/error.ts";
 
 const manualImportSchema = z.object({
   provider: z.string().min(1).max(64),

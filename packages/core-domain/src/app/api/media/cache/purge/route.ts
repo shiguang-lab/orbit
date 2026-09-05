@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { isAuthenticated } from "../../../../../shared/utils/apiAuth.ts";
 import { clearMemoryCache } from "../../../../../lib/semanticCache.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 
 export const dynamic = "force-dynamic";
 

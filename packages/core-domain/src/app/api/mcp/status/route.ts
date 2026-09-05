@@ -1,15 +1,15 @@
 import { NextResponse } from "next/server";
-import { getAuditStats, queryAuditEntries } from "../../../../../open-sse/mcp-server/audit.ts";
+import { getAuditStats, queryAuditEntries } from "../../../../../../open-sse/mcp-server/audit.ts";
 import {
   isMcpHeartbeatOnline,
   isProcessAlive,
   readMcpHeartbeat,
   resolveMcpHeartbeatPath,
-} from "../../../../../open-sse/mcp-server/runtimeHeartbeat.ts";
+} from "../../../../../../open-sse/mcp-server/runtimeHeartbeat.ts";
 import {
   getMcpHttpStatus,
   isMcpHttpTransportReady,
-} from "../../../../../open-sse/mcp-server/httpTransport";
+} from "../../../../../../open-sse/mcp-server/httpTransport";
 import { getCachedSettings } from "../../../../lib/db/settings.ts";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
 

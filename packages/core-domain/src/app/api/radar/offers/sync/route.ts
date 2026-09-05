@@ -1,7 +1,7 @@
 /** POST a server-side Radar offers sync. The browser never receives the supporter key. */
 
 import { NextResponse } from "next/server";
-import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 import { syncRadarOffers } from "../../../../../lib/radar/offersSync.ts";
 import { isAuthenticated } from "../../../../../shared/utils/apiAuth.ts";
 import { CORS_HEADERS, handleCorsOptions } from "../../../../../shared/utils/cors.ts";

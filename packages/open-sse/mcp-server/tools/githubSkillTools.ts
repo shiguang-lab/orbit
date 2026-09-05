@@ -22,7 +22,7 @@ import {
   INSTALL_TARGETS,
   type GitHubSkillRepo,
   type SkillInstallResult,
-} from "../../../src/lib/skills/githubCollector.ts";
+} from "../../../core-domain/src/lib/skills/githubCollector.ts";
 
 // ── Handlers ─────────────────────────────────────────────────────────────────
 

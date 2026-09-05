@@ -1,4 +1,4 @@
-import { isKimiTokenExpiringSoon } from "../../open-sse/utils/kimiJwt.ts";
+import { isKimiTokenExpiringSoon } from "../../../open-sse/utils/kimiJwt.ts";
 import { exchangeKimiRefreshToken } from "./kimi/tokenRefresh.ts";
 import { updateProviderConnection } from "./db/providers.ts";
 

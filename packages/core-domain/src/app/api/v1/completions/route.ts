@@ -1,6 +1,6 @@
 import { CORS_HEADERS } from "../../../../shared/utils/cors.ts";
 import { buildClientRawRequest, handleChat } from "../../../../sse/handlers/chat.ts";
-import { initTranslators } from "../../../../../open-sse/translator/index.ts";
+import { initTranslators } from "../../../../../../open-sse/translator/index.ts";
 import { createInjectionGuard } from "../../../../middleware/promptInjectionGuard.ts";
 import { asTextCompletionResponse } from "./textCompletionTransform.ts";
 import {

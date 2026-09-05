@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { buildErrorBody } from "../../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
 import { purgeCallLogs } from "../../../../lib/db/cleanup.ts";
 import { isAuthenticated } from "../../../../shared/utils/apiAuth.ts";
 

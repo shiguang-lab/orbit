@@ -1,7 +1,7 @@
 import { getVersionManagerTool } from "../db/versionManager.ts";
 import { getSettings } from "../db/settings.ts";
 import { markAllUnavailable } from "../db/serviceModels.ts";
-import { resolveDedicatedCliproxyapiApiKey } from "../../../open-sse/handlers/chatCore/cliproxyapiCredentials.ts";
+import { resolveDedicatedCliproxyapiApiKey } from "../../../../open-sse/handlers/chatCore/cliproxyapiCredentials.ts";
 import { registerSupervisor, getSupervisor } from "./registry";
 import { ServiceSupervisor } from "./ServiceSupervisor";
 import { resolveSpawnArgs as nineRouterSpawnArgs } from "./installers/ninerouter";

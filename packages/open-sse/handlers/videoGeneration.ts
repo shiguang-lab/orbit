@@ -42,14 +42,14 @@ import {
   extractComfyOutputFiles,
   resolveComfyUiBaseUrl,
 } from "../utils/comfyuiClient.ts";
-import { saveCallLog } from "../../src/lib/usageDb.ts";
-import { getAllCustomModels } from "../../src/lib/db/models.ts";
+import { saveCallLog } from "../../core-domain/src/lib/usageDb.ts";
+import { getAllCustomModels } from "../../core-domain/src/lib/db/models.ts";
 import { sanitizeErrorMessage } from "../utils/error.ts";
 import {
   FetchTimeoutError,
   fetchWithTimeout,
   getConfiguredTimeout,
-} from "../../src/shared/utils/fetchTimeout.ts";
+} from "../../core-domain/src/shared/utils/fetchTimeout.ts";
 import { handleFalVideoGeneration } from "./mediaGeneration/fal.ts";
 
 /**

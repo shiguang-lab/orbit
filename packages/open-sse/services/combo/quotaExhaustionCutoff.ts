@@ -19,11 +19,11 @@ import {
   type PreflightQuotaThresholds,
   type QuotaInfo,
 } from "../quotaPreflight.ts";
-import { getCachedProviderConnectionById } from "../../../src/lib/localDb.ts";
+import { getCachedProviderConnectionById } from "../../../core-domain/src/lib/localDb.ts";
 import {
   resolveResilienceSettings,
   type ResilienceSettings,
-} from "../../../src/lib/resilience/settings";
+} from "../../../core-domain/src/lib/resilience/settings";
 import { fetchResetAwareQuotaWithCache } from "./quotaStrategies.ts";
 import type { ResetWindowConfig } from "./quotaScoring.ts";
 

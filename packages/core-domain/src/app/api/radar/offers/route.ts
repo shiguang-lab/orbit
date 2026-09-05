@@ -1,7 +1,7 @@
 /** GET the verified local Radar offers cache. Never proxies the private service. */
 
 import { NextResponse } from "next/server";
-import { buildErrorBody, sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 import { getRadarOffers } from "../../../../lib/radar/index.ts";
 import { isAuthenticated } from "../../../../shared/utils/apiAuth.ts";
 import { CORS_HEADERS, handleCorsOptions } from "../../../../shared/utils/cors.ts";

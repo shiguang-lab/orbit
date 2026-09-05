@@ -1,4 +1,4 @@
-import { getExplicitModelOutputCap } from "../../src/lib/modelCapabilities.ts";
+import { getExplicitModelOutputCap } from "../../core-domain/src/lib/modelCapabilities.ts";
 import { isDiscoverableAntigravityModelId } from "../config/antigravityModelAliases";
 
 /**

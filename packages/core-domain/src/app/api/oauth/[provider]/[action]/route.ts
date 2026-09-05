@@ -28,7 +28,7 @@ import { AWS_REGION_PATTERN } from "../../../../../lib/oauth/constants/oauth.ts"
 import { antigravityDegradedProjectState } from "../../../../../lib/oauth/antigravityProjectGate.ts";
 import { syncToCloud } from "../../../../../lib/cloudSync.ts";
 import { startLocalServer } from "../../../../../lib/oauth/utils/server.ts";
-import { runWithProxyContextOrDirect } from "../../../../../../open-sse/utils/proxyFetch.ts";
+import { runWithProxyContextOrDirect } from "../../../../../../../open-sse/utils/proxyFetch.ts";
 import {
   jsonObjectSchema,
   oauthDeviceCompleteSchema,
@@ -38,7 +38,7 @@ import {
 } from "../../../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../../../shared/validation/helpers.ts";
 import { isAuthRequired, isAuthenticated } from "../../../../../shared/utils/apiAuth.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 import { GITLAB_DUO_OAUTH_SETUP_MESSAGE } from "../../../../../shared/constants/gitlabDuoSetupMessage.ts";
 import { keychainImportOnlyGuard } from "./keychainImportOnly";
 import { buildRemoteOAuthHint } from "./remoteOAuthHint";

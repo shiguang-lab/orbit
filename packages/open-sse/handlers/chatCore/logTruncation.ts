@@ -4,7 +4,7 @@ import {
   getChatLogArrayTailItems,
   getChatLogMaxObjectKeys,
   getChatLogMaxBodyBytes,
-} from "../../../src/lib/logEnv.ts";
+} from "../../../core-domain/src/lib/logEnv.ts";
 import { estimateSizeFast } from "../../utils/estimateSize.ts";
 
 export const MEMORY_EXTRACTION_TEXT_LIMIT = 64 * 1024;

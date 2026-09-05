@@ -27,7 +27,7 @@ import {
   isLoopbackNodeHost,
   type AudioProvider,
   type ProviderNodeRow,
-} from "../../../../../open-sse/config/audioRegistry.ts";
+} from "../../../../../../open-sse/config/audioRegistry.ts";
 
 /** Feature flag gating remote (non-loopback) audio provider nodes. Default OFF. */
 export const AUDIO_REMOTE_NODES_FLAG = "AUDIO_REMOTE_PROVIDER_NODES";

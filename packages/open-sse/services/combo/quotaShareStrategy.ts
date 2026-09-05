@@ -31,7 +31,7 @@
  * Part of: Quota Sharing Engine — Phase 3 (#9 dedicated quota-share strategy).
  */
 
-import { isBucketSaturated } from "../../../src/lib/quota/accountBuckets.ts";
+import { isBucketSaturated } from "../../../core-domain/src/lib/quota/accountBuckets.ts";
 import { incrementInflight, decrementInflight, getInflight } from "./quotaShareInflight.ts";
 import type { ResolvedComboTarget } from "./types.ts";
 

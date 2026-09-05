@@ -1,30 +1,30 @@
-import { getAntigravityModelsDiscoveryUrls } from "../../../../../../../open-sse/config/antigravityUpstream.ts";
+import { getAntigravityModelsDiscoveryUrls } from "../../../../../../../../open-sse/config/antigravityUpstream.ts";
 import {
   GROK_BUILD_DEFAULT_CONTEXT_WINDOW,
   getGrokBuildModelsHeaders,
   GROK_BUILD_MODELS_URL,
   GROK_BUILD_SUPPORTED_REASONING_EFFORTS,
-} from "../../../../../../../open-sse/config/grokBuild.ts";
-import { getAntigravityContentHeaders } from "../../../../../../../open-sse/services/antigravityHeaders.ts";
+} from "../../../../../../../../open-sse/config/grokBuild.ts";
+import { getAntigravityContentHeaders } from "../../../../../../../../open-sse/services/antigravityHeaders.ts";
 import { parseGeminiModelsList } from "../../../../../../lib/providerModels/geminiModelsParser.ts";
 import {
   CLINE_MODELS_ENDPOINT,
   CLINEPASS_MODELS_ENDPOINT,
   parseClineModels,
   parseClinepassRecommendedModels,
-} from "../../../../../../../open-sse/services/clinepassModels.ts";
-import { buildClaudeCodeCompatibleHeaders } from "../../../../../../../open-sse/services/claudeCodeCompatible.ts";
+} from "../../../../../../../../open-sse/services/clinepassModels.ts";
+import { buildClaudeCodeCompatibleHeaders } from "../../../../../../../../open-sse/services/claudeCodeCompatible.ts";
 import {
   buildKimiCodeIdentityHeaders,
   getKimiCodeCliUserAgent,
   KIMI_CODING_MODELS_URL,
-} from "../../../../../../../open-sse/config/providers/registry/kimi/coding/runtime.ts";
-import { ALIBABA_MODEL_STUDIO_MODELS } from "../../../../../../../open-sse/config/providers/registry/alibaba/index.ts";
-import { QWEN_CLOUD_TEXT_MODELS } from "../../../../../../../open-sse/config/providers/registry/qwen-cloud/index.ts";
-import { filterAlibabaFreeEligibleModels } from "../../../../../../../open-sse/services/alibabaFreeTierDiscovery.ts";
-import { shouldUseLiveAlibabaFreeModelDiscovery } from "../../../../../../../open-sse/services/alibabaFreeTier.ts";
-import { isDashscopeTextModelId } from "../../../../../../../open-sse/services/dashscopeTextModels.ts";
-import { extractZaiToken } from "../../../../../../../open-sse/services/zaiWebCredentials.ts";
+} from "../../../../../../../../open-sse/config/providers/registry/kimi/coding/runtime.ts";
+import { ALIBABA_MODEL_STUDIO_MODELS } from "../../../../../../../../open-sse/config/providers/registry/alibaba/index.ts";
+import { QWEN_CLOUD_TEXT_MODELS } from "../../../../../../../../open-sse/config/providers/registry/qwen-cloud/index.ts";
+import { filterAlibabaFreeEligibleModels } from "../../../../../../../../open-sse/services/alibabaFreeTierDiscovery.ts";
+import { shouldUseLiveAlibabaFreeModelDiscovery } from "../../../../../../../../open-sse/services/alibabaFreeTier.ts";
+import { isDashscopeTextModelId } from "../../../../../../../../open-sse/services/dashscopeTextModels.ts";
+import { extractZaiToken } from "../../../../../../../../open-sse/services/zaiWebCredentials.ts";
 import { normalizeOpenAiLikeModelsResponse } from "./normalizers";
 
 const QWEN_CLOUD_TEXT_MODEL_IDS = new Set(QWEN_CLOUD_TEXT_MODELS.map((model) => model.id));

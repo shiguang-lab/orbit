@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import {
   setSystemPromptConfig,
   getSystemPromptConfig,
-} from "../../../../../open-sse/services/systemPrompt.ts";
+} from "../../../../../../open-sse/services/systemPrompt.ts";
 import { updateSettings } from "../../../../lib/localDb.ts";
 import { updateSystemPromptSchema } from "../../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";

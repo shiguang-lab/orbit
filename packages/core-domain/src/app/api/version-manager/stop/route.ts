@@ -2,7 +2,7 @@
 
 import { NextResponse } from "next/server";
 import { getSupervisor } from "../../../../lib/services/registry.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 import { parseVersionManagerToolRequest } from "../request";
 

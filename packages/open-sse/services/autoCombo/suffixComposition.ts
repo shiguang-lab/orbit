@@ -18,9 +18,9 @@
  */
 import type { AutoVariant } from "./autoPrefix";
 import { classifyTier } from "../tierResolver";
-import { getResolvedModelCapabilities } from "../../../src/lib/modelCapabilities.ts";
-import { isVisionModelId } from "../../../src/shared/constants/visionModels.ts";
-import { isVisionBridgeForcedModel } from "../../../src/shared/constants/visionBridgeDefaults.ts";
+import { getResolvedModelCapabilities } from "../../../core-domain/src/lib/modelCapabilities.ts";
+import { isVisionModelId } from "../../../core-domain/src/shared/constants/visionModels.ts";
+import { isVisionBridgeForcedModel } from "../../../core-domain/src/shared/constants/visionBridgeDefaults.ts";
 
 export type AutoCategory = "coding" | "reasoning" | "vision" | "chat" | "multimodal";
 export type AutoTier =

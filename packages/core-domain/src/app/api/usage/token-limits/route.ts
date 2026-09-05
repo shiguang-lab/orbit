@@ -12,7 +12,7 @@
 import { NextResponse } from "next/server";
 import { setTokenLimitSchema } from "../../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
-import { buildErrorBody, sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 import {
   listTokenLimits,
   upsertTokenLimit,

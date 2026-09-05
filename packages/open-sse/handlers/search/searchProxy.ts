@@ -8,7 +8,7 @@
  * query, API key, or proxy credentials).
  */
 
-import { saveCallLog } from "../../../src/lib/usageDb.ts";
+import { saveCallLog } from "../../../core-domain/src/lib/usageDb.ts";
 import { sanitizeErrorMessage } from "../../utils/error.ts";
 import { formatSearchProviderFailure } from "./providerFailure.ts";
 import type { SearchProviderConfig } from "../../config/searchRegistry.ts";
@@ -37,7 +37,7 @@ export async function resolveSearchProxy(
     return { proxy: null, proxyLevel: "direct" };
   }
   try {
-    const { resolveProxyForConnection } = await import("../../../src/lib/db/settings.ts");
+    const { resolveProxyForConnection } = await import("../../../core-domain/src/lib/db/settings.ts");
     const proxyInfo = await resolveProxyForConnection(connectionId, apiKeyId, providerId);
     return { proxy: proxyInfo.proxy, proxyLevel: proxyInfo.level || "direct" };
   } catch {
@@ -73,7 +73,7 @@ export async function emitSearchProxyEvent(
   status: string
 ): Promise<void> {
   try {
-    const { logProxyEvent } = await import("../../../src/lib/proxyLogger.ts");
+    const { logProxyEvent } = await import("../../../core-domain/src/lib/proxyLogger.ts");
     let targetOrigin = "";
     let targetPath = "";
     try {

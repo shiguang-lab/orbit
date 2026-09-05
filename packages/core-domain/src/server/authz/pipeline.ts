@@ -13,7 +13,7 @@ import {
   resolveStampedPeer,
   resolveStampedViaProxy,
 } from "./peerStamp";
-import { checkRequestIP } from "../../../open-sse/services/ipFilter.ts";
+import { checkRequestIP } from "../../../../open-sse/services/ipFilter.ts";
 import { clientApiPolicy } from "./policies/clientApi";
 import { managementPolicy } from "./policies/management";
 import { publicPolicy } from "./policies/public";

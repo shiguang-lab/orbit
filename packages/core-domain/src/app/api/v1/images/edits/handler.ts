@@ -3,12 +3,12 @@ import {
   handleCodexImageEdit,
   handleOpenAIImageEdit,
   handleOpenRouterImageEdit,
-} from "../../../../../../open-sse/handlers/imageGeneration.ts";
+} from "../../../../../../../open-sse/handlers/imageGeneration.ts";
 import {
   handleFalAIImageEdit,
   FAL_IMAGE_EDIT_MAX_REFERENCES,
   isFalImageEditModel,
-} from "../../../../../../open-sse/handlers/imageGeneration/providers/fal.ts";
+} from "../../../../../../../open-sse/handlers/imageGeneration/providers/fal.ts";
 import { createInjectionGuard } from "../../../../../middleware/promptInjectionGuard.ts";
 import {
   getProviderCredentialsWithQuotaPreflight,
@@ -18,9 +18,9 @@ import {
   parseImageModel,
   getImageProvider,
   getImageModelEntry,
-} from "../../../../../../open-sse/config/imageRegistry.ts";
-import { errorResponse, unavailableResponse } from "../../../../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../../../../open-sse/config/constants.ts";
+} from "../../../../../../../open-sse/config/imageRegistry.ts";
+import { errorResponse, unavailableResponse } from "../../../../../../../open-sse/utils/error.ts";
+import { HTTP_STATUS } from "../../../../../../../open-sse/config/constants.ts";
 import * as log from "../../../../../sse/utils/logger.ts";
 import { toJsonErrorPayload } from "../../../../../shared/utils/upstreamError.ts";
 import { enforceApiKeyPolicy } from "../../../../../shared/utils/apiKeyPolicy.ts";
@@ -31,8 +31,8 @@ import {
 } from "../../../../../lib/images/imageRouteModel.ts";
 import { isMicrosoftDesignerWebProviderRetiredError } from "../../../../../shared/constants/designerWebRetirement.ts";
 import { resolveProxyForConnection } from "../../../../../lib/localDb.ts";
-import { runWithProxyContext } from "../../../../../../open-sse/utils/proxyFetch.ts";
-import { isCodexFreePlan } from "../../../../../../open-sse/executors/codex/tools.ts";
+import { runWithProxyContext } from "../../../../../../../open-sse/utils/proxyFetch.ts";
+import { isCodexFreePlan } from "../../../../../../../open-sse/executors/codex/tools.ts";
 import {
   getBodySizeLimit,
   readRequestBodyWithLimit,

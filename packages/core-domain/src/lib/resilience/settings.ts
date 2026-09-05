@@ -2,7 +2,7 @@ import {
   DEFAULT_API_LIMITS,
   PROVIDER_PROFILES,
   STREAM_THROUGHPUT_WATCHDOG,
-} from "../../../open-sse/config/constants.ts";
+} from "../../../../open-sse/config/constants.ts";
 
 import type { JsonRecord, ResilienceSettings, ResilienceSettingsPatch } from "./settings/types";
 import {

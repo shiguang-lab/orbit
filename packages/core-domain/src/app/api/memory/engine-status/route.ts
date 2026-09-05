@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { isAuthenticated } from "../../../../shared/utils/apiAuth.ts";
 import { engineStatus } from "../../../../lib/memory/retrieval.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 export async function GET(request: Request) {
   if (!(await isAuthenticated(request))) {

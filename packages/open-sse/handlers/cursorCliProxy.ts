@@ -21,10 +21,10 @@
 
 import { SignJWT, jwtVerify, type JWTPayload } from "jose";
 import { z } from "zod";
-import { getApiKeyById, getApiKeyMetadata, validateApiKey } from "../../src/lib/db/apiKeys.ts";
-import { getProviderConnections } from "../../src/lib/db/providers.ts";
-import { saveCallLog } from "../../src/lib/usage/callLogs.ts";
-import { isRequireApiKeyEnabled } from "../../src/shared/utils/featureFlags.ts";
+import { getApiKeyById, getApiKeyMetadata, validateApiKey } from "../../core-domain/src/lib/db/apiKeys.ts";
+import { getProviderConnections } from "../../core-domain/src/lib/db/providers.ts";
+import { saveCallLog } from "../../core-domain/src/lib/usage/callLogs.ts";
+import { isRequireApiKeyEnabled } from "../../core-domain/src/shared/utils/featureFlags.ts";
 import { HTTP_STATUS } from "../config/constants.ts";
 import {
   CURSOR_API_BASE_URL,

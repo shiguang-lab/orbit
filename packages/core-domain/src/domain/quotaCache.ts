@@ -16,9 +16,9 @@
  * @module domain/quotaCache
  */
 
-import { getUsageForProvider } from "../../open-sse/services/usage.ts";
+import { getUsageForProvider } from "../../../open-sse/services/usage.ts";
 import { getCachedProviderConnectionById, resolveProxyForConnection } from "../lib/localDb.ts";
-import { runWithProxyContext } from "../../open-sse/utils/proxyFetch.ts";
+import { runWithProxyContext } from "../../../open-sse/utils/proxyFetch.ts";
 import { safePercentage } from "../shared/utils/formatting.ts";
 import {
   saveQuotaSnapshot,
@@ -30,14 +30,14 @@ import {
   CODEX_SPARK_QUOTA_SESSION,
   CODEX_SPARK_QUOTA_WEEKLY,
   getCodexQuotaWindowFilterForModel,
-} from "../../open-sse/config/codexQuotaScopes.ts";
+} from "../../../open-sse/config/codexQuotaScopes.ts";
 import {
   createCodexAccountPool,
   getCodexChildQuotaHydration,
   resolveCodexAccount,
   type CodexPersistedQuotaState,
-} from "../../open-sse/services/codexAccount/index.ts";
-import { getAntigravityQuotaFamily } from "../../open-sse/services/antigravityQuotaFamily.ts";
+} from "../../../open-sse/services/codexAccount/index.ts";
+import { getAntigravityQuotaFamily } from "../../../open-sse/services/antigravityQuotaFamily.ts";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 

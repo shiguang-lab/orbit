@@ -193,7 +193,7 @@ export async function resolvePlaywrightProxy(
     const resolver =
       deps?.resolveProxy ??
       (async (id: string) => {
-        const { resolveProxyForProvider } = await import("../../src/lib/db/proxies");
+        const { resolveProxyForProvider } = await import("../../core-domain/src/lib/db/proxies");
         return resolveProxyForProvider(id);
       });
     const p = await resolver(providerKey);

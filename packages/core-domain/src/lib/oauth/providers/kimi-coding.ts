@@ -6,8 +6,8 @@ import {
   buildKimiCodeIdentityHeaders,
   normalizeKimiDeviceId,
   sanitizeKimiHeaderValue,
-} from "../../../../open-sse/config/providers/registry/kimi/coding/runtime.ts";
-import { getKimiDeviceModel } from "../../../../open-sse/utils/kimiDevice.ts";
+} from "../../../../../open-sse/config/providers/registry/kimi/coding/runtime.ts";
+import { getKimiDeviceModel } from "../../../../../open-sse/utils/kimiDevice.ts";
 import { resolveDataDir } from "../../dataPaths";
 import { KIMI_CODING_CONFIG } from "../constants/oauth";
 

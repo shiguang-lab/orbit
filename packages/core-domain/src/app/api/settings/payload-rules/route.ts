@@ -3,7 +3,7 @@ import { updateSettings } from "../../../../lib/localDb.ts";
 import {
   getPayloadRulesConfig,
   normalizePayloadRulesConfig,
-} from "../../../../../open-sse/services/payloadRules.ts";
+} from "../../../../../../open-sse/services/payloadRules.ts";
 import { updatePayloadRulesSchema } from "../../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";

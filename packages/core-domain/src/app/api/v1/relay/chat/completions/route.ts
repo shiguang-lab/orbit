@@ -15,7 +15,7 @@ import {
   buildErrorBody,
   parseUpstreamError,
   sanitizeErrorMessage,
-} from "../../../../../../../open-sse/utils/error.ts";
+} from "../../../../../../../../open-sse/utils/error.ts";
 import {
   checkIpRateLimit,
   extractToken,
@@ -31,10 +31,10 @@ import {
   shouldTryBifrostForRequest,
   type BifrostRoutingConfig,
 } from "./routingBackend";
-import { getProviderPluginManifestEntryForModel } from "../../../../../../../open-sse/config/providerPluginManifestRegistry.ts";
-import { getProviderPluginManifestHeader } from "../../../../../../../open-sse/config/providerPluginManifestUrl.ts";
+import { getProviderPluginManifestEntryForModel } from "../../../../../../../../open-sse/config/providerPluginManifestRegistry.ts";
+import { getProviderPluginManifestHeader } from "../../../../../../../../open-sse/config/providerPluginManifestUrl.ts";
 import { finalizeReadableStream } from "./streamFinalizer";
-import { stripStaleEncodingHeaders } from "../../../../../../../open-sse/utils/upstreamResponseHeaders.ts";
+import { stripStaleEncodingHeaders } from "../../../../../../../../open-sse/utils/upstreamResponseHeaders.ts";
 import {
   clearBifrostFailure,
   getActiveBifrostCooldown,

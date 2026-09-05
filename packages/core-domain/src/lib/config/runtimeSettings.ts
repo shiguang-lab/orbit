@@ -1,9 +1,9 @@
 import { clearHealthCheckLogCache } from "../tokenHealthCheck.ts";
-import { setCustomBannedSignals } from "../../../open-sse/services/accountFallback.ts";
+import { setCustomBannedSignals } from "../../../../open-sse/services/accountFallback.ts";
 import {
   setOperatorProviderErrorRules,
   type OperatorProviderErrorRule,
-} from "../../../open-sse/config/providerErrorRules.ts";
+} from "../../../../open-sse/config/providerErrorRules.ts";
 import { isAutomatedTestProcess } from "../../shared/utils/testProcess.ts";
 
 type JsonRecord = Record<string, unknown>;
@@ -288,7 +288,7 @@ function getPreviousSnapshot(): RuntimeSettingsSnapshot {
 
 async function applyPayloadRulesSection(payloadRules: unknown) {
   const { clearPayloadRulesConfigOverride, setPayloadRulesConfig } =
-    await import("../../../open-sse/services/payloadRules.ts");
+    await import("../../../../open-sse/services/payloadRules.ts");
 
   if (payloadRules === null || payloadRules === undefined) {
     clearPayloadRulesConfigOverride();
@@ -299,13 +299,13 @@ async function applyPayloadRulesSection(payloadRules: unknown) {
 }
 
 async function applyModelAliasesSection(modelAliases: Record<string, string>) {
-  const { setCustomAliases } = await import("../../../open-sse/services/modelDeprecation.ts");
+  const { setCustomAliases } = await import("../../../../open-sse/services/modelDeprecation.ts");
   setCustomAliases(modelAliases);
 }
 
 async function applyBackgroundDegradationSection(backgroundDegradation: JsonRecord | null) {
   const { getDefaultDegradationMap, getDefaultDetectionPatterns, setBackgroundDegradationConfig } =
-    await import("../../../open-sse/services/backgroundTaskDetector.ts");
+    await import("../../../../open-sse/services/backgroundTaskDetector.ts");
 
   if (!backgroundDegradation) {
     setBackgroundDegradationConfig({
@@ -330,7 +330,7 @@ async function applyBackgroundDegradationSection(backgroundDegradation: JsonReco
 }
 
 async function applyCliCompatProvidersSection(cliCompatProviders: string[]) {
-  const { setCliCompatProviders } = await import("../../../open-sse/config/cliFingerprints.ts");
+  const { setCliCompatProviders } = await import("../../../../open-sse/config/cliFingerprints.ts");
   setCliCompatProviders(cliCompatProviders);
 }
 
@@ -341,7 +341,7 @@ async function applyCacheControlSection() {
 
 async function applyUsageTrackingSection(newBuffer: number | null) {
   const { invalidateBufferTokensCache, setBufferTokensCache } =
-    await import("../../../open-sse/utils/usageTracking.ts");
+    await import("../../../../open-sse/utils/usageTracking.ts");
   if (typeof newBuffer === "number" && newBuffer >= 0) {
     // Set the value directly so the first request after a settings save gets the
     // correct count synchronously — no race window back to DEFAULT (2000).
@@ -353,7 +353,7 @@ async function applyUsageTrackingSection(newBuffer: number | null) {
 
 async function applyThoughtSignatureSection(mode: string) {
   const { setGeminiThoughtSignatureMode } =
-    await import("../../../open-sse/services/geminiThoughtSignatureStore.ts");
+    await import("../../../../open-sse/services/geminiThoughtSignatureStore.ts");
   setGeminiThoughtSignatureMode(mode);
 }
 
@@ -374,7 +374,7 @@ async function applyCorsOriginsSection(corsOrigins: string) {
  */
 async function applyCcBridgeTransformsSection(ccBridgeTransforms: unknown) {
   const { setSystemTransformsConfig } =
-    await import("../../../open-sse/services/systemTransforms.ts");
+    await import("../../../../open-sse/services/systemTransforms.ts");
   if (ccBridgeTransforms && typeof ccBridgeTransforms === "object") {
     setSystemTransformsConfig(ccBridgeTransforms);
   }
@@ -390,7 +390,7 @@ function applyAuthzBypassSection(snapshot: AuthzBypassSnapshot) {
 
 async function applySystemTransformsSection(systemTransforms: unknown) {
   const { setSystemTransformsConfig, resetSystemTransformsConfig } =
-    await import("../../../open-sse/services/systemTransforms.ts");
+    await import("../../../../open-sse/services/systemTransforms.ts");
 
   if (
     systemTransforms === null ||

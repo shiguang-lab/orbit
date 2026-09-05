@@ -11,7 +11,7 @@
  */
 
 import { getProviderConnectionById, updateProviderConnection } from "./localDb.ts";
-import { refreshCopilotToken } from "../../open-sse/services/tokenRefresh.ts";
+import { refreshCopilotToken } from "../../../open-sse/services/tokenRefresh.ts";
 
 type HealthCheckLogger = {
   info: (tag: string, msg: string) => void;

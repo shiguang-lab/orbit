@@ -1,7 +1,7 @@
 import {
   listExtractionConfigs,
   type TokenSource,
-} from "../../../open-sse/services/tokenExtractionConfig.ts";
+} from "../../../../open-sse/services/tokenExtractionConfig.ts";
 import { getWebSessionCredentialRequirement } from "../../shared/providers/webSessionCredentials.ts";
 
 export const WEB_SESSION_CONTRACT_VERSION = 1;

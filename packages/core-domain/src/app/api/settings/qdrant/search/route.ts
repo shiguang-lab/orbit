@@ -3,7 +3,7 @@ import { isAuthenticated } from "../../../../../shared/utils/apiAuth.ts";
 import { validateBody, isValidationFailure } from "../../../../../shared/validation/helpers.ts";
 import { QdrantSearchSchema } from "../../../../../shared/schemas/qdrant.ts";
 import { searchSemanticMemory } from "../../../../../lib/memory/qdrant.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 
 export async function POST(request: NextRequest) {
   if (!(await isAuthenticated(request))) {

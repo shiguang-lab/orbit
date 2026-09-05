@@ -14,7 +14,7 @@ import { CORS_HEADERS, handleCorsOptions } from "../../../../shared/utils/cors.t
 import { isFeatureFlagEnabled } from "../../../../shared/utils/featureFlags.ts";
 import { isAuthenticated } from "../../../../shared/utils/apiAuth.ts";
 import { syncRadar } from "../../../../lib/radar/sync.ts";
-import { buildErrorBody } from "../../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
 import { radarSyncBodyError, validateRadarSyncBody } from "../syncRequest";
 
 export const dynamic = "force-dynamic";
@@ -52,7 +52,7 @@ export async function POST(request: Request) {
     const result = await syncRadar();
     return NextResponse.json(result, { headers: CORS_HEADERS });
   } catch (err: unknown) {
-    const { sanitizeErrorMessage } = await import("../../../../../open-sse/utils/error.ts");
+    const { sanitizeErrorMessage } = await import("../../../../../../open-sse/utils/error.ts");
     return NextResponse.json(
       buildErrorBody(500, sanitizeErrorMessage(err) || "Radar sync failed"),
       { status: 500, headers: CORS_HEADERS }

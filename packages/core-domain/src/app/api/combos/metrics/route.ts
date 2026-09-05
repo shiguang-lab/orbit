@@ -4,7 +4,7 @@ import {
   getComboMetrics,
   resetComboMetrics,
   resetAllComboMetrics,
-} from "../../../../../open-sse/services/comboMetrics.ts";
+} from "../../../../../../open-sse/services/comboMetrics.ts";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
 
 // GET /api/combos/metrics - Get per-combo metrics

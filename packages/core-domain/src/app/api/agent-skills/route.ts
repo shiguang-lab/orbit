@@ -11,7 +11,7 @@
  */
 import { NextResponse } from "next/server";
 
-import { buildErrorBody } from "../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../../open-sse/utils/error.ts";
 import { ListQuerySchema } from "../../../lib/agentSkills/schemas.ts";
 import { filterCatalog, computeCoverage } from "../../../lib/agentSkills/catalog.ts";
 

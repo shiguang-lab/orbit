@@ -1,7 +1,7 @@
 import { exportCallLogsSince } from "../../../../lib/usage/callLogs.ts";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
 import { exportProxyLogsSince } from "../../../../lib/db/proxyLogs.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 /**
  * GET /api/logs/export — export logs as JSON

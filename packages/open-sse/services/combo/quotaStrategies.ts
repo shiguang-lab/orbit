@@ -32,8 +32,8 @@ import {
 } from "../accountFallback.ts";
 import { PRE_SCREEN_CONCURRENCY } from "../comboConfig.ts";
 import { getQuotaFetcher } from "../quotaPreflight.ts";
-import { getCircuitBreaker } from "../../../src/shared/utils/circuitBreaker";
-import { getCachedProviderConnections } from "../../../src/lib/db/readCache";
+import { getCircuitBreaker } from "../../../core-domain/src/shared/utils/circuitBreaker";
+import { getCachedProviderConnections } from "../../../core-domain/src/lib/db/readCache";
 import { MAX_RR_COUNTERS, rrCounters } from "./rrState.ts";
 import type { ResolvedComboTarget, IsModelAvailable } from "./types.ts";
 import {
@@ -46,7 +46,7 @@ import {
 } from "./quotaScoring.ts";
 import { rankByHeadroom, type HeadroomSaturation } from "./headroomRanking.ts";
 import { preferAntigravityConnectionsWithStoredProject } from "../antigravityProjectPersist.ts";
-import { isQuotaExhaustedForRequest } from "../../../src/domain/quotaCache.ts";
+import { isQuotaExhaustedForRequest } from "../../../core-domain/src/domain/quotaCache.ts";
 
 const RESET_AWARE_CONNECTION_CACHE_TTL_MS = 30_000;
 const RESET_AWARE_QUOTA_FETCH_CONCURRENCY = 5;
@@ -599,7 +599,7 @@ export function __setHeadroomSaturationFetcherForTests(fetcher: SaturationFetche
 
 async function resolveHeadroomSaturationFetcher(): Promise<SaturationFetcher> {
   if (_headroomSaturationFetcherOverride) return _headroomSaturationFetcherOverride;
-  const mod = await import("../../../src/lib/quota/saturationSignals");
+  const mod = await import("../../../core-domain/src/lib/quota/saturationSignals");
   return mod.getSaturation as SaturationFetcher;
 }
 

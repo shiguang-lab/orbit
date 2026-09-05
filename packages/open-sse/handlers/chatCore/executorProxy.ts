@@ -16,16 +16,16 @@
  * account pool (not a configured bearer key) and has its own server-side model-alias mechanism.
  */
 
-import { assertRuntimeProviderAvailable } from "../../../src/shared/constants/providerRetirement.ts";
+import { assertRuntimeProviderAvailable } from "../../../core-domain/src/shared/constants/providerRetirement.ts";
 
 import { getExecutor } from "../../executors/index.ts";
 import { isCliproxyapiDeepModeEnabled } from "../../executors/cliproxyapi.ts";
 import { isDarioDeepModeEnabled } from "../../executors/dario.ts";
-import { getCachedSettings } from "../../../src/lib/db/readCache.ts";
-import { assertMicrosoftDesignerWebProviderAvailable } from "../../../src/shared/constants/designerWebRetirement.ts";
-import { assertCommonChatGptWebProviderAvailable } from "../../../src/shared/constants/chatgptWebRetirement.ts";
+import { getCachedSettings } from "../../../core-domain/src/lib/db/readCache.ts";
+import { assertMicrosoftDesignerWebProviderAvailable } from "../../../core-domain/src/shared/constants/designerWebRetirement.ts";
+import { assertCommonChatGptWebProviderAvailable } from "../../../core-domain/src/shared/constants/chatgptWebRetirement.ts";
 import { getUpstreamProxyConfigCached } from "./comboContextCache.ts";
-import type { FallbackBackend } from "../../../src/lib/db/upstreamProxy.ts";
+import type { FallbackBackend } from "../../../core-domain/src/lib/db/upstreamProxy.ts";
 import { wrapExecutorWithCliproxyapiModelMapping } from "./cliproxyModelMapping.ts";
 import {
   resolveDedicatedCliproxyapiApiKey,

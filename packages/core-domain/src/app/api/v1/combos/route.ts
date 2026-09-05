@@ -9,8 +9,8 @@
  */
 import { NextResponse } from "next/server";
 import { getCombos } from "../../../../lib/localDb.ts";
-import { errorResponse } from "../../../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../../../open-sse/config/constants.ts";
+import { errorResponse } from "../../../../../../open-sse/utils/error.ts";
+import { HTTP_STATUS } from "../../../../../../open-sse/config/constants.ts";
 import { extractApiKey, isValidApiKey } from "../../../../sse/services/auth.ts";
 import { isDashboardSessionAuthenticated } from "../../../../shared/utils/apiAuth.ts";
 import { isRequireApiKeyEnabled } from "../../../../shared/utils/featureFlags.ts";

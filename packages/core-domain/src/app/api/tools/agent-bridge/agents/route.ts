@@ -5,7 +5,7 @@
  */
 import { ALL_TARGETS } from "../../../../../mitm/targets/index.ts";
 import { detectAgent } from "../../../../../mitm/detection/index.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 import { createErrorResponse } from "../../../../../lib/api/errorResponse.ts";
 
 export async function GET(): Promise<Response> {

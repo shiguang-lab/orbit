@@ -1,11 +1,11 @@
 import {
   computeFreeModelTotals,
   type FreeModelBudget,
-} from "../../../../../open-sse/config/freeModelCatalog.ts";
+} from "../../../../../../open-sse/config/freeModelCatalog.ts";
 import {
   FREE_CATALOG_CURATED_AT,
   FREE_MODEL_BUDGETS,
-} from "../../../../../open-sse/config/freeModelCatalog.data.ts";
+} from "../../../../../../open-sse/config/freeModelCatalog.data.ts";
 import type { MergedEntry } from "../../../../lib/radar/applyFeed.ts";
 import { getRadarCatalog } from "../../../../lib/radar/index.ts";
 import { sumUsageTokensThisMonth } from "../../../../lib/db/usageSummary.ts";

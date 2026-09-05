@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import type { BatchItemCheckpoint, BatchRecord } from "../../src/lib/localDb.ts";
+import type { BatchItemCheckpoint, BatchRecord } from "../../core-domain/src/lib/localDb.ts";
 import {
   countBatchItemCheckpoints,
   createFile,
@@ -16,10 +16,10 @@ import {
   markBatchItemProcessing,
   markBatchItemResult,
   updateBatch,
-} from "../../src/lib/localDb.ts";
-import { dispatch } from "../../src/lib/batches/dispatch.ts";
-import type { SupportedBatchEndpoint } from "../../src/shared/constants/batchEndpoints.ts";
-import { DEFAULT_BATCH_EXPIRATION_SECONDS } from "../../src/shared/constants/batch.ts";
+} from "../../core-domain/src/lib/localDb.ts";
+import { dispatch } from "../../core-domain/src/lib/batches/dispatch.ts";
+import type { SupportedBatchEndpoint } from "../../core-domain/src/shared/constants/batchEndpoints.ts";
+import { DEFAULT_BATCH_EXPIRATION_SECONDS } from "../../core-domain/src/shared/constants/batch.ts";
 
 let isProcessing: boolean = false;
 let pollInterval: NodeJS.Timeout | null = null;

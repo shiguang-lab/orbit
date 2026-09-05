@@ -1,4 +1,4 @@
-import { formatRetryAfter } from "../../../open-sse/services/accountFallback.ts";
+import { formatRetryAfter } from "../../../../open-sse/services/accountFallback.ts";
 import { resolveResilienceSettings } from "../../lib/resilience/settings.ts";
 
 const MAX_REQUEST_RETRY = 10;

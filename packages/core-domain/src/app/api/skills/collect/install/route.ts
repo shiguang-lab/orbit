@@ -15,7 +15,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { validateBody, isValidationFailure } from "../../../../../shared/validation/helpers.ts";
-import { sanitizeErrorMessage, buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage, buildErrorBody } from "../../../../../../../open-sse/utils/error.ts";
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
 
 const installSchema = z.object({

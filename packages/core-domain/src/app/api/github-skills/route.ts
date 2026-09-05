@@ -14,7 +14,7 @@ import { z } from "zod";
 import { searchGitHubSkills } from "../../../lib/skills/githubCollector.ts";
 import { matchesSearch } from "../../../shared/utils/turkishText.ts";
 import { validateBody } from "../../../shared/validation/helpers.ts";
-import { buildErrorBody, sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+import { buildErrorBody, sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
 import { requireManagementAuth } from "../../../lib/api/requireManagementAuth.ts";
 
 const installSkillSchema = z.object({

@@ -10,7 +10,7 @@ import { registerHook, unregisterHook, updateHook } from "../../../../../lib/mid
 import type { HookConfig } from "../../../../../lib/middleware/types.ts";
 import { isValidationFailure, validateBody } from "../../../../../shared/validation/helpers.ts";
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 
 type RouteParams = { params: Promise<{ name: string }> };
 

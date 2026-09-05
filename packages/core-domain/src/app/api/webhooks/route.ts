@@ -6,7 +6,7 @@
 
 import { z } from "zod";
 import { NextResponse } from "next/server";
-import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
 import { getWebhooks, createWebhook } from "../../../lib/localDb.ts";
 import { validateBody, isValidationFailure } from "../../../shared/validation/helpers.ts";
 import { requireManagementAuth } from "../../../lib/api/requireManagementAuth.ts";

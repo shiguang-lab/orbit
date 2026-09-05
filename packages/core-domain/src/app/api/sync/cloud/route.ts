@@ -7,7 +7,7 @@ import path from "path";
 import os from "os";
 import { cloudSyncActionSchema } from "../../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 /**
  * GET /api/sync/cloud

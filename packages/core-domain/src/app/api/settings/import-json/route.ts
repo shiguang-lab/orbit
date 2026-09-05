@@ -6,8 +6,8 @@ import { invalidateDbCache } from "../../../../lib/db/readCache.ts";
 import { isAuthRequired, isAuthenticated } from "../../../../shared/utils/apiAuth.ts";
 import { runJsonMigration, type LegacyJsonData } from "../../../../lib/db/jsonMigration.ts";
 import { getSettings } from "../../../../lib/db/settings.ts";
-import { setSystemPromptConfig } from "../../../../../open-sse/services/systemPrompt.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { setSystemPromptConfig } from "../../../../../../open-sse/services/systemPrompt.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 /**
  * POST /api/settings/import-json

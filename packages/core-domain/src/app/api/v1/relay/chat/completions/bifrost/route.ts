@@ -31,8 +31,8 @@
 import { CORS_HEADERS, handleCorsOptions } from "../../../../../../../shared/utils/cors.ts";
 import { createInjectionGuard } from "../../../../../../../middleware/promptInjectionGuard.ts";
 import { getRelayTokenByHash, checkRateLimit, recordRelayUsage } from "../../../../../../../lib/db/relayProxies.ts";
-import { buildErrorBody } from "../../../../../../../../open-sse/utils/error.ts";
-import { getProviderPluginManifestHeader } from "../../../../../../../../open-sse/config/providerPluginManifestUrl.ts";
+import { buildErrorBody } from "../../../../../../../../../open-sse/utils/error.ts";
+import { getProviderPluginManifestHeader } from "../../../../../../../../../open-sse/config/providerPluginManifestUrl.ts";
 import { z } from "zod";
 import {
   checkIpRateLimit,

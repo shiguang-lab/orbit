@@ -1,6 +1,6 @@
-import { getCodexRequestDefaults } from "../../src/lib/providers/requestDefaults.ts";
-import { getProviderConnections } from "../../src/lib/db/providers.ts";
-import { AI_PROVIDERS, NOAUTH_PROVIDERS } from "../../src/shared/constants/providers.ts";
+import { getCodexRequestDefaults } from "../../core-domain/src/lib/providers/requestDefaults.ts";
+import { getProviderConnections } from "../../core-domain/src/lib/db/providers.ts";
+import { AI_PROVIDERS, NOAUTH_PROVIDERS } from "../../core-domain/src/shared/constants/providers.ts";
 
 type JsonRecord = Record<string, unknown>;
 type McpCatalogStatus = "available" | "degraded" | "unavailable";

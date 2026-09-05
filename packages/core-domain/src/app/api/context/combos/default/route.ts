@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { deriveDefaultPlan } from "../../../../../../open-sse/services/compression/deriveDefaultPlan.ts";
+import { deriveDefaultPlan } from "../../../../../../../open-sse/services/compression/deriveDefaultPlan.ts";
 import { getCompressionSettings } from "../../../../../lib/db/compression.ts";
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
-import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../../../../open-sse/utils/error.ts";
 
 // The default compression pipeline is no longer editable here. It is DERIVED from the
 // per-engine toggle map (see open-sse deriveDefaultPlan). This route is a read-only shim:

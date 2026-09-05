@@ -2,7 +2,7 @@ import { z } from "zod";
 import { deleteProxyById } from "../../../../../lib/localDb.ts";
 import { createErrorResponse, createErrorResponseFromUnknown } from "../../../../../lib/api/errorResponse.ts";
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
-import { clearDispatcherCache } from "../../../../../../open-sse/utils/proxyDispatcher.ts";
+import { clearDispatcherCache } from "../../../../../../../open-sse/utils/proxyDispatcher.ts";
 import { isValidationFailure, validateBody } from "../../../../../shared/validation/helpers.ts";
 
 const batchDeleteSchema = z.object({

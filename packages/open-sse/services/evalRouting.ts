@@ -1,5 +1,5 @@
-import type { PersistedEvalRun } from "../../src/lib/db/evals.ts";
-import { listModelEvalRunsForRouting } from "../../src/lib/db/evals.ts";
+import type { PersistedEvalRun } from "../../core-domain/src/lib/db/evals.ts";
+import { listModelEvalRunsForRouting } from "../../core-domain/src/lib/db/evals.ts";
 import { parseModel } from "./model.ts";
 
 type EvalRoutingLogger = {

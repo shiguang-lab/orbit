@@ -8,7 +8,7 @@ import {
   getAccessToken,
   updateProviderCredentials,
 } from "../../../sse/services/tokenRefresh.ts";
-import { isUnrecoverableRefreshError } from "../../../../open-sse/services/tokenRefresh.ts";
+import { isUnrecoverableRefreshError } from "../../../../../open-sse/services/tokenRefresh.ts";
 
 type JsonRecord = Record<string, unknown>;
 

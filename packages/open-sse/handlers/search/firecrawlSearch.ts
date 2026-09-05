@@ -1,5 +1,5 @@
 import type { SearchProviderConfig } from "../../config/searchRegistry.ts";
-import { parseAndValidatePublicUrl } from "../../../src/shared/network/outboundUrlGuard.ts";
+import { parseAndValidatePublicUrl } from "../../../core-domain/src/shared/network/outboundUrlGuard.ts";
 
 export interface FirecrawlSearchParams {
   query: string;

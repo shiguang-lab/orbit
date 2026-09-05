@@ -7,7 +7,7 @@
 
 import fs from "fs";
 import path from "path";
-import { resolveDataDir } from "../../../src/lib/dataPaths.ts";
+import { resolveDataDir } from "../../../core-domain/src/lib/dataPaths.ts";
 
 export interface AdaptationState {
   comboId: string;

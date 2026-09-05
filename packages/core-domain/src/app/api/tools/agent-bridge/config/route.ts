@@ -8,7 +8,7 @@
  *
  * LOCAL_ONLY: covered by the "/api/tools/agent-bridge/" prefix in routeGuard.ts.
  */
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 import { createErrorResponse } from "../../../../../lib/api/errorResponse.ts";
 import {
   AgentBridgeConfigSchema,

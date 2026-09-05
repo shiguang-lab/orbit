@@ -2,7 +2,7 @@
 // Family: leonardo | Module: leonardo | Lines: 3427-3558 (132 LOC)
 // Ref: see open-sse/handlers/imageGeneration.ts top-of-file comment for split rationale
 
-import { saveCallLog } from "../../../../src/lib/usageDb.ts";
+import { saveCallLog } from "../../../../core-domain/src/lib/usageDb.ts";
 import { sleep } from "../../../utils/sleep.ts";
 import { sanitizeErrorMessage } from "../../../utils/error.ts";
 

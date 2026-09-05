@@ -14,7 +14,7 @@ import {
   findWorkingProxy,
   clearProxyFallbackCache,
 } from "../utils/proxyFallback.ts";
-import { isFeatureFlagEnabled } from "../../src/shared/utils/featureFlags.ts";
+import { isFeatureFlagEnabled } from "../../core-domain/src/shared/utils/featureFlags.ts";
 
 // ---------------------------------------------------------------------------
 // Public API

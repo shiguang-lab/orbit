@@ -19,8 +19,8 @@ import {
   isClaudeCodeCompatibleProvider,
   isOpenAICompatibleProvider,
 } from "../../shared/constants/providers.ts";
-import type { RegistryModel } from "../../../open-sse/config/providerRegistry.ts";
-import { appendSyncedEffortVariants } from "../../../open-sse/utils/syncedEffortVariants.ts";
+import type { RegistryModel } from "../../../../open-sse/config/providerRegistry.ts";
+import { appendSyncedEffortVariants } from "../../../../open-sse/utils/syncedEffortVariants.ts";
 
 type JsonRecord = Record<string, unknown>;
 

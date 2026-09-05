@@ -1,8 +1,8 @@
 import {
   isUserCallableAntigravityModelId,
   toClientAntigravityModelId,
-} from "../../../../open-sse/config/antigravityModelAliases.ts";
-import { isUserCallableAgyModelId } from "../../../../open-sse/config/agyModels.ts";
+} from "../../../../../open-sse/config/antigravityModelAliases.ts";
+import { isUserCallableAgyModelId } from "../../../../../open-sse/config/agyModels.ts";
 
 type JsonRecord = Record<string, unknown>;
 

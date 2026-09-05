@@ -1,15 +1,15 @@
 import { NextResponse } from "next/server";
 import { buildTelemetryPayload } from "../../../../lib/monitoring/observability.ts";
 import { getTelemetrySummary } from "../../../../shared/utils/requestTelemetry.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const windowMs = parseInt(searchParams.get("windowMs") || "300000", 10);
     const summary = getTelemetrySummary(windowMs);
-    const { getQuotaMonitorSummary } = await import("../../../../../open-sse/services/quotaMonitor.ts");
-    const { getActiveSessions } = await import("../../../../../open-sse/services/sessionManager.ts");
+    const { getQuotaMonitorSummary } = await import("../../../../../../open-sse/services/quotaMonitor.ts");
+    const { getActiveSessions } = await import("../../../../../../open-sse/services/sessionManager.ts");
     const quotaMonitorSummary = getQuotaMonitorSummary();
     const activeSessions = getActiveSessions();
     const payload = buildTelemetryPayload({

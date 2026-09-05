@@ -13,7 +13,7 @@
 
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../../../../open-sse/utils/error.ts";
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
 import { CORS_HEADERS, handleCorsOptions } from "../../../../../shared/utils/cors.ts";
 import { getQuotaAnalyticsSummary } from "../../../../../lib/quota/quotaAnalytics.ts";

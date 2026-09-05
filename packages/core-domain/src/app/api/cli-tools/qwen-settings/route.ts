@@ -5,7 +5,7 @@ import path from "node:path";
 import pino from "pino";
 import { NextResponse } from "next/server";
 
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 import { requireCliToolsAuth } from "../../../../lib/api/requireCliToolsAuth.ts";
 import { getApiKeyById } from "../../../../lib/db/apiKeys.ts";

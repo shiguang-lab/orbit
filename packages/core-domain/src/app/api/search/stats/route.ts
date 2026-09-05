@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getCacheStats } from "../../../../../open-sse/services/searchCache.ts";
-import { SEARCH_PROVIDERS } from "../../../../../open-sse/config/searchRegistry.ts";
+import { getCacheStats } from "../../../../../../open-sse/services/searchCache.ts";
+import { SEARCH_PROVIDERS } from "../../../../../../open-sse/config/searchRegistry.ts";
 import { isAuthenticated } from "../../../../shared/utils/apiAuth.ts";
 import { getSearchProviderStats, getRecentSearchLogs } from "../../../../lib/db/callLogStats.ts";
 

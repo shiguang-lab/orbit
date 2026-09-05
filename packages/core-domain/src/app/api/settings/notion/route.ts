@@ -7,7 +7,7 @@ import {
   clearNotionToken,
 } from "../../../../lib/db/notion.ts";
 import { createNotionClient } from "../../../../lib/notion/api.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 const setTokenSchema = z.object({
   token: z.string().min(1).max(500),

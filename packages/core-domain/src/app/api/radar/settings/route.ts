@@ -31,7 +31,7 @@ import { isAuthenticated } from "../../../../shared/utils/apiAuth.ts";
 import { setRadarOptIn, setRadarKey, getRadarSettings } from "../../../../lib/db/radar.ts";
 import { getContributorClaimUrl, getSupporterPlansUrl } from "../../../../lib/radar/links.ts";
 import { SUPPORTER_KEY_REGEX } from "../../../../lib/radar/supporterKey.ts";
-import { buildErrorBody } from "../../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -88,7 +88,7 @@ export async function GET(request: Request) {
       { headers: { ...CORS_HEADERS, "Cache-Control": "no-store" } }
     );
   } catch (err: unknown) {
-    const { sanitizeErrorMessage } = await import("../../../../../open-sse/utils/error.ts");
+    const { sanitizeErrorMessage } = await import("../../../../../../open-sse/utils/error.ts");
     return NextResponse.json(
       buildErrorBody(500, sanitizeErrorMessage(err) || "Failed to load Radar settings"),
       { status: 500, headers: CORS_HEADERS }
@@ -168,7 +168,7 @@ export async function POST(request: Request) {
       { headers: CORS_HEADERS }
     );
   } catch (err: unknown) {
-    const { sanitizeErrorMessage } = await import("../../../../../open-sse/utils/error.ts");
+    const { sanitizeErrorMessage } = await import("../../../../../../open-sse/utils/error.ts");
     return NextResponse.json(
       buildErrorBody(500, sanitizeErrorMessage(err) || "Failed to update Radar settings"),
       { status: 500, headers: CORS_HEADERS }

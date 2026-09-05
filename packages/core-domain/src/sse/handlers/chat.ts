@@ -6,8 +6,8 @@ export { buildClientRawRequest, resolveDispatchClientRawRequest };
 import { normalizeReasoningRequest } from "../../shared/reasoning/effortStandardization.ts";
 import { isDetailedLoggingEnabled } from "../../lib/db/detailedLogs.ts";
 import { resolvePreviousResponseState } from "../../lib/db/responsesContinuationStore.ts";
-import { normalizeResponsesPreviousResponseIdMode } from "../../../open-sse/utils/responsesStatePolicy.ts";
-import { FORMATS } from "../../../open-sse/translator/formats.ts";
+import { normalizeResponsesPreviousResponseIdMode } from "../../../../open-sse/utils/responsesStatePolicy.ts";
+import { FORMATS } from "../../../../open-sse/translator/formats.ts";
 import { resolveRoutingModel, RoutingModelOps } from "./resolveRoutingModel";
 import {
   getProviderCredentialsWithQuotaPreflight,
@@ -23,42 +23,42 @@ import {
   lockModel,
   recordModelLockoutFailure,
   isDailyQuotaExhausted,
-} from "../../../open-sse/services/accountFallback.ts";
+} from "../../../../open-sse/services/accountFallback.ts";
 import { getCombo, getComboForModel, getModelInfo } from "../services/model";
-import { stripContextWindowSuffix } from "../../../open-sse/services/model.ts";
-import { resolveBareModelToConnectionDefault } from "../../../open-sse/services/model.ts";
-import { errorResponse } from "../../../open-sse/utils/error.ts";
-import { getImageModelEntry } from "../../../open-sse/config/imageRegistry.ts";
-import { acceptHeaderForcesStream } from "../../../open-sse/utils/aiSdkCompat.ts";
-import { applyNoThinkingAlias } from "../../../open-sse/utils/noThinkingAlias.ts";
+import { stripContextWindowSuffix } from "../../../../open-sse/services/model.ts";
+import { resolveBareModelToConnectionDefault } from "../../../../open-sse/services/model.ts";
+import { errorResponse } from "../../../../open-sse/utils/error.ts";
+import { getImageModelEntry } from "../../../../open-sse/config/imageRegistry.ts";
+import { acceptHeaderForcesStream } from "../../../../open-sse/utils/aiSdkCompat.ts";
+import { applyNoThinkingAlias } from "../../../../open-sse/utils/noThinkingAlias.ts";
 import { resolveCcDiscoveryAliasStrip } from "../../lib/ccDiscoveryAliasResolve.ts";
 import {
   handleComboChat,
   resolveComboTargets,
   shouldSkipConnDisable,
-} from "../../../open-sse/services/combo.ts";
-import type { ComboLike, SingleModelTarget } from "../../../open-sse/services/combo/types.ts";
-import { mergeAbortSignals } from "../../../open-sse/executors/base.ts";
-import { resolveRequestAutoControls } from "../../../open-sse/services/autoCombo/requestControls.ts";
-import { isVerifiedNativeCodexRequest } from "../../../open-sse/config/codexIdentity.ts";
-import { resolveCompressionSettings } from "../../../open-sse/handlers/chatCore/compressionSettings.ts";
-import type { CompressionExclusions } from "../../../open-sse/services/compression/exclusions.ts";
-import { resolveComboConfig } from "../../../open-sse/services/comboConfig.ts";
-import { injectHandoffIntoBody } from "../../../open-sse/services/contextHandoff.ts";
+} from "../../../../open-sse/services/combo.ts";
+import type { ComboLike, SingleModelTarget } from "../../../../open-sse/services/combo/types.ts";
+import { mergeAbortSignals } from "../../../../open-sse/executors/base.ts";
+import { resolveRequestAutoControls } from "../../../../open-sse/services/autoCombo/requestControls.ts";
+import { isVerifiedNativeCodexRequest } from "../../../../open-sse/config/codexIdentity.ts";
+import { resolveCompressionSettings } from "../../../../open-sse/handlers/chatCore/compressionSettings.ts";
+import type { CompressionExclusions } from "../../../../open-sse/services/compression/exclusions.ts";
+import { resolveComboConfig } from "../../../../open-sse/services/comboConfig.ts";
+import { injectHandoffIntoBody } from "../../../../open-sse/services/contextHandoff.ts";
 import {
   HTTP_STATUS,
   ANTIGRAVITY_PRE_RESPONSE_TIMEOUT_CODE,
-} from "../../../open-sse/config/constants.ts";
+} from "../../../../open-sse/config/constants.ts";
 import {
   getTargetFormat,
   detectFormatFromEndpoint,
   detectFormatFromUrl,
-} from "../../../open-sse/services/provider.ts";
+} from "../../../../open-sse/services/provider.ts";
 import {
   getModelsByProviderId,
   getModelTargetFormat,
   PROVIDER_ID_TO_ALIAS,
-} from "../../../open-sse/config/providerModels.ts";
+} from "../../../../open-sse/config/providerModels.ts";
 import * as log from "../utils/logger";
 import { checkAndRefreshToken } from "../services/tokenRefresh";
 import { createHookContext, runHooks, initPreRequestRegistry } from "../../lib/middleware/registry.ts";
@@ -100,16 +100,16 @@ import {
   withConversationId,
 } from "./chatHelpers";
 import { buildModalityBridgeHeader } from "../../lib/guardrails/modalityBridge/bridgeStats.ts";
-import { resolveConversationId } from "../../../open-sse/services/conversationTracker.ts";
+import { resolveConversationId } from "../../../../open-sse/services/conversationTracker.ts";
 import {
   isAntigravityMissingProjectError,
   isProviderBreakerFailureStatus,
   resolveStreamReadinessClassificationError,
   shouldTripProviderBreakerForResult,
 } from "./chatPredicates";
-import { markAntigravityMissingCloudCodeProject } from "../../../open-sse/services/antigravityProjectPersistence.ts";
-import { connectionHasExtraKeys } from "../../../open-sse/services/apiKeyRotator.ts";
-import { wrapResponseWithOAuthSessionRelease } from "../../../open-sse/services/oauthSessionOccupancy.ts";
+import { markAntigravityMissingCloudCodeProject } from "../../../../open-sse/services/antigravityProjectPersistence.ts";
+import { connectionHasExtraKeys } from "../../../../open-sse/services/apiKeyRotator.ts";
+import { wrapResponseWithOAuthSessionRelease } from "../../../../open-sse/services/oauthSessionOccupancy.ts";
 import {
   extractReasoningIntent,
   type ExtractedReasoningIntent,
@@ -125,7 +125,7 @@ import { getComboFailureLogError } from "./comboFailureLogging";
 
 // Pipeline integration — wired modules
 import { classify429FromError, type FailureKind } from "../../shared/utils/classify429.ts";
-import { isSubscriptionQuotaText } from "../../../open-sse/services/quotaTextCooldowns.ts";
+import { isSubscriptionQuotaText } from "../../../../open-sse/services/quotaTextCooldowns.ts";
 import { resolveUseUpstream429BreakerHints } from "../../shared/utils/providerHints.ts";
 import { isFeatureFlagEnabled } from "../../shared/utils/featureFlags.ts";
 import { shouldIsolateProbeFailures } from "../../shared/utils/probeOrigin.ts";
@@ -138,16 +138,16 @@ import { logAuditEvent } from "../../lib/compliance/index";
 import { enforceApiKeyPolicy } from "../../shared/utils/apiKeyPolicy";
 import { hasProviderQuotaBypassScope } from "../../shared/constants/apiKeyPolicyScopes";
 import { isMicrosoftDesignerWebProviderRetiredError } from "../../shared/constants/designerWebRetirement";
-import { cloneBoundedForLog } from "../../../open-sse/utils/requestLogger.ts";
+import { cloneBoundedForLog } from "../../../../open-sse/utils/requestLogger.ts";
 import { handleInternalUsageCommand } from "../../lib/usage/internalUsageCommand.ts";
 import {
   applyTaskAwareRouting,
   getTaskRoutingConfig,
-} from "../../../open-sse/services/taskAwareRouter.ts";
+} from "../../../../open-sse/services/taskAwareRouter.ts";
 import {
   hasNativeWebSearchTool,
   resolveWebSearchRouteOverride,
-} from "../../../open-sse/services/webSearchRouting.ts";
+} from "../../../../open-sse/services/webSearchRouting.ts";
 import {
   generateSessionId as generateStableSessionId,
   touchSession,
@@ -155,24 +155,24 @@ import {
   checkSessionLimit,
   registerKeySession,
   isSessionRegisteredForKey,
-} from "../../../open-sse/services/sessionManager.ts";
-import { startQuotaMonitor } from "../../../open-sse/services/quotaMonitor.ts";
+} from "../../../../open-sse/services/sessionManager.ts";
+import { startQuotaMonitor } from "../../../../open-sse/services/quotaMonitor.ts";
 import {
   isFallbackDecision,
   shouldUseFallback,
-} from "../../../open-sse/services/emergencyFallback.ts";
+} from "../../../../open-sse/services/emergencyFallback.ts";
 import {
   registerCodexConnection,
   registerCodexQuotaFetcher,
-} from "../../../open-sse/services/codexQuotaFetcher.ts";
-import { registerBailianCodingPlanQuotaFetcher } from "../../../open-sse/services/bailianQuotaFetcher.ts";
-import { registerQwenTokenPlanQuotaFetcher } from "../../../open-sse/services/qwenTokenPlanQuotaFetcher.ts";
-import { registerCrofUsageFetcher } from "../../../open-sse/services/crofUsageFetcher.ts";
-import { registerDeepseekQuotaFetcher } from "../../../open-sse/services/deepseekQuotaFetcher.ts";
-import { registerOpenrouterQuotaFetcher } from "../../../open-sse/services/openrouterQuotaFetcher.ts";
-import { registerOpencodeQuotaFetcher } from "../../../open-sse/services/opencodeQuotaFetcher.ts";
-import { registerGrokWebQuotaFetcher } from "../../../open-sse/services/grokQuotaFetcher.ts";
-import { registerGenericQuotaFetchers } from "../../../open-sse/services/genericQuotaFetcher.ts";
+} from "../../../../open-sse/services/codexQuotaFetcher.ts";
+import { registerBailianCodingPlanQuotaFetcher } from "../../../../open-sse/services/bailianQuotaFetcher.ts";
+import { registerQwenTokenPlanQuotaFetcher } from "../../../../open-sse/services/qwenTokenPlanQuotaFetcher.ts";
+import { registerCrofUsageFetcher } from "../../../../open-sse/services/crofUsageFetcher.ts";
+import { registerDeepseekQuotaFetcher } from "../../../../open-sse/services/deepseekQuotaFetcher.ts";
+import { registerOpenrouterQuotaFetcher } from "../../../../open-sse/services/openrouterQuotaFetcher.ts";
+import { registerOpencodeQuotaFetcher } from "../../../../open-sse/services/opencodeQuotaFetcher.ts";
+import { registerGrokWebQuotaFetcher } from "../../../../open-sse/services/grokQuotaFetcher.ts";
+import { registerGenericQuotaFetchers } from "../../../../open-sse/services/genericQuotaFetcher.ts";
 import "@shiguang-gateway/open-sse/services/quotaTrackersBatch.ts";
 import {
   disableCooldownAwareRetry,

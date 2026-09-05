@@ -2,7 +2,7 @@ import {
   DEFAULT_ANTIGRAVITY_CLIENT_PROFILE,
   normalizeAntigravityClientProfile,
   type AntigravityClientProfile,
-} from "../../src/shared/constants/antigravityClientProfile.ts";
+} from "../../core-domain/src/shared/constants/antigravityClientProfile.ts";
 import { getAntigravityContentHeaders } from "./antigravityHeaders.ts";
 import type { AntigravityCredentialsLike } from "./antigravityIdentity.ts";
 import {
@@ -15,7 +15,7 @@ export {
   DEFAULT_ANTIGRAVITY_CLIENT_PROFILE,
   normalizeAntigravityClientProfile,
   type AntigravityClientProfile,
-} from "../../src/shared/constants/antigravityClientProfile.ts";
+} from "../../core-domain/src/shared/constants/antigravityClientProfile.ts";
 
 type AntigravityProfileCredentials = AntigravityCredentialsLike & {
   providerSpecificData?: Record<string, unknown> | null;

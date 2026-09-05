@@ -15,7 +15,7 @@ import { z } from "zod";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
 import { DEFAULT_MODEL_TEST_TIMEOUT_MS, runSingleModelTest } from "../../../../lib/api/modelTestRunner.ts";
 import { setModelIsHidden } from "../../../../lib/localDb.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 import { getSettings } from "../../../../lib/db/settings.ts";
 import { isFreeModel, providerHasFreeModels } from "../../../../shared/utils/freeModels.ts";
 import * as log from "../../../../sse/utils/logger.ts";

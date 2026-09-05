@@ -12,7 +12,7 @@ import {
   resetLocalCorpusIndex,
 } from "../../../../lib/localCorpus/configured.ts";
 import { isAuthenticated } from "../../../../shared/utils/apiAuth.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 const localCorpusSchema = z
   .object({

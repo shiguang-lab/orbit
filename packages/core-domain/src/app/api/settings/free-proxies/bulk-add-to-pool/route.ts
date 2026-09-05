@@ -7,7 +7,7 @@ import { getFreeProxyById, promoteFreeProxyToPool } from "../../../../../lib/loc
 import {
   createProxyDispatcher,
   proxyConfigToUrl,
-} from "../../../../../../open-sse/utils/proxyDispatcher.ts";
+} from "../../../../../../../open-sse/utils/proxyDispatcher.ts";
 import { probeEchoTargets } from "../../../../../lib/proxyEchoTarget.ts";
 
 type QuickTester = (

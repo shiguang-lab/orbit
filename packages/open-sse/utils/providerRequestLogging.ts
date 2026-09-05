@@ -1,6 +1,6 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 
-import { updatePendingScope, type PendingRequestScope } from "../../src/lib/usage/pendingRequestScope.ts";
+import { updatePendingScope, type PendingRequestScope } from "../../core-domain/src/lib/usage/pendingRequestScope.ts";
 
 export type ProviderRequestPrepared = {
   url: string;

@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
-import { buildErrorBody } from "../../../../../open-sse/utils/error.ts";
-import { registerBuiltinCompressionEngines } from "../../../../../open-sse/services/compression/engines/index.ts";
-import { listCompressionEngines } from "../../../../../open-sse/services/compression/engines/registry.ts";
+import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
+import { registerBuiltinCompressionEngines } from "../../../../../../open-sse/services/compression/engines/index.ts";
+import { listCompressionEngines } from "../../../../../../open-sse/services/compression/engines/registry.ts";
 
 export async function GET(req: Request) {
   const authError = await requireManagementAuth(req);

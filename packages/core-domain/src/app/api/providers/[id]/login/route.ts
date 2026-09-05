@@ -10,7 +10,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCachedProviderConnectionById, updateProviderConnection } from "../../../../../lib/localDb.ts";
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
 import { clampLoginTimeoutMs } from "../../../../../lib/api/loginTimeout.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 
 const ADOBE_FIREFLY_SLUGS = new Set(["adobe-firefly", "firefly"]);
 
@@ -127,7 +127,7 @@ async function loginAdobeFirefly(
   // startAdobeFireflyBrowserLogin always kills its Chrome tree in `finally` (no orphans).
   try {
     const { startAdobeFireflyBrowserLogin } =
-      await import("../../../../../../open-sse/services/adobeFireflyBrowserLogin.ts");
+      await import("../../../../../../../open-sse/services/adobeFireflyBrowserLogin.ts");
     const pure = await startAdobeFireflyBrowserLogin(timeout, {
       sessionKey: connectionId,
       freshSession,
@@ -196,7 +196,7 @@ export async function POST(
   if (providerSlug === "conol-web" || providerSlug === "cnl") {
     try {
       const { startConolBrowserLogin } =
-        await import("../../../../../../open-sse/services/conolBrowserLogin.ts");
+        await import("../../../../../../../open-sse/services/conolBrowserLogin.ts");
       const result = await startConolBrowserLogin(
         typeof body.timeout === "number" ? body.timeout : undefined
       );
@@ -234,7 +234,7 @@ export async function POST(
     // TOKEN_EXTRACTION_CONFIGS can find the extraction config.
     // Bug: the previous code passed `id` (connection UUID), so the lookup always
     // missed and returned "No extraction config" without launching a browser.
-    const { inAppLoginService } = await import("../../../../../../open-sse/services/inAppLoginService.ts");
+    const { inAppLoginService } = await import("../../../../../../../open-sse/services/inAppLoginService.ts");
 
     const result = await inAppLoginService.startLogin(providerSlug || id, {
       timeout: clampLoginTimeoutMs(body.timeout),

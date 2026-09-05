@@ -2,11 +2,11 @@ import { NextResponse } from "next/server";
 import {
   SEARCH_PROVIDERS,
   getSearchCredentialFallbacks,
-} from "../../../../../open-sse/config/searchRegistry.ts";
+} from "../../../../../../open-sse/config/searchRegistry.ts";
 import { isAuthenticated } from "../../../../shared/utils/apiAuth.ts";
 import { getProviderCredentials } from "../../../../sse/services/auth.ts";
 import { isAllRateLimitedCredentials } from "../../v1/_shared/rateLimit.ts";
-import { buildErrorBody } from "../../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
 import {
   SearchProviderCatalogResponseSchema,
   type SearchProviderCatalogItem,

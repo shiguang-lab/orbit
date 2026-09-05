@@ -1,6 +1,6 @@
 import { handleChat } from "../../../../../sse/handlers/chat.ts";
-import { initTranslators } from "../../../../../../open-sse/translator/index.ts";
-import { transformToOllama } from "../../../../../../open-sse/utils/ollamaTransform.ts";
+import { initTranslators } from "../../../../../../../open-sse/translator/index.ts";
+import { transformToOllama } from "../../../../../../../open-sse/utils/ollamaTransform.ts";
 import { withChatAdmission } from "../../../../../shared/middleware/withChatAdmission.ts";
 
 let initialized = false;

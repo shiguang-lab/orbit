@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
-import { getComboTrace } from "../../../../../../open-sse/services/combo/decisionTrace.ts";
+import { getComboTrace } from "../../../../../../../open-sse/services/combo/decisionTrace.ts";
 
 /**
  * #10681: read the ordered per-target decision trace for one combo invocation.

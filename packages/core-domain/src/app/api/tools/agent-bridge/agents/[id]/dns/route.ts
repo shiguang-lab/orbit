@@ -14,7 +14,7 @@ import {
   normalizeMitmSudoPasswordInput,
   resolveMitmSudoPassword,
 } from "../../../../../../../mitm/sudoGate.ts";
-import { sanitizeErrorMessage } from "../../../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../../../open-sse/utils/error.ts";
 import { createErrorResponse } from "../../../../../../../lib/api/errorResponse.ts";
 import { ALL_TARGETS } from "../../../../../../../mitm/targets/index.ts";
 

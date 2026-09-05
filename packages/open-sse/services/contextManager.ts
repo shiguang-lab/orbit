@@ -9,7 +9,7 @@ import { REGISTRY } from "../config/providerRegistry.ts";
 import {
   getModelContextLimit,
   type ModelCapabilityResolutionSnapshot,
-} from "../../src/lib/modelCapabilities.ts";
+} from "../../core-domain/src/lib/modelCapabilities.ts";
 import { parseModel } from "./model.ts";
 import { jsonLength } from "../utils/jsonSize.ts";
 

@@ -2,8 +2,8 @@ import { createHash } from "crypto";
 
 import { getProviderConnections, updateProviderConnection } from "../db/providers.ts";
 import { getCachedProviderConnectionById } from "../localDb.ts";
-import { clearProviderFailure, clearModelLock } from "../../../open-sse/services/accountFallback.ts";
-import { resolveProviderAlias } from "../../../open-sse/services/model.ts";
+import { clearProviderFailure, clearModelLock } from "../../../../open-sse/services/accountFallback.ts";
+import { resolveProviderAlias } from "../../../../open-sse/services/model.ts";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -261,8 +261,8 @@ export async function buildProviderHealthAutopilotReport(
   const [{ getAllCircuitBreakerStatuses }, { getAllModelLockouts }, quotaMonitor] =
     await Promise.all([
       import("../../shared/utils/circuitBreaker.ts"),
-      import("../../../open-sse/services/accountFallback.ts"),
-      import("../../../open-sse/services/quotaMonitor.ts").catch(() => null),
+      import("../../../../open-sse/services/accountFallback.ts"),
+      import("../../../../open-sse/services/quotaMonitor.ts").catch(() => null),
     ]);
 
   // Connections generally use canonical ids, while breakers, lockouts, and quota

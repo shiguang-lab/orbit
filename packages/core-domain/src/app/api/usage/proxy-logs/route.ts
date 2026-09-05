@@ -1,5 +1,5 @@
 import { getProxyLogs, clearProxyLogs } from "../../../../lib/proxyLogger.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 function serverErrorResponse(error: unknown): Response {
   return Response.json(

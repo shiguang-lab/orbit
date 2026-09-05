@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getTaskManager } from "../../../../../../lib/a2a/taskManager.ts";
 import { authorizeA2ATaskRoute } from "../../../_auth.ts";
-import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../../open-sse/utils/error.ts";
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   // GHSA-jcm5-6wpp-wjj8: this route had no auth call at all. The owner check

@@ -4,7 +4,7 @@ import {
   createCursorLoginSession,
   generateCursorAuthParams,
 } from "../../../../../../lib/oauth/services/cursorLogin.ts";
-import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../../open-sse/utils/error.ts";
 
 async function requireOAuthAuth(request: Request) {
   if (!(await isAuthRequired(request))) return null;

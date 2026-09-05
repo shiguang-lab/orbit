@@ -3,7 +3,7 @@ import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth
 import { validateBody, isValidationFailure } from "../../../../shared/validation/helpers.ts";
 import { MemorySummarizeSchema } from "../../../../shared/schemas/memory.ts";
 import { summarizeMemoriesOlderThan } from "../../../../lib/memory/summarization.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 export async function POST(request: Request) {
   const authError = await requireManagementAuth(request);

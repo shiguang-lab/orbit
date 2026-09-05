@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import pino from "pino";
 
-import { buildErrorBody } from "../../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
 
 import { requireCliToolsAuth } from "../../../../lib/api/requireCliToolsAuth.ts";
 import { CLI_TOOLS } from "../../../../shared/constants/cliTools.ts";

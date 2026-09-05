@@ -7,7 +7,7 @@
  * LOCAL_ONLY enforced by routeGuard.
  */
 
-import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
+import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../../../open-sse/utils/error.ts";
 import { InspectorCaptureModeActionSchema } from "../../../../../../shared/schemas/inspector.ts";
 import { startHttpProxyServer } from "../../../../../../mitm/inspector/httpProxyServer.ts";
 import { getHttpProxyHandle, setHttpProxyHandle } from "../../../../../../lib/inspector/captureState.ts";

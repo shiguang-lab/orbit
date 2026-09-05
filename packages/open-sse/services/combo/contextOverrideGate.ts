@@ -22,7 +22,7 @@
  * every model, not just overridden ones.
  */
 
-import { getResolvedModelContextOverride } from "../../../src/lib/modelCapabilities";
+import { getResolvedModelContextOverride } from "../../../core-domain/src/lib/modelCapabilities";
 
 /**
  * Resolve the context-fit verdict from a persisted per-model override, if one

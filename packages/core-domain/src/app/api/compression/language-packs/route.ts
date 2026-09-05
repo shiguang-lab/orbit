@@ -3,7 +3,7 @@ import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth
 import {
   listCavemanRulePacks,
   listSupportedCompressionLanguages,
-} from "../../../../../open-sse/services/compression/index.ts";
+} from "../../../../../../open-sse/services/compression/index.ts";
 
 export async function GET(req: Request) {
   const authError = await requireManagementAuth(req);

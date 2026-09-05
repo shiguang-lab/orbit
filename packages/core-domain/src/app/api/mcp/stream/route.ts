@@ -9,7 +9,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getCachedSettings } from "../../../../lib/db/settings.ts";
-import { handleMcpStreamableHTTP } from "../../../../../open-sse/mcp-server/httpTransport";
+import { handleMcpStreamableHTTP } from "../../../../../../open-sse/mcp-server/httpTransport";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
 
 async function guardEnabled(): Promise<NextResponse | null> {

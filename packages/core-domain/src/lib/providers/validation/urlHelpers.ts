@@ -4,7 +4,7 @@
 import {
   stripAnthropicMessagesSuffix,
   stripClaudeCodeCompatibleEndpointSuffix,
-} from "../../../../open-sse/services/claudeCodeCompatible.ts";
+} from "../../../../../open-sse/services/claudeCodeCompatible.ts";
 import { isOpenAICompatibleProvider } from "../../../shared/constants/providers.ts";
 
 export const OPENAI_LIKE_FORMATS = new Set(["openai", "openai-responses"]);

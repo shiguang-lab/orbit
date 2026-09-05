@@ -14,8 +14,8 @@
  * allowed, matching /v1/models behavior.
  */
 import { NextResponse } from "next/server";
-import { errorResponse } from "../../../../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../../../../open-sse/config/constants.ts";
+import { errorResponse } from "../../../../../../../open-sse/utils/error.ts";
+import { HTTP_STATUS } from "../../../../../../../open-sse/config/constants.ts";
 import { extractApiKey, isValidApiKey } from "../../../../../sse/services/auth.ts";
 import { isDashboardSessionAuthenticated } from "../../../../../shared/utils/apiAuth.ts";
 import { isRequireApiKeyEnabled } from "../../../../../shared/utils/featureFlags.ts";
@@ -25,7 +25,7 @@ import {
   routingOtelStats,
   initRoutingObservability,
   classifyQuality,
-} from "../../../../../../open-sse/services/routing/index.ts";
+} from "../../../../../../../open-sse/services/routing/index.ts";
 
 export async function OPTIONS() {
   return new Response(null, {

@@ -3,7 +3,7 @@ import { bulkProxyAssignmentSchema } from "../../../../../../shared/validation/s
 import { isValidationFailure, validateBody } from "../../../../../../shared/validation/helpers.ts";
 import { createErrorResponse, createErrorResponseFromUnknown } from "../../../../../../lib/api/errorResponse.ts";
 import { requireManagementAuth } from "../../../../../../lib/api/requireManagementAuth.ts";
-import { clearDispatcherCache } from "../../../../../../../open-sse/utils/proxyDispatcher.ts";
+import { clearDispatcherCache } from "../../../../../../../../open-sse/utils/proxyDispatcher.ts";
 
 export async function PUT(request: Request) {
   const authError = await requireManagementAuth(request);

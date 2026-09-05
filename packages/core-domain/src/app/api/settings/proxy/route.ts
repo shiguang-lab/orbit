@@ -7,7 +7,7 @@ import {
   getProxyAssignments,
   getProxyById,
 } from "../../../../lib/localDb";
-import { clearDispatcherCache } from "../../../../../open-sse/utils/proxyDispatcher.ts";
+import { clearDispatcherCache } from "../../../../../../open-sse/utils/proxyDispatcher.ts";
 import { updateProxyConfigSchema } from "../../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
 import {

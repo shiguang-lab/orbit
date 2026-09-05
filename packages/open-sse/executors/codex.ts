@@ -1,10 +1,10 @@
-import { getCodexRequestDefaults } from "../../src/lib/providers/requestDefaults.ts";
+import { getCodexRequestDefaults } from "../../core-domain/src/lib/providers/requestDefaults.ts";
 import {
   getCodexModelScope,
   getCodexRateLimitKey,
   type CodexQuotaScope,
 } from "../config/codexQuotaScopes.ts";
-import { isFeatureFlagEnabled } from "../../src/shared/utils/featureFlags.ts";
+import { isFeatureFlagEnabled } from "../../core-domain/src/shared/utils/featureFlags.ts";
 import {
   BaseExecutor,
   mergeUpstreamExtraHeaders,

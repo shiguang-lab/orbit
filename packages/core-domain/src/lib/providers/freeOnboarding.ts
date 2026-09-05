@@ -1,5 +1,5 @@
 import { NOAUTH_PROVIDERS } from "../../shared/constants/providers.ts";
-import { REGISTRY } from "../../../open-sse/config/providerRegistry.ts";
+import { REGISTRY } from "../../../../open-sse/config/providerRegistry.ts";
 
 interface NoAuthOnboardingMetadata {
   id: string;

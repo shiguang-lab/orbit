@@ -1,4 +1,4 @@
-import { isVisionModelId } from "../../../src/shared/constants/visionModels.ts";
+import { isVisionModelId } from "../../../core-domain/src/shared/constants/visionModels.ts";
 import type { CompressionResult, CompressionMode } from "./types.ts";
 import { createCompressionStats } from "./stats.ts";
 

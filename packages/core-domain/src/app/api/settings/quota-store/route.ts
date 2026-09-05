@@ -20,7 +20,7 @@
  */
 
 import { NextResponse } from "next/server";
-import { buildErrorBody } from "../../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
 import { QuotaStoreSettingsSchema } from "../../../../shared/schemas/quota.ts";
 import { getSettings, updateSettings } from "../../../../lib/localDb.ts";

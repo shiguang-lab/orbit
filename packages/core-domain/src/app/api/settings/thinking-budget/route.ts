@@ -4,7 +4,7 @@ import {
   setThinkingBudgetConfig,
   getThinkingBudgetConfig,
   ThinkingMode,
-} from "../../../../../open-sse/services/thinkingBudget.ts";
+} from "../../../../../../open-sse/services/thinkingBudget.ts";
 import { updateThinkingBudgetSchema } from "../../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";

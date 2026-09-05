@@ -7,8 +7,8 @@ import {
   CLAUDE_CODE_COMPATIBLE_DEFAULT_CHAT_PATH,
   joinClaudeCodeCompatibleUrl,
 } from "./claudeCodeCompatible.ts";
-import { getClaudeCodeCompatibleRequestDefaults } from "../../src/lib/providers/requestDefaults.ts";
-import { buildClineHeaders } from "../../src/shared/utils/clineAuth.ts";
+import { getClaudeCodeCompatibleRequestDefaults } from "../../core-domain/src/lib/providers/requestDefaults.ts";
+import { buildClineHeaders } from "../../core-domain/src/shared/utils/clineAuth.ts";
 import { usesCcWireImage } from "./ccWireImageBuiltins.ts";
 
 const OPENAI_COMPATIBLE_PREFIX = "openai-compatible-";

@@ -23,7 +23,7 @@ import {
   type KeyHealth,
 } from "../../services/apiKeyRotator.ts";
 import { isModelUnavailableError } from "../../services/modelFamilyFallback.ts";
-import { updateProviderConnection } from "../../../src/lib/db/providers.ts";
+import { updateProviderConnection } from "../../../core-domain/src/lib/db/providers.ts";
 
 type KeyHealthLog = {
   warn?: (tag: string, message: string) => void;

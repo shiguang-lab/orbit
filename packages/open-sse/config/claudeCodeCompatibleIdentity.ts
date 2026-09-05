@@ -3,7 +3,7 @@ import {
   CLAUDE_CODE_RUNTIME_VERSION,
   CLAUDE_CODE_SDK_PACKAGE_VERSION,
   getClaudeCodeUserAgent,
-} from "../../src/shared/constants/claudeCodeClient.ts";
+} from "../../core-domain/src/shared/constants/claudeCodeClient.ts";
 
 export const CLAUDE_CODE_COMPATIBLE_VERSION = CLAUDE_CODE_CLIENT_VERSION;
 export const CLAUDE_CODE_COMPATIBLE_USER_AGENT = getClaudeCodeUserAgent("sdk-cli");

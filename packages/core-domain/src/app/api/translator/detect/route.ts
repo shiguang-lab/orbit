@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { detectFormat } from "../../../../../open-sse/services/provider.ts";
+import { detectFormat } from "../../../../../../open-sse/services/provider.ts";
 import { translatorDetectSchema } from "../../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
 

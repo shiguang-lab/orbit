@@ -16,7 +16,7 @@
 // introduces new keys and never throws on null/undefined bodies — call sites
 // can chain it without extra guards.
 
-import { getParamFilterConfig, ModelParamFilter, ProviderParamFilter } from "../../src/lib/db/paramFilters.ts";
+import { getParamFilterConfig, ModelParamFilter, ProviderParamFilter } from "../../core-domain/src/lib/db/paramFilters.ts";
 import { getProviderModel } from "../config/providerModels.ts";
 
 type StripRule = {

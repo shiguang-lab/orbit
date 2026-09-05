@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { MCP_TOOLS, MCP_TOOL_MAP } from "../../../../../open-sse/mcp-server/schemas/tools.ts";
+import { MCP_TOOLS, MCP_TOOL_MAP } from "../../../../../../open-sse/mcp-server/schemas/tools.ts";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
 
 export async function GET(request: Request) {

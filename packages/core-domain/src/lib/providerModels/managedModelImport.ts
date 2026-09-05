@@ -21,10 +21,10 @@ import {
   ANTIGRAVITY_MODEL_ALIASES,
   ANTIGRAVITY_REVERSE_MODEL_ALIASES,
   isDiscoverableAntigravityModelId,
-} from "../../../open-sse/config/antigravityModelAliases.ts";
-import { isDiscoverableAgyModelId } from "../../../open-sse/config/agyModels.ts";
-import { filterChatSelectableModels } from "../../../open-sse/services/modelEndpointPolicy.ts";
-import { filterSelectableModels } from "../../../open-sse/services/modelLifecycle.ts";
+} from "../../../../open-sse/config/antigravityModelAliases.ts";
+import { isDiscoverableAgyModelId } from "../../../../open-sse/config/agyModels.ts";
+import { filterChatSelectableModels } from "../../../../open-sse/services/modelEndpointPolicy.ts";
+import { filterSelectableModels } from "../../../../open-sse/services/modelLifecycle.ts";
 import { isSelfHostedChatProvider } from "../../shared/constants/providers.ts";
 
 type JsonRecord = Record<string, unknown>;

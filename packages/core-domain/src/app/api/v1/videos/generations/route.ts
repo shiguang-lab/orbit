@@ -1,13 +1,13 @@
-import { handleVideoGeneration } from "../../../../../../open-sse/handlers/videoGeneration.ts";
-import { resolveVideoCredentialProvider } from "../../../../../../open-sse/handlers/videoGeneration/googleFlow.ts";
+import { handleVideoGeneration } from "../../../../../../../open-sse/handlers/videoGeneration.ts";
+import { resolveVideoCredentialProvider } from "../../../../../../../open-sse/handlers/videoGeneration/googleFlow.ts";
 import { withInjectionGuard } from "../../../../../middleware/promptInjectionGuard.ts";
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
 } from "../../../../../sse/services/auth.ts";
-import { getVideoProvider } from "../../../../../../open-sse/config/videoRegistry.ts";
-import { errorResponse } from "../../../../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../../../../open-sse/config/constants.ts";
+import { getVideoProvider } from "../../../../../../../open-sse/config/videoRegistry.ts";
+import { errorResponse } from "../../../../../../../open-sse/utils/error.ts";
+import { HTTP_STATUS } from "../../../../../../../open-sse/config/constants.ts";
 import * as log from "../../../../../sse/utils/logger.ts";
 import { enforceApiKeyPolicy } from "../../../../../shared/utils/apiKeyPolicy.ts";
 import {
@@ -75,7 +75,7 @@ async function postHandler(request, context) {
     const { getComboByName } = await import("../../../../../lib/db/combos.ts");
     const combo = await getComboByName(body.model);
     if (combo) {
-      const { executeVideoCombo } = await import("../../../../../../open-sse/services/videoCombo.ts");
+      const { executeVideoCombo } = await import("../../../../../../../open-sse/services/videoCombo.ts");
       return executeVideoCombo(body.model, body, { request, policy }, startTime, log);
     }
   }

@@ -11,7 +11,7 @@ import {
   setObsidianVaultPath,
 } from "../../../../lib/db/obsidian.ts";
 import { createObsidianClient } from "../../../../lib/obsidian/api.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 const setTokenSchema = z.object({
   token: z.string().min(1).max(5000),

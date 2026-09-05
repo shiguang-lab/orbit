@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { createErrorResponse } from "../../../../lib/api/errorResponse.ts";
 import { InstallError, SERVICE_VERSION_PATTERN } from "../../../../lib/services/installers/utils.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 export type ServiceInstallResult = {
   installedVersion: string;

@@ -3,7 +3,7 @@ import { getCompressionSettings, updateCompressionSettings } from "../../../../l
 import { isAuthenticated } from "../../../../shared/utils/apiAuth.ts";
 import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
 import { compressionSettingsUpdateSchema } from "../../../../shared/validation/compressionConfigSchemas.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 export async function GET(request: NextRequest) {
   if (!(await isAuthenticated(request))) {

@@ -18,7 +18,7 @@ import {
 } from "../../../../lib/db/featureFlags.ts";
 import { resolveAllFeatureFlags } from "../../../../shared/utils/featureFlags.ts";
 import { getCcAliasGlobalState } from "../../../../lib/db/ccDiscoveryAliases.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 const ACTIVE_VALUES = new Set(["true", "1", "yes"]);
 const CC_DISCOVERY_ALIASES_FLAG_KEY = "EXPOSE_CC_DISCOVERY_ALIASES";

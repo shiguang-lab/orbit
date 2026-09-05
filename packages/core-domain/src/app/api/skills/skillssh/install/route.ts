@@ -5,7 +5,7 @@ import { GLOBAL_SKILL_OWNER_ID, skillRegistry } from "../../../../../lib/skills/
 import { isAuthenticated } from "../../../../../shared/utils/apiAuth.ts";
 import { fetchSkillMd } from "../../../../../lib/skills/skillssh.ts";
 import { getSkillsProviderSetting } from "../../../../../lib/skills/providerSettings.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 
 const skillsshInstallSchema = z.object({
   name: z.string().min(1).max(64),

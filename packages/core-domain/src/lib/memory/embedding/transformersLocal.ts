@@ -6,7 +6,7 @@
  * This satisfies D8 + D25 (serverExternalPackages + no bundle impact).
  */
 
-import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
 import type { EmbeddingResult, EmbeddingError } from "./types";
 
 const TRANSFORMERS_MODEL = process.env.MEMORY_TRANSFORMERS_MODEL || "Xenova/all-MiniLM-L6-v2";

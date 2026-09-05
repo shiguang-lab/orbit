@@ -1,14 +1,14 @@
 import { handleChat } from "../../../../sse/handlers/chat.ts";
-import { initTranslators } from "../../../../../open-sse/translator/index.ts";
+import { initTranslators } from "../../../../../../open-sse/translator/index.ts";
 import { withInjectionGuard } from "../../../../middleware/promptInjectionGuard.ts";
 import { withChatAdmission } from "../../../../shared/middleware/withChatAdmission.ts";
 import { requireJsonContentType } from "../../../../shared/middleware/requireJsonContentType.ts";
 import {
   withEarlyStreamKeepalive,
   ANTHROPIC_PING_FRAME,
-} from "../../../../../open-sse/utils/earlyStreamKeepalive.ts";
-import { resolveKeepaliveThreshold } from "../../../../../open-sse/utils/keepaliveThreshold.ts";
-import { resolveStreamFlag } from "../../../../../open-sse/utils/aiSdkCompat.ts";
+} from "../../../../../../open-sse/utils/earlyStreamKeepalive.ts";
+import { resolveKeepaliveThreshold } from "../../../../../../open-sse/utils/keepaliveThreshold.ts";
+import { resolveStreamFlag } from "../../../../../../open-sse/utils/aiSdkCompat.ts";
 
 let initialized = false;
 

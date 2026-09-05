@@ -18,7 +18,7 @@ import { getServiceRow } from "../../../../../lib/db/versionManager.ts";
 import { decrypt } from "../../../../../lib/db/encryption.ts";
 import { isAuthRequired, isAuthenticated } from "../../../../../shared/utils/apiAuth.ts";
 import { DARIO_DEFAULT_PORT } from "../../../../../lib/services/installers/dario.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 
 export function darioBaseUrl(): string {
   const host = process.env.DARIO_HOST || "127.0.0.1";

@@ -10,11 +10,11 @@
  * call sites in the handler stay byte-identical; behaviour is unchanged.
  */
 
-import { extractProviderWarnings } from "../../../src/lib/compliance/providerAudit.ts";
-import { logAuditEvent } from "../../../src/lib/compliance/index.ts";
-import { emit } from "../../../src/lib/events/eventBus.ts";
-import type { RequestCompletedPayload, RequestFailedPayload } from "../../../src/lib/events/types.ts";
-import { saveCallLog } from "../../../src/lib/usageDb.ts";
+import { extractProviderWarnings } from "../../../core-domain/src/lib/compliance/providerAudit.ts";
+import { logAuditEvent } from "../../../core-domain/src/lib/compliance/index.ts";
+import { emit } from "../../../core-domain/src/lib/events/eventBus.ts";
+import type { RequestCompletedPayload, RequestFailedPayload } from "../../../core-domain/src/lib/events/types.ts";
+import { saveCallLog } from "../../../core-domain/src/lib/usageDb.ts";
 import { FORMATS } from "../../translator/formats.ts";
 import { takeEarlyKeepaliveBytes } from "../../utils/earlyKeepaliveByteBuffer.ts";
 import { cloneBoundedChatLogPayload, truncateForLog } from "./logTruncation.ts";

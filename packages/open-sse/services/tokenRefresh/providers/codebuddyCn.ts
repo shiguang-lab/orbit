@@ -15,7 +15,7 @@ export async function refreshCodebuddyCnToken(
   proxyConfig: unknown = null
 ) {
   if (!refreshToken) return null;
-  const { CODEBUDDY_CN_CONFIG } = await import("../../../../src/lib/oauth/constants/oauth.ts");
+  const { CODEBUDDY_CN_CONFIG } = await import("../../../../core-domain/src/lib/oauth/constants/oauth.ts");
   const oauth = CODEBUDDY_CN_CONFIG;
   try {
     const response = await runWithProxyContext(proxyConfig, () =>

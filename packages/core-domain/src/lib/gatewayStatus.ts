@@ -22,7 +22,7 @@ export async function buildShiguangGatewayStatus() {
   const [connections, circuitModule, quotaMonitorModule] = await Promise.all([
     Promise.resolve(readProviderStatusRows()),
     import("../shared/utils/circuitBreaker.ts").catch(() => null),
-    import("../../open-sse/services/quotaMonitor").catch(() => null),
+    import("../../../open-sse/services/quotaMonitor").catch(() => null),
   ]);
   const pools = listPools().items;
   const circuitStatuses = circuitModule?.getAllCircuitBreakerStatuses() ?? null;

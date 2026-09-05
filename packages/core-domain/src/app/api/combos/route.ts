@@ -10,7 +10,7 @@ import { getConsistentMachineId } from "../../../shared/utils/machineId.ts";
 import { syncToCloud } from "../../../lib/cloudSync.ts";
 import { validateCompositeTiersConfig } from "../../../lib/combos/compositeTiers.ts";
 import { normalizeComboModels } from "../../../lib/combos/steps.ts";
-import { validateComboDAG, clampComboDepth } from "../../../../open-sse/services/combo.ts";
+import { validateComboDAG, clampComboDepth } from "../../../../../open-sse/services/combo.ts";
 import { createComboSchema, paginationSchema } from "../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../shared/validation/helpers.ts";
 import { requireManagementAuth } from "../../../lib/api/requireManagementAuth.ts";

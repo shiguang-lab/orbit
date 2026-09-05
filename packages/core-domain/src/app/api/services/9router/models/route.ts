@@ -17,7 +17,7 @@ import { syncServiceModels } from "../../../../../lib/services/modelSync.ts";
 import { getSupervisor } from "../../../../../lib/services/registry.ts";
 import { getOrCreateApiKey } from "../../../../../lib/services/apiKey.ts";
 import { createErrorResponse } from "../../../../../lib/api/errorResponse.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 
 const TOOL = "9router";
 const DEFAULT_PORT = parseInt(process.env.NINEROUTER_PORT ?? "20130", 10);

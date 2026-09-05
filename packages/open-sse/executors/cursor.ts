@@ -90,7 +90,7 @@ import {
   resolveCursorEmptyTurnError,
   type ClassifiedCursorError,
 } from "./cursor/cursorErrors.ts";
-import { getActiveSyncedCatalog } from "../../src/lib/db/models/activeSyncedCatalog.ts";
+import { getActiveSyncedCatalog } from "../../core-domain/src/lib/db/models/activeSyncedCatalog.ts";
 // Composer helpers re-exported for external importers (tests).
 export {
   isComposerModel,

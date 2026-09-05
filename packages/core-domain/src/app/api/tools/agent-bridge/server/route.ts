@@ -16,7 +16,7 @@ import {
   resolveMitmSudoPassword,
 } from "../../../../../mitm/sudoGate.ts";
 import path from "path";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 import { createErrorResponse } from "../../../../../lib/api/errorResponse.ts";
 import { pickApiKeyForInternalUse } from "../../../../../lib/localDb.ts";
 

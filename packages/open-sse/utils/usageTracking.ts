@@ -2,14 +2,14 @@
  * Token Usage Tracking - Extract, normalize, estimate and log token usage
  */
 
-import { appendRequestLog } from "../../src/lib/usageDb.ts";
+import { appendRequestLog } from "../../core-domain/src/lib/usageDb.ts";
 import {
   getLoggedInputTokens,
   getLoggedOutputTokens,
   getNoCacheTokens,
   getPromptCacheCreationTokens,
   getPromptCacheReadTokens,
-} from "../../src/lib/usage/tokenAccounting.ts";
+} from "../../core-domain/src/lib/usage/tokenAccounting.ts";
 import { FORMATS } from "../translator/formats.ts";
 
 /** Nested `*_tokens_details` containers ({ cached_tokens, reasoning_tokens, … }). */
@@ -131,7 +131,7 @@ function getBufferTokens(): number {
 
 async function _loadBufferFromDb(): Promise<void> {
   try {
-    const { getSettings } = await import("../../src/lib/db/settings.ts");
+    const { getSettings } = await import("../../core-domain/src/lib/db/settings.ts");
     const settings = await getSettings();
     const val = settings.usageTokenBuffer;
     if (typeof val === "number" && val >= 0) {

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { countAuditLog, getAuditLog } from "../../../../lib/compliance/index.ts";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
 import { AuditLogQuerySchema } from "../../../../shared/schemas/quota.ts";
-import { buildErrorBody } from "../../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
 
 export const dynamic = "force-dynamic";
 

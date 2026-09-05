@@ -5,7 +5,7 @@
 // image providers wired in this file. Mirrors the shape/error-handling
 // conventions used by ./hyperbolic.ts and ./leonardo.ts.
 
-import { saveCallLog } from "../../../../src/lib/usageDb.ts";
+import { saveCallLog } from "../../../../core-domain/src/lib/usageDb.ts";
 import { sanitizeErrorMessage } from "../../../utils/error.ts";
 
 export async function handleHuggingFaceImageGeneration({

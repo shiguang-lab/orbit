@@ -9,7 +9,7 @@
 
 import { generatePKCE, generateState } from "./utils/pkce";
 import { PROVIDERS } from "./providers/index";
-import { resolvePublicCred } from "../../../open-sse/utils/publicCreds.ts";
+import { resolvePublicCred } from "../../../../open-sse/utils/publicCreds.ts";
 
 const GOOGLE_BROWSER_PROVIDERS = new Set(["antigravity", "agy"]);
 

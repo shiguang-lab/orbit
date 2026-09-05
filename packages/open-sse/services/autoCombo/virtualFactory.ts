@@ -1,24 +1,24 @@
 import { AutoComboConfig } from "./engine";
 import { MODE_PACKS } from "./modePacks";
 import { DEFAULT_WEIGHTS, ScoringWeights } from "./scoring";
-import { getCachedProviderConnections } from "../../../src/lib/db/readCache.ts";
-import { getSettings } from "../../../src/lib/db/settings.ts";
+import { getCachedProviderConnections } from "../../../core-domain/src/lib/db/readCache.ts";
+import { getSettings } from "../../../core-domain/src/lib/db/settings.ts";
 import { getProviderRegistry } from "./providerRegistryAccessor";
-import type { ConnectionFields } from "../../../src/lib/db/encryption.ts";
-import { NOAUTH_PROVIDERS } from "../../../src/shared/constants/providers.ts";
-import { isMicrosoftDesignerWebRetiredProviderId } from "../../../src/shared/constants/designerWebRetirement.ts";
-import { isRuntimeRetiredProviderId } from "../../../src/shared/constants/providerRetirement.ts";
-import { isCommonChatGptWebRetiredProviderId } from "../../../src/shared/constants/chatgptWebRetirement.ts";
-import { hasUsableWebSessionCredential } from "../../../src/shared/providers/webSessionCredentials.ts";
-import { toNumber } from "../../../src/shared/utils/numeric.ts";
-import { isCompatibleProviderConnectionId } from "../../../src/shared/utils/compatibleProviderId.ts";
+import type { ConnectionFields } from "../../../core-domain/src/lib/db/encryption.ts";
+import { NOAUTH_PROVIDERS } from "../../../core-domain/src/shared/constants/providers.ts";
+import { isMicrosoftDesignerWebRetiredProviderId } from "../../../core-domain/src/shared/constants/designerWebRetirement.ts";
+import { isRuntimeRetiredProviderId } from "../../../core-domain/src/shared/constants/providerRetirement.ts";
+import { isCommonChatGptWebRetiredProviderId } from "../../../core-domain/src/shared/constants/chatgptWebRetirement.ts";
+import { hasUsableWebSessionCredential } from "../../../core-domain/src/shared/providers/webSessionCredentials.ts";
+import { toNumber } from "../../../core-domain/src/shared/utils/numeric.ts";
+import { isCompatibleProviderConnectionId } from "../../../core-domain/src/shared/utils/compatibleProviderId.ts";
 import { defaultLogger as log } from "../../utils/logger.ts";
 import { getTokenLimit } from "../contextManager";
 import {
   createModelCapabilityResolutionSnapshot,
   getResolvedModelCapabilities,
   type ModelCapabilityResolutionSnapshot,
-} from "../../../src/lib/modelCapabilities.ts";
+} from "../../../core-domain/src/lib/modelCapabilities.ts";
 import {
   buildAutoCandidateFilter,
   tierToWeightVariant,
@@ -28,8 +28,8 @@ import {
 import { classifyTier } from "../tierResolver";
 import type { AutoVariant } from "./autoPrefix";
 import { buildFamilyCandidateFilter, type ModelFamily } from "./modelFamily";
-import { getHiddenModelsByProvider } from "../../../src/models/index.ts";
-import { getSyncedAvailableModelsByConnection, getCustomModels } from "../../../src/lib/db/models.ts";
+import { getHiddenModelsByProvider } from "../../../core-domain/src/models/index.ts";
+import { getSyncedAvailableModelsByConnection, getCustomModels } from "../../../core-domain/src/lib/db/models.ts";
 import { filterPaidOnlyCandidates } from "./paidModelFilter";
 import { filterModelExposureCandidates } from "./modelExposureFilter";
 import {
@@ -39,10 +39,10 @@ import {
 } from "./subscriptionLadder";
 import { filterStrictZeroCostCandidates, filterTosAvoidCandidates } from "./strictZeroCostFilter";
 import { resolveFreeAccessState } from "./freeAccessQuota";
-import { isModelExcludedByConnection } from "../../../src/domain/connectionModelRules.ts";
+import { isModelExcludedByConnection } from "../../../core-domain/src/domain/connectionModelRules.ts";
 import { resolveProviderAlias } from "../model.ts";
 import { filterExcludedCandidates } from "./candidateOverrides";
-import { getExcludedConnectionIds } from "../../../src/lib/db/autoCandidateOverrides.ts";
+import { getExcludedConnectionIds } from "../../../core-domain/src/lib/db/autoCandidateOverrides.ts";
 import {
   filterResilienceBlockedCandidates,
   buildConnectionResilienceMap,

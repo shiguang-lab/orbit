@@ -13,7 +13,7 @@ import {
   fetchWithTimeout,
   FetchTimeoutError,
   getConfiguredTimeout,
-} from "../../../src/shared/utils/fetchTimeout.ts";
+} from "../../../core-domain/src/shared/utils/fetchTimeout.ts";
 import { sanitizeErrorMessage } from "../../utils/error.ts";
 import { sleep } from "../../utils/sleep.ts";
 

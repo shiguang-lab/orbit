@@ -33,7 +33,7 @@
 
 import type { QuotaInfo } from "./quotaPreflight.ts";
 import { throttleQuotaFetch } from "./quotaFetchThrottle.ts";
-import { toNumber } from "../../src/shared/utils/numeric.ts";
+import { toNumber } from "../../core-domain/src/shared/utils/numeric.ts";
 
 const SELF_PATH = "/api/user/self";
 

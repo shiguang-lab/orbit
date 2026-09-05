@@ -11,14 +11,14 @@ import { getConsistentMachineId } from "../../../../../shared/utils/machineId.ts
 import { syncToCloud } from "../../../../../lib/cloudSync.ts";
 import { validateProviderApiKey } from "../../../../../lib/providers/validation.ts";
 import { getCliRuntimeStatus } from "../../../../../shared/services/cliRuntime.ts";
-import { buildQoderCliNotFoundHint } from "../../../../../../open-sse/services/qoderCliResolve.ts";
+import { buildQoderCliNotFoundHint } from "../../../../../../../open-sse/services/qoderCliResolve.ts";
 // Use the shared open-sse token refresh with built-in dedup/race-condition cache
-import { getAccessToken } from "../../../../../../open-sse/services/tokenRefresh.ts";
-import { rotationGroupFor } from "../../../../../../open-sse/services/refreshSerializer.ts";
+import { getAccessToken } from "../../../../../../../open-sse/services/tokenRefresh.ts";
+import { rotationGroupFor } from "../../../../../../../open-sse/services/refreshSerializer.ts";
 import { saveCallLog } from "../../../../../lib/usageDb.ts";
 import { shouldHideLogs } from "../../../../../lib/tokenHealthCheck.ts";
 import { logProxyEvent } from "../../../../../lib/proxyLogger.ts";
-import { runWithProxyContext } from "../../../../../../open-sse/utils/proxyFetch.ts";
+import { runWithProxyContext } from "../../../../../../../open-sse/utils/proxyFetch.ts";
 import {
   buildGitLabDuoProbeBody,
   buildGitLabDuoProbeHeaders,
@@ -29,13 +29,13 @@ import {
 import { isOpenAICompatibleProvider, providerAllowsOptionalApiKey } from "../../../../../shared/constants/providers.ts";
 import { shouldUseApiKeyConnectionTest } from "./webSessionTestDispatch";
 import { testCodexAppServerConnection, makeDiagnosis } from "./codexAppServerHealth";
-import { recoverKeyHealth } from "../../../../../../open-sse/services/apiKeyRotator.ts";
+import { recoverKeyHealth } from "../../../../../../../open-sse/services/apiKeyRotator.ts";
 import { shouldClearErrorStateOnValidProbe } from "../../../../../lib/usage/providerLimits.ts";
 import { isConnectionUnavailableToAuxiliaryActivity } from "../../../../../lib/exclusiveLeaseIsolation.ts";
 import { classifyAmbiguousOrAuthError, type ClassifyFailureArgs } from "./mistralAmbiguousAuth";
 import { buildApiKeyConnectionTestResult } from "./apiKeyTestResult";
 import { classifyOAuthProbeInconclusive, OAUTH_TEST_CONFIG } from "./oauthTestConfig";
-import { isGeoBlockedError } from "../../../../../../open-sse/services/errorClassifier.ts";
+import { isGeoBlockedError } from "../../../../../../../open-sse/services/errorClassifier.ts";
 import * as retirement from "../../../../../lib/providers/chatgptWebRetirementResponse.ts";
 
 // Match the API-key path's 30s timeout so a hung OAuth upstream cannot block the test queue.

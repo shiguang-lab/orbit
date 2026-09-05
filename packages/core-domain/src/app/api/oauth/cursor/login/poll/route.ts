@@ -11,7 +11,7 @@ import {
 import { persistCursorConnection } from "../../../../../../lib/oauth/services/persistCursorConnection.ts";
 import { isCloudEnabled } from "../../../../../../models/index.ts";
 import { syncToCloud } from "../../../../../../lib/cloudSync.ts";
-import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../../open-sse/utils/error.ts";
 import { getConsistentMachineId } from "../../../../../../shared/utils/machineId.ts";
 
 const pollSchema = z.object({

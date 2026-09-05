@@ -4,7 +4,7 @@
  */
 
 import { NextResponse } from "next/server";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 import { getWebhook, getDeliveries } from "../../../../../lib/localDb.ts";
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
 

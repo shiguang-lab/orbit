@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import pino from "pino";
 import { z } from "zod";
 
-import { buildErrorBody } from "../../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
 
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
 import { buildProviderHealthMatrix } from "../../../../lib/monitoring/providerHealthMatrix.ts";

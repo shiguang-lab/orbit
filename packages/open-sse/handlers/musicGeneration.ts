@@ -24,7 +24,7 @@ import {
   extractComfyOutputFiles,
   resolveComfyUiBaseUrl,
 } from "../utils/comfyuiClient.ts";
-import { saveCallLog } from "../../src/lib/usageDb.ts";
+import { saveCallLog } from "../../core-domain/src/lib/usageDb.ts";
 import {
   getKieCallbackUrl,
   getKieTaskId,

@@ -14,7 +14,7 @@ import {
 } from "../../../../../mitm/sudoGate.ts";
 import path from "path";
 import fs from "fs";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 import { createErrorResponse } from "../../../../../lib/api/errorResponse.ts";
 
 // Exported for unit testing. Next.js only treats GET/POST/etc. as route

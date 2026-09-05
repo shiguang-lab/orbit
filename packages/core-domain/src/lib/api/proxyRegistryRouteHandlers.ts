@@ -10,7 +10,7 @@ import {
 import { createErrorResponse, createErrorResponseFromUnknown } from "./errorResponse.ts";
 import { createProxyRegistrySchema, updateProxyRegistrySchema } from "../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../shared/validation/helpers.ts";
-import { clearDispatcherCache } from "../../../open-sse/utils/proxyDispatcher.ts";
+import { clearDispatcherCache } from "../../../../open-sse/utils/proxyDispatcher.ts";
 
 async function readJsonBody(request: Request) {
   try {

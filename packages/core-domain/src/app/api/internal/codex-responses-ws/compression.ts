@@ -17,19 +17,19 @@
  * now; the WS bridge previously had *zero* compression coverage, so this closes the primary gap.
  */
 
-import { logger } from "../../../../../open-sse/utils/logger.ts";
-import { estimateTokens } from "../../../../../open-sse/services/contextManager.ts";
-import { adaptBodyForCompression } from "../../../../../open-sse/services/compression/bodyAdapter.ts";
-import { resolveOmniGlyphTransport } from "../../../../../open-sse/services/compression/imageTransportPolicy.ts";
+import { logger } from "../../../../../../open-sse/utils/logger.ts";
+import { estimateTokens } from "../../../../../../open-sse/services/contextManager.ts";
+import { adaptBodyForCompression } from "../../../../../../open-sse/services/compression/bodyAdapter.ts";
+import { resolveOmniGlyphTransport } from "../../../../../../open-sse/services/compression/imageTransportPolicy.ts";
 import type {
   CompressionConfig,
   CompressionResult,
-} from "../../../../../open-sse/services/compression/types.ts";
-import { resolveCompressionSettings } from "../../../../../open-sse/handlers/chatCore/compressionSettings.ts";
+} from "../../../../../../open-sse/services/compression/types.ts";
+import { resolveCompressionSettings } from "../../../../../../open-sse/handlers/chatCore/compressionSettings.ts";
 import {
   writeCompressionAnalytics,
   writeCompressionSkip,
-} from "../../../../../open-sse/handlers/chatCore/compressionAnalyticsWrite.ts";
+} from "../../../../../../open-sse/handlers/chatCore/compressionAnalyticsWrite.ts";
 
 const log = logger("RESPONSES_WS_COMPRESSION");
 
@@ -65,7 +65,7 @@ export async function applyResponsesWsCompression(
     }
 
     const { selectCompressionStrategy, applyCompressionAsync } =
-      await import("../../../../../open-sse/services/compression/strategySelector.ts");
+      await import("../../../../../../open-sse/services/compression/strategySelector.ts");
 
     const estimatedTokens = estimateTokens(adapter.body.messages);
     const cachingContext = {

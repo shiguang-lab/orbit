@@ -1,4 +1,4 @@
-import { getModelSpec } from "../../src/shared/constants/modelSpecs.ts";
+import { getModelSpec } from "../../core-domain/src/shared/constants/modelSpecs.ts";
 
 export const BEDROCK_DEFAULT_REGION = "us-east-1";
 export const BEDROCK_DASHBOARD_DEFAULT_REGION = "eu-west-2";

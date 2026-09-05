@@ -14,8 +14,8 @@
  * Anything that does not match falls through unchanged, so existing built-in and
  * already-internal ids keep working.
  */
-import { parseImageModel } from "../../../open-sse/config/imageRegistry.ts";
-import { resolveComboTargets } from "../../../open-sse/services/combo.ts";
+import { parseImageModel } from "../../../../open-sse/config/imageRegistry.ts";
+import { resolveComboTargets } from "../../../../open-sse/services/combo.ts";
 
 import { getComboByName, getCombos } from "../db/combos.ts";
 import { getCachedProviderNodes } from "../localDb.ts";

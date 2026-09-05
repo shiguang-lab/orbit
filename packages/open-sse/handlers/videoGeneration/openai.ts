@@ -2,8 +2,8 @@ import {
   fetchWithTimeout,
   FetchTimeoutError,
   getConfiguredTimeout,
-} from "../../../src/shared/utils/fetchTimeout.ts";
-import { saveCallLog } from "../../../src/lib/usageDb.ts";
+} from "../../../core-domain/src/shared/utils/fetchTimeout.ts";
+import { saveCallLog } from "../../../core-domain/src/lib/usageDb.ts";
 import { sanitizeErrorMessage } from "../../utils/error.ts";
 
 interface LogLike {

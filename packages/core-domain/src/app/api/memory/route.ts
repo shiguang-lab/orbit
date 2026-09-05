@@ -7,7 +7,7 @@ import { MemoryType } from "../../../lib/memory/types.ts";
 import { parsePaginationParams, buildPaginatedResponse } from "../../../shared/types/pagination.ts";
 import { z } from "zod";
 import { validateBody, isValidationFailure } from "../../../shared/validation/helpers.ts";
-import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
 
 const createMemorySchema = z.object({
   content: z.string().min(1),

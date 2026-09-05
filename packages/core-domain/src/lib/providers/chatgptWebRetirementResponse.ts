@@ -1,4 +1,4 @@
-import { errorResponse } from "../../../open-sse/utils/error.ts";
+import { errorResponse } from "../../../../open-sse/utils/error.ts";
 
 import {
   assertCommonChatGptWebProviderAvailable,

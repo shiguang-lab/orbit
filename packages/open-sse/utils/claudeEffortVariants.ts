@@ -28,7 +28,7 @@
  * or Haiku). "none" is intentionally omitted: it is the base model id, already in
  * the catalog. Max/ultra are codex-only presets and are not synthesized here.
  */
-import { getModelSpec } from "../../src/shared/constants/modelSpecs.ts";
+import { getModelSpec } from "../../core-domain/src/shared/constants/modelSpecs.ts";
 import { supportsXHighEffort } from "../config/providerModels.ts";
 
 /** Base reasoning-effort levels advertised for every effort-capable Claude model. */

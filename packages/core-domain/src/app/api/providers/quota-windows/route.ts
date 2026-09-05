@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAllProviderQuotaWindows } from "../../../../../open-sse/services/quotaPreflight.ts";
+import { getAllProviderQuotaWindows } from "../../../../../../open-sse/services/quotaPreflight.ts";
 import { getCachedSettings } from "../../../../lib/localDb.ts";
 import { resolveResilienceSettings } from "../../../../lib/resilience/settings.ts";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";

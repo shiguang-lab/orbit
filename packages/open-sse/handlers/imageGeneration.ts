@@ -5,7 +5,7 @@ import {
   CHATGPT_WEB_RETIRED_ERROR_CODE,
   CHATGPT_WEB_RETIRED_MESSAGE,
   isCommonChatGptWebRetiredProviderId,
-} from "../../src/shared/constants/chatgptWebRetirement.ts";
+} from "../../core-domain/src/shared/constants/chatgptWebRetirement.ts";
 
 import { getImageProvider, parseImageModel } from "../config/imageRegistry.ts";
 import { HTTP_STATUS } from "../config/constants.ts";
@@ -14,7 +14,7 @@ import { getAntigravityEnvelopeUserAgent } from "../services/antigravityIdentity
 import { kieExecutor } from "../executors/kie.ts";
 import { mapImageSize } from "../translator/image/sizeMapper.ts";
 import { getCodexClientVersion, getCodexUserAgent } from "../config/codexClient.ts";
-import { saveCallLog } from "../../src/lib/usageDb.ts";
+import { saveCallLog } from "../../core-domain/src/lib/usageDb.ts";
 import { sleep } from "../utils/sleep.ts";
 import {
   getKieErrorMessage,
@@ -30,17 +30,17 @@ import {
   extractComfyOutputFiles,
   resolveComfyUiBaseUrl,
 } from "../utils/comfyuiClient.ts";
-import { fetchRemoteImage } from "../../src/shared/network/remoteImageFetch.ts";
+import { fetchRemoteImage } from "../../core-domain/src/shared/network/remoteImageFetch.ts";
 import {
   FetchTimeoutError,
   fetchWithTimeout,
   getConfiguredTimeout,
-} from "../../src/shared/utils/fetchTimeout.ts";
+} from "../../core-domain/src/shared/utils/fetchTimeout.ts";
 import { sanitizeErrorMessage, sanitizeUpstreamDetails } from "../utils/error.ts";
 import {
   isMicrosoftDesignerWebRetiredProviderId,
   MICROSOFT_DESIGNER_WEB_RETIRED_MESSAGE,
-} from "../../src/shared/constants/designerWebRetirement.ts";
+} from "../../core-domain/src/shared/constants/designerWebRetirement.ts";
 
 import { handleSDWebUIImageGeneration } from "./imageGeneration/providers/sdWebUI.ts";
 import { handleHyperbolicImageGeneration } from "./imageGeneration/providers/hyperbolic.ts";

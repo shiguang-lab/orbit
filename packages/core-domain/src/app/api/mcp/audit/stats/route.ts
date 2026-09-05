@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAuditStats } from "../../../../../../open-sse/mcp-server/audit.ts";
+import { getAuditStats } from "../../../../../../../open-sse/mcp-server/audit.ts";
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
 
 export async function GET(request: Request) {

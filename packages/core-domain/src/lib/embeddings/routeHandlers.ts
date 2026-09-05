@@ -1,5 +1,5 @@
-import { errorResponse } from "@shiguang-gateway/core-domain/open-sse/utils/error.ts";
-import { HTTP_STATUS } from "@shiguang-gateway/core-domain/open-sse/config/constants.ts";
+import { errorResponse } from "@shiguang-gateway/open-sse/utils/error.ts";
+import { HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants.ts";
 import * as log from "@shiguang-gateway/core-domain/sse/logger";
 import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/shared/api-key-policy";
 import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/edge/feature-flags";

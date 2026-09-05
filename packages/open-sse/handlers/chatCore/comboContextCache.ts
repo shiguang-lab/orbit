@@ -1,5 +1,5 @@
-import { getUpstreamProxyConfig } from "../../../src/lib/localDb.ts";
-import type { FallbackBackend } from "../../../src/lib/db/upstreamProxy.ts";
+import { getUpstreamProxyConfig } from "../../../core-domain/src/lib/localDb.ts";
+import type { FallbackBackend } from "../../../core-domain/src/lib/db/upstreamProxy.ts";
 
 /**
  * Module-level cache for upstream proxy config (shared across all requests).
@@ -29,7 +29,7 @@ const COMBOS_CACHE_TTL = 10_000;
 
 export async function getCombosCached(): Promise<unknown[]> {
   const now = Date.now();
-  const { getCombos, getCombosCacheVersion } = await import("../../../src/lib/localDb.ts");
+  const { getCombos, getCombosCacheVersion } = await import("../../../core-domain/src/lib/localDb.ts");
   const version = getCombosCacheVersion();
   // A combo write (create/update/delete/reorder) bumps the shared version via
   // invalidateDbCache("combos"); when it no longer matches our snapshot we drop

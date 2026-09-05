@@ -14,11 +14,11 @@ import {
   proxyUrlForLogs,
 } from "./proxyDispatcher.ts";
 import tlsClient, { type TlsFetchOptions } from "./tlsClient.ts";
-import { isProxyReachable } from "../../src/lib/proxyHealth.ts";
+import { isProxyReachable } from "../../core-domain/src/lib/proxyHealth.ts";
 import {
   isControlPlaneProxyDirectFallbackEnabled,
   isFeatureFlagEnabled,
-} from "../../src/shared/utils/featureFlags.ts";
+} from "../../core-domain/src/shared/utils/featureFlags.ts";
 import {
   directFetchWithBoundedResponseStart,
   isDirectResponseStartTimeout,

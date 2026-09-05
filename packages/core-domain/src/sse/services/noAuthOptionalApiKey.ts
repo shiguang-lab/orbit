@@ -8,8 +8,8 @@
  * (`anonymousApiKey` and/or FREE_APIKEY), prefer an active connection that
  * actually has a key, then fall back to the synthetic anonymous path.
  */
-import { REGISTRY } from "../../../open-sse/config/providerRegistry.ts";
-import { isAccountUnavailable } from "../../../open-sse/services/accountFallback.ts";
+import { REGISTRY } from "../../../../open-sse/config/providerRegistry.ts";
+import { isAccountUnavailable } from "../../../../open-sse/services/accountFallback.ts";
 import { createLazyConnectionView } from "../../lib/db/providers/lazyConnectionView.ts";
 import type { ProviderConnectionView } from "../../lib/db/providers/lazyConnectionView.ts";
 import { getCachedRawProviderConnections } from "../../lib/db/readCache.ts";

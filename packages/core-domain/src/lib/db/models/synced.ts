@@ -1,4 +1,4 @@
-import { isRetiredGitHubCopilotModelId } from "../../../../open-sse/config/providers/registry/github/retiredModels.ts";
+import { isRetiredGitHubCopilotModelId } from "../../../../../open-sse/config/providers/registry/github/retiredModels.ts";
 
 import { asRecord, toNonEmptyString } from "./shared";
 

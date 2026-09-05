@@ -17,26 +17,26 @@ import {
   shouldSuppressStaticModelForExclusiveListing,
 } from "./catalogSyncedCoverage";
 import { buildSyncedCapabilities, mergeSyncedCapabilities } from "./syncedCapabilities";
-import { getAllEmbeddingModels } from "../../../../../open-sse/config/embeddingRegistry.ts";
+import { getAllEmbeddingModels } from "../../../../../../open-sse/config/embeddingRegistry.ts";
 import {
   getAllImageModels,
   isRegisteredImageModel,
-} from "../../../../../open-sse/config/imageRegistry.ts";
-import { aiHordeImageCatalog } from "../../../../../open-sse/services/aihordeImageCatalog.ts";
-import { getAllRerankModels } from "../../../../../open-sse/config/rerankRegistry.ts";
-import { getAllAudioModels } from "../../../../../open-sse/config/audioRegistry.ts";
-import { getAllModerationModels } from "../../../../../open-sse/config/moderationRegistry.ts";
-import { getAllVideoModels } from "../../../../../open-sse/config/videoRegistry.ts";
-import { getAllMusicModels } from "../../../../../open-sse/config/musicRegistry.ts";
+} from "../../../../../../open-sse/config/imageRegistry.ts";
+import { aiHordeImageCatalog } from "../../../../../../open-sse/services/aihordeImageCatalog.ts";
+import { getAllRerankModels } from "../../../../../../open-sse/config/rerankRegistry.ts";
+import { getAllAudioModels } from "../../../../../../open-sse/config/audioRegistry.ts";
+import { getAllModerationModels } from "../../../../../../open-sse/config/moderationRegistry.ts";
+import { getAllVideoModels } from "../../../../../../open-sse/config/videoRegistry.ts";
+import { getAllMusicModels } from "../../../../../../open-sse/config/musicRegistry.ts";
 import {
   getRegistryModelThinkingEfforts,
   getRegistryThinkingEfforts,
   providerUsesAuthoritativeLiveCatalog,
   REGISTRY,
-} from "../../../../../open-sse/config/providerRegistry.ts";
-import { CODEX_NATIVE_UNPREFIXED_MODELS } from "../../../../../open-sse/services/model.ts";
-import { isModelSelectable } from "../../../../../open-sse/services/modelLifecycle.ts";
-import { resolveNestedComboTargets } from "../../../../../open-sse/services/combo.ts";
+} from "../../../../../../open-sse/config/providerRegistry.ts";
+import { CODEX_NATIVE_UNPREFIXED_MODELS } from "../../../../../../open-sse/services/model.ts";
+import { isModelSelectable } from "../../../../../../open-sse/services/modelLifecycle.ts";
+import { resolveNestedComboTargets } from "../../../../../../open-sse/services/combo.ts";
 import {
   AUTO_TEMPLATE_VARIANTS,
   AUTO_SUFFIX_VARIANTS,
@@ -44,7 +44,7 @@ import {
   createBuiltinAutoCombo,
   prepareBuiltinAutoComboInputs,
   isPaidTierAutoId,
-} from "../../../../../open-sse/services/autoCombo/builtinCatalog.ts";
+} from "../../../../../../open-sse/services/autoCombo/builtinCatalog.ts";
 import {
   getSyncedAvailableModelsByConnection,
   SYNCED_AVAILABLE_MODELS_MALFORMED,
@@ -83,7 +83,7 @@ import {
   isNoAuthRawProviderPrefix,
   normalizeBlockedProviderSet,
 } from "../../../../shared/utils/noAuthProviders.ts";
-import { getSourcedTokenLimit, getTokenLimit } from "../../../../../open-sse/services/contextManager.ts";
+import { getSourcedTokenLimit, getTokenLimit } from "../../../../../../open-sse/services/contextManager.ts";
 import { extractApiKey } from "../../../../sse/services/auth.ts";
 import type { ComboModelStep } from "../../../../lib/combos/steps.ts";
 import {
@@ -125,7 +125,7 @@ import { isUnifiedChatSourceModelSelectable } from "./catalogModelPolicy";
 import { isFreeModel } from "../../../../shared/utils/freeModels.ts";
 import { isModelExposureAllowed } from "../../../../shared/utils/modelExposureList.ts";
 import { isCodexDiscoveryModelExcluded } from "../../../../shared/services/codexDiscoveryPolicy.ts";
-import { buildErrorBody } from "../../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
 
 // Public API of this module is preserved after the catalog helper extraction:
 // `isVisionModelId` (vision-detection-consistency.test.ts) and

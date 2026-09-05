@@ -3,7 +3,7 @@
  * Implements MemoryBackend interface by delegating to store.ts
  */
 
-import { logger } from "../../../open-sse/utils/logger";
+import { logger } from "../../../../open-sse/utils/logger";
 import type {
   MemoryBackend,
   CreateMemoryInput,

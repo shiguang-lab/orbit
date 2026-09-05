@@ -15,7 +15,7 @@
 import net from "node:net";
 import path from "node:path";
 import fs from "node:fs";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 import { createErrorResponse } from "../../../../../lib/api/errorResponse.ts";
 import { getMitmStatus } from "../../../../../mitm/manager.ts";
 import { checkCertInstalled } from "../../../../../mitm/cert/install.ts";

@@ -1,6 +1,6 @@
 import { stopHeadroomProxy } from "../../../../lib/headroom/process.ts";
 import { createErrorResponse } from "../../../../lib/api/errorResponse.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 export const dynamic = "force-dynamic";
 

@@ -1,15 +1,15 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
-import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
-import { loadRtkFilters } from "../../../../../../open-sse/services/compression/engines/rtk/filterLoader.ts";
+import { buildErrorBody } from "../../../../../../../open-sse/utils/error.ts";
+import { loadRtkFilters } from "../../../../../../../open-sse/services/compression/engines/rtk/filterLoader.ts";
 import {
   installGlobalRtkTomlV1,
   parseRtkTomlV1,
   RTK_TOML_MAX_BYTES,
   RtkTomlCompatibilityError,
   type RtkTomlCompatibilityResult,
-} from "../../../../../../open-sse/services/compression/engines/rtk/tomlCompatibility.ts";
+} from "../../../../../../../open-sse/services/compression/engines/rtk/tomlCompatibility.ts";
 
 const RequestSchema = z
   .object({

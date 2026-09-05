@@ -8,7 +8,7 @@ import {
 } from "../db/reasoningRoutingRules.ts";
 import { getResolvedModelCapabilities } from "../modelCapabilities.ts";
 import { normalizeRoutingTags } from "../../domain/tagRouter.ts";
-import { splitClaudeEffortSuffix } from "../../../open-sse/config/providerModels.ts";
+import { splitClaudeEffortSuffix } from "../../../../open-sse/config/providerModels.ts";
 
 type JsonRecord = Record<string, unknown>;
 const EFFORTS = new Set<ReasoningEffort>([

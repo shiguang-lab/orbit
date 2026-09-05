@@ -3,7 +3,7 @@
 import { NextResponse } from "next/server";
 import { getInstalledVersion, getLatestVersion } from "../../../../lib/services/installers/cliproxy.ts";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 export async function GET(request: Request) {
   const authError = await requireManagementAuth(request);

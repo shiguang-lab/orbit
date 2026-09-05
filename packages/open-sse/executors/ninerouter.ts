@@ -28,8 +28,8 @@ import {
 } from "./base.ts";
 import { FETCH_TIMEOUT_MS } from "../config/constants.ts";
 import { buildErrorBody } from "../utils/error.ts";
-import { getSupervisor } from "../../src/lib/services/registry.ts";
-import { getOrCreateApiKey } from "../../src/lib/services/apiKey.ts";
+import { getSupervisor } from "../../core-domain/src/lib/services/registry.ts";
+import { getOrCreateApiKey } from "../../core-domain/src/lib/services/apiKey.ts";
 
 const DEFAULT_PORT = 20130;
 const DEFAULT_HOST = "127.0.0.1";

@@ -8,7 +8,7 @@ import {
   normalizeMemorySettings,
   toMemorySettingsUpdates,
 } from "../../../../lib/memory/settings.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 export async function GET(request: NextRequest) {
   if (!(await isAuthenticated(request))) {

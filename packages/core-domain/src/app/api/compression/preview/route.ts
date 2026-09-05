@@ -5,23 +5,23 @@ import { compressionPreviewConfigSchema } from "../../../../shared/validation/co
 import {
   applyCompression,
   applyCompressionAsync,
-} from "../../../../../open-sse/services/compression/strategySelector.ts";
+} from "../../../../../../open-sse/services/compression/strategySelector.ts";
 import type {
   CompressionConfig,
   CompressionMode,
-} from "../../../../../open-sse/services/compression/types.ts";
+} from "../../../../../../open-sse/services/compression/types.ts";
 import {
   buildCompressionPreviewDiff,
   type HeatmapMode,
-} from "../../../../../open-sse/services/compression/diffHelper.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+} from "../../../../../../open-sse/services/compression/diffHelper.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 import { countTextTokens } from "../../../../shared/utils/tiktokenCounter.ts";
 import {
   ensureEngineBreakdown,
   reconcileSingleEngineTokens,
-} from "../../../../../open-sse/services/compression/engineBreakdown.ts";
-import { summarizeEncoderCandidates } from "../../../../../open-sse/services/compression/engines/headroom/encoderComparison.ts";
-import { DEFAULT_MIN_ROWS } from "../../../../../open-sse/services/compression/engines/headroom/smartcrusher.ts";
+} from "../../../../../../open-sse/services/compression/engineBreakdown.ts";
+import { summarizeEncoderCandidates } from "../../../../../../open-sse/services/compression/engines/headroom/encoderComparison.ts";
+import { DEFAULT_MIN_ROWS } from "../../../../../../open-sse/services/compression/engines/headroom/smartcrusher.ts";
 
 export const PreviewCompressionConfigSchema = compressionPreviewConfigSchema;
 

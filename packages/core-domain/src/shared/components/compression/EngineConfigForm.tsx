@@ -1,5 +1,5 @@
 "use client";
-import type { EngineConfigField } from "../../../../open-sse/services/compression/engines/types.ts";
+import type { EngineConfigField } from "../../../../../open-sse/services/compression/engines/types.ts";
 
 export interface EngineConfigFormProps {
   schema: EngineConfigField[];

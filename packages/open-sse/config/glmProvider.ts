@@ -1,4 +1,4 @@
-import { getClaudeCodeUserAgent } from "../../src/shared/constants/claudeCodeClient.ts";
+import { getClaudeCodeUserAgent } from "../../core-domain/src/shared/constants/claudeCodeClient.ts";
 
 import { ANTHROPIC_VERSION_HEADER } from "./anthropicHeaders.ts";
 

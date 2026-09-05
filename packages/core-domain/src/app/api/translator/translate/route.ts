@@ -4,9 +4,9 @@ import {
   getTargetFormat,
   buildProviderUrl,
   buildProviderHeaders,
-} from "../../../../../open-sse/services/provider.ts";
-import { translateRequest } from "../../../../../open-sse/translator/index.ts";
-import { FORMATS } from "../../../../../open-sse/translator/formats.ts";
+} from "../../../../../../open-sse/services/provider.ts";
+import { translateRequest } from "../../../../../../open-sse/translator/index.ts";
+import { FORMATS } from "../../../../../../open-sse/translator/formats.ts";
 import { getProviderConnections } from "../../../../lib/localDb.ts";
 import { isConnectionUnavailableToAuxiliaryActivity } from "../../../../lib/exclusiveLeaseIsolation.ts";
 import { translatorTranslateSchema } from "../../../../shared/validation/schemas.ts";

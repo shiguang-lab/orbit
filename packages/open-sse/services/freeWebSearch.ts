@@ -9,7 +9,7 @@
  * unit test pins the contract against a real captured response. The network call
  * goes through `safeOutboundFetch` with the public-only SSRF guard.
  */
-import { safeOutboundFetch } from "../../src/shared/network/safeOutboundFetch.ts";
+import { safeOutboundFetch } from "../../core-domain/src/shared/network/safeOutboundFetch.ts";
 
 export interface FreeSearchResult {
   title: string;

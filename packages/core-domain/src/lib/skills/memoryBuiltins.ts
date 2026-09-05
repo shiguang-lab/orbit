@@ -2,7 +2,7 @@ import { createMemory, updateMemory, deleteMemory, getMemory } from "../memory/s
 import { retrieveMemories } from "../memory/retrieval.ts";
 import { getMemorySettings, DEFAULT_MEMORY_SETTINGS, toMemoryRetrievalConfig } from "../memory/settings.ts";
 import { MemoryType } from "../memory/types.ts";
-import { logger } from "../../../open-sse/utils/logger.ts";
+import { logger } from "../../../../open-sse/utils/logger.ts";
 
 const log = logger("MEMORY_BUILTINS");
 

@@ -14,7 +14,7 @@
 import { z } from "zod";
 import { updateServiceField } from "../../../../../lib/db/versionManager.ts";
 import { createErrorResponse } from "../../../../../lib/api/errorResponse.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 
 const BodySchema = z.object({ enabled: z.boolean() });
 

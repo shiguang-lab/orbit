@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import {
   discoverRepeatedNoise,
   listRtkCommandSamples,
-} from "../../../../../../open-sse/services/compression/engines/rtk/index.ts";
+} from "../../../../../../../open-sse/services/compression/engines/rtk/index.ts";
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
 
 /** Parse a positive `limit` query param, clamped to [1, 2000]; default 500. */

@@ -6,7 +6,7 @@ import {
   writeClaudeAuthFileToLocalCli,
 } from "../../../../../../lib/oauth/utils/claudeAuthFile.ts";
 import { getAuditRequestContext, logAuditEvent } from "../../../../../../lib/compliance/index.ts";
-import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../../open-sse/utils/error.ts";
 
 function toErrorResponse(error: unknown) {
   if (error instanceof ClaudeAuthFileError) {

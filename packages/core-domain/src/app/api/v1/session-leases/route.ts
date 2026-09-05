@@ -22,7 +22,7 @@ import {
   validateExclusiveLeaseKeyConfiguration,
 } from "../../../../sse/services/leaseContext.ts";
 import { getModelInfo } from "../../../../sse/services/model.ts";
-import { buildErrorBody } from "../../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
 
 const action = <T extends string>(name: T, shape: z.ZodRawShape) =>
   z.object({ action: z.literal(name), ...shape });

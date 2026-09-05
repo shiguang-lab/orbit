@@ -11,7 +11,7 @@ import type {
   EngineValidationResult,
 } from "../types.ts";
 import { CODEX_RESPONSE_ITEM_META } from "../../bodyAdapter.ts";
-import { countTextTokens } from "../../../../../src/shared/utils/tiktokenCounter.ts";
+import { countTextTokens } from "../../../../../core-domain/src/shared/utils/tiktokenCounter.ts";
 
 const ENGINE_ID = "codex-responses";
 

@@ -1,6 +1,6 @@
 import { isJsonObject } from "../../utils/kieTask.ts";
-import { saveCallLog } from "../../../src/lib/usageDb.ts";
-import { resolveAlibabaProviderMediaBaseUrl } from "../../../src/shared/constants/alibabaProviderRegions.ts";
+import { saveCallLog } from "../../../core-domain/src/lib/usageDb.ts";
+import { resolveAlibabaProviderMediaBaseUrl } from "../../../core-domain/src/shared/constants/alibabaProviderRegions.ts";
 import { sanitizeErrorMessage } from "../../utils/error.ts";
 
 /**

@@ -1,8 +1,8 @@
 import {
   PROVIDER_ID_TO_ALIAS,
   PROVIDER_MODELS,
-} from "../../open-sse/config/providerModels.ts";
-import { parseModel, resolveCanonicalProviderModel } from "../../open-sse/services/model.ts";
+} from "../../../open-sse/config/providerModels.ts";
+import { parseModel, resolveCanonicalProviderModel } from "../../../open-sse/services/model.ts";
 import {
   findModelSpecIdByExactOrAlias,
   getAuthoritativeContextWindow,
@@ -25,11 +25,11 @@ export type { ModelCapabilityResolutionSnapshot } from "./modelCapabilityResolut
 export { createModelCapabilityResolutionSnapshot } from "./modelCapabilityResolutionSnapshot.ts";
 export { resolveAudioCapability } from "./modelCapabilityModalities.ts";
 import { isVisionModelId } from "../shared/constants/visionModels.ts";
-import { getUnsupportedParams } from "../../open-sse/config/providerRegistry.ts";
+import { getUnsupportedParams } from "../../../open-sse/config/providerRegistry.ts";
 import {
   getLearnedThinkingCap,
   GEMINI_FALLBACK_THINKING_CAP,
-} from "../../open-sse/services/learnedThinkingCaps.ts";
+} from "../../../open-sse/services/learnedThinkingCaps.ts";
 
 const TOOL_CALLING_UNSUPPORTED_PATTERNS: string[] = [
   // Specialty / non-chat surfaces must never inherit optimistic tool defaults (#8016)

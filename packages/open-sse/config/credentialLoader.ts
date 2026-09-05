@@ -44,7 +44,7 @@ function resolveCredentialsPath(): string {
   let resolveDataDir: (options?: { isCloud?: boolean }) => string;
 
   try {
-    resolveDataDir = require("../../src/lib/dataPaths.ts").resolveDataDir;
+    resolveDataDir = require("../../core-domain/src/lib/dataPaths.ts").resolveDataDir;
   } catch (err) {
     const fallbackDataDir = process.env.DATA_DIR || join(process.cwd(), "data");
     console.warn(

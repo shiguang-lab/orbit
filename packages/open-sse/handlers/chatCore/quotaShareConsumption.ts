@@ -22,7 +22,7 @@ export async function scheduleQuotaShareConsumption(args: {
   if (!args.apiKeyId || !args.connectionId) return;
   try {
     const { scheduleRecordConsumption, buildConsumptionCost } = await import(
-      "../../../src/lib/quota/spendRecorder.ts"
+      "../../../core-domain/src/lib/quota/spendRecorder.ts"
     );
     scheduleRecordConsumption(
       {

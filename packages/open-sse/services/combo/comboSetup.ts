@@ -9,16 +9,16 @@
  *
  * See _tasks/quality/2026-06-19-DESIGN-godfiles-decomposition.md §4.
  */
-import { normalizeRoutingStrategy } from "../../../src/shared/constants/routingStrategies.ts";
+import { normalizeRoutingStrategy } from "../../../core-domain/src/shared/constants/routingStrategies.ts";
 import {
   resolveContextRelayConfig,
   resolveUniversalHandoffConfig,
   SKIP_UNIVERSAL_HANDOFF_FLAG,
 } from "../contextHandoff.ts";
-import { getLastSessionModel } from "../../../src/lib/db/contextHandoffs.ts";
+import { getLastSessionModel } from "../../../core-domain/src/lib/db/contextHandoffs.ts";
 import { applyComboAgentMiddleware } from "../comboAgentMiddleware.ts";
 import { resolveComboSetupConfig, resolveComboTargetTimeoutMsForCombo } from "../comboConfig.ts";
-import { resolveResilienceSettings } from "../../../src/lib/resilience/settings";
+import { resolveResilienceSettings } from "../../../core-domain/src/lib/resilience/settings";
 import { FETCH_TIMEOUT_MS } from "../../config/constants.ts";
 import { deriveComboSessionKey } from "./autoStrategy.ts";
 import type { ComboContext } from "./context.ts";

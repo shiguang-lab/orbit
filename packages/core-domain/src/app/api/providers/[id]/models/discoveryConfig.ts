@@ -1,4 +1,4 @@
-import { getRegistryEntry } from "../../../../../../open-sse/config/providerRegistry.ts";
+import { getRegistryEntry } from "../../../../../../../open-sse/config/providerRegistry.ts";
 import type { ProviderModelsConfigEntry } from "./discovery/providerModelsConfig";
 
 function parseRegistryModelsResponse(data: unknown): unknown[] {

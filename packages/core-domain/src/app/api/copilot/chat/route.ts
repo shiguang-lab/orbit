@@ -3,7 +3,7 @@ import { z } from "zod";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
 import { processCopilotChat } from "../../../../lib/copilot/engine.ts";
 import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
-import { sanitizeErrorMessage, buildErrorBody } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage, buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
 
 const copilotRequestSchema = z.object({
   messages: z

@@ -1,4 +1,4 @@
-import { parseModel } from "../../../open-sse/services/model.ts";
+import { parseModel } from "../../../../open-sse/services/model.ts";
 import {
   getCanonicalModelMetadata,
   type CanonicalModelMetadata,

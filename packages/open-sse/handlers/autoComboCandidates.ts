@@ -27,11 +27,11 @@
  * unchanged and keeps excluding these candidates before dispatch.
  */
 import { buildErrorBody } from "../utils/error.ts";
-import { getCircuitBreaker } from "../../src/shared/utils/circuitBreaker.ts";
+import { getCircuitBreaker } from "../../core-domain/src/shared/utils/circuitBreaker.ts";
 import { isModelLocked } from "../services/accountFallback.ts";
 import { parseModel } from "../services/model.ts";
-import { getProviderConnectionById } from "../../src/lib/db/providers.ts";
-import { getExcludedConnectionIds } from "../../src/lib/db/autoCandidateOverrides.ts";
+import { getProviderConnectionById } from "../../core-domain/src/lib/db/providers.ts";
+import { getExcludedConnectionIds } from "../../core-domain/src/lib/db/autoCandidateOverrides.ts";
 
 /**
  * One row of the unfiltered, reason-annotated candidate pool (#9133): every

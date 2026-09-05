@@ -9,7 +9,7 @@
  * 404 if skill not found in catalog.
  * 502 if upstream GitHub fetch fails.
  */
-import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../../../../open-sse/utils/error.ts";
 import { getSkillById, fetchSkillMarkdown } from "../../../../../lib/agentSkills/catalog.ts";
 
 export const dynamic = "force-dynamic";

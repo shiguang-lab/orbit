@@ -24,7 +24,7 @@ import {
   supportsTokenRefresh,
   isUnrecoverableRefreshError,
   refreshCopilotToken,
-} from "../../open-sse/services/tokenRefresh.ts";
+} from "../../../open-sse/services/tokenRefresh.ts";
 import { pickMaskedDisplayValue } from "../shared/utils/maskEmail.ts";
 import { isAutomatedTestProcess } from "../shared/utils/testProcess.ts";
 import { refreshGithubCopilotSubTokenIfNeeded } from "./tokenHealthCheckCopilot.ts";

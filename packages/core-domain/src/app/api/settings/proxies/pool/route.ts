@@ -11,7 +11,7 @@ import {
 } from "../../../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../../../shared/validation/helpers.ts";
 import { createErrorResponse, createErrorResponseFromUnknown } from "../../../../../lib/api/errorResponse.ts";
-import { clearDispatcherCache } from "../../../../../../open-sse/utils/proxyDispatcher.ts";
+import { clearDispatcherCache } from "../../../../../../../open-sse/utils/proxyDispatcher.ts";
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
 
 // #6365 proxy pools — a scope (global/provider/account/combo) may hold MULTIPLE

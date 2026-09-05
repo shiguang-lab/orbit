@@ -1,4 +1,4 @@
-import { ipVersion, isPrivateHost, normalizeHost } from "./privateHost";
+import { ipVersion, isPrivateHost, normalizeHost } from "@shiguang-gateway/config/network/private-host";
 
 // #11122: the host classification lives in `./privateHost.ts` because
 // `open-sse/config/providerRegistry.ts` imports it from a module reachable by a browser

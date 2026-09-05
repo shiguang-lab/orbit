@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { skillRegistry } from "../../../src/lib/skills/registry.ts";
-import { skillExecutor } from "../../../src/lib/skills/executor.ts";
+import { skillRegistry } from "../../../core-domain/src/lib/skills/registry.ts";
+import { skillExecutor } from "../../../core-domain/src/lib/skills/executor.ts";
 
 export const SkillListSchema = z.object({
   apiKeyId: z.string().optional(),

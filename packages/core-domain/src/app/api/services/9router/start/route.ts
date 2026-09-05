@@ -1,7 +1,7 @@
 import { getServiceRow } from "../../../../../lib/db/versionManager.ts";
 import { getOrInitSupervisor } from "../_lib";
 import { createErrorResponse } from "../../../../../lib/api/errorResponse.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 
 const TOOL = "9router";
 

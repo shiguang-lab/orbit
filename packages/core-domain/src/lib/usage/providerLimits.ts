@@ -19,22 +19,22 @@ import { clearRecoveredProviderState } from "../../sse/services/auth.ts";
 import { getMachineId } from "../../shared/utils/machine.ts";
 import { USAGE_SUPPORTED_PROVIDERS } from "../../shared/constants/providers.ts";
 import { mergeProviderLimitsCacheEntry, toProviderLimitsCacheEntry } from "./providerLimitsCache";
-import { getExecutor } from "../../../open-sse/executors/index.ts";
-import { getUsageForProvider } from "../../../open-sse/services/usage.ts";
-import { cooldownUntilMs } from "../../../open-sse/services/accountFallback.ts";
+import { getExecutor } from "../../../../open-sse/executors/index.ts";
+import { getUsageForProvider } from "../../../../open-sse/services/usage.ts";
+import { cooldownUntilMs } from "../../../../open-sse/services/accountFallback.ts";
 import {
   rotationGroupFor,
   serializeRefresh,
-} from "../../../open-sse/services/refreshSerializer.ts";
+} from "../../../../open-sse/services/refreshSerializer.ts";
 import {
   extractCodeAssistOnboardTierId,
   extractCodeAssistSubscriptionTier,
-} from "../../../open-sse/services/codeAssistSubscription.ts";
+} from "../../../../open-sse/services/codeAssistSubscription.ts";
 import {
   extractAntigravityProjectIdFromPayload,
   getStoredAntigravityProjectId,
-} from "../../../open-sse/services/antigravityProjectPersistence.ts";
-import { runWithProxyContext } from "../../../open-sse/utils/proxyFetch.ts";
+} from "../../../../open-sse/services/antigravityProjectPersistence.ts";
+import { runWithProxyContext } from "../../../../open-sse/utils/proxyFetch.ts";
 import { onUsageRecorded } from "./usageEvents";
 import {
   isRecord,

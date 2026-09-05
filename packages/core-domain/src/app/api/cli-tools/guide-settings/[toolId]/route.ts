@@ -10,7 +10,7 @@ import { mergeOpenCodeConfigText } from "../../../../../shared/services/opencode
 import { guideSettingsSaveSchema } from "../../../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../../../shared/validation/helpers.ts";
 import { resolveApiKey, getOrCreateApiKey } from "../../../../../shared/services/apiKeyResolver.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 import { guardCliConfigWrite } from "../../../../../lib/api/cliConfigWriteGuard.ts";
 
 /**

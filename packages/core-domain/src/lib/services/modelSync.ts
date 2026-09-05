@@ -9,7 +9,7 @@
  * SYNC_INTERVAL_MS. Stops automatically when the service stops.
  */
 
-import { sanitizeErrorMessage } from "../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
 import { getServiceModels, saveServiceModels, type ServiceModel } from "../db/serviceModels.ts";
 import { updateVersionManagerTool } from "../db/versionManager.ts";
 

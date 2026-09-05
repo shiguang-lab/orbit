@@ -8,14 +8,14 @@
  * mirrors the first time it was written as a duplicate.
  */
 
-import { appendNoThinkingVariants } from "../../../../../open-sse/utils/noThinkingAlias.ts";
-import { appendClaudeEffortVariants } from "../../../../../open-sse/utils/claudeEffortVariants.ts";
-import { appendSyncedEffortVariants } from "../../../../../open-sse/utils/syncedEffortVariants.ts";
-import { appendCcDiscoveryAliases } from "../../../../../open-sse/utils/ccDiscoveryAliases.ts";
+import { appendNoThinkingVariants } from "../../../../../../open-sse/utils/noThinkingAlias.ts";
+import { appendClaudeEffortVariants } from "../../../../../../open-sse/utils/claudeEffortVariants.ts";
+import { appendSyncedEffortVariants } from "../../../../../../open-sse/utils/syncedEffortVariants.ts";
+import { appendCcDiscoveryAliases } from "../../../../../../open-sse/utils/ccDiscoveryAliases.ts";
 import {
   appendFunctionalGatewayMirrors,
   isFunctionalGatewayMirror,
-} from "../../../../../open-sse/utils/functionalGatewayMirrors.ts";
+} from "../../../../../../open-sse/utils/functionalGatewayMirrors.ts";
 import { isCcAliasGlobalEnabled, getCcAliasSettingsBulk } from "../../../../lib/db/ccDiscoveryAliases.ts";
 import { buildCcAliasPredicate } from "./ccAliasPredicate";
 import {
@@ -23,7 +23,7 @@ import {
   getFunctionalGatewaySettingsBulk,
 } from "../../../../lib/db/functionalGatewayMirrors.ts";
 import { buildFunctionalGatewayPredicate } from "./functionalGatewayPredicate";
-import { getPassthroughProviders, REGISTRY } from "../../../../../open-sse/config/providerRegistry.ts";
+import { getPassthroughProviders, REGISTRY } from "../../../../../../open-sse/config/providerRegistry.ts";
 import { hasEligibleConnectionForModel } from "../../../../domain/connectionModelRules.ts";
 import { dedupeExactCatalogIds } from "./catalogDedupe";
 import { sortCatalogModelsProviderGrouped } from "./catalogOrder";

@@ -8,7 +8,7 @@
  * LOCAL_ONLY enforced by routeGuard.
  */
 
-import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../../../open-sse/utils/error.ts";
+import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../../../../open-sse/utils/error.ts";
 import { globalTrafficBuffer } from "../../../../../../../mitm/inspector/buffer.ts";
 
 interface Params {

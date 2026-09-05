@@ -1,5 +1,5 @@
-import { getPendingById } from "../../src/lib/usage/usageHistory.ts";
-import { getChatLogMaxDepth, getChatLogArrayTailItems } from "../../src/lib/logEnv.ts";
+import { getPendingById } from "../../core-domain/src/lib/usage/usageHistory.ts";
+import { getChatLogMaxDepth, getChatLogArrayTailItems } from "../../core-domain/src/lib/logEnv.ts";
 import { sanitizeErrorMessage } from "./error.ts";
 
 type JsonRecord = Record<string, unknown>;

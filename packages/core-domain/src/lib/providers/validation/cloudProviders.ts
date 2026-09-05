@@ -12,35 +12,35 @@ import {
 import { applyCustomUserAgent, buildBearerHeaders } from "./headers";
 import { toValidationErrorResult, validationRead, validationWrite } from "./transport";
 import { validateDirectChatProvider } from "./directChatProbe";
-import { getGigachatAccessToken } from "../../../../open-sse/services/gigachatAuth.ts";
+import { getGigachatAccessToken } from "../../../../../open-sse/services/gigachatAuth.ts";
 import {
   AZURE_AI_DEFAULT_BASE_URL,
   buildAzureAiChatUrl,
   buildAzureAiModelsUrl,
-} from "../../../../open-sse/config/azureAi.ts";
+} from "../../../../../open-sse/config/azureAi.ts";
 import {
   DATAROBOT_DEFAULT_BASE_URL,
   buildDataRobotCatalogUrl,
   buildDataRobotChatUrl,
   isDataRobotDeploymentUrl,
-} from "../../../../open-sse/config/datarobot.ts";
+} from "../../../../../open-sse/config/datarobot.ts";
 import {
   OCI_DEFAULT_BASE_URL,
   buildOciChatUrl,
   buildOciModelsUrl,
-} from "../../../../open-sse/config/oci.ts";
+} from "../../../../../open-sse/config/oci.ts";
 import {
   SAP_DEFAULT_BASE_URL,
   buildSapChatUrl,
   buildSapModelsUrl,
   getSapResourceGroup,
   isSapDeploymentUrl,
-} from "../../../../open-sse/config/sap.ts";
+} from "../../../../../open-sse/config/sap.ts";
 import {
   WATSONX_DEFAULT_BASE_URL,
   buildWatsonxChatUrl,
   buildWatsonxModelsUrl,
-} from "../../../../open-sse/config/watsonx.ts";
+} from "../../../../../open-sse/config/watsonx.ts";
 
 export async function validateHerokuProvider({ apiKey, providerSpecificData = {} }: any) {
   const baseUrl = normalizeBaseUrl(providerSpecificData.baseUrl);

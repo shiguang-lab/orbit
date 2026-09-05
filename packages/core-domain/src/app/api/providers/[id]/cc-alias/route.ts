@@ -8,7 +8,7 @@ import {
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
 import { updateCcAliasSettingSchema } from "../../../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../../../shared/validation/helpers.ts";
-import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 
 /**
  * GET /api/providers/[id]/cc-alias

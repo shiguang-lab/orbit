@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 import { createProviderConnection } from "../../../../models/index.ts";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 import {
   scanCliProxyAuthDir,
   toConnectionPayload,

@@ -4,7 +4,7 @@ import {
   getConfiguredLocalCorpusStatus,
   readConfiguredLocalCorpus,
   searchConfiguredLocalCorpus,
-} from "../../../src/lib/localCorpus/configured.ts";
+} from "../../../core-domain/src/lib/localCorpus/configured.ts";
 
 export const localCorpusTools = [
   {

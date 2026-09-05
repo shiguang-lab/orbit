@@ -495,7 +495,7 @@ async function writeBackAdobeFireflyCredentials(
   // Skip when connectionId looks like a credential fingerprint (32 hex) without a real UUID.
   // Real ShiguangGateway connection ids are UUIDs; still attempt write-back for any non-empty key.
   try {
-    const { updateProviderConnection } = await import("../../src/lib/db/providers.ts");
+    const { updateProviderConnection } = await import("../../core-domain/src/lib/db/providers.ts");
     const credential = serializeAdobeFireflyCredential(session);
     await updateProviderConnection(connectionId, {
       apiKey: credential,

@@ -11,7 +11,7 @@
 import {
   resolveDisabledGuardrails as defaultResolveDisabled,
   type GuardrailContext,
-} from "../../../src/lib/guardrails/index.ts";
+} from "../../../core-domain/src/lib/guardrails/index.ts";
 
 type LoggerLike = GuardrailContext["log"];
 type HeadersLike = Headers | Record<string, unknown> | null;

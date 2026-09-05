@@ -8,7 +8,7 @@ import {
   CLAUDE_CODE_COMPATIBLE_DEFAULT_MODELS_PATH,
   joinClaudeCodeCompatibleUrl,
   joinBaseUrlAndPath,
-} from "../../../../open-sse/services/claudeCodeCompatible.ts";
+} from "../../../../../open-sse/services/claudeCodeCompatible.ts";
 import {
   addModelsSuffix,
   normalizeAnthropicBaseUrl,
@@ -137,7 +137,7 @@ export async function validateClaudeOAuthInline({
     typeof override === "string" && override ? override : modelId || "claude-haiku-4-5-20251001";
 
   try {
-    const { getExecutor } = await import("../../../../open-sse/executors/index.ts");
+    const { getExecutor } = await import("../../../../../open-sse/executors/index.ts");
     const executed = await (await getExecutor("claude")).execute({
       model: testModelId,
       body: {

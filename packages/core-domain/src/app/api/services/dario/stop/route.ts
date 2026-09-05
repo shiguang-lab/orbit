@@ -1,6 +1,6 @@
 import { getSupervisor } from "../../../../../lib/services/registry.ts";
 import { createErrorResponse } from "../../../../../lib/api/errorResponse.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 
 const TOOL = "dario";
 

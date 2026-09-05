@@ -5,7 +5,7 @@ import {
   resetTaskRoutingStats,
   getDefaultTaskModelMap,
   getDefaultTaskPatterns,
-} from "../../../../../open-sse/services/taskAwareRouter.ts";
+} from "../../../../../../open-sse/services/taskAwareRouter.ts";
 import { updateSettings } from "../../../../lib/db/settings.ts";
 import { taskRoutingActionSchema, updateTaskRoutingSchema } from "../../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
@@ -60,7 +60,7 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: validation.error }, { status: 400 });
     }
     const config =
-      validation.data as import("../../../../../open-sse/services/taskAwareRouter.ts").TaskRoutingConfig;
+      validation.data as import("../../../../../../open-sse/services/taskAwareRouter.ts").TaskRoutingConfig;
 
     setTaskRoutingConfig(config);
 
@@ -114,7 +114,7 @@ export async function POST(request: Request) {
     }
 
     if (actionRequest.action === "detect") {
-      const { detectTaskType } = await import("../../../../../open-sse/services/taskAwareRouter.ts");
+      const { detectTaskType } = await import("../../../../../../open-sse/services/taskAwareRouter.ts");
       const taskType = detectTaskType(actionRequest.body || {});
       const config = getTaskRoutingConfig();
       return NextResponse.json({

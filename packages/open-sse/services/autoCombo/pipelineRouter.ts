@@ -15,8 +15,8 @@ import {
   type TaskType,
   type PipelineResult,
   type FitnessTier,
-} from "../../../src/domain/pipeline.ts";
-import { renderPrompt } from "../../../src/domain/prompts.ts";
+} from "../../../core-domain/src/domain/pipeline.ts";
+import { renderPrompt } from "../../../core-domain/src/domain/prompts.ts";
 import { getTaskFitness } from "./taskFitness.ts";
 
 // ---------------------------------------------------------------------------

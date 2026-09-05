@@ -1,5 +1,5 @@
 import { getAllCustomModels } from "../../../../lib/db/models.ts";
-import { parseVideoModel } from "../../../../../open-sse/config/videoRegistry.ts";
+import { parseVideoModel } from "../../../../../../open-sse/config/videoRegistry.ts";
 import { getProviderCredentialsWithQuotaPreflight } from "../../../../sse/services/auth.ts";
 import { isAllRateLimitedCredentials } from "./rateLimit.ts";
 

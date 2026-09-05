@@ -23,7 +23,7 @@ import { getOrCreateApiKey } from "./apiKey.ts";
 import { rewriteHtml } from "./htmlRewriter.ts";
 import { toUpstreamPath } from "./embedPath.ts";
 import { createErrorResponse } from "../api/errorResponse.ts";
-import { sanitizeErrorMessage } from "../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
 
 // ─── constants ────────────────────────────────────────────────────────────────
 

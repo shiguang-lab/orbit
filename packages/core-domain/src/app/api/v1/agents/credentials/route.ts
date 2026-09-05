@@ -7,7 +7,7 @@ import {
 } from "../../../../../lib/cloudAgent/credentials.ts";
 import { getCloudAgentCorsHeaders, requireCloudAgentManagementAuth } from "../../../../../lib/cloudAgent/api.ts";
 import pino from "pino";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 
 const logger = pino({ name: "cloud-agents-credentials-api" });
 

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getTranslationEvents } from "../../../../lib/translatorEvents.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 /**
  * GET /api/translator/history

@@ -38,7 +38,7 @@ import { getOrInitSupervisor } from "../../_lib";
 import { getProviderConnections, getProviderConnectionById } from "../../../../../../lib/db/providers.ts";
 import { getDarioHomeDir } from "../../../../../../lib/services/installers/dario.ts";
 import { createErrorResponse } from "../../../../../../lib/api/errorResponse.ts";
-import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../../open-sse/utils/error.ts";
 
 const ImportBodySchema = z.object({
   connectionId: z.string().trim().min(1).optional(),

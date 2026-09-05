@@ -7,7 +7,7 @@ import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth
 import { memoryManager } from "../../../../lib/memory/index.ts";
 import { validateBody, isValidationFailure } from "../../../../shared/validation/helpers.ts";
 import { MemoryUpdatePutSchema } from "../../../../shared/schemas/memory.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 export async function DELETE(request: Request, props: { params: Promise<{ id: string }> }) {
   const authError = await requireManagementAuth(request);

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { isAuthenticated } from "../../../../../shared/utils/apiAuth.ts";
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
-import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../../../../open-sse/utils/error.ts";
 import {
   getObsidianSyncStatus,
   enableObsidianVaultSync,

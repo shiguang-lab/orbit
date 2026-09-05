@@ -1,6 +1,6 @@
-import { saveCallLog } from "../../../../src/lib/usageDb.ts";
-import { fetchRemoteImage } from "../../../../src/shared/network/remoteImageFetch.ts";
-import { safeOutboundFetch } from "../../../../src/shared/network/safeOutboundFetch.ts";
+import { saveCallLog } from "../../../../core-domain/src/lib/usageDb.ts";
+import { fetchRemoteImage } from "../../../../core-domain/src/shared/network/remoteImageFetch.ts";
+import { safeOutboundFetch } from "../../../../core-domain/src/shared/network/safeOutboundFetch.ts";
 import { sleep } from "../../../utils/sleep.ts";
 import { sanitizeErrorMessage } from "../../../utils/error.ts";
 import {

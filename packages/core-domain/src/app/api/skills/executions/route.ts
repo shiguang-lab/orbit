@@ -4,7 +4,7 @@ import { parsePaginationParams, buildPaginatedResponse } from "../../../../share
 import { z } from "zod";
 import { validateBody, isValidationFailure } from "../../../../shared/validation/helpers.ts";
 import { isAuthenticated } from "../../../../shared/utils/apiAuth.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 export async function GET(request: Request) {
   if (!(await isAuthenticated(request))) {

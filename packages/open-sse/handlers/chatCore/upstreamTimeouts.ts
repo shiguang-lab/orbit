@@ -8,8 +8,8 @@ import {
   getLoggedInputTokens,
   getLoggedOutputTokens,
   getReasoningTokens,
-} from "../../../src/lib/usage/tokenAccounting.ts";
-import { MAX_PROVIDER_SPECIFIC_TIMEOUT_MS } from "../../../src/shared/validation/providerSpecificData.ts";
+} from "../../../core-domain/src/lib/usage/tokenAccounting.ts";
+import { MAX_PROVIDER_SPECIFIC_TIMEOUT_MS } from "../../../core-domain/src/shared/validation/providerSpecificData.ts";
 
 export function createBodyTimeoutError(timeoutMs: number): Error {
   const err = new Error(`Response body read timeout after ${timeoutMs}ms`);

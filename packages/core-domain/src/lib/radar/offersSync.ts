@@ -3,7 +3,7 @@
  * Every failure preserves the last verified local cache.
  */
 
-import { sanitizeErrorMessage } from "../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
 import { isFeatureFlagEnabled } from "../../shared/utils/featureFlags.ts";
 import { RadarOffersFeedSchema, type RadarOffersFeed } from "./offersFeedSchema";
 import { compareVersions, type RadarSettingsSnapshot } from "./sync";

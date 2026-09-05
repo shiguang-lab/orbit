@@ -1,4 +1,4 @@
-import { getImageProvider } from "../../../open-sse/config/imageRegistry.ts";
+import { getImageProvider } from "../../../../open-sse/config/imageRegistry.ts";
 
 import { getProviderOutboundGuard } from "../../shared/network/outboundUrlGuardPolicy.ts";
 import { isSecurityBlockError } from "./validation/transport.ts";

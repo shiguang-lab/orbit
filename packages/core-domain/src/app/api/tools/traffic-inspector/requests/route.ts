@@ -5,7 +5,7 @@
  * LOCAL_ONLY enforced by routeGuard (no extra check needed here).
  */
 
-import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../../../../open-sse/utils/error.ts";
 import { InspectorListQuerySchema } from "../../../../../shared/schemas/inspector.ts";
 import { globalTrafficBuffer } from "../../../../../mitm/inspector/buffer.ts";
 import type { ListFilters } from "../../../../../mitm/inspector/types.ts";

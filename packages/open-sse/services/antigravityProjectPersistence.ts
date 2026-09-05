@@ -7,7 +7,7 @@
  * - [2026-07-24] [Composer] - Persist runtime loadCodeAssist projectId; filter broken accounts
  */
 
-import { updateProviderConnection } from "../../src/lib/db/providers.ts";
+import { updateProviderConnection } from "../../core-domain/src/lib/db/providers.ts";
 
 export type AntigravityProjectConnectionLike = {
   projectId?: string | null;

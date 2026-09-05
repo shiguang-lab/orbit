@@ -10,7 +10,7 @@
  * perplexity-search reuses credentials from the "perplexity" chat provider.
  */
 
-import { isProviderBlockedByIdOrAlias } from "../../src/shared/utils/noAuthProviders.ts";
+import { isProviderBlockedByIdOrAlias } from "../../core-domain/src/shared/utils/noAuthProviders.ts";
 
 export interface SearchProviderConfig {
   id: string;

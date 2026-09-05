@@ -2,7 +2,7 @@ import {
   CODEX_CLI_RS_ORIGINATOR,
   getCodexClientVersion,
   getCodexDefaultHeaders,
-} from "../../../../../../../open-sse/config/codexClient.ts";
+} from "../../../../../../../../open-sse/config/codexClient.ts";
 import { isCodexDiscoveryModelExcluded } from "../../../../../../shared/services/codexDiscoveryPolicy.ts";
 
 export {

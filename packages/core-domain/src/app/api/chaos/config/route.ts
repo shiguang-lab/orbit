@@ -9,7 +9,7 @@
 
 import { NextResponse } from "next/server";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
-import { buildErrorBody, sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 import {
   getChaosConfig,
   setChaosConfig,

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireManagementAuth } from "../../../lib/api/requireManagementAuth.ts";
-import { FREE_MODEL_BUDGETS } from "../../../../open-sse/config/freeModelCatalog.ts";
+import { FREE_MODEL_BUDGETS } from "../../../../../open-sse/config/freeModelCatalog.ts";
 
 // GET /api/free-models - List free model budgets for plugin enrichment
 export async function GET(request: Request) {

@@ -1,5 +1,5 @@
-import { fetchLiveProviderLimits } from "../../../src/lib/usage/providerLimits.ts";
-import { isClaudeExtraUsageBlockEnabled } from "../../../src/lib/providers/claudeExtraUsage.ts";
+import { fetchLiveProviderLimits } from "../../../core-domain/src/lib/usage/providerLimits.ts";
+import { isClaudeExtraUsageBlockEnabled } from "../../../core-domain/src/lib/providers/claudeExtraUsage.ts";
 
 // #4604 — Lazy backoff for the best-effort live-WS sidecar bridge. In single-port
 // deployments the sidecar (port 20132) is not running, so every compression event

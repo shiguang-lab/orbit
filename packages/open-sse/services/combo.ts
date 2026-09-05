@@ -62,22 +62,22 @@ import {
   recordSessionModelUsage,
   getLastSessionModel,
   getHandoff,
-} from "../../src/lib/db/contextHandoffs.ts";
-import { extractSessionAffinityKey } from "../../src/sse/services/auth.ts";
-import { getHiddenModelsByProvider } from "../../src/models/index.ts";
-import { resolveModelLockoutSettings } from "../../src/lib/resilience/modelLockoutSettings";
+} from "../../core-domain/src/lib/db/contextHandoffs.ts";
+import { extractSessionAffinityKey } from "../../core-domain/src/sse/services/auth.ts";
+import { getHiddenModelsByProvider } from "../../core-domain/src/models/index.ts";
+import { resolveModelLockoutSettings } from "../../core-domain/src/lib/resilience/modelLockoutSettings";
 import { fetchCodexQuota } from "./codexQuotaFetcher.ts";
 import { evaluateQuotaCutoff, getQuotaFetcher, type QuotaInfo } from "./quotaPreflight.ts";
-import { resolveProviderId } from "../../src/shared/constants/providers.ts";
+import { resolveProviderId } from "../../core-domain/src/shared/constants/providers.ts";
 import * as semaphore from "./rateLimitSemaphore.ts";
-import { getCircuitBreaker } from "../../src/shared/utils/circuitBreaker";
+import { getCircuitBreaker } from "../../core-domain/src/shared/utils/circuitBreaker";
 import { parseModel } from "./model.ts";
 import { rejectRetiredAutoComboCandidates } from "./modelLifecycle.ts";
 import { createComboContext } from "./combo/context.ts";
 import { phaseComboSetup } from "./combo/comboSetup.ts";
 import { checkCredentialGate, logCredentialSkip } from "./credentialGate.ts";
-import { emit } from "../../src/lib/events/eventBus";
-import { notifyWebhookEvent } from "../../src/lib/webhookDispatcher";
+import { emit } from "../../core-domain/src/lib/events/eventBus";
+import { notifyWebhookEvent } from "../../core-domain/src/lib/webhookDispatcher";
 import { type ProviderCandidate } from "./autoCombo/scoring.ts";
 import { estimateTokens } from "./contextManager.ts";
 import { getSessionConnection } from "./sessionManager.ts";
@@ -94,9 +94,9 @@ import {
 import { selectQuotaShareTarget } from "./combo/quotaShareStrategy.ts";
 import { makeConnectionConcurrencyResolver, lookupPositiveCap } from "./combo/concurrencyCaps.ts";
 import { acquireQuotaShareConcurrencySlot } from "./combo/quotaShareConcurrency.ts";
-import { canAffordRequest } from "../../src/lib/quota/quotaScheduler.ts";
+import { canAffordRequest } from "../../core-domain/src/lib/quota/quotaScheduler.ts";
 import { resolveConnectionTimeoutMs } from "../handlers/chatCore/upstreamTimeouts.ts";
-import { getCachedProviderConnectionById } from "../../src/lib/db/readCache.ts";
+import { getCachedProviderConnectionById } from "../../core-domain/src/lib/db/readCache.ts";
 import { orderTargetsByEvalScores } from "./evalRouting.ts";
 
 /**
@@ -135,13 +135,13 @@ import {
 } from "./combo/comboErrorAggregation.ts";
 import type { ComboErrorEntry } from "./combo/comboErrorAggregation.ts";
 import type { CompressionMode } from "./compression/types.ts";
-import { getCachedProviderConnections } from "../../src/lib/db/readCache";
+import { getCachedProviderConnections } from "../../core-domain/src/lib/db/readCache";
 import { isProviderInCooldown, recordProviderCooldown } from "./providerCooldownTracker.ts";
 import {
   resolveResilienceSettings,
   type ResilienceSettings,
   type ComboCooldownWaitSettings,
-} from "../../src/lib/resilience/settings";
+} from "../../core-domain/src/lib/resilience/settings";
 import { resolveReasoningBufferedMaxTokens, toPositiveInteger } from "./reasoningTokenBuffer.ts";
 import { RESET_WINDOW_NAMES } from "./combo/types.ts";
 import type {
@@ -183,7 +183,7 @@ import {
 import {
   computeClosestRetryAfter,
   waitForCooldownAwareRetry,
-} from "../../src/sse/services/cooldownAwareRetry.ts";
+} from "../../core-domain/src/sse/services/cooldownAwareRetry.ts";
 import { dispatchChaosFromCombo, type ChaosTuning } from "./autoCombo/chaosEngine.ts";
 import {
   TRANSIENT_FOR_SEMAPHORE,
@@ -344,7 +344,7 @@ async function readConnectionForCooldownGate(
   fresh: boolean
 ): Promise<Record<string, unknown> | null | undefined> {
   if (!fresh) return getCachedProviderConnectionById(connectionId);
-  const { getProviderConnectionById } = await import("../../src/lib/db/providers.ts");
+  const { getProviderConnectionById } = await import("../../core-domain/src/lib/db/providers.ts");
   return (await getProviderConnectionById(connectionId)) as Record<string, unknown> | null;
 }
 
@@ -370,7 +370,7 @@ export function clearStaleLKGP(
 ): void {
   void (async () => {
     try {
-      const { clearLKGP } = await import("../../src/lib/localDb.ts");
+      const { clearLKGP } = await import("../../core-domain/src/lib/localDb.ts");
       const promises: Promise<void>[] = [clearLKGP(comboName, comboId || comboName)];
       if (executionKey) {
         promises.push(clearLKGP(comboName, executionKey));
@@ -427,11 +427,11 @@ export async function buildAutoCandidates(
   // apply, so auto-routing behavior is unchanged.
   const quotaCutoffEnabled =
     (resilienceSettings ?? resolveResilienceSettings(null))?.quotaPreflight?.enabled === true;
-  const { getPricingForModel } = await import("../../src/lib/localDb");
+  const { getPricingForModel } = await import("../../core-domain/src/lib/localDb");
   const quotaPromises = new Map<string, Promise<unknown>>();
   let historicalLatencyStats: Record<string, HistoricalLatencyStatsEntry> = {};
   try {
-    const { getModelLatencyStats } = await import("../../src/lib/usageDb");
+    const { getModelLatencyStats } = await import("../../core-domain/src/lib/usageDb");
     historicalLatencyStats = await getModelLatencyStats({
       windowHours: 24,
       minSamples: 3,
@@ -1969,7 +1969,7 @@ async function handleComboChatInner({
               const connId = effectiveConnectionId || undefined;
               void (async () => {
                 try {
-                  const { setLKGP } = await import("../../src/lib/localDb");
+                  const { setLKGP } = await import("../../core-domain/src/lib/localDb");
                   await Promise.all([
                     setLKGP(combo.name, target.executionKey, provider, connId),
                     setLKGP(combo.name, combo.id || combo.name, provider, connId),
@@ -3442,7 +3442,7 @@ async function handleRoundRobinCombo({
             typeof attemptBody === "object"
           ) {
             try {
-              const { reserveQuota } = await import("../../src/lib/quota/quotaScheduler.ts");
+              const { reserveQuota } = await import("../../core-domain/src/lib/quota/quotaScheduler.ts");
               reserveQuota(target.connectionId, modelStr, attemptBody as Record<string, unknown>, {
                 tokenLimit: await resolveTargetTokenLimit(target),
               });
@@ -3566,7 +3566,7 @@ async function handleRoundRobinCombo({
               const connId = effectiveConnectionId || undefined;
               void (async () => {
                 try {
-                  const { setLKGP } = await import("../../src/lib/localDb");
+                  const { setLKGP } = await import("../../core-domain/src/lib/localDb");
                   await Promise.all([
                     setLKGP(combo.name, target.executionKey, provider, connId),
                     setLKGP(combo.name, combo.id || combo.name, provider, connId),

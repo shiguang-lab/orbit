@@ -25,12 +25,12 @@
 // Use the same canonical alias as catalogModelPolicy.ts (l.1) — a relative path from
 // src/app/api/v1/models/ to open-sse/ would need 5 `../` and silently breaks under
 // refactors. (Confirmed convention: grep "from \"@shiguang-gateway/open-sse" src/app/api/v1/models/)
-import { getLearnedReasoningEffortForModel } from "../../../../../open-sse/services/learnedReasoningEffortCaps.ts";
-import { isSkippedEffortProvider } from "../../../../../open-sse/utils/syncedEffortVariants.ts";
+import { getLearnedReasoningEffortForModel } from "../../../../../../open-sse/services/learnedReasoningEffortCaps.ts";
+import { isSkippedEffortProvider } from "../../../../../../open-sse/utils/syncedEffortVariants.ts";
 import {
   getRegistryModelThinkingEfforts,
   getRegistryThinkingEfforts,
-} from "../../../../../open-sse/config/providerRegistry.ts";
+} from "../../../../../../open-sse/config/providerRegistry.ts";
 
 interface SyncedCapabilityFlags {
   id?: string;

@@ -27,7 +27,7 @@
  * `disabled` — advertising it for a model that ignores suppression would be a lie.
  * An explicit registry override (`ModelSpec.noThinkingAlias`) wins over the default.
  */
-import { getModelSpec } from "../../src/shared/constants/modelSpecs.ts";
+import { getModelSpec } from "../../core-domain/src/shared/constants/modelSpecs.ts";
 
 export const NO_THINKING_PREFIX = "no-think/";
 

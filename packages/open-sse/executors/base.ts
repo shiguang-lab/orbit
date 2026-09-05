@@ -29,7 +29,7 @@ import {
   getParamFilterConfig,
   addParamToBlocklist,
   isAutoLearnGloballyEnabled,
-} from "../../src/lib/db/paramFilters.ts";
+} from "../../core-domain/src/lib/db/paramFilters.ts";
 import { applyFingerprint, isCliCompatEnabled, stripInternalBodyFields } from "../config/cliFingerprints.ts";
 import { supportsClaudeMaxEffort, supportsXHighEffort } from "../config/providerModels.ts";
 import { getThinkingBudgetConfig, ThinkingMode } from "../services/thinkingBudget.ts";
@@ -68,7 +68,7 @@ import {
   modelHasNativeContext1m,
   modelSupportsContext1mBeta,
 } from "../services/claudeCodeCompatible.ts";
-import { getClaudeCodeCompatibleRequestDefaults } from "../../src/lib/providers/requestDefaults.ts";
+import { getClaudeCodeCompatibleRequestDefaults } from "../../core-domain/src/lib/providers/requestDefaults.ts";
 import {
   cloakThirdPartyToolNames,
   remapToolNamesInRequest,
@@ -106,15 +106,15 @@ import {
   applyConfiguredUserAgent,
   stripStainlessHeadersForOpenAICompat,
 } from "./base/headers.ts";
-import { applyPeerTraceHeader } from "../../src/shared/resilience/peerRouting.ts";
-import { applyClineProtocolHeaders } from "../../src/shared/utils/clineAuth.ts";
-import { isProbeContext } from "../../src/shared/utils/probeOrigin.ts";
+import { applyPeerTraceHeader } from "../../core-domain/src/shared/resilience/peerRouting.ts";
+import { applyClineProtocolHeaders } from "../../core-domain/src/shared/utils/clineAuth.ts";
+import { isProbeContext } from "../../core-domain/src/shared/utils/probeOrigin.ts";
 import {
   parseAndValidatePublicUrl,
   parseAndValidateNonMetadataUrl,
-} from "../../src/shared/network/outboundUrlGuard.ts";
-import { getProviderValidationGuard } from "../../src/shared/network/outboundUrlGuardPolicy.ts";
-import { isLocalProvider, isSelfHostedChatProvider } from "../../src/shared/constants/providers.ts";
+} from "../../core-domain/src/shared/network/outboundUrlGuard.ts";
+import { getProviderValidationGuard } from "../../core-domain/src/shared/network/outboundUrlGuardPolicy.ts";
+import { isLocalProvider, isSelfHostedChatProvider } from "../../core-domain/src/shared/constants/providers.ts";
 // Header helpers extracted to a pure leaf; re-exported for external importers
 // (executors + tests) that import them from "./base.ts".
 export {

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { isLocalRequestAllowed } from "../../../../../lib/security/localEndpoints.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 
 import {
   REDIS_CONTAINER_NAME,

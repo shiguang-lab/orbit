@@ -2,7 +2,7 @@ import {
   getAllModelLockouts,
   clearModelLock,
   type ModelLockoutInfo,
-} from "../../open-sse/services/accountFallback.ts";
+} from "../../../open-sse/services/accountFallback.ts";
 
 export type AvailabilityReportItem = Pick<
   ModelLockoutInfo,

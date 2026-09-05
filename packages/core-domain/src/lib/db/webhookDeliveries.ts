@@ -1,5 +1,5 @@
 import { getDbInstance } from "./core";
-import { sanitizeErrorMessage } from "../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
 
 export interface WebhookDelivery {
   id: number;

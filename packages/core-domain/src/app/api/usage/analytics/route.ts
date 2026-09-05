@@ -412,7 +412,7 @@ export async function GET(request: Request) {
     }
     const { computeCostFromPricing, getCodexFastCostMultiplier, normalizeModelName } =
       await import("../../../../lib/usage/costCalculator.ts");
-    const { PROVIDER_ID_TO_ALIAS } = await import("../../../../../open-sse/config/providerModels.ts");
+    const { PROVIDER_ID_TO_ALIAS } = await import("../../../../../../open-sse/config/providerModels.ts");
 
     const summaryRow = getUsageSummary(unifiedSource, unifiedParams) as Record<string, unknown>;
 
@@ -926,7 +926,7 @@ export async function GET(request: Request) {
     console.error("Error computing analytics:", error);
     // Surface the real (sanitized) reason so the dashboard can show it instead of a
     // generic placeholder (#3356). buildErrorBody strips stacks/absolute paths.
-    const { buildErrorBody } = await import("../../../../../open-sse/utils/error.ts");
+    const { buildErrorBody } = await import("../../../../../../open-sse/utils/error.ts");
     const message = error instanceof Error ? error.message : String(error);
     return NextResponse.json(buildErrorBody(500, message || "Failed to compute analytics"), {
       status: 500,

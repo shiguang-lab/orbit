@@ -10,7 +10,7 @@ import {
   isForbiddenUpstreamHeaderName,
   isForbiddenCustomHeaderName,
 } from "../../constants/upstreamHeaders.ts";
-import { MAX_TIMER_TIMEOUT_MS } from "../../utils/runtimeTimeouts.ts";
+import { MAX_TIMER_TIMEOUT_MS } from "@shiguang-gateway/config/timeouts";
 import { AUTO_DISABLE_BANNED_SCOPES } from "../../utils/autoDisableBanned.ts";
 
 // Single source of truth: ../settingsSchemas (the schema the runtime settings route validates

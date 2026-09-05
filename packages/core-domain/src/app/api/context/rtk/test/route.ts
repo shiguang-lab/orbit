@@ -3,7 +3,7 @@ import { z } from "zod";
 import {
   detectCommandType,
   processRtkText,
-} from "../../../../../../open-sse/services/compression/engines/rtk/index.ts";
+} from "../../../../../../../open-sse/services/compression/engines/rtk/index.ts";
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
 import { isValidationFailure, validateBody } from "../../../../../shared/validation/helpers.ts";
 import { rtkConfigSchema } from "../../../../../shared/validation/compressionConfigSchemas.ts";

@@ -21,7 +21,7 @@
  * when to schedule it, so importing this module in tests never spawns a timer.
  */
 
-import { cooldownUntilMs } from "../../../open-sse/services/accountFallback.ts";
+import { cooldownUntilMs } from "../../../../open-sse/services/accountFallback.ts";
 import { isAutomatedTestProcess } from "../../shared/utils/testProcess.ts";
 
 /**

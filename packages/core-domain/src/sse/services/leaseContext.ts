@@ -1,5 +1,5 @@
 import { LEASE_OWNER_PATTERN } from "../../lib/db/exclusiveConnectionLeases.ts";
-import { buildErrorBody } from "../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../open-sse/utils/error.ts";
 
 export const LEASE_EXCLUSIVE_SCOPE = "lease:exclusive",
   LEASE_OWNER_HEADER = "X-ShiguangGateway-Lease-Owner",

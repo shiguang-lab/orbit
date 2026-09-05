@@ -1,4 +1,4 @@
-import { runWithProxyContext, getOriginalFetch } from "../../../open-sse/utils/proxyFetch.ts";
+import { runWithProxyContext, getOriginalFetch } from "../../../../open-sse/utils/proxyFetch.ts";
 import { FetchTimeoutError, fetchWithTimeout } from "../utils/fetchTimeout.ts";
 import {
   OutboundUrlGuardError,

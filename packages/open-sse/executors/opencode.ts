@@ -24,7 +24,7 @@ import {
   isEmptyUpstreamRejection,
   extractChatcmplId,
 } from "./accountRotation.ts";
-import { isNetworkRotationSharedEgressGuardEnabled } from "../../src/shared/utils/featureFlags.ts";
+import { isNetworkRotationSharedEgressGuardEnabled } from "../../core-domain/src/shared/utils/featureFlags.ts";
 
 /**
  * Per-account proxy configuration, persisted by NoAuthAccountCard under

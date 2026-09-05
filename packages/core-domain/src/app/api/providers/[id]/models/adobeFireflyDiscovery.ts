@@ -1,14 +1,14 @@
 import {
   discoverAdobeFireflyModels,
   resolveAdobeAccessToken,
-} from "../../../../../../open-sse/services/adobeFireflyClient.ts";
+} from "../../../../../../../open-sse/services/adobeFireflyClient.ts";
 import {
   getAdobeFireflyFallbackCatalog,
   mapDiscoveredToCatalog,
   toAdobeMediaCapabilitiesApi,
   type AdobeFireflyCatalogModel,
-} from "../../../../../../open-sse/services/adobeFireflyModels.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+} from "../../../../../../../open-sse/services/adobeFireflyModels.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 
 type AdobeProviderData = { cookie?: unknown; access_token?: unknown; accessToken?: unknown };
 

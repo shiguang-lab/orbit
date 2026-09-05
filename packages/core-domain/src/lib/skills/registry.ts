@@ -2,7 +2,7 @@ import type { Skill, SkillSchema } from "./types";
 import { SkillCreateInputSchema } from "./schemas";
 import { getDbInstance } from "../db/core";
 import { randomUUID } from "crypto";
-import { logger } from "../../../open-sse/utils/logger.ts";
+import { logger } from "../../../../open-sse/utils/logger.ts";
 
 const log = logger("SKILLS");
 

@@ -2,13 +2,13 @@ import {
   generateSignature,
   getCachedResponse,
   isCacheableForRead,
-} from "../../../src/lib/semanticCache.ts";
-import { calculateCost } from "../../../src/lib/usage/costCalculator.ts";
-import { trackPendingRequest } from "../../../src/lib/usageDb.ts";
+} from "../../../core-domain/src/lib/semanticCache.ts";
+import { calculateCost } from "../../../core-domain/src/lib/usage/costCalculator.ts";
+import { trackPendingRequest } from "../../../core-domain/src/lib/usageDb.ts";
 import { synthesizeOpenAiSseFromJson } from "../../utils/jsonToSse.ts";
-import { attachShiguangGatewayMetaHeaders } from "../../../src/domain/gatewayResponseMeta.ts";
+import { attachShiguangGatewayMetaHeaders } from "../../../core-domain/src/domain/gatewayResponseMeta.ts";
 import { extractUsageFromResponse } from "../usageExtractor.ts";
-import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "../../../src/shared/constants/headers.ts";
+import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "../../../core-domain/src/shared/constants/headers.ts";
 
 export async function checkSemanticCache({
   semanticCacheEnabled,

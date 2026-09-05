@@ -12,7 +12,7 @@
  * @module services/tokenLimitCounter
  */
 
-import { getDbInstance } from "../../src/lib/db/core.ts";
+import { getDbInstance } from "../../core-domain/src/lib/db/core.ts";
 import {
   resetWindowIfElapsed,
   getWindowUsage,
@@ -20,7 +20,7 @@ import {
   getTokenLimitsForRequest,
   logTokenLimitReset,
   type TokenLimit,
-} from "../../src/lib/localDb.ts";
+} from "../../core-domain/src/lib/localDb.ts";
 
 interface CacheEntry {
   windowStart: string;

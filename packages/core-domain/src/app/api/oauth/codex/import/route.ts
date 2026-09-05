@@ -3,8 +3,8 @@ import { z } from "zod";
 import { normalizeCodexImportRecord, flattenCodexImportPayload } from "../../../../../lib/oauth/services/codexImport.ts";
 import { createProviderConnection } from "../../../../../models/index.ts";
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
-import { refreshCodexToken, isUnrecoverableRefreshError } from "../../../../../../open-sse/services/tokenRefresh.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
+import { refreshCodexToken, isUnrecoverableRefreshError } from "../../../../../../../open-sse/services/tokenRefresh.ts";
 
 /**
  * Message returned when the imported record's refresh_token is already dead

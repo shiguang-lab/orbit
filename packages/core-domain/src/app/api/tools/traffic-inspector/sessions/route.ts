@@ -5,7 +5,7 @@
  * LOCAL_ONLY enforced by routeGuard.
  */
 
-import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 import { InspectorSessionStartSchema } from "../../../../../shared/schemas/inspector.ts";
 import { listSessions, createSession } from "../../../../../lib/db/inspectorSessions.ts";
 

@@ -13,8 +13,8 @@
  * text where the old stored text_preview was capped at 8000 chars.
  */
 
-import { getDbInstance } from "../../src/lib/db/core.ts";
-import { readCallArtifact } from "../../src/lib/usage/callLogArtifacts.ts";
+import { getDbInstance } from "../../core-domain/src/lib/db/core.ts";
+import { readCallArtifact } from "../../core-domain/src/lib/usage/callLogArtifacts.ts";
 import { extractCanonicalTurns, hashTurnContent } from "./conversationTracker.ts";
 
 export type TurnDisplayContent = {

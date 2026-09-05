@@ -8,7 +8,7 @@ import {
   removeFromWhitelist,
   tempBanIP,
   removeTempBan,
-} from "../../../../../open-sse/services/ipFilter.ts";
+} from "../../../../../../open-sse/services/ipFilter.ts";
 import { updateIpFilterSchema } from "../../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";

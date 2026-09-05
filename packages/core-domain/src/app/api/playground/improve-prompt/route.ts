@@ -14,8 +14,8 @@
  * Hard Rule #12: ALL error paths route through buildErrorBody.
  */
 
-import { buildErrorBody, sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../../../open-sse/config/constants.ts";
+import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { HTTP_STATUS } from "../../../../../../open-sse/config/constants.ts";
 import { extractApiKey, isValidApiKey } from "../../../../sse/services/auth.ts";
 import {
   ImprovePromptRequestSchema,

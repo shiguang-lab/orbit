@@ -2,7 +2,7 @@ import { z } from "zod";
 import { deleteProxyById, listProxies, updateProxy } from "../../../../../lib/localDb.ts";
 import { createErrorResponseFromUnknown } from "../../../../../lib/api/errorResponse.ts";
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
-import { createProxyDispatcher, proxyConfigToUrl } from "../../../../../../open-sse/utils/proxyDispatcher.ts";
+import { createProxyDispatcher, proxyConfigToUrl } from "../../../../../../../open-sse/utils/proxyDispatcher.ts";
 import { fetch as undiciFetch } from "undici";
 import { classifyProbeStatus } from "../../../../../lib/proxyHealth/decision.ts";
 import { resolveHealthCheckStatusWrite } from "../../../../../lib/proxyHealth/statusPolicy.ts";

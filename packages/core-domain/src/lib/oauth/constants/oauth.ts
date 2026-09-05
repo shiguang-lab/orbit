@@ -2,21 +2,21 @@ import {
   ANTIGRAVITY_BOOTSTRAP_BASE_URLS,
   ANTIGRAVITY_RUNTIME_BASE_URLS,
   getAntigravityFetchAvailableModelsUrls,
-} from "../../../../open-sse/config/antigravityUpstream.ts";
+} from "../../../../../open-sse/config/antigravityUpstream.ts";
 import {
   GITHUB_COPILOT_API_VERSION,
   GITHUB_COPILOT_CHAT_PLUGIN_VERSION,
   GITHUB_COPILOT_CHAT_USER_AGENT,
   GITHUB_COPILOT_EDITOR_VERSION,
-} from "../../../../open-sse/config/providerHeaderProfiles.ts";
+} from "../../../../../open-sse/config/providerHeaderProfiles.ts";
 import {
   GROK_BUILD_DEVICE_CODE_URL,
   GROK_BUILD_OAUTH_ISSUER,
   GROK_BUILD_OAUTH_SCOPES,
   GROK_BUILD_TOKEN_URL,
-} from "../../../../open-sse/config/grokBuild.ts";
-import { resolvePublicCred } from "../../../../open-sse/utils/publicCreds.ts";
-import { CURSOR_AGENT_CLI_VERSION } from "../../../../open-sse/utils/cursorAgentCliVersion.ts";
+} from "../../../../../open-sse/config/grokBuild.ts";
+import { resolvePublicCred } from "../../../../../open-sse/utils/publicCreds.ts";
+import { CURSOR_AGENT_CLI_VERSION } from "../../../../../open-sse/utils/cursorAgentCliVersion.ts";
 import { buildGitLabOAuthEndpoints, GITLAB_DUO_DEFAULT_BASE_URL } from "../gitlab";
 
 /**

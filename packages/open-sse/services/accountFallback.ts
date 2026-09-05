@@ -29,25 +29,25 @@ import {
 import {
   DEFAULT_RESILIENCE_SETTINGS,
   resolveResilienceSettings,
-} from "../../src/lib/resilience/settings";
-import { resolveModelLockoutSettings } from "../../src/lib/resilience/modelLockoutSettings";
+} from "../../core-domain/src/lib/resilience/settings";
+import { resolveModelLockoutSettings } from "../../core-domain/src/lib/resilience/modelLockoutSettings";
 import {
   getAllCircuitBreakerStatuses,
   getCircuitBreaker,
-} from "../../src/shared/utils/circuitBreaker";
+} from "../../core-domain/src/shared/utils/circuitBreaker";
 import {
   classify429FromError,
   looksLikeQuotaExhausted,
   type FailureKind,
-} from "../../src/shared/utils/classify429";
+} from "../../core-domain/src/shared/utils/classify429";
 import { recordProviderSuccess as resetCooldownFailureCount } from "./providerCooldownTracker.ts";
 import {
   getProviderById,
   resolveProviderId,
   isLocalProvider as isLocalProviderId,
   isSelfHostedChatProvider,
-} from "../../src/shared/constants/providers";
-import { resolveUseUpstream429BreakerHints } from "../../src/shared/utils/providerHints";
+} from "../../core-domain/src/shared/constants/providers";
+import { resolveUseUpstream429BreakerHints } from "../../core-domain/src/shared/utils/providerHints";
 import { getCodexModelScope } from "../config/codexQuotaScopes.ts";
 import { getQuotaScopedModelForProvider } from "./antigravityQuotaFamily.ts";
 import {
@@ -56,7 +56,7 @@ import {
   isRpmExhausted,
   isTpmExhausted,
 } from "./geminiRateLimitTracker.ts";
-import { setConnectionRateLimitUntil } from "../../src/lib/db/providers.ts";
+import { setConnectionRateLimitUntil } from "../../core-domain/src/lib/db/providers.ts";
 import {
   parseRetryHintFromJsonBody,
   parseDetailedRetryHintFromJsonBody,
@@ -568,7 +568,7 @@ export function getProviderProfile(provider: string): ProviderProfile {
 
 export async function getRuntimeProviderProfile(provider: string | null | undefined) {
   try {
-    const { getCachedSettings } = await import("../../src/lib/db/readCache.ts");
+    const { getCachedSettings } = await import("../../core-domain/src/lib/db/readCache.ts");
     const settings = await getCachedSettings();
     const category = getProviderCategory(provider || "");
     return buildProviderProfile(category, settings);

@@ -1,15 +1,15 @@
-import { getEmbeddingProvider } from "../../../open-sse/config/embeddingRegistry.ts";
-import { getRerankProvider } from "../../../open-sse/config/rerankRegistry.ts";
-import { getImageProvider } from "../../../open-sse/config/imageRegistry.ts";
-import { getVideoProvider } from "../../../open-sse/config/videoRegistry.ts";
+import { getEmbeddingProvider } from "../../../../open-sse/config/embeddingRegistry.ts";
+import { getRerankProvider } from "../../../../open-sse/config/rerankRegistry.ts";
+import { getImageProvider } from "../../../../open-sse/config/imageRegistry.ts";
+import { getVideoProvider } from "../../../../open-sse/config/videoRegistry.ts";
 import {
   getSpeechProvider,
   getTranscriptionProvider,
-} from "../../../open-sse/config/audioRegistry.ts";
-import { ANTIGRAVITY_PUBLIC_MODELS } from "../../../open-sse/config/antigravityModelAliases.ts";
-import { getStaticQoderModels } from "../../../open-sse/services/qoderCli.ts";
-import { getSearchProvider } from "../../../open-sse/config/searchRegistry.ts";
-import { BAILIAN_CODING_PLAN_MODELS } from "../../../open-sse/config/providers/registry/bailian-coding-plan/index.ts";
+} from "../../../../open-sse/config/audioRegistry.ts";
+import { ANTIGRAVITY_PUBLIC_MODELS } from "../../../../open-sse/config/antigravityModelAliases.ts";
+import { getStaticQoderModels } from "../../../../open-sse/services/qoderCli.ts";
+import { getSearchProvider } from "../../../../open-sse/config/searchRegistry.ts";
+import { BAILIAN_CODING_PLAN_MODELS } from "../../../../open-sse/config/providers/registry/bailian-coding-plan/index.ts";
 
 import { getModelsByProviderId } from "../../shared/constants/models.ts";
 

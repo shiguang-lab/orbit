@@ -1,9 +1,9 @@
-import { isOpenAIResponsesStoreEnabled } from "../../src/lib/providers/requestDefaults.ts";
+import { isOpenAIResponsesStoreEnabled } from "../../core-domain/src/lib/providers/requestDefaults.ts";
 import {
   DEFAULT_RESPONSES_PREVIOUS_RESPONSE_ID_MODE,
   RESPONSES_PREVIOUS_RESPONSE_ID_MODES,
   type ResponsesPreviousResponseIdMode,
-} from "../../src/shared/constants/responsesPreviousResponseId.ts";
+} from "../../core-domain/src/shared/constants/responsesPreviousResponseId.ts";
 import { FORMATS } from "../translator/formats.ts";
 
 type JsonRecord = Record<string, unknown>;

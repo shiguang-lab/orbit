@@ -14,12 +14,12 @@ import { syncToCloud } from "../../../../../lib/cloudSync.ts";
 import { getConsistentMachineId } from "../../../../../shared/utils/machineId.ts";
 import { KiroService } from "../../../../../lib/oauth/services/kiro.ts";
 import { findKiroConnectionByIdentity } from "../../../../../lib/oauth/kiroConnectionIdentity.ts";
-import { runWithProxyContext } from "../../../../../../open-sse/utils/proxyFetch.ts";
+import { runWithProxyContext } from "../../../../../../../open-sse/utils/proxyFetch.ts";
 import {
   emailFromExternalIdpToken,
   isExternalIdpAuthMethod,
   normalizeScope,
-} from "../../../../../../open-sse/services/kiroExternalIdp.ts";
+} from "../../../../../../../open-sse/services/kiroExternalIdp.ts";
 
 /**
  * GET /api/oauth/kiro/auto-import

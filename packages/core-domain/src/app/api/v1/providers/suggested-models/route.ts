@@ -2,12 +2,12 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { CORS_HEADERS, handleCorsOptions } from "../../../../../shared/utils/cors.ts";
 import { isAuthenticated } from "../../../../../shared/utils/apiAuth.ts";
-import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../../../../open-sse/utils/error.ts";
 import {
   resolveHfPipelineTag,
   sortHfSuggestedModels,
   type HfModelSummary,
-} from "../../../../../../open-sse/services/hfModelSuggestions.ts";
+} from "../../../../../../../open-sse/services/hfModelSuggestions.ts";
 
 /**
  * GET /api/v1/providers/suggested-models?type=image

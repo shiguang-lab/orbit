@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 
-import { AUDIO_TRANSCRIPTION_PROVIDERS } from "../../../open-sse/config/audioRegistry.ts";
-import { detectMediaParts } from "../../../open-sse/utils/mediaParts.ts";
+import { AUDIO_TRANSCRIPTION_PROVIDERS } from "../../../../open-sse/config/audioRegistry.ts";
+import { detectMediaParts } from "../../../../open-sse/utils/mediaParts.ts";
 
 import { getRuntimePorts } from "../runtime/ports.ts";
 import { fetchRemoteImage } from "../../shared/network/remoteImageFetch.ts";

@@ -1,5 +1,5 @@
-import { HTTP_STATUS } from "../../../../../open-sse/config/constants.ts";
-import { unavailableResponse } from "../../../../../open-sse/utils/error.ts";
+import { HTTP_STATUS } from "../../../../../../open-sse/config/constants.ts";
+import { unavailableResponse } from "../../../../../../open-sse/utils/error.ts";
 
 export type RateLimitedCredentials = {
   allRateLimited: true;

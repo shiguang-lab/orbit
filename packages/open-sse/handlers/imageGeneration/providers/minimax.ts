@@ -4,7 +4,7 @@
 // in `data.image_urls`. This normalizes that response into the OpenAI-compatible
 // images payload the rest of the handler expects.
 
-import { saveCallLog } from "../../../../src/lib/usageDb.ts";
+import { saveCallLog } from "../../../../core-domain/src/lib/usageDb.ts";
 import { sanitizeErrorMessage } from "../../../utils/error.ts";
 
 interface MinimaxImageGenArgs {

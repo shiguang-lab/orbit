@@ -11,7 +11,7 @@ import { validateProviderApiKey } from "../../../../lib/providers/validation.ts"
 import { getProxyForLevel, resolveProxyForProvider } from "../../../../lib/localDb.ts";
 import { validateProviderApiKeySchema } from "../../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
-import { runWithProxyContextOrDirect } from "../../../../../open-sse/utils/proxyFetch.ts";
+import { runWithProxyContextOrDirect } from "../../../../../../open-sse/utils/proxyFetch.ts";
 import { rejectRetiredCommonChatGptWebProvider } from "../../../../lib/providers/chatgptWebRetirementResponse.ts";
 
 function sanitizeAuditUrl(url: string | null | undefined) {

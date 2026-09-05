@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
 import { getProviderConnectionById } from "../../../../../lib/db/providers.ts";
-import { getChatGptWebCodexDoctorStatus } from "../../../../../../open-sse/services/chatgptWebCodexAdmin.ts";
+import { getChatGptWebCodexDoctorStatus } from "../../../../../../../open-sse/services/chatgptWebCodexAdmin.ts";
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const authError = await requireManagementAuth(request);

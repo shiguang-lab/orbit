@@ -2,7 +2,7 @@
 
 import { NextResponse } from "next/server";
 
-import { buildErrorBody, sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 import { syncRadarIntel } from "../../../../lib/radar/intelSync.ts";
 import { syncRadarOffers } from "../../../../lib/radar/offersSync.ts";

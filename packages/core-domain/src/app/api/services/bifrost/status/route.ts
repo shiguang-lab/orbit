@@ -6,7 +6,7 @@ import {
   BIFROST_DEFAULT_PORT,
 } from "../../../../../lib/services/installers/bifrost.ts";
 import { createErrorResponse } from "../../../../../lib/api/errorResponse.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 
 const TOOL = "bifrost";
 

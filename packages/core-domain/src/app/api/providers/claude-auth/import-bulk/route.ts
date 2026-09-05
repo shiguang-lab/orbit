@@ -8,7 +8,7 @@ import {
 } from "../../../../../lib/oauth/utils/claudeAuthImport.ts";
 import { getAuditRequestContext, logAuditEvent } from "../../../../../lib/compliance/index.ts";
 import { getProviderAuditTarget } from "../../../../../lib/compliance/providerAudit.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 import { importClaudeAuthBulkSchema } from "../../../../../shared/validation/schemas.ts";
 import { validateBody, isValidationFailure } from "../../../../../shared/validation/helpers.ts";
 import { sanitizeProviderSpecificDataForResponse } from "../../../../../lib/providers/requestDefaults.ts";

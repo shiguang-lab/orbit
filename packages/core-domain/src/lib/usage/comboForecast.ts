@@ -3,7 +3,7 @@ import { getCombos, getComboById } from "../db/combos.ts";
 import { getPricingForModel } from "../db/settings.ts";
 import { getQuotaSnapshots } from "../db/quotaSnapshots.ts";
 import { computeCostFromPricing, normalizeModelName } from "./costCalculator.ts";
-import { resolveNestedComboTargets } from "../../../open-sse/services/combo.ts";
+import { resolveNestedComboTargets } from "../../../../open-sse/services/combo.ts";
 import type {
   ComboRecord,
   ComboForecastHorizon,

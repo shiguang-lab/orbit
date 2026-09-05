@@ -1,10 +1,10 @@
 import { buildClientRawRequest, handleChat } from "../../../../../sse/handlers/chat.ts";
-import { initTranslators } from "../../../../../../open-sse/translator/index.ts";
+import { initTranslators } from "../../../../../../../open-sse/translator/index.ts";
 import {
   convertOpenAIResponseToGemini,
   transformOpenAISSEToGeminiSSE,
-} from "../../../../../../open-sse/translator/response/openai-to-gemini-sse.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+} from "../../../../../../../open-sse/translator/response/openai-to-gemini-sse.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 import { v1betaGeminiGenerateSchema } from "../../../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../../../shared/validation/helpers.ts";
 import { convertGeminiToInternal } from "./convertGeminiToInternal";

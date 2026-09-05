@@ -1,8 +1,8 @@
 import {
   createCodexAccountPool,
   getCodexParentAccountDiagnostic,
-} from "../../../open-sse/services/codexAccount/index.ts";
-import type { AdaptiveAdmissionPublicSnapshot } from "../../../open-sse/services/admission/runtime.ts";
+} from "../../../../open-sse/services/codexAccount/index.ts";
+import type { AdaptiveAdmissionPublicSnapshot } from "../../../../open-sse/services/admission/runtime.ts";
 import type { PerConnectionAdmissionController } from "../../shared/middleware/chatBodyAdmission.ts";
 
 type JsonRecord = Record<string, unknown>;

@@ -2,7 +2,7 @@
  * MemoryManager - Singleton orchestrator for memory backends
  * Handles registration, routing, fallback, and caching
  */
-import { logger } from "../../../open-sse/utils/logger.ts";
+import { logger } from "../../../../open-sse/utils/logger.ts";
 import type {
   MemoryBackend,
   CreateMemoryInput,

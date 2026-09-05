@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from "node:crypto";
 
-import { getStainlessTimeoutSeconds } from "../../src/shared/utils/runtimeTimeouts.ts";
+import { getStainlessTimeoutSeconds } from "@shiguang-gateway/config/timeouts";
 import { ANTHROPIC_VERSION_HEADER } from "../config/anthropicHeaders.ts";
 import {
   CLAUDE_CODE_COMPATIBLE_STAINLESS_PACKAGE_VERSION,

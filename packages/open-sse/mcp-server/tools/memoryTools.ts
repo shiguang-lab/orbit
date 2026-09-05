@@ -1,12 +1,12 @@
 import { z } from "zod";
-import { retrieveMemories } from "../../../src/lib/memory/retrieval.ts";
-import { createMemory, deleteMemory, listMemories } from "../../../src/lib/memory/store.ts";
-import { MemoryType } from "../../../src/lib/memory/types.ts";
+import { retrieveMemories } from "../../../core-domain/src/lib/memory/retrieval.ts";
+import { createMemory, deleteMemory, listMemories } from "../../../core-domain/src/lib/memory/store.ts";
+import { MemoryType } from "../../../core-domain/src/lib/memory/types.ts";
 import {
   getMemorySettings,
   toMemoryRetrievalConfig,
   DEFAULT_MEMORY_SETTINGS,
-} from "../../../src/lib/memory/settings.ts";
+} from "../../../core-domain/src/lib/memory/settings.ts";
 import { resolveMcpCallerApiKeyId } from "../mcpCallerIdentity.ts";
 
 /**

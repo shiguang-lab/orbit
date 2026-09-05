@@ -1,4 +1,4 @@
-import { buildErrorBody } from "../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../open-sse/utils/error.ts";
 
 import { CORS_HEADERS } from "../utils/cors";
 

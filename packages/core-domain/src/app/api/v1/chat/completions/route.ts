@@ -3,17 +3,17 @@ import { CORS_HEADERS, handleCorsOptions } from "../../../../../shared/utils/cor
 import { callCloudWithMachineId } from "../../../../../shared/utils/cloud.ts";
 import { handleChat } from "../../../../../sse/handlers/chat.ts";
 import { generateRequestId } from "../../../../../shared/utils/requestId.ts";
-import { errorResponse } from "../../../../../../open-sse/utils/error.ts";
-import { initTranslators } from "../../../../../../open-sse/translator/index.ts";
+import { errorResponse } from "../../../../../../../open-sse/utils/error.ts";
+import { initTranslators } from "../../../../../../../open-sse/translator/index.ts";
 import { createInjectionGuard } from "../../../../../middleware/promptInjectionGuard.ts";
-import { acceptHeaderForcesStream } from "../../../../../../open-sse/utils/aiSdkCompat.ts";
+import { acceptHeaderForcesStream } from "../../../../../../../open-sse/utils/aiSdkCompat.ts";
 import {
   OPENAI_CHAT_ERROR_FRAME,
   OPENAI_KEEPALIVE_FRAME,
   OPENAI_STARTUP_FRAME,
   withEarlyStreamKeepalive,
-} from "../../../../../../open-sse/utils/earlyStreamKeepalive.ts";
-import { resolveKeepaliveThreshold } from "../../../../../../open-sse/utils/keepaliveThreshold.ts";
+} from "../../../../../../../open-sse/utils/earlyStreamKeepalive.ts";
+import { resolveKeepaliveThreshold } from "../../../../../../../open-sse/utils/keepaliveThreshold.ts";
 import {
   admitChatRequest,
   admitChatStructure,

@@ -5,8 +5,8 @@ import {
   benchmarkEngines,
   compareReports,
   DEFAULT_BENCHMARK_ENGINES,
-} from "../../../../../open-sse/services/compression/harness/benchmark.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+} from "../../../../../../open-sse/services/compression/harness/benchmark.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 export const dynamic = "force-dynamic";
 

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
-import { CodexExecutor } from "../../../../../open-sse/executors/codex.ts";
+import { CodexExecutor } from "../../../../../../open-sse/executors/codex.ts";
 import { getApiKeyMetadata } from "../../../../lib/db/apiKeys.ts";
 import { authorizeWebSocketHandshake, extractWsTokenFromRequest } from "../../../../lib/ws/handshake.ts";
 import { getModelInfo } from "../../../../sse/services/model.ts";
@@ -18,11 +18,11 @@ import {
   getMemorySettings,
   toMemoryRetrievalConfig,
 } from "../../../../lib/memory/settings.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
-import { logger } from "../../../../../open-sse/utils/logger.ts";
-import { resolveProxy } from "../../../../../open-sse/utils/networkProxy.ts";
-import { withCodexFingerprintCredentials } from "../../../../../open-sse/config/codexIdentity.ts";
-import { proxyConfigToUrl } from "../../../../../open-sse/utils/proxyDispatcher.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { logger } from "../../../../../../open-sse/utils/logger.ts";
+import { resolveProxy } from "../../../../../../open-sse/utils/networkProxy.ts";
+import { withCodexFingerprintCredentials } from "../../../../../../open-sse/config/codexIdentity.ts";
+import { proxyConfigToUrl } from "../../../../../../open-sse/utils/proxyDispatcher.ts";
 import {
   attachReasoningRuleDirective,
   applyReasoningRuleDirective,

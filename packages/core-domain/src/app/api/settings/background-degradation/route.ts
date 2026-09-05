@@ -3,7 +3,7 @@ import {
   getBackgroundDegradationConfig,
   setBackgroundDegradationConfig,
   resetStats,
-} from "../../../../../open-sse/services/backgroundTaskDetector.ts";
+} from "../../../../../../open-sse/services/backgroundTaskDetector.ts";
 import { getSettings, updateSettings } from "../../../../lib/db/settings.ts";
 import { jsonObjectSchema, resetStatsActionSchema } from "../../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";

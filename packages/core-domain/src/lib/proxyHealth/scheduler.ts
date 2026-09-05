@@ -33,7 +33,7 @@ import {
   createProxyDispatcher,
   clearDispatcherCache,
   proxyConfigToUrl,
-} from "../../../open-sse/utils/proxyDispatcher.ts";
+} from "../../../../open-sse/utils/proxyDispatcher.ts";
 import { fetch as undiciFetch } from "undici";
 import {
   classifyProbeStatus,

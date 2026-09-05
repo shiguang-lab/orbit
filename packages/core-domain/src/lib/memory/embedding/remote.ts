@@ -1,4 +1,4 @@
-import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
 import { createEmbeddingResponse } from "../../embeddings/service.ts";
 import type { EmbeddingResult, EmbeddingError } from "./types";
 import type { ResolvedMemoryCustomEmbeddingProvider } from "./customProvider";

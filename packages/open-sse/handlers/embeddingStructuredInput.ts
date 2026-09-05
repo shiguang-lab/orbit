@@ -1,5 +1,5 @@
-import { MAX_EMBEDDING_INLINE_TOTAL_BYTES } from "../../src/shared/validation/schemas/apiV1.ts";
-import type { EmbeddingMultimodalItem } from "../../src/shared/validation/schemas/apiV1.ts";
+import { MAX_EMBEDDING_INLINE_TOTAL_BYTES } from "../../core-domain/src/shared/validation/schemas/apiV1.ts";
+import type { EmbeddingMultimodalItem } from "../../core-domain/src/shared/validation/schemas/apiV1.ts";
 import type { EmbeddingProvider } from "../config/embeddingRegistry.ts";
 import {
   isCanonicalEmbeddingItem,
@@ -7,12 +7,12 @@ import {
   isJinaNativeDoc,
   isJinaNativeEmbeddingItem,
   isPlainObject,
-} from "../../src/shared/validation/jinaNativeEmbeddingInput.ts";
+} from "../../core-domain/src/shared/validation/jinaNativeEmbeddingInput.ts";
 import {
   isGeminiNativeContent,
   isGeminiNativeEmbedRequest,
   isGeminiNativePart,
-} from "../../src/shared/validation/geminiNativeEmbeddingInput.ts";
+} from "../../core-domain/src/shared/validation/geminiNativeEmbeddingInput.ts";
 
 const AGGREGATE_SIZE_ERROR = "decoded inline media must not exceed 16 MiB per request";
 

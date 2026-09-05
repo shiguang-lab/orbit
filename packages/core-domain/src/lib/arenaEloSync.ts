@@ -10,7 +10,7 @@
  * On by default; opt out via Dashboard Feature Flags or ARENA_ELO_SYNC_ENABLED=false.
  */
 
-import { resolveScoresAs } from "../../open-sse/services/autoCombo/scoresAs.ts";
+import { resolveScoresAs } from "../../../open-sse/services/autoCombo/scoresAs.ts";
 
 import { isArenaEloSyncEnabled } from "../shared/utils/featureFlags.ts";
 

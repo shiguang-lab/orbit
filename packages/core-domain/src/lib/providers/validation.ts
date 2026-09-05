@@ -1,5 +1,5 @@
-import { getEmbeddingProvider } from "../../../open-sse/config/embeddingRegistry.ts";
-import { getRegistryEntry } from "../../../open-sse/config/providerRegistry.ts";
+import { getEmbeddingProvider } from "../../../../open-sse/config/embeddingRegistry.ts";
+import { getRegistryEntry } from "../../../../open-sse/config/providerRegistry.ts";
 import {
   isClaudeCodeCompatibleProvider,
   isAnthropicCompatibleProvider,
@@ -12,12 +12,12 @@ import {
 } from "../../shared/constants/providers.ts";
 import { MODAL_DEFAULT_VALIDATION_MODEL_ID } from "../../shared/constants/modal.ts";
 import { validateImageProviderApiKey } from "./imageValidation.ts";
-import { usesCcWireImage } from "../../../open-sse/services/ccWireImageBuiltins.ts";
+import { usesCcWireImage } from "../../../../open-sse/services/ccWireImageBuiltins.ts";
 import {
   isAlibabaRegionalProvider,
   resolveAlibabaProviderBaseUrl,
 } from "../../shared/constants/alibabaProviderRegions.ts";
-import { buildProviderHeaders, buildProviderUrl } from "../../../open-sse/services/provider.ts";
+import { buildProviderHeaders, buildProviderUrl } from "../../../../open-sse/services/provider.ts";
 
 import {
   OPENAI_LIKE_FORMATS,

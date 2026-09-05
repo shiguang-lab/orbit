@@ -8,7 +8,7 @@ import { cursorImportSchema } from "../../../../../shared/validation/schemas.ts"
 import { isValidationFailure, validateBody } from "../../../../../shared/validation/helpers.ts";
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
 import { getConsistentMachineId } from "../../../../../shared/utils/machineId.ts";
-import { runWithProxyContext } from "../../../../../../open-sse/utils/proxyFetch.ts";
+import { runWithProxyContext } from "../../../../../../../open-sse/utils/proxyFetch.ts";
 import { resolveProxyForProvider } from "../../../../../models/index.ts";
 
 async function requireOAuthImportAuth(request: Request) {

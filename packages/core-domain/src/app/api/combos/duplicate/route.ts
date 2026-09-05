@@ -7,10 +7,10 @@ import { isValidationFailure, validateBody } from "../../../../shared/validation
 import {
   AUTO_FAMILY_IDS,
   resolveBuiltinAutoSpec,
-} from "../../../../../open-sse/services/autoCombo/builtinCatalog.ts";
-import { AutoVariant } from "../../../../../open-sse/services/autoCombo/autoPrefix.ts";
-import { AutoComboSpec } from "../../../../../open-sse/services/autoCombo/virtualFactory.ts";
-import { MODEL_FAMILIES, ModelFamily } from "../../../../../open-sse/services/autoCombo/modelFamily.ts";
+} from "../../../../../../open-sse/services/autoCombo/builtinCatalog.ts";
+import { AutoVariant } from "../../../../../../open-sse/services/autoCombo/autoPrefix.ts";
+import { AutoComboSpec } from "../../../../../../open-sse/services/autoCombo/virtualFactory.ts";
+import { MODEL_FAMILIES, ModelFamily } from "../../../../../../open-sse/services/autoCombo/modelFamily.ts";
 
 // POST /api/combos/duplicate - Resolve an auto-combo into a static combo snapshot.
 // Takes an auto/* template name, resolves its candidate pool using the same logic as
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
 
   try {
     const { createVirtualAutoCombo } =
-      await import("../../../../../open-sse/services/autoCombo/virtualFactory.ts");
+      await import("../../../../../../open-sse/services/autoCombo/virtualFactory.ts");
 
     // Resolve the variant/spec using the same logic as builtinCatalog.
     const suffix = name.slice("auto/".length);
@@ -84,7 +84,7 @@ export async function POST(request: Request) {
     // includeResolvedCapabilities is required so computeSnapshotWeights can
     // differentiate candidates by vision/reasoning capabilities at snapshot time.
     const { prepareVirtualAutoComboInputs, createVirtualAutoComboFromPrepared } =
-      await import("../../../../../open-sse/services/autoCombo/virtualFactory.ts");
+      await import("../../../../../../open-sse/services/autoCombo/virtualFactory.ts");
 
     const prepared = await prepareVirtualAutoComboInputs({
       includeResolvedCapabilities: true,

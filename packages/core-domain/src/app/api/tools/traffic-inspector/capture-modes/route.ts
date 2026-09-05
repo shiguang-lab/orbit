@@ -10,7 +10,7 @@
  * LOCAL_ONLY enforced by routeGuard.
  */
 
-import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 import { listCustomHosts } from "../../../../../lib/db/inspectorCustomHosts.ts";
 import {
   getHttpProxyHandle,

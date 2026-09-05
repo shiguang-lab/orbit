@@ -155,7 +155,7 @@ export async function recommendStrategyOverride(
 
   // Check if adaptive routing is enabled globally
   try {
-    const { getSettings } = await import("../../src/lib/localDb.ts");
+    const { getSettings } = await import("../../core-domain/src/lib/localDb.ts");
     const settings = await getSettings();
     if (!settings.adaptiveVolumeRouting) {
       return noOverride;

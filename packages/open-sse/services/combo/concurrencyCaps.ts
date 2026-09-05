@@ -19,7 +19,7 @@
  * shrinking (Quality Gate / #3501).
  */
 
-import { getCachedProviderConnectionById } from "../../../src/lib/localDb.ts";
+import { getCachedProviderConnectionById } from "../../../core-domain/src/lib/localDb.ts";
 import { effectiveMaxConcurrency } from "./comboPredicates.ts";
 import type { ResolvedComboTarget } from "./types.ts";
 

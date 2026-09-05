@@ -27,12 +27,12 @@ import {
   batchUpdateProviderConnectionsSchema,
 } from "../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../shared/validation/helpers.ts";
-import { normalizeQoderPatProviderData } from "../../../../open-sse/services/qoderCli.ts";
-import { projectCodexAccountPool } from "../../../../open-sse/services/codexAccount/index.ts";
+import { normalizeQoderPatProviderData } from "../../../../../open-sse/services/qoderCli.ts";
+import { projectCodexAccountPool } from "../../../../../open-sse/services/codexAccount/index.ts";
 import {
   CODEX_SPARK_QUOTA_SESSION,
   CODEX_SPARK_QUOTA_WEEKLY,
-} from "../../../../open-sse/config/codexQuotaScopes.ts";
+} from "../../../../../open-sse/config/codexQuotaScopes.ts";
 import {
   normalizeProviderSpecificData,
   sanitizeProviderSpecificDataForResponse,
@@ -47,7 +47,7 @@ import {
   fetchModelSyncInternal,
   getModelSyncInternalBaseUrl,
 } from "../../../shared/services/modelSyncScheduler.ts";
-import { finalizeValidatedChatGptWebCodexSecrets } from "../../../../open-sse/services/chatgptWebCodexAdmin.ts";
+import { finalizeValidatedChatGptWebCodexSecrets } from "../../../../../open-sse/services/chatgptWebCodexAdmin.ts";
 import { isAutoFetchModelsEnabled } from "../../../lib/providerModels/modelDiscovery.ts";
 import { testSingleConnection } from "./[id]/test/route";
 import { rejectRetiredCommonChatGptWebProvider } from "../../../lib/providers/chatgptWebRetirementResponse.ts";

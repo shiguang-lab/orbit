@@ -13,7 +13,7 @@ import {
   getCodexRequestDefaults,
   normalizeCodexServiceTier,
   type CodexServiceTier,
-} from "../../../src/lib/providers/requestDefaults.ts";
+} from "../../../core-domain/src/lib/providers/requestDefaults.ts";
 
 /** The effective service tier carried through a request: "standard" or a normalized Codex tier. */
 export type EffectiveServiceTier = "standard" | CodexServiceTier;

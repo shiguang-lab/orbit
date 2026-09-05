@@ -5,7 +5,7 @@ import { parsePastedCredentials } from "../../../../../lib/oauth/pasteCredential
 import { oauthPasteCredentialsSchema } from "../../../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../../../shared/validation/helpers.ts";
 import { isAuthRequired, isAuthenticated } from "../../../../../shared/utils/apiAuth.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 
 /**
  * POST /api/oauth/[provider]/paste-credentials

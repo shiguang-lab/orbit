@@ -4,7 +4,7 @@
  */
 
 import { NextResponse } from "next/server";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 import { getWebhook } from "../../../../../lib/localDb.ts";
 import { decryptMetadata } from "../../../../../lib/webhookDispatcher.ts";
 import { buildSlackPayload } from "../../../../../lib/webhooks/integrations/slack.ts";

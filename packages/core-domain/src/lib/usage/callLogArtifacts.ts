@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import type { RequestPipelinePayloads } from "../../../open-sse/utils/requestLogger.ts";
+import type { RequestPipelinePayloads } from "../../../../open-sse/utils/requestLogger.ts";
 import { resolveDataDir } from "../dataPaths";
 import { getCallLogPipelineMaxSizeBytes, isChatDebugFileEnabled } from "../logEnv";
 

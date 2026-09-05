@@ -18,12 +18,12 @@ import { reorderConnections } from "./providers/deletion";
 import {
   removeConnectionHealth,
   removeConnectionIndex,
-} from "../../../open-sse/services/apiKeyRotator.ts";
+} from "../../../../open-sse/services/apiKeyRotator.ts";
 import { invalidateReasoningRoutingRuleCache } from "./reasoningRoutingRules";
 import { normalizeProviderSpecificData } from "../providers/requestDefaults.ts";
 import { withDerivedCookieExpiry } from "../../shared/utils/webCookieExpiry.ts";
 import { WEB_COOKIE_PROVIDERS } from "../../shared/constants/providers.ts";
-import { ensureCodexFingerprintSeed } from "../../../open-sse/config/codexIdentity.ts";
+import { ensureCodexFingerprintSeed } from "../../../../open-sse/config/codexIdentity.ts";
 import { bumpProxyConfigGeneration, getSettings } from "./settings";
 import {
   getStoredManagementPassword,

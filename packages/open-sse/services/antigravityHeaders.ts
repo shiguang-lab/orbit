@@ -1,4 +1,4 @@
-import type { AntigravityClientProfile } from "../../src/shared/constants/antigravityClientProfile.ts";
+import type { AntigravityClientProfile } from "../../core-domain/src/shared/constants/antigravityClientProfile.ts";
 import {
   getCachedAntigravityCliVersion,
   getCachedAntigravityIdeVersion,

@@ -10,7 +10,7 @@ import { registerHook, getAllHooks } from "../../../../lib/middleware/registry.t
 import type { HookConfig, CreateHookRequest } from "../../../../lib/middleware/types.ts";
 import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 const hookScopeSchema = z.union([
   z.object({ type: z.literal("global") }),

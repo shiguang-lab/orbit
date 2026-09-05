@@ -1,7 +1,7 @@
 import {
   getExplicitModelOutputCap,
   getResolvedModelCapabilities,
-} from "../../src/lib/modelCapabilities.ts";
+} from "../../core-domain/src/lib/modelCapabilities.ts";
 
 /**
  * Below this caller-supplied `max_tokens`, the request is treated as a probe

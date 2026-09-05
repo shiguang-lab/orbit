@@ -332,7 +332,7 @@ function getProviderIdFromConnection(connection: unknown) {
 
 async function getActiveProviderSet() {
   try {
-    const { getCachedProviderConnections } = await import("../../src/lib/localDb.ts");
+    const { getCachedProviderConnections } = await import("../../core-domain/src/lib/localDb.ts");
     const conns = (await getCachedProviderConnections()) as unknown[];
     const providers = conns
       .map(getProviderIdFromConnection)
@@ -345,7 +345,7 @@ async function getActiveProviderSet() {
 
 async function getActiveSyncedProvidersForModel(modelId: string) {
   try {
-    const { getActiveProvidersWithSyncedModel } = await import("../../src/lib/localDb.ts");
+    const { getActiveProvidersWithSyncedModel } = await import("../../core-domain/src/lib/localDb.ts");
     const providers = await getActiveProvidersWithSyncedModel(modelId);
     return providers
       .map(resolveProviderAlias)
@@ -360,7 +360,7 @@ async function reconcileInferredProvidersWithActiveCatalog(providerIds: string[]
 
   try {
     const { reconcileProvidersWithActiveSyncedCatalog } =
-      await import("../../src/lib/db/models/activeSyncedCatalog.ts");
+      await import("../../core-domain/src/lib/db/models/activeSyncedCatalog.ts");
 
     const reconciliations = await Promise.all(
       uniqueProviders.map(async (provider) => {
@@ -403,7 +403,7 @@ function isTruthyEnv(value: string | undefined) {
 
 async function getPreferClaudeCodeForUnprefixedClaudeModels() {
   try {
-    const { getCachedSettings } = await import("../../src/lib/localDb.ts");
+    const { getCachedSettings } = await import("../../core-domain/src/lib/localDb.ts");
     const settings = (await getCachedSettings()) as Record<string, unknown>;
     if (typeof settings.preferClaudeCodeForUnprefixedClaudeModels === "boolean") {
       return settings.preferClaudeCodeForUnprefixedClaudeModels;

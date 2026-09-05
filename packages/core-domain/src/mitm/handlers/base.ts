@@ -29,7 +29,7 @@ import type { InterceptedRequest } from "../inspector/types";
  */
 async function safeErrorMessage(err: unknown): Promise<string> {
   try {
-    const mod = (await import("../../../open-sse/utils/error.ts")) as {
+    const mod = (await import("../../../../open-sse/utils/error.ts")) as {
       sanitizeErrorMessage?: (m: unknown) => string;
     };
     if (typeof mod.sanitizeErrorMessage === "function") {

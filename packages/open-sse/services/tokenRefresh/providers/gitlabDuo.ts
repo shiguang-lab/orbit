@@ -3,7 +3,7 @@
 // provenance notes (ported idea from KooshaPari's PR #7338, redone on tip).
 import { PROVIDERS } from "../../../config/constants.ts";
 import { runWithProxyContext } from "../../../utils/proxyFetch.ts";
-import { buildGitLabOAuthEndpoints, resolveGitLabOAuthBaseUrl } from "../../../../src/lib/oauth/gitlab.ts";
+import { buildGitLabOAuthEndpoints, resolveGitLabOAuthBaseUrl } from "../../../../core-domain/src/lib/oauth/gitlab.ts";
 import { buildFormParams, type RefreshLogger } from "../shared.ts";
 
 /**

@@ -3,7 +3,7 @@
  *
  * Extracted verbatim from openai-responses.ts. Registration stays in the host.
  */
-import { isOpenAIResponsesStoreEnabled } from "../../../../src/lib/providers/requestDefaults.ts";
+import { isOpenAIResponsesStoreEnabled } from "../../../../core-domain/src/lib/providers/requestDefaults.ts";
 import { isInternalReasoningPlaceholder } from "../../../utils/reasoningPlaceholder.ts";
 import { getReadableReasoningValue } from "../../../utils/reasoningFields.ts";
 import { generateToolCallId } from "../../helpers/toolCallHelper.ts";

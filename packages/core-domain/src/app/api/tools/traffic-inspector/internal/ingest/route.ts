@@ -19,7 +19,7 @@
  * LOCAL_ONLY enforced by routeGuard + token gate below.
  */
 
-import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
+import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../../../open-sse/utils/error.ts";
 import { createHash, timingSafeEqual } from "node:crypto";
 import { randomUUID } from "node:crypto";
 import { InterceptedRequestSchema } from "../../../../../../mitm/inspector/types.ts";

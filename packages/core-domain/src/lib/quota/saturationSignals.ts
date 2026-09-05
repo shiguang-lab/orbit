@@ -285,7 +285,7 @@ async function fetchCodexSaturation(
   connection?: Record<string, unknown>
 ): Promise<number> {
   // Dynamic import — codexQuotaFetcher lives in open-sse workspace
-  const mod = await import("../../../open-sse/services/codexQuotaFetcher.ts");
+  const mod = await import("../../../../open-sse/services/codexQuotaFetcher.ts");
   // #6379: pass the loaded connection snapshot through so fetchCodexQuota can
   // read its accessToken/workspaceId even when this connection was never
   // registered via registerCodexConnection() (e.g. during headroom ranking,
@@ -310,7 +310,7 @@ async function fetchBailianSaturation(
   connectionId: string,
   dim: DimensionSpec
 ): Promise<number> {
-  const mod = await import("../../../open-sse/services/bailianQuotaFetcher.ts");
+  const mod = await import("../../../../open-sse/services/bailianQuotaFetcher.ts");
   const quota = await mod.fetchBailianQuota(connectionId);
   if (!quota) return 0;
 
@@ -370,7 +370,7 @@ export function __setAnthropicSaturationDepsForTests(
 async function defaultAnthropicDeps(): Promise<AnthropicSaturationDeps> {
   const [localDbMod, usageMod] = await Promise.all([
     import("../localDb.ts"),
-    import("../../../open-sse/services/usage.ts"),
+    import("../../../../open-sse/services/usage.ts"),
   ]);
   return {
     loadConnection: (connectionId) =>
@@ -482,7 +482,7 @@ async function defaultGenericUsageFetch(
   connectionId: string,
   provider: string
 ): Promise<unknown> {
-  const mod = await import("../../../open-sse/services/usage.ts");
+  const mod = await import("../../../../open-sse/services/usage.ts");
   const conn = { id: connectionId, provider } as Parameters<typeof mod.getUsageForProvider>[0];
   return mod.getUsageForProvider(conn);
 }
@@ -502,7 +502,7 @@ async function fetchGenericSaturation(
       // Prefer the normalized quota shape (handles nested `quotas` map for
       // Antigravity / Claude / etc.). Fall back to legacy top-level fields.
       const { convertUsageToQuotaInfo } = await import(
-        "../../../open-sse/services/genericQuotaFetcher.ts"
+        "../../../../open-sse/services/genericQuotaFetcher.ts"
       );
       const quota = convertUsageToQuotaInfo(result);
       if (quota && Number.isFinite(quota.percentUsed)) {

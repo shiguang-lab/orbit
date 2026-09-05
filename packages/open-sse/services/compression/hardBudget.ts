@@ -14,7 +14,7 @@ import {
   countTextTokens,
   tokenizerContextFromBody,
   type TokenizerContext,
-} from "../../../src/shared/utils/tiktokenCounter.ts";
+} from "../../../core-domain/src/shared/utils/tiktokenCounter.ts";
 import { createCompressionStats } from "./stats.ts";
 
 interface HardBudgetOptions {

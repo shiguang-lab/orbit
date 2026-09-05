@@ -4,7 +4,7 @@
  * LOCAL_ONLY: registered in routeGuard.ts
  */
 import { generateCert } from "../../../../../../mitm/cert/generate.ts";
-import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../../open-sse/utils/error.ts";
 import { createErrorResponse } from "../../../../../../lib/api/errorResponse.ts";
 
 export async function POST(): Promise<Response> {

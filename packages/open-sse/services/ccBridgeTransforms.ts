@@ -24,7 +24,7 @@ import { createHash } from "node:crypto";
 import {
   CLAUDE_CODE_CLIENT_BUILD_REVISION,
   CLAUDE_CODE_CLIENT_VERSION,
-} from "../../src/shared/constants/claudeCodeClient.ts";
+} from "../../core-domain/src/shared/constants/claudeCodeClient.ts";
 
 // ────────────────────────────────────────────────────────────────────────────
 // DSL types

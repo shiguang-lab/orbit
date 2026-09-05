@@ -4,7 +4,7 @@ import { builtinSkills } from "./builtins";
 import { getDbInstance } from "../db/core";
 import { getSettings } from "../db/settings";
 import { randomUUID } from "crypto";
-import { logger } from "../../../open-sse/utils/logger.ts";
+import { logger } from "../../../../open-sse/utils/logger.ts";
 
 const log = logger("SKILLS_EXECUTOR");
 

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
 import { extractClaudeAuthZip } from "../../../../../lib/oauth/utils/claudeAuthZipExtract.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 
 const ZIP_BODY_LIMIT = 11 * 1024 * 1024; // 11 MB — slightly above the 10 MB extracted limit
 

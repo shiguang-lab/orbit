@@ -20,7 +20,7 @@ import {
   getComboByName,
   updateCombo,
 } from "../db/combos.ts";
-import { REGISTRY } from "../../../open-sse/config/providerRegistry.ts";
+import { REGISTRY } from "../../../../open-sse/config/providerRegistry.ts";
 import {
   quotaModelName,
   parseQuotaModelName,

@@ -4,8 +4,8 @@ import { validateBody, isValidationFailure } from "../../../../shared/validation
 import { MemoryReindexSchema } from "../../../../shared/schemas/memory.ts";
 import { runReindexBatch, getReindexPending } from "../../../../lib/memory/reindex.ts";
 import { markAllMemoriesNeedReindex } from "../../../../lib/localDb.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
-import { logger } from "../../../../../open-sse/utils/logger.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { logger } from "../../../../../../open-sse/utils/logger.ts";
 
 const log = logger("MEMORY_REINDEX_ROUTE");
 

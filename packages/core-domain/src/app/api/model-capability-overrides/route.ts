@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { resolveProviderAlias } from "../../../../open-sse/services/model.ts";
+import { resolveProviderAlias } from "../../../../../open-sse/services/model.ts";
 import { parseReasoningEffortsOverride } from "../../../shared/reasoning/reasoningEffortsOverride.ts";
 import { requireManagementAuth } from "../../../lib/api/requireManagementAuth.ts";
 import {

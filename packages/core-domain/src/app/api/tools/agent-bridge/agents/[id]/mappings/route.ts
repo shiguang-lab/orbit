@@ -9,7 +9,7 @@ import {
   setMappings,
   syncAgentBridgeMappingsToMitmAlias,
 } from "../../../../../../../lib/db/agentBridgeMappings.ts";
-import { sanitizeErrorMessage } from "../../../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../../../open-sse/utils/error.ts";
 import { createErrorResponse } from "../../../../../../../lib/api/errorResponse.ts";
 
 type Params = { params: Promise<{ id: string }> };

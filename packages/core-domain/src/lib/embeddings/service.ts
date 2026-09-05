@@ -1,13 +1,13 @@
-import { handleEmbedding } from "../../../open-sse/handlers/embeddings.ts";
+import { handleEmbedding } from "../../../../open-sse/handlers/embeddings.ts";
 import {
   parseEmbeddingModel,
   getEmbeddingProvider,
   buildDynamicEmbeddingProvider,
   type EmbeddingProviderNodeRow,
   type EmbeddingProvider,
-} from "../../../open-sse/config/embeddingRegistry.ts";
-import { errorResponse, unavailableResponse } from "../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../open-sse/config/constants.ts";
+} from "../../../../open-sse/config/embeddingRegistry.ts";
+import { errorResponse, unavailableResponse } from "../../../../open-sse/utils/error.ts";
+import { HTTP_STATUS } from "../../../../open-sse/config/constants.ts";
 import * as log from "../../sse/utils/logger.ts";
 import { toJsonErrorPayload } from "../../shared/utils/upstreamError.ts";
 import {
@@ -19,9 +19,9 @@ import { getCachedProviderNodes } from "../db/readCache.ts";
 import { getComboByName, getCombos } from "../db/combos.ts";
 import { getDatabaseSettings } from "../db/databaseSettings.ts";
 import { resolveProxyForConnection } from "../db/settings.ts";
-import { runWithProxyContext } from "../../../open-sse/utils/proxyFetch.ts";
-import { handleComboChat } from "../../../open-sse/services/combo.ts";
-import { resolveBareModelToConnectionDefault } from "../../../open-sse/services/model.ts";
+import { runWithProxyContext } from "../../../../open-sse/utils/proxyFetch.ts";
+import { handleComboChat } from "../../../../open-sse/services/combo.ts";
+import { resolveBareModelToConnectionDefault } from "../../../../open-sse/services/model.ts";
 import { findEmbeddingComboDimensionConflict } from "./familyGuard";
 import {
   formatMissingEmbeddingCredentialsError,

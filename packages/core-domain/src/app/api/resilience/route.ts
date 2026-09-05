@@ -10,7 +10,7 @@ import {
 import { updateResilienceSchema } from "../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../shared/validation/helpers.ts";
 import { resetAllCircuitBreakers } from "../../../shared/utils/circuitBreaker.ts";
-import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -112,8 +112,8 @@ function normalizeLegacyPatch(body: JsonRecord): ResilienceSettingsPatch {
 
 async function syncRuntimeSettings(resilienceSettings: ResilienceSettings) {
   const [{ applyRequestQueueSettings }, { setProviderQuotaOverrides }] = await Promise.all([
-    import("../../../../open-sse/services/rateLimitManager.ts"),
-    import("../../../../open-sse/services/providerDefaultRateLimit.ts"),
+    import("../../../../../open-sse/services/rateLimitManager.ts"),
+    import("../../../../../open-sse/services/providerDefaultRateLimit.ts"),
   ]);
   await applyRequestQueueSettings(resilienceSettings.requestQueue);
   // #6846 Phase 2: re-apply per-provider RPM/concurrency overrides on the hot

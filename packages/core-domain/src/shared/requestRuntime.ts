@@ -30,9 +30,9 @@ export async function hydrateRequestRuntime(): Promise<void> {
 
   const [{ setSystemPromptConfig }, { hydrateThinkingBudgetConfig }, { hydrateTaskRoutingConfig }] =
     await Promise.all([
-      load("../../open-sse/services/systemPrompt"),
-      load("../../open-sse/services/thinkingBudget"),
-      load("../../open-sse/services/taskAwareRouter"),
+      load("../../../open-sse/services/systemPrompt"),
+      load("../../../open-sse/services/thinkingBudget"),
+      load("../../../open-sse/services/taskAwareRouter"),
     ]);
   if (settings.systemPrompt) setSystemPromptConfig(settings.systemPrompt);
   hydrateThinkingBudgetConfig(settings);

@@ -1,4 +1,4 @@
-import { fisherYatesShuffle, getNextFromDeck } from "../../../src/shared/utils/shuffleDeck";
+import { fisherYatesShuffle, getNextFromDeck } from "../../../core-domain/src/shared/utils/shuffleDeck";
 import { generateRoutingHints } from "../manifestAdapter";
 import { resolveMaxConcurrentByConnection } from "./concurrencyCaps.ts";
 import { sortTargetsByContextSize } from "./comboStructure.ts";
@@ -67,7 +67,7 @@ export async function applyStrategyOrdering(
 
   if (strategy === "lkgp") {
     try {
-      const { getLKGP } = await import("../../../src/lib/localDb");
+      const { getLKGP } = await import("../../../core-domain/src/lib/localDb");
       const lkgpProvider = await getLKGP(combo.name, combo.id || combo.name);
 
       if (lkgpProvider) {

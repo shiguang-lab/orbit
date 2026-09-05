@@ -1,5 +1,5 @@
 // CLI Tools configuration
-import { getClaudeCodeDefaultModels } from "../../../open-sse/config/providerRegistry.ts";
+import { getClaudeCodeDefaultModels } from "../../../../open-sse/config/providerRegistry.ts";
 import type { CliCatalogEntry } from "../schemas/cliCatalog.ts";
 import { GROK_BUILD_CLI_TOOL } from "./cliToolsGrokBuild.ts";
 

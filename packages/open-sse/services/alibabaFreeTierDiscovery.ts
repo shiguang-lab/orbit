@@ -347,7 +347,7 @@ export function scheduleAlibabaFreeTierProbeRefresh(
         chatCompletionsUrl
       );
       if (!merged) return;
-      const { updateProviderConnection } = await import("../../src/lib/db/providers.ts");
+      const { updateProviderConnection } = await import("../../core-domain/src/lib/db/providers.ts");
       await updateProviderConnection(connection.id, { providerSpecificData: merged });
     } catch (error) {
       console.warn("[alibaba-free-tier] background probe refresh failed", {

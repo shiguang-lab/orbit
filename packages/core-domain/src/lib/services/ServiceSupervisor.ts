@@ -3,7 +3,7 @@
 import { EventEmitter } from "node:events";
 import { spawn } from "node:child_process";
 import type { ChildProcess } from "node:child_process";
-import { sanitizeErrorMessage } from "../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
 import { getServiceRow, updateServiceField, setToolStatus } from "../db/versionManager.ts";
 import { RingBuffer } from "./ringBuffer";
 import { HealthChecker } from "./healthCheck";

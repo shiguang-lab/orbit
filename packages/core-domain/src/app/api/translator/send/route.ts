@@ -4,7 +4,7 @@ import {
   buildProviderHeaders,
   detectFormat,
   getTargetFormat,
-} from "../../../../../open-sse/services/provider.ts";
+} from "../../../../../../open-sse/services/provider.ts";
 import { getProviderConnections } from "../../../../lib/localDb.ts";
 import { isConnectionUnavailableToAuxiliaryActivity } from "../../../../lib/exclusiveLeaseIsolation.ts";
 import { toJsonErrorPayload } from "../../../../shared/utils/upstreamError.ts";

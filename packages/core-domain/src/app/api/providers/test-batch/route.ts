@@ -20,7 +20,7 @@ import { testSingleConnection } from "../[id]/test/route";
 import { providersBatchTestSchema } from "../../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 // Determine auth type group for a provider id
 function getAuthGroup(providerId) {

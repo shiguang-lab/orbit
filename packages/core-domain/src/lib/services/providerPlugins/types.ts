@@ -1,4 +1,4 @@
-import type { ProviderPluginManifestEntry } from "../../../../open-sse/config/providerPluginManifest.ts";
+import type { ProviderPluginManifestEntry } from "../../../../../open-sse/config/providerPluginManifest.ts";
 import type { ServiceBackendPluginId } from "../serviceBackends";
 import type { resolveSpawnArgs as resolveNinerouterSpawnArgs } from "../installers/ninerouter";
 

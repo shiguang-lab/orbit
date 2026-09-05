@@ -17,7 +17,7 @@ import {
 } from "../../../../../lib/cloudAgent/api.ts";
 import { CreateCloudAgentTaskSchema } from "../../../../../lib/cloudAgent/types.ts";
 import pino from "pino";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 
 const logger = pino({ name: "cloud-agents-api" });
 

@@ -1,6 +1,6 @@
 import { PROVIDER_MODELS, PROVIDER_ID_TO_ALIAS } from "../../../../shared/constants/models.ts";
 import { AI_PROVIDERS } from "../../../../shared/constants/providers.ts";
-import { parseModel, resolveCanonicalProviderModel } from "../../../../../open-sse/services/model.ts";
+import { parseModel, resolveCanonicalProviderModel } from "../../../../../../open-sse/services/model.ts";
 
 // Alias <-> providerId resolution maps for the unified model catalog. Extracted
 // verbatim from ./catalog.ts. `FALLBACK_ALIAS_TO_PROVIDER` is also consumed directly by

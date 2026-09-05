@@ -11,7 +11,7 @@
  * Kept as a pure, dependency-light function so the filter is unit-testable in
  * isolation without seeding the DB-backed virtual factory.
  */
-import { isFreeModel, providerHasFreeModels } from "../../../src/shared/utils/freeModels.ts";
+import { isFreeModel, providerHasFreeModels } from "../../../core-domain/src/shared/utils/freeModels.ts";
 
 interface PaidFilterCandidate {
   provider: string;

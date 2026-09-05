@@ -1,6 +1,6 @@
 // Allow large audio/video file uploads — 5min for processing large files (up to 2GB)
 export const maxDuration = 300;
-import { handleAudioTranscription } from "@shiguang-gateway/core-domain/open-sse/handlers/audioTranscription.ts";
+import { handleAudioTranscription } from "@shiguang-gateway/open-sse/handlers/audioTranscription.ts";
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
@@ -13,10 +13,10 @@ import {
   listAlternateAudioModelIds,
   missingAudioProviderCredentialsMessage,
   AUDIO_TRANSCRIPTION_PROVIDERS,
-} from "@shiguang-gateway/core-domain/open-sse/config/audioRegistry.ts";
+} from "@shiguang-gateway/open-sse/config/audioRegistry.ts";
 import { resolveDynamicAudioProviders } from "@shiguang-gateway/core-domain/edge/audio-provider-nodes";
-import { errorResponse } from "@shiguang-gateway/core-domain/open-sse/utils/error.ts";
-import { HTTP_STATUS } from "@shiguang-gateway/core-domain/open-sse/config/constants.ts";
+import { errorResponse } from "@shiguang-gateway/open-sse/utils/error.ts";
+import { HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants.ts";
 import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/shared/api-key-policy";
 import {
   isAllRateLimitedCredentials,
@@ -25,8 +25,8 @@ import {
 import { attachShiguangGatewayMetaToResponse } from "@shiguang-gateway/core-domain/edge/gateway-response-meta";
 import { generateRequestId } from "@shiguang-gateway/core-domain/edge/request-id";
 import { getComboByName, getCombos, getDatabaseSettings } from "@shiguang-gateway/core-domain/edge/local-db";
-import { handleComboChat } from "@shiguang-gateway/core-domain/open-sse/services/combo.ts";
-import { log } from "@shiguang-gateway/core-domain/open-sse/utils/logger.ts";
+import { handleComboChat } from "@shiguang-gateway/open-sse/services/combo.ts";
+import { log } from "@shiguang-gateway/open-sse/utils/logger.ts";
 
 /**
  * Copy a multipart body, swapping only the `model` field. Combo fan-out needs one

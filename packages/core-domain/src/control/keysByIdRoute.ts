@@ -12,7 +12,7 @@ import { updateKeyPermissionsSchema } from "../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../shared/validation/helpers.ts";
 import { requireManagementAuth } from "../lib/api/requireManagementAuth.ts";
 import * as log from "../sse/utils/logger.ts";
-import { buildErrorBody } from "../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../open-sse/utils/error.ts";
 
 // GET /api/keys/[id] - Get single API key
 export async function GET(request, { params }) {

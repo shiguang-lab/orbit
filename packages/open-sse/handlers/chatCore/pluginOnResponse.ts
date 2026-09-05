@@ -28,7 +28,7 @@ export async function runPluginOnResponseHook(args: {
   response: PluginOnResponsePayload;
 }): Promise<void> {
   try {
-    const { runOnResponse } = await import("../../../src/lib/plugins/hooks.ts");
+    const { runOnResponse } = await import("../../../core-domain/src/lib/plugins/hooks.ts");
     runOnResponse(
       {
         requestId: args.requestId,
@@ -83,7 +83,7 @@ export async function runPluginOnStreamCompleteHook(args: {
   startTime: number;
 }): Promise<void> {
   try {
-    const { runOnStreamComplete } = await import("../../../src/lib/plugins/hooks.ts");
+    const { runOnStreamComplete } = await import("../../../core-domain/src/lib/plugins/hooks.ts");
     runOnStreamComplete({
       status: args.status,
       usage: args.usage as PluginOnStreamCompletePayload["usage"],

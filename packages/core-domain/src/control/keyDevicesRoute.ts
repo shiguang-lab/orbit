@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { requireManagementAuth } from "../lib/api/requireManagementAuth.ts";
 import { getApiKeyById } from "../lib/db/apiKeys.ts";
-import { getDeviceCount, getDeviceDetails } from "../../open-sse/services/deviceTracker.ts";
-import { buildErrorBody, sanitizeErrorMessage } from "../../open-sse/utils/error.ts";
+import { getDeviceCount, getDeviceDetails } from "../../../open-sse/services/deviceTracker.ts";
+import { buildErrorBody, sanitizeErrorMessage } from "../../../open-sse/utils/error.ts";
 import * as log from "../sse/utils/logger.ts";
 
 /** GET /api/keys/[id]/devices */

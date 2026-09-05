@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { getProviderConnectionById } from "../../../../../lib/db/providers.ts";
 import { refreshKimiProviderConnection } from "../../../../../lib/kimi/tokenRefresh.ts";
-import { parseKimiJwt } from "../../../../../../open-sse/utils/kimiJwt.ts";
+import { parseKimiJwt } from "../../../../../../../open-sse/utils/kimiJwt.ts";
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
-import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../../../../open-sse/utils/error.ts";
 
 export async function POST(
   req: Request,

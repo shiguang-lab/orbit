@@ -9,7 +9,7 @@
  * mutate `process.env`.
  */
 
-import { sleep } from "../../../open-sse/utils/sleep.ts";
+import { sleep } from "../../../../open-sse/utils/sleep.ts";
 
 export const DEFAULT_PROBE_TARGET = "https://httpbin.org/ip";
 export const DEFAULT_PROBE_CONCURRENCY = 10;

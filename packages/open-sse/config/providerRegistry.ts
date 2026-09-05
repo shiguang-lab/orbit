@@ -13,7 +13,7 @@ import { REGISTRY } from "./providers/index.ts";
 // Imported from `privateHost` rather than `outboundUrlGuard`: this module is reachable from
 // `ProviderDetailPageClient.tsx`, so anything it pulls in has to survive a browser bundle
 // (#11122). `privateHost` is platform-free by contract; the guard module is not.
-import { isPrivateHost } from "../../src/shared/network/privateHost.ts";
+import { isPrivateHost } from "@shiguang-gateway/config/network/private-host";
 import {
   RegistryModel,
   REASONING_UNSUPPORTED,

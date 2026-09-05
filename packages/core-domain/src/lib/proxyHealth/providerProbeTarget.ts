@@ -10,7 +10,7 @@
  * "the" target of such a provider, so they fall back to the generic probe.
  */
 
-import { getRegistryEntry } from "../../../open-sse/config/providerRegistry.ts";
+import { getRegistryEntry } from "../../../../open-sse/config/providerRegistry.ts";
 import { normalizeBaseUrl, addModelsSuffix } from "../providers/validation/urlHelpers.ts";
 import { getProxyWhereUsed } from "../db/proxies.ts";
 

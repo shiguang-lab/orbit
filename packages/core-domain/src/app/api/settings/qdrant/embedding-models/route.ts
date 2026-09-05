@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { isAuthenticated } from "../../../../../shared/utils/apiAuth.ts";
 import { getProviderConnections } from "../../../../../lib/db/providers.ts";
 import { providerAllowsOptionalApiKey } from "../../../../../shared/constants/providers.ts";
-import { getAllEmbeddingModels } from "../../../../../../open-sse/config/embeddingRegistry.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { getAllEmbeddingModels } from "../../../../../../../open-sse/config/embeddingRegistry.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 
 type EmbeddingModelOption = {
   value: string;

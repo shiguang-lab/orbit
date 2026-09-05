@@ -11,7 +11,7 @@
  * LOCAL_ONLY enforced by routeGuard.
  */
 
-import { buildErrorBody } from "../../../../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../../../../../open-sse/utils/error.ts";
 import { InspectorTlsInterceptToggleSchema } from "../../../../../../shared/schemas/inspector.ts";
 import { isTlsInterceptEnabled, setTlsIntercept } from "../../../../../../lib/inspector/captureState.ts";
 

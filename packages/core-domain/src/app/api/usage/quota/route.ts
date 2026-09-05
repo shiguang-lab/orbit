@@ -3,7 +3,7 @@ import { getProviderConnections } from "../../../../lib/localDb.ts";
 import {
   getLearnedLimits,
   getRateLimitStatus,
-} from "../../../../../open-sse/services/rateLimitManager.ts";
+} from "../../../../../../open-sse/services/rateLimitManager.ts";
 import {
   normalizeQuotaResponse,
   sanitizeQuotaProvider,

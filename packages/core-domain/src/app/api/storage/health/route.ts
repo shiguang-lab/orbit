@@ -9,7 +9,7 @@ import {
   getProxyLogsTableMaxRows,
 } from "../../../../lib/logEnv.ts";
 import { getDbBackupMaxFiles, getDbBackupRetentionDays } from "../../../../lib/db/backup.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 /**
  * GET /api/storage/health — Return database storage information.

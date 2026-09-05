@@ -13,7 +13,7 @@
  *       content_block_stop, message_delta, message_stop
  */
 
-import { restoreClaudeToolName } from "../../../../../open-sse/services/claudeCodeToolRemapper.ts";
+import { restoreClaudeToolName } from "../../../../../../open-sse/services/claudeCodeToolRemapper.ts";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

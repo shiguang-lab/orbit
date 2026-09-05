@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { queryAuditEntries } from "../../../../../open-sse/mcp-server/audit.ts";
+import { queryAuditEntries } from "../../../../../../open-sse/mcp-server/audit.ts";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
 
 function parseBooleanParam(value: string | null): boolean | undefined {

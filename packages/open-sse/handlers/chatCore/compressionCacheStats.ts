@@ -25,7 +25,7 @@ export function recordCompressionCacheStats(args: {
   void (async () => {
     try {
       const { detectCachingContext } = await import("../../services/compression/cachingAware.ts");
-      const { recordCacheStats } = await import("../../../src/lib/db/compressionCacheStats.ts");
+      const { recordCacheStats } = await import("../../../core-domain/src/lib/db/compressionCacheStats.ts");
       const cacheContext = detectCachingContext(args.compressionInputBody, {
         provider: args.provider,
         targetFormat: args.targetFormat,

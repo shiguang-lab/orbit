@@ -6,7 +6,7 @@ import { listBackups, restoreBackup, deleteBackup } from "../../../../shared/ser
 import { ensureCliConfigWriteAllowed } from "../../../../shared/services/cliRuntime.ts";
 import { cliBackupMutationSchema } from "../../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 const VALID_TOOLS = ["claude", "codex", "droid", "grok-build", "openclaw", "cline", "kilo", "qwen"];
 

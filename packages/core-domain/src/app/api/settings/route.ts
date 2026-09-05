@@ -18,7 +18,7 @@ import {
   getUpstreamProxyConfig,
 } from "../../../lib/db/upstreamProxy.ts";
 import { getProviderConnections } from "../../../lib/db/providers.ts";
-import { clearCliproxyapiUrlCache } from "../../../../open-sse/executors/cliproxyapi.ts";
+import { clearCliproxyapiUrlCache } from "../../../../../open-sse/executors/cliproxyapi.ts";
 import {
   ensurePersistentManagementPasswordHash,
   getStoredManagementPassword,

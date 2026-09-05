@@ -5,7 +5,7 @@ import {
   isOpenAICompatibleProvider,
   NOAUTH_PROVIDERS,
 } from "../../../../../shared/constants/providers.ts";
-import { getRegistryEntry } from "../../../../../../open-sse/config/providerRegistry.ts";
+import { getRegistryEntry } from "../../../../../../../open-sse/config/providerRegistry.ts";
 import { getModelsByProviderId } from "../../../../../shared/constants/models.ts";
 import { resolveAlibabaProviderModelsUrl } from "../../../../../shared/constants/alibabaProviderRegions.ts";
 import { getStaticModelsForProvider } from "../../../../../lib/providers/staticModels.ts";
@@ -26,58 +26,58 @@ import {
   getProviderOutboundGuard,
   getProviderValidationGuard,
 } from "../../../../../shared/network/outboundUrlGuardPolicy.ts";
-import { errorResponse, sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
-import { getStaticQoderModels } from "../../../../../../open-sse/services/qoderCli.ts";
+import { errorResponse, sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
+import { getStaticQoderModels } from "../../../../../../../open-sse/services/qoderCli.ts";
 import { deriveConfigFromRegistryModelsUrl } from "./discoveryConfig";
-import { resolveZedModels } from "../../../../../../open-sse/shared/zedAuth.ts";
+import { resolveZedModels } from "../../../../../../../open-sse/shared/zedAuth.ts";
 import {
   fetchGitHubCopilotModels,
   fetchGheCopilotModels,
-} from "../../../../../../open-sse/services/githubCopilotModels.ts";
-import { fetchKiroAvailableModels } from "../../../../../../open-sse/services/kiroModels.ts";
+} from "../../../../../../../open-sse/services/githubCopilotModels.ts";
+import { fetchKiroAvailableModels } from "../../../../../../../open-sse/services/kiroModels.ts";
 import {
   buildGlmCodingHeaders,
   buildGlmModelsUrl,
-} from "../../../../../../open-sse/config/glmProvider.ts";
-import { getImageProvider } from "../../../../../../open-sse/config/imageRegistry.ts";
-import { getVideoProvider } from "../../../../../../open-sse/config/videoRegistry.ts";
+} from "../../../../../../../open-sse/config/glmProvider.ts";
+import { getImageProvider } from "../../../../../../../open-sse/config/imageRegistry.ts";
+import { getVideoProvider } from "../../../../../../../open-sse/config/videoRegistry.ts";
 import {
   discoverBedrockNativeModels,
   isBedrockNativeApiError,
-} from "../../../../../../open-sse/services/bedrock.ts";
+} from "../../../../../../../open-sse/services/bedrock.ts";
 import {
   discoverPromptQlModels,
   PROMPTQL_FALLBACK_MODELS,
-} from "../../../../../../open-sse/services/promptqlModels.ts";
+} from "../../../../../../../open-sse/services/promptqlModels.ts";
 import {
   discoverNotionWebModels,
   NOTION_WEB_FALLBACK_MODELS,
-} from "../../../../../../open-sse/services/notionWebModels.ts";
+} from "../../../../../../../open-sse/services/notionWebModels.ts";
 import {
   AZURE_AI_DEFAULT_BASE_URL,
   buildAzureAiModelsUrl,
-} from "../../../../../../open-sse/config/azureAi.ts";
+} from "../../../../../../../open-sse/config/azureAi.ts";
 import {
   DATAROBOT_DEFAULT_BASE_URL,
   buildDataRobotCatalogUrl,
   isDataRobotDeploymentUrl,
-} from "../../../../../../open-sse/config/datarobot.ts";
-import { OCI_DEFAULT_BASE_URL, buildOciModelsUrl } from "../../../../../../open-sse/config/oci.ts";
+} from "../../../../../../../open-sse/config/datarobot.ts";
+import { OCI_DEFAULT_BASE_URL, buildOciModelsUrl } from "../../../../../../../open-sse/config/oci.ts";
 import {
   SAP_DEFAULT_BASE_URL,
   buildSapModelsUrl,
   getSapResourceGroup,
-} from "../../../../../../open-sse/config/sap.ts";
+} from "../../../../../../../open-sse/config/sap.ts";
 import {
   WATSONX_DEFAULT_BASE_URL,
   buildWatsonxModelsUrl,
-} from "../../../../../../open-sse/config/watsonx.ts";
-import { getEmbeddingProvider } from "../../../../../../open-sse/config/embeddingRegistry.ts";
-import { getRerankProvider } from "../../../../../../open-sse/config/rerankRegistry.ts";
+} from "../../../../../../../open-sse/config/watsonx.ts";
+import { getEmbeddingProvider } from "../../../../../../../open-sse/config/embeddingRegistry.ts";
+import { getRerankProvider } from "../../../../../../../open-sse/config/rerankRegistry.ts";
 import {
   getSpeechProvider,
   getTranscriptionProvider,
-} from "../../../../../../open-sse/config/audioRegistry.ts";
+} from "../../../../../../../open-sse/config/audioRegistry.ts";
 import {
   getCachedDiscoveredModels,
   isAutoFetchModelsEnabled,
@@ -1764,7 +1764,7 @@ export async function GET(
       let bearerToken: string | null = null;
       try {
         const { parseSAFromApiKey, getAccessToken } =
-          await import("../../../../../../open-sse/executors/vertex.ts");
+          await import("../../../../../../../open-sse/executors/vertex.ts");
         if (accessToken) {
           bearerToken = accessToken;
         } else if (credential) {
@@ -2348,11 +2348,11 @@ export async function GET(
 
     if (provider === "alibaba" || provider === "alibaba-cn") {
       const { shouldUseLiveAlibabaFreeModelDiscovery } =
-        await import("../../../../../../open-sse/services/alibabaFreeTier.ts");
+        await import("../../../../../../../open-sse/services/alibabaFreeTier.ts");
       const { scheduleAlibabaFreeTierProbeRefresh } =
-        await import("../../../../../../open-sse/services/alibabaFreeTierDiscovery.ts");
+        await import("../../../../../../../open-sse/services/alibabaFreeTierDiscovery.ts");
       const { scheduleAlibabaFreeTierQuotaRefresh, hasAlibabaConsoleFreeTierAuth } =
-        await import("../../../../../../open-sse/services/alibabaFreeTierQuotaFetcher.ts");
+        await import("../../../../../../../open-sse/services/alibabaFreeTierQuotaFetcher.ts");
       const { resolveAlibabaProviderBaseUrl } =
         await import("../../../../../shared/constants/alibabaProviderRegions.ts");
       const providerSpecificData = connection.providerSpecificData as Record<

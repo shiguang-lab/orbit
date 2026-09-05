@@ -12,7 +12,7 @@ import crypto from "crypto";
 import fs from "fs";
 
 import { AgentBridgeUpstreamCaPostSchema } from "../../../../../../shared/schemas/agentBridge.ts";
-import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../../open-sse/utils/error.ts";
 import { createErrorResponse } from "../../../../../../lib/api/errorResponse.ts";
 
 export async function POST(request: Request): Promise<Response> {

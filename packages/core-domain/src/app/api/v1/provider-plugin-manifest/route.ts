@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 
 import { CORS_HEADERS } from "../../../../shared/utils/cors.ts";
-import { generateProviderPluginManifest } from "../../../../../open-sse/config/providerPluginManifestRegistry.ts";
+import { generateProviderPluginManifest } from "../../../../../../open-sse/config/providerPluginManifestRegistry.ts";
 import { getServiceRow } from "../../../../lib/db/versionManager.ts";
 import { getServiceModels, type ServiceModel } from "../../../../lib/db/serviceModels.ts";
 import {
@@ -14,7 +14,7 @@ import type {
   ProviderPluginManifest,
   ProviderPluginManifestEntry,
   ProviderPluginModel,
-} from "../../../../../open-sse/config/providerPluginManifest.ts";
+} from "../../../../../../open-sse/config/providerPluginManifest.ts";
 
 const SERVICE_BACKEND_EXPOSURE_REQUIRED = new Set(SERVICE_BACKEND_PLUGIN_IDS);
 const SERVICE_BACKEND_PLUGIN_ID_SET = new Set<string>(SERVICE_BACKEND_PLUGIN_IDS);

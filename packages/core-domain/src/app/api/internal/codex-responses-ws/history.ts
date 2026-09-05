@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getApiKeyMetadata } from "../../../../lib/db/apiKeys.ts";
 import { extractWsTokenFromRequest } from "../../../../lib/ws/handshake.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 const CODEX_RESPONSES_WS_URL = "wss://chatgpt.com/backend-api/codex/responses";
 type JsonRecord = Record<string, unknown>;

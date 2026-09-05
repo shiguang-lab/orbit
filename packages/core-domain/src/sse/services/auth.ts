@@ -47,9 +47,9 @@ import {
   hydrateCodexQuotaCacheForRequest,
   isQuotaExhaustedForRequest,
 } from "../../domain/quotaCache.ts";
-import { getQuotaScopeLabelForProvider } from "../../../open-sse/services/antigravityQuotaFamily.ts";
-import { getCreditsMode } from "../../../open-sse/services/antigravityCredits.ts";
-import { preferAntigravityConnectionsWithStoredProject } from "../../../open-sse/services/antigravityProjectPersistence.ts";
+import { getQuotaScopeLabelForProvider } from "../../../../open-sse/services/antigravityQuotaFamily.ts";
+import { getCreditsMode } from "../../../../open-sse/services/antigravityCredits.ts";
+import { preferAntigravityConnectionsWithStoredProject } from "../../../../open-sse/services/antigravityProjectPersistence.ts";
 import {
   isAccountUnavailable,
   getUnavailableUntil,
@@ -65,29 +65,29 @@ import {
   recordModelLockoutFailure,
   retryHintBypassesMaxCooldownMs,
   isProviderModelUnsupported400,
-} from "../../../open-sse/services/accountFallback.ts";
-import { isLocalProvider } from "../../../open-sse/config/providerRegistry.ts";
-import { COOLDOWN_MS, RateLimitReason } from "../../../open-sse/config/constants.ts";
+} from "../../../../open-sse/services/accountFallback.ts";
+import { isLocalProvider } from "../../../../open-sse/config/providerRegistry.ts";
+import { COOLDOWN_MS, RateLimitReason } from "../../../../open-sse/config/constants.ts";
 import {
   honorsRuleLockScope,
   isEgressBucketedLockScope,
   egressBucketedLockProviders,
-} from "../../../open-sse/config/providerErrorRules.ts";
+} from "../../../../open-sse/config/providerErrorRules.ts";
 import {
   preflightQuota,
   isQuotaPreflightEnabled,
-} from "../../../open-sse/services/quotaPreflight.ts";
+} from "../../../../open-sse/services/quotaPreflight.ts";
 import { resolveResilienceSettings } from "../../lib/resilience/settings.ts";
 import { resolveModelLockoutSettings } from "../../lib/resilience/modelLockoutSettings.ts";
 import {
   buildMixedAvailabilityError,
   isTransportCooldownErrorCode,
 } from "../services/sameAccountTransportRetry";
-import { syncHealthFromDB, type KeyHealth } from "../../../open-sse/services/apiKeyRotator.ts";
+import { syncHealthFromDB, type KeyHealth } from "../../../../open-sse/services/apiKeyRotator.ts";
 import {
   classifyProviderError,
   PROVIDER_ERROR_TYPES,
-} from "../../../open-sse/services/errorClassifier.ts";
+} from "../../../../open-sse/services/errorClassifier.ts";
 import {
   ALIBABA_FREE_DRAINED_LOCK_MS,
   getAlibabaBillingMode,
@@ -96,19 +96,19 @@ import {
   isAlibabaModelStudioProvider,
   mergeAlibabaFreeDrainedModels,
   rehydrateAlibabaFreeDrainedModelLocks,
-} from "../../../open-sse/services/alibabaFreeTier.ts";
+} from "../../../../open-sse/services/alibabaFreeTier.ts";
 
 import {
   getCodexModelScope,
   getCodexQuotaWindowFilterForModel,
   toCodexBaseQuotaWindowName,
   toCodexScopedQuotaWindowName,
-} from "../../../open-sse/config/codexQuotaScopes.ts";
+} from "../../../../open-sse/config/codexQuotaScopes.ts";
 import {
   getCodexChildCooldown,
   isCodexChildUnavailable,
   persistCodexChildCooldown,
-} from "../../../open-sse/services/codexAccount/index.ts";
+} from "../../../../open-sse/services/codexAccount/index.ts";
 import {
   getProviderById,
   getProviderAlias,
@@ -163,7 +163,7 @@ import { readHeaderValue, type AuthRequestHeaders } from "./headerReader.ts";
 import {
   getOAuthSessionAvailability,
   reserveOAuthSession,
-} from "../../../open-sse/services/oauthSessionOccupancy.ts";
+} from "../../../../open-sse/services/oauthSessionOccupancy.ts";
 
 type JsonRecord = Record<string, unknown>;
 interface RecoverableConnectionState {
@@ -2578,7 +2578,7 @@ export async function markAccountUnavailable(
     // worst case is one extra background refresh.
     if (provider) {
       const { invalidateFreeAccessState } =
-        await import("../../../open-sse/services/autoCombo/freeAccessQuota.ts");
+        await import("../../../../open-sse/services/autoCombo/freeAccessQuota.ts");
       invalidateFreeAccessState(provider, connectionId);
     }
 

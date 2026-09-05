@@ -13,7 +13,7 @@ import {
   generateSignature as defaultGenerateSignature,
   setCachedResponse as defaultSetCachedResponse,
   isCacheableForWrite as defaultIsCacheableForWrite,
-} from "../../../src/lib/semanticCache.ts";
+} from "../../../core-domain/src/lib/semanticCache.ts";
 import { isSmallEnoughForSemanticCache as defaultIsSmallEnough } from "../../utils/estimateSize.ts";
 
 type LoggerLike = { debug?: (...args: unknown[]) => void } | null | undefined;

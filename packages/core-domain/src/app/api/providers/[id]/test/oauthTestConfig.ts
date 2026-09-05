@@ -1,8 +1,8 @@
 import { buildGitLabOAuthEndpoints, resolveGitLabOAuthBaseUrl } from "../../../../../lib/oauth/gitlab.ts";
-import { ANTIGRAVITY_RUNTIME_BASE_URLS } from "../../../../../../open-sse/config/antigravityUpstream.ts";
-import { getAntigravityContentHeaders } from "../../../../../../open-sse/services/antigravityHeaders.ts";
-import { getAntigravityClientProfile } from "../../../../../../open-sse/services/antigravityClientProfile.ts";
-import { isGeoBlockedError } from "../../../../../../open-sse/services/errorClassifier.ts";
+import { ANTIGRAVITY_RUNTIME_BASE_URLS } from "../../../../../../../open-sse/config/antigravityUpstream.ts";
+import { getAntigravityContentHeaders } from "../../../../../../../open-sse/services/antigravityHeaders.ts";
+import { getAntigravityClientProfile } from "../../../../../../../open-sse/services/antigravityClientProfile.ts";
+import { isGeoBlockedError } from "../../../../../../../open-sse/services/errorClassifier.ts";
 
 // Real model-surface probe for antigravity/agy. The previous probe only hit the
 // OAuth userinfo endpoint, which is NOT geo-restricted — so "Test Connection"

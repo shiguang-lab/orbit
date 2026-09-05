@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { buildClaudeAuthFile, ClaudeAuthFileError } from "../../../../../../lib/oauth/utils/claudeAuthFile.ts";
 import { requireManagementAuth } from "../../../../../../lib/api/requireManagementAuth.ts";
-import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../../open-sse/utils/error.ts";
 
 function toErrorResponse(error: unknown) {
   if (error instanceof ClaudeAuthFileError) {

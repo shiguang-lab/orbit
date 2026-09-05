@@ -7,7 +7,7 @@
  * LOCAL_ONLY enforced by routeGuard.
  */
 
-import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../../../open-sse/utils/error.ts";
+import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../../../../open-sse/utils/error.ts";
 import { InspectorAnnotationPutSchema } from "../../../../../../../shared/schemas/inspector.ts";
 import { globalTrafficBuffer } from "../../../../../../../mitm/inspector/buffer.ts";
 

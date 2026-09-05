@@ -16,7 +16,7 @@ export async function emitRequestGamificationEvent(args: {
 }): Promise<void> {
   if (!args.apiKeyId) return;
   try {
-    const { emitGamificationEvent } = await import("../../../src/lib/gamification/events.ts");
+    const { emitGamificationEvent } = await import("../../../core-domain/src/lib/gamification/events.ts");
     emitGamificationEvent({
       apiKeyId: args.apiKeyId,
       action: "request",

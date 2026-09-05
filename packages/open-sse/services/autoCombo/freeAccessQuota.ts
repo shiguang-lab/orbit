@@ -19,7 +19,7 @@ import {
   USAGE_FETCHER_PROVIDERS,
   type UsageFetcherProvider,
 } from "./../usage.ts";
-import { getCachedProviderConnections } from "../../../src/lib/db/readCache.ts";
+import { getCachedProviderConnections } from "../../../core-domain/src/lib/db/readCache.ts";
 import { defaultLogger as log } from "../../utils/logger.ts";
 import type { FreeAccessState } from "./strictZeroCostFilter";
 import { isStateStaleForReset } from "./subscriptionLadder";

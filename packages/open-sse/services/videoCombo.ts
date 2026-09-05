@@ -15,32 +15,32 @@
  * combo targets may be prompt-optional I2V models), so it is treated as a
  * retryable skip rather than a terminal failure.
  */
-import { getComboByName, getCombos } from "../../src/lib/db/combos.ts";
+import { getComboByName, getCombos } from "../../core-domain/src/lib/db/combos.ts";
 import { resolveComboTargets } from "./combo.ts";
 import { getVideoProvider } from "../config/videoRegistry.ts";
 import { resolveVideoCredentialProvider } from "../handlers/videoGeneration/googleFlow.ts";
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
-} from "../../src/sse/services/auth.ts";
-import { isAllRateLimitedCredentials } from "../../src/app/api/v1/_shared/rateLimit.ts";
+} from "../../core-domain/src/sse/services/auth.ts";
+import { isAllRateLimitedCredentials } from "../../core-domain/src/app/api/v1/_shared/rateLimit.ts";
 import { handleVideoGeneration } from "../handlers/videoGeneration.ts";
 import {
   isMediaGenerationFailure,
   promptRequiredResponse,
   successfulMediaGenerationResponse,
-} from "../../src/app/api/v1/_shared/mediaGenerationRoute.ts";
-import type { MediaGenerationResultLike } from "../../src/app/api/v1/_shared/mediaGenerationRoute.ts";
+} from "../../core-domain/src/app/api/v1/_shared/mediaGenerationRoute.ts";
+import type { MediaGenerationResultLike } from "../../core-domain/src/app/api/v1/_shared/mediaGenerationRoute.ts";
 import {
   isVideoPromptOptional,
   resolveLocalOverrideCredentials,
   resolveVideoModelTarget,
-} from "../../src/app/api/v1/_shared/videoModelResolution.ts";
-import type { VideoModelTarget } from "../../src/app/api/v1/_shared/videoModelResolution.ts";
-import { toJsonErrorPayload } from "../../src/shared/utils/upstreamError.ts";
+} from "../../core-domain/src/app/api/v1/_shared/videoModelResolution.ts";
+import type { VideoModelTarget } from "../../core-domain/src/app/api/v1/_shared/videoModelResolution.ts";
+import { toJsonErrorPayload } from "../../core-domain/src/shared/utils/upstreamError.ts";
 import { HTTP_STATUS } from "../config/constants.ts";
 import { errorResponse } from "../utils/error.ts";
-import * as logger from "../../src/sse/utils/logger.ts";
+import * as logger from "../../core-domain/src/sse/utils/logger.ts";
 
 /**
  * Execute a full combo strategy for a video generation request.

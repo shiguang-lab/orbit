@@ -3,9 +3,9 @@ import { skillRegistry } from "./registry";
 import { builtinSkills } from "./builtins";
 import { memoryBuiltinHandlers, MEMORY_BUILTIN_TOOL_NAMES } from "./memoryBuiltins";
 import { detectProvider, decodeSkillToolName } from "./injection";
-import { SHIGUANG_GATEWAY_WEB_SEARCH_FALLBACK_TOOL_NAME } from "../../../open-sse/services/webSearchFallback.ts";
-import { SHIGUANG_GATEWAY_WEB_FETCH_FALLBACK_TOOL_NAME } from "../../../open-sse/services/webFetchInterception.ts";
-import { logger } from "../../../open-sse/utils/logger.ts";
+import { SHIGUANG_GATEWAY_WEB_SEARCH_FALLBACK_TOOL_NAME } from "../../../../open-sse/services/webSearchFallback.ts";
+import { SHIGUANG_GATEWAY_WEB_FETCH_FALLBACK_TOOL_NAME } from "../../../../open-sse/services/webFetchInterception.ts";
+import { logger } from "../../../../open-sse/utils/logger.ts";
 
 const log = logger("SKILLS_INTERCEPTION");
 

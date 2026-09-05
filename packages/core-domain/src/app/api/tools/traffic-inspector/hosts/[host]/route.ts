@@ -5,7 +5,7 @@
  * LOCAL_ONLY enforced by routeGuard.
  */
 
-import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
+import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../../../open-sse/utils/error.ts";
 import { z } from "zod";
 import { removeCustomHost, toggleCustomHost, listCustomHosts } from "../../../../../../lib/db/inspectorCustomHosts.ts";
 import { getCachedPassword } from "../../../../../../mitm/manager.ts";

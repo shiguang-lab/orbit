@@ -7,7 +7,7 @@ import {
   refreshCopilotToken,
   resolveCopilotTokenBaseUrl,
 } from "../../../../../sse/services/tokenRefresh.ts";
-import { rotationGroupFor } from "../../../../../../open-sse/services/refreshSerializer.ts";
+import { rotationGroupFor } from "../../../../../../../open-sse/services/refreshSerializer.ts";
 
 type RefreshResult = {
   accessToken?: string;

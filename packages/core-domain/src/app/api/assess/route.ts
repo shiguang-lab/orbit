@@ -9,7 +9,7 @@ import {
   type ModelCategory,
 } from "../../../domain/assessment/types.ts";
 import { validateBody } from "../../../shared/validation/helpers.ts";
-import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
 
 const runtimeBaseUrl = process.env.SHIGUANG_GATEWAY_BASE_URL ?? process.env.INTERNAL_BASE_URL ?? "http://127.0.0.1:8787";
 const runtimeApiKey = process.env.SHIGUANG_GATEWAY_API_KEY ?? process.env.API_KEY ?? "";

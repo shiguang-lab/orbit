@@ -9,7 +9,7 @@ import {
 } from "../../../shared/network/safeOutboundFetch.ts";
 import { isPrivateHost } from "../../../shared/network/outboundUrlGuard.ts";
 import { getProviderValidationGuard } from "../../../shared/network/outboundUrlGuardPolicy.ts";
-import { selectProxyForValidation } from "../../../../open-sse/services/proxyAutoSelector.ts";
+import { selectProxyForValidation } from "../../../../../open-sse/services/proxyAutoSelector.ts";
 
 /**
  * Wrapped fetch call that auto-retries with a proxy when the direct connection

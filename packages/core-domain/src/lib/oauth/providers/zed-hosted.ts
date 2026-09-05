@@ -6,7 +6,7 @@ import {
   decryptZedAccessToken,
   fetchZedAuthenticatedUser,
   resolveZedOrganizationId,
-} from "../../../../open-sse/shared/zedAuth.ts";
+} from "../../../../../open-sse/shared/zedAuth.ts";
 
 /**
  * Zed Hosted Models OAuth provider.

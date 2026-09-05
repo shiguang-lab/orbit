@@ -1,12 +1,12 @@
-import { handleAudioTranslation } from "../../../open-sse/handlers/audioTranslation.ts";
+import { handleAudioTranslation } from "../../../../open-sse/handlers/audioTranslation.ts";
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
 } from "../../sse/services/auth.ts";
-import { parseTranslationModel, getTranslationProvider } from "../../../open-sse/config/audioRegistry.ts";
+import { parseTranslationModel, getTranslationProvider } from "../../../../open-sse/config/audioRegistry.ts";
 import { resolveDynamicAudioProviders } from "../../app/api/v1/_shared/audioProviderNodes.ts";
-import { errorResponse } from "../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../open-sse/config/constants.ts";
+import { errorResponse } from "../../../../open-sse/utils/error.ts";
+import { HTTP_STATUS } from "../../../../open-sse/config/constants.ts";
 import { enforceApiKeyPolicy } from "../../shared/utils/apiKeyPolicy.ts";
 import {
   isAllRateLimitedCredentials,

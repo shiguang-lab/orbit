@@ -6,7 +6,7 @@
  */
 
 import { NextResponse } from "next/server";
-import { SEARCH_PROVIDERS } from "../../../../../../open-sse/config/searchRegistry.ts";
+import { SEARCH_PROVIDERS } from "../../../../../../../open-sse/config/searchRegistry.ts";
 import { enforceApiKeyPolicy } from "../../../../../shared/utils/apiKeyPolicy.ts";
 import { getSearchAggregateStats, getSearchProviderCounts } from "../../../../../lib/db/callLogStats.ts";
 

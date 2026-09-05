@@ -32,7 +32,7 @@ export async function getXaiUsage(connectionId: string) {
     return { message: "xAI: connection id unavailable for self-tracked usage." };
   }
   try {
-    const { getMonthlyProviderTokensForConnection } = await import("../../../src/lib/usage/usageStats.ts");
+    const { getMonthlyProviderTokensForConnection } = await import("../../../core-domain/src/lib/usage/usageStats.ts");
     const used = getMonthlyProviderTokensForConnection("xai", connectionId);
     return {
       plan: "xAI / Grok (ShiguangGateway-tracked)",

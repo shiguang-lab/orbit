@@ -24,9 +24,9 @@ import {
   getCreditsMode,
   handleCreditsFailure,
 } from "../services/antigravityCredits.ts";
-import { persistCreditBalance, getAllPersistedCreditBalances } from "../../src/lib/db/creditBalance.ts";
-import { setConnectionRateLimitUntil } from "../../src/lib/db/providers.ts";
-import { getMitmAlias } from "../../src/lib/db/models.ts";
+import { persistCreditBalance, getAllPersistedCreditBalances } from "../../core-domain/src/lib/db/creditBalance.ts";
+import { setConnectionRateLimitUntil } from "../../core-domain/src/lib/db/providers.ts";
+import { getMitmAlias } from "../../core-domain/src/lib/db/models.ts";
 import {
   MAX_ANTIGRAVITY_OUTPUT_TOKENS,
   resolveAntigravityOutputCap,

@@ -1,4 +1,4 @@
-import { capMaxOutputTokens } from "../../../../src/lib/modelCapabilities.ts";
+import { capMaxOutputTokens } from "../../../../core-domain/src/lib/modelCapabilities.ts";
 
 // Anthropic constraints for the thinking + max_tokens contract:
 //   - thinking.budget_tokens must be >= 1024 when thinking is enabled

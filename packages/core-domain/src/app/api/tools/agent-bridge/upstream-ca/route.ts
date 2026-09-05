@@ -12,7 +12,7 @@ import { resolveMitmDataDir } from "../../../../../mitm/dataDir.ts";
 import { configureUpstreamCa } from "../../../../../mitm/upstreamTrust.ts";
 import path from "path";
 import fs from "fs";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 import { createErrorResponse } from "../../../../../lib/api/errorResponse.ts";
 
 const CA_PATH_FILE = path.join(resolveMitmDataDir(), "mitm", "upstream-ca.path");

@@ -1,31 +1,31 @@
 import { getModelInfo, getComboForModel, getModelInfoOrRetirementResponse } from "../services/model";
 import { clearAccountError, markAccountUnavailable } from "../services/auth";
-import { connectionHasExtraKeys } from "../../../open-sse/services/apiKeyRotator.ts";
-import { createBuiltinAutoCombo } from "../../../open-sse/services/autoCombo/builtinCatalog.ts";
+import { connectionHasExtraKeys } from "../../../../open-sse/services/apiKeyRotator.ts";
+import { createBuiltinAutoCombo } from "../../../../open-sse/services/autoCombo/builtinCatalog.ts";
 import * as log from "../utils/logger";
 import { updateProviderCredentials } from "../services/tokenRefresh";
-import { detectFormatFromEndpoint } from "../../../open-sse/services/provider.ts";
-import { resolveChatCoreTargetFormat } from "../../../open-sse/handlers/chatCore/targetFormat.ts";
-import { handleChatCore } from "../../../open-sse/handlers/chatCore.ts";
+import { detectFormatFromEndpoint } from "../../../../open-sse/services/provider.ts";
+import { resolveChatCoreTargetFormat } from "../../../../open-sse/handlers/chatCore/targetFormat.ts";
+import { handleChatCore } from "../../../../open-sse/handlers/chatCore.ts";
 import {
   checkResourcePressureGuard,
   type ResourcePressureGuardResult,
-} from "../../../open-sse/utils/resourcePressure.ts";
+} from "../../../../open-sse/utils/resourcePressure.ts";
 import {
   errorResponse,
   modelCooldownResponse,
   providerCircuitOpenResponse,
   unavailableResponse,
-} from "../../../open-sse/utils/error.ts";
-import { inheritTrustedLocalRateLimitResponse } from "../../../open-sse/services/rateLimitManager/errors.ts";
-import { HTTP_STATUS } from "../../../open-sse/config/constants.ts";
+} from "../../../../open-sse/utils/error.ts";
+import { inheritTrustedLocalRateLimitResponse } from "../../../../open-sse/services/rateLimitManager/errors.ts";
+import { HTTP_STATUS } from "../../../../open-sse/config/constants.ts";
 import {
   runWithProxyContext,
   runWithAppliedProxyCapture,
   runWithTlsTracking,
   isTlsFingerprintActive,
   type AppliedProxySink,
-} from "../../../open-sse/utils/proxyFetch.ts";
+} from "../../../../open-sse/utils/proxyFetch.ts";
 import { resolveProxyForConnection } from "../../lib/localDb.ts";
 import { hasBlockingProxyAssignment } from "../../lib/db/proxies.ts";
 import {
@@ -38,7 +38,7 @@ import { resolveUseUpstream429BreakerHints } from "../../shared/utils/providerHi
 
 import { logProxyEvent } from "../../lib/proxyLogger";
 import { logTranslationEvent } from "../../lib/translatorEvents";
-import { getRuntimeProviderProfile } from "../../../open-sse/services/accountFallback.ts";
+import { getRuntimeProviderProfile } from "../../../../open-sse/services/accountFallback.ts";
 
 // Models that explicitly cannot run on the codex/ChatGPT-Pro OAuth pool — when
 // a caller writes `codex/deepseek-v4-pro` we transparently reroute to the
@@ -875,7 +875,7 @@ export async function safeLogEvents({
     let egressIp: string | null = null;
     try {
       const { getCachedEgressIp, warmEgressIp } = await import("../../lib/proxyEgress");
-      const { proxyConfigToUrl } = await import("../../../open-sse/utils/proxyDispatcher.ts");
+      const { proxyConfigToUrl } = await import("../../../../open-sse/utils/proxyDispatcher.ts");
       const proxyUrl = proxyInfo?.proxy ? proxyConfigToUrl(proxyInfo.proxy) : null;
       egressIp = getCachedEgressIp(proxyUrl);
       warmEgressIp(proxyUrl);

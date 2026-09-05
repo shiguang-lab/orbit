@@ -11,7 +11,7 @@
  * `/v1/chat-messages`, and 200 for a valid key, so a single POST there is the
  * correct auth probe.
  */
-import { getRegistryEntry } from "../../../../open-sse/config/providerRegistry.ts";
+import { getRegistryEntry } from "../../../../../open-sse/config/providerRegistry.ts";
 import { normalizeBaseUrl } from "./urlHelpers";
 import { toValidationErrorResult, validationWrite } from "./transport";
 

@@ -1,4 +1,4 @@
-import { FREE_MODEL_BUDGETS, grantsFreeAccess } from "../../../open-sse/config/freeModelCatalog.ts";
+import { FREE_MODEL_BUDGETS, grantsFreeAccess } from "../../../../open-sse/config/freeModelCatalog.ts";
 import { resolveProviderId } from "../constants/providers.ts";
 import { globToRegex } from "./globPattern.ts";
 import { AI_MODELS } from "../constants/models.ts";

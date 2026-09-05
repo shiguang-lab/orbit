@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
-import { getAllRateLimitStatus } from "../../../../../open-sse/services/rateLimitManager.ts";
+import { getAllRateLimitStatus } from "../../../../../../open-sse/services/rateLimitManager.ts";
 import {
   getStats as getSemaphoreStats,
   resetAll as resetAllSemaphores,
-} from "../../../../../open-sse/services/accountSemaphore.ts";
+} from "../../../../../../open-sse/services/accountSemaphore.ts";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
 
 export async function GET(request: Request) {

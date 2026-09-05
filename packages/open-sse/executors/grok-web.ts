@@ -20,7 +20,7 @@ import {
   type ExecutorLog,
 } from "./base.ts";
 import { FETCH_TIMEOUT_MS } from "../config/constants.ts";
-import { buildGrokCookieHeader } from "../../src/lib/providers/webCookieAuth.ts";
+import { buildGrokCookieHeader } from "../../core-domain/src/lib/providers/webCookieAuth.ts";
 import {
   tlsFetchGrok,
   TlsClientUnavailableError,

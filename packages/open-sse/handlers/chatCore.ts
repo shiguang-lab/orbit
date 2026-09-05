@@ -200,16 +200,16 @@ import {
   getResolvedModelCapabilities,
   getExplicitModelOutputCap,
   resolveInputTokenCapForGate,
-} from "../../src/lib/modelCapabilities.ts";
+} from "../../core-domain/src/lib/modelCapabilities.ts";
 import {
   checkRequestCapabilityFit,
   deriveRequestCapabilityRequirements,
   buildCapabilityMismatchMessage,
-} from "../../src/shared/constants/capabilities/capabilityFilter.ts";
+} from "../../core-domain/src/shared/constants/capabilities/capabilityFilter.ts";
 import {
   areContextWindowChecksDisabled,
   isFeatureFlagEnabled,
-} from "../../src/shared/utils/featureFlags.ts";
+} from "../../core-domain/src/shared/utils/featureFlags.ts";
 import { resolveNoAuthEchoModel } from "./chatCore/noAuthEchoModel.ts";
 import {
   REASONING_BUFFER_MIN_TRIGGER,
@@ -218,7 +218,7 @@ import {
   isTinyBudgetReasoningProbe,
   toPositiveInteger,
 } from "../services/reasoningTokenBuffer.ts";
-import { normalizeThinkingForModel } from "../../src/shared/constants/modelSpecs.ts";
+import { normalizeThinkingForModel } from "../../core-domain/src/shared/constants/modelSpecs.ts";
 import {
   buildErrorBody,
   createErrorResult,
@@ -253,13 +253,13 @@ import { createRecoverableStream, makeContinuationBody } from "../services/strea
 import {
   resolveResilienceSettings,
   isStreamRecoveryExplicitlyConfigured,
-} from "../../src/lib/resilience/settings.ts";
+} from "../../core-domain/src/lib/resilience/settings.ts";
 import {
   classifyProviderError,
   PROVIDER_ERROR_TYPES,
   isEmptyContentResponse,
 } from "../services/errorClassifier.ts";
-import { updateProviderConnection, getProviderConnectionById } from "../../src/lib/db/providers.ts";
+import { updateProviderConnection, getProviderConnectionById } from "../../core-domain/src/lib/db/providers.ts";
 import { wasRefreshTokenRotated } from "../services/refreshSerializer.ts";
 import { connectionHasExtraKeys } from "../services/apiKeyRotator.ts";
 import { recordKeyHealthStatus as recordKeyHealthStatusFor } from "./chatCore/keyHealth.ts";
@@ -290,16 +290,16 @@ import { getKimiTemporaryRateLimitResetAt } from "./chatCore/kimiQuotaRecovery.t
 import {
   getCallLogPipelineCaptureStreamChunks,
   getCallLogPipelineMaxSizeBytes,
-} from "../../src/lib/logEnv.ts";
-import { logAuditEvent } from "../../src/lib/compliance/index.ts";
-import { emit } from "../../src/lib/events/eventBus.ts";
+} from "../../core-domain/src/lib/logEnv.ts";
+import { logAuditEvent } from "../../core-domain/src/lib/compliance/index.ts";
+import { emit } from "../../core-domain/src/lib/events/eventBus.ts";
 import { adaptBodyForCompression } from "../services/compression/bodyAdapter.ts";
 import { ensureEngineBreakdown } from "../services/compression/engineBreakdown.ts";
 import { handleBypassRequest } from "../utils/bypassHandler.ts";
-import { saveRequestUsage, trackPendingRequest, appendRequestLog } from "../../src/lib/usageDb.ts";
-import { finalizePendingScope, updatePendingScope } from "../../src/lib/usage/pendingRequestScope.ts";
-import { recordCost } from "../../src/domain/costRules.ts";
-import { calculateCost } from "../../src/lib/usage/costCalculator.ts";
+import { saveRequestUsage, trackPendingRequest, appendRequestLog } from "../../core-domain/src/lib/usageDb.ts";
+import { finalizePendingScope, updatePendingScope } from "../../core-domain/src/lib/usage/pendingRequestScope.ts";
+import { recordCost } from "../../core-domain/src/domain/costRules.ts";
+import { calculateCost } from "../../core-domain/src/lib/usage/costCalculator.ts";
 import {
   buildClaudePassthroughToolNameMap,
   mergeResponseToolNameMap,
@@ -310,7 +310,7 @@ import {
   createDisabledCompressionConfig,
   resolveCompressionSettings,
 } from "./chatCore/compressionSettings.ts";
-import type { EnforceDecision } from "../../src/lib/quota/types.ts";
+import type { EnforceDecision } from "../../core-domain/src/lib/quota/types.ts";
 import { isCompressionExcluded } from "../services/compression/exclusions.ts";
 import {
   isBuiltinStackedPipeline,
@@ -353,18 +353,18 @@ import {
   executeWithUpstreamStartTimeout,
   resolveConnectionTimeoutMs,
 } from "./chatCore/upstreamTimeouts.ts";
-import { getModelNormalizeToolCallId, getModelPreserveOpenAIDeveloperRole } from "../../src/lib/db/models.ts";
-import { getProviderCredentials, extractSessionAffinityKey } from "../../src/sse/services/auth.ts";
-import { assertExclusiveConnectionLeaseFence } from "../../src/lib/db/exclusiveConnectionLeases.ts";
-import { deleteSessionAccountAffinity } from "../../src/lib/db/sessionAccountAffinity.ts";
-import { getCacheControlSettings } from "../../src/lib/cacheControlSettings.ts";
-import { guardrailRegistry } from "../../src/lib/guardrails/index.ts";
+import { getModelNormalizeToolCallId, getModelPreserveOpenAIDeveloperRole } from "../../core-domain/src/lib/db/models.ts";
+import { getProviderCredentials, extractSessionAffinityKey } from "../../core-domain/src/sse/services/auth.ts";
+import { assertExclusiveConnectionLeaseFence } from "../../core-domain/src/lib/db/exclusiveConnectionLeases.ts";
+import { deleteSessionAccountAffinity } from "../../core-domain/src/lib/db/sessionAccountAffinity.ts";
+import { getCacheControlSettings } from "../../core-domain/src/lib/cacheControlSettings.ts";
+import { guardrailRegistry } from "../../core-domain/src/lib/guardrails/index.ts";
 import {
   shouldPreserveCacheControl,
   resolveConnectionCacheOverride,
 } from "../utils/cacheControlPolicy.ts";
-import { getCachedSettings } from "../../src/lib/db/readCache.ts";
-import { applyCodexGlobalFastServiceTier } from "../../src/lib/providers/codexFastTier.ts";
+import { getCachedSettings } from "../../core-domain/src/lib/db/readCache.ts";
+import { applyCodexGlobalFastServiceTier } from "../../core-domain/src/lib/providers/codexFastTier.ts";
 import { buildUpstreamHeadersForExecute as buildUpstreamHeadersForExecuteFor } from "./chatCore/upstreamExecuteHeaders.ts";
 import {
   resolveEffectiveServiceTier as resolveEffectiveServiceTierFor,
@@ -411,8 +411,8 @@ import {
   setCachedResponse,
   isCacheableForRead,
   isCacheableForWrite,
-} from "../../src/lib/semanticCache.ts";
-import { saveIdempotency } from "../../src/lib/idempotencyLayer.ts";
+} from "../../core-domain/src/lib/semanticCache.ts";
+import { saveIdempotency } from "../../core-domain/src/lib/idempotencyLayer.ts";
 import {
   isModelUnavailableError,
   getNextFamilyFallback,
@@ -437,29 +437,29 @@ import type {
 import { generateSessionId } from "../services/sessionManager.ts";
 import { prepareWebSearchFallbackBody } from "../services/webSearchFallback.ts";
 import { prepareWebFetchFallbackBody } from "../services/webFetchInterception.ts";
-import { resolveInterceptSearch, resolveInterceptFetch } from "../../src/lib/db/interceptionRules.ts";
+import { resolveInterceptSearch, resolveInterceptFetch } from "../../core-domain/src/lib/db/interceptionRules.ts";
 import {
   resolveExplicitStreamAlias,
   resolveStreamFlag,
   stripMarkdownCodeFence,
 } from "../utils/aiSdkCompat.ts";
-import { generateRequestId } from "../../src/shared/utils/requestId.ts";
-import { isLocalStreamLifecycleError } from "../../src/shared/utils/circuitBreaker.ts";
-import { shouldIsolateProbeFailures } from "../../src/shared/utils/probeOrigin.ts";
-import { writeTerminalStatus } from "../../src/shared/utils/terminalStatus.ts";
-import { extractFacts } from "../../src/lib/memory/extraction.ts";
-import { handleToolCallExecution } from "../../src/lib/skills/interception.ts";
-import { MEMORY_BUILTIN_TOOL_NAMES } from "../../src/lib/skills/memoryBuiltins.ts";
-import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "../../src/shared/constants/headers.ts";
-import { resolveProviderId } from "../../src/shared/constants/providers.ts";
-import { getClaudeCodeCompatibleRequestDefaults } from "../../src/lib/providers/requestDefaults.ts";
+import { generateRequestId } from "../../core-domain/src/shared/utils/requestId.ts";
+import { isLocalStreamLifecycleError } from "../../core-domain/src/shared/utils/circuitBreaker.ts";
+import { shouldIsolateProbeFailures } from "../../core-domain/src/shared/utils/probeOrigin.ts";
+import { writeTerminalStatus } from "../../core-domain/src/shared/utils/terminalStatus.ts";
+import { extractFacts } from "../../core-domain/src/lib/memory/extraction.ts";
+import { handleToolCallExecution } from "../../core-domain/src/lib/skills/interception.ts";
+import { MEMORY_BUILTIN_TOOL_NAMES } from "../../core-domain/src/lib/skills/memoryBuiltins.ts";
+import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "../../core-domain/src/shared/constants/headers.ts";
+import { resolveProviderId } from "../../core-domain/src/shared/constants/providers.ts";
+import { getClaudeCodeCompatibleRequestDefaults } from "../../core-domain/src/lib/providers/requestDefaults.ts";
 import {
   buildClaudeCodeCompatibleRequest,
   resolveClaudeCodeCompatibleSessionId,
 } from "../services/claudeCodeCompatible.ts";
 import { setGeminiThoughtSignatureMode } from "../services/geminiThoughtSignatureStore.ts";
-import { fetchLiveProviderLimits } from "../../src/lib/usage/providerLimits.ts";
-import { isClaudeExtraUsageBlockEnabled } from "../../src/lib/providers/claudeExtraUsage.ts";
+import { fetchLiveProviderLimits } from "../../core-domain/src/lib/usage/providerLimits.ts";
+import { isClaudeExtraUsageBlockEnabled } from "../../core-domain/src/lib/providers/claudeExtraUsage.ts";
 import {
   classifyModelScope429,
   getModelScopeRetryDelayMs,
@@ -1427,7 +1427,7 @@ export async function handleChatCore({
       };
       if ((isCombo && comboName) || routingComboId) {
         try {
-          const { getComboByName } = await import("../../src/lib/localDb");
+          const { getComboByName } = await import("../../core-domain/src/lib/localDb");
           let comboConfig = await getComboByName(comboName);
           if (!comboConfig && comboName?.startsWith("combo/")) {
             comboConfig = await getComboByName(comboName.substring(6));
@@ -1469,7 +1469,7 @@ export async function handleChatCore({
           ].filter((id): id is string => typeof id === "string" && id.length > 0);
           if (routingComboIds.length > 0) {
             const { getCompressionComboForRoutingCombo } =
-              await import("../../src/lib/db/compressionCombos.ts");
+              await import("../../core-domain/src/lib/db/compressionCombos.ts");
             const assignedCompressionCombo =
               routingComboIds
                 .map((id) => getCompressionComboForRoutingCombo(id))
@@ -1493,7 +1493,7 @@ export async function handleChatCore({
       }
       let namedCombos: Record<string, CompressionPipelineStep[]> = {};
       try {
-        const { listCompressionCombos } = await import("../../src/lib/db/compressionCombos.ts");
+        const { listCompressionCombos } = await import("../../core-domain/src/lib/db/compressionCombos.ts");
         namedCombos = buildNamedComboLookup(listCompressionCombos());
       } catch (err) {
         log?.debug?.(
@@ -1533,7 +1533,7 @@ export async function handleChatCore({
       ) {
         try {
           const { getDefaultCompressionCombo } =
-            await import("../../src/lib/db/compressionCombos.ts");
+            await import("../../core-domain/src/lib/db/compressionCombos.ts");
           const defaultCompressionCombo = getDefaultCompressionCombo();
           if (
             isStackedCompressionCombo(defaultCompressionCombo as RuntimeCompressionCombo | null) &&
@@ -1918,7 +1918,7 @@ export async function handleChatCore({
     if (isCombo && comboName) {
       log?.info?.("CONTEXT", `Attempting to resolve combo limits for comboName=${comboName}`);
       try {
-        const { getComboByName } = await import("../../src/lib/localDb");
+        const { getComboByName } = await import("../../core-domain/src/lib/localDb");
         const { resolveComboTargets } = await import("../services/combo.ts");
         let comboConfig = await getComboByName(comboName);
         if (!comboConfig && comboName.startsWith("combo/")) {
@@ -2434,7 +2434,7 @@ export async function handleChatCore({
   } catch (error) {
     // ── Plugin onError hook ──
     try {
-      const { runOnError } = await import("../../src/lib/plugins/hooks.ts");
+      const { runOnError } = await import("../../core-domain/src/lib/plugins/hooks.ts");
       await runOnError(
         { requestId: traceId, body, model, provider, apiKeyInfo, metadata: {} },
         error instanceof Error ? error : new Error(String(error))
@@ -2858,7 +2858,7 @@ export async function handleChatCore({
   let quotaSoftDeprioritize = false;
   if (apiKeyInfo?.id && credentials?.connectionId) {
     try {
-      const { enforceQuotaShare } = await import("../../src/lib/quota/enforce.ts");
+      const { enforceQuotaShare } = await import("../../core-domain/src/lib/quota/enforce.ts");
       const decision = await enforceQuotaShare({
         apiKeyId: apiKeyInfo.id,
         connectionId: credentials.connectionId,
@@ -3344,7 +3344,7 @@ export async function handleChatCore({
                       antigravityByopExcludedIds.push(String(byopFailedId));
                     }
                     try {
-                      const { setConnectionRateLimitUntil } = await import("../../src/lib/db/providers.ts");
+                      const { setConnectionRateLimitUntil } = await import("../../core-domain/src/lib/db/providers.ts");
                       setConnectionRateLimitUntil(
                         String(byopFailedId),
                         Date.now() + COOLDOWN_MS.gcpProjectRequired
@@ -3750,7 +3750,7 @@ export async function handleChatCore({
 
     // Store rate-limit headers for quota saturation signals
     try {
-      const { storeRateLimitHeaders } = await import("../../src/lib/quota/saturationSignals.ts");
+      const { storeRateLimitHeaders } = await import("../../core-domain/src/lib/quota/saturationSignals.ts");
       storeRateLimitHeaders(
         responseConnectionId,
         provider,
@@ -4277,7 +4277,7 @@ export async function handleChatCore({
               if (provider === "kimi-coding") {
                 try {
                   const { fetchAndPersistProviderLimits } =
-                    await import("../../src/lib/usage/providerLimits.ts");
+                    await import("../../core-domain/src/lib/usage/providerLimits.ts");
                   const { usage } = await fetchAndPersistProviderLimits(
                     errorConnectionId,
                     "manual"
@@ -4429,7 +4429,7 @@ export async function handleChatCore({
           // not push a connection into a day-long cooldown (#9817).
           if (!(await shouldIsolateProbeFailures())) {
             try {
-              const { setConnectionRateLimitUntil } = await import("../../src/lib/db/providers.ts");
+              const { setConnectionRateLimitUntil } = await import("../../core-domain/src/lib/db/providers.ts");
               setConnectionRateLimitUntil(errorConnectionId, Date.now() + geoCooldownMs);
             } catch {
               // DB write failure must never break the fallback loop
@@ -4451,7 +4451,7 @@ export async function handleChatCore({
             errorCode: statusCode,
           });
           try {
-            const { setConnectionRateLimitUntil } = await import("../../src/lib/db/providers.ts");
+            const { setConnectionRateLimitUntil } = await import("../../core-domain/src/lib/db/providers.ts");
             setConnectionRateLimitUntil(errorConnectionId, Date.now() + byopCooldownMs);
           } catch {
             // best-effort — never break the error path

@@ -22,7 +22,7 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import type { AgentId } from "../types";
 import { MitmHandlerBase } from "./base";
-import { TOOL_RENAME_MAP } from "../../../open-sse/services/claudeCodeToolRemapper.ts";
+import { TOOL_RENAME_MAP } from "../../../../open-sse/services/claudeCodeToolRemapper.ts";
 
 interface GeminiPart {
   text?: string;

@@ -49,21 +49,21 @@ import {
   resolvePoeUpstreamUrl,
 } from "../config/providers/registry/poe/index.ts";
 import { buildMaritalkChatUrl } from "../config/maritalk.ts";
-import { LOCAL_PROVIDERS } from "../../src/shared/constants/providers.ts";
-import { isForbiddenCustomHeaderName } from "../../src/shared/constants/upstreamHeaders.ts";
-import { getClaudeCodeCompatibleRequestDefaults } from "../../src/lib/providers/requestDefaults.ts";
-import { applyClineAuthHeaders } from "../../src/shared/utils/clineAuth.ts";
+import { LOCAL_PROVIDERS } from "../../core-domain/src/shared/constants/providers.ts";
+import { isForbiddenCustomHeaderName } from "../../core-domain/src/shared/constants/upstreamHeaders.ts";
+import { getClaudeCodeCompatibleRequestDefaults } from "../../core-domain/src/lib/providers/requestDefaults.ts";
+import { applyClineAuthHeaders } from "../../core-domain/src/shared/utils/clineAuth.ts";
 import {
   normalizeHerokuChatUrl,
   normalizeDatabricksChatUrl,
   normalizeSnowflakeChatUrl,
   normalizeGigachatChatUrl,
-} from "../../src/lib/providers/validation/urlHelpers.ts";
+} from "../../core-domain/src/lib/providers/validation/urlHelpers.ts";
 import { forwardOpencodeClientHeaders } from "../utils/opencodeHeaders.ts";
 import { resolveZaiUrl } from "./default/zaiFormatOverride.ts";
 import { normalizePoolConfig } from "./default/poolConfig.ts";
 import { acquireNvidiaConcurrencySlot } from "./default/nvidiaConcurrencyGate.ts";
-import { resolveAlibabaProviderBaseUrl } from "../../src/shared/constants/alibabaProviderRegions.ts";
+import { resolveAlibabaProviderBaseUrl } from "../../core-domain/src/shared/constants/alibabaProviderRegions.ts";
 import { usesCcWireImage } from "../services/ccWireImageBuiltins.ts";
 
 const NVIDIA_TOOL_CALL_ID_PATTERN = /^[A-Za-z0-9]{9}$/;

@@ -12,14 +12,14 @@ import { syncToCloud } from "../../../../../lib/cloudSync.ts";
 import { kiroImportSchema } from "../../../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../../../shared/validation/helpers.ts";
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
-import { runWithProxyContext } from "../../../../../../open-sse/utils/proxyFetch.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { runWithProxyContext } from "../../../../../../../open-sse/utils/proxyFetch.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 import { findKiroConnectionByIdentity } from "../../../../../lib/oauth/kiroConnectionIdentity.ts";
 import {
   emailFromExternalIdpToken,
   isExternalIdpAuthMethod,
   normalizeScope,
-} from "../../../../../../open-sse/services/kiroExternalIdp.ts";
+} from "../../../../../../../open-sse/services/kiroExternalIdp.ts";
 
 /**
  * Build the user-facing error message for a failed Kiro/Amazon-Q token import.

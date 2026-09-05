@@ -1,4 +1,4 @@
-import { isResourceNotFoundResponse } from "../../../open-sse/services/errorClassifier.ts";
+import { isResourceNotFoundResponse } from "../../../../open-sse/services/errorClassifier.ts";
 
 type HealthLogger = {
   info(tag: string, message: string): void;

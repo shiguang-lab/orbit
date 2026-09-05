@@ -6,7 +6,7 @@
  * baseline — mirrors the existing `googleFlowHandler.ts` extraction.
  */
 
-import { saveCallLog } from "../../../src/lib/usageDb.ts";
+import { saveCallLog } from "../../../core-domain/src/lib/usageDb.ts";
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));

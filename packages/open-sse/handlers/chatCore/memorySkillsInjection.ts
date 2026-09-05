@@ -1,9 +1,9 @@
-import { retrieveMemories } from "../../../src/lib/memory/retrieval.ts";
-import { getMemorySettings, DEFAULT_MEMORY_SETTINGS, toMemoryRetrievalConfig } from "../../../src/lib/memory/settings.ts";
-import { injectMemory, shouldInjectMemory } from "../../../src/lib/memory/injection.ts";
-import { injectSkills } from "../../../src/lib/skills/injection.ts";
-import { buildMemoryToolsForProvider } from "../../../src/lib/skills/memoryBuiltins.ts";
-import { skillRegistry } from "../../../src/lib/skills/registry.ts";
+import { retrieveMemories } from "../../../core-domain/src/lib/memory/retrieval.ts";
+import { getMemorySettings, DEFAULT_MEMORY_SETTINGS, toMemoryRetrievalConfig } from "../../../core-domain/src/lib/memory/settings.ts";
+import { injectMemory, shouldInjectMemory } from "../../../core-domain/src/lib/memory/injection.ts";
+import { injectSkills } from "../../../core-domain/src/lib/skills/injection.ts";
+import { buildMemoryToolsForProvider } from "../../../core-domain/src/lib/skills/memoryBuiltins.ts";
+import { skillRegistry } from "../../../core-domain/src/lib/skills/registry.ts";
 import { FORMATS } from "../../translator/formats.ts";
 import { detectCachingContext } from "../../services/compression/cachingAware.ts";
 

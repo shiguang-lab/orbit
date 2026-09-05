@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
 import { getConversationTurnPage } from "../../../../../lib/db/agenticConversations.ts";
-import { resolveTurnDisplayContent } from "../../../../../../open-sse/services/conversationTurnContent.ts";
+import { resolveTurnDisplayContent } from "../../../../../../../open-sse/services/conversationTurnContent.ts";
 
 export const dynamic = "force-dynamic";
 

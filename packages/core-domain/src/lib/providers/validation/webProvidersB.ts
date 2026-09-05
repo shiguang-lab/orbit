@@ -11,7 +11,7 @@ import {
 } from "./transport";
 import { SafeOutboundFetchError } from "../../../shared/network/safeOutboundFetch.ts";
 import { normalizeSessionCookieHeader } from "../webCookieAuth.ts";
-import { normalizeGeminiCookieInput } from "../../../../open-sse/utils/geminiCookies.ts";
+import { normalizeGeminiCookieInput } from "../../../../../open-sse/utils/geminiCookies.ts";
 import { buildJulesApiUrl } from "../../cloudAgent/julesApi.ts";
 import {
   META_AI_ASBD_ID,
@@ -141,7 +141,7 @@ export async function validateClaudeWebProvider({ apiKey, providerSpecificData =
     }
 
     const { tlsFetchClaude, TlsClientUnavailableError } =
-      await import("../../../../open-sse/services/claudeTlsClient.ts");
+      await import("../../../../../open-sse/services/claudeTlsClient.ts");
 
     let response: { status: number; text: string | null };
     try {
@@ -298,7 +298,7 @@ export async function validateCopilotWebProvider({ apiKey, providerSpecificData 
     }
 
     // Extract token — may be bare JWT, cookie string with access_token=, or Bearer prefix
-    const { extractAccessToken } = await import("../../../../open-sse/executors/copilot-web.ts");
+    const { extractAccessToken } = await import("../../../../../open-sse/executors/copilot-web.ts");
     const token = extractAccessToken(raw);
     if (!token) {
       return { valid: false, error: "Could not extract access_token from input" };

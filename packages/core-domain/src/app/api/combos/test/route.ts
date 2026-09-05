@@ -3,11 +3,11 @@ import { NextResponse } from "next/server";
 import { buildComboTestRequestBody, extractComboTestResponseText } from "../../../../lib/combos/testHealth.ts";
 import { getComboByName, getCombos, pickApiKeyForInternalUse } from "../../../../lib/localDb.ts";
 import { getRuntimePorts } from "../../../../lib/runtime/ports.ts";
-import { resolveNestedComboTargets } from "../../../../../open-sse/services/combo.ts";
+import { resolveNestedComboTargets } from "../../../../../../open-sse/services/combo.ts";
 import { testComboSchema } from "../../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 async function getInternalApiKey(): Promise<string | null> {
   // Combo health-check probes hit /v1/chat/completions, which enforces

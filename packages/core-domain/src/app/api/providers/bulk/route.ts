@@ -26,10 +26,10 @@ import {
 } from "../../../../lib/providers/requestDefaults.ts";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
 import { isManagedProviderConnectionId } from "../../../../lib/providers/catalog.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 import { validateProviderApiKey } from "../../../../lib/providers/validation.ts";
 import { getProxyForLevel, resolveProxyForProvider } from "../../../../lib/localDb.ts";
-import { runWithProxyContext } from "../../../../../open-sse/utils/proxyFetch.ts";
+import { runWithProxyContext } from "../../../../../../open-sse/utils/proxyFetch.ts";
 import { rejectRetiredCommonChatGptWebProvider } from "../../../../lib/providers/chatgptWebRetirementResponse.ts";
 
 // POST /api/providers/bulk — create multiple API-key connections for a single provider.

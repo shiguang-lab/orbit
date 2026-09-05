@@ -1,6 +1,6 @@
 import { createRequire } from "module";
 import { createHash } from "node:crypto";
-import { getTlsClientTimeoutConfig } from "../../src/shared/utils/runtimeTimeouts.ts";
+import { getTlsClientTimeoutConfig } from "@shiguang-gateway/config/timeouts";
 
 const runtimeRequire = createRequire(import.meta.url);
 

@@ -1,4 +1,4 @@
-import { handleSearch } from "../../../../../open-sse/handlers/search.ts";
+import { handleSearch } from "../../../../../../open-sse/handlers/search.ts";
 import {
   getProviderCredentialsWithQuotaPreflight,
   extractApiKey,
@@ -13,9 +13,9 @@ import {
   isUnconfiguredLoopbackSearchProvider,
   SEARCH_PROVIDERS,
   getSearchCredentialFallbacks,
-} from "../../../../../open-sse/config/searchRegistry.ts";
-import { errorResponse } from "../../../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../../../open-sse/config/constants.ts";
+} from "../../../../../../open-sse/config/searchRegistry.ts";
+import { errorResponse } from "../../../../../../open-sse/utils/error.ts";
+import { HTTP_STATUS } from "../../../../../../open-sse/config/constants.ts";
 import * as log from "../../../../sse/utils/logger.ts";
 import { toJsonErrorPayload } from "../../../../shared/utils/upstreamError.ts";
 import { enforceApiKeyPolicy } from "../../../../shared/utils/apiKeyPolicy.ts";
@@ -30,7 +30,7 @@ import {
   computeCacheKey,
   getOrCoalesce,
   SEARCH_CACHE_DEFAULT_TTL_MS,
-} from "../../../../../open-sse/services/searchCache.ts";
+} from "../../../../../../open-sse/services/searchCache.ts";
 import {
   isAllRateLimitedCredentials,
   rateLimitedProviderResponse,

@@ -1,5 +1,5 @@
 import { CURSOR_CONFIG } from "../constants/oauth";
-import { getCursorUserAgent } from "../../../../open-sse/config/providerHeaderProfiles.ts";
+import { getCursorUserAgent } from "../../../../../open-sse/config/providerHeaderProfiles.ts";
 
 /**
  * Cursor IDE OAuth Service

@@ -38,8 +38,8 @@ import {
   reorderByTaskWeight,
 } from "../taskAwareRouting.ts";
 import { errorResponseWithComboDiagnostics } from "../../utils/error.ts";
-import { getCircuitBreaker } from "../../../src/shared/utils/circuitBreaker";
-import type { ResilienceSettings } from "../../../src/lib/resilience/settings";
+import { getCircuitBreaker } from "../../../core-domain/src/shared/utils/circuitBreaker";
+import type { ResilienceSettings } from "../../../core-domain/src/lib/resilience/settings";
 import { applyStrategyOrdering } from "./applyStrategyOrdering.ts";
 import { expandTargetsForAllStrategies } from "./connectionAwareExpansion.ts";
 import { clampComboDepth } from "./comboPredicates.ts";

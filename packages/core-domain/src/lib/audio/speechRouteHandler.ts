@@ -1,13 +1,13 @@
-import { handleAudioSpeech } from "../../../open-sse/handlers/audioSpeech.ts";
+import { handleAudioSpeech } from "../../../../open-sse/handlers/audioSpeech.ts";
 import { withInjectionGuard } from "../../middleware/promptInjectionGuard.ts";
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
 } from "../../sse/services/auth.ts";
-import { parseSpeechModel, getSpeechProvider } from "../../../open-sse/config/audioRegistry.ts";
+import { parseSpeechModel, getSpeechProvider } from "../../../../open-sse/config/audioRegistry.ts";
 import { resolveDynamicAudioProviders } from "../../app/api/v1/_shared/audioProviderNodes.ts";
-import { errorResponse } from "../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../open-sse/config/constants.ts";
+import { errorResponse } from "../../../../open-sse/utils/error.ts";
+import { HTTP_STATUS } from "../../../../open-sse/config/constants.ts";
 import { enforceApiKeyPolicy } from "../../shared/utils/apiKeyPolicy.ts";
 import { v1AudioSpeechSchema } from "../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../shared/validation/helpers.ts";
@@ -54,7 +54,7 @@ async function postHandler(request: Request): Promise<Response> {
     const { getComboByName } = await import("../db/combos.ts");
     const combo = await getComboByName(body.model);
     if (combo) {
-      const { executeSpeechCombo } = await import("../../../open-sse/services/speechCombo.ts");
+      const { executeSpeechCombo } = await import("../../../../open-sse/services/speechCombo.ts");
       return executeSpeechCombo(body.model, body, startTime);
     }
   }

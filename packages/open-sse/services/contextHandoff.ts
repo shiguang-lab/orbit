@@ -4,7 +4,7 @@ import {
   hasActiveHandoff,
   type HandoffPayload,
   upsertHandoff,
-} from "../../src/lib/db/contextHandoffs.ts";
+} from "../../core-domain/src/lib/db/contextHandoffs.ts";
 import { estimateTokens } from "./contextManager.ts";
 import { stripMarkdownCodeFence } from "../utils/aiSdkCompat.ts";
 

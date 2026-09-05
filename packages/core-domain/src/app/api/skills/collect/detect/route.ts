@@ -13,7 +13,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCliRuntimeStatus, CLI_TOOL_IDS } from "../../../../../shared/services/cliRuntime.ts";
 import { searchGitHubSkills, type GitHubSkillRepo } from "../../../../../lib/skills/githubCollector.ts";
-import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../../../../open-sse/utils/error.ts";
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
 
 export const dynamic = "force-dynamic";

@@ -3,7 +3,7 @@ import { z } from "zod";
 import { GLOBAL_SKILL_OWNER_ID, skillRegistry } from "../../../../lib/skills/registry.ts";
 import { validateBody, isValidationFailure } from "../../../../shared/validation/helpers.ts";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 const installManifestSchema = z.object({
   name: z.string().min(1).max(100),

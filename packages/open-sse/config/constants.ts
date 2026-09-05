@@ -1,4 +1,4 @@
-import { getUpstreamTimeoutConfig } from "../../src/shared/utils/runtimeTimeouts.ts";
+import { getUpstreamTimeoutConfig } from "@shiguang-gateway/config/timeouts";
 import { resolvePublicCred } from "../utils/publicCreds.ts";
 import type { LegacyProvider } from "./providerRegistry.ts";
 import { loadProviderCredentials } from "./credentialLoader.ts";

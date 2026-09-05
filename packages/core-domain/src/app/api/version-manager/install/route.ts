@@ -6,7 +6,7 @@ import { InstallError } from "../../../../lib/services/installers/utils.ts";
 import { versionManagerInstallSchema } from "../../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 export async function POST(request: Request) {
   const authError = await requireManagementAuth(request);

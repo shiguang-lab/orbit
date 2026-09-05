@@ -1,19 +1,19 @@
-import { errorResponse } from "../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../open-sse/config/constants.ts";
-import type { AutoVariant } from "../../../open-sse/services/autoCombo/autoPrefix.ts";
+import { errorResponse } from "../../../../open-sse/utils/error.ts";
+import { HTTP_STATUS } from "../../../../open-sse/config/constants.ts";
+import type { AutoVariant } from "../../../../open-sse/services/autoCombo/autoPrefix.ts";
 import {
   AUTO_TEMPLATE_VARIANTS,
   VALID_AUTO_VARIANTS,
-} from "../../../open-sse/services/autoCombo/builtinCatalog.ts";
+} from "../../../../open-sse/services/autoCombo/builtinCatalog.ts";
 import {
   parseAutoSuffix,
   type AutoCategory,
   type AutoTier,
-} from "../../../open-sse/services/autoCombo/suffixComposition.ts";
+} from "../../../../open-sse/services/autoCombo/suffixComposition.ts";
 import {
   isValidModelFamily,
   type ModelFamily,
-} from "../../../open-sse/services/autoCombo/modelFamily.ts";
+} from "../../../../open-sse/services/autoCombo/modelFamily.ts";
 import { getCachedSettings } from "../../lib/localDb.ts";
 import * as log from "../utils/logger";
 
@@ -68,7 +68,7 @@ async function applyAutoPrefix(
 ): Promise<Pick<AutoRoutingState, "variant" | "spec">> {
   try {
     const { parseAutoPrefix } =
-      await import("../../../open-sse/services/autoCombo/autoPrefix.ts");
+      await import("../../../../open-sse/services/autoCombo/autoPrefix.ts");
     const parsed = parseAutoPrefix(model);
     if (!parsed.valid) {
       if (!state.spec) log.warn("AUTO", `Invalid auto prefix format: ${model}`);
@@ -134,7 +134,7 @@ export async function createVirtualAutoCombo(
 
   try {
     const { createVirtualAutoCombo: createVirtual } =
-      await import("../../../open-sse/services/autoCombo/virtualFactory.ts");
+      await import("../../../../open-sse/services/autoCombo/virtualFactory.ts");
     // #7819 (Level 2): scope candidate exclusions to this API key + the
     // requested auto channel (e.g. "auto/best-coding"). Omitted for any
     // caller that doesn't pass apiKeyId — routing stays unfiltered.

@@ -30,7 +30,7 @@ import { isCloudflareFingerprintRejection } from "../errorClassifier.ts";
 // #10334 — agentrouter-exclusive predicate shared with the persistence layer
 // (markAccountUnavailable) so the same-request combo skip and the persisted
 // connection cooldown agree on exactly which fallbackResult shapes qualify.
-import { isAgentrouterConnectionQuotaScope } from "../../../src/sse/services/auth.ts";
+import { isAgentrouterConnectionQuotaScope } from "../../../core-domain/src/sse/services/auth.ts";
 import type { ComboLogger, ResolvedComboTarget } from "./types.ts";
 
 // Connection-level failure statuses: the provider connection itself is likely bad (upstream

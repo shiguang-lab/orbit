@@ -1,4 +1,4 @@
-import { handleImageGeneration } from "../../../../../../open-sse/handlers/imageGeneration.ts";
+import { handleImageGeneration } from "../../../../../../../open-sse/handlers/imageGeneration.ts";
 import { withInjectionGuard } from "../../../../../middleware/promptInjectionGuard.ts";
 import {
   getProviderCredentialsWithQuotaPreflight,
@@ -9,9 +9,9 @@ import {
   getImageProvider,
   getImageModelEntry,
   modalitiesRequireImageInput,
-} from "../../../../../../open-sse/config/imageRegistry.ts";
-import { errorResponse, unavailableResponse } from "../../../../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../../../../open-sse/config/constants.ts";
+} from "../../../../../../../open-sse/config/imageRegistry.ts";
+import { errorResponse, unavailableResponse } from "../../../../../../../open-sse/utils/error.ts";
+import { HTTP_STATUS } from "../../../../../../../open-sse/config/constants.ts";
 import { isAllRateLimitedCredentials } from "../../_shared/rateLimit.ts";
 import * as log from "../../../../../sse/utils/logger.ts";
 import { toJsonErrorPayload } from "../../../../../shared/utils/upstreamError.ts";
@@ -32,7 +32,7 @@ import {
   resolveLocalSyncedEndpointRoute,
   type LocalSyncedEndpointRoute,
 } from "../../../../../lib/providerModels/syncedEndpointRouting.ts";
-import { runWithProxyContext } from "../../../../../../open-sse/utils/proxyFetch.ts";
+import { runWithProxyContext } from "../../../../../../../open-sse/utils/proxyFetch.ts";
 import { attachShiguangGatewayMetaHeaders } from "../../../../../domain/gatewayResponseMeta.ts";
 import { calculateModalCost } from "../../../../../lib/usage/costCalculator.ts";
 import { generateRequestId } from "../../../../../shared/utils/requestId.ts";
@@ -157,7 +157,7 @@ async function postHandler(request, context) {
   if (body.model && typeof body.model === "string" && !body.model.includes("/")) {
     const combo = await getComboByName(body.model as string);
     if (combo) {
-      const { executeImageCombo } = await import("../../../../../../open-sse/services/imageCombo.ts");
+      const { executeImageCombo } = await import("../../../../../../../open-sse/services/imageCombo.ts");
       return executeImageCombo(body.model as string, body, { request, policy }, startTime, log);
     }
   }

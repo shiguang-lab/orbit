@@ -1,6 +1,6 @@
 import "./setupPolyfill.ts";
 import { Agent, ProxyAgent, type Dispatcher } from "undici";
-import { getUpstreamTimeoutConfig } from "../../src/shared/utils/runtimeTimeouts.ts";
+import { getUpstreamTimeoutConfig } from "@shiguang-gateway/config/timeouts";
 import { stripIpv6Brackets, detectIpLiteralFamily, parseProxyFamily } from "./proxyFamily.ts";
 import { createSocksDispatcherWithFamily } from "./socksConnectorWithFamily.ts";
 import {

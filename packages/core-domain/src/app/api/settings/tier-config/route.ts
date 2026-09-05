@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { loadTierConfig, saveTierConfig } from "../../../../lib/db/tierConfig.ts";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
-import { setTierConfig } from "../../../../../open-sse/services/tierResolver.ts";
-import { buildErrorBody } from "../../../../../open-sse/utils/error.ts";
+import { setTierConfig } from "../../../../../../open-sse/services/tierResolver.ts";
+import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
 
 /**
  * Settings route for a single provider's routing-tier override (#7818).

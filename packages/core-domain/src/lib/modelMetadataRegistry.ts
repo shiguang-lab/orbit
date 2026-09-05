@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { parseModel } from "../../open-sse/services/model.ts";
+import { parseModel } from "../../../open-sse/services/model.ts";
 import { getModelInfo } from "../sse/services/model.ts";
 import { getModelAliases } from "./db/models.ts";
 import {

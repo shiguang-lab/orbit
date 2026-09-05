@@ -2,4 +2,4 @@ export {
   getResolvedModelCapabilities,
   supportsReasoning,
   supportsToolCalling,
-} from "../../src/lib/modelCapabilities.ts";
+} from "../../core-domain/src/lib/modelCapabilities.ts";

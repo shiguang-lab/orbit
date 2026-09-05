@@ -1,8 +1,8 @@
 import { getComboById, getCombos } from "../db/combos.ts";
 import { getDbInstance } from "../db/core.ts";
 import { getQuotaSnapshots } from "../db/quotaSnapshots.ts";
-import { getComboMetrics } from "../../../open-sse/services/comboMetrics.ts";
-import { resolveNestedComboTargets } from "../../../open-sse/services/combo.ts";
+import { getComboMetrics } from "../../../../open-sse/services/comboMetrics.ts";
+import { resolveNestedComboTargets } from "../../../../open-sse/services/combo.ts";
 import type {
   ComboRecord,
   ComboHealthMetrics,

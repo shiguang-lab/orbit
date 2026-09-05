@@ -4,7 +4,7 @@ import { extractCodexAccountInfo } from "../../../../../lib/oauth/services/codex
 import { parseCodexSessionJson } from "../../../../../lib/oauth/utils/codexSessionImport.ts";
 import { createProviderConnection } from "../../../../../models/index.ts";
 import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
-import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 
 /**
  * POST /api/oauth/codex/import-token

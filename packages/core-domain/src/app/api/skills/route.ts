@@ -4,7 +4,7 @@ import { parsePaginationParams, buildPaginatedResponse } from "../../../shared/t
 import { getSkillsProviderSetting } from "../../../lib/skills/providerSettings.ts";
 import { requireManagementAuth } from "../../../lib/api/requireManagementAuth.ts";
 import { matchesSearch } from "../../../shared/utils/turkishText.ts";
-import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
 
 const POPULAR_BY_PROVIDER = {
   skillsmp: ["web-search", "file-reader", "sql-assistant", "devops-helper", "docs-assistant"],

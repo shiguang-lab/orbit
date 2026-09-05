@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { readRtkRawOutput } from "../../../../../../../open-sse/services/compression/engines/rtk/index.ts";
+import { readRtkRawOutput } from "../../../../../../../../open-sse/services/compression/engines/rtk/index.ts";
 import { requireManagementAuth } from "../../../../../../lib/api/requireManagementAuth.ts";
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {

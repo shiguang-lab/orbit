@@ -12,7 +12,7 @@ import {
   isForbiddenUpstreamHeaderName,
   isForbiddenCustomHeaderName,
 } from "../../constants/upstreamHeaders.ts";
-import { MAX_TIMER_TIMEOUT_MS } from "../../utils/runtimeTimeouts.ts";
+import { MAX_TIMER_TIMEOUT_MS } from "@shiguang-gateway/config/timeouts";
 
 export function isHttpUrl(value: string): boolean {
   try {

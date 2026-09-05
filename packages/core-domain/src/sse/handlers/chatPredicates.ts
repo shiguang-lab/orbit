@@ -1,6 +1,6 @@
 import { isLocalStreamLifecycleError } from "../../shared/utils/circuitBreaker";
 import { isRequestScopedUpstreamFailure } from "./comboFailureLogging";
-import { getTrustedLocalRateLimitResponse } from "../../../open-sse/services/rateLimitManager/errors.ts";
+import { getTrustedLocalRateLimitResponse } from "../../../../open-sse/services/rateLimitManager/errors.ts";
 
 export const PROVIDER_BREAKER_FAILURE_STATUSES = new Set([408, 500, 502, 503, 504]);
 

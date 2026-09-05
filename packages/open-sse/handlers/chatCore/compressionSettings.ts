@@ -31,7 +31,7 @@ export async function resolveCompressionSettings(log?: LoggerLike): Promise<{
   contextEditingEnabled: boolean;
 }> {
   try {
-    const { getCompressionSettings } = await import("../../../src/lib/db/compression.ts");
+    const { getCompressionSettings } = await import("../../../core-domain/src/lib/db/compression.ts");
     const settings = await getCompressionSettings();
     return {
       settings,

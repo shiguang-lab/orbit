@@ -3,7 +3,7 @@ import { getMcpAccessibilityConfig, setMcpAccessibilityConfig } from "../../../.
 import { isAuthenticated } from "../../../../../shared/utils/apiAuth.ts";
 import { isValidationFailure, validateBody } from "../../../../../shared/validation/helpers.ts";
 import { mcpAccessibilityConfigSchema } from "../../../../../shared/validation/compressionConfigSchemas.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 
 // Read/update the mcpAccessibility engine config (compression/mcpAccessibility DB key) that the
 // MCP server consumes on every tool call to trim oversized tool outputs. Kept as a dedicated

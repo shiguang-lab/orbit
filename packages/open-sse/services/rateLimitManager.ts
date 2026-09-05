@@ -19,7 +19,7 @@ import {
   DEFAULT_RESILIENCE_SETTINGS,
   resolveResilienceSettings,
   type RequestQueueSettings,
-} from "../../src/lib/resilience/settings";
+} from "../../core-domain/src/lib/resilience/settings";
 import {
   STANDARD_HEADERS,
   ANTHROPIC_HEADERS,
@@ -33,7 +33,7 @@ import {
   RATE_LIMIT_QUEUE_WEDGED_CODE,
 } from "./rateLimitManager/errors";
 import { LimiterWedgeWatchdog, WATCHDOG_INTERVAL_MS } from "./rateLimitManager/wedgeWatchdog";
-import { toNumber } from "../../src/shared/utils/numeric.ts";
+import { toNumber } from "../../core-domain/src/shared/utils/numeric.ts";
 
 interface LearnedLimitEntry {
   provider: string;
@@ -338,7 +338,7 @@ export async function initializeRateLimits() {
   applyBottleneckHeartbeatPatch();
 
   try {
-    const { getCachedProviderConnections, getSettings } = await import("../../src/lib/localDb.ts");
+    const { getCachedProviderConnections, getSettings } = await import("../../core-domain/src/lib/localDb.ts");
     const [connections, settings] = await Promise.all([
       getCachedProviderConnections(),
       getSettings(),
@@ -385,7 +385,7 @@ export async function applyRequestQueueSettings(nextSettings: RequestQueueSettin
   currentRequestQueueSettings = { ...nextSettings };
   // Global policy changes invalidate snapshots from the previous generation.
   preservedReplacementSettings.clear();
-  const { getCachedProviderConnections } = await import("../../src/lib/localDb.ts");
+  const { getCachedProviderConnections } = await import("../../core-domain/src/lib/localDb.ts");
   const connections = await getCachedProviderConnections();
   // Also discard any snapshot created while the asynchronous DB read yielded.
   preservedReplacementSettings.clear();
@@ -841,7 +841,7 @@ export function getLearnedLimits() {
 
 async function persistLearnedLimitsNow() {
   try {
-    const { updateSettings } = await import("../../src/lib/db/settings.ts");
+    const { updateSettings } = await import("../../core-domain/src/lib/db/settings.ts");
     await updateSettings({ learnedRateLimits: JSON.stringify(learnedLimits) });
     logRateLimit(
       `💾 [RATE-LIMIT] Persisted learned limits for ${Object.keys(learnedLimits).length} provider(s)`
@@ -953,7 +953,7 @@ export async function __getLimiterStateForTests(provider, connectionId, model = 
  */
 async function loadPersistedLimits() {
   try {
-    const { getSettings } = await import("../../src/lib/db/settings.ts");
+    const { getSettings } = await import("../../core-domain/src/lib/db/settings.ts");
     const settings = await getSettings();
     const raw = settings?.learnedRateLimits;
     if (typeof raw !== "string" || raw.trim().length === 0) return;

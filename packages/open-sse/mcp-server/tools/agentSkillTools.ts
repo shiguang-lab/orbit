@@ -5,8 +5,8 @@ import {
   filterCatalog,
   computeCoverage,
   fetchSkillMarkdown,
-} from "../../../src/lib/agentSkills/catalog.ts";
-import type { AgentSkill, SkillCoverage } from "../../../src/lib/agentSkills/types.ts";
+} from "../../../core-domain/src/lib/agentSkills/catalog.ts";
+import type { AgentSkill, SkillCoverage } from "../../../core-domain/src/lib/agentSkills/types.ts";
 
 // ── Input Schemas ────────────────────────────────────────────────────────────
 

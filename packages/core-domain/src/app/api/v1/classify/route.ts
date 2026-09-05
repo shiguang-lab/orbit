@@ -1,11 +1,11 @@
-import { handleJinaFoundationProxy } from "../../../../../open-sse/handlers/jinaFoundation.ts";
+import { handleJinaFoundationProxy } from "../../../../../../open-sse/handlers/jinaFoundation.ts";
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
 } from "../../../../sse/services/auth.ts";
 import { withInjectionGuard } from "../../../../middleware/promptInjectionGuard.ts";
-import { errorResponse } from "../../../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../../../open-sse/config/constants.ts";
+import { errorResponse } from "../../../../../../open-sse/utils/error.ts";
+import { HTTP_STATUS } from "../../../../../../open-sse/config/constants.ts";
 import { enforceApiKeyPolicy } from "../../../../shared/utils/apiKeyPolicy.ts";
 import { v1ClassifySchema } from "../../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";

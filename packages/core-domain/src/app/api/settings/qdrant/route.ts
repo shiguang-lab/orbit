@@ -5,7 +5,7 @@ import { QdrantSettingsUpdateSchema } from "../../../../shared/schemas/qdrant.ts
 import { getQdrantConfig, normalizeQdrantConfig } from "../../../../lib/memory/qdrant.ts";
 import { updateSettings, getSettings } from "../../../../lib/localDb.ts";
 import { invalidateMemorySettingsCache } from "../../../../lib/memory/settings.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 function maskApiKey(apiKey: string | null): { hasApiKey: boolean; apiKeyMasked: string | null } {
   if (!apiKey || apiKey.trim().length === 0) {

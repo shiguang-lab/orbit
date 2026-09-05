@@ -5,7 +5,7 @@
  */
 
 import { isIP } from "node:net";
-import { getDbInstance } from "../../src/lib/db/core.ts";
+import { getDbInstance } from "../../core-domain/src/lib/db/core.ts";
 
 // In-memory IP lists
 let _config = {

@@ -104,7 +104,7 @@ async function cleanup(): Promise<void> {
       { closeLogRotation },
       { closeCallLogSaves },
     ] = await Promise.all([
-      import("../../open-sse/mcp-server/audit.ts"),
+      import("../../../open-sse/mcp-server/audit.ts"),
       import("./db/core.ts"),
       import("./spend/batchWriter.ts"),
       import("./logRotation.ts"),
@@ -141,7 +141,7 @@ async function cleanup(): Promise<void> {
 
     try {
       const { stopChatGptWebCodexRuntime } =
-        await import("../../open-sse/executors/chatgpt-web-codex/runtime.ts");
+        await import("../../../open-sse/executors/chatgpt-web-codex/runtime.ts");
       await stopChatGptWebCodexRuntime();
       console.log("[Shutdown] ChatGPT Web (Codex) runtime stopped.");
     } catch {

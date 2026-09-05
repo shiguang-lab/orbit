@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { isAuthenticated } from "../../../../../shared/utils/apiAuth.ts";
 import { cleanupSemanticMemoryPoints } from "../../../../../lib/memory/qdrant.ts";
 import { getMemorySettings } from "../../../../../lib/memory/settings.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 
 export async function POST(request: NextRequest) {
   if (!(await isAuthenticated(request))) {

@@ -4,7 +4,7 @@ import { skillRegistry } from "../../../../lib/skills/registry.ts";
 import { z } from "zod";
 import { validateBody, isValidationFailure } from "../../../../shared/validation/helpers.ts";
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 const updateSkillSchema = z.object({
   enabled: z.boolean().optional(),

@@ -7,7 +7,7 @@
  * LOCAL_ONLY enforced by routeGuard.
  */
 
-import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../../../open-sse/utils/error.ts";
+import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../../../../open-sse/utils/error.ts";
 import { getSession, getSessionRequests } from "../../../../../../../lib/db/inspectorSessions.ts";
 import { toHar } from "../../../../../../../lib/inspector/harExport.ts";
 import type { InterceptedRequest } from "../../../../../../../mitm/inspector/types.ts";

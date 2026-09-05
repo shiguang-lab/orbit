@@ -33,15 +33,15 @@ import {
   type McpAccessibilityConfig,
   type RtkConfig,
   type UltraConfig,
-} from "../../../open-sse/services/compression/types.ts";
-import { normalizeCompressionExclusions } from "../../../open-sse/services/compression/exclusions.ts";
-import { DEFAULT_CONTEXT_BUDGET } from "../../../open-sse/services/compression/adaptiveCompression/types.ts";
+} from "../../../../open-sse/services/compression/types.ts";
+import { normalizeCompressionExclusions } from "../../../../open-sse/services/compression/exclusions.ts";
+import { DEFAULT_CONTEXT_BUDGET } from "../../../../open-sse/services/compression/adaptiveCompression/types.ts";
 import { normalizeContextBudgetConfig } from "./compressionContextBudget";
 import {
   isPreserveSystemPromptMode,
   normalizePreserveSystemPromptMode,
-} from "../../../open-sse/services/compression/preserveSystemPromptMode.ts";
-import { maybePrewarmUltraSlmOnConfig } from "../../../open-sse/services/compression/ultra.ts";
+} from "../../../../open-sse/services/compression/preserveSystemPromptMode.ts";
+import { maybePrewarmUltraSlmOnConfig } from "../../../../open-sse/services/compression/ultra.ts";
 import { applyDetailConfigUpdate, buildDetailConfigDefaults } from "./compressionDetailNormalizers";
 
 const NAMESPACE = "compression";

@@ -14,7 +14,7 @@ import {
   serializePayloadForStorage,
   parseStoredPayload,
 } from "../logPayloads";
-import { compactStructuredStreamPayload } from "../../../open-sse/utils/streamPayloadCollector.ts";
+import { compactStructuredStreamPayload } from "../../../../open-sse/utils/streamPayloadCollector.ts";
 
 export interface RequestDetailLog {
   id?: string;

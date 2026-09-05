@@ -17,7 +17,7 @@ import {
   SafeOutboundFetchError,
   getSafeOutboundFetchErrorStatus,
 } from "../../../../shared/network/safeOutboundFetch.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 const DAHL_TOKENS_URL = "https://inference.dahl.global/tokens";
 

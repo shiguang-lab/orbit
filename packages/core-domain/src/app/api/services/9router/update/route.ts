@@ -6,7 +6,7 @@ import {
   update as npmUpdate,
 } from "../../../../../lib/services/installers/ninerouter.ts";
 import { createErrorResponse } from "../../../../../lib/api/errorResponse.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 
 export async function POST(): Promise<Response> {
   try {

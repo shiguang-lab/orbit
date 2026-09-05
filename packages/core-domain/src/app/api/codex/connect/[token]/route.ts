@@ -9,7 +9,7 @@ import {
 } from "../../../../../lib/oauth/deviceFlowTickets.ts";
 import { validateBody, isValidationFailure } from "../../../../../shared/validation/helpers.ts";
 import { oauthDeviceCompleteSchema } from "../../../../../shared/validation/schemas.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
 
 /**
  * Public Codex device-flow completion endpoint (NOT behind dashboard auth).

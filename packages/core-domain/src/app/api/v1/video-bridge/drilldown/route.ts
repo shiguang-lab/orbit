@@ -3,7 +3,7 @@ import { z } from "zod";
 import { CORS_HEADERS, handleCorsOptions } from "../../../../../shared/utils/cors.ts";
 import { enforceApiKeyPolicy } from "../../../../../shared/utils/apiKeyPolicy.ts";
 import { extractApiKey, isValidApiKey } from "../../../../../sse/services/auth.ts";
-import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../../../../open-sse/utils/error.ts";
 
 import {
   isVideoBridgeDrilldownRemoteAccessEnabled,

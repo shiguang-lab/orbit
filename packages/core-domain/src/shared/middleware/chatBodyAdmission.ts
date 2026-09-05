@@ -40,7 +40,7 @@ import {
 import {
   getResourcePressureObservation,
   type PressureSeverity,
-} from "../../../open-sse/utils/resourcePressure.ts";
+} from "../../../../open-sse/utils/resourcePressure.ts";
 
 function parsePositiveInt(value: string | undefined, fallback: number): number {
   const parsed = Number.parseInt(String(value), 10);

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireManagementAuth } from "../../../lib/api/requireManagementAuth.ts";
-import { getWebSessionPoolHealth } from "../../../../open-sse/services/webSessionPoolHealth.ts";
-import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+import { getWebSessionPoolHealth } from "../../../../../open-sse/services/webSessionPoolHealth.ts";
+import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
 
 export const dynamic = "force-dynamic";
 

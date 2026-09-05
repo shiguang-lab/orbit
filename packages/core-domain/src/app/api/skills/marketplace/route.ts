@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getSettings } from "../../../../lib/db/settings.ts";
 import { isAuthenticated } from "../../../../shared/utils/apiAuth.ts";
 import { getSkillsProviderSetting } from "../../../../lib/skills/providerSettings.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 
 const POPULAR_BY_PROVIDER = {
   skillsmp: ["web-search", "file-reader", "sql-assistant", "devops-helper", "docs-assistant"],

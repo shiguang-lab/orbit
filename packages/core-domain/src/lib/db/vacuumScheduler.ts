@@ -1,5 +1,5 @@
 import { DEFAULT_DATABASE_SETTINGS } from "../../types/databaseSettings.ts";
-import { MAX_TIMER_TIMEOUT_MS } from "../../shared/utils/runtimeTimeouts.ts";
+import { MAX_TIMER_TIMEOUT_MS } from "@shiguang-gateway/config/timeouts";
 
 import { getDbInstance } from "./core";
 // Direct `key_value` access — the existing `keyValueStore` helpers only exist
