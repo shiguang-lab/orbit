@@ -1,3 +1,4 @@
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 import { Injectable } from "@nestjs/common";
 import {
   getAutoRoutingTotalCount,
@@ -26,7 +27,7 @@ export class AnalyticsService {
         topProviders,
       };
     } catch (error) {
-      console.error("Auto-routing analytics error:", error);
+      console.error("Auto-routing analytics error:", sanitizeErrorMessage(error));
       return {
         totalRequests: 0,
         variantBreakdown: {},

@@ -3,7 +3,18 @@ import { unwrapClinepassEnvelope } from "./clinepassEnvelope.ts";
 import { getDefaultErrorMessage, getErrorInfo } from "../config/errorConfig.ts";
 import { normalizePayloadForLog } from "./logPayload.ts";
 import type { ModelCooldownErrorPayload } from "@shiguang-gateway/contracts";
+import {
+  redactSensitiveErrorText,
+  sanitizeErrorMessage,
+  sanitizeUpstreamDetails,
+} from "@shiguang-gateway/error-sanitization";
 import { buildPassthroughErrorResponse } from "./upstreamErrorPassthrough.ts";
+
+export {
+  redactSensitiveErrorText,
+  sanitizeErrorMessage,
+  sanitizeUpstreamDetails,
+} from "@shiguang-gateway/error-sanitization";
 
 /**
  * Sanitize an error message to prevent stack trace exposure in API responses.
@@ -18,91 +29,6 @@ interface ErrorResponseBody {
     reason?: string;
   };
   upstream_details?: Record<string, unknown> | null; // sanitized upstream provider body
-}
-
-// Length cap protects against pathological inputs even before tokenization.
-const MAX_ERROR_LEN = 4096;
-const SOURCE_EXT = ["ts", "tsx", "js", "jsx", "mjs", "cjs"] as const;
-
-function looksLikeAbsolutePath(tok: string): boolean {
-  // POSIX: "/<...>.ts" (optionally followed by :line[:col]).
-  // Windows: "C:\<...>.ts" or "C:/<...>.ts".
-  if (tok.length < 4 || tok.length > 2048) return false;
-  const isPosix = tok.charCodeAt(0) === 0x2f; // '/'
-  const isWindows = tok.length > 2 && tok.charCodeAt(1) === 0x3a && /[A-Za-z]/.test(tok[0]);
-  if (!isPosix && !isWindows) return false;
-  const dot = tok.lastIndexOf(".");
-  if (dot <= 0 || dot === tok.length - 1) return false;
-  const ext = tok
-    .slice(dot + 1)
-    .split(":", 1)[0]
-    .toLowerCase();
-  return (SOURCE_EXT as readonly string[]).includes(ext);
-}
-
-export function redactSensitiveErrorText(value: string): string {
-  return value
-    .replace(/data:[^,\s]+;base64,[A-Za-z0-9+/=_-]+/gi, "[REDACTED_DATA_URL]")
-    .replace(/\b(Bearer|Basic)\s+[A-Za-z0-9._~+/=-]+/gi, "$1 [REDACTED]")
-    .replace(
-      /(["']?(?:api[_-]?key|access[_-]?token|authorization|cookie|secret)["']?\s*[:=]\s*["'])[^"']*(["'])/gi,
-      "$1[REDACTED]$2"
-    )
-    .replace(
-      /(["']?(?:api[_-]?key|access[_-]?token|authorization|cookie|secret)["']?\s*[:=]\s*)[^"',\s}]+/gi,
-      "$1[REDACTED]"
-    );
-}
-
-/**
- * Strip stack-trace tail and absolute source paths from error messages.
- *
- * Implemented via simple whitespace tokenization (linear time) instead of a
- * single complex regex, so CodeQL `js/polynomial-redos` stays clean even when
- * the runtime error message is attacker-controlled.
- */
-export function sanitizeErrorMessage(message: unknown): string {
-  let str = typeof message === "string" ? message : String(message ?? "");
-  if (str.length > MAX_ERROR_LEN) str = str.slice(0, MAX_ERROR_LEN);
-  const nl = str.indexOf("\n");
-  const firstLine = nl >= 0 ? str.slice(0, nl) : str;
-  // Preserve original whitespace by splitting on captured separator.
-  const parts = firstLine.split(/(\s+)/);
-  for (let i = 0; i < parts.length; i++) {
-    if (looksLikeAbsolutePath(parts[i])) parts[i] = "<path>";
-  }
-  return redactSensitiveErrorText(parts.join(""));
-}
-
-const BLOCKED_KEYS =
-  /stack|trace|path|file|cwd|dir|password|secret|token|key|authorization|cookie/i;
-const MAX_DEPTH = 4;
-
-/**
- * Recursively sanitize an arbitrary JSON value from an upstream provider body.
- * - Strings: run through sanitizeErrorMessage (strips stacks + absolute paths).
- * - Keys matching BLOCKED_KEYS are dropped (credential/path guards).
- * - Depth capped at MAX_DEPTH to prevent pathological nesting.
- * - Arrays capped at 32 elements.
- * - Returns null for null/undefined/non-JSON-serializable values.
- */
-export function sanitizeUpstreamDetails(value: unknown, depth = 0): unknown {
-  if (depth > MAX_DEPTH) return "[truncated]";
-  if (value === null || value === undefined) return null;
-  if (typeof value === "string") return sanitizeErrorMessage(value);
-  if (typeof value === "number" || typeof value === "boolean") return value;
-  if (Array.isArray(value)) {
-    return value.slice(0, 32).map((v) => sanitizeUpstreamDetails(v, depth + 1));
-  }
-  if (typeof value === "object") {
-    const out: Record<string, unknown> = {};
-    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
-      if (BLOCKED_KEYS.test(k)) continue;
-      out[k] = sanitizeUpstreamDetails(v, depth + 1);
-    }
-    return out;
-  }
-  return null;
 }
 
 /** Optional caller classification; when set, wins over status-derived defaults. */

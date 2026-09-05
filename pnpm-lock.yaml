@@ -144,6 +144,9 @@ importers:
       '@shiguang-gateway/core-domain':
         specifier: workspace:*
         version: link:../../packages/core-domain
+      '@shiguang-gateway/error-sanitization':
+        specifier: workspace:*
+        version: link:../../packages/error-sanitization
       '@shiguang-gateway/http-kernel':
         specifier: workspace:*
         version: link:../../packages/http-kernel
@@ -193,6 +196,9 @@ importers:
       '@shiguang-gateway/core-domain':
         specifier: workspace:*
         version: link:../../packages/core-domain
+      '@shiguang-gateway/error-sanitization':
+        specifier: workspace:*
+        version: link:../../packages/error-sanitization
       '@shiguang-gateway/http-kernel':
         specifier: workspace:*
         version: link:../../packages/http-kernel
@@ -620,6 +626,12 @@ importers:
         specifier: 'catalog:'
         version: 5.8.3
 
+  packages/error-sanitization:
+    devDependencies:
+      typescript:
+        specifier: 'catalog:'
+        version: 5.8.3
+
   packages/http-kernel:
     dependencies:
       '@nestjs/common':
@@ -663,6 +675,9 @@ importers:
       '@shiguang-gateway/contracts':
         specifier: workspace:*
         version: link:../contracts
+      '@shiguang-gateway/error-sanitization':
+        specifier: workspace:*
+        version: link:../error-sanitization
       '@shiguang-gateway/network-guard':
         specifier: workspace:*
         version: link:../network-guard

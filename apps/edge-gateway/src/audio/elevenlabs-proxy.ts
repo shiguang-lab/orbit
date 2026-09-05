@@ -1,3 +1,5 @@
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+
 const load = (specifier: string): Promise<any> => import(specifier as string);
 
 const ELEVENLABS_API_BASE = "https://api.elevenlabs.io/v1";
@@ -44,7 +46,7 @@ export async function proxyElevenLabsRequest(
   const [
     { getProviderCredentialsWithQuotaPreflight, clearRecoveredProviderState },
     { isAllRateLimitedCredentials, rateLimitedProviderResponse },
-    { buildErrorBody, sanitizeErrorMessage },
+    { buildErrorBody },
   ] = await Promise.all([
     load("@shiguang-gateway/core-domain/sse/auth"),
     load("@shiguang-gateway/core-domain/edge/rate-limit"),

@@ -1,0 +1,20 @@
+{
+  "name": "@shiguang-gateway/error-sanitization",
+  "version": "0.1.0",
+  "description": "Transport-neutral error text and upstream payload sanitization shared by gateway applications",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "catalog:"
+  }
+}
