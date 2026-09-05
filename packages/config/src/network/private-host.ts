@@ -1,7 +1,7 @@
 // Host classification shared by the outbound URL guard and the provider registry.
 //
 // #11122: `open-sse/config/providerRegistry.ts` needs `isPrivateHost`, and that module is
-// reachable from `ProviderDetailPageClient.tsx`. `outboundUrlGuard.ts` reached for `node:net`'s
+// reachable from `ProviderDetailPageClient.tsx`. The network guard reached for `node:net`'s
 // `isIP`, so importing it from the registry broke the browser bundle with
 // `Could not resolve "node:net"` (caught by tests/unit/media-page-client-browser-bundle.test.ts,
 // which has been red on the release branch since #11122 merged).
@@ -9,7 +9,7 @@
 //
 // Two constraints this module MUST keep — both enforced by tests:
 //   1. No `node:*` import: it is bundled for the browser.
-//   2. No `@/`-aliased import: `./outboundUrlGuard.ts` re-exports from here and is loaded by the
+//   2. No `@/`-aliased import: `@shiguang-gateway/network-guard` re-exports from here and is loaded by the
 //      packaged CLI (`shiguangGateway setup-opencode`), where no tsconfig resolves the alias (#7682).
 
 // Vendored from Node's own `lib/internal/net.js` so `ipVersion` stays verdict-for-verdict
