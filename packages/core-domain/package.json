@@ -180,10 +180,6 @@
       "types": "./src/public/providerNodeConstants.d.ts",
       "import": "./src/shared/constants/providers.ts"
     },
-    "./network/outbound-url-guard": {
-      "types": "./src/public/outboundUrlGuard.d.ts",
-      "import": "./src/shared/network/outboundUrlGuard.ts"
-    },
     "./network/outbound-url-guard-policy": {
       "types": "./src/public/outboundUrlGuardPolicy.d.ts",
       "import": "./src/shared/network/outboundUrlGuardPolicy.ts"
@@ -424,6 +420,7 @@
     "@shiguang-gateway/config": "workspace:*",
     "@shiguang-gateway/contracts": "workspace:*",
     "@shiguang-gateway/db-schema": "workspace:*",
+    "@shiguang-gateway/network-guard": "workspace:*",
     "@swc/helpers": "^0.5.23",
     "@toon-format/toon": "^4.1.1",
     "@types/mdx": "^2.0.14",
