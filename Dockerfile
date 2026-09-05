@@ -24,6 +24,20 @@ RUN pnpm build
 # is required because this workspace uses linked, rather than injected, packages.
 RUN --mount=type=cache,id=shiguang-gateway-pnpm-store,target=/root/.local/share/pnpm/store \
     pnpm deploy --legacy --filter @shiguang-gateway/worker --prod /app/runtime
+# The runtime base is shared by all service targets, so its pnpm store must
+# contain the production dependency closure of every deployable app. Keep the
+# worker deployment as the base and merge the other app closures into its
+# .pnpm store; app-local link trees below then resolve all direct dependencies
+# without copying the complete development workspace.
+RUN --mount=type=cache,id=shiguang-gateway-pnpm-store,target=/root/.local/share/pnpm/store \
+    pnpm deploy --legacy --filter @shiguang-gateway/edge-gateway --prod /app/runtime-edge \
+    && pnpm deploy --legacy --filter @shiguang-gateway/control-api --prod /app/runtime-control \
+    && pnpm deploy --legacy --filter @shiguang-gateway/realtime --prod /app/runtime-realtime \
+    && pnpm deploy --legacy --filter @shiguang-gateway/importer --prod /app/runtime-importer \
+    && mkdir -p /app/runtime/node_modules/.pnpm \
+    && for closure in /app/runtime-edge /app/runtime-control /app/runtime-realtime /app/runtime-importer; do \
+         cp -a "$closure/node_modules/.pnpm/." /app/runtime/node_modules/.pnpm/; \
+       done
 
 FROM node:22-bookworm-slim AS runtime-base
 WORKDIR /app
