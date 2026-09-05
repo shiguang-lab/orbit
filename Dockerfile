@@ -47,6 +47,13 @@ COPY --from=build --chown=node:node /app/apps/control-api/dist ./apps/control-ap
 COPY --from=build --chown=node:node /app/apps/realtime/dist ./apps/realtime/dist
 COPY --from=build --chown=node:node /app/apps/worker/dist ./apps/worker/dist
 COPY --from=build --chown=node:node /app/apps/importer/dist ./apps/importer/dist
+# Each app has a small pnpm link tree for its direct dependencies (for
+# example realtime imports fastify directly). Keep these link trees while the
+# package contents remain shared in the deployed production store above.
+COPY --from=build --chown=node:node /app/apps/edge-gateway/node_modules ./apps/edge-gateway/node_modules
+COPY --from=build --chown=node:node /app/apps/control-api/node_modules ./apps/control-api/node_modules
+COPY --from=build --chown=node:node /app/apps/realtime/node_modules ./apps/realtime/node_modules
+COPY --from=build --chown=node:node /app/apps/worker/node_modules ./apps/worker/node_modules
 # The compiled OpenAPI route reads this path from process.cwd(). Keep the
 # single runtime asset while leaving the rest of the 158 MB source/docs tree out.
 COPY --from=build --chown=node:node /app/packages/gateway-runtime/docs/openapi.yaml ./packages/gateway-runtime/docs/openapi.yaml
