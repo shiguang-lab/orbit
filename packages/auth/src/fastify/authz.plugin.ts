@@ -5,22 +5,16 @@
  *  - JWT cookie 校验：直接用 jose 在本 Gateway 内实现(与原逻辑一致：auth_token JWT + JWT_SECRET)。
  *  - API key / CLI token / 引擎侧校验：通过 EngineAuthAdapter 注入(指向本地 runtime 的
  *    isValidApiKey/getApiKeyMetadata/isCliTokenAuthValid 等)，保证与引擎零重复实现。
- *  - 管理 scope 判定：MANAGEMENT_API_KEY_SCOPES(manage/admin) 内联常量，与引擎同步。
+ *  - 管理 scope 判定：统一复用 management-scopes 契约。
  */
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { jwtVerify } from "jose";
 import { isAdminIdentity, resolveGatewayIdentity } from "../gateway-session.js";
-
-/** 与引擎 src/shared/constants/managementScopes.ts 保持同步 */
-export const MANAGE_SCOPE = "manage";
-export const MANAGEMENT_API_KEY_SCOPES = new Set<string>(["manage", "admin"]);
-
-export function hasManageScope(scopes: readonly string[] = []): boolean {
-  for (const scope of scopes) {
-    if (MANAGEMENT_API_KEY_SCOPES.has(scope)) return true;
-  }
-  return false;
-}
+import {
+  hasManageScope,
+  MANAGE_SCOPE,
+  MANAGEMENT_API_KEY_SCOPES,
+} from "../management-scopes.js";
 
 export interface EngineAuthAdapter {
   /** 校验 API key 是否有效(引擎 isValidApiKey) */

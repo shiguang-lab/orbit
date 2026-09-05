@@ -1,9 +1,6 @@
 export {
   authzPlugin,
   getCookieValueFromHeader,
-  hasManageScope,
-  MANAGE_SCOPE,
-  MANAGEMENT_API_KEY_SCOPES,
   type AuthzOptions,
   type EngineAuthAdapter,
 } from "./fastify/authz.plugin.js";
@@ -31,3 +28,10 @@ export {
   type ResolvedSgIdentity,
   type SgIdentityOptions,
 } from "./sg-identity.verifier.js";
+export {
+  MANAGE_SCOPE,
+  MCP_CONNECT_SCOPE,
+  MANAGEMENT_API_KEY_SCOPES,
+  hasManageScope,
+  hasMcpConnectOrManageScope,
+} from "./management-scopes.js";

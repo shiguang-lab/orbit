@@ -9,7 +9,7 @@ import { hasManageScope } from "../../../lib/api/requireManagementAuth";
 import {
   hasMcpConnectOrManageScope,
   MCP_CONNECT_SCOPE,
-} from "../../../shared/constants/managementScopes";
+} from "@shiguang-gateway/auth";
 import { evaluateAccessTokenAuth } from "../accessTokenAuth";
 import { isInternalServiceRequest } from "../../../lib/api/internalServiceAuth";
 import {

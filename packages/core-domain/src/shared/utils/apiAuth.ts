@@ -186,7 +186,7 @@ async function validateBearerApiKey(apiKey: string | null): Promise<boolean> {
  * allowlist). Returns `false` for unscoped keys so that the existing
  * default-deny posture on management routes is preserved.
  *
- * Scope set is sourced from `@/shared/constants/managementScopes` so this
+ * Scope set is sourced from `@shiguang-gateway/auth` so this
  * helper stays in lockstep with `requireManagementAuth.hasManageScope`.
  */
 async function validateBearerApiKeyForManagement(apiKey: string | null): Promise<boolean> {
@@ -195,7 +195,7 @@ async function validateBearerApiKeyForManagement(apiKey: string | null): Promise
   try {
     const [{ validateApiKey, getApiKeyMetadata }, { hasManageScope }] = await Promise.all([
       import("../../lib/db/apiKeys.ts"),
-      import("../constants/managementScopes.ts"),
+      import("@shiguang-gateway/auth"),
     ]);
     const valid = await validateApiKey(apiKey);
     if (!valid) return false;

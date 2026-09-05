@@ -7,11 +7,11 @@ import { evaluateAccessTokenAuth } from "../../server/authz/accessTokenAuth.ts";
 import { isTrustedLoopbackInternalServiceRequest } from "./internalServiceAuth.ts";
 import { AUTHZ_HEADER_AUTH_KIND, AUTHZ_HEADER_AUTH_LABEL } from "../../server/authz/headers.ts";
 import {
-  MANAGE_SCOPE,
-  MCP_CONNECT_SCOPE,
   hasManageScope as hasManageScopeShared,
   hasMcpConnectOrManageScope,
-} from "../../shared/constants/managementScopes.ts";
+  MCP_CONNECT_SCOPE,
+  MANAGE_SCOPE,
+} from "@shiguang-gateway/auth";
 
 export { MANAGE_SCOPE };
 
@@ -19,7 +19,7 @@ export { MANAGE_SCOPE };
  * Check whether any of the supplied scopes authorizes management API access.
  *
  * Re-exported here for backwards compatibility with existing callers. The
- * canonical definition lives in `@/shared/constants/managementScopes`.
+ * canonical definition lives in `@shiguang-gateway/auth`.
  */
 export function hasManageScope(scopes: string[] = []): boolean {
   return hasManageScopeShared(scopes);
