@@ -5,7 +5,7 @@
 
 **上线阻塞（已核实 NAS 当前配置）**：`ALLOWED_RETURN_ORIGINS` 已包含
 `https://llm-gateway.shiguanglab.com`，但 `DEFAULT_ENTITLEMENTS` 当前只有
-`omniroute:access` 等旧项，尚未包含 `shiguang-gateway:access`。必须由 auth-service
+现有官方授权项尚未包含 `shiguang-gateway:access`。必须由 auth-service
 负责人独立追加并重启/验证；在此之前不得把新域名、镜像或 Caddy 配置宣称为已切流。
 
 ## 1. 环境变量变更
