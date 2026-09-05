@@ -10,6 +10,7 @@ export async function bootstrapRealtime() {
   });
   const nestApp = await NestFactory.create(AppModule, adapter, { bufferLogs: true });
   const fastify = nestApp.getHttpAdapter().getInstance() as FastifyInstance;
+  await nestApp.init();
   nestApp.enableShutdownHooks(["SIGINT", "SIGTERM"]);
   return { nestApp, fastify };
 }
