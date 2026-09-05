@@ -73,6 +73,7 @@ COPY --from=build --chown=node:node /app/apps/edge-gateway/node_modules ./apps/e
 COPY --from=build --chown=node:node /app/apps/control-api/node_modules ./apps/control-api/node_modules
 COPY --from=build --chown=node:node /app/apps/realtime/node_modules ./apps/realtime/node_modules
 COPY --from=build --chown=node:node /app/apps/worker/node_modules ./apps/worker/node_modules
+COPY --from=build --chown=node:node /app/apps/importer/node_modules ./apps/importer/node_modules
 # The compiled OpenAPI route reads this path from process.cwd(). Keep the
 # single runtime asset while leaving the rest of the 158 MB source/docs tree out.
 COPY --from=build --chown=node:node /app/packages/core-domain/docs/openapi.yaml ./packages/core-domain/docs/openapi.yaml
@@ -90,9 +91,23 @@ COPY --from=build --chown=node:node /app/packages/http-kernel/package.json ./pac
 COPY --from=build --chown=node:node /app/packages/core-domain/package.json ./packages/core-domain/package.json
 COPY --from=build --chown=node:node /app/packages/http-kernel/node_modules ./packages/http-kernel/node_modules
 COPY --from=build --chown=node:node /app/packages/core-domain/node_modules ./packages/core-domain/node_modules
+COPY --from=build --chown=node:node /app/packages/contracts/src ./packages/contracts/src
+COPY --from=build --chown=node:node /app/packages/contracts/package.json ./packages/contracts/package.json
+COPY --from=build --chown=node:node /app/packages/contracts/tsconfig.json ./packages/contracts/tsconfig.json
+COPY --from=build --chown=node:node /app/packages/config/src ./packages/config/src
+COPY --from=build --chown=node:node /app/packages/config/package.json ./packages/config/package.json
+COPY --from=build --chown=node:node /app/packages/config/tsconfig.json ./packages/config/tsconfig.json
+COPY --from=build --chown=node:node /app/packages/db-schema/src ./packages/db-schema/src
+COPY --from=build --chown=node:node /app/packages/db-schema/package.json ./packages/db-schema/package.json
+COPY --from=build --chown=node:node /app/packages/db-schema/tsconfig.json ./packages/db-schema/tsconfig.json
 RUN rm -f /app/node_modules/@shiguang-gateway/http-kernel /app/node_modules/@shiguang-gateway/core-domain \
+    /app/node_modules/@shiguang-gateway/contracts /app/node_modules/@shiguang-gateway/config \
+    /app/node_modules/@shiguang-gateway/db-schema \
     && ln -s /app/packages/http-kernel /app/node_modules/@shiguang-gateway/http-kernel \
-    && ln -s /app/packages/core-domain /app/node_modules/@shiguang-gateway/core-domain
+    && ln -s /app/packages/core-domain /app/node_modules/@shiguang-gateway/core-domain \
+    && ln -s /app/packages/contracts /app/node_modules/@shiguang-gateway/contracts \
+    && ln -s /app/packages/config /app/node_modules/@shiguang-gateway/config \
+    && ln -s /app/packages/db-schema /app/node_modules/@shiguang-gateway/db-schema
 RUN mkdir -p /app/data && chown node:node /app/data
 USER node
 EXPOSE 8787 8788 8790 20132
