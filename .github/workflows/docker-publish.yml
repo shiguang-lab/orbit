@@ -131,7 +131,9 @@ jobs:
         with:
           context: .
           target: ${{ matrix.target }}
-          platforms: linux/amd64,linux/arm64
+          # NAS deployment target is x86_64; keeping one platform avoids
+          # exhausting GitHub-hosted runner disk while building six services.
+          platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: |
