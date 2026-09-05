@@ -1,17 +1,16 @@
-import { NextResponse } from "next/server";
-import { requireManagementAuth } from "../lib/api/requireManagementAuth.ts";
-import { getAuditRequestContext, logAuditEvent } from "../lib/compliance/index.ts";
-import { validateClaudeCodeCompatibleProvider } from "../lib/providers/validation.ts";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/control/compliance";
+import { validateClaudeCodeCompatibleProvider } from "@shiguang-gateway/core-domain/control/provider-validation";
 import {
   SAFE_OUTBOUND_FETCH_PRESETS,
   SafeOutboundFetchError,
   getSafeOutboundFetchErrorStatus,
   safeOutboundFetch,
-} from "../shared/network/safeOutboundFetch.ts";
-import { getProviderValidationGuard } from "../shared/network/outboundUrlGuardPolicy.ts";
-import { isCcCompatibleProviderEnabled } from "../shared/utils/featureFlags.ts";
-import { providerNodeValidateSchema } from "../shared/validation/schemas.ts";
-import { isValidationFailure, validateBody } from "../shared/validation/helpers.ts";
+} from "@shiguang-gateway/core-domain/network/safe-outbound-fetch";
+import { getProviderValidationGuard } from "@shiguang-gateway/core-domain/network/outbound-url-guard-policy";
+import { isCcCompatibleProviderEnabled } from "@shiguang-gateway/core-domain/control/feature-flags";
+import { providerNodeValidateSchema } from "@shiguang-gateway/core-domain/control/provider-validation-schemas";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 
 // Matches a base URL whose host is localhost / 127.0.0.1 (with an optional port).
 const LOCALHOST_BASE_URL_RE = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?(?:[/?#]|$)/i;
@@ -173,7 +172,7 @@ function sanitizeAuditBaseUrl(baseUrl: string) {
 }
 
 // POST /api/provider-nodes/validate - Validate API key against base URL
-export async function POST(request) {
+export async function POST(request: Request) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 
@@ -182,7 +181,7 @@ export async function POST(request) {
   try {
     rawBody = await request.json();
   } catch {
-    return NextResponse.json(
+    return Response.json(
       {
         error: {
           message: "Invalid request",
@@ -196,7 +195,7 @@ export async function POST(request) {
   try {
     const validation = validateBody(providerNodeValidateSchema, rawBody);
     if (isValidationFailure(validation)) {
-      return NextResponse.json({ error: validation.error }, { status: 400 });
+      return Response.json({ error: validation.error }, { status: 400 });
     }
     const { baseUrl, apiKey, type, compatMode, apiType, chatPath, modelsPath, modelId } =
       validation.data;
@@ -206,7 +205,7 @@ export async function POST(request) {
     if (type === "anthropic-compatible") {
       if (compatMode === "cc") {
         if (!isCcCompatibleProviderEnabled()) {
-          return NextResponse.json(
+          return Response.json(
             { valid: false, error: "CC Compatible provider is disabled" },
             { status: 403 }
           );
@@ -220,7 +219,7 @@ export async function POST(request) {
           },
         });
 
-        return NextResponse.json({
+        return Response.json({
           valid: !!result.valid,
           error: result.valid ? null : result.error || "Invalid API key",
           warning: result.warning || null,
@@ -245,10 +244,10 @@ export async function POST(request) {
         },
       });
 
-      if (res.ok) return NextResponse.json({ valid: true, error: null });
+      if (res.ok) return Response.json({ valid: true, error: null });
       // Auth errors: chat fallback would not recover. Skip and surface clear message.
       if (res.status === 401 || res.status === 403) {
-        return NextResponse.json({ valid: false, error: "API key unauthorized" });
+        return Response.json({ valid: false, error: "API key unauthorized" });
       }
       // Optional /chat/completions fallback when caller supplied a model ID
       // (some Anthropic-compatible proxies expose only the chat endpoint).
@@ -259,14 +258,14 @@ export async function POST(request) {
           modelId: trimmedModelId,
           extraHeaders: { "x-api-key": apiKey ?? "", "anthropic-version": "2023-06-01" },
         });
-        if (chatRes.ok) return NextResponse.json({ valid: true, error: null, method: "chat" });
-        return NextResponse.json({
+        if (chatRes.ok) return Response.json({ valid: true, error: null, method: "chat" });
+        return Response.json({
           valid: false,
           error: getChatErrorMessage(chatRes.status),
           method: "chat",
         });
       }
-      return NextResponse.json({ valid: false, error: getModelsErrorMessage(res.status) });
+      return Response.json({ valid: false, error: getModelsErrorMessage(res.status) });
     }
 
     // OpenAI Compatible Validation (Default)
@@ -274,7 +273,7 @@ export async function POST(request) {
 
     if (apiType === "audio-transcriptions") {
       if (!trimmedModelId) {
-        return NextResponse.json({
+        return Response.json({
           valid: false,
           error: "Model ID required to validate audio transcriptions",
           method: "audio-transcriptions",
@@ -286,9 +285,9 @@ export async function POST(request) {
         modelId: trimmedModelId,
       });
       if (transcriptionRes.ok) {
-        return NextResponse.json({ valid: true, error: null, method: "audio-transcriptions" });
+        return Response.json({ valid: true, error: null, method: "audio-transcriptions" });
       }
-      return NextResponse.json({
+      return Response.json({
         valid: false,
         error: getAudioTranscriptionErrorMessage(transcriptionRes.status),
         method: "audio-transcriptions",
@@ -302,9 +301,9 @@ export async function POST(request) {
       headers: { Authorization: `Bearer ${apiKey}` },
     });
 
-    if (res.ok) return NextResponse.json({ valid: true, error: null });
+    if (res.ok) return Response.json({ valid: true, error: null });
     if (res.status === 401 || res.status === 403) {
-      return NextResponse.json({ valid: false, error: "API key unauthorized" });
+      return Response.json({ valid: false, error: "API key unauthorized" });
     }
     if (trimmedModelId) {
       const chatRes = await probeChatFallback({
@@ -312,14 +311,14 @@ export async function POST(request) {
         apiKey: apiKey ?? "",
         modelId: trimmedModelId,
       });
-      if (chatRes.ok) return NextResponse.json({ valid: true, error: null, method: "chat" });
-      return NextResponse.json({
+      if (chatRes.ok) return Response.json({ valid: true, error: null, method: "chat" });
+      return Response.json({
         valid: false,
         error: getChatErrorMessage(chatRes.status),
         method: "chat",
       });
     }
-    return NextResponse.json({ valid: false, error: getModelsErrorMessage(res.status) });
+    return Response.json({ valid: false, error: getModelsErrorMessage(res.status) });
   } catch (error) {
     const attemptedBaseUrl =
       rawBody && typeof rawBody === "object" && "baseUrl" in rawBody
@@ -350,10 +349,10 @@ export async function POST(request) {
           },
         });
       }
-      return NextResponse.json({ error: message }, { status });
+      return Response.json({ error: message }, { status });
     }
     console.log("Error validating provider node:", error);
     const message = augmentDockerLocalhostHint(error, attemptedBaseUrl, "Validation failed");
-    return NextResponse.json({ error: message }, { status: 500 });
+    return Response.json({ error: message }, { status: 500 });
   }
 }

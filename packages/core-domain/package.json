@@ -177,6 +177,42 @@
       "types": "./src/public/validationHelpers.d.ts",
       "import": "./src/shared/validation/helpers.ts"
     },
+    "./control/provider-validation-schemas": {
+      "types": "./src/public/providerValidationSchemas.d.ts",
+      "import": "./src/shared/validation/schemas.ts"
+    },
+    "./control/feature-flags": {
+      "types": "./src/public/featureFlags.d.ts",
+      "import": "./src/shared/utils/featureFlags.ts"
+    },
+    "./control/compliance": {
+      "types": "./src/public/compliance.d.ts",
+      "import": "./src/lib/compliance/index.ts"
+    },
+    "./control/provider-validation": {
+      "types": "./src/public/providerValidation.d.ts",
+      "import": "./src/lib/providers/validation.ts"
+    },
+    "./db/provider-nodes": {
+      "types": "./src/public/providerNodesDb.d.ts",
+      "import": "./src/lib/db/providers/nodes.ts"
+    },
+    "./catalog/provider-node-prefixes": {
+      "types": "./src/public/providerNodeConstants.d.ts",
+      "import": "./src/shared/constants/providers.ts"
+    },
+    "./network/outbound-url-guard": {
+      "types": "./src/public/outboundUrlGuard.d.ts",
+      "import": "./src/shared/network/outboundUrlGuard.ts"
+    },
+    "./network/outbound-url-guard-policy": {
+      "types": "./src/public/outboundUrlGuardPolicy.d.ts",
+      "import": "./src/shared/network/outboundUrlGuardPolicy.ts"
+    },
+    "./network/safe-outbound-fetch": {
+      "types": "./src/public/safeOutboundFetch.d.ts",
+      "import": "./src/shared/network/safeOutboundFetch.ts"
+    },
     "./shared/constants/selfServiceScopes": {
       "types": "./src/public/selfServiceScopes.d.ts",
       "import": "./src/shared/constants/selfServiceScopes.ts"
@@ -230,10 +266,6 @@
       "types": "./src/public/requestTelemetry.d.ts",
       "import": "./src/shared/utils/requestTelemetry.ts"
     },
-    "./control/provider-nodes-route": {
-      "types": "./src/public/providerNodesRoute.d.ts",
-      "import": "./src/control/providerNodesRoute.ts"
-    },
     "./control/provider-node-by-id-route": {
       "types": "./src/public/providerNodeByIdRoute.d.ts",
       "import": "./src/control/providerNodeByIdRoute.ts"
@@ -241,10 +273,6 @@
     "./control/provider-models-route": {
       "types": "./src/public/providerModelsRoute.d.ts",
       "import": "./src/control/providerModelsRoute.ts"
-    },
-    "./control/provider-nodes-validate-route": {
-      "types": "./src/public/providerNodesValidateRoute.d.ts",
-      "import": "./src/control/providerNodesValidateRoute.ts"
     },
     "./control/keys-by-id-route": {
       "types": "./src/public/keysByIdRoute.d.ts",

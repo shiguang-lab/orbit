@@ -1,16 +1,14 @@
-import { NextResponse } from "next/server";
-import { createProviderNode, getProviderNodes } from "../models/index.ts";
-import { getProviderNodesCount } from "../lib/db/providers/nodes.ts";
+import { randomUUID } from "node:crypto";
+import { createProviderNode, getProviderNodes, getProviderNodesCount } from "@shiguang-gateway/core-domain/db/provider-nodes";
 import {
   OPENAI_COMPATIBLE_PREFIX,
   ANTHROPIC_COMPATIBLE_PREFIX,
   CLAUDE_CODE_COMPATIBLE_PREFIX,
-} from "../shared/constants/providers.ts";
-import { generateId } from "../shared/utils/index.ts";
-import { isCcCompatibleProviderEnabled } from "../shared/utils/featureFlags.ts";
-import { createProviderNodeSchema, paginationSchema } from "../shared/validation/schemas.ts";
-import { isValidationFailure, validateBody } from "../shared/validation/helpers.ts";
-import { validateProviderNodeBaseUrl } from "./providerNodesUrlGuard.ts";
+} from "@shiguang-gateway/core-domain/catalog/provider-node-prefixes";
+import { isCcCompatibleProviderEnabled } from "@shiguang-gateway/core-domain/control/feature-flags";
+import { createProviderNodeSchema, paginationSchema } from "@shiguang-gateway/core-domain/control/provider-validation-schemas";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { validateProviderNodeBaseUrl } from "./provider-nodes-url-guard.js";
 
 const OPENAI_COMPATIBLE_DEFAULTS = {
   baseUrl: "https://api.openai.com/v1",
@@ -71,7 +69,7 @@ export async function GET(request?: Request) {
     };
     const validation = validateBody(paginationSchema, raw);
     if (isValidationFailure(validation)) {
-      return NextResponse.json({ error: validation.error }, { status: 400 });
+      return Response.json({ error: validation.error }, { status: 400 });
     }
     const { limit: parsedLimit, offset: parsedOffset } = validation.data;
     const limit =
@@ -81,24 +79,24 @@ export async function GET(request?: Request) {
 
     const total = getProviderNodesCount();
     const nodes = await getProviderNodes({}, limit, offset);
-    return NextResponse.json({
+    return Response.json({
       nodes,
       total,
       ccCompatibleProviderEnabled: isCcCompatibleProviderEnabled(),
     });
   } catch (error) {
     console.log("Error fetching provider nodes:", error);
-    return NextResponse.json({ error: "Failed to fetch provider nodes" }, { status: 500 });
+    return Response.json({ error: "Failed to fetch provider nodes" }, { status: 500 });
   }
 }
 
 // POST /api/provider-nodes - Create provider node
-export async function POST(request) {
+export async function POST(request: Request) {
   let rawBody;
   try {
     rawBody = await request.json();
   } catch {
-    return NextResponse.json(
+    return Response.json(
       {
         error: {
           message: "Invalid request",
@@ -112,7 +110,7 @@ export async function POST(request) {
   try {
     const validation = validateBody(createProviderNodeSchema, rawBody);
     if (isValidationFailure(validation)) {
-      return NextResponse.json({ error: validation.error }, { status: 400 });
+      return Response.json({ error: validation.error }, { status: 400 });
     }
     const {
       name,
@@ -135,7 +133,7 @@ export async function POST(request) {
       if (baseUrlError) return baseUrlError;
 
       const node = await createProviderNode({
-        id: `${OPENAI_COMPATIBLE_PREFIX}${VIBEPROXY_OPENAI_DEFAULTS.apiType}-${generateId()}`,
+        id: `${OPENAI_COMPATIBLE_PREFIX}${VIBEPROXY_OPENAI_DEFAULTS.apiType}-${randomUUID()}`,
         type: "openai-compatible",
         prefix: (prefix?.trim() || VIBEPROXY_OPENAI_DEFAULTS.prefix).trim(),
         apiType: apiType || VIBEPROXY_OPENAI_DEFAULTS.apiType,
@@ -146,7 +144,7 @@ export async function POST(request) {
         iconUrl: iconUrl?.trim() || null,
         customHeaders: customHeaders || null,
       });
-      return NextResponse.json({ node }, { status: 201 });
+      return Response.json({ node }, { status: 201 });
     }
 
     // Determine type
@@ -160,7 +158,7 @@ export async function POST(request) {
       if (baseUrlError) return baseUrlError;
 
       const node = await createProviderNode({
-        id: `${OPENAI_COMPATIBLE_PREFIX}${apiType}-${generateId()}`,
+        id: `${OPENAI_COMPATIBLE_PREFIX}${apiType}-${randomUUID()}`,
         type: "openai-compatible",
         prefix: resolvedPrefix,
         apiType,
@@ -171,12 +169,12 @@ export async function POST(request) {
         iconUrl: iconUrl?.trim() || null,
         customHeaders: customHeaders || null,
       });
-      return NextResponse.json({ node }, { status: 201 });
+      return Response.json({ node }, { status: 201 });
     }
 
     if (nodeType === "anthropic-compatible") {
       if (compatMode === "cc" && !isCcCompatibleProviderEnabled()) {
-        return NextResponse.json({ error: "CC Compatible provider is disabled" }, { status: 403 });
+        return Response.json({ error: "CC Compatible provider is disabled" }, { status: 403 });
       }
 
       const rawBaseUrl = baseUrl || ANTHROPIC_COMPATIBLE_DEFAULTS.baseUrl;
@@ -190,8 +188,8 @@ export async function POST(request) {
       const node = await createProviderNode({
         id:
           compatMode === "cc"
-            ? `${CLAUDE_CODE_COMPATIBLE_PREFIX}${generateId()}`
-            : `${ANTHROPIC_COMPATIBLE_PREFIX}${generateId()}`,
+            ? `${CLAUDE_CODE_COMPATIBLE_PREFIX}${randomUUID()}`
+            : `${ANTHROPIC_COMPATIBLE_PREFIX}${randomUUID()}`,
         type: "anthropic-compatible",
         prefix: (prefix || "").trim(),
         baseUrl: sanitizedBaseUrl,
@@ -201,12 +199,12 @@ export async function POST(request) {
         iconUrl: iconUrl?.trim() || null,
         customHeaders: customHeaders || null,
       });
-      return NextResponse.json({ node }, { status: 201 });
+      return Response.json({ node }, { status: 201 });
     }
 
-    return NextResponse.json({ error: "Invalid provider node type" }, { status: 400 });
+    return Response.json({ error: "Invalid provider node type" }, { status: 400 });
   } catch (error) {
     console.log("Error creating provider node:", error);
-    return NextResponse.json({ error: "Failed to create provider node" }, { status: 500 });
+    return Response.json({ error: "Failed to create provider node" }, { status: 500 });
   }
 }

@@ -22,12 +22,12 @@ import {
 import {
   GET as getProviderNodesHandler,
   POST as createProviderNodeHandler,
-} from "@shiguang-gateway/core-domain/control/provider-nodes-route";
+} from "./handlers/provider-nodes.js";
 import {
   DELETE as deleteProviderNodeHandler,
   PUT as updateProviderNodeHandler,
 } from "@shiguang-gateway/core-domain/control/provider-node-by-id-route";
-import { POST as validateProviderNodeHandler } from "@shiguang-gateway/core-domain/control/provider-nodes-validate-route";
+import { POST as validateProviderNodeHandler } from "./handlers/provider-nodes-validate.js";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
 

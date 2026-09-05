@@ -1,11 +1,10 @@
-import { NextResponse } from "next/server";
 import {
   OutboundUrlGuardError,
   parseAndValidateNonMetadataUrl,
   parseAndValidatePublicUrl,
   parseOutboundUrl,
-} from "../shared/network/outboundUrlGuard.ts";
-import { getProviderValidationGuard } from "../shared/network/outboundUrlGuardPolicy.ts";
+} from "@shiguang-gateway/core-domain/network/outbound-url-guard";
+import { getProviderValidationGuard } from "@shiguang-gateway/core-domain/network/outbound-url-guard-policy";
 
 function guardProviderNodeBaseUrl(baseUrl: string): void {
   const guard = getProviderValidationGuard();
@@ -20,7 +19,7 @@ function guardProviderNodeBaseUrl(baseUrl: string): void {
   parseAndValidatePublicUrl(baseUrl);
 }
 
-export function validateProviderNodeBaseUrl(baseUrl: string): NextResponse | null {
+export function validateProviderNodeBaseUrl(baseUrl: string): Response | null {
   try {
     guardProviderNodeBaseUrl(baseUrl);
     return null;
@@ -31,7 +30,7 @@ export function validateProviderNodeBaseUrl(baseUrl: string): NextResponse | nul
           ? "Invalid provider base URL format"
           : error.message
         : "Invalid provider base URL";
-    return NextResponse.json(
+    return Response.json(
       {
         error: {
           message: "Invalid request",
