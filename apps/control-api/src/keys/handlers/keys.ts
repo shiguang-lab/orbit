@@ -1,19 +1,20 @@
-import { NextResponse } from "next/server";
 import {
   getApiKeys,
   getApiKeysCount,
   createApiKey,
-  isCloudEnabled,
   updateApiKeyPermissions,
-} from "../lib/localDb.ts";
-import { getConsistentMachineId } from "../shared/utils/machineId.ts";
-import { syncToCloud } from "../lib/cloudSync.ts";
-import { createKeySchema } from "../shared/validation/schemas.ts";
-import { isValidationFailure, validateBody } from "../shared/validation/helpers.ts";
-import { isApiKeyRevealEnabled, maskStoredApiKey } from "../lib/apiKeyExposure.ts";
-import { requireManagementAuth } from "../lib/api/requireManagementAuth.ts";
-import { normalizeSelfServiceScopesForCreate } from "../shared/constants/selfServiceScopes.ts";
-import * as log from "../sse/utils/logger.ts";
+} from "@shiguang-gateway/core-domain/control/api-key-store";
+import { isCloudEnabled } from "@shiguang-gateway/core-domain/control/settings";
+import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
+import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";
+import { createKeySchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { isApiKeyRevealEnabled, maskStoredApiKey } from "@shiguang-gateway/core-domain/control/api-key-exposure";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { normalizeSelfServiceScopesForCreate } from "@shiguang-gateway/core-domain/shared/constants/selfServiceScopes";
+import * as log from "@shiguang-gateway/core-domain/sse/logger";
+
+const json = (body: unknown, init?: ResponseInit): Response => Response.json(body, init);
 
 function parsePagination(request: Request) {
   const url = new URL(request.url);
@@ -45,19 +46,19 @@ export async function GET(request: Request) {
       key: maskStoredApiKey(k.key),
     }));
 
-    return NextResponse.json({
+    return json({
       keys: maskedKeys,
       total,
       allowKeyReveal: isApiKeyRevealEnabled(),
     });
   } catch (error) {
     log.error("keys", "Error fetching keys", error);
-    return NextResponse.json({ error: "Failed to fetch keys" }, { status: 500 });
+    return json({ error: "Failed to fetch keys" }, { status: 500 });
   }
 }
 
 // POST /api/keys - Create new API key
-export async function POST(request) {
+export async function POST(request: Request) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 
@@ -67,7 +68,7 @@ export async function POST(request) {
     // Zod validation
     const validation = validateBody(createKeySchema, body);
     if (isValidationFailure(validation)) {
-      return NextResponse.json({ error: validation.error }, { status: 400 });
+      return json({ error: validation.error }, { status: 400 });
     }
     const {
       name,
@@ -113,7 +114,7 @@ export async function POST(request) {
     // this is safe to leave unawaited.
     void syncKeysToCloudIfEnabled();
 
-    return NextResponse.json(
+    return json(
       {
         key: apiKey.key,
         name: apiKey.name,
@@ -134,7 +135,7 @@ export async function POST(request) {
     );
   } catch (error) {
     log.error("keys", "Error creating key", error);
-    return NextResponse.json({ error: "Failed to create key" }, { status: 500 });
+    return json({ error: "Failed to create key" }, { status: 500 });
   }
 }
 

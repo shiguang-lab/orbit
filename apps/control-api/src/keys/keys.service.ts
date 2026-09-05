@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import {
   GET as getKeysHandler,
   POST as createKeyHandler,
-} from "@shiguang-gateway/core-domain/control/keys-route";
+} from "./handlers/keys.js";
 import {
   GET as getKeyByIdHandler,
   PATCH as patchKeyByIdHandler,

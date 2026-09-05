@@ -28,7 +28,10 @@
       "types": "./src/public/auth.d.ts",
       "import": "./src/sse/services/auth.ts"
     },
-    "./sse/logger": "./src/sse/utils/logger.ts",
+    "./sse/logger": {
+      "types": "./src/public/logger.d.ts",
+      "import": "./src/sse/utils/logger.ts"
+    },
     "./middleware/prompt-injection": "./src/middleware/promptInjectionGuard.ts",
     "./shared/api-key-policy": "./src/shared/utils/apiKeyPolicy.ts",
     "./edge/music-rate-limit": "./src/app/api/v1/_shared/rateLimit.ts",
@@ -150,7 +153,34 @@
       "types": "./src/public/settings.d.ts",
       "import": "./src/lib/db/settings.ts"
     },
-    "./control/api-key-store": "./src/lib/db/apiKeys.ts",
+    "./control/api-key-store": {
+      "types": "./src/public/apiKeyStore.d.ts",
+      "import": "./src/lib/db/apiKeys.ts"
+    },
+    "./control/cloud-sync": {
+      "types": "./src/public/cloudSync.d.ts",
+      "import": "./src/lib/cloudSync.ts"
+    },
+    "./control/api-key-exposure": {
+      "types": "./src/public/apiKeyExposure.d.ts",
+      "import": "./src/lib/apiKeyExposure.ts"
+    },
+    "./shared/utils/machineId": {
+      "types": "./src/public/machineId.d.ts",
+      "import": "./src/shared/utils/machineId.ts"
+    },
+    "./shared/validation/schemas": {
+      "types": "./src/public/keyValidationSchemas.d.ts",
+      "import": "./src/shared/validation/schemas.ts"
+    },
+    "./shared/validation/helpers": {
+      "types": "./src/public/validationHelpers.d.ts",
+      "import": "./src/shared/validation/helpers.ts"
+    },
+    "./shared/constants/selfServiceScopes": {
+      "types": "./src/public/selfServiceScopes.d.ts",
+      "import": "./src/shared/constants/selfServiceScopes.ts"
+    },
     "./control/cli-token-auth": "./src/lib/middleware/cliTokenAuth.ts",
     "./control/gateway-status": {
       "types": "./src/public/gatewayStatus.d.ts",
@@ -215,10 +245,6 @@
     "./control/provider-nodes-validate-route": {
       "types": "./src/public/providerNodesValidateRoute.d.ts",
       "import": "./src/control/providerNodesValidateRoute.ts"
-    },
-    "./control/keys-route": {
-      "types": "./src/public/keysRoute.d.ts",
-      "import": "./src/control/keysRoute.ts"
     },
     "./control/keys-by-id-route": {
       "types": "./src/public/keysByIdRoute.d.ts",
