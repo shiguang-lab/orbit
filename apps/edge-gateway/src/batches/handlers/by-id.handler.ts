@@ -1,8 +1,7 @@
-import { CORS_HEADERS, handleCorsOptions } from "../../shared/utils/cors.ts";
-import { getBatch, deleteBatch } from "../localDb.ts";
-import { NextResponse } from "next/server";
-import { getApiKeyRequestScope } from "../../app/api/v1/_helpers/apiKeyScope.ts";
-import { formatBatchResponse } from "./formatBatchResponse.ts";
+import { getBatch, deleteBatch } from "@shiguang-gateway/core-domain/edge/local-db";
+import { getApiKeyRequestScope } from "./api-key-scope.js";
+import { CORS_HEADERS, handleCorsOptions, jsonResponse } from "./cors.js";
+import { formatBatchResponse } from "./format-batch-response.js";
 
 export async function OPTIONS() {
   return handleCorsOptions();
@@ -25,13 +24,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   const batch = getBatch(id);
 
   if (!batch || !scopeCheck(scope, batch.apiKeyId)) {
-    return NextResponse.json(
+    return jsonResponse(
       { error: { message: "Batch not found", type: "invalid_request_error" } },
       { status: 404, headers: CORS_HEADERS }
     );
   }
 
-  return NextResponse.json(formatBatchResponse(batch), { headers: CORS_HEADERS });
+  return jsonResponse(formatBatchResponse(batch), { headers: CORS_HEADERS });
 }
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -42,7 +41,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
   const batch = getBatch(id);
 
   if (!batch || !scopeCheck(scope, batch.apiKeyId)) {
-    return NextResponse.json(
+    return jsonResponse(
       { error: { message: "Batch not found", type: "invalid_request_error" } },
       { status: 404, headers: CORS_HEADERS }
     );
@@ -51,7 +50,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
   // Only allow deleting terminal batches (completed, failed, cancelled, expired)
   const terminal = ["completed", "failed", "cancelled", "expired"];
   if (!terminal.includes(batch.status)) {
-    return NextResponse.json(
+    return jsonResponse(
       { error: { message: "Only terminal batches can be deleted", type: "invalid_request_error" } },
       { status: 409, headers: CORS_HEADERS }
     );
@@ -59,5 +58,5 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
 
   deleteBatch(id);
 
-  return NextResponse.json({ id, object: "batch", deleted: true }, { headers: CORS_HEADERS });
+  return jsonResponse({ id, object: "batch", deleted: true }, { headers: CORS_HEADERS });
 }

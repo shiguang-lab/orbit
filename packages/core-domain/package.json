@@ -67,21 +67,9 @@
       "types": "./src/public/edgeImages.d.ts",
       "import": "./src/app/api/v1/images/upscale/handler.ts"
     },
-    "./edge/batches-root-handler": {
-      "types": "./src/public/edgeBatches.d.ts",
-      "import": "./src/lib/batches/rootRouteHandler.ts"
-    },
-    "./edge/batches-by-id-handler": {
-      "types": "./src/public/edgeBatches.d.ts",
-      "import": "./src/lib/batches/byIdRouteHandler.ts"
-    },
-    "./edge/batches-cancel-handler": {
-      "types": "./src/public/edgeBatches.d.ts",
-      "import": "./src/lib/batches/cancelRouteHandler.ts"
-    },
-    "./edge/batches-delete-completed-handler": {
-      "types": "./src/public/edgeBatches.d.ts",
-      "import": "./src/lib/batches/deleteCompletedRouteHandler.ts"
+    "./edge/batches-validation-schemas": {
+      "types": "./src/public/batchesValidationSchemas.d.ts",
+      "import": "./src/shared/validation/schemas/apiV1.ts"
     },
     "./edge/local-db": {
       "types": "./src/public/localDb.d.ts",

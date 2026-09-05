@@ -6,7 +6,7 @@ port or selecting a surface at runtime.
 
 | App | Owns | Reads/writes | Acceptance |
 | --- | --- | --- | --- |
-| `edge-gateway` | Public `/v1`, `/v1beta`, A2A and provider execution; no live-dashboard listener | Provider connections, batches/files (through domain services) | `pnpm --filter @shiguang-gateway/edge-gateway typecheck && pnpm --filter @shiguang-gateway/edge-gateway build && pnpm smoke:split-deployment` |
+| `edge-gateway` | Public `/v1`, `/v1beta`, A2A and provider execution; no live-dashboard listener | Provider connections, batches/files (through app-owned Nest modules and handlers) | `pnpm --filter @shiguang-gateway/edge-gateway typecheck && pnpm --filter @shiguang-gateway/edge-gateway build && pnpm smoke:split-deployment` |
 | `control-api` | Admin `/api`, authz, CRUD, settings and audit commands; migrated health route group in `apps/control-api/src/routes/api` | Control-plane tables | `pnpm --filter @shiguang-gateway/control-api typecheck && pnpm --filter @shiguang-gateway/control-api build` |
 | `realtime` | Live dashboard WebSocket transport (`apps/realtime/src/live-ws`) | Event projections only | `pnpm --filter @shiguang-gateway/realtime typecheck && pnpm --filter @shiguang-gateway/realtime build` |
 | `worker` | Schedulers, sync, cleanup and background writes; task manifest/runner in `apps/worker/src/jobs` | Usage, quota, audit and job tables | `pnpm --filter @shiguang-gateway/worker typecheck && pnpm --filter @shiguang-gateway/worker build && pnpm smoke:worker` |

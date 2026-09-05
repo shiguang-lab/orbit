@@ -1,10 +1,9 @@
-import { CORS_HEADERS, handleCorsOptions } from "../../shared/utils/cors.ts";
-import { createBatch, getFile, listBatches, countBatches } from "../localDb.ts";
-import { v1BatchCreateSchema } from "../../shared/validation/schemas.ts";
-import { NextResponse } from "next/server";
-import { getApiKeyRequestScope } from "../../app/api/v1/_helpers/apiKeyScope.ts";
-import { formatBatchResponse } from "./formatBatchResponse.ts";
-import { parseBatchListLimit } from "./parseListLimit.ts";
+import { createBatch, getFile, listBatches, countBatches } from "@shiguang-gateway/core-domain/edge/local-db";
+import { v1BatchCreateSchema } from "@shiguang-gateway/core-domain/edge/batches-validation-schemas";
+import { getApiKeyRequestScope } from "./api-key-scope.js";
+import { CORS_HEADERS, handleCorsOptions, jsonResponse } from "./cors.js";
+import { formatBatchResponse } from "./format-batch-response.js";
+import { parseBatchListLimit } from "./parse-list-limit.js";
 
 export async function OPTIONS() {
   return handleCorsOptions();
@@ -19,7 +18,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const validation = v1BatchCreateSchema.safeParse(body);
     if (!validation.success) {
-      return NextResponse.json(
+      return jsonResponse(
         {
           error: {
             message: validation.error.message,
@@ -33,7 +32,7 @@ export async function POST(request: Request) {
 
     const inputFile = getFile(validated.input_file_id);
     if (!inputFile || (inputFile.apiKeyId !== null && inputFile.apiKeyId !== apiKeyId)) {
-      return NextResponse.json(
+      return jsonResponse(
         { error: { message: "Input file not found", type: "invalid_request_error" } },
         { status: 400, headers: CORS_HEADERS }
       );
@@ -49,10 +48,10 @@ export async function POST(request: Request) {
       outputExpiresAfterAnchor: validated.output_expires_after?.anchor || null,
     });
 
-    return NextResponse.json(formatBatchResponse(batch), { headers: CORS_HEADERS });
+    return jsonResponse(formatBatchResponse(batch), { headers: CORS_HEADERS });
   } catch (error) {
     console.error("[BATCHES] Create failed:", error);
-    return NextResponse.json(
+    return jsonResponse(
       {
         error: {
           message: error instanceof Error ? error.message : "Create failed",
@@ -72,7 +71,7 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const parsedLimit = parseBatchListLimit(url.searchParams.get("limit"));
   if (!parsedLimit.ok) {
-    return NextResponse.json(
+    return jsonResponse(
       { error: { message: parsedLimit.message, type: "invalid_request_error" } },
       { status: 400, headers: CORS_HEADERS }
     );
@@ -88,12 +87,12 @@ export async function GET(request: Request) {
 
   const totalCount = countBatches(apiKeyId || undefined);
 
-  return NextResponse.json(
+  return jsonResponse(
     {
       object: "list",
       data: formattedData,
       first_id: formattedData.length > 0 ? formattedData[0].id : null,
-      last_id: formattedData.length > 0 ? formattedData.at(-1).id : null,
+      last_id: formattedData.length > 0 ? formattedData.at(-1)?.id ?? null : null,
       has_more: hasMore,
       total_count: totalCount,
     },

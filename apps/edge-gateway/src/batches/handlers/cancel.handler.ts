@@ -1,8 +1,7 @@
-import { CORS_HEADERS, handleCorsOptions } from "../../shared/utils/cors.ts";
-import { getBatch, updateBatch } from "../localDb.ts";
-import { NextResponse } from "next/server";
-import { getApiKeyRequestScope } from "../../app/api/v1/_helpers/apiKeyScope.ts";
-import { formatBatchResponse } from "./formatBatchResponse.ts";
+import { getBatch, updateBatch } from "@shiguang-gateway/core-domain/edge/local-db";
+import { getApiKeyRequestScope } from "./api-key-scope.js";
+import { CORS_HEADERS, handleCorsOptions, jsonResponse } from "./cors.js";
+import { formatBatchResponse } from "./format-batch-response.js";
 
 export async function OPTIONS() {
   return handleCorsOptions();
@@ -17,14 +16,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const batch = getBatch(id);
 
   if (!batch || (batch.apiKeyId !== null && batch.apiKeyId !== apiKeyId)) {
-    return NextResponse.json(
+    return jsonResponse(
       { error: { message: "Batch not found", type: "invalid_request_error" } },
       { status: 404, headers: CORS_HEADERS }
     );
   }
 
   if (["completed", "failed", "cancelled", "expired"].includes(batch.status)) {
-    return NextResponse.json(
+    return jsonResponse(
       {
         error: { message: `Batch ${id} is already ${batch.status}`, type: "invalid_request_error" },
       },
@@ -33,7 +32,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   }
 
   if (batch.status === "cancelling") {
-    return NextResponse.json(formatBatchResponse(batch), { headers: CORS_HEADERS });
+    return jsonResponse(formatBatchResponse(batch), { headers: CORS_HEADERS });
   }
 
   updateBatch(id, {
@@ -43,5 +42,5 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   const updatedBatch = getBatch(id);
 
-  return NextResponse.json(formatBatchResponse(updatedBatch), { headers: CORS_HEADERS });
+  return jsonResponse(formatBatchResponse(updatedBatch), { headers: CORS_HEADERS });
 }

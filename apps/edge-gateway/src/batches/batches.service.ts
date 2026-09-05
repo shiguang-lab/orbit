@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { GET as getBatches, POST as createBatch } from "@shiguang-gateway/core-domain/edge/batches-root-handler";
-import { GET as getBatch, DELETE as deleteBatch } from "@shiguang-gateway/core-domain/edge/batches-by-id-handler";
-import { POST as cancelBatch } from "@shiguang-gateway/core-domain/edge/batches-cancel-handler";
-import { DELETE as deleteCompletedBatches } from "@shiguang-gateway/core-domain/edge/batches-delete-completed-handler";
+import { GET as getBatches, POST as createBatch } from "./handlers/root.handler.js";
+import { GET as getBatch, DELETE as deleteBatch } from "./handlers/by-id.handler.js";
+import { POST as cancelBatch } from "./handlers/cancel.handler.js";
+import { DELETE as deleteCompletedBatches } from "./handlers/delete-completed.handler.js";
 
 @Injectable()
 export class BatchesService {
