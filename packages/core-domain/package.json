@@ -67,18 +67,6 @@
       "types": "./src/public/edgeImages.d.ts",
       "import": "./src/app/api/v1/images/upscale/handler.ts"
     },
-    "./edge/files-root-handler": {
-      "types": "./src/public/edgeFiles.d.ts",
-      "import": "./src/lib/files/rootRouteHandler.ts"
-    },
-    "./edge/files-by-id-handler": {
-      "types": "./src/public/edgeFiles.d.ts",
-      "import": "./src/lib/files/byIdRouteHandler.ts"
-    },
-    "./edge/files-content-handler": {
-      "types": "./src/public/edgeFiles.d.ts",
-      "import": "./src/lib/files/contentRouteHandler.ts"
-    },
     "./edge/batches-root-handler": {
       "types": "./src/public/edgeBatches.d.ts",
       "import": "./src/lib/batches/rootRouteHandler.ts"
@@ -95,7 +83,10 @@
       "types": "./src/public/edgeBatches.d.ts",
       "import": "./src/lib/batches/deleteCompletedRouteHandler.ts"
     },
-    "./edge/local-db": "./src/lib/localDb.ts",
+    "./edge/local-db": {
+      "types": "./src/public/localDb.d.ts",
+      "import": "./src/lib/localDb.ts"
+    },
     "./edge/audio-transcription-handler": {
       "types": "./src/public/edgeAudio.d.ts",
       "import": "./src/lib/audio/transcriptionRouteHandlers.ts"

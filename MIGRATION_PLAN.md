@@ -18,6 +18,7 @@
 - ✅ control-api 的 `/api/auth/status`、`/api/gateway/status`、`/api/shutdown`、`/api/restart`、`/api/token-health` 已物理迁入 `apps/control-api/src/routes/api`；edge 的 `/api/v1/music/generations`、`/api/v1/speech-to-text`、`/api/v1/voices` 与 `/api/v1/ws` 已物理迁入 `apps/edge-gateway/src/routes/api`。
 - ✅ control-api 的 `/api/provider-stats`、`/api/provider-metrics`、`/api/provider-nodes`、`/api/provider-nodes/validate`、`/api/provider-models` 与 edge 的 `/api/v1/embeddings`、`/api/v1/audio/transcriptions`、`/api/v1/text-to-speech/*`、`/api/v1/moderations`、`/api/v1/rerank` 已物理迁入各自 app 路由树，并完成独立鉴权/路径验收。
 - ✅ control-api 的完整 `/api/keys/**` 管理域（密钥 CRUD、设备、重生成、明文查看、用量限制、分组、成员与权限）已物理迁入 `apps/control-api/src/keys`；root GET/POST handler 已由 app-owned `keys/handlers/keys.ts` 闭环，其余业务 handler 通过 `core-domain/control/*` 显式子路径提供，并完成 control 401 / edge 404 的拆分部署验收。
+- ✅ edge-gateway 的 `/api/v1/files*` handler 已物理迁入 `apps/edge-gateway/src/files/handlers`，改用 app-owned Response/CORS 适配层；文件持久化仍通过显式 core-domain DB 合约提供。
 - ✅ `db-schema` 收敛跨 app 的表名/所有权元数据；查询与写入仍由所属 app 的领域服务负责。
 - ✅ 每个 app 的 typecheck、部署 smoke 与边界审计已纳入逐域验收；详见 [`DOMAIN_BOUNDARIES.md`](./DOMAIN_BOUNDARIES.md)。
 

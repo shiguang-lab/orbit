@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { GET as getFiles, POST as createFile } from "@shiguang-gateway/core-domain/edge/files-root-handler";
-import { GET as getFile, DELETE as deleteFile } from "@shiguang-gateway/core-domain/edge/files-by-id-handler";
-import { GET as getFileContent } from "@shiguang-gateway/core-domain/edge/files-content-handler";
+import { GET as getFiles, POST as createFile } from "./handlers/root.handler.js";
+import { GET as getFile, DELETE as deleteFile } from "./handlers/by-id.handler.js";
+import { GET as getFileContent } from "./handlers/content.handler.js";
 
 @Injectable()
 export class FilesService {

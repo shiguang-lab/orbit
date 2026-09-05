@@ -1,7 +1,6 @@
-import { CORS_HEADERS, handleCorsOptions } from "../../shared/utils/cors.ts";
-import { createFile, listFiles, formatFileResponse, countFiles } from "../localDb.ts";
-import { NextResponse } from "next/server";
-import { getApiKeyRequestScope } from "../../app/api/v1/_helpers/apiKeyScope.ts";
+import { createFile, listFiles, formatFileResponse, countFiles } from "@shiguang-gateway/core-domain/edge/local-db";
+import { getApiKeyRequestScope } from "./api-key-scope.js";
+import { CORS_HEADERS, handleCorsOptions, jsonResponse } from "./cors.js";
 
 export async function OPTIONS() {
   return handleCorsOptions();
@@ -26,7 +25,7 @@ export function parseFilesListQuery(searchParams: URLSearchParams):
     if (!/^\d+$/.test(rawLimit)) {
       return {
         ok: false,
-        response: NextResponse.json(
+        response: jsonResponse(
           { error: { message: "limit must be a positive integer", type: "invalid_request_error" } },
           { status: 400, headers: CORS_HEADERS }
         ),
@@ -37,7 +36,7 @@ export function parseFilesListQuery(searchParams: URLSearchParams):
     if (limit < 1 || limit > MAX_LIST_LIMIT) {
       return {
         ok: false,
-        response: NextResponse.json(
+        response: jsonResponse(
           {
             error: {
               message: `limit must be between 1 and ${MAX_LIST_LIMIT}`,
@@ -75,7 +74,7 @@ export async function POST(request: Request) {
     const expiresAfterSeconds = formData.get("expires_after[seconds]") as string;
 
     if (!file || !purpose) {
-      return NextResponse.json(
+      return jsonResponse(
         { error: { message: "Missing file or purpose", type: "invalid_request_error" } },
         { status: 400, headers: CORS_HEADERS }
       );
@@ -83,7 +82,7 @@ export async function POST(request: Request) {
 
     const MAX_FILE_BYTES = 512 * 1024 * 1024; // 512 MB
     if (file.size > MAX_FILE_BYTES) {
-      return NextResponse.json(
+      return jsonResponse(
         {
           error: {
             message: "File exceeds maximum allowed size of 512 MB",
@@ -117,10 +116,10 @@ export async function POST(request: Request) {
       expiresAt,
     });
 
-    return NextResponse.json(formatFileResponse(record), { headers: CORS_HEADERS });
+    return jsonResponse(formatFileResponse(record), { headers: CORS_HEADERS });
   } catch (error) {
     console.error("[FILES] Upload failed:", error);
-    return NextResponse.json(
+    return jsonResponse(
       { error: { message: "Upload failed", type: "server_error" } },
       { status: 500, headers: CORS_HEADERS }
     );
@@ -150,12 +149,12 @@ export async function GET(request: Request) {
   const data = files.slice(0, limit);
   const totalCount = countFiles({ apiKeyId: apiKeyId || undefined, purpose });
 
-  return NextResponse.json(
+  return jsonResponse(
     {
       object: "list",
       data: data.map((f) => formatFileResponse(f)),
       first_id: data.length > 0 ? data[0].id : null,
-      last_id: data.length > 0 ? data.at(-1).id : null,
+      last_id: data.length > 0 ? data.at(-1)?.id ?? null : null,
       has_more: hasMore,
       total_count: totalCount,
     },
