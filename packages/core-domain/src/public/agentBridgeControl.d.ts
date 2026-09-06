@@ -36,7 +36,7 @@ export interface AgentBridgeMappingRow {
   updated_at: string;
 }
 export interface AgentBridgeBypassRow { pattern: string; source: "default" | "user"; created_at: string }
-export function getAllBypassPatterns(): string[];
+export function getAllBypassPatterns(): AgentBridgeBypassRow[];
 export function getUserBypassPatterns(): string[];
 export function replaceUserBypassPatterns(patterns: string[]): void;
 export function getAllAgentBridgeStates(): AgentBridgeStateRow[];
@@ -53,3 +53,34 @@ export interface AgentDetection { installed: boolean; version?: string; path?: s
 export function detectAgent(id: string): AgentDetection;
 export interface TrafficBuffer { list(filters?: Record<string, unknown>): any[]; clear(): void }
 export const globalTrafficBuffer: TrafficBuffer;
+export interface MitmStatus { running: boolean; dnsConfigured?: boolean; [key: string]: unknown }
+export function getMitmStatus(agentId?: string): Promise<MitmStatus>;
+export function getAllAgentsStatus(): Array<Record<string, unknown>>;
+export function getCachedPassword(): string | null;
+export function setCachedPassword(password: string | null | undefined): void;
+export function checkCertInstalled(certPath: string): Promise<boolean>;
+export function resolveMitmDataDir(): string;
+export interface DiagnosticCheck { name: string; ok: boolean; hint: string | null }
+export interface DiagnosticReport { healthy: boolean; checks: DiagnosticCheck[] }
+export function summarizeDiagnostics(input: {
+  serverRunning: boolean;
+  serverReachable: boolean;
+  certExists: boolean;
+  certTrusted: boolean;
+  dnsConfigured: boolean;
+}): DiagnosticReport;
+export function checkDNSEntryForAgent(agentId?: string): boolean;
+export function isSudoPasswordRequired(): boolean;
+export function generateCert(options?: { force?: boolean }): Promise<{ key: string; cert: string }>;
+export interface CertInstallResult {
+  installed: boolean;
+  skipped?: boolean;
+  reason?: string;
+  message?: string;
+  manualGuide?: unknown;
+}
+export function installCertResult(sudoPassword: string, certPath: string): Promise<CertInstallResult>;
+export function uninstallCert(sudoPassword: string, certPath: string): Promise<void>;
+export function normalizeMitmSudoPasswordInput(value?: string | null): string;
+export function resolveMitmSudoPassword(bodyPassword?: string, cachedPassword?: string | null): string;
+export function isMitmSudoPasswordRequired(sudoPassword: string): boolean;

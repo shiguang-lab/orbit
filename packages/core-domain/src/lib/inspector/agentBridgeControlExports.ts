@@ -34,3 +34,18 @@ export {
 export { ALL_TARGETS, resolveTarget } from "../../mitm/targets/index.ts";
 export { detectAgent } from "../../mitm/detection/index.ts";
 export { globalTrafficBuffer } from "../../mitm/inspector/buffer.ts";
+export {
+  getMitmStatus,
+  getAllAgentsStatus,
+  getCachedPassword,
+} from "../../mitm/manager.ts";
+export { checkCertInstalled, installCertResult, uninstallCert } from "../../mitm/cert/install.ts";
+export { resolveMitmDataDir } from "../../mitm/dataDir.ts";
+export { summarizeDiagnostics } from "../../mitm/inspector/diagnostics.ts";
+export { checkDNSEntryForAgent, isSudoPasswordRequired } from "../../mitm/dns/dnsConfig.ts";
+export { generateCert } from "../../mitm/cert/generate.ts";
+export {
+  isMitmSudoPasswordRequired,
+  normalizeMitmSudoPasswordInput,
+  resolveMitmSudoPassword,
+} from "../../mitm/sudoGate.ts";

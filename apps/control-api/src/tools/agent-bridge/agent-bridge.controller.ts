@@ -20,4 +20,11 @@ export class AgentBridgeController {
   @Get("agents/:id/detected-models") detectedModels(@Param("id") id: string, @Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, (r) => this.service.detectedModels(r, id)); }
   @Get("agents/:id/mappings") mappingsGet(@Param("id") id: string, @Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, (r) => this.service.mappingsGet(r, id)); }
   @Put("agents/:id/mappings") mappingsPut(@Param("id") id: string, @Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, (r) => this.service.mappingsPut(r, id)); }
+  @Get("state") state(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, () => this.service.state()); }
+  @Get("diagnose") diagnose(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, (r) => this.service.diagnose(r)); }
+  @Get("cert") cert(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, () => this.service.cert()); }
+  @Post("cert") certPost(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, (r) => this.service.certPost(r)); }
+  @Delete("cert") certDelete(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, (r) => this.service.certDelete(r)); }
+  @Post("cert/regenerate") certRegenerate(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, () => this.service.certRegenerate()); }
+  @Get("cert/download") certDownload(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, () => this.service.certDownload()); }
 }
