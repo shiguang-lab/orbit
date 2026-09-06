@@ -25,6 +25,15 @@ export interface AccountKeyLimit {
   hourlyIssued: number;
   updatedAt: string;
 }
+export interface ProviderKeyLimit {
+  provider: string;
+  maxActiveKeys: number | null;
+  dailyIssueLimit: number | null;
+  hourlyIssueLimit: number | null;
+  dailyIssued: number;
+  hourlyIssued: number;
+  updatedAt: string;
+}
 export interface QuotaCheckResult {
   allowed: boolean;
   errorCode?: string;
@@ -50,3 +59,5 @@ export function getRegisteredKey(id: string): RegisteredKey | null;
 export function revokeRegisteredKey(id: string): boolean;
 export function getAccountKeyLimit(accountId: string): AccountKeyLimit | null;
 export function setAccountKeyLimit(accountId: string, limits: { maxActiveKeys?: number | null; dailyIssueLimit?: number | null; hourlyIssueLimit?: number | null }): void;
+export function getProviderKeyLimit(provider: string): ProviderKeyLimit | null;
+export function setProviderKeyLimit(provider: string, limits: { maxActiveKeys?: number | null; dailyIssueLimit?: number | null; hourlyIssueLimit?: number | null }): void;
