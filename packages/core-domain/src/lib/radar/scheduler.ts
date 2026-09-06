@@ -2,11 +2,11 @@
  * scheduler.ts — daily background sync for the Radar feed (spec: "GET 1×/dia,
  * só quando opt-in").
  *
- * Inertia contract: a flag-off boot NEVER creates a timer. The scheduler only
- * starts from (a) `initRadarSyncScheduler()` at boot when the flag AND the
- * user opt-in are already on, or (b) the settings route right after the user
- * opts in. If the flag is later turned off, the next tick stops the timer —
- * returning the process to the zero-timer state.
+ * Inertia contract: a flag-off boot NEVER creates a timer. When the feature is
+ * enabled, the worker owns one timer and re-reads opt-in state on each tick.
+ * This keeps background lifecycle out of the control process while allowing a
+ * settings change to take effect without restarting the worker. If the flag is
+ * later turned off, the next tick stops the timer.
  *
  * The tick itself is cheap (one flag lookup + one DB row) and only performs a
  * network sync when the cache is older than the daily window computed by
@@ -170,16 +170,13 @@ export function stopRadarSyncScheduler(deps: RadarSchedulerDeps = {}): void {
 }
 
 /**
- * Boot-time init: only arms the scheduler when the flag AND the opt-in are
- * already on (a flag-off install stays byte-identical — no timer, no DB
- * polling loop). Never throws.
+ * Boot-time init: arms the worker scheduler whenever the feature is enabled.
+ * The tick itself enforces opt-in, so the control process only persists state.
  */
 export function initRadarSyncScheduler(deps: RadarSchedulerDeps = {}): boolean {
   try {
     const getFlag = deps.getFlag ?? isFeatureFlagEnabled;
     if (!getFlag("RADAR_ENABLED")) return false;
-    const settings = (deps.getSettings ?? getRadarSettings)();
-    if (!settings.optIn) return false;
     return ensureRadarSyncScheduler(deps);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);

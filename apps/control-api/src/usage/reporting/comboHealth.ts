@@ -1,6 +1,6 @@
-import { getComboById, getCombos } from "@shiguang-gateway/core-domain/usage/reporting-support/lib/db/combos";
-import { getDbInstance } from "@shiguang-gateway/core-domain/usage/reporting-support/lib/db/core";
-import { getQuotaSnapshots } from "@shiguang-gateway/core-domain/usage/reporting-support/lib/db/quotaSnapshots";
+import { getComboById, getCombos } from "@shiguang-gateway/core-domain/usage/reporting-support/combos";
+import { getDbInstance } from "@shiguang-gateway/core-domain/usage/reporting-support/database";
+import { getQuotaSnapshots } from "@shiguang-gateway/core-domain/usage/reporting-support/quota-snapshots";
 import { getComboMetrics } from "@shiguang-gateway/open-sse/services/comboMetrics";
 import { resolveNestedComboTargets } from "@shiguang-gateway/open-sse/services/combo";
 import type {

@@ -13,13 +13,16 @@ import {
 import { WORKER_JOBS } from "../src/jobs/registry.ts";
 
 test("worker registry owns backup scheduling and its teardown", () => {
-  assert.deepEqual(WORKER_JOBS.find(({ name }) => name === "backup-schedule"), {
+  const job = WORKER_JOBS.find(({ name }) => name === "backup-schedule");
+  assert.ok(job);
+  const { loadModule, ...metadata } = job;
+  assert.deepEqual(metadata, {
     name: "backup-schedule",
     mode: "call",
-    modulePath: "./backup-schedule.js",
     exportName: "startBackupScheduleJob",
     stopExportName: "stopBackupScheduleJob",
   });
+  assert.equal(typeof loadModule, "function");
 });
 
 test("backup scheduler start, stop, and restart are idempotent", (t) => {

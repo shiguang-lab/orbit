@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
-import { purgeCallLogs } from "@shiguang-gateway/core-domain/worker/lib/db/cleanup.ts";
+import { purgeCallLogs } from "@shiguang-gateway/core-domain/control/database-cleanup";
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 
 export async function POST(request: Request) {

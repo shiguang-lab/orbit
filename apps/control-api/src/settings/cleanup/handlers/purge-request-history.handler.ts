@@ -3,7 +3,7 @@ import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
 import {
   purgeCallLogs,
   purgeDetailedLogs,
-} from "@shiguang-gateway/core-domain/worker/lib/db/cleanup.ts";
+} from "@shiguang-gateway/core-domain/control/database-cleanup";
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 
 export async function POST(request: Request) {

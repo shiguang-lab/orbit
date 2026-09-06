@@ -1243,27 +1243,28 @@
     },
     "./domain/provider-error-classifier": "./src/domain/providerErrorClassifier.ts",
     "./domain/provider-error-signals": "./src/domain/providerErrorSignals.ts",
-    "./worker/lib/initCloudSync.ts": "./src/lib/initCloudSync.ts",
-    "./worker/domain/quotaCache.ts": "./src/domain/quotaCache.ts",
-    "./worker/lib/spend/batchWriter.ts": "./src/lib/spend/batchWriter.ts",
-    "./worker/lib/quota/connectionRecovery.ts": "./src/lib/quota/connectionRecovery.ts",
-    "./worker/lib/radar/scheduler.ts": { "types": "./src/public/radar.d.ts", "import": "./src/lib/radar/scheduler.ts" },
+    "./worker/cloud-sync": "./src/lib/initCloudSync.ts",
+    "./worker/quota-cache": "./src/domain/quotaCache.ts",
+    "./worker/spend-batch-writer": "./src/lib/spend/batchWriter.ts",
+    "./worker/connection-recovery": "./src/lib/quota/connectionRecovery.ts",
+    "./worker/radar-scheduler": { "types": "./src/public/radar.d.ts", "import": "./src/lib/radar/scheduler.ts" },
     "./control/embedded-services-runtime-support": "./src/control/embedded-services-runtime-support.ts",
-    "./worker/lib/modelsDevSync.ts": "./src/lib/modelsDevSync.ts",
-    "./worker/lib/pricingSync.ts": "./src/lib/pricingSync.ts",
-    "./worker/lib/db/cleanup.ts": "./src/lib/db/cleanup.ts",
-    "./worker/lib/proxySubscription/subscriptionService.ts": "./src/lib/proxySubscription/subscriptionService.ts",
-    "./worker/lib/db/sessionAccountAffinity.ts": "./src/lib/db/sessionAccountAffinity.ts",
-    "./worker/lib/db/vacuumScheduler.ts": "./src/lib/db/vacuumScheduler.ts",
-    "./worker/lib/compliance/index.ts": "./src/lib/compliance/index.ts",
-    "./worker/lib/memory/index.ts": "./src/lib/memory/index.ts",
-    "./worker/lib/arenaEloSync.ts": "./src/lib/arenaEloSync.ts",
-    "./worker/lib/catalog/openrouterProviderStats.ts": "./src/lib/catalog/openrouterProviderStats.ts",
-    "./worker/lib/contextWindowResolver.ts": "./src/lib/contextWindowResolver.ts",
-    "./worker/lib/memory/typedDecay.ts": "./src/lib/memory/typedDecay.ts",
-    "./worker/lib/config/hotReload.ts": "./src/lib/config/hotReload.ts",
+    "./worker/model-sync": "./src/lib/modelsDevSync.ts",
+    "./worker/pricing-sync": "./src/lib/pricingSync.ts",
+    "./worker/database-cleanup": "./src/lib/db/cleanup.ts",
+    "./control/database-cleanup": "./src/lib/db/cleanup.ts",
+    "./worker/proxy-subscription": "./src/lib/proxySubscription/subscriptionService.ts",
+    "./worker/session-affinity": "./src/lib/db/sessionAccountAffinity.ts",
+    "./worker/database-vacuum": "./src/lib/db/vacuumScheduler.ts",
+    "./worker/compliance": "./src/lib/compliance/index.ts",
+    "./worker/memory": "./src/lib/memory/index.ts",
+    "./worker/arena-elo-sync": "./src/lib/arenaEloSync.ts",
+    "./worker/openrouter-provider-stats": "./src/lib/catalog/openrouterProviderStats.ts",
+    "./worker/context-window": "./src/lib/contextWindowResolver.ts",
+    "./worker/typed-memory-decay": "./src/lib/memory/typedDecay.ts",
+    "./worker/config-hot-reload": "./src/lib/config/hotReload.ts",
     "./backup/runtime": "./src/lib/backup/runtime.ts",
-    "./lib/modelAliasResolver": "./src/lib/modelAliasResolver.ts",
+    "./edge/model-alias-resolver": "./src/lib/modelAliasResolver.ts",
     "./shared/constants/cliTools": "./src/shared/constants/cliTools.ts",
     "./shared/middleware/chatBodyAdmission": "./src/shared/middleware/chatBodyAdmission.ts",
     "./shared/services/grokBuildConfig": "./src/shared/services/grokBuildConfig.ts",
@@ -1341,17 +1342,17 @@
     "./usage/provider-limits-support/usageEvents": "./src/lib/usage/usageEvents.ts",
     "./usage/provider-limits-support/quotaNormalize": "./src/lib/usage/providerLimits/quotaNormalize.ts",
     "./usage/provider-limits-support/chunkedSpacingSync": "./src/lib/usage/providerLimits/chunkedSpacingSync.ts",
-    "./usage/reporting-support/lib/db/comboForecast": "./src/lib/db/comboForecast.ts",
-    "./usage/reporting-support/lib/db/combos": "./src/lib/db/combos.ts",
-    "./usage/reporting-support/lib/db/settings": "./src/lib/db/settings.ts",
-    "./usage/reporting-support/lib/db/quotaSnapshots": "./src/lib/db/quotaSnapshots.ts",
-    "./usage/reporting-support/lib/usage/costCalculator": "./src/lib/usage/costCalculator.ts",
+    "./usage/reporting-support/combo-forecast": "./src/lib/db/comboForecast.ts",
+    "./usage/reporting-support/combos": "./src/lib/db/combos.ts",
+    "./usage/reporting-support/pricing": "./src/lib/db/settings.ts",
+    "./usage/reporting-support/quota-snapshots": "./src/lib/db/quotaSnapshots.ts",
+    "./usage/reporting-support/cost-calculator": "./src/lib/usage/costCalculator.ts",
     "./usage/reporting-support/shared/types/utilization": "./src/shared/types/utilization.ts",
-    "./usage/reporting-support/lib/db/core": "./src/lib/db/core.ts",
-    "./usage/reporting-support/lib/db/providers": "./src/lib/db/providers.ts",
+    "./usage/reporting-support/database": "./src/lib/db/core.ts",
+    "./usage/reporting-support/providers": "./src/lib/db/providers.ts",
     "./usage/reporting-support/shared/utils/circuitBreaker": "./src/shared/utils/circuitBreaker.ts",
     "./usage/reporting-support/domain/connectionModelRules": "./src/domain/connectionModelRules.ts",
-    "./usage/reporting-support/lib/usage/callLogs": "./src/lib/usage/callLogs.ts",
+    "./usage/reporting-support/call-logs": "./src/lib/usage/callLogs.ts",
     "./runtime/quota-key": "./src/lib/quota/quotaKey.ts",
     "./runtime/usage-db": "./src/lib/usageDb.ts",
     "./runtime/no-auth-providers": "./src/shared/utils/noAuthProviders.ts",
@@ -1562,49 +1563,9 @@
       "types": "./src/models/index.ts",
       "import": "./src/models/index.ts"
     },
-    "./lib/compliance/index": {
-      "types": "./src/lib/compliance/index.ts",
-      "import": "./src/lib/compliance/index.ts"
-    },
-    "./lib/compliance/providerAudit": {
-      "types": "./src/lib/compliance/providerAudit.ts",
-      "import": "./src/lib/compliance/providerAudit.ts"
-    },
-    "./lib/cloudSync": {
-      "types": "./src/lib/cloudSync.ts",
-      "import": "./src/lib/cloudSync.ts"
-    },
-    "./lib/providers/catalog": {
-      "types": "./src/lib/providers/catalog.ts",
-      "import": "./src/lib/providers/catalog.ts"
-    },
-    "./lib/providers/requestDefaults": {
-      "types": "./src/lib/providers/requestDefaults.ts",
-      "import": "./src/lib/providers/requestDefaults.ts"
-    },
-    "./lib/providers/chatgptWebRetirementResponse": {
+    "./shared/chatgpt-web-retirement-response": {
       "types": "./src/lib/providers/chatgptWebRetirementResponse.ts",
       "import": "./src/lib/providers/chatgptWebRetirementResponse.ts"
-    },
-    "./lib/api/requireManagementAuth": {
-      "types": "./src/lib/api/requireManagementAuth.ts",
-      "import": "./src/lib/api/requireManagementAuth.ts"
-    },
-    "./lib/apiKeyExposure": {
-      "types": "./src/lib/apiKeyExposure.ts",
-      "import": "./src/lib/apiKeyExposure.ts"
-    },
-    "./lib/localDb": {
-      "types": "./src/lib/localDb.ts",
-      "import": "./src/lib/localDb.ts"
-    },
-    "./lib/db/models": {
-      "types": "./src/lib/db/models.ts",
-      "import": "./src/lib/db/models.ts"
-    },
-    "./lib/providerModels/modelDiscovery": {
-      "types": "./src/lib/providerModels/modelDiscovery.ts",
-      "import": "./src/lib/providerModels/modelDiscovery.ts"
     },
     "./domain/quotaCache": {
       "types": "./src/public/quotaCache.d.ts",

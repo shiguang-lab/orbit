@@ -3,7 +3,7 @@ import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
 import {
   RESET_USAGE_HISTORY_PERIODS,
   resetUsageHistory,
-} from "@shiguang-gateway/core-domain/worker/lib/db/cleanup.ts";
+} from "@shiguang-gateway/core-domain/control/database-cleanup";
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 import {
   isValidationFailure,

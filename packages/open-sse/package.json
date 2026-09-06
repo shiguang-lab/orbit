@@ -529,7 +529,7 @@
       "types": "./public/dbRuntimeHooks.d.ts",
       "import": "./services/dbRuntimeHooks.ts"
     },
-    "./services/autoRefreshDaemon.ts": "./services/autoRefreshDaemon.ts",
+    "./services/auto-refresh-daemon": "./services/autoRefreshDaemon.ts",
     "./handlers/chat-core/cliproxyapi-credentials": "./handlers/chatCore/cliproxyapiCredentials.ts",
     "./services/usage/codex": "./services/usage/codex.ts",
     "./services/memoryRuntime": {

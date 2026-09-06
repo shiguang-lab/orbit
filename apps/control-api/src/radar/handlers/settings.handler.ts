@@ -2,7 +2,6 @@ import { z } from "zod";
 import { getContributorClaimUrl, getSupporterPlansUrl } from "../radar-links.js";
 import { SUPPORTER_KEY_REGEX } from "../supporter-key.js";
 import { getRadarSettings, setRadarKey, setRadarOptIn } from "@shiguang-gateway/core-domain/control/radar-db";
-import { ensureRadarSyncScheduler } from "@shiguang-gateway/core-domain/worker/lib/radar/scheduler.ts";
 import { authorize, handleCorsOptions, json, internalError } from "../common.js";
 const SettingsBodySchema = z.object({ optIn: z.boolean().optional(), supporterKey: z.string().regex(SUPPORTER_KEY_REGEX, 'Key must match "omr_" + 40 hex chars').nullable().optional() });
 const maskKey = (key: string | null) => key ? `omr_****${key.slice(-4)}` : null;
@@ -18,7 +17,7 @@ export async function POST(request: Request) {
   const parsed = SettingsBodySchema.safeParse(body); if (!parsed.success) return json({ error: "Invalid request body", details: parsed.error.flatten().fieldErrors }, { status: 400 });
   const { optIn, supporterKey } = parsed.data; if (optIn === undefined && supporterKey === undefined) return json({ error: "At least one of optIn or supporterKey is required" }, { status: 400 });
   try {
-    if (optIn !== undefined) { setRadarOptIn(optIn); if (optIn) { try { ensureRadarSyncScheduler(); } catch { /* best effort */ } } }
+    if (optIn !== undefined) setRadarOptIn(optIn);
     if (supporterKey !== undefined) setRadarKey(supporterKey);
     return json({ ok: true, optIn: optIn ?? undefined, supporterKey: supporterKey !== undefined ? maskKey(supporterKey) : undefined });
   } catch (cause) { return internalError(cause, "Failed to update Radar settings"); }

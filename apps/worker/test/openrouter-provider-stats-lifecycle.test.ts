@@ -7,19 +7,20 @@ import test from "node:test";
 import {
   initOpenRouterProviderStatsSync,
   stopOpenRouterProviderStatsSync,
-} from "@shiguang-gateway/core-domain/worker/lib/catalog/openrouterProviderStats.ts";
+} from "@shiguang-gateway/core-domain/worker/openrouter-provider-stats";
 import { WORKER_JOBS } from "../src/jobs/registry.js";
 
 test("worker registry wires provider stats shutdown to Nest teardown", () => {
   const job = WORKER_JOBS.find(({ name }) => name === "openrouter-provider-stats");
-  assert.deepEqual(job, {
+  assert.ok(job);
+  const { loadModule, ...metadata } = job;
+  assert.deepEqual(metadata, {
     name: "openrouter-provider-stats",
     mode: "call",
-    modulePath:
-      "@shiguang-gateway/core-domain/worker/lib/catalog/openrouterProviderStats.ts",
     exportName: "initOpenRouterProviderStatsSync",
     stopExportName: "stopOpenRouterProviderStatsSync",
   });
+  assert.equal(typeof loadModule, "function");
 });
 
 test("provider stats scheduler supports idempotent start, stop, and restart", async (t) => {

@@ -36,7 +36,7 @@ import {
   assertCommonChatGptWebProviderAvailable,
   isCommonChatGptWebRetirementError,
 } from "@shiguang-gateway/contracts/chatgpt-web-retirement";
-import { commonChatGptWebRetirementResponse } from "@shiguang-gateway/core-domain/lib/providers/chatgptWebRetirementResponse";
+import { commonChatGptWebRetirementResponse } from "@shiguang-gateway/core-domain/shared/chatgpt-web-retirement-response";
 import { errorResponse } from "../utils/error.ts";
 import { HTTP_STATUS } from "@shiguang-gateway/contracts/http-status";
 

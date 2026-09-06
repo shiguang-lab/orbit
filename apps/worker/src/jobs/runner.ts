@@ -10,7 +10,7 @@ export async function startWorkerJobs(
   const started: string[] = [];
   for (const job of jobs) {
     try {
-      const mod = await import(job.modulePath) as Record<string, unknown>;
+      const mod = await job.loadModule() as Record<string, unknown>;
       const fn = mod[job.exportName];
       if (typeof fn !== "function") {
         throw new Error(`missing export ${job.exportName}`);
@@ -35,7 +35,7 @@ export async function stopWorkerJobs(
   for (const job of [...jobs].reverse()) {
     if (!startedSet.has(job.name) || !job.stopExportName) continue;
     try {
-      const mod = await import(job.modulePath) as Record<string, unknown>;
+      const mod = await job.loadModule() as Record<string, unknown>;
       const fn = mod[job.stopExportName];
       if (typeof fn !== "function") continue;
       await (fn as () => unknown)();

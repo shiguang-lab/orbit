@@ -81,7 +81,7 @@ export function OPTIONS(): Response {
 export async function POST(request: Request): Promise<Response> {
   const [admissionApi, aliasApi] = await Promise.all([
     load("@shiguang-gateway/core-domain/shared/middleware/chatBodyAdmission"),
-    load("@shiguang-gateway/core-domain/lib/modelAliasResolver"),
+    load("@shiguang-gateway/core-domain/edge/model-alias-resolver"),
   ]);
   const { admitChatRequest, admitChatStructure, CHAT_ADMISSION_QUEUE_MAX_MS, releaseChatAdmissionAfterHandler, releaseChatAdmissionWhenDone, resolveSessionId } = admissionApi;
   const { resolveModelAliasWithSeedFallbackOnBody } = aliasApi;

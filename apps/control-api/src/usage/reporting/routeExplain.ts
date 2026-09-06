@@ -1,4 +1,4 @@
-import { getComboByName } from "@shiguang-gateway/core-domain/usage/reporting-support/lib/db/combos";
+import { getComboByName } from "@shiguang-gateway/core-domain/usage/reporting-support/combos";
 import { buildComboScoringInspectorResponse } from "./comboScoringInspector.js";
 import { inspectTargetResilience } from "./resilienceExplain.js";
 import type {
@@ -6,7 +6,7 @@ import type {
   ComboScoringInspectorTarget,
   ResilienceExplanation,
 } from "@shiguang-gateway/core-domain/usage/reporting-support/shared/types/utilization";
-import { getCallLogById, getCallLogs } from "@shiguang-gateway/core-domain/usage/reporting-support/lib/usage/callLogs";
+import { getCallLogById, getCallLogs } from "@shiguang-gateway/core-domain/usage/reporting-support/call-logs";
 
 type JsonRecord = Record<string, unknown>;
 

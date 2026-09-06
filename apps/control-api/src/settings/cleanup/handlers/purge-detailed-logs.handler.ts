@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { purgeDetailedLogs } from "@shiguang-gateway/core-domain/worker/lib/db/cleanup.ts";
+import { purgeDetailedLogs } from "@shiguang-gateway/core-domain/control/database-cleanup";
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 
 export async function POST(request: Request) {

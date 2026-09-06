@@ -291,8 +291,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/radar-referrals-sync",
   "control/radar-offers-sync",
   "control/radar-intel-sync",
-  "worker/lib/radar/scheduler.ts",
-  "worker/lib/db/cleanup.ts",
+  "control/database-cleanup",
   "usage/call-logs",
   "shared/authz-route-constants",
   "db/provider-cc-alias",
@@ -1033,6 +1032,13 @@ for (const appPath of ["apps/control-api", "apps/edge-gateway", "apps/realtime",
 const controlJobsContract = join(packagesRoot, "core-domain", "src", "control", "jobs.ts");
 if (existsSync(controlJobsContract) && /\bgetJobRegistry\b|\.\.\/lib\/jobRegistry\/index/.test(readFileSync(controlJobsContract, "utf8"))) {
   add("control-job-contract-exposes-worker-runtime", controlJobsContract, "control jobs contract must expose DB projections only");
+}
+const workerJobRegistry = join(appsRoot, "worker", "src", "jobs", "registry.ts");
+if (existsSync(workerJobRegistry)) {
+  const source = readFileSync(workerJobRegistry, "utf8");
+  if (/\bdomainModule\s*\(|\bmodulePath\s*:/.test(source)) {
+    add("opaque-worker-job-import", workerJobRegistry, "worker jobs must use literal lazy imports so dependency audits can inspect every boundary");
+  }
 }
 const coreDomainEntry = packageEntries.find(({ manifest }) => manifest?.name === "@shiguang-gateway/core-domain");
 const retiredAppOwnedExports = [

@@ -4,7 +4,7 @@ import { WORKER_JOBS, type WorkerJob } from "../src/jobs/registry.js";
 import { startWorkerJobs, stopWorkerJobs } from "../src/jobs/runner.js";
 
 test("every worker registry entry has an explicit startup function", () => {
-  assert.ok(WORKER_JOBS.every((job) => job.mode === "call" && job.exportName.length > 0));
+  assert.ok(WORKER_JOBS.every((job) => job.mode === "call" && job.exportName.length > 0 && typeof job.loadModule === "function"));
   for (const name of ["batch-processor", "auto-refresh-daemon"]) {
     const job = WORKER_JOBS.find((entry) => entry.name === name);
     assert.ok(job);
@@ -16,14 +16,13 @@ test("runner calls explicit start and stop exports", async () => {
   const stateKey = `__worker_job_lifecycle_${Date.now()}`;
   const state = globalThis as Record<string, unknown>;
   state[stateKey] = [];
-  const source = [
-    `export function start(){globalThis[${JSON.stringify(stateKey)}].push("start")}`,
-    `export function stop(){globalThis[${JSON.stringify(stateKey)}].push("stop")}`,
-  ].join(";");
   const job: WorkerJob = {
     name: "fixture",
     mode: "call",
-    modulePath: `data:text/javascript,${encodeURIComponent(source)}`,
+    loadModule: async () => ({
+      start: () => (state[stateKey] as string[]).push("start"),
+      stop: () => (state[stateKey] as string[]).push("stop"),
+    }),
     exportName: "start",
     stopExportName: "stop",
   };

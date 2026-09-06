@@ -412,6 +412,9 @@ const legacyMixed = new Set();
 
 for (const entry of packageEntries) {
   for (const [subpath, value] of Object.entries(entry.manifest?.exports ?? {})) {
+    if (subpath.endsWith(".ts") || subpath.includes("/lib/")) {
+      add("implementation-layout-package-export", join(entry.dir, "package.json"), `${subpath} leaks a source filename or lib directory; expose a stable capability subpath`);
+    }
     for (const target of packageExportTargets(value)) {
       if (!target.startsWith("./") || target.includes("*")) continue;
       const resolvedTarget = resolve(entry.dir, target);

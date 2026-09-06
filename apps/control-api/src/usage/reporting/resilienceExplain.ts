@@ -1,7 +1,7 @@
 import pino from "pino";
 
 import { isModelExcludedByConnection } from "@shiguang-gateway/core-domain/usage/reporting-support/domain/connectionModelRules";
-import { getProviderConnections } from "@shiguang-gateway/core-domain/usage/reporting-support/lib/db/providers";
+import { getProviderConnections } from "@shiguang-gateway/core-domain/usage/reporting-support/providers";
 import { getCircuitBreaker } from "@shiguang-gateway/core-domain/usage/reporting-support/shared/utils/circuitBreaker";
 import { getModelLockoutInfo } from "@shiguang-gateway/open-sse/services/accountFallbackRuntime";
 import {

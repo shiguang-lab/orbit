@@ -35,7 +35,7 @@ import { classifyAmbiguousOrAuthError, type ClassifyFailureArgs } from "./mistra
 import { buildApiKeyConnectionTestResult } from "./apiKeyTestResult.js";
 import { classifyOAuthProbeInconclusive, OAUTH_TEST_CONFIG } from "./oauthTestConfig.js";
 import { isGeoBlockedError } from "@shiguang-gateway/core-domain/domain/provider-error-classifier";
-import * as retirement from "@shiguang-gateway/core-domain/lib/providers/chatgptWebRetirementResponse";
+import * as retirement from "@shiguang-gateway/core-domain/shared/chatgpt-web-retirement-response";
 
 // Match the API-key path's 30s timeout so a hung OAuth upstream cannot block the test queue.
 const OAUTH_TEST_TIMEOUT_MS = 30_000;
