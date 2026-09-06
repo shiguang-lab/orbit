@@ -301,6 +301,22 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/conversations",
   "control/cli-tools-",
 );
+allowedCoreDomainSubpaths["apps/control-api"].push(
+  "models/index",
+  "lib/compliance/index",
+  "lib/compliance/providerAudit",
+  "lib/cloudSync",
+  "lib/providers/catalog",
+  "lib/providers/requestDefaults",
+  "lib/providers/validation",
+  "lib/providers/chatgptWebRetirementResponse",
+  "lib/api/requireManagementAuth",
+  "lib/apiKeyExposure",
+  "lib/localDb",
+  "lib/db/models",
+  "lib/providerModels/modelDiscovery",
+  "domain/quotaCache",
+);
 
 // Route files that have completed a physical ownership move. Keep this list
 // small and explicit: adding an entry is the acceptance record for a domain

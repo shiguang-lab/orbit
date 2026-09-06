@@ -1,10 +1,8 @@
-import { NextResponse } from "next/server";
-export const dynamic = "force-dynamic";
-import { getAuditRequestContext, logAuditEvent } from "../../../lib/compliance/index.ts";
+import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/lib/compliance/index";
 import {
   getProviderAuditTarget,
   summarizeProviderConnectionForAudit,
-} from "../../../lib/compliance/providerAudit.ts";
+} from "@shiguang-gateway/core-domain/lib/compliance/providerAudit";
 import {
   getProviderConnections,
   getProviderConnectionsCount,
@@ -13,44 +11,44 @@ import {
   updateProviderConnection,
   resolveProviderNodeForConnection,
   isCloudEnabled,
-} from "../../../models/index.ts";
+} from "@shiguang-gateway/core-domain/models/index";
 import {
   isClaudeCodeCompatibleProvider,
   isOpenAICompatibleProvider,
   isAnthropicCompatibleProvider,
   resolveProviderId,
-} from "../../../shared/constants/providers.ts";
-import { getConsistentMachineId } from "../../../shared/utils/machineId.ts";
-import { syncToCloud } from "../../../lib/cloudSync.ts";
+} from "@shiguang-gateway/core-domain/shared/constants/providers";
+import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
+import { syncToCloud } from "@shiguang-gateway/core-domain/lib/cloudSync";
 import {
   createProviderSchema,
   batchUpdateProviderConnectionsSchema,
-} from "../../../shared/validation/schemas.ts";
-import { isValidationFailure, validateBody } from "../../../shared/validation/helpers.ts";
-import { normalizeQoderPatProviderData } from "../../../../../open-sse/services/qoderCli.ts";
-import { projectCodexAccountPool } from "../../../../../open-sse/services/codexAccount/index.ts";
+} from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { normalizeQoderPatProviderData } from "@shiguang-gateway/open-sse/services/qoderCli";
+import { projectCodexAccountPool } from "@shiguang-gateway/open-sse/services/codexAccount/index";
 import {
   CODEX_SPARK_QUOTA_SESSION,
   CODEX_SPARK_QUOTA_WEEKLY,
-} from "../../../../../open-sse/config/codexQuotaScopes.ts";
+} from "@shiguang-gateway/open-sse/config/codexQuotaScopes";
 import {
   normalizeProviderSpecificData,
   sanitizeProviderSpecificDataForResponse,
-} from "../../../lib/providers/requestDefaults.ts";
-import { getQuotaWindowObservation } from "../../../domain/quotaCache.ts";
-import { requireManagementAuth } from "../../../lib/api/requireManagementAuth.ts";
-import { isManagedProviderConnectionId } from "../../../lib/providers/catalog.ts";
-import { isApiKeyRevealEnabled, maskStoredApiKey } from "../../../lib/apiKeyExposure.ts";
-import { cleanupProviderModelsAfterConnectionDelete } from "../../../lib/db/models.ts";
+} from "@shiguang-gateway/core-domain/lib/providers/requestDefaults";
+import { getQuotaWindowObservation } from "@shiguang-gateway/core-domain/domain/quotaCache";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/lib/api/requireManagementAuth";
+import { isManagedProviderConnectionId } from "@shiguang-gateway/core-domain/lib/providers/catalog";
+import { isApiKeyRevealEnabled, maskStoredApiKey } from "@shiguang-gateway/core-domain/lib/apiKeyExposure";
+import { cleanupProviderModelsAfterConnectionDelete } from "@shiguang-gateway/core-domain/lib/db/models";
 import {
   buildModelSyncInternalHeaders,
   fetchModelSyncInternal,
   getModelSyncInternalBaseUrl,
-} from "../../../shared/services/modelSyncScheduler.ts";
-import { finalizeValidatedChatGptWebCodexSecrets } from "../../../../../open-sse/services/chatgptWebCodexAdmin.ts";
-import { isAutoFetchModelsEnabled } from "../../../lib/providerModels/modelDiscovery.ts";
-import { testSingleConnection } from "./[id]/test/route";
-import { rejectRetiredCommonChatGptWebProvider } from "../../../lib/providers/chatgptWebRetirementResponse.ts";
+} from "@shiguang-gateway/core-domain/shared/services/modelSyncScheduler";
+import { finalizeValidatedChatGptWebCodexSecrets } from "@shiguang-gateway/open-sse/services/chatgptWebCodexAdmin";
+import { isAutoFetchModelsEnabled } from "@shiguang-gateway/core-domain/lib/providerModels/modelDiscovery";
+import { testSingleConnection } from "@shiguang-gateway/core-domain/control/provider-test-batch";
+import { rejectRetiredCommonChatGptWebProvider } from "@shiguang-gateway/core-domain/lib/providers/chatgptWebRetirementResponse";
 
 function projectCodexAccountPoolWithRoutingQuota(
   connection: Parameters<typeof projectCodexAccountPool>[0],
@@ -95,7 +93,7 @@ function projectCodexAccountPoolWithRoutingQuota(
 }
 
 // GET /api/providers - List all connections
-export async function GET(request: Request) {
+export async function listProviders(request: Request) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 
@@ -143,15 +141,15 @@ export async function GET(request: Request) {
       };
     });
 
-    return NextResponse.json({ connections: safeConnections, total });
+    return Response.json({ connections: safeConnections, total });
   } catch (error) {
     console.log("Error fetching providers:", error);
-    return NextResponse.json({ error: "Failed to fetch providers" }, { status: 500 });
+    return Response.json({ error: "Failed to fetch providers" }, { status: 500 });
   }
 }
 
 // POST /api/providers - Create new connection (API Key only, OAuth via separate flow)
-export async function POST(request: Request) {
+export async function createProvider(request: Request) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 
@@ -163,7 +161,7 @@ export async function POST(request: Request) {
     // Zod validation
     const validation = validateBody(createProviderSchema, body);
     if (isValidationFailure(validation)) {
-      return NextResponse.json({ error: validation.error }, { status: 400 });
+      return Response.json({ error: validation.error }, { status: 400 });
     }
     const {
       provider: requestedProvider,
@@ -188,7 +186,7 @@ export async function POST(request: Request) {
       isAnthropicCompatibleProvider(provider);
 
     if (!isValidProvider) {
-      return NextResponse.json({ error: "Invalid provider" }, { status: 400 });
+      return Response.json({ error: "Invalid provider" }, { status: 400 });
     }
 
     let providerSpecificData = incomingPsd || null;
@@ -209,7 +207,7 @@ export async function POST(request: Request) {
         providerSpecificData = { ...(providerSpecificData || {}) };
         delete providerSpecificData.validationId;
       } catch (error) {
-        return NextResponse.json(
+        return Response.json(
           {
             error:
               error instanceof Error
@@ -224,7 +222,7 @@ export async function POST(request: Request) {
     if (isOpenAICompatibleProvider(provider)) {
       const node: any = await resolveProviderNodeForConnection(provider);
       if (!node) {
-        return NextResponse.json({ error: "OpenAI Compatible node not found" }, { status: 404 });
+        return Response.json({ error: "OpenAI Compatible node not found" }, { status: 404 });
       }
 
       // Allow multiple connections for compatible nodes exactly like first-party providers
@@ -242,7 +240,7 @@ export async function POST(request: Request) {
     } else if (isAnthropicCompatibleProvider(provider)) {
       const node: any = await resolveProviderNodeForConnection(provider);
       if (!node) {
-        return NextResponse.json(
+        return Response.json(
           {
             error: isClaudeCodeCompatibleProvider(provider)
               ? "CC Compatible node not found"
@@ -281,7 +279,7 @@ export async function POST(request: Request) {
       // works. The auto-test fired below flips this to true on success (or on
       // an "unsupported" test, which cannot be verified either way and keeps
       // the historical trust-it default) — see testSingleConnection in
-      // ./[id]/test/route.ts. A connection that fails its test, or is never
+      // @shiguang-gateway/core-domain/control/provider-test-batch. A connection that fails its test, or is never
       // tested because auto-test itself errors, simply stays hidden until the
       // operator fixes the credential and re-tests it manually.
       isActive: false,
@@ -397,15 +395,15 @@ export async function POST(request: Request) {
       );
     }
 
-    return NextResponse.json({ connection: result }, { status: 201 });
+    return Response.json({ connection: result }, { status: 201 });
   } catch (error) {
     console.log("Error creating provider:", error);
-    return NextResponse.json({ error: "Failed to create provider" }, { status: 500 });
+    return Response.json({ error: "Failed to create provider" }, { status: 500 });
   }
 }
 
 // PATCH /api/providers - Bulk activate/deactivate connections
-export async function PATCH(request: Request) {
+export async function updateProviders(request: Request) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 
@@ -415,12 +413,12 @@ export async function PATCH(request: Request) {
   try {
     rawBody = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    return Response.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
   const validation = validateBody(batchUpdateProviderConnectionsSchema, rawBody);
   if (isValidationFailure(validation)) {
-    return NextResponse.json({ error: validation.error }, { status: 400 });
+    return Response.json({ error: validation.error }, { status: 400 });
   }
   const { ids, isActive } = validation.data;
 
@@ -459,7 +457,7 @@ export async function PATCH(request: Request) {
       metadata: { isActive, updated: updatedIds.length, notFound: notFoundIds, ids },
     });
 
-    return NextResponse.json(
+    return Response.json(
       {
         message: `${isActive ? "Activated" : "Deactivated"} ${updatedIds.length} connection(s)`,
         updated: updatedIds.length,
@@ -469,11 +467,11 @@ export async function PATCH(request: Request) {
     );
   } catch (error) {
     console.error("Error batch updating connections:", error);
-    return NextResponse.json({ error: "Failed to batch update connections" }, { status: 500 });
+    return Response.json({ error: "Failed to batch update connections" }, { status: 500 });
   }
 }
 
-export async function DELETE(request: Request) {
+export async function deleteProviders(request: Request) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 
@@ -483,18 +481,18 @@ export async function DELETE(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    return Response.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
   if (!Array.isArray(body.ids) || body.ids.length === 0) {
-    return NextResponse.json(
+    return Response.json(
       { error: "ids must be a non-empty array of connection IDs" },
       { status: 400 }
     );
   }
 
   if (body.ids.length > 100) {
-    return NextResponse.json(
+    return Response.json(
       { error: "Cannot delete more than 100 connections at once" },
       { status: 400 }
     );
@@ -530,13 +528,13 @@ export async function DELETE(request: Request) {
       metadata: { count: deleted, ids: body.ids },
     });
 
-    return NextResponse.json(
+    return Response.json(
       { message: `Deleted ${deleted} connection(s)`, deleted },
       { status: 200 }
     );
   } catch (error) {
     console.log("Error batch deleting connections:", error);
-    return NextResponse.json({ error: "Failed to batch delete connections" }, { status: 500 });
+    return Response.json({ error: "Failed to batch delete connections" }, { status: 500 });
   }
 }
 

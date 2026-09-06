@@ -247,6 +247,18 @@
       "types": "./public/searchCache.d.ts",
       "import": "./services/searchCache.ts"
     },
+    "./services/qoderCli": {
+      "types": "./services/qoderCli.ts",
+      "import": "./services/qoderCli.ts"
+    },
+    "./services/codexAccount/index": {
+      "types": "./services/codexAccount/index.ts",
+      "import": "./services/codexAccount/index.ts"
+    },
+    "./config/codexQuotaScopes": {
+      "types": "./config/codexQuotaScopes.ts",
+      "import": "./config/codexQuotaScopes.ts"
+    },
     "./*": {
       "types": "./*",
       "import": "./*"

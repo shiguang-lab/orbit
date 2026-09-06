@@ -26,6 +26,14 @@ import {
   updateInterceptionRulesSchema,
   updateParamFilterConfigSchema,
 } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import {
+  listProviders,
+  createProvider,
+  updateProviders,
+  deleteProviders,
+} from "./handlers/provider-management.js";
+import { bulkCreateProviders } from "./handlers/provider-bulk.js";
+import { importProviders } from "./handlers/provider-import.js";
 
 @Controller("api")
 export class ProvidersController {
@@ -35,6 +43,36 @@ export class ProvidersController {
     @Inject(ProviderPolicyService) private readonly providerPolicy: ProviderPolicyService,
     @Inject(ProviderClientService) private readonly providerClient: ProviderClientService,
   ) {}
+
+  @Get("providers")
+  list(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, listProviders);
+  }
+
+  @Post("providers")
+  create(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, createProvider);
+  }
+
+  @Patch("providers")
+  update(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, updateProviders);
+  }
+
+  @Delete("providers")
+  remove(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, deleteProviders);
+  }
+
+  @Post("providers/bulk")
+  bulk(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, bulkCreateProviders);
+  }
+
+  @Post("providers/import")
+  import(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, importProviders);
+  }
 
   @Get("providers/:id/cc-alias")
   async getCcAlias(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply) {

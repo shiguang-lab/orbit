@@ -937,6 +937,10 @@
       "types": "./src/public/selfServiceScopes.d.ts",
       "import": "./src/shared/constants/selfServiceScopes.ts"
     },
+    "./shared/constants/providers": {
+      "types": "./src/public/providerMetadata.d.ts",
+      "import": "./src/shared/constants/providers.ts"
+    },
     "./control/cli-token-auth": "./src/lib/middleware/cliTokenAuth.ts",
     "./control/gateway-status": {
       "types": "./src/public/gatewayStatus.d.ts",
@@ -1303,6 +1307,70 @@
     "./shared/types/pagination": {
       "types": "./src/public/pagination.d.ts",
       "import": "./src/shared/types/pagination.ts"
+    },
+    "./models/index": {
+      "types": "./src/models/index.ts",
+      "import": "./src/models/index.ts"
+    },
+    "./lib/compliance/index": {
+      "types": "./src/lib/compliance/index.ts",
+      "import": "./src/lib/compliance/index.ts"
+    },
+    "./lib/compliance/providerAudit": {
+      "types": "./src/lib/compliance/providerAudit.ts",
+      "import": "./src/lib/compliance/providerAudit.ts"
+    },
+    "./lib/cloudSync": {
+      "types": "./src/lib/cloudSync.ts",
+      "import": "./src/lib/cloudSync.ts"
+    },
+    "./lib/providers/catalog": {
+      "types": "./src/lib/providers/catalog.ts",
+      "import": "./src/lib/providers/catalog.ts"
+    },
+    "./lib/providers/requestDefaults": {
+      "types": "./src/lib/providers/requestDefaults.ts",
+      "import": "./src/lib/providers/requestDefaults.ts"
+    },
+    "./lib/providers/validation": {
+      "types": "./src/lib/providers/validation.ts",
+      "import": "./src/lib/providers/validation.ts"
+    },
+    "./lib/providers/chatgptWebRetirementResponse": {
+      "types": "./src/lib/providers/chatgptWebRetirementResponse.ts",
+      "import": "./src/lib/providers/chatgptWebRetirementResponse.ts"
+    },
+    "./lib/api/requireManagementAuth": {
+      "types": "./src/lib/api/requireManagementAuth.ts",
+      "import": "./src/lib/api/requireManagementAuth.ts"
+    },
+    "./lib/apiKeyExposure": {
+      "types": "./src/lib/apiKeyExposure.ts",
+      "import": "./src/lib/apiKeyExposure.ts"
+    },
+    "./lib/localDb": {
+      "types": "./src/lib/localDb.ts",
+      "import": "./src/lib/localDb.ts"
+    },
+    "./lib/db/models": {
+      "types": "./src/lib/db/models.ts",
+      "import": "./src/lib/db/models.ts"
+    },
+    "./lib/providerModels/modelDiscovery": {
+      "types": "./src/lib/providerModels/modelDiscovery.ts",
+      "import": "./src/lib/providerModels/modelDiscovery.ts"
+    },
+    "./domain/quotaCache": {
+      "types": "./src/domain/quotaCache.ts",
+      "import": "./src/domain/quotaCache.ts"
+    },
+    "./shared/utils/bulkApiKeyParser": {
+      "types": "./src/shared/utils/bulkApiKeyParser.ts",
+      "import": "./src/shared/utils/bulkApiKeyParser.ts"
+    },
+    "./shared/services/modelSyncScheduler": {
+      "types": "./src/shared/services/modelSyncScheduler.ts",
+      "import": "./src/shared/services/modelSyncScheduler.ts"
     }
   },
   "dependencies": {

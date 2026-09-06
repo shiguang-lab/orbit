@@ -1,42 +1,41 @@
-import { NextResponse } from "next/server";
-import { getAuditRequestContext, logAuditEvent } from "../../../../lib/compliance/index.ts";
+import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/lib/compliance/index";
 import {
   getProviderAuditTarget,
   summarizeProviderConnectionForAudit,
-} from "../../../../lib/compliance/providerAudit.ts";
+} from "@shiguang-gateway/core-domain/lib/compliance/providerAudit";
 import {
   createProviderConnection,
   getProviderConnections,
   getProviderNodeById,
   isCloudEnabled,
-} from "../../../../models/index.ts";
+} from "@shiguang-gateway/core-domain/models/index";
 import {
   isAnthropicCompatibleProvider,
   isOpenAICompatibleProvider,
   supportsBulkApiKey,
-} from "../../../../shared/constants/providers.ts";
-import { getConsistentMachineId } from "../../../../shared/utils/machineId.ts";
-import { resolveBulkNameCollisions } from "../../../../shared/utils/bulkApiKeyParser.ts";
-import { syncToCloud } from "../../../../lib/cloudSync.ts";
-import { bulkCreateProviderSchema } from "../../../../shared/validation/schemas.ts";
-import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
+} from "@shiguang-gateway/core-domain/shared/constants/providers";
+import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
+import { resolveBulkNameCollisions } from "@shiguang-gateway/core-domain/shared/utils/bulkApiKeyParser";
+import { syncToCloud } from "@shiguang-gateway/core-domain/lib/cloudSync";
+import { bulkCreateProviderSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import {
   normalizeProviderSpecificData,
   sanitizeProviderSpecificDataForResponse,
-} from "../../../../lib/providers/requestDefaults.ts";
-import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
-import { isManagedProviderConnectionId } from "../../../../lib/providers/catalog.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
-import { validateProviderApiKey } from "../../../../lib/providers/validation.ts";
-import { getProxyForLevel, resolveProxyForProvider } from "../../../../lib/localDb.ts";
-import { runWithProxyContext } from "../../../../../../open-sse/utils/proxyFetch.ts";
-import { rejectRetiredCommonChatGptWebProvider } from "../../../../lib/providers/chatgptWebRetirementResponse.ts";
+} from "@shiguang-gateway/core-domain/lib/providers/requestDefaults";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/lib/api/requireManagementAuth";
+import { isManagedProviderConnectionId } from "@shiguang-gateway/core-domain/lib/providers/catalog";
+import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { validateProviderApiKey } from "@shiguang-gateway/core-domain/lib/providers/validation";
+import { getProxyForLevel, resolveProxyForProvider } from "@shiguang-gateway/core-domain/lib/localDb";
+import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
+import { rejectRetiredCommonChatGptWebProvider } from "@shiguang-gateway/core-domain/lib/providers/chatgptWebRetirementResponse";
 
 // POST /api/providers/bulk — create multiple API-key connections for a single provider.
 // Partial-failure semantics: each entry succeeds or fails independently; the
 // response always returns 200 with per-entry results so callers can show which
 // lines failed without rolling back the successful ones.
-export async function POST(request: Request) {
+export async function bulkCreateProviders(request: Request) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 
@@ -46,12 +45,12 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    return Response.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
   const validation = validateBody(bulkCreateProviderSchema, body);
   if (isValidationFailure(validation)) {
-    return NextResponse.json({ error: validation.error }, { status: 400 });
+    return Response.json({ error: validation.error }, { status: 400 });
   }
 
   const {
@@ -72,11 +71,11 @@ export async function POST(request: Request) {
     isAnthropicCompatibleProvider(provider);
 
   if (!isManagedOrCompatible) {
-    return NextResponse.json({ error: "Invalid provider" }, { status: 400 });
+    return Response.json({ error: "Invalid provider" }, { status: 400 });
   }
 
   if (!supportsBulkApiKey(provider)) {
-    return NextResponse.json(
+    return Response.json(
       { error: "Bulk add is not supported for this provider" },
       { status: 400 }
     );
@@ -86,7 +85,7 @@ export async function POST(request: Request) {
   if (isOpenAICompatibleProvider(provider) || isAnthropicCompatibleProvider(provider)) {
     const node: any = await getProviderNodeById(provider);
     if (!node) {
-      return NextResponse.json({ error: "Provider node not found" }, { status: 404 });
+      return Response.json({ error: "Provider node not found" }, { status: 404 });
     }
     baseProviderSpecificData = {
       ...(baseProviderSpecificData || {}),
@@ -217,7 +216,7 @@ export async function POST(request: Request) {
     },
   });
 
-  return NextResponse.json(
+  return Response.json(
     {
       success: created.length,
       failed: errors.length,

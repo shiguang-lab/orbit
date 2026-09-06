@@ -1,35 +1,34 @@
-import { NextResponse } from "next/server";
-import { getAuditRequestContext, logAuditEvent } from "../../../../lib/compliance/index.ts";
+import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/lib/compliance/index";
 import {
   getProviderAuditTarget,
   summarizeProviderConnectionForAudit,
-} from "../../../../lib/compliance/providerAudit.ts";
+} from "@shiguang-gateway/core-domain/lib/compliance/providerAudit";
 import {
   createProviderConnection,
   getProviderConnections,
   getProviderNodeById,
   isCloudEnabled,
-} from "../../../../models/index.ts";
+} from "@shiguang-gateway/core-domain/models/index";
 import {
   isAnthropicCompatibleProvider,
   isOpenAICompatibleProvider,
-} from "../../../../shared/constants/providers.ts";
-import { isManagedProviderConnectionId } from "../../../../lib/providers/catalog.ts";
-import { getConsistentMachineId } from "../../../../shared/utils/machineId.ts";
-import { resolveBulkNameCollisions } from "../../../../shared/utils/bulkApiKeyParser.ts";
-import { syncToCloud } from "../../../../lib/cloudSync.ts";
-import { bulkImportProviderSchema } from "../../../../shared/validation/schemas.ts";
-import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
+} from "@shiguang-gateway/core-domain/shared/constants/providers";
+import { isManagedProviderConnectionId } from "@shiguang-gateway/core-domain/lib/providers/catalog";
+import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
+import { resolveBulkNameCollisions } from "@shiguang-gateway/core-domain/shared/utils/bulkApiKeyParser";
+import { syncToCloud } from "@shiguang-gateway/core-domain/lib/cloudSync";
+import { bulkImportProviderSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import {
   normalizeProviderSpecificData,
   sanitizeProviderSpecificDataForResponse,
-} from "../../../../lib/providers/requestDefaults.ts";
-import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
-import { validateProviderApiKey } from "../../../../lib/providers/validation.ts";
-import { getProxyForLevel, resolveProxyForProvider } from "../../../../lib/localDb.ts";
-import { runWithProxyContext } from "../../../../../../open-sse/utils/proxyFetch.ts";
-import { rejectRetiredCommonChatGptWebProvider } from "../../../../lib/providers/chatgptWebRetirementResponse.ts";
+} from "@shiguang-gateway/core-domain/lib/providers/requestDefaults";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/lib/api/requireManagementAuth";
+import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { validateProviderApiKey } from "@shiguang-gateway/core-domain/lib/providers/validation";
+import { getProxyForLevel, resolveProxyForProvider } from "@shiguang-gateway/core-domain/lib/localDb";
+import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
+import { rejectRetiredCommonChatGptWebProvider } from "@shiguang-gateway/core-domain/lib/providers/chatgptWebRetirementResponse";
 
 type ImportEntry = {
   provider: string;
@@ -193,7 +192,7 @@ async function syncToCloudIfEnabled() {
 // CSV/JSON file, where each row/entry may target a DIFFERENT provider (#6836).
 // Partial-failure semantics identical to /api/providers/bulk: every entry succeeds or
 // fails independently and the response always returns 200 with per-entry results.
-export async function POST(request: Request) {
+export async function importProviders(request: Request) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 
@@ -203,12 +202,12 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    return Response.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
   const validation = validateBody(bulkImportProviderSchema, body);
   if (isValidationFailure(validation)) {
-    return NextResponse.json({ error: validation.error }, { status: 400 });
+    return Response.json({ error: validation.error }, { status: 400 });
   }
 
   const { entries, validateKeys } = validation.data;
@@ -278,7 +277,7 @@ export async function POST(request: Request) {
     },
   });
 
-  return NextResponse.json(
+  return Response.json(
     {
       success: created.length,
       failed: errors.length,

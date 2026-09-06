@@ -1,4 +1,8 @@
 import type { z } from "zod";
+export const createProviderSchema: z.ZodTypeAny;
+export const bulkCreateProviderSchema: z.ZodTypeAny;
+export const bulkImportProviderSchema: z.ZodTypeAny;
+export const batchUpdateProviderConnectionsSchema: z.ZodTypeAny;
 export const createKeySchema: z.ZodTypeAny;
 export const createSyncTokenSchema: z.ZodTypeAny;
 export const cloudSyncActionSchema: z.ZodTypeAny;
