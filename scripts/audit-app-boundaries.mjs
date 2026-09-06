@@ -168,6 +168,8 @@ const migratedRouteOwnership = {
     "api/quota/pools/[id]/log/route.ts",
     "api/quota/pools/[id]/usage/route.ts",
     "api/quota/preview/route.ts",
+    "api/models/test/route.ts",
+    "api/models/test-all/route.ts",
   ],
   "apps/edge-gateway": [
     "api/v1/music/generations/route.ts",
