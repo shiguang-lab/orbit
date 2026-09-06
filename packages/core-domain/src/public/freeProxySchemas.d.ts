@@ -15,3 +15,6 @@ export declare const freeProxyListSchema: z.ZodType<{
 }>;
 export declare const freeProxySyncSchema: z.ZodType<{ sources?: FreeProxySourceId[] }>;
 export declare const freeProxyBulkAddSchema: z.ZodType<{ ids: string[] }>;
+export declare const denoDeploySchema: z.ZodType<any>;
+export declare const vercelDeploySchema: z.ZodType<any>;
+export declare const cloudflareDeploySchema: z.ZodType<any>;

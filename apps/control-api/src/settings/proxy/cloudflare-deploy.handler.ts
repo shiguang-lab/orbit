@@ -3,7 +3,7 @@ import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/man
 import { createErrorResponse, createErrorResponseFromUnknown } from "@shiguang-gateway/core-domain/shared/error-response";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { cloudflareDeploySchema } from "@shiguang-gateway/core-domain/shared/validation/free-proxy-schemas";
-import { createProxy } from "@shiguang-gateway/core-domain/edge/local-db";
+import { createProxy } from "@shiguang-gateway/core-domain/db/local-db";
 import { encrypt } from "@shiguang-gateway/core-domain/db/encryption";
 import {
   buildCloudflareWorkerScript,
