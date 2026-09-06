@@ -112,14 +112,6 @@ export {
   flushThinkBuffer,
 } from "./utils/thinkTagParser.ts";
 
-// Rerank
-export { handleRerank } from "./handlers/rerank.ts";
-export {
-  RERANK_PROVIDERS,
-  getRerankProvider,
-  parseRerankModel,
-  getAllRerankModels,
-} from "./config/rerankRegistry.ts";
 
 // Audio (Transcription + Speech)
 export { handleAudioTranscription } from "./handlers/audioTranscription.ts";

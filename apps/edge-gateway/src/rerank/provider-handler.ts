@@ -1,4 +1,8 @@
-import { CORS_HEADERS } from "../utils/cors.ts";
+// Provider execution for the edge rerank HTTP domain.
+// This adapter preserves the legacy provider-specific payload normalization while the
+// surrounding HTTP orchestration remains strongly typed in the Nest application.
+// @ts-nocheck
+import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
 /**
  * Rerank Handler
  *
@@ -6,15 +10,12 @@ import { CORS_HEADERS } from "../utils/cors.ts";
  * Routes to the appropriate provider based on the model prefix or lookup.
  */
 
-import { getRerankProvider, parseRerankModel, RERANK_PROVIDERS } from "../config/rerankRegistry.ts";
-import { errorResponse } from "../utils/error.ts";
-import { attachShiguangGatewayMetaHeaders } from "../../core-domain/src/domain/gatewayResponseMeta.ts";
-import { calculateModalCost } from "../../core-domain/src/lib/usage/costCalculator.ts";
-import { generateRequestId } from "../../core-domain/src/shared/utils/requestId.ts";
-import { saveCallLog } from "../../core-domain/src/lib/usageDb.ts";
-import { resolveProxyForConnection } from "../../core-domain/src/lib/db/settings.ts";
-import { runWithProxyContext } from "../utils/proxyFetch.ts";
-import * as log from "../../core-domain/src/sse/utils/logger.ts";
+import { getRerankProvider, parseRerankModel, RERANK_PROVIDERS } from "@shiguang-gateway/rerank-catalog";
+import { errorResponse } from "@shiguang-gateway/open-sse/utils/error";
+import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
+import * as log from "@shiguang-gateway/open-sse/utils/logger";
+
+const load = (specifier: string): Promise<any> => import(specifier as string);
 
 /** A document as the Cohere-compatible rerank API accepts it: a bare string or `{ text }`. */
 type RerankDocument = string | { text?: string };
@@ -202,6 +203,13 @@ export async function handleRerank({
   apiKeyId = null,
   apiKeyName = null,
 }) {
+  const [{ attachShiguangGatewayMetaHeaders }, { calculateModalCost }, { generateRequestId }, { saveCallLog }, { resolveProxyForConnection }] = await Promise.all([
+    load("@shiguang-gateway/core-domain/edge/gateway-response-meta"),
+    load("@shiguang-gateway/core-domain/pricing/modal-cost"),
+    load("@shiguang-gateway/core-domain/edge/request-id"),
+    load("@shiguang-gateway/core-domain/edge/usage-db"),
+    load("@shiguang-gateway/core-domain/control/settings"),
+  ]);
   const startTime = Date.now();
   if (!model) return errorResponse(400, "model is required");
   if (!query) return errorResponse(400, "query is required");

@@ -36,7 +36,10 @@
     "./shared/api-key-policy": "./src/shared/utils/apiKeyPolicy.ts",
     "./edge/music-rate-limit": "./src/app/api/v1/_shared/rateLimit.ts",
     "./edge/rate-limit": "./src/app/api/v1/_shared/rateLimit.ts",
-    "./edge/rerank-validation-schemas": "./src/shared/validation/schemas.ts",
+    "./edge/rerank-validation-schemas": {
+      "types": "./src/public/rerankValidationSchemas.d.ts",
+      "import": "./src/shared/validation/schemas.ts"
+    },
     "./edge/rerank-validation-helpers": "./src/shared/validation/helpers.ts",
     "./edge/rerank-provider-nodes": "./src/lib/db/readCache.ts",
     "./edge/usage-db": "./src/lib/usageDb.ts",
@@ -82,10 +85,6 @@
     "./edge/embeddings-handler": {
       "types": "./src/public/edgeEmbeddings.d.ts",
       "import": "./src/lib/embeddings/routeHandlers.ts"
-    },
-    "./edge/rerank-handler": {
-      "types": "./src/public/edgeRerank.d.ts",
-      "import": "./src/lib/rerank/routeHandlers.ts"
     },
     "./edge/media-generation": {
       "types": "./src/public/edgeMusic.d.ts",
@@ -425,6 +424,7 @@
     "@shiguang-gateway/contracts": "workspace:*",
     "@shiguang-gateway/db-schema": "workspace:*",
     "@shiguang-gateway/network-guard": "workspace:*",
+    "@shiguang-gateway/rerank-catalog": "workspace:*",
     "@swc/helpers": "^0.5.23",
     "@toon-format/toon": "^4.1.1",
     "@types/mdx": "^2.0.14",

@@ -1,5 +1,5 @@
 import { getEmbeddingProvider } from "../../../../open-sse/config/embeddingRegistry.ts";
-import { getRerankProvider } from "../../../../open-sse/config/rerankRegistry.ts";
+import { getRerankProvider } from "@shiguang-gateway/rerank-catalog";
 import { getImageProvider } from "../../../../open-sse/config/imageRegistry.ts";
 import { getVideoProvider } from "../../../../open-sse/config/videoRegistry.ts";
 import {

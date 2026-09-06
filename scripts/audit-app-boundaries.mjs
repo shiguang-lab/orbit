@@ -78,7 +78,6 @@ const allowedCoreDomainSubpaths = {
     "edge/specialty-catalog",
     "edge/rerank-validation-schemas",
     "edge/rerank-validation-helpers",
-    "edge/rerank-handler",
     "edge/rerank-provider-nodes",
     "edge/usage-db",
     "pricing/modal-cost",

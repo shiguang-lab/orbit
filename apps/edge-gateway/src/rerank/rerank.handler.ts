@@ -1,24 +1,19 @@
-import { handleRerank } from "@shiguang-gateway/open-sse/handlers/rerank.ts";
-import {
-  getProviderCredentialsWithQuotaPreflight,
-  clearRecoveredProviderState,
-} from "@shiguang-gateway/core-domain/sse/auth";
-import { withInjectionGuard } from "@shiguang-gateway/core-domain/middleware/prompt-injection";
-import { parseRerankModel, getRerankProvider } from "@shiguang-gateway/open-sse/config/rerankRegistry.ts";
-import { errorResponse } from "@shiguang-gateway/open-sse/utils/error.ts";
-import { HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants.ts";
-import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/shared/api-key-policy";
-import { v1RerankSchema } from "@shiguang-gateway/core-domain/edge/rerank-validation-schemas";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/edge/rerank-validation-helpers";
-import { getCachedProviderNodes } from "@shiguang-gateway/core-domain/edge/rerank-provider-nodes";
-import {
-  isAllRateLimitedCredentials,
-  rateLimitedProviderResponse,
-} from "@shiguang-gateway/core-domain/edge/rate-limit";
-import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
-import { attachShiguangGatewayMetaHeaders } from "@shiguang-gateway/core-domain/edge/gateway-response-meta";
-import { generateRequestId } from "@shiguang-gateway/core-domain/edge/request-id";
-import { CORS_HEADERS } from "@shiguang-gateway/open-sse/utils/cors.ts";
+// HTTP orchestration for the edge rerank domain.
+import { handleRerank } from "./provider-handler.js";
+import { parseRerankModel } from "@shiguang-gateway/rerank-catalog";
+import { errorResponse } from "@shiguang-gateway/open-sse/utils/error";
+import { HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants";
+import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
+
+const load = (specifier: string): Promise<any> => import(specifier as string);
+
+type RerankRequestBody = {
+  model: string;
+  query: string;
+  documents: Array<string | { text?: string }>;
+  top_n?: number;
+  return_documents?: boolean;
+};
 
 /**
  * Handle CORS preflight
@@ -56,7 +51,28 @@ function buildDynamicRerankProvider(node: any) {
  * Supports cloud providers (Cohere, Together, NVIDIA, Fireworks)
  * and local provider_nodes (oMLX, vLLM, etc.) via dynamic routing.
  */
-async function postHandler(request, context) {
+async function postHandler(request: Request, _context: unknown): Promise<Response> {
+  const [
+    { getProviderCredentialsWithQuotaPreflight, clearRecoveredProviderState },
+    { enforceApiKeyPolicy },
+    { v1RerankSchema },
+    { isValidationFailure, validateBody },
+    { getCachedProviderNodes },
+    { isAllRateLimitedCredentials, rateLimitedProviderResponse },
+    { saveCallLog },
+    { attachShiguangGatewayMetaHeaders },
+    { generateRequestId },
+  ] = await Promise.all([
+    load("@shiguang-gateway/core-domain/sse/auth"),
+    load("@shiguang-gateway/core-domain/shared/api-key-policy"),
+    load("@shiguang-gateway/core-domain/edge/rerank-validation-schemas"),
+    load("@shiguang-gateway/core-domain/edge/rerank-validation-helpers"),
+    load("@shiguang-gateway/core-domain/edge/rerank-provider-nodes"),
+    load("@shiguang-gateway/core-domain/edge/rate-limit"),
+    load("@shiguang-gateway/core-domain/edge/usage-db"),
+    load("@shiguang-gateway/core-domain/edge/gateway-response-meta"),
+    load("@shiguang-gateway/core-domain/edge/request-id"),
+  ]);
   let rawBody;
   try {
     rawBody = await request.json();
@@ -68,7 +84,7 @@ async function postHandler(request, context) {
   if (isValidationFailure(validation)) {
     return errorResponse(HTTP_STATUS.BAD_REQUEST, validation.error.message);
   }
-  const body = validation.data;
+  const body = validation.data as RerankRequestBody;
 
   // Enforce API key policies (model restrictions + budget limits)
   const policy = await enforceApiKeyPolicy(request, body.model);
@@ -124,10 +140,10 @@ async function postHandler(request, context) {
       top_n: body.top_n,
       return_documents: body.return_documents,
       credentials,
-      connectionId: (credentials as { connectionId?: string } | null)?.connectionId || null,
-      apiKeyId: policy.apiKeyInfo?.id || null,
-      apiKeyName: policy.apiKeyInfo?.name || null,
-    });
+      connectionId: (credentials as { connectionId?: string } | null)?.connectionId,
+      apiKeyId: policy.apiKeyInfo?.id,
+      apiKeyName: policy.apiKeyInfo?.name,
+    } as any);
     if (response?.ok) {
       await clearRecoveredProviderState(credentials);
     }
@@ -286,4 +302,7 @@ async function postHandler(request, context) {
   );
 }
 
-export const POST = withInjectionGuard(postHandler);
+export async function POST(request: Request): Promise<Response> {
+  const { withInjectionGuard } = await load("@shiguang-gateway/core-domain/middleware/prompt-injection");
+  return withInjectionGuard((guardedRequest: Request) => postHandler(guardedRequest, undefined))(request);
+}

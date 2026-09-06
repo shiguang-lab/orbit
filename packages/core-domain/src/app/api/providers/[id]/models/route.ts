@@ -73,7 +73,7 @@ import {
   buildWatsonxModelsUrl,
 } from "../../../../../../../open-sse/config/watsonx.ts";
 import { getEmbeddingProvider } from "../../../../../../../open-sse/config/embeddingRegistry.ts";
-import { getRerankProvider } from "../../../../../../../open-sse/config/rerankRegistry.ts";
+import { getRerankProvider } from "@shiguang-gateway/rerank-catalog";
 import {
   getSpeechProvider,
   getTranscriptionProvider,

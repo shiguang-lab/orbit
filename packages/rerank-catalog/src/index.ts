@@ -8,7 +8,17 @@
  * keyed by provider ID (e.g. "cohere", "together").
  */
 
-export const RERANK_PROVIDERS = {
+export type RerankModel = { id: string; name: string };
+export type RerankProvider = {
+  id: string;
+  baseUrl: string;
+  authType: string;
+  authHeader: string;
+  format?: "nvidia" | "voyage" | "deepinfra";
+  models: RerankModel[];
+};
+
+export const RERANK_PROVIDERS: Record<string, RerankProvider> = {
   cohere: {
     id: "cohere",
     baseUrl: "https://api.cohere.com/v2/rerank",
@@ -52,7 +62,7 @@ export const RERANK_PROVIDERS = {
 
   // Voyage AI is NOT Cohere-compatible: uses `top_k` (not `top_n`), rejects empty-string
   // documents, and returns `{data:[{relevance_score,index}]}` instead of `{results:[…]}`.
-  // The `voyage` format adapter in open-sse/handlers/rerank.ts handles both directions (#7809).
+  // The edge rerank provider adapter handles both directions (#7809).
   "voyage-ai": {
     id: "voyage-ai",
     baseUrl: "https://api.voyageai.com/v1/rerank",
@@ -115,7 +125,7 @@ export const RERANK_PROVIDERS = {
 
   // DeepInfra rerank is NOT Cohere-shaped: POST /v1/inference/<MODEL> with {queries:[q],documents}
   // returning {scores:[…]} (one score per document, positional). The `deepinfra` format adapter in
-  // open-sse/handlers/rerank.ts builds the per-model URL and maps scores → Cohere results (#5332).
+  // The edge provider adapter builds the per-model URL and maps scores → Cohere results (#5332).
   deepinfra: {
     id: "deepinfra",
     baseUrl: "https://api.deepinfra.com/v1/inference",
@@ -130,16 +140,16 @@ export const RERANK_PROVIDERS = {
   },
 };
 
-const RERANK_PROVIDER_ALIASES = {
+const RERANK_PROVIDER_ALIASES: Record<string, string> = {
   jina: "jina-ai",
   voyage: "voyage-ai",
 };
 
-function resolveRerankProviderId(providerId) {
+function resolveRerankProviderId(providerId: string): string {
   return RERANK_PROVIDER_ALIASES[providerId] || providerId;
 }
 
-function normalizeProviderScopedModelId(providerId, modelId) {
+function normalizeProviderScopedModelId(providerId: string, modelId: string): string {
   const resolvedProvider = resolveRerankProviderId(providerId);
   const provider = RERANK_PROVIDERS[resolvedProvider];
   if (provider?.models.some((model) => model.id === modelId)) return modelId;
@@ -152,14 +162,14 @@ function normalizeProviderScopedModelId(providerId, modelId) {
   return modelId.startsWith(`${providerId}/`) ? modelId.slice(providerId.length + 1) : modelId;
 }
 
-function toProviderScopedModelId(providerId, modelId) {
+function toProviderScopedModelId(providerId: string, modelId: string): string {
   return modelId.startsWith(`${providerId}/`) ? modelId : `${providerId}/${modelId}`;
 }
 
 /**
  * Get rerank provider config by ID
  */
-export function getRerankProvider(providerId) {
+export function getRerankProvider(providerId: string): RerankProvider | null {
   return RERANK_PROVIDERS[resolveRerankProviderId(providerId)] || null;
 }
 
@@ -167,7 +177,10 @@ export function getRerankProvider(providerId) {
  * Parse rerank model string (format: "provider/model" or just "model")
  * Returns { provider, model }
  */
-export function parseRerankModel(modelStr) {
+export function parseRerankModel(modelStr: string | null | undefined): {
+  provider: string | null;
+  model: string | null;
+} {
   if (!modelStr) return { provider: null, model: null };
 
   const slashIdx = modelStr.indexOf("/");
@@ -205,8 +218,8 @@ export function parseRerankModel(modelStr) {
 /**
  * Get all rerank models as a flat list
  */
-export function getAllRerankModels() {
-  const models = [];
+export function getAllRerankModels(): Array<RerankModel & { provider: string }> {
+  const models: Array<RerankModel & { provider: string }> = [];
   for (const [providerId, config] of Object.entries(RERANK_PROVIDERS)) {
     for (const model of config.models) {
       models.push({

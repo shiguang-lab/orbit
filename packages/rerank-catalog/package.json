@@ -1,0 +1,20 @@
+{
+  "name": "@shiguang-gateway/rerank-catalog",
+  "version": "0.1.0",
+  "description": "Provider-neutral rerank model catalog and parser shared by edge and control applications",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "catalog:"
+  }
+}

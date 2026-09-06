@@ -205,6 +205,9 @@ importers:
       '@shiguang-gateway/open-sse':
         specifier: workspace:*
         version: link:../../packages/open-sse
+      '@shiguang-gateway/rerank-catalog':
+        specifier: workspace:*
+        version: link:../../packages/rerank-catalog
       '@shiguang-gateway/web-route-compat':
         specifier: workspace:*
         version: link:../../packages/web-route-compat
@@ -390,6 +393,9 @@ importers:
       '@shiguang-gateway/open-sse':
         specifier: workspace:*
         version: link:../open-sse
+      '@shiguang-gateway/rerank-catalog':
+        specifier: workspace:*
+        version: link:../rerank-catalog
       '@swc/helpers':
         specifier: ^0.5.23
         version: 0.5.23
@@ -758,6 +764,12 @@ importers:
       tls-client-node:
         specifier: ^0.2.0
         version: 0.2.0
+
+  packages/rerank-catalog:
+    devDependencies:
+      typescript:
+        specifier: 'catalog:'
+        version: 5.8.3
 
   packages/web-route-compat:
     dependencies:

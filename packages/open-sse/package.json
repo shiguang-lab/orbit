@@ -13,6 +13,18 @@
       "types": "./public/error.d.ts",
       "import": "./utils/error.ts"
     },
+    "./utils/proxyFetch": {
+      "types": "./public/proxyFetch.d.ts",
+      "import": "./utils/proxyFetch.ts"
+    },
+    "./utils/logger": {
+      "types": "./public/logger.d.ts",
+      "import": "./utils/logger.ts"
+    },
+    "./config/constants": {
+      "types": "./public/constants.d.ts",
+      "import": "./config/constants.ts"
+    },
     "./services/deviceTracker": {
       "types": "./public/deviceTracker.d.ts",
       "import": "./services/deviceTracker.ts"

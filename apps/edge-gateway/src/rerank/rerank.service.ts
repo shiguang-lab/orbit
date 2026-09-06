@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { POST as rerank } from "@shiguang-gateway/core-domain/edge/rerank-handler";
+import { POST as rerank } from "./rerank.handler.js";
 
 @Injectable()
 export class RerankService {
