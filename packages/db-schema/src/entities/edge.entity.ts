@@ -284,3 +284,64 @@ export const CompressionEngineBreakdownEntity: EntityDefinition = {
     column("duration_ms", "INTEGER"),
   ],
 };
+
+/** Relay credentials issued for the public relay endpoint. */
+export const RelayTokenEntity: EntityDefinition = {
+  entityName: "RelayToken",
+  tableName: "relay_tokens",
+  owner: "edge-gateway",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("name", "TEXT", { nullable: false }),
+    column("token_hash", "TEXT", { nullable: false }),
+    column("token_prefix", "TEXT", { nullable: false }),
+    column("description", "TEXT", { default: "''" }),
+    column("combo_id", "TEXT"),
+    column("allowed_models", "TEXT", { default: "'[]'" }),
+    column("max_tokens_per_request", "INTEGER", { default: "128000" }),
+    column("max_requests_per_minute", "INTEGER", { default: "60" }),
+    column("max_requests_per_day", "INTEGER", { default: "10000" }),
+    column("max_cost_per_day", "REAL", { default: "0" }),
+    column("enabled", "INTEGER", { default: "1" }),
+    column("created_at", "INTEGER", { nullable: false }),
+    column("updated_at", "INTEGER", { nullable: false }),
+    column("expires_at", "INTEGER"),
+    column("last_used_at", "INTEGER"),
+    column("metadata", "TEXT", { default: "'{}'" }),
+  ],
+};
+
+/** Fixed-window counters used by the relay endpoint's rate limiter. */
+export const RelayRateLimitEntity: EntityDefinition = {
+  entityName: "RelayRateLimit",
+  tableName: "relay_rate_limits",
+  owner: "edge-gateway",
+  columns: [
+    column("token_id", "TEXT", { nullable: false, primaryKey: true }),
+    column("window_start", "INTEGER", { nullable: false, primaryKey: true }),
+    column("request_count", "INTEGER", { default: "0" }),
+    column("cost", "REAL", { default: "0" }),
+  ],
+};
+
+/** Per-request relay usage records retained for control-plane diagnostics. */
+export const RelayLogEntity: EntityDefinition = {
+  entityName: "RelayLog",
+  tableName: "relay_logs",
+  owner: "edge-gateway",
+  columns: [
+    column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
+    column("token_id", "TEXT", { nullable: false }),
+    column("request_id", "TEXT"),
+    column("model", "TEXT"),
+    column("prompt_tokens", "INTEGER", { default: "0" }),
+    column("completion_tokens", "INTEGER", { default: "0" }),
+    column("cost", "REAL", { default: "0" }),
+    column("status", "TEXT", { default: "'success'" }),
+    column("status_code", "INTEGER", { default: "200" }),
+    column("latency_ms", "INTEGER", { default: "0" }),
+    column("client_ip", "TEXT"),
+    column("user_agent", "TEXT"),
+    column("created_at", "INTEGER", { nullable: false }),
+  ],
+};

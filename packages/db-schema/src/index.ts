@@ -80,6 +80,9 @@ import {
   ContextHandoffEntity,
   SemanticCacheEntity,
   CacheMetricEntity,
+  RelayTokenEntity,
+  RelayRateLimitEntity,
+  RelayLogEntity,
 } from "./entities/edge.entity.js";
 import {
   AuditLogEntity,
@@ -186,6 +189,9 @@ export const GATEWAY_TABLES = {
   contextHandoffs: "context_handoffs",
   semanticCache: "semantic_cache",
   cacheMetrics: "cache_metrics",
+  relayTokens: "relay_tokens",
+  relayRateLimits: "relay_rate_limits",
+  relayLogs: "relay_logs",
   skills: "skills",
   skillExecutions: "skill_executions",
 } as const;
@@ -289,6 +295,9 @@ export const TABLE_OWNERSHIP: readonly TableRef[] = [
   { table: GATEWAY_TABLES.contextHandoffs, owner: "edge-gateway", access: "read-write" },
   { table: GATEWAY_TABLES.semanticCache, owner: "edge-gateway", access: "read-write" },
   { table: GATEWAY_TABLES.cacheMetrics, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.relayTokens, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.relayRateLimits, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.relayLogs, owner: "edge-gateway", access: "read-write" },
   { table: GATEWAY_TABLES.skills, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.skillExecutions, owner: "edge-gateway", access: "read-write" },
 ];
@@ -386,6 +395,9 @@ export const GATEWAY_ENTITIES = {
   contextHandoffs: ContextHandoffEntity,
   semanticCache: SemanticCacheEntity,
   cacheMetrics: CacheMetricEntity,
+  relayTokens: RelayTokenEntity,
+  relayRateLimits: RelayRateLimitEntity,
+  relayLogs: RelayLogEntity,
   skills: SkillEntity,
   skillExecutions: SkillExecutionEntity,
 } satisfies Record<keyof typeof GATEWAY_TABLES, EntityDefinition>;
