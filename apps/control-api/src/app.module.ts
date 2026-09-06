@@ -33,6 +33,7 @@ import { SystemModule } from "./system/system.module.js";
 import { FreeProxiesModule } from "./settings/free-proxies/free-proxies.module.js";
 import { ProviderAuthImportModule } from "./providers/auth/provider-auth-import.module.js";
 import { CompressionModule } from "./settings/compression/compression.module.js";
+import { QdrantModule } from "./settings/qdrant/qdrant.module.js";
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { CompressionModule } from "./settings/compression/compression.module.js"
     FreeProxiesModule,
     ProviderAuthImportModule,
     CompressionModule,
+    QdrantModule,
   ],
 })
 export class AppModule {}

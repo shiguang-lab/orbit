@@ -19,5 +19,6 @@ export interface MemorySettings {
 }
 
 export function normalizeMemorySettings(rawSettings?: Record<string, unknown>): MemorySettings;
+export function getMemorySettings(): Promise<MemorySettings>;
 export function toMemorySettingsUpdates(settings: Partial<MemorySettings>): Record<string, unknown>;
 export function invalidateMemorySettingsCache(): void;

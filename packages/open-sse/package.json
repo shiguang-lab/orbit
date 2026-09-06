@@ -29,6 +29,10 @@
       "types": "./public/constants.d.ts",
       "import": "./config/constants.ts"
     },
+    "./config/embeddingRegistry": {
+      "types": "./public/embeddingRegistry.d.ts",
+      "import": "./config/embeddingRegistry.ts"
+    },
     "./handlers/imageGeneration": {
       "types": "./public/imageGeneration.d.ts",
       "import": "./handlers/imageGeneration.ts"

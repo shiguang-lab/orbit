@@ -135,9 +135,11 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/tier-config",
   "control/provider-auth-import",
   "control/compression-settings",
+  "control/qdrant",
   "db/compression-run-telemetry",
   "shared/validation/compression-config-schemas",
 );
+allowedCoreDomainSubpaths["apps/control-api"].push("catalog/providers");
 
 // Route files that have completed a physical ownership move. Keep this list
 // small and explicit: adding an entry is the acceptance record for a domain
@@ -291,6 +293,11 @@ const migratedRouteOwnership = {
     "api/settings/compression/mcp-accessibility/route.ts",
     "api/settings/compression/run-telemetry/route.ts",
     "api/compression/rules/route.ts",
+    "api/settings/qdrant/route.ts",
+    "api/settings/qdrant/health/route.ts",
+    "api/settings/qdrant/search/route.ts",
+    "api/settings/qdrant/cleanup/route.ts",
+    "api/settings/qdrant/embedding-models/route.ts",
     "api/settings/proxy/test/route.ts",
     "api/settings/proxies/route.ts",
     "api/settings/proxies/assignments/route.ts",

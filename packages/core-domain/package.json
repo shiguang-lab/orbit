@@ -250,6 +250,10 @@
       "types": "./src/public/memoryRuntime.d.ts",
       "import": "./src/lib/memory/runtime.ts"
     },
+    "./control/qdrant": {
+      "types": "./src/public/qdrant.d.ts",
+      "import": "./src/lib/memory/qdrant.ts"
+    },
     "./control/database-settings": {
       "types": "./src/public/databaseSettings.d.ts",
       "import": "./src/lib/db/databaseSettings.ts"
