@@ -1,7 +1,9 @@
 import { ensureSecrets } from "@shiguang-gateway/core-domain/startup";
+import { assertGatewayEntities } from "@shiguang-gateway/db-schema";
 import { bootstrapRealtime } from "./bootstrap.js";
 
 async function main(): Promise<void> {
+  assertGatewayEntities();
   await ensureSecrets();
 
   const host = process.env.REALTIME_HOST ?? "0.0.0.0";

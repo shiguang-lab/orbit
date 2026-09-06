@@ -25,6 +25,8 @@ raw SQLite adapters rather than TypeORM/Drizzle, so these entities deliberately 
 connection, Nest module, query, or mutation logic. SQL migrations remain the single runtime migration source
 under the database owner; SQL queries and mutations stay in the owning domain service. New shared tables must
 first add a verified entity here, while app-only temporary tables stay app-owned and are not exported from this package.
+
+Every deployable server app declares `@shiguang-gateway/db-schema` directly and validates the catalog during startup. This keeps the entity contract active at runtime instead of relying only on audit scripts.
 `network-guard` contains pure outbound URL parsing, host classification and SSRF error contracts; it has no
 database, framework or application lifecycle dependency. Configuration-backed guard policy remains in the owning
 domain service. `packages/core-domain` contains the provider/protocol domain

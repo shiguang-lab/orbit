@@ -1,7 +1,9 @@
 import { ensureSecrets } from "@shiguang-gateway/core-domain/startup";
+import { assertGatewayEntities } from "@shiguang-gateway/db-schema";
 import { WORKER_JOBS } from "./jobs/registry.js";
 import { startWorkerJobs } from "./jobs/runner.js";
 
+assertGatewayEntities();
 await ensureSecrets();
 process.env.SHIGUANG_GATEWAY_BASE_URL ??= process.env.INTERNAL_BASE_URL ??
   `http://${process.env.EDGE_GATEWAY_HOST === "0.0.0.0" ? "127.0.0.1" : (process.env.EDGE_GATEWAY_HOST ?? "127.0.0.1")}:${process.env.EDGE_GATEWAY_PORT ?? "8787"}`;

@@ -190,7 +190,11 @@ export class SettingsSecurityService {
       if (!(await isDashboardSessionAuthenticated(request))) {
         const apiKey = extractApiKey(request);
         if (!apiKey) return { error: { status: 401, body: { error: "Authentication required" } } } as const;
-        if (!(await isValidApiKey(apiKey))) return { error: { status: 403, body: { error: "Invalid API key" } } } as const;
+        try {
+          if (!(await isValidApiKey(apiKey))) return { error: { status: 403, body: { error: "Invalid API key" } } } as const;
+        } catch {
+          return { error: { status: 503, body: { error: "Service temporarily unavailable" } } } as const;
+        }
       }
     }
     const settings = await getSettings();

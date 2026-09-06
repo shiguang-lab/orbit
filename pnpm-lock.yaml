@@ -144,6 +144,9 @@ importers:
       '@shiguang-gateway/core-domain':
         specifier: workspace:*
         version: link:../../packages/core-domain
+      '@shiguang-gateway/db-schema':
+        specifier: workspace:*
+        version: link:../../packages/db-schema
       '@shiguang-gateway/error-sanitization':
         specifier: workspace:*
         version: link:../../packages/error-sanitization
@@ -199,6 +202,9 @@ importers:
       '@shiguang-gateway/core-domain':
         specifier: workspace:*
         version: link:../../packages/core-domain
+      '@shiguang-gateway/db-schema':
+        specifier: workspace:*
+        version: link:../../packages/db-schema
       '@shiguang-gateway/error-sanitization':
         specifier: workspace:*
         version: link:../../packages/error-sanitization
@@ -264,6 +270,9 @@ importers:
       '@shiguang-gateway/core-domain':
         specifier: workspace:*
         version: link:../../packages/core-domain
+      '@shiguang-gateway/db-schema':
+        specifier: workspace:*
+        version: link:../../packages/db-schema
       '@shiguang-gateway/http-kernel':
         specifier: workspace:*
         version: link:../../packages/http-kernel
@@ -298,6 +307,9 @@ importers:
       '@shiguang-gateway/core-domain':
         specifier: workspace:*
         version: link:../../packages/core-domain
+      '@shiguang-gateway/db-schema':
+        specifier: workspace:*
+        version: link:../../packages/db-schema
       '@shiguang-gateway/open-sse':
         specifier: workspace:*
         version: link:../../packages/open-sse
