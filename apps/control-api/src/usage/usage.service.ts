@@ -7,6 +7,11 @@ import { GET as getCacheHealth } from "./handlers/cache-health.handler.js";
 import { GET as getProviderWindowCosts } from "./handlers/provider-window-costs.handler.js";
 import { GET as getRouteExplain } from "./handlers/route-explain.handler.js";
 import { GET as getUtilization } from "./handlers/utilization.handler.js";
+import { GET as getCodexResetCredit, POST as consumeCodexResetCredit } from "./handlers/codex-reset-credit.handler.js";
+import { GET as getComboForecast } from "./handlers/combo-forecast.handler.js";
+import { GET as getComboHealthDashboard } from "./handlers/combo-health-dashboard.handler.js";
+import { GET as getComboHealthAutopilot } from "./handlers/combo-health-autopilot.handler.js";
+import { GET as getComboScoringInspector } from "./handlers/combo-scoring-inspector.handler.js";
 
 /** Management-facing usage use cases. HTTP transport stays in UsageController. */
 @Injectable()
@@ -46,4 +51,11 @@ export class UsageService {
   getUtilization(request: Request) {
     return getUtilization(request);
   }
+
+  getCodexResetCredit(request: Request) { return getCodexResetCredit(request); }
+  consumeCodexResetCredit(request: Request) { return consumeCodexResetCredit(request); }
+  getComboForecast(request: Request) { return getComboForecast(request); }
+  getComboHealthDashboard(request: Request) { return getComboHealthDashboard(request); }
+  getComboHealthAutopilot(request: Request) { return getComboHealthAutopilot(request); }
+  getComboScoringInspector(request: Request) { return getComboScoringInspector(request); }
 }

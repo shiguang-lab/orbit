@@ -54,4 +54,34 @@ export class UsageController {
   getUtilization(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
     return this.routes.dispatch(request, reply, (req) => this.usage.getUtilization(req));
   }
+
+  @Get("codex-reset-credit")
+  getCodexResetCredit(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, (req) => this.usage.getCodexResetCredit(req));
+  }
+
+  @Post("codex-reset-credit")
+  consumeCodexResetCredit(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, (req) => this.usage.consumeCodexResetCredit(req));
+  }
+
+  @Get("combo-forecast")
+  getComboForecast(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, (req) => this.usage.getComboForecast(req));
+  }
+
+  @Get("combo-health-dashboard")
+  getComboHealthDashboard(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, (req) => this.usage.getComboHealthDashboard(req));
+  }
+
+  @Get("combo-health-autopilot")
+  getComboHealthAutopilot(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, (req) => this.usage.getComboHealthAutopilot(req));
+  }
+
+  @Get("combo-scoring-inspector")
+  getComboScoringInspector(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, (req) => this.usage.getComboScoringInspector(req));
+  }
 }
