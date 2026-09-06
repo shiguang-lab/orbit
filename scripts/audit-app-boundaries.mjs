@@ -83,6 +83,7 @@ const allowedCoreDomainSubpaths = {
     "edge/gateway-response-meta",
     "edge/request-id",
     "edge/local-db",
+    "catalog/project-combo",
     "edge/image-route-model",
     "shared/body-size-guard",
     "edge/read-cache",
