@@ -11,7 +11,7 @@ import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provide
 import {
   getSyncedAvailableModels,
   getAllSyncedAvailableModels,
-} from "@shiguang-gateway/core-domain/control/synced-models";
+} from "@shiguang-gateway/core-domain/db/models-runtime";
 import {
   GET as getProviderModelsHandler,
   POST as addProviderModelHandler,

@@ -28,7 +28,7 @@ import {
   getComboByName,
   resolveProxyForConnection,
 } from "@shiguang-gateway/core-domain/edge/local-db";
-import { getAllCustomModels } from "@shiguang-gateway/core-domain/control/synced-models";
+import { getAllCustomModels } from "@shiguang-gateway/core-domain/db/models-runtime";
 import { resolveImageRouteModel } from "../image-route-model.js";
 import {
   isMicrosoftDesignerWebProviderRetiredError,

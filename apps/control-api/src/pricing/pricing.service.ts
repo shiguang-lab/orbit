@@ -8,7 +8,7 @@ import {
 } from "@shiguang-gateway/core-domain/pricing/db";
 import { getDefaultPricing } from "@shiguang-gateway/core-domain/pricing/defaults";
 import { getProviderPrefixIndex } from "@shiguang-gateway/core-domain/pricing/provider-prefixes";
-import { getAllCustomModels, getAllSyncedAvailableModels } from "@shiguang-gateway/core-domain/control/synced-models";
+import { getAllCustomModels, getAllSyncedAvailableModels } from "@shiguang-gateway/core-domain/db/models-runtime";
 import {
   syncPricingFromSources,
   getSyncStatus,

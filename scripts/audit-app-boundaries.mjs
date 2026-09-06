@@ -150,7 +150,7 @@ const allowedCoreDomainSubpaths = {
     "edge/moderation-validation-schemas",
     "edge/moderation-validation-helpers",
     "edge/rate-limit",
-    "control/synced-models",
+    "db/models-runtime",
     "usage/call-log-api-key-context",
     "sse/image-credential-retry",
     "edge/ws-cors",
@@ -199,6 +199,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "domain/provider-error-classifier",
   "usage/reporting-support/",
 );
+allowedCoreDomainSubpaths["apps/control-api"].push("db/models-runtime");
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "db/agentic-conversations",
   "usage/summary",
@@ -1114,7 +1115,11 @@ if (coreDomainEntry) {
     }
   }
 }
-const retiredRedundantCoreExports = ["./edge/music-rate-limit", "./catalog/quota-runtime"];
+const retiredRedundantCoreExports = [
+  "./edge/music-rate-limit",
+  "./catalog/quota-runtime",
+  "./control/synced-models",
+];
 for (const subpath of retiredRedundantCoreExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {
     add("redundant-core-domain-export", join(coreDomainEntry.dir, "package.json"), subpath);

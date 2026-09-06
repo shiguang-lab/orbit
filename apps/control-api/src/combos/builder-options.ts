@@ -1,4 +1,4 @@
-import { getAllCustomModels, getAllSyncedAvailableModels, getModelIsHidden } from "@shiguang-gateway/core-domain/control/synced-models";
+import { getAllCustomModels, getAllSyncedAvailableModels, getModelIsHidden } from "@shiguang-gateway/core-domain/db/models-runtime";
 import { getCombos } from "@shiguang-gateway/core-domain/db/local-db";
 import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { getProviderNodes } from "@shiguang-gateway/core-domain/db/provider-nodes";

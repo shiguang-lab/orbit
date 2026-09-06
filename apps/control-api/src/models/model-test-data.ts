@@ -1,4 +1,4 @@
-import { getCustomModels } from "@shiguang-gateway/core-domain/control/synced-models";
+import { getCustomModels } from "@shiguang-gateway/core-domain/db/models-runtime";
 import { getProviderNodeById } from "@shiguang-gateway/core-domain/db/provider-nodes";
 import { isConnectionUnavailableToAuxiliaryActivity } from "@shiguang-gateway/core-domain/shared/connection-isolation";
 

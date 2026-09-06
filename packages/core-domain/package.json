@@ -896,10 +896,6 @@
       "types": "./src/public/registeredKeys.d.ts",
       "import": "./src/lib/db/registeredKeys.ts"
     },
-    "./control/synced-models": {
-      "types": "./src/public/syncedModels.d.ts",
-      "import": "./src/lib/db/models.ts"
-    },
     "./control/openrouter-provider-stats": {
       "types": "./src/public/openrouterProviderStats.d.ts",
       "import": "./src/lib/catalog/openrouterProviderStats.ts"
