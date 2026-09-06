@@ -11,6 +11,7 @@ export const ownedEdgeRoutes: readonly OwnedRoute[] = [
   { path: "/a2a/status", methods: ["GET"] },
   { path: "/v1/audio/speech", methods: ["OPTIONS", "POST"] },
   { path: "/v1/antigravity", methods: ["OPTIONS", "POST"] },
+  { path: "/v1/auto-combo/:channel/candidates", methods: ["GET", "OPTIONS"] },
   { path: "/v1/agents/health", methods: ["GET", "OPTIONS"] },
   { path: "/v1/agents/credentials", methods: ["GET", "OPTIONS", "POST"] },
   { path: "/v1/agents/tasks", methods: ["DELETE", "GET", "OPTIONS", "POST"] },

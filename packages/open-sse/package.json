@@ -69,6 +69,10 @@
       "types": "./public/webFetch.d.ts",
       "import": "./handlers/webFetch.ts"
     },
+    "./handlers/autoComboCandidates": {
+      "types": "./public/autoComboCandidates.d.ts",
+      "import": "./handlers/autoComboCandidates.ts"
+    },
     "./config/imageRegistry": {
       "types": "./public/imageRegistry.d.ts",
       "import": "./config/imageRegistry.ts"
