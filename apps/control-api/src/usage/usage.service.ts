@@ -6,6 +6,7 @@ import { GET as getModelLatencyStats } from "./handlers/model-latency-stats.hand
 import { GET as getCacheHealth } from "./handlers/cache-health.handler.js";
 import { GET as getProviderWindowCosts } from "./handlers/provider-window-costs.handler.js";
 import { GET as getRouteExplain } from "./handlers/route-explain.handler.js";
+import { GET as getUtilization } from "./handlers/utilization.handler.js";
 
 /** Management-facing usage use cases. HTTP transport stays in UsageController. */
 @Injectable()
@@ -40,5 +41,9 @@ export class UsageService {
 
   getRouteExplain(request: Request, id: string) {
     return getRouteExplain(request, { params: { id } });
+  }
+
+  getUtilization(request: Request) {
+    return getUtilization(request);
   }
 }

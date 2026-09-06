@@ -49,4 +49,9 @@ export class UsageController {
   getRouteExplain(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply) {
     return this.routes.dispatch(request, reply, (req) => this.usage.getRouteExplain(req, id), { id });
   }
+
+  @Get("utilization")
+  getUtilization(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, (req) => this.usage.getUtilization(req));
+  }
 }
