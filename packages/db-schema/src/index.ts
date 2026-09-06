@@ -83,6 +83,7 @@ import {
   RelayTokenEntity,
   RelayRateLimitEntity,
   RelayLogEntity,
+  McpToolAuditEntity,
 } from "./entities/edge.entity.js";
 import {
   AuditLogEntity,
@@ -192,6 +193,7 @@ export const GATEWAY_TABLES = {
   relayTokens: "relay_tokens",
   relayRateLimits: "relay_rate_limits",
   relayLogs: "relay_logs",
+  mcpToolAudit: "mcp_tool_audit",
   skills: "skills",
   skillExecutions: "skill_executions",
 } as const;
@@ -298,6 +300,7 @@ export const TABLE_OWNERSHIP: readonly TableRef[] = [
   { table: GATEWAY_TABLES.relayTokens, owner: "edge-gateway", access: "read-write" },
   { table: GATEWAY_TABLES.relayRateLimits, owner: "edge-gateway", access: "read-write" },
   { table: GATEWAY_TABLES.relayLogs, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.mcpToolAudit, owner: "edge-gateway", access: "read-write" },
   { table: GATEWAY_TABLES.skills, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.skillExecutions, owner: "edge-gateway", access: "read-write" },
 ];
@@ -398,6 +401,7 @@ export const GATEWAY_ENTITIES = {
   relayTokens: RelayTokenEntity,
   relayRateLimits: RelayRateLimitEntity,
   relayLogs: RelayLogEntity,
+  mcpToolAudit: McpToolAuditEntity,
   skills: SkillEntity,
   skillExecutions: SkillExecutionEntity,
 } satisfies Record<keyof typeof GATEWAY_TABLES, EntityDefinition>;

@@ -27,6 +27,10 @@ control rankings. Both are shared cross-app contracts with explicit single
 write owners, so their entity metadata lives here even though query code stays
 in the consuming domain modules.
 
+`mcp_tool_audit` is likewise appended by the MCP runtime and queried by the
+control-api audit surface. It is declared as an edge-owned entity here so the
+runtime and management readers share one physical schema contract.
+
 The edge catalog includes the shared `compression_analytics` receipt stream and
 its `compression_engine_breakdown` rows. They are written by the streaming
 request path and read by control/realtime diagnostics, so their complete

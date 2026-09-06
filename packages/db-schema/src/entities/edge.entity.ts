@@ -345,3 +345,25 @@ export const RelayLogEntity: EntityDefinition = {
     column("created_at", "INTEGER", { nullable: false }),
   ],
 };
+
+/**
+ * Append-only audit records emitted by the MCP server runtime and queried by
+ * the control-plane MCP management surface. The runtime lives in the edge
+ * deployment dependency graph, while control-api only reads these rows.
+ */
+export const McpToolAuditEntity: EntityDefinition = {
+  entityName: "McpToolAudit",
+  tableName: "mcp_tool_audit",
+  owner: "edge-gateway",
+  columns: [
+    column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
+    column("tool_name", "TEXT", { nullable: false }),
+    column("input_hash", "TEXT"),
+    column("output_summary", "TEXT"),
+    column("duration_ms", "INTEGER"),
+    column("api_key_id", "TEXT"),
+    column("success", "INTEGER", { default: "1" }),
+    column("error_code", "TEXT"),
+    column("created_at", "TEXT", { default: "datetime('now')" }),
+  ],
+};
