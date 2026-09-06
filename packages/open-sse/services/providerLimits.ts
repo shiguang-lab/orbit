@@ -2,8 +2,8 @@ import {
   getProviderConnectionById,
   getProviderConnections,
   updateProviderConnection,
-} from "@shiguang-gateway/core-domain/usage/provider-limits-support/providerConnections";
-import { getSettings, resolveProxyForConnection, updateSettings } from "@shiguang-gateway/core-domain/usage/provider-limits-support/settings";
+} from "@shiguang-gateway/core-domain/db/provider-connections";
+import { getSettings, resolveProxyForConnection, updateSettings } from "@shiguang-gateway/core-domain/db/settings";
 import {
   getAllProviderLimitsCache,
   getProviderLimitsCache,

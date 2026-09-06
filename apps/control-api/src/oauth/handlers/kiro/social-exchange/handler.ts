@@ -6,7 +6,7 @@ import {
   getProviderConnections,
   updateProviderConnection,
 } from "@shiguang-gateway/core-domain/control/oauth-persistence";
-import { isCloudEnabled } from "@shiguang-gateway/core-domain/control/settings";
+import { isCloudEnabled } from "@shiguang-gateway/core-domain/db/settings";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
 import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";
 import { isAuthRequired, isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";

@@ -14,7 +14,7 @@ import {
   type Memory,
   type MemoryType,
 } from "@shiguang-gateway/open-sse/services/memoryRuntime";
-import { getSettings, updateSettings } from "@shiguang-gateway/core-domain/control/settings";
+import { getSettings, updateSettings } from "@shiguang-gateway/core-domain/db/settings";
 import {
   invalidateMemorySettingsCache,
   normalizeMemorySettings,

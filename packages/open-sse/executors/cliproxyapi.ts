@@ -127,7 +127,7 @@ export function clearCliproxyapiUrlCache() {
 // This runs once when the executor module is first imported.
 (async () => {
   try {
-    const { getSettings } = await import("@shiguang-gateway/core-domain/control/settings");
+    const { getSettings } = await import("@shiguang-gateway/core-domain/db/settings");
     const settings = await getSettings();
     if (typeof settings.cliproxyapi_url === "string" && settings.cliproxyapi_url.trim()) {
       _cachedSettingsUrl = { url: settings.cliproxyapi_url.trim(), ts: Date.now() };
@@ -148,7 +148,7 @@ async function resolveCliproxyapiBaseUrl(): Promise<string> {
   }
 
   try {
-    const { getSettings } = await import("@shiguang-gateway/core-domain/control/settings");
+    const { getSettings } = await import("@shiguang-gateway/core-domain/db/settings");
     const settings = await getSettings();
     if (typeof settings.cliproxyapi_url === "string" && settings.cliproxyapi_url.trim()) {
       const url = settings.cliproxyapi_url.trim();

@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import {
   getSettings,
   updateSettings,
-} from "@shiguang-gateway/core-domain/control/settings";
+} from "@shiguang-gateway/core-domain/db/settings";
 import {
   checkQdrantHealth,
   cleanupSemanticMemoryPoints,

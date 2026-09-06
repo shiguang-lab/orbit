@@ -841,7 +841,7 @@ export function getLearnedLimits() {
 
 async function persistLearnedLimitsNow() {
   try {
-    const { updateSettings } = await import("@shiguang-gateway/core-domain/control/settings");
+    const { updateSettings } = await import("@shiguang-gateway/core-domain/db/settings");
     await updateSettings({ learnedRateLimits: JSON.stringify(learnedLimits) });
     logRateLimit(
       `💾 [RATE-LIMIT] Persisted learned limits for ${Object.keys(learnedLimits).length} provider(s)`
@@ -953,7 +953,7 @@ export async function __getLimiterStateForTests(provider, connectionId, model = 
  */
 async function loadPersistedLimits() {
   try {
-    const { getSettings } = await import("@shiguang-gateway/core-domain/control/settings");
+    const { getSettings } = await import("@shiguang-gateway/core-domain/db/settings");
     const settings = await getSettings();
     const raw = settings?.learnedRateLimits;
     if (typeof raw !== "string" || raw.trim().length === 0) return;

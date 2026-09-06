@@ -4,7 +4,7 @@ import {
   createApiKey,
   updateApiKeyPermissions,
 } from "@shiguang-gateway/core-domain/control/api-key-store";
-import { isCloudEnabled } from "@shiguang-gateway/core-domain/control/settings";
+import { isCloudEnabled } from "@shiguang-gateway/core-domain/db/settings";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
 import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";
 import { createKeySchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";

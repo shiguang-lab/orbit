@@ -7,7 +7,7 @@ import {
   removeCustomAlias,
   setCustomAliases,
 } from "@shiguang-gateway/open-sse/services/modelDeprecation";
-import { getSettings, updateSettings } from "@shiguang-gateway/core-domain/control/settings";
+import { getSettings, updateSettings } from "@shiguang-gateway/core-domain/db/settings";
 
 /** Use cases for operator-managed model deprecation aliases. */
 @Injectable()

@@ -208,7 +208,7 @@ export async function handleRerank({
     load("@shiguang-gateway/core-domain/pricing/modal-cost"),
     load("@shiguang-gateway/core-domain/runtime/request-id"),
     load("@shiguang-gateway/core-domain/usage/call-logs"),
-    load("@shiguang-gateway/core-domain/control/settings"),
+    load("@shiguang-gateway/core-domain/db/settings"),
   ]);
   const startTime = Date.now();
   if (!model) return errorResponse(400, "model is required");

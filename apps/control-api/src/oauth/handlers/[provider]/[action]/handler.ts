@@ -20,7 +20,7 @@ import {
   updateProviderConnection,
   getProviderConnections,
 } from "@shiguang-gateway/core-domain/control/oauth-persistence";
-import { isCloudEnabled } from "@shiguang-gateway/core-domain/control/settings";
+import { isCloudEnabled } from "@shiguang-gateway/core-domain/db/settings";
 import { resolveProxyForProvider } from "@shiguang-gateway/core-domain/db/proxies";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
 import { isValidGheUrl } from "@shiguang-gateway/core-domain/shared/provider-specific-data";

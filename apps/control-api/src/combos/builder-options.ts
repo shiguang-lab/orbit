@@ -2,7 +2,7 @@ import { getAllCustomModels, getAllSyncedAvailableModels, getModelIsHidden } fro
 import { getCombos } from "@shiguang-gateway/core-domain/db/local-db";
 import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { getProviderNodes } from "@shiguang-gateway/core-domain/db/provider-nodes";
-import { getSettings } from "@shiguang-gateway/core-domain/control/settings";
+import { getSettings } from "@shiguang-gateway/core-domain/db/settings";
 import { getAccountDisplayName, getProviderDisplayName } from "@shiguang-gateway/core-domain/catalog/display-names";
 import { getCompatibleFallbackModels } from "@shiguang-gateway/core-domain/catalog/managed-available-models";
 import { getResolvedModelCapabilities } from "@shiguang-gateway/core-domain/catalog/model-capabilities";

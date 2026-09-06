@@ -90,7 +90,7 @@ export class ControlSecurityService implements OnModuleInit {
       },
       getSettings: async () => {
         try {
-          const { getSettings } = await load("@shiguang-gateway/core-domain/control/settings");
+          const { getSettings } = await load("@shiguang-gateway/core-domain/db/settings");
           return await getSettings();
         } catch {
           return {};

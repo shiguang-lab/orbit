@@ -36,7 +36,7 @@ import {
   type RateLimitedCredentials,
 } from "@shiguang-gateway/open-sse/services/credential-selection";
 import { rateLimitedProviderResponse } from "../common/provider-rate-limit-response.js";
-import { getSettings } from "@shiguang-gateway/core-domain/control/settings";
+import { getSettings } from "@shiguang-gateway/core-domain/db/settings";
 import { isProviderBlockedByIdOrAlias } from "@shiguang-gateway/contracts/config/noAuthProviders";
 import { withInjectionGuard } from "@shiguang-gateway/core-domain/middleware/prompt-injection";
 

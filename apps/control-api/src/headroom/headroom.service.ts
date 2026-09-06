@@ -11,7 +11,7 @@ import {
   startHeadroomProxy,
   stopHeadroomProxy,
 } from "./runtime/process.js";
-import { getCachedSettings } from "@shiguang-gateway/core-domain/control/settings";
+import { getCachedSettings } from "@shiguang-gateway/core-domain/db/settings";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { createErrorResponse } from "@shiguang-gateway/core-domain/shared/error-response";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";

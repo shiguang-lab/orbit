@@ -9,7 +9,7 @@ import {
   isDetailedLoggingEnabled,
 } from "@shiguang-gateway/core-domain/db/detailed-logs";
 import { getUserDatabaseSettings, updateDatabaseSettings } from "@shiguang-gateway/core-domain/control/database-settings";
-import { updateSettings } from "@shiguang-gateway/core-domain/control/settings";
+import { updateSettings } from "@shiguang-gateway/core-domain/db/settings";
 
 export const dynamic = "force-dynamic";
 

@@ -4,7 +4,7 @@ import {
   getCombos,
   getCombosCount,
 } from "@shiguang-gateway/core-domain/db/local-db";
-import { isCloudEnabled } from "@shiguang-gateway/core-domain/control/settings";
+import { isCloudEnabled } from "@shiguang-gateway/core-domain/db/settings";
 import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
 import { createComboSchema, paginationSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";

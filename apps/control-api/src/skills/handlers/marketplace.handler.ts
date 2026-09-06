@@ -1,4 +1,4 @@
-import { getSettings } from "@shiguang-gateway/core-domain/control/settings";
+import { getSettings } from "@shiguang-gateway/core-domain/db/settings";
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import type { SkillsProviderSettingsService } from "../providers/skills-provider-settings.service.js";

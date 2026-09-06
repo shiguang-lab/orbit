@@ -1,6 +1,6 @@
 import { getModelAliases, setModelAlias } from "@shiguang-gateway/core-domain/db/model-aliases";
 import { validateApiKey } from "@shiguang-gateway/core-domain/db/api-keys";
-import { isCloudEnabled } from "@shiguang-gateway/core-domain/control/settings";
+import { isCloudEnabled } from "@shiguang-gateway/core-domain/db/settings";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
 import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";

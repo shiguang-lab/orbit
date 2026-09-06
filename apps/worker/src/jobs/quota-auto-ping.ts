@@ -27,7 +27,7 @@ import type { BaseExecutor } from "@shiguang-gateway/open-sse/executors/base";
 import { getCodexUsage } from "@shiguang-gateway/open-sse/services/usage/codex";
 import {
   getSettings,
-} from "@shiguang-gateway/core-domain/runtime/settings";
+} from "@shiguang-gateway/core-domain/db/settings";
 import {
   getProviderConnections,
   updateProviderConnection,

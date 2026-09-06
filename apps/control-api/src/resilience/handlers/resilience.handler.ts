@@ -1,4 +1,4 @@
-import { getCachedSettings, getSettings, updateSettings } from "@shiguang-gateway/core-domain/control/settings";
+import { getCachedSettings, getSettings, updateSettings } from "@shiguang-gateway/core-domain/db/settings";
 import {
   buildLegacyResilienceCompat,
   mergeResilienceSettings,

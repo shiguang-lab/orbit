@@ -37,7 +37,7 @@ export async function resolveSearchProxy(
     return { proxy: null, proxyLevel: "direct" };
   }
   try {
-    const { resolveProxyForConnection } = await import("@shiguang-gateway/core-domain/control/settings");
+    const { resolveProxyForConnection } = await import("@shiguang-gateway/core-domain/db/settings");
     const proxyInfo = await resolveProxyForConnection(connectionId, apiKeyId, providerId);
     return {
       proxy: proxyInfo?.proxy,

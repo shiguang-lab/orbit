@@ -8,7 +8,7 @@ import {
   setTaskRoutingConfig,
   type TaskRoutingConfig,
 } from "@shiguang-gateway/open-sse/services/taskAwareRouter";
-import { updateSettings } from "@shiguang-gateway/core-domain/control/settings";
+import { updateSettings } from "@shiguang-gateway/core-domain/db/settings";
 
 /** Use cases for the control-plane task-aware routing settings surface. */
 @Injectable()

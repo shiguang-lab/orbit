@@ -131,7 +131,7 @@ function getBufferTokens(): number {
 
 async function _loadBufferFromDb(): Promise<void> {
   try {
-    const { getSettings } = await import("@shiguang-gateway/core-domain/control/settings");
+    const { getSettings } = await import("@shiguang-gateway/core-domain/db/settings");
     const settings = await getSettings();
     const val = settings.usageTokenBuffer;
     if (typeof val === "number" && val >= 0) {

@@ -1,6 +1,6 @@
 import { buildComboHealthAutopilotReport } from "./comboHealthAutopilot.js";
 import { getCombos } from "@shiguang-gateway/core-domain/usage/reporting-support/combos";
-import { getProviderConnections } from "@shiguang-gateway/core-domain/usage/reporting-support/providers";
+import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { buildComboForecastResponse } from "./comboForecast.js";
 import { buildComboHealthResponse } from "./comboHealth.js";
 import {

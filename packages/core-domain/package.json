@@ -74,8 +74,8 @@
       "import": "./src/lib/services/registry.ts"
     },
     "./edge/count-tokens-validation": {
-      "types": "./src/public/countTokensValidation.d.ts",
-      "import": "./src/shared/validation/schemas/apiV1.ts"
+      "types": "./src/shared/validation/countTokensExports.ts",
+      "import": "./src/shared/validation/countTokensExports.ts"
     },
     "./sse/logger": {
       "types": "./src/public/logger.d.ts",
@@ -90,8 +90,8 @@
       "import": "./src/shared/utils/upstreamError.ts"
     },
     "./edge/rerank-validation-schemas": {
-      "types": "./src/public/rerankValidationSchemas.d.ts",
-      "import": "./src/shared/validation/schemas.ts"
+      "types": "./src/shared/validation/rerankExports.ts",
+      "import": "./src/shared/validation/rerankExports.ts"
     },
     "./edge/rerank-provider-nodes": "./src/lib/db/readCache.ts",
     "./edge/gateway-response-meta": {
@@ -99,8 +99,8 @@
       "import": "./src/domain/gatewayResponseMeta.ts"
     },
     "./edge/embedding-input-limits": {
-      "types": "./src/public/embeddingInputLimits.d.ts",
-      "import": "./src/shared/validation/schemas/apiV1.ts"
+      "types": "./src/shared/validation/embeddingInputExports.ts",
+      "import": "./src/shared/validation/embeddingInputExports.ts"
     },
     "./edge/jina-native-embedding-input": {
       "types": "./src/public/jinaNativeEmbeddingInput.d.ts",
@@ -147,12 +147,12 @@
       "import": "./src/shared/utils/featureFlags.ts"
     },
     "./edge/embeddings-validation-schemas": {
-      "types": "./src/public/embeddingsValidationSchemas.d.ts",
-      "import": "./src/shared/validation/schemas.ts"
+      "types": "./src/shared/validation/embeddingsExports.ts",
+      "import": "./src/shared/validation/embeddingsExports.ts"
     },
     "./edge/batches-validation-schemas": {
-      "types": "./src/public/batchesValidationSchemas.d.ts",
-      "import": "./src/shared/validation/schemas/apiV1.ts"
+      "types": "./src/shared/validation/batchesExports.ts",
+      "import": "./src/shared/validation/batchesExports.ts"
     },
     "./edge/local-db": {
       "types": "./src/public/localDb.d.ts",
@@ -206,7 +206,10 @@
       "types": "./src/public/edgeWs.d.ts",
       "import": "./src/lib/ws/handshake.ts"
     },
-    "./edge/moderation-validation-schemas": "./src/shared/validation/schemas.ts",
+    "./edge/moderation-validation-schemas": {
+      "types": "./src/shared/validation/moderationExports.ts",
+      "import": "./src/shared/validation/moderationExports.ts"
+    },
     "./db/compression-analytics": {
       "types": "./src/public/compressionAnalytics.d.ts",
       "import": "./src/lib/db/compressionAnalytics.ts"
@@ -357,7 +360,6 @@
     "./control/provider-discovery-support/volcenginePlanModelDiscovery": "./src/lib/providers/volcenginePlanModelDiscovery.ts",
     "./control/provider-discovery-support/models": "./src/shared/constants/models.ts",
     "./control/provider-discovery-support/apiAuth": "./src/shared/utils/apiAuth.ts",
-    "./control/provider-discovery-support/settings": "./src/lib/db/settings.ts",
     "./control/provider-discovery-support/modelsDb": "./src/lib/db/models.ts",
     "./control/provider-discovery-support/alibabaProviderRegions": "./src/shared/constants/alibabaProviderRegions.ts",
     "./control/provider-discovery-support/localDb": "./src/lib/localDb.ts",
@@ -445,9 +447,9 @@
       "types": "./src/public/accessTokenAuth.d.ts",
       "import": "./src/server/authz/accessTokenAuth.ts"
     },
-    "./control/settings": {
-      "types": "./src/public/settings.d.ts",
-      "import": "./src/lib/db/settings.ts"
+    "./db/settings": {
+      "types": "./src/public/dbSettings.d.ts",
+      "import": "./src/db/settings.ts"
     },
     "./control/settings-config": {
       "types": "./src/public/settingsConfig.d.ts",
@@ -700,8 +702,8 @@
       "import": "./src/shared/validation/schemas/cli.ts"
     },
     "./control/provider-validation-schemas": {
-      "types": "./src/public/providerValidationSchemas.d.ts",
-      "import": "./src/shared/validation/schemas.ts"
+      "types": "./src/shared/validation/providerValidationExports.ts",
+      "import": "./src/shared/validation/providerValidationExports.ts"
     },
     "./control/compliance": {
       "types": "./src/public/compliance.d.ts",
@@ -746,7 +748,7 @@
     "./control/cli-token-auth": "./src/lib/middleware/cliTokenAuth.ts",
     "./db/provider-connections": {
       "types": "./src/public/providerConnections.d.ts",
-      "import": "./src/lib/db/providers.ts"
+      "import": "./src/db/providerConnections.ts"
     },
     "./db/provider-connection-view": {
       "types": "./src/lib/db/providers/lazyConnectionView.ts",
@@ -1155,12 +1157,10 @@
     "./runtime/provider-ports": "./src/runtime/providerRuntimePorts.ts",
     "./runtime/provider-node-select": "./src/lib/db/providerNodeSelect.ts",
     "./runtime/read-cache": "./src/lib/db/readCache.ts",
-    "./runtime/provider-connections": "./src/lib/db/providers.ts",
     "./runtime/proxy-logs": "./src/lib/db/proxyLogs.ts",
     "./runtime/proxy-log-lifecycle": "./src/runtime/proxyLogLifecycle.ts",
     "./runtime/api-keys": "./src/lib/db/apiKeys.ts",
     "./runtime/exclusive-leases": "./src/lib/db/exclusiveConnectionLeases.ts",
-    "./runtime/settings": "./src/lib/db/settings.ts",
     "./runtime/peak-hour-protection": "./src/lib/providers/peakHourProtection.ts",
     "./runtime/jina-credentials": "./src/lib/providers/jina.ts",
     "./runtime/gemini-credentials": "./src/lib/providers/gemini.ts",
@@ -1198,8 +1198,6 @@
     "./db/provider-limits-cache": "./src/lib/db/providerLimits.ts",
     "./usage/codex-reset-support/local-db": "./src/lib/localDb.ts",
     "./usage/internal-command-support/api-key-usage-limits": "./src/lib/usage/apiKeyUsageLimits.ts",
-    "./usage/provider-limits-support/providerConnections": "./src/lib/db/providers.ts",
-    "./usage/provider-limits-support/settings": "./src/lib/db/settings.ts",
     "./usage/provider-limits-support/providerLimits": "./src/lib/db/providerLimits.ts",
     "./usage/provider-limits-support/cloudSync": "./src/lib/cloudSync.ts",
     "./usage/provider-limits-support/quotaCache": "./src/domain/quotaCache.ts",
@@ -1212,11 +1210,9 @@
     "./usage/provider-limits-support/chunkedSpacingSync": "./src/lib/usage/providerLimits/chunkedSpacingSync.ts",
     "./usage/reporting-support/combo-forecast": "./src/lib/db/comboForecast.ts",
     "./usage/reporting-support/combos": "./src/lib/db/combos.ts",
-    "./usage/reporting-support/pricing": "./src/lib/db/settings.ts",
     "./usage/reporting-support/quota-snapshots": "./src/lib/db/quotaSnapshots.ts",
     "./usage/reporting-support/cost-calculator": "./src/lib/usage/costCalculator.ts",
     "./usage/reporting-support/shared/types/utilization": "./src/shared/types/utilization.ts",
-    "./usage/reporting-support/providers": "./src/lib/db/providers.ts",
     "./usage/reporting-support/shared/utils/circuitBreaker": "./src/shared/utils/circuitBreaker.ts",
     "./usage/reporting-support/domain/connectionModelRules": "./src/domain/connectionModelRules.ts",
     "./usage/reporting-support/call-logs": "./src/lib/usage/callLogs.ts",

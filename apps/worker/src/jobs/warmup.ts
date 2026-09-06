@@ -4,7 +4,7 @@ import {
 import {
   getSettings,
   resolveProxyForConnection,
-} from "@shiguang-gateway/core-domain/runtime/settings";
+} from "@shiguang-gateway/core-domain/db/settings";
 import { matchesCron } from "@shiguang-gateway/core-domain/jobs/cron-match";
 import {
   TERMINAL_CONNECTION_STATUSES,

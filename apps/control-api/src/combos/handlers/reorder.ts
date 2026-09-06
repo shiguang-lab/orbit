@@ -1,5 +1,5 @@
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { isCloudEnabled } from "@shiguang-gateway/core-domain/control/settings";
+import { isCloudEnabled } from "@shiguang-gateway/core-domain/db/settings";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
 import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";
 import { reorderCombos } from "@shiguang-gateway/core-domain/db/local-db";

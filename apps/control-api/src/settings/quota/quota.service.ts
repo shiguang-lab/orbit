@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import {
   getSettings,
   updateSettings,
-} from "@shiguang-gateway/core-domain/control/settings";
+} from "@shiguang-gateway/core-domain/db/settings";
 import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/control/compliance";
 import { QuotaStoreSettingsSchema } from "../../quota/schemas.js";
 import {

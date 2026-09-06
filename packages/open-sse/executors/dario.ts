@@ -49,7 +49,7 @@ export function clearDarioUrlCache() {
 // Runs once when the executor module is first imported (mirrors cliproxyapi.ts).
 (async () => {
   try {
-    const { getSettings } = await import("@shiguang-gateway/core-domain/control/settings");
+    const { getSettings } = await import("@shiguang-gateway/core-domain/db/settings");
     const settings = await getSettings();
     if (typeof settings.dario_url === "string" && settings.dario_url.trim()) {
       _cachedSettingsUrl = { url: settings.dario_url.trim(), ts: Date.now() };
@@ -71,7 +71,7 @@ async function resolveDarioBaseUrl(): Promise<string> {
   }
 
   try {
-    const { getSettings } = await import("@shiguang-gateway/core-domain/control/settings");
+    const { getSettings } = await import("@shiguang-gateway/core-domain/db/settings");
     const settings = await getSettings();
     if (typeof settings.dario_url === "string" && settings.dario_url.trim()) {
       const url = settings.dario_url.trim();

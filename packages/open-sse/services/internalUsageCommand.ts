@@ -72,7 +72,7 @@ async function normalizeDeps(deps: InternalUsageCommandDeps = {}): Promise<Requi
   const providers =
     deps.getProviderConnectionById && deps.getProviderConnections
       ? null
-      : await import("@shiguang-gateway/core-domain/runtime/provider-connections");
+      : await import("@shiguang-gateway/core-domain/db/provider-connections");
   const providerLimits =
     deps.getProviderLimitsCache && deps.getAllProviderLimitsCache
       ? null

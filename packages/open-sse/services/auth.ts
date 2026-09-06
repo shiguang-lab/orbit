@@ -15,7 +15,7 @@ import {
   resetConnectionBackoff,
   touchConnectionLastUsed,
   clearConnectionErrorIfUnchanged,
-} from "@shiguang-gateway/core-domain/runtime/provider-connections";
+} from "@shiguang-gateway/core-domain/db/provider-connections";
 import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
 import { getRecentEgressIpForConnection, EGRESS_IP_LOOKUP_WINDOW_MS } from "@shiguang-gateway/core-domain/runtime/proxy-logs";
 import { validateApiKey } from "@shiguang-gateway/core-domain/runtime/api-keys";
@@ -24,7 +24,7 @@ import {
   hashLeaseOwnerId,
   type ExclusiveConnectionLease,
 } from "@shiguang-gateway/core-domain/runtime/exclusive-leases";
-import { getSettings } from "@shiguang-gateway/core-domain/runtime/settings";
+import { getSettings } from "@shiguang-gateway/core-domain/db/settings";
 import {
   describePeakHourWindow,
   evaluatePeakHourProtection,

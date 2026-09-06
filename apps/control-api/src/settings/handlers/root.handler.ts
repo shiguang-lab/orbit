@@ -4,7 +4,7 @@ import {
   getSettingsRevision,
   updateSettings,
   SettingsRevisionConflictError,
-} from "@shiguang-gateway/core-domain/control/settings";
+} from "@shiguang-gateway/core-domain/db/settings";
 import { getRuntimePorts } from "@shiguang-gateway/core-domain/control/cli-tools-runtime-ports";
 import { updateSettingsSchema } from "@shiguang-gateway/core-domain/shared/validation/settings-schema";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";

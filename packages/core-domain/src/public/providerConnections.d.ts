@@ -20,7 +20,18 @@ export function updateProviderConnection(
   id: string,
   data: Record<string, unknown>,
 ): Promise<Record<string, any> | null>;
-export function deleteProviderConnectionsByProvider(providerId: string): Promise<unknown>;
+export function resetConnectionBackoff(id: string): Promise<void>;
+export function clearConnectionErrorIfUnchanged(
+  id: string,
+  expected: {
+    testStatus: string | null | undefined;
+    lastErrorAt: string | null | undefined;
+    rateLimitedUntil: string | null | undefined;
+  },
+): Promise<boolean>;
+export function deleteProviderConnectionsByProvider(
+  providerId: string,
+): Promise<number | undefined>;
 export function getRawProviderConnections(
   filter?: Record<string, unknown>,
   limit?: number,

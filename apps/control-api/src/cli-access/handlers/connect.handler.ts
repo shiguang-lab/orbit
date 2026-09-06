@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/control/compliance";
-import { getCachedSettings } from "@shiguang-gateway/core-domain/control/settings";
+import { getCachedSettings } from "@shiguang-gateway/core-domain/db/settings";
 import {
   ensurePersistentManagementPasswordHash,
   getStoredManagementPassword,

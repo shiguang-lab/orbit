@@ -2,7 +2,7 @@ import { AutoComboConfig } from "./engine";
 import { MODE_PACKS } from "./modePacks";
 import { DEFAULT_WEIGHTS, ScoringWeights } from "./scoring";
 import { getCachedProviderConnections } from "@shiguang-gateway/core-domain/edge/read-cache";
-import { getSettings } from "@shiguang-gateway/core-domain/control/settings";
+import { getSettings } from "@shiguang-gateway/core-domain/db/settings";
 import { getProviderRegistry } from "./providerRegistryAccessor";
 import type { ConnectionFields } from "@shiguang-gateway/core-domain/db/encryption";
 import { NOAUTH_PROVIDERS } from "@shiguang-gateway/contracts/config/providerCatalog";

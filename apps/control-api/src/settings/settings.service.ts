@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { getSettings, updateSettings } from "@shiguang-gateway/core-domain/control/settings";
+import { getSettings, updateSettings } from "@shiguang-gateway/core-domain/db/settings";
 import {
   getSystemPromptConfig,
   setSystemPromptConfig,

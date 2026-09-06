@@ -14,7 +14,7 @@ import * as oauthPersistence from "@shiguang-gateway/core-domain/control/oauth-p
 import * as providerConnections from "@shiguang-gateway/core-domain/db/provider-connections";
 import * as modelAliases from "@shiguang-gateway/core-domain/db/model-aliases";
 import * as apiKeys from "@shiguang-gateway/core-domain/db/api-keys";
-import * as settings from "@shiguang-gateway/core-domain/control/settings";
+import * as settings from "@shiguang-gateway/core-domain/db/settings";
 import * as proxies from "@shiguang-gateway/core-domain/db/proxies";
 import * as mitmAliases from "@shiguang-gateway/core-domain/db/mitm-aliases";
 import * as hiddenModels from "@shiguang-gateway/core-domain/db/hidden-models";

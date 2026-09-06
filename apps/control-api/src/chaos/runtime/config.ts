@@ -9,7 +9,7 @@
  */
 
 import { z } from "zod";
-import { getSettings, updateSettings } from "@shiguang-gateway/core-domain/control/settings";
+import { getSettings, updateSettings } from "@shiguang-gateway/core-domain/db/settings";
 
 // ── Schema ───────────────────────────────────────────────────────────────────
 

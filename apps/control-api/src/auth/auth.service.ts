@@ -5,7 +5,7 @@ import { issueDashboardCsrfToken } from "@shiguang-gateway/auth";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/control/compliance";
 import { ensurePersistentManagementPasswordHash, getStoredManagementPassword, verifyManagementPassword } from "@shiguang-gateway/core-domain/control/management-password";
-import { getSettings, updateSettings } from "@shiguang-gateway/core-domain/control/settings";
+import { getSettings, updateSettings } from "@shiguang-gateway/core-domain/db/settings";
 import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
 import { checkLoginGuard, clearLoginAttempts, recordLoginFailure } from "./login.guard.js";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";

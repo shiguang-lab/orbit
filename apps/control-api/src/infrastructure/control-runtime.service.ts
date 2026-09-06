@@ -20,7 +20,7 @@ export class ControlRuntimeService implements OnModuleInit {
         .then(async () => {
           const [{ ensurePersistentManagementPasswordHash }, { getSettings }] = await Promise.all([
             load("@shiguang-gateway/core-domain/control/management-password"),
-            load("@shiguang-gateway/core-domain/control/settings"),
+            load("@shiguang-gateway/core-domain/db/settings"),
           ]);
           const settings = await getSettings();
           await ensurePersistentManagementPasswordHash({

@@ -6,7 +6,7 @@
  */
 
 import { getCachedSettings } from "@shiguang-gateway/core-domain/runtime/read-cache";
-import { updateProviderConnection } from "@shiguang-gateway/core-domain/runtime/provider-connections";
+import { updateProviderConnection } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { resolveProviderId, WEB_COOKIE_PROVIDERS } from "@shiguang-gateway/core-domain/catalog/providers";
 import { shouldAutoDisableBannedConnection } from "@shiguang-gateway/core-domain/runtime/auto-disable-banned";
 import { shouldIsolateProbeFailures } from "@shiguang-gateway/core-domain/runtime/probe-origin";

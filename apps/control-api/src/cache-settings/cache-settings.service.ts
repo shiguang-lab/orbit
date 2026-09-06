@@ -3,7 +3,7 @@ import {
   getDatabaseSettings,
   updateDatabaseSettings,
 } from "@shiguang-gateway/core-domain/control/database-settings";
-import { getSettings, updateSettings } from "@shiguang-gateway/core-domain/control/settings";
+import { getSettings, updateSettings } from "@shiguang-gateway/core-domain/db/settings";
 import { getCacheMetrics, resetCacheMetrics } from "@shiguang-gateway/core-domain/cache/services";
 import { clearAllLKGP } from "@shiguang-gateway/core-domain/control/lkgp-cache";
 
