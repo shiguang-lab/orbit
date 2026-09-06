@@ -62,10 +62,8 @@ const allowedCoreDomainSubpaths = {
     "backup/runtime",
     "cli/container-guard",
     "cli/doctor-checks",
-    "cli/log-streamer",
     "cli/opencode-config",
     "cli/sqlite-driver",
-    "cli/windows-process",
     "control/cli-tools-config-generator",
     "control/cli-tools-tool-detector",
     "runtime/combos-db",
@@ -885,6 +883,13 @@ const retiredCoreVscodeDir = join(packagesRoot, "core-domain", "src", "lib", "vs
 if (existsSync(retiredCoreVscodeDir)) {
   add("edge-runtime-in-core-domain", retiredCoreVscodeDir, "VS Code transport and presentation runtime belongs in apps/edge-gateway");
 }
+const retiredCoreCliRuntimeFiles = [
+  join(packagesRoot, "core-domain", "src", "lib", "cli-helper", "log-streamer.ts"),
+  join(packagesRoot, "core-domain", "src", "shared", "platform", "windowsProcess.ts"),
+];
+for (const file of retiredCoreCliRuntimeFiles) {
+  if (existsSync(file)) add("cli-runtime-in-core-domain", file, "CLI-owned runtime belongs in apps/cli");
+}
 
 // The shared HTTP package must never regain a generic app factory or a
 // caller-selected surface. Those APIs collapse independently deployable apps
@@ -1045,6 +1050,8 @@ if (existsSync(workerJobRegistry)) {
 }
 const coreDomainEntry = packageEntries.find(({ manifest }) => manifest?.name === "@shiguang-gateway/core-domain");
 const retiredAppOwnedExports = [
+  "./cli/log-streamer",
+  "./cli/windows-process",
   "./edge/vscode-token",
   "./edge/vscode-service-tier",
   "./edge/vscode-models",

@@ -1,17 +1,4 @@
-export interface LogStreamOptions {
-  baseUrl?: string;
-  filters?: string[];
-  follow?: boolean;
-  timeout?: number;
-  headers?: HeadersInit;
-}
-
-export interface LogStream {
-  stream: ReadableStream<Uint8Array>;
-  stop: () => void;
-}
-
-export function createLogStream(options: LogStreamOptions = {}): LogStream {
+export function createLogStream(options = {}) {
   const baseUrl = options.baseUrl || process.env.SHIGUANG_GATEWAY_BASE_URL || process.env.INTERNAL_BASE_URL || "http://127.0.0.1:8787";
   const filters = options.filters || [];
   const follow = options.follow ?? false;
@@ -21,7 +8,7 @@ export function createLogStream(options: LogStreamOptions = {}): LogStream {
   const controller = new AbortController();
   const { signal } = controller;
 
-  const stream = new ReadableStream<Uint8Array>({
+  const stream = new ReadableStream({
     async start(controller) {
       let url = `${baseUrl}/api/cli-tools/logs?follow=${follow}`;
       if (filters.length > 0) {
@@ -60,9 +47,9 @@ export function createLogStream(options: LogStreamOptions = {}): LogStream {
         controller.close();
         clearTimeout(timeoutId);
       } catch (err) {
+        clearTimeout(timeoutId);
         if (signal.aborted) return; // Expected stop
         controller.error(err instanceof Error ? err : new Error(String(err)));
-        clearTimeout(timeoutId);
       }
     },
 

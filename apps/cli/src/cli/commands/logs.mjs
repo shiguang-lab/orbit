@@ -100,9 +100,7 @@ export async function runLogsCommand(opts = {}) {
   // an auth credential, so it is deliberately not forwarded to buildHeaders.
   const headers = await buildHeaders({ baseUrl, context: opts.context });
 
-  const { createLogStream } = await import(
-    "@shiguang-gateway/core-domain/cli/log-streamer"
-  );
+  const { createLogStream } = await import("../runtime/log-streamer.mjs");
   const { stream, stop } = createLogStream({
     baseUrl,
     filters: levelFilters,

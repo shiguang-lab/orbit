@@ -1338,17 +1338,9 @@
       "types": "./src/public/cliDoctorChecks.ts",
       "import": "./src/public/cliDoctorChecks.ts"
     },
-    "./cli/log-streamer": {
-      "types": "./src/public/cliLogStreamer.ts",
-      "import": "./src/public/cliLogStreamer.ts"
-    },
     "./cli/opencode-config": {
       "types": "./src/public/cliOpencodeConfig.ts",
       "import": "./src/public/cliOpencodeConfig.ts"
-    },
-    "./cli/windows-process": {
-      "types": "./src/public/cliWindowsProcess.ts",
-      "import": "./src/public/cliWindowsProcess.ts"
     },
     "./cli/sqlite-driver": {
       "types": "./src/public/cliSqliteDriver.ts",

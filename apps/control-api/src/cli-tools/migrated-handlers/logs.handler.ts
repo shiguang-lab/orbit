@@ -3,7 +3,7 @@
  *
  * Reads the application log file and returns matching entries.
  * Called by the CLI `shiguangGateway logs` command via
- * `src/lib/cli-helper/log-streamer.ts`.
+ * `apps/cli/src/cli/runtime/log-streamer.mjs`.
  *
  * Query params:
  *   - follow: boolean — kept for forward-compat; ignored in this
