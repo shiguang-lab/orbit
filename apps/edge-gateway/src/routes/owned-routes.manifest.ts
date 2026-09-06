@@ -32,6 +32,7 @@ export const ownedEdgeRoutes: readonly OwnedRoute[] = [
   { path: "/v1/music/generations", methods: ["GET", "OPTIONS", "POST"] },
   { path: "/v1/rerank", methods: ["OPTIONS", "POST"] },
   { path: "/v1/segment", methods: ["OPTIONS", "POST"] },
+  { path: "/v1/session-leases", methods: ["OPTIONS", "POST"] },
   { path: "/v1/speech-to-text", methods: ["OPTIONS", "POST"] },
   { path: "/v1/text-to-speech/:voiceId", methods: ["OPTIONS", "POST"] },
   { path: "/v1/voices", methods: ["GET", "OPTIONS"] },
