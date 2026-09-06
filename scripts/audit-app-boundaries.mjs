@@ -990,6 +990,11 @@ const retiredAppOwnedExports = [
   "./shared/utils/compressionHeaderEcho",
   "./control/radar-supporter-key",
   "./control/provider-discovery-support/vertexAnthropicModelsParser",
+  "./shared/utils/codexBaseUrl",
+  "./shared/utils/codexConfig",
+  "./shared/services/claudeCliConfig",
+  "./shared/turkish-text",
+  "./shared/utils/turkishText",
 ];
 for (const subpath of retiredAppOwnedExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {

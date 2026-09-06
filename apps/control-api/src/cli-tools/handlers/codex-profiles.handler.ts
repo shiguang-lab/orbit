@@ -3,7 +3,7 @@ import path from "path";
 import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { ensureCliConfigWriteAllowed, getCliConfigPaths } from "@shiguang-gateway/core-domain/shared/services/cliRuntime";
 import { resolveDataDir } from "@shiguang-gateway/core-domain/shared/data-paths";
-import { compareTr } from "@shiguang-gateway/core-domain/shared/utils/turkishText";
+import { compareTr } from "../../common/turkish-text.js";
 import { codexProfileIdSchema, codexProfileNameSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 

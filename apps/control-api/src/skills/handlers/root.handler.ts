@@ -1,7 +1,7 @@
 import { skillRegistry } from "@shiguang-gateway/core-domain/control/skills-registry";
 import { parsePaginationParams, buildPaginatedResponse } from "@shiguang-gateway/core-domain/shared/types/pagination";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { matchesSearch } from "@shiguang-gateway/core-domain/shared/utils/turkishText";
+import { matchesSearch } from "../../common/turkish-text.js";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import type { SkillsProviderSettingsService } from "../providers/skills-provider-settings.service.js";
 

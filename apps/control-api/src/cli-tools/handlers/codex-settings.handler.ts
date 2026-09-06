@@ -11,8 +11,8 @@ import { saveCliToolLastConfigured, deleteCliToolLastConfigured } from "../cli-t
 import { cliModelConfigSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas/cli";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { getApiKeyById } from "@shiguang-gateway/core-domain/control/api-key-store";
-import { normalizeCodexBaseUrl } from "@shiguang-gateway/core-domain/shared/utils/codexBaseUrl";
-import { migrateCodexFeatureFlags } from "@shiguang-gateway/core-domain/shared/utils/codexConfig";
+import { normalizeCodexBaseUrl } from "../codex-settings/base-url.js";
+import { migrateCodexFeatureFlags } from "../codex-settings/feature-flags.js";
 
 const getCodexPaths = () => {
   const paths = getCliConfigPaths("codex");

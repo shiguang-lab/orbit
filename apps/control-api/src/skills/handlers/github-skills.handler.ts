@@ -4,7 +4,7 @@ import {
   searchGitHubSkills,
 } from "@shiguang-gateway/core-domain/control/skills-github";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { matchesSearch } from "@shiguang-gateway/core-domain/shared/turkish-text";
+import { matchesSearch } from "../../common/turkish-text.js";
 import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 
 const installSkillSchema = z.object({

@@ -738,10 +738,6 @@
       "types": "./src/public/logEnv.d.ts",
       "import": "./src/lib/logEnv.ts"
     },
-    "./shared/turkish-text": {
-      "types": "./src/public/turkishText.d.ts",
-      "import": "./src/shared/utils/turkishText.ts"
-    },
     "./control/api-key-store": {
       "types": "./src/public/apiKeyStore.d.ts",
       "import": "./src/lib/db/apiKeys.ts"
@@ -853,18 +849,6 @@
     "./shared/data-paths": {
       "types": "./src/public/dataPaths.d.ts",
       "import": "./src/lib/dataPaths.ts"
-    },
-    "./shared/utils/codexBaseUrl": {
-      "types": "./src/public/codexBaseUrl.d.ts",
-      "import": "./src/shared/utils/codexBaseUrl.ts"
-    },
-    "./shared/utils/codexConfig": {
-      "types": "./src/public/codexConfig.d.ts",
-      "import": "./src/shared/utils/codexConfig.ts"
-    },
-    "./shared/utils/turkishText": {
-      "types": "./src/public/turkishText.d.ts",
-      "import": "./src/shared/utils/turkishText.ts"
     },
     "./shared/cli-tool-config-status": {
       "types": "./src/public/cliToolConfigStatus.d.ts",
@@ -1342,7 +1326,6 @@
     "./lib/modelAliasResolver": "./src/lib/modelAliasResolver.ts",
     "./shared/constants/cliTools": "./src/shared/constants/cliTools.ts",
     "./shared/middleware/chatBodyAdmission": "./src/shared/middleware/chatBodyAdmission.ts",
-    "./shared/services/claudeCliConfig": "./src/shared/services/claudeCliConfig.ts",
     "./shared/services/droidCustomModels": "./src/shared/services/droidCustomModels.ts",
     "./shared/services/grokBuildConfig": "./src/shared/services/grokBuildConfig.ts",
     "./shared/services/opencodeConfig": "./src/shared/services/opencodeConfig.ts",

@@ -9,7 +9,7 @@ import {
   getCliRuntimeStatus,
 } from "@shiguang-gateway/core-domain/control/cli-tools-runtime";
 import { createBackup } from "@shiguang-gateway/core-domain/control/cli-tools-backups";
-import { normalizeClaudeBaseUrl } from "@shiguang-gateway/core-domain/shared/services/claudeCliConfig";
+import { normalizeClaudeBaseUrl } from "../claude-cli-config.js";
 import { saveCliToolLastConfigured, deleteCliToolLastConfigured } from "../cli-tool-state.js";
 import { cliSettingsEnvSchema } from "@shiguang-gateway/core-domain/control/cli-tools-validation-schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/control/cli-tools-validation-helpers";

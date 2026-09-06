@@ -3,7 +3,7 @@ import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/man
 import { getCallLogs, getCompletedDetails, getPendingById } from "@shiguang-gateway/core-domain/edge/usage-db";
 import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { getProviderNodes } from "@shiguang-gateway/core-domain/db/provider-nodes";
-import { matchesSearch } from "@shiguang-gateway/core-domain/shared/turkish-text";
+import { matchesSearch } from "../../common/turkish-text.js";
 
 type CallLogListRowsInput = {
   logs: any[];
