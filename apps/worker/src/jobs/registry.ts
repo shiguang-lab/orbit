@@ -36,7 +36,7 @@ export const WORKER_JOBS: readonly WorkerJob[] = [
   { name: "memory-backends", mode: "call", modulePath: domainModule("lib/memory/index"), exportName: "initMemoryBackends" },
   { name: "conductor-bridge", mode: "call", modulePath: domainModule("lib/conductor/boot"), exportName: "initConductorBridge", stopExportName: "stopConductorBridge" },
   { name: "arena-elo-sync", mode: "call", modulePath: domainModule("lib/arenaEloSync"), exportName: "initArenaEloSync", stopExportName: "stopArenaEloSync" },
-  { name: "openrouter-provider-stats", mode: "call", modulePath: domainModule("lib/catalog/openrouterProviderStats"), exportName: "initOpenRouterProviderStatsSync" },
+  { name: "openrouter-provider-stats", mode: "call", modulePath: domainModule("lib/catalog/openrouterProviderStats"), exportName: "initOpenRouterProviderStatsSync", stopExportName: "stopOpenRouterProviderStatsSync" },
   { name: "context-window-reconcile", mode: "call", modulePath: domainModule("lib/contextWindowResolver"), exportName: "startContextWindowReconcile", stopExportName: "stopContextWindowReconcile" },
   { name: "memory-decay", mode: "call", modulePath: domainModule("lib/memory/typedDecay"), exportName: "startMemoryDecaySweep", stopExportName: "stopMemoryDecaySweep" },
   { name: "runtime-config-hot-reload", mode: "call", modulePath: domainModule("lib/config/hotReload"), exportName: "startRuntimeConfigHotReload", stopExportName: "stopRuntimeConfigHotReloadForTests" },

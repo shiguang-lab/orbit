@@ -343,3 +343,10 @@ export function initOpenRouterProviderStatsSync(): boolean {
   startPeriodicSync();
   return true;
 }
+
+/** Stop the periodic sync, if running. Safe to call more than once. */
+export function stopOpenRouterProviderStatsSync(): void {
+  if (!syncTimer) return;
+  clearInterval(syncTimer);
+  syncTimer = null;
+}
