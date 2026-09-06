@@ -24,3 +24,6 @@ export function refreshCopilotToken(
   credentials?: ProviderRefreshCredentials,
   baseUrl?: string,
 ): Promise<CopilotRefreshResult | null>;
+
+export function refreshCodexToken(...args: any[]): Promise<any>;
+export function isUnrecoverableRefreshError(error: unknown): boolean;

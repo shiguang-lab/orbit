@@ -28,4 +28,4 @@ export {
   isCloudEnabled,
   resolveProxyForProvider,
   getHiddenModelsByProvider,
-} from "../lib/localDb.ts";
+} from "../lib/localDb.js";

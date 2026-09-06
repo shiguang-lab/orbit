@@ -295,9 +295,84 @@
       "types": "./src/public/settingsConfig.d.ts",
       "import": "./src/control/settingsConfig.ts"
     },
-    "./control/oauth-handlers": {
-      "types": "./src/public/oauthHandlers.d.ts",
-      "import": "./src/control/oauthHandlers.ts"
+    "./control/oauth-runtime/providers": {
+      "types": "./src/lib/oauth/providers.ts",
+      "import": "./src/lib/oauth/providers.ts"
+    },
+    "./control/oauth-runtime/connectionPersistence": {
+      "types": "./src/lib/oauth/connectionPersistence.ts",
+      "import": "./src/lib/oauth/connectionPersistence.ts"
+    },
+    "./control/oauth-runtime/deviceFlowTickets": {
+      "types": "./src/lib/oauth/deviceFlowTickets.ts",
+      "import": "./src/lib/oauth/deviceFlowTickets.ts"
+    },
+    "./control/oauth-runtime/pasteCredentials": {
+      "types": "./src/lib/oauth/pasteCredentials.ts",
+      "import": "./src/lib/oauth/pasteCredentials.ts"
+    },
+    "./control/oauth-runtime/antigravityProjectGate": {
+      "types": "./src/lib/oauth/antigravityProjectGate.ts",
+      "import": "./src/lib/oauth/antigravityProjectGate.ts"
+    },
+    "./control/oauth-runtime/kiroConnectionIdentity": {
+      "types": "./src/lib/oauth/kiroConnectionIdentity.ts",
+      "import": "./src/lib/oauth/kiroConnectionIdentity.ts"
+    },
+    "./control/oauth-runtime/kiroSocialPoll": {
+      "types": "./src/lib/oauth/kiroSocialPoll.ts",
+      "import": "./src/lib/oauth/kiroSocialPoll.ts"
+    },
+    "./control/oauth-runtime/constants/oauth": {
+      "types": "./src/lib/oauth/constants/oauth.ts",
+      "import": "./src/lib/oauth/constants/oauth.ts"
+    },
+    "./control/oauth-runtime/services/codexImport": {
+      "types": "./src/lib/oauth/services/codexImport.ts",
+      "import": "./src/lib/oauth/services/codexImport.ts"
+    },
+    "./control/oauth-runtime/services/cursor": {
+      "types": "./src/lib/oauth/services/cursor.ts",
+      "import": "./src/lib/oauth/services/cursor.ts"
+    },
+    "./control/oauth-runtime/services/cursorLogin": {
+      "types": "./src/lib/oauth/services/cursorLogin.ts",
+      "import": "./src/lib/oauth/services/cursorLogin.ts"
+    },
+    "./control/oauth-runtime/services/kiro": {
+      "types": "./src/lib/oauth/services/kiro.ts",
+      "import": "./src/lib/oauth/services/kiro.ts"
+    },
+    "./control/oauth-runtime/services/persistCursorConnection": {
+      "types": "./src/lib/oauth/services/persistCursorConnection.ts",
+      "import": "./src/lib/oauth/services/persistCursorConnection.ts"
+    },
+    "./control/oauth-runtime/utils/cliProxyAuthImport": {
+      "types": "./src/lib/oauth/utils/cliProxyAuthImport.ts",
+      "import": "./src/lib/oauth/utils/cliProxyAuthImport.ts"
+    },
+    "./control/oauth-runtime/utils/codexSessionImport": {
+      "types": "./src/lib/oauth/utils/codexSessionImport.ts",
+      "import": "./src/lib/oauth/utils/codexSessionImport.ts"
+    },
+    "./control/oauth-runtime/utils/server": {
+      "types": "./src/lib/oauth/utils/server.ts",
+      "import": "./src/lib/oauth/utils/server.ts"
+    },
+    "./control/models": "./src/models/index.ts",
+    "./control/build-phase": "./src/lib/buildPhase.ts",
+    "./control/cursor-token-extractor": "./src/lib/cursor/tokenExtractor.ts",
+    "./shared/validation/providerSpecificData": {
+      "types": "./src/shared/validation/providerSpecificData.ts",
+      "import": "./src/shared/validation/providerSpecificData.ts"
+    },
+    "./shared/constants/gitlabDuoSetupMessage": {
+      "types": "./src/shared/constants/gitlabDuoSetupMessage.ts",
+      "import": "./src/shared/constants/gitlabDuoSetupMessage.ts"
+    },
+    "./shared/authz-route-guard": {
+      "types": "./src/server/authz/routeGuard.ts",
+      "import": "./src/server/authz/routeGuard.ts"
     },
     "./control/tier-config": {
       "types": "./src/public/tierConfig.d.ts",

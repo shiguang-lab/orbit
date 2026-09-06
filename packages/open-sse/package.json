@@ -113,6 +113,10 @@
       "types": "./public/tokenRefresh.d.ts",
       "import": "./services/tokenRefresh.ts"
     },
+    "./services/kiro-external-idp": {
+      "types": "./services/kiroExternalIdp.ts",
+      "import": "./services/kiroExternalIdp.ts"
+    },
     "./services/tier-resolver": {
       "types": "./public/tierResolver.d.ts",
       "import": "./services/tierResolver.ts"
