@@ -719,8 +719,13 @@ src/lib/a2a/
     ├── smartRouting.ts    # Smart routing skill (routes via /v1/chat/completions)
     └── quotaManagement.ts # Quota management skill (natural-language quota queries)
 
-src/app/a2a/
-└── route.ts               # Next.js API route handler (JSON-RPC 2.0 dispatch)
+apps/edge-gateway/src/a2a/
+├── a2a.module.ts          # Nest module — the single A2A registration surface
+├── a2a-*.controller.ts     # JSON-RPC and REST transport controllers
+└── a2a.service.ts         # Edge-owned application service
+
+src/a2a/legacy/
+└── *.ts                   # Transitional implementation exports; not route files
 
 open-sse/mcp-server/
 └── schemas/a2a.ts         # Zod schemas (AgentCard, Task, JSON-RPC, SSE events)

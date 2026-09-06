@@ -182,6 +182,14 @@ const migratedRouteOwnership = {
     "api/model-combo-mappings/[id]/route.ts",
   ],
   "apps/edge-gateway": [
+    // A2A protocol and task-management routes are owned by the edge Nest app.
+    // The old Next route tree must stay empty; the controller contract is the
+    // single registration surface for both canonical and /api aliases.
+    "a2a/route.ts",
+    "api/a2a/status/route.ts",
+    "api/a2a/tasks/route.ts",
+    "api/a2a/tasks/[id]/route.ts",
+    "api/a2a/tasks/[id]/cancel/route.ts",
     "api/v1/music/generations/route.ts",
     "api/v1/speech-to-text/route.ts",
     "api/v1/voices/route.ts",
@@ -294,6 +302,15 @@ function extractControllerRoutes(controllerFile) {
 }
 
 const coreRouteRoot = join(packagesRoot, "core-domain", "src", "app");
+const legacyA2ARouteRoots = [
+  join(coreRouteRoot, "a2a"),
+  join(coreRouteRoot, "api", "a2a"),
+];
+for (const legacyRoot of legacyA2ARouteRoots) {
+  for (const file of walk(legacyRoot)) {
+    add("duplicate-core-a2a-route", file, "A2A transport is owned by apps/edge-gateway; legacy Next routes must be removed");
+  }
+}
 for (const [appPath, routePaths] of Object.entries(migratedRouteOwnership)) {
   const appDir = join(repoRoot, appPath);
   const appRouteRoot = join(appDir, "src", "routes");
@@ -384,6 +401,7 @@ const report = {
     "packages may not import apps",
     "apps may consume only their allow-listed core-domain subpaths",
     "migrated route files must exist only under their owning app",
+    "A2A transport and task routes belong only to apps/edge-gateway",
     "realtime WebSocket implementation and export belong only to apps/realtime",
     "http-kernel exposes no app factory or surface selector",
     "legacy runtime package names are retired",

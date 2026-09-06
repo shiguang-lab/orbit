@@ -15,10 +15,10 @@
  * answer as if they did not exist. Management/operator view sees all tasks.
  */
 
-import { requireManagementAuth } from "../../../lib/api/requireManagementAuth.ts";
-import { extractApiKey, isValidApiKey } from "../../../sse/services/auth.ts";
-import { isRequireApiKeyEnabled } from "../../../shared/utils/featureFlags.ts";
-import { resolveA2AOwner } from "../../../lib/a2a/authenticate.ts";
+import { requireManagementAuth } from "../../lib/api/requireManagementAuth.ts";
+import { extractApiKey, isValidApiKey } from "../../sse/services/auth.ts";
+import { isRequireApiKeyEnabled } from "../../shared/utils/featureFlags.ts";
+import { resolveA2AOwner } from "../../lib/a2a/authenticate.ts";
 
 export interface A2ARestAuth {
   /** Owner scope for task reads/mutations; undefined = operator view (all tasks). */

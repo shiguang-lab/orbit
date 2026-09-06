@@ -106,6 +106,15 @@ const localApiRoots = [
   join(repoRoot, "apps", "control-api", "src", "routes", "api"),
   join(repoRoot, "apps", "edge-gateway", "src", "routes", "api"),
 ].filter(existsSync);
+
+// A2A is an edge-owned Nest transport. Keep the historical contract in the
+// controller map, but reject any regression that recreates the old Next route
+// files under core-domain (which would register a second transport surface).
+const legacyA2ARouteRoots = [
+  join(repoRoot, "packages", "core-domain", "src", "app", "a2a"),
+  join(repoRoot, "packages", "core-domain", "src", "app", "api", "a2a"),
+];
+const staleA2ARoutes = legacyA2ARouteRoots.flatMap((root) => walk(root));
 const controllerRoots = [
   join(repoRoot, "apps", "control-api", "src"),
   join(repoRoot, "apps", "edge-gateway", "src"),
@@ -143,6 +152,13 @@ for (const controllerFile of controllerFiles) {
 }
 
 const mismatches = [];
+for (const file of staleA2ARoutes) {
+  mismatches.push({
+    path: relative(repoRoot, file).split("\\").join("/"),
+    expected: [],
+    actual: ["legacy Next A2A route must be removed"],
+  });
+}
 const referenceAvailable = refFiles.length > 0;
 if (referenceAvailable) {
   for (const path of new Set([...refMap.keys(), ...localMap.keys()])) {

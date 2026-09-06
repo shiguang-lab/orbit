@@ -10,7 +10,7 @@ lastUpdated: 2026-06-28
 
 The A2A surface has two faces:
 
-- **JSON-RPC 2.0** at `POST /a2a` (canonical entry point, defined in `src/app/a2a/route.ts`).
+- **JSON-RPC 2.0** at `POST /a2a` (canonical entry point, registered by `apps/edge-gateway/src/a2a/a2a-root.controller.ts`).
 - **REST** under `/api/a2a/*` for dashboards and tooling (status, task list, cancel).
 
 Tasks are tracked by `A2ATaskManager` (`src/lib/a2a/taskManager.ts`, default 5-minute TTL). Skills are dispatched via `A2A_SKILL_HANDLERS` in `src/lib/a2a/taskExecution.ts`.

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getTaskManager } from "../../../../lib/a2a/taskManager.ts";
-import { getCachedSettings } from "../../../../lib/db/settings.ts";
+import { getTaskManager } from "../../lib/a2a/taskManager.ts";
+import { getCachedSettings } from "../../lib/db/settings.ts";
 
 export async function GET() {
   try {
@@ -13,7 +13,7 @@ export async function GET() {
     let agentCard: any = null;
     if (enabled) {
       try {
-        const agentModule = await import("../../../.well-known/agent.json/route");
+        const agentModule = await import("../../app/.well-known/agent.json/route.ts");
         const cardResponse = await agentModule.GET();
         agentCard = await cardResponse.json();
       } catch {

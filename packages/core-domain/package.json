@@ -291,6 +291,14 @@
       "types": "./src/public/comboTest.d.ts",
       "import": "./src/lib/combos/testHealth.ts"
     },
+    "./control/combo-builder-options": {
+      "types": "./src/public/comboBuilderOptions.d.ts",
+      "import": "./src/lib/combos/builderOptions.ts"
+    },
+    "./control/combo-steps": {
+      "types": "./src/public/comboSteps.d.ts",
+      "import": "./src/lib/combos/steps.ts"
+    },
     "./shared/probe-origin": {
       "types": "./src/public/probeOrigin.d.ts",
       "import": "./src/shared/utils/probeOrigin.ts"
@@ -478,23 +486,23 @@
     },
     "./a2a/legacy-jsonrpc": {
       "types": "./src/public/a2aLegacyRoute.d.ts",
-      "import": "./src/app/a2a/route.ts"
+      "import": "./src/a2a/legacy/jsonrpc.ts"
     },
     "./a2a/legacy-tasks": {
       "types": "./src/public/a2aLegacyRoute.d.ts",
-      "import": "./src/app/api/a2a/tasks/route.ts"
+      "import": "./src/a2a/legacy/tasks.ts"
     },
     "./a2a/legacy-task-by-id": {
       "types": "./src/public/a2aLegacyRoute.d.ts",
-      "import": "./src/app/api/a2a/tasks/[id]/route.ts"
+      "import": "./src/a2a/legacy/task-by-id.ts"
     },
     "./a2a/legacy-task-cancel": {
       "types": "./src/public/a2aLegacyRoute.d.ts",
-      "import": "./src/app/api/a2a/tasks/[id]/cancel/route.ts"
+      "import": "./src/a2a/legacy/task-cancel.ts"
     },
     "./a2a/legacy-status": {
       "types": "./src/public/a2aLegacyRoute.d.ts",
-      "import": "./src/app/api/a2a/status/route.ts"
+      "import": "./src/a2a/legacy/status.ts"
     }
   },
   "dependencies": {

@@ -11,12 +11,12 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { getTaskManager } from "@/lib/a2a/taskManager";
-import { logRoutingDecision } from "@/lib/a2a/routingLogger";
-import { createA2AStream, SSE_HEADERS } from "@/lib/a2a/streaming";
-import { A2A_SKILL_HANDLERS, executeA2ATaskWithState } from "@/lib/a2a/taskExecution";
-import { getSettings } from "@/lib/db/settings";
-import { authenticateA2ARequest, resolveA2AOwner } from "@/lib/a2a/authenticate";
+import { getTaskManager } from "../../lib/a2a/taskManager.ts";
+import { logRoutingDecision } from "../../lib/a2a/routingLogger.ts";
+import { createA2AStream, SSE_HEADERS } from "../../lib/a2a/streaming.ts";
+import { A2A_SKILL_HANDLERS, executeA2ATaskWithState } from "../../lib/a2a/taskExecution.ts";
+import { getSettings } from "../../lib/db/settings.ts";
+import { authenticateA2ARequest, resolveA2AOwner } from "../../lib/a2a/authenticate.ts";
 
 // ============ A2A v1.0 ↔ v0.3 compatibility layer ============
 // A2A 1.0 renamed the JSON-RPC methods (message/send → SendMessage,

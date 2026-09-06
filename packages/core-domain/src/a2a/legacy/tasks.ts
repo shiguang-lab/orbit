@@ -2,10 +2,10 @@ import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { getTaskManager, type TaskState } from "../../../../lib/a2a/taskManager.ts";
-import { authorizeA2ATaskRoute } from "../_auth.ts";
-import { createConductorTask } from "../../../../lib/conductor/hubProxy.ts";
-import { getSettings } from "../../../../lib/db/settings.ts";
+import { getTaskManager, type TaskState } from "../../lib/a2a/taskManager.ts";
+import { authorizeA2ATaskRoute } from "./auth.ts";
+import { createConductorTask } from "../../lib/conductor/hubProxy.ts";
+import { getSettings } from "../../lib/db/settings.ts";
 
 const VALID_TASK_STATES = new Set<TaskState>([
   "submitted",
@@ -92,7 +92,8 @@ export function tokensMatch(provided: string, expected: string): boolean {
 }
 
 /**
- * Mesma semântica de auth do JSON-RPC A2A (src/app/a2a/route.ts): Bearer vs SHIGUANG_GATEWAY_API_KEY; aberto se não configurada.
+ * Same authentication semantics as the JSON-RPC A2A implementation: Bearer
+ * versus SHIGUANG_GATEWAY_API_KEY; open when no key is configured.
  *
  * Exported as a test seam only — not part of the route contract.
  */
