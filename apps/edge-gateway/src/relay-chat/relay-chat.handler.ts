@@ -10,7 +10,7 @@ import { CORS_HEADERS, handleCorsOptions } from "@shiguang-gateway/core-domain/s
 import { handleChat } from "@shiguang-gateway/open-sse/handlers/chat";
 import { withChatAdmission } from "../chat-admission.js";
 import { createInjectionGuard } from "@shiguang-gateway/core-domain/middleware/prompt-injection";
-import { getRelayTokenByHash, checkRateLimit, recordRelayUsage } from "@shiguang-gateway/core-domain/edge/relay-bifrost";
+import { getRelayTokenByHash, checkRateLimit, recordRelayUsage } from "@shiguang-gateway/core-domain/db/relayProxies";
 import {
   buildErrorBody,
   parseUpstreamError,

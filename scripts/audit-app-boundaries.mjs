@@ -110,7 +110,7 @@ const allowedCoreDomainSubpaths = {
     "edge/chat-handler",
     "edge/responses-runtime",
     "edge/codex-responses-ws-runtime",
-    "edge/relay-bifrost",
+    "db/relayProxies",
     "edge/relay-chat",
     "edge/service-registry",
     "control/settings",
@@ -917,6 +917,10 @@ const retiredCoreProjectCombo = join(packagesRoot, "core-domain", "src", "lib", 
 if (existsSync(retiredCoreProjectCombo)) {
   add("edge-runtime-in-core-domain", retiredCoreProjectCombo, "Client combo projection belongs in apps/edge-gateway");
 }
+const retiredCoreRelayBifrostFacade = join(packagesRoot, "core-domain", "src", "lib", "edge", "relayBifrost.ts");
+if (existsSync(retiredCoreRelayBifrostFacade)) {
+  add("redundant-core-domain-facade", retiredCoreRelayBifrostFacade, "Edge handlers must use the shared relay proxy DB contract directly");
+}
 
 // The shared HTTP package must never regain a generic app factory or a
 // caller-selected surface. Those APIs collapse independently deployable apps
@@ -1092,6 +1096,7 @@ for (const subpath of retiredRedundantCoreExports) {
   }
 }
 const retiredAppOwnedExports = [
+  "./edge/relay-bifrost",
   "./catalog/project-combo",
   "./control/free-onboarding",
   "./control/gateway-status",

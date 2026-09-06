@@ -7,7 +7,7 @@ import {
   checkRateLimit,
   getRelayTokenByHash,
   recordRelayUsage,
-} from "@shiguang-gateway/core-domain/edge/relay-bifrost";
+} from "@shiguang-gateway/core-domain/db/relayProxies";
 import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
 import { getProviderPluginManifestHeader } from "@shiguang-gateway/open-sse/config/providerPluginManifestUrl";
 

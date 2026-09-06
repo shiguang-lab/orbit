@@ -77,10 +77,6 @@
       "types": "./src/edge/codexResponsesWsRuntime.ts",
       "import": "./src/edge/codexResponsesWsRuntime.ts"
     },
-    "./edge/relay-bifrost": {
-      "types": "./src/public/relayBifrost.d.ts",
-      "import": "./src/lib/edge/relayBifrost.ts"
-    },
     "./edge/service-registry": {
       "types": "./src/public/serviceRegistry.d.ts",
       "import": "./src/lib/services/registry.ts"
