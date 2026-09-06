@@ -200,6 +200,10 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/skills-github",
   "control/mcp-management",
   "control/proxy-subscriptions",
+  "control/model-capability-overrides",
+  "control/model-context-overrides",
+  "pricing/provider-prefixes",
+  "shared/reasoning-efforts-override",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push("catalog/providers");
 allowedCoreDomainSubpaths["apps/control-api"].push(
@@ -346,6 +350,7 @@ const migratedRouteOwnership = {
     "api/quota/preview/route.ts",
     "api/models/test/route.ts",
     "api/models/test-all/route.ts",
+    "api/model-capability-overrides/route.ts",
     "api/model-combo-mappings/route.ts",
     "api/model-combo-mappings/[id]/route.ts",
     "api/combos/builder/options/route.ts",

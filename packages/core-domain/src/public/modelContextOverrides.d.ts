@@ -9,6 +9,7 @@ export function getModelContextOverrideRecord(
   provider: string | null | undefined,
   modelId: string | null | undefined,
 ): ModelContextOverride | null;
+export function listModelContextOverrides(): ModelContextOverride[];
 export function setModelContextOverride(
   provider: string,
   modelId: string,

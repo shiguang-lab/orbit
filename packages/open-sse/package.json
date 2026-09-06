@@ -97,6 +97,10 @@
       "types": "./public/modelDeprecation.d.ts",
       "import": "./services/modelDeprecation.ts"
     },
+    "./services/model": {
+      "types": "./public/model.d.ts",
+      "import": "./services/model.ts"
+    },
     "./services/ipFilter": {
       "types": "./public/ipFilter.d.ts",
       "import": "./services/ipFilter.ts"

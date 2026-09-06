@@ -851,6 +851,14 @@
       "types": "./src/public/modelContextOverrides.d.ts",
       "import": "./src/control/modelContextOverrides.ts"
     },
+    "./control/model-capability-overrides": {
+      "types": "./src/public/modelCapabilityOverrides.d.ts",
+      "import": "./src/control/modelCapabilityOverrides.ts"
+    },
+    "./shared/reasoning-efforts-override": {
+      "types": "./src/public/reasoningEffortsOverride.d.ts",
+      "import": "./src/shared/reasoning/reasoningEffortsOverride.ts"
+    },
     "./control/reasoning-routing": {
       "types": "./src/public/reasoningRouting.d.ts",
       "import": "./src/control/reasoningRouting.ts"

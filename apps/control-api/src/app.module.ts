@@ -15,6 +15,7 @@ import { AssessmentModule } from "./assessment/assessment.module.js";
 import { PluginsModule } from "./plugins/plugins.module.js";
 import { QuotaModule } from "./quota/quota.module.js";
 import { ModelsModule } from "./models/models.module.js";
+import { ModelCapabilityOverridesModule } from "./models/model-capability-overrides.module.js";
 import { CombosModule } from "./combos/combos.module.js";
 import { LogsModule } from "./logs/logs.module.js";
 import { WebhooksModule } from "./webhooks/webhooks.module.js";
@@ -86,6 +87,7 @@ import { ProxySubscriptionsModule } from "./proxy-subscriptions/proxy-subscripti
     PluginsModule,
     QuotaModule,
     ModelsModule,
+    ModelCapabilityOverridesModule,
     CombosModule,
     LogsModule,
     WebhooksModule,
