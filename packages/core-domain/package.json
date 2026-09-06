@@ -437,6 +437,10 @@
       "types": "./src/public/cursorTokenExtractor.d.ts",
       "import": "./src/lib/cursor/tokenExtractor.ts"
     },
+    "./control/video-bridge-drilldown": {
+      "types": "./src/public/videoBridgeDrilldown.d.ts",
+      "import": "./src/lib/guardrails/videoBridgeDrilldownExports.ts"
+    },
     "./control/cursor-renewal": {
       "types": "./src/public/cursorRenewal.d.ts",
       "import": "./src/lib/cursor/renewal.ts"
