@@ -47,3 +47,6 @@ export const cursorImportSchema: z.ZodTypeAny;
 export const kiroApiKeyImportSchema: z.ZodTypeAny;
 export const kiroImportSchema: z.ZodTypeAny;
 export const traeImportSchema: z.ZodTypeAny;
+export const cloudCredentialUpdateSchema: z.ZodTypeAny;
+export const cloudResolveAliasSchema: z.ZodTypeAny;
+export const cloudModelAliasUpdateSchema: z.ZodTypeAny;
