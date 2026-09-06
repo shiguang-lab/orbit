@@ -41,6 +41,10 @@
       "types": "./public/imageRegistry.d.ts",
       "import": "./config/imageRegistry.ts"
     },
+    "./utils/syncedEffortVariants": {
+      "types": "./public/syncedEffortVariants.d.ts",
+      "import": "./utils/syncedEffortVariants.ts"
+    },
     "./executors/codex/tools": {
       "types": "./public/codexTools.d.ts",
       "import": "./executors/codex/tools.ts"

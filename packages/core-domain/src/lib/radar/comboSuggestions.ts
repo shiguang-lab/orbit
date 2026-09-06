@@ -1,4 +1,4 @@
-import type { ComboBuilderProviderOption } from "../combos/builderOptions";
+import type { ComboBuilderProviderOption } from "@shiguang-gateway/contracts";
 
 import type { MergedEntry } from "./applyFeed";
 

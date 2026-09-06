@@ -110,6 +110,15 @@ const allowedCoreDomainSubpaths = {
   ],
 };
 
+allowedCoreDomainSubpaths["apps/control-api"].push(
+  "catalog/display-names",
+  "catalog/managed-available-models",
+  "catalog/model-capabilities",
+  "catalog/models-dev-sync",
+  "catalog/provider-models",
+  "catalog/providers",
+);
+
 // Route files that have completed a physical ownership move. Keep this list
 // small and explicit: adding an entry is the acceptance record for a domain
 // migration, and the old core-domain copy must be gone.

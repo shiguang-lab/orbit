@@ -219,15 +219,51 @@ export interface ComboMetrics {
   [key: string]: unknown;
 }
 
+export interface ComboBuilderModelOption {
+  id: string;
+  qualifiedModel: string;
+  name: string;
+  source: string;
+  sources: string[];
+  supportedEndpoints?: string[];
+  apiFormat?: string;
+  contextLength?: number;
+  outputTokenLimit?: number;
+  supportsThinking?: boolean;
+}
+
+export interface ComboBuilderConnectionOption {
+  id: string;
+  label: string;
+  type: string;
+  status: string;
+  priority: number;
+  isActive: boolean;
+  defaultModel?: string | null;
+  rateLimitedUntil?: number | null;
+  lastError?: string | null;
+  lastTested?: string | null;
+}
+
+export interface ComboBuilderProviderOption {
+  providerId: string;
+  providerType: string;
+  displayName: string;
+  alias: string;
+  prefix?: string | null;
+  icon: string;
+  color: string;
+  source: string;
+  acceptsArbitraryModel: boolean;
+  connectionCount: number;
+  activeConnectionCount: number;
+  modelCount: number;
+  models: ComboBuilderModelOption[];
+  connections: ComboBuilderConnectionOption[];
+}
+
 export interface ComboBuilderOptions {
-  providers: Array<{
-    providerId: string;
-    name?: string;
-    displayName?: string;
-    providerName?: string;
-    models?: Array<{ id: string; name?: string; qualifiedModel?: string }>;
-    connections?: Array<{ id: string; label?: string; status?: string }>;
-  }>;
+  providers: ComboBuilderProviderOption[];
   comboRefs: Array<{
     id?: string;
     name: string;

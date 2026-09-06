@@ -1,0 +1,1 @@
+export function getResolvedModelCapabilities(input: Record<string, unknown>, options?: Record<string, unknown>, snapshot?: unknown): { contextWindow?: number | null; maxOutputTokens?: number | null; supportsThinking?: boolean | null; [key: string]: unknown };

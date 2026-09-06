@@ -1,5 +1,5 @@
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getComboBuilderOptions } from "@shiguang-gateway/core-domain/control/combo-builder-options";
+import { getComboBuilderOptions } from "../builder-options.js";
 
 /** GET /api/combos/builder/options. Control-plane picker metadata. */
 export async function getBuilderOptions(request: Request): Promise<Response> {
