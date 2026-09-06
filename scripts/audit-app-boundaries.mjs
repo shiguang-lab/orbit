@@ -139,6 +139,12 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "db/compression-run-telemetry",
   "shared/validation/compression-config-schemas",
   "control/reasoning-routing",
+  "shared/local-corpus",
+  "control/notion-db",
+  "control/notion-client",
+  "control/obsidian-db",
+  "control/obsidian-client",
+  "control/obsidian-sync",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push("catalog/providers");
 allowedCoreDomainSubpaths["apps/control-api"].push("db/cc-discovery-metrics");
@@ -306,6 +312,10 @@ const migratedRouteOwnership = {
     "api/settings/cc-discovery-metrics/route.ts",
     "api/settings/task-routing/route.ts",
     "api/settings/model-aliases/route.ts",
+    "api/settings/local-corpus/route.ts",
+    "api/settings/notion/route.ts",
+    "api/settings/obsidian/route.ts",
+    "api/settings/obsidian/webdav/route.ts",
     "api/settings/proxy/test/route.ts",
     "api/settings/proxies/route.ts",
     "api/settings/proxies/assignments/route.ts",

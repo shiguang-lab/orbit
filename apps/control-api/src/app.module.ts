@@ -38,6 +38,9 @@ import { ReasoningRoutingModule } from "./settings/reasoning-routing/reasoning-r
 import { TaskRoutingModule } from "./settings/task-routing/task-routing.module.js";
 import { ModelAliasesModule } from "./settings/model-aliases/model-aliases.module.js";
 import { CcDiscoveryMetricsModule } from "./settings/cc-discovery-metrics/cc-discovery-metrics.module.js";
+import { NotionSettingsModule } from "./settings/notion/notion.module.js";
+import { ObsidianSettingsModule } from "./settings/obsidian/obsidian.module.js";
+import { LocalCorpusModule } from "./settings/local-corpus/local-corpus.module.js";
 
 @Module({
   imports: [
@@ -80,6 +83,9 @@ import { CcDiscoveryMetricsModule } from "./settings/cc-discovery-metrics/cc-dis
     TaskRoutingModule,
     ModelAliasesModule,
     CcDiscoveryMetricsModule,
+    NotionSettingsModule,
+    ObsidianSettingsModule,
+    LocalCorpusModule,
   ],
 })
 export class AppModule {}

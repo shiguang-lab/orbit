@@ -170,6 +170,11 @@
       "types": "./src/public/providerAuthImport.d.ts",
       "import": "./src/control/providerAuthImport.ts"
     },
+    "./control/notion-db": { "types": "./src/public/notionDb.d.ts", "import": "./src/lib/db/notion.ts" },
+    "./control/notion-client": { "types": "./src/public/notionClient.d.ts", "import": "./src/lib/notion/api.ts" },
+    "./control/obsidian-db": { "types": "./src/public/obsidianDb.d.ts", "import": "./src/lib/db/obsidian.ts" },
+    "./control/obsidian-client": { "types": "./src/public/obsidianClient.d.ts", "import": "./src/lib/obsidian/api.ts" },
+    "./control/obsidian-sync": { "types": "./src/public/obsidianSync.d.ts", "import": "./src/lib/obsidianSync.ts" },
     "./shared/version-manager": {
       "types": "./src/public/versionManagerControl.d.ts",
       "import": "./src/lib/versionManager/controlExports.ts"
@@ -253,6 +258,10 @@
     "./control/qdrant": {
       "types": "./src/public/qdrant.d.ts",
       "import": "./src/lib/memory/qdrant.ts"
+    },
+    "./shared/local-corpus": {
+      "types": "./src/public/localCorpusControl.d.ts",
+      "import": "./src/shared/localCorpus.ts"
     },
     "./control/database-settings": {
       "types": "./src/public/databaseSettings.d.ts",
