@@ -1,4 +1,4 @@
-// src/lib/playground/promptImprover.ts
+// Control-owned prompt improver for the Playground API.
 import { z } from "zod";
 
 export const ImprovePromptRequestSchema = z

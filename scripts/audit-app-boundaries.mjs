@@ -363,7 +363,6 @@ allowedCoreDomainSubpaths["apps/control-api"].push("db/relayProxies", "shared/va
 allowedCoreDomainSubpaths["apps/control-api"].push("db/cc-discovery-metrics");
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/playground-presets",
-  "control/playground-prompt-improver",
   "shared/schemas/playground",
   "control/cli-tools-",
 );
@@ -895,6 +894,10 @@ const retiredCoreChaosDir = join(packagesRoot, "core-domain", "src", "lib", "cha
 if (existsSync(retiredCoreChaosDir)) {
   add("control-runtime-in-core-domain", retiredCoreChaosDir, "Chaos runtime belongs in apps/control-api");
 }
+const retiredCorePlaygroundDir = join(packagesRoot, "core-domain", "src", "lib", "playground");
+if (existsSync(retiredCorePlaygroundDir)) {
+  add("control-runtime-in-core-domain", retiredCorePlaygroundDir, "Playground runtime belongs in apps/control-api or apps/admin");
+}
 
 // The shared HTTP package must never regain a generic app factory or a
 // caller-selected surface. Those APIs collapse independently deployable apps
@@ -1055,6 +1058,7 @@ if (existsSync(workerJobRegistry)) {
 }
 const coreDomainEntry = packageEntries.find(({ manifest }) => manifest?.name === "@shiguang-gateway/core-domain");
 const retiredAppOwnedExports = [
+  "./control/playground-prompt-improver",
   "./chaos/config",
   "./chaos/executor",
   "./control/acp",

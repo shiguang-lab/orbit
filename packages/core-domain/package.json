@@ -731,10 +731,6 @@
       "types": "./src/public/playgroundPresets.d.ts",
       "import": "./src/lib/db/playgroundPresets.ts"
     },
-    "./control/playground-prompt-improver": {
-      "types": "./src/public/playgroundPromptImprover.d.ts",
-      "import": "./src/lib/playground/promptImprover.ts"
-    },
     "./shared/app-config": {
       "types": "./src/public/appConfig.d.ts",
       "import": "./src/shared/constants/appConfig.ts"

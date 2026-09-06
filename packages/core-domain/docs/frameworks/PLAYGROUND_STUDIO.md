@@ -102,26 +102,17 @@ preserves config state.
 
 - Tab switcher (role="tablist").
 - `TokenCostCounter` — live token (↑/↓) and estimated cost display.
-- Export code button (`</>`) — opens `ExportCodeModal`.
-
----
-
-## Export Code Modal
-
-`ExportCodeModal.tsx` uses `codeExport.ts` to generate curl / Python / TypeScript snippets
-from the current `PlaygroundState`. API key placeholder is always `$SHIGUANG_GATEWAY_API_KEY` (D11).
 
 ---
 
 ## Prompt Improver
 
-`ImprovePromptButton.tsx` → `useImprovePrompt.ts` → `POST /api/playground/improve-prompt`:
+`POST /api/playground/improve-prompt`:
 
 1. Modal warns "will consume quota".
 2. On confirm, sends `{ system, prompt, model, tone }` to the route.
-3. Route calls `/v1/chat/completions` internally with `promptImprover.META_SYSTEM_PROMPT`.
+3. The control handler calls `/v1/chat/completions` with the app-owned `META_SYSTEM_PROMPT`.
 4. Returns `{ improvedSystem?, improvedPrompt?, tokensIn, tokensOut }`.
-5. UI patches the Config pane system prompt and the Chat tab user prompt.
 
 ---
 
@@ -132,18 +123,6 @@ from the current `PlaygroundState`. API key placeholder is always `$SHIGUANG_GAT
 - Stored in `playground_presets` SQLite table (migration `084_playground_presets.sql`).
 - Each preset stores: `name`, `endpoint`, `model`, `system`, `params_json`, `created_at`.
 - CRUD: `GET` list, `POST` create, `GET /:id`, `PUT /:id`, `DELETE /:id`.
-
----
-
-## Stream Metrics
-
-`useStreamMetrics.ts` + `streamMetrics.ts` (pure function):
-
-- `start()` — records request start time.
-- `onFirstChunk()` — records TTFT.
-- `onChunk(n)` — accumulates completion token count.
-- `finish(usage?)` — computes final metrics: `ttftMs`, `totalMs`, `tps`, `tokensIn`, `tokensOut`, `costUsd`.
-- Pricing from static table in `src/lib/playground/types.ts` (labelled "estimated" — D13).
 
 ---
 
@@ -179,9 +158,7 @@ Auth: optional (`REQUIRE_API_KEY`). Errors via `buildErrorBody()` (Hard Rule #12
 | `src/app/(dashboard)/dashboard/playground/hooks/useStreamMetrics.ts`       | Client-side metric hook                             |
 | `src/app/(dashboard)/dashboard/playground/hooks/usePresets.ts`             | Presets CRUD hook                                   |
 | `src/app/(dashboard)/dashboard/playground/hooks/useImprovePrompt.ts`       | Improve-prompt hook                                 |
-| `src/lib/playground/codeExport.ts`                                         | curl/Python/TS generator (shared with Search Tools) |
-| `src/lib/playground/promptImprover.ts`                                     | Meta-prompt builder                                 |
-| `src/lib/playground/streamMetrics.ts`                                      | Pure metrics computation                            |
+| `apps/control-api/src/playground/runtime/prompt-improver.ts`                | Meta-prompt builder                                 |
 | `src/lib/db/playgroundPresets.ts`                                          | DB module (CRUD)                                    |
 | `src/app/api/playground/improve-prompt/route.ts`                           | Improve-prompt REST route                           |
 | `src/app/api/playground/presets/route.ts`                                  | Presets list + create                               |
@@ -196,10 +173,8 @@ Auth: optional (`REQUIRE_API_KEY`). Errors via `buildErrorBody()` (Hard Rule #12
 | -------------------------------------- | ----------------------------- | ------------------------------------------------------------------------------- |
 | Monaco editor not rendering in API tab | SSR loaded Monaco             | Verify `ApiTab` uses `dynamic(..., { ssr: false })`                             |
 | Compare streams fire sequentially      | Wrong `Promise.all` usage     | All stream starts must be dispatched in one `Promise.all` call                  |
-| Metrics show `null` TTFT               | First chunk handler not wired | Check `useStreamMetrics.onFirstChunk()` is called in the SSE reader loop        |
 | Preset not persisting                  | DB migration not run          | Run `npm run db:migrate` or restart the server (migration auto-runs on startup) |
 | Improve prompt returns 502             | Model not set in Config       | User must enter a model name in the Config pane before improving                |
-| Export code shows `MISSING_API_KEY`    | Placeholder not inserted      | `codeExport.ts` always uses `API_KEY_PLACEHOLDER = "$SHIGUANG_GATEWAY_API_KEY"`        |
 
 ---
 
@@ -207,6 +182,5 @@ Auth: optional (`REQUIRE_API_KEY`). Errors via `buildErrorBody()` (Hard Rule #12
 
 - Master plan: `_tasks/features-v3.8.6/refactorpages/_orchestration/master-plan-group-C.md`
 - Feature plan: `_tasks/features-v3.8.6/refactorpages/17-playground-studio-redesign.plan.md`
-- Code export: `src/lib/playground/codeExport.ts`
-- Prompt improver: `src/lib/playground/promptImprover.ts`
+- Prompt improver: `apps/control-api/src/playground/runtime/prompt-improver.ts`
 - Search Tools Studio: `docs/frameworks/SEARCH_TOOLS_STUDIO.md`

@@ -21,7 +21,7 @@ import {
   ImprovePromptRequestSchema,
   buildImproveChatBody,
   parseImprovedContent,
-} from "@shiguang-gateway/core-domain/control/playground-prompt-improver";
+} from "../runtime/prompt-improver.js";
 import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/control/feature-flags";
 
 const CORS_HEADERS = {
