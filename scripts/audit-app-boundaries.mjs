@@ -365,7 +365,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/resilience-connection-recovery",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push("control/guardrails");
-allowedCoreDomainSubpaths["apps/control-api"].push("control/headroom", "db/relayProxies", "shared/validation");
+allowedCoreDomainSubpaths["apps/control-api"].push("db/relayProxies", "shared/validation");
 allowedCoreDomainSubpaths["apps/control-api"].push("db/cc-discovery-metrics");
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/playground-presets",
@@ -1042,6 +1042,7 @@ if (existsSync(workerJobRegistry)) {
 }
 const coreDomainEntry = packageEntries.find(({ manifest }) => manifest?.name === "@shiguang-gateway/core-domain");
 const retiredAppOwnedExports = [
+  "./control/headroom",
   "./control/network-info",
   "./edge/v1beta-models",
   "./runtime/build-sha",

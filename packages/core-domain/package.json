@@ -387,10 +387,6 @@
       "types": "./src/public/policies.d.ts",
       "import": "./src/control/policies.ts"
     },
-    "./control/headroom": {
-      "types": "./src/public/headroom.d.ts",
-      "import": "./src/control/headroom.ts"
-    },
     "./edge/tunnels": {
       "types": "./src/public/edgeTunnels.d.ts",
       "import": "./src/edge/tunnels.ts"

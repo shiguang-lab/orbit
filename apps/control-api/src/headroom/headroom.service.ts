@@ -1,15 +1,17 @@
 import { Injectable } from "@nestjs/common";
 import {
   DEFAULT_HEADROOM_URL,
-  getCachedSettings,
   getHeadroomStatus,
-  getManagedPid,
-  HeadroomError,
   isLoopbackHeadroomUrl,
   parsePortFromHeadroomUrl,
+} from "./runtime/detect.js";
+import {
+  getManagedPid,
+  HeadroomError,
   startHeadroomProxy,
   stopHeadroomProxy,
-} from "@shiguang-gateway/core-domain/control/headroom";
+} from "./runtime/process.js";
+import { getCachedSettings } from "@shiguang-gateway/core-domain/control/settings";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { createErrorResponse } from "@shiguang-gateway/core-domain/shared/error-response";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";

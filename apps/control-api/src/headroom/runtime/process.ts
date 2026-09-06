@@ -12,10 +12,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import { spawn } from "node:child_process";
-import { DATA_DIR } from "../db/core.ts";
-import { findHeadroomBinary } from "./detect";
+import { resolveWritableDataDir } from "@shiguang-gateway/config/dataPaths";
+import { findHeadroomBinary } from "./detect.js";
 
-const HEADROOM_DIR = path.join(DATA_DIR ?? ".", "headroom");
+const HEADROOM_DIR = path.join(resolveWritableDataDir(), "headroom");
 const PID_FILE = path.join(HEADROOM_DIR, "proxy.pid");
 const LOG_FILE = path.join(HEADROOM_DIR, "proxy.log");
 const DEFAULT_PORT = 8787;

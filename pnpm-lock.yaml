@@ -224,6 +224,9 @@ importers:
       '@shiguang-gateway/auth':
         specifier: workspace:*
         version: link:../../packages/auth
+      '@shiguang-gateway/config':
+        specifier: workspace:*
+        version: link:../../packages/config
       '@shiguang-gateway/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
