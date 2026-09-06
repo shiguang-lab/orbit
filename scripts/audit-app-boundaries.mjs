@@ -155,6 +155,10 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/obsidian-db",
   "control/obsidian-client",
   "control/obsidian-sync",
+  "control/oauth-handlers",
+  "usage/cache-health",
+  "usage/provider-window-costs",
+  "usage/route-explain",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push("catalog/providers");
 allowedCoreDomainSubpaths["apps/control-api"].push("db/cc-discovery-metrics");
@@ -360,6 +364,25 @@ const migratedRouteOwnership = {
     "api/usage/budget/bulk/route.ts",
     "api/usage/history/route.ts",
     "api/usage/model-latency-stats/route.ts",
+    "api/usage/cache-health/route.ts",
+    "api/usage/provider-window-costs/route.ts",
+    "api/usage/route-explain/[id]/route.ts",
+    "api/oauth/[provider]/[action]/route.ts",
+    "api/oauth/[provider]/paste-credentials/route.ts",
+    "api/oauth/cliproxy-import/route.ts",
+    "api/oauth/codex/import-token/route.ts",
+    "api/oauth/codex/import/route.ts",
+    "api/oauth/cursor/auto-import/route.ts",
+    "api/oauth/cursor/import/route.ts",
+    "api/oauth/cursor/login/cancel/route.ts",
+    "api/oauth/cursor/login/poll/route.ts",
+    "api/oauth/cursor/login/start/route.ts",
+    "api/oauth/kiro/api-key/route.ts",
+    "api/oauth/kiro/auto-import/route.ts",
+    "api/oauth/kiro/import/route.ts",
+    "api/oauth/kiro/social-authorize/route.ts",
+    "api/oauth/kiro/social-exchange/route.ts",
+    "api/oauth/trae/import/route.ts",
   ],
   "apps/edge-gateway": [
     // A2A protocol and task-management routes are owned by the edge Nest app.

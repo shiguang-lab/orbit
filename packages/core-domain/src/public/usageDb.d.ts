@@ -5,3 +5,11 @@ export function getCallLogById(id: string): Promise<any | null>;
 export function exportCallLogsSince(since: string): Promise<any[]>;
 export function getPendingById(): Map<string, any>;
 export function getCompletedDetails(): Map<string, any>;
+export function getUsageStats(): Promise<any>;
+export function getModelLatencyStats(options?: {
+  windowHours?: number;
+  minSamples?: number;
+  maxRows?: number;
+  provider?: string;
+  model?: string;
+}): Promise<Record<string, any>>;

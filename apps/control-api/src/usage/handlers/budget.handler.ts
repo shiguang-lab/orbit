@@ -1,22 +1,21 @@
-import { NextResponse } from "next/server";
-import { getCostSummary, setBudget, checkBudget } from "../../../../domain/costRules.ts";
-import { setBudgetSchema } from "../../../../shared/validation/schemas.ts";
-import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
-import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
+import { getCostSummary, setBudget, checkBudget } from "@shiguang-gateway/core-domain/control/cost-rules";
+import {
+  isValidationFailure,
+  validateBody,
+} from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { setBudgetSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 
-export async function GET(request) {
+export async function GET(request: Request) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 
   try {
-    const { searchParams } = new URL(request.url);
-    const apiKeyId = searchParams.get("apiKeyId");
-    if (!apiKeyId) {
-      return NextResponse.json({ error: "apiKeyId query param is required" }, { status: 400 });
-    }
+    const apiKeyId = new URL(request.url).searchParams.get("apiKeyId");
+    if (!apiKeyId) return Response.json({ error: "apiKeyId query param is required" }, { status: 400 });
     const summary = getCostSummary(apiKeyId);
     const budgetCheck = checkBudget(apiKeyId);
-    return NextResponse.json({
+    return Response.json({
       ...summary,
       budgetCheck,
       dailyLimitUsd: summary.dailyLimitUsd,
@@ -36,34 +35,27 @@ export async function GET(request) {
     });
   } catch (error) {
     console.error("Error fetching budget summary:", error);
-    return NextResponse.json({ error: "Failed to fetch budget summary" }, { status: 500 });
+    return Response.json({ error: "Failed to fetch budget summary" }, { status: 500 });
   }
 }
 
-export async function POST(request) {
+export async function POST(request: Request) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 
-  let rawBody;
+  let rawBody: unknown;
   try {
     rawBody = await request.json();
   } catch {
-    return NextResponse.json(
-      {
-        error: {
-          message: "Invalid request",
-          details: [{ field: "body", message: "Invalid JSON body" }],
-        },
-      },
-      { status: 400 }
+    return Response.json(
+      { error: { message: "Invalid request", details: [{ field: "body", message: "Invalid JSON body" }] } },
+      { status: 400 },
     );
   }
 
   try {
     const validation = validateBody(setBudgetSchema, rawBody);
-    if (isValidationFailure(validation)) {
-      return NextResponse.json({ error: validation.error }, { status: 400 });
-    }
+    if (isValidationFailure(validation)) return Response.json({ error: validation.error }, { status: 400 });
     const {
       apiKeyId,
       dailyLimitUsd,
@@ -73,7 +65,6 @@ export async function POST(request) {
       resetInterval,
       resetTime,
     } = validation.data;
-
     const budget = setBudget(apiKeyId, {
       dailyLimitUsd,
       weeklyLimitUsd,
@@ -82,9 +73,9 @@ export async function POST(request) {
       resetInterval,
       resetTime,
     });
-    return NextResponse.json({ success: true, apiKeyId, budget });
+    return Response.json({ success: true, apiKeyId, budget });
   } catch (error) {
     console.error("Error setting budget:", error);
-    return NextResponse.json({ error: "Failed to set budget" }, { status: 500 });
+    return Response.json({ error: "Failed to set budget" }, { status: 500 });
   }
 }

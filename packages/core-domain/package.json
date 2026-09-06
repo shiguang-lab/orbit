@@ -150,6 +150,18 @@
       "types": "./src/public/costRules.d.ts",
       "import": "./src/domain/costRules.ts"
     },
+    "./usage/cache-health": {
+      "types": "./src/public/cacheHealth.d.ts",
+      "import": "./src/lib/usage/cacheHealth.ts"
+    },
+    "./usage/provider-window-costs": {
+      "types": "./src/public/providerWindowCosts.d.ts",
+      "import": "./src/lib/usage/providerWindowCosts.ts"
+    },
+    "./usage/route-explain": {
+      "types": "./src/public/routeExplain.d.ts",
+      "import": "./src/lib/usage/routeExplain.ts"
+    },
     "./db/compression-run-telemetry": {
       "types": "./src/public/compressionRunTelemetry.d.ts",
       "import": "./src/lib/db/compressionRunTelemetry.ts"

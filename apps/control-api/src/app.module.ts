@@ -27,6 +27,7 @@ import { ProxiesModule } from "./proxies/proxies.module.js";
 import { CacheSettingsModule } from "./cache-settings/cache-settings.module.js";
 import { SettingsSecurityModule } from "./settings/security/security.module.js";
 import { SettingsConfigModule } from "./settings/config/settings-config.module.js";
+import { OAuthModule } from "./oauth/oauth.module.js";
 import { OneproxyModule } from "./settings/oneproxy/oneproxy.module.js";
 import { TierConfigModule } from "./settings/tier-config/tier-config.module.js";
 import { SystemModule } from "./system/system.module.js";
@@ -44,6 +45,7 @@ import { ObsidianSettingsModule } from "./settings/obsidian/obsidian.module.js";
 import { LocalCorpusModule } from "./settings/local-corpus/local-corpus.module.js";
 import { ProxySettingsModule } from "./settings/proxy/proxy-settings.module.js";
 import { QuotaSettingsModule } from "./settings/quota/quota.module.js";
+import { UsageModule } from "./usage/usage.module.js";
 
 @Module({
   imports: [
@@ -75,6 +77,7 @@ import { QuotaSettingsModule } from "./settings/quota/quota.module.js";
     CacheSettingsModule,
     SettingsSecurityModule,
     SettingsConfigModule,
+    OAuthModule,
     OneproxyModule,
     TierConfigModule,
     SystemModule,
@@ -92,6 +95,7 @@ import { QuotaSettingsModule } from "./settings/quota/quota.module.js";
     LocalCorpusModule,
     ProxySettingsModule,
     QuotaSettingsModule,
+    UsageModule,
   ],
 })
 export class AppModule {}
