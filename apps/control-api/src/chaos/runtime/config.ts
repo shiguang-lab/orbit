@@ -1,5 +1,5 @@
 /**
- * lib/chaos/chaosConfig.ts
+ * Control-owned Chaos Mode configuration.
  *
  * Chaos Mode configuration — persisted per-instance settings for:
  * - Which providers/models participate
@@ -9,7 +9,7 @@
  */
 
 import { z } from "zod";
-import { getSettings, updateSettings } from "../db/settings.ts";
+import { getSettings, updateSettings } from "@shiguang-gateway/core-domain/control/settings";
 
 // ── Schema ───────────────────────────────────────────────────────────────────
 
@@ -37,51 +37,37 @@ export const DEFAULT_CHAOS_CONFIG: ChaosConfig = {
   enabled: false,
   defaultMode: "parallel",
   providerOverrides: [],
-  systemPrompt: undefined,
   timeoutMs: 120_000,
   maxTokens: 4096,
 };
 
 // ── Persistence ──────────────────────────────────────────────────────────────
 //
-// Persisted via the shared settings store (src/lib/db/settings.ts::getSettings/
-// updateSettings — the `key_value` table, namespace 'settings') rather than
-// hand-rolled SQL against a nonexistent `settings` table (the original PR queried
-// a table that was never created — every read silently fell back to defaults and
-// every write/reset threw). Follows the repo convention of routing all settings
-// reads/writes through src/lib/db/settings.ts (see CLAUDE.md → Database).
+// Persisted via the shared settings contract (`key_value`, namespace `settings`).
 
 const CONFIG_KEY = "chaosModeConfig";
-
-let _configCache: ChaosConfig | null = null;
 
 /**
  * Get the current Chaos Mode configuration.
  */
 export async function getChaosConfig(): Promise<ChaosConfig> {
-  if (_configCache) return _configCache;
-
   try {
     const settings = await getSettings();
     const raw = settings[CONFIG_KEY];
 
     if (raw === undefined || raw === null) {
-      _configCache = DEFAULT_CHAOS_CONFIG;
-      return _configCache;
+      return DEFAULT_CHAOS_CONFIG;
     }
 
     const result = chaosConfigSchema.safeParse(raw);
     if (result.success) {
-      _configCache = result.data;
       return result.data;
     }
 
     // Fall back to default if stored config is invalid
-    _configCache = DEFAULT_CHAOS_CONFIG;
-    return _configCache;
+    return DEFAULT_CHAOS_CONFIG;
   } catch {
-    _configCache = DEFAULT_CHAOS_CONFIG;
-    return _configCache;
+    return DEFAULT_CHAOS_CONFIG;
   }
 }
 
@@ -93,9 +79,6 @@ export async function setChaosConfig(config: ChaosConfig): Promise<ChaosConfig> 
 
   await updateSettings({ [CONFIG_KEY]: validated });
 
-  // Invalidate cache
-  _configCache = null;
-
   return validated;
 }
 
@@ -104,16 +87,5 @@ export async function setChaosConfig(config: ChaosConfig): Promise<ChaosConfig> 
  */
 export async function resetChaosConfig(): Promise<ChaosConfig> {
   await updateSettings({ [CONFIG_KEY]: null });
-  _configCache = null;
   return DEFAULT_CHAOS_CONFIG;
-}
-
-/**
- * Invalidate the in-memory config cache without touching persisted settings.
- * Needed whenever the underlying DB/settings store is reset out-of-band (e.g.
- * test teardown calling resetDbInstance()) — otherwise getChaosConfig() keeps
- * serving a stale in-memory value after the store it was read from is gone.
- */
-export function invalidateChaosConfigCache(): void {
-  _configCache = null;
 }

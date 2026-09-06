@@ -77,14 +77,6 @@
       "types": "./src/public/hubProxy.d.ts",
       "import": "./src/lib/conductor/hubProxy.ts"
     },
-    "./chaos/config": {
-      "types": "./src/public/chaosConfig.d.ts",
-      "import": "./src/lib/chaos/chaosConfig.ts"
-    },
-    "./chaos/executor": {
-      "types": "./src/public/chaosExecutor.d.ts",
-      "import": "./src/lib/chaos/chaosExecutor.ts"
-    },
     "./edge/responses-runtime": {
       "types": "./src/public/responsesRuntime.d.ts",
       "import": "./src/lib/edge/responsesRuntime.ts"

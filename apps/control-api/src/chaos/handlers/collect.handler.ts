@@ -27,12 +27,9 @@ import { z } from "zod";
 import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import { validateApiKey, getApiKeyMetadata } from "@shiguang-gateway/core-domain/db/api-keys";
-import { getChaosConfig } from "@shiguang-gateway/core-domain/chaos/config";
-import { executeChaosRun, setChaosChatDispatch, type ChaosRunResult } from "@shiguang-gateway/core-domain/chaos/executor";
+import { getChaosConfig } from "../runtime/config.js";
+import { executeChaosRun, type ChaosRunResult } from "../runtime/executor.js";
 import * as log from "@shiguang-gateway/core-domain/sse/logger";
-import { POST as postChatCompletion } from "@shiguang-gateway/open-sse/services/chat-completions-compat";
-
-setChaosChatDispatch(postChatCompletion);
 
 export const dynamic = "force-dynamic";
 

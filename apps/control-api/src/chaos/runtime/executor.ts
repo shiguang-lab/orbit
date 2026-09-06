@@ -1,5 +1,5 @@
 /**
- * lib/chaos/chaosExecutor.ts
+ * Control-owned Chaos Mode execution engine.
  *
  * Shared Chaos Mode execution engine — used by BOTH:
  *   - POST /api/chaos/run       (dashboard, management-session auth)
@@ -8,25 +8,9 @@
  * Eliminates the ~150 lines of duplicate dispatch logic that previously existed
  * in both route files.
  */
-import { getProviderConnections } from "../../models/index.ts";
-import { getChaosConfig, type ChaosConfig } from "./chaosConfig.ts";
-
-// Wrapped in an object (rather than called as a bare imported function) so unit
-// tests can swap it out via `mock.method(chatDispatch, "postChatCompletion", ...)`
-// without hitting real upstream providers — the same pattern src/lib/batches/
-// dispatch.ts uses for its `dispatch` export (ES module named bindings are
-// read-only and cannot be mocked directly).
-export const chatDispatch = {
-  postChatCompletion: async (_request: Request): Promise<Response> => {
-    throw new Error("Chaos chat dispatch is not configured");
-  },
-};
-
-export function setChaosChatDispatch(
-  postChatCompletion: (request: Request) => Promise<Response>,
-): void {
-  chatDispatch.postChatCompletion = postChatCompletion;
-}
+import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
+import { POST as postChatCompletion } from "@shiguang-gateway/open-sse/services/chat-completions-compat";
+import { getChaosConfig, type ChaosConfig } from "./config.js";
 
 // ── Exported types ───────────────────────────────────────────────────────────
 
@@ -300,7 +284,7 @@ async function dispatchToModel(
   try {
     const model = modelId || providerId;
     const request = buildDispatchRequest(model, messages, maxTokens, timeoutMs, apiKey);
-    const res = await chatDispatch.postChatCompletion(request);
+    const res = await postChatCompletion(request);
     return await parseDispatchResponse(res, ctx, start);
   } catch (err: unknown) {
     return buildDispatchErrorResult(err, ctx, start, timeoutMs);
