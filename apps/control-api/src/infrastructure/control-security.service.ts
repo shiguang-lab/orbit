@@ -9,6 +9,7 @@ import {
   type EngineAuthAdapter,
   LocalAuthBroker,
 } from "@shiguang-gateway/auth";
+import { installControlLocalOnlyGuard } from "./control-local-only.guard.js";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
 
@@ -21,6 +22,8 @@ export class ControlSecurityService implements OnModuleInit {
   }
 
   async register(app: FastifyInstance): Promise<void> {
+    installControlLocalOnlyGuard(app);
+
     app.addHook("preHandler", async (request, reply) => {
       const pathname = new URL(request.url, "http://control-api").pathname;
       const clientPath = pathname === "/api/v1" || pathname.startsWith("/api/v1/") ||
