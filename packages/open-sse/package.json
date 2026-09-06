@@ -37,6 +37,10 @@
       "types": "./public/embeddingRegistry.d.ts",
       "import": "./config/embeddingRegistry.ts"
     },
+    "./config/searchRegistry": {
+      "types": "./public/searchRegistry.d.ts",
+      "import": "./config/searchRegistry.ts"
+    },
     "./handlers/imageGeneration": {
       "types": "./public/imageGeneration.d.ts",
       "import": "./handlers/imageGeneration.ts"

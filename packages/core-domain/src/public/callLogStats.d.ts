@@ -9,3 +9,17 @@ export interface ProviderMetricRow {
   lastErrorStatus?: number | string | null;
 }
 export function getProviderMetrics(): ProviderMetricRow[];
+
+export interface SearchAggregateStats {
+  total: number;
+  today: number;
+  errors: number;
+  avg_duration: number | null;
+  cached: number;
+}
+export interface SearchProviderCountRow {
+  provider: string;
+  cnt: number;
+}
+export function getSearchAggregateStats(todayIso: string): SearchAggregateStats;
+export function getSearchProviderCounts(): SearchProviderCountRow[];
