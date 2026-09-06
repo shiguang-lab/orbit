@@ -64,17 +64,17 @@ import { rejectPeerRequest } from "@shiguang-gateway/core-domain/runtime/peer-ro
 import { isRuntimeProviderRetirementError } from "@shiguang-gateway/contracts/provider-retirement";
 import { isCommonChatGptWebRetirementError } from "@shiguang-gateway/contracts/chatgpt-web-retirement";
 import { deleteHandoff, getHandoff } from "@shiguang-gateway/core-domain/runtime/context-handoffs";
-import { getComboByName, updateCombo } from "@shiguang-gateway/core-domain/runtime/combos-db";
+import { getComboByName, updateCombo } from "@shiguang-gateway/core-domain/db/combos";
 import { isModelAllowedForKey } from "@shiguang-gateway/core-domain/db/api-keys";
 import { promoteSuccessfulComboModel } from "@shiguang-gateway/core-domain/runtime/combo-auto-promote";
 import {
   deleteSessionAccountAffinity,
   evictSessionAccountAffinityForConnection,
   getSessionAccountAffinity,
-} from "@shiguang-gateway/core-domain/runtime/session-affinity-db";
+} from "@shiguang-gateway/core-domain/session-affinity/store";
 import { dispatchChatWithAffinityEviction } from "@shiguang-gateway/open-sse/handlers/chatDispatch";
 import { getCachedSettings, getCombosCacheVersion } from "@shiguang-gateway/core-domain/db/read-cache";
-import { getCombos } from "@shiguang-gateway/core-domain/runtime/combos-db";
+import { getCombos } from "@shiguang-gateway/core-domain/db/combos";
 import { resolveModelLockoutSettings } from "@shiguang-gateway/core-domain/resilience/model-lockout-settings";
 import {
   ensureOpenAIStoreSessionFallback,
@@ -1240,7 +1240,7 @@ async function handleChatImplementation(
     const providerPrefix = resolvedModelStr.split("/")[0];
     if (providerPrefix) {
       try {
-        const { getComboByName } = await import("@shiguang-gateway/core-domain/runtime/combos-db");
+        const { getComboByName } = await import("@shiguang-gateway/core-domain/db/combos");
         const routingCombo = await getComboByName(providerPrefix);
         if (typeof routingCombo?.id === "string") {
           routingComboId = routingCombo.id;

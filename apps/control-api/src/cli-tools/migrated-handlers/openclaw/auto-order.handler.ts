@@ -5,7 +5,7 @@
  */
 
 import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getComboModelProvider } from "@shiguang-gateway/core-domain/control/cli-tools-combo";
+import { getComboModelProvider } from "@shiguang-gateway/core-domain/routing/combo-steps";
 import { resolveGatewayBaseUrl } from "@shiguang-gateway/core-domain/shared/utils/resolveGatewayBaseUrl";
 
 const SHIGUANG_GATEWAY_BASE_URL = resolveGatewayBaseUrl();

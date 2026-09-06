@@ -9,7 +9,7 @@
 
 import { getCircuitBreaker } from "@shiguang-gateway/core-domain/resilience/circuit-breaker";
 import { secureRandomFloat, secureRandomInt } from "@shiguang-gateway/core-domain/shared/secure-random";
-import { getComboStepTarget, getComboStepWeight } from "@shiguang-gateway/core-domain/edge/mcp-combo-steps";
+import { getComboStepTarget, getComboStepWeight } from "@shiguang-gateway/core-domain/routing/combo-steps";
 import { getComboMetrics } from "../comboMetrics.ts";
 import { parseModel } from "../model.ts";
 import type { ResolvedComboTarget } from "./types.ts";

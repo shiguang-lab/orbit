@@ -1,5 +1,5 @@
 import { getComboForecastUsageRows, type ComboForecastUsageRow } from "@shiguang-gateway/core-domain/usage/reporting-support/combo-forecast";
-import { getCombos, getComboById } from "@shiguang-gateway/core-domain/usage/reporting-support/combos";
+import { getCombos, getComboById } from "@shiguang-gateway/core-domain/db/combos";
 import { getPricingForModel } from "@shiguang-gateway/core-domain/db/settings";
 import { getQuotaSnapshots } from "@shiguang-gateway/core-domain/usage/reporting-support/quota-snapshots";
 import { computeCostFromPricing, normalizeModelName } from "@shiguang-gateway/core-domain/usage/reporting-support/cost-calculator";

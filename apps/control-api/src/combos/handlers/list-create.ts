@@ -9,7 +9,7 @@ import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
 import { createComboSchema, paginationSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { normalizeComboModels } from "@shiguang-gateway/core-domain/shared/combo-steps";
+import { normalizeComboModels } from "@shiguang-gateway/core-domain/routing/combo-steps";
 import { validateComboDAG, clampComboDepth } from "@shiguang-gateway/open-sse/services/combo";
 import {
   buildComboNameCollisionWarning,

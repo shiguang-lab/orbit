@@ -1,4 +1,4 @@
-import { getComboByName } from "@shiguang-gateway/core-domain/usage/reporting-support/combos";
+import { getComboByName } from "@shiguang-gateway/core-domain/db/combos";
 import { buildComboScoringInspectorResponse } from "./comboScoringInspector.js";
 import { inspectTargetResilience } from "./resilienceExplain.js";
 import type {

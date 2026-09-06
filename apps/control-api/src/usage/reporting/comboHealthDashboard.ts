@@ -1,4 +1,4 @@
-import { getCombos } from "@shiguang-gateway/core-domain/usage/reporting-support/combos";
+import { getCombos } from "@shiguang-gateway/core-domain/db/combos";
 import { buildComboHealthAutopilotReport } from "./comboHealthAutopilot.js";
 import { buildComboForecastResponse } from "./comboForecast.js";
 import { buildComboHealthResponse } from "./comboHealth.js";

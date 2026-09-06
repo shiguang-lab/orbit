@@ -1,4 +1,4 @@
-import { getComboById, getCombos } from "@shiguang-gateway/core-domain/usage/reporting-support/combos";
+import { getComboById, getCombos } from "@shiguang-gateway/core-domain/db/combos";
 import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
 import { getQuotaSnapshots } from "@shiguang-gateway/core-domain/usage/reporting-support/quota-snapshots";
 import { getComboMetrics } from "@shiguang-gateway/open-sse/services/comboMetrics";

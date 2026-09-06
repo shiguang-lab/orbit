@@ -33,7 +33,7 @@ import {
   touchSessionAccountAffinity,
   deleteSessionAccountAffinity,
   evictSessionAccountAffinityForConnection,
-} from "@shiguang-gateway/core-domain/db/session-account-affinity";
+} from "@shiguang-gateway/core-domain/session-affinity/store";
 import { touchConnectionLastUsed } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { isModelExcludedByConnection } from "@shiguang-gateway/core-domain/routing/connection-model-rules";
 import { isAccountQuotaExhausted } from "@shiguang-gateway/core-domain/quota/cache";

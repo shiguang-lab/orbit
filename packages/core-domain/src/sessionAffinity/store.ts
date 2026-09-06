@@ -1,5 +1,5 @@
-export { deleteSessionAccountAffinity } from "../lib/db/sessionAccountAffinity.js";
 export {
+  deleteSessionAccountAffinity,
   evictSessionAccountAffinityForConnection,
   getSessionAccountAffinity,
   touchSessionAccountAffinity,

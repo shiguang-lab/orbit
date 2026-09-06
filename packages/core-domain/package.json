@@ -799,8 +799,8 @@
       "import": "./src/lib/db/contextHandoffs.ts"
     },
     "./db/combos": {
-      "types": "./src/public/combosDb.d.ts",
-      "import": "./src/lib/db/combos.ts"
+      "types": "./src/db/combos.ts",
+      "import": "./src/db/combos.ts"
     },
     "./db/active-synced-catalog": {
       "types": "./src/public/activeSyncedCatalogDb.d.ts",
@@ -854,9 +854,13 @@
       "types": "./src/public/exclusiveConnectionLeasesDb.d.ts",
       "import": "./src/lib/db/exclusiveConnectionLeases.ts"
     },
-    "./db/session-account-affinity": {
-      "types": "./src/public/sessionAccountAffinityDb.d.ts",
-      "import": "./src/lib/db/sessionAccountAffinity.ts"
+    "./session-affinity/store": {
+      "types": "./src/public/sessionAffinityStore.d.ts",
+      "import": "./src/sessionAffinity/store.ts"
+    },
+    "./session-affinity/cleanup-lifecycle": {
+      "types": "./src/public/sessionAffinityCleanupLifecycle.d.ts",
+      "import": "./src/sessionAffinity/cleanupLifecycle.ts"
     },
     "./control/authenticated": {
       "types": "./src/public/authenticated.d.ts",
@@ -896,9 +900,9 @@
     "./catalog/models-dev-sync": { "types": "./src/public/catalogModelsDevSync.d.ts", "import": "./src/lib/modelsDevSync.ts" },
     "./catalog/provider-models": { "types": "./src/public/catalogProviderModels.d.ts", "import": "./src/shared/constants/models.ts" },
     "./catalog/providers": { "types": "./src/public/catalogProviders.d.ts", "import": "./src/catalog/providers.ts" },
-    "./shared/combo-steps": {
-      "types": "./src/public/comboSteps.d.ts",
-      "import": "./src/lib/combos/steps.ts"
+    "./routing/combo-steps": {
+      "types": "./src/public/routingComboSteps.d.ts",
+      "import": "./src/routing/comboSteps.ts"
     },
     "./shared/probe-origin": {
       "types": "./src/public/probeOrigin.d.ts",
@@ -999,10 +1003,6 @@
     "./edge/cache-control": {
       "types": "./src/public/cacheControlRuntime.d.ts",
       "import": "./src/lib/cacheControlSettings.ts"
-    },
-    "./edge/mcp-combo-steps": {
-      "types": "./src/public/mcpComboSteps.d.ts",
-      "import": "./src/lib/combos/steps.ts"
     },
     "./shared/quota-contract": {
       "types": "./src/public/quotaContract.d.ts",
@@ -1115,7 +1115,6 @@
     "./worker/database-cleanup": "./src/lib/db/cleanup.ts",
     "./control/database-cleanup": "./src/lib/db/cleanup.ts",
     "./worker/proxy-subscription": "./src/lib/proxySubscription/subscriptionService.ts",
-    "./worker/session-affinity": "./src/lib/db/sessionAccountAffinity.ts",
     "./worker/database-vacuum": "./src/lib/db/vacuumScheduler.ts",
     "./worker/memory": "./src/lib/memory/index.ts",
     "./worker/arena-elo-sync": "./src/lib/arenaEloSync.ts",
@@ -1179,10 +1178,8 @@
     "./runtime/cc-discovery-alias": "./src/lib/ccDiscoveryAliasResolve.ts",
     "./runtime/middleware-registry": "./src/lib/middleware/registry.ts",
     "./runtime/context-handoffs": "./src/lib/db/contextHandoffs.ts",
-    "./runtime/combos-db": "./src/lib/db/combos.ts",
     "./runtime/recovery-db": "./src/lib/db/recovery.ts",
     "./runtime/combo-auto-promote": "./src/lib/combos/autoPromote.ts",
-    "./runtime/session-affinity-db": "./src/lib/db/sessionAccountAffinity.ts",
     "./runtime/request-defaults": "./src/lib/providers/requestDefaults.ts",
     "./runtime/guardrails": "./src/lib/guardrails/index.ts",
     "./runtime/modality-bridge-stats": "./src/lib/guardrails/modalityBridge/bridgeStats.ts",
@@ -1208,7 +1205,6 @@
     "./usage/provider-limits-support/quotaNormalize": "./src/lib/usage/providerLimits/quotaNormalize.ts",
     "./usage/provider-limits-support/chunkedSpacingSync": "./src/lib/usage/providerLimits/chunkedSpacingSync.ts",
     "./usage/reporting-support/combo-forecast": "./src/lib/db/comboForecast.ts",
-    "./usage/reporting-support/combos": "./src/lib/db/combos.ts",
     "./usage/reporting-support/quota-snapshots": "./src/lib/db/quotaSnapshots.ts",
     "./usage/reporting-support/cost-calculator": "./src/lib/usage/costCalculator.ts",
     "./usage/reporting-support/shared/types/utilization": "./src/shared/types/utilization.ts",
@@ -1248,7 +1244,6 @@
     "./control/cli-tools-mitm-dns": "./src/mitm/dns/dnsConfig.ts",
     "./control/cli-tools-mitm-manager": "./src/mitm/manager.runtime.ts",
     "./control/cli-tools-status": { "types": "./src/lib/cliTools/checkToolConfigStatus.ts", "import": "./src/lib/cliTools/checkToolConfigStatus.ts" },
-    "./control/cli-tools-combo": { "types": "./src/lib/combos/steps.ts", "import": "./src/lib/combos/steps.ts" },
     "./control/cli-tools-log": { "types": "./src/lib/logEnv.ts", "import": "./src/lib/logEnv.ts" },
     "./control/cli-tools-backups": { "types": "./src/shared/services/backupService.ts", "import": "./src/shared/services/backupService.ts" },
     "./control/cli-tools-runtime": { "types": "./src/shared/services/cliRuntime.ts", "import": "./src/shared/services/cliRuntime.ts" },

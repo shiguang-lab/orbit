@@ -6,7 +6,7 @@ import {
   getComboModelProvider,
   getComboModelString,
   getComboStepTarget,
-} from "@shiguang-gateway/core-domain/edge/mcp-combo-steps";
+} from "@shiguang-gateway/core-domain/routing/combo-steps";
 import type { AutoRoutingStrategyValue } from "@shiguang-gateway/contracts/routing-strategies";
 import { rankBySpeed, DEFAULT_SPEED_WEIGHTS } from "../../services/autoCombo/speedRanking.ts";
 import type { SpeedCandidate } from "../../services/autoCombo/speedRanking.ts";

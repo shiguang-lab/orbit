@@ -362,7 +362,7 @@ import {
   extractSessionAffinityKey,
 } from "../services/auth.ts";
 import { assertExclusiveConnectionLeaseFence } from "@shiguang-gateway/core-domain/db/exclusive-connection-leases";
-import { deleteSessionAccountAffinity } from "@shiguang-gateway/core-domain/db/session-account-affinity";
+import { deleteSessionAccountAffinity } from "@shiguang-gateway/core-domain/session-affinity/store";
 import { getCacheControlSettings } from "@shiguang-gateway/core-domain/edge/cache-control";
 import { guardrailRegistry } from "@shiguang-gateway/core-domain/edge/guardrails-runtime";
 import {

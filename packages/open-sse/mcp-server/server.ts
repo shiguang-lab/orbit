@@ -4,7 +4,7 @@ import {
   getComboModelProvider,
   getComboModelString,
   getComboStepTarget,
-} from "@shiguang-gateway/core-domain/edge/mcp-combo-steps";
+} from "@shiguang-gateway/core-domain/routing/combo-steps";
 import { registerToolSearchTool } from "./toolSearch/register.ts";
 import {
   MCP_TOOLS,

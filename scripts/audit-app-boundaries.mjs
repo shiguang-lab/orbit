@@ -23,6 +23,8 @@ const quotaCacheLifecycleSpecifier =
   "@shiguang-gateway/core-domain/quota/cache-lifecycle";
 const complianceLifecycleSpecifier =
   "@shiguang-gateway/core-domain/compliance/lifecycle";
+const sessionAffinityCleanupLifecycleSpecifier =
+  "@shiguang-gateway/core-domain/session-affinity/cleanup-lifecycle";
 const violations = [];
 
 const readJson = (file) => {
@@ -70,7 +72,7 @@ const allowedCoreDomainSubpaths = {
     "cli/sqlite-driver",
     "cli/config-generator",
     "cli/tool-detector",
-    "runtime/combos-db",
+    "db/combos",
     "runtime/recovery-db",
     "runtime/setup-polyfill",
     "shared/constants/cliTools",
@@ -192,8 +194,15 @@ const allowedCoreDomainSubpaths = {
   ],
 };
 
-allowedCoreDomainSubpaths["apps/control-api"].push("compliance/audit-log");
+allowedCoreDomainSubpaths["apps/control-api"] = allowedCoreDomainSubpaths[
+  "apps/control-api"
+].filter((subpath) => subpath !== "control/compliance" && subpath !== "compliance");
+allowedCoreDomainSubpaths["apps/control-api"].push(
+  "compliance/audit-log",
+  "routing/combo-steps",
+);
 allowedCoreDomainSubpaths["apps/worker"].push("compliance/lifecycle");
+allowedCoreDomainSubpaths["apps/worker"].push("session-affinity/cleanup-lifecycle");
 
 for (const app of ["apps/control-api", "apps/edge-gateway", "apps/realtime", "apps/worker"]) {
   allowedCoreDomainSubpaths[app].push("db/runtime-lifecycle");
@@ -1107,6 +1116,13 @@ for (const app of appEntries) {
           "only the worker may invoke compliance initialization and retention lifecycle",
         );
       }
+      if (specifier === sessionAffinityCleanupLifecycleSpecifier && rel(app.dir) !== "apps/worker") {
+        add(
+          "session-affinity-cleanup-lifecycle-outside-worker",
+          file,
+          "only the worker may own session-affinity cleanup lifecycle",
+        );
+      }
       if (specifier.startsWith(".")) {
         const target = resolve(file, "..", specifier);
         if (target.includes(`${sep}apps${sep}`) && !target.startsWith(`${app.dir}${sep}`)) add("cross-app-relative-import", file, specifier);
@@ -1272,11 +1288,17 @@ const retiredRedundantCoreExports = [
   "./runtime/free-models",
   "./control/api-key-store",
   "./runtime/api-keys",
+  "./db/session-account-affinity",
+  "./worker/session-affinity",
+  "./runtime/session-affinity-db",
   "./control/provider-discovery-support/callLogs",
   "./usage/reporting-support/call-logs",
   "./control/compliance",
   "./worker/compliance",
   "./compliance",
+  "./shared/combo-steps",
+  "./edge/mcp-combo-steps",
+  "./control/cli-tools-combo",
 ];
 for (const subpath of retiredRedundantCoreExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {
@@ -1390,6 +1412,13 @@ for (const pkg of packageEntries) {
           "compliance-lifecycle-in-shared-package",
           file,
           "shared packages may use audit-log operations but must not invoke compliance lifecycle",
+        );
+      }
+      if (specifier === sessionAffinityCleanupLifecycleSpecifier) {
+        add(
+          "session-affinity-cleanup-lifecycle-in-shared-package",
+          file,
+          "shared packages may read and write session affinity but must not own its cleanup scheduler",
         );
       }
       const workspace = workspaceByName.get(specifier) ?? [...workspaceByName.entries()].find(([name]) => specifier.startsWith(`${name}/`))?.[1];

@@ -18,7 +18,7 @@ function makeHttpContext(opts) {
 
 async function importDbModules() {
   const [combos, recovery] = await Promise.all([
-    import("@shiguang-gateway/core-domain/runtime/combos-db"),
+    import("@shiguang-gateway/core-domain/db/combos"),
     import("@shiguang-gateway/core-domain/runtime/recovery-db"),
   ]);
   return { combos, recovery };

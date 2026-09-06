@@ -1,4 +1,4 @@
-import { getCombos } from "@shiguang-gateway/core-domain/usage/reporting-support/combos";
+import { getCombos } from "@shiguang-gateway/core-domain/db/combos";
 import {
   buildProviderHealthAutopilotReport,
   type ProviderAutopilotReport,
