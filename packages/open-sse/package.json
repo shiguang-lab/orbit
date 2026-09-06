@@ -128,6 +128,8 @@
       "types": "./public/deviceTracker.d.ts",
       "import": "./services/deviceTracker.ts"
     },
+    "./services/sessionManager": "./services/sessionManager.ts",
+    "./services/webSessionPoolHealth": "./services/webSessionPoolHealth.ts",
     "./services/accountFallback": {
       "types": "./public/accountFallback.d.ts",
       "import": "./services/accountFallback.ts"

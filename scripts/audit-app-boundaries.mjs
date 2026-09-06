@@ -290,7 +290,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
 );
 allowedCoreDomainSubpaths["apps/control-api"].push("control/compression-management");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/guardrails");
-allowedCoreDomainSubpaths["apps/control-api"].push("control/headroom");
+allowedCoreDomainSubpaths["apps/control-api"].push("control/headroom", "db/relayProxies", "shared/validation");
 allowedCoreDomainSubpaths["apps/control-api"].push("db/cc-discovery-metrics");
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/playground-presets",

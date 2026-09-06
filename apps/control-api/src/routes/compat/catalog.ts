@@ -138,6 +138,13 @@ export function controlRouteCatalog(): CompatRouteDefinition[] {
     "usage/provider-limits",
     "usage/combo-trace/[id]",
     "usage/om-usage",
+    "relay/tokens",
+    "relay/tokens/[id]",
+    "sessions",
+    "session-pools",
+    "session-pools/[provider]",
+    "routing/decisions/[requestId]",
+    "compliance/audit-log",
   ]);
   return coreRoutes.filter((route) => !migrated.has(route.segments.join("/")));
 }

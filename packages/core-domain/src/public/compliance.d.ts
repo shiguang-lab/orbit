@@ -16,3 +16,18 @@ export function logAuditEvent(entry: {
   requestId?: string;
   createdAt?: string;
 }): void;
+export interface AuditLogFilter {
+  action?: string;
+  actor?: string;
+  target?: string;
+  resourceType?: string;
+  status?: string;
+  requestId?: string;
+  from?: string;
+  to?: string;
+  limit?: number;
+  offset?: number;
+  levelFilter?: "high";
+}
+export function getAuditLog(filter?: AuditLogFilter): unknown[];
+export function countAuditLog(filter?: AuditLogFilter): number;

@@ -275,6 +275,10 @@
       "types": "./src/public/routeExplain.d.ts",
       "import": "./src/lib/usage/routeExplain.ts"
     },
+    "./db/relayProxies": {
+      "types": "./src/public/relayProxies.d.ts",
+      "import": "./src/lib/db/relayProxies.ts"
+    },
     "./usage/codex-reset-credits": {
       "types": "./src/public/codexResetCredits.d.ts",
       "import": "./src/lib/usage/codexResetCredits.ts"

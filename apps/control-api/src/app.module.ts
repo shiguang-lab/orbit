@@ -89,6 +89,9 @@ import { TunnelsModule } from "./tunnels/tunnels.module.js";
 import { DocsModule } from "./docs/docs.module.js";
 import { GuardrailsModule } from "./guardrails/guardrails.module.js";
 import { HeadroomModule } from "./headroom/headroom.module.js";
+import { RelayModule } from "./relay/relay.module.js";
+import { SessionsModule } from "./sessions/sessions.module.js";
+import { ComplianceModule } from "./compliance/compliance.module.js";
 
 @Module({
   imports: [
@@ -183,6 +186,9 @@ import { HeadroomModule } from "./headroom/headroom.module.js";
     DocsModule,
     GuardrailsModule,
     HeadroomModule,
+    RelayModule,
+    SessionsModule,
+    ComplianceModule,
   ],
 })
 export class AppModule {}
