@@ -214,11 +214,13 @@ The provider page model list now includes:
 
 ## 🔧 OAuth Env Repair _(v3.6.1+)_
 
-One-click "Repair env" action for OAuth providers that restores missing environment variables and fixes broken auth state. Accessible from `Dashboard → Providers → [OAuth Provider] → Repair env`. Automatically detects and repairs:
+The authenticated system repair endpoint inspects or appends missing defaults
+from the OAuth section of `.env.example`:
 
 - Missing OAuth client credentials
-- Corrupted env file entries
-- Backup path sanitization
+- Existing values are never overwritten
+- Existing `.env` files are backed up before changes
+- Deployments without the template explicitly report the feature unavailable
 
 ---
 

@@ -346,7 +346,7 @@ open-sse/
 | `build-next-isolated.mjs`           | Standalone build (Next.js 16 standalone)                                   |
 | `prepublish.ts`                     | Package preparation before `npm pack`                                      |
 | `postinstall.mjs`                   | Auto-create `.env` from `.env.example` on first install                    |
-| `sync-env.mjs`                      | Re-sync `.env` keys with `.env.example`                                    |
+| `apps/control-api/src/system/runtime/env-sync.ts` | Inspect and append `.env` defaults for source deployments          |
 | `check-cycles.mjs`                  | Detect circular dependencies                                               |
 | `check-route-validation.mjs`        | Validate all API routes have Zod validation                                |
 | `check-t11-any-budget.mjs`          | Enforce explicit `any` budget per file                                     |

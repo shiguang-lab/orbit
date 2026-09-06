@@ -234,7 +234,6 @@ allowedCoreDomainSubpaths["apps/edge-gateway"].push(
 );
 allowedCoreDomainSubpaths["apps/control-api"].push("control/free-provider-rankings");
 allowedCoreDomainSubpaths["apps/control-api"].push(
-  "control/env-repair",
   "control/intelligence-sync",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push(
@@ -927,6 +926,15 @@ const retiredCoreClientApiAuth = join(packagesRoot, "core-domain", "src", "share
 if (existsSync(retiredCoreClientApiAuth)) {
   add("edge-runtime-in-core-domain", retiredCoreClientApiAuth, "Client API route authentication belongs in apps/edge-gateway");
 }
+const retiredCoreEnvRepairSources = [
+  join(packagesRoot, "core-domain", "src", "control", "env-repair.ts"),
+  join(packagesRoot, "core-domain", "scripts", "dev", "sync-env.mjs"),
+];
+for (const source of retiredCoreEnvRepairSources) {
+  if (existsSync(source)) {
+    add("control-runtime-in-core-domain", source, "Environment repair runtime belongs in apps/control-api");
+  }
+}
 const retiredUnreachableCoreSources = [
   join(packagesRoot, "core-domain", "src", "lib", "batches"),
   ...["builderDraft.ts", "comboSort.ts", "controlCenter.ts", "intelligentRouting.ts"].map((file) =>
@@ -1114,6 +1122,7 @@ for (const subpath of retiredRedundantCoreExports) {
   }
 }
 const retiredAppOwnedExports = [
+  "./control/env-repair",
   "./shared/client-api-auth",
   "./control/provider-test-batch",
   "./edge/relay-bifrost",

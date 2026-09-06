@@ -951,7 +951,8 @@ These endpoints mirror Gemini's API format for clients that expect native Gemini
 | `/api/tags`              | GET    | Ollama-compatible model tags (for Ollama clients)    |
 | `/api/restart`           | POST   | Trigger graceful server restart                      |
 | `/api/shutdown`          | POST   | Trigger graceful server shutdown                     |
-| `/api/system/env/repair` | POST   | Repair OAuth provider environment variables          |
+| `/api/system/env/repair` | GET    | Inspect missing OAuth environment defaults            |
+| `/api/system/env/repair` | POST   | Append missing OAuth environment defaults             |
 
 > **Note:** These endpoints are used internally by the system or for Ollama client compatibility. They are not typically called by end users.
 
@@ -959,20 +960,21 @@ These endpoints mirror Gemini's API format for clients that expect native Gemini
 
 ```bash
 POST /api/system/env/repair
-Content-Type: application/json
-
-{
-  "provider": "claude-code"
-}
 ```
 
-Repairs missing or corrupted OAuth environment variables for a specific provider. Returns:
+Appends missing keys from the OAuth section of `.env.example` without
+overwriting existing values. When `.env` exists, it first creates a timestamped
+backup in the current project root. A deployment without `.env.example`
+reports `available: false` from `GET` and performs no repair.
 
 ```json
 {
   "success": true,
-  "repaired": ["CLAUDE_CODE_OAUTH_CLIENT_ID", "CLAUDE_CODE_OAUTH_CLIENT_SECRET"],
-  "backupPath": "/home/user/.shiguang-gateway/backups/env-repair-2026-04-11.bak"
+  "backupPath": "/app/.env.backup-2026-04-11T12-00-00-000Z",
+  "created": false,
+  "added": 2,
+  "missingCount": 0,
+  "missingKeys": []
 }
 ```
 

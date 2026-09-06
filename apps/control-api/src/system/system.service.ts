@@ -29,6 +29,7 @@ import { restartRunningServer } from "./process-manager-restart.js";
 // a shell (nodejs/node#52554 → "spawn npm ENOENT"). buildNpmExecOptions enables the
 // shell on win32 only; SERVICE_VERSION_PATTERN keeps the shell-joined version safe.
 import { buildNpmExecOptions, SERVICE_VERSION_PATTERN } from "./npm-utils.js";
+import { syncEnv } from "./runtime/env-sync.js";
 import {
   GET as getEnvRepair,
   POST as repairEnv,
@@ -257,10 +258,7 @@ async function updateVersion(): Promise<SystemResult> {
           send({ step: "rebuild", status: "done", message: "Dependencies installed" });
 
           try {
-            await execFileAsync("node", ["packages/core-domain/scripts/dev/sync-env.mjs"], {
-              timeout: 15_000,
-              cwd: PROJECT_ROOT,
-            });
+            syncEnv({ rootDir: PROJECT_ROOT, quiet: true });
           } catch {
             // .env sync is non-fatal during update.
           }

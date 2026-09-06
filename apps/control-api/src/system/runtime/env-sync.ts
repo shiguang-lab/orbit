@@ -15,26 +15,16 @@
 import { copyFileSync, existsSync, readFileSync, writeFileSync } from "node:fs";
 import { randomBytes } from "node:crypto";
 import { createRequire } from "node:module";
-import { dirname, join, resolve } from "node:path";
+import { join, resolve } from "node:path";
 import { homedir } from "node:os";
 import { fileURLToPath } from "node:url";
 
 /**
- * Resolve the repository/package root that holds `.env` / `.env.example`.
- *
- * When this module is statically bundled into a Next.js standalone route,
- * `import.meta.url` is frozen to the build-machine path
- * (`file:///home/runner/.../sync-env.mjs`) and `fileURLToPath` can throw at
- * runtime. Callers (e.g. the env-repair route) pass an explicit `rootDir`;
- * when they don't, fall back to `process.cwd()` instead of crashing. (#5006)
+ * Resolve the source checkout that holds `.env` / `.env.example`.
+ * Runtime callers pass an explicit root; direct CLI use defaults to cwd.
  */
-function resolveRootDir(rootDir) {
-  if (rootDir) return rootDir;
-  try {
-    return dirname(dirname(fileURLToPath(import.meta.url)));
-  } catch {
-    return process.cwd();
-  }
+function resolveRootDir(rootDir?: string): string {
+  return rootDir ? resolve(rootDir) : process.cwd();
 }
 
 // Secrets this file may fill in when `.env.example` ships them blank.
@@ -53,7 +43,7 @@ function resolveRootDir(rootDir) {
 // update, invalidating dashboard sessions (JWT_SECRET) and API-key CRCs
 // (API_KEY_SECRET). STORAGE_ENCRYPTION_KEY was pulled out first, for the same
 // reason, when it cost users their encrypted credentials (issue #1622).
-const CRYPTO_SECRETS = {
+const CRYPTO_SECRETS: Record<string, () => string> = {
   MACHINE_ID_SALT: () => `shiguangGateway-${randomBytes(8).toString("hex")}`,
 };
 
@@ -69,7 +59,7 @@ const CRYPTO_SECRETS = {
 const ENCRYPTION_BOUND_KEYS = new Set([]);
 
 // ── Resolve DATA_DIR (mirrors bootstrap-env.mjs / dataPaths.ts) ─────────────
-function resolveDataDir(env = process.env) {
+function resolveDataDir(env: NodeJS.ProcessEnv = process.env): string {
   const configured = env.DATA_DIR?.trim();
   if (configured) return resolve(configured);
 
@@ -89,7 +79,7 @@ function resolveDataDir(env = process.env) {
  * under a previous STORAGE_ENCRYPTION_KEY. If so, generating a new key would
  * make them permanently unrecoverable (AES-GCM auth-tag mismatch).
  */
-function hasEncryptedCredentials(dataDir) {
+function hasEncryptedCredentials(dataDir: string): boolean {
   const dbPath = join(dataDir, "storage.sqlite");
   if (!existsSync(dbPath)) return false;
 
@@ -150,11 +140,11 @@ function hasEncryptedCredentials(dataDir) {
   }
 }
 
-export function parseEnvFile(filePath) {
-  if (!existsSync(filePath)) return new Map();
+export function parseEnvFile(filePath: string): Map<string, string> {
+  if (!existsSync(filePath)) return new Map<string, string>();
 
   const content = readFileSync(filePath, "utf8");
-  const entries = new Map();
+  const entries = new Map<string, string>();
 
   for (const line of content.split(/\r?\n/)) {
     const parsed = parseEnvEntry(line);
@@ -167,7 +157,7 @@ export function parseEnvFile(filePath) {
   return entries;
 }
 
-function parseEnvEntry(line) {
+function parseEnvEntry(line: string): [string, string] | null {
   const trimmed = line.trim();
   if (!trimmed || trimmed.startsWith("#")) return null;
 
@@ -179,15 +169,31 @@ function parseEnvEntry(line) {
   return [key, value];
 }
 
-function unquoteEnvValue(value) {
+function unquoteEnvValue(value: string): string {
   if (value.length < 2) return value;
   const quote = value[0];
   if ((quote !== '"' && quote !== "'") || value[value.length - 1] !== quote) return value;
   return value.slice(1, -1);
 }
 
-function parseExampleEntries(content, scope = "full") {
-  const entries = new Map();
+export type EnvSyncScope = "full" | "oauth";
+
+export interface EnvSyncEntry {
+  key: string;
+  value: string;
+  generated: boolean;
+  blocked?: boolean;
+}
+
+export interface EnvSyncPlan {
+  available: boolean;
+  created: boolean;
+  added: number;
+  missingEntries: EnvSyncEntry[];
+}
+
+function parseExampleEntries(content: string, scope: EnvSyncScope = "full"): Map<string, string> {
+  const entries = new Map<string, string>();
   const lines = content.split(/\r?\n/);
 
   if (scope === "oauth") {
@@ -226,7 +232,9 @@ function parseExampleEntries(content, scope = "full") {
   return entries;
 }
 
-export function getEnvSyncPlan({ rootDir, scope = "full" } = {}) {
+export function getEnvSyncPlan(
+  { rootDir, scope = "full" }: { rootDir?: string; scope?: EnvSyncScope } = {},
+): EnvSyncPlan {
   const root = resolveRootDir(rootDir);
   const envExamplePath = join(root, ".env.example");
   const envPath = join(root, ".env");
@@ -242,11 +250,11 @@ export function getEnvSyncPlan({ rootDir, scope = "full" } = {}) {
 
   const exampleEntries = parseExampleEntries(readFileSync(envExamplePath, "utf8"), scope);
   const currentEntries = parseEnvFile(envPath);
-  const missingEntries = [];
+  const missingEntries: EnvSyncEntry[] = [];
 
   // Check once whether encrypted data exists — avoids repeated DB opens
-  let _encryptedDataExists;
-  function encryptedDataExists() {
+  let _encryptedDataExists: boolean | undefined;
+  function encryptedDataExists(): boolean {
     if (_encryptedDataExists === undefined) {
       try {
         _encryptedDataExists = hasEncryptedCredentials(resolveDataDir());
@@ -287,13 +295,19 @@ export function getEnvSyncPlan({ rootDir, scope = "full" } = {}) {
   };
 }
 
-function replaceBlankSecret(content, key, value) {
+function replaceBlankSecret(content: string, key: string, value: string): string {
   const pattern = new RegExp(`^${key}=\\s*$`, "m");
   return pattern.test(content) ? content.replace(pattern, `${key}=${value}`) : content;
 }
 
-export function syncEnv({ rootDir, quiet = false, scope = "full" } = {}) {
-  const log = quiet ? () => {} : (message) => process.stderr.write(`[sync-env] ${message}\n`);
+export function syncEnv(
+  { rootDir, quiet = false, scope = "full" }: {
+    rootDir?: string;
+    quiet?: boolean;
+    scope?: EnvSyncScope;
+  } = {},
+): { created: boolean; added: number } {
+  const log = quiet ? () => {} : (message: string) => process.stderr.write(`[sync-env] ${message}\n`);
   const root = resolveRootDir(rootDir);
   const envExamplePath = join(root, ".env.example");
   const envPath = join(root, ".env");
@@ -393,6 +407,8 @@ export function syncEnv({ rootDir, quiet = false, scope = "full" } = {}) {
   return { created: false, added: missingEntries.length };
 }
 
-if (process.argv[1]?.endsWith("sync-env.mjs")) {
-  syncEnv({ scope: process.argv.includes("--oauth-only") ? "oauth" : "full" });
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  const rootIndex = process.argv.indexOf("--root-dir");
+  const rootDir = rootIndex >= 0 ? process.argv[rootIndex + 1] : undefined;
+  syncEnv({ rootDir, scope: process.argv.includes("--oauth-only") ? "oauth" : "full" });
 }

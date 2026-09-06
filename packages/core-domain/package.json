@@ -4,10 +4,6 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./control/env-repair": {
-      "types": "./src/public/envRepair.d.ts",
-      "import": "./src/control/env-repair.ts"
-    },
     "./control/intelligence-sync": {
       "types": "./src/public/intelligenceSync.d.ts",
       "import": "./src/control/intelligence-sync.ts"

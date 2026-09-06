@@ -670,7 +670,7 @@ Organized into 6 subfolders by purpose.
   `run-standalone.mjs`, `standalone-server-ws.mjs`, `responses-ws-proxy.mjs`,
   `v1-ws-bridge.mjs`, `smoke-electron-packaged.mjs`,
   `run-playwright-tests.mjs`, `run-ecosystem-tests.mjs`,
-  `run-protocol-clients-tests.mjs`, `sync-env.mjs`, `healthcheck.mjs`,
+  `run-protocol-clients-tests.mjs`, `healthcheck.mjs`,
   `system-info.mjs`.
 - **`scripts/check/`** — `check-cycles.mjs`, `check-docs-sync.mjs`,
   `check-docs-counts-sync.mjs`, `check-env-doc-sync.mjs`,

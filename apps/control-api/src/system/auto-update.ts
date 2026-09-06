@@ -312,7 +312,7 @@ export function buildSourceUpdateScript(latest: string, gitRemote = "origin"): s
     'git branch "$backup_branch" 2>/dev/null || true',
     `git checkout "${targetTag}"`,
     "npm install --include=optional --legacy-peer-deps",
-    "node packages/core-domain/scripts/dev/sync-env.mjs 2>/dev/null || true",
+    'npm exec --workspace apps/control-api -- tsx src/system/runtime/env-sync.ts --root-dir "$PWD" 2>/dev/null || true',
     "npm run build",
     "if command -v pm2 >/dev/null 2>&1; then",
     "  pm2 restart shiguangGateway --update-env || true",

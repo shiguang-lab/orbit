@@ -8,11 +8,7 @@
 import { copyFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
-import { getEnvSyncPlan, syncEnv } from "@shiguang-gateway/core-domain/control/env-repair";
-
-async function loadSyncHelpers() {
-  return { getEnvSyncPlan, syncEnv };
-}
+import { getEnvSyncPlan, syncEnv } from "../runtime/env-sync.js";
 
 function createEnvBackup() {
   const envPath = join(process.cwd(), ".env");
@@ -35,7 +31,6 @@ export async function GET(request: Request) {
   }
 
   try {
-    const { getEnvSyncPlan } = await loadSyncHelpers();
     // Pass an explicit rootDir so the helper never derives the root from a
     // webpack-frozen `import.meta.url` (build-machine path) — that froze the
     // path and 500'd this route on packaged installs (#5006). cwd matches the
@@ -63,7 +58,6 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { syncEnv, getEnvSyncPlan } = await loadSyncHelpers();
     const backupPath = createEnvBackup();
     // Explicit rootDir (cwd) — see GET above (#5006).
     const result = syncEnv({ scope: "oauth", quiet: true, rootDir: process.cwd() });
