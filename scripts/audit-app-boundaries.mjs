@@ -160,6 +160,7 @@ const migratedRouteOwnership = {
     "api/provider-models/route.ts",
     "api/provider-nodes/validate/route.ts",
     "api/providers/validate/route.ts",
+    "api/providers/[id]/refresh/route.ts",
     "api/keys/route.ts",
     "api/keys/[id]/route.ts",
     "api/keys/[id]/devices/route.ts",
