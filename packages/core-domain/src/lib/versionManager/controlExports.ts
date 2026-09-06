@@ -19,3 +19,14 @@ export {
   install,
   resolveSpawnArgs,
 } from "../services/installers/cliproxy.ts";
+
+export {
+  BIFROST_DEFAULT_PORT,
+  getInstalledVersion as getBifrostInstalledVersion,
+  getLatestVersion as getBifrostLatestVersion,
+  install as installBifrost,
+  resolveSpawnArgs as resolveBifrostSpawnArgs,
+  update as updateBifrost,
+} from "../services/installers/bifrost.ts";
+
+export { updateServiceField } from "../db/versionManager.ts";

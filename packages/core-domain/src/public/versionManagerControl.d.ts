@@ -18,6 +18,8 @@ export interface SupervisorStatus {
   port?: number;
   health?: string;
   lastError?: string;
+  startedAt?: string | null;
+  adopted?: boolean;
 }
 
 export function getSupervisor(tool: string): {
@@ -53,3 +55,21 @@ export function resolveSpawnArgs(port: number, managementKey?: string): {
   env: NodeJS.ProcessEnv;
   cwd: string;
 };
+
+export const BIFROST_DEFAULT_PORT: number;
+export function getBifrostInstalledVersion(): Promise<string | null>;
+export function getBifrostLatestVersion(): Promise<string | null>;
+export function installBifrost(version?: string): Promise<InstallResult>;
+export function updateBifrost(): Promise<InstallResult>;
+export function resolveBifrostSpawnArgs(port: number): {
+  command: string;
+  args: string[];
+  env: NodeJS.ProcessEnv;
+  cwd: string;
+};
+
+export function updateServiceField(
+  tool: string,
+  field: string,
+  value: string | number | boolean | null
+): Promise<VersionManagerRow | null>;
