@@ -12,7 +12,7 @@ import {
 import { mergeUpstreamExtraHeaders } from "./base/headers.ts";
 import { FETCH_TIMEOUT_MS } from "../config/constants.ts";
 import { buildErrorBody } from "../utils/error.ts";
-import { stripCookieInputPrefix } from "../../core-domain/src/lib/providers/webCookieAuth.ts";
+import { stripCookieInputPrefix } from "@shiguang-gateway/core-domain/edge/web-cookie-auth";
 
 const AISTUDIO_BASE = "https://aistudio.tencent.ai";
 

@@ -1,7 +1,7 @@
 import {
   attachShiguangGatewayMetaHeaders,
   buildShiguangGatewayResponseMetaHeaders,
-} from "../../../core-domain/src/domain/gatewayResponseMeta.ts";
+} from "@shiguang-gateway/core-domain/edge/gateway-response-meta";
 import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "@shiguang-gateway/contracts/gateway-headers";
 import { defaultLogger } from "../../utils/logger.ts";
 

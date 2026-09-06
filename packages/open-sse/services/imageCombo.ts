@@ -8,22 +8,22 @@
  *
  * #9239
  */
-import { getComboByName, getCombos } from "../../core-domain/src/lib/db/combos.ts";
+import { getComboByName, getCombos } from "@shiguang-gateway/core-domain/db/combos";
 import { resolveComboTargets } from "./combo.ts";
 import { getImageModelEntry, parseImageModel } from "../config/imageRegistry.ts";
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
-} from "../../core-domain/src/sse/services/auth.ts";
+} from "@shiguang-gateway/core-domain/sse/auth";
 import { isAllRateLimitedCredentials } from "@shiguang-gateway/core-domain/edge/rate-limit";
 import { handleImageGeneration } from "../handlers/imageGeneration.ts";
-import { attachShiguangGatewayMetaHeaders } from "../../core-domain/src/domain/gatewayResponseMeta.ts";
+import { attachShiguangGatewayMetaHeaders } from "@shiguang-gateway/core-domain/edge/gateway-response-meta";
 import { generateRequestId } from "@shiguang-gateway/contracts/request-id";
-import { calculateModalCost } from "../../core-domain/src/lib/usage/costCalculator.ts";
+import { calculateModalCost } from "@shiguang-gateway/core-domain/pricing/modal-cost";
 import { toJsonErrorPayload } from "@shiguang-gateway/core-domain/shared/upstream-error";
 import { HTTP_STATUS } from "../config/constants.ts";
 import { errorResponse } from "../utils/error.ts";
-import * as logger from "../../core-domain/src/sse/utils/logger.ts";
+import * as logger from "@shiguang-gateway/core-domain/sse/logger";
 
 /**
  * Caller-facing shape of handleImageGeneration(). The handler is untyped and

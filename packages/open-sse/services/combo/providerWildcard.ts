@@ -31,7 +31,7 @@
 
 import { wildcardMatch } from "../wildcardRouter.ts";
 import { getProviderModels } from "../../config/providerModels.ts";
-import { getActiveSyncedCatalog } from "../../../core-domain/src/lib/db/models/activeSyncedCatalog.ts";
+import { getActiveSyncedCatalog } from "@shiguang-gateway/core-domain/db/active-synced-catalog";
 import { filterAlibabaFreeTierModels, isAlibabaModelStudioProvider } from "../alibabaFreeTier.ts";
 import {
   filterAlibabaFreeEligibleModels,

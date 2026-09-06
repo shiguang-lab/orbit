@@ -31,7 +31,7 @@ import { getCircuitBreaker } from "@shiguang-gateway/core-domain/edge/circuit-br
 import { isModelLocked } from "../services/accountFallback.ts";
 import { parseModel } from "../services/model.ts";
 import { getProviderConnectionById } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { getExcludedConnectionIds } from "../../core-domain/src/lib/db/autoCandidateOverrides.ts";
+import { getExcludedConnectionIds } from "@shiguang-gateway/core-domain/db/auto-candidate-overrides";
 
 /**
  * One row of the unfiltered, reason-annotated candidate pool (#9133): every

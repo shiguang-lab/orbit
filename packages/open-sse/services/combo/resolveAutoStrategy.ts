@@ -18,7 +18,7 @@ import { classifyWithConfig } from "../intentClassifier.ts";
 import type { RoutingHint } from "../manifestAdapter";
 import { parseModel } from "../model.ts";
 import { supportsToolCalling } from "../modelCapabilities.ts";
-import type { ResilienceSettings } from "../../../core-domain/src/lib/resilience/settings";
+import type { ResilienceSettings } from "@shiguang-gateway/core-domain/resilience/settings";
 import { parseAutoConfig } from "./autoConfig.ts";
 import { dedupeTargetsByExecutionKey } from "./comboData.ts";
 import {

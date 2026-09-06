@@ -4,7 +4,7 @@ import {
   hasActiveHandoff,
   type HandoffPayload,
   upsertHandoff,
-} from "../../core-domain/src/lib/db/contextHandoffs.ts";
+} from "@shiguang-gateway/core-domain/db/context-handoffs";
 import { estimateTokens } from "./contextManager.ts";
 import { stripMarkdownCodeFence } from "../utils/aiSdkCompat.ts";
 

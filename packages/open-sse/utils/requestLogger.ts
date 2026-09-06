@@ -1,4 +1,4 @@
-import { getPendingById } from "../../core-domain/src/lib/usage/usageHistory.ts";
+import { getPendingById } from "@shiguang-gateway/core-domain/edge/usage-db";
 import { getChatLogMaxDepth, getChatLogArrayTailItems } from "@shiguang-gateway/config/logEnv";
 import { sanitizeErrorMessage } from "./error.ts";
 

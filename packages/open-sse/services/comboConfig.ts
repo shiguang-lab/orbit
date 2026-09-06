@@ -6,7 +6,7 @@
  */
 
 import { MAX_TIMER_TIMEOUT_MS } from "@shiguang-gateway/config/timeouts";
-import type { ComboCooldownWaitSettings } from "../../core-domain/src/lib/resilience/settings.ts";
+import type { ComboCooldownWaitSettings } from "@shiguang-gateway/core-domain/resilience/settings";
 import type { ResponseValidationConfig } from "./combo/responseValidation.ts";
 
 /**

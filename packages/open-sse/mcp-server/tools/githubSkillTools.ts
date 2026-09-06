@@ -22,7 +22,7 @@ import {
   INSTALL_TARGETS,
   type GitHubSkillRepo,
   type SkillInstallResult,
-} from "../../../core-domain/src/lib/skills/githubCollector.ts";
+} from "@shiguang-gateway/core-domain/edge/skills-runtime";
 
 // ── Handlers ─────────────────────────────────────────────────────────────────
 

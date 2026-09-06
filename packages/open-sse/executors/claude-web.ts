@@ -6,7 +6,7 @@
  * provenance, prepares one turn, selects a transport, and commits state only
  * after the strict stream parser observes message_stop.
  */
-import { normalizeSessionCookieHeader } from "../../core-domain/src/lib/providers/webCookieAuth.ts";
+import { normalizeSessionCookieHeader } from "@shiguang-gateway/core-domain/edge/web-cookie-auth";
 
 import { CLAUDE_WEB_FINGERPRINT } from "../config/claudeWebFingerprint.ts";
 import { FETCH_TIMEOUT_MS } from "../config/constants.ts";

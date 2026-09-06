@@ -1,7 +1,11 @@
 export * from "./versionManagerControl.d.ts";
 
 export function generateServiceApiKey(prefix?: string): string;
+export function getOrCreateApiKey(tool: string): Promise<string>;
 export function maskApiKey(plainKey: string): string;
+export interface ServiceStatus { state: string; port?: number; }
+export interface ServiceSupervisorLike { getStatus(): ServiceStatus; }
+export function getSupervisor(tool: string): ServiceSupervisorLike | null;
 
 export interface NineRouterInstallResult {
   installedVersion: string;

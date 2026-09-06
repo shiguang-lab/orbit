@@ -67,7 +67,7 @@ export async function getXaiOauthUsage(
   }
 
   try {
-    const { getMonthlyProviderTokensForConnection } = await import("../../../core-domain/src/lib/usage/usageStats.ts");
+    const { getMonthlyProviderTokensForConnection } = await import("@shiguang-gateway/core-domain/usage/stats");
     const used =
       getMonthlyProviderTokensForConnection("xai-oauth", connectionId) ||
       getMonthlyProviderTokensForConnection("xao", connectionId) ||

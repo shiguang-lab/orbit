@@ -16,7 +16,7 @@ export const gamificationTools = [
       limit: z.number().min(1).max(100).default(50),
     }),
     handler: async (args: { scope: string; limit: number }) => {
-      const { getTopN } = await import("../../../core-domain/src/lib/gamification/leaderboard");
+      const { getTopN } = await import("@shiguang-gateway/core-domain/edge/mcp-gamification");
       const entries = await getTopN(args.scope as any, args.limit);
       return { entries };
     },
@@ -30,7 +30,7 @@ export const gamificationTools = [
       scope: z.enum(["global", "weekly", "monthly", "tokens_shared"]).default("global"),
     }),
     handler: async (args: { apiKeyId: string; scope: string }) => {
-      const { getRank } = await import("../../../core-domain/src/lib/gamification/leaderboard");
+      const { getRank } = await import("@shiguang-gateway/core-domain/edge/mcp-gamification");
       const rank = await getRank(args.apiKeyId, args.scope as any);
       return { rank };
     },
@@ -43,10 +43,10 @@ export const gamificationTools = [
       apiKeyId: z.string(),
     }),
     handler: async (args: { apiKeyId: string }) => {
-      const { getXp, getBadges } = await import("../../../core-domain/src/lib/db/gamification");
+      const { getXp, getBadges } = await import("@shiguang-gateway/core-domain/control/gamification-db");
       const { calculateLevel, getLevelTitle, getLevelTier } =
-        await import("../../../core-domain/src/lib/gamification/xp");
-      const { getStreak } = await import("../../../core-domain/src/lib/gamification/streaks");
+        await import("@shiguang-gateway/core-domain/edge/mcp-gamification");
+      const { getStreak } = await import("@shiguang-gateway/core-domain/edge/mcp-gamification");
 
       const xp = getXp(args.apiKeyId);
       const badges = getBadges(args.apiKeyId);
@@ -73,7 +73,7 @@ export const gamificationTools = [
       category: z.string().optional(),
     }),
     handler: async (args: { apiKeyId?: string; category?: string }) => {
-      const { getBadgeDefinitions, getBadges } = await import("../../../core-domain/src/lib/db/gamification");
+      const { getBadgeDefinitions, getBadges } = await import("@shiguang-gateway/core-domain/control/gamification-db");
 
       if (args.apiKeyId) {
         const badges = getBadges(args.apiKeyId);
@@ -100,7 +100,7 @@ export const gamificationTools = [
       amount: number;
       reason?: string;
     }) => {
-      const { transferTokens } = await import("../../../core-domain/src/lib/gamification/sharing");
+      const { transferTokens } = await import("@shiguang-gateway/core-domain/edge/mcp-gamification");
       const result = await transferTokens(
         args.fromApiKeyId,
         args.toApiKeyId,
@@ -120,7 +120,7 @@ export const gamificationTools = [
       maxUses: z.number().positive().default(1),
     }),
     handler: async (args: { apiKeyId: string; serverUrl?: string; maxUses: number }) => {
-      const { createInvite } = await import("../../../core-domain/src/lib/gamification/invites");
+      const { createInvite } = await import("@shiguang-gateway/core-domain/edge/mcp-gamification");
       const result = await createInvite(args.apiKeyId, args.serverUrl, args.maxUses);
       return result;
     },
@@ -131,7 +131,7 @@ export const gamificationTools = [
     scopes: ["read:gamification"],
     inputSchema: z.object({}),
     handler: async () => {
-      const { listServers } = await import("../../../core-domain/src/lib/gamification/servers");
+      const { listServers } = await import("@shiguang-gateway/core-domain/edge/mcp-gamification");
       return { servers: await listServers() };
     },
   },
@@ -141,7 +141,7 @@ export const gamificationTools = [
     scopes: ["read:gamification"],
     inputSchema: z.object({}),
     handler: async () => {
-      const { getAnomalies } = await import("../../../core-domain/src/lib/gamification/antiCheat");
+      const { getAnomalies } = await import("@shiguang-gateway/core-domain/edge/mcp-gamification");
       return { anomalies: await getAnomalies() };
     },
   },

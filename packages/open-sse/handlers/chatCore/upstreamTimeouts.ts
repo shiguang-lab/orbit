@@ -9,7 +9,7 @@ import {
   getLoggedOutputTokens,
   getReasoningTokens,
 } from "@shiguang-gateway/contracts/usage/tokenAccounting";
-import { MAX_PROVIDER_SPECIFIC_TIMEOUT_MS } from "../../../core-domain/src/shared/validation/providerSpecificData.ts";
+import { MAX_PROVIDER_SPECIFIC_TIMEOUT_MS } from "@shiguang-gateway/core-domain/shared/provider-specific-data";
 
 export function createBodyTimeoutError(timeoutMs: number): Error {
   const err = new Error(`Response body read timeout after ${timeoutMs}ms`);

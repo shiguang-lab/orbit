@@ -64,6 +64,10 @@
       "types": "./src/public/eventBus.d.ts",
       "import": "./src/lib/events/eventBus.ts"
     },
+    "./events/types": {
+      "types": "./src/public/eventTypes.d.ts",
+      "import": "./src/lib/events/types.ts"
+    },
     "./shared/test-process": {
       "types": "./src/public/testProcess.d.ts",
       "import": "./src/shared/utils/testProcess.ts"
@@ -227,6 +231,54 @@
       "types": "./src/public/embeddingsService.d.ts",
       "import": "./src/lib/embeddings/service.ts"
     },
+    "./edge/embedding-input-limits": {
+      "types": "./src/public/embeddingInputLimits.d.ts",
+      "import": "./src/shared/validation/schemas/apiV1.ts"
+    },
+    "./edge/jina-native-embedding-input": {
+      "types": "./src/public/jinaNativeEmbeddingInput.d.ts",
+      "import": "./src/shared/validation/jinaNativeEmbeddingInput.ts"
+    },
+    "./edge/gemini-native-embedding-input": {
+      "types": "./src/public/geminiNativeEmbeddingInput.d.ts",
+      "import": "./src/shared/validation/geminiNativeEmbeddingInput.ts"
+    },
+    "./edge/reactive-model-sync": {
+      "types": "./src/public/reactiveModelSync.d.ts",
+      "import": "./src/lib/providerModels/reactiveModelSync.ts"
+    },
+    "./edge/peer-routing": {
+      "types": "./src/public/peerRouting.d.ts",
+      "import": "./src/shared/resilience/peerRouting.ts"
+    },
+    "./edge/pipeline": {
+      "types": "./src/public/pipeline.d.ts",
+      "import": "./src/domain/pipeline.ts"
+    },
+    "./edge/pipeline-prompts": {
+      "types": "./src/public/pipelinePrompts.d.ts",
+      "import": "./src/domain/prompts.ts"
+    },
+    "./edge/connection-model-rules": {
+      "types": "./src/public/connectionModelRules.d.ts",
+      "import": "./src/domain/connectionModelRules.ts"
+    },
+    "./edge/tag-router": {
+      "types": "./src/public/tagRouter.d.ts",
+      "import": "./src/domain/tagRouter.ts"
+    },
+    "./edge/cooldown-aware-retry": {
+      "types": "./src/public/cooldownAwareRetry.d.ts",
+      "import": "./src/sse/services/cooldownAwareRetry.ts"
+    },
+    "./edge/credential-health-cache": {
+      "types": "./src/public/credentialHealthCache.d.ts",
+      "import": "./src/lib/credentialHealth/cache.ts"
+    },
+    "./edge/reasoning-routing-policy": {
+      "types": "./src/public/reasoningRoutingPolicy.d.ts",
+      "import": "./src/lib/reasoningRouting/policy.ts"
+    },
     "./edge/feature-flags": {
       "types": "./src/public/featureFlags.d.ts",
       "import": "./src/shared/utils/featureFlags.ts"
@@ -291,6 +343,38 @@
       "types": "./src/public/videoModelResolution.d.ts",
       "import": "./src/lib/edge/videoModelResolution.ts"
     },
+    "./edge/provider-request-defaults": {
+      "types": "./src/lib/providers/requestDefaults.ts",
+      "import": "./src/lib/providers/requestDefaults.ts"
+    },
+    "./edge/web-cookie-auth": {
+      "types": "./src/lib/providers/webCookieAuth.ts",
+      "import": "./src/lib/providers/webCookieAuth.ts"
+    },
+    "./edge/provider-url-validation": {
+      "types": "./src/lib/providers/validation/urlHelpers.ts",
+      "import": "./src/lib/providers/validation/urlHelpers.ts"
+    },
+    "./edge/xai-chat-translator": {
+      "types": "./src/lib/providers/xai/translators/openai-chat.ts",
+      "import": "./src/lib/providers/xai/translators/openai-chat.ts"
+    },
+    "./edge/claude-fast-mode": {
+      "types": "./src/lib/providers/claudeFastMode.ts",
+      "import": "./src/lib/providers/claudeFastMode.ts"
+    },
+    "./edge/codex-fast-tier": {
+      "types": "./src/lib/providers/codexFastTier.ts",
+      "import": "./src/lib/providers/codexFastTier.ts"
+    },
+    "./edge/claude-extra-usage": {
+      "types": "./src/lib/providers/claudeExtraUsage.ts",
+      "import": "./src/lib/providers/claudeExtraUsage.ts"
+    },
+    "./shared/provider-specific-data": {
+      "types": "./src/public/providerSpecificData.d.ts",
+      "import": "./src/shared/validation/providerSpecificData.ts"
+    },
     "./edge/specialty-catalog": {
       "types": "./src/public/specialtyCatalog.d.ts",
       "import": "./src/lib/edge/specialtyCatalog.ts"
@@ -326,6 +410,14 @@
     "./control/cost-rules": {
       "types": "./src/public/costRules.d.ts",
       "import": "./src/domain/costRules.ts"
+    },
+    "./resilience/settings": {
+      "types": "./src/public/resilienceSettings.d.ts",
+      "import": "./src/lib/resilience/settings.ts"
+    },
+    "./resilience/model-lockout-settings": {
+      "types": "./src/public/modelLockoutSettings.d.ts",
+      "import": "./src/lib/resilience/modelLockoutSettings.ts"
     },
     "./usage/cache-health": {
       "types": "./src/public/cacheHealth.d.ts",
@@ -1018,6 +1110,70 @@
       "types": "./src/public/upstreamProxy.d.ts",
       "import": "./src/lib/db/upstreamProxy.ts"
     },
+    "./db/reasoning-cache": {
+      "types": "./src/public/reasoningCacheDb.d.ts",
+      "import": "./src/lib/db/reasoningCache.ts"
+    },
+    "./db/models-runtime": {
+      "types": "./src/public/modelsRuntimeDb.d.ts",
+      "import": "./src/lib/db/models.ts"
+    },
+    "./db/context-handoffs": {
+      "types": "./src/public/contextHandoffsDb.d.ts",
+      "import": "./src/lib/db/contextHandoffs.ts"
+    },
+    "./db/combos": {
+      "types": "./src/public/combosDb.d.ts",
+      "import": "./src/lib/db/combos.ts"
+    },
+    "./db/active-synced-catalog": {
+      "types": "./src/public/activeSyncedCatalogDb.d.ts",
+      "import": "./src/lib/db/models/activeSyncedCatalog.ts"
+    },
+    "./db/proxies": {
+      "types": "./src/public/proxiesDb.d.ts",
+      "import": "./src/lib/db/proxies.ts"
+    },
+    "./db/auto-candidate-overrides": {
+      "types": "./src/public/autoCandidateOverridesDb.d.ts",
+      "import": "./src/lib/db/autoCandidateOverrides.ts"
+    },
+    "./db/compression-cache-stats": {
+      "types": "./src/public/compressionCacheStatsDb.d.ts",
+      "import": "./src/lib/db/compressionCacheStats.ts"
+    },
+    "./db/tier-config": {
+      "types": "./src/public/tierConfigDb.d.ts",
+      "import": "./src/lib/db/tierConfig.ts"
+    },
+    "./db/agentic-conversations": {
+      "types": "./src/public/agenticConversationsDb.d.ts",
+      "import": "./src/lib/db/agenticConversations.ts"
+    },
+    "./db/model-intelligence": {
+      "types": "./src/public/modelIntelligenceDb.d.ts",
+      "import": "./src/lib/db/modelIntelligence.ts"
+    },
+    "./db/model-preserve-video-url": {
+      "types": "./src/public/modelPreserveVideoUrlDb.d.ts",
+      "import": "./src/lib/db/models/modelPreserveVideoUrl.ts"
+    },
+    "./db/credit-balance": {
+      "types": "./src/public/creditBalanceDb.d.ts",
+      "import": "./src/lib/db/creditBalance.ts"
+    },
+    "./db/ccr-blocks": {
+      "types": "./src/public/ccrBlocksDb.d.ts",
+      "import": "./src/lib/db/ccrBlocks.ts"
+    },
+    "./db/exclusive-connection-leases": {
+      "types": "./src/public/exclusiveConnectionLeasesDb.d.ts",
+      "import": "./src/lib/db/exclusiveConnectionLeases.ts"
+    },
+    "./db/session-account-affinity": {
+      "types": "./src/public/sessionAccountAffinityDb.d.ts",
+      "import": "./src/lib/db/sessionAccountAffinity.ts"
+    },
     "./control/authenticated": {
       "types": "./src/public/authenticated.d.ts",
       "import": "./src/shared/utils/apiAuth.ts"
@@ -1174,6 +1330,66 @@
       "types": "./src/shared/constants/visionBridgeDefaults.ts",
       "import": "./src/shared/constants/visionBridgeDefaults.ts"
     },
+    "./edge/memory-runtime": {
+      "types": "./src/public/memoryEdgeRuntime.d.ts",
+      "import": "./src/edge/memoryRuntime.ts"
+    },
+    "./edge/skills-runtime": {
+      "types": "./src/public/skillsEdgeRuntime.d.ts",
+      "import": "./src/edge/skillsRuntime.ts"
+    },
+    "./edge/plugins-runtime": {
+      "types": "./src/public/pluginsEdgeRuntime.d.ts",
+      "import": "./src/edge/pluginsRuntime.ts"
+    },
+    "./edge/guardrails-runtime": {
+      "types": "./src/public/guardrailsEdgeRuntime.d.ts",
+      "import": "./src/edge/guardrailsRuntime.ts"
+    },
+    "./edge/semantic-cache": {
+      "types": "./src/public/semanticCacheRuntime.d.ts",
+      "import": "./src/lib/semanticCache.ts"
+    },
+    "./edge/idempotency": {
+      "types": "./src/public/idempotencyRuntime.d.ts",
+      "import": "./src/lib/idempotencyLayer.ts"
+    },
+    "./edge/streaming-pii": {
+      "types": "./src/public/streamingPiiRuntime.d.ts",
+      "import": "./src/lib/streamingPiiTransform.ts"
+    },
+    "./edge/prompt-cache": {
+      "types": "./src/public/promptCacheRuntime.d.ts",
+      "import": "./src/lib/promptCache/prefixAnalyzer.ts"
+    },
+    "./edge/cache-control": {
+      "types": "./src/public/cacheControlRuntime.d.ts",
+      "import": "./src/lib/cacheControlSettings.ts"
+    },
+    "./edge/mcp-combo-steps": {
+      "types": "./src/public/mcpComboSteps.d.ts",
+      "import": "./src/lib/combos/steps.ts"
+    },
+    "./edge/internal-service-auth": {
+      "types": "./src/public/internalServiceAuth.d.ts",
+      "import": "./src/lib/api/internalServiceAuth.ts"
+    },
+    "./shared/quota-contract": {
+      "types": "./src/public/quotaContract.d.ts",
+      "import": "./src/shared/contracts/quota.ts"
+    },
+    "./edge/mcp-gamification": {
+      "types": "./src/public/mcpGamification.d.ts",
+      "import": "./src/edge/mcpGamification.ts"
+    },
+    "./edge/mcp-notion": {
+      "types": "./src/public/mcpNotion.d.ts",
+      "import": "./src/lib/notion/api.ts"
+    },
+    "./edge/mcp-obsidian": {
+      "types": "./src/public/mcpObsidian.d.ts",
+      "import": "./src/lib/obsidian/api.ts"
+    },
     "./pricing/db": {
       "types": "./src/public/pricingDb.d.ts",
       "import": "./src/lib/db/settings/pricing.ts"
@@ -1295,7 +1511,22 @@
     "./sse/handlers/chatHelpers": "./src/sse/handlers/chatHelpers.ts",
     "./sse/services/leaseContext": "./src/sse/services/leaseContext.ts",
     "./sse/services/model": "./src/sse/services/model.ts",
-    "./usage/call-logs": "./src/lib/usage/callLogs.ts",
+    "./usage/call-logs": {
+      "types": "./src/public/usageDb.d.ts",
+      "import": "./src/lib/usage/callLogs.ts"
+    },
+    "./usage/pending-request-scope": {
+      "types": "./src/public/usageRuntime.d.ts",
+      "import": "./src/lib/usage/pendingRequestScope.ts"
+    },
+    "./usage/call-log-artifacts": {
+      "types": "./src/public/usageRuntime.d.ts",
+      "import": "./src/lib/usage/callLogArtifacts.ts"
+    },
+    "./usage/stats": {
+      "types": "./src/public/usageRuntime.d.ts",
+      "import": "./src/lib/usage/usageStats.ts"
+    },
     "./middleware/*": "./src/middleware/*",
     "./edge/*": "./src/edge/*",
     "./sse/*": "./src/sse/*",
@@ -1405,9 +1636,33 @@
       "types": "./src/public/quotaState.d.ts",
       "import": "./src/lib/quota/quotaStateExports.ts"
     },
+    "./quota/account-buckets": {
+      "types": "./src/public/quotaRuntime.d.ts",
+      "import": "./src/lib/quota/accountBuckets.ts"
+    },
+    "./quota/scheduler": {
+      "types": "./src/public/quotaRuntime.d.ts",
+      "import": "./src/lib/quota/quotaScheduler.ts"
+    },
+    "./quota/saturation-signals": {
+      "types": "./src/public/quotaRuntime.d.ts",
+      "import": "./src/lib/quota/saturationSignals.ts"
+    },
+    "./quota/spend-recorder": {
+      "types": "./src/public/quotaRuntime.d.ts",
+      "import": "./src/lib/quota/spendRecorder.ts"
+    },
+    "./quota/types": {
+      "types": "./src/public/quotaRuntime.d.ts",
+      "import": "./src/lib/quota/types.ts"
+    },
     "./compliance": {
       "types": "./src/public/compliance.d.ts",
       "import": "./src/lib/compliance/index.ts"
+    },
+    "./compliance/provider-audit": {
+      "types": "./src/public/providerAudit.d.ts",
+      "import": "./src/lib/compliance/providerAudit.ts"
     },
     "./a2a/legacy-jsonrpc": {
       "types": "./src/public/a2aLegacyRoute.d.ts",
@@ -1510,7 +1765,7 @@
       "import": "./src/lib/providerModels/modelDiscovery.ts"
     },
     "./domain/quotaCache": {
-      "types": "./src/domain/quotaCache.ts",
+      "types": "./src/public/quotaCache.d.ts",
       "import": "./src/domain/quotaCache.ts"
     },
     "./shared/utils/bulkApiKeyParser": {

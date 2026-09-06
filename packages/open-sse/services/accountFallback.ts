@@ -29,8 +29,8 @@ import {
 import {
   DEFAULT_RESILIENCE_SETTINGS,
   resolveResilienceSettings,
-} from "../../core-domain/src/lib/resilience/settings";
-import { resolveModelLockoutSettings } from "../../core-domain/src/lib/resilience/modelLockoutSettings";
+} from "@shiguang-gateway/core-domain/resilience/settings";
+import { resolveModelLockoutSettings } from "@shiguang-gateway/core-domain/resilience/model-lockout-settings";
 import {
   getAllCircuitBreakerStatuses,
   getCircuitBreaker,
@@ -568,7 +568,7 @@ export function getProviderProfile(provider: string): ProviderProfile {
 
 export async function getRuntimeProviderProfile(provider: string | null | undefined) {
   try {
-    const { getCachedSettings } = await import("../../core-domain/src/lib/db/readCache.ts");
+    const { getCachedSettings } = await import("@shiguang-gateway/core-domain/edge/read-cache");
     const settings = await getCachedSettings();
     const category = getProviderCategory(provider || "");
     return buildProviderProfile(category, settings);

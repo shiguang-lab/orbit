@@ -6,9 +6,9 @@
 
 import { z } from "zod";
 import { resolve, normalize, isAbsolute } from "path";
-import { listPlugins, getPluginByName, updatePluginConfig } from "../../../core-domain/src/lib/db/plugins";
-import { pluginManager } from "../../../core-domain/src/lib/plugins/manager";
-import { validatePluginConfig, type ConfigField } from "../../../core-domain/src/lib/plugins/manifest";
+import { listPlugins, getPluginByName, updatePluginConfig } from "@shiguang-gateway/core-domain/plugins/db";
+import { pluginManager } from "@shiguang-gateway/core-domain/edge/plugins-runtime";
+import { validatePluginConfig, type ConfigField } from "@shiguang-gateway/core-domain/edge/plugins-runtime";
 
 /**
  * Validate a path is safe for plugin installation.
@@ -186,7 +186,7 @@ export const pluginTools = [
     }),
     handler: async (args: { name?: string; limit?: number }) => {
       const { getPluginAnalytics, getPluginAnalyticsSummary } = await import(
-        "../../../core-domain/src/lib/db/plugins"
+        "@shiguang-gateway/core-domain/plugins/db"
       );
       const limit = args.limit || 20;
       if (args.name) {

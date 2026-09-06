@@ -26,7 +26,7 @@ import {
 } from "./base.ts";
 import { FETCH_TIMEOUT_MS } from "../config/constants.ts";
 import { buildErrorBody, sanitizeErrorMessage } from "../utils/error.ts";
-import { normalizeSessionCookieHeader } from "../../core-domain/src/lib/providers/webCookieAuth.ts";
+import { normalizeSessionCookieHeader } from "@shiguang-gateway/core-domain/edge/web-cookie-auth";
 import { streamJsonlToOpenAi, readJsonlResponse } from "./huggingchat/jsonlStream.ts";
 
 const HUGGINGFACE_BASE = "https://huggingface.co";

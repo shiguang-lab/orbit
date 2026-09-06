@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
-import { getIdempotencyKey, checkIdempotency } from "../../../core-domain/src/lib/idempotencyLayer.ts";
-import { calculateCost } from "../../../core-domain/src/lib/usage/costCalculator.ts";
-import { attachShiguangGatewayMetaHeaders } from "../../../core-domain/src/domain/gatewayResponseMeta.ts";
+import { getIdempotencyKey, checkIdempotency } from "@shiguang-gateway/core-domain/edge/idempotency";
+import { calculateCost } from "@shiguang-gateway/core-domain/pricing/modal-cost";
+import { attachShiguangGatewayMetaHeaders } from "@shiguang-gateway/core-domain/edge/gateway-response-meta";
 import type { EffectiveServiceTier } from "./serviceTier.ts";
 
 type HeadersLike = Headers | Record<string, unknown> | null | undefined;

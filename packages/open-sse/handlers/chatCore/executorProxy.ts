@@ -21,11 +21,11 @@ import { assertRuntimeProviderAvailable } from "@shiguang-gateway/contracts/prov
 import { getExecutor } from "../../executors/index.ts";
 import { isCliproxyapiDeepModeEnabled } from "../../executors/cliproxyapi.ts";
 import { isDarioDeepModeEnabled } from "../../executors/dario.ts";
-import { getCachedSettings } from "../../../core-domain/src/lib/db/readCache.ts";
+import { getCachedSettings } from "@shiguang-gateway/core-domain/edge/read-cache";
 import { assertMicrosoftDesignerWebProviderAvailable } from "@shiguang-gateway/contracts/designer-web-retirement";
 import { assertCommonChatGptWebProviderAvailable } from "@shiguang-gateway/contracts/chatgpt-web-retirement";
 import { getUpstreamProxyConfigCached } from "./comboContextCache.ts";
-import type { FallbackBackend } from "../../../core-domain/src/lib/db/upstreamProxy.ts";
+import type { FallbackBackend } from "@shiguang-gateway/core-domain/db/upstream-proxy";
 import { wrapExecutorWithCliproxyapiModelMapping } from "./cliproxyModelMapping.ts";
 import {
   resolveDedicatedCliproxyapiApiKey,

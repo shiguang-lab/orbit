@@ -38,12 +38,12 @@
 
 // ─── Static fitness table (versioned rows only, fallback layer 4) ────────
 
-import { getDbInstance } from "../../../core-domain/src/lib/db/core.ts";
+import { getDbInstance } from "@shiguang-gateway/core-domain/db/ping";
 import {
   getModelIntelligenceBySource,
   setUserFitnessOverrideEntry,
   deleteUserFitnessOverrideEntry,
-} from "../../../core-domain/src/lib/db/modelIntelligence.ts";
+} from "@shiguang-gateway/core-domain/db/model-intelligence";
 import { readFileSync } from "node:fs";
 import { resolveScoresAs } from "./scoresAs.ts";
 import { isVendorRetiredId } from "../modelLifecycle.ts";

@@ -1,5 +1,5 @@
 import { getUpstreamProxyConfig } from "@shiguang-gateway/core-domain/edge/local-db";
-import type { FallbackBackend } from "../../../core-domain/src/lib/db/upstreamProxy.ts";
+import type { FallbackBackend } from "@shiguang-gateway/core-domain/db/upstream-proxy";
 
 /**
  * Module-level cache for upstream proxy config (shared across all requests).

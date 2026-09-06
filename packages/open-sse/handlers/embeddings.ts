@@ -23,29 +23,29 @@ import {
 } from "../config/embeddingRegistry.ts";
 import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
 import { createRequestLogger } from "../utils/requestLogger.ts";
-import { isDetailedLoggingEnabled } from "../../core-domain/src/lib/db/detailedLogs.ts";
+import { isDetailedLoggingEnabled } from "@shiguang-gateway/core-domain/db/detailed-logs";
 import { getCallLogPipelineCaptureStreamChunks } from "@shiguang-gateway/config/logEnv";
 import { toJsonErrorPayload } from "@shiguang-gateway/core-domain/shared/upstream-error";
 import { stripStaleEncodingHeaders } from "../utils/upstreamResponseHeaders.ts";
 import { sanitizeErrorMessage } from "../utils/error.ts";
 import { stripTrailingSlashes } from "../utils/urlSanitize.ts";
-import { fetchRemoteImage } from "../../core-domain/src/shared/network/remoteImageFetch.ts";
+import { fetchRemoteImage } from "@shiguang-gateway/core-domain/network/remote-image-fetch";
 import {
   hasStructuredEmbeddingInput,
   prepareJinaMixedEmbeddingInput,
   prepareStructuredEmbeddingRequest,
 } from "./embeddingStructuredInput.ts";
-import { MAX_EMBEDDING_INLINE_ITEM_BYTES } from "../../core-domain/src/shared/validation/schemas/apiV1.ts";
-import { markAccountUnavailable } from "../../core-domain/src/sse/services/auth.ts";
+import { MAX_EMBEDDING_INLINE_ITEM_BYTES } from "@shiguang-gateway/core-domain/edge/embedding-input-limits";
+import { markAccountUnavailable } from "@shiguang-gateway/core-domain/sse/auth";
 import {
   collectJinaNativeModalities,
   isJinaNativeEmbeddingInput,
-} from "../../core-domain/src/shared/validation/jinaNativeEmbeddingInput.ts";
+} from "@shiguang-gateway/core-domain/edge/jina-native-embedding-input";
 import {
   collectGeminiNativeModalities,
   isGeminiEmbedding2Family,
   isGeminiNativeEmbeddingInput,
-} from "../../core-domain/src/shared/validation/geminiNativeEmbeddingInput.ts";
+} from "@shiguang-gateway/core-domain/edge/gemini-native-embedding-input";
 
 interface ClientRawRequest {
   endpoint: string;
@@ -385,7 +385,7 @@ export async function handleEmbedding({
     // Quota share enforcement (fail-open: errors allow the request through)
     if (apiKeyId && connectionId && provider) {
       try {
-        const { enforceQuotaShare } = await import("../../core-domain/src/lib/quota/enforce.ts");
+        const { enforceQuotaShare } = await import("@shiguang-gateway/core-domain/quota/services");
         const quotaDecision = await enforceQuotaShare({
           apiKeyId,
           connectionId,
@@ -535,7 +535,7 @@ export async function handleEmbedding({
     // Record quota consumption (fire-and-forget, never blocks)
     if (apiKeyId && connectionId && provider) {
       try {
-        const { scheduleRecordConsumption } = await import("../../core-domain/src/lib/quota/spendRecorder.ts");
+        const { scheduleRecordConsumption } = await import("@shiguang-gateway/core-domain/quota/spend-recorder");
         scheduleRecordConsumption({
           apiKeyId,
           connectionId,

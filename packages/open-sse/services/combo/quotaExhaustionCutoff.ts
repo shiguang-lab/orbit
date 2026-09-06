@@ -23,7 +23,7 @@ import { getCachedProviderConnectionById } from "@shiguang-gateway/core-domain/e
 import {
   resolveResilienceSettings,
   type ResilienceSettings,
-} from "../../../core-domain/src/lib/resilience/settings";
+} from "@shiguang-gateway/core-domain/resilience/settings";
 import { fetchResetAwareQuotaWithCache } from "./quotaStrategies.ts";
 import type { ResetWindowConfig } from "./quotaScoring.ts";
 

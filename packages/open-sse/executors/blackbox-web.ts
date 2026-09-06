@@ -5,7 +5,7 @@ import {
   type ExecuteInput,
 } from "./base.ts";
 import { FETCH_TIMEOUT_MS } from "../config/constants.ts";
-import { normalizeSessionCookieHeader } from "../../core-domain/src/lib/providers/webCookieAuth.ts";
+import { normalizeSessionCookieHeader } from "@shiguang-gateway/core-domain/edge/web-cookie-auth";
 import { prepareToolMessages, buildToolAwareResult } from "../translator/webTools.ts";
 
 const BLACKBOX_CHAT_API = "https://app.blackbox.ai/api/chat";

@@ -28,8 +28,8 @@ import {
   makeExecutorErrorResult as makeErrorResult,
   sanitizeErrorMessage,
 } from "../utils/error.ts";
-import { extractKimiAccessToken } from "../../core-domain/src/lib/providers/webCookieAuth.ts";
-import { exchangeKimiRefreshToken } from "../../core-domain/src/lib/kimi/tokenRefresh.ts";
+import { extractKimiAccessToken } from "@shiguang-gateway/core-domain/edge/web-cookie-auth";
+import { exchangeKimiRefreshToken } from "@shiguang-gateway/core-domain/control/kimi-token-refresh";
 import {
   type KimiWebModelConfig,
   resolveKimiWebContextLength,

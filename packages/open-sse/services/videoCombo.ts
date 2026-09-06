@@ -15,14 +15,14 @@
  * combo targets may be prompt-optional I2V models), so it is treated as a
  * retryable skip rather than a terminal failure.
  */
-import { getComboByName, getCombos } from "../../core-domain/src/lib/db/combos.ts";
+import { getComboByName, getCombos } from "@shiguang-gateway/core-domain/db/combos";
 import { resolveComboTargets } from "./combo.ts";
 import { getVideoProvider } from "../config/videoRegistry.ts";
 import { resolveVideoCredentialProvider } from "../handlers/videoGeneration/googleFlow.ts";
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
-} from "../../core-domain/src/sse/services/auth.ts";
+} from "@shiguang-gateway/core-domain/sse/auth";
 import { isAllRateLimitedCredentials } from "@shiguang-gateway/core-domain/edge/rate-limit";
 import { handleVideoGeneration } from "../handlers/videoGeneration.ts";
 import {
@@ -40,7 +40,7 @@ import type { VideoModelTarget } from "@shiguang-gateway/core-domain/edge/video-
 import { toJsonErrorPayload } from "@shiguang-gateway/core-domain/shared/upstream-error";
 import { HTTP_STATUS } from "../config/constants.ts";
 import { errorResponse } from "../utils/error.ts";
-import * as logger from "../../core-domain/src/sse/utils/logger.ts";
+import * as logger from "@shiguang-gateway/core-domain/sse/logger";
 
 /**
  * Execute a full combo strategy for a video generation request.

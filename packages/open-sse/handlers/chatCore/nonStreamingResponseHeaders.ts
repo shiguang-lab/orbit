@@ -9,7 +9,7 @@
  * inline block, including `latencyMs: now - startTime`.
  */
 import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "@shiguang-gateway/contracts/gateway-headers";
-import { attachShiguangGatewayMetaHeaders as defaultAttachMeta } from "../../../core-domain/src/domain/gatewayResponseMeta.ts";
+import { attachShiguangGatewayMetaHeaders as defaultAttachMeta } from "@shiguang-gateway/core-domain/edge/gateway-response-meta";
 
 export function buildNonStreamingResponseHeaders(
   args: {

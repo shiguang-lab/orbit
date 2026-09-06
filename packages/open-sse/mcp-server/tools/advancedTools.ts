@@ -18,13 +18,13 @@
 
 import { logToolCall } from "../audit.ts";
 import { getMcpHttpAuthHeadersForInternalFetch } from "../httpAuthContext.ts";
-import { normalizeQuotaResponse } from "../../../core-domain/src/shared/contracts/quota.ts";
+import { normalizeQuotaResponse } from "@shiguang-gateway/core-domain/shared/quota-contract";
 import { resolveGatewayBaseUrl } from "@shiguang-gateway/core-domain/shared/utils/resolveGatewayBaseUrl";
 import {
   getComboModelProvider,
   getComboModelString,
   getComboStepTarget,
-} from "../../../core-domain/src/lib/combos/steps.ts";
+} from "@shiguang-gateway/core-domain/edge/mcp-combo-steps";
 import type {
   AutoRoutingStrategyValue,
   RoutingStrategyValue,
@@ -893,7 +893,7 @@ export async function handleDbHealthCheck(args: { autoRepair?: boolean }) {
   const autoRepair = args.autoRepair === true;
 
   try {
-    const { runManagedDbHealthCheck } = await import("../../../core-domain/src/lib/db/core.ts");
+    const { runManagedDbHealthCheck } = await import("@shiguang-gateway/core-domain/db/health");
     const result = runManagedDbHealthCheck({ autoRepair });
 
     await logToolCall(

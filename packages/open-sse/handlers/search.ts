@@ -35,7 +35,7 @@ import * as xquikSearch from "./search/xquikSearch.ts";
 import * as anysearchSearch from "./search/anysearchSearch.ts";
 import { freeWebSearch } from "../services/freeWebSearch.ts";
 import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
-import { safeOutboundFetch } from "../../core-domain/src/shared/network/safeOutboundFetch.ts";
+import { safeOutboundFetch } from "@shiguang-gateway/core-domain/network/safe-outbound-fetch";
 import { parseAndValidateNonMetadataUrl } from "@shiguang-gateway/network-guard";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";

@@ -18,3 +18,4 @@ export interface ProviderInterceptionRules {
 export function getInterceptionRules(provider: string): ProviderInterceptionRules | null;
 export function setInterceptionRules(provider: string, rules: ProviderInterceptionRules): void;
 export function deleteInterceptionRules(provider: string): void;
+export { resolveInterceptFetch, resolveInterceptSearch } from "../lib/db/interceptionRules.js";

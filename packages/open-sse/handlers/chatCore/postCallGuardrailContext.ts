@@ -11,7 +11,7 @@
 import {
   resolveDisabledGuardrails as defaultResolveDisabled,
   type GuardrailContext,
-} from "../../../core-domain/src/lib/guardrails/index.ts";
+} from "@shiguang-gateway/core-domain/edge/guardrails-runtime";
 
 type LoggerLike = GuardrailContext["log"];
 type HeadersLike = Headers | Record<string, unknown> | null;

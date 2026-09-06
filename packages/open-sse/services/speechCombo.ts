@@ -11,19 +11,19 @@
  * off `response.ok` and the upstream body is passed through untouched — only
  * ADD-only meta headers are attached, matching the direct route.
  */
-import { getComboByName, getCombos } from "../../core-domain/src/lib/db/combos.ts";
+import { getComboByName, getCombos } from "@shiguang-gateway/core-domain/db/combos";
 import { resolveComboTargets } from "./combo.ts";
 import { parseSpeechModel, getSpeechProvider } from "../config/audioRegistry.ts";
 import { resolveDynamicAudioProviders } from "@shiguang-gateway/core-domain/edge/audio-provider-nodes";
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
-} from "../../core-domain/src/sse/services/auth.ts";
+} from "@shiguang-gateway/core-domain/sse/auth";
 import { isAllRateLimitedCredentials } from "@shiguang-gateway/core-domain/edge/rate-limit";
 import { handleAudioSpeech } from "../handlers/audioSpeech.ts";
-import { attachShiguangGatewayMetaToResponse } from "../../core-domain/src/domain/gatewayResponseMeta.ts";
+import { attachShiguangGatewayMetaToResponse } from "@shiguang-gateway/core-domain/edge/gateway-response-meta";
 import { generateRequestId } from "@shiguang-gateway/contracts/request-id";
-import { calculateModalCost } from "../../core-domain/src/lib/usage/costCalculator.ts";
+import { calculateModalCost } from "@shiguang-gateway/core-domain/pricing/modal-cost";
 import { toJsonErrorPayload } from "@shiguang-gateway/core-domain/shared/upstream-error";
 import { HTTP_STATUS } from "../config/constants.ts";
 import { errorResponse } from "../utils/error.ts";

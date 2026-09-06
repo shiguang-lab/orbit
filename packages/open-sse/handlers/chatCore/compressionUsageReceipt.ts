@@ -18,7 +18,7 @@ export function attachCompressionUsageReceiptAfterAnalytics(
   void (async () => {
     try {
       if (pendingWrite) await pendingWrite;
-      const { attachCompressionUsageReceipt } = await import("../../../core-domain/src/lib/db/compressionAnalytics.ts");
+      const { attachCompressionUsageReceipt } = await import("@shiguang-gateway/core-domain/db/compression-analytics");
       attachCompressionUsageReceipt(skillRequestId, usage, source);
     } catch {
       // Compression analytics are best-effort and must never affect responses.

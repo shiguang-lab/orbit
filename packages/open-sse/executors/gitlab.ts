@@ -26,7 +26,7 @@ import {
   parseGitLabDirectAccessDetails,
   resolveGitLabOAuthBaseUrl,
   type GitLabDirectAccessDetails,
-} from "../../core-domain/src/lib/oauth/gitlab.ts";
+} from "@shiguang-gateway/core-domain/control/oauth-gitlab";
 
 type OpenAIToolCall = {
   id?: string;

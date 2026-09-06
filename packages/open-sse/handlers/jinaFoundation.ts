@@ -7,7 +7,7 @@
 
 import { CORS_HEADERS } from "../utils/cors.ts";
 import { errorResponse } from "../utils/error.ts";
-import { attachShiguangGatewayMetaHeaders } from "../../core-domain/src/domain/gatewayResponseMeta.ts";
+import { attachShiguangGatewayMetaHeaders } from "@shiguang-gateway/core-domain/edge/gateway-response-meta";
 import { generateRequestId } from "@shiguang-gateway/contracts/request-id";
 import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
 

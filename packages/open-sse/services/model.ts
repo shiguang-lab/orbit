@@ -360,7 +360,7 @@ async function reconcileInferredProvidersWithActiveCatalog(providerIds: string[]
 
   try {
     const { reconcileProvidersWithActiveSyncedCatalog } =
-      await import("../../core-domain/src/lib/db/models/activeSyncedCatalog.ts");
+      await import("@shiguang-gateway/core-domain/db/active-synced-catalog");
 
     const reconciliations = await Promise.all(
       uniqueProviders.map(async (provider) => {

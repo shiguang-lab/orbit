@@ -15,10 +15,10 @@ import {
   resolveUniversalHandoffConfig,
   SKIP_UNIVERSAL_HANDOFF_FLAG,
 } from "../contextHandoff.ts";
-import { getLastSessionModel } from "../../../core-domain/src/lib/db/contextHandoffs.ts";
+import { getLastSessionModel } from "@shiguang-gateway/core-domain/db/context-handoffs";
 import { applyComboAgentMiddleware } from "../comboAgentMiddleware.ts";
 import { resolveComboSetupConfig, resolveComboTargetTimeoutMsForCombo } from "../comboConfig.ts";
-import { resolveResilienceSettings } from "../../../core-domain/src/lib/resilience/settings";
+import { resolveResilienceSettings } from "@shiguang-gateway/core-domain/resilience/settings";
 import { FETCH_TIMEOUT_MS } from "../../config/constants.ts";
 import { deriveComboSessionKey } from "./autoStrategy.ts";
 import type { ComboContext } from "./context.ts";

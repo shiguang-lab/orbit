@@ -5,7 +5,7 @@
  */
 
 import { isIP } from "node:net";
-import { getDbInstance } from "../../core-domain/src/lib/db/core.ts";
+import { getDbInstance } from "@shiguang-gateway/core-domain/db/ping";
 
 // In-memory IP lists
 let _config = {

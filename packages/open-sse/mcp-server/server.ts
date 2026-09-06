@@ -4,7 +4,7 @@ import {
   getComboModelProvider,
   getComboModelString,
   getComboStepTarget,
-} from "../../core-domain/src/lib/combos/steps.ts";
+} from "@shiguang-gateway/core-domain/edge/mcp-combo-steps";
 import { registerToolSearchTool } from "./toolSearch/register.ts";
 import {
   MCP_TOOLS,
@@ -49,7 +49,7 @@ import {
   type McpToolExtraLike,
 } from "./scopeEnforcement.ts";
 import { getMcpHttpAuthHeadersForInternalFetch } from "./httpAuthContext.ts";
-import { getInternalServiceAuthHeaders } from "../../core-domain/src/lib/api/internalServiceAuth.ts";
+import { getInternalServiceAuthHeaders } from "@shiguang-gateway/core-domain/edge/internal-service-auth";
 import {
   handleSimulateRoute,
   handleSetBudgetGuard,
@@ -73,8 +73,8 @@ import { memoryTools } from "./tools/memoryTools.ts";
 import { skillTools } from "./tools/skillTools.ts";
 import { agentSkillTools } from "./tools/agentSkillTools.ts";
 import { githubSkillTools } from "./tools/githubSkillTools.ts";
-import { skillRegistry } from "../../core-domain/src/lib/skills/registry.ts";
-import { skillExecutor } from "../../core-domain/src/lib/skills/executor.ts";
+import { skillRegistry } from "@shiguang-gateway/core-domain/edge/skills-runtime";
+import { skillExecutor } from "@shiguang-gateway/core-domain/edge/skills-runtime";
 import { pluginTools } from "./tools/pluginTools.ts";
 import { compressionTools } from "./tools/compressionTools.ts";
 import { poolTools } from "./tools/poolTools.ts";
@@ -90,8 +90,8 @@ import {
   clampMcpAccessibilityConfig,
   type McpAccessibilityConfig,
 } from "../services/compression/engines/mcpAccessibility/constants.ts";
-import { getDbInstance } from "../../core-domain/src/lib/db/core.ts";
-import { normalizeQuotaResponse } from "../../core-domain/src/shared/contracts/quota.ts";
+import { getDbInstance } from "@shiguang-gateway/core-domain/db/ping";
+import { normalizeQuotaResponse } from "@shiguang-gateway/core-domain/shared/quota-contract";
 import { resolveGatewayBaseUrl } from "@shiguang-gateway/core-domain/shared/utils/resolveGatewayBaseUrl";
 import { sanitizeErrorMessage } from "../utils/error.ts";
 import { mcpFetchTimeoutSignal } from "./fetchTimeout.ts";

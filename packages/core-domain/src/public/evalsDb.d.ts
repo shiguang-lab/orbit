@@ -33,3 +33,7 @@ export function getEvalScorecard(options?: { limit?: number }): any;
 export function saveCustomEvalSuite(input: any): EvalSuiteRecord;
 export function getCustomEvalSuite(id: string): EvalSuiteRecord | null;
 export function deleteCustomEvalSuite(id: string): boolean;
+export {
+  listModelEvalRunsForRouting,
+  type PersistedEvalRun,
+} from "../lib/db/evals.js";

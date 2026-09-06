@@ -30,7 +30,7 @@ export function emitOutputStyleTelemetry(args: {
       const { buildOutputStyleTelemetry } = await import(
         "../../services/compression/outputStyles/telemetry.ts"
       );
-      const { insertCompressionRunTelemetryRow } = await import("../../../core-domain/src/lib/db/compressionRunTelemetry.ts");
+      const { insertCompressionRunTelemetryRow } = await import("@shiguang-gateway/core-domain/db/compression-run-telemetry");
       const record = buildOutputStyleTelemetry({
         requestId: args.skillRequestId ?? args.traceId ?? "",
         model: args.effectiveModel ?? "",

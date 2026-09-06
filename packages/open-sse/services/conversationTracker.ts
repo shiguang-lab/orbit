@@ -40,7 +40,7 @@ import {
   touchOrCreateExternalConversation,
   updateAgenticConversation,
   type ConversationTurnIndex,
-} from "../../core-domain/src/lib/db/agenticConversations.ts";
+} from "@shiguang-gateway/core-domain/db/agentic-conversations";
 
 type JsonRecord = Record<string, unknown>;
 

@@ -27,7 +27,7 @@ export async function runPluginOnRequestHook(args: {
   log?: LoggerLike;
 }): Promise<PluginOnRequestGate> {
   try {
-    const { runOnRequest } = await import("../../../core-domain/src/lib/plugins/hooks.ts");
+    const { runOnRequest } = await import("@shiguang-gateway/core-domain/edge/plugins-runtime");
     const pluginCtx = {
       requestId: args.requestId,
       body: args.body,

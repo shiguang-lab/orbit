@@ -1,6 +1,6 @@
 import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
-import { fetchRemoteImage } from "../../../../core-domain/src/shared/network/remoteImageFetch.ts";
-import { safeOutboundFetch } from "../../../../core-domain/src/shared/network/safeOutboundFetch.ts";
+import { fetchRemoteImage } from "@shiguang-gateway/core-domain/network/remote-image-fetch";
+import { safeOutboundFetch } from "@shiguang-gateway/core-domain/network/safe-outbound-fetch";
 import { sleep } from "../../../utils/sleep.ts";
 import { sanitizeErrorMessage } from "../../../utils/error.ts";
 import {

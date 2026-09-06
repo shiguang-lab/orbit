@@ -27,7 +27,7 @@ import type {
   HistoricalLatencyStatsEntry,
   ResolvedComboTarget,
 } from "./types.ts";
-import { extractSessionAffinityKey } from "../../../core-domain/src/sse/services/auth.ts";
+import { extractSessionAffinityKey } from "@shiguang-gateway/core-domain/sse/auth";
 import { isMicrosoftDesignerWebRetiredProviderId } from "@shiguang-gateway/contracts/designer-web-retirement";
 import { isRuntimeRetiredProviderId } from "@shiguang-gateway/contracts/provider-retirement";
 import { isCommonChatGptWebRetiredProviderId } from "@shiguang-gateway/contracts/chatgpt-web-retirement";
@@ -42,18 +42,18 @@ import {
   type ScoringWeights,
 } from "../autoCombo/scoring.ts";
 import type { RoutingHint } from "../manifestAdapter";
-import { getCachedProviderConnections } from "../../../core-domain/src/lib/db/readCache";
+import { getCachedProviderConnections } from "@shiguang-gateway/core-domain/edge/read-cache";
 import {
   getSyncedAvailableModels,
   getCustomModels,
   getHiddenModelsByProvider,
-} from "../../../core-domain/src/lib/db/models";
+} from "@shiguang-gateway/core-domain/db/models-runtime";
 import { getProviderModels } from "../../config/providerModels.ts";
 import {
   getConnectionRoutingTags,
   matchesRoutingTags,
   resolveRequestRoutingTags,
-} from "../../../core-domain/src/domain/tagRouter.ts";
+} from "@shiguang-gateway/core-domain/edge/tag-router";
 
 // Quota Share soft-policy deprioritization factor (B17).
 // When a candidate has quotaSoftPenalty === true, its auto-combo score is

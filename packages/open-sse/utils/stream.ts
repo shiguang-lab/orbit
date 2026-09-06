@@ -27,8 +27,8 @@ import {
   injectThinkingSignature,
 } from "./streamHelpers.ts";
 import { rejectEmptyChoicesStream, buildEmptyChoicesStreamError } from "./streamEmptyChoices.ts";
-import { calculateCost } from "../../core-domain/src/lib/usage/costCalculator.ts";
-import { buildShiguangGatewaySseMetadataComment } from "../../core-domain/src/domain/gatewayResponseMeta.ts";
+import { calculateCost } from "@shiguang-gateway/core-domain/pricing/modal-cost";
+import { buildShiguangGatewaySseMetadataComment } from "@shiguang-gateway/core-domain/edge/gateway-response-meta";
 import { sseCommentsEnabled } from "./sseHeartbeat.ts";
 import {
   createStructuredSSECollector,

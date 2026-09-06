@@ -7,7 +7,7 @@
  * (do not slugify). On poll failure the last good snapshot is kept.
  */
 
-import { safeOutboundFetch } from "../../core-domain/src/shared/network/safeOutboundFetch.ts";
+import { safeOutboundFetch } from "@shiguang-gateway/core-domain/network/safe-outbound-fetch";
 import { registerDynamicImageModelSource } from "../config/dynamicImageModelSources.ts";
 
 export const AI_HORDE_API_BASE = "https://aihorde.net/api";

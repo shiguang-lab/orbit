@@ -12,3 +12,29 @@ export function clearRecoveredProviderState(
   credentials: unknown,
   expectedState?: Record<string, unknown>,
 ): Promise<{ applied: boolean }>;
+export function extractSessionAffinityKey(
+  body: unknown,
+  headers?: Headers | { get?: (name: string) => string | null } | null,
+): string | null;
+export function isAgentrouterConnectionQuotaScope(
+  provider: string | null | undefined,
+  fallbackResult: {
+    ruleScope?: "model" | "provider" | "connection";
+    reason?: string;
+    permanent?: boolean;
+    creditsExhausted?: boolean;
+  },
+): boolean;
+export function markAccountUnavailable(
+  connectionId: string,
+  status: number,
+  errorText: string,
+  provider?: string | null,
+  model?: string | null,
+  providerProfile?: unknown,
+  options?: {
+    persistUnavailableState?: boolean;
+    isCombo?: boolean;
+    headers?: Headers | Record<string, string> | null;
+  },
+): Promise<unknown>;

@@ -4,7 +4,7 @@ import {
   getConfiguredLocalCorpusStatus,
   readConfiguredLocalCorpus,
   searchConfiguredLocalCorpus,
-} from "../../../core-domain/src/lib/localCorpus/configured.ts";
+} from "@shiguang-gateway/core-domain/shared/local-corpus";
 
 export const localCorpusTools = [
   {

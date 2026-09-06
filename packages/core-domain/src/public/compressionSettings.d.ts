@@ -1,9 +1,13 @@
-/** Public control-plane contract for persisted compression settings. */
-export type CompressionSettings = Record<string, unknown>;
+import type {
+  CompressionConfig,
+  McpAccessibilityConfig,
+} from "../../../open-sse/services/compression/types.js";
 
-export function getCompressionSettings(): Promise<CompressionSettings>;
+export type CompressionSettings = CompressionConfig;
+
+export function getCompressionSettings(): Promise<CompressionConfig>;
 export function updateCompressionSettings(
-  updates: Record<string, unknown>,
-): Promise<CompressionSettings>;
-export function getMcpAccessibilityConfig(): Promise<CompressionSettings>;
-export function setMcpAccessibilityConfig(value: Record<string, unknown>): Promise<void>;
+  updates: Partial<CompressionConfig>,
+): Promise<CompressionConfig>;
+export function getMcpAccessibilityConfig(): Promise<McpAccessibilityConfig>;
+export function setMcpAccessibilityConfig(value: Partial<McpAccessibilityConfig>): Promise<void>;

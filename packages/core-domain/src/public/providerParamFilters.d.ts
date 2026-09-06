@@ -13,3 +13,4 @@ export interface ProviderParamFilter {
 export function getParamFilterConfig(provider: string): ProviderParamFilter | null;
 export function setParamFilterConfig(provider: string, config: ProviderParamFilter): void;
 export function deleteParamFilterConfig(provider: string): void;
+export { addParamToBlocklist, isAutoLearnGloballyEnabled } from "../lib/db/paramFilters.js";

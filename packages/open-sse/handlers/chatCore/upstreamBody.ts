@@ -171,7 +171,7 @@ async function injectPromptCacheKey(
     Array.isArray(bodyToSend.messages) &&
     !["nvidia", "xai"].includes(provider)
   ) {
-    const { generatePromptCacheKey } = await import("../../../core-domain/src/lib/promptCache/index.ts");
+    const { generatePromptCacheKey } = await import("@shiguang-gateway/core-domain/edge/prompt-cache");
     const cacheKey = generatePromptCacheKey(bodyToSend.messages);
     if (cacheKey) {
       bodyToSend = { ...bodyToSend, prompt_cache_key: cacheKey };

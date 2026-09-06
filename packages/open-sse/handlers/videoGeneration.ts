@@ -43,7 +43,7 @@ import {
   resolveComfyUiBaseUrl,
 } from "../utils/comfyuiClient.ts";
 import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
-import { getAllCustomModels } from "../../core-domain/src/lib/db/models.ts";
+import { getAllCustomModels } from "@shiguang-gateway/core-domain/db/models-runtime";
 import { sanitizeErrorMessage } from "../utils/error.ts";
 import {
   FetchTimeoutError,

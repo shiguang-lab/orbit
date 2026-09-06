@@ -1,4 +1,4 @@
-import { getHiddenModelsByProvider } from "../../../core-domain/src/lib/db/models";
+import { getHiddenModelsByProvider } from "@shiguang-gateway/core-domain/db/models-runtime";
 import { parseModel, resolveCanonicalProviderModel } from "../model.ts";
 import type { HiddenModelsByProvider } from "./types.ts";
 

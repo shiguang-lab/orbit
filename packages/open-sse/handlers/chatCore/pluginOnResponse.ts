@@ -28,7 +28,7 @@ export async function runPluginOnResponseHook(args: {
   response: PluginOnResponsePayload;
 }): Promise<void> {
   try {
-    const { runOnResponse } = await import("../../../core-domain/src/lib/plugins/hooks.ts");
+    const { runOnResponse } = await import("@shiguang-gateway/core-domain/edge/plugins-runtime");
     runOnResponse(
       {
         requestId: args.requestId,
@@ -83,7 +83,7 @@ export async function runPluginOnStreamCompleteHook(args: {
   startTime: number;
 }): Promise<void> {
   try {
-    const { runOnStreamComplete } = await import("../../../core-domain/src/lib/plugins/hooks.ts");
+    const { runOnStreamComplete } = await import("@shiguang-gateway/core-domain/edge/plugins-runtime");
     runOnStreamComplete({
       status: args.status,
       usage: args.usage as PluginOnStreamCompletePayload["usage"],

@@ -253,7 +253,7 @@ import { createRecoverableStream, makeContinuationBody } from "../services/strea
 import {
   resolveResilienceSettings,
   isStreamRecoveryExplicitlyConfigured,
-} from "../../core-domain/src/lib/resilience/settings.ts";
+} from "@shiguang-gateway/core-domain/resilience/settings";
 import {
   classifyProviderError,
   PROVIDER_ERROR_TYPES,
@@ -291,15 +291,15 @@ import {
   getCallLogPipelineCaptureStreamChunks,
   getCallLogPipelineMaxSizeBytes,
 } from "@shiguang-gateway/config/logEnv";
-import { logAuditEvent } from "../../core-domain/src/lib/compliance/index.ts";
-import { emit } from "../../core-domain/src/lib/events/eventBus.ts";
+import { logAuditEvent } from "@shiguang-gateway/core-domain/compliance";
+import { emit } from "@shiguang-gateway/core-domain/events/eventBus";
 import { adaptBodyForCompression } from "../services/compression/bodyAdapter.ts";
 import { ensureEngineBreakdown } from "../services/compression/engineBreakdown.ts";
 import { handleBypassRequest } from "../utils/bypassHandler.ts";
 import { saveRequestUsage, trackPendingRequest, appendRequestLog } from "@shiguang-gateway/core-domain/edge/usage-db";
-import { finalizePendingScope, updatePendingScope } from "../../core-domain/src/lib/usage/pendingRequestScope.ts";
-import { recordCost } from "../../core-domain/src/domain/costRules.ts";
-import { calculateCost } from "../../core-domain/src/lib/usage/costCalculator.ts";
+import { finalizePendingScope, updatePendingScope } from "@shiguang-gateway/core-domain/usage/pending-request-scope";
+import { recordCost } from "@shiguang-gateway/core-domain/control/cost-rules";
+import { calculateCost } from "@shiguang-gateway/core-domain/pricing/modal-cost";
 import {
   buildClaudePassthroughToolNameMap,
   mergeResponseToolNameMap,
@@ -310,7 +310,7 @@ import {
   createDisabledCompressionConfig,
   resolveCompressionSettings,
 } from "./chatCore/compressionSettings.ts";
-import type { EnforceDecision } from "../../core-domain/src/lib/quota/types.ts";
+import type { EnforceDecision } from "@shiguang-gateway/core-domain/quota/types";
 import { isCompressionExcluded } from "../services/compression/exclusions.ts";
 import {
   isBuiltinStackedPipeline,
@@ -353,18 +353,18 @@ import {
   executeWithUpstreamStartTimeout,
   resolveConnectionTimeoutMs,
 } from "./chatCore/upstreamTimeouts.ts";
-import { getModelNormalizeToolCallId, getModelPreserveOpenAIDeveloperRole } from "../../core-domain/src/lib/db/models.ts";
-import { getProviderCredentials, extractSessionAffinityKey } from "../../core-domain/src/sse/services/auth.ts";
-import { assertExclusiveConnectionLeaseFence } from "../../core-domain/src/lib/db/exclusiveConnectionLeases.ts";
-import { deleteSessionAccountAffinity } from "../../core-domain/src/lib/db/sessionAccountAffinity.ts";
-import { getCacheControlSettings } from "../../core-domain/src/lib/cacheControlSettings.ts";
-import { guardrailRegistry } from "../../core-domain/src/lib/guardrails/index.ts";
+import { getModelNormalizeToolCallId, getModelPreserveOpenAIDeveloperRole } from "@shiguang-gateway/core-domain/db/models-runtime";
+import { getProviderCredentials, extractSessionAffinityKey } from "@shiguang-gateway/core-domain/sse/auth";
+import { assertExclusiveConnectionLeaseFence } from "@shiguang-gateway/core-domain/db/exclusive-connection-leases";
+import { deleteSessionAccountAffinity } from "@shiguang-gateway/core-domain/db/session-account-affinity";
+import { getCacheControlSettings } from "@shiguang-gateway/core-domain/edge/cache-control";
+import { guardrailRegistry } from "@shiguang-gateway/core-domain/edge/guardrails-runtime";
 import {
   shouldPreserveCacheControl,
   resolveConnectionCacheOverride,
 } from "../utils/cacheControlPolicy.ts";
-import { getCachedSettings } from "../../core-domain/src/lib/db/readCache.ts";
-import { applyCodexGlobalFastServiceTier } from "../../core-domain/src/lib/providers/codexFastTier.ts";
+import { getCachedSettings } from "@shiguang-gateway/core-domain/edge/read-cache";
+import { applyCodexGlobalFastServiceTier } from "@shiguang-gateway/core-domain/edge/codex-fast-tier";
 import { buildUpstreamHeadersForExecute as buildUpstreamHeadersForExecuteFor } from "./chatCore/upstreamExecuteHeaders.ts";
 import {
   resolveEffectiveServiceTier as resolveEffectiveServiceTierFor,
@@ -411,8 +411,8 @@ import {
   setCachedResponse,
   isCacheableForRead,
   isCacheableForWrite,
-} from "../../core-domain/src/lib/semanticCache.ts";
-import { saveIdempotency } from "../../core-domain/src/lib/idempotencyLayer.ts";
+} from "@shiguang-gateway/core-domain/edge/semantic-cache";
+import { saveIdempotency } from "@shiguang-gateway/core-domain/edge/idempotency";
 import {
   isModelUnavailableError,
   getNextFamilyFallback,
@@ -437,7 +437,7 @@ import type {
 import { generateSessionId } from "../services/sessionManager.ts";
 import { prepareWebSearchFallbackBody } from "../services/webSearchFallback.ts";
 import { prepareWebFetchFallbackBody } from "../services/webFetchInterception.ts";
-import { resolveInterceptSearch, resolveInterceptFetch } from "../../core-domain/src/lib/db/interceptionRules.ts";
+import { resolveInterceptSearch, resolveInterceptFetch } from "@shiguang-gateway/core-domain/db/provider-interception-rules";
 import {
   resolveExplicitStreamAlias,
   resolveStreamFlag,
@@ -447,19 +447,19 @@ import { generateRequestId } from "@shiguang-gateway/contracts/request-id";
 import { isLocalStreamLifecycleError } from "@shiguang-gateway/core-domain/edge/circuit-breaker";
 import { shouldIsolateProbeFailures } from "@shiguang-gateway/core-domain/edge/probe-origin";
 import { writeTerminalStatus } from "@shiguang-gateway/core-domain/shared/terminal-status";
-import { extractFacts } from "../../core-domain/src/lib/memory/extraction.ts";
-import { handleToolCallExecution } from "../../core-domain/src/lib/skills/interception.ts";
-import { MEMORY_BUILTIN_TOOL_NAMES } from "../../core-domain/src/lib/skills/memoryBuiltins.ts";
+import { extractFacts } from "@shiguang-gateway/core-domain/edge/memory-runtime";
+import { handleToolCallExecution } from "@shiguang-gateway/core-domain/edge/skills-runtime";
+import { MEMORY_BUILTIN_TOOL_NAMES } from "@shiguang-gateway/core-domain/edge/skills-runtime";
 import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "@shiguang-gateway/contracts/gateway-headers";
 import { resolveProviderId } from "@shiguang-gateway/core-domain/edge/provider-constants";
-import { getClaudeCodeCompatibleRequestDefaults } from "../../core-domain/src/lib/providers/requestDefaults.ts";
+import { getClaudeCodeCompatibleRequestDefaults } from "@shiguang-gateway/core-domain/edge/provider-request-defaults";
 import {
   buildClaudeCodeCompatibleRequest,
   resolveClaudeCodeCompatibleSessionId,
 } from "../services/claudeCodeCompatible.ts";
 import { setGeminiThoughtSignatureMode } from "../services/geminiThoughtSignatureStore.ts";
-import { fetchLiveProviderLimits } from "../../core-domain/src/lib/usage/providerLimits.ts";
-import { isClaudeExtraUsageBlockEnabled } from "../../core-domain/src/lib/providers/claudeExtraUsage.ts";
+import { fetchLiveProviderLimits } from "@shiguang-gateway/core-domain/edge/provider-limits";
+import { isClaudeExtraUsageBlockEnabled } from "@shiguang-gateway/core-domain/edge/claude-extra-usage";
 import {
   classifyModelScope429,
   getModelScopeRetryDelayMs,
@@ -1469,7 +1469,7 @@ export async function handleChatCore({
           ].filter((id): id is string => typeof id === "string" && id.length > 0);
           if (routingComboIds.length > 0) {
             const { getCompressionComboForRoutingCombo } =
-              await import("../../core-domain/src/lib/db/compressionCombos.ts");
+              await import("@shiguang-gateway/core-domain/control/compression-combos");
             const assignedCompressionCombo =
               routingComboIds
                 .map((id) => getCompressionComboForRoutingCombo(id))
@@ -1493,7 +1493,7 @@ export async function handleChatCore({
       }
       let namedCombos: Record<string, CompressionPipelineStep[]> = {};
       try {
-        const { listCompressionCombos } = await import("../../core-domain/src/lib/db/compressionCombos.ts");
+        const { listCompressionCombos } = await import("@shiguang-gateway/core-domain/control/compression-combos");
         namedCombos = buildNamedComboLookup(listCompressionCombos());
       } catch (err) {
         log?.debug?.(
@@ -1533,7 +1533,7 @@ export async function handleChatCore({
       ) {
         try {
           const { getDefaultCompressionCombo } =
-            await import("../../core-domain/src/lib/db/compressionCombos.ts");
+            await import("@shiguang-gateway/core-domain/control/compression-combos");
           const defaultCompressionCombo = getDefaultCompressionCombo();
           if (
             isStackedCompressionCombo(defaultCompressionCombo as RuntimeCompressionCombo | null) &&
@@ -2434,7 +2434,7 @@ export async function handleChatCore({
   } catch (error) {
     // ── Plugin onError hook ──
     try {
-      const { runOnError } = await import("../../core-domain/src/lib/plugins/hooks.ts");
+      const { runOnError } = await import("@shiguang-gateway/core-domain/edge/plugins-runtime");
       await runOnError(
         { requestId: traceId, body, model, provider, apiKeyInfo, metadata: {} },
         error instanceof Error ? error : new Error(String(error))
@@ -2858,7 +2858,7 @@ export async function handleChatCore({
   let quotaSoftDeprioritize = false;
   if (apiKeyInfo?.id && credentials?.connectionId) {
     try {
-      const { enforceQuotaShare } = await import("../../core-domain/src/lib/quota/enforce.ts");
+      const { enforceQuotaShare } = await import("@shiguang-gateway/core-domain/quota/services");
       const decision = await enforceQuotaShare({
         apiKeyId: apiKeyInfo.id,
         connectionId: credentials.connectionId,
@@ -3750,7 +3750,7 @@ export async function handleChatCore({
 
     // Store rate-limit headers for quota saturation signals
     try {
-      const { storeRateLimitHeaders } = await import("../../core-domain/src/lib/quota/saturationSignals.ts");
+      const { storeRateLimitHeaders } = await import("@shiguang-gateway/core-domain/quota/saturation-signals");
       storeRateLimitHeaders(
         responseConnectionId,
         provider,
@@ -4277,7 +4277,7 @@ export async function handleChatCore({
               if (provider === "kimi-coding") {
                 try {
                   const { fetchAndPersistProviderLimits } =
-                    await import("../../core-domain/src/lib/usage/providerLimits.ts");
+                    await import("@shiguang-gateway/core-domain/edge/provider-limits");
                   const { usage } = await fetchAndPersistProviderLimits(
                     errorConnectionId,
                     "manual"

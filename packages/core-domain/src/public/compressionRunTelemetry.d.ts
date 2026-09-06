@@ -9,3 +9,4 @@ export interface CompressionRunTelemetrySummary {
 }
 
 export function getCompressionRunTelemetrySummary(): CompressionRunTelemetrySummary;
+export { insertCompressionRunTelemetryRow } from "../lib/db/compressionRunTelemetry.js";

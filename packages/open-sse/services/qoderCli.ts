@@ -3,7 +3,7 @@ import crypto from "crypto";
 import fs from "fs";
 import os from "os";
 import path from "path";
-import { getLookupEnv } from "../../core-domain/src/shared/services/cliRuntime.ts";
+import { getLookupEnv } from "@shiguang-gateway/core-domain/control/cli-tools-runtime";
 import { qoderProvider } from "../config/providers/registry/qoder/index.ts";
 import { buildQoderCliNotFoundHint, resolveQoderCliInvocation } from "./qoderCliResolve";
 export { getQoderCliCommand } from "./qoderCliResolve"; // #6263 public entry point

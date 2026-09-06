@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { skillRegistry } from "../../../core-domain/src/lib/skills/registry.ts";
-import { skillExecutor } from "../../../core-domain/src/lib/skills/executor.ts";
+import { skillRegistry } from "@shiguang-gateway/core-domain/edge/skills-runtime";
+import { skillExecutor } from "@shiguang-gateway/core-domain/edge/skills-runtime";
 
 export const SkillListSchema = z.object({
   apiKeyId: z.string().optional(),

@@ -22,7 +22,7 @@ import {
   getReasoningCacheEntries,
   getReasoningCacheStats,
   setReasoningCache,
-} from "../../core-domain/src/lib/db/reasoningCache.ts";
+} from "@shiguang-gateway/core-domain/db/reasoning-cache";
 import { isInternalReasoningPlaceholder } from "../utils/reasoningPlaceholder.ts";
 
 // ──────────────── Provider/Model Detection ────────────────

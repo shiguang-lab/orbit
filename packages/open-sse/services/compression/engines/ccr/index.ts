@@ -42,7 +42,7 @@ import {
   loadCcrBlock,
   persistCcrBlock,
   touchCcrBlock,
-} from "../../../../../core-domain/src/lib/db/ccrBlocks.ts";
+} from "@shiguang-gateway/core-domain/db/ccr-blocks";
 import { createCompressionStats } from "../../stats.ts";
 import { queryBlock, type CcrQuery } from "./ccrQuery.ts";
 import { callerSupportsCcrRetrieve, injectCcrProtocolInstruction } from "./protocolInstruction.ts";

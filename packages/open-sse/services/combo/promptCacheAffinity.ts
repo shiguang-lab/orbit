@@ -2,8 +2,8 @@ import { createHash } from "node:crypto";
 import {
   analyzePrefix,
   generatePromptCacheKey,
-} from "../../../core-domain/src/lib/promptCache/prefixAnalyzer.ts";
-import { getCachedProviderConnections } from "../../../core-domain/src/lib/db/readCache";
+} from "@shiguang-gateway/core-domain/edge/prompt-cache";
+import { getCachedProviderConnections } from "@shiguang-gateway/core-domain/edge/read-cache";
 import { parseModel } from "../model.ts";
 import type { ResolvedComboTarget } from "./types.ts";
 import { getOAuthSessionAvailability } from "../oauthSessionOccupancy.ts";

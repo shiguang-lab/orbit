@@ -1,1 +1,1 @@
-export function runManagedDbHealthCheck(options?: { autoRepair?: boolean }): unknown;
+export { isNativeSqliteLoadError, runManagedDbHealthCheck } from "../lib/db/core.js";

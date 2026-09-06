@@ -20,6 +20,16 @@ export function getCallLogById(id: string): Promise<any | null>;
 export function exportCallLogsSince(since: string): Promise<any[]>;
 export function getPendingById(): Map<string, any>;
 export function getCompletedDetails(): Map<string, any>;
+export function finalizeMostRecentPendingRequest(
+  model: string,
+  provider: string,
+  connectionId: string | null,
+  metadata?: Record<string, any>,
+): boolean;
+export function finalizePendingRequestById(
+  id: string | null | undefined,
+  metadata?: Record<string, any>,
+): boolean;
 export function getUsageStats(): Promise<any>;
 export function getModelLatencyStats(options?: {
   windowHours?: number;

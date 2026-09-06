@@ -10,7 +10,7 @@
  * literal `auto/*` string panel member already behaves via the single-
  * dispatch safety net in src/sse/handlers/chat.ts.
  */
-import { getComboModelString, normalizeComboStep } from "../../../core-domain/src/lib/combos/steps.ts";
+import { getComboModelString, normalizeComboStep } from "@shiguang-gateway/core-domain/edge/mcp-combo-steps";
 import { executeComboRefUnit } from "./runtimeUnits.ts";
 import type {
   ComboCollectionLike,

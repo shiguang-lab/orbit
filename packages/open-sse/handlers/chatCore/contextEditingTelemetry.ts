@@ -26,7 +26,7 @@ export function recordContextEditingTelemetryHook(args: {
       const { extractContextEditingTelemetry } = await import("../../config/contextEditing.ts");
       const tele = extractContextEditingTelemetry(responseBody);
       if (tele) {
-        const { recordContextEditingTelemetry } = await import("../../../core-domain/src/lib/db/compressionAnalytics.ts");
+        const { recordContextEditingTelemetry } = await import("@shiguang-gateway/core-domain/db/compression-analytics");
         recordContextEditingTelemetry(skillRequestId, tele, provider);
         log?.debug?.(
           "CONTEXT_EDITING",

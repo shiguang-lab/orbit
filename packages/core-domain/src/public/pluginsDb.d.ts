@@ -25,3 +25,4 @@ export interface PluginRow {
 export function listPlugins(status?: string): PluginRow[];
 export function getPluginByName(name: string): PluginRow | null;
 export function updatePluginConfig(name: string, config: Record<string, unknown>): boolean;
+export { getPluginAnalytics, getPluginAnalyticsSummary } from "../lib/db/plugins.js";

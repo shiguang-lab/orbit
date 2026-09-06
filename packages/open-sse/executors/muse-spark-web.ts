@@ -9,7 +9,7 @@ import { sanitizeErrorMessage } from "../utils/error.ts";
 import {
   normalizeSessionCookieHeader,
   normalizeSessionCookieHeaders,
-} from "../../core-domain/src/lib/providers/webCookieAuth.ts";
+} from "@shiguang-gateway/core-domain/edge/web-cookie-auth";
 import { type ParsedMetaAiResponse, isRecord } from "./muse-spark-web/response-parser.ts";
 
 const META_AI_GRAPHQL_API = "https://www.meta.ai/api/graphql";

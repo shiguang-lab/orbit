@@ -10,7 +10,7 @@
 import {
   DEFAULT_RESILIENCE_SETTINGS,
   type ResilienceSettings,
-} from "../../core-domain/src/lib/resilience/settings";
+} from "@shiguang-gateway/core-domain/resilience/settings";
 
 interface CooldownEntry {
   /** Timestamp of last recorded failure (ms since epoch) */

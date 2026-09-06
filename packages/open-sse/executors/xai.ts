@@ -2,7 +2,7 @@ import { BaseExecutor, type ExecutorLog, type ProviderCredentials } from "./base
 import { PROVIDERS } from "../config/constants.ts";
 import { getModelTargetFormat } from "../config/providerModels.ts";
 import { isResponsesEndpointPath } from "../utils/responsesEndpoint.ts";
-import { chatRequestToXaiResponses } from "../../core-domain/src/lib/providers/xai/translators/openai-chat.ts";
+import { chatRequestToXaiResponses } from "@shiguang-gateway/core-domain/edge/xai-chat-translator";
 import { capXaiRequestHistory } from "../services/xaiMessageCap.ts";
 
 type JsonRecord = Record<string, unknown>;

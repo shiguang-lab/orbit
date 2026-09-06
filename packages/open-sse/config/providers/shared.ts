@@ -39,7 +39,7 @@ import {
 } from "../providerHeaderProfiles.ts";
 import type { ProviderRequestDefaults } from "../../services/providerRequestDefaults.ts";
 import { resolvePublicCred } from "../../utils/publicCreds.ts";
-import { buildGitLabOAuthEndpoints, GITLAB_DUO_DEFAULT_BASE_URL } from "../../../core-domain/src/lib/oauth/gitlab.ts";
+import { buildGitLabOAuthEndpoints, GITLAB_DUO_DEFAULT_BASE_URL } from "@shiguang-gateway/core-domain/control/oauth-gitlab";
 
 // ── Types ─────────────────────────────────────────────────────────────────
 

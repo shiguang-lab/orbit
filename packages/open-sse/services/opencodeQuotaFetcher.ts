@@ -262,12 +262,12 @@ function hasDashboardQuotaConfig(connection?: Record<string, unknown>): boolean 
 async function synthesizeQuotaFromDashboardSnapshots(
   connectionId: string
 ): Promise<OpencodeTripleWindowQuota | null> {
-  let quotaCacheDomain: typeof import("../../core-domain/src/domain/quotaCache.ts");
+  let quotaCacheDomain: typeof import("@shiguang-gateway/core-domain/domain/quotaCache");
   try {
     // Dynamic import: a static edge would close an initialization cycle
     // (opencodeQuotaFetcher → quotaCache → usage.ts → usage/opencode.ts →
     // opencodeQuotaFetcher).
-    quotaCacheDomain = await import("../../core-domain/src/domain/quotaCache.ts");
+    quotaCacheDomain = await import("@shiguang-gateway/core-domain/domain/quotaCache");
   } catch {
     return null;
   }

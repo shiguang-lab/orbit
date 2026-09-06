@@ -30,7 +30,7 @@ import {
   extractComfyOutputFiles,
   resolveComfyUiBaseUrl,
 } from "../utils/comfyuiClient.ts";
-import { fetchRemoteImage } from "../../core-domain/src/shared/network/remoteImageFetch.ts";
+import { fetchRemoteImage } from "@shiguang-gateway/core-domain/network/remote-image-fetch";
 import {
   FetchTimeoutError,
   fetchWithTimeout,

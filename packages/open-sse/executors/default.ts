@@ -51,14 +51,14 @@ import {
 import { buildMaritalkChatUrl } from "../config/maritalk.ts";
 import { LOCAL_PROVIDERS } from "@shiguang-gateway/core-domain/edge/provider-constants";
 import { isForbiddenCustomHeaderName } from "@shiguang-gateway/contracts/upstream-headers";
-import { getClaudeCodeCompatibleRequestDefaults } from "../../core-domain/src/lib/providers/requestDefaults.ts";
+import { getClaudeCodeCompatibleRequestDefaults } from "@shiguang-gateway/core-domain/edge/provider-request-defaults";
 import { applyClineAuthHeaders } from "@shiguang-gateway/core-domain/edge/cline-auth";
 import {
   normalizeHerokuChatUrl,
   normalizeDatabricksChatUrl,
   normalizeSnowflakeChatUrl,
   normalizeGigachatChatUrl,
-} from "../../core-domain/src/lib/providers/validation/urlHelpers.ts";
+} from "@shiguang-gateway/core-domain/edge/provider-url-validation";
 import { forwardOpencodeClientHeaders } from "../utils/opencodeHeaders.ts";
 import { resolveZaiUrl } from "./default/zaiFormatOverride.ts";
 import { normalizePoolConfig } from "./default/poolConfig.ts";

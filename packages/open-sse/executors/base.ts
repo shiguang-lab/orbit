@@ -29,7 +29,7 @@ import {
   getParamFilterConfig,
   addParamToBlocklist,
   isAutoLearnGloballyEnabled,
-} from "../../core-domain/src/lib/db/paramFilters.ts";
+} from "@shiguang-gateway/core-domain/db/provider-param-filters";
 import { applyFingerprint, isCliCompatEnabled, stripInternalBodyFields } from "../config/cliFingerprints.ts";
 import { supportsClaudeMaxEffort, supportsXHighEffort } from "../config/providerModels.ts";
 import { getThinkingBudgetConfig, ThinkingMode } from "../services/thinkingBudget.ts";
@@ -68,7 +68,7 @@ import {
   modelHasNativeContext1m,
   modelSupportsContext1mBeta,
 } from "../services/claudeCodeCompatible.ts";
-import { getClaudeCodeCompatibleRequestDefaults } from "../../core-domain/src/lib/providers/requestDefaults.ts";
+import { getClaudeCodeCompatibleRequestDefaults } from "@shiguang-gateway/core-domain/edge/provider-request-defaults";
 import {
   cloakThirdPartyToolNames,
   remapToolNamesInRequest,
@@ -106,14 +106,14 @@ import {
   applyConfiguredUserAgent,
   stripStainlessHeadersForOpenAICompat,
 } from "./base/headers.ts";
-import { applyPeerTraceHeader } from "../../core-domain/src/shared/resilience/peerRouting.ts";
+import { applyPeerTraceHeader } from "@shiguang-gateway/core-domain/edge/peer-routing";
 import { applyClineProtocolHeaders } from "@shiguang-gateway/core-domain/edge/cline-auth";
 import { isProbeContext } from "@shiguang-gateway/core-domain/edge/probe-origin";
 import {
   parseAndValidatePublicUrl,
   parseAndValidateNonMetadataUrl,
 } from "@shiguang-gateway/network-guard";
-import { getProviderValidationGuard } from "../../core-domain/src/shared/network/outboundUrlGuardPolicy.ts";
+import { getProviderValidationGuard } from "@shiguang-gateway/core-domain/network/outbound-url-guard-policy";
 import {
   isLocalProvider,
   isSelfHostedChatProvider,

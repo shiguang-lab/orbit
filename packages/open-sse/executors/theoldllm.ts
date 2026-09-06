@@ -109,7 +109,7 @@ const TOKEN_SEED = "oldllm-client-2026";
 const UA_PREFIX = CHROME_UA.slice(0, 20); // "Mozilla/5.0 (Windows"
 
 type TheOldLlmProxy = Awaited<
-  ReturnType<typeof import("../../core-domain/src/lib/db/proxies").resolveProxyForProvider>
+  ReturnType<typeof import("@shiguang-gateway/core-domain/db/proxies").resolveProxyForProvider>
 >;
 
 interface TheOldLlmFetchDependencies {
@@ -150,7 +150,7 @@ export async function fetchTheOldLlmWithProviderProxy(
     const [
       { resolveProxyForProvider, hasBlockingProxyAssignmentForProvider },
       { runWithProxyContext },
-    ] = await Promise.all([import("../../core-domain/src/lib/db/proxies"), import("../utils/proxyFetch.ts")]);
+    ] = await Promise.all([import("@shiguang-gateway/core-domain/db/proxies"), import("../utils/proxyFetch.ts")]);
     deps = {
       resolveProxy: () => resolveProxyForProvider("theoldllm"),
       runWithProxy: runWithProxyContext,

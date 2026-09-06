@@ -37,9 +37,12 @@ export async function resolveSearchProxy(
     return { proxy: null, proxyLevel: "direct" };
   }
   try {
-    const { resolveProxyForConnection } = await import("../../../core-domain/src/lib/db/settings.ts");
+    const { resolveProxyForConnection } = await import("@shiguang-gateway/core-domain/control/settings");
     const proxyInfo = await resolveProxyForConnection(connectionId, apiKeyId, providerId);
-    return { proxy: proxyInfo.proxy, proxyLevel: proxyInfo.level || "direct" };
+    return {
+      proxy: proxyInfo?.proxy,
+      proxyLevel: typeof proxyInfo?.level === "string" ? proxyInfo.level : "direct",
+    };
   } catch {
     return { proxy: null, proxyLevel: "direct" };
   }
@@ -73,7 +76,7 @@ export async function emitSearchProxyEvent(
   status: string
 ): Promise<void> {
   try {
-    const { logProxyEvent } = await import("../../../core-domain/src/lib/proxyLogger.ts");
+    const { logProxyEvent } = await import("@shiguang-gateway/core-domain/control/proxy-logs");
     let targetOrigin = "";
     let targetPath = "";
     try {

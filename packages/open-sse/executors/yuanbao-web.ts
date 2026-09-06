@@ -26,7 +26,7 @@ import {
 } from "./base.ts";
 import { FETCH_TIMEOUT_MS } from "../config/constants.ts";
 import { buildErrorBody, sanitizeErrorMessage } from "../utils/error.ts";
-import { extractCookieValue, stripCookieInputPrefix } from "../../core-domain/src/lib/providers/webCookieAuth.ts";
+import { extractCookieValue, stripCookieInputPrefix } from "@shiguang-gateway/core-domain/edge/web-cookie-auth";
 
 const YUANBAO_BASE = "https://yuanbao.tencent.com";
 const CREATE_URL = `${YUANBAO_BASE}/api/user/agent/conversation/create`;

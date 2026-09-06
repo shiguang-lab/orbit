@@ -8,3 +8,7 @@ export function shouldClearErrorStateOnValidProbe(
   probeValid: boolean,
   now?: number,
 ): boolean;
+export function fetchLiveProviderLimits(connectionId: string): Promise<{
+  connection: Record<string, any>;
+  usage: Record<string, unknown>;
+}>;

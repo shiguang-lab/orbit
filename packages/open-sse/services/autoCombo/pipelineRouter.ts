@@ -15,8 +15,8 @@ import {
   type TaskType,
   type PipelineResult,
   type FitnessTier,
-} from "../../../core-domain/src/domain/pipeline.ts";
-import { renderPrompt } from "../../../core-domain/src/domain/prompts.ts";
+} from "@shiguang-gateway/core-domain/edge/pipeline";
+import { renderPrompt } from "@shiguang-gateway/core-domain/edge/pipeline-prompts";
 import { getTaskFitness } from "./taskFitness.ts";
 
 // ---------------------------------------------------------------------------

@@ -19,7 +19,7 @@ import {
   DEFAULT_RESILIENCE_SETTINGS,
   resolveResilienceSettings,
   type RequestQueueSettings,
-} from "../../core-domain/src/lib/resilience/settings";
+} from "@shiguang-gateway/core-domain/resilience/settings";
 import {
   STANDARD_HEADERS,
   ANTHROPIC_HEADERS,
@@ -841,7 +841,7 @@ export function getLearnedLimits() {
 
 async function persistLearnedLimitsNow() {
   try {
-    const { updateSettings } = await import("../../core-domain/src/lib/db/settings.ts");
+    const { updateSettings } = await import("@shiguang-gateway/core-domain/control/settings");
     await updateSettings({ learnedRateLimits: JSON.stringify(learnedLimits) });
     logRateLimit(
       `💾 [RATE-LIMIT] Persisted learned limits for ${Object.keys(learnedLimits).length} provider(s)`
@@ -953,7 +953,7 @@ export async function __getLimiterStateForTests(provider, connectionId, model = 
  */
 async function loadPersistedLimits() {
   try {
-    const { getSettings } = await import("../../core-domain/src/lib/db/settings.ts");
+    const { getSettings } = await import("@shiguang-gateway/core-domain/control/settings");
     const settings = await getSettings();
     const raw = settings?.learnedRateLimits;
     if (typeof raw !== "string" || raw.trim().length === 0) return;

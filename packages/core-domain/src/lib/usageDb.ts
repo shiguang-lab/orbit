@@ -31,10 +31,18 @@ export {
   getRecentLogs,
   getCompletedDetails,
   getPendingById,
+  finalizeMostRecentPendingRequest,
+  finalizePendingRequestById,
 } from "./usage/usageHistory.js";
 
 export { calculateCost } from "./usage/costCalculator.js";
 
 export { getUsageStats } from "./usage/usageStats.js";
 
-export { saveCallLog, rotateCallLogs, getCallLogs, getCallLogById } from "./usage/callLogs.js";
+export {
+  saveCallLog,
+  rotateCallLogs,
+  getCallLogs,
+  getCallLogById,
+  exportCallLogsSince,
+} from "./usage/callLogs.js";

@@ -27,7 +27,7 @@
  * No barrel import — consistent with the other combo/* leaves.
  */
 
-import { deleteSessionModelHistory } from "../../../core-domain/src/lib/db/contextHandoffs.ts";
+import { deleteSessionModelHistory } from "@shiguang-gateway/core-domain/db/context-handoffs";
 
 /** Default threshold — after this many consecutive failures the pin is cleared. */
 export const COMBO_FAILURE_THRESHOLD = 3 as const;

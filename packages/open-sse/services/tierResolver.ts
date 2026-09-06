@@ -110,7 +110,7 @@ export function classifyTier(provider: string, model: string): TierAssignment {
 export function setTierConfig(config?: Partial<TierConfig> | null): void {
   if (config === null || config === undefined) {
     try {
-      const { loadTierConfig } = require("../../core-domain/src/lib/db/tierConfig");
+      const { loadTierConfig } = require("@shiguang-gateway/core-domain/db/tier-config");
       currentConfig = loadTierConfig();
     } catch {
       currentConfig = DEFAULT_TIER_CONFIG;

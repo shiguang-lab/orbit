@@ -12,3 +12,9 @@ export function calculateModalCost(
   model: string,
   usage: ModalUsage,
 ): Promise<number>;
+export function calculateCost(
+  provider: string,
+  model: string,
+  tokens: Record<string, number | undefined> | null | undefined,
+  options?: Record<string, unknown>,
+): Promise<number>;

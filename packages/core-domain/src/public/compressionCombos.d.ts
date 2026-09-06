@@ -1,8 +1,10 @@
+import type { CompressionPipelineStep } from "../../../open-sse/services/compression/types.js";
+
 export interface CompressionCombo {
   id: string;
   name: string;
   description: string;
-  pipeline: Array<Record<string, unknown>>;
+  pipeline: CompressionPipelineStep[];
   languagePacks: string[];
   outputMode: boolean;
   outputModeIntensity: string;
@@ -27,3 +29,4 @@ export function setDefaultCompressionCombo(id: string): boolean;
 export function getAssignmentsForCompressionCombo(id: string): CompressionComboAssignment[];
 export function updateAssignments(id: string, routingComboIds: string[]): boolean;
 export function getCompressionComboForRoutingCombo(routingComboId: string): CompressionCombo | null;
+export function getDefaultCompressionCombo(): CompressionCombo | null;

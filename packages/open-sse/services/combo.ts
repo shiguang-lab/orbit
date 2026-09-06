@@ -62,10 +62,10 @@ import {
   recordSessionModelUsage,
   getLastSessionModel,
   getHandoff,
-} from "../../core-domain/src/lib/db/contextHandoffs.ts";
-import { extractSessionAffinityKey } from "../../core-domain/src/sse/services/auth.ts";
-import { getHiddenModelsByProvider } from "../../core-domain/src/models/index.ts";
-import { resolveModelLockoutSettings } from "../../core-domain/src/lib/resilience/modelLockoutSettings";
+} from "@shiguang-gateway/core-domain/db/context-handoffs";
+import { extractSessionAffinityKey } from "@shiguang-gateway/core-domain/sse/auth";
+import { getHiddenModelsByProvider } from "@shiguang-gateway/core-domain/control/models";
+import { resolveModelLockoutSettings } from "@shiguang-gateway/core-domain/resilience/model-lockout-settings";
 import { fetchCodexQuota } from "./codexQuotaFetcher.ts";
 import { evaluateQuotaCutoff, getQuotaFetcher, type QuotaInfo } from "./quotaPreflight.ts";
 import { resolveProviderId } from "@shiguang-gateway/core-domain/edge/provider-constants";
@@ -76,8 +76,8 @@ import { rejectRetiredAutoComboCandidates } from "./modelLifecycle.ts";
 import { createComboContext } from "./combo/context.ts";
 import { phaseComboSetup } from "./combo/comboSetup.ts";
 import { checkCredentialGate, logCredentialSkip } from "./credentialGate.ts";
-import { emit } from "../../core-domain/src/lib/events/eventBus";
-import { notifyWebhookEvent } from "../../core-domain/src/lib/webhookDispatcher";
+import { emit } from "@shiguang-gateway/core-domain/events/eventBus";
+import { notifyWebhookEvent } from "@shiguang-gateway/core-domain/shared/webhook-dispatcher";
 import { type ProviderCandidate } from "./autoCombo/scoring.ts";
 import { estimateTokens } from "./contextManager.ts";
 import { getSessionConnection } from "./sessionManager.ts";
@@ -94,9 +94,9 @@ import {
 import { selectQuotaShareTarget } from "./combo/quotaShareStrategy.ts";
 import { makeConnectionConcurrencyResolver, lookupPositiveCap } from "./combo/concurrencyCaps.ts";
 import { acquireQuotaShareConcurrencySlot } from "./combo/quotaShareConcurrency.ts";
-import { canAffordRequest } from "../../core-domain/src/lib/quota/quotaScheduler.ts";
+import { canAffordRequest } from "@shiguang-gateway/core-domain/quota/scheduler";
 import { resolveConnectionTimeoutMs } from "../handlers/chatCore/upstreamTimeouts.ts";
-import { getCachedProviderConnectionById } from "../../core-domain/src/lib/db/readCache.ts";
+import { getCachedProviderConnectionById } from "@shiguang-gateway/core-domain/edge/read-cache";
 import { orderTargetsByEvalScores } from "./evalRouting.ts";
 
 /**
@@ -135,13 +135,13 @@ import {
 } from "./combo/comboErrorAggregation.ts";
 import type { ComboErrorEntry } from "./combo/comboErrorAggregation.ts";
 import type { CompressionMode } from "./compression/types.ts";
-import { getCachedProviderConnections } from "../../core-domain/src/lib/db/readCache";
+import { getCachedProviderConnections } from "@shiguang-gateway/core-domain/edge/read-cache";
 import { isProviderInCooldown, recordProviderCooldown } from "./providerCooldownTracker.ts";
 import {
   resolveResilienceSettings,
   type ResilienceSettings,
   type ComboCooldownWaitSettings,
-} from "../../core-domain/src/lib/resilience/settings";
+} from "@shiguang-gateway/core-domain/resilience/settings";
 import { resolveReasoningBufferedMaxTokens, toPositiveInteger } from "./reasoningTokenBuffer.ts";
 import { RESET_WINDOW_NAMES } from "./combo/types.ts";
 import type {
@@ -183,7 +183,7 @@ import {
 import {
   computeClosestRetryAfter,
   waitForCooldownAwareRetry,
-} from "../../core-domain/src/sse/services/cooldownAwareRetry.ts";
+} from "@shiguang-gateway/core-domain/edge/cooldown-aware-retry";
 import { dispatchChaosFromCombo, type ChaosTuning } from "./autoCombo/chaosEngine.ts";
 import {
   TRANSIENT_FOR_SEMAPHORE,
@@ -3442,7 +3442,7 @@ async function handleRoundRobinCombo({
             typeof attemptBody === "object"
           ) {
             try {
-              const { reserveQuota } = await import("../../core-domain/src/lib/quota/quotaScheduler.ts");
+              const { reserveQuota } = await import("@shiguang-gateway/core-domain/quota/scheduler");
               reserveQuota(target.connectionId, modelStr, attemptBody as Record<string, unknown>, {
                 tokenLimit: await resolveTargetTokenLimit(target),
               });

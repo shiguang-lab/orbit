@@ -21,9 +21,9 @@
 
 import { SignJWT, jwtVerify, type JWTPayload } from "jose";
 import { z } from "zod";
-import { getApiKeyById, getApiKeyMetadata, validateApiKey } from "../../core-domain/src/lib/db/apiKeys.ts";
+import { getApiKeyById, getApiKeyMetadata, validateApiKey } from "@shiguang-gateway/core-domain/db/api-keys";
 import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { saveCallLog } from "../../core-domain/src/lib/usage/callLogs.ts";
+import { saveCallLog } from "@shiguang-gateway/core-domain/usage/call-logs";
 import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/edge/feature-flags";
 import { HTTP_STATUS } from "../config/constants.ts";
 import {

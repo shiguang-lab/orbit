@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { createNotionClient } from "../../../core-domain/src/lib/notion/api.ts";
-import { getNotionToken } from "../../../core-domain/src/lib/db/notion.ts";
+import { createNotionClient } from "@shiguang-gateway/core-domain/edge/mcp-notion";
+import { getNotionToken } from "@shiguang-gateway/core-domain/control/notion-db";
 
 function requireToken(): string {
   const token = getNotionToken();

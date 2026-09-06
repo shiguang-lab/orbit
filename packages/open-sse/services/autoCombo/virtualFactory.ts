@@ -1,10 +1,10 @@
 import { AutoComboConfig } from "./engine";
 import { MODE_PACKS } from "./modePacks";
 import { DEFAULT_WEIGHTS, ScoringWeights } from "./scoring";
-import { getCachedProviderConnections } from "../../../core-domain/src/lib/db/readCache.ts";
-import { getSettings } from "../../../core-domain/src/lib/db/settings.ts";
+import { getCachedProviderConnections } from "@shiguang-gateway/core-domain/edge/read-cache";
+import { getSettings } from "@shiguang-gateway/core-domain/control/settings";
 import { getProviderRegistry } from "./providerRegistryAccessor";
-import type { ConnectionFields } from "../../../core-domain/src/lib/db/encryption.ts";
+import type { ConnectionFields } from "@shiguang-gateway/core-domain/db/encryption";
 import { NOAUTH_PROVIDERS } from "@shiguang-gateway/contracts/config/providerCatalog";
 import { isMicrosoftDesignerWebRetiredProviderId } from "@shiguang-gateway/contracts/designer-web-retirement";
 import { isRuntimeRetiredProviderId } from "@shiguang-gateway/contracts/provider-retirement";
@@ -28,8 +28,8 @@ import {
 import { classifyTier } from "../tierResolver";
 import type { AutoVariant } from "./autoPrefix";
 import { buildFamilyCandidateFilter, type ModelFamily } from "./modelFamily";
-import { getHiddenModelsByProvider } from "../../../core-domain/src/models/index.ts";
-import { getSyncedAvailableModelsByConnection, getCustomModels } from "../../../core-domain/src/lib/db/models.ts";
+import { getHiddenModelsByProvider } from "@shiguang-gateway/core-domain/control/models";
+import { getSyncedAvailableModelsByConnection, getCustomModels } from "@shiguang-gateway/core-domain/db/models-runtime";
 import { filterPaidOnlyCandidates } from "./paidModelFilter";
 import { filterModelExposureCandidates } from "./modelExposureFilter";
 import {
@@ -39,10 +39,10 @@ import {
 } from "./subscriptionLadder";
 import { filterStrictZeroCostCandidates, filterTosAvoidCandidates } from "./strictZeroCostFilter";
 import { resolveFreeAccessState } from "./freeAccessQuota";
-import { isModelExcludedByConnection } from "../../../core-domain/src/domain/connectionModelRules.ts";
+import { isModelExcludedByConnection } from "@shiguang-gateway/core-domain/edge/connection-model-rules";
 import { resolveProviderAlias } from "../model.ts";
 import { filterExcludedCandidates } from "./candidateOverrides";
-import { getExcludedConnectionIds } from "../../../core-domain/src/lib/db/autoCandidateOverrides.ts";
+import { getExcludedConnectionIds } from "@shiguang-gateway/core-domain/db/auto-candidate-overrides";
 import {
   filterResilienceBlockedCandidates,
   buildConnectionResilienceMap,

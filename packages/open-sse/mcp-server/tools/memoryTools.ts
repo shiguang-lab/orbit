@@ -1,12 +1,12 @@
 import { z } from "zod";
-import { retrieveMemories } from "../../../core-domain/src/lib/memory/retrieval.ts";
-import { createMemory, deleteMemory, listMemories } from "../../../core-domain/src/lib/memory/store.ts";
-import { MemoryType } from "../../../core-domain/src/lib/memory/types.ts";
+import { retrieveMemories } from "@shiguang-gateway/core-domain/edge/memory-runtime";
+import { createMemory, deleteMemory, listMemories } from "@shiguang-gateway/core-domain/edge/memory-runtime";
+import { MemoryType } from "@shiguang-gateway/core-domain/edge/memory-runtime";
 import {
   getMemorySettings,
   toMemoryRetrievalConfig,
   DEFAULT_MEMORY_SETTINGS,
-} from "../../../core-domain/src/lib/memory/settings.ts";
+} from "@shiguang-gateway/core-domain/edge/memory-runtime";
 import { resolveMcpCallerApiKeyId } from "../mcpCallerIdentity.ts";
 
 /**
