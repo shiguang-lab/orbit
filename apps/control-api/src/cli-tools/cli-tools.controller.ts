@@ -80,4 +80,9 @@ export class CliToolsController {
   cliStatusGet(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
     return this.routes.dispatch(req, reply, (request) => this.cliTools.cliStatusGet(request));
   }
+
+  @Get("all-statuses")
+  allStatusesGet(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(req, reply, (request) => this.cliTools.allStatusesGet(request));
+  }
 }

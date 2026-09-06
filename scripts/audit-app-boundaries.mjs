@@ -74,6 +74,7 @@ const allowedCoreDomainSubpaths = {
     "edge/relay-bifrost",
     "edge/relay-chat",
     "edge/vscode-token",
+    "edge/vscode-models",
     "control/settings",
     "edge/count-tokens-validation",
     "control/authenticated",

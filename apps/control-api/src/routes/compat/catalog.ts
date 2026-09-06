@@ -29,6 +29,10 @@ export function controlRouteCatalog(): CompatRouteDefinition[] {
   const appRoot = fileURLToPath(new URL("../", import.meta.url));
   const coreRoutes = collectApiRoutes(coreRoot);
   const appRoutes = collectApiRoutes(appRoot);
-  const migrated = new Set(appRoutes.map((route) => route.segments.join("/")));
+  const migrated = new Set([
+    ...appRoutes.map((route) => route.segments.join("/")),
+    // Implemented as a Nest controller in control-api (not a legacy route.ts).
+    "cli-tools/all-statuses",
+  ]);
   return coreRoutes.filter((route) => !migrated.has(route.segments.join("/")));
 }
