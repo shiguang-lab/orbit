@@ -5,11 +5,10 @@
  * Returns which targets would be tried, in which order, and with what expected outcome.
  */
 
-import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getCombos } from "../../../../lib/db/combos.ts";
-import { getProviderConnections } from "../../../../lib/db/providers.ts";
-import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
+import { getCombos } from "@shiguang-gateway/core-domain/db/local-db";
+import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 
 interface SimulateRequest {
   /** Combo ID to simulate */
@@ -133,7 +132,7 @@ export async function POST(request: Request) {
     const rawBody = await request.json();
     const validation = validateBody(simulateRequestSchema, rawBody);
     if (isValidationFailure(validation)) {
-      return NextResponse.json({ error: validation.error }, { status: 400 });
+      return Response.json({ error: validation.error }, { status: 400 });
     }
     const body: SimulateRequest = validation.data;
     const warnings: string[] = [];
@@ -150,7 +149,7 @@ export async function POST(request: Request) {
       const combo = combos.find((c) => c.id === body.comboId || c.name === body.comboId);
       if (!combo) {
         errors.push(`Combo "${body.comboId}" not found.`);
-        return NextResponse.json({ error: "Combo not found" }, { status: 404 });
+        return Response.json({ error: "Combo not found" }, { status: 404 });
       }
       const persistedSteps = Array.isArray(combo.models) ? combo.models : [];
       let unsupportedStepCount = 0;
@@ -212,7 +211,7 @@ export async function POST(request: Request) {
       comboInfo = body.combo;
     } else {
       errors.push("Either comboId or combo config is required.");
-      return NextResponse.json({ error: "Missing combo configuration" }, { status: 400 });
+      return Response.json({ error: "Missing combo configuration" }, { status: 400 });
     }
 
     const promptTokens = body.promptTokens || 500;
@@ -276,9 +275,9 @@ export async function POST(request: Request) {
       errors,
     };
 
-    return NextResponse.json(response, { status: 200 });
+    return Response.json(response, { status: 200 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
-    return NextResponse.json({ error: `Simulation error: ${message}` }, { status: 500 });
+    return Response.json({ error: `Simulation error: ${message}` }, { status: 500 });
   }
 }

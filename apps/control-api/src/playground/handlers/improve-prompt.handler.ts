@@ -14,15 +14,15 @@
  * Hard Rule #12: ALL error paths route through buildErrorBody.
  */
 
-import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../../../../open-sse/config/constants.ts";
-import { extractApiKey, isValidApiKey } from "../../../../sse/services/auth.ts";
+import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants";
+import { extractApiKey, isValidApiKey } from "@shiguang-gateway/core-domain/sse/auth";
 import {
   ImprovePromptRequestSchema,
   buildImproveChatBody,
   parseImprovedContent,
-} from "../../../../lib/playground/promptImprover.ts";
-import { isRequireApiKeyEnabled } from "../../../../shared/utils/featureFlags.ts";
+} from "@shiguang-gateway/core-domain/control/playground-prompt-improver";
+import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/control/feature-flags";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",

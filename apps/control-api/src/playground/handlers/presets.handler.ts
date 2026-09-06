@@ -7,15 +7,15 @@
  * Hard Rule #12: all error paths via buildErrorBody.
  */
 
-import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../../../../open-sse/config/constants.ts";
-import { extractApiKey, isValidApiKey } from "../../../../sse/services/auth.ts";
-import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
-import { listPlaygroundPresets, createPlaygroundPreset } from "../../../../lib/db/playgroundPresets.ts";
-import { PlaygroundPresetCreateSchema } from "../../../../shared/schemas/playground.ts";
-import { isRequireApiKeyEnabled } from "../../../../shared/utils/featureFlags.ts";
-import { paginationSchema } from "../../../../shared/validation/schemas.ts";
-import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
+import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants";
+import { extractApiKey, isValidApiKey } from "@shiguang-gateway/core-domain/sse/auth";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { listPlaygroundPresets, createPlaygroundPreset } from "@shiguang-gateway/core-domain/control/playground-presets";
+import { PlaygroundPresetCreateSchema } from "@shiguang-gateway/core-domain/shared/schemas/playground";
+import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/control/feature-flags";
+import { paginationSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",

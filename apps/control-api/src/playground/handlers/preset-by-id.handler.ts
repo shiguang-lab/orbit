@@ -10,16 +10,16 @@
  */
 
 import { z } from "zod";
-import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../../../../../open-sse/config/constants.ts";
-import { extractApiKey, isValidApiKey } from "../../../../../sse/services/auth.ts";
+import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants";
+import { extractApiKey, isValidApiKey } from "@shiguang-gateway/core-domain/sse/auth";
 import {
   getPlaygroundPreset,
   updatePlaygroundPreset,
   deletePlaygroundPreset,
-} from "../../../../../lib/db/playgroundPresets.ts";
-import { PlaygroundPresetUpdateSchema } from "../../../../../shared/schemas/playground.ts";
-import { isRequireApiKeyEnabled } from "../../../../../shared/utils/featureFlags.ts";
+} from "@shiguang-gateway/core-domain/control/playground-presets";
+import { PlaygroundPresetUpdateSchema } from "@shiguang-gateway/core-domain/shared/schemas/playground";
+import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/control/feature-flags";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Methods": "GET, PUT, DELETE, OPTIONS",
@@ -78,7 +78,7 @@ export async function GET(
   try {
     const preset = getPlaygroundPreset(id);
     if (!preset) {
-      return errorResp(HTTP_STATUS.NOT_FOUND, `Preset not found: ${id}`);
+      return errorResp(404, `Preset not found: ${id}`);
     }
     return new Response(JSON.stringify(preset), {
       status: 200,
@@ -138,7 +138,7 @@ export async function PUT(
     });
 
     if (!updated) {
-      return errorResp(HTTP_STATUS.NOT_FOUND, `Preset not found: ${id}`);
+      return errorResp(404, `Preset not found: ${id}`);
     }
 
     return new Response(JSON.stringify(updated), {
@@ -172,7 +172,7 @@ export async function DELETE(
   try {
     const deleted = deletePlaygroundPreset(id);
     if (!deleted) {
-      return errorResp(HTTP_STATUS.NOT_FOUND, `Preset not found: ${id}`);
+      return errorResp(404, `Preset not found: ${id}`);
     }
     return new Response(null, {
       status: 204,
