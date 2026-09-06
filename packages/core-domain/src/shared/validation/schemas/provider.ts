@@ -292,19 +292,6 @@ export const providerModelMutationSchema = z.object({
     .optional(),
 });
 
-export const updateModelAliasesSchema = z.object({
-  aliases: z.record(z.string().trim().min(1), z.string().trim().min(1)),
-});
-
-export const addModelAliasSchema = z.object({
-  from: z.string().trim().min(1),
-  to: z.string().trim().min(1),
-});
-
-export const removeModelAliasSchema = z.object({
-  from: z.string().trim().min(1),
-});
-
 export const createProviderNodeSchema = z
   .object({
     // #6874: name/prefix are required in general, but a `preset` (e.g.

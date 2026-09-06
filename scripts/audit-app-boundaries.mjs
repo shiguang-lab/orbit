@@ -302,6 +302,8 @@ const migratedRouteOwnership = {
     "api/settings/reasoning-routing-rules/route.ts",
     "api/settings/reasoning-routing-rules/[id]/route.ts",
     "api/settings/reasoning-routing-rules/simulate/route.ts",
+    "api/settings/task-routing/route.ts",
+    "api/settings/model-aliases/route.ts",
     "api/settings/proxy/test/route.ts",
     "api/settings/proxies/route.ts",
     "api/settings/proxies/assignments/route.ts",

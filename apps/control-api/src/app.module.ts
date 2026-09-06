@@ -35,6 +35,8 @@ import { ProviderAuthImportModule } from "./providers/auth/provider-auth-import.
 import { CompressionModule } from "./settings/compression/compression.module.js";
 import { QdrantModule } from "./settings/qdrant/qdrant.module.js";
 import { ReasoningRoutingModule } from "./settings/reasoning-routing/reasoning-routing.module.js";
+import { TaskRoutingModule } from "./settings/task-routing/task-routing.module.js";
+import { ModelAliasesModule } from "./settings/model-aliases/model-aliases.module.js";
 
 @Module({
   imports: [
@@ -74,6 +76,8 @@ import { ReasoningRoutingModule } from "./settings/reasoning-routing/reasoning-r
     CompressionModule,
     QdrantModule,
     ReasoningRoutingModule,
+    TaskRoutingModule,
+    ModelAliasesModule,
   ],
 })
 export class AppModule {}
