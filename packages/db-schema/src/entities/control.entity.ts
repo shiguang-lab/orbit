@@ -70,6 +70,48 @@ export const PluginMetricEntity: EntityDefinition = {
   ],
 };
 
+/** Skill definitions are managed by control-api and injected/executed by edge. */
+export const SkillEntity: EntityDefinition = {
+  entityName: "Skill",
+  tableName: "skills",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("api_key_id", "TEXT", { nullable: false }),
+    column("name", "TEXT", { nullable: false }),
+    column("version", "TEXT", { nullable: false, default: "'1.0.0'" }),
+    column("description", "TEXT"),
+    column("schema", "TEXT", { nullable: false }),
+    column("handler", "TEXT", { nullable: false }),
+    column("enabled", "INTEGER", { nullable: false, default: "1" }),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+    column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+    column("mode", "TEXT", { nullable: false, default: "'auto'" }),
+    column("source_provider", "TEXT"),
+    column("tags", "TEXT"),
+    column("install_count", "INTEGER", { nullable: false, default: "0" }),
+  ],
+};
+
+/** Skill execution audit records are written by the shared runtime. */
+export const SkillExecutionEntity: EntityDefinition = {
+  entityName: "SkillExecution",
+  tableName: "skill_executions",
+  owner: "edge-gateway",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("skill_id", "TEXT", { nullable: false }),
+    column("api_key_id", "TEXT", { nullable: false }),
+    column("session_id", "TEXT"),
+    column("input", "TEXT", { nullable: false }),
+    column("output", "TEXT"),
+    column("status", "TEXT", { nullable: false }),
+    column("error_message", "TEXT"),
+    column("duration_ms", "INTEGER"),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
 export const ProviderConnectionEntity: EntityDefinition = {
   entityName: "ProviderConnection",
   tableName: "provider_connections",

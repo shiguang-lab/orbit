@@ -53,6 +53,8 @@ import {
   RadarOffersCacheEntity,
   RadarIntelCacheEntity,
   RadarLocalModelStateEntity,
+  SkillEntity,
+  SkillExecutionEntity,
 } from "./entities/control.entity.js";
 import {
   AgenticConversationEntity,
@@ -158,6 +160,8 @@ export const GATEWAY_TABLES = {
   compressionEngineBreakdown: "compression_engine_breakdown",
   semanticCache: "semantic_cache",
   cacheMetrics: "cache_metrics",
+  skills: "skills",
+  skillExecutions: "skill_executions",
 } as const;
 
 export type GatewayTable = (typeof GATEWAY_TABLES)[keyof typeof GATEWAY_TABLES];
@@ -246,6 +250,8 @@ export const TABLE_OWNERSHIP: readonly TableRef[] = [
   { table: GATEWAY_TABLES.compressionEngineBreakdown, owner: "edge-gateway", access: "read-write" },
   { table: GATEWAY_TABLES.semanticCache, owner: "edge-gateway", access: "read-write" },
   { table: GATEWAY_TABLES.cacheMetrics, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.skills, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.skillExecutions, owner: "edge-gateway", access: "read-write" },
 ];
 
 /**
@@ -328,6 +334,8 @@ export const GATEWAY_ENTITIES = {
   compressionEngineBreakdown: CompressionEngineBreakdownEntity,
   semanticCache: SemanticCacheEntity,
   cacheMetrics: CacheMetricEntity,
+  skills: SkillEntity,
+  skillExecutions: SkillExecutionEntity,
 } satisfies Record<keyof typeof GATEWAY_TABLES, EntityDefinition>;
 
 /** Runtime guard used by architecture checks and tests. */
