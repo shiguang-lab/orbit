@@ -1012,17 +1012,9 @@
       "types": "./src/public/skillsRegistry.d.ts",
       "import": "./src/lib/skills/registry.ts"
     },
-    "./control/skills-provider-settings": {
-      "types": "./src/public/skillsProviderSettings.d.ts",
-      "import": "./src/lib/skills/providerSettings.ts"
-    },
     "./control/skills-github": {
       "types": "./src/public/skillsGithub.d.ts",
       "import": "./src/lib/skills/githubCollector.ts"
-    },
-    "./control/skills-skillssh": {
-      "types": "./src/public/skillsSkillssh.d.ts",
-      "import": "./src/lib/skills/skillssh.ts"
     },
     "./shared/types/pagination": {
       "types": "./src/public/pagination.d.ts",

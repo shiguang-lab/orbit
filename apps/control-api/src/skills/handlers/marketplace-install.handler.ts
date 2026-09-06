@@ -1,10 +1,9 @@
 import { z } from "zod";
 import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { GLOBAL_SKILL_OWNER_ID, skillRegistry } from "@shiguang-gateway/core-domain/control/skills-registry";
-import { getSkillsProviderSetting } from "@shiguang-gateway/core-domain/control/skills-provider-settings";
-
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import type { SkillsProviderSettingsService } from "../providers/skills-provider-settings.service.js";
 
 const marketplaceInstallSchema = z.object({
   name: z.string().min(1).max(64),
@@ -14,12 +13,12 @@ const marketplaceInstallSchema = z.object({
   sourceUrl: z.string().optional(),
 });
 
-export async function POST(request: Request) {
+export async function POST(request: Request, providerSettings: SkillsProviderSettingsService) {
   if (!(await isAuthenticated(request))) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
   try {
-    const provider = await getSkillsProviderSetting();
+    const provider = await providerSettings.get();
     if (provider !== "skillsmp") {
       return Response.json(
         {

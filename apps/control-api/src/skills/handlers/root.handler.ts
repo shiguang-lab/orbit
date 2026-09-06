@@ -1,22 +1,22 @@
 import { skillRegistry } from "@shiguang-gateway/core-domain/control/skills-registry";
 import { parsePaginationParams, buildPaginatedResponse } from "@shiguang-gateway/core-domain/shared/types/pagination";
-import { getSkillsProviderSetting } from "@shiguang-gateway/core-domain/control/skills-provider-settings";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { matchesSearch } from "@shiguang-gateway/core-domain/shared/utils/turkishText";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import type { SkillsProviderSettingsService } from "../providers/skills-provider-settings.service.js";
 
 const POPULAR_BY_PROVIDER = {
   skillsmp: ["web-search", "file-reader", "sql-assistant", "devops-helper", "docs-assistant"],
   skillssh: ["git", "terminal", "postgres", "kubernetes", "playwright"],
 } as const;
 
-export async function GET(request?: Request) {
+export async function GET(request: Request | undefined, providerSettings: SkillsProviderSettingsService) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 
   try {
     await skillRegistry.loadFromDatabase();
-    const provider = await getSkillsProviderSetting();
+    const provider = await providerSettings.get();
     const url = request?.url || "http://localhost/api/skills";
     const parsedUrl = new URL(url);
     const query = parsedUrl.searchParams.get("q")?.trim() || "";

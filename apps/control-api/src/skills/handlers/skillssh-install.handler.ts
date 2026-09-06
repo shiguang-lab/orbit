@@ -2,9 +2,9 @@ import { z } from "zod";
 import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { GLOBAL_SKILL_OWNER_ID, skillRegistry } from "@shiguang-gateway/core-domain/control/skills-registry";
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
-import { fetchSkillMd } from "@shiguang-gateway/core-domain/control/skills-skillssh";
-import { getSkillsProviderSetting } from "@shiguang-gateway/core-domain/control/skills-provider-settings";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import type { SkillsProviderSettingsService } from "../providers/skills-provider-settings.service.js";
+import type { SkillsShProvider } from "../providers/skills-sh.provider.js";
 
 const skillsshInstallSchema = z.object({
   name: z.string().min(1).max(64),
@@ -14,12 +14,16 @@ const skillsshInstallSchema = z.object({
   version: z.string().default("1.0.0"),
 });
 
-export async function POST(request: Request) {
+export async function POST(
+  request: Request,
+  skillsSh: SkillsShProvider,
+  providerSettings: SkillsProviderSettingsService,
+) {
   if (!(await isAuthenticated(request))) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
   try {
-    const provider = await getSkillsProviderSetting();
+    const provider = await providerSettings.get();
     if (provider !== "skillssh") {
       return Response.json(
         {
@@ -37,7 +41,7 @@ export async function POST(request: Request) {
     }
     const { name, description, source, skillId, version } = validation.data;
 
-    const skillMdContent = await fetchSkillMd(source, skillId);
+    const skillMdContent = await skillsSh.fetchSkillMd(source, skillId);
 
     const skill = await skillRegistry.register({
       name,

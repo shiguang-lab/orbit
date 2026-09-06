@@ -1,21 +1,21 @@
 import { getSettings } from "@shiguang-gateway/core-domain/control/settings";
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
-import { getSkillsProviderSetting } from "@shiguang-gateway/core-domain/control/skills-provider-settings";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import type { SkillsProviderSettingsService } from "../providers/skills-provider-settings.service.js";
 
 const POPULAR_BY_PROVIDER = {
   skillsmp: ["web-search", "file-reader", "sql-assistant", "devops-helper", "docs-assistant"],
   skillssh: ["git", "terminal", "postgres", "kubernetes", "playwright"],
 } as const;
 
-export async function GET(request: Request) {
+export async function GET(request: Request, providerSettings: SkillsProviderSettingsService) {
   if (!(await isAuthenticated(request))) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
   try {
     const { searchParams } = new URL(request.url);
     const q = searchParams.get("q")?.trim() || "";
-    const provider = await getSkillsProviderSetting();
+    const provider = await providerSettings.get();
 
     // Return popular skills when query is empty
     if (!q) {
