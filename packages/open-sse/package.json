@@ -89,6 +89,14 @@
       "types": "./public/cavemanRules.d.ts",
       "import": "./services/compression/cavemanRules.ts"
     },
+    "./services/compression/engines/rtk": {
+      "types": "./public/rtk.d.ts",
+      "import": "./services/compression/engines/rtk/index.ts"
+    },
+    "./services/compression/engines/rtk/filterLoader": {
+      "types": "./public/rtk.d.ts",
+      "import": "./services/compression/engines/rtk/filterLoader.ts"
+    },
     "./services/combo": {
       "types": "./public/combo.d.ts",
       "import": "./services/combo.ts"

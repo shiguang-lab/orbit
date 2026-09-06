@@ -7,6 +7,14 @@ import {
 } from "@shiguang-gateway/core-domain/control/compression-settings";
 import { getCompressionRunTelemetrySummary } from "@shiguang-gateway/core-domain/db/compression-run-telemetry";
 import { getCavemanRuleMetadata } from "@shiguang-gateway/open-sse/services/compression/cavemanRules";
+import {
+  discoverRepeatedNoise,
+  listRtkCommandSamples,
+} from "@shiguang-gateway/open-sse/services/compression/engines/rtk";
+import {
+  getRtkFilterCatalog,
+  getRtkFilterLoadDiagnostics,
+} from "@shiguang-gateway/open-sse/services/compression/engines/rtk/filterLoader";
 
 const EMPTY_TELEMETRY_SUMMARY = {
   totalRuns: 0,
@@ -26,6 +34,31 @@ export class CompressionSettingsService {
 
   updateSettings(updates: Record<string, unknown>) {
     return updateCompressionSettings(updates);
+  }
+
+  async getRtkConfig() {
+    const settings = await getCompressionSettings();
+    return settings.rtkConfig;
+  }
+
+  async updateRtkConfig(updates: Record<string, unknown>) {
+    const current = await getCompressionSettings();
+    const settings = await updateCompressionSettings({
+      rtkConfig: {
+        ...((current.rtkConfig as Record<string, unknown> | undefined) ?? {}),
+        ...updates,
+      },
+    });
+    return settings.rtkConfig;
+  }
+
+  getRtkDiscover(limit: number) {
+    const samples = listRtkCommandSamples({ limit });
+    return { sampleCount: samples.length, candidates: discoverRepeatedNoise(samples) };
+  }
+
+  getRtkFilters() {
+    return { filters: getRtkFilterCatalog(), diagnostics: getRtkFilterLoadDiagnostics() };
   }
 
   getMcpAccessibility() {

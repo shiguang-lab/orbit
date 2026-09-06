@@ -7,7 +7,7 @@ port or selecting a surface at runtime.
 | App | Owns | Reads/writes | Acceptance |
 | --- | --- | --- | --- |
 | `edge-gateway` | Public `/v1`, `/v1beta`, A2A and provider execution; no live-dashboard listener | Provider connections, batches/files (through app-owned Nest modules and handlers) | `pnpm --filter @shiguang-gateway/edge-gateway typecheck && pnpm --filter @shiguang-gateway/edge-gateway build && pnpm smoke:split-deployment` |
-| `control-api` | Admin `/api`, authz, CRUD, settings, logs, audit commands, free-proxy catalog/promotion and system version/update controls; migrated health route group in `apps/control-api/src/routes/api` | Control-plane tables and read-only usage projections | `pnpm --filter @shiguang-gateway/control-api typecheck && pnpm --filter @shiguang-gateway/control-api build` |
+| `control-api` | Admin `/api`, authz, CRUD, settings, logs, audit commands, free-proxy catalog/promotion and system version/update controls; migrated health route group in `apps/control-api/src/routes/api`; named compression-combo CRUD and assignments | Control-plane tables and read-only usage projections | `pnpm --filter @shiguang-gateway/control-api typecheck && pnpm --filter @shiguang-gateway/control-api build` |
 | `realtime` | Live dashboard WebSocket transport (`apps/realtime/src/live-ws`) | Event projections only | `pnpm --filter @shiguang-gateway/realtime typecheck && pnpm --filter @shiguang-gateway/realtime build` |
 | `worker` | Schedulers, sync, cleanup and background writes; task manifest/runner in `apps/worker/src/jobs` | Usage, quota, audit and job tables | `pnpm --filter @shiguang-gateway/worker typecheck && pnpm --filter @shiguang-gateway/worker build && pnpm smoke:worker` |
 | `importer` | One-shot snapshot import and migration | Import target only | `pnpm --filter @shiguang-gateway/importer typecheck && pnpm --filter @shiguang-gateway/importer build` |
@@ -75,7 +75,7 @@ The entity write owners are intentionally narrower than those consumers:
 
 | Owner | Entities |
 | --- | --- |
-| `control-api` | settings, providerConnections, providerNodes, apiKeys, apiKeyGroups, combos, modelComboMappings, webhooks, apiKeyTokenLimits, providerPlans, plugins, modelContextOverrides, modelCapabilityOverrides, tierConfig, tierAssignments, freeProxies, freeProxySyncErrors, reasoningRoutingRules, quotaGroups, quotaPools, quotaAllocations, quotaPoolConnections, quotaAllocationModelCaps |
+| `control-api` | settings, providerConnections, providerNodes, apiKeys, apiKeyGroups, combos, compressionCombos, compressionComboAssignments, modelComboMappings, webhooks, apiKeyTokenLimits, providerPlans, plugins, modelContextOverrides, modelCapabilityOverrides, tierConfig, tierAssignments, freeProxies, freeProxySyncErrors, reasoningRoutingRules, quotaGroups, quotaPools, quotaAllocations, quotaPoolConnections, quotaAllocationModelCaps |
 | `edge-gateway` | batches, files, agenticConversations, conversationTurnNodes, apiKeyTokenCounters, apiKeyTokenLimitResetLogs, providerQuotaState, quotaConsumption |
 | `worker` | usageHistory, callLogs, proxyLogs, quotaSnapshots, auditLogs, memories, jobs, modelCapabilities |
 
@@ -110,7 +110,8 @@ The current migration wave has moved the control auth (status, CSRF, password lo
 logout and OIDC), health/status/process-control/system version/update/version-manager/Bifrost controls,
 rate-limit toggle, proxy connectivity/registry management, free-proxy catalog/list/stats/sync/
 promotion, settings/database maintenance and feature flags, OneProxy compatibility redirects, compression settings,
-MCP accessibility configuration, compression run telemetry, Caveman settings alias and rule metadata, provider token refresh,
+MCP accessibility configuration, compression run telemetry, Caveman settings alias and rule metadata, RTK configuration,
+filter discovery and filter catalog diagnostics, provider token refresh,
 Qdrant configuration, health, semantic-search diagnostics, cleanup, and embedding-model discovery,
 reasoning-routing rule CRUD and policy simulation, Claude Code discovery-alias usage metrics,
 task-aware routing configuration and detection diagnostics,
@@ -118,7 +119,7 @@ model-alias settings (built-in/custom alias inspection and management),
 MITM settings/status, certificate download and regeneration, and start/stop controls,
 Notion integration token settings and Obsidian REST/WebDAV settings,
 local-corpus source configuration and index lifecycle,
-compression analytics summary and per-engine diagnostics,
+compression analytics summary and per-engine diagnostics, named compression-combo CRUD/assignment/default-plan routes,
 token-health/synced-models/provider-stats/provider-metrics/provider-nodes list/validation/provider-models, provider validation/observability (OpenRouter stats, quota windows, expiration, health matrix), provider policy settings (Claude Code aliases, parameter filters, web interception rules, tier configuration), client connection export and web-session contract, combo management (builder options, duplicate, metrics, reorder, auto and test), webhook management, memory settings, and complete API-key management groups (including app-owned root handlers, devices, regeneration, reveal, usage limits, key groups, memberships, and permissions), and the edge files, music,
 speech-to-text, embeddings, audio-transcriptions, audio-speech, audio-translations, text-to-speech, image edits/generations/upscale, moderation, rerank, ElevenLabs voices, plus WebSocket handshake routes. Remaining route groups stay in
 `core-domain` until their dependencies can move without reintroducing a
