@@ -516,6 +516,11 @@ const migratedRouteOwnership = {
     "api/tools/agent-bridge/agents/[id]/detect/route.ts",
     "api/tools/agent-bridge/agents/[id]/detected-models/route.ts",
     "api/tools/agent-bridge/agents/[id]/mappings/route.ts",
+    "api/tools/agent-bridge/state/route.ts",
+    "api/tools/agent-bridge/diagnose/route.ts",
+    "api/tools/agent-bridge/cert/route.ts",
+    "api/tools/agent-bridge/cert/regenerate/route.ts",
+    "api/tools/agent-bridge/cert/download/route.ts",
   ],
   "apps/edge-gateway": [
     // A2A protocol and task-management routes are owned by the edge Nest app.
