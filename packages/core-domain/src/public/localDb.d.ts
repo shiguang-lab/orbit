@@ -182,6 +182,9 @@ export function markBatchItemError(
 ): void;
 export function getApiKeyById(id: string): Promise<{ key?: string | null } | null>;
 export function getProxyForLevel(level: string, provider?: string): Promise<unknown | null>;
+export function getProxyConfig(): Promise<Record<string, any>>;
+export function setProxyConfig(config: Record<string, unknown>): Promise<Record<string, any>>;
+export function deleteProxyForLevel(level: string, id: string | null): Promise<Record<string, any>>;
 export function resolveProxyForProvider(provider: string): Promise<unknown | null>;
 
 export function getComboByName(name: string): Promise<unknown>;

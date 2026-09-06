@@ -41,6 +41,8 @@ import { CcDiscoveryMetricsModule } from "./settings/cc-discovery-metrics/cc-dis
 import { NotionSettingsModule } from "./settings/notion/notion.module.js";
 import { ObsidianSettingsModule } from "./settings/obsidian/obsidian.module.js";
 import { LocalCorpusModule } from "./settings/local-corpus/local-corpus.module.js";
+import { ProxySettingsModule } from "./settings/proxy/proxy-settings.module.js";
+import { QuotaSettingsModule } from "./settings/quota/quota.module.js";
 
 @Module({
   imports: [
@@ -86,6 +88,8 @@ import { LocalCorpusModule } from "./settings/local-corpus/local-corpus.module.j
     NotionSettingsModule,
     ObsidianSettingsModule,
     LocalCorpusModule,
+    ProxySettingsModule,
+    QuotaSettingsModule,
   ],
 })
 export class AppModule {}

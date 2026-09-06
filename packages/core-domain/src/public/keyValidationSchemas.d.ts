@@ -11,6 +11,7 @@ export const toggleRateLimitSchema: z.ZodTypeAny;
 export const versionManagerToolSchema: z.ZodTypeAny;
 export const versionManagerInstallSchema: z.ZodTypeAny;
 export const testProxySchema: z.ZodTypeAny;
+export const updateProxyConfigSchema: z.ZodTypeAny;
 export const databaseSettingsSchema: z.ZodObject<any>;
 export const bulkImportProxiesSchema: z.ZodTypeAny;
 export const bulkProxyAssignmentSchema: z.ZodTypeAny;
