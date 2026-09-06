@@ -1,0 +1,31 @@
+import { Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
+import { WORKER_JOBS } from "./registry.js";
+import { startWorkerJobs, stopWorkerJobs } from "./runner.js";
+import { stopBatchProcessor } from "./batch-processor.js";
+
+/** Owns worker job startup and shutdown inside the Nest module graph. */
+@Injectable()
+export class WorkerJobsService implements OnModuleInit, OnModuleDestroy {
+  private keepAlive: NodeJS.Timeout | null = null;
+  private started: string[] = [];
+
+  async onModuleInit(): Promise<void> {
+    const log = (...args: unknown[]) => console.log("[worker]", ...args);
+    this.started = await startWorkerJobs(WORKER_JOBS, log);
+    log(`started: ${this.started.join(", ") || "none"}`);
+
+    // A standalone application context has no listening socket. Keep the
+    // process alive while the worker-owned schedulers are running.
+    this.keepAlive = setInterval(() => undefined, 60_000);
+  }
+
+  async onModuleDestroy(): Promise<void> {
+    if (this.keepAlive) {
+      clearInterval(this.keepAlive);
+      this.keepAlive = null;
+    }
+    await stopWorkerJobs(WORKER_JOBS, this.started, (...args) => console.log("[worker]", ...args));
+    stopBatchProcessor();
+    console.log("[worker] stopped");
+  }
+}

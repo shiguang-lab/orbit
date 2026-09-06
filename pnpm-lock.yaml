@@ -301,6 +301,12 @@ importers:
 
   apps/worker:
     dependencies:
+      '@nestjs/common':
+        specifier: ^11.2.3
+        version: 11.2.3(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nestjs/core':
+        specifier: ^11.2.3
+        version: 11.2.3(@nestjs/common@11.2.3(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@shiguang-gateway/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts

@@ -32,7 +32,7 @@ const appKinds = {
   "control-api": { entry: "main.ts", nest: true },
   "edge-gateway": { entry: "main.ts", nest: true },
   realtime: { entry: "main.ts", nest: true },
-  worker: { entry: "main.ts", nest: false },
+  worker: { entry: "main.ts", nest: true },
   importer: { entry: "main.ts", nest: false },
 };
 

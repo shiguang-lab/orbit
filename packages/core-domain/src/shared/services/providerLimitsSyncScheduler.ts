@@ -70,3 +70,16 @@ export function startProviderLimitsSyncScheduler(): void {
     startupTimer.unref?.();
   })();
 }
+
+/** Stop pending startup and recurring provider-limit sync timers. */
+export function stopProviderLimitsSyncScheduler(): void {
+  if (startupTimer) {
+    clearTimeout(startupTimer);
+    startupTimer = null;
+  }
+  if (schedulerTimer) {
+    clearInterval(schedulerTimer);
+    schedulerTimer = null;
+  }
+  isRunning = false;
+}

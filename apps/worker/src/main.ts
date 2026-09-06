@@ -1,22 +1,14 @@
 import { ensureSecrets } from "@shiguang-gateway/core-domain/startup";
 import { assertGatewayEntities } from "@shiguang-gateway/db-schema";
-import { WORKER_JOBS } from "./jobs/registry.js";
-import { startWorkerJobs } from "./jobs/runner.js";
+import { bootstrapWorker } from "./bootstrap.js";
 
-assertGatewayEntities();
-await ensureSecrets();
-process.env.SHIGUANG_GATEWAY_BASE_URL ??= process.env.INTERNAL_BASE_URL ??
-  `http://${process.env.EDGE_GATEWAY_HOST === "0.0.0.0" ? "127.0.0.1" : (process.env.EDGE_GATEWAY_HOST ?? "127.0.0.1")}:${process.env.EDGE_GATEWAY_PORT ?? "8787"}`;
-const log = (...args: unknown[]) => console.log("[worker]", ...args);
-const started = await startWorkerJobs(WORKER_JOBS, log);
-log(`started: ${started.join(", ") || "none"}`);
+async function main(): Promise<void> {
+  assertGatewayEntities();
+  await ensureSecrets();
+  process.env.SHIGUANG_GATEWAY_BASE_URL ??= process.env.INTERNAL_BASE_URL ??
+    `http://${process.env.EDGE_GATEWAY_HOST === "0.0.0.0" ? "127.0.0.1" : (process.env.EDGE_GATEWAY_HOST ?? "127.0.0.1")}:${process.env.EDGE_GATEWAY_PORT ?? "8787"}`;
 
-await new Promise<void>((resolve) => {
-  const keepAlive = setInterval(() => undefined, 60_000);
-  const stop = () => {
-    clearInterval(keepAlive);
-    resolve();
-  };
-  process.once("SIGINT", stop);
-  process.once("SIGTERM", stop);
-});
+  await bootstrapWorker();
+}
+
+await main();
