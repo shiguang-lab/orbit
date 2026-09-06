@@ -363,15 +363,15 @@
     "./control/build-phase": "./src/lib/buildPhase.ts",
     "./control/cursor-token-extractor": "./src/lib/cursor/tokenExtractor.ts",
     "./shared/validation/providerSpecificData": {
-      "types": "./src/shared/validation/providerSpecificData.ts",
+      "types": "./src/public/providerSpecificData.d.ts",
       "import": "./src/shared/validation/providerSpecificData.ts"
     },
     "./shared/constants/gitlabDuoSetupMessage": {
-      "types": "./src/shared/constants/gitlabDuoSetupMessage.ts",
+      "types": "./src/public/gitlabDuoSetupMessage.d.ts",
       "import": "./src/shared/constants/gitlabDuoSetupMessage.ts"
     },
     "./shared/authz-route-guard": {
-      "types": "./src/server/authz/routeGuard.ts",
+      "types": "./src/public/authzRouteGuard.d.ts",
       "import": "./src/server/authz/routeGuard.ts"
     },
     "./control/tier-config": {
