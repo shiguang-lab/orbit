@@ -659,7 +659,9 @@ const migratedRouteOwnership = {
     "api/v1/muse-code/models/route.ts",
     "api/v1/me/status/route.ts",
     "api/v1/completions/route.ts",
+    "api/v1/messages/route.ts",
     "api/v1/antigravity/route.ts",
+    "api/v1/auto-combo/[channel]/candidates/route.ts",
   ],
 };
 
