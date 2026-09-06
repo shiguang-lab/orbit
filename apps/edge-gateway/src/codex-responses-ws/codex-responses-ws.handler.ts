@@ -1,54 +1,54 @@
-import { NextResponse } from "next/server";
 import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
-import { CodexExecutor } from "../../../../../../open-sse/executors/codex.ts";
-import { getApiKeyMetadata } from "../../../../lib/db/apiKeys.ts";
-import { authorizeWebSocketHandshake, extractWsTokenFromRequest } from "../../../../lib/ws/handshake.ts";
-import { getModelInfo } from "../../../../sse/services/model.ts";
-import { resolveCcDiscoveryAliasStrip } from "../../../../lib/ccDiscoveryAliasResolve.ts";
-import { getProviderCredentialsWithQuotaPreflight } from "../../../../sse/services/auth.ts";
-import { enforceApiKeyPolicy } from "../../../../shared/utils/apiKeyPolicy.ts";
-import { checkAndRefreshToken } from "../../../../sse/services/tokenRefresh.ts";
-import { resolveCodexWsModelInfo } from "./modelResolution";
-import { isFeatureFlagEnabled } from "../../../../shared/utils/featureFlags.ts";
-import { formatMemoryContext } from "../../../../lib/memory/injection.ts";
-import { retrieveMemories } from "../../../../lib/memory/retrieval.ts";
-import {
-  DEFAULT_MEMORY_SETTINGS,
-  getMemorySettings,
-  toMemoryRetrievalConfig,
-} from "../../../../lib/memory/settings.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
-import { logger } from "../../../../../../open-sse/utils/logger.ts";
-import { resolveProxy } from "../../../../../../open-sse/utils/networkProxy.ts";
-import { withCodexFingerprintCredentials } from "../../../../../../open-sse/config/codexIdentity.ts";
-import { proxyConfigToUrl } from "../../../../../../open-sse/utils/proxyDispatcher.ts";
 import {
   attachReasoningRuleDirective,
   applyReasoningRuleDirective,
+  authorizeWebSocketHandshake,
+  buildManagedLeaseErrorResponse,
+  checkAndRefreshToken,
+  DEFAULT_MEMORY_SETTINGS,
+  enforceApiKeyPolicy,
   extractReasoningIntent,
+  extractWsTokenFromRequest,
+  formatMemoryContext,
+  getApiKeyMetadata,
+  getComboByName,
+  getComboModelString,
+  getMemorySettings,
+  getModelInfo,
+  getProviderCredentialsWithQuotaPreflight,
+  isExclusiveLeaseManagedKey,
+  isFeatureFlagEnabled,
+  LeaseContextError,
+  resolveCcDiscoveryAliasStrip,
+  resolveCodexWsModelInfo,
   resolveReasoningSourceModels,
   resolveReasoningRoutingRule,
+  resolveRequestRoutingTags,
+  retrieveMemories,
+  toMemoryRetrievalConfig,
+  validateApiKeyRoutingTarget,
   validateCodexWsDecision,
-} from "../../../../lib/reasoningRouting/policy.ts";
-import { resolveRequestRoutingTags } from "../../../../domain/tagRouter.ts";
-import { validateApiKeyRoutingTarget } from "../../../../shared/utils/apiKeyPolicy.ts";
-import { persistResponsesWsCallHistory } from "./history";
-import { applyResponsesWsCompression } from "./compression";
-import { getComboByName } from "../../../../lib/db/combos.ts";
-import { getComboModelString } from "../../../../lib/combos/steps.ts";
+} from "@shiguang-gateway/core-domain/edge/codex-responses-ws-runtime";
 import {
-  buildManagedLeaseErrorResponse,
-  isExclusiveLeaseManagedKey,
-  LeaseContextError,
-} from "../../../../sse/services/leaseContext.ts";
+  CodexExecutor,
+  logger,
+  proxyConfigToUrl,
+  resolveProxy,
+  sanitizeErrorMessage,
+  withCodexFingerprintCredentials,
+} from "@shiguang-gateway/open-sse/services/codex-responses-ws-runtime";
+import { persistResponsesWsCallHistory } from "./history.js";
+import { applyResponsesWsCompression } from "./compression.js";
 
 const CODEX_RESPONSES_WS_URL = "wss://chatgpt.com/backend-api/codex/responses";
 const executor = new CodexExecutor();
 const log = logger("RESPONSES_WS");
 
 type JsonRecord = Record<string, unknown>;
-type ApiKeyMetadata = Awaited<ReturnType<typeof getApiKeyMetadata>>;
+type ApiKeyMetadata = NonNullable<
+  Awaited<ReturnType<typeof enforceApiKeyPolicy>>["apiKeyInfo"]
+>;
 
 const bridgePayloadSchema = z
   .object({
@@ -248,7 +248,7 @@ function getAuthRequest(body: JsonRecord): Request {
 }
 
 function jsonError(status: number, code: string, message: string) {
-  return NextResponse.json(
+  return Response.json(
     {
       error: {
         code,
@@ -290,7 +290,7 @@ async function authenticate(body: JsonRecord) {
     );
   }
 
-  return NextResponse.json({
+  return Response.json({
     ok: true,
     authenticated: auth.authenticated,
     authType: auth.authType,
@@ -480,7 +480,7 @@ async function resolveCodexUpstreamContext(
     model,
     context.allowedConnections
   );
-  if (credentialResult.error) return credentialResult;
+  if (!("credentials" in credentialResult)) return credentialResult;
   let reasoningDecision = context.decision;
   if (!reasoningDecision) {
     reasoningDecision = await resolveReasoningRoutingRule({
@@ -518,14 +518,16 @@ async function resolveCodexProxy(provider: string): Promise<string | undefined> 
   try {
     return proxyConfigToUrl(await resolveProxy(provider)) || undefined;
   } catch (err) {
-    logger.warn(`[codex-responses-ws] proxy resolution failed: ${sanitizeErrorMessage(err)}`);
+    log.warn(`[codex-responses-ws] proxy resolution failed: ${sanitizeErrorMessage(err)}`);
     return undefined;
   }
 }
 
-async function prepare(body: JsonRecord) {
+async function prepare(body: JsonRecord): Promise<Response> {
   const context = await resolveCodexRequestContext(body);
-  if ("error" in context) return context.error;
+  if ("error" in context) {
+    return context.error ?? jsonError(500, "codex_ws_context_failed", "Request context failed");
+  }
   const combo = await getComboByName(context.requestedModel).catch(() => null);
   if (combo) {
     const models = Array.isArray(combo.models) ? combo.models : [];
@@ -538,7 +540,9 @@ async function prepare(body: JsonRecord) {
     }
   }
   const upstream = await resolveCodexUpstreamContext(context);
-  if ("error" in upstream) return upstream.error;
+  if (!("provider" in upstream)) {
+    return upstream.error ?? jsonError(500, "codex_ws_upstream_failed", "Upstream resolution failed");
+  }
   const { responseBody, metadata, provider, model, credentials: refreshedCredentials } = upstream;
   const reasoningDecision = upstream.reasoningDecision;
 
@@ -583,7 +587,7 @@ async function prepare(body: JsonRecord) {
   // so a no-direct-egress container failed with a DNS lookup error.
   const proxy = await resolveCodexProxy(provider);
 
-  return NextResponse.json({
+  return Response.json({
     ok: true,
     upstreamUrl: CODEX_RESPONSES_WS_URL,
     // #5591: chrome_149 does not exist in wreq-js 2.3.1 (max chrome_147) → the
@@ -603,7 +607,7 @@ async function prepare(body: JsonRecord) {
   });
 }
 
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<Response> {
   const expectedSecret = getBridgeSecret();
   const receivedSecret = request.headers.get("x-shiguangGateway-ws-bridge-secret") || "";
   if (!bridgeSecretMatches(expectedSecret, receivedSecret)) {

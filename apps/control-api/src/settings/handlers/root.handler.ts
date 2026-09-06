@@ -1,45 +1,40 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
-import {
-  getSettings,
-  getSettingsRevision,
-  updateSettings,
-  SettingsRevisionConflictError,
-} from "../../../lib/db/settings.ts";
-import { getRuntimePorts } from "../../../lib/runtime/ports.ts";
-import { updateSettingsSchema } from "../../../shared/validation/settingsSchemas.ts";
-import { isValidationFailure, validateBody } from "../../../shared/validation/helpers.ts";
-import { getConsistentMachineId } from "../../../shared/utils/machineId.ts";
-import { isFeatureFlagEnabled } from "../../../shared/utils/featureFlags.ts";
-import { resolveModelLockoutSettings } from "../../../lib/resilience/modelLockoutSettings.ts";
-import {
-  validateProxyUrl,
-  upsertUpstreamProxyConfig,
-  getUpstreamProxyConfig,
-} from "../../../lib/db/upstreamProxy.ts";
-import { getProviderConnections } from "../../../lib/db/providers.ts";
-import { clearCliproxyapiUrlCache } from "../../../../../open-sse/executors/cliproxyapi.ts";
-import {
-  ensurePersistentManagementPasswordHash,
-  getStoredManagementPassword,
-  hasManagementPasswordConfigured,
-  hashManagementPassword,
-  verifyManagementPassword,
-} from "../../../lib/auth/managementPassword.ts";
-import { requireManagementAuth } from "../../../lib/api/requireManagementAuth.ts";
-import { isPaidModelTarget } from "../../../shared/utils/freeModels.ts";
-import { getAuditRequestContext, logAuditEvent } from "../../../lib/compliance/index.ts";
-import { isAuthRequired, isDashboardSessionAuthenticated } from "../../../shared/utils/apiAuth.ts";
-import { isCliTokenAuthValid } from "../../../lib/middleware/cliTokenAuth.ts";
-import { extractApiKey } from "../../../sse/services/auth.ts";
-import { getApiKeyMetadata } from "../../../lib/db/apiKeys.ts";
-import { getRadarAdminUrl } from "../../../lib/radar/links.ts";
 import {
   AUTHZ_HEADER_AUTH_ID,
   AUTHZ_HEADER_AUTH_KIND,
   AUTHZ_HEADER_PEER_LOCALITY,
-} from "../../../server/authz/headers.ts";
-import { readSubjectFromHeaders } from "../../../server/authz/assertAuth.ts";
+  clearCliproxyapiUrlCache,
+  ensurePersistentManagementPasswordHash,
+  getApiKeyMetadata,
+  getAuditRequestContext,
+  getConsistentMachineId,
+  getProviderConnections,
+  getRadarAdminUrl,
+  getRuntimePorts,
+  getSettings,
+  getSettingsRevision,
+  getStoredManagementPassword,
+  getUpstreamProxyConfig,
+  hasManagementPasswordConfigured,
+  hashManagementPassword,
+  isAuthRequired,
+  isCliTokenAuthValid,
+  isDashboardSessionAuthenticated,
+  isFeatureFlagEnabled,
+  isPaidModelTarget,
+  logAuditEvent,
+  readSubjectFromHeaders,
+  resolveModelLockoutSettings,
+  updateSettingsSchema,
+  updateSettings,
+  upsertUpstreamProxyConfig,
+  validateProxyUrl,
+  verifyManagementPassword,
+  SettingsRevisionConflictError,
+} from "@shiguang-gateway/core-domain/control/settings-root";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { extractApiKey } from "@shiguang-gateway/core-domain/sse/auth";
 
 /**
  * Force this route to run dynamically per-request and never be cached/prerendered.
@@ -243,7 +238,7 @@ export async function GET(request: Request) {
       // best effort — don't fail GET /api/settings if this lookup fails
     }
 
-    return NextResponse.json(
+    return Response.json(
       {
         ...safeSettings,
         settingsRevision,
@@ -271,7 +266,7 @@ export async function GET(request: Request) {
     );
   } catch (error) {
     console.log("Error getting settings:", error);
-    return NextResponse.json({ error: "Failed to load settings" }, { status: 500 });
+    return Response.json({ error: "Failed to load settings" }, { status: 500 });
   }
 }
 
@@ -288,7 +283,7 @@ export async function PATCH(request: Request) {
     // Malformed JSON — surface a zod-style failure path so the rejection
     // is auditable like every other 400.
     emitSettingsFailureAudit(request, actor, "INVALID_JSON", []);
-    return NextResponse.json(
+    return Response.json(
       { error: { code: "INVALID_JSON", message: "Request body is not valid JSON" } },
       { status: 400 }
     );
@@ -303,7 +298,8 @@ export async function PATCH(request: Request) {
       // Detect spawn-capable prefix rejection (spec AC-8) so the audit row
       // names the correct error code; otherwise fall back to the generic
       // validation-failure label.
-      const isBypassPrefixRejection = (validation.error.details || []).some(
+      const details = (validation.error as { details?: Array<{ message?: string }> }).details ?? [];
+      const isBypassPrefixRejection = details.some(
         (d) => typeof d.message === "string" && d.message.includes("BYPASS_PREFIX_NOT_ALLOWED")
       );
       emitSettingsFailureAudit(
@@ -312,7 +308,7 @@ export async function PATCH(request: Request) {
         isBypassPrefixRejection ? "BYPASS_PREFIX_NOT_ALLOWED" : "VALIDATION_FAILED",
         attemptedKeys
       );
-      return NextResponse.json({ error: validation.error }, { status: 400 });
+      return Response.json({ error: validation.error }, { status: 400 });
     }
     const body: typeof validation.data & { password?: string } = { ...validation.data };
 
@@ -331,7 +327,7 @@ export async function PATCH(request: Request) {
       const hasAtLeastOne = subjects.some((s) => typeof s === "string" && s.trim().length > 0);
       if (!hasAtLeastOne) {
         emitSettingsFailureAudit(request, actor, "OIDC_ALLOWED_SUBJECTS_REQUIRED", attemptedKeys);
-        return NextResponse.json(
+        return Response.json(
           {
             error: {
               code: "OIDC_ALLOWED_SUBJECTS_REQUIRED",
@@ -371,7 +367,7 @@ export async function PATCH(request: Request) {
       if (!isColdBoot) {
         if (!body.currentPassword) {
           emitSettingsFailureAudit(request, actor, "PASSWORD_REQUIRED", attemptedKeys);
-          return NextResponse.json(
+          return Response.json(
             {
               error: {
                 code: "PASSWORD_REQUIRED",
@@ -385,7 +381,7 @@ export async function PATCH(request: Request) {
         const isValid = await verifyManagementPassword(body.currentPassword, storedPasswordHash);
         if (!isValid) {
           emitSettingsFailureAudit(request, actor, "PASSWORD_MISMATCH", attemptedKeys);
-          return NextResponse.json(
+          return Response.json(
             {
               error: {
                 code: "PASSWORD_MISMATCH",
@@ -408,7 +404,7 @@ export async function PATCH(request: Request) {
       if ((currentSettings as Record<string, unknown>)?.hidePaidModels === true) {
         if (isPaidModelTarget(body.webSearchRouteModel) === "paid") {
           emitSettingsFailureAudit(request, actor, "PAID_MODEL_TARGET_BLOCKED", attemptedKeys);
-          return NextResponse.json(
+          return Response.json(
             {
               error: {
                 code: "PAID_MODEL_TARGET_BLOCKED",
@@ -441,7 +437,7 @@ export async function PATCH(request: Request) {
     } catch (error) {
       if (error instanceof SettingsRevisionConflictError) {
         emitSettingsFailureAudit(request, actor, "SETTINGS_REVISION_CONFLICT", attemptedKeys);
-        return NextResponse.json(
+        return Response.json(
           {
             error: {
               code: "SETTINGS_REVISION_CONFLICT",
@@ -462,7 +458,7 @@ export async function PATCH(request: Request) {
       const urlValidation = validateProxyUrl(cpaUrl);
       if (urlValidation.valid === false) {
         emitSettingsFailureAudit(request, actor, "CLIPROXY_URL_INVALID", attemptedKeys);
-        return NextResponse.json(
+        return Response.json(
           { error: `Invalid CLIProxyAPI URL: ${urlValidation.error}` },
           { status: 400 }
         );
@@ -483,7 +479,9 @@ export async function PATCH(request: Request) {
       // (e.g. getUpstreamProxyConfig("anthropic")), not a single global row.
       // Embedded service IDs are not real routing targets and must be skipped.
       const EMBEDDED_SERVICE_IDS = new Set(["cliproxyapi", "9router"]);
-      const activeConnections = await getProviderConnections({ isActive: true });
+      const activeConnections = (await getProviderConnections({ isActive: true })) as Array<
+        Record<string, unknown>
+      >;
       const activeProviderIds = [
         ...new Set(
           activeConnections
@@ -538,13 +536,13 @@ export async function PATCH(request: Request) {
 
     const { password, ...safeSettings } = settings;
     const settingsRevision = await getSettingsRevision();
-    return NextResponse.json(
+    return Response.json(
       { ...safeSettings, settingsRevision },
       { headers: settingsResponseHeaders(settingsRevision) }
     );
   } catch (error) {
     console.log("Error updating settings:", error);
-    return NextResponse.json({ error: "Failed to update settings" }, { status: 500 });
+    return Response.json({ error: "Failed to update settings" }, { status: 500 });
   }
 }
 

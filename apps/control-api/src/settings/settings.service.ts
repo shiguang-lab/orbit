@@ -25,10 +25,27 @@ import {
   resolveAllFeatureFlags,
   setFeatureFlagOverride,
 } from "@shiguang-gateway/core-domain/control/feature-flags";
+import {
+  GET as getRootSettings,
+  PATCH as patchRootSettings,
+  PUT as putRootSettings,
+} from "./handlers/root.handler.js";
 
 /** Use cases for settings that alter model request construction at runtime. */
 @Injectable()
 export class SettingsService {
+  getRoot(request: Request) {
+    return getRootSettings(request);
+  }
+
+  patchRoot(request: Request) {
+    return patchRootSettings(request);
+  }
+
+  putRoot(request: Request) {
+    return putRootSettings(request);
+  }
+
   getSystemPrompt() {
     return getSystemPromptConfig();
   }

@@ -1,5 +1,5 @@
-export { resolveResponsesApiModel } from "../../app/api/internal/codex-responses-ws/modelResolution.ts";
-export { getModelInfo, getComboForModel } from "../../sse/services/model.ts";
+export { resolveResponsesApiModel } from "../../edge/codexResponsesWsModel.js";
+export { getModelInfo, getComboForModel } from "../../sse/services/model.js";
 export {
   admitChatRequest,
   admitChatStructure,
@@ -7,4 +7,4 @@ export {
   releaseChatAdmissionAfterHandler,
   releaseChatAdmissionWhenDone,
   resolveSessionId,
-} from "../../shared/middleware/chatBodyAdmission.ts";
+} from "../../shared/middleware/chatBodyAdmission.js";

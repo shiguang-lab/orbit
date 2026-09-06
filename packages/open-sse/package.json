@@ -271,6 +271,10 @@
       "types": "./public/contextManager.d.ts",
       "import": "./services/contextManager.ts"
     },
+    "./services/codex-responses-ws-runtime": {
+      "types": "./services/codexResponsesWsRuntime.ts",
+      "import": "./services/codexResponsesWsRuntime.ts"
+    },
     "./services/taskAwareRouter": {
       "types": "./public/taskAwareRouter.d.ts",
       "import": "./services/taskAwareRouter.ts"

@@ -1,0 +1,33 @@
+export class SettingsRevisionConflictError extends Error {
+  currentRevision: number;
+}
+export const getSettings: (...args: any[]) => Promise<Record<string, any>>;
+export const getSettingsRevision: (...args: any[]) => Promise<number>;
+export const updateSettings: (...args: any[]) => Promise<Record<string, any>>;
+export const getRuntimePorts: (...args: any[]) => Record<string, any>;
+export const updateSettingsSchema: any;
+export const getConsistentMachineId: (...args: any[]) => Promise<string>;
+export const isFeatureFlagEnabled: (...args: any[]) => boolean;
+export const resolveModelLockoutSettings: (...args: any[]) => Record<string, any>;
+export const validateProxyUrl: (...args: any[]) => any;
+export const upsertUpstreamProxyConfig: (...args: any[]) => Promise<any>;
+export const getUpstreamProxyConfig: (...args: any[]) => Promise<any>;
+export const getProviderConnections: (...args: any[]) => Array<Record<string, any>>;
+export const ensurePersistentManagementPasswordHash: (...args: any[]) => Promise<any>;
+export const getStoredManagementPassword: (...args: any[]) => string;
+export const hasManagementPasswordConfigured: (...args: any[]) => boolean;
+export const hashManagementPassword: (...args: any[]) => Promise<string>;
+export const verifyManagementPassword: (...args: any[]) => Promise<boolean>;
+export const isPaidModelTarget: (...args: any[]) => string;
+export const getAuditRequestContext: (...args: any[]) => { ipAddress: string | null; requestId: string };
+export const logAuditEvent: (...args: any[]) => void;
+export const isAuthRequired: (...args: any[]) => Promise<boolean>;
+export const isDashboardSessionAuthenticated: (...args: any[]) => Promise<boolean>;
+export const isCliTokenAuthValid: (...args: any[]) => Promise<boolean>;
+export const getApiKeyMetadata: (...args: any[]) => Promise<any>;
+export const getRadarAdminUrl: (...args: any[]) => string | null;
+export const AUTHZ_HEADER_AUTH_ID: string;
+export const AUTHZ_HEADER_AUTH_KIND: string;
+export const AUTHZ_HEADER_PEER_LOCALITY: string;
+export const readSubjectFromHeaders: (...args: any[]) => any;
+export const clearCliproxyapiUrlCache: (...args: any[]) => void;

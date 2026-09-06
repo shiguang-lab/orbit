@@ -106,6 +106,8 @@ import { MonitoringModule } from "./monitoring/monitoring.module.js";
 import { NetworkModule } from "./network/network.module.js";
 import { FreeTierModule } from "./free-tier/free-tier.module.js";
 import { SearchStatsModule } from "./search/stats/search-stats.module.js";
+import { TelegramModule } from "./telegram/telegram.module.js";
+import { IntelligenceModule } from "./intelligence/intelligence.module.js";
 
 @Module({
   imports: [
@@ -217,6 +219,8 @@ import { SearchStatsModule } from "./search/stats/search-stats.module.js";
     NetworkModule,
     FreeTierModule,
     SearchStatsModule,
+    TelegramModule,
+    IntelligenceModule,
   ],
 })
 export class AppModule {}

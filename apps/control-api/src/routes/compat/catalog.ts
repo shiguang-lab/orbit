@@ -175,6 +175,12 @@ export function controlRouteCatalog(): CompatRouteDefinition[] {
     "github-skills",
     "skills/executions",
     "search/stats",
+    "settings",
+    "system/env/repair",
+    "telegram/update",
+    "intelligence/sync",
+    "gateway/route/preview",
+    "skills/collect/chaos",
   ]);
   return coreRoutes.filter((route) => !migrated.has(route.segments.join("/")));
 }

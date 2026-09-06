@@ -13,16 +13,20 @@
  *   3. Handles /start (returns the Mini App deep link) and everything else
  *      as a chat prompt proxied through the ShiguangGateway pipeline.
  */
-import { NextResponse } from "next/server";
 import { z } from "zod";
-import { validateBody, isValidationFailure } from "../../../../shared/validation/helpers.ts";
-import type { TelegramUpdate } from "../../../../lib/telegram/botApi.ts";
-import { extractChatMessage, sendTelegramMessage } from "../../../../lib/telegram/botApi.ts";
-import { getTelegramBotToken, isTelegramEnabled } from "../../../../lib/telegram/config.ts";
-import { verifyInitData, parseInitData } from "../../../../lib/telegram/initData.ts";
-import { proxyChat } from "../../../../lib/telegram/chatProxy.ts";
-import { formatTelegramGatewayError } from "../../../../lib/telegram/errorMessage.ts";
-import { resolveGatewayBaseUrl } from "../../../../shared/utils/resolveGatewayBaseUrl.ts";
+import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import {
+  extractChatMessage,
+  formatTelegramGatewayError,
+  getTelegramBotToken,
+  isTelegramEnabled,
+  parseInitData,
+  proxyChat,
+  resolveGatewayBaseUrl,
+  sendTelegramMessage,
+  verifyInitData,
+  type TelegramUpdate,
+} from "@shiguang-gateway/core-domain/control/telegram";
 
 /**
  * Telegram update bodies are open-ended (many update types, evolving schema),
@@ -68,19 +72,19 @@ const START_HELP =
 
 export async function POST(request: Request) {
   if (!isTelegramEnabled()) {
-    return NextResponse.json({ ok: false, error: "Telegram not configured" }, { status: 503 });
+    return Response.json({ ok: false, error: "Telegram not configured" }, { status: 503 });
   }
 
   let rawBody: unknown;
   try {
     rawBody = await request.json();
   } catch {
-    return NextResponse.json({ ok: false, error: "Invalid JSON" }, { status: 400 });
+    return Response.json({ ok: false, error: "Invalid JSON" }, { status: 400 });
   }
 
   const validation = validateBody(telegramBodySchema, rawBody);
   if (isValidationFailure(validation)) {
-    return NextResponse.json({ ok: false, error: "Invalid request" }, { status: 400 });
+    return Response.json({ ok: false, error: "Invalid request" }, { status: 400 });
   }
   const body = validation.data as Record<string, unknown>;
 
@@ -89,17 +93,17 @@ export async function POST(request: Request) {
   if (initData) {
     const botToken = getTelegramBotToken();
     if (!verifyInitData(initData, botToken)) {
-      return NextResponse.json({ ok: false, error: "Invalid initData signature" }, { status: 401 });
+      return Response.json({ ok: false, error: "Invalid initData signature" }, { status: 401 });
     }
     const message = typeof body.message === "string" ? body.message : "";
     if (!message.trim()) {
-      return NextResponse.json({ ok: false, error: "message is required" }, { status: 400 });
+      return Response.json({ ok: false, error: "message is required" }, { status: 400 });
     }
     // Resolve the Telegram user id from the verified initData for key mapping.
     const telegramUserId = extractInitDataUserId(initData);
     // Proxy synchronously and return the reply (Mini App awaits the fetch).
     const reply = await proxyChat(telegramUserId, message);
-    return NextResponse.json({ ok: true, reply: reply || "⚠️ Empty gateway response." });
+    return Response.json({ ok: true, reply: reply || "⚠️ Empty gateway response." });
   }
 
   // ── Bot webhook path: TelegramUpdate ─────────────────────────────────────
@@ -107,14 +111,14 @@ export async function POST(request: Request) {
   const chat = extractChatMessage(update);
   if (!chat) {
     // Non-message updates (callback_query etc.) — acknowledge silently.
-    return NextResponse.json({ ok: true });
+    return Response.json({ ok: true });
   }
 
   // Fire-and-forget reply: Telegram retries on 5xx, so always 200 after
   // enqueueing the reply. Keep the handler non-blocking.
   void handleAndReply(chat.chatId, chat.text, chat.messageId);
 
-  return NextResponse.json({ ok: true });
+  return Response.json({ ok: true });
 }
 
 async function handleAndReply(chatId: number, text: string, messageId?: number): Promise<void> {

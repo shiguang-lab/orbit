@@ -4,6 +4,26 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./control/settings-root": {
+      "types": "./src/public/settingsRoot.d.ts",
+      "import": "./src/control/settings-root.ts"
+    },
+    "./control/env-repair": {
+      "types": "./src/public/envRepair.d.ts",
+      "import": "./src/control/env-repair.ts"
+    },
+    "./control/telegram": {
+      "types": "./src/public/telegram.d.ts",
+      "import": "./src/control/telegram.ts"
+    },
+    "./control/routing-preview": {
+      "types": "./src/public/routingPreview.d.ts",
+      "import": "./src/control/routing-preview.ts"
+    },
+    "./control/intelligence-sync": {
+      "types": "./src/public/intelligenceSync.d.ts",
+      "import": "./src/control/intelligence-sync.ts"
+    },
     "./control/monitoring-health": {
       "types": "./src/public/monitoringHealth.d.ts",
       "import": "./src/control/monitoring-health.ts"
@@ -143,6 +163,10 @@
     "./edge/responses-runtime": {
       "types": "./src/public/responsesRuntime.d.ts",
       "import": "./src/lib/edge/responsesRuntime.ts"
+    },
+    "./edge/codex-responses-ws-runtime": {
+      "types": "./src/edge/codexResponsesWsRuntime.ts",
+      "import": "./src/edge/codexResponsesWsRuntime.ts"
     },
     "./edge/relay-bifrost": {
       "types": "./src/public/relayBifrost.d.ts",

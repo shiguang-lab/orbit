@@ -13,6 +13,7 @@ import {
   FEATURE_FLAG_DEFINITIONS,
 } from "@shiguang-gateway/core-domain/control/feature-flags";
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 
 const databaseSettingsPatchSchema = databaseSettingsSchema.partial().strict();
 
@@ -60,7 +61,25 @@ const updateFeatureFlagSchema = z.object({
 /** HTTP transport for model runtime settings owned by control-api. */
 @Controller("api/settings")
 export class SettingsController {
-  constructor(@Inject(SettingsService) private readonly settings: SettingsService) {}
+  constructor(
+    @Inject(SettingsService) private readonly settings: SettingsService,
+    @Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher,
+  ) {}
+
+  @Get()
+  getRoot(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, (req) => this.settings.getRoot(req));
+  }
+
+  @Patch()
+  patchRoot(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, (req) => this.settings.patchRoot(req));
+  }
+
+  @Put()
+  putRoot(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, (req) => this.settings.putRoot(req));
+  }
 
   private async authorize(request: FastifyRequest, reply: FastifyReply): Promise<boolean> {
     const authError = await requireManagementAuth(request.raw as unknown as Request);

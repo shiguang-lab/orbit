@@ -3,6 +3,7 @@ import { Readable } from "node:stream";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 import { SystemService, type SystemResult } from "./system.service.js";
+import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 
 function toWebRequest(request: FastifyRequest): Request {
   const headers = new Headers();
@@ -19,7 +20,20 @@ function toWebRequest(request: FastifyRequest): Request {
 /** HTTP transport for system update and environment operations owned by control-api. */
 @Controller("api/system")
 export class SystemController {
-  constructor(@Inject(SystemService) private readonly system: SystemService) {}
+  constructor(
+    @Inject(SystemService) private readonly system: SystemService,
+    @Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher,
+  ) {}
+
+  @Get("env/repair")
+  envRepairStatus(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, (req) => this.system.getEnvRepair(req));
+  }
+
+  @Post("env/repair")
+  repairEnv(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, (req) => this.system.repairEnv(req));
+  }
 
   @Get("version")
   async version(@Req() request: FastifyRequest, @Res() reply: FastifyReply): Promise<unknown> {

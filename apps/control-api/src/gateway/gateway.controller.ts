@@ -2,10 +2,20 @@ import { Controller, Get, Inject, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { GatewayService } from "./gateway.service.js";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
+import { POST as previewRoute } from "./handlers/route-preview.handler.js";
 
 @Controller("api")
 export class GatewayController {
-  constructor(@Inject(GatewayService) private readonly gatewayService: GatewayService) {}
+  constructor(
+    @Inject(GatewayService) private readonly gatewayService: GatewayService,
+    private readonly routes: WebRouteDispatcher,
+  ) {}
+
+  @Post("gateway/route/preview")
+  preview(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, previewRoute);
+  }
 
   @Get("gateway/status")
   async status(@Req() request: FastifyRequest, @Res() reply: FastifyReply): Promise<unknown> {

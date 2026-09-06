@@ -71,6 +71,7 @@ const allowedCoreDomainSubpaths = {
     "edge/chat-handler",
     "edge/chat-admission",
     "edge/responses-runtime",
+    "edge/codex-responses-ws-runtime",
     "edge/relay-bifrost",
     "edge/relay-chat",
     "edge/service-registry",
@@ -170,6 +171,13 @@ allowedCoreDomainSubpaths["apps/control-api"].push("control/tunnels");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/jobs");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/monitoring-health", "control/network-info");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/free-provider-rankings", "control/free-tier-summary");
+allowedCoreDomainSubpaths["apps/control-api"].push(
+  "control/settings-root",
+  "control/env-repair",
+  "control/telegram",
+  "control/intelligence-sync",
+  "control/routing-preview",
+);
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/usage",
   "edge/provider-limits",

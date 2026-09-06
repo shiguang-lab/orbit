@@ -1,7 +1,11 @@
-import { NextResponse } from "next/server";
-import { getApiKeyMetadata } from "../../../../lib/db/apiKeys.ts";
-import { extractWsTokenFromRequest } from "../../../../lib/ws/handshake.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import {
+  extractWsTokenFromRequest,
+  getApiKeyMetadata,
+  logProxyEvent,
+  saveCallLog,
+  saveRequestUsage,
+} from "@shiguang-gateway/core-domain/edge/codex-responses-ws-runtime";
+import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/services/codex-responses-ws-runtime";
 
 const CODEX_RESPONSES_WS_URL = "wss://chatgpt.com/backend-api/codex/responses";
 type JsonRecord = Record<string, unknown>;
@@ -231,11 +235,6 @@ function buildUsageEntry(context: ResponsesWsHistoryContext): JsonRecord {
 }
 
 export async function persistResponsesWsCallHistory(body: JsonRecord) {
-  const [{ saveCallLog }, { saveRequestUsage }, { logProxyEvent }] = await Promise.all([
-    import("../../../../lib/usage/callLogs.ts"),
-    import("../../../../lib/usage/usageHistory.ts"),
-    import("../../../../lib/proxyLogger.ts"),
-  ]);
   const context = await buildHistoryContext(body);
   await saveCallLog(buildCallLogEntry(body, context));
   await saveRequestUsage(buildUsageEntry(context));
@@ -249,5 +248,5 @@ export async function persistResponsesWsCallHistory(body: JsonRecord) {
     connectionId: context.connectionId,
     account: context.account,
   });
-  return NextResponse.json({ ok: true, logged: true });
+  return Response.json({ ok: true, logged: true });
 }

@@ -29,6 +29,10 @@ import { restartRunningServer } from "./process-manager-restart.js";
 // a shell (nodejs/node#52554 → "spawn npm ENOENT"). buildNpmExecOptions enables the
 // shell on win32 only; SERVICE_VERSION_PATTERN keeps the shell-joined version safe.
 import { buildNpmExecOptions, SERVICE_VERSION_PATTERN } from "./npm-utils.js";
+import {
+  GET as getEnvRepair,
+  POST as repairEnv,
+} from "./handlers/env-repair.handler.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -364,6 +368,14 @@ async function updateVersion(): Promise<SystemResult> {
 /** Control-plane provider for update/version operations. */
 @Injectable()
 export class SystemService {
+  getEnvRepair(request: Request) {
+    return getEnvRepair(request);
+  }
+
+  repairEnv(request: Request) {
+    return repairEnv(request);
+  }
+
   getVersion(headers: Headers): Promise<SystemResult> {
     return getVersion(headers);
   }

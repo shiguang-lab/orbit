@@ -17,21 +17,27 @@
  * now; the WS bridge previously had *zero* compression coverage, so this closes the primary gap.
  */
 
-import { logger } from "../../../../../../open-sse/utils/logger.ts";
-import { estimateTokens } from "../../../../../../open-sse/services/contextManager.ts";
-import { adaptBodyForCompression } from "../../../../../../open-sse/services/compression/bodyAdapter.ts";
-import { resolveOmniGlyphTransport } from "../../../../../../open-sse/services/compression/imageTransportPolicy.ts";
+import {
+  adaptBodyForCompression,
+  applyCompressionAsync,
+  estimateTokens,
+  logger,
+  resolveCompressionSettings,
+  resolveOmniGlyphTransport,
+  selectCompressionStrategy,
+  writeCompressionAnalytics,
+  writeCompressionSkip,
+} from "@shiguang-gateway/open-sse/services/codex-responses-ws-runtime";
 import type {
   CompressionConfig,
   CompressionResult,
-} from "../../../../../../open-sse/services/compression/types.ts";
-import { resolveCompressionSettings } from "../../../../../../open-sse/handlers/chatCore/compressionSettings.ts";
-import {
-  writeCompressionAnalytics,
-  writeCompressionSkip,
-} from "../../../../../../open-sse/handlers/chatCore/compressionAnalyticsWrite.ts";
+} from "@shiguang-gateway/open-sse/services/codex-responses-ws-runtime";
 
 const log = logger("RESPONSES_WS_COMPRESSION");
+const compressionLog = {
+  debug: (...args: unknown[]) => log.debug(args.map(String).join(" ")),
+  warn: (...args: unknown[]) => log.warn(args.map(String).join(" ")),
+};
 
 type JsonRecord = Record<string, unknown>;
 
@@ -52,7 +58,7 @@ export async function applyResponsesWsCompression(
   ctx: ResponsesWsCompressionContext
 ): Promise<JsonRecord> {
   try {
-    const { settings, enabled } = await resolveCompressionSettings(log);
+    const { settings, enabled } = await resolveCompressionSettings(compressionLog);
     if (!enabled || !settings) return responseBody;
 
     const adapter = adaptBodyForCompression(responseBody);
@@ -63,9 +69,6 @@ export async function applyResponsesWsCompression(
     ) {
       return responseBody;
     }
-
-    const { selectCompressionStrategy, applyCompressionAsync } =
-      await import("../../../../../../open-sse/services/compression/strategySelector.ts");
 
     const estimatedTokens = estimateTokens(adapter.body.messages);
     const cachingContext = {
@@ -123,7 +126,7 @@ async function persistAndRestore(
     skillRequestId: ctx.requestId,
     cavemanOutputModeApplied: false,
     cavemanOutputModeIntensity: null,
-    log,
+    log: compressionLog,
   };
 
   if (!result.compressed) {
