@@ -1,4 +1,4 @@
-import { getUnifiedModelsResponse } from "../../../models/catalog.ts";
+import { getUnifiedModelsResponse } from "../../../../../../lib/catalog/catalog";
 import { getResolvedModelCapabilities } from "../../../../../../lib/modelCapabilities.ts";
 import { getCanonicalModelMetadata } from "../../../../../../lib/modelMetadataRegistry.ts";
 import {

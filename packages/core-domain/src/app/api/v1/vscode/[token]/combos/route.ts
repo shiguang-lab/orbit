@@ -6,7 +6,7 @@
  * so we re-export /api/version, /api/tags, etc. from the [token] parent route.
  */
 import { getCombos } from "../../../../../../lib/db/combos.ts";
-import { projectCombo, type PublicCombo } from "../../../combos/projectCombo.ts";
+import { projectCombo, type PublicCombo } from "../../../../../../lib/catalog/projectCombo.ts";
 
 // Re-export Ollama-compatible endpoints from the parent [token] route
 // so VS Code can validate the server version and list models normally

@@ -14,7 +14,7 @@
  * capabilities (multimodal / reasoning / caching) so importing clients enable
  * those features instead of requiring manual config after import.
  */
-import { getResolvedModelCapabilities } from "../../../../lib/modelCapabilities.ts";
+import { getResolvedModelCapabilities } from "../modelCapabilities.ts";
 
 export interface PublicComboStep {
   kind: "model" | "combo-ref";

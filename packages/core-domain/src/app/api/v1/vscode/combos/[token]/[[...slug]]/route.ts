@@ -6,7 +6,7 @@
  * - GET /api/v1/vscode/combos/{token}/api/version → returns Ollama-compatible version
  * - GET /api/v1/vscode/combos/{token}/api/tags → exposes combo catalog in Ollama format
  */
-import { getUnifiedModelsResponse } from "../../../../models/catalog.ts";
+import { getUnifiedModelsResponse } from "../../../../../../../lib/catalog/catalog";
 import {
 	buildReasoningConfigSchema,
 	buildSupportedReasoningEfforts,

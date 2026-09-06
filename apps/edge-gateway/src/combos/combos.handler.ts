@@ -7,14 +7,14 @@
  * with the API-key auth model used by `/v1/models` and projects out internal
  * routing details (account/connection ids, weights, internal labels).
  */
-import { NextResponse } from "next/server";
-import { getCombos } from "../../../../lib/localDb.ts";
-import { errorResponse } from "../../../../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../../../../open-sse/config/constants.ts";
-import { extractApiKey, isValidApiKey } from "../../../../sse/services/auth.ts";
-import { isDashboardSessionAuthenticated } from "../../../../shared/utils/apiAuth.ts";
-import { isRequireApiKeyEnabled } from "../../../../shared/utils/featureFlags.ts";
-import { projectCombo, type PublicCombo } from "./projectCombo";
+import { getCombos } from "@shiguang-gateway/core-domain/edge/local-db";
+import { extractApiKey, isValidApiKey } from "@shiguang-gateway/core-domain/sse/auth";
+import { isDashboardSessionAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
+import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/edge/feature-flags";
+import { errorResponse } from "@shiguang-gateway/open-sse/utils/error";
+import { projectCombo, type PublicCombo } from "@shiguang-gateway/core-domain/catalog/project-combo";
+
+const HTTP_STATUS = { UNAUTHORIZED: 401, SERVER_ERROR: 500 } as const;
 
 export async function OPTIONS() {
   return new Response(null, {
@@ -48,10 +48,9 @@ export async function GET(request: Request) {
       .map((c) => projectCombo(c as Record<string, unknown>, { includeCapabilities: true }))
       .filter((c): c is PublicCombo => c !== null);
 
-    return NextResponse.json(
-      { object: "list", data },
-      { headers: { "Cache-Control": "no-store" } }
-    );
+    return new Response(JSON.stringify({ object: "list", data }), {
+      headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
+    });
   } catch {
     return errorResponse(HTTP_STATUS.SERVER_ERROR, "Failed to fetch combos");
   }

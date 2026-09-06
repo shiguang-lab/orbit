@@ -1,4 +1,4 @@
-import { getUnifiedModelsResponse } from "../../../../models/catalog.ts";
+import { getUnifiedModelsResponse } from "../../../../../../../lib/catalog/catalog";
 import { getCanonicalModelMetadata } from "../../../../../../../lib/modelMetadataRegistry.ts";
 import { CORS_HEADERS, handleCorsOptions } from "../../../../../../../shared/utils/cors.ts";
 import {

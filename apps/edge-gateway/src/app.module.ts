@@ -20,6 +20,7 @@ import { WebModule } from "./web/web.module.js";
 import { CloudAgentsModule } from "./cloud-agents/cloud-agents.module.js";
 import { SessionLeasesModule } from "./session-leases/session-leases.module.js";
 import { ClassifyModule } from "./classify/classify.module.js";
+import { CombosModule } from "./combos/combos.module.js";
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { ClassifyModule } from "./classify/classify.module.js";
     CloudAgentsModule,
     SessionLeasesModule,
     ClassifyModule,
+    CombosModule,
   ],
 })
 export class AppModule {}
