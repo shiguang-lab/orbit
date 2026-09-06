@@ -36,7 +36,7 @@ import { runWithProxyContext } from "../../../../../../../open-sse/utils/proxyFe
 import { attachShiguangGatewayMetaHeaders } from "../../../../../domain/gatewayResponseMeta.ts";
 import { calculateModalCost } from "../../../../../lib/usage/costCalculator.ts";
 import { generateRequestId } from "../../../../../shared/utils/requestId.ts";
-import { getSpecialtyModelsResponse } from "../../_shared/specialtyCatalog.ts";
+import { getSpecialtyModelsResponse } from "../../../../../lib/edge/specialtyCatalog.ts";
 import { enforceClientApiRouteAuth } from "../../../../../shared/utils/clientApiRouteAuth.ts";
 import { runWithCallLogApiKeyContext } from "../../../../../lib/usage/callLogApiKeyContext.ts";
 import { executeImageWithCredentialFallback } from "../../../../../sse/services/imageCredentialRetry.ts";

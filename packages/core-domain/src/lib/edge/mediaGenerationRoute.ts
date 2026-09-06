@@ -1,12 +1,12 @@
-import { errorResponse } from "../../../../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../../../../open-sse/config/constants.ts";
+import { errorResponse } from "../../../../open-sse/utils/error.ts";
+import { HTTP_STATUS } from "../../../../open-sse/config/constants.ts";
 
-import { attachShiguangGatewayMetaHeaders } from "../../../../domain/gatewayResponseMeta.ts";
-import { calculateModalCost } from "../../../../lib/usage/costCalculator.ts";
-import { generateRequestId } from "../../../../shared/utils/requestId.ts";
-import { toJsonErrorPayload } from "../../../../shared/utils/upstreamError.ts";
-import { v1ImageGenerationSchema } from "../../../../shared/validation/schemas.ts";
-import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
+import { attachShiguangGatewayMetaHeaders } from "../../domain/gatewayResponseMeta.ts";
+import { calculateModalCost } from "../usage/costCalculator.ts";
+import { generateRequestId } from "../../shared/utils/requestId.ts";
+import { toJsonErrorPayload } from "../../shared/utils/upstreamError.ts";
+import { v1ImageGenerationSchema } from "../../shared/validation/schemas.ts";
+import { isValidationFailure, validateBody } from "../../shared/validation/helpers.ts";
 
 type MediaModelListEntry = {
   id: string;

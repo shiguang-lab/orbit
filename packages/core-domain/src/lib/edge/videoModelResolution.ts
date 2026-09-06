@@ -1,7 +1,7 @@
-import { getAllCustomModels } from "../../../../lib/db/models.ts";
-import { parseVideoModel } from "../../../../../../open-sse/config/videoRegistry.ts";
-import { getProviderCredentialsWithQuotaPreflight } from "../../../../sse/services/auth.ts";
-import { isAllRateLimitedCredentials } from "../../../../lib/edge/rateLimit.ts";
+import { getAllCustomModels } from "../db/models.ts";
+import { parseVideoModel } from "../../../../open-sse/config/videoRegistry.ts";
+import { getProviderCredentialsWithQuotaPreflight } from "../../sse/services/auth.ts";
+import { isAllRateLimitedCredentials } from "./rateLimit.ts";
 
 export type VideoModelTarget = {
   provider: string | null;

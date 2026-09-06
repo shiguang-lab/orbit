@@ -29,14 +29,14 @@ import {
   isMediaGenerationFailure,
   promptRequiredResponse,
   successfulMediaGenerationResponse,
-} from "../../core-domain/src/app/api/v1/_shared/mediaGenerationRoute.ts";
-import type { MediaGenerationResultLike } from "../../core-domain/src/app/api/v1/_shared/mediaGenerationRoute.ts";
+} from "../../core-domain/src/lib/edge/mediaGenerationRoute.ts";
+import type { MediaGenerationResultLike } from "../../core-domain/src/lib/edge/mediaGenerationRoute.ts";
 import {
   isVideoPromptOptional,
   resolveLocalOverrideCredentials,
   resolveVideoModelTarget,
-} from "../../core-domain/src/app/api/v1/_shared/videoModelResolution.ts";
-import type { VideoModelTarget } from "../../core-domain/src/app/api/v1/_shared/videoModelResolution.ts";
+} from "../../core-domain/src/lib/edge/videoModelResolution.ts";
+import type { VideoModelTarget } from "../../core-domain/src/lib/edge/videoModelResolution.ts";
 import { toJsonErrorPayload } from "../../core-domain/src/shared/utils/upstreamError.ts";
 import { HTTP_STATUS } from "../config/constants.ts";
 import { errorResponse } from "../utils/error.ts";

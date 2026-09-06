@@ -122,11 +122,11 @@
     },
     "./edge/media-generation": {
       "types": "./src/public/edgeMusic.d.ts",
-      "import": "./src/app/api/v1/_shared/mediaGenerationRoute.ts"
+      "import": "./src/lib/edge/mediaGenerationRoute.ts"
     },
     "./edge/specialty-catalog": {
       "types": "./src/public/specialtyCatalog.d.ts",
-      "import": "./src/app/api/v1/_shared/specialtyCatalog.ts"
+      "import": "./src/lib/edge/specialtyCatalog.ts"
     },
     "./edge/ws-cors": "./src/shared/utils/cors.ts",
     "./edge/ws-path": "./src/shared/utils/wsPath.ts",
@@ -136,7 +136,7 @@
     },
     "./edge/elevenlabs-proxy": {
       "types": "./src/public/edgeAudio.d.ts",
-      "import": "./src/app/api/v1/_shared/elevenLabsProxy.ts"
+      "import": "./src/lib/edge/elevenLabsProxy.ts"
     },
     "./edge/moderation-validation-schemas": "./src/shared/validation/schemas.ts",
     "./edge/moderation-validation-helpers": "./src/shared/validation/helpers.ts",

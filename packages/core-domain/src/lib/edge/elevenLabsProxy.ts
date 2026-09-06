@@ -1,16 +1,16 @@
 import {
   clearRecoveredProviderState,
   getProviderCredentialsWithQuotaPreflight,
-} from "../../../../sse/services/auth.ts";
+} from "../../sse/services/auth.ts";
 import {
   isAllRateLimitedCredentials,
   rateLimitedProviderResponse,
-} from "../../../../lib/edge/rateLimit.ts";
+} from "./rateLimit.ts";
 import {
   buildErrorBody,
   sanitizeErrorMessage,
-} from "../../../../../../open-sse/utils/error.ts";
-import { CORS_HEADERS, handleCorsOptions } from "../../../../shared/utils/cors.ts";
+} from "../../../../open-sse/utils/error.ts";
+import { CORS_HEADERS, handleCorsOptions } from "../../shared/utils/cors.ts";
 
 const ELEVENLABS_API_BASE = "https://api.elevenlabs.io/v1";
 const ALLOWED_RESPONSE_HEADERS = [
