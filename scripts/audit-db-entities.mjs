@@ -50,7 +50,7 @@ function workspaceAppConsumers(name, appEntries, packageEntries, dependents, see
 }
 
 function classifySqlLine(line) {
-  return /\b(?:INSERT\s+INTO|UPDATE|DELETE\s+FROM|REPLACE\s+INTO|CREATE\s+TABLE|ALTER\s+TABLE|DROP\s+TABLE)\b/i.test(line)
+  return /\b(?:INSERT(?:\s+OR\s+(?:REPLACE|ROLLBACK|ABORT|FAIL|IGNORE))?\s+INTO|REPLACE\s+INTO|UPDATE(?:\s+OR\s+(?:ROLLBACK|ABORT|REPLACE|FAIL|IGNORE))?|DELETE\s+FROM|CREATE\s+TABLE|ALTER\s+TABLE|DROP\s+TABLE)\b/i.test(line)
     ? "write"
     : "read";
 }
