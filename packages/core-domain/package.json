@@ -45,7 +45,10 @@
       "import": "./src/shared/utils/upstreamError.ts"
     },
     "./edge/music-rate-limit": "./src/app/api/v1/_shared/rateLimit.ts",
-    "./edge/rate-limit": "./src/app/api/v1/_shared/rateLimit.ts",
+    "./edge/rate-limit": {
+      "types": "./src/public/rateLimit.d.ts",
+      "import": "./src/app/api/v1/_shared/rateLimit.ts"
+    },
     "./edge/rerank-validation-schemas": {
       "types": "./src/public/rerankValidationSchemas.d.ts",
       "import": "./src/shared/validation/schemas.ts"

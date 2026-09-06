@@ -14,8 +14,7 @@
  * performed — a rate-limited/failing explicit provider surfaces its own error.
  */
 
-import { errorResponse, unavailableResponse } from "../../../../../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../../../../../open-sse/config/constants.ts";
+import { errorResponse, unavailableResponse } from "@shiguang-gateway/open-sse/utils/error";
 import {
   handleWebFetch,
   type WebFetchCredentials,
@@ -24,27 +23,43 @@ import {
   EXPLICIT_ONLY_WEB_FETCH_PROVIDERS,
   ANONYMOUS_CAPABLE_WEB_FETCH_PROVIDERS,
   type WebFetchProviderId,
-} from "../../../../../../../open-sse/handlers/webFetch.ts";
-import * as log from "../../../../../sse/utils/logger.ts";
+} from "@shiguang-gateway/open-sse/handlers/webFetch";
+import * as log from "@shiguang-gateway/core-domain/sse/logger";
 import {
   extractApiKey,
   isValidApiKey,
   getProviderCredentialsWithQuotaPreflight,
-} from "../../../../../sse/services/auth.ts";
-import { enforceApiKeyPolicy } from "../../../../../shared/utils/apiKeyPolicy.ts";
-import { isRequireApiKeyEnabled } from "../../../../../shared/utils/featureFlags.ts";
-import { v1WebFetchSchema } from "../../../../../shared/validation/schemas.ts";
-import { isValidationFailure, validateBody } from "../../../../../shared/validation/helpers.ts";
+} from "@shiguang-gateway/core-domain/sse/auth";
+import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/shared/api-key-policy";
+import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/edge/feature-flags";
+import { z } from "zod";
 import {
   isAllRateLimitedCredentials,
   rateLimitedProviderResponse,
   type RateLimitedCredentials,
-} from "../../_shared/rateLimit.ts";
+} from "@shiguang-gateway/core-domain/edge/rate-limit";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Allow-Headers": "*",
 };
+
+const v1WebFetchSchema = z.object({
+  url: z.string().url("url must be a valid URL (http/https)"),
+  provider: z.enum([
+    "firecrawl",
+    "jina-reader",
+    "tavily-search",
+    "tinyfish",
+    "context7",
+    "nimble-search",
+    "anysearch-search",
+  ]).optional(),
+  format: z.enum(["markdown", "html", "links", "screenshot"]).default("markdown"),
+  depth: z.union([z.literal(0), z.literal(1), z.literal(2)]).default(0),
+  wait_for_selector: z.string().max(256).optional(),
+  include_metadata: z.boolean().default(false),
+});
 
 const WEB_FETCH_PROVIDERS = SHARED_WEB_FETCH_PROVIDERS;
 
@@ -87,8 +102,8 @@ async function resolveCredentials(providerId: WebFetchProviderId): Promise<Crede
 
 /** A request-time upstream status that means "try the next provider" instead of giving up. */
 function isRetryableWebFetchStatus(providerId: WebFetchProviderId, status?: number): boolean {
-  if (status === HTTP_STATUS.RATE_LIMITED) return true;
-  if (status === HTTP_STATUS.PAYMENT_REQUIRED || status === HTTP_STATUS.FORBIDDEN) {
+  if (status === 429) return true;
+  if (status === 402 || status === 403) {
     return QUOTA_STATUS_PROVIDERS.has(providerId);
   }
   return false;
@@ -191,7 +206,7 @@ async function resolveExplicitTarget(
     return {
       ok: false,
       response: errorResponse(
-        HTTP_STATUS.BAD_REQUEST,
+        400,
         `No credentials configured for web-fetch provider: ${providerId}. ` +
           `Add an API key for "${providerId}" in the dashboard.`
       ),
@@ -246,7 +261,7 @@ async function resolveAutoSelectTarget(): Promise<ResolvedWebFetchTarget> {
   return {
     ok: false,
     response: errorResponse(
-      HTTP_STATUS.BAD_REQUEST,
+      400,
       `No credentials configured for any web-fetch provider. ` +
         `Add an API key for one of: ${WEB_FETCH_PROVIDERS.join(", ")}.`
     ),
@@ -269,12 +284,13 @@ export async function POST(request: Request) {
     rawBody = await request.json();
   } catch {
     log.warn("WEB_FETCH", "Invalid JSON body");
-    return errorResponse(HTTP_STATUS.BAD_REQUEST, "Invalid JSON body");
+    return errorResponse(400, "Invalid JSON body");
   }
 
-  const validation = validateBody(v1WebFetchSchema, rawBody);
-  if (isValidationFailure(validation)) {
-    return errorResponse(HTTP_STATUS.BAD_REQUEST, validation.error.message);
+  const validation = v1WebFetchSchema.safeParse(rawBody);
+  if (!validation.success) {
+    const issue = validation.error.issues[0];
+    return errorResponse(400, issue ? `${issue.path.join(".")}: ${issue.message}` : "Invalid request");
   }
   const body = validation.data;
 
@@ -283,10 +299,10 @@ export async function POST(request: Request) {
   // APIs (#7785).
   const apiKeyRaw = extractApiKey(request);
   if (isRequireApiKeyEnabled() && !apiKeyRaw) {
-    return errorResponse(HTTP_STATUS.UNAUTHORIZED, "Authentication required");
+    return errorResponse(401, "Authentication required");
   }
   if (isRequireApiKeyEnabled() && apiKeyRaw && !(await isValidApiKey(apiKeyRaw))) {
-    return errorResponse(HTTP_STATUS.UNAUTHORIZED, "Invalid API key");
+    return errorResponse(401, "Invalid API key");
   }
 
   // Enforce API key policies
@@ -319,7 +335,7 @@ export async function POST(request: Request) {
 
   if (poolExhausted) {
     return unavailableResponse(
-      HTTP_STATUS.RATE_LIMITED,
+      429,
       "All configured web-fetch providers are rate limited or quota-exhausted"
     );
   }

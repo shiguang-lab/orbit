@@ -9,9 +9,13 @@ import { FilesModule } from "./files/files.module.js";
 import { ImagesModule } from "./images/images.module.js";
 import { ModerationsModule } from "./moderations/moderations.module.js";
 import { MusicModule } from "./music/music.module.js";
+import { OcrModule } from "./ocr/ocr.module.js";
 import { RerankModule } from "./rerank/rerank.module.js";
+import { SegmentModule } from "./segment/segment.module.js";
 import { VoicesModule } from "./voices/voices.module.js";
+import { VideosModule } from "./videos/videos.module.js";
 import { WsModule } from "./ws/ws.module.js";
+import { WebModule } from "./web/web.module.js";
 
 @Module({
   imports: [
@@ -25,9 +29,13 @@ import { WsModule } from "./ws/ws.module.js";
     ImagesModule,
     ModerationsModule,
     MusicModule,
+    OcrModule,
     RerankModule,
+    SegmentModule,
     VoicesModule,
+    VideosModule,
     WsModule,
+    WebModule,
   ],
 })
 export class AppModule {}

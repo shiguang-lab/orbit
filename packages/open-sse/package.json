@@ -33,6 +33,10 @@
       "types": "./public/imageGenerationFal.d.ts",
       "import": "./handlers/imageGeneration/providers/fal.ts"
     },
+    "./handlers/webFetch": {
+      "types": "./public/webFetch.d.ts",
+      "import": "./handlers/webFetch.ts"
+    },
     "./config/imageRegistry": {
       "types": "./public/imageRegistry.d.ts",
       "import": "./config/imageRegistry.ts"

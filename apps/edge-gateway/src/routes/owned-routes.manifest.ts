@@ -19,11 +19,15 @@ export const ownedEdgeRoutes: readonly OwnedRoute[] = [
   { path: "/v1/images/generations", methods: ["GET", "OPTIONS", "POST"] },
   { path: "/v1/images/upscale", methods: ["GET", "OPTIONS", "POST"] },
   { path: "/v1/moderations", methods: ["OPTIONS", "POST"] },
+  { path: "/v1/ocr", methods: ["OPTIONS", "POST"] },
   { path: "/v1/music/generations", methods: ["GET", "OPTIONS", "POST"] },
   { path: "/v1/rerank", methods: ["OPTIONS", "POST"] },
+  { path: "/v1/segment", methods: ["OPTIONS", "POST"] },
   { path: "/v1/speech-to-text", methods: ["OPTIONS", "POST"] },
   { path: "/v1/text-to-speech/:voiceId", methods: ["OPTIONS", "POST"] },
   { path: "/v1/voices", methods: ["GET", "OPTIONS"] },
+  { path: "/v1/web/fetch", methods: ["OPTIONS", "POST"] },
+  { path: "/v1/videos/generations", methods: ["GET", "OPTIONS", "POST"] },
   { path: "/v1/ws", methods: ["GET", "OPTIONS"] },
 ];
 
