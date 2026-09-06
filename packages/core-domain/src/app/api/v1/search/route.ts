@@ -35,7 +35,7 @@ import {
   isAllRateLimitedCredentials,
   rateLimitedProviderResponse,
   type RateLimitedCredentials,
-} from "../../../lib/edge/rateLimit.ts";
+} from "../../../../lib/edge/rateLimit.ts";
 import { getSettings } from "../../../../lib/db/settings.ts";
 import { isProviderBlockedByIdOrAlias } from "../../../../shared/utils/noAuthProviders.ts";
 import { withInjectionGuard } from "../../../../middleware/promptInjectionGuard.ts";
