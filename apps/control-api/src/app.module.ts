@@ -30,6 +30,7 @@ import { SettingsConfigModule } from "./settings/config/settings-config.module.j
 import { OneproxyModule } from "./settings/oneproxy/oneproxy.module.js";
 import { TierConfigModule } from "./settings/tier-config/tier-config.module.js";
 import { SystemModule } from "./system/system.module.js";
+import { FreeProxiesModule } from "./settings/free-proxies/free-proxies.module.js";
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { SystemModule } from "./system/system.module.js";
     OneproxyModule,
     TierConfigModule,
     SystemModule,
+    FreeProxiesModule,
   ],
 })
 export class AppModule {}

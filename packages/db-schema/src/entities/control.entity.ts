@@ -240,3 +240,38 @@ export const TierAssignmentEntity: EntityDefinition = {
     column("updated_at", "TEXT", { default: "datetime('now')" }),
   ],
 };
+
+/** Free-proxy catalog shared by control management and the worker sync job. */
+export const FreeProxyEntity: EntityDefinition = {
+  entityName: "FreeProxy",
+  tableName: "free_proxies",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("source", "TEXT", { nullable: false }),
+    column("host", "TEXT", { nullable: false }),
+    column("port", "INTEGER", { nullable: false }),
+    column("type", "TEXT", { nullable: false, default: "'http'" }),
+    column("country_code", "TEXT"),
+    column("quality_score", "INTEGER"),
+    column("latency_ms", "INTEGER"),
+    column("anonymity", "TEXT"),
+    column("last_validated", "TEXT"),
+    column("in_pool", "INTEGER", { default: "0" }),
+    column("pool_proxy_id", "TEXT"),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+    column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
+/** Last per-source free-proxy sync failures surfaced by the control UI. */
+export const FreeProxySyncErrorEntity: EntityDefinition = {
+  entityName: "FreeProxySyncError",
+  tableName: "free_proxy_sync_errors",
+  owner: "control-api",
+  columns: [
+    column("source", "TEXT", { nullable: false, primaryKey: true }),
+    column("errors", "TEXT", { nullable: false }),
+    column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};

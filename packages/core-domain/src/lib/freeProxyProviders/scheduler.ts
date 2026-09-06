@@ -24,10 +24,13 @@
 import { getEnabledProviders } from "./index.ts";
 import { getFreeProxyStats } from "../localDb.ts";
 import { runFreeProxySyncCycle, type FreeProxySyncCycleResult } from "./syncCycle";
+import {
+  getFreeProxyAutoSyncIntervalMs,
+  isFreeProxyAutoSyncEnabled,
+} from "./schedulerConfig.ts";
+export { getFreeProxyAutoSyncIntervalMs, isFreeProxyAutoSyncEnabled } from "./schedulerConfig.ts";
 
 const STARTUP_DELAY_MS = 5_000;
-const DEFAULT_INTERVAL_MS = 1_800_000;
-const MIN_INTERVAL_MS = 300_000;
 const LOG_PREFIX = "[FreeProxyAutoSync]";
 
 declare global {
@@ -43,16 +46,6 @@ let _syncCycleRunner: SyncCycleRunner = () => runFreeProxySyncCycle();
 /** Test-only seam: override the cycle body so tests never hit real providers. */
 export function _setSyncCycleRunnerForTests(runner: SyncCycleRunner | null): void {
   _syncCycleRunner = runner ?? (() => runFreeProxySyncCycle());
-}
-
-export function isFreeProxyAutoSyncEnabled(): boolean {
-  return process.env.FREE_PROXY_AUTO_SYNC_ENABLED === "true";
-}
-
-export function getFreeProxyAutoSyncIntervalMs(): number {
-  const raw = parseInt(process.env.FREE_PROXY_AUTO_SYNC_INTERVAL_MS ?? "", 10);
-  const candidate = Number.isFinite(raw) && raw > 0 ? raw : DEFAULT_INTERVAL_MS;
-  return Math.max(candidate, MIN_INTERVAL_MS);
 }
 
 function isBuildProcess(): boolean {

@@ -258,6 +258,14 @@
       "types": "./src/public/proxyEchoTarget.d.ts",
       "import": "./src/lib/proxyEchoTarget.ts"
     },
+    "./shared/free-proxies": {
+      "types": "./src/public/freeProxies.d.ts",
+      "import": "./src/shared/freeProxies.ts"
+    },
+    "./shared/validation/free-proxy-schemas": {
+      "types": "./src/public/freeProxySchemas.d.ts",
+      "import": "./src/shared/validation/freeProxySchemas.ts"
+    },
     "./shared/proxy-health": {
       "types": "./src/public/proxyHealth.d.ts",
       "import": "./src/shared/proxy-health.ts"

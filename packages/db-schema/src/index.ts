@@ -15,6 +15,8 @@ import {
   TierAssignmentEntity,
   TierConfigEntity,
   WebhookEntity,
+  FreeProxyEntity,
+  FreeProxySyncErrorEntity,
 } from "./entities/control.entity.js";
 import {
   AgenticConversationEntity,
@@ -70,6 +72,8 @@ export const GATEWAY_TABLES = {
   modelCapabilityOverrides: "model_capability_overrides",
   tierConfig: "tier_config",
   tierAssignments: "tier_assignments",
+  freeProxies: "free_proxies",
+  freeProxySyncErrors: "free_proxy_sync_errors",
 } as const;
 
 export type GatewayTable = (typeof GATEWAY_TABLES)[keyof typeof GATEWAY_TABLES];
@@ -115,6 +119,8 @@ export const TABLE_OWNERSHIP: readonly TableRef[] = [
   { table: GATEWAY_TABLES.modelCapabilityOverrides, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.tierConfig, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.tierAssignments, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.freeProxies, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.freeProxySyncErrors, owner: "control-api", access: "read-write" },
 ];
 
 /**
@@ -154,6 +160,8 @@ export const GATEWAY_ENTITIES = {
   modelCapabilityOverrides: ModelCapabilityOverrideEntity,
   tierConfig: TierConfigEntity,
   tierAssignments: TierAssignmentEntity,
+  freeProxies: FreeProxyEntity,
+  freeProxySyncErrors: FreeProxySyncErrorEntity,
 } satisfies Record<keyof typeof GATEWAY_TABLES, EntityDefinition>;
 
 /** Runtime guard used by architecture checks and tests. */
