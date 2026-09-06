@@ -4,14 +4,14 @@
  */
 
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
-import { getWebhook } from "@shiguang-gateway/core-domain/db/local-db";
+import { getWebhook } from "@shiguang-gateway/core-domain/db/webhooks";
 import { decryptMetadata } from "@shiguang-gateway/core-domain/shared/webhook-dispatcher";
 import { buildSlackPayload } from "@shiguang-gateway/core-domain/shared/webhook-integrations/slack";
 import { buildTelegramUrl, buildTelegramPayload } from "@shiguang-gateway/core-domain/shared/webhook-integrations/telegram";
 import { buildDiscordPayload } from "@shiguang-gateway/core-domain/shared/webhook-integrations/discord";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { insertDelivery } from "@shiguang-gateway/core-domain/db/webhook-deliveries";
-import { recordWebhookDelivery } from "@shiguang-gateway/core-domain/db/local-db";
+import { recordWebhookDelivery } from "@shiguang-gateway/core-domain/db/webhooks";
 import { isPrivateHost, OutboundUrlGuardError } from "@shiguang-gateway/network-guard";
 import { parseAndValidateWebhookUrl } from "@shiguang-gateway/core-domain/network/outbound-url-guard-policy";
 import crypto from "crypto";

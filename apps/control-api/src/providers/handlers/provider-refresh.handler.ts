@@ -1,5 +1,5 @@
 
-import { getCachedProviderConnectionById } from "@shiguang-gateway/core-domain/db/local-db";
+import { getCachedProviderConnectionById } from "@shiguang-gateway/core-domain/db/read-cache";
 import { updateProviderConnection } from "@shiguang-gateway/core-domain/db/provider-connections";
 import {
   updateProviderCredentials,

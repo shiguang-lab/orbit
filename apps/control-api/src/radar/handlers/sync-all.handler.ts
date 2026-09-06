@@ -1,7 +1,7 @@
-import { syncRadar } from "@shiguang-gateway/core-domain/control/radar-sync";
-import { syncRadarIntel } from "@shiguang-gateway/core-domain/control/radar-intel-sync";
-import { syncRadarOffers } from "@shiguang-gateway/core-domain/control/radar-offers-sync";
-import { syncRadarReferrals } from "@shiguang-gateway/core-domain/control/radar-referrals-sync";
+import { syncRadar } from "@shiguang-gateway/core-domain/radar/sync/catalog";
+import { syncRadarIntel } from "@shiguang-gateway/core-domain/radar/sync/intel";
+import { syncRadarOffers } from "@shiguang-gateway/core-domain/radar/sync/offers";
+import { syncRadarReferrals } from "@shiguang-gateway/core-domain/radar/sync/referrals";
 import { authorize, handleCorsOptions, json, internalError, withRadarSyncBody } from "../common.js";
 export function OPTIONS() { return handleCorsOptions(); }
 export async function POST(request: Request) {

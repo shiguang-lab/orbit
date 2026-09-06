@@ -77,7 +77,7 @@ async function postHandler(request: Request): Promise<Response> {
     if (policy.rejection) return policy.rejection;
 
     if (body.model && !body.model.includes("/")) {
-      const { getComboByName } = await load("@shiguang-gateway/core-domain/edge/local-db");
+      const { getComboByName } = await load("@shiguang-gateway/core-domain/db/combos");
       const combo = await getComboByName(body.model);
       if (combo) {
         const { executeVideoCombo } = await load("@shiguang-gateway/open-sse/services/videoCombo");

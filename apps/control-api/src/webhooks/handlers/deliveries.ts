@@ -4,7 +4,7 @@
  */
 
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
-import { getWebhook, getDeliveries } from "@shiguang-gateway/core-domain/db/local-db";
+import { getWebhook, getDeliveries } from "@shiguang-gateway/core-domain/db/webhooks";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {

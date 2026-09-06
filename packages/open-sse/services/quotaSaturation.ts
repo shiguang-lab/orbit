@@ -32,7 +32,7 @@ import type {
   QuotaUnit,
   QuotaWindow,
 } from "@shiguang-gateway/core-domain/quota/dimensions";
-import { getCachedProviderConnectionById } from "@shiguang-gateway/core-domain/db/local-db";
+import { getCachedProviderConnectionById } from "@shiguang-gateway/core-domain/db/read-cache";
 import { logger } from "@shiguang-gateway/runtime-logging";
 import { fetchCodexQuota } from "./codexQuotaFetcher.js";
 import { fetchBailianQuota } from "./bailianQuotaFetcher.js";

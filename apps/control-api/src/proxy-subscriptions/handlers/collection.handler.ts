@@ -5,15 +5,13 @@ import {
   listSubscriptions,
   proxySubscriptionCreateSchema,
   redactSubscriptionUrl,
-  startSubscriptionScheduler,
-} from "@shiguang-gateway/core-domain/control/proxy-subscriptions";
+} from "@shiguang-gateway/core-domain/proxy-subscriptions/management";
 import { createErrorResponseFromUnknown } from "@shiguang-gateway/core-domain/shared/error-response";
 
 export async function GET(request: Request): Promise<Response> {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
   try {
-    startSubscriptionScheduler();
     const items = await listSubscriptions();
     return Response.json({ items: items.map((item) => ({ ...item, url: redactSubscriptionUrl(item.url) })) });
   } catch (error) {

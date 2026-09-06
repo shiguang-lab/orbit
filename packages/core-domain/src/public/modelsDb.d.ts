@@ -2,6 +2,7 @@ export {
   SYNCED_AVAILABLE_MODELS_MALFORMED,
   deleteImportedCustomModels,
   deleteSyncedAvailableModelsForProvider,
+  getActiveProvidersWithSyncedModel,
   getAllCustomModels,
   getAllSyncedAvailableModels,
   getCustomModels,

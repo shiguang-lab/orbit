@@ -33,14 +33,14 @@ export function scheduleStreamingQuotaShareConsumption(args: {
   const quotaApiKeyId = args.apiKeyId;
   const quotaConnectionId = args.connectionId;
   // onStreamComplete is sync — use .then() (fire-and-forget, fail-open) instead of await
-  import("@shiguang-gateway/core-domain/quota/spend-recorder")
+  import("@shiguang-gateway/core-domain/quota/consumption-recorder")
     .then(({ recordStreamingConsumption }) =>
       recordStreamingConsumption(
         {
           apiKeyId: quotaApiKeyId,
           connectionId: quotaConnectionId,
           provider: args.provider,
-          model: args.model,
+          model: args.model ?? "",
           streamUsage: args.streamUsage,
           streamStatus: args.streamStatus,
           serviceTier: args.serviceTier,

@@ -104,7 +104,7 @@
     },
     "./config/embeddingRegistry": {
       "types": "./public/embeddingRegistry.d.ts",
-      "import": "./config/embeddingRegistry.ts"
+      "import": "./exports/config/embeddingRegistry.ts"
     },
     "./config/searchRegistry": {
       "types": "./public/searchRegistry.d.ts",
@@ -268,7 +268,7 @@
     "./services/webSessionPoolHealth": "./services/webSessionPoolHealth.ts",
     "./services/accountFallback": {
       "types": "./public/accountFallback.d.ts",
-      "import": "./services/accountFallback.ts"
+      "import": "./exports/services/accountFallback.ts"
     },
     "./services/chatgptWebCodexAdmin": {
       "types": "./public/chatgptWebCodexAdmin.d.ts",
@@ -276,7 +276,7 @@
     },
     "./services/rateLimitManager": {
       "types": "./public/rateLimitManager.d.ts",
-      "import": "./services/rateLimitManager.ts"
+      "import": "./exports/services/rateLimitManager.ts"
     },
     "./services/combo/decisionTrace": "./services/combo/decisionTrace.ts",
     "./services/providerDefaultRateLimit": {
@@ -543,8 +543,6 @@
     "./services/autoCombo/scoring": "./services/autoCombo/scoring.ts",
     "./services/autoCombo/modePacks": "./services/autoCombo/modePacks.ts",
     "./services/autoCombo/taskFitness": "./services/autoCombo/taskFitness.ts",
-    "./services/accountFallbackRuntime": "./services/accountFallback.ts",
-    "./services/rateLimitManagerRuntime": "./services/rateLimitManager.ts",
     "./services/adobeFireflyModels": "./services/adobeFireflyModels.ts",
     "./services/conolAuth": "./services/conolAuth.ts",
     "./services/conolModels": "./services/conolModels.ts",
@@ -578,8 +576,7 @@
     "./config/sap": "./config/sap.ts",
     "./config/watsonx": "./config/watsonx.ts",
     "./executors/vertex": "./executors/vertex.ts",
-    "./services/alibabaFreeTierQuotaFetcher": "./services/alibabaFreeTierQuotaFetcher.ts",
-    "./config/embeddingRegistryRuntime": "./config/embeddingRegistry.ts"
+    "./services/alibabaFreeTierQuotaFetcher": "./services/alibabaFreeTierQuotaFetcher.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit --pretty false",

@@ -53,6 +53,24 @@ try {
 if (manifest) {
   if (manifest.private !== true) add("package-private", manifestPath, "open-sse is an internal implementation package and must remain private");
   if (!manifest.exports || !manifest.exports["."]) add("package-exports", manifestPath, "an explicit package entrypoint is required");
+  for (const retired of [
+    "./config/embeddingRegistryRuntime",
+    "./services/accountFallbackRuntime",
+    "./services/rateLimitManagerRuntime",
+  ]) {
+    if (manifest.exports?.[retired]) {
+      add("redundant-package-export", manifestPath, `${retired} must stay retired`);
+    }
+  }
+  for (const [subpath, target] of Object.entries({
+    "./config/embeddingRegistry": "./exports/config/embeddingRegistry.ts",
+    "./services/accountFallback": "./exports/services/accountFallback.ts",
+    "./services/rateLimitManager": "./exports/services/rateLimitManager.ts",
+  })) {
+    if (manifest.exports?.[subpath]?.import !== target) {
+      add("broad-package-export", manifestPath, `${subpath} must target ${target}`);
+    }
+  }
 }
 
 walk(packageDir);

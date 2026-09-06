@@ -20,7 +20,7 @@ import {
   getTokenLimitsForRequest,
   logTokenLimitReset,
   type TokenLimit,
-} from "@shiguang-gateway/core-domain/edge/local-db";
+} from "@shiguang-gateway/core-domain/db/token-limits";
 
 interface CacheEntry {
   windowStart: string;

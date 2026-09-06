@@ -74,7 +74,7 @@ function resolveDateWindow(searchParams: URLSearchParams, range: string): DateWi
 }
 
 async function resolveRawCutoffDate(): Promise<string> {
-  const { getUserDatabaseSettings } = await import("@shiguang-gateway/core-domain/control/database-settings");
+  const { getUserDatabaseSettings } = await import("@shiguang-gateway/core-domain/db/database-settings");
   const dbSettings = getUserDatabaseSettings();
   const rawRetentionDays = dbSettings.aggregation?.rawDataRetentionDays ?? 30;
   const rawCutoff = new Date();

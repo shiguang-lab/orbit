@@ -4,14 +4,20 @@ export type PendingRequestScope = {
   provider: string;
   connectionId: string | null;
 };
-export function updatePendingScope(scope: PendingRequestScope, metadata: Record<string, any>): void;
-export function finalizePendingScope(scope: PendingRequestScope, metadata: Record<string, any>): void;
-export function readCallArtifact(relativePath: string | null): {
-  artifact: Record<string, any> | null;
-  state: "ready" | "missing" | "corrupt";
+export type PendingRequestMetadata = {
+  clientEndpoint?: string | null;
+  clientRequest?: unknown;
+  providerRequest?: unknown;
+  providerUrl?: string | null;
+  providerResponse?: unknown;
+  clientResponse?: unknown;
+  status?: number | null;
+  error?: string | null;
+  errorCode?: string | null;
+  stage?: string | null;
+  stageUpdatedAt?: number | null;
+  correlationId?: string | null;
+  sessionTag?: string | null;
 };
-export function getMonthlyProviderTokensForConnection(provider: string, connectionId: string): number;
-export function getConnectionSpendUsdSinceAdded(
-  provider: string,
-  connectionId: string,
-): Promise<{ costUsd: number; requests: number }>;
+export function updatePendingScope(scope: PendingRequestScope, metadata: PendingRequestMetadata): void;
+export function finalizePendingScope(scope: PendingRequestScope, metadata: PendingRequestMetadata): void;

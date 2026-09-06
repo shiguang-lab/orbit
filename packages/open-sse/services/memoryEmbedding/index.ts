@@ -5,7 +5,7 @@ import {
   type EmbeddingProviderNodeRow,
 } from "../../config/embeddingRegistry.js";
 import { getProviderCredentials } from "../auth.js";
-import { getCachedProviderNodes } from "@shiguang-gateway/core-domain/db/local-db";
+import { getCachedProviderNodes } from "@shiguang-gateway/core-domain/db/read-cache";
 import type { MemorySettings as MemorySettingsExtended } from "@shiguang-gateway/core-domain/memory/settings";
 import type {
   EmbeddingResolution,

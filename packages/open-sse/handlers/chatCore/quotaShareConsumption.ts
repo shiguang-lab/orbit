@@ -22,7 +22,7 @@ export async function scheduleQuotaShareConsumption(args: {
   if (!args.apiKeyId || !args.connectionId) return;
   try {
     const { scheduleRecordConsumption, buildConsumptionCost } = await import(
-      "@shiguang-gateway/core-domain/quota/spend-recorder"
+      "@shiguang-gateway/core-domain/quota/consumption-recorder"
     );
     scheduleRecordConsumption(
       {

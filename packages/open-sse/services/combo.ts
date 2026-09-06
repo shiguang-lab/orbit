@@ -94,7 +94,7 @@ import {
 import { selectQuotaShareTarget } from "./combo/quotaShareStrategy.ts";
 import { makeConnectionConcurrencyResolver, lookupPositiveCap } from "./combo/concurrencyCaps.ts";
 import { acquireQuotaShareConcurrencySlot } from "./combo/quotaShareConcurrency.ts";
-import { canAffordRequest } from "@shiguang-gateway/core-domain/quota/scheduler";
+import { canAffordRequest } from "@shiguang-gateway/core-domain/quota/reservations";
 import { resolveConnectionTimeoutMs } from "../handlers/chatCore/upstreamTimeouts.ts";
 import { getCachedProviderConnectionById } from "@shiguang-gateway/core-domain/db/read-cache";
 import { orderTargetsByEvalScores } from "./evalRouting.ts";
@@ -370,7 +370,7 @@ export function clearStaleLKGP(
 ): void {
   void (async () => {
     try {
-      const { clearLKGP } = await import("@shiguang-gateway/core-domain/edge/local-db");
+      const { clearLKGP } = await import("@shiguang-gateway/core-domain/db/lkgp");
       const promises: Promise<void>[] = [clearLKGP(comboName, comboId || comboName)];
       if (executionKey) {
         promises.push(clearLKGP(comboName, executionKey));
@@ -427,7 +427,7 @@ export async function buildAutoCandidates(
   // apply, so auto-routing behavior is unchanged.
   const quotaCutoffEnabled =
     (resilienceSettings ?? resolveResilienceSettings(null))?.quotaPreflight?.enabled === true;
-  const { getPricingForModel } = await import("@shiguang-gateway/core-domain/edge/local-db");
+  const { getPricingForModel } = await import("@shiguang-gateway/core-domain/pricing/db");
   const quotaPromises = new Map<string, Promise<unknown>>();
   let historicalLatencyStats: Record<string, HistoricalLatencyStatsEntry> = {};
   try {
@@ -1969,7 +1969,7 @@ async function handleComboChatInner({
               const connId = effectiveConnectionId || undefined;
               void (async () => {
                 try {
-                  const { setLKGP } = await import("@shiguang-gateway/core-domain/edge/local-db");
+                  const { setLKGP } = await import("@shiguang-gateway/core-domain/db/lkgp");
                   await Promise.all([
                     setLKGP(combo.name, target.executionKey, provider, connId),
                     setLKGP(combo.name, combo.id || combo.name, provider, connId),
@@ -3442,7 +3442,7 @@ async function handleRoundRobinCombo({
             typeof attemptBody === "object"
           ) {
             try {
-              const { reserveQuota } = await import("@shiguang-gateway/core-domain/quota/scheduler");
+              const { reserveQuota } = await import("@shiguang-gateway/core-domain/quota/reservations");
               reserveQuota(target.connectionId, modelStr, attemptBody as Record<string, unknown>, {
                 tokenLimit: await resolveTargetTokenLimit(target),
               });
@@ -3566,7 +3566,7 @@ async function handleRoundRobinCombo({
               const connId = effectiveConnectionId || undefined;
               void (async () => {
                 try {
-                  const { setLKGP } = await import("@shiguang-gateway/core-domain/edge/local-db");
+                  const { setLKGP } = await import("@shiguang-gateway/core-domain/db/lkgp");
                   await Promise.all([
                     setLKGP(combo.name, target.executionKey, provider, connId),
                     setLKGP(combo.name, combo.id || combo.name, provider, connId),

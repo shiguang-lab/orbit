@@ -1,5 +1,5 @@
 import { AgentBridgeServerActionSchema, checkCertInstalled, generateCert, getCachedPassword, installCertResult, isMitmSudoPasswordRequired, normalizeMitmSudoPasswordInput, resolveMitmDataDir, resolveMitmSudoPassword, setCachedPassword, startMitm, stopMitm, getMitmStatus } from "@shiguang-gateway/core-domain/control/agent-bridge";
-import { pickApiKeyForInternalUse } from "@shiguang-gateway/core-domain/db/local-db";
+import { pickApiKeyForInternalUse } from "@shiguang-gateway/core-domain/db/api-keys";
 import { errorResponse, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import path from "node:path";
 

@@ -1,6 +1,6 @@
-import { getRadarReferrals } from "@shiguang-gateway/core-domain/control/radar";
-import { getRadarReferralsCache } from "@shiguang-gateway/core-domain/control/radar-db";
-import { shouldSyncReferralsOnRead, syncRadarReferrals } from "@shiguang-gateway/core-domain/control/radar-referrals-sync";
+import { getRadarReferrals } from "@shiguang-gateway/core-domain/radar/read";
+import { getRadarReferralsCache } from "@shiguang-gateway/core-domain/radar/store";
+import { shouldSyncReferralsOnRead, syncRadarReferrals } from "@shiguang-gateway/core-domain/radar/sync/referrals";
 import { authorize, handleCorsOptions, json, internalError } from "../common.js";
 export function OPTIONS() { return handleCorsOptions(); }
 export async function GET(request: Request) {

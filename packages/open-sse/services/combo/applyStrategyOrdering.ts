@@ -67,7 +67,7 @@ export async function applyStrategyOrdering(
 
   if (strategy === "lkgp") {
     try {
-      const { getLKGP } = await import("@shiguang-gateway/core-domain/edge/local-db");
+      const { getLKGP } = await import("@shiguang-gateway/core-domain/db/lkgp");
       const lkgpProvider = await getLKGP(combo.name, combo.id || combo.name);
 
       if (lkgpProvider) {

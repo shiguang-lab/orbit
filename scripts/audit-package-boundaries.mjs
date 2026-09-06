@@ -424,6 +424,7 @@ function appConsumers(name, seen = new Set()) {
 const legacyMixed = new Set();
 
 for (const entry of packageEntries) {
+  const runtimeExportTargets = new Map();
   for (const [subpath, value] of Object.entries(entry.manifest?.exports ?? {})) {
     if (subpath.endsWith(".ts") || subpath.includes("/lib/")) {
       add("implementation-layout-package-export", join(entry.dir, "package.json"), `${subpath} leaks a source filename or lib directory; expose a stable capability subpath`);
@@ -435,6 +436,20 @@ for (const entry of packageEntries) {
         add("missing-package-export-target", join(entry.dir, "package.json"), `${subpath} -> ${target}`);
       }
     }
+    const runtimeTarget = typeof value === "string" ? value : value?.import;
+    if (typeof runtimeTarget === "string" && !runtimeTarget.includes("*")) {
+      const subpaths = runtimeExportTargets.get(runtimeTarget) ?? [];
+      subpaths.push(subpath);
+      runtimeExportTargets.set(runtimeTarget, subpaths);
+    }
+  }
+  for (const [target, subpaths] of runtimeExportTargets) {
+    if (subpaths.length < 2) continue;
+    add(
+      "duplicate-package-runtime-export-target",
+      join(entry.dir, "package.json"),
+      `${subpaths.join(", ")} all resolve to ${target}; expose one stable capability subpath or split the implementation by responsibility`,
+    );
   }
   for (const file of walk(join(entry.dir, "src"))) {
     const source = readFileSync(file, "utf8");
@@ -495,6 +510,7 @@ const result = {
     "core-domain source may not import executable CLI implementations from package bin or apps/cli",
     "packages may not contain route.ts modules or retired dynamic compat dispatchers",
     "every explicit package export condition must resolve to an existing file",
+    "each runtime export target must have one stable public subpath; semantic aliases are forbidden",
     "package source imports may not start timers, listeners, or database access; applications own lifecycle",
   ],
   workspacePackageDependencyGraph: {

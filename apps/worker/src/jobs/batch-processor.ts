@@ -1,22 +1,19 @@
 import { randomUUID } from "node:crypto";
-import type { BatchItemCheckpoint, BatchRecord } from "@shiguang-gateway/core-domain/db/local-db";
+import type { BatchItemCheckpoint, BatchRecord } from "@shiguang-gateway/core-domain/db/batches";
 import {
   countBatchItemCheckpoints,
-  createFile,
-  deleteFile,
   ensureBatchItemCheckpoints,
-  getApiKeyById,
   getBatch,
-  getFileContent,
   getPendingBatches,
   getTerminalBatches,
   listBatchItemCheckpoints,
-  listFiles,
   markBatchItemError,
   markBatchItemProcessing,
   markBatchItemResult,
   updateBatch,
-} from "@shiguang-gateway/core-domain/db/local-db";
+} from "@shiguang-gateway/core-domain/db/batches";
+import { createFile, deleteFile, getFileContent, listFiles } from "@shiguang-gateway/core-domain/db/files";
+import { getApiKeyById } from "@shiguang-gateway/core-domain/db/api-keys";
 import {
   DEFAULT_BATCH_EXPIRATION_SECONDS,
   type SupportedBatchEndpoint,
@@ -194,8 +191,8 @@ function getBatchOutputExpiresAt(batch: BatchRecord): number | null {
     return batch.createdAt + batch.outputExpiresAfterSeconds;
   }
 
-  const completionTime: number =
-    batch.completedAt || batch.failedAt || batch.cancelledAt || batch.expiredAt;
+  const completionTime =
+    batch.completedAt ?? batch.failedAt ?? batch.cancelledAt ?? batch.expiredAt ?? 0;
   if (!completionTime) return null;
   // Default: batch output files expire 30 days after completion
   return completionTime + DEFAULT_BATCH_EXPIRATION_SECONDS;

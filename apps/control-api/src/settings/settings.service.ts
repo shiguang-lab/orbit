@@ -11,7 +11,7 @@ import {
 import {
   getDatabaseSettings,
   updateDatabaseSettings,
-} from "@shiguang-gateway/core-domain/control/database-settings";
+} from "@shiguang-gateway/core-domain/db/database-settings";
 import { getDatabaseStats } from "@shiguang-gateway/core-domain/db/database-stats";
 import { getState as getVacuumState, runNow as runVacuumNow } from "@shiguang-gateway/core-domain/db/vacuum";
 import {

@@ -1,5 +1,5 @@
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { createCombo, getCombos } from "@shiguang-gateway/core-domain/db/local-db";
+import { createCombo, getCombos } from "@shiguang-gateway/core-domain/db/combos";
 import { normalizeComboModels } from "@shiguang-gateway/core-domain/routing/combo-steps";
 import { z } from "zod";
 

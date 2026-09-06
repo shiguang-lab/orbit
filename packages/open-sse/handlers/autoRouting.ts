@@ -14,7 +14,7 @@ import {
   isValidModelFamily,
   type ModelFamily,
 } from "../services/autoCombo/modelFamily.ts";
-import { getCachedSettings } from "@shiguang-gateway/core-domain/edge/local-db";
+import { getCachedSettings } from "@shiguang-gateway/core-domain/db/read-cache";
 import * as log from "../utils/sseLogger.ts";
 
 export type AutoRoutingState = {

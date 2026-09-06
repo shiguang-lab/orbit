@@ -3,7 +3,7 @@ import {
   getComboByName,
   getCombos,
   getCombosCount,
-} from "@shiguang-gateway/core-domain/db/local-db";
+} from "@shiguang-gateway/core-domain/db/combos";
 import { isCloudEnabled } from "@shiguang-gateway/core-domain/db/settings";
 import { syncToCloud } from "@shiguang-gateway/core-domain/sync/cloud";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";

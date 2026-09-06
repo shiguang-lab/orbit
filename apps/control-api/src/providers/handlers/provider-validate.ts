@@ -7,7 +7,8 @@ import {
   isAnthropicCompatibleProvider,
 } from "@shiguang-gateway/core-domain/catalog/providers";
 import { validateProviderApiKey } from "@shiguang-gateway/open-sse/services/provider-validation";
-import { getProxyForLevel, resolveProxyForProvider } from "@shiguang-gateway/core-domain/db/local-db";
+import { getProxyForLevel } from "@shiguang-gateway/core-domain/db/proxy-settings";
+import { resolveProxyForProvider } from "@shiguang-gateway/core-domain/db/proxies";
 import { validateProviderApiKeySchema } from "@shiguang-gateway/core-domain/control/provider-validation-schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { runWithProxyContextOrDirect } from "@shiguang-gateway/open-sse/utils/proxyFetch";

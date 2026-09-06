@@ -42,7 +42,7 @@ export async function POST(request: Request): Promise<Response> {
     load("@shiguang-gateway/open-sse/services/auth"),
     load("@shiguang-gateway/core-domain/runtime/api-key-policy"),
     load("@shiguang-gateway/open-sse/services/leaseContext"),
-    load("@shiguang-gateway/core-domain/edge/local-db"),
+    load("@shiguang-gateway/core-domain/db/exclusive-connection-leases"),
     load("@shiguang-gateway/open-sse/services/runtimeModel"),
     load("@shiguang-gateway/open-sse/utils/error"),
     load("@shiguang-gateway/contracts/cors"),

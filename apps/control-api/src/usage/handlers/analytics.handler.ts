@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 import { getProviderById } from "@shiguang-gateway/core-domain/catalog/providers";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { getApiKeys } from "@shiguang-gateway/core-domain/db/api-keys";
-import { getUserDatabaseSettings } from "@shiguang-gateway/core-domain/control/database-settings";
+import { getUserDatabaseSettings } from "@shiguang-gateway/core-domain/db/database-settings";
 import {
   buildUnifiedSource,
   buildPresetUnifiedSource,

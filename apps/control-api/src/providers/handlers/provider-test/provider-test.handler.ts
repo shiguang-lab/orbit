@@ -2,10 +2,9 @@ import { z } from "zod";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import {
   getCachedProviderConnectionById,
-  updateProviderConnection,
-  isCloudEnabled,
-  resolveProxyForConnection,
-} from "@shiguang-gateway/core-domain/db/local-db";
+} from "@shiguang-gateway/core-domain/db/read-cache";
+import { updateProviderConnection } from "@shiguang-gateway/core-domain/db/provider-connections";
+import { isCloudEnabled, resolveProxyForConnection } from "@shiguang-gateway/core-domain/db/settings";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
 import { syncToCloud } from "@shiguang-gateway/core-domain/sync/cloud";
 import { validateProviderApiKey } from "@shiguang-gateway/open-sse/services/provider-validation";

@@ -19,7 +19,7 @@ import {
   type PreflightQuotaThresholds,
   type QuotaInfo,
 } from "../quotaPreflight.ts";
-import { getCachedProviderConnectionById } from "@shiguang-gateway/core-domain/edge/local-db";
+import { getCachedProviderConnectionById } from "@shiguang-gateway/core-domain/db/read-cache";
 import {
   resolveResilienceSettings,
   type ResilienceSettings,

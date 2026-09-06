@@ -6,6 +6,8 @@ export {
   getExclusiveLeaseOccupancy,
   hashLeaseOwnerId,
   invalidateExclusiveConnectionLease,
+  releaseExclusiveConnectionLease,
+  renewExclusiveConnectionLease,
   transitionExclusiveConnectionLease,
 } from "../lib/db/exclusiveConnectionLeases.js";
 export type {

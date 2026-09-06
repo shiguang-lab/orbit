@@ -7,7 +7,7 @@
  * with the API-key auth model used by `/v1/models` and projects out internal
  * routing details (account/connection ids, weights, internal labels).
  */
-import { getCombos } from "@shiguang-gateway/core-domain/edge/local-db";
+import { getCombos } from "@shiguang-gateway/core-domain/db/combos";
 import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/services/auth";
 import { isDashboardSessionAuthenticated } from "@shiguang-gateway/auth/dashboard-session";
 import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";

@@ -27,6 +27,12 @@ const sessionAffinityCleanupLifecycleSpecifier =
   "@shiguang-gateway/core-domain/session-affinity/cleanup-lifecycle";
 const openRouterProviderStatsLifecycleSpecifier =
   "@shiguang-gateway/core-domain/catalog/openrouter-provider-stats-lifecycle";
+const proxySubscriptionLifecycleSpecifier =
+  "@shiguang-gateway/core-domain/worker/proxy-subscription-lifecycle";
+const radarSyncLifecycleSpecifier =
+  "@shiguang-gateway/core-domain/radar/sync-lifecycle";
+const guardrailManagementSpecifier =
+  "@shiguang-gateway/core-domain/control/guardrails";
 const preRequestHookManagementSpecifier =
   "@shiguang-gateway/core-domain/middleware/pre-request-hook-management";
 const violations = [];
@@ -204,22 +210,47 @@ allowedCoreDomainSubpaths["apps/control-api"] = allowedCoreDomainSubpaths[
   (subpath) =>
     subpath !== "control/compliance" &&
     subpath !== "compliance" &&
-    subpath !== "control/middleware-registry",
+    subpath !== "control/middleware-registry" &&
+    subpath !== "control/database-settings" &&
+    subpath !== "db/local-db",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "compliance/audit-log",
+  "db/database-settings",
+  "db/model-combo-mappings",
+  "db/proxy-registry",
+  "db/proxy-settings",
+  "db/relay-probe-stats",
+  "db/webhooks",
   "routing/combo-steps",
   "network/probe-origin",
   "resilience/rate-limit-classification",
   "middleware/pre-request-hook-management",
 );
+allowedCoreDomainSubpaths["apps/worker"] = allowedCoreDomainSubpaths["apps/worker"].filter(
+  (subpath) => subpath !== "db/local-db",
+);
+allowedCoreDomainSubpaths["apps/worker"].push(
+  "db/api-keys",
+  "db/batches",
+  "db/files",
+  "db/proxy-registry",
+);
 allowedCoreDomainSubpaths["apps/worker"].push("compliance/lifecycle");
 allowedCoreDomainSubpaths["apps/worker"].push("session-affinity/cleanup-lifecycle");
 allowedCoreDomainSubpaths["apps/worker"].push("catalog/openrouter-provider-stats-lifecycle");
+allowedCoreDomainSubpaths["apps/worker"].push("radar/sync-lifecycle");
 allowedCoreDomainSubpaths["apps/edge-gateway"] = allowedCoreDomainSubpaths[
   "apps/edge-gateway"
-].filter((subpath) => subpath !== "edge/video-bridge-stats");
+].filter(
+  (subpath) => subpath !== "edge/video-bridge-stats" && subpath !== "edge/local-db",
+);
 allowedCoreDomainSubpaths["apps/edge-gateway"].push("guardrails/modality-bridge-stats");
+allowedCoreDomainSubpaths["apps/edge-gateway"].push(
+  "db/database-settings",
+  "db/exclusive-connection-leases",
+  "db/models",
+);
 
 for (const app of ["apps/control-api", "apps/edge-gateway"]) {
   allowedCoreDomainSubpaths[app] = allowedCoreDomainSubpaths[app].filter(
@@ -322,12 +353,12 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "catalog/free-models",
   "shared/cors-status",
   "runtime/feature-flags",
-  "control/radar",
-  "control/radar-db",
-  "control/radar-sync",
-  "control/radar-referrals-sync",
-  "control/radar-offers-sync",
-  "control/radar-intel-sync",
+  "radar/read",
+  "radar/store",
+  "radar/sync/catalog",
+  "radar/sync/referrals",
+  "radar/sync/offers",
+  "radar/sync/intel",
   "db/cleanup",
   "usage/call-logs",
   "shared/authz-route-policy",
@@ -382,7 +413,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/skills-github",
   "control/agent-skills",
   "control/mcp-management",
-  "control/proxy-subscriptions",
+  "proxy-subscriptions/management",
   "control/model-capability-overrides",
   "control/model-context-overrides",
   "pricing/provider-prefixes",
@@ -1158,6 +1189,27 @@ for (const app of appEntries) {
           "only the worker may own OpenRouter provider stats refresh lifecycle",
         );
       }
+      if (specifier === proxySubscriptionLifecycleSpecifier && rel(app.dir) !== "apps/worker") {
+        add(
+          "proxy-subscription-lifecycle-outside-worker",
+          file,
+          "only the worker may own proxy subscription refresh lifecycle",
+        );
+      }
+      if (specifier === radarSyncLifecycleSpecifier && rel(app.dir) !== "apps/worker") {
+        add(
+          "radar-sync-lifecycle-outside-worker",
+          file,
+          "only the worker may own Radar background synchronization lifecycle",
+        );
+      }
+      if (specifier === guardrailManagementSpecifier && rel(app.dir) !== "apps/control-api") {
+        add(
+          "guardrail-management-outside-control-api",
+          file,
+          "only control-api may register or inspect the mutable guardrail registry",
+        );
+      }
       if (specifier === preRequestHookManagementSpecifier && rel(app.dir) !== "apps/control-api") {
         add(
           "pre-request-hook-management-outside-control-api",
@@ -1251,6 +1303,9 @@ if (coreDomainEntry) {
   }
 }
 const retiredRedundantCoreExports = [
+  "./edge/local-db",
+  "./db/local-db",
+  "./control/database-settings",
   "./shared/api-key-policy",
   "./runtime/upstream-error",
   "./edge/request-id",
@@ -1348,6 +1403,9 @@ const retiredRedundantCoreExports = [
   "./control/openrouter-provider-stats",
   "./worker/openrouter-provider-stats",
   "./usage/provider-limits-support/providerLimits",
+  "./quota/types",
+  "./quota/scheduler",
+  "./quota/spend-recorder",
   "./runtime/middleware-registry",
   "./control/middleware-registry",
   "./control/provider-discovery-support/callLogs",
@@ -1375,11 +1433,35 @@ const retiredRedundantCoreExports = [
   "./control/cli-tools-status",
   "./pricing/modal-cost",
   "./usage/reporting-support/cost-calculator",
+  "./control/proxy-subscriptions",
+  "./worker/proxy-subscription",
+  "./control/radar",
+  "./control/radar-db",
+  "./control/radar-sync",
+  "./control/radar-referrals-sync",
+  "./control/radar-offers-sync",
+  "./control/radar-intel-sync",
+  "./worker/radar-scheduler",
+  "./edge/guardrails-runtime",
+  "./runtime/guardrails",
 ];
 for (const subpath of retiredRedundantCoreExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {
     add("redundant-core-domain-export", join(coreDomainEntry.dir, "package.json"), subpath);
   }
+}
+const callLogArtifactsExport = coreDomainEntry?.manifest?.exports?.["./usage/call-log-artifacts"];
+if (
+  callLogArtifactsExport &&
+  typeof callLogArtifactsExport === "object" &&
+  (callLogArtifactsExport.import === "./src/lib/usage/callLogArtifacts.ts" ||
+    callLogArtifactsExport.types === "./src/public/usageRuntime.d.ts")
+) {
+  add(
+    "broad-call-log-artifacts-export",
+    join(coreDomainEntry.dir, "package.json"),
+    "usage/call-log-artifacts must remain a physical read-only contract",
+  );
 }
 const retiredAppOwnedExports = [
   "./control/env-repair",
@@ -1502,6 +1584,27 @@ for (const pkg of packageEntries) {
           "openrouter-provider-stats-lifecycle-in-shared-package",
           file,
           "shared packages may read provider stats but must not own the refresh scheduler",
+        );
+      }
+      if (specifier === proxySubscriptionLifecycleSpecifier) {
+        add(
+          "proxy-subscription-lifecycle-in-shared-package",
+          file,
+          "shared packages may manage subscriptions but must not own their refresh scheduler",
+        );
+      }
+      if (specifier === radarSyncLifecycleSpecifier) {
+        add(
+          "radar-sync-lifecycle-in-shared-package",
+          file,
+          "shared packages may use Radar data and sync capabilities but must not own its scheduler",
+        );
+      }
+      if (specifier === guardrailManagementSpecifier) {
+        add(
+          "guardrail-management-in-shared-package",
+          file,
+          "shared packages may evaluate guardrails but must not manage the mutable registry",
         );
       }
       if (specifier === preRequestHookManagementSpecifier) {

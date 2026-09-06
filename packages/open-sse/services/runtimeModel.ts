@@ -1,15 +1,14 @@
 // Re-export from open-sse with localDb integration
 import {
-  getModelAliases,
   getComboByName,
   getComboById,
   getComboByNameInsensitive,
-  getCachedProviderNodes,
-  getCustomModels,
-} from "@shiguang-gateway/core-domain/edge/local-db";
+} from "@shiguang-gateway/core-domain/db/combos";
+import { getModelAliases } from "@shiguang-gateway/core-domain/db/model-aliases";
+import { getCachedProviderNodes, getCachedSettings } from "@shiguang-gateway/core-domain/db/read-cache";
+import { getCustomModels } from "@shiguang-gateway/core-domain/db/models";
 
 import { getSyncedAutoAliases } from "@shiguang-gateway/core-domain/catalog/synced-auto-aliases";
-import { getCachedSettings } from "@shiguang-gateway/core-domain/edge/local-db";
 import { getActiveSyncedCatalog } from "@shiguang-gateway/core-domain/db/active-synced-catalog";
 import { getModelCompatOverrides } from "@shiguang-gateway/core-domain/db/model-compat";
 import { getNoAuthHydrationProviderIds } from "./noAuthProviderSiblings";
@@ -660,7 +659,7 @@ export async function getComboForModel(modelStr) {
 
   // 2. NEW — check model-combo mappings table (pattern match)
   try {
-    const { resolveComboForModel } = await import("@shiguang-gateway/core-domain/edge/local-db");
+    const { resolveComboForModel } = await import("@shiguang-gateway/core-domain/db/model-combo-mappings");
     const mapped = await resolveComboForModel(baseModelStr || modelStr);
     if (mapped && (mapped as any).models?.length > 0) {
       return mapped;

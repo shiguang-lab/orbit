@@ -8,7 +8,9 @@ import {
   proxyUrlForLogs,
 } from "@shiguang-gateway/open-sse/utils/proxyDispatcher";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
-import { getProxyById, extractRelayAuth, recordRelayProbe } from "@shiguang-gateway/core-domain/db/local-db";
+import { getProxyById } from "@shiguang-gateway/core-domain/db/proxies";
+import { extractRelayAuth } from "@shiguang-gateway/core-domain/db/proxy-registry";
+import { recordRelayProbe } from "@shiguang-gateway/core-domain/db/relay-probe-stats";
 import { probeEchoTargets } from "@shiguang-gateway/core-domain/shared/proxy-echo-target";
 import { testProxySchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";

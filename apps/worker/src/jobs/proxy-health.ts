@@ -22,7 +22,7 @@
  *                               same threshold, not independently tunable.
  */
 
-import { deleteProxyById, listProxies, updateProxy } from "@shiguang-gateway/core-domain/db/local-db";
+import { deleteProxyById, listProxies, updateProxy } from "@shiguang-gateway/core-domain/db/proxy-registry";
 import { isProxyLogIncludeIps } from "@shiguang-gateway/core-domain/logging/proxy-log-settings";
 import {
   getRecentEgressSharingSummary,

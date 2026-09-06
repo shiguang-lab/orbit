@@ -17,7 +17,7 @@ import {
 } from "@shiguang-gateway/open-sse/services/auth";
 import { getCachedProviderNodes } from "@shiguang-gateway/core-domain/db/read-cache";
 import { getComboByName, getCombos } from "@shiguang-gateway/core-domain/db/combos";
-import { getDatabaseSettings } from "@shiguang-gateway/core-domain/control/database-settings";
+import { getDatabaseSettings } from "@shiguang-gateway/core-domain/db/database-settings";
 import { resolveProxyForConnection } from "@shiguang-gateway/core-domain/db/settings";
 import { runWithProxyContext } from "../../utils/proxyFetch.js";
 import { handleComboChat } from "../combo.js";

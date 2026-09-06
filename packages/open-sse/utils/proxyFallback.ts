@@ -11,7 +11,8 @@
 import { fetch as undiciFetch } from "undici";
 import { registerDbRuntimeHooks } from "@shiguang-gateway/core-domain/db/runtime-hooks";
 import { createProxyDispatcher, normalizeProxyUrl } from "./proxyDispatcher.ts";
-import { resolveProxyForScopeFromRegistry, listProxies, listOneproxyProxies } from "@shiguang-gateway/core-domain/edge/local-db";
+import { resolveProxyForScopeFromRegistry, listProxies } from "@shiguang-gateway/core-domain/db/proxy-registry";
+import { listOneproxyProxies } from "@shiguang-gateway/core-domain/db/oneproxy";
 import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
 
 // ---------------------------------------------------------------------------

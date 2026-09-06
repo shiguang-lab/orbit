@@ -1,4 +1,4 @@
-import { syncRadarOffers } from "@shiguang-gateway/core-domain/control/radar-offers-sync";
+import { syncRadarOffers } from "@shiguang-gateway/core-domain/radar/sync/offers";
 import { authorize, handleCorsOptions, json, internalError, withRadarSyncBody } from "../common.js";
 export function OPTIONS() { return handleCorsOptions(); }
 export async function POST(request: Request) {

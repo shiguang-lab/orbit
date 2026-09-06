@@ -338,7 +338,10 @@ export async function initializeRateLimits() {
   applyBottleneckHeartbeatPatch();
 
   try {
-    const { getCachedProviderConnections, getSettings } = await import("@shiguang-gateway/core-domain/edge/local-db");
+    const [{ getCachedProviderConnections }, { getSettings }] = await Promise.all([
+      import("@shiguang-gateway/core-domain/db/read-cache"),
+      import("@shiguang-gateway/core-domain/db/settings"),
+    ]);
     const [connections, settings] = await Promise.all([
       getCachedProviderConnections(),
       getSettings(),
@@ -385,7 +388,7 @@ export async function applyRequestQueueSettings(nextSettings: RequestQueueSettin
   currentRequestQueueSettings = { ...nextSettings };
   // Global policy changes invalidate snapshots from the previous generation.
   preservedReplacementSettings.clear();
-  const { getCachedProviderConnections } = await import("@shiguang-gateway/core-domain/edge/local-db");
+  const { getCachedProviderConnections } = await import("@shiguang-gateway/core-domain/db/read-cache");
   const connections = await getCachedProviderConnections();
   // Also discard any snapshot created while the asynchronous DB read yielded.
   preservedReplacementSettings.clear();

@@ -24,10 +24,8 @@ import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/runtime/api-k
 import { v1ImageGenerationSchema } from "@shiguang-gateway/core-domain/edge/image-generation-validation";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 
-import {
-  getComboByName,
-  resolveProxyForConnection,
-} from "@shiguang-gateway/core-domain/edge/local-db";
+import { getComboByName } from "@shiguang-gateway/core-domain/db/combos";
+import { resolveProxyForConnection } from "@shiguang-gateway/core-domain/db/settings";
 import { getAllCustomModels } from "@shiguang-gateway/core-domain/db/models";
 import { resolveImageRouteModel } from "../image-route-model.js";
 import {

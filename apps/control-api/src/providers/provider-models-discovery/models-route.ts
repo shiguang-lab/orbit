@@ -70,7 +70,7 @@ import {
   WATSONX_DEFAULT_BASE_URL,
   buildWatsonxModelsUrl,
 } from "@shiguang-gateway/open-sse/config/watsonx";
-import { getEmbeddingProvider } from "@shiguang-gateway/open-sse/config/embeddingRegistryRuntime";
+import { getEmbeddingProvider } from "@shiguang-gateway/open-sse/config/embeddingRegistry";
 import { getRerankProvider } from "@shiguang-gateway/rerank-catalog";
 import {
   getSpeechProvider,

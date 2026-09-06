@@ -312,7 +312,7 @@ import {
   createDisabledCompressionConfig,
   resolveCompressionSettings,
 } from "./chatCore/compressionSettings.ts";
-import type { EnforceDecision } from "@shiguang-gateway/core-domain/quota/types";
+import type { EnforceDecision } from "@shiguang-gateway/core-domain/quota/enforcement-decision";
 import { isCompressionExcluded } from "../services/compression/exclusions.ts";
 import {
   isBuiltinStackedPipeline,
@@ -364,7 +364,7 @@ import {
 import { assertExclusiveConnectionLeaseFence } from "@shiguang-gateway/core-domain/db/exclusive-connection-leases";
 import { deleteSessionAccountAffinity } from "@shiguang-gateway/core-domain/session-affinity/store";
 import { getCacheControlSettings } from "@shiguang-gateway/core-domain/edge/cache-control";
-import { guardrailRegistry } from "@shiguang-gateway/core-domain/edge/guardrails-runtime";
+import { evaluateGuardrailsPostCall } from "@shiguang-gateway/core-domain/guardrails/evaluation";
 import {
   shouldPreserveCacheControl,
   resolveConnectionCacheOverride,
@@ -1433,7 +1433,7 @@ export async function handleChatCore({
       };
       if ((isCombo && comboName) || routingComboId) {
         try {
-          const { getComboByName } = await import("@shiguang-gateway/core-domain/edge/local-db");
+          const { getComboByName } = await import("@shiguang-gateway/core-domain/db/combos");
           let comboConfig = await getComboByName(comboName);
           if (!comboConfig && comboName?.startsWith("combo/")) {
             comboConfig = await getComboByName(comboName.substring(6));
@@ -1924,7 +1924,7 @@ export async function handleChatCore({
     if (isCombo && comboName) {
       log?.info?.("CONTEXT", `Attempting to resolve combo limits for comboName=${comboName}`);
       try {
-        const { getComboByName } = await import("@shiguang-gateway/core-domain/edge/local-db");
+        const { getComboByName } = await import("@shiguang-gateway/core-domain/db/combos");
         const { resolveComboTargets } = await import("../services/combo.ts");
         let comboConfig = await getComboByName(comboName);
         if (!comboConfig && comboName.startsWith("combo/")) {
@@ -5152,7 +5152,7 @@ export async function handleChatCore({
       responsePayloadFormat,
       clientResponseFormat,
     });
-    const postCallGuardrails = await guardrailRegistry.runPostCallHooks(
+    const postCallGuardrails = await evaluateGuardrailsPostCall(
       translatedResponse,
       guardrailContext
     );

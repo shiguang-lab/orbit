@@ -14,10 +14,14 @@ const canonicalSubpath = "./db/combos";
 const canonicalEntry = "./src/db/combos.ts";
 const runtimeExports = [
   "createCombo",
+  "deleteCombo",
   "deleteComboByName",
   "getComboById",
   "getComboByName",
+  "getComboByNameInsensitive",
   "getCombos",
+  "getCombosCount",
+  "reorderCombos",
   "setActiveCombo",
   "updateCombo",
 ] as const;

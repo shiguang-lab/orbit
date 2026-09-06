@@ -536,7 +536,7 @@ export async function handleEmbedding({
     // Record quota consumption (fire-and-forget, never blocks)
     if (apiKeyId && connectionId && provider) {
       try {
-        const { scheduleRecordConsumption } = await import("@shiguang-gateway/core-domain/quota/spend-recorder");
+        const { scheduleRecordConsumption } = await import("@shiguang-gateway/core-domain/quota/consumption-recorder");
         scheduleRecordConsumption({
           apiKeyId,
           connectionId,

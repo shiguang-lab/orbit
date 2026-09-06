@@ -2,9 +2,9 @@
 import * as log from "../utils/sseLogger.ts";
 import {
   updateProviderConnection,
-  resolveProxyForConnection,
-  resolveProxyForProvider,
-} from "@shiguang-gateway/core-domain/edge/local-db";
+} from "@shiguang-gateway/core-domain/db/provider-connections";
+import { resolveProxyForConnection } from "@shiguang-gateway/core-domain/db/settings";
+import { resolveProxyForProvider } from "@shiguang-gateway/core-domain/db/proxies";
 import {
   TOKEN_EXPIRY_BUFFER_MS as BUFFER_MS,
   getRefreshLeadMs as _getRefreshLeadMs,

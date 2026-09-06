@@ -2,7 +2,7 @@ import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/man
 import { isCloudEnabled } from "@shiguang-gateway/core-domain/db/settings";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
 import { syncToCloud } from "@shiguang-gateway/core-domain/sync/cloud";
-import { reorderCombos } from "@shiguang-gateway/core-domain/db/local-db";
+import { reorderCombos } from "@shiguang-gateway/core-domain/db/combos";
 import { z } from "zod";
 
 const reorderSchema = z.object({

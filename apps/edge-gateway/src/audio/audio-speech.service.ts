@@ -47,7 +47,7 @@ export class AudioSpeechService {
     // Bare model names may refer to configured speech combos. Combo execution
     // remains an explicit edge application concern rather than a core route.
     if (!body.model.includes("/")) {
-      const { getComboByName } = await load("@shiguang-gateway/core-domain/edge/local-db");
+      const { getComboByName } = await load("@shiguang-gateway/core-domain/db/combos");
       const combo = await getComboByName(body.model);
       if (combo) {
         const { executeSpeechCombo } = await load("@shiguang-gateway/open-sse/services/speechCombo");

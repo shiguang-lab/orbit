@@ -1,13 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import {
   deleteProxyForLevel,
-  getProxyAssignments,
-  getProxyById,
   getProxyConfig,
   getProxyForLevel,
-  resolveProxyForConnection,
   setProxyConfig,
-} from "@shiguang-gateway/core-domain/db/local-db";
+} from "@shiguang-gateway/core-domain/db/proxy-settings";
+import { getProxyAssignments } from "@shiguang-gateway/core-domain/db/proxy-registry";
+import { getProxyById } from "@shiguang-gateway/core-domain/db/proxies";
+import { resolveProxyForConnection } from "@shiguang-gateway/core-domain/db/settings";
 import { updateProxyConfigSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { clearDispatcherCache } from "@shiguang-gateway/open-sse/utils/proxyDispatcher";

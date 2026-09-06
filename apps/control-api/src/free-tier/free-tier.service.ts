@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
 import { computeFreeProviderRankings } from "@shiguang-gateway/core-domain/control/free-provider-rankings";
-import { getRadarCatalog } from "@shiguang-gateway/core-domain/control/radar";
+import { getRadarCatalog } from "@shiguang-gateway/core-domain/radar/read";
 import { sumUsageTokensThisMonth } from "@shiguang-gateway/core-domain/usage/summary";
 import { listNoCredentialProviders } from "./provider-credential-requirement.js";
 import {

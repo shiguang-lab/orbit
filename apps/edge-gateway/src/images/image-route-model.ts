@@ -17,11 +17,8 @@
 import { parseImageModel } from "@shiguang-gateway/open-sse/config/imageRegistry";
 import { resolveComboTargets } from "@shiguang-gateway/open-sse/services/combo";
 
-import {
-  getCachedProviderNodes,
-  getComboByName,
-  getCombos,
-} from "@shiguang-gateway/core-domain/edge/local-db";
+import { getCachedProviderNodes } from "@shiguang-gateway/core-domain/db/read-cache";
+import { getComboByName, getCombos } from "@shiguang-gateway/core-domain/db/combos";
 import { assertMicrosoftDesignerWebProviderAvailable } from "@shiguang-gateway/contracts/designer-web-retirement";
 import { assertCommonChatGptWebModelAvailable } from "@shiguang-gateway/contracts/chatgpt-web-retirement";
 

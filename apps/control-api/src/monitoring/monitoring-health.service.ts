@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { getCachedSettings } from "@shiguang-gateway/core-domain/db/local-db";
+import { getCachedSettings } from "@shiguang-gateway/core-domain/db/read-cache";
 import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { readRunningBuildSha } from "./build-sha.js";
 import { buildHealthPayload } from "@shiguang-gateway/core-domain/metrics/observability";

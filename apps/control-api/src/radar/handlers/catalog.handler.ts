@@ -1,4 +1,4 @@
-import { getRadarCatalog } from "@shiguang-gateway/core-domain/control/radar";
+import { getRadarCatalog } from "@shiguang-gateway/core-domain/radar/read";
 import { authorize, error, handleCorsOptions, json, internalError } from "../common.js";
 
 export function OPTIONS() { return handleCorsOptions(); }

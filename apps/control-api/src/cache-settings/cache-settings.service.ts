@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import {
   getDatabaseSettings,
   updateDatabaseSettings,
-} from "@shiguang-gateway/core-domain/control/database-settings";
+} from "@shiguang-gateway/core-domain/db/database-settings";
 import { getSettings, updateSettings } from "@shiguang-gateway/core-domain/db/settings";
 import { getCacheMetrics, resetCacheMetrics } from "@shiguang-gateway/core-domain/cache/services";
 import { clearAllLKGP } from "@shiguang-gateway/core-domain/control/lkgp-cache";
@@ -49,7 +49,11 @@ export class CacheSettingsService {
     const databaseUpdates: Record<string, unknown> = { ...updates };
     delete databaseUpdates.idempotencyWindowMs;
     if (Object.keys(databaseUpdates).length > 0) {
-      updateDatabaseSettings({ cache: databaseUpdates });
+      updateDatabaseSettings({
+        cache: databaseUpdates as NonNullable<
+          Parameters<typeof updateDatabaseSettings>[0]["cache"]
+        >,
+      });
     }
     if (updates.idempotencyWindowMs !== undefined) {
       await updateSettings({ idempotencyWindowMs: updates.idempotencyWindowMs });

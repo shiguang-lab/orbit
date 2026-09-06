@@ -3,7 +3,7 @@
  * decomposition, #3501).
  *
  * Extracted from handleChatCore's non-streaming success path: assemble the context object passed to
- * `guardrailRegistry.runPostCallHooks`. Pure value builder — no side effects, no early-returns. The
+ * `evaluateGuardrailsPostCall`. Pure value builder — no side effects, no early-returns. The
  * `disabledGuardrails` field is resolved via `resolveDisabledGuardrails` (injectable for tests).
  * Preserves the previous field mapping and constants while narrowing values from
  * the untyped request boundary to the public guardrail contract.
@@ -11,7 +11,7 @@
 import {
   resolveDisabledGuardrails as defaultResolveDisabled,
   type GuardrailContext,
-} from "@shiguang-gateway/core-domain/edge/guardrails-runtime";
+} from "@shiguang-gateway/core-domain/guardrails/evaluation";
 
 type LoggerLike = GuardrailContext["log"];
 type HeadersLike = Headers | Record<string, unknown> | null;

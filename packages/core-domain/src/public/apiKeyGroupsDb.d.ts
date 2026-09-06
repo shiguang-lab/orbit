@@ -29,5 +29,16 @@ export function getGroupPermissions(groupId: string): GroupModelPermission[];
 export function addGroupPermission(groupId: string, modelPattern: string, accessType: "allow" | "deny", provider?: string): GroupModelPermission;
 export function removeGroupPermission(permissionId: string): boolean;
 export function getGroupMembers(groupId: string): KeyGroupMember[];
+export function getKeyGroupsForApiKey(keyId: string): KeyGroup[];
 export function addKeyToGroup(keyId: string, groupId: string): boolean;
 export function removeKeyFromGroup(keyId: string, groupId: string): boolean;
+export interface ModelAccessCheck {
+  allowed: boolean;
+  matchedRules: GroupModelPermission[];
+  deniedBy: GroupModelPermission | null;
+}
+export function checkKeyModelAccess(
+  keyId: string,
+  model: string,
+  provider?: string,
+): ModelAccessCheck;

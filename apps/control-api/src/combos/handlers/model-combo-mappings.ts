@@ -5,7 +5,7 @@ import {
   getModelComboMappingById,
   getModelComboMappings,
   updateModelComboMapping,
-} from "@shiguang-gateway/core-domain/db/local-db";
+} from "@shiguang-gateway/core-domain/db/model-combo-mappings";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { json } from "./response.js";
 

@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getComboByName, getCombos, pickApiKeyForInternalUse } from "@shiguang-gateway/core-domain/db/local-db";
+import { getComboByName, getCombos } from "@shiguang-gateway/core-domain/db/combos";
+import { pickApiKeyForInternalUse } from "@shiguang-gateway/core-domain/db/api-keys";
 import { buildComboTestRequestBody, extractComboTestResponseText } from "../combo-test.js";
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 import { z } from "zod";

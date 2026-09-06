@@ -1,5 +1,5 @@
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { syncSubscription } from "@shiguang-gateway/core-domain/control/proxy-subscriptions";
+import { syncSubscription } from "@shiguang-gateway/core-domain/proxy-subscriptions/management";
 import { createErrorResponseFromUnknown } from "@shiguang-gateway/core-domain/shared/error-response";
 
 export async function POST(request: Request, context: { params: Promise<{ id: string }> }): Promise<Response> {

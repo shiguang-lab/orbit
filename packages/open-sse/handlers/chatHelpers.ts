@@ -26,7 +26,7 @@ import {
   isTlsFingerprintActive,
   type AppliedProxySink,
 } from "../utils/proxyFetch.ts";
-import { resolveProxyForConnection } from "@shiguang-gateway/core-domain/edge/local-db";
+import { resolveProxyForConnection } from "@shiguang-gateway/core-domain/db/settings";
 import { hasBlockingProxyAssignment } from "@shiguang-gateway/core-domain/db/proxies";
 import {
   CircuitBreakerOpenError,

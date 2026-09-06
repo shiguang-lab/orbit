@@ -11,7 +11,7 @@ export type VideoModelTarget = {
 export async function resolveVideoModelTarget(modelStr: string | null | undefined): Promise<VideoModelTarget> {
   const [{ parseVideoModel }, { getAllCustomModels }] = await Promise.all([
     load("@shiguang-gateway/open-sse/config/videoRegistry"),
-    load("@shiguang-gateway/core-domain/edge/local-db"),
+    load("@shiguang-gateway/core-domain/db/models"),
   ]);
   const parsed = parseVideoModel(modelStr ?? null);
   if (parsed.provider) return { provider: parsed.provider, model: parsed.model, isCustomModel: false };

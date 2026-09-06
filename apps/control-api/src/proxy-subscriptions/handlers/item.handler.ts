@@ -6,7 +6,7 @@ import {
   proxySubscriptionUpdateSchema,
   redactSubscriptionUrl,
   updateSubscription,
-} from "@shiguang-gateway/core-domain/control/proxy-subscriptions";
+} from "@shiguang-gateway/core-domain/proxy-subscriptions/management";
 import { createErrorResponseFromUnknown } from "@shiguang-gateway/core-domain/shared/error-response";
 
 type RouteContext = { params: Promise<{ id: string }> };

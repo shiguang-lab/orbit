@@ -20,7 +20,7 @@ async function getConfig() {
   if (_cachedConfig && now < _cacheExpiry) return _cachedConfig;
 
   try {
-    const { getProxyConfig } = await import("@shiguang-gateway/core-domain/edge/local-db");
+    const { getProxyConfig } = await import("@shiguang-gateway/core-domain/db/proxy-settings");
     _cachedConfig = await getProxyConfig();
     _cacheExpiry = now + 30_000; // Cache for 30s
     return _cachedConfig;

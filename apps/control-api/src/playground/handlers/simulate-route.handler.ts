@@ -6,7 +6,7 @@
  */
 
 import { z } from "zod";
-import { getCombos } from "@shiguang-gateway/core-domain/db/local-db";
+import { getCombos } from "@shiguang-gateway/core-domain/db/combos";
 import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 

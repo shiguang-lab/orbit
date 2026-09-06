@@ -40,9 +40,10 @@ export class AudioTranscriptionService {
     // feature service so the legacy Next route is not part of the edge runtime.
     if (!modelStr.includes("/")) {
       try {
-        const { getComboByName, getCombos, getDatabaseSettings } = await load(
-          "@shiguang-gateway/core-domain/edge/local-db",
-        );
+        const [{ getComboByName, getCombos }, { getDatabaseSettings }] = await Promise.all([
+          load("@shiguang-gateway/core-domain/db/combos"),
+          load("@shiguang-gateway/core-domain/db/database-settings"),
+        ]);
         const combo = await getComboByName(modelStr);
         if (combo) {
           const [{ handleComboChat }, { log }] = await Promise.all([

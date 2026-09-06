@@ -1,4 +1,4 @@
-import { getUpstreamProxyConfig } from "@shiguang-gateway/core-domain/edge/local-db";
+import { getUpstreamProxyConfig } from "@shiguang-gateway/core-domain/db/upstream-proxy";
 import type { FallbackBackend } from "@shiguang-gateway/core-domain/db/upstream-proxy";
 
 /**
@@ -29,7 +29,10 @@ const COMBOS_CACHE_TTL = 10_000;
 
 export async function getCombosCached(): Promise<unknown[]> {
   const now = Date.now();
-  const { getCombos, getCombosCacheVersion } = await import("@shiguang-gateway/core-domain/edge/local-db");
+  const [{ getCombos }, { getCombosCacheVersion }] = await Promise.all([
+    import("@shiguang-gateway/core-domain/db/combos"),
+    import("@shiguang-gateway/core-domain/db/read-cache"),
+  ]);
   const version = getCombosCacheVersion();
   // A combo write (create/update/delete/reorder) bumps the shared version via
   // invalidateDbCache("combos"); when it no longer matches our snapshot we drop

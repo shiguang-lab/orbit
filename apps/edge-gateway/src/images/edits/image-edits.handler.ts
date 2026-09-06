@@ -36,7 +36,7 @@ import {
   validateCodexImageEditReferences,
 } from "../image-route-model.js";
 import { isMicrosoftDesignerWebProviderRetiredError } from "@shiguang-gateway/contracts/designer-web-retirement";
-import { resolveProxyForConnection } from "@shiguang-gateway/core-domain/edge/local-db";
+import { resolveProxyForConnection } from "@shiguang-gateway/core-domain/db/settings";
 import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
 import { isCodexFreePlan } from "@shiguang-gateway/open-sse/executors/codex/tools";
 import {

@@ -9,9 +9,7 @@ import {
   createProxyAndAssign,
   deleteProxyById,
   getProxyAssignments,
-  getProxyById,
   getProxyHealthStats,
-  getRelayProbeStats,
   getScopeProxyPool,
   getScopeRotationStrategy,
   isRelayAuthMissing,
@@ -19,13 +17,15 @@ import {
   listProxies,
   redactProxySecrets,
   removeProxyFromScopePool,
-  resolveProxyForConnection,
   relayRepairMode,
   updateProxy,
   updateProxyAndAssign,
   upsertProxy,
   migrateLegacyProxyConfigToRegistry,
-} from "@shiguang-gateway/core-domain/db/local-db";
+} from "@shiguang-gateway/core-domain/db/proxy-registry";
+import { getProxyById } from "@shiguang-gateway/core-domain/db/proxies";
+import { resolveProxyForConnection } from "@shiguang-gateway/core-domain/db/settings";
+import { getRelayProbeStats } from "@shiguang-gateway/core-domain/db/relay-probe-stats";
 import { decrypt } from "@shiguang-gateway/core-domain/db/encryption";
 import { clearDispatcherCache } from "@shiguang-gateway/open-sse/utils/proxyDispatcher";
 import { createProxyDispatcher, proxyConfigToUrl } from "@shiguang-gateway/open-sse/utils/proxyDispatcher";
@@ -440,7 +440,7 @@ export class ProxiesService {
         return Response.json({ success: true, removed });
       }
       const strategy = String(data.strategy);
-      const applied = await import("@shiguang-gateway/core-domain/db/local-db").then(({ setScopeRotationStrategy }) => setScopeRotationStrategy(scope, scopeId, strategy, { stickyWindowMinutes: data.stickyWindowMinutes as number | undefined }));
+      const applied = await import("@shiguang-gateway/core-domain/db/proxy-registry").then(({ setScopeRotationStrategy }) => setScopeRotationStrategy(scope, scopeId, strategy, { stickyWindowMinutes: data.stickyWindowMinutes as number | undefined }));
       clearDispatcherCache();
       return Response.json({ success: true, strategy: applied });
     } catch (error) {

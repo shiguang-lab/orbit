@@ -6,7 +6,7 @@
 
 import { z } from "zod";
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
-import { getWebhooks, createWebhook } from "@shiguang-gateway/core-domain/db/local-db";
+import { getWebhooks, createWebhook } from "@shiguang-gateway/core-domain/db/webhooks";
 import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { encryptMetadata } from "@shiguang-gateway/core-domain/shared/webhook-dispatcher";

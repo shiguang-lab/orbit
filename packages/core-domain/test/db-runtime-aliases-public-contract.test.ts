@@ -44,6 +44,8 @@ const contracts = [
       "getExclusiveLeaseOccupancy",
       "hashLeaseOwnerId",
       "invalidateExclusiveConnectionLease",
+      "releaseExclusiveConnectionLease",
+      "renewExclusiveConnectionLease",
       "transitionExclusiveConnectionLease",
     ],
   },

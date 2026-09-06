@@ -6,6 +6,8 @@ export {
   getExclusiveLeaseOccupancy,
   hashLeaseOwnerId,
   invalidateExclusiveConnectionLease,
+  releaseExclusiveConnectionLease,
+  renewExclusiveConnectionLease,
   transitionExclusiveConnectionLease,
   type ExclusiveConnectionLease,
   type ExclusiveLeaseEndReason,

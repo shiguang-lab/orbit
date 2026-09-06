@@ -14,6 +14,8 @@ const expectedContracts = {
   "./usage/history": ["saveRequestUsage"],
   "./usage/model-latency-stats": ["getModelLatencyStats"],
   "./usage/request-logs": ["appendRequestLog", "getRecentLogs"],
+  "./usage/pending-request-scope": ["finalizePendingScope", "updatePendingScope"],
+  "./usage/call-log-artifacts": ["readCallArtifact"],
   "./usage/pending-requests": [
     "finalizeMostRecentPendingRequest",
     "finalizePendingRequestById",
@@ -90,4 +92,29 @@ test("mixed usage database facade and aliases stay retired", () => {
       file,
     );
   }
+});
+
+test("call-log artifact reader stays physical, read-only, and accurately typed", () => {
+  assert.deepEqual(manifest.exports["./usage/call-log-artifacts"], {
+    types: "./src/public/usageCallLogArtifacts.d.ts",
+    import: "./src/usage/call-log-artifacts.ts",
+  });
+
+  const serializedExports = JSON.stringify(manifest.exports);
+  assert.doesNotMatch(serializedExports, /src\/lib\/usage\/callLogArtifacts\.ts/);
+
+  const consumers = [
+    ...sourceFiles(path.join(repoRoot, "apps")),
+    ...sourceFiles(path.join(repoRoot, "packages/open-sse")),
+  ].filter((file) =>
+    fs.readFileSync(file, "utf8").includes("core-domain/usage/call-log-artifacts"),
+  );
+  assert.deepEqual(
+    consumers.map((file) => path.relative(repoRoot, file).split(path.sep).join("/")),
+    ["packages/open-sse/services/conversationTurnContent.ts"],
+  );
+  assert.match(
+    fs.readFileSync(consumers[0], "utf8"),
+    /import\s*\{\s*readCallArtifact\s*\}\s*from\s*["']@shiguang-gateway\/core-domain\/usage\/call-log-artifacts["']/,
+  );
 });

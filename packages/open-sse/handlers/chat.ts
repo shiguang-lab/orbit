@@ -80,7 +80,10 @@ import {
   ensureOpenAIStoreSessionFallback,
   isOpenAIResponsesStoreEnabled,
 } from "@shiguang-gateway/core-domain/providers/request-defaults";
-import { guardrailRegistry, resolveDisabledGuardrails } from "@shiguang-gateway/core-domain/runtime/guardrails";
+import {
+  evaluateGuardrailsPreCall,
+  resolveDisabledGuardrails,
+} from "@shiguang-gateway/core-domain/guardrails/evaluation";
 import {
   resolveModelOrError,
   checkPipelineGates,
@@ -694,7 +697,7 @@ async function handleChatImplementation(
 
   // Guardrail pre-call pipeline — prompt injection, PII masking, and future custom rules.
   telemetry.startPhase("validate");
-  const preCallGuardrails = await guardrailRegistry.runPreCallHooks(body, {
+  const preCallGuardrails = await evaluateGuardrailsPreCall(body, {
     apiKeyInfo: apiKeyInfo as any,
     disabledGuardrails: resolveDisabledGuardrails({
       apiKeyInfo: (apiKeyInfo ?? null) as any,
