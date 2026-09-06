@@ -1,5 +1,7 @@
 import { Injectable, type OnModuleInit } from "@nestjs/common";
 import { hydrateRequestRuntime } from "@shiguang-gateway/core-domain/runtime/request";
+import { ensureGamificationSchema } from "@shiguang-gateway/db-schema";
+import { getDbInstance } from "@shiguang-gateway/core-domain/db/ping";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
 
@@ -48,6 +50,7 @@ export class EdgeRuntimeService implements OnModuleInit {
   initialize(): Promise<void> {
     if (!this.initialization) {
       this.initialization = hydrateRequestRuntime()
+        .then(() => ensureGamificationSchema(getDbInstance()))
         .then(registerQuotaFetchers)
         .then(() => console.log("[edge-gateway] request services initialized"))
         .catch((error) => {

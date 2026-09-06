@@ -62,6 +62,7 @@ import {
 import type { EntityDefinition } from "./entities/definition.js";
 
 export * from "./entities/index.js";
+export * from "./gamification.js";
 
 export const GATEWAY_TABLES = {
   settings: "key_value",
