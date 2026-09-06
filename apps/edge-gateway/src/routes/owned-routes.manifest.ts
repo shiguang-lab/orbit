@@ -62,6 +62,10 @@ export const ownedEdgeRoutes: readonly OwnedRoute[] = [
   { path: "/v1/me/status", methods: ["GET"] },
   { path: "/v1/vscode/:token/api/version", methods: ["GET", "OPTIONS"] },
   { path: "/v1/vscode/:token/chat/completions", methods: ["OPTIONS", "POST"] },
+  { path: "/v1/vscode/:token/models", methods: ["GET", "OPTIONS"] },
+  { path: "/v1/vscode/:token/v1/models", methods: ["GET", "OPTIONS"] },
+  { path: "/v1/vscode/raw/:token/models", methods: ["GET", "OPTIONS"] },
+  { path: "/v1/vscode/raw/:token/v1/models", methods: ["GET", "OPTIONS"] },
   { path: "/v1/search", methods: ["GET", "OPTIONS", "POST"] },
 ];
 

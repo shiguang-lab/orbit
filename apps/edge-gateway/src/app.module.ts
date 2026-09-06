@@ -3,6 +3,7 @@ import { HealthModule as ProcessHealthModule, HttpKernelModule } from "@shiguang
 import { EdgeRuntimeModule } from "./runtime/edge-runtime.module.js";
 import { EdgeRoutesModule } from "./routes/edge-routes.module.js";
 import { AudioModule } from "./audio/audio.module.js";
+import { AudioSpeechModule } from "./audio/audio-speech.module.js";
 import { A2aModule } from "./a2a/a2a.module.js";
 import { BatchesModule } from "./batches/batches.module.js";
 import { EmbeddingsModule } from "./embeddings/embeddings.module.js";
@@ -49,6 +50,7 @@ import { VscodeChatModule } from "./vscode-chat/vscode-chat.module.js";
     EdgeRuntimeModule,
     EdgeRoutesModule,
     AudioModule,
+    AudioSpeechModule,
     A2aModule,
     BatchesModule,
     EmbeddingsModule,

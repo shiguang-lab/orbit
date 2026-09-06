@@ -36,6 +36,10 @@
       "types": "./src/public/vscodeToken.d.ts",
       "import": "./src/lib/vscode/tokenizedRequest.ts"
     },
+    "./edge/vscode-models": {
+      "types": "./src/public/vscodeModels.d.ts",
+      "import": "./src/lib/vscode/models.ts"
+    },
     "./edge/chat-admission": {
       "types": "./src/public/chatAdmission.d.ts",
       "import": "./src/shared/middleware/withChatAdmission.ts"
