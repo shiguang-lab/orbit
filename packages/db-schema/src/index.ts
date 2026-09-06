@@ -210,14 +210,59 @@ export const GATEWAY_ENTITIES = {
 
 /** Runtime guard used by architecture checks and tests. */
 export function assertGatewayEntities(): void {
+  const tableEntries = Object.entries(GATEWAY_TABLES) as Array<[
+    keyof typeof GATEWAY_TABLES,
+    GatewayTable,
+  ]>;
+  const tableKeys = new Set(tableEntries.map(([key]) => key));
+  const physicalTables = new Set<GatewayTable>();
+  for (const [key, table] of tableEntries) {
+    if (physicalTables.has(table)) {
+      throw new Error(`Duplicate physical table in GATEWAY_TABLES: ${table}`);
+    }
+    physicalTables.add(table);
+    if (!GATEWAY_ENTITIES[key]) {
+      throw new Error(`Missing entity catalog entry for table key: ${key}`);
+    }
+  }
+
+  const ownershipByTable = new Map<GatewayTable, TableRef>();
+  for (const ref of TABLE_OWNERSHIP) {
+    if (!physicalTables.has(ref.table)) {
+      throw new Error(`Ownership references unknown gateway table: ${ref.table}`);
+    }
+    if (ownershipByTable.has(ref.table)) {
+      throw new Error(`Duplicate ownership declaration for table: ${ref.table}`);
+    }
+    ownershipByTable.set(ref.table, ref);
+  }
+  if (ownershipByTable.size !== physicalTables.size) {
+    const missingOwnership = [...physicalTables].filter((table) => !ownershipByTable.has(table));
+    throw new Error(`Missing ownership declaration for tables: ${missingOwnership.join(", ")}`);
+  }
+
+  const entityNames = new Set<string>();
   for (const [key, entity] of Object.entries(GATEWAY_ENTITIES) as Array<[
     keyof typeof GATEWAY_TABLES,
     EntityDefinition,
   ]>) {
+    if (!tableKeys.has(key)) {
+      throw new Error(`Entity catalog contains unknown table key: ${key}`);
+    }
     if (entity.tableName !== GATEWAY_TABLES[key]) {
       throw new Error(`Entity ${key} maps to ${entity.tableName}, expected ${GATEWAY_TABLES[key]}`);
     }
-    const ownership = TABLE_OWNERSHIP.find((ref) => ref.table === entity.tableName);
+    if (entityNames.has(entity.entityName)) {
+      throw new Error(`Duplicate entityName in gateway catalog: ${entity.entityName}`);
+    }
+    entityNames.add(entity.entityName);
+    const columnNames = new Set<string>();
+    for (const item of entity.columns) {
+      if (!item.name.trim()) throw new Error(`Entity ${key} contains an unnamed column`);
+      if (columnNames.has(item.name)) throw new Error(`Entity ${key} contains duplicate column: ${item.name}`);
+      columnNames.add(item.name);
+    }
+    const ownership = ownershipByTable.get(entity.tableName);
     if (!ownership || ownership.owner !== entity.owner) {
       throw new Error(`Entity ${key} has no matching table ownership declaration`);
     }
