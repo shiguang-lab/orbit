@@ -64,6 +64,7 @@ import { PlaygroundModule } from "./playground/playground.module.js";
 import { CloudModule } from "./cloud/cloud.module.js";
 import { SkillsModule } from "./skills/skills.module.js";
 import { McpModule } from "./mcp/mcp.module.js";
+import { CompressionManagementModule } from "./compression/compression-management.module.js";
 
 @Module({
   imports: [
@@ -133,6 +134,7 @@ import { McpModule } from "./mcp/mcp.module.js";
     CloudModule,
     SkillsModule,
     McpModule,
+    CompressionManagementModule,
   ],
 })
 export class AppModule {}

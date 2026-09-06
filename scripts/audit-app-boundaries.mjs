@@ -210,6 +210,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/resilience-connection-recovery",
   "control/resilience-types",
 );
+allowedCoreDomainSubpaths["apps/control-api"].push("control/compression-management");
 allowedCoreDomainSubpaths["apps/control-api"].push("db/cc-discovery-metrics");
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/playground-presets",
@@ -222,6 +223,10 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
 // migration, and the old core-domain copy must be gone.
 const migratedRouteOwnership = {
   "apps/control-api": [
+    "api/compression/compare/route.ts",
+    "api/compression/engines/route.ts",
+    "api/compression/language-packs/route.ts",
+    "api/compression/retrieve/route.ts",
     "api/playground/improve-prompt/route.ts",
     "api/playground/simulate-route/route.ts",
     "api/playground/presets/route.ts",
