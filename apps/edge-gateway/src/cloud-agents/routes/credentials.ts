@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "./next-compat.js";
 import { z } from "zod";
 import {
+  createCloudAgentCredentialsTable,
   listCloudAgentCredentials,
   saveCloudAgentCredential,
   maskApiKey,
@@ -20,6 +21,7 @@ export async function OPTIONS(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    createCloudAgentCredentialsTable();
     const authError = await requireCloudAgentManagementAuth(request);
     if (authError) return authError;
 
@@ -41,6 +43,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    createCloudAgentCredentialsTable();
     const authError = await requireCloudAgentManagementAuth(request);
     if (authError) return authError;
 
