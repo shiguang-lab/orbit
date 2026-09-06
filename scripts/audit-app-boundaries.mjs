@@ -132,7 +132,6 @@ const allowedCoreDomainSubpaths = {
     "edge/gateway-response-meta",
     "edge/request-id",
     "edge/local-db",
-    "catalog/project-combo",
     "edge/image-route-model",
     "edge/synced-endpoint-routing",
     "shared/body-size-guard",
@@ -914,6 +913,10 @@ const retiredCoreFreeOnboarding = join(packagesRoot, "core-domain", "src", "lib"
 if (existsSync(retiredCoreFreeOnboarding)) {
   add("control-runtime-in-core-domain", retiredCoreFreeOnboarding, "Provider onboarding orchestration belongs in apps/control-api");
 }
+const retiredCoreProjectCombo = join(packagesRoot, "core-domain", "src", "lib", "catalog", "projectCombo.ts");
+if (existsSync(retiredCoreProjectCombo)) {
+  add("edge-runtime-in-core-domain", retiredCoreProjectCombo, "Client combo projection belongs in apps/edge-gateway");
+}
 
 // The shared HTTP package must never regain a generic app factory or a
 // caller-selected surface. Those APIs collapse independently deployable apps
@@ -1089,6 +1092,7 @@ for (const subpath of retiredRedundantCoreExports) {
   }
 }
 const retiredAppOwnedExports = [
+  "./catalog/project-combo",
   "./control/free-onboarding",
   "./control/gateway-status",
   "./control/routing-preview",

@@ -12,7 +12,7 @@ import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/service
 import { isDashboardSessionAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/edge/feature-flags";
 import { errorResponse } from "@shiguang-gateway/open-sse/utils/error";
-import { projectCombo, type PublicCombo } from "@shiguang-gateway/core-domain/catalog/project-combo";
+import { projectCombo, type PublicCombo } from "./runtime/project-combo.js";
 
 const HTTP_STATUS = { UNAUTHORIZED: 401, SERVER_ERROR: 500 } as const;
 

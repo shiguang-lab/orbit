@@ -955,7 +955,6 @@
     "./catalog/display-names": { "types": "./src/public/catalogDisplayNames.d.ts", "import": "./src/lib/display/names.ts" },
     "./catalog/managed-available-models": { "types": "./src/public/catalogManagedModels.d.ts", "import": "./src/lib/providers/managedAvailableModels.ts" },
     "./catalog/model-capabilities": { "types": "./src/public/catalogModelCapabilities.d.ts", "import": "./src/lib/modelCapabilities.ts" },
-    "./catalog/project-combo": { "types": "./src/public/projectCombo.d.ts", "import": "./src/lib/catalog/projectCombo.ts" },
     "./catalog/models-dev-sync": { "types": "./src/public/catalogModelsDevSync.d.ts", "import": "./src/lib/modelsDevSync.ts" },
     "./catalog/provider-models": { "types": "./src/public/catalogProviderModels.d.ts", "import": "./src/shared/constants/models.ts" },
     "./catalog/providers": { "types": "./src/public/catalogProviders.d.ts", "import": "./src/shared/constants/providers.ts" },
