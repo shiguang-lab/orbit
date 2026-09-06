@@ -1,5 +1,22 @@
 import { column, type EntityDefinition } from "./definition.js";
 
+/** Append-only middleware execution records emitted by edge/open-sse runtime. */
+export const MiddlewareLogEntity: EntityDefinition = {
+  entityName: "MiddlewareLog",
+  tableName: "middleware_logs",
+  owner: "edge-gateway",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("hook_name", "TEXT", { nullable: false }),
+    column("request_id", "TEXT", { nullable: false }),
+    column("duration_ms", "INTEGER", { nullable: false, default: "0" }),
+    column("mutated", "INTEGER", { nullable: false, default: "0" }),
+    column("skipped", "INTEGER", { nullable: false, default: "0" }),
+    column("error", "TEXT"),
+    column("timestamp", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
 /**
  * Persistent reasoning replay entries written by the streaming request path
  * and periodically purged by the worker cleanup job.

@@ -15,7 +15,8 @@ Every table that is part of an app boundary is represented by an
 - `control.entity.ts` — control-plane configuration and operator-managed data,
   including control-api-owned audit, playground, plugin metric/analytics, gamification,
   evaluation suite/case/run, model-assessment/health, Traffic Inspector
-  sessions/requests/custom-host records, and webhook delivery audit tables
+  sessions/requests/custom-host records, middleware hook definitions, and
+  webhook delivery audit tables
 - `edge.entity.ts` — request-path data owned by `edge-gateway`
 - `worker.entity.ts` — asynchronous jobs, usage, logs, model data, and
   provider quota-reset observations owned by `worker`
@@ -35,6 +36,13 @@ written by the worker Arena ELO synchronizer and read by edge routing and
 control rankings. Both are shared cross-app contracts with explicit single
 write owners, so their entity metadata lives here even though query code stays
 in the consuming domain modules.
+
+Middleware hook definitions (`middleware_hooks`) are managed by control-api but
+loaded by the edge/open-sse request pipeline. Their append-only execution
+records (`middleware_logs`) are emitted by that request runtime and queried by
+the control management surface. Control-api owns hook configuration writes,
+while edge-gateway owns execution-log writes; registry execution and SQL query
+code remain in the consuming app/domain modules.
 
 `mcp_tool_audit` is likewise appended by the MCP runtime and queried by the
 control-api audit surface. It is declared as an edge-owned entity here so the

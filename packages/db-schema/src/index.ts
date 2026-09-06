@@ -27,6 +27,7 @@ import {
   ProxyScopeRotationEntity,
   ProxySubscriptionEntity,
   SettingsEntity,
+  MiddlewareHookEntity,
   TierAssignmentEntity,
   TierConfigEntity,
   WebhookEntity,
@@ -96,6 +97,7 @@ import {
   CcrBlockEntity,
   CompressionCacheStatsEntity,
   MemoryVecMetaEntity,
+  MiddlewareLogEntity,
 } from "./entities/edge.entity.js";
 import {
   AuditLogEntity,
@@ -120,6 +122,8 @@ export * from "./proxy.js";
 
 export const GATEWAY_TABLES = {
   settings: "key_value",
+  middlewareHooks: "middleware_hooks",
+  middlewareLogs: "middleware_logs",
   configAuditLog: "config_audit_log",
   playgroundPresets: "playground_presets",
   pluginMetrics: "plugin_metrics",
@@ -242,6 +246,8 @@ export interface TableRef {
  */
 export const TABLE_OWNERSHIP: readonly TableRef[] = [
   { table: GATEWAY_TABLES.settings, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.middlewareHooks, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.middlewareLogs, owner: "edge-gateway", access: "read-write" },
   { table: GATEWAY_TABLES.configAuditLog, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.playgroundPresets, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.pluginMetrics, owner: "control-api", access: "read-write" },
@@ -358,6 +364,8 @@ export const TABLE_OWNERSHIP: readonly TableRef[] = [
  */
 export const GATEWAY_ENTITIES = {
   settings: SettingsEntity,
+  middlewareHooks: MiddlewareHookEntity,
+  middlewareLogs: MiddlewareLogEntity,
   configAuditLog: ConfigAuditLogEntity,
   playgroundPresets: PlaygroundPresetEntity,
   pluginMetrics: PluginMetricEntity,

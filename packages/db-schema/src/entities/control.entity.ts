@@ -1,5 +1,25 @@
 import { column, type EntityDefinition } from "./definition.js";
 
+/** Middleware hook definitions managed by control-api and executed by edge/open-sse. */
+export const MiddlewareHookEntity: EntityDefinition = {
+  entityName: "MiddlewareHook",
+  tableName: "middleware_hooks",
+  owner: "control-api",
+  columns: [
+    column("name", "TEXT", { nullable: false, primaryKey: true }),
+    column("description", "TEXT", { nullable: false, default: "''" }),
+    column("priority", "INTEGER", { nullable: false, default: "200" }),
+    column("scope_type", "TEXT", { nullable: false, default: "'global'" }),
+    column("combo_id", "TEXT"),
+    column("enabled", "INTEGER", { nullable: false, default: "1" }),
+    column("code", "TEXT", { nullable: false, default: "''" }),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+    column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+    column("run_count", "INTEGER", { nullable: false, default: "0" }),
+    column("last_error", "TEXT"),
+  ],
+};
+
 /** Radar feed/cache tables are read by control-api and the worker scheduler. */
 export const RadarFeedCacheEntity: EntityDefinition = { entityName: "RadarFeedCache", tableName: "radar_feed_cache", owner: "control-api", columns: [column("id", "INTEGER", { nullable: false, primaryKey: true }), column("version", "TEXT"), column("generated_at", "TEXT"), column("tier", "TEXT"), column("payload", "TEXT"), column("signature", "TEXT"), column("fetched_at", "TEXT")] };
 export const RadarSettingsEntity: EntityDefinition = { entityName: "RadarSettings", tableName: "radar_settings", owner: "control-api", columns: [column("id", "INTEGER", { nullable: false, primaryKey: true }), column("opt_in", "INTEGER", { nullable: false, default: "0" }), column("supporter_key_encrypted", "TEXT"), column("updated_at", "TEXT")] };

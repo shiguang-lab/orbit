@@ -88,8 +88,8 @@ The entity write owners are intentionally narrower than those consumers:
 
 | Owner | Entities |
 | --- | --- |
-| `control-api` | settings, configAuditLog, playgroundPresets, pluginMetrics, evalSuites/evalCases/evalRuns, providerConnections, providerNodes, apiKeys, apiKeyGroups, combos, compressionCombos, compressionComboAssignments, modelComboMappings, webhooks, apiKeyTokenLimits, providerPlans, plugins, modelContextOverrides, modelCapabilityOverrides, tierConfig, tierAssignments, freeProxies, freeProxySyncErrors, reasoningRoutingRules, quotaGroups, quotaPools, quotaAllocations, quotaPoolConnections, quotaAllocationModelCaps, gamification leaderboard/user levels/badges/invites/community servers, inspectorSessions/inspectorSessionRequests/inspectorCustomHosts, discovery_results |
-| `edge-gateway` | batches, files, agenticConversations, conversationTurnNodes, apiKeyTokenCounters, apiKeyTokenLimitResetLogs, providerQuotaState, quotaConsumption, compressionAnalytics, compressionEngineBreakdown, pluginAnalytics, mcpToolAudit |
+| `control-api` | settings, configAuditLog, playgroundPresets, pluginMetrics, middleware_hooks, evalSuites/evalCases/evalRuns, providerConnections, providerNodes, apiKeys, apiKeyGroups, combos, compressionCombos, compressionComboAssignments, modelComboMappings, webhooks, apiKeyTokenLimits, providerPlans, plugins, modelContextOverrides, modelCapabilityOverrides, tierConfig, tierAssignments, freeProxies, freeProxySyncErrors, reasoningRoutingRules, quotaGroups, quotaPools, quotaAllocations, quotaPoolConnections, quotaAllocationModelCaps, gamification leaderboard/user levels/badges/invites/community servers, inspectorSessions/inspectorSessionRequests/inspectorCustomHosts, discovery_results |
+| `edge-gateway` | batches, files, agenticConversations, conversationTurnNodes, apiKeyTokenCounters, apiKeyTokenLimitResetLogs, providerQuotaState, quotaConsumption, compressionAnalytics, compressionEngineBreakdown, pluginAnalytics, middleware_logs, mcpToolAudit |
 | `worker` | usageHistory, callLogs, proxyLogs, quotaSnapshots, auditLogs, memories, jobs, modelCapabilities, modelIntelligence |
 
 AgentBridge's `agent_bridge_state`, `agent_bridge_mappings`, and
@@ -137,6 +137,13 @@ appends invocation records, while control-api exposes read-only audit queries.
 Its canonical columns and edge write ownership are therefore declared in
 `packages/db-schema`; the runtime logger and control query surface remain
 implemented in their owning apps/packages.
+
+Middleware hooks follow the same split: control-api owns the `middleware_hooks`
+configuration rows, while edge/open-sse loads and executes those definitions.
+The edge request runtime appends `middleware_logs`, and control-api reads those
+records for management and observability. Their canonical columns and ownership
+are declared in `packages/db-schema`; registry execution and query code stay in
+the consuming modules.
 
 The SQL scan currently finds table references in `core-domain` rather than direct
 app source, so the report labels these rows `PASS-indirect-declared-owner`. This is
