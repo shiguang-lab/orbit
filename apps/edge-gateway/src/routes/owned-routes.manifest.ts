@@ -10,6 +10,7 @@ export const ownedEdgeRoutes: readonly OwnedRoute[] = [
   { path: "/a2a/tasks/:id/cancel", methods: ["POST"] },
   { path: "/a2a/status", methods: ["GET"] },
   { path: "/v1/audio/speech", methods: ["OPTIONS", "POST"] },
+  { path: "/v1/antigravity", methods: ["OPTIONS", "POST"] },
   { path: "/v1/agents/health", methods: ["GET", "OPTIONS"] },
   { path: "/v1/agents/credentials", methods: ["GET", "OPTIONS", "POST"] },
   { path: "/v1/agents/tasks", methods: ["DELETE", "GET", "OPTIONS", "POST"] },
@@ -49,6 +50,7 @@ export const ownedEdgeRoutes: readonly OwnedRoute[] = [
   { path: "/v1/providers/:provider/models", methods: ["GET", "OPTIONS"] },
   { path: "/v1/providers/:provider/embeddings", methods: ["OPTIONS", "POST"] },
   { path: "/v1/providers/:provider/images/generations", methods: ["OPTIONS", "POST"] },
+  { path: "/v1/video-bridge/drilldown", methods: ["DELETE", "GET", "OPTIONS"] },
   { path: "/v1/me/status", methods: ["GET"] },
 ];
 

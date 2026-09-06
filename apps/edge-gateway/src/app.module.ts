@@ -28,7 +28,9 @@ import { ProviderChatModule } from "./provider-chat/provider-chat.module.js";
 import { ProviderEmbeddingsModule } from "./provider-embeddings/provider-embeddings.module.js";
 import { MeModule } from "./me/me.module.js";
 import { ExplainRoutingModule } from "./explain-routing/explain-routing.module.js";
+import { VideoBridgeDrilldownModule } from "./video-bridge/video-bridge-drilldown.module.js";
 import { ProviderImagesModule } from "./provider-images/provider-images.module.js";
+import { AntigravityModule } from "./antigravity/antigravity.module.js";
 
 @Module({
   imports: [
@@ -62,7 +64,9 @@ import { ProviderImagesModule } from "./provider-images/provider-images.module.j
     ProviderEmbeddingsModule,
     MeModule,
     ExplainRoutingModule,
+    VideoBridgeDrilldownModule,
     ProviderImagesModule,
+    AntigravityModule,
   ],
 })
 export class AppModule {}
