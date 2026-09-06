@@ -7,7 +7,7 @@
  */
 import { AgentBridgeDnsActionSchema } from "../../../../../../../shared/schemas/agentBridge.ts";
 import { addDNSEntry, removeDNSEntry } from "../../../../../../../mitm/dns/dnsConfig.ts";
-import { upsertAgentBridgeState } from "../../../../../../../lib/db/agentBridgeState.ts";
+import { getAgentBridgeStore } from "../../../../../../../mitm/agentBridgeStore.ts";
 import { getCachedPassword, setCachedPassword } from "../../../../../../../mitm/manager.ts";
 import {
   isMitmSudoPasswordRequired,
@@ -69,7 +69,7 @@ export async function POST(request: Request, { params }: Params): Promise<Respon
       setCachedPassword(suppliedPassword);
     }
 
-    upsertAgentBridgeState({ agent_id: id, dns_enabled: enabled });
+    getAgentBridgeStore().upsertAgentBridgeState({ agent_id: id, dns_enabled: enabled });
 
     return Response.json({ ok: true, dns_enabled: enabled });
   } catch (err) {

@@ -2,15 +2,13 @@ import {
   ALL_TARGETS,
   checkCertInstalled,
   checkDNSEntryForAgent,
-  getAllAgentBridgeStates,
   getAllAgentsStatus,
-  getAllBypassPatterns,
   getCachedPassword,
-  getMappingsForAgent,
   getMitmStatus,
   isSudoPasswordRequired,
   resolveMitmDataDir,
 } from "@shiguang-gateway/core-domain/control/agent-bridge";
+import { agentBridgePersistence } from "../agent-bridge.persistence.js";
 import { failure } from "./common.js";
 import fs from "node:fs";
 import path from "node:path";
@@ -21,13 +19,13 @@ export async function GET(): Promise<Response> {
     const [serverStatus, agents, agentStates, bypassPatterns] = await Promise.all([
       getMitmStatus(),
       getAllAgentsStatus(),
-      getAllAgentBridgeStates(),
-      getAllBypassPatterns(),
+      agentBridgePersistence.getAllAgentBridgeStates(),
+      agentBridgePersistence.getAllBypassPatterns(),
     ]);
     const mappings = Object.fromEntries(
       ALL_TARGETS.map((target) => [
         target.id,
-        getMappingsForAgent(target.id).map((row) => ({ source: row.source_model, target: row.target_model })),
+        agentBridgePersistence.getMappingsForAgent(target.id).map((row) => ({ source: row.source_model, target: row.target_model })),
       ]),
     );
     const certPath = path.join(resolveMitmDataDir(), "mitm", "server.crt");

@@ -2,8 +2,9 @@
  * Control-plane AgentBridge capabilities.
  *
  * The HTTP transport is owned by apps/control-api.  This explicit package
- * surface keeps the MITM implementation and its persisted state behind a
- * reviewable boundary while the control app owns Nest controllers/modules.
+ * surface keeps the shared MITM implementation and its persistence port behind
+ * a reviewable boundary while control-api owns the SQLite adapter and Nest
+ * controllers/modules.
  */
 export {
   AgentBridgeBypassUpsertSchema,
@@ -14,23 +15,9 @@ export {
   AgentBridgeBypassRowSchema,
   AgentBridgeServerActionSchema,
   AgentBridgeUpstreamCaPostSchema,
+  AgentBridgeConfigSchema,
 } from "../../shared/schemas/agentBridge.ts";
-export { exportConfig, importConfig, AgentBridgeConfigSchema } from "./configPortability.ts";
-export {
-  getAllBypassPatterns,
-  getUserBypassPatterns,
-  replaceUserBypassPatterns,
-} from "../db/agentBridgeBypass.ts";
-export {
-  getAllAgentBridgeStates,
-  getAgentBridgeState,
-  upsertAgentBridgeState,
-} from "../db/agentBridgeState.ts";
-export {
-  getMappingsForAgent,
-  setMappings,
-  syncAgentBridgeMappingsToMitmAlias,
-} from "../db/agentBridgeMappings.ts";
+export { configureAgentBridgeStore, getAgentBridgeStore } from "../../mitm/agentBridgeStore.ts";
 export { ALL_TARGETS, resolveTarget } from "../../mitm/targets/index.ts";
 export { detectAgent } from "../../mitm/detection/index.ts";
 export { globalTrafficBuffer } from "../../mitm/inspector/buffer.ts";

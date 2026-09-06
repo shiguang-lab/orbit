@@ -4,11 +4,11 @@ import path from "node:path";
 import {
   checkCertInstalled,
   checkDNSEntryForAgent,
-  getAllAgentBridgeStates,
   getMitmStatus,
   resolveMitmDataDir,
   summarizeDiagnostics,
 } from "@shiguang-gateway/core-domain/control/agent-bridge";
+import { agentBridgePersistence } from "../agent-bridge.persistence.js";
 import { failure } from "./common.js";
 
 function probeTcp(port: number, host = "127.0.0.1", timeoutMs = 1500): Promise<boolean> {
@@ -32,7 +32,7 @@ export async function GET(request: Request): Promise<Response> {
     const serverReachable = status.running ? await probeTcp(port) : false;
     let dnsConfigured = status.dnsConfigured ?? false;
     if (!agentId) {
-      const states = await getAllAgentBridgeStates();
+      const states = agentBridgePersistence.getAllAgentBridgeStates();
       dnsConfigured = states.length > 0 && states.some((state) => state.dns_enabled && checkDNSEntryForAgent(state.agent_id));
     }
     return Response.json({

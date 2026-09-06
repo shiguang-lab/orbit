@@ -13,7 +13,7 @@
  * never pulls their DB dependencies.
  */
 import type { DiagnosticReport } from "../../mitm/inspector/diagnostics.ts";
-import type { AgentBridgeConfig, ImportResult } from "./configPortability.ts";
+import type { AgentBridgeConfig, AgentBridgeImportResult as ImportResult } from "../../shared/schemas/agentBridge.ts";
 
 export interface DiagnoseResult extends DiagnosticReport {
   /** The port the diagnose route probed (echoed back for display). */

@@ -9,8 +9,6 @@ export interface AgentBridgeImportResult {
   customHosts: number;
   agents: number;
 }
-export function exportConfig(): AgentBridgeConfig;
-export function importConfig(config: AgentBridgeConfig): AgentBridgeImportResult;
 export const AgentBridgeConfigSchema: { safeParse(input: unknown): { success: boolean; data?: AgentBridgeConfig; error?: { issues: Array<{ message: string }> } } };
 export const AgentBridgeBypassUpsertSchema: { safeParse(input: unknown): { success: boolean; data?: { patterns: string[] }; error?: { flatten(): unknown } } };
 export const AgentBridgeMappingPutSchema: { safeParse(input: unknown): { success: boolean; data?: { mappings: Array<{ source: string; target: string }> }; error?: { flatten(): unknown } } };
@@ -36,15 +34,18 @@ export interface AgentBridgeMappingRow {
   updated_at: string;
 }
 export interface AgentBridgeBypassRow { pattern: string; source: "default" | "user"; created_at: string }
-export function getAllBypassPatterns(): AgentBridgeBypassRow[];
-export function getUserBypassPatterns(): string[];
-export function replaceUserBypassPatterns(patterns: string[]): void;
-export function getAllAgentBridgeStates(): AgentBridgeStateRow[];
-export function getAgentBridgeState(agentId: string): AgentBridgeStateRow | null;
-export function upsertAgentBridgeState(row: Partial<AgentBridgeStateRow> & { agent_id: string }): void;
-export function getMappingsForAgent(agentId: string): AgentBridgeMappingRow[];
-export function setMappings(agentId: string, mappings: Array<{ source: string; target: string }>): void;
-export function syncAgentBridgeMappingsToMitmAlias(agentId: string): void;
+export interface AgentBridgeStore {
+  getAllAgentBridgeStates(): AgentBridgeStateRow[];
+  getUserBypassPatterns(): string[];
+  getAllBypassPatterns(): AgentBridgeBypassRow[];
+  getAgentBridgeState(agentId: string): AgentBridgeStateRow | null;
+  upsertAgentBridgeState(row: Partial<AgentBridgeStateRow> & { agent_id: string }): void;
+  getMappingsForAgent(agentId: string): AgentBridgeMappingRow[];
+  setMappings(agentId: string, mappings: Array<{ source: string; target: string }>): void;
+  syncAgentBridgeMappingsToMitmAlias(agentId: string): void;
+}
+export function configureAgentBridgeStore(store: AgentBridgeStore): void;
+export function getAgentBridgeStore(): AgentBridgeStore;
 
 export interface MitmTarget { id: string; name: string; hosts: string[]; viability?: string; [key: string]: unknown }
 export const ALL_TARGETS: MitmTarget[];

@@ -16,8 +16,7 @@ import { decideCertMigration } from "./cert/migration.ts";
 import { ALL_TARGETS } from "./targets/index.ts";
 import { detectAgent } from "./detection/index.ts";
 import type { AgentId, DetectionResult, MitmTarget } from "./types.ts";
-import { getAllAgentBridgeStates } from "../lib/db/agentBridgeState.ts";
-import { getUserBypassPatterns } from "../lib/db/agentBridgeBypass.ts";
+import { getAgentBridgeStore } from "./agentBridgeStore.ts";
 import { getGheCopilotHosts } from "../lib/db/providers.ts";
 import { configureUpstreamCa } from "./upstreamTrust.ts";
 import { createLogger } from "../shared/utils/logger.ts";
@@ -198,7 +197,7 @@ export function writeBypassJson(userPatterns?: string[]): void {
   const patterns =
     Array.isArray(userPatterns) && userPatterns.length >= 0
       ? userPatterns
-      : getUserBypassPatterns();
+      : getAgentBridgeStore().getUserBypassPatterns();
   const payload = {
     version: 1,
     generatedAt: new Date().toISOString(),

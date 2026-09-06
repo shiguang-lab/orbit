@@ -11,12 +11,15 @@ import * as cert from "./handlers/cert.handler.js";
 import * as certRegenerate from "./handlers/cert-regenerate.handler.js";
 import * as certDownload from "./handlers/cert-download.handler.js";
 import { ensureAgentBridgeSchema } from "./agent-bridge-schema.js";
+import { agentBridgePersistence } from "./agent-bridge.persistence.js";
+import { configureAgentBridgeStore } from "@shiguang-gateway/core-domain/control/agent-bridge";
 
 /** AgentBridge use cases; transport stays in AgentBridgeController. */
 @Injectable()
 export class AgentBridgeService implements OnModuleInit {
   onModuleInit(): void {
     ensureAgentBridgeSchema();
+    configureAgentBridgeStore(agentBridgePersistence);
   }
 
   configGet() { return config.GET(); }

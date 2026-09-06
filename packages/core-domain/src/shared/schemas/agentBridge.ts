@@ -35,3 +35,31 @@ export const AgentBridgeMappingPutSchema = z.object({
 export const AgentBridgeBypassUpsertSchema = z.object({ patterns: z.array(z.string()) });
 
 export const AgentBridgeUpstreamCaPostSchema = z.object({ path: z.string().min(1) });
+
+export type AgentBridgeStateRow = z.infer<typeof AgentBridgeStateRowSchema>;
+export type AgentBridgeMappingRow = z.infer<typeof AgentBridgeMappingRowSchema>;
+export type AgentBridgeBypassRow = z.infer<typeof AgentBridgeBypassRowSchema>;
+
+/** Portable operator configuration; the persistence/application logic lives in control-api. */
+export const AgentBridgeConfigSchema = z.object({
+  version: z.literal(1),
+  bypassPatterns: z.array(z.string()),
+  customHosts: z.array(
+    z.object({
+      host: z.string().min(1),
+      kind: z.enum(["llm", "app", "custom"]).default("custom"),
+      label: z.string().nullable().optional(),
+    }),
+  ),
+  agentMappings: z.record(
+    z.string(),
+    z.array(z.object({ source: z.string(), target: z.string() })),
+  ),
+});
+
+export type AgentBridgeConfig = z.infer<typeof AgentBridgeConfigSchema>;
+export interface AgentBridgeImportResult {
+  bypassPatterns: number;
+  customHosts: number;
+  agents: number;
+}

@@ -607,9 +607,6 @@ export {
   type MemoryVecMeta,
 } from "./db/memoryVec";
 // T-A-F2: AgentBridge state/mappings/bypass + Inspector custom hosts/sessions
-export * from "./db/agentBridgeState";
-export * from "./db/agentBridgeMappings";
-export * from "./db/agentBridgeBypass";
 export * from "./db/inspectorCustomHosts";
 export * from "./db/inspectorSessions";
 export * from "./db/omp";

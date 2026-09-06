@@ -6,7 +6,8 @@
 import { addDNSEntry, addDNSEntries, isSudoAvailable } from "./dnsConfig.ts";
 import { isRoot } from "../systemCommands.ts";
 import { ALL_TARGETS } from "../targets/index.ts";
-import { getAllAgentBridgeStates } from "../../lib/db/agentBridgeState.ts";
+import { getAgentBridgeStore } from "../agentBridgeStore.ts";
+import type { AgentBridgeStateRow } from "../../shared/schemas/agentBridge.ts";
 import { listCustomHosts } from "../../lib/db/inspectorCustomHosts.ts";
 import { getGheCopilotHosts } from "../../lib/db/providers.ts";
 import { createLogger } from "../../shared/utils/logger.ts";
@@ -23,7 +24,7 @@ interface DnsProvisionLogger {
 export interface DnsProvisionDeps {
   addDefaultDns?: (sudoPassword: string) => Promise<void>;
   addHostsDns?: (hosts: string[], sudoPassword: string) => Promise<void>;
-  getAgentStates?: () => ReturnType<typeof getAllAgentBridgeStates>;
+  getAgentStates?: () => AgentBridgeStateRow[];
   listEnabledCustomHosts?: () => ReturnType<typeof listCustomHosts>;
   /** Return true if privileged host-file writes are possible (sudo or root). */
   canElevate?: () => boolean;
@@ -34,7 +35,7 @@ export interface DnsProvisionDeps {
 type ResolvedDnsProvisionDeps = {
   addDefaultDns: (sudoPassword: string) => Promise<void>;
   addHostsDns: (hosts: string[], sudoPassword: string) => Promise<void>;
-  getAgentStates: () => ReturnType<typeof getAllAgentBridgeStates>;
+  getAgentStates: () => AgentBridgeStateRow[];
   listEnabledCustomHosts: () => ReturnType<typeof listCustomHosts>;
   logger: DnsProvisionLogger;
 };
@@ -133,7 +134,7 @@ export async function provisionDnsEntries(
   const resolvedDeps: ResolvedDnsProvisionDeps = {
     addDefaultDns: deps.addDefaultDns ?? addDNSEntry,
     addHostsDns: deps.addHostsDns ?? addDNSEntries,
-    getAgentStates: deps.getAgentStates ?? getAllAgentBridgeStates,
+    getAgentStates: deps.getAgentStates ?? (() => getAgentBridgeStore().getAllAgentBridgeStates()),
     listEnabledCustomHosts:
       deps.listEnabledCustomHosts ?? (() => listCustomHosts({ enabledOnly: true })),
     logger,
