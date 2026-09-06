@@ -140,10 +140,17 @@ try {
     }, null, 2));
   }
   // Strict mode fails when an uncovered table is referenced by app code unless
-  // it is explicitly classified as app-private above. Package-local tables
-  // are intentionally left for the owning domain migration.
+  // it is explicitly classified as app-private above. App-private DDL must
+  // also live with its owning app; keeping it in a package would leak an
+  // app-only schema into every deployable unit.
   const unclassifiedAppEvidence = [...directAppEvidence.keys()].filter((table) => !appPrivateTables.has(table));
-  if (process.argv.includes("--strict") && (unclassifiedAppEvidence.length || Object.keys(columnDrift).length)) process.exitCode = 1;
+  const appPrivatePackageDeclarations = [...appPrivateTables].filter((table) =>
+    (declarations.get(table) ?? []).some((file) => file.startsWith("packages/")),
+  );
+  if (appPrivatePackageDeclarations.length) {
+    console.log(`app-private tables declared in packages: ${appPrivatePackageDeclarations.join(", ")}`);
+  }
+  if (process.argv.includes("--strict") && (unclassifiedAppEvidence.length || Object.keys(columnDrift).length || appPrivatePackageDeclarations.length)) process.exitCode = 1;
 } finally {
   rmSync(outputDir, { recursive: true, force: true });
 }

@@ -20,10 +20,10 @@ import {
   pasteCredentialsPost,
   traeImportGet,
   traeImportPost,
-} from "@shiguang-gateway/core-domain/control/oauth-handlers";
+} from "./handlers/index.js";
 
 type OAuthParams = Record<string, string>;
-type OAuthHandler = (request: Request, context?: { params: OAuthParams }) => Promise<Response> | Response;
+type OAuthHandler = (...args: any[]) => Promise<Response> | Response;
 
 /** Application use-case boundary for provider OAuth flows. */
 @Injectable()

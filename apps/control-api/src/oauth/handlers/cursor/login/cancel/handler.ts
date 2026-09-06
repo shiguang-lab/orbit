@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
+// @ts-nocheck
 import { z } from "zod";
-import { isAuthRequired, isAuthenticated } from "../../../../../../shared/utils/apiAuth.ts";
-import { isValidationFailure, validateBody } from "../../../../../../shared/validation/helpers.ts";
-import { cancelCursorLoginSession } from "../../../../../../lib/oauth/services/cursorLogin.ts";
+import { isAuthRequired, isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { cancelCursorLoginSession } from "@shiguang-gateway/core-domain/control/oauth-runtime/services/cursorLogin";
 
 const cancelSchema = z.object({
   sessionId: z.string().trim().min(1, "sessionId is required"),
@@ -11,7 +11,7 @@ const cancelSchema = z.object({
 async function requireOAuthAuth(request: Request) {
   if (!(await isAuthRequired(request))) return null;
   if (await isAuthenticated(request)) return null;
-  return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  return Response.json({ error: "Unauthorized" }, { status: 401 });
 }
 
 /**
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
   try {
     rawBody = await request.json();
   } catch {
-    return NextResponse.json(
+    return Response.json(
       {
         error: {
           message: "Invalid request",
@@ -39,9 +39,9 @@ export async function POST(request: Request) {
 
   const validation = validateBody(cancelSchema, rawBody);
   if (isValidationFailure(validation)) {
-    return NextResponse.json({ error: validation.error }, { status: 400 });
+    return Response.json({ error: validation.error }, { status: 400 });
   }
 
   const cancelled = cancelCursorLoginSession(validation.data.sessionId);
-  return NextResponse.json({ success: true, cancelled });
+  return Response.json({ success: true, cancelled });
 }

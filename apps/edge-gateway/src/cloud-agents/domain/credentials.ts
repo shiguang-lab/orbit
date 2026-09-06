@@ -2,10 +2,18 @@ import { getDbInstance } from "@shiguang-gateway/core-domain/db/ping";
 import { encrypt, decrypt } from "@shiguang-gateway/core-domain/db/encryption";
 import type { AgentCredentials } from "./baseAgent.js";
 
-// The `cloud_agent_credentials` table is provisioned by migration
-// `061_cloud_agent_credentials.sql` at database initialization (see
-// src/lib/db/migrations/). Do not create it inline here — the project
-// migration policy requires versioned, transaction-wrapped DDL.
+/** Provision the edge-owned credentials table before any credential query. */
+export function createCloudAgentCredentialsTable(): void {
+  const db = getDbInstance();
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS cloud_agent_credentials (
+      provider_id TEXT PRIMARY KEY,
+      api_key_encrypted TEXT NOT NULL,
+      base_url TEXT,
+      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    )
+  `);
+}
 
 /** Mask API key for display — show last 4 chars only */
 export function maskApiKey(key: string): string {

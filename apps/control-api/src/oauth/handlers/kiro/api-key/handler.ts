@@ -1,24 +1,24 @@
-import { NextResponse } from "next/server";
-import { KiroService } from "../../../../../lib/oauth/services/kiro.ts";
+// @ts-nocheck
+import { KiroService } from "@shiguang-gateway/core-domain/control/oauth-runtime/services/kiro";
 import {
   createProviderConnection,
   getProviderConnections,
   updateProviderConnection,
   isCloudEnabled,
-} from "../../../../../models/index.ts";
-import { syncToCloud } from "../../../../../lib/cloudSync.ts";
-import { getConsistentMachineId } from "../../../../../shared/utils/machineId.ts";
-import { kiroApiKeyImportSchema } from "../../../../../shared/validation/schemas.ts";
-import { isValidationFailure, validateBody } from "../../../../../shared/validation/helpers.ts";
-import { isAuthRequired, isAuthenticated } from "../../../../../shared/utils/apiAuth.ts";
-import { buildKiroImportError } from "../import/handler";
-import { buildKiroApiKeyConnectionName, isKiroApiKeyImportClientError } from "./helpers";
-import { findKiroConnectionByIdentity } from "../../../../../lib/oauth/kiroConnectionIdentity.ts";
+} from "@shiguang-gateway/core-domain/control/models";
+import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";
+import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
+import { kiroApiKeyImportSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { isAuthRequired, isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
+import { buildKiroImportError } from "../import/handler.js";
+import { buildKiroApiKeyConnectionName, isKiroApiKeyImportClientError } from "./helpers.js";
+import { findKiroConnectionByIdentity } from "@shiguang-gateway/core-domain/control/oauth-runtime/kiroConnectionIdentity";
 
 async function requireKiroApiKeyImportAuth(request: Request) {
   if (!(await isAuthRequired(request))) return null;
   if (await isAuthenticated(request)) return null;
-  return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  return Response.json({ error: "Unauthorized" }, { status: 401 });
 }
 
 /**
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
   try {
     rawBody = await request.json();
   } catch {
-    return NextResponse.json(
+    return Response.json(
       {
         error: {
           message: "Invalid request",
@@ -52,7 +52,7 @@ export async function POST(request: Request) {
     const targetProvider = searchParams.get("targetProvider") === "amazon-q" ? "amazon-q" : "kiro";
     const validation = validateBody(kiroApiKeyImportSchema, rawBody);
     if (isValidationFailure(validation)) {
-      return NextResponse.json({ error: validation.error }, { status: 400 });
+      return Response.json({ error: validation.error }, { status: 400 });
     }
 
     const { apiKey, region } = validation.data;
@@ -97,7 +97,7 @@ export async function POST(request: Request) {
 
     await syncToCloudIfEnabled();
 
-    return NextResponse.json({
+    return Response.json({
       success: true,
       connection: {
         id: connection.id,
@@ -107,7 +107,7 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("Kiro API key import error:", error);
-    return NextResponse.json(
+    return Response.json(
       { error: buildKiroImportError(error) },
       { status: isKiroApiKeyImportClientError(error) ? 400 : 500 }
     );

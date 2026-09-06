@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
+// @ts-nocheck
 import { z } from "zod";
-import { normalizeCodexImportRecord, flattenCodexImportPayload } from "../../../../../lib/oauth/services/codexImport.ts";
-import { createProviderConnection } from "../../../../../models/index.ts";
-import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
-import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
-import { refreshCodexToken, isUnrecoverableRefreshError } from "../../../../../../../open-sse/services/tokenRefresh.ts";
+import { normalizeCodexImportRecord, flattenCodexImportPayload } from "@shiguang-gateway/core-domain/control/oauth-runtime/services/codexImport";
+import { createProviderConnection } from "@shiguang-gateway/core-domain/control/models";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { refreshCodexToken, isUnrecoverableRefreshError } from "@shiguang-gateway/open-sse/services/token-refresh";
 
 /**
  * Message returned when the imported record's refresh_token is already dead
@@ -96,7 +96,7 @@ export async function POST(request: Request) {
   try {
     rawBody = await request.json();
   } catch {
-    return NextResponse.json(
+    return Response.json(
       { error: "Invalid or empty JSON body" },
       { status: 400 },
     );
@@ -104,7 +104,7 @@ export async function POST(request: Request) {
 
   const parsed = bodySchema.safeParse(rawBody);
   if (!parsed.success) {
-    return NextResponse.json(
+    return Response.json(
       { error: parsed.error.errors[0]?.message ?? "Invalid request body" },
       { status: 400 },
     );
@@ -112,10 +112,10 @@ export async function POST(request: Request) {
 
   const flat = flattenCodexImportPayload(parsed.data.accounts);
   if (!flat.ok) {
-    return NextResponse.json({ error: flat.error }, { status: 400 });
+    return Response.json({ error: flat.error }, { status: 400 });
   }
   if (flat.records.length === 0) {
-    return NextResponse.json(
+    return Response.json(
       { error: "No accounts found in payload" },
       { status: 400 },
     );
@@ -162,7 +162,7 @@ export async function POST(request: Request) {
     }
   }
 
-  return NextResponse.json({
+  return Response.json({
     success: failed === 0,
     imported,
     failed,

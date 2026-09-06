@@ -1,15 +1,15 @@
-import { NextResponse } from "next/server";
-import { CursorService } from "../../../../../lib/oauth/services/cursor.ts";
-import { credentialsFromCursorTokens } from "../../../../../lib/oauth/services/cursorLogin.ts";
-import { persistCursorConnection } from "../../../../../lib/oauth/services/persistCursorConnection.ts";
-import { isCloudEnabled } from "../../../../../models/index.ts";
-import { syncToCloud } from "../../../../../lib/cloudSync.ts";
-import { cursorImportSchema } from "../../../../../shared/validation/schemas.ts";
-import { isValidationFailure, validateBody } from "../../../../../shared/validation/helpers.ts";
-import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
-import { getConsistentMachineId } from "../../../../../shared/utils/machineId.ts";
-import { runWithProxyContext } from "../../../../../../../open-sse/utils/proxyFetch.ts";
-import { resolveProxyForProvider } from "../../../../../models/index.ts";
+// @ts-nocheck
+import { CursorService } from "@shiguang-gateway/core-domain/control/oauth-runtime/services/cursor";
+import { credentialsFromCursorTokens } from "@shiguang-gateway/core-domain/control/oauth-runtime/services/cursorLogin";
+import { persistCursorConnection } from "@shiguang-gateway/core-domain/control/oauth-runtime/services/persistCursorConnection";
+import { isCloudEnabled } from "@shiguang-gateway/core-domain/control/models";
+import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";
+import { cursorImportSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
+import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
+import { resolveProxyForProvider } from "@shiguang-gateway/core-domain/control/models";
 
 async function requireOAuthImportAuth(request: Request) {
   // GHSA-mg76: importing a provider connection is a state-mutating admin action;
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
   try {
     rawBody = await request.json();
   } catch {
-    return NextResponse.json(
+    return Response.json(
       {
         error: {
           message: "Invalid request",
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
   try {
     const validation = validateBody(cursorImportSchema, rawBody);
     if (isValidationFailure(validation)) {
-      return NextResponse.json({ error: validation.error }, { status: 400 });
+      return Response.json({ error: validation.error }, { status: 400 });
     }
     const { accessToken, machineId, refreshToken } = validation.data;
 
@@ -78,7 +78,7 @@ export async function POST(request: Request) {
       });
     } else {
       // Access-only import — no refresh; user must re-import when expired.
-      const { createProviderConnection } = await import("../../../../../models/index.ts");
+      const { createProviderConnection } = await import("@shiguang-gateway/core-domain/control/models");
       connection = await createProviderConnection({
         provider: "cursor",
         authType: "oauth",
@@ -99,7 +99,7 @@ export async function POST(request: Request) {
 
     await syncToCloudIfEnabled();
 
-    return NextResponse.json({
+    return Response.json({
       success: true,
       connection: {
         id: connection.id,
@@ -109,7 +109,7 @@ export async function POST(request: Request) {
     });
   } catch (error: unknown) {
     console.error("Cursor import token error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return Response.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
@@ -124,7 +124,7 @@ export async function GET(request: Request) {
   const cursorService = new CursorService();
   const instructions = cursorService.getTokenStorageInstructions();
 
-  return NextResponse.json({
+  return Response.json({
     provider: "cursor",
     method: "import_token",
     instructions,

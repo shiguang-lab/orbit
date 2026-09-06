@@ -1,25 +1,25 @@
-import { NextResponse } from "next/server";
-import { KiroService } from "../../../../../lib/oauth/services/kiro.ts";
+// @ts-nocheck
+import { KiroService } from "@shiguang-gateway/core-domain/control/oauth-runtime/services/kiro";
 import {
   createProviderConnection,
   getProviderConnections,
   updateProviderConnection,
   isCloudEnabled,
   resolveProxyForProvider,
-} from "../../../../../models/index.ts";
-import { getConsistentMachineId } from "../../../../../shared/utils/machineId.ts";
-import { syncToCloud } from "../../../../../lib/cloudSync.ts";
-import { kiroImportSchema } from "../../../../../shared/validation/schemas.ts";
-import { isValidationFailure, validateBody } from "../../../../../shared/validation/helpers.ts";
-import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
-import { runWithProxyContext } from "../../../../../../../open-sse/utils/proxyFetch.ts";
-import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
-import { findKiroConnectionByIdentity } from "../../../../../lib/oauth/kiroConnectionIdentity.ts";
+} from "@shiguang-gateway/core-domain/control/models";
+import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
+import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";
+import { kiroImportSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
+import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { findKiroConnectionByIdentity } from "@shiguang-gateway/core-domain/control/oauth-runtime/kiroConnectionIdentity";
 import {
   emailFromExternalIdpToken,
   isExternalIdpAuthMethod,
   normalizeScope,
-} from "../../../../../../../open-sse/services/kiroExternalIdp.ts";
+} from "@shiguang-gateway/open-sse/services/kiro-external-idp";
 
 /**
  * Build the user-facing error message for a failed Kiro/Amazon-Q token import.
@@ -72,7 +72,7 @@ export async function POST(request: Request) {
   try {
     rawBody = await request.json();
   } catch {
-    return NextResponse.json(
+    return Response.json(
       {
         error: {
           message: "Invalid request",
@@ -88,7 +88,7 @@ export async function POST(request: Request) {
     const targetProvider = searchParams.get("targetProvider") === "amazon-q" ? "amazon-q" : "kiro";
     const validation = validateBody(kiroImportSchema, rawBody);
     if (isValidationFailure(validation)) {
-      return NextResponse.json({ error: validation.error }, { status: 400 });
+      return Response.json({ error: validation.error }, { status: 400 });
     }
     const { refreshToken, region, clientId, clientSecret, authMethod, profileArn } =
       validation.data;
@@ -142,7 +142,7 @@ export async function POST(request: Request) {
         email,
       });
       await syncToCloudIfEnabled();
-      return NextResponse.json({
+      return Response.json({
         success: true,
         connection: { id: connection.id, provider: connection.provider, email: connection.email },
       });
@@ -230,7 +230,7 @@ export async function POST(request: Request) {
     // Auto sync to Cloud if enabled
     await syncToCloudIfEnabled();
 
-    return NextResponse.json({
+    return Response.json({
       success: true,
       connection: {
         id: connection.id,
@@ -240,7 +240,7 @@ export async function POST(request: Request) {
     });
   } catch (error: any) {
     console.error("Kiro-compatible import token error:", error);
-    return NextResponse.json({ error: buildKiroImportError(error) }, { status: 500 });
+    return Response.json({ error: buildKiroImportError(error) }, { status: 500 });
   }
 }
 

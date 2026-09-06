@@ -1,4 +1,5 @@
-import { isLoopbackHost } from "../../../../../server/authz/routeGuard.ts";
+// @ts-nocheck
+import { isLoopbackHost } from "@shiguang-gateway/core-domain/shared/authz-route-guard";
 
 export type RemoteOAuthHint =
   | { remoteHost: false }

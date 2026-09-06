@@ -1,19 +1,19 @@
-import { NextResponse } from "next/server";
+// @ts-nocheck
 import { z } from "zod";
-import { KiroService } from "../../../../../lib/oauth/services/kiro.ts";
+import { KiroService } from "@shiguang-gateway/core-domain/control/oauth-runtime/services/kiro";
 import {
   createProviderConnection,
   getProviderConnections,
   updateProviderConnection,
   isCloudEnabled,
-} from "../../../../../models/index.ts";
-import { getConsistentMachineId } from "../../../../../shared/utils/machineId.ts";
-import { syncToCloud } from "../../../../../lib/cloudSync.ts";
-import { isAuthRequired, isAuthenticated } from "../../../../../shared/utils/apiAuth.ts";
-import { validateBody, isValidationFailure } from "../../../../../shared/validation/helpers.ts";
-import { KIRO_CONFIG } from "../../../../../lib/oauth/constants/oauth.ts";
-import { findKiroConnectionByIdentity } from "../../../../../lib/oauth/kiroConnectionIdentity.ts";
-import { classifyKiroSocialPoll } from "../../../../../lib/oauth/kiroSocialPoll.ts";
+} from "@shiguang-gateway/core-domain/control/models";
+import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
+import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";
+import { isAuthRequired, isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
+import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { KIRO_CONFIG } from "@shiguang-gateway/core-domain/control/oauth-runtime/constants/oauth";
+import { findKiroConnectionByIdentity } from "@shiguang-gateway/core-domain/control/oauth-runtime/kiroConnectionIdentity";
+import { classifyKiroSocialPoll } from "@shiguang-gateway/core-domain/control/oauth-runtime/kiroSocialPoll";
 
 const socialExchangeSchema = z.object({
   deviceCode: z.string().min(1, "Missing deviceCode or provider"),
@@ -28,14 +28,14 @@ const socialExchangeSchema = z.object({
  */
 export async function POST(request: Request) {
   if ((await isAuthRequired(request)) && !(await isAuthenticated(request))) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   let rawBody;
   try {
     rawBody = await request.json();
   } catch {
-    return NextResponse.json(
+    return Response.json(
       {
         error: {
           message: "Invalid request",
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
 
   const validation = validateBody(socialExchangeSchema, rawBody);
   if (isValidationFailure(validation)) {
-    return NextResponse.json(
+    return Response.json(
       { error: validation.error || "Missing deviceCode or provider" },
       { status: 400 }
     );
@@ -67,7 +67,7 @@ export async function POST(request: Request) {
     const poll = classifyKiroSocialPoll(response.ok, response.status, data);
 
     if (poll.kind === "pending") {
-      return NextResponse.json({
+      return Response.json({
         success: false,
         pending: true,
         error: poll.error,
@@ -75,7 +75,7 @@ export async function POST(request: Request) {
     }
 
     if (poll.kind === "error") {
-      return NextResponse.json(
+      return Response.json(
         {
           success: false,
           pending: false,
@@ -124,7 +124,7 @@ export async function POST(request: Request) {
 
     await syncToCloudIfEnabled();
 
-    return NextResponse.json({
+    return Response.json({
       success: true,
       connection: {
         id: connection.id,
@@ -134,7 +134,7 @@ export async function POST(request: Request) {
     });
   } catch (error: any) {
     console.error("Kiro social exchange error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return Response.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 

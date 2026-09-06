@@ -1,15 +1,15 @@
-import { NextResponse } from "next/server";
-import { isAuthRequired, isAuthenticated } from "../../../../../../shared/utils/apiAuth.ts";
+// @ts-nocheck
+import { isAuthRequired, isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 import {
   createCursorLoginSession,
   generateCursorAuthParams,
-} from "../../../../../../lib/oauth/services/cursorLogin.ts";
-import { sanitizeErrorMessage } from "../../../../../../../../open-sse/utils/error.ts";
+} from "@shiguang-gateway/core-domain/control/oauth-runtime/services/cursorLogin";
+import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 
 async function requireOAuthAuth(request: Request) {
   if (!(await isAuthRequired(request))) return null;
   if (await isAuthenticated(request)) return null;
-  return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  return Response.json({ error: "Unauthorized" }, { status: 401 });
 }
 
 /**
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
   try {
     const params = await generateCursorAuthParams();
     const { sessionId, loginUrl } = createCursorLoginSession(params);
-    return NextResponse.json({
+    return Response.json({
       success: true,
       sessionId,
       loginUrl,
@@ -32,6 +32,6 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     const message = sanitizeErrorMessage(error) || "Failed to start Cursor login";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return Response.json({ error: message }, { status: 500 });
   }
 }

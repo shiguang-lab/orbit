@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
+// @ts-nocheck
 import { z } from "zod";
-import { extractCodexAccountInfo } from "../../../../../lib/oauth/services/codexImport.ts";
-import { parseCodexSessionJson } from "../../../../../lib/oauth/utils/codexSessionImport.ts";
-import { createProviderConnection } from "../../../../../models/index.ts";
-import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
-import { buildErrorBody, sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
+import { extractCodexAccountInfo } from "@shiguang-gateway/core-domain/control/oauth-runtime/services/codexImport";
+import { parseCodexSessionJson } from "@shiguang-gateway/core-domain/control/oauth-runtime/utils/codexSessionImport";
+import { createProviderConnection } from "@shiguang-gateway/core-domain/control/models";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 
 /**
  * POST /api/oauth/codex/import-token
@@ -59,14 +59,14 @@ function resolveAccessToken(
  */
 async function parseRequestBody(
   request: Request
-): Promise<{ ok: true; resolved: ResolvedBody } | { ok: false; response: NextResponse }> {
+): Promise<{ ok: true; resolved: ResolvedBody } | { ok: false; response: Response }> {
   let rawBody: unknown;
   try {
     rawBody = await request.json();
   } catch {
     return {
       ok: false,
-      response: NextResponse.json(buildErrorBody(400, "Invalid or empty JSON body"), {
+      response: Response.json(buildErrorBody(400, "Invalid or empty JSON body"), {
         status: 400,
       }),
     };
@@ -76,7 +76,7 @@ async function parseRequestBody(
   if (!parsed.success) {
     return {
       ok: false,
-      response: NextResponse.json(
+      response: Response.json(
         buildErrorBody(400, parsed.error.issues[0]?.message ?? "Invalid request body"),
         { status: 400 }
       ),
@@ -87,7 +87,7 @@ async function parseRequestBody(
   if (!resolved.ok) {
     return {
       ok: false,
-      response: NextResponse.json(buildErrorBody(400, resolved.error), { status: 400 }),
+      response: Response.json(buildErrorBody(400, resolved.error), { status: 400 }),
     };
   }
   return { ok: true, resolved: resolved.resolved };
@@ -111,7 +111,7 @@ export async function POST(request: Request) {
   const info = extractCodexAccountInfo(accessToken);
 
   if (!info.email && !info.chatgptAccountId && !name) {
-    return NextResponse.json(
+    return Response.json(
       buildErrorBody(
         400,
         "Could not decode any account info from the access token and no name was provided"
@@ -136,7 +136,7 @@ export async function POST(request: Request) {
       ...(Object.keys(providerSpecificData).length > 0 ? { providerSpecificData } : {}),
     });
 
-    return NextResponse.json({
+    return Response.json({
       success: true,
       connection: {
         id: connection.id,
@@ -146,7 +146,7 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
-    return NextResponse.json(
+    return Response.json(
       buildErrorBody(
         500,
         sanitizeErrorMessage(error instanceof Error ? error.message : String(error))

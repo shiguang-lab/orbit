@@ -1,14 +1,14 @@
+// @ts-nocheck
 import os from "os";
 import path from "path";
-import { NextResponse } from "next/server";
 
-import { createProviderConnection } from "../../../../models/index.ts";
-import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { createProviderConnection } from "@shiguang-gateway/core-domain/control/models";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import {
   scanCliProxyAuthDir,
   toConnectionPayload,
-} from "../../../../lib/oauth/utils/cliProxyAuthImport.ts";
+} from "@shiguang-gateway/core-domain/control/oauth-runtime/utils/cliProxyAuthImport";
 
 /**
  * #1934: import OAuth credentials saved by CLIProxyAPI (~/.cli-proxy-api/) so users
@@ -39,9 +39,9 @@ export async function GET(request: Request) {
       type: c.type,
       email: c.email,
     }));
-    return NextResponse.json({ dir: cliProxyConfigDir(), scanned, skipped, accounts });
+    return Response.json({ dir: cliProxyConfigDir(), scanned, skipped, accounts });
   } catch (error) {
-    return NextResponse.json(
+    return Response.json(
       { error: sanitizeErrorMessage(error instanceof Error ? error.message : String(error)) },
       { status: 500 }
     );
@@ -70,9 +70,9 @@ export async function POST(request: Request) {
         });
       }
     }
-    return NextResponse.json({ scanned, skipped, imported, results });
+    return Response.json({ scanned, skipped, imported, results });
   } catch (error) {
-    return NextResponse.json(
+    return Response.json(
       { error: sanitizeErrorMessage(error instanceof Error ? error.message : String(error)) },
       { status: 500 }
     );

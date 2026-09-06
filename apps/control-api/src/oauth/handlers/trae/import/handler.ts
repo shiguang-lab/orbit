@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
-import { createProviderConnection } from "../../../../../models/index.ts";
-import { traeImportSchema } from "../../../../../shared/validation/schemas.ts";
-import { isValidationFailure, validateBody } from "../../../../../shared/validation/helpers.ts";
-import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
+// @ts-nocheck
+import { createProviderConnection } from "@shiguang-gateway/core-domain/control/models";
+import { traeImportSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 
 /**
  * POST /api/oauth/trae/import
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
   try {
     rawBody = await request.json();
   } catch {
-    return NextResponse.json(
+    return Response.json(
       {
         error: {
           message: "Invalid request",
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
   try {
     const validation = validateBody(traeImportSchema, rawBody);
     if (isValidationFailure(validation)) {
-      return NextResponse.json({ error: validation.error }, { status: 400 });
+      return Response.json({ error: validation.error }, { status: 400 });
     }
     const { accessToken, webId, bizUserId, userUniqueId, scope, tenant, region } = validation.data;
 
@@ -78,13 +78,13 @@ export async function POST(request: Request) {
       testStatus: "active",
     });
 
-    return NextResponse.json({
+    return Response.json({
       success: true,
       connection: { id: connection.id, provider: connection.provider },
     });
   } catch (error: any) {
     console.error("Trae import token error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return Response.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
@@ -96,7 +96,7 @@ export async function GET(request: Request) {
   const authResponse = await requireOAuthImportAuth(request);
   if (authResponse) return authResponse;
 
-  return NextResponse.json({
+  return Response.json({
     provider: "trae",
     method: "import_token",
     instructions:

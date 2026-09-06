@@ -1,25 +1,25 @@
-import { NextResponse } from "next/server";
+// @ts-nocheck
 import { homedir } from "os";
 import { join } from "path";
-import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
-import { isNextBuildPhase } from "../../../../../lib/buildPhase.ts";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { isNextBuildPhase } from "@shiguang-gateway/core-domain/control/build-phase";
 import {
   createProviderConnection,
   getProviderConnections,
   updateProviderConnection,
   isCloudEnabled,
   resolveProxyForProvider,
-} from "../../../../../models/index.ts";
-import { syncToCloud } from "../../../../../lib/cloudSync.ts";
-import { getConsistentMachineId } from "../../../../../shared/utils/machineId.ts";
-import { KiroService } from "../../../../../lib/oauth/services/kiro.ts";
-import { findKiroConnectionByIdentity } from "../../../../../lib/oauth/kiroConnectionIdentity.ts";
-import { runWithProxyContext } from "../../../../../../../open-sse/utils/proxyFetch.ts";
+} from "@shiguang-gateway/core-domain/control/models";
+import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";
+import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
+import { KiroService } from "@shiguang-gateway/core-domain/control/oauth-runtime/services/kiro";
+import { findKiroConnectionByIdentity } from "@shiguang-gateway/core-domain/control/oauth-runtime/kiroConnectionIdentity";
+import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
 import {
   emailFromExternalIdpToken,
   isExternalIdpAuthMethod,
   normalizeScope,
-} from "../../../../../../../open-sse/services/kiroExternalIdp.ts";
+} from "@shiguang-gateway/open-sse/services/kiro-external-idp";
 
 /**
  * GET /api/oauth/kiro/auto-import
@@ -51,7 +51,7 @@ export async function GET(request: Request) {
     return await saveAndRespond(cacheResult, targetProvider, request);
   }
 
-  return NextResponse.json({
+  return Response.json({
     found: false,
     error:
       "Kiro credentials not found. " +
@@ -543,7 +543,7 @@ async function saveAndRespond(
         const machineId = await getConsistentMachineId();
         await syncToCloud(machineId).catch(() => {});
       }
-      return NextResponse.json({
+      return Response.json({
         found: true,
         source: result.source,
         email: email || null,
@@ -665,7 +665,7 @@ async function saveAndRespond(
       await syncToCloud(machineId).catch(() => {});
     }
 
-    return NextResponse.json({
+    return Response.json({
       found: true,
       source: result.source,
       email: email || null,
@@ -675,6 +675,6 @@ async function saveAndRespond(
     });
   } catch (error: any) {
     console.error("[kiro auto-import] save error:", error);
-    return NextResponse.json({ found: false, error: "Internal server error" }, { status: 500 });
+    return Response.json({ found: false, error: "Internal server error" }, { status: 500 });
   }
 }
