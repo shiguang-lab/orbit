@@ -162,7 +162,6 @@ const allowedCoreDomainSubpaths = {
     "db/ping",
     "db/encryption",
     "db/provider-connections",
-    "control/provider-discovery-support/exclusiveLeaseIsolation",
     "db/upstream-proxy",
     "control/management-auth",
     "shared/cors-status",
@@ -277,7 +276,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "shared/webhook-integrations/",
   "control/api-key-auth",
   "shared/auto-disable-banned",
-  "shared/free-models",
+  "catalog/free-models",
   "shared/cors-status",
   "runtime/feature-flags",
   "control/radar",
@@ -1256,6 +1255,11 @@ const retiredRedundantCoreExports = [
   "./runtime/models-db",
   "./control/resilience-settings",
   "./runtime/resilience-settings",
+  "./control/provider-discovery-support/freeModels",
+  "./shared/free-models",
+  "./runtime/free-models",
+  "./control/provider-discovery-support/callLogs",
+  "./usage/reporting-support/call-logs",
 ];
 for (const subpath of retiredRedundantCoreExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {

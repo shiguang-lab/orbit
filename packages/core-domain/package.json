@@ -388,9 +388,6 @@
     "./control/provider-discovery-support/outboundUrlGuardPolicy": "./src/shared/network/outboundUrlGuardPolicy.ts",
     "./control/provider-discovery-support/safeOutboundFetch": "./src/shared/network/safeOutboundFetch.ts",
     "./control/provider-discovery-support/noAuthProviders": "./src/shared/utils/noAuthProviders.ts",
-    "./control/provider-discovery-support/exclusiveLeaseIsolation": "./src/lib/exclusiveLeaseIsolation.ts",
-    "./control/provider-discovery-support/freeModels": "./src/shared/utils/freeModels.ts",
-    "./control/provider-discovery-support/callLogs": "./src/lib/usage/callLogs.ts",
     "./control/cursor-availability": {
       "types": "./src/public/cursorAvailability.d.ts",
       "import": "./src/lib/cursor/renewal.ts"
@@ -541,9 +538,9 @@
       "types": "./src/public/autoDisableBanned.d.ts",
       "import": "./src/shared/utils/autoDisableBanned.ts"
     },
-    "./shared/free-models": {
+    "./catalog/free-models": {
       "types": "./src/public/freeModels.d.ts",
-      "import": "./src/shared/utils/freeModels.ts"
+      "import": "./src/catalog/freeModels.ts"
     },
     "./shared/cors-status": {
       "types": "./src/public/corsStatus.d.ts",
@@ -887,8 +884,8 @@
       "import": "./src/lib/quota/connectionRecovery.ts"
     },
     "./shared/connection-isolation": {
-      "types": "./src/public/connectionIsolation.d.ts",
-      "import": "./src/lib/exclusiveLeaseIsolation.ts"
+      "types": "./src/shared/connectionIsolation.ts",
+      "import": "./src/shared/connectionIsolation.ts"
     },
     "./shared/combo-invariants": {
       "types": "./src/public/comboInvariants.d.ts",
@@ -935,10 +932,6 @@
     "./shared/classify-429": {
       "types": "./src/public/classify429.d.ts",
       "import": "./src/shared/utils/classify429.ts"
-    },
-    "./shared/free-models": {
-      "types": "./src/public/freeModels.d.ts",
-      "import": "./src/shared/utils/freeModels.ts"
     },
     "./db/provider-stats": {
       "types": "./src/public/providerStatsDb.d.ts",
@@ -1147,7 +1140,7 @@
     "./shared/utils/resolveGatewayBaseUrl": "./src/shared/utils/resolveGatewayBaseUrl.ts",
     "./usage/call-logs": {
       "types": "./src/public/usageCallLogs.d.ts",
-      "import": "./src/lib/usage/callLogs.ts"
+      "import": "./src/usage/callLogs.ts"
     },
     "./usage/pending-request-scope": {
       "types": "./src/public/usageRuntime.d.ts",
@@ -1187,7 +1180,6 @@
     "./runtime/jina-credentials": "./src/lib/providers/jina.ts",
     "./runtime/gemini-credentials": "./src/lib/providers/gemini.ts",
     "./runtime/provider-connection-view": "./src/lib/db/providers/lazyConnectionView.ts",
-    "./runtime/free-models": "./src/shared/utils/freeModels.ts",
     "./runtime/probe-origin": "./src/shared/utils/probeOrigin.ts",
     "./runtime/shuffle-deck": "./src/shared/utils/shuffleDeck.ts",
     "./runtime/detailed-logs": "./src/lib/db/detailedLogs.ts",
@@ -1218,7 +1210,6 @@
     "./usage/provider-limits-support/providerLimits": "./src/lib/db/providerLimits.ts",
     "./usage/provider-limits-support/cloudSync": "./src/lib/cloudSync.ts",
     "./usage/provider-limits-support/claudeExtraUsage": "./src/lib/providers/claudeExtraUsage.ts",
-    "./usage/provider-limits-support/exclusiveLeaseIsolation": "./src/lib/exclusiveLeaseIsolation.ts",
     "./usage/provider-limits-support/machine": "./src/shared/utils/machine.ts",
     "./usage/provider-limits-support/providerLimitsCache": "./src/lib/usage/providerLimitsCache.ts",
     "./usage/provider-limits-support/usageEvents": "./src/lib/usage/usageEvents.ts",
@@ -1229,7 +1220,6 @@
     "./usage/reporting-support/quota-snapshots": "./src/lib/db/quotaSnapshots.ts",
     "./usage/reporting-support/cost-calculator": "./src/lib/usage/costCalculator.ts",
     "./usage/reporting-support/shared/types/utilization": "./src/shared/types/utilization.ts",
-    "./usage/reporting-support/call-logs": "./src/lib/usage/callLogs.ts",
     "./runtime/quota-key": "./src/lib/quota/quotaKey.ts",
     "./runtime/no-auth-providers": "./src/shared/utils/noAuthProviders.ts",
     "./runtime/proxy-mappers": "./src/lib/db/proxies/mappers.ts",

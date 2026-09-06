@@ -22,18 +22,11 @@ const expectedContracts = {
     "trackPendingRequest",
   ],
   "./usage/call-logs": [
-    "cleanupOrphanCallLogFiles",
-    "cleanupOverflowCallLogFiles",
-    "closeCallLogSaves",
     "deleteCallLogsBefore",
     "exportCallLogsSince",
     "getCallLogById",
     "getCallLogs",
-    "rotateCallLogs",
     "saveCallLog",
-    "scheduleCallLogRotation",
-    "trimCallLogsToMaxRows",
-    "waitForCallLogSaves",
   ],
   "./usage/stats": [
     "getConnectionSpendUsdSinceAdded",
@@ -80,6 +73,8 @@ test("usage package subpaths expose focused and accurate declarations", async ()
 test("mixed usage database facade and aliases stay retired", () => {
   assert.equal(manifest.exports["./edge/usage-db"], undefined);
   assert.equal(manifest.exports["./runtime/usage-db"], undefined);
+  assert.equal(manifest.exports["./control/provider-discovery-support/callLogs"], undefined);
+  assert.equal(manifest.exports["./usage/reporting-support/call-logs"], undefined);
   assert.equal(fs.existsSync(path.join(packageRoot, "src/lib/usageDb.ts")), false);
   assert.equal(fs.existsSync(path.join(packageRoot, "src/public/usageDb.d.ts")), false);
 
@@ -89,6 +84,10 @@ test("mixed usage database facade and aliases stay retired", () => {
   ];
   for (const file of consumers) {
     const source = fs.readFileSync(file, "utf8");
-    assert.doesNotMatch(source, /core-domain\/(?:edge|runtime)\/usage-db/, file);
+    assert.doesNotMatch(
+      source,
+      /core-domain\/(?:edge\/usage-db|runtime\/usage-db|control\/provider-discovery-support\/callLogs|usage\/reporting-support\/call-logs)/,
+      file,
+    );
   }
 });

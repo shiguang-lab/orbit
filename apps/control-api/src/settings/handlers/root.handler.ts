@@ -23,7 +23,7 @@ import {
   hashManagementPassword,
   verifyManagementPassword,
 } from "@shiguang-gateway/core-domain/control/management-password";
-import { isPaidModelTarget } from "@shiguang-gateway/core-domain/shared/free-models";
+import { isPaidModelTarget } from "@shiguang-gateway/core-domain/catalog/free-models";
 import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/control/compliance";
 import {
   isAuthRequired,

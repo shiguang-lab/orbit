@@ -28,7 +28,7 @@ import { setSystemPromptConfig } from "@shiguang-gateway/open-sse/services/syste
 import {
   isFreeModel,
   providerHasFreeModels,
-} from "@shiguang-gateway/core-domain/shared/free-models";
+} from "@shiguang-gateway/core-domain/catalog/free-models";
 
 const LEGACY_COMBO_RESILIENCE_KEYS = new Set([
   "timeoutMs",

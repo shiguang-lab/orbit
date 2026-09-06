@@ -11,7 +11,7 @@ import {
   validateBody,
 } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { updateComboDefaultsSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
-import { isPaidModelTarget } from "@shiguang-gateway/core-domain/shared/free-models";
+import { isPaidModelTarget } from "@shiguang-gateway/core-domain/catalog/free-models";
 import {
   SAFE_OUTBOUND_FETCH_PRESETS,
   safeOutboundFetch,

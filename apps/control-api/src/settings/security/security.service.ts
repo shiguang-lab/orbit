@@ -31,7 +31,7 @@ import {
   getPayloadRulesConfig,
   normalizePayloadRulesConfig,
 } from "@shiguang-gateway/open-sse/services/payloadRules";
-import { isPaidModelTarget } from "@shiguang-gateway/core-domain/shared/free-models";
+import { isPaidModelTarget } from "@shiguang-gateway/core-domain/catalog/free-models";
 import { getCorsStatus } from "@shiguang-gateway/core-domain/shared/cors-status";
 import {
   ALWAYS_PROTECTED_API_PATHS,

@@ -3,7 +3,7 @@ import { z } from "zod";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { getSettings } from "@shiguang-gateway/core-domain/db/settings";
 import { setModelIsHidden } from "@shiguang-gateway/core-domain/db/hidden-models";
-import { isFreeModel, providerHasFreeModels } from "@shiguang-gateway/core-domain/shared/free-models";
+import { isFreeModel, providerHasFreeModels } from "@shiguang-gateway/core-domain/catalog/free-models";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import * as log from "@shiguang-gateway/core-domain/sse/logger";
 import {

@@ -75,21 +75,7 @@ export interface DeleteCallLogsResult {
 }
 
 export function saveCallLog(entry: Record<string, unknown>): Promise<void>;
-export function waitForCallLogSaves(timeoutMs: number): Promise<boolean>;
-export function closeCallLogSaves(timeoutMs?: number): Promise<void>;
 export function getCallLogs(filter?: CallLogFilter): Promise<CallLogSummary[]>;
 export function getCallLogById(id: string): Promise<CallLogDetail | null>;
 export function exportCallLogsSince(since: string): Promise<CallLogDetail[]>;
-export function cleanupOrphanCallLogFiles(
-  baseDir?: string | null,
-  options?: { maxCandidates?: number; maxScanEntries?: number; minAgeMs?: number },
-): number;
-export function cleanupOverflowCallLogFiles(
-  baseDir?: string | null,
-  maxEntries?: number,
-  maxDeletes?: number,
-): number;
 export function deleteCallLogsBefore(cutoff: string, maxDeletes?: number): DeleteCallLogsResult;
-export function trimCallLogsToMaxRows(maxRows?: number, maxDeletes?: number): DeleteCallLogsResult;
-export function rotateCallLogs(): void;
-export function scheduleCallLogRotation(): void;

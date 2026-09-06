@@ -126,7 +126,7 @@ import {
   SYNCED_AVAILABLE_MODELS_MALFORMED,
   type SyncedAvailableModelsByConnection,
 } from "@shiguang-gateway/core-domain/db/models";
-import { isFreeModel } from "@shiguang-gateway/core-domain/runtime/free-models";
+import { isFreeModel } from "@shiguang-gateway/core-domain/catalog/free-models";
 import {
   applySessionAffinityPin,
   formatSessionKeyForLog,

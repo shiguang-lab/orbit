@@ -4,12 +4,12 @@ import {
   deleteSyncedAvailableModelsForProvider,
   getSyncedAvailableModelsForConnection,
 } from "@shiguang-gateway/core-domain/db/models";
-import { selectModelsForImport } from "@shiguang-gateway/core-domain/control/provider-discovery-support/freeModels";
+import { selectModelsForImport } from "@shiguang-gateway/core-domain/catalog/free-models";
 import {
   importManagedModels,
   type ManagedModelImportMode,
 } from "@shiguang-gateway/core-domain/control/provider-discovery-support/managedModelImport";
-import { saveCallLog } from "@shiguang-gateway/core-domain/control/provider-discovery-support/callLogs";
+import { saveCallLog } from "@shiguang-gateway/core-domain/usage/call-logs";
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/provider-discovery-support/apiAuth";
 import {
   buildModelSyncInternalHeaders,

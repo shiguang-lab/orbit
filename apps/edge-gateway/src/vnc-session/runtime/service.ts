@@ -2,7 +2,7 @@ import { spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { chmodSync, mkdirSync, rmSync } from "node:fs";
 import { join } from "node:path";
-import { isConnectionUnavailableToAuxiliaryActivity } from "@shiguang-gateway/core-domain/control/provider-discovery-support/exclusiveLeaseIsolation";
+import { isConnectionUnavailableToAuxiliaryActivity } from "@shiguang-gateway/core-domain/shared/connection-isolation";
 import {
   getProviderConnectionById,
   updateProviderConnection,

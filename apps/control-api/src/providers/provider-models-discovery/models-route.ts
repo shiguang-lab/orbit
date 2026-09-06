@@ -85,7 +85,7 @@ import { buildProviderModelsUrl, getDiscoveryClientVersionOptions } from "./disc
 import { getAdobeModels } from "./adobeFireflyDiscovery.js";
 import { parseGeminiModelsList } from "./discovery/gemini-models-parser.js";
 import { getSyncedAvailableModels, getCustomModels } from "@shiguang-gateway/core-domain/db/models";
-import { isConnectionUnavailableToAuxiliaryActivity } from "@shiguang-gateway/core-domain/control/provider-discovery-support/exclusiveLeaseIsolation";
+import { isConnectionUnavailableToAuxiliaryActivity } from "@shiguang-gateway/core-domain/shared/connection-isolation";
 import { fetchCursorAgentModels } from "@shiguang-gateway/core-domain/control/provider-discovery-support/cursorAgent";
 import { fetchCursorAvailableModels } from "@shiguang-gateway/open-sse/oauth/services/cursor-models";
 import { ensureCursorAutoCatalogEntry } from "@shiguang-gateway/core-domain/control/provider-discovery-support/cursorAutoCatalog";

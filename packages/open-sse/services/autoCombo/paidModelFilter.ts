@@ -11,7 +11,7 @@
  * Kept as a pure, dependency-light function so the filter is unit-testable in
  * isolation without seeding the DB-backed virtual factory.
  */
-import { isFreeModel, providerHasFreeModels } from "@shiguang-gateway/core-domain/shared/free-models";
+import { isFreeModel, providerHasFreeModels } from "@shiguang-gateway/core-domain/catalog/free-models";
 
 interface PaidFilterCandidate {
   provider: string;
