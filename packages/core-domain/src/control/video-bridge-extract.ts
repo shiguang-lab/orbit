@@ -1,30 +1,30 @@
-import { createErrorResponse } from "../../../../../lib/api/errorResponse.ts";
+import { createErrorResponse } from "../lib/api/errorResponse.ts";
 import {
   currentVideoBridgeBrokerFingerprint,
   VIDEO_BRIDGE_BROKER_PATH,
   isVideoBridgeBrokerInternalRequest,
-} from "../../../../../lib/guardrails/videoBridgeBrokerAuth.ts";
+} from "../lib/guardrails/videoBridgeBrokerAuth.ts";
 import {
   createVideoExtractionQueue,
   type VideoExtractionQueue,
   VideoExtractionQueueError,
-} from "../../../../../lib/guardrails/videoBridgeBrokerQueue.ts";
+} from "../lib/guardrails/videoBridgeBrokerQueue.ts";
 import {
   extractVideoAudioFromBytes,
   type ExtractedVideoAudio,
-} from "../../../../../lib/guardrails/videoBridgeAudioExtraction.ts";
+} from "../lib/guardrails/videoBridgeAudioExtraction.ts";
 import {
   extractVideoFramesFromBytes,
   type VideoFocusBounds,
   type VideoSamplingPolicy,
-} from "../../../../../lib/guardrails/videoBridgeRuntime.ts";
+} from "../lib/guardrails/videoBridgeRuntime.ts";
 import {
   extractVideoSubtitlesFromBytes,
   VIDEO_SUBTITLE_SUBDEADLINE_MS,
-} from "../../../../../lib/guardrails/videoBridgeSubtitleRuntime.ts";
-import { resolveModelSyncInternalBaseUrl } from "../../../../../shared/services/modelSyncScheduler.ts";
-import { VIDEO_BRIDGE_TIMEOUT_MAX_MS } from "../../../../../shared/constants/modalityBridgeDefaults.ts";
-import { createLogger } from "../../../../../shared/utils/logger.ts";
+} from "../lib/guardrails/videoBridgeSubtitleRuntime.ts";
+import { resolveModelSyncInternalBaseUrl } from "../shared/services/modelSyncScheduler.ts";
+import { VIDEO_BRIDGE_TIMEOUT_MAX_MS } from "../shared/constants/modalityBridgeDefaults.ts";
+import { createLogger } from "../shared/utils/logger.ts";
 
 const log = createLogger("video-bridge-broker");
 
@@ -391,8 +391,4 @@ export async function handleVideoExtractionBrokerRequest(
   } catch (error) {
     return mapBrokerExtractionError(error, { deadline, inputBytes: bytes.byteLength, mode, request });
   }
-}
-
-export async function POST(request: Request): Promise<Response> {
-  return handleVideoExtractionBrokerRequest(request);
 }

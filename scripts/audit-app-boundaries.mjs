@@ -140,6 +140,7 @@ const allowedCoreDomainSubpaths = {
     "control/video-bridge-drilldown",
     "control/modality-bridge-stats",
     "control/video-bridge-runtime",
+    "control/video-bridge-extract",
     "shared/error-response",
     "shared/constants/selfServiceScopes",
     "control/cost-rules",

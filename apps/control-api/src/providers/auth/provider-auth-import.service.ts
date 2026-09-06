@@ -1,4 +1,7 @@
 import { Injectable } from "@nestjs/common";
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import type { FastifyRequest } from "fastify";
 import {
   AgyAuthFileError,
@@ -32,6 +35,7 @@ import {
   isValidationFailure,
   validateBody,
 } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { applyLocalAgyAuthSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 
 const ZIP_BODY_LIMIT = 11 * 1024 * 1024;
@@ -211,6 +215,63 @@ export class ProviderAuthImportService {
       return result(200, { connection: sanitizeConnection(connection), created });
     } catch (error) {
       return errorFromFile(error, "Failed to import Antigravity CLI auth");
+    }
+  }
+
+  async applyLocalAgy(request: ProviderAuthRequest, body: unknown): Promise<ProviderAuthOperationResult> {
+    const parsed = parseBody(body ?? {});
+    if (!parsed.ok) return result(400, { error: "Invalid JSON body" });
+    const validation = validateBody(applyLocalAgyAuthSchema, parsed.value);
+    if (isValidationFailure(validation)) return result(400, { error: validation.error });
+
+    const { name, email, overwriteExisting = true } = validation.data as any;
+    const override = process.env.AGY_TOKEN_FILE;
+    const tokenPath = override && override.trim()
+      ? override.trim()
+      : path.join(os.homedir(), ".gemini", "antigravity-cli", "antigravity-oauth-token");
+    let rawJson: unknown;
+    try {
+      const content = await fs.readFile(tokenPath, "utf8");
+      rawJson = JSON.parse(content);
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException)?.code;
+      if (code === "ENOENT") {
+        return result(404, {
+          error: "No local Antigravity CLI login found. Run `agy`, sign in with Google, then try again.",
+          code: "no_local_login",
+        });
+      }
+      return result(500, { error: "Could not read the local agy token file", code: "read_failed" });
+    }
+
+    const auditContext = getAuditRequestContext(request);
+    try {
+      const parsedToken = parseAndValidateAgyToken(rawJson);
+      const enriched = await enrichWithAntigravityBackend(parsedToken);
+      const { connection, created } = await createConnectionFromAgyToken(enriched, {
+        name,
+        email,
+        overwriteExisting,
+      });
+      logAuditEvent({
+        action: "provider.credentials.imported",
+        actor: "admin",
+        target: getProviderAuditTarget(connection),
+        resourceType: "provider_credentials",
+        status: "success",
+        ipAddress: auditContext.ipAddress || undefined,
+        requestId: auditContext.requestId,
+        metadata: {
+          provider: "agy",
+          created,
+          source: "apply-local",
+          email: enriched.email || email,
+          hasProjectId: !!enriched.projectId,
+        },
+      });
+      return result(200, { connection: sanitizeConnection(connection), created });
+    } catch (error) {
+      return errorFromFile(error, "Failed to import local Antigravity CLI login");
     }
   }
 

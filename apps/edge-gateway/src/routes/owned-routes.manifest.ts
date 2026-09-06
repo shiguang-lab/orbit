@@ -67,6 +67,8 @@ export const ownedEdgeRoutes: readonly OwnedRoute[] = [
   { path: "/v1/video-bridge/drilldown", methods: ["DELETE", "GET", "OPTIONS"] },
   { path: "/api/modality-bridge/stats", methods: ["GET"] },
   { path: "/api/modality-bridge/video/runtime", methods: ["GET"] },
+  { path: "/api/modality-bridge/video/extract", methods: ["POST"] },
+  { path: "/api/modality-bridge/video/drilldown", methods: ["DELETE", "GET", "POST"] },
   { path: "/v1/me/status", methods: ["GET"] },
   { path: "/v1/vscode/:token/api/version", methods: ["GET", "OPTIONS"] },
   { path: "/v1/vscode/:token/chat/completions", methods: ["OPTIONS", "POST"] },

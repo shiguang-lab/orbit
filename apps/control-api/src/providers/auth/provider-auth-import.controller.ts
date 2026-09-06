@@ -63,6 +63,13 @@ export class ProviderAuthImportController {
     return reply.status(response.status).send(response.body);
   }
 
+  @Post("agy-auth/apply-local")
+  async applyLocalAgy(@Req() request: FastifyRequest, @Res() reply: FastifyReply, @Body() body: unknown) {
+    if (!(await this.authorize(request, reply))) return;
+    const response = await this.providerAuth.applyLocalAgy(request.raw as unknown as Request, body);
+    return reply.status(response.status).send(response.body);
+  }
+
   @Post("agy-auth/import-bulk")
   async importAgyBulk(@Req() request: FastifyRequest, @Res() reply: FastifyReply, @Body() body: unknown) {
     if (!(await this.authorize(request, reply))) return;

@@ -339,6 +339,14 @@
       "types": "./src/public/videoBridgeRuntime.d.ts",
       "import": "./src/lib/guardrails/videoBridgeRuntime.ts"
     },
+    "./control/video-bridge-extract": {
+      "types": "./src/public/videoBridgeExtract.d.ts",
+      "import": "./src/control/video-bridge-extract.ts"
+    },
+    "./control/video-bridge-drilldown-broker": {
+      "types": "./src/public/videoBridgeDrilldownBroker.d.ts",
+      "import": "./src/control/video-bridge-drilldown-broker.ts"
+    },
     "./control/agent-skills": {
       "types": "./src/public/agentSkills.d.ts",
       "import": "./src/lib/agentSkills/index.ts"

@@ -1,20 +1,20 @@
 import { z } from "zod";
 
-import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
-import { createErrorResponse } from "../../../../../lib/api/errorResponse.ts";
+import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { createErrorResponse } from "../lib/api/errorResponse.ts";
 import {
   resolveVideoBridgeDrilldownPrincipal,
   VIDEO_BRIDGE_DRILLDOWN_PATH,
-} from "../../../../../lib/guardrails/videoBridgeBrokerAuth.ts";
+} from "../lib/guardrails/videoBridgeBrokerAuth.ts";
 import {
   VideoDrilldownAbortedError,
   VideoDrilldownCache,
   VideoDrilldownValidationError,
   VIDEO_DRILLDOWN_MAX_ENTRY_BYTES,
   VIDEO_DRILLDOWN_MAX_FRAME_DATA_URI_CHARS,
-} from "../../../../../lib/guardrails/videoBridgeDrilldown.ts";
-import { resolveModelSyncInternalBaseUrl } from "../../../../../shared/services/modelSyncScheduler.ts";
-import { createLogger } from "../../../../../shared/utils/logger.ts";
+} from "../lib/guardrails/videoBridgeDrilldown.ts";
+import { resolveModelSyncInternalBaseUrl } from "../shared/services/modelSyncScheduler.ts";
+import { createLogger } from "../shared/utils/logger.ts";
 
 const log = createLogger("video-bridge-drilldown");
 
@@ -294,16 +294,4 @@ export async function handleVideoDrilldownRequest(
     });
   }
   return Response.json({ stored: true }, { status: 201, headers: { "Cache-Control": "no-store" } });
-}
-
-export async function POST(request: Request): Promise<Response> {
-  return handleVideoDrilldownRequest(request);
-}
-
-export async function GET(request: Request): Promise<Response> {
-  return handleVideoDrilldownRequest(request);
-}
-
-export async function DELETE(request: Request): Promise<Response> {
-  return handleVideoDrilldownRequest(request);
 }
