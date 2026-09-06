@@ -29,7 +29,7 @@
     "audit:release-readiness": "node scripts/release-readiness.mjs",
     "smoke:provider-matrix": "node scripts/smoke-provider-matrix.mjs",
     "verify:imported-data": "node scripts/verify-imported-data.mjs",
-    "import:source-data": "node scripts/import-source-data.mjs",
+    "import:source-data": "pnpm --filter @shiguang-gateway/importer run import",
     "infra:migrate-postgres": "pnpm --filter @shiguang-gateway/importer infra:migrate-postgres",
     "smoke:split-deployment": "node scripts/smoke-split-deployment.mjs",
     "smoke:worker": "node scripts/smoke-worker-start.mjs",

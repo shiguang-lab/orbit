@@ -250,6 +250,10 @@ try {
   await waitHttp(18887, "/api/keys/groups/smoke-group/permissions", 404);
   await waitHttp(18888, "/api/gateway/status", 401);
   await waitHttp(18887, "/api/gateway/status", 404);
+  // The control plane now reads the durable default `requireLogin: true`
+  // setting during startup, so its auth boundary rejects these retired paths
+  // before Nest's 404 handler. Static route ownership audits prove retirement;
+  // the split smoke verifies unauthenticated callers cannot reach them.
   await waitHttp(18888, "/api/shutdown", 401, "POST");
   await waitHttp(18888, "/api/restart", 401, "POST");
   await waitHttp(18887, "/api/shutdown", 404, "POST");

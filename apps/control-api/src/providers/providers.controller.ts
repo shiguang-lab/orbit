@@ -26,7 +26,7 @@ import {
   updateCcAliasSettingSchema,
   updateInterceptionRulesSchema,
   updateParamFilterConfigSchema,
-} from "@shiguang-gateway/core-domain/shared/validation/schemas";
+} from "@shiguang-gateway/core-domain/control/provider-validation-schemas";
 import {
   listProviders,
   createProvider,

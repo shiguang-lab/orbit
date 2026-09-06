@@ -52,8 +52,9 @@ try {
 
 if (manifest) {
   if (manifest.private !== true) add("package-private", manifestPath, "open-sse is an internal implementation package and must remain private");
-  if (!manifest.exports || !manifest.exports["."]) add("package-exports", manifestPath, "an explicit package entrypoint is required");
+  if (!manifest.exports) add("package-exports", manifestPath, "explicit reviewed package subpaths are required");
   for (const retired of [
+    ".",
     "./config/embeddingRegistryRuntime",
     "./services/accountFallbackRuntime",
     "./services/rateLimitManagerRuntime",

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { InstallError, SERVICE_VERSION_PATTERN } from "@shiguang-gateway/core-domain/shared/embedded-services";
+import { InstallError, SERVICE_VERSION_PATTERN } from "@shiguang-gateway/core-domain/control/embedded-services-install";
 import { install } from "@shiguang-gateway/core-domain/control/cliproxy";
 import { createErrorResponse, sanitizeErrorMessage } from "@shiguang-gateway/core-domain/shared/error-response";
 

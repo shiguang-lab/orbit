@@ -7,11 +7,11 @@ import { listNoCredentialProviders } from "./provider-credential-requirement.js"
 import {
   computeFreeModelTotals,
   type FreeModelBudget,
-} from "@shiguang-gateway/open-sse/config/freeModelCatalog";
+} from "@shiguang-gateway/provider-catalog/free-model-catalog";
 import {
   FREE_CATALOG_CURATED_AT,
   FREE_MODEL_BUDGETS,
-} from "@shiguang-gateway/open-sse/config/freeModelCatalog.data";
+} from "@shiguang-gateway/provider-catalog/free-model-catalog";
 import { freeProviderRankingsQuerySchema } from "./free-tier.schemas.js";
 
 const CORS = {

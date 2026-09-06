@@ -217,9 +217,6 @@ export {
   clearSyncedPricing,
   syncPricingFromSources,
   getSyncStatus,
-  initPricingSync,
-  startPeriodicSync,
-  stopPeriodicSync,
 } from "./pricingSync";
 
 export {

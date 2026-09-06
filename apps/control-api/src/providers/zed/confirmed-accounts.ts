@@ -10,7 +10,7 @@ import { fingerprintZedCredential } from "./credential-fingerprint.js";
 import {
   confirmedAccountSchema,
   type ConfirmedAccount,
-} from "@shiguang-gateway/core-domain/shared/validation/schemas";
+} from "@shiguang-gateway/core-domain/control/provider-validation-schemas";
 import { zedImportSchema } from "@shiguang-gateway/core-domain/control/oauth-validation";
 
 export function isConfirmedAccount(value: unknown): value is ConfirmedAccount {

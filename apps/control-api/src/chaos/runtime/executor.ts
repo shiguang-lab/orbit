@@ -9,7 +9,7 @@
  * in both route files.
  */
 import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { POST as postChatCompletion } from "@shiguang-gateway/open-sse/services/chat-completions-compat";
+import { forwardEdgeHttpRequest } from "../../edge-runtime/client.js";
 import { getChaosConfig, type ChaosConfig } from "./config.js";
 
 // ── Exported types ───────────────────────────────────────────────────────────
@@ -43,10 +43,9 @@ export interface ChaosRunInput {
   /** Override max_tokens sent to each model (default 4096) */
   maxTokens?: number;
   /**
-   * API key to attribute the in-process dispatch calls to (usage accounting,
-   * per-key policy). Optional — omitted for dashboard-initiated runs, which fall
-   * back to the same "local mode" (no Authorization header) path used by
-   * src/lib/evals/runtime.ts and the worker batch processor.
+   * API key to attribute the edge dispatch calls to (usage accounting and
+   * per-key policy). Optional — dashboard-initiated runs omit Authorization and
+   * use the edge handler's local-mode policy.
    */
   apiKey?: string | null;
 }
@@ -263,11 +262,9 @@ function buildDispatchErrorResult(
 }
 
 /**
- * Dispatch to ShiguangGateway's own /v1/chat/completions handler for a given
- * provider+model — in-process, via a synthetic Request handed directly to the
- * route's POST handler. No network hop, no port dependency. Mirrors the
- * established pattern in the worker batch processor and src/lib/evals/runtime.ts
- * (which the codebase's outbound-self-call convention requires — see #6679 review).
+ * Dispatch to the edge-owned /v1/chat/completions handler for a given
+ * provider+model. The edge process owns routing, provider execution, and its
+ * associated live runtime state.
  */
 async function dispatchToModel(
   providerId: string,
@@ -284,7 +281,7 @@ async function dispatchToModel(
   try {
     const model = modelId || providerId;
     const request = buildDispatchRequest(model, messages, maxTokens, timeoutMs, apiKey);
-    const res = await postChatCompletion(request);
+    const res = await forwardEdgeHttpRequest(request);
     return await parseDispatchResponse(res, ctx, start);
   } catch (err: unknown) {
     return buildDispatchErrorResult(err, ctx, start, timeoutMs);

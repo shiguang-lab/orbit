@@ -38,10 +38,10 @@ import {
   AUTHZ_HEADER_PEER_LOCALITY,
 } from "@shiguang-gateway/core-domain/shared/authz-headers";
 import { readSubjectFromHeaders } from "@shiguang-gateway/core-domain/shared/authz-subject";
-import { clearCliproxyapiUrlCache } from "@shiguang-gateway/open-sse/executors/cliproxyapi";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { extractApiKey } from "@shiguang-gateway/open-sse/services/auth";
+import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 
 /**
  * Force this route to run dynamically per-request and never be cached/prerendered.
@@ -440,7 +440,7 @@ export async function PATCH(request: Request) {
     const beforeSnapshot = (await getSettings()) as Record<string, unknown>;
     let settings: Awaited<ReturnType<typeof getSettings>>;
     try {
-      settings = await updateSettings(body, { expectedRevision });
+      settings = await updateSettings(body, { expectedRevision, applyRuntime: false });
     } catch (error) {
       if (error instanceof SettingsRevisionConflictError) {
         emitSettingsFailureAudit(request, actor, "SETTINGS_REVISION_CONFLICT", attemptedKeys);
@@ -470,8 +470,6 @@ export async function PATCH(request: Request) {
           { status: 400 }
         );
       }
-      // Invalidate the executor's URL cache so it picks up the new URL immediately
-      clearCliproxyapiUrlCache();
     }
 
     const cpaModelMapping = rawBody.cliproxyapi_model_mapping as Record<string, string> | undefined;
@@ -543,6 +541,16 @@ export async function PATCH(request: Request) {
 
     const { password, ...safeSettings } = settings;
     const settingsRevision = await getSettingsRevision();
+    await executeEdgeRuntimeCommand({
+      command: "runtime-settings.apply",
+      minimumRevision: settingsRevision,
+    });
+    if (cpaUrl !== undefined) {
+      await executeEdgeRuntimeCommand({
+        command: "runtime-cache.invalidate",
+        target: "cliproxy-url",
+      });
+    }
     return Response.json(
       { ...safeSettings, settingsRevision },
       { headers: settingsResponseHeaders(settingsRevision) }

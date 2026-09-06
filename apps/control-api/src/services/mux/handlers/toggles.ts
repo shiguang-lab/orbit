@@ -1,4 +1,4 @@
-import { updateServiceField } from "@shiguang-gateway/core-domain/shared/version-manager";
+import { updateServiceField } from "@shiguang-gateway/core-domain/control/embedded-services-lifecycle";
 import { createErrorResponse } from "@shiguang-gateway/core-domain/shared/error-response";
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 import { z } from "zod";

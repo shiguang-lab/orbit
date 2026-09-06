@@ -28,13 +28,19 @@ async function embedProviderModel(text: string, model: string): Promise<number[]
   return vector as number[];
 }
 
-registerMemoryEmbeddingRuntime({
-  embed,
-  listEmbeddingProviders,
-  resolveEmbeddingSource,
-  cacheStats,
-  embedProviderModel,
-});
+let memoryRuntimePortInstalled = false;
+
+export function installMemoryRuntimePort(): void {
+  if (memoryRuntimePortInstalled) return;
+  registerMemoryEmbeddingRuntime({
+    embed,
+    listEmbeddingProviders,
+    resolveEmbeddingSource,
+    cacheStats,
+    embedProviderModel,
+  });
+  memoryRuntimePortInstalled = true;
+}
 
 export {
   memoryManager,

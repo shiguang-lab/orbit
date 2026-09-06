@@ -2,10 +2,8 @@ import { createHash } from "crypto";
 
 import { getProviderConnections, updateProviderConnection } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { getCachedProviderConnectionById } from "@shiguang-gateway/core-domain/db/read-cache";
-import { getAllCircuitBreakerStatuses } from "@shiguang-gateway/core-domain/resilience/circuit-breaker";
-import { clearProviderFailure, clearModelLock, getAllModelLockouts } from "@shiguang-gateway/open-sse/services/accountFallback";
 import { resolveProviderAlias } from "@shiguang-gateway/open-sse/services/model";
-import { getQuotaMonitorSnapshots } from "@shiguang-gateway/open-sse/services/quotaMonitor";
+import { executeEdgeRuntimeCommand } from "../edge-runtime/client.js";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -267,17 +265,22 @@ export async function buildProviderHealthAutopilotReport(
     const provider = canonicalProviderId(connection.provider);
     return provider && (!providerFilter || provider === providerFilter);
   });
-  const breakers = getAllCircuitBreakerStatuses().filter((breaker) => {
+  const runtime = await executeEdgeRuntimeCommand<{
+    breakers: JsonRecord[];
+    lockouts: JsonRecord[];
+    quotaSnapshots: JsonRecord[];
+  }>({ command: "provider-health.snapshot" });
+  const breakers = runtime.breakers.filter((breaker) => {
     const name = toString((breaker as unknown as JsonRecord).name);
     const provider = canonicalProviderId(name);
     if (!name || !provider || name.startsWith("test-") || name.startsWith("test_")) return false;
     return !providerFilter || provider === providerFilter;
   });
-  const lockouts = (getAllModelLockouts() as unknown as JsonRecord[]).filter((lockout) => {
+  const lockouts = runtime.lockouts.filter((lockout) => {
     const provider = canonicalProviderId(providerFromLockout(lockout));
     return provider && (!providerFilter || provider === providerFilter);
   });
-  const quotaSnapshots = (getQuotaMonitorSnapshots() as unknown as JsonRecord[]).filter((snapshot) => {
+  const quotaSnapshots = runtime.quotaSnapshots.filter((snapshot) => {
         const provider = canonicalProviderId(snapshot.provider);
         return provider && (!providerFilter || provider === providerFilter);
       });
@@ -673,7 +676,7 @@ export async function executeProviderHealthAutopilotAction(
   let changed: JsonRecord = {};
   switch (input.type) {
     case "clear_provider_breaker":
-      clearProviderFailure(provider);
+      await executeEdgeRuntimeCommand({ command: "provider-health.clear", provider });
       changed = { circuitBreaker: "CLOSED" };
       break;
     case "clear_connection_cooldown":
@@ -709,7 +712,12 @@ export async function executeProviderHealthAutopilotAction(
       if (isTerminalConnection(connection)) {
         return { status: 409, body: { success: false, error: "terminal connection state" } };
       }
-      const removed = clearModelLock(provider, connectionId, model);
+      const { removed } = await executeEdgeRuntimeCommand<{ removed: number }>({
+        command: "model-lockouts.clear",
+        provider,
+        connectionId,
+        model,
+      });
       if (!removed) {
         return {
           status: 409,

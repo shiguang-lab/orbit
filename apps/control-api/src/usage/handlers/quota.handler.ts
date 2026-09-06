@@ -1,14 +1,11 @@
-import { getProviderConnections } from "@shiguang-gateway/core-domain/control/usage";
-import {
-  getLearnedLimits,
-  getRateLimitStatus,
-} from "@shiguang-gateway/open-sse/services/rateLimitManager";
+import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
+import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 import {
   normalizeQuotaResponse,
   sanitizeQuotaProvider,
   type QuotaProviderEntry,
   type QuotaTokenStatus,
-} from "@shiguang-gateway/core-domain/control/usage";
+} from "@shiguang-gateway/core-domain/quota/provider-response";
 
 type ProviderConnectionRecord = Record<string, unknown>;
 
@@ -141,10 +138,15 @@ export async function GET(request: Request) {
       connections = connections.filter((conn) => conn.id === connectionIdFilter);
     }
 
-    const learnedLimits = getLearnedLimits();
+    const targets = connections.map((conn) => ({ provider: String(conn.provider), connectionId: String(conn.id) }));
+    const runtime = await executeEdgeRuntimeCommand<{
+      learnedLimits: Record<string, unknown>;
+      statusByTarget: Record<string, Record<string, unknown>>;
+    }>({ command: "rate-limits.snapshot", targets });
+    const learnedLimits = runtime.learnedLimits;
     const providers = connections.map((conn) => {
       const learnedLimit = learnedLimits?.[`${conn.provider}:${conn.id}`] || null;
-      const rateStatus = getRateLimitStatus(conn.provider, conn.id);
+      const rateStatus = runtime.statusByTarget[`${conn.provider}:${conn.id}`] ?? {};
       return buildQuotaEntry(conn, learnedLimit, rateStatus);
     });
 

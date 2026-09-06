@@ -10,9 +10,9 @@
  */
 
 import {
-  providerRuntimePorts,
-  type FreeModelBudgetContract,
-} from "../../runtime/providerRuntimePorts.ts";
+  FREE_MODEL_BUDGETS,
+  type FreeModelBudget,
+} from "@shiguang-gateway/provider-catalog/free-model-catalog";
 import { RadarFeedSchema, type RadarFeed, type RadarReferral } from "./feedSchema";
 import { RadarReferralsFeedSchema, type RadarReferralsFeed } from "./referralsFeedSchema";
 import {
@@ -78,7 +78,7 @@ export interface GetRadarCatalogDeps {
  * Convert the static `FreeModelBudget[]` into `MergedEntry[]` so the
  * merge function has a uniform input shape.
  */
-export function baselineToMergedEntries(budgets: readonly FreeModelBudgetContract[]): MergedEntry[] {
+export function baselineToMergedEntries(budgets: readonly FreeModelBudget[]): MergedEntry[] {
   return budgets.map((b) => ({
     provider: b.provider,
     modelId: b.modelId,
@@ -119,7 +119,7 @@ export function getRadarCatalog(deps: GetRadarCatalogDeps = {}): RadarCatalogRes
   } = deps;
 
   // Resolve baseline
-  const baseline = baselineInput ?? baselineToMergedEntries(providerRuntimePorts.getFreeModelCatalog());
+  const baseline = baselineInput ?? baselineToMergedEntries(FREE_MODEL_BUDGETS);
 
   // Flag gate
   const flagOn = getFlag("RADAR_ENABLED");

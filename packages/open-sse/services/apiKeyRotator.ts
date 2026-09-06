@@ -411,4 +411,10 @@ export function removeConnectionIndex(connectionId: string): void {
 
 export type { KeyHealth };
 
-registerDbRuntimeHooks({ removeConnectionHealth, removeConnectionIndex });
+let dbRuntimeHooksInstalled = false;
+
+export function installApiKeyRotatorDbRuntimeHooks(): void {
+  if (dbRuntimeHooksInstalled) return;
+  registerDbRuntimeHooks({ removeConnectionHealth, removeConnectionIndex });
+  dbRuntimeHooksInstalled = true;
+}

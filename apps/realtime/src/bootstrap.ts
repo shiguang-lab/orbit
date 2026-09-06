@@ -1,10 +1,11 @@
 import { NestFactory } from "@nestjs/core";
 import { FastifyAdapter } from "@nestjs/platform-fastify";
 import type { FastifyInstance } from "fastify";
+import { installRuntimePorts } from "@shiguang-gateway/open-sse/services/dbRuntimeHooks";
 
 /** Construct the realtime application without starting either listening socket. */
 export async function bootstrapRealtime() {
-  await import("@shiguang-gateway/open-sse/services/dbRuntimeHooks");
+  installRuntimePorts();
   const { AppModule } = await import("./app.module.js");
   const adapter = new FastifyAdapter({
     logger: { level: process.env.LOG_LEVEL ?? "info" },

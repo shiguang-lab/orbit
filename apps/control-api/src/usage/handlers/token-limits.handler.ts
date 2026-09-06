@@ -9,7 +9,7 @@
  * @route /api/usage/token-limits
  */
 
-import { setTokenLimitSchema } from "@shiguang-gateway/core-domain/control/usage";
+import { setTokenLimitSchema } from "@shiguang-gateway/core-domain/control/token-limit-validation";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import {
@@ -18,8 +18,8 @@ import {
   deleteTokenLimit,
   getWindowUsage,
   resetWindowIfElapsed,
-} from "@shiguang-gateway/core-domain/control/usage";
-import type { TokenLimit } from "@shiguang-gateway/core-domain/control/usage";
+} from "@shiguang-gateway/core-domain/db/token-limits";
+import type { TokenLimit } from "@shiguang-gateway/core-domain/db/token-limits";
 
 export async function GET(request: Request) {
   try {

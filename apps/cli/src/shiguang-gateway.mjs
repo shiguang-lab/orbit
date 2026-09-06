@@ -252,7 +252,7 @@ if (shouldProvisionStorageKey(process.argv)) {
 if (process.argv.includes("--mcp")) {
   try {
     const { startMcpCli } = await import(pathToFileURL(join(ROOT, "src", "mcp-server.mjs")).href);
-    await startMcpCli(ROOT);
+    await startMcpCli();
   } catch (err) {
     console.error("\x1b[31m✖ Failed to start MCP server:\x1b[0m", err.message || err);
     process.exit(1);

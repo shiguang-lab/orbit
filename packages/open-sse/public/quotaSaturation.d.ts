@@ -3,6 +3,7 @@ export declare function storeRateLimitHeaders(
   provider: string,
   headers: Record<string, string>,
 ): void;
+export declare function installQuotaSaturationRuntimePort(): void;
 export declare function getTokenHeaderSaturation(
   provider: string,
   connectionId: string,

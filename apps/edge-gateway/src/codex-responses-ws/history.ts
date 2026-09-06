@@ -1,10 +1,8 @@
-import {
-  extractWsTokenFromRequest,
-  getApiKeyMetadata,
-  logProxyEvent,
-  saveCallLog,
-  saveRequestUsage,
-} from "@shiguang-gateway/core-domain/edge/codex-responses-ws-runtime";
+import { extractWsTokenFromRequest } from "@shiguang-gateway/core-domain/edge/ws-handshake";
+import { getApiKeyMetadata } from "@shiguang-gateway/core-domain/db/api-keys";
+import { logProxyEvent } from "@shiguang-gateway/core-domain/logging/proxy-logs";
+import { saveCallLog } from "@shiguang-gateway/core-domain/usage/call-logs";
+import { saveRequestUsage } from "@shiguang-gateway/core-domain/usage/history";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/services/codex-responses-ws-runtime";
 
 const CODEX_RESPONSES_WS_URL = "wss://chatgpt.com/backend-api/codex/responses";

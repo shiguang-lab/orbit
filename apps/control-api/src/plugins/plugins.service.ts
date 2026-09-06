@@ -1,5 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { listPlugins, getPluginByName, updatePluginConfig } from "@shiguang-gateway/core-domain/plugins/db";
+import {
+  listPlugins,
+  getPluginByName,
+  updatePluginConfig,
+  type PluginRow,
+} from "@shiguang-gateway/core-domain/plugins/db";
 import { pluginManager } from "@shiguang-gateway/core-domain/plugins/manager";
 import { listMarketplacePlugins, installMarketplacePlugin } from "@shiguang-gateway/core-domain/plugins/marketplace";
 
@@ -22,7 +27,7 @@ function formatPlugin(row: any) {
 
 @Injectable()
 export class PluginsService {
-  listPlugins(status?: string) {
+  listPlugins(status?: PluginRow["status"]) {
     const plugins = listPlugins(status || undefined);
     return plugins.map(formatPlugin);
   }

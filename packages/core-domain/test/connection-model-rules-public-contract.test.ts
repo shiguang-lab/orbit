@@ -37,6 +37,7 @@ test("connection model rules use one narrow routing contract", async () => {
 
   const runtime = await import(pathToFileURL(path.join(packageRoot, canonicalEntry)).href);
   assert.deepEqual(Object.keys(runtime).sort(), [
+    "hasEligibleConnectionForModel",
     "isModelAdvertisedByConnection",
     "isModelExcludedByConnection",
   ]);

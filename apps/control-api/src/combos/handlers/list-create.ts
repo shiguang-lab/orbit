@@ -7,7 +7,8 @@ import {
 import { isCloudEnabled } from "@shiguang-gateway/core-domain/db/settings";
 import { syncToCloud } from "@shiguang-gateway/core-domain/sync/cloud";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
-import { createComboSchema, paginationSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { createComboSchema } from "@shiguang-gateway/core-domain/validation/combos";
+import { paginationSchema } from "@shiguang-gateway/core-domain/validation/misc";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { normalizeComboModels } from "@shiguang-gateway/core-domain/routing/combo-steps";
 import { validateComboDAG, clampComboDepth } from "@shiguang-gateway/open-sse/services/combo";

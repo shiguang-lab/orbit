@@ -1,28 +1,18 @@
 import { Injectable } from "@nestjs/common";
-import { getQuotaMonitorSummary } from "@shiguang-gateway/open-sse/services/quotaMonitor";
 import { buildShiguangGatewayStatus } from "./runtime/gateway-status.js";
+import { readEdgeRuntimeHealth } from "../edge-runtime/client.js";
 
 @Injectable()
 export class GatewayService {
   async getGatewayStatus() {
+    const runtime = await readEdgeRuntimeHealth();
     return {
       generatedAt: new Date().toISOString(),
       liveRequestExecuted: false,
-      ...(await buildShiguangGatewayStatus(getQuotaMonitorSummary)),
+      ...(await buildShiguangGatewayStatus({
+        circuitStatuses: runtime.circuitBreakers as Array<{ state: string }>,
+        quotaSummary: runtime.quotaMonitorSummary as { active: number },
+      })),
     };
-  }
-
-  scheduleRestart() {
-    setTimeout(() => {
-      process.kill(process.pid, "SIGTERM");
-    }, 500);
-    return { status: "restarting" };
-  }
-
-  scheduleShutdown() {
-    setTimeout(() => {
-      process.kill(process.pid, "SIGTERM");
-    }, 500);
-    return { success: true, message: "Shutting down..." };
   }
 }

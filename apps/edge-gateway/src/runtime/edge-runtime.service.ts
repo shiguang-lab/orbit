@@ -1,8 +1,12 @@
 import { Injectable, type OnModuleInit } from "@nestjs/common";
-import "@shiguang-gateway/open-sse/services/runtime-settings-hooks";
+import {
+  installResilienceRuntimeSettingsPort,
+  installRuntimeSettingsPort,
+} from "@shiguang-gateway/open-sse/services/runtime-settings-hooks";
 import { hydrateRequestRuntime } from "@shiguang-gateway/core-domain/runtime/request";
 import { ensureGamificationSchema } from "@shiguang-gateway/db-schema";
 import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
+import { refreshResilienceRuntimeSettings } from "@shiguang-gateway/core-domain/resilience/settings-runtime";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
 
@@ -50,7 +54,10 @@ export class EdgeRuntimeService implements OnModuleInit {
 
   initialize(): Promise<void> {
     if (!this.initialization) {
+      installRuntimeSettingsPort();
+      installResilienceRuntimeSettingsPort();
       this.initialization = hydrateRequestRuntime()
+        .then(() => refreshResilienceRuntimeSettings({ force: true, source: "edge-gateway:startup" }))
         .then(() => ensureGamificationSchema(getDbInstance()))
         .then(registerQuotaFetchers)
         .then(() => console.log("[edge-gateway] request services initialized"))

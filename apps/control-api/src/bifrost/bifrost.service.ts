@@ -1,17 +1,19 @@
 import { Injectable } from "@nestjs/common";
 import {
-  BIFROST_DEFAULT_PORT,
   ServiceSupervisor,
-  getBifrostInstalledVersion,
-  getBifrostLatestVersion,
   getServiceRow,
   getSupervisor,
-  installBifrost,
   registerSupervisor,
+  updateServiceField,
+} from "@shiguang-gateway/core-domain/control/embedded-services-lifecycle";
+import {
+  BIFROST_DEFAULT_PORT,
+  getBifrostInstalledVersion,
+  getBifrostLatestVersion,
+  installBifrost,
   resolveBifrostSpawnArgs,
   updateBifrost,
-  updateServiceField,
-} from "@shiguang-gateway/core-domain/shared/version-manager";
+} from "@shiguang-gateway/core-domain/control/embedded-services-install";
 
 const TOOL = "bifrost";
 

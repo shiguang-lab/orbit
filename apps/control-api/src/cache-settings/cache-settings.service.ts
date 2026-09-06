@@ -3,7 +3,8 @@ import {
   getDatabaseSettings,
   updateDatabaseSettings,
 } from "@shiguang-gateway/core-domain/db/database-settings";
-import { getSettings, updateSettings } from "@shiguang-gateway/core-domain/db/settings";
+import { getSettings } from "@shiguang-gateway/core-domain/db/settings";
+import { updatePersistedRuntimeSettings } from "../settings/runtime-settings-persistence.js";
 import { getCacheMetrics, resetCacheMetrics } from "@shiguang-gateway/core-domain/cache/services";
 import { clearAllLKGP } from "@shiguang-gateway/core-domain/control/lkgp-cache";
 
@@ -56,7 +57,7 @@ export class CacheSettingsService {
       });
     }
     if (updates.idempotencyWindowMs !== undefined) {
-      await updateSettings({ idempotencyWindowMs: updates.idempotencyWindowMs });
+      await updatePersistedRuntimeSettings({ idempotencyWindowMs: updates.idempotencyWindowMs });
     }
   }
 

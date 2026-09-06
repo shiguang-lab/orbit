@@ -1,13 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { getSettings, updateSettings } from "@shiguang-gateway/core-domain/db/settings";
-import {
-  getSystemPromptConfig,
-  setSystemPromptConfig,
-} from "@shiguang-gateway/open-sse/services/systemPrompt";
-import {
-  getThinkingBudgetConfig,
-  setThinkingBudgetConfig,
-} from "@shiguang-gateway/open-sse/services/thinkingBudget";
+import { getSettings } from "@shiguang-gateway/core-domain/db/settings";
+import { updatePersistedRuntimeSettings } from "./runtime-settings-persistence.js";
 import {
   getDatabaseSettings,
   updateDatabaseSettings,
@@ -46,24 +39,38 @@ export class SettingsService {
     return putRootSettings(request);
   }
 
-  getSystemPrompt() {
-    return getSystemPromptConfig();
+  async getSystemPrompt() {
+    const settings = await getSettings();
+    const config = settings.systemPrompt as Record<string, unknown> | undefined;
+    return {
+      enabled: config?.enabled === true,
+      prefixPrompt: typeof config?.prefixPrompt === "string" ? config.prefixPrompt : "",
+      suffixPrompt: typeof config?.suffixPrompt === "string"
+        ? config.suffixPrompt
+        : typeof config?.prompt === "string" ? config.prompt : "",
+    };
   }
 
   async updateSystemPrompt(config: Record<string, unknown>) {
-    setSystemPromptConfig(config);
-    await updateSettings({ systemPrompt: config });
-    return getSystemPromptConfig();
+    const current = await this.getSystemPrompt();
+    const next = { ...current, ...config };
+    await updatePersistedRuntimeSettings({ systemPrompt: next });
+    return this.getSystemPrompt();
   }
 
-  getThinkingBudget() {
-    return getThinkingBudgetConfig();
+  async getThinkingBudget() {
+    const settings = await getSettings();
+    return {
+      mode: "passthrough",
+      customBudget: 10240,
+      effortLevel: "medium",
+      ...((settings.thinkingBudget as Record<string, unknown> | undefined) ?? {}),
+    };
   }
 
   async updateThinkingBudget(config: Record<string, unknown>) {
-    setThinkingBudgetConfig(config);
-    await updateSettings({ thinkingBudget: config });
-    return getThinkingBudgetConfig();
+    await updatePersistedRuntimeSettings({ thinkingBudget: config });
+    return this.getThinkingBudget();
   }
 
   async getPersistedSettings() {

@@ -361,6 +361,9 @@ export function getProxyLogs(filters: ProxyLogFilters = {}) {
 // ──────────────── Clear ────────────────
 
 export function clearProxyLogs() {
+  // Clearing is owner-local: discard queued rows before deleting persisted data
+  // so the next batch tick cannot resurrect entries after the API reports success.
+  pendingLogsQueue = [];
   proxyLogs.length = 0;
 
   if (shouldPersistToDisk) {

@@ -13,6 +13,13 @@ const installSkillSchema = z.object({
   description: z.string().optional().default(""),
 });
 
+type InstallTarget = Parameters<typeof resolveInstallPath>[0];
+const INSTALL_TARGETS = new Set<InstallTarget>(["hermes", "claude", "gemini", "opencode"]);
+
+function isInstallTarget(target: string): target is InstallTarget {
+  return INSTALL_TARGETS.has(target as InstallTarget);
+}
+
 export async function GET(request: Request): Promise<Response> {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
@@ -69,6 +76,7 @@ export async function POST(request: Request): Promise<Response> {
     const skillName = repoName.split("/").pop() || repoName;
     const results = targets.map((target) => {
       try {
+        if (!isInstallTarget(target)) throw new Error(`Unknown install target: ${target}`);
         const destDir = resolveInstallPath(target, skillName, description);
         return { target, ok: true, action: "planned", destDir };
       } catch (error) {

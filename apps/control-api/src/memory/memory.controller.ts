@@ -175,7 +175,7 @@ export class MemoryController {
     const validation = validateBody(ReindexSchema, body);
     if (isValidationFailure(validation)) return reply.status(400).send(validation.error);
     try {
-      return reply.send(this.memory.reindex(validation.data.force));
+      return reply.send(await this.memory.reindex(validation.data.force));
     } catch (error) {
       return reply.status(500).send({ error: { message: sanitizeErrorMessage(error) } });
     }

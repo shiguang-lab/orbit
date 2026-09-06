@@ -1,5 +1,5 @@
 import { Injectable, type OnModuleDestroy, type OnModuleInit } from "@nestjs/common";
-import { stopAllSupervisors } from "@shiguang-gateway/core-domain/control/embedded-services-runtime-support";
+import { stopAllSupervisors } from "@shiguang-gateway/core-domain/control/embedded-services-lifecycle";
 import { bootstrapEmbeddedServices } from "./embedded-services-runtime.js";
 import { initEmbedWsProxy } from "./embedded-service-ws-proxy.js";
 

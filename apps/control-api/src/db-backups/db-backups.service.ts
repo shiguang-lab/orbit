@@ -22,8 +22,7 @@ import {
   exportAllSummaryRows,
   CALL_LOGS_DIR,
 } from "@shiguang-gateway/core-domain/db-backups/db";
-import { setSystemPromptConfig } from "@shiguang-gateway/open-sse/services/systemPrompt";
-import { getSettings } from "@shiguang-gateway/core-domain/db/settings";
+import { applyPersistedRuntimeSettings } from "../settings/runtime-settings-persistence.js";
 
 const DEFAULT_MAX_UPLOAD_MB = 100;
 const MAX_UPLOAD_MB_CEILING = 4096;
@@ -52,7 +51,9 @@ export class DbBackupsService {
   }
 
   async restoreBackup(backupId: string) {
-    return restoreDbBackup(backupId);
+    const result = await restoreDbBackup(backupId);
+    await applyPersistedRuntimeSettings();
+    return result;
   }
 
   persistRetentionSettings(input: { keepLatest?: number; retentionDays?: number }) {
@@ -231,14 +232,7 @@ export class DbBackupsService {
       getDbInstance();
       const { connCount, nodeCount, comboCount, keyCount } = countImportedRows();
 
-      try {
-        const importedSettings = await getSettings();
-        if (importedSettings.systemPrompt) {
-          setSystemPromptConfig(importedSettings.systemPrompt);
-        }
-      } catch {
-        /* ignore */
-      }
+      await applyPersistedRuntimeSettings();
 
       return {
         imported: true,

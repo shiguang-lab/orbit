@@ -14,6 +14,7 @@ const expectedRuntimeExports = [
   "calculateCost",
   "calculateModalCost",
   "computeCostFromPricing",
+  "getCodexFastCostMultiplier",
   "normalizeModelName",
 ] as const;
 const retiredAliases = [

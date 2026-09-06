@@ -1,18 +1,19 @@
 import {
-  getOrCreateApiKey,
   getSupervisor,
-  getServiceModels,
-  getNineRouterInstalledVersion,
-  getNineRouterLatestVersion,
-  generateServiceApiKey,
-  resolveNineRouterSpawnArgs,
   registerSupervisor,
   unregisterSupervisor,
   ServiceSupervisor,
+  getServiceRow,
+  updateServiceField,
+} from "@shiguang-gateway/core-domain/control/embedded-services-lifecycle";
+import { getServiceModels } from "@shiguang-gateway/core-domain/embedded-services/catalog";
+import { generateServiceApiKey, getOrCreateApiKey } from "@shiguang-gateway/core-domain/embedded-services/api-key";
+import {
+  getNineRouterInstalledVersion,
+  getNineRouterLatestVersion,
+  resolveNineRouterSpawnArgs,
   updateNineRouter,
-} from "@shiguang-gateway/core-domain/shared/embedded-services";
-import { getServiceRow } from "@shiguang-gateway/core-domain/shared/version-manager";
-import { updateServiceField } from "@shiguang-gateway/core-domain/shared/version-manager";
+} from "@shiguang-gateway/core-domain/control/embedded-services-install";
 import { encrypt } from "@shiguang-gateway/core-domain/db/encryption";
 import { createErrorResponse, sanitizeErrorMessage } from "@shiguang-gateway/core-domain/shared/error-response";
 

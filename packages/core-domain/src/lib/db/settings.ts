@@ -312,7 +312,7 @@ export async function getSettings() {
 
 export async function updateSettings(
   updates: Record<string, unknown>,
-  options?: { expectedRevision?: number }
+  options?: { expectedRevision?: number; applyRuntime?: boolean }
 ) {
   // Detect first-time setup completion before we overwrite settings.
   let setupJustCompleted = false;
@@ -352,14 +352,16 @@ export async function updateSettings(
 
   const nextSettings = await getSettings();
 
-  try {
-    const { applyRuntimeSettings } = await import("../config/runtimeSettings.ts");
-    await applyRuntimeSettings(nextSettings, { source: "settings:update" });
-  } catch (error) {
-    console.warn(
-      "[HOT_RELOAD] Failed to apply runtime settings after update:",
-      error instanceof Error ? error.message : error
-    );
+  if (options?.applyRuntime !== false) {
+    try {
+      const { applyRuntimeSettings } = await import("../config/runtimeSettings.ts");
+      await applyRuntimeSettings(nextSettings, { source: "settings:update" });
+    } catch (error) {
+      console.warn(
+        "[HOT_RELOAD] Failed to apply runtime settings after update:",
+        error instanceof Error ? error.message : error
+      );
+    }
   }
 
   // Onboarding / setup finished → one-shot Codex catalog revalidation (init case).

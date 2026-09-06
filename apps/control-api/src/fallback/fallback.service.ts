@@ -11,7 +11,7 @@ import {
 import {
   registerFallbackSchema,
   removeFallbackSchema,
-} from "@shiguang-gateway/core-domain/shared/validation/schemas";
+} from "@shiguang-gateway/core-domain/validation/routing";
 
 @Injectable()
 export class FallbackService {

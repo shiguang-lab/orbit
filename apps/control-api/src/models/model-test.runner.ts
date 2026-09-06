@@ -35,10 +35,6 @@ function getErrorMessage(error: unknown): string {
   return sanitizeErrorMessage(error) || "Unknown error";
 }
 
-function getErrorName(error: unknown): string {
-  return error instanceof Error ? error.name : "";
-}
-
 export function createModelTestTimeoutError(timeoutMs: number): Error {
   const error = new Error(`Model test deadline exceeded after ${timeoutMs}ms`);
   error.name = "TimeoutError";
@@ -414,10 +410,10 @@ export async function classifyTestErrorQuota(errorText: string): Promise<{
 }
 
 /**
- * Run a single model test. When `connectionId` is provided, wraps the
- * upstream call with `withRateLimit` (Bottleneck). Returns a plain
- * `SingleModelTestResult` (not an HTTP Response) so the single-test and
- * batch-test endpoints can format it differently.
+ * Run a single model test through the edge gateway. The edge owner applies
+ * connection rate limiting exactly once. Returns a plain `SingleModelTestResult`
+ * (not an HTTP Response) so the single-test and batch-test endpoints can format
+ * it differently.
  */
 export async function runSingleModelTest(
   options: RunSingleModelTestOptions
@@ -476,9 +472,8 @@ export async function runSingleModelTest(
           maxTokens: !isEmbedding && streamChat ? STREAMING_CHAT_TEST_MAX_TOKENS : undefined,
         });
 
-  // Per-model AbortController. We track whether the timeout fired so we can
-  // distinguish "rate-limit queue aborted" (withRateLimit threw AbortError
-  // with no timeout) from "timeout fired and aborted withRateLimit".
+  // Per-model AbortController. Track whether this deadline fired so timeout
+  // results remain distinct from transport failures.
   const controller = new AbortController();
   let timedOut = false;
   const timeoutHandle = setTimeout(() => {
@@ -499,25 +494,10 @@ export async function runSingleModelTest(
 
   let res: Response;
   try {
-    if (connectionId) {
-      const { withRateLimit } = await load("@shiguang-gateway/open-sse/services/rateLimitManager");
-      res = await withRateLimit(
-        providerId,
-        connectionId,
-        fullModelStr,
-        // T-PROBE: wrap the scheduled fn, not the withRateLimit call — a
-        // queued Bottleneck job executes from its own async resource and
-        // would otherwise run outside the probe context below.
-        (signal: AbortSignal) => runAsProbe(() => runInner(signal)),
-        controller.signal
-      );
-    } else {
-      res = await runAsProbe(() => runInner(controller.signal));
-    }
+    res = await runAsProbe(() => runInner(controller.signal));
   } catch (error: unknown) {
     clearTimeout(timeoutHandle);
     const latencyMs = Date.now() - startTime;
-    const errorName = getErrorName(error);
     if (timedOut) {
       return {
         modelId: fullModelStr,
@@ -528,27 +508,12 @@ export async function runSingleModelTest(
         isTimeout: true,
       };
     }
-    if (errorName === "AbortError") {
-      // AbortError without timeout = withRateLimit queue rejection / abort.
-      // Surface as rate_limited so the batch endpoint can stop the loop.
-      return {
-        modelId: fullModelStr,
-        status: "rate_limited",
-        latencyMs,
-        httpStatus: 429,
-        error: "Rate limited (queue aborted)",
-        rateLimited: true,
-      };
-    }
-    const { getTrustedLocalRateLimitError } = await load("@shiguang-gateway/open-sse/services/rateLimitManager/errors");
-    const localRateLimitFailure = getTrustedLocalRateLimitError(error);
     return {
       modelId: fullModelStr,
-      status: localRateLimitFailure?.status === 429 ? "rate_limited" : "error",
+      status: "error",
       latencyMs,
-      httpStatus: localRateLimitFailure?.status ?? 500,
+      httpStatus: 500,
       error: getErrorMessage(error),
-      ...(localRateLimitFailure?.status === 429 ? { rateLimited: true } : {}),
     };
   }
   let latencyMs = Date.now() - startTime;

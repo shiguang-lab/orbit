@@ -13,7 +13,6 @@ import {
   readCliVersion,
 } from "../src/cli/app-paths.mjs";
 import { generateLocales } from "../src/cli/scripts/generate-locales.mjs";
-import { resolveMcpEntry } from "../src/mcp-server.mjs";
 import { buildServeExecLine, resolveCliPath } from "../src/cli/tray/autostart.mjs";
 import { getCurrentVersion, runUpdateCommand } from "../src/cli/commands/update.mjs";
 
@@ -37,9 +36,10 @@ test("update remains a read-only workspace check", async () => {
   assert.equal(await runUpdateCommand({ apply: true }), 0);
 });
 
-test("MCP launcher resolves the published open-sse entry", () => {
-  const entry = resolveMcpEntry();
-  assert.match(entry, /packages[\\/]open-sse[\\/]mcp-server[\\/]server\.ts$/);
+test("MCP launcher consumes the callable open-sse factory", () => {
+  const source = readFileSync(join(CLI_APP_ROOT, "src", "mcp-server.mjs"), "utf8");
+  assert.match(source, /@shiguang-gateway\/open-sse\/mcp-server\/factory/);
+  assert.doesNotMatch(source, /mcp-server\/entry/);
 });
 
 test("autostart always targets the app-owned CLI entry", () => {

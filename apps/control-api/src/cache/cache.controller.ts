@@ -56,7 +56,7 @@ export class CacheController {
     }
 
     try {
-      const result = this.cacheService.deleteCache({ model, signature, staleMs });
+      const result = await this.cacheService.deleteCache({ model, signature, staleMs });
       return reply.send(result);
     } catch (error: any) {
       return reply.status(500).send({ error: error?.message || String(error) });
@@ -111,7 +111,7 @@ export class CacheController {
     }
 
     try {
-      const result = this.cacheService.deleteEntry({ signature, model });
+      const result = await this.cacheService.deleteEntry({ signature, model });
       return reply.send(result);
     } catch (error: any) {
       return reply.status(500).send({ error: error?.message || String(error) });
@@ -133,7 +133,7 @@ export class CacheController {
     }
 
     try {
-      const result = this.cacheService.getReasoning({
+      const result = await this.cacheService.getReasoning({
         provider,
         model,
         limit: limit ? parseInt(limit, 10) : undefined,
@@ -158,7 +158,7 @@ export class CacheController {
     }
 
     try {
-      const result = this.cacheService.deleteReasoning({ toolCallId, provider });
+      const result = await this.cacheService.deleteReasoning({ toolCallId, provider });
       return reply.send(result);
     } catch (error: any) {
       return reply.status(500).send({ error: error?.message || String(error) });
@@ -173,7 +173,7 @@ export class CacheController {
     }
 
     try {
-      const result = this.cacheService.getMemoryStats();
+      const result = await this.cacheService.getMemoryStats();
       return reply.send(result);
     } catch (error: any) {
       return reply.status(500).send({ error: error?.message || String(error) });
@@ -188,7 +188,7 @@ export class CacheController {
     }
 
     try {
-      const result = this.cacheService.clearMemory();
+      const result = await this.cacheService.clearMemory();
       return reply.send(result);
     } catch (error: any) {
       return reply.status(500).send({ error: error?.message || String(error) });

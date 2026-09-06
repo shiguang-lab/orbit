@@ -77,7 +77,7 @@ export async function getChaosConfig(): Promise<ChaosConfig> {
 export async function setChaosConfig(config: ChaosConfig): Promise<ChaosConfig> {
   const validated = chaosConfigSchema.parse(config);
 
-  await updateSettings({ [CONFIG_KEY]: validated });
+  await updateSettings({ [CONFIG_KEY]: validated }, { applyRuntime: false });
 
   return validated;
 }
@@ -86,6 +86,6 @@ export async function setChaosConfig(config: ChaosConfig): Promise<ChaosConfig> 
  * Reset chaos config to defaults.
  */
 export async function resetChaosConfig(): Promise<ChaosConfig> {
-  await updateSettings({ [CONFIG_KEY]: null });
+  await updateSettings({ [CONFIG_KEY]: null }, { applyRuntime: false });
   return DEFAULT_CHAOS_CONFIG;
 }

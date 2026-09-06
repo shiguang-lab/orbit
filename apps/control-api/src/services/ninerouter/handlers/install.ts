@@ -3,7 +3,7 @@ import {
   InstallError,
   SERVICE_VERSION_PATTERN,
   installNineRouter,
-} from "@shiguang-gateway/core-domain/shared/embedded-services";
+} from "@shiguang-gateway/core-domain/control/embedded-services-install";
 import {
   createErrorResponse,
   sanitizeErrorMessage,

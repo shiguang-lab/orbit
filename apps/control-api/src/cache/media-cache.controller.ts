@@ -14,7 +14,7 @@ export class MediaCacheController {
       return reply.status(401).send({ error: "Unauthorized" });
     }
     try {
-      return reply.send(this.cacheService.getMediaStats());
+      return reply.send(await this.cacheService.getMediaStats());
     } catch (error) {
       return reply.status(500).send({ error: sanitizeErrorMessage(error) });
     }
@@ -28,7 +28,7 @@ export class MediaCacheController {
     try {
       const body = (req.body ?? {}) as Record<string, unknown>;
       const modality = typeof body.modality === "string" ? body.modality : "all";
-      return reply.send(this.cacheService.purgeMedia(modality));
+      return reply.send(await this.cacheService.purgeMedia(modality));
     } catch (error) {
       return reply.status(500).send({ error: sanitizeErrorMessage(error) });
     }

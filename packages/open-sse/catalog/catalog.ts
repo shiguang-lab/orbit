@@ -1,46 +1,69 @@
 import {
   PROVIDER_MODELS,
   PROVIDER_ID_TO_ALIAS,
-  NOAUTH_PROVIDERS,
+} from "@shiguang-gateway/core-domain/catalog/provider-models";
+import { NOAUTH_PROVIDERS } from "@shiguang-gateway/core-domain/catalog/providers";
+import {
   getCachedRawProviderConnections,
-  getCombos,
-  getAllCustomModels,
-  getSettings,
   getCachedProviderNodes,
-  getModelAliases,
-  getHiddenModelsByProvider,
-  getUserDatabaseSettings,
-  createLazyConnectionView,
-  extractAliasBackedModels,
-  buildSyncedModelIdsByCanonicalProvider,
-  shouldSuppressStaticModelForExclusiveListing,
+  getModelCatalogCacheVersion,
+} from "@shiguang-gateway/core-domain/db/read-cache";
+import { getCombos } from "@shiguang-gateway/core-domain/db/combos";
+import {
+  getAllCustomModels,
   getSyncedAvailableModelsByConnection,
   SYNCED_AVAILABLE_MODELS_MALFORMED,
   type SyncedAvailableModel,
-  getAllActiveSyncedModels,
-  getModelCatalogCacheVersion,
-  getCompatibleFallbackModels,
+} from "@shiguang-gateway/core-domain/db/models";
+import { getSettings } from "@shiguang-gateway/core-domain/db/settings";
+import { getModelAliases } from "@shiguang-gateway/core-domain/db/model-aliases";
+import { getHiddenModelsByProvider } from "@shiguang-gateway/core-domain/db/hidden-models";
+import { getUserDatabaseSettings } from "@shiguang-gateway/core-domain/db/database-settings";
+import { createLazyConnectionView } from "@shiguang-gateway/core-domain/db/provider-connection-view";
+import { getAllActiveSyncedModels } from "@shiguang-gateway/core-domain/db/active-synced-catalog";
+import { extractAliasBackedModels } from "@shiguang-gateway/core-domain/catalog/alias-backed-models";
+import {
+  buildSyncedModelIdsByCanonicalProvider,
+  shouldSuppressStaticModelForExclusiveListing,
+} from "@shiguang-gateway/core-domain/catalog/synced-coverage";
+import {
   providerUsesCuratedModelsOnly,
   providerUsesExclusiveSyncedListing,
-  ensureCursorAutoCatalogEntry,
+} from "@shiguang-gateway/core-domain/catalog/model-listing-policy";
+import { ensureCursorAutoCatalogEntry } from "@shiguang-gateway/core-domain/catalog/cursor-auto-entry";
+import {
+  getCompatibleFallbackModels,
+} from "@shiguang-gateway/core-domain/catalog/managed-available-models";
+import {
   mergeCustomModelMetadata,
-  getOpenRouterCatalog,
-  hasEligibleConnectionForModel,
-  INTERNAL_PROXY_ERROR,
-  getCanonicalModelMetadata,
-  getCatalogDiagnosticsHeaders,
   type CatalogEnrichmentSnapshot,
   createModelCapabilityResolutionSnapshot,
+  getModelsCatalogPrefixMode,
+  maybeOmitCatalogModelName,
+} from "@shiguang-gateway/core-domain/catalog/response-presentation";
+import { getOpenRouterCatalog } from "@shiguang-gateway/core-domain/catalog/openrouter-catalog";
+import { hasEligibleConnectionForModel } from "@shiguang-gateway/core-domain/routing/connection-model-rules";
+import {
+  INTERNAL_PROXY_ERROR,
+  getCatalogDiagnosticsHeaders,
+} from "@shiguang-gateway/core-domain/catalog/diagnostics";
+import { getCanonicalModelMetadata } from "@shiguang-gateway/core-domain/catalog/model-metadata";
+import {
   getModelsDevPricing,
   getSyncedCapability,
-  classifyModelSupportedEndpoints,
-  getModelsCatalogPrefixMode,
+} from "@shiguang-gateway/core-domain/catalog/synced-model-capabilities";
+import { classifyModelSupportedEndpoints } from "@shiguang-gateway/core-domain/catalog/supported-endpoints";
+import {
   isProviderNodePrefixReserved,
   selectCompatibleNodeForPrefix,
+} from "@shiguang-gateway/core-domain/catalog/provider-prefixes";
+import {
   isNoAuthProviderBlocked,
   isNoAuthProviderKey,
   isNoAuthRawProviderPrefix,
   normalizeBlockedProviderSet,
+} from "@shiguang-gateway/core-domain/catalog/no-auth-providers";
+import {
   type ComboModelStep,
   type CustomModelEntry,
   type ComboCatalogTarget,
@@ -49,22 +72,25 @@ import {
   parseJsonStringArray,
   intersectStringArrays,
   minKnownNumber,
-  maybeOmitCatalogModelName,
   getThinkingCapabilityFields,
   mergeComboCapabilities,
   getConnectionScopedEffortTiers,
   type ConnectionScopedReasoningCatalog,
+} from "@shiguang-gateway/core-domain/catalog/combo-capabilities";
+import {
   qualifyOpenRouterModelId,
   normalizeOpenRouterModalities,
   getOpenRouterModelType,
   isOpenRouterFreeModel,
   getOpenRouterDisplayName,
+} from "@shiguang-gateway/core-domain/catalog/openrouter-catalog";
+import {
   getVisionCapabilityFields,
   getCustomVisionCapabilityFields,
-  incrementCcDiscoveryHitCount,
-  isFreeModel,
-  isCodexDiscoveryModelExcluded,
-} from "@shiguang-gateway/core-domain/catalog/runtime-support";
+} from "@shiguang-gateway/core-domain/catalog/vision-capabilities";
+import { incrementCcDiscoveryHitCount } from "@shiguang-gateway/core-domain/db/cc-discovery-metrics";
+import { isFreeModel } from "@shiguang-gateway/core-domain/catalog/free-models";
+import { isCodexDiscoveryModelExcluded } from "@shiguang-gateway/core-domain/catalog/codex-discovery-policy";
 import { buildSyncedCapabilities, mergeSyncedCapabilities } from "./syncedCapabilities";
 import { getAllEmbeddingModels } from "../config/embeddingRegistry.ts";
 import {

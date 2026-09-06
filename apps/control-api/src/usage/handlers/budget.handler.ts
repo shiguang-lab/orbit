@@ -3,7 +3,7 @@ import {
   isValidationFailure,
   validateBody,
 } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { setBudgetSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { setBudgetSchema } from "@shiguang-gateway/core-domain/validation/keys";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 
 export async function GET(request: Request) {

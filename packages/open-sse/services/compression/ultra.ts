@@ -321,4 +321,10 @@ export async function maybePrewarmUltraSlmOnConfig(config: {
   }
 }
 
-registerDbRuntimeHooks({ maybePrewarmUltraSlmOnConfig });
+let dbRuntimeHooksInstalled = false;
+
+export function installUltraCompressionDbRuntimeHooks(): void {
+  if (dbRuntimeHooksInstalled) return;
+  registerDbRuntimeHooks({ maybePrewarmUltraSlmOnConfig });
+  dbRuntimeHooksInstalled = true;
+}

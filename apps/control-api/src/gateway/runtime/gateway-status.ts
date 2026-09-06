@@ -30,21 +30,17 @@ function readProviderStatusRows(): ProviderStatusRow[] {
     .all();
 }
 
-export async function buildShiguangGatewayStatus(
-  getQuotaMonitorSummary: () => { active: number } | null,
-) {
-  const [connections, circuitModule] = await Promise.all([
-    Promise.resolve(readProviderStatusRows()),
-    import("@shiguang-gateway/core-domain/resilience/circuit-breaker").catch(() => null),
-  ]);
+export async function buildShiguangGatewayStatus(runtime: {
+  circuitStatuses: CircuitStatus[] | null;
+  quotaSummary: { active: number } | null;
+}) {
+  const connections = readProviderStatusRows();
   const pools = listPools().items;
-  const circuitStatuses = circuitModule?.getAllCircuitBreakerStatuses() ?? null;
-  const quotaSummary = getQuotaMonitorSummary();
   return buildGatewayStatusSnapshot({
     connections,
     pools,
-    circuitStatuses,
-    quotaSummary,
+    circuitStatuses: runtime.circuitStatuses,
+    quotaSummary: runtime.quotaSummary,
     dbHealthy: pingDb(),
   });
 }

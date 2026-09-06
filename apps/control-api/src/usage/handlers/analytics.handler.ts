@@ -20,8 +20,8 @@ import {
   getApiKeyMetadataRows,
   getWeeklyPatternRows,
   getPresetCostModelRows,
-} from "@shiguang-gateway/core-domain/control/usage";
-import { getFallbackStats, getErrorTypeBreakdown } from "@shiguang-gateway/core-domain/control/usage";
+} from "@shiguang-gateway/core-domain/usage/analytics";
+import { getFallbackStats, getErrorTypeBreakdown } from "@shiguang-gateway/core-domain/usage/analytics";
 import { buildByProviderRows } from "../provider-display-names.js";
 import { toNumber } from "@shiguang-gateway/contracts/numeric";
 
@@ -410,8 +410,8 @@ export async function GET(request: Request) {
       pricingByProvider[providerKey.toLowerCase()] = lowerProvider;
     }
     const { computeCostFromPricing, getCodexFastCostMultiplier, normalizeModelName } =
-      await import("@shiguang-gateway/core-domain/control/usage");
-    const { PROVIDER_ID_TO_ALIAS } = await import("@shiguang-gateway/open-sse");
+      await import("@shiguang-gateway/core-domain/pricing/cost-calculator");
+    const { PROVIDER_ID_TO_ALIAS } = await import("@shiguang-gateway/provider-catalog/provider-models");
 
     const summaryRow = getUsageSummary(unifiedSource, unifiedParams) as Record<string, unknown>;
 

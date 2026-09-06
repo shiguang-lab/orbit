@@ -10,6 +10,7 @@ import {
   getCodexParentAccountDiagnostic,
 } from "@shiguang-gateway/open-sse/services/codexAccount/index";
 import { LocalProviderHealthService } from "./local-provider-health.service.js";
+import { executeEdgeRuntimeCommand, readEdgeRuntimeHealth } from "../edge-runtime/client.js";
 
 const HEALTH_PAYLOAD_TTL_MS = 1_000;
 
@@ -21,6 +22,8 @@ const FALLBACK_QUOTA_MONITOR_SUMMARY = {
   statusCounts: { starting: 0, idle: 0, healthy: 0, warning: 0, exhausted: 0, error: 0 },
   byProvider: {},
 };
+
+type HealthPayloadInput = Parameters<typeof buildHealthPayload>[0];
 
 const EMPTY_MONITORING_HEALTH_SNAPSHOT = {
   status: "degraded",
@@ -37,102 +40,43 @@ const EMPTY_MONITORING_HEALTH_SNAPSHOT = {
   dedup: { inflightRequests: 0 },
 };
 
-function readHealthValue<T>(label: string, reader: () => T, fallback: T): T {
-  try {
-    return reader();
-  } catch (error) {
-    console.warn(
-      `[monitoring-health] ${label} unavailable:`,
-      error instanceof Error ? error.message : error,
-    );
-    return fallback;
-  }
-}
-
 async function buildMonitoringHealthSnapshot(localProviders: Record<string, unknown>): Promise<unknown> {
   const [
-    circuitBreakerModule,
-    rateLimitModule,
-    accountFallbackModule,
-    requestDedupModule,
-    quotaMonitorModule,
-    sessionManagerModule,
-    credentialHealthModule,
-    adaptiveAdmissionModule,
-    chatAdmissionModule,
+    runtimeResult,
     settingsResult,
     connectionsResult,
   ] = await Promise.allSettled([
-    import("@shiguang-gateway/core-domain/resilience/circuit-breaker"),
-    import("@shiguang-gateway/open-sse/services/rateLimitManager"),
-    import("@shiguang-gateway/open-sse/services/accountFallback"),
-    import("@shiguang-gateway/open-sse/services/requestDedup"),
-    import("@shiguang-gateway/open-sse/services/quotaMonitor"),
-    import("@shiguang-gateway/open-sse/services/sessionManager"),
-    import("@shiguang-gateway/core-domain/resilience/credential-health-cache"),
-    import("@shiguang-gateway/open-sse/services/admission/runtime"),
-    import("@shiguang-gateway/core-domain/shared/middleware/chatBodyAdmission"),
+    readEdgeRuntimeHealth(),
     getCachedSettings(),
     getProviderConnections(),
   ]);
+  if (runtimeResult.status === "rejected") throw runtimeResult.reason;
+  const runtime = runtimeResult.value;
   return buildHealthPayload({
     appVersion: APP_CONFIG.version,
     buildSha: readRunningBuildSha(),
     catalogCount: Object.keys(AI_PROVIDERS).length,
     settings: settingsResult.status === "fulfilled" ? settingsResult.value : {},
     connections: connectionsResult.status === "fulfilled" ? connectionsResult.value : [],
-    circuitBreakers: circuitBreakerModule.status === "fulfilled"
-      ? readHealthValue("circuit breakers", () => circuitBreakerModule.value.getAllCircuitBreakerStatuses(), [])
-      : [],
-    rateLimitStatus: rateLimitModule.status === "fulfilled"
-      ? readHealthValue("rate limits", () => rateLimitModule.value.getAllRateLimitStatus(), {})
-      : {},
-    learnedLimits: rateLimitModule.status === "fulfilled"
-      ? readHealthValue("learned limits", () => rateLimitModule.value.getLearnedLimits(), {})
-      : {},
-    lockouts: accountFallbackModule.status === "fulfilled"
-      ? readHealthValue("model lockouts", () => accountFallbackModule.value.getAllModelLockouts(), [])
-      : [],
+    circuitBreakers: runtime.circuitBreakers as HealthPayloadInput["circuitBreakers"],
+    rateLimitStatus: runtime.rateLimitStatus as HealthPayloadInput["rateLimitStatus"],
+    learnedLimits: runtime.learnedLimits as HealthPayloadInput["learnedLimits"],
+    lockouts: runtime.lockouts as HealthPayloadInput["lockouts"],
     localProviders,
-    inflightRequests: requestDedupModule.status === "fulfilled"
-      ? readHealthValue("inflight requests", () => requestDedupModule.value.getInflightCount(), 0)
-      : 0,
-    quotaMonitorSummary: quotaMonitorModule.status === "fulfilled"
-      ? readHealthValue("quota monitor summary", () => quotaMonitorModule.value.getQuotaMonitorSummary(), FALLBACK_QUOTA_MONITOR_SUMMARY)
-      : FALLBACK_QUOTA_MONITOR_SUMMARY,
-    quotaMonitorMonitors: quotaMonitorModule.status === "fulfilled"
-      ? readHealthValue("quota monitor snapshots", () => quotaMonitorModule.value.getQuotaMonitorSnapshots(), [])
-      : [],
-    activeSessions: sessionManagerModule.status === "fulfilled"
-      ? readHealthValue("active sessions", () => sessionManagerModule.value.getActiveSessions(), [])
-      : [],
-    activeSessionsByKey: sessionManagerModule.status === "fulfilled"
-      ? readHealthValue("active sessions by key", () => sessionManagerModule.value.getAllActiveSessionCountsByKey(), {})
-      : {},
-    credentialHealth: credentialHealthModule.status === "fulfilled"
-      ? readHealthValue("credential health", () => credentialHealthModule.value.getCredentialHealthSummary(), undefined)
-      : undefined,
-    adaptiveAdmission: adaptiveAdmissionModule.status === "fulfilled"
-      ? readHealthValue("adaptive admission", () => adaptiveAdmissionModule.value.getAdaptiveAdmissionRuntime().snapshot(), null)
-      : null,
-    chatAdmission: chatAdmissionModule.status === "fulfilled"
-      ? readHealthValue("chat admission", () => chatAdmissionModule.value.perConnectionAdmissionController.snapshot(), null)
-      : null,
+    inflightRequests: runtime.inflightRequests,
+    quotaMonitorSummary: runtime.quotaMonitorSummary as unknown as HealthPayloadInput["quotaMonitorSummary"],
+    quotaMonitorMonitors: runtime.quotaMonitorMonitors as HealthPayloadInput["quotaMonitorMonitors"],
+    activeSessions: runtime.activeSessions as HealthPayloadInput["activeSessions"],
+    activeSessionsByKey: runtime.activeSessionsByKey as HealthPayloadInput["activeSessionsByKey"],
+    credentialHealth: runtime.credentialHealth as HealthPayloadInput["credentialHealth"],
+    adaptiveAdmission: runtime.adaptiveAdmission as HealthPayloadInput["adaptiveAdmission"],
+    chatAdmission: runtime.chatAdmission as HealthPayloadInput["chatAdmission"],
     getCodexAccountDiagnostic: (
       connection: Parameters<typeof createCodexAccountPool>[0],
       nowMs: number,
     ) =>
       getCodexParentAccountDiagnostic(createCodexAccountPool(connection), nowMs),
   });
-}
-
-async function resetMonitoringCircuitBreakers(): Promise<number> {
-  const { getAllCircuitBreakerStatuses, resetAllCircuitBreakers } = await import(
-    "@shiguang-gateway/core-domain/resilience/circuit-breaker"
-  );
-  const count = getAllCircuitBreakerStatuses().length;
-  resetAllCircuitBreakers();
-  return count;
 }
 
 function publicHealthView(payload: unknown): Record<string, unknown> {
@@ -168,7 +112,9 @@ export class MonitoringHealthService {
 
   async reset(): Promise<Response> {
     try {
-      const resetCount = await resetMonitoringCircuitBreakers();
+      const { resetCount } = await executeEdgeRuntimeCommand<{ resetCount: number }>({
+        command: "resilience.reset",
+      });
       this.cache = null;
       return Response.json({
         success: true,

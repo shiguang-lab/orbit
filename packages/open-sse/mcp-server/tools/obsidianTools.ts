@@ -4,7 +4,7 @@ import {
   getObsidianToken,
   getObsidianBaseUrl,
   getObsidianConfigForApiKey,
-} from "@shiguang-gateway/core-domain/control/obsidian-db";
+} from "@shiguang-gateway/core-domain/db/obsidian-config";
 import type { ObsidianClient, SyncServerClient } from "@shiguang-gateway/core-domain/integrations/obsidian-client";
 
 type McpExtra = {

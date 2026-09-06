@@ -1,8 +1,8 @@
 import {
   PROVIDER_MODELS,
   PROVIDER_ID_TO_ALIAS,
-  AI_PROVIDERS,
-} from "@shiguang-gateway/core-domain/catalog/runtime-support";
+} from "@shiguang-gateway/core-domain/catalog/provider-models";
+import { AI_PROVIDERS } from "@shiguang-gateway/core-domain/catalog/providers";
 import { parseModel, resolveCanonicalProviderModel } from "../services/model.ts";
 
 // Alias <-> providerId resolution maps for the unified model catalog. Extracted

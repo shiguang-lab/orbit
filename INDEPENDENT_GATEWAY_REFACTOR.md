@@ -175,7 +175,7 @@ sqlite-vec 对应索引重建、全量 route 与 worker 验收，并完成 SQLit
 |---|---|---|
 | 源代码来源 | 已将 `src/app/api`、领域、DB、协议和 middleware 纳入 `packages/core-domain`，并将本地 import 重写为相对路径 | 运行时只加载本仓库内容；发布前仍需完成许可证/来源审查 |
 | 路由覆盖 | edge/control app 各自维护 compat catalog 并调用 `packages/http-kernel/src/routes/compatDispatcher.ts` 的纯 transport dispatcher；审查脚本逐路径和 HTTP method 比较参考/本地集合 | 仍需按发布清单补齐每个 route 的行为契约和真实 provider smoke |
-| 数据同步 | `scripts/import-source-data.mjs` 支持冷快照复制、SQLite integrity check、逐文件 SHA-256 manifest 和可恢复替换；`verify-imported-data.mjs` 校验源/目标文件集合、不可变文件 hash、SQLite 和关键表 | 本机快照及 Docker acceptance 已完成；生产目标仍需执行同一校验 |
+| 数据同步 | importer app 支持冷快照复制、SQLite integrity check、逐文件 SHA-256 manifest 和可恢复替换；`verify-imported-data.mjs` 校验源/目标文件集合、不可变文件 hash、SQLite 和关键表 | 本机快照及 Docker acceptance 已完成；生产目标仍需执行同一校验 |
 | 凭据与外部状态 | importer 不复制进程锁/内存队列；CLI、keychain、浏览器 profile、隧道 token 需要单独导入或重新授权 | 目标机必须逐 Provider 记录解密/刷新/smoke 结果 |
 | 运行时依赖 | NAS proxy、旧官方 host、兼容路由和 sibling import 已删除；Admin live WS 默认同源本地地址 | Provider 上游 API 仍按用户配置访问，这不属于官方 Orbit 运行时依赖 |
 
@@ -367,7 +367,7 @@ status: PASS
 已从 NAS 官方实例数据目录在维护窗口停写后制作冷快照，并对冻结源数据目录执行：
 
 ```bash
-node scripts/import-source-data.mjs \
+pnpm import:source-data -- \
   --source-data-dir /path/to/frozen-source-data \
   --target-data-dir /path/to/independent-data --replace
 pnpm verify:imported-data /path/to/frozen-source-data /path/to/independent-data

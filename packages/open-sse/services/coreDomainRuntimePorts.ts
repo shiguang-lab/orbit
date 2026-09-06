@@ -15,7 +15,6 @@ import { checkTokenLimits } from "./tokenLimitCounter.ts";
 import { setSystemPromptConfig } from "./systemPrompt.ts";
 import { hydrateThinkingBudgetConfig } from "./thinkingBudget.ts";
 import { hydrateTaskRoutingConfig } from "./taskAwareRouter.ts";
-import { FREE_MODEL_BUDGETS, grantsFreeAccess } from "../config/freeModelCatalog.ts";
 import { filterSelectableModels } from "./modelLifecycle.ts";
 import { filterChatSelectableModels } from "./modelEndpointPolicy.ts";
 import { isObsoleteKiroModelAlias } from "./kiroModels.ts";
@@ -42,7 +41,11 @@ import * as searchCache from "./searchCache.ts";
 import * as webFetchRuntime from "../handlers/webFetch.ts";
 import { reloadAdaptiveAdmissionRuntime } from "./admission/runtime.ts";
 
-registerProviderRuntimePorts({
+let runtimePortsInstalled = false;
+
+export function installCoreDomainRuntimePorts(): void {
+  if (runtimePortsInstalled) return;
+  registerProviderRuntimePorts({
   parseModel,
   resolveCanonicalProviderModel,
   getLearnedThinkingCap,
@@ -74,8 +77,6 @@ registerProviderRuntimePorts({
     hydrateThinkingBudgetConfig(settings as never);
     hydrateTaskRoutingConfig(settings as never);
   },
-  getFreeModelCatalog: () => FREE_MODEL_BUDGETS,
-  grantsFreeAccess: (freeType) => grantsFreeAccess(freeType as never),
   filterSelectableModels,
   filterChatSelectableModels,
   isObsoleteKiroModelAlias,
@@ -104,4 +105,6 @@ registerProviderRuntimePorts({
   searchRuntime: { ...searchRegistry, ...searchCache, handleSearch },
   webFetchRuntime,
   reloadAdaptiveAdmissionRuntime,
-});
+  });
+  runtimePortsInstalled = true;
+}

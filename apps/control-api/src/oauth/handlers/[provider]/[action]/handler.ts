@@ -35,7 +35,7 @@ import {
   oauthImportTokenSchema,
   oauthPollSchema,
 } from "@shiguang-gateway/core-domain/control/oauth-validation";
-import { jsonObjectSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { jsonObjectSchema } from "@shiguang-gateway/core-domain/validation/misc";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { isAuthRequired, isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";

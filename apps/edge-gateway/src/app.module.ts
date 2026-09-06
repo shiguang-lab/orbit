@@ -1,5 +1,4 @@
 import { Module } from "@nestjs/common";
-import "@shiguang-gateway/open-sse/services/dbRuntimeHooks";
 import { HttpKernelModule } from "@shiguang-gateway/http-kernel";
 import { ProcessHealthModule } from "./process-health/process-health.module.js";
 import { EdgeRuntimeModule } from "./runtime/edge-runtime.module.js";
@@ -62,6 +61,8 @@ import { CodexResponsesWsModule } from "./codex-responses-ws/codex-responses-ws.
 import { CursorCliModule } from "./cursor-cli/cursor-cli.module.js";
 import { UpstreamProxyModule } from "./upstream-proxy/upstream-proxy.module.js";
 import { TunnelsModule } from "./tunnels/tunnels.module.js";
+import { TelegramModule } from "./telegram/telegram.module.js";
+import { RuntimeControlModule } from "./runtime-control/runtime-control.module.js";
 import { DatabaseRuntimeLifecycleService } from "./database-runtime-lifecycle.service.js";
 
 @Module({
@@ -128,6 +129,8 @@ import { DatabaseRuntimeLifecycleService } from "./database-runtime-lifecycle.se
     CursorCliModule,
     UpstreamProxyModule,
     TunnelsModule,
+    TelegramModule,
+    RuntimeControlModule,
   ],
   providers: [DatabaseRuntimeLifecycleService],
 })

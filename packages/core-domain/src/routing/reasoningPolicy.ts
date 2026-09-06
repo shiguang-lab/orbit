@@ -5,6 +5,7 @@ export {
   filterComboForReasoningDecision,
   resolveReasoningRoutingRule,
   resolveReasoningSourceModels,
+  validateCodexWsDecision,
 } from "../lib/reasoningRouting/policy.ts";
 export type {
   ExtractedReasoningIntent,

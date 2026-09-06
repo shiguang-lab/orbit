@@ -35,7 +35,12 @@ const localApiExtensions = new Set([
   // Private authenticated control-to-edge command surface, outside the
   // frozen public API contract.
   "internal/tunnels/command/route.ts",
+  "internal/runtime/command/route.ts",
 ]);
+// These upstream control-process routes are intentionally retired. In the
+// split runtime they could only terminate control-api, not the gateway stack;
+// full-stack lifecycle is owned by the CLI supervisor.
+const retiredApiRoutes = new Set(["restart/route.ts", "shutdown/route.ts"]);
 // Root A2A transport is intentionally implemented by the edge Nest app; the
 // legacy Next root route is removed as part of that physical migration.
 const localRootRouteExtensions = new Set(["a2a/route.ts"]);
@@ -178,11 +183,18 @@ const localRoutePaths = new Set([
   ...nativeFallbackContracts,
 ]);
 const comparableLocalRoutePaths = new Set([...localRoutePaths].filter((path) => !localApiExtensions.has(path)));
+const comparableOfficialRoutePaths = new Set(
+  [...officialRoutePaths].filter((path) => !retiredApiRoutes.has(path)),
+);
+const frozenParityRoutePaths = new Set([...comparableLocalRoutePaths, ...retiredApiRoutes]);
+const retiredRouteRegressions = [...retiredApiRoutes]
+  .filter((path) => localRoutePaths.has(path))
+  .sort();
 const routePathMismatches = referenceAvailable ? [
-  ...[...officialRoutePaths].filter((p) => !comparableLocalRoutePaths.has(p)).map((path) => ({ path, side: "missing-local" })),
-  ...[...comparableLocalRoutePaths].filter((p) => !officialRoutePaths.has(p)).map((path) => ({ path, side: "extra-local" })),
+  ...[...comparableOfficialRoutePaths].filter((p) => !comparableLocalRoutePaths.has(p)).map((path) => ({ path, side: "missing-local" })),
+  ...[...comparableLocalRoutePaths].filter((p) => !comparableOfficialRoutePaths.has(p)).map((path) => ({ path, side: "extra-local" })),
 ].sort((a, b) => a.path.localeCompare(b.path)) :
-  (comparableLocalRoutePaths.size === frozenBaseline.apiRouteFiles && hashPaths(comparableLocalRoutePaths) === frozenBaseline.apiPathSha256 ? [] : [{ path: "<frozen-api-route-baseline>", side: "hash-mismatch" }]);
+  (frozenParityRoutePaths.size === frozenBaseline.apiRouteFiles && hashPaths(frozenParityRoutePaths) === frozenBaseline.apiPathSha256 ? [] : [{ path: "<frozen-api-route-baseline>", side: "hash-mismatch" }]);
 const requiredApps = ["admin", "edge-gateway", "control-api", "realtime", "worker", "importer"];
 const missingApps = requiredApps.filter((name) => !existsSync(join(repoRoot, "apps", name, "package.json")));
 
@@ -241,9 +253,12 @@ for (const path of allSourceFiles) {
 }
 
 const localGroups = new Set([...comparableLocalRoutePaths].map((path) => path.split("/")[0]));
+const expectedOfficialGroups = new Set(
+  [...comparableOfficialRoutePaths].map((path) => path.split("/")[0]),
+);
 const missingGroups = referenceAvailable
-  ? [...officialGroups].filter((group) => !localGroups.has(normalizeRoutePath(group))).sort()
-  : (localGroups.size === frozenBaseline.apiGroups ? [] : ["<frozen-api-group-baseline>"]);
+  ? [...expectedOfficialGroups].filter((group) => !localGroups.has(normalizeRoutePath(group))).sort()
+  : (new Set([...localGroups, ...[...retiredApiRoutes].map((path) => path.split("/")[0])]).size === frozenBaseline.apiGroups ? [] : ["<frozen-api-group-baseline>"]);
 
 const report = {
   reference: orbitRoot,
@@ -252,6 +267,8 @@ const report = {
   official: referenceAvailable ? { routeFiles: officialRoutes.length, apiGroups: officialGroups.size, rootRouteFiles: officialRootRoutes.length } : null,
     target: { appRouteFiles: appRouteFiles.length, appFastifyHandlers: appHandlers, controllerFiles: controllerFiles.length, controllerRoutePaths: allControllerRoutePaths.size, localApiRoutePaths: comparableLocalRoutePaths.size, localRuntimeRouteFiles: localRuntimeRoutes.length, localRootRoutePaths: comparableLocalRootPaths.size, localRootRouteFiles: localRootRoutes.length, additiveLocalApiExtensions: [...localApiExtensions], additiveLocalRootRouteExtensions: [...localRootRouteExtensions], dynamicCompatDispatcherRemoved },
   routePathMismatches,
+  retiredApiRoutes: [...retiredApiRoutes],
+  retiredRouteRegressions,
   rootRouteMismatches,
   missingApiGroups: missingGroups,
   forbiddenReferenceCount: violations.length,
@@ -259,7 +276,7 @@ const report = {
   mockFallbackFiles: mockFallbacks,
   requiredApps,
   missingApps,
-  status: dynamicCompatDispatcherRemoved && missingGroups.length === 0 && routePathMismatches.length === 0 && rootRouteMismatches.length === 0 && violations.length === 0 && mockFallbacks.length === 0 && missingApps.length === 0 ? "PASS" : "FAIL",
+  status: dynamicCompatDispatcherRemoved && missingGroups.length === 0 && routePathMismatches.length === 0 && retiredRouteRegressions.length === 0 && rootRouteMismatches.length === 0 && violations.length === 0 && mockFallbacks.length === 0 && missingApps.length === 0 ? "PASS" : "FAIL",
 };
 
 console.log(JSON.stringify(report, null, 2));

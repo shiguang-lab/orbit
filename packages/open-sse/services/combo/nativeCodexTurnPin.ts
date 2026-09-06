@@ -155,8 +155,14 @@ export function clearNativeCodexTurnPinsForTests(): void {
   pins.clear();
 }
 
-registerDbRuntimeHooks({
-  revokeNativeCodexTurnPinsForConnection(connectionId) {
-    revokeNativeCodexTurnPinsForConnection(connectionId);
-  },
-});
+let dbRuntimeHooksInstalled = false;
+
+export function installNativeCodexTurnPinDbRuntimeHooks(): void {
+  if (dbRuntimeHooksInstalled) return;
+  registerDbRuntimeHooks({
+    revokeNativeCodexTurnPinsForConnection(connectionId) {
+      revokeNativeCodexTurnPinsForConnection(connectionId);
+    },
+  });
+  dbRuntimeHooksInstalled = true;
+}

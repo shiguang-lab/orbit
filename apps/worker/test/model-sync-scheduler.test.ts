@@ -60,8 +60,8 @@ test("worker scheduler owns one startup timer and one recurring timer", async ()
     log: () => undefined,
   });
 
-  scheduler.start("http://127.0.0.1:20128", 60_000);
-  scheduler.start("http://127.0.0.1:20128", 60_000);
+  scheduler.start("http://127.0.0.1:41028", 60_000);
+  scheduler.start("http://127.0.0.1:41028", 60_000);
   await Promise.resolve();
 
   assert.deepEqual(
@@ -71,15 +71,15 @@ test("worker scheduler owns one startup timer and one recurring timer", async ()
       { delayMs: 60_000, kind: "interval" },
     ]
   );
-  assert.deepEqual(runs, ["revalidate:http://127.0.0.1:20128"]);
+  assert.deepEqual(runs, ["revalidate:http://127.0.0.1:41028"]);
 
   created[0].callback();
   created[1].callback();
   await Promise.resolve();
   assert.deepEqual(runs, [
-    "revalidate:http://127.0.0.1:20128",
-    "http://127.0.0.1:20128",
-    "http://127.0.0.1:20128",
+    "revalidate:http://127.0.0.1:41028",
+    "http://127.0.0.1:41028",
+    "http://127.0.0.1:41028",
   ]);
 
   scheduler.stop();
@@ -112,7 +112,7 @@ test("worker scheduler cancels a pending startup cycle on stop", () => {
     log: () => undefined,
   });
 
-  scheduler.start("http://127.0.0.1:20128", 60_000);
+  scheduler.start("http://127.0.0.1:41028", 60_000);
   scheduler.stop();
   assert.deepEqual(cleared, created);
 });

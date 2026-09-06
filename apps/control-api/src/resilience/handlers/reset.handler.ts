@@ -1,4 +1,5 @@
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 
 /**
  * POST /api/resilience/reset — Reset all provider circuit breakers and model lockouts.
@@ -10,22 +11,9 @@ export async function POST(request: Request) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
   try {
-    const { getAllCircuitBreakerStatuses, getCircuitBreaker } =
-      await import("@shiguang-gateway/core-domain/resilience/circuit-breaker");
-
-    const statuses = getAllCircuitBreakerStatuses();
-    let resetCount = 0;
-
-    for (const { name } of statuses) {
-      const breaker = getCircuitBreaker(name);
-      breaker.reset();
-      resetCount++;
-    }
-
-    // Also clear in-memory model lockouts (per-model quota cooldowns)
-    const { clearAllModelLockouts } =
-      await import("@shiguang-gateway/open-sse/services/accountFallback");
-    clearAllModelLockouts();
+    const { resetCount } = await executeEdgeRuntimeCommand<{ resetCount: number }>({
+      command: "resilience.reset",
+    });
 
     return Response.json({
       ok: true,

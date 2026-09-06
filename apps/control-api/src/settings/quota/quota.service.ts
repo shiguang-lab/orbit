@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import {
   getSettings,
-  updateSettings,
 } from "@shiguang-gateway/core-domain/db/settings";
+import { updatePersistedRuntimeSettings } from "../runtime-settings-persistence.js";
 import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/compliance/audit-log";
 import { QuotaStoreSettingsSchema } from "../../quota/schemas.js";
 import {
@@ -41,7 +41,7 @@ export class QuotaSettingsService {
     }
     const quotaStore: Record<string, unknown> = { driver };
     if (redisUrl) quotaStore.redisUrl = redisUrl;
-    await updateSettings({ quotaStore });
+    await updatePersistedRuntimeSettings({ quotaStore });
     resetQuotaStoreSingleton();
     const ctx = getAuditRequestContext(request);
     logAuditEvent({

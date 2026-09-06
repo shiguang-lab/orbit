@@ -1,29 +1,37 @@
 import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 import {
-  attachReasoningRuleDirective,
-  applyReasoningRuleDirective,
   authorizeWebSocketHandshake,
-  DEFAULT_MEMORY_SETTINGS,
-  enforceApiKeyPolicy,
-  extractReasoningIntent,
   extractWsTokenFromRequest,
+} from "@shiguang-gateway/core-domain/edge/ws-handshake";
+import {
+  enforceApiKeyPolicy,
+  validateApiKeyRoutingTarget,
+} from "@shiguang-gateway/core-domain/runtime/api-key-policy";
+import { getApiKeyMetadata } from "@shiguang-gateway/core-domain/db/api-keys";
+import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
+import { resolveCcDiscoveryAliasStrip } from "@shiguang-gateway/core-domain/runtime/cc-discovery-alias";
+import {
+  DEFAULT_MEMORY_SETTINGS,
   formatMemoryContext,
-  getApiKeyMetadata,
-  getComboByName,
-  getComboModelString,
   getMemorySettings,
-  isFeatureFlagEnabled,
-  resolveCcDiscoveryAliasStrip,
-  resolveCodexWsModelInfo,
-  resolveReasoningSourceModels,
-  resolveReasoningRoutingRule,
-  resolveRequestRoutingTags,
   retrieveMemories,
   toMemoryRetrievalConfig,
-  validateApiKeyRoutingTarget,
+} from "@shiguang-gateway/core-domain/edge/memory-runtime";
+import {
+  applyReasoningRuleDirective,
+  attachReasoningRuleDirective,
+  extractReasoningIntent,
+  resolveReasoningSourceModels,
+  resolveReasoningRoutingRule,
   validateCodexWsDecision,
-} from "@shiguang-gateway/core-domain/edge/codex-responses-ws-runtime";
+} from "@shiguang-gateway/core-domain/routing/reasoning-policy";
+import { resolveRequestRoutingTags } from "@shiguang-gateway/core-domain/edge/tag-router";
+import { getComboByName } from "@shiguang-gateway/core-domain/db/combos";
+import { getComboModelString } from "@shiguang-gateway/core-domain/routing/combo-steps";
+import {
+  resolveCodexWsModelInfo,
+} from "@shiguang-gateway/core-domain/edge/codex-responses-model";
 import { getProviderCredentialsWithQuotaPreflight } from "@shiguang-gateway/open-sse/services/auth";
 import { checkAndRefreshToken } from "@shiguang-gateway/open-sse/services/credentialTokenRefresh";
 import {

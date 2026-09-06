@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { probeVideoRuntime } from "@shiguang-gateway/core-domain/edge/video-bridge-runtime";
+import { probeVideoRuntime } from "@shiguang-gateway/core-domain/guardrails/video-runtime-probe";
 import { AUTHZ_HEADER_PEER_LOCALITY } from "@shiguang-gateway/core-domain/shared/authz-headers";
 import { createErrorResponse } from "@shiguang-gateway/core-domain/shared/error-response";
 

@@ -1,8 +1,8 @@
 import { getComboById, getCombos } from "@shiguang-gateway/core-domain/db/combos";
 import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
 import { getQuotaSnapshots } from "@shiguang-gateway/core-domain/usage/quota-snapshots";
-import { getComboMetrics } from "@shiguang-gateway/open-sse/services/comboMetrics";
 import { resolveNestedComboTargets } from "@shiguang-gateway/open-sse/services/combo";
+import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 import type {
   ComboRecord,
   ComboHealthMetrics,
@@ -52,6 +52,10 @@ type RuntimeTargetMetricView = {
   avgLatencyMs?: number;
   lastStatus?: "ok" | "error" | null;
   lastUsedAt?: string | null;
+};
+
+type RuntimeComboMetricView = {
+  byTarget?: Record<string, RuntimeTargetMetricView>;
 };
 
 type HistoricalTargetAggregateRow = {
@@ -420,9 +424,9 @@ function getHistoricalTargetMetrics(
 function buildTargetHealth(
   comboName: string,
   targets: ResolvedComboTargetView[],
-  since: string
+  since: string,
+  comboMetrics: RuntimeComboMetricView | null,
 ): NonNullable<ComboHealthMetrics["targetHealth"]> {
-  const comboMetrics = getComboMetrics(comboName);
   const historicalMetrics = getHistoricalTargetMetrics(comboName, since);
 
   return targets.map((target) => {
@@ -492,7 +496,8 @@ function buildTargetHealth(
 function buildComboHealth(
   combo: ComboRecord,
   since: string,
-  allCombos: ComboRecord[]
+  allCombos: ComboRecord[],
+  runtimeMetrics: Record<string, RuntimeComboMetricView | null>,
 ): ComboHealthMetrics | null {
   const comboId = typeof combo.id === "string" ? combo.id : "";
   const comboName = typeof combo.name === "string" ? combo.name : "";
@@ -510,7 +515,7 @@ function buildComboHealth(
         ? combo.strategy
         : "priority",
     models,
-    targetHealth: buildTargetHealth(comboName, targets, since),
+    targetHealth: buildTargetHealth(comboName, targets, since, runtimeMetrics[comboName] ?? null),
     quotaHealth: buildQuotaHealth(providers, since),
     usageSkew: buildUsageSkew(comboName, models, since),
     performance: buildPerformance(comboName, since),
@@ -524,7 +529,12 @@ export async function buildComboHealthResponse(opts: {
   combos?: ComboRecord[];
 }): Promise<ComboHealthResponse> {
   const since = getRangeStartIso(opts.range, opts.now);
-  const allCombos = opts.combos ?? ((await getCombos()) as ComboRecord[]);
+  const [allCombos, { metrics: runtimeMetrics }] = await Promise.all([
+    opts.combos ? Promise.resolve(opts.combos) : (getCombos() as Promise<ComboRecord[]>),
+    executeEdgeRuntimeCommand<{
+      metrics: Record<string, RuntimeComboMetricView | null>;
+    }>({ command: "combo-metrics.snapshot" }),
+  ]);
   let combos: ComboRecord[] = [];
 
   if (opts.comboId) {
@@ -539,7 +549,7 @@ export async function buildComboHealthResponse(opts: {
   return {
     timeRange: opts.range,
     combos: combos
-      .map((combo) => buildComboHealth(combo, since, allCombos))
+      .map((combo) => buildComboHealth(combo, since, allCombos, runtimeMetrics))
       .filter((combo): combo is ComboHealthMetrics => combo !== null),
   };
 }

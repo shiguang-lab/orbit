@@ -4,7 +4,7 @@ import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/
 import { ensureCliConfigWriteAllowed, getCliConfigPaths } from "@shiguang-gateway/core-domain/cli/runtime";
 import { resolveDataDir } from "@shiguang-gateway/core-domain/shared/data-paths";
 import { compareTr } from "../../common/turkish-text.js";
-import { codexProfileIdSchema, codexProfileNameSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { codexProfileIdSchema, codexProfileNameSchema } from "@shiguang-gateway/core-domain/validation/misc";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 
 const PROFILES_DIR = path.join(resolveDataDir(), "codex-profiles");

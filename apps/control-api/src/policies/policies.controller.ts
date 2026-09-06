@@ -2,7 +2,7 @@ import { Controller, Get, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { forceUnlock, getLockedIdentifiers } from "@shiguang-gateway/core-domain/control/policies";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { policyActionSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { policyActionSchema } from "@shiguang-gateway/core-domain/validation/misc";
 
 @Controller("api/policies")
 export class PoliciesController {

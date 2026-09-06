@@ -15,7 +15,7 @@ import { getAccessToken } from "@shiguang-gateway/open-sse/services/token-refres
 import { rotationGroupFor } from "@shiguang-gateway/open-sse/services/refreshSerializer";
 import { saveCallLog } from "@shiguang-gateway/core-domain/usage/call-logs";
 import { shouldHideLogs } from "@shiguang-gateway/core-domain/control/token-health-check";
-import { logProxyEvent } from "@shiguang-gateway/core-domain/logging/proxy-logs";
+import { executeEdgeRuntimeCommand } from "../../../edge-runtime/client.js";
 import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
 import {
   buildGitLabDuoProbeBody,
@@ -28,7 +28,7 @@ import { isOpenAICompatibleProvider, providerAllowsOptionalApiKey } from "@shigu
 import { shouldUseApiKeyConnectionTest } from "./webSessionTestDispatch.js";
 import { testCodexAppServerConnection, makeDiagnosis } from "./codexAppServerHealth.js";
 import { recoverKeyHealth } from "@shiguang-gateway/open-sse/services/api-key-rotator";
-import { shouldClearErrorStateOnValidProbe } from "@shiguang-gateway/open-sse/services/providerLimits";
+import { storedInstantToEpochMs } from "@shiguang-gateway/contracts/runtime-settings";
 import { isConnectionUnavailableToAuxiliaryActivity } from "@shiguang-gateway/core-domain/shared/connection-isolation";
 import { classifyAmbiguousOrAuthError, type ClassifyFailureArgs } from "./mistralAmbiguousAuth.js";
 import { buildApiKeyConnectionTestResult } from "./apiKeyTestResult.js";
@@ -38,6 +38,17 @@ import * as retirement from "@shiguang-gateway/core-domain/shared/chatgpt-web-re
 
 // Match the API-key path's 30s timeout so a hung OAuth upstream cannot block the test queue.
 const OAUTH_TEST_TIMEOUT_MS = 30_000;
+
+function shouldClearErrorStateOnValidProbe(
+  connection: { rateLimitedUntil?: string | number | null },
+  probeValid: boolean,
+  now: number = Date.now(),
+): boolean {
+  if (!probeValid) return false;
+  if (!connection.rateLimitedUntil) return true;
+  const until = storedInstantToEpochMs(connection.rateLimitedUntil);
+  return !Number.isFinite(until) || until <= now;
+}
 
 import { CLI_RUNTIME_PROVIDER_MAP } from "./cliRuntimeProviderMap.js";
 
@@ -1196,19 +1207,22 @@ export async function testSingleConnection(connectionId: string, validationModel
 
   // Log to Proxy tab (proxy_logs table)
   try {
-    logProxyEvent({
-      status: result.valid ? "success" : "error",
-      proxy: proxyInfo?.proxy || null,
-      level: proxyInfo?.level || "provider-test",
-      levelId: proxyInfo?.levelId || null,
-      provider,
-      targetUrl: `${provider}/connection-test`,
-      latencyMs,
-      error: result.valid ? null : result.error || null,
-      connectionId,
-      comboId: null,
-      account: connectionId?.slice(0, 8) || null,
-      tlsFingerprint: false,
+    await executeEdgeRuntimeCommand({
+      command: "proxy-logs.record",
+      entry: {
+        status: result.valid ? "success" : "error",
+        proxy: proxyInfo?.proxy || null,
+        level: proxyInfo?.level || "provider-test",
+        levelId: proxyInfo?.levelId || null,
+        provider,
+        targetUrl: `${provider}/connection-test`,
+        latencyMs,
+        error: result.valid ? null : result.error || null,
+        connectionId,
+        comboId: null,
+        account: connectionId?.slice(0, 8) || null,
+        tlsFingerprint: false,
+      },
     });
   } catch {}
 

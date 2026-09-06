@@ -20,8 +20,8 @@
 
 import {
   getSupervisor,
-  getOrCreateApiKey,
-} from "@shiguang-gateway/core-domain/shared/version-manager";
+} from "@shiguang-gateway/core-domain/control/embedded-services-lifecycle";
+import { getOrCreateApiKey } from "@shiguang-gateway/core-domain/embedded-services/api-key";
 import { rewriteHtml } from "./embedded-service-html-rewriter.js";
 import { toUpstreamPath } from "./embedded-service-embed-path.js";
 import { createErrorResponse } from "@shiguang-gateway/core-domain/shared/error-response";

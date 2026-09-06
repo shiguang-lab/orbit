@@ -6,7 +6,8 @@ import {
   CLAUDE_CODE_COMPATIBLE_PREFIX,
 } from "@shiguang-gateway/core-domain/catalog/providers";
 import { isCcCompatibleProviderEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
-import { createProviderNodeSchema, paginationSchema } from "@shiguang-gateway/core-domain/control/provider-validation-schemas";
+import { createProviderNodeSchema } from "@shiguang-gateway/core-domain/control/provider-validation-schemas";
+import { paginationSchema } from "@shiguang-gateway/core-domain/validation/misc";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { validateProviderNodeBaseUrl } from "./provider-nodes-url-guard.js";
 

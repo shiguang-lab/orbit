@@ -1,56 +1,33 @@
 import { Injectable } from "@nestjs/common";
-import {
-  addCustomAlias,
-  getAllAliases,
-  getBuiltInAliases,
-  getCustomAliases,
-  removeCustomAlias,
-  setCustomAliases,
-} from "@shiguang-gateway/open-sse/services/modelDeprecation";
-import { getSettings, updateSettings } from "@shiguang-gateway/core-domain/db/settings";
+import { getSettings } from "@shiguang-gateway/core-domain/db/settings";
+import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
+import { updatePersistedRuntimeSettings } from "../runtime-settings-persistence.js";
 
 /** Use cases for operator-managed model deprecation aliases. */
 @Injectable()
 export class ModelAliasesService {
   async getAliases() {
-    // Hydrate the process-local resolver from persisted settings when needed.
-    // This also handles separate module graphs in standalone deployments.
-    const custom = getCustomAliases();
-    if (Object.keys(custom).length === 0) {
-      try {
-        const settings = await getSettings();
-        const stored = settings.modelAliases;
-        if (stored && typeof stored === "object" && Object.keys(stored).length > 0) {
-          setCustomAliases(stored as Record<string, string>);
-        }
-      } catch {
-        // Best-effort hydration; an unavailable settings store should not hide built-ins.
-      }
-    }
-    return {
-      builtIn: getBuiltInAliases(),
-      custom: getCustomAliases(),
-      all: getAllAliases(),
-    };
+    return executeEdgeRuntimeCommand({ command: "model-aliases.snapshot" });
   }
 
   async replaceAliases(aliases: Record<string, string>) {
-    setCustomAliases(aliases);
-    await updateSettings({ modelAliases: aliases });
-    return { success: true, custom: getCustomAliases() };
+    await updatePersistedRuntimeSettings({ modelAliases: aliases });
+    return { success: true, custom: aliases };
   }
 
   async addAlias(from: string, to: string) {
-    addCustomAlias(from, to);
-    const custom = getCustomAliases();
-    await updateSettings({ modelAliases: custom });
+    const settings = await getSettings();
+    const custom = { ...((settings.modelAliases as Record<string, string> | undefined) ?? {}), [from]: to };
+    await updatePersistedRuntimeSettings({ modelAliases: custom });
     return { success: true, custom };
   }
 
   async removeAlias(from: string) {
-    if (!removeCustomAlias(from)) return null;
-    const custom = getCustomAliases();
-    await updateSettings({ modelAliases: custom });
+    const settings = await getSettings();
+    const custom = { ...((settings.modelAliases as Record<string, string> | undefined) ?? {}) };
+    if (!(from in custom)) return null;
+    delete custom[from];
+    await updatePersistedRuntimeSettings({ modelAliases: custom });
     return { success: true, custom };
   }
 }

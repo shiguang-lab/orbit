@@ -15,10 +15,8 @@ export { getConsistentMachineId } from "../shared/utils/machineId.js";
 export { isAuthenticated } from "../shared/utils/apiAuth.js";
 export { isFreeModel, providerHasFreeModels } from "../shared/utils/freeModels.js";
 export { isValidationFailure, validateBody } from "../shared/validation/helpers.js";
-export {
-  cloudModelAliasUpdateSchema,
-  updateModelAliasSchema,
-} from "../shared/validation/schemas.js";
+export { cloudModelAliasUpdateSchema } from "../shared/validation/schemas/cloud.js";
+export { updateModelAliasSchema } from "../shared/validation/schemas/routing.js";
 export { AI_MODELS, PROVIDER_ID_TO_ALIAS } from "../shared/constants/models.js";
 export { AI_PROVIDERS } from "../shared/constants/providers.js";
 export { hasEligibleConnectionForModel } from "../domain/connectionModelRules.js";

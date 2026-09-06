@@ -202,6 +202,10 @@
       "types": "./src/tunnel-command.ts",
       "import": "./src/tunnel-command.ts"
     },
+    "./edge-runtime-command": {
+      "types": "./src/edge-runtime-command.ts",
+      "import": "./src/edge-runtime-command.ts"
+    },
     "./job-command": {
       "types": "./src/job-command.ts",
       "import": "./src/job-command.ts"

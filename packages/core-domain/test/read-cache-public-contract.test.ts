@@ -17,6 +17,7 @@ const expectedRuntimeExports = [
   "getCachedRawProviderConnections",
   "getCachedSettings",
   "getCombosCacheVersion",
+  "getModelCatalogCacheVersion",
 ] as const;
 
 const retiredAliases = [

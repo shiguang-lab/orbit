@@ -12,3 +12,4 @@ export function getCachedProviderNodes(
   filter?: Record<string, unknown>,
 ): Promise<Array<Record<string, unknown> | null>>;
 export function getCombosCacheVersion(): number;
+export function getModelCatalogCacheVersion(): number;

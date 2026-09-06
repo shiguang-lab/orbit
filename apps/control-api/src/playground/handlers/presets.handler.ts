@@ -14,7 +14,7 @@ import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/man
 import { listPlaygroundPresets, createPlaygroundPreset } from "@shiguang-gateway/core-domain/control/playground-presets";
 import { PlaygroundPresetCreateSchema } from "@shiguang-gateway/core-domain/shared/schemas/playground";
 import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
-import { paginationSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { paginationSchema } from "@shiguang-gateway/core-domain/validation/misc";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 
 const CORS_HEADERS = {

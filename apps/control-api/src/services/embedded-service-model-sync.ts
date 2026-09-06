@@ -11,11 +11,13 @@
 
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 import {
-  getServiceModels,
   saveServiceModels,
-  type ServiceModel,
   updateVersionManagerTool,
-} from "@shiguang-gateway/core-domain/control/embedded-services-runtime-support";
+} from "@shiguang-gateway/core-domain/control/embedded-services-lifecycle";
+import {
+  getServiceModels,
+  type ServiceModel,
+} from "@shiguang-gateway/core-domain/embedded-services/catalog";
 
 const SYNC_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 const FETCH_TIMEOUT_MS = 10_000;

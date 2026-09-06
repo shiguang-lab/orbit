@@ -1,5 +1,4 @@
 import { Module } from "@nestjs/common";
-import "@shiguang-gateway/open-sse/services/dbRuntimeHooks";
 import { HttpKernelModule } from "@shiguang-gateway/http-kernel";
 import { ProcessHealthModule } from "./process-health/process-health.module.js";
 import { AuthModule } from "./auth/auth.module.js";
@@ -108,7 +107,6 @@ import { MonitoringModule } from "./monitoring/monitoring.module.js";
 import { NetworkModule } from "./network/network.module.js";
 import { FreeTierModule } from "./free-tier/free-tier.module.js";
 import { SearchStatsModule } from "./search/stats/search-stats.module.js";
-import { TelegramModule } from "./telegram/telegram.module.js";
 import { IntelligenceModule } from "./intelligence/intelligence.module.js";
 import { EmbeddedServiceProxyModule } from "./services/embedded-service-proxy.module.js";
 import { DatabaseRuntimeLifecycleService } from "./database-runtime-lifecycle.service.js";
@@ -223,7 +221,6 @@ import { DatabaseRuntimeLifecycleService } from "./database-runtime-lifecycle.se
     NetworkModule,
     FreeTierModule,
     SearchStatsModule,
-    TelegramModule,
     IntelligenceModule,
     EmbeddedServiceProxyModule,
   ],

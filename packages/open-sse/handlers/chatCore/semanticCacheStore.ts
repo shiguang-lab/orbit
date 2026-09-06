@@ -12,7 +12,7 @@ import {
   generateSignature as defaultGenerateSignature,
   setCachedResponse as defaultSetCachedResponse,
   isCacheableForWrite as defaultIsCacheableForWrite,
-} from "@shiguang-gateway/core-domain/edge/semantic-cache";
+} from "@shiguang-gateway/core-domain/cache/semantic";
 import { isSmallEnoughForSemanticCache as defaultIsSmallEnough } from "../../utils/estimateSize.ts";
 
 type LoggerLike = { debug?: (...args: unknown[]) => void } | null | undefined;

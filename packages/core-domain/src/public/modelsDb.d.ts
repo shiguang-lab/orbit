@@ -13,5 +13,6 @@ export {
   getSyncedAvailableModelsByConnection,
   getSyncedAvailableModelsForConnection,
   replaceSyncedAvailableModelsForConnection,
+  type SyncedAvailableModel,
   type SyncedAvailableModelsByConnection,
 } from "../lib/db/models.js";

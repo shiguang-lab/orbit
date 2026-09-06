@@ -1223,6 +1223,10 @@
     "./support/utils/urlSanitize": {
       "types": "./src/utils/urlSanitize.ts",
       "import": "./src/utils/urlSanitize.ts"
+    },
+    "./free-model-catalog": {
+      "types": "./src/catalog/freeModelCatalog.ts",
+      "import": "./src/catalog/freeModelCatalog.ts"
     }
   },
   "scripts": {

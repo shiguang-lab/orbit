@@ -949,12 +949,14 @@ These endpoints mirror Gemini's API format for clients that expect native Gemini
 | ------------------------ | ------ | ---------------------------------------------------- |
 | `/api/init`              | GET    | Application initialization check (used on first run) |
 | `/api/tags`              | GET    | Ollama-compatible model tags (for Ollama clients)    |
-| `/api/restart`           | POST   | Trigger graceful server restart                      |
-| `/api/shutdown`          | POST   | Trigger graceful server shutdown                     |
 | `/api/system/env/repair` | GET    | Inspect missing OAuth environment defaults            |
 | `/api/system/env/repair` | POST   | Append missing OAuth environment defaults             |
 
 > **Note:** These endpoints are used internally by the system or for Ollama client compatibility. They are not typically called by end users.
+
+Whole-gateway lifecycle is owned by the external CLI supervisor. Use
+`shiguang-gateway restart` or `shiguang-gateway stop`; the control API does not
+terminate its own process or claim to control the other split services.
 
 ### OAuth Environment Repair _(v3.6.1+)_
 

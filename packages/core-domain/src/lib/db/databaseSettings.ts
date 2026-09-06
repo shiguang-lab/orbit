@@ -6,7 +6,7 @@ import { backupDbFile } from "./backup";
 import { DATA_DIR, SQLITE_FILE, applyDatabaseOptimizationSettings, getDbInstance } from "./core";
 import { invalidateDbCache } from "./readCache";
 import { getDatabaseStats } from "./stats";
-import { getState as getVacuumSchedulerState, refreshVacuumScheduler } from "./vacuumScheduler";
+import { getState as getVacuumSchedulerState } from "./vacuum";
 
 const DATABASE_SETTINGS_NAMESPACE = "databaseSettings";
 
@@ -306,10 +306,7 @@ export function updateDatabaseSettings(
 
   backupDbFile("pre-write");
   invalidateDbCache("settings");
-  if (optimizationUpdated) {
-    applyDatabaseOptimizationSettings(nextSettings.optimization);
-    refreshVacuumScheduler();
-  }
+  if (optimizationUpdated) applyDatabaseOptimizationSettings(nextSettings.optimization);
 
   return nextSettings;
 }

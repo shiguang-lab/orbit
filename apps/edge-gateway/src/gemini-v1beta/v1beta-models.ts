@@ -10,8 +10,8 @@ import { getSyncedCapabilities } from "@shiguang-gateway/core-domain/catalog/syn
 import {
   PROVIDER_MODELS,
   PROVIDER_ID_TO_ALIAS,
-  mergeCustomModelMetadata,
-} from "@shiguang-gateway/core-domain/catalog/runtime-support";
+} from "@shiguang-gateway/core-domain/catalog/provider-models";
+import { mergeCustomModelMetadata } from "@shiguang-gateway/core-domain/catalog/response-presentation";
 import {
   GET as getModels,
   OPTIONS,

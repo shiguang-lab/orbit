@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { updateServiceField } from "@shiguang-gateway/core-domain/shared/version-manager";
+import { updateServiceField } from "@shiguang-gateway/core-domain/control/embedded-services-lifecycle";
 import { createErrorResponse, sanitizeErrorMessage } from "@shiguang-gateway/core-domain/shared/error-response";
 
 const bodySchema = z.object({ enabled: z.boolean() });

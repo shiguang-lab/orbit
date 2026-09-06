@@ -4,13 +4,13 @@ import { z } from "zod";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import {
-  jsonObjectSchema,
   resetStatsActionSchema,
   updateAutoDisableAccountsSchema,
   updateIpFilterSchema,
   updatePayloadRulesSchema,
   updateRequireLoginSchema,
-} from "@shiguang-gateway/core-domain/shared/validation/schemas";
+} from "@shiguang-gateway/core-domain/validation/security";
+import { jsonObjectSchema } from "@shiguang-gateway/core-domain/validation/misc";
 import { SettingsSecurityService } from "./security.service.js";
 
 @Controller("api/settings")
@@ -43,7 +43,7 @@ export class SettingsSecurityController {
   @Get("background-degradation")
   async getBackground(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
     if (!(await this.authorize(request, reply))) return;
-    try { return reply.send(this.security.getBackgroundDegradation()); }
+    try { return reply.send(await this.security.getBackgroundDegradation()); }
     catch { return reply.status(500).send({ error: "Failed to get config" }); }
   }
 
@@ -63,7 +63,7 @@ export class SettingsSecurityController {
     const validation = validateBody(resetStatsActionSchema, body);
     if (isValidationFailure(validation)) return reply.status(400).send({ error: validation.error });
     if (validation.data.action !== "reset-stats") return reply.status(400).send({ error: "Unknown action" });
-    return reply.send(this.security.resetBackgroundStats());
+    return reply.send(await this.security.resetBackgroundStats());
   }
 
   @Get("require-login")
@@ -83,7 +83,7 @@ export class SettingsSecurityController {
   @Get("ip-filter")
   async getIpFilter(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
     if (!(await this.authorize(request, reply))) return;
-    try { return reply.send(this.security.getIpFilter()); }
+    try { return reply.send(await this.security.getIpFilter()); }
     catch { return reply.status(500).send({ error: "Failed to get IP filter config" }); }
   }
 
@@ -92,7 +92,7 @@ export class SettingsSecurityController {
     if (!(await this.authorize(request, reply))) return;
     const validation = validateBody(updateIpFilterSchema, body);
     if (isValidationFailure(validation)) return reply.status(400).send({ error: validation.error });
-    try { return reply.send(this.security.updateIpFilter(validation.data)); }
+    try { return reply.send(await this.security.updateIpFilter(validation.data)); }
     catch { return reply.status(500).send({ error: "Failed to update IP filter config" }); }
   }
 

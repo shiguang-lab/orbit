@@ -2,7 +2,6 @@ import { Injectable } from "@nestjs/common";
 import { jwtVerify } from "jose";
 import {
   getSettings,
-  updateSettings,
 } from "@shiguang-gateway/core-domain/db/settings";
 import {
   hashManagementPassword,
@@ -12,26 +11,12 @@ import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authentic
 import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
 import { getNodeRuntimeSupport } from "./node-runtime-support.js";
 import { normalizeAutoDisableBannedScope } from "@shiguang-gateway/core-domain/resilience/auto-disable-banned";
+import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 import {
-  getBackgroundDegradationConfig,
-  setBackgroundDegradationConfig,
-  resetStats,
-} from "@shiguang-gateway/open-sse/services/backgroundTaskDetector";
-import {
-  configureIPFilter,
-  getIPFilterConfig,
-  addToBlacklist,
-  removeFromBlacklist,
-  addToWhitelist,
-  removeFromWhitelist,
-  tempBanIP,
-  removeTempBan,
-} from "@shiguang-gateway/open-sse/services/ipFilter";
-import {
-  getPayloadRulesConfig,
-  normalizePayloadRulesConfig,
-} from "@shiguang-gateway/open-sse/services/payloadRules";
-import { isPaidModelTarget } from "@shiguang-gateway/core-domain/catalog/free-models";
+  applyPersistedRuntimeSettings,
+  updatePersistedRuntimeSettings,
+} from "../runtime-settings-persistence.js";
+import { readIpFilterConfig, writeIpFilterConfig } from "./ip-filter.repository.js";
 import { getCorsStatus } from "@shiguang-gateway/core-domain/shared/cors-status";
 import {
   ALWAYS_PROTECTED_API_PATHS,
@@ -85,7 +70,7 @@ export class SettingsSecurityService {
   }
 
   async updateAutoDisableAccounts(body: Record<string, unknown>) {
-    await updateSettings({
+    await updatePersistedRuntimeSettings({
       autoDisableBannedAccounts: body.enabled,
       ...(body.threshold !== undefined && { autoDisableBannedThreshold: body.threshold }),
       ...(body.scope !== undefined && { autoDisableBannedScope: body.scope }),
@@ -94,26 +79,30 @@ export class SettingsSecurityService {
   }
 
   getBackgroundDegradation() {
-    return getBackgroundDegradationConfig();
+    return executeEdgeRuntimeCommand({ command: "background-degradation.snapshot" });
   }
 
   async updateBackgroundDegradation(config: Record<string, unknown>) {
     const settings = await getSettings();
     if (settings.hidePaidModels === true && config.degradationMap && typeof config.degradationMap === "object") {
-      const blocked = Object.values(config.degradationMap as Record<string, unknown>).some(
-        (target) => typeof target === "string" && isPaidModelTarget(target) === "paid",
-      );
-      if (blocked) return { blocked: true } as const;
+      const targets = Object.values(config.degradationMap as Record<string, unknown>)
+        .filter((target): target is string => typeof target === "string" && target.length > 0);
+      const classification = await executeEdgeRuntimeCommand<{ paidTargets: string[] }>({
+        command: "model-access.classify",
+        targets,
+      });
+      if (classification.paidTargets.length > 0) return { blocked: true } as const;
     }
-    setBackgroundDegradationConfig(config);
-    const { stats: _stats, ...persistable } = getBackgroundDegradationConfig();
-    await updateSettings({ backgroundDegradation: persistable });
-    return { blocked: false, config: getBackgroundDegradationConfig() } as const;
+    const current = await this.getBackgroundDegradation() as Record<string, unknown>;
+    const persistable = { ...current, ...config };
+    delete persistable.stats;
+    await updatePersistedRuntimeSettings({ backgroundDegradation: persistable });
+    const applied = await this.getBackgroundDegradation();
+    return { blocked: false, config: applied } as const;
   }
 
   resetBackgroundStats() {
-    resetStats();
-    return { success: true, stats: getBackgroundDegradationConfig().stats };
+    return executeEdgeRuntimeCommand({ command: "background-degradation.reset-stats" });
   }
 
   async getRequireLogin(request: Request) {
@@ -156,32 +145,48 @@ export class SettingsSecurityService {
     const updates: Record<string, unknown> = {};
     if (typeof body.requireLogin === "boolean") updates.requireLogin = body.requireLogin;
     if (body.password) updates.password = await hashManagementPassword(String(body.password));
-    await updateSettings(updates);
+    await updatePersistedRuntimeSettings(updates);
     return { unauthorized: false, success: true } as const;
   }
 
   getIpFilter() {
-    return getIPFilterConfig();
+    return executeEdgeRuntimeCommand({ command: "ip-filter.snapshot" });
   }
 
-  updateIpFilter(body: Record<string, any>) {
-    if (body.enabled !== undefined || body.mode || body.blacklist || body.whitelist) configureIPFilter(body);
-    if (body.addBlacklist) addToBlacklist(body.addBlacklist);
-    if (body.removeBlacklist) removeFromBlacklist(body.removeBlacklist);
-    if (body.addWhitelist) addToWhitelist(body.addWhitelist);
-    if (body.removeWhitelist) removeFromWhitelist(body.removeWhitelist);
-    if (body.tempBan) tempBanIP(body.tempBan.ip, body.tempBan.durationMs || 3600000, body.tempBan.reason || "Manual ban");
-    if (body.removeBan) removeTempBan(body.removeBan);
-    return getIPFilterConfig();
+  async updateIpFilter(body: Record<string, any>) {
+    const config = readIpFilterConfig();
+    if (typeof body.enabled === "boolean") config.enabled = body.enabled;
+    if (typeof body.mode === "string") config.mode = body.mode;
+    if (Array.isArray(body.blacklist)) config.blacklist = [...body.blacklist];
+    if (Array.isArray(body.whitelist)) config.whitelist = [...body.whitelist];
+    const normalize = (value: string) => value.replace(/^::ffff:/, "").trim();
+    if (body.addBlacklist) config.blacklist = Array.from(new Set([...config.blacklist, normalize(body.addBlacklist)]));
+    if (body.removeBlacklist) config.blacklist = config.blacklist.filter((entry) => entry !== normalize(body.removeBlacklist));
+    if (body.addWhitelist) config.whitelist = Array.from(new Set([...config.whitelist, normalize(body.addWhitelist)]));
+    if (body.removeWhitelist) config.whitelist = config.whitelist.filter((entry) => entry !== normalize(body.removeWhitelist));
+    writeIpFilterConfig(config);
+    await applyPersistedRuntimeSettings();
+    if (body.tempBan) {
+      await executeEdgeRuntimeCommand({
+        command: "ip-filter.temp-ban",
+        ip: body.tempBan.ip,
+        durationMs: body.tempBan.durationMs || 3600000,
+        reason: body.tempBan.reason || "Manual ban",
+      });
+    }
+    if (body.removeBan) {
+      await executeEdgeRuntimeCommand({ command: "ip-filter.remove-temp-ban", ip: body.removeBan });
+    }
+    return this.getIpFilter();
   }
 
-  getPayloadRules() {
-    return getPayloadRulesConfig();
+  async getPayloadRules() {
+    return executeEdgeRuntimeCommand({ command: "payload-rules.snapshot" });
   }
 
   async updatePayloadRules(body: unknown) {
-    const config = normalizePayloadRulesConfig(body);
-    await updateSettings({ payloadRules: config });
+    const config = body;
+    await updatePersistedRuntimeSettings({ payloadRules: config });
     return config;
   }
 

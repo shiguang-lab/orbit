@@ -1,11 +1,13 @@
 import {
+  getOrCreateApiKey,
+  maskApiKey,
+} from "@shiguang-gateway/core-domain/embedded-services/api-key";
+import { getSupervisor } from "@shiguang-gateway/core-domain/control/embedded-services-lifecycle";
+import { getServiceRow } from "@shiguang-gateway/core-domain/embedded-services/status";
+import {
   getNineRouterInstalledVersion,
   getNineRouterLatestVersion,
-  getOrCreateApiKey,
-  getSupervisor,
-  maskApiKey,
-} from "@shiguang-gateway/core-domain/shared/embedded-services";
-import { getServiceRow } from "@shiguang-gateway/core-domain/shared/version-manager";
+} from "@shiguang-gateway/core-domain/control/embedded-services-install";
 import { createErrorResponse, sanitizeErrorMessage } from "@shiguang-gateway/core-domain/shared/error-response";
 import { logAuditEvent } from "@shiguang-gateway/core-domain/compliance/audit-log";
 

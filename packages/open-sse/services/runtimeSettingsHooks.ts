@@ -1,4 +1,5 @@
 import { registerProviderRuntimeSettingsPort } from "@shiguang-gateway/core-domain/runtime/provider-settings-port";
+import { registerResilienceRuntimeSettingsPort } from "@shiguang-gateway/core-domain/resilience/settings-runtime";
 function normalizeStringArray(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
   return Array.from(
@@ -22,7 +23,33 @@ function normalizeStringRecord(value: unknown): Record<string, string> {
   );
 }
 
-registerProviderRuntimeSettingsPort({
+let runtimeSettingsPortInstalled = false;
+let resilienceRuntimeSettingsPortInstalled = false;
+
+export function installResilienceRuntimeSettingsPort(): void {
+  if (resilienceRuntimeSettingsPortInstalled) return;
+  registerResilienceRuntimeSettingsPort({
+    async applyRequestQueueSettings(settings) {
+      const { applyRequestQueueSettings } = await import("./rateLimitManager.ts");
+      await applyRequestQueueSettings(settings);
+    },
+    async setProviderQuotaOverrides(settings) {
+      const { setProviderQuotaOverrides } = await import("./providerDefaultRateLimit.ts");
+      setProviderQuotaOverrides(settings);
+    },
+    async resetAllCircuitBreakers() {
+      const { resetAllCircuitBreakers } = await import(
+        "@shiguang-gateway/core-domain/resilience/circuit-breaker"
+      );
+      resetAllCircuitBreakers();
+    },
+  });
+  resilienceRuntimeSettingsPortInstalled = true;
+}
+
+export function installRuntimeSettingsPort(): void {
+  if (runtimeSettingsPortInstalled) return;
+  registerProviderRuntimeSettingsPort({
   async applyPayloadRules(value) {
     const { clearPayloadRulesConfigOverride, setPayloadRulesConfig } = await import("./payloadRules.js");
     if (value === null || value === undefined) clearPayloadRulesConfigOverride();
@@ -86,4 +113,6 @@ registerProviderRuntimeSettingsPort({
     const { setOperatorProviderErrorRules } = await import("../config/providerErrorRules.js");
     setOperatorProviderErrorRules(value);
   },
-});
+  });
+  runtimeSettingsPortInstalled = true;
+}

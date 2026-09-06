@@ -431,11 +431,13 @@ export async function cleanupCcrBlocks(): Promise<CleanupResult> {
 /**
  * Run all cleanup functions if auto-cleanup is enabled.
  */
-export async function runAutoCleanup(): Promise<{
+export interface AutoCleanupResult {
   totalDeleted: number;
   totalErrors: number;
   results: Record<string, CleanupResult>;
-}> {
+}
+
+export async function runAutoCleanup(): Promise<AutoCleanupResult> {
   const retention = getRetentionSettings();
   const autoCleanupEnabled = retention.autoCleanupEnabled;
 
@@ -770,80 +772,4 @@ export async function cleanupProxyLogs(): Promise<CleanupResult> {
   }
 
   return result;
-}
-
-// ──────────────── Background Cleanup Scheduler ────────────────
-
-const CLEANUP_INTERVAL_MS = 6 * 60 * 60 * 1000; // 6 hours
-let _cleanupSchedulerTimer: ReturnType<typeof setInterval> | null = null;
-
-/**
- * Start the background cleanup scheduler. Runs cleanup on startup
- * and then every 6 hours. Runs VACUUM after deletes to reclaim disk space.
- *
- * Without this, tables grow unboundedly (compression_analytics 600K+ rows,
- * usage_history 250K+ rows) causing 1.4GB+ SQLite files and 3-8GB RSS
- * from better-sqlite3 memory mapping.
- */
-export function startCleanupScheduler(): void {
-  if (_cleanupSchedulerTimer) return;
-
-  // Run cleanup 30s after startup (let the server initialize first).
-  setTimeout(async () => {
-    try {
-      const result = await runAutoCleanup();
-      const proxyResult = await cleanupProxyLogs();
-      const totalDeleted = result.totalDeleted + proxyResult.deleted;
-      if (totalDeleted > 0) {
-        console.log(`[Cleanup] Startup cleanup freed ${totalDeleted} rows. Running VACUUM...`);
-        try {
-          const db = getDbInstance();
-          db.exec("VACUUM");
-          console.log("[Cleanup] VACUUM completed after startup cleanup.");
-        } catch (vacErr) {
-          console.error("[Cleanup] VACUUM after cleanup failed:", vacErr);
-        }
-      }
-    } catch (err) {
-      console.error("[Cleanup] Startup cleanup failed:", err);
-    }
-  }, 30_000);
-
-  // Schedule periodic cleanup every 6 hours.
-  _cleanupSchedulerTimer = setInterval(async () => {
-    try {
-      const result = await runAutoCleanup();
-      const proxyResult = await cleanupProxyLogs();
-      const totalDeleted = result.totalDeleted + proxyResult.deleted;
-      if (totalDeleted > 0) {
-        console.log(`[Cleanup] Periodic cleanup freed ${totalDeleted} rows. Running VACUUM...`);
-        try {
-          const db = getDbInstance();
-          db.exec("VACUUM");
-          console.log("[Cleanup] VACUUM completed after periodic cleanup.");
-        } catch (vacErr) {
-          console.error("[Cleanup] VACUUM after cleanup failed:", vacErr);
-        }
-      }
-    } catch (err) {
-      console.error("[Cleanup] Periodic cleanup failed:", err);
-    }
-  }, CLEANUP_INTERVAL_MS);
-
-  // Don't keep the process alive solely for cleanup.
-  if (_cleanupSchedulerTimer && typeof _cleanupSchedulerTimer.unref === "function") {
-    _cleanupSchedulerTimer.unref();
-  }
-
-  console.log("[Cleanup] Background cleanup scheduler started (every 6 hours).");
-}
-
-/**
- * Stop the background cleanup scheduler (for tests).
- */
-export function stopCleanupScheduler(): void {
-  if (_cleanupSchedulerTimer) {
-    clearInterval(_cleanupSchedulerTimer);
-    _cleanupSchedulerTimer = null;
-  }
 }

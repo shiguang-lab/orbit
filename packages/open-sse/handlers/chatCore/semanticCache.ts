@@ -2,7 +2,7 @@ import {
   generateSignature,
   getCachedResponse,
   isCacheableForRead,
-} from "@shiguang-gateway/core-domain/edge/semantic-cache";
+} from "@shiguang-gateway/core-domain/cache/semantic";
 import { calculateCost } from "@shiguang-gateway/core-domain/pricing/cost-calculator";
 import { trackPendingRequest } from "@shiguang-gateway/core-domain/usage/pending-requests";
 import { synthesizeOpenAiSseFromJson } from "../../utils/jsonToSse.ts";

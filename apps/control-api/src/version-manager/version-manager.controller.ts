@@ -8,7 +8,7 @@ import {
 import {
   versionManagerInstallSchema,
   versionManagerToolSchema,
-} from "@shiguang-gateway/core-domain/shared/validation/schemas";
+} from "@shiguang-gateway/core-domain/validation/misc";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import { VersionManagerService } from "./version-manager.service.js";
 

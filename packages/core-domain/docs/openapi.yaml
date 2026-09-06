@@ -5508,23 +5508,6 @@ paths:
         "200":
           description: Init status
 
-  /api/restart:
-    post:
-      tags: [System]
-      summary: Restart the application
-      responses:
-        "200":
-          description: Restart initiated
-
-  /api/shutdown:
-    post:
-      tags: [System]
-      summary: Shutdown the application
-      x-always-protected: true
-      responses:
-        "200":
-          description: Shutdown initiated
-
   /api/db-backups:
     get:
       tags: [System]

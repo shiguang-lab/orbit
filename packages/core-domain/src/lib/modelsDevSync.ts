@@ -61,7 +61,7 @@ interface SyncStatus {
   intervalMs: number;
 }
 
-interface SyncResult {
+export interface SyncResult {
   success: boolean;
   modelCount: number;
   providerCount: number;
@@ -78,6 +78,16 @@ const MODELS_DEV_API_URL = "https://models.dev/api.json";
 const parsedInterval = parseInt(process.env.MODELS_DEV_SYNC_INTERVAL || "86400", 10);
 const SYNC_INTERVAL_MS =
   Number.isFinite(parsedInterval) && parsedInterval > 0 ? parsedInterval * 1000 : 86400 * 1000;
+
+export function resolveModelsDevSyncIntervalMs(
+  configuredInterval: unknown,
+  environmentSeconds: string | undefined = process.env.MODELS_DEV_SYNC_INTERVAL,
+): number {
+  const configured = Number(configuredInterval);
+  if (Number.isFinite(configured) && configured > 0) return configured;
+  const seconds = Number.parseInt(environmentSeconds ?? "", 10);
+  return Number.isFinite(seconds) && seconds > 0 ? seconds * 1000 : 86_400_000;
+}
 
 /** Parse MODELS_DEV_SYNC_ENABLED. Invalid / empty → unset (honor DB settings). */
 export function readModelsDevSyncEnvFlag(
@@ -105,20 +115,46 @@ export function isModelsDevSyncEnvForcedOn(): boolean {
 
 // ─── Periodic sync state ─────────────────────────────────
 
-let syncTimer: ReturnType<typeof setInterval> | null = null;
-let activeSyncAbortController: AbortController | null = null;
-let activeSyncPromise: Promise<SyncResult> | null = null;
-let activePeriodicSyncToken: { stopped: boolean } | null = null;
-let lastSyncTime: string | null = null;
-let lastSyncModelCount = 0;
-let lastSyncCapabilityCount = 0;
-let activeSyncIntervalMs = SYNC_INTERVAL_MS;
 let cachedData: ModelsDevData | null = null;
 let cacheTime = 0;
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 let cachedCapabilities: CapabilitiesByProvider | null = null;
 let cachedCapabilitiesLoadedAll = false;
 const MODELS_DEV_ABORT_ERROR = "AbortError";
+const SYNC_STATUS_NAMESPACE = "models_dev_sync_status";
+const SYNC_STATUS_KEY = "last_sync";
+
+type PersistedSyncStatus = Pick<
+  SyncStatus,
+  "lastSync" | "lastSyncModelCount" | "lastSyncCapabilityCount"
+>;
+
+function readPersistedSyncStatus(): PersistedSyncStatus {
+  const row = getDbInstance()
+    .prepare("SELECT value FROM key_value WHERE namespace = ? AND key = ?")
+    .get(SYNC_STATUS_NAMESPACE, SYNC_STATUS_KEY) as { value?: unknown } | undefined;
+  if (typeof row?.value !== "string") {
+    return { lastSync: null, lastSyncModelCount: 0, lastSyncCapabilityCount: 0 };
+  }
+  try {
+    const parsed = JSON.parse(row.value) as Partial<PersistedSyncStatus>;
+    return {
+      lastSync: typeof parsed.lastSync === "string" ? parsed.lastSync : null,
+      lastSyncModelCount: typeof parsed.lastSyncModelCount === "number" ? parsed.lastSyncModelCount : 0,
+      lastSyncCapabilityCount:
+        typeof parsed.lastSyncCapabilityCount === "number" ? parsed.lastSyncCapabilityCount : 0,
+    };
+  } catch {
+    return { lastSync: null, lastSyncModelCount: 0, lastSyncCapabilityCount: 0 };
+  }
+}
+
+function writePersistedSyncStatus(status: PersistedSyncStatus): void {
+  getDbInstance().prepare(
+    "INSERT INTO key_value (namespace, key, value) VALUES (?, ?, ?) " +
+      "ON CONFLICT(namespace, key) DO UPDATE SET value = excluded.value",
+  ).run(SYNC_STATUS_NAMESPACE, SYNC_STATUS_KEY, JSON.stringify(status));
+}
 
 function createAbortError(): Error {
   const error = new Error("models.dev sync aborted");
@@ -604,9 +640,11 @@ export async function syncModelsDev(opts?: {
           ensureCapabilitiesTable();
           saveModelsDevCapabilities(capabilities);
         }
-        lastSyncTime = new Date().toISOString();
-        lastSyncModelCount = modelCount;
-        lastSyncCapabilityCount = capabilityCount;
+        writePersistedSyncStatus({
+          lastSync: new Date().toISOString(),
+          lastSyncModelCount: modelCount,
+          lastSyncCapabilityCount: capabilityCount,
+        });
       }
 
       return {
@@ -654,130 +692,14 @@ export async function syncModelsDev(opts?: {
   };
 }
 
-// ─── Periodic sync ───────────────────────────────────────
-
-/**
- * Start periodic models.dev sync (non-blocking).
- */
-export function startPeriodicSync(intervalMs?: number): void {
-  if (syncTimer) return; // Already running
-
-  const interval = intervalMs ?? SYNC_INTERVAL_MS;
-  activeSyncIntervalMs = interval;
-  const syncToken = { stopped: false };
-  activePeriodicSyncToken = syncToken;
-  console.log(`[MODELS_DEV] Starting periodic sync every ${interval / 1000}s`);
-
-  const launchSync = () => {
-    if (syncToken.stopped) {
-      return Promise.resolve(createAbortedSyncResult(false));
-    }
-
-    if (activeSyncPromise) return activeSyncPromise;
-
-    const controller = new AbortController();
-    activeSyncAbortController = controller;
-    const promise = syncModelsDev({ signal: controller.signal }).finally(() => {
-      if (activeSyncAbortController === controller) {
-        activeSyncAbortController = null;
-      }
-      if (activeSyncPromise === promise) {
-        activeSyncPromise = null;
-      }
-    });
-    activeSyncPromise = promise;
-    return promise;
-  };
-
-  // Initial sync (non-blocking)
-  launchSync()
-    .then((result) => {
-      if (result.success) {
-        console.log(
-          `[MODELS_DEV] Initial sync complete: ${result.modelCount} pricing entries, ${result.capabilityCount} capabilities from ${result.providerCount} providers`
-        );
-      }
-    })
-    .catch((err) => {
-      console.warn("[MODELS_DEV] Initial sync error:", err instanceof Error ? err.message : err);
-    });
-
-  syncTimer = setInterval(() => {
-    launchSync()
-      .then((result) => {
-        if (result.success) {
-          console.log(`[MODELS_DEV] Periodic sync complete: ${result.modelCount} pricing entries`);
-        }
-      })
-      .catch((err) => {
-        console.warn("[MODELS_DEV] Periodic sync error:", err instanceof Error ? err.message : err);
-      });
-  }, interval);
-
-  if (syncTimer && typeof syncTimer === "object" && "unref" in syncTimer) {
-    (syncTimer as { unref?: () => void }).unref?.();
-  }
-}
-
-/**
- * Stop periodic sync and cleanup timer.
- */
-export function stopPeriodicSync(): void {
-  if (activePeriodicSyncToken) {
-    activePeriodicSyncToken.stopped = true;
-    activePeriodicSyncToken = null;
-  }
-
-  if (activeSyncAbortController) {
-    activeSyncAbortController.abort();
-    activeSyncAbortController = null;
-  }
-
-  if (syncTimer) {
-    clearInterval(syncTimer);
-    syncTimer = null;
-    console.log("[MODELS_DEV] Periodic sync stopped");
-  }
-}
-
-/**
- * Get current sync status.
- */
 export function getSyncStatus(): SyncStatus {
-  // If the sync timer is active, it's enabled.
-  const enabled = syncTimer !== null;
+  const persisted = readPersistedSyncStatus();
   return {
-    enabled,
-    lastSync: lastSyncTime,
-    lastSyncModelCount,
-    lastSyncCapabilityCount,
-    nextSync:
-      syncTimer && lastSyncTime
-        ? new Date(new Date(lastSyncTime).getTime() + activeSyncIntervalMs).toISOString()
-        : null,
-    intervalMs: activeSyncIntervalMs,
+    enabled: !isModelsDevSyncEnvDisabled(),
+    ...persisted,
+    nextSync: persisted.lastSync
+      ? new Date(new Date(persisted.lastSync).getTime() + SYNC_INTERVAL_MS).toISOString()
+      : null,
+    intervalMs: SYNC_INTERVAL_MS,
   };
-}
-
-// ─── Init (called from instrumentation-node.ts) ───────────────────
-
-/**
- * Initialize models.dev sync if enabled.
- */
-export async function initModelsDevSync(): Promise<void> {
-  if (isModelsDevSyncEnvDisabled()) {
-    console.log("[MODELS_DEV] Disabled (MODELS_DEV_SYNC_ENABLED=0)");
-    return;
-  }
-
-  const { getSettings } = await import("./localDb");
-  const settings = await getSettings();
-
-  if (!isModelsDevSyncEnvForcedOn() && settings.modelsDevSyncEnabled !== true) {
-    console.log("[MODELS_DEV] Disabled (enable via Settings > AI or MODELS_DEV_SYNC_ENABLED=1)");
-    return;
-  }
-
-  const interval = settings.modelsDevSyncInterval as number | undefined;
-  startPeriodicSync(interval);
 }

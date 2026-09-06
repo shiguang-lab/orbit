@@ -5,7 +5,7 @@ import {
   getSearchProviderStats,
 } from "@shiguang-gateway/core-domain/db/call-log-stats";
 import { SEARCH_PROVIDERS } from "@shiguang-gateway/open-sse/config/searchRegistry";
-import { getCacheStats } from "@shiguang-gateway/open-sse/services/searchCache";
+import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 
 @Injectable()
 export class SearchStatsService {
@@ -44,7 +44,12 @@ export class SearchStatsService {
         return { query, provider: row.provider, timestamp: row.timestamp, filters };
       });
 
-      return Response.json({ cache: getCacheStats(), providers, recent_searches });
+      const cache = await executeEdgeRuntimeCommand<{
+        size: number;
+        hits: number;
+        misses: number;
+      }>({ command: "search-cache.snapshot" });
+      return Response.json({ cache, providers, recent_searches });
     } catch {
       return Response.json({ error: "Failed to get stats" }, { status: 500 });
     }

@@ -18,13 +18,19 @@ import {
 import {
   getModelsDevPricing,
   getSyncedCapabilities,
-  getSyncStatus,
-  startPeriodicSync,
-  stopPeriodicSync,
-  syncModelsDev,
 } from "@shiguang-gateway/core-domain/catalog/synced-model-capabilities";
+import {
+  getSyncStatus,
+  isModelsDevSyncEnvDisabled,
+  isModelsDevSyncEnvForcedOn,
+  resolveModelsDevSyncIntervalMs,
+  syncModelsDev,
+} from "@shiguang-gateway/core-domain/sync/models-dev";
 import { getApiKeys } from "@shiguang-gateway/core-domain/db/api-keys";
-import { setSystemPromptConfig } from "@shiguang-gateway/open-sse/services/systemPrompt";
+import {
+  applyPersistedRuntimeSettings,
+  updatePersistedRuntimeSettings,
+} from "../runtime-settings-persistence.js";
 import {
   isFreeModel,
   providerHasFreeModels,
@@ -146,8 +152,7 @@ export class SettingsConfigService {
     const counts = runJsonMigration(getDbInstance(), safeData);
     clearApiKeyCaches();
     invalidateDbCache();
-    const importedSettings = await getSettings();
-    if (importedSettings.systemPrompt) setSystemPromptConfig(importedSettings.systemPrompt);
+    await applyPersistedRuntimeSettings();
     return counts;
   }
 
@@ -166,7 +171,7 @@ export class SettingsConfigService {
     const updates: Record<string, unknown> = {};
     if (comboDefaults) updates.comboDefaults = sanitizeComboRuntimeConfig(comboDefaults);
     if (providerOverrides) updates.providerOverrides = sanitizeProviderOverrides(providerOverrides);
-    const settings = await updateSettings(updates) as Record<string, unknown>;
+    const settings = await updatePersistedRuntimeSettings(updates);
     return this.getComboDefaults(settings);
   }
 
@@ -178,12 +183,21 @@ export class SettingsConfigService {
     };
   }
 
-  getModelsDevStatus() {
+  async getModelsDevStatus() {
     const status = getSyncStatus();
+    const settings = await getSettings();
+    const enabled = !isModelsDevSyncEnvDisabled() &&
+      (isModelsDevSyncEnvForcedOn() || settings.modelsDevSyncEnabled === true);
+    const intervalMs = resolveModelsDevSyncIntervalMs(settings.modelsDevSyncInterval);
     const pricing = getModelsDevPricing();
     const capabilities = getSyncedCapabilities();
     return {
       ...status,
+      enabled,
+      intervalMs,
+      nextSync: enabled && status.lastSync
+        ? new Date(new Date(status.lastSync).getTime() + intervalMs).toISOString()
+        : null,
       providerCount: Object.keys(pricing).length,
       modelCount: Object.values(pricing as Record<string, Record<string, unknown>>).reduce(
         (sum, models) => sum + Object.keys(models).length,
@@ -200,11 +214,11 @@ export class SettingsConfigService {
     return syncModelsDev(options);
   }
 
-  startModelsDevSync() {
-    startPeriodicSync();
+  async startModelsDevSync() {
+    await updateSettings({ modelsDevSyncEnabled: true }, { applyRuntime: false });
   }
 
-  stopModelsDevSync() {
-    stopPeriodicSync();
+  async stopModelsDevSync() {
+    await updateSettings({ modelsDevSyncEnabled: false }, { applyRuntime: false });
   }
 }

@@ -3,4 +3,4 @@ export {
   getArenaEloSyncStatus,
   syncArenaElo,
 } from "../lib/arenaEloSync.ts";
-export { intelligenceSyncRequestSchema } from "../shared/validation/schemas.ts";
+export { intelligenceSyncRequestSchema } from "../shared/validation/schemas/routing.ts";

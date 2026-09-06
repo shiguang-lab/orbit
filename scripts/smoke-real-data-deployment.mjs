@@ -78,7 +78,7 @@ async function waitHttp(port, path, expected = 200, headers = {}) {
 }
 
 try {
-  await run("node", ["scripts/import-source-data.mjs", "--source-data-dir", sourceDir, "--target-data-dir", dataDir, "--replace"]);
+  await run("pnpm", ["--filter", "@shiguang-gateway/importer", "run", "import", "--", "--source-data-dir", sourceDir, "--target-data-dir", dataDir, "--replace"]);
   const db = new DatabaseSync(join(dataDir, "storage.sqlite"), { readOnly: true });
   const apiKey = db.prepare(`
     SELECT key FROM api_keys

@@ -7,9 +7,8 @@
 // cross-provider plumbing. The provider-module split was originally proposed
 // by KooshaPari in PR #7338, whose base was too old to merge as-is; this is an
 // independent implementation of the same idea against the current tip, not a
-// reuse of that diff. Supported provider refresh exports are re-exported below so
-// importers (open-sse/index.ts, executors, src/sse/services/tokenRefresh.ts,
-// tests) keep a stable surface.
+// reuse of that diff. Supported provider refresh exports are re-exported below
+// for the focused token-refresh consumers.
 import { AsyncLocalStorage } from "node:async_hooks";
 import { PROVIDERS } from "../config/constants.ts";
 import { getCodexAuthIdentityHeaders } from "../config/codexClient.ts";
@@ -716,12 +715,7 @@ async function _getAccessTokenWithStalenessCheck(provider, credentials, log, pro
   return result;
 }
 
-/**
- * Refresh token by provider type (alias for getAccessToken)
- * @deprecated Since v0.2.70 — use getAccessToken() directly.
- * Still exported because open-sse/index.js and src/sse wrapper use it.
- * Will be removed in a future major version.
- */
+/** Refresh a token through the provider-specific credential refresh contract. */
 export const refreshTokenByProvider = getAccessToken;
 
 /**

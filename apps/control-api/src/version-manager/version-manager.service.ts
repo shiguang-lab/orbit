@@ -1,17 +1,19 @@
 import { Injectable } from "@nestjs/common";
 import {
-  CLIPROXY_DEFAULT_PORT,
   ServiceSupervisor,
-  getInstalledVersion,
-  getLatestVersion,
-  getOrCreateApiKey,
   getServiceRow,
   getSupervisor,
   getVersionManagerStatus,
-  install,
   registerSupervisor,
-  resolveSpawnArgs,
-} from "@shiguang-gateway/core-domain/shared/version-manager";
+} from "@shiguang-gateway/core-domain/control/embedded-services-lifecycle";
+import { getOrCreateApiKey } from "@shiguang-gateway/core-domain/embedded-services/api-key";
+import {
+  CLIPROXY_DEFAULT_PORT,
+  getCliproxyInstalledVersion as getInstalledVersion,
+  getCliproxyLatestVersion as getLatestVersion,
+  installCliproxy as install,
+  resolveCliproxySpawnArgs as resolveSpawnArgs,
+} from "@shiguang-gateway/core-domain/control/embedded-services-install";
 
 const TOOL = "cliproxy";
 const SUPERVISOR_TOOLS = new Set([TOOL, "cliproxyapi"]);

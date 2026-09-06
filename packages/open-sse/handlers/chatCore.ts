@@ -417,7 +417,7 @@ import {
   setCachedResponse,
   isCacheableForRead,
   isCacheableForWrite,
-} from "@shiguang-gateway/core-domain/edge/semantic-cache";
+} from "@shiguang-gateway/core-domain/cache/semantic";
 import { saveIdempotency } from "@shiguang-gateway/core-domain/edge/idempotency";
 import {
   isModelUnavailableError,
@@ -2864,7 +2864,10 @@ export async function handleChatCore({
   let quotaSoftDeprioritize = false;
   if (apiKeyInfo?.id && credentials?.connectionId) {
     try {
-      await import("../services/quotaSaturation.js");
+      const { installQuotaSaturationRuntimePort } = await import(
+        "../services/quotaSaturation.js"
+      );
+      installQuotaSaturationRuntimePort();
       const { enforceQuotaShare } = await import("@shiguang-gateway/core-domain/quota/services");
       const decision = await enforceQuotaShare({
         apiKeyId: apiKeyInfo.id,

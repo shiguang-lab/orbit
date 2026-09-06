@@ -15,15 +15,17 @@ const contracts = {
     entry: "./src/resilience/connectionRecoveryPolicy.ts",
     runtime: ["TERMINAL_CONNECTION_STATUSES"],
   },
-  "./worker/connection-recovery-lifecycle": {
-    entry: "./src/worker/connectionRecoveryLifecycle.ts",
-    runtime: ["initConnectionRecoveryScheduler", "stopConnectionRecoveryScheduler"],
+  "./resilience/connection-recovery": {
+    entry: "./src/resilience/connectionRecovery.ts",
+    types: "./src/public/connectionRecoveryOperation.d.ts",
+    runtime: ["resolveConnectionRecoveryIntervalMs", "runConnectionRecoveryTick"],
   },
 } as const;
 const retiredSubpaths = [
   "./shared/connection-recovery-policy",
   "./control/resilience-connection-recovery",
   "./worker/connection-recovery",
+  "./worker/connection-recovery-lifecycle",
 ] as const;
 
 function sourceFiles(dir: string): string[] {
@@ -37,10 +39,10 @@ function sourceFiles(dir: string): string[] {
   return files;
 }
 
-test("connection recovery policy and worker lifecycle have distinct narrow contracts", async () => {
+test("connection recovery policy and run-once operation have distinct narrow contracts", async () => {
   for (const [subpath, contract] of Object.entries(contracts)) {
     assert.deepEqual(manifest.exports[subpath], {
-      types: contract.entry,
+      types: "types" in contract ? contract.types : contract.entry,
       import: contract.entry,
     });
     const runtime = await import(pathToFileURL(path.join(packageRoot, contract.entry)).href);
@@ -64,7 +66,7 @@ test("scenario-specific connection recovery aliases stay retired", () => {
   }
 });
 
-test("connection recovery lifecycle remains worker-only", () => {
+test("retired connection recovery lifecycle is absent from app consumers", () => {
   const lifecycleImport = /core-domain\/worker\/connection-recovery-lifecycle/;
   for (const root of [
     "apps/admin",
@@ -79,4 +81,5 @@ test("connection recovery lifecycle remains worker-only", () => {
       assert.doesNotMatch(fs.readFileSync(file, "utf8"), lifecycleImport, file);
     }
   }
+  assert.equal(fs.existsSync(path.join(packageRoot, "src/worker/connectionRecoveryLifecycle.ts")), false);
 });

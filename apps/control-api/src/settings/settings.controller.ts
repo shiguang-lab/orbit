@@ -6,7 +6,7 @@ import {
   isValidationFailure,
   validateBody,
 } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { databaseSettingsSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { databaseSettingsSchema } from "@shiguang-gateway/core-domain/validation/settings";
 import { SettingsService } from "./settings.service.js";
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 import {
@@ -101,7 +101,7 @@ export class SettingsController {
   async getSystemPrompt(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
     if (!(await this.authorize(request, reply))) return;
     try {
-      return reply.send(this.settings.getSystemPrompt());
+      return reply.send(await this.settings.getSystemPrompt());
     } catch (error) {
       console.error("Error reading system prompt config:", error);
       return reply.status(500).send({ error: "Failed to read system prompt config" });
@@ -129,7 +129,7 @@ export class SettingsController {
   async getThinkingBudget(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
     if (!(await this.authorize(request, reply))) return;
     try {
-      return reply.send(this.settings.getThinkingBudget());
+      return reply.send(await this.settings.getThinkingBudget());
     } catch (error) {
       console.error("Error reading thinking budget config:", error);
       return reply.status(500).send({ error: "Failed to read thinking budget config" });

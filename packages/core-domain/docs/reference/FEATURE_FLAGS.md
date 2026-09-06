@@ -209,8 +209,8 @@ value. Returns `{ cleared: <count>, message: "..." }`.
 
 > [!NOTE]
 > Flags with `requiresRestart: true` only take effect after a process reload.
-> The dashboard's restart flow calls `POST /api/restart` and then polls
-> `GET /api/health/ping` until the server is back up.
+> Restart the complete split runtime with `shiguang-gateway restart`; process
+> lifecycle is owned by the external CLI supervisor, not the control API.
 
 ---
 

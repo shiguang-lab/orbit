@@ -5,6 +5,8 @@ export type OwnedRoute = {
 
 export const ownedEdgeRoutes: readonly OwnedRoute[] = [
   { path: "/api/internal/codex-responses-ws", methods: ["POST"] },
+  { path: "/api/internal/runtime/command", methods: ["POST"] },
+  { path: "/api/telegram/update", methods: ["POST"] },
   { path: "/.well-known/agent.json", methods: ["GET", "HEAD"] },
   { path: "/.well-known/agent-card.json", methods: ["GET", "HEAD"] },
   { path: "/a2a", methods: ["OPTIONS", "POST"] },

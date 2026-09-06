@@ -1,7 +1,7 @@
 import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/compliance/audit-log";
 import { createErrorResponse, createErrorResponseFromUnknown } from "@shiguang-gateway/core-domain/shared/error-response";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { createSyncTokenSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { createSyncTokenSchema } from "@shiguang-gateway/core-domain/validation/keys";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { issueSyncToken, listSyncTokenSummaries, resolveSyncApiKeyIdFromManagementRequest } from "@shiguang-gateway/core-domain/control/sync-tokens";
 

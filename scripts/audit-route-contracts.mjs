@@ -8,7 +8,7 @@ import { join, relative, resolve } from "node:path";
 const repoRoot = resolve(import.meta.dirname, "..");
 const referenceRoot = resolve(process.env.SHIGUANG_GATEWAY_REFERENCE_DIR || join(repoRoot, "..", "Orbit"));
 const methods = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"];
-const frozenContractSha256 = "1f9b667b02c61bc53f4feab303f56941a37506e651d0ba9e497c91c2a416be14";
+const frozenContractSha256 = "83173aff965fddda925fc9ae256b7131731aa5d2c5fd73aa05bd3c54fe8f19d2";
 const localApiExtensions = new Set([
   "media/cache/stats/route.ts",
   "media/cache/purge/route.ts",
@@ -26,6 +26,14 @@ const localApiExtensions = new Set([
   // Private, token-authenticated control-to-edge command surface. It has no
   // historical public Next route contract and is not exposed by control-api.
   "internal/tunnels/command/route.ts",
+  "internal/runtime/command/route.ts",
+]);
+// Whole-runtime lifecycle belongs to the external CLI supervisor. The former
+// control routes terminated only the control process while claiming to stop or
+// restart the entire split runtime, so they are intentionally absent.
+const retiredMisleadingLifecycleRoutes = new Set([
+  "restart/route.ts",
+  "shutdown/route.ts",
 ]);
 const normalizeRoutePath = (value) => value.replace(new RegExp("omni" + "route", "gi"), "gateway");
 
@@ -157,7 +165,9 @@ const localPath = (file) => {
   return root ? relative(root, file).split("\\").join("/") : file;
 };
 
-const refMap = new Map(refFiles.map((file) => [normalizeRoutePath(relative(referenceApi, file).split("\\").join("/")), contract(file)]));
+const refMap = new Map(refFiles
+  .map((file) => [normalizeRoutePath(relative(referenceApi, file).split("\\").join("/")), contract(file)])
+  .filter(([routePath]) => !retiredMisleadingLifecycleRoutes.has(routePath)));
 const localMap = new Map();
 
 for (const routePath of nativeFallbackContracts) {
@@ -210,11 +220,12 @@ if (referenceAvailable) {
 } else {
   const serialized = [...localMap].sort(([a], [b]) => a.localeCompare(b)).map(([path, verbs]) => `${path}:${verbs.join(",")}`).join("\n");
   const actualHash = createHash("sha256").update(serialized).digest("hex");
-  if (localMap.size !== 689 || actualHash !== frozenContractSha256) {
+  if (localMap.size !== 687 || actualHash !== frozenContractSha256) {
     mismatches.push({ path: "<frozen-contract-baseline>", expected: [frozenContractSha256], actual: [actualHash] });
   }
 }
-const report = { referenceRoot, referenceAvailable, frozenContractSha256, routeFiles: referenceAvailable ? refFiles.length : 689, localRouteFiles: localMap.size, additiveLocalApiExtensions: [...localApiExtensions], mismatches,
-  status: (referenceAvailable ? refFiles.length === localMap.size : localMap.size === 689) && mismatches.length === 0 ? "PASS" : "FAIL" };
+const expectedRouteCount = referenceAvailable ? refMap.size : 687;
+const report = { referenceRoot, referenceAvailable, frozenContractSha256, routeFiles: expectedRouteCount, localRouteFiles: localMap.size, additiveLocalApiExtensions: [...localApiExtensions], retiredMisleadingLifecycleRoutes: [...retiredMisleadingLifecycleRoutes], mismatches,
+  status: localMap.size === expectedRouteCount && mismatches.length === 0 ? "PASS" : "FAIL" };
 console.log(JSON.stringify(report, null, 2));
 if (process.argv.includes("--strict") && report.status !== "PASS") process.exitCode = 1;

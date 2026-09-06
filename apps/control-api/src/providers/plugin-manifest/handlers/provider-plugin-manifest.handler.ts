@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
-import { getServiceModels, type ServiceModel } from "@shiguang-gateway/core-domain/shared/embedded-services";
-import { getServiceRow } from "@shiguang-gateway/core-domain/shared/version-manager";
+import { getServiceModels, type ServiceModel } from "@shiguang-gateway/core-domain/embedded-services/catalog";
+import { getServiceRow } from "@shiguang-gateway/core-domain/embedded-services/status";
 import {
   generateProviderPluginManifest,
 } from "@shiguang-gateway/open-sse/config/providerPluginManifestRegistry";

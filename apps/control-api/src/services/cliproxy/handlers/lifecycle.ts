@@ -1,4 +1,4 @@
-import { getSupervisor, getServiceRow } from "@shiguang-gateway/core-domain/shared/version-manager";
+import { getSupervisor, getServiceRow } from "@shiguang-gateway/core-domain/control/embedded-services-lifecycle";
 import { getInstalledVersion, getLatestVersion, update as downloadUpdate, CLIPROXY_DEFAULT_PORT, resolvePortPid } from "@shiguang-gateway/core-domain/control/cliproxy";
 import { createErrorResponse, sanitizeErrorMessage } from "@shiguang-gateway/core-domain/shared/error-response";
 import { getOrInitSupervisor } from "../_lib.js";
@@ -59,7 +59,7 @@ export async function status(): Promise<Response> {
     let liveStatus = supervisor?.getStatus() ?? null;
     if (row?.status === "running" && (!liveStatus || liveStatus.pid === null)) {
       const pid = await resolvePortPid(row.port);
-      if (pid !== null) liveStatus = liveStatus ? { ...liveStatus, pid } : { tool: TOOL, state: "running", pid, port: row.port, health: "unknown", startedAt: null, lastError: row.errorMessage ?? undefined, adopted: true };
+      if (pid !== null) liveStatus = liveStatus ? { ...liveStatus, pid } : { tool: TOOL, state: "running", pid, port: row.port, health: "unknown", startedAt: null, lastError: row.errorMessage ?? null, adopted: true };
     }
     const installedVersion = await getInstalledVersion();
     const latestVersion = await getLatestVersion();

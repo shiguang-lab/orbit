@@ -1,6 +1,4 @@
 import { Injectable, type OnModuleInit } from "@nestjs/common";
-import "@shiguang-gateway/open-sse/services/runtime-settings-hooks";
-import { hydrateRequestRuntime } from "@shiguang-gateway/core-domain/runtime/request";
 import { ensureControlSchema } from "./control-schema.js";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
@@ -15,7 +13,7 @@ export class ControlRuntimeService implements OnModuleInit {
 
   initialize(): Promise<void> {
     if (!this.initialization) {
-      this.initialization = hydrateRequestRuntime()
+      this.initialization = Promise.resolve()
         .then(() => ensureControlSchema())
         .then(async () => {
           const [{ ensurePersistentManagementPasswordHash }, { getSettings }] = await Promise.all([
@@ -29,7 +27,7 @@ export class ControlRuntimeService implements OnModuleInit {
             source: "control-api:startup",
           });
         })
-        .then(() => console.log("[control-api] request runtime initialized"))
+        .then(() => console.log("[control-api] control runtime initialized"))
         .catch((error) => {
           this.initialization = null;
           throw error;

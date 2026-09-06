@@ -9,7 +9,7 @@ import {
   isDetailedLoggingEnabled,
 } from "@shiguang-gateway/core-domain/db/detailed-logs";
 import { getUserDatabaseSettings, updateDatabaseSettings } from "@shiguang-gateway/core-domain/db/database-settings";
-import { updateSettings } from "@shiguang-gateway/core-domain/db/settings";
+import { updatePersistedRuntimeSettings } from "../../settings/runtime-settings-persistence.js";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
   const body = await req.json();
   const enabled = body.enabled === true || body.enabled === "1";
 
-  await updateSettings({ call_log_pipeline_enabled: enabled });
+  await updatePersistedRuntimeSettings({ call_log_pipeline_enabled: enabled });
   const databaseSettings = getUserDatabaseSettings();
   updateDatabaseSettings({
     logs: {

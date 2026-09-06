@@ -1,1 +1,1 @@
-import "../../../scripts/import-source-data.mjs";
+import "./import-source-data.mjs";

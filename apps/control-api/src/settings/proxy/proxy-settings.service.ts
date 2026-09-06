@@ -8,10 +8,10 @@ import {
 import { getProxyAssignments } from "@shiguang-gateway/core-domain/db/proxy-registry";
 import { getProxyById } from "@shiguang-gateway/core-domain/db/proxies";
 import { resolveProxyForConnection } from "@shiguang-gateway/core-domain/db/settings";
-import { updateProxyConfigSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { updateProxyConfigSchema } from "@shiguang-gateway/core-domain/validation/proxy";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { clearDispatcherCache } from "@shiguang-gateway/open-sse/utils/proxyDispatcher";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 type ProxyConfigInput = { type?: "http" | "https" | "socks5"; host?: string; port?: number; username?: string; password?: string };
 type UpdateProxyConfigInput = { proxy?: ProxyConfigInput | null; global?: ProxyConfigInput | null; providers?: Record<string, ProxyConfigInput | null>; combos?: Record<string, ProxyConfigInput | null>; keys?: Record<string, ProxyConfigInput | null>; level?: "global" | "provider" | "combo" | "key"; id?: string };
 type ProxyMapInput = Record<string, ProxyConfigInput | null>;
@@ -100,7 +100,11 @@ export class ProxySettingsService {
     const authError = await requireManagementAuth(request); if (authError) return authError;
     const validation = validateBody(updateProxyConfigSchema, rawBody);
     if (isValidationFailure(validation)) return errorResponse(400, validation.error.message, "invalid_request");
-    try { const updated = await setProxyConfig(normalizeProxyPayload(validation.data as UpdateProxyConfigInput)); clearDispatcherCache(); return Response.json(updated); }
+    try {
+      const updated = await setProxyConfig(normalizeProxyPayload(validation.data as UpdateProxyConfigInput));
+      await executeEdgeRuntimeCommand({ command: "runtime-cache.invalidate", target: "proxy-dispatcher" });
+      return Response.json(updated);
+    }
     catch (error) { const routeError = error as ApiRouteError; return errorResponse(Number(routeError.status) || 500, routeError.message, routeError.type); }
   }
   async delete(request: Request): Promise<Response> {
@@ -108,7 +112,9 @@ export class ProxySettingsService {
     try {
       const { searchParams } = new URL(request.url); const level = searchParams.get("level"); const id = searchParams.get("id");
       if (!level) return errorResponse(400, "level is required", "invalid_request");
-      const updated = await deleteProxyForLevel(level, id); clearDispatcherCache(); return Response.json(updated);
+      const updated = await deleteProxyForLevel(level, id);
+      await executeEdgeRuntimeCommand({ command: "runtime-cache.invalidate", target: "proxy-dispatcher" });
+      return Response.json(updated);
     } catch (error) { return errorFromUnknown(error, "Failed to delete proxy"); }
   }
 }

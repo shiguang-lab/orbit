@@ -1,5 +1,4 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
   getComboModelProvider,
   getComboModelString,
@@ -39,10 +38,9 @@ import {
   oneproxyRotateInput,
   oneproxyStatsInput,
 } from "./schemas/tools.ts";
-import { startMcpHeartbeat } from "./runtimeHeartbeat.ts";
 import { countUniqueMcpTools } from "./toolCount.ts";
 import { z } from "zod";
-import { closeAuditDb, logToolCall } from "./audit.ts";
+import { logToolCall } from "./audit.ts";
 import {
   evaluateToolScopes,
   resolveCallerScopeContext,
@@ -734,6 +732,15 @@ async function handleWebFetch(args: {
 
 export interface CreateMcpServerOptions {
   blockedProviders?: string[] | (() => string[]);
+}
+
+export function getMcpServerRuntimeInfo() {
+  return {
+    version: process.env.npm_package_version || "1.8.1",
+    scopesEnforced: MCP_ENFORCE_SCOPES,
+    allowedScopes: Array.from(MCP_ALLOWED_SCOPES),
+    toolCount: TOTAL_MCP_TOOL_COUNT,
+  };
 }
 
 export function createMcpServer(options?: CreateMcpServerOptions): McpServer {
@@ -1518,54 +1525,4 @@ export function createMcpServer(options?: CreateMcpServerOptions): McpServer {
   }
 
   return server;
-}
-
-// ============ Main Entry Point (stdio) ============
-
-/**
- * Start the MCP server with stdio transport.
- * Called when `shiguangGateway --mcp` is used.
- */
-export async function startMcpStdio(): Promise<void> {
-  // Stdout is reserved for JSON-RPC — bin/mcpStdioConsoleGuard.mjs is preloaded via
-  // `node --import` (see bin/mcp-server.mjs) so console.log/warn already redirect to
-  // stderr before this module's own imports evaluate (DB init happens as a side effect of
-  // createMcpServer()'s tool registration, earlier than any code placed here could catch).
-  const server = createMcpServer();
-  const transport = new StdioServerTransport();
-  const version = process.env.npm_package_version || "1.8.1";
-  const stopHeartbeat = startMcpHeartbeat({
-    version,
-    scopesEnforced: MCP_ENFORCE_SCOPES,
-    allowedScopes: Array.from(MCP_ALLOWED_SCOPES),
-    toolCount: TOTAL_MCP_TOOL_COUNT,
-  });
-  const stopHeartbeatOnce = () => {
-    stopHeartbeat();
-  };
-  process.once("exit", stopHeartbeatOnce);
-  process.once("SIGINT", stopHeartbeatOnce);
-  process.once("SIGTERM", stopHeartbeatOnce);
-
-  console.error("[MCP] ShiguangGateway MCP Server starting (stdio transport)...");
-  try {
-    await server.connect(transport);
-    console.error("[MCP] ShiguangGateway MCP Server connected and ready.");
-  } finally {
-    if (closeAuditDb()) {
-      console.error("[MCP] Audit database checkpointed and closed.");
-    }
-    stopHeartbeatOnce();
-    process.off("exit", stopHeartbeatOnce);
-    process.off("SIGINT", stopHeartbeatOnce);
-    process.off("SIGTERM", stopHeartbeatOnce);
-  }
-}
-
-// If this file is run directly, start stdio server
-if (process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, "/"))) {
-  startMcpStdio().catch((err) => {
-    console.error("[MCP] Fatal error:", err);
-    process.exit(1);
-  });
 }

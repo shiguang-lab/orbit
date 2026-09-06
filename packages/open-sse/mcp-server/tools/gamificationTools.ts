@@ -43,7 +43,7 @@ export const gamificationTools = [
       apiKeyId: z.string(),
     }),
     handler: async (args: { apiKeyId: string }) => {
-      const { getXp, getBadges } = await import("@shiguang-gateway/core-domain/control/gamification-db");
+      const { getXp, getBadges } = await import("@shiguang-gateway/core-domain/gamification/profile");
       const { calculateLevel, getLevelTitle, getLevelTier } =
         await import("@shiguang-gateway/core-domain/edge/mcp-gamification");
       const { getStreak } = await import("@shiguang-gateway/core-domain/edge/mcp-gamification");
@@ -73,7 +73,7 @@ export const gamificationTools = [
       category: z.string().optional(),
     }),
     handler: async (args: { apiKeyId?: string; category?: string }) => {
-      const { getBadgeDefinitions, getBadges } = await import("@shiguang-gateway/core-domain/control/gamification-db");
+      const { getBadgeDefinitions, getBadges } = await import("@shiguang-gateway/core-domain/gamification/profile");
 
       if (args.apiKeyId) {
         const badges = getBadges(args.apiKeyId);

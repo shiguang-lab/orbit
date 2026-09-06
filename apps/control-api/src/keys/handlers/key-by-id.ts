@@ -7,7 +7,7 @@ import {
 import { isCloudEnabled } from "@shiguang-gateway/core-domain/db/settings";
 import { syncToCloud } from "@shiguang-gateway/core-domain/sync/cloud";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
-import { updateKeyPermissionsSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { updateKeyPermissionsSchema } from "@shiguang-gateway/core-domain/validation/keys";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";

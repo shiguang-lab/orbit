@@ -5,6 +5,7 @@ export {
   toMemoryRetrievalConfig,
 } from "../lib/memory/settings.ts";
 export {
+  formatMemoryContext,
   injectMemory,
   shouldInjectMemory,
   systemMessageMustBeFirst,

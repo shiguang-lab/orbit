@@ -23,7 +23,9 @@ import {
   getFunctionalGatewaySettingsBulk,
   buildCcAliasPredicate,
   buildFunctionalGatewayPredicate,
-  hasEligibleConnectionForModel,
+} from "@shiguang-gateway/core-domain/catalog/visibility";
+import { hasEligibleConnectionForModel } from "@shiguang-gateway/core-domain/routing/connection-model-rules";
+import {
   dedupeExactCatalogIds,
   sortCatalogModelsProviderGrouped,
   disambiguateCatalogModelNames,
@@ -32,7 +34,7 @@ import {
   createModelCapabilityResolutionSnapshot,
   isModelCatalogNamesEnabled,
   maybeOmitCatalogModelName,
-} from "@shiguang-gateway/core-domain/catalog/runtime-support";
+} from "@shiguang-gateway/core-domain/catalog/response-presentation";
 import { getPassthroughProviders, REGISTRY } from "@shiguang-gateway/provider-catalog/provider-registry";
 import { extractApiKey } from "../services/auth.ts";
 import { isCodexModelCatalogClient } from "./catalogRequest";

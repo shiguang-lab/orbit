@@ -1,7 +1,6 @@
 import { getSyncedAvailableModelsByConnection } from "../db/models.ts";
 import { getProviderConnections } from "../db/providers.ts";
 import { getDbInstance } from "../db/core.ts";
-import { getAllCircuitBreakerStatuses } from "../../shared/utils/circuitBreaker.ts";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -340,6 +339,7 @@ function classifyProvider(
 export async function buildProviderHealthMatrix(
   options: ProviderHealthMatrixOptions = {},
   runtime: {
+    getAllCircuitBreakerStatuses: () => unknown[];
     getAllModelLockouts: () => unknown[];
     resolveProviderAlias: (provider: string) => string | null;
     getWebSessionPoolHealth: (provider?: string) => { providers: any[] };
@@ -361,7 +361,7 @@ export async function buildProviderHealthMatrix(
   // so a provider has one health row with every related signal attached.
   const [connections, breakers, lockouts, rawStats] = await Promise.all([
     getProviderConnections({}),
-    getAllCircuitBreakerStatuses(),
+    runtime.getAllCircuitBreakerStatuses(),
     runtime.getAllModelLockouts(),
     Promise.resolve(queryCallLogTargetStats(cutoff, null)),
   ]);

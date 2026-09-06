@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import {
   getSettings,
-  updateSettings,
 } from "@shiguang-gateway/core-domain/db/settings";
+import { updatePersistedRuntimeSettings } from "../runtime-settings-persistence.js";
 import {
   checkQdrantHealth,
   cleanupSemanticMemoryPoints,
@@ -66,7 +66,7 @@ export class QdrantService {
     if (body.quantization !== undefined) updates.qdrantQuantization = body.quantization;
     if (body.apiKey !== undefined) updates.qdrantApiKey = body.apiKey === "" ? null : body.apiKey;
 
-    const next = (await updateSettings(updates)) as Record<string, unknown>;
+    const next = await updatePersistedRuntimeSettings(updates);
     invalidateMemorySettingsCache();
     return buildSettingsResponse(next);
   }

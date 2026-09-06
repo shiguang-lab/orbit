@@ -11,7 +11,6 @@ import {
   applyProviderUsageTokenBuffer,
 } from "./providerRuntimePort.js";
 import type { OperatorProviderErrorRule } from "@shiguang-gateway/contracts/runtime-settings";
-import { isAutomatedTestProcess } from "../../shared/utils/testProcess.ts";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -24,7 +23,6 @@ export type RuntimeReloadSection =
   | "usageTracking"
   | "healthCheckLogs"
   | "thoughtSignature"
-  | "modelsDevSync"
   | "corsOrigins"
   | "ccBridgeTransforms"
   | "systemTransforms"
@@ -50,8 +48,6 @@ interface RuntimeSettingsSnapshot {
   antigravitySignatureCacheMode: string;
   usageTokenBuffer: unknown;
   hideHealthCheckLogs: boolean;
-  modelsDevSyncEnabled: boolean;
-  modelsDevSyncInterval: number | null;
   corsOrigins: string;
   ccBridgeTransforms: unknown;
   systemTransforms: unknown;
@@ -77,8 +73,6 @@ const DEFAULT_RUNTIME_SETTINGS_SNAPSHOT: RuntimeSettingsSnapshot = {
   antigravitySignatureCacheMode: "enabled",
   usageTokenBuffer: null,
   hideHealthCheckLogs: false,
-  modelsDevSyncEnabled: false,
-  modelsDevSyncInterval: null,
   corsOrigins: "",
   ccBridgeTransforms: null,
   systemTransforms: null,
@@ -278,8 +272,6 @@ export function buildRuntimeSettingsSnapshot(
         : DEFAULT_RUNTIME_SETTINGS_SNAPSHOT.antigravitySignatureCacheMode,
     usageTokenBuffer: settings.usageTokenBuffer ?? null,
     hideHealthCheckLogs: settings.hideHealthCheckLogs === true,
-    modelsDevSyncEnabled: settings.modelsDevSyncEnabled === true,
-    modelsDevSyncInterval: normalizeNumber(settings.modelsDevSyncInterval),
     corsOrigins: typeof settings.corsOrigins === "string" ? settings.corsOrigins : "",
     ccBridgeTransforms: parseStoredJson(settings.ccBridgeTransforms, "ccBridgeTransforms"),
     systemTransforms: parseStoredJson(settings.systemTransforms, "systemTransforms"),
@@ -355,63 +347,12 @@ async function applySystemTransformsSection(systemTransforms: unknown) {
   await applyProviderSystemTransforms(systemTransforms);
 }
 
-async function applyModelsDevSyncSection(
-  previousSnapshot: RuntimeSettingsSnapshot,
-  currentSnapshot: RuntimeSettingsSnapshot,
-  force: boolean
-) {
-  const {
-    startPeriodicSync,
-    stopPeriodicSync,
-    isModelsDevSyncEnvDisabled,
-    isModelsDevSyncEnvForcedOn,
-  } = await import("../modelsDevSync.ts");
-  const skipBackgroundSyncInTests =
-    (isAutomatedTestProcess() && process.env.SHIGUANG_GATEWAY_ENABLE_RUNTIME_BACKGROUND_TASKS !== "1") ||
-    isTruthyEnvFlag(process.env.SHIGUANG_GATEWAY_DISABLE_BACKGROUND_SERVICES);
-
-  if (skipBackgroundSyncInTests || isModelsDevSyncEnvDisabled()) {
-    stopPeriodicSync();
-    return;
-  }
-
-  const wasEnabled = previousSnapshot.modelsDevSyncEnabled === true;
-  const isEnabled =
-    isModelsDevSyncEnvForcedOn() || currentSnapshot.modelsDevSyncEnabled === true;
-  const intervalChanged =
-    previousSnapshot.modelsDevSyncInterval !== currentSnapshot.modelsDevSyncInterval;
-
-  if (!isEnabled) {
-    if (wasEnabled || force) {
-      stopPeriodicSync();
-    }
-    return;
-  }
-
-  if (force) {
-    stopPeriodicSync();
-    startPeriodicSync(currentSnapshot.modelsDevSyncInterval || undefined);
-    return;
-  }
-
-  if (!wasEnabled) {
-    startPeriodicSync(currentSnapshot.modelsDevSyncInterval || undefined);
-    return;
-  }
-
-  if (intervalChanged) {
-    stopPeriodicSync();
-    startPeriodicSync(currentSnapshot.modelsDevSyncInterval || undefined);
-  }
-}
-
 export async function applyRuntimeSettings(
   settings: Record<string, unknown>,
   options: { force?: boolean; source?: string; skipBackgroundServices?: boolean } = {}
 ): Promise<RuntimeReloadChange[]> {
   const source = options.source || "runtime";
   const force = options.force === true;
-  const hasBootstrappedSnapshot = lastAppliedSnapshot !== null;
   const currentSnapshot = buildRuntimeSettingsSnapshot(settings);
   const previousSnapshot = getPreviousSnapshot();
   const changes: RuntimeReloadChange[] = [];
@@ -483,17 +424,6 @@ export async function applyRuntimeSettings(
   ) {
     await applyThoughtSignatureSection(currentSnapshot.antigravitySignatureCacheMode);
     markChanged("thoughtSignature");
-  }
-
-  if (
-    !options.skipBackgroundServices &&
-    (force ||
-      (hasBootstrappedSnapshot &&
-        (currentSnapshot.modelsDevSyncEnabled !== previousSnapshot.modelsDevSyncEnabled ||
-          currentSnapshot.modelsDevSyncInterval !== previousSnapshot.modelsDevSyncInterval)))
-  ) {
-    await applyModelsDevSyncSection(previousSnapshot, currentSnapshot, force);
-    markChanged("modelsDevSync");
   }
 
   if (force || hasChanged(currentSnapshot.corsOrigins, previousSnapshot.corsOrigins)) {

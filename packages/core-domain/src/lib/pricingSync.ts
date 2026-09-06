@@ -62,7 +62,7 @@ interface LiteLLMModelInfo {
   ocr_cost_per_page?: number;
 }
 
-interface SyncStatus {
+export interface SyncStatus {
   enabled: boolean;
   lastSync: string | null;
   lastSyncModelCount: number;
@@ -71,7 +71,7 @@ interface SyncStatus {
   sources: string[];
 }
 
-interface SyncResult {
+export interface SyncResult {
   success: boolean;
   modelCount: number;
   providerCount: number;
@@ -79,6 +79,7 @@ interface SyncResult {
   dryRun: boolean;
   data?: PricingByProvider;
   error?: string;
+  warnings?: string[];
 }
 
 // ─── Configuration ───────────────────────────────────────
@@ -137,11 +138,6 @@ const LITELLM_PROVIDER_MAP: Record<string, string[]> = {
 };
 
 // ─── Periodic sync state ─────────────────────────────────
-
-let syncTimer: ReturnType<typeof setInterval> | null = null;
-let lastSyncTime: string | null = null;
-let lastSyncModelCount = 0;
-let activeSyncIntervalMs = SYNC_INTERVAL_MS;
 
 // ─── Core: Fetch + Transform ─────────────────────────────
 
@@ -418,9 +414,7 @@ export async function syncPricingFromSources(opts?: {
 
     if (!dryRun) {
       saveSyncedPricing(aggregated);
-      lastSyncTime = new Date().toISOString();
-      lastSyncModelCount = modelCount;
-      writePersistedSyncStatus(lastSyncTime, modelCount);
+      writePersistedSyncStatus(new Date().toISOString(), modelCount);
     }
 
     return {
@@ -448,97 +442,20 @@ export async function syncPricingFromSources(opts?: {
   }
 }
 
-// ─── Periodic sync ───────────────────────────────────────
-
-/**
- * Start periodic pricing sync (non-blocking).
- */
-export function startPeriodicSync(intervalMs?: number): void {
-  if (syncTimer) return; // Already running
-
-  const interval = intervalMs ?? SYNC_INTERVAL_MS;
-  activeSyncIntervalMs = interval;
-  console.log(`[PRICING_SYNC] Starting periodic sync every ${interval / 1000}s`);
-
-  // Initial sync (non-blocking)
-  syncPricingFromSources()
-    .then((result) => {
-      if (result.success) {
-        console.log(
-          `[PRICING_SYNC] Initial sync complete: ${result.modelCount} models from ${result.providerCount} providers`
-        );
-      }
-    })
-    .catch((err) => {
-      console.warn("[PRICING_SYNC] Initial sync error:", err instanceof Error ? err.message : err);
-    });
-
-  syncTimer = setInterval(() => {
-    syncPricingFromSources()
-      .then((result) => {
-        if (result.success) {
-          console.log(`[PRICING_SYNC] Periodic sync complete: ${result.modelCount} models`);
-        }
-      })
-      .catch((err) => {
-        console.warn(
-          "[PRICING_SYNC] Periodic sync error:",
-          err instanceof Error ? err.message : err
-        );
-      });
-  }, interval);
-
-  if (syncTimer && typeof syncTimer === "object" && "unref" in syncTimer) {
-    (syncTimer as { unref?: () => void }).unref?.();
-  }
-}
-
-/**
- * Stop periodic sync and cleanup timer.
- */
-export function stopPeriodicSync(): void {
-  if (syncTimer) {
-    clearInterval(syncTimer);
-    syncTimer = null;
-    console.log("[PRICING_SYNC] Periodic sync stopped");
-  }
-}
-
-/**
- * Get current sync status.
- */
 export function getSyncStatus(): SyncStatus {
   const enabled = process.env.PRICING_SYNC_ENABLED === "true";
-  // `lastSyncTime`/`lastSyncModelCount` are only reliably populated on the
-  // module instance that performed the sync (see note above
-  // writePersistedSyncStatus) — fall back to the persisted DB record so
-  // status reads from a different module instance still see it.
-  const persisted = lastSyncTime === null ? readPersistedSyncStatus() : null;
-  const effectiveLastSync = lastSyncTime ?? persisted?.lastSyncTime ?? null;
-  const effectiveModelCount =
-    lastSyncTime !== null ? lastSyncModelCount : (persisted?.lastSyncModelCount ?? 0);
+  const persisted = readPersistedSyncStatus();
+  const effectiveLastSync = persisted?.lastSyncTime ?? null;
+  const effectiveModelCount = persisted?.lastSyncModelCount ?? 0;
   return {
     enabled,
     lastSync: effectiveLastSync,
     lastSyncModelCount: effectiveModelCount,
     nextSync:
       enabled && effectiveLastSync
-        ? new Date(new Date(effectiveLastSync).getTime() + activeSyncIntervalMs).toISOString()
+        ? new Date(new Date(effectiveLastSync).getTime() + SYNC_INTERVAL_MS).toISOString()
         : null,
-    intervalMs: activeSyncIntervalMs,
+    intervalMs: SYNC_INTERVAL_MS,
     sources: SYNC_SOURCES,
   };
-}
-
-// ─── Init (called from instrumentation-node.ts) ───────────────────
-
-/**
- * Initialize pricing sync if enabled.
- */
-export async function initPricingSync(): Promise<void> {
-  if (process.env.PRICING_SYNC_ENABLED !== "true") {
-    console.log("[PRICING_SYNC] Disabled (set PRICING_SYNC_ENABLED=true to enable)");
-    return;
-  }
-  startPeriodicSync();
 }

@@ -10,7 +10,7 @@ import {
   isValidationFailure,
   validateBody,
 } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { updateComboDefaultsSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { updateComboDefaultsSchema } from "@shiguang-gateway/core-domain/validation/combos";
 import { isPaidModelTarget } from "@shiguang-gateway/core-domain/catalog/free-models";
 import {
   SAFE_OUTBOUND_FETCH_PRESETS,
@@ -243,7 +243,7 @@ export class SettingsConfigController {
     if (requestUrl(request).searchParams.get("action") !== "status") {
       return reply.status(400).send({ error: "Unknown action" });
     }
-    return reply.send(this.settingsConfig.getModelsDevStatus());
+    return reply.send(await this.settingsConfig.getModelsDevStatus());
   }
 
   @Post("models-dev")
@@ -254,10 +254,10 @@ export class SettingsConfigController {
     const { action, dryRun, syncCapabilities } = validation.data;
     if (action === "sync") return reply.send(await this.settingsConfig.syncModelsDev({ dryRun, syncCapabilities: syncCapabilities !== false }));
     if (action === "start") {
-      this.settingsConfig.startModelsDevSync();
+      await this.settingsConfig.startModelsDevSync();
       return reply.send({ success: true, message: "Periodic sync started" });
     }
-    this.settingsConfig.stopModelsDevSync();
+    await this.settingsConfig.stopModelsDevSync();
     return reply.send({ success: true, message: "Periodic sync stopped" });
   }
 }

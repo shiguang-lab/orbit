@@ -583,4 +583,10 @@ export async function getSaturation(
   return value;
 }
 
-registerQuotaSaturationRuntime({ getSaturation });
+let quotaSaturationRuntimePortInstalled = false;
+
+export function installQuotaSaturationRuntimePort(): void {
+  if (quotaSaturationRuntimePortInstalled) return;
+  registerQuotaSaturationRuntime({ getSaturation });
+  quotaSaturationRuntimePortInstalled = true;
+}

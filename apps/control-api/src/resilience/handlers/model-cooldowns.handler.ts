@@ -1,12 +1,8 @@
 import { z } from "zod";
-import {
-  clearModelUnavailability,
-  getAvailabilityReport,
-  resetAllAvailability,
-} from "../model-availability.js";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 
 const deleteCooldownSchema = z
   .object({
@@ -25,7 +21,10 @@ export async function GET(request: Request) {
   if (authError) return authError;
 
   try {
-    const items = getAvailabilityReport().sort((a, b) => b.remainingMs - a.remainingMs);
+    const { items } = await executeEdgeRuntimeCommand<{
+      items: Array<{ remainingMs: number } & Record<string, unknown>>;
+    }>({ command: "model-lockouts.list" });
+    items.sort((a, b) => b.remainingMs - a.remainingMs);
     return Response.json({ items });
   } catch (error: unknown) {
     console.error("[API] GET /api/resilience/model-cooldowns error:", error);
@@ -49,8 +48,11 @@ export async function DELETE(request: Request) {
     const body = validation.data;
 
     if (body.all) {
-      resetAllAvailability();
-      return Response.json({ ok: true, clearedAll: true });
+      const result = await executeEdgeRuntimeCommand({
+        command: "model-lockouts.clear",
+        all: true,
+      });
+      return Response.json(result);
     }
 
     const provider = typeof body.provider === "string" ? body.provider.trim() : "";
@@ -59,8 +61,12 @@ export async function DELETE(request: Request) {
       return Response.json({ error: "provider and model are required" }, { status: 400 });
     }
 
-    const removed = clearModelUnavailability(provider, model);
-    return Response.json({ ok: true, removed });
+    const result = await executeEdgeRuntimeCommand({
+      command: "model-lockouts.clear",
+      provider,
+      model,
+    });
+    return Response.json(result);
   } catch (error: unknown) {
     console.error("[API] DELETE /api/resilience/model-cooldowns error:", error);
     return Response.json(

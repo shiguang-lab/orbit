@@ -1,9 +1,9 @@
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import {
-  CodexResetCreditError,
-  consumeCodexResetCredit,
-  listCodexResetCredits,
-} from "@shiguang-gateway/open-sse/services/codexResetCredits";
+import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
+
+type CommandResult<T> =
+  | { ok: true; value: T }
+  | { ok: false; status: number; code: string; message: string };
 
 const connectionId = (value: string | null) => {
   const trimmed = value?.trim() ?? "";
@@ -11,11 +11,11 @@ const connectionId = (value: string | null) => {
 };
 
 const errorResponse = (error: unknown) => {
-  const typed = error instanceof CodexResetCreditError;
-  const status = typed ? error.status : 500;
-  const code = typed ? error.code : "codex_reset_credit_failed";
+  const value = error as { status?: unknown; code?: unknown; message?: unknown };
+  const status = typeof value?.status === "number" ? value.status : 500;
+  const code = typeof value?.code === "string" ? value.code : "codex_reset_credit_failed";
   return Response.json(
-    { ok: false, code, error: typed ? error.message || "Codex reset-credit request failed." : "Codex reset-credit request failed." },
+    { ok: false, code, error: typeof value?.message === "string" && value.message ? value.message : "Codex reset-credit request failed." },
     { status },
   );
 };
@@ -26,7 +26,12 @@ export async function GET(request: Request): Promise<Response> {
   const id = connectionId(new URL(request.url).searchParams.get("connectionId"));
   if (!id) return Response.json({ ok: false, code: "invalid_connection_id", error: "Invalid connectionId." }, { status: 400 });
   try {
-    return Response.json({ ok: true, ...(await listCodexResetCredits(id)) });
+    const result = await executeEdgeRuntimeCommand<CommandResult<Record<string, unknown>>>(
+      { command: "codex-reset-credits.list", connectionId: id },
+      { timeoutMs: 180_000 },
+    );
+    if (!result.ok) return errorResponse(result);
+    return Response.json({ ok: true, ...result.value });
   } catch (error) {
     console.error("[API] GET /api/usage/codex-reset-credit error:", error);
     return errorResponse(error);
@@ -47,7 +52,17 @@ export async function POST(request: Request): Promise<Response> {
     return Response.json({ ok: false, code: "invalid_request_body", error: "Invalid request body." }, { status: 400 });
   }
   try {
-    return Response.json({ ok: true, ...(await consumeCodexResetCredit(id, key, creditId)) });
+    const result = await executeEdgeRuntimeCommand<CommandResult<Record<string, unknown>>>(
+      {
+        command: "codex-reset-credits.consume",
+        connectionId: id,
+        idempotencyKey: key,
+        ...(creditId ? { creditId } : {}),
+      },
+      { timeoutMs: 180_000 },
+    );
+    if (!result.ok) return errorResponse(result);
+    return Response.json({ ok: true, ...result.value });
   } catch (error) {
     console.error("[API] POST /api/usage/codex-reset-credit error:", error);
     return errorResponse(error);

@@ -1,5 +1,5 @@
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { buildUnifiedSource, getProviderDailyUsageRows } from "@shiguang-gateway/core-domain/control/usage";
+import { buildUnifiedSource, getProviderDailyUsageRows } from "@shiguang-gateway/core-domain/usage/analytics";
 
 /**
  * GET /api/usage/requests-by-provider-date — #4009

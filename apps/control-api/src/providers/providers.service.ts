@@ -36,9 +36,7 @@ import {
 import {
   buildProviderHealthMatrix,
 } from "@shiguang-gateway/core-domain/control/provider-health-matrix";
-import { getAllModelLockouts } from "@shiguang-gateway/open-sse/services/accountFallback";
 import { resolveProviderAlias } from "@shiguang-gateway/open-sse/services/model";
-import { getWebSessionPoolHealth } from "@shiguang-gateway/open-sse/services/webSessionPoolHealth";
 import {
   getAllExpirations,
   getExpirationSummary,
@@ -49,8 +47,7 @@ import { handleProviderRefresh } from "./handlers/provider-refresh.handler.js";
 import { GET as getChatgptWebCodexDoctor } from "./handlers/provider-chatgpt-web-codex-doctor.js";
 import { POST as refreshProviderToken } from "./handlers/provider-refresh-token.js";
 import { POST as refreshCursorToken } from "./handlers/provider-refresh-cursor.js";
-
-const load = (specifier: string): Promise<any> => import(specifier as string);
+import { executeEdgeRuntimeCommand } from "../edge-runtime/client.js";
 
 @Injectable()
 export class ProvidersService {
@@ -124,9 +121,13 @@ export class ProvidersService {
   }
 
   async getStats() {
-    const [{ getAllComboMetrics }, { getToolLatencyByProvider }] = await Promise.all([
-      load("@shiguang-gateway/open-sse/services/comboMetrics"),
-      load("@shiguang-gateway/open-sse/services/toolLatencyTracker"),
+    const [{ metrics: comboMetrics }, { providers: toolLatency }] = await Promise.all([
+      executeEdgeRuntimeCommand<{ metrics: Record<string, unknown> }>({
+        command: "combo-metrics.snapshot",
+      }),
+      executeEdgeRuntimeCommand<{ providers: Record<string, unknown> }>({
+        command: "tool-latency.snapshot",
+      }),
     ]);
     const resolveName = (provider: string, nodeName: string | null) => {
       if (nodeName?.trim()) return nodeName.trim();
@@ -143,9 +144,9 @@ export class ProvidersService {
     return {
       providers,
       models,
-      comboMetrics: getAllComboMetrics(),
+      comboMetrics,
       telemetry: getTelemetrySummary(300_000),
-      toolLatency: getToolLatencyByProvider(),
+      toolLatency,
     };
   }
 
@@ -191,10 +192,9 @@ export class ProvidersService {
   }
 
   async getQuotaWindows() {
-    const { getAllProviderQuotaWindows } = await load(
-      "@shiguang-gateway/open-sse/services/quotaPreflight"
-    );
-    const windows = getAllProviderQuotaWindows();
+    const { windows } = await executeEdgeRuntimeCommand<{ windows: unknown }>({
+      command: "quota-windows.snapshot",
+    });
     const settings = await getCachedSettings();
     const resilience = resolveResilienceSettings(settings);
     return {
@@ -207,10 +207,21 @@ export class ProvidersService {
   }
 
   async getProviderHealthMatrix(options: Record<string, unknown>) {
+    const [{ breakers, lockouts }, { pools }] = await Promise.all([
+      executeEdgeRuntimeCommand<{ breakers: unknown[]; lockouts: unknown[] }>({
+        command: "provider-health.snapshot",
+      }),
+      executeEdgeRuntimeCommand<{ pools: { providers: any[] } }>({
+        command: "sessions.snapshot",
+      }),
+    ]);
     return buildProviderHealthMatrix(options, {
-      getAllModelLockouts,
+      getAllCircuitBreakerStatuses: () => breakers,
+      getAllModelLockouts: () => lockouts,
       resolveProviderAlias,
-      getWebSessionPoolHealth,
+      getWebSessionPoolHealth: (provider?: string) => ({
+        providers: provider ? pools.providers.filter((entry) => entry.provider === provider) : pools.providers,
+      }),
     });
   }
 

@@ -53,7 +53,7 @@ import {
   FREE_MODEL_BUDGETS,
   grantsFreeAccess,
   type FreeModelBudget,
-} from "../../config/freeModelCatalog.ts";
+} from "@shiguang-gateway/provider-catalog/free-model-catalog";
 import { SYNTHETIC_NOAUTH_CONNECTION_ID } from "./resilienceCandidateFilter";
 
 export type FreeAccessStatus = "SAFE" | "EXHAUSTED" | "UNKNOWN";

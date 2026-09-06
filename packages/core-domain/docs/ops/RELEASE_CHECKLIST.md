@@ -374,7 +374,7 @@ Before shipping any v3.8.x release, verify these additional items:
       optionals, so without this the worker would load llmlingua-2 against the root's transformers
       and the SLM tier would silently fail-open.
 - [ ] `shiguang-gateway status` works with no `.env` (CLI token path, loopback only)
-- [ ] `curl http://localhost:20128/api/shutdown` returns 401 (always-protected route)
+- [ ] `curl -X POST http://localhost:20128/api/shutdown` returns 404 (lifecycle is CLI-owned)
 - [ ] `curl -H "host: evil.com" http://localhost:20128/api/mcp/sse` returns 401 (loopback guard)
 - [ ] SQLite runtime resolves to `bundled` on first run (bundled binary valid for platform)
 - [ ] SQLite runtime falls back to `runtime` when `node_modules/better-sqlite3` is deleted

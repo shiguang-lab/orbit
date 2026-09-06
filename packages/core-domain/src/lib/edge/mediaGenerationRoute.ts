@@ -5,7 +5,7 @@ import { attachShiguangGatewayMetaHeaders } from "../../domain/gatewayResponseMe
 import { calculateModalCost } from "../usage/costCalculator.ts";
 import { generateRequestId } from "../../shared/utils/requestId.ts";
 import { toJsonErrorPayload } from "../../shared/utils/upstreamError.ts";
-import { v1ImageGenerationSchema } from "../../shared/validation/schemas.ts";
+import { v1ImageGenerationSchema } from "../../shared/validation/schemas/apiV1.ts";
 import { isValidationFailure, validateBody } from "../../shared/validation/helpers.ts";
 
 type MediaModelListEntry = {

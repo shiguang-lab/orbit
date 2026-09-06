@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { getSupervisor } from "@shiguang-gateway/core-domain/shared/embedded-services";
+import { getSupervisor } from "@shiguang-gateway/core-domain/control/embedded-services-lifecycle";
 import { getOrInitSupervisor as getOrInitCliproxySupervisor } from "./cliproxy/_lib.js";
 import { getOrInitSupervisor as getOrInitMuxSupervisor } from "./mux/_lib.js";
 import { BifrostService } from "../bifrost/bifrost.service.js";

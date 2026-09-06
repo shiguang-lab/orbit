@@ -1,26 +1,13 @@
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { createCombo, getCombos } from "@shiguang-gateway/core-domain/db/combos";
 import { normalizeComboModels } from "@shiguang-gateway/core-domain/routing/combo-steps";
+import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 import { z } from "zod";
 
 const duplicateSchema = z.object({
   name: z.string().trim().min(1, 'Missing required field: "name" (e.g. auto/best-coding)'),
   strategy: z.string().trim().min(1).optional(),
 });
-
-type AutoSpec = { variant?: string; category?: string; tier?: string; family?: string };
-const load = (specifier: string): Promise<any> => import(specifier);
-
-async function resolveAutoSpec(name: string): Promise<AutoSpec | null> {
-  const [{ resolveBuiltinAutoSpec }, { MODEL_FAMILIES }] = await Promise.all([
-    load("@shiguang-gateway/open-sse/services/autoCombo/builtinCatalog"),
-    load("@shiguang-gateway/open-sse/services/autoCombo/modelFamily"),
-  ]);
-  const suffix = name.slice("auto/".length);
-  const resolved = resolveBuiltinAutoSpec(name, suffix) as AutoSpec;
-  if (resolved.category || resolved.variant !== undefined) return resolved;
-  return MODEL_FAMILIES.includes(suffix) ? { family: suffix } : null;
-}
 
 /** POST /api/combos/duplicate. Materialize a built-in auto combo snapshot. */
 export async function duplicate(request: Request): Promise<Response> {
@@ -40,24 +27,21 @@ export async function duplicate(request: Request): Promise<Response> {
 
   const { name, strategy } = validation.data;
   try {
-    const spec = await resolveAutoSpec(name);
-    if (!spec) return Response.json({ error: `Unknown auto-combo template: "${name}"` }, { status: 422 });
-
-    const { prepareVirtualAutoComboInputs, createVirtualAutoComboFromPrepared } =
-      await load("@shiguang-gateway/open-sse/services/autoCombo/virtualFactory");
-    const resolvedSpec = spec.family ? { family: spec.family } : spec;
-    const prepared = await prepareVirtualAutoComboInputs({ includeResolvedCapabilities: true });
-    const virtualCombo = await createVirtualAutoComboFromPrepared(
-      prepared,
-      spec.variant,
-      resolvedSpec,
-    );
+    const virtualCombo = await executeEdgeRuntimeCommand<{
+      recognized: boolean;
+      models?: Array<{ model?: string; providerId?: string; weight?: number }>;
+      weights?: unknown;
+      autoConfig?: { weights?: unknown };
+    }>({ command: "auto-combos.materialize", name });
+    if (!virtualCombo.recognized) {
+      return Response.json({ error: `Unknown auto-combo template: "${name}"` }, { status: 422 });
+    }
     if (!Array.isArray(virtualCombo.models) || virtualCombo.models.length === 0) {
       return Response.json({ error: "No connected providers/models match this auto-combo template" }, { status: 422 });
     }
 
     const allCombos = await getCombos();
-    const rawModels = virtualCombo.models.map((model: any, index: number) => ({
+    const rawModels = virtualCombo.models.map((model, index: number) => ({
       id: `auto-duplicate-${name}-${index + 1}`,
       kind: "model",
       model: model.model || `${model.providerId}/unknown`,

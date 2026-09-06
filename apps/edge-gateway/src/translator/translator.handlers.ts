@@ -4,7 +4,7 @@ import { FORMATS } from "@shiguang-gateway/open-sse/translator/formats";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { isConnectionUnavailableToAuxiliaryActivity } from "@shiguang-gateway/core-domain/shared/connection-isolation";
-import { translatorDetectSchema, translatorSendSchema, translatorTranslateSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { translatorDetectSchema, translatorSendSchema, translatorTranslateSchema } from "@shiguang-gateway/core-domain/validation/translator";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { toJsonErrorPayload } from "@shiguang-gateway/core-domain/shared/upstream-error";
 import { getTranslationEvents, logTranslationEvent } from "./translator-events.js";

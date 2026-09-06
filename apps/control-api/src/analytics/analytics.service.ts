@@ -9,8 +9,7 @@ import {
   getCompressionAnalyticsSummary,
   getPerEngineAnalytics,
 } from "@shiguang-gateway/core-domain/db/compression-analytics";
-
-const load = (specifier: string): Promise<any> => import(specifier as string);
+import { executeEdgeRuntimeCommand } from "../edge-runtime/client.js";
 
 @Injectable()
 export class AnalyticsService {
@@ -51,9 +50,6 @@ export class AnalyticsService {
   }
 
   async getDiversityAnalytics() {
-    const { getDiversityReport } = await load(
-      "@shiguang-gateway/open-sse/services/autoCombo/providerDiversity",
-    );
-    return getDiversityReport();
+    return executeEdgeRuntimeCommand({ command: "provider-diversity.snapshot" });
   }
 }

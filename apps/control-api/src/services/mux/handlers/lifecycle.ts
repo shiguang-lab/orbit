@@ -1,4 +1,4 @@
-import { getSupervisor, getServiceRow } from "@shiguang-gateway/core-domain/shared/version-manager";
+import { getSupervisor, getServiceRow } from "@shiguang-gateway/core-domain/control/embedded-services-lifecycle";
 import { getInstalledVersion, getLatestVersion, MUX_DEFAULT_PORT, update as updateMux } from "@shiguang-gateway/core-domain/control/mux";
 import { createErrorResponse } from "@shiguang-gateway/core-domain/shared/error-response";
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";

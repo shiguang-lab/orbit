@@ -1,5 +1,5 @@
-import { getProxyLogs, clearProxyLogs } from "@shiguang-gateway/core-domain/logging/proxy-logs";
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 
 function serverErrorResponse(error: unknown): Response {
   return Response.json(
@@ -21,16 +21,21 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
 
-    const filters: Record<string, any> = {};
-    if (searchParams.get("status")) filters.status = searchParams.get("status");
-    if (searchParams.get("type")) filters.type = searchParams.get("type");
-    if (searchParams.get("provider")) filters.provider = searchParams.get("provider");
-    if (searchParams.get("level")) filters.level = searchParams.get("level");
-    if (searchParams.get("search")) filters.search = searchParams.get("search");
+    const filters: Record<string, string | number> = {};
+    for (const key of ["status", "type", "provider", "level", "search"] as const) {
+      const value = searchParams.get(key);
+      if (value) filters[key] = value;
+    }
     const limitParam = searchParams.get("limit");
-    if (limitParam) filters.limit = parseInt(limitParam, 10);
+    if (limitParam) {
+      const limit = parseInt(limitParam, 10);
+      if (Number.isFinite(limit) && limit > 0) filters.limit = limit;
+    }
 
-    const logs = getProxyLogs(filters);
+    const { logs } = await executeEdgeRuntimeCommand<{ logs: unknown[] }>({
+      command: "proxy-logs.list",
+      filters,
+    });
     return Response.json(logs);
   } catch (error) {
     return serverErrorResponse(error);
@@ -42,8 +47,7 @@ export async function GET(request: Request) {
  */
 export async function DELETE() {
   try {
-    clearProxyLogs();
-    return Response.json({ cleared: true });
+    return Response.json(await executeEdgeRuntimeCommand({ command: "proxy-logs.clear" }));
   } catch (error) {
     return serverErrorResponse(error);
   }

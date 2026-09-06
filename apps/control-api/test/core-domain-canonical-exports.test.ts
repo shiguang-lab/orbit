@@ -83,8 +83,8 @@ test("resolves the canonical provider-data and authz route contracts", () => {
   assert.equal(isLoopbackHost("127.0.0.1:3000"), true);
   assert.equal(isLoopbackHost("example.com"), false);
   assert.equal(LOCAL_ONLY_API_PREFIXES.includes("/api/mcp/"), true);
-  assert.equal(ALWAYS_PROTECTED_API_PATHS.includes("/api/shutdown"), true);
-  assert.equal(isAlwaysProtectedPath("/api/shutdown"), true);
+  assert.equal(ALWAYS_PROTECTED_API_PATHS.includes("/api/shutdown"), false);
+  assert.equal(isAlwaysProtectedPath("/api/shutdown"), false);
   assert.deepEqual(Object.keys(authzRoutePolicy).sort(), [
     "ALWAYS_PROTECTED_API_PATHS",
     "LOCAL_ONLY_API_GET_EXEMPTIONS",

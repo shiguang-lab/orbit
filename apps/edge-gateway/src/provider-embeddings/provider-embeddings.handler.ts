@@ -29,7 +29,7 @@ export async function POST(request: Request, { params }: ProviderParams): Promis
       load("@shiguang-gateway/open-sse/config/constants"),
       load("@shiguang-gateway/open-sse/config/providerRegistry"),
       load("@shiguang-gateway/open-sse/services/auth"),
-      load("@shiguang-gateway/open-sse"),
+      load("@shiguang-gateway/open-sse/handlers/embeddings"),
       load("@shiguang-gateway/core-domain/sse/logger"),
       load("@shiguang-gateway/core-domain/runtime/api-key-policy"),
       load("@shiguang-gateway/core-domain/shared/validation/helpers"),

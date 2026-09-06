@@ -7,7 +7,7 @@ import {
   inspectTargetResilience,
   type ProviderConnectionView,
 } from "./resilienceExplain.js";
-import { getCircuitBreaker } from "@shiguang-gateway/core-domain/resilience/circuit-breaker";
+import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 import {
   calculateFactors,
   calculateScore,
@@ -239,15 +239,19 @@ function quotaRemaining(target: TargetHealth, forecastTarget: ComboForecastTarge
   };
 }
 
-function circuitState(provider: string): ProviderCandidate["circuitBreakerState"] {
-  const state = String(getCircuitBreaker(provider).getStatus().state);
+function circuitState(
+  provider: string,
+  breakerStates: Map<string, string>,
+): ProviderCandidate["circuitBreakerState"] {
+  const state = breakerStates.get(provider) ?? "CLOSED";
   if (state === "OPEN" || state === "HALF_OPEN") return state;
   return "CLOSED";
 }
 
 function buildCandidate(
   target: TargetHealth,
-  forecastTarget: ComboForecastTarget | undefined
+  forecastTarget: ComboForecastTarget | undefined,
+  breakerStates: Map<string, string>,
 ): { candidate: ProviderCandidate; context: CandidateContext } {
   const sources: CandidateContext["sources"] = {};
   const notes: CandidateContext["notes"] = {};
@@ -296,7 +300,7 @@ function buildCandidate(
       model: target.model,
       quotaRemaining: quota.value,
       quotaTotal: 100,
-      circuitBreakerState: circuitState(target.provider),
+      circuitBreakerState: circuitState(target.provider, breakerStates),
       costPer1MTokens: cost ?? 1,
       p95LatencyMs: Math.max(1, latency),
       latencyStdDev: Math.max(10, latency * (1 - successRate / 100) + 10),
@@ -362,7 +366,8 @@ async function buildInspectorCombo(
   forecastTargets: Map<string, ComboForecastTarget>,
   autopilotCombo: ComboAutopilotCombo | undefined,
   taskType: string,
-  inspectorWeights: InspectorWeights
+  inspectorWeights: InspectorWeights,
+  breakerStates: Map<string, string>,
 ): Promise<ComboScoringInspectorCombo> {
   const warnings: string[] = [];
   const { weights } = inspectorWeights;
@@ -381,7 +386,8 @@ async function buildInspectorCombo(
   const contexts = targets.map((target) =>
     buildCandidate(
       target,
-      forecastTargets.get(target.executionKey) || forecastTargets.get(target.stepId)
+      forecastTargets.get(target.executionKey) || forecastTargets.get(target.stepId),
+      breakerStates,
     )
   );
   const pool = contexts.map((entry) => entry.candidate);
@@ -466,7 +472,7 @@ export async function buildComboScoringInspectorResponse(
 ): Promise<ComboScoringInspectorResponse> {
   const taskType = normalizeTaskType(options.taskType);
   const configuredCombos = await resolveConfiguredCombos(options);
-  const [health, forecast] = await Promise.all([
+  const [health, forecast, runtime] = await Promise.all([
     options.healthResponse ??
       buildComboHealthResponse({
         range: options.range,
@@ -482,7 +488,16 @@ export async function buildComboScoringInspectorResponse(
         now: options.now,
         combos: configuredCombos,
       }),
+    executeEdgeRuntimeCommand<{ breakers: Array<{ name?: unknown; state?: unknown }> }>({
+      command: "provider-health.snapshot",
+    }),
   ]);
+  const breakerStates = new Map(
+    runtime.breakers
+      .filter((entry): entry is { name: string; state: string } =>
+        typeof entry.name === "string" && typeof entry.state === "string")
+      .map((entry) => [entry.name, entry.state]),
+  );
   const autopilot =
     options.autopilotReport ??
     (options.skipAutopilot
@@ -522,7 +537,8 @@ export async function buildComboScoringInspectorResponse(
           taskType,
           resolveInspectorWeights(
             combosById.get(combo.comboId) ?? combosByName.get(combo.comboName)
-          )
+          ),
+          breakerStates,
         )
       )
     ),

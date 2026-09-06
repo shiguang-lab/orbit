@@ -5,6 +5,7 @@ import test from "node:test";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const packageRoot = fileURLToPath(new URL("..", import.meta.url));
+const repoRoot = path.resolve(packageRoot, "../..");
 const manifest = JSON.parse(
   fs.readFileSync(path.join(packageRoot, "package.json"), "utf8"),
 ) as { exports: Record<string, { types?: string; import?: string } | string> };
@@ -58,9 +59,12 @@ const contracts = {
     entry: "./src/shared/validation/providerValidationExports.ts",
     runtime: [
       "createProviderNodeSchema",
-      "paginationSchema",
+      "confirmedAccountSchema",
       "providerModelMutationSchema",
       "providerNodeValidateSchema",
+      "updateCcAliasSettingSchema",
+      "updateInterceptionRulesSchema",
+      "updateParamFilterConfigSchema",
       "updateProviderNodeSchema",
       "validateProviderApiKeySchema",
     ],
@@ -98,7 +102,87 @@ const contracts = {
       "volcenginePlanIdentitySchema",
     ],
   },
+  "./validation/proxy": {
+    entry: "./src/validation/proxy.ts",
+    runtime: [
+      "bulkImportProxiesSchema",
+      "bulkProxyAssignmentSchema",
+      "createProxyRegistrySchema",
+      "proxyAssignmentSchema",
+      "proxyPoolMemberSchema",
+      "proxyRotationStrategySchema",
+      "testProxySchema",
+      "updateProxyConfigSchema",
+      "updateProxyRegistrySchema",
+    ],
+  },
+  "./validation/keys": {
+    entry: "./src/validation/keys.ts",
+    runtime: [
+      "createKeySchema",
+      "createSyncTokenSchema",
+      "setBudgetSchema",
+      "updateKeyPermissionsSchema",
+    ],
+  },
+  "./validation/combos": {
+    entry: "./src/validation/combos.ts",
+    runtime: ["createComboSchema", "updateComboDefaultsSchema", "updateComboSchema"],
+  },
+  "./validation/routing": {
+    entry: "./src/validation/routing.ts",
+    runtime: [
+      "registerFallbackSchema",
+      "removeFallbackSchema",
+      "taskRoutingActionSchema",
+      "updateTaskRoutingSchema",
+    ],
+  },
+  "./validation/settings": {
+    entry: "./src/validation/settings.ts",
+    runtime: ["databaseSettingsSchema", "updateResilienceSchema"],
+  },
+  "./validation/security": {
+    entry: "./src/validation/security.ts",
+    runtime: [
+      "resetStatsActionSchema",
+      "updateAutoDisableAccountsSchema",
+      "updateIpFilterSchema",
+      "updatePayloadRulesSchema",
+      "updateRequireLoginSchema",
+    ],
+  },
+  "./validation/misc": {
+    entry: "./src/validation/misc.ts",
+    runtime: [
+      "codexProfileIdSchema",
+      "codexProfileNameSchema",
+      "jsonObjectSchema",
+      "paginationSchema",
+      "policyActionSchema",
+      "toggleRateLimitSchema",
+      "versionManagerInstallSchema",
+      "versionManagerToolSchema",
+    ],
+  },
+  "./validation/translator": {
+    entry: "./src/validation/translator.ts",
+    runtime: [
+      "translatorDetectSchema",
+      "translatorSendSchema",
+      "translatorTranslateSchema",
+    ],
+  },
 } as const;
+
+function sourceFiles(dir: string): string[] {
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    if (["dist", "node_modules", ".turbo"].includes(entry.name)) return [];
+    const target = path.join(dir, entry.name);
+    return entry.isDirectory() ? sourceFiles(target) : /\.[cm]?[jt]sx?$/.test(entry.name) ? [target] : [];
+  });
+}
 
 test("validation subpaths expose only their declared runtime contracts", async () => {
   const implementationPaths = new Set<string>();
@@ -116,4 +200,17 @@ test("validation subpaths expose only their declared runtime contracts", async (
   }
 
   assert.equal(implementationPaths.size, Object.keys(contracts).length);
+});
+
+test("the shared validation schema catch-all stays retired", () => {
+  assert.equal(manifest.exports["./shared/validation/schemas"], undefined);
+  assert.equal(fs.existsSync(path.join(packageRoot, "src/shared/validation/schemas.ts")), false);
+  assert.equal(fs.existsSync(path.join(packageRoot, "src/public/keyValidationSchemas.d.ts")), false);
+
+  const forbidden = /@shiguang-gateway\/core-domain\/shared\/validation\/schemas(?=["'])/;
+  for (const root of ["apps/control-api", "apps/edge-gateway", "packages/open-sse"]) {
+    for (const file of sourceFiles(path.join(repoRoot, root))) {
+      assert.doesNotMatch(fs.readFileSync(file, "utf8"), forbidden, file);
+    }
+  }
 });

@@ -3,7 +3,6 @@ import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { registerProviderRuntimePorts } from "../src/runtime/providerRuntimePorts.js";
 
 const packageRoot = fileURLToPath(new URL("..", import.meta.url));
 const repoRoot = path.resolve(packageRoot, "../..");
@@ -44,10 +43,6 @@ test("catalog/free-models is the single narrow free-model catalog contract", asy
     import: "./src/catalog/freeModels.ts",
   });
 
-  registerProviderRuntimePorts({
-    getFreeModelCatalog: () => [],
-    grantsFreeAccess: () => false,
-  });
   const runtime = await import(
     pathToFileURL(path.join(packageRoot, (entry as { import: string }).import)).href
   );

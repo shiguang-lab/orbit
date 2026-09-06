@@ -22,7 +22,8 @@ const source = targets.map((file) => `${file}\n${read(file)}`).join("\n");
 assert.doesNotMatch(source, /packages\/core-domain\/bin|config\/i18n\.json/);
 assert.doesNotMatch(source, /npm install -g shiguangGateway|update --apply|update-notifier/);
 assert.doesNotMatch(source, /@shiguangGateway[\\/]opencode-plugin|BUNDLED_PLUGIN_DIR/);
-assert.match(read("apps/cli/src/mcp-server.mjs"), /@shiguang-gateway\/open-sse\/mcp-server\/entry/);
+assert.match(read("apps/cli/src/mcp-server.mjs"), /@shiguang-gateway\/open-sse\/mcp-server\/factory/);
+assert.doesNotMatch(read("apps/cli/src/mcp-server.mjs"), /mcp-server\/entry/);
 
 const cliPackage = JSON.parse(read("apps/cli/package.json"));
 assert.equal(cliPackage.private, true);

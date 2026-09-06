@@ -1,4 +1,7 @@
-import { providerRuntimePorts } from "../../runtime/providerRuntimePorts.js";
+import {
+  FREE_MODEL_BUDGETS,
+  grantsFreeAccess,
+} from "@shiguang-gateway/provider-catalog/free-model-catalog";
 import { resolveProviderId } from "../constants/providers.js";
 import { globToRegex } from "@shiguang-gateway/contracts/glob-pattern";
 import { AI_MODELS } from "../constants/models.js";
@@ -23,9 +26,9 @@ import { AI_MODELS } from "../constants/models.js";
  */
 
 /** Catalogued entries whose regime still grants free access. */
-const getFreeModelBudgets = () => providerRuntimePorts.getFreeModelCatalog();
+const getFreeModelBudgets = () => FREE_MODEL_BUDGETS;
 const getFreeBudgets = () =>
-  getFreeModelBudgets().filter((model) => providerRuntimePorts.grantsFreeAccess(model.freeType));
+  getFreeModelBudgets().filter((model) => grantsFreeAccess(model.freeType));
 
 /** Provider ids that have at least one documented free model. */
 function providersWithFreeModels(): Set<string> {

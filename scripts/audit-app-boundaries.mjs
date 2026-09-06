@@ -16,6 +16,7 @@ const repoRoot = resolve(import.meta.dirname, "..");
 const strict = process.argv.includes("--strict");
 const appsRoot = join(repoRoot, "apps");
 const packagesRoot = join(repoRoot, "packages");
+const scriptsRoot = join(repoRoot, "scripts");
 const sourceExtensions = /\.(?:[cm]?[jt]sx?|json)$/i;
 const ignored = new Set(["node_modules", "dist", ".turbo", ".git"]);
 const legacyNames = ["gateway" + "-runtime", "server" + "-runtime"];
@@ -33,9 +34,43 @@ const radarSyncLifecycleSpecifier =
   "@shiguang-gateway/core-domain/radar/sync-lifecycle";
 const guardrailManagementSpecifier =
   "@shiguang-gateway/core-domain/control/guardrails";
-const preRequestHookManagementSpecifier =
-  "@shiguang-gateway/core-domain/middleware/pre-request-hook-management";
+const preRequestHookExecutionSpecifier =
+  "@shiguang-gateway/core-domain/middleware/pre-request-hook-execution";
 const violations = [];
+const edgeRuntimeProxyOwnedControlFiles = new Set([
+  "apps/control-api/src/monitoring/monitoring-health.service.ts",
+  "apps/control-api/src/resilience/handlers/reset.handler.ts",
+  "apps/control-api/src/resilience/handlers/model-cooldowns.handler.ts",
+  "apps/control-api/src/resilience/handlers/resilience.handler.ts",
+  "apps/control-api/src/settings/handlers/root.handler.ts",
+  "apps/control-api/src/sessions/sessions.service.ts",
+  "apps/control-api/src/admin/admin-concurrency.service.ts",
+  "apps/control-api/src/rate-limits/rate-limits.service.ts",
+  "apps/control-api/src/resilience/handlers/connections.handler.ts",
+  "apps/control-api/src/providers/provider-health-autopilot.ts",
+  "apps/control-api/src/gateway/runtime/gateway-status.ts",
+  "apps/control-api/src/gateway/gateway.service.ts",
+  "apps/control-api/src/telemetry/telemetry.service.ts",
+  "apps/control-api/src/usage/handlers/quota.handler.ts",
+  "apps/control-api/src/usage/reporting/resilienceExplain.ts",
+  "apps/control-api/src/usage/reporting/comboScoringInspector.ts",
+  "apps/control-api/src/providers/handlers/provider-detail.ts",
+  "apps/control-api/src/keys/handlers/key-devices.ts",
+  "apps/control-api/src/providers/providers.service.ts",
+  "apps/control-api/src/cache/cache.service.ts",
+  "apps/control-api/src/combos/handlers/metrics.ts",
+  "apps/control-api/src/combos/handlers/auto.ts",
+  "apps/control-api/src/combos/handlers/duplicate.ts",
+  "apps/control-api/src/usage/reporting/comboHealth.ts",
+  "apps/control-api/src/search/stats/search-stats.service.ts",
+  "apps/control-api/src/settings/model-aliases/model-aliases.service.ts",
+  "apps/control-api/src/settings/settings.service.ts",
+  "apps/control-api/src/settings/task-routing/task-routing.service.ts",
+  "apps/control-api/src/settings/security/security.service.ts",
+  "apps/control-api/src/settings/tier-config/tier-config.service.ts",
+  "apps/control-api/src/settings/config/settings-config.service.ts",
+  "apps/control-api/src/db-backups/db-backups.service.ts",
+]);
 
 const readJson = (file) => {
   try { return JSON.parse(readFileSync(file, "utf8")); } catch { return null; }
@@ -128,13 +163,19 @@ const allowedCoreDomainSubpaths = {
     "sse/logger",
     "edge/chat-handler",
     "edge/responses-runtime",
-    "edge/codex-responses-ws-runtime",
+    "edge/codex-responses-model",
     "db/relayProxies",
     "edge/relay-chat",
-    "edge/service-registry",
     "db/settings",
     "edge/count-tokens-validation",
     "runtime/api-key-policy",
+    "runtime/cc-discovery-alias",
+    "routing/reasoning-policy",
+    "routing/combo-steps",
+    "edge/tag-router",
+    "edge/memory-runtime",
+    "logging/proxy-logs",
+    "usage/history",
     "shared/upstream-error",
     "shared/validation/schemas",
     "shared/validation/helpers",
@@ -153,6 +194,8 @@ const allowedCoreDomainSubpaths = {
     "edge/synced-endpoint-routing",
     "shared/body-size-guard",
     "shared/authz-headers",
+    "shared/utils/machineId",
+    "shared/utils/resolveGatewayBaseUrl",
     "shared/designer-web-retirement",
     "shared/chatgpt-web-retirement",
     "db/api-keys",
@@ -186,11 +229,11 @@ const allowedCoreDomainSubpaths = {
     "runtime/provider-ports",
     "runtime/reasoning-effort",
     "edge/codex-fast-tier",
-    "shared/embedded-services",
+    "embedded-services/catalog",
     "shared/compatible-provider-id",
     "edge/video-bridge-drilldown",
     "edge/video-bridge-stats",
-    "edge/video-bridge-runtime",
+    "guardrails/video-runtime-probe",
     "edge/video-bridge-extraction-runtime",
     "shared/error-response",
     "shared/constants/selfServiceScopes",
@@ -215,6 +258,13 @@ allowedCoreDomainSubpaths["apps/control-api"] = allowedCoreDomainSubpaths[
     subpath !== "db/local-db",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push(
+  "validation/proxy",
+  "validation/keys",
+  "validation/combos",
+  "validation/routing",
+  "validation/settings",
+  "validation/security",
+  "validation/misc",
   "compliance/audit-log",
   "db/database-settings",
   "db/model-combo-mappings",
@@ -225,7 +275,6 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "routing/combo-steps",
   "network/probe-origin",
   "resilience/rate-limit-classification",
-  "middleware/pre-request-hook-management",
 );
 allowedCoreDomainSubpaths["apps/worker"] = allowedCoreDomainSubpaths["apps/worker"].filter(
   (subpath) => subpath !== "db/local-db",
@@ -233,8 +282,14 @@ allowedCoreDomainSubpaths["apps/worker"] = allowedCoreDomainSubpaths["apps/worke
 allowedCoreDomainSubpaths["apps/worker"].push(
   "db/api-keys",
   "db/batches",
+  "db/cleanup-maintenance",
   "db/files",
   "db/proxy-registry",
+  "db/vacuum",
+  "db/vacuum-schedule",
+  "pricing/sync",
+  "resilience/connection-recovery",
+  "sync/models-dev",
 );
 allowedCoreDomainSubpaths["apps/worker"].push("compliance/lifecycle");
 allowedCoreDomainSubpaths["apps/worker"].push("session-affinity/cleanup-lifecycle");
@@ -282,6 +337,14 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "db/tier-config",
 );
 allowedCoreDomainSubpaths["apps/edge-gateway"].push("runtime/model-sync-client");
+allowedCoreDomainSubpaths["apps/edge-gateway"].push("runtime/settings-refresh");
+allowedCoreDomainSubpaths["apps/edge-gateway"].push("cache/services");
+allowedCoreDomainSubpaths["apps/edge-gateway"].push(
+  "db/tier-config",
+  "resilience/settings-runtime",
+  "resilience/circuit-breaker",
+  "resilience/credential-health-cache",
+);
 allowedCoreDomainSubpaths["apps/control-api"].push("runtime/model-sync-client");
 allowedCoreDomainSubpaths["apps/control-api"].push("runtime/api-key-policy");
 allowedCoreDomainSubpaths["apps/control-api"].push("db/files");
@@ -308,7 +371,9 @@ allowedCoreDomainSubpaths["apps/edge-gateway"].push(
 );
 allowedCoreDomainSubpaths["apps/control-api"].push("control/jobs");
 allowedCoreDomainSubpaths["apps/edge-gateway"].push(
-  "catalog/runtime-support",
+  "validation/translator",
+  "catalog/provider-models",
+  "catalog/response-presentation",
   "catalog/model-capabilities",
   "catalog/synced-model-capabilities",
 );
@@ -317,9 +382,11 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/intelligence-sync",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push(
-  "control/usage",
+  "usage/analytics",
+  "quota/provider-response",
+  "db/token-limits",
+  "control/token-limit-validation",
   "edge/provider-limits",
-  "pricing/modal-cost",
   "usage/combo-health",
 );
 
@@ -360,6 +427,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "radar/sync/offers",
   "radar/sync/intel",
   "db/cleanup",
+  "sync/models-dev",
   "usage/call-logs",
   "shared/authz-route-policy",
   "db/provider-cc-alias",
@@ -382,7 +450,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "shared/local-corpus",
   "control/notion-db",
   "integrations/notion-client",
-  "control/obsidian-db",
+  "db/obsidian-config",
   "integrations/obsidian-client",
   "control/obsidian-sync",
   "control/oauth-runtime/",
@@ -395,6 +463,9 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/provider-auth-files/",
   "control/gamification",
   "control/gamification-db",
+  "control/gamification-notifications",
+  "gamification/profile",
+  "gamification/rules",
   "usage/cache-health",
   "usage/provider-window-costs",
   "usage/codex-reset-credits",
@@ -405,7 +476,9 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "usage/route-explain",
   "usage/quota-snapshots",
   "usage/utilization",
-  "shared/embedded-services",
+  "embedded-services/catalog",
+  "embedded-services/api-key",
+  "embedded-services/status",
   "control/sync-bundle",
   "control/sync-tokens",
   "control/cloud-sync-initialize",
@@ -437,7 +510,10 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "cli/tool-detector",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push("control/provider-management");
-allowedCoreDomainSubpaths["apps/control-api"].push("control/embedded-services-runtime-support");
+allowedCoreDomainSubpaths["apps/control-api"].push(
+  "control/embedded-services-lifecycle",
+  "control/embedded-services-install",
+);
 
 // Route files that have completed a physical ownership move. Keep this list
 // small and explicit: adding an entry is the acceptance record for a domain
@@ -487,8 +563,6 @@ const migratedRouteOwnership = {
     "api/services/dario/stop/route.ts",
     "api/services/dario/update/route.ts",
     "api/gateway/status/route.ts",
-    "api/shutdown/route.ts",
-    "api/restart/route.ts",
     "api/token-health/route.ts",
     "api/rate-limits/route.ts",
     "api/version-manager/status/route.ts",
@@ -861,6 +935,7 @@ const migratedRouteOwnership = {
     // The old Next route tree must stay empty; the controller contract is the
     // single registration surface for both canonical and /api aliases.
     "a2a/route.ts",
+    "api/telegram/update/route.ts",
     "api/a2a/status/route.ts",
     "api/a2a/tasks/route.ts",
     "api/a2a/tasks/[id]/route.ts",
@@ -970,7 +1045,24 @@ if (existsSync(retiredCorePlaygroundDir)) {
 }
 const retiredCoreTelegramDir = join(packagesRoot, "core-domain", "src", "lib", "telegram");
 if (existsSync(retiredCoreTelegramDir)) {
-  add("control-runtime-in-core-domain", retiredCoreTelegramDir, "Telegram runtime belongs in apps/control-api");
+  add("edge-runtime-in-core-domain", retiredCoreTelegramDir, "Telegram ingress runtime belongs in apps/edge-gateway");
+}
+const retiredControlTelegramIngress = [
+  join(repoRoot, "apps", "control-api", "src", "telegram", "telegram.controller.ts"),
+  join(repoRoot, "apps", "control-api", "src", "telegram", "telegram.service.ts"),
+  join(repoRoot, "apps", "control-api", "src", "telegram", "telegram.module.ts"),
+  join(repoRoot, "apps", "control-api", "src", "telegram", "handlers", "update.handler.ts"),
+  join(repoRoot, "apps", "control-api", "src", "telegram", "runtime", "bot-api.ts"),
+  join(repoRoot, "apps", "control-api", "src", "telegram", "runtime", "chat-proxy.ts"),
+  join(repoRoot, "apps", "control-api", "src", "telegram", "runtime", "config.ts"),
+  join(repoRoot, "apps", "control-api", "src", "telegram", "runtime", "error-message.ts"),
+  join(repoRoot, "apps", "control-api", "src", "telegram", "runtime", "index.ts"),
+  join(repoRoot, "apps", "control-api", "src", "telegram", "runtime", "init-data.ts"),
+];
+for (const file of retiredControlTelegramIngress) {
+  if (existsSync(file)) {
+    add("public-telegram-ingress-in-control", file, "POST /api/telegram/update and its chat pipeline belong in apps/edge-gateway");
+  }
 }
 const retiredCoreCopilotDir = join(packagesRoot, "core-domain", "src", "lib", "copilot");
 if (existsSync(retiredCoreCopilotDir)) {
@@ -1129,6 +1221,17 @@ for (const [appPath, routePaths] of Object.entries(migratedRouteOwnership)) {
       implementedRoutes.add(r);
     }
   }
+  if (
+    appPath === "apps/control-api" &&
+    (implementedRoutes.has("telegram/update/route.ts") ||
+      implementedRoutes.has("api/telegram/update/route.ts"))
+  ) {
+    add(
+      "public-telegram-ingress-in-control",
+      appDir,
+      "POST /api/telegram/update belongs exclusively to apps/edge-gateway",
+    );
+  }
 
   for (const routePath of routePaths) {
     const appFile = join(appRouteRoot, routePath);
@@ -1152,6 +1255,59 @@ for (const app of appEntries) {
   }
   for (const file of walk(join(app.dir, "src"))) {
     const source = readFileSync(file, "utf8");
+    if (
+      rel(app.dir) === "apps/control-api" &&
+      /@shiguang-gateway\/open-sse\/(?:services\/chat-completions-compat|services\/rateLimitManager(?:\/errors)?)/.test(source)
+    ) {
+      add(
+        "control-invokes-edge-request-runtime-in-process",
+        file,
+        "control-generated requests must use edge HTTP; edge-owned rate limiting must not also run in control",
+      );
+    }
+    if (
+      edgeRuntimeProxyOwnedControlFiles.has(rel(file)) &&
+      /@shiguang-gateway\/(?:open-sse\/(?:services\/(?:accountFallback|rateLimitManager|requestDedup|quotaMonitor|sessionManager|accountSemaphore|webSessionPoolHealth|signatureCache|deviceTracker|comboMetrics|toolLatencyTracker|searchCache|reasoningCache|quotaPreflight|modelDeprecation|systemPrompt|thinkingBudget|taskAwareRouter|backgroundTaskDetector|ipFilter|payloadRules|tier-resolver|autoCombo\/(?:virtualFactory|freeAccessQuota|builtinCatalog|modelFamily|autoPrefix|suffixComposition))|executors\/cliproxyapi)|core-domain\/resilience\/circuit-breaker)/.test(source)
+    ) {
+      add(
+        "control-imports-edge-runtime-singleton",
+        file,
+        "control diagnostics and commands must use the authenticated edge runtime command contract",
+      );
+    }
+    if (
+      [
+        "apps/control-api/src/proxies/proxies.service.ts",
+        "apps/control-api/src/settings/proxy/proxy-settings.service.ts",
+      ].includes(rel(file)) &&
+      /import\s*\{[^}]*\bclearDispatcherCache\b[^}]*\}\s*from\s*["']@shiguang-gateway\/open-sse\/utils\/proxyDispatcher["']/.test(source)
+    ) {
+      add(
+        "control-invalidates-edge-runtime-cache",
+        file,
+        "control proxy mutations must invalidate the edge dispatcher cache through the authenticated command contract",
+      );
+    }
+    if (
+      rel(file) === "apps/control-api/src/cache/cache.service.ts" &&
+      /\b(?:getCacheStats|clearCache|invalidateByModel|invalidateBySignature|invalidateStale|clearMemoryCache|getMemoryCacheStats)\b/.test(source)
+    ) {
+      add(
+        "control-accesses-edge-semantic-cache",
+        file,
+        "control semantic-cache management must use the authenticated edge runtime command contract",
+      );
+    }
+    if (
+      rel(app.dir) === "apps/control-api" &&
+      /@shiguang-gateway\/open-sse\/services\/(?:providerLimits|codexResetCredits)/.test(source)
+    ) {
+      add(
+        "control-imports-edge-quota-runtime",
+        file,
+        "provider-limits listeners, refresh timers, and quota caches belong to edge runtime commands",
+      );
+    }
     if (
       rel(app.dir) === "apps/control-api" &&
       /\bgetJobRegistry\b|@shiguang-gateway\/core-domain\/(?:worker\/jobs|worker\/cloud-sync|control\/(?:cloud-sync-initialize|model-sync-scheduler))/.test(source)
@@ -1210,17 +1366,24 @@ for (const app of appEntries) {
           "only control-api may register or inspect the mutable guardrail registry",
         );
       }
-      if (specifier === preRequestHookManagementSpecifier && rel(app.dir) !== "apps/control-api") {
+      if (specifier === preRequestHookExecutionSpecifier) {
         add(
-          "pre-request-hook-management-outside-control-api",
+          "pre-request-hook-execution-imported-by-app",
           file,
-          "only control-api may mutate the pre-request hook registry",
+          "open-sse owns pre-request hook execution on the edge request path",
         );
       }
       if (specifier.startsWith(".")) {
         const target = resolve(file, "..", specifier);
         if (target.includes(`${sep}apps${sep}`) && !target.startsWith(`${app.dir}${sep}`)) add("cross-app-relative-import", file, specifier);
         if (target.includes(`${sep}packages${sep}`)) add("package-source-relative-import", file, specifier);
+        if (target === scriptsRoot || target.startsWith(`${scriptsRoot}${sep}`)) {
+          add(
+            "app-imports-root-script",
+            file,
+            `${specifier}; deployable app source must not escape its app root into repository scripts`,
+          );
+        }
       }
       const workspace = workspaceByName.get(specifier) ?? [...workspaceByName.entries()].find(([name]) => specifier.startsWith(`${name}/`))?.[1];
       if (workspace && appByName.has(workspace.manifest.name)) add("cross-app-import", file, specifier);
@@ -1303,6 +1466,11 @@ if (coreDomainEntry) {
   }
 }
 const retiredRedundantCoreExports = [
+  "./catalog/runtime-support",
+  "./edge/service-registry",
+  "./shared/version-manager",
+  "./shared/embedded-services",
+  "./control/embedded-services-runtime-support",
   "./edge/local-db",
   "./db/local-db",
   "./control/database-settings",
@@ -1331,6 +1499,7 @@ const retiredRedundantCoreExports = [
   "./catalog/quota-runtime",
   "./control/synced-models",
   "./control/cost-rules",
+  "./control/usage",
   "./control/cli-tools-config-generator",
   "./control/cli-tools-tool-detector",
   "./edge/credential-health-cache",
@@ -1340,6 +1509,7 @@ const retiredRedundantCoreExports = [
   "./resilience/rate-limit",
   "./control/modality-bridge-stats",
   "./control/video-bridge-runtime",
+  "./edge/video-bridge-runtime",
   "./control/video-bridge-drilldown",
   "./shared/services/apiKeyResolver",
   "./control/cli-tools-api-key-resolver",
@@ -1442,6 +1612,7 @@ const retiredRedundantCoreExports = [
   "./control/radar-offers-sync",
   "./control/radar-intel-sync",
   "./worker/radar-scheduler",
+  "./middleware/pre-request-hook-management",
   "./edge/guardrails-runtime",
   "./runtime/guardrails",
 ];
@@ -1464,6 +1635,11 @@ if (
   );
 }
 const retiredAppOwnedExports = [
+  "./worker/connection-recovery-lifecycle",
+  "./worker/model-sync-lifecycle",
+  "./worker/pricing-sync-lifecycle",
+  "./worker/database-cleanup-lifecycle",
+  "./worker/database-vacuum-lifecycle",
   "./control/env-repair",
   "./shared/client-api-auth",
   "./control/provider-test-batch",
@@ -1540,6 +1716,28 @@ for (const subpath of retiredAppOwnedExports) {
     add("app-owned-capability-exported-by-core-domain", join(coreDomainEntry.dir, "package.json"), subpath);
   }
 }
+for (const relativeFile of ["src/lib/db/cleanup.ts", "src/lib/db/vacuum.ts"]) {
+  const file = join(coreDomainEntry?.dir ?? join(packagesRoot, "core-domain"), relativeFile);
+  if (existsSync(file) && /\b(?:setTimeout|setInterval|clearTimeout|clearInterval)\s*\(/.test(readFileSync(file, "utf8"))) {
+    add(
+      "database-maintenance-lifecycle-in-core-domain",
+      file,
+      "database cleanup and vacuum timers belong to apps/worker/jobs",
+    );
+  }
+}
+for (const relativeFile of ["src/lib/modelsDevSync.ts", "src/lib/pricingSync.ts"]) {
+  const file = join(coreDomainEntry?.dir ?? join(packagesRoot, "core-domain"), relativeFile);
+  if (existsSync(file) && /\b(?:setInterval|clearInterval)\s*\(/.test(readFileSync(file, "utf8"))) {
+    add("sync-lifecycle-in-core-domain", file, "model and pricing sync timers belong to apps/worker/jobs");
+  }
+}
+{
+  const file = join(coreDomainEntry?.dir ?? join(packagesRoot, "core-domain"), "src/lib/quota/connectionRecovery.ts");
+  if (existsSync(file) && /\b(?:setTimeout|setInterval|clearTimeout|clearInterval)\s*\(/.test(readFileSync(file, "utf8"))) {
+    add("connection-recovery-lifecycle-in-core-domain", file, "connection recovery timers belong to apps/worker/jobs");
+  }
+}
 const openSseEntry = packageEntries.find(({ manifest }) => manifest?.name === "@shiguang-gateway/open-sse");
 if (openSseEntry?.manifest?.exports?.["./oauth/codex-device-completion"]) {
   add(
@@ -1607,11 +1805,14 @@ for (const pkg of packageEntries) {
           "shared packages may evaluate guardrails but must not manage the mutable registry",
         );
       }
-      if (specifier === preRequestHookManagementSpecifier) {
+      if (
+        specifier === preRequestHookExecutionSpecifier &&
+        pkg.manifest?.name !== "@shiguang-gateway/open-sse"
+      ) {
         add(
-          "pre-request-hook-management-in-shared-package",
+          "pre-request-hook-execution-outside-open-sse",
           file,
-          "shared packages may execute pre-request hooks but must not manage the registry",
+          "only open-sse may execute persisted pre-request hooks for the edge request path",
         );
       }
       const workspace = workspaceByName.get(specifier) ?? [...workspaceByName.entries()].find(([name]) => specifier.startsWith(`${name}/`))?.[1];

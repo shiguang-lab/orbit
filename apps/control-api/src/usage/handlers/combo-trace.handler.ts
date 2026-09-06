@@ -1,5 +1,5 @@
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getComboTrace } from "@shiguang-gateway/open-sse/services/combo/decisionTrace";
+import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 
 /**
  * #10681: read the ordered per-target decision trace for one combo invocation.
@@ -16,7 +16,10 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   if (!id || !id.startsWith("combo-")) {
     return Response.json({ error: "Invalid invocation id" }, { status: 400 });
   }
-  const trace = getComboTrace(id);
+  const { trace } = await executeEdgeRuntimeCommand<{ trace: unknown | null }>({
+    command: "combo-trace.get",
+    invocationId: id,
+  });
   if (!trace) {
     return Response.json({ error: "Combo trace not found or expired" }, { status: 404 });
   }

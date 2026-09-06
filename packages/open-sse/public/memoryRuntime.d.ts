@@ -1,4 +1,5 @@
 export * from "@shiguang-gateway/core-domain/memory/runtime";
+export function installMemoryRuntimePort(): void;
 export {
   retrieveMemories,
   DEFAULT_MEMORY_SETTINGS,

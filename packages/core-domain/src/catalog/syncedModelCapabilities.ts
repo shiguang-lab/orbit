@@ -1,1 +1,5 @@
-export { getSyncedCapabilities } from "../lib/modelsDevSync.ts";
+export {
+  getModelsDevPricing,
+  getSyncedCapabilities,
+  getSyncedCapability,
+} from "../lib/modelsDevSync.ts";

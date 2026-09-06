@@ -1,8 +1,10 @@
 import {
-  getOrCreateApiKey,
   getServiceModels,
+} from "@shiguang-gateway/core-domain/embedded-services/catalog";
+import { getOrCreateApiKey } from "@shiguang-gateway/core-domain/embedded-services/api-key";
+import {
   getSupervisor,
-} from "@shiguang-gateway/core-domain/shared/embedded-services";
+} from "@shiguang-gateway/core-domain/control/embedded-services-lifecycle";
 import { syncServiceModels } from "../../embedded-service-model-sync.js";
 import { createErrorResponse, sanitizeErrorMessage } from "@shiguang-gateway/core-domain/shared/error-response";
 

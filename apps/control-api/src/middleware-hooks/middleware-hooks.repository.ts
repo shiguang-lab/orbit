@@ -1,6 +1,32 @@
 import { Injectable } from "@nestjs/common";
 import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
-import type { MiddlewareHookConfig } from "@shiguang-gateway/core-domain/middleware/pre-request-hook-management";
+export type MiddlewareHookScope =
+  | { type: "global" }
+  | { type: "combo"; comboId: string };
+
+export interface MiddlewareHookConfig {
+  name: string;
+  description: string;
+  priority: number;
+  scope: MiddlewareHookScope;
+  enabled: boolean;
+  code: string;
+  createdAt: string;
+  updatedAt: string;
+  runCount: number;
+  lastError?: string;
+}
+
+export interface MiddlewareHookLogEntry {
+  id: string;
+  hookName: string;
+  requestId: string;
+  durationMs: number;
+  mutated: boolean;
+  skipped: boolean;
+  error?: string;
+  timestamp: string;
+}
 
 interface HookRow {
   name: string;
@@ -47,6 +73,31 @@ export class MiddlewareHooksRepository {
       .prepare("SELECT * FROM middleware_hooks WHERE name = ?")
       .get(name) as HookRow | undefined;
     return row ? fromRow(row) : undefined;
+  }
+
+  logs(hookName: string, limit: number): MiddlewareHookLogEntry[] {
+    const rows = getDbInstance()
+      .prepare("SELECT * FROM middleware_logs WHERE hook_name = ? ORDER BY timestamp DESC LIMIT ?")
+      .all(hookName, limit) as Array<{
+        id: string;
+        hook_name: string;
+        request_id: string;
+        duration_ms: number;
+        mutated: number;
+        skipped: number;
+        error?: string | null;
+        timestamp: string;
+      }>;
+    return rows.map((row) => ({
+      id: row.id,
+      hookName: row.hook_name,
+      requestId: row.request_id,
+      durationMs: row.duration_ms,
+      mutated: row.mutated === 1,
+      skipped: row.skipped === 1,
+      error: row.error || undefined,
+      timestamp: row.timestamp,
+    }));
   }
 
   create(config: MiddlewareHookConfig): MiddlewareHookConfig {

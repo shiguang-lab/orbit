@@ -1,20 +1,29 @@
 import { z } from "zod";
 
 import { getRawProviderConnections, getProviderConnectionsCount } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { getAllCircuitBreakerStatuses } from "@shiguang-gateway/core-domain/resilience/circuit-breaker";
 import { resolveProviderId } from "@shiguang-gateway/core-domain/catalog/providers";
 import { TERMINAL_CONNECTION_STATUSES } from "@shiguang-gateway/core-domain/resilience/connection-recovery-policy";
 import { sanitizeErrorMessage, buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
-import {
-  getAllModelLockouts,
-  cooldownUntilMs,
-  type ModelLockoutInfo,
-} from "@shiguang-gateway/open-sse/services/accountFallback";
+import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 import type {
   ResilienceConnectionsResponse,
   ConnectionState,
   BreakerWithHistory,
 } from "../connection-types.js";
+
+type ModelLockoutInfo = {
+  provider: string;
+  connectionId: string;
+  model: string;
+  reason: string;
+  remainingMs: number;
+};
+
+function cooldownUntilMs(value: string): number {
+  const numeric = Number(value);
+  if (Number.isFinite(numeric)) return numeric;
+  return new Date(value).getTime();
+}
 
 // Explicit column whitelist -- getRawProviderConnections() DEFAULTS TO SELECT *,
 // so passing columns is MANDATORY to avoid leaking api_key, access_token,
@@ -127,6 +136,16 @@ export async function GET(req: Request) {
     const { windowMs, provider } = params.data;
 
     const degraded: string[] = [];
+    let runtime: { breakers: BreakerWithHistory[]; lockouts: ModelLockoutInfo[] } = {
+      breakers: [],
+      lockouts: [],
+    };
+    try {
+      runtime = await executeEdgeRuntimeCommand({ command: "provider-health.snapshot" });
+    } catch (err) {
+      degraded.push("edgeRuntime");
+      console.error("[API] resilience/connections edge runtime error:", err);
+    }
 
     // Fetch all three sources independently (partial degradation)
     let rawConnections: Record<string, unknown>[] = [];
@@ -149,7 +168,7 @@ export async function GET(req: Request) {
     // API. The outer try/catch handles this case.
     let breakers: BreakerWithHistory[] = [];
     try {
-      const allStatuses = getAllCircuitBreakerStatuses();
+      const allStatuses = runtime.breakers;
       breakers = allStatuses.map((status) => ({
         name: status.name,
         state: status.state,
@@ -179,7 +198,7 @@ export async function GET(req: Request) {
 
     let lockouts: ModelLockoutInfo[] = [];
     try {
-      lockouts = getAllModelLockouts();
+      lockouts = runtime.lockouts;
     } catch (err) {
       degraded.push("modelLockouts");
       console.error("[API] resilience/connections lockout module error:", err);

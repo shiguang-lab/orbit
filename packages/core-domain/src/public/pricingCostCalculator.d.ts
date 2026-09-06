@@ -15,6 +15,11 @@ export type ModalUsage = {
 };
 
 export function normalizeModelName(model: string): string;
+export function getCodexFastCostMultiplier(
+  provider?: string | null,
+  model?: string | null,
+  serviceTier?: string | null,
+): number;
 export function computeCostFromPricing(
   pricing: Record<string, unknown> | null | undefined,
   tokens: Record<string, number | undefined> | null | undefined,

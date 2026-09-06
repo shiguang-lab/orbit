@@ -8,7 +8,7 @@ import {
 import {
   taskRoutingActionSchema,
   updateTaskRoutingSchema,
-} from "@shiguang-gateway/core-domain/shared/validation/schemas";
+} from "@shiguang-gateway/core-domain/validation/routing";
 import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import { TaskRoutingService } from "./task-routing.service.js";
 
@@ -40,7 +40,7 @@ export class TaskRoutingController {
   async get(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
     if (!(await this.authorize(request, reply))) return;
     try {
-      return reply.send(this.taskRouting.getConfig());
+      return reply.send(await this.taskRouting.getConfig());
     } catch (error) {
       return reply.status(500).send(buildErrorBody(500, sanitizeErrorMessage(error)));
     }
@@ -65,9 +65,9 @@ export class TaskRoutingController {
     if (isValidationFailure(validation)) return reply.status(400).send({ error: validation.error });
     try {
       if (validation.data.action === "reset-stats") {
-        return reply.send({ success: true, stats: this.taskRouting.resetStats() });
+        return reply.send(await this.taskRouting.resetStats());
       }
-      return reply.send(this.taskRouting.detect(validation.data.body ?? {}));
+      return reply.send(await this.taskRouting.detect(validation.data.body ?? {}));
     } catch (error) {
       return reply.status(500).send(buildErrorBody(500, sanitizeErrorMessage(error)));
     }

@@ -22,7 +22,6 @@
  */
 
 import { storedInstantToEpochMs as cooldownUntilMs } from "@shiguang-gateway/contracts/runtime-settings";
-import { isAutomatedTestProcess } from "../../shared/utils/testProcess.ts";
 
 /**
  * The transient-cooldown status written by `markAccountUnavailable()` for a
@@ -299,46 +298,8 @@ export async function runConnectionRecoveryTick(
   return result;
 }
 
-// ── Scheduler (opt-out, low frequency) ──────────────────────────────────────
-// Mirrors src/lib/tokenHealthCheck.ts: a globalThis-guarded singleton so HMR /
-// double-import never stacks timers, an unref'd interval so it never holds the
-// process open, and a self-disable in build/test processes. NOT auto-started on
-// import — startup bootstrap calls initConnectionRecoveryScheduler().
-
 const DEFAULT_TICK_MS = 60 * 1000; // re-validate elapsed cooldowns every 60s
 const MIN_TICK_MS = 5 * 1000; // floor to avoid hot-looping if misconfigured
-const RECOVERY_LOG_PREFIX = "[ConnectionRecovery]";
-const TRUE_ENV_VALUES = new Set(["1", "true", "yes", "on"]);
-
-declare global {
-  var __shiguangGatewayConnRecovery:
-    { initialized: boolean; interval: ReturnType<typeof setInterval> | null } | undefined;
-}
-
-function getRecoveryState() {
-  if (!globalThis.__shiguangGatewayConnRecovery) {
-    globalThis.__shiguangGatewayConnRecovery = { initialized: false, interval: null };
-  }
-  return globalThis.__shiguangGatewayConnRecovery;
-}
-
-function isEnvFlagEnabled(name: string): boolean {
-  const value = typeof process !== "undefined" ? process.env[name] : undefined;
-  return !!value && TRUE_ENV_VALUES.has(value.trim().toLowerCase());
-}
-
-function isBuildProcess(): boolean {
-  return typeof process !== "undefined" && process.env.NEXT_PHASE === "phase-production-build";
-}
-
-function isRecoverySchedulerDisabled(): boolean {
-  return (
-    isEnvFlagEnabled("SHIGUANG_GATEWAY_DISABLE_CONNECTION_RECOVERY") ||
-    isEnvFlagEnabled("SHIGUANG_GATEWAY_DISABLE_BACKGROUND_SERVICES") ||
-    isBuildProcess() ||
-    isAutomatedTestProcess()
-  );
-}
 
 /**
  * Resolve the tick interval (ms) from SHIGUANG_GATEWAY_CONNECTION_RECOVERY_INTERVAL_MS,
@@ -353,50 +314,4 @@ export function resolveConnectionRecoveryIntervalMs(
   const parsed = Number(rawValue);
   if (!Number.isFinite(parsed) || parsed <= 0) return DEFAULT_TICK_MS;
   return Math.max(MIN_TICK_MS, Math.floor(parsed));
-}
-
-/**
- * Start the proactive connection-recovery scheduler (idempotent). No-op in
- * build/test processes or when disabled via env. Each tick runs
- * runConnectionRecoveryTick() against the real DB.
- */
-export function initConnectionRecoveryScheduler(): void {
-  const state = getRecoveryState();
-  if (state.initialized || isRecoverySchedulerDisabled()) return;
-  state.initialized = true;
-
-  const tickMs = resolveConnectionRecoveryIntervalMs();
-  const tickLogger = {
-    info: (msg: string) => console.log(msg),
-    warn: (msg: string) => console.warn(msg),
-  };
-
-  const runTick = () => {
-    runConnectionRecoveryTick({ logger: tickLogger }).catch((err: unknown) => {
-      const msg = err instanceof Error ? err.message : String(err);
-      console.warn(`${RECOVERY_LOG_PREFIX} tick error (non-fatal): ${msg}`);
-    });
-  };
-
-  console.log(
-    `${RECOVERY_LOG_PREFIX} Starting proactive cooldown recovery (tick every ${Math.round(tickMs / 1000)}s)`
-  );
-
-  // Delay the first tick a little so it never piles onto cold-start work.
-  const timer = setTimeout(() => {
-    runTick();
-    state.interval = setInterval(runTick, tickMs);
-    (state.interval as { unref?: () => void } | undefined)?.unref?.();
-  }, 15_000);
-  (timer as { unref?: () => void } | undefined)?.unref?.();
-}
-
-/** Stop the scheduler (tests / hot-reload). */
-export function stopConnectionRecoveryScheduler(): void {
-  const state = getRecoveryState();
-  if (state.interval) {
-    clearInterval(state.interval);
-    state.interval = null;
-  }
-  state.initialized = false;
 }

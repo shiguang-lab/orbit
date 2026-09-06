@@ -27,8 +27,8 @@ import type { IncomingMessage } from "node:http";
 
 import {
   getSupervisor,
-  getOrCreateApiKey,
-} from "@shiguang-gateway/core-domain/control/embedded-services-runtime-support";
+} from "@shiguang-gateway/core-domain/control/embedded-services-lifecycle";
+import { getOrCreateApiKey } from "@shiguang-gateway/core-domain/embedded-services/api-key";
 import {
   attachRequestStreamGuards,
   installProcessCrashGuard,

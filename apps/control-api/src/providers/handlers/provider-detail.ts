@@ -25,11 +25,7 @@ import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/pro
 import { isApiKeyRevealEnabled, maskStoredApiKey } from "@shiguang-gateway/core-domain/control/provider-connection";
 import { cleanupProviderModelsAfterConnectionDelete } from "@shiguang-gateway/core-domain/control/provider-connection";
 import { canUpdateProviderApiKey } from "@shiguang-gateway/contracts/config/webSessionCredentials";
-import {
-  refreshConnectionRateLimits,
-  enableRateLimitProtection,
-  disableRateLimitProtection,
-} from "@shiguang-gateway/open-sse/services/rateLimitManager";
+import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 import {
   finalizeValidatedChatGptWebCodexSecrets,
   decodeChatGptWebCodexSecrets,
@@ -348,12 +344,12 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     // queuing requests through Bottleneck for a connection whose DB row (and
     // the dashboard toggle reading it) both still say "off" (#11278).
     if (rateLimitOverrides !== undefined) {
-      refreshConnectionRateLimits(id, updated?.rateLimitOverrides ?? null);
-      if (updated?.rateLimitProtection === true) {
-        enableRateLimitProtection(id);
-      } else {
-        disableRateLimitProtection(id);
-      }
+      await executeEdgeRuntimeCommand({
+        command: "connection-rate-limits.refresh",
+        connectionId: id,
+        overrides: (updated?.rateLimitOverrides as Record<string, number> | null) ?? null,
+        enabled: updated?.rateLimitProtection === true,
+      });
     }
 
     // Hide sensitive fields

@@ -3,8 +3,8 @@ import {
   loadTierConfig,
   saveTierConfig,
 } from "@shiguang-gateway/core-domain/db/tier-config";
-import { setTierConfig } from "@shiguang-gateway/open-sse/services/tier-resolver";
-import type { TierConfig } from "@shiguang-gateway/open-sse/services/tierTypes";
+import type { TierConfig } from "@shiguang-gateway/contracts/tier-types";
+import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 
 export interface TierOverrideUpdate {
   provider: string;
@@ -18,7 +18,7 @@ export class TierConfigService {
     return loadTierConfig();
   }
 
-  updateProviderOverride({ provider, tier }: TierOverrideUpdate): TierConfig {
+  async updateProviderOverride({ provider, tier }: TierOverrideUpdate): Promise<TierConfig> {
     const config = loadTierConfig();
     const providerOverrides = config.providerOverrides.filter(
       (override: TierConfig["providerOverrides"][number]) =>
@@ -28,9 +28,7 @@ export class TierConfigService {
 
     const nextConfig: TierConfig = { ...config, providerOverrides };
     saveTierConfig(nextConfig);
-    // Keep the in-process routing cache in sync for requests handled by this
-    // process. Other app processes reload the same persisted row on startup.
-    setTierConfig(nextConfig);
+    await executeEdgeRuntimeCommand({ command: "tier-config.apply" });
     return nextConfig;
   }
 }

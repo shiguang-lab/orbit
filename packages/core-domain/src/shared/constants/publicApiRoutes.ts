@@ -25,7 +25,7 @@ const PUBLIC_API_ROUTE_PREFIXES = [
   // Telegram Bot API update webhook + Mini App proxy. Telegram POSTs updates
   // here without any dashboard cookie/API key; the handler enforces its own
   // auth (503 when TELEGRAM_BOT_TOKEN is unset; 401 on invalid initData
-  // HMAC). See src/app/api/telegram/update/route.ts. Do not widen.
+  // HMAC). See apps/edge-gateway/src/telegram/handlers/update.handler.ts. Do not widen.
   "/api/telegram/",
   // Cursor CLI passthrough (CURSOR_API_ENDPOINT -> ShiguangGateway -> api2.cursor.sh).
   // The handler enforces its own auth: /auth/exchange_user_api_key requires an

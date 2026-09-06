@@ -1,4 +1,4 @@
-import { getCachedSettings, getSettings, updateSettings } from "@shiguang-gateway/core-domain/db/settings";
+import { getCachedSettings, getSettings } from "@shiguang-gateway/core-domain/db/settings";
 import {
   buildLegacyResilienceCompat,
   mergeResilienceSettings,
@@ -6,10 +6,13 @@ import {
   type ResilienceSettings,
   type ResilienceSettingsPatch,
 } from "@shiguang-gateway/core-domain/resilience/settings";
-import { updateResilienceSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { updateResilienceSchema } from "@shiguang-gateway/core-domain/validation/settings";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { resetAllCircuitBreakers } from "@shiguang-gateway/core-domain/resilience/circuit-breaker";
+import {
+  persistResilienceSettings,
+} from "@shiguang-gateway/core-domain/resilience/settings-runtime";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -107,18 +110,6 @@ function normalizeLegacyPatch(body: JsonRecord): ResilienceSettingsPatch {
   }
 
   return patch;
-}
-
-async function syncRuntimeSettings(resilienceSettings: ResilienceSettings) {
-  const [{ applyRequestQueueSettings }, { setProviderQuotaOverrides }] = await Promise.all([
-    import("@shiguang-gateway/open-sse/services/rateLimitManager"),
-    import("@shiguang-gateway/open-sse/services/providerDefaultRateLimit"),
-  ]);
-  await applyRequestQueueSettings(resilienceSettings.requestQueue);
-  // #6846 Phase 2: re-apply per-provider RPM/concurrency overrides on the hot
-  // path so a PATCH takes effect without a process restart. Mirrors the call in
-  // rateLimitManager.ts::initializeRateLimits() (startup).
-  setProviderQuotaOverrides(resilienceSettings.providerQuotaOverrides);
 }
 
 /**
@@ -223,26 +214,11 @@ export async function PATCH(request: Request) {
       ...normalizeLegacyPatch(body),
     });
 
-    await updateSettings({
-      resilienceSettings: nextResilience,
-      requestRetry: nextResilience.waitForCooldown.maxRetries,
-      maxRetryIntervalSec: nextResilience.waitForCooldown.maxRetryWaitSec,
+    const persistedSnapshot = await persistResilienceSettings(nextResilience);
+    await executeEdgeRuntimeCommand({
+      command: "runtime-settings.apply",
+      minimumRevision: persistedSnapshot.revision,
     });
-    await syncRuntimeSettings(nextResilience);
-
-    // Issue #2100 follow-up: detect transitions in useUpstream429BreakerHints
-    // and reset breakers so the registry stops serving cached options.
-    // Compared on STORED override transition (boolean | undefined) so that
-    // `null` (PATCH input) → undefined (stored) is correctly detected as
-    // "unset request" when the previous stored value was a boolean.
-    const breakerHintsChanged =
-      currentResilience.connectionCooldown.oauth.useUpstream429BreakerHints !==
-        nextResilience.connectionCooldown.oauth.useUpstream429BreakerHints ||
-      currentResilience.connectionCooldown.apikey.useUpstream429BreakerHints !==
-        nextResilience.connectionCooldown.apikey.useUpstream429BreakerHints;
-    if (breakerHintsChanged) {
-      resetAllCircuitBreakers();
-    }
 
     return Response.json({
       ok: true,

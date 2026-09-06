@@ -1,7 +1,7 @@
 import {
   isAuthRequired,
   isDashboardSessionAuthenticated,
-} from "@shiguang-gateway/core-domain/catalog/runtime-support";
+} from "@shiguang-gateway/core-domain/auth/request-state";
 import { extractApiKey } from "../services/auth.ts";
 
 // Request-scoped catalog helpers: API-key auth gating for `/v1/models` and Codex

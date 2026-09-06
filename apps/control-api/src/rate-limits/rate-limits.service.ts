@@ -3,30 +3,22 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import { getProviderConnections, updateProviderConnection } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { getAccountDisplayName } from "@shiguang-gateway/core-domain/catalog/display-names";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { toggleRateLimitSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
-
-type RateLimitApi = {
-  getAllModelLockouts(): unknown;
-  getCacheStats(): unknown;
-  enableRateLimitProtection(connectionId: string): void;
-  disableRateLimitProtection(connectionId: string): void;
-  getRateLimitStatus(provider: string, connectionId: string): Record<string, unknown>;
-  getAllRateLimitStatus(): unknown;
-};
+import { toggleRateLimitSchema } from "@shiguang-gateway/core-domain/validation/misc";
+import { executeEdgeRuntimeCommand } from "../edge-runtime/client.js";
 
 type JsonRecord = Record<string, unknown>;
-const load = <T>(specifier: string): Promise<T> => import(specifier) as Promise<T>;
 
 @Injectable()
 export class RateLimitsService {
   async getStatus(reply: FastifyReply): Promise<unknown> {
     try {
-      const [{ getAllModelLockouts }, { getCacheStats }, rateLimits] = await Promise.all([
-        load<Pick<RateLimitApi, "getAllModelLockouts">>("@shiguang-gateway/open-sse/services/accountFallback"),
-        load<Pick<RateLimitApi, "getCacheStats">>("@shiguang-gateway/open-sse/services/signatureCache"),
-        load<RateLimitApi>("@shiguang-gateway/open-sse/services/rateLimitManager"),
-      ]);
-      const connections = getProviderConnections().map((raw) => {
+      const rawConnections = await getProviderConnections();
+      const targets = rawConnections.map((raw) => {
+        const conn = this.asRecord(raw);
+        return { connectionId: String(conn.id ?? ""), provider: String(conn.provider ?? "unknown") };
+      }).filter((target) => target.connectionId);
+      const runtime = await executeEdgeRuntimeCommand<{ statusByTarget: Record<string, Record<string, unknown>>; overview: unknown; lockouts: unknown; cacheStats: unknown }>({ command: "rate-limits.snapshot", targets });
+      const connections = rawConnections.map((raw) => {
         const conn = this.asRecord(raw);
         const connectionId = typeof conn.id === "string" ? conn.id : "";
         const provider = typeof conn.provider === "string" ? conn.provider : "unknown";
@@ -39,14 +31,14 @@ export class RateLimitsService {
           provider,
           name,
           rateLimitProtection: conn.rateLimitProtection === true,
-          ...rateLimits.getRateLimitStatus(provider, connectionId),
+          ...(runtime.statusByTarget[`${provider}:${connectionId}`] ?? {}),
         };
       });
       return reply.send({
         connections,
-        overview: rateLimits.getAllRateLimitStatus(),
-        lockouts: getAllModelLockouts(),
-        cacheStats: getCacheStats(),
+        overview: runtime.overview,
+        lockouts: runtime.lockouts,
+        cacheStats: runtime.cacheStats,
       });
     } catch (error) {
       console.error("[API ERROR] /api/rate-limits GET:", error);
@@ -65,10 +57,8 @@ export class RateLimitsService {
       const validation = validateBody(toggleRateLimitSchema, rawBody);
       if (isValidationFailure(validation)) return reply.status(400).send({ error: validation.error });
       const { connectionId, enabled } = validation.data as { connectionId: string; enabled: boolean };
-      const rateLimits = await load<RateLimitApi>("@shiguang-gateway/open-sse/services/rateLimitManager");
-      if (enabled) rateLimits.enableRateLimitProtection(connectionId);
-      else rateLimits.disableRateLimitProtection(connectionId);
       await updateProviderConnection(connectionId, { rateLimitProtection: !!enabled });
+      await executeEdgeRuntimeCommand({ command: "rate-limits.toggle", connectionId, enabled });
       return reply.send({ success: true, connectionId, enabled: !!enabled });
     } catch (error) {
       console.error("[API ERROR] /api/rate-limits POST:", error);

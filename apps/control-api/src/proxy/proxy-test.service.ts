@@ -12,7 +12,7 @@ import { getProxyById } from "@shiguang-gateway/core-domain/db/proxies";
 import { extractRelayAuth } from "@shiguang-gateway/core-domain/db/proxy-registry";
 import { recordRelayProbe } from "@shiguang-gateway/core-domain/db/relay-probe-stats";
 import { probeEchoTargets } from "@shiguang-gateway/core-domain/shared/proxy-echo-target";
-import { testProxySchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { testProxySchema } from "@shiguang-gateway/core-domain/validation/proxy";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { buildRelayTestResult } from "./relay-test-result.js";
 

@@ -13,11 +13,11 @@ const manifest = JSON.parse(
 const contracts = {
   "./catalog/provider-models": {
     entry: ["./src/public/catalogProviderModels.d.ts", "./src/catalog/providerModels.ts"],
-    keys: ["PROVIDER_MODELS", "getModelsByProviderId"],
+    keys: ["PROVIDER_ID_TO_ALIAS", "PROVIDER_MODELS", "getModelsByProviderId"],
   },
   "./catalog/no-auth-providers": {
     entry: ["./src/public/catalogNoAuthProviders.d.ts", "./src/catalog/noAuthProviders.ts"],
-    keys: ["isProviderBlockedByIdOrAlias"],
+    keys: ["isNoAuthProviderBlocked", "isNoAuthProviderKey", "isNoAuthRawProviderPrefix", "isProviderBlockedByIdOrAlias", "normalizeBlockedProviderSet"],
   },
   "./control/authenticated": {
     entry: ["./src/public/authenticated.d.ts", "./src/control/authenticated.ts"],

@@ -198,7 +198,7 @@ export class AuthService {
       const allowed = Array.isArray(settings.oidcAllowedSubjects) ? settings.oidcAllowedSubjects : [];
       if (allowed.length) { const sub = typeof payload.sub === "string" ? payload.sub : ""; const rec = payload as Record<string, unknown>; const email = rec.email_verified === true && typeof rec.email === "string" ? rec.email.toLowerCase() : ""; if (!allowed.some((value) => typeof value === "string" && (value === sub || (email && value.toLowerCase() === email)))) return { ...errorRedirect("subject_not_allowed"), cookies: [clearState] }; }
     } catch { return { ...errorRedirect("id_token_invalid"), cookies: [clearState] }; }
-    try { await updateSettings({ setupComplete: true }); } catch { /* login remains valid */ }
+    try { await updateSettings({ setupComplete: true }, { applyRuntime: false }); } catch { /* login remains valid */ }
     const secret = jwtSecret(); if (!secret) return { ...errorRedirect("server_misconfigured"), cookies: [clearState] };
     const token = await new SignJWT({ authenticated: true }).setProtectedHeader({ alg: "HS256" }).setExpirationTime("30d").sign(secret);
     return { status: 302, location: `${origin}/dashboard`, cookies: [clearState, cookie("auth_token", token, { maxAge: AUTH_COOKIE_MAX_AGE, secure: secureCookie(request) })] };

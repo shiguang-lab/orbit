@@ -2,8 +2,7 @@ import pino from "pino";
 
 import { isModelExcludedByConnection } from "@shiguang-gateway/core-domain/routing/connection-model-rules";
 import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { getCircuitBreaker } from "@shiguang-gateway/core-domain/resilience/circuit-breaker";
-import { getModelLockoutInfo } from "@shiguang-gateway/open-sse/services/accountFallback";
+import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 import {
   createCodexAccountPool,
   inspectCodexAccount,
@@ -19,6 +18,7 @@ import type {
 } from "@shiguang-gateway/core-domain/usage/utilization";
 
 type JsonRecord = Record<string, unknown>;
+type RuntimeResilienceSnapshot = { breakers: JsonRecord[]; lockouts: JsonRecord[] };
 
 const logger = pino({ name: "resilience-explain" });
 
@@ -78,12 +78,12 @@ function isTerminalStatus(status: string): boolean {
   return status === "credits_exhausted" || status === "banned" || status === "expired";
 }
 
-function buildProviderExplanation(provider: string): {
+function buildProviderExplanation(provider: string, breakers: JsonRecord[]): {
   provider: ResilienceProviderExplanation;
   skipReason: ResilienceSkipReason | null;
 } {
   try {
-    const status = getCircuitBreaker(provider).getStatus();
+    const status = breakers.find((entry) => entry.name === provider) ?? { state: "CLOSED" };
     const circuitBreakerState =
       status.state === "OPEN" || status.state === "HALF_OPEN" || status.state === "CLOSED"
         ? status.state
@@ -168,7 +168,8 @@ function accountReason(
     connectionId: string | null;
     allowedIds: Set<string> | null;
     now: number;
-  }
+  },
+  lockouts: JsonRecord[]
 ): { state: ResilienceExplainState; reason: ResilienceSkipReason | null } {
   const connectionId = toStringOrNull(connection.id) || "unknown";
   if (options.allowedIds && !options.allowedIds.has(connectionId)) {
@@ -292,7 +293,9 @@ function accountReason(
     };
   }
 
-  const lockout = getModelLockoutInfo(options.provider, connectionId, options.model);
+  const lockout = lockouts.find((entry) =>
+    entry.provider === options.provider && entry.connectionId === connectionId && entry.model === options.model
+  );
   if (lockout) {
     return {
       state: "skipped",
@@ -301,7 +304,7 @@ function accountReason(
         code: "model_lockout",
         connectionId,
         message: `Model ${options.model} is locked out on connection ${connectionId}.`,
-        retryAfterMs: Math.max(0, lockout.remainingMs),
+        retryAfterMs: Math.max(0, Number(lockout.remainingMs ?? 0)),
         evidence: {
           reason: lockout.reason,
           failureCount: lockout.failureCount,
@@ -337,19 +340,22 @@ function buildAccountExplanation(
 function buildModelExplanation(
   provider: string,
   model: string,
-  connectionId: string
+  connectionId: string,
+  lockouts: JsonRecord[]
 ): ResilienceModelExplanation | null {
-  const lockout = getModelLockoutInfo(provider, connectionId, model);
+  const lockout = lockouts.find((entry) =>
+    entry.provider === provider && entry.connectionId === connectionId && entry.model === model
+  );
   if (!lockout) return null;
   return {
     provider,
     model,
     connectionId,
     state: "skipped",
-    reason: lockout.reason,
-    retryAfterMs: Math.max(0, lockout.remainingMs),
-    failureCount: lockout.failureCount,
-    lockedAt: lockout.lockedAt,
+    reason: typeof lockout.reason === "string" ? lockout.reason : null,
+    retryAfterMs: Math.max(0, Number(lockout.remainingMs ?? 0)),
+    failureCount: Number(lockout.failureCount ?? 0),
+    lockedAt: typeof lockout.lockedAt === "string" ? lockout.lockedAt : null,
   };
 }
 
@@ -379,7 +385,10 @@ export async function inspectTargetResilience(
   options: InspectTargetResilienceOptions
 ): Promise<ResilienceExplanation> {
   const now = options.now ?? Date.now();
-  const providerInspection = buildProviderExplanation(options.provider);
+  const runtime = await executeEdgeRuntimeCommand<RuntimeResilienceSnapshot>({
+    command: "provider-health.snapshot",
+  });
+  const providerInspection = buildProviderExplanation(options.provider, runtime.breakers);
   const skipReasons: ResilienceSkipReason[] = [];
   if (providerInspection.skipReason) skipReasons.push(providerInspection.skipReason);
 
@@ -412,11 +421,16 @@ export async function inspectTargetResilience(
         connectionId: options.connectionId ?? null,
         allowedIds,
         now,
-      });
+      }, runtime.lockouts);
       if (reason) skipReasons.push(reason);
       accountExplanations.push(buildAccountExplanation(connection, state, reason));
       if (reason?.code === "connection_not_allowed") continue;
-      const modelExplanation = buildModelExplanation(options.provider, options.model, connectionId);
+      const modelExplanation = buildModelExplanation(
+        options.provider,
+        options.model,
+        connectionId,
+        runtime.lockouts,
+      );
       if (modelExplanation) modelExplanations.push(modelExplanation);
     }
 

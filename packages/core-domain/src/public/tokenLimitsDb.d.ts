@@ -5,10 +5,10 @@ export interface TokenLimit {
   id: string;
   apiKeyId: string;
   scopeType: TokenLimitScopeType;
-  scopeValue: string;
+  scopeValue?: string;
   tokenLimit: number;
-  resetInterval: BudgetResetInterval;
-  resetTime: string;
+  resetInterval?: BudgetResetInterval;
+  resetTime?: string;
   enabled: boolean;
   createdAt: string;
   updatedAt: string;
@@ -20,6 +20,21 @@ export interface TokenWindowState {
   periodStartAt: number;
   nextResetAt: number;
 }
+
+export interface UpsertTokenLimitInput {
+  id?: string;
+  apiKeyId: string;
+  scopeType: TokenLimitScopeType;
+  scopeValue: string;
+  tokenLimit: number;
+  resetInterval: BudgetResetInterval;
+  resetTime: string;
+  enabled?: boolean;
+}
+
+export function listTokenLimits(apiKeyId: string): TokenLimit[];
+export function upsertTokenLimit(input: UpsertTokenLimitInput): TokenLimit;
+export function deleteTokenLimit(id: string): boolean;
 
 export function getTokenLimitsForRequest(
   apiKeyId: string,

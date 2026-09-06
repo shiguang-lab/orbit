@@ -1,60 +1,64 @@
 #!/usr/bin/env node
 
-import { spawn } from "node:child_process";
-import { dirname, join } from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const ROOT = join(__dirname, "..");
+import { startMcpHeartbeat } from "./mcpRuntimeHeartbeat.mjs";
 
-/**
- * @returns {string} resolved absolute path to the package-owned MCP entry
- */
-export function resolveMcpEntry() {
-  return fileURLToPath(import.meta.resolve("@shiguang-gateway/open-sse/mcp-server/entry"));
+const currentFile = fileURLToPath(import.meta.url);
+
+async function loadMcpRuntime() {
+  await import(new URL("./mcpStdioConsoleGuard.mjs", import.meta.url).href);
+  const { installRuntimePorts } = await import(
+    "@shiguang-gateway/open-sse/services/dbRuntimeHooks"
+  );
+  installRuntimePorts();
+  const [{ createMcpServer, getMcpServerRuntimeInfo }, { closeAuditDb }, { StdioServerTransport }] =
+    await Promise.all([
+      import("@shiguang-gateway/open-sse/mcp-server/factory"),
+      import("@shiguang-gateway/open-sse/mcp-server/audit"),
+      import("@modelcontextprotocol/sdk/server/stdio.js"),
+    ]);
+  return {
+    createMcpServer,
+    getMcpServerRuntimeInfo,
+    closeAuditDb,
+    createTransport: () => new StdioServerTransport(),
+    startHeartbeat: startMcpHeartbeat,
+  };
 }
 
-function formatSpawnError(exitCode, signal) {
-  if (signal) return `MCP server exited by signal ${signal}`;
-  return `MCP server exited with code ${exitCode ?? 1}`;
+export async function startMcpCli(options = {}) {
+  const processLike = options.processLike || process;
+  processLike.chdir?.(join(fileURLToPath(new URL(".", import.meta.url)), ".."));
+  const runtime = options.runtime || (await loadMcpRuntime());
+  const logger = options.logger || console;
+  const server = await runtime.createMcpServer();
+  const transport = runtime.createTransport();
+  const stopHeartbeat = runtime.startHeartbeat(await runtime.getMcpServerRuntimeInfo());
+  const stopHeartbeatOnce = () => stopHeartbeat();
+
+  processLike.once("exit", stopHeartbeatOnce);
+  processLike.once("SIGINT", stopHeartbeatOnce);
+  processLike.once("SIGTERM", stopHeartbeatOnce);
+  logger.error("[MCP] ShiguangGateway MCP Server starting (stdio transport)...");
+  try {
+    await server.connect(transport);
+    logger.error("[MCP] ShiguangGateway MCP Server connected and ready.");
+  } finally {
+    if (runtime.closeAuditDb()) {
+      logger.error("[MCP] Audit database checkpointed and closed.");
+    }
+    stopHeartbeatOnce();
+    processLike.off("exit", stopHeartbeatOnce);
+    processLike.off("SIGINT", stopHeartbeatOnce);
+    processLike.off("SIGTERM", stopHeartbeatOnce);
+  }
 }
 
-export async function startMcpCli(rootDir = ROOT) {
-  const mcpEntry = resolveMcpEntry();
-
-  // `tsx` loader is only required for local `.ts` fallback; JS entry works without it.
-  const tsxLoaderArgs = mcpEntry.endsWith(".ts") ? ["--import", "tsx"] : [];
-  // Preload the stdout/stderr console guard before mcpEntry's own module graph evaluates —
-  // DB init (a side effect of createMcpServer()'s tool registration) logs via plain
-  // console.log, and by the time any code inside mcpEntry itself could redirect it, that
-  // module's own (hoisted) imports have already run. Loading the guard first, in a separate
-  // module, is the only point early enough to guarantee it never leaks into the JSON-RPC
-  // stream on stdout.
-  const consoleGuard = pathToFileURL(join(__dirname, "mcpStdioConsoleGuard.mjs")).href;
-  const loaderArgs = ["--import", consoleGuard, ...tsxLoaderArgs];
-
-  await new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [...loaderArgs, mcpEntry], {
-      cwd: rootDir,
-      env: process.env,
-      stdio: "inherit",
-    });
-
-    child.once("error", reject);
-    child.once("exit", (code, signal) => {
-      if ((code ?? 0) === 0 && !signal) {
-        resolve(undefined);
-        return;
-      }
-      reject(new Error(formatSpawnError(code, signal)));
-    });
-  });
-}
-
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
-  startMcpCli().catch((err) => {
-    console.error("\x1b[31m✖ Failed to start MCP server:\x1b[0m", err?.message || err);
-    process.exit(1);
+if (process.argv[1] && currentFile === process.argv[1]) {
+  startMcpCli().catch((error) => {
+    console.error("\x1b[31m✖ Failed to start MCP server:\x1b[0m", error?.message || error);
+    process.exitCode = 1;
   });
 }

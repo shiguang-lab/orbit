@@ -2,29 +2,13 @@ import { Injectable } from "@nestjs/common";
 import fs from "node:fs";
 import path from "node:path";
 import {
-  getCacheStats,
-  clearCache,
-  invalidateByModel,
-  invalidateBySignature,
-  invalidateStale,
   getIdempotencyStats,
   getCacheMetrics,
   getCacheTrend,
   getCachedSettings,
-  clearMemoryCache,
-  getMemoryCacheStats,
 } from "@shiguang-gateway/core-domain/cache/services";
-import {
-  clearReasoningCacheAll,
-  deleteReasoningCacheEntry,
-  getReasoningCacheServiceEntries,
-  getReasoningCacheServiceStats,
-} from "@shiguang-gateway/open-sse/services/reasoningCache";
-import {
-  listSemanticCacheEntries,
-  deleteSemanticCacheBySignature,
-  deleteSemanticCacheByModel,
-} from "@shiguang-gateway/core-domain/cache/db";
+import { executeEdgeRuntimeCommand } from "../edge-runtime/client.js";
+import { listSemanticCacheEntries } from "@shiguang-gateway/core-domain/cache/db";
 
 @Injectable()
 export class CacheService {
@@ -33,7 +17,7 @@ export class CacheService {
     return path.join(home, ".shiguangGateway", "media_cache");
   }
 
-  getMediaStats() {
+  async getMediaStats() {
     const dir = this.mediaCacheDir();
     let totalBytes = 0;
     let totalFiles = 0;
@@ -48,7 +32,9 @@ export class CacheService {
         }
       }
     }
-    const semantic = getMemoryCacheStats();
+    const { memoryStats: semantic } = await executeEdgeRuntimeCommand<{
+      memoryStats: { size?: number };
+    }>({ command: "semantic-cache.snapshot" });
     return {
       totalBytes,
       totalFiles,
@@ -63,7 +49,7 @@ export class CacheService {
     };
   }
 
-  purgeMedia(modality = "all") {
+  async purgeMedia(modality = "all") {
     const dir = this.mediaCacheDir();
     let freedBytes = 0;
     if (fs.existsSync(dir)) {
@@ -78,14 +64,17 @@ export class CacheService {
         }
       }
     }
-    clearMemoryCache();
+    await executeEdgeRuntimeCommand({
+      command: "semantic-cache.invalidate",
+      operation: { scope: "memory" },
+    });
     return { success: true, purgedModality: modality, freedBytes };
   }
 
   async getOverview(trendHours: number = 24) {
     const safeTrendHours = Math.min(720, Math.max(1, Number.isNaN(trendHours) ? 24 : trendHours));
-    const cacheStats = getCacheStats();
-    const [idempotencyStats, promptCacheMetrics, trend, settings] = await Promise.all([
+    const [semanticSnapshot, idempotencyStats, promptCacheMetrics, trend, settings] = await Promise.all([
+      executeEdgeRuntimeCommand<{ cacheStats: unknown }>({ command: "semantic-cache.snapshot" }),
       getIdempotencyStats(),
       getCacheMetrics(),
       getCacheTrend(safeTrendHours),
@@ -93,7 +82,7 @@ export class CacheService {
     ]);
 
     return {
-      semanticCache: cacheStats,
+      semanticCache: semanticSnapshot.cacheStats,
       promptCache: promptCacheMetrics,
       trend,
       idempotency: idempotencyStats,
@@ -107,22 +96,30 @@ export class CacheService {
     const { model, signature, staleMs } = params;
 
     if (model) {
-      const removed = invalidateByModel(model);
-      return { ok: true, invalidated: removed, scope: "model", model };
+      return executeEdgeRuntimeCommand({
+        command: "semantic-cache.invalidate",
+        operation: { scope: "model", model },
+      });
     }
 
     if (signature) {
-      const removed = invalidateBySignature(signature);
-      return { ok: true, invalidated: removed ? 1 : 0, scope: "signature" };
+      return executeEdgeRuntimeCommand({
+        command: "semantic-cache.invalidate",
+        operation: { scope: "signature", signature },
+      });
     }
 
     if (staleMs) {
-      const removed = invalidateStale(staleMs);
-      return { ok: true, invalidated: removed, scope: "stale", maxAgeMs: staleMs };
+      return executeEdgeRuntimeCommand({
+        command: "semantic-cache.invalidate",
+        operation: { scope: "stale", maxAgeMs: staleMs },
+      });
     }
 
-    const cleared = clearCache();
-    return { ok: true, cleared, scope: "all" };
+    return executeEdgeRuntimeCommand({
+      command: "semantic-cache.invalidate",
+      operation: { scope: "all" },
+    });
   }
 
   listEntries(params: {
@@ -149,54 +146,52 @@ export class CacheService {
     };
   }
 
-  deleteEntry(params: { signature?: string; model?: string }) {
+  async deleteEntry(params: { signature?: string; model?: string }) {
     if (params.signature) {
-      const { deleted } = deleteSemanticCacheBySignature(params.signature);
-      return { ok: true, deleted };
+      const result = await executeEdgeRuntimeCommand<{ invalidated: number }>({
+        command: "semantic-cache.invalidate",
+        operation: { scope: "signature", signature: params.signature },
+      });
+      return { ok: true, deleted: result.invalidated > 0 };
     }
     if (params.model) {
-      const { deleted } = deleteSemanticCacheByModel(params.model);
-      return { ok: true, deleted };
+      const result = await executeEdgeRuntimeCommand<{ invalidated: number }>({
+        command: "semantic-cache.invalidate",
+        operation: { scope: "model", model: params.model },
+      });
+      return { ok: true, deleted: result.invalidated };
     }
     return null;
   }
 
-  getReasoning(params: { provider?: string; model?: string; limit?: number; offset?: number }) {
+  async getReasoning(params: { provider?: string; model?: string; limit?: number; offset?: number }) {
     const limit = Math.min(Math.max(params.limit || 50, 1), 200);
     const offset = Math.max(params.offset || 0, 0);
 
-    const stats = getReasoningCacheServiceStats();
-    const entries = getReasoningCacheServiceEntries({
+    return executeEdgeRuntimeCommand({
+      command: "reasoning-cache.snapshot",
       limit,
       offset,
       provider: params.provider,
       model: params.model,
     });
-
-    return { stats, entries };
   }
 
   deleteReasoning(params: { toolCallId?: string; provider?: string }) {
-    if (params.toolCallId) {
-      const cleared = deleteReasoningCacheEntry(params.toolCallId);
-      return { ok: true, cleared, scope: "toolCallId", toolCallId: params.toolCallId };
-    }
-
-    const cleared = clearReasoningCacheAll(params.provider);
-    return {
-      ok: true,
-      cleared,
-      scope: params.provider ? "provider" : "all",
-      ...(params.provider ? { provider: params.provider } : {}),
-    };
+    return executeEdgeRuntimeCommand({ command: "reasoning-cache.delete", ...params });
   }
 
-  getMemoryStats() {
-    return getMemoryCacheStats();
+  async getMemoryStats() {
+    const { memoryStats } = await executeEdgeRuntimeCommand<{ memoryStats: unknown }>({
+      command: "semantic-cache.snapshot",
+    });
+    return memoryStats;
   }
 
   clearMemory() {
-    clearMemoryCache();
-    return { success: true, message: "Cache cleared" };
+    return executeEdgeRuntimeCommand({
+      command: "semantic-cache.invalidate",
+      operation: { scope: "memory" },
+    });
   }
 }

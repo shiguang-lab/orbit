@@ -36,67 +36,6 @@ export function resolveMcpHeartbeatPath(): string {
   return join(resolveDataDir(), RUNTIME_DIR, HEARTBEAT_FILE);
 }
 
-async function writeHeartbeat(snapshot: McpHeartbeatSnapshot): Promise<void> {
-  const heartbeatPath = resolveMcpHeartbeatPath();
-  const runtimeDir = join(resolveDataDir(), RUNTIME_DIR);
-  await fs.mkdir(runtimeDir, { recursive: true });
-  await fs.writeFile(heartbeatPath, JSON.stringify(snapshot, null, 2), "utf-8");
-}
-
-export function startMcpHeartbeat(config: {
-  version: string;
-  scopesEnforced: boolean;
-  allowedScopes: string[];
-  toolCount: number;
-  intervalMs?: number;
-}): () => void {
-  const startedAt = new Date().toISOString();
-  let timer: ReturnType<typeof setInterval> | null = null;
-  let stopped = false;
-  const intervalMs =
-    typeof config.intervalMs === "number" && config.intervalMs > 0
-      ? config.intervalMs
-      : DEFAULT_INTERVAL_MS;
-
-  const tick = async () => {
-    if (stopped) return;
-    const snapshot: McpHeartbeatSnapshot = {
-      pid: process.pid,
-      startedAt,
-      lastHeartbeatAt: new Date().toISOString(),
-      version: config.version,
-      transport: "stdio",
-      scopesEnforced: config.scopesEnforced,
-      allowedScopes: [...config.allowedScopes],
-      toolCount: config.toolCount,
-    };
-
-    try {
-      await writeHeartbeat(snapshot);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      console.error("[MCP Heartbeat] Failed to write heartbeat:", message);
-    }
-  };
-
-  void tick();
-  timer = setInterval(() => {
-    void tick();
-  }, intervalMs);
-  if (typeof timer === "object" && "unref" in timer) timer.unref?.();
-
-  return () => {
-    if (stopped) return;
-    stopped = true;
-    if (timer) {
-      clearInterval(timer);
-      timer = null;
-    }
-    // Keep last snapshot on disk for post-mortem/offline reporting.
-    void tick();
-  };
-}
-
 export async function readMcpHeartbeat(): Promise<McpHeartbeatSnapshot | null> {
   const heartbeatPath = resolveMcpHeartbeatPath();
   try {

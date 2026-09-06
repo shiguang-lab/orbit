@@ -64,7 +64,7 @@ export class AcpService {
       return { status: 409, body: { error: `Agent with id '${newAgent.id}' already exists` } };
     }
     const updated = [...current, newAgent];
-    await updateSettings({ customAgents: updated });
+    await updateSettings({ customAgents: updated }, { applyRuntime: false });
     setCustomAgents(updated);
     return { status: 200, body: { agents: refreshAgentCache(), added: newAgent } };
   }
@@ -77,7 +77,7 @@ export class AcpService {
     if (updated.length === current.length) {
       return { status: 404, body: { error: `Agent '${agentId}' not found in custom agents` } };
     }
-    await updateSettings({ customAgents: updated });
+    await updateSettings({ customAgents: updated }, { applyRuntime: false });
     setCustomAgents(updated);
     return { status: 200, body: { agents: refreshAgentCache(), removed: agentId } };
   }

@@ -21,17 +21,6 @@ export type CodexQuotaHydration = {
   exhaustedWindow: "5h" | "7d" | null;
 } | null;
 
-export type FreeModelBudgetContract = {
-  provider: string;
-  modelId: string;
-  displayName: string;
-  monthlyTokens: number;
-  creditTokens: number;
-  freeType: string;
-  poolKey: string | null;
-  tos: unknown;
-};
-
 export type KimiRefreshResult = {
   success: boolean;
   accessToken?: string;
@@ -68,8 +57,6 @@ export interface ProviderRuntimePorts {
     limitValue: number;
   } | null;
   hydrateRoutingSettings(settings: Record<string, unknown>): void;
-  getFreeModelCatalog(): readonly FreeModelBudgetContract[];
-  grantsFreeAccess(freeType: string): boolean;
   filterSelectableModels<T extends { id: string }>(provider: string, models: readonly T[]): T[];
   filterChatSelectableModels<T extends { id: string; supportedEndpoints?: readonly string[] }>(
     provider: string | null | undefined,
@@ -118,8 +105,6 @@ const ports: ProviderRuntimePorts = {
   getPressureSeverity: () => "normal",
   checkTokenLimits: () => missing("checkTokenLimits"),
   hydrateRoutingSettings: () => missing("hydrateRoutingSettings"),
-  getFreeModelCatalog: () => missing("getFreeModelCatalog"),
-  grantsFreeAccess: () => missing("grantsFreeAccess"),
   filterSelectableModels: () => missing("filterSelectableModels"),
   filterChatSelectableModels: () => missing("filterChatSelectableModels"),
   isObsoleteKiroModelAlias: () => missing("isObsoleteKiroModelAlias"),

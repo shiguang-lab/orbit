@@ -61,11 +61,6 @@ COPY --from=build --chown=node:node /app/apps/control-api/dist ./apps/control-ap
 COPY --from=build --chown=node:node /app/apps/realtime/dist ./apps/realtime/dist
 COPY --from=build --chown=node:node /app/apps/worker/dist ./apps/worker/dist
 COPY --from=build --chown=node:node /app/apps/importer/dist ./apps/importer/dist
-# The importer entrypoint intentionally reuses the file-oriented snapshot
-# importer from the repository scripts directory. Keep that single runtime
-# script in the production image; the rest of the workspace tooling remains
-# excluded from deployable images.
-COPY --from=build --chown=node:node /app/scripts/import-source-data.mjs ./scripts/import-source-data.mjs
 # Each app has a small pnpm link tree for its direct dependencies (for
 # example realtime imports fastify directly). Keep these link trees while the
 # package contents remain shared in the deployed production store above.

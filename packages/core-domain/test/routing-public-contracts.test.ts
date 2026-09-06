@@ -24,6 +24,7 @@ const contracts = {
       "filterComboForReasoningDecision",
       "resolveReasoningRoutingRule",
       "resolveReasoningSourceModels",
+      "validateCodexWsDecision",
     ],
   },
   "./providers/request-defaults": {

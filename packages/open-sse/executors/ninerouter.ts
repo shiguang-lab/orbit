@@ -10,9 +10,8 @@
  * The service is local-only (loopback enforced by routeGuard.ts), so no TLS or
  * identity cloaking is needed — 9router handles its own upstream auth internally.
  *
- * G-01: port and apiKey are re-read per request from the supervisor registry
- * and DB respectively — never cached in the constructor — because rotate-key
- * and update (new port) can change them between calls.
+ * G-01: port and apiKey are re-read per request from environment/persisted state
+ * and DB respectively — never from the control process's in-memory supervisor.
  *
  * G-02: when the supervisor is not running, the executor returns a 503 with
  * header X-Omni-Fallback-Hint: connection_cooldown so accountFallback.ts
@@ -28,8 +27,9 @@ import {
 } from "./base.ts";
 import { FETCH_TIMEOUT_MS } from "../config/constants.ts";
 import { buildErrorBody } from "../utils/error.ts";
-import { getSupervisor } from "@shiguang-gateway/core-domain/shared/embedded-services";
-import { getOrCreateApiKey } from "@shiguang-gateway/core-domain/shared/embedded-services";
+import { getOrCreateApiKey } from "@shiguang-gateway/core-domain/embedded-services/api-key";
+import { getServiceRow } from "@shiguang-gateway/core-domain/embedded-services/status";
+import { probeEmbeddedServiceLiveness } from "@shiguang-gateway/core-domain/embedded-services/liveness";
 
 const DEFAULT_PORT = 20130;
 const DEFAULT_HOST = "127.0.0.1";
@@ -132,11 +132,21 @@ export class NineRouterExecutor extends BaseExecutor {
   }
 
   async execute(input: ExecuteInput) {
-    // G-01: re-lookup supervisor state per request (port may change on restart/update)
-    const supervisor = getSupervisor("9router");
-    const status = supervisor?.getStatus();
-    if (!supervisor || status?.state !== "running") {
-      const stateLabel = status?.state ?? "unknown";
+    // The edge runtime is a separate process from control-api, so its supervisor
+    // registry is necessarily empty. Resolve the endpoint from environment/DB and
+    // verify the actual process over its health endpoint instead.
+    const persisted = await getServiceRow("9router");
+    const dynamicPort = Number.parseInt(
+      process.env.NINEROUTER_PORT || String(persisted?.port ?? DEFAULT_PORT),
+      10,
+    );
+    const dynamicBaseUrl = `http://${process.env.NINEROUTER_HOST || DEFAULT_HOST}:${dynamicPort}`;
+    const liveness = await probeEmbeddedServiceLiveness(dynamicBaseUrl, {
+      path: "/api/health",
+      timeoutMs: HEALTH_CHECK_TIMEOUT_MS,
+    });
+    if (!liveness.ok) {
+      const stateLabel = persisted?.status ?? "unknown";
       const msg = `9router is not running (state: ${stateLabel})`;
       input.log?.warn?.("9ROUTER", msg);
       return {
@@ -146,9 +156,6 @@ export class NineRouterExecutor extends BaseExecutor {
         transformedBody: null,
       };
     }
-    const dynamicPort = status.port;
-    const dynamicBaseUrl = `http://127.0.0.1:${dynamicPort}`;
-
     // G-01: re-read apiKey per request — never cached in constructor
     const apiKey = await getOrCreateApiKey("9router");
     const dynamicCredentials: ProviderCredentials = { ...input.credentials, apiKey };

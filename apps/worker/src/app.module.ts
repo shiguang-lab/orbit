@@ -1,5 +1,4 @@
 import { Module } from "@nestjs/common";
-import "@shiguang-gateway/open-sse/services/dbRuntimeHooks";
 import { WorkerJobsService } from "./jobs/worker-jobs.service.js";
 import { DatabaseRuntimeLifecycleService } from "./database-runtime-lifecycle.service.js";
 

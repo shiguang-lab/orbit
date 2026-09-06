@@ -7,7 +7,7 @@
  */
 
 import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
-import { calculateLevel } from "@shiguang-gateway/core-domain/control/gamification";
+import { calculateLevel } from "@shiguang-gateway/core-domain/gamification/rules";
 
 export interface UserLevelProfile {
   apiKeyId: string;

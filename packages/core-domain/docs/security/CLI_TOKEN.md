@@ -38,7 +38,7 @@ password on every invocation.
 | **Loopback-only**                | Accepted only when the server's trusted peer-locality stamp (derived from the real TCP peer address) says loopback. The client-controlled `Host` header is never trusted for locality. |
 | **Constant-time compare**        | `crypto.timingSafeEqual` prevents timing attacks.                                                                                                                                      |
 | **Non-reversible**               | HMAC output cannot recover the machine-id.                                                                                                                                             |
-| **No `always`-protected bypass** | `isAlwaysProtectedPath()` is evaluated before the CLI token check. `/api/shutdown` and `/api/settings/database` always require JWT.                                                    |
+| **No `always`-protected bypass** | `isAlwaysProtectedPath()` is evaluated before the CLI token check. `/api/settings/database` always requires JWT.                                                                         |
 | **Non-exportable**               | Token is never written to disk or logged.                                                                                                                                              |
 
 ## Salt rotation

@@ -5,3 +5,5 @@ export interface CcDiscoveryMetrics {
 }
 
 export function getCcDiscoveryMetrics(): CcDiscoveryMetrics;
+export function incrementCcAliasRequestCount(realModelId: string): void;
+export function incrementCcDiscoveryHitCount(): void;

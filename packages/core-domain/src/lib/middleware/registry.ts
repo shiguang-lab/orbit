@@ -1,8 +1,7 @@
 /**
  * Pre-request Hook Registry
  *
- * Singleton registry for pre-request middleware hooks.
- * Follows the same globalThis pattern as GuardrailRegistry.
+ * Stateless executor for persisted pre-request middleware hooks.
  *
  * Hooks execute in priority order (lower = first) BEFORE provider
  * selection and combo routing. They can:
@@ -12,44 +11,19 @@
  *   - Skip remaining hooks
  */
 
+import { randomUUID } from "node:crypto";
 import * as vm from "vm";
 
 import {
   type HookMiddleware,
-  type HookConfig,
   type PreRequestHookContext,
   type HookResult,
-  type HookScope,
-  type HookLogEntry,
-  HookPriority,
-} from "./types";
-
-// ── State (globalThis singleton) ──────────────────────────────────────────
-
-declare global {
-  var __shiguangGatewayPreRequestRegistry:
-    | {
-        initialized: boolean;
-        hooks: Map<string, HookConfig>;
-        middlewares: Map<string, HookMiddleware>;
-        logs: HookLogEntry[];
-        maxLogs: number;
-      }
-    | undefined;
-}
-
-function getRegistryState() {
-  if (!globalThis.__shiguangGatewayPreRequestRegistry) {
-    globalThis.__shiguangGatewayPreRequestRegistry = {
-      initialized: false,
-      hooks: new Map(),
-      middlewares: new Map(),
-      logs: [],
-      maxLogs: 1000,
-    };
-  }
-  return globalThis.__shiguangGatewayPreRequestRegistry;
-}
+} from "./types.js";
+import {
+  getEnabledMiddlewareHooks,
+  insertHookLog,
+  recordHookExecution,
+} from "../db/middleware.js";
 
 // ── Compile hook code into middleware function ────────────────────────────
 
@@ -109,10 +83,7 @@ function createHookSandbox(context: PreRequestHookContext): Record<string, unkno
 }
 
 function compileHookCode(code: string, hookName: string): HookMiddleware {
-  // Compile-once: parse the source into a reusable vm.Script. This throws on
-  // syntax errors at registration time (preserving the original behavior) and
-  // is cached in the returned closure so each execution only pays for a fresh
-  // minimal context, not re-parsing.
+  // Parse persisted source into an isolated script for this request.
   let script: vm.Script;
   try {
     script = new vm.Script(`(async () => { ${code} })();`, {
@@ -193,99 +164,8 @@ export function createHookContext(params: {
   };
 }
 
-// ── Public API ────────────────────────────────────────────────────────────
-
 /**
- * Register a pre-request hook.
- */
-export function registerHook(config: HookConfig, middleware?: HookMiddleware): void {
-  const state = getRegistryState();
-
-  if (state.hooks.has(config.name)) {
-    throw new Error(`Hook "${config.name}" is already registered`);
-  }
-
-  state.hooks.set(config.name, { ...config });
-
-  if (middleware) {
-    state.middlewares.set(config.name, middleware);
-  } else {
-    // Compile from code
-    const compiled = compileHookCode(config.code, config.name);
-    state.middlewares.set(config.name, compiled);
-  }
-}
-
-/**
- * Unregister a hook by name.
- */
-export function unregisterHook(name: string): boolean {
-  const state = getRegistryState();
-  const removed = state.hooks.delete(name);
-  state.middlewares.delete(name);
-  return removed;
-}
-
-/**
- * Update an existing hook's config and optionally recompile.
- */
-export function updateHook(name: string, updates: Partial<HookConfig>): boolean {
-  const state = getRegistryState();
-  const existing = state.hooks.get(name);
-  if (!existing) return false;
-
-  const updated = { ...existing, ...updates, updatedAt: new Date().toISOString() };
-  state.hooks.set(name, updated);
-
-  // Recompile if code changed
-  if (updates.code) {
-    try {
-      const compiled = compileHookCode(updated.code, name);
-      state.middlewares.set(name, compiled);
-    } catch (err: unknown) {
-      state.hooks.set(name, { ...existing, lastError: (err as Error).message });
-      throw err;
-    }
-  }
-
-  return true;
-}
-
-/**
- * Get a hook config by name.
- */
-export function getHook(name: string): HookConfig | undefined {
-  return getRegistryState().hooks.get(name);
-}
-
-/**
- * Get all registered hooks.
- */
-export function getAllHooks(): HookConfig[] {
-  return Array.from(getRegistryState().hooks.values());
-}
-
-/**
- * Load hooks from DB config rows into the registry.
- * This is called at startup to restore persisted hooks.
- */
-export function loadHooksFromConfig(rows: HookConfig[]): void {
-  const state = getRegistryState();
-  for (const row of rows) {
-    if (!state.hooks.has(row.name)) {
-      state.hooks.set(row.name, row);
-      try {
-        const compiled = compileHookCode(row.code, row.name);
-        state.middlewares.set(row.name, compiled);
-      } catch (err) {
-        console.error(`[Middleware] Failed to compile hook "${row.name}":`, err);
-      }
-    }
-  }
-}
-
-/**
- * Execute all enabled hooks for the given context.
+ * Execute the enabled hooks read from shared storage for this request.
  * Returns the final context with all mutations applied.
  *
  * If any hook short-circuits, returns { response } immediately
@@ -298,75 +178,27 @@ export async function runHooks(
   context: PreRequestHookContext;
   response?: { status: number; body: Record<string, unknown> };
 }> {
-  const state = getRegistryState();
-  const hooks = Array.from(state.hooks.values())
+  const hooks = getEnabledMiddlewareHooks()
     .filter(
       (h) =>
-        h.enabled &&
-        (h.scope.type === "global" ||
-          (h.scope.type === "combo" && comboId && h.scope.comboId === comboId))
+        h.scope.type === "global" ||
+        (h.scope.type === "combo" && comboId !== undefined && h.scope.comboId === comboId)
     )
     .sort((a, b) => a.priority - b.priority);
 
   for (const hook of hooks) {
-    const middleware = state.middlewares.get(hook.name);
-    if (!middleware) continue;
-
     const startTime = Date.now();
+    let result: HookResult;
     try {
-      const result = await middleware(context);
-
-      // Apply mutations
-      if (result.body) {
-        context.body = { ...context.body, ...result.body };
-      }
-      if (result.headers) {
-        context.headers = { ...context.headers, ...result.headers };
-      }
-      if (result.model) {
-        context.model = result.model;
-      }
-      if (result.combo) {
-        context.combo = result.combo;
-      }
-
-      // Update run count
-      hook.runCount = (hook.runCount || 0) + 1;
-
-      // Record execution log
-      const logEntry: HookLogEntry = {
-        id: `${hook.name}-${Date.now()}`,
-        hookName: hook.name,
-        requestId: `${Date.now()}`,
-        durationMs: Date.now() - startTime,
-        mutated: !!(result.body || result.headers || result.model || result.combo),
-        skipped: !!result.skipRemaining,
-        timestamp: new Date().toISOString(),
-      };
-
-      state.logs.push(logEntry);
-      if (state.logs.length > state.maxLogs) {
-        state.logs.splice(0, state.logs.length - state.maxLogs);
-      }
-
-      // Short-circuit
-      if (result.response) {
-        return { context, response: result.response };
-      }
-
-      // Skip remaining
-      if (result.skipRemaining) {
-        break;
-      }
+      const middleware = compileHookCode(hook.code, hook.name);
+      result = await middleware(context);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Unknown error";
-      hook.lastError = message;
-      hook.runCount = (hook.runCount || 0) + 1;
-
-      state.logs.push({
-        id: `${hook.name}-err-${Date.now()}`,
+      recordHookExecution(hook.name, message);
+      insertHookLog({
+        id: randomUUID(),
         hookName: hook.name,
-        requestId: `${Date.now()}`,
+        requestId: randomUUID(),
         durationMs: Date.now() - startTime,
         mutated: false,
         skipped: false,
@@ -375,58 +207,40 @@ export async function runHooks(
       });
 
       console.error(`[Middleware] Hook "${hook.name}" failed:`, message);
+      continue;
+    }
+
+    if (result.body) {
+      context.body = { ...context.body, ...result.body };
+    }
+    if (result.headers) {
+      context.headers = { ...context.headers, ...result.headers };
+    }
+    if (result.model) {
+      context.model = result.model;
+    }
+    if (result.combo) {
+      context.combo = result.combo;
+    }
+
+    recordHookExecution(hook.name);
+    insertHookLog({
+      id: randomUUID(),
+      hookName: hook.name,
+      requestId: randomUUID(),
+      durationMs: Date.now() - startTime,
+      mutated: !!(result.body || result.headers || result.model || result.combo),
+      skipped: !!result.skipRemaining,
+      timestamp: new Date().toISOString(),
+    });
+
+    if (result.response) {
+      return { context, response: result.response };
+    }
+    if (result.skipRemaining) {
+      break;
     }
   }
 
   return { context };
-}
-
-/**
- * Get execution logs.
- */
-export function getHookLogs(hookName?: string, limit = 50): HookLogEntry[] {
-  const state = getRegistryState();
-  let logs = state.logs;
-  if (hookName) {
-    logs = logs.filter((l) => l.hookName === hookName);
-  }
-  return logs.slice(-limit);
-}
-
-/**
- * Initialize registry (idempotent).
- */
-export function initPreRequestRegistry(): void {
-  getRegistryState().initialized = true;
-}
-
-/**
- * Clear all hooks (for testing).
- */
-export function clearAllHooks(): void {
-  const state = getRegistryState();
-  state.hooks.clear();
-  state.middlewares.clear();
-  state.logs = [];
-}
-
-/**
- * Get registry stats for health monitoring.
- */
-export function getRegistryStats(): {
-  totalHooks: number;
-  enabledHooks: number;
-  globalHooks: number;
-  comboScopedHooks: number;
-  recentLogs: number;
-} {
-  const state = getRegistryState();
-  const hooks = Array.from(state.hooks.values());
-  return {
-    totalHooks: hooks.length,
-    enabledHooks: hooks.filter((h) => h.enabled).length,
-    globalHooks: hooks.filter((h) => h.scope.type === "global").length,
-    comboScopedHooks: hooks.filter((h) => h.scope.type === "combo").length,
-    recentLogs: state.logs.length,
-  };
 }

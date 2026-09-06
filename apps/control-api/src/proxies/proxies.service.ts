@@ -27,8 +27,8 @@ import { getProxyById } from "@shiguang-gateway/core-domain/db/proxies";
 import { resolveProxyForConnection } from "@shiguang-gateway/core-domain/db/settings";
 import { getRelayProbeStats } from "@shiguang-gateway/core-domain/db/relay-probe-stats";
 import { decrypt } from "@shiguang-gateway/core-domain/db/encryption";
-import { clearDispatcherCache } from "@shiguang-gateway/open-sse/utils/proxyDispatcher";
 import { createProxyDispatcher, proxyConfigToUrl } from "@shiguang-gateway/open-sse/utils/proxyDispatcher";
+import { executeEdgeRuntimeCommand } from "../edge-runtime/client.js";
 import {
   bulkImportProxiesSchema,
   bulkProxyAssignmentSchema,
@@ -37,7 +37,7 @@ import {
   proxyPoolMemberSchema,
   proxyRotationStrategySchema,
   updateProxyRegistrySchema,
-} from "@shiguang-gateway/core-domain/shared/validation/schemas";
+} from "@shiguang-gateway/core-domain/validation/proxy";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import {
@@ -57,6 +57,11 @@ import {
 import { z } from "zod";
 
 type ApiResult = Response;
+
+const invalidateEdgeProxyDispatcherCache = () => executeEdgeRuntimeCommand({
+  command: "runtime-cache.invalidate",
+  target: "proxy-dispatcher",
+});
 
 export interface ProxyOperationResult {
   status: number;
@@ -295,7 +300,7 @@ export class ProxiesService {
       const { assignment, ...proxyFields } = validation.data;
       if (assignment) {
         const result = await createProxyAndAssign(proxyFields, assignment);
-        clearDispatcherCache();
+        await invalidateEdgeProxyDispatcherCache();
         return Response.json({ ...result.proxy, assignment: result.assignment }, { status: 201 });
       }
       const created = await createProxy(proxyFields);
@@ -318,7 +323,7 @@ export class ProxiesService {
       if (assignment) {
         const result = await updateProxyAndAssign(id, changes, assignment);
         if (!result?.proxy) return errorResponse(404, "Proxy not found", "not_found");
-        clearDispatcherCache();
+        await invalidateEdgeProxyDispatcherCache();
         return Response.json({ ...result.proxy, assignment: result.assignment });
       }
       const updated = await updateProxy(id, changes);
@@ -376,7 +381,7 @@ export class ProxiesService {
       if (isValidationFailure(validation)) return errorResponse(400, validation.error.message, "invalid_request");
       const { scope, scopeId, proxyId } = validation.data;
       const assignment = await assignProxyToScope(scope, scopeId || null, proxyId || null);
-      clearDispatcherCache();
+      await invalidateEdgeProxyDispatcherCache();
       return Response.json({ success: true, assignment });
     } catch (error) {
       return errorFromUnknown(error, "Failed to update assignment");
@@ -431,17 +436,17 @@ export class ProxiesService {
       const scopeId = (data.scopeId as string | null | undefined) || null;
       if (operation === "add") {
         const member = await addProxyToScopePool(scope, scopeId, String(data.proxyId));
-        clearDispatcherCache();
+        await invalidateEdgeProxyDispatcherCache();
         return Response.json({ success: true, member });
       }
       if (operation === "remove") {
         const removed = await removeProxyFromScopePool(scope, scopeId, String(data.proxyId));
-        clearDispatcherCache();
+        await invalidateEdgeProxyDispatcherCache();
         return Response.json({ success: true, removed });
       }
       const strategy = String(data.strategy);
       const applied = await import("@shiguang-gateway/core-domain/db/proxy-registry").then(({ setScopeRotationStrategy }) => setScopeRotationStrategy(scope, scopeId, strategy, { stickyWindowMinutes: data.stickyWindowMinutes as number | undefined }));
-      clearDispatcherCache();
+      await invalidateEdgeProxyDispatcherCache();
       return Response.json({ success: true, strategy: applied });
     } catch (error) {
       return errorFromUnknown(error, operation === "add" ? "Failed to add proxy to pool" : operation === "remove" ? "Failed to remove proxy from pool" : "Failed to set rotation strategy");
@@ -463,7 +468,7 @@ export class ProxiesService {
       const { scope, scopeIds, proxyId } = validation.data;
       const normalizedScope = this.normalizeScope(scope);
       const result = await bulkAssignProxyToScope(normalizedScope, scopeIds || [], proxyId || null);
-      clearDispatcherCache();
+      await invalidateEdgeProxyDispatcherCache();
       return Response.json({ success: true, scope: normalizedScope, requested: normalizedScope === "global" ? 1 : (scopeIds || []).length, updated: result.updated, failed: result.failed });
     } catch (error) {
       return errorFromUnknown(error, "Failed to run bulk assignment");
@@ -482,7 +487,7 @@ export class ProxiesService {
       const results: Array<{ name: string; success: boolean; action?: "created" | "updated"; id?: string; error?: string }> = [];
       for (const item of validation.data.items) {
         try {
-          const result = await upsertProxy(item);
+          const result = await upsertProxy({ ...item, type: item.type ?? "http" });
           if (result.proxy) {
             if (result.action === "created") created++; else updated++;
             results.push({ name: item.name, success: true, action: result.action, id: result.proxy.id });
@@ -523,7 +528,7 @@ export class ProxiesService {
           if (success) { changed++; results.push({ id, success: true }); } else results.push({ id, success: false, error: "Proxy not found" });
         } catch (error) { results.push({ id, success: false, error: error instanceof Error ? error.message : "Unknown error" }); }
       }
-      if (changed > 0) clearDispatcherCache();
+      if (changed > 0) await invalidateEdgeProxyDispatcherCache();
       return operation === "activate"
         ? Response.json({ success: changed > 0, status: (validation.data as { status: string }).status, updated: changed, failed: ids.length - changed, results })
         : Response.json({ success: changed > 0, deleted: changed, failed: ids.length - changed, results });

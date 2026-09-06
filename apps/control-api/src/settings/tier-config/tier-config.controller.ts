@@ -43,6 +43,6 @@ export class TierConfigController {
         .status(400)
         .send(buildErrorBody(400, "Invalid tier override payload"));
     }
-    return reply.send(this.tierConfig.updateProviderOverride(parsed.data));
+    return reply.send(await this.tierConfig.updateProviderOverride(parsed.data));
   }
 }

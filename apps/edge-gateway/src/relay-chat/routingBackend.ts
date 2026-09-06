@@ -1,5 +1,3 @@
-import { getSupervisor } from "@shiguang-gateway/core-domain/edge/service-registry";
-
 export type RelayRoutingBackend = "ts" | "bifrost" | "auto";
 
 const VALID_BACKENDS = new Set<RelayRoutingBackend>(["ts", "bifrost", "auto"]);
@@ -27,17 +25,7 @@ export interface BifrostRoutingDecision {
 export function getBifrostRoutingConfig(
   env: NodeJS.ProcessEnv = process.env
 ): BifrostRoutingConfig | null {
-  const baseUrl = env.BIFROST_BASE_URL?.replace(/\/$/, "");
-
-  // §4b: if BIFROST_BASE_URL is unset, check if supervised instance is running
-  let resolvedBaseUrl = baseUrl;
-  if (!resolvedBaseUrl) {
-    const sup = getSupervisor("bifrost");
-    if (sup?.getStatus().state === "running") {
-      resolvedBaseUrl = `http://127.0.0.1:${sup.getStatus().port}`;
-    }
-  }
-
+  const resolvedBaseUrl = env.BIFROST_BASE_URL?.replace(/\/$/, "");
   if (!resolvedBaseUrl) return null;
 
   const timeoutMs = Number.parseInt(env.BIFROST_TIMEOUT_MS || "", 10);

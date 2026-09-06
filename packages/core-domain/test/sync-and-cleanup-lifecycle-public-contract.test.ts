@@ -11,8 +11,15 @@ const manifest = JSON.parse(
 ) as { exports: Record<string, { types?: string; import?: string } | string> };
 
 const contracts = {
-  "./catalog/synced-model-capabilities": ["getSyncedCapabilities"],
+  "./catalog/synced-model-capabilities": ["getModelsDevPricing", "getSyncedCapabilities", "getSyncedCapability"],
   "./pricing/sync": ["clearSyncedPricing", "getSyncStatus", "syncPricingFromSources"],
+  "./sync/models-dev": [
+    "getSyncStatus",
+    "isModelsDevSyncEnvDisabled",
+    "isModelsDevSyncEnvForcedOn",
+    "resolveModelsDevSyncIntervalMs",
+    "syncModelsDev",
+  ],
   "./db/cleanup": [
     "RESET_USAGE_HISTORY_PERIODS",
     "purgeCallLogs",
@@ -20,9 +27,7 @@ const contracts = {
     "purgeQuotaSnapshots",
     "resetUsageHistory",
   ],
-  "./worker/model-sync-lifecycle": ["startPeriodicSync", "stopPeriodicSync"],
-  "./worker/pricing-sync-lifecycle": ["startPeriodicSync", "stopPeriodicSync"],
-  "./worker/database-cleanup-lifecycle": ["startCleanupScheduler", "stopCleanupScheduler"],
+  "./db/cleanup-maintenance": ["cleanupProxyLogs", "runAutoCleanup"],
 } as const;
 
 const retiredAliases = [
@@ -31,6 +36,9 @@ const retiredAliases = [
   "./worker/pricing-sync",
   "./worker/database-cleanup",
   "./control/database-cleanup",
+  "./worker/model-sync-lifecycle",
+  "./worker/pricing-sync-lifecycle",
+  "./worker/database-cleanup-lifecycle",
 ] as const;
 
 function sourceFiles(dir: string): string[] {
@@ -57,6 +65,9 @@ test("sync, cleanup, and worker lifecycle contracts remain narrow", async () => 
 
 test("mixed sync and cleanup aliases stay retired", () => {
   for (const alias of retiredAliases) assert.equal(manifest.exports[alias], undefined, alias);
+  assert.equal(fs.existsSync(path.join(packageRoot, "src/public/databaseCleanupLifecycle.d.ts")), false);
+  assert.equal(fs.existsSync(path.join(packageRoot, "src/public/modelSyncLifecycle.d.ts")), false);
+  assert.equal(fs.existsSync(path.join(packageRoot, "src/public/pricingSyncLifecycle.d.ts")), false);
   const retiredImportPattern = new RegExp(
     `core-domain/(?:${retiredAliases.map((alias) => alias.slice(2).replaceAll("/", "\\/")).join("|")})(?=["'])`,
   );

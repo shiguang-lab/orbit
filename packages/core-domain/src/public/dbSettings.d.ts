@@ -19,7 +19,7 @@ export function getSettingsRevision(): Promise<number>;
 export function getCachedSettings(): Promise<Settings>;
 export function updateSettings(
   patch: Record<string, unknown>,
-  options?: { expectedRevision?: number },
+  options?: { expectedRevision?: number; applyRuntime?: boolean },
 ): Promise<Settings>;
 export function isCloudEnabled(): Promise<boolean>;
 export function resolveProxyForConnection(

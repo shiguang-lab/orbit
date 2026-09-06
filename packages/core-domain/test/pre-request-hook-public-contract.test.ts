@@ -17,12 +17,6 @@ const contracts = [
     implementation: "./src/middleware/preRequestHookExecution.ts",
     keys: ["createHookContext", "runHooks"],
   },
-  {
-    subpath: "./middleware/pre-request-hook-management",
-    types: "./src/public/preRequestHookManagement.d.ts",
-    implementation: "./src/middleware/preRequestHookManagement.ts",
-    keys: ["getAllHooks", "getHookLogs", "registerHook", "unregisterHook"],
-  },
 ] as const;
 
 function sourceFiles(dir: string): string[] {
@@ -53,8 +47,12 @@ test("pre-request hook contracts expose only their consumed runtime keys", async
   }
 });
 
-test("legacy registry aliases stay retired and management remains control-owned", () => {
-  for (const alias of ["./runtime/middleware-registry", "./control/middleware-registry"]) {
+test("legacy registry and in-memory management entries stay retired", () => {
+  for (const alias of [
+    "./runtime/middleware-registry",
+    "./control/middleware-registry",
+    "./middleware/pre-request-hook-management",
+  ]) {
     assert.equal(manifest.exports[alias], undefined, alias);
   }
 
@@ -65,11 +63,30 @@ test("legacy registry aliases stay retired and management remains control-owned"
     }
   }
 
-  const managementImport =
-    "@shiguang-gateway/core-domain/middleware/pre-request-hook-management";
-  for (const root of ["apps/edge-gateway", "apps/realtime", "apps/worker", "packages/open-sse"]) {
-    for (const file of sourceFiles(path.join(repoRoot, root))) {
-      assert.equal(fs.readFileSync(file, "utf8").includes(managementImport), false, file);
-    }
+  const registry = fs.readFileSync(
+    path.join(packageRoot, "src/lib/middleware/registry.ts"),
+    "utf8",
+  );
+  assert.doesNotMatch(
+    registry,
+    /__shiguangGatewayPreRequestRegistry|loadHooksFromConfig|initPreRequestRegistry|clearAllHooks/,
+  );
+  assert.match(registry, /getEnabledMiddlewareHooks\(\)/);
+  assert.match(registry, /recordHookExecution\(hook\.name/);
+  assert.match(registry, /insertHookLog\(/);
+
+  for (const file of sourceFiles(path.join(repoRoot, "apps/control-api/src"))) {
+    const source = fs.readFileSync(file, "utf8");
+    assert.doesNotMatch(source, /pre-request-hook-(?:execution|management)/, file);
   }
+  const controlRepository = fs.readFileSync(
+    path.join(repoRoot, "apps/control-api/src/middleware-hooks/middleware-hooks.repository.ts"),
+    "utf8",
+  );
+  const controlService = fs.readFileSync(
+    path.join(repoRoot, "apps/control-api/src/middleware-hooks/middleware-hooks.service.ts"),
+    "utf8",
+  );
+  assert.match(controlRepository, /FROM middleware_logs/);
+  assert.match(controlService, /this\.repository\.logs\(/);
 });

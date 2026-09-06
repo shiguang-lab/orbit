@@ -30,22 +30,4 @@ export class GatewayController {
       return reply.status(500).send({ error: "Failed to build ShiguangGateway status" });
     }
   }
-
-  @Post("restart")
-  async restart(@Req() request: FastifyRequest, @Res() reply: FastifyReply): Promise<unknown> {
-    const rawReq = request.raw as unknown as Request;
-    const authError = await requireManagementAuth(rawReq);
-    if (authError) return reply.status(authError.status).send(await authError.json());
-
-    return reply.send(this.gatewayService.scheduleRestart());
-  }
-
-  @Post("shutdown")
-  async shutdown(@Req() request: FastifyRequest, @Res() reply: FastifyReply): Promise<unknown> {
-    const rawReq = request.raw as unknown as Request;
-    const authError = await requireManagementAuth(rawReq);
-    if (authError) return reply.status(authError.status).send(await authError.json());
-
-    return reply.send(this.gatewayService.scheduleShutdown());
-  }
 }

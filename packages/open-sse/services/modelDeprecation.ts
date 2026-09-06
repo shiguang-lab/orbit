@@ -191,4 +191,10 @@ export function getBuiltInAliases(): Record<string, string> {
   return { ...BUILT_IN_ALIASES };
 }
 
-registerDbRuntimeHooks({ resolveModelAlias });
+let dbRuntimeHooksInstalled = false;
+
+export function installModelDeprecationDbRuntimeHooks(): void {
+  if (dbRuntimeHooksInstalled) return;
+  registerDbRuntimeHooks({ resolveModelAlias });
+  dbRuntimeHooksInstalled = true;
+}

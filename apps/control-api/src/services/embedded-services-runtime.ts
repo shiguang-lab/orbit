@@ -5,6 +5,11 @@ import {
   registerSupervisor,
   getSupervisor,
   ServiceSupervisor,
+  type ServiceStatus,
+  getServiceProviderPlugin,
+} from "@shiguang-gateway/core-domain/control/embedded-services-lifecycle";
+import { getOrCreateApiKey } from "@shiguang-gateway/core-domain/embedded-services/api-key";
+import {
   resolveNineRouterSpawnArgs as nineRouterSpawnArgs,
   resolveCliproxySpawnArgs as cliproxySpawnArgs,
   CLIPROXY_DEFAULT_PORT,
@@ -14,10 +19,7 @@ import {
   BIFROST_DEFAULT_PORT,
   resolveDarioSpawnArgs as darioSpawnArgs,
   DARIO_DEFAULT_PORT,
-  getOrCreateApiKey,
-  type ServiceStatus,
-  getServiceProviderPlugin,
-} from "@shiguang-gateway/core-domain/control/embedded-services-runtime-support";
+} from "@shiguang-gateway/core-domain/control/embedded-services-install";
 import { resolveDedicatedCliproxyapiApiKey } from "@shiguang-gateway/open-sse/handlers/chat-core/cliproxyapi-credentials";
 import {
   scheduleServiceModelSync,

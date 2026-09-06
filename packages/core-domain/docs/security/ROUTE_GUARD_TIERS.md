@@ -139,12 +139,10 @@ operator responsibilities remain:
 **Bypass:** None when `requireLogin=false`; JWT always required
 
 These routes are destructive or irreversible. Allowing them in a "no-password"
-install would mean anyone on the same LAN could wipe the database or kill the
-server process.
+install would mean anyone on the same LAN could wipe the database.
 
 | Path                     | Reason                            |
 | ------------------------ | --------------------------------- |
-| `/api/shutdown`          | Terminates the server process     |
 | `/api/settings/database` | Database export, import, and wipe |
 
 **Response on violation:** `401 Authentication required`

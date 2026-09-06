@@ -385,7 +385,10 @@ export async function handleEmbedding({
     // Quota share enforcement (fail-open: errors allow the request through)
     if (apiKeyId && connectionId && provider) {
       try {
-        await import("../services/quotaSaturation.js");
+        const { installQuotaSaturationRuntimePort } = await import(
+          "../services/quotaSaturation.js"
+        );
+        installQuotaSaturationRuntimePort();
         const { enforceQuotaShare } = await import("@shiguang-gateway/core-domain/quota/services");
         const quotaDecision = await enforceQuotaShare({
           apiKeyId,

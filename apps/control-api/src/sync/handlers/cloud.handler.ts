@@ -42,7 +42,7 @@ export async function POST(request: Request) {
         if (keys.length === 0) createdKey = await createApiKey("Default Key", machineId, []);
         const enableResult = await syncAndVerify(machineId, createdKey?.key, keys);
         const enableBody = await enableResult.clone().json().catch(() => ({}));
-        if (enableBody.success) await updateSettings({ cloudEnabled: true });
+        if (enableBody.success) await updateSettings({ cloudEnabled: true }, { applyRuntime: false });
         return enableResult;
       }
       case "sync": {
@@ -50,7 +50,7 @@ export async function POST(request: Request) {
         return syncResult.error ? Response.json(syncResult, { status: 502 }) : Response.json(syncResult);
       }
       case "disable":
-        await updateSettings({ cloudEnabled: false });
+        await updateSettings({ cloudEnabled: false }, { applyRuntime: false });
         return handleDisable(machineId, request);
       default:
         return Response.json({ error: "Invalid action" }, { status: 400 });

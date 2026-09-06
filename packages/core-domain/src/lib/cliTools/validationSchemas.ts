@@ -7,5 +7,5 @@ export {
   cliSettingsEnvSchema,
   cliModelConfigSchema,
   cliMultiModelConfigSchema,
-  guideSettingsSaveSchema,
-} from "../../shared/validation/schemas.ts";
+} from "../../shared/validation/schemas/cli.ts";
+export { guideSettingsSaveSchema } from "../../shared/validation/schemas/settings.ts";

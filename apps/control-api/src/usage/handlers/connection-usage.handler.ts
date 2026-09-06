@@ -1,4 +1,8 @@
-import { fetchAndPersistProviderLimits } from "@shiguang-gateway/open-sse/services/providerLimits";
+import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
+
+type CommandResult<T> =
+  | { ok: true; value: T }
+  | { ok: false; status: number; message: string };
 
 /**
  * GET /api/usage/[connectionId] - Get live usage data for a specific connection
@@ -17,10 +21,12 @@ export async function GET(
 ) {
   try {
     const { connectionId } = await params;
-    const { usage } = await fetchAndPersistProviderLimits(connectionId, "manual", {
-      allowRotatingRefresh: true,
-    });
-    return Response.json(usage);
+    const result = await executeEdgeRuntimeCommand<CommandResult<unknown>>(
+      { command: "provider-limits.refresh-connection", connectionId },
+      { timeoutMs: 180_000 },
+    );
+    if (!result.ok) return Response.json({ error: result.message }, { status: result.status });
+    return Response.json(result.value);
   } catch (error) {
     const status =
       typeof (error as { status?: unknown })?.status === "number"

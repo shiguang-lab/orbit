@@ -440,4 +440,10 @@ export async function selectWorkingProxyFallback(_connectionId?: string): Promis
   }
 }
 
-registerDbRuntimeHooks({ selectWorkingProxyFallback });
+let dbRuntimeHooksInstalled = false;
+
+export function installProxyFallbackDbRuntimeHooks(): void {
+  if (dbRuntimeHooksInstalled) return;
+  registerDbRuntimeHooks({ selectWorkingProxyFallback });
+  dbRuntimeHooksInstalled = true;
+}
