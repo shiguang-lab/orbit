@@ -1,15 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "./next-compat.js";
 import { z } from "zod";
 import {
   listCloudAgentCredentials,
   saveCloudAgentCredential,
   maskApiKey,
-} from "../../../../../lib/cloudAgent/credentials.ts";
-import { getCloudAgentCorsHeaders, requireCloudAgentManagementAuth } from "../../../../../lib/cloudAgent/api.ts";
-import pino from "pino";
-import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
-
-const logger = pino({ name: "cloud-agents-credentials-api" });
+} from "../domain/credentials.js";
+import { getCloudAgentCorsHeaders, requireCloudAgentManagementAuth } from "../domain/api.js";
+import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 
 const SaveCredentialSchema = z.object({
   providerId: z.enum(["jules", "devin", "codex-cloud", "cursor-cloud"]),
@@ -30,7 +27,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ data }, { headers: getCloudAgentCorsHeaders(request) });
   } catch (error) {
-    logger.error({ err: error }, "Failed to list cloud agent credentials");
+    console.error("Failed to list cloud agent credentials", error);
     return NextResponse.json(
       {
         error:
@@ -71,7 +68,7 @@ export async function POST(request: NextRequest) {
       { status: 201, headers: getCloudAgentCorsHeaders(request) }
     );
   } catch (error) {
-    logger.error({ err: error }, "Failed to save cloud agent credentials");
+    console.error("Failed to save cloud agent credentials", error);
     return NextResponse.json(
       {
         error:

@@ -4,15 +4,15 @@ import {
   type AgentCredentials,
   type CreateTaskParams,
   type GetStatusResult,
-} from "../baseAgent.ts";
-import { buildJulesApiUrl, JULES_API_BASE_URL } from "../julesApi.ts";
+} from "../baseAgent.js";
+import { buildJulesApiUrl, JULES_API_BASE_URL } from "@shiguang-gateway/contracts/cloud-agent";
 import type {
   CloudAgentTask,
   CloudAgentActivity,
   CloudAgentStatus,
   CloudAgentResult,
-} from "../types.ts";
-import { CLOUD_AGENT_STATUS } from "../types.ts";
+} from "../types.js";
+import { CLOUD_AGENT_STATUS } from "../types.js";
 
 function julesHeaders(apiKey: string, json = false): Record<string, string> {
   const headers: Record<string, string> = {

@@ -1,22 +1,19 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAgent } from "../../../../../../lib/cloudAgent/registry.ts";
+import { NextResponse, type NextRequest } from "./next-compat.js";
+import { getAgent } from "../domain/registry.js";
 import {
   createCloudAgentTaskTable,
   getCloudAgentTaskById,
   updateCloudAgentTask,
   deleteCloudAgentTask,
-} from "../../../../../../lib/cloudAgent/db.ts";
+} from "../domain/db.js";
 import {
   getCloudAgentCorsHeaders,
   getCloudAgentCredentials,
   requireCloudAgentManagementAuth,
   serializeCloudAgentTask,
-} from "../../../../../../lib/cloudAgent/api.ts";
+} from "../domain/api.js";
 import { z } from "zod";
-import pino from "pino";
-import { sanitizeErrorMessage } from "../../../../../../../../open-sse/utils/error.ts";
-
-const logger = pino({ name: "cloud-agents-api" });
+import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 
 let _tableInit = false;
 function ensureTable() {
@@ -91,7 +88,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
           });
         }
       } catch (err) {
-        logger.error({ err }, "Failed to sync task status");
+        console.error("Failed to sync task status", err);
       }
     }
 
@@ -183,7 +180,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       { headers: getCloudAgentCorsHeaders(request) }
     );
   } catch (error) {
-    logger.error({ err: error }, "Failed to process task action");
+    console.error("Failed to process task action", error);
     return NextResponse.json(
       {
         error:

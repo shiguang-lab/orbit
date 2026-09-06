@@ -12,7 +12,7 @@ import {
 import { SafeOutboundFetchError } from "../../../shared/network/safeOutboundFetch.ts";
 import { normalizeSessionCookieHeader } from "../webCookieAuth.ts";
 import { normalizeGeminiCookieInput } from "../../../../../open-sse/utils/geminiCookies.ts";
-import { buildJulesApiUrl } from "../../cloudAgent/julesApi.ts";
+import { buildJulesApiUrl } from "@shiguang-gateway/contracts/cloud-agent";
 import {
   META_AI_ASBD_ID,
   META_AI_FRIENDLY_NAME,

@@ -3,9 +3,9 @@ import {
   type AgentCredentials,
   type CreateTaskParams,
   type GetStatusResult,
-} from "../baseAgent.ts";
-import type { CloudAgentActivity, CloudAgentStatus, CloudAgentTask } from "../types.ts";
-import { CLOUD_AGENT_STATUS } from "../types.ts";
+} from "../baseAgent.js";
+import type { CloudAgentActivity, CloudAgentStatus, CloudAgentTask } from "../types.js";
+import { CLOUD_AGENT_STATUS } from "../types.js";
 
 /**
  * Cursor Cloud Agent — drives Cursor's Background / Cloud Agents through its official

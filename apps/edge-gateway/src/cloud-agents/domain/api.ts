@@ -1,8 +1,8 @@
-import { requireManagementAuth } from "../api/requireManagementAuth.ts";
-import { getProviderConnections } from "../db/providers.ts";
-import { resolveAllowedOrigin, getCorsStatus } from "../../server/cors/origins.ts";
-import type { AgentCredentials } from "./baseAgent.ts";
-import type { CloudAgentTaskRow } from "./db.ts";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
+import { resolveAllowedOrigin, getCorsStatus } from "@shiguang-gateway/core-domain/shared/cors-status";
+import type { AgentCredentials } from "./baseAgent.js";
+import type { CloudAgentTaskRow } from "./db.js";
 
 type JsonRecord = Record<string, unknown>;
 

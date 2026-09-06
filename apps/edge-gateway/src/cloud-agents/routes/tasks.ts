@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAgent } from "../../../../../lib/cloudAgent/registry.ts";
-import type { CloudAgentTaskRow } from "../../../../../lib/cloudAgent/db.ts";
+import { NextResponse, type NextRequest } from "./next-compat.js";
+import { getAgent } from "../domain/registry.js";
+import type { CloudAgentTaskRow } from "../domain/db.js";
 import {
   createCloudAgentTaskTable,
   insertCloudAgentTask,
@@ -8,18 +8,15 @@ import {
   getCloudAgentTasksByProvider,
   getCloudAgentTasksByStatus,
   deleteCloudAgentTask,
-} from "../../../../../lib/cloudAgent/db.ts";
+} from "../domain/db.js";
 import {
   getCloudAgentCorsHeaders,
   getCloudAgentCredentials,
   requireCloudAgentManagementAuth,
   serializeCloudAgentTask,
-} from "../../../../../lib/cloudAgent/api.ts";
-import { CreateCloudAgentTaskSchema } from "../../../../../lib/cloudAgent/types.ts";
-import pino from "pino";
-import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
-
-const logger = pino({ name: "cloud-agents-api" });
+} from "../domain/api.js";
+import { CreateCloudAgentTaskSchema } from "../domain/types.js";
+import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 
 function getLimit(value: string | null): number {
   const parsed = Number.parseInt(value || "50", 10);
@@ -146,7 +143,7 @@ export async function POST(request: NextRequest) {
       { status: 201, headers: getCloudAgentCorsHeaders(request) }
     );
   } catch (error) {
-    logger.error({ err: error }, "Failed to create cloud agent task");
+    console.error("Failed to create cloud agent task", error);
     return NextResponse.json(
       {
         error:

@@ -3,9 +3,9 @@ import {
   type AgentCredentials,
   type CreateTaskParams,
   type GetStatusResult,
-} from "../baseAgent.ts";
-import type { CloudAgentTask, CloudAgentActivity } from "../types.ts";
-import { CLOUD_AGENT_STATUS } from "../types.ts";
+} from "../baseAgent.js";
+import type { CloudAgentTask, CloudAgentActivity } from "../types.js";
+import { CLOUD_AGENT_STATUS } from "../types.js";
 
 export class DevinAgent extends CloudAgentBase {
   readonly providerId = "devin";

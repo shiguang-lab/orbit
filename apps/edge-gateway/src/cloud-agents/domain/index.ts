@@ -1,8 +1,8 @@
-export * from "./types.ts";
-export * from "./baseAgent.ts";
-export * from "./registry.ts";
-export * from "./db.ts";
+export * from "./types.js";
+export * from "./baseAgent.js";
+export * from "./registry.js";
+export * from "./db.js";
 
-import { createCloudAgentTaskTable } from "./db.ts";
+import { createCloudAgentTaskTable } from "./db.js";
 
 createCloudAgentTaskTable();

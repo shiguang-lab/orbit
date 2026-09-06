@@ -1,4 +1,4 @@
-import { getDbInstance } from "../db/core.ts";
+import { getDbInstance } from "@shiguang-gateway/core-domain/db/ping";
 
 export interface CloudAgentTaskRow {
   id: string;

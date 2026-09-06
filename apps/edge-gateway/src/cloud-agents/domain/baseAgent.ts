@@ -5,7 +5,7 @@ import type {
   CloudAgentSource,
   CloudAgentResult,
   CloudAgentActivity,
-} from "./types.ts";
+} from "./types.js";
 
 export interface AgentCredentials {
   apiKey: string;

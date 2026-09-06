@@ -102,6 +102,11 @@ const allowedCoreDomainSubpaths = {
     "edge/ws-cors",
     "edge/ws-path",
     "edge/ws-handshake",
+    "db/ping",
+    "db/encryption",
+    "db/provider-connections",
+    "control/management-auth",
+    "shared/cors-status",
     "network/remote-image-fetch",
     // A2A transport is owned by edge-gateway; these explicit dynamic imports
     // are transitional facades for the legacy skill implementation while its

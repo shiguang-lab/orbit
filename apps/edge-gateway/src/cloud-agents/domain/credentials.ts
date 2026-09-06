@@ -1,6 +1,6 @@
-import { getDbInstance } from "../db/core.ts";
-import { encrypt, decrypt } from "../db/encryption.ts";
-import type { AgentCredentials } from "./baseAgent.ts";
+import { getDbInstance } from "@shiguang-gateway/core-domain/db/ping";
+import { encrypt, decrypt } from "@shiguang-gateway/core-domain/db/encryption";
+import type { AgentCredentials } from "./baseAgent.js";
 
 // The `cloud_agent_credentials` table is provisioned by migration
 // `061_cloud_agent_credentials.sql` at database initialization (see

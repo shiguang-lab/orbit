@@ -85,6 +85,10 @@
     "./cli-compat": {
       "types": "./src/cli-compat.ts",
       "import": "./src/cli-compat.ts"
+    },
+    "./cloud-agent": {
+      "types": "./src/cloud-agent.ts",
+      "import": "./src/cloud-agent.ts"
     }
   },
   "scripts": {

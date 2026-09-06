@@ -1,8 +1,8 @@
-import type { CloudAgentBase } from "./baseAgent.ts";
-import { JulesAgent } from "./agents/jules.ts";
-import { DevinAgent } from "./agents/devin.ts";
-import { CodexCloudAgent } from "./agents/codex.ts";
-import { CursorCloudAgent } from "./agents/cursor.ts";
+import type { CloudAgentBase } from "./baseAgent.js";
+import { JulesAgent } from "./agents/jules.js";
+import { DevinAgent } from "./agents/devin.js";
+import { CodexCloudAgent } from "./agents/codex.js";
+import { CursorCloudAgent } from "./agents/cursor.js";
 
 const AGENTS: Record<string, CloudAgentBase> = {
   jules: new JulesAgent(),
@@ -26,4 +26,4 @@ export function isCloudAgentProvider(providerId: string): boolean {
 }
 
 export { JulesAgent, DevinAgent, CodexCloudAgent, CursorCloudAgent };
-export type { CloudAgentBase } from "./baseAgent.ts";
+export type { CloudAgentBase } from "./baseAgent.js";
