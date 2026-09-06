@@ -1,5 +1,5 @@
-import { errorResponse } from "@shiguang-gateway/open-sse/utils/error.ts";
-import { HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants.ts";
+import { errorResponse } from "@shiguang-gateway/open-sse/utils/error";
+import { HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants";
 import * as log from "@shiguang-gateway/core-domain/sse/logger";
 import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/shared/api-key-policy";
 import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/edge/feature-flags";
@@ -39,7 +39,7 @@ export async function handleValidatedEmbeddingRequestBody(
   return createEmbeddingResponse(body, options);
 }
 
-async function postHandler(request, context) {
+async function postHandler(request: Request, _context: unknown) {
   let rawBody;
   try {
     rawBody = await request.json();
@@ -52,7 +52,7 @@ async function postHandler(request, context) {
   if (isValidationFailure(validation)) {
     return errorResponse(HTTP_STATUS.BAD_REQUEST, validation.error.message);
   }
-  const body = validation.data;
+  const body = validation.data as ValidatedEmbeddingBody;
 
   // Auth check — when REQUIRE_API_KEY=false, ignore presented invalid keys
   // so anonymous access works the same as all other client APIs (#7785).

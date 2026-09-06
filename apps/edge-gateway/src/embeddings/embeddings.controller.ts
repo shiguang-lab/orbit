@@ -3,7 +3,12 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 import { EmbeddingsService } from "./embeddings.service.js";
 
-@Controller(["v1/embeddings", "api/v1/embeddings"])
+@Controller([
+  "v1/embeddings",
+  "api/v1/embeddings",
+  "v1/multimodal-embeddings",
+  "api/v1/multimodal-embeddings",
+])
 export class EmbeddingsController {
   constructor(
     @Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher,

@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { GET as getEmbeddings, POST as createEmbedding } from "@shiguang-gateway/core-domain/edge/embeddings-handler";
+import { GET as getEmbeddings, POST as createEmbedding } from "./embeddings.handler.js";
 
 @Injectable()
 export class EmbeddingsService {
