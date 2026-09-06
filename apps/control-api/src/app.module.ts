@@ -65,6 +65,7 @@ import { CloudModule } from "./cloud/cloud.module.js";
 import { SkillsModule } from "./skills/skills.module.js";
 import { McpModule } from "./mcp/mcp.module.js";
 import { CompressionManagementModule } from "./compression/compression-management.module.js";
+import { ProxySubscriptionsModule } from "./proxy-subscriptions/proxy-subscriptions.module.js";
 
 @Module({
   imports: [
@@ -135,6 +136,7 @@ import { CompressionManagementModule } from "./compression/compression-managemen
     SkillsModule,
     McpModule,
     CompressionManagementModule,
+    ProxySubscriptionsModule,
   ],
 })
 export class AppModule {}

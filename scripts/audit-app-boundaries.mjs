@@ -202,6 +202,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/skills-github",
   "control/skills-skillssh",
   "control/mcp-management",
+  "control/proxy-subscriptions",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push("catalog/providers");
 allowedCoreDomainSubpaths["apps/control-api"].push(
@@ -439,6 +440,10 @@ const migratedRouteOwnership = {
     "api/sync/cloud/route.ts",
     "api/sync/tokens/route.ts",
     "api/sync/tokens/[id]/route.ts",
+    "api/v1/management/proxy-subscriptions/route.ts",
+    "api/v1/management/proxy-subscriptions/[id]/route.ts",
+    "api/v1/management/proxy-subscriptions/[id]/nodes/route.ts",
+    "api/v1/management/proxy-subscriptions/[id]/refresh/route.ts",
     "api/cloud/auth/route.ts",
     "api/cloud/credentials/update/route.ts",
     "api/cloud/model/resolve/route.ts",

@@ -238,6 +238,10 @@
     "./control/radar-intel-sync": { "types": "./src/public/radar.d.ts", "import": "./src/lib/radar/intelSync.ts" },
     "./control/radar-links": { "types": "./src/public/radar.d.ts", "import": "./src/lib/radar/links.ts" },
     "./control/radar-supporter-key": { "types": "./src/public/radar.d.ts", "import": "./src/lib/radar/supporterKey.ts" },
+    "./control/proxy-subscriptions": {
+      "types": "./src/public/proxySubscriptions.d.ts",
+      "import": "./src/lib/proxySubscription/index.ts"
+    },
     "./shared/public-safe-error": {
       "types": "./src/public/publicSafeTunnelError.d.ts",
       "import": "./src/lib/api/publicSafeTunnelError.ts"
