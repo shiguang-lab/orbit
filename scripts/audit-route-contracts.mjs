@@ -12,6 +12,10 @@ const frozenContractSha256 = "1f9b667b02c61bc53f4feab303f56941a37506e651d0ba9e49
 const localApiExtensions = new Set([
   "media/cache/stats/route.ts",
   "media/cache/purge/route.ts",
+  // `/a2a` is a protocol root (not part of Next's `app/api` tree); it is
+  // intentionally represented by the edge Nest controller and omitted from
+  // the historical API route reference set.
+  "a2a/route.ts",
 ]);
 const normalizeRoutePath = (value) => value.replace(new RegExp("omni" + "route", "gi"), "gateway");
 
@@ -68,7 +72,11 @@ function extractControllerContracts(controllerFile) {
         if (fullPath.startsWith("api/")) fullPath = fullPath.slice("api/".length);
         fullPath = fullPath.replace(/:([a-zA-Z0-9_]+)/g, "[$1]");
         const routePath = `${fullPath ? fullPath + "/" : ""}route.ts`;
-        const isClientV1 = fullPath.startsWith("v1/") || fullPath.startsWith("v1beta/") || fullPath.startsWith("a2a/");
+        // A2A's REST task routes intentionally mirror the Next handlers and do
+        // not advertise an OPTIONS method. CORS preflight is owned by the
+        // canonical JSON-RPC `/a2a` endpoint; do not synthesize OPTIONS for
+        // every `api/a2a/*` controller when reconstructing the contract.
+        const isClientV1 = fullPath.startsWith("v1/") || fullPath.startsWith("v1beta/");
         if (!map.has(routePath)) map.set(routePath, isClientV1 ? new Set(["OPTIONS"]) : new Set());
         map.get(routePath).add(verb);
       }

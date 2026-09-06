@@ -60,7 +60,7 @@ const appByName = new Map(appEntries.filter((entry) => entry.manifest?.name).map
 const allowedCoreDomainSubpaths = {
   "apps/realtime": ["startup", "events/eventBus", "shared/test-process", "shared/http-client-abort-guard", "sse/auth", "db/compression-analytics"],
   "apps/worker": ["startup", "worker/", "db/local-db"],
-  "apps/control-api": ["startup", "runtime/request", "domain/degradation", "db/ping", "db/call-log-stats", "db/provider-connections", "db/model-aliases", "db/provider-stats", "catalog/provider-metadata", "catalog/provider-registry", "catalog/provider-node-prefixes", "pricing/db", "pricing/defaults", "pricing/sync", "pricing/provider-prefixes", "pricing/validation", "cache/db", "cache/services", "db/compression-analytics", "analytics/auto-routing-db", "analytics/diversity", "db-backups/db", "db-backups/validation", "metrics/combo", "metrics/request-telemetry", "metrics/tool-latency", "shared/numeric", "open-sse/utils/error.ts", "open-sse/services/deviceTracker.ts", "control/management-auth", "control/compliance", "control/feature-flags", "control/provider-validation", "control/provider-validation-schemas", "control/provider-model-store", "control/provider-model-aliases", "control/model-context-overrides", "control/model-test-data", "db/provider-nodes", "network/outbound-url-guard-policy", "network/safe-outbound-fetch", "control/gateway-status", "control/authenticated", "control/synced-models", "control/settings", "control/api-key-store", "control/cloud-sync", "control/api-key-exposure", "db/api-key-groups", "control/api-key-usage-limits", "shared/", "sse/logger", "evals/db", "evals/runner", "evals/runtime", "evals/validation", "db/api-keys", "plugins/db", "plugins/manager", "plugins/marketplace", "shared/cors", "quota/schemas", "quota/db", "quota/services", "compliance"],
+  "apps/control-api": ["startup", "runtime/request", "domain/degradation", "db/ping", "db/call-log-stats", "db/provider-connections", "db/model-aliases", "db/local-db", "db/provider-stats", "catalog/provider-metadata", "catalog/provider-registry", "catalog/provider-node-prefixes", "pricing/db", "pricing/defaults", "pricing/sync", "pricing/provider-prefixes", "pricing/validation", "cache/db", "cache/services", "db/compression-analytics", "analytics/auto-routing-db", "analytics/diversity", "db-backups/db", "db-backups/validation", "metrics/combo", "metrics/request-telemetry", "metrics/tool-latency", "shared/numeric", "open-sse/utils/error.ts", "open-sse/services/deviceTracker.ts", "control/management-auth", "control/compliance", "control/feature-flags", "control/provider-validation", "control/provider-validation-schemas", "control/provider-model-store", "control/provider-model-aliases", "control/model-context-overrides", "control/model-test-data", "db/provider-nodes", "network/outbound-url-guard-policy", "network/safe-outbound-fetch", "control/gateway-status", "control/authenticated", "control/synced-models", "control/settings", "control/api-key-store", "control/cloud-sync", "control/api-key-exposure", "db/api-key-groups", "control/api-key-usage-limits", "shared/", "sse/logger", "evals/db", "evals/runner", "evals/runtime", "evals/validation", "db/api-keys", "plugins/db", "plugins/manager", "plugins/marketplace", "shared/cors", "quota/schemas", "quota/db", "quota/services", "compliance"],
   "apps/edge-gateway": [
     "startup",
     "runtime/request",
@@ -103,6 +103,10 @@ const allowedCoreDomainSubpaths = {
     "edge/ws-path",
     "edge/ws-handshake",
     "network/remote-image-fetch",
+    // A2A transport is owned by edge-gateway; these explicit dynamic imports
+    // are transitional facades for the legacy skill implementation while its
+    // provider/DB dependencies are moved into edge-owned modules.
+    "a2a/legacy-",
   ],
 };
 
@@ -174,6 +178,8 @@ const migratedRouteOwnership = {
     "api/quota/preview/route.ts",
     "api/models/test/route.ts",
     "api/models/test-all/route.ts",
+    "api/model-combo-mappings/route.ts",
+    "api/model-combo-mappings/[id]/route.ts",
   ],
   "apps/edge-gateway": [
     "api/v1/music/generations/route.ts",

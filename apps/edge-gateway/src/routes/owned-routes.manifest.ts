@@ -4,6 +4,11 @@ export type OwnedRoute = {
 };
 
 export const ownedEdgeRoutes: readonly OwnedRoute[] = [
+  { path: "/a2a", methods: ["OPTIONS", "POST"] },
+  { path: "/a2a/tasks", methods: ["GET", "OPTIONS", "POST"] },
+  { path: "/a2a/tasks/:id", methods: ["GET", "OPTIONS"] },
+  { path: "/a2a/tasks/:id/cancel", methods: ["OPTIONS", "POST"] },
+  { path: "/a2a/status", methods: ["GET", "OPTIONS"] },
   { path: "/v1/audio/speech", methods: ["OPTIONS", "POST"] },
   { path: "/v1/audio/transcriptions", methods: ["OPTIONS", "POST"] },
   { path: "/v1/audio/translations", methods: ["OPTIONS", "POST"] },

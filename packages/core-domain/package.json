@@ -170,6 +170,30 @@
       "types": "./src/public/settings.d.ts",
       "import": "./src/lib/db/settings.ts"
     },
+    "./control/database-settings": {
+      "types": "./src/public/databaseSettings.d.ts",
+      "import": "./src/lib/db/databaseSettings.ts"
+    },
+    "./control/proxy-logs": {
+      "types": "./src/public/proxyLogs.d.ts",
+      "import": "./src/lib/proxyLogger.ts"
+    },
+    "./db/detailed-logs": {
+      "types": "./src/public/detailedLogs.d.ts",
+      "import": "./src/lib/db/detailedLogs.ts"
+    },
+    "./db/proxy-logs": {
+      "types": "./src/public/proxyLogs.d.ts",
+      "import": "./src/lib/db/proxyLogs.ts"
+    },
+    "./shared/log-env": {
+      "types": "./src/public/logEnv.d.ts",
+      "import": "./src/lib/logEnv.ts"
+    },
+    "./shared/turkish-text": {
+      "types": "./src/public/turkishText.d.ts",
+      "import": "./src/shared/utils/turkishText.ts"
+    },
     "./control/api-key-store": {
       "types": "./src/public/apiKeyStore.d.ts",
       "import": "./src/lib/db/apiKeys.ts"
@@ -451,6 +475,26 @@
     "./compliance": {
       "types": "./src/public/compliance.d.ts",
       "import": "./src/lib/compliance/index.ts"
+    },
+    "./a2a/legacy-jsonrpc": {
+      "types": "./src/public/a2aLegacyRoute.d.ts",
+      "import": "./src/app/a2a/route.ts"
+    },
+    "./a2a/legacy-tasks": {
+      "types": "./src/public/a2aLegacyRoute.d.ts",
+      "import": "./src/app/api/a2a/tasks/route.ts"
+    },
+    "./a2a/legacy-task-by-id": {
+      "types": "./src/public/a2aLegacyRoute.d.ts",
+      "import": "./src/app/api/a2a/tasks/[id]/route.ts"
+    },
+    "./a2a/legacy-task-cancel": {
+      "types": "./src/public/a2aLegacyRoute.d.ts",
+      "import": "./src/app/api/a2a/tasks/[id]/cancel/route.ts"
+    },
+    "./a2a/legacy-status": {
+      "types": "./src/public/a2aLegacyRoute.d.ts",
+      "import": "./src/app/api/a2a/status/route.ts"
     }
   },
   "dependencies": {
