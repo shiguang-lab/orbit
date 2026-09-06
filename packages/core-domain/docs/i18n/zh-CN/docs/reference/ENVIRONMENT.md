@@ -225,7 +225,7 @@ ShiguangGateway 提供两层防护：请求侧的注入扫描和响应侧的 PII
 
 | 变量                                | 默认值 | 源文件                                      | 说明                                                                                                                                                                                                    |
 | ----------------------------------- | ------ | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `SHIGUANG_GATEWAY_VSCODE_SANITIZE_CONTEXT` | `1`    | `src/app/api/v1/vscode/contextSanitizer.ts` | 从 `/v1/vscode/[token]/*` 请求中剥离隐式的活跃编辑器上下文（`editorContext`, `activeEditor`, `currentFile`, `selection`, `openTabs`...），并脱敏显式附加的敏感文件内容。安全默认启用；设为 `0` 可禁用。 |
+| `SHIGUANG_GATEWAY_VSCODE_SANITIZE_CONTEXT` | `1`    | `apps/edge-gateway/src/vscode/runtime/context-sanitizer.ts` | 从 `/v1/vscode/[token]/*` 请求中剥离隐式的活跃编辑器上下文（`editorContext`, `activeEditor`, `currentFile`, `selection`, `openTabs`...），并脱敏显式附加的敏感文件内容。安全默认启用；设为 `0` 可禁用。 |
 
 ### 场景
 

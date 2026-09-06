@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { OPTIONS, POST } from "../responses/responses.handler.js";
-import { rewriteVscodeServiceTierRequest } from "@shiguang-gateway/core-domain/edge/vscode-service-tier";
-import { withSanitizedPathTokenApiKey } from "@shiguang-gateway/core-domain/edge/vscode-token";
+import { rewriteVscodeServiceTierRequest } from "../vscode/runtime/service-tier-variants.js";
+import { withSanitizedPathTokenApiKey } from "../vscode/runtime/tokenized-request.js";
 
 @Injectable()
 export class VscodeResponsesService {

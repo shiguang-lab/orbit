@@ -4,7 +4,7 @@
  * Effort-capable Claude models steer their reasoning via `reasoning_effort`
  * (translated to Claude `output_config.effort` / thinking config downstream).
  * Rich clients such as VS Code render this as a `reasoningEffort` *config schema*
- * slider (see `src/lib/vscode/reasoningMetadata.ts`), but catalog-only clients —
+ * slider (see the edge app's `vscode/runtime/reasoning-metadata.ts`), but catalog-only clients —
  * OpenCode, plain OpenAI-SDK model pickers — can only choose a model by its `id`.
  * For those clients an effort level is unreachable unless it is advertised as a
  * standalone model id:

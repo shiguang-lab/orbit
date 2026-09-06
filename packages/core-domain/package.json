@@ -61,26 +61,6 @@
       "types": "./src/public/httpClientAbortGuard.d.ts",
       "import": "./src/shared/utils/httpClientAbortGuard.mjs"
     },
-    "./edge/vscode-token": {
-      "types": "./src/public/vscodeToken.d.ts",
-      "import": "./src/lib/vscode/tokenizedRequest.ts"
-    },
-    "./edge/vscode-service-tier": {
-      "types": "./src/public/vscodeServiceTier.d.ts",
-      "import": "./src/lib/vscode/serviceTierVariants.ts"
-    },
-    "./edge/vscode-models": {
-      "types": "./src/public/vscodeModels.d.ts",
-      "import": "./src/lib/vscode/models.ts"
-    },
-    "./edge/vscode-ollama": {
-      "types": "./src/public/vscodeOllama.d.ts",
-      "import": "./src/lib/vscode/ollama.ts"
-    },
-    "./edge/vscode-combos": {
-      "types": "./src/public/vscodeCombos.d.ts",
-      "import": "./src/lib/vscode/combos.ts"
-    },
     "./control/provider-test-batch": {
       "types": "./src/public/providerTestBatch.d.ts",
       "import": "./src/lib/providers/testBatch.ts"

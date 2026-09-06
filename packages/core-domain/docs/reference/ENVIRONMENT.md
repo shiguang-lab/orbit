@@ -269,7 +269,7 @@ ShiguangGateway provides a two-layer defense: request-side injection scanning an
 
 | Variable                            | Default | Source File                                 | Description                                                                                                                                                                                                                                                 |
 | ----------------------------------- | ------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `SHIGUANG_GATEWAY_VSCODE_SANITIZE_CONTEXT` | `1`     | `src/app/api/v1/vscode/contextSanitizer.ts` | Strips implicit active-editor context (`editorContext`, `activeEditor`, `currentFile`, `selection`, `openTabs`…) from `/v1/vscode/[token]/*` requests and redacts content of explicitly-attached sensitive files. Secure-by-default; set to `0` to disable. |
+| `SHIGUANG_GATEWAY_VSCODE_SANITIZE_CONTEXT` | `1`     | `apps/edge-gateway/src/vscode/runtime/context-sanitizer.ts` | Strips implicit active-editor context (`editorContext`, `activeEditor`, `currentFile`, `selection`, `openTabs`…) from `/v1/vscode/[token]/*` requests and redacts content of explicitly-attached sensitive files. Secure-by-default; set to `0` to disable. |
 
 ### Scenarios
 

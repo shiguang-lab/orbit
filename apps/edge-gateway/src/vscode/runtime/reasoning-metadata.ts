@@ -1,7 +1,7 @@
 import { supportsXHighEffort } from "@shiguang-gateway/provider-catalog/provider-models";
-import { providerRuntimePorts } from "../../runtime/providerRuntimePorts.js";
-import { stripVscodeServiceTierVariantModelId } from "./serviceTierVariants.ts";
-import { extendCodexGpt56EffortValues } from "../../shared/reasoning/effortStandardization.ts";
+import { providerRuntimePorts } from "@shiguang-gateway/core-domain/runtime/provider-ports";
+import { stripVscodeServiceTierVariantModelId } from "./service-tier-variants.js";
+import { extendCodexGpt56EffortValues } from "@shiguang-gateway/core-domain/runtime/reasoning-effort";
 
 export type VscodeCatalogModel = {
   id?: string;

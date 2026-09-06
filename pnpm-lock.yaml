@@ -330,6 +330,9 @@ importers:
       '@shiguang-gateway/open-sse':
         specifier: workspace:*
         version: link:../../packages/open-sse
+      '@shiguang-gateway/provider-catalog':
+        specifier: workspace:*
+        version: link:../../packages/provider-catalog
       '@shiguang-gateway/rerank-catalog':
         specifier: workspace:*
         version: link:../../packages/rerank-catalog

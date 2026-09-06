@@ -1,7 +1,7 @@
-import type { VscodeModelsResolver } from "./models.js";
-import { getCanonicalModelMetadata } from "../modelMetadataRegistry.js";
-import { getProviderConnections } from "../db/providers.js";
-import { CORS_HEADERS, handleCorsOptions } from "../../shared/utils/cors.js";
+import type { VscodeModelsResolver } from "../vscode-models/vscode-models.handler.js";
+import { getCanonicalModelMetadata } from "@shiguang-gateway/core-domain/catalog/model-metadata";
+import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
+import { CORS_HEADERS, handleCorsOptions } from "@shiguang-gateway/core-domain/shared/cors";
 import {
   buildReasoningConfigSchema,
   buildSupportedReasoningEfforts,
@@ -10,16 +10,16 @@ import {
   getReasoningEffortValues,
   inferSelectedReasoningEffort,
   type VscodeCatalogModel,
-} from "../vscode/reasoningMetadata.js";
-import { getVscodeModelDisplayName, getVscodeModelGroupingKey } from "../vscode/modelPresentation.js";
+} from "../vscode/runtime/reasoning-metadata.js";
+import { getVscodeModelDisplayName, getVscodeModelGroupingKey } from "../vscode/runtime/model-presentation.js";
 import {
   expandVscodeServiceTierModels,
   getVscodeServiceTierVariantModelId,
   parseVscodeServiceTierVariantModelId,
-} from "../vscode/serviceTierVariants.js";
-import { getFamilyFirstModelCandidates, getFamilyFirstPublishedModelId } from "../vscode/familyFirstModelIds.js";
-import { withPathTokenApiKey } from "../vscode/tokenizedRequest.js";
-import { isUsableChatModel } from "../vscode/usableChatModel.js";
+} from "../vscode/runtime/service-tier-variants.js";
+import { getFamilyFirstModelCandidates, getFamilyFirstPublishedModelId } from "../vscode/runtime/family-first-model-ids.js";
+import { withPathTokenApiKey } from "../vscode/runtime/tokenized-request.js";
+import { isUsableChatModel } from "../vscode/runtime/usable-chat-model.js";
 
 type OpenAiCatalogModel = {
   id?: string;

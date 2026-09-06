@@ -1,7 +1,7 @@
-import { getProviderConnections } from "../db/providers.ts";
-import { getResolvedModelCapabilities } from "../modelCapabilities.ts";
-import { getCanonicalModelMetadata } from "../modelMetadataRegistry.ts";
-import { CORS_HEADERS, handleCorsOptions } from "../../shared/utils/cors.ts";
+import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
+import { getResolvedModelCapabilities } from "@shiguang-gateway/core-domain/catalog/model-capabilities";
+import { getCanonicalModelMetadata } from "@shiguang-gateway/core-domain/catalog/model-metadata";
+import { CORS_HEADERS, handleCorsOptions } from "@shiguang-gateway/core-domain/shared/cors";
 import {
   buildReasoningConfigSchema,
   buildSupportedReasoningEfforts,
@@ -9,21 +9,21 @@ import {
   getReasoningEffortValues,
   getReasoningVariantBaseModelId,
   type VscodeCatalogModel,
-} from "./reasoningMetadata.ts";
+} from "../vscode/runtime/reasoning-metadata.js";
 import {
   getVscodeModelDisplayName,
   getVscodeModelGroupingKey,
   resolveVscodeModelMetadata,
-} from "./modelPresentation.ts";
-import { withPathTokenApiKey } from "./tokenizedRequest.ts";
+} from "../vscode/runtime/model-presentation.js";
+import { withPathTokenApiKey } from "../vscode/runtime/tokenized-request.js";
 import {
   expandVscodeServiceTierModels,
   getVscodeServiceTierVariantModelId,
   getVscodeServiceTierVariantSuffix,
   parseVscodeServiceTierVariantModelId,
-} from "./serviceTierVariants.ts";
-import { getFamilyFirstPublishedModelId } from "./familyFirstModelIds.ts";
-import { isUsableChatModel } from "./usableChatModel.ts";
+} from "../vscode/runtime/service-tier-variants.js";
+import { getFamilyFirstPublishedModelId } from "../vscode/runtime/family-first-model-ids.js";
+import { isUsableChatModel } from "../vscode/runtime/usable-chat-model.js";
 
 type CatalogModelEntry = {
   id?: string;

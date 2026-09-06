@@ -1,15 +1,15 @@
-import { providerRuntimePorts } from "../../runtime/providerRuntimePorts.js";
+import { providerRuntimePorts } from "@shiguang-gateway/core-domain/runtime/provider-ports";
 import {
   getCanonicalModelMetadata,
   type CanonicalModelMetadata,
-} from "../modelMetadataRegistry.ts";
-import { resolveFamilyFirstPublishedModelId } from "./familyFirstModelIds.ts";
-import { getReasoningVariantBaseModelId } from "./reasoningMetadata.ts";
+} from "@shiguang-gateway/core-domain/catalog/model-metadata";
+import { resolveFamilyFirstPublishedModelId } from "./family-first-model-ids.js";
+import { getReasoningVariantBaseModelId } from "./reasoning-metadata.js";
 import {
   getVscodeServiceTierVariantSuffix,
   parseVscodeServiceTierVariantModelId,
   supportsVscodeServiceTierVariants,
-} from "./serviceTierVariants.ts";
+} from "./service-tier-variants.js";
 
 type VscodeCatalogModel = {
   id?: string;

@@ -115,11 +115,6 @@ const allowedCoreDomainSubpaths = {
     "edge/relay-bifrost",
     "edge/relay-chat",
     "edge/service-registry",
-    "edge/vscode-token",
-    "edge/vscode-models",
-    "edge/vscode-ollama",
-    "edge/vscode-combos",
-    "edge/vscode-service-tier",
     "control/settings",
     "edge/count-tokens-validation",
     "control/authenticated",
@@ -177,6 +172,10 @@ const allowedCoreDomainSubpaths = {
     "network/remote-image-fetch",
     "catalog/unified",
     "catalog/providers",
+    "catalog/model-metadata",
+    "runtime/provider-ports",
+    "runtime/reasoning-effort",
+    "edge/codex-fast-tier",
     "shared/embedded-services",
     "shared/compatible-provider-id",
     "control/video-bridge-drilldown",
@@ -882,6 +881,10 @@ for (const legacy of legacyNames) {
   const dir = join(packagesRoot, legacy);
   if (existsSync(dir)) add("retired-runtime-directory", dir, `packages/${legacy} must be removed`);
 }
+const retiredCoreVscodeDir = join(packagesRoot, "core-domain", "src", "lib", "vscode");
+if (existsSync(retiredCoreVscodeDir)) {
+  add("edge-runtime-in-core-domain", retiredCoreVscodeDir, "VS Code transport and presentation runtime belongs in apps/edge-gateway");
+}
 
 // The shared HTTP package must never regain a generic app factory or a
 // caller-selected surface. Those APIs collapse independently deployable apps
@@ -1042,6 +1045,11 @@ if (existsSync(workerJobRegistry)) {
 }
 const coreDomainEntry = packageEntries.find(({ manifest }) => manifest?.name === "@shiguang-gateway/core-domain");
 const retiredAppOwnedExports = [
+  "./edge/vscode-token",
+  "./edge/vscode-service-tier",
+  "./edge/vscode-models",
+  "./edge/vscode-ollama",
+  "./edge/vscode-combos",
   "./control/video-bridge-extract",
   "./control/issue-agent",
   "./control/headroom",

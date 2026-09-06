@@ -1,5 +1,5 @@
 import { OPTIONS as baseOptions, POST as basePost } from "../chat-completions/handlers/chat-completions.handler.js";
-import { withSanitizedPathTokenApiKey } from "@shiguang-gateway/core-domain/edge/vscode-token";
+import { withSanitizedPathTokenApiKey } from "../vscode/runtime/tokenized-request.js";
 
 export function OPTIONS(): Response { return baseOptions(); }
 

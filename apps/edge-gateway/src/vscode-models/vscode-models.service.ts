@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { GET, GET_RAW, OPTIONS, OPTIONS_RAW } from "@shiguang-gateway/core-domain/edge/vscode-models";
+import { GET, GET_RAW, OPTIONS, OPTIONS_RAW } from "./vscode-models.handler.js";
 import { getUnifiedModelsResponse } from "@shiguang-gateway/open-sse/catalog/unified";
 
 @Injectable()

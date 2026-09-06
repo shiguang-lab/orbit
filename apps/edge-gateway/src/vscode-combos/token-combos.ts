@@ -1,6 +1,6 @@
 import { getCombos } from "@shiguang-gateway/core-domain/db/combos";
 import { projectCombo, type PublicCombo } from "@shiguang-gateway/core-domain/catalog/project-combo";
-import { GET as getModels, OPTIONS as modelsOptions } from "@shiguang-gateway/core-domain/edge/vscode-models";
+import { GET as getModels, OPTIONS as modelsOptions } from "../vscode-models/vscode-models.handler.js";
 
 export type TokenComboDependencies = {
   getCombos: typeof getCombos;

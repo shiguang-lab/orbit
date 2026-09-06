@@ -6,7 +6,7 @@
  * - GET /api/v1/vscode/combos/{token}/api/version → returns Ollama-compatible version
  * - GET /api/v1/vscode/combos/{token}/api/tags → exposes combo catalog in Ollama format
  */
-import type { VscodeModelsResolver } from "./models.js";
+import type { VscodeModelsResolver } from "../vscode-models/vscode-models.handler.js";
 import {
 	buildReasoningConfigSchema,
 	buildSupportedReasoningEfforts,
@@ -14,13 +14,13 @@ import {
 	getReasoningEffortValues,
 	inferSelectedReasoningEffort,
 	type VscodeCatalogModel,
-} from "./reasoningMetadata.js";
+} from "../vscode/runtime/reasoning-metadata.js";
 import {
 	getVscodeRawModelDisplayName,
-} from "./models.js";
-import { withPathTokenApiKey } from "./tokenizedRequest.js";
-import { getCanonicalModelMetadata } from "../modelMetadataRegistry.js";
-import { CORS_HEADERS } from "../../shared/utils/cors.js";
+} from "../vscode-models/vscode-models.handler.js";
+import { withPathTokenApiKey } from "../vscode/runtime/tokenized-request.js";
+import { getCanonicalModelMetadata } from "@shiguang-gateway/core-domain/catalog/model-metadata";
+import { CORS_HEADERS } from "@shiguang-gateway/core-domain/shared/cors";
 
 const OLLAMA_COMPAT_VERSION = "0.6.4";
 
