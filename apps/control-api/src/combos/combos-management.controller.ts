@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Inject, Post, Req, Res } from "@nestjs/common";
+import { Controller, Delete, Get, Inject, Param, Patch, Post, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 import { CombosManagementService } from "./combos-management.service.js";
@@ -10,6 +10,16 @@ export class CombosManagementController {
     @Inject(CombosManagementService) private readonly combos: CombosManagementService,
     @Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher,
   ) {}
+
+  @Get()
+  list(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(req, reply, (request) => this.combos.list(request));
+  }
+
+  @Post()
+  create(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(req, reply, (request) => this.combos.create(request));
+  }
 
   @Get("builder/options")
   builderOptions(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
@@ -44,5 +54,25 @@ export class CombosManagementController {
   @Post("test")
   test(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
     return this.routes.dispatch(req, reply, (request) => this.combos.test(request));
+  }
+
+  @Get(":id")
+  get(@Param("id") id: string, @Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(req, reply, (request) => this.combos.get(request, id), { id });
+  }
+
+  @Put(":id")
+  update(@Param("id") id: string, @Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(req, reply, (request) => this.combos.update(request, id), { id });
+  }
+
+  @Patch(":id")
+  patch(@Param("id") id: string, @Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(req, reply, (request) => this.combos.patch(request, id), { id });
+  }
+
+  @Delete(":id")
+  remove(@Param("id") id: string, @Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(req, reply, (request) => this.combos.remove(request, id), { id });
   }
 }

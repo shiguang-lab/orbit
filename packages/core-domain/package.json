@@ -202,6 +202,10 @@
       "types": "./src/public/memorySettings.d.ts",
       "import": "./src/lib/memory/settings.ts"
     },
+    "./memory/runtime": {
+      "types": "./src/public/memoryRuntime.d.ts",
+      "import": "./src/lib/memory/runtime.ts"
+    },
     "./control/database-settings": {
       "types": "./src/public/databaseSettings.d.ts",
       "import": "./src/lib/db/databaseSettings.ts"
@@ -338,6 +342,10 @@
     "./shared/combo-test": {
       "types": "./src/public/comboTest.d.ts",
       "import": "./src/lib/combos/testHealth.ts"
+    },
+    "./control/combo-admin": {
+      "types": "./src/public/comboAdmin.d.ts",
+      "import": "./src/lib/combos/adminExports.ts"
     },
     "./catalog/display-names": { "types": "./src/public/catalogDisplayNames.d.ts", "import": "./src/lib/display/names.ts" },
     "./catalog/managed-available-models": { "types": "./src/public/catalogManagedModels.d.ts", "import": "./src/lib/providers/managedAvailableModels.ts" },

@@ -113,9 +113,13 @@ export function getProxyForLevel(level: string, provider?: string): Promise<unkn
 export function resolveProxyForProvider(provider: string): Promise<unknown | null>;
 
 export function getComboByName(name: string): Promise<unknown>;
+export function getComboById(id: string): Promise<unknown>;
 export function getCombos(limit?: number, offset?: number): Promise<unknown[]>;
+export function getCombosCount(): number;
 export function createCombo(data: Record<string, unknown>): Promise<unknown>;
+export function updateCombo(id: string, data: Record<string, unknown>): Promise<unknown>;
 export function reorderCombos(comboIds: string[]): Promise<unknown[]>;
+export function deleteCombo(id: string): Promise<boolean>;
 export function pickApiKeyForInternalUse(reason?: string): Promise<string | null>;
 
 export interface ModelComboMapping {

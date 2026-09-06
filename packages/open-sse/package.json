@@ -61,6 +61,10 @@
       "types": "./public/thinkingBudget.d.ts",
       "import": "./services/thinkingBudget.ts"
     },
+    "./services/combo": {
+      "types": "./public/combo.d.ts",
+      "import": "./services/combo.ts"
+    },
     "./*": {
       "types": "./*",
       "import": "./*"
