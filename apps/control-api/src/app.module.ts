@@ -27,6 +27,7 @@ import { ProxiesModule } from "./proxies/proxies.module.js";
 import { CacheSettingsModule } from "./cache-settings/cache-settings.module.js";
 import { SettingsSecurityModule } from "./settings/security/security.module.js";
 import { SettingsConfigModule } from "./settings/config/settings-config.module.js";
+import { OneproxyModule } from "./settings/oneproxy/oneproxy.module.js";
 import { SystemModule } from "./system/system.module.js";
 
 @Module({
@@ -59,6 +60,7 @@ import { SystemModule } from "./system/system.module.js";
     CacheSettingsModule,
     SettingsSecurityModule,
     SettingsConfigModule,
+    OneproxyModule,
     SystemModule,
   ],
 })
