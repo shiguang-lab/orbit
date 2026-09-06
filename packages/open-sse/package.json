@@ -85,6 +85,10 @@
       "types": "./public/providerConstants.d.ts",
       "import": "./config/providerConstants.ts"
     },
+    "./config/ollamaModels": {
+      "types": "./public/ollamaModels.d.ts",
+      "import": "./config/ollamaModels.ts"
+    },
     "./translator": {
       "types": "./public/translator.d.ts",
       "import": "./translator/index.ts"

@@ -95,6 +95,9 @@ import { SessionsModule } from "./sessions/sessions.module.js";
 import { ComplianceModule } from "./compliance/compliance.module.js";
 import { FilesModule } from "./files/files.module.js";
 import { FreeModelsModule } from "./free-models/free-models.module.js";
+import { AuthInitModule } from "./auth-init/auth-init.module.js";
+import { TagsModule } from "./tags/tags.module.js";
+import { TelemetryModule } from "./telemetry/telemetry.module.js";
 
 @Module({
   imports: [
@@ -195,6 +198,9 @@ import { FreeModelsModule } from "./free-models/free-models.module.js";
     ComplianceModule,
     FilesModule,
     FreeModelsModule,
+    AuthInitModule,
+    TagsModule,
+    TelemetryModule,
   ],
 })
 export class AppModule {}

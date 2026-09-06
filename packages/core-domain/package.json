@@ -4,6 +4,10 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./control/auth-init": {
+      "types": "./src/public/authInit.d.ts",
+      "import": "./src/control/auth-init.ts"
+    },
     "./startup": {
       "types": "./src/startup.d.ts",
       "import": "./src/startup.ts"
@@ -1081,6 +1085,10 @@
     "./metrics/request-telemetry": {
       "types": "./src/public/requestTelemetry.d.ts",
       "import": "./src/shared/utils/requestTelemetry.ts"
+    },
+    "./metrics/observability": {
+      "types": "./src/public/observability.d.ts",
+      "import": "./src/lib/monitoring/observability.ts"
     },
     "./control/provider-model-store": {
       "types": "./src/public/providerModelsStore.d.ts",

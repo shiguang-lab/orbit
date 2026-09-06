@@ -148,6 +148,11 @@ export function controlRouteCatalog(): CompatRouteDefinition[] {
     "files",
     "files/[id]/content",
     "free-models",
+    "codex/connect/[token]",
+    "dahl/tokens",
+    "init",
+    "tags",
+    "telemetry/summary",
   ]);
   return coreRoutes.filter((route) => !migrated.has(route.segments.join("/")));
 }
