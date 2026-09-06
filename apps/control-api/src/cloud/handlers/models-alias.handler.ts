@@ -3,7 +3,7 @@ import { validateApiKey } from "@shiguang-gateway/core-domain/db/api-keys";
 import { isCloudEnabled } from "@shiguang-gateway/core-domain/db/settings";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
-import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";
+import { syncToCloud } from "@shiguang-gateway/core-domain/sync/cloud";
 import { cloudModelAliasUpdateSchema } from "@shiguang-gateway/core-domain/control/cloud-validation";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 

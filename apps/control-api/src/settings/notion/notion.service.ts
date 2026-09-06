@@ -4,7 +4,7 @@ import {
   getNotionConfig,
   setNotionToken,
 } from "@shiguang-gateway/core-domain/control/notion-db";
-import { createNotionClient } from "@shiguang-gateway/core-domain/control/notion-client";
+import { createNotionClient } from "@shiguang-gateway/core-domain/integrations/notion-client";
 
 @Injectable()
 export class NotionSettingsService {

@@ -1,5 +1,5 @@
-import { SAFE_OUTBOUND_FETCH_PRESETS, safeOutboundFetch } from "@shiguang-gateway/core-domain/control/provider-discovery-support/safeOutboundFetch";
-import { getProviderOutboundGuard } from "@shiguang-gateway/core-domain/control/provider-discovery-support/outboundUrlGuardPolicy";
+import { SAFE_OUTBOUND_FETCH_PRESETS, safeOutboundFetch } from "@shiguang-gateway/core-domain/network/safe-outbound-fetch";
+import { getProviderOutboundGuard } from "@shiguang-gateway/core-domain/network/outbound-url-guard-policy";
 import { resolveConolCredentials } from "@shiguang-gateway/open-sse/services/conolAuth";
 import {
   CONOL_FALLBACK_MODELS,

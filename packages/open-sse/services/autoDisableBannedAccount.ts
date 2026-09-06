@@ -8,8 +8,8 @@
 import { getCachedSettings } from "@shiguang-gateway/core-domain/db/read-cache";
 import { updateProviderConnection } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { resolveProviderId, WEB_COOKIE_PROVIDERS } from "@shiguang-gateway/core-domain/catalog/providers";
-import { shouldAutoDisableBannedConnection } from "@shiguang-gateway/core-domain/runtime/auto-disable-banned";
-import { shouldIsolateProbeFailures } from "@shiguang-gateway/core-domain/runtime/probe-origin";
+import { shouldAutoDisableBannedConnection } from "@shiguang-gateway/core-domain/resilience/auto-disable-banned";
+import { shouldIsolateProbeFailures } from "@shiguang-gateway/core-domain/network/probe-origin";
 import * as log from "../utils/sseLogger.ts";
 
 /** Deactivate a connection after a permanent ban when settings and scope allow it. */

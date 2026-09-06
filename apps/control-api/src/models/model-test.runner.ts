@@ -6,7 +6,7 @@ import {
 } from "../combos/combo-test.js";
 import { getCustomModels, getProviderNodeById, isConnectionUnavailableToAuxiliaryActivity } from "./model-test-data.js";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
-import { runAsProbe } from "@shiguang-gateway/core-domain/shared/probe-origin";
+import { runAsProbe } from "@shiguang-gateway/core-domain/network/probe-origin";
 
 export const DEFAULT_MODEL_TEST_TIMEOUT_MS = 30_000;
 const DOLA_PRO_TEST_TIMEOUT_MS = 90_000;
@@ -393,7 +393,7 @@ export async function classifyTestErrorQuota(errorText: string): Promise<{
   // and should win over credits-exhausted if both match.
   const [{ isCreditsExhausted, isDailyQuotaExhausted }, { looksLikeQuotaExhausted }] = await Promise.all([
     load("@shiguang-gateway/open-sse/services/accountFallback"),
-    load("@shiguang-gateway/core-domain/shared/classify-429"),
+    load("@shiguang-gateway/core-domain/resilience/rate-limit-classification"),
   ]);
   if (isDailyQuotaExhausted(trimmed)) {
     return { isQuota: true, isTransient: true };

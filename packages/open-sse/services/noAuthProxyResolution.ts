@@ -1,4 +1,4 @@
-import { getProxyById } from "@shiguang-gateway/core-domain/runtime/proxies";
+import { getProxyById } from "@shiguang-gateway/core-domain/db/proxies";
 import { isRelayProxyType, extractRelayAuth } from "@shiguang-gateway/core-domain/runtime/proxy-mappers";
 
 /**

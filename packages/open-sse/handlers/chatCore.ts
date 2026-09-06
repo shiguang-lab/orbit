@@ -301,7 +301,7 @@ import { trackPendingRequest } from "@shiguang-gateway/core-domain/usage/pending
 import { appendRequestLog } from "@shiguang-gateway/core-domain/usage/request-logs";
 import { finalizePendingScope, updatePendingScope } from "@shiguang-gateway/core-domain/usage/pending-request-scope";
 import { recordCost } from "@shiguang-gateway/core-domain/usage/cost-rules";
-import { calculateCost } from "@shiguang-gateway/core-domain/pricing/modal-cost";
+import { calculateCost } from "@shiguang-gateway/core-domain/pricing/cost-calculator";
 import {
   buildClaudePassthroughToolNameMap,
   mergeResponseToolNameMap,
@@ -451,21 +451,21 @@ import {
 } from "../utils/aiSdkCompat.ts";
 import { generateRequestId } from "@shiguang-gateway/contracts/request-id";
 import { isLocalStreamLifecycleError } from "@shiguang-gateway/core-domain/resilience/circuit-breaker";
-import { shouldIsolateProbeFailures } from "@shiguang-gateway/core-domain/edge/probe-origin";
+import { shouldIsolateProbeFailures } from "@shiguang-gateway/core-domain/network/probe-origin";
 import { writeTerminalStatus } from "@shiguang-gateway/core-domain/shared/terminal-status";
 import { extractFacts } from "../services/memoryRuntime.ts";
 import { handleToolCallExecution } from "@shiguang-gateway/core-domain/edge/skills-runtime";
 import { MEMORY_BUILTIN_TOOL_NAMES } from "@shiguang-gateway/core-domain/edge/skills-runtime";
 import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "@shiguang-gateway/contracts/gateway-headers";
 import { resolveProviderId } from "@shiguang-gateway/core-domain/catalog/providers";
-import { getClaudeCodeCompatibleRequestDefaults } from "@shiguang-gateway/core-domain/edge/provider-request-defaults";
+import { getClaudeCodeCompatibleRequestDefaults } from "@shiguang-gateway/core-domain/providers/request-defaults";
 import {
   buildClaudeCodeCompatibleRequest,
   resolveClaudeCodeCompatibleSessionId,
 } from "../services/claudeCodeCompatible.ts";
 import { setGeminiThoughtSignatureMode } from "../services/geminiThoughtSignatureStore.ts";
 import { fetchLiveProviderLimits } from "../services/providerLimits.ts";
-import { isClaudeExtraUsageBlockEnabled } from "@shiguang-gateway/core-domain/edge/claude-extra-usage";
+import { isClaudeExtraUsageBlockEnabled } from "@shiguang-gateway/core-domain/usage/claude-extra-usage";
 import {
   classifyModelScope429,
   getModelScopeRetryDelayMs,

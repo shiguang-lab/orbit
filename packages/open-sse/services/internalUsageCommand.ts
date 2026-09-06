@@ -2,7 +2,7 @@ import type { ProviderLimitsCacheEntry } from "@shiguang-gateway/core-domain/db/
 import {
   buildApiKeyUsageLimitPercentText,
   type ApiKeyUsageLimitStatus,
-} from "@shiguang-gateway/core-domain/usage/internal-command-support/api-key-usage-limits";
+} from "@shiguang-gateway/core-domain/usage/api-key-limits";
 import { buildErrorBody } from "@shiguang-gateway/http-kernel/error-response";
 
 export const INTERNAL_USAGE_COMMAND = "@@om-usage";
@@ -79,7 +79,7 @@ async function normalizeDeps(deps: InternalUsageCommandDeps = {}): Promise<Requi
       : await import("@shiguang-gateway/core-domain/db/provider-limits-cache");
   const usageLimits = deps.getApiKeyUsageLimitStatus
     ? null
-    : await import("@shiguang-gateway/core-domain/usage/internal-command-support/api-key-usage-limits");
+    : await import("@shiguang-gateway/core-domain/usage/api-key-limits");
 
   return {
     now: deps.now ?? Date.now,

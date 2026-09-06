@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { probeVideoRuntime } from "@shiguang-gateway/core-domain/edge/video-bridge-runtime";
-import { getBridgeStats } from "@shiguang-gateway/core-domain/edge/video-bridge-stats";
+import { getBridgeStats } from "@shiguang-gateway/core-domain/guardrails/modality-bridge-stats";
 import {
   isVideoBridgeDrilldownRemoteAccessEnabled,
   VIDEO_BRIDGE_DRILLDOWN_PATH,

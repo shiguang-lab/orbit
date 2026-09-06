@@ -6,7 +6,7 @@ import {
   updateCombo,
 } from "@shiguang-gateway/core-domain/db/local-db";
 import { isCloudEnabled } from "@shiguang-gateway/core-domain/db/settings";
-import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";
+import { syncToCloud } from "@shiguang-gateway/core-domain/sync/cloud";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
 import { updateComboSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";

@@ -28,7 +28,7 @@ import {
   formatUnknownEmbeddingProviderError,
 } from "./errors.js";
 import { isPrivateHost, isCloudMetadataHost } from "@shiguang-gateway/network-guard";
-import { calculateCost } from "@shiguang-gateway/core-domain/pricing/modal-cost";
+import { calculateCost } from "@shiguang-gateway/core-domain/pricing/cost-calculator";
 import { attachShiguangGatewayMetaHeaders } from "@shiguang-gateway/core-domain/edge/gateway-response-meta";
 import { generateRequestId } from "@shiguang-gateway/core-domain/runtime/request-id";
 import { resolveLocalSyncedEndpointRoute } from "@shiguang-gateway/core-domain/edge/synced-endpoint-routing";

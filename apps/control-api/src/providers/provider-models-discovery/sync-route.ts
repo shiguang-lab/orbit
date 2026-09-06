@@ -10,7 +10,7 @@ import {
   type ManagedModelImportMode,
 } from "@shiguang-gateway/core-domain/control/provider-discovery-support/managedModelImport";
 import { saveCallLog } from "@shiguang-gateway/core-domain/usage/call-logs";
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/provider-discovery-support/apiAuth";
+import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 import {
   buildModelSyncInternalHeaders,
   fetchModelSyncInternal,

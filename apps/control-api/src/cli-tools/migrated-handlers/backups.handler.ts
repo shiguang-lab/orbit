@@ -1,8 +1,8 @@
 "use server";
 
 import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { listBackups, restoreBackup, deleteBackup } from "@shiguang-gateway/core-domain/control/cli-tools-backups";
-import { ensureCliConfigWriteAllowed } from "@shiguang-gateway/core-domain/control/cli-tools-runtime";
+import { listBackups, restoreBackup, deleteBackup } from "@shiguang-gateway/core-domain/cli/backups";
+import { ensureCliConfigWriteAllowed } from "@shiguang-gateway/core-domain/cli/runtime";
 import { cliBackupMutationSchema } from "@shiguang-gateway/core-domain/control/cli-tools-validation-schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";

@@ -5,7 +5,7 @@ import type {
   ComboScoringInspectorFactor,
   ComboScoringInspectorTarget,
   ResilienceExplanation,
-} from "@shiguang-gateway/core-domain/usage/reporting-support/shared/types/utilization";
+} from "@shiguang-gateway/core-domain/usage/utilization";
 import { getCallLogById, getCallLogs } from "@shiguang-gateway/core-domain/usage/call-logs";
 
 type JsonRecord = Record<string, unknown>;

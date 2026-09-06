@@ -22,7 +22,7 @@
  */
 
 import { readFileSync, existsSync } from "fs";
-import { getAppLogFilePath } from "@shiguang-gateway/core-domain/control/cli-tools-log";
+import { getAppLogFilePath } from "@shiguang-gateway/core-domain/logging/environment";
 import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 

@@ -10,7 +10,7 @@ import {
 } from "@shiguang-gateway/open-sse/oauth/services/cursor-login";
 import { persistCursorConnection } from "@shiguang-gateway/core-domain/control/oauth-runtime/services/persistCursorConnection";
 import { isCloudEnabled } from "@shiguang-gateway/core-domain/db/settings";
-import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";
+import { syncToCloud } from "@shiguang-gateway/core-domain/sync/cloud";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
 

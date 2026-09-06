@@ -19,7 +19,7 @@ import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services
 import { handleImageGeneration } from "../handlers/imageGeneration.ts";
 import { attachShiguangGatewayMetaHeaders } from "@shiguang-gateway/core-domain/edge/gateway-response-meta";
 import { generateRequestId } from "@shiguang-gateway/contracts/request-id";
-import { calculateModalCost } from "@shiguang-gateway/core-domain/pricing/modal-cost";
+import { calculateModalCost } from "@shiguang-gateway/core-domain/pricing/cost-calculator";
 import { toJsonErrorPayload } from "@shiguang-gateway/core-domain/shared/upstream-error";
 import { HTTP_STATUS } from "../config/constants.ts";
 import { errorResponse } from "../utils/error.ts";

@@ -16,7 +16,7 @@ import {
   getCliRuntimeStatus,
   getKnownToolPaths,
   shouldUseShellForCommand,
-} from "@shiguang-gateway/core-domain/control/cli-tools-runtime";
+} from "@shiguang-gateway/core-domain/cli/runtime";
 
 export function getQoderCliCommand(): string {
   const explicit = String(process.env.CLI_QODER_BIN || "").trim();

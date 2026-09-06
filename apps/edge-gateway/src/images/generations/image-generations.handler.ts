@@ -41,7 +41,7 @@ import {
 } from "@shiguang-gateway/core-domain/edge/synced-endpoint-routing";
 import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
 import { attachShiguangGatewayMetaHeaders } from "@shiguang-gateway/core-domain/edge/gateway-response-meta";
-import { calculateModalCost } from "@shiguang-gateway/core-domain/pricing/modal-cost";
+import { calculateModalCost } from "@shiguang-gateway/core-domain/pricing/cost-calculator";
 import { generateRequestId } from "@shiguang-gateway/core-domain/runtime/request-id";
 import { getSpecialtyModelsResponse } from "@shiguang-gateway/open-sse/catalog/specialty";
 import { enforceClientApiRouteAuth } from "../../common/client-api-route-auth.js";

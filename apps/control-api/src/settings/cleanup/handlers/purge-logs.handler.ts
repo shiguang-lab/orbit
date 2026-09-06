@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { getCallLogRetentionDays } from "@shiguang-gateway/core-domain/shared/log-env";
+import { getCallLogRetentionDays } from "@shiguang-gateway/core-domain/logging/environment";
 import { deleteCallLogsBefore } from "@shiguang-gateway/core-domain/usage/call-logs";
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 

@@ -23,7 +23,7 @@
  */
 
 import { deleteProxyById, listProxies, updateProxy } from "@shiguang-gateway/core-domain/db/local-db";
-import { isProxyLogIncludeIps } from "@shiguang-gateway/core-domain/shared/proxy-log-settings";
+import { isProxyLogIncludeIps } from "@shiguang-gateway/core-domain/logging/proxy-log-settings";
 import {
   getRecentEgressSharingSummary,
   type EgressSharingSummary,

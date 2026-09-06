@@ -4,7 +4,7 @@ import * as chatAdmission from "@shiguang-gateway/open-sse/handlers/chatAdmissio
 import { buildClientRawRequest, resolveDispatchClientRawRequest } from "@shiguang-gateway/open-sse/handlers/chat/clientRawRequest";
 export { buildClientRawRequest, resolveDispatchClientRawRequest };
 import { normalizeReasoningRequest } from "@shiguang-gateway/core-domain/runtime/reasoning-effort";
-import { isDetailedLoggingEnabled } from "@shiguang-gateway/core-domain/runtime/detailed-logs";
+import { isDetailedLoggingEnabled } from "@shiguang-gateway/core-domain/db/detailed-logs";
 import { resolvePreviousResponseState } from "@shiguang-gateway/core-domain/runtime/responses-continuation";
 import { normalizeResponsesPreviousResponseIdMode } from "../utils/responsesStatePolicy.ts";
 import { FORMATS } from "../translator/formats.ts";
@@ -59,11 +59,11 @@ import {
 } from "../config/providerModels.ts";
 import * as log from "../utils/sseLogger.ts";
 import { checkAndRefreshToken } from "@shiguang-gateway/open-sse/services/credentialTokenRefresh";
-import { createHookContext, runHooks, initPreRequestRegistry } from "@shiguang-gateway/core-domain/runtime/middleware-registry";
-import { rejectPeerRequest } from "@shiguang-gateway/core-domain/runtime/peer-routing";
+import { createHookContext, runHooks } from "@shiguang-gateway/core-domain/middleware/pre-request-hook-execution";
+import { rejectPeerRequest } from "@shiguang-gateway/core-domain/routing/peer-routing";
 import { isRuntimeProviderRetirementError } from "@shiguang-gateway/contracts/provider-retirement";
 import { isCommonChatGptWebRetirementError } from "@shiguang-gateway/contracts/chatgpt-web-retirement";
-import { deleteHandoff, getHandoff } from "@shiguang-gateway/core-domain/runtime/context-handoffs";
+import { deleteHandoff, getHandoff } from "@shiguang-gateway/core-domain/db/context-handoffs";
 import { getComboByName, updateCombo } from "@shiguang-gateway/core-domain/db/combos";
 import { isModelAllowedForKey } from "@shiguang-gateway/core-domain/db/api-keys";
 import { promoteSuccessfulComboModel } from "@shiguang-gateway/core-domain/runtime/combo-auto-promote";
@@ -79,7 +79,7 @@ import { resolveModelLockoutSettings } from "@shiguang-gateway/core-domain/resil
 import {
   ensureOpenAIStoreSessionFallback,
   isOpenAIResponsesStoreEnabled,
-} from "@shiguang-gateway/core-domain/runtime/request-defaults";
+} from "@shiguang-gateway/core-domain/providers/request-defaults";
 import { guardrailRegistry, resolveDisabledGuardrails } from "@shiguang-gateway/core-domain/runtime/guardrails";
 import {
   resolveModelOrError,
@@ -97,7 +97,7 @@ import {
   withModalityBridgeHeader,
   withConversationId,
 } from "@shiguang-gateway/open-sse/handlers/chatHelpers";
-import { buildModalityBridgeHeader } from "@shiguang-gateway/core-domain/runtime/modality-bridge-stats";
+import { buildModalityBridgeHeader } from "@shiguang-gateway/core-domain/guardrails/modality-bridge-stats";
 import { resolveConversationId } from "../services/conversationTracker.ts";
 import {
   isAntigravityMissingProjectError,
@@ -112,7 +112,7 @@ import {
   extractReasoningIntent,
   type ExtractedReasoningIntent,
   type ReasoningRuleDecision,
-} from "@shiguang-gateway/core-domain/runtime/reasoning-policy";
+} from "@shiguang-gateway/core-domain/routing/reasoning-policy";
 import {
   applyConnectionReasoningRule,
   applyReasoningRouting,
@@ -122,15 +122,15 @@ import { createVirtualAutoCombo, resolveAutoRoutingState } from "@shiguang-gatew
 import { getComboFailureLogError } from "@shiguang-gateway/open-sse/handlers/comboFailureLogging";
 
 // Pipeline integration — wired modules
-import { classify429FromError, type FailureKind } from "@shiguang-gateway/core-domain/edge/classify-429";
+import { classify429FromError, type FailureKind } from "@shiguang-gateway/core-domain/resilience/rate-limit-classification";
 import { isSubscriptionQuotaText } from "../services/quotaTextCooldowns.ts";
 import { resolveUseUpstream429BreakerHints } from "@shiguang-gateway/core-domain/edge/provider-hints";
 import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
-import { shouldIsolateProbeFailures } from "@shiguang-gateway/core-domain/runtime/probe-origin";
+import { shouldIsolateProbeFailures } from "@shiguang-gateway/core-domain/network/probe-origin";
 import { getCircuitBreaker, isLocalStreamLifecycleError } from "@shiguang-gateway/core-domain/resilience/circuit-breaker";
 import { markAccountExhaustedFrom429 } from "@shiguang-gateway/core-domain/quota/cache";
 import { resolveForcedConnectionForCredentialPool } from "@shiguang-gateway/open-sse/services/sessionAffinityPin";
-import { RequestTelemetry, recordTelemetry } from "@shiguang-gateway/core-domain/runtime/request-telemetry";
+import { RequestTelemetry, recordTelemetry } from "@shiguang-gateway/core-domain/metrics/request-telemetry";
 import { generateRequestId } from "@shiguang-gateway/core-domain/runtime/request-id";
 import { logAuditEvent } from "@shiguang-gateway/core-domain/compliance/audit-log";
 import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/runtime/api-key-policy";
@@ -783,7 +783,6 @@ async function handleChatImplementation(
 
   // T09 — Pre-request Middleware Hooks
   // Execute user-defined hooks BEFORE task-aware routing and combo selection
-  initPreRequestRegistry();
   const hookContext = createHookContext({
     body: body as Record<string, unknown>,
     headers: Object.fromEntries(request?.headers?.entries() || []) as Record<

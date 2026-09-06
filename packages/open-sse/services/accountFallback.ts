@@ -39,7 +39,7 @@ import {
   classify429FromError,
   looksLikeQuotaExhausted,
   type FailureKind,
-} from "@shiguang-gateway/core-domain/edge/classify-429";
+} from "@shiguang-gateway/core-domain/resilience/rate-limit-classification";
 import { recordProviderSuccess as resetCooldownFailureCount } from "./providerCooldownTracker.ts";
 import {
   getProviderById,

@@ -7,8 +7,8 @@ import {
   getHookLogs,
   registerHook,
   unregisterHook,
-} from "@shiguang-gateway/core-domain/control/middleware-registry";
-import type { MiddlewareHookConfig } from "@shiguang-gateway/core-domain/control/middleware-registry";
+} from "@shiguang-gateway/core-domain/middleware/pre-request-hook-management";
+import type { MiddlewareHookConfig } from "@shiguang-gateway/core-domain/middleware/pre-request-hook-management";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { MiddlewareHooksRepository } from "./middleware-hooks.repository.js";
 

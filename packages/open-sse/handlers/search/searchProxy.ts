@@ -76,7 +76,7 @@ export async function emitSearchProxyEvent(
   status: string
 ): Promise<void> {
   try {
-    const { logProxyEvent } = await import("@shiguang-gateway/core-domain/control/proxy-logs");
+    const { logProxyEvent } = await import("@shiguang-gateway/core-domain/logging/proxy-logs");
     let targetOrigin = "";
     let targetPath = "";
     try {

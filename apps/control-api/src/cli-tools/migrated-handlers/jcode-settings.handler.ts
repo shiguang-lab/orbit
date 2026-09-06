@@ -8,8 +8,8 @@ import {
   ensureCliConfigWriteAllowed,
   getCliPrimaryConfigPath,
   getCliRuntimeStatus,
-} from "@shiguang-gateway/core-domain/control/cli-tools-runtime";
-import { createBackup } from "@shiguang-gateway/core-domain/control/cli-tools-backups";
+} from "@shiguang-gateway/core-domain/cli/runtime";
+import { createBackup } from "@shiguang-gateway/core-domain/cli/backups";
 import { saveCliToolLastConfigured, deleteCliToolLastConfigured } from "../cli-tool-state.js";
 import { cliModelConfigSchema } from "@shiguang-gateway/core-domain/control/cli-tools-validation-schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";

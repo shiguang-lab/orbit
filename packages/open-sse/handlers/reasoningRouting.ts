@@ -15,7 +15,7 @@ import {
   resolveReasoningRoutingRule,
   type ExtractedReasoningIntent,
   type ReasoningRuleDecision,
-} from "@shiguang-gateway/core-domain/edge/reasoning-routing-policy";
+} from "@shiguang-gateway/core-domain/routing/reasoning-policy";
 
 
 type RoutingPolicy = {

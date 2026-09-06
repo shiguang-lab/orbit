@@ -1,4 +1,6 @@
-export function getProxyLogs(filters?: Record<string, unknown>): any[];
-export function clearProxyLogs(): void;
+export const EGRESS_IP_LOOKUP_WINDOW_MS: number;
 export function exportProxyLogsSince(since: string): Record<string, unknown>[];
-export function logProxyEvent(entry: Record<string, unknown>): unknown;
+export function getRecentEgressIpForConnection(
+  connectionId: string,
+  since: string,
+): { egressIp: string; at: string } | null;

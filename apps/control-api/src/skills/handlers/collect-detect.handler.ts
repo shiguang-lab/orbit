@@ -10,7 +10,7 @@
  *   totalSkills: number
  * }
  */
-import { getCliRuntimeStatus, CLI_TOOL_IDS } from "@shiguang-gateway/core-domain/shared/services/cliRuntime";
+import { getCliRuntimeStatus, CLI_TOOL_IDS } from "@shiguang-gateway/core-domain/cli/runtime";
 import { searchGitHubSkills, type GitHubSkillRepo } from "@shiguang-gateway/core-domain/control/skills-github";
 import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";

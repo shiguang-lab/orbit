@@ -25,6 +25,10 @@ const complianceLifecycleSpecifier =
   "@shiguang-gateway/core-domain/compliance/lifecycle";
 const sessionAffinityCleanupLifecycleSpecifier =
   "@shiguang-gateway/core-domain/session-affinity/cleanup-lifecycle";
+const openRouterProviderStatsLifecycleSpecifier =
+  "@shiguang-gateway/core-domain/catalog/openrouter-provider-stats-lifecycle";
+const preRequestHookManagementSpecifier =
+  "@shiguang-gateway/core-domain/middleware/pre-request-hook-management";
 const violations = [];
 
 const readJson = (file) => {
@@ -103,12 +107,12 @@ const allowedCoreDomainSubpaths = {
     "shared/test-process",
     "events/eventBus",
     "shared/free-proxies",
-    "shared/proxy-log-settings",
+    "logging/proxy-log-settings",
     "shared/proxy-egress",
     "shared/proxy-health",
     "quota/cache-lifecycle",
   ],
-  "apps/control-api": ["startup", "runtime/request", "db/ping", "db/health", "db/call-log-stats", "db/provider-connections", "db/model-aliases", "db/mitm-aliases", "db/hidden-models", "db/proxies", "db/settings", "db/read-cache", "db/local-db", "db/provider-stats", "db/database-stats", "db/vacuum-scheduler", "catalog/provider-registry", "pricing/db", "pricing/defaults", "pricing/sync", "pricing/provider-prefixes", "pricing/validation", "pricing/modal-cost", "cache/db", "cache/services", "db/compression-analytics", "analytics/auto-routing-db", "analytics/diversity", "db-backups/db", "db-backups/validation", "metrics/combo", "metrics/request-telemetry", "metrics/observability", "metrics/tool-latency", "shared/numeric", "open-sse/utils/error.ts", "open-sse/services/deviceTracker.ts", "control/management-auth", "control/middleware-registry", "control/provider-credentials", "control/lkgp-cache", "control/management-password", "runtime/feature-flags", "control/provider-validation", "control/provider-validation-schemas", "control/oauth-validation", "control/cloud-validation", "control/volcengine-validation", "control/model-context-overrides", "control/model-test-data", "db/provider-nodes", "network/outbound-url-guard-policy", "network/safe-outbound-fetch", "control/authenticated", "control/registered-keys", "control/settings-config", "control/oauth-persistence", "memory/settings", "memory/runtime", "control/database-settings", "control/proxy-logs", "control/openrouter-provider-stats", "control/provider-health-matrix", "resilience/settings", "routing/connection-model-rules", "usage/stats", "usage/model-latency-stats", "usage/request-logs", "usage/pending-requests", "db/detailed-logs", "db/proxy-logs", "shared/log-env", "control/cloud-sync", "control/api-key-exposure", "db/api-key-groups", "control/api-key-usage-limits", "shared/", "sse/logger", "sse/auth", "evals/db", "evals/runner", "evals/runtime", "evals/validation", "db/api-keys", "db/batches", "plugins/db", "plugins/manager", "plugins/marketplace", "shared/cors", "quota/dimensions", "quota/db", "quota/services", "quota/state", "shared/combo-invariants", "catalog/combo-targets", "catalog/model-metadata", "catalog/provider-models"],
+  "apps/control-api": ["startup", "runtime/request", "db/ping", "db/health", "db/call-log-stats", "db/provider-connections", "db/model-aliases", "db/mitm-aliases", "db/hidden-models", "db/proxies", "db/settings", "db/read-cache", "db/local-db", "db/provider-stats", "db/database-stats", "db/vacuum", "catalog/provider-registry", "pricing/db", "pricing/defaults", "pricing/sync", "pricing/provider-prefixes", "pricing/validation", "pricing/modal-cost", "cache/db", "cache/services", "db/compression-analytics", "analytics/auto-routing-db", "analytics/diversity", "db-backups/db", "db-backups/validation", "metrics/combo", "metrics/request-telemetry", "metrics/observability", "metrics/tool-latency", "shared/numeric", "open-sse/utils/error.ts", "open-sse/services/deviceTracker.ts", "control/management-auth", "control/middleware-registry", "control/provider-credentials", "control/lkgp-cache", "control/management-password", "runtime/feature-flags", "control/provider-validation", "control/provider-validation-schemas", "control/oauth-validation", "control/cloud-validation", "control/volcengine-validation", "control/model-context-overrides", "control/model-test-data", "db/provider-nodes", "network/outbound-url-guard-policy", "network/safe-outbound-fetch", "control/authenticated", "control/registered-keys", "control/settings-config", "control/oauth-persistence", "memory/settings", "memory/runtime", "control/database-settings", "logging/proxy-logs", "catalog/openrouter-provider-stats", "control/provider-health-matrix", "resilience/settings", "routing/connection-model-rules", "usage/stats", "usage/model-latency-stats", "usage/request-logs", "usage/pending-requests", "db/detailed-logs", "db/proxy-logs", "logging/environment", "sync/cloud", "control/api-key-exposure", "db/api-key-groups", "usage/api-key-limits", "shared/", "sse/logger", "sse/auth", "evals/db", "evals/runner", "evals/runtime", "evals/validation", "db/api-keys", "db/batches", "plugins/db", "plugins/manager", "plugins/marketplace", "shared/cors", "quota/dimensions", "quota/db", "quota/services", "quota/state", "shared/combo-invariants", "catalog/combo-targets", "catalog/model-metadata", "catalog/provider-models"],
   "apps/edge-gateway": [
     "startup",
     "runtime/request",
@@ -196,13 +200,33 @@ const allowedCoreDomainSubpaths = {
 
 allowedCoreDomainSubpaths["apps/control-api"] = allowedCoreDomainSubpaths[
   "apps/control-api"
-].filter((subpath) => subpath !== "control/compliance" && subpath !== "compliance");
+].filter(
+  (subpath) =>
+    subpath !== "control/compliance" &&
+    subpath !== "compliance" &&
+    subpath !== "control/middleware-registry",
+);
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "compliance/audit-log",
   "routing/combo-steps",
+  "network/probe-origin",
+  "resilience/rate-limit-classification",
+  "middleware/pre-request-hook-management",
 );
 allowedCoreDomainSubpaths["apps/worker"].push("compliance/lifecycle");
 allowedCoreDomainSubpaths["apps/worker"].push("session-affinity/cleanup-lifecycle");
+allowedCoreDomainSubpaths["apps/worker"].push("catalog/openrouter-provider-stats-lifecycle");
+allowedCoreDomainSubpaths["apps/edge-gateway"] = allowedCoreDomainSubpaths[
+  "apps/edge-gateway"
+].filter((subpath) => subpath !== "edge/video-bridge-stats");
+allowedCoreDomainSubpaths["apps/edge-gateway"].push("guardrails/modality-bridge-stats");
+
+for (const app of ["apps/control-api", "apps/edge-gateway"]) {
+  allowedCoreDomainSubpaths[app] = allowedCoreDomainSubpaths[app].filter(
+    (subpath) => subpath !== "pricing/modal-cost",
+  );
+  allowedCoreDomainSubpaths[app].push("pricing/cost-calculator");
+}
 
 for (const app of ["apps/control-api", "apps/edge-gateway", "apps/realtime", "apps/worker"]) {
   allowedCoreDomainSubpaths[app].push("db/runtime-lifecycle");
@@ -215,6 +239,9 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
 );
 allowedCoreDomainSubpaths["apps/control-api"].push("db/models");
 allowedCoreDomainSubpaths["apps/control-api"].push(
+  "cli/runtime",
+  "cli/backups",
+  "cli/config-status",
   "db/agentic-conversations",
   "usage/summary",
   "resilience/credential-health-cache",
@@ -238,6 +265,8 @@ allowedCoreDomainSubpaths["apps/control-api"].push("control/provider-connection"
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/provider-discovery-support/",
   "control/fallback-policy",
+  "catalog/no-auth-providers",
+  "providers/alibaba-regions",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push("control/skills-github", "control/skills-executor");
 // Host tunnel processes belong to the public edge runtime. Control may only
@@ -250,7 +279,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push("control/jobs");
 allowedCoreDomainSubpaths["apps/edge-gateway"].push(
   "catalog/runtime-support",
   "catalog/model-capabilities",
-  "catalog/models-dev-sync",
+  "catalog/synced-model-capabilities",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push("control/free-provider-rankings");
 allowedCoreDomainSubpaths["apps/control-api"].push(
@@ -280,7 +309,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "catalog/display-names",
   "catalog/managed-available-models",
   "catalog/model-capabilities",
-  "catalog/models-dev-sync",
+  "catalog/synced-model-capabilities",
   "catalog/provider-models",
   "catalog/providers",
   "db/encryption",
@@ -289,7 +318,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "shared/webhook-events",
   "shared/webhook-integrations/",
   "control/api-key-auth",
-  "shared/auto-disable-banned",
+  "resilience/auto-disable-banned",
   "catalog/free-models",
   "shared/cors-status",
   "runtime/feature-flags",
@@ -299,7 +328,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/radar-referrals-sync",
   "control/radar-offers-sync",
   "control/radar-intel-sync",
-  "control/database-cleanup",
+  "db/cleanup",
   "usage/call-logs",
   "shared/authz-route-policy",
   "db/provider-cc-alias",
@@ -307,7 +336,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "db/provider-param-filters",
   "control/web-session-contract",
   "control/provider-auth-import",
-  "control/cursor-availability",
+  "providers/cursor-session",
   "control/provider-health-autopilot",
   "control/dario-installer",
   "control/cliproxy",
@@ -321,9 +350,9 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/reasoning-routing",
   "shared/local-corpus",
   "control/notion-db",
-  "control/notion-client",
+  "integrations/notion-client",
   "control/obsidian-db",
-  "control/obsidian-client",
+  "integrations/obsidian-client",
   "control/obsidian-sync",
   "control/oauth-runtime/",
   "control/model-management",
@@ -331,7 +360,6 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/agent-bridge",
   "control/build-phase",
   "control/cursor-token-extractor",
-  "control/cursor-renewal",
   "control/kimi-token-refresh",
   "control/provider-auth-files/",
   "control/gamification",
@@ -343,9 +371,9 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "usage/combo-health-dashboard",
   "usage/combo-health-autopilot",
   "usage/combo-scoring-inspector",
-    "usage/route-explain",
-    "db/quota-snapshots",
-  "shared/utilization",
+  "usage/route-explain",
+  "usage/quota-snapshots",
+  "usage/utilization",
   "shared/embedded-services",
   "control/sync-bundle",
   "control/sync-tokens",
@@ -1123,6 +1151,20 @@ for (const app of appEntries) {
           "only the worker may own session-affinity cleanup lifecycle",
         );
       }
+      if (specifier === openRouterProviderStatsLifecycleSpecifier && rel(app.dir) !== "apps/worker") {
+        add(
+          "openrouter-provider-stats-lifecycle-outside-worker",
+          file,
+          "only the worker may own OpenRouter provider stats refresh lifecycle",
+        );
+      }
+      if (specifier === preRequestHookManagementSpecifier && rel(app.dir) !== "apps/control-api") {
+        add(
+          "pre-request-hook-management-outside-control-api",
+          file,
+          "only control-api may mutate the pre-request hook registry",
+        );
+      }
       if (specifier.startsWith(".")) {
         const target = resolve(file, "..", specifier);
         if (target.includes(`${sep}apps${sep}`) && !target.startsWith(`${app.dir}${sep}`)) add("cross-app-relative-import", file, specifier);
@@ -1291,6 +1333,23 @@ const retiredRedundantCoreExports = [
   "./db/session-account-affinity",
   "./worker/session-affinity",
   "./runtime/session-affinity-db",
+  "./edge/claude-extra-usage",
+  "./usage/provider-limits-support/claudeExtraUsage",
+  "./db/quota-snapshots",
+  "./usage/reporting-support/quota-snapshots",
+  "./shared/utilization",
+  "./usage/reporting-support/shared/types/utilization",
+  "./runtime/detailed-logs",
+  "./runtime/proxy-logs",
+  "./runtime/provider-connection-view",
+  "./runtime/context-handoffs",
+  "./runtime/exclusive-leases",
+  "./runtime/proxies",
+  "./control/openrouter-provider-stats",
+  "./worker/openrouter-provider-stats",
+  "./usage/provider-limits-support/providerLimits",
+  "./runtime/middleware-registry",
+  "./control/middleware-registry",
   "./control/provider-discovery-support/callLogs",
   "./usage/reporting-support/call-logs",
   "./control/compliance",
@@ -1299,6 +1358,23 @@ const retiredRedundantCoreExports = [
   "./shared/combo-steps",
   "./edge/mcp-combo-steps",
   "./control/cli-tools-combo",
+  "./shared/probe-origin",
+  "./edge/probe-origin",
+  "./runtime/probe-origin",
+  "./edge/video-bridge-stats",
+  "./runtime/modality-bridge-stats",
+  "./shared/auto-disable-banned",
+  "./runtime/auto-disable-banned",
+  "./control/proxy-logs",
+  "./shared/proxy-log-settings",
+  "./shared/services/cliRuntime",
+  "./control/cli-tools-runtime",
+  "./shared/services/backupService",
+  "./control/cli-tools-backups",
+  "./shared/cli-tool-config-status",
+  "./control/cli-tools-status",
+  "./pricing/modal-cost",
+  "./usage/reporting-support/cost-calculator",
 ];
 for (const subpath of retiredRedundantCoreExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {
@@ -1419,6 +1495,20 @@ for (const pkg of packageEntries) {
           "session-affinity-cleanup-lifecycle-in-shared-package",
           file,
           "shared packages may read and write session affinity but must not own its cleanup scheduler",
+        );
+      }
+      if (specifier === openRouterProviderStatsLifecycleSpecifier) {
+        add(
+          "openrouter-provider-stats-lifecycle-in-shared-package",
+          file,
+          "shared packages may read provider stats but must not own the refresh scheduler",
+        );
+      }
+      if (specifier === preRequestHookManagementSpecifier) {
+        add(
+          "pre-request-hook-management-in-shared-package",
+          file,
+          "shared packages may execute pre-request hooks but must not manage the registry",
         );
       }
       const workspace = workspaceByName.get(specifier) ?? [...workspaceByName.entries()].find(([name]) => specifier.startsWith(`${name}/`))?.[1];

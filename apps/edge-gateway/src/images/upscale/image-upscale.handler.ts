@@ -116,7 +116,7 @@ async function postHandler(request: Request) {
     load("@shiguang-gateway/core-domain/db/settings"),
     load("@shiguang-gateway/open-sse/utils/proxyFetch"),
     load("@shiguang-gateway/core-domain/edge/gateway-response-meta"),
-    load("@shiguang-gateway/core-domain/pricing/modal-cost"),
+    load("@shiguang-gateway/core-domain/pricing/cost-calculator"),
     load("@shiguang-gateway/core-domain/runtime/request-id"),
     load("@shiguang-gateway/core-domain/shared/upstream-error"),
   ]);

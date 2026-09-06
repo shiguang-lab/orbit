@@ -7,7 +7,7 @@ import {
   CLAUDE_CODE_COMPATIBLE_DEFAULT_CHAT_PATH,
   joinClaudeCodeCompatibleUrl,
 } from "./claudeCodeCompatible.ts";
-import { getClaudeCodeCompatibleRequestDefaults } from "@shiguang-gateway/core-domain/edge/provider-request-defaults";
+import { getClaudeCodeCompatibleRequestDefaults } from "@shiguang-gateway/core-domain/providers/request-defaults";
 import { buildClineHeaders } from "@shiguang-gateway/core-domain/edge/cline-auth";
 import { usesCcWireImage } from "./ccWireImageBuiltins.ts";
 

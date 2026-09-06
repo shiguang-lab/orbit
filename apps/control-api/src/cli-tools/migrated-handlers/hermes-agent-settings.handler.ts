@@ -2,7 +2,7 @@ import fs from "fs/promises";
 import path from "path";
 import { z } from "zod";
 import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getCliPrimaryConfigPath } from "@shiguang-gateway/core-domain/control/cli-tools-runtime";
+import { getCliPrimaryConfigPath } from "@shiguang-gateway/core-domain/cli/runtime";
 import { validateBaseUrl } from "@shiguang-gateway/core-domain/cli/config-generator";
 import {
   generateHermesAgentConfig,

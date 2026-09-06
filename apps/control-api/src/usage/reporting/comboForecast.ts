@@ -1,8 +1,8 @@
 import { getComboForecastUsageRows, type ComboForecastUsageRow } from "@shiguang-gateway/core-domain/usage/reporting-support/combo-forecast";
 import { getCombos, getComboById } from "@shiguang-gateway/core-domain/db/combos";
 import { getPricingForModel } from "@shiguang-gateway/core-domain/db/settings";
-import { getQuotaSnapshots } from "@shiguang-gateway/core-domain/usage/reporting-support/quota-snapshots";
-import { computeCostFromPricing, normalizeModelName } from "@shiguang-gateway/core-domain/usage/reporting-support/cost-calculator";
+import { getQuotaSnapshots } from "@shiguang-gateway/core-domain/usage/quota-snapshots";
+import { computeCostFromPricing, normalizeModelName } from "@shiguang-gateway/core-domain/pricing/cost-calculator";
 import { resolveNestedComboTargets } from "@shiguang-gateway/open-sse/services/combo";
 import type {
   ComboRecord,
@@ -14,7 +14,7 @@ import type {
   ComboForecastTarget,
   QuotaSnapshotRow,
   UtilizationTimeRange,
-} from "@shiguang-gateway/core-domain/usage/reporting-support/shared/types/utilization";
+} from "@shiguang-gateway/core-domain/usage/utilization";
 
 type JsonRecord = Record<string, unknown>;
 

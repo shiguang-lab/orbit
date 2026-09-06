@@ -32,7 +32,7 @@ import { POST as validateProviderHandler } from "./handlers/provider-validate.js
 import {
   getOpenRouterProviderStats,
   refreshOpenRouterProviderStats,
-} from "@shiguang-gateway/core-domain/control/openrouter-provider-stats";
+} from "@shiguang-gateway/core-domain/catalog/openrouter-provider-stats";
 import {
   buildProviderHealthMatrix,
 } from "@shiguang-gateway/core-domain/control/provider-health-matrix";

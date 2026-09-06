@@ -4,10 +4,10 @@ import { filterSelectableModels } from "@shiguang-gateway/open-sse/services/mode
 import { getModelIsHidden } from "@shiguang-gateway/core-domain/db/hidden-models";
 import { getSettings } from "@shiguang-gateway/core-domain/db/settings";
 import { getStaticModelsForProvider } from "@shiguang-gateway/open-sse/services/static-models";
-import { SAFE_OUTBOUND_FETCH_PRESETS, safeOutboundFetch } from "@shiguang-gateway/core-domain/control/provider-discovery-support/safeOutboundFetch";
-import { getProviderOutboundGuard } from "@shiguang-gateway/core-domain/control/provider-discovery-support/outboundUrlGuardPolicy";
-import { getModelsByProviderId } from "@shiguang-gateway/core-domain/control/provider-discovery-support/models";
-import { isProviderBlockedByIdOrAlias } from "@shiguang-gateway/core-domain/control/provider-discovery-support/noAuthProviders";
+import { SAFE_OUTBOUND_FETCH_PRESETS, safeOutboundFetch } from "@shiguang-gateway/core-domain/network/safe-outbound-fetch";
+import { getProviderOutboundGuard } from "@shiguang-gateway/core-domain/network/outbound-url-guard-policy";
+import { getModelsByProviderId } from "@shiguang-gateway/core-domain/catalog/provider-models";
+import { isProviderBlockedByIdOrAlias } from "@shiguang-gateway/core-domain/catalog/no-auth-providers";
 import { mergeLocalCatalogModels } from "./discovery/helpers.js";
 
 export function filterModelsForRoute<

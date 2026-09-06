@@ -7,16 +7,16 @@ import {
   resolveProxyForConnection,
 } from "@shiguang-gateway/core-domain/db/local-db";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
-import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";
+import { syncToCloud } from "@shiguang-gateway/core-domain/sync/cloud";
 import { validateProviderApiKey } from "@shiguang-gateway/open-sse/services/provider-validation";
-import { getCliRuntimeStatus } from "@shiguang-gateway/core-domain/shared/services/cliRuntime";
+import { getCliRuntimeStatus } from "@shiguang-gateway/core-domain/cli/runtime";
 import { buildQoderCliNotFoundHint } from "@shiguang-gateway/open-sse/services/qoder-cli-resolve";
 // Use the shared open-sse token refresh with built-in dedup/race-condition cache
 import { getAccessToken } from "@shiguang-gateway/open-sse/services/token-refresh";
 import { rotationGroupFor } from "@shiguang-gateway/open-sse/services/refreshSerializer";
 import { saveCallLog } from "@shiguang-gateway/core-domain/usage/call-logs";
 import { shouldHideLogs } from "@shiguang-gateway/core-domain/control/token-health-check";
-import { logProxyEvent } from "@shiguang-gateway/core-domain/control/proxy-logs";
+import { logProxyEvent } from "@shiguang-gateway/core-domain/logging/proxy-logs";
 import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
 import {
   buildGitLabDuoProbeBody,

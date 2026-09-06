@@ -23,7 +23,7 @@ import type {
   ComboHealthResponse,
   ComboRecord,
   UtilizationTimeRange,
-} from "@shiguang-gateway/core-domain/usage/reporting-support/shared/types/utilization";
+} from "@shiguang-gateway/core-domain/usage/utilization";
 
 type JsonRecord = Record<string, unknown>;
 

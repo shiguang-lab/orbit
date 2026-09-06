@@ -205,7 +205,7 @@ export async function handleRerank({
 }) {
   const [{ attachShiguangGatewayMetaHeaders }, { calculateModalCost }, { generateRequestId }, { saveCallLog }, { resolveProxyForConnection }] = await Promise.all([
     load("@shiguang-gateway/core-domain/edge/gateway-response-meta"),
-    load("@shiguang-gateway/core-domain/pricing/modal-cost"),
+    load("@shiguang-gateway/core-domain/pricing/cost-calculator"),
     load("@shiguang-gateway/core-domain/runtime/request-id"),
     load("@shiguang-gateway/core-domain/usage/call-logs"),
     load("@shiguang-gateway/core-domain/db/settings"),

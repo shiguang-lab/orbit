@@ -1,4 +1,4 @@
-import { getProxyLogs, clearProxyLogs } from "@shiguang-gateway/core-domain/control/proxy-logs";
+import { getProxyLogs, clearProxyLogs } from "@shiguang-gateway/core-domain/logging/proxy-logs";
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 
 function serverErrorResponse(error: unknown): Response {

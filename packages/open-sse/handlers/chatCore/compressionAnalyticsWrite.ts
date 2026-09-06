@@ -36,7 +36,7 @@ type WriteOpts = {
 
 type RtkPointer = { id?: string | null; bytes?: number | null };
 
-type CalculateCost = typeof import("@shiguang-gateway/core-domain/pricing/modal-cost").calculateCost;
+type CalculateCost = typeof import("@shiguang-gateway/core-domain/pricing/cost-calculator").calculateCost;
 
 type WriteDependencies = {
   calculateCost?: CalculateCost;
@@ -144,7 +144,7 @@ export function writeCompressionAnalytics(
       let estimatedUsdSaved = 0;
       try {
         const calculateCost =
-          dependencies.calculateCost ?? (await import("@shiguang-gateway/core-domain/pricing/modal-cost")).calculateCost;
+          dependencies.calculateCost ?? (await import("@shiguang-gateway/core-domain/pricing/cost-calculator")).calculateCost;
         estimatedUsdSaved = await calculateCost(
           opts.provider ?? "",
           opts.effectiveModel ?? "",

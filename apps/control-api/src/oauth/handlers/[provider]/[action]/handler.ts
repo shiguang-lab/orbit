@@ -26,7 +26,7 @@ import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/uti
 import { isValidGheUrl } from "@shiguang-gateway/core-domain/shared/provider-specific-data";
 import { AWS_REGION_PATTERN } from "@shiguang-gateway/open-sse/oauth/constants";
 import { antigravityDegradedProjectState } from "../../../antigravity-project-gate.js";
-import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";
+import { syncToCloud } from "@shiguang-gateway/core-domain/sync/cloud";
 import { startLocalServer } from "../../../callback-listener.js";
 import { runWithProxyContextOrDirect } from "@shiguang-gateway/open-sse/utils/proxyFetch";
 import {

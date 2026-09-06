@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
-import type { MiddlewareHookConfig } from "@shiguang-gateway/core-domain/control/middleware-registry";
+import type { MiddlewareHookConfig } from "@shiguang-gateway/core-domain/middleware/pre-request-hook-management";
 
 interface HookRow {
   name: string;

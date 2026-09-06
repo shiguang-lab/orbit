@@ -5,7 +5,7 @@ import {
   CLI_TOOL_IDS,
   getCliPrimaryConfigPath,
   getCliRuntimeStatus,
-} from "@shiguang-gateway/core-domain/control/cli-tools-runtime";
+} from "@shiguang-gateway/core-domain/cli/runtime";
 
 export async function GET(request, { params }) {
   const authError = await requireCliToolsAuth(request);

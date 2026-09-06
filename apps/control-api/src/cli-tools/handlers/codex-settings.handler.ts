@@ -5,10 +5,10 @@ import {
   ensureCliConfigWriteAllowed,
   getCliConfigPaths,
   getCliRuntimeStatus,
-} from "@shiguang-gateway/core-domain/shared/services/cliRuntime";
-import { createMultiBackup } from "@shiguang-gateway/core-domain/shared/services/backupService";
+} from "@shiguang-gateway/core-domain/cli/runtime";
+import { createMultiBackup } from "@shiguang-gateway/core-domain/cli/backups";
 import { saveCliToolLastConfigured, deleteCliToolLastConfigured } from "../cli-tool-state.js";
-import { cliModelConfigSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas/cli";
+import { cliModelConfigSchema } from "@shiguang-gateway/core-domain/control/cli-tools-config-validation";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { getApiKeyById } from "@shiguang-gateway/core-domain/db/api-keys";
 import { normalizeCodexBaseUrl } from "../codex-settings/base-url.js";

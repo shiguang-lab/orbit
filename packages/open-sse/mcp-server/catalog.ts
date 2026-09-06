@@ -1,4 +1,4 @@
-import { getCodexRequestDefaults } from "@shiguang-gateway/core-domain/edge/provider-request-defaults";
+import { getCodexRequestDefaults } from "@shiguang-gateway/core-domain/providers/request-defaults";
 import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { AI_PROVIDERS } from "@shiguang-gateway/core-domain/catalog/providers";
 import { NOAUTH_PROVIDERS } from "@shiguang-gateway/contracts/config/providerCatalog";

@@ -4,7 +4,7 @@ import os from "os";
 import * as yaml from "js-yaml";
 import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { getRuntimePorts } from "@shiguang-gateway/core-domain/control/cli-tools-runtime-ports";
-import { getCliPrimaryConfigPath, getOpenCodeConfigPath } from "@shiguang-gateway/core-domain/control/cli-tools-runtime";
+import { getCliPrimaryConfigPath, getOpenCodeConfigPath } from "@shiguang-gateway/core-domain/cli/runtime";
 import { guideSettingsSaveSchema } from "@shiguang-gateway/core-domain/control/cli-tools-validation-schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { resolveApiKey, getOrCreateApiKey } from "@shiguang-gateway/core-domain/shared/api-key-resolver";

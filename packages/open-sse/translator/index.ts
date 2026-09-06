@@ -25,7 +25,7 @@ import { getRequestTranslator, getResponseTranslator } from "./registry.ts";
 import { bootstrapTranslatorRegistry } from "./bootstrap.ts";
 import { hasThinkingConfig, normalizeThinkingConfig } from "../services/provider.ts";
 import { applyThinkingBudget } from "../services/thinkingBudget.ts";
-import { applyReasoningRuleDirective } from "@shiguang-gateway/core-domain/edge/reasoning-routing-policy";
+import { applyReasoningRuleDirective } from "@shiguang-gateway/core-domain/routing/reasoning-policy";
 import { getModelPreserveVideoUrl } from "@shiguang-gateway/core-domain/db/model-preserve-video-url";
 import { getResolvedModelCapabilities, supportsReasoning } from "../services/modelCapabilities.ts";
 import { normalizeRoles } from "../services/roleNormalizer.ts";

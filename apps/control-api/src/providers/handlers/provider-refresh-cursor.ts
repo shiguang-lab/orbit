@@ -7,7 +7,7 @@ import {
   buildCursorRenewedUpdate,
   runCursorRenewalExclusive,
   BACKGROUND_IDE_AUTH_TIMEOUT_MS,
-} from "@shiguang-gateway/core-domain/control/cursor-renewal";
+} from "@shiguang-gateway/core-domain/providers/cursor-session";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 
 const MANUAL_REFRESH_COOLDOWN_MS = 30_000;

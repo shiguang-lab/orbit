@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createNotionClient } from "@shiguang-gateway/core-domain/edge/mcp-notion";
+import { createNotionClient } from "@shiguang-gateway/core-domain/integrations/notion-client";
 import { getNotionToken } from "@shiguang-gateway/core-domain/control/notion-db";
 
 function requireToken(): string {

@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { ensureCliConfigWriteAllowed, getCliConfigPaths } from "@shiguang-gateway/core-domain/shared/services/cliRuntime";
+import { ensureCliConfigWriteAllowed, getCliConfigPaths } from "@shiguang-gateway/core-domain/cli/runtime";
 import { resolveDataDir } from "@shiguang-gateway/core-domain/shared/data-paths";
 import { compareTr } from "../../common/turkish-text.js";
 import { codexProfileIdSchema, codexProfileNameSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
@@ -234,7 +234,7 @@ export async function PUT(request: Request) {
     }
 
     // Create backup of current config before switching
-    const { createMultiBackup } = await import("@shiguang-gateway/core-domain/shared/services/backupService");
+    const { createMultiBackup } = await import("@shiguang-gateway/core-domain/cli/backups");
     await createMultiBackup("codex", [paths.config, paths.auth]);
 
     // Ensure codex dir exists

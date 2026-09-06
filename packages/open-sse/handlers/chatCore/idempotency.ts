@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { getIdempotencyKey, checkIdempotency } from "@shiguang-gateway/core-domain/edge/idempotency";
-import { calculateCost } from "@shiguang-gateway/core-domain/pricing/modal-cost";
+import { calculateCost } from "@shiguang-gateway/core-domain/pricing/cost-calculator";
 import { attachShiguangGatewayMetaHeaders } from "@shiguang-gateway/core-domain/edge/gateway-response-meta";
 import type { EffectiveServiceTier } from "./serviceTier.ts";
 

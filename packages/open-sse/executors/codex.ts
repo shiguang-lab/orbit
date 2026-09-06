@@ -1,4 +1,4 @@
-import { getCodexRequestDefaults } from "@shiguang-gateway/core-domain/edge/provider-request-defaults";
+import { getCodexRequestDefaults } from "@shiguang-gateway/core-domain/providers/request-defaults";
 import {
   getCodexModelScope,
   getCodexRateLimitKey,

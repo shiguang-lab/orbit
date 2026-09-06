@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import fs from "node:fs";
 import path from "node:path";
 import { resolveDataDir } from "@shiguang-gateway/core-domain/shared/data-paths";
-import { getAppLogRetentionDays, getCallLogRetentionDays, getCallLogsTableMaxRows, getProxyLogsTableMaxRows } from "@shiguang-gateway/core-domain/shared/log-env";
+import { getAppLogRetentionDays, getCallLogRetentionDays, getCallLogsTableMaxRows, getProxyLogsTableMaxRows } from "@shiguang-gateway/core-domain/logging/environment";
 import { getDbBackupMaxFiles, getDbBackupRetentionDays } from "@shiguang-gateway/core-domain/db-backups/db";
 import { sanitizeErrorMessage } from "@shiguang-gateway/core-domain/shared/error-response";
 

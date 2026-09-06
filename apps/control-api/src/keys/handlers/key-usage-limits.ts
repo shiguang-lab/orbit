@@ -1,6 +1,6 @@
 import { getApiKeyById } from "@shiguang-gateway/core-domain/db/api-keys";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getApiKeyUsageLimitStatus } from "@shiguang-gateway/core-domain/control/api-key-usage-limits";
+import { getApiKeyUsageLimitStatus } from "@shiguang-gateway/core-domain/usage/api-key-limits";
 import * as log from "@shiguang-gateway/core-domain/sse/logger";
 import { json } from "./response.js";
 

@@ -5,7 +5,7 @@ import type {
   ModelCallResult,
   ModelClient,
 } from "@shiguang-gateway/open-sse/services/compression/eval/types";
-import { calculateCost } from "@shiguang-gateway/core-domain/pricing/modal-cost";
+import { calculateCost } from "@shiguang-gateway/core-domain/pricing/cost-calculator";
 
 /**
  * Cost-aware judge ModelClient for the compression playground's fidelity verify.

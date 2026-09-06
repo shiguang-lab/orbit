@@ -5,8 +5,8 @@ import {
   NOAUTH_PROVIDERS,
 } from "@shiguang-gateway/core-domain/catalog/providers";
 import { getRegistryEntry } from "@shiguang-gateway/open-sse/config/providerRegistry";
-import { getModelsByProviderId } from "@shiguang-gateway/core-domain/control/provider-discovery-support/models";
-import { resolveAlibabaProviderModelsUrl } from "@shiguang-gateway/core-domain/control/provider-discovery-support/alibabaProviderRegions";
+import { getModelsByProviderId } from "@shiguang-gateway/core-domain/catalog/provider-models";
+import { resolveAlibabaProviderModelsUrl } from "@shiguang-gateway/core-domain/providers/alibaba-regions";
 import { getStaticModelsForProvider } from "@shiguang-gateway/open-sse/services/static-models";
 import { providerUsesCuratedModelsOnly } from "@shiguang-gateway/core-domain/control/provider-discovery-support/modelListingCapability";
 import { mergeModelsWithCustomPrecedence } from "@shiguang-gateway/core-domain/control/provider-discovery-support/modelMetadataPrecedence";
@@ -18,11 +18,11 @@ import {
   SafeOutboundFetchError,
   getSafeOutboundFetchErrorStatus,
   safeOutboundFetch,
-} from "@shiguang-gateway/core-domain/control/provider-discovery-support/safeOutboundFetch";
+} from "@shiguang-gateway/core-domain/network/safe-outbound-fetch";
 import {
   getProviderOutboundGuard,
   getProviderValidationGuard,
-} from "@shiguang-gateway/core-domain/control/provider-discovery-support/outboundUrlGuardPolicy";
+} from "@shiguang-gateway/core-domain/network/outbound-url-guard-policy";
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 import { errorResponse } from "@shiguang-gateway/http-kernel/error-response";
 import { getStaticQoderModels } from "@shiguang-gateway/open-sse/services/qoderCli";
@@ -2352,7 +2352,7 @@ export async function getProviderModels(
       const { scheduleAlibabaFreeTierQuotaRefresh, hasAlibabaConsoleFreeTierAuth } =
         await import("@shiguang-gateway/open-sse/services/alibabaFreeTierQuotaFetcher");
       const { resolveAlibabaProviderBaseUrl } =
-        await import("@shiguang-gateway/core-domain/control/provider-discovery-support/alibabaProviderRegions");
+        await import("@shiguang-gateway/core-domain/providers/alibaba-regions");
       const providerSpecificData = connection.providerSpecificData as Record<
         string,
         unknown

@@ -6,7 +6,7 @@ import {
   setObsidianBaseUrl,
   setObsidianToken,
 } from "@shiguang-gateway/core-domain/control/obsidian-db";
-import { createObsidianClient } from "@shiguang-gateway/core-domain/control/obsidian-client";
+import { createObsidianClient } from "@shiguang-gateway/core-domain/integrations/obsidian-client";
 import {
   disableObsidianVaultSync,
   enableObsidianVaultSync,

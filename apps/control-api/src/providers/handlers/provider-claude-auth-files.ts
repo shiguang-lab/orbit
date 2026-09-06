@@ -1,5 +1,5 @@
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { ensureCliConfigWriteAllowed } from "@shiguang-gateway/core-domain/shared/services/cliRuntime";
+import { ensureCliConfigWriteAllowed } from "@shiguang-gateway/core-domain/cli/runtime";
 import {
   ClaudeAuthFileError,
   buildClaudeAuthFile,

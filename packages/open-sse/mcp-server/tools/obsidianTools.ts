@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { createObsidianClient, createSyncServerClient, getSyncToken } from "@shiguang-gateway/core-domain/edge/mcp-obsidian";
+import { createObsidianClient, createSyncServerClient, getSyncToken } from "@shiguang-gateway/core-domain/integrations/obsidian-client";
 import {
   getObsidianToken,
   getObsidianBaseUrl,
   getObsidianConfigForApiKey,
 } from "@shiguang-gateway/core-domain/control/obsidian-db";
-import type { ObsidianClient, SyncServerClient } from "@shiguang-gateway/core-domain/edge/mcp-obsidian";
+import type { ObsidianClient, SyncServerClient } from "@shiguang-gateway/core-domain/integrations/obsidian-client";
 
 type McpExtra = {
   authInfo?: { clientId?: string; scopes?: string[] };

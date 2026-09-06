@@ -11,9 +11,9 @@ import {
   getCliConfigHome,
   getCliRuntimeStatus,
   getCliPrimaryConfigPath,
-} from "@shiguang-gateway/core-domain/control/cli-tools-runtime";
+} from "@shiguang-gateway/core-domain/cli/runtime";
 import { getAllCliToolLastConfigured } from "../cli-tool-state.js";
-import { checkToolConfigStatus } from "@shiguang-gateway/core-domain/control/cli-tools-status";
+import { checkToolConfigStatus } from "@shiguang-gateway/core-domain/cli/config-status";
 import { findShiguangGatewayQwenCodeModel } from "@shiguang-gateway/core-domain/shared/services/qwenCodeConfig";
 import {
   parseGrokBuildConfig,

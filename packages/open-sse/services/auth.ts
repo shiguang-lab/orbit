@@ -17,13 +17,13 @@ import {
   clearConnectionErrorIfUnchanged,
 } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
-import { getRecentEgressIpForConnection, EGRESS_IP_LOOKUP_WINDOW_MS } from "@shiguang-gateway/core-domain/runtime/proxy-logs";
+import { getRecentEgressIpForConnection, EGRESS_IP_LOOKUP_WINDOW_MS } from "@shiguang-gateway/core-domain/db/proxy-logs";
 import { validateApiKey } from "@shiguang-gateway/core-domain/db/api-keys";
 import {
   getActiveExclusiveConnectionLease,
   hashLeaseOwnerId,
   type ExclusiveConnectionLease,
-} from "@shiguang-gateway/core-domain/runtime/exclusive-leases";
+} from "@shiguang-gateway/core-domain/db/exclusive-connection-leases";
 import { getSettings } from "@shiguang-gateway/core-domain/db/settings";
 import {
   describePeakHourWindow,
@@ -39,7 +39,7 @@ import {
   createLazyConnectionView,
   toProviderConnection,
   type ProviderConnectionView,
-} from "@shiguang-gateway/core-domain/runtime/provider-connection-view";
+} from "@shiguang-gateway/core-domain/db/provider-connection-view";
 import {
   DEFAULT_QUOTA_THRESHOLD_PERCENT,
   getQuotaCache,
@@ -151,8 +151,8 @@ import {
   fisherYatesShuffle,
   getNextFromDeckSync,
   planNextFromDeckSync,
-} from "@shiguang-gateway/core-domain/runtime/shuffle-deck";
-import { shouldIsolateProbeFailures } from "@shiguang-gateway/core-domain/runtime/probe-origin";
+} from "@shiguang-gateway/core-domain/selection/shuffle-deck";
+import { shouldIsolateProbeFailures } from "@shiguang-gateway/core-domain/network/probe-origin";
 import {
   applyExclusiveConnectionLeasePolicy,
   invalidateManagedConnectionLease,

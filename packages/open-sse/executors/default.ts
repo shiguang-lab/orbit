@@ -51,7 +51,7 @@ import {
 import { buildMaritalkChatUrl } from "../config/maritalk.ts";
 import { LOCAL_PROVIDERS } from "@shiguang-gateway/core-domain/catalog/providers";
 import { isForbiddenCustomHeaderName } from "@shiguang-gateway/contracts/upstream-headers";
-import { getClaudeCodeCompatibleRequestDefaults } from "@shiguang-gateway/core-domain/edge/provider-request-defaults";
+import { getClaudeCodeCompatibleRequestDefaults } from "@shiguang-gateway/core-domain/providers/request-defaults";
 import { applyClineAuthHeaders } from "@shiguang-gateway/core-domain/edge/cline-auth";
 import {
   normalizeHerokuChatUrl,
@@ -63,7 +63,7 @@ import { forwardOpencodeClientHeaders } from "../utils/opencodeHeaders.ts";
 import { resolveZaiUrl } from "./default/zaiFormatOverride.ts";
 import { normalizePoolConfig } from "./default/poolConfig.ts";
 import { acquireNvidiaConcurrencySlot } from "./default/nvidiaConcurrencyGate.ts";
-import { resolveAlibabaProviderBaseUrl } from "@shiguang-gateway/core-domain/edge/alibaba-provider-regions";
+import { resolveAlibabaProviderBaseUrl } from "@shiguang-gateway/core-domain/providers/alibaba-regions";
 import { usesCcWireImage } from "../services/ccWireImageBuiltins.ts";
 
 const NVIDIA_TOOL_CALL_ID_PATTERN = /^[A-Za-z0-9]{9}$/;

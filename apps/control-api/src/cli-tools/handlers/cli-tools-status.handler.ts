@@ -1,7 +1,7 @@
 import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getCliRuntimeStatus, CLI_TOOL_IDS } from "@shiguang-gateway/core-domain/shared/services/cliRuntime";
+import { getCliRuntimeStatus, CLI_TOOL_IDS } from "@shiguang-gateway/core-domain/cli/runtime";
 import { getAllCliToolLastConfigured } from "../cli-tool-state.js";
-import { checkToolConfigStatus } from "@shiguang-gateway/core-domain/shared/cli-tool-config-status";
+import { checkToolConfigStatus } from "@shiguang-gateway/core-domain/cli/config-status";
 
 /**
  * GET /api/cli-tools/status

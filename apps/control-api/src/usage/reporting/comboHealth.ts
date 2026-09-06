@@ -1,6 +1,6 @@
 import { getComboById, getCombos } from "@shiguang-gateway/core-domain/db/combos";
 import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
-import { getQuotaSnapshots } from "@shiguang-gateway/core-domain/usage/reporting-support/quota-snapshots";
+import { getQuotaSnapshots } from "@shiguang-gateway/core-domain/usage/quota-snapshots";
 import { getComboMetrics } from "@shiguang-gateway/open-sse/services/comboMetrics";
 import { resolveNestedComboTargets } from "@shiguang-gateway/open-sse/services/combo";
 import type {
@@ -9,7 +9,7 @@ import type {
   ComboHealthResponse,
   QuotaSnapshotRow,
   UtilizationTimeRange,
-} from "@shiguang-gateway/core-domain/usage/reporting-support/shared/types/utilization";
+} from "@shiguang-gateway/core-domain/usage/utilization";
 
 type ModelUsageRow = {
   model: string | null;

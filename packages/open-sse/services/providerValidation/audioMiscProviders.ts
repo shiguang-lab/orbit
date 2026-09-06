@@ -24,7 +24,7 @@ import {
   buildMaritalkModelsUrl,
 } from "../../config/maritalk.ts";
 import { signAwsRequest } from "../../utils/awsSigV4.ts";
-import { resolveAlibabaProviderBaseUrl } from "@shiguang-gateway/core-domain/edge/alibaba-provider-regions";
+import { resolveAlibabaProviderBaseUrl } from "@shiguang-gateway/core-domain/providers/alibaba-regions";
 
 export async function validateDeepgramProvider({ apiKey, providerSpecificData = {} }: any) {
   try {

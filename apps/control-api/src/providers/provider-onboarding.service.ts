@@ -12,7 +12,7 @@ import {
   withFreeProviderSetupLock,
 } from "./runtime/free-onboarding.js";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { getCachedCursorAgentAvailability } from "@shiguang-gateway/core-domain/control/cursor-availability";
+import { getCachedCursorAgentAvailability } from "@shiguang-gateway/core-domain/providers/cursor-session";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import {
   buildProviderHealthAutopilotReport,

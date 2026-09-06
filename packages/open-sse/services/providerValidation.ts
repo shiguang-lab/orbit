@@ -16,7 +16,7 @@ import { usesCcWireImage } from "../services/ccWireImageBuiltins.ts";
 import {
   isAlibabaRegionalProvider,
   resolveAlibabaProviderBaseUrl,
-} from "@shiguang-gateway/core-domain/edge/alibaba-provider-regions";
+} from "@shiguang-gateway/core-domain/providers/alibaba-regions";
 import { buildProviderHeaders, buildProviderUrl } from "../services/provider.ts";
 
 import {

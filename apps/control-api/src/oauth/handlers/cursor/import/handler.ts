@@ -3,7 +3,7 @@ import { CursorService } from "@shiguang-gateway/open-sse/oauth/services/cursor"
 import { credentialsFromCursorTokens } from "@shiguang-gateway/open-sse/oauth/services/cursor-login";
 import { persistCursorConnection } from "@shiguang-gateway/core-domain/control/oauth-runtime/services/persistCursorConnection";
 import { isCloudEnabled } from "@shiguang-gateway/core-domain/db/settings";
-import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";
+import { syncToCloud } from "@shiguang-gateway/core-domain/sync/cloud";
 import { cursorImportSchema } from "@shiguang-gateway/core-domain/control/oauth-validation";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";

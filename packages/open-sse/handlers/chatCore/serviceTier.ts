@@ -13,7 +13,7 @@ import {
   getCodexRequestDefaults,
   normalizeCodexServiceTier,
   type CodexServiceTier,
-} from "@shiguang-gateway/core-domain/edge/provider-request-defaults";
+} from "@shiguang-gateway/core-domain/providers/request-defaults";
 
 /** The effective service tier carried through a request: "standard" or a normalized Codex tier. */
 export type EffectiveServiceTier = "standard" | CodexServiceTier;

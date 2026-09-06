@@ -7,7 +7,7 @@ import { getSettings } from "@shiguang-gateway/core-domain/db/settings";
 import { getAccountDisplayName, getProviderDisplayName } from "@shiguang-gateway/core-domain/catalog/display-names";
 import { getCompatibleFallbackModels } from "@shiguang-gateway/core-domain/catalog/managed-available-models";
 import { getResolvedModelCapabilities } from "@shiguang-gateway/core-domain/catalog/model-capabilities";
-import { getSyncedCapabilities } from "@shiguang-gateway/core-domain/catalog/models-dev-sync";
+import { getSyncedCapabilities } from "@shiguang-gateway/core-domain/catalog/synced-model-capabilities";
 import { getModelsByProviderId } from "@shiguang-gateway/core-domain/catalog/provider-models";
 import {
   AI_PROVIDERS,

@@ -8,7 +8,7 @@ import {
 } from "@shiguang-gateway/core-domain/control/oauth-persistence";
 import { isCloudEnabled } from "@shiguang-gateway/core-domain/db/settings";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
-import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";
+import { syncToCloud } from "@shiguang-gateway/core-domain/sync/cloud";
 import { isAuthRequired, isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { KIRO_CONFIG } from "@shiguang-gateway/open-sse/oauth/constants";

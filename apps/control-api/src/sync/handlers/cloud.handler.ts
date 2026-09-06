@@ -1,7 +1,7 @@
 import { getApiKeys, createApiKey, pickApiKeyForInternalUse } from "@shiguang-gateway/core-domain/db/api-keys";
 import { isCloudEnabled, updateSettings } from "@shiguang-gateway/core-domain/db/settings";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
-import { syncToCloud, fetchWithTimeout, CLOUD_URL } from "@shiguang-gateway/core-domain/control/cloud-sync";
+import { syncToCloud, fetchWithTimeout, CLOUD_URL } from "@shiguang-gateway/core-domain/sync/cloud";
 import { cloudSyncActionSchema } from "@shiguang-gateway/core-domain/control/cloud-validation";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";

@@ -10,10 +10,10 @@ import {
   setProviderLimitsCache,
   setProviderLimitsCacheBatch,
   type ProviderLimitsCacheEntry,
-} from "@shiguang-gateway/core-domain/usage/provider-limits-support/providerLimits";
-import { syncToCloud } from "@shiguang-gateway/core-domain/usage/provider-limits-support/cloudSync";
+} from "@shiguang-gateway/core-domain/db/provider-limits-cache";
+import { syncToCloud } from "@shiguang-gateway/core-domain/sync/cloud";
 import { setQuotaCache } from "@shiguang-gateway/core-domain/quota/cache";
-import { buildClaudeExtraUsageConnectionUpdate } from "@shiguang-gateway/core-domain/usage/provider-limits-support/claudeExtraUsage";
+import { buildClaudeExtraUsageConnectionUpdate } from "@shiguang-gateway/core-domain/usage/claude-extra-usage";
 import { isConnectionUnavailableToAuxiliaryActivity } from "@shiguang-gateway/core-domain/shared/connection-isolation";
 import { clearRecoveredProviderState } from "@shiguang-gateway/open-sse/services/auth";
 import { getMachineId } from "@shiguang-gateway/core-domain/usage/provider-limits-support/machine";

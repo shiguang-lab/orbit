@@ -22,7 +22,7 @@ import {
   startPeriodicSync,
   stopPeriodicSync,
   syncModelsDev,
-} from "@shiguang-gateway/core-domain/catalog/models-dev-sync";
+} from "@shiguang-gateway/core-domain/catalog/synced-model-capabilities";
 import { getApiKeys } from "@shiguang-gateway/core-domain/db/api-keys";
 import { setSystemPromptConfig } from "@shiguang-gateway/open-sse/services/systemPrompt";
 import {

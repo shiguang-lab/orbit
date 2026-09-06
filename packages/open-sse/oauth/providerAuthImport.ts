@@ -45,7 +45,7 @@ export { extractCodexAuthZip } from "./utils/codexAuthZipExtract.js";
 export { extractJsonZip as extractAgyAuthZip } from "./utils/jsonZipExtract.js";
 export type { ExtractedZipFile } from "./utils/jsonZipExtract.js";
 
-export { sanitizeProviderSpecificDataForResponse } from "@shiguang-gateway/core-domain/edge/provider-request-defaults";
+export { sanitizeProviderSpecificDataForResponse } from "@shiguang-gateway/core-domain/providers/request-defaults";
 export { getProviderAuditTarget } from "@shiguang-gateway/core-domain/compliance/provider-audit";
 
 export {

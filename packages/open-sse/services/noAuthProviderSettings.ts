@@ -1,5 +1,5 @@
 import { getSettings } from "@shiguang-gateway/core-domain/edge/local-db";
-import { isProviderBlockedByIdOrAlias } from "@shiguang-gateway/core-domain/runtime/no-auth-providers";
+import { isProviderBlockedByIdOrAlias } from "@shiguang-gateway/core-domain/catalog/no-auth-providers";
 import * as log from "../utils/sseLogger.ts";
 
 export async function isNoAuthProviderBlockedBySettings(providerId: string): Promise<boolean> {

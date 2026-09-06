@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { purgeQuotaSnapshots } from "@shiguang-gateway/core-domain/control/database-cleanup";
+import { purgeQuotaSnapshots } from "@shiguang-gateway/core-domain/db/cleanup";
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 
 export async function POST(request: Request) {

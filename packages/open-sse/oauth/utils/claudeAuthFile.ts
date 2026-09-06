@@ -1,8 +1,8 @@
 import fs from "fs/promises";
 import path from "path";
 import { getCachedProviderConnectionById } from "@shiguang-gateway/core-domain/control/oauth-persistence";
-import { createBackup } from "@shiguang-gateway/core-domain/shared/services/backupService";
-import { getCliConfigPaths } from "@shiguang-gateway/core-domain/shared/services/cliRuntime";
+import { createBackup } from "@shiguang-gateway/core-domain/cli/backups";
+import { getCliConfigPaths } from "@shiguang-gateway/core-domain/cli/runtime";
 import {
   TOKEN_EXPIRY_BUFFER_MS,
   getAccessToken,

@@ -5,7 +5,7 @@ import path from "node:path";
 import { generateConfig } from "@shiguang-gateway/core-domain/cli/config-generator";
 import { resolveGatewayBaseUrl } from "@shiguang-gateway/core-domain/shared/utils/resolveGatewayBaseUrl";
 import { guardCliConfigWrite } from "@shiguang-gateway/core-domain/control/cli-tools-config-guard";
-import { getCliPrimaryConfigPath, normalizeCliToolId } from "@shiguang-gateway/core-domain/control/cli-tools-runtime";
+import { getCliPrimaryConfigPath, normalizeCliToolId } from "@shiguang-gateway/core-domain/cli/runtime";
 
 const applySchema = z.object({
   toolId: z.string().min(1),

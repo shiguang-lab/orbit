@@ -8,7 +8,7 @@ import type {
   ComboHealthDashboardResponse,
   ComboRecord,
   UtilizationTimeRange,
-} from "@shiguang-gateway/core-domain/usage/reporting-support/shared/types/utilization";
+} from "@shiguang-gateway/core-domain/usage/utilization";
 
 export interface ComboHealthDashboardOptions {
   range: UtilizationTimeRange;

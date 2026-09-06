@@ -6,7 +6,7 @@ import {
 } from "@shiguang-gateway/core-domain/db/models";
 import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { getResolvedModelCapabilities } from "@shiguang-gateway/core-domain/catalog/model-capabilities";
-import { getSyncedCapabilities } from "@shiguang-gateway/core-domain/catalog/models-dev-sync";
+import { getSyncedCapabilities } from "@shiguang-gateway/core-domain/catalog/synced-model-capabilities";
 import {
   PROVIDER_MODELS,
   PROVIDER_ID_TO_ALIAS,

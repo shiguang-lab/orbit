@@ -1,6 +1,6 @@
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { CLI_TOOL_IDS, getCliRuntimeStatus } from "@shiguang-gateway/core-domain/shared/services/cliRuntime";
-import { checkToolConfigStatus } from "@shiguang-gateway/core-domain/shared/cli-tool-config-status";
+import { CLI_TOOL_IDS, getCliRuntimeStatus } from "@shiguang-gateway/core-domain/cli/runtime";
+import { checkToolConfigStatus } from "@shiguang-gateway/core-domain/cli/config-status";
 import { getAllCliToolLastConfigured } from "../cli-tool-state.js";
 
 /** GET /api/cli-tools/all-statuses — control-plane batch runtime/config status. */

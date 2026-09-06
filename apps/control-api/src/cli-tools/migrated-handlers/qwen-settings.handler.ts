@@ -9,7 +9,7 @@ import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { getApiKeyById } from "@shiguang-gateway/core-domain/db/api-keys";
 import { deleteCliToolLastConfigured, saveCliToolLastConfigured } from "../cli-tool-state.js";
-import { createMultiBackup } from "@shiguang-gateway/core-domain/control/cli-tools-backups";
+import { createMultiBackup } from "@shiguang-gateway/core-domain/cli/backups";
 import {
   hasShiguangGatewayQwenCodeConfig,
   mergeQwenCodeEnv,
@@ -21,7 +21,7 @@ import {
   ensureCliConfigWriteAllowed,
   getCliConfigPaths,
   getCliRuntimeStatus,
-} from "@shiguang-gateway/core-domain/control/cli-tools-runtime";
+} from "@shiguang-gateway/core-domain/cli/runtime";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { cliModelConfigSchema } from "@shiguang-gateway/core-domain/control/cli-tools-validation-schemas";
 

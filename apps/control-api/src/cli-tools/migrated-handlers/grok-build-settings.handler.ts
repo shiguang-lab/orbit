@@ -12,8 +12,8 @@ import { guardCliConfigWrite } from "@shiguang-gateway/core-domain/control/cli-t
 import { deleteCliToolLastConfigured, saveCliToolLastConfigured } from "../cli-tool-state.js";
 import { getResolvedModelCapabilities } from "@shiguang-gateway/core-domain/catalog/model-capabilities";
 import { resolveApiKey } from "@shiguang-gateway/core-domain/shared/api-key-resolver";
-import { createBackup } from "@shiguang-gateway/core-domain/control/cli-tools-backups";
-import { getCliConfigHome, getCliRuntimeStatus } from "@shiguang-gateway/core-domain/control/cli-tools-runtime";
+import { createBackup } from "@shiguang-gateway/core-domain/cli/backups";
+import { getCliConfigHome, getCliRuntimeStatus } from "@shiguang-gateway/core-domain/cli/runtime";
 import {
   applyGrokBuildConfig,
   GrokBuildConfigConflictError,

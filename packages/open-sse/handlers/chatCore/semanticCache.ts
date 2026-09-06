@@ -3,7 +3,7 @@ import {
   getCachedResponse,
   isCacheableForRead,
 } from "@shiguang-gateway/core-domain/edge/semantic-cache";
-import { calculateCost } from "@shiguang-gateway/core-domain/pricing/modal-cost";
+import { calculateCost } from "@shiguang-gateway/core-domain/pricing/cost-calculator";
 import { trackPendingRequest } from "@shiguang-gateway/core-domain/usage/pending-requests";
 import { synthesizeOpenAiSseFromJson } from "../../utils/jsonToSse.ts";
 import { attachShiguangGatewayMetaHeaders } from "@shiguang-gateway/core-domain/edge/gateway-response-meta";

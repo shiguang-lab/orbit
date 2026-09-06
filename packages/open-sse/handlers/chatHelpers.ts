@@ -33,10 +33,10 @@ import {
   getCircuitBreaker,
   isLocalStreamLifecycleError,
 } from "@shiguang-gateway/core-domain/resilience/circuit-breaker";
-import { classify429FromError, type FailureKind } from "@shiguang-gateway/core-domain/edge/classify-429";
+import { classify429FromError, type FailureKind } from "@shiguang-gateway/core-domain/resilience/rate-limit-classification";
 import { resolveUseUpstream429BreakerHints } from "@shiguang-gateway/core-domain/edge/provider-hints";
 
-import { logProxyEvent } from "@shiguang-gateway/core-domain/control/proxy-logs";
+import { logProxyEvent } from "@shiguang-gateway/core-domain/logging/proxy-logs";
 import { logTranslationEvent } from "@shiguang-gateway/core-domain/edge/translation-events";
 import { getRuntimeProviderProfile } from "../services/accountFallback.ts";
 

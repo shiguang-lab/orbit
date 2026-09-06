@@ -14,7 +14,7 @@
  */
 import { getCachedProviderConnections } from "@shiguang-gateway/core-domain/db/read-cache";
 import { getCircuitBreaker } from "@shiguang-gateway/core-domain/resilience/circuit-breaker";
-import { fisherYatesShuffle, getNextFromDeck } from "@shiguang-gateway/core-domain/shared/shuffle-deck";
+import { fisherYatesShuffle, getNextFromDeck } from "@shiguang-gateway/core-domain/selection/shuffle-deck";
 import { handleFusionChat, type FusionTuning } from "../fusion.ts";
 import { getResolvedModelCapabilities } from "../modelCapabilities.ts";
 import { errorResponseWithComboDiagnostics } from "../../utils/error.ts";

@@ -13,7 +13,7 @@ import {
   updateDatabaseSettings,
 } from "@shiguang-gateway/core-domain/control/database-settings";
 import { getDatabaseStats } from "@shiguang-gateway/core-domain/db/database-stats";
-import { getState as getVacuumState, runNow as runVacuumNow } from "@shiguang-gateway/core-domain/db/vacuum-scheduler";
+import { getState as getVacuumState, runNow as runVacuumNow } from "@shiguang-gateway/core-domain/db/vacuum";
 import {
   ADAPTIVE_VIRTUAL_LANES_FLAG_KEY,
   FEATURE_FLAG_DEFINITIONS,

@@ -10,7 +10,7 @@ import {
 } from "./base.ts";
 import { FETCH_TIMEOUT_MS } from "../config/constants.ts";
 import { getAccessToken } from "../services/tokenRefresh.ts";
-import { isProbeContext } from "@shiguang-gateway/core-domain/edge/probe-origin";
+import { isProbeContext } from "@shiguang-gateway/core-domain/network/probe-origin";
 import { prepareToolMessages, buildToolAwareResult } from "../translator/webTools.ts";
 import {
   buildStreamingResponse,

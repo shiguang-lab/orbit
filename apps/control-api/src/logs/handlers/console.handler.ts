@@ -11,7 +11,7 @@
  */
 
 import { readFileSync, existsSync } from "node:fs";
-import { getAppLogFilePath } from "@shiguang-gateway/core-domain/shared/log-env";
+import { getAppLogFilePath } from "@shiguang-gateway/core-domain/logging/environment";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { matchesSearch } from "../../common/turkish-text.js";
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";

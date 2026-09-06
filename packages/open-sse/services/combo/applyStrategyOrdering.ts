@@ -1,4 +1,4 @@
-import { fisherYatesShuffle, getNextFromDeck } from "@shiguang-gateway/core-domain/shared/shuffle-deck";
+import { fisherYatesShuffle, getNextFromDeck } from "@shiguang-gateway/core-domain/selection/shuffle-deck";
 import { generateRoutingHints } from "../manifestAdapter";
 import { resolveMaxConcurrentByConnection } from "./concurrencyCaps.ts";
 import { sortTargetsByContextSize } from "./comboStructure.ts";

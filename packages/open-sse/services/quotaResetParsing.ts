@@ -1,4 +1,4 @@
-import { looksLikeQuotaExhausted } from "@shiguang-gateway/core-domain/edge/classify-429";
+import { looksLikeQuotaExhausted } from "@shiguang-gateway/core-domain/resilience/rate-limit-classification";
 import { getProviderCategory } from "../config/providerRegistry.ts";
 
 /**

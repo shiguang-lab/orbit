@@ -68,7 +68,7 @@ import {
   modelHasNativeContext1m,
   modelSupportsContext1mBeta,
 } from "../services/claudeCodeCompatible.ts";
-import { getClaudeCodeCompatibleRequestDefaults } from "@shiguang-gateway/core-domain/edge/provider-request-defaults";
+import { getClaudeCodeCompatibleRequestDefaults } from "@shiguang-gateway/core-domain/providers/request-defaults";
 import {
   cloakThirdPartyToolNames,
   remapToolNamesInRequest,
@@ -106,9 +106,9 @@ import {
   applyConfiguredUserAgent,
   stripStainlessHeadersForOpenAICompat,
 } from "./base/headers.ts";
-import { applyPeerTraceHeader } from "@shiguang-gateway/core-domain/edge/peer-routing";
+import { applyPeerTraceHeader } from "@shiguang-gateway/core-domain/routing/peer-routing";
 import { applyClineProtocolHeaders } from "@shiguang-gateway/core-domain/edge/cline-auth";
-import { isProbeContext } from "@shiguang-gateway/core-domain/edge/probe-origin";
+import { isProbeContext } from "@shiguang-gateway/core-domain/network/probe-origin";
 import {
   parseAndValidatePublicUrl,
   parseAndValidateNonMetadataUrl,
