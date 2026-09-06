@@ -1308,6 +1308,10 @@
       "types": "./src/public/pagination.d.ts",
       "import": "./src/shared/types/pagination.ts"
     },
+    "./control/provider-management": {
+      "types": "./src/control/provider-management.ts",
+      "import": "./src/control/provider-management.ts"
+    },
     "./models/index": {
       "types": "./src/models/index.ts",
       "import": "./src/models/index.ts"

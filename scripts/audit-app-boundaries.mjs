@@ -162,6 +162,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push("db/health");
 allowedCoreDomainSubpaths["apps/control-api"].push("db/files");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/guardrails", "control/local-endpoints", "control/local-redis", "control/auth-init");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/assessment", "control/policies");
+allowedCoreDomainSubpaths["apps/control-api"].push("control/provider-management");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/tunnels");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/jobs");
 allowedCoreDomainSubpaths["apps/control-api"].push(
@@ -301,22 +302,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/conversations",
   "control/cli-tools-",
 );
-allowedCoreDomainSubpaths["apps/control-api"].push(
-  "models/index",
-  "lib/compliance/index",
-  "lib/compliance/providerAudit",
-  "lib/cloudSync",
-  "lib/providers/catalog",
-  "lib/providers/requestDefaults",
-  "lib/providers/validation",
-  "lib/providers/chatgptWebRetirementResponse",
-  "lib/api/requireManagementAuth",
-  "lib/apiKeyExposure",
-  "lib/localDb",
-  "lib/db/models",
-  "lib/providerModels/modelDiscovery",
-  "domain/quotaCache",
-);
+allowedCoreDomainSubpaths["apps/control-api"].push("control/provider-management");
 
 // Route files that have completed a physical ownership move. Keep this list
 // small and explicit: adding an entry is the acceptance record for a domain

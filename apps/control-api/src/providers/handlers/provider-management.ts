@@ -1,54 +1,23 @@
-import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/lib/compliance/index";
 import {
-  getProviderAuditTarget,
-  summarizeProviderConnectionForAudit,
-} from "@shiguang-gateway/core-domain/lib/compliance/providerAudit";
-import {
-  getProviderConnections,
-  getProviderConnectionsCount,
-  createProviderConnection,
-  deleteProviderConnections,
-  updateProviderConnection,
-  resolveProviderNodeForConnection,
-  isCloudEnabled,
-} from "@shiguang-gateway/core-domain/models/index";
-import {
-  isClaudeCodeCompatibleProvider,
-  isOpenAICompatibleProvider,
-  isAnthropicCompatibleProvider,
-  resolveProviderId,
-} from "@shiguang-gateway/core-domain/shared/constants/providers";
-import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
-import { syncToCloud } from "@shiguang-gateway/core-domain/lib/cloudSync";
-import {
-  createProviderSchema,
-  batchUpdateProviderConnectionsSchema,
-} from "@shiguang-gateway/core-domain/shared/validation/schemas";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+  getAuditRequestContext, logAuditEvent, getProviderAuditTarget, summarizeProviderConnectionForAudit,
+  getProviderConnections, getProviderConnectionsCount, createProviderConnection,
+  deleteProviderConnections, updateProviderConnection, resolveProviderNodeForConnection, isCloudEnabled,
+  isClaudeCodeCompatibleProvider, isOpenAICompatibleProvider, isAnthropicCompatibleProvider, resolveProviderId,
+  getConsistentMachineId, syncToCloud, createProviderSchema, batchUpdateProviderConnectionsSchema,
+  isValidationFailure, validateBody, normalizeProviderSpecificData, sanitizeProviderSpecificDataForResponse,
+  getQuotaWindowObservation, requireManagementAuth, isManagedProviderConnectionId,
+  isApiKeyRevealEnabled, maskStoredApiKey, cleanupProviderModelsAfterConnectionDelete,
+  buildModelSyncInternalHeaders, fetchModelSyncInternal, getModelSyncInternalBaseUrl,
+  isAutoFetchModelsEnabled, rejectRetiredCommonChatGptWebProvider,
+} from "@shiguang-gateway/core-domain/control/provider-management";
 import { normalizeQoderPatProviderData } from "@shiguang-gateway/open-sse/services/qoderCli";
 import { projectCodexAccountPool } from "@shiguang-gateway/open-sse/services/codexAccount/index";
 import {
   CODEX_SPARK_QUOTA_SESSION,
   CODEX_SPARK_QUOTA_WEEKLY,
 } from "@shiguang-gateway/open-sse/config/codexQuotaScopes";
-import {
-  normalizeProviderSpecificData,
-  sanitizeProviderSpecificDataForResponse,
-} from "@shiguang-gateway/core-domain/lib/providers/requestDefaults";
-import { getQuotaWindowObservation } from "@shiguang-gateway/core-domain/domain/quotaCache";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/lib/api/requireManagementAuth";
-import { isManagedProviderConnectionId } from "@shiguang-gateway/core-domain/lib/providers/catalog";
-import { isApiKeyRevealEnabled, maskStoredApiKey } from "@shiguang-gateway/core-domain/lib/apiKeyExposure";
-import { cleanupProviderModelsAfterConnectionDelete } from "@shiguang-gateway/core-domain/lib/db/models";
-import {
-  buildModelSyncInternalHeaders,
-  fetchModelSyncInternal,
-  getModelSyncInternalBaseUrl,
-} from "@shiguang-gateway/core-domain/shared/services/modelSyncScheduler";
 import { finalizeValidatedChatGptWebCodexSecrets } from "@shiguang-gateway/open-sse/services/chatgptWebCodexAdmin";
-import { isAutoFetchModelsEnabled } from "@shiguang-gateway/core-domain/lib/providerModels/modelDiscovery";
 import { testSingleConnection } from "@shiguang-gateway/core-domain/control/provider-test-batch";
-import { rejectRetiredCommonChatGptWebProvider } from "@shiguang-gateway/core-domain/lib/providers/chatgptWebRetirementResponse";
 
 function projectCodexAccountPoolWithRoutingQuota(
   connection: Parameters<typeof projectCodexAccountPool>[0],

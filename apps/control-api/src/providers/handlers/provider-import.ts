@@ -1,34 +1,14 @@
-import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/lib/compliance/index";
 import {
-  getProviderAuditTarget,
-  summarizeProviderConnectionForAudit,
-} from "@shiguang-gateway/core-domain/lib/compliance/providerAudit";
-import {
-  createProviderConnection,
-  getProviderConnections,
-  getProviderNodeById,
-  isCloudEnabled,
-} from "@shiguang-gateway/core-domain/models/index";
-import {
-  isAnthropicCompatibleProvider,
-  isOpenAICompatibleProvider,
-} from "@shiguang-gateway/core-domain/shared/constants/providers";
-import { isManagedProviderConnectionId } from "@shiguang-gateway/core-domain/lib/providers/catalog";
-import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
-import { resolveBulkNameCollisions } from "@shiguang-gateway/core-domain/shared/utils/bulkApiKeyParser";
-import { syncToCloud } from "@shiguang-gateway/core-domain/lib/cloudSync";
-import { bulkImportProviderSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import {
-  normalizeProviderSpecificData,
-  sanitizeProviderSpecificDataForResponse,
-} from "@shiguang-gateway/core-domain/lib/providers/requestDefaults";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/lib/api/requireManagementAuth";
+  getAuditRequestContext, logAuditEvent, getProviderAuditTarget, summarizeProviderConnectionForAudit,
+  createProviderConnection, getProviderConnections, getProviderNodeById, isCloudEnabled,
+  isAnthropicCompatibleProvider, isOpenAICompatibleProvider, isManagedProviderConnectionId,
+  getConsistentMachineId, resolveBulkNameCollisions, syncToCloud, bulkImportProviderSchema,
+  isValidationFailure, validateBody, normalizeProviderSpecificData, sanitizeProviderSpecificDataForResponse,
+  requireManagementAuth, validateProviderApiKey, getProxyForLevel, resolveProxyForProvider,
+  rejectRetiredCommonChatGptWebProvider,
+} from "@shiguang-gateway/core-domain/control/provider-management";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
-import { validateProviderApiKey } from "@shiguang-gateway/core-domain/lib/providers/validation";
-import { getProxyForLevel, resolveProxyForProvider } from "@shiguang-gateway/core-domain/lib/localDb";
 import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
-import { rejectRetiredCommonChatGptWebProvider } from "@shiguang-gateway/core-domain/lib/providers/chatgptWebRetirementResponse";
 
 type ImportEntry = {
   provider: string;
