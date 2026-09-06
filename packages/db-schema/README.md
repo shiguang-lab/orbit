@@ -14,10 +14,11 @@ Every table that is part of an app boundary is represented by an
 
 - `control.entity.ts` — control-plane configuration and operator-managed data,
   including control-api-owned audit, playground, plugin metric, gamification,
-  evaluation suite/case/run, and model-assessment/health tables
+  evaluation suite/case/run, model-assessment/health, and webhook delivery
+  audit tables
 - `edge.entity.ts` — request-path data owned by `edge-gateway`
-- `worker.entity.ts` — asynchronous jobs, usage, logs, and model data owned by
-  `worker`
+- `worker.entity.ts` — asynchronous jobs, usage, logs, model data, and
+  provider quota-reset observations owned by `worker`
 
 The edge catalog includes the shared `compression_analytics` receipt stream and
 its `compression_engine_breakdown` rows. They are written by the streaming
@@ -36,6 +37,13 @@ maintained by combo invalidation, while `reasoning_cache` is persisted by the
 same streaming path and purged by the worker cleanup job. Their query logic
 stays in the consuming package/app; only the physical entity definitions live
 here.
+
+Webhook delivery history is emitted by the shared dispatcher (which can run on
+the request path) and exposed by the control-plane deliveries endpoint, so
+`webhook_deliveries` is cataloged alongside `webhooks`. Provider quota reset
+observations are recorded by the worker refresh loop and consumed by the
+control-plane provider-window-costs API, so `provider_quota_reset_events` is
+cataloged as a worker-owned cross-app contract.
 
 `src/index.ts` exports the complete `GATEWAY_TABLES`, `TABLE_OWNERSHIP`, and
 `GATEWAY_ENTITIES` catalogs. `assertGatewayEntities()` verifies that every
