@@ -11,7 +11,7 @@
 import fs from "fs";
 import path from "path";
 import { ZipFile } from "yazl";
-import { getDbInstance, isCloud, isBuildPhase, DATA_DIR } from "../db/core";
+import { getDbInstance, isCloud, DATA_DIR } from "../db/core";
 import { getLegacyDotDataDir, isSamePath } from "../dataPaths";
 import { getAppLogFilePath } from "../logEnv";
 import { protectPayloadForLog } from "../logPayloads";
@@ -22,8 +22,7 @@ import {
   resolveOrphanedUsageAccountIdentity,
   resolveUsageAccountIdentity,
 } from "./accountIdentity";
-
-export const shouldPersistToDisk = !isCloud && !isBuildPhase;
+import { shouldPersistToDisk } from "./persistence.js";
 
 const LEGACY_DATA_DIR = isCloud ? null : getLegacyDotDataDir();
 
@@ -514,18 +513,28 @@ export function migrateUsageJsonToSqlite() {
   }
 }
 
-migrateLegacyUsageFiles();
+let usageStorageInitialization: Promise<void> | null = null;
 
-if (shouldPersistToDisk) {
-  try {
-    await archiveLegacyRequestLogs();
-  } catch (error) {
-    console.error("[usageDb] Failed to archive legacy request logs:", (error as Error).message);
+/** Run the one-time legacy usage migrations before the edge starts accepting traffic. */
+export function initializeUsageStorage(): Promise<void> {
+  if (!usageStorageInitialization) {
+    usageStorageInitialization = (async () => {
+      migrateLegacyUsageFiles();
+      if (!shouldPersistToDisk) return;
+
+      try {
+        await archiveLegacyRequestLogs();
+      } catch (error) {
+        console.error("[usageDb] Failed to archive legacy request logs:", (error as Error).message);
+      }
+
+      try {
+        migrateUsageJsonToSqlite();
+      } catch {
+        // Best-effort startup migration.
+      }
+    })();
   }
 
-  try {
-    migrateUsageJsonToSqlite();
-  } catch {
-    // Best-effort startup migration.
-  }
+  return usageStorageInitialization;
 }

@@ -1,8 +1,7 @@
-/** Process bootstrap shared by non-HTTP deployables.
+/** Persisted-state initialization that applications run before loading domain services.
  *
- * HTTP composition lives in `@shiguang-gateway/http-kernel`; this module only
- * restores the persisted signing secrets needed by edge, realtime and worker
- * processes before they load domain services.
+ * HTTP composition lives in `@shiguang-gateway/http-kernel`; this module exposes
+ * the explicit startup work required before an application begins serving requests.
  */
 import { randomBytes } from "node:crypto";
 import { getPersistedSecret, persistSecret } from "./lib/db/secrets.js";
@@ -29,4 +28,10 @@ export async function ensureSecrets(): Promise<void> {
     process.env.API_KEY_SECRET = generated;
     if (!persisted) persistSecret("apiKeySecret", generated);
   }
+}
+
+/** Complete legacy usage-storage migrations before request handlers are loaded. */
+export async function initializeUsageStorage(): Promise<void> {
+  const usageStorage = await import("./lib/usage/migrations.js");
+  await usageStorage.initializeUsageStorage();
 }

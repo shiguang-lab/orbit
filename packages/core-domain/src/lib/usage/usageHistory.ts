@@ -31,7 +31,7 @@ import {
   scheduleCompletedDetailCleanup,
   storeCompletedDetail,
 } from "./completedRequestDetails.js";
-import { shouldPersistToDisk } from "./migrations.js";
+import { shouldPersistToDisk } from "./persistence.js";
 import { emitUsageRecorded } from "./usageEvents.js";
 import {
   getLoggedInputTokens,

@@ -10,7 +10,7 @@ import path from "node:path";
 import type { RequestPipelinePayloads } from "@shiguang-gateway/contracts/request-pipeline-payloads";
 import { getDbInstance } from "../db/core";
 import { getRequestDetailLogByCallLogId } from "../db/detailedLogs";
-import { shouldPersistToDisk } from "./migrations";
+import { shouldPersistToDisk } from "./persistence.js";
 import { getCallLogApiKeyContext } from "./callLogApiKeyContext";
 import {
   getLoggedInputTokens,
@@ -630,10 +630,6 @@ export async function closeCallLogSaves(timeoutMs = 2_000): Promise<void> {
   // continuations can finish before the database is closed.
   await Promise.allSettled([...pendingCallLogSaves]);
   await closeCallLogArtifactWriter(0);
-}
-
-if (shouldPersistToDisk && process.env.NODE_ENV !== "test") {
-  scheduleCallLogRotation();
 }
 
 /**

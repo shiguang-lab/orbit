@@ -1,8 +1,10 @@
 import { NestFactory } from "@nestjs/core";
 import { FastifyAdapter } from "@nestjs/platform-fastify";
+import { initializeUsageStorage } from "@shiguang-gateway/core-domain/startup";
 import type { FastifyInstance } from "fastify";
 
 export async function bootstrapEdgeGateway() {
+  await initializeUsageStorage();
   await import("@shiguang-gateway/open-sse/services/dbRuntimeHooks");
   const { AppModule } = await import("./app.module.js");
   const adapter = new FastifyAdapter({
