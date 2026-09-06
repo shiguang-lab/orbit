@@ -6,7 +6,7 @@ lastUpdated: 2026-06-28
 
 # Agent Protocols Guide
 
-> **Source:** `src/lib/{a2a,acp,cloudAgent}/`, `src/app/api/{a2a,acp,cloud}/`, `src/app/api/v1/agents/`
+> **Source:** `apps/edge-gateway/src/a2a/`, `apps/control-api/src/{acp,cloud-agents}/`
 > **Last updated:** 2026-06-28 — v3.8.40
 
 ShiguangGateway exposes three different agent-related surfaces. They look similar at first glance but solve different problems. Use this page to pick the right one.
@@ -16,7 +16,7 @@ ShiguangGateway exposes three different agent-related surfaces. They look simila
 | Surface                       | Best for                                                                                                                                   | Transport                   | Standard             |
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------- | -------------------- |
 | **A2A — Agent-to-Agent**      | Cross-agent collaboration with peer agents that speak the A2A protocol                                                                     | JSON-RPC 2.0 over HTTP      | A2A v0.3 (open spec) |
-| **ACP — CLI Agents Registry** | Detecting / registering / launching CLI coding agents installed on the user's machine (Cursor, Cline, Codex CLI, Claude Code, Aider, etc.) | HTTP REST                   | ShiguangGateway-specific   |
+| **ACP — CLI Agents Registry** | Detecting and registering CLI coding agents installed on the user's machine (Cursor, Cline, Codex CLI, Claude Code, Aider, etc.) | HTTP REST                   | ShiguangGateway-specific   |
 | **Cloud Agents**              | Submitting long-running coding tasks to external cloud services (Codex Cloud, Devin, Jules, Cursor Cloud)                                  | HTTP REST + DB-backed tasks | ShiguangGateway-specific   |
 
 The three are independent — pick any subset.
@@ -72,7 +72,7 @@ See [A2A-SERVER.md](./A2A-SERVER.md) for transport details, agent card structure
 ## 2. ACP — CLI Agents Registry
 
 **ShiguangGateway endpoint:** `GET /api/acp/agents`
-**Source:** `src/lib/acp/{index,manager,registry}.ts`
+**Source:** `apps/control-api/src/acp/`
 
 ### What it is
 
@@ -82,8 +82,8 @@ This is NOT an external protocol — it's an internal registry that powers the "
 
 ### What it does
 
-- Probes the host for installed CLI binaries (uses `which` / `where` per OS)
-- Reads each CLI's version (calls `<bin> --version`)
+- Probes the host for installed CLI binaries by running their version commands
+- Reads each CLI's version (normally `<bin> --version`)
 - Optionally accepts user-defined custom agents (binary path + version probe + spawn args)
 - Persists custom agents in settings
 - Returns the unified list to the dashboard
@@ -93,7 +93,8 @@ This is NOT an external protocol — it's an internal registry that powers the "
 | Endpoint          | Method | Description                                                   | Auth    |
 | ----------------- | ------ | ------------------------------------------------------------- | ------- |
 | `/api/acp/agents` | GET    | List detected + custom agents (installed/total counts)        | API key |
-| `/api/acp/agents` | POST   | Add/update/remove custom agent (action discriminator in body) | API key |
+| `/api/acp/agents` | POST   | Add a custom agent or refresh the detection cache             | API key |
+| `/api/acp/agents` | DELETE | Remove a custom agent by query-string ID                       | API key |
 
 Body shape for POST (`customAgentBodySchema` in `src/app/api/acp/agents/route.ts`):
 
@@ -103,7 +104,7 @@ Body shape for POST (`customAgentBodySchema` in `src/app/api/acp/agents/route.ts
   "id": "cursor",
   "name": "Cursor",
   "binary": "/usr/local/bin/cursor",
-  "versionCommand": "--version",
+  "versionCommand": "cursor --version",
   "providerAlias": "cursor",
   "spawnArgs": ["--api-base", "http://localhost:20128"],
   "protocol": "stdio"
@@ -280,4 +281,4 @@ curl http://localhost:20128/api/v1/agents/tasks/<task-id> \
 - [CLI-TOOLS.md](../reference/CLI-TOOLS.md) — External CLI integrations (uses ACP)
 - [SKILLS.md](./SKILLS.md) — Skills framework (different from A2A skills — local execution sandbox)
 - [API_REFERENCE.md](../reference/API_REFERENCE.md#agents-protocol) — endpoint reference
-- Source: `src/lib/{a2a,acp,cloudAgent}/`
+- Source: `apps/edge-gateway/src/a2a/`, `apps/control-api/src/{acp,cloud-agents}/`

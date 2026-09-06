@@ -14,7 +14,7 @@ ShiguangGateway integrates with three categories of CLI tools spread across thre
 | -------------- | ----------------------- | ------------------------------------------------------------------------- | ------------ |
 | **CLI Code's** | `/dashboard/cli-code`   | Coding tools you point at ShiguangGateway (Client → CLI → ShiguangGateway → Provider) | 26           |
 | **CLI Agents** | `/dashboard/cli-agents` | Autonomous agents you point at ShiguangGateway (same flow, broader scope)       | 9            |
-| **ACP Agents** | `/dashboard/acp-agents` | CLIs that ShiguangGateway spawns as backend via stdio/ACP (reverse flow)        | see registry |
+| **ACP Agents** | `/dashboard/acp-agents` | Locally installed CLIs detected by the control-plane registry                   | see registry |
 
 Legacy routes redirect via 308: `/dashboard/cli-tools` → `/dashboard/cli-code`, `/dashboard/agents` → `/dashboard/acp-agents`.
 
@@ -32,8 +32,8 @@ Claude / Codex / OpenCode / Cline / KiloCode / Continue / Hermes Agent / Goose /
            ▼  (ShiguangGateway routes to the right provider)
     Anthropic / OpenAI / Gemini / DeepSeek / Groq / Mistral / ...
 
-ACP Agents (reverse spawn flow):
-    Client request → ShiguangGateway → spawns CLI via stdio/ACP → response
+ACP Agents (inventory flow):
+    Dashboard → ShiguangGateway control API → version probe → installation status
 ```
 
 **Benefits:**
@@ -111,7 +111,7 @@ Each entry has these fields (defined in `src/shared/schemas/cliCatalog.ts`):
 | ----------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------ |
 | `category`                                      | `"code" \| "agent"`                                          | Which page the tool appears on                         |
 | `vendor`                                        | `string`                                                     | Tool origin ("Anthropic", "OSS (P. Gauthier)")         |
-| `acpSpawnable`                                  | `boolean`                                                    | Also usable as an ACP Agent (badge shown)              |
+| `acpSpawnable`                                  | `boolean`                                                    | Included in the ACP-compatible inventory (badge shown) |
 | `baseUrlSupport`                                | `"full" \| "partial" \| "none"`                              | Custom endpoint support level. `"none"` = MITM backlog |
 | `configType`                                    | `"env" \| "custom" \| "guide" \| "custom-builder" \| "mitm"` | Configuration mechanism                                |
 | `id`, `name`, `color`, `description`, `docsUrl` | standard                                                     | Core display fields                                    |
@@ -196,7 +196,7 @@ Autonomous agents that appear in `/dashboard/cli-agents`:
 
 ## 3. ACP Agents (/dashboard/acp-agents)
 
-This page (renamed from `/dashboard/agents`) shows CLIs that ShiguangGateway can **spawn** as backend execution engines via stdio/ACP protocol. The catalog is maintained separately in `src/lib/acp/registry.ts` and is **not** the same as `CLI_TOOLS`.
+This page (renamed from `/dashboard/agents`) shows locally installed CLIs detected by the control API. The catalog is maintained in `apps/control-api/src/acp/runtime/agent-registry.ts` and is **not** the same as `CLI_TOOLS`; it does not launch or manage agent processes.
 
 ---
 

@@ -1414,8 +1414,8 @@ Returns the public A2A agent card (name, description, capabilities, skill catalo
 
 ## ACP (Agent Client Protocol) Management
 
-as child processes. These endpoints manage ACP agent detection and custom agent
-registration.
+These endpoints manage local CLI detection and custom agent registration. They
+do not spawn or manage agent processes.
 
 | Method | Path              | Description                                                                                                                                            |
 | ------ | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |

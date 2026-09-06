@@ -73,10 +73,6 @@
       "types": "./src/lib/oauth/gitlab.ts",
       "import": "./src/lib/oauth/gitlab.ts"
     },
-    "./control/acp": {
-      "types": "./src/public/acp.d.ts",
-      "import": "./src/lib/acp/registry.ts"
-    },
     "./conductor/hub-proxy": {
       "types": "./src/public/hubProxy.d.ts",
       "import": "./src/lib/conductor/hubProxy.ts"

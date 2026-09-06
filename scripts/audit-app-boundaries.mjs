@@ -254,7 +254,6 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/token-health-check",
   "control/oauth-gitlab",
   "lib/providers/chatgptWebRetirementResponse",
-  "control/acp",
   "conductor/hub-proxy",
   "chaos/config",
   "chaos/executor",
@@ -890,6 +889,10 @@ const retiredCoreCliRuntimeFiles = [
 for (const file of retiredCoreCliRuntimeFiles) {
   if (existsSync(file)) add("cli-runtime-in-core-domain", file, "CLI-owned runtime belongs in apps/cli");
 }
+const retiredCoreAcpDir = join(packagesRoot, "core-domain", "src", "lib", "acp");
+if (existsSync(retiredCoreAcpDir)) {
+  add("control-runtime-in-core-domain", retiredCoreAcpDir, "ACP inventory runtime belongs in apps/control-api");
+}
 
 // The shared HTTP package must never regain a generic app factory or a
 // caller-selected surface. Those APIs collapse independently deployable apps
@@ -1050,6 +1053,7 @@ if (existsSync(workerJobRegistry)) {
 }
 const coreDomainEntry = packageEntries.find(({ manifest }) => manifest?.name === "@shiguang-gateway/core-domain");
 const retiredAppOwnedExports = [
+  "./control/acp",
   "./cli/log-streamer",
   "./cli/windows-process",
   "./edge/vscode-token",

@@ -21,7 +21,7 @@ ShiguangGateway 集成了三类 CLI 工具，分布在三个专用仪表板页�
 | ------------ | ----------------------- | -------------------------------------------------------------- | -------- |
 | **CLI 代码** | `/dashboard/cli-code`   | 指向 ShiguangGateway 的编码工具（客户端 → CLI → ShiguangGateway → 提供者） | 26       |
 | **CLI 代理** | `/dashboard/cli-agents` | 指向 ShiguangGateway 的自主代理（相同流程，更广泛的范围）            | 8        |
-| **ACP 代理** | `/dashboard/acp-agents` | ShiguangGateway 通过 stdio/ACP 作为后端生成的 CLI（反向流程）        | 见注册表 |
+| **ACP 代理** | `/dashboard/acp-agents` | 控制面注册表检测到的本机 CLI                                  | 见注册表 |
 
 遗留路由通过 308 重定向：`/dashboard/cli-tools` → `/dashboard/cli-code`，`/dashboard/agents` → `/dashboard/acp-agents`。
 
@@ -39,8 +39,8 @@ Claude / Codex / OpenCode / Cline / KiloCode / Continue / Hermes Agent / Goose /
            ▼  (ShiguangGateway 路由到正确的提供者)
     Anthropic / OpenAI / Gemini / DeepSeek / Groq / Mistral / ...
 
-ACP 代理（反向生成流程）：
-    客户端请求 → ShiguangGateway → 通过 stdio/ACP 生成 CLI → 响应
+ACP 代理（清单流程）：
+    仪表板 → ShiguangGateway 控制 API → 版本探测 → 安装状态
 ```
 
 **好处：**
@@ -86,7 +86,7 @@ shiguang-gateway setup-goose        shiguang-gateway setup-qwen         shiguang
 | ----------------------------------------------- | ------------------------------------------------------------ | -------------------------------------------- |
 | `category`                                      | `"code" \| "agent"`                                          | 工具出现的页面                               |
 | `vendor`                                        | `string`                                                     | 工具来源（"Anthropic", "OSS (P. Gauthier)"） |
-| `acpSpawnable`                                  | `boolean`                                                    | 也可以作为 ACP Agent 使用（显示徽章）        |
+| `acpSpawnable`                                  | `boolean`                                                    | 纳入 ACP 兼容清单（显示徽章）                |
 | `baseUrlSupport`                                | `"full" \| "partial" \| "none"`                              | 自定义端点支持级别。`"none"` = MITM 待办事项 |
 | `configType`                                    | `"env" \| "custom" \| "guide" \| "custom-builder" \| "mitm"` | 配置机制                                     |
 | `id`, `name`, `color`, `description`, `docsUrl` | 标准                                                         | 核心显示字段                                 |
@@ -160,7 +160,7 @@ shiguang-gateway setup-goose        shiguang-gateway setup-qwen         shiguang
 
 ## 3. ACP 代理 (/dashboard/acp-agents)
 
-此页面（从 `/dashboard/agents` 重命名）显示 ShiguangGateway 可以通过 stdio/ACP 协议 **生成** 的 CLI 作为后端执行引擎。目录在 `src/lib/acp/registry.ts` 中单独维护，并且与 `CLI_TOOLS` **不相同**。
+此页面（从 `/dashboard/agents` 重命名）显示控制 API 检测到的本机 CLI。目录由 `apps/control-api/src/acp/runtime/agent-registry.ts` 维护，与 `CLI_TOOLS` **不相同**；它不会启动或管理代理进程。
 
 ---
 

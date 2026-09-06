@@ -6,7 +6,7 @@ import {
   setCustomAgents,
   type CliAgentInfo,
   type CustomAgentDef,
-} from "@shiguang-gateway/core-domain/control/acp";
+} from "./runtime/agent-registry.js";
 import { getSettings, updateSettings } from "@shiguang-gateway/core-domain/control/settings";
 
 @Injectable()

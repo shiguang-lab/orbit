@@ -2,8 +2,7 @@
  * ACP (Agent Client Protocol) — CLI Agent Registry
  *
  * Discovers installed CLI tools on the system by checking standard paths
- * and running version commands. Used to offer ACP transport as an alternative
- * to the HTTP proxy method.
+ * and running version commands for the control API inventory.
  *
  * Supports built-in agents + user-defined custom agents from settings.
  *
@@ -216,13 +215,6 @@ export function setCustomAgents(agents: CustomAgentDef[]): void {
   _cachedAgents = null; // invalidate cache
 }
 
-/**
- * Get current custom agent definitions.
- */
-export function getCustomAgentDefs(): CustomAgentDef[] {
-  return _customAgentDefs;
-}
-
 function tokenizeVersionCommand(command: string): string[] | null {
   if (!command || DISALLOWED_VERSION_COMMAND_CHARS.test(command)) {
     return null;
@@ -319,7 +311,7 @@ export function resolveVersionProbe(
   return { command, args };
 }
 
-export function shouldUseShellForVersionProbe(
+function shouldUseShellForVersionProbe(
   command: string,
   platform = process.platform
 ): boolean {
@@ -398,37 +390,4 @@ export function detectInstalledAgents(): CliAgentInfo[] {
 export function refreshAgentCache(): CliAgentInfo[] {
   _cachedAgents = null;
   return detectInstalledAgents();
-}
-
-/**
- * Get a specific agent by ID.
- */
-export function getAgentById(id: string): CliAgentInfo | undefined {
-  const agents = detectInstalledAgents();
-  return agents.find((a) => a.id === id);
-}
-
-/**
- * Check registration without probing every executable on PATH.
- *
- * Process lifecycle callers need an allowlist decision, not a fresh health
- * scan. Keeping this lookup pure avoids making `spawn()` wait on one timeout
- * per uninstalled agent while preserving detectInstalledAgents() for UI/status
- * consumers.
- */
-export function hasRegisteredAgent(id: string): boolean {
-  const normalized = String(id || "")
-    .trim()
-    .toLowerCase();
-  return (
-    AGENT_DEFINITIONS.some((agent) => agent.id === normalized) ||
-    _customAgentDefs.some((agent) => agent.id === normalized)
-  );
-}
-
-/**
- * Get agents that are installed and available for ACP.
- */
-export function getAvailableAgents(): CliAgentInfo[] {
-  return detectInstalledAgents().filter((a) => a.installed);
 }
