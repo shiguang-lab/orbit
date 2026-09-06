@@ -101,10 +101,6 @@
       "types": "./src/public/acp.d.ts",
       "import": "./src/lib/acp/registry.ts"
     },
-    "./conductor/faro-proxy": {
-      "types": "./src/public/faroProxy.d.ts",
-      "import": "./src/lib/conductor/faroProxy.ts"
-    },
     "./conductor/hub-proxy": {
       "types": "./src/public/hubProxy.d.ts",
       "import": "./src/lib/conductor/hubProxy.ts"
@@ -1015,7 +1011,6 @@
       "types": "./src/public/authenticated.d.ts",
       "import": "./src/shared/utils/apiAuth.ts"
     },
-    "./control/local-endpoints": "./src/lib/security/localEndpoints.ts",
     "./control/registered-keys": {
       "types": "./src/public/registeredKeys.d.ts",
       "import": "./src/lib/db/registeredKeys.ts"

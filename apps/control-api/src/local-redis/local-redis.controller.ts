@@ -1,6 +1,6 @@
 import { Controller, Get, Inject, Post, Res } from "@nestjs/common";
 import type { FastifyReply } from "fastify";
-import { isLocalRequestAllowed } from "@shiguang-gateway/core-domain/control/local-endpoints";
+import { isLocalRequestAllowed } from "./local-endpoints.js";
 import { LocalRedisService } from "./local-redis.service.js";
 
 @Controller("api/local/redis")
@@ -18,7 +18,7 @@ export class LocalRedisController {
 
   private async dispatch(reply: FastifyReply, action: () => Promise<{ status: number; body: unknown }>) {
     const guard = isLocalRequestAllowed();
-    if (!guard.allowed) return reply.status(403).send({ error: guard.reason });
+    if (guard.allowed === false) return reply.status(403).send({ error: guard.reason });
     const result = await action();
     return reply.status(result.status).send(result.body);
   }

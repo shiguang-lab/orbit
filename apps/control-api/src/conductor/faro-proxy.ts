@@ -1,13 +1,3 @@
-/**
- * Server-side proxy to Faro, the OmniConductor spokesperson (Conductor PRD RF4).
- *
- * Faro's `/ask` requires a valid hub credential (Bearer) — that token lives only
- * in server env, so the browser talks to our /api/conductor/ask route, never to
- * Faro directly. The response is whitelisted to {text, pending}: `pending` set
- * means Faro is asking for confirmation (the UI offers Sim/Não); the safety gate
- * itself lives in Faro's engine and is never bypassed here.
- */
-
 import { z } from "zod";
 
 const faroResponseSchema = z.object({

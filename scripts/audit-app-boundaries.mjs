@@ -173,7 +173,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
 );
 allowedCoreDomainSubpaths["apps/edge-gateway"].push("shared/services/modelSyncScheduler");
 allowedCoreDomainSubpaths["apps/control-api"].push("db/files");
-allowedCoreDomainSubpaths["apps/control-api"].push("control/guardrails", "control/local-endpoints", "control/auth-init");
+allowedCoreDomainSubpaths["apps/control-api"].push("control/guardrails", "control/auth-init");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/assessment", "control/policies");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/provider-management");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/provider-connection");
@@ -210,7 +210,6 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/oauth-gitlab",
   "lib/providers/chatgptWebRetirementResponse",
   "control/acp",
-  "conductor/faro-proxy",
   "conductor/hub-proxy",
   "chaos/config",
   "chaos/executor",
@@ -995,6 +994,8 @@ const retiredAppOwnedExports = [
   "./shared/services/claudeCliConfig",
   "./shared/turkish-text",
   "./shared/utils/turkishText",
+  "./conductor/faro-proxy",
+  "./control/local-endpoints",
 ];
 for (const subpath of retiredAppOwnedExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {
