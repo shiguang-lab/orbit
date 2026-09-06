@@ -1,5 +1,5 @@
 import { SEARCH_PROVIDERS } from "../../config/searchRegistry";
-import { isProviderBlockedByIdOrAlias } from "../../../core-domain/src/shared/utils/noAuthProviders";
+import { isProviderBlockedByIdOrAlias } from "@shiguang-gateway/contracts/config/noAuthProviders";
 
 /**
  * Dynamically generates a tuple of active search provider IDs for Zod enums.

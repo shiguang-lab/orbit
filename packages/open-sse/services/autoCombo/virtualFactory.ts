@@ -5,7 +5,7 @@ import { getCachedProviderConnections } from "../../../core-domain/src/lib/db/re
 import { getSettings } from "../../../core-domain/src/lib/db/settings.ts";
 import { getProviderRegistry } from "./providerRegistryAccessor";
 import type { ConnectionFields } from "../../../core-domain/src/lib/db/encryption.ts";
-import { NOAUTH_PROVIDERS } from "../../../core-domain/src/shared/constants/providers.ts";
+import { NOAUTH_PROVIDERS } from "@shiguang-gateway/contracts/config/providerCatalog";
 import { isMicrosoftDesignerWebRetiredProviderId } from "@shiguang-gateway/contracts/designer-web-retirement";
 import { isRuntimeRetiredProviderId } from "@shiguang-gateway/contracts/provider-retirement";
 import { isCommonChatGptWebRetiredProviderId } from "@shiguang-gateway/contracts/chatgpt-web-retirement";

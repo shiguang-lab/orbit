@@ -10,7 +10,7 @@
  * decision (e.g. the #1311 opt-in echo) untouched.
  */
 import { REGISTRY } from "../../config/providerRegistry.ts";
-import { isNoAuthProviderKey } from "../../../core-domain/src/shared/utils/noAuthProviders.ts";
+import { isNoAuthProviderKey } from "@shiguang-gateway/contracts/config/noAuthProviders";
 
 export function resolveNoAuthEchoModel(
   requestedModel: unknown,

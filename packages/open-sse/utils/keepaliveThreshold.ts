@@ -12,7 +12,7 @@
  * everything else.
  */
 
-import { NOAUTH_PROVIDERS } from "../../core-domain/src/shared/constants/providers.ts";
+import { NOAUTH_PROVIDERS } from "@shiguang-gateway/contracts/config/providerCatalog";
 import { APIKEY_PROVIDERS } from "../../core-domain/src/shared/constants/providers.ts";
 import { WEB_COOKIE_PROVIDERS } from "../../core-domain/src/shared/constants/providers.ts";
 import { WEB_SESSION_CREDENTIAL_REQUIREMENTS } from "../../core-domain/src/shared/providers/webSessionCredentials.ts";

@@ -93,6 +93,14 @@
     "./cloud-agent": {
       "types": "./src/cloud-agent.ts",
       "import": "./src/cloud-agent.ts"
+    },
+    "./config/providerCatalog": {
+      "types": "./src/config/providerCatalog.ts",
+      "import": "./src/config/providerCatalog.ts"
+    },
+    "./config/noAuthProviders": {
+      "types": "./src/config/noAuthProviders.ts",
+      "import": "./src/config/noAuthProviders.ts"
     }
   },
   "scripts": {
