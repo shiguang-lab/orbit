@@ -34,12 +34,3 @@ export interface InspectorCustomHostRow {
   added_at: string;
   last_seen_at: string | null;
 }
-
-export interface InspectorSessionRow {
-  id: string;
-  name: string | null;
-  started_at: string;
-  ended_at: string | null;
-  request_count: number;
-  profile: "llm" | "custom" | "all" | null;
-}

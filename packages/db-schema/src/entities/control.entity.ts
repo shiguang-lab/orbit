@@ -933,3 +933,45 @@ export const HealActionEntity: EntityDefinition = {
     column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
   ],
 };
+
+/** Traffic Inspector recording sessions are managed by control-api. */
+export const InspectorSessionEntity: EntityDefinition = {
+  entityName: "InspectorSession",
+  tableName: "inspector_sessions",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("name", "TEXT"),
+    column("started_at", "TEXT", { nullable: false }),
+    column("ended_at", "TEXT"),
+    column("request_count", "INTEGER", { nullable: false, default: "0" }),
+    column("profile", "TEXT"),
+  ],
+};
+
+/** Requests persisted as part of a control-api Traffic Inspector session. */
+export const InspectorSessionRequestEntity: EntityDefinition = {
+  entityName: "InspectorSessionRequest",
+  tableName: "inspector_session_requests",
+  owner: "control-api",
+  columns: [
+    column("session_id", "TEXT", { nullable: false, primaryKey: true }),
+    column("seq", "INTEGER", { nullable: false, primaryKey: true }),
+    column("payload", "TEXT", { nullable: false }),
+  ],
+};
+
+/** Custom host allowlist managed by control-api and consumed by edge MITM. */
+export const InspectorCustomHostEntity: EntityDefinition = {
+  entityName: "InspectorCustomHost",
+  tableName: "inspector_custom_hosts",
+  owner: "control-api",
+  columns: [
+    column("host", "TEXT", { nullable: false, primaryKey: true }),
+    column("enabled", "INTEGER", { nullable: false, default: "1" }),
+    column("label", "TEXT"),
+    column("kind", "TEXT", { nullable: false, default: "'custom'" }),
+    column("added_at", "TEXT", { nullable: false, default: "CURRENT_TIMESTAMP" }),
+    column("last_seen_at", "TEXT"),
+  ],
+};

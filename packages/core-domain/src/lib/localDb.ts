@@ -608,7 +608,6 @@ export {
 } from "./db/memoryVec";
 // T-A-F2: AgentBridge state/mappings/bypass + Inspector custom hosts/sessions
 export * from "./db/inspectorCustomHosts";
-export * from "./db/inspectorSessions";
 export * from "./db/omp";
 // Quota Sharing — Group B (planos 16+22)
 export {

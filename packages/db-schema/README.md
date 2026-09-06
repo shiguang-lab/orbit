@@ -14,8 +14,8 @@ Every table that is part of an app boundary is represented by an
 
 - `control.entity.ts` — control-plane configuration and operator-managed data,
   including control-api-owned audit, playground, plugin metric, gamification,
-  evaluation suite/case/run, model-assessment/health, and webhook delivery
-  audit tables
+  evaluation suite/case/run, model-assessment/health, Traffic Inspector
+  sessions/requests/custom-host records, and webhook delivery audit tables
 - `edge.entity.ts` — request-path data owned by `edge-gateway`
 - `worker.entity.ts` — asynchronous jobs, usage, logs, model data, and
   provider quota-reset observations owned by `worker`

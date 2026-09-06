@@ -17,12 +17,14 @@ export {
   isTlsInterceptEnabled,
 } from "./captureState.ts";
 export { globalTrafficBuffer } from "../../mitm/inspector/buffer.ts";
-export { listSessions, createSession } from "../db/inspectorSessions.ts";
+export { toHar } from "./harExport.ts";
 export { getCachedPassword } from "../../mitm/manager.ts";
 export { addDNSEntries } from "../../mitm/dns/dnsConfig.ts";
 export {
   InspectorCustomHostSchema,
   InspectorSessionStartSchema,
+  InspectorSessionPatchSchema,
+  InspectorSessionRequestAppendSchema,
   InspectorListQuerySchema,
 } from "../../shared/schemas/inspector.ts";
 export type { ListFilters } from "../../mitm/inspector/types.ts";

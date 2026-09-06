@@ -1,13 +1,10 @@
 import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
-import {
-  InspectorSessionStartSchema,
-  createSession,
-  listSessions,
-} from "@shiguang-gateway/core-domain/control/traffic-inspector";
+import { InspectorSessionStartSchema } from "@shiguang-gateway/core-domain/control/traffic-inspector";
+import { inspectorSessionsRepository } from "../traffic-inspector/inspector-sessions.repository.js";
 
 export async function listRecordingSessions(): Promise<Response> {
   try {
-    return Response.json({ sessions: listSessions() });
+    return Response.json({ sessions: inspectorSessionsRepository.list() });
   } catch (err) {
     const msg = sanitizeErrorMessage(err);
     return new Response(JSON.stringify(buildErrorBody(500, msg || "Failed to list sessions")), {
@@ -28,7 +25,7 @@ export async function createRecordingSession(request: Request): Promise<Response
     });
   }
   try {
-    return Response.json(createSession({ name: parsed.data.name }), { status: 201 });
+    return Response.json(inspectorSessionsRepository.create({ name: parsed.data.name }), { status: 201 });
   } catch (err) {
     const msg = sanitizeErrorMessage(err);
     return new Response(JSON.stringify(buildErrorBody(500, msg || "Failed to create session")), {

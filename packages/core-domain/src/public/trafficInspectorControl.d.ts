@@ -30,16 +30,7 @@ export interface TrafficBuffer {
 }
 export const globalTrafficBuffer: TrafficBuffer;
 
-export interface InspectorSessionRow {
-  id: string;
-  name: string | null;
-  started_at: string;
-  ended_at: string | null;
-  request_count: number;
-  profile: "llm" | "custom" | "all" | null;
-}
-export function listSessions(): InspectorSessionRow[];
-export function createSession(opts?: { name?: string }): { id: string; started_at: string };
+export function toHar(requests: unknown[]): unknown;
 
 export function getCachedPassword(): string | null;
 export function addDNSEntries(hosts: string[], sudoPassword: string): Promise<void>;
@@ -49,4 +40,6 @@ type SchemaResult<T = any> =
   | { success: false; data?: never; error: { issues: Array<{ message: string }> } };
 export const InspectorCustomHostSchema: { safeParse(input: unknown): SchemaResult };
 export const InspectorSessionStartSchema: { safeParse(input: unknown): SchemaResult };
+export const InspectorSessionPatchSchema: { safeParse(input: unknown): SchemaResult };
+export const InspectorSessionRequestAppendSchema: { safeParse(input: unknown): SchemaResult };
 export const InspectorListQuerySchema: { safeParse(input: unknown): SchemaResult };

@@ -43,6 +43,35 @@ CREATE TABLE IF NOT EXISTS plugin_metrics (
   last_called_at TEXT,
   PRIMARY KEY (plugin_name, event)
 );
+
+CREATE TABLE IF NOT EXISTS inspector_sessions (
+  id TEXT PRIMARY KEY,
+  name TEXT,
+  started_at TEXT NOT NULL,
+  ended_at TEXT,
+  request_count INTEGER NOT NULL DEFAULT 0,
+  profile TEXT CHECK (profile IN ('llm','custom','all'))
+);
+
+CREATE TABLE IF NOT EXISTS inspector_session_requests (
+  session_id TEXT NOT NULL REFERENCES inspector_sessions(id) ON DELETE CASCADE,
+  seq INTEGER NOT NULL,
+  payload TEXT NOT NULL,
+  PRIMARY KEY (session_id, seq)
+);
+CREATE INDEX IF NOT EXISTS idx_inspector_session_requests_sid
+  ON inspector_session_requests(session_id);
+
+CREATE TABLE IF NOT EXISTS inspector_custom_hosts (
+  host TEXT PRIMARY KEY,
+  enabled INTEGER NOT NULL DEFAULT 1,
+  label TEXT,
+  kind TEXT NOT NULL DEFAULT 'custom' CHECK (kind IN ('llm','app','custom')),
+  added_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  last_seen_at TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_inspector_custom_hosts_enabled
+  ON inspector_custom_hosts(enabled);
 `;
 
 /** Ensure all control-api-owned tables exist after the shared runtime starts. */
