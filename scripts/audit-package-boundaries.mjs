@@ -44,6 +44,19 @@ function isPackageExecutableSource(file) {
   return /\/packages\/[^/]+\/src\/bin\//.test(`/${rel(file)}`);
 }
 
+function runtimeExportTargets(value, out = []) {
+  if (typeof value === "string") {
+    out.push(value);
+  } else if (Array.isArray(value)) {
+    for (const item of value) runtimeExportTargets(item, out);
+  } else if (value && typeof value === "object") {
+    for (const [condition, target] of Object.entries(value)) {
+      if (condition !== "types") runtimeExportTargets(target, out);
+    }
+  }
+  return out;
+}
+
 function callName(node) {
   if (ts.isIdentifier(node.expression)) return node.expression.text;
   if (ts.isPropertyAccessExpression(node.expression)) return node.expression.name.text;
@@ -229,6 +242,7 @@ if (process.argv.includes("--self-test")) {
   assert.equal(isRetiredDynamicCompatDispatcher(resolve(repoRoot, "packages/a/src/loader.ts"), 'await import("./route.js")'), false);
   assert.equal(isPackageExecutableSource(resolve(repoRoot, "packages/a/src/bin/worker.cjs")), true);
   assert.equal(isPackageExecutableSource(resolve(repoRoot, "packages/a/src/lib/worker.cjs")), false);
+  assert.deepEqual(runtimeExportTargets({ types: "./dist/index.d.ts", import: "./src/index.ts" }), ["./src/index.ts"]);
   const lifecycleFixture = `
     const sweep = setInterval(run, 1000);
     const request = () => setTimeout(abort, 1000);
@@ -353,6 +367,15 @@ function appConsumers(name, seen = new Set()) {
 const legacyMixed = new Set();
 
 for (const entry of packageEntries) {
+  for (const [subpath, value] of Object.entries(entry.manifest?.exports ?? {})) {
+    for (const target of runtimeExportTargets(value)) {
+      if (!target.startsWith("./") || target.includes("*")) continue;
+      const resolvedTarget = resolve(entry.dir, target);
+      if (!existsSync(resolvedTarget)) {
+        add("missing-package-runtime-export-target", join(entry.dir, "package.json"), `${subpath} -> ${target}`);
+      }
+    }
+  }
   for (const file of walk(join(entry.dir, "src"))) {
     const source = readFileSync(file, "utf8");
     if (isRetiredDynamicCompatDispatcher(file, source)) {
@@ -410,6 +433,7 @@ const result = {
     "dependencies and optionalDependencies between workspace packages must form an acyclic graph without self-dependencies",
     "a package may not import another package through a relative source path; use a declared published contract",
     "packages may not contain route.ts modules or retired dynamic compat dispatchers",
+    "every explicit package runtime export must resolve to an existing file",
     "package source imports may not start timers or listeners; applications own lifecycle",
   ],
   workspacePackageDependencyGraph: {

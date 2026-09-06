@@ -89,10 +89,6 @@
       "types": "./src/public/vscodeTokenCombos.d.ts",
       "import": "./src/lib/vscode/tokenCombos.ts"
     },
-    "./edge/fleet-skills": {
-      "types": "./src/public/fleetSkills.d.ts",
-      "import": "./src/lib/conductor/fleetSkills.ts"
-    },
     "./control/provider-test-batch": {
       "types": "./src/public/providerTestBatch.d.ts",
       "import": "./src/lib/providers/testBatch.ts"

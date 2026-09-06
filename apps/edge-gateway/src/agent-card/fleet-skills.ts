@@ -1,12 +1,3 @@
-/**
- * Fleet skills for the Agent Card (Conductor PRD RF2) — derives A2A skills from
- * the OmniConductor hub's runner registry (`GET /v1/runners`, OASF capabilities).
- *
- * Fail-open by design: any problem (env unset, hub offline, bad shape) yields
- * `[]` so the Agent Card stays valid, just without the fleet section. Results
- * are cached for ~60s to keep the card endpoint cheap.
- */
-
 import { z } from "zod";
 
 export interface FleetSkill {
@@ -16,28 +7,22 @@ export interface FleetSkill {
   tags: string[];
 }
 
-/** Untrusted hub response — validate only what we read. */
 const runnersSchema = z.array(
   z.object({
     online: z.boolean().optional(),
     capabilities: z.object({
-      clis: z
-        .array(
-          z.object({
-            profile: z.string(),
-            models: z.array(z.object({ id: z.string() })).optional(),
-          })
-        )
-        .optional(),
+      clis: z.array(z.object({
+        profile: z.string(),
+        models: z.array(z.object({ id: z.string() })).optional(),
+      })).optional(),
       skills: z.array(z.string()).optional(),
     }),
-  })
+  }),
 );
 
 const CACHE_TTL_MS = 60_000;
 let cache: { at: number; skills: FleetSkill[] } | null = null;
 
-/** Test hook: resets the module cache. */
 export function clearFleetSkillsCache(): void {
   cache = null;
 }
@@ -61,24 +46,24 @@ export async function getFleetSkills(opts: FleetSkillsOptions = {}): Promise<Fle
     });
     if (res.ok) skills = deriveSkills(runnersSchema.parse(await res.json()));
   } catch {
-    skills = []; // hub offline / shape inválido: o card omite a frota, nunca quebra
+    skills = [];
   }
   cache = { at: now(), skills };
   return skills;
 }
 
 function deriveSkills(runners: z.infer<typeof runnersSchema>): FleetSkill[] {
-  const online = runners.filter((r) => r.online !== false);
+  const online = runners.filter((runner) => runner.online !== false);
   const byProfile = new Map<string, { count: number; models: Set<string> }>();
   const oasfSkills = new Set<string>();
-  for (const r of online) {
-    for (const cli of r.capabilities.clis ?? []) {
+  for (const runner of online) {
+    for (const cli of runner.capabilities.clis ?? []) {
       const entry = byProfile.get(cli.profile) ?? { count: 0, models: new Set<string>() };
       entry.count++;
-      for (const m of cli.models ?? []) entry.models.add(m.id);
+      for (const model of cli.models ?? []) entry.models.add(model.id);
       byProfile.set(cli.profile, entry);
     }
-    for (const s of r.capabilities.skills ?? []) oasfSkills.add(s);
+    for (const skill of runner.capabilities.skills ?? []) oasfSkills.add(skill);
   }
 
   const skills: FleetSkill[] = [];
@@ -94,11 +79,11 @@ function deriveSkills(runners: z.infer<typeof runnersSchema>): FleetSkill[] {
       tags: ["conductor", "fleet", "cli", profile],
     });
   }
-  for (const s of [...oasfSkills].sort()) {
+  for (const skill of [...oasfSkills].sort()) {
     skills.push({
-      id: `conductor-skill-${s}`,
-      name: `Conductor fleet skill: ${s}`,
-      description: `OASF skill "${s}" declared by online runners of the OmniConductor fleet.`,
+      id: `conductor-skill-${skill}`,
+      name: `Conductor fleet skill: ${skill}`,
+      description: `OASF skill "${skill}" declared by online runners of the OmniConductor fleet.`,
       tags: ["conductor", "fleet", "skill"],
     });
   }

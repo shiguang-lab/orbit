@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common";
+import { getFleetSkills } from "./fleet-skills.js";
 
 type AgentCardRequest = Pick<Request, "headers">;
 
 @Injectable()
 export class AgentCardService {
   private async fleetSkills(): Promise<readonly { id: string; name: string; description: string; tags: string[] }[]> {
-    const module = await import("@shiguang-gateway/core-domain/edge/fleet-skills");
-    return module.getFleetSkills();
+    return getFleetSkills();
   }
 
   private baseUrl(request: AgentCardRequest): string {

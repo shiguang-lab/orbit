@@ -81,7 +81,6 @@ const allowedCoreDomainSubpaths = {
     "edge/vscode-combos",
     "edge/vscode-token-combos",
     "edge/vscode-service-tier",
-    "edge/fleet-skills",
     "control/settings",
     "edge/count-tokens-validation",
     "control/authenticated",
@@ -981,16 +980,17 @@ if (existsSync(controlJobsContract) && /\bgetJobRegistry\b|\.\.\/lib\/jobRegistr
   add("control-job-contract-exposes-worker-runtime", controlJobsContract, "control jobs contract must expose DB projections only");
 }
 const coreDomainEntry = packageEntries.find(({ manifest }) => manifest?.name === "@shiguang-gateway/core-domain");
-const retiredControlOnlyExports = [
+const retiredAppOwnedExports = [
   "./runtime/build-sha",
   "./control/oauth-runtime/antigravityProjectGate",
   "./control/cli-tools-batch-cache",
   "./control/local-redis",
   "./control/oauth-runtime/deviceFlowTickets",
+  "./edge/fleet-skills",
 ];
-for (const subpath of retiredControlOnlyExports) {
+for (const subpath of retiredAppOwnedExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {
-    add("control-only-capability-exported-by-core-domain", join(coreDomainEntry.dir, "package.json"), subpath);
+    add("app-owned-capability-exported-by-core-domain", join(coreDomainEntry.dir, "package.json"), subpath);
   }
 }
 const openSseEntry = packageEntries.find(({ manifest }) => manifest?.name === "@shiguang-gateway/open-sse");
@@ -1036,7 +1036,7 @@ const report = {
     "http-kernel exposes no app factory or surface selector",
     "control-api cannot import the worker-owned JobRegistry runtime",
     "core-domain control jobs contract cannot expose the worker-owned registry",
-    "migrated control-only capabilities cannot be re-exported by core-domain",
+    "migrated app-owned capabilities cannot be re-exported by core-domain",
     "legacy runtime package names are retired",
   ],
   violations,
