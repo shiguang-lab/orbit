@@ -27,7 +27,11 @@ const frozenBaseline = {
 const localApiExtensions = new Set([
   "media/cache/stats/route.ts",
   "media/cache/purge/route.ts",
+  "a2a/route.ts",
 ]);
+// Root A2A transport is intentionally implemented by the edge Nest app; the
+// legacy Next root route is removed as part of that physical migration.
+const localRootRouteExtensions = new Set(["a2a/route.ts"]);
 const normalizeRoutePath = (value) => value.replace(new RegExp("omni" + "route", "gi"), "gateway");
 
 function walk(dir, predicate, out = []) {
@@ -73,11 +77,12 @@ const rootRoutePaths = (dir, files) => new Set(files.map((p) => relative(dir, p)
 const officialRootPaths = rootRoutePaths(officialRootDir, officialRootRoutes);
 const localRootPaths = rootRoutePaths(localRootDir, localRootRoutes);
 const hashPaths = (paths) => createHash("sha256").update([...paths].sort().join("\n")).digest("hex");
+const comparableLocalRootPaths = new Set([...localRootPaths].filter((path) => !localRootRouteExtensions.has(path)));
 const rootRouteMismatches = referenceAvailable ? [
-  ...[...officialRootPaths].filter((p) => !localRootPaths.has(p)).map((path) => ({ path, side: "missing-local" })),
-  ...[...localRootPaths].filter((p) => !officialRootPaths.has(p)).map((path) => ({ path, side: "extra-local" })),
+  ...[...officialRootPaths].filter((p) => !comparableLocalRootPaths.has(p) && !localRootRouteExtensions.has(p)).map((path) => ({ path, side: "missing-local" })),
+  ...[...comparableLocalRootPaths].filter((p) => !officialRootPaths.has(p)).map((path) => ({ path, side: "extra-local" })),
 ].sort((a, b) => a.path.localeCompare(b.path)) :
-  (localRootRoutes.length === frozenBaseline.rootRouteFiles && hashPaths(localRootPaths) === frozenBaseline.rootPathSha256 ? [] : [{ path: "<frozen-root-route-baseline>", side: "hash-mismatch" }]);
+  (comparableLocalRootPaths.size === frozenBaseline.rootRouteFiles && hashPaths(comparableLocalRootPaths) === frozenBaseline.rootPathSha256 ? [] : [{ path: "<frozen-root-route-baseline>", side: "hash-mismatch" }]);
 function extractControllerRoutes(controllerFile) {
   const source = readFileSync(controllerFile, "utf8");
   const controllerMatch = source.match(/@Controller\s*\(\s*(?:\[([^\]]*)\]|["'`\x27\x60](.*?)["'`\x27\x60])?\s*\)/);
@@ -210,7 +215,7 @@ const report = {
   referenceAvailable,
   frozenBaseline,
   official: referenceAvailable ? { routeFiles: officialRoutes.length, apiGroups: officialGroups.size, rootRouteFiles: officialRootRoutes.length } : null,
-    target: { appRouteFiles: appRouteFiles.length, appFastifyHandlers: appHandlers, localRuntimeRouteFiles: localRuntimeRoutes.length, localRootRouteFiles: localRootRoutes.length, additiveLocalApiExtensions: [...localApiExtensions], appCompatDispatcherReady },
+    target: { appRouteFiles: appRouteFiles.length, appFastifyHandlers: appHandlers, localRuntimeRouteFiles: localRuntimeRoutes.length, localRootRouteFiles: localRootRoutes.length, additiveLocalApiExtensions: [...localApiExtensions], additiveLocalRootRouteExtensions: [...localRootRouteExtensions], appCompatDispatcherReady },
   routePathMismatches,
   rootRouteMismatches,
   missingApiGroups: missingGroups,
