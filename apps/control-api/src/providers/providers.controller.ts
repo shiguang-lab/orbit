@@ -134,6 +134,21 @@ export class ProvidersController {
     );
   }
 
+  @Post("providers/:id/refresh-token")
+  refreshProviderToken(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, (req) => this.providersService.handleRefreshProviderToken(req, id), { id });
+  }
+
+  @Post("providers/:id/refresh-cursor")
+  refreshCursor(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, (req) => this.providersService.handleRefreshCursorToken(req, id), { id });
+  }
+
+  @Get("providers/:id/chatgpt-web-codex-doctor")
+  chatgptWebCodexDoctor(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, (req) => this.providersService.handleChatgptWebCodexDoctor(req, id), { id });
+  }
+
   @Get("provider-metrics")
   metrics(@Res() reply: FastifyReply) {
     try {

@@ -58,6 +58,7 @@ import { SyncModule } from "./sync/sync.module.js";
 import { RadarModule } from "./radar/radar.module.js";
 import { ResilienceModule } from "./resilience/resilience.module.js";
 import { ToolsModule } from "./tools/tools.module.js";
+import { AgentBridgeModule } from "./tools/agent-bridge/agent-bridge.module.js";
 import { RegisteredKeysModule } from "./registered-keys/registered-keys.module.js";
 import { PlaygroundModule } from "./playground/playground.module.js";
 import { CloudModule } from "./cloud/cloud.module.js";
@@ -124,6 +125,7 @@ import { CloudModule } from "./cloud/cloud.module.js";
     RadarModule,
     ResilienceModule,
     ToolsModule,
+    AgentBridgeModule,
     RegisteredKeysModule,
     PlaygroundModule,
     CloudModule,

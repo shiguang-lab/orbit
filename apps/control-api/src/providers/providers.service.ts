@@ -43,6 +43,9 @@ import {
 import { resolveResilienceSettings } from "@shiguang-gateway/core-domain/control/resilience-settings";
 import { getCachedSettings } from "@shiguang-gateway/core-domain/cache/services";
 import { handleProviderRefresh } from "./handlers/provider-refresh.handler.js";
+import { GET as getChatgptWebCodexDoctor } from "./handlers/provider-chatgpt-web-codex-doctor.js";
+import { POST as refreshProviderToken } from "./handlers/provider-refresh-token.js";
+import { POST as refreshCursorToken } from "./handlers/provider-refresh-cursor.js";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
 
@@ -251,5 +254,17 @@ export class ProvidersService {
 
   async handleValidateProvider(request: Request) {
     return validateProviderHandler(request);
+  }
+
+  async handleChatgptWebCodexDoctor(request: Request, id: string) {
+    return getChatgptWebCodexDoctor(request, id);
+  }
+
+  async handleRefreshProviderToken(request: Request, id: string) {
+    return refreshProviderToken(request, id);
+  }
+
+  async handleRefreshCursorToken(request: Request, id: string) {
+    return refreshCursorToken(request, id);
   }
 }

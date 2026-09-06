@@ -395,10 +395,30 @@
       "types": "./src/public/trafficInspectorControl.d.ts",
       "import": "./src/lib/inspector/trafficInspectorControlExports.ts"
     },
+    "./control/agent-bridge": {
+      "types": "./src/public/agentBridgeControl.d.ts",
+      "import": "./src/lib/inspector/agentBridgeControlExports.ts"
+    },
     "./control/build-phase": "./src/lib/buildPhase.ts",
     "./control/cursor-token-extractor": {
       "types": "./src/public/cursorTokenExtractor.d.ts",
       "import": "./src/lib/cursor/tokenExtractor.ts"
+    },
+    "./control/cursor-renewal": {
+      "types": "./src/public/cursorRenewal.d.ts",
+      "import": "./src/lib/cursor/renewal.ts"
+    },
+    "./control/kimi-token-refresh": {
+      "types": "./src/public/kimiTokenRefresh.d.ts",
+      "import": "./src/lib/kimi/tokenRefresh.ts"
+    },
+    "./control/provider-auth-files/claude": {
+      "types": "./src/public/providerAuthFiles.d.ts",
+      "import": "./src/lib/oauth/utils/claudeAuthFile.ts"
+    },
+    "./control/provider-auth-files/codex": {
+      "types": "./src/public/providerAuthFiles.d.ts",
+      "import": "./src/lib/oauth/utils/codexAuthFile.ts"
     },
     "./shared/validation/providerSpecificData": {
       "types": "./src/public/providerSpecificData.d.ts",
