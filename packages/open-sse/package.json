@@ -77,6 +77,10 @@
       "types": "./public/payloadRules.d.ts",
       "import": "./services/payloadRules.ts"
     },
+    "./services/compression/cavemanRules": {
+      "types": "./public/cavemanRules.d.ts",
+      "import": "./services/compression/cavemanRules.ts"
+    },
     "./services/combo": {
       "types": "./public/combo.d.ts",
       "import": "./services/combo.ts"

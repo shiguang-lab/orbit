@@ -138,6 +138,14 @@
       "types": "./src/public/compressionAnalytics.d.ts",
       "import": "./src/lib/db/compressionAnalytics.ts"
     },
+    "./control/compression-settings": {
+      "types": "./src/public/compressionSettings.d.ts",
+      "import": "./src/lib/db/compression.ts"
+    },
+    "./db/compression-run-telemetry": {
+      "types": "./src/public/compressionRunTelemetry.d.ts",
+      "import": "./src/lib/db/compressionRunTelemetry.ts"
+    },
     "./db/call-log-stats": {
       "types": "./src/public/callLogStats.d.ts",
       "import": "./src/lib/db/callLogStats.ts"
@@ -325,6 +333,10 @@
     "./shared/validation/helpers": {
       "types": "./src/public/validationHelpers.d.ts",
       "import": "./src/shared/validation/helpers.ts"
+    },
+    "./shared/validation/compression-config-schemas": {
+      "types": "./src/public/compressionConfigSchemas.d.ts",
+      "import": "./src/shared/validation/compressionConfigSchemas.ts"
     },
     "./control/provider-validation-schemas": {
       "types": "./src/public/providerValidationSchemas.d.ts",

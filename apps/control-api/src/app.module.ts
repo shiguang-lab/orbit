@@ -31,6 +31,7 @@ import { OneproxyModule } from "./settings/oneproxy/oneproxy.module.js";
 import { TierConfigModule } from "./settings/tier-config/tier-config.module.js";
 import { SystemModule } from "./system/system.module.js";
 import { FreeProxiesModule } from "./settings/free-proxies/free-proxies.module.js";
+import { CompressionModule } from "./settings/compression/compression.module.js";
 
 @Module({
   imports: [
@@ -66,6 +67,7 @@ import { FreeProxiesModule } from "./settings/free-proxies/free-proxies.module.j
     TierConfigModule,
     SystemModule,
     FreeProxiesModule,
+    CompressionModule,
   ],
 })
 export class AppModule {}

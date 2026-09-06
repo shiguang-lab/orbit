@@ -104,7 +104,8 @@ with the remaining domain handlers, so each move is independently verifiable.
 The current migration wave has moved the control auth (status, CSRF, password login,
 logout and OIDC), health/status/process-control/system version/update/version-manager/Bifrost controls,
 rate-limit toggle, proxy connectivity/registry management, free-proxy catalog/list/stats/sync/
-promotion, settings/database maintenance and feature flags, OneProxy compatibility redirects, provider token refresh,
+promotion, settings/database maintenance and feature flags, OneProxy compatibility redirects, compression settings,
+MCP accessibility configuration, compression run telemetry and Caveman rule metadata, provider token refresh,
 token-health/synced-models/provider-stats/provider-metrics/provider-nodes list/validation/provider-models, provider validation/observability (OpenRouter stats, quota windows, expiration, health matrix), provider policy settings (Claude Code aliases, parameter filters, web interception rules, tier configuration), client connection export and web-session contract, combo management (builder options, duplicate, metrics, reorder, auto and test), webhook management, memory settings, and complete API-key management groups (including app-owned root handlers, devices, regeneration, reveal, usage limits, key groups, memberships, and permissions), and the edge files, music,
 speech-to-text, embeddings, audio-transcriptions, audio-speech, audio-translations, text-to-speech, image edits/generations/upscale, moderation, rerank, ElevenLabs voices, plus WebSocket handshake routes. Remaining route groups stay in
 `core-domain` until their dependencies can move without reintroducing a

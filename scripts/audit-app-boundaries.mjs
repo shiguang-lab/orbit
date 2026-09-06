@@ -133,6 +133,9 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "db/provider-param-filters",
   "control/web-session-contract",
   "control/tier-config",
+  "control/compression-settings",
+  "db/compression-run-telemetry",
+  "shared/validation/compression-config-schemas",
 );
 
 // Route files that have completed a physical ownership move. Keep this list
@@ -273,6 +276,11 @@ const migratedRouteOwnership = {
     "api/settings/free-proxies/sync/route.ts",
     "api/settings/free-proxies/bulk-add-to-pool/route.ts",
     "api/settings/free-proxies/[id]/add-to-pool/route.ts",
+    "api/settings/compression/route.ts",
+    "api/settings/compression/rules/route.ts",
+    "api/settings/compression/mcp-accessibility/route.ts",
+    "api/settings/compression/run-telemetry/route.ts",
+    "api/compression/rules/route.ts",
     "api/settings/proxy/test/route.ts",
     "api/settings/proxies/route.ts",
     "api/settings/proxies/assignments/route.ts",
