@@ -197,7 +197,6 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/cloud-sync-initialize",
   "control/model-sync-scheduler",
   "control/skills-registry",
-  "control/skills-db",
   "control/skills-provider-settings",
   "control/skills-github",
   "control/skills-skillssh",

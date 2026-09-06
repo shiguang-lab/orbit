@@ -1,9 +1,9 @@
-import { updateSkill } from "@shiguang-gateway/core-domain/control/skills-db";
 import { skillRegistry } from "@shiguang-gateway/core-domain/control/skills-registry";
 import { z } from "zod";
 import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import type { SkillsRepository } from "../skills.repository.js";
 
 const updateSkillSchema = z.object({
   enabled: z.boolean().optional(),
@@ -27,7 +27,11 @@ export async function DELETE(_request: Request, props: { params: Promise<{ id: s
   }
 }
 
-export async function PUT(request: Request, props: { params: Promise<{ id: string }> }) {
+export async function PUT(
+  request: Request,
+  props: { params: Promise<{ id: string }> },
+  repository: SkillsRepository,
+) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 
@@ -61,7 +65,7 @@ export async function PUT(request: Request, props: { params: Promise<{ id: strin
       return Response.json({ error: "No update payload provided" }, { status: 400 });
     }
 
-    updateSkill(id, patch);
+    repository.update(id, patch);
 
     await skillRegistry.loadFromDatabase();
 

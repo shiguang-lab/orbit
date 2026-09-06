@@ -1012,10 +1012,6 @@
       "types": "./src/public/skillsRegistry.d.ts",
       "import": "./src/lib/skills/registry.ts"
     },
-    "./control/skills-db": {
-      "types": "./src/public/skillsDb.d.ts",
-      "import": "./src/lib/db/skills.ts"
-    },
     "./control/skills-provider-settings": {
       "types": "./src/public/skillsProviderSettings.d.ts",
       "import": "./src/lib/skills/providerSettings.ts"

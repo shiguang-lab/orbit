@@ -7,14 +7,19 @@ import * as marketplaceInstall from "./handlers/marketplace-install.handler.js";
 import * as skillssh from "./handlers/skillssh.handler.js";
 import * as skillsshInstall from "./handlers/skillssh-install.handler.js";
 import * as collectDetect from "./handlers/collect-detect.handler.js";
+import { SkillsRepository } from "./skills.repository.js";
 import * as collectInstall from "./handlers/collect-install.handler.js";
 
 /** Skills management use cases. HTTP transport is owned by SkillsController. */
 @Injectable()
 export class SkillsService {
+  constructor(private readonly repository: SkillsRepository) {}
+
   list(request: Request) { return root.GET(request); }
   install(request: Request) { return install.POST(request); }
-  update(request: Request, id: string) { return byId.PUT(request, { params: Promise.resolve({ id }) }); }
+  update(request: Request, id: string) {
+    return byId.PUT(request, { params: Promise.resolve({ id }) }, this.repository);
+  }
   remove(request: Request, id: string) { return byId.DELETE(request, { params: Promise.resolve({ id }) }); }
   marketplace(request: Request) { return marketplace.GET(request); }
   marketplaceInstall(request: Request) { return marketplaceInstall.POST(request); }
