@@ -1,7 +1,7 @@
 {
   "name": "@shiguang-gateway/db-schema",
   "version": "0.1.0",
-  "description": "Database table vocabulary and ownership contracts shared by applications",
+  "description": "ORM-neutral SQLite entity metadata and ownership contracts shared by applications",
   "private": true,
   "type": "module",
   "sideEffects": false,

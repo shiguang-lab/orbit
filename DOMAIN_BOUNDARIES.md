@@ -19,8 +19,13 @@ port or selecting a surface at runtime.
 `packages/http-kernel`, `packages/web-route-compat` and `packages/error-sanitization`
 are shared dependency leaves. `error-sanitization` contains only transport-neutral
 redaction helpers and is consumed directly by multiple deployable apps.
-`db-schema` contains table names and ownership metadata only; SQL queries and mutations stay in the owning domain
-service. `network-guard` contains pure outbound URL parsing, host classification and SSRF error contracts; it has no
+`db-schema` contains the canonical ORM-neutral entity metadata under `src/entities/*.entity.ts`:
+physical SQLite table names, verified column definitions, and write ownership. The project currently uses
+raw SQLite adapters rather than TypeORM/Drizzle, so these entities deliberately have no decorators, database
+connection, Nest module, query, or mutation logic. SQL migrations remain the single runtime migration source
+under the database owner; SQL queries and mutations stay in the owning domain service. New shared tables must
+first add a verified entity here, while app-only temporary tables stay app-owned and are not exported from this package.
+`network-guard` contains pure outbound URL parsing, host classification and SSRF error contracts; it has no
 database, framework or application lifecycle dependency. Configuration-backed guard policy remains in the owning
 domain service. `packages/core-domain` contains the provider/protocol domain
 implementation and exposes only allow-listed subpaths for app-owned workers,

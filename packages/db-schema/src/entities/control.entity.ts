@@ -1,0 +1,121 @@
+import { column, type EntityDefinition } from "./definition.js";
+
+export const SettingsEntity: EntityDefinition = {
+  entityName: "Settings",
+  tableName: "key_value",
+  owner: "control-api",
+  columns: [
+    column("namespace", "TEXT", { nullable: false, primaryKey: true }),
+    column("key", "TEXT", { nullable: false, primaryKey: true }),
+    column("value", "TEXT", { nullable: false }),
+  ],
+};
+
+export const ProviderConnectionEntity: EntityDefinition = {
+  entityName: "ProviderConnection",
+  tableName: "provider_connections",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("provider", "TEXT", { nullable: false }),
+    column("auth_type", "TEXT"), column("name", "TEXT"), column("email", "TEXT"),
+    column("priority", "INTEGER", { default: "0" }), column("is_active", "INTEGER", { default: "1" }),
+    column("access_token", "TEXT"), column("refresh_token", "TEXT"), column("expires_at", "TEXT"),
+    column("token_expires_at", "TEXT"), column("scope", "TEXT"), column("project_id", "TEXT"),
+    column("test_status", "TEXT"), column("error_code", "TEXT"), column("last_error", "TEXT"),
+    column("last_error_at", "TEXT"), column("last_error_type", "TEXT"), column("last_error_source", "TEXT"),
+    column("backoff_level", "INTEGER", { default: "0" }), column("rate_limited_until", "TEXT"),
+    column("health_check_interval", "INTEGER"), column("last_health_check_at", "TEXT"), column("last_tested", "TEXT"),
+    column("api_key", "TEXT"), column("id_token", "TEXT"), column("provider_specific_data", "TEXT"),
+    column("expires_in", "INTEGER"), column("display_name", "TEXT"), column("global_priority", "INTEGER"),
+    column("default_model", "TEXT"), column("token_type", "TEXT"), column("consecutive_use_count", "INTEGER", { default: "0" }),
+    column("rate_limit_protection", "INTEGER", { default: "0" }), column("created_at", "TEXT", { nullable: false }),
+    column("updated_at", "TEXT", { nullable: false }), column("max_concurrent", "INTEGER"),
+    column("quota_window_thresholds_json", "TEXT"), column("proxy_enabled", "INTEGER", { nullable: false, default: "1" }),
+    column("per_key_proxy_enabled", "INTEGER", { nullable: false, default: "0" }), column("last_ping_at", "TEXT"),
+    column("last_pinged_reset_key", "TEXT"), column("quota_visible", "INTEGER", { nullable: false, default: "1" }),
+  ],
+};
+
+export const ProviderNodeEntity: EntityDefinition = {
+  entityName: "ProviderNode",
+  tableName: "provider_nodes",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }), column("type", "TEXT", { nullable: false }),
+    column("name", "TEXT", { nullable: false }), column("prefix", "TEXT"), column("api_type", "TEXT"),
+    column("base_url", "TEXT"), column("created_at", "TEXT", { nullable: false }),
+    column("updated_at", "TEXT", { nullable: false }), column("chat_path", "TEXT"),
+    column("models_path", "TEXT"), column("custom_headers_json", "TEXT"), column("icon_url", "TEXT"),
+  ],
+};
+
+export const ApiKeyEntity: EntityDefinition = {
+  entityName: "ApiKey",
+  tableName: "api_keys",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }), column("name", "TEXT", { nullable: false }),
+    column("key", "TEXT", { nullable: false }), column("machine_id", "TEXT"),
+    column("created_at", "TEXT", { nullable: false }), column("revoked_at", "TEXT"), column("expires_at", "TEXT"),
+    column("last_used_at", "TEXT"), column("key_prefix", "TEXT"), column("ip_allowlist", "TEXT"),
+    column("scopes", "TEXT"), column("allowed_combos", "TEXT"), column("throttle_delay_ms", "INTEGER"),
+    column("stream_default_mode", "TEXT", { nullable: false, default: "'legacy'" }),
+    column("allowed_quotas", "TEXT", { nullable: false, default: "'[]'" }),
+    column("disable_non_public_models", "INTEGER", { nullable: false, default: "0" }),
+    column("usage_limit_enabled", "INTEGER", { nullable: false, default: "0" }), column("daily_usage_limit_usd", "REAL"),
+    column("weekly_usage_limit_usd", "REAL"), column("cache_default_mode", "TEXT", { nullable: false, default: "'legacy'" }),
+    column("model_access_mode", "TEXT", { nullable: false, default: "'all'" }),
+    column("compression_enabled", "INTEGER", { nullable: false, default: "1" }),
+  ],
+};
+
+export const ComboEntity: EntityDefinition = {
+  entityName: "Combo",
+  tableName: "combos",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }), column("name", "TEXT", { nullable: false }),
+    column("data", "TEXT", { nullable: false }), column("created_at", "TEXT", { nullable: false }),
+    column("updated_at", "TEXT", { nullable: false }), column("system_message", "TEXT", { default: "NULL" }),
+    column("tool_filter_regex", "TEXT", { default: "NULL" }), column("context_cache_protection", "INTEGER", { default: "0" }),
+    column("sort_order", "INTEGER", { nullable: false, default: "0" }),
+  ],
+};
+
+export const ModelComboMappingEntity: EntityDefinition = {
+  entityName: "ModelComboMapping",
+  tableName: "model_combo_mappings",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }), column("pattern", "TEXT", { nullable: false }),
+    column("combo_id", "TEXT", { nullable: false }), column("priority", "INTEGER", { default: "0" }),
+    column("enabled", "INTEGER", { default: "1" }), column("description", "TEXT", { default: "''" }),
+    column("created_at", "TEXT", { nullable: false }), column("updated_at", "TEXT", { nullable: false }),
+  ],
+};
+
+export const WebhookEntity: EntityDefinition = {
+  entityName: "Webhook",
+  tableName: "webhooks",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }), column("url", "TEXT", { nullable: false }),
+    column("events", "TEXT", { nullable: false, default: "'[\"*\"]'" }), column("secret", "TEXT"),
+    column("enabled", "INTEGER", { default: "1" }), column("description", "TEXT", { default: "''" }),
+    column("created_at", "TEXT", { default: "datetime('now')" }), column("last_triggered_at", "TEXT"),
+    column("last_status", "INTEGER"), column("failure_count", "INTEGER", { default: "0" }),
+    column("kind", "TEXT", { nullable: false, default: "'custom'" }), column("metadata_encrypted", "BLOB"),
+  ],
+};
+
+export const KeyGroupEntity: EntityDefinition = {
+  entityName: "KeyGroup",
+  tableName: "key_groups",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }), column("name", "TEXT", { nullable: false }),
+    column("description", "TEXT", { nullable: false, default: "''" }), column("is_active", "INTEGER", { nullable: false, default: "1" }),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }), column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
