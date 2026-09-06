@@ -59,6 +59,7 @@ export const ContextHandoffEntity: EntityDefinition = {
     column("active_entities", "TEXT", { nullable: false, default: "'[]'" }),
     column("message_count", "INTEGER", { nullable: false, default: "0" }),
     column("model", "TEXT", { nullable: false, default: "''" }),
+    column("last_model", "TEXT"),
     column("warning_threshold_pct", "REAL", { nullable: false, default: "0.85" }),
     column("generated_at", "TEXT", { nullable: false }),
     column("expires_at", "TEXT", { nullable: false }),
