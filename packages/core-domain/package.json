@@ -4,6 +4,22 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./control/monitoring-health": {
+      "types": "./src/public/monitoringHealth.d.ts",
+      "import": "./src/control/monitoring-health.ts"
+    },
+    "./control/network-info": {
+      "types": "./src/public/networkInfo.d.ts",
+      "import": "./src/control/network-info.ts"
+    },
+    "./control/free-provider-rankings": {
+      "types": "./src/public/freeProviderRankings.d.ts",
+      "import": "./src/control/free-provider-rankings.ts"
+    },
+    "./control/free-tier-summary": {
+      "types": "./src/public/freeTierSummary.d.ts",
+      "import": "./src/control/free-tier-summary.ts"
+    },
     "./control/fallback-policy": {
       "types": "./src/public/fallbackPolicy.d.ts",
       "import": "./src/control/fallback-policy.ts"
@@ -1335,6 +1351,10 @@
     "./control/provider-management": {
       "types": "./src/control/provider-management.ts",
       "import": "./src/control/provider-management.ts"
+    },
+    "./control/provider-connection": {
+      "types": "./src/control/provider-connection.ts",
+      "import": "./src/control/provider-connection.ts"
     },
     "./models/index": {
       "types": "./src/models/index.ts",

@@ -102,6 +102,9 @@ import { CopilotModule } from "./copilot/copilot.module.js";
 import { IssueAgentModule } from "./issue-agent/issue-agent.module.js";
 import { FallbackModule } from "./fallback/fallback.module.js";
 import { ProxyFallbackModule } from "./proxy-fallback/proxy-fallback.module.js";
+import { MonitoringModule } from "./monitoring/monitoring.module.js";
+import { NetworkModule } from "./network/network.module.js";
+import { FreeTierModule } from "./free-tier/free-tier.module.js";
 
 @Module({
   imports: [
@@ -209,6 +212,9 @@ import { ProxyFallbackModule } from "./proxy-fallback/proxy-fallback.module.js";
     IssueAgentModule,
     FallbackModule,
     ProxyFallbackModule,
+    MonitoringModule,
+    NetworkModule,
+    FreeTierModule,
   ],
 })
 export class AppModule {}

@@ -1,42 +1,41 @@
-import { NextResponse } from "next/server";
-import { getAuditRequestContext, logAuditEvent } from "../../../../lib/compliance/index.ts";
+import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/control/provider-connection";
 import {
   getProviderAuditTarget,
   summarizeProviderConnectionForAudit,
-} from "../../../../lib/compliance/providerAudit.ts";
+} from "@shiguang-gateway/core-domain/control/provider-connection";
 import {
   getCachedProviderConnectionById,
   updateProviderConnection,
   deleteProviderConnection,
   isCloudEnabled,
-} from "../../../../lib/localDb.ts";
-import { getConsistentMachineId } from "../../../../shared/utils/machineId.ts";
-import { syncToCloud } from "../../../../lib/cloudSync.ts";
-import { updateProviderConnectionSchema } from "../../../../shared/validation/schemas.ts";
-import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
+} from "@shiguang-gateway/core-domain/control/provider-connection";
+import { getConsistentMachineId } from "@shiguang-gateway/core-domain/control/provider-connection";
+import { syncToCloud } from "@shiguang-gateway/core-domain/control/provider-connection";
+import { updateProviderConnectionSchema } from "@shiguang-gateway/core-domain/control/provider-connection";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/control/provider-connection";
 import {
   normalizeProviderSpecificData,
   sanitizeProviderSpecificDataForResponse,
-} from "../../../../lib/providers/requestDefaults.ts";
+} from "@shiguang-gateway/core-domain/control/provider-connection";
 import {
   buildClaudeExtraUsageStateClearUpdate,
   isClaudeExtraUsageBlockEnabled,
-} from "../../../../lib/providers/claudeExtraUsage.ts";
-import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
-import { isApiKeyRevealEnabled, maskStoredApiKey } from "../../../../lib/apiKeyExposure.ts";
-import { cleanupProviderModelsAfterConnectionDelete } from "../../../../lib/db/models.ts";
+} from "@shiguang-gateway/core-domain/control/provider-connection";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/provider-connection";
+import { isApiKeyRevealEnabled, maskStoredApiKey } from "@shiguang-gateway/core-domain/control/provider-connection";
+import { cleanupProviderModelsAfterConnectionDelete } from "@shiguang-gateway/core-domain/control/provider-connection";
 import { canUpdateProviderApiKey } from "@shiguang-gateway/contracts/config/webSessionCredentials";
 import {
   refreshConnectionRateLimits,
   enableRateLimitProtection,
   disableRateLimitProtection,
-} from "../../../../../../open-sse/services/rateLimitManager.ts";
+} from "@shiguang-gateway/open-sse/services/rateLimitManager";
 import {
   finalizeValidatedChatGptWebCodexSecrets,
   decodeChatGptWebCodexSecrets,
   encodeChatGptWebCodexSecrets,
-} from "../../../../../../open-sse/services/chatgptWebCodexAdmin.ts";
-import { rejectRetiredCommonChatGptWebProvider } from "../../../../lib/providers/chatgptWebRetirementResponse.ts";
+} from "@shiguang-gateway/open-sse/services/chatgptWebCodexAdmin";
+import { rejectRetiredCommonChatGptWebProvider } from "@shiguang-gateway/core-domain/control/provider-connection";
 
 function normalizeCodexLimitPolicy(
   incoming: unknown,
@@ -72,7 +71,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     const connection = await getCachedProviderConnectionById(id);
 
     if (!connection) {
-      return NextResponse.json({ error: "Connection not found" }, { status: 404 });
+      return Response.json({ error: "Connection not found" }, { status: 404 });
     }
 
     const revealKeys = isApiKeyRevealEnabled();
@@ -91,10 +90,10 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       );
     }
 
-    return NextResponse.json({ connection: result });
+    return Response.json({ connection: result });
   } catch (error) {
     console.log("Error fetching connection:", error);
-    return NextResponse.json({ error: "Failed to fetch connection" }, { status: 500 });
+    return Response.json({ error: "Failed to fetch connection" }, { status: 500 });
   }
 }
 
@@ -108,7 +107,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   try {
     rawBody = await request.json();
   } catch {
-    return NextResponse.json(
+    return Response.json(
       {
         error: {
           message: "Invalid request",
@@ -130,7 +129,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         ...validation.error.details.map((d) => d.field).filter(Boolean),
         ...validation.error.details.flatMap((d) => d.keys ?? []),
       ];
-      return NextResponse.json({ error: { ...validation.error, rejected } }, { status: 400 });
+      return Response.json({ error: { ...validation.error, rejected } }, { status: 400 });
     }
     const body = validation.data;
     const {
@@ -162,7 +161,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
     const existing = (await getCachedProviderConnectionById(id)) as Record<string, any> | null;
     if (!existing) {
-      return NextResponse.json({ error: "Connection not found" }, { status: 404 });
+      return Response.json({ error: "Connection not found" }, { status: 404 });
     }
     const retirementResponse = rejectRetiredCommonChatGptWebProvider(existing.provider);
     if (retirementResponse) return retirementResponse;
@@ -191,7 +190,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
             validationId
           ).encodedCredential;
         } catch (error) {
-          return NextResponse.json(
+          return Response.json(
             {
               error:
                 error instanceof Error
@@ -388,10 +387,10 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       },
     });
 
-    return NextResponse.json({ connection: result });
+    return Response.json({ connection: result });
   } catch (error) {
     console.log("Error updating connection:", error);
-    return NextResponse.json({ error: "Failed to update connection" }, { status: 500 });
+    return Response.json({ error: "Failed to update connection" }, { status: 500 });
   }
 }
 
@@ -417,12 +416,12 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     // Fetch connection before deleting to check provider type
     const connection = (await getCachedProviderConnectionById(id)) as Record<string, any> | null;
     if (!connection) {
-      return NextResponse.json({ error: "Connection not found" }, { status: 404 });
+      return Response.json({ error: "Connection not found" }, { status: 404 });
     }
 
     const deleted = await deleteProviderConnection(id);
     if (!deleted) {
-      return NextResponse.json({ error: "Connection not found" }, { status: 404 });
+      return Response.json({ error: "Connection not found" }, { status: 404 });
     }
 
     // Remove this connection's synced models. Provider-level imported models
@@ -450,10 +449,10 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
       },
     });
 
-    return NextResponse.json({ message: "Connection deleted successfully" });
+    return Response.json({ message: "Connection deleted successfully" });
   } catch (error) {
     console.log("Error deleting connection:", error);
-    return NextResponse.json({ error: "Failed to delete connection" }, { status: 500 });
+    return Response.json({ error: "Failed to delete connection" }, { status: 500 });
   }
 }
 

@@ -63,6 +63,8 @@ export function controlRouteCatalog(): CompatRouteDefinition[] {
     "providers",
     "providers/bulk",
     "providers/import",
+    "providers/[id]",
+    "providers/[id]/login",
     "cli/connect",
     "cli/whoami",
     "cli/tokens",
@@ -165,6 +167,10 @@ export function controlRouteCatalog(): CompatRouteDefinition[] {
     "fallback/chains",
     "proxy-fallback/test",
     "services/[name]/logs",
+    "monitoring/health",
+    "network/info",
+    "free-provider-rankings",
+    "free-tier/summary",
   ]);
   return coreRoutes.filter((route) => !migrated.has(route.segments.join("/")));
 }

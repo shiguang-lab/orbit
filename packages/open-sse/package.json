@@ -247,6 +247,14 @@
       "types": "./public/inAppLoginService.d.ts",
       "import": "./services/inAppLoginService.ts"
     },
+    "./services/adobeFireflyBrowserLogin": {
+      "types": "./public/adobeFireflyBrowserLogin.d.ts",
+      "import": "./services/adobeFireflyBrowserLogin.ts"
+    },
+    "./services/conolBrowserLogin": {
+      "types": "./public/conolBrowserLogin.d.ts",
+      "import": "./services/conolBrowserLogin.ts"
+    },
     "./services/searchCache": {
       "types": "./public/searchCache.d.ts",
       "import": "./services/searchCache.ts"

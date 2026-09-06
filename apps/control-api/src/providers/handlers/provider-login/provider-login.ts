@@ -6,13 +6,13 @@
  * and persists extracted credentials to the provider connection.
  */
 
-import { NextRequest, NextResponse } from "next/server";
-import { getCachedProviderConnectionById, updateProviderConnection } from "../../../../../lib/localDb.ts";
-import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
-import { clampLoginTimeoutMs } from "../../../../../lib/api/loginTimeout.ts";
-import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
+import { getCachedProviderConnectionById, updateProviderConnection } from "@shiguang-gateway/core-domain/control/provider-connection";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/provider-connection";
+import { clampLoginTimeoutMs } from "@shiguang-gateway/core-domain/control/provider-connection";
+import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 
 const ADOBE_FIREFLY_SLUGS = new Set(["adobe-firefly", "firefly"]);
+const load = (specifier: string): Promise<any> => import(specifier as string);
 
 /** Resolve the provider slug (e.g. "claude-web", "adobe-firefly") from the connection row. */
 function resolveProviderSlug(connection: Record<string, unknown> | null): string {
@@ -93,8 +93,8 @@ function adobeFireflySuccessResponse(data: {
   account: string;
   arpSessionId?: string;
   via: "pure-cdp";
-}): NextResponse {
-  return NextResponse.json({
+}): Response {
+  return Response.json({
     success: true,
     account: data.account || undefined,
     accessToken: data.accessToken || undefined,
@@ -117,7 +117,7 @@ function adobeFireflySuccessResponse(data: {
 async function loginAdobeFirefly(
   connectionId: string,
   body: { timeout?: unknown; freshSession?: unknown }
-): Promise<NextResponse> {
+): Promise<Response> {
   const timeout = typeof body.timeout === "number" ? body.timeout : undefined;
   const freshSession = typeof body.freshSession === "boolean" ? body.freshSession : true;
 
@@ -126,8 +126,9 @@ async function loginAdobeFirefly(
   // reliable Playwright browser bundle.
   // startAdobeFireflyBrowserLogin always kills its Chrome tree in `finally` (no orphans).
   try {
-    const { startAdobeFireflyBrowserLogin } =
-      await import("../../../../../../../open-sse/services/adobeFireflyBrowserLogin.ts");
+    const { startAdobeFireflyBrowserLogin } = await load(
+      "@shiguang-gateway/open-sse/services/adobeFireflyBrowserLogin"
+    );
     const pure = await startAdobeFireflyBrowserLogin(timeout, {
       sessionKey: connectionId,
       freshSession,
@@ -143,7 +144,7 @@ async function loginAdobeFirefly(
         via: "pure-cdp",
       });
     }
-    return NextResponse.json(
+    return Response.json(
       {
         success: false,
         error: pure.error || "Adobe Firefly sign-in did not capture an authenticated IMS JWT.",
@@ -152,23 +153,23 @@ async function loginAdobeFirefly(
     );
   } catch (err) {
     const msg = sanitizeErrorMessage(err instanceof Error ? err.message : err);
-    return NextResponse.json({ success: false, error: msg }, { status: 400 });
+    return Response.json({ success: false, error: msg }, { status: 400 });
   }
 }
 
 // --- POST: Start login flow -------------------------------------------------
 
 export async function POST(
-  req: NextRequest,
+  req: Request,
   { params }: { params: Promise<{ id: string }> }
-): Promise<NextResponse> {
+): Promise<Response> {
   const auth = await requireManagementAuth(req);
   if (auth) return auth;
 
   const { id } = await params;
   const provider = await getCachedProviderConnectionById(id);
   if (!provider) {
-    return NextResponse.json({ success: false, error: "Provider not found" }, { status: 404 });
+    return Response.json({ success: false, error: "Provider not found" }, { status: 404 });
   }
 
   const body = (await req.json().catch(() => ({}))) as {
@@ -183,7 +184,7 @@ export async function POST(
       return await loginAdobeFirefly(id, body);
     } catch (err) {
       const msg = sanitizeErrorMessage(err instanceof Error ? err.message : err);
-      return NextResponse.json(
+      return Response.json(
         { success: false, error: `Adobe Firefly sign-in error: ${msg}` },
         { status: 500 }
       );
@@ -195,13 +196,14 @@ export async function POST(
   // persistence (same shape as the other web-cookie providers).
   if (providerSlug === "conol-web" || providerSlug === "cnl") {
     try {
-      const { startConolBrowserLogin } =
-        await import("../../../../../../../open-sse/services/conolBrowserLogin.ts");
+      const { startConolBrowserLogin } = await load(
+        "@shiguang-gateway/open-sse/services/conolBrowserLogin"
+      );
       const result = await startConolBrowserLogin(
         typeof body.timeout === "number" ? body.timeout : undefined
       );
       if (!result.success || !result.credentials) {
-        return NextResponse.json(result, { status: 400 });
+        return Response.json(result, { status: 400 });
       }
       try {
         await updateProviderConnection(id, {
@@ -210,19 +212,19 @@ export async function POST(
         });
       } catch (err) {
         const msg = sanitizeErrorMessage(err instanceof Error ? err.message : err);
-        return NextResponse.json(
+        return Response.json(
           { success: false, error: `Extracted but failed to persist: ${msg}` },
           { status: 500 }
         );
       }
-      return NextResponse.json({
+      return Response.json({
         success: true,
         credentials: result.credentials,
         persisted: true,
       });
     } catch (err) {
       const msg = sanitizeErrorMessage(err instanceof Error ? err.message : err);
-      return NextResponse.json(
+      return Response.json(
         { success: false, error: `Login endpoint error: ${msg}` },
         { status: 500 }
       );
@@ -234,7 +236,9 @@ export async function POST(
     // TOKEN_EXTRACTION_CONFIGS can find the extraction config.
     // Bug: the previous code passed `id` (connection UUID), so the lookup always
     // missed and returned "No extraction config" without launching a browser.
-    const { inAppLoginService } = await import("../../../../../../../open-sse/services/inAppLoginService.ts");
+    const { inAppLoginService } = await load(
+      "@shiguang-gateway/open-sse/services/inAppLoginService"
+    );
 
     const result = await inAppLoginService.startLogin(providerSlug || id, {
       timeout: clampLoginTimeoutMs(body.timeout),
@@ -249,7 +253,7 @@ export async function POST(
           providerSpecificData: result.credentials,
         });
 
-        return NextResponse.json({
+        return Response.json({
           success: true,
           credentials: result.credentials,
           persisted: true,
@@ -257,20 +261,20 @@ export async function POST(
       } catch (err) {
         // Hard Rule #12: never put raw err.message/stack in a response body.
         const msg = sanitizeErrorMessage(err instanceof Error ? err.message : err);
-        return NextResponse.json(
+        return Response.json(
           { success: false, error: `Extracted but failed to persist: ${msg}` },
           { status: 500 }
         );
       }
     }
 
-    return NextResponse.json(result, {
+    return Response.json(result, {
       status: result.success ? 200 : 400,
     });
   } catch (err) {
     // Hard Rule #12: never put raw err.message/stack in a response body.
     const msg = sanitizeErrorMessage(err instanceof Error ? err.message : err);
-    return NextResponse.json(
+    return Response.json(
       { success: false, error: `Login endpoint error: ${msg}` },
       { status: 500 }
     );

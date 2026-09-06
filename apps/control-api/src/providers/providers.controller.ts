@@ -38,6 +38,12 @@ import {
   getProviderModels as getProviderModelsDiscovery,
   syncProviderModels,
 } from "@shiguang-gateway/core-domain/control/provider-models-discovery";
+import {
+  DELETE as deleteProviderDetail,
+  GET as getProviderDetail,
+  PUT as updateProviderDetail,
+} from "./handlers/provider-detail.js";
+import { POST as loginProvider } from "./handlers/provider-login/provider-login.js";
 
 @Controller("api")
 export class ProvidersController {
@@ -76,6 +82,31 @@ export class ProvidersController {
   @Post("providers/import")
   import(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
     return this.routes.dispatch(request, reply, importProviders);
+  }
+
+  @Get("providers/:id")
+  getProvider(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, getProviderDetail, { id });
+  }
+
+  @Put("providers/:id")
+  updateProvider(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, updateProviderDetail, { id });
+  }
+
+  @Patch("providers/:id")
+  patchProvider(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, updateProviderDetail, { id });
+  }
+
+  @Delete("providers/:id")
+  deleteProvider(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, deleteProviderDetail, { id });
+  }
+
+  @Post("providers/:id/login")
+  loginProvider(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, loginProvider, { id });
   }
 
   @Get("providers/:id/cc-alias")
