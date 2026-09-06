@@ -52,6 +52,7 @@ import { VscodeResponsesModule } from "./vscode-responses/vscode-responses.modul
 import { VscodeCombosModule } from "./vscode-combos/vscode-combos.module.js";
 import { GeminiV1betaModule } from "./gemini-v1beta/gemini-v1beta.module.js";
 import { VncSessionModule } from "./vnc-session/vnc-session.module.js";
+import { TranslatorModule } from "./translator/translator.module.js";
 
 @Module({
   imports: [
@@ -109,6 +110,7 @@ import { VncSessionModule } from "./vnc-session/vnc-session.module.js";
     VscodeCombosModule,
     GeminiV1betaModule,
     VncSessionModule,
+    TranslatorModule,
   ],
 })
 export class AppModule {}

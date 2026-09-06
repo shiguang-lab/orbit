@@ -13,7 +13,7 @@ export async function POST(request: Request): Promise<Response> {
   let body: unknown;
   try { body = await request.json(); } catch { return errorResponse(400, "Invalid JSON body"); }
   const parsed = AgentBridgeServerActionSchema.safeParse(body);
-  if (!parsed.success) return errorResponse(400, "Invalid request body", parsed.error.flatten());
+  if (!parsed.success) return errorResponse(400, "Invalid request body");
   const raw = body as Record<string, unknown>;
   const supplied = typeof raw.sudoPassword === "string" ? raw.sudoPassword : undefined;
   const password = resolveMitmSudoPassword(supplied, getCachedPassword());

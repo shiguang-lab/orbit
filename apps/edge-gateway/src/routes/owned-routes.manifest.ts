@@ -73,6 +73,11 @@ export const ownedEdgeRoutes: readonly OwnedRoute[] = [
   { path: "/v1/vscode/raw/:token/models", methods: ["GET", "OPTIONS"] },
   { path: "/v1/vscode/raw/:token/v1/models", methods: ["GET", "OPTIONS"] },
   { path: "/v1/search", methods: ["GET", "OPTIONS", "POST"] },
+  { path: "/api/translator/detect", methods: ["POST"] },
+  { path: "/api/translator/translate", methods: ["POST"] },
+  { path: "/api/translator/transform-stream", methods: ["POST"] },
+  { path: "/api/translator/send", methods: ["POST"] },
+  { path: "/api/translator/history", methods: ["GET"] },
 ];
 
 /** Paths physically owned by edge-gateway, expressed as compatibility catalog segments. */

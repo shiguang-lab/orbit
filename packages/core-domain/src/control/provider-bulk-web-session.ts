@@ -1,26 +1,26 @@
 import { NextResponse } from "next/server";
-import { getAuditRequestContext, logAuditEvent } from "../../../../lib/compliance/index.ts";
+import { getAuditRequestContext, logAuditEvent } from "../lib/compliance/index.ts";
 import {
   getProviderAuditTarget,
   summarizeProviderConnectionForAudit,
-} from "../../../../lib/compliance/providerAudit.ts";
-import { createProviderConnection, isCloudEnabled } from "../../../../models/index.ts";
-import { getConsistentMachineId } from "../../../../shared/utils/machineId.ts";
-import { syncToCloud } from "../../../../lib/cloudSync.ts";
-import { bulkWebSessionImportSchema } from "../../../../shared/validation/schemas.ts";
-import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
-import { sanitizeProviderSpecificDataForResponse } from "../../../../lib/providers/requestDefaults.ts";
-import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+} from "../lib/compliance/providerAudit.ts";
+import { createProviderConnection, isCloudEnabled } from "../models/index.ts";
+import { getConsistentMachineId } from "../shared/utils/machineId.ts";
+import { syncToCloud } from "../lib/cloudSync.ts";
+import { bulkWebSessionImportSchema } from "../shared/validation/schemas.ts";
+import { isValidationFailure, validateBody } from "../shared/validation/helpers.ts";
+import { sanitizeProviderSpecificDataForResponse } from "../lib/providers/requestDefaults.ts";
+import { requireManagementAuth } from "../lib/api/requireManagementAuth.ts";
+import { sanitizeErrorMessage } from "../../open-sse/utils/error.ts";
 import {
   requiresWebSessionCredential,
   getWebSessionCredentialRequirement,
   hasUsableWebSessionCredential,
   resolveWebSessionImportApiKey,
 } from "@shiguang-gateway/contracts/config/webSessionCredentials";
-import { rejectRetiredCommonChatGptWebProvider } from "../../../../lib/providers/chatgptWebRetirementResponse.ts";
+import { rejectRetiredCommonChatGptWebProvider } from "../lib/providers/chatgptWebRetirementResponse.ts";
 
-export async function POST(request: Request) {
+export async function postBulkWebSession(request: Request) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 

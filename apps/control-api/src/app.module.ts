@@ -36,6 +36,7 @@ import { TierConfigModule } from "./settings/tier-config/tier-config.module.js";
 import { SystemModule } from "./system/system.module.js";
 import { FreeProxiesModule } from "./settings/free-proxies/free-proxies.module.js";
 import { ProviderAuthImportModule } from "./providers/auth/provider-auth-import.module.js";
+import { ProviderBulkWebSessionModule } from "./providers/bulk-web-session/provider-bulk-web-session.module.js";
 import { CompressionModule } from "./settings/compression/compression.module.js";
 import { QdrantModule } from "./settings/qdrant/qdrant.module.js";
 import { MitmModule } from "./settings/mitm/mitm.module.js";
@@ -125,6 +126,7 @@ import { DocsModule } from "./docs/docs.module.js";
     SystemModule,
     FreeProxiesModule,
     ProviderAuthImportModule,
+    ProviderBulkWebSessionModule,
     CompressionModule,
     QdrantModule,
     MitmModule,

@@ -10,7 +10,7 @@ export function GET(): Response { return Response.json({ path: process.env.AGENT
 export async function POST(request: Request): Promise<Response> {
   let body: unknown; try { body = await request.json(); } catch { return errorResponse(400, "Invalid JSON body"); }
   const parsed = AgentBridgeUpstreamCaPostSchema.safeParse(body);
-  if (!parsed.success) return errorResponse(400, "Invalid request body", parsed.error.flatten());
+  if (!parsed.success) return errorResponse(400, "Invalid request body");
   const value = parsed.data.path;
   if (!fs.existsSync(value)) return errorResponse(400, `Upstream CA file not found: ${value}`);
   try { writePath(value); } catch (error) { return errorResponse(500, sanitizeErrorMessage(error instanceof Error ? error.message : String(error))); }

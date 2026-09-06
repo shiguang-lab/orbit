@@ -88,6 +88,7 @@ const allowedCoreDomainSubpaths = {
     "shared/upstream-error",
     "shared/validation/schemas",
     "shared/validation/helpers",
+    "shared/connection-isolation",
     "shared/tokenizer",
     "edge/music-rate-limit",
     "edge/media-generation",
@@ -165,6 +166,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
 
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/provider-test-batch",
+  "control/provider-bulk-web-session",
   "control/acp",
   "conductor/faro-proxy",
   "conductor/hub-proxy",

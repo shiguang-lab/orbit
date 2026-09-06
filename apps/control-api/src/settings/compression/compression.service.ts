@@ -9,12 +9,25 @@ import { getCompressionRunTelemetrySummary } from "@shiguang-gateway/core-domain
 import { getCavemanRuleMetadata } from "@shiguang-gateway/open-sse/services/compression/cavemanRules";
 import {
   discoverRepeatedNoise,
-  listRtkCommandSamples,
 } from "@shiguang-gateway/open-sse/services/compression/engines/rtk";
 import {
   getRtkFilterCatalog,
   getRtkFilterLoadDiagnostics,
+  loadRtkFilters,
 } from "@shiguang-gateway/open-sse/services/compression/engines/rtk/filterLoader";
+import {
+  commandToId,
+  detectCommandType,
+  listRtkCommandSamples,
+  processRtkText,
+  readRtkRawOutput,
+  suggestFilter,
+} from "@shiguang-gateway/open-sse/services/compression/engines/rtk";
+import {
+  installGlobalRtkTomlV1,
+  parseRtkTomlV1,
+  type RtkTomlCompatibilityResult,
+} from "@shiguang-gateway/open-sse/services/compression/engines/rtk/tomlCompatibility";
 
 const EMPTY_TELEMETRY_SUMMARY = {
   totalRuns: 0,
@@ -59,6 +72,39 @@ export class CompressionSettingsService {
 
   getRtkFilters() {
     return { filters: getRtkFilterCatalog(), diagnostics: getRtkFilterLoadDiagnostics() };
+  }
+
+  getRtkLearn(command: string, limit: number) {
+    const targetId = commandToId(command);
+    const matching = listRtkCommandSamples({ limit }).filter(
+      (sample) => commandToId(sample.command) === targetId,
+    );
+    return { command, sampleCount: matching.length, filter: suggestFilter(command, matching) };
+  }
+
+  testRtk(text: string, command: string | undefined, config: Record<string, unknown> | undefined) {
+    const detection = detectCommandType(text, command);
+    return {
+      detection,
+      ...processRtkText(text, { command, config }),
+    };
+  }
+
+  readRtkRawOutput(id: string) {
+    return readRtkRawOutput(id);
+  }
+
+  importRtkToml(
+    action: "validate" | "install",
+    content: string,
+    overwrite?: boolean,
+  ): RtkTomlCompatibilityResult & { installedPath?: string; backupCreated?: boolean } {
+    const result =
+      action === "install"
+        ? installGlobalRtkTomlV1(content, { overwrite })
+        : parseRtkTomlV1(content);
+    if (action === "install") loadRtkFilters({ refresh: true });
+    return result;
   }
 
   getMcpAccessibility() {

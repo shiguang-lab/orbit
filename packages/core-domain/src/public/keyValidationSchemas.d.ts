@@ -57,6 +57,9 @@ export const volcenginePlanIdentitySchema: z.ZodTypeAny;
 export const confirmedAccountSchema: z.ZodTypeAny;
 export const zedImportSchema: z.ZodTypeAny;
 export const v1SearchSchema: z.ZodTypeAny;
+export const translatorDetectSchema: z.ZodTypeAny;
+export const translatorSendSchema: z.ZodTypeAny;
+export const translatorTranslateSchema: z.ZodTypeAny;
 export type ConfirmedAccount = {
   service: string;
   account: string;

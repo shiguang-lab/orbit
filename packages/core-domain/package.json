@@ -387,6 +387,10 @@
       "types": "./src/public/providerAuthImport.d.ts",
       "import": "./src/control/providerAuthImport.ts"
     },
+    "./control/provider-bulk-web-session": {
+      "types": "./src/public/providerBulkWebSession.d.ts",
+      "import": "./src/control/provider-bulk-web-session.ts"
+    },
     "./control/free-onboarding": {
       "types": "./src/public/freeOnboarding.d.ts",
       "import": "./src/lib/providers/freeOnboarding.ts"

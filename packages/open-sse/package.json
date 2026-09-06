@@ -89,6 +89,9 @@
       "types": "./public/translator.d.ts",
       "import": "./translator/index.ts"
     },
+    "./translator/formats": "./translator/formats.ts",
+    "./services/provider": "./services/provider.ts",
+    "./transformer/responsesTransformer": "./transformer/responsesTransformer.ts",
     "./handlers/imageGeneration": {
       "types": "./public/imageGeneration.d.ts",
       "import": "./handlers/imageGeneration.ts"
@@ -189,6 +192,10 @@
     "./services/compression/engines/rtk/filterLoader": {
       "types": "./public/rtk.d.ts",
       "import": "./services/compression/engines/rtk/filterLoader.ts"
+    },
+    "./services/compression/engines/rtk/tomlCompatibility": {
+      "types": "./public/rtkTomlCompatibility.d.ts",
+      "import": "./services/compression/engines/rtk/tomlCompatibility.ts"
     },
     "./services/combo": {
       "types": "./public/combo.d.ts",
