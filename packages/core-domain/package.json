@@ -214,6 +214,14 @@
       "types": "./src/public/managementAuth.d.ts",
       "import": "./src/lib/api/requireManagementAuth.ts"
     },
+    "./control/gamification": {
+      "types": "./src/public/gamification.d.ts",
+      "import": "./src/lib/gamification/index.ts"
+    },
+    "./control/gamification-db": {
+      "types": "./src/public/gamificationDb.d.ts",
+      "import": "./src/lib/db/gamification.ts"
+    },
     "./shared/public-safe-error": {
       "types": "./src/public/publicSafeTunnelError.d.ts",
       "import": "./src/lib/api/publicSafeTunnelError.ts"

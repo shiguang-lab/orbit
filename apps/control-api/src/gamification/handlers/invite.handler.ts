@@ -1,31 +1,30 @@
-import { NextRequest, NextResponse } from "next/server";
-import { CORS_HEADERS, handleCorsOptions } from "../../../../shared/utils/cors.ts";
-import { createInvite, listInvites, revokeInvite } from "../../../../lib/gamification/invites.ts";
-import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
+import { CORS_HEADERS, handleCorsOptions } from "@shiguang-gateway/core-domain/shared/cors";
+import { createInvite, listInvites, revokeInvite } from "@shiguang-gateway/core-domain/control/gamification";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { z } from "zod";
 
 export async function OPTIONS() {
   return handleCorsOptions();
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 
   const url = new URL(request.url);
   const apiKeyId = url.searchParams.get("apiKeyId");
   if (!apiKeyId) {
-    return NextResponse.json(
+    return Response.json(
       { error: "apiKeyId required" },
       { status: 400, headers: CORS_HEADERS }
     );
   }
 
   const invites = await listInvites(apiKeyId);
-  return NextResponse.json({ invites }, { headers: CORS_HEADERS });
+  return Response.json({ invites }, { headers: CORS_HEADERS });
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 
@@ -33,7 +32,7 @@ export async function POST(request: NextRequest) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json(
+    return Response.json(
       { error: "Invalid JSON body" },
       { status: 400, headers: CORS_HEADERS }
     );
@@ -47,7 +46,7 @@ export async function POST(request: NextRequest) {
 
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json(
+    return Response.json(
       { error: "Invalid request", details: parsed.error.issues },
       { status: 400, headers: CORS_HEADERS }
     );
@@ -59,19 +58,19 @@ export async function POST(request: NextRequest) {
     parsed.data.maxUses
   );
 
-  return NextResponse.json({ code, token }, { status: 201, headers: CORS_HEADERS });
+  return Response.json({ code, token }, { status: 201, headers: CORS_HEADERS });
 }
 
-export async function DELETE(request: NextRequest) {
+export async function DELETE(request: Request) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 
   const url = new URL(request.url);
   const inviteId = url.searchParams.get("id");
   if (!inviteId) {
-    return NextResponse.json({ error: "id required" }, { status: 400, headers: CORS_HEADERS });
+    return Response.json({ error: "id required" }, { status: 400, headers: CORS_HEADERS });
   }
 
   await revokeInvite(inviteId);
-  return NextResponse.json({ success: true }, { headers: CORS_HEADERS });
+  return Response.json({ success: true }, { headers: CORS_HEADERS });
 }

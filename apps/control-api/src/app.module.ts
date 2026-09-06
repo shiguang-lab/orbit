@@ -47,6 +47,7 @@ import { ProxySettingsModule } from "./settings/proxy/proxy-settings.module.js";
 import { QuotaSettingsModule } from "./settings/quota/quota.module.js";
 import { DarioAdminModule } from "./services/dario-admin.module.js";
 import { UsageModule } from "./usage/usage.module.js";
+import { GamificationModule } from "./gamification/gamification.module.js";
 
 @Module({
   imports: [
@@ -98,6 +99,7 @@ import { UsageModule } from "./usage/usage.module.js";
     QuotaSettingsModule,
     DarioAdminModule,
     UsageModule,
+    GamificationModule,
   ],
 })
 export class AppModule {}

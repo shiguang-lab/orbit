@@ -5,18 +5,16 @@
  *
  * LOCAL_ONLY: not process-spawning; management-scoped via requireManagementAuth.
  */
-import { NextRequest, NextResponse } from "next/server";
-
-import { CORS_HEADERS, handleCorsOptions } from "../../../../shared/utils/cors.ts";
-import { getBadgeDefinitions } from "../../../../lib/db/gamification.ts";
-import { seedBuiltinBadges } from "../../../../lib/gamification/badges.ts";
-import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
+import { CORS_HEADERS, handleCorsOptions } from "@shiguang-gateway/core-domain/shared/cors";
+import { getBadgeDefinitions } from "@shiguang-gateway/core-domain/control/gamification-db";
+import { seedBuiltinBadges } from "@shiguang-gateway/core-domain/control/gamification";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 
 export async function OPTIONS() {
   return handleCorsOptions();
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 
@@ -24,5 +22,5 @@ export async function GET(request: NextRequest) {
 
   const category = new URL(request.url).searchParams.get("category") || undefined;
   const badges = getBadgeDefinitions(category);
-  return NextResponse.json({ badges }, { headers: CORS_HEADERS });
+  return Response.json({ badges }, { headers: CORS_HEADERS });
 }

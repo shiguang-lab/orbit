@@ -1,18 +1,17 @@
-import { NextRequest, NextResponse } from "next/server";
-import { CORS_HEADERS, handleCorsOptions } from "../../../../shared/utils/cors.ts";
+import { CORS_HEADERS, handleCorsOptions } from "@shiguang-gateway/core-domain/shared/cors";
 import {
   getTopN,
   getRank,
   getNeighbors,
   type LeaderboardScope,
-} from "../../../../lib/gamification/leaderboard.ts";
-import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
+} from "@shiguang-gateway/core-domain/control/gamification";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 
 export async function OPTIONS() {
   return handleCorsOptions();
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 
@@ -23,7 +22,7 @@ export async function GET(request: NextRequest) {
   const apiKeyId = url.searchParams.get("apiKeyId");
 
   if (!Number.isInteger(limit) || limit < 1 || limit > 200) {
-    return NextResponse.json(
+    return Response.json(
       { error: "'limit' must be an integer between 1 and 200" },
       { status: 400, headers: CORS_HEADERS }
     );
@@ -38,5 +37,5 @@ export async function GET(request: NextRequest) {
     neighbors = await getNeighbors(apiKeyId, scope);
   }
 
-  return NextResponse.json({ entries, myRank, neighbors }, { headers: CORS_HEADERS });
+  return Response.json({ entries, myRank, neighbors }, { headers: CORS_HEADERS });
 }

@@ -1,0 +1,20 @@
+export type LeaderboardScope = "global" | "weekly" | "monthly" | "tokens_shared" | "contributions";
+export interface LeaderboardEntry { apiKeyId: string; scope: LeaderboardScope; score: number; rank?: number; }
+export function getAnomalies(): Promise<unknown[]>;
+export function updateScore(apiKeyId: string, scope: string, points: number): Promise<void> | void;
+export function getTopN(scope: LeaderboardScope, limit: number): Promise<unknown[]>;
+export function getRank(apiKeyId: string, scope: LeaderboardScope): Promise<number | null>;
+export function getNeighbors(apiKeyId: string, scope: LeaderboardScope): Promise<unknown[]>;
+export function rotateScope(scope: "weekly" | "monthly"): Promise<void>;
+export function seedBuiltinBadges(): Promise<void>;
+export function transferTokens(fromApiKeyId: string, toApiKeyId: string, amount: number, reason?: string): Promise<{ success: boolean; error?: string; idempotencyKey?: string }>;
+export function getBalance(apiKeyId: string): Promise<unknown>;
+export function getHistory(apiKeyId: string): Promise<unknown[]>;
+export function createInvite(apiKeyId: string, serverUrl?: string, maxUses?: number): Promise<{ code: string; token: string }>;
+export function redeemInviteCode(code: string, apiKeyId: string): Promise<{ success: boolean; serverUrl?: string; error?: string }>;
+export function listInvites(apiKeyId: string): Promise<unknown[]>;
+export function revokeInvite(inviteId: string): Promise<boolean>;
+export function connectServer(name: string, url: string, apiKey: string): Promise<unknown>;
+export function disconnectServer(serverId: string): Promise<void>;
+export function listServers(): Promise<unknown[]>;
+export function createBadgeNotificationStream(apiKeyId: string, signal?: AbortSignal): ReadableStream<Uint8Array>;

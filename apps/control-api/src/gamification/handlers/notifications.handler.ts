@@ -1,12 +1,11 @@
-import { NextRequest } from "next/server";
-import { CORS_HEADERS } from "../../../../shared/utils/cors.ts";
-import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
-import { createBadgeNotificationStream } from "../../../../lib/gamification/notifications.ts";
+import { CORS_HEADERS } from "@shiguang-gateway/core-domain/shared/cors";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { createBadgeNotificationStream } from "@shiguang-gateway/core-domain/control/gamification";
 
 /**
  * GET /api/gamification/notifications?apiKeyId=xxx — SSE badge unlock notifications
  */
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   const authErr = await requireManagementAuth(request);
   if (authErr) return authErr;
 

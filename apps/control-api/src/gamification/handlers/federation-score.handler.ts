@@ -1,7 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { CORS_HEADERS, handleCorsOptions } from "../../../../../shared/utils/cors.ts";
-import { updateScore } from "../../../../../lib/gamification/leaderboard.ts";
-import { getConnectedServerByKeyHash } from "../../../../../lib/db/gamification.ts";
+import { CORS_HEADERS, handleCorsOptions } from "@shiguang-gateway/core-domain/shared/cors";
+import { updateScore } from "@shiguang-gateway/core-domain/control/gamification";
+import { getConnectedServerByKeyHash } from "@shiguang-gateway/core-domain/control/gamification-db";
 import { z } from "zod";
 import crypto from "crypto";
 
@@ -12,10 +11,10 @@ export async function OPTIONS() {
 /**
  * POST /api/gamification/federation/score — Receive score from connected instance
  */
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   const authHeader = request.headers.get("Authorization");
   if (!authHeader?.startsWith("Bearer ")) {
-    return NextResponse.json(
+    return Response.json(
       { error: "Missing authorization" },
       { status: 401, headers: CORS_HEADERS }
     );
@@ -28,7 +27,7 @@ export async function POST(request: NextRequest) {
   const server = getConnectedServerByKeyHash(tokenHash);
 
   if (!server) {
-    return NextResponse.json(
+    return Response.json(
       { error: "Invalid or unauthorized token" },
       { status: 403, headers: CORS_HEADERS }
     );
@@ -43,10 +42,10 @@ export async function POST(request: NextRequest) {
 
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: "Invalid request" }, { status: 400, headers: CORS_HEADERS });
+    return Response.json({ error: "Invalid request" }, { status: 400, headers: CORS_HEADERS });
   }
 
   await updateScore(parsed.data.apiKeyId, parsed.data.scope, parsed.data.score);
 
-  return NextResponse.json({ success: true }, { headers: CORS_HEADERS });
+  return Response.json({ success: true }, { headers: CORS_HEADERS });
 }

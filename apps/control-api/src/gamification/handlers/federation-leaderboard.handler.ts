@@ -1,7 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { CORS_HEADERS, handleCorsOptions } from "../../../../../shared/utils/cors.ts";
-import { type LeaderboardScope, getTopN } from "../../../../../lib/gamification/leaderboard.ts";
-import { getConnectedServerByKeyHash } from "../../../../../lib/db/gamification.ts";
+import { CORS_HEADERS, handleCorsOptions } from "@shiguang-gateway/core-domain/shared/cors";
+import { type LeaderboardScope, getTopN } from "@shiguang-gateway/core-domain/control/gamification";
+import { getConnectedServerByKeyHash } from "@shiguang-gateway/core-domain/control/gamification-db";
 import crypto from "crypto";
 
 export async function OPTIONS() {
@@ -13,11 +12,11 @@ export async function OPTIONS() {
  *
  * Requires bearer token authentication against community_servers.
  */
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   // Authenticate: validate bearer token against community_servers
   const authHeader = request.headers.get("Authorization");
   if (!authHeader?.startsWith("Bearer ")) {
-    return NextResponse.json(
+    return Response.json(
       { error: "Missing authorization" },
       { status: 401, headers: CORS_HEADERS }
     );
@@ -30,7 +29,7 @@ export async function GET(request: NextRequest) {
   const server = getConnectedServerByKeyHash(tokenHash);
 
   if (!server) {
-    return NextResponse.json(
+    return Response.json(
       { error: "Invalid or unauthorized token" },
       { status: 403, headers: CORS_HEADERS }
     );
@@ -41,7 +40,7 @@ export async function GET(request: NextRequest) {
   const rawLimit = url.searchParams.get("limit");
   const limit = rawLimit === null ? 100 : Number(rawLimit);
   if (!Number.isInteger(limit) || limit < 1 || limit > 200) {
-    return NextResponse.json(
+    return Response.json(
       { error: "'limit' must be an integer between 1 and 200" },
       { status: 400, headers: CORS_HEADERS }
     );
@@ -49,7 +48,7 @@ export async function GET(request: NextRequest) {
 
   const entries = await getTopN(scope, limit);
 
-  return NextResponse.json(
+  return Response.json(
     {
       entries: entries.map((e: any) => ({
         apiKeyId: e.apiKeyId,

@@ -4,7 +4,7 @@
  * @module lib/gamification
  */
 
-export { emitGamificationEvent } from "./events";
+export { emitGamificationEvent } from "./events.js";
 export {
   updateScore,
   getRank,
@@ -13,9 +13,9 @@ export {
   rotateScope,
   type LeaderboardScope,
   type LeaderboardEntry,
-} from "./leaderboard";
-export { validateScoreChange, getAnomalies } from "./antiCheat";
-export { BUILTIN_BADGES } from "./badges";
+} from "./leaderboard.js";
+export { validateScoreChange, getAnomalies } from "./antiCheat.js";
+export { BUILTIN_BADGES, seedBuiltinBadges } from "./badges.js";
 export {
   xpForLevel,
   cumulativeXpForLevel,
@@ -25,13 +25,15 @@ export {
   getLevelTier,
   XP_REWARDS,
   type XpAction,
-} from "./xp";
-export { updateStreak } from "./streaks";
+} from "./xp.js";
+export { updateStreak } from "./streaks.js";
 export {
   recordBadgeUnlock,
   consumeBadgeUnlocks,
   createBadgeNotificationStream,
-} from "./notifications";
-export { transferTokens, getBalance, getHistory } from "./sharing";
-export { createInvite, redeemInvite as redeemInviteCode } from "./invites";
-export { connectServer, disconnectServer, listServers } from "./servers";
+} from "./notifications.js";
+export { transferTokens, getBalance, getHistory } from "./sharing.js";
+export { createInvite, redeemInvite as redeemInviteCode, listInvites, revokeInvite } from "./invites.js";
+export { connectServer, disconnectServer, listServers } from "./servers.js";
+
+export { getBadges, getAllEarnedBadges, getBadgeDefinitions, getXp, getAggregateXp, getConnectedServerByKeyHash } from "../db/gamification.js";

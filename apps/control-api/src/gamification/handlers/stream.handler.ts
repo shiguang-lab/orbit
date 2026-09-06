@@ -5,10 +5,9 @@
  * Supports all leaderboard scopes (global, weekly, monthly, tokens_shared, contributions).
  */
 
-import { NextRequest } from "next/server";
-import { type LeaderboardScope, getTopN } from "../../../../lib/gamification/leaderboard.ts";
-import { CORS_HEADERS } from "../../../../shared/utils/cors.ts";
-import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
+import { type LeaderboardScope, getTopN } from "@shiguang-gateway/core-domain/control/gamification";
+import { CORS_HEADERS } from "@shiguang-gateway/core-domain/shared/cors";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 
 const VALID_SCOPES: ReadonlySet<string> = new Set([
   "global",
@@ -24,7 +23,7 @@ const VALID_SCOPES: ReadonlySet<string> = new Set([
  * Query params:
  *   scope — one of: global, weekly, monthly, tokens_shared, contributions (default: global)
  */
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   const authErr = await requireManagementAuth(request);
   if (authErr) return authErr;
 

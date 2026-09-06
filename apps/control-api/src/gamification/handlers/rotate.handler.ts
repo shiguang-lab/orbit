@@ -1,7 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { CORS_HEADERS, handleCorsOptions } from "../../../../shared/utils/cors.ts";
-import { rotateScope } from "../../../../lib/gamification/leaderboard.ts";
-import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
+import { CORS_HEADERS, handleCorsOptions } from "@shiguang-gateway/core-domain/shared/cors";
+import { rotateScope } from "@shiguang-gateway/core-domain/control/gamification";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { z } from "zod";
 
 export async function OPTIONS() {
@@ -11,7 +10,7 @@ export async function OPTIONS() {
 /**
  * POST /api/gamification/rotate — Manually trigger leaderboard rotation
  */
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 
@@ -22,10 +21,10 @@ export async function POST(request: NextRequest) {
 
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: "Invalid request" }, { status: 400, headers: CORS_HEADERS });
+    return Response.json({ error: "Invalid request" }, { status: 400, headers: CORS_HEADERS });
   }
 
   await rotateScope(parsed.data.scope);
 
-  return NextResponse.json({ success: true, scope: parsed.data.scope }, { headers: CORS_HEADERS });
+  return Response.json({ success: true, scope: parsed.data.scope }, { headers: CORS_HEADERS });
 }

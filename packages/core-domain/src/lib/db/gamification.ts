@@ -5,8 +5,8 @@
  * and community server connections.
  */
 
-import { getDbInstance } from "./core";
-import { calculateLevel } from "../gamification/xp";
+import { getDbInstance } from "./core.js";
+import { calculateLevel } from "../gamification/xp.js";
 
 // ──────────────── Types ────────────────
 
