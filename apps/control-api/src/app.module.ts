@@ -11,6 +11,7 @@ import { CacheModule } from "./cache/cache.module.js";
 import { PricingModule } from "./pricing/pricing.module.js";
 import { ProvidersModule } from "./providers/providers.module.js";
 import { EvalsModule } from "./evals/evals.module.js";
+import { AssessmentModule } from "./assessment/assessment.module.js";
 import { PluginsModule } from "./plugins/plugins.module.js";
 import { QuotaModule } from "./quota/quota.module.js";
 import { ModelsModule } from "./models/models.module.js";
@@ -57,6 +58,7 @@ import { SyncModule } from "./sync/sync.module.js";
 import { RadarModule } from "./radar/radar.module.js";
 import { ResilienceModule } from "./resilience/resilience.module.js";
 import { ToolsModule } from "./tools/tools.module.js";
+import { RegisteredKeysModule } from "./registered-keys/registered-keys.module.js";
 
 @Module({
   imports: [
@@ -73,6 +75,7 @@ import { ToolsModule } from "./tools/tools.module.js";
     CacheModule,
     PricingModule,
     EvalsModule,
+    AssessmentModule,
     PluginsModule,
     QuotaModule,
     ModelsModule,
@@ -119,6 +122,7 @@ import { ToolsModule } from "./tools/tools.module.js";
     RadarModule,
     ResilienceModule,
     ToolsModule,
+    RegisteredKeysModule,
   ],
 })
 export class AppModule {}

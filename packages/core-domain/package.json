@@ -677,6 +677,10 @@
       "types": "./src/public/authenticated.d.ts",
       "import": "./src/shared/utils/apiAuth.ts"
     },
+    "./control/registered-keys": {
+      "types": "./src/public/registeredKeys.d.ts",
+      "import": "./src/lib/db/registeredKeys.ts"
+    },
     "./control/api-key-auth": {
       "types": "./src/public/apiKeyAuth.d.ts",
       "import": "./src/sse/services/auth.ts"
