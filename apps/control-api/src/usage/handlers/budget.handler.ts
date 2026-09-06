@@ -1,4 +1,4 @@
-import { getCostSummary, setBudget, checkBudget } from "@shiguang-gateway/core-domain/control/cost-rules";
+import { getCostSummary, setBudget, checkBudget } from "@shiguang-gateway/core-domain/usage/cost-rules";
 import {
   isValidationFailure,
   validateBody,

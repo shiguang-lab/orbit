@@ -1,4 +1,4 @@
-import { getCostSummary, checkBudget } from "@shiguang-gateway/core-domain/control/cost-rules";
+import { getCostSummary, checkBudget } from "@shiguang-gateway/core-domain/usage/cost-rules";
 import { getApiKeys } from "@shiguang-gateway/core-domain/db/api-keys";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 

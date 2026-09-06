@@ -239,7 +239,7 @@
       "types": "./src/public/compressionCombos.d.ts",
       "import": "./src/lib/db/compressionCombos.ts"
     },
-    "./control/cost-rules": {
+    "./usage/cost-rules": {
       "types": "./src/public/costRules.d.ts",
       "import": "./src/domain/costRules.ts"
     },

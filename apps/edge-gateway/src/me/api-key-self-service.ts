@@ -360,7 +360,7 @@ async function normalizeDeps(deps: ApiKeySelfServiceDeps): Promise<RequiredDeps>
   const costRules =
     deps.getCostSummary && deps.checkBudget
       ? null
-      : await import("@shiguang-gateway/core-domain/control/cost-rules");
+      : await import("@shiguang-gateway/core-domain/usage/cost-rules");
   const dbCore = deps.getDbInstance
     ? null
     : await import("@shiguang-gateway/core-domain/db/ping");

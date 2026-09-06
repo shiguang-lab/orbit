@@ -20,12 +20,12 @@ import {
   loadCostTotal,
   saveBudget,
   saveBudgetResetLog,
-} from "../lib/db/domainState";
+} from "../lib/db/domainState.js";
 import {
   discardSpendBatchEntries,
   resetSpendBatchWriterForTests,
   spendBatchWriter,
-} from "../lib/spend/batchWriter.ts";
+} from "../lib/spend/batchWriter.js";
 
 export type BudgetResetInterval = "daily" | "weekly" | "monthly";
 

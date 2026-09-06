@@ -25,7 +25,7 @@ import {
   isValidationFailure,
   validateBody,
 } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { recordCost } from "@shiguang-gateway/core-domain/control/cost-rules";
+import { recordCost } from "@shiguang-gateway/core-domain/usage/cost-rules";
 import {
   computeCacheKey,
   getOrCoalesce,

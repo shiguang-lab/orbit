@@ -179,7 +179,7 @@ const allowedCoreDomainSubpaths = {
     "shared/error-response",
     "shared/pino-logger",
     "shared/constants/selfServiceScopes",
-    "control/cost-rules",
+    "usage/cost-rules",
     "edge/provider-limits",
     "edge/internal-usage",
     "shared/cors",
@@ -295,7 +295,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/compression-settings",
   "control/compression-combos",
   "control/compression-judge-client",
-  "control/cost-rules",
+  "usage/cost-rules",
   "control/qdrant",
   "db/compression-run-telemetry",
   "control/reasoning-routing",
@@ -1119,6 +1119,7 @@ const retiredRedundantCoreExports = [
   "./edge/music-rate-limit",
   "./catalog/quota-runtime",
   "./control/synced-models",
+  "./control/cost-rules",
 ];
 for (const subpath of retiredRedundantCoreExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {

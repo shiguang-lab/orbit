@@ -298,7 +298,7 @@ import { ensureEngineBreakdown } from "../services/compression/engineBreakdown.t
 import { handleBypassRequest } from "../utils/bypassHandler.ts";
 import { saveRequestUsage, trackPendingRequest, appendRequestLog } from "@shiguang-gateway/core-domain/edge/usage-db";
 import { finalizePendingScope, updatePendingScope } from "@shiguang-gateway/core-domain/usage/pending-request-scope";
-import { recordCost } from "@shiguang-gateway/core-domain/control/cost-rules";
+import { recordCost } from "@shiguang-gateway/core-domain/usage/cost-rules";
 import { calculateCost } from "@shiguang-gateway/core-domain/pricing/modal-cost";
 import {
   buildClaudePassthroughToolNameMap,
