@@ -105,7 +105,7 @@ The current migration wave has moved the control auth (status, CSRF, password lo
 logout and OIDC), health/status/process-control/system version/update/version-manager/Bifrost controls,
 rate-limit toggle, proxy connectivity/registry management, free-proxy catalog/list/stats/sync/
 promotion, settings/database maintenance and feature flags, OneProxy compatibility redirects, compression settings,
-MCP accessibility configuration, compression run telemetry and Caveman rule metadata, provider token refresh,
+MCP accessibility configuration, compression run telemetry, Caveman settings alias and rule metadata, provider token refresh,
 Qdrant configuration, health, semantic-search diagnostics, cleanup, and embedding-model discovery,
 reasoning-routing rule CRUD and policy simulation, Claude Code discovery-alias usage metrics,
 task-aware routing configuration and detection diagnostics,

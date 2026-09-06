@@ -301,6 +301,7 @@ const migratedRouteOwnership = {
     "api/settings/compression/mcp-accessibility/route.ts",
     "api/settings/compression/run-telemetry/route.ts",
     "api/compression/rules/route.ts",
+    "api/context/caveman/config/route.ts",
     "api/settings/qdrant/route.ts",
     "api/settings/qdrant/health/route.ts",
     "api/settings/qdrant/search/route.ts",
