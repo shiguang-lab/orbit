@@ -30,6 +30,51 @@ const walk = (dir, out = []) => {
 };
 
 /**
+ * Keep the physical entity declarations in the documented Nest-style
+ * `src/entities/*.entity.ts` boundary.  The runtime is ORM-neutral, but the
+ * source layout still matters: putting an entity next to a bootstrap helper
+ * or an app implementation makes the catalog easy to bypass accidentally.
+ */
+function assertEntitySourceLayout() {
+  const entitiesDir = join(repoRoot, "packages", "db-schema", "src", "entities");
+  const entries = readdirSync(entitiesDir, { withFileTypes: true });
+  const entityFiles = entries
+    .filter((entry) => entry.isFile() && entry.name.endsWith(".entity.ts"))
+    .map((entry) => entry.name)
+    .sort();
+  if (entityFiles.length === 0) {
+    throw new Error("db-schema has no src/entities/*.entity.ts files");
+  }
+
+  const declarationsOutsideEntityFiles = [];
+  for (const file of walk(join(repoRoot, "packages", "db-schema", "src"))) {
+    const relativePath = relative(repoRoot, file).split(sep).join("/");
+    const isEntityFile = relativePath.startsWith("packages/db-schema/src/entities/") &&
+      relativePath.endsWith(".entity.ts");
+    if (isEntityFile) continue;
+    const source = readFileSync(file, "utf8");
+    if (/export\s+const\s+\w+Entity\s*:\s*EntityDefinition\b/.test(source)) {
+      declarationsOutsideEntityFiles.push(relativePath);
+    }
+  }
+  if (declarationsOutsideEntityFiles.length) {
+    throw new Error(
+      `EntityDefinition declarations must live in src/entities/*.entity.ts: ${declarationsOutsideEntityFiles.join(", ")}`,
+    );
+  }
+
+  const barrel = readFileSync(join(entitiesDir, "index.ts"), "utf8");
+  const missingBarrelExports = entityFiles.filter((file) => {
+    const stem = file.replace(/\.ts$/, "").replace(/\./g, "\\.");
+    return !new RegExp(`export\\s+\\*\\s+from\\s+[\"']\\./${stem}\\.(?:js|ts)[\"']`).test(barrel);
+  });
+  if (missingBarrelExports.length) {
+    throw new Error(`src/entities/index.ts does not export: ${missingBarrelExports.join(", ")}`);
+  }
+  console.log(`db-schema entity source layout: PASS (${entityFiles.length} files)`);
+}
+
+/**
  * Resolve deployable apps through workspace package dependencies. This is
  * deliberately separate from SQL evidence: a package can be consumed by
  * several apps while a particular table remains write-owned by one app.
@@ -96,6 +141,7 @@ function collectUsage(entities, appEntries, packageEntries, appConsumers) {
 }
 
 try {
+  assertEntitySourceLayout();
   const compile = spawnSync(
     "pnpm",
     [
