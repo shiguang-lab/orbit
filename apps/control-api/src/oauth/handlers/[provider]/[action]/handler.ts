@@ -14,7 +14,7 @@ import {
   buildOAuthConnectionCreatePayload,
   findExistingOAuthConnectionMatch,
 } from "@shiguang-gateway/core-domain/control/oauth-runtime/connectionPersistence";
-import { createDeviceFlowTicket, getDeviceFlowTicketStatus } from "@shiguang-gateway/core-domain/control/oauth-runtime/deviceFlowTickets";
+import { createDeviceFlowTicket, getDeviceFlowTicketStatus } from "../../../device-flow-tickets.js";
 import {
   createProviderConnection,
   updateProviderConnection,

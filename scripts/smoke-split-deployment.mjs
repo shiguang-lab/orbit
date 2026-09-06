@@ -145,9 +145,12 @@ async function assertTcpClosed(port) {
 }
 
 try {
-  services.forEach(start);
+  // Match compose startup ordering: edge completes schema migration before
+  // the remaining deployables open the shared database.
+  start(services[0]);
   await waitHttp(18887, "/healthz");
   await waitHttp(18887, "/readyz");
+  services.slice(1).forEach(start);
   start(workerService);
   await waitHttp(18891, "/internal/jobs/commands/v1", 401, "POST");
   const authenticatedJobCommand = await fetch("http://127.0.0.1:18891/internal/jobs/commands/v1", {

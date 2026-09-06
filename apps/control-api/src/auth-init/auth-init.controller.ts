@@ -2,7 +2,7 @@ import { Controller, Get, Param, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 import { initializeControlRuntime, issueDahlTokens } from "@shiguang-gateway/core-domain/control/auth-init";
-import { completeCodexDeviceFlow, getCodexDeviceTicket } from "@shiguang-gateway/open-sse/oauth/codex-device-completion";
+import { completeCodexDeviceFlow, getCodexDeviceTicket } from "../oauth/codex-device-completion.js";
 
 @Controller()
 export class AuthInitController {

@@ -9,10 +9,6 @@
       "types": "./public/oauthRuntime.d.ts",
       "import": "./oauth/providers.ts"
     },
-    "./oauth/codex-device-completion": {
-      "types": "./public/oauthCodexDeviceCompletion.d.ts",
-      "import": "./oauth/codexDeviceCompletion.ts"
-    },
     "./oauth/constants": {
       "types": "./public/oauthConstants.d.ts",
       "import": "./oauth/constants/oauth.ts"

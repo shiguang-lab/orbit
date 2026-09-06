@@ -175,7 +175,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
 );
 allowedCoreDomainSubpaths["apps/edge-gateway"].push("shared/services/modelSyncScheduler");
 allowedCoreDomainSubpaths["apps/control-api"].push("db/files");
-allowedCoreDomainSubpaths["apps/control-api"].push("control/guardrails", "control/local-endpoints", "control/local-redis", "control/auth-init");
+allowedCoreDomainSubpaths["apps/control-api"].push("control/guardrails", "control/local-endpoints", "control/auth-init");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/assessment", "control/policies");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/provider-management");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/provider-connection");
@@ -985,11 +985,21 @@ const retiredControlOnlyExports = [
   "./runtime/build-sha",
   "./control/oauth-runtime/antigravityProjectGate",
   "./control/cli-tools-batch-cache",
+  "./control/local-redis",
+  "./control/oauth-runtime/deviceFlowTickets",
 ];
 for (const subpath of retiredControlOnlyExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {
     add("control-only-capability-exported-by-core-domain", join(coreDomainEntry.dir, "package.json"), subpath);
   }
+}
+const openSseEntry = packageEntries.find(({ manifest }) => manifest?.name === "@shiguang-gateway/open-sse");
+if (openSseEntry?.manifest?.exports?.["./oauth/codex-device-completion"]) {
+  add(
+    "control-only-capability-exported-by-open-sse",
+    join(openSseEntry.dir, "package.json"),
+    "./oauth/codex-device-completion",
+  );
 }
 for (const pkg of packageEntries) {
   const declared = new Set(Object.keys({ ...(pkg.manifest?.dependencies ?? {}), ...(pkg.manifest?.devDependencies ?? {}), ...(pkg.manifest?.optionalDependencies ?? {}) }));

@@ -408,10 +408,6 @@
       "types": "./src/public/headroom.d.ts",
       "import": "./src/control/headroom.ts"
     },
-    "./control/local-redis": {
-      "types": "./src/public/localRedis.d.ts",
-      "import": "./src/control/localRedis.ts"
-    },
     "./edge/tunnels": {
       "types": "./src/public/edgeTunnels.d.ts",
       "import": "./src/edge/tunnels.ts"
@@ -591,10 +587,6 @@
     "./control/oauth-runtime/connectionPersistence": {
       "types": "./src/public/oauthConnectionPersistence.d.ts",
       "import": "./src/lib/oauth/connectionPersistence.ts"
-    },
-    "./control/oauth-runtime/deviceFlowTickets": {
-      "types": "./src/lib/oauth/deviceFlowTickets.ts",
-      "import": "./src/lib/oauth/deviceFlowTickets.ts"
     },
     "./control/oauth-runtime/pasteCredentials": {
       "types": "./src/public/oauthRuntime.d.ts",

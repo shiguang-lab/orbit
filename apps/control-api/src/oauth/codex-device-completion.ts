@@ -5,10 +5,10 @@ import {
   completeDeviceFlowTicket,
   peekDeviceFlowTicket,
   releaseDeviceFlowTicket,
-} from "@shiguang-gateway/core-domain/control/oauth-runtime/deviceFlowTickets";
+} from "./device-flow-tickets.js";
 import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { oauthDeviceCompleteSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
-import { finalizeTokens } from "./providers.js";
+import { finalizeTokens } from "@shiguang-gateway/open-sse/oauth/providers";
 
 export type CodexDeviceCompletionResult = { status: number; body: unknown };
 

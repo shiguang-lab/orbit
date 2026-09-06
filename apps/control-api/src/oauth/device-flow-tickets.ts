@@ -12,7 +12,7 @@
  * survive a restart and are not shared across instances — acceptable for a
  * short-lived (15 min), single-use link.
  */
-import { randomBytes } from "crypto";
+import { randomBytes } from "node:crypto";
 
 const TICKET_TTL_MS = 15 * 60 * 1000; // matches OpenAI's device code expiry
 const STORE_KEY = "__codexDeviceFlowTickets";

@@ -1,4 +1,5 @@
 import { execFile } from "node:child_process";
+import { createConnection } from "node:net";
 import { promisify } from "node:util";
 
 export const REDIS_CONTAINER_NAME =
@@ -24,6 +25,24 @@ export function buildRedisPublishSpec(
   return `${normalizedHost}:${port}:6379`;
 }
 
+export function buildRedisRunArgs(input: {
+  bindHost: string;
+  hostPort: string | number;
+  image: string;
+}): readonly string[] {
+  return [
+    "run",
+    "-d",
+    "--name",
+    REDIS_CONTAINER_NAME,
+    "-p",
+    buildRedisPublishSpec(input.bindHost, input.hostPort),
+    "--restart",
+    "unless-stopped",
+    input.image,
+  ];
+}
+
 export async function detectRedisContainerRuntime(
   runCommand: ExecFileAsync = execFileAsync,
 ): Promise<string | null> {
@@ -31,9 +50,7 @@ export async function detectRedisContainerRuntime(
     try {
       await runCommand(candidate, ["--version"], { timeout: 3000 });
       return candidate;
-    } catch {
-      // Try the next installed runtime.
-    }
+    } catch {}
   }
   return null;
 }
@@ -79,21 +96,19 @@ export function parseRedisUrl(url?: string): { host: string; port: number } | nu
 
 export async function pingRedis(port: number | string, host = "127.0.0.1"): Promise<boolean> {
   return new Promise((resolve) => {
-    import("node:net").then(({ createConnection }) => {
-      const socket = createConnection({ port: Number(port), host });
-      const timeout = setTimeout(() => {
-        socket.destroy();
-        resolve(false);
-      }, 1500);
-      socket.once("connect", () => {
-        clearTimeout(timeout);
-        socket.end();
-        resolve(true);
-      });
-      socket.once("error", () => {
-        clearTimeout(timeout);
-        resolve(false);
-      });
+    const socket = createConnection({ port: Number(port), host });
+    const timeout = setTimeout(() => {
+      socket.destroy();
+      resolve(false);
+    }, 1500);
+    socket.once("connect", () => {
+      clearTimeout(timeout);
+      socket.end();
+      resolve(true);
+    });
+    socket.once("error", () => {
+      clearTimeout(timeout);
+      resolve(false);
     });
   });
 }

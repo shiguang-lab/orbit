@@ -2,13 +2,13 @@ import { Injectable } from "@nestjs/common";
 import {
   REDIS_CONTAINER_NAME,
   REDIS_DEFAULT_BIND_HOST,
-  buildRedisPublishSpec,
+  buildRedisRunArgs,
   detectRedisContainerRuntime,
   getRedisContainerState,
   parseRedisUrl,
   pingRedis,
   runRedisRuntimeCommand,
-} from "@shiguang-gateway/core-domain/control/local-redis";
+} from "./local-redis-runtime.js";
 import { sanitizeErrorMessage } from "@shiguang-gateway/core-domain/shared/error-response";
 
 @Injectable()
@@ -20,10 +20,11 @@ export class LocalRedisService {
     const bindHost = process.env.SHIGUANG_GATEWAY_REDIS_BIND_HOST || REDIS_DEFAULT_BIND_HOST;
     const image = process.env.SHIGUANG_GATEWAY_REDIS_IMAGE || "docker.io/redis:7-alpine";
     try {
-      const { stdout, stderr } = await runRedisRuntimeCommand(runtime, [
-        "run", "-d", "--name", REDIS_CONTAINER_NAME, "-p", buildRedisPublishSpec(bindHost, hostPort),
-        "--restart", "unless-stopped", image,
-      ], 30_000);
+      const { stdout, stderr } = await runRedisRuntimeCommand(
+        runtime,
+        buildRedisRunArgs({ bindHost, hostPort, image }),
+        30_000,
+      );
       return { status: 200, body: { ok: true, runtime, name: REDIS_CONTAINER_NAME, port: hostPort, bindHost, stdout, stderr } };
     } catch (error) {
       return { status: 500, body: { ok: false, runtime, error: sanitizeErrorMessage(error) } };

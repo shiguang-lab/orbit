@@ -1,8 +1,6 @@
 export function persistOAuthConnection(...args: any[]): Promise<any>;
 export function findExistingOAuthConnectionMatch(...args: any[]): any;
 export function buildOAuthConnectionCreatePayload(...args: any[]): any;
-export function createDeviceFlowTicket(...args: any[]): any;
-export function getDeviceFlowTicketStatus(...args: any[]): any;
 export function parsePastedCredentials(...args: any[]): any;
 export function findKiroConnectionByIdentity(...args: any[]): any;
 export function classifyKiroSocialPoll(...args: any[]): any;
