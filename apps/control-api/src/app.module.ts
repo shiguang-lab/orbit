@@ -18,6 +18,7 @@ import { CombosModule } from "./combos/combos.module.js";
 import { LogsModule } from "./logs/logs.module.js";
 import { WebhooksModule } from "./webhooks/webhooks.module.js";
 import { MemoryModule } from "./memory/memory.module.js";
+import { SettingsModule } from "./settings/settings.module.js";
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { MemoryModule } from "./memory/memory.module.js";
     LogsModule,
     WebhooksModule,
     MemoryModule,
+    SettingsModule,
   ],
 })
 export class AppModule {}

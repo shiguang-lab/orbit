@@ -206,6 +206,8 @@ const migratedRouteOwnership = {
     "api/webhooks/[id]/route.ts",
     "api/webhooks/[id]/deliveries/route.ts",
     "api/webhooks/[id]/test/route.ts",
+    "api/settings/system-prompt/route.ts",
+    "api/settings/thinking-budget/route.ts",
   ],
   "apps/edge-gateway": [
     // A2A protocol and task-management routes are owned by the edge Nest app.

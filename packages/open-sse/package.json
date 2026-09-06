@@ -53,6 +53,14 @@
       "types": "./public/deviceTracker.d.ts",
       "import": "./services/deviceTracker.ts"
     },
+    "./services/systemPrompt": {
+      "types": "./public/systemPrompt.d.ts",
+      "import": "./services/systemPrompt.ts"
+    },
+    "./services/thinkingBudget": {
+      "types": "./public/thinkingBudget.d.ts",
+      "import": "./services/thinkingBudget.ts"
+    },
     "./*": {
       "types": "./*",
       "import": "./*"
