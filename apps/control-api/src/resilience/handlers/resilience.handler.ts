@@ -1,16 +1,15 @@
-import { NextResponse } from "next/server";
-import { getCachedSettings, getSettings, updateSettings } from "../../../lib/localDb.ts";
+import { getCachedSettings, getSettings, updateSettings } from "@shiguang-gateway/core-domain/control/settings";
 import {
   buildLegacyResilienceCompat,
   mergeResilienceSettings,
   resolveResilienceSettings,
   type ResilienceSettings,
   type ResilienceSettingsPatch,
-} from "../../../lib/resilience/settings.ts";
-import { updateResilienceSchema } from "../../../shared/validation/schemas.ts";
-import { isValidationFailure, validateBody } from "../../../shared/validation/helpers.ts";
-import { resetAllCircuitBreakers } from "../../../shared/utils/circuitBreaker.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+} from "@shiguang-gateway/core-domain/control/resilience-settings";
+import { updateResilienceSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { resetAllCircuitBreakers } from "@shiguang-gateway/core-domain/control/resilience-circuit-breaker";
+import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -112,8 +111,8 @@ function normalizeLegacyPatch(body: JsonRecord): ResilienceSettingsPatch {
 
 async function syncRuntimeSettings(resilienceSettings: ResilienceSettings) {
   const [{ applyRequestQueueSettings }, { setProviderQuotaOverrides }] = await Promise.all([
-    import("../../../../../open-sse/services/rateLimitManager.ts"),
-    import("../../../../../open-sse/services/providerDefaultRateLimit.ts"),
+    import("@shiguang-gateway/open-sse/services/rateLimitManager"),
+    import("@shiguang-gateway/open-sse/services/providerDefaultRateLimit"),
   ]);
   await applyRequestQueueSettings(resilienceSettings.requestQueue);
   // #6846 Phase 2: re-apply per-provider RPM/concurrency overrides on the hot
@@ -130,7 +129,7 @@ export async function GET() {
     const settings = await getCachedSettings();
     const resilience = resolveResilienceSettings(settings);
 
-    return NextResponse.json({
+    return Response.json({
       requestQueue: resilience.requestQueue,
       connectionCooldown: resilience.connectionCooldown,
       providerBreaker: resilience.providerBreaker,
@@ -147,7 +146,7 @@ export async function GET() {
     });
   } catch (err: unknown) {
     console.error("[API] GET /api/resilience error:", err);
-    return NextResponse.json(
+    return Response.json(
       { error: getErrorMessage(err, "Failed to load resilience settings") },
       { status: 500 }
     );
@@ -157,12 +156,12 @@ export async function GET() {
 /**
  * PATCH /api/resilience — Update resilience configuration
  */
-export async function PATCH(request) {
+export async function PATCH(request: Request) {
   let rawBody;
   try {
     rawBody = await request.json();
   } catch {
-    return NextResponse.json(
+    return Response.json(
       {
         error: {
           message: "Invalid request",
@@ -176,7 +175,7 @@ export async function PATCH(request) {
   try {
     const validation = validateBody(updateResilienceSchema, rawBody);
     if (isValidationFailure(validation)) {
-      return NextResponse.json({ error: validation.error }, { status: 400 });
+      return Response.json({ error: validation.error }, { status: 400 });
     }
 
     const body = validation.data as JsonRecord;
@@ -245,7 +244,7 @@ export async function PATCH(request) {
       resetAllCircuitBreakers();
     }
 
-    return NextResponse.json({
+    return Response.json({
       ok: true,
       requestQueue: nextResilience.requestQueue,
       connectionCooldown: nextResilience.connectionCooldown,
@@ -263,7 +262,7 @@ export async function PATCH(request) {
     });
   } catch (err: unknown) {
     console.error("[API] PATCH /api/resilience error:", err);
-    return NextResponse.json(
+    return Response.json(
       { error: getErrorMessage(err, "Failed to save resilience settings") },
       { status: 500 }
     );

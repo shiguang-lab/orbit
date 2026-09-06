@@ -1,5 +1,4 @@
-import { NextResponse } from "next/server";
-import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 
 /**
  * POST /api/resilience/reset — Reset all provider circuit breakers and model lockouts.
@@ -12,7 +11,7 @@ export async function POST(request: Request) {
   if (authError) return authError;
   try {
     const { getAllCircuitBreakerStatuses, getCircuitBreaker } =
-      await import("../../../../shared/utils/circuitBreaker.ts");
+      await import("@shiguang-gateway/core-domain/control/resilience-circuit-breaker");
 
     const statuses = getAllCircuitBreakerStatuses();
     let resetCount = 0;
@@ -25,16 +24,16 @@ export async function POST(request: Request) {
 
     // Also clear in-memory model lockouts (per-model quota cooldowns)
     const { clearAllModelLockouts } =
-      await import("../../../../../../open-sse/services/accountFallback.ts");
+      await import("@shiguang-gateway/open-sse/services/accountFallback");
     clearAllModelLockouts();
 
-    return NextResponse.json({
+    return Response.json({
       ok: true,
       resetCount,
       message: `Reset ${resetCount} circuit breaker(s) and model lockouts`,
     });
   } catch (err: unknown) {
     console.error("[API] POST /api/resilience/reset error:", err);
-    return NextResponse.json({ error: "Failed to reset resilience state" }, { status: 500 });
+    return Response.json({ error: "Failed to reset resilience state" }, { status: 500 });
   }
 }

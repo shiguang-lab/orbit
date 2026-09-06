@@ -4,3 +4,4 @@ export function isAnthropicCompatibleProvider(providerId: unknown): providerId i
 export function isClaudeCodeCompatibleProvider(providerId: unknown): providerId is string;
 export function isOpenAICompatibleProvider(providerId: unknown): providerId is string;
 export function providerAllowsOptionalApiKey(providerId: unknown): boolean;
+export function resolveProviderId(aliasOrId: string): string;

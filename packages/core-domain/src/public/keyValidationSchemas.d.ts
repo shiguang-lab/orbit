@@ -13,6 +13,7 @@ export const codexProfileNameSchema: z.ZodTypeAny;
 export const codexProfileIdSchema: z.ZodTypeAny;
 export const paginationSchema: z.ZodTypeAny;
 export const toggleRateLimitSchema: z.ZodTypeAny;
+export const updateResilienceSchema: z.ZodTypeAny;
 export const versionManagerToolSchema: z.ZodTypeAny;
 export const versionManagerInstallSchema: z.ZodTypeAny;
 export const testProxySchema: z.ZodTypeAny;

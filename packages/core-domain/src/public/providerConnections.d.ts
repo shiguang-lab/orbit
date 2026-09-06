@@ -22,3 +22,10 @@ export function updateProviderConnection(
   data: Record<string, unknown>,
 ): Promise<Record<string, unknown> | null>;
 export function deleteProviderConnectionsByProvider(providerId: string): Promise<unknown>;
+export function getRawProviderConnections(
+  filter?: Record<string, unknown>,
+  limit?: number,
+  offset?: number,
+  columns?: string[],
+): Promise<Record<string, unknown>[]>;
+export function getProviderConnectionsCount(filter?: Record<string, unknown>): number;

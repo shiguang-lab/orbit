@@ -61,6 +61,18 @@
       "types": "./public/deviceTracker.d.ts",
       "import": "./services/deviceTracker.ts"
     },
+    "./services/accountFallback": {
+      "types": "./public/accountFallback.d.ts",
+      "import": "./services/accountFallback.ts"
+    },
+    "./services/rateLimitManager": {
+      "types": "./public/rateLimitManager.d.ts",
+      "import": "./services/rateLimitManager.ts"
+    },
+    "./services/providerDefaultRateLimit": {
+      "types": "./public/providerDefaultRateLimit.d.ts",
+      "import": "./services/providerDefaultRateLimit.ts"
+    },
     "./services/systemPrompt": {
       "types": "./public/systemPrompt.d.ts",
       "import": "./services/systemPrompt.ts"

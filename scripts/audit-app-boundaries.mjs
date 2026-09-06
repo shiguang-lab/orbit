@@ -187,6 +187,12 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/model-sync-scheduler",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push("catalog/providers");
+allowedCoreDomainSubpaths["apps/control-api"].push(
+  "control/resilience-circuit-breaker",
+  "control/model-availability",
+  "control/resilience-connection-recovery",
+  "control/resilience-types",
+);
 allowedCoreDomainSubpaths["apps/control-api"].push("db/cc-discovery-metrics");
 
 // Route files that have completed a physical ownership move. Keep this list

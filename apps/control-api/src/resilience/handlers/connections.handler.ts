@@ -1,21 +1,20 @@
-import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
-import { getRawProviderConnections, getProviderConnectionsCount } from "../../../../lib/db/providers.ts";
-import { getAllCircuitBreakerStatuses } from "../../../../shared/utils/circuitBreaker.ts";
-import { resolveProviderId } from "../../../../shared/constants/providers.ts";
-import { TERMINAL_CONNECTION_STATUSES } from "../../../../lib/quota/connectionRecovery.ts";
-import { sanitizeErrorMessage, buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
+import { getRawProviderConnections, getProviderConnectionsCount } from "@shiguang-gateway/core-domain/db/provider-connections";
+import { getAllCircuitBreakerStatuses } from "@shiguang-gateway/core-domain/control/resilience-circuit-breaker";
+import { resolveProviderId } from "@shiguang-gateway/core-domain/catalog/providers";
+import { TERMINAL_CONNECTION_STATUSES } from "@shiguang-gateway/core-domain/control/resilience-connection-recovery";
+import { sanitizeErrorMessage, buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
 import {
   getAllModelLockouts,
   cooldownUntilMs,
   type ModelLockoutInfo,
-} from "../../../../../../open-sse/services/accountFallback.ts";
+} from "@shiguang-gateway/open-sse/services/accountFallback";
 import type {
   ResilienceConnectionsResponse,
   ConnectionState,
   BreakerWithHistory,
-} from "../../../../types/resilience.ts";
+} from "@shiguang-gateway/core-domain/control/resilience-types";
 
 // Explicit column whitelist -- getRawProviderConnections() DEFAULTS TO SELECT *,
 // so passing columns is MANDATORY to avoid leaking api_key, access_token,
@@ -116,11 +115,11 @@ function toConnectionState(
   };
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(req: Request) {
   try {
     const params = querySchema.safeParse(Object.fromEntries(new URL(req.url).searchParams));
     if (!params.success) {
-      return NextResponse.json(
+      return Response.json(
         buildErrorBody(400, params.error.issues[0]?.message ?? "Invalid query parameters"),
         { status: 400 }
       );
@@ -238,9 +237,9 @@ export async function GET(req: NextRequest) {
       window: windowMeta,
       meta: { totalConnections, coolingDownCount, unhealthyBreakerCount, countsCapped, degraded },
     };
-    return NextResponse.json(response);
+    return Response.json(response);
   } catch (err) {
     console.error("[API] resilience/connections unexpected error:", err);
-    return NextResponse.json(buildErrorBody(500, sanitizeErrorMessage(err)), { status: 500 });
+    return Response.json(buildErrorBody(500, sanitizeErrorMessage(err)), { status: 500 });
   }
 }

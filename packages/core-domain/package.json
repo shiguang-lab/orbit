@@ -701,6 +701,22 @@
       "types": "./src/public/resilienceSettings.d.ts",
       "import": "./src/lib/resilience/settings.ts"
     },
+    "./control/resilience-circuit-breaker": {
+      "types": "./src/public/resilienceCircuitBreaker.d.ts",
+      "import": "./src/shared/utils/circuitBreaker.ts"
+    },
+    "./control/model-availability": {
+      "types": "./src/public/modelAvailability.d.ts",
+      "import": "./src/domain/modelAvailability.ts"
+    },
+    "./control/resilience-connection-recovery": {
+      "types": "./src/public/connectionRecovery.d.ts",
+      "import": "./src/lib/quota/connectionRecovery.ts"
+    },
+    "./control/resilience-types": {
+      "types": "./src/public/resilienceTypes.d.ts",
+      "import": "./src/types/resilience.ts"
+    },
     "./shared/connection-isolation": {
       "types": "./src/public/connectionIsolation.d.ts",
       "import": "./src/lib/exclusiveLeaseIsolation.ts"
