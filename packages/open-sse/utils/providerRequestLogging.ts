@@ -195,9 +195,9 @@ function bodyToString(body: BodyInit | null | undefined): string | null {
   if (body instanceof URLSearchParams) return body.toString();
   if (body instanceof ArrayBuffer) return new TextDecoder().decode(body);
   if (ArrayBuffer.isView(body)) {
-    return new TextDecoder().decode(
-      body.buffer.slice(body.byteOffset, body.byteOffset + body.byteLength)
-    );
+    const bytes = new Uint8Array(body.byteLength);
+    bytes.set(new Uint8Array(body.buffer, body.byteOffset, body.byteLength));
+    return new TextDecoder().decode(bytes);
   }
   return null;
 }

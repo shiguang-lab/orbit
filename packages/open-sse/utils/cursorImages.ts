@@ -308,7 +308,7 @@ async function fetchImageBytes(url: string): Promise<{ data: Buffer; mimeType: s
  * resort for exotic body shapes, and is still cap-checked afterwards.
  */
 async function readCapped(response: Response, cap: number): Promise<Buffer> {
-  const body = response.body as
+  const body = response.body as unknown as
     | (AsyncIterable<Uint8Array> & { getReader?: () => ReadableStreamDefaultReader<Uint8Array> })
     | null;
   if (!body) {

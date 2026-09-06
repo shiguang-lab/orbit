@@ -456,6 +456,7 @@
     "ink-text-input": "^6.0.0",
     "ioredis": "^6.0.0",
     "jose": "^6.2.10",
+    "js-tiktoken": "^1.0.21",
     "js-yaml": "^5.4.1",
     "jsonc-parser": "^3.3.1",
     "lowdb": "^7.0.1",
