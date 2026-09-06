@@ -17,6 +17,7 @@ import {
   WebhookEntity,
   FreeProxyEntity,
   FreeProxySyncErrorEntity,
+  ReasoningRoutingRuleEntity,
 } from "./entities/control.entity.js";
 import {
   AgenticConversationEntity,
@@ -74,6 +75,7 @@ export const GATEWAY_TABLES = {
   tierAssignments: "tier_assignments",
   freeProxies: "free_proxies",
   freeProxySyncErrors: "free_proxy_sync_errors",
+  reasoningRoutingRules: "reasoning_routing_rules",
 } as const;
 
 export type GatewayTable = (typeof GATEWAY_TABLES)[keyof typeof GATEWAY_TABLES];
@@ -121,6 +123,7 @@ export const TABLE_OWNERSHIP: readonly TableRef[] = [
   { table: GATEWAY_TABLES.tierAssignments, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.freeProxies, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.freeProxySyncErrors, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.reasoningRoutingRules, owner: "control-api", access: "read-write" },
 ];
 
 /**
@@ -162,6 +165,7 @@ export const GATEWAY_ENTITIES = {
   tierAssignments: TierAssignmentEntity,
   freeProxies: FreeProxyEntity,
   freeProxySyncErrors: FreeProxySyncErrorEntity,
+  reasoningRoutingRules: ReasoningRoutingRuleEntity,
 } satisfies Record<keyof typeof GATEWAY_TABLES, EntityDefinition>;
 
 /** Runtime guard used by architecture checks and tests. */

@@ -138,6 +138,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/qdrant",
   "db/compression-run-telemetry",
   "shared/validation/compression-config-schemas",
+  "control/reasoning-routing",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push("catalog/providers");
 
@@ -298,6 +299,9 @@ const migratedRouteOwnership = {
     "api/settings/qdrant/search/route.ts",
     "api/settings/qdrant/cleanup/route.ts",
     "api/settings/qdrant/embedding-models/route.ts",
+    "api/settings/reasoning-routing-rules/route.ts",
+    "api/settings/reasoning-routing-rules/[id]/route.ts",
+    "api/settings/reasoning-routing-rules/simulate/route.ts",
     "api/settings/proxy/test/route.ts",
     "api/settings/proxies/route.ts",
     "api/settings/proxies/assignments/route.ts",

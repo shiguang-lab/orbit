@@ -19,7 +19,11 @@ The management API is exposed by these routes:
 - `GET`, `PATCH`, and `DELETE` at `/api/settings/reasoning-routing-rules/[id]`
 - `POST` at `/api/settings/reasoning-routing-rules/simulate`
 
-All routes use `requireManagementAuth`. Inputs are validated with the schemas in
+The HTTP surface is implemented by the standard Nest feature under
+`apps/control-api/src/settings/reasoning-routing`. All routes use
+`requireManagementAuth`. Shared persistence and request-path policy evaluation are
+published through the explicit `@shiguang-gateway/core-domain/control/reasoning-routing`
+contract. Inputs are validated with the schemas in
 `src/shared/validation/schemas/reasoningRouting.ts`. The simulator never makes an upstream call.
 
 ## Rule Resolution

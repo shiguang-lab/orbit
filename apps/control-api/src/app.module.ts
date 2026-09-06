@@ -34,6 +34,7 @@ import { FreeProxiesModule } from "./settings/free-proxies/free-proxies.module.j
 import { ProviderAuthImportModule } from "./providers/auth/provider-auth-import.module.js";
 import { CompressionModule } from "./settings/compression/compression.module.js";
 import { QdrantModule } from "./settings/qdrant/qdrant.module.js";
+import { ReasoningRoutingModule } from "./settings/reasoning-routing/reasoning-routing.module.js";
 
 @Module({
   imports: [
@@ -72,6 +73,7 @@ import { QdrantModule } from "./settings/qdrant/qdrant.module.js";
     ProviderAuthImportModule,
     CompressionModule,
     QdrantModule,
+    ReasoningRoutingModule,
   ],
 })
 export class AppModule {}

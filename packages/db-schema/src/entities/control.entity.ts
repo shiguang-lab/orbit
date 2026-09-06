@@ -275,3 +275,34 @@ export const FreeProxySyncErrorEntity: EntityDefinition = {
     column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
   ],
 };
+
+/** Operator-managed reasoning policies evaluated by the edge request pipeline. */
+export const ReasoningRoutingRuleEntity: EntityDefinition = {
+  entityName: "ReasoningRoutingRule",
+  tableName: "reasoning_routing_rules",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("name", "TEXT", { nullable: false }),
+    column("description", "TEXT", { nullable: false, default: "''" }),
+    column("scope", "TEXT", { nullable: false }),
+    column("api_key_id", "TEXT"),
+    column("combo_id", "TEXT"),
+    column("connection_id", "TEXT"),
+    column("model_pattern", "TEXT"),
+    column("source_effort", "TEXT", { nullable: false, default: "'any'" }),
+    column("request_tags", "TEXT", { nullable: false, default: "'[]'" }),
+    column("tag_match_mode", "TEXT", { nullable: false, default: "'any'" }),
+    column("effort_mode", "TEXT", { nullable: false, default: "'inherit'" }),
+    column("target_effort", "TEXT"),
+    column("target_kind", "TEXT", { nullable: false, default: "'keep'" }),
+    column("target_model", "TEXT"),
+    column("target_combo_id", "TEXT"),
+    column("budget_action", "TEXT", { nullable: false, default: "'preserve'" }),
+    column("budget_tokens", "INTEGER"),
+    column("priority", "INTEGER", { nullable: false, default: "0" }),
+    column("enabled", "INTEGER", { nullable: false, default: "1" }),
+    column("created_at", "TEXT", { nullable: false }),
+    column("updated_at", "TEXT", { nullable: false }),
+  ],
+};

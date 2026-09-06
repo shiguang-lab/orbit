@@ -529,6 +529,10 @@
       "types": "./src/public/modelContextOverrides.d.ts",
       "import": "./src/control/modelContextOverrides.ts"
     },
+    "./control/reasoning-routing": {
+      "types": "./src/public/reasoningRouting.d.ts",
+      "import": "./src/control/reasoningRouting.ts"
+    },
     "./db/model-aliases": {
       "types": "./src/public/modelAliasesDb.d.ts",
       "import": "./src/lib/db/models/aliases.ts"

@@ -10,3 +10,9 @@ export interface ApiKeyPolicyResult {
   rejection: Response | null;
 }
 export function enforceApiKeyPolicy(request: Request, modelStr: string | null): Promise<ApiKeyPolicyResult>;
+export function validateApiKeyRoutingTarget(
+  request: Request,
+  apiKey: string | null,
+  apiKeyInfo: ApiKeyPolicyInfo | null,
+  modelStr: string | null,
+): Promise<Response | null>;
