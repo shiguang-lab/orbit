@@ -91,6 +91,14 @@ belong only to the `edge-gateway` cloud-agents module and keep their DDL in
 that app. If another app starts consuming one, promote it into this catalog
 and declare the new ownership contract before sharing it.
 
+The catalog also includes internal SQLite metadata and legacy runtime tables
+(`db_meta`, `_shiguanggateway_migrations`, leases, affinity, domain state,
+version-manager state, and similar records). These are physical schema
+contracts even when their bootstrap remains in the owning app or migration
+runner. The coverage audit explicitly labels the only non-schema occurrence,
+the `users` token in an evaluation seed SQL example, as fixture-only; it is not
+promoted to an entity without a production table declaration.
+
 ## Verification
 
 Run these checks from the repository root after changing the catalog:

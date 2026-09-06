@@ -114,6 +114,33 @@ import {
   ModelCapabilitiesEntity,
   ModelIntelligenceEntity,
 } from "./entities/worker.entity.js";
+import {
+  GatewayMigrationsEntity,
+  AgentBridgeStateEntity,
+  AgentBridgeMappingEntity,
+  AgentBridgeBypassEntity,
+  CloudAgentCredentialsEntity,
+  CloudAgentTaskEntity,
+  ApiKeyContextSourceEntity,
+  AutoCandidateOverrideEntity,
+  CliAccessTokenEntity,
+  ComboAdaptationStateEntity,
+  CommandCodeAuthSessionEntity,
+  CompressionRunTelemetryEntity,
+  ConnectionRuntimeStateEntity,
+  DbMetaEntity,
+  DomainBudgetEntity,
+  DomainBudgetResetLogEntity,
+  DomainCostHistoryEntity,
+  DomainFallbackChainEntity,
+  DomainLockoutStateEntity,
+  DomainCircuitBreakerEntity,
+  ExclusiveConnectionLeaseEntity,
+  PromptTemplateEntity,
+  RequestDetailLogEntity,
+  SessionAccountAffinityEntity,
+  VersionManagerEntity,
+} from "./entities/internal.entity.js";
 import type { EntityDefinition } from "./entities/definition.js";
 
 export * from "./entities/index.js";
@@ -121,6 +148,7 @@ export * from "./gamification.js";
 export * from "./proxy.js";
 
 export const GATEWAY_TABLES = {
+  gatewayMigrations: "_shiguanggateway_migrations",
   settings: "key_value",
   middlewareHooks: "middleware_hooks",
   middlewareLogs: "middleware_logs",
@@ -230,6 +258,30 @@ export const GATEWAY_TABLES = {
   ccrBlocks: "ccr_blocks",
   compressionCacheStats: "compression_cache_stats",
   memoryVecMeta: "memory_vec_meta",
+  agentBridgeState: "agent_bridge_state",
+  agentBridgeMappings: "agent_bridge_mappings",
+  agentBridgeBypass: "agent_bridge_bypass",
+  cloudAgentCredentials: "cloud_agent_credentials",
+  cloudAgentTasks: "cloud_agent_tasks",
+  apiKeyContextSources: "api_key_context_sources",
+  autoCandidateOverrides: "auto_candidate_overrides",
+  cliAccessTokens: "cli_access_tokens",
+  comboAdaptationState: "combo_adaptation_state",
+  commandCodeAuthSessions: "command_code_auth_sessions",
+  compressionRunTelemetry: "compression_run_telemetry",
+  connectionRuntimeState: "connection_runtime_state",
+  dbMeta: "db_meta",
+  domainBudgets: "domain_budgets",
+  domainBudgetResetLogs: "domain_budget_reset_logs",
+  domainCostHistory: "domain_cost_history",
+  domainFallbackChains: "domain_fallback_chains",
+  domainLockoutState: "domain_lockout_state",
+  domainCircuitBreakers: "domain_circuit_breakers",
+  exclusiveConnectionLeases: "exclusive_connection_leases",
+  promptTemplates: "prompt_templates",
+  requestDetailLogs: "request_detail_logs",
+  sessionAccountAffinity: "session_account_affinity",
+  versionManager: "version_manager",
 } as const;
 
 export type GatewayTable = (typeof GATEWAY_TABLES)[keyof typeof GATEWAY_TABLES];
@@ -245,6 +297,7 @@ export interface TableRef {
  * table can be read by several apps, but writes have one operational owner.
  */
 export const TABLE_OWNERSHIP: readonly TableRef[] = [
+  { table: GATEWAY_TABLES.gatewayMigrations, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.settings, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.middlewareHooks, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.middlewareLogs, owner: "edge-gateway", access: "read-write" },
@@ -354,6 +407,30 @@ export const TABLE_OWNERSHIP: readonly TableRef[] = [
   { table: GATEWAY_TABLES.ccrBlocks, owner: "edge-gateway", access: "read-write" },
   { table: GATEWAY_TABLES.compressionCacheStats, owner: "edge-gateway", access: "read-write" },
   { table: GATEWAY_TABLES.memoryVecMeta, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.agentBridgeState, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.agentBridgeMappings, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.agentBridgeBypass, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.cloudAgentCredentials, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.cloudAgentTasks, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.apiKeyContextSources, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.autoCandidateOverrides, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.cliAccessTokens, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.comboAdaptationState, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.commandCodeAuthSessions, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.compressionRunTelemetry, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.connectionRuntimeState, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.dbMeta, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.domainBudgets, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.domainBudgetResetLogs, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.domainCostHistory, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.domainFallbackChains, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.domainLockoutState, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.domainCircuitBreakers, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.exclusiveConnectionLeases, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.promptTemplates, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.requestDetailLogs, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.sessionAccountAffinity, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.versionManager, owner: "control-api", access: "read-write" },
 ];
 
 /**
@@ -363,6 +440,7 @@ export const TABLE_OWNERSHIP: readonly TableRef[] = [
  * and an exact SQLite `tableName`.
  */
 export const GATEWAY_ENTITIES = {
+  gatewayMigrations: GatewayMigrationsEntity,
   settings: SettingsEntity,
   middlewareHooks: MiddlewareHookEntity,
   middlewareLogs: MiddlewareLogEntity,
@@ -472,6 +550,30 @@ export const GATEWAY_ENTITIES = {
   ccrBlocks: CcrBlockEntity,
   compressionCacheStats: CompressionCacheStatsEntity,
   memoryVecMeta: MemoryVecMetaEntity,
+  agentBridgeState: AgentBridgeStateEntity,
+  agentBridgeMappings: AgentBridgeMappingEntity,
+  agentBridgeBypass: AgentBridgeBypassEntity,
+  cloudAgentCredentials: CloudAgentCredentialsEntity,
+  cloudAgentTasks: CloudAgentTaskEntity,
+  apiKeyContextSources: ApiKeyContextSourceEntity,
+  autoCandidateOverrides: AutoCandidateOverrideEntity,
+  cliAccessTokens: CliAccessTokenEntity,
+  comboAdaptationState: ComboAdaptationStateEntity,
+  commandCodeAuthSessions: CommandCodeAuthSessionEntity,
+  compressionRunTelemetry: CompressionRunTelemetryEntity,
+  connectionRuntimeState: ConnectionRuntimeStateEntity,
+  dbMeta: DbMetaEntity,
+  domainBudgets: DomainBudgetEntity,
+  domainBudgetResetLogs: DomainBudgetResetLogEntity,
+  domainCostHistory: DomainCostHistoryEntity,
+  domainFallbackChains: DomainFallbackChainEntity,
+  domainLockoutState: DomainLockoutStateEntity,
+  domainCircuitBreakers: DomainCircuitBreakerEntity,
+  exclusiveConnectionLeases: ExclusiveConnectionLeaseEntity,
+  promptTemplates: PromptTemplateEntity,
+  requestDetailLogs: RequestDetailLogEntity,
+  sessionAccountAffinity: SessionAccountAffinityEntity,
+  versionManager: VersionManagerEntity,
 } satisfies Record<keyof typeof GATEWAY_TABLES, EntityDefinition>;
 
 /** Runtime guard used by architecture checks and tests. */

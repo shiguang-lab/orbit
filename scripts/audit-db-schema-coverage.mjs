@@ -52,6 +52,12 @@ const appPrivateTables = new Set([
   "agent_bridge_mappings",
   "agent_bridge_bypass",
 ]);
+// SQL-looking examples in evaluation seed corpora are not production schema
+// declarations. Keep these explicitly classified so a fixture token cannot
+// create an unexplained package-only table in the coverage report.
+const fixtureOnlyTables = new Map([
+  ["users", "evaluation seed SQL example; no runtime users table exists"],
+]);
 const sqlNoise = new Set([
   "add", "alter", "and", "as", "by", "column", "create", "delete", "drop", "fail", "from", "if",
   "in", "insert", "into", "not", "on", "or", "re-run", "select", "table", "update", "where",
@@ -126,10 +132,13 @@ try {
   for (const table of uncovered) {
     const scope = appPrivateTables.has(table)
       ? "app-private"
+      : fixtureOnlyTables.has(table)
+        ? "fixture-only"
       : directAppEvidence.has(table)
         ? "app-evidence"
         : "package-only";
     console.log(`  ${table} [${scope}]`);
+    if (fixtureOnlyTables.has(table)) console.log(`    reason: ${fixtureOnlyTables.get(table)}`);
     for (const file of declarations.get(table) ?? []) console.log(`    - ${file}`);
     for (const file of directAppEvidence.get(table) ?? []) console.log(`    app: ${file}`);
   }
@@ -146,7 +155,7 @@ try {
   // it is explicitly classified as app-private above. App-private DDL must
   // also live with its owning app; keeping it in a package would leak an
   // app-only schema into every deployable unit.
-  const unclassifiedAppEvidence = [...directAppEvidence.keys()].filter((table) => !appPrivateTables.has(table));
+  const unclassifiedAppEvidence = [...directAppEvidence.keys()].filter((table) => !appPrivateTables.has(table) && !fixtureOnlyTables.has(table));
   const appPrivatePackageDeclarations = [...appPrivateTables].filter((table) =>
     (declarations.get(table) ?? []).some((file) => file.startsWith("packages/")),
   );
