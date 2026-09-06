@@ -448,8 +448,6 @@
     },
     "./control/provider-discovery-support/codexDiscoveryPolicy": "./src/shared/services/codexDiscoveryPolicy.ts",
     "./control/provider-discovery-support/providers": "./src/shared/constants/providers.ts",
-    "./control/provider-discovery-support/ollamaCapabilities": "./src/lib/providerModels/ollamaCapabilities.ts",
-    "./control/provider-discovery-support/geminiModelsParser": "./src/lib/providerModels/geminiModelsParser.ts",
     "./control/provider-discovery-support/modelListingCapability": "./src/lib/providers/modelListingCapability.ts",
     "./control/provider-discovery-support/modelMetadataPrecedence": "./src/lib/providers/modelMetadataPrecedence.ts",
     "./control/provider-discovery-support/cursorAgent": "./src/lib/providerModels/cursorAgent.ts",

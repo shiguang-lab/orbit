@@ -6,7 +6,7 @@ import {
   GROK_BUILD_SUPPORTED_REASONING_EFFORTS,
 } from "@shiguang-gateway/open-sse/config/grokBuild";
 import { getAntigravityContentHeaders } from "@shiguang-gateway/open-sse/services/antigravity-headers";
-import { parseGeminiModelsList } from "@shiguang-gateway/core-domain/control/provider-discovery-support/geminiModelsParser";
+import { parseGeminiModelsList } from "./gemini-models-parser.js";
 import {
   CLINE_MODELS_ENDPOINT,
   CLINEPASS_MODELS_ENDPOINT,

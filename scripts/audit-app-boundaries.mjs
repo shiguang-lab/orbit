@@ -996,6 +996,8 @@ const retiredAppOwnedExports = [
   "./shared/utils/turkishText",
   "./conductor/faro-proxy",
   "./control/local-endpoints",
+  "./control/provider-discovery-support/geminiModelsParser",
+  "./control/provider-discovery-support/ollamaCapabilities",
 ];
 for (const subpath of retiredAppOwnedExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {

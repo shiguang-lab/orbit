@@ -16,11 +16,6 @@
  * Note: `gemini-*-image` models (e.g. gemini-3-pro-image) generate images via the
  * regular `generateContent` path, so they stay "chat" (image output is a chat
  * modality) and are intentionally NOT reclassified as "images".
- *
- * This is shared by the `gemini` discovery config and the `vertex` /
- * `vertex-partner` (incl. Vertex AI Express key) discovery branches, so every
- * supported model the account can access — chat, image, video and embeddings —
- * surfaces dynamically instead of being limited to the small static registry.
  */
 const METHOD_TO_ENDPOINT: Record<string, string> = {
   generateContent: "chat",
@@ -101,6 +96,6 @@ export function parseGeminiModelsList(data: any): GeminiDiscoveryModel[] {
     })
     .filter(
       (model: GeminiDiscoveryModel | null): model is GeminiDiscoveryModel =>
-        Boolean(model) && !RETIRED_GEMINI_MODEL_IDS.has(model.id)
+        model !== null && !RETIRED_GEMINI_MODEL_IDS.has(model.id)
     );
 }

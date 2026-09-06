@@ -5,7 +5,7 @@ import { getProviderValidationGuard } from "@shiguang-gateway/core-domain/contro
 import {
   buildOllamaShowUrl,
   enrichOllamaModelsWithCapabilities,
-} from "@shiguang-gateway/core-domain/control/provider-discovery-support/ollamaCapabilities";
+} from "./ollama-capabilities.js";
 
 export type JsonRecord = Record<string, unknown>;
 
