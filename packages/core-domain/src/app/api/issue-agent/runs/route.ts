@@ -7,7 +7,7 @@ import {
 } from "../../../../lib/issueAgent/execution.ts";
 import { normalizeGitHubIssueExport } from "../../../../lib/issueAgent/githubExport.ts";
 import { createRecordedTriageRun } from "../../../../lib/issueAgent/recordedTriage.ts";
-import { POST as postChatCompletion } from "../../v1/chat/completions/route.ts";
+import { POST as postChatCompletion } from "../../../../lib/edge/chatCompletionsCompat.ts";
 import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
 import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 

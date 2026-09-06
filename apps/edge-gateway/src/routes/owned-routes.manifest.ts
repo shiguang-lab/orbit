@@ -52,12 +52,15 @@ export const ownedEdgeRoutes: readonly OwnedRoute[] = [
   { path: "/v1/providers/:provider/embeddings", methods: ["OPTIONS", "POST"] },
   { path: "/v1/providers/:provider/images/generations", methods: ["OPTIONS", "POST"] },
   { path: "/v1/completions", methods: ["OPTIONS", "POST"] },
+  { path: "/v1/chat/completions", methods: ["OPTIONS", "POST"] },
   { path: "/v1/messages", methods: ["OPTIONS", "POST"] },
   { path: "/v1/messages/count_tokens", methods: ["OPTIONS", "POST"] },
   { path: "/v1/responses", methods: ["OPTIONS", "POST"] },
+  { path: "/v1/relay/chat/completions/bifrost", methods: ["OPTIONS", "POST"] },
   { path: "/v1/video-bridge/drilldown", methods: ["DELETE", "GET", "OPTIONS"] },
   { path: "/v1/me/status", methods: ["GET"] },
   { path: "/v1/vscode/:token/api/version", methods: ["GET", "OPTIONS"] },
+  { path: "/v1/search", methods: ["GET", "OPTIONS", "POST"] },
 ];
 
 /** Paths physically owned by edge-gateway, expressed as compatibility catalog segments. */

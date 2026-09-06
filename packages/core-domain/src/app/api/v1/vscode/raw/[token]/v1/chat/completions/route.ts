@@ -1,4 +1,4 @@
-import { POST as basePost, OPTIONS } from "../../../../../../chat/completions/route.ts";
+import { POST as basePost, OPTIONS } from "../../../../../../../../../lib/edge/chatCompletionsCompat.ts";
 import { rewriteVscodeServiceTierRequest } from "../../../serviceTierVariants.ts";
 import { withSanitizedPathTokenApiKey } from "../../../tokenizedRequest.ts";
 

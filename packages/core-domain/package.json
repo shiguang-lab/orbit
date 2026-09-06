@@ -40,6 +40,10 @@
       "types": "./src/public/responsesRuntime.d.ts",
       "import": "./src/lib/edge/responsesRuntime.ts"
     },
+    "./edge/relay-bifrost": {
+      "types": "./src/public/relayBifrost.d.ts",
+      "import": "./src/lib/edge/relayBifrost.ts"
+    },
     "./edge/count-tokens-validation": {
       "types": "./src/public/countTokensValidation.d.ts",
       "import": "./src/shared/validation/schemas/apiV1.ts"

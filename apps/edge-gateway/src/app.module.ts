@@ -25,6 +25,7 @@ import { MuseCodeModule } from "./muse-code/muse-code.module.js";
 import { ProviderModelsModule } from "./provider-models/provider-models.module.js";
 import { ModelsModule } from "./models/models.module.js";
 import { ProviderChatModule } from "./provider-chat/provider-chat.module.js";
+import { ChatCompletionsModule } from "./chat-completions/chat-completions.module.js";
 import { ProviderEmbeddingsModule } from "./provider-embeddings/provider-embeddings.module.js";
 import { CompletionsModule } from "./completions/completions.module.js";
 import { MeModule } from "./me/me.module.js";
@@ -35,7 +36,9 @@ import { AntigravityModule } from "./antigravity/antigravity.module.js";
 import { AutoComboCandidatesModule } from "./auto-combo-candidates/auto-combo-candidates.module.js";
 import { MessagesModule } from "./messages/messages.module.js";
 import { ResponsesModule } from "./responses/responses.module.js";
+import { RelayBifrostModule } from "./relay-bifrost/relay-bifrost.module.js";
 import { VscodeVersionModule } from "./vscode-version/vscode-version.module.js";
+import { SearchModule } from "./search/search.module.js";
 
 @Module({
   imports: [
@@ -66,6 +69,7 @@ import { VscodeVersionModule } from "./vscode-version/vscode-version.module.js";
     ProviderModelsModule,
     ModelsModule,
     ProviderChatModule,
+    ChatCompletionsModule,
     ProviderEmbeddingsModule,
     CompletionsModule,
     MeModule,
@@ -76,7 +80,9 @@ import { VscodeVersionModule } from "./vscode-version/vscode-version.module.js";
     AutoComboCandidatesModule,
     MessagesModule,
     ResponsesModule,
+    RelayBifrostModule,
     VscodeVersionModule,
+    SearchModule,
   ],
 })
 export class AppModule {}

@@ -1,9 +1,9 @@
-import { handleSearch } from "../../../../../../open-sse/handlers/search.ts";
+import { handleSearch } from "@shiguang-gateway/open-sse/handlers/search";
 import {
   getProviderCredentialsWithQuotaPreflight,
   extractApiKey,
   isValidApiKey,
-} from "../../../../sse/services/auth.ts";
+} from "@shiguang-gateway/core-domain/sse/auth";
 import {
   getAllSearchProviders,
   getSearchProvider,
@@ -13,32 +13,32 @@ import {
   isUnconfiguredLoopbackSearchProvider,
   SEARCH_PROVIDERS,
   getSearchCredentialFallbacks,
-} from "../../../../../../open-sse/config/searchRegistry.ts";
-import { errorResponse } from "../../../../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../../../../open-sse/config/constants.ts";
-import * as log from "../../../../sse/utils/logger.ts";
-import { toJsonErrorPayload } from "../../../../shared/utils/upstreamError.ts";
-import { enforceApiKeyPolicy } from "../../../../shared/utils/apiKeyPolicy.ts";
-import { v1SearchSchema } from "../../../../shared/validation/schemas.ts";
+} from "@shiguang-gateway/open-sse/config/searchRegistry";
+import { errorResponse } from "@shiguang-gateway/open-sse/utils/error";
+import { HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants";
+import * as log from "@shiguang-gateway/core-domain/sse/logger";
+import { toJsonErrorPayload } from "@shiguang-gateway/core-domain/shared/upstream-error";
+import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/shared/api-key-policy";
+import { v1SearchSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
 import {
   formatValidationMessage,
   isValidationFailure,
   validateBody,
-} from "../../../../shared/validation/helpers.ts";
-import { recordCost } from "../../../../domain/costRules.ts";
+} from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { recordCost } from "@shiguang-gateway/core-domain/control/cost-rules";
 import {
   computeCacheKey,
   getOrCoalesce,
   SEARCH_CACHE_DEFAULT_TTL_MS,
-} from "../../../../../../open-sse/services/searchCache.ts";
+} from "@shiguang-gateway/open-sse/services/searchCache";
 import {
   isAllRateLimitedCredentials,
   rateLimitedProviderResponse,
   type RateLimitedCredentials,
-} from "../../../../lib/edge/rateLimit.ts";
-import { getSettings } from "../../../../lib/db/settings.ts";
-import { isProviderBlockedByIdOrAlias } from "../../../../shared/utils/noAuthProviders.ts";
-import { withInjectionGuard } from "../../../../middleware/promptInjectionGuard.ts";
+} from "@shiguang-gateway/core-domain/edge/rate-limit";
+import { getSettings } from "@shiguang-gateway/core-domain/control/settings";
+import { isProviderBlockedByIdOrAlias } from "@shiguang-gateway/contracts/config/noAuthProviders";
+import { withInjectionGuard } from "@shiguang-gateway/core-domain/middleware/prompt-injection";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
@@ -296,7 +296,7 @@ async function postHandler(request: Request, context: unknown) {
       )
       .sort((a, b) => a.costPerQuery - b.costPerQuery)
       .map((p) => p.id)
-      .filter((id) => id !== providerConfig.id);
+      .filter((id) => id !== providerConfig!.id);
 
     for (const pid of otherIds) {
       const altConfig = getSearchProvider(pid);
@@ -314,7 +314,7 @@ async function postHandler(request: Request, context: unknown) {
     // is configured. Only used when no real alternate was found above.
     if (!alternateProviderId) {
       for (const provider of Object.values(SEARCH_PROVIDERS)) {
-        if (!provider.fallbackOnly || provider.id === providerConfig.id) continue;
+        if (!provider.fallbackOnly || provider.id === providerConfig!.id) continue;
         if (isUnconfiguredLoopbackSearchProvider(provider)) continue;
         if (!supportsSearchType(provider, body.search_type)) continue;
         const fallbackCreds = await resolveSearchExecutionCredentials(provider);
@@ -325,6 +325,10 @@ async function postHandler(request: Request, context: unknown) {
         }
       }
     }
+  }
+
+  if (!providerConfig) {
+    return errorResponse(HTTP_STATUS.BAD_REQUEST, "No search provider available");
   }
 
   // Clamp max_results to provider limit

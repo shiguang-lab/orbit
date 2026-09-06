@@ -1,32 +1,18 @@
 import { z } from "zod";
-import { CORS_HEADERS, handleCorsOptions } from "../../../../../shared/utils/cors.ts";
-import { callCloudWithMachineId } from "../../../../../shared/utils/cloud.ts";
-import { handleChat } from "../../../../../sse/handlers/chat.ts";
-import { generateRequestId } from "../../../../../shared/utils/requestId.ts";
-import { errorResponse } from "../../../../../../../open-sse/utils/error.ts";
-import { initTranslators } from "../../../../../../../open-sse/translator/index.ts";
-import { createInjectionGuard } from "../../../../../middleware/promptInjectionGuard.ts";
-import { acceptHeaderForcesStream } from "../../../../../../../open-sse/utils/aiSdkCompat.ts";
+import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
+import { handleChat, buildClientRawRequest } from "@shiguang-gateway/core-domain/edge/chat-handler";
+import { generateRequestId } from "@shiguang-gateway/core-domain/edge/request-id";
+import { errorResponse } from "@shiguang-gateway/open-sse/utils/error";
+import { initTranslators } from "@shiguang-gateway/open-sse/translator";
+import { createInjectionGuard } from "@shiguang-gateway/core-domain/middleware/prompt-injection";
+import { acceptHeaderForcesStream } from "@shiguang-gateway/open-sse/utils/aiSdkCompat";
 import {
   OPENAI_CHAT_ERROR_FRAME,
   OPENAI_KEEPALIVE_FRAME,
   OPENAI_STARTUP_FRAME,
   withEarlyStreamKeepalive,
-} from "../../../../../../../open-sse/utils/earlyStreamKeepalive.ts";
-import { resolveKeepaliveThreshold } from "../../../../../../../open-sse/utils/keepaliveThreshold.ts";
-import {
-  admitChatRequest,
-  admitChatStructure,
-  CHAT_ADMISSION_QUEUE_MAX_MS,
-  releaseChatAdmissionAfterHandler,
-  releaseChatAdmissionWhenDone,
-  resolveSessionId,
-} from "../../../../../shared/middleware/chatBodyAdmission.ts";
-import {
-  readCompressionRequestHeader,
-  withCompressionHeaderEcho,
-} from "../../../../../shared/utils/compressionHeaderEcho.ts";
-import { resolveModelAliasWithSeedFallbackOnBody } from "../../../../../lib/modelAliasResolver.ts";
+} from "@shiguang-gateway/open-sse/utils/earlyStreamKeepalive";
+import { resolveKeepaliveThreshold } from "@shiguang-gateway/open-sse/utils/keepaliveThreshold";
 import {
   assertRuntimeModelProviderAvailable,
   isRuntimeProviderRetirementError,
@@ -36,7 +22,9 @@ import {
   isCommonChatGptWebRetirementError,
 } from "@shiguang-gateway/contracts/chatgpt-web-retirement";
 
-let initPromise = null;
+const load = (specifier: string): Promise<any> => import(specifier);
+
+let initPromise: Promise<void> | null = null;
 
 // Singleton injection guard instance
 const injectionGuard = createInjectionGuard();
@@ -82,11 +70,19 @@ const chatCompletionsRouteShapeSchema = z
 /**
  * Handle CORS preflight
  */
-export async function OPTIONS() {
-  return handleCorsOptions();
+export function OPTIONS(): Response {
+  return new Response(null, { headers: { ...CORS_HEADERS, "Access-Control-Allow-Methods": "GET, POST, OPTIONS", "Access-Control-Allow-Headers": "*" } });
 }
 
-export async function POST(request) {
+export async function POST(request: Request): Promise<Response> {
+  const [admissionApi, compressionApi, aliasApi] = await Promise.all([
+    load("@shiguang-gateway/core-domain/shared/middleware/chatBodyAdmission"),
+    load("@shiguang-gateway/core-domain/shared/utils/compressionHeaderEcho"),
+    load("@shiguang-gateway/core-domain/lib/modelAliasResolver"),
+  ]);
+  const { admitChatRequest, admitChatStructure, CHAT_ADMISSION_QUEUE_MAX_MS, releaseChatAdmissionAfterHandler, releaseChatAdmissionWhenDone, resolveSessionId } = admissionApi;
+  const { readCompressionRequestHeader, withCompressionHeaderEcho } = compressionApi;
+  const { resolveModelAliasWithSeedFallbackOnBody } = aliasApi;
   await ensureInitialized();
 
   // Content-Type guard (#6414) — reject non-JSON POST bodies with 415 per RFC 7231.

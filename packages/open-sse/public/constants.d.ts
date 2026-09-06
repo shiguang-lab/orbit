@@ -4,5 +4,6 @@ export const HTTP_STATUS: {
   SERVER_ERROR: number;
   RATE_LIMITED: number;
   BAD_GATEWAY: number;
+  FORBIDDEN: number;
 };
 export const SSE_HEARTBEAT_INTERVAL_MS: number;

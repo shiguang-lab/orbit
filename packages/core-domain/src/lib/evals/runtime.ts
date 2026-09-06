@@ -1,4 +1,4 @@
-import { POST as postChatCompletion } from "../../app/api/v1/chat/completions/route.ts";
+import { POST as postChatCompletion } from "../edge/chatCompletionsCompat.ts";
 import type { PersistedEvalRun, EvalTargetType } from "../db/evals.ts";
 import { saveEvalRun } from "../db/evals.ts";
 import { getApiKeyById, getCombos } from "../localDb.ts";

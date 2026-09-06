@@ -22,3 +22,4 @@ export interface BudgetSummary {
 export function setBudget(apiKeyId: string, config: Record<string, unknown>): Record<string, unknown>;
 export function getCostSummary(apiKeyId: string): BudgetSummary;
 export function checkBudget(apiKeyId: string, additionalCost?: number): Record<string, unknown>;
+export function recordCost(apiKeyId: string, cost: number): void;

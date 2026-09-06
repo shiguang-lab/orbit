@@ -10,3 +10,4 @@ export function resolveStreamFlag(
   sourceFormat?: string,
   optionsOrUserAgent?: unknown,
 ): boolean;
+export function acceptHeaderForcesStream(acceptHeader: unknown, bodyStream: unknown): boolean;

@@ -10,7 +10,7 @@
  */
 import { getProviderConnections } from "../../models/index.ts";
 import { getChaosConfig, type ChaosConfig } from "./chaosConfig.ts";
-import { POST as postChatCompletion } from "../../app/api/v1/chat/completions/route.ts";
+import { POST as postChatCompletion } from "../edge/chatCompletionsCompat.ts";
 
 // Wrapped in an object (rather than called as a bare imported function) so unit
 // tests can swap it out via `mock.method(chatDispatch, "postChatCompletion", ...)`

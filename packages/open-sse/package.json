@@ -61,6 +61,10 @@
       "types": "./public/providerPluginManifest.d.ts",
       "import": "./config/providerPluginManifest.ts"
     },
+    "./config/providerPluginManifestUrl": {
+      "types": "./public/providerPluginManifestUrl.d.ts",
+      "import": "./config/providerPluginManifestUrl.ts"
+    },
     "./config/providerPluginManifestRegistry": {
       "types": "./public/providerPluginManifestRegistry.d.ts",
       "import": "./config/providerPluginManifestRegistry.ts"
@@ -80,6 +84,10 @@
     "./handlers/imageGeneration": {
       "types": "./public/imageGeneration.d.ts",
       "import": "./handlers/imageGeneration.ts"
+    },
+    "./handlers/search": {
+      "types": "./public/search.d.ts",
+      "import": "./handlers/search.ts"
     },
     "./handlers/imageGeneration/providers/fal": {
       "types": "./public/imageGenerationFal.d.ts",
@@ -212,6 +220,10 @@
     "./services/inAppLoginService": {
       "types": "./public/inAppLoginService.d.ts",
       "import": "./services/inAppLoginService.ts"
+    },
+    "./services/searchCache": {
+      "types": "./public/searchCache.d.ts",
+      "import": "./services/searchCache.ts"
     },
     "./*": {
       "types": "./*",
