@@ -479,6 +479,7 @@ const migratedRouteOwnership = {
     "api/settings/proxies/route.ts",
     "api/settings/proxies/assignments/route.ts",
     "api/settings/proxies/health/route.ts",
+    "api/v1/management/proxies/health/route.ts",
     "api/settings/proxies/pool/route.ts",
     "api/settings/proxies/bulk-assign/route.ts",
     "api/settings/proxies/bulk-import/route.ts",
