@@ -1,5 +1,5 @@
 import { handleCorsOptions } from "../../../../../shared/utils/cors.ts";
-import { getUnifiedModelsResponse } from "../catalog";
+import { getUnifiedModelsResponse } from "../../../../../lib/catalog/catalog";
 import { handleGetModelById } from "../modelById";
 
 /**

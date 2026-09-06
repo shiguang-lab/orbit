@@ -7,7 +7,7 @@ import {
   CANONICAL_EFFORT_VALUES,
   extendCodexGpt56EffortValues,
   extendDeepSeekEffortValues,
-} from "../../../../shared/reasoning/effortStandardization.ts";
+} from "../../shared/reasoning/effortStandardization.ts";
 
 export interface CustomModelEntry {
   id?: string;

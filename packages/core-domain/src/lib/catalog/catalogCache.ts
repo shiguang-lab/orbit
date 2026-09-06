@@ -16,8 +16,8 @@ import { createHmac } from "node:crypto";
 
 import { after } from "next/server";
 
-import { getModelCatalogCacheVersion } from "../../../../lib/db/readCache.ts";
-import { extractApiKey } from "../../../../sse/services/auth.ts";
+import { getModelCatalogCacheVersion } from "../db/readCache.ts";
+import { extractApiKey } from "../../sse/services/auth.ts";
 
 import { isCodexModelCatalogClient } from "./catalogRequest";
 

@@ -15,7 +15,7 @@ import { providerUsesExclusiveSyncedListing } from "../../../lib/providers/model
 import {
   buildSyncedModelIdsByCanonicalProvider,
   shouldSuppressStaticModelForExclusiveListing,
-} from "../v1/models/catalogSyncedCoverage.ts";
+} from "../../../lib/catalog/catalogSyncedCoverage.ts";
 import { buildAliasMaps } from "../../../lib/catalog/catalogProviderMaps.ts";
 import { resolveCanonicalProviderId as resolveCanonicalProviderIdFromMaps } from "../../../lib/catalog/catalogProviderMaps.ts";
 

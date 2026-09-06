@@ -1,6 +1,6 @@
 import { after } from "next/server";
 
-import { getUnifiedModelsResponse } from "./catalog";
+import { getUnifiedModelsResponse } from "../../../../lib/catalog/catalog";
 
 /**
  * Handle CORS preflight

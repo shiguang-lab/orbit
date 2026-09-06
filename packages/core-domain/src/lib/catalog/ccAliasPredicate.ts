@@ -22,7 +22,7 @@
  * follows the global flag.
  */
 
-import { resolveCcAliasEnabled, type CcAliasSetting } from "../../../../lib/db/ccDiscoveryAliases.ts";
+import { resolveCcAliasEnabled, type CcAliasSetting } from "../db/ccDiscoveryAliases.ts";
 
 export interface CcAliasGateSnapshot {
   global: boolean;

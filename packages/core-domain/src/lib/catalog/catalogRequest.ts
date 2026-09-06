@@ -1,11 +1,11 @@
-import { isAuthRequired, isDashboardSessionAuthenticated } from "../../../../shared/utils/apiAuth.ts";
-import { extractApiKey } from "../../../../sse/services/auth.ts";
+import { isAuthRequired, isDashboardSessionAuthenticated } from "../../shared/utils/apiAuth.ts";
+import { extractApiKey } from "../../sse/services/auth.ts";
 
 // Request-scoped catalog helpers: API-key auth gating for `/v1/models` and Codex
 // CLI client detection. Extracted verbatim from ./catalog.ts.
 
 async function validateCatalogApiKey(apiKey: string): Promise<boolean> {
-  const { validateApiKey } = await import("../../../../lib/db/apiKeys.ts");
+  const { validateApiKey } = await import("../db/apiKeys.ts");
   return validateApiKey(apiKey);
 }
 

@@ -24,7 +24,7 @@
  * effort-variant scoping, and Claude-mirror gating are untouched. Pure; no DB/IO.
  */
 
-import { OAUTH_PROVIDERS, NOAUTH_PROVIDERS, APIKEY_PROVIDERS } from "../../../../shared/constants/providers.ts";
+import { OAUTH_PROVIDERS, NOAUTH_PROVIDERS, APIKEY_PROVIDERS } from "../../shared/constants/providers.ts";
 
 /** Canonical provider precedence, keyed by provider id (not alias). Built once. */
 const CANONICAL_PROVIDER_ORDER: readonly string[] = [

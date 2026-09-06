@@ -1,5 +1,5 @@
-import { PROVIDER_MODELS, PROVIDER_ID_TO_ALIAS } from "../../../../shared/constants/models.ts";
-import { NOAUTH_PROVIDERS } from "../../../../shared/constants/providers.ts";
+import { PROVIDER_MODELS, PROVIDER_ID_TO_ALIAS } from "../../shared/constants/models.ts";
+import { NOAUTH_PROVIDERS } from "../../shared/constants/providers.ts";
 import {
   getCachedRawProviderConnections,
   getCombos,
@@ -8,35 +8,35 @@ import {
   getCachedProviderNodes,
   getModelAliases,
   getHiddenModelsByProvider,
-} from "../../../../lib/localDb.ts";
-import { getUserDatabaseSettings } from "../../../../lib/db/databaseSettings.ts";
-import { createLazyConnectionView } from "../../../../lib/db/providers/lazyConnectionView.ts";
+} from "../localDb.ts";
+import { getUserDatabaseSettings } from "../db/databaseSettings.ts";
+import { createLazyConnectionView } from "../db/providers/lazyConnectionView.ts";
 import { extractAliasBackedModels } from "./aliasBackedModels";
 import {
   buildSyncedModelIdsByCanonicalProvider,
   shouldSuppressStaticModelForExclusiveListing,
 } from "./catalogSyncedCoverage";
 import { buildSyncedCapabilities, mergeSyncedCapabilities } from "./syncedCapabilities";
-import { getAllEmbeddingModels } from "../../../../../../open-sse/config/embeddingRegistry.ts";
+import { getAllEmbeddingModels } from "../../../../open-sse/config/embeddingRegistry.ts";
 import {
   getAllImageModels,
   isRegisteredImageModel,
-} from "../../../../../../open-sse/config/imageRegistry.ts";
-import { aiHordeImageCatalog } from "../../../../../../open-sse/services/aihordeImageCatalog.ts";
+} from "../../../../open-sse/config/imageRegistry.ts";
+import { aiHordeImageCatalog } from "../../../../open-sse/services/aihordeImageCatalog.ts";
 import { getAllRerankModels } from "@shiguang-gateway/rerank-catalog";
-import { getAllAudioModels } from "../../../../../../open-sse/config/audioRegistry.ts";
-import { getAllModerationModels } from "../../../../../../open-sse/config/moderationRegistry.ts";
-import { getAllVideoModels } from "../../../../../../open-sse/config/videoRegistry.ts";
-import { getAllMusicModels } from "../../../../../../open-sse/config/musicRegistry.ts";
+import { getAllAudioModels } from "../../../../open-sse/config/audioRegistry.ts";
+import { getAllModerationModels } from "../../../../open-sse/config/moderationRegistry.ts";
+import { getAllVideoModels } from "../../../../open-sse/config/videoRegistry.ts";
+import { getAllMusicModels } from "../../../../open-sse/config/musicRegistry.ts";
 import {
   getRegistryModelThinkingEfforts,
   getRegistryThinkingEfforts,
   providerUsesAuthoritativeLiveCatalog,
   REGISTRY,
-} from "../../../../../../open-sse/config/providerRegistry.ts";
-import { CODEX_NATIVE_UNPREFIXED_MODELS } from "../../../../../../open-sse/services/model.ts";
-import { isModelSelectable } from "../../../../../../open-sse/services/modelLifecycle.ts";
-import { resolveNestedComboTargets } from "../../../../../../open-sse/services/combo.ts";
+} from "../../../../open-sse/config/providerRegistry.ts";
+import { CODEX_NATIVE_UNPREFIXED_MODELS } from "../../../../open-sse/services/model.ts";
+import { isModelSelectable } from "../../../../open-sse/services/modelLifecycle.ts";
+import { resolveNestedComboTargets } from "../../../../open-sse/services/combo.ts";
 import {
   AUTO_TEMPLATE_VARIANTS,
   AUTO_SUFFIX_VARIANTS,
@@ -44,48 +44,48 @@ import {
   createBuiltinAutoCombo,
   prepareBuiltinAutoComboInputs,
   isPaidTierAutoId,
-} from "../../../../../../open-sse/services/autoCombo/builtinCatalog.ts";
+} from "../../../../open-sse/services/autoCombo/builtinCatalog.ts";
 import {
   getSyncedAvailableModelsByConnection,
   SYNCED_AVAILABLE_MODELS_MALFORMED,
   type SyncedAvailableModel,
-} from "../../../../lib/db/models.ts";
-import { getAllActiveSyncedModels } from "../../../../lib/db/models/activeSyncedCatalog.ts";
-import { getModelCatalogCacheVersion } from "../../../../lib/db/readCache.ts";
-import { getCompatibleFallbackModels } from "../../../../lib/providers/managedAvailableModels.ts";
+} from "../db/models.ts";
+import { getAllActiveSyncedModels } from "../db/models/activeSyncedCatalog.ts";
+import { getModelCatalogCacheVersion } from "../db/readCache.ts";
+import { getCompatibleFallbackModels } from "../providers/managedAvailableModels.ts";
 import {
   providerUsesCuratedModelsOnly,
   providerUsesExclusiveSyncedListing,
-} from "../../../../lib/providers/modelListingCapability.ts";
-import { ensureCursorAutoCatalogEntry } from "../../../../lib/providerModels/cursorAutoCatalog.ts";
-import { mergeCustomModelMetadata } from "../../../../lib/providers/modelMetadataPrecedence.ts";
-import { getOpenRouterCatalog } from "../../../../lib/catalog/openrouterCatalog.ts";
-import { hasEligibleConnectionForModel } from "../../../../domain/connectionModelRules.ts";
+} from "../providers/modelListingCapability.ts";
+import { ensureCursorAutoCatalogEntry } from "../providerModels/cursorAutoCatalog.ts";
+import { mergeCustomModelMetadata } from "../providers/modelMetadataPrecedence.ts";
+import { getOpenRouterCatalog } from "../catalog/openrouterCatalog.ts";
+import { hasEligibleConnectionForModel } from "../../domain/connectionModelRules.ts";
 import {
   INTERNAL_PROXY_ERROR,
   getCanonicalModelMetadata,
   getCatalogDiagnosticsHeaders,
   type CatalogEnrichmentSnapshot,
-} from "../../../../lib/modelMetadataRegistry.ts";
-import { createModelCapabilityResolutionSnapshot } from "../../../../lib/modelCapabilityResolutionSnapshot.ts";
-import { getModelsDevPricing, getSyncedCapability } from "../../../../lib/modelsDevSync.ts";
+} from "../modelMetadataRegistry.ts";
+import { createModelCapabilityResolutionSnapshot } from "../modelCapabilityResolutionSnapshot.ts";
+import { getModelsDevPricing, getSyncedCapability } from "../modelsDevSync.ts";
 import { getModelSpec } from "@shiguang-gateway/contracts/model-specs";
-import { classifyModelSupportedEndpoints } from "../../../../shared/constants/modelSupportedEndpoints.ts";
-import { getModelsCatalogPrefixMode } from "../../../../shared/utils/featureFlags.ts";
+import { classifyModelSupportedEndpoints } from "../../shared/constants/modelSupportedEndpoints.ts";
+import { getModelsCatalogPrefixMode } from "../../shared/utils/featureFlags.ts";
 import {
   isProviderNodePrefixReserved,
   selectCompatibleNodeForPrefix,
-} from "../../../../lib/providerNodePrefixes.ts";
+} from "../providerNodePrefixes.ts";
 import { applyCatalogPostFilters, finalizeCatalogResponse } from "./catalogResponse";
 import {
   isNoAuthProviderBlocked,
   isNoAuthProviderKey,
   isNoAuthRawProviderPrefix,
   normalizeBlockedProviderSet,
-} from "../../../../shared/utils/noAuthProviders.ts";
-import { getSourcedTokenLimit, getTokenLimit } from "../../../../../../open-sse/services/contextManager.ts";
-import { extractApiKey } from "../../../../sse/services/auth.ts";
-import type { ComboModelStep } from "../../../../lib/combos/steps.ts";
+} from "../../shared/utils/noAuthProviders.ts";
+import { getSourcedTokenLimit, getTokenLimit } from "../../../../open-sse/services/contextManager.ts";
+import { extractApiKey } from "../../sse/services/auth.ts";
+import type { ComboModelStep } from "../combos/steps.ts";
 import {
   type CustomModelEntry,
   type ComboCatalogTarget,
@@ -114,18 +114,18 @@ import {
   resolveCanonicalProviderId as resolveCanonicalProviderIdFromMaps,
   getProviderPrefixes as getProviderPrefixesFromMaps,
   getComboTargetModelId as getComboTargetModelIdFromMaps,
-} from "../../../../lib/catalog/catalogProviderMaps.ts";
+} from "../catalog/catalogProviderMaps.ts";
 import {
   getModelCatalogAuthRejection,
   isCodexModelCatalogClient,
   isCcDiscoveryModelCatalogClient,
 } from "./catalogRequest";
-import { incrementCcDiscoveryHitCount } from "../../../../lib/db/ccDiscoveryMetrics.ts";
+import { incrementCcDiscoveryHitCount } from "../db/ccDiscoveryMetrics.ts";
 import { isUnifiedChatSourceModelSelectable } from "./catalogModelPolicy";
-import { isFreeModel } from "../../../../shared/utils/freeModels.ts";
-import { isModelExposureAllowed } from "../../../../shared/utils/modelExposureList.ts";
-import { isCodexDiscoveryModelExcluded } from "../../../../shared/services/codexDiscoveryPolicy.ts";
-import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
+import { isFreeModel } from "../../shared/utils/freeModels.ts";
+import { isModelExposureAllowed } from "../../shared/utils/modelExposureList.ts";
+import { isCodexDiscoveryModelExcluded } from "../../shared/services/codexDiscoveryPolicy.ts";
+import { buildErrorBody } from "../../../../open-sse/utils/error.ts";
 
 // Public API of this module is preserved after the catalog helper extraction:
 // `isVisionModelId` (vision-detection-consistency.test.ts) and
@@ -808,10 +808,10 @@ async function buildUnifiedModelsResponseCore(
     // provider/auto-combo/registry loops start.
     const earlyApiKey = extractApiKey(request);
     if (earlyApiKey) {
-      const { getApiKeyMetadata } = await import("../../../../lib/db/apiKeys.ts");
+      const { getApiKeyMetadata } = await import("../db/apiKeys.ts");
       const earlyKeyMeta = await getApiKeyMetadata(earlyApiKey);
       if (earlyKeyMeta?.allowedQuotas && earlyKeyMeta.allowedQuotas.length > 0) {
-        const { buildQuotaExclusiveModels } = await import("../../../../lib/quota/quotaCombos.ts");
+        const { buildQuotaExclusiveModels } = await import("../quota/quotaCombos.ts");
         const quotaModels = await buildQuotaExclusiveModels(
           earlyKeyMeta.allowedQuotas,
           combos,
@@ -1879,14 +1879,14 @@ async function buildUnifiedModelsResponseCore(
     const apiKey = extractApiKey(request);
     let finalModels = models;
     if (apiKey) {
-      const { isModelAllowedForKey, getApiKeyMetadata } = await import("../../../../lib/db/apiKeys.ts");
+      const { isModelAllowedForKey, getApiKeyMetadata } = await import("../db/apiKeys.ts");
 
       // Quota-exclusive keys (allowedQuotas non-empty): list ONLY the pool's qtSd/*
       // virtual models. #4806: build from the hidden qtSd/* combos directly — the base
       // `models` list drops hidden combos, so filtering it returned nothing (0 models).
       const keyMeta = await getApiKeyMetadata(apiKey);
       if (keyMeta && keyMeta.allowedQuotas && keyMeta.allowedQuotas.length > 0) {
-        const { buildQuotaExclusiveModels } = await import("../../../../lib/quota/quotaCombos.ts");
+        const { buildQuotaExclusiveModels } = await import("../quota/quotaCombos.ts");
         finalModels = await buildQuotaExclusiveModels(
           keyMeta.allowedQuotas,
           combos,

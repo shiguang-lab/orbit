@@ -1,5 +1,5 @@
 import { AI_PROVIDERS } from "../../../../shared/constants/providers.ts";
-import { getUnifiedModelsResponse } from "../../v1/models/catalog.ts";
+import { getUnifiedModelsResponse } from "../../../../lib/catalog/catalog";
 import { INTERNAL_PROXY_ERROR, getCatalogDiagnosticsHeaders } from "../../../../lib/modelMetadataRegistry.ts";
 import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
 

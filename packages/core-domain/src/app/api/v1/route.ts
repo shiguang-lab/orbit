@@ -1,5 +1,5 @@
 import { CORS_HEADERS } from "../../../shared/utils/cors.ts";
-import { getUnifiedModelsResponse } from "./models/catalog";
+import { getUnifiedModelsResponse } from "../../../lib/catalog/catalog";
 
 /**
  * Handle CORS preflight

@@ -1,4 +1,4 @@
-import { getUnifiedModelsResponse } from "../../app/api/v1/models/catalog.ts";
+import { getUnifiedModelsResponse } from "../catalog/catalog.ts";
 
 type UnifiedModelEntry = Record<string, unknown>;
 

@@ -8,33 +8,33 @@
  * mirrors the first time it was written as a duplicate.
  */
 
-import { appendNoThinkingVariants } from "../../../../../../open-sse/utils/noThinkingAlias.ts";
-import { appendClaudeEffortVariants } from "../../../../../../open-sse/utils/claudeEffortVariants.ts";
-import { appendSyncedEffortVariants } from "../../../../../../open-sse/utils/syncedEffortVariants.ts";
-import { appendCcDiscoveryAliases } from "../../../../../../open-sse/utils/ccDiscoveryAliases.ts";
+import { appendNoThinkingVariants } from "../../../../open-sse/utils/noThinkingAlias.ts";
+import { appendClaudeEffortVariants } from "../../../../open-sse/utils/claudeEffortVariants.ts";
+import { appendSyncedEffortVariants } from "../../../../open-sse/utils/syncedEffortVariants.ts";
+import { appendCcDiscoveryAliases } from "../../../../open-sse/utils/ccDiscoveryAliases.ts";
 import {
   appendFunctionalGatewayMirrors,
   isFunctionalGatewayMirror,
-} from "../../../../../../open-sse/utils/functionalGatewayMirrors.ts";
-import { isCcAliasGlobalEnabled, getCcAliasSettingsBulk } from "../../../../lib/db/ccDiscoveryAliases.ts";
+} from "../../../../open-sse/utils/functionalGatewayMirrors.ts";
+import { isCcAliasGlobalEnabled, getCcAliasSettingsBulk } from "../db/ccDiscoveryAliases.ts";
 import { buildCcAliasPredicate } from "./ccAliasPredicate";
 import {
   isFunctionalGatewayGlobalEnabled,
   getFunctionalGatewaySettingsBulk,
-} from "../../../../lib/db/functionalGatewayMirrors.ts";
+} from "../db/functionalGatewayMirrors.ts";
 import { buildFunctionalGatewayPredicate } from "./functionalGatewayPredicate";
-import { getPassthroughProviders, REGISTRY } from "../../../../../../open-sse/config/providerRegistry.ts";
-import { hasEligibleConnectionForModel } from "../../../../domain/connectionModelRules.ts";
+import { getPassthroughProviders, REGISTRY } from "../../../../open-sse/config/providerRegistry.ts";
+import { hasEligibleConnectionForModel } from "../../domain/connectionModelRules.ts";
 import { dedupeExactCatalogIds } from "./catalogDedupe";
 import { sortCatalogModelsProviderGrouped } from "./catalogOrder";
 import {
   disambiguateCatalogModelNames,
   enrichCatalogModelEntry,
   type CatalogEnrichmentSnapshot,
-} from "../../../../lib/modelMetadataRegistry.ts";
-import { createModelCapabilityResolutionSnapshot } from "../../../../lib/modelCapabilityResolutionSnapshot.ts";
-import { isModelCatalogNamesEnabled } from "../../../../shared/utils/featureFlags.ts";
-import { extractApiKey } from "../../../../sse/services/auth.ts";
+} from "../modelMetadataRegistry.ts";
+import { createModelCapabilityResolutionSnapshot } from "../modelCapabilityResolutionSnapshot.ts";
+import { isModelCatalogNamesEnabled } from "../../shared/utils/featureFlags.ts";
+import { extractApiKey } from "../../sse/services/auth.ts";
 import { maybeOmitCatalogModelName } from "./catalogHelpers";
 import { isCodexModelCatalogClient } from "./catalogRequest";
 
@@ -206,7 +206,7 @@ export async function finalizeCatalogResponse(
 ): Promise<Response> {
   const apiKey = extractApiKey(request);
   if (apiKey) {
-    const { getApiKeyMetadata, isModelAllowedForKey } = await import("../../../../lib/db/apiKeys.ts");
+    const { getApiKeyMetadata, isModelAllowedForKey } = await import("../db/apiKeys.ts");
     const keyMeta = await getApiKeyMetadata(apiKey);
     if (keyMeta && keyMeta.id !== "env-key" && !keyMeta.allowedQuotas?.length) {
       finalModels = await filterUnauthorizedFunctionalGatewayMirrors(

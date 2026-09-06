@@ -1,4 +1,4 @@
-import { getUnifiedModelsResponse } from "../../../models/catalog.ts";
+import { getUnifiedModelsResponse } from "../../../../../../lib/catalog/catalog";
 import { getServiceModels } from "../../../../../../lib/db/serviceModels.ts";
 import { isServiceBackendPluginId } from "../../../../../../lib/services/serviceBackends.ts";
 import { getRegistryEntry } from "../../../../../../../../open-sse/config/providerRegistry.ts";

@@ -1,5 +1,5 @@
-import { getModelEndpointDecision } from "../../../../../../open-sse/services/modelEndpointPolicy.ts";
-import { isModelSelectable } from "../../../../../../open-sse/services/modelLifecycle.ts";
+import { getModelEndpointDecision } from "../../../../open-sse/services/modelEndpointPolicy.ts";
+import { isModelSelectable } from "../../../../open-sse/services/modelLifecycle.ts";
 
 type CatalogModelPolicyInput = {
   id: string;
