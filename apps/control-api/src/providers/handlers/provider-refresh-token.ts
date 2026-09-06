@@ -1,7 +1,7 @@
 import { getProviderConnectionById } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { refreshKimiProviderConnection } from "@shiguang-gateway/core-domain/control/kimi-token-refresh";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { parseKimiJwt } from "@shiguang-gateway/open-sse/utils/kimiJwt.ts";
+import { parseKimiJwt } from "@shiguang-gateway/open-sse/utils/kimiJwt";
 
 /** POST /api/providers/:id/refresh-token. */
 export async function POST(request: Request, id: string): Promise<Response> {

@@ -13,6 +13,10 @@
       "types": "./public/error.d.ts",
       "import": "./utils/error.ts"
     },
+    "./utils/kimiJwt": {
+      "types": "./public/kimiJwt.d.ts",
+      "import": "./utils/kimiJwt.ts"
+    },
     "./utils/proxyFetch": {
       "types": "./public/proxyFetch.d.ts",
       "import": "./utils/proxyFetch.ts"
@@ -64,6 +68,10 @@
     "./services/accountFallback": {
       "types": "./public/accountFallback.d.ts",
       "import": "./services/accountFallback.ts"
+    },
+    "./services/chatgptWebCodexAdmin": {
+      "types": "./public/chatgptWebCodexAdmin.d.ts",
+      "import": "./services/chatgptWebCodexAdmin.ts"
     },
     "./services/rateLimitManager": {
       "types": "./public/rateLimitManager.d.ts",

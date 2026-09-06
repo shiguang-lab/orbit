@@ -2,7 +2,7 @@ import { z } from "zod";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { buildComboForecastResponse } from "@shiguang-gateway/core-domain/usage/combo-forecast";
 
-const schema = z.object({ range: z.enum(["1h", "24h", "7d", "30d"]).default("7d"), horizon: z.enum(["24h", "7d", "30d"]).default("30d"), comboId: z.string().uuid().optional() });
+const schema = z.object({ range: z.enum(["1h", "24h", "7d", "30d"]).default("7d"), horizon: z.enum(["24h", "7d", "30d"]).default("30d"), comboId: z.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i).optional() });
 
 export async function GET(request: Request): Promise<Response> {
   const authError = await requireManagementAuth(request); if (authError) return authError;
