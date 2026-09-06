@@ -10,7 +10,7 @@
 import { getCombos } from "@shiguang-gateway/core-domain/edge/local-db";
 import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/services/auth";
 import { isDashboardSessionAuthenticated } from "@shiguang-gateway/auth/dashboard-session";
-import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/edge/feature-flags";
+import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
 import { errorResponse } from "@shiguang-gateway/open-sse/utils/error";
 import { projectCombo, type PublicCombo } from "./runtime/project-combo.js";
 

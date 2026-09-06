@@ -6,9 +6,9 @@
  * over the process environment variable of the same name.
  */
 
-import { FEATURE_FLAG_DEFINITIONS } from "../../shared/constants/featureFlagDefinitions.ts";
-import { getDbInstance } from "./core.ts";
-import { finishModelCatalogWriteWithoutBackup } from "./models/modelCatalogWriteSignals.ts";
+import { FEATURE_FLAG_DEFINITIONS } from "../../shared/constants/featureFlagDefinitions.js";
+import { getDbInstance } from "./core.js";
+import { finishModelCatalogWriteWithoutBackup } from "./models/modelCatalogWriteSignals.js";
 
 const NAMESPACE = "feature_flags";
 

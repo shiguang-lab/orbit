@@ -5,7 +5,7 @@ import {
   ANTHROPIC_COMPATIBLE_PREFIX,
   CLAUDE_CODE_COMPATIBLE_PREFIX,
 } from "@shiguang-gateway/core-domain/catalog/provider-node-prefixes";
-import { isCcCompatibleProviderEnabled } from "@shiguang-gateway/core-domain/control/feature-flags";
+import { isCcCompatibleProviderEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
 import { createProviderNodeSchema, paginationSchema } from "@shiguang-gateway/core-domain/control/provider-validation-schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { validateProviderNodeBaseUrl } from "./provider-nodes-url-guard.js";

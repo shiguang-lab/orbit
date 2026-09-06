@@ -12,7 +12,7 @@
  * `SHIGUANG_GATEWAY_EMERGENCY_FALLBACK=false` (or `0`). Default remains enabled.
  */
 
-import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/edge/feature-flags";
+import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
 
 const EMERGENCY_FALLBACK_FLAG_KEY = "SHIGUANG_GATEWAY_EMERGENCY_FALLBACK";
 const EMERGENCY_FALLBACK_FLAG_CACHE_MS = 500;

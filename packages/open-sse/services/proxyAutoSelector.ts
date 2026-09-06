@@ -14,7 +14,7 @@ import {
   findWorkingProxy,
   clearProxyFallbackCache,
 } from "../utils/proxyFallback.ts";
-import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/edge/feature-flags";
+import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
 
 // ---------------------------------------------------------------------------
 // Public API

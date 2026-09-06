@@ -19,7 +19,7 @@ import {
   deletePlaygroundPreset,
 } from "@shiguang-gateway/core-domain/control/playground-presets";
 import { PlaygroundPresetUpdateSchema } from "@shiguang-gateway/core-domain/shared/schemas/playground";
-import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/control/feature-flags";
+import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Methods": "GET, PUT, DELETE, OPTIONS",

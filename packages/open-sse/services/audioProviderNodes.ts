@@ -1,5 +1,5 @@
 import { getCachedProviderNodes } from "@shiguang-gateway/core-domain/runtime/read-cache";
-import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/edge/feature-flags";
+import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
 import {
   buildDynamicAudioProvider,
   isLoopbackNodeHost,

@@ -156,7 +156,7 @@
       "types": "./src/public/reasoningRoutingPolicy.d.ts",
       "import": "./src/lib/reasoningRouting/policy.ts"
     },
-    "./edge/feature-flags": {
+    "./runtime/feature-flags": {
       "types": "./src/public/featureFlags.d.ts",
       "import": "./src/shared/utils/featureFlags.ts"
     },
@@ -746,10 +746,6 @@
     "./control/provider-validation-schemas": {
       "types": "./src/public/providerValidationSchemas.d.ts",
       "import": "./src/shared/validation/schemas.ts"
-    },
-    "./control/feature-flags": {
-      "types": "./src/public/featureFlags.d.ts",
-      "import": "./src/shared/utils/featureFlags.ts"
     },
     "./control/compliance": {
       "types": "./src/public/compliance.d.ts",

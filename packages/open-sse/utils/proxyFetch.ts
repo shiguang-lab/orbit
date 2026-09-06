@@ -18,7 +18,7 @@ import { isProxyReachable } from "./proxyHealth.ts";
 import {
   isControlPlaneProxyDirectFallbackEnabled,
   isFeatureFlagEnabled,
-} from "@shiguang-gateway/core-domain/edge/feature-flags";
+} from "@shiguang-gateway/core-domain/runtime/feature-flags";
 import {
   directFetchWithBoundedResponseStart,
   isDirectResponseStartTimeout,

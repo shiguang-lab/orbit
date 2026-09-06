@@ -16,7 +16,7 @@
  */
 
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/edge/feature-flags";
+import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
 import {
   extractA2AApiKey,
   isValidA2AApiKey,

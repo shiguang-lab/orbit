@@ -484,7 +484,7 @@ export type {
   CommunityServer,
 } from "./db/gamification";
 
-export * from "./db/featureFlags";
+export * from "./db/featureFlags.js";
 
 export {
   upsertHandoff,
@@ -795,9 +795,9 @@ export { markConnectionRateLimitedUntil, clearConnectionRateLimit } from "./db/p
 export * from "./db/paramFilters";
 export * from "./db/interceptionRules"; // Per-model web-search/web-fetch interception rules (#3384)
 export * from "./db/relayProbeStats"; // Relay probe latency/health stats (#6909)
-export * from "./db/ccDiscoveryAliases"; // Claude Code discovery-alias gate (flag + per-provider/model overrides)
+export * from "./db/ccDiscoveryAliases.js"; // Claude Code discovery-alias gate (flag + per-provider/model overrides)
 export * from "./db/ccDiscoveryMetrics"; // Claude Code discovery-alias usage counters (alias requests + discovery hits)
-export * from "./db/functionalGatewayMirrors"; // Functional-gateway mirror gate (flag + per-provider/model overrides)
+export * from "./db/functionalGatewayMirrors.js"; // Functional-gateway mirror gate (flag + per-provider/model overrides)
 // Radar client — local feed cache + settings (opt-in, encrypted supporter key)
 export {
   getRadarCache,

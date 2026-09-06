@@ -209,7 +209,7 @@ import {
 import {
   areContextWindowChecksDisabled,
   isFeatureFlagEnabled,
-} from "@shiguang-gateway/core-domain/edge/feature-flags";
+} from "@shiguang-gateway/core-domain/runtime/feature-flags";
 import { resolveNoAuthEchoModel } from "./chatCore/noAuthEchoModel.ts";
 import {
   REASONING_BUFFER_MIN_TRIGGER,

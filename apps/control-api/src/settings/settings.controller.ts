@@ -11,7 +11,7 @@ import { SettingsService } from "./settings.service.js";
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 import {
   FEATURE_FLAG_DEFINITIONS,
-} from "@shiguang-gateway/core-domain/control/feature-flags";
+} from "@shiguang-gateway/core-domain/runtime/feature-flags";
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 

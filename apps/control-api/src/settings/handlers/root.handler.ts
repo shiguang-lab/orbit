@@ -8,7 +8,7 @@ import {
 import { getRuntimePorts } from "@shiguang-gateway/core-domain/control/cli-tools-runtime-ports";
 import { updateSettingsSchema } from "@shiguang-gateway/core-domain/shared/validation/settings-schema";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
-import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/control/feature-flags";
+import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
 import { resolveModelLockoutSettings } from "@shiguang-gateway/core-domain/resilience/model-lockout-settings";
 import {
   getUpstreamProxyConfig,

@@ -8,7 +8,7 @@ import {
   safeOutboundFetch,
 } from "@shiguang-gateway/core-domain/network/safe-outbound-fetch";
 import { getProviderValidationGuard } from "@shiguang-gateway/core-domain/network/outbound-url-guard-policy";
-import { isCcCompatibleProviderEnabled } from "@shiguang-gateway/core-domain/control/feature-flags";
+import { isCcCompatibleProviderEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
 import { providerNodeValidateSchema } from "@shiguang-gateway/core-domain/control/provider-validation-schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 

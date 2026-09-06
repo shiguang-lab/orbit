@@ -31,7 +31,7 @@ import {
   getProviderCredentialsWithQuotaPreflight,
 } from "@shiguang-gateway/open-sse/services/auth";
 import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/shared/api-key-policy";
-import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/edge/feature-flags";
+import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
 import { z } from "zod";
 import {
   isAllRateLimitedCredentials,

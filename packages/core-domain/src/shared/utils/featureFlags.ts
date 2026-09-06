@@ -1,22 +1,22 @@
-import { getFeatureFlagOverride } from "../../lib/db/featureFlags.ts";
+import { getFeatureFlagOverride } from "../../lib/db/featureFlags.js";
 import {
   FEATURE_FLAG_DEFINITIONS,
   type FeatureFlagDefinition,
-} from "../constants/featureFlagDefinitions.ts";
+} from "../constants/featureFlagDefinitions.js";
 
-export { FEATURE_FLAG_DEFINITIONS } from "../constants/featureFlagDefinitions.ts";
-export type { FeatureFlagDefinition } from "../constants/featureFlagDefinitions.ts";
+export { FEATURE_FLAG_DEFINITIONS } from "../constants/featureFlagDefinitions.js";
+export type { FeatureFlagDefinition } from "../constants/featureFlagDefinitions.js";
 export {
   getFeatureFlagOverrides,
   setFeatureFlagOverride,
   removeFeatureFlagOverride,
   clearAllFeatureFlagOverrides,
-} from "../../lib/db/featureFlags.ts";
-export { getCcAliasGlobalState } from "../../lib/db/ccDiscoveryAliases.ts";
+} from "../../lib/db/featureFlags.js";
+export { getCcAliasGlobalState } from "../../lib/db/ccDiscoveryAliases.js";
 export {
   ADAPTIVE_VIRTUAL_LANES_FLAG_KEY,
   resolveAdaptiveVirtualLanesFlag,
-} from "../../lib/admissionVirtualLanes.ts";
+} from "../../lib/admissionVirtualLanes.js";
 
 /**
  * Resolve the effective value of a feature flag.

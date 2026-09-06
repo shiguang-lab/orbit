@@ -125,7 +125,7 @@ import { getComboFailureLogError } from "@shiguang-gateway/open-sse/handlers/com
 import { classify429FromError, type FailureKind } from "@shiguang-gateway/core-domain/edge/classify-429";
 import { isSubscriptionQuotaText } from "../services/quotaTextCooldowns.ts";
 import { resolveUseUpstream429BreakerHints } from "@shiguang-gateway/core-domain/edge/provider-hints";
-import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/edge/feature-flags";
+import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
 import { shouldIsolateProbeFailures } from "@shiguang-gateway/core-domain/runtime/probe-origin";
 import { getCircuitBreaker, isLocalStreamLifecycleError } from "@shiguang-gateway/core-domain/edge/circuit-breaker";
 import { markAccountExhaustedFrom429 } from "@shiguang-gateway/core-domain/runtime/quota-cache";

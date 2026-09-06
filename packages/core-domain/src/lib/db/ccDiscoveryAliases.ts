@@ -20,9 +20,9 @@
  * why this module resolves the flag directly instead of reusing it).
  */
 
-import { getFeatureFlagOverride } from "./featureFlags";
-import { getDbInstance } from "./core";
-import { finishModelCatalogWriteWithoutBackup } from "./models/modelCatalogWriteSignals";
+import { getFeatureFlagOverride } from "./featureFlags.js";
+import { getDbInstance } from "./core.js";
+import { finishModelCatalogWriteWithoutBackup } from "./models/modelCatalogWriteSignals.js";
 
 const NAMESPACE = "ccDiscoveryAliases";
 const FLAG_KEY = "EXPOSE_CC_DISCOVERY_ALIASES";

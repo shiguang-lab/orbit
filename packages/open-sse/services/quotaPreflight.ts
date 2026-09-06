@@ -19,7 +19,7 @@
  */
 
 import { isCompatibleProviderConnectionId } from "@shiguang-gateway/contracts/compatible-provider-id";
-import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/edge/feature-flags";
+import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
 import { fetchNewApiAggregatorQuota } from "./newApiAggregatorQuotaFetcher.ts";
 
 export interface PreflightQuotaResult {

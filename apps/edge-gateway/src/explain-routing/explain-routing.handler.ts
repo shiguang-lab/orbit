@@ -8,7 +8,7 @@ import {
   routingQualitySnapshot,
 } from "@shiguang-gateway/open-sse/services/routing";
 import { isDashboardSessionAuthenticated } from "@shiguang-gateway/auth/dashboard-session";
-import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/edge/feature-flags";
+import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
 import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/services/auth";
 
 export function OPTIONS(): Response {

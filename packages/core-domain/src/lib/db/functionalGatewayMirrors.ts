@@ -6,8 +6,8 @@
  * (env "1"|"true" > DB flag > default false). Provider/model overrides stored as
  * `provider:<id>` and `model:<provider>/<model>` keys with value "on"/"off".
  */
-import { getFeatureFlagOverride } from "./featureFlags";
-import { getDbInstance } from "./core";
+import { getFeatureFlagOverride } from "./featureFlags.js";
+import { getDbInstance } from "./core.js";
 
 const NAMESPACE = "functionalGatewayMirrors";
 const FLAG_KEY = "EXPOSE_FUNCTIONAL_GATEWAY_MIRRORS";

@@ -24,7 +24,7 @@ import { z } from "zod";
 import { getApiKeyById, getApiKeyMetadata, validateApiKey } from "@shiguang-gateway/core-domain/db/api-keys";
 import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { saveCallLog } from "@shiguang-gateway/core-domain/usage/call-logs";
-import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/edge/feature-flags";
+import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
 import { HTTP_STATUS } from "../config/constants.ts";
 import {
   CURSOR_API_BASE_URL,

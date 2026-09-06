@@ -24,7 +24,7 @@ import {
   resolveAdaptiveVirtualLanesFlag,
   resolveAllFeatureFlags,
   setFeatureFlagOverride,
-} from "@shiguang-gateway/core-domain/control/feature-flags";
+} from "@shiguang-gateway/core-domain/runtime/feature-flags";
 import {
   GET as getRootSettings,
   PATCH as patchRootSettings,

@@ -1,6 +1,6 @@
 import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
-import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/edge/feature-flags";
+import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
 import { CORS_HEADERS, handleCorsOptions } from "@shiguang-gateway/core-domain/shared/cors";
 import { radarSyncBodyError, validateRadarSyncBody } from "./sync-request.js";
 

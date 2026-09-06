@@ -70,7 +70,7 @@ export async function resolveDynamicAudioProviders(
   try {
     const [{ getCachedProviderNodes }, { isFeatureFlagEnabled }, registry] = await Promise.all([
       load("@shiguang-gateway/core-domain/edge/rerank-provider-nodes"),
-      load("@shiguang-gateway/core-domain/edge/feature-flags"),
+      load("@shiguang-gateway/core-domain/runtime/feature-flags"),
       load("@shiguang-gateway/open-sse/config/audioRegistry"),
     ]);
     const nodes = await getCachedProviderNodes();

@@ -13,7 +13,7 @@ import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/service
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { listPlaygroundPresets, createPlaygroundPreset } from "@shiguang-gateway/core-domain/control/playground-presets";
 import { PlaygroundPresetCreateSchema } from "@shiguang-gateway/core-domain/shared/schemas/playground";
-import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/control/feature-flags";
+import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
 import { paginationSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 

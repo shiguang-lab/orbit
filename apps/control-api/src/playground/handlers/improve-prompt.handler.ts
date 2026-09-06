@@ -22,7 +22,7 @@ import {
   buildImproveChatBody,
   parseImprovedContent,
 } from "../runtime/prompt-improver.js";
-import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/control/feature-flags";
+import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
