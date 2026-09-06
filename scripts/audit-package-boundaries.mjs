@@ -74,6 +74,17 @@ function inspectExecutedNode(node, state, skipFunctionBodies = true) {
     if (isGlobalTimer && (name === "setInterval" || name === "setTimeout")) state.timers.add(name);
     if (name === "createServer") state.createsServer = true;
     if (name === "listen") state.listens = true;
+    if (
+      ts.isPropertyAccessExpression(node.expression) &&
+      ts.isIdentifier(node.expression.expression) &&
+      node.expression.expression.text === "process" &&
+      ["on", "once", "addListener"].includes(node.expression.name.text) &&
+      node.arguments.length > 0 &&
+      ts.isStringLiteral(node.arguments[0]) &&
+      ["SIGINT", "SIGTERM", "SIGHUP"].includes(node.arguments[0].text)
+    ) {
+      state.processSignals.add(node.arguments[0].text);
+    }
   }
   if (skipFunctionBodies && ts.isFunctionLike(node)) return;
   ts.forEachChild(node, (child) => inspectExecutedNode(child, state, skipFunctionBodies));
@@ -89,16 +100,19 @@ function packageLifecycleFindings(file, source) {
   }
 
   const findings = [];
-  const moduleState = { timers: new Set(), createsServer: false, listens: false };
+  const moduleState = { timers: new Set(), processSignals: new Set(), createsServer: false, listens: false };
   for (const statement of sourceFile.statements) {
     if (ts.isVariableStatement(statement)) {
       for (const declaration of statement.declarationList.declarations) {
         if (!declaration.initializer || !ts.isIdentifier(declaration.name)) continue;
-        const state = { timers: new Set(), createsServer: false, listens: false };
+        const state = { timers: new Set(), processSignals: new Set(), createsServer: false, listens: false };
         inspectExecutedNode(declaration.initializer, state);
         inspectExecutedNode(declaration.initializer, moduleState);
         for (const timer of state.timers) {
           findings.push({ signature: `module-timer:${timer}:${declaration.name.text}`, line: sourceFile.getLineAndCharacterOfPosition(declaration.getStart()).line + 1 });
+        }
+        for (const signal of state.processSignals) {
+          findings.push({ signature: `module-process-signal:${signal}:${declaration.name.text}`, line: sourceFile.getLineAndCharacterOfPosition(declaration.getStart()).line + 1 });
         }
         if (state.createsServer && state.listens) {
           findings.push({ signature: `module-listener:${declaration.name.text}`, line: sourceFile.getLineAndCharacterOfPosition(declaration.getStart()).line + 1 });
@@ -108,11 +122,14 @@ function packageLifecycleFindings(file, source) {
     }
     if (!ts.isExpressionStatement(statement)) continue;
 
-    const directState = { timers: new Set(), createsServer: false, listens: false };
+    const directState = { timers: new Set(), processSignals: new Set(), createsServer: false, listens: false };
     inspectExecutedNode(statement.expression, directState);
     inspectExecutedNode(statement.expression, moduleState);
     for (const timer of directState.timers) {
       findings.push({ signature: `module-timer:${timer}:expression`, line: sourceFile.getLineAndCharacterOfPosition(statement.getStart()).line + 1 });
+    }
+    for (const signal of directState.processSignals) {
+      findings.push({ signature: `module-process-signal:${signal}:expression`, line: sourceFile.getLineAndCharacterOfPosition(statement.getStart()).line + 1 });
     }
     if (directState.createsServer && directState.listens) {
       findings.push({ signature: "module-listener:expression", line: sourceFile.getLineAndCharacterOfPosition(statement.getStart()).line + 1 });
@@ -128,10 +145,13 @@ function packageLifecycleFindings(file, source) {
     for (const name of invoked) {
       const declaration = functions.get(name);
       if (!declaration?.body) continue;
-      const state = { timers: new Set(), createsServer: false, listens: false };
+      const state = { timers: new Set(), processSignals: new Set(), createsServer: false, listens: false };
       inspectExecutedNode(declaration.body, state, false);
       for (const timer of state.timers) {
         findings.push({ signature: `startup-timer:${timer}:${name}`, line: sourceFile.getLineAndCharacterOfPosition(statement.getStart()).line + 1 });
+      }
+      for (const signal of state.processSignals) {
+        findings.push({ signature: `startup-process-signal:${signal}:${name}`, line: sourceFile.getLineAndCharacterOfPosition(statement.getStart()).line + 1 });
       }
       if (state.createsServer && state.listens) {
         findings.push({ signature: `startup-listener:${name}`, line: sourceFile.getLineAndCharacterOfPosition(statement.getStart()).line + 1 });
@@ -259,6 +279,10 @@ if (process.argv.includes("--self-test")) {
   assert.deepEqual(
     packageLifecycleFindings("listener.ts", "const server = createServer(); server.listen(3000);").map(({ signature }) => signature),
     ["module-listener:source"],
+  );
+  assert.deepEqual(
+    packageLifecycleFindings("signal.ts", 'process.once("SIGTERM", shutdown);').map(({ signature }) => signature),
+    ["module-process-signal:SIGTERM:expression"],
   );
   console.log(JSON.stringify({ status: "PASS", checks: ["core-domain/open-sse SCC", "self-loop", "package ownership", "relative import extraction", "route basename ownership", "retired dynamic compat dispatcher", "package runtime export targets", "package lifecycle ownership"] }, null, 2));
   process.exit(0);

@@ -111,6 +111,7 @@ import { SearchStatsModule } from "./search/stats/search-stats.module.js";
 import { TelegramModule } from "./telegram/telegram.module.js";
 import { IntelligenceModule } from "./intelligence/intelligence.module.js";
 import { EmbeddedServiceProxyModule } from "./services/embedded-service-proxy.module.js";
+import { DatabaseRuntimeLifecycleService } from "./database-runtime-lifecycle.service.js";
 
 @Module({
   imports: [
@@ -226,5 +227,6 @@ import { EmbeddedServiceProxyModule } from "./services/embedded-service-proxy.mo
     IntelligenceModule,
     EmbeddedServiceProxyModule,
   ],
+  providers: [DatabaseRuntimeLifecycleService],
 })
 export class AppModule {}

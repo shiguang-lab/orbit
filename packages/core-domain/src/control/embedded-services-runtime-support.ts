@@ -10,6 +10,7 @@ export {
 export {
   registerSupervisor,
   getSupervisor,
+  stopAllSupervisors,
 } from "../lib/services/registry.js";
 export { ServiceSupervisor } from "../lib/services/ServiceSupervisor.js";
 export { resolveSpawnArgs as resolveNineRouterSpawnArgs } from "../lib/services/installers/ninerouter.js";

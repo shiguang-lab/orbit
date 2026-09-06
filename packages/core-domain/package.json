@@ -359,6 +359,10 @@
       "types": "./src/public/dbHealth.d.ts",
       "import": "./src/lib/db/core.ts"
     },
+    "./db/runtime-lifecycle": {
+      "types": "./src/public/dbRuntimeLifecycle.d.ts",
+      "import": "./src/lib/db/core.ts"
+    },
     "./control/management-auth": {
       "types": "./src/public/managementAuth.d.ts",
       "import": "./src/lib/api/requireManagementAuth.ts"

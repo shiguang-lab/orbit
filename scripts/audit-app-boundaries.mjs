@@ -156,6 +156,10 @@ const allowedCoreDomainSubpaths = {
   ],
 };
 
+for (const app of ["apps/control-api", "apps/edge-gateway", "apps/realtime", "apps/worker"]) {
+  allowedCoreDomainSubpaths[app].push("db/runtime-lifecycle");
+}
+
 allowedCoreDomainSubpaths["apps/control-api"].push("db/health");
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "domain/provider-error-classifier",
@@ -964,6 +968,23 @@ for (const app of appEntries) {
   }
 }
 
+for (const appPath of ["apps/control-api", "apps/edge-gateway", "apps/realtime", "apps/worker"]) {
+  const lifecycleFile = join(repoRoot, appPath, "src", "database-runtime-lifecycle.service.ts");
+  const appModuleFile = join(repoRoot, appPath, "src", "app.module.ts");
+  if (!existsSync(lifecycleFile)) {
+    add("missing-app-db-lifecycle", lifecycleFile, "long-running apps must close the shared database during Nest application shutdown");
+    continue;
+  }
+  const lifecycleSource = readFileSync(lifecycleFile, "utf8");
+  if (!/implements\s+OnApplicationShutdown/.test(lifecycleSource) || !/\bcloseDbInstance\s*\(/.test(lifecycleSource)) {
+    add("invalid-app-db-lifecycle", lifecycleFile, "database lifecycle service must close the database in OnApplicationShutdown");
+  }
+  const appModuleSource = existsSync(appModuleFile) ? readFileSync(appModuleFile, "utf8") : "";
+  if (!/providers\s*:\s*\[[^\]]*DatabaseRuntimeLifecycleService/s.test(appModuleSource)) {
+    add("unregistered-app-db-lifecycle", appModuleFile, "register DatabaseRuntimeLifecycleService in the root module");
+  }
+}
+
 // Shared packages must stay below apps; importing an app from packages would
 // create a deployment cycle and silently couple independently deployable units.
 const controlJobsContract = join(packagesRoot, "core-domain", "src", "control", "jobs.ts");
@@ -1058,6 +1079,7 @@ const report = {
     "control-api cannot import the worker-owned JobRegistry runtime",
     "core-domain control jobs contract cannot expose the worker-owned registry",
     "migrated app-owned capabilities cannot be re-exported by core-domain",
+    "long-running Nest apps own final database shutdown",
     "legacy runtime package names are retired",
   ],
   violations,

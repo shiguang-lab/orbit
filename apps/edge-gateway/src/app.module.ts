@@ -62,6 +62,7 @@ import { CodexResponsesWsModule } from "./codex-responses-ws/codex-responses-ws.
 import { CursorCliModule } from "./cursor-cli/cursor-cli.module.js";
 import { UpstreamProxyModule } from "./upstream-proxy/upstream-proxy.module.js";
 import { TunnelsModule } from "./tunnels/tunnels.module.js";
+import { DatabaseRuntimeLifecycleService } from "./database-runtime-lifecycle.service.js";
 
 @Module({
   imports: [
@@ -128,5 +129,6 @@ import { TunnelsModule } from "./tunnels/tunnels.module.js";
     UpstreamProxyModule,
     TunnelsModule,
   ],
+  providers: [DatabaseRuntimeLifecycleService],
 })
 export class AppModule {}

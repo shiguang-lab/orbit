@@ -144,6 +144,8 @@ export function createNodeSqliteAdapterFromDatabase(
   }
 
   function close() {
+    if (!_isOpen) return;
+    _isOpen = false;
     try {
       onClose?.();
     } catch {}
@@ -156,7 +158,6 @@ export function createNodeSqliteAdapterFromDatabase(
     try {
       db.close();
     } catch {}
-    _isOpen = false;
   }
 
   return {
