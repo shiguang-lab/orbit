@@ -163,6 +163,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push("db/files");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/guardrails", "control/local-endpoints", "control/local-redis", "control/auth-init");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/assessment", "control/policies");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/provider-management");
+allowedCoreDomainSubpaths["apps/control-api"].push("control/provider-models-discovery", "control/fallback-policy");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/tunnels");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/jobs");
 allowedCoreDomainSubpaths["apps/control-api"].push(

@@ -20,7 +20,7 @@ const TOOL = "9router";
 const PORT = 20130;
 let initInFlight: Promise<InstanceType<typeof ServiceSupervisor>> | null = null;
 
-async function getOrInitSupervisor(): Promise<InstanceType<typeof ServiceSupervisor>> {
+export async function getOrInitSupervisor(): Promise<InstanceType<typeof ServiceSupervisor>> {
   const existing = getSupervisor(TOOL);
   if (existing) return existing as InstanceType<typeof ServiceSupervisor>;
   if (initInFlight) return initInFlight;

@@ -1,96 +1,95 @@
-import { NextResponse } from "next/server";
 import {
   isClaudeCodeCompatibleProvider,
   isAnthropicCompatibleProvider,
   isOpenAICompatibleProvider,
   NOAUTH_PROVIDERS,
-} from "../../../../../shared/constants/providers.ts";
-import { getRegistryEntry } from "../../../../../../../open-sse/config/providerRegistry.ts";
-import { getModelsByProviderId } from "../../../../../shared/constants/models.ts";
-import { resolveAlibabaProviderModelsUrl } from "../../../../../shared/constants/alibabaProviderRegions.ts";
-import { getStaticModelsForProvider } from "../../../../../lib/providers/staticModels.ts";
-import { providerUsesCuratedModelsOnly } from "../../../../../lib/providers/modelListingCapability.ts";
-import { mergeModelsWithCustomPrecedence } from "../../../../../lib/providers/modelMetadataPrecedence.ts";
+} from "../../shared/constants/providers.ts";
+import { getRegistryEntry } from "../../../../open-sse/config/providerRegistry.ts";
+import { getModelsByProviderId } from "../../shared/constants/models.ts";
+import { resolveAlibabaProviderModelsUrl } from "../../shared/constants/alibabaProviderRegions.ts";
+import { getStaticModelsForProvider } from "../../lib/providers/staticModels.ts";
+import { providerUsesCuratedModelsOnly } from "../../lib/providers/modelListingCapability.ts";
+import { mergeModelsWithCustomPrecedence } from "../../lib/providers/modelMetadataPrecedence.ts";
 import {
   getCachedProviderConnectionById,
   getModelIsHidden,
   resolveProxyForProvider,
-} from "../../../../../lib/localDb.ts";
+} from "../../lib/localDb.ts";
 import {
   SAFE_OUTBOUND_FETCH_PRESETS,
   SafeOutboundFetchError,
   getSafeOutboundFetchErrorStatus,
   safeOutboundFetch,
-} from "../../../../../shared/network/safeOutboundFetch.ts";
+} from "../../shared/network/safeOutboundFetch.ts";
 import {
   getProviderOutboundGuard,
   getProviderValidationGuard,
-} from "../../../../../shared/network/outboundUrlGuardPolicy.ts";
-import { errorResponse, sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
-import { getStaticQoderModels } from "../../../../../../../open-sse/services/qoderCli.ts";
+} from "../../shared/network/outboundUrlGuardPolicy.ts";
+import { errorResponse, sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+import { getStaticQoderModels } from "../../../../open-sse/services/qoderCli.ts";
 import { deriveConfigFromRegistryModelsUrl } from "./discoveryConfig";
-import { resolveZedModels } from "../../../../../../../open-sse/shared/zedAuth.ts";
+import { resolveZedModels } from "../../../../open-sse/shared/zedAuth.ts";
 import {
   fetchGitHubCopilotModels,
   fetchGheCopilotModels,
-} from "../../../../../../../open-sse/services/githubCopilotModels.ts";
-import { fetchKiroAvailableModels } from "../../../../../../../open-sse/services/kiroModels.ts";
+} from "../../../../open-sse/services/githubCopilotModels.ts";
+import { fetchKiroAvailableModels } from "../../../../open-sse/services/kiroModels.ts";
 import {
   buildGlmCodingHeaders,
   buildGlmModelsUrl,
-} from "../../../../../../../open-sse/config/glmProvider.ts";
-import { getImageProvider } from "../../../../../../../open-sse/config/imageRegistry.ts";
-import { getVideoProvider } from "../../../../../../../open-sse/config/videoRegistry.ts";
+} from "../../../../open-sse/config/glmProvider.ts";
+import { getImageProvider } from "../../../../open-sse/config/imageRegistry.ts";
+import { getVideoProvider } from "../../../../open-sse/config/videoRegistry.ts";
 import {
   discoverBedrockNativeModels,
   isBedrockNativeApiError,
-} from "../../../../../../../open-sse/services/bedrock.ts";
+} from "../../../../open-sse/services/bedrock.ts";
 import {
   discoverPromptQlModels,
   PROMPTQL_FALLBACK_MODELS,
-} from "../../../../../../../open-sse/services/promptqlModels.ts";
+} from "../../../../open-sse/services/promptqlModels.ts";
 import {
   discoverNotionWebModels,
   NOTION_WEB_FALLBACK_MODELS,
-} from "../../../../../../../open-sse/services/notionWebModels.ts";
+} from "../../../../open-sse/services/notionWebModels.ts";
 import {
   AZURE_AI_DEFAULT_BASE_URL,
   buildAzureAiModelsUrl,
-} from "../../../../../../../open-sse/config/azureAi.ts";
+} from "../../../../open-sse/config/azureAi.ts";
 import {
   DATAROBOT_DEFAULT_BASE_URL,
   buildDataRobotCatalogUrl,
   isDataRobotDeploymentUrl,
-} from "../../../../../../../open-sse/config/datarobot.ts";
-import { OCI_DEFAULT_BASE_URL, buildOciModelsUrl } from "../../../../../../../open-sse/config/oci.ts";
+} from "../../../../open-sse/config/datarobot.ts";
+import { OCI_DEFAULT_BASE_URL, buildOciModelsUrl } from "../../../../open-sse/config/oci.ts";
 import {
   SAP_DEFAULT_BASE_URL,
   buildSapModelsUrl,
   getSapResourceGroup,
-} from "../../../../../../../open-sse/config/sap.ts";
+} from "../../../../open-sse/config/sap.ts";
 import {
   WATSONX_DEFAULT_BASE_URL,
   buildWatsonxModelsUrl,
-} from "../../../../../../../open-sse/config/watsonx.ts";
-import { getEmbeddingProvider } from "../../../../../../../open-sse/config/embeddingRegistry.ts";
+} from "../../../../open-sse/config/watsonx.ts";
+import { getEmbeddingProvider } from "../../../../open-sse/config/embeddingRegistry.ts";
 import { getRerankProvider } from "@shiguang-gateway/rerank-catalog";
 import {
   getSpeechProvider,
   getTranscriptionProvider,
-} from "../../../../../../../open-sse/config/audioRegistry.ts";
+} from "../../../../open-sse/config/audioRegistry.ts";
 import {
   getCachedDiscoveredModels,
   isAutoFetchModelsEnabled,
   persistDiscoveredModels,
-} from "../../../../../lib/providerModels/modelDiscovery.ts";
+} from "../../lib/providerModels/modelDiscovery.ts";
 import { buildProviderModelsUrl, getDiscoveryClientVersionOptions } from "./discoveryClientVersion";
 import { getAdobeModels } from "./adobeFireflyDiscovery";
-import { parseGeminiModelsList } from "../../../../../lib/providerModels/geminiModelsParser.ts";
-import { getSyncedAvailableModels, getCustomModels } from "../../../../../lib/db/models.ts";
-import { isConnectionUnavailableToAuxiliaryActivity } from "../../../../../lib/exclusiveLeaseIsolation.ts";
-import { fetchCursorAgentModels } from "../../../../../lib/providerModels/cursorAgent.ts";
-import { fetchCursorAvailableModels } from "../../../../../lib/providerModels/cursorAvailableModels.ts";
-import { ensureCursorAutoCatalogEntry } from "../../../../../lib/providerModels/cursorAutoCatalog.ts";
+import { parseGeminiModelsList } from "../../lib/providerModels/geminiModelsParser.ts";
+import { getSyncedAvailableModels, getCustomModels } from "../../lib/db/models.ts";
+import { isConnectionUnavailableToAuxiliaryActivity } from "../../lib/exclusiveLeaseIsolation.ts";
+import { fetchCursorAgentModels } from "../../lib/providerModels/cursorAgent.ts";
+import { fetchCursorAvailableModels } from "../../lib/providerModels/cursorAvailableModels.ts";
+import { ensureCursorAutoCatalogEntry } from "../../lib/providerModels/cursorAutoCatalog.ts";
 import {
   type JsonRecord,
   asRecord,
@@ -130,7 +129,7 @@ import { buildNoAuthModelsResponse, filterModelsForRoute } from "./modelRoutePro
 /**
  * GET /api/providers/[id]/models - Get models list from provider
  */
-export async function GET(
+export async function getProviderModels(
   request: Request,
   context: { params: Promise<{ id: string }> | { id: string } }
 ) {
@@ -174,7 +173,7 @@ export async function GET(
     }
 
     if (!connection) {
-      return NextResponse.json({ error: "Connection not found" }, { status: 404 });
+      return Response.json({ error: "Connection not found" }, { status: 404 });
     }
 
     if (await isConnectionUnavailableToAuxiliaryActivity(id))
@@ -189,7 +188,7 @@ export async function GET(
 
     const provider = connectionProvider;
     if (!provider) {
-      return NextResponse.json({ error: "Invalid connection provider" }, { status: 400 });
+      return Response.json({ error: "Invalid connection provider" }, { status: 400 });
     }
     const usesCuratedModelsOnly = providerUsesCuratedModelsOnly(provider);
 
@@ -236,7 +235,7 @@ export async function GET(
       if (excludeHidden && payload.models && Array.isArray(payload.models)) {
         payload.models = payload.models.filter((m: any) => !getModelIsHidden(provider, m.id));
       }
-      return NextResponse.json(payload, statusConfig);
+      return Response.json(payload, statusConfig);
     };
 
     const connectionId = typeof connection.id === "string" ? connection.id : id;
@@ -634,7 +633,7 @@ export async function GET(
           localWarning: "No token configured — using local catalog",
         });
         if (fallback) return fallback;
-        return NextResponse.json(
+        return Response.json(
           {
             error:
               "No API key configured for this provider. Please add an API key in the provider settings.",
@@ -682,10 +681,10 @@ export async function GET(
             localWarning: `Auth failed (${status}) — using local catalog`,
           });
           if (fallback) return fallback;
-          return NextResponse.json({ error: `Auth failed: ${status}` }, { status });
+          return Response.json({ error: `Auth failed: ${status}` }, { status });
         }
         if (status === 400) {
-          return NextResponse.json(
+          return Response.json(
             { error: "Invalid Bedrock region or models request" },
             { status }
           );
@@ -696,7 +695,7 @@ export async function GET(
         });
         if (fallback) return fallback;
         if (status) {
-          return NextResponse.json({ error: `Bedrock models API failed: ${status}` }, { status });
+          return Response.json({ error: `Bedrock models API failed: ${status}` }, { status });
         }
         throw error;
       }
@@ -727,7 +726,7 @@ export async function GET(
           localWarning: "Base URL unavailable — using local catalog",
         });
         if (fallback) return fallback;
-        return NextResponse.json(
+        return Response.json(
           {
             error: isOpenAICompatibleProvider(provider)
               ? "No base URL configured for OpenAI compatible provider"
@@ -835,7 +834,7 @@ export async function GET(
         if (fallback) return fallback;
 
         if (lastErrorStatus === 401 || lastErrorStatus === 403) {
-          return NextResponse.json(
+          return Response.json(
             { error: `Auth failed: ${lastErrorStatus}` },
             { status: lastErrorStatus }
           );
@@ -868,7 +867,7 @@ export async function GET(
           localWarning: "No token configured — using local catalog",
         });
         if (fallback) return fallback;
-        return NextResponse.json(
+        return Response.json(
           {
             error:
               "No API key configured for this provider. Please add an API key in the provider settings.",
@@ -902,7 +901,7 @@ export async function GET(
           localWarning: "Invalid DataRobot base URL — using local catalog",
         });
         if (fallback) return fallback;
-        return NextResponse.json({ error: "Invalid DataRobot base URL" }, { status: 400 });
+        return Response.json({ error: "Invalid DataRobot base URL" }, { status: 400 });
       }
 
       let response: Response;
@@ -929,7 +928,7 @@ export async function GET(
           localWarning: `Catalog probe failed (${response.status}) — using local catalog`,
         });
         if (fallback) return fallback;
-        return NextResponse.json(
+        return Response.json(
           { error: `Failed to fetch models: ${response.status}` },
           { status: response.status }
         );
@@ -958,7 +957,7 @@ export async function GET(
           localWarning: "No token configured — using local catalog",
         });
         if (fallback) return fallback;
-        return NextResponse.json(
+        return Response.json(
           {
             error:
               "No API key configured for this provider. Please add an API key in the provider settings.",
@@ -1020,7 +1019,7 @@ export async function GET(
         localWarning: `Azure AI models probe failed (${lastStatus || "empty"}) — using local catalog`,
       });
       if (fallback) return fallback;
-      return NextResponse.json(
+      return Response.json(
         { error: `Failed to fetch models: ${lastStatus || "unknown"}` },
         { status: lastStatus || 502 }
       );
@@ -1035,7 +1034,7 @@ export async function GET(
 
       const token = accessToken || apiKey;
       if (!token) {
-        return NextResponse.json(
+        return Response.json(
           {
             error:
               "No API key configured for this provider. Please add an API key in the provider settings.",
@@ -1046,7 +1045,7 @@ export async function GET(
 
       const rawBaseUrl = getProviderBaseUrl(connection.providerSpecificData);
       if (!rawBaseUrl) {
-        return NextResponse.json(
+        return Response.json(
           { error: "No Azure OpenAI resource endpoint configured" },
           { status: 400 }
         );
@@ -1099,7 +1098,7 @@ export async function GET(
         localWarning: `Azure OpenAI models probe failed (${lastStatus}) — using local catalog`,
       });
       if (fallback) return fallback;
-      return NextResponse.json(
+      return Response.json(
         { error: `Failed to fetch models: ${lastStatus || "unknown"}` },
         { status: lastStatus || 502 }
       );
@@ -1119,7 +1118,7 @@ export async function GET(
           localWarning: "No token configured — using local catalog",
         });
         if (fallback) return fallback;
-        return NextResponse.json(
+        return Response.json(
           {
             error:
               "No API key configured for this provider. Please add an API key in the provider settings.",
@@ -1155,7 +1154,7 @@ export async function GET(
           localWarning: `Models probe failed (${response.status}) — using local catalog`,
         });
         if (fallback) return fallback;
-        return NextResponse.json(
+        return Response.json(
           { error: `Failed to fetch models: ${response.status}` },
           { status: response.status }
         );
@@ -1180,7 +1179,7 @@ export async function GET(
           localWarning: "No token configured — using local catalog",
         });
         if (fallback) return fallback;
-        return NextResponse.json(
+        return Response.json(
           {
             error:
               "No API key configured for this provider. Please add an API key in the provider settings.",
@@ -1221,7 +1220,7 @@ export async function GET(
           localWarning: `Models probe failed (${response.status}) — using local catalog`,
         });
         if (fallback) return fallback;
-        return NextResponse.json(
+        return Response.json(
           { error: `Failed to fetch models: ${response.status}` },
           { status: response.status }
         );
@@ -1246,7 +1245,7 @@ export async function GET(
           localWarning: "No token configured — using local catalog",
         });
         if (fallback) return fallback;
-        return NextResponse.json(
+        return Response.json(
           {
             error:
               "No API key configured for this provider. Please add an API key in the provider settings.",
@@ -1286,7 +1285,7 @@ export async function GET(
           localWarning: `Models probe failed (${response.status}) — using local catalog`,
         });
         if (fallback) return fallback;
-        return NextResponse.json(
+        return Response.json(
           { error: `Failed to fetch models: ${response.status}` },
           { status: response.status }
         );
@@ -1347,7 +1346,7 @@ export async function GET(
           localWarning: `${detail} — using local catalog`,
         });
         if (fallback) return fallback;
-        return NextResponse.json(
+        return Response.json(
           { error: `Failed to fetch Cursor models: ${detail}` },
           { status: 502 }
         );
@@ -1454,7 +1453,7 @@ export async function GET(
           localWarning: `Inner.ai models unavailable (${message}) — using local catalog`,
         });
         if (fallback) return fallback;
-        return NextResponse.json(
+        return Response.json(
           { error: `Failed to fetch Inner.ai models: ${message}` },
           { status: 502 }
         );
@@ -1518,14 +1517,14 @@ export async function GET(
 
       if (!response?.ok) {
         if (response?.status === 401 || response?.status === 403) {
-          return NextResponse.json(
+          return Response.json(
             { error: `Failed to fetch models: ${response.status}` },
             { status: response.status }
           );
         }
         const fallback = buildDiscoveryFallbackResponse();
         if (fallback) return fallback;
-        return NextResponse.json(
+        return Response.json(
           { error: `Failed to fetch models: ${response?.status || 502}` },
           { status: response?.status || 502 }
         );
@@ -1764,7 +1763,7 @@ export async function GET(
       let bearerToken: string | null = null;
       try {
         const { parseSAFromApiKey, getAccessToken } =
-          await import("../../../../../../../open-sse/executors/vertex.ts");
+          await import("../../../../open-sse/executors/vertex.ts");
         if (accessToken) {
           bearerToken = accessToken;
         } else if (credential) {
@@ -1800,7 +1799,7 @@ export async function GET(
           localWarning: "No usable Vertex credential — using local catalog",
         });
         if (fallback) return fallback;
-        return NextResponse.json(
+        return Response.json(
           { error: "No usable Vertex AI credential configured for model discovery." },
           { status: 400 }
         );
@@ -1835,7 +1834,7 @@ export async function GET(
             });
             const fallback = buildDiscoveryFallbackResponse();
             if (fallback) return fallback;
-            return NextResponse.json(
+            return Response.json(
               { error: `Failed to fetch Vertex models: ${response.status}` },
               { status: response.status }
             );
@@ -1893,7 +1892,7 @@ export async function GET(
           if (anthropicResponse.ok) {
             const anthropicData = await anthropicResponse.json();
             const { parseVertexAnthropicModels } =
-              await import("../../../../../lib/providerModels/vertexAnthropicModelsParser.ts");
+              await import("../../lib/providerModels/vertexAnthropicModelsParser.ts");
             allModels.push(...parseVertexAnthropicModels(anthropicData));
           } else {
             console.log("[models] Vertex Anthropic partner discovery failed", {
@@ -1929,7 +1928,7 @@ export async function GET(
       // the cached-discovery / auto-fetch fallbacks, which would otherwise
       // return a misleading 200 "no models" for a CC node (#10828 ordering).
       if (isClaudeCodeCompatibleProvider(provider)) {
-        return NextResponse.json(
+        return Response.json(
           { error: `Provider ${provider} does not support models listing` },
           { status: 400 }
         );
@@ -1948,7 +1947,7 @@ export async function GET(
           localWarning: "Base URL unavailable — using local catalog",
         });
         if (fallback) return fallback;
-        return NextResponse.json(
+        return Response.json(
           { error: "No base URL configured for Anthropic compatible provider" },
           { status: 400 }
         );
@@ -1989,7 +1988,7 @@ export async function GET(
         console.log("Error fetching models from provider", { provider, errorText });
         const fallback = buildDiscoveryFallbackResponse();
         if (fallback) return fallback;
-        return NextResponse.json(
+        return Response.json(
           { error: `Failed to fetch models: ${response.status}` },
           { status: response.status }
         );
@@ -2015,7 +2014,7 @@ export async function GET(
       if (!zedToken) {
         const fallback = buildDiscoveryFallbackResponse();
         if (fallback) return fallback;
-        return NextResponse.json({ error: "Zed connection has no access token" }, { status: 400 });
+        return Response.json({ error: "Zed connection has no access token" }, { status: 400 });
       }
       let providerSpecificData: Record<string, unknown> = {};
       const rawPsd = (connection as { providerSpecificData?: unknown }).providerSpecificData;
@@ -2050,7 +2049,7 @@ export async function GET(
         });
         const fallback = buildDiscoveryFallbackResponse();
         if (fallback) return fallback;
-        return NextResponse.json(
+        return Response.json(
           { error: `Failed to fetch models: ${sanitizeErrorMessage(error)}` },
           { status: 502 }
         );
@@ -2182,7 +2181,7 @@ export async function GET(
       });
     }
     if (!config) {
-      return NextResponse.json(
+      return Response.json(
         { error: `Provider ${provider} does not support models listing` },
         { status: 400 }
       );
@@ -2202,7 +2201,7 @@ export async function GET(
         localWarning: "No token configured — using local catalog",
       });
       if (fallback) return fallback;
-      return NextResponse.json(
+      return Response.json(
         {
           error:
             "No API key configured for this provider. Please add an API key in the provider settings.",
@@ -2250,7 +2249,7 @@ export async function GET(
         (typeof pData.accountId === "string" && pData.accountId) ||
         process.env.CLOUDFLARE_ACCOUNT_ID;
       if (!accountId) {
-        return NextResponse.json(
+        return Response.json(
           { error: "Cloudflare Workers AI requires an Account ID in provider settings." },
           { status: 400 }
         );
@@ -2309,7 +2308,7 @@ export async function GET(
         console.log("Error fetching models from provider", { provider, errorText });
         const fallback = buildDiscoveryFallbackResponse();
         if (fallback) return fallback;
-        return NextResponse.json(
+        return Response.json(
           { error: `Failed to fetch models: ${response.status}` },
           { status: response.status }
         );
@@ -2348,13 +2347,13 @@ export async function GET(
 
     if (provider === "alibaba" || provider === "alibaba-cn") {
       const { shouldUseLiveAlibabaFreeModelDiscovery } =
-        await import("../../../../../../../open-sse/services/alibabaFreeTier.ts");
+        await import("../../../../open-sse/services/alibabaFreeTier.ts");
       const { scheduleAlibabaFreeTierProbeRefresh } =
-        await import("../../../../../../../open-sse/services/alibabaFreeTierDiscovery.ts");
+        await import("../../../../open-sse/services/alibabaFreeTierDiscovery.ts");
       const { scheduleAlibabaFreeTierQuotaRefresh, hasAlibabaConsoleFreeTierAuth } =
-        await import("../../../../../../../open-sse/services/alibabaFreeTierQuotaFetcher.ts");
+        await import("../../../../open-sse/services/alibabaFreeTierQuotaFetcher.ts");
       const { resolveAlibabaProviderBaseUrl } =
-        await import("../../../../../shared/constants/alibabaProviderRegions.ts");
+        await import("../../shared/constants/alibabaProviderRegions.ts");
       const providerSpecificData = connection.providerSpecificData as Record<
         string,
         unknown
@@ -2388,15 +2387,15 @@ export async function GET(
     return buildApiDiscoveryResponse(allModels);
   } catch (error) {
     if (error instanceof SafeOutboundFetchError && error.code === "URL_GUARD_BLOCKED") {
-      return NextResponse.json({ error: sanitizeErrorMessage(error.message) }, { status: 400 });
+      return Response.json({ error: sanitizeErrorMessage(error.message) }, { status: 400 });
     }
 
     const status = getSafeOutboundFetchErrorStatus(error);
     if (status) {
       const message = error instanceof Error ? error.message : "Failed to fetch models";
-      return NextResponse.json({ error: message }, { status });
+      return Response.json({ error: message }, { status });
     }
     console.log("Error fetching provider models:", error);
-    return NextResponse.json({ error: "Failed to fetch models" }, { status: 500 });
+    return Response.json({ error: "Failed to fetch models" }, { status: 500 });
   }
 }

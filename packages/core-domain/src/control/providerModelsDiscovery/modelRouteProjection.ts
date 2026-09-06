@@ -1,14 +1,13 @@
-import { NextResponse } from "next/server";
-import { getRegistryEntry } from "../../../../../../../open-sse/config/providerRegistry.ts";
-import { filterChatSelectableModels } from "../../../../../../../open-sse/services/modelEndpointPolicy.ts";
-import { filterSelectableModels } from "../../../../../../../open-sse/services/modelLifecycle.ts";
-import { getModelIsHidden } from "../../../../../lib/db/models.ts";
-import { getSettings } from "../../../../../lib/db/settings.ts";
-import { getStaticModelsForProvider } from "../../../../../lib/providers/staticModels.ts";
-import { SAFE_OUTBOUND_FETCH_PRESETS, safeOutboundFetch } from "../../../../../shared/network/safeOutboundFetch.ts";
-import { getProviderOutboundGuard } from "../../../../../shared/network/outboundUrlGuardPolicy.ts";
-import { getModelsByProviderId } from "../../../../../shared/constants/models.ts";
-import { isProviderBlockedByIdOrAlias } from "../../../../../shared/utils/noAuthProviders.ts";
+import { getRegistryEntry } from "../../../../open-sse/config/providerRegistry.ts";
+import { filterChatSelectableModels } from "../../../../open-sse/services/modelEndpointPolicy.ts";
+import { filterSelectableModels } from "../../../../open-sse/services/modelLifecycle.ts";
+import { getModelIsHidden } from "../../lib/db/models.ts";
+import { getSettings } from "../../lib/db/settings.ts";
+import { getStaticModelsForProvider } from "../../lib/providers/staticModels.ts";
+import { SAFE_OUTBOUND_FETCH_PRESETS, safeOutboundFetch } from "../../shared/network/safeOutboundFetch.ts";
+import { getProviderOutboundGuard } from "../../shared/network/outboundUrlGuardPolicy.ts";
+import { getModelsByProviderId } from "../../shared/constants/models.ts";
+import { isProviderBlockedByIdOrAlias } from "../../shared/utils/noAuthProviders.ts";
 import { mergeLocalCatalogModels } from "./discovery/helpers";
 
 export function filterModelsForRoute<
@@ -36,7 +35,7 @@ async function fetchLiveNoAuthModels(
   connectionId: string,
   excludeHidden: boolean,
   chatOnly: boolean
-): Promise<NextResponse | null> {
+): Promise<Response | null> {
   try {
     const liveResponse = await safeOutboundFetch(modelsUrl, {
       ...SAFE_OUTBOUND_FETCH_PRESETS.modelsDiscovery,
@@ -58,7 +57,7 @@ async function fetchLiveNoAuthModels(
     const visible = excludeHidden
       ? selectable.filter((model) => !getModelIsHidden(providerId, model.id))
       : selectable;
-    return NextResponse.json({
+    return Response.json({
       provider: providerId,
       connectionId,
       models: visible,
@@ -76,7 +75,7 @@ export async function buildNoAuthModelsResponse(
   chatOnly: boolean
 ) {
   if (isProviderBlockedByIdOrAlias(providerId, (await getSettings()).blockedProviders)) {
-    return NextResponse.json({ error: "Provider is disabled" }, { status: 403 });
+    return Response.json({ error: "Provider is disabled" }, { status: 403 });
   }
 
   const registryEntry = getRegistryEntry(providerId);
@@ -103,7 +102,7 @@ export async function buildNoAuthModelsResponse(
   const visible = excludeHidden
     ? selectable.filter((model) => !getModelIsHidden(providerId, model.id))
     : selectable;
-  return NextResponse.json({
+  return Response.json({
     provider: providerId,
     connectionId,
     models: visible,

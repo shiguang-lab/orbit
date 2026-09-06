@@ -1,12 +1,12 @@
-import { SAFE_OUTBOUND_FETCH_PRESETS, safeOutboundFetch } from "../../../../../shared/network/safeOutboundFetch.ts";
-import { getProviderOutboundGuard } from "../../../../../shared/network/outboundUrlGuardPolicy.ts";
-import { resolveConolCredentials } from "../../../../../../../open-sse/services/conolAuth.ts";
+import { SAFE_OUTBOUND_FETCH_PRESETS, safeOutboundFetch } from "../../shared/network/safeOutboundFetch.ts";
+import { getProviderOutboundGuard } from "../../shared/network/outboundUrlGuardPolicy.ts";
+import { resolveConolCredentials } from "../../../../open-sse/services/conolAuth.ts";
 import {
   CONOL_FALLBACK_MODELS,
   discoverConolModels,
   type ConolModel,
-} from "../../../../../../../open-sse/services/conolModels.ts";
-import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
+} from "../../../../open-sse/services/conolModels.ts";
+import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
 
 interface DiscoveryWarnings {
   cacheWarning?: string;

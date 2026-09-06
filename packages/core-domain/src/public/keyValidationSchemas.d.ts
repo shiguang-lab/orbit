@@ -1,4 +1,6 @@
 import type { z } from "zod";
+export const registerFallbackSchema: z.ZodTypeAny;
+export const removeFallbackSchema: z.ZodTypeAny;
 export const createProviderSchema: z.ZodTypeAny;
 export const bulkCreateProviderSchema: z.ZodTypeAny;
 export const bulkImportProviderSchema: z.ZodTypeAny;

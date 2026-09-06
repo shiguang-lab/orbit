@@ -25,6 +25,10 @@
       "types": "./public/proxyDispatcher.d.ts",
       "import": "./utils/proxyDispatcher.ts"
     },
+    "./utils/proxyFallback": {
+      "types": "./public/proxyFallback.d.ts",
+      "import": "./utils/proxyFallback.ts"
+    },
     "./utils/earlyStreamKeepalive": {
       "types": "./public/earlyStreamKeepalive.d.ts",
       "import": "./utils/earlyStreamKeepalive.ts"

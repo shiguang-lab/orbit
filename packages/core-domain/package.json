@@ -4,6 +4,10 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./control/fallback-policy": {
+      "types": "./src/public/fallbackPolicy.d.ts",
+      "import": "./src/control/fallback-policy.ts"
+    },
     "./control/auth-init": {
       "types": "./src/public/authInit.d.ts",
       "import": "./src/control/auth-init.ts"
@@ -450,6 +454,10 @@
     "./control/provider-bulk-web-session": {
       "types": "./src/public/providerBulkWebSession.d.ts",
       "import": "./src/control/provider-bulk-web-session.ts"
+    },
+    "./control/provider-models-discovery": {
+      "types": "./src/public/providerModelsDiscovery.d.ts",
+      "import": "./src/control/providerModelsDiscovery/index.ts"
     },
     "./control/free-onboarding": {
       "types": "./src/public/freeOnboarding.d.ts",

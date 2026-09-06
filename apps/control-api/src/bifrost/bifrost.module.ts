@@ -5,5 +5,6 @@ import { BifrostService } from "./bifrost.service.js";
 @Module({
   controllers: [BifrostController],
   providers: [BifrostService],
+  exports: [BifrostService],
 })
 export class BifrostModule {}

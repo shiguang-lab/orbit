@@ -1,23 +1,23 @@
-import { SAFE_OUTBOUND_FETCH_PRESETS, safeOutboundFetch } from "../../../../../../shared/network/safeOutboundFetch.ts";
-import { getProviderOutboundGuard } from "../../../../../../shared/network/outboundUrlGuardPolicy.ts";
+import { SAFE_OUTBOUND_FETCH_PRESETS, safeOutboundFetch } from "../../../shared/network/safeOutboundFetch.ts";
+import { getProviderOutboundGuard } from "../../../shared/network/outboundUrlGuardPolicy.ts";
 import {
   getAntigravityModelsDiscoveryUrls,
   getAntigravityFetchAvailableModelsUrls,
-} from "../../../../../../../../open-sse/config/antigravityUpstream.ts";
-import { getAntigravityContentHeaders } from "../../../../../../../../open-sse/services/antigravityHeaders.ts";
-import { resolveAntigravityClientVersion } from "../../../../../../../../open-sse/services/antigravityClientProfile.ts";
+} from "../../../../../open-sse/config/antigravityUpstream.ts";
+import { getAntigravityContentHeaders } from "../../../../../open-sse/services/antigravityHeaders.ts";
+import { resolveAntigravityClientVersion } from "../../../../../open-sse/services/antigravityClientProfile.ts";
 import {
   getClientVisibleAntigravityModelName,
   isDiscoverableAntigravityModelId,
   toClientAntigravityModelId,
-} from "../../../../../../../../open-sse/config/antigravityModelAliases.ts";
+} from "../../../../../open-sse/config/antigravityModelAliases.ts";
 import {
   getClientVisibleAgyModelName,
   isDiscoverableAgyModelId,
-} from "../../../../../../../../open-sse/config/agyModels.ts";
+} from "../../../../../open-sse/config/agyModels.ts";
 import { normalizeAntigravityClientProfile } from "@shiguang-gateway/contracts/provider-client-profiles";
-import { ensureAntigravityProjectAssigned } from "../../../../../../../../open-sse/services/antigravityProjectBootstrap.ts";
-import { persistDiscoveredAntigravityProjectId } from "../../../../../../../../open-sse/services/antigravityProjectPersist.ts";
+import { ensureAntigravityProjectAssigned } from "../../../../../open-sse/services/antigravityProjectBootstrap.ts";
+import { persistDiscoveredAntigravityProjectId } from "../../../../../open-sse/services/antigravityProjectPersist.ts";
 import { asRecord, toNonEmptyString } from "./helpers";
 
 const antigravityDiscoveryInflight = new Map<

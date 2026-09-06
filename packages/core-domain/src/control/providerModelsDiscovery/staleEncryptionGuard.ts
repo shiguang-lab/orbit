@@ -1,5 +1,4 @@
-import { NextResponse } from "next/server";
-import { buildErrorBody } from "../../../../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "../../../../open-sse/utils/error.ts";
 
 /**
  * #6148 — Stale STORAGE_ENCRYPTION_KEY guard for model-discovery.
@@ -23,7 +22,7 @@ export function buildStaleEncryptionKeyResponse(
       }
     | null
     | undefined
-): NextResponse | null {
+): Response | null {
   if (!connection || connection.credentialDecryptFailed !== true) return null;
 
   // #9927 — surface WHICH credential failed plus the recovery path so the
@@ -44,5 +43,5 @@ export function buildStaleEncryptionKeyResponse(
   // client can key off the specific stale-encryption cause.
   const body = buildErrorBody(424, message);
   body.error.type = "storage_encryption_stale";
-  return NextResponse.json(body, { status: 424 });
+  return Response.json(body, { status: 424 });
 }

@@ -34,6 +34,10 @@ import {
 } from "./handlers/provider-management.js";
 import { bulkCreateProviders } from "./handlers/provider-bulk.js";
 import { importProviders } from "./handlers/provider-import.js";
+import {
+  getProviderModels as getProviderModelsDiscovery,
+  syncProviderModels,
+} from "@shiguang-gateway/core-domain/control/provider-models-discovery";
 
 @Controller("api")
 export class ProvidersController {
@@ -170,6 +174,24 @@ export class ProvidersController {
       (req) => this.providersService.handleRefreshProvider(req, id),
       { id }
     );
+  }
+
+  @Get("providers/:id/models")
+  providerModelsDiscovery(
+    @Param("id") id: string,
+    @Req() request: FastifyRequest,
+    @Res() reply: FastifyReply,
+  ) {
+    return this.routes.dispatch(request, reply, getProviderModelsDiscovery, { id });
+  }
+
+  @Post("providers/:id/sync-models")
+  syncProviderModels(
+    @Param("id") id: string,
+    @Req() request: FastifyRequest,
+    @Res() reply: FastifyReply,
+  ) {
+    return this.routes.dispatch(request, reply, syncProviderModels, { id });
   }
 
   @Post("providers/:id/refresh-token")

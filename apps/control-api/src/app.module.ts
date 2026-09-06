@@ -100,6 +100,8 @@ import { TagsModule } from "./tags/tags.module.js";
 import { TelemetryModule } from "./telemetry/telemetry.module.js";
 import { CopilotModule } from "./copilot/copilot.module.js";
 import { IssueAgentModule } from "./issue-agent/issue-agent.module.js";
+import { FallbackModule } from "./fallback/fallback.module.js";
+import { ProxyFallbackModule } from "./proxy-fallback/proxy-fallback.module.js";
 
 @Module({
   imports: [
@@ -205,6 +207,8 @@ import { IssueAgentModule } from "./issue-agent/issue-agent.module.js";
     TelemetryModule,
     CopilotModule,
     IssueAgentModule,
+    FallbackModule,
+    ProxyFallbackModule,
   ],
 })
 export class AppModule {}

@@ -110,7 +110,7 @@ export class BifrostService {
     }
   }
 
-  private async getOrInitSupervisor(): Promise<ServiceSupervisor> {
+  async getOrInitSupervisor(): Promise<ServiceSupervisor> {
     const existing = getSupervisor(TOOL);
     if (existing) return existing as ServiceSupervisor;
 

@@ -1,11 +1,11 @@
-import { isSelfHostedChatProvider } from "../../../../../../shared/constants/providers.ts";
-import { getStaticModelsForProvider, type LocalCatalogModel } from "../../../../../../lib/providers/staticModels.ts";
-import { SAFE_OUTBOUND_FETCH_PRESETS, safeOutboundFetch } from "../../../../../../shared/network/safeOutboundFetch.ts";
-import { getProviderValidationGuard } from "../../../../../../shared/network/outboundUrlGuardPolicy.ts";
+import { isSelfHostedChatProvider } from "../../../shared/constants/providers.ts";
+import { getStaticModelsForProvider, type LocalCatalogModel } from "../../../lib/providers/staticModels.ts";
+import { SAFE_OUTBOUND_FETCH_PRESETS, safeOutboundFetch } from "../../../shared/network/safeOutboundFetch.ts";
+import { getProviderValidationGuard } from "../../../shared/network/outboundUrlGuardPolicy.ts";
 import {
   buildOllamaShowUrl,
   enrichOllamaModelsWithCapabilities,
-} from "../../../../../../lib/providerModels/ollamaCapabilities.ts";
+} from "../../../lib/providerModels/ollamaCapabilities.ts";
 
 export type JsonRecord = Record<string, unknown>;
 

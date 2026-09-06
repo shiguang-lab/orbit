@@ -1,34 +1,33 @@
-import { NextResponse } from "next/server";
-import { getCachedProviderConnectionById } from "../../../../../lib/localDb.ts";
+import { getCachedProviderConnectionById } from "../../lib/localDb.ts";
 import {
   deleteImportedCustomModels,
   deleteSyncedAvailableModelsForProvider,
   getSyncedAvailableModelsForConnection,
-} from "../../../../../lib/db/models.ts";
-import { selectModelsForImport } from "../../../../../shared/utils/freeModels.ts";
+} from "../../lib/db/models.ts";
+import { selectModelsForImport } from "../../shared/utils/freeModels.ts";
 import {
   importManagedModels,
   type ManagedModelImportMode,
-} from "../../../../../lib/providerModels/managedModelImport.ts";
-import { saveCallLog } from "../../../../../lib/usage/callLogs.ts";
-import { isAuthenticated } from "../../../../../shared/utils/apiAuth.ts";
+} from "../../lib/providerModels/managedModelImport.ts";
+import { saveCallLog } from "../../lib/usage/callLogs.ts";
+import { isAuthenticated } from "../../shared/utils/apiAuth.ts";
 import {
   buildModelSyncInternalHeaders,
   fetchModelSyncInternal,
   getModelSyncInternalBaseUrl,
   isModelSyncInternalRequest,
-} from "../../../../../shared/services/modelSyncScheduler.ts";
-import { autoSyncCodexProfilesFromLiveCatalog } from "../../../../../lib/cli-helper/codexProfileAutoSync.ts";
-import { autoSyncClaudeProfilesFromLiveCatalog } from "../../../../../lib/cli-helper/claudeProfileAutoSync.ts";
-import { providerUsesCuratedModelsOnly } from "../../../../../lib/providers/modelListingCapability.ts";
+} from "../../shared/services/modelSyncScheduler.ts";
+import { autoSyncCodexProfilesFromLiveCatalog } from "../../lib/cli-helper/codexProfileAutoSync.ts";
+import { autoSyncClaudeProfilesFromLiveCatalog } from "../../lib/cli-helper/claudeProfileAutoSync.ts";
+import { providerUsesCuratedModelsOnly } from "../../lib/providers/modelListingCapability.ts";
 import {
   fetchVolcPlanModels,
   providerToVolcPlanKind,
-} from "../../../../../lib/providers/volcenginePlanModelDiscovery.ts";
-import { replaceSyncedAvailableModelsForConnection } from "../../../../../lib/db/models.ts";
-import { GET as getProviderModels } from "../models/route";
+} from "../../lib/providers/volcenginePlanModelDiscovery.ts";
+import { replaceSyncedAvailableModelsForConnection } from "../../lib/db/models.ts";
+import { getProviderModels } from "./models-route";
 import { isDegradedDiscovery } from "./degradedLocalCatalog";
-import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -401,7 +400,7 @@ async function fetchProviderModelsForSync(request: Request, connectionId: string
  * - modelSyncScheduler (auto-sync on interval)
  * - Manual trigger from UI
  */
-export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function syncProviderModels(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const start = Date.now();
   const { id } = await params;
   const requestUrl = new URL(request.url);
@@ -415,7 +414,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   try {
     if (!(await isAuthenticated(request)) && !isModelSyncInternalRequest(request)) {
-      return NextResponse.json(
+      return Response.json(
         { error: { message: "Authentication required", type: "invalid_api_key" } },
         { status: 401 }
       );
@@ -423,7 +422,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
     const connection = await getCachedProviderConnectionById(id);
     if (!connection) {
-      return NextResponse.json({ error: "Connection not found" }, { status: 404 });
+      return Response.json({ error: "Connection not found" }, { status: 404 });
     }
 
     logProvider = toNonEmptyString(connection.provider) || "unknown";
@@ -459,7 +458,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
           requestType: "model-sync",
           ...(channelLabel ? { responseBody: { channel: channelLabel } } : {}),
         }).catch(() => undefined);
-        return NextResponse.json(
+        return Response.json(
           { error: sanitizeErrorMessage(message) || "Volcano plan discovery failed" },
           { status: 401 }
         );
@@ -492,7 +491,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
           mode,
         },
       }).catch(() => undefined);
-      return NextResponse.json({
+      return Response.json({
         ok: true,
         provider: logProvider,
         connectionId: id,
@@ -511,7 +510,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         deleteSyncedAvailableModelsForProvider(logProvider),
         deleteImportedCustomModels(logProvider),
       ]);
-      return NextResponse.json({
+      return Response.json({
         provider: logProvider,
         connectionId: id,
         source: "curated",
@@ -562,7 +561,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
           : {}),
       });
 
-      return NextResponse.json(
+      return Response.json(
         {
           error: responseError,
           ...(parseError ? { upstreamStatus: modelsRes.status } : {}),
@@ -595,7 +594,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         },
       });
 
-      return NextResponse.json(
+      return Response.json(
         {
           error: responseError,
           source: modelSource,
@@ -725,7 +724,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       });
     }
 
-    return NextResponse.json({
+    return Response.json({
       ok: true,
       provider: logProvider,
       mode,
@@ -765,7 +764,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         : {}),
     }).catch(() => {});
 
-    return NextResponse.json(
+    return Response.json(
       { error: sanitizeErrorMessage(error) || "Failed to sync models" },
       { status: 500 }
     );

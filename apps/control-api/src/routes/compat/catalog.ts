@@ -162,6 +162,9 @@ export function controlRouteCatalog(): CompatRouteDefinition[] {
     "mcp/stream",
     "copilot/chat",
     "issue-agent/runs",
+    "fallback/chains",
+    "proxy-fallback/test",
+    "services/[name]/logs",
   ]);
   return coreRoutes.filter((route) => !migrated.has(route.segments.join("/")));
 }

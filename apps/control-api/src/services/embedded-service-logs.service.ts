@@ -2,6 +2,9 @@ import { Injectable } from "@nestjs/common";
 import { getSupervisor } from "@shiguang-gateway/core-domain/shared/embedded-services";
 import { getOrInitSupervisor as getOrInitCliproxySupervisor } from "./cliproxy/_lib.js";
 import { getOrInitSupervisor as getOrInitMuxSupervisor } from "./mux/_lib.js";
+import { BifrostService } from "../bifrost/bifrost.service.js";
+import { DarioService } from "./dario/dario.service.js";
+import { NinerouterService } from "./ninerouter/ninerouter.service.js";
 
 export interface ServiceLogLine {
   line: string;
@@ -19,11 +22,20 @@ export interface LogSupervisor {
 
 @Injectable()
 export class EmbeddedServiceLogsService {
+  constructor(
+    private readonly bifrost: BifrostService,
+    private readonly dario: DarioService,
+    private readonly ninerouter: NinerouterService,
+  ) {}
+
   async resolveSupervisor(name: string): Promise<LogSupervisor | null> {
     const existing = getSupervisor(name);
     if (existing) return existing as unknown as LogSupervisor;
     if (name === "mux") return (await getOrInitMuxSupervisor()) as unknown as LogSupervisor;
     if (name === "cliproxy") return (await getOrInitCliproxySupervisor()) as unknown as LogSupervisor;
+    if (name === "9router") return (await this.ninerouter.getOrInitSupervisor()) as unknown as LogSupervisor;
+    if (name === "bifrost") return (await this.bifrost.getOrInitSupervisor()) as unknown as LogSupervisor;
+    if (name === "dario") return (await this.dario.getOrInitSupervisor()) as unknown as LogSupervisor;
     return null;
   }
 

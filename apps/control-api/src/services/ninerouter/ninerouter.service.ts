@@ -18,4 +18,5 @@ export class NinerouterService {
   stop() { return lifecycle.stop(); }
   rotateKey() { return lifecycle.rotateKey(); }
   update() { return lifecycle.update(); }
+  getOrInitSupervisor() { return lifecycle.getOrInitSupervisor(); }
 }

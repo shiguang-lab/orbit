@@ -2,14 +2,14 @@ import {
   CODEX_CLI_RS_ORIGINATOR,
   getCodexClientVersion,
   getCodexDefaultHeaders,
-} from "../../../../../../../../open-sse/config/codexClient.ts";
-import { isCodexDiscoveryModelExcluded } from "../../../../../../shared/services/codexDiscoveryPolicy.ts";
+} from "../../../../../open-sse/config/codexClient.ts";
+import { isCodexDiscoveryModelExcluded } from "../../../shared/services/codexDiscoveryPolicy.ts";
 
 export {
   CODEX_DISCOVERY_EXCLUDED_IDS,
   CODEX_DISCOVERY_EXCLUDED_ID_PREFIXES,
   isCodexDiscoveryModelExcluded,
-} from "../../../../../../shared/services/codexDiscoveryPolicy.ts";
+} from "../../../shared/services/codexDiscoveryPolicy.ts";
 
 export const CODEX_MODELS_URL = "https://chatgpt.com/backend-api/codex/models";
 export const CODEX_GITHUB_MODELS_URL =
