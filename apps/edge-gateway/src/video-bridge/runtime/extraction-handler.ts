@@ -1,30 +1,24 @@
-import { createErrorResponse } from "../lib/api/errorResponse.ts";
+import { createErrorResponse } from "@shiguang-gateway/core-domain/shared/error-response";
 import {
   currentVideoBridgeBrokerFingerprint,
   VIDEO_BRIDGE_BROKER_PATH,
   isVideoBridgeBrokerInternalRequest,
-} from "../lib/guardrails/videoBridgeBrokerAuth.ts";
+  extractVideoAudioFromBytes,
+  extractVideoFramesFromBytes,
+  extractVideoSubtitlesFromBytes,
+  VIDEO_BRIDGE_TIMEOUT_MAX_MS,
+  VIDEO_SUBTITLE_SUBDEADLINE_MS,
+  type ExtractedVideoAudio,
+  type VideoFocusBounds,
+  type VideoSamplingPolicy,
+} from "@shiguang-gateway/core-domain/edge/video-bridge-extraction-runtime";
 import {
   createVideoExtractionQueue,
   type VideoExtractionQueue,
   VideoExtractionQueueError,
-} from "../lib/guardrails/videoBridgeBrokerQueue.ts";
-import {
-  extractVideoAudioFromBytes,
-  type ExtractedVideoAudio,
-} from "../lib/guardrails/videoBridgeAudioExtraction.ts";
-import {
-  extractVideoFramesFromBytes,
-  type VideoFocusBounds,
-  type VideoSamplingPolicy,
-} from "../lib/guardrails/videoBridgeRuntime.ts";
-import {
-  extractVideoSubtitlesFromBytes,
-  VIDEO_SUBTITLE_SUBDEADLINE_MS,
-} from "../lib/guardrails/videoBridgeSubtitleRuntime.ts";
-import { resolveModelSyncInternalBaseUrl } from "../shared/services/modelSyncScheduler.ts";
-import { VIDEO_BRIDGE_TIMEOUT_MAX_MS } from "../shared/constants/modalityBridgeDefaults.ts";
-import { createLogger } from "../shared/utils/logger.ts";
+} from "./extraction-queue.js";
+import { resolveModelSyncInternalBaseUrl } from "@shiguang-gateway/core-domain/shared/services/modelSyncScheduler";
+import { createLogger } from "@shiguang-gateway/core-domain/shared/pino-logger";
 
 const log = createLogger("video-bridge-broker");
 

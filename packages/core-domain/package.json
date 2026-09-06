@@ -367,10 +367,7 @@
       "types": "./src/public/videoBridgeRuntime.d.ts",
       "import": "./src/lib/guardrails/videoBridgeRuntime.ts"
     },
-    "./control/video-bridge-extract": {
-      "types": "./src/public/videoBridgeExtract.d.ts",
-      "import": "./src/control/video-bridge-extract.ts"
-    },
+    "./edge/video-bridge-extraction-runtime": "./src/edge/videoBridgeExtractionRuntime.ts",
     "./control/agent-skills": {
       "types": "./src/public/agentSkills.d.ts",
       "import": "./src/lib/agentSkills/index.ts"
@@ -429,6 +426,7 @@
       "types": "./src/public/errorResponse.d.ts",
       "import": "./src/lib/api/errorResponse.ts"
     },
+    "./shared/pino-logger": "./src/shared/utils/logger.ts",
     "./control/provider-discovery-support/codexDiscoveryPolicy": "./src/shared/services/codexDiscoveryPolicy.ts",
     "./control/provider-discovery-support/providers": "./src/shared/constants/providers.ts",
     "./control/provider-discovery-support/modelListingCapability": "./src/lib/providers/modelListingCapability.ts",

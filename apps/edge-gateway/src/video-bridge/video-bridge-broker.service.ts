@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { handleVideoDrilldownRequest } from "./video-bridge-drilldown-broker.handler.js";
-import { handleVideoExtractionBrokerRequest } from "@shiguang-gateway/core-domain/control/video-bridge-extract";
+import { handleVideoExtractionBrokerRequest } from "./runtime/extraction-handler.js";
 
 @Injectable()
 export class VideoBridgeBrokerService {

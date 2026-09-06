@@ -182,8 +182,9 @@ const allowedCoreDomainSubpaths = {
     "control/video-bridge-drilldown",
     "control/modality-bridge-stats",
     "control/video-bridge-runtime",
-    "control/video-bridge-extract",
+    "edge/video-bridge-extraction-runtime",
     "shared/error-response",
+    "shared/pino-logger",
     "shared/constants/selfServiceScopes",
     "control/cost-rules",
     "edge/provider-limits",
@@ -1041,6 +1042,7 @@ if (existsSync(workerJobRegistry)) {
 }
 const coreDomainEntry = packageEntries.find(({ manifest }) => manifest?.name === "@shiguang-gateway/core-domain");
 const retiredAppOwnedExports = [
+  "./control/video-bridge-extract",
   "./control/issue-agent",
   "./control/headroom",
   "./control/network-info",
