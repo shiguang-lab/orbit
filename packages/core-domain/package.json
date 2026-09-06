@@ -116,9 +116,9 @@
       "types": "./src/public/relayBifrost.d.ts",
       "import": "./src/lib/edge/relayBifrost.ts"
     },
-    "./edge/relay-chat": {
-      "types": "./src/public/relayChat.d.ts",
-      "import": "./src/app/api/v1/relay/chat/completions/route.ts"
+    "./edge/service-registry": {
+      "types": "./src/public/serviceRegistry.d.ts",
+      "import": "./src/lib/services/registry.ts"
     },
     "./edge/count-tokens-validation": {
       "types": "./src/public/countTokensValidation.d.ts",
@@ -338,6 +338,10 @@
     "./control/conversations": {
       "types": "./src/public/conversations.d.ts",
       "import": "./src/control/conversations.ts"
+    },
+    "./control/tunnels": {
+      "types": "./src/public/tunnels.d.ts",
+      "import": "./src/control/tunnels.ts"
     },
     "./control/jobs": {
       "types": "./src/public/jobs.d.ts",

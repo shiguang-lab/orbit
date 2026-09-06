@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { OPTIONS, POST } from "@shiguang-gateway/core-domain/edge/relay-chat";
+import { OPTIONS, POST } from "./relay-chat.handler.js";
 
 @Injectable()
 export class RelayChatService {

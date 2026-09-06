@@ -6,23 +6,23 @@
  * to the internal ShiguangGateway chat completions pipeline.
  */
 
-import { CORS_HEADERS, handleCorsOptions } from "../../../../../../shared/utils/cors.ts";
-import { handleChat } from "../../../../../../sse/handlers/chat.ts";
-import { withChatAdmission } from "../../../../../../shared/middleware/withChatAdmission.ts";
-import { createInjectionGuard } from "../../../../../../middleware/promptInjectionGuard.ts";
-import { getRelayTokenByHash, checkRateLimit, recordRelayUsage } from "../../../../../../lib/db/relayProxies.ts";
+import { CORS_HEADERS, handleCorsOptions } from "@shiguang-gateway/core-domain/shared/cors";
+import { handleChat } from "@shiguang-gateway/core-domain/edge/chat-handler";
+import { withChatAdmission } from "@shiguang-gateway/core-domain/edge/chat-admission";
+import { createInjectionGuard } from "@shiguang-gateway/core-domain/middleware/prompt-injection";
+import { getRelayTokenByHash, checkRateLimit, recordRelayUsage } from "@shiguang-gateway/core-domain/edge/relay-bifrost";
 import {
   buildErrorBody,
   parseUpstreamError,
   sanitizeErrorMessage,
-} from "../../../../../../../../open-sse/utils/error.ts";
+} from "@shiguang-gateway/open-sse/utils/error";
 import {
   checkIpRateLimit,
   extractToken,
   getClientIp,
   hashToken,
   sanitizeForensicHeader,
-} from "./relaySecurity";
+} from "./relaySecurity.js";
 import {
   getBifrostRoutingConfig,
   getRoutingFallbackHeader,
@@ -30,17 +30,22 @@ import {
   resolveRelayRoutingBackend,
   shouldTryBifrostForRequest,
   type BifrostRoutingConfig,
-} from "./routingBackend";
-import { getProviderPluginManifestEntryForModel } from "../../../../../../../../open-sse/config/providerPluginManifestRegistry.ts";
-import { getProviderPluginManifestHeader } from "../../../../../../../../open-sse/config/providerPluginManifestUrl.ts";
-import { finalizeReadableStream } from "./streamFinalizer";
-import { stripStaleEncodingHeaders } from "../../../../../../../../open-sse/utils/upstreamResponseHeaders.ts";
+} from "./routingBackend.js";
+import { getProviderPluginManifestEntryForModel } from "@shiguang-gateway/open-sse/config/providerPluginManifestRegistry";
+import { getProviderPluginManifestHeader } from "@shiguang-gateway/open-sse/config/providerPluginManifestUrl";
+import { finalizeReadableStream } from "./streamFinalizer.js";
+import { stripStaleEncodingHeaders } from "@shiguang-gateway/open-sse/utils/upstreamResponseHeaders";
 import {
   clearBifrostFailure,
   getActiveBifrostCooldown,
   recordBifrostFailure,
-} from "./bifrostCooldown";
-import type { RelayToken } from "../../../../../../lib/db/relayProxies.ts";
+} from "./bifrostCooldown.js";
+type RelayToken = {
+  id: string;
+  tokenPrefix: string;
+  expiresAt?: number | null;
+  allowedModels: string;
+};
 
 const JSON_CORS_HEADERS = { ...CORS_HEADERS, "Content-Type": "application/json" } as const;
 
@@ -141,7 +146,7 @@ async function forwardToBifrost(
     }
 
     if (wantsStream && upstream.body) {
-      const stream = finalizeReadableStream(upstream.body, (error) => {
+      const stream = finalizeReadableStream(upstream.body, (error: unknown) => {
         clearTimeout(tid);
         const statusCode = timedOut ? 504 : upstream.status;
         if (error && backend === "auto") {
@@ -344,12 +349,12 @@ async function postHandler(request: Request) {
       backend,
       bifrostConfig,
       parsedBody,
-      (model) => getProviderPluginManifestEntryForModel(model)?.sidecar ?? null
+      (model: string | undefined) => getProviderPluginManifestEntryForModel(model)?.sidecar ?? null
     );
     if (bifrostDecision.fallbackReason) {
       bifrostFallbackReason = bifrostDecision.fallbackReason;
     }
-    if (bifrostDecision.tryBifrost) {
+    if (bifrostDecision.tryBifrost && bifrostConfig) {
       const cooldown = backend === "auto" ? getActiveBifrostCooldown(bifrostConfig.baseUrl) : null;
       if (cooldown) {
         bifrostFallbackReason = `bifrost-cooldown; remaining=${cooldown.remainingMs}`;

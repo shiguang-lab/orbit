@@ -73,6 +73,7 @@ const allowedCoreDomainSubpaths = {
     "edge/responses-runtime",
     "edge/relay-bifrost",
     "edge/relay-chat",
+    "edge/service-registry",
     "edge/vscode-token",
     "edge/vscode-models",
     "edge/vscode-ollama",
@@ -153,6 +154,7 @@ const allowedCoreDomainSubpaths = {
 };
 
 allowedCoreDomainSubpaths["apps/control-api"].push("db/health");
+allowedCoreDomainSubpaths["apps/control-api"].push("control/tunnels");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/jobs");
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/usage",

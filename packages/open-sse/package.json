@@ -33,6 +33,14 @@
       "types": "./public/keepaliveThreshold.d.ts",
       "import": "./utils/keepaliveThreshold.ts"
     },
+    "./utils/ollamaTransform": {
+      "types": "./public/ollamaTransform.d.ts",
+      "import": "./utils/ollamaTransform.ts"
+    },
+    "./utils/upstreamResponseHeaders": {
+      "types": "./public/upstreamResponseHeaders.d.ts",
+      "import": "./utils/upstreamResponseHeaders.ts"
+    },
     "./utils/aiSdkCompat": {
       "types": "./public/aiSdkCompat.d.ts",
       "import": "./utils/aiSdkCompat.ts"

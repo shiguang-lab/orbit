@@ -27,6 +27,7 @@ import { ProviderModelsModule } from "./provider-models/provider-models.module.j
 import { ModelsModule } from "./models/models.module.js";
 import { ProviderChatModule } from "./provider-chat/provider-chat.module.js";
 import { ChatCompletionsModule } from "./chat-completions/chat-completions.module.js";
+import { OllamaChatModule } from "./ollama-chat/ollama-chat.module.js";
 import { ProviderEmbeddingsModule } from "./provider-embeddings/provider-embeddings.module.js";
 import { CompletionsModule } from "./completions/completions.module.js";
 import { MeModule } from "./me/me.module.js";
@@ -83,6 +84,7 @@ import { VncSessionModule } from "./vnc-session/vnc-session.module.js";
     ModelsModule,
     ProviderChatModule,
     ChatCompletionsModule,
+    OllamaChatModule,
     ProviderEmbeddingsModule,
     CompletionsModule,
     MeModule,

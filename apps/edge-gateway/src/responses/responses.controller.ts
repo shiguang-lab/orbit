@@ -12,8 +12,18 @@ export class ResponsesController {
     return this.routes.dispatch(request, reply, (req) => this.service.post(req));
   }
 
+  @Post("*")
+  postPath(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, (req) => this.service.post(req));
+  }
+
   @Options()
   options(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, () => this.service.options());
+  }
+
+  @Options("*")
+  optionsPath(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
     return this.routes.dispatch(request, reply, () => this.service.options());
   }
 

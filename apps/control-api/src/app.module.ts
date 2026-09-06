@@ -82,6 +82,7 @@ import { ConductorModule } from "./conductor/conductor.module.js";
 import { ChaosModule } from "./chaos/chaos.module.js";
 import { AdminModule } from "./admin/admin.module.js";
 import { JobsModule } from "./jobs/jobs.module.js";
+import { TunnelsModule } from "./tunnels/tunnels.module.js";
 
 @Module({
   imports: [
@@ -169,6 +170,7 @@ import { JobsModule } from "./jobs/jobs.module.js";
     ChaosModule,
     AdminModule,
     JobsModule,
+    TunnelsModule,
   ],
 })
 export class AppModule {}

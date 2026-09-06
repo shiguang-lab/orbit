@@ -1,4 +1,4 @@
-import { getSupervisor } from "../../../../../../lib/services/registry.ts";
+import { getSupervisor } from "@shiguang-gateway/core-domain/edge/service-registry";
 
 export type RelayRoutingBackend = "ts" | "bifrost" | "auto";
 
