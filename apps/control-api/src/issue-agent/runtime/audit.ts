@@ -2,7 +2,7 @@ import { mkdir, appendFile } from "node:fs/promises";
 import { join } from "node:path";
 import { homedir } from "node:os";
 
-import type { RecordedTriageRun } from "./recordedTriage";
+import type { RecordedTriageRun } from "./recorded-triage.js";
 
 export interface IssueAgentAuditOptions {
   dataDir?: string;

@@ -129,7 +129,7 @@ Przy dodawaniu nowej trasy lub executora skopiuj wzorzec asercji z tego pliku. B
 ## Powiązane mechanizmy kontroli
 
 - Alerty CodeQL `js/stack-trace-exposure` w `.github/security` powinny zawsze być **albo** naprawione przez te helpery, **albo** odrzucone z komentarzem cytującym ten dokument.
-- Konfiguracja redakcji `pino` (`src/shared/utils/logRedaction.ts`) obsługuje redakcję logów strukturalnych osobno. Ten dokument obejmuje wyłącznie powierzchnię komunikatów w odpowiedziach.
+- Konfiguracja redakcji `pino` (`packages/runtime-logging/src/redaction.ts`) obsługuje redakcję logów strukturalnych osobno. Ten dokument obejmuje wyłącznie powierzchnię komunikatów w odpowiedziach.
 - Denylist nagłówków upstream (`src/shared/constants/upstreamHeaders.ts`) pokrywa wyciek nagłówków — utrzymuj oba pliki w zgodności przy dodawaniu nowego ryzyka eksfiltracji.
 
 ## Przekazywanie szczegółów upstream (passthrough)

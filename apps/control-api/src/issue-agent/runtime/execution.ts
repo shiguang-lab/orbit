@@ -1,4 +1,4 @@
-import type { RecordedTriageRun } from "./recordedTriage.ts";
+import type { RecordedTriageRun } from "./recorded-triage.js";
 
 export interface RecordedTriageExecutionInput {
   run: RecordedTriageRun;

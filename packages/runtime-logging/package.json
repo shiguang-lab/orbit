@@ -9,6 +9,10 @@
     ".": {
       "types": "./src/index.ts",
       "import": "./src/index.ts"
+    },
+    "./redaction": {
+      "types": "./src/redaction.ts",
+      "import": "./src/redaction.ts"
     }
   },
   "scripts": {

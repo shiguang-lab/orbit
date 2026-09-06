@@ -350,7 +350,6 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/agent-skills",
   "control/mcp-management",
   "control/copilot",
-  "control/issue-agent",
   "control/proxy-subscriptions",
   "control/model-capability-overrides",
   "control/model-context-overrides",
@@ -1042,6 +1041,7 @@ if (existsSync(workerJobRegistry)) {
 }
 const coreDomainEntry = packageEntries.find(({ manifest }) => manifest?.name === "@shiguang-gateway/core-domain");
 const retiredAppOwnedExports = [
+  "./control/issue-agent",
   "./control/headroom",
   "./control/network-info",
   "./edge/v1beta-models",

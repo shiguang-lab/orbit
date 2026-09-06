@@ -254,6 +254,9 @@ importers:
       '@shiguang-gateway/rerank-catalog':
         specifier: workspace:*
         version: link:../../packages/rerank-catalog
+      '@shiguang-gateway/runtime-logging':
+        specifier: workspace:*
+        version: link:../../packages/runtime-logging
       '@shiguang-gateway/web-handler-adapter':
         specifier: workspace:*
         version: link:../../packages/web-handler-adapter

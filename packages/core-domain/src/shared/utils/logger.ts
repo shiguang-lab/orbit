@@ -17,7 +17,7 @@ import pino from "pino";
 import { resolve } from "path";
 import { getLogConfig, initLogRotation } from "../../lib/logRotation.ts";
 import { getAppLogLevel } from "../../lib/logEnv.ts";
-import { redactLogArgs } from "./logRedaction.ts";
+import { redactLogArgs } from "@shiguang-gateway/runtime-logging/redaction";
 
 const isDev = process.env.NODE_ENV !== "production";
 
@@ -31,7 +31,7 @@ const baseConfig: pino.LoggerOptions = {
     },
   },
   // Final defense-in-depth redaction net: runs in the main thread (transport-safe) and
-  // scrubs credentials that slip into any log message/object/error. See logRedaction.ts.
+  // scrubs credentials that slip into any log message/object/error.
   hooks: {
     logMethod(inputArgs: unknown[], method: (...args: unknown[]) => void) {
       return (method as (...a: unknown[]) => void).apply(this, redactLogArgs(inputArgs));

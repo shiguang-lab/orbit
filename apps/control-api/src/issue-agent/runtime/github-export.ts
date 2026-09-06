@@ -1,4 +1,4 @@
-import type { RecordedTriageComment, RecordedTriageContextInput } from "./recordedTriage";
+import type { RecordedTriageComment, RecordedTriageContextInput } from "./recorded-triage.js";
 
 export interface NormalizedGitHubIssueExport {
   issueUrl: string;

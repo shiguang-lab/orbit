@@ -399,10 +399,6 @@
       "types": "./src/public/copilot.d.ts",
       "import": "./src/control/copilot.ts"
     },
-    "./control/issue-agent": {
-      "types": "./src/public/issueAgent.d.ts",
-      "import": "./src/control/issue-agent.ts"
-    },
     "./shared/validation-helpers": {
       "types": "./src/public/validationHelpers.d.ts",
       "import": "./src/shared/validation/helpers.ts"

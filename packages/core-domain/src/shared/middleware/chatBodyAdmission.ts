@@ -236,7 +236,7 @@ const shedLog = createLogger("chat-admission");
  * Default shed sink (#11244): exactly one structured warn per structural shed.
  * The 503 returns BEFORE request logging, so without this line a shed left no
  * trace anywhere. No raw credentials — `lane` is already the HMAC fingerprint,
- * and the shared logger's redaction hook (logRedaction.ts) is the safety net.
+ * and the shared logger's runtime-logging redaction hook is the safety net.
  * Nothing is logged for admitted requests (noise).
  */
 function defaultChatAdmissionShedSink(event: ChatAdmissionShedEvent): void {

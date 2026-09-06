@@ -2,9 +2,9 @@ import { Injectable } from "@nestjs/common";
 import {
   appendIssueAgentAuditRecord, createRecordedTriageRun, executeRecordedTriageChatCompletion,
   normalizeGitHubIssueExport,
-} from "@shiguang-gateway/core-domain/control/issue-agent";
+} from "./runtime/index.js";
 import { POST as postChatCompletion } from "@shiguang-gateway/open-sse/services/chat-completions-compat";
-export { RecordedTriageTimeoutError } from "@shiguang-gateway/core-domain/control/issue-agent";
+export { RecordedTriageTimeoutError } from "./runtime/execution.js";
 
 @Injectable()
 export class IssueAgentService {
