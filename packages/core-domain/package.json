@@ -111,6 +111,10 @@
       "types": "./src/public/localDb.d.ts",
       "import": "./src/lib/localDb.ts"
     },
+    "./edge/provider-limits": {
+      "types": "./src/public/providerLimits.d.ts",
+      "import": "./src/lib/usage/providerLimits.ts"
+    },
     "./edge/image-route-model": {
       "types": "./src/public/imageRouteModel.d.ts",
       "import": "./src/lib/images/imageRouteModel.ts"

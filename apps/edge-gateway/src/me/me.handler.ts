@@ -1,31 +1,28 @@
-import { NextResponse } from "next/server";
-
-import { buildApiKeySelfServiceStatus } from "../../../../../lib/usage/apiKeySelfService.ts";
-import { hasSelfUsageScope } from "../../../../../shared/constants/selfServiceScopes.ts";
+import { getApiKeyMetadata, validateApiKey } from "@shiguang-gateway/core-domain/db/api-keys";
+import { hasSelfUsageScope } from "@shiguang-gateway/core-domain/shared/constants/selfServiceScopes";
+import { buildApiKeySelfServiceStatus } from "./api-key-self-service.js";
 
 function extractBearerToken(request: Request): string | null {
   const authorization = request.headers.get("Authorization") ?? "";
   const match = authorization.match(/^Bearer\s+(.+)$/i);
   const token = match?.[1]?.trim();
-  return token ? token : null;
+  return token || null;
 }
 
-function authError(status = 401) {
-  return NextResponse.json({ error: status === 401 ? "Unauthorized" : "Forbidden" }, { status });
+function authError(status = 401): Response {
+  return Response.json({ error: status === 401 ? "Unauthorized" : "Forbidden" }, { status });
 }
 
-export async function GET(request: Request) {
+/** GET /v1/me/status — authenticated API-key self-service usage status. */
+export async function GET(request: Request): Promise<Response> {
   const apiKey = extractBearerToken(request);
   if (!apiKey) return authError(401);
-
-  const { validateApiKey, getApiKeyMetadata } = await import("../../../../../lib/localDb.ts");
 
   const valid = await validateApiKey(apiKey);
   if (!valid) return authError(401);
 
   const metadata = await getApiKeyMetadata(apiKey);
   if (!metadata || metadata.id === "env-key") return authError(401);
-
   if (!hasSelfUsageScope(metadata.scopes)) return authError(403);
 
   try {
@@ -35,12 +32,11 @@ export async function GET(request: Request) {
       scopes: metadata.scopes,
       allowedConnections: metadata.allowedConnections,
     });
-
-    return NextResponse.json(status);
+    return Response.json(status);
   } catch (error) {
     if (error instanceof Error && error.message === "missing_self_usage_scope") {
       return authError(403);
     }
-    return NextResponse.json({ error: "Failed to build API key status" }, { status: 500 });
+    return Response.json({ error: "Failed to build API key status" }, { status: 500 });
   }
 }

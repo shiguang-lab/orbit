@@ -1,8 +1,8 @@
 import {
   hasSelfAccountQuotaScope,
   hasSelfUsageScope,
-} from "../../shared/constants/selfServiceScopes.ts";
-import { USAGE_SUPPORTED_PROVIDERS } from "../../shared/constants/providers.ts";
+} from "@shiguang-gateway/core-domain/shared/constants/selfServiceScopes";
+import { USAGE_SUPPORTED_PROVIDERS } from "@shiguang-gateway/core-domain/catalog/providers";
 
 type JsonRecord = Record<string, unknown>;
 type DateLike = number | string | Date | null | undefined;
@@ -38,7 +38,7 @@ type GetCostSummaryFn = (apiKeyId: string) => CostSummaryLike;
 type CheckBudgetFn = (apiKeyId: string) => unknown;
 type GetDbInstanceFn = () => DbLike;
 type GetProviderConnectionByIdFn = (connectionId: string) => Promise<unknown>;
-type GetProviderConnectionsFn = (filters?: Record<string, unknown>) => Promise<unknown[]>;
+type GetProviderConnectionsFn = (filters?: Record<string, unknown>) => unknown[] | Promise<unknown[]>;
 type FetchAndPersistProviderLimitsFn = (
   connectionId: string,
   source: "manual"
@@ -246,7 +246,7 @@ async function listAccountQuotaConnections(
             }
           })
         )
-      : await deps.getProviderConnections({ isActive: true }).catch(() => []);
+      : await Promise.resolve(deps.getProviderConnections({ isActive: true })).catch(() => []);
 
   const connections: AccountQuotaConnection[] = [];
   const seen = new Set<string>();
@@ -358,15 +358,19 @@ type RequiredDeps = Required<ApiKeySelfServiceDeps>;
 
 async function normalizeDeps(deps: ApiKeySelfServiceDeps): Promise<RequiredDeps> {
   const costRules =
-    deps.getCostSummary && deps.checkBudget ? null : await import("../../domain/costRules.ts");
-  const dbCore = deps.getDbInstance ? null : await import("../db/core.ts");
+    deps.getCostSummary && deps.checkBudget
+      ? null
+      : await import("@shiguang-gateway/core-domain/control/cost-rules");
+  const dbCore = deps.getDbInstance
+    ? null
+    : await import("@shiguang-gateway/core-domain/db/ping");
   const localDb =
     deps.getProviderConnectionById && deps.getProviderConnections
       ? null
-      : await import("../localDb.ts");
+      : await import("@shiguang-gateway/core-domain/db/provider-connections");
   const providerLimits = deps.fetchAndPersistProviderLimits
     ? null
-    : await import("./providerLimits.ts");
+    : await import("@shiguang-gateway/core-domain/edge/provider-limits");
 
   return {
     now: deps.now ?? Date.now,
@@ -374,7 +378,8 @@ async function normalizeDeps(deps: ApiKeySelfServiceDeps): Promise<RequiredDeps>
     checkBudget: deps.checkBudget ?? costRules!.checkBudget,
     getDbInstance: deps.getDbInstance ?? dbCore!.getDbInstance,
     getProviderConnectionById: deps.getProviderConnectionById ?? localDb!.getProviderConnectionById,
-    getProviderConnections: deps.getProviderConnections ?? localDb!.getProviderConnections,
+    getProviderConnections:
+      deps.getProviderConnections ?? (async (filter) => localDb!.getProviderConnections(filter)),
     fetchAndPersistProviderLimits:
       deps.fetchAndPersistProviderLimits ?? providerLimits!.fetchAndPersistProviderLimits,
   };

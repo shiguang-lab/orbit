@@ -122,6 +122,9 @@ const allowedCoreDomainSubpaths = {
     "catalog/providers",
     "shared/embedded-services",
     "shared/compatible-provider-id",
+    "shared/constants/selfServiceScopes",
+    "control/cost-rules",
+    "edge/provider-limits",
     // A2A transport is owned by edge-gateway; these explicit dynamic imports
     // are transitional facades for the legacy skill implementation while its
     // provider/DB dependencies are moved into edge-owned modules.
@@ -652,6 +655,7 @@ const migratedRouteOwnership = {
     "api/v1/batches/delete-completed/route.ts",
     "api/v1/models/[...model]/route.ts",
     "api/v1/muse-code/models/route.ts",
+    "api/v1/me/status/route.ts",
   ],
 };
 

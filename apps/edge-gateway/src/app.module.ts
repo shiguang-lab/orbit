@@ -26,7 +26,9 @@ import { ProviderModelsModule } from "./provider-models/provider-models.module.j
 import { ModelsModule } from "./models/models.module.js";
 import { ProviderChatModule } from "./provider-chat/provider-chat.module.js";
 import { ProviderEmbeddingsModule } from "./provider-embeddings/provider-embeddings.module.js";
+import { MeModule } from "./me/me.module.js";
 import { ExplainRoutingModule } from "./explain-routing/explain-routing.module.js";
+import { ProviderImagesModule } from "./provider-images/provider-images.module.js";
 
 @Module({
   imports: [
@@ -58,7 +60,9 @@ import { ExplainRoutingModule } from "./explain-routing/explain-routing.module.j
     ModelsModule,
     ProviderChatModule,
     ProviderEmbeddingsModule,
+    MeModule,
     ExplainRoutingModule,
+    ProviderImagesModule,
   ],
 })
 export class AppModule {}

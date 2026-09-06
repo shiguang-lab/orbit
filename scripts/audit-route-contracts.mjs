@@ -80,7 +80,10 @@ function extractControllerContracts(controllerFile) {
         // canonical JSON-RPC `/a2a` endpoint; do not synthesize OPTIONS for
         // every `api/a2a/*` controller when reconstructing the contract.
         const isClientV1 = fullPath.startsWith("v1/") || fullPath.startsWith("v1beta/");
-        if (!map.has(routePath)) map.set(routePath, isClientV1 && !controllerFile.includes("/apps/control-api/") ? new Set(["OPTIONS"]) : new Set());
+        // `/v1/me/status` is a bearer-key self-service read endpoint whose
+        // historical contract declares GET only; do not synthesize OPTIONS.
+        const implicitOptions = isClientV1 && !controllerFile.includes("/apps/control-api/") && routePath !== "v1/me/status/route.ts";
+        if (!map.has(routePath)) map.set(routePath, implicitOptions ? new Set(["OPTIONS"]) : new Set());
         map.get(routePath).add(verb);
       }
     }
