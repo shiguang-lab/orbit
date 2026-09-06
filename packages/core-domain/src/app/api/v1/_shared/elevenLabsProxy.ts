@@ -5,7 +5,7 @@ import {
 import {
   isAllRateLimitedCredentials,
   rateLimitedProviderResponse,
-} from "./rateLimit.ts";
+} from "../../../../lib/edge/rateLimit.ts";
 import {
   buildErrorBody,
   sanitizeErrorMessage,

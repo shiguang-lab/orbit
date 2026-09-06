@@ -1,6 +1,7 @@
-import { HTTP_STATUS } from "../../../../../../open-sse/config/constants.ts";
-import { unavailableResponse } from "../../../../../../open-sse/utils/error.ts";
+import { HTTP_STATUS } from "../../../../open-sse/config/constants.ts";
+import { unavailableResponse } from "../../../../open-sse/utils/error.ts";
 
+/** Credentials result returned when every account for a provider is cooling down. */
 export type RateLimitedCredentials = {
   allRateLimited: true;
   retryAfter?: string | number | Date | null;

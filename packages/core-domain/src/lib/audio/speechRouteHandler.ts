@@ -14,7 +14,7 @@ import { isValidationFailure, validateBody } from "../../shared/validation/helpe
 import {
   isAllRateLimitedCredentials,
   rateLimitedProviderResponse,
-} from "../../app/api/v1/_shared/rateLimit.ts";
+} from "../edge/rateLimit.ts";
 import { attachShiguangGatewayMetaToResponse } from "../../domain/gatewayResponseMeta.ts";
 import { calculateModalCost } from "../usage/costCalculator.ts";
 import { generateRequestId } from "../../shared/utils/requestId.ts";

@@ -19,7 +19,7 @@ import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
 } from "../../core-domain/src/sse/services/auth.ts";
-import { isAllRateLimitedCredentials } from "../../core-domain/src/app/api/v1/_shared/rateLimit.ts";
+import { isAllRateLimitedCredentials } from "../../core-domain/src/lib/edge/rateLimit.ts";
 import { handleAudioSpeech } from "../handlers/audioSpeech.ts";
 import { attachShiguangGatewayMetaToResponse } from "../../core-domain/src/domain/gatewayResponseMeta.ts";
 import { generateRequestId } from "@shiguang-gateway/contracts/request-id";

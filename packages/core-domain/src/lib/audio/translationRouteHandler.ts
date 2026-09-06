@@ -11,7 +11,7 @@ import { enforceApiKeyPolicy } from "../../shared/utils/apiKeyPolicy.ts";
 import {
   isAllRateLimitedCredentials,
   rateLimitedProviderResponse,
-} from "../../app/api/v1/_shared/rateLimit.ts";
+} from "../edge/rateLimit.ts";
 import { attachShiguangGatewayMetaToResponse } from "../../domain/gatewayResponseMeta.ts";
 import { generateRequestId } from "../../shared/utils/requestId.ts";
 

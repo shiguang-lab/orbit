@@ -23,7 +23,7 @@ import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
 } from "../../core-domain/src/sse/services/auth.ts";
-import { isAllRateLimitedCredentials } from "../../core-domain/src/app/api/v1/_shared/rateLimit.ts";
+import { isAllRateLimitedCredentials } from "../../core-domain/src/lib/edge/rateLimit.ts";
 import { handleVideoGeneration } from "../handlers/videoGeneration.ts";
 import {
   isMediaGenerationFailure,

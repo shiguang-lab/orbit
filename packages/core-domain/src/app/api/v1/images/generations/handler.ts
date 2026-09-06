@@ -12,7 +12,7 @@ import {
 } from "../../../../../../../open-sse/config/imageRegistry.ts";
 import { errorResponse, unavailableResponse } from "../../../../../../../open-sse/utils/error.ts";
 import { HTTP_STATUS } from "../../../../../../../open-sse/config/constants.ts";
-import { isAllRateLimitedCredentials } from "../../_shared/rateLimit.ts";
+import { isAllRateLimitedCredentials } from "../../../../../lib/edge/rateLimit.ts";
 import * as log from "../../../../../sse/utils/logger.ts";
 import { toJsonErrorPayload } from "../../../../../shared/utils/upstreamError.ts";
 import { enforceApiKeyPolicy } from "../../../../../shared/utils/apiKeyPolicy.ts";
