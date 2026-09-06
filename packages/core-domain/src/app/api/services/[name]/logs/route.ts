@@ -32,10 +32,9 @@ async function getOrInitNamedSupervisor(name: string) {
     return getOrInitSupervisor();
   }
 
-  if (name === "mux") {
-    const { getOrInitSupervisor } = await import("../../mux/_lib");
-    return getOrInitSupervisor();
-  }
+  // Mux lifecycle construction is owned by apps/control-api. Its worker
+  // bootstrap registers the shared supervisor before log streaming begins.
+  if (name === "mux") return null;
   if (name === "bifrost") {
     const { getOrInitSupervisor } = await import("../../bifrost/_lib");
     return getOrInitSupervisor();

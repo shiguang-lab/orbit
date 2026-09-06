@@ -51,6 +51,7 @@ import { UsageModule } from "./usage/usage.module.js";
 import { GamificationModule } from "./gamification/gamification.module.js";
 import { CliToolsModule } from "./cli-tools/cli-tools.module.js";
 import { CliproxyModule } from "./services/cliproxy/cliproxy.module.js";
+import { MuxModule } from "./services/mux/mux.module.js";
 import { SyncModule } from "./sync/sync.module.js";
 
 @Module({
@@ -108,6 +109,7 @@ import { SyncModule } from "./sync/sync.module.js";
     GamificationModule,
     CliToolsModule,
     CliproxyModule,
+    MuxModule,
     SyncModule,
   ],
 })

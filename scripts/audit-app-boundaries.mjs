@@ -144,6 +144,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/provider-health-autopilot",
   "control/dario-installer",
   "control/cliproxy",
+  "control/mux",
   "control/compression-settings",
   "control/compression-combos",
   "control/cost-rules",
