@@ -612,6 +612,7 @@ const migratedRouteOwnership = {
     "api/v1/moderations/route.ts",
     "api/v1/rerank/route.ts",
     "api/v1/embeddings/route.ts",
+    "api/v1/classify/route.ts",
     "api/v1/text-to-speech/[voiceId]/route.ts",
     "api/v1/audio/transcriptions/route.ts",
     "api/v1/audio/speech/route.ts",

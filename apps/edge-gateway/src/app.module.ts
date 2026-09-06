@@ -19,6 +19,7 @@ import { WsModule } from "./ws/ws.module.js";
 import { WebModule } from "./web/web.module.js";
 import { CloudAgentsModule } from "./cloud-agents/cloud-agents.module.js";
 import { SessionLeasesModule } from "./session-leases/session-leases.module.js";
+import { ClassifyModule } from "./classify/classify.module.js";
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { SessionLeasesModule } from "./session-leases/session-leases.module.js";
     WebModule,
     CloudAgentsModule,
     SessionLeasesModule,
+    ClassifyModule,
   ],
 })
 export class AppModule {}

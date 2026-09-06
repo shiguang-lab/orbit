@@ -21,6 +21,7 @@ export const ownedEdgeRoutes: readonly OwnedRoute[] = [
   { path: "/v1/batches/:id", methods: ["DELETE", "GET", "OPTIONS"] },
   { path: "/v1/batches/:id/cancel", methods: ["OPTIONS", "POST"] },
   { path: "/v1/embeddings", methods: ["GET", "OPTIONS", "POST"] },
+  { path: "/v1/classify", methods: ["OPTIONS", "POST"] },
   { path: "/v1/files", methods: ["GET", "OPTIONS", "POST"] },
   { path: "/v1/files/:id", methods: ["DELETE", "GET", "OPTIONS"] },
   { path: "/v1/files/:id/content", methods: ["GET", "OPTIONS"] },
