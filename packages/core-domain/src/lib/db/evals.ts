@@ -690,7 +690,6 @@ export function saveCustomEvalSuite(input: {
 
 export function deleteCustomEvalSuite(suiteId: string): boolean {
   const db = getDbInstance() as unknown as DbLike;
-  ensureEvalSuiteTables(db);
   const normalizedSuiteId = suiteId.trim();
   if (!normalizedSuiteId) return false;
 
