@@ -283,6 +283,22 @@
       "types": "./src/public/syncedModels.d.ts",
       "import": "./src/lib/db/models.ts"
     },
+    "./control/openrouter-provider-stats": {
+      "types": "./src/public/openrouterProviderStats.d.ts",
+      "import": "./src/lib/catalog/openrouterProviderStats.ts"
+    },
+    "./control/provider-health-matrix": {
+      "types": "./src/public/providerHealthMatrix.d.ts",
+      "import": "./src/lib/monitoring/providerHealthMatrix.ts"
+    },
+    "./control/provider-expiration": {
+      "types": "./src/public/providerExpiration.d.ts",
+      "import": "./src/domain/providerExpiration.ts"
+    },
+    "./control/resilience-settings": {
+      "types": "./src/public/resilienceSettings.d.ts",
+      "import": "./src/lib/resilience/settings.ts"
+    },
     "./shared/connection-isolation": {
       "types": "./src/public/connectionIsolation.d.ts",
       "import": "./src/lib/exclusiveLeaseIsolation.ts"

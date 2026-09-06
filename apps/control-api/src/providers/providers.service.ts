@@ -29,6 +29,19 @@ import {
 } from "./handlers/provider-node-by-id.js";
 import { POST as validateProviderNodeHandler } from "./handlers/provider-nodes-validate.js";
 import { POST as validateProviderHandler } from "./handlers/provider-validate.js";
+import {
+  getOpenRouterProviderStats,
+  refreshOpenRouterProviderStats,
+} from "@shiguang-gateway/core-domain/control/openrouter-provider-stats";
+import {
+  buildProviderHealthMatrix,
+} from "@shiguang-gateway/core-domain/control/provider-health-matrix";
+import {
+  getAllExpirations,
+  getExpirationSummary,
+} from "@shiguang-gateway/core-domain/control/provider-expiration";
+import { resolveResilienceSettings } from "@shiguang-gateway/core-domain/control/resilience-settings";
+import { getCachedSettings } from "@shiguang-gateway/core-domain/cache/services";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
 
@@ -159,6 +172,35 @@ export class ProvidersService {
   async getSyncedModels(provider?: string | null) {
     if (provider) return { models: await getSyncedAvailableModels(provider) };
     return getAllSyncedAvailableModels();
+  }
+
+  async getOpenRouterStats(forceRefresh: boolean) {
+    if (forceRefresh) return refreshOpenRouterProviderStats();
+    return getOpenRouterProviderStats();
+  }
+
+  getProviderExpirations() {
+    return { summary: getExpirationSummary(), list: getAllExpirations() };
+  }
+
+  async getQuotaWindows() {
+    const { getAllProviderQuotaWindows } = await load(
+      "@shiguang-gateway/open-sse/services/quotaPreflight"
+    );
+    const windows = getAllProviderQuotaWindows();
+    const settings = await getCachedSettings();
+    const resilience = resolveResilienceSettings(settings);
+    return {
+      windows,
+      defaults: {
+        globalThresholdPercent: resilience.quotaPreflight.defaultThresholdPercent,
+        providerWindowDefaults: resilience.quotaPreflight.providerWindowDefaults,
+      },
+    };
+  }
+
+  async getProviderHealthMatrix(options: Record<string, unknown>) {
+    return buildProviderHealthMatrix(options);
   }
 
   // Handlers for models & nodes

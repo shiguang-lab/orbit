@@ -15,6 +15,8 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import { ProvidersService } from "./providers.service.js";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
 
 @Controller("api")
 export class ProvidersController {
@@ -170,5 +172,92 @@ export class ProvidersController {
     return this.routes.dispatch(request, reply, (req) =>
       this.providersService.handleValidateProvider(req)
     );
+  }
+
+  @Get("providers/openrouter-stats")
+  async openRouterStats(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    if (!(await isAuthenticated(request.raw as unknown as Request))) {
+      return reply
+        .status(401)
+        .send({ error: { message: "Authentication required", type: "invalid_request_error" } });
+    }
+    try {
+      const forceRefresh = new URL(request.raw.url ?? "", "http://localhost").searchParams.get("refresh") === "true";
+      const result = await this.providersService.getOpenRouterStats(forceRefresh);
+      if (forceRefresh) {
+        return reply.send({
+          object: "list",
+          data: result.data,
+          meta: {
+            source: result.ok ? "fresh" : "error",
+            count: result.data.length,
+            error: result.error ?? undefined,
+          },
+        });
+      }
+      return reply.send({
+        object: "list",
+        data: result.data,
+        meta: {
+          source: result.fromCache ? (result.stale ? "stale-cache" : "cache") : "fresh",
+          cachedAt: result.cachedAt ?? undefined,
+          stale: result.stale,
+          count: result.data.length,
+        },
+      });
+    } catch (error) {
+      console.error("Failed to load OpenRouter provider stats", error);
+      return reply.status(500).send({ error: "Failed to load OpenRouter provider stats" });
+    }
+  }
+
+  @Get("providers/quota-windows")
+  async quotaWindows(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    const authError = await requireManagementAuth(request.raw as unknown as Request);
+    if (authError) return reply.status(authError.status).send(await authError.json());
+    try {
+      return reply.send(await this.providersService.getQuotaWindows());
+    } catch (error) {
+      console.error("Error fetching quota windows:", error);
+      return reply.status(500).send({ error: "Failed to fetch quota windows" });
+    }
+  }
+
+  @Get("providers/expiration")
+  providerExpiration(@Res() reply: FastifyReply) {
+    try {
+      return reply.send(this.providersService.getProviderExpirations());
+    } catch (error) {
+      console.error("Failed to fetch provider expiration metadata", error);
+      return reply.status(500).send({ error: "Failed to fetch expiration metadata." });
+    }
+  }
+
+  @Get("providers/health-matrix")
+  async providerHealthMatrix(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    const authError = await requireManagementAuth(request.raw as unknown as Request);
+    if (authError) return reply.status(authError.status).send(await authError.json());
+    const query = new URL(request.raw.url ?? "", "http://localhost").searchParams;
+    const providerRaw = query.get("provider");
+    const rangeRaw = query.get("range");
+    const includeHealthyRaw = query.get("includeHealthy");
+    const validRange = rangeRaw === null || ["1h", "24h", "7d", "30d"].includes(rangeRaw);
+    const validInclude = includeHealthyRaw === null || ["true", "false", "1", "0"].includes(includeHealthyRaw);
+    if (!validRange || !validInclude || (providerRaw !== null && providerRaw.trim().length === 0)) {
+      return reply.status(400).send(buildErrorBody(400, "Invalid provider health matrix query"));
+    }
+    try {
+      return reply.send(
+        await this.providersService.getProviderHealthMatrix({
+          provider: providerRaw,
+          range: rangeRaw,
+          includeHealthy:
+            includeHealthyRaw === null || includeHealthyRaw === "true" || includeHealthyRaw === "1",
+        })
+      );
+    } catch (error) {
+      console.error("Failed to build provider health matrix", error);
+      return reply.status(500).send(buildErrorBody(500, "Failed to build provider health matrix"));
+    }
   }
 }
