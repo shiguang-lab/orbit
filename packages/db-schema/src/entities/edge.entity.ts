@@ -119,3 +119,64 @@ export const QuotaConsumptionEntity: EntityDefinition = {
     column("updated_at", "INTEGER", { nullable: false }),
   ],
 };
+
+/**
+ * Compression receipts written by the edge streaming pipeline and consumed by
+ * the control analytics API and realtime diagnostics.
+ *
+ * The migration history adds receipt/RTK/combo columns incrementally; keeping
+ * the complete current shape here prevents app-specific readers from
+ * inventing divergent table definitions.
+ */
+export const CompressionAnalyticsEntity: EntityDefinition = {
+  entityName: "CompressionAnalytics",
+  tableName: "compression_analytics",
+  owner: "edge-gateway",
+  columns: [
+    column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
+    column("timestamp", "TEXT", { nullable: false }),
+    column("combo_id", "TEXT"),
+    column("provider", "TEXT"),
+    column("mode", "TEXT", { nullable: false }),
+    column("original_tokens", "INTEGER", { nullable: false }),
+    column("compressed_tokens", "INTEGER", { nullable: false }),
+    column("tokens_saved", "INTEGER", { nullable: false }),
+    column("duration_ms", "INTEGER"),
+    column("request_id", "TEXT"),
+    column("actual_prompt_tokens", "INTEGER"),
+    column("actual_completion_tokens", "INTEGER"),
+    column("actual_total_tokens", "INTEGER"),
+    column("actual_cache_read_tokens", "INTEGER"),
+    column("actual_cache_write_tokens", "INTEGER"),
+    column("estimated_usd_saved", "REAL"),
+    column("mcp_description_tokens_saved", "INTEGER", { default: "0" }),
+    column("multimodal_skip_count", "INTEGER", { default: "0" }),
+    column("receipt_source", "TEXT"),
+    column("validation_fallback", "INTEGER", { default: "0" }),
+    column("output_mode", "TEXT"),
+    column("compression_combo_id", "TEXT"),
+    column("engine", "TEXT"),
+    column("rtk_raw_output_pointer", "TEXT"),
+    column("rtk_raw_output_bytes", "INTEGER"),
+    column("rtk_raw_output_pointers", "TEXT"),
+    column("rtk_raw_output_total_bytes", "INTEGER"),
+    column("skip_reason", "TEXT"),
+  ],
+};
+
+/** Per-engine breakdown rows for stacked compression analytics. */
+export const CompressionEngineBreakdownEntity: EntityDefinition = {
+  entityName: "CompressionEngineBreakdown",
+  tableName: "compression_engine_breakdown",
+  owner: "edge-gateway",
+  columns: [
+    column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
+    column("timestamp", "TEXT", { nullable: false }),
+    column("request_id", "TEXT"),
+    column("engine", "TEXT", { nullable: false }),
+    column("original_tokens", "INTEGER", { nullable: false, default: "0" }),
+    column("compressed_tokens", "INTEGER", { nullable: false, default: "0" }),
+    column("tokens_saved", "INTEGER", { nullable: false, default: "0" }),
+    column("duration_ms", "INTEGER"),
+  ],
+};

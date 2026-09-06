@@ -12,6 +12,11 @@ Every table that is part of an app boundary is represented by an
 - `worker.entity.ts` — asynchronous jobs, usage, logs, and model data owned by
   `worker`
 
+The edge catalog includes the shared `compression_analytics` receipt stream and
+its `compression_engine_breakdown` rows. They are written by the streaming
+request path and read by control/realtime diagnostics, so their complete
+receipt/RTK column shape is kept here rather than re-declared by consumers.
+
 `src/index.ts` exports the complete `GATEWAY_TABLES`, `TABLE_OWNERSHIP`, and
 `GATEWAY_ENTITIES` catalogs. `assertGatewayEntities()` verifies that every
 catalog entry has a matching physical table name, owner, and non-empty column
@@ -32,4 +37,3 @@ Run these checks from the repository root after changing the catalog:
 pnpm audit:db-schema-coverage -- --strict
 pnpm audit:db-entities
 ```
-

@@ -35,6 +35,8 @@ import {
   FileEntity,
   ProviderQuotaStateEntity,
   QuotaConsumptionEntity,
+  CompressionAnalyticsEntity,
+  CompressionEngineBreakdownEntity,
 } from "./entities/edge.entity.js";
 import {
   AuditLogEntity,
@@ -92,6 +94,8 @@ export const GATEWAY_TABLES = {
   quotaPoolConnections: "quota_pool_connections",
   quotaAllocationModelCaps: "quota_allocation_model_caps",
   quotaConsumption: "quota_consumption",
+  compressionAnalytics: "compression_analytics",
+  compressionEngineBreakdown: "compression_engine_breakdown",
 } as const;
 
 export type GatewayTable = (typeof GATEWAY_TABLES)[keyof typeof GATEWAY_TABLES];
@@ -148,6 +152,8 @@ export const TABLE_OWNERSHIP: readonly TableRef[] = [
   { table: GATEWAY_TABLES.quotaPoolConnections, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.quotaAllocationModelCaps, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.quotaConsumption, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.compressionAnalytics, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.compressionEngineBreakdown, owner: "edge-gateway", access: "read-write" },
 ];
 
 /**
@@ -198,6 +204,8 @@ export const GATEWAY_ENTITIES = {
   quotaPoolConnections: QuotaPoolConnectionEntity,
   quotaAllocationModelCaps: QuotaAllocationModelCapEntity,
   quotaConsumption: QuotaConsumptionEntity,
+  compressionAnalytics: CompressionAnalyticsEntity,
+  compressionEngineBreakdown: CompressionEngineBreakdownEntity,
 } satisfies Record<keyof typeof GATEWAY_TABLES, EntityDefinition>;
 
 /** Runtime guard used by architecture checks and tests. */
