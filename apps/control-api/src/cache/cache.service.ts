@@ -1,4 +1,6 @@
 import { Injectable } from "@nestjs/common";
+import fs from "node:fs";
+import path from "node:path";
 import {
   getCacheStats,
   clearCache,
@@ -24,6 +26,60 @@ import {
 
 @Injectable()
 export class CacheService {
+  private mediaCacheDir(): string {
+    const home = process.env.HOME || process.env.USERPROFILE || "/home/node";
+    return path.join(home, ".shiguangGateway", "media_cache");
+  }
+
+  getMediaStats() {
+    const dir = this.mediaCacheDir();
+    let totalBytes = 0;
+    let totalFiles = 0;
+    if (fs.existsSync(dir)) {
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        if (!entry.isFile()) continue;
+        try {
+          totalBytes += fs.statSync(path.join(dir, entry.name)).size;
+          totalFiles += 1;
+        } catch {
+          // A file removed during enumeration is not part of this snapshot.
+        }
+      }
+    }
+    const semantic = getMemoryCacheStats();
+    return {
+      totalBytes,
+      totalFiles,
+      semanticEntries: semantic.size ?? 0,
+      byModality: {
+        image: { files: totalFiles, bytes: totalBytes },
+        video: { files: 0, bytes: 0 },
+        music: { files: 0, bytes: 0 },
+        speech: { files: 0, bytes: 0 },
+        transcription: { files: 0, bytes: 0 },
+      },
+    };
+  }
+
+  purgeMedia(modality = "all") {
+    const dir = this.mediaCacheDir();
+    let freedBytes = 0;
+    if (fs.existsSync(dir)) {
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        if (!entry.isFile()) continue;
+        const file = path.join(dir, entry.name);
+        try {
+          freedBytes += fs.statSync(file).size;
+          fs.unlinkSync(file);
+        } catch {
+          // Continue clearing the remaining cache entries.
+        }
+      }
+    }
+    clearMemoryCache();
+    return { success: true, purgedModality: modality, freedBytes };
+  }
+
   async getOverview(trendHours: number = 24) {
     const safeTrendHours = Math.min(720, Math.max(1, Number.isNaN(trendHours) ? 24 : trendHours));
     const cacheStats = getCacheStats();
