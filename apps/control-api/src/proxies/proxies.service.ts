@@ -183,6 +183,71 @@ export class ProxiesService {
     return requireManagementAuth(request);
   }
 
+  /** Legacy v1 management surface retained as an explicit control-api contract. */
+  async managementList(request: Request): Promise<ApiResult> {
+    const authError = await this.authorize(request);
+    if (authError) return authError;
+    try {
+      const { searchParams } = new URL(request.url);
+      const id = searchParams.get("id");
+      if (id && searchParams.get("where_used") === "1") {
+        const assignments = await getProxyAssignments({ proxyId: id });
+        return Response.json({ count: assignments.length, assignments });
+      }
+      if (id) {
+        const proxy = await getProxyById(id, { includeSecrets: false });
+        return proxy ? Response.json(proxy) : errorResponse(404, "Proxy not found", "not_found");
+      }
+      const limit = Math.max(1, Math.min(200, Number(searchParams.get("limit") || 50)));
+      const offset = Math.max(0, Number(searchParams.get("offset") || 0));
+      const result = await listProxies({ includeSecrets: false, limit, offset });
+      return Response.json({ items: result.items, page: { limit, offset, total: result.total } });
+    } catch (error) {
+      return errorFromUnknown(error, "Failed to load proxies");
+    }
+  }
+
+  managementCreate(request: Request): Promise<ApiResult> {
+    return this.create(request);
+  }
+
+  managementUpdate(request: Request): Promise<ApiResult> {
+    return this.update(request);
+  }
+
+  managementRemove(request: Request): Promise<ApiResult> {
+    return this.remove(request);
+  }
+
+  async managementAssignments(request: Request): Promise<ApiResult> {
+    const authError = await this.authorize(request);
+    if (authError) return authError;
+    try {
+      const params = new URL(request.url).searchParams;
+      const resolveConnectionId = params.get("resolve_connection_id");
+      if (resolveConnectionId) return Response.json(await resolveProxyForConnection(resolveConnectionId));
+      const entries = await getProxyAssignments({
+        proxyId: params.get("proxy_id") || undefined,
+        scope: params.get("scope") || undefined,
+      });
+      const scopeId = params.get("scope_id");
+      const filtered = scopeId ? entries.filter((entry) => entry.scopeId === scopeId) : entries;
+      const limit = Math.max(1, Math.min(200, Number(params.get("limit") || 100)));
+      const offset = Math.max(0, Number(params.get("offset") || 0));
+      return Response.json({ items: filtered.slice(offset, offset + limit), page: { limit, offset, total: filtered.length } });
+    } catch (error) {
+      return errorFromUnknown(error, "Failed to load proxy assignments");
+    }
+  }
+
+  managementUpdateAssignment(request: Request): Promise<ApiResult> {
+    return this.updateAssignment(request);
+  }
+
+  managementBulkAssign(request: Request): Promise<ApiResult> {
+    return this.bulkAssign(request);
+  }
+
   async list(request: Request): Promise<ApiResult> {
     const authError = await this.authorize(request);
     if (authError) return authError;
