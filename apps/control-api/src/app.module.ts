@@ -49,6 +49,7 @@ import { LocalCorpusModule } from "./settings/local-corpus/local-corpus.module.j
 import { ProxySettingsModule } from "./settings/proxy/proxy-settings.module.js";
 import { QuotaSettingsModule } from "./settings/quota/quota.module.js";
 import { DarioAdminModule } from "./services/dario-admin.module.js";
+import { DarioModule } from "./services/dario/dario.module.js";
 import { NinerouterModule } from "./services/ninerouter/ninerouter.module.js";
 import { UsageModule } from "./usage/usage.module.js";
 import { GamificationModule } from "./gamification/gamification.module.js";
@@ -80,6 +81,7 @@ import { DbHealthModule } from "./db-health/db-health.module.js";
 import { ConductorModule } from "./conductor/conductor.module.js";
 import { ChaosModule } from "./chaos/chaos.module.js";
 import { AdminModule } from "./admin/admin.module.js";
+import { JobsModule } from "./jobs/jobs.module.js";
 
 @Module({
   imports: [
@@ -134,6 +136,7 @@ import { AdminModule } from "./admin/admin.module.js";
     ProxySettingsModule,
     QuotaSettingsModule,
     DarioAdminModule,
+    DarioModule,
     NinerouterModule,
     UsageModule,
     GamificationModule,
@@ -165,6 +168,7 @@ import { AdminModule } from "./admin/admin.module.js";
     ConductorModule,
     ChaosModule,
     AdminModule,
+    JobsModule,
   ],
 })
 export class AppModule {}

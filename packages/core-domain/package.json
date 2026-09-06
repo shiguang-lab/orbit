@@ -32,6 +32,22 @@
       "types": "./src/public/chatHandler.d.ts",
       "import": "./src/sse/handlers/chat.ts"
     },
+    "./edge/v1beta-models": {
+      "types": "./src/public/v1betaModels.d.ts",
+      "import": "./src/edge/v1betaModels.ts"
+    },
+    "./edge/v1beta-generate": {
+      "types": "./src/public/v1betaGenerate.d.ts",
+      "import": "./src/edge/v1betaGenerate.ts"
+    },
+    "./edge/vnc-session": {
+      "types": "./src/public/vncSession.d.ts",
+      "import": "./src/edge/vncSession.ts"
+    },
+    "./edge/vnc-session-params": {
+      "types": "./src/public/vncSessionParams.d.ts",
+      "import": "./src/edge/vncSessionParams.ts"
+    },
     "./edge/vscode-token": {
       "types": "./src/public/vscodeToken.d.ts",
       "import": "./src/lib/vscode/tokenizedRequest.ts"
@@ -322,6 +338,10 @@
     "./control/conversations": {
       "types": "./src/public/conversations.d.ts",
       "import": "./src/control/conversations.ts"
+    },
+    "./control/jobs": {
+      "types": "./src/public/jobs.d.ts",
+      "import": "./src/control/jobs.ts"
     },
     "./control/mcp-management": {
       "types": "./src/public/mcpManagement.d.ts",

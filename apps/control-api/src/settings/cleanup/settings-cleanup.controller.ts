@@ -35,4 +35,9 @@ export class SettingsCleanupController {
   purgeRequestHistory(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
     return this.routes.dispatch(request, reply, (req) => this.cleanup.purgeRequestHistory(req));
   }
+
+  @Post("purge-usage-history")
+  purgeUsageHistory(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, (req) => this.cleanup.purgeUsageHistory(req));
+  }
 }

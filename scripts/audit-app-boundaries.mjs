@@ -141,6 +141,10 @@ const allowedCoreDomainSubpaths = {
     "edge/provider-limits",
     "edge/internal-usage",
     "shared/cors",
+    "edge/v1beta-models",
+    "edge/v1beta-generate",
+    "edge/vnc-session",
+    "edge/vnc-session-params",
     // A2A transport is owned by edge-gateway; these explicit dynamic imports
     // are transitional facades for the legacy skill implementation while its
     // provider/DB dependencies are moved into edge-owned modules.
@@ -149,6 +153,7 @@ const allowedCoreDomainSubpaths = {
 };
 
 allowedCoreDomainSubpaths["apps/control-api"].push("db/health");
+allowedCoreDomainSubpaths["apps/control-api"].push("control/jobs");
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/usage",
   "edge/provider-limits",
@@ -303,6 +308,19 @@ const migratedRouteOwnership = {
     "api/health/ping/route.ts",
     "api/health/degradation/route.ts",
     "api/db/health/route.ts",
+    "api/jobs/route.ts",
+    "api/jobs/[id]/runs/route.ts",
+    "api/jobs/[id]/enable/route.ts",
+    "api/jobs/[id]/disable/route.ts",
+    "api/jobs/[id]/run-now/route.ts",
+    "api/services/dario/status/route.ts",
+    "api/services/dario/install/route.ts",
+    "api/services/dario/auto-start/route.ts",
+    "api/services/dario/auto-restart-adopted/route.ts",
+    "api/services/dario/start/route.ts",
+    "api/services/dario/restart/route.ts",
+    "api/services/dario/stop/route.ts",
+    "api/services/dario/update/route.ts",
     "api/gateway/status/route.ts",
     "api/shutdown/route.ts",
     "api/restart/route.ts",
@@ -469,6 +487,7 @@ const migratedRouteOwnership = {
     "api/settings/purge-logs/route.ts",
     "api/settings/purge-quota-snapshots/route.ts",
     "api/settings/purge-request-history/route.ts",
+    "api/settings/purge-usage-history/route.ts",
     "api/settings/auto-disable-accounts/route.ts",
     "api/settings/background-degradation/route.ts",
     "api/settings/require-login/route.ts",
@@ -710,6 +729,10 @@ const migratedRouteOwnership = {
     "api/v1/batches/[id]/route.ts",
     "api/v1/batches/[id]/cancel/route.ts",
     "api/v1/batches/delete-completed/route.ts",
+    "api/v1beta/models/route.ts",
+    "api/v1beta/models/[...path]/route.ts",
+    "api/vnc-session/route.ts",
+    "api/vnc-session/[...params]/route.ts",
     "api/v1/models/[...model]/route.ts",
     "api/v1/muse-code/models/route.ts",
     "api/v1/me/status/route.ts",
@@ -799,7 +822,7 @@ function extractControllerRoutes(controllerFile) {
       for (let subPath of subPaths) {
         let fullPath = [basePrefix, subPath].filter(Boolean).join("/");
         if (fullPath.startsWith("api/")) fullPath = fullPath.slice("api/".length);
-        fullPath = fullPath.replace(/\/\*$/, "/[...model]");
+        fullPath = fullPath.replace(/\/\*$/, fullPath.startsWith("v1beta/models/") ? "/[...path]" : (fullPath.startsWith("vnc-session/") ? "/[...params]" : "/[...model]"));
         fullPath = fullPath.replace(/:([a-zA-Z0-9_]+)/g, "[$1]");
         const routePath = `${fullPath ? fullPath + "/" : ""}route.ts`;
         routes.add(routePath);

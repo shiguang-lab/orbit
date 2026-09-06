@@ -4,6 +4,7 @@ import { POST as purgeDetailedLogs } from "./handlers/purge-detailed-logs.handle
 import { POST as purgeLogs } from "./handlers/purge-logs.handler.js";
 import { POST as purgeQuotaSnapshots } from "./handlers/purge-quota-snapshots.handler.js";
 import { POST as purgeRequestHistory } from "./handlers/purge-request-history.handler.js";
+import { POST as purgeUsageHistory } from "./handlers/purge-usage-history.handler.js";
 
 /** Use cases for destructive settings-data cleanup operations. */
 @Injectable()
@@ -26,5 +27,9 @@ export class SettingsCleanupService {
 
   purgeRequestHistory(request: Request) {
     return purgeRequestHistory(request);
+  }
+
+  purgeUsageHistory(request: Request) {
+    return purgeUsageHistory(request);
   }
 }

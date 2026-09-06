@@ -49,6 +49,8 @@ import { UsageCommandModule } from "./usage-command/usage-command.module.js";
 import { VscodeModelsModule } from "./vscode-models/vscode-models.module.js";
 import { VscodeResponsesModule } from "./vscode-responses/vscode-responses.module.js";
 import { VscodeCombosModule } from "./vscode-combos/vscode-combos.module.js";
+import { GeminiV1betaModule } from "./gemini-v1beta/gemini-v1beta.module.js";
+import { VncSessionModule } from "./vnc-session/vnc-session.module.js";
 
 @Module({
   imports: [
@@ -103,6 +105,8 @@ import { VscodeCombosModule } from "./vscode-combos/vscode-combos.module.js";
     VscodeModelsModule,
     VscodeResponsesModule,
     VscodeCombosModule,
+    GeminiV1betaModule,
+    VncSessionModule,
   ],
 })
 export class AppModule {}

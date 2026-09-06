@@ -31,6 +31,8 @@ export const ownedEdgeRoutes: readonly OwnedRoute[] = [
   { path: "/v1", methods: ["GET", "OPTIONS"] },
   { path: "/v1/models", methods: ["GET", "HEAD", "OPTIONS"] },
   { path: "/v1/models/*", methods: ["GET", "HEAD", "OPTIONS"] },
+  { path: "/v1beta/models", methods: ["GET", "OPTIONS"] },
+  { path: "/v1beta/models/*", methods: ["OPTIONS", "POST"] },
   { path: "/v1/muse-code/models", methods: ["GET", "OPTIONS"] },
   { path: "/v1/files", methods: ["GET", "OPTIONS", "POST"] },
   { path: "/v1/files/:id", methods: ["DELETE", "GET", "OPTIONS"] },
