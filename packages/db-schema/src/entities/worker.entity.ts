@@ -109,3 +109,23 @@ export const ModelCapabilitiesEntity: EntityDefinition = {
     column("last_synced", "TEXT"),
   ],
 };
+
+/**
+ * Arena/model task-fitness snapshots synced by the worker and consumed by
+ * edge auto-combo routing plus control-plane free-provider rankings.
+ */
+export const ModelIntelligenceEntity: EntityDefinition = {
+  entityName: "ModelIntelligence",
+  tableName: "model_intelligence",
+  owner: "worker",
+  columns: [
+    column("model", "TEXT", { nullable: false, primaryKey: true }),
+    column("source", "TEXT", { nullable: false, primaryKey: true }),
+    column("category", "TEXT", { nullable: false, primaryKey: true }),
+    column("score", "REAL", { nullable: false }),
+    column("elo_raw", "INTEGER"),
+    column("confidence", "TEXT"),
+    column("synced_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+    column("expires_at", "TEXT"),
+  ],
+};

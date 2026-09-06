@@ -13,12 +13,19 @@ Every table that is part of an app boundary is represented by an
 `EntityDefinition` in `src/entities/`:
 
 - `control.entity.ts` — control-plane configuration and operator-managed data,
-  including control-api-owned audit, playground, plugin metric, gamification,
+  including control-api-owned audit, playground, plugin metric/analytics, gamification,
   evaluation suite/case/run, model-assessment/health, Traffic Inspector
   sessions/requests/custom-host records, and webhook delivery audit tables
 - `edge.entity.ts` — request-path data owned by `edge-gateway`
 - `worker.entity.ts` — asynchronous jobs, usage, logs, model data, and
   provider quota-reset observations owned by `worker`
+
+`plugin_analytics` is the append-only hook execution stream emitted by the edge
+request runtime and inspected by control/MCP tooling; `model_intelligence` is
+written by the worker Arena ELO synchronizer and read by edge routing and
+control rankings. Both are shared cross-app contracts with explicit single
+write owners, so their entity metadata lives here even though query code stays
+in the consuming domain modules.
 
 The edge catalog includes the shared `compression_analytics` receipt stream and
 its `compression_engine_breakdown` rows. They are written by the streaming

@@ -89,8 +89,8 @@ The entity write owners are intentionally narrower than those consumers:
 | Owner | Entities |
 | --- | --- |
 | `control-api` | settings, configAuditLog, playgroundPresets, pluginMetrics, evalSuites/evalCases/evalRuns, providerConnections, providerNodes, apiKeys, apiKeyGroups, combos, compressionCombos, compressionComboAssignments, modelComboMappings, webhooks, apiKeyTokenLimits, providerPlans, plugins, modelContextOverrides, modelCapabilityOverrides, tierConfig, tierAssignments, freeProxies, freeProxySyncErrors, reasoningRoutingRules, quotaGroups, quotaPools, quotaAllocations, quotaPoolConnections, quotaAllocationModelCaps, gamification leaderboard/user levels/badges/invites/community servers, inspectorSessions/inspectorSessionRequests/inspectorCustomHosts |
-| `edge-gateway` | batches, files, agenticConversations, conversationTurnNodes, apiKeyTokenCounters, apiKeyTokenLimitResetLogs, providerQuotaState, quotaConsumption, compressionAnalytics, compressionEngineBreakdown |
-| `worker` | usageHistory, callLogs, proxyLogs, quotaSnapshots, auditLogs, memories, jobs, modelCapabilities |
+| `edge-gateway` | batches, files, agenticConversations, conversationTurnNodes, apiKeyTokenCounters, apiKeyTokenLimitResetLogs, providerQuotaState, quotaConsumption, compressionAnalytics, compressionEngineBreakdown, pluginAnalytics |
+| `worker` | usageHistory, callLogs, proxyLogs, quotaSnapshots, auditLogs, memories, jobs, modelCapabilities, modelIntelligence |
 
 AgentBridge's `agent_bridge_state`, `agent_bridge_mappings`, and
 `agent_bridge_bypass` tables are intentionally app-private control-api
@@ -123,6 +123,14 @@ control-api manages definitions while the edge/open-sse execution path reads
 and records executions. A shared package import alone is not a reason to
 promote an app-private table; each promotion requires concrete cross-app
 read/write evidence.
+
+`model_intelligence` is synced by the worker's `arena-elo-sync` job, read by
+edge auto-combo task fitness, and read by the control free-provider rankings
+surface, so worker is the single write owner. `plugin_analytics` is an
+append-only request-runtime hook log exposed by the MCP/plugin management
+surface; edge is its operational write owner while control-facing readers use
+the shared database contract. These tables are cataloged in
+`packages/db-schema` rather than treated as app-private DDL.
 
 The SQL scan currently finds table references in `core-domain` rather than direct
 app source, so the report labels these rows `PASS-indirect-declared-owner`. This is

@@ -70,6 +70,27 @@ export const PluginMetricEntity: EntityDefinition = {
   ],
 };
 
+/**
+ * Per-hook plugin execution records emitted by the request runtime and
+ * inspected through the control/MCP management surfaces. The aggregate
+ * `plugin_metrics` table is control-owned; this append-only event table is a
+ * separate shared runtime contract and therefore keeps its own entity.
+ */
+export const PluginAnalyticsEntity: EntityDefinition = {
+  entityName: "PluginAnalytics",
+  tableName: "plugin_analytics",
+  owner: "edge-gateway",
+  columns: [
+    column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
+    column("plugin_name", "TEXT", { nullable: false }),
+    column("hook", "TEXT", { nullable: false }),
+    column("duration_ms", "INTEGER", { nullable: false, default: "0" }),
+    column("success", "INTEGER", { nullable: false, default: "1" }),
+    column("error_message", "TEXT"),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
 /** Skill definitions are managed by control-api and injected/executed by edge. */
 export const SkillEntity: EntityDefinition = {
   entityName: "Skill",
