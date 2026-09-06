@@ -46,8 +46,8 @@ import { getCachedProviderConnections } from "@shiguang-gateway/core-domain/db/r
 import {
   getSyncedAvailableModels,
   getCustomModels,
-  getHiddenModelsByProvider,
-} from "@shiguang-gateway/core-domain/db/models-runtime";
+} from "@shiguang-gateway/core-domain/db/models";
+import { getHiddenModelsByProvider } from "@shiguang-gateway/core-domain/db/hidden-models";
 import { getProviderModels } from "../../config/providerModels.ts";
 import {
   getConnectionRoutingTags,

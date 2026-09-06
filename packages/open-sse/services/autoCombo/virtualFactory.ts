@@ -29,7 +29,7 @@ import { classifyTier } from "../tierResolver";
 import type { AutoVariant } from "./autoPrefix";
 import { buildFamilyCandidateFilter, type ModelFamily } from "./modelFamily";
 import { getHiddenModelsByProvider } from "@shiguang-gateway/core-domain/db/hidden-models";
-import { getSyncedAvailableModelsByConnection, getCustomModels } from "@shiguang-gateway/core-domain/db/models-runtime";
+import { getSyncedAvailableModelsByConnection, getCustomModels } from "@shiguang-gateway/core-domain/db/models";
 import { filterPaidOnlyCandidates } from "./paidModelFilter";
 import { filterModelExposureCandidates } from "./modelExposureFilter";
 import {
@@ -39,7 +39,7 @@ import {
 } from "./subscriptionLadder";
 import { filterStrictZeroCostCandidates, filterTosAvoidCandidates } from "./strictZeroCostFilter";
 import { resolveFreeAccessState } from "./freeAccessQuota";
-import { isModelExcludedByConnection } from "@shiguang-gateway/core-domain/edge/connection-model-rules";
+import { isModelExcludedByConnection } from "@shiguang-gateway/core-domain/routing/connection-model-rules";
 import { resolveProviderAlias } from "../model.ts";
 import { filterExcludedCandidates } from "./candidateOverrides";
 import { getExcludedConnectionIds } from "@shiguang-gateway/core-domain/db/auto-candidate-overrides";

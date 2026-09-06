@@ -14,7 +14,7 @@
  */
 
 import { getModelContextLimit } from "@shiguang-gateway/core-domain/catalog/model-capabilities";
-import { getHiddenModelsByProvider } from "@shiguang-gateway/core-domain/db/models-runtime";
+import { getHiddenModelsByProvider } from "@shiguang-gateway/core-domain/db/hidden-models";
 import { getComboModelString, normalizeComboStep } from "@shiguang-gateway/core-domain/edge/mcp-combo-steps";
 import { getProviderByAlias, getProviderById } from "@shiguang-gateway/core-domain/catalog/providers";
 import { estimateTokens } from "../contextManager.ts";

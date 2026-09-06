@@ -100,7 +100,7 @@ async function normalizeDeps(deps: InternalUsageCommandDeps = {}): Promise<Requi
 async function getDefaultUsageCommandQuotaPolicy(): Promise<UsageCommandQuotaPolicy> {
   const [{ getCachedSettings }, { resolveResilienceSettings }] = await Promise.all([
     import("@shiguang-gateway/core-domain/db/read-cache"),
-    import("@shiguang-gateway/core-domain/runtime/resilience-settings"),
+    import("@shiguang-gateway/core-domain/resilience/settings"),
   ]);
   const resilience = resolveResilienceSettings(await getCachedSettings());
   return {

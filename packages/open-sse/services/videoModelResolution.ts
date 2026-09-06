@@ -1,4 +1,4 @@
-import { getAllCustomModels } from "@shiguang-gateway/core-domain/runtime/models-db";
+import { getAllCustomModels } from "@shiguang-gateway/core-domain/db/models";
 import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
 import { parseVideoModel } from "../config/videoRegistry.ts";
 import { getProviderCredentialsWithQuotaPreflight } from "./auth.ts";

@@ -26,7 +26,7 @@ import {
 } from "../services/antigravityCredits.ts";
 import { persistCreditBalance, getAllPersistedCreditBalances } from "@shiguang-gateway/core-domain/db/credit-balance";
 import { setConnectionRateLimitUntil } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { getMitmAlias } from "@shiguang-gateway/core-domain/db/models-runtime";
+import { getMitmAlias } from "@shiguang-gateway/core-domain/db/mitm-aliases";
 import {
   MAX_ANTIGRAVITY_OUTPUT_TOKENS,
   resolveAntigravityOutputCap,

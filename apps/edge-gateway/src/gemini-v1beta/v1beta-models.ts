@@ -3,7 +3,7 @@ import {
   getAllCustomModels,
   getAllSyncedAvailableModels,
   getSyncedAvailableModels,
-} from "@shiguang-gateway/core-domain/db/models-runtime";
+} from "@shiguang-gateway/core-domain/db/models";
 import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { getResolvedModelCapabilities } from "@shiguang-gateway/core-domain/catalog/model-capabilities";
 import { getSyncedCapabilities } from "@shiguang-gateway/core-domain/catalog/models-dev-sync";

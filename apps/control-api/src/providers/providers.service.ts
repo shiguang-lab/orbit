@@ -11,7 +11,7 @@ import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provide
 import {
   getSyncedAvailableModels,
   getAllSyncedAvailableModels,
-} from "@shiguang-gateway/core-domain/db/models-runtime";
+} from "@shiguang-gateway/core-domain/db/models";
 import {
   GET as getProviderModelsHandler,
   POST as addProviderModelHandler,
@@ -43,7 +43,7 @@ import {
   getAllExpirations,
   getExpirationSummary,
 } from "./provider-expiration.js";
-import { resolveResilienceSettings } from "@shiguang-gateway/core-domain/control/resilience-settings";
+import { resolveResilienceSettings } from "@shiguang-gateway/core-domain/resilience/settings";
 import { getCachedSettings } from "@shiguang-gateway/core-domain/cache/services";
 import { handleProviderRefresh } from "./handlers/provider-refresh.handler.js";
 import { GET as getChatgptWebCodexDoctor } from "./handlers/provider-chatgpt-web-codex-doctor.js";

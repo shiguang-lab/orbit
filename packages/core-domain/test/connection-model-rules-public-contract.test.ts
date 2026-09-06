@@ -10,9 +10,12 @@ const manifest = JSON.parse(
   fs.readFileSync(path.join(packageRoot, "package.json"), "utf8"),
 ) as { exports: Record<string, { types?: string; import?: string } | string> };
 
-const retiredAliases = [
-  "./control/provider-discovery-support/localDb",
-  "./usage/codex-reset-support/local-db",
+const canonicalSubpath = "./routing/connection-model-rules";
+const canonicalEntry = "./src/routing/connectionModelRules.ts";
+const retiredSubpaths = [
+  "./edge/connection-model-rules",
+  "./runtime/connection-model-rules",
+  "./usage/reporting-support/domain/connectionModelRules",
 ] as const;
 
 function sourceFiles(dir: string): string[] {
@@ -26,37 +29,30 @@ function sourceFiles(dir: string): string[] {
   return files;
 }
 
-test("db/hidden-models exposes only the shared hidden-model query contract", async () => {
-  const entry = manifest.exports["./db/hidden-models"];
-  assert.deepEqual(entry, {
-    types: "./src/public/hiddenModelsDb.d.ts",
-    import: "./src/db/hiddenModels.ts",
+test("connection model rules use one narrow routing contract", async () => {
+  assert.deepEqual(manifest.exports[canonicalSubpath], {
+    types: canonicalEntry,
+    import: canonicalEntry,
   });
 
-  const runtime = await import(
-    pathToFileURL(path.join(packageRoot, (entry as { import: string }).import)).href
-  );
+  const runtime = await import(pathToFileURL(path.join(packageRoot, canonicalEntry)).href);
   assert.deepEqual(Object.keys(runtime).sort(), [
-    "getHiddenModelsByProvider",
-    "getModelIsHidden",
-    "setModelIsHidden",
+    "isModelAdvertisedByConnection",
+    "isModelExcludedByConnection",
   ]);
-
-  const declaration = fs.readFileSync(
-    path.join(packageRoot, (entry as { types: string }).types),
-    "utf8",
-  );
-  const declaredRuntimeNames = [...declaration.matchAll(/export function (\w+)/g)].map(
-    (match) => match[1],
-  );
-  assert.deepEqual(declaredRuntimeNames.sort(), Object.keys(runtime).sort());
 });
 
-test("localDb scenario aliases stay retired", () => {
-  for (const alias of retiredAliases) assert.equal(manifest.exports[alias], undefined, alias);
+test("scenario-specific connection model rule aliases stay retired", () => {
+  for (const subpath of retiredSubpaths) assert.equal(manifest.exports[subpath], undefined, subpath);
+  assert.equal(
+    fs.existsSync(path.join(packageRoot, "src/public/connectionModelRules.d.ts")),
+    false,
+  );
 
   const retiredImportPattern = new RegExp(
-    `core-domain/(?:${retiredAliases.map((alias) => alias.slice(2).replaceAll("/", "\\/")).join("|")})(?=["'])`,
+    `core-domain/(?:${retiredSubpaths
+      .map((subpath) => subpath.slice(2).replaceAll("/", "\\/"))
+      .join("|")})`,
   );
   for (const root of ["apps", "packages/open-sse"]) {
     for (const file of sourceFiles(path.join(repoRoot, root))) {

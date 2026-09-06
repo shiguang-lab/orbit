@@ -125,9 +125,9 @@
       "types": "./src/public/pipelinePrompts.d.ts",
       "import": "./src/domain/prompts.ts"
     },
-    "./edge/connection-model-rules": {
-      "types": "./src/public/connectionModelRules.d.ts",
-      "import": "./src/domain/connectionModelRules.ts"
+    "./routing/connection-model-rules": {
+      "types": "./src/routing/connectionModelRules.ts",
+      "import": "./src/routing/connectionModelRules.ts"
     },
     "./edge/tag-router": {
       "types": "./src/public/tagRouter.d.ts",
@@ -247,7 +247,7 @@
     },
     "./resilience/settings": {
       "types": "./src/public/resilienceSettings.d.ts",
-      "import": "./src/lib/resilience/settings.ts"
+      "import": "./src/resilience/settings.ts"
     },
     "./resilience/model-lockout-settings": {
       "types": "./src/public/modelLockoutSettings.d.ts",
@@ -383,7 +383,6 @@
     "./control/provider-discovery-support/volcenginePlanModelDiscovery": "./src/lib/providers/volcenginePlanModelDiscovery.ts",
     "./control/provider-discovery-support/models": "./src/shared/constants/models.ts",
     "./control/provider-discovery-support/apiAuth": "./src/shared/utils/apiAuth.ts",
-    "./control/provider-discovery-support/modelsDb": "./src/lib/db/models.ts",
     "./control/provider-discovery-support/alibabaProviderRegions": "./src/shared/constants/alibabaProviderRegions.ts",
     "./control/provider-discovery-support/modelDiscovery": "./src/lib/providerModels/modelDiscovery.ts",
     "./control/provider-discovery-support/outboundUrlGuardPolicy": "./src/shared/network/outboundUrlGuardPolicy.ts",
@@ -799,9 +798,9 @@
       "types": "./src/public/reasoningCacheDb.d.ts",
       "import": "./src/lib/db/reasoningCache.ts"
     },
-    "./db/models-runtime": {
-      "types": "./src/public/modelsRuntimeDb.d.ts",
-      "import": "./src/lib/db/models.ts"
+    "./db/models": {
+      "types": "./src/public/modelsDb.d.ts",
+      "import": "./src/db/models.ts"
     },
     "./db/context-handoffs": {
       "types": "./src/public/contextHandoffsDb.d.ts",
@@ -882,10 +881,6 @@
     "./control/provider-health-matrix": {
       "types": "./src/public/providerHealthMatrix.d.ts",
       "import": "./src/lib/monitoring/providerHealthMatrix.ts"
-    },
-    "./control/resilience-settings": {
-      "types": "./src/public/resilienceSettings.d.ts",
-      "import": "./src/lib/resilience/settings.ts"
     },
     "./control/resilience-connection-recovery": {
       "types": "./src/public/connectionRecovery.d.ts",
@@ -1192,9 +1187,6 @@
     "./runtime/jina-credentials": "./src/lib/providers/jina.ts",
     "./runtime/gemini-credentials": "./src/lib/providers/gemini.ts",
     "./runtime/provider-connection-view": "./src/lib/db/providers/lazyConnectionView.ts",
-    "./runtime/resilience-settings": "./src/lib/resilience/settings.ts",
-    "./runtime/connection-model-rules": "./src/domain/connectionModelRules.ts",
-    "./runtime/models-db": "./src/lib/db/models.ts",
     "./runtime/free-models": "./src/shared/utils/freeModels.ts",
     "./runtime/probe-origin": "./src/shared/utils/probeOrigin.ts",
     "./runtime/shuffle-deck": "./src/shared/utils/shuffleDeck.ts",
@@ -1237,7 +1229,6 @@
     "./usage/reporting-support/quota-snapshots": "./src/lib/db/quotaSnapshots.ts",
     "./usage/reporting-support/cost-calculator": "./src/lib/usage/costCalculator.ts",
     "./usage/reporting-support/shared/types/utilization": "./src/shared/types/utilization.ts",
-    "./usage/reporting-support/domain/connectionModelRules": "./src/domain/connectionModelRules.ts",
     "./usage/reporting-support/call-logs": "./src/lib/usage/callLogs.ts",
     "./runtime/quota-key": "./src/lib/quota/quotaKey.ts",
     "./runtime/no-auth-providers": "./src/shared/utils/noAuthProviders.ts",

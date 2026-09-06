@@ -10,9 +10,17 @@ const manifest = JSON.parse(
   fs.readFileSync(path.join(packageRoot, "package.json"), "utf8"),
 ) as { exports: Record<string, { types?: string; import?: string } | string> };
 
+const expectedRuntimeExports = [
+  "DEFAULT_RESILIENCE_SETTINGS",
+  "buildLegacyResilienceCompat",
+  "isStreamRecoveryExplicitlyConfigured",
+  "mergeResilienceSettings",
+  "resolveResilienceSettings",
+] as const;
+
 const retiredAliases = [
-  "./control/provider-discovery-support/localDb",
-  "./usage/codex-reset-support/local-db",
+  "./control/resilience-settings",
+  "./runtime/resilience-settings",
 ] as const;
 
 function sourceFiles(dir: string): string[] {
@@ -26,33 +34,30 @@ function sourceFiles(dir: string): string[] {
   return files;
 }
 
-test("db/hidden-models exposes only the shared hidden-model query contract", async () => {
-  const entry = manifest.exports["./db/hidden-models"];
+test("resilience/settings is the single narrow resilience-settings contract", async () => {
+  const entry = manifest.exports["./resilience/settings"];
+  assert.equal(typeof entry, "object");
   assert.deepEqual(entry, {
-    types: "./src/public/hiddenModelsDb.d.ts",
-    import: "./src/db/hiddenModels.ts",
+    types: "./src/public/resilienceSettings.d.ts",
+    import: "./src/resilience/settings.ts",
   });
 
   const runtime = await import(
     pathToFileURL(path.join(packageRoot, (entry as { import: string }).import)).href
   );
-  assert.deepEqual(Object.keys(runtime).sort(), [
-    "getHiddenModelsByProvider",
-    "getModelIsHidden",
-    "setModelIsHidden",
-  ]);
+  assert.deepEqual(Object.keys(runtime).sort(), [...expectedRuntimeExports].sort());
 
   const declaration = fs.readFileSync(
     path.join(packageRoot, (entry as { types: string }).types),
     "utf8",
   );
-  const declaredRuntimeNames = [...declaration.matchAll(/export function (\w+)/g)].map(
-    (match) => match[1],
-  );
-  assert.deepEqual(declaredRuntimeNames.sort(), Object.keys(runtime).sort());
+  const declaredRuntimeNames = [
+    ...declaration.matchAll(/export (?:const|function) (\w+)/g),
+  ].map((match) => match[1]);
+  assert.deepEqual(declaredRuntimeNames.sort(), [...expectedRuntimeExports].sort());
 });
 
-test("localDb scenario aliases stay retired", () => {
+test("scenario-specific resilience-settings aliases stay retired", () => {
   for (const alias of retiredAliases) assert.equal(manifest.exports[alias], undefined, alias);
 
   const retiredImportPattern = new RegExp(

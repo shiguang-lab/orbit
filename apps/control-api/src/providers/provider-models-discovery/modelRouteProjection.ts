@@ -1,7 +1,7 @@
 import { getRegistryEntry } from "@shiguang-gateway/open-sse/config/providerRegistry";
 import { filterChatSelectableModels } from "@shiguang-gateway/open-sse/services/modelEndpointPolicy";
 import { filterSelectableModels } from "@shiguang-gateway/open-sse/services/modelLifecycle";
-import { getModelIsHidden } from "@shiguang-gateway/core-domain/control/provider-discovery-support/modelsDb";
+import { getModelIsHidden } from "@shiguang-gateway/core-domain/db/hidden-models";
 import { getSettings } from "@shiguang-gateway/core-domain/db/settings";
 import { getStaticModelsForProvider } from "@shiguang-gateway/open-sse/services/static-models";
 import { SAFE_OUTBOUND_FETCH_PRESETS, safeOutboundFetch } from "@shiguang-gateway/core-domain/control/provider-discovery-support/safeOutboundFetch";

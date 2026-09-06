@@ -5,7 +5,7 @@ import {
   resolveResilienceSettings,
   type ResilienceSettings,
   type ResilienceSettingsPatch,
-} from "@shiguang-gateway/core-domain/control/resilience-settings";
+} from "@shiguang-gateway/core-domain/resilience/settings";
 import { updateResilienceSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { resetAllCircuitBreakers } from "@shiguang-gateway/core-domain/resilience/circuit-breaker";

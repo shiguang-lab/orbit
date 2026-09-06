@@ -77,7 +77,7 @@ import {
   preflightQuota,
   isQuotaPreflightEnabled,
 } from "../services/quotaPreflight.ts";
-import { resolveResilienceSettings } from "@shiguang-gateway/core-domain/runtime/resilience-settings";
+import { resolveResilienceSettings } from "@shiguang-gateway/core-domain/resilience/settings";
 import { resolveModelLockoutSettings } from "@shiguang-gateway/core-domain/resilience/model-lockout-settings";
 import {
   buildMixedAvailabilityError,
@@ -120,12 +120,12 @@ import {
 import {
   isModelExcludedByConnection,
   isModelAdvertisedByConnection,
-} from "@shiguang-gateway/core-domain/runtime/connection-model-rules";
+} from "@shiguang-gateway/core-domain/routing/connection-model-rules";
 import {
   getSyncedAvailableModelsByConnection,
   SYNCED_AVAILABLE_MODELS_MALFORMED,
   type SyncedAvailableModelsByConnection,
-} from "@shiguang-gateway/core-domain/runtime/models-db";
+} from "@shiguang-gateway/core-domain/db/models";
 import { isFreeModel } from "@shiguang-gateway/core-domain/runtime/free-models";
 import {
   applySessionAffinityPin,

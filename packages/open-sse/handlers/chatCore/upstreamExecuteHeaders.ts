@@ -9,7 +9,7 @@
  * Side-effect-free; behaviour is byte-identical to the previous inline closure.
  */
 
-import { getModelUpstreamExtraHeaders } from "@shiguang-gateway/core-domain/db/models-runtime";
+import { getModelUpstreamExtraHeaders } from "@shiguang-gateway/core-domain/db/models";
 import { resolveModelAlias } from "../../services/modelDeprecation.ts";
 import { CPA_FORCE_FAST_MODE_HEADER, shouldRequestClaudeFastMode } from "@shiguang-gateway/core-domain/edge/claude-fast-mode";
 import { isForbiddenCustomHeaderName } from "@shiguang-gateway/contracts/upstream-headers";

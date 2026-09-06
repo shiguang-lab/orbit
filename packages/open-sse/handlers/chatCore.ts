@@ -355,7 +355,7 @@ import {
   executeWithUpstreamStartTimeout,
   resolveConnectionTimeoutMs,
 } from "./chatCore/upstreamTimeouts.ts";
-import { getModelNormalizeToolCallId, getModelPreserveOpenAIDeveloperRole } from "@shiguang-gateway/core-domain/db/models-runtime";
+import { getModelNormalizeToolCallId, getModelPreserveOpenAIDeveloperRole } from "@shiguang-gateway/core-domain/db/models";
 import {
   getProviderCredentials,
   getProviderCredentialsWithQuotaPreflight,

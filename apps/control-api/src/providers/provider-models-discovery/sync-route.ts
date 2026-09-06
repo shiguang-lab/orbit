@@ -3,7 +3,7 @@ import {
   deleteImportedCustomModels,
   deleteSyncedAvailableModelsForProvider,
   getSyncedAvailableModelsForConnection,
-} from "@shiguang-gateway/core-domain/control/provider-discovery-support/modelsDb";
+} from "@shiguang-gateway/core-domain/db/models";
 import { selectModelsForImport } from "@shiguang-gateway/core-domain/control/provider-discovery-support/freeModels";
 import {
   importManagedModels,
@@ -24,7 +24,7 @@ import {
   fetchVolcPlanModels,
   providerToVolcPlanKind,
 } from "@shiguang-gateway/core-domain/control/provider-discovery-support/volcenginePlanModelDiscovery";
-import { replaceSyncedAvailableModelsForConnection } from "@shiguang-gateway/core-domain/control/provider-discovery-support/modelsDb";
+import { replaceSyncedAvailableModelsForConnection } from "@shiguang-gateway/core-domain/db/models";
 import { getProviderModels } from "./models-route.js";
 import { isDegradedDiscovery } from "./degradedLocalCatalog.js";
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
