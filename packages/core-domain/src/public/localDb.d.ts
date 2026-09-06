@@ -91,6 +91,11 @@ export function getComboByName(name: string): Promise<unknown>;
 export function getCombos(limit?: number, offset?: number): Promise<unknown[]>;
 export function getDatabaseSettings(): unknown;
 export function getApiKeyMetadata(apiKey: string | null | undefined): Promise<any>;
+export function resolveProxyForConnection(
+  connectionId: string,
+  apiKeyId?: string,
+  providerId?: string,
+): Promise<Record<string, unknown> | null>;
 
 export interface BatchRecord {
   id: string;

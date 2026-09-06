@@ -3,7 +3,7 @@ import {
   GET as getImageGenerations,
   POST as imageGenerations,
 } from "@shiguang-gateway/core-domain/edge/image-generations-handler";
-import { POST as imageEdits } from "@shiguang-gateway/core-domain/edge/image-edits-handler";
+import { POST as imageEdits } from "./edits/image-edits.route.js";
 import {
   GET as getImageUpscale,
   POST as imageUpscale,

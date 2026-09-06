@@ -3,46 +3,56 @@ import {
   handleCodexImageEdit,
   handleOpenAIImageEdit,
   handleOpenRouterImageEdit,
-} from "../../../../../../../open-sse/handlers/imageGeneration.ts";
+// @ts-ignore open-sse exposes runtime TypeScript modules without per-handler declarations.
+} from "@shiguang-gateway/open-sse/handlers/imageGeneration";
 import {
   handleFalAIImageEdit,
   FAL_IMAGE_EDIT_MAX_REFERENCES,
   isFalImageEditModel,
-} from "../../../../../../../open-sse/handlers/imageGeneration/providers/fal.ts";
-import { createInjectionGuard } from "../../../../../middleware/promptInjectionGuard.ts";
+// @ts-ignore open-sse exposes runtime TypeScript modules without per-handler declarations.
+} from "@shiguang-gateway/open-sse/handlers/imageGeneration/providers/fal";
+import { createInjectionGuard } from "@shiguang-gateway/core-domain/middleware/prompt-injection";
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
-} from "../../../../../sse/services/auth.ts";
+} from "@shiguang-gateway/core-domain/sse/auth";
+const getProviderCredentialsWithQuotaPreflightAny = getProviderCredentialsWithQuotaPreflight as any;
 import {
   parseImageModel,
   getImageProvider,
   getImageModelEntry,
-} from "../../../../../../../open-sse/config/imageRegistry.ts";
-import { errorResponse, unavailableResponse } from "../../../../../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../../../../../open-sse/config/constants.ts";
-import * as log from "../../../../../sse/utils/logger.ts";
-import { toJsonErrorPayload } from "../../../../../shared/utils/upstreamError.ts";
-import { enforceApiKeyPolicy } from "../../../../../shared/utils/apiKeyPolicy.ts";
+// @ts-ignore open-sse exposes runtime TypeScript modules without per-handler declarations.
+} from "@shiguang-gateway/open-sse/config/imageRegistry";
+import { errorResponse, unavailableResponse } from "@shiguang-gateway/open-sse/utils/error";
+import { HTTP_STATUS as OPEN_SSE_HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants";
+const HTTP_STATUS = {
+  ...OPEN_SSE_HTTP_STATUS,
+  GONE: 410,
+  SERVICE_UNAVAILABLE: 503,
+} as const;
+import * as log from "@shiguang-gateway/core-domain/sse/logger";
+import { toJsonErrorPayload } from "@shiguang-gateway/core-domain/shared/upstream-error";
+import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/shared/api-key-policy";
 import {
   resolveImageRouteModel,
   extractImageEditInputFromJson,
   validateCodexImageEditReferences,
-} from "../../../../../lib/images/imageRouteModel.ts";
-import { isMicrosoftDesignerWebProviderRetiredError } from "../../../../../shared/constants/designerWebRetirement.ts";
-import { resolveProxyForConnection } from "../../../../../lib/localDb.ts";
-import { runWithProxyContext } from "../../../../../../../open-sse/utils/proxyFetch.ts";
-import { isCodexFreePlan } from "../../../../../../../open-sse/executors/codex/tools.ts";
+} from "@shiguang-gateway/core-domain/edge/image-route-model";
+import { isMicrosoftDesignerWebProviderRetiredError } from "@shiguang-gateway/core-domain/shared/designer-web-retirement";
+import { resolveProxyForConnection } from "@shiguang-gateway/core-domain/edge/local-db";
+import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
+// @ts-expect-error open-sse exposes runtime TypeScript modules without per-handler declarations.
+import { isCodexFreePlan } from "@shiguang-gateway/open-sse/executors/codex/tools";
 import {
   getBodySizeLimit,
   readRequestBodyWithLimit,
   RequestBodyTooLargeError,
-} from "../../../../../shared/middleware/bodySizeGuard.ts";
-import { getCachedSettings } from "../../../../../lib/db/readCache.ts";
+} from "@shiguang-gateway/core-domain/shared/body-size-guard";
+import { getCachedSettings } from "@shiguang-gateway/core-domain/edge/read-cache";
 import {
   CHATGPT_WEB_RETIRED_ERROR_CODE,
   isCommonChatGptWebRetirementError,
-} from "../../../../../shared/constants/chatgptWebRetirement.ts";
+} from "@shiguang-gateway/core-domain/shared/chatgpt-web-retirement";
 import { z } from "zod";
 
 // JSON edit body (Open WebUI / OpenAI-style). All fields optional — the prompt
@@ -239,7 +249,7 @@ async function handleAdobeFireflyEditRequest(params: {
     imageMime,
   } = params;
 
-  const credentials = await getProviderCredentialsWithQuotaPreflight(
+  const credentials = await getProviderCredentialsWithQuotaPreflightAny(
     parsed.provider,
     null,
     allowedConnections,
@@ -405,7 +415,7 @@ async function postHandler(request: Request, _context?: unknown) {
       return errorResponse(HTTP_STATUS.BAD_REQUEST, imageValidationError);
     }
 
-    const credentials = await getProviderCredentialsWithQuotaPreflight(
+    const credentials = await getProviderCredentialsWithQuotaPreflightAny(
       parsed.provider,
       null,
       allowedConnections,
@@ -482,7 +492,7 @@ async function postHandler(request: Request, _context?: unknown) {
   }
 
   if (providerConfig?.format === "fal-ai" && isFalImageEditModel(parsed.model)) {
-    const credentials = await getProviderCredentialsWithQuotaPreflight(
+    const credentials = await getProviderCredentialsWithQuotaPreflightAny(
       parsed.provider,
       null,
       allowedConnections,
@@ -549,7 +559,7 @@ async function postHandler(request: Request, _context?: unknown) {
   // provider-specific adapter (#10197), rather than the multipart
   // /images/edits path used by custom OpenAI-compatible nodes.
   if (providerConfig?.id === "openrouter") {
-    const credentials = await getProviderCredentialsWithQuotaPreflight(
+    const credentials = await getProviderCredentialsWithQuotaPreflightAny(
       parsed.provider,
       null,
       allowedConnections,
@@ -614,7 +624,7 @@ async function postHandler(request: Request, _context?: unknown) {
     );
   }
 
-  const credentials = await getProviderCredentialsWithQuotaPreflight(
+  const credentials = await getProviderCredentialsWithQuotaPreflightAny(
     customProviderId,
     null,
     allowedConnections,

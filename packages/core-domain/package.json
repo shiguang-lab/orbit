@@ -54,7 +54,10 @@
     "./edge/request-id": "./src/shared/utils/requestId.ts",
     "./edge/embeddings-service": "./src/lib/embeddings/service.ts",
     "./edge/feature-flags": "./src/shared/utils/featureFlags.ts",
-    "./edge/embeddings-validation-schemas": "./src/shared/validation/schemas.ts",
+    "./edge/embeddings-validation-schemas": {
+      "types": "./src/public/embeddingsValidationSchemas.d.ts",
+      "import": "./src/shared/validation/schemas.ts"
+    },
     "./edge/embeddings-validation-helpers": "./src/shared/validation/helpers.ts",
     "./edge/audio-provider-nodes": "./src/app/api/v1/_shared/audioProviderNodes.ts",
     "./edge/audio-speech-handler": {
@@ -64,10 +67,6 @@
     "./edge/audio-translation-handler": {
       "types": "./src/public/edgeAudio.d.ts",
       "import": "./src/lib/audio/translationRouteHandler.ts"
-    },
-    "./edge/image-edits-handler": {
-      "types": "./src/public/edgeImages.d.ts",
-      "import": "./src/app/api/v1/images/edits/handler.ts"
     },
     "./edge/image-generations-handler": {
       "types": "./src/public/edgeImages.d.ts",
@@ -81,13 +80,23 @@
       "types": "./src/public/localDb.d.ts",
       "import": "./src/lib/localDb.ts"
     },
+    "./edge/image-route-model": {
+      "types": "./src/public/imageRouteModel.d.ts",
+      "import": "./src/lib/images/imageRouteModel.ts"
+    },
+    "./shared/body-size-guard": {
+      "types": "./src/public/bodySizeGuard.d.ts",
+      "import": "./src/shared/middleware/bodySizeGuard.ts"
+    },
+    "./edge/read-cache": {
+      "types": "./src/public/readCache.d.ts",
+      "import": "./src/lib/db/readCache.ts"
+    },
+    "./shared/designer-web-retirement": "./src/shared/constants/designerWebRetirement.ts",
+    "./shared/chatgpt-web-retirement": "./src/shared/constants/chatgptWebRetirement.ts",
     "./edge/audio-transcription-handler": {
       "types": "./src/public/edgeAudio.d.ts",
       "import": "./src/lib/audio/transcriptionRouteHandlers.ts"
-    },
-    "./edge/embeddings-handler": {
-      "types": "./src/public/edgeEmbeddings.d.ts",
-      "import": "./src/lib/embeddings/routeHandlers.ts"
     },
     "./edge/media-generation": {
       "types": "./src/public/edgeMusic.d.ts",
