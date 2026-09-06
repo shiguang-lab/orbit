@@ -11,6 +11,8 @@ import {
   resolveLocalOverrideCredentials,
   resolveVideoModelTarget,
 } from "./video-model-resolution.js";
+import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
+import { rateLimitedProviderResponse } from "../common/provider-rate-limit-response.js";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
 
@@ -45,7 +47,6 @@ async function postHandler(request: Request): Promise<Response> {
     { HTTP_STATUS },
     log,
     { enforceApiKeyPolicy },
-    { isAllRateLimitedCredentials, rateLimitedProviderResponse },
     {
       failedMediaGenerationResponse,
       isMediaGenerationFailure,
@@ -63,7 +64,6 @@ async function postHandler(request: Request): Promise<Response> {
     load("@shiguang-gateway/open-sse/config/constants"),
     load("@shiguang-gateway/core-domain/sse/logger"),
     load("@shiguang-gateway/core-domain/shared/api-key-policy"),
-    load("@shiguang-gateway/core-domain/edge/rate-limit"),
     load("@shiguang-gateway/core-domain/edge/media-generation"),
   ]);
 

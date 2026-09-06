@@ -209,6 +209,10 @@
       "types": "./public/auth.d.ts",
       "import": "./services/auth.ts"
     },
+    "./services/credential-selection": {
+      "types": "./public/credentialSelection.d.ts",
+      "import": "./services/credential-selection.ts"
+    },
     "./catalog/unified": {
       "types": "./public/catalogUnified.d.ts",
       "import": "./catalog/catalog.ts"

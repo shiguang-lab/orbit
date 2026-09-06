@@ -1,3 +1,6 @@
+import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
+import { rateLimitedProviderResponse } from "../common/provider-rate-limit-response.js";
+
 const load = (specifier: string): Promise<any> => import(specifier as string);
 
 /** Handle CORS preflight for the document OCR endpoint. */
@@ -33,7 +36,7 @@ function resolveOcrCredentials<T extends {
 }
 
 async function postHandler(request: Request): Promise<Response> {
-  const [ocrHandler, ocrRegistry, auth, errorApi, constants, policyApi, validationApi, validationHelpers, rateLimit] = await Promise.all([
+  const [ocrHandler, ocrRegistry, auth, errorApi, constants, policyApi, validationApi, validationHelpers] = await Promise.all([
     load("@shiguang-gateway/open-sse/handlers/ocr"),
     load("@shiguang-gateway/open-sse/config/ocrRegistry"),
     load("@shiguang-gateway/open-sse/services/auth"),
@@ -42,7 +45,6 @@ async function postHandler(request: Request): Promise<Response> {
     load("@shiguang-gateway/core-domain/shared/api-key-policy"),
     load("@shiguang-gateway/core-domain/shared/validation/schemas"),
     load("@shiguang-gateway/core-domain/shared/validation/helpers"),
-    load("@shiguang-gateway/core-domain/edge/rate-limit"),
   ]);
 
   const { handleOcr, resolveVertexOcrAccessToken, resolveVertexOcrBaseUrl } = ocrHandler;
@@ -53,7 +55,6 @@ async function postHandler(request: Request): Promise<Response> {
   const { enforceApiKeyPolicy } = policyApi;
   const { v1OcrSchema } = validationApi;
   const { isValidationFailure, validateBody } = validationHelpers;
-  const { isAllRateLimitedCredentials, rateLimitedProviderResponse } = rateLimit;
 
   let rawBody: unknown;
   try {

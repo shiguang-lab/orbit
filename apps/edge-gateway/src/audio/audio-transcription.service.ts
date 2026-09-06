@@ -1,6 +1,8 @@
 import { Injectable } from "@nestjs/common";
+import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
 import { audioOptionsResponse } from "./audio-options.js";
 import { resolveDynamicAudioProviders, type AudioProvider } from "./audio-provider-nodes.js";
+import { rateLimitedProviderResponse } from "../common/provider-rate-limit-response.js";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
 
@@ -94,13 +96,11 @@ export class AudioTranscriptionService {
       { getProviderCredentialsWithQuotaPreflight, clearRecoveredProviderState },
       { parseTranscriptionModel, getTranscriptionProvider, audioModelAliasCandidates, findAlternateAudioProvider, listAlternateAudioModelIds, missingAudioProviderCredentialsMessage, AUDIO_TRANSCRIPTION_PROVIDERS },
       { errorResponse },
-      { isAllRateLimitedCredentials, rateLimitedProviderResponse },
     ] = await Promise.all([
       load("@shiguang-gateway/open-sse/handlers/audioTranscription"),
       load("@shiguang-gateway/open-sse/services/auth"),
       load("@shiguang-gateway/open-sse/config/audioRegistry"),
       load("@shiguang-gateway/open-sse/utils/error"),
-      load("@shiguang-gateway/core-domain/edge/rate-limit"),
     ]);
 
     const dynamicProviders = await resolveDynamicAudioProviders(
@@ -186,4 +186,3 @@ export class AudioTranscriptionService {
     return response;
   }
 }
-

@@ -93,10 +93,6 @@
       "types": "./src/public/upstreamError.d.ts",
       "import": "./src/shared/utils/upstreamError.ts"
     },
-    "./edge/rate-limit": {
-      "types": "./src/public/rateLimit.d.ts",
-      "import": "./src/lib/edge/rateLimit.ts"
-    },
     "./edge/rerank-validation-schemas": {
       "types": "./src/public/rerankValidationSchemas.d.ts",
       "import": "./src/shared/validation/schemas.ts"

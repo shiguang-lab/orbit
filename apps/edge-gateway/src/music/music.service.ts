@@ -1,4 +1,6 @@
 import { Injectable } from "@nestjs/common";
+import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
+import { rateLimitedProviderResponse } from "../common/provider-rate-limit-response.js";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
 
@@ -28,7 +30,6 @@ export class MusicService {
         { errorResponse },
         { readMediaGenerationBody, promptRequiredResponse, successfulMediaGenerationResponse, failedMediaGenerationResponse },
         { enforceApiKeyPolicy },
-        { isAllRateLimitedCredentials, rateLimitedProviderResponse },
         log,
       ] = await Promise.all([
         load("@shiguang-gateway/open-sse/handlers/musicGeneration"),
@@ -37,7 +38,6 @@ export class MusicService {
         load("@shiguang-gateway/open-sse/utils/error"),
         load("@shiguang-gateway/core-domain/edge/media-generation"),
         load("@shiguang-gateway/core-domain/shared/api-key-policy"),
-        load("@shiguang-gateway/core-domain/edge/rate-limit"),
         load("@shiguang-gateway/core-domain/sse/logger"),
       ]);
 

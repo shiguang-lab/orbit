@@ -4,6 +4,8 @@ import { parseRerankModel } from "@shiguang-gateway/rerank-catalog";
 import { errorResponse } from "@shiguang-gateway/open-sse/utils/error";
 import { HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants";
 import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
+import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
+import { rateLimitedProviderResponse } from "../common/provider-rate-limit-response.js";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
 
@@ -58,7 +60,6 @@ async function postHandler(request: Request, _context: unknown): Promise<Respons
     { v1RerankSchema },
     { isValidationFailure, validateBody },
     { getCachedProviderNodes },
-    { isAllRateLimitedCredentials, rateLimitedProviderResponse },
     { saveCallLog },
     { attachShiguangGatewayMetaHeaders },
     { generateRequestId },
@@ -68,7 +69,6 @@ async function postHandler(request: Request, _context: unknown): Promise<Respons
     load("@shiguang-gateway/core-domain/edge/rerank-validation-schemas"),
     load("@shiguang-gateway/core-domain/edge/rerank-validation-helpers"),
     load("@shiguang-gateway/core-domain/edge/rerank-provider-nodes"),
-    load("@shiguang-gateway/core-domain/edge/rate-limit"),
     load("@shiguang-gateway/core-domain/edge/usage-db"),
     load("@shiguang-gateway/core-domain/edge/gateway-response-meta"),
     load("@shiguang-gateway/core-domain/edge/request-id"),

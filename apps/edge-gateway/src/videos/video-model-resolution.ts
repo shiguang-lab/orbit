@@ -1,3 +1,5 @@
+import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
+
 const load = (specifier: string): Promise<any> => import(specifier as string);
 
 export type VideoModelTarget = {
@@ -43,10 +45,9 @@ export function isVideoPromptOptional(parsed: VideoModelTarget): boolean {
 }
 
 export async function resolveLocalOverrideCredentials(provider: string): Promise<any> {
-  const [{ getProviderCredentialsWithQuotaPreflight }, { isAllRateLimitedCredentials }] = await Promise.all([
-    load("@shiguang-gateway/open-sse/services/auth"),
-    load("@shiguang-gateway/core-domain/edge/rate-limit"),
-  ]);
+  const { getProviderCredentialsWithQuotaPreflight } = await load(
+    "@shiguang-gateway/open-sse/services/auth",
+  );
   const localCredentials = await getProviderCredentialsWithQuotaPreflight(provider);
   return localCredentials && !isAllRateLimitedCredentials(localCredentials) ? localCredentials : null;
 }

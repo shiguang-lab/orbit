@@ -1,7 +1,9 @@
 import { Injectable } from "@nestjs/common";
+import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
 import { resolveDynamicAudioProviders } from "./audio-provider-nodes.js";
 import { audioOptionsResponse } from "./audio-options.js";
 import { audioSpeechSchema, formatValidationError } from "./audio-schemas.js";
+import { rateLimitedProviderResponse } from "../common/provider-rate-limit-response.js";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
 
@@ -20,13 +22,12 @@ export class AudioSpeechService {
   }
 
   private async post(request: Request): Promise<Response> {
-    const [{ handleAudioSpeech }, { errorResponse }, { getSpeechProvider, parseSpeechModel }, { getProviderCredentialsWithQuotaPreflight, clearRecoveredProviderState }, { enforceApiKeyPolicy }, { isAllRateLimitedCredentials, rateLimitedProviderResponse }] = await Promise.all([
+    const [{ handleAudioSpeech }, { errorResponse }, { getSpeechProvider, parseSpeechModel }, { getProviderCredentialsWithQuotaPreflight, clearRecoveredProviderState }, { enforceApiKeyPolicy }] = await Promise.all([
       load("@shiguang-gateway/open-sse/handlers/audioSpeech"),
       load("@shiguang-gateway/open-sse/utils/error"),
       load("@shiguang-gateway/open-sse/config/audioRegistry"),
       load("@shiguang-gateway/open-sse/services/auth"),
       load("@shiguang-gateway/core-domain/shared/api-key-policy"),
-      load("@shiguang-gateway/core-domain/edge/rate-limit"),
     ]);
 
     let rawBody: unknown;

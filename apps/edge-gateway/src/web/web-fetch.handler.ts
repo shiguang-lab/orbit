@@ -35,9 +35,9 @@ import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/runtime/fe
 import { z } from "zod";
 import {
   isAllRateLimitedCredentials,
-  rateLimitedProviderResponse,
   type RateLimitedCredentials,
-} from "@shiguang-gateway/core-domain/edge/rate-limit";
+} from "@shiguang-gateway/open-sse/services/credential-selection";
+import { rateLimitedProviderResponse } from "../common/provider-rate-limit-response.js";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",

@@ -17,7 +17,7 @@ const HTTP_STATUS = {
   GONE: 410,
   SERVICE_UNAVAILABLE: 503,
 } as const;
-import { isAllRateLimitedCredentials } from "@shiguang-gateway/core-domain/edge/rate-limit";
+import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
 import * as log from "@shiguang-gateway/core-domain/sse/logger";
 import { toJsonErrorPayload } from "@shiguang-gateway/core-domain/shared/upstream-error";
 import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/shared/api-key-policy";

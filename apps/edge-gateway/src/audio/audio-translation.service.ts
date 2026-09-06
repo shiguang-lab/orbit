@@ -1,6 +1,8 @@
 import { Injectable } from "@nestjs/common";
+import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
 import { audioOptionsResponse } from "./audio-options.js";
 import { resolveDynamicAudioProviders, type AudioProvider } from "./audio-provider-nodes.js";
+import { rateLimitedProviderResponse } from "../common/provider-rate-limit-response.js";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
 
@@ -40,12 +42,10 @@ export class AudioTranslationService {
     const [
       { parseTranslationModel, getTranslationProvider },
       { getProviderCredentialsWithQuotaPreflight, clearRecoveredProviderState },
-      { isAllRateLimitedCredentials, rateLimitedProviderResponse },
       { handleAudioTranslation },
     ] = await Promise.all([
       load("@shiguang-gateway/open-sse/config/audioRegistry"),
       load("@shiguang-gateway/open-sse/services/auth"),
-      load("@shiguang-gateway/core-domain/edge/rate-limit"),
       load("@shiguang-gateway/open-sse/handlers/audioTranslation"),
     ]);
     const { provider, model: resolvedModel } = parseTranslationModel(modelStr, dynamicProviders);
@@ -98,4 +98,3 @@ export class AudioTranslationService {
     return response;
   }
 }
-

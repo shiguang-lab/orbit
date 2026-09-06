@@ -1,3 +1,6 @@
+import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
+import { rateLimitedProviderResponse } from "../common/provider-rate-limit-response.js";
+
 const load = (specifier: string): Promise<any> => import(specifier as string);
 
 const JINA_FOUNDATION_PROVIDER_ID = "jina-ai";
@@ -14,7 +17,7 @@ export function OPTIONS() {
 }
 
 async function postHandler(request: Request): Promise<Response> {
-  const [jina, auth, errorApi, constants, policyApi, validationApi, validationHelpers, rateLimit] = await Promise.all([
+  const [jina, auth, errorApi, constants, policyApi, validationApi, validationHelpers] = await Promise.all([
     load("@shiguang-gateway/open-sse/handlers/jinaFoundation"),
     load("@shiguang-gateway/open-sse/services/auth"),
     load("@shiguang-gateway/open-sse/utils/error"),
@@ -22,7 +25,6 @@ async function postHandler(request: Request): Promise<Response> {
     load("@shiguang-gateway/core-domain/shared/api-key-policy"),
     load("@shiguang-gateway/core-domain/shared/validation/schemas"),
     load("@shiguang-gateway/core-domain/shared/validation/helpers"),
-    load("@shiguang-gateway/core-domain/edge/rate-limit"),
   ]);
   const { handleJinaFoundationProxy } = jina;
   const { getProviderCredentialsWithQuotaPreflight, clearRecoveredProviderState } = auth;
@@ -31,7 +33,6 @@ async function postHandler(request: Request): Promise<Response> {
   const { enforceApiKeyPolicy } = policyApi;
   const { v1SegmentSchema } = validationApi;
   const { isValidationFailure, validateBody } = validationHelpers;
-  const { isAllRateLimitedCredentials, rateLimitedProviderResponse } = rateLimit;
 
   let rawBody: unknown;
   try {

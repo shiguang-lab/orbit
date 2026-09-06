@@ -23,7 +23,7 @@ import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
 } from "./auth.ts";
-import { isAllRateLimitedCredentials } from "@shiguang-gateway/core-domain/edge/rate-limit";
+import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
 import { handleVideoGeneration } from "../handlers/videoGeneration.ts";
 import {
   isMediaGenerationFailure,

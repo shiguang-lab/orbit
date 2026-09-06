@@ -1,4 +1,6 @@
 import { Injectable } from "@nestjs/common";
+import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
+import { rateLimitedProviderResponse } from "../common/provider-rate-limit-response.js";
 
 // Moderation orchestration lives in the edge app.  Keep the legacy domain
 // implementation as a callable provider, but do not import the deleted Next
@@ -22,7 +24,6 @@ export class ModerationsService {
         { v1ModerationSchema },
         { isValidationFailure, validateBody },
         { enforceApiKeyPolicy },
-        { isAllRateLimitedCredentials, rateLimitedProviderResponse },
       ] = await Promise.all([
         load("@shiguang-gateway/open-sse/handlers/moderations"),
         load("@shiguang-gateway/open-sse/services/auth"),
@@ -31,7 +32,6 @@ export class ModerationsService {
         load("@shiguang-gateway/core-domain/edge/moderation-validation-schemas"),
         load("@shiguang-gateway/core-domain/edge/moderation-validation-helpers"),
         load("@shiguang-gateway/core-domain/shared/api-key-policy"),
-        load("@shiguang-gateway/core-domain/edge/rate-limit"),
       ]);
 
       let rawBody: unknown;

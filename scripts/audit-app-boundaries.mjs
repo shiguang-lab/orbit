@@ -149,7 +149,6 @@ const allowedCoreDomainSubpaths = {
     "edge/embeddings-validation-helpers",
     "edge/moderation-validation-schemas",
     "edge/moderation-validation-helpers",
-    "edge/rate-limit",
     "db/models-runtime",
     "usage/call-log-api-key-context",
     "sse/image-credential-retry",
@@ -341,7 +340,6 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/model-context-overrides",
   "pricing/provider-prefixes",
   "shared/reasoning-efforts-override",
-  "edge/rate-limit",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push("catalog/providers");
 allowedCoreDomainSubpaths["apps/control-api"].push(
@@ -928,6 +926,15 @@ const retiredCoreClientApiAuth = join(packagesRoot, "core-domain", "src", "share
 if (existsSync(retiredCoreClientApiAuth)) {
   add("edge-runtime-in-core-domain", retiredCoreClientApiAuth, "Client API route authentication belongs in apps/edge-gateway");
 }
+const retiredCoreRateLimitSources = [
+  join(packagesRoot, "core-domain", "src", "lib", "edge", "rateLimit.ts"),
+  join(packagesRoot, "core-domain", "src", "lib", "resilience", "rateLimit.ts"),
+];
+for (const source of retiredCoreRateLimitSources) {
+  if (existsSync(source)) {
+    add("mixed-runtime-boundary", source, "Credential selection belongs in open-sse and HTTP adaptation belongs in apps/edge-gateway");
+  }
+}
 const retiredCoreEnvRepairSources = [
   join(packagesRoot, "core-domain", "src", "control", "env-repair.ts"),
   join(packagesRoot, "core-domain", "scripts", "dev", "sync-env.mjs"),
@@ -1127,6 +1134,8 @@ const retiredRedundantCoreExports = [
   "./edge/credential-health-cache",
   "./edge/feature-flags",
   "./control/feature-flags",
+  "./edge/rate-limit",
+  "./resilience/rate-limit",
 ];
 for (const subpath of retiredRedundantCoreExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {
