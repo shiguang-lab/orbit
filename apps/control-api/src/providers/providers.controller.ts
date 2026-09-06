@@ -164,4 +164,11 @@ export class ProvidersController {
       this.providersService.handleValidateProviderNode(req)
     );
   }
+
+  @Post("providers/validate")
+  validateProvider(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, (req) =>
+      this.providersService.handleValidateProvider(req)
+    );
+  }
 }

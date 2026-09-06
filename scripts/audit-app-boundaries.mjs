@@ -129,6 +129,7 @@ const migratedRouteOwnership = {
     "api/provider-nodes/[id]/route.ts",
     "api/provider-models/route.ts",
     "api/provider-nodes/validate/route.ts",
+    "api/providers/validate/route.ts",
     "api/keys/route.ts",
     "api/keys/[id]/route.ts",
     "api/keys/[id]/devices/route.ts",
@@ -180,6 +181,8 @@ const migratedRouteOwnership = {
     "api/models/test-all/route.ts",
     "api/model-combo-mappings/route.ts",
     "api/model-combo-mappings/[id]/route.ts",
+    "api/combos/builder/options/route.ts",
+    "api/combos/duplicate/route.ts",
   ],
   "apps/edge-gateway": [
     // A2A protocol and task-management routes are owned by the edge Nest app.

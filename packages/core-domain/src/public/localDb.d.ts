@@ -86,6 +86,8 @@ export function markBatchItemError(
   error: unknown,
 ): void;
 export function getApiKeyById(id: string): Promise<{ key?: string | null } | null>;
+export function getProxyForLevel(level: string, provider?: string): Promise<unknown | null>;
+export function resolveProxyForProvider(provider: string): Promise<unknown | null>;
 
 export function getComboByName(name: string): Promise<unknown>;
 export function getCombos(limit?: number, offset?: number): Promise<unknown[]>;

@@ -28,6 +28,7 @@ import {
   PUT as updateProviderNodeHandler,
 } from "./handlers/provider-node-by-id.js";
 import { POST as validateProviderNodeHandler } from "./handlers/provider-nodes-validate.js";
+import { POST as validateProviderHandler } from "./handlers/provider-validate.js";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
 
@@ -199,5 +200,9 @@ export class ProvidersService {
 
   async handleValidateProviderNode(request: Request) {
     return validateProviderNodeHandler(request);
+  }
+
+  async handleValidateProvider(request: Request) {
+    return validateProviderHandler(request);
   }
 }
