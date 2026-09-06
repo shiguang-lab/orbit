@@ -306,6 +306,24 @@ export const WebhookEntity: EntityDefinition = {
   ],
 };
 
+/** Delivery audit rows emitted by the shared webhook dispatcher and exposed by control-api. */
+export const WebhookDeliveryEntity: EntityDefinition = {
+  entityName: "WebhookDelivery",
+  tableName: "webhook_deliveries",
+  owner: "control-api",
+  columns: [
+    column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
+    column("webhook_id", "TEXT", { nullable: false }),
+    column("event_type", "TEXT", { nullable: false }),
+    column("status", "TEXT", { nullable: false }),
+    column("http_status", "INTEGER"),
+    column("latency_ms", "INTEGER"),
+    column("error", "TEXT"),
+    column("payload_snapshot", "TEXT"),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
 export const KeyGroupEntity: EntityDefinition = {
   entityName: "KeyGroup",
   tableName: "key_groups",

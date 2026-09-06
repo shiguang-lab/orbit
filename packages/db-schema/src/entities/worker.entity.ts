@@ -41,6 +41,28 @@ export const QuotaSnapshotEntity: EntityDefinition = {
   ],
 };
 
+/** Provider reset transitions observed by worker quota refresh and read by control usage APIs. */
+export const ProviderQuotaResetEventEntity: EntityDefinition = {
+  entityName: "ProviderQuotaResetEvent",
+  tableName: "provider_quota_reset_events",
+  owner: "worker",
+  columns: [
+    column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
+    column("provider", "TEXT", { nullable: false }),
+    column("connection_id", "TEXT", { nullable: false }),
+    column("window_key", "TEXT", { nullable: false }),
+    column("window_started_at", "TEXT", { nullable: false }),
+    column("window_resets_at", "TEXT", { nullable: false }),
+    column("observed_at", "TEXT", { nullable: false }),
+    column("previous_remaining_percentage", "REAL"),
+    column("new_remaining_percentage", "REAL"),
+    column("previous_used_percentage", "REAL"),
+    column("new_used_percentage", "REAL"),
+    column("raw_data", "TEXT"),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
 export const MemoryEntity: EntityDefinition = {
   entityName: "Memory", tableName: "memories", owner: "worker", columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }), column("api_key_id", "TEXT", { nullable: false }), column("session_id", "TEXT"), column("type", "TEXT", { nullable: false }), column("key", "TEXT"), column("content", "TEXT", { nullable: false }), column("metadata", "TEXT"), column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }), column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }), column("expires_at", "TEXT"), column("memory_id", "INTEGER"), column("needs_reindex", "INTEGER", { nullable: false, default: "0" }), column("access_count", "INTEGER", { nullable: false, default: "0" }), column("last_accessed_at", "TEXT"),
