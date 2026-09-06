@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { z } from "zod";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { getSettings } from "@shiguang-gateway/core-domain/control/settings";
 import { setModelIsHidden } from "@shiguang-gateway/core-domain/control/synced-models";
@@ -16,6 +17,18 @@ const CONSECUTIVE_RATE_LIMIT_STOP_THRESHOLD = 3;
 const SLOW_PROBE_PROVIDERS = new Set(["lmarena", "lma"]);
 const SLOW_PROBE_DELAY_MS = 3500;
 const CONSECUTIVE_BOT_STOP_THRESHOLD = 2;
+const testModelSchema = z.object({
+  providerId: z.string().min(1),
+  modelId: z.string().min(1),
+  connectionId: z.string().min(1).optional(),
+});
+const testAllSchema = z.object({
+  providerId: z.string().min(1),
+  modelIds: z.array(z.string().min(1)).min(1).max(100),
+  connectionId: z.string().optional(),
+  respectRateLimit: z.boolean().optional().default(true),
+  autoHideFailed: z.boolean().optional().default(false),
+});
 
 type BatchTestResultEntry = {
   status: "ok" | "error" | "slow";
@@ -69,16 +82,12 @@ export class ModelsService {
       return json({ status: "error", error: "Invalid JSON body" }, 400);
     }
 
-    if (!rawBody || typeof rawBody !== "object" || Array.isArray(rawBody)) {
-      return json({ status: "error", error: "Invalid request: body: Expected an object" }, 400);
+    const validation = testModelSchema.safeParse(rawBody);
+    if (!validation.success) {
+      const detail = validation.error.issues.map((issue) => `${issue.path.join(".") || "body"}: ${issue.message}`).join("; ");
+      return json({ status: "error", error: `Invalid request: ${detail}` }, 400);
     }
-    const body = rawBody as Record<string, unknown>;
-    const providerId = typeof body.providerId === "string" ? body.providerId.trim() : "";
-    const modelId = typeof body.modelId === "string" ? body.modelId.trim() : "";
-    const connectionId = typeof body.connectionId === "string" ? body.connectionId.trim() : undefined;
-    if (!providerId || !modelId) {
-      return json({ status: "error", error: "Invalid request: providerId and modelId are required" }, 400);
-    }
+    const { providerId, modelId, connectionId } = validation.data;
 
     let hidePaid = false;
     try {
@@ -123,18 +132,9 @@ export class ModelsService {
     } catch {
       return json({ error: { message: "Invalid request", details: [{ field: "body", message: "Invalid JSON body" }] } }, 400);
     }
-    if (!rawBody || typeof rawBody !== "object" || Array.isArray(rawBody)) {
-      return json({ error: { message: "Invalid request" } }, 400);
-    }
-    const body = rawBody as Record<string, unknown>;
-    const providerId = typeof body.providerId === "string" ? body.providerId.trim() : "";
-    const modelIds = Array.isArray(body.modelIds) ? body.modelIds.filter((id): id is string => typeof id === "string" && id.trim().length > 0) : [];
-    const connectionId = typeof body.connectionId === "string" ? body.connectionId : undefined;
-    const respectRateLimit = body.respectRateLimit !== false;
-    const autoHideFailed = body.autoHideFailed === true;
-    if (!providerId || modelIds.length === 0 || modelIds.length > 100) {
-      return json({ error: { message: "Invalid request: providerId and 1-100 modelIds are required" } }, 400);
-    }
+    const validation = testAllSchema.safeParse(rawBody);
+    if (!validation.success) return json({ error: validation.error.format() }, 400);
+    const { providerId, modelIds, connectionId, respectRateLimit, autoHideFailed } = validation.data;
 
     let hidePaid = false;
     try {

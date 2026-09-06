@@ -27,10 +27,35 @@
     "audit:boundary": "node ../../scripts/audit-open-sse-boundary.mjs --strict"
   },
   "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.1126.0",
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "@shiguang-gateway/config": "workspace:*",
     "@shiguang-gateway/contracts": "workspace:*",
     "@shiguang-gateway/error-sanitization": "workspace:*",
-    "@shiguang-gateway/network-guard": "workspace:*"
+    "@shiguang-gateway/network-guard": "workspace:*",
+    "@toon-format/toon": "^4.1.1",
+    "bottleneck": "^2.19.5",
+    "fflate": "^0.8.3",
+    "jose": "^6.2.10",
+    "omniglyph": "^1.4.0",
+    "parse5": "^8.0.1",
+    "playwright": "^1.62.1",
+    "playwright-core": "^1.62.1",
+    "safe-regex": "^2.1.1",
+    "sharp": "^0.35.4",
+    "smol-toml": "^1.8.0",
+    "socks": "^2.8.10",
+    "turndown": "^7.2.4",
+    "turndown-plugin-gfm": "^1.0.2",
+    "undici": "^8.10.1",
+    "uuid": "^14.0.2",
+    "ws": "^8.21.3",
+    "xxhash-wasm": "^1.1.0",
+    "zod": "catalog:"
+  },
+  "optionalDependencies": {
+    "better-sqlite3": "^13.0.2",
+    "tls-client-node": "^0.2.0"
   },
   "devDependencies": {
     "@types/node": "catalog:",

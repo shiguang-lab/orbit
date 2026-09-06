@@ -16,7 +16,9 @@ port or selecting a surface at runtime.
 ## Shared package rule
 
 `packages/contracts`, `packages/config`, `packages/db-schema`, `packages/network-guard`,
-`packages/http-kernel` and `packages/web-route-compat` are shared dependency leaves.
+`packages/http-kernel`, `packages/web-route-compat` and `packages/error-sanitization`
+are shared dependency leaves. `error-sanitization` contains only transport-neutral
+redaction helpers and is consumed directly by multiple deployable apps.
 `db-schema` contains table names and ownership metadata only; SQL queries and mutations stay in the owning domain
 service. `network-guard` contains pure outbound URL parsing, host classification and SSRF error contracts; it has no
 database, framework or application lifecycle dependency. Configuration-backed guard policy remains in the owning

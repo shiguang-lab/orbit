@@ -82,7 +82,7 @@ export class AudioSpeechService {
       await clearRecoveredProviderState(credentials);
       try {
         const [{ calculateModalCost }, { attachShiguangGatewayMetaToResponse }, { generateRequestId }] = await Promise.all([
-          load("@shiguang-gateway/core-domain/edge/audio-cost"),
+          load("@shiguang-gateway/core-domain/pricing/modal-cost"),
           load("@shiguang-gateway/core-domain/edge/gateway-response-meta"),
           load("@shiguang-gateway/core-domain/edge/request-id"),
         ]);
