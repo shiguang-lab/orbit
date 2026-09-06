@@ -60,7 +60,7 @@ const appByName = new Map(appEntries.filter((entry) => entry.manifest?.name).map
 const allowedCoreDomainSubpaths = {
   "apps/realtime": ["startup", "events/eventBus", "shared/test-process", "shared/http-client-abort-guard", "sse/auth", "db/compression-analytics"],
   "apps/worker": ["startup", "worker/", "db/local-db"],
-  "apps/control-api": ["startup", "runtime/request", "domain/degradation", "db/ping", "db/call-log-stats", "db/provider-connections", "db/model-aliases", "db/local-db", "db/provider-stats", "db/database-stats", "db/vacuum-scheduler", "catalog/provider-metadata", "catalog/provider-registry", "catalog/provider-node-prefixes", "pricing/db", "pricing/defaults", "pricing/sync", "pricing/provider-prefixes", "pricing/validation", "cache/db", "cache/services", "db/compression-analytics", "analytics/auto-routing-db", "analytics/diversity", "db-backups/db", "db-backups/validation", "metrics/combo", "metrics/request-telemetry", "metrics/tool-latency", "shared/numeric", "open-sse/utils/error.ts", "open-sse/services/deviceTracker.ts", "control/management-auth", "control/middleware-registry", "control/provider-credentials", "control/lkgp-cache", "control/management-password", "control/compliance", "control/feature-flags", "control/provider-validation", "control/provider-validation-schemas", "control/provider-model-store", "control/provider-model-aliases", "control/model-context-overrides", "control/model-test-data", "db/provider-nodes", "network/outbound-url-guard-policy", "network/safe-outbound-fetch", "control/gateway-status", "control/authenticated", "control/registered-keys", "control/synced-models", "control/settings", "memory/settings", "memory/runtime", "control/database-settings", "control/proxy-logs", "control/openrouter-provider-stats", "control/provider-health-matrix", "control/provider-expiration", "control/resilience-settings", "edge/usage-db", "db/detailed-logs", "db/proxy-logs", "shared/log-env", "control/api-key-store", "control/cloud-sync", "control/api-key-exposure", "db/api-key-groups", "control/api-key-usage-limits", "shared/", "sse/logger", "sse/auth", "evals/db", "evals/runner", "evals/runtime", "evals/validation", "db/api-keys", "db/batches", "plugins/db", "plugins/manager", "plugins/marketplace", "shared/cors", "quota/schemas", "quota/db", "quota/services", "quota/state", "compliance", "shared/combo-invariants", "catalog/combo-targets", "catalog/model-metadata", "catalog/provider-models"],
+  "apps/control-api": ["startup", "runtime/request", "domain/degradation", "db/ping", "db/health", "db/call-log-stats", "db/provider-connections", "db/model-aliases", "db/local-db", "db/provider-stats", "db/database-stats", "db/vacuum-scheduler", "catalog/provider-metadata", "catalog/provider-registry", "catalog/provider-node-prefixes", "pricing/db", "pricing/defaults", "pricing/sync", "pricing/provider-prefixes", "pricing/validation", "cache/db", "cache/services", "db/compression-analytics", "analytics/auto-routing-db", "analytics/diversity", "db-backups/db", "db-backups/validation", "metrics/combo", "metrics/request-telemetry", "metrics/tool-latency", "shared/numeric", "open-sse/utils/error.ts", "open-sse/services/deviceTracker.ts", "control/management-auth", "control/middleware-registry", "control/provider-credentials", "control/lkgp-cache", "control/management-password", "control/compliance", "control/feature-flags", "control/provider-validation", "control/provider-validation-schemas", "control/provider-model-store", "control/provider-model-aliases", "control/model-context-overrides", "control/model-test-data", "db/provider-nodes", "network/outbound-url-guard-policy", "network/safe-outbound-fetch", "control/gateway-status", "control/authenticated", "control/registered-keys", "control/synced-models", "control/settings", "memory/settings", "memory/runtime", "control/database-settings", "control/proxy-logs", "control/openrouter-provider-stats", "control/provider-health-matrix", "control/provider-expiration", "control/resilience-settings", "edge/usage-db", "db/detailed-logs", "db/proxy-logs", "shared/log-env", "control/api-key-store", "control/cloud-sync", "control/api-key-exposure", "db/api-key-groups", "control/api-key-usage-limits", "shared/", "sse/logger", "sse/auth", "evals/db", "evals/runner", "evals/runtime", "evals/validation", "db/api-keys", "db/batches", "plugins/db", "plugins/manager", "plugins/marketplace", "shared/cors", "quota/schemas", "quota/db", "quota/services", "quota/state", "compliance", "shared/combo-invariants", "catalog/combo-targets", "catalog/model-metadata", "catalog/provider-models"],
   "apps/edge-gateway": [
     "startup",
     "runtime/request",
@@ -142,6 +142,8 @@ const allowedCoreDomainSubpaths = {
     "a2a/legacy-",
   ],
 };
+
+allowedCoreDomainSubpaths["apps/control-api"].push("db/health");
 
 allowedCoreDomainSubpaths["apps/control-api"].push("control/provider-test-batch", "control/acp");
 allowedCoreDomainSubpaths["apps/control-api"].push(
@@ -233,6 +235,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/model-sync-scheduler",
   "control/skills-registry",
   "control/skills-github",
+  "control/agent-skills",
   "control/mcp-management",
   "control/proxy-subscriptions",
   "control/model-capability-overrides",
@@ -254,6 +257,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/playground-presets",
   "control/playground-prompt-improver",
   "shared/schemas/playground",
+  "control/conversations",
 );
 
 // Route files that have completed a physical ownership move. Keep this list
@@ -278,6 +282,7 @@ const migratedRouteOwnership = {
     "api/health/route.ts",
     "api/health/ping/route.ts",
     "api/health/degradation/route.ts",
+    "api/db/health/route.ts",
     "api/gateway/status/route.ts",
     "api/shutdown/route.ts",
     "api/restart/route.ts",
@@ -329,6 +334,8 @@ const migratedRouteOwnership = {
     "api/providers/zed/discover/route.ts",
     "api/providers/zed/import/route.ts",
     "api/providers/zed/manual-import/route.ts",
+    "api/conversations/route.ts",
+    "api/conversations/[id]/tree/route.ts",
     "api/providers/volcengine-plan/connect/route.ts",
     "api/providers/volcengine-plan/connect/[sessionId]/status/route.ts",
     "api/providers/volcengine-plan/connect/[sessionId]/cancel/route.ts",

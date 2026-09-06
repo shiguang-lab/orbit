@@ -74,6 +74,9 @@ import { IssuesModule } from "./issues/issues.module.js";
 import { AcpModule } from "./acp/acp.module.js";
 import { CliAccessModule } from "./cli-access/cli-access.module.js";
 import { BatchesModule } from "./batches/batches.module.js";
+import { AgentSkillsModule } from "./agent-skills/agent-skills.module.js";
+import { ConversationsModule } from "./conversations/conversations.module.js";
+import { DbHealthModule } from "./db-health/db-health.module.js";
 
 @Module({
   imports: [
@@ -153,6 +156,9 @@ import { BatchesModule } from "./batches/batches.module.js";
     AcpModule,
     CliAccessModule,
     BatchesModule,
+    AgentSkillsModule,
+    ConversationsModule,
+    DbHealthModule,
   ],
 })
 export class AppModule {}

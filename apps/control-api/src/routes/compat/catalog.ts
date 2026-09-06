@@ -40,6 +40,14 @@ export function controlRouteCatalog(): CompatRouteDefinition[] {
     "cli/tokens/[id]",
     "batches",
     "batches/[id]",
+    "agent-skills",
+    "agent-skills/coverage",
+    "agent-skills/generate",
+    "agent-skills/[id]",
+    "agent-skills/[id]/raw",
+    "conversations",
+    "conversations/[id]/tree",
+    "db/health",
   ]);
   return coreRoutes.filter((route) => !migrated.has(route.segments.join("/")));
 }

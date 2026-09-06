@@ -123,7 +123,7 @@ import {
 import { incrementCcDiscoveryHitCount } from "../db/ccDiscoveryMetrics.ts";
 import { isUnifiedChatSourceModelSelectable } from "./catalogModelPolicy";
 import { isFreeModel } from "../../shared/utils/freeModels.ts";
-import { isModelExposureAllowed } from "../../shared/utils/modelExposureList.ts";
+import { isModelExposureAllowed } from "@shiguang-gateway/contracts/model-exposure";
 import { isCodexDiscoveryModelExcluded } from "../../shared/services/codexDiscoveryPolicy.ts";
 import { buildErrorBody } from "../../../../open-sse/utils/error.ts";
 

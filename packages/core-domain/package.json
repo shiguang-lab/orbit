@@ -271,9 +271,21 @@
       "types": "./src/public/ping.d.ts",
       "import": "./src/lib/db/core.ts"
     },
+    "./db/health": {
+      "types": "./src/public/dbHealth.d.ts",
+      "import": "./src/lib/db/core.ts"
+    },
     "./control/management-auth": {
       "types": "./src/public/managementAuth.d.ts",
       "import": "./src/lib/api/requireManagementAuth.ts"
+    },
+    "./control/agent-skills": {
+      "types": "./src/public/agentSkills.d.ts",
+      "import": "./src/lib/agentSkills/index.ts"
+    },
+    "./control/conversations": {
+      "types": "./src/public/conversations.d.ts",
+      "import": "./src/control/conversations.ts"
     },
     "./control/mcp-management": {
       "types": "./src/public/mcpManagement.d.ts",
