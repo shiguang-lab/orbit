@@ -25,6 +25,10 @@
     "./oauth": {
       "types": "./src/oauth.ts",
       "import": "./src/oauth.ts"
+    },
+    "./logEnv": {
+      "types": "./src/logEnv.ts",
+      "import": "./src/logEnv.ts"
     }
   },
   "scripts": {

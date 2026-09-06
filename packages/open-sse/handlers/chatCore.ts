@@ -290,7 +290,7 @@ import { getKimiTemporaryRateLimitResetAt } from "./chatCore/kimiQuotaRecovery.t
 import {
   getCallLogPipelineCaptureStreamChunks,
   getCallLogPipelineMaxSizeBytes,
-} from "../../core-domain/src/lib/logEnv.ts";
+} from "@shiguang-gateway/config/logEnv";
 import { logAuditEvent } from "../../core-domain/src/lib/compliance/index.ts";
 import { emit } from "../../core-domain/src/lib/events/eventBus.ts";
 import { adaptBodyForCompression } from "../services/compression/bodyAdapter.ts";

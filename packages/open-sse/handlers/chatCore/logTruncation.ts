@@ -4,7 +4,7 @@ import {
   getChatLogArrayTailItems,
   getChatLogMaxObjectKeys,
   getChatLogMaxBodyBytes,
-} from "../../../core-domain/src/lib/logEnv.ts";
+} from "@shiguang-gateway/config/logEnv";
 import { estimateSizeFast } from "../../utils/estimateSize.ts";
 
 export const MEMORY_EXTRACTION_TEXT_LIMIT = 64 * 1024;

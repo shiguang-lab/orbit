@@ -33,3 +33,4 @@ export function resolveNodeConfig(): ShiguangGatewayConfig {
 
 export * from "./dataPaths.js";
 export * from "./oauth.js";
+export * from "./logEnv.js";
