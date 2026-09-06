@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Put, Req, Res } from "@nestjs/common";
+import { Body, Controller, Get, Inject, Patch, Post, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
@@ -6,7 +6,11 @@ import {
   isValidationFailure,
   validateBody,
 } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { databaseSettingsSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
 import { SettingsService } from "./settings.service.js";
+import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
+
+const databaseSettingsPatchSchema = databaseSettingsSchema.partial().strict();
 
 const updateSystemPromptSchema = z
   .object({
@@ -53,6 +57,15 @@ export class SettingsController {
     const authError = await requireManagementAuth(request.raw as unknown as Request);
     if (!authError) return true;
     reply.status(authError.status).send(await authError.json());
+    return false;
+  }
+
+  private async authorizeAuthenticated(
+    request: FastifyRequest,
+    reply: FastifyReply,
+  ): Promise<boolean> {
+    if (await isAuthenticated(request.raw as unknown as Request)) return true;
+    reply.status(401).send({ error: "Unauthorized" });
     return false;
   }
 
@@ -109,6 +122,89 @@ export class SettingsController {
     } catch (error) {
       console.error("Error updating thinking budget config:", error);
       return reply.status(500).send({ error: "Failed to update thinking budget config" });
+    }
+  }
+
+  @Get("database")
+  async getDatabaseSettings(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    if (!(await this.authorizeAuthenticated(request, reply))) return;
+    try {
+      return reply.send(this.settings.getDatabaseSettings());
+    } catch (error) {
+      console.error("Error getting database settings:", error);
+      return reply.status(500).send({ error: "Failed to load database settings" });
+    }
+  }
+
+  @Patch("database")
+  async patchDatabaseSettings(
+    @Req() request: FastifyRequest,
+    @Res() reply: FastifyReply,
+    @Body() body: unknown,
+  ) {
+    if (!(await this.authorizeAuthenticated(request, reply))) return;
+    const validation = validateBody(databaseSettingsPatchSchema, body);
+    if (isValidationFailure(validation)) return reply.status(400).send({ error: validation.error });
+    try {
+      return reply.send(this.settings.getDatabaseSettingsAfterUpdate(validation.data));
+    } catch (error) {
+      console.error("Error updating database settings:", error);
+      return reply.status(500).send({ error: "Failed to update database settings" });
+    }
+  }
+
+  @Put("database")
+  async putDatabaseSettings(
+    @Req() request: FastifyRequest,
+    @Res() reply: FastifyReply,
+    @Body() body: unknown,
+  ) {
+    return this.patchDatabaseSettings(request, reply, body);
+  }
+
+  @Get("database/vacuum")
+  async getVacuumState(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    if (!(await this.authorizeAuthenticated(request, reply))) return;
+    return reply.send({ state: this.settings.getVacuumState() });
+  }
+
+  @Post("database/vacuum")
+  async runVacuum(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    if (!(await this.authorizeAuthenticated(request, reply))) return;
+    try {
+      const result = await this.settings.runVacuum();
+      if (result.success) {
+        return reply.send({
+          success: true,
+          message: `VACUUM completed in ${result.durationMs}ms`,
+          duration: result.durationMs,
+        });
+      }
+      if (result.error === "already_running") {
+        return reply.status(409).send({ success: false, error: "A vacuum is already in progress" });
+      }
+      return reply.status(500).send({
+        success: false,
+        error: result.error || "VACUUM failed",
+        duration: result.durationMs,
+      });
+    } catch (error) {
+      console.error("[API] VACUUM endpoint error:", error);
+      return reply.status(500).send({
+        error: "Failed to run VACUUM",
+        details: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
+  @Post("database/refresh-stats")
+  async refreshDatabaseStats(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    if (!(await this.authorizeAuthenticated(request, reply))) return;
+    try {
+      return reply.send({ success: true, stats: this.settings.getDatabaseStats() });
+    } catch (error) {
+      console.error("Failed to refresh database stats:", error);
+      return reply.status(500).send({ error: "Failed to refresh database stats" });
     }
   }
 }

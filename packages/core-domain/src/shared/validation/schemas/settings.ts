@@ -17,7 +17,7 @@ import { AUTO_DISABLE_BANNED_SCOPES } from "../../utils/autoDisableBanned.ts";
 // against). Re-exported here so this modular barrel stays in exact lockstep — a divergent local
 // copy (introduced by the #3988 lossy modularization) silently dropped 40 fields while gaining a
 // few others. The settings-schema parity test guards this; see QUALITY_GATE_PLAYBOOK Parte 6 (G2).
-export { updateSettingsSchema } from "../settingsSchemas";
+export { databaseSettingsSchema, updateSettingsSchema } from "../settingsSchemas";
 
 export const legacyResilienceProfileSchema = z.object({
   transientCooldown: z.number().min(0),

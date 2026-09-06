@@ -214,6 +214,14 @@
       "types": "./src/public/databaseSettings.d.ts",
       "import": "./src/lib/db/databaseSettings.ts"
     },
+    "./db/database-stats": {
+      "types": "./src/public/databaseStats.d.ts",
+      "import": "./src/lib/db/stats.ts"
+    },
+    "./db/vacuum-scheduler": {
+      "types": "./src/public/vacuumScheduler.d.ts",
+      "import": "./src/lib/db/vacuumScheduler.ts"
+    },
     "./control/proxy-logs": {
       "types": "./src/public/proxyLogs.d.ts",
       "import": "./src/lib/proxyLogger.ts"
