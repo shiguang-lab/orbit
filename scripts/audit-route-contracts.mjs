@@ -70,6 +70,9 @@ function extractControllerContracts(controllerFile) {
       for (let subPath of subPaths) {
         let fullPath = [basePrefix, subPath].filter(Boolean).join("/");
         if (fullPath.startsWith("api/")) fullPath = fullPath.slice("api/".length);
+        // Nest/Fastify uses a trailing wildcard for the Next catch-all model
+        // route; retain the canonical contract key for comparison.
+        fullPath = fullPath.replace(/\/\*$/, "/[...model]");
         fullPath = fullPath.replace(/:([a-zA-Z0-9_]+)/g, "[$1]");
         const routePath = `${fullPath ? fullPath + "/" : ""}route.ts`;
         // A2A's REST task routes intentionally mirror the Next handlers and do

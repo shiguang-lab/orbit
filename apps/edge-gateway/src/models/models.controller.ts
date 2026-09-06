@@ -26,6 +26,28 @@ export class ModelsController {
     return this.routes.dispatch(request, reply, () => this.models.handleOptions());
   }
 
+  /**
+   * Catch-all model ids preserve provider/model (and deeper provider paths)
+   * instead of truncating at the first slash.
+   */
+  @Get("models/*")
+  getById(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    const params = request.params as Record<string, unknown> | undefined;
+    const rawModel = params?.["*"] ?? params?.model;
+    const requestedId = decodeURIComponent(String(rawModel ?? ""));
+    return this.routes.dispatch(request, reply, (r) => this.models.handleGetById(r, requestedId));
+  }
+
+  @Head("models/*")
+  headById(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, () => this.models.handleHeadById());
+  }
+
+  @Options("models/*")
+  optionsById(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, () => this.models.handleOptionsById());
+  }
+
   @Get()
   getRoot(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
     return this.routes.dispatch(request, reply, (r) => this.models.handleGetRoot(r));

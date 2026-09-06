@@ -644,6 +644,7 @@ const migratedRouteOwnership = {
     "api/v1/batches/[id]/route.ts",
     "api/v1/batches/[id]/cancel/route.ts",
     "api/v1/batches/delete-completed/route.ts",
+    "api/v1/models/[...model]/route.ts",
   ],
 };
 
@@ -720,6 +721,7 @@ function extractControllerRoutes(controllerFile) {
       for (let subPath of subPaths) {
         let fullPath = [basePrefix, subPath].filter(Boolean).join("/");
         if (fullPath.startsWith("api/")) fullPath = fullPath.slice("api/".length);
+        fullPath = fullPath.replace(/\/\*$/, "/[...model]");
         fullPath = fullPath.replace(/:([a-zA-Z0-9_]+)/g, "[$1]");
         const routePath = `${fullPath ? fullPath + "/" : ""}route.ts`;
         routes.add(routePath);

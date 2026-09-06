@@ -29,7 +29,11 @@ export function registerEdgeCompatRoutes(app: FastifyInstance): Promise<void> {
   app.addHook("onRequest", async (request, reply) => {
     const pathname = new URL(request.url, "http://edge-gateway").pathname.replace(/^\/api(?=\/v1(?:\/|$))/, "");
     const owned = ownedEdgeRoutes.find((route) => {
-      const pattern = new RegExp(`^${route.path.replace(/:[^/]+/g, "[^/]+")}$`);
+      const pattern = new RegExp(`^${route.path.split("/").map((segment) => {
+        if (segment === "*") return ".+";
+        if (segment.startsWith(":")) return "[^/]+";
+        return segment.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      }).join("\\/")}$`);
       return pattern.test(pathname);
     });
     if (owned && !owned.methods.includes((request.method === "HEAD" ? "GET" : request.method) as never)) {
