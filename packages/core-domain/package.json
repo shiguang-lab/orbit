@@ -166,6 +166,10 @@
       "types": "./src/public/providerCredentials.d.ts",
       "import": "./src/sse/services/tokenRefresh.ts"
     },
+    "./control/provider-auth-import": {
+      "types": "./src/public/providerAuthImport.d.ts",
+      "import": "./src/control/providerAuthImport.ts"
+    },
     "./shared/version-manager": {
       "types": "./src/public/versionManagerControl.d.ts",
       "import": "./src/lib/versionManager/controlExports.ts"
