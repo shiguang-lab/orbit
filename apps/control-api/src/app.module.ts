@@ -55,6 +55,8 @@ import { MuxModule } from "./services/mux/mux.module.js";
 import { EmbeddedServiceLogsModule } from "./services/embedded-service-logs.module.js";
 import { SyncModule } from "./sync/sync.module.js";
 import { RadarModule } from "./radar/radar.module.js";
+import { ResilienceModule } from "./resilience/resilience.module.js";
+import { ToolsModule } from "./tools/tools.module.js";
 
 @Module({
   imports: [
@@ -115,6 +117,8 @@ import { RadarModule } from "./radar/radar.module.js";
     EmbeddedServiceLogsModule,
     SyncModule,
     RadarModule,
+    ResilienceModule,
+    ToolsModule,
   ],
 })
 export class AppModule {}

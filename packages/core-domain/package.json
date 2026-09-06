@@ -391,6 +391,10 @@
       "types": "./src/public/controlModels.d.ts",
       "import": "./src/models/index.ts"
     },
+    "./control/traffic-inspector": {
+      "types": "./src/public/trafficInspectorControl.d.ts",
+      "import": "./src/lib/inspector/trafficInspectorControlExports.ts"
+    },
     "./control/build-phase": "./src/lib/buildPhase.ts",
     "./control/cursor-token-extractor": {
       "types": "./src/public/cursorTokenExtractor.d.ts",

@@ -170,6 +170,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/obsidian-sync",
   "control/oauth-runtime/",
   "control/models",
+  "control/traffic-inspector",
   "control/build-phase",
   "control/cursor-token-extractor",
   "control/gamification",
@@ -467,6 +468,10 @@ const migratedRouteOwnership = {
     "api/gamification/servers/route.ts",
     "api/gamification/stream/route.ts",
     "api/gamification/transfer/route.ts",
+    "api/tools/traffic-inspector/capture-modes/route.ts",
+    "api/tools/traffic-inspector/hosts/route.ts",
+    "api/tools/traffic-inspector/requests/route.ts",
+    "api/tools/traffic-inspector/sessions/route.ts",
   ],
   "apps/edge-gateway": [
     // A2A protocol and task-management routes are owned by the edge Nest app.
