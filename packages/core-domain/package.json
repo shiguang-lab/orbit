@@ -667,6 +667,10 @@
       "types": "./src/public/quotaServices.d.ts",
       "import": "./src/lib/quota/quotaServicesExports.ts"
     },
+    "./quota/state": {
+      "types": "./src/public/quotaState.d.ts",
+      "import": "./src/lib/quota/quotaStateExports.ts"
+    },
     "./compliance": {
       "types": "./src/public/compliance.d.ts",
       "import": "./src/lib/compliance/index.ts"

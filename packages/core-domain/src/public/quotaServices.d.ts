@@ -13,6 +13,7 @@ export function reconcilePoolExclusivity(
   exclusive: boolean
 ): Promise<void>;
 export function getQuotaStore(): Promise<any>;
+export function resetQuotaStoreSingleton(): void;
 export function enforceQuotaShare(params: any): Promise<any>;
 export interface PoolUsageSnapshot {
   poolId: string;
