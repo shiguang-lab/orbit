@@ -58,6 +58,19 @@ HTTP/IPC command endpoint. Until that contract exists, the job route remains a d
 legacy seam rather than a misleading Nest controller that would report success without
 affecting the worker.
 
+### Tunnel control boundary
+
+The `/api/tunnels/*` surface is intentionally outside `control-api`. The
+cloudflared, ngrok and Tailscale handlers start, stop, install or authenticate
+host-level tunnel daemons (including `tailscaled`) and may invoke `sudo` or
+write host configuration. They are runtime/system-process controls, not
+control-plane CRUD or status projections. Moving them into a normal
+control-api Nest module would put privileged process operations behind the
+wrong app boundary and could cause a control process to act on a different
+host than the one serving the tunnel. Keep these handlers in the runtime-owned
+compatibility seam until a dedicated host-agent contract exists; do not add
+new tunnel handlers to `apps/control-api`.
+
 The package rule is enforced by `pnpm audit:package-boundaries --strict`: a package must
 have at least two workspace consumers and must not contain app-owned route trees. The
 legacy `core-domain` and `open-sse` packages currently fail this gate and remain an
