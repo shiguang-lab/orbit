@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, type OnModuleInit } from "@nestjs/common";
 import * as anomalies from "./handlers/anomalies.handler.js";
 import * as badges from "./handlers/badges.handler.js";
 import * as badgesEarned from "./handlers/badges-earned.handler.js";
@@ -13,10 +13,15 @@ import * as rotate from "./handlers/rotate.handler.js";
 import * as servers from "./handlers/servers.handler.js";
 import * as stream from "./handlers/stream.handler.js";
 import * as transfer from "./handlers/transfer.handler.js";
+import { ensureGamificationSchema } from "./gamification-schema.js";
 
 /** Control-plane gamification use cases. HTTP transport is owned by GamificationController. */
 @Injectable()
-export class GamificationService {
+export class GamificationService implements OnModuleInit {
+  onModuleInit(): void {
+    ensureGamificationSchema();
+  }
+
   anomalies(request: Request) { return anomalies.GET(request); }
   badges(request: Request) { return badges.GET(request); }
   badgesEarned(request: Request) { return badgesEarned.GET(request); }

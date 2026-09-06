@@ -456,3 +456,120 @@ export const QuotaAllocationModelCapEntity: EntityDefinition = {
     column("cap_unit", "TEXT", { nullable: false }),
   ],
 };
+
+/** Gamification aggregates maintained by the control plane. */
+export const GamificationLeaderboardEntity: EntityDefinition = {
+  entityName: "GamificationLeaderboard",
+  tableName: "leaderboard",
+  owner: "control-api",
+  columns: [
+    column("api_key_id", "TEXT", { nullable: false, primaryKey: true }),
+    column("scope", "TEXT", { nullable: false, primaryKey: true, default: "'global'" }),
+    column("score", "INTEGER", { nullable: false, default: "0" }),
+    column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
+export const GamificationUserLevelEntity: EntityDefinition = {
+  entityName: "GamificationUserLevel",
+  tableName: "user_levels",
+  owner: "control-api",
+  columns: [
+    column("api_key_id", "TEXT", { nullable: false, primaryKey: true }),
+    column("total_xp", "INTEGER", { nullable: false, default: "0" }),
+    column("current_level", "INTEGER", { nullable: false, default: "1" }),
+    column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
+export const GamificationBadgeDefinitionEntity: EntityDefinition = {
+  entityName: "GamificationBadgeDefinition",
+  tableName: "badge_definitions",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("name", "TEXT", { nullable: false }),
+    column("description", "TEXT"),
+    column("icon", "TEXT"),
+    column("category", "TEXT"),
+    column("rarity", "TEXT", { nullable: false, default: "'common'" }),
+    column("criteria", "TEXT"),
+    column("hidden", "INTEGER", { nullable: false, default: "0" }),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
+export const GamificationUserBadgeEntity: EntityDefinition = {
+  entityName: "GamificationUserBadge",
+  tableName: "user_badges",
+  owner: "control-api",
+  columns: [
+    column("api_key_id", "TEXT", { nullable: false, primaryKey: true }),
+    column("badge_id", "TEXT", { nullable: false, primaryKey: true }),
+    column("unlocked_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
+export const GamificationXpAuditLogEntity: EntityDefinition = {
+  entityName: "GamificationXpAuditLog",
+  tableName: "xp_audit_log",
+  owner: "control-api",
+  columns: [
+    column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
+    column("api_key_id", "TEXT", { nullable: false }),
+    column("action", "TEXT", { nullable: false }),
+    column("xp_earned", "INTEGER", { nullable: false }),
+    column("metadata", "TEXT"),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
+export const GamificationTokenLedgerEntity: EntityDefinition = {
+  entityName: "GamificationTokenLedger",
+  tableName: "token_ledger",
+  owner: "control-api",
+  columns: [
+    column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
+    column("from_api_key_id", "TEXT", { nullable: false }),
+    column("to_api_key_id", "TEXT", { nullable: false }),
+    column("amount", "INTEGER", { nullable: false }),
+    column("reason", "TEXT"),
+    column("idempotency_key", "TEXT"),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
+export const GamificationInviteTokenEntity: EntityDefinition = {
+  entityName: "GamificationInviteToken",
+  tableName: "invite_tokens",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("code", "TEXT", { nullable: false }),
+    column("token_hash", "TEXT", { nullable: false }),
+    column("created_by", "TEXT", { nullable: false }),
+    column("used_by", "TEXT"),
+    column("server_url", "TEXT"),
+    column("max_uses", "INTEGER", { nullable: false, default: "1" }),
+    column("use_count", "INTEGER", { nullable: false, default: "0" }),
+    column("expires_at", "TEXT"),
+    column("revoked_at", "TEXT"),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
+export const GamificationCommunityServerEntity: EntityDefinition = {
+  entityName: "GamificationCommunityServer",
+  tableName: "community_servers",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("name", "TEXT", { nullable: false }),
+    column("url", "TEXT", { nullable: false }),
+    column("api_key_hash", "TEXT", { nullable: false }),
+    column("connected_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+    column("last_sync_at", "TEXT"),
+    column("status", "TEXT", { nullable: false, default: "'connected'" }),
+    column("error_message", "TEXT"),
+  ],
+};
