@@ -1,4 +1,4 @@
-import { getCachedProviderConnectionById } from "@shiguang-gateway/core-domain/edge/local-db";
+import { getCachedProviderConnectionById } from "@shiguang-gateway/core-domain/db/local-db";
 import { updateProviderConnection } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { tryIdeAuth } from "@shiguang-gateway/core-domain/control/cursor-token-extractor";
