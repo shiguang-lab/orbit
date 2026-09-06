@@ -42,6 +42,13 @@ function normalizeName(name) {
 const declarationPattern = /\b(?:CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?|ALTER\s+TABLE)\s+([`"[]?[A-Za-z_][A-Za-z0-9_$-]*[`"\]]?)/gi;
 const alterColumnPattern = /\bALTER\s+TABLE\s+([`"[]?[A-Za-z_][A-Za-z0-9_$-]*[`"\]]?)\s+ADD\s+(?:COLUMN\s+)?([`"[]?[A-Za-z_][A-Za-z0-9_$-]*[`"\]]?)/gi;
 const sqlEvidencePattern = /\b(?:CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?|ALTER\s+TABLE|INSERT\s+INTO|UPDATE|DELETE\s+FROM|SELECT[\s\S]{0,160}?\bFROM)\b/i;
+// Tables that are intentionally private to one deployable app.  They are
+// reported for inventory purposes, but must not be promoted into the shared
+// db-schema catalog: doing so would make an app-only table a package API.
+const appPrivateTables = new Set([
+  "cloud_agent_credentials",
+  "cloud_agent_tasks",
+]);
 const sqlNoise = new Set([
   "add", "alter", "and", "as", "by", "column", "create", "delete", "drop", "fail", "from", "if",
   "in", "insert", "into", "not", "on", "or", "re-run", "select", "table", "update", "where",
@@ -114,7 +121,11 @@ try {
 
   console.log(`db-schema coverage: canonical=${canonical.size}, declared=${declarations.size}, uncovered=${uncovered.length}`);
   for (const table of uncovered) {
-    const scope = directAppEvidence.has(table) ? "app-evidence" : "package-only";
+    const scope = appPrivateTables.has(table)
+      ? "app-private"
+      : directAppEvidence.has(table)
+        ? "app-evidence"
+        : "package-only";
     console.log(`  ${table} [${scope}]`);
     for (const file of declarations.get(table) ?? []) console.log(`    - ${file}`);
     for (const file of directAppEvidence.get(table) ?? []) console.log(`    app: ${file}`);
@@ -128,9 +139,11 @@ try {
       columnDrift,
     }, null, 2));
   }
-  // Strict mode only fails when an uncovered table is referenced by app code.
-  // Package-local tables are intentionally left for the owning app migration.
-  if (process.argv.includes("--strict") && (directAppEvidence.size || Object.keys(columnDrift).length)) process.exitCode = 1;
+  // Strict mode fails when an uncovered table is referenced by app code unless
+  // it is explicitly classified as app-private above. Package-local tables
+  // are intentionally left for the owning domain migration.
+  const unclassifiedAppEvidence = [...directAppEvidence.keys()].filter((table) => !appPrivateTables.has(table));
+  if (process.argv.includes("--strict") && (unclassifiedAppEvidence.length || Object.keys(columnDrift).length)) process.exitCode = 1;
 } finally {
   rmSync(outputDir, { recursive: true, force: true });
 }

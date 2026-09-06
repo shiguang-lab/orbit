@@ -29,6 +29,12 @@ add app-only tables here. When a table is read or written across app
 boundaries, add its entity definition, table constant, ownership entry, and
 coverage evidence in the same change.
 
+The coverage audit reports app-private tables separately. For example,
+`cloud_agent_credentials` and `cloud_agent_tasks` belong only to the
+`edge-gateway` cloud-agents module, so they deliberately remain outside this
+shared package. Adding another app consumer requires promoting the table into
+this catalog rather than bypassing the entity contract.
+
 ## Verification
 
 Run these checks from the repository root after changing the catalog:
