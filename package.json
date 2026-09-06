@@ -20,6 +20,7 @@
     "audit:architecture": "node scripts/audit-architecture.mjs --strict",
     "audit:package-boundaries": "node scripts/audit-package-boundaries.mjs --strict",
     "audit:db-entities": "node scripts/audit-db-entities.mjs",
+    "audit:db-schema-coverage": "node scripts/audit-db-schema-coverage.mjs",
     "audit:open-sse-boundary": "node scripts/audit-open-sse-boundary.mjs --strict",
     "verify:external-state": "node scripts/verify-external-state.mjs",
     "audit:provider-config": "node scripts/audit-provider-config.mjs",
