@@ -1,0 +1,2 @@
+export const DEFAULT_SSE_HEARTBEAT_INTERVAL_MS: number;
+export const OPENAI_RESPONSES_IN_PROGRESS_FRAME: Uint8Array;

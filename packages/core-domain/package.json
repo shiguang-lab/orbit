@@ -36,6 +36,14 @@
       "types": "./src/public/chatAdmission.d.ts",
       "import": "./src/shared/middleware/withChatAdmission.ts"
     },
+    "./edge/responses-runtime": {
+      "types": "./src/public/responsesRuntime.d.ts",
+      "import": "./src/lib/edge/responsesRuntime.ts"
+    },
+    "./edge/count-tokens-validation": {
+      "types": "./src/public/countTokensValidation.d.ts",
+      "import": "./src/shared/validation/schemas/apiV1.ts"
+    },
     "./sse/logger": {
       "types": "./src/public/logger.d.ts",
       "import": "./src/sse/utils/logger.ts"
@@ -608,6 +616,10 @@
     "./shared/utils/machineId": {
       "types": "./src/public/machineId.d.ts",
       "import": "./src/shared/utils/machineId.ts"
+    },
+    "./shared/tokenizer": {
+      "types": "./src/public/tokenizer.d.ts",
+      "import": "./src/shared/utils/tiktokenCounter.ts"
     },
     "./shared/validation/schemas": {
       "types": "./src/public/keyValidationSchemas.d.ts",

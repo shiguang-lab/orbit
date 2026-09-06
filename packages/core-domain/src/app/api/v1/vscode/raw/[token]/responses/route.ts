@@ -1,4 +1,4 @@
-import { POST as basePost, OPTIONS } from "../../../../responses/route.ts";
+import { POST as basePost, OPTIONS } from "../../../../../../../lib/edge/responsesCompat.ts";
 import { rewriteVscodeServiceTierRequest } from "../serviceTierVariants.ts";
 import { withSanitizedPathTokenApiKey } from "../tokenizedRequest.ts";
 
