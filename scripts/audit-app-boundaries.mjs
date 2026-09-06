@@ -137,6 +137,7 @@ const migratedRouteOwnership = {
     "api/shutdown/route.ts",
     "api/restart/route.ts",
     "api/token-health/route.ts",
+    "api/rate-limits/route.ts",
     "api/synced-available-models/route.ts",
     "api/provider-stats/route.ts",
     "api/providers/openrouter-stats/route.ts",
