@@ -89,6 +89,9 @@ export function getApiKeyById(id: string): Promise<{ key?: string | null } | nul
 
 export function getComboByName(name: string): Promise<unknown>;
 export function getCombos(limit?: number, offset?: number): Promise<unknown[]>;
+export function createCombo(data: Record<string, unknown>): Promise<unknown>;
+export function reorderCombos(comboIds: string[]): Promise<unknown[]>;
+export function pickApiKeyForInternalUse(reason?: string): Promise<string | null>;
 
 export interface ModelComboMapping {
   id: string;
