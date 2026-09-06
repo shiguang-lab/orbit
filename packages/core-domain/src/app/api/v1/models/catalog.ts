@@ -23,7 +23,7 @@ import {
   isRegisteredImageModel,
 } from "../../../../../../open-sse/config/imageRegistry.ts";
 import { aiHordeImageCatalog } from "../../../../../../open-sse/services/aihordeImageCatalog.ts";
-import { getAllRerankModels } from "../../../../../../open-sse/config/rerankRegistry.ts";
+import { getAllRerankModels } from "@shiguang-gateway/rerank-catalog";
 import { getAllAudioModels } from "../../../../../../open-sse/config/audioRegistry.ts";
 import { getAllModerationModels } from "../../../../../../open-sse/config/moderationRegistry.ts";
 import { getAllVideoModels } from "../../../../../../open-sse/config/videoRegistry.ts";
@@ -69,7 +69,7 @@ import {
 } from "../../../../lib/modelMetadataRegistry.ts";
 import { createModelCapabilityResolutionSnapshot } from "../../../../lib/modelCapabilityResolutionSnapshot.ts";
 import { getModelsDevPricing, getSyncedCapability } from "../../../../lib/modelsDevSync.ts";
-import { getModelSpec } from "../../../../shared/constants/modelSpecs.ts";
+import { getModelSpec } from "@shiguang-gateway/contracts/model-specs";
 import { classifyModelSupportedEndpoints } from "../../../../shared/constants/modelSupportedEndpoints.ts";
 import { getModelsCatalogPrefixMode } from "../../../../shared/utils/featureFlags.ts";
 import {
@@ -131,7 +131,7 @@ import { buildErrorBody } from "../../../../../../open-sse/utils/error.ts";
 // `isVisionModelId` (vision-detection-consistency.test.ts) and
 // `getCustomVisionCapabilityFields` (llm-selector-custom-vision-models.test.ts)
 // are still importable from here.
-export { isVisionModelId } from "../../../../shared/constants/visionModels.ts";
+export { isVisionModelId } from "@shiguang-gateway/contracts/vision-models";
 export { getCustomVisionCapabilityFields };
 
 // The response cache (coalescing, short-TTL memoization and stale-while-revalidate)
