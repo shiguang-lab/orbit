@@ -927,6 +927,18 @@ const retiredCoreClientApiAuth = join(packagesRoot, "core-domain", "src", "share
 if (existsSync(retiredCoreClientApiAuth)) {
   add("edge-runtime-in-core-domain", retiredCoreClientApiAuth, "Client API route authentication belongs in apps/edge-gateway");
 }
+const retiredUnreachableCoreSources = [
+  join(packagesRoot, "core-domain", "src", "lib", "batches"),
+  ...["builderDraft.ts", "comboSort.ts", "controlCenter.ts", "intelligentRouting.ts"].map((file) =>
+    join(packagesRoot, "core-domain", "src", "lib", "combos", file)),
+  ...["activityIcons.ts", "timeline.ts"].map((file) =>
+    join(packagesRoot, "core-domain", "src", "lib", "audit", file)),
+];
+for (const source of retiredUnreachableCoreSources) {
+  if (existsSync(source) && (statSync(source).isFile() || walk(source).length > 0)) {
+    add("retired-unreachable-core-source", source, "unreachable app-era implementation must not return to core-domain");
+  }
+}
 
 // The shared HTTP package must never regain a generic app factory or a
 // caller-selected surface. Those APIs collapse independently deployable apps
