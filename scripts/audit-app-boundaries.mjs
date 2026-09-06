@@ -75,6 +75,7 @@ const allowedCoreDomainSubpaths = {
     "edge/relay-chat",
     "edge/vscode-token",
     "edge/vscode-models",
+    "edge/vscode-ollama",
     "control/settings",
     "edge/count-tokens-validation",
     "control/authenticated",
@@ -141,6 +142,7 @@ const allowedCoreDomainSubpaths = {
   ],
 };
 
+allowedCoreDomainSubpaths["apps/control-api"].push("control/provider-test-batch");
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "catalog/display-names",
   "catalog/managed-available-models",

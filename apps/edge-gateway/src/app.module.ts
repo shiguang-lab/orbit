@@ -42,6 +42,7 @@ import { RelayChatModule } from "./relay-chat/relay-chat.module.js";
 import { VscodeVersionModule } from "./vscode-version/vscode-version.module.js";
 import { SearchModule } from "./search/search.module.js";
 import { VscodeChatModule } from "./vscode-chat/vscode-chat.module.js";
+import { VscodeOllamaModule } from "./vscode-ollama/vscode-ollama.module.js";
 
 @Module({
   imports: [
@@ -89,6 +90,7 @@ import { VscodeChatModule } from "./vscode-chat/vscode-chat.module.js";
     VscodeVersionModule,
     SearchModule,
     VscodeChatModule,
+    VscodeOllamaModule,
   ],
 })
 export class AppModule {}

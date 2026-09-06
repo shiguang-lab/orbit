@@ -40,6 +40,14 @@
       "types": "./src/public/vscodeModels.d.ts",
       "import": "./src/lib/vscode/models.ts"
     },
+    "./edge/vscode-ollama": {
+      "types": "./src/public/vscodeOllama.d.ts",
+      "import": "./src/lib/vscode/ollama.ts"
+    },
+    "./control/provider-test-batch": {
+      "types": "./src/public/providerTestBatch.d.ts",
+      "import": "./src/lib/providers/testBatch.ts"
+    },
     "./edge/chat-admission": {
       "types": "./src/public/chatAdmission.d.ts",
       "import": "./src/shared/middleware/withChatAdmission.ts"
