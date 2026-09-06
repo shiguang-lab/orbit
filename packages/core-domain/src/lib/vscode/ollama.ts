@@ -293,3 +293,8 @@ export async function POST(request: Request, { params }: { params?: Promise<{ to
   if (!model) return Response.json({ error: `Model not found: ${requestedName}` }, { status: 404, headers: { ...CORS_HEADERS } });
   return Response.json(buildShowPayload(model, requestedName), { headers: { ...CORS_HEADERS } });
 }
+
+export const SHOW_OPTIONS = OPTIONS;
+export const SHOW_POST = POST;
+export const TAGS_OPTIONS = OPTIONS;
+export const TAGS = GET;
