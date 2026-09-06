@@ -44,7 +44,7 @@ import { attachShiguangGatewayMetaHeaders } from "@shiguang-gateway/core-domain/
 import { calculateModalCost } from "@shiguang-gateway/core-domain/pricing/modal-cost";
 import { generateRequestId } from "@shiguang-gateway/core-domain/edge/request-id";
 import { getSpecialtyModelsResponse } from "@shiguang-gateway/open-sse/catalog/specialty";
-import { enforceClientApiRouteAuth } from "@shiguang-gateway/core-domain/shared/client-api-auth";
+import { enforceClientApiRouteAuth } from "../../common/client-api-route-auth.js";
 import { runWithCallLogApiKeyContext } from "@shiguang-gateway/core-domain/usage/call-log-api-key-context";
 import { executeImageWithCredentialFallback } from "@shiguang-gateway/open-sse/services/imageCredentialRetry";
 import { AUTHZ_HEADER_PEER_LOCALITY } from "@shiguang-gateway/core-domain/shared/authz-headers";

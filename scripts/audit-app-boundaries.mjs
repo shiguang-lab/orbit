@@ -135,7 +135,6 @@ const allowedCoreDomainSubpaths = {
     "edge/image-route-model",
     "edge/synced-endpoint-routing",
     "shared/body-size-guard",
-    "shared/client-api-auth",
     "shared/authz-headers",
     "edge/read-cache",
     "shared/designer-web-retirement",
@@ -924,6 +923,10 @@ const retiredCoreProviderTestBatchFacade = join(packagesRoot, "core-domain", "sr
 if (existsSync(retiredCoreProviderTestBatchFacade)) {
   add("redundant-core-domain-facade", retiredCoreProviderTestBatchFacade, "Provider batch validation belongs in apps/control-api");
 }
+const retiredCoreClientApiAuth = join(packagesRoot, "core-domain", "src", "shared", "utils", "clientApiRouteAuth.ts");
+if (existsSync(retiredCoreClientApiAuth)) {
+  add("edge-runtime-in-core-domain", retiredCoreClientApiAuth, "Client API route authentication belongs in apps/edge-gateway");
+}
 
 // The shared HTTP package must never regain a generic app factory or a
 // caller-selected surface. Those APIs collapse independently deployable apps
@@ -1099,6 +1102,7 @@ for (const subpath of retiredRedundantCoreExports) {
   }
 }
 const retiredAppOwnedExports = [
+  "./shared/client-api-auth",
   "./control/provider-test-batch",
   "./edge/relay-bifrost",
   "./catalog/project-combo",

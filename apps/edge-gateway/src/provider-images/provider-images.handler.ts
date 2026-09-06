@@ -11,7 +11,7 @@ import { toJsonErrorPayload } from "@shiguang-gateway/core-domain/shared/upstrea
 import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/shared/api-key-policy";
 import { v1ImageGenerationSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { enforceClientApiRouteAuth } from "@shiguang-gateway/core-domain/shared/client-api-auth";
+import { enforceClientApiRouteAuth } from "../common/client-api-route-auth.js";
 import { runWithCallLogApiKeyContext } from "@shiguang-gateway/core-domain/usage/call-log-api-key-context";
 import { executeImageWithCredentialFallback } from "@shiguang-gateway/open-sse/services/imageCredentialRetry";
 import {

@@ -16,15 +16,34 @@
  *    `src/app/api/playground/presets/route.ts`);
  *  - anonymous traffic stays allowed while `REQUIRE_API_KEY=false`.
  *
- * @module shared/utils/clientApiRouteAuth
+ * @module apps/edge-gateway/common/client-api-route-auth
  */
 
 import { errorResponse } from "@shiguang-gateway/http-kernel/error-response";
 import { HTTP_STATUS } from "@shiguang-gateway/contracts/http-status";
 import { extractApiKey, isValidGatewayApiKey } from "@shiguang-gateway/auth";
-import { validateApiKey } from "../../lib/db/apiKeys.ts";
-import { isRequireApiKeyEnabled } from "./featureFlags.ts";
-import { isDashboardSessionAuthenticated } from "./apiAuth.ts";
+import { validateApiKey } from "@shiguang-gateway/core-domain/db/api-keys";
+import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/edge/feature-flags";
+import { isDashboardSessionAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
+
+export interface ClientApiRouteAuthDependencies {
+  extractApiKey: (request: Request) => string | null;
+  isValidGatewayApiKey: (
+    apiKey: string,
+    validate: (apiKey: string) => Promise<boolean>,
+  ) => Promise<boolean>;
+  validateApiKey: (apiKey: string) => Promise<boolean>;
+  isRequireApiKeyEnabled: () => boolean;
+  isDashboardSessionAuthenticated: (request: Request) => Promise<boolean>;
+}
+
+const defaultDependencies: ClientApiRouteAuthDependencies = {
+  extractApiKey,
+  isValidGatewayApiKey,
+  validateApiKey,
+  isRequireApiKeyEnabled,
+  isDashboardSessionAuthenticated,
+};
 
 /**
  * Authenticate a client-API request at the route level.
@@ -33,19 +52,22 @@ import { isDashboardSessionAuthenticated } from "./apiAuth.ts";
  * @returns A 401 `Response` the handler must return, or `null` when the
  *          request may proceed to policy enforcement.
  */
-export async function enforceClientApiRouteAuth(request: Request): Promise<Response | null> {
-  const apiKeyRaw = extractApiKey(request);
+export async function enforceClientApiRouteAuth(
+  request: Request,
+  dependencies: ClientApiRouteAuthDependencies = defaultDependencies,
+): Promise<Response | null> {
+  const apiKeyRaw = dependencies.extractApiKey(request);
 
   if (apiKeyRaw) {
-    if (await isValidGatewayApiKey(apiKeyRaw, validateApiKey)) return null;
-    return isRequireApiKeyEnabled()
+    if (await dependencies.isValidGatewayApiKey(apiKeyRaw, dependencies.validateApiKey)) return null;
+    return dependencies.isRequireApiKeyEnabled()
       ? errorResponse(HTTP_STATUS.UNAUTHORIZED, "Invalid API key")
       : null;
   }
 
-  if (await isDashboardSessionAuthenticated(request)) return null;
+  if (await dependencies.isDashboardSessionAuthenticated(request)) return null;
 
-  return isRequireApiKeyEnabled()
+  return dependencies.isRequireApiKeyEnabled()
     ? errorResponse(HTTP_STATUS.UNAUTHORIZED, "Authentication required")
     : null;
 }

@@ -715,10 +715,6 @@
       "types": "./src/public/validationHelpers.d.ts",
       "import": "./src/shared/validation/helpers.ts"
     },
-    "./shared/client-api-auth": {
-      "types": "./src/public/clientApiRouteAuth.d.ts",
-      "import": "./src/shared/utils/clientApiRouteAuth.ts"
-    },
     "./shared/authz-headers": {
       "types": "./src/public/authzHeaders.d.ts",
       "import": "./src/server/authz/headers.ts"
