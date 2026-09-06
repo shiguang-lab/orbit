@@ -11,6 +11,10 @@
     "./internal-service": {
       "types": "./src/internal-service.ts",
       "import": "./src/internal-service.ts"
+    },
+    "./credential-blob": {
+      "types": "./src/credential-blob.ts",
+      "import": "./src/credential-blob.ts"
     }
   },
   "scripts": {

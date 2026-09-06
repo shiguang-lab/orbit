@@ -1,5 +1,8 @@
 import { z } from "zod";
-import { PoolAllocationSchema, QuotaDimensionSchema } from "../../lib/quota/dimensions.ts";
+import {
+  PoolAllocationSchema,
+  QuotaDimensionSchema,
+} from "@shiguang-gateway/core-domain/quota/dimensions";
 
 export const GroupCreateSchema = z.object({
   name: z.string().min(1).max(120),

@@ -1,5 +1,5 @@
 import { parseResponseBody, getErrorMessage } from "../utils/api.ts";
-import { CREDENTIAL_BLOB_PREFIX } from "../../lib/oauth/credentialBlob.ts";
+import { CREDENTIAL_BLOB_PREFIX } from "@shiguang-gateway/auth/credential-blob";
 
 /**
  * Helpers for the remote-login "paste credentials" path in OAuthModal.

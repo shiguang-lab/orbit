@@ -135,7 +135,7 @@ async function defaultResolveContext(overrideName) {
 async function loadDeps() {
   const { getProvider } = await import("@shiguang-gateway/open-sse/oauth/providers");
   const antigravity = getProvider("antigravity");
-  const { encodeCredentialBlob } = await import("../../../src/lib/oauth/credentialBlob.ts");
+  const { encodeCredentialBlob } = await import("@shiguang-gateway/auth/credential-blob");
   return { antigravity, encodeCredentialBlob };
 }
 

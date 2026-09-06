@@ -9,7 +9,7 @@ import {
   PoolCreateSchema,
   PoolUpdateSchema,
   QuotaPreviewQuerySchema,
-} from "@shiguang-gateway/core-domain/quota/schemas";
+} from "./schemas.js";
 import { logAuditEvent, getAuditRequestContext } from "@shiguang-gateway/core-domain/compliance";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);

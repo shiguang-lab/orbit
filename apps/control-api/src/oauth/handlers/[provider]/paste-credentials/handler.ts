@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { finalizeTokens } from "@shiguang-gateway/open-sse/oauth/providers";
 import { persistOAuthConnection } from "@shiguang-gateway/core-domain/control/oauth-runtime/connectionPersistence";
-import { parsePastedCredentials } from "@shiguang-gateway/core-domain/control/oauth-runtime/pasteCredentials";
+import { parsePastedCredentials } from "../../../paste-credentials.js";
 import { oauthPasteCredentialsSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { isAuthRequired, isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
@@ -18,7 +18,7 @@ import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
  * blob here; we decode + validate it (provider allowlist + match), finalize the
  * tokens (the Cloud Code onboarding runs here on the server, which CAN reach
  * Google's APIs), and persist the connection. Same finalize path as the
- * `device-complete` action. See src/lib/oauth/credentialBlob.ts.
+ * `device-complete` action. See @shiguang-gateway/auth/credential-blob.
  *
  * This lives in its own static route segment (not the dynamic `[action]` route)
  * so Next.js routes `/paste-credentials` here; static segments win over `[action]`.

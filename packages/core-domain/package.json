@@ -566,10 +566,6 @@
       "types": "./src/public/oauthConnectionPersistence.d.ts",
       "import": "./src/lib/oauth/connectionPersistence.ts"
     },
-    "./control/oauth-runtime/pasteCredentials": {
-      "types": "./src/public/oauthRuntime.d.ts",
-      "import": "./src/lib/oauth/pasteCredentials.ts"
-    },
     "./control/oauth-runtime/kiroSocialPoll": {
       "types": "./src/public/oauthRuntime.d.ts",
       "import": "./src/lib/oauth/kiroSocialPoll.ts"
@@ -1464,10 +1460,6 @@
     "./shared/cors": {
       "types": "./src/public/cors.d.ts",
       "import": "./src/shared/utils/cors.ts"
-    },
-    "./quota/schemas": {
-      "types": "./src/public/quotaSchemas.d.ts",
-      "import": "./src/shared/schemas/quota.ts"
     },
     "./quota/db": {
       "types": "./src/public/quotaDb.d.ts",

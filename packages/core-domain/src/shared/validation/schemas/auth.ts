@@ -162,7 +162,7 @@ export const oauthDeviceCompleteSchema = z.object({
  * redirect is reachable, which never happens on a remote VPS install — so the
  * helper (`shiguangGateway login antigravity`) runs the OAuth on the user's own machine
  * and emits a single-line credential blob. The dashboard pastes that blob here;
- * the server decodes + finalizes + persists. See src/lib/oauth/credentialBlob.ts.
+ * the server decodes + finalizes + persists. See @shiguang-gateway/auth/credential-blob.
  */
 export const oauthPasteCredentialsSchema = z.object({
   blob: z.string().trim().min(1, "credential blob is required"),
