@@ -37,6 +37,22 @@
     "./model-specs": {
       "types": "./src/model-specs.ts",
       "import": "./src/model-specs.ts"
+    },
+    "./routing-strategies": {
+      "types": "./src/routing-strategies.ts",
+      "import": "./src/routing-strategies.ts"
+    },
+    "./responses-state": {
+      "types": "./src/responses-state.ts",
+      "import": "./src/responses-state.ts"
+    },
+    "./responses-store": {
+      "types": "./src/responses-store.ts",
+      "import": "./src/responses-store.ts"
+    },
+    "./reasoning-effort": {
+      "types": "./src/reasoning-effort.ts",
+      "import": "./src/reasoning-effort.ts"
     }
   },
   "scripts": {
@@ -44,5 +60,8 @@
   },
   "devDependencies": {
     "typescript": "catalog:"
+  },
+  "dependencies": {
+    "zod": "catalog:"
   }
 }

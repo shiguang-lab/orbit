@@ -4,7 +4,7 @@
  * Responses API uses: { input: [...], instructions: "..." }
  * Chat API uses: { messages: [...] }
  */
-import { isOpenAIResponsesStoreEnabled } from "../../../core-domain/src/lib/providers/requestDefaults.ts";
+import { isOpenAIResponsesStoreEnabled } from "@shiguang-gateway/contracts/responses-store";
 import { FORMATS } from "../formats.ts";
 import { register } from "../registry.ts";
 import { normalizeResponsesInputForChat } from "../../utils/responsesInputNormalization.ts";

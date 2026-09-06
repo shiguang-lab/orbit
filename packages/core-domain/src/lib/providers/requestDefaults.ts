@@ -6,6 +6,7 @@ import { normalizeRoutingTags } from "../../domain/tagRouter.ts";
 import { normalizeOpenRouterPreset } from "../../shared/constants/openRouterPreset.ts";
 import { isForbiddenCustomHeaderName } from "../../shared/constants/upstreamHeaders.ts";
 import { normalizePeakHourProtection } from "./peakHourProtection.ts";
+import { isOpenAIResponsesStoreEnabled as isOpenAIResponsesStoreEnabledContract } from "@shiguang-gateway/contracts/responses-store";
 
 export const CODEX_REASONING_EFFORT_VALUES = [
   "none",
@@ -352,7 +353,7 @@ export function sanitizeProviderSpecificDataForResponse(value: unknown): JsonRec
 }
 
 export function isOpenAIResponsesStoreEnabled(providerSpecificData: unknown): boolean {
-  return asRecord(providerSpecificData).openaiStoreEnabled === true;
+  return isOpenAIResponsesStoreEnabledContract(providerSpecificData);
 }
 
 export function buildOpenAIStoreSessionId(sessionId: unknown): string | undefined {

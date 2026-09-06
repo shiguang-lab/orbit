@@ -2,7 +2,7 @@ import { register } from "../registry.ts";
 import { FORMATS } from "../formats.ts";
 import { adjustMaxTokens } from "../helpers/maxTokensHelper.ts";
 import { fixToolPairs } from "../../services/contextManager.ts";
-import { normalizeEffort } from "../../../core-domain/src/shared/reasoning/effortStandardization.ts";
+import { normalizeEffort } from "@shiguang-gateway/contracts/reasoning-effort";
 
 type JsonRecord = Record<string, unknown>;
 

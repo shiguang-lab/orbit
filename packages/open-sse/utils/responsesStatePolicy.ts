@@ -1,9 +1,9 @@
-import { isOpenAIResponsesStoreEnabled } from "../../core-domain/src/lib/providers/requestDefaults.ts";
+import { isOpenAIResponsesStoreEnabled } from "@shiguang-gateway/contracts/responses-store";
 import {
   DEFAULT_RESPONSES_PREVIOUS_RESPONSE_ID_MODE,
   RESPONSES_PREVIOUS_RESPONSE_ID_MODES,
   type ResponsesPreviousResponseIdMode,
-} from "../../core-domain/src/shared/constants/responsesPreviousResponseId.ts";
+} from "@shiguang-gateway/contracts/responses-state";
 import { FORMATS } from "../translator/formats.ts";
 
 type JsonRecord = Record<string, unknown>;
