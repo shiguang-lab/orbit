@@ -4,7 +4,7 @@ import { GROK_BUILD_PROXY_BASE_URL, getGrokBuildModelsHeaders } from "../../conf
 import {
   GROK_BUILD_ADDITIONAL_CREDITS_URL,
   type GrokAutoTopUpStatus,
-} from "../../../core-domain/src/shared/utils/grokBilling.ts";
+} from "@shiguang-gateway/contracts/grok-billing";
 
 const GROK_BUILD_FETCH_TIMEOUT_MS = 10_000;
 const GROK_BUILD_MAX_RESPONSE_BYTES = 256 * 1024;

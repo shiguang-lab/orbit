@@ -1,16 +1,15 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getAuditRequestContext, logAuditEvent } from "../../../../lib/compliance/index.ts";
-import { getCachedSettings } from "../../../../lib/localDb.ts";
+import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/control/compliance";
+import { getCachedSettings } from "@shiguang-gateway/core-domain/control/settings";
 import {
   ensurePersistentManagementPasswordHash,
   getStoredManagementPassword,
   verifyManagementPassword,
-} from "../../../../lib/auth/managementPassword.ts";
-import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
-import { checkLoginGuard, clearLoginAttempts, recordLoginFailure } from "../../../../server/auth/loginGuard.ts";
-import { createAccessToken } from "../../../../lib/db/accessTokens.ts";
-import { ACCESS_SCOPES } from "../../../../lib/accessTokens/scopes.ts";
+} from "@shiguang-gateway/core-domain/control/management-password";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { checkLoginGuard, clearLoginAttempts, recordLoginFailure } from "@shiguang-gateway/core-domain/control/login-guard";
+import { createAccessToken } from "@shiguang-gateway/core-domain/control/cli-access-tokens";
+import { ACCESS_SCOPES } from "@shiguang-gateway/core-domain/control/cli-access-scopes";
 
 /**
  * POST /api/cli/connect — remote-mode bootstrap.
@@ -40,12 +39,12 @@ export async function POST(request: Request) {
     try {
       rawBody = await request.json();
     } catch {
-      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+      return Response.json({ error: "Invalid JSON body" }, { status: 400 });
     }
 
     const validation = validateBody(connectSchema, rawBody);
     if (isValidationFailure(validation)) {
-      return NextResponse.json({ error: validation.error }, { status: 400 });
+      return Response.json({ error: validation.error }, { status: 400 });
     }
     const { password, name, scope, expiresInDays } = validation.data;
 
@@ -65,7 +64,7 @@ export async function POST(request: Request) {
         requestId: auditContext.requestId,
         metadata: { retryAfterSeconds: guardCheck.retryAfterSeconds || 0 },
       });
-      return NextResponse.json(
+      return Response.json(
         { error: "Too many failed attempts. Try again later." },
         {
           status: 429,
@@ -82,7 +81,7 @@ export async function POST(request: Request) {
     });
     const storedHash = getStoredManagementPassword(passwordState.settings);
     if (!storedHash) {
-      return NextResponse.json(
+      return Response.json(
         { error: "No password configured. Complete onboarding first.", needsSetup: true },
         { status: 403 }
       );
@@ -102,7 +101,7 @@ export async function POST(request: Request) {
         metadata: { reason: "invalid_password", lockedOut: failureDecision.allowed === false },
       });
       if (!failureDecision.allowed) {
-        return NextResponse.json(
+        return Response.json(
           { error: "Too many failed attempts. Try again later." },
           {
             status: 429,
@@ -112,7 +111,7 @@ export async function POST(request: Request) {
           }
         );
       }
-      return NextResponse.json({ error: "Invalid password" }, { status: 401 });
+      return Response.json({ error: "Invalid password" }, { status: 401 });
     }
 
     clearLoginAttempts(clientIp);
@@ -141,7 +140,7 @@ export async function POST(request: Request) {
       metadata: { tokenId: record.id, scope: tokenScope },
     });
 
-    return NextResponse.json({
+    return Response.json({
       success: true,
       token: secret,
       id: record.id,
@@ -151,6 +150,6 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("[CLI] connect failed:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return Response.json({ error: "Internal server error" }, { status: 500 });
   }
 }

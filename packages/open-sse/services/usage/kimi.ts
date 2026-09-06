@@ -12,7 +12,7 @@ import { safePercentage } from "@shiguang-gateway/contracts/formatting";
 import {
   KIMI_CODE_ADDITIONAL_CREDITS_URL,
   type KimiBillingStatus,
-} from "../../../core-domain/src/shared/utils/kimiBilling.ts";
+} from "@shiguang-gateway/contracts/kimi-billing";
 import {
   buildKimiCodeIdentityHeaders,
   getKimiCodeCliUserAgent,

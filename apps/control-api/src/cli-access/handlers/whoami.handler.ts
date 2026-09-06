@@ -1,7 +1,6 @@
-import { NextResponse } from "next/server";
-import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
-import { extractBearer, ACCESS_TOKEN_PREFIX } from "../../../../server/authz/accessTokenAuth.ts";
-import { verifyAccessToken, getAccessToken } from "../../../../lib/db/accessTokens.ts";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { extractBearer, ACCESS_TOKEN_PREFIX } from "@shiguang-gateway/core-domain/control/access-token-auth";
+import { verifyAccessToken, getAccessToken } from "@shiguang-gateway/core-domain/control/cli-access-tokens";
 
 /**
  * GET /api/cli/whoami — report the current credential to the CLI.
@@ -21,7 +20,7 @@ export async function GET(request: Request) {
     const verified = verifyAccessToken(bearer);
     if (verified) {
       const record = getAccessToken(verified.id);
-      return NextResponse.json({
+      return Response.json({
         authenticated: true,
         viaAccessToken: true,
         id: verified.id,
@@ -34,5 +33,5 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.json({ authenticated: true, viaAccessToken: false, scope: null });
+  return Response.json({ authenticated: true, viaAccessToken: false, scope: null });
 }

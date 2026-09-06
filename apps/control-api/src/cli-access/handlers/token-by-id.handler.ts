@@ -1,6 +1,5 @@
-import { NextResponse } from "next/server";
-import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
-import { revokeAccessToken } from "../../../../../lib/db/accessTokens.ts";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { revokeAccessToken } from "@shiguang-gateway/core-domain/control/cli-access-tokens";
 
 /**
  * DELETE /api/cli/tokens/:id — revoke an access token (by id or display prefix).
@@ -17,7 +16,7 @@ export async function DELETE(
   const { id } = await params;
   const revoked = revokeAccessToken(id);
   if (!revoked) {
-    return NextResponse.json({ error: "Token not found or already revoked" }, { status: 404 });
+    return Response.json({ error: "Token not found or already revoked" }, { status: 404 });
   }
-  return NextResponse.json({ success: true, id });
+  return Response.json({ success: true, id });
 }

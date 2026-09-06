@@ -42,6 +42,14 @@
       "types": "./src/model-specs.ts",
       "import": "./src/model-specs.ts"
     },
+    "./grok-billing": {
+      "types": "./src/grok-billing.ts",
+      "import": "./src/grok-billing.ts"
+    },
+    "./kimi-billing": {
+      "types": "./src/kimi-billing.ts",
+      "import": "./src/kimi-billing.ts"
+    },
     "./routing-strategies": {
       "types": "./src/routing-strategies.ts",
       "import": "./src/routing-strategies.ts"

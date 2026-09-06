@@ -388,6 +388,22 @@
       "types": "./src/public/managementPassword.d.ts",
       "import": "./src/lib/auth/managementPassword.ts"
     },
+    "./control/cli-access-tokens": {
+      "types": "./src/public/cliAccessTokens.d.ts",
+      "import": "./src/lib/db/accessTokens.ts"
+    },
+    "./control/cli-access-scopes": {
+      "types": "./src/public/cliAccessScopes.d.ts",
+      "import": "./src/lib/accessTokens/scopes.ts"
+    },
+    "./control/login-guard": {
+      "types": "./src/public/loginGuard.d.ts",
+      "import": "./src/server/auth/loginGuard.ts"
+    },
+    "./control/access-token-auth": {
+      "types": "./src/public/accessTokenAuth.d.ts",
+      "import": "./src/server/authz/accessTokenAuth.ts"
+    },
     "./control/settings": {
       "types": "./src/public/settings.d.ts",
       "import": "./src/lib/db/settings.ts"

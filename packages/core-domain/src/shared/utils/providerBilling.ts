@@ -2,12 +2,12 @@ import {
   GROK_BUILD_ADDITIONAL_CREDITS_URL,
   sanitizeGrokBillingStatus,
   type GrokBillingStatus,
-} from "./grokBilling";
+} from "@shiguang-gateway/contracts/grok-billing";
 import {
   KIMI_CODE_ADDITIONAL_CREDITS_URL,
   sanitizeKimiBillingStatus,
   type KimiBillingStatus,
-} from "./kimiBilling";
+} from "@shiguang-gateway/contracts/kimi-billing";
 
 export type ProviderBillingStatus = GrokBillingStatus | KimiBillingStatus;
 

@@ -1,6 +1,6 @@
 import type { ProviderLimitsCacheEntry } from "../db/providerLimits.ts";
 import { sanitizeProviderBillingStatus } from "../../shared/utils/providerBilling.ts";
-import { GROK_BUILD_ADDITIONAL_CREDITS_URL } from "../../shared/utils/grokBilling.ts";
+import { GROK_BUILD_ADDITIONAL_CREDITS_URL } from "@shiguang-gateway/contracts/grok-billing";
 
 const GROK_CLI_PROVIDER = "grok-cli";
 

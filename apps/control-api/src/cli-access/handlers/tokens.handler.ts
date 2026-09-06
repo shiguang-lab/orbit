@@ -1,9 +1,8 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
-import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
-import { createAccessToken, listAccessTokens } from "../../../../lib/db/accessTokens.ts";
-import { ACCESS_SCOPES } from "../../../../lib/accessTokens/scopes.ts";
-import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { createAccessToken, listAccessTokens } from "@shiguang-gateway/core-domain/control/cli-access-tokens";
+import { ACCESS_SCOPES } from "@shiguang-gateway/core-domain/control/cli-access-scopes";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 
 /**
  * /api/cli/tokens — manage scoped CLI access tokens. Admin-only: the path is in
@@ -14,7 +13,7 @@ import { isValidationFailure, validateBody } from "../../../../shared/validation
 export async function GET(request: Request) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
-  return NextResponse.json({ tokens: listAccessTokens() });
+  return Response.json({ tokens: listAccessTokens() });
 }
 
 const createSchema = z.object({
@@ -31,12 +30,12 @@ export async function POST(request: Request) {
   try {
     rawBody = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    return Response.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
   const validation = validateBody(createSchema, rawBody);
   if (isValidationFailure(validation)) {
-    return NextResponse.json({ error: validation.error }, { status: 400 });
+    return Response.json({ error: validation.error }, { status: 400 });
   }
   const { name, scope, expiresInDays } = validation.data;
   const expiresAt =
@@ -47,7 +46,7 @@ export async function POST(request: Request) {
   const { record, secret } = createAccessToken({ name, scope: scope ?? "read", expiresAt });
 
   // `token` (the plaintext secret) is returned ONCE here and never again.
-  return NextResponse.json({
+  return Response.json({
     success: true,
     token: secret,
     id: record.id,

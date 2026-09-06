@@ -72,6 +72,8 @@ import { MiddlewareHooksModule } from "./middleware-hooks/middleware-hooks.modul
 import { SearchProvidersModule } from "./search/providers/search-providers.module.js";
 import { IssuesModule } from "./issues/issues.module.js";
 import { AcpModule } from "./acp/acp.module.js";
+import { CliAccessModule } from "./cli-access/cli-access.module.js";
+import { BatchesModule } from "./batches/batches.module.js";
 
 @Module({
   imports: [
@@ -149,6 +151,8 @@ import { AcpModule } from "./acp/acp.module.js";
     SearchProvidersModule,
     IssuesModule,
     AcpModule,
+    CliAccessModule,
+    BatchesModule,
   ],
 })
 export class AppModule {}
