@@ -1013,10 +1013,6 @@
       "types": "./src/public/providerHealthMatrix.d.ts",
       "import": "./src/lib/monitoring/providerHealthMatrix.ts"
     },
-    "./control/provider-expiration": {
-      "types": "./src/public/providerExpiration.d.ts",
-      "import": "./src/domain/providerExpiration.ts"
-    },
     "./control/resilience-settings": {
       "types": "./src/public/resilienceSettings.d.ts",
       "import": "./src/lib/resilience/settings.ts"
@@ -1028,10 +1024,6 @@
     "./control/resilience-connection-recovery": {
       "types": "./src/public/connectionRecovery.d.ts",
       "import": "./src/lib/quota/connectionRecovery.ts"
-    },
-    "./control/resilience-types": {
-      "types": "./src/public/resilienceTypes.d.ts",
-      "import": "./src/types/resilience.ts"
     },
     "./shared/connection-isolation": {
       "types": "./src/public/connectionIsolation.d.ts",

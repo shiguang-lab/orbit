@@ -14,7 +14,7 @@ import type {
   ResilienceConnectionsResponse,
   ConnectionState,
   BreakerWithHistory,
-} from "@shiguang-gateway/core-domain/control/resilience-types";
+} from "../connection-types.js";
 
 // Explicit column whitelist -- getRawProviderConnections() DEFAULTS TO SELECT *,
 // so passing columns is MANDATORY to avoid leaking api_key, access_token,

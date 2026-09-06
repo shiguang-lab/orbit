@@ -42,7 +42,7 @@ import { getWebSessionPoolHealth } from "@shiguang-gateway/open-sse/services/web
 import {
   getAllExpirations,
   getExpirationSummary,
-} from "@shiguang-gateway/core-domain/control/provider-expiration";
+} from "./provider-expiration.js";
 import { resolveResilienceSettings } from "@shiguang-gateway/core-domain/control/resilience-settings";
 import { getCachedSettings } from "@shiguang-gateway/core-domain/cache/services";
 import { handleProviderRefresh } from "./handlers/provider-refresh.handler.js";

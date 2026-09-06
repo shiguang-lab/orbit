@@ -1,21 +1,13 @@
-import type { TransitionRecord } from "../shared/utils/circuitBreaker.ts";
-
-// Shared contract between the connections API (src/app/api/resilience/connections/route.ts)
-// and any future UI consumer. Keep in sync with the route's GET response shape.
-
 export interface ResilienceConnectionsResponse {
   connections: ConnectionState[];
   breakers: BreakerWithHistory[];
-  // sinceMs/untilMs are ABSOLUTE timestamps (epoch ms); now is server time.
   window: { sinceMs: number; untilMs: number; now: number };
-  // Client-side field: set after fetch resolves (not sent by server).
-  // Used for clock-skew-immune countdown: cooldownRemainingMs - (Date.now() - receivedAt).
   receivedAt?: number;
   meta: {
     totalConnections: number;
     coolingDownCount: number;
     unhealthyBreakerCount: number;
-    countsCapped: boolean; // true when totalConnections > CONNECTION_LIMIT
+    countsCapped: boolean;
     degraded: string[];
   };
 }
@@ -52,5 +44,11 @@ export interface BreakerWithHistory {
   failureCount: number;
   retryAfterMs: number;
   lastFailureKind: string | null;
-  transitionHistory: TransitionRecord[];
+  transitionHistory: Array<{
+    from: string;
+    to: string;
+    timestamp: number;
+    failureCount: number;
+    reason?: string;
+  }>;
 }
