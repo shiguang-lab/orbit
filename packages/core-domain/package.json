@@ -8,10 +8,6 @@
       "types": "./src/public/envRepair.d.ts",
       "import": "./src/control/env-repair.ts"
     },
-    "./control/telegram": {
-      "types": "./src/public/telegram.d.ts",
-      "import": "./src/control/telegram.ts"
-    },
     "./control/routing-preview": {
       "types": "./src/public/routingPreview.d.ts",
       "import": "./src/control/routing-preview.ts"

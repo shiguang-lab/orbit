@@ -1596,10 +1596,10 @@ These settings were introduced after the previous environment-contract snapshot.
 | `ADOBE_FIREFLY_BATCH_EXTRA_GAP_MS` | `15000` | `open-sse/services/adobeFireflySession.ts` | Extra quiet period after every third successful Adobe submission. |
 | `ADOBE_FIREFLY_CHROME_HEADLESS` | `0` | `open-sse/services/adobeFireflyBrowserLogin.ts` | Debug-only true-headless mode; Adobe colligo normally rejects the resulting risk session. |
 | `CHROME_PATH` | auto-detect | `open-sse/executors/cloudflare-playground.ts`, `open-sse/executors/chatgpt-web-codex.ts` | Optional absolute Chrome executable used by the browser-driven executors when platform auto-detection is insufficient. |
-| `TELEGRAM_BOT_TOKEN` | _(unset)_ | `src/lib/telegram/config.ts` | BotFather token that enables the inbound webhook and signs Mini App `initData`. |
-| `TELEGRAM_DEFAULT_MODEL` | `auto/chat` | `src/lib/telegram/chatProxy.ts` | Model used for Telegram chat replies. |
-| `TELEGRAM_BOT_API_BASE` | `https://api.telegram.org` | `src/lib/telegram/config.ts` | Bot API base URL override for proxies or self-hosted Bot API servers. |
-| `TELEGRAM_WEBHOOK_TIMEOUT_MS` | `60000` | `src/lib/telegram/config.ts` | Timeout in milliseconds for outbound Bot API calls. |
+| `TELEGRAM_BOT_TOKEN` | _(unset)_ | `apps/control-api/src/telegram/runtime/config.ts` | BotFather token that enables the inbound webhook and signs Mini App `initData`. |
+| `TELEGRAM_DEFAULT_MODEL` | `auto/chat` | `apps/control-api/src/telegram/runtime/chat-proxy.ts` | Model used for Telegram chat replies. |
+| `TELEGRAM_BOT_API_BASE` | `https://api.telegram.org` | `apps/control-api/src/telegram/runtime/config.ts` | Bot API base URL override for proxies or self-hosted Bot API servers. |
+| `TELEGRAM_WEBHOOK_TIMEOUT_MS` | `60000` | `apps/control-api/src/telegram/runtime/config.ts` | Timeout in milliseconds for outbound Bot API calls. |
 | `SHIGUANG_GATEWAY_OPTIONAL_PACK_TAR` | `1` (enabled) | `scripts/build/optionalPackStaging.mjs` | Set `0` to skip emitting `.tar.gz` tarballs while staging optional ML/browser packs for the Electron standalone tree (pack directories and `optional-packs.index.json` are still produced). Used by the desktop release workflow to trim artifact upload size. |
 ### ChatGPT Web (Codex)
 

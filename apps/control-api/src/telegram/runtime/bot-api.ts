@@ -5,7 +5,7 @@
  * replies and setWebhook for webhook registration. Streaming is emulated
  * by the caller via progressive edits (sendMessage / editMessageText).
  */
-import { getTelegramBotApiBase, getTelegramBotToken, getTelegramWebhookTimeoutMs } from "./config";
+import { getTelegramBotApiBase, getTelegramBotToken, getTelegramWebhookTimeoutMs } from "./config.js";
 
 export interface TelegramSendMessageParams {
   chat_id: number | string;
@@ -13,13 +13,6 @@ export interface TelegramSendMessageParams {
   parse_mode?: "Markdown" | "HTML";
   reply_to_message_id?: number;
   disable_web_page_preview?: boolean;
-}
-
-export interface TelegramEditMessageParams {
-  chat_id: number | string;
-  message_id: number;
-  text: string;
-  parse_mode?: "Markdown" | "HTML";
 }
 
 export interface TelegramUser {
@@ -74,27 +67,6 @@ export async function sendTelegramMessage(
   params: TelegramSendMessageParams
 ): Promise<TelegramMessage> {
   return botFetch<TelegramMessage>("sendMessage", params);
-}
-
-export async function editTelegramMessage(
-  params: TelegramEditMessageParams
-): Promise<TelegramMessage> {
-  return botFetch<TelegramMessage>("editMessageText", params);
-}
-
-/**
- * Register (or unregister) the bot webhook. Returns the Bot API result.
- * Call this once per deployment (e.g. a CLI command or startup when
- * TELEGRAM_WEBHOOK_URL is set).
- */
-export async function setTelegramWebhook(
-  url: string | null,
-  opts: { dropPending?: boolean } = {}
-): Promise<{ url: string; pending_update_count?: number }> {
-  if (url) {
-    return botFetch("setWebhook", { url, drop_pending_updates: opts.dropPending ?? true });
-  }
-  return botFetch("deleteWebhook", { drop_pending_updates: opts.dropPending ?? true });
 }
 
 /** Extract a chat id + text from any update shape we care about. */

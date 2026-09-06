@@ -27,7 +27,8 @@ import {
   sendTelegramMessage,
   verifyInitData,
   type TelegramUpdate,
-} from "@shiguang-gateway/core-domain/control/telegram";
+} from "../runtime/index.js";
+import { resolveGatewayBaseUrl } from "@shiguang-gateway/core-domain/shared/utils/resolveGatewayBaseUrl";
 
 /**
  * Telegram update bodies are open-ended (many update types, evolving schema),
