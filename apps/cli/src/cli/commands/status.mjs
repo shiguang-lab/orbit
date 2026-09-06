@@ -55,7 +55,7 @@ export async function runStatusCommand(opts = {}) {
   if (isVerbose || !isJson) {
     try {
       const { detectAllTools } = await import(
-        "@shiguang-gateway/core-domain/control/cli-tools-tool-detector"
+        "@shiguang-gateway/core-domain/cli/tool-detector"
       );
       const tools = await detectAllTools();
       status.tools = tools.map((t) => ({

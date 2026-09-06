@@ -18,7 +18,7 @@ function ensureBackup(configPath) {
 
 async function runConfigListCommand(opts = {}) {
   const { detectAllTools } = await import(
-    "@shiguang-gateway/core-domain/control/cli-tools-tool-detector"
+    "@shiguang-gateway/core-domain/cli/tool-detector"
   );
   const tools = await detectAllTools();
 
@@ -46,7 +46,7 @@ async function runConfigGetCommand(toolId, opts = {}) {
     return 1;
   }
   const { detectTool } = await import(
-    "@shiguang-gateway/core-domain/control/cli-tools-tool-detector"
+    "@shiguang-gateway/core-domain/cli/tool-detector"
   );
   const tool = await detectTool(toolId);
   if (!tool) {
@@ -85,7 +85,7 @@ async function runConfigSetCommand(toolId, opts = {}) {
   }
 
   const { generateConfig } = await import(
-    "@shiguang-gateway/core-domain/control/cli-tools-config-generator"
+    "@shiguang-gateway/core-domain/cli/config-generator"
   );
   const result = await generateConfig(toolId, { baseUrl, apiKey, model });
 
@@ -142,7 +142,7 @@ async function runConfigValidateCommand(toolId, opts = {}) {
   const model = opts.model;
 
   const { generateConfig } = await import(
-    "@shiguang-gateway/core-domain/control/cli-tools-config-generator"
+    "@shiguang-gateway/core-domain/cli/config-generator"
   );
   const result = await generateConfig(toolId, { baseUrl, apiKey, model });
 

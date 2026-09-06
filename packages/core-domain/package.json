@@ -1285,8 +1285,8 @@
       "types": "./src/public/cliContainerGuard.ts",
       "import": "./src/public/cliContainerGuard.ts"
     },
-    "./control/cli-tools-config-generator": "./src/lib/cli-helper/config-generator/index.ts",
-    "./control/cli-tools-tool-detector": "./src/lib/cli-helper/tool-detector.ts",
+    "./cli/config-generator": "./src/lib/cli-helper/config-generator/index.ts",
+    "./cli/tool-detector": "./src/lib/cli-helper/tool-detector.ts",
     "./control/cli-tools-config-guard": "./src/lib/api/cliConfigWriteGuard.ts",
     "./control/cli-tools-hermes-agent": "./src/lib/cli-helper/config-generator/hermes-agent.ts",
     "./control/cli-tools-hermes-home": "./src/lib/cli-helper/config-generator/hermesHome.ts",

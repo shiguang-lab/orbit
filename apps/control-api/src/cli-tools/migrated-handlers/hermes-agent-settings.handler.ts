@@ -3,7 +3,7 @@ import path from "path";
 import { z } from "zod";
 import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { getCliPrimaryConfigPath } from "@shiguang-gateway/core-domain/control/cli-tools-runtime";
-import { validateBaseUrl } from "@shiguang-gateway/core-domain/control/cli-tools-config-generator";
+import { validateBaseUrl } from "@shiguang-gateway/core-domain/cli/config-generator";
 import {
   generateHermesAgentConfig,
   getCurrentHermesAgentRoles,

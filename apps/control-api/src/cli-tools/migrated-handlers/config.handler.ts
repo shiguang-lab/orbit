@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { generateConfig, generateAllConfigs } from "@shiguang-gateway/core-domain/control/cli-tools-config-generator";
+import { generateConfig, generateAllConfigs } from "@shiguang-gateway/core-domain/cli/config-generator";
 import { resolveGatewayBaseUrl } from "@shiguang-gateway/core-domain/shared/utils/resolveGatewayBaseUrl";
 
 const generateConfigSchema = z.object({

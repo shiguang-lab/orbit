@@ -1,5 +1,5 @@
 import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { detectAllTools, detectTool } from "@shiguang-gateway/core-domain/control/cli-tools-tool-detector";
+import { detectAllTools, detectTool } from "@shiguang-gateway/core-domain/cli/tool-detector";
 
 // GET /api/cli-tools/detect - Detect all installed CLI tools
 export async function GET(request: Request) {

@@ -64,8 +64,8 @@ const allowedCoreDomainSubpaths = {
     "cli/doctor-checks",
     "cli/opencode-config",
     "cli/sqlite-driver",
-    "control/cli-tools-config-generator",
-    "control/cli-tools-tool-detector",
+    "cli/config-generator",
+    "cli/tool-detector",
     "runtime/combos-db",
     "runtime/recovery-db",
     "runtime/setup-polyfill",
@@ -357,6 +357,8 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "db/combos",
   "shared/schemas/playground",
   "control/cli-tools-",
+  "cli/config-generator",
+  "cli/tool-detector",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push("control/provider-management");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/embedded-services-runtime-support");
@@ -1120,6 +1122,8 @@ const retiredRedundantCoreExports = [
   "./catalog/quota-runtime",
   "./control/synced-models",
   "./control/cost-rules",
+  "./control/cli-tools-config-generator",
+  "./control/cli-tools-tool-detector",
 ];
 for (const subpath of retiredRedundantCoreExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {
