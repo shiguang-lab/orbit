@@ -40,6 +40,33 @@ export const SessionModelHistoryEntity: EntityDefinition = {
 };
 
 /**
+ * Context-relay summaries shared across account switches. The edge request
+ * pipeline and core-domain SSE handlers read/write these rows; cleanup and
+ * combo invalidation remain in their owning runtime modules.
+ */
+export const ContextHandoffEntity: EntityDefinition = {
+  entityName: "ContextHandoff",
+  tableName: "context_handoffs",
+  owner: "edge-gateway",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true, default: "lower(hex(randomblob(8)))" }),
+    column("session_id", "TEXT", { nullable: false }),
+    column("combo_name", "TEXT", { nullable: false }),
+    column("from_account", "TEXT", { nullable: false }),
+    column("summary", "TEXT", { nullable: false }),
+    column("key_decisions", "TEXT", { nullable: false, default: "'[]'" }),
+    column("task_progress", "TEXT", { nullable: false, default: "''" }),
+    column("active_entities", "TEXT", { nullable: false, default: "'[]'" }),
+    column("message_count", "INTEGER", { nullable: false, default: "0" }),
+    column("model", "TEXT", { nullable: false, default: "''" }),
+    column("warning_threshold_pct", "REAL", { nullable: false, default: "0.85" }),
+    column("generated_at", "TEXT", { nullable: false }),
+    column("expires_at", "TEXT", { nullable: false }),
+    column("created_at", "TEXT", { nullable: false, default: "strftime('%Y-%m-%dT%H:%M:%SZ', 'now')" }),
+  ],
+};
+
+/**
  * Persistent semantic responses written by the edge request pipeline and
  * inspected/invalidated by control-api cache operations.
  *
