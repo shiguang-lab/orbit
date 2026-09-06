@@ -202,7 +202,13 @@ export {
   getProxyHealthStats,
   bulkAssignProxyToScope,
   extractRelayAuth,
+  redactProxySecrets,
+  isRelayProxyType,
+  isRelayAuthMissing,
+  relayRepairMode,
 } from "./db/proxies";
+
+export { getRelayProbeStats } from "./db/relayProbeStats";
 
 export {
   // Pricing Sync

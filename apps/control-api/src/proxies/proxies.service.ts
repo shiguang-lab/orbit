@@ -1,0 +1,361 @@
+import { randomUUID } from "node:crypto";
+import { Injectable } from "@nestjs/common";
+import {
+  addProxyToScopePool,
+  assignProxyToScope,
+  bulkAssignProxyToScope,
+  createProxy,
+  createProxyAndAssign,
+  deleteProxyById,
+  getProxyAssignments,
+  getProxyById,
+  getProxyHealthStats,
+  getRelayProbeStats,
+  getScopeProxyPool,
+  getScopeRotationStrategy,
+  isRelayAuthMissing,
+  isRelayProxyType,
+  listProxies,
+  redactProxySecrets,
+  removeProxyFromScopePool,
+  resolveProxyForConnection,
+  relayRepairMode,
+  updateProxy,
+  updateProxyAndAssign,
+  upsertProxy,
+} from "@shiguang-gateway/core-domain/db/local-db";
+import { clearDispatcherCache } from "@shiguang-gateway/open-sse/utils/proxyDispatcher";
+import {
+  bulkImportProxiesSchema,
+  bulkProxyAssignmentSchema,
+  createProxyRegistrySchema,
+  proxyAssignmentSchema,
+  proxyPoolMemberSchema,
+  proxyRotationStrategySchema,
+  updateProxyRegistrySchema,
+} from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { z } from "zod";
+
+type ApiResult = Response;
+
+function errorResponse(status: number, message: string, type?: string, details?: unknown): Response {
+  return Response.json(
+    {
+      error: { message, type: type ?? (status === 404 ? "not_found" : status === 409 ? "conflict" : status >= 500 ? "server_error" : "invalid_request"), details },
+      requestId: randomUUID(),
+    },
+    { status },
+  );
+}
+
+function errorFromUnknown(error: unknown, fallback: string): Response {
+  const value = error as { message?: unknown; status?: unknown; type?: unknown; details?: unknown };
+  return errorResponse(
+    Number(value?.status) || 500,
+    typeof value?.message === "string" ? value.message : fallback,
+    typeof value?.type === "string" ? value.type : undefined,
+    value?.details,
+  );
+}
+
+async function readJson(request: Request): Promise<{ ok: true; body: unknown } | { ok: false; response: Response }> {
+  try {
+    return { ok: true, body: await request.json() };
+  } catch {
+    return { ok: false, response: errorResponse(400, "Invalid JSON body") };
+  }
+}
+
+/** Use cases for the operator-managed proxy registry and assignment pools. */
+@Injectable()
+export class ProxiesService {
+  private async authorize(request: Request): Promise<Response | null> {
+    return requireManagementAuth(request);
+  }
+
+  async list(request: Request): Promise<ApiResult> {
+    const authError = await this.authorize(request);
+    if (authError) return authError;
+    try {
+      const { searchParams } = new URL(request.url);
+      const id = searchParams.get("id");
+      const whereUsed = searchParams.get("whereUsed") === "1";
+      if (id && whereUsed) {
+        const assignments = await getProxyAssignments({ proxyId: id });
+        return Response.json({ count: assignments.length, assignments });
+      }
+      if (id) {
+        const proxy = await getProxyById(id, { includeSecrets: false });
+        return proxy ? Response.json(proxy) : errorResponse(404, "Proxy not found", "not_found");
+      }
+
+      const raw = await listProxies({ includeSecrets: true });
+      const items = raw.items.map((proxy) => ({
+        ...redactProxySecrets(proxy),
+        relayInfo: {
+          isRelay: isRelayProxyType(proxy.type),
+          authMissing: isRelayAuthMissing(proxy.notes, proxy.type),
+          repairMode: relayRepairMode(proxy.notes, proxy.type),
+        },
+      }));
+      return Response.json({
+        items,
+        total: raw.total,
+        relayProbeStats: getRelayProbeStats(),
+        socks5Enabled: !["false", "0", "no", "off"].includes((process.env.ENABLE_SOCKS5_PROXY ?? "").trim().toLowerCase()),
+      });
+    } catch (error) {
+      return errorFromUnknown(error, "Failed to load proxies");
+    }
+  }
+
+  async create(request: Request): Promise<ApiResult> {
+    const authError = await this.authorize(request);
+    if (authError) return authError;
+    const parsed = await readJson(request);
+    if (!parsed.ok) return parsed.response;
+    try {
+      const validation = validateBody(createProxyRegistrySchema, parsed.body);
+      if (isValidationFailure(validation)) return errorResponse(400, validation.error.message, "invalid_request");
+      const { assignment, ...proxyFields } = validation.data;
+      if (assignment) {
+        const result = await createProxyAndAssign(proxyFields, assignment);
+        clearDispatcherCache();
+        return Response.json({ ...result.proxy, assignment: result.assignment }, { status: 201 });
+      }
+      const created = await createProxy(proxyFields);
+      return Response.json(created, { status: 201 });
+    } catch (error) {
+      return errorFromUnknown(error, "Failed to create proxy");
+    }
+  }
+
+  async update(request: Request): Promise<ApiResult> {
+    const authError = await this.authorize(request);
+    if (authError) return authError;
+    const parsed = await readJson(request);
+    if (!parsed.ok) return parsed.response;
+    try {
+      const validation = validateBody(updateProxyRegistrySchema, parsed.body);
+      if (isValidationFailure(validation)) return errorResponse(400, validation.error.message, "invalid_request");
+      const { id, assignment, ...rawChanges } = validation.data;
+      const changes = Object.fromEntries(Object.entries(rawChanges).filter(([, value]) => value !== undefined));
+      if (assignment) {
+        const result = await updateProxyAndAssign(id, changes, assignment);
+        if (!result?.proxy) return errorResponse(404, "Proxy not found", "not_found");
+        clearDispatcherCache();
+        return Response.json({ ...result.proxy, assignment: result.assignment });
+      }
+      const updated = await updateProxy(id, changes);
+      return updated ? Response.json(updated) : errorResponse(404, "Proxy not found", "not_found");
+    } catch (error) {
+      return errorFromUnknown(error, "Failed to update proxy");
+    }
+  }
+
+  async remove(request: Request): Promise<ApiResult> {
+    const authError = await this.authorize(request);
+    if (authError) return authError;
+    try {
+      const { searchParams } = new URL(request.url);
+      const id = searchParams.get("id");
+      if (!id) return errorResponse(400, "id is required");
+      const deleted = await deleteProxyById(id, { force: searchParams.get("force") === "1" });
+      return deleted ? Response.json({ success: true }) : errorResponse(404, "Proxy not found", "not_found");
+    } catch (error) {
+      return errorFromUnknown(error, "Failed to delete proxy");
+    }
+  }
+
+  async assignments(request: Request): Promise<ApiResult> {
+    const authError = await this.authorize(request);
+    if (authError) return authError;
+    try {
+      const { searchParams } = new URL(request.url);
+      const resolveConnectionId = searchParams.get("resolveConnectionId");
+      if (resolveConnectionId) {
+        // The connection resolver remains part of the shared DB capability;
+        // assignment management itself is owned by control-api.
+        const resolved = await resolveProxyForConnection(resolveConnectionId);
+        return Response.json(resolved);
+      }
+      const entries = await getProxyAssignments({
+        proxyId: searchParams.get("proxyId") || undefined,
+        scope: searchParams.get("scope") || undefined,
+      });
+      const scopeId = searchParams.get("scopeId");
+      const filtered = scopeId ? entries.filter((entry) => entry.scopeId === scopeId) : entries;
+      return Response.json({ items: filtered, total: filtered.length });
+    } catch (error) {
+      return errorFromUnknown(error, "Failed to load proxy assignments");
+    }
+  }
+
+  async updateAssignment(request: Request): Promise<ApiResult> {
+    const authError = await this.authorize(request);
+    if (authError) return authError;
+    const parsed = await readJson(request);
+    if (!parsed.ok) return parsed.response;
+    try {
+      const validation = validateBody(proxyAssignmentSchema, parsed.body);
+      if (isValidationFailure(validation)) return errorResponse(400, validation.error.message, "invalid_request");
+      const { scope, scopeId, proxyId } = validation.data;
+      const assignment = await assignProxyToScope(scope, scopeId || null, proxyId || null);
+      clearDispatcherCache();
+      return Response.json({ success: true, assignment });
+    } catch (error) {
+      return errorFromUnknown(error, "Failed to update assignment");
+    }
+  }
+
+  async health(request: Request): Promise<ApiResult> {
+    const authError = await this.authorize(request);
+    if (authError) return authError;
+    try {
+      const hours = Number(new URL(request.url).searchParams.get("hours") || 24);
+      const items = await getProxyHealthStats({ hours });
+      return Response.json({ items, total: items.length, windowHours: hours });
+    } catch (error) {
+      return errorFromUnknown(error, "Failed to load proxy health stats");
+    }
+  }
+
+  private normalizeScope(scope: string): string {
+    return scope === "key" ? "account" : scope;
+  }
+
+  async pool(request: Request): Promise<ApiResult> {
+    const authError = await this.authorize(request);
+    if (authError) return authError;
+    try {
+      const params = new URL(request.url).searchParams;
+      const rawScope = params.get("scope");
+      if (!rawScope) return errorResponse(400, "scope is required");
+      const scope = this.normalizeScope(rawScope);
+      const scopeId = params.get("scopeId");
+      if (scope !== "global" && !scopeId?.trim()) return errorResponse(400, "scopeId is required for provider/account/combo/key scope");
+      const normalizedScopeId = scope === "global" ? null : scopeId;
+      const [members, strategy] = await Promise.all([getScopeProxyPool(scope, normalizedScopeId), getScopeRotationStrategy(scope, normalizedScopeId)]);
+      return Response.json({ members, strategy, total: members.length });
+    } catch (error) {
+      return errorFromUnknown(error, "Failed to load proxy pool");
+    }
+  }
+
+  private async poolMutation(request: Request, operation: "add" | "remove" | "strategy"): Promise<ApiResult> {
+    const authError = await this.authorize(request);
+    if (authError) return authError;
+    const parsed = await readJson(request);
+    if (!parsed.ok) return parsed.response;
+    try {
+      const schema = operation === "strategy" ? proxyRotationStrategySchema : proxyPoolMemberSchema;
+      const validation = validateBody(schema, parsed.body);
+      if (isValidationFailure(validation)) return errorResponse(400, validation.error.message, "invalid_request");
+      const data = validation.data as Record<string, unknown>;
+      const scope = this.normalizeScope(String(data.scope));
+      const scopeId = (data.scopeId as string | null | undefined) || null;
+      if (operation === "add") {
+        const member = await addProxyToScopePool(scope, scopeId, String(data.proxyId));
+        clearDispatcherCache();
+        return Response.json({ success: true, member });
+      }
+      if (operation === "remove") {
+        const removed = await removeProxyFromScopePool(scope, scopeId, String(data.proxyId));
+        clearDispatcherCache();
+        return Response.json({ success: true, removed });
+      }
+      const strategy = String(data.strategy);
+      const applied = await import("@shiguang-gateway/core-domain/db/local-db").then(({ setScopeRotationStrategy }) => setScopeRotationStrategy(scope, scopeId, strategy, { stickyWindowMinutes: data.stickyWindowMinutes as number | undefined }));
+      clearDispatcherCache();
+      return Response.json({ success: true, strategy: applied });
+    } catch (error) {
+      return errorFromUnknown(error, operation === "add" ? "Failed to add proxy to pool" : operation === "remove" ? "Failed to remove proxy from pool" : "Failed to set rotation strategy");
+    }
+  }
+
+  addPoolMember(request: Request) { return this.poolMutation(request, "add"); }
+  removePoolMember(request: Request) { return this.poolMutation(request, "remove"); }
+  setPoolStrategy(request: Request) { return this.poolMutation(request, "strategy"); }
+
+  async bulkAssign(request: Request): Promise<ApiResult> {
+    const authError = await this.authorize(request);
+    if (authError) return authError;
+    const parsed = await readJson(request);
+    if (!parsed.ok) return parsed.response;
+    try {
+      const validation = validateBody(bulkProxyAssignmentSchema, parsed.body);
+      if (isValidationFailure(validation)) return errorResponse(400, validation.error.message, "invalid_request");
+      const { scope, scopeIds, proxyId } = validation.data;
+      const normalizedScope = this.normalizeScope(scope);
+      const result = await bulkAssignProxyToScope(normalizedScope, scopeIds || [], proxyId || null);
+      clearDispatcherCache();
+      return Response.json({ success: true, scope: normalizedScope, requested: normalizedScope === "global" ? 1 : (scopeIds || []).length, updated: result.updated, failed: result.failed });
+    } catch (error) {
+      return errorFromUnknown(error, "Failed to run bulk assignment");
+    }
+  }
+
+  async bulkImport(request: Request): Promise<ApiResult> {
+    const authError = await this.authorize(request);
+    if (authError) return authError;
+    const parsed = await readJson(request);
+    if (!parsed.ok) return parsed.response;
+    try {
+      const validation = validateBody(bulkImportProxiesSchema, parsed.body);
+      if (isValidationFailure(validation)) return errorResponse(400, validation.error.message, "invalid_request");
+      let created = 0; let updated = 0; let failed = 0;
+      const results: Array<{ name: string; success: boolean; action?: "created" | "updated"; id?: string; error?: string }> = [];
+      for (const item of validation.data.items) {
+        try {
+          const result = await upsertProxy(item);
+          if (result.proxy) {
+            if (result.action === "created") created++; else updated++;
+            results.push({ name: item.name, success: true, action: result.action, id: result.proxy.id });
+          } else { failed++; results.push({ name: item.name, success: false, error: "Unknown error" }); }
+        } catch (error) {
+          failed++; results.push({ name: item.name, success: false, error: error instanceof Error ? error.message : "Unknown error" });
+        }
+      }
+      return Response.json({ created, updated, failed, results });
+    } catch (error) {
+      return errorFromUnknown(error, "Failed to bulk import proxies");
+    }
+  }
+
+  async batchActivate(request: Request): Promise<ApiResult> {
+    return this.batchUpdate(request, "activate");
+  }
+
+  async batchDelete(request: Request): Promise<ApiResult> {
+    return this.batchUpdate(request, "delete");
+  }
+
+  private async batchUpdate(request: Request, operation: "activate" | "delete"): Promise<ApiResult> {
+    const authError = await this.authorize(request);
+    if (authError) return authError;
+    const parsed = await readJson(request);
+    if (!parsed.ok) return parsed.response;
+    const schema = operation === "activate" ? z.object({ ids: z.array(z.string()).min(1).max(500), status: z.enum(["active", "inactive"]).optional().default("active") }) : z.object({ ids: z.array(z.string()).min(1).max(100), force: z.boolean().optional().default(false) });
+    const validation = validateBody(schema, parsed.body);
+    if (isValidationFailure(validation)) return errorResponse(400, validation.error.message, "invalid_request");
+    try {
+      const { ids } = validation.data;
+      const results: Array<{ id: string; success: boolean; error?: string }> = [];
+      let changed = 0;
+      for (const id of ids) {
+        try {
+          const success = operation === "activate" ? Boolean(await updateProxy(id, { status: (validation.data as { status: string }).status })) : await deleteProxyById(id, { force: (validation.data as { force: boolean }).force });
+          if (success) { changed++; results.push({ id, success: true }); } else results.push({ id, success: false, error: "Proxy not found" });
+        } catch (error) { results.push({ id, success: false, error: error instanceof Error ? error.message : "Unknown error" }); }
+      }
+      if (changed > 0) clearDispatcherCache();
+      return operation === "activate"
+        ? Response.json({ success: changed > 0, status: (validation.data as { status: string }).status, updated: changed, failed: ids.length - changed, results })
+        : Response.json({ success: changed > 0, deleted: changed, failed: ids.length - changed, results });
+    } catch (error) {
+      return errorFromUnknown(error, operation === "activate" ? "Failed to batch update proxy status" : "Failed to batch delete proxies");
+    }
+  }
+}

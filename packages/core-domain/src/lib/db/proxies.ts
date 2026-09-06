@@ -33,7 +33,13 @@ export {
   hasBlockingProxyAssignment,
   hasBlockingProxyAssignmentForProvider,
 } from "./proxies/guards";
-export { extractRelayAuth, redactProxySecrets } from "./proxies/mappers";
+export {
+  extractRelayAuth,
+  redactProxySecrets,
+  isRelayProxyType,
+  isRelayAuthMissing,
+  relayRepairMode,
+} from "./proxies/mappers";
 export { addProxiesToScopePool } from "./proxySubscriptions";
 export {
   bumpProxyRegistryGeneration,

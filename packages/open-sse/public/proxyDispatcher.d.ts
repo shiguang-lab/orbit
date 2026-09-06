@@ -5,3 +5,4 @@ export declare function isSocks5ProxyEnabled(): boolean;
 export declare function proxyConfigToUrl(config: ProxyConfig, options?: { allowSocks5?: boolean }): string | null;
 export declare function proxyUrlForLogs(url: string): string;
 export declare function createProxyDispatcher(proxyUrl: string): any;
+export declare function clearDispatcherCache(): void;

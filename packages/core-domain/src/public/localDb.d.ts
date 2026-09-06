@@ -71,7 +71,53 @@ export interface ProxyRegistryRecord {
 }
 export function getProxyById(id: string, options?: { includeSecrets?: boolean }): Promise<ProxyRegistryRecord | null>;
 export function extractRelayAuth(notes: unknown): string | undefined;
+export function redactProxySecrets(proxy: ProxyRegistryRecord): ProxyRegistryRecord;
+export function isRelayProxyType(type: unknown): boolean;
+export function isRelayAuthMissing(notes: unknown, type: unknown): boolean;
+export function relayRepairMode(notes: unknown, type: unknown): "noop" | "recovered" | "redeploy" | null;
 export function recordRelayProbe(alive: boolean): void;
+export function getRelayProbeStats(): { total: number; alive: number; lastProbeAt: string | null };
+
+export function listProxies(options?: { includeSecrets?: boolean; limit?: number; offset?: number }): Promise<{
+  items: ProxyRegistryRecord[];
+  total: number;
+}>;
+export function createProxy(payload: Record<string, unknown>): Promise<ProxyRegistryRecord | null>;
+export function createProxyAndAssign(payload: Record<string, unknown>, assignment: Record<string, unknown>): Promise<{
+  proxy: ProxyRegistryRecord;
+  assignment: Record<string, unknown> | null;
+}>;
+export function updateProxy(id: string, payload: Record<string, unknown>): Promise<ProxyRegistryRecord | null>;
+export function updateProxyAndAssign(id: string, payload: Record<string, unknown>, assignment: Record<string, unknown>): Promise<{
+  proxy: ProxyRegistryRecord;
+  assignment: Record<string, unknown> | null;
+} | null>;
+export function upsertProxy(payload: Record<string, unknown>): Promise<{
+  proxy: ProxyRegistryRecord | null;
+  action: "created" | "updated";
+}>;
+export function deleteProxyById(id: string, options?: { force?: boolean }): Promise<boolean>;
+export interface ProxyAssignmentRecord {
+  id: number;
+  proxyId: string;
+  scope: string;
+  scopeId: string | null;
+  position: number;
+  createdAt: string;
+  updatedAt: string;
+}
+export function getProxyAssignments(filters?: { proxyId?: string; scope?: string }): Promise<ProxyAssignmentRecord[]>;
+export function assignProxyToScope(scope: string, scopeId: string | null, proxyId: string | null): Promise<ProxyAssignmentRecord | null>;
+export function addProxyToScopePool(scope: string, scopeId: string | null, proxyId: string): Promise<ProxyAssignmentRecord | null>;
+export function removeProxyFromScopePool(scope: string, scopeId: string | null, proxyId: string): Promise<boolean>;
+export function getScopeProxyPool(scope: string, scopeId?: string | null): Promise<ProxyAssignmentRecord[]>;
+export function setScopeRotationStrategy(scope: string, scopeId: string | null, strategy: string, options?: { stickyWindowMinutes?: number }): Promise<string>;
+export function getScopeRotationStrategy(scope: string, scopeId?: string | null): Promise<string>;
+export function getProxyHealthStats(options?: { hours?: number }): Promise<Array<Record<string, unknown>>>;
+export function bulkAssignProxyToScope(scope: string, scopeIds: string[], proxyId: string | null): Promise<{
+  updated: number;
+  failed: Array<{ scopeId: string; reason: string }>;
+}>;
 
 export type WebhookKind = "slack" | "telegram" | "discord" | "custom";
 export interface Webhook {
