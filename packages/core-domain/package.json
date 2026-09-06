@@ -348,9 +348,7 @@
       "types": "./src/public/errorResponse.d.ts",
       "import": "./src/lib/api/errorResponse.ts"
     },
-    "./shared/pino-logger": "./src/shared/utils/logger.ts",
     "./control/provider-discovery-support/codexDiscoveryPolicy": "./src/shared/services/codexDiscoveryPolicy.ts",
-    "./control/provider-discovery-support/providers": "./src/shared/constants/providers.ts",
     "./control/provider-discovery-support/modelListingCapability": "./src/lib/providers/modelListingCapability.ts",
     "./control/provider-discovery-support/modelMetadataPrecedence": "./src/lib/providers/modelMetadataPrecedence.ts",
     "./control/provider-discovery-support/cursorAgent": "./src/lib/providerModels/cursorAgent.ts",
@@ -484,10 +482,6 @@
     "./control/oauth-runtime/utils/codexSessionImport": {
       "types": "./src/public/oauthRuntime.d.ts",
       "import": "./src/lib/oauth/utils/codexSessionImport.ts"
-    },
-    "./control/models": {
-      "types": "./src/public/controlModels.d.ts",
-      "import": "./src/models/index.ts"
     },
     "./control/model-management": {
       "types": "./src/control/model-management.ts",
@@ -744,10 +738,6 @@
       "types": "./src/public/providerNodesDb.d.ts",
       "import": "./src/lib/db/providers/nodes.ts"
     },
-    "./catalog/provider-node-prefixes": {
-      "types": "./src/public/providerNodeConstants.d.ts",
-      "import": "./src/shared/constants/providers.ts"
-    },
     "./network/outbound-url-guard-policy": {
       "types": "./src/public/outboundUrlGuardPolicy.d.ts",
       "import": "./src/shared/network/outboundUrlGuardPolicy.ts"
@@ -763,10 +753,6 @@
     "./shared/constants/selfServiceScopes": {
       "types": "./src/public/selfServiceScopes.d.ts",
       "import": "./src/shared/constants/selfServiceScopes.ts"
-    },
-    "./shared/constants/providers": {
-      "types": "./src/public/providerMetadata.d.ts",
-      "import": "./src/shared/constants/providers.ts"
     },
     "./control/cli-token-auth": "./src/lib/middleware/cliTokenAuth.ts",
     "./db/provider-connections": {
@@ -906,7 +892,7 @@
     "./catalog/model-capabilities": { "types": "./src/public/catalogModelCapabilities.d.ts", "import": "./src/lib/modelCapabilities.ts" },
     "./catalog/models-dev-sync": { "types": "./src/public/catalogModelsDevSync.d.ts", "import": "./src/lib/modelsDevSync.ts" },
     "./catalog/provider-models": { "types": "./src/public/catalogProviderModels.d.ts", "import": "./src/shared/constants/models.ts" },
-    "./catalog/providers": { "types": "./src/public/catalogProviders.d.ts", "import": "./src/shared/constants/providers.ts" },
+    "./catalog/providers": { "types": "./src/public/catalogProviders.d.ts", "import": "./src/catalog/providers.ts" },
     "./shared/combo-steps": {
       "types": "./src/public/comboSteps.d.ts",
       "import": "./src/lib/combos/steps.ts"
@@ -943,10 +929,6 @@
       "types": "./src/public/providerStatsDb.d.ts",
       "import": "./src/lib/db/providerStats.ts"
     },
-    "./catalog/provider-metadata": {
-      "types": "./src/public/providerMetadata.d.ts",
-      "import": "./src/shared/constants/providers.ts"
-    },
     "./edge/alibaba-provider-regions": {
       "types": "./src/shared/constants/alibabaProviderRegions.ts",
       "import": "./src/shared/constants/alibabaProviderRegions.ts"
@@ -970,10 +952,6 @@
     "./edge/translation-events": {
       "types": "./src/lib/translatorEvents.ts",
       "import": "./src/lib/translatorEvents.ts"
-    },
-    "./edge/provider-constants": {
-      "types": "./src/shared/constants/providers.ts",
-      "import": "./src/shared/constants/providers.ts"
     },
     "./edge/circuit-breaker": {
       "types": "./src/shared/utils/circuitBreaker.ts",
@@ -1115,6 +1093,14 @@
       "types": "./src/public/modelAliasesDb.d.ts",
       "import": "./src/lib/db/models/aliases.ts"
     },
+    "./db/mitm-aliases": {
+      "types": "./src/public/mitmAliasesDb.d.ts",
+      "import": "./src/lib/db/models/mitmAlias.ts"
+    },
+    "./db/hidden-models": {
+      "types": "./src/public/hiddenModelsDb.d.ts",
+      "import": "./src/lib/db/models/hiddenModels.ts"
+    },
     "./domain/provider-error-classifier": "./src/domain/providerErrorClassifier.ts",
     "./domain/provider-error-signals": "./src/domain/providerErrorSignals.ts",
     "./worker/cloud-sync": "./src/lib/initCloudSync.ts",
@@ -1219,7 +1205,6 @@
     "./db/provider-limits-cache": "./src/lib/db/providerLimits.ts",
     "./usage/codex-reset-support/local-db": "./src/lib/localDb.ts",
     "./usage/internal-command-support/api-key-usage-limits": "./src/lib/usage/apiKeyUsageLimits.ts",
-    "./usage/provider-limits-support/providers": "./src/shared/constants/providers.ts",
     "./usage/provider-limits-support/providerConnections": "./src/lib/db/providers.ts",
     "./usage/provider-limits-support/settings": "./src/lib/db/settings.ts",
     "./usage/provider-limits-support/providerLimits": "./src/lib/db/providerLimits.ts",
@@ -1246,7 +1231,6 @@
     "./runtime/quota-key": "./src/lib/quota/quotaKey.ts",
     "./runtime/no-auth-providers": "./src/shared/utils/noAuthProviders.ts",
     "./runtime/proxy-mappers": "./src/lib/db/proxies/mappers.ts",
-    "./runtime/provider-constants": "./src/shared/constants/providers.ts",
     "./runtime/auto-disable-banned": "./src/shared/utils/autoDisableBanned.ts",
     "./runtime/reasoning-effort": "./src/shared/reasoning/effortStandardization.ts",
     "./runtime/peer-routing": "./src/shared/resilience/peerRouting.ts",

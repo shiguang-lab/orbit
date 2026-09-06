@@ -7,9 +7,9 @@ import {
   createProviderConnection,
   getProviderConnections,
   updateProviderConnection,
-  isCloudEnabled,
-  resolveProxyForProvider,
-} from "@shiguang-gateway/core-domain/control/models";
+} from "@shiguang-gateway/core-domain/control/oauth-persistence";
+import { isCloudEnabled } from "@shiguang-gateway/core-domain/control/settings";
+import { resolveProxyForProvider } from "@shiguang-gateway/core-domain/db/proxies";
 import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
 import { KiroService } from "@shiguang-gateway/open-sse/oauth/services/kiro";

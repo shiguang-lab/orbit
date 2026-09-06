@@ -4,7 +4,7 @@ import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provide
 import { readRunningBuildSha } from "./build-sha.js";
 import { buildHealthPayload } from "@shiguang-gateway/core-domain/metrics/observability";
 import { APP_CONFIG } from "@shiguang-gateway/core-domain/shared/app-config";
-import { AI_PROVIDERS } from "@shiguang-gateway/core-domain/shared/constants/providers";
+import { AI_PROVIDERS } from "@shiguang-gateway/core-domain/catalog/providers";
 import {
   createCodexAccountPool,
   getCodexParentAccountDiagnostic,

@@ -13,14 +13,13 @@ export function getProviderConnections(
   filter?: Record<string, unknown>,
   limit?: number,
   offset?: number,
-): Promise<any[]>;
+): Promise<Array<Record<string, any>>>;
 export function getProviderConnectionById(id: string): Promise<ProviderConnectionSummary | null>;
-export function createProviderConnection(data: Record<string, unknown>): Promise<{ id?: unknown } | null>;
-export function getProviderConnectionById(id: string): Promise<Record<string, unknown> | null>;
+export function createProviderConnection(data: Record<string, unknown>): Promise<Record<string, any>>;
 export function updateProviderConnection(
   id: string,
   data: Record<string, unknown>,
-): Promise<Record<string, unknown> | null>;
+): Promise<Record<string, any> | null>;
 export function deleteProviderConnectionsByProvider(providerId: string): Promise<unknown>;
 export function getRawProviderConnections(
   filter?: Record<string, unknown>,
@@ -45,4 +44,4 @@ export function updateCodexScopeCooldown(
   scope: "codex" | "spark",
   rateLimitedUntil: string,
 ): Promise<Record<string, unknown> | null>;
-export { touchConnectionLastUsed } from "../lib/db/providers.js";
+export function touchConnectionLastUsed(id: string, consecutiveUseCount: number): Promise<void>;

@@ -457,7 +457,7 @@ import { extractFacts } from "../services/memoryRuntime.ts";
 import { handleToolCallExecution } from "@shiguang-gateway/core-domain/edge/skills-runtime";
 import { MEMORY_BUILTIN_TOOL_NAMES } from "@shiguang-gateway/core-domain/edge/skills-runtime";
 import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "@shiguang-gateway/contracts/gateway-headers";
-import { resolveProviderId } from "@shiguang-gateway/core-domain/edge/provider-constants";
+import { resolveProviderId } from "@shiguang-gateway/core-domain/catalog/providers";
 import { getClaudeCodeCompatibleRequestDefaults } from "@shiguang-gateway/core-domain/edge/provider-request-defaults";
 import {
   buildClaudeCodeCompatibleRequest,

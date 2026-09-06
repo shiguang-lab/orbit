@@ -9,7 +9,7 @@ import {
   updateProviderConnection,
 } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { deleteModelAliasesForProvider } from "@shiguang-gateway/core-domain/db/model-aliases";
-import { isClaudeCodeCompatibleProvider } from "@shiguang-gateway/core-domain/catalog/provider-metadata";
+import { isClaudeCodeCompatibleProvider } from "@shiguang-gateway/core-domain/catalog/providers";
 import { updateProviderNodeSchema } from "@shiguang-gateway/core-domain/control/provider-validation-schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { validateProviderNodeBaseUrl } from "./provider-nodes-url-guard.js";

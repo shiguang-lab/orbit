@@ -6,7 +6,7 @@ import {
   createProviderConnection,
   getProviderConnections,
   updateProviderConnection,
-} from "../../../models/index.ts";
+} from "../../db/providers.ts";
 export type PersistCursorAuthMethod = "deep_control" | "imported" | "cursor-agent";
 
 export type PersistCursorConnectionInput = {

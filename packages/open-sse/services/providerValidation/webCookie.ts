@@ -1,7 +1,7 @@
 // Web-cookie session-ping validator + Bytez auth-only probe. Extracted from validation.ts
 // (god-file decomposition) — top-level functions with no dispatcher-state captures; behavior is
 // byte-identical to the original inline defs.
-import { WEB_COOKIE_PROVIDERS, isLocalProvider } from "@shiguang-gateway/core-domain/runtime/provider-constants";
+import { WEB_COOKIE_PROVIDERS, isLocalProvider } from "@shiguang-gateway/core-domain/catalog/providers";
 import { getRegistryEntry } from "@shiguang-gateway/provider-catalog/provider-registry";
 import { extractZaiToken } from "../../executors/zai-web.ts";
 import { normalizeBaseUrl } from "./urlHelpers";

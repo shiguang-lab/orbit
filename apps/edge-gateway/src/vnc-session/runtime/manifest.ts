@@ -1,4 +1,4 @@
-import { WEB_COOKIE_PROVIDERS } from "@shiguang-gateway/core-domain/edge/provider-constants";
+import { WEB_COOKIE_PROVIDERS } from "@shiguang-gateway/core-domain/catalog/providers";
 import {
   getWebSessionCredentialRequirement,
   type WebSessionCredentialRequirement,

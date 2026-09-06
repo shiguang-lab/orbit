@@ -13,7 +13,7 @@ import { isAccountUnavailable } from "../services/accountFallback.ts";
 import { createLazyConnectionView } from "@shiguang-gateway/core-domain/db/provider-connection-view";
 import type { ProviderConnectionView } from "@shiguang-gateway/core-domain/db/provider-connection-view";
 import { getCachedRawProviderConnections } from "@shiguang-gateway/core-domain/edge/read-cache";
-import { supportsApiKeyOnFreeProvider } from "@shiguang-gateway/core-domain/shared/constants/providers";
+import { supportsApiKeyOnFreeProvider } from "@shiguang-gateway/core-domain/catalog/providers";
 
 export function noAuthProviderAcceptsOptionalApiKey(providerId: string): boolean {
   if (supportsApiKeyOnFreeProvider(providerId)) return true;

@@ -49,7 +49,7 @@ import {
   resolvePoeUpstreamUrl,
 } from "../config/providers/registry/poe/index.ts";
 import { buildMaritalkChatUrl } from "../config/maritalk.ts";
-import { LOCAL_PROVIDERS } from "@shiguang-gateway/core-domain/edge/provider-constants";
+import { LOCAL_PROVIDERS } from "@shiguang-gateway/core-domain/catalog/providers";
 import { isForbiddenCustomHeaderName } from "@shiguang-gateway/contracts/upstream-headers";
 import { getClaudeCodeCompatibleRequestDefaults } from "@shiguang-gateway/core-domain/edge/provider-request-defaults";
 import { applyClineAuthHeaders } from "@shiguang-gateway/core-domain/edge/cline-auth";

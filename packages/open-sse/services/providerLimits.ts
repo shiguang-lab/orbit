@@ -17,7 +17,7 @@ import { buildClaudeExtraUsageConnectionUpdate } from "@shiguang-gateway/core-do
 import { isConnectionUnavailableToAuxiliaryActivity } from "@shiguang-gateway/core-domain/usage/provider-limits-support/exclusiveLeaseIsolation";
 import { clearRecoveredProviderState } from "@shiguang-gateway/open-sse/services/auth";
 import { getMachineId } from "@shiguang-gateway/core-domain/usage/provider-limits-support/machine";
-import { USAGE_SUPPORTED_PROVIDERS } from "@shiguang-gateway/core-domain/usage/provider-limits-support/providers";
+import { USAGE_SUPPORTED_PROVIDERS } from "@shiguang-gateway/core-domain/catalog/providers";
 import { mergeProviderLimitsCacheEntry, toProviderLimitsCacheEntry } from "@shiguang-gateway/core-domain/usage/provider-limits-support/providerLimitsCache";
 import { getExecutor } from "../executors/index.ts";
 import { getUsageForProvider } from "./usage.ts";

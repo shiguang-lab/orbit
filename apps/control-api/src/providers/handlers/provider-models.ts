@@ -26,7 +26,7 @@ import {
   AI_PROVIDERS,
   isOpenAICompatibleProvider,
   isAnthropicCompatibleProvider,
-} from "@shiguang-gateway/core-domain/catalog/provider-metadata";
+} from "@shiguang-gateway/core-domain/catalog/providers";
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 import { providerModelMutationSchema } from "@shiguang-gateway/core-domain/control/provider-validation-schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";

@@ -25,7 +25,7 @@ import {
   resolveGitLabOAuthBaseUrl,
   shouldFallbackToPublicCodeSuggestions,
 } from "@shiguang-gateway/core-domain/control/oauth-gitlab";
-import { isOpenAICompatibleProvider, providerAllowsOptionalApiKey } from "@shiguang-gateway/core-domain/shared/constants/providers";
+import { isOpenAICompatibleProvider, providerAllowsOptionalApiKey } from "@shiguang-gateway/core-domain/catalog/providers";
 import { shouldUseApiKeyConnectionTest } from "./webSessionTestDispatch.js";
 import { testCodexAppServerConnection, makeDiagnosis } from "./codexAppServerHealth.js";
 import { recoverKeyHealth } from "@shiguang-gateway/open-sse/services/api-key-rotator";

@@ -5,7 +5,7 @@ import {
   getModelCallStats,
   getProviderCallStats,
 } from "@shiguang-gateway/core-domain/db/provider-stats";
-import { AI_PROVIDERS } from "@shiguang-gateway/core-domain/catalog/provider-metadata";
+import { AI_PROVIDERS } from "@shiguang-gateway/core-domain/catalog/providers";
 import { getTelemetrySummary } from "@shiguang-gateway/core-domain/metrics/request-telemetry";
 import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
 import {

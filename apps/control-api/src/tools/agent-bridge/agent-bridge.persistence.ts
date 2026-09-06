@@ -1,5 +1,5 @@
 import { getDbInstance } from "@shiguang-gateway/core-domain/db/ping";
-import { setMitmAliasAll } from "@shiguang-gateway/core-domain/control/models";
+import { setMitmAliasAll } from "@shiguang-gateway/core-domain/db/mitm-aliases";
 import type {
   AgentBridgeBypassRow,
   AgentBridgeMappingRow,

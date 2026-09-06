@@ -1,8 +1,6 @@
-import {
-  getModelAliases,
-  getProviderConnections,
-  validateApiKey,
-} from "@shiguang-gateway/core-domain/control/models";
+import { getModelAliases } from "@shiguang-gateway/core-domain/db/model-aliases";
+import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
+import { validateApiKey } from "@shiguang-gateway/core-domain/db/api-keys";
 
 export async function POST(request: Request) {
   try {

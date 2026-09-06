@@ -5,7 +5,7 @@ import {
   isClaudeCodeCompatibleProvider,
   isOpenAICompatibleProvider,
   isAnthropicCompatibleProvider,
-} from "@shiguang-gateway/core-domain/catalog/provider-metadata";
+} from "@shiguang-gateway/core-domain/catalog/providers";
 import { validateProviderApiKey } from "@shiguang-gateway/open-sse/services/provider-validation";
 import { getProxyForLevel, resolveProxyForProvider } from "@shiguang-gateway/core-domain/db/local-db";
 import { validateProviderApiKeySchema } from "@shiguang-gateway/core-domain/control/provider-validation-schemas";

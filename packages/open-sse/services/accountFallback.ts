@@ -46,7 +46,7 @@ import {
   resolveProviderId,
   isLocalProvider as isLocalProviderId,
   isSelfHostedChatProvider,
-} from "@shiguang-gateway/core-domain/edge/provider-constants";
+} from "@shiguang-gateway/core-domain/catalog/providers";
 import { resolveUseUpstream429BreakerHints } from "@shiguang-gateway/core-domain/edge/provider-hints";
 import { getCodexModelScope } from "../config/codexQuotaScopes.ts";
 import { getQuotaScopedModelForProvider } from "./antigravityQuotaFamily.ts";

@@ -9,7 +9,7 @@ import {
   providerAllowsOptionalApiKey,
   resolveProviderId,
   WEB_COOKIE_PROVIDERS,
-} from "@shiguang-gateway/core-domain/runtime/provider-constants";
+} from "@shiguang-gateway/core-domain/catalog/providers";
 import { MODAL_DEFAULT_VALIDATION_MODEL_ID } from "@shiguang-gateway/core-domain/runtime/modal-validation";
 import { validateImageProviderApiKey } from "./imageValidation.ts";
 import { usesCcWireImage } from "../services/ccWireImageBuiltins.ts";

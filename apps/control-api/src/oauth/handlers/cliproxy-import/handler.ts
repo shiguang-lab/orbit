@@ -2,7 +2,7 @@
 import os from "os";
 import path from "path";
 
-import { createProviderConnection } from "@shiguang-gateway/core-domain/control/models";
+import { createProviderConnection } from "@shiguang-gateway/core-domain/control/oauth-persistence";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import {

@@ -14,7 +14,7 @@ import { isRecord } from "./comboData.ts";
 import type { SlaRoutingPolicy } from "../autoCombo/routerStrategy.ts";
 import { RESET_WINDOW_NAMES } from "./types.ts";
 import type { ResolvedComboTarget } from "./types.ts";
-import { resolveProviderId } from "@shiguang-gateway/core-domain/edge/provider-constants";
+import { resolveProviderId } from "@shiguang-gateway/core-domain/catalog/providers";
 
 const RESET_AWARE_SESSION_WINDOW_MS = 5 * 60 * 60 * 1000;
 const RESET_AWARE_WEEKLY_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;

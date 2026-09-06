@@ -1,4 +1,5 @@
-import { getModelAliases, validateApiKey } from "@shiguang-gateway/core-domain/control/models";
+import { getModelAliases } from "@shiguang-gateway/core-domain/db/model-aliases";
+import { validateApiKey } from "@shiguang-gateway/core-domain/db/api-keys";
 import { cloudResolveAliasSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 

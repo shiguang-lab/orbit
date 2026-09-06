@@ -13,8 +13,7 @@
  */
 
 import { NOAUTH_PROVIDERS } from "@shiguang-gateway/contracts/config/providerCatalog";
-import { APIKEY_PROVIDERS } from "@shiguang-gateway/core-domain/edge/provider-constants";
-import { WEB_COOKIE_PROVIDERS } from "@shiguang-gateway/core-domain/edge/provider-constants";
+import { APIKEY_PROVIDERS, WEB_COOKIE_PROVIDERS } from "@shiguang-gateway/core-domain/catalog/providers";
 import { WEB_SESSION_CREDENTIAL_REQUIREMENTS } from "@shiguang-gateway/contracts/config/webSessionCredentials";
 
 const DEFAULT_THRESHOLD_MS = 2_000;

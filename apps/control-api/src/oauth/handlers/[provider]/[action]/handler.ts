@@ -19,9 +19,9 @@ import {
   createProviderConnection,
   updateProviderConnection,
   getProviderConnections,
-  isCloudEnabled,
-  resolveProxyForProvider,
-} from "@shiguang-gateway/core-domain/control/models";
+} from "@shiguang-gateway/core-domain/control/oauth-persistence";
+import { isCloudEnabled } from "@shiguang-gateway/core-domain/control/settings";
+import { resolveProxyForProvider } from "@shiguang-gateway/core-domain/db/proxies";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
 import { isValidGheUrl } from "@shiguang-gateway/core-domain/shared/validation/providerSpecificData";
 import { AWS_REGION_PATTERN } from "@shiguang-gateway/open-sse/oauth/constants";

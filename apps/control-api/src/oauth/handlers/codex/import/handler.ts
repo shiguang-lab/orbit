@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { z } from "zod";
 import { normalizeCodexImportRecord, flattenCodexImportPayload } from "@shiguang-gateway/core-domain/control/oauth-runtime/services/codexImport";
-import { createProviderConnection } from "@shiguang-gateway/core-domain/control/models";
+import { createProviderConnection } from "@shiguang-gateway/core-domain/control/oauth-persistence";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import { refreshCodexToken, isUnrecoverableRefreshError } from "@shiguang-gateway/open-sse/services/token-refresh";

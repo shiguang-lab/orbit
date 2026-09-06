@@ -3,7 +3,7 @@ import {
   isAnthropicCompatibleProvider,
   isOpenAICompatibleProvider,
   NOAUTH_PROVIDERS,
-} from "@shiguang-gateway/core-domain/control/provider-discovery-support/providers";
+} from "@shiguang-gateway/core-domain/catalog/providers";
 import { getRegistryEntry } from "@shiguang-gateway/open-sse/config/providerRegistry";
 import { getModelsByProviderId } from "@shiguang-gateway/core-domain/control/provider-discovery-support/models";
 import { resolveAlibabaProviderModelsUrl } from "@shiguang-gateway/core-domain/control/provider-discovery-support/alibabaProviderRegions";

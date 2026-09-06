@@ -6,7 +6,11 @@ export function updateSettings(
   options?: { expectedRevision?: number },
 ): Promise<Record<string, unknown>>;
 export function isCloudEnabled(): Promise<boolean>;
-export { resolveProxyForConnection } from "../lib/db/settings.js";
+export function resolveProxyForConnection(
+  connectionId: string,
+  apiKeyId?: string,
+  providerId?: string,
+): Promise<unknown | null>;
 export class SettingsRevisionConflictError extends Error {
   readonly code: "SETTINGS_REVISION_CONFLICT";
   readonly currentRevision: number;

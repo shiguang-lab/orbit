@@ -10,8 +10,8 @@ import {
   createProviderConnection,
   updateProviderConnection,
   getProviderConnections,
-  isCloudEnabled,
-} from "../../models/index.ts";
+} from "../db/providers.ts";
+import { isCloudEnabled } from "../db/settings.ts";
 import { getConsistentMachineId } from "../../shared/utils/machineId.ts";
 import { syncToCloud } from "../cloudSync.ts";
 

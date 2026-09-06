@@ -64,11 +64,11 @@ import {
   getHandoff,
 } from "@shiguang-gateway/core-domain/db/context-handoffs";
 import { extractSessionAffinityKey } from "./auth.ts";
-import { getHiddenModelsByProvider } from "@shiguang-gateway/core-domain/control/models";
+import { getHiddenModelsByProvider } from "@shiguang-gateway/core-domain/db/hidden-models";
 import { resolveModelLockoutSettings } from "@shiguang-gateway/core-domain/resilience/model-lockout-settings";
 import { fetchCodexQuota } from "./codexQuotaFetcher.ts";
 import { evaluateQuotaCutoff, getQuotaFetcher, type QuotaInfo } from "./quotaPreflight.ts";
-import { resolveProviderId } from "@shiguang-gateway/core-domain/edge/provider-constants";
+import { resolveProviderId } from "@shiguang-gateway/core-domain/catalog/providers";
 import * as semaphore from "./rateLimitSemaphore.ts";
 import { getCircuitBreaker } from "@shiguang-gateway/core-domain/edge/circuit-breaker";
 import { parseModel } from "./model.ts";

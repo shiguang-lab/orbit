@@ -28,7 +28,7 @@ import {
 import { classifyTier } from "../tierResolver";
 import type { AutoVariant } from "./autoPrefix";
 import { buildFamilyCandidateFilter, type ModelFamily } from "./modelFamily";
-import { getHiddenModelsByProvider } from "@shiguang-gateway/core-domain/control/models";
+import { getHiddenModelsByProvider } from "@shiguang-gateway/core-domain/db/hidden-models";
 import { getSyncedAvailableModelsByConnection, getCustomModels } from "@shiguang-gateway/core-domain/db/models-runtime";
 import { filterPaidOnlyCandidates } from "./paidModelFilter";
 import { filterModelExposureCandidates } from "./modelExposureFilter";

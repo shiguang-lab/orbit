@@ -116,7 +116,7 @@ import {
   NOAUTH_PROVIDERS,
   WEB_COOKIE_PROVIDERS,
   isSelfHostedChatProvider,
-} from "@shiguang-gateway/core-domain/runtime/provider-constants";
+} from "@shiguang-gateway/core-domain/catalog/providers";
 import {
   isModelExcludedByConnection,
   isModelAdvertisedByConnection,

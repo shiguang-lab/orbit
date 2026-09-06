@@ -5,10 +5,10 @@
 export {
   deleteModelAlias,
   getModelAliases,
-  getProviderConnections,
-  isCloudEnabled,
   setModelAlias,
-} from "../models/index.js";
+} from "../lib/db/models/aliases.js";
+export { getProviderConnections } from "../lib/db/providers.js";
+export { isCloudEnabled } from "../lib/db/settings.js";
 export { syncToCloud } from "../lib/cloudSync.js";
 export { getSettings } from "../lib/db/settings.js";
 export { getConsistentMachineId } from "../shared/utils/machineId.js";

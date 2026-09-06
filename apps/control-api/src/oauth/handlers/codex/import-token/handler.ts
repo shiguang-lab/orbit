@@ -2,7 +2,7 @@
 import { z } from "zod";
 import { extractCodexAccountInfo } from "@shiguang-gateway/core-domain/control/oauth-runtime/services/codexImport";
 import { parseCodexSessionJson } from "@shiguang-gateway/core-domain/control/oauth-runtime/utils/codexSessionImport";
-import { createProviderConnection } from "@shiguang-gateway/core-domain/control/models";
+import { createProviderConnection } from "@shiguang-gateway/core-domain/control/oauth-persistence";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 

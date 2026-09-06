@@ -1,3 +1,3 @@
-export { resolveProxyForProvider } from "../lib/db/proxies.js";
+export function resolveProxyForProvider(providerId: string): Promise<unknown | null>;
 export function hasBlockingProxyAssignmentForProvider(providerId: string): boolean;
-export { hasBlockingProxyAssignment } from "../lib/db/proxies.js";
+export function hasBlockingProxyAssignment(connectionId: string, providerId?: string): boolean;

@@ -18,9 +18,9 @@ import {
   VideoExtractionQueueError,
 } from "./extraction-queue.js";
 import { resolveModelSyncInternalBaseUrl } from "@shiguang-gateway/core-domain/runtime/model-sync-client";
-import { createLogger } from "@shiguang-gateway/core-domain/shared/pino-logger";
+import { logger } from "@shiguang-gateway/runtime-logging";
 
-const log = createLogger("video-bridge-broker");
+const log = logger("video-bridge-broker");
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -192,6 +192,7 @@ function mapBrokerExtractionError(
   const clientAborted = context.request.signal.aborted;
   const deadlineExceeded = !clientAborted && context.deadline.aborted;
   log.warn(
+    "Video Bridge broker extraction failed",
     {
       aborted: clientAborted,
       code: clientAborted
@@ -206,7 +207,6 @@ function mapBrokerExtractionError(
       inputBytes: context.inputBytes,
       mode: context.mode,
     },
-    "Video Bridge broker extraction failed"
   );
   if (clientAborted) return invalid("Video extraction was aborted", 499);
   if (deadlineExceeded) return invalid("Video extraction deadline exceeded", 504);
@@ -273,6 +273,7 @@ async function handleSubtitleProbeBrokerRequest(
     const clientAborted = request.signal.aborted;
     const deadlineExceeded = !clientAborted && deadline.aborted;
     log.warn(
+      "Video Bridge broker subtitle probe failed",
       {
         aborted: clientAborted,
         code: clientAborted
@@ -284,7 +285,6 @@ async function handleSubtitleProbeBrokerRequest(
               : "EXTRACTION_FAILED",
         inputBytes: bytes.byteLength,
       },
-      "Video Bridge broker subtitle probe failed"
     );
     if (clientAborted) return invalid("Video extraction was aborted", 499);
     if (deadlineExceeded) return invalid("Video extraction deadline exceeded", 504);

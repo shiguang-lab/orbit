@@ -4,7 +4,7 @@ import {
   OPENAI_COMPATIBLE_PREFIX,
   ANTHROPIC_COMPATIBLE_PREFIX,
   CLAUDE_CODE_COMPATIBLE_PREFIX,
-} from "@shiguang-gateway/core-domain/catalog/provider-node-prefixes";
+} from "@shiguang-gateway/core-domain/catalog/providers";
 import { isCcCompatibleProviderEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
 import { createProviderNodeSchema, paginationSchema } from "@shiguang-gateway/core-domain/control/provider-validation-schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";

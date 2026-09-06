@@ -5,7 +5,7 @@ import {
   stripAnthropicMessagesSuffix,
   stripClaudeCodeCompatibleEndpointSuffix,
 } from "../../services/claudeCodeCompatible.ts";
-import { isOpenAICompatibleProvider } from "@shiguang-gateway/core-domain/runtime/provider-constants";
+import { isOpenAICompatibleProvider } from "@shiguang-gateway/core-domain/catalog/providers";
 import {
   addProviderModelsSuffix,
   normalizeProviderBaseUrl,

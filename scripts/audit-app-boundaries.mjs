@@ -101,7 +101,7 @@ const allowedCoreDomainSubpaths = {
     "shared/proxy-egress",
     "shared/proxy-health",
   ],
-  "apps/control-api": ["startup", "runtime/request", "db/ping", "db/health", "db/call-log-stats", "db/provider-connections", "db/model-aliases", "db/local-db", "db/provider-stats", "db/database-stats", "db/vacuum-scheduler", "catalog/provider-metadata", "catalog/provider-registry", "catalog/provider-node-prefixes", "pricing/db", "pricing/defaults", "pricing/sync", "pricing/provider-prefixes", "pricing/validation", "pricing/modal-cost", "cache/db", "cache/services", "db/compression-analytics", "analytics/auto-routing-db", "analytics/diversity", "db-backups/db", "db-backups/validation", "metrics/combo", "metrics/request-telemetry", "metrics/observability", "metrics/tool-latency", "shared/numeric", "open-sse/utils/error.ts", "open-sse/services/deviceTracker.ts", "control/management-auth", "control/middleware-registry", "control/provider-credentials", "control/lkgp-cache", "control/management-password", "control/compliance", "runtime/feature-flags", "control/provider-validation", "control/provider-validation-schemas", "control/model-context-overrides", "control/model-test-data", "db/provider-nodes", "network/outbound-url-guard-policy", "network/safe-outbound-fetch", "control/authenticated", "control/registered-keys", "control/settings", "memory/settings", "memory/runtime", "control/database-settings", "control/proxy-logs", "control/openrouter-provider-stats", "control/provider-health-matrix", "control/resilience-settings", "usage/stats", "usage/model-latency-stats", "usage/request-logs", "usage/pending-requests", "db/detailed-logs", "db/proxy-logs", "shared/log-env", "control/api-key-store", "control/cloud-sync", "control/api-key-exposure", "db/api-key-groups", "control/api-key-usage-limits", "shared/", "sse/logger", "sse/auth", "evals/db", "evals/runner", "evals/runtime", "evals/validation", "db/api-keys", "db/batches", "plugins/db", "plugins/manager", "plugins/marketplace", "shared/cors", "quota/dimensions", "quota/db", "quota/services", "quota/state", "compliance", "shared/combo-invariants", "catalog/combo-targets", "catalog/model-metadata", "catalog/provider-models"],
+  "apps/control-api": ["startup", "runtime/request", "db/ping", "db/health", "db/call-log-stats", "db/provider-connections", "db/model-aliases", "db/mitm-aliases", "db/proxies", "db/local-db", "db/provider-stats", "db/database-stats", "db/vacuum-scheduler", "catalog/provider-registry", "pricing/db", "pricing/defaults", "pricing/sync", "pricing/provider-prefixes", "pricing/validation", "pricing/modal-cost", "cache/db", "cache/services", "db/compression-analytics", "analytics/auto-routing-db", "analytics/diversity", "db-backups/db", "db-backups/validation", "metrics/combo", "metrics/request-telemetry", "metrics/observability", "metrics/tool-latency", "shared/numeric", "open-sse/utils/error.ts", "open-sse/services/deviceTracker.ts", "control/management-auth", "control/middleware-registry", "control/provider-credentials", "control/lkgp-cache", "control/management-password", "control/compliance", "runtime/feature-flags", "control/provider-validation", "control/provider-validation-schemas", "control/model-context-overrides", "control/model-test-data", "db/provider-nodes", "network/outbound-url-guard-policy", "network/safe-outbound-fetch", "control/authenticated", "control/registered-keys", "control/settings", "control/oauth-persistence", "memory/settings", "memory/runtime", "control/database-settings", "control/proxy-logs", "control/openrouter-provider-stats", "control/provider-health-matrix", "control/resilience-settings", "usage/stats", "usage/model-latency-stats", "usage/request-logs", "usage/pending-requests", "db/detailed-logs", "db/proxy-logs", "shared/log-env", "control/api-key-store", "control/cloud-sync", "control/api-key-exposure", "db/api-key-groups", "control/api-key-usage-limits", "shared/", "sse/logger", "sse/auth", "evals/db", "evals/runner", "evals/runtime", "evals/validation", "db/api-keys", "db/batches", "plugins/db", "plugins/manager", "plugins/marketplace", "shared/cors", "quota/dimensions", "quota/db", "quota/services", "quota/state", "compliance", "shared/combo-invariants", "catalog/combo-targets", "catalog/model-metadata", "catalog/provider-models"],
   "apps/edge-gateway": [
     "startup",
     "runtime/request",
@@ -156,7 +156,6 @@ const allowedCoreDomainSubpaths = {
     "db/ping",
     "db/encryption",
     "db/provider-connections",
-    "edge/provider-constants",
     "control/provider-discovery-support/exclusiveLeaseIsolation",
     "db/upstream-proxy",
     "control/management-auth",
@@ -175,7 +174,6 @@ const allowedCoreDomainSubpaths = {
     "edge/video-bridge-runtime",
     "edge/video-bridge-extraction-runtime",
     "shared/error-response",
-    "shared/pino-logger",
     "shared/constants/selfServiceScopes",
     "usage/cost-rules",
     "edge/provider-limits",
@@ -304,7 +302,6 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/obsidian-client",
   "control/obsidian-sync",
   "control/oauth-runtime/",
-  "control/models",
   "control/model-management",
   "control/traffic-inspector",
   "control/agent-bridge",
@@ -928,6 +925,16 @@ const retiredCoreUsageDbDeclaration = join(packagesRoot, "core-domain", "src", "
 if (existsSync(retiredCoreUsageDbDeclaration)) {
   add("orphan-public-declaration", retiredCoreUsageDbDeclaration, "The mixed usage database contract is retired");
 }
+const retiredCoreModelsFacade = join(packagesRoot, "core-domain", "src", "models", "index.ts");
+if (existsSync(retiredCoreModelsFacade)) {
+  add("redundant-core-domain-facade", retiredCoreModelsFacade, "Consumers must use the narrow database and runtime contracts");
+}
+for (const retiredProviderDeclaration of ["providerMetadata.d.ts", "providerNodeConstants.d.ts"]) {
+  const file = join(packagesRoot, "core-domain", "src", "public", retiredProviderDeclaration);
+  if (existsSync(file)) {
+    add("orphan-public-declaration", file, "Provider catalog consumers must use the canonical catalog/providers contract");
+  }
+}
 const retiredCoreClientApiAuth = join(packagesRoot, "core-domain", "src", "shared", "utils", "clientApiRouteAuth.ts");
 if (existsSync(retiredCoreClientApiAuth)) {
   add("edge-runtime-in-core-domain", retiredCoreClientApiAuth, "Client API route authentication belongs in apps/edge-gateway");
@@ -1157,6 +1164,14 @@ if (coreDomainEntry) {
   }
 }
 const retiredRedundantCoreExports = [
+  "./control/models",
+  "./control/provider-discovery-support/providers",
+  "./usage/provider-limits-support/providers",
+  "./catalog/provider-node-prefixes",
+  "./shared/constants/providers",
+  "./catalog/provider-metadata",
+  "./edge/provider-constants",
+  "./runtime/provider-constants",
   "./edge/usage-db",
   "./runtime/usage-db",
   "./edge/music-rate-limit",
@@ -1185,6 +1200,7 @@ const retiredRedundantCoreExports = [
   "./control/provider-discovery-support/modelSyncScheduler",
   "./control/model-sync-scheduler",
   "./shared/services/modelSyncScheduler",
+  "./shared/pino-logger",
 ];
 for (const subpath of retiredRedundantCoreExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {
