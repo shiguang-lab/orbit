@@ -26,8 +26,6 @@ export function parseVertexAnthropicModels(data: unknown): VertexAnthropicDiscov
     .map((m: unknown) => {
       const model = m as VertexPublisherModel;
       const rawName = typeof model.name === "string" ? model.name : "";
-      // "publishers/anthropic/models/claude-sonnet-4-6" or
-      // "projects/x/locations/y/publishers/anthropic/models/claude-sonnet-4-6"
       const id = rawName.replace(/^(?:projects\/[^/]+\/locations\/[^/]+\/)?publishers\/anthropic\/models\//, "") || rawName;
       if (!id) return null;
 

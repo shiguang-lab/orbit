@@ -289,7 +289,6 @@
       "import": "./src/shared/validation/providerSpecificData.ts"
     },
     "./edge/ws-cors": "./src/shared/utils/cors.ts",
-    "./edge/ws-path": "./src/shared/utils/wsPath.ts",
     "./edge/ws-handshake": {
       "types": "./src/public/edgeWs.d.ts",
       "import": "./src/lib/ws/handshake.ts"
@@ -439,7 +438,6 @@
     "./control/radar-offers-sync": { "types": "./src/public/radar.d.ts", "import": "./src/lib/radar/offersSync.ts" },
     "./control/radar-intel-sync": { "types": "./src/public/radar.d.ts", "import": "./src/lib/radar/intelSync.ts" },
     "./control/radar-links": { "types": "./src/public/radar.d.ts", "import": "./src/lib/radar/links.ts" },
-    "./control/radar-supporter-key": { "types": "./src/public/radar.d.ts", "import": "./src/lib/radar/supporterKey.ts" },
     "./control/proxy-subscriptions": {
       "types": "./src/public/proxySubscriptions.d.ts",
       "import": "./src/lib/proxySubscription/index.ts"
@@ -460,7 +458,6 @@
     "./control/provider-discovery-support/modelMetadataPrecedence": "./src/lib/providers/modelMetadataPrecedence.ts",
     "./control/provider-discovery-support/cursorAgent": "./src/lib/providerModels/cursorAgent.ts",
     "./control/provider-discovery-support/cursorAutoCatalog": "./src/lib/providerModels/cursorAutoCatalog.ts",
-    "./control/provider-discovery-support/vertexAnthropicModelsParser": "./src/lib/providerModels/vertexAnthropicModelsParser.ts",
     "./control/provider-discovery-support/managedModelImport": "./src/lib/providerModels/managedModelImport.ts",
     "./control/provider-discovery-support/codexProfileAutoSync": "./src/lib/cli-helper/codexProfileAutoSync.ts",
     "./control/provider-discovery-support/claudeProfileAutoSync": "./src/lib/cli-helper/claudeProfileAutoSync.ts",
@@ -1351,7 +1348,6 @@
     "./shared/services/opencodeConfig": "./src/shared/services/opencodeConfig.ts",
     "./shared/services/qwenCodeConfig": "./src/shared/services/qwenCodeConfig.ts",
     "./shared/types/cliBatchStatus": "./src/shared/types/cliBatchStatus.ts",
-    "./shared/utils/compressionHeaderEcho": "./src/shared/utils/compressionHeaderEcho.ts",
     "./shared/utils/resolveGatewayBaseUrl": "./src/shared/utils/resolveGatewayBaseUrl.ts",
     "./usage/call-logs": {
       "types": "./src/public/usageDb.d.ts",

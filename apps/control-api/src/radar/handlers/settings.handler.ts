@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { getContributorClaimUrl, getSupporterPlansUrl } from "@shiguang-gateway/core-domain/control/radar-links";
-import { SUPPORTER_KEY_REGEX } from "@shiguang-gateway/core-domain/control/radar-supporter-key";
+import { SUPPORTER_KEY_REGEX } from "../supporter-key.js";
 import { getRadarSettings, setRadarKey, setRadarOptIn } from "@shiguang-gateway/core-domain/control/radar-db";
 import { ensureRadarSyncScheduler } from "@shiguang-gateway/core-domain/worker/lib/radar/scheduler.ts";
 import { authorize, handleCorsOptions, json, internalError } from "../common.js";

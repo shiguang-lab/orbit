@@ -1893,7 +1893,7 @@ export async function getProviderModels(
           if (anthropicResponse.ok) {
             const anthropicData = await anthropicResponse.json();
             const { parseVertexAnthropicModels } =
-              await import("@shiguang-gateway/core-domain/control/provider-discovery-support/vertexAnthropicModelsParser");
+              await import("./vertex-anthropic-models-parser.js");
             allModels.push(...parseVertexAnthropicModels(anthropicData));
           } else {
             console.log("[models] Vertex Anthropic partner discovery failed", {

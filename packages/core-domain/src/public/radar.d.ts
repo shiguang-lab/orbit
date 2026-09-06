@@ -21,5 +21,4 @@ export function clearRadarLocalModelOverride(...args: any[]): any;
 export function getContributorClaimUrl(...args: any[]): string;
 export function getSupporterPlansUrl(...args: any[]): string;
 export function getRadarAdminUrl(...args: any[]): string | null;
-export const SUPPORTER_KEY_REGEX: RegExp;
 export function ensureRadarSyncScheduler(...args: any[]): any;

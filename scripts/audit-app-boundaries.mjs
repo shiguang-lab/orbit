@@ -125,7 +125,6 @@ const allowedCoreDomainSubpaths = {
     "usage/call-log-api-key-context",
     "sse/image-credential-retry",
     "edge/ws-cors",
-    "edge/ws-path",
     "edge/ws-handshake",
     "db/ping",
     "db/encryption",
@@ -249,7 +248,6 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/radar-offers-sync",
   "control/radar-intel-sync",
   "control/radar-links",
-  "control/radar-supporter-key",
   "worker/lib/radar/scheduler.ts",
   "worker/lib/db/cleanup.ts",
   "usage/call-logs",
@@ -988,6 +986,10 @@ const retiredAppOwnedExports = [
   "./control/oauth-runtime/deviceFlowTickets",
   "./edge/fleet-skills",
   "./edge/vscode-token-combos",
+  "./edge/ws-path",
+  "./shared/utils/compressionHeaderEcho",
+  "./control/radar-supporter-key",
+  "./control/provider-discovery-support/vertexAnthropicModelsParser",
 ];
 for (const subpath of retiredAppOwnedExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {

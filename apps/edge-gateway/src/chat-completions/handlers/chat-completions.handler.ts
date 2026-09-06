@@ -21,6 +21,10 @@ import {
   assertCommonChatGptWebModelAvailable,
   isCommonChatGptWebRetirementError,
 } from "@shiguang-gateway/contracts/chatgpt-web-retirement";
+import {
+  readCompressionRequestHeader,
+  withCompressionHeaderEcho,
+} from "../../completions/compression-header-echo.js";
 
 const load = (specifier: string): Promise<any> => import(specifier);
 
@@ -75,13 +79,11 @@ export function OPTIONS(): Response {
 }
 
 export async function POST(request: Request): Promise<Response> {
-  const [admissionApi, compressionApi, aliasApi] = await Promise.all([
+  const [admissionApi, aliasApi] = await Promise.all([
     load("@shiguang-gateway/core-domain/shared/middleware/chatBodyAdmission"),
-    load("@shiguang-gateway/core-domain/shared/utils/compressionHeaderEcho"),
     load("@shiguang-gateway/core-domain/lib/modelAliasResolver"),
   ]);
   const { admitChatRequest, admitChatStructure, CHAT_ADMISSION_QUEUE_MAX_MS, releaseChatAdmissionAfterHandler, releaseChatAdmissionWhenDone, resolveSessionId } = admissionApi;
-  const { readCompressionRequestHeader, withCompressionHeaderEcho } = compressionApi;
   const { resolveModelAliasWithSeedFallbackOnBody } = aliasApi;
   await ensureInitialized();
 

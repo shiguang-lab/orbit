@@ -1,18 +1,17 @@
 import { Injectable } from "@nestjs/common";
+import { getLiveWsPath, resolveLiveWsPublicUrl } from "./ws-path.js";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
 
 @Injectable()
 export class WsService {
   async handleWs(req: Request): Promise<Response> {
-    const [handshakeModule, corsModule, pathModule] = await Promise.all([
+    const [handshakeModule, corsModule] = await Promise.all([
       load("@shiguang-gateway/core-domain/edge/ws-handshake"),
       load("@shiguang-gateway/core-domain/edge/ws-cors"),
-      load("@shiguang-gateway/core-domain/edge/ws-path"),
     ]);
     const { authorizeWebSocketHandshake } = handshakeModule;
     const { CORS_HEADERS } = corsModule;
-    const { getLiveWsPath, resolveLiveWsPublicUrl } = pathModule;
     const headers = { ...CORS_HEADERS, "Cache-Control": "no-store" };
     const auth = await authorizeWebSocketHandshake(req);
     if (new URL(req.url).searchParams.get("handshake") !== "1") {
