@@ -116,6 +116,10 @@
       "types": "./public/webFetch.d.ts",
       "import": "./handlers/webFetch.ts"
     },
+    "./handlers/cursorCliProxy": {
+      "types": "./public/cursorCliProxy.d.ts",
+      "import": "./handlers/cursorCliProxy.ts"
+    },
     "./handlers/autoComboCandidates": {
       "types": "./public/autoComboCandidates.d.ts",
       "import": "./handlers/autoComboCandidates.ts"
@@ -315,10 +319,26 @@
       "types": "./config/codexQuotaScopes.ts",
       "import": "./config/codexQuotaScopes.ts"
     },
-    "./*": {
-      "types": "./*",
-      "import": "./*"
-    }
+    "./config/audioRegistry": "./config/audioRegistry.ts",
+    "./handlers/audioTranscription": "./handlers/audioTranscription.ts",
+    "./mcp-server/audit": "./mcp-server/audit.ts",
+    "./mcp-server/runtimeHeartbeat": "./mcp-server/runtimeHeartbeat.ts",
+    "./mcp-server/schemas/tools": "./mcp-server/schemas/tools.ts",
+    "./services/compression": "./services/compression/index.ts",
+    "./services/compression/diffHelper": "./services/compression/diffHelper.ts",
+    "./services/compression/engineBreakdown": "./services/compression/engineBreakdown.ts",
+    "./services/compression/engines/ccr/ccrQuery": "./services/compression/engines/ccr/ccrQuery.ts",
+    "./services/compression/engines/ccr/index": "./services/compression/engines/ccr/index.ts",
+    "./services/compression/engines/headroom/encoderComparison": "./services/compression/engines/headroom/encoderComparison.ts",
+    "./services/compression/engines/headroom/smartcrusher": "./services/compression/engines/headroom/smartcrusher.ts",
+    "./services/compression/engines/index": "./services/compression/engines/index.ts",
+    "./services/compression/engines/registry": "./services/compression/engines/registry.ts",
+    "./services/compression/harness/benchmark": "./services/compression/harness/benchmark.ts",
+    "./services/compression/strategySelector": "./services/compression/strategySelector.ts",
+    "./services/compression/types": "./services/compression/types.ts",
+    "./services/conversationTurnContent": "./services/conversationTurnContent.ts",
+    "./services/quotaMonitor": "./services/quotaMonitor.ts",
+    "./services/tierTypes": "./services/tierTypes.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit --pretty false",

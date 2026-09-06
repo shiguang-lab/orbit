@@ -1,7 +1,7 @@
 import { Controller, Get, Inject, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { GET as getCatalog } from "@shiguang-gateway/core-domain/control/model-catalog-route";
 import { WebRouteDispatcher } from "../../common/web-route.dispatcher.js";
+import { GET as getCatalog } from "./models-catalog.handler.js";
 
 @Controller("api/models/catalog")
 export class ModelsCatalogController {

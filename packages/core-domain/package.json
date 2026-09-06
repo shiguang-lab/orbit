@@ -4,6 +4,10 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./control/embedded-service-proxy": {
+      "types": "./src/public/embeddedServiceProxy.d.ts",
+      "import": "./src/control/embedded-service-proxy.ts"
+    },
     "./control/settings-root": {
       "types": "./src/public/settingsRoot.d.ts",
       "import": "./src/control/settings-root.ts"
@@ -499,10 +503,6 @@
       "types": "./src/public/providerAuthImport.d.ts",
       "import": "./src/control/providerAuthImport.ts"
     },
-    "./control/provider-bulk-web-session": {
-      "types": "./src/public/providerBulkWebSession.d.ts",
-      "import": "./src/control/provider-bulk-web-session.ts"
-    },
     "./control/provider-models-discovery": {
       "types": "./src/public/providerModelsDiscovery.d.ts",
       "import": "./src/control/providerModelsDiscovery/index.ts"
@@ -672,21 +672,9 @@
       "types": "./src/public/controlModels.d.ts",
       "import": "./src/models/index.ts"
     },
-    "./control/model-alias-routes": {
-      "types": "./src/public/modelRouteHandlers.d.ts",
-      "import": "./src/control/modelAliasRoutes.ts"
-    },
-    "./control/model-catalog-route": {
-      "types": "./src/public/modelRouteHandlers.d.ts",
-      "import": "./src/control/modelCatalogRoute.ts"
-    },
-    "./control/models-route": {
-      "types": "./src/public/modelRouteHandlers.d.ts",
-      "import": "./src/control/modelsRoute.ts"
-    },
-    "./control/openrouter-catalog-route": {
-      "types": "./src/public/modelRouteHandlers.d.ts",
-      "import": "./src/control/openrouterCatalogRoute.ts"
+    "./control/model-management": {
+      "types": "./src/control/model-management.ts",
+      "import": "./src/control/model-management.ts"
     },
     "./control/traffic-inspector": {
       "types": "./src/public/trafficInspectorControl.d.ts",
@@ -1021,6 +1009,10 @@
     "./db/provider-connections": {
       "types": "./src/public/providerConnections.d.ts",
       "import": "./src/lib/db/providers.ts"
+    },
+    "./db/upstream-proxy": {
+      "types": "./src/public/upstreamProxy.d.ts",
+      "import": "./src/lib/db/upstreamProxy.ts"
     },
     "./control/authenticated": {
       "types": "./src/public/authenticated.d.ts",

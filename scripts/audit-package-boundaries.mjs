@@ -96,10 +96,7 @@ function appConsumers(name, seen = new Set()) {
   return [...result];
 }
 
-const legacyMixed = new Set([
-  "@shiguang-gateway/core-domain",
-  "@shiguang-gateway/open-sse",
-]);
+const legacyMixed = new Set();
 
 // Legacy packages are still consumed by applications, so do not let their
 // transitional status hide the two boundary leaks that are cheapest to detect:

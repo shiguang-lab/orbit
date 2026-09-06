@@ -1,7 +1,7 @@
 import { Controller, Get, Inject, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { GET as getOpenRouterCatalog } from "@shiguang-gateway/core-domain/control/openrouter-catalog-route";
 import { WebRouteDispatcher } from "../../common/web-route.dispatcher.js";
+import { GET as getOpenRouterCatalog } from "./models-openrouter-catalog.handler.js";
 
 @Controller("api/models/openrouter-catalog")
 export class ModelsOpenRouterCatalogController {

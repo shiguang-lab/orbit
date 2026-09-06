@@ -1,7 +1,7 @@
 import { Controller, Get, Inject, Post, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { GET as getModels, PUT as putModelAlias } from "@shiguang-gateway/core-domain/control/models-route";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
+import { GET as getModels, PUT as putModelAlias } from "./models.handler.js";
 import { ModelsService } from "./models.service.js";
 
 @Controller("api/models")

@@ -131,6 +131,7 @@ const allowedCoreDomainSubpaths = {
     "db/ping",
     "db/encryption",
     "db/provider-connections",
+    "db/upstream-proxy",
     "control/management-auth",
     "shared/cors-status",
     "network/remote-image-fetch",
@@ -148,6 +149,7 @@ const allowedCoreDomainSubpaths = {
     "edge/provider-limits",
     "edge/internal-usage",
     "shared/cors",
+    "shared/validation-helpers",
     "edge/v1beta-models",
     "edge/v1beta-generate",
     "edge/vnc-session",
@@ -177,6 +179,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/telegram",
   "control/intelligence-sync",
   "control/routing-preview",
+  "control/embedded-service-proxy",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/usage",
@@ -190,7 +193,6 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/token-health-check",
   "control/oauth-gitlab",
   "lib/providers/chatgptWebRetirementResponse",
-  "control/provider-bulk-web-session",
   "control/acp",
   "conductor/faro-proxy",
   "conductor/hub-proxy",
@@ -260,10 +262,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/obsidian-sync",
   "control/oauth-runtime/",
   "control/models",
-  "control/model-alias-routes",
-  "control/model-catalog-route",
-  "control/models-route",
-  "control/openrouter-catalog-route",
+  "control/model-management",
   "control/traffic-inspector",
   "control/agent-bridge",
   "control/build-phase",
@@ -797,6 +796,10 @@ const migratedRouteOwnership = {
     "api/v1/auto-combo/[channel]/candidates/route.ts",
     "api/v1/vscode/[token]/api/version/route.ts",
     "api/v1/search/route.ts",
+    "api/[...gatewayApiCatchAll]/route.ts",
+    "api/v1/[...gatewayCatchAll]/route.ts",
+    "api/upstream-proxy/[providerId]/route.ts",
+    "api/cursor-cli/[...path]/route.ts",
   ],
 };
 
@@ -873,7 +876,7 @@ function extractControllerRoutes(controllerFile) {
       for (let subPath of subPaths) {
         let fullPath = [basePrefix, subPath].filter(Boolean).join("/");
         if (fullPath.startsWith("api/")) fullPath = fullPath.slice("api/".length);
-        fullPath = fullPath.replace(/\/\*$/, fullPath.startsWith("v1beta/models/") ? "/[...path]" : (fullPath.startsWith("vnc-session/") ? "/[...params]" : "/[...model]"));
+        fullPath = fullPath.replace(/\/\*$/, fullPath.startsWith("v1beta/models/") || fullPath.startsWith("cursor-cli/") ? "/[...path]" : (fullPath.startsWith("vnc-session/") ? "/[...params]" : "/[...model]"));
         fullPath = fullPath.replace(/:([a-zA-Z0-9_]+)/g, "[$1]");
         const routePath = `${fullPath ? fullPath + "/" : ""}route.ts`;
         routes.add(routePath);

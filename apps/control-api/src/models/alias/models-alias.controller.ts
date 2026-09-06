@@ -4,7 +4,7 @@ import {
   DELETE as deleteAlias,
   GET as getAliases,
   PUT as putAlias,
-} from "@shiguang-gateway/core-domain/control/model-alias-routes";
+} from "./models-alias.handler.js";
 import { WebRouteDispatcher } from "../../common/web-route.dispatcher.js";
 
 @Controller("api/models/alias")

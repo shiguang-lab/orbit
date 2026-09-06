@@ -108,6 +108,7 @@ import { FreeTierModule } from "./free-tier/free-tier.module.js";
 import { SearchStatsModule } from "./search/stats/search-stats.module.js";
 import { TelegramModule } from "./telegram/telegram.module.js";
 import { IntelligenceModule } from "./intelligence/intelligence.module.js";
+import { EmbeddedServiceProxyModule } from "./services/embedded-service-proxy.module.js";
 
 @Module({
   imports: [
@@ -221,6 +222,7 @@ import { IntelligenceModule } from "./intelligence/intelligence.module.js";
     SearchStatsModule,
     TelegramModule,
     IntelligenceModule,
+    EmbeddedServiceProxyModule,
   ],
 })
 export class AppModule {}

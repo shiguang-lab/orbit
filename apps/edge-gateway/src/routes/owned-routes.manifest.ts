@@ -1,6 +1,6 @@
 export type OwnedRoute = {
   path: string;
-  methods: readonly ("GET" | "POST" | "DELETE" | "OPTIONS" | "HEAD")[];
+  methods: readonly ("GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "OPTIONS" | "HEAD")[];
 };
 
 export const ownedEdgeRoutes: readonly OwnedRoute[] = [
@@ -83,6 +83,11 @@ export const ownedEdgeRoutes: readonly OwnedRoute[] = [
   { path: "/api/translator/transform-stream", methods: ["POST"] },
   { path: "/api/translator/send", methods: ["POST"] },
   { path: "/api/translator/history", methods: ["GET"] },
+  { path: "/api/upstream-proxy/:providerId", methods: ["DELETE", "GET", "PUT"] },
+  { path: "/api/cursor-cli/*", methods: ["GET", "POST"] },
+  { path: "/api/v1/*", methods: ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"] },
+  { path: "/v1/*", methods: ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"] },
+  { path: "/api/*", methods: ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"] },
 ];
 
 /** Paths physically owned by edge-gateway, expressed as compatibility catalog segments. */

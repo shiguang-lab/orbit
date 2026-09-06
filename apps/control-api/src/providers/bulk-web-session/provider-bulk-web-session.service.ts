@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { postBulkWebSession } from "@shiguang-gateway/core-domain/control/provider-bulk-web-session";
+import { postBulkWebSession } from "./provider-bulk-web-session.handler.js";
 
 @Injectable()
 export class ProviderBulkWebSessionService {

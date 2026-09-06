@@ -57,6 +57,8 @@ import { GeminiV1betaModule } from "./gemini-v1beta/gemini-v1beta.module.js";
 import { VncSessionModule } from "./vnc-session/vnc-session.module.js";
 import { TranslatorModule } from "./translator/translator.module.js";
 import { CodexResponsesWsModule } from "./codex-responses-ws/codex-responses-ws.module.js";
+import { CursorCliModule } from "./cursor-cli/cursor-cli.module.js";
+import { UpstreamProxyModule } from "./upstream-proxy/upstream-proxy.module.js";
 
 @Module({
   imports: [
@@ -119,6 +121,8 @@ import { CodexResponsesWsModule } from "./codex-responses-ws/codex-responses-ws.
     VncSessionModule,
     TranslatorModule,
     CodexResponsesWsModule,
+    CursorCliModule,
+    UpstreamProxyModule,
   ],
 })
 export class AppModule {}
