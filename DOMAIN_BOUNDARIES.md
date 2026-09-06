@@ -40,6 +40,29 @@ have at least two workspace consumers and must not contain app-owned route trees
 legacy `core-domain` and `open-sse` packages currently fail this gate and remain an
 explicit migration backlog; new app-only code must not be added to them.
 
+## Entity sharing evidence
+
+Run `pnpm audit:db-entities --json` when changing a table definition. The audit
+compiles the canonical entities, resolves transitive workspace consumers, and scans
+`apps/*/src` plus package source for SQL table references. In the current graph,
+`@shiguang-gateway/db-schema` reaches four deployable apps through the remaining
+`core-domain` seam: `control-api`, `edge-gateway`, `realtime`, and `worker`.
+
+The entity write owners are intentionally narrower than those consumers:
+
+| Owner | Entities |
+| --- | --- |
+| `control-api` | settings, providerConnections, providerNodes, apiKeys, apiKeyGroups, combos, modelComboMappings, webhooks |
+| `edge-gateway` | batches, files |
+| `worker` | usageHistory, callLogs, proxyLogs, quotaSnapshots, auditLogs, memories, jobs |
+
+The SQL scan currently finds table references in `core-domain` rather than direct
+app source, so the report labels these rows `PASS-indirect-declared-owner`. This is
+evidence that the package is shared, not proof that the legacy package has already
+enforced each app's write boundary. A domain migration must move its queries and
+mutations into the owner app and should make the row `PASS-direct`; an app-only
+temporary table must not be added to `db-schema`.
+
 Route migration is physical: handlers already accepted by an app live below
 that app's `src/routes` tree. The parity audits aggregate those app-owned trees
 with the remaining domain handlers, so each move is independently verifiable.
