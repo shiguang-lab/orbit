@@ -9,3 +9,4 @@ export const paginationSchema: z.ZodTypeAny;
 export const toggleRateLimitSchema: z.ZodTypeAny;
 export const versionManagerToolSchema: z.ZodTypeAny;
 export const versionManagerInstallSchema: z.ZodTypeAny;
+export const testProxySchema: z.ZodTypeAny;

@@ -17,6 +17,10 @@
       "types": "./public/proxyFetch.d.ts",
       "import": "./utils/proxyFetch.ts"
     },
+    "./utils/proxyDispatcher": {
+      "types": "./public/proxyDispatcher.d.ts",
+      "import": "./utils/proxyDispatcher.ts"
+    },
     "./utils/logger": {
       "types": "./public/logger.d.ts",
       "import": "./utils/logger.ts"

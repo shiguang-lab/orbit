@@ -52,6 +52,27 @@ export function countBatches(apiKeyId?: string): number;
 export function deleteBatch(id: string): boolean;
 export function deleteCompletedBatches(): { deletedBatches: number; deletedFiles: number };
 
+export interface ProxyRegistryRecord {
+  id: string;
+  name: string;
+  type: string;
+  host: string;
+  port: number;
+  username: string;
+  password: string;
+  region: string | null;
+  notes: string | null;
+  status: string;
+  source: string;
+  family: string;
+  subscriptionId: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+export function getProxyById(id: string, options?: { includeSecrets?: boolean }): Promise<ProxyRegistryRecord | null>;
+export function extractRelayAuth(notes: unknown): string | undefined;
+export function recordRelayProbe(alive: boolean): void;
+
 export type WebhookKind = "slack" | "telegram" | "discord" | "custom";
 export interface Webhook {
   id: string;

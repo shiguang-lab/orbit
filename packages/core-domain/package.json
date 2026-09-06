@@ -218,6 +218,10 @@
       "types": "./src/public/proxyLogs.d.ts",
       "import": "./src/lib/proxyLogger.ts"
     },
+    "./shared/proxy-echo-target": {
+      "types": "./src/public/proxyEchoTarget.d.ts",
+      "import": "./src/lib/proxyEchoTarget.ts"
+    },
     "./db/detailed-logs": {
       "types": "./src/public/detailedLogs.d.ts",
       "import": "./src/lib/db/detailedLogs.ts"

@@ -21,6 +21,8 @@ import { MemoryModule } from "./memory/memory.module.js";
 import { SettingsModule } from "./settings/settings.module.js";
 import { RateLimitsModule } from "./rate-limits/rate-limits.module.js";
 import { VersionManagerModule } from "./version-manager/version-manager.module.js";
+import { BifrostModule } from "./bifrost/bifrost.module.js";
+import { ProxyModule } from "./proxy/proxy.module.js";
 
 @Module({
   imports: [
@@ -46,6 +48,8 @@ import { VersionManagerModule } from "./version-manager/version-manager.module.j
     SettingsModule,
     RateLimitsModule,
     VersionManagerModule,
+    BifrostModule,
+    ProxyModule,
   ],
 })
 export class AppModule {}

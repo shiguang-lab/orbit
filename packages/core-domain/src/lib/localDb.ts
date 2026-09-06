@@ -201,6 +201,7 @@ export {
   migrateLegacyProxyConfigToRegistry,
   getProxyHealthStats,
   bulkAssignProxyToScope,
+  extractRelayAuth,
 } from "./db/proxies";
 
 export {
