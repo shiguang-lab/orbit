@@ -13,7 +13,7 @@ import { createHash, randomBytes, randomUUID } from "node:crypto";
 import {
   CLAUDE_CODE_CLIENT_VERSION,
   CLAUDE_CODE_SDK_PACKAGE_VERSION,
-} from "../../core-domain/src/shared/constants/claudeCodeClient.ts";
+} from "@shiguang-gateway/contracts/claude-code-client";
 
 // ---------- Versions ------------------------------------------------------
 

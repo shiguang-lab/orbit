@@ -14,7 +14,7 @@ import {
   getAntigravityUserAgent,
   GITHUB_COPILOT_CHAT_USER_AGENT,
 } from "./providerHeaderProfiles.ts";
-import { normalizeCliCompatProviderId } from "../../core-domain/src/shared/utils/cliCompat.ts";
+import { normalizeCliCompatProviderId } from "@shiguang-gateway/contracts/cli-compat";
 
 export interface CliFingerprint {
   /** Ordered list of header names (case-sensitive). Unlisted headers are appended. */

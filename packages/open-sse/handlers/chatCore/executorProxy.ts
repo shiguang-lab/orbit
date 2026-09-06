@@ -16,14 +16,14 @@
  * account pool (not a configured bearer key) and has its own server-side model-alias mechanism.
  */
 
-import { assertRuntimeProviderAvailable } from "../../../core-domain/src/shared/constants/providerRetirement.ts";
+import { assertRuntimeProviderAvailable } from "@shiguang-gateway/contracts/provider-retirement";
 
 import { getExecutor } from "../../executors/index.ts";
 import { isCliproxyapiDeepModeEnabled } from "../../executors/cliproxyapi.ts";
 import { isDarioDeepModeEnabled } from "../../executors/dario.ts";
 import { getCachedSettings } from "../../../core-domain/src/lib/db/readCache.ts";
-import { assertMicrosoftDesignerWebProviderAvailable } from "../../../core-domain/src/shared/constants/designerWebRetirement.ts";
-import { assertCommonChatGptWebProviderAvailable } from "../../../core-domain/src/shared/constants/chatgptWebRetirement.ts";
+import { assertMicrosoftDesignerWebProviderAvailable } from "@shiguang-gateway/contracts/designer-web-retirement";
+import { assertCommonChatGptWebProviderAvailable } from "@shiguang-gateway/contracts/chatgpt-web-retirement";
 import { getUpstreamProxyConfigCached } from "./comboContextCache.ts";
 import type { FallbackBackend } from "../../../core-domain/src/lib/db/upstreamProxy.ts";
 import { wrapExecutorWithCliproxyapiModelMapping } from "./cliproxyModelMapping.ts";

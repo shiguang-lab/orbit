@@ -12,7 +12,7 @@
 import { getModelUpstreamExtraHeaders } from "../../../core-domain/src/lib/db/models.ts";
 import { resolveModelAlias } from "../../services/modelDeprecation.ts";
 import { CPA_FORCE_FAST_MODE_HEADER, shouldRequestClaudeFastMode } from "../../../core-domain/src/lib/providers/claudeFastMode.ts";
-import { isForbiddenCustomHeaderName } from "../../../core-domain/src/shared/constants/upstreamHeaders.ts";
+import { isForbiddenCustomHeaderName } from "@shiguang-gateway/contracts/upstream-headers";
 
 export function buildUpstreamHeadersForExecute(opts: {
   modelToCall: string;

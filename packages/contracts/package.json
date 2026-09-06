@@ -53,6 +53,38 @@
     "./reasoning-effort": {
       "types": "./src/reasoning-effort.ts",
       "import": "./src/reasoning-effort.ts"
+    },
+    "./claude-code-client": {
+      "types": "./src/claude-code-client.ts",
+      "import": "./src/claude-code-client.ts"
+    },
+    "./codex-client": {
+      "types": "./src/codex-client.ts",
+      "import": "./src/codex-client.ts"
+    },
+    "./vision-models": {
+      "types": "./src/vision-models.ts",
+      "import": "./src/vision-models.ts"
+    },
+    "./upstream-headers": {
+      "types": "./src/upstream-headers.ts",
+      "import": "./src/upstream-headers.ts"
+    },
+    "./designer-web-retirement": {
+      "types": "./src/designer-web-retirement.ts",
+      "import": "./src/designer-web-retirement.ts"
+    },
+    "./provider-retirement": {
+      "types": "./src/provider-retirement.ts",
+      "import": "./src/provider-retirement.ts"
+    },
+    "./chatgpt-web-retirement": {
+      "types": "./src/chatgpt-web-retirement.ts",
+      "import": "./src/chatgpt-web-retirement.ts"
+    },
+    "./cli-compat": {
+      "types": "./src/cli-compat.ts",
+      "import": "./src/cli-compat.ts"
     }
   },
   "scripts": {

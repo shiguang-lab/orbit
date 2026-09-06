@@ -5,7 +5,7 @@ import {
   CHATGPT_WEB_RETIRED_ERROR_CODE,
   CHATGPT_WEB_RETIRED_MESSAGE,
   isCommonChatGptWebRetiredProviderId,
-} from "../../core-domain/src/shared/constants/chatgptWebRetirement.ts";
+} from "@shiguang-gateway/contracts/chatgpt-web-retirement";
 
 import { getImageProvider, parseImageModel } from "../config/imageRegistry.ts";
 import { HTTP_STATUS } from "../config/constants.ts";
@@ -40,7 +40,7 @@ import { sanitizeErrorMessage, sanitizeUpstreamDetails } from "../utils/error.ts
 import {
   isMicrosoftDesignerWebRetiredProviderId,
   MICROSOFT_DESIGNER_WEB_RETIRED_MESSAGE,
-} from "../../core-domain/src/shared/constants/designerWebRetirement.ts";
+} from "@shiguang-gateway/contracts/designer-web-retirement";
 
 import { handleSDWebUIImageGeneration } from "./imageGeneration/providers/sdWebUI.ts";
 import { handleHyperbolicImageGeneration } from "./imageGeneration/providers/hyperbolic.ts";

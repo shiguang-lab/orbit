@@ -28,9 +28,9 @@ import type {
   ResolvedComboTarget,
 } from "./types.ts";
 import { extractSessionAffinityKey } from "../../../core-domain/src/sse/services/auth.ts";
-import { isMicrosoftDesignerWebRetiredProviderId } from "../../../core-domain/src/shared/constants/designerWebRetirement.ts";
-import { isRuntimeRetiredProviderId } from "../../../core-domain/src/shared/constants/providerRetirement.ts";
-import { isCommonChatGptWebRetiredProviderId } from "../../../core-domain/src/shared/constants/chatgptWebRetirement.ts";
+import { isMicrosoftDesignerWebRetiredProviderId } from "@shiguang-gateway/contracts/designer-web-retirement";
+import { isRuntimeRetiredProviderId } from "@shiguang-gateway/contracts/provider-retirement";
+import { isCommonChatGptWebRetiredProviderId } from "@shiguang-gateway/contracts/chatgpt-web-retirement";
 import { filterChatSelectableModels } from "../modelEndpointPolicy.ts";
 import { DEFAULT_INTENT_CONFIG, type IntentClassifierConfig } from "../intentClassifier.ts";
 import { getTaskFitness } from "../autoCombo/taskFitness.ts";

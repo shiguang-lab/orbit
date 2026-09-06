@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 
-import { isVisionModelId } from "../../core-domain/src/shared/constants/visionModels.ts";
+import { isVisionModelId } from "@shiguang-gateway/contracts/vision-models";
 import { REGISTRY } from "../config/providerRegistry.ts";
 import {
   BaseExecutor,

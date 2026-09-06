@@ -223,6 +223,14 @@ export * from "./routing-strategies.js";
 export * from "./responses-state.js";
 export * from "./responses-store.js";
 export * from "./reasoning-effort.js";
+export * from "./claude-code-client.js";
+export * from "./codex-client.js";
+export * from "./vision-models.js";
+export * from "./upstream-headers.js";
+export * from "./designer-web-retirement.js";
+export * from "./provider-retirement.js";
+export * from "./chatgpt-web-retirement.js";
+export * from "./cli-compat.js";
 
 export interface ComboBuilderModelOption {
   id: string;

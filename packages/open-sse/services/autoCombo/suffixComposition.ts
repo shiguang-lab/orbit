@@ -19,7 +19,7 @@
 import type { AutoVariant } from "./autoPrefix";
 import { classifyTier } from "../tierResolver";
 import { getResolvedModelCapabilities } from "../../../core-domain/src/lib/modelCapabilities.ts";
-import { isVisionModelId } from "../../../core-domain/src/shared/constants/visionModels.ts";
+import { isVisionModelId } from "@shiguang-gateway/contracts/vision-models";
 import { isVisionBridgeForcedModel } from "../../../core-domain/src/shared/constants/visionBridgeDefaults.ts";
 
 export type AutoCategory = "coding" | "reasoning" | "vision" | "chat" | "multimodal";

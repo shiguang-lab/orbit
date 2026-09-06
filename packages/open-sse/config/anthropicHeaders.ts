@@ -5,7 +5,7 @@ import {
   CLAUDE_CODE_RUNTIME_VERSION,
   CLAUDE_CODE_SDK_PACKAGE_VERSION,
   getClaudeCodeUserAgent,
-} from "../../core-domain/src/shared/constants/claudeCodeClient.ts";
+} from "@shiguang-gateway/contracts/claude-code-client";
 import { modelSupportsContext1mBeta } from "../config/context1m.ts";
 
 export const ANTHROPIC_VERSION_HEADER = "2023-06-01";

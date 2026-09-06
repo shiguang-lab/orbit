@@ -50,7 +50,7 @@ import {
 } from "../config/providers/registry/poe/index.ts";
 import { buildMaritalkChatUrl } from "../config/maritalk.ts";
 import { LOCAL_PROVIDERS } from "../../core-domain/src/shared/constants/providers.ts";
-import { isForbiddenCustomHeaderName } from "../../core-domain/src/shared/constants/upstreamHeaders.ts";
+import { isForbiddenCustomHeaderName } from "@shiguang-gateway/contracts/upstream-headers";
 import { getClaudeCodeCompatibleRequestDefaults } from "../../core-domain/src/lib/providers/requestDefaults.ts";
 import { applyClineAuthHeaders } from "../../core-domain/src/shared/utils/clineAuth.ts";
 import {
