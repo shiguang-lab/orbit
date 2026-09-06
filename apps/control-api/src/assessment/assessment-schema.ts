@@ -1,8 +1,14 @@
-import { mkdirSync, existsSync } from "node:fs";
-import { dirname } from "node:path";
+import { getDbInstance } from "@shiguang-gateway/core-domain/db/ping";
 
-const MIGRATION_SQL = `
--- Model assessments: probe results for each provider/model pair
+/**
+ * SQLite schema for the control-plane model assessment engine.
+ *
+ * Entity metadata lives in packages/db-schema; this module owns the concrete
+ * DDL and startup initialization because assessment data is only written by
+ * control-api.  Keep this helper idempotent so existing installations can
+ * start without a separate migration package.
+ */
+const ASSESSMENT_SCHEMA_SQL = `
 CREATE TABLE IF NOT EXISTS model_assessments (
   id TEXT PRIMARY KEY,
   model_id TEXT NOT NULL,
@@ -29,7 +35,6 @@ CREATE TABLE IF NOT EXISTS model_assessments (
   UNIQUE(model_id, provider_id)
 );
 
--- Assessment run history
 CREATE TABLE IF NOT EXISTS assessment_runs (
   id TEXT PRIMARY KEY,
   started_at TEXT NOT NULL,
@@ -43,7 +48,6 @@ CREATE TABLE IF NOT EXISTS assessment_runs (
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
--- Combo health tracking
 CREATE TABLE IF NOT EXISTS combo_health (
   combo_id TEXT PRIMARY KEY,
   healthy_model_count INTEGER DEFAULT 0,
@@ -56,7 +60,6 @@ CREATE TABLE IF NOT EXISTS combo_health (
   FOREIGN KEY (combo_id) REFERENCES combos(id)
 );
 
--- Self-heal action log
 CREATE TABLE IF NOT EXISTS heal_actions (
   id TEXT PRIMARY KEY,
   combo_id TEXT NOT NULL,
@@ -71,7 +74,6 @@ CREATE TABLE IF NOT EXISTS heal_actions (
   FOREIGN KEY (combo_id) REFERENCES combos(id)
 );
 
--- Indexes for common queries
 CREATE INDEX IF NOT EXISTS idx_model_assessments_status ON model_assessments(status);
 CREATE INDEX IF NOT EXISTS idx_model_assessments_provider ON model_assessments(provider_id);
 CREATE INDEX IF NOT EXISTS idx_model_assessments_tier ON model_assessments(tier);
@@ -81,31 +83,10 @@ CREATE INDEX IF NOT EXISTS idx_heal_actions_combo_id ON heal_actions(combo_id);
 CREATE INDEX IF NOT EXISTS idx_heal_actions_timestamp ON heal_actions(timestamp);
 `;
 
-export async function runAssessmentMigration(dbPath: string): Promise<void> {
-  const dir = dirname(dbPath);
-  if (!existsSync(dir)) {
-    mkdirSync(dir, { recursive: true });
-  }
-
-  const { tryOpenSync } = await import("../../lib/db/adapters/driverFactory.ts");
-  const db = tryOpenSync(dbPath);
-  if (!db) throw new Error("No SQLite driver available for assessment migration");
-
-  db.pragma("journal_mode = WAL");
-  db.pragma("foreign_keys = ON");
-
-  db.exec(MIGRATION_SQL);
-
-  const versionRow = db
-    .prepare("SELECT COUNT(*) as count FROM _shiguangGateway_migrations WHERE name = ?")
-    .get("assessment_engine") as { count: number };
-  if (versionRow.count === 0) {
-    db.prepare(
-      "INSERT INTO _shiguangGateway_migrations (name, applied_at) VALUES (?, datetime('now'))"
-    ).run("assessment_engine");
-  }
-
-  db.close();
+/** Ensure assessment tables exist for fresh and previously migrated databases. */
+export function ensureAssessmentSchema(): void {
+  const db = getDbInstance();
+  db.exec(ASSESSMENT_SCHEMA_SQL);
 }
 
-export { MIGRATION_SQL };
+export { ASSESSMENT_SCHEMA_SQL };

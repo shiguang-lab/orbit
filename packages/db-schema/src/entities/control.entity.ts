@@ -724,3 +724,89 @@ export const EvalRunEntity: EntityDefinition = {
     column("created_at", "TEXT", { nullable: false }),
   ],
 };
+
+/** Model/provider probe results maintained by the control-plane assessment engine. */
+export const ModelAssessmentEntity: EntityDefinition = {
+  entityName: "ModelAssessment",
+  tableName: "model_assessments",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("model_id", "TEXT", { nullable: false }),
+    column("provider_id", "TEXT", { nullable: false }),
+    column("status", "TEXT", { nullable: false, default: "'unknown'" }),
+    column("latency_p50", "INTEGER"),
+    column("latency_p95", "INTEGER"),
+    column("success_rate", "REAL", { default: "0" }),
+    column("supports_vision", "INTEGER", { default: "0" }),
+    column("supports_tool_call", "INTEGER", { default: "0" }),
+    column("supports_streaming", "INTEGER", { default: "0" }),
+    column("supports_structured_output", "INTEGER", { default: "0" }),
+    column("max_context_window", "INTEGER"),
+    column("max_output_tokens", "INTEGER"),
+    column("categories", "TEXT", { default: "'[]'" }),
+    column("fitness_scores", "TEXT", { default: "'{}'" }),
+    column("tier", "TEXT", { default: "'balanced'" }),
+    column("last_tested", "TEXT"),
+    column("last_error", "TEXT"),
+    column("consecutive_fails", "INTEGER", { default: "0" }),
+    column("probe_count", "INTEGER", { default: "0" }),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+    column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
+/** Historical assessment executions written by control-api. */
+export const AssessmentRunEntity: EntityDefinition = {
+  entityName: "AssessmentRun",
+  tableName: "assessment_runs",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("started_at", "TEXT", { nullable: false }),
+    column("completed_at", "TEXT"),
+    column("models_tested", "INTEGER", { default: "0" }),
+    column("models_passed", "INTEGER", { default: "0" }),
+    column("models_failed", "INTEGER", { default: "0" }),
+    column("models_rate_limited", "INTEGER", { default: "0" }),
+    column("duration_ms", "INTEGER"),
+    column("trigger", "TEXT", { default: "'on_demand'" }),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
+/** Aggregate routing-combo health maintained by the assessment engine. */
+export const ComboHealthEntity: EntityDefinition = {
+  entityName: "ComboHealth",
+  tableName: "combo_health",
+  owner: "control-api",
+  columns: [
+    column("combo_id", "TEXT", { nullable: false, primaryKey: true }),
+    column("healthy_model_count", "INTEGER", { default: "0" }),
+    column("dead_model_count", "INTEGER", { default: "0" }),
+    column("total_model_count", "INTEGER", { default: "0" }),
+    column("health_score", "REAL", { default: "0" }),
+    column("last_auto_fix", "TEXT"),
+    column("auto_fix_count", "INTEGER", { default: "0" }),
+    column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
+/** Self-healing actions applied to routing combos by control-api. */
+export const HealActionEntity: EntityDefinition = {
+  entityName: "HealAction",
+  tableName: "heal_actions",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("combo_id", "TEXT", { nullable: false }),
+    column("action_type", "TEXT", { nullable: false }),
+    column("model_id", "TEXT", { nullable: false }),
+    column("provider_id", "TEXT", { nullable: false }),
+    column("reason", "TEXT", { nullable: false }),
+    column("previous_weight", "INTEGER"),
+    column("new_weight", "INTEGER"),
+    column("timestamp", "TEXT", { nullable: false }),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
