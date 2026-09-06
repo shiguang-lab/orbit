@@ -46,7 +46,7 @@ import {
   getQuotaWindowStatus,
   hydrateCodexQuotaCacheForRequest,
   isQuotaExhaustedForRequest,
-} from "@shiguang-gateway/core-domain/runtime/quota-cache";
+} from "@shiguang-gateway/core-domain/quota/cache";
 import { getQuotaScopeLabelForProvider } from "../services/antigravityQuotaFamily.ts";
 import { getCreditsMode } from "../services/antigravityCredits.ts";
 import { preferAntigravityConnectionsWithStoredProject } from "../services/antigravityProjectPersistence.ts";

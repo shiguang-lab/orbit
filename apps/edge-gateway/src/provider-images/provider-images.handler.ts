@@ -9,7 +9,7 @@ import { getImageProvider } from "@shiguang-gateway/open-sse/config/imageRegistr
 import * as log from "@shiguang-gateway/core-domain/sse/logger";
 import { toJsonErrorPayload } from "@shiguang-gateway/core-domain/shared/upstream-error";
 import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/runtime/api-key-policy";
-import { v1ImageGenerationSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { v1ImageGenerationSchema } from "@shiguang-gateway/core-domain/edge/image-generation-validation";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { enforceClientApiRouteAuth } from "../common/client-api-route-auth.js";
 import { runWithCallLogApiKeyContext } from "@shiguang-gateway/core-domain/usage/call-log-api-key-context";

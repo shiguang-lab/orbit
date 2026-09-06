@@ -21,7 +21,7 @@ import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services
 import * as log from "@shiguang-gateway/core-domain/sse/logger";
 import { toJsonErrorPayload } from "@shiguang-gateway/core-domain/shared/upstream-error";
 import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/runtime/api-key-policy";
-import { v1ImageGenerationSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { v1ImageGenerationSchema } from "@shiguang-gateway/core-domain/edge/image-generation-validation";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 
 import {

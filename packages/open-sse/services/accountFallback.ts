@@ -34,7 +34,7 @@ import { resolveModelLockoutSettings } from "@shiguang-gateway/core-domain/resil
 import {
   getAllCircuitBreakerStatuses,
   getCircuitBreaker,
-} from "@shiguang-gateway/core-domain/edge/circuit-breaker";
+} from "@shiguang-gateway/core-domain/resilience/circuit-breaker";
 import {
   classify429FromError,
   looksLikeQuotaExhausted,

@@ -8,7 +8,7 @@ import {
 } from "@shiguang-gateway/core-domain/control/resilience-settings";
 import { updateResilienceSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { resetAllCircuitBreakers } from "@shiguang-gateway/core-domain/control/resilience-circuit-breaker";
+import { resetAllCircuitBreakers } from "@shiguang-gateway/core-domain/resilience/circuit-breaker";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 
 type JsonRecord = Record<string, unknown>;

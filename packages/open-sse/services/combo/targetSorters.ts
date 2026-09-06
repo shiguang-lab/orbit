@@ -7,7 +7,7 @@
  * in combo.ts) are imported back from this module. No barrel import — pure leaf.
  */
 
-import { getCircuitBreaker } from "@shiguang-gateway/core-domain/edge/circuit-breaker";
+import { getCircuitBreaker } from "@shiguang-gateway/core-domain/resilience/circuit-breaker";
 import { secureRandomFloat, secureRandomInt } from "@shiguang-gateway/core-domain/shared/secure-random";
 import { getComboStepTarget, getComboStepWeight } from "@shiguang-gateway/core-domain/edge/mcp-combo-steps";
 import { getComboMetrics } from "../comboMetrics.ts";

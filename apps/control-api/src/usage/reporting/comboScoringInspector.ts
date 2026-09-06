@@ -7,7 +7,7 @@ import {
   inspectTargetResilience,
   type ProviderConnectionView,
 } from "./resilienceExplain.js";
-import { getCircuitBreaker } from "@shiguang-gateway/core-domain/usage/reporting-support/shared/utils/circuitBreaker";
+import { getCircuitBreaker } from "@shiguang-gateway/core-domain/resilience/circuit-breaker";
 import {
   calculateFactors,
   calculateScore,

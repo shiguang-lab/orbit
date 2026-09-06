@@ -19,6 +19,8 @@ const packagesRoot = join(repoRoot, "packages");
 const sourceExtensions = /\.(?:[cm]?[jt]sx?|json)$/i;
 const ignored = new Set(["node_modules", "dist", ".turbo", ".git"]);
 const legacyNames = ["gateway" + "-runtime", "server" + "-runtime"];
+const quotaCacheLifecycleSpecifier =
+  "@shiguang-gateway/core-domain/quota/cache-lifecycle";
 const violations = [];
 
 const readJson = (file) => {
@@ -91,7 +93,7 @@ const allowedCoreDomainSubpaths = {
     "runtime/model-sync-operation",
     "shared/connection-isolation",
     "shared/connection-recovery-policy",
-    "shared/circuit-breaker",
+    "resilience/circuit-breaker",
     "resilience/credential-health-cache",
     "shared/credential-probe-policy",
     "shared/test-process",
@@ -100,6 +102,7 @@ const allowedCoreDomainSubpaths = {
     "shared/proxy-log-settings",
     "shared/proxy-egress",
     "shared/proxy-health",
+    "quota/cache-lifecycle",
   ],
   "apps/control-api": ["startup", "runtime/request", "db/ping", "db/health", "db/call-log-stats", "db/provider-connections", "db/model-aliases", "db/mitm-aliases", "db/proxies", "db/settings", "db/local-db", "db/provider-stats", "db/database-stats", "db/vacuum-scheduler", "catalog/provider-registry", "pricing/db", "pricing/defaults", "pricing/sync", "pricing/provider-prefixes", "pricing/validation", "pricing/modal-cost", "cache/db", "cache/services", "db/compression-analytics", "analytics/auto-routing-db", "analytics/diversity", "db-backups/db", "db-backups/validation", "metrics/combo", "metrics/request-telemetry", "metrics/observability", "metrics/tool-latency", "shared/numeric", "open-sse/utils/error.ts", "open-sse/services/deviceTracker.ts", "control/management-auth", "control/middleware-registry", "control/provider-credentials", "control/lkgp-cache", "control/management-password", "control/compliance", "runtime/feature-flags", "control/provider-validation", "control/provider-validation-schemas", "control/model-context-overrides", "control/model-test-data", "db/provider-nodes", "network/outbound-url-guard-policy", "network/safe-outbound-fetch", "control/authenticated", "control/registered-keys", "control/settings-config", "control/oauth-persistence", "memory/settings", "memory/runtime", "control/database-settings", "control/proxy-logs", "control/openrouter-provider-stats", "control/provider-health-matrix", "control/resilience-settings", "usage/stats", "usage/model-latency-stats", "usage/request-logs", "usage/pending-requests", "db/detailed-logs", "db/proxy-logs", "shared/log-env", "control/api-key-store", "control/cloud-sync", "control/api-key-exposure", "db/api-key-groups", "control/api-key-usage-limits", "shared/", "sse/logger", "sse/auth", "evals/db", "evals/runner", "evals/runtime", "evals/validation", "db/api-keys", "db/batches", "plugins/db", "plugins/manager", "plugins/marketplace", "shared/cors", "quota/dimensions", "quota/db", "quota/services", "quota/state", "compliance", "shared/combo-invariants", "catalog/combo-targets", "catalog/model-metadata", "catalog/provider-models"],
   "apps/edge-gateway": [
@@ -148,6 +151,11 @@ const allowedCoreDomainSubpaths = {
     "runtime/feature-flags",
     "edge/embeddings-validation-schemas",
     "edge/moderation-validation-schemas",
+    "edge/image-generation-validation",
+    "edge/image-upscale-validation",
+    "edge/ocr-validation",
+    "edge/search-validation",
+    "edge/segment-validation",
     "db/models-runtime",
     "usage/call-log-api-key-context",
     "sse/image-credential-retry",
@@ -342,7 +350,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
 );
 allowedCoreDomainSubpaths["apps/control-api"].push("catalog/providers");
 allowedCoreDomainSubpaths["apps/control-api"].push(
-  "control/resilience-circuit-breaker",
+  "resilience/circuit-breaker",
   "control/model-availability",
   "control/resilience-connection-recovery",
 );
@@ -1082,6 +1090,13 @@ for (const app of appEntries) {
     if (legacyNames.some((name) => source.includes(name))) add("retired-runtime-reference", file);
     for (const match of source.matchAll(importRe)) {
       const specifier = match[1] ?? match[2] ?? "";
+      if (specifier === quotaCacheLifecycleSpecifier && rel(app.dir) !== "apps/worker") {
+        add(
+          "quota-cache-lifecycle-outside-worker",
+          file,
+          "only the worker may own quota cache background refresh lifecycle",
+        );
+      }
       if (specifier.startsWith(".")) {
         const target = resolve(file, "..", specifier);
         if (target.includes(`${sep}apps${sep}`) && !target.startsWith(`${app.dir}${sep}`)) add("cross-app-relative-import", file, specifier);
@@ -1224,6 +1239,14 @@ const retiredRedundantCoreExports = [
   "./runtime/provider-connections",
   "./usage/provider-limits-support/providerConnections",
   "./usage/reporting-support/providers",
+  "./worker/quota-cache",
+  "./runtime/quota-cache",
+  "./usage/provider-limits-support/quotaCache",
+  "./domain/quotaCache",
+  "./shared/circuit-breaker",
+  "./control/resilience-circuit-breaker",
+  "./edge/circuit-breaker",
+  "./usage/reporting-support/shared/utils/circuitBreaker",
 ];
 for (const subpath of retiredRedundantCoreExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {
@@ -1325,6 +1348,13 @@ for (const pkg of packageEntries) {
     if (legacyNames.some((name) => source.includes(name))) add("retired-runtime-reference", file);
     for (const match of source.matchAll(importRe)) {
       const specifier = match[1] ?? match[2] ?? "";
+      if (specifier === quotaCacheLifecycleSpecifier) {
+        add(
+          "quota-cache-lifecycle-in-shared-package",
+          file,
+          "shared packages may query or update quota cache state but must not own its scheduler",
+        );
+      }
       const workspace = workspaceByName.get(specifier) ?? [...workspaceByName.entries()].find(([name]) => specifier.startsWith(`${name}/`))?.[1];
       if (workspace && appByName.has(workspace.manifest.name)) add("package-imports-app", file, specifier);
     }

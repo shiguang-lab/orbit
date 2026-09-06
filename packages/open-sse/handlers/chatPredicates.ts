@@ -1,4 +1,4 @@
-import { isLocalStreamLifecycleError } from "@shiguang-gateway/core-domain/edge/circuit-breaker";
+import { isLocalStreamLifecycleError } from "@shiguang-gateway/core-domain/resilience/circuit-breaker";
 import { isRequestScopedUpstreamFailure } from "./comboFailureLogging";
 import { getTrustedLocalRateLimitResponse } from "../services/rateLimitManager/errors.ts";
 

@@ -214,7 +214,7 @@ async function isStickyConnectionQuotaExhausted(connectionId: string): Promise<b
   if (_quotaExhaustionOverride) return _quotaExhaustionOverride(connectionId);
 
   try {
-    const mod = await import("@shiguang-gateway/core-domain/domain/quotaCache");
+    const mod = await import("@shiguang-gateway/core-domain/quota/cache");
     return Boolean(mod.isAccountQuotaExhausted(connectionId));
   } catch {
     return false;

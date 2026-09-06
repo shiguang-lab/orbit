@@ -2,7 +2,7 @@ import { createHash } from "crypto";
 
 import { getProviderConnections, updateProviderConnection } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { getCachedProviderConnectionById } from "@shiguang-gateway/core-domain/db/local-db";
-import { getAllCircuitBreakerStatuses } from "@shiguang-gateway/core-domain/usage/reporting-support/shared/utils/circuitBreaker";
+import { getAllCircuitBreakerStatuses } from "@shiguang-gateway/core-domain/resilience/circuit-breaker";
 import { clearProviderFailure, clearModelLock, getAllModelLockouts } from "@shiguang-gateway/open-sse/services/accountFallback";
 import { resolveProviderAlias } from "@shiguang-gateway/open-sse/services/model";
 import { getQuotaMonitorSnapshots } from "@shiguang-gateway/open-sse/services/quotaMonitor";

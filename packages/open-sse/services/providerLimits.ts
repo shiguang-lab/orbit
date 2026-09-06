@@ -12,7 +12,7 @@ import {
   type ProviderLimitsCacheEntry,
 } from "@shiguang-gateway/core-domain/usage/provider-limits-support/providerLimits";
 import { syncToCloud } from "@shiguang-gateway/core-domain/usage/provider-limits-support/cloudSync";
-import { setQuotaCache } from "@shiguang-gateway/core-domain/usage/provider-limits-support/quotaCache";
+import { setQuotaCache } from "@shiguang-gateway/core-domain/quota/cache";
 import { buildClaudeExtraUsageConnectionUpdate } from "@shiguang-gateway/core-domain/usage/provider-limits-support/claudeExtraUsage";
 import { isConnectionUnavailableToAuxiliaryActivity } from "@shiguang-gateway/core-domain/usage/provider-limits-support/exclusiveLeaseIsolation";
 import { clearRecoveredProviderState } from "@shiguang-gateway/open-sse/services/auth";

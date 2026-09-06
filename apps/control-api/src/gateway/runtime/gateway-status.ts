@@ -35,7 +35,7 @@ export async function buildShiguangGatewayStatus(
 ) {
   const [connections, circuitModule] = await Promise.all([
     Promise.resolve(readProviderStatusRows()),
-    import("@shiguang-gateway/core-domain/control/resilience-circuit-breaker").catch(() => null),
+    import("@shiguang-gateway/core-domain/resilience/circuit-breaker").catch(() => null),
   ]);
   const pools = listPools().items;
   const circuitStatuses = circuitModule?.getAllCircuitBreakerStatuses() ?? null;

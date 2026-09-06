@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { getRawProviderConnections, getProviderConnectionsCount } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { getAllCircuitBreakerStatuses } from "@shiguang-gateway/core-domain/control/resilience-circuit-breaker";
+import { getAllCircuitBreakerStatuses } from "@shiguang-gateway/core-domain/resilience/circuit-breaker";
 import { resolveProviderId } from "@shiguang-gateway/core-domain/catalog/providers";
 import { TERMINAL_CONNECTION_STATUSES } from "@shiguang-gateway/core-domain/control/resilience-connection-recovery";
 import { sanitizeErrorMessage, buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";

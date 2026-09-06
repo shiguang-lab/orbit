@@ -19,7 +19,7 @@ import { HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants";
 import * as log from "@shiguang-gateway/core-domain/sse/logger";
 import { toJsonErrorPayload } from "@shiguang-gateway/core-domain/shared/upstream-error";
 import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/runtime/api-key-policy";
-import { v1SearchSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { v1SearchSchema } from "@shiguang-gateway/core-domain/edge/search-validation";
 import {
   formatValidationMessage,
   isValidationFailure,

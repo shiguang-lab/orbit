@@ -210,6 +210,26 @@
       "types": "./src/shared/validation/moderationExports.ts",
       "import": "./src/shared/validation/moderationExports.ts"
     },
+    "./edge/image-generation-validation": {
+      "types": "./src/shared/validation/imageGenerationExports.ts",
+      "import": "./src/shared/validation/imageGenerationExports.ts"
+    },
+    "./edge/image-upscale-validation": {
+      "types": "./src/shared/validation/imageUpscaleExports.ts",
+      "import": "./src/shared/validation/imageUpscaleExports.ts"
+    },
+    "./edge/ocr-validation": {
+      "types": "./src/shared/validation/ocrExports.ts",
+      "import": "./src/shared/validation/ocrExports.ts"
+    },
+    "./edge/search-validation": {
+      "types": "./src/shared/validation/searchExports.ts",
+      "import": "./src/shared/validation/searchExports.ts"
+    },
+    "./edge/segment-validation": {
+      "types": "./src/shared/validation/segmentExports.ts",
+      "import": "./src/shared/validation/segmentExports.ts"
+    },
     "./db/compression-analytics": {
       "types": "./src/public/compressionAnalytics.d.ts",
       "import": "./src/lib/db/compressionAnalytics.ts"
@@ -233,6 +253,10 @@
     "./resilience/model-lockout-settings": {
       "types": "./src/public/modelLockoutSettings.d.ts",
       "import": "./src/lib/resilience/modelLockoutSettings.ts"
+    },
+    "./resilience/circuit-breaker": {
+      "types": "./src/public/resilienceCircuitBreaker.d.ts",
+      "import": "./src/resilience/circuitBreaker.ts"
     },
     "./usage/cache-health": {
       "types": "./src/public/cacheHealth.d.ts",
@@ -581,7 +605,6 @@
       "import": "./src/shared/proxy-health.ts"
     },
     "./shared/proxy-log-settings": { "types": "./src/public/proxyLogSettings.d.ts", "import": "./src/lib/proxyLogger.ts" },
-    "./shared/circuit-breaker": { "types": "./src/public/resilienceCircuitBreaker.d.ts", "import": "./src/shared/utils/circuitBreaker.ts" },
     "./shared/connection-recovery-policy": { "types": "./src/public/connectionRecovery.d.ts", "import": "./src/lib/quota/connectionRecovery.ts" },
     "./shared/credential-probe-policy": { "types": "./src/public/credentialProbePolicy.d.ts", "import": "./src/lib/credentialHealth/probePolicy.ts" },
     "./db/connection-runtime-state": { "types": "./src/public/connectionRuntimeState.d.ts", "import": "./src/lib/db/connectionRuntimeState.ts" },
@@ -854,10 +877,6 @@
       "types": "./src/public/resilienceSettings.d.ts",
       "import": "./src/lib/resilience/settings.ts"
     },
-    "./control/resilience-circuit-breaker": {
-      "types": "./src/public/resilienceCircuitBreaker.d.ts",
-      "import": "./src/shared/utils/circuitBreaker.ts"
-    },
     "./control/resilience-connection-recovery": {
       "types": "./src/public/connectionRecovery.d.ts",
       "import": "./src/lib/quota/connectionRecovery.ts"
@@ -943,10 +962,6 @@
     "./edge/translation-events": {
       "types": "./src/lib/translatorEvents.ts",
       "import": "./src/lib/translatorEvents.ts"
-    },
-    "./edge/circuit-breaker": {
-      "types": "./src/shared/utils/circuitBreaker.ts",
-      "import": "./src/shared/utils/circuitBreaker.ts"
     },
     "./edge/probe-origin": {
       "types": "./src/shared/utils/probeOrigin.ts",
@@ -1095,7 +1110,10 @@
     "./domain/provider-error-classifier": "./src/domain/providerErrorClassifier.ts",
     "./domain/provider-error-signals": "./src/domain/providerErrorSignals.ts",
     "./worker/cloud-sync": "./src/lib/initCloudSync.ts",
-    "./worker/quota-cache": "./src/domain/quotaCache.ts",
+    "./quota/cache-lifecycle": {
+      "types": "./src/public/quotaCacheLifecycle.d.ts",
+      "import": "./src/quota/cacheLifecycle.ts"
+    },
     "./worker/spend-batch-writer": "./src/lib/spend/batchWriter.ts",
     "./worker/connection-recovery": "./src/lib/quota/connectionRecovery.ts",
     "./worker/radar-scheduler": { "types": "./src/public/radar.d.ts", "import": "./src/lib/radar/scheduler.ts" },
@@ -1165,7 +1183,6 @@
     "./runtime/jina-credentials": "./src/lib/providers/jina.ts",
     "./runtime/gemini-credentials": "./src/lib/providers/gemini.ts",
     "./runtime/provider-connection-view": "./src/lib/db/providers/lazyConnectionView.ts",
-    "./runtime/quota-cache": "./src/domain/quotaCache.ts",
     "./runtime/resilience-settings": "./src/lib/resilience/settings.ts",
     "./runtime/connection-model-rules": "./src/domain/connectionModelRules.ts",
     "./runtime/models-db": "./src/lib/db/models.ts",
@@ -1200,7 +1217,6 @@
     "./usage/internal-command-support/api-key-usage-limits": "./src/lib/usage/apiKeyUsageLimits.ts",
     "./usage/provider-limits-support/providerLimits": "./src/lib/db/providerLimits.ts",
     "./usage/provider-limits-support/cloudSync": "./src/lib/cloudSync.ts",
-    "./usage/provider-limits-support/quotaCache": "./src/domain/quotaCache.ts",
     "./usage/provider-limits-support/claudeExtraUsage": "./src/lib/providers/claudeExtraUsage.ts",
     "./usage/provider-limits-support/exclusiveLeaseIsolation": "./src/lib/exclusiveLeaseIsolation.ts",
     "./usage/provider-limits-support/machine": "./src/shared/utils/machine.ts",
@@ -1213,7 +1229,6 @@
     "./usage/reporting-support/quota-snapshots": "./src/lib/db/quotaSnapshots.ts",
     "./usage/reporting-support/cost-calculator": "./src/lib/usage/costCalculator.ts",
     "./usage/reporting-support/shared/types/utilization": "./src/shared/types/utilization.ts",
-    "./usage/reporting-support/shared/utils/circuitBreaker": "./src/shared/utils/circuitBreaker.ts",
     "./usage/reporting-support/domain/connectionModelRules": "./src/domain/connectionModelRules.ts",
     "./usage/reporting-support/call-logs": "./src/lib/usage/callLogs.ts",
     "./runtime/quota-key": "./src/lib/quota/quotaKey.ts",
@@ -1414,9 +1429,9 @@
       "types": "./src/lib/providers/chatgptWebRetirementResponse.ts",
       "import": "./src/lib/providers/chatgptWebRetirementResponse.ts"
     },
-    "./domain/quotaCache": {
+    "./quota/cache": {
       "types": "./src/public/quotaCache.d.ts",
-      "import": "./src/domain/quotaCache.ts"
+      "import": "./src/quota/cache.ts"
     },
     "./runtime/model-sync-client": {
       "types": "./src/public/modelSyncClient.d.ts",

@@ -450,7 +450,7 @@ import {
   stripMarkdownCodeFence,
 } from "../utils/aiSdkCompat.ts";
 import { generateRequestId } from "@shiguang-gateway/contracts/request-id";
-import { isLocalStreamLifecycleError } from "@shiguang-gateway/core-domain/edge/circuit-breaker";
+import { isLocalStreamLifecycleError } from "@shiguang-gateway/core-domain/resilience/circuit-breaker";
 import { shouldIsolateProbeFailures } from "@shiguang-gateway/core-domain/edge/probe-origin";
 import { writeTerminalStatus } from "@shiguang-gateway/core-domain/shared/terminal-status";
 import { extractFacts } from "../services/memoryRuntime.ts";

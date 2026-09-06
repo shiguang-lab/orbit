@@ -13,7 +13,7 @@
  * Extracted from combo.ts as a pure move (#3501). No behaviour change.
  */
 import { getCachedProviderConnections } from "@shiguang-gateway/core-domain/edge/read-cache";
-import { getCircuitBreaker } from "@shiguang-gateway/core-domain/edge/circuit-breaker";
+import { getCircuitBreaker } from "@shiguang-gateway/core-domain/resilience/circuit-breaker";
 import { fisherYatesShuffle, getNextFromDeck } from "@shiguang-gateway/core-domain/shared/shuffle-deck";
 import { handleFusionChat, type FusionTuning } from "../fusion.ts";
 import { getResolvedModelCapabilities } from "../modelCapabilities.ts";

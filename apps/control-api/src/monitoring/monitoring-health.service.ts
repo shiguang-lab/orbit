@@ -63,7 +63,7 @@ async function buildMonitoringHealthSnapshot(localProviders: Record<string, unkn
     settingsResult,
     connectionsResult,
   ] = await Promise.allSettled([
-    import("@shiguang-gateway/core-domain/control/resilience-circuit-breaker"),
+    import("@shiguang-gateway/core-domain/resilience/circuit-breaker"),
     import("@shiguang-gateway/open-sse/services/rateLimitManager"),
     import("@shiguang-gateway/open-sse/services/accountFallback"),
     import("@shiguang-gateway/open-sse/services/requestDedup"),
@@ -128,7 +128,7 @@ async function buildMonitoringHealthSnapshot(localProviders: Record<string, unkn
 
 async function resetMonitoringCircuitBreakers(): Promise<number> {
   const { getAllCircuitBreakerStatuses, resetAllCircuitBreakers } = await import(
-    "@shiguang-gateway/core-domain/control/resilience-circuit-breaker"
+    "@shiguang-gateway/core-domain/resilience/circuit-breaker"
   );
   const count = getAllCircuitBreakerStatuses().length;
   resetAllCircuitBreakers();

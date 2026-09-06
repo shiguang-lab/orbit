@@ -70,7 +70,7 @@ import { fetchCodexQuota } from "./codexQuotaFetcher.ts";
 import { evaluateQuotaCutoff, getQuotaFetcher, type QuotaInfo } from "./quotaPreflight.ts";
 import { resolveProviderId } from "@shiguang-gateway/core-domain/catalog/providers";
 import * as semaphore from "./rateLimitSemaphore.ts";
-import { getCircuitBreaker } from "@shiguang-gateway/core-domain/edge/circuit-breaker";
+import { getCircuitBreaker } from "@shiguang-gateway/core-domain/resilience/circuit-breaker";
 import { parseModel } from "./model.ts";
 import { rejectRetiredAutoComboCandidates } from "./modelLifecycle.ts";
 import { createComboContext } from "./combo/context.ts";

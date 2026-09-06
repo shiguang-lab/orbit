@@ -111,7 +111,7 @@ async function postHandler(request: Request) {
     load("@shiguang-gateway/open-sse/utils/error"),
     load("@shiguang-gateway/open-sse/services/auth"),
     load("@shiguang-gateway/core-domain/runtime/api-key-policy"),
-    load("@shiguang-gateway/core-domain/shared/validation/schemas"),
+    load("@shiguang-gateway/core-domain/edge/image-upscale-validation"),
     load("@shiguang-gateway/core-domain/shared/validation/helpers"),
     load("@shiguang-gateway/core-domain/db/settings"),
     load("@shiguang-gateway/open-sse/utils/proxyFetch"),

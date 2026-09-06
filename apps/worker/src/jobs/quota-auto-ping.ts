@@ -37,7 +37,7 @@ import {
 } from "@shiguang-gateway/core-domain/shared/connection-isolation";
 import {
   getCircuitBreaker,
-} from "@shiguang-gateway/core-domain/shared/circuit-breaker";
+} from "@shiguang-gateway/core-domain/resilience/circuit-breaker";
 import { refreshAndUpdateCredentials } from "@shiguang-gateway/open-sse/services/providerLimits";
 import {
   QUOTA_AUTOPING_FAILURE_COOLDOWN_MS,

@@ -32,7 +32,7 @@ import {
 } from "../accountFallback.ts";
 import { PRE_SCREEN_CONCURRENCY } from "../comboConfig.ts";
 import { getQuotaFetcher } from "../quotaPreflight.ts";
-import { getCircuitBreaker } from "@shiguang-gateway/core-domain/edge/circuit-breaker";
+import { getCircuitBreaker } from "@shiguang-gateway/core-domain/resilience/circuit-breaker";
 import { getCachedProviderConnections } from "@shiguang-gateway/core-domain/edge/read-cache";
 import { MAX_RR_COUNTERS, rrCounters } from "./rrState.ts";
 import type { ResolvedComboTarget, IsModelAvailable } from "./types.ts";
@@ -46,7 +46,7 @@ import {
 } from "./quotaScoring.ts";
 import { rankByHeadroom, type HeadroomSaturation } from "./headroomRanking.ts";
 import { preferAntigravityConnectionsWithStoredProject } from "../antigravityProjectPersist.ts";
-import { isQuotaExhaustedForRequest } from "@shiguang-gateway/core-domain/domain/quotaCache";
+import { isQuotaExhaustedForRequest } from "@shiguang-gateway/core-domain/quota/cache";
 
 const RESET_AWARE_CONNECTION_CACHE_TTL_MS = 30_000;
 const RESET_AWARE_QUOTA_FETCH_CONCURRENCY = 5;

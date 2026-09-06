@@ -32,7 +32,7 @@ import {
   CircuitBreakerOpenError,
   getCircuitBreaker,
   isLocalStreamLifecycleError,
-} from "@shiguang-gateway/core-domain/edge/circuit-breaker";
+} from "@shiguang-gateway/core-domain/resilience/circuit-breaker";
 import { classify429FromError, type FailureKind } from "@shiguang-gateway/core-domain/edge/classify-429";
 import { resolveUseUpstream429BreakerHints } from "@shiguang-gateway/core-domain/edge/provider-hints";
 

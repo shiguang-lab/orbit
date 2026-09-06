@@ -11,7 +11,7 @@ export async function POST(request: Request) {
   if (authError) return authError;
   try {
     const { getAllCircuitBreakerStatuses, getCircuitBreaker } =
-      await import("@shiguang-gateway/core-domain/control/resilience-circuit-breaker");
+      await import("@shiguang-gateway/core-domain/resilience/circuit-breaker");
 
     const statuses = getAllCircuitBreakerStatuses();
     let resetCount = 0;

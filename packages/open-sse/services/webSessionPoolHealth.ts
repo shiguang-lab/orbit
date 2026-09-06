@@ -15,7 +15,7 @@ import {
   isProviderInCooldown,
   getProviderCooldownRemainingMs,
 } from "./accountFallback.ts";
-import { getAllCircuitBreakerStatuses } from "@shiguang-gateway/core-domain/edge/circuit-breaker";
+import { getAllCircuitBreakerStatuses } from "@shiguang-gateway/core-domain/resilience/circuit-breaker";
 import type { PoolStats, PoolSessionDetail } from "./sessionPool/types.ts";
 
 // ─── Dependency Injection (for testability) ─────────────────────────────────

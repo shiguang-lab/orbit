@@ -34,6 +34,26 @@ const contracts = {
     entry: "./src/shared/validation/moderationExports.ts",
     runtime: ["v1ModerationSchema"],
   },
+  "./edge/image-generation-validation": {
+    entry: "./src/shared/validation/imageGenerationExports.ts",
+    runtime: ["v1ImageGenerationSchema"],
+  },
+  "./edge/image-upscale-validation": {
+    entry: "./src/shared/validation/imageUpscaleExports.ts",
+    runtime: ["v1ImageUpscaleSchema"],
+  },
+  "./edge/ocr-validation": {
+    entry: "./src/shared/validation/ocrExports.ts",
+    runtime: ["v1OcrSchema"],
+  },
+  "./edge/search-validation": {
+    entry: "./src/shared/validation/searchExports.ts",
+    runtime: ["v1SearchSchema"],
+  },
+  "./edge/segment-validation": {
+    entry: "./src/shared/validation/segmentExports.ts",
+    runtime: ["v1SegmentSchema"],
+  },
   "./control/provider-validation-schemas": {
     entry: "./src/shared/validation/providerValidationExports.ts",
     runtime: [
