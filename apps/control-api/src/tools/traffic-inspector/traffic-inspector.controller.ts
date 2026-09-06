@@ -86,8 +86,6 @@ export class TrafficInspectorController {
 
   @Get("ws")
   ws(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    // WebSocket upgrades are not enabled on the control Fastify adapter yet;
-    // preserve the historical HTTP contract and let clients receive 426.
-    return this.routes.dispatch(request, reply, () => new Response(JSON.stringify({ error: { message: "Upgrade Required" } }), { status: 426, headers: { "content-type": "application/json", Upgrade: "websocket" } }));
+    return this.service.handleWebSocket(request, reply);
   }
 }
