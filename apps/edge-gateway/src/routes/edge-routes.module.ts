@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
-import { CompatRoutesService } from "./compat/compat-routes.service.js";
+import { MethodGuardService } from "./method-guard.service.js";
 
 @Module({
-  providers: [CompatRoutesService],
+  providers: [MethodGuardService],
 })
 export class EdgeRoutesModule {}

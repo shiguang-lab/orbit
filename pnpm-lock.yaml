@@ -162,9 +162,9 @@ importers:
       '@shiguang-gateway/rerank-catalog':
         specifier: workspace:*
         version: link:../../packages/rerank-catalog
-      '@shiguang-gateway/web-route-compat':
+      '@shiguang-gateway/web-handler-adapter':
         specifier: workspace:*
-        version: link:../../packages/web-route-compat
+        version: link:../../packages/web-handler-adapter
       fastify:
         specifier: 5.12.1
         version: 5.12.1
@@ -232,9 +232,9 @@ importers:
       '@shiguang-gateway/rerank-catalog':
         specifier: workspace:*
         version: link:../../packages/rerank-catalog
-      '@shiguang-gateway/web-route-compat':
+      '@shiguang-gateway/web-handler-adapter':
         specifier: workspace:*
-        version: link:../../packages/web-route-compat
+        version: link:../../packages/web-handler-adapter
       fastify:
         specifier: 5.12.1
         version: 5.12.1
@@ -903,7 +903,7 @@ importers:
         specifier: 'catalog:'
         version: 5.8.3
 
-  packages/web-route-compat:
+  packages/web-handler-adapter:
     dependencies:
       fastify:
         specifier: 5.12.1

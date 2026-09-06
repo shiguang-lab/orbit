@@ -14,7 +14,7 @@ import {
 } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { ProvidersService } from "./providers.service.js";
-import { POST as testProviderConnection } from "./handlers/provider-test/route.js";
+import { POST as testProviderConnection } from "./handlers/provider-test/provider-test.handler.js";
 import { ProviderPolicyService } from "./provider-policy.service.js";
 import { ProviderClientService } from "./provider-client.service.js";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";

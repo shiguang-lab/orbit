@@ -19,7 +19,7 @@ import {
   ANTHROPIC_COMPATIBLE_PREFIX,
 } from "@shiguang-gateway/core-domain/control/provider-test-batch";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
-import { testSingleConnection } from "./handlers/provider-test/route.js";
+import { testSingleConnection } from "./handlers/provider-test/provider-test.handler.js";
 
 @Injectable()
 export class ProviderTestBatchService {

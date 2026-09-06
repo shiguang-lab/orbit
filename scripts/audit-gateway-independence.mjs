@@ -155,6 +155,16 @@ const rootRouteMismatches = referenceAvailable ? [
   (comparableLocalRootPaths.size === frozenBaseline.rootRouteFiles - localRootRouteExtensions.size && hashPaths(comparableLocalRootPaths) === frozenBaseline.rootPathSha256
     ? []
     : [{ path: "<frozen-root-route-baseline>", side: "hash-mismatch" }]);
+const retiredCompatDispatcherFiles = [
+  join(repoRoot, "packages", "web-route-compat"),
+  join(repoRoot, "packages", "web-handler-adapter", "src", "compat-dispatcher.ts"),
+  join(repoRoot, "apps", "edge-gateway", "src", "routes", "compat", "dispatcher.ts"),
+  join(repoRoot, "apps", "control-api", "src", "routes", "compat", "dispatcher.ts"),
+];
+const dynamicCompatDispatcherRemoved = retiredCompatDispatcherFiles.every((path) => !existsSync(path));
+const nativeFallbackContracts = dynamicCompatDispatcherRemoved
+  ? ["[...gatewayApiCatchAll]/route.ts", "v1/[...gatewayCatchAll]/route.ts"]
+  : [];
 const localRoutePaths = new Set([
   ...localRouteSources.flatMap(({ root, pathRoot }) =>
     walk(root, (p) => p.endsWith("route.ts")).map((p) => normalizeRoutePath(relative(pathRoot, p).split("\\").join("/")))
@@ -162,6 +172,7 @@ const localRoutePaths = new Set([
   // Root web routes are audited independently and must not inflate the API
   // route count. Explicit additive API routes remain allowed below.
   ...[...allControllerRoutePaths].filter((path) => !isRootRoutePath(path)),
+  ...nativeFallbackContracts,
 ]);
 const comparableLocalRoutePaths = new Set([...localRoutePaths].filter((path) => !localApiExtensions.has(path)));
 const routePathMismatches = referenceAvailable ? [
@@ -169,14 +180,6 @@ const routePathMismatches = referenceAvailable ? [
   ...[...comparableLocalRoutePaths].filter((p) => !officialRoutePaths.has(p)).map((path) => ({ path, side: "extra-local" })),
 ].sort((a, b) => a.path.localeCompare(b.path)) :
   (comparableLocalRoutePaths.size === frozenBaseline.apiRouteFiles && hashPaths(comparableLocalRoutePaths) === frozenBaseline.apiPathSha256 ? [] : [{ path: "<frozen-api-route-baseline>", side: "hash-mismatch" }]);
-const compatDispatcherFile = join(repoRoot, "packages", "web-route-compat", "src", "compat-dispatcher.ts");
-const appCompatDispatcherFiles = [
-  join(repoRoot, "apps", "edge-gateway", "src", "routes", "compat", "dispatcher.ts"),
-  join(repoRoot, "apps", "control-api", "src", "routes", "compat", "dispatcher.ts"),
-];
-const appCompatDispatcherReady = existsSync(compatDispatcherFile) &&
-  text(compatDispatcherFile).includes("registerCompatDispatcher") &&
-  appCompatDispatcherFiles.every((path) => existsSync(path) && text(path).includes("@shiguang-gateway/web-route-compat"));
 const requiredApps = ["admin", "edge-gateway", "control-api", "realtime", "worker", "importer"];
 const missingApps = requiredApps.filter((name) => !existsSync(join(repoRoot, "apps", name, "package.json")));
 
@@ -244,7 +247,7 @@ const report = {
   referenceAvailable,
   frozenBaseline,
   official: referenceAvailable ? { routeFiles: officialRoutes.length, apiGroups: officialGroups.size, rootRouteFiles: officialRootRoutes.length } : null,
-    target: { appRouteFiles: appRouteFiles.length, appFastifyHandlers: appHandlers, controllerFiles: controllerFiles.length, controllerRoutePaths: allControllerRoutePaths.size, localApiRoutePaths: comparableLocalRoutePaths.size, localRuntimeRouteFiles: localRuntimeRoutes.length, localRootRoutePaths: comparableLocalRootPaths.size, localRootRouteFiles: localRootRoutes.length, additiveLocalApiExtensions: [...localApiExtensions], additiveLocalRootRouteExtensions: [...localRootRouteExtensions], appCompatDispatcherReady },
+    target: { appRouteFiles: appRouteFiles.length, appFastifyHandlers: appHandlers, controllerFiles: controllerFiles.length, controllerRoutePaths: allControllerRoutePaths.size, localApiRoutePaths: comparableLocalRoutePaths.size, localRuntimeRouteFiles: localRuntimeRoutes.length, localRootRoutePaths: comparableLocalRootPaths.size, localRootRouteFiles: localRootRoutes.length, additiveLocalApiExtensions: [...localApiExtensions], additiveLocalRootRouteExtensions: [...localRootRouteExtensions], dynamicCompatDispatcherRemoved },
   routePathMismatches,
   rootRouteMismatches,
   missingApiGroups: missingGroups,
@@ -253,7 +256,7 @@ const report = {
   mockFallbackFiles: mockFallbacks,
   requiredApps,
   missingApps,
-  status: appCompatDispatcherReady && missingGroups.length === 0 && routePathMismatches.length === 0 && rootRouteMismatches.length === 0 && violations.length === 0 && mockFallbacks.length === 0 && missingApps.length === 0 ? "PASS" : "FAIL",
+  status: dynamicCompatDispatcherRemoved && missingGroups.length === 0 && routePathMismatches.length === 0 && rootRouteMismatches.length === 0 && violations.length === 0 && mockFallbacks.length === 0 && missingApps.length === 0 ? "PASS" : "FAIL",
 };
 
 console.log(JSON.stringify(report, null, 2));

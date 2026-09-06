@@ -17,7 +17,7 @@ import {
   CODEX_SPARK_QUOTA_WEEKLY,
 } from "@shiguang-gateway/open-sse/config/codexQuotaScopes";
 import { finalizeValidatedChatGptWebCodexSecrets } from "@shiguang-gateway/open-sse/services/chatgptWebCodexAdmin";
-import { testSingleConnection } from "./provider-test/route.js";
+import { testSingleConnection } from "./provider-test/provider-test.handler.js";
 
 function projectCodexAccountPoolWithRoutingQuota(
   connection: Parameters<typeof projectCodexAccountPool>[0],

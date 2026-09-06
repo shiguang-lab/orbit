@@ -59,10 +59,10 @@ for (const [name, shape] of Object.entries(appKinds)) {
     const nestSourceFiles = walkFiles(src, (path) => path.endsWith(".ts"));
     for (const file of nestSourceFiles) {
       const source = readFileSync(file, "utf8");
-      if (file.endsWith(".route.ts")) {
-        fail("nest-route-file-naming", file, "use a Nest controller/service/handler instead of *.route.ts");
-      }
       const basename = file.split(sep).pop() || "";
+      if (basename === "route.ts" || basename.endsWith(".route.ts")) {
+        fail("nest-route-file-naming", file, "use a Nest controller/service/handler instead of route.ts or *.route.ts");
+      }
       if (basename.endsWith(".module.ts") && !/@Module\s*\(/.test(source)) {
         fail("nest-module-decorator", file, "*.module.ts must declare @Module");
       }

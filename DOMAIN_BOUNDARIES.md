@@ -16,7 +16,7 @@ port or selecting a surface at runtime.
 ## Shared package rule
 
 `packages/contracts`, `packages/config`, `packages/db-schema`, `packages/network-guard`,
-`packages/http-kernel`, `packages/web-route-compat` and `packages/error-sanitization`
+`packages/http-kernel`, `packages/web-handler-adapter` and `packages/error-sanitization`
 are shared dependency leaves. `error-sanitization` contains only transport-neutral
 redaction helpers and is consumed directly by multiple deployable apps.
 `db-schema` contains the canonical ORM-neutral entity metadata under `src/entities/*.entity.ts`:

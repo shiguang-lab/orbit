@@ -811,8 +811,6 @@ const migratedRouteOwnership = {
     "api/v1/auto-combo/[channel]/candidates/route.ts",
     "api/v1/vscode/[token]/api/version/route.ts",
     "api/v1/search/route.ts",
-    "api/[...gatewayApiCatchAll]/route.ts",
-    "api/v1/[...gatewayCatchAll]/route.ts",
     "api/upstream-proxy/[providerId]/route.ts",
     "api/cursor-cli/[...path]/route.ts",
   ],
