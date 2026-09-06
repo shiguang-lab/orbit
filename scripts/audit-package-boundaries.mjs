@@ -260,7 +260,7 @@ if (process.argv.includes("--self-test")) {
     packageLifecycleFindings("listener.ts", "const server = createServer(); server.listen(3000);").map(({ signature }) => signature),
     ["module-listener:source"],
   );
-  console.log(JSON.stringify({ status: "PASS", checks: ["core-domain/open-sse SCC", "self-loop", "package ownership", "relative import extraction", "route basename ownership", "retired dynamic compat dispatcher", "package lifecycle ownership"] }, null, 2));
+  console.log(JSON.stringify({ status: "PASS", checks: ["core-domain/open-sse SCC", "self-loop", "package ownership", "relative import extraction", "route basename ownership", "retired dynamic compat dispatcher", "package runtime export targets", "package lifecycle ownership"] }, null, 2));
   process.exit(0);
 }
 

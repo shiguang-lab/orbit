@@ -85,10 +85,6 @@
       "types": "./src/public/vscodeCombos.d.ts",
       "import": "./src/lib/vscode/combos.ts"
     },
-    "./edge/vscode-token-combos": {
-      "types": "./src/public/vscodeTokenCombos.d.ts",
-      "import": "./src/lib/vscode/tokenCombos.ts"
-    },
     "./control/provider-test-batch": {
       "types": "./src/public/providerTestBatch.d.ts",
       "import": "./src/lib/providers/testBatch.ts"

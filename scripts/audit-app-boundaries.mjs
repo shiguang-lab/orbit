@@ -79,7 +79,6 @@ const allowedCoreDomainSubpaths = {
     "edge/vscode-models",
     "edge/vscode-ollama",
     "edge/vscode-combos",
-    "edge/vscode-token-combos",
     "edge/vscode-service-tier",
     "control/settings",
     "edge/count-tokens-validation",
@@ -113,6 +112,7 @@ const allowedCoreDomainSubpaths = {
     "db/api-keys",
     "db/files",
     "db/batches",
+    "db/combos",
     "edge/embeddings-service",
     "edge/embeddings-handler",
     "edge/feature-flags",
@@ -987,6 +987,7 @@ const retiredAppOwnedExports = [
   "./control/local-redis",
   "./control/oauth-runtime/deviceFlowTickets",
   "./edge/fleet-skills",
+  "./edge/vscode-token-combos",
 ];
 for (const subpath of retiredAppOwnedExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {
