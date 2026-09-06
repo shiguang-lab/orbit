@@ -1,0 +1,7 @@
+import { Module } from "@nestjs/common";
+import { CommonModule } from "../common/common.module.js";
+import { SyncController } from "./sync.controller.js";
+import { SyncService } from "./sync.service.js";
+
+@Module({ imports: [CommonModule], controllers: [SyncController], providers: [SyncService] })
+export class SyncModule {}

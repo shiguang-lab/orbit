@@ -267,6 +267,10 @@
       "types": "./src/public/darioInstaller.d.ts",
       "import": "./src/lib/services/installers/dario.ts"
     },
+    "./control/cliproxy": {
+      "types": "./src/public/cliproxy.d.ts",
+      "import": "./src/control/cliproxy.ts"
+    },
     "./shared/webhook-dispatcher": {
       "types": "./src/public/webhookDispatcher.d.ts",
       "import": "./src/lib/webhookDispatcher.ts"
@@ -499,6 +503,22 @@
     "./control/cloud-sync": {
       "types": "./src/public/cloudSync.d.ts",
       "import": "./src/lib/cloudSync.ts"
+    },
+    "./control/sync-bundle": {
+      "types": "./src/public/syncBundle.d.ts",
+      "import": "./src/lib/sync/bundle.ts"
+    },
+    "./control/sync-tokens": {
+      "types": "./src/public/syncTokens.d.ts",
+      "import": "./src/lib/sync/tokens.ts"
+    },
+    "./control/cloud-sync-initialize": {
+      "types": "./src/public/cloudSyncInitialize.d.ts",
+      "import": "./src/shared/services/initializeCloudSync.ts"
+    },
+    "./control/model-sync-scheduler": {
+      "types": "./src/public/modelSyncScheduler.d.ts",
+      "import": "./src/shared/services/modelSyncScheduler.ts"
     },
     "./control/api-key-exposure": {
       "types": "./src/public/apiKeyExposure.d.ts",

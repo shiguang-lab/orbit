@@ -50,6 +50,7 @@ import { NinerouterModule } from "./services/ninerouter/ninerouter.module.js";
 import { UsageModule } from "./usage/usage.module.js";
 import { GamificationModule } from "./gamification/gamification.module.js";
 import { CliToolsModule } from "./cli-tools/cli-tools.module.js";
+import { SyncModule } from "./sync/sync.module.js";
 
 @Module({
   imports: [
@@ -105,6 +106,7 @@ import { CliToolsModule } from "./cli-tools/cli-tools.module.js";
     UsageModule,
     GamificationModule,
     CliToolsModule,
+    SyncModule,
   ],
 })
 export class AppModule {}

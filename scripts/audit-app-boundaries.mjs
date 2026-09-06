@@ -168,6 +168,10 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
     "db/quota-snapshots",
   "shared/utilization",
   "shared/embedded-services",
+  "control/sync-bundle",
+  "control/sync-tokens",
+  "control/cloud-sync-initialize",
+  "control/model-sync-scheduler",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push("catalog/providers");
 allowedCoreDomainSubpaths["apps/control-api"].push("db/cc-discovery-metrics");
@@ -368,6 +372,11 @@ const migratedRouteOwnership = {
     "api/settings/proxies/bulk-import/route.ts",
     "api/settings/proxies/batch-activate/route.ts",
     "api/settings/proxies/batch-delete/route.ts",
+    "api/sync/initialize/route.ts",
+    "api/sync/bundle/route.ts",
+    "api/sync/cloud/route.ts",
+    "api/sync/tokens/route.ts",
+    "api/sync/tokens/[id]/route.ts",
     "api/system/version/route.ts",
     "api/services/dario/admin/accounts/route.ts",
     "api/services/dario/admin/import-from-gateway/route.ts",
