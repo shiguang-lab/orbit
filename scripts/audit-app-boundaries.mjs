@@ -201,6 +201,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/skills-provider-settings",
   "control/skills-github",
   "control/skills-skillssh",
+  "control/mcp-management",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push("catalog/providers");
 allowedCoreDomainSubpaths["apps/control-api"].push(
@@ -545,6 +546,10 @@ const migratedRouteOwnership = {
     "api/skills/skillssh/install/route.ts",
     "api/skills/collect/detect/route.ts",
     "api/skills/collect/install/route.ts",
+    "api/mcp/audit/route.ts",
+    "api/mcp/audit/stats/route.ts",
+    "api/mcp/status/route.ts",
+    "api/mcp/tools/route.ts",
   ],
   "apps/edge-gateway": [
     // A2A protocol and task-management routes are owned by the edge Nest app.

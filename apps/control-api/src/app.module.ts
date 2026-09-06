@@ -63,6 +63,7 @@ import { RegisteredKeysModule } from "./registered-keys/registered-keys.module.j
 import { PlaygroundModule } from "./playground/playground.module.js";
 import { CloudModule } from "./cloud/cloud.module.js";
 import { SkillsModule } from "./skills/skills.module.js";
+import { McpModule } from "./mcp/mcp.module.js";
 
 @Module({
   imports: [
@@ -131,6 +132,7 @@ import { SkillsModule } from "./skills/skills.module.js";
     PlaygroundModule,
     CloudModule,
     SkillsModule,
+    McpModule,
   ],
 })
 export class AppModule {}

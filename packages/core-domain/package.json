@@ -214,6 +214,10 @@
       "types": "./src/public/managementAuth.d.ts",
       "import": "./src/lib/api/requireManagementAuth.ts"
     },
+    "./control/mcp-management": {
+      "types": "./src/public/mcpManagement.d.ts",
+      "import": "./src/lib/mcp/mcpManagementExports.ts"
+    },
     "./control/gamification": {
       "types": "./src/public/gamification.d.ts",
       "import": "./src/lib/gamification/index.ts"
