@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { rankCandidates } from "@shiguang-gateway/core-domain/control/routing-preview";
+import { rankCandidates } from "../runtime/routing-preview.js";
 
 const candidateSchema = z.object({
   providerId: z.string().min(1),

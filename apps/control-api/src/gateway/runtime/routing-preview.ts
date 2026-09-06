@@ -1,8 +1,11 @@
-import type { ProviderFailure } from "../resilience/failureClassification.ts";
-import type { ProviderQuotaStatus } from "../quota/providerQuotaTelemetry.ts";
-
 export type AllocationDecision = "allow" | "warn" | "deny";
 export type CircuitState = "closed" | "open" | "half_open";
+export type ProviderQuotaStatus =
+  | "healthy"
+  | "approaching_limit"
+  | "exhausted"
+  | "unavailable"
+  | "unknown";
 
 export interface RoutingCandidate {
   providerId: string;
@@ -126,28 +129,4 @@ export function scoreCandidate(candidate: RoutingCandidate): RoutingExplanation 
 export function rankCandidates(candidates: RoutingCandidate[]): RankedRoutingResult {
   const ranked = candidates.map(scoreCandidate).sort((a, b) => b.score - a.score);
   return { selected: ranked.find((candidate) => candidate.eligible) ?? null, candidates: ranked };
-}
-
-export interface FailoverPolicy {
-  maxProviderAttempts: number;
-  allowCrossProviderFallback: boolean;
-  retryRateLimited: boolean;
-  retryTimeouts: boolean;
-}
-
-export const DEFAULT_FAILOVER_POLICY: FailoverPolicy = {
-  maxProviderAttempts: 3,
-  allowCrossProviderFallback: true,
-  retryRateLimited: true,
-  retryTimeouts: true,
-};
-
-export function shouldFailover(
-  failure: ProviderFailure,
-  policy = DEFAULT_FAILOVER_POLICY
-): boolean {
-  if (!policy.allowCrossProviderFallback || !failure.retryable) return false;
-  if (failure.type === "rate_limit") return policy.retryRateLimited;
-  if (failure.type === "timeout") return policy.retryTimeouts;
-  return failure.type === "network_error" || failure.type === "provider_5xx";
 }

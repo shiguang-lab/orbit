@@ -239,7 +239,6 @@ allowedCoreDomainSubpaths["apps/control-api"].push("control/free-provider-rankin
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/env-repair",
   "control/intelligence-sync",
-  "control/routing-preview",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/usage",
@@ -905,6 +904,10 @@ const retiredCoreCopilotDir = join(packagesRoot, "core-domain", "src", "lib", "c
 if (existsSync(retiredCoreCopilotDir)) {
   add("control-runtime-in-core-domain", retiredCoreCopilotDir, "Copilot runtime belongs in apps/control-api");
 }
+const retiredCoreRoutingPreview = join(packagesRoot, "core-domain", "src", "lib", "routing", "adaptiveRouting.ts");
+if (existsSync(retiredCoreRoutingPreview)) {
+  add("control-runtime-in-core-domain", retiredCoreRoutingPreview, "Routing preview runtime belongs in apps/control-api");
+}
 
 // The shared HTTP package must never regain a generic app factory or a
 // caller-selected surface. Those APIs collapse independently deployable apps
@@ -1065,6 +1068,7 @@ if (existsSync(workerJobRegistry)) {
 }
 const coreDomainEntry = packageEntries.find(({ manifest }) => manifest?.name === "@shiguang-gateway/core-domain");
 const retiredAppOwnedExports = [
+  "./control/routing-preview",
   "./control/copilot",
   "./control/telegram",
   "./control/playground-prompt-improver",
