@@ -168,6 +168,15 @@ importers:
       jose:
         specifier: ^6.2.10
         version: 6.2.10
+      js-yaml:
+        specifier: ^5.4.1
+        version: 5.4.1
+      pino:
+        specifier: ^10.3.1
+        version: 10.3.1
+      smol-toml:
+        specifier: ^1.8.0
+        version: 1.8.0
       tsx:
         specifier: ^4.23.13
         version: 4.23.13

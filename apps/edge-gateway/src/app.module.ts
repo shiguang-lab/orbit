@@ -45,6 +45,7 @@ import { VscodeChatModule } from "./vscode-chat/vscode-chat.module.js";
 import { VscodeOllamaModule } from "./vscode-ollama/vscode-ollama.module.js";
 import { DocsSearchModule } from "./docs-search/docs-search.module.js";
 import { AgentCardModule } from "./agent-card/agent-card.module.js";
+import { UsageCommandModule } from "./usage-command/usage-command.module.js";
 
 @Module({
   imports: [
@@ -95,6 +96,7 @@ import { AgentCardModule } from "./agent-card/agent-card.module.js";
     VscodeOllamaModule,
     DocsSearchModule,
     AgentCardModule,
+    UsageCommandModule,
   ],
 })
 export class AppModule {}

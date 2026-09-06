@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Post, Put, Req, Res } from "@nestjs/common";
+import { All, Controller, Delete, Get, Post, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 import { CliToolsService } from "./cli-tools.service.js";
@@ -84,5 +84,46 @@ export class CliToolsController {
   @Get("all-statuses")
   allStatusesGet(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
     return this.routes.dispatch(req, reply, (request) => this.cliTools.allStatusesGet(request));
+  }
+
+  @Get([
+    "detect", "config", "backups", "keys", "logs", "runtime/:toolId", "guide-settings/:toolId",
+    "antigravity-mitm", "antigravity-mitm/alias", "openclaw/auto-order", "claude-settings",
+    "cline-settings", "codewhale-settings", "crush-settings", "droid-settings", "grok-build-settings",
+    "hermes-agent-settings", "jcode-settings", "kilo-settings", "letta-settings", "omp-settings",
+    "openclaw-settings", "qwen-settings", "smelt-settings",
+  ])
+  migratedGet(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(req, reply, (request) => this.cliTools.dispatch(request));
+  }
+
+  @Post([
+    "config", "apply", "backups", "guide-settings/:toolId", "antigravity-mitm", "claude-settings",
+    "cline-settings", "codewhale-settings", "crush-settings", "droid-settings", "grok-build-settings",
+    "hermes-agent-settings", "jcode-settings", "kilo-settings", "letta-settings", "omp-settings",
+    "openclaw-settings", "qwen-settings", "smelt-settings",
+  ])
+  migratedPost(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(req, reply, (request) => this.cliTools.dispatch(request));
+  }
+
+  @Delete([
+    "backups", "antigravity-mitm", "claude-settings", "cline-settings", "codewhale-settings",
+    "crush-settings", "droid-settings", "grok-build-settings", "jcode-settings", "kilo-settings",
+    "letta-settings", "omp-settings", "openclaw-settings", "qwen-settings", "smelt-settings",
+  ])
+  migratedDelete(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(req, reply, (request) => this.cliTools.dispatch(request));
+  }
+
+  @Put("antigravity-mitm/alias")
+  migratedPut(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(req, reply, (request) => this.cliTools.dispatch(request));
+  }
+
+  /** Catch-all for CLI tool routes that are implemented as app-owned handlers. */
+  @All("*")
+  catchAll(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(req, reply, (request) => this.cliTools.dispatch(request));
   }
 }

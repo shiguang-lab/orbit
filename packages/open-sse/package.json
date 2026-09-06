@@ -129,6 +129,7 @@
       "types": "./public/rateLimitManager.d.ts",
       "import": "./services/rateLimitManager.ts"
     },
+    "./services/combo/decisionTrace": "./services/combo/decisionTrace.ts",
     "./services/providerDefaultRateLimit": {
       "types": "./public/providerDefaultRateLimit.d.ts",
       "import": "./services/providerDefaultRateLimit.ts"

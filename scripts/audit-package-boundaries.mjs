@@ -19,6 +19,17 @@ const readJson = (file) => {
 };
 const add = (rule, file, detail) => violations.push({ rule, file: rel(file), detail });
 
+function isAppOwnedSource(file) {
+  const path = rel(file);
+  if (/\/src\/(app|routes)\//.test(path)) return true;
+  // `src/control` is the reviewed package-contract namespace. Only transport
+  // or route orchestration belongs in apps; pure re-export contracts remain in
+  // the shared package.
+  if (!/\/src\/control\//.test(path)) return false;
+  const source = readFileSync(file, "utf8");
+  return /from ["'](?:next\/|@nestjs\/)|export\s+(?:async\s+)?function\s+(?:GET|POST|PUT|PATCH|DELETE)\b/.test(source);
+}
+
 function walk(dir, out = []) {
   if (!existsSync(dir)) return out;
   const info = statSync(dir);
@@ -98,7 +109,7 @@ for (const entry of packageEntries) {
   const name = entry.manifest?.name;
   if (!legacyMixed.has(name)) continue;
   for (const file of walk(join(entry.dir, "src"))) {
-    if (/\/src\/(app|control|routes)\//.test(rel(file))) {
+    if (isAppOwnedSource(file)) {
       add("legacy-app-owned-code", file, `${name} exposes app-owned routes/orchestration from a transitional package; migrate this file into apps/*`);
     }
   }
@@ -120,7 +131,7 @@ for (const entry of packageEntries) {
     add("package-not-shared", join(entry.dir, "package.json"), `${name} has ${applications.length} app consumer(s); packages require at least two deployable app consumers`);
   }
   for (const file of walk(join(entry.dir, "src"))) {
-    if (/\/src\/(app|control|routes)\//.test(rel(file))) {
+    if (isAppOwnedSource(file)) {
       add("app-owned-code-in-shared-package", file, "move app-specific routes/handlers into the owning apps/* module");
     }
   }

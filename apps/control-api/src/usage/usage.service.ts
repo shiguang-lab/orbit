@@ -12,6 +12,14 @@ import { GET as getComboForecast } from "./handlers/combo-forecast.handler.js";
 import { GET as getComboHealthDashboard } from "./handlers/combo-health-dashboard.handler.js";
 import { GET as getComboHealthAutopilot } from "./handlers/combo-health-autopilot.handler.js";
 import { GET as getComboScoringInspector } from "./handlers/combo-scoring-inspector.handler.js";
+import { GET as getAnalytics } from "./handlers/analytics.handler.js";
+import { GET as getRequestsByProviderDate } from "./handlers/requests-by-provider-date.handler.js";
+import { GET as getTokenLimits, POST as setTokenLimits, DELETE as deleteTokenLimits } from "./handlers/token-limits.handler.js";
+import { GET as getConnectionUsage } from "./handlers/connection-usage.handler.js";
+import { GET as getComboHealth } from "./handlers/combo-health.handler.js";
+import { GET as getQuota } from "./handlers/quota.handler.js";
+import { GET as getProviderLimits, POST as refreshProviderLimits } from "./handlers/provider-limits.handler.js";
+import { GET as getComboTrace } from "./handlers/combo-trace.handler.js";
 
 /** Management-facing usage use cases. HTTP transport stays in UsageController. */
 @Injectable()
@@ -58,4 +66,15 @@ export class UsageService {
   getComboHealthDashboard(request: Request) { return getComboHealthDashboard(request); }
   getComboHealthAutopilot(request: Request) { return getComboHealthAutopilot(request); }
   getComboScoringInspector(request: Request) { return getComboScoringInspector(request); }
+  getAnalytics(request: Request) { return getAnalytics(request); }
+  getRequestsByProviderDate(request: Request) { return getRequestsByProviderDate(request); }
+  getTokenLimits(request: Request) { return getTokenLimits(request); }
+  setTokenLimits(request: Request) { return setTokenLimits(request); }
+  deleteTokenLimits(request: Request) { return deleteTokenLimits(request); }
+  getConnectionUsage(request: Request, connectionId: string) { return getConnectionUsage(request, { params: Promise.resolve({ connectionId }) }); }
+  getComboHealth(request: Request) { return getComboHealth(request); }
+  getQuota(request: Request) { return getQuota(request); }
+  getProviderLimits() { return getProviderLimits(); }
+  refreshProviderLimits() { return refreshProviderLimits(); }
+  getComboTrace(request: Request, id: string) { return getComboTrace(request, { params: Promise.resolve({ id }) }); }
 }

@@ -1,0 +1,251 @@
+"use server";
+
+import fs from "fs/promises";
+import path from "path";
+import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import {
+  ensureCliConfigWriteAllowed,
+  getCliPrimaryConfigPath,
+  getCliRuntimeStatus,
+} from "@shiguang-gateway/core-domain/control/cli-tools-runtime";
+import { createBackup } from "@shiguang-gateway/core-domain/control/cli-tools-backups";
+import { saveCliToolLastConfigured, deleteCliToolLastConfigured } from "../cli-tool-state.js";
+import { cliModelConfigSchema } from "@shiguang-gateway/core-domain/control/cli-tools-validation-schemas";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/control/cli-tools-validation-helpers";
+import { resolveApiKey } from "@shiguang-gateway/core-domain/control/cli-tools-api-key-resolver";
+import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+
+const TOOL_ID = "crush";
+
+// Crush (charmbracelet/crush) reads a file-based config, default
+// ~/.config/crush/crush.json — same default `bin/cli/commands/setup-crush.mjs`
+// (resolveCrushTarget / runSetupCrushCommand) writes to, so the dashboard and
+// the `shiguangGateway setup-crush` CLI command agree on one canonical location.
+const getCrushConfigPath = (): string =>
+  getCliPrimaryConfigPath(TOOL_ID) ??
+  path.join(process.env.HOME ?? "~", ".config", "crush", "crush.json");
+
+const getCrushDir = () => path.dirname(getCrushConfigPath());
+
+/**
+ * Crush's config uses a `providers.<id>` map. ShiguangGateway is registered under
+ * the `shiguangGateway` provider id as an `openai-compat` provider — same shape
+ * `buildCrushProvider()`/`mergeCrushConfig()` in setup-crush.mjs produce.
+ */
+type CrushProvider = {
+  type: "openai-compat";
+  base_url: string;
+  api_key: string;
+  models: Array<{ id: string; name: string; context_window: number }>;
+};
+
+const DEFAULT_CONTEXT_WINDOW = 128000;
+
+const ensureV1 = (url: string): string => {
+  const s = url.replace(/\/+$/, "");
+  return s.endsWith("/v1") ? s : `${s}/v1`;
+};
+
+const hasShiguangGatewayConfig = (settings: Record<string, unknown> | null): boolean => {
+  if (!settings) return false;
+  const providers = settings.providers as Record<string, unknown> | undefined;
+  const shiguangGateway = providers?.shiguangGateway as Record<string, unknown> | undefined;
+  return (
+    !!shiguangGateway &&
+    shiguangGateway.type === "openai-compat" &&
+    typeof shiguangGateway.base_url === "string" &&
+    shiguangGateway.base_url.length > 0
+  );
+};
+
+// Read current crush.json
+const readConfig = async (): Promise<Record<string, unknown> | null> => {
+  try {
+    const content = await fs.readFile(getCrushConfigPath(), "utf-8");
+    return JSON.parse(content) as Record<string, unknown>;
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === "ENOENT") return null;
+    throw err;
+  }
+};
+
+// GET — check crush CLI and return current config
+export async function GET(request: Request) {
+  const authError = await requireCliToolsAuth(request);
+  if (authError) return authError;
+
+  try {
+    const runtime = await getCliRuntimeStatus(TOOL_ID);
+
+    if (!runtime.installed || !runtime.runnable) {
+      return Response.json({
+        installed: runtime.installed,
+        runnable: runtime.runnable,
+        command: runtime.command,
+        commandPath: runtime.commandPath,
+        runtimeMode: runtime.runtimeMode,
+        reason: runtime.reason,
+        config: null,
+        message:
+          runtime.installed && !runtime.runnable
+            ? "Crush CLI is installed but not runnable"
+            : "Crush CLI is not installed",
+      });
+    }
+
+    const config = await readConfig();
+
+    return Response.json({
+      installed: runtime.installed,
+      runnable: runtime.runnable,
+      command: runtime.command,
+      commandPath: runtime.commandPath,
+      runtimeMode: runtime.runtimeMode,
+      reason: runtime.reason,
+      config,
+      hasShiguangGateway: hasShiguangGatewayConfig(config),
+      configPath: getCrushConfigPath(),
+    });
+  } catch (err) {
+    return Response.json({ error: { message: sanitizeErrorMessage(err) } }, { status: 500 });
+  }
+}
+
+// POST — write ShiguangGateway settings to crush.json (providers.shiguangGateway)
+export async function POST(request: Request) {
+  const authError = await requireCliToolsAuth(request);
+  if (authError) return authError;
+
+  let rawBody;
+  try {
+    rawBody = await request.json();
+  } catch {
+    return Response.json({ error: { message: "Invalid JSON body" } }, { status: 400 });
+  }
+
+  try {
+    const writeGuard = ensureCliConfigWriteAllowed();
+    if (writeGuard) {
+      return Response.json({ error: writeGuard }, { status: 403 });
+    }
+
+    // Extract keyId BEFORE Zod validation — Zod strips unknown fields
+    const keyId = typeof rawBody?.keyId === "string" ? rawBody.keyId.trim() : null;
+
+    const validation = validateBody(cliModelConfigSchema, rawBody);
+    if (isValidationFailure(validation)) {
+      return Response.json({ error: validation.error }, { status: 400 });
+    }
+    const { baseUrl, model } = validation.data;
+    const apiKey = await resolveApiKey(keyId, validation.data.apiKey);
+
+    const configPath = getCrushConfigPath();
+    const crushDir = getCrushDir();
+
+    // Ensure directory exists
+    await fs.mkdir(crushDir, { recursive: true });
+
+    // Backup current config before modifying
+    await createBackup(TOOL_ID, configPath);
+
+    // Read existing config or start fresh
+    let existing: Record<string, unknown> = {};
+    try {
+      const raw = await fs.readFile(configPath, "utf-8");
+      existing = JSON.parse(raw) as Record<string, unknown>;
+    } catch {
+      /* No existing config */
+    }
+
+    const normalizedBaseUrl = ensureV1(baseUrl);
+    const provider: CrushProvider = {
+      type: "openai-compat",
+      base_url: normalizedBaseUrl,
+      api_key: apiKey,
+      models: [{ id: model, name: `ShiguangGateway: ${model}`, context_window: DEFAULT_CONTEXT_WINDOW }],
+    };
+
+    const updated: Record<string, unknown> = {
+      ...existing,
+      providers: {
+        ...((existing.providers as Record<string, unknown>) || {}),
+        shiguangGateway: provider,
+      },
+    };
+
+    await fs.writeFile(configPath, JSON.stringify(updated, null, 2), "utf-8");
+
+    // Persist last-configured timestamp
+    try {
+      saveCliToolLastConfigured(TOOL_ID);
+    } catch {
+      /* non-critical */
+    }
+
+    return Response.json({
+      success: true,
+      message: "Crush settings applied successfully!",
+      configPath,
+    });
+  } catch (err) {
+    return Response.json({ error: { message: sanitizeErrorMessage(err) } }, { status: 500 });
+  }
+}
+
+// DELETE — remove ShiguangGateway provider from Crush config
+export async function DELETE(request: Request) {
+  const authError = await requireCliToolsAuth(request);
+  if (authError) return authError;
+
+  try {
+    const writeGuard = ensureCliConfigWriteAllowed();
+    if (writeGuard) {
+      return Response.json({ error: writeGuard }, { status: 403 });
+    }
+
+    const configPath = getCrushConfigPath();
+
+    // Backup before modifying
+    await createBackup(TOOL_ID, configPath);
+
+    // Read existing config
+    let existing: Record<string, unknown> = {};
+    try {
+      const raw = await fs.readFile(configPath, "utf-8");
+      existing = JSON.parse(raw) as Record<string, unknown>;
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code === "ENOENT") {
+        return Response.json({ success: true, message: "No config file to reset" });
+      }
+      throw err;
+    }
+
+    // Remove only the ShiguangGateway-managed provider entry — preserve the rest
+    // of the user's providers map (Crush supports multiple providers).
+    const providers = { ...((existing.providers as Record<string, unknown>) || {}) };
+    delete providers.shiguangGateway;
+
+    if (Object.keys(providers).length === 0) {
+      delete existing.providers;
+    } else {
+      existing.providers = providers;
+    }
+
+    if (Object.keys(existing).length === 0) {
+      await fs.rm(configPath, { force: true });
+    } else {
+      await fs.writeFile(configPath, JSON.stringify(existing, null, 2), "utf-8");
+    }
+
+    // Clear last-configured timestamp
+    try {
+      deleteCliToolLastConfigured(TOOL_ID);
+    } catch {
+      /* non-critical */
+    }
+
+    return Response.json({ success: true, message: "Crush ShiguangGateway settings removed" });
+  } catch (err) {
+    return Response.json({ error: { message: sanitizeErrorMessage(err) } }, { status: 500 });
+  }
+}

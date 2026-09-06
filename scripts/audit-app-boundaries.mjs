@@ -136,6 +136,8 @@ const allowedCoreDomainSubpaths = {
     "shared/constants/selfServiceScopes",
     "control/cost-rules",
     "edge/provider-limits",
+    "edge/internal-usage",
+    "shared/cors",
     // A2A transport is owned by edge-gateway; these explicit dynamic imports
     // are transitional facades for the legacy skill implementation while its
     // provider/DB dependencies are moved into edge-owned modules.
@@ -144,8 +146,21 @@ const allowedCoreDomainSubpaths = {
 };
 
 allowedCoreDomainSubpaths["apps/control-api"].push("db/health");
+allowedCoreDomainSubpaths["apps/control-api"].push(
+  "control/usage",
+  "edge/provider-limits",
+  "pricing/modal-cost",
+  "usage/combo-health",
+);
 
-allowedCoreDomainSubpaths["apps/control-api"].push("control/provider-test-batch", "control/acp");
+allowedCoreDomainSubpaths["apps/control-api"].push(
+  "control/provider-test-batch",
+  "control/acp",
+  "conductor/faro-proxy",
+  "conductor/hub-proxy",
+  "chaos/config",
+  "chaos/executor",
+);
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/cli-access-tokens",
   "control/cli-access-scopes",
@@ -236,6 +251,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/skills-registry",
   "control/skills-github",
   "control/agent-skills",
+  "control/provider-display-names",
   "control/mcp-management",
   "control/proxy-subscriptions",
   "control/model-capability-overrides",
@@ -258,6 +274,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/playground-prompt-improver",
   "shared/schemas/playground",
   "control/conversations",
+  "control/cli-tools-",
 );
 
 // Route files that have completed a physical ownership move. Keep this list

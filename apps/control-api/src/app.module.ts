@@ -77,6 +77,8 @@ import { BatchesModule } from "./batches/batches.module.js";
 import { AgentSkillsModule } from "./agent-skills/agent-skills.module.js";
 import { ConversationsModule } from "./conversations/conversations.module.js";
 import { DbHealthModule } from "./db-health/db-health.module.js";
+import { ConductorModule } from "./conductor/conductor.module.js";
+import { ChaosModule } from "./chaos/chaos.module.js";
 
 @Module({
   imports: [
@@ -159,6 +161,8 @@ import { DbHealthModule } from "./db-health/db-health.module.js";
     AgentSkillsModule,
     ConversationsModule,
     DbHealthModule,
+    ConductorModule,
+    ChaosModule,
   ],
 })
 export class AppModule {}

@@ -48,6 +48,10 @@
       "types": "./src/public/fleetSkills.d.ts",
       "import": "./src/lib/conductor/fleetSkills.ts"
     },
+    "./edge/internal-usage": {
+      "types": "./src/public/internalUsageCommand.d.ts",
+      "import": "./src/lib/usage/internalUsageCommand.ts"
+    },
     "./control/provider-test-batch": {
       "types": "./src/public/providerTestBatch.d.ts",
       "import": "./src/lib/providers/testBatch.ts"
@@ -55,6 +59,22 @@
     "./control/acp": {
       "types": "./src/public/acp.d.ts",
       "import": "./src/lib/acp/registry.ts"
+    },
+    "./conductor/faro-proxy": {
+      "types": "./src/public/faroProxy.d.ts",
+      "import": "./src/lib/conductor/faroProxy.ts"
+    },
+    "./conductor/hub-proxy": {
+      "types": "./src/public/hubProxy.d.ts",
+      "import": "./src/lib/conductor/hubProxy.ts"
+    },
+    "./chaos/config": {
+      "types": "./src/public/chaosConfig.d.ts",
+      "import": "./src/lib/chaos/chaosConfig.ts"
+    },
+    "./chaos/executor": {
+      "types": "./src/public/chaosExecutor.d.ts",
+      "import": "./src/lib/chaos/chaosExecutor.ts"
     },
     "./edge/chat-admission": {
       "types": "./src/public/chatAdmission.d.ts",
@@ -250,6 +270,10 @@
     "./usage/combo-health-autopilot": {
       "types": "./src/public/comboHealthAutopilot.d.ts",
       "import": "./src/lib/monitoring/comboHealthAutopilot.ts"
+    },
+    "./control/usage": {
+      "types": "./src/public/usageControl.d.ts",
+      "import": "./src/lib/usage/usageControl.ts"
     },
     "./db/quota-snapshots": {
       "types": "./src/public/quotaSnapshots.d.ts",
@@ -1030,6 +1054,27 @@
     "./edge/*": "./src/edge/*",
     "./sse/*": "./src/sse/*",
     "./shared/*": "./src/shared/*",
+    "./control/cli-tools-config-generator": "./src/lib/cli-helper/config-generator/index.ts",
+    "./control/cli-tools-tool-detector": "./src/lib/cli-helper/tool-detector.ts",
+    "./control/cli-tools-config-guard": "./src/lib/api/cliConfigWriteGuard.ts",
+    "./control/cli-tools-batch-cache": "./src/lib/cliTools/batchStatusCache.ts",
+    "./control/cli-tools-hermes-agent": "./src/lib/cli-helper/config-generator/hermes-agent.ts",
+    "./control/cli-tools-hermes-home": "./src/lib/cli-helper/config-generator/hermesHome.ts",
+    "./control/cli-tools-omp": "./src/lib/db/omp.ts",
+    "./control/cli-tools-runtime-ports": "./src/lib/runtime/ports.ts",
+    "./control/cli-tools-mitm": "./src/mitm/systemCommands.ts",
+    "./control/cli-tools-mitm-dns": "./src/mitm/dns/dnsConfig.ts",
+    "./control/cli-tools-mitm-alias": "./src/mitm/aliasConfig.ts",
+    "./control/cli-tools-mitm-manager": "./src/mitm/manager.runtime.ts",
+    "./control/cli-tools-status": { "types": "./src/lib/cliTools/checkToolConfigStatus.ts", "import": "./src/lib/cliTools/checkToolConfigStatus.ts" },
+    "./control/cli-tools-combo": { "types": "./src/lib/combos/steps.ts", "import": "./src/lib/combos/steps.ts" },
+    "./control/cli-tools-log": { "types": "./src/lib/logEnv.ts", "import": "./src/lib/logEnv.ts" },
+    "./control/cli-tools-api-key-resolver": { "types": "./src/shared/services/apiKeyResolver.ts", "import": "./src/shared/services/apiKeyResolver.ts" },
+    "./control/cli-tools-backups": { "types": "./src/shared/services/backupService.ts", "import": "./src/shared/services/backupService.ts" },
+    "./control/cli-tools-runtime": { "types": "./src/shared/services/cliRuntime.ts", "import": "./src/shared/services/cliRuntime.ts" },
+    "./control/cli-tools-validation-helpers": { "types": "./src/shared/validation/helpers.ts", "import": "./src/shared/validation/helpers.ts" },
+    "./control/cli-tools-validation-schemas": { "types": "./src/public/cliToolsValidationSchemas.d.ts", "import": "./src/lib/cliTools/validationSchemas.ts" },
+    "./control/cli-tools-validation-cli": { "types": "./src/shared/validation/schemas/cli.ts", "import": "./src/shared/validation/schemas/cli.ts" },
     "./cache/db": {
       "types": "./src/public/cacheDb.d.ts",
       "import": "./src/lib/db/semanticCache.ts"
