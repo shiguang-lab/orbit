@@ -14,6 +14,7 @@ import { EvalsModule } from "./evals/evals.module.js";
 import { PluginsModule } from "./plugins/plugins.module.js";
 import { QuotaModule } from "./quota/quota.module.js";
 import { ModelsModule } from "./models/models.module.js";
+import { CombosModule } from "./combos/combos.module.js";
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { ModelsModule } from "./models/models.module.js";
     PluginsModule,
     QuotaModule,
     ModelsModule,
+    CombosModule,
   ],
 })
 export class AppModule {}

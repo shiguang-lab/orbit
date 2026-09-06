@@ -89,6 +89,45 @@ export function getApiKeyById(id: string): Promise<{ key?: string | null } | nul
 
 export function getComboByName(name: string): Promise<unknown>;
 export function getCombos(limit?: number, offset?: number): Promise<unknown[]>;
+
+export interface ModelComboMapping {
+  id: string;
+  pattern: string;
+  comboId: string;
+  comboName?: string;
+  priority: number;
+  enabled: boolean;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+}
+export interface ModelComboMappingPage {
+  items: ModelComboMapping[];
+  total: number;
+}
+export function getModelComboMappings(options?: {
+  limit?: number;
+  offset?: number;
+}): Promise<ModelComboMappingPage>;
+export function getModelComboMappingById(id: string): Promise<ModelComboMapping | null>;
+export function createModelComboMapping(data: {
+  pattern: string;
+  comboId: string;
+  priority?: number;
+  enabled?: boolean;
+  description?: string;
+}): Promise<ModelComboMapping>;
+export function updateModelComboMapping(
+  id: string,
+  data: Partial<{
+    pattern: string;
+    comboId: string;
+    priority: number;
+    enabled: boolean;
+    description: string;
+  }>,
+): Promise<ModelComboMapping | null>;
+export function deleteModelComboMapping(id: string): Promise<boolean>;
 export function getDatabaseSettings(): unknown;
 export function getApiKeyMetadata(apiKey: string | null | undefined): Promise<any>;
 export function resolveProxyForConnection(
