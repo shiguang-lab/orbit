@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, type OnModuleInit } from "@nestjs/common";
 import { randomUUID } from "node:crypto";
 import {
   getEvalScorecard,
@@ -10,9 +10,14 @@ import {
 import { getApiKeys } from "@shiguang-gateway/core-domain/db/api-keys";
 import { listSuites, getSuite, runSuite, createScorecard } from "@shiguang-gateway/core-domain/evals/runner";
 import { buildEvalTargetOptions, runEvalSuiteAgainstTarget } from "@shiguang-gateway/core-domain/evals/runtime";
+import { ensureEvalsSchema } from "./evals-schema.js";
 
 @Injectable()
-export class EvalsService {
+export class EvalsService implements OnModuleInit {
+  onModuleInit(): void {
+    ensureEvalsSchema();
+  }
+
   async getEvalsOverview() {
     const [suites, recentRuns, scorecard, targets, apiKeys] = await Promise.all([
       Promise.resolve(listSuites()),

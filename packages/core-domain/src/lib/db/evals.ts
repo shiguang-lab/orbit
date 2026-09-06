@@ -86,83 +86,6 @@ interface DbLike {
   prepare: <TRow = unknown>(sql: string) => StatementLike<TRow>;
 }
 
-function hasColumn(db: DbLike, table: string, column: string): boolean {
-  const rows = db.prepare<{ name?: string }>(`PRAGMA table_info(${table})`).all();
-  return rows.some((row) => row && typeof row.name === "string" && row.name === column);
-}
-
-function ensureEvalSuiteTables(db: DbLike) {
-  db.prepare(
-    `CREATE TABLE IF NOT EXISTS eval_suites (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL,
-      description TEXT,
-      created_at TEXT NOT NULL,
-      updated_at TEXT NOT NULL
-    )`
-  ).run();
-
-  if (!hasColumn(db, "eval_suites", "description")) {
-    db.prepare("ALTER TABLE eval_suites ADD COLUMN description TEXT").run();
-  }
-  if (!hasColumn(db, "eval_suites", "created_at")) {
-    db.prepare("ALTER TABLE eval_suites ADD COLUMN created_at TEXT NOT NULL DEFAULT ''").run();
-  }
-  if (!hasColumn(db, "eval_suites", "updated_at")) {
-    db.prepare("ALTER TABLE eval_suites ADD COLUMN updated_at TEXT NOT NULL DEFAULT ''").run();
-  }
-
-  db.prepare(
-    `CREATE TABLE IF NOT EXISTS eval_cases (
-      id TEXT PRIMARY KEY,
-      suite_id TEXT NOT NULL,
-      sort_order INTEGER NOT NULL DEFAULT 0,
-      name TEXT NOT NULL,
-      model TEXT,
-      input_json TEXT NOT NULL,
-      expected_strategy TEXT NOT NULL,
-      expected_value TEXT,
-      tags_json TEXT,
-      created_at TEXT NOT NULL,
-      updated_at TEXT NOT NULL
-    )`
-  ).run();
-
-  if (!hasColumn(db, "eval_cases", "sort_order")) {
-    db.prepare("ALTER TABLE eval_cases ADD COLUMN sort_order INTEGER NOT NULL DEFAULT 0").run();
-  }
-  if (!hasColumn(db, "eval_cases", "model")) {
-    db.prepare("ALTER TABLE eval_cases ADD COLUMN model TEXT").run();
-  }
-  if (!hasColumn(db, "eval_cases", "input_json")) {
-    db.prepare("ALTER TABLE eval_cases ADD COLUMN input_json TEXT NOT NULL DEFAULT '{}'").run();
-  }
-  if (!hasColumn(db, "eval_cases", "expected_strategy")) {
-    db.prepare(
-      "ALTER TABLE eval_cases ADD COLUMN expected_strategy TEXT NOT NULL DEFAULT 'contains'"
-    ).run();
-  }
-  if (!hasColumn(db, "eval_cases", "expected_value")) {
-    db.prepare("ALTER TABLE eval_cases ADD COLUMN expected_value TEXT").run();
-  }
-  if (!hasColumn(db, "eval_cases", "tags_json")) {
-    db.prepare("ALTER TABLE eval_cases ADD COLUMN tags_json TEXT").run();
-  }
-  if (!hasColumn(db, "eval_cases", "created_at")) {
-    db.prepare("ALTER TABLE eval_cases ADD COLUMN created_at TEXT NOT NULL DEFAULT ''").run();
-  }
-  if (!hasColumn(db, "eval_cases", "updated_at")) {
-    db.prepare("ALTER TABLE eval_cases ADD COLUMN updated_at TEXT NOT NULL DEFAULT ''").run();
-  }
-
-  db.prepare(
-    "CREATE INDEX IF NOT EXISTS idx_eval_suites_updated_at ON eval_suites(updated_at DESC)"
-  ).run();
-  db.prepare(
-    "CREATE INDEX IF NOT EXISTS idx_eval_cases_suite_order ON eval_cases(suite_id, sort_order ASC, created_at ASC)"
-  ).run();
-}
-
 function parseJsonRecord(value: unknown): JsonRecord {
   if (value && typeof value === "object" && !Array.isArray(value)) {
     return value as JsonRecord;
@@ -607,7 +530,6 @@ export function getEvalScorecard(
 
 export function listCustomEvalSuites(): EvalSuiteRecord[] {
   const db = getDbInstance() as unknown as DbLike;
-  ensureEvalSuiteTables(db);
   const suiteRows = db
     .prepare("SELECT * FROM eval_suites ORDER BY updated_at DESC, created_at DESC")
     .all();
@@ -661,7 +583,6 @@ export function saveCustomEvalSuite(input: {
   }>;
 }): EvalSuiteRecord {
   const db = getDbInstance() as unknown as DbLike;
-  ensureEvalSuiteTables(db);
   const now = new Date().toISOString();
   const suiteId =
     typeof input.id === "string" && input.id.trim().length > 0 ? input.id.trim() : randomUUID();

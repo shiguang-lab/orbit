@@ -573,3 +573,62 @@ export const GamificationCommunityServerEntity: EntityDefinition = {
     column("error_message", "TEXT"),
   ],
 };
+
+/** Evaluation suites and cases are authored by the control plane. */
+export const EvalSuiteEntity: EntityDefinition = {
+  entityName: "EvalSuite",
+  tableName: "eval_suites",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("name", "TEXT", { nullable: false }),
+    column("description", "TEXT"),
+    column("created_at", "TEXT", { nullable: false }),
+    column("updated_at", "TEXT", { nullable: false }),
+  ],
+};
+
+export const EvalCaseEntity: EntityDefinition = {
+  entityName: "EvalCase",
+  tableName: "eval_cases",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("suite_id", "TEXT", { nullable: false }),
+    column("sort_order", "INTEGER", { nullable: false, default: "0" }),
+    column("name", "TEXT", { nullable: false }),
+    column("model", "TEXT"),
+    column("input_json", "TEXT", { nullable: false }),
+    column("expected_strategy", "TEXT", { nullable: false }),
+    column("expected_value", "TEXT"),
+    column("tags_json", "TEXT"),
+    column("created_at", "TEXT", { nullable: false }),
+    column("updated_at", "TEXT", { nullable: false }),
+  ],
+};
+
+/** Evaluation run history is written by control-api and read by routing. */
+export const EvalRunEntity: EntityDefinition = {
+  entityName: "EvalRun",
+  tableName: "eval_runs",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("run_group_id", "TEXT"),
+    column("suite_id", "TEXT", { nullable: false }),
+    column("suite_name", "TEXT", { nullable: false }),
+    column("target_type", "TEXT", { nullable: false }),
+    column("target_id", "TEXT"),
+    column("target_label", "TEXT", { nullable: false }),
+    column("api_key_id", "TEXT"),
+    column("pass_rate", "INTEGER", { nullable: false, default: "0" }),
+    column("total", "INTEGER", { nullable: false, default: "0" }),
+    column("passed", "INTEGER", { nullable: false, default: "0" }),
+    column("failed", "INTEGER", { nullable: false, default: "0" }),
+    column("avg_latency_ms", "INTEGER", { nullable: false, default: "0" }),
+    column("summary_json", "TEXT", { nullable: false }),
+    column("results_json", "TEXT", { nullable: false }),
+    column("outputs_json", "TEXT"),
+    column("created_at", "TEXT", { nullable: false }),
+  ],
+};
