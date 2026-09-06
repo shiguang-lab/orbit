@@ -48,6 +48,9 @@ const sqlEvidencePattern = /\b(?:CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?|ALTER\s
 const appPrivateTables = new Set([
   "cloud_agent_credentials",
   "cloud_agent_tasks",
+  "agent_bridge_state",
+  "agent_bridge_mappings",
+  "agent_bridge_bypass",
 ]);
 const sqlNoise = new Set([
   "add", "alter", "and", "as", "by", "column", "create", "delete", "drop", "fail", "from", "if",

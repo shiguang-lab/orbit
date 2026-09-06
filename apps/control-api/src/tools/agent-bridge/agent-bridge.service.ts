@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, type OnModuleInit } from "@nestjs/common";
 import * as config from "./handlers/config.handler.js";
 import * as bypass from "./handlers/bypass.handler.js";
 import * as agents from "./handlers/agents.handler.js";
@@ -10,10 +10,15 @@ import * as diagnose from "./handlers/diagnose.handler.js";
 import * as cert from "./handlers/cert.handler.js";
 import * as certRegenerate from "./handlers/cert-regenerate.handler.js";
 import * as certDownload from "./handlers/cert-download.handler.js";
+import { ensureAgentBridgeSchema } from "./agent-bridge-schema.js";
 
 /** AgentBridge use cases; transport stays in AgentBridgeController. */
 @Injectable()
-export class AgentBridgeService {
+export class AgentBridgeService implements OnModuleInit {
+  onModuleInit(): void {
+    ensureAgentBridgeSchema();
+  }
+
   configGet() { return config.GET(); }
   configPost(request: Request) { return config.POST(request); }
   bypassGet() { return bypass.GET(); }
