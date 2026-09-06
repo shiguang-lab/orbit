@@ -23,13 +23,13 @@ import type { InterceptedRequest } from "../inspector/types";
 
 /**
  * Best-effort error sanitizer.
- * Routes through `@shiguang-gateway/open-sse/utils/error.sanitizeErrorMessage` (Hard Rule #12)
+ * Routes through `@shiguang-gateway/error-sanitization.sanitizeErrorMessage` (Hard Rule #12)
  * when available; falls back to a safe `String(err)` if the module is not present
  * (e.g. unit tests that don't load the full open-sse barrel).
  */
 async function safeErrorMessage(err: unknown): Promise<string> {
   try {
-    const mod = (await import("../../../../open-sse/utils/error.ts")) as {
+    const mod = (await import("@shiguang-gateway/error-sanitization")) as {
       sanitizeErrorMessage?: (m: unknown) => string;
     };
     if (typeof mod.sanitizeErrorMessage === "function") {

@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { resolveChatRequestBody } from "./requestBody";
-import * as chatAdmission from "./chatAdmission.ts";
-import { buildClientRawRequest, resolveDispatchClientRawRequest } from "./chat/clientRawRequest.ts";
+import * as chatAdmission from "@shiguang-gateway/open-sse/handlers/chatAdmission";
+import { buildClientRawRequest, resolveDispatchClientRawRequest } from "@shiguang-gateway/open-sse/handlers/chat/clientRawRequest";
 export { buildClientRawRequest, resolveDispatchClientRawRequest };
 import { normalizeReasoningRequest } from "../../shared/reasoning/effortStandardization.ts";
 import { isDetailedLoggingEnabled } from "../../lib/db/detailedLogs.ts";
@@ -24,10 +24,10 @@ import {
   recordModelLockoutFailure,
   isDailyQuotaExhausted,
 } from "../../../../open-sse/services/accountFallback.ts";
-import { getCombo, getComboForModel, getModelInfo } from "../services/model";
+import { getCombo, getComboForModel, getModelInfo } from "@shiguang-gateway/open-sse/services/runtimeModel";
 import { stripContextWindowSuffix } from "../../../../open-sse/services/model.ts";
 import { resolveBareModelToConnectionDefault } from "../../../../open-sse/services/model.ts";
-import { errorResponse } from "../../../../open-sse/utils/error.ts";
+import { errorResponse } from "@shiguang-gateway/http-kernel/error-response";
 import { getImageModelEntry } from "../../../../open-sse/config/imageRegistry.ts";
 import { acceptHeaderForcesStream } from "../../../../open-sse/utils/aiSdkCompat.ts";
 import { applyNoThinkingAlias } from "../../../../open-sse/utils/noThinkingAlias.ts";
@@ -58,7 +58,7 @@ import {
   PROVIDER_ID_TO_ALIAS,
 } from "../../../../open-sse/config/providerModels.ts";
 import * as log from "../utils/logger";
-import { checkAndRefreshToken } from "../services/tokenRefresh";
+import { checkAndRefreshToken } from "@shiguang-gateway/open-sse/services/credentialTokenRefresh";
 import { createHookContext, runHooks, initPreRequestRegistry } from "../../lib/middleware/registry.ts";
 import { rejectPeerRequest } from "../../shared/resilience/peerRouting.ts";
 import { isRuntimeProviderRetirementError } from "@shiguang-gateway/contracts/provider-retirement";
@@ -72,7 +72,7 @@ import {
   evictSessionAccountAffinityForConnection,
   getSessionAccountAffinity,
 } from "../../lib/db/sessionAccountAffinity.ts";
-import { dispatchChatWithAffinityEviction } from "./chatDispatch";
+import { dispatchChatWithAffinityEviction } from "@shiguang-gateway/open-sse/handlers/chatDispatch";
 import { getCachedSettings, getCombosCacheVersion } from "../../lib/db/readCache.ts";
 import { getCombos } from "../../lib/db/combos.ts";
 import { resolveModelLockoutSettings } from "../../lib/resilience/modelLockoutSettings.ts";
@@ -96,7 +96,7 @@ import {
   withCorrelationId,
   withModalityBridgeHeader,
   withConversationId,
-} from "./chatHelpers";
+} from "@shiguang-gateway/open-sse/handlers/chatHelpers";
 import { buildModalityBridgeHeader } from "../../lib/guardrails/modalityBridge/bridgeStats.ts";
 import { resolveConversationId } from "../../../../open-sse/services/conversationTracker.ts";
 import {
@@ -104,7 +104,7 @@ import {
   isProviderBreakerFailureStatus,
   resolveStreamReadinessClassificationError,
   shouldTripProviderBreakerForResult,
-} from "./chatPredicates";
+} from "@shiguang-gateway/open-sse/handlers/chatPredicates";
 import { markAntigravityMissingCloudCodeProject } from "../../../../open-sse/services/antigravityProjectPersistence.ts";
 import { connectionHasExtraKeys } from "../../../../open-sse/services/apiKeyRotator.ts";
 import { wrapResponseWithOAuthSessionRelease } from "../../../../open-sse/services/oauthSessionOccupancy.ts";
@@ -117,9 +117,9 @@ import {
   applyConnectionReasoningRule,
   applyReasoningRouting,
   filterReasoningCombo,
-} from "./reasoningRouting";
-import { createVirtualAutoCombo, resolveAutoRoutingState } from "./autoRouting";
-import { getComboFailureLogError } from "./comboFailureLogging";
+} from "@shiguang-gateway/open-sse/handlers/reasoningRouting";
+import { createVirtualAutoCombo, resolveAutoRoutingState } from "@shiguang-gateway/open-sse/handlers/autoRouting";
+import { getComboFailureLogError } from "@shiguang-gateway/open-sse/handlers/comboFailureLogging";
 
 // Pipeline integration — wired modules
 import { classify429FromError, type FailureKind } from "../../shared/utils/classify429.ts";
@@ -129,7 +129,7 @@ import { isFeatureFlagEnabled } from "../../shared/utils/featureFlags.ts";
 import { shouldIsolateProbeFailures } from "../../shared/utils/probeOrigin.ts";
 import { getCircuitBreaker, isLocalStreamLifecycleError } from "../../shared/utils/circuitBreaker";
 import { markAccountExhaustedFrom429 } from "../../domain/quotaCache";
-import { resolveForcedConnectionForCredentialPool } from "../services/sessionAffinityPin.ts";
+import { resolveForcedConnectionForCredentialPool } from "@shiguang-gateway/open-sse/services/sessionAffinityPin";
 import { RequestTelemetry, recordTelemetry } from "../../shared/utils/requestTelemetry";
 import { generateRequestId } from "../../shared/utils/requestId";
 import { logAuditEvent } from "../../lib/compliance/index";
@@ -177,13 +177,13 @@ import {
   getCooldownAwareRetryDecision,
   resolveCooldownAwareRetrySettings,
   waitForCooldownAwareRetry,
-} from "../services/cooldownAwareRetry";
+} from "@shiguang-gateway/open-sse/services/cooldownAwareRetry";
 import {
   shouldRetrySameAccountTransport,
   sameAccountTransportRetryDelayMs,
 } from "../services/sameAccountTransportRetry";
 import { constrainConnectionsToQuota, resolveQuotaKeyScope } from "../../lib/quota/quotaKey";
-import { checkConnectionCapacity } from "../utils/backpressure";
+import { checkConnectionCapacity } from "@shiguang-gateway/open-sse/utils/backpressure";
 import {
   buildManagedLeaseErrorResponse,
   buildManagedLeaseSelectionErrorResponse,
@@ -193,7 +193,7 @@ import {
   parseManagedLeaseRequestContext,
   validateExclusiveLeaseKeyConfiguration,
   type ManagedLeaseDispatchContext,
-} from "../services/leaseContext";
+} from "@shiguang-gateway/open-sse/services/leaseContext";
 
 registerCodexQuotaFetcher();
 
@@ -348,7 +348,7 @@ const managedComboRejection = () =>
 
 const comboPromoteDeps = { updateCombo, info: log.info, warn: log.warn };
 
-export { shouldTripProviderBreakerForResult } from "./chatPredicates";
+export { shouldTripProviderBreakerForResult } from "@shiguang-gateway/open-sse/handlers/chatPredicates";
 
 async function handleChatImplementation(
   request: any,

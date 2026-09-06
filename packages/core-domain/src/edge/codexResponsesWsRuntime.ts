@@ -9,14 +9,14 @@ export {
   authorizeWebSocketHandshake,
   extractWsTokenFromRequest,
 } from "../lib/ws/handshake.js";
-export { getModelInfo } from "../sse/services/model.js";
+export { getModelInfo } from "@shiguang-gateway/open-sse/services/runtimeModel";
 export { resolveCcDiscoveryAliasStrip } from "../lib/ccDiscoveryAliasResolve.js";
 export { getProviderCredentialsWithQuotaPreflight } from "../sse/services/auth.js";
 export {
   enforceApiKeyPolicy,
   validateApiKeyRoutingTarget,
 } from "../shared/utils/apiKeyPolicy.js";
-export { checkAndRefreshToken } from "../sse/services/tokenRefresh.js";
+export { checkAndRefreshToken } from "@shiguang-gateway/open-sse/services/credentialTokenRefresh";
 export { isFeatureFlagEnabled } from "../shared/utils/featureFlags.js";
 export { formatMemoryContext } from "../lib/memory/injection.js";
 export { retrieveMemories } from "../lib/memory/retrieval.js";
@@ -40,7 +40,7 @@ export {
   buildManagedLeaseErrorResponse,
   isExclusiveLeaseManagedKey,
   LeaseContextError,
-} from "../sse/services/leaseContext.js";
+} from "@shiguang-gateway/open-sse/services/leaseContext";
 export { saveCallLog } from "../lib/usage/callLogs.js";
 export { saveRequestUsage } from "../lib/usage/usageHistory.js";
 export { logProxyEvent } from "../lib/proxyLogger.js";

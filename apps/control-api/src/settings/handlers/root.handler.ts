@@ -1,37 +1,44 @@
 import { z } from "zod";
 import {
+  getSettings,
+  getSettingsRevision,
+  updateSettings,
+  SettingsRevisionConflictError,
+} from "@shiguang-gateway/core-domain/control/settings";
+import { getRuntimePorts } from "@shiguang-gateway/core-domain/control/cli-tools-runtime-ports";
+import { updateSettingsSchema } from "@shiguang-gateway/core-domain/shared/validation/settings-schema";
+import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
+import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/control/feature-flags";
+import { resolveModelLockoutSettings } from "@shiguang-gateway/core-domain/resilience/model-lockout-settings";
+import {
+  getUpstreamProxyConfig,
+  upsertUpstreamProxyConfig,
+  validateProxyUrl,
+} from "@shiguang-gateway/core-domain/db/upstream-proxy";
+import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
+import {
+  ensurePersistentManagementPasswordHash,
+  getStoredManagementPassword,
+  hasManagementPasswordConfigured,
+  hashManagementPassword,
+  verifyManagementPassword,
+} from "@shiguang-gateway/core-domain/control/management-password";
+import { isPaidModelTarget } from "@shiguang-gateway/core-domain/shared/free-models";
+import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/control/compliance";
+import {
+  isAuthRequired,
+  isDashboardSessionAuthenticated,
+} from "@shiguang-gateway/core-domain/control/authenticated";
+import { isCliTokenAuthValid } from "@shiguang-gateway/core-domain/control/cli-token-auth";
+import { getApiKeyMetadata } from "@shiguang-gateway/core-domain/db/api-keys";
+import { getRadarAdminUrl } from "@shiguang-gateway/core-domain/control/radar-links";
+import {
   AUTHZ_HEADER_AUTH_ID,
   AUTHZ_HEADER_AUTH_KIND,
   AUTHZ_HEADER_PEER_LOCALITY,
-  clearCliproxyapiUrlCache,
-  ensurePersistentManagementPasswordHash,
-  getApiKeyMetadata,
-  getAuditRequestContext,
-  getConsistentMachineId,
-  getProviderConnections,
-  getRadarAdminUrl,
-  getRuntimePorts,
-  getSettings,
-  getSettingsRevision,
-  getStoredManagementPassword,
-  getUpstreamProxyConfig,
-  hasManagementPasswordConfigured,
-  hashManagementPassword,
-  isAuthRequired,
-  isCliTokenAuthValid,
-  isDashboardSessionAuthenticated,
-  isFeatureFlagEnabled,
-  isPaidModelTarget,
-  logAuditEvent,
-  readSubjectFromHeaders,
-  resolveModelLockoutSettings,
-  updateSettingsSchema,
-  updateSettings,
-  upsertUpstreamProxyConfig,
-  validateProxyUrl,
-  verifyManagementPassword,
-  SettingsRevisionConflictError,
-} from "@shiguang-gateway/core-domain/control/settings-root";
+} from "@shiguang-gateway/core-domain/shared/authz-headers";
+import { readSubjectFromHeaders } from "@shiguang-gateway/core-domain/shared/authz-subject";
+import { clearCliproxyapiUrlCache } from "@shiguang-gateway/open-sse/executors/cliproxyapi";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { extractApiKey } from "@shiguang-gateway/core-domain/sse/auth";

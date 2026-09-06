@@ -3,14 +3,20 @@ import {
   benchmarkEngines,
   compareReports,
   DEFAULT_BENCHMARK_ENGINES,
-  listCompressionEngines,
+} from "@shiguang-gateway/open-sse/services/compression/harness/benchmark";
+import {
+  registerBuiltinCompressionEngines,
+} from "@shiguang-gateway/open-sse/services/compression/engines/index";
+import { listCompressionEngines } from "@shiguang-gateway/open-sse/services/compression/engines/registry";
+import {
   listCavemanRulePacks,
   listSupportedCompressionLanguages,
-  queryBlock,
-  registerBuiltinCompressionEngines,
+} from "@shiguang-gateway/open-sse/services/compression";
+import {
   retrieveBlock,
-  sanitizeErrorMessage,
-} from "@shiguang-gateway/core-domain/control/compression-management";
+} from "@shiguang-gateway/open-sse/services/compression/engines/ccr/index";
+import { queryBlock } from "@shiguang-gateway/open-sse/services/compression/engines/ccr/ccrQuery";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 
 @Injectable()
 export class CompressionManagementService {

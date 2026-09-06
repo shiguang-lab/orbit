@@ -1,5 +1,5 @@
 export { resolveResponsesApiModel } from "../../edge/codexResponsesWsModel.js";
-export { getModelInfo, getComboForModel } from "../../sse/services/model.js";
+export { getModelInfo, getComboForModel } from "@shiguang-gateway/open-sse/services/runtimeModel";
 export {
   admitChatRequest,
   admitChatStructure,

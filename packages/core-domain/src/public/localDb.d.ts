@@ -297,3 +297,10 @@ export function listOneproxyProxies(options?: {
   minQuality?: number;
   limit?: number;
 }): Promise<any[]>;
+export {
+  getCachedProviderNodes,
+  getComboByNameInsensitive,
+  getCustomModels,
+  getModelAliases,
+  resolveComboForModel,
+} from "../lib/localDb.js";

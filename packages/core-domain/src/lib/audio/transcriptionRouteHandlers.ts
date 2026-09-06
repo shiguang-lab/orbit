@@ -15,7 +15,7 @@ import {
   AUDIO_TRANSCRIPTION_PROVIDERS,
 } from "@shiguang-gateway/open-sse/config/audioRegistry";
 import { resolveDynamicAudioProviders } from "@shiguang-gateway/core-domain/edge/audio-provider-nodes";
-import { errorResponse } from "@shiguang-gateway/open-sse/utils/error";
+import { errorResponse } from "@shiguang-gateway/http-kernel/error-response";
 import { HTTP_STATUS } from "@shiguang-gateway/contracts/http-status";
 import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/shared/api-key-policy";
 import {

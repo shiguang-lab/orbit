@@ -6,7 +6,7 @@ import {
 } from "../../sse/services/auth.ts";
 import { parseSpeechModel, getSpeechProvider } from "../../../../open-sse/config/audioRegistry.ts";
 import { resolveDynamicAudioProviders } from "../edge/audioProviderNodes.ts";
-import { errorResponse } from "../../../../open-sse/utils/error.ts";
+import { errorResponse } from "@shiguang-gateway/http-kernel/error-response";
 import { HTTP_STATUS } from "@shiguang-gateway/contracts/http-status";
 import { enforceApiKeyPolicy } from "../../shared/utils/apiKeyPolicy.ts";
 import { v1AudioSpeechSchema } from "../../shared/validation/schemas.ts";

@@ -45,3 +45,4 @@ export function updateCodexScopeCooldown(
   scope: "codex" | "spark",
   rateLimitedUntil: string,
 ): Promise<Record<string, unknown> | null>;
+export { touchConnectionLastUsed } from "../lib/db/providers.js";

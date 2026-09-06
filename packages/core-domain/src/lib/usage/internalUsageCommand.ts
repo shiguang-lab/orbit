@@ -3,7 +3,7 @@ import {
   buildApiKeyUsageLimitPercentText,
   type ApiKeyUsageLimitStatus,
 } from "./apiKeyUsageLimits.ts";
-import { buildErrorBody } from "../../../../open-sse/utils/error.ts";
+import { buildErrorBody } from "@shiguang-gateway/http-kernel/error-response";
 
 export const INTERNAL_USAGE_COMMAND = "@@om-usage";
 export const USAGE_COMMAND_DISABLED_MESSAGE = "Usage command is disabled for this API key.";

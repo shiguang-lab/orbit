@@ -4,7 +4,7 @@ import { updateProviderConnection } from "@shiguang-gateway/core-domain/db/provi
 import {
   updateProviderCredentials,
   resolveCopilotTokenBaseUrl,
-} from "@shiguang-gateway/core-domain/control/provider-credentials";
+} from "@shiguang-gateway/open-sse/services/credentialTokenRefresh";
 import {
   getAccessToken,
   refreshCopilotToken,

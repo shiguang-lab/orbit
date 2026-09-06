@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { parseModel } from "../../../open-sse/services/model.ts";
-import { getModelInfo } from "../sse/services/model.ts";
+import { getModelInfo } from "@shiguang-gateway/open-sse/services/runtimeModel";
 import { getModelAliases } from "./db/models.ts";
 import {
   getResolvedModelCapabilities,

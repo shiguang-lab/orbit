@@ -7,7 +7,7 @@ import {
   TOKEN_EXPIRY_BUFFER_MS,
   getAccessToken,
   updateProviderCredentials,
-} from "../../../sse/services/tokenRefresh.ts";
+} from "@shiguang-gateway/open-sse/services/credentialTokenRefresh";
 import { isUnrecoverableRefreshError } from "../../../../../open-sse/services/tokenRefresh.ts";
 
 type JsonRecord = Record<string, unknown>;

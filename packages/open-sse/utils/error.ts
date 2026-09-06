@@ -1,13 +1,10 @@
-import { CORS_HEADERS } from "./cors.ts";
 import { unwrapClinepassEnvelope } from "./clinepassEnvelope.ts";
-import { getDefaultErrorMessage, getErrorInfo } from "../config/errorConfig.ts";
 import { normalizePayloadForLog } from "./logPayload.ts";
-import type { ModelCooldownErrorPayload } from "@shiguang-gateway/contracts";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 import {
-  redactSensitiveErrorText,
-  sanitizeErrorMessage,
-  sanitizeUpstreamDetails,
-} from "@shiguang-gateway/error-sanitization";
+  buildErrorBody,
+  type ErrorResponseBody,
+} from "@shiguang-gateway/http-kernel/error-response";
 import { buildPassthroughErrorResponse } from "./upstreamErrorPassthrough.ts";
 
 export {
@@ -15,64 +12,18 @@ export {
   sanitizeErrorMessage,
   sanitizeUpstreamDetails,
 } from "@shiguang-gateway/error-sanitization";
-
-/**
- * Sanitize an error message to prevent stack trace exposure in API responses.
- * Strips stack traces, file paths, and absolute Windows/POSIX paths from
- * error messages before they reach the client.
- */
-interface ErrorResponseBody {
-  error: {
-    message: string;
-    type?: string;
-    code?: string;
-    reason?: string;
-  };
-  upstream_details?: Record<string, unknown> | null; // sanitized upstream provider body
-}
-
-/** Optional caller classification; when set, wins over status-derived defaults. */
-export type ErrorBodyClassification = {
-  type?: string;
-  code?: string;
-  reason?: string;
-};
-
-/**
- * Build OpenAI-compatible error response body. Message is always sanitized
- * so callers do not need to remember to strip stack traces themselves.
- * Optional third argument `upstreamDetails` (raw parsed provider body) is
- * sanitized by sanitizeUpstreamDetails before inclusion as `upstream_details`.
- * Optional fourth argument `classification` preserves an explicit type/code
- * instead of re-deriving both from the status-code table.
- */
-export function buildErrorBody(
-  statusCode: number,
-  message: string,
-  upstreamDetails?: unknown,
-  classification?: ErrorBodyClassification
-): ErrorResponseBody {
-  const errorInfo = getErrorInfo(statusCode);
-  const safeMessage = sanitizeErrorMessage(message) || getDefaultErrorMessage(statusCode);
-
-  const body: ErrorResponseBody = {
-    error: {
-      message: safeMessage,
-      type: classification?.type ?? errorInfo.type,
-      code: classification?.code ?? errorInfo.code,
-      reason: classification?.reason,
-    },
-  };
-
-  if (upstreamDetails !== undefined && upstreamDetails !== null) {
-    const sanitized = sanitizeUpstreamDetails(upstreamDetails);
-    if (sanitized !== null && typeof sanitized === "object" && !Array.isArray(sanitized)) {
-      body.upstream_details = sanitized as Record<string, unknown>;
-    }
-  }
-
-  return body;
-}
+export {
+  buildErrorBody,
+  buildModelCooldownBody,
+  errorResponse,
+  modelCooldownResponse,
+  providerCircuitOpenResponse,
+  unavailableResponse,
+} from "@shiguang-gateway/http-kernel/error-response";
+export type {
+  ErrorBodyClassification,
+  ErrorResponseBody,
+} from "@shiguang-gateway/http-kernel/error-response";
 
 /**
  * Sanitized auto-combo diagnostic trace surfaced on a combo terminal failure.
@@ -264,30 +215,6 @@ export function errorResponseWithComboDiagnostics(
 }
 
 /**
- * Create error Response object (for non-streaming)
- * @param {number} statusCode - HTTP status code
- * @param {string} message - Error message
- * @returns {Response} HTTP Response object
- */
-export function errorResponse(
-  statusCode: number,
-  message: string,
-  classification?: ErrorBodyClassification
-): Response {
-  return new Response(
-    JSON.stringify(
-      buildErrorBody(statusCode, sanitizeErrorMessage(message), undefined, classification)
-    ),
-    {
-      status: statusCode,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
-}
-
-/**
  * Write error to SSE stream (for streaming)
  * @param {WritableStreamDefaultWriter} writer - Stream writer
  * @param {number} statusCode - HTTP status code
@@ -301,28 +228,6 @@ export async function writeStreamError(
   const errorBody = buildErrorBody(statusCode, sanitizeErrorMessage(message));
   const encoder = new TextEncoder();
   await writer.write(encoder.encode(`data: ${JSON.stringify(errorBody)}\n\n`));
-}
-
-function normalizeRetryAfterSeconds(retryAfter?: string | number | Date | null): number {
-  if (typeof retryAfter === "number" && Number.isFinite(retryAfter)) {
-    if (retryAfter > 0 && retryAfter < 1_000_000_000) {
-      return Math.max(Math.ceil(retryAfter), 1);
-    }
-
-    const retryTimeMs = new Date(retryAfter).getTime();
-    if (Number.isFinite(retryTimeMs)) {
-      return Math.max(Math.ceil((retryTimeMs - Date.now()) / 1000), 1);
-    }
-  }
-
-  if (retryAfter instanceof Date || typeof retryAfter === "string") {
-    const retryTimeMs = new Date(retryAfter).getTime();
-    if (Number.isFinite(retryTimeMs)) {
-      return Math.max(Math.ceil((retryTimeMs - Date.now()) / 1000), 1);
-    }
-  }
-
-  return 1;
 }
 
 /**
@@ -534,130 +439,6 @@ export function createErrorResult(
   }
 
   return result;
-}
-
-/**
- * Create unavailable response when all accounts are rate limited
- * @param {number} statusCode - Original error status code
- * @param {string} message - Error message (without retry info)
- * @param {string} retryAfter - ISO timestamp when earliest account becomes available
- * @param {string} retryAfterHuman - Human-readable retry info e.g. "reset after 30s"
- * @returns {Response}
- */
-export function unavailableResponse(
-  statusCode: number,
-  message: string,
-  retryAfter?: string | number | Date | null,
-  retryAfterHuman?: string
-) {
-  const retryAfterSec = normalizeRetryAfterSeconds(retryAfter);
-  const msg = retryAfterHuman ? `${message} (${retryAfterHuman})` : message;
-  return new Response(JSON.stringify({ error: { message: msg } }), {
-    status: statusCode,
-    headers: {
-      "Content-Type": "application/json",
-      "Retry-After": String(retryAfterSec),
-    },
-  });
-}
-
-export function providerCircuitOpenResponse(
-  provider: string,
-  retryAfter?: string | number | Date | null
-) {
-  const retryAfterSec = normalizeRetryAfterSeconds(retryAfter);
-  return new Response(
-    JSON.stringify({
-      error: {
-        message: `Provider ${provider} circuit breaker is open`,
-        type: "server_error",
-        code: "provider_circuit_open",
-        provider,
-        retry_after: retryAfterSec,
-      },
-    }),
-    {
-      status: 503,
-      headers: {
-        "Content-Type": "application/json",
-        "Retry-After": String(retryAfterSec),
-        "X-ShiguangGateway-Provider-Breaker": "open",
-      },
-    }
-  );
-}
-
-export function buildModelCooldownBody({
-  model,
-  retryAfterSec,
-  retryAfterAt,
-  credentialsCoolingCount,
-}: {
-  model?: string | null;
-  retryAfterSec: number;
-  retryAfterAt?: string | null;
-  credentialsCoolingCount?: number | null;
-}): ModelCooldownErrorPayload {
-  const resolvedModel = typeof model === "string" && model.trim().length > 0 ? model.trim() : null;
-  const resolvedRetryAfterAt =
-    typeof retryAfterAt === "string" && retryAfterAt.length > 0 ? retryAfterAt : null;
-  const resolvedCoolingCount =
-    typeof credentialsCoolingCount === "number" &&
-    Number.isFinite(credentialsCoolingCount) &&
-    credentialsCoolingCount > 0
-      ? Math.floor(credentialsCoolingCount)
-      : null;
-
-  return {
-    error: {
-      message: resolvedModel
-        ? `All credentials for model ${resolvedModel} are cooling down`
-        : "All credentials for the requested model are cooling down",
-      type: "rate_limit_error",
-      code: "model_cooldown",
-      ...(resolvedModel ? { model: resolvedModel } : {}),
-      reset_seconds: Math.max(Math.ceil(retryAfterSec), 1),
-      ...(resolvedRetryAfterAt ? { retry_after: resolvedRetryAfterAt } : {}),
-      ...(resolvedCoolingCount ? { credentials_cooling: resolvedCoolingCount } : {}),
-    },
-  };
-}
-
-export function modelCooldownResponse({
-  model,
-  retryAfter,
-  retryAfterAt,
-  credentialsCoolingCount,
-}: {
-  model?: string | null;
-  retryAfter?: string | number | Date | null;
-  retryAfterAt?: string | null;
-  credentialsCoolingCount?: number | null;
-}) {
-  const retryAfterSec = normalizeRetryAfterSeconds(retryAfter);
-  const resolvedRetryAfterAt =
-    typeof retryAfterAt === "string" && retryAfterAt.length > 0
-      ? retryAfterAt
-      : typeof retryAfter === "string" && retryAfter.length > 0
-        ? retryAfter
-        : null;
-  return new Response(
-    JSON.stringify(
-      buildModelCooldownBody({
-        model,
-        retryAfterSec,
-        retryAfterAt: resolvedRetryAfterAt,
-        credentialsCoolingCount,
-      })
-    ),
-    {
-      status: 429,
-      headers: {
-        "Content-Type": "application/json",
-        "Retry-After": String(retryAfterSec),
-      },
-    }
-  );
 }
 
 /**

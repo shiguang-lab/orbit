@@ -1,5 +1,5 @@
 import { HTTP_STATUS } from "@shiguang-gateway/contracts/http-status";
-import { unavailableResponse } from "../../../../open-sse/utils/error.ts";
+import { unavailableResponse } from "@shiguang-gateway/http-kernel/error-response";
 
 /** Credentials result returned when every account for a provider is cooling down. */
 export type RateLimitedCredentials = {

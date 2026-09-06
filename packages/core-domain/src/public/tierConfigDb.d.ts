@@ -1,1 +1,6 @@
-export { loadTierConfig } from "../lib/db/tierConfig.js";
+export {
+  initTierConfigTable,
+  loadTierConfig,
+  loadTierConfigFromDb,
+  saveTierConfig,
+} from "../lib/db/tierConfig.js";

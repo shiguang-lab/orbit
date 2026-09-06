@@ -22,7 +22,7 @@ import { checkTokenLimits } from "../../../../open-sse/services/tokenLimitCounte
 import {
   errorResponse,
   buildErrorBody,
-} from "../../../../open-sse/utils/error.ts";
+} from "@shiguang-gateway/http-kernel/error-response";
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 import { HTTP_STATUS } from "@shiguang-gateway/contracts/http-status";
 import * as log from "../../sse/utils/logger.ts";

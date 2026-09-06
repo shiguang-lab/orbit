@@ -183,7 +183,7 @@ import {
 import {
   computeClosestRetryAfter,
   waitForCooldownAwareRetry,
-} from "@shiguang-gateway/core-domain/edge/cooldown-aware-retry";
+} from "./cooldownAwareRetry.ts";
 import { dispatchChaosFromCombo, type ChaosTuning } from "./autoCombo/chaosEngine.ts";
 import {
   TRANSIENT_FOR_SEMAPHORE,

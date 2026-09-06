@@ -1,7 +1,10 @@
-export type ErrorInfo = {
-  type: string;
-  code: string;
-};
+export {
+  DEFAULT_ERROR_MESSAGES,
+  ERROR_TYPES,
+  getDefaultErrorMessage,
+  getErrorInfo,
+} from "@shiguang-gateway/http-kernel/error-response";
+export type { ErrorInfo } from "@shiguang-gateway/http-kernel/error-response";
 
 export type ConfiguredErrorReason =
   | "auth_error"
@@ -18,40 +21,6 @@ export type ErrorRule = {
   reason?: ConfiguredErrorReason;
   cooldownMs?: number;
   backoff?: boolean;
-};
-
-// OpenAI-compatible error types mapping (client-facing)
-export const ERROR_TYPES: Record<number, ErrorInfo> = {
-  400: { type: "invalid_request_error", code: "bad_request" },
-  401: { type: "authentication_error", code: "invalid_api_key" },
-  402: { type: "billing_error", code: "payment_required" },
-  403: { type: "permission_error", code: "insufficient_quota" },
-  404: { type: "invalid_request_error", code: "model_not_found" },
-  406: { type: "invalid_request_error", code: "model_not_supported" },
-  410: { type: "invalid_request_error", code: "model_shutdown" },
-  429: { type: "rate_limit_error", code: "rate_limit_exceeded" },
-  499: { type: "client_disconnected", code: "client_disconnected" },
-  500: { type: "server_error", code: "internal_server_error" },
-  502: { type: "server_error", code: "bad_gateway" },
-  503: { type: "server_error", code: "service_unavailable" },
-  504: { type: "server_error", code: "gateway_timeout" },
-};
-
-// Default error messages per status code (client-facing)
-export const DEFAULT_ERROR_MESSAGES: Record<number, string> = {
-  400: "Bad request",
-  401: "Invalid API key provided",
-  402: "Payment required",
-  403: "You exceeded your current quota",
-  404: "Model not found",
-  406: "Model not supported",
-  410: "Model has been shut down",
-  429: "Rate limit exceeded",
-  499: "Client disconnected",
-  500: "Internal server error",
-  502: "Bad gateway - upstream provider error",
-  503: "Service temporarily unavailable",
-  504: "Gateway timeout",
 };
 
 // Exponential backoff config for rate limits.
@@ -189,19 +158,6 @@ export const ERROR_RULES: ErrorRule[] = [
 
 function normalizeErrorMessage(message: unknown): string {
   return String(message || "").toLowerCase();
-}
-
-export function getErrorInfo(statusCode: number): ErrorInfo {
-  return (
-    ERROR_TYPES[statusCode] ||
-    (statusCode >= 500
-      ? { type: "server_error", code: "internal_server_error" }
-      : { type: "invalid_request_error", code: "" })
-  );
-}
-
-export function getDefaultErrorMessage(statusCode: number): string {
-  return DEFAULT_ERROR_MESSAGES[statusCode] || "An error occurred";
 }
 
 export function calculateBackoffCooldown(level = 0): number {

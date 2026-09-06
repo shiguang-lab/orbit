@@ -1,4 +1,4 @@
-import { errorResponse } from "../../../../open-sse/utils/error.ts";
+import { errorResponse } from "@shiguang-gateway/http-kernel/error-response";
 import { HTTP_STATUS } from "@shiguang-gateway/contracts/http-status";
 
 import { attachShiguangGatewayMetaHeaders } from "../../domain/gatewayResponseMeta.ts";

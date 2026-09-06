@@ -8,10 +8,6 @@
       "types": "./src/public/embeddedServiceProxy.d.ts",
       "import": "./src/control/embedded-service-proxy.ts"
     },
-    "./control/settings-root": {
-      "types": "./src/public/settingsRoot.d.ts",
-      "import": "./src/control/settings-root.ts"
-    },
     "./control/env-repair": {
       "types": "./src/public/envRepair.d.ts",
       "import": "./src/control/env-repair.ts"
@@ -28,10 +24,6 @@
       "types": "./src/public/intelligenceSync.d.ts",
       "import": "./src/control/intelligence-sync.ts"
     },
-    "./control/monitoring-health": {
-      "types": "./src/public/monitoringHealth.d.ts",
-      "import": "./src/control/monitoring-health.ts"
-    },
     "./control/network-info": {
       "types": "./src/public/networkInfo.d.ts",
       "import": "./src/control/network-info.ts"
@@ -39,10 +31,6 @@
     "./control/free-provider-rankings": {
       "types": "./src/public/freeProviderRankings.d.ts",
       "import": "./src/control/free-provider-rankings.ts"
-    },
-    "./control/free-tier-summary": {
-      "types": "./src/public/freeTierSummary.d.ts",
-      "import": "./src/control/free-tier-summary.ts"
     },
     "./control/fallback-policy": {
       "types": "./src/public/fallbackPolicy.d.ts",
@@ -267,10 +255,6 @@
       "types": "./src/public/tagRouter.d.ts",
       "import": "./src/domain/tagRouter.ts"
     },
-    "./edge/cooldown-aware-retry": {
-      "types": "./src/public/cooldownAwareRetry.d.ts",
-      "import": "./src/sse/services/cooldownAwareRetry.ts"
-    },
     "./edge/credential-health-cache": {
       "types": "./src/public/credentialHealthCache.d.ts",
       "import": "./src/lib/credentialHealth/cache.ts"
@@ -399,10 +383,6 @@
       "types": "./src/public/compressionSettings.d.ts",
       "import": "./src/lib/db/compression.ts"
     },
-    "./control/compression-management": {
-      "types": "./src/public/compressionManagement.d.ts",
-      "import": "./src/control/compression-management.ts"
-    },
     "./control/compression-combos": {
       "types": "./src/public/compressionCombos.d.ts",
       "import": "./src/lib/db/compressionCombos.ts"
@@ -422,6 +402,10 @@
     "./usage/cache-health": {
       "types": "./src/public/cacheHealth.d.ts",
       "import": "./src/lib/usage/cacheHealth.ts"
+    },
+    "./usage/summary": {
+      "types": "./src/public/usageSummary.d.ts",
+      "import": "./src/lib/db/usageSummary.ts"
     },
     "./usage/provider-window-costs": {
       "types": "./src/public/providerWindowCosts.d.ts",
@@ -503,17 +487,9 @@
       "types": "./src/public/videoBridgeExtract.d.ts",
       "import": "./src/control/video-bridge-extract.ts"
     },
-    "./control/video-bridge-drilldown-broker": {
-      "types": "./src/public/videoBridgeDrilldownBroker.d.ts",
-      "import": "./src/control/video-bridge-drilldown-broker.ts"
-    },
     "./control/agent-skills": {
       "types": "./src/public/agentSkills.d.ts",
       "import": "./src/lib/agentSkills/index.ts"
-    },
-    "./control/conversations": {
-      "types": "./src/public/conversations.d.ts",
-      "import": "./src/control/conversations.ts"
     },
     "./control/guardrails": {
       "types": "./src/public/guardrails.d.ts",
@@ -546,10 +522,6 @@
     "./control/mcp-management": {
       "types": "./src/public/mcpManagement.d.ts",
       "import": "./src/lib/mcp/mcpManagementExports.ts"
-    },
-    "./control/mcp-transports": {
-      "types": "./src/public/mcpTransports.d.ts",
-      "import": "./src/control/mcp-transports.ts"
     },
     "./control/copilot": {
       "types": "./src/public/copilot.d.ts",
@@ -590,10 +562,6 @@
     "./shared/error-response": {
       "types": "./src/public/errorResponse.d.ts",
       "import": "./src/lib/api/errorResponse.ts"
-    },
-    "./control/provider-credentials": {
-      "types": "./src/public/providerCredentials.d.ts",
-      "import": "./src/sse/services/tokenRefresh.ts"
     },
     "./control/provider-auth-import": {
       "types": "./src/public/providerAuthImport.d.ts",
@@ -786,7 +754,7 @@
       "import": "./src/lib/cursor/tokenExtractor.ts"
     },
     "./control/video-bridge-drilldown": {
-      "types": "./src/public/videoBridgeDrilldown.d.ts",
+      "types": "./src/lib/guardrails/videoBridgeDrilldownExports.ts",
       "import": "./src/lib/guardrails/videoBridgeDrilldownExports.ts"
     },
     "./control/cursor-renewal": {
@@ -816,10 +784,6 @@
     "./shared/authz-route-guard": {
       "types": "./src/public/authzRouteGuard.d.ts",
       "import": "./src/server/authz/routeGuard.ts"
-    },
-    "./control/tier-config": {
-      "types": "./src/public/tierConfig.d.ts",
-      "import": "./src/control/tierConfig.ts"
     },
     "./shared/auto-disable-banned": {
       "types": "./src/public/autoDisableBanned.d.ts",
@@ -981,6 +945,22 @@
       "types": "./src/public/appConfig.d.ts",
       "import": "./src/shared/constants/appConfig.ts"
     },
+    "./runtime/build-sha": {
+      "types": "./src/public/buildSha.d.ts",
+      "import": "./src/lib/monitoring/buildSha.ts"
+    },
+    "./runtime/local-health": {
+      "types": "./src/public/localHealth.d.ts",
+      "import": "./src/lib/localHealthCheck.ts"
+    },
+    "./catalog/provider-credential-requirement": {
+      "types": "./src/public/providerCredentialRequirement.d.ts",
+      "import": "./src/shared/utils/providerCredentialRequirement.ts"
+    },
+    "./shared/validation/settings-schema": {
+      "types": "./src/shared/validation/settingsSchemas.ts",
+      "import": "./src/shared/validation/settingsSchemas.ts"
+    },
     "./shared/validation/helpers": {
       "types": "./src/public/validationHelpers.d.ts",
       "import": "./src/shared/validation/helpers.ts"
@@ -992,6 +972,10 @@
     "./shared/authz-headers": {
       "types": "./src/public/authzHeaders.d.ts",
       "import": "./src/server/authz/headers.ts"
+    },
+    "./shared/authz-subject": {
+      "types": "./src/public/authzSubject.d.ts",
+      "import": "./src/server/authz/assertAuth.ts"
     },
     "./shared/services/cliRuntime": {
       "types": "./src/public/cliRuntime.d.ts",
@@ -1106,6 +1090,14 @@
       "types": "./src/public/providerConnections.d.ts",
       "import": "./src/lib/db/providers.ts"
     },
+    "./db/provider-connection-view": {
+      "types": "./src/lib/db/providers/lazyConnectionView.ts",
+      "import": "./src/lib/db/providers/lazyConnectionView.ts"
+    },
+    "./db/model-compat": {
+      "types": "./src/lib/db/models/compat.ts",
+      "import": "./src/lib/db/models/compat.ts"
+    },
     "./db/upstream-proxy": {
       "types": "./src/public/upstreamProxy.d.ts",
       "import": "./src/lib/db/upstreamProxy.ts"
@@ -1129,6 +1121,14 @@
     "./db/active-synced-catalog": {
       "types": "./src/public/activeSyncedCatalogDb.d.ts",
       "import": "./src/lib/db/models/activeSyncedCatalog.ts"
+    },
+    "./catalog/synced-auto-aliases": {
+      "types": "./src/lib/providerModels/syncedAutoAliases.ts",
+      "import": "./src/lib/providerModels/syncedAutoAliases.ts"
+    },
+    "./catalog/reserved-provider-prefixes": {
+      "types": "./src/shared/constants/reservedProviderPrefixes.ts",
+      "import": "./src/shared/constants/reservedProviderPrefixes.ts"
     },
     "./db/proxies": {
       "types": "./src/public/proxiesDb.d.ts",
@@ -1310,6 +1310,14 @@
       "types": "./src/shared/utils/providerHints.ts",
       "import": "./src/shared/utils/providerHints.ts"
     },
+    "./edge/proxy-egress-cache": {
+      "types": "./src/lib/proxyEgress.ts",
+      "import": "./src/lib/proxyEgress.ts"
+    },
+    "./edge/translation-events": {
+      "types": "./src/lib/translatorEvents.ts",
+      "import": "./src/lib/translatorEvents.ts"
+    },
     "./edge/provider-constants": {
       "types": "./src/shared/constants/providers.ts",
       "import": "./src/shared/constants/providers.ts"
@@ -1418,10 +1426,6 @@
       "types": "./src/public/callLogApiKeyContext.d.ts",
       "import": "./src/lib/usage/callLogApiKeyContext.ts"
     },
-    "./sse/image-credential-retry": {
-      "types": "./src/public/imageCredentialRetry.d.ts",
-      "import": "./src/sse/services/imageCredentialRetry.ts"
-    },
     "./metrics/request-telemetry": {
       "types": "./src/public/requestTelemetry.d.ts",
       "import": "./src/shared/utils/requestTelemetry.ts"
@@ -1508,9 +1512,6 @@
     "./shared/types/cliBatchStatus": "./src/shared/types/cliBatchStatus.ts",
     "./shared/utils/compressionHeaderEcho": "./src/shared/utils/compressionHeaderEcho.ts",
     "./shared/utils/resolveGatewayBaseUrl": "./src/shared/utils/resolveGatewayBaseUrl.ts",
-    "./sse/handlers/chatHelpers": "./src/sse/handlers/chatHelpers.ts",
-    "./sse/services/leaseContext": "./src/sse/services/leaseContext.ts",
-    "./sse/services/model": "./src/sse/services/model.ts",
     "./usage/call-logs": {
       "types": "./src/public/usageDb.d.ts",
       "import": "./src/lib/usage/callLogs.ts"
@@ -1795,6 +1796,7 @@
     "@shiguang-gateway/contracts": "workspace:*",
     "@shiguang-gateway/db-schema": "workspace:*",
     "@shiguang-gateway/error-sanitization": "workspace:*",
+    "@shiguang-gateway/http-kernel": "workspace:*",
     "@shiguang-gateway/network-guard": "workspace:*",
     "@shiguang-gateway/rerank-catalog": "workspace:*",
     "@shiguang-gateway/runtime-logging": "workspace:*",

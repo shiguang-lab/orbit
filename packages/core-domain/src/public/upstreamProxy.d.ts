@@ -1,5 +1,9 @@
 export type FallbackBackend = "cliproxyapi" | "dario";
 
+export function validateProxyUrl(
+  value: string,
+): { valid: true; url: string } | { valid: false; error: string };
+
 export interface UpstreamProxyConfig {
   id: number;
   providerId: string;

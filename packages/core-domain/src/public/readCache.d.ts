@@ -3,3 +3,4 @@ export {
   getCachedProviderConnectionById,
   getCachedProviderConnections,
 } from "../lib/db/readCache.js";
+export { getCachedRawProviderConnections } from "../lib/db/readCache.js";

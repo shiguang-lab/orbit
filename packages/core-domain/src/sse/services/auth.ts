@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 import { nodeTypeFromId } from "../../lib/db/providerNodeSelect.ts";
-import { extractGoogApiKeyHeader } from "./googApiKeyAuth.ts";
+import { extractGoogApiKeyHeader } from "@shiguang-gateway/open-sse/services/googApiKeyAuth";
 import { describeUpstreamFailure } from "../../shared/utils/upstreamError.ts";
 import { buildAllExpiredCredentials } from "./authExpiredCredentials.ts";
 import {
@@ -135,15 +135,15 @@ import {
   selectSessionAffinityConnection,
   planSessionAffinityConnection,
   syncSessionAffinityRuntimeFields,
-} from "./sessionAffinityPin";
+} from "@shiguang-gateway/open-sse/services/sessionAffinityPin";
 import {
   isAnonymousFallbackDisabledBySettings,
   isNoAuthProviderBlockedBySettings,
 } from "./noAuthProviderSettings";
 import { resolveAccountProxiesFromRegistry } from "./noAuthProxyResolution";
-import { getNoAuthHydrationProviderIds } from "./noAuthProviderSiblings";
-import { loadOptionalNoAuthApiKeyCredentials } from "./noAuthOptionalApiKey";
-import { getResource404Bypass } from "./requestResourceHealth";
+import { getNoAuthHydrationProviderIds } from "@shiguang-gateway/open-sse/services/noAuthProviderSiblings";
+import { loadOptionalNoAuthApiKeyCredentials } from "@shiguang-gateway/open-sse/services/noAuthOptionalApiKey";
+import { getResource404Bypass } from "@shiguang-gateway/open-sse/services/requestResourceHealth";
 import { isVertexConnectionWidePermissionDenied } from "./vertexErrorClassifier";
 import { maybeAutoDisableBannedAccount } from "./autoDisableBannedAccount";
 import * as log from "../utils/logger";
@@ -158,8 +158,8 @@ import {
   invalidateManagedConnectionLease,
   mutateExclusiveConnectionLease,
   type CredentialLeaseSelectionContext,
-} from "./exclusiveConnectionLeasePolicy";
-import { readHeaderValue, type AuthRequestHeaders } from "./headerReader.ts";
+} from "@shiguang-gateway/open-sse/services/exclusiveConnectionLeasePolicy";
+import { readHeaderValue, type AuthRequestHeaders } from "@shiguang-gateway/open-sse/services/headerReader";
 import {
   getOAuthSessionAvailability,
   reserveOAuthSession,
@@ -954,8 +954,8 @@ const markMutexes = new Map<string, Promise<void>>();
 export { fisherYatesShuffle, getNextFromDeckSync as getNextFromDeck };
 // Re-export readHeaderValue and AuthRequestHeaders from headerReader.ts for
 // backwards compat with existing imports (e.g. googApiKeyAuth.ts).
-export { readHeaderValue, type AuthRequestHeaders } from "./headerReader.ts";
-export { extractSessionAffinityKey } from "./sessionAffinityPin";
+export { readHeaderValue, type AuthRequestHeaders } from "@shiguang-gateway/open-sse/services/headerReader";
+export { extractSessionAffinityKey } from "@shiguang-gateway/open-sse/services/sessionAffinityPin";
 const PROVIDER_SEARCH_PAIRS: string[][] = [
   ["nvidia", "nvidia_nim"],
   ["kimi-coding", "kimi-coding-apikey"],

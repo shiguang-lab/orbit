@@ -1,7 +1,17 @@
 import { Injectable } from "@nestjs/common";
 import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
 import { computeFreeProviderRankings } from "@shiguang-gateway/core-domain/control/free-provider-rankings";
-import { buildFreeTierSummary } from "@shiguang-gateway/core-domain/control/free-tier-summary";
+import { getRadarCatalog } from "@shiguang-gateway/core-domain/control/radar";
+import { sumUsageTokensThisMonth } from "@shiguang-gateway/core-domain/usage/summary";
+import { listNoCredentialProviders } from "@shiguang-gateway/core-domain/catalog/provider-credential-requirement";
+import {
+  computeFreeModelTotals,
+  type FreeModelBudget,
+} from "@shiguang-gateway/open-sse/config/freeModelCatalog";
+import {
+  FREE_CATALOG_CURATED_AT,
+  FREE_MODEL_BUDGETS,
+} from "@shiguang-gateway/open-sse/config/freeModelCatalog.data";
 import { freeProviderRankingsQuerySchema } from "./free-tier.schemas.js";
 
 const CORS = {
@@ -9,6 +19,55 @@ const CORS = {
   "Access-Control-Allow-Methods": "GET, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
+
+const HARD_STOP_BY_KEY = new Map(
+  FREE_MODEL_BUDGETS.filter((model) => model.hardStopGuaranteed !== undefined).map((model) => [
+    `${model.provider}:${model.modelId}`,
+    model.hardStopGuaranteed,
+  ]),
+);
+
+type RadarEntry = ReturnType<typeof getRadarCatalog>["entries"][number];
+
+function toBudgetEntry(entry: RadarEntry): FreeModelBudget & { enabled?: boolean } {
+  return {
+    provider: entry.provider,
+    modelId: entry.modelId,
+    displayName: entry.displayName,
+    monthlyTokens: entry.monthlyTokens,
+    creditTokens: entry.creditTokens,
+    freeType: entry.freeType,
+    poolKey: entry.poolKey,
+    tos: entry.tos,
+    trainsOnPrompts: entry.trainsOnPrompts,
+    hardStopGuaranteed: HARD_STOP_BY_KEY.get(`${entry.provider}:${entry.modelId}`),
+    enabled: entry.enabled,
+  };
+}
+
+function buildFreeTierSummary(options: {
+  excludeTosAvoid: boolean;
+  authenticated: boolean;
+}): Record<string, unknown> {
+  const { entries, meta } = getRadarCatalog();
+  const serveOverlay = meta !== null && (meta.tier !== "live" || options.authenticated);
+  const totals = serveOverlay
+    ? computeFreeModelTotals({
+        excludeTosAvoid: options.excludeTosAvoid,
+        entries: entries.map(toBudgetEntry),
+      })
+    : computeFreeModelTotals({ excludeTosAvoid: options.excludeTosAvoid });
+  const usedThisMonth = sumUsageTokensThisMonth();
+
+  return {
+    ...totals,
+    usedThisMonth,
+    remaining: Math.max(0, totals.steadyRecurringTokens - usedThisMonth),
+    catalogUpdatedAt: serveOverlay ? meta.generatedAt : FREE_CATALOG_CURATED_AT,
+    catalogSource: serveOverlay ? "radar-overlay" : "baseline",
+    noCredentialProviders: listNoCredentialProviders(),
+  };
+}
 
 @Injectable()
 export class FreeTierService {

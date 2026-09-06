@@ -46,7 +46,7 @@ import { generateRequestId } from "@shiguang-gateway/core-domain/edge/request-id
 import { getSpecialtyModelsResponse } from "@shiguang-gateway/core-domain/edge/specialty-catalog";
 import { enforceClientApiRouteAuth } from "@shiguang-gateway/core-domain/shared/client-api-auth";
 import { runWithCallLogApiKeyContext } from "@shiguang-gateway/core-domain/usage/call-log-api-key-context";
-import { executeImageWithCredentialFallback } from "@shiguang-gateway/core-domain/sse/image-credential-retry";
+import { executeImageWithCredentialFallback } from "@shiguang-gateway/open-sse/services/imageCredentialRetry";
 import { AUTHZ_HEADER_PEER_LOCALITY } from "@shiguang-gateway/core-domain/shared/authz-headers";
 import {
   assertCommonChatGptWebModelAvailable,

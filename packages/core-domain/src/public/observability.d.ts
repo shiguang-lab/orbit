@@ -16,3 +16,4 @@ export declare function buildTelemetryPayload(args: {
     lastActive: number;
   }>;
 }): Record<string, unknown>;
+export declare function buildHealthPayload(args: Record<string, any>): Record<string, unknown>;

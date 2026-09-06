@@ -13,7 +13,7 @@ import { v1ImageGenerationSchema } from "@shiguang-gateway/core-domain/shared/va
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { enforceClientApiRouteAuth } from "@shiguang-gateway/core-domain/shared/client-api-auth";
 import { runWithCallLogApiKeyContext } from "@shiguang-gateway/core-domain/usage/call-log-api-key-context";
-import { executeImageWithCredentialFallback } from "@shiguang-gateway/core-domain/sse/image-credential-retry";
+import { executeImageWithCredentialFallback } from "@shiguang-gateway/open-sse/services/imageCredentialRetry";
 import {
   CHATGPT_WEB_RETIRED_ERROR_CODE,
   CHATGPT_WEB_RETIRED_MESSAGE,

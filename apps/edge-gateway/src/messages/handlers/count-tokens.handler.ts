@@ -53,8 +53,8 @@ export async function POST(request: Request): Promise<Response> {
 
   try {
     const [modelApi, proxyApi, executorApi, usageApi] = await Promise.all([
-      load("@shiguang-gateway/core-domain/sse/services/model"),
-      load("@shiguang-gateway/core-domain/sse/handlers/chatHelpers"),
+      load("@shiguang-gateway/open-sse/services/runtimeModel"),
+      load("@shiguang-gateway/open-sse/handlers/chatHelpers"),
       load("@shiguang-gateway/open-sse/executors/index"),
       load("@shiguang-gateway/open-sse/utils/usageTracking"),
     ]);

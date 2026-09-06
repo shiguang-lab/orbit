@@ -38,3 +38,7 @@ export function markAccountUnavailable(
     headers?: Headers | Record<string, string> | null;
   },
 ): Promise<unknown>;
+export function clearAccountError(
+  connectionId: string,
+  currentConnection: Record<string, unknown>,
+): Promise<void>;

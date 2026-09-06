@@ -2,9 +2,9 @@ import { Injectable } from "@nestjs/common";
 import {
   loadTierConfig,
   saveTierConfig,
-  type TierConfig,
-} from "@shiguang-gateway/core-domain/control/tier-config";
+} from "@shiguang-gateway/core-domain/db/tier-config";
 import { setTierConfig } from "@shiguang-gateway/open-sse/services/tier-resolver";
+import type { TierConfig } from "@shiguang-gateway/open-sse/services/tierTypes";
 
 export interface TierOverrideUpdate {
   provider: string;
@@ -21,7 +21,8 @@ export class TierConfigService {
   updateProviderOverride({ provider, tier }: TierOverrideUpdate): TierConfig {
     const config = loadTierConfig();
     const providerOverrides = config.providerOverrides.filter(
-      (override) => override.provider.toLowerCase() !== provider.toLowerCase(),
+      (override: TierConfig["providerOverrides"][number]) =>
+        override.provider.toLowerCase() !== provider.toLowerCase(),
     );
     if (tier !== null) providerOverrides.push({ provider, tier });
 
