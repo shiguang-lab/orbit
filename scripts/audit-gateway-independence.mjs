@@ -135,7 +135,7 @@ const routePathMismatches = referenceAvailable ? [
   (comparableLocalRoutePaths.size === frozenBaseline.apiRouteFiles && hashPaths(comparableLocalRoutePaths) === frozenBaseline.apiPathSha256 ? [] : [{ path: "<frozen-api-route-baseline>", side: "hash-mismatch" }]);
 const compatDispatcherFile = join(repoRoot, "packages", "web-route-compat", "src", "compat-dispatcher.ts");
 const appCompatDispatcherFiles = [
-  join(repoRoot, "apps", "edge-gateway", "src", "routes", "compat", "runtime-catchall.ts"),
+  join(repoRoot, "apps", "edge-gateway", "src", "routes", "compat", "dispatcher.ts"),
   join(repoRoot, "apps", "control-api", "src", "routes", "compat", "dispatcher.ts"),
 ];
 const appCompatDispatcherReady = existsSync(compatDispatcherFile) &&
