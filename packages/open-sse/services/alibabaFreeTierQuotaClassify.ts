@@ -11,7 +11,7 @@ import {
   getAlibabaBuiltinFreeTierTextCapableModels,
   getAlibabaBuiltinNoFreeTierTextModels,
 } from "./alibabaFreeTierAllowlist.ts";
-import { toNumberOrNull } from "../../core-domain/src/shared/utils/numeric.ts";
+import { toNumberOrNull } from "@shiguang-gateway/contracts/numeric";
 import {
   isDashscopeAudioModelId,
   isDashscopeMultimodalModelId,

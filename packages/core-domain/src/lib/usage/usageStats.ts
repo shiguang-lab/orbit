@@ -13,7 +13,7 @@ import { getPendingRequests } from "./usageHistory";
 import { getAccountDisplayName } from "../display/names.ts";
 import { calculateCost } from "./costCalculator";
 import { getRawDataCutoffDate, isAggregationEnabled } from "./aggregateHistory";
-import { toNumber } from "../../shared/utils/numeric.ts";
+import { toNumber } from "@shiguang-gateway/contracts/numeric";
 
 type JsonRecord = Record<string, unknown>;
 type UsageBucket = {

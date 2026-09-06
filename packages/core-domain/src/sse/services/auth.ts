@@ -32,7 +32,7 @@ import {
 import { buildJinaEnvCredentials } from "../../lib/providers/jina.ts";
 import { buildGeminiEnvCredentials } from "../../lib/providers/gemini.ts";
 import { isCommonChatGptWebRetiredProviderId } from "@shiguang-gateway/contracts/chatgpt-web-retirement";
-import { toNumber } from "../../shared/utils/numeric.ts";
+import { toNumber } from "@shiguang-gateway/contracts/numeric";
 import { isMicrosoftDesignerWebRetiredProviderId } from "@shiguang-gateway/contracts/designer-web-retirement";
 import { isRuntimeRetiredProviderId } from "@shiguang-gateway/contracts/provider-retirement";
 import {

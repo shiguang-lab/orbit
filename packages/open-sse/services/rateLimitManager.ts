@@ -33,7 +33,7 @@ import {
   RATE_LIMIT_QUEUE_WEDGED_CODE,
 } from "./rateLimitManager/errors";
 import { LimiterWedgeWatchdog, WATCHDOG_INTERVAL_MS } from "./rateLimitManager/wedgeWatchdog";
-import { toNumber } from "../../core-domain/src/shared/utils/numeric.ts";
+import { toNumber } from "@shiguang-gateway/contracts/numeric";
 
 interface LearnedLimitEntry {
   provider: string;

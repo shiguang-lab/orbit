@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { getProviderMetrics } from "@shiguang-gateway/core-domain/db/call-log-stats";
-import { toNumber } from "@shiguang-gateway/core-domain/shared/numeric";
+import { toNumber } from "@shiguang-gateway/contracts/numeric";
 import {
   getModelCallStats,
   getProviderCallStats,

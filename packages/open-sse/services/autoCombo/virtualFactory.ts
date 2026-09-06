@@ -10,7 +10,7 @@ import { isMicrosoftDesignerWebRetiredProviderId } from "@shiguang-gateway/contr
 import { isRuntimeRetiredProviderId } from "@shiguang-gateway/contracts/provider-retirement";
 import { isCommonChatGptWebRetiredProviderId } from "@shiguang-gateway/contracts/chatgpt-web-retirement";
 import { hasUsableWebSessionCredential } from "@shiguang-gateway/contracts/config/webSessionCredentials";
-import { toNumber } from "../../../core-domain/src/shared/utils/numeric.ts";
+import { toNumber } from "@shiguang-gateway/contracts/numeric";
 import { isCompatibleProviderConnectionId } from "../../../core-domain/src/shared/utils/compatibleProviderId.ts";
 import { defaultLogger as log } from "../../utils/logger.ts";
 import { getTokenLimit } from "../contextManager";

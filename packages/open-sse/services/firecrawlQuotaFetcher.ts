@@ -25,7 +25,7 @@
 import { registerQuotaFetcher, type QuotaInfo } from "./quotaPreflight.ts";
 import { registerMonitorFetcher } from "./quotaMonitor.ts";
 import { throttleQuotaFetch } from "./quotaFetchThrottle.ts";
-import { toNumberOrNull } from "../../core-domain/src/shared/utils/numeric.ts";
+import { toNumberOrNull } from "@shiguang-gateway/contracts/numeric";
 
 const CREDIT_USAGE_URL = "https://api.firecrawl.dev/v2/team/credit-usage";
 const CACHE_TTL_MS = 60_000;

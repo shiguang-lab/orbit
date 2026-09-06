@@ -5,7 +5,7 @@
 
 // #7879: re-export the canonical helper so existing consumers of this module
 // keep importing `toNumber` from here unchanged.
-export { toNumber } from "../../../shared/utils/numeric.ts";
+export { toNumber } from "@shiguang-gateway/contracts/numeric";
 
 type JsonRecord = Record<string, unknown>;
 

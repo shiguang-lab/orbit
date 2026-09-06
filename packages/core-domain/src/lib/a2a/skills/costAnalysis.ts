@@ -7,7 +7,7 @@
 import type { A2ATask, TaskArtifact } from "../taskManager";
 import { resolveGatewayBaseUrl } from "../../../shared/utils/resolveGatewayBaseUrl.ts";
 import { formatCost } from "../../../shared/utils/formatting.ts";
-import { toNumber } from "../../../shared/utils/numeric.ts";
+import { toNumber } from "@shiguang-gateway/contracts/numeric";
 
 type AnalyticsRecord = Record<string, unknown>;
 

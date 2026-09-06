@@ -113,6 +113,10 @@
     "./request-id": {
       "types": "./src/request-id.ts",
       "import": "./src/request-id.ts"
+    },
+    "./numeric": {
+      "types": "./src/numeric.ts",
+      "import": "./src/numeric.ts"
     }
   },
   "scripts": {

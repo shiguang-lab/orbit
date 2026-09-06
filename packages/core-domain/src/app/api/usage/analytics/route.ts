@@ -24,7 +24,7 @@ import {
 } from "../../../../lib/db/usageAnalytics.ts";
 import { getFallbackStats, getErrorTypeBreakdown } from "../../../../lib/db/callLogStats.ts";
 import { buildByProviderRows } from "../../../../lib/usage/providerDisplayNames.ts";
-import { toNumber } from "../../../../shared/utils/numeric.ts";
+import { toNumber } from "@shiguang-gateway/contracts/numeric";
 
 function getRangeStartIso(range: string): string | null {
   const end = new Date();

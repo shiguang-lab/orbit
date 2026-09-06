@@ -206,10 +206,6 @@
       "types": "./src/public/callLogStats.d.ts",
       "import": "./src/lib/db/callLogStats.ts"
     },
-    "./shared/numeric": {
-      "types": "./src/public/numeric.d.ts",
-      "import": "./src/shared/utils/numeric.ts"
-    },
     "./db/ping": {
       "types": "./src/public/ping.d.ts",
       "import": "./src/lib/db/core.ts"
