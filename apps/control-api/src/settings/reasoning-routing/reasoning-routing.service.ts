@@ -21,8 +21,8 @@ import {
 import { getApiKeyById } from "@shiguang-gateway/core-domain/control/api-key-store";
 import {
   validateApiKeyRoutingTarget,
-  type ApiKeyPolicyInfo,
-} from "@shiguang-gateway/core-domain/shared/api-key-policy";
+  type ApiKeyMetadata,
+} from "@shiguang-gateway/core-domain/runtime/api-key-policy";
 
 function permissionMessage(payload: unknown): string {
   if (!payload || typeof payload !== "object") return "The API key cannot access the target";
@@ -84,7 +84,7 @@ export class ReasoningRoutingService {
     data: ReasoningRoutingSimulationInput,
   ) {
     const apiKey = (data.apiKeyId ? await getApiKeyById(data.apiKeyId) : null) as
-      | (ApiKeyPolicyInfo & { key?: string | null })
+      | (ApiKeyMetadata & { key?: string | null })
       | null;
     if (data.apiKeyId && !apiKey) return { notFound: true as const };
 

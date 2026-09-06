@@ -1,4 +1,5 @@
-import { getDbInstance, pingDb } from "@shiguang-gateway/core-domain/db/ping";
+import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
+import { pingDb } from "@shiguang-gateway/core-domain/db/ping";
 import { listPools } from "@shiguang-gateway/core-domain/quota/db";
 
 interface ProviderStatusRow {

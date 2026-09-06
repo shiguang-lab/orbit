@@ -1,4 +1,4 @@
-import { getDbInstance } from "@shiguang-gateway/core-domain/db/ping";
+import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
 
 /** Command Code auth is control-plane state; initialize it with control-api. */
 export function ensureCommandCodeAuthSchema(): void {

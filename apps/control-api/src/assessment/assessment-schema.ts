@@ -1,4 +1,4 @@
-import { getDbInstance } from "@shiguang-gateway/core-domain/db/ping";
+import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
 
 /**
  * SQLite schema for the control-plane model assessment engine.

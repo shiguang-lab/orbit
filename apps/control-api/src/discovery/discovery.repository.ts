@@ -1,4 +1,4 @@
-import { getDbInstance } from "@shiguang-gateway/core-domain/db/ping";
+import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
 import type { DiscoveryResult } from "./discovery.types.js";
 
 interface DiscoveryRow {
@@ -106,4 +106,3 @@ export function markDiscoveryResultVerified(id: number): DiscoveryResult | null 
 export function deleteDiscoveryResult(id: number): boolean {
   return getDbInstance().prepare("DELETE FROM discovery_results WHERE id = ?").run(id).changes > 0;
 }
-

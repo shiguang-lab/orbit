@@ -1,4 +1,4 @@
-import { getDbInstance } from "@shiguang-gateway/core-domain/db/ping";
+import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
 import { encrypt, decrypt } from "@shiguang-gateway/core-domain/db/encryption";
 import type { AgentCredentials } from "./baseAgent.js";
 

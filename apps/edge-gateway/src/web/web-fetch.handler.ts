@@ -30,7 +30,7 @@ import {
   isValidApiKey,
   getProviderCredentialsWithQuotaPreflight,
 } from "@shiguang-gateway/open-sse/services/auth";
-import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/shared/api-key-policy";
+import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/runtime/api-key-policy";
 import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
 import { z } from "zod";
 import {

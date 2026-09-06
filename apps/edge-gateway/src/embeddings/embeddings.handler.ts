@@ -1,7 +1,7 @@
 import { errorResponse } from "@shiguang-gateway/open-sse/utils/error";
 import { HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants";
 import * as log from "@shiguang-gateway/core-domain/sse/logger";
-import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/shared/api-key-policy";
+import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/runtime/api-key-policy";
 import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
 import { v1EmbeddingsSchema } from "@shiguang-gateway/core-domain/edge/embeddings-validation-schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";

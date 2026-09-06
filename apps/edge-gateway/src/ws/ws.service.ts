@@ -8,7 +8,7 @@ export class WsService {
   async handleWs(req: Request): Promise<Response> {
     const [handshakeModule, corsModule] = await Promise.all([
       load("@shiguang-gateway/core-domain/edge/ws-handshake"),
-      load("@shiguang-gateway/core-domain/edge/ws-cors"),
+      load("@shiguang-gateway/core-domain/shared/cors"),
     ]);
     const { authorizeWebSocketHandshake } = handshakeModule;
     const { CORS_HEADERS } = corsModule;

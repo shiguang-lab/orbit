@@ -19,7 +19,7 @@ import {
   toClientAntigravityQuotaModelId,
 } from "../../config/antigravityModelAliases.ts";
 import { isUserCallableAgyModelId } from "../../config/agyModels.ts";
-import { getDbInstance } from "@shiguang-gateway/core-domain/db/ping";
+import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
 import {
   applyAntigravityClientProfileHeaders,
   getAntigravityClientProfile,

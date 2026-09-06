@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from "node:crypto";
 import { Injectable } from "@nestjs/common";
-import { getDbInstance } from "@shiguang-gateway/core-domain/db/ping";
+import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
 import { decrypt, encrypt } from "@shiguang-gateway/core-domain/db/encryption";
 
 export type CommandCodeAuthStatus = "pending" | "received" | "applied" | "expired";

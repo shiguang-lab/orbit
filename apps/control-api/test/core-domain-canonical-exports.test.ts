@@ -30,6 +30,12 @@ import {
   isLoopbackHost,
 } from "@shiguang-gateway/core-domain/shared/authz-route-policy";
 import * as authzRoutePolicy from "@shiguang-gateway/core-domain/shared/authz-route-policy";
+import * as apiKeyPolicy from "@shiguang-gateway/core-domain/runtime/api-key-policy";
+import * as upstreamError from "@shiguang-gateway/core-domain/shared/upstream-error";
+import * as requestId from "@shiguang-gateway/core-domain/runtime/request-id";
+import * as credentialHealth from "@shiguang-gateway/core-domain/resilience/credential-health-cache";
+import * as modelLockout from "@shiguang-gateway/core-domain/resilience/model-lockout-settings";
+import * as cors from "@shiguang-gateway/core-domain/shared/cors";
 import { z } from "zod";
 
 test("resolves the canonical API-key resolver export", async () => {
@@ -94,4 +100,38 @@ test("resolves the canonical provider-data and authz route contracts", () => {
     "isLoopbackHost",
     "isPrivateLanHost",
   ]);
+});
+
+test("resolves the canonical shared and runtime utility contracts", () => {
+  assert.deepEqual(Object.keys(apiKeyPolicy).sort(), [
+    "enforceApiKeyPolicy",
+    "validateApiKeyRoutingTarget",
+  ]);
+  assert.deepEqual(Object.keys(upstreamError).sort(), [
+    "describeUpstreamFailure",
+    "extractErrorMessage",
+    "toJsonErrorPayload",
+  ]);
+  assert.deepEqual(Object.keys(requestId).sort(), [
+    "addRequestIdHeader",
+    "attachRequestIdToResponse",
+    "generateRequestId",
+    "getRequestId",
+    "withRequestId",
+  ]);
+  assert.deepEqual(Object.keys(credentialHealth).sort(), [
+    "getAllCredentialHealth",
+    "getCredentialHealth",
+    "getCredentialHealthSummary",
+    "initCredentialCache",
+    "isCredentialHealthy",
+    "isCredentialStale",
+    "removeCredentialHealth",
+    "setCredentialHealth",
+  ]);
+  assert.deepEqual(Object.keys(modelLockout).sort(), [
+    "DEFAULT_MODEL_LOCKOUT_SETTINGS",
+    "resolveModelLockoutSettings",
+  ]);
+  assert.deepEqual(Object.keys(cors).sort(), ["CORS_HEADERS", "handleCorsOptions"]);
 });

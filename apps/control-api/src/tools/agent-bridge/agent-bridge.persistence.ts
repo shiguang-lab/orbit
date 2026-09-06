@@ -1,4 +1,4 @@
-import { getDbInstance } from "@shiguang-gateway/core-domain/db/ping";
+import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
 import { setMitmAliasAll } from "@shiguang-gateway/core-domain/db/mitm-aliases";
 import type {
   AgentBridgeBypassRow,

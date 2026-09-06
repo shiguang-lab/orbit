@@ -85,10 +85,6 @@
       "types": "./src/public/promptInjection.d.ts",
       "import": "./src/middleware/promptInjectionGuard.ts"
     },
-    "./shared/api-key-policy": {
-      "types": "./src/public/apiKeyPolicy.d.ts",
-      "import": "./src/shared/utils/apiKeyPolicy.ts"
-    },
     "./shared/upstream-error": {
       "types": "./src/public/upstreamError.d.ts",
       "import": "./src/shared/utils/upstreamError.ts"
@@ -102,7 +98,6 @@
       "types": "./src/public/gatewayResponseMeta.d.ts",
       "import": "./src/domain/gatewayResponseMeta.ts"
     },
-    "./edge/request-id": "./src/shared/utils/requestId.ts",
     "./edge/embedding-input-limits": {
       "types": "./src/public/embeddingInputLimits.d.ts",
       "import": "./src/shared/validation/schemas/apiV1.ts"
@@ -207,7 +202,6 @@
       "types": "./src/public/providerSpecificData.d.ts",
       "import": "./src/shared/validation/providerSpecificData.ts"
     },
-    "./edge/ws-cors": "./src/shared/utils/cors.ts",
     "./edge/ws-handshake": {
       "types": "./src/public/edgeWs.d.ts",
       "import": "./src/lib/ws/handshake.ts"
@@ -275,15 +269,19 @@
     },
     "./db/ping": {
       "types": "./src/public/ping.d.ts",
-      "import": "./src/lib/db/core.ts"
+      "import": "./src/db/ping.ts"
+    },
+    "./db/connection": {
+      "types": "./src/public/dbConnection.d.ts",
+      "import": "./src/db/connection.ts"
     },
     "./db/health": {
       "types": "./src/public/dbHealth.d.ts",
-      "import": "./src/lib/db/core.ts"
+      "import": "./src/db/health.ts"
     },
     "./db/runtime-lifecycle": {
       "types": "./src/public/dbRuntimeLifecycle.d.ts",
-      "import": "./src/lib/db/core.ts"
+      "import": "./src/db/runtimeLifecycle.ts"
     },
     "./control/management-auth": {
       "types": "./src/public/managementAuth.d.ts",
@@ -583,7 +581,6 @@
     "./shared/proxy-log-settings": { "types": "./src/public/proxyLogSettings.d.ts", "import": "./src/lib/proxyLogger.ts" },
     "./shared/circuit-breaker": { "types": "./src/public/resilienceCircuitBreaker.d.ts", "import": "./src/shared/utils/circuitBreaker.ts" },
     "./shared/connection-recovery-policy": { "types": "./src/public/connectionRecovery.d.ts", "import": "./src/lib/quota/connectionRecovery.ts" },
-    "./shared/credential-health-cache": { "types": "./src/public/credentialHealthCache.d.ts", "import": "./src/lib/credentialHealth/cache.ts" },
     "./shared/credential-probe-policy": { "types": "./src/public/credentialProbePolicy.d.ts", "import": "./src/lib/credentialHealth/probePolicy.ts" },
     "./db/connection-runtime-state": { "types": "./src/public/connectionRuntimeState.d.ts", "import": "./src/lib/db/connectionRuntimeState.ts" },
     "./shared/proxy-egress": {
@@ -1157,10 +1154,8 @@
     },
     "./runtime/provider-ports": "./src/runtime/providerRuntimePorts.ts",
     "./runtime/provider-node-select": "./src/lib/db/providerNodeSelect.ts",
-    "./runtime/upstream-error": "./src/shared/utils/upstreamError.ts",
     "./runtime/read-cache": "./src/lib/db/readCache.ts",
     "./runtime/provider-connections": "./src/lib/db/providers.ts",
-    "./runtime/db-core": "./src/lib/db/core.ts",
     "./runtime/proxy-logs": "./src/lib/db/proxyLogs.ts",
     "./runtime/proxy-log-lifecycle": "./src/runtime/proxyLogLifecycle.ts",
     "./runtime/api-keys": "./src/lib/db/apiKeys.ts",
@@ -1172,7 +1167,6 @@
     "./runtime/provider-connection-view": "./src/lib/db/providers/lazyConnectionView.ts",
     "./runtime/quota-cache": "./src/domain/quotaCache.ts",
     "./runtime/resilience-settings": "./src/lib/resilience/settings.ts",
-    "./runtime/model-lockout-settings": "./src/lib/resilience/modelLockoutSettings.ts",
     "./runtime/connection-model-rules": "./src/domain/connectionModelRules.ts",
     "./runtime/models-db": "./src/lib/db/models.ts",
     "./runtime/free-models": "./src/shared/utils/freeModels.ts",
@@ -1192,8 +1186,14 @@
     "./runtime/modality-bridge-stats": "./src/lib/guardrails/modalityBridge/bridgeStats.ts",
     "./runtime/reasoning-policy": "./src/lib/reasoningRouting/policy.ts",
     "./runtime/request-telemetry": "./src/shared/utils/requestTelemetry.ts",
-    "./runtime/request-id": "./src/shared/utils/requestId.ts",
-    "./runtime/api-key-policy": "./src/shared/utils/apiKeyPolicy.ts",
+    "./runtime/request-id": {
+      "types": "./src/public/requestId.d.ts",
+      "import": "./src/shared/utils/requestId.ts"
+    },
+    "./runtime/api-key-policy": {
+      "types": "./src/public/apiKeyPolicy.d.ts",
+      "import": "./src/runtime/apiKeyPolicy.ts"
+    },
     "./runtime/api-key-policy-scopes": "./src/shared/constants/apiKeyPolicyScopes.ts",
     "./db/provider-limits-cache": "./src/lib/db/providerLimits.ts",
     "./usage/codex-reset-support/local-db": "./src/lib/localDb.ts",
@@ -1216,7 +1216,6 @@
     "./usage/reporting-support/quota-snapshots": "./src/lib/db/quotaSnapshots.ts",
     "./usage/reporting-support/cost-calculator": "./src/lib/usage/costCalculator.ts",
     "./usage/reporting-support/shared/types/utilization": "./src/shared/types/utilization.ts",
-    "./usage/reporting-support/database": "./src/lib/db/core.ts",
     "./usage/reporting-support/providers": "./src/lib/db/providers.ts",
     "./usage/reporting-support/shared/utils/circuitBreaker": "./src/shared/utils/circuitBreaker.ts",
     "./usage/reporting-support/domain/connectionModelRules": "./src/domain/connectionModelRules.ts",

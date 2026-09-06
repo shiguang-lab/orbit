@@ -92,7 +92,7 @@ const allowedCoreDomainSubpaths = {
     "shared/connection-isolation",
     "shared/connection-recovery-policy",
     "shared/circuit-breaker",
-    "shared/credential-health-cache",
+    "resilience/credential-health-cache",
     "shared/credential-probe-policy",
     "shared/test-process",
     "events/eventBus",
@@ -117,7 +117,7 @@ const allowedCoreDomainSubpaths = {
     "edge/service-registry",
     "control/settings",
     "edge/count-tokens-validation",
-    "shared/api-key-policy",
+    "runtime/api-key-policy",
     "shared/upstream-error",
     "shared/validation/schemas",
     "shared/validation/helpers",
@@ -130,7 +130,7 @@ const allowedCoreDomainSubpaths = {
     "usage/call-logs",
     "pricing/modal-cost",
     "edge/gateway-response-meta",
-    "edge/request-id",
+    "runtime/request-id",
     "edge/local-db",
     "edge/image-route-model",
     "edge/synced-endpoint-routing",
@@ -151,7 +151,6 @@ const allowedCoreDomainSubpaths = {
     "db/models-runtime",
     "usage/call-log-api-key-context",
     "sse/image-credential-retry",
-    "edge/ws-cors",
     "edge/ws-handshake",
     "db/ping",
     "db/encryption",
@@ -206,7 +205,10 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
 );
 allowedCoreDomainSubpaths["apps/edge-gateway"].push("runtime/model-sync-client");
 allowedCoreDomainSubpaths["apps/control-api"].push("runtime/model-sync-client");
+allowedCoreDomainSubpaths["apps/control-api"].push("runtime/api-key-policy");
 allowedCoreDomainSubpaths["apps/control-api"].push("db/files");
+allowedCoreDomainSubpaths["apps/control-api"].push("db/connection");
+allowedCoreDomainSubpaths["apps/edge-gateway"].push("db/connection");
 allowedCoreDomainSubpaths["apps/control-api"].push("runtime/proxy-log-lifecycle");
 allowedCoreDomainSubpaths["apps/edge-gateway"].push("runtime/proxy-log-lifecycle");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/guardrails", "control/auth-init");
@@ -1166,6 +1168,14 @@ if (coreDomainEntry) {
   }
 }
 const retiredRedundantCoreExports = [
+  "./shared/api-key-policy",
+  "./runtime/upstream-error",
+  "./edge/request-id",
+  "./shared/credential-health-cache",
+  "./runtime/model-lockout-settings",
+  "./edge/ws-cors",
+  "./runtime/db-core",
+  "./usage/reporting-support/database",
   "./shared/validation/providerSpecificData",
   "./shared/authz-route-guard",
   "./shared/authz-route-constants",

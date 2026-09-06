@@ -27,7 +27,7 @@ export class AudioSpeechService {
       load("@shiguang-gateway/open-sse/utils/error"),
       load("@shiguang-gateway/open-sse/config/audioRegistry"),
       load("@shiguang-gateway/open-sse/services/auth"),
-      load("@shiguang-gateway/core-domain/shared/api-key-policy"),
+      load("@shiguang-gateway/core-domain/runtime/api-key-policy"),
     ]);
 
     let rawBody: unknown;
@@ -85,7 +85,7 @@ export class AudioSpeechService {
         const [{ calculateModalCost }, { attachShiguangGatewayMetaToResponse }, { generateRequestId }] = await Promise.all([
           load("@shiguang-gateway/core-domain/pricing/modal-cost"),
           load("@shiguang-gateway/core-domain/edge/gateway-response-meta"),
-          load("@shiguang-gateway/core-domain/edge/request-id"),
+          load("@shiguang-gateway/core-domain/runtime/request-id"),
         ]);
         const characters = typeof body.input === "string" ? body.input.length : 0;
         const costUsd = await calculateModalCost("audio", provider, resolvedModel || body.model, { characters });

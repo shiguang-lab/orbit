@@ -13,7 +13,7 @@
  * text where the old stored text_preview was capped at 8000 chars.
  */
 
-import { getDbInstance } from "@shiguang-gateway/core-domain/db/ping";
+import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
 import { readCallArtifact } from "@shiguang-gateway/core-domain/usage/call-log-artifacts";
 import { extractCanonicalTurns, hashTurnContent } from "./conversationTracker.ts";
 

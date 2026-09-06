@@ -31,7 +31,7 @@ export class ModerationsService {
         load("@shiguang-gateway/open-sse/utils/error"),
         load("@shiguang-gateway/core-domain/edge/moderation-validation-schemas"),
         load("@shiguang-gateway/core-domain/shared/validation/helpers"),
-        load("@shiguang-gateway/core-domain/shared/api-key-policy"),
+        load("@shiguang-gateway/core-domain/runtime/api-key-policy"),
       ]);
 
       let rawBody: unknown;

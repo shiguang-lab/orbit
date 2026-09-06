@@ -6,7 +6,7 @@
  * the shared/core-domain DB facade.
  */
 
-import { getDbInstance } from "@shiguang-gateway/core-domain/db/ping";
+import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
 import { calculateLevel } from "@shiguang-gateway/core-domain/control/gamification";
 
 export interface UserLevelProfile {

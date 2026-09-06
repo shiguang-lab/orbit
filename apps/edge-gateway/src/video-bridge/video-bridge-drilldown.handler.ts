@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
 import { handleCorsOptions } from "../common/cors.js";
-import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/shared/api-key-policy";
+import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/runtime/api-key-policy";
 import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/services/auth";
 import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
 import {

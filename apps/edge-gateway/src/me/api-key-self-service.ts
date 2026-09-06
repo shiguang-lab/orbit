@@ -363,7 +363,7 @@ async function normalizeDeps(deps: ApiKeySelfServiceDeps): Promise<RequiredDeps>
       : await import("@shiguang-gateway/core-domain/usage/cost-rules");
   const dbCore = deps.getDbInstance
     ? null
-    : await import("@shiguang-gateway/core-domain/db/ping");
+    : await import("@shiguang-gateway/core-domain/db/connection");
   const localDb =
     deps.getProviderConnectionById && deps.getProviderConnections
       ? null

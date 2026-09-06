@@ -37,7 +37,7 @@ export class MusicService {
         load("@shiguang-gateway/open-sse/config/musicRegistry"),
         load("@shiguang-gateway/open-sse/utils/error"),
         load("@shiguang-gateway/core-domain/edge/media-generation"),
-        load("@shiguang-gateway/core-domain/shared/api-key-policy"),
+        load("@shiguang-gateway/core-domain/runtime/api-key-policy"),
         load("@shiguang-gateway/core-domain/sse/logger"),
       ]);
 

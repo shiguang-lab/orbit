@@ -29,7 +29,7 @@ const HTTP_STATUS = {
 } as const;
 import * as log from "@shiguang-gateway/core-domain/sse/logger";
 import { toJsonErrorPayload } from "@shiguang-gateway/core-domain/shared/upstream-error";
-import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/shared/api-key-policy";
+import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/runtime/api-key-policy";
 import {
   resolveImageRouteModel,
   extractImageEditInputFromJson,

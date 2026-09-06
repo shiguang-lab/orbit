@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
 import { handleChat, buildClientRawRequest } from "@shiguang-gateway/open-sse/handlers/chat";
-import { generateRequestId } from "@shiguang-gateway/core-domain/edge/request-id";
+import { generateRequestId } from "@shiguang-gateway/core-domain/runtime/request-id";
 import { errorResponse } from "@shiguang-gateway/open-sse/utils/error";
 import { initTranslators } from "@shiguang-gateway/open-sse/translator";
 import { createInjectionGuard } from "@shiguang-gateway/core-domain/middleware/prompt-injection";

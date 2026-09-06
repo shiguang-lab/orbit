@@ -1,6 +1,6 @@
 import { Controller, Get, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/shared/api-key-policy";
+import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/runtime/api-key-policy";
 import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
 import { SearchAnalyticsService } from "./search-analytics.service.js";
 

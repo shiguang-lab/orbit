@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { nodeTypeFromId } from "@shiguang-gateway/core-domain/runtime/provider-node-select";
 import { extractApiKey, isValidGatewayApiKey } from "@shiguang-gateway/auth";
-import { describeUpstreamFailure } from "@shiguang-gateway/core-domain/runtime/upstream-error";
+import { describeUpstreamFailure } from "@shiguang-gateway/core-domain/shared/upstream-error";
 import { buildAllExpiredCredentials } from "./authExpiredCredentials.ts";
 import {
   getCachedRawProviderConnections,
@@ -16,7 +16,7 @@ import {
   touchConnectionLastUsed,
   clearConnectionErrorIfUnchanged,
 } from "@shiguang-gateway/core-domain/runtime/provider-connections";
-import { getDbInstance } from "@shiguang-gateway/core-domain/runtime/db-core";
+import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
 import { getRecentEgressIpForConnection, EGRESS_IP_LOOKUP_WINDOW_MS } from "@shiguang-gateway/core-domain/runtime/proxy-logs";
 import { validateApiKey } from "@shiguang-gateway/core-domain/runtime/api-keys";
 import {
@@ -78,7 +78,7 @@ import {
   isQuotaPreflightEnabled,
 } from "../services/quotaPreflight.ts";
 import { resolveResilienceSettings } from "@shiguang-gateway/core-domain/runtime/resilience-settings";
-import { resolveModelLockoutSettings } from "@shiguang-gateway/core-domain/runtime/model-lockout-settings";
+import { resolveModelLockoutSettings } from "@shiguang-gateway/core-domain/resilience/model-lockout-settings";
 import {
   buildMixedAvailabilityError,
   isTransportCooldownErrorCode,

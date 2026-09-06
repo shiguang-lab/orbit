@@ -2,7 +2,7 @@ import { Injectable, type OnModuleInit } from "@nestjs/common";
 import "@shiguang-gateway/open-sse/services/runtime-settings-hooks";
 import { hydrateRequestRuntime } from "@shiguang-gateway/core-domain/runtime/request";
 import { ensureGamificationSchema } from "@shiguang-gateway/db-schema";
-import { getDbInstance } from "@shiguang-gateway/core-domain/db/ping";
+import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
 

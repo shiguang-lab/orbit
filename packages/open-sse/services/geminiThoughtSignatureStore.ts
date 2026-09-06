@@ -1,4 +1,4 @@
-import { getDbInstance } from "@shiguang-gateway/core-domain/db/ping";
+import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
 
 const MAX_SIGNATURES = 1000;
 const MAX_PERSISTED_SIGNATURES = 2_000;

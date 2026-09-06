@@ -12,7 +12,7 @@ import {
   resolveSessionId,
 } from "@shiguang-gateway/core-domain/edge/responses-runtime";
 import { createInjectionGuard } from "@shiguang-gateway/core-domain/middleware/prompt-injection";
-import { generateRequestId } from "@shiguang-gateway/core-domain/edge/request-id";
+import { generateRequestId } from "@shiguang-gateway/core-domain/runtime/request-id";
 import { errorResponse } from "@shiguang-gateway/open-sse/utils/error";
 import { SSE_HEARTBEAT_INTERVAL_MS } from "@shiguang-gateway/open-sse/config/constants";
 import { resolveStreamFlag } from "@shiguang-gateway/open-sse/utils/aiSdkCompat";

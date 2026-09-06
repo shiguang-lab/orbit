@@ -12,7 +12,7 @@
  * @module services/tokenLimitCounter
  */
 
-import { getDbInstance } from "@shiguang-gateway/core-domain/db/ping";
+import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
 import {
   resetWindowIfElapsed,
   getWindowUsage,

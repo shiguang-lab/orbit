@@ -20,7 +20,7 @@ const HTTP_STATUS = {
 import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
 import * as log from "@shiguang-gateway/core-domain/sse/logger";
 import { toJsonErrorPayload } from "@shiguang-gateway/core-domain/shared/upstream-error";
-import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/shared/api-key-policy";
+import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/runtime/api-key-policy";
 import { v1ImageGenerationSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 
@@ -42,7 +42,7 @@ import {
 import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
 import { attachShiguangGatewayMetaHeaders } from "@shiguang-gateway/core-domain/edge/gateway-response-meta";
 import { calculateModalCost } from "@shiguang-gateway/core-domain/pricing/modal-cost";
-import { generateRequestId } from "@shiguang-gateway/core-domain/edge/request-id";
+import { generateRequestId } from "@shiguang-gateway/core-domain/runtime/request-id";
 import { getSpecialtyModelsResponse } from "@shiguang-gateway/open-sse/catalog/specialty";
 import { enforceClientApiRouteAuth } from "../../common/client-api-route-auth.js";
 import { runWithCallLogApiKeyContext } from "@shiguang-gateway/core-domain/usage/call-log-api-key-context";

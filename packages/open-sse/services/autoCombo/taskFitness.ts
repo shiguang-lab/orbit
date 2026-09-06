@@ -38,7 +38,7 @@
 
 // ─── Static fitness table (versioned rows only, fallback layer 4) ────────
 
-import { getDbInstance } from "@shiguang-gateway/core-domain/db/ping";
+import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
 import {
   getModelIntelligenceBySource,
   setUserFitnessOverrideEntry,

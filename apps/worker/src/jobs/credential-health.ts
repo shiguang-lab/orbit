@@ -25,7 +25,7 @@ import {
   removeCredentialHealth,
   initCredentialCache,
   getCredentialHealth,
-} from "@shiguang-gateway/core-domain/shared/credential-health-cache";
+} from "@shiguang-gateway/core-domain/resilience/credential-health-cache";
 import {
   isCredentialProbeInconclusive,
   resolveInconclusiveProbeRecheckDelayMs,

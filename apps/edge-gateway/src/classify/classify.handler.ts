@@ -23,7 +23,7 @@ async function postHandler(request: Request): Promise<Response> {
     load("@shiguang-gateway/open-sse/services/auth"),
     load("@shiguang-gateway/open-sse/utils/error"),
     load("@shiguang-gateway/open-sse/config/constants"),
-    load("@shiguang-gateway/core-domain/shared/api-key-policy"),
+    load("@shiguang-gateway/core-domain/runtime/api-key-policy"),
     load("@shiguang-gateway/core-domain/shared/validation/helpers"),
   ]);
   const { handleJinaFoundationProxy } = jina;

@@ -75,7 +75,7 @@ import {
 import { dispatchChatWithAffinityEviction } from "@shiguang-gateway/open-sse/handlers/chatDispatch";
 import { getCachedSettings, getCombosCacheVersion } from "@shiguang-gateway/core-domain/runtime/read-cache";
 import { getCombos } from "@shiguang-gateway/core-domain/runtime/combos-db";
-import { resolveModelLockoutSettings } from "@shiguang-gateway/core-domain/runtime/model-lockout-settings";
+import { resolveModelLockoutSettings } from "@shiguang-gateway/core-domain/resilience/model-lockout-settings";
 import {
   ensureOpenAIStoreSessionFallback,
   isOpenAIResponsesStoreEnabled,

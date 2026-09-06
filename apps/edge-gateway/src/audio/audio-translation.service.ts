@@ -29,7 +29,7 @@ export class AudioTranslationService {
     }
     const modelStr = String(model);
     const [{ enforceApiKeyPolicy }, { errorResponse }] = await Promise.all([
-      load("@shiguang-gateway/core-domain/shared/api-key-policy"),
+      load("@shiguang-gateway/core-domain/runtime/api-key-policy"),
       load("@shiguang-gateway/open-sse/utils/error"),
     ]);
     const policy = await enforceApiKeyPolicy(request, modelStr);
@@ -82,7 +82,7 @@ export class AudioTranslationService {
       try {
         const [{ attachShiguangGatewayMetaToResponse }, { generateRequestId }] = await Promise.all([
           load("@shiguang-gateway/core-domain/edge/gateway-response-meta"),
-          load("@shiguang-gateway/core-domain/edge/request-id"),
+          load("@shiguang-gateway/core-domain/runtime/request-id"),
         ]);
         response = attachShiguangGatewayMetaToResponse(response, {
           provider,

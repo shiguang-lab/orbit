@@ -40,7 +40,7 @@ export async function OPTIONS(): Promise<Response> {
 export async function POST(request: Request): Promise<Response> {
   const [auth, policyApi, leaseContext, localDb, modelApi, errorApi, contracts] = await Promise.all([
     load("@shiguang-gateway/open-sse/services/auth"),
-    load("@shiguang-gateway/core-domain/shared/api-key-policy"),
+    load("@shiguang-gateway/core-domain/runtime/api-key-policy"),
     load("@shiguang-gateway/open-sse/services/leaseContext"),
     load("@shiguang-gateway/core-domain/edge/local-db"),
     load("@shiguang-gateway/open-sse/services/runtimeModel"),
