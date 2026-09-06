@@ -25,7 +25,7 @@ import {
 import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
 import { isApiKeyRevealEnabled, maskStoredApiKey } from "../../../../lib/apiKeyExposure.ts";
 import { cleanupProviderModelsAfterConnectionDelete } from "../../../../lib/db/models.ts";
-import { canUpdateProviderApiKey } from "../../../../shared/providers/webSessionCredentials.ts";
+import { canUpdateProviderApiKey } from "@shiguang-gateway/contracts/config/webSessionCredentials";
 import {
   refreshConnectionRateLimits,
   enableRateLimitProtection,

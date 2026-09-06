@@ -101,6 +101,18 @@
     "./config/noAuthProviders": {
       "types": "./src/config/noAuthProviders.ts",
       "import": "./src/config/noAuthProviders.ts"
+    },
+    "./config/webSessionCredentials": {
+      "types": "./src/config/webSessionCredentials.ts",
+      "import": "./src/config/webSessionCredentials.ts"
+    },
+    "./usage/tokenAccounting": {
+      "types": "./src/usage/tokenAccounting.ts",
+      "import": "./src/usage/tokenAccounting.ts"
+    },
+    "./request-id": {
+      "types": "./src/request-id.ts",
+      "import": "./src/request-id.ts"
     }
   },
   "scripts": {

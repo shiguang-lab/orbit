@@ -8,7 +8,7 @@
 import { CORS_HEADERS } from "../utils/cors.ts";
 import { errorResponse } from "../utils/error.ts";
 import { attachShiguangGatewayMetaHeaders } from "../../core-domain/src/domain/gatewayResponseMeta.ts";
-import { generateRequestId } from "../../core-domain/src/shared/utils/requestId.ts";
+import { generateRequestId } from "@shiguang-gateway/contracts/request-id";
 import { saveCallLog } from "../../core-domain/src/lib/usageDb.ts";
 
 export interface JinaFoundationCredentials {

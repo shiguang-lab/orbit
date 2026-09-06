@@ -8,7 +8,7 @@ import {
   getLoggedInputTokens,
   getLoggedOutputTokens,
   getReasoningTokens,
-} from "../../../core-domain/src/lib/usage/tokenAccounting.ts";
+} from "@shiguang-gateway/contracts/usage/tokenAccounting";
 import { MAX_PROVIDER_SPECIFIC_TIMEOUT_MS } from "../../../core-domain/src/shared/validation/providerSpecificData.ts";
 
 export function createBodyTimeoutError(timeoutMs: number): Error {

@@ -290,7 +290,7 @@ export async function testProxiesAgainstTarget(
 // probe the whole proxy pool simultaneously — a thundering herd of TCP connects
 // that throttles the very proxies it is trying to reach. Concurrent
 // findWorkingProxy calls for the same cache key share ONE probe promise;
-// mirrors the proxyHealthInflight pattern in src/lib/proxyHealth.ts.
+// mirrors the proxyHealthInflight pattern in proxyHealth.ts.
 const inflightProbes = new Map<string, Promise<string | null>>();
 
 /**

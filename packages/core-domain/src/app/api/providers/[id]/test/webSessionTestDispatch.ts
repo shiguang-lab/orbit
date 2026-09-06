@@ -1,4 +1,4 @@
-import { getWebSessionCredentialRequirement } from "../../../../../shared/providers/webSessionCredentials.ts";
+import { getWebSessionCredentialRequirement } from "@shiguang-gateway/contracts/config/webSessionCredentials";
 
 /**
  * Token-kind web-session providers (`getWebSessionCredentialRequirement(...).kind ===

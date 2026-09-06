@@ -2,7 +2,7 @@ import {
   listExtractionConfigs,
   type TokenSource,
 } from "../../../../open-sse/services/tokenExtractionConfig.ts";
-import { getWebSessionCredentialRequirement } from "../../shared/providers/webSessionCredentials.ts";
+import { getWebSessionCredentialRequirement } from "@shiguang-gateway/contracts/config/webSessionCredentials";
 
 export const WEB_SESSION_CONTRACT_VERSION = 1;
 

@@ -9,7 +9,7 @@ import {
   getNoCacheTokens,
   getPromptCacheCreationTokens,
   getPromptCacheReadTokens,
-} from "../../core-domain/src/lib/usage/tokenAccounting.ts";
+} from "@shiguang-gateway/contracts/usage/tokenAccounting";
 import { FORMATS } from "../translator/formats.ts";
 
 /** Nested `*_tokens_details` containers ({ cached_tokens, reasoning_tokens, … }). */

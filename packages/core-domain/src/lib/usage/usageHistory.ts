@@ -39,7 +39,7 @@ import {
   getPromptCacheCreationTokens,
   getPromptCacheReadTokens,
   getReasoningTokens,
-} from "./tokenAccounting";
+} from "@shiguang-gateway/contracts/usage/tokenAccounting";
 
 export type PendingRequestMetadata = {
   clientEndpoint?: string | null;
@@ -609,7 +609,8 @@ export async function getUsageDb(sinceIso?: string | null, limit?: number, curso
  * Anthropic `input_tokens`/`cache_read_input_tokens`, …) or the already
  * normalized `{ input, output, cacheRead, cacheCreation, reasoning }` shape —
  * `getLoggedInputTokens`/`getLoggedOutputTokens`/`getPromptCache*Tokens` in
- * `./tokenAccounting` accept both and extract the right fields.
+ * `@shiguang-gateway/contracts/usage/tokenAccounting` accept both and extract
+ * the right fields.
  */
 export interface UsageEntry {
   provider?: string | null;

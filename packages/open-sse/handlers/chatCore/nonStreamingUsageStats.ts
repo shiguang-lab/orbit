@@ -11,7 +11,7 @@
  */
 
 import { saveRequestUsage } from "../../../core-domain/src/lib/usageDb.ts";
-import { formatUsageLog } from "../../../core-domain/src/lib/usage/tokenAccounting.ts";
+import { formatUsageLog } from "@shiguang-gateway/contracts/usage/tokenAccounting";
 import { COLORS } from "../../utils/stream.ts";
 import { recordTokenUsage } from "../../services/tokenLimitCounter.ts";
 import { computeBillableTokens } from "./upstreamTimeouts.ts";

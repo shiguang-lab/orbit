@@ -17,7 +17,7 @@ import {
   getWebSessionCredentialRequirement,
   hasUsableWebSessionCredential,
   resolveWebSessionImportApiKey,
-} from "../../../../shared/providers/webSessionCredentials.ts";
+} from "@shiguang-gateway/contracts/config/webSessionCredentials";
 import { rejectRetiredCommonChatGptWebProvider } from "../../../../lib/providers/chatgptWebRetirementResponse.ts";
 
 export async function POST(request: Request) {

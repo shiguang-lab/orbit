@@ -443,7 +443,7 @@ import {
   resolveStreamFlag,
   stripMarkdownCodeFence,
 } from "../utils/aiSdkCompat.ts";
-import { generateRequestId } from "../../core-domain/src/shared/utils/requestId.ts";
+import { generateRequestId } from "@shiguang-gateway/contracts/request-id";
 import { isLocalStreamLifecycleError } from "../../core-domain/src/shared/utils/circuitBreaker.ts";
 import { shouldIsolateProbeFailures } from "../../core-domain/src/shared/utils/probeOrigin.ts";
 import { writeTerminalStatus } from "../../core-domain/src/shared/utils/terminalStatus.ts";

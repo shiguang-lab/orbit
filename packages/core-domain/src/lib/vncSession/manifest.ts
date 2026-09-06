@@ -2,7 +2,7 @@ import { WEB_COOKIE_PROVIDERS } from "../../shared/constants/providers.ts";
 import {
   getWebSessionCredentialRequirement,
   type WebSessionCredentialRequirement,
-} from "../../shared/providers/webSessionCredentials.ts";
+} from "@shiguang-gateway/contracts/config/webSessionCredentials";
 
 export interface VncProviderEntry {
   /** Provider id stored in provider_connections.provider. */

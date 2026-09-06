@@ -14,7 +14,7 @@ import {
   proxyUrlForLogs,
 } from "./proxyDispatcher.ts";
 import tlsClient, { type TlsFetchOptions } from "./tlsClient.ts";
-import { isProxyReachable } from "../../core-domain/src/lib/proxyHealth.ts";
+import { isProxyReachable } from "./proxyHealth.ts";
 import {
   isControlPlaneProxyDirectFallbackEnabled,
   isFeatureFlagEnabled,

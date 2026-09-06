@@ -19,7 +19,7 @@ import {
   getPromptCacheCreationTokensOrNull,
   getReasoningTokensOrNull,
   getObservedReasoning,
-} from "./tokenAccounting";
+} from "@shiguang-gateway/contracts/usage/tokenAccounting";
 import { isNoLog } from "../compliance/noLog";
 import { protectPayloadForLog, parseStoredPayload } from "../logPayloads";
 import { pickDisplayValue } from "../../shared/utils/maskEmail.ts";

@@ -9,7 +9,7 @@ import { NOAUTH_PROVIDERS } from "@shiguang-gateway/contracts/config/providerCat
 import { isMicrosoftDesignerWebRetiredProviderId } from "@shiguang-gateway/contracts/designer-web-retirement";
 import { isRuntimeRetiredProviderId } from "@shiguang-gateway/contracts/provider-retirement";
 import { isCommonChatGptWebRetiredProviderId } from "@shiguang-gateway/contracts/chatgpt-web-retirement";
-import { hasUsableWebSessionCredential } from "../../../core-domain/src/shared/providers/webSessionCredentials.ts";
+import { hasUsableWebSessionCredential } from "@shiguang-gateway/contracts/config/webSessionCredentials";
 import { toNumber } from "../../../core-domain/src/shared/utils/numeric.ts";
 import { isCompatibleProviderConnectionId } from "../../../core-domain/src/shared/utils/compatibleProviderId.ts";
 import { defaultLogger as log } from "../../utils/logger.ts";

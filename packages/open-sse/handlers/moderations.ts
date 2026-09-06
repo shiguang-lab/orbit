@@ -8,7 +8,7 @@ import { CORS_HEADERS } from "../utils/cors.ts";
 import { getModerationProvider, parseModerationModel } from "../config/moderationRegistry.ts";
 import { errorResponse, redactSensitiveErrorText } from "../utils/error.ts";
 import { attachShiguangGatewayMetaHeaders } from "../../core-domain/src/domain/gatewayResponseMeta.ts";
-import { generateRequestId } from "../../core-domain/src/shared/utils/requestId.ts";
+import { generateRequestId } from "@shiguang-gateway/contracts/request-id";
 
 /**
  * Handle moderation request

@@ -13,7 +13,7 @@ import {
   isOpenAIChoicesPayload,
 } from "../../utils/streamHelpers.ts";
 import { evaluateResponseValidation, type ResponseValidationConfig } from "./responseValidation.ts";
-import { getReasoningTokens } from "../../../core-domain/src/lib/usage/tokenAccounting.ts";
+import { getReasoningTokens } from "@shiguang-gateway/contracts/usage/tokenAccounting";
 import type { ComboRetryAfter } from "./types.ts";
 
 export function toRetryAfterDisplayValue(value: ComboRetryAfter): string | Date {
