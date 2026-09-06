@@ -75,7 +75,7 @@ The entity write owners are intentionally narrower than those consumers:
 
 | Owner | Entities |
 | --- | --- |
-| `control-api` | settings, providerConnections, providerNodes, apiKeys, apiKeyGroups, combos, compressionCombos, compressionComboAssignments, modelComboMappings, webhooks, apiKeyTokenLimits, providerPlans, plugins, modelContextOverrides, modelCapabilityOverrides, tierConfig, tierAssignments, freeProxies, freeProxySyncErrors, reasoningRoutingRules, quotaGroups, quotaPools, quotaAllocations, quotaPoolConnections, quotaAllocationModelCaps |
+| `control-api` | settings, configAuditLog, playgroundPresets, pluginMetrics, providerConnections, providerNodes, apiKeys, apiKeyGroups, combos, compressionCombos, compressionComboAssignments, modelComboMappings, webhooks, apiKeyTokenLimits, providerPlans, plugins, modelContextOverrides, modelCapabilityOverrides, tierConfig, tierAssignments, freeProxies, freeProxySyncErrors, reasoningRoutingRules, quotaGroups, quotaPools, quotaAllocations, quotaPoolConnections, quotaAllocationModelCaps, gamification leaderboard/user levels/badges/invites/community servers |
 | `edge-gateway` | batches, files, agenticConversations, conversationTurnNodes, apiKeyTokenCounters, apiKeyTokenLimitResetLogs, providerQuotaState, quotaConsumption, compressionAnalytics, compressionEngineBreakdown |
 | `worker` | usageHistory, callLogs, proxyLogs, quotaSnapshots, auditLogs, memories, jobs, modelCapabilities |
 
@@ -84,7 +84,10 @@ roots/turn identities while control reads them; control configures token limits,
 provider plans, plugins and model capability overrides while edge enforces or executes them; edge owns the
 hot-path token/quota ledgers; edge writes compression receipts and per-engine
 breakdowns while control analytics and realtime diagnostics read them; and worker
-syncs model capabilities consumed by edge routing. Runtime-only tables such as `session_model_history` remain package-only
+syncs model capabilities consumed by edge routing. Gamification tables are initialized from the
+single executor-only helper in `packages/db-schema` by both control and edge because the
+streaming event path writes leaderboard/XP rows while the control API serves management views.
+Runtime-only tables such as `session_model_history` remain package-only
 until another deployable app needs them; a shared package import alone is not a
 reason to promote an app-private table.
 
