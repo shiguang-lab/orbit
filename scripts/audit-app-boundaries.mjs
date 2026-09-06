@@ -69,7 +69,6 @@ const allowedCoreDomainSubpaths = {
     "sse/auth",
     "sse/logger",
     "edge/chat-handler",
-    "edge/chat-admission",
     "edge/responses-runtime",
     "edge/codex-responses-ws-runtime",
     "edge/relay-bifrost",
@@ -150,6 +149,7 @@ const allowedCoreDomainSubpaths = {
     "edge/internal-usage",
     "shared/cors",
     "shared/validation-helpers",
+    "shared/middleware/chatBodyAdmission",
     "edge/v1beta-models",
     // A2A transport is app-owned; core exposes only the transport-neutral task runtime.
     "a2a/runtime",
@@ -1029,6 +1029,7 @@ const retiredAppOwnedExports = [
   "./control/radar-links",
   "./quota/schemas",
   "./control/oauth-runtime/pasteCredentials",
+  "./edge/chat-admission",
 ];
 for (const subpath of retiredAppOwnedExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {

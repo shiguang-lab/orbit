@@ -1,21 +1,15 @@
-/**
- * Compose process-wide chat admission in front of a route handler.
- *
- * Uses the shipped `admitChatRequest` budget/fairness controller — it does not
- * introduce a second admission path. Call this *outside* `withInjectionGuard`
- * so a large `/v1/responses` or `/v1/messages` body is reserved (or 503-shed)
- * before `request.clone()` / `.json()`.
- */
 import {
   admitChatRequest,
   CHAT_ADMISSION_QUEUE_MAX_MS,
   releaseChatAdmissionAfterHandler,
   resolveSessionId,
   type ChatAdmissionController,
-} from "./chatBodyAdmission";
+} from "@shiguang-gateway/core-domain/shared/middleware/chatBodyAdmission";
 
 type RouteHandler = (request: Request, ...args: any[]) => Promise<Response> | Response;
+type AdmittedRouteHandler = (request: Request, ...args: any[]) => Promise<Response>;
 
+/** Apply the shared process-local admission controller to an edge route handler. */
 export function withChatAdmission(
   handler: RouteHandler,
   options: {
@@ -23,12 +17,11 @@ export function withChatAdmission(
     queueMs?: number;
     largeBodyBytes?: number;
     hardMaxBytes?: number;
-  } = {}
-): RouteHandler {
+  } = {},
+): AdmittedRouteHandler {
   return async function admittedHandler(request: Request, ...args: any[]) {
-    const sessionId = resolveSessionId(request);
     const admission = await admitChatRequest(request, {
-      sessionId,
+      sessionId: resolveSessionId(request),
       queueMs: options.queueMs ?? CHAT_ADMISSION_QUEUE_MAX_MS,
       controller: options.controller,
       largeBodyBytes: options.largeBodyBytes,
@@ -38,7 +31,7 @@ export function withChatAdmission(
     try {
       return await releaseChatAdmissionAfterHandler(
         Promise.resolve(handler(admission.request, ...args)),
-        admission.lease
+        admission.lease,
       );
     } catch (error) {
       admission.lease?.release();

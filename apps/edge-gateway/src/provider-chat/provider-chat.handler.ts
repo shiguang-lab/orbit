@@ -20,7 +20,7 @@ async function runtime(): Promise<{
     import("@shiguang-gateway/open-sse/utils/error"),
     import("@shiguang-gateway/open-sse/config/constants"),
     import("@shiguang-gateway/open-sse/config/providerRegistry"),
-    import("@shiguang-gateway/core-domain/edge/chat-admission"),
+    import("../chat-admission.js"),
   ]);
   return {
     chat,

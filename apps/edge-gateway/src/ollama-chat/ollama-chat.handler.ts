@@ -1,5 +1,5 @@
 import { handleChat } from "@shiguang-gateway/open-sse/handlers/chat";
-import { withChatAdmission } from "@shiguang-gateway/core-domain/edge/chat-admission";
+import { withChatAdmission } from "../chat-admission.js";
 import { initTranslators } from "@shiguang-gateway/open-sse/translator";
 import { transformToOllama } from "@shiguang-gateway/open-sse/utils/ollamaTransform";
 

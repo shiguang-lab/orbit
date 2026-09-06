@@ -13,7 +13,7 @@ async function runtime(): Promise<{
   const [chat, translator, admission] = await Promise.all([
     load("@shiguang-gateway/open-sse/handlers/chat"),
     load("@shiguang-gateway/open-sse/translator"),
-    load("@shiguang-gateway/core-domain/edge/chat-admission"),
+    import("../../chat-admission.js"),
   ]);
   return {
     chat: chat as ChatRuntime,

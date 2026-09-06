@@ -113,10 +113,6 @@
       "types": "./src/public/chaosExecutor.d.ts",
       "import": "./src/lib/chaos/chaosExecutor.ts"
     },
-    "./edge/chat-admission": {
-      "types": "./src/public/chatAdmission.d.ts",
-      "import": "./src/shared/middleware/withChatAdmission.ts"
-    },
     "./edge/responses-runtime": {
       "types": "./src/public/responsesRuntime.d.ts",
       "import": "./src/lib/edge/responsesRuntime.ts"

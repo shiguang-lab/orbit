@@ -1,5 +1,5 @@
 import { buildClientRawRequest, handleChat } from "@shiguang-gateway/open-sse/handlers/chat";
-import { withChatAdmission } from "@shiguang-gateway/core-domain/edge/chat-admission";
+import { withChatAdmission } from "../chat-admission.js";
 import { createInjectionGuard } from "@shiguang-gateway/core-domain/middleware/prompt-injection";
 import { initTranslators } from "@shiguang-gateway/open-sse/translator";
 import { CORS_HEADERS } from "../common/cors.js";
