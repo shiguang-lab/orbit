@@ -117,17 +117,12 @@ interface CacheEntry {
 const quotaCache = new Map<string, CacheEntry>();
 const CACHE_TTL_MS = 60_000; // 60 seconds — matches codexQuotaFetcher
 
-const _cacheCleanup = setInterval(() => {
-  const now = Date.now();
+function pruneStaleQuotaCache(now = Date.now()): void {
   for (const [key, entry] of quotaCache) {
     if (now - entry.fetchedAt > CACHE_TTL_MS * 5) {
       quotaCache.delete(key);
     }
   }
-}, 5 * 60_000);
-
-if (typeof _cacheCleanup === "object" && "unref" in _cacheCleanup) {
-  (_cacheCleanup as { unref?: () => void }).unref?.();
 }
 
 // ─── Auth helpers (mirrors pi-grok-usage / hermes-grok-usage patterns) ────────
@@ -431,6 +426,7 @@ export async function fetchGrokWebQuota(
   connectionId: string,
   _connection?: Record<string, unknown>
 ): Promise<QuotaInfo | null> {
+  pruneStaleQuotaCache();
   // Check cache first
   const cached = quotaCache.get(connectionId);
   if (cached && Date.now() - cached.fetchedAt < CACHE_TTL_MS) {

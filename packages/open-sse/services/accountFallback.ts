@@ -182,22 +182,15 @@ const NETWORK_ERROR_DEDUP_MS = 10_000;
 const MAX_NETWORK_ERROR_DEDUP_ENTRIES = 1000;
 const lastNetworkErrorByProvider = new Map<string, number>();
 
-function pruneConnectionFailureDedupeEntries(): void {
+function pruneConnectionFailureDedupeEntries(now: number = Date.now()): void {
+  for (const [key, timestamp] of lastConnectionFailure) {
+    if (now - timestamp >= CONNECTION_FAILURE_DEDUP_MS) lastConnectionFailure.delete(key);
+  }
   while (lastConnectionFailure.size > MAX_CONNECTION_FAILURE_DEDUP_ENTRIES) {
     const oldestKey = lastConnectionFailure.keys().next().value;
     if (typeof oldestKey !== "string") return;
     lastConnectionFailure.delete(oldestKey);
   }
-}
-
-const _connectionFailureSweep = setInterval(() => {
-  const now = Date.now();
-  for (const [key, ts] of lastConnectionFailure) {
-    if (now - ts > CONNECTION_FAILURE_DEDUP_MS) lastConnectionFailure.delete(key);
-  }
-}, 60_000);
-if (typeof _connectionFailureSweep === "object" && "unref" in _connectionFailureSweep) {
-  (_connectionFailureSweep as { unref?: () => void }).unref?.();
 }
 
 // A model that upstream has permanently retired — Gemini's deprecated-model 404
@@ -647,24 +640,12 @@ function getScaledCooldown(
   return safeBase * Math.pow(2, exponent);
 }
 
-// Auto-cleanup expired lockouts every 15 seconds (lazy init for Cloudflare Workers compatibility)
-let _cleanupTimer: ReturnType<typeof setInterval> | null = null;
-
-function ensureCleanupTimer() {
-  if (_cleanupTimer) return;
-  try {
-    _cleanupTimer = setInterval(() => {
-      const now = Date.now();
-      for (const key of modelLockouts.keys()) cleanupModelLockKey(key, now);
-      for (const key of modelFailureState.keys()) cleanupModelLockKey(key, now);
-      evictModelLockoutOverflow();
-    }, 15_000);
-    if (typeof _cleanupTimer === "object" && "unref" in _cleanupTimer) {
-      (_cleanupTimer as { unref?: () => void }).unref?.(); // Don't prevent process exit (Node.js only)
-    }
-  } catch {
-    // Cloudflare Workers may not support setInterval outside handlers — skip cleanup timer
-  }
+// Prune expired lockouts whenever the lockout registry is accessed.
+function pruneModelLockouts(): void {
+  const now = Date.now();
+  for (const key of modelLockouts.keys()) cleanupModelLockKey(key, now);
+  for (const key of modelFailureState.keys()) cleanupModelLockKey(key, now);
+  evictModelLockoutOverflow();
 }
 
 /** @internal exported for testing only (both accessors below). */
@@ -672,6 +653,7 @@ export function evictModelLockoutOverflow(): void {
   evictLockoutOverflow(modelLockouts, modelFailureState);
 }
 export function getModelLockoutSize(): number {
+  pruneModelLockouts();
   return modelLockouts.size;
 }
 
@@ -692,7 +674,7 @@ export function lockModel(
   metadata: Partial<ModelLockoutEntry> = {}
 ): void {
   if (!model) return; // No model → skip model-level locking
-  ensureCleanupTimer();
+  pruneModelLockouts();
   const key = getModelLockKey(provider, connectionId, model, reason);
   cleanupModelLockKey(key);
   const newUntil = Date.now() + cooldownMs;
@@ -723,7 +705,7 @@ export function lockModel(
 // Lock only this exact provider/account/model tuple, never a quota family — see exactModelLock.ts.
 export const lockExactModel = exactModelLock.createLockExactModel(
   modelLockouts,
-  ensureCleanupTimer,
+  pruneModelLockouts,
   cleanupModelLockKey,
   getCanonicalLockProvider
 );
@@ -768,7 +750,7 @@ export function recordModelLockoutFailure(
     exactCooldownIsUpstreamReset?: boolean;
   } = {}
 ) {
-  ensureCleanupTimer();
+  pruneModelLockouts();
   const key =
     options.scope === "exact"
       ? buildExactKey(getCanonicalLockProvider(provider), connectionId, model)
@@ -1151,13 +1133,14 @@ export function recordProviderFailure(
   if (connectionId) {
     const dedupKey = `${provider}:${connectionId}`;
     const now = Date.now();
+    pruneConnectionFailureDedupeEntries(now);
     const lastFailure = lastConnectionFailure.get(dedupKey);
     if (lastFailure && now - lastFailure < CONNECTION_FAILURE_DEDUP_MS) {
       return;
     }
     lastConnectionFailure.delete(dedupKey);
     lastConnectionFailure.set(dedupKey, now);
-    pruneConnectionFailureDedupeEntries();
+    pruneConnectionFailureDedupeEntries(now);
   }
 
   const breaker = configureProviderBreaker(provider, profile);

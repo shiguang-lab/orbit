@@ -21,6 +21,7 @@ shiguang-gateway-monorepo/
 │   ├── core-domain/ # 无端口监听的领域实现与协议能力
 │   ├── db-schema/   # 跨 app 共享的表名与所有权元数据
 │   ├── http-kernel/ # 仅承载 HTTP 基础设施；路由由 app 负责装配
+│   ├── web-handler-adapter/ # 显式 Web Request handler 到 Fastify 的窄适配
 │   ├── contracts/    # 前后端共享的 API 类型/契约
 │   ├── config/       # 共享配置
 │   ├── network-guard/ # 纯出站 URL/SSRF 校验原语
@@ -126,10 +127,13 @@ apps/worker/src/main.ts              # 后台作业进程入口
 apps/importer/src/main.ts            # 一次性导入进程入口
 
 packages/http-kernel/src/
-├── app.ts                # 纯 Fastify transport 基础设施
-├── middleware/           # 可复用的底层 transport middleware
-├── plugins/              # 可复用的底层 Fastify plugins
-└── routes/compatDispatcher.ts # Request/Response 与 Fastify 的传输适配
+├── http-kernel.module.ts # Nest transport 基础模块
+├── middleware/           # request-id middleware
+├── interceptors/         # request-id interceptor
+└── filters/              # API exception filter
+
+packages/web-handler-adapter/src/
+└── web-handler-adapter.ts # 显式选中的 Web handler 到 Fastify 的传输适配
 ```
 
 每个服务端 app 都由自己的 `AppModule` 组合模块并通过 Nest lifecycle 注册基础设施、路由和 provider。
@@ -139,17 +143,11 @@ packages/http-kernel/src/
 
 | 组 | 状态 |
 |---|---|
-| control health (`/api/health*`) | ✅ 物理迁入 `apps/control-api/src/routes` |
-| control auth status (`/api/auth/status`) | ✅ 物理迁入 `apps/control-api/src/routes` |
-| control gateway status (`/api/gateway/status`) | ✅ 物理迁入 `apps/control-api/src/routes` |
-| control process control (`/api/shutdown`, `/api/restart`) | ✅ 物理迁入 `apps/control-api/src/routes` |
-| control token health (`/api/token-health`) | ✅ 物理迁入 `apps/control-api/src/routes` |
-| control synced models (`/api/synced-available-models`) | ✅ 物理迁入 `apps/control-api/src/routes` |
-| control provider stats/metrics/nodes/models/validation (`/api/provider-stats`, `/api/provider-metrics`, `/api/provider-nodes`, `/api/provider-nodes/validate`, `/api/provider-models`) | ✅ 物理迁入 `apps/control-api/src/routes` |
-| edge music + speech-to-text + embeddings + audio-transcriptions + audio-speech + audio-translations + text-to-speech + ElevenLabs voices + WS handshake | ✅ 物理迁入 `apps/edge-gateway/src/routes` |
-| edge images (`/api/v1/images/edits`, `/generations`, `/upscale`) | ✅ 完整小域物理迁入 `apps/edge-gateway/src/routes`，领域 handler 由 `core-domain/edge/*` 显式导出 |
-| edge moderations + rerank (`/api/v1/moderations`, `/api/v1/rerank`) | ✅ 物理迁入 `apps/edge-gateway/src/routes` |
-| 其余 auth/providers/官方 route | ⏳ dispatcher parity 覆盖，按依赖风险逐组物理迁移 |
+| control 管理 API | ✅ Nest feature modules，物理位于 `apps/control-api/src` |
+| edge 模型与协议 API | ✅ Nest feature modules，物理位于 `apps/edge-gateway/src` |
+| realtime WS/SSE | ✅ 物理位于 `apps/realtime/src` |
+| worker schedulers | ✅ 由 `apps/worker/src/jobs` 显式启动和停止 |
+| 旧 App Router route tree / 动态 dispatcher | ✅ 已移除；严格 route parity 由 controller contract 审计 |
 
 ## 迁移新增一个路由组的模式
 
@@ -157,5 +155,5 @@ packages/http-kernel/src/
 
 1. 为该领域在所属 app 下创建 feature module、controller 和 service，由 `AppModule` 显式导入；HTTP 方法使用 Nest 官方装饰器声明。
 2. 数据访问由所属 app 的领域 service 调用 `core-domain` 显式导出；请求 DTO、guards、interceptors 和 providers 跟随该 feature module 注册。
-3. 未显式迁移的参考 route 仅由所属 app 的 `routes/compat` 注册器接管，禁止新增 all-surface 分支；`http-kernel` 只提供 transport dispatcher。
+3. handler 通过 controller 显式选择；禁止目录扫描、动态 route import 或 all-surface dispatcher。仍使用 Web `Request`/`Response` 的 handler 只通过 `web-handler-adapter` 做窄传输适配。
 4. 更新 owned-route manifest 后，依次运行边界审计、route parity、所属 app 的 typecheck/build 和 split-deployment smoke。

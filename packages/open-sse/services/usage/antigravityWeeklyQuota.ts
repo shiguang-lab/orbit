@@ -33,18 +33,11 @@ const WEEKLY_QUOTA_CACHE_TTL_MS = 60 * 1000;
 const _weeklyQuotaCache = new Map<string, { data: unknown; fetchedAt: number }>();
 const _weeklyQuotaInflight = new Map<string, Promise<unknown>>();
 
-// Self-contained purge timer — this leaf owns its own cache, so it owns the cleanup too
-// (same pattern as usage/antigravity.ts's module-level caches).
-const _weeklyQuotaCacheCleanupTimer = setInterval(
-  () => {
-    const now = Date.now();
-    for (const [key, entry] of _weeklyQuotaCache) {
-      if (now - entry.fetchedAt > WEEKLY_QUOTA_CACHE_TTL_MS) _weeklyQuotaCache.delete(key);
-    }
-  },
-  5 * 60 * 1000
-);
-_weeklyQuotaCacheCleanupTimer.unref?.();
+function purgeExpiredWeeklyQuotaEntries(now = Date.now()): void {
+  for (const [key, entry] of _weeklyQuotaCache) {
+    if (now - entry.fetchedAt > WEEKLY_QUOTA_CACHE_TTL_MS) _weeklyQuotaCache.delete(key);
+  }
+}
 
 function buildCacheKey(
   accessToken: string,
@@ -67,6 +60,7 @@ export async function fetchAntigravityUserQuotaSummaryCached(
 ): Promise<unknown | null> {
   if (!accessToken || !projectId) return null;
 
+  purgeExpiredWeeklyQuotaEntries();
   const cacheKey = buildCacheKey(accessToken, projectId, clientProfile);
   const cached = _weeklyQuotaCache.get(cacheKey);
   if (

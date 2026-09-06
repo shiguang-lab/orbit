@@ -211,8 +211,7 @@ function evictOldestMetric(
   }
 }
 
-const _metricsCleanupTimer = setInterval(() => {
-  const now = Date.now();
+function pruneExpiredMetrics(now: number = Date.now()): void {
   for (const [name, entry] of metrics) {
     const lastUsed = entry.lastUsedAt ? new Date(entry.lastUsedAt).getTime() : now;
     if (now - lastUsed > METRICS_TTL_MS) {
@@ -227,8 +226,7 @@ const _metricsCleanupTimer = setInterval(() => {
       shadowMetrics.delete(name);
     }
   }
-}, 5 * 60 * 1000); // every 5 minutes
-_metricsCleanupTimer.unref?.(); // Don't prevent process exit
+}
 
 /**
  * Record a combo request result.
@@ -258,6 +256,7 @@ export function recordComboRequest(
     target?: ComboRequestTargetMeta | null;
   }
 ): void {
+  pruneExpiredMetrics();
   if (!metrics.has(comboName) && metrics.size >= MAX_METRICS_ENTRIES) {
     evictOldestMetric(metrics, { deletePairedShadow: true });
   }
@@ -333,6 +332,7 @@ export function recordComboShadowRequest(
     target?: ComboRequestTargetMeta | null;
   }
 ): void {
+  pruneExpiredMetrics();
   if (!shadowMetrics.has(comboName) && shadowMetrics.size >= MAX_METRICS_ENTRIES) {
     evictOldestMetric(shadowMetrics);
   }
@@ -405,6 +405,7 @@ function getComboShadowMetrics(comboName: string): ComboShadowMetricsView {
  * @returns {Object|null}
  */
 export function getComboMetrics(comboName: string): ComboMetricsView | null {
+  pruneExpiredMetrics();
   const productionCombo = metrics.get(comboName);
   const combo =
     productionCombo || (shadowMetrics.has(comboName) ? createComboEntry("priority") : null);
@@ -438,6 +439,7 @@ export function getComboMetrics(comboName: string): ComboMetricsView | null {
  * @returns {Object} Map of comboName → metrics
  */
 export function getAllComboMetrics(): Record<string, ComboMetricsView | null> {
+  pruneExpiredMetrics();
   const result: Record<string, ComboMetricsView | null> = {};
   for (const name of new Set([...metrics.keys(), ...shadowMetrics.keys()])) {
     result[name] = getComboMetrics(name);
@@ -449,6 +451,7 @@ export function getAllComboMetrics(): Record<string, ComboMetricsView | null> {
  * Record detected prompt intent for a combo (used by multilingual routing analytics).
  */
 export function recordComboIntent(comboName: string, intent: string): void {
+  pruneExpiredMetrics();
   if (!metrics.has(comboName) && metrics.size >= MAX_METRICS_ENTRIES) {
     evictOldestMetric(metrics, { deletePairedShadow: true });
   }
@@ -474,7 +477,6 @@ export function resetComboMetrics(comboName: string): void {
  * Reset all combo metrics.
  */
 export function resetAllComboMetrics(): void {
-  clearInterval(_metricsCleanupTimer);
   metrics.clear();
   shadowMetrics.clear();
 }

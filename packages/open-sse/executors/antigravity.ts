@@ -198,13 +198,9 @@ function evictStaleCreditBalanceEntries(): void {
   }
 }
 
-const _creditBalanceSweep = setInterval(evictStaleCreditBalanceEntries, 60_000);
-if (typeof _creditBalanceSweep === "object" && "unref" in _creditBalanceSweep) {
-  (_creditBalanceSweep as { unref?: () => void }).unref?.();
-}
-
 export function getAntigravityRemainingCredits(accountId: string): number | null {
   hydrateCreditCacheFromDb();
+  evictStaleCreditBalanceEntries();
   const entry = creditBalanceCache.get(accountId);
   if (!entry) return null;
   if (Date.now() - entry.updatedAt > CREDIT_BALANCE_TTL_MS) {
@@ -215,6 +211,7 @@ export function getAntigravityRemainingCredits(accountId: string): number | null
 }
 
 export function updateAntigravityRemainingCredits(accountId: string, balance: number): void {
+  evictStaleCreditBalanceEntries();
   if (creditBalanceCache.size >= MAX_CREDIT_BALANCE_ENTRIES && !creditBalanceCache.has(accountId)) {
     const oldestKey = creditBalanceCache.keys().next().value;
     if (oldestKey !== undefined) creditBalanceCache.delete(oldestKey);

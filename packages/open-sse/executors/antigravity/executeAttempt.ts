@@ -45,39 +45,27 @@ export type OnAntigravityCreditsUpdate = (accountId: string, balance: number) =>
 const MAX_CREDITS_EXHAUSTED_ENTRIES = 50;
 const creditsExhaustedUntil = new Map<string, number>();
 
-const _creditsExhaustedSweep = setInterval(() => {
-  const now = Date.now();
+function purgeExpiredCreditsExhausted(now = Date.now()): void {
   for (const [key, until] of creditsExhaustedUntil) {
     if (now >= until) creditsExhaustedUntil.delete(key);
   }
-}, 60_000);
-if (typeof _creditsExhaustedSweep === "object" && "unref" in _creditsExhaustedSweep) {
-  (_creditsExhaustedSweep as { unref?: () => void }).unref?.();
 }
 
 /** True while `accountId`'s Google One AI credits are marked exhausted. @internal */
 export function isCreditsExhausted(accountId: string): boolean {
+  purgeExpiredCreditsExhausted();
   const until = creditsExhaustedUntil.get(accountId);
   if (!until) return false;
-  if (Date.now() >= until) {
-    creditsExhaustedUntil.delete(accountId);
-    return false;
-  }
   return true;
 }
 
 /** Mark an account's Google One AI credits as exhausted for CREDITS_EXHAUSTED_TTL_MS. */
 export function markCreditsExhausted(accountId: string): void {
+  purgeExpiredCreditsExhausted();
   if (
     creditsExhaustedUntil.size >= MAX_CREDITS_EXHAUSTED_ENTRIES &&
     !creditsExhaustedUntil.has(accountId)
   ) {
-    const now = Date.now();
-    for (const [key, until] of creditsExhaustedUntil) {
-      if (now >= until) {
-        creditsExhaustedUntil.delete(key);
-      }
-    }
     if (creditsExhaustedUntil.size >= MAX_CREDITS_EXHAUSTED_ENTRIES) {
       const oldestKey = creditsExhaustedUntil.keys().next().value;
       if (oldestKey !== undefined) creditsExhaustedUntil.delete(oldestKey);

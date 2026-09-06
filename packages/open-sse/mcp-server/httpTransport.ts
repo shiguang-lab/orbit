@@ -31,8 +31,7 @@ const _streamableSessions = new Map<string, StreamableSession>();
 
 const MCP_SESSION_IDLE_MS = 5 * 60 * 1000;
 
-const _mcpSessionSweep = setInterval(() => {
-  const now = Date.now();
+function pruneIdleStreamableSessions(now: number = Date.now()): void {
   for (const [sessionId, session] of _streamableSessions) {
     if (now - session.lastActivityAt > MCP_SESSION_IDLE_MS) {
       try {
@@ -40,9 +39,6 @@ const _mcpSessionSweep = setInterval(() => {
       } catch {}
     }
   }
-}, 60_000);
-if (typeof _mcpSessionSweep === "object" && "unref" in _mcpSessionSweep) {
-  (_mcpSessionSweep as { unref?: () => void }).unref?.();
 }
 
 function closeSseTransport(): void {
@@ -201,6 +197,7 @@ function withSessionHeader(response: Response, sessionId: string): Response {
 }
 
 async function handleStreamableRequest(request: Request): Promise<Response> {
+  pruneIdleStreamableSessions();
   const sessionId = request.headers.get("mcp-session-id");
 
   if (sessionId) {
@@ -330,6 +327,7 @@ export function getMcpHttpStatus(): {
   startedAt: number | null;
   uptime: string | null;
 } {
+  pruneIdleStreamableSessions();
   const streamableStartedAt =
     _streamableSessions.size > 0
       ? Math.min(...Array.from(_streamableSessions.values(), (session) => session.startedAt))
@@ -360,5 +358,6 @@ export function shutdownMcpHttp(): void {
 }
 
 export function isMcpHttpActive(): boolean {
+  pruneIdleStreamableSessions();
   return _sseTransport !== null || _streamableSessions.size > 0;
 }

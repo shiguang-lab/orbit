@@ -104,18 +104,12 @@ export function _hasWarned404(url: string): boolean {
   return _warned404Urls.has(url);
 }
 
-// Auto-cleanup stale entries every 5 minutes
-const _cacheCleanup = setInterval(() => {
-  const now = Date.now();
+function pruneStaleQuotaCache(now = Date.now()): void {
   for (const [key, entry] of quotaCache) {
     if (now - entry.fetchedAt > CACHE_TTL_MS * 5) {
       quotaCache.delete(key);
     }
   }
-}, 5 * 60_000);
-
-if (typeof _cacheCleanup === "object" && "unref" in _cacheCleanup) {
-  (_cacheCleanup as { unref?: () => void }).unref?.();
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -351,6 +345,7 @@ export async function fetchOpencodeQuota(
   connectionId: string,
   connection?: Record<string, unknown>
 ): Promise<OpencodeTripleWindowQuota | null> {
+  pruneStaleQuotaCache();
   // Snapshots can only exist when the dashboard scrape is configured for this
   // connection (or globally via env); without it the bridge stays off and the
   // fetcher never touches the snapshot store.

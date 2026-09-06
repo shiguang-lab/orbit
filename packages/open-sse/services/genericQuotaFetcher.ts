@@ -41,15 +41,10 @@ function cacheKey(provider: string, connectionId: string): string {
   return `${provider}::${connectionId}`;
 }
 
-// Auto-cleanup stale entries — same shape as codexQuotaFetcher.
-const _cacheCleanup = setInterval(() => {
-  const now = Date.now();
+function pruneStaleQuotaCache(now = Date.now()): void {
   for (const [key, entry] of cache) {
     if (now - entry.fetchedAt > CACHE_TTL_MS * 5) cache.delete(key);
   }
-}, 5 * 60_000);
-if (typeof _cacheCleanup === "object" && "unref" in _cacheCleanup) {
-  (_cacheCleanup as { unref?: () => void }).unref?.();
 }
 
 function toNumber(value: unknown): number | null {
@@ -215,6 +210,7 @@ function normalizeQuotaWindows(
  * threshold evaluation).
  */
 export const fetchGenericQuota: QuotaFetcher = async (connectionId, connection) => {
+  pruneStaleQuotaCache();
   if (!connection) return null;
   const conn = connection as ConnectionInputs;
   const provider = typeof conn.provider === "string" ? conn.provider : null;

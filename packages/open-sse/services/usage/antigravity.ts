@@ -4,9 +4,7 @@
  * Extracted from services/usage.ts (god-file decomposition): the full Antigravity family —
  * local-usage fallback, code-assist tier/plan mapping, credit-balance probing, the user-quota
  * + available-models fetchers (with their module-level caches), and getAntigravityUsage. The
- * 4 data caches + their proactive TTL-purge setInterval move here as a self-contained unit
- * (previously the purge timer lived in usage.ts; that timer was
- * split so each module owns its own caches + cleanup). usage.ts imports getAntigravityUsage
+ * 4 data caches are kept bounded through access-time TTL eviction. usage.ts imports getAntigravityUsage
  * (dispatcher) + getAntigravityPlanLabel/mapCodeAssist* (__testing). Behavior-preserving move.
  */
 
@@ -74,32 +72,23 @@ const _antigravityUserQuotaInflight = new Map<string, Promise<unknown>>();
 const _antigravityCreditProbeCache = new Map<string, { data: number | null; fetchedAt: number }>();
 const _antigravityCreditProbeInflight = new Map<string, Promise<number | null>>();
 
-// ── Proactive TTL purging for the Antigravity module-level caches ──────────
-// Split out of the shared usage.ts cleanup timer (god-file decomposition): this
-// leaf owns its 4 data caches, so it owns their purge too. The 2 inflight Maps
-// self-clean when their Promise settles, so they are NOT swept here.
-const _antigravityCacheCleanupTimer = setInterval(
-  () => {
-    const now = Date.now();
-    for (const [key, entry] of _antigravitySubCache) {
-      if (now - entry.fetchedAt > ANTIGRAVITY_CACHE_TTL_MS) _antigravitySubCache.delete(key);
-    }
-    for (const [key, entry] of _antigravityAvailableModelsCache) {
-      if (now - entry.fetchedAt > ANTIGRAVITY_MODELS_CACHE_TTL_MS)
-        _antigravityAvailableModelsCache.delete(key);
-    }
-    for (const [key, entry] of _antigravityUserQuotaCache) {
-      if (now - entry.fetchedAt > ANTIGRAVITY_MODELS_CACHE_TTL_MS)
-        _antigravityUserQuotaCache.delete(key);
-    }
-    for (const [key, entry] of _antigravityCreditProbeCache) {
-      if (now - entry.fetchedAt > ANTIGRAVITY_CREDIT_PROBE_TTL_MS)
-        _antigravityCreditProbeCache.delete(key);
-    }
-  },
-  5 * 60 * 1000
-); // every 5 minutes
-_antigravityCacheCleanupTimer.unref?.(); // Don't prevent process exit
+function purgeExpiredAntigravityCacheEntries(now = Date.now()): void {
+  for (const [key, entry] of _antigravitySubCache) {
+    if (now - entry.fetchedAt > ANTIGRAVITY_CACHE_TTL_MS) _antigravitySubCache.delete(key);
+  }
+  for (const [key, entry] of _antigravityAvailableModelsCache) {
+    if (now - entry.fetchedAt > ANTIGRAVITY_MODELS_CACHE_TTL_MS)
+      _antigravityAvailableModelsCache.delete(key);
+  }
+  for (const [key, entry] of _antigravityUserQuotaCache) {
+    if (now - entry.fetchedAt > ANTIGRAVITY_MODELS_CACHE_TTL_MS)
+      _antigravityUserQuotaCache.delete(key);
+  }
+  for (const [key, entry] of _antigravityCreditProbeCache) {
+    if (now - entry.fetchedAt > ANTIGRAVITY_CREDIT_PROBE_TTL_MS)
+      _antigravityCreditProbeCache.delete(key);
+  }
+}
 
 interface AntigravityUsageOptions {
   forceRefresh?: boolean;
@@ -192,6 +181,7 @@ async function fetchAntigravityAvailableModelsCached(
 ): Promise<unknown> {
   if (!accessToken) throw new Error("Access token is required");
 
+  purgeExpiredAntigravityCacheEntries();
   const cacheKey = buildAntigravityUsageCacheKey(accessToken, projectId, clientProfile);
   const cached = _antigravityAvailableModelsCache.get(cacheKey);
   if (
@@ -257,6 +247,7 @@ async function fetchAntigravityUserQuotaCached(
 ): Promise<unknown | null> {
   if (!accessToken || !projectId) return null;
 
+  purgeExpiredAntigravityCacheEntries();
   const cacheKey = buildAntigravityUsageCacheKey(accessToken, projectId, clientProfile);
   const cached = _antigravityUserQuotaCache.get(cacheKey);
   if (
@@ -419,6 +410,7 @@ async function probeAntigravityCreditBalance(
 ): Promise<number | null> {
   if (!accessToken) return null;
 
+  purgeExpiredAntigravityCacheEntries();
   const clientProfile = getAntigravityClientProfile({ providerSpecificData });
   const cacheKey = buildAntigravityUsageCacheKey(
     accessToken,
@@ -757,6 +749,7 @@ async function getAntigravitySubscriptionInfoCached(
   providerSpecificData?: JsonRecord,
   options: AntigravityUsageOptions = {}
 ): Promise<unknown> {
+  purgeExpiredAntigravityCacheEntries();
   const profile = getAntigravityClientProfile({ providerSpecificData });
   const cacheKey = `${accessToken.substring(0, 16)}:${profile}`;
 

@@ -53,17 +53,12 @@ interface CacheEntry {
 
 const quotaCache = new Map<string, CacheEntry>();
 
-const _cacheCleanup = setInterval(() => {
-  const now = Date.now();
+function pruneStaleQuotaCache(now = Date.now()): void {
   for (const [key, entry] of quotaCache) {
     if (now - entry.fetchedAt > CACHE_TTL_MS * 5) {
       quotaCache.delete(key);
     }
   }
-}, 5 * 60_000);
-
-if (typeof _cacheCleanup === "object" && "unref" in _cacheCleanup) {
-  (_cacheCleanup as { unref?: () => void }).unref?.();
 }
 
 function toRecord(value: unknown): Record<string, unknown> {
@@ -137,6 +132,7 @@ export async function fetchAgentrouterQuota(
   connectionId: string,
   connection?: Record<string, unknown>
 ): Promise<QuotaInfo | null> {
+  pruneStaleQuotaCache();
   const cached = quotaCache.get(connectionId);
   if (cached && Date.now() - cached.fetchedAt < CACHE_TTL_MS) {
     return cached.quota;

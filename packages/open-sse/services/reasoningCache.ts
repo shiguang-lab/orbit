@@ -217,6 +217,7 @@ export function cacheReasoningByKey(
   const now = Date.now();
 
   // Memory write
+  purgeExpiredMemory();
   if (memoryCache.size >= MAX_MEMORY_ENTRIES) {
     evictOldest();
   }
@@ -570,53 +571,3 @@ export function cleanupReasoningCache(): number {
     return 0;
   }
 }
-
-// ──────────────── Auto-start periodic cleanup ────────────────
-//
-// server-init.ts was supposed to start the cleanup job, but that module was
-// never imported anywhere (it was stranded dead code, since removed). As a
-// result, the reasoning_cache SQLite table accumulates expired entries
-// indefinitely.
-//
-// Fix: start the periodic cleanup directly from this module so it runs
-// regardless of how the server boots.  On first import we run one
-// immediate sweep, then schedule a 30-minute interval.
-//
-// See: src/lib/jobs/reasoningCacheCleanupJob.ts (the original job module).
-
-const DEFAULT_CLEANUP_INTERVAL_MS = 30 * 60 * 1000; // 30 min
-
-function getCleanupIntervalMs(): number {
-  const raw = process.env.SHIGUANG_GATEWAY_REASONING_CACHE_CLEANUP_INTERVAL_MS;
-  const parsed = raw ? Number(raw) : Number.NaN;
-  return Number.isFinite(parsed) && parsed >= 60_000 ? parsed : DEFAULT_CLEANUP_INTERVAL_MS;
-}
-
-function startAutoCleanup(): void {
-  // Run once immediately on boot
-  try {
-    const deleted = cleanupReasoningCache();
-    if (deleted > 0) {
-      console.log(`[ReasoningCache] boot cleanup removed ${deleted} expired entries`);
-    }
-  } catch (error) {
-    console.error("[ReasoningCache] boot cleanup failed:", error);
-  }
-
-  // Schedule periodic cleanup
-  const timer = setInterval(() => {
-    try {
-      const deleted = cleanupReasoningCache();
-      if (deleted > 0) {
-        console.log(`[ReasoningCache] periodic cleanup removed ${deleted} expired entries`);
-      }
-    } catch (error) {
-      console.error("[ReasoningCache] periodic cleanup failed:", error);
-    }
-  }, getCleanupIntervalMs());
-
-  timer.unref?.();
-}
-
-// Start on module load — every consumer of reasoning cache benefits.
-startAutoCleanup();

@@ -27,7 +27,7 @@ let _config = {
 // dashboard settings route (a separate module instance, since @shiguang-gateway/open-sse
 // is bundled per-entry via transpilePackages) propagates to the proxy runtime
 // without a restart. A DB failure still degrades to the in-memory defaults, and
-// tempBans remain in-memory-only as before.
+// tempBans remain in-memory-only and expire on access.
 const IP_FILTER_NAMESPACE = "ipFilter";
 const IP_FILTER_KEY = "config";
 
@@ -68,15 +68,11 @@ function persist() {
   }
 }
 
-const _tempBanSweep = setInterval(() => {
-  const now = Date.now();
+function pruneExpiredTempBans(now: number = Date.now()): void {
   const bans = _config.tempBans as Map<string, { until: number; reason: string }>;
   for (const [ip, entry] of bans) {
     if (now >= entry.until) bans.delete(ip);
   }
-}, 60_000);
-if (typeof _tempBanSweep === "object" && "unref" in _tempBanSweep) {
-  (_tempBanSweep as { unref?: () => void }).unref?.();
 }
 
 /**
@@ -96,6 +92,7 @@ export function configureIPFilter(config) {
  */
 export function getIPFilterConfig() {
   ensureLoaded();
+  pruneExpiredTempBans();
   return {
     enabled: _config.enabled,
     mode: _config.mode,
@@ -117,6 +114,7 @@ export function getIPFilterConfig() {
  */
 export function checkIP(ip) {
   ensureLoaded();
+  pruneExpiredTempBans();
   if (!_config.enabled) return { allowed: true };
   if (!ip) return { allowed: true };
 
@@ -125,10 +123,7 @@ export function checkIP(ip) {
   // Check temp bans first (highest priority)
   const ban = _config.tempBans.get(normalizedIP);
   if (ban) {
-    if (Date.now() < ban.until) {
-      return { allowed: false, reason: `Temporarily banned: ${ban.reason}` };
-    }
-    _config.tempBans.delete(normalizedIP); // Expired
+    return { allowed: false, reason: `Temporarily banned: ${ban.reason}` };
   }
 
   switch (_config.mode) {
@@ -163,6 +158,7 @@ export function checkIP(ip) {
  * Temporarily ban an IP
  */
 export function tempBanIP(ip, durationMs, reason = "Automated ban") {
+  pruneExpiredTempBans();
   const normalizedIP = normalizeIP(ip);
   _config.tempBans.set(normalizedIP, {
     until: Date.now() + durationMs,

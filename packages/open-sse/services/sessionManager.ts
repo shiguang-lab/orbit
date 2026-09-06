@@ -41,22 +41,22 @@ const sessions = new Map<string, SessionEntry>();
 // Hard cap on active sessions to prevent memory exhaustion
 const MAX_SESSIONS = 200;
 
-// Auto-cleanup sessions older than 15 minutes (reduced from 30)
+// Sessions expire after 15 minutes (reduced from 30).
 const SESSION_TTL_MS = 15 * 60 * 1000;
-const _cleanupTimer = setInterval(() => {
-  const now = Date.now();
+
+function removeSession(sessionId: string): void {
+  sessions.delete(sessionId);
+  for (const [apiKeyId, sessionSet] of activeSessionsByKey) {
+    sessionSet.delete(sessionId);
+    if (sessionSet.size === 0) activeSessionsByKey.delete(apiKeyId);
+  }
+}
+
+function pruneSessions(now: number = Date.now()): void {
   // Evict expired sessions
   for (const [key, entry] of sessions) {
     if (now - entry.lastActive > SESSION_TTL_MS) {
-      sessions.delete(key);
-      const keysToDelete: string[] = [];
-      for (const [apiKeyId, sessionSet] of activeSessionsByKey) {
-        sessionSet.delete(key);
-        if (sessionSet.size === 0) keysToDelete.push(apiKeyId);
-      }
-      for (const k of keysToDelete) {
-        activeSessionsByKey.delete(k);
-      }
+      removeSession(key);
     }
   }
   // Hard cap: evict oldest if over limit
@@ -70,19 +70,8 @@ const _cleanupTimer = setInterval(() => {
       }
     }
     if (oldestKey === null) break;
-    sessions.delete(oldestKey);
-    const evictionKeys: string[] = [];
-    for (const [apiKeyId, sessionSet] of activeSessionsByKey) {
-      sessionSet.delete(oldestKey);
-      if (sessionSet.size === 0) evictionKeys.push(apiKeyId);
-    }
-    for (const k of evictionKeys) {
-      activeSessionsByKey.delete(k);
-    }
+    removeSession(oldestKey);
   }
-}, 60_000);
-if (typeof _cleanupTimer === "object" && "unref" in _cleanupTimer) {
-  (_cleanupTimer as { unref?: () => void }).unref?.();
 }
 
 /**
@@ -149,6 +138,7 @@ export function generateSessionId(
  */
 export function touchSession(sessionId: string | null, connectionId: string | null = null): void {
   if (!sessionId) return;
+  pruneSessions();
   const existing = sessions.get(sessionId);
   if (existing) {
     existing.lastActive = Date.now();
@@ -170,6 +160,7 @@ export function touchSession(sessionId: string | null, connectionId: string | nu
  */
 export function markToolFinish(sessionId: string | null): void {
   if (!sessionId) return;
+  pruneSessions();
   const session = sessions.get(sessionId);
   if (session) session.lastToolFinishAt = Date.now();
 }
@@ -180,6 +171,7 @@ export function markToolFinish(sessionId: string | null): void {
  */
 export function consumeToolFinishTime(sessionId: string | null): number | null {
   if (!sessionId) return null;
+  pruneSessions();
   const session = sessions.get(sessionId);
   if (!session?.lastToolFinishAt) return null;
   const ts = session.lastToolFinishAt;
@@ -192,12 +184,9 @@ export function consumeToolFinishTime(sessionId: string | null): number | null {
  */
 export function getSessionInfo(sessionId: string | null): SessionEntry | null {
   if (!sessionId) return null;
+  pruneSessions();
   const entry = sessions.get(sessionId);
   if (!entry) return null;
-  if (Date.now() - entry.lastActive > SESSION_TTL_MS) {
-    sessions.delete(sessionId);
-    return null;
-  }
   return { ...entry };
 }
 
@@ -213,6 +202,7 @@ export function getSessionConnection(sessionId: string | null): string | null {
  * Get session count (for dashboard)
  */
 export function getActiveSessionCount(): number {
+  pruneSessions();
   return sessions.size;
 }
 
@@ -221,6 +211,7 @@ export function getActiveSessionCount(): number {
  */
 export function getActiveSessions(): Array<SessionEntry & { sessionId: string; ageMs: number }> {
   const now = Date.now();
+  pruneSessions(now);
   const result: Array<SessionEntry & { sessionId: string; ageMs: number }> = [];
   for (const [id, entry] of sessions) {
     if (now - entry.lastActive <= SESSION_TTL_MS) {
@@ -250,6 +241,7 @@ const activeSessionsByKey = new Map<string, Set<string>>();
  * @param apiKeyId - The API key's UUID from the database
  */
 export function getActiveSessionCountForKey(apiKeyId: string): number {
+  pruneSessions();
   return activeSessionsByKey.get(apiKeyId)?.size ?? 0;
 }
 
@@ -257,6 +249,7 @@ export function getActiveSessionCountForKey(apiKeyId: string): number {
  * Snapshot of active session counts per API key.
  */
 export function getAllActiveSessionCountsByKey(): Record<string, number> {
+  pruneSessions();
   const out: Record<string, number> = {};
   for (const [apiKeyId, sessionIds] of activeSessionsByKey) {
     out[apiKeyId] = sessionIds.size;
@@ -269,6 +262,7 @@ export function getAllActiveSessionCountsByKey(): Record<string, number> {
  * Call this after session creation is allowed (i.e., limit check passed).
  */
 export function registerKeySession(apiKeyId: string, sessionId: string): void {
+  pruneSessions();
   if (!activeSessionsByKey.has(apiKeyId)) {
     activeSessionsByKey.set(apiKeyId, new Set());
   }
@@ -279,6 +273,7 @@ export function registerKeySession(apiKeyId: string, sessionId: string): void {
  * Check whether a given session is already registered for an API key.
  */
 export function isSessionRegisteredForKey(apiKeyId: string, sessionId: string): boolean {
+  pruneSessions();
   return activeSessionsByKey.get(apiKeyId)?.has(sessionId) === true;
 }
 

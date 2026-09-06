@@ -38,8 +38,9 @@ domain service. `packages/core-domain` contains the provider/protocol domain
 implementation and exposes only allow-listed subpaths for app-owned workers,
 realtime adapters, and the remaining migration seams. Worker scheduling policy and task ordering
 live only in `apps/worker/src/jobs`; the package exports implementations, not a
-process-wide scheduler registry. `packages/http-kernel` contains only transport-level
-Fastify middleware and the compatibility dispatch protocol. Each HTTP app constructs
+process-wide scheduler registry. `packages/http-kernel` contains only shared Nest
+transport middleware, filters and interceptors. `packages/web-handler-adapter` adapts
+an explicitly selected Web Request handler to Fastify without route discovery. Each HTTP app constructs
 Nest/Fastify itself; the shared package has no app factory and accepts no app selector.
 The free-proxy provider/database primitives are exposed through the explicit
 `core-domain/shared/free-proxies` contract: control owns the HTTP catalog and

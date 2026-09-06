@@ -14,14 +14,12 @@
  * Ported from upstream 9router#931 (thanks @mugnimaestra) — original stored
  * a global singleton keyed by the raw API key string; this port keys by
  * `apiKeyInfo.id` (ShiguangGateway never threads the raw key value down to
- * `chatCore`) and follows the module-Map + `unref()` cleanup-timer pattern
- * used across `open-sse/services/`.
+ * `chatCore`) and expires records on access.
  */
 
 import { createHash } from "node:crypto";
 
 const DEFAULT_TTL_MS = 30 * 60 * 1000;
-const CLEANUP_INTERVAL_MS = 60 * 1000;
 const DEFAULT_MAX_DEVICES_PER_API_KEY = 1000;
 const DEFAULT_MAX_TOTAL_DEVICES = 10000;
 const MAX_STORED_USER_AGENT_LENGTH = 256;
@@ -73,8 +71,6 @@ let maxTotalDevices = parsePositiveIntegerEnv(MAX_TOTAL_ENV_NAME, DEFAULT_MAX_TO
 // Module-scoped in-memory store — mirrors the `sessionManager.ts` pattern.
 // key: apiKeyId → Map<fingerprint, DeviceRecord>
 const devicesByApiKey = new Map<string, Map<string, DeviceRecord>>();
-
-let cleanupTimer: ReturnType<typeof setInterval> | null = null;
 
 /**
  * Mask an IP address so the stored/reported value never reveals the full
@@ -154,8 +150,8 @@ function enforceDeviceLimits(apiKeyId: string, devices: Map<string, DeviceRecord
 }
 
 /**
- * Remove expired device records. Exported for tests; the cleanup timer
- * calls this on an interval in production.
+ * Remove expired device records. Exported for deterministic tests and called
+ * before reads and writes in production.
  */
 export function expireDevices(now: number = Date.now()): number {
   let expiredCount = 0;
@@ -172,16 +168,6 @@ export function expireDevices(now: number = Date.now()): number {
 
   return expiredCount;
 }
-
-function ensureCleanupTimer(): void {
-  if (cleanupTimer) return;
-  cleanupTimer = setInterval(() => {
-    expireDevices();
-  }, CLEANUP_INTERVAL_MS);
-  cleanupTimer.unref?.();
-}
-
-ensureCleanupTimer();
 
 /**
  * Extract the client IP from a header source. Mirrors the priority order

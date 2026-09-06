@@ -9,16 +9,6 @@ const PROVIDER_TOOL_LIMITS: Record<string, number> = {
   "nvidia": 1536,
 };
 
-const _detectedLimitsSweep = setInterval(() => {
-  const now = Date.now();
-  for (const [key, entry] of DETECTED_LIMITS) {
-    if (now - entry.timestamp > TTL_MS) DETECTED_LIMITS.delete(key);
-  }
-}, 60_000);
-if (typeof _detectedLimitsSweep === "object" && "unref" in _detectedLimitsSweep) {
-  (_detectedLimitsSweep as { unref?: () => void }).unref?.();
-}
-
 export function getKnownToolLimit(provider: string | null | undefined): number | null {
   const proactiveLimit = PROVIDER_TOOL_LIMITS[provider];
   if (proactiveLimit !== undefined) {
@@ -28,6 +18,7 @@ export function getKnownToolLimit(provider: string | null | undefined): number |
   if (cached && Date.now() - cached.timestamp < TTL_MS) {
     return cached.limit;
   }
+  if (cached) DETECTED_LIMITS.delete(provider);
   return null;
 }
 

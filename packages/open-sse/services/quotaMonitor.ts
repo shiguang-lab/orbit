@@ -84,8 +84,7 @@ const activeMonitors = new Map<string, MonitorState>();
 const MAX_ALERT_ENTRIES = 500;
 const alertSuppression = new Map<string, number>();
 
-const _alertSweep = setInterval(() => {
-  const now = Date.now();
+function pruneAlertSuppression(now: number = Date.now()): void {
   for (const [key, timestamp] of alertSuppression) {
     if (now - timestamp > ALERT_SUPPRESS_WINDOW_MS) alertSuppression.delete(key);
   }
@@ -94,9 +93,6 @@ const _alertSweep = setInterval(() => {
     if (oldestKey !== undefined) alertSuppression.delete(oldestKey);
     else break;
   }
-}, 60_000);
-if (typeof _alertSweep === "object" && "unref" in _alertSweep) {
-  (_alertSweep as { unref?: () => void }).unref?.();
 }
 // Registry mirror from quotaPreflight (same Map reference via re-export)
 const quotaFetcherRegistry = new Map<string, QuotaFetcher>();
@@ -116,14 +112,16 @@ function suppressedAlert(
   accountId: string,
   percentUsed: number
 ): boolean {
+  const now = Date.now();
+  pruneAlertSuppression(now);
   const key = `${sessionId}:${provider}:${accountId}`;
   const last = alertSuppression.get(key) ?? 0;
-  if (Date.now() - last < ALERT_SUPPRESS_WINDOW_MS) return false;
+  if (now - last < ALERT_SUPPRESS_WINDOW_MS) return false;
   if (alertSuppression.size >= MAX_ALERT_ENTRIES && !alertSuppression.has(key)) {
     const oldestKey = alertSuppression.keys().next().value;
     if (oldestKey !== undefined) alertSuppression.delete(oldestKey);
   }
-  alertSuppression.set(key, Date.now());
+  alertSuppression.set(key, now);
   console.warn(
     `[QuotaMonitor] session=${sessionId} ${provider}/${accountId}: ${(percentUsed * 100).toFixed(1)}% quota used`
   );

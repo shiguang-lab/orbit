@@ -126,8 +126,7 @@ const usageCache = new Map<string, UsageCacheEntry>();
 const tierCache = new Map<string, TierCacheEntry>();
 const secTokenCache = new Map<string, { token: string; fetchedAt: number }>();
 
-const _cacheCleanup = setInterval(() => {
-  const now = Date.now();
+function pruneStaleQuotaCaches(now = Date.now()): void {
   for (const [key, entry] of usageCache) {
     if (now - entry.fetchedAt > USAGE_CACHE_TTL_MS * 5) usageCache.delete(key);
   }
@@ -137,10 +136,6 @@ const _cacheCleanup = setInterval(() => {
   for (const [key, entry] of secTokenCache) {
     if (now - entry.fetchedAt > TIER_CACHE_TTL_MS * 2) secTokenCache.delete(key);
   }
-}, 5 * 60_000);
-
-if (typeof _cacheCleanup === "object" && "unref" in _cacheCleanup) {
-  (_cacheCleanup as { unref?: () => void }).unref?.();
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -361,6 +356,7 @@ export async function fetchQwenTokenPlanQuota(
   connectionId: string,
   connection?: Record<string, unknown>
 ): Promise<QuotaInfo | null> {
+  pruneStaleQuotaCaches();
   const cached = usageCache.get(connectionId);
   if (cached && Date.now() - cached.fetchedAt < USAGE_CACHE_TTL_MS) {
     return cached.quota;
