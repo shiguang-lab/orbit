@@ -33,6 +33,7 @@ export function controlRouteCatalog(): CompatRouteDefinition[] {
     ...appRoutes.map((route) => route.segments.join("/")),
     // Implemented as a Nest controller in control-api (not a legacy route.ts).
     "cli-tools/all-statuses",
+    "providers/test-batch",
   ]);
   return coreRoutes.filter((route) => !migrated.has(route.segments.join("/")));
 }

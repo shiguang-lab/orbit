@@ -12,10 +12,12 @@ import { CommandCodeAuthModule } from "./command-code/command-code-auth.module.j
 import { SuggestedModelsModule } from "./suggested-models/suggested-models.module.js";
 import { ProviderPluginManifestModule } from "./plugin-manifest/provider-plugin-manifest.module.js";
 import { ProviderLimitsModule } from "./provider-limits/provider-limits.module.js";
+import { ProviderTestBatchController } from "./provider-test-batch.controller.js";
+import { ProviderTestBatchService } from "./provider-test-batch.service.js";
 
 @Module({
   imports: [CommonModule, ZedImportModule, VolcenginePlanModule, CommandCodeAuthModule, SuggestedModelsModule, ProviderPluginManifestModule, ProviderLimitsModule],
-  controllers: [ProvidersController, ProviderOnboardingController],
-  providers: [ProvidersService, ProviderPolicyService, ProviderClientService, ProviderOnboardingService],
+  controllers: [ProvidersController, ProviderOnboardingController, ProviderTestBatchController],
+  providers: [ProvidersService, ProviderPolicyService, ProviderClientService, ProviderOnboardingService, ProviderTestBatchService],
 })
 export class ProvidersModule {}
