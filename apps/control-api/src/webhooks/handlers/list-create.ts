@@ -5,16 +5,15 @@
  */
 
 import { z } from "zod";
-import { NextResponse } from "next/server";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
-import { getWebhooks, createWebhook } from "../../../lib/localDb.ts";
-import { validateBody, isValidationFailure } from "../../../shared/validation/helpers.ts";
-import { requireManagementAuth } from "../../../lib/api/requireManagementAuth.ts";
-import { encryptMetadata } from "../../../lib/webhookDispatcher.ts";
-import { isEncryptionEnabled } from "../../../lib/db/encryption.ts";
-import { parseAndValidateWebhookUrl } from "../../../shared/network/outboundUrlGuardPolicy.ts";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+import { getWebhooks, createWebhook } from "@shiguang-gateway/core-domain/db/local-db";
+import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { encryptMetadata } from "@shiguang-gateway/core-domain/shared/webhook-dispatcher";
+import { isEncryptionEnabled } from "@shiguang-gateway/core-domain/db/encryption";
+import { parseAndValidateWebhookUrl } from "@shiguang-gateway/core-domain/network/outbound-url-guard-policy";
 
-import { WEBHOOK_EVENT_VALUES } from "../../../lib/webhooks/eventDescriptions.ts";
+import { WEBHOOK_EVENT_VALUES } from "@shiguang-gateway/core-domain/shared/webhook-events";
 
 const WEBHOOK_KINDS = ["slack", "telegram", "discord", "custom"] as const;
 const WEBHOOK_EVENT_VALUES_WITH_WILDCARD = ["*", ...WEBHOOK_EVENT_VALUES] as const;
@@ -26,7 +25,7 @@ const createWebhookSchema = z
     secret: z.string().max(500).optional(),
     description: z.string().max(1000).optional().default(""),
     kind: z.enum(WEBHOOK_KINDS).optional().default("custom"),
-    metadata: z.record(z.string()).optional(),
+    metadata: z.record(z.string(), z.string()).optional(),
   })
   .superRefine((data, ctx) => {
     if (data.kind === "telegram") return;
@@ -55,9 +54,9 @@ export async function GET(request: Request) {
       ...w,
       secret: w.secret ? `${w.secret.slice(0, 10)}...` : null,
     }));
-    return NextResponse.json({ webhooks: masked, total: result.total });
+    return Response.json({ webhooks: masked, total: result.total });
   } catch (error: any) {
-    return NextResponse.json(
+    return Response.json(
       { error: sanitizeErrorMessage(error) || "Failed to list webhooks" },
       { status: 500 }
     );
@@ -72,13 +71,13 @@ export async function POST(request: Request) {
     const rawBody = await request.json();
     const validation = validateBody(createWebhookSchema, rawBody);
     if (isValidationFailure(validation)) {
-      return NextResponse.json({ error: validation.error }, { status: 400 });
+      return Response.json({ error: validation.error }, { status: 400 });
     }
 
     const { data } = validation;
 
     if (data.kind === "telegram" && !isEncryptionEnabled()) {
-      return NextResponse.json(
+      return Response.json(
         { error: "Telegram webhooks require STORAGE_ENCRYPTION_KEY to be configured" },
         { status: 400 }
       );
@@ -94,9 +93,9 @@ export async function POST(request: Request) {
       metadataEncrypted,
     });
 
-    return NextResponse.json({ webhook }, { status: 201 });
+    return Response.json({ webhook }, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json(
+    return Response.json(
       { error: sanitizeErrorMessage(error) || "Failed to create webhook" },
       { status: 500 }
     );

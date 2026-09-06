@@ -3,18 +3,17 @@
  * POST — Send a test ping event to a specific webhook and return full diagnostics.
  */
 
-import { NextResponse } from "next/server";
-import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
-import { getWebhook } from "../../../../../lib/localDb.ts";
-import { decryptMetadata } from "../../../../../lib/webhookDispatcher.ts";
-import { buildSlackPayload } from "../../../../../lib/webhooks/integrations/slack.ts";
-import { buildTelegramUrl, buildTelegramPayload } from "../../../../../lib/webhooks/integrations/telegram.ts";
-import { buildDiscordPayload } from "../../../../../lib/webhooks/integrations/discord.ts";
-import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
-import { insertDelivery } from "../../../../../lib/db/webhookDeliveries.ts";
-import { recordWebhookDelivery } from "../../../../../lib/localDb.ts";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+import { getWebhook } from "@shiguang-gateway/core-domain/db/local-db";
+import { decryptMetadata } from "@shiguang-gateway/core-domain/shared/webhook-dispatcher";
+import { buildSlackPayload } from "@shiguang-gateway/core-domain/shared/webhook-integrations/slack";
+import { buildTelegramUrl, buildTelegramPayload } from "@shiguang-gateway/core-domain/shared/webhook-integrations/telegram";
+import { buildDiscordPayload } from "@shiguang-gateway/core-domain/shared/webhook-integrations/discord";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { insertDelivery } from "@shiguang-gateway/core-domain/db/webhook-deliveries";
+import { recordWebhookDelivery } from "@shiguang-gateway/core-domain/db/local-db";
 import { isPrivateHost, OutboundUrlGuardError } from "@shiguang-gateway/network-guard";
-import { parseAndValidateWebhookUrl } from "../../../../../shared/network/outboundUrlGuardPolicy.ts";
+import { parseAndValidateWebhookUrl } from "@shiguang-gateway/core-domain/network/outbound-url-guard-policy";
 import crypto from "crypto";
 
 const MAX_RESPONSE_BODY = 2048;
@@ -83,7 +82,7 @@ export async function POST(_: Request, { params }: { params: Promise<{ id: strin
     const { id } = await params;
     const webhook = getWebhook(id);
     if (!webhook) {
-      return NextResponse.json({ error: "Webhook not found" }, { status: 404 });
+      return Response.json({ error: "Webhook not found" }, { status: 404 });
     }
 
     const kind = webhook.kind ?? "custom";
@@ -107,7 +106,7 @@ export async function POST(_: Request, { params }: { params: Promise<{ id: strin
       const meta = decryptMetadata(webhook.metadata_encrypted ?? null);
       const botToken = meta?.botToken;
       if (!botToken) {
-        return NextResponse.json({ error: "Missing Telegram botToken" }, { status: 422 });
+        return Response.json({ error: "Missing Telegram botToken" }, { status: 422 });
       }
       fetchUrl = buildTelegramUrl(botToken);
       payloadSent = buildTelegramPayload("test.ping", testData, webhook.url) as Record<
@@ -143,7 +142,7 @@ export async function POST(_: Request, { params }: { params: Promise<{ id: strin
     }
     recordWebhookDelivery(webhook.id, result.status, result.success);
 
-    return NextResponse.json({
+    return Response.json({
       delivered: result.success,
       status: result.status,
       latencyMs: result.latencyMs,
@@ -152,6 +151,6 @@ export async function POST(_: Request, { params }: { params: Promise<{ id: strin
       error: result.error ? sanitizeErrorMessage(result.error) : null,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: sanitizeErrorMessage(error) }, { status: 500 });
+    return Response.json({ error: sanitizeErrorMessage(error) }, { status: 500 });
   }
 }

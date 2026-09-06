@@ -3,10 +3,9 @@
  * GET — List recent deliveries for a webhook
  */
 
-import { NextResponse } from "next/server";
-import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
-import { getWebhook, getDeliveries } from "../../../../../lib/localDb.ts";
-import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+import { getWebhook, getDeliveries } from "@shiguang-gateway/core-domain/db/local-db";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const authError = await requireManagementAuth(request);
@@ -16,7 +15,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     const { id } = await params;
     const webhook = getWebhook(id);
     if (!webhook) {
-      return NextResponse.json({ error: "Webhook not found" }, { status: 404 });
+      return Response.json({ error: "Webhook not found" }, { status: 404 });
     }
 
     const url = new URL(request.url);
@@ -24,9 +23,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     const limit = Math.min(Math.max(1, parseInt(limitParam ?? "20", 10) || 20), 100);
 
     const deliveries = getDeliveries(id, limit);
-    return NextResponse.json({ deliveries });
+    return Response.json({ deliveries });
   } catch (error: any) {
-    return NextResponse.json(
+    return Response.json(
       { error: sanitizeErrorMessage(error) || "Failed to fetch deliveries" },
       { status: 500 }
     );

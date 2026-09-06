@@ -117,6 +117,11 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "catalog/models-dev-sync",
   "catalog/provider-models",
   "catalog/providers",
+  "db/encryption",
+  "db/webhook-deliveries",
+  "shared/webhook-dispatcher",
+  "shared/webhook-events",
+  "shared/webhook-integrations/",
 );
 
 // Route files that have completed a physical ownership move. Keep this list
@@ -196,6 +201,11 @@ const migratedRouteOwnership = {
     "api/model-combo-mappings/[id]/route.ts",
     "api/combos/builder/options/route.ts",
     "api/combos/duplicate/route.ts",
+    "api/webhooks/route.ts",
+    "api/webhooks/validate-url/route.ts",
+    "api/webhooks/[id]/route.ts",
+    "api/webhooks/[id]/deliveries/route.ts",
+    "api/webhooks/[id]/test/route.ts",
   ],
   "apps/edge-gateway": [
     // A2A protocol and task-management routes are owned by the edge Nest app.
