@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Patch, Post, Put, Req, Res } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Inject, Patch, Post, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
@@ -9,6 +9,10 @@ import {
 import { databaseSettingsSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
 import { SettingsService } from "./settings.service.js";
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
+import {
+  FEATURE_FLAG_DEFINITIONS,
+} from "@shiguang-gateway/core-domain/control/feature-flags";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 
 const databaseSettingsPatchSchema = databaseSettingsSchema.partial().strict();
 
@@ -47,6 +51,11 @@ const updateThinkingBudgetSchema = z
       value.complexityMultiplier !== undefined,
     { message: "No valid fields to update" },
   );
+
+const updateFeatureFlagSchema = z.object({
+  key: z.string().min(1),
+  value: z.string().optional(),
+});
 
 /** HTTP transport for model runtime settings owned by control-api. */
 @Controller("api/settings")
@@ -205,6 +214,54 @@ export class SettingsController {
     } catch (error) {
       console.error("Failed to refresh database stats:", error);
       return reply.status(500).send({ error: "Failed to refresh database stats" });
+    }
+  }
+
+  @Get("feature-flags")
+  async getFeatureFlags(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    if (!(await this.authorizeAuthenticated(request, reply))) return;
+    try {
+      return reply.send(this.settings.getFeatureFlags());
+    } catch (error) {
+      return reply.status(500).send({ error: sanitizeErrorMessage(error) });
+    }
+  }
+
+  @Put("feature-flags")
+  async updateFeatureFlag(
+    @Req() request: FastifyRequest,
+    @Res() reply: FastifyReply,
+    @Body() body: unknown,
+  ) {
+    if (!(await this.authorizeAuthenticated(request, reply))) return;
+    const validation = validateBody(updateFeatureFlagSchema, body);
+    if (isValidationFailure(validation)) return reply.status(400).send({ error: validation.error });
+
+    const { key, value } = validation.data;
+    const definition = FEATURE_FLAG_DEFINITIONS.find((item) => item.key === key);
+    if (!definition) return reply.status(400).send({ error: `Unknown feature flag key: ${key}` });
+    if (value !== undefined && definition.type === "enum" && definition.enumValues) {
+      if (!definition.enumValues.includes(value)) {
+        return reply.status(400).send({
+          error: `Invalid value "${value}" for enum flag ${key}. Allowed: ${definition.enumValues.join(", ")}`,
+        });
+      }
+    }
+
+    try {
+      return reply.send(this.settings.updateFeatureFlag(key, value));
+    } catch (error) {
+      return reply.status(500).send({ error: sanitizeErrorMessage(error) });
+    }
+  }
+
+  @Delete("feature-flags")
+  async clearFeatureFlags(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    if (!(await this.authorizeAuthenticated(request, reply))) return;
+    try {
+      return reply.send(this.settings.clearFeatureFlagOverrides());
+    } catch (error) {
+      return reply.status(500).send({ error: sanitizeErrorMessage(error) });
     }
   }
 }

@@ -239,6 +239,7 @@ const migratedRouteOwnership = {
     "api/settings/database/route.ts",
     "api/settings/database/vacuum/route.ts",
     "api/settings/database/refresh-stats/route.ts",
+    "api/settings/feature-flags/route.ts",
     "api/settings/proxy/test/route.ts",
     "api/settings/proxies/route.ts",
     "api/settings/proxies/assignments/route.ts",

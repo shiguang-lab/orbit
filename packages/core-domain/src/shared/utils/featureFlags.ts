@@ -4,6 +4,20 @@ import {
   type FeatureFlagDefinition,
 } from "../constants/featureFlagDefinitions.ts";
 
+export { FEATURE_FLAG_DEFINITIONS } from "../constants/featureFlagDefinitions.ts";
+export type { FeatureFlagDefinition } from "../constants/featureFlagDefinitions.ts";
+export {
+  getFeatureFlagOverrides,
+  setFeatureFlagOverride,
+  removeFeatureFlagOverride,
+  clearAllFeatureFlagOverrides,
+} from "../../lib/db/featureFlags.ts";
+export { getCcAliasGlobalState } from "../../lib/db/ccDiscoveryAliases.ts";
+export {
+  ADAPTIVE_VIRTUAL_LANES_FLAG_KEY,
+  resolveAdaptiveVirtualLanesFlag,
+} from "../../lib/admissionVirtualLanes.ts";
+
 /**
  * Resolve the effective value of a feature flag.
  * Priority: DB override > process.env > definition.defaultValue
