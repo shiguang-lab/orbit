@@ -1,4 +1,4 @@
-import { exportCallLogsSince } from "@shiguang-gateway/core-domain/edge/usage-db";
+import { exportCallLogsSince } from "@shiguang-gateway/core-domain/usage/call-logs";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { exportProxyLogsSince } from "@shiguang-gateway/core-domain/db/proxy-logs";
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";

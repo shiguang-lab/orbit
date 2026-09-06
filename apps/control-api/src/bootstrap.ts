@@ -7,6 +7,7 @@ import { AppModule } from "./app.module.js";
 export async function bootstrapControlApi() {
   const adapter = new FastifyAdapter({
     logger: { level: process.env.LOG_LEVEL ?? "info" },
+    exposeHeadRoutes: false,
     bodyLimit: 512 * 1024 * 1024,
   });
   const fastify = adapter.getInstance() as FastifyInstance;

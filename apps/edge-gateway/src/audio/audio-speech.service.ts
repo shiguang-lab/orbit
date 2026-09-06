@@ -21,9 +21,9 @@ export class AudioSpeechService {
 
   private async post(request: Request): Promise<Response> {
     const [{ handleAudioSpeech }, { errorResponse }, { getSpeechProvider, parseSpeechModel }, { getProviderCredentialsWithQuotaPreflight, clearRecoveredProviderState }, { enforceApiKeyPolicy }, { isAllRateLimitedCredentials, rateLimitedProviderResponse }] = await Promise.all([
-      load("@shiguang-gateway/open-sse/handlers/audioSpeech.ts"),
-      load("@shiguang-gateway/open-sse/utils/error.ts"),
-      load("@shiguang-gateway/open-sse/config/audioRegistry.ts"),
+      load("@shiguang-gateway/open-sse/handlers/audioSpeech"),
+      load("@shiguang-gateway/open-sse/utils/error"),
+      load("@shiguang-gateway/open-sse/config/audioRegistry"),
       load("@shiguang-gateway/core-domain/sse/auth"),
       load("@shiguang-gateway/core-domain/shared/api-key-policy"),
       load("@shiguang-gateway/core-domain/edge/rate-limit"),
@@ -49,7 +49,7 @@ export class AudioSpeechService {
       const { getComboByName } = await load("@shiguang-gateway/core-domain/edge/local-db");
       const combo = await getComboByName(body.model);
       if (combo) {
-        const { executeSpeechCombo } = await load("@shiguang-gateway/open-sse/services/speechCombo.ts");
+        const { executeSpeechCombo } = await load("@shiguang-gateway/open-sse/services/speechCombo");
         return executeSpeechCombo(body.model, body, startTime);
       }
     }

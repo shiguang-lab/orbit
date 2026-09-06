@@ -29,10 +29,12 @@ export {
   getModelLatencyStats,
   appendRequestLog,
   getRecentLogs,
-} from "./usage/usageHistory";
+  getCompletedDetails,
+  getPendingById,
+} from "./usage/usageHistory.js";
 
-export { calculateCost } from "./usage/costCalculator";
+export { calculateCost } from "./usage/costCalculator.js";
 
-export { getUsageStats } from "./usage/usageStats";
+export { getUsageStats } from "./usage/usageStats.js";
 
-export { saveCallLog, rotateCallLogs, getCallLogs, getCallLogById } from "./usage/callLogs";
+export { saveCallLog, rotateCallLogs, getCallLogs, getCallLogById } from "./usage/callLogs.js";

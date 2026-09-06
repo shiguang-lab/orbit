@@ -28,7 +28,7 @@ export { getCachedPassword } from "../../mitm/manager.ts";
 export { addDNSEntries, removeDNSEntries } from "../../mitm/dns/dnsConfig.ts";
 export { maskSecret } from "../../mitm/maskSecrets.ts";
 export { sanitizeHeaders } from "../../mitm/sanitizeHeaders.ts";
-export { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error.ts";
+export { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
 export { getIngestTokenForBootstrap } from "./ingestToken.ts";
 export {
   InspectorCustomHostSchema,

@@ -52,7 +52,7 @@ export class AnalyticsService {
 
   async getDiversityAnalytics() {
     const { getDiversityReport } = await load(
-      "@shiguang-gateway/open-sse/services/autoCombo/providerDiversity.ts",
+      "@shiguang-gateway/open-sse/services/autoCombo/providerDiversity",
     );
     return getDiversityReport();
   }

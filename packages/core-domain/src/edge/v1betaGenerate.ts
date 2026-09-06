@@ -3,7 +3,7 @@ import { initTranslators } from "@shiguang-gateway/open-sse/translator";
 import {
   convertOpenAIResponseToGemini,
   transformOpenAISSEToGeminiSSE,
-} from "../../open-sse/translator/response/openai-to-gemini-sse.ts";
+} from "@shiguang-gateway/open-sse/translator/response/openai-to-gemini-sse";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import { v1betaGeminiGenerateSchema } from "../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../shared/validation/helpers.ts";

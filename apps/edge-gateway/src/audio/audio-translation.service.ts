@@ -16,19 +16,19 @@ export class AudioTranslationService {
     try {
       formData = await request.formData();
     } catch {
-      const { errorResponse } = await load("@shiguang-gateway/open-sse/utils/error.ts");
+      const { errorResponse } = await load("@shiguang-gateway/open-sse/utils/error");
       return errorResponse(400, "Invalid multipart form data");
     }
 
     const model = formData.get("model");
     if (!model) {
-      const { errorResponse } = await load("@shiguang-gateway/open-sse/utils/error.ts");
+      const { errorResponse } = await load("@shiguang-gateway/open-sse/utils/error");
       return errorResponse(400, "Missing model");
     }
     const modelStr = String(model);
     const [{ enforceApiKeyPolicy }, { errorResponse }] = await Promise.all([
       load("@shiguang-gateway/core-domain/shared/api-key-policy"),
-      load("@shiguang-gateway/open-sse/utils/error.ts"),
+      load("@shiguang-gateway/open-sse/utils/error"),
     ]);
     const policy = await enforceApiKeyPolicy(request, modelStr);
     if (policy.rejection) return policy.rejection;
@@ -43,10 +43,10 @@ export class AudioTranslationService {
       { isAllRateLimitedCredentials, rateLimitedProviderResponse },
       { handleAudioTranslation },
     ] = await Promise.all([
-      load("@shiguang-gateway/open-sse/config/audioRegistry.ts"),
+      load("@shiguang-gateway/open-sse/config/audioRegistry"),
       load("@shiguang-gateway/core-domain/sse/auth"),
       load("@shiguang-gateway/core-domain/edge/rate-limit"),
-      load("@shiguang-gateway/open-sse/handlers/audioTranslation.ts"),
+      load("@shiguang-gateway/open-sse/handlers/audioTranslation"),
     ]);
     const { provider, model: resolvedModel } = parseTranslationModel(modelStr, dynamicProviders);
     if (!provider) {

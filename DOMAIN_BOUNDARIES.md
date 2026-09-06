@@ -73,8 +73,10 @@ new tunnel handlers to `apps/control-api`.
 
 The package rule is enforced by `pnpm audit:package-boundaries --strict`: a package must
 have at least two workspace consumers and must not contain app-owned route trees. The
-legacy `core-domain` and `open-sse` packages currently fail this gate and remain an
-explicit migration backlog; new app-only code must not be added to them.
+current package graph passes this gate; `core-domain` and `open-sse` are classified as
+shared packages with multiple deployable consumers. The stricter
+`pnpm audit:open-sse-boundary` source-layer audit remains a separate migration gate;
+new app-only routes, listeners, or orchestration must not be added to either package.
 
 ## Entity sharing evidence
 

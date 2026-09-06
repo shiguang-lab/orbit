@@ -173,7 +173,7 @@ import { registerOpenrouterQuotaFetcher } from "../../../../open-sse/services/op
 import { registerOpencodeQuotaFetcher } from "../../../../open-sse/services/opencodeQuotaFetcher.ts";
 import { registerGrokWebQuotaFetcher } from "../../../../open-sse/services/grokQuotaFetcher.ts";
 import { registerGenericQuotaFetchers } from "../../../../open-sse/services/genericQuotaFetcher.ts";
-import "@shiguang-gateway/open-sse/services/quotaTrackersBatch.ts";
+import "@shiguang-gateway/open-sse/services/quotaTrackersBatch";
 import {
   disableCooldownAwareRetry,
   getCooldownAwareRetryDecision,

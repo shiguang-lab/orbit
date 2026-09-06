@@ -4,4 +4,4 @@ export {
   ensureLoopbackServerReady,
   selfFetchWithRetry,
   __resetLoopbackReadinessForTests,
-} from "./models-route.ts";
+} from "./sync-route.ts";

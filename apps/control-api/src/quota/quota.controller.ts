@@ -13,7 +13,7 @@ import {
 import { logAuditEvent, getAuditRequestContext } from "@shiguang-gateway/core-domain/compliance";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
-const { buildErrorBody } = await load("@shiguang-gateway/open-sse/utils/error.ts");
+const { buildErrorBody } = await load("@shiguang-gateway/open-sse/utils/error");
 
 @Controller("api/quota")
 export class QuotaController {

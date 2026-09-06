@@ -157,7 +157,13 @@ for (const controllerFile of controllerFiles) {
   for (const { routePath, verbs } of contracts) {
     // This audit freezes the public API surface. UI-only root routes are
     // app-owned controllers but intentionally absent from the API baseline.
-    if (routePath === "authorize/route.ts" || routePath.startsWith("dashboard/")) continue;
+    if (
+      routePath === "authorize/route.ts" ||
+      routePath === "healthz/route.ts" ||
+      routePath === "livez/route.ts" ||
+      routePath === "readyz/route.ts" ||
+      routePath.startsWith("dashboard/")
+    ) continue;
     if (!localApiExtensions.has(routePath)) {
       const normalized = normalizeRoutePath(routePath);
       const existing = localMap.get(normalized) || [];

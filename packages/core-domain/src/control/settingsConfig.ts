@@ -12,6 +12,7 @@ export {
   getAllDomainCostHistory,
   getAllDomainBudgets,
 } from "../lib/db/usageAnalytics.ts";
-export { getDbInstance, backupDbFile } from "../lib/db/core.ts";
+export { getDbInstance } from "../lib/db/core.ts";
+export { backupDbFile } from "../lib/db/backup.ts";
 export { runJsonMigration } from "../lib/db/jsonMigration.ts";
 export type { LegacyJsonData } from "../lib/db/jsonMigration.ts";

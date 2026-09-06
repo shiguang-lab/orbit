@@ -108,13 +108,13 @@ async function readUpscaleBody(request: Request): Promise<Record<string, unknown
 
 async function postHandler(request: Request) {
   const [errorApi, authApi, policyApi, validationApi, validationHelpers, settingsApi, proxyApi, metaApi, pricingApi, requestIdApi, upstreamErrorApi] = await Promise.all([
-    load("@shiguang-gateway/open-sse/utils/error.ts"),
+    load("@shiguang-gateway/open-sse/utils/error"),
     load("@shiguang-gateway/core-domain/sse/auth"),
     load("@shiguang-gateway/core-domain/shared/api-key-policy"),
     load("@shiguang-gateway/core-domain/shared/validation/schemas"),
     load("@shiguang-gateway/core-domain/shared/validation/helpers"),
     load("@shiguang-gateway/core-domain/control/settings"),
-    load("@shiguang-gateway/open-sse/utils/proxyFetch.ts"),
+    load("@shiguang-gateway/open-sse/utils/proxyFetch"),
     load("@shiguang-gateway/core-domain/edge/gateway-response-meta"),
     load("@shiguang-gateway/core-domain/pricing/modal-cost"),
     load("@shiguang-gateway/core-domain/edge/request-id"),

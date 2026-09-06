@@ -26,6 +26,19 @@ const services = [
 ];
 const children = [];
 
+function appendOutput(service, chunk) {
+  service.output = `${service.output}${chunk}`.slice(-8_000);
+}
+
+function assertServicesRunning() {
+  const exited = children.filter(({ child }) => child.exitCode !== null);
+  if (exited.length === 0) return;
+  const details = exited
+    .map(({ service, child }) => `${service.name} exited ${child.exitCode}\n${service.output.trim()}`)
+    .join("\n\n");
+  throw new Error(details);
+}
+
 function start(service) {
   const env = { ...baseEnv };
   if (service.name === "edge-gateway") {
@@ -41,22 +54,27 @@ function start(service) {
   } else {
     env.REALTIME_PORT = String(service.port);
     env.REALTIME_HOST = "127.0.0.1";
+    env.SHIGUANG_GATEWAY_ENABLE_LIVE_WS = "true";
     env.LIVE_WS_PORT = "18890";
     env.LIVE_WS_HOST = "127.0.0.1";
   }
   const child = spawn("pnpm", ["--filter", `@shiguang-gateway/${service.name}`, "start"], {
     cwd: repoRoot,
     env,
-    stdio: "ignore",
+    stdio: ["ignore", "pipe", "pipe"],
     detached: true,
   });
-  children.push(child);
+  service.output = "";
+  child.stdout.on("data", (chunk) => appendOutput(service, chunk));
+  child.stderr.on("data", (chunk) => appendOutput(service, chunk));
+  children.push({ child, service });
 }
 
 async function waitHttp(port, path, expected = 200, method = "GET") {
   const deadline = Date.now() + 45_000;
   let last = "";
   while (Date.now() < deadline) {
+    assertServicesRunning();
     try {
       const response = await fetch(`http://127.0.0.1:${port}${path}`, { method });
       if (response.status === expected) return;
@@ -72,6 +90,7 @@ async function waitHttp(port, path, expected = 200, method = "GET") {
 async function waitTcp(port) {
   const deadline = Date.now() + 45_000;
   while (Date.now() < deadline) {
+    assertServicesRunning();
     try {
       await new Promise((resolve, reject) => {
         const socket = net.createConnection({ host: "127.0.0.1", port }, resolve);
@@ -193,7 +212,7 @@ try {
   await assertTcpClosed(18991);
   console.log("split deployment smoke: PASS (edge, control, realtime, live WS)");
 } finally {
-  for (const child of children) {
+  for (const { child } of children) {
     try { process.kill(-child.pid, "SIGTERM"); } catch {}
   }
   await rm(dataDir, { recursive: true, force: true });

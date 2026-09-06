@@ -17,9 +17,9 @@ import {
   IDE_PROVIDER_IDS,
   OPENAI_COMPATIBLE_PREFIX,
   ANTHROPIC_COMPATIBLE_PREFIX,
-  testSingleConnection,
 } from "@shiguang-gateway/core-domain/control/provider-test-batch";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { testSingleConnection } from "./handlers/provider-test/route.js";
 
 @Injectable()
 export class ProviderTestBatchService {

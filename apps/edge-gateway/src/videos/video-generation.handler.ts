@@ -54,13 +54,13 @@ async function postHandler(request: Request): Promise<Response> {
       successfulMediaGenerationResponse,
     },
   ] = await Promise.all([
-    load("@shiguang-gateway/open-sse/handlers/videoGeneration.ts"),
-    load("@shiguang-gateway/open-sse/handlers/videoGeneration/googleFlow.ts"),
+    load("@shiguang-gateway/open-sse/handlers/videoGeneration"),
+    load("@shiguang-gateway/open-sse/handlers/videoGeneration/googleFlow"),
     load("@shiguang-gateway/core-domain/middleware/prompt-injection"),
     load("@shiguang-gateway/core-domain/sse/auth"),
-    load("@shiguang-gateway/open-sse/config/videoRegistry.ts"),
-    load("@shiguang-gateway/open-sse/utils/error.ts"),
-    load("@shiguang-gateway/open-sse/config/constants.ts"),
+    load("@shiguang-gateway/open-sse/config/videoRegistry"),
+    load("@shiguang-gateway/open-sse/utils/error"),
+    load("@shiguang-gateway/open-sse/config/constants"),
     load("@shiguang-gateway/core-domain/sse/logger"),
     load("@shiguang-gateway/core-domain/shared/api-key-policy"),
     load("@shiguang-gateway/core-domain/edge/rate-limit"),
@@ -80,7 +80,7 @@ async function postHandler(request: Request): Promise<Response> {
       const { getComboByName } = await load("@shiguang-gateway/core-domain/edge/local-db");
       const combo = await getComboByName(body.model);
       if (combo) {
-        const { executeVideoCombo } = await load("@shiguang-gateway/open-sse/services/videoCombo.ts");
+        const { executeVideoCombo } = await load("@shiguang-gateway/open-sse/services/videoCombo");
         return executeVideoCombo(body.model, body, { request: guardedRequest, policy }, startTime, log);
       }
     }

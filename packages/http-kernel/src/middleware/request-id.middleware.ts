@@ -6,7 +6,8 @@ type RequestLike = {
 };
 
 type ResponseLike = {
-  header(name: string, value: string): unknown;
+  header?: (name: string, value: string) => unknown;
+  setHeader?: (name: string, value: string) => unknown;
 };
 
 /** Adds a stable correlation id before a request reaches a controller. */
@@ -18,7 +19,8 @@ export class RequestIdMiddleware implements NestMiddleware {
       (Array.isArray(existing) ? existing[0] : existing) ??
       `req-${crypto.randomUUID().slice(0, 8)}${Date.now().toString(36)}`;
     request.id = requestId;
-    response.header("x-request-id", requestId);
+    if (typeof response.header === "function") response.header("x-request-id", requestId);
+    else response.setHeader?.("x-request-id", requestId);
     next();
   }
 }

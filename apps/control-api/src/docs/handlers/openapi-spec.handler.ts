@@ -1,6 +1,6 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
-import yaml from "js-yaml";
+import { load } from "js-yaml";
 
 let cached: { data: unknown; mtime: number } | null = null;
 const candidates = [path.join(process.cwd(), "packages/core-domain/docs/openapi.yaml"), path.join(process.cwd(), "docs/openapi.yaml")];
@@ -27,7 +27,7 @@ export function GET(): Response {
     if (!specPath) return Response.json({ error: "openapi.yaml not found" }, { status: 404 });
     const mtime = statSync(specPath).mtimeMs;
     if (cached?.mtime === mtime) return Response.json(cached.data);
-    const raw: any = yaml.load(readFileSync(specPath, "utf8"));
+    const raw: any = load(readFileSync(specPath, "utf8"));
     const components = raw.components?.schemas || {};
     const endpoints: any[] = [];
     for (const [pathName, methods] of Object.entries(raw.paths || {})) for (const [method, spec] of Object.entries(methods as any)) {

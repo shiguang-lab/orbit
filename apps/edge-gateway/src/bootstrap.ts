@@ -7,6 +7,7 @@ export async function bootstrapEdgeGateway() {
   const adapter = new FastifyAdapter({
     logger: { level: process.env.LOG_LEVEL ?? "info" },
     bodyLimit: 512 * 1024 * 1024,
+    exposeHeadRoutes: false,
   });
   const fastify = adapter.getInstance() as FastifyInstance;
   fastify.addContentTypeParser(

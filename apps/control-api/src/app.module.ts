@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
-import { HealthModule as ProcessHealthModule, HttpKernelModule } from "@shiguang-gateway/http-kernel";
+import { HttpKernelModule } from "@shiguang-gateway/http-kernel";
+import { ProcessHealthModule } from "./process-health/process-health.module.js";
 import { AuthModule } from "./auth/auth.module.js";
 import { GatewayModule } from "./gateway/gateway.module.js";
 import { HealthModule } from "./health/health.module.js";

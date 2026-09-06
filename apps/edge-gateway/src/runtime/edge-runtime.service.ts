@@ -6,7 +6,7 @@ import { getDbInstance } from "@shiguang-gateway/core-domain/db/ping";
 const load = (specifier: string): Promise<any> => import(specifier as string);
 
 async function registerQuotaFetchers(): Promise<void> {
-  await load("@shiguang-gateway/open-sse/services/quotaTrackersBatch.ts");
+  await load("@shiguang-gateway/open-sse/services/quotaTrackersBatch");
   const [
     { registerCodexQuotaFetcher },
     { registerBailianCodingPlanQuotaFetcher },

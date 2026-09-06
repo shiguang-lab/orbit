@@ -6,7 +6,7 @@ import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
 import { z } from "zod";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
-const { buildErrorBody } = await load("@shiguang-gateway/open-sse/utils/error.ts");
+const { buildErrorBody } = await load("@shiguang-gateway/open-sse/utils/error");
 
 const StatusSchema = z.enum(["installed", "active", "inactive", "error"]).optional();
 const InstallPathSchema = z.object({

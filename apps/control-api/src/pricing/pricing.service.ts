@@ -62,7 +62,7 @@ export class PricingService {
   async getModelsCatalog() {
     const catalog: Record<string, any> = {};
     const { REGISTRY } = await load(
-      "@shiguang-gateway/open-sse/config/providerRegistry.ts",
+      "@shiguang-gateway/open-sse/config/providerRegistry",
     );
     const registry = REGISTRY as Record<string, any>;
 

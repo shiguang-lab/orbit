@@ -7,15 +7,15 @@ import {
   getModelAliases,
   isCloudEnabled,
   isValidationFailure,
-  requireManagementAuth,
   resolveModelAliasLookup,
   setModelAlias,
   syncToCloud,
   validateBody,
 } from "@shiguang-gateway/core-domain/control/model-management";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 
 // GET /api/models/alias - Get all aliases
-export async function GET(request) {
+export async function GET(request: Request) {
   const alias = new URL(request.url).searchParams.get("alias");
   try {
     const authError = await requireManagementAuth(request);
@@ -96,7 +96,7 @@ export async function GET(request) {
 }
 
 // PUT /api/models/alias - Set model alias
-export async function PUT(request) {
+export async function PUT(request: Request) {
   const diagnosticHeaders = getCatalogDiagnosticsHeaders({ request });
   let rawBody;
   try {
@@ -155,7 +155,7 @@ export async function PUT(request) {
 }
 
 // DELETE /api/models/alias?alias=xxx - Delete alias
-export async function DELETE(request) {
+export async function DELETE(request: Request) {
   const diagnosticHeaders = getCatalogDiagnosticsHeaders({ request });
   try {
     const authError = await requireManagementAuth(request);

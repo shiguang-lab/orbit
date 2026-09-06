@@ -20,7 +20,7 @@ export class VoicesService {
 
   async handlePostTextToSpeech(request: Request, voiceId: string) {
     if (!isSafeElevenLabsVoiceId(voiceId)) {
-      const { buildErrorBody } = await load("@shiguang-gateway/open-sse/utils/error.ts");
+      const { buildErrorBody } = await load("@shiguang-gateway/open-sse/utils/error");
       return new Response(JSON.stringify(buildErrorBody(400, "Invalid ElevenLabs voice ID")), {
         status: 400,
         headers: { ...ELEVENLABS_CORS_HEADERS, "Content-Type": "application/json" },

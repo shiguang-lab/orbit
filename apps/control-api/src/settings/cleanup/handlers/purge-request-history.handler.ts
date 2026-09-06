@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { buildErrorBody } from "@shiguang-gateway/core-domain/open-sse/utils/error.ts";
+import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
 import {
   purgeCallLogs,
   purgeDetailedLogs,

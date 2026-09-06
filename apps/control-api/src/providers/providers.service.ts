@@ -122,8 +122,8 @@ export class ProvidersService {
 
   async getStats() {
     const [{ getAllComboMetrics }, { getToolLatencyByProvider }] = await Promise.all([
-      load("@shiguang-gateway/open-sse/services/comboMetrics.ts"),
-      load("@shiguang-gateway/open-sse/services/toolLatencyTracker.ts"),
+      load("@shiguang-gateway/open-sse/services/comboMetrics"),
+      load("@shiguang-gateway/open-sse/services/toolLatencyTracker"),
     ]);
     const resolveName = (provider: string, nodeName: string | null) => {
       if (nodeName?.trim()) return nodeName.trim();

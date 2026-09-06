@@ -19,7 +19,8 @@ const frozenBaseline = {
   apiGroups: 102,
   rootRouteFiles: 9,
   apiPathSha256: "95cc81aee27643d97699c826e8d4c95f04f01278301acf7913580e59965c7ed3",
-  rootPathSha256: "9a7f840cbc57495378ffe261a3da879dc741e4eda9eb11d1dc292fa2dc701638",
+  // Canonical public paths, excluding the separately tracked root A2A route.
+  rootPathSha256: "783073f71ca49460508e60cbc58a028fee399dec5060d924d9dace0849b74543",
 };
 // Local capabilities that are intentionally additive to the frozen Orbit
 // route tree. They have no upstream counterpart and are validated separately
@@ -28,6 +29,9 @@ const localApiExtensions = new Set([
   "media/cache/stats/route.ts",
   "media/cache/purge/route.ts",
   "a2a/route.ts",
+  "docs/api/search/route.ts",
+  ".well-known/agent.json/route.ts",
+  ".well-known/agent-card.json/route.ts",
 ]);
 // Root A2A transport is intentionally implemented by the edge Nest app; the
 // legacy Next root route is removed as part of that physical migration.
@@ -73,16 +77,18 @@ const officialRootDir = join(orbitRoot, "src", "app");
 const localRootDir = join(repoRoot, "packages", "core-domain", "src", "app");
 const officialRootRoutes = walk(officialRootDir, (p) => p.endsWith("route.ts") && !p.startsWith(`${join(officialRootDir, "api")}/`));
 const localRootRoutes = walk(localRootDir, (p) => p.endsWith("route.ts") && !p.startsWith(`${join(localRootDir, "api")}/`));
-const rootRoutePaths = (dir, files) => new Set(files.map((p) => relative(dir, p).split("\\").join("/")));
+// Route groups are a Next filesystem detail and do not exist in the HTTP URL
+// exposed by a Nest controller. Compare both sides as public route paths.
+const canonicalRootPath = (path) => path.replace(/(^|\/)\([^/]+\)\//g, "$1");
+const rootRoutePaths = (dir, files) => new Set(files.map((p) => canonicalRootPath(relative(dir, p).split("\\").join("/"))));
 const officialRootPaths = rootRoutePaths(officialRootDir, officialRootRoutes);
 const localRootPaths = rootRoutePaths(localRootDir, localRootRoutes);
 const hashPaths = (paths) => createHash("sha256").update([...paths].sort().join("\n")).digest("hex");
-const comparableLocalRootPaths = new Set([...localRootPaths].filter((path) => !localRootRouteExtensions.has(path)));
-const rootRouteMismatches = referenceAvailable ? [
-  ...[...officialRootPaths].filter((p) => !comparableLocalRootPaths.has(p) && !localRootRouteExtensions.has(p)).map((path) => ({ path, side: "missing-local" })),
-  ...[...comparableLocalRootPaths].filter((p) => !officialRootPaths.has(p)).map((path) => ({ path, side: "extra-local" })),
-].sort((a, b) => a.path.localeCompare(b.path)) :
-  (comparableLocalRootPaths.size === frozenBaseline.rootRouteFiles && hashPaths(comparableLocalRootPaths) === frozenBaseline.rootPathSha256 ? [] : [{ path: "<frozen-root-route-baseline>", side: "hash-mismatch" }]);
+const isRootRoutePath = (path) =>
+  /^(?:authorize|healthz|livez|readyz|a2a)\/route\.ts$/.test(path) ||
+  /^\.well-known\/[^/]+\/route\.ts$/.test(path) ||
+  path === "docs/api/search/route.ts" ||
+  path.startsWith("dashboard/");
 function extractControllerRoutes(controllerFile) {
   const source = readFileSync(controllerFile, "utf8");
   const controllerMatch = source.match(/@Controller\s*\(\s*(?:\[([^\]]*)\]|["'`\x27\x60](.*?)["'`\x27\x60])?\s*\)/);
@@ -112,6 +118,16 @@ function extractControllerRoutes(controllerFile) {
       for (let subPath of subPaths) {
         let fullPath = [basePrefix, subPath].filter(Boolean).join("/");
         if (fullPath.startsWith("api/")) fullPath = fullPath.slice("api/".length);
+        // Keep the historical Next catch-all names in the parity key. Nest's
+        // wildcard parameter itself is unnamed, so the surrounding route is
+        // the only reliable discriminator.
+        fullPath = fullPath.replace(/\/\*$/, fullPath.startsWith("dashboard/providers/services/")
+          ? "/[[...path]]"
+          : fullPath.includes("/vscode/combos/")
+          ? "/[[...slug]]"
+          : (fullPath.startsWith("v1beta/models/") || fullPath.startsWith("v1/responses/") || fullPath.startsWith("cursor-cli/")
+              ? "/[...path]"
+              : (fullPath.startsWith("vnc-session/") ? "/[...params]" : "/[...model]")));
         fullPath = fullPath.replace(/:([a-zA-Z0-9_]+)/g, "[$1]");
         const routePath = `${fullPath ? fullPath + "/" : ""}route.ts`;
         routes.add(routePath);
@@ -126,11 +142,26 @@ const controllerFiles = ["control-api", "edge-gateway"].flatMap((name) =>
 );
 const controllerRoutePaths = controllerFiles.flatMap((f) => [...extractControllerRoutes(f)]);
 
+const allControllerRoutePaths = new Set(controllerRoutePaths.map(normalizeRoutePath));
+const controllerRootRoutePaths = new Set([...allControllerRoutePaths].filter(isRootRoutePath));
+const comparableLocalRootPaths = new Set(
+  [...localRootPaths, ...controllerRootRoutePaths].filter((path) => !localRootRouteExtensions.has(path)),
+);
+const comparableOfficialRootPaths = new Set([...officialRootPaths].filter((path) => !localRootRouteExtensions.has(path)));
+const rootRouteMismatches = referenceAvailable ? [
+  ...[...comparableOfficialRootPaths].filter((p) => !comparableLocalRootPaths.has(p)).map((path) => ({ path, side: "missing-local" })),
+  ...[...comparableLocalRootPaths].filter((p) => !comparableOfficialRootPaths.has(p)).map((path) => ({ path, side: "extra-local" })),
+].sort((a, b) => a.path.localeCompare(b.path)) :
+  (comparableLocalRootPaths.size === frozenBaseline.rootRouteFiles - localRootRouteExtensions.size && hashPaths(comparableLocalRootPaths) === frozenBaseline.rootPathSha256
+    ? []
+    : [{ path: "<frozen-root-route-baseline>", side: "hash-mismatch" }]);
 const localRoutePaths = new Set([
   ...localRouteSources.flatMap(({ root, pathRoot }) =>
     walk(root, (p) => p.endsWith("route.ts")).map((p) => normalizeRoutePath(relative(pathRoot, p).split("\\").join("/")))
   ),
-  ...controllerRoutePaths.map(normalizeRoutePath),
+  // Root web routes are audited independently and must not inflate the API
+  // route count. Explicit additive API routes remain allowed below.
+  ...[...allControllerRoutePaths].filter((path) => !isRootRoutePath(path)),
 ]);
 const comparableLocalRoutePaths = new Set([...localRoutePaths].filter((path) => !localApiExtensions.has(path)));
 const routePathMismatches = referenceAvailable ? [
@@ -203,19 +234,17 @@ for (const path of allSourceFiles) {
   }
 }
 
-const appGroups = new Set(appRouteFiles.map((p) => p.split("/").pop().replace(/\.ts$/, "")));
 const localGroups = new Set([...comparableLocalRoutePaths].map((path) => path.split("/")[0]));
-const missingGroups = appCompatDispatcherReady && routePathMismatches.length === 0 &&
-  (referenceAvailable ? officialRoutes.length > 0 : localGroups.size === frozenBaseline.apiGroups)
-  ? []
-  : referenceAvailable ? [...officialGroups].filter((group) => !appGroups.has(group)).sort() : ["<frozen-api-group-baseline>"];
+const missingGroups = referenceAvailable
+  ? [...officialGroups].filter((group) => !localGroups.has(normalizeRoutePath(group))).sort()
+  : (localGroups.size === frozenBaseline.apiGroups ? [] : ["<frozen-api-group-baseline>"]);
 
 const report = {
   reference: orbitRoot,
   referenceAvailable,
   frozenBaseline,
   official: referenceAvailable ? { routeFiles: officialRoutes.length, apiGroups: officialGroups.size, rootRouteFiles: officialRootRoutes.length } : null,
-    target: { appRouteFiles: appRouteFiles.length, appFastifyHandlers: appHandlers, localRuntimeRouteFiles: localRuntimeRoutes.length, localRootRouteFiles: localRootRoutes.length, additiveLocalApiExtensions: [...localApiExtensions], additiveLocalRootRouteExtensions: [...localRootRouteExtensions], appCompatDispatcherReady },
+    target: { appRouteFiles: appRouteFiles.length, appFastifyHandlers: appHandlers, controllerFiles: controllerFiles.length, controllerRoutePaths: allControllerRoutePaths.size, localApiRoutePaths: comparableLocalRoutePaths.size, localRuntimeRouteFiles: localRuntimeRoutes.length, localRootRoutePaths: comparableLocalRootPaths.size, localRootRouteFiles: localRootRoutes.length, additiveLocalApiExtensions: [...localApiExtensions], additiveLocalRootRouteExtensions: [...localRootRouteExtensions], appCompatDispatcherReady },
   routePathMismatches,
   rootRouteMismatches,
   missingApiGroups: missingGroups,
@@ -224,7 +253,7 @@ const report = {
   mockFallbackFiles: mockFallbacks,
   requiredApps,
   missingApps,
-  status: missingGroups.length === 0 && routePathMismatches.length === 0 && rootRouteMismatches.length === 0 && violations.length === 0 && mockFallbacks.length === 0 && missingApps.length === 0 ? "PASS" : "FAIL",
+  status: appCompatDispatcherReady && missingGroups.length === 0 && routePathMismatches.length === 0 && rootRouteMismatches.length === 0 && violations.length === 0 && mockFallbacks.length === 0 && missingApps.length === 0 ? "PASS" : "FAIL",
 };
 
 console.log(JSON.stringify(report, null, 2));

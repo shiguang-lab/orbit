@@ -249,6 +249,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/mux",
   "control/compression-settings",
   "control/compression-combos",
+  "control/compression-judge-client",
   "control/cost-rules",
   "control/qdrant",
   "db/compression-run-telemetry",

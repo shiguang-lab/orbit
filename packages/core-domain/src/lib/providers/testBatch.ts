@@ -1,4 +1,3 @@
-export { testSingleConnection } from "../../app/api/providers/[id]/test/route.ts";
 export { providersBatchTestSchema } from "../../shared/validation/schemas/provider.ts";
 export {
   AI_PROVIDERS,

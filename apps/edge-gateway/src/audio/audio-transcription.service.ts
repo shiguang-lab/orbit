@@ -16,19 +16,19 @@ export class AudioTranscriptionService {
     try {
       formData = await request.formData();
     } catch {
-      const { errorResponse } = await load("@shiguang-gateway/open-sse/utils/error.ts");
+      const { errorResponse } = await load("@shiguang-gateway/open-sse/utils/error");
       return errorResponse(400, "Invalid multipart form data");
     }
 
     const model = formData.get("model");
     if (!model) {
-      const { errorResponse } = await load("@shiguang-gateway/open-sse/utils/error.ts");
+      const { errorResponse } = await load("@shiguang-gateway/open-sse/utils/error");
       return errorResponse(400, "Missing model");
     }
     const modelStr = String(model);
     const [{ enforceApiKeyPolicy }, { errorResponse }] = await Promise.all([
       load("@shiguang-gateway/core-domain/shared/api-key-policy"),
-      load("@shiguang-gateway/open-sse/utils/error.ts"),
+      load("@shiguang-gateway/open-sse/utils/error"),
     ]);
     const policy = await enforceApiKeyPolicy(request, modelStr);
     if (policy.rejection) return policy.rejection;
@@ -44,8 +44,8 @@ export class AudioTranscriptionService {
         const combo = await getComboByName(modelStr);
         if (combo) {
           const [{ handleComboChat }, { log }] = await Promise.all([
-            load("@shiguang-gateway/open-sse/services/combo.ts"),
-            load("@shiguang-gateway/open-sse/utils/logger.ts"),
+            load("@shiguang-gateway/open-sse/services/combo"),
+            load("@shiguang-gateway/open-sse/utils/logger"),
           ]);
           let allCombos: any[] = [];
           try {
@@ -74,7 +74,7 @@ export class AudioTranscriptionService {
         }
       } catch (error) {
         try {
-          const { log } = await load("@shiguang-gateway/open-sse/utils/logger.ts");
+          const { log } = await load("@shiguang-gateway/open-sse/utils/logger");
           log.error("AUDIO", `Combo resolution failed for ${modelStr}: ${error}`);
         } catch {
           // Combo lookup is optional; the concrete provider path still works.
@@ -96,10 +96,10 @@ export class AudioTranscriptionService {
       { errorResponse },
       { isAllRateLimitedCredentials, rateLimitedProviderResponse },
     ] = await Promise.all([
-      load("@shiguang-gateway/open-sse/handlers/audioTranscription.ts"),
+      load("@shiguang-gateway/open-sse/handlers/audioTranscription"),
       load("@shiguang-gateway/core-domain/sse/auth"),
-      load("@shiguang-gateway/open-sse/config/audioRegistry.ts"),
-      load("@shiguang-gateway/open-sse/utils/error.ts"),
+      load("@shiguang-gateway/open-sse/config/audioRegistry"),
+      load("@shiguang-gateway/open-sse/utils/error"),
       load("@shiguang-gateway/core-domain/edge/rate-limit"),
     ]);
 

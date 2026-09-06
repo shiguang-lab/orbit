@@ -17,7 +17,7 @@ import {
   CODEX_SPARK_QUOTA_WEEKLY,
 } from "@shiguang-gateway/open-sse/config/codexQuotaScopes";
 import { finalizeValidatedChatGptWebCodexSecrets } from "@shiguang-gateway/open-sse/services/chatgptWebCodexAdmin";
-import { testSingleConnection } from "@shiguang-gateway/core-domain/control/provider-test-batch";
+import { testSingleConnection } from "./provider-test/route.js";
 
 function projectCodexAccountPoolWithRoutingQuota(
   connection: Parameters<typeof projectCodexAccountPool>[0],
@@ -56,7 +56,7 @@ function projectCodexAccountPoolWithRoutingQuota(
         },
       },
     };
-  }) as typeof projection.children;
+  }) as unknown as typeof projection.children;
 
   return { ...projection, children };
 }
@@ -84,7 +84,7 @@ export async function listProviders(request: Request) {
     const revealKeys = isApiKeyRevealEnabled();
 
     // Hide or mask sensitive fields
-    const safeConnections = connections.map((c) => {
+    const safeConnections = connections.map((c: any) => {
       const providerSpecificData = c.providerSpecificData
         ? sanitizeProviderSpecificDataForResponse(c.providerSpecificData)
         : undefined;
@@ -297,12 +297,12 @@ export async function createProvider(request: Request) {
           .catch((err) => {
             console.log(`[providers] Auto-sync error for ${newConnection.id}:`, err?.message || err);
           });
-      } catch (syncSetupError) {
+      } catch (syncSetupError: unknown) {
         // Defensive: if URL parsing or header construction itself throws, do
         // not let it break the (already successful) POST response.
         console.log(
           `[providers] Auto-sync setup failed for ${newConnection.id}:`,
-          syncSetupError?.message || syncSetupError
+          syncSetupError instanceof Error ? syncSetupError.message : syncSetupError
         );
       }
     }
@@ -396,7 +396,7 @@ export async function updateProviders(request: Request) {
       const requestedIds = new Set(ids);
       const requestedConnections = (
         await getProviderConnections({}, undefined, undefined, ["id", "provider"])
-      ).filter((connection) => requestedIds.has(connection.id));
+      ).filter((connection: { id: string; provider: string }) => requestedIds.has(connection.id));
       for (const connection of requestedConnections) {
         const retirementResponse = rejectRetiredCommonChatGptWebProvider(connection.provider);
         if (retirementResponse) return retirementResponse;
@@ -471,7 +471,7 @@ export async function deleteProviders(request: Request) {
     const requestedIds = new Set(body.ids);
     const deletedConnections = (
       await getProviderConnections({}, undefined, undefined, ["id", "provider"])
-    ).filter((connection) => requestedIds.has(connection.id));
+    ).filter((connection: { id: string; provider: string }) => requestedIds.has(connection.id));
     const deleted = await deleteProviderConnections(body.ids);
 
     for (const connection of deletedConnections) {

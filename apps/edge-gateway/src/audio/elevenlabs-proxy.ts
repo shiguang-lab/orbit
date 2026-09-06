@@ -50,7 +50,7 @@ export async function proxyElevenLabsRequest(
   ] = await Promise.all([
     load("@shiguang-gateway/core-domain/sse/auth"),
     load("@shiguang-gateway/core-domain/edge/rate-limit"),
-    load("@shiguang-gateway/open-sse/utils/error.ts"),
+    load("@shiguang-gateway/open-sse/utils/error"),
   ]);
   const credentials = (await getProviderCredentialsWithQuotaPreflight(
     "elevenlabs",

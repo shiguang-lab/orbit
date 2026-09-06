@@ -49,7 +49,7 @@ export function registerEdgeCompatRoutes(app: FastifyInstance): Promise<void> {
     accepts,
     // `/a2a` is registered by A2aRootController. Keep the wildcard for
     // legacy protocol subpaths, but do not register a duplicate exact route.
-    rootPaths: ["/v1", "/v1/*", "/v1beta", "/v1beta/*", "/a2a/*"],
+    rootPaths: ["/v1/*", "/v1beta/*", "/a2a/*"],
   });
   return Promise.resolve();
 }

@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
-import { HealthModule as ProcessHealthModule, HttpKernelModule } from "@shiguang-gateway/http-kernel";
+import { HttpKernelModule } from "@shiguang-gateway/http-kernel";
+import { ProcessHealthModule } from "./process-health/process-health.module.js";
 import { EdgeRuntimeModule } from "./runtime/edge-runtime.module.js";
 import { EdgeRoutesModule } from "./routes/edge-routes.module.js";
 import { AudioModule } from "./audio/audio.module.js";

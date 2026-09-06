@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { buildErrorBody } from "@shiguang-gateway/core-domain/open-sse/utils/error.ts";
+import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
 import { purgeCallLogs } from "@shiguang-gateway/core-domain/worker/lib/db/cleanup.ts";
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 

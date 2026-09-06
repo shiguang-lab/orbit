@@ -10,7 +10,7 @@ import {
 } from "@shiguang-gateway/core-domain/evals/validation";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
-const { sanitizeErrorMessage } = await load("@shiguang-gateway/open-sse/utils/error.ts");
+const { sanitizeErrorMessage } = await load("@shiguang-gateway/open-sse/utils/error");
 
 @Controller("api/evals")
 export class EvalsController {

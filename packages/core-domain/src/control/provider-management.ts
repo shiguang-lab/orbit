@@ -5,23 +5,55 @@
  * from reaching into core-domain implementation paths while preserving the
  * provider connection/domain contracts used by the management handlers.
  */
-export * from "../models/index";
-export * from "../lib/compliance/index";
-export * from "../lib/compliance/providerAudit";
-export * from "../lib/cloudSync";
-export * from "../lib/providers/catalog";
-export * from "../lib/providers/requestDefaults";
-export * from "../lib/providers/validation";
-export * from "../lib/providers/chatgptWebRetirementResponse";
-export * from "../lib/api/requireManagementAuth";
-export * from "../lib/apiKeyExposure";
-export * from "../lib/localDb";
-export * from "../lib/db/models";
-export * from "../lib/providerModels/modelDiscovery";
-export * from "../domain/quotaCache";
-export * from "../shared/constants/providers";
-export * from "../shared/services/modelSyncScheduler";
-export * from "../shared/utils/bulkApiKeyParser";
-export * from "../shared/utils/machineId";
-export * from "../shared/validation/helpers";
-export * from "../shared/validation/schemas";
+export { getAuditRequestContext, logAuditEvent } from "../lib/compliance/index.js";
+export {
+  getProviderAuditTarget,
+  summarizeProviderConnectionForAudit,
+} from "../lib/compliance/providerAudit.js";
+export { syncToCloud } from "../lib/cloudSync.js";
+export { isManagedProviderConnectionId } from "../lib/providers/catalog.js";
+export {
+  normalizeProviderSpecificData,
+  sanitizeProviderSpecificDataForResponse,
+} from "../lib/providers/requestDefaults.js";
+export { rejectRetiredCommonChatGptWebProvider } from "../lib/providers/chatgptWebRetirementResponse.js";
+export { requireManagementAuth } from "../lib/api/requireManagementAuth.js";
+export { isApiKeyRevealEnabled, maskStoredApiKey } from "../lib/apiKeyExposure.js";
+export {
+  getProviderConnections,
+  getProviderConnectionsCount,
+  createProviderConnection,
+  deleteProviderConnections,
+  updateProviderConnection,
+  resolveProviderNodeForConnection,
+  getProviderNodeById,
+  getProxyForLevel,
+  resolveProxyForProvider,
+  isCloudEnabled,
+} from "../lib/localDb.js";
+export { cleanupProviderModelsAfterConnectionDelete } from "../lib/db/models.js";
+export { isAutoFetchModelsEnabled } from "../lib/providerModels/modelDiscovery.js";
+export { getQuotaWindowObservation } from "../domain/quotaCache.js";
+export {
+  isClaudeCodeCompatibleProvider,
+  isOpenAICompatibleProvider,
+  isAnthropicCompatibleProvider,
+  resolveProviderId,
+  supportsBulkApiKey,
+} from "../shared/constants/providers.js";
+export {
+  buildModelSyncInternalHeaders,
+  fetchModelSyncInternal,
+  getModelSyncInternalBaseUrl,
+} from "../shared/services/modelSyncScheduler.js";
+export { getConsistentMachineId } from "../shared/utils/machineId.js";
+export { resolveBulkNameCollisions } from "../shared/utils/bulkApiKeyParser.js";
+export { isValidationFailure, validateBody } from "../shared/validation/helpers.js";
+export {
+  createProviderSchema,
+  batchUpdateProviderConnectionsSchema,
+  bulkCreateProviderSchema,
+  bulkImportProviderSchema,
+  bulkWebSessionImportSchema,
+} from "../shared/validation/schemas/provider.js";
+export { validateProviderApiKey } from "../lib/providers/validation.js";

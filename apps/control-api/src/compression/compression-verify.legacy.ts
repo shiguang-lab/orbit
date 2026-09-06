@@ -1,11 +1,10 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
-import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
-import { judgeFidelityBatch } from "../../../../../../../open-sse/services/compression/eval/fidelityCheck.ts";
-import { createPricedJudgeClient } from "../../../../../lib/compression/judgeModelClient.ts";
-import type { ProviderCredentials } from "../../../../../../../open-sse/executors/base.ts";
-import { getProviderCredentials } from "../../../../../sse/services/auth.ts";
-import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { judgeFidelityBatch } from "@shiguang-gateway/open-sse/services/compression/eval/fidelityCheck";
+import { createPricedJudgeClient } from "@shiguang-gateway/core-domain/control/compression-judge-client";
+import type { ProviderCredentials } from "@shiguang-gateway/open-sse/executors/base";
+import { getProviderCredentials } from "@shiguang-gateway/core-domain/sse/auth";
+import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 
 export const dynamic = "force-dynamic";
 
@@ -26,11 +25,11 @@ export async function POST(req: Request) {
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    return Response.json({ error: "Invalid JSON body" }, { status: 400 });
   }
   const parsed = VerifyRequestSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json(
+    return Response.json(
       { error: "Invalid request", details: parsed.error.issues },
       { status: 400 }
     );
@@ -39,7 +38,7 @@ export async function POST(req: Request) {
   try {
     const rawCredentials = await getProviderCredentials(provider);
     if (!rawCredentials) {
-      return NextResponse.json(
+      return Response.json(
         { error: `No credentials configured for provider "${provider}"` },
         { status: 400 }
       );
@@ -55,7 +54,7 @@ export async function POST(req: Request) {
       "connectionId" in rawCredentials &&
       ("apiKey" in rawCredentials || "accessToken" in rawCredentials);
     if (!looksLikeCredentials) {
-      return NextResponse.json(
+      return Response.json(
         { error: `Provider "${provider}" credentials are unavailable` },
         { status: 503 }
       );
@@ -63,11 +62,11 @@ export async function POST(req: Request) {
     const credentials = rawCredentials as unknown as ProviderCredentials;
     const client = createPricedJudgeClient(provider, credentials);
     const result = await judgeFidelityBatch(client, judgeModel, items, costCapUsd);
-    return NextResponse.json(result);
+    return Response.json(result);
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error("[/api/compression/compare/verify]", msg);
-    return NextResponse.json(
+    return Response.json(
       { error: "Verify failed", details: sanitizeErrorMessage(msg) },
       { status: 500 }
     );

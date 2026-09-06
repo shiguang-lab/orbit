@@ -35,8 +35,8 @@ export async function handleAdobeFireflyImageUpscale({
   fetchImpl?: typeof fetch;
 }): Promise<UpscaleHandlerResult> {
   const [{ AdobeFireflyError, resolveAdobeAccessToken, resolveAdobeSourceImageIds }, { adobeFireflyUpscaleImage, resolveAdobeUpscaleModel }] = await Promise.all([
-    load("@shiguang-gateway/open-sse/services/adobeFireflyClient.ts"),
-    load("@shiguang-gateway/open-sse/services/adobeFireflyUpscale.ts"),
+    load("@shiguang-gateway/open-sse/services/adobeFireflyClient"),
+    load("@shiguang-gateway/open-sse/services/adobeFireflyUpscale"),
   ]);
   const startTime = Date.now();
 
