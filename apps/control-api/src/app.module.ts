@@ -46,8 +46,10 @@ import { LocalCorpusModule } from "./settings/local-corpus/local-corpus.module.j
 import { ProxySettingsModule } from "./settings/proxy/proxy-settings.module.js";
 import { QuotaSettingsModule } from "./settings/quota/quota.module.js";
 import { DarioAdminModule } from "./services/dario-admin.module.js";
+import { NinerouterModule } from "./services/ninerouter/ninerouter.module.js";
 import { UsageModule } from "./usage/usage.module.js";
 import { GamificationModule } from "./gamification/gamification.module.js";
+import { CliToolsModule } from "./cli-tools/cli-tools.module.js";
 
 @Module({
   imports: [
@@ -98,8 +100,10 @@ import { GamificationModule } from "./gamification/gamification.module.js";
     ProxySettingsModule,
     QuotaSettingsModule,
     DarioAdminModule,
+    NinerouterModule,
     UsageModule,
     GamificationModule,
+    CliToolsModule,
   ],
 })
 export class AppModule {}

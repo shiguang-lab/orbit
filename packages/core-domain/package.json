@@ -524,6 +524,22 @@
       "types": "./src/public/validationHelpers.d.ts",
       "import": "./src/shared/validation/helpers.ts"
     },
+    "./shared/services/cliRuntime": {
+      "types": "./src/public/cliRuntime.d.ts",
+      "import": "./src/shared/services/cliRuntime.ts"
+    },
+    "./shared/services/backupService": {
+      "types": "./src/public/backupService.d.ts",
+      "import": "./src/shared/services/backupService.ts"
+    },
+    "./shared/services/apiKeyResolver": {
+      "types": "./src/public/apiKeyResolver.d.ts",
+      "import": "./src/shared/services/apiKeyResolver.ts"
+    },
+    "./shared/validation/schemas/cli": {
+      "types": "./src/public/cliSchemas.d.ts",
+      "import": "./src/shared/validation/schemas/cli.ts"
+    },
     "./shared/validation/compression-config-schemas": {
       "types": "./src/public/compressionConfigSchemas.d.ts",
       "import": "./src/shared/validation/compressionConfigSchemas.ts"

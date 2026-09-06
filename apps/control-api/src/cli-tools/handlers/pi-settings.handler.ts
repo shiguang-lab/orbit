@@ -1,20 +1,19 @@
 "use server";
 
-import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
-import { requireCliToolsAuth } from "../../../../lib/api/requireCliToolsAuth.ts";
+import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import {
   ensureCliConfigWriteAllowed,
   getCliPrimaryConfigPath,
   getCliRuntimeStatus,
-} from "../../../../shared/services/cliRuntime.ts";
-import { createBackup } from "../../../../shared/services/backupService.ts";
-import { saveCliToolLastConfigured, deleteCliToolLastConfigured } from "../../../../lib/db/cliToolState.ts";
-import { cliModelConfigSchema } from "../../../../shared/validation/schemas.ts";
-import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
-import { resolveApiKey } from "../../../../shared/services/apiKeyResolver.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+} from "@shiguang-gateway/core-domain/shared/services/cliRuntime";
+import { createBackup } from "@shiguang-gateway/core-domain/shared/services/backupService";
+import { saveCliToolLastConfigured, deleteCliToolLastConfigured } from "../cli-tool-state.js";
+import { cliModelConfigSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas/cli";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { resolveApiKey } from "@shiguang-gateway/core-domain/shared/services/apiKeyResolver";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 
 const TOOL_ID = "pi";
 
@@ -55,7 +54,7 @@ export async function GET(request: Request) {
     const runtime = await getCliRuntimeStatus(TOOL_ID);
 
     if (!runtime.installed || !runtime.runnable) {
-      return NextResponse.json({
+      return Response.json({
         installed: runtime.installed,
         runnable: runtime.runnable,
         command: runtime.command,
@@ -72,7 +71,7 @@ export async function GET(request: Request) {
 
     const config = await readConfig();
 
-    return NextResponse.json({
+    return Response.json({
       installed: runtime.installed,
       runnable: runtime.runnable,
       command: runtime.command,
@@ -84,7 +83,7 @@ export async function GET(request: Request) {
       configPath: getPiConfigPath(),
     });
   } catch (err) {
-    return NextResponse.json(
+    return Response.json(
       { error: { message: sanitizeErrorMessage(err) } },
       { status: 500 }
     );
@@ -100,7 +99,7 @@ export async function POST(request: Request) {
   try {
     rawBody = await request.json();
   } catch {
-    return NextResponse.json(
+    return Response.json(
       { error: { message: "Invalid JSON body" } },
       { status: 400 }
     );
@@ -109,7 +108,7 @@ export async function POST(request: Request) {
   try {
     const writeGuard = ensureCliConfigWriteAllowed();
     if (writeGuard) {
-      return NextResponse.json({ error: writeGuard }, { status: 403 });
+      return Response.json({ error: writeGuard }, { status: 403 });
     }
 
     // Extract keyId BEFORE Zod validation — Zod strips unknown fields
@@ -117,7 +116,7 @@ export async function POST(request: Request) {
 
     const validation = validateBody(cliModelConfigSchema, rawBody);
     if (isValidationFailure(validation)) {
-      return NextResponse.json({ error: validation.error }, { status: 400 });
+      return Response.json({ error: validation.error }, { status: 400 });
     }
     const { baseUrl, model } = validation.data;
     const apiKey = await resolveApiKey(keyId, validation.data.apiKey);
@@ -159,13 +158,13 @@ export async function POST(request: Request) {
       /* non-critical */
     }
 
-    return NextResponse.json({
+    return Response.json({
       success: true,
       message: "Pi settings applied successfully!",
       configPath,
     });
   } catch (err) {
-    return NextResponse.json(
+    return Response.json(
       { error: { message: sanitizeErrorMessage(err) } },
       { status: 500 }
     );
@@ -180,7 +179,7 @@ export async function DELETE(request: Request) {
   try {
     const writeGuard = ensureCliConfigWriteAllowed();
     if (writeGuard) {
-      return NextResponse.json({ error: writeGuard }, { status: 403 });
+      return Response.json({ error: writeGuard }, { status: 403 });
     }
 
     const configPath = getPiConfigPath();
@@ -195,7 +194,7 @@ export async function DELETE(request: Request) {
       existing = JSON.parse(raw) as Record<string, unknown>;
     } catch (err) {
       if ((err as NodeJS.ErrnoException).code === "ENOENT") {
-        return NextResponse.json({ success: true, message: "No config file to reset" });
+        return Response.json({ success: true, message: "No config file to reset" });
       }
       throw err;
     }
@@ -219,9 +218,9 @@ export async function DELETE(request: Request) {
       /* non-critical */
     }
 
-    return NextResponse.json({ success: true, message: "Pi ShiguangGateway settings removed" });
+    return Response.json({ success: true, message: "Pi ShiguangGateway settings removed" });
   } catch (err) {
-    return NextResponse.json(
+    return Response.json(
       { error: { message: sanitizeErrorMessage(err) } },
       { status: 500 }
     );
