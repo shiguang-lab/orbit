@@ -22,7 +22,7 @@ import {
   getPresetCostModelRows,
 } from "@shiguang-gateway/core-domain/control/usage";
 import { getFallbackStats, getErrorTypeBreakdown } from "@shiguang-gateway/core-domain/control/usage";
-import { buildByProviderRows } from "@shiguang-gateway/core-domain/control/provider-display-names";
+import { buildByProviderRows } from "../provider-display-names.js";
 import { toNumber } from "@shiguang-gateway/contracts/numeric";
 
 function getRangeStartIso(range: string): string | null {

@@ -305,7 +305,6 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/skills-registry",
   "control/skills-github",
   "control/agent-skills",
-  "control/provider-display-names",
   "control/mcp-management",
   "control/copilot",
   "control/issue-agent",
@@ -1030,6 +1029,7 @@ const retiredAppOwnedExports = [
   "./quota/schemas",
   "./control/oauth-runtime/pasteCredentials",
   "./edge/chat-admission",
+  "./control/provider-display-names",
 ];
 for (const subpath of retiredAppOwnedExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {

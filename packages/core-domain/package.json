@@ -1270,7 +1270,6 @@
     "./worker/lib/jobs/backupScheduleJob.ts": "./src/lib/jobs/backupScheduleJob.ts",
     "./worker/lib/proxyHealth/scheduler.ts": "./src/lib/proxyHealth/scheduler.ts",
     "./worker/lib/freeProxyProviders/scheduler.ts": "./src/lib/freeProxyProviders/scheduler.ts",
-    "./control/provider-display-names": "./src/lib/usage/providerDisplayNames.ts",
     "./lib/modelAliasResolver": "./src/lib/modelAliasResolver.ts",
     "./shared/constants/cliTools": "./src/shared/constants/cliTools.ts",
     "./shared/middleware/chatBodyAdmission": "./src/shared/middleware/chatBodyAdmission.ts",
