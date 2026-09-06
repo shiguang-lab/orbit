@@ -14,6 +14,42 @@ export const UsageHistoryEntity: EntityDefinition = {
   ],
 };
 
+/** Hourly usage rollups maintained by the worker retention/aggregation jobs. */
+export const HourlyUsageSummaryEntity: EntityDefinition = {
+  entityName: "HourlyUsageSummary",
+  tableName: "hourly_usage_summary",
+  owner: "worker",
+  columns: [
+    column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
+    column("provider", "TEXT", { nullable: false }),
+    column("model", "TEXT", { nullable: false }),
+    column("date_hour", "TEXT", { nullable: false }),
+    column("total_requests", "INTEGER", { nullable: false, default: "0" }),
+    column("total_input_tokens", "INTEGER", { nullable: false, default: "0" }),
+    column("total_output_tokens", "INTEGER", { nullable: false, default: "0" }),
+    column("total_cost", "REAL", { nullable: false, default: "0.0" }),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
+/** Daily usage rollups maintained by the worker retention/aggregation jobs. */
+export const DailyUsageSummaryEntity: EntityDefinition = {
+  entityName: "DailyUsageSummary",
+  tableName: "daily_usage_summary",
+  owner: "worker",
+  columns: [
+    column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
+    column("provider", "TEXT", { nullable: false }),
+    column("model", "TEXT", { nullable: false }),
+    column("date", "TEXT", { nullable: false }),
+    column("total_requests", "INTEGER", { nullable: false, default: "0" }),
+    column("total_input_tokens", "INTEGER", { nullable: false, default: "0" }),
+    column("total_output_tokens", "INTEGER", { nullable: false, default: "0" }),
+    column("total_cost", "REAL", { nullable: false, default: "0.0" }),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
 export const CallLogEntity: EntityDefinition = {
   entityName: "CallLog", tableName: "call_logs", owner: "worker", columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }), column("timestamp", "TEXT", { nullable: false }), column("method", "TEXT"), column("path", "TEXT"),
@@ -78,6 +114,24 @@ export const AuditLogEntity: EntityDefinition = {
 export const JobEntity: EntityDefinition = {
   entityName: "Job", tableName: "jobs", owner: "worker", columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }), column("type", "TEXT", { nullable: false, default: "'interval'" }), column("cron", "TEXT"), column("interval_ms", "INTEGER"), column("enabled", "INTEGER", { nullable: false, default: "1" }), column("env_flag", "TEXT"), column("config", "TEXT", { nullable: false, default: "'{}'" }), column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }), column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
+/** Execution history for worker job registry entries. */
+export const JobRunEntity: EntityDefinition = {
+  entityName: "JobRun",
+  tableName: "job_runs",
+  owner: "worker",
+  columns: [
+    column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
+    column("job_id", "TEXT", { nullable: false }),
+    column("started_at", "TEXT", { nullable: false }),
+    column("finished_at", "TEXT"),
+    column("status", "TEXT", { nullable: false, default: "'running'" }),
+    column("error_message", "TEXT"),
+    column("records_affected", "INTEGER", { default: "0" }),
+    column("duration_ms", "INTEGER"),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
   ],
 };
 

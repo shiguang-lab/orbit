@@ -134,6 +134,23 @@ export const BatchEntity: EntityDefinition = {
   ],
 };
 
+/** Durable per-item checkpoints written by edge batch processing. */
+export const BatchItemCheckpointEntity: EntityDefinition = {
+  entityName: "BatchItemCheckpoint",
+  tableName: "batch_item_checkpoints",
+  owner: "edge-gateway",
+  columns: [
+    column("batch_id", "TEXT", { nullable: false, primaryKey: true }),
+    column("line_number", "INTEGER", { nullable: false, primaryKey: true }),
+    column("custom_id", "TEXT"),
+    column("status", "TEXT", { nullable: false }),
+    column("result_json", "TEXT"),
+    column("error_json", "TEXT"),
+    column("created_at", "INTEGER", { nullable: false }),
+    column("updated_at", "INTEGER", { nullable: false }),
+  ],
+};
+
 /** Conversation roots are created on public requests and read by control dashboards. */
 export const AgenticConversationEntity: EntityDefinition = {
   entityName: "AgenticConversation",

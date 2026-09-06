@@ -8,6 +8,28 @@ export const RadarOffersCacheEntity: EntityDefinition = { entityName: "RadarOffe
 export const RadarIntelCacheEntity: EntityDefinition = { entityName: "RadarIntelCache", tableName: "radar_intel_cache", owner: "control-api", columns: [column("id", "INTEGER", { nullable: false, primaryKey: true }), column("version", "TEXT", { nullable: false }), column("tier", "TEXT", { nullable: false }), column("payload", "TEXT", { nullable: false }), column("signature", "TEXT", { nullable: false }), column("supporter_identity", "TEXT", { nullable: false }), column("fetched_at", "TEXT", { nullable: false, default: "datetime('now')" })] };
 export const RadarLocalModelStateEntity: EntityDefinition = { entityName: "RadarLocalModelState", tableName: "radar_local_model_state", owner: "control-api", columns: [column("provider", "TEXT", { nullable: false, primaryKey: true }), column("model_id", "TEXT", { nullable: false, primaryKey: true }), column("display_name", "TEXT"), column("enabled", "INTEGER"), column("tombstoned", "INTEGER", { nullable: false, default: "0" }), column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" })] };
 
+/** Automated provider-discovery findings managed by the control plane. */
+export const DiscoveryResultEntity: EntityDefinition = {
+  entityName: "DiscoveryResult",
+  tableName: "discovery_results",
+  owner: "control-api",
+  columns: [
+    column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
+    column("provider_id", "TEXT", { nullable: false }),
+    column("method", "TEXT", { nullable: false }),
+    column("endpoint", "TEXT"),
+    column("auth_type", "TEXT"),
+    column("models", "TEXT"),
+    column("rate_limit", "TEXT"),
+    column("feasibility", "INTEGER"),
+    column("risk_level", "TEXT"),
+    column("status", "TEXT", { default: "'pending'" }),
+    column("notes", "TEXT"),
+    column("discovered_at", "TEXT", { default: "datetime('now')" }),
+    column("verified_at", "TEXT"),
+  ],
+};
+
 export const SettingsEntity: EntityDefinition = {
   entityName: "Settings",
   tableName: "key_value",
@@ -353,6 +375,33 @@ export const KeyGroupEntity: EntityDefinition = {
     column("id", "TEXT", { nullable: false, primaryKey: true }), column("name", "TEXT", { nullable: false }),
     column("description", "TEXT", { nullable: false, default: "''" }), column("is_active", "INTEGER", { nullable: false, default: "1" }),
     column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }), column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
+/** Model allow/deny rules managed with API-key groups by control-api. */
+export const GroupModelPermissionEntity: EntityDefinition = {
+  entityName: "GroupModelPermission",
+  tableName: "group_model_permissions",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("group_id", "TEXT", { nullable: false }),
+    column("model_pattern", "TEXT", { nullable: false }),
+    column("provider", "TEXT"),
+    column("access_type", "TEXT", { nullable: false, default: "'allow'" }),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
+/** API-key to group membership edges managed by control-api. */
+export const KeyGroupMemberEntity: EntityDefinition = {
+  entityName: "KeyGroupMember",
+  tableName: "key_group_members",
+  owner: "control-api",
+  columns: [
+    column("key_id", "TEXT", { nullable: false, primaryKey: true }),
+    column("group_id", "TEXT", { nullable: false, primaryKey: true }),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
   ],
 };
 
