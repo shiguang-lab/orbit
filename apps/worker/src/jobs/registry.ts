@@ -46,6 +46,6 @@ export const WORKER_JOBS: readonly WorkerJob[] = [
   { name: "backup-schedule", mode: "call", modulePath: domainModule("lib/jobs/backupScheduleJob"), exportName: "startBackupScheduleJob" },
   { name: "proxy-health", mode: "import", modulePath: domainModule("lib/proxyHealth/scheduler") },
   { name: "free-proxy-auto-sync", mode: "import", modulePath: domainModule("lib/freeProxyProviders/scheduler") },
-  { name: "batch-processor", mode: "import", modulePath: sseModule("services/batchProcessor") },
+  { name: "batch-processor", mode: "import", modulePath: "./batch-processor.js" },
   { name: "auto-refresh-daemon", mode: "import", modulePath: sseModule("services/autoRefreshDaemon") },
 ];

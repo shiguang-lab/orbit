@@ -373,6 +373,10 @@
       "types": "./src/public/batchesDb.d.ts",
       "import": "./src/lib/db/batches.ts"
     },
+    "./db/local-db": {
+      "types": "./src/public/localDb.d.ts",
+      "import": "./src/lib/localDb.ts"
+    },
     "./plugins/db": {
       "types": "./src/public/pluginsDb.d.ts",
       "import": "./src/lib/db/plugins.ts"

@@ -4,6 +4,6 @@
   "private": true,
   "type": "module",
   "scripts": { "dev": "tsx --tsconfig tsconfig.json watch src/main.ts", "start": "tsx --tsconfig tsconfig.json src/main.ts", "build": "tsc -p tsconfig.json --pretty false", "typecheck": "tsc -p tsconfig.json --noEmit --pretty false" },
-  "dependencies": { "@shiguang-gateway/core-domain": "workspace:*", "@shiguang-gateway/open-sse": "workspace:*", "tsx": "^4.23.13" },
+  "dependencies": { "@shiguang-gateway/contracts": "workspace:*", "@shiguang-gateway/core-domain": "workspace:*", "@shiguang-gateway/open-sse": "workspace:*", "tsx": "^4.23.13" },
   "devDependencies": { "@types/node": "catalog:", "typescript": "catalog:" }
 }

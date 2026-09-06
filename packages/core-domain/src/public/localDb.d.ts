@@ -52,6 +52,41 @@ export function countBatches(apiKeyId?: string): number;
 export function deleteBatch(id: string): boolean;
 export function deleteCompletedBatches(): { deletedBatches: number; deletedFiles: number };
 
+export type BatchItemCheckpointStatus = "pending" | "processing" | "completed" | "errored";
+export interface BatchItemCheckpoint {
+  batchId: string;
+  lineNumber: number;
+  customId: string | null;
+  status: BatchItemCheckpointStatus;
+  result: any | null;
+  error: any | null;
+  createdAt: number;
+  updatedAt: number;
+}
+export function getPendingBatches(): BatchRecord[];
+export function getTerminalBatches(): BatchRecord[];
+export function ensureBatchItemCheckpoints(
+  batchId: string,
+  items: Array<{ lineNumber: number; customId: string | null }>,
+): void;
+export function countBatchItemCheckpoints(batchId: string): number;
+export function listBatchItemCheckpoints(batchId: string): BatchItemCheckpoint[];
+export function markBatchItemProcessing(
+  batchId: string,
+  item: { lineNumber: number; customId: string | null },
+): void;
+export function markBatchItemResult(
+  batchId: string,
+  item: { lineNumber: number; customId: string | null },
+  result: unknown,
+): void;
+export function markBatchItemError(
+  batchId: string,
+  item: { lineNumber: number; customId: string | null },
+  error: unknown,
+): void;
+export function getApiKeyById(id: string): Promise<{ key?: string | null } | null>;
+
 export function getComboByName(name: string): Promise<unknown>;
 export function getCombos(limit?: number, offset?: number): Promise<unknown[]>;
 export function getDatabaseSettings(): unknown;

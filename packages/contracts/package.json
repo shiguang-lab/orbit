@@ -21,6 +21,10 @@
     "./cors": {
       "types": "./src/cors.ts",
       "import": "./src/cors.ts"
+    },
+    "./batch": {
+      "types": "./src/batch.ts",
+      "import": "./src/batch.ts"
     }
   },
   "scripts": {

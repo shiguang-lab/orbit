@@ -55,7 +55,7 @@ export interface ChaosRunInput {
    * API key to attribute the in-process dispatch calls to (usage accounting,
    * per-key policy). Optional — omitted for dashboard-initiated runs, which fall
    * back to the same "local mode" (no Authorization header) path used by
-   * src/lib/evals/runtime.ts and src/lib/batches/dispatch.ts.
+   * src/lib/evals/runtime.ts and the worker batch processor.
    */
   apiKey?: string | null;
 }
@@ -275,7 +275,7 @@ function buildDispatchErrorResult(
  * Dispatch to ShiguangGateway's own /v1/chat/completions handler for a given
  * provider+model — in-process, via a synthetic Request handed directly to the
  * route's POST handler. No network hop, no port dependency. Mirrors the
- * established pattern in src/lib/batches/dispatch.ts and src/lib/evals/runtime.ts
+ * established pattern in the worker batch processor and src/lib/evals/runtime.ts
  * (which the codebase's outbound-self-call convention requires — see #6679 review).
  */
 async function dispatchToModel(

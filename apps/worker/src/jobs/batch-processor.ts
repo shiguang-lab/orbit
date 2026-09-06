@@ -1,5 +1,5 @@
-import { v4 as uuidv4 } from "uuid";
-import type { BatchItemCheckpoint, BatchRecord } from "../../core-domain/src/lib/localDb.ts";
+import { randomUUID } from "node:crypto";
+import type { BatchItemCheckpoint, BatchRecord } from "@shiguang-gateway/core-domain/db/local-db";
 import {
   countBatchItemCheckpoints,
   createFile,
@@ -16,10 +16,33 @@ import {
   markBatchItemProcessing,
   markBatchItemResult,
   updateBatch,
-} from "../../core-domain/src/lib/localDb.ts";
-import { dispatch } from "../../core-domain/src/lib/batches/dispatch.ts";
-import type { SupportedBatchEndpoint } from "../../core-domain/src/shared/constants/batchEndpoints.ts";
-import { DEFAULT_BATCH_EXPIRATION_SECONDS } from "../../core-domain/src/shared/constants/batch.ts";
+} from "@shiguang-gateway/core-domain/db/local-db";
+import {
+  DEFAULT_BATCH_EXPIRATION_SECONDS,
+  type SupportedBatchEndpoint,
+} from "@shiguang-gateway/contracts/batch";
+
+const dispatch = {
+  async dispatchBatchApiRequest({
+    endpoint,
+    body,
+    apiKey,
+  }: {
+    endpoint: SupportedBatchEndpoint;
+    body: Record<string, unknown>;
+    apiKey?: string | null;
+  }): Promise<Response> {
+    const baseUrl = process.env.SHIGUANG_GATEWAY_BASE_URL ?? "http://127.0.0.1:8787";
+    const url = `${baseUrl.replace(/\/$/, "")}${endpoint}`;
+    const headers = new Headers({ "Content-Type": "application/json" });
+    if (apiKey) headers.set("Authorization", `Bearer ${apiKey}`);
+    return fetch(url, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(body),
+    });
+  },
+};
 
 let isProcessing: boolean = false;
 let pollInterval: NodeJS.Timeout | null = null;
@@ -300,7 +323,7 @@ async function startBatch(batch: any): Promise<void> {
 
   try {
     const parsedItems = parseBatchItems(content, batch.endpoint);
-    if (parsedItems.error) {
+    if (parsedItems.error || !parsedItems.items) {
       // Set total count even on validation failure so UI shows correct numbers
       const lines = content
         .toString()
@@ -390,7 +413,7 @@ async function processBatchItems(batch: BatchRecord, items: BatchRequestItem[]):
       // The output file format expects entries like:
       // { id, custom_id, response: { status_code, body } }
       const wrapped = {
-        id: `req_${uuidv4().replaceAll("-", "")}`,
+        id: `req_${randomUUID().replaceAll("-", "")}`,
         custom_id: item.customId ?? null,
         response: {
           status_code: response.status,
@@ -467,14 +490,14 @@ async function resolveApiKey(batch: BatchRecord): Promise<any> {
   return resolveBatchApiKeyValue(batch, apiKeyRow);
 }
 
-async function processSingleItemWithRetry(item: BatchRequestItem, apiKey: string) {
+async function processSingleItemWithRetry(item: BatchRequestItem, apiKey: string): Promise<Response> {
   // Time-based retry limit: individual batch items can retry for up to 24 hours.
   // This accommodates large batches against heavily rate-limited providers.
   const MAX_RETRY_DURATION_MS = BATCH_RETRY_DURATION_MS;
   const maxRetries = 200; // safety ceiling — time limit should kick in first
   const retryStartedAt = Date.now();
 
-  let response: Response = null;
+  let response: Response | undefined;
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     // If the previous attempt got a response, check for rate limit headers and throttle if needed before retrying.
     if (response) {
@@ -504,6 +527,7 @@ async function processSingleItemWithRetry(item: BatchRequestItem, apiKey: string
 
     return response;
   }
+  throw new Error("Batch item retry loop exhausted");
 }
 
 // G10 (silent-stop fix): individual batch-item dispatches can hang indefinitely
@@ -659,7 +683,16 @@ const toNumber = (v: string | null) => {
   return Number.isFinite(n) ? n : null;
 };
 
-function createBatchState(batch: BatchRecord) {
+interface BatchState {
+  results: Array<Record<string, any>>;
+  errors: Array<Record<string, any>>;
+  completed: number;
+  failed: number;
+  tokens: { input: number; output: number; reasoning: number };
+  model: string | null;
+}
+
+function createBatchState(batch: BatchRecord): BatchState {
   return {
     results: [],
     errors: [],
@@ -880,7 +913,7 @@ function createErrorFile(
   const failures = results.filter((r) => r.response.status_code >= 400 || r.response.body?.error);
 
   const processErrors = itemsWithErrors.map((e) => ({
-    id: `batch_req_${uuidv4().replaceAll("-", "")}`,
+    id: `batch_req_${randomUUID().replaceAll("-", "")}`,
     custom_id: e.custom_id,
     response: null,
     error: { message: e.error, type: "batch_process_error" },
