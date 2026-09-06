@@ -13,8 +13,8 @@ Every table that is part of an app boundary is represented by an
 `EntityDefinition` in `src/entities/`:
 
 - `control.entity.ts` — control-plane configuration and operator-managed data,
-  including control-api-owned audit, playground, plugin metric, and
-  gamification tables
+  including control-api-owned audit, playground, plugin metric, gamification,
+  and evaluation suite/case/run tables
 - `edge.entity.ts` — request-path data owned by `edge-gateway`
 - `worker.entity.ts` — asynchronous jobs, usage, logs, and model data owned by
   `worker`
