@@ -364,7 +364,10 @@
       "import": "./src/models/index.ts"
     },
     "./control/build-phase": "./src/lib/buildPhase.ts",
-    "./control/cursor-token-extractor": "./src/lib/cursor/tokenExtractor.ts",
+    "./control/cursor-token-extractor": {
+      "types": "./src/public/cursorTokenExtractor.d.ts",
+      "import": "./src/lib/cursor/tokenExtractor.ts"
+    },
     "./shared/validation/providerSpecificData": {
       "types": "./src/public/providerSpecificData.d.ts",
       "import": "./src/shared/validation/providerSpecificData.ts"
