@@ -63,6 +63,8 @@ import {
   RadarLocalModelStateEntity,
   SkillEntity,
   SkillExecutionEntity,
+  SyncTokenEntity,
+  UpstreamProxyConfigEntity,
 } from "./entities/control.entity.js";
 import {
   AgenticConversationEntity,
@@ -84,6 +86,9 @@ import {
   RelayRateLimitEntity,
   RelayLogEntity,
   McpToolAuditEntity,
+  A2aTaskEntity,
+  A2aTaskEventEntity,
+  RoutingDecisionEntity,
 } from "./entities/edge.entity.js";
 import {
   AuditLogEntity,
@@ -196,6 +201,11 @@ export const GATEWAY_TABLES = {
   mcpToolAudit: "mcp_tool_audit",
   skills: "skills",
   skillExecutions: "skill_executions",
+  syncTokens: "sync_tokens",
+  upstreamProxyConfig: "upstream_proxy_config",
+  a2aTasks: "a2a_tasks",
+  a2aTaskEvents: "a2a_task_events",
+  routingDecisions: "routing_decisions",
 } as const;
 
 export type GatewayTable = (typeof GATEWAY_TABLES)[keyof typeof GATEWAY_TABLES];
@@ -303,6 +313,11 @@ export const TABLE_OWNERSHIP: readonly TableRef[] = [
   { table: GATEWAY_TABLES.mcpToolAudit, owner: "edge-gateway", access: "read-write" },
   { table: GATEWAY_TABLES.skills, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.skillExecutions, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.syncTokens, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.upstreamProxyConfig, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.a2aTasks, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.a2aTaskEvents, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.routingDecisions, owner: "edge-gateway", access: "read-write" },
 ];
 
 /**
@@ -404,6 +419,11 @@ export const GATEWAY_ENTITIES = {
   mcpToolAudit: McpToolAuditEntity,
   skills: SkillEntity,
   skillExecutions: SkillExecutionEntity,
+  syncTokens: SyncTokenEntity,
+  upstreamProxyConfig: UpstreamProxyConfigEntity,
+  a2aTasks: A2aTaskEntity,
+  a2aTaskEvents: A2aTaskEventEntity,
+  routingDecisions: RoutingDecisionEntity,
 } satisfies Record<keyof typeof GATEWAY_TABLES, EntityDefinition>;
 
 /** Runtime guard used by architecture checks and tests. */

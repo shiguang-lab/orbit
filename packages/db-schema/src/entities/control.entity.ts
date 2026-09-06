@@ -996,3 +996,44 @@ export const InspectorCustomHostEntity: EntityDefinition = {
     column("last_seen_at", "TEXT"),
   ],
 };
+
+/** Scoped configuration-sync credentials issued by control-api. */
+export const SyncTokenEntity: EntityDefinition = {
+  entityName: "SyncToken",
+  tableName: "sync_tokens",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("name", "TEXT", { nullable: false }),
+    column("token_hash", "TEXT", { nullable: false }),
+    column("sync_api_key_id", "TEXT"),
+    column("revoked_at", "TEXT"),
+    column("last_used_at", "TEXT"),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+    column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
+/**
+ * Per-provider upstream proxy policy managed by control-api and read by the
+ * edge streaming executors.  The `family` and `fallback_backend` columns are
+ * included because later migrations extend the original table shape.
+ */
+export const UpstreamProxyConfigEntity: EntityDefinition = {
+  entityName: "UpstreamProxyConfig",
+  tableName: "upstream_proxy_config",
+  owner: "control-api",
+  columns: [
+    column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
+    column("provider_id", "TEXT", { nullable: false }),
+    column("mode", "TEXT", { nullable: false, default: "'native'" }),
+    column("cliproxyapi_model_mapping", "TEXT"),
+    column("native_priority", "INTEGER", { nullable: false, default: "1" }),
+    column("cliproxyapi_priority", "INTEGER", { nullable: false, default: "2" }),
+    column("enabled", "INTEGER", { nullable: false, default: "1" }),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+    column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+    column("family", "TEXT", { nullable: false, default: "'auto'" }),
+    column("fallback_backend", "TEXT", { nullable: false, default: "'cliproxyapi'" }),
+  ],
+};

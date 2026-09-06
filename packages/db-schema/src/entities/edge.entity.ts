@@ -367,3 +367,69 @@ export const McpToolAuditEntity: EntityDefinition = {
     column("created_at", "TEXT", { default: "datetime('now')" }),
   ],
 };
+
+/**
+ * A2A task lifecycle rows are owned by the edge protocol surface.  The
+ * control/admin readers and the MCP observability tooling consume the same
+ * physical records, so these entities stay in the shared catalog even though
+ * task orchestration remains in the edge app.
+ */
+export const A2aTaskEntity: EntityDefinition = {
+  entityName: "A2aTask",
+  tableName: "a2a_tasks",
+  owner: "edge-gateway",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("state", "TEXT", { nullable: false, default: "'submitted'" }),
+    column("skill_id", "TEXT"),
+    column("input_json", "TEXT"),
+    column("output_json", "TEXT"),
+    column("cost_estimated", "REAL"),
+    column("cost_actual", "REAL"),
+    column("routing_explanation", "TEXT"),
+    column("resilience_trace", "TEXT"),
+    column("policy_verdict", "TEXT"),
+    column("api_key_id", "TEXT"),
+    column("created_at", "TEXT", { default: "datetime('now')" }),
+    column("updated_at", "TEXT", { default: "datetime('now')" }),
+    column("completed_at", "TEXT"),
+    column("expires_at", "TEXT"),
+  ],
+};
+
+/** Append-only A2A state transitions consumed by edge and management views. */
+export const A2aTaskEventEntity: EntityDefinition = {
+  entityName: "A2aTaskEvent",
+  tableName: "a2a_task_events",
+  owner: "edge-gateway",
+  columns: [
+    column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
+    column("task_id", "TEXT", { nullable: false }),
+    column("event_type", "TEXT", { nullable: false }),
+    column("data_json", "TEXT"),
+    column("created_at", "TEXT", { default: "datetime('now')" }),
+  ],
+};
+
+/** Explainability records emitted by edge routing and inspected by control/MCP. */
+export const RoutingDecisionEntity: EntityDefinition = {
+  entityName: "RoutingDecision",
+  tableName: "routing_decisions",
+  owner: "edge-gateway",
+  columns: [
+    column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
+    column("request_id", "TEXT"),
+    column("task_type", "TEXT"),
+    column("combo_id", "TEXT"),
+    column("provider_selected", "TEXT"),
+    column("model_selected", "TEXT"),
+    column("score", "REAL"),
+    column("factors_json", "TEXT"),
+    column("fallbacks_triggered", "INTEGER", { default: "0" }),
+    column("success", "INTEGER", { default: "1" }),
+    column("latency_ms", "INTEGER"),
+    column("cost", "REAL"),
+    column("source", "TEXT", { default: "'api'" }),
+    column("created_at", "TEXT", { default: "datetime('now')" }),
+  ],
+};

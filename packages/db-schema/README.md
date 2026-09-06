@@ -20,6 +20,15 @@ Every table that is part of an app boundary is represented by an
 - `worker.entity.ts` — asynchronous jobs, usage, logs, model data, and
   provider quota-reset observations owned by `worker`
 
+The edge catalog also owns the A2A lifecycle (`a2a_tasks`,
+`a2a_task_events`) and routing explainability (`routing_decisions`) records.
+The edge A2A/routing runtime emits these rows while control/MCP surfaces read
+them for task management and explainability. `sync_tokens` and
+`upstream_proxy_config` are control-owned configuration tables: control-api
+issues or updates them, and edge streaming consumes the resulting policies.
+Their definitions include the columns added by migrations 099 and 138 so all
+apps observe one current physical shape.
+
 `plugin_analytics` is the append-only hook execution stream emitted by the edge
 request runtime and inspected by control/MCP tooling; `model_intelligence` is
 written by the worker Arena ELO synchronizer and read by edge routing and
