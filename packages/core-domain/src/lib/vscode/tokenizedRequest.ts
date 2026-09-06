@@ -1,4 +1,4 @@
-import { sanitizeVscodeRequest } from "../../app/api/v1/vscode/contextSanitizer.ts";
+import { sanitizeVscodeRequest } from "./contextSanitizer.ts";
 
 // Path-token endpoints carry the API key in the URL (by design, for Ollama/VS Code clients that
 // cannot send an Authorization header). URLs leak via access logs, proxies, and browser history,

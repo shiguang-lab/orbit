@@ -10,21 +10,21 @@ import {
   getReasoningEffortValues,
   getReasoningVariantBaseModelId,
   type VscodeCatalogModel,
-} from "../../app/api/v1/vscode/[token]/reasoningMetadata.ts";
+} from "./reasoningMetadata.ts";
 import {
   getVscodeModelDisplayName,
   getVscodeModelGroupingKey,
   resolveVscodeModelMetadata,
-} from "../../app/api/v1/vscode/[token]/modelPresentation.ts";
-import { withPathTokenApiKey } from "../../app/api/v1/vscode/[token]/tokenizedRequest.ts";
+} from "./modelPresentation.ts";
+import { withPathTokenApiKey } from "./tokenizedRequest.ts";
 import {
   expandVscodeServiceTierModels,
   getVscodeServiceTierVariantModelId,
   getVscodeServiceTierVariantSuffix,
   parseVscodeServiceTierVariantModelId,
-} from "../../app/api/v1/vscode/[token]/serviceTierVariants.ts";
-import { getFamilyFirstPublishedModelId } from "../../app/api/v1/vscode/[token]/familyFirstModelIds.ts";
-import { isUsableChatModel } from "../../app/api/v1/vscode/[token]/usableChatModel.ts";
+} from "./serviceTierVariants.ts";
+import { getFamilyFirstPublishedModelId } from "./familyFirstModelIds.ts";
+import { isUsableChatModel } from "./usableChatModel.ts";
 
 type CatalogModelEntry = {
   id?: string;
