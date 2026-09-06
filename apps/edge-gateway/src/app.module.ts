@@ -43,6 +43,7 @@ import { VscodeVersionModule } from "./vscode-version/vscode-version.module.js";
 import { SearchModule } from "./search/search.module.js";
 import { VscodeChatModule } from "./vscode-chat/vscode-chat.module.js";
 import { VscodeOllamaModule } from "./vscode-ollama/vscode-ollama.module.js";
+import { DocsSearchModule } from "./docs-search/docs-search.module.js";
 
 @Module({
   imports: [
@@ -91,6 +92,7 @@ import { VscodeOllamaModule } from "./vscode-ollama/vscode-ollama.module.js";
     SearchModule,
     VscodeChatModule,
     VscodeOllamaModule,
+    DocsSearchModule,
   ],
 })
 export class AppModule {}

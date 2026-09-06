@@ -16,6 +16,10 @@ const localApiExtensions = new Set([
   // intentionally represented by the edge Nest controller and omitted from
   // the historical API route reference set.
   "a2a/route.ts",
+  // Documentation search is a root web surface now owned by edge-gateway;
+  // it is intentionally represented by a Nest controller rather than the
+  // historical Next app route.
+  "docs/api/search/route.ts",
 ]);
 const normalizeRoutePath = (value) => value.replace(new RegExp("omni" + "route", "gi"), "gateway");
 
