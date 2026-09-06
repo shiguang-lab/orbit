@@ -6,15 +6,16 @@
  * Keeping the manifest in the app prevents control/edge processes from
  * accidentally inheriting background schedulers.
  */
-export type WorkerJob =
-  | { name: string; mode: "call"; modulePath: string; exportName: string; stopExportName?: string }
-  | { name: string; mode: "import"; modulePath: string; stopExportName?: string };
+export interface WorkerJob {
+  name: string;
+  mode: "call";
+  modulePath: string;
+  exportName: string;
+  stopExportName?: string;
+}
 
 const domainModule = (path: string) =>
   `@shiguang-gateway/core-domain/worker/${path}.ts`;
-const sseModule = (path: string) =>
-  `@shiguang-gateway/open-sse/${path}.ts`;
-
 export const WORKER_JOBS: readonly WorkerJob[] = [
   { name: "cloud-sync-and-job-registry", mode: "call", modulePath: domainModule("lib/initCloudSync"), exportName: "ensureCloudSyncInitialized" },
   { name: "quota-cache-refresh", mode: "call", modulePath: domainModule("domain/quotaCache"), exportName: "startBackgroundRefresh", stopExportName: "stopBackgroundRefresh" },
@@ -34,7 +35,7 @@ export const WORKER_JOBS: readonly WorkerJob[] = [
   { name: "audit-log", mode: "call", modulePath: domainModule("lib/compliance/index"), exportName: "initAuditLog" },
   { name: "audit-log-retention", mode: "call", modulePath: domainModule("lib/compliance/index"), exportName: "cleanupExpiredLogs" },
   { name: "memory-backends", mode: "call", modulePath: domainModule("lib/memory/index"), exportName: "initMemoryBackends" },
-  { name: "conductor-bridge", mode: "call", modulePath: domainModule("lib/conductor/boot"), exportName: "initConductorBridge", stopExportName: "stopConductorBridge" },
+  { name: "conductor-bridge", mode: "call", modulePath: "./conductor-bridge.js", exportName: "initConductorBridge", stopExportName: "stopConductorBridge" },
   { name: "arena-elo-sync", mode: "call", modulePath: domainModule("lib/arenaEloSync"), exportName: "initArenaEloSync", stopExportName: "stopArenaEloSync" },
   { name: "openrouter-provider-stats", mode: "call", modulePath: domainModule("lib/catalog/openrouterProviderStats"), exportName: "initOpenRouterProviderStatsSync", stopExportName: "stopOpenRouterProviderStatsSync" },
   { name: "context-window-reconcile", mode: "call", modulePath: domainModule("lib/contextWindowResolver"), exportName: "startContextWindowReconcile", stopExportName: "stopContextWindowReconcile" },
@@ -42,8 +43,8 @@ export const WORKER_JOBS: readonly WorkerJob[] = [
   { name: "runtime-config-hot-reload", mode: "call", modulePath: domainModule("lib/config/hotReload"), exportName: "startRuntimeConfigHotReload", stopExportName: "stopRuntimeConfigHotReloadForTests" },
   { name: "reasoning-cache-cleanup", mode: "call", modulePath: "./reasoning-cache-cleanup.js", exportName: "startReasoningCacheCleanupJob", stopExportName: "stopReasoningCacheCleanupJob" },
   { name: "backup-schedule", mode: "call", modulePath: "./backup-schedule.js", exportName: "startBackupScheduleJob", stopExportName: "stopBackupScheduleJob" },
-  { name: "proxy-health", mode: "call", modulePath: domainModule("lib/proxyHealth/scheduler"), exportName: "startProxyHealthCheck", stopExportName: "stopProxyHealthCheck" },
-  { name: "free-proxy-auto-sync", mode: "call", modulePath: domainModule("lib/freeProxyProviders/scheduler"), exportName: "startFreeProxyAutoSync", stopExportName: "stopFreeProxyAutoSync" },
-  { name: "batch-processor", mode: "import", modulePath: "./batch-processor.js" },
-  { name: "auto-refresh-daemon", mode: "import", modulePath: sseModule("services/autoRefreshDaemon") },
+  { name: "proxy-health", mode: "call", modulePath: "./proxy-health.js", exportName: "startProxyHealthCheck", stopExportName: "stopProxyHealthCheck" },
+  { name: "free-proxy-auto-sync", mode: "call", modulePath: "./free-proxy-scheduler.js", exportName: "startFreeProxyAutoSync", stopExportName: "stopFreeProxyAutoSync" },
+  { name: "batch-processor", mode: "call", modulePath: "./batch-processor.js", exportName: "initBatchProcessor", stopExportName: "stopBatchProcessor" },
+  { name: "auto-refresh-daemon", mode: "call", modulePath: "./auto-refresh-daemon.js", exportName: "startAutoRefreshDaemon", stopExportName: "stopAutoRefreshDaemon" },
 ];

@@ -1,7 +1,6 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
 import { WORKER_JOBS } from "./registry.js";
 import { startWorkerJobs, stopWorkerJobs } from "./runner.js";
-import { stopBatchProcessor } from "./batch-processor.js";
 import type { Server } from "node:http";
 import { startWorkerJobCommandServer, stopWorkerJobCommandServer } from "./command-server.js";
 
@@ -33,7 +32,6 @@ export class WorkerJobsService implements OnModuleInit, OnModuleDestroy {
       this.keepAlive = null;
     }
     await stopWorkerJobs(WORKER_JOBS, this.started, (...args) => console.log("[worker]", ...args));
-    stopBatchProcessor();
     console.log("[worker] stopped");
   }
 }

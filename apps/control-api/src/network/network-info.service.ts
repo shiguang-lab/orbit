@@ -1,9 +1,14 @@
 import { Injectable } from "@nestjs/common";
-import { resolveNetworkInfo } from "@shiguang-gateway/core-domain/control/network-info";
+import { TunnelsService } from "../tunnels/tunnels.service.js";
+import { resolveNetworkInfo } from "./network-info.js";
 
 @Injectable()
 export class NetworkInfoService {
+  constructor(private readonly tunnels: TunnelsService) {}
+
   read(requestHost?: string | null) {
-    return resolveNetworkInfo(requestHost);
+    return resolveNetworkInfo(requestHost, {
+      getTailscaleStatus: () => this.tunnels.tailscaleStatus(),
+    });
   }
 }

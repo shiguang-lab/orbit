@@ -5,7 +5,7 @@
  * the worker uses the same policies for the background sweep. Keep this module
  * transport-neutral; HTTP concerns belong to the owning app.
  */
-export { classifyProbeStatus } from "../lib/proxyHealth/decision.js";
+export { classifyProbeStatus, decideProxyHealthAction } from "../lib/proxyHealth/decision.js";
 export {
   resolveHealthCheckStatusWrite,
   isProxyHealthAutoDeactivateEnabled,

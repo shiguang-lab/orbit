@@ -1,5 +1,17 @@
 export type ProxyProbeOutcome = "ok" | "fail" | "inconclusive" | "blocked";
 export function classifyProbeStatus(status: number): ProxyProbeOutcome;
+export function decideProxyHealthAction(input: {
+  outcome: ProxyProbeOutcome;
+  priorFailures: number;
+  autoRemove: boolean;
+  autoDisable?: boolean;
+  removeAfter: number;
+}): {
+  failures: number;
+  clearFailures: boolean;
+  setStatus: "active" | "inactive" | "dead" | null;
+  remove: boolean;
+};
 export function resolveHealthCheckStatusWrite(
   alive: boolean,
   env?: { PROXY_HEALTH_AUTO_DEACTIVATE?: string },

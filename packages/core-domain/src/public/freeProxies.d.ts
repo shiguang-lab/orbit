@@ -52,6 +52,7 @@ export function promoteFreeProxyToPool(
 export function deleteFreeProxy(id: string): Promise<boolean>;
 export function clearFreeProxiesBySource(source: FreeProxySourceId): Promise<number>;
 export function getFreeProxyStats(): Promise<FreeProxyStats>;
+export function getEnabledProviders(): FreeProxyProvider[];
 export function getFreeProxySyncErrors(): Promise<FreeProxySyncErrors>;
 
 export interface FreeProxyProvider {

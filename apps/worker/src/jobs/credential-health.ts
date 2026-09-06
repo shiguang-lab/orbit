@@ -19,15 +19,19 @@
 
 import {
   getProviderConnections,
+} from "@shiguang-gateway/core-domain/db/provider-connections";
+import {
   setCredentialHealth,
   removeCredentialHealth,
   initCredentialCache,
+  getCredentialHealth,
+} from "@shiguang-gateway/core-domain/shared/credential-health-cache";
+import {
   isCredentialProbeInconclusive,
   resolveInconclusiveProbeRecheckDelayMs,
-  getCredentialHealth,
-  emit,
-  isAutomatedTestProcess,
-} from "@shiguang-gateway/core-domain/worker/credential-health-support";
+} from "@shiguang-gateway/core-domain/shared/credential-probe-policy";
+import { emit } from "@shiguang-gateway/core-domain/events/eventBus";
+import { isAutomatedTestProcess } from "@shiguang-gateway/core-domain/shared/test-process";
 import { SEARCH_VALIDATOR_CONFIGS } from "@shiguang-gateway/open-sse/services/provider-validation/search-providers";
 import { validateProviderApiKey } from "@shiguang-gateway/open-sse/services/provider-validation";
 

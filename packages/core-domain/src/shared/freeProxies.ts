@@ -21,7 +21,7 @@ export type {
   FreeProxySyncErrors,
 } from "../lib/db/freeProxies.ts";
 
-export { getAllProviders, getProvider } from "../lib/freeProxyProviders/index.ts";
+export { getAllProviders, getEnabledProviders, getProvider } from "../lib/freeProxyProviders/index.ts";
 export type {
   FreeProxyProvider,
   FreeProxySourceId,

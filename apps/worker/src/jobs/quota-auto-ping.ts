@@ -27,11 +27,17 @@ import type { BaseExecutor } from "@shiguang-gateway/open-sse/executors/base";
 import { getCodexUsage } from "@shiguang-gateway/open-sse/services/usage/codex";
 import {
   getSettings,
+} from "@shiguang-gateway/core-domain/runtime/settings";
+import {
   getProviderConnections,
   updateProviderConnection,
+} from "@shiguang-gateway/core-domain/db/provider-connections";
+import {
   isConnectionUnavailableToAuxiliaryActivity,
+} from "@shiguang-gateway/core-domain/shared/connection-isolation";
+import {
   getCircuitBreaker,
-} from "@shiguang-gateway/core-domain/worker/auxiliary-scheduler-support";
+} from "@shiguang-gateway/core-domain/shared/circuit-breaker";
 import { refreshAndUpdateCredentials } from "@shiguang-gateway/open-sse/services/providerLimits";
 import {
   QUOTA_AUTOPING_FAILURE_COOLDOWN_MS,

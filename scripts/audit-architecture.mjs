@@ -40,6 +40,16 @@ const appKinds = {
 if (existsSync(join(root, "packages/core-domain/bin"))) {
   fail("cli-app-ownership", join(root, "packages/core-domain/bin"), "CLI executable source belongs in apps/cli");
 }
+for (const legacyUiPath of ["src/shared/components", "src/shared/hooks"]) {
+  const path = join(root, "packages/core-domain", legacyUiPath);
+  if (existsSync(path)) {
+    fail(
+      "admin-ui-ownership",
+      path,
+      "React UI components and hooks belong in apps/admin, not the server-side domain package",
+    );
+  }
+}
 
 for (const [name, shape] of Object.entries(appKinds)) {
   const dir = join(root, "apps", name);

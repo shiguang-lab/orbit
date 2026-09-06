@@ -11,13 +11,11 @@ export async function startWorkerJobs(
   for (const job of jobs) {
     try {
       const mod = await import(job.modulePath) as Record<string, unknown>;
-      if (job.mode === "call") {
-        const fn = mod[job.exportName];
-        if (typeof fn !== "function") {
-          throw new Error(`missing export ${job.exportName}`);
-        }
-        await (fn as () => unknown)();
+      const fn = mod[job.exportName];
+      if (typeof fn !== "function") {
+        throw new Error(`missing export ${job.exportName}`);
       }
+      await (fn as () => unknown)();
       started.push(job.name);
     } catch (error) {
       log(`failed to start ${job.name}:`, error instanceof Error ? error.message : String(error));

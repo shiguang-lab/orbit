@@ -13,7 +13,7 @@ export function getProviderConnections(
   filter?: Record<string, unknown>,
   limit?: number,
   offset?: number,
-): any[];
+): Promise<any[]>;
 export function getProviderConnectionById(id: string): Promise<ProviderConnectionSummary | null>;
 export function createProviderConnection(data: Record<string, unknown>): Promise<{ id?: unknown } | null>;
 export function getProviderConnectionById(id: string): Promise<Record<string, unknown> | null>;

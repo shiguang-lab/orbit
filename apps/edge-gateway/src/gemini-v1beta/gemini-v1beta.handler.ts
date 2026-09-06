@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { GET as getModels, OPTIONS as modelsOptions } from "@shiguang-gateway/core-domain/edge/v1beta-models";
+import { GET as getModels, OPTIONS as modelsOptions } from "./v1beta-models.js";
 import { convertGeminiToInternal } from "./gemini-request.js";
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 import { buildClientRawRequest, handleChat } from "@shiguang-gateway/open-sse/handlers/chat";

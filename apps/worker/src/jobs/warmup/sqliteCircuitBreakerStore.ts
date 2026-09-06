@@ -5,7 +5,7 @@ import {
   upsertWarmupCircuit,
   clearWarmupCircuit,
   markForbidden,
-} from "@shiguang-gateway/core-domain/worker/auxiliary-scheduler-support";
+} from "@shiguang-gateway/core-domain/db/connection-runtime-state";
 import { getWarmupBackoffUntil } from "./backoff.js";
 import type { WarmupResult } from "./core.js";
 

@@ -75,7 +75,32 @@ const allowedCoreDomainSubpaths = {
     "shared/services/qwenCodeConfig",
   ],
   "apps/realtime": ["startup", "events/eventBus", "shared/test-process", "shared/http-client-abort-guard", "sse/auth", "db/compression-analytics"],
-  "apps/worker": ["startup", "worker/", "db/local-db", "backup/runtime"],
+  "apps/worker": [
+    "startup",
+    "worker/",
+    "db/local-db",
+    "backup/runtime",
+    "jobs/runtime-registry",
+    "jobs/cron-match",
+    "a2a/runtime",
+    "conductor/bridge",
+    "db/conductor-bridge",
+    "db/provider-connections",
+    "db/connection-runtime-state",
+    "runtime/settings",
+    "runtime/provider-ports",
+    "shared/connection-isolation",
+    "shared/connection-recovery-policy",
+    "shared/circuit-breaker",
+    "shared/credential-health-cache",
+    "shared/credential-probe-policy",
+    "shared/test-process",
+    "events/eventBus",
+    "shared/free-proxies",
+    "shared/proxy-log-settings",
+    "shared/proxy-egress",
+    "shared/proxy-health",
+  ],
   "apps/control-api": ["startup", "runtime/request", "db/ping", "db/health", "db/call-log-stats", "db/provider-connections", "db/model-aliases", "db/local-db", "db/provider-stats", "db/database-stats", "db/vacuum-scheduler", "catalog/provider-metadata", "catalog/provider-registry", "catalog/provider-node-prefixes", "pricing/db", "pricing/defaults", "pricing/sync", "pricing/provider-prefixes", "pricing/validation", "pricing/modal-cost", "cache/db", "cache/services", "db/compression-analytics", "analytics/auto-routing-db", "analytics/diversity", "db-backups/db", "db-backups/validation", "metrics/combo", "metrics/request-telemetry", "metrics/observability", "metrics/tool-latency", "shared/numeric", "open-sse/utils/error.ts", "open-sse/services/deviceTracker.ts", "control/management-auth", "control/middleware-registry", "control/provider-credentials", "control/lkgp-cache", "control/management-password", "control/compliance", "control/feature-flags", "control/provider-validation", "control/provider-validation-schemas", "control/model-context-overrides", "control/model-test-data", "db/provider-nodes", "network/outbound-url-guard-policy", "network/safe-outbound-fetch", "control/gateway-status", "control/authenticated", "control/registered-keys", "control/synced-models", "control/settings", "memory/settings", "memory/runtime", "control/database-settings", "control/proxy-logs", "control/openrouter-provider-stats", "control/provider-health-matrix", "control/resilience-settings", "edge/usage-db", "db/detailed-logs", "db/proxy-logs", "shared/log-env", "control/api-key-store", "control/cloud-sync", "control/api-key-exposure", "db/api-key-groups", "control/api-key-usage-limits", "shared/", "sse/logger", "sse/auth", "evals/db", "evals/runner", "evals/runtime", "evals/validation", "db/api-keys", "db/batches", "plugins/db", "plugins/manager", "plugins/marketplace", "shared/cors", "quota/dimensions", "quota/db", "quota/services", "quota/state", "compliance", "shared/combo-invariants", "catalog/combo-targets", "catalog/model-metadata", "catalog/provider-models"],
   "apps/edge-gateway": [
     "startup",
@@ -166,7 +191,6 @@ const allowedCoreDomainSubpaths = {
     "shared/cors",
     "shared/validation-helpers",
     "shared/middleware/chatBodyAdmission",
-    "edge/v1beta-models",
     // A2A transport is app-owned; core exposes only the transport-neutral task runtime.
     "a2a/runtime",
   ],
@@ -208,7 +232,11 @@ allowedCoreDomainSubpaths["apps/edge-gateway"].push(
   "shared/public-safe-error",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push("control/jobs");
-allowedCoreDomainSubpaths["apps/control-api"].push("control/network-info");
+allowedCoreDomainSubpaths["apps/edge-gateway"].push(
+  "catalog/runtime-support",
+  "catalog/model-capabilities",
+  "catalog/models-dev-sync",
+);
 allowedCoreDomainSubpaths["apps/control-api"].push("control/free-provider-rankings");
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/env-repair",
@@ -1008,6 +1036,8 @@ if (existsSync(controlJobsContract) && /\bgetJobRegistry\b|\.\.\/lib\/jobRegistr
 }
 const coreDomainEntry = packageEntries.find(({ manifest }) => manifest?.name === "@shiguang-gateway/core-domain");
 const retiredAppOwnedExports = [
+  "./control/network-info",
+  "./edge/v1beta-models",
   "./runtime/build-sha",
   "./control/oauth-runtime/antigravityProjectGate",
   "./control/cli-tools-batch-cache",
@@ -1046,6 +1076,12 @@ const retiredAppOwnedExports = [
   "./control/oauth-runtime/pasteCredentials",
   "./edge/chat-admission",
   "./control/provider-display-names",
+  "./worker/jobs",
+  "./worker/auxiliary-scheduler-support",
+  "./worker/credential-health-support",
+  "./worker/lib/conductor/boot.ts",
+  "./worker/lib/proxyHealth/scheduler.ts",
+  "./worker/lib/freeProxyProviders/scheduler.ts",
 ];
 for (const subpath of retiredAppOwnedExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {

@@ -4,3 +4,4 @@ export {
   getRecentEgressSharingSummary,
   validateProxyPool,
 } from "../lib/proxyEgress.js";
+export type { EgressSharingSummary, EgressSharingWarning } from "../lib/proxyEgress.js";

@@ -44,15 +44,13 @@ function isPackageExecutableSource(file) {
   return /\/packages\/[^/]+\/src\/bin\//.test(`/${rel(file)}`);
 }
 
-function runtimeExportTargets(value, out = []) {
+function packageExportTargets(value, out = []) {
   if (typeof value === "string") {
     out.push(value);
   } else if (Array.isArray(value)) {
-    for (const item of value) runtimeExportTargets(item, out);
+    for (const item of value) packageExportTargets(item, out);
   } else if (value && typeof value === "object") {
-    for (const [condition, target] of Object.entries(value)) {
-      if (condition !== "types") runtimeExportTargets(target, out);
-    }
+    for (const target of Object.values(value)) packageExportTargets(target, out);
   }
   return out;
 }
@@ -274,7 +272,10 @@ if (process.argv.includes("--self-test")) {
   assert.equal(isRetiredDynamicCompatDispatcher(resolve(repoRoot, "packages/a/src/loader.ts"), 'await import("./route.js")'), false);
   assert.equal(isPackageExecutableSource(resolve(repoRoot, "packages/a/src/bin/worker.cjs")), true);
   assert.equal(isPackageExecutableSource(resolve(repoRoot, "packages/a/src/lib/worker.cjs")), false);
-  assert.deepEqual(runtimeExportTargets({ types: "./dist/index.d.ts", import: "./src/index.ts" }), ["./src/index.ts"]);
+  assert.deepEqual(packageExportTargets({ types: "./src/index.ts", import: "./src/index.ts" }), [
+    "./src/index.ts",
+    "./src/index.ts",
+  ]);
   const lifecycleFixture = `
     const sweep = setInterval(run, 1000);
     const request = () => setTimeout(abort, 1000);
@@ -296,7 +297,7 @@ if (process.argv.includes("--self-test")) {
     packageLifecycleFindings("signal.ts", 'process.once("SIGTERM", shutdown);').map(({ signature }) => signature),
     ["module-process-signal:SIGTERM:expression"],
   );
-  console.log(JSON.stringify({ status: "PASS", checks: ["core-domain/open-sse SCC", "self-loop", "package ownership", "relative import extraction", "core source cannot import CLI implementations", "core CLI cannot cross into core source by relative path", "route basename ownership", "retired dynamic compat dispatcher", "package runtime export targets", "package lifecycle ownership"] }, null, 2));
+  console.log(JSON.stringify({ status: "PASS", checks: ["core-domain/open-sse SCC", "self-loop", "package ownership", "relative import extraction", "core source cannot import CLI implementations", "core CLI cannot cross into core source by relative path", "route basename ownership", "retired dynamic compat dispatcher", "package export condition targets", "package lifecycle ownership"] }, null, 2));
   process.exit(0);
 }
 
@@ -411,11 +412,11 @@ const legacyMixed = new Set();
 
 for (const entry of packageEntries) {
   for (const [subpath, value] of Object.entries(entry.manifest?.exports ?? {})) {
-    for (const target of runtimeExportTargets(value)) {
+    for (const target of packageExportTargets(value)) {
       if (!target.startsWith("./") || target.includes("*")) continue;
       const resolvedTarget = resolve(entry.dir, target);
       if (!existsSync(resolvedTarget)) {
-        add("missing-package-runtime-export-target", join(entry.dir, "package.json"), `${subpath} -> ${target}`);
+        add("missing-package-export-target", join(entry.dir, "package.json"), `${subpath} -> ${target}`);
       }
     }
   }
@@ -477,7 +478,7 @@ const result = {
     "a package may not import another package through a relative source path; use a declared published contract",
     "core-domain source may not import executable CLI implementations from package bin or apps/cli",
     "packages may not contain route.ts modules or retired dynamic compat dispatchers",
-    "every explicit package runtime export must resolve to an existing file",
+    "every explicit package export condition must resolve to an existing file",
     "package source imports may not start timers or listeners; applications own lifecycle",
   ],
   workspacePackageDependencyGraph: {

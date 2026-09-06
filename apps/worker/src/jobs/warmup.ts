@@ -1,11 +1,17 @@
 import {
   getProviderConnections,
+} from "@shiguang-gateway/core-domain/db/provider-connections";
+import {
   getSettings,
   resolveProxyForConnection,
-  matchesCron,
+} from "@shiguang-gateway/core-domain/runtime/settings";
+import { matchesCron } from "@shiguang-gateway/core-domain/jobs/cron-match";
+import {
   TERMINAL_CONNECTION_STATUSES,
+} from "@shiguang-gateway/core-domain/shared/connection-recovery-policy";
+import {
   isConnectionUnavailableToAuxiliaryActivity,
-} from "@shiguang-gateway/core-domain/worker/auxiliary-scheduler-support";
+} from "@shiguang-gateway/core-domain/shared/connection-isolation";
 import { refreshAndUpdateCredentials } from "@shiguang-gateway/open-sse/services/providerLimits";
 import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
 import { logger } from "@shiguang-gateway/runtime-logging";

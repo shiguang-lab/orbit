@@ -9,7 +9,7 @@ import {
   type JobCommandFailureCode,
   type JobCommandResponse,
 } from "@shiguang-gateway/contracts/job-command";
-import { getJobRegistry } from "@shiguang-gateway/core-domain/worker/jobs";
+import { getJobRegistry } from "@shiguang-gateway/core-domain/jobs/runtime-registry";
 
 export interface WorkerJobCommandRegistry {
   hasHandler(id: string): boolean;

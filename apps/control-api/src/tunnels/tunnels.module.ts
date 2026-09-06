@@ -5,5 +5,6 @@ import { TunnelsService } from "./tunnels.service.js";
 @Module({
   controllers: [TunnelsController],
   providers: [TunnelsService],
+  exports: [TunnelsService],
 })
 export class TunnelsModule {}

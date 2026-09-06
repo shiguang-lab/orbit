@@ -1,3 +1,19 @@
+export interface EgressSharingWarning {
+  egressIp: string;
+  rotationGroup: string;
+  connections: string[];
+}
+export interface EgressSharingSummary {
+  windowStart: string;
+  windowEnd: string;
+  distinctEgressIps: number;
+  sharingByRotationGroup: Array<{
+    rotationGroup: string;
+    sharedIps: number;
+    maxAccountsSharingOneIp: number;
+  }>;
+  maxAccountsSharingOneIp: number;
+}
 export interface ProxyValidationResult {
   proxyId: string;
   host: string;
@@ -10,7 +26,7 @@ export interface ProxyValidationResult {
 }
 export function diagnoseAllEgressIps(): Promise<Record<string, unknown>>;
 export function getRecentEgressSharingSummary(): Promise<{
-  summary: Record<string, unknown>;
-  warnings: Array<Record<string, unknown>>;
+  summary: EgressSharingSummary;
+  warnings: EgressSharingWarning[];
 }>;
 export function validateProxyPool(): Promise<ProxyValidationResult[]>;
