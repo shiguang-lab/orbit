@@ -62,6 +62,29 @@ function workspaceConsumers(name, seen = new Set()) {
   return [...result];
 }
 
+/**
+ * Resolve the applications that ultimately consume a package. Package-to-package
+ * edges alone do not make a package shared: the rule is about the deployable
+ * app boundaries that actually use the capability. A package may still be
+ * consumed through a public contract package, so follow the dependency graph
+ * and collect only app entries at the leaves.
+ */
+function appConsumers(name, seen = new Set()) {
+  if (seen.has(name)) return [];
+  seen.add(name);
+  const result = new Set();
+  for (const consumer of dependents.get(name) ?? []) {
+    if (appEntries.some((entry) => entry.manifest?.name === consumer)) {
+      result.add(consumer);
+      continue;
+    }
+    if (packageNames.has(consumer)) {
+      for (const app of appConsumers(consumer, seen)) result.add(app);
+    }
+  }
+  return [...result];
+}
+
 const legacyMixed = new Set([
   "@shiguang-gateway/core-domain",
   "@shiguang-gateway/open-sse",
@@ -70,12 +93,13 @@ const legacyMixed = new Set([
 for (const entry of packageEntries) {
   const name = entry.manifest?.name;
   const consumers = workspaceConsumers(name);
+  const applications = appConsumers(name);
   if (legacyMixed.has(name)) {
     add("legacy-mixed-package", join(entry.dir, "package.json"), `${name} still mixes app-owned routes/orchestration; migrate it before completion`);
     continue;
   }
-  if (consumers.length < 2) {
-    add("package-not-shared", join(entry.dir, "package.json"), `${name} has ${consumers.length} workspace consumer(s); packages require at least two`);
+  if (applications.length < 2) {
+    add("package-not-shared", join(entry.dir, "package.json"), `${name} has ${applications.length} app consumer(s); packages require at least two deployable app consumers`);
   }
   for (const file of walk(join(entry.dir, "src"))) {
     if (/\/src\/(app|control|routes)\//.test(rel(file))) {
@@ -90,6 +114,7 @@ const result = {
   packages: packageEntries.map((entry) => ({
     name: entry.manifest?.name,
     consumers: workspaceConsumers(entry.manifest?.name),
+    appConsumers: appConsumers(entry.manifest?.name),
     classification: legacyMixed.has(entry.manifest?.name) ? "legacy-mixed" : "shared",
   })),
   violations,
