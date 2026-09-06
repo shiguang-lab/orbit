@@ -122,7 +122,6 @@ const allowedCoreDomainSubpaths = {
     "shared/validation/helpers",
     "shared/connection-isolation",
     "shared/tokenizer",
-    "edge/music-rate-limit",
     "edge/media-generation",
     "edge/specialty-catalog",
     "edge/rerank-validation-schemas",
@@ -1074,6 +1073,21 @@ if (existsSync(workerJobRegistry)) {
   }
 }
 const coreDomainEntry = packageEntries.find(({ manifest }) => manifest?.name === "@shiguang-gateway/core-domain");
+if (coreDomainEntry) {
+  const serializedExports = JSON.stringify(coreDomainEntry.manifest.exports ?? {});
+  for (const declaration of walk(join(coreDomainEntry.dir, "src", "public")).filter((file) => file.endsWith(".d.ts"))) {
+    const declarationPath = `./${relative(coreDomainEntry.dir, declaration).split(sep).join("/")}`;
+    if (!serializedExports.includes(declarationPath)) {
+      add("orphan-public-declaration", declaration, "public declarations must be referenced by a package export");
+    }
+  }
+}
+const retiredRedundantCoreExports = ["./edge/music-rate-limit", "./catalog/quota-runtime"];
+for (const subpath of retiredRedundantCoreExports) {
+  if (coreDomainEntry?.manifest?.exports?.[subpath]) {
+    add("redundant-core-domain-export", join(coreDomainEntry.dir, "package.json"), subpath);
+  }
+}
 const retiredAppOwnedExports = [
   "./control/free-onboarding",
   "./control/gateway-status",

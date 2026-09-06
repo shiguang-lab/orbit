@@ -105,10 +105,6 @@
       "types": "./src/public/upstreamError.d.ts",
       "import": "./src/shared/utils/upstreamError.ts"
     },
-    "./edge/music-rate-limit": {
-      "types": "./src/public/rateLimit.d.ts",
-      "import": "./src/lib/edge/rateLimit.ts"
-    },
     "./edge/rate-limit": {
       "types": "./src/public/rateLimit.d.ts",
       "import": "./src/lib/edge/rateLimit.ts"
@@ -951,10 +947,6 @@
     "./catalog/runtime-support": {
       "types": "./src/public/catalogRuntimeSupport.d.ts",
       "import": "./src/catalog/runtime-support.ts"
-    },
-    "./catalog/quota-runtime": {
-      "types": "./src/public/catalogQuotaRuntime.d.ts",
-      "import": "./src/lib/quota/quotaCombos.ts"
     },
     "./catalog/model-metadata": {
       "types": "./src/public/catalogModelMetadata.d.ts",
