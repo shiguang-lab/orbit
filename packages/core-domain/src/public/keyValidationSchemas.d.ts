@@ -5,6 +5,7 @@ export const v1ImageUpscaleSchema: z.ZodTypeAny;
 export const MemorySettingsExtendedSchema: z.ZodTypeAny;
 export const createComboSchema: z.ZodTypeAny;
 export const updateComboSchema: z.ZodTypeAny;
+export const updateComboDefaultsSchema: z.ZodTypeAny;
 export const paginationSchema: z.ZodTypeAny;
 export const toggleRateLimitSchema: z.ZodTypeAny;
 export const versionManagerToolSchema: z.ZodTypeAny;

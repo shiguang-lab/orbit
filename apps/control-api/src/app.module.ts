@@ -26,6 +26,7 @@ import { ProxyModule } from "./proxy/proxy.module.js";
 import { ProxiesModule } from "./proxies/proxies.module.js";
 import { CacheSettingsModule } from "./cache-settings/cache-settings.module.js";
 import { SettingsSecurityModule } from "./settings/security/security.module.js";
+import { SettingsConfigModule } from "./settings/config/settings-config.module.js";
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { SettingsSecurityModule } from "./settings/security/security.module.js";
     ProxiesModule,
     CacheSettingsModule,
     SettingsSecurityModule,
+    SettingsConfigModule,
   ],
 })
 export class AppModule {}

@@ -314,6 +314,10 @@
       "types": "./src/public/keyValidationSchemas.d.ts",
       "import": "./src/shared/validation/schemas.ts"
     },
+    "./shared/app-config": {
+      "types": "./src/public/appConfig.d.ts",
+      "import": "./src/shared/constants/appConfig.ts"
+    },
     "./shared/validation/helpers": {
       "types": "./src/public/validationHelpers.d.ts",
       "import": "./src/shared/validation/helpers.ts"
