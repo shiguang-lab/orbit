@@ -10,7 +10,7 @@ import {
 } from "@shiguang-gateway/core-domain/control/management-password";
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/control/feature-flags";
-import { getNodeRuntimeSupport } from "@shiguang-gateway/core-domain/shared/node-runtime-support";
+import { getNodeRuntimeSupport } from "./node-runtime-support.js";
 import { normalizeAutoDisableBannedScope } from "@shiguang-gateway/core-domain/shared/auto-disable-banned";
 import {
   getBackgroundDegradationConfig,

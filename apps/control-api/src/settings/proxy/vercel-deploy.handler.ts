@@ -2,7 +2,7 @@ import { randomBytes } from "node:crypto";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { createErrorResponse, createErrorResponseFromUnknown } from "@shiguang-gateway/core-domain/shared/error-response";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { vercelDeploySchema } from "@shiguang-gateway/core-domain/shared/validation/free-proxy-schemas";
+import { vercelDeploySchema } from "../free-proxy-schemas.js";
 import { createProxy } from "@shiguang-gateway/core-domain/db/local-db";
 import { encrypt } from "@shiguang-gateway/core-domain/db/encryption";
 // Shared SSRF-safe relay-path resolver — the same pure guard embedded in the

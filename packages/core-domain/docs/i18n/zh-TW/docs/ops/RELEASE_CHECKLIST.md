@@ -113,7 +113,7 @@ CI 只能暫存；只有擁有者的 2FA 才能真正發布。
 - [ ] `npm run check:cycles` — 沒有循環依賴
 - [ ] `npm run check:any-budget:t11` — 在預算內
 - [ ] `npm run check:route-validation:t06` — 乾淨通過
-- [ ] `npm run check:node-runtime` — 符合支援的執行時期最低版本（`>=22.22.2 <23`、`>=24.0.0 <27`，詳見 `src/shared/utils/nodeRuntimeSupport.ts` 中的 `SUPPORTED_NODE_RANGE`；需與 `package.json` 的 `engines` 一致）
+- [ ] `npm run check:node-runtime` — 符合支援的執行時期最低版本（`>=22.22.2 <23`、`>=24.0.0 <27`，詳見 `bin/nodeRuntimeSupport.mjs` 中的 `SUPPORTED_NODE_RANGE`；需與 `package.json` 的 `engines` 一致）
 
 ### 測試
 

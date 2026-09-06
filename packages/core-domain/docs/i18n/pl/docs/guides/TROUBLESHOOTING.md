@@ -187,7 +187,7 @@ npm rebuild better-sqlite3
 shiguang-gateway
 ```
 
-> **Uwaga:** To rekompiluje natywny binding względem lokalnej wersji Node.js i architektury CPU, usuwając niedopasowanie binarium. Oficjalnie wspierany zakres runtime to **`>=22.22.2 <23` lub `>=24.0.0 <27`** (`SUPPORTED_NODE_RANGE` w `src/shared/utils/nodeRuntimeSupport.ts`, zgodny z polem `engines` w `package.json`). Node.js 24.x LTS (Krypton) i Node.js 26 są w pełni wspierane z `better-sqlite3` v12.x.
+> **Uwaga:** To rekompiluje natywny binding względem lokalnej wersji Node.js i architektury CPU, usuwając niedopasowanie binarium. Oficjalnie wspierany zakres runtime to **`>=22.22.2 <23` lub `>=24.0.0 <27`** (`SUPPORTED_NODE_RANGE` w `bin/nodeRuntimeSupport.mjs`, zgodny z polem `engines` w `package.json`). Node.js 24.x LTS (Krypton) i Node.js 26 są w pełni wspierane z `better-sqlite3` v12.x.
 
 ---
 

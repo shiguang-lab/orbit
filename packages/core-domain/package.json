@@ -644,10 +644,6 @@
       "types": "./src/public/autoDisableBanned.d.ts",
       "import": "./src/shared/utils/autoDisableBanned.ts"
     },
-    "./shared/node-runtime-support": {
-      "types": "./src/public/nodeRuntimeSupport.d.ts",
-      "import": "./src/shared/utils/nodeRuntimeSupport.ts"
-    },
     "./shared/free-models": {
       "types": "./src/public/freeModels.d.ts",
       "import": "./src/shared/utils/freeModels.ts"
@@ -707,10 +703,6 @@
     "./shared/free-proxies": {
       "types": "./src/public/freeProxies.d.ts",
       "import": "./src/shared/freeProxies.ts"
-    },
-    "./shared/validation/free-proxy-schemas": {
-      "types": "./src/public/freeProxySchemas.d.ts",
-      "import": "./src/shared/validation/freeProxySchemas.ts"
     },
     "./shared/proxy-health": {
       "types": "./src/public/proxyHealth.d.ts",
@@ -1319,7 +1311,6 @@
     "./lib/modelAliasResolver": "./src/lib/modelAliasResolver.ts",
     "./shared/constants/cliTools": "./src/shared/constants/cliTools.ts",
     "./shared/middleware/chatBodyAdmission": "./src/shared/middleware/chatBodyAdmission.ts",
-    "./shared/services/droidCustomModels": "./src/shared/services/droidCustomModels.ts",
     "./shared/services/grokBuildConfig": "./src/shared/services/grokBuildConfig.ts",
     "./shared/services/opencodeConfig": "./src/shared/services/opencodeConfig.ts",
     "./shared/services/qwenCodeConfig": "./src/shared/services/qwenCodeConfig.ts",

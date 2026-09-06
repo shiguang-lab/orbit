@@ -34,7 +34,7 @@ import {
   freeProxyListSchema,
   freeProxySourceSchema,
   freeProxySyncSchema,
-} from "@shiguang-gateway/core-domain/shared/validation/free-proxy-schemas";
+} from "../free-proxy-schemas.js";
 
 export interface FreeProxiesOperationResult {
   status: number;

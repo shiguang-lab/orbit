@@ -18,7 +18,7 @@ import {
   buildDroidCustomModels,
   isShiguangGatewayCustomModel,
   normalizeDroidModelList,
-} from "@shiguang-gateway/core-domain/shared/services/droidCustomModels";
+} from "./droid-settings/custom-models.js";
 
 const getDroidSettingsPath = () => getCliPrimaryConfigPath("droid");
 const getDroidDir = () => path.dirname(getDroidSettingsPath());

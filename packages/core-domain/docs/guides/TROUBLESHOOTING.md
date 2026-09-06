@@ -260,7 +260,7 @@ npm rebuild better-sqlite3
 shiguang-gateway
 ```
 
-> **Note:** This recompiles the native binding against your local Node.js version and CPU architecture, resolving the binary mismatch. The officially supported runtime range is **`>=22.22.2 <23` or `>=24.0.0 <27`** (`SUPPORTED_NODE_RANGE` in `src/shared/utils/nodeRuntimeSupport.ts`, aligned with the `package.json` `engines` field). Node.js 24.x LTS (Krypton) and Node.js 26 are fully supported with `better-sqlite3` v12.x.
+> **Note:** This recompiles the native binding against your local Node.js version and CPU architecture, resolving the binary mismatch. The officially supported runtime range is **`>=22.22.2 <23` or `>=24.0.0 <27`** (`SUPPORTED_NODE_RANGE` in `bin/nodeRuntimeSupport.mjs`, aligned with the `package.json` `engines` field). Node.js 24.x LTS (Krypton) and Node.js 26 are fully supported with `better-sqlite3` v12.x.
 
 ---
 

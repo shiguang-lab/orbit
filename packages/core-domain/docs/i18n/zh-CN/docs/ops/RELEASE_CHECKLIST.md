@@ -66,7 +66,7 @@ npm run test:e2e           # 可选但推荐
 - [ ] `npm run check:cycles` — 无循环依赖
 - [ ] `npm run check:any-budget:t11` — 在预算范围内
 - [ ] `npm run check:route-validation:t06` — 通过
-- [ ] `npm run check:node-runtime` — 支持的运行时下限已满足（`>=22.22.2 <23`、`>=24.0.0 <27`，依据 `src/shared/utils/nodeRuntimeSupport.ts` 中的 `SUPPORTED_NODE_RANGE`；与 `package.json` `engines` 对齐）
+- [ ] `npm run check:node-runtime` — 支持的运行时下限已满足（`>=22.22.2 <23`、`>=24.0.0 <27`，依据 `bin/nodeRuntimeSupport.mjs` 中的 `SUPPORTED_NODE_RANGE`；与 `package.json` `engines` 对齐）
 
 ### 测试
 

@@ -236,7 +236,6 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "shared/webhook-integrations/",
   "control/api-key-auth",
   "shared/auto-disable-banned",
-  "shared/node-runtime-support",
   "shared/free-models",
   "shared/cors-status",
   "edge/feature-flags",
@@ -998,6 +997,9 @@ const retiredAppOwnedExports = [
   "./control/local-endpoints",
   "./control/provider-discovery-support/geminiModelsParser",
   "./control/provider-discovery-support/ollamaCapabilities",
+  "./shared/node-runtime-support",
+  "./shared/validation/free-proxy-schemas",
+  "./shared/services/droidCustomModels",
 ];
 for (const subpath of retiredAppOwnedExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {

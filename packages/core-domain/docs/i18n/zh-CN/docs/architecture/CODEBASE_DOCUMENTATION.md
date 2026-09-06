@@ -412,7 +412,7 @@ server/
   `cloud.ts`、`cn.ts`、`cors.ts`、`costEstimator.ts`、`featureFlags.ts`、
   `fetchTimeout.ts`、`formatting.ts`、`inputSanitizer.ts`、`logger.ts`、
   `machine.ts`、`machineId.ts`、`maskEmail.ts`、`modelCatalogSearch.ts`、
-  `nodeRuntimeSupport.ts`、`parseApiKeys.ts`、`providerHints.ts`、
+  `parseApiKeys.ts`、`providerHints.ts`、
   `providerModelAliases.ts`、`rateLimiter.ts`、`releaseNotes.ts`、
   `a11yAudit.ts`，以及 `services/`、`network/`、
   `middleware/`、`schemas/`、`hooks/`、`components/` 下的仪表盘钩子/组件。

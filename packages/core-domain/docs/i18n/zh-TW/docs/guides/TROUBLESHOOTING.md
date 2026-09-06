@@ -152,7 +152,7 @@ npm rebuild better-sqlite3
 shiguang-gateway
 ```
 
-> **注意：** 這會針對您當地的 Node.js 版本和 CPU 架構重新編譯原生綁定，解決二進位檔案不匹配的問題。官方支援的執行環境範圍為 **`>=22.22.2 <23` 或 `>=24.0.0 <27`**（`src/shared/utils/nodeRuntimeSupport.ts` 中的 `SUPPORTED_NODE_RANGE`，與 `package.json` 的 `engines` 欄位一致）。Node.js 24.x LTS（Krypton）和 Node.js 26 搭配 `better-sqlite3` v12.x 皆受完整支援。
+> **注意：** 這會針對您當地的 Node.js 版本和 CPU 架構重新編譯原生綁定，解決二進位檔案不匹配的問題。官方支援的執行環境範圍為 **`>=22.22.2 <23` 或 `>=24.0.0 <27`**（`bin/nodeRuntimeSupport.mjs` 中的 `SUPPORTED_NODE_RANGE`，與 `package.json` 的 `engines` 欄位一致）。Node.js 24.x LTS（Krypton）和 Node.js 26 搭配 `better-sqlite3` v12.x 皆受完整支援。
 
 ---
 

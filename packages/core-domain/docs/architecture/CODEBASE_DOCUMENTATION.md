@@ -430,7 +430,7 @@ Split into focused subdirectories:
   `cloud.ts`, `cn.ts`, `cors.ts`, `costEstimator.ts`, `featureFlags.ts`,
   `fetchTimeout.ts`, `formatting.ts`, `inputSanitizer.ts`, `logger.ts`,
   `machine.ts`, `machineId.ts`, `maskEmail.ts`, `modelCatalogSearch.ts`,
-  `nodeRuntimeSupport.ts`, `parseApiKeys.ts`, `providerHints.ts`,
+  `parseApiKeys.ts`, `providerHints.ts`,
   `providerModelAliases.ts`, `rateLimiter.ts`, `releaseNotes.ts`,
   `a11yAudit.ts`, plus dashboard hooks/components under `services/`, `network/`,
   `middleware/`, `schemas/`, `hooks/`, `components/`.

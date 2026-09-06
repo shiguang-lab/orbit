@@ -117,7 +117,7 @@ automatycznie, bez żadnej etykiety.
 - [ ] `npm run check:cycles` — brak cyklicznych zależności
 - [ ] `npm run check:any-budget:t11` — w budżecie
 - [ ] `npm run check:route-validation:t06` — czysto
-- [ ] `npm run check:node-runtime` — spełnione minimum wspieranego runtime (`>=22.22.2 <23`, `>=24.0.0 <27`, wg `SUPPORTED_NODE_RANGE` w `src/shared/utils/nodeRuntimeSupport.ts`; zgodne z `engines` w `package.json`)
+- [ ] `npm run check:node-runtime` — spełnione minimum wspieranego runtime (`>=22.22.2 <23`, `>=24.0.0 <27`, wg `SUPPORTED_NODE_RANGE` w `bin/nodeRuntimeSupport.mjs`; zgodne z `engines` w `package.json`)
 
 ### Testy
 
