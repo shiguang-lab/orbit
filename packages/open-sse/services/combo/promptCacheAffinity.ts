@@ -3,7 +3,7 @@ import {
   analyzePrefix,
   generatePromptCacheKey,
 } from "@shiguang-gateway/core-domain/edge/prompt-cache";
-import { getCachedProviderConnections } from "@shiguang-gateway/core-domain/edge/read-cache";
+import { getCachedProviderConnections } from "@shiguang-gateway/core-domain/db/read-cache";
 import { parseModel } from "../model.ts";
 import type { ResolvedComboTarget } from "./types.ts";
 import { getOAuthSessionAvailability } from "../oauthSessionOccupancy.ts";

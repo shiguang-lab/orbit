@@ -15,7 +15,7 @@ import {
   clearRecoveredProviderState,
   markAccountUnavailable,
 } from "@shiguang-gateway/open-sse/services/auth";
-import { getCachedProviderNodes } from "@shiguang-gateway/core-domain/runtime/read-cache";
+import { getCachedProviderNodes } from "@shiguang-gateway/core-domain/db/read-cache";
 import { getComboByName, getCombos } from "@shiguang-gateway/core-domain/runtime/combos-db";
 import { getDatabaseSettings } from "@shiguang-gateway/core-domain/control/database-settings";
 import { resolveProxyForConnection } from "@shiguang-gateway/core-domain/db/settings";

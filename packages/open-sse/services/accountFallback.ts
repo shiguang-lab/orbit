@@ -487,7 +487,7 @@ export function getProviderProfile(provider: string): ProviderProfile {
 
 export async function getRuntimeProviderProfile(provider: string | null | undefined) {
   try {
-    const { getCachedSettings } = await import("@shiguang-gateway/core-domain/edge/read-cache");
+    const { getCachedSettings } = await import("@shiguang-gateway/core-domain/db/read-cache");
     const settings = await getCachedSettings();
     const category = getProviderCategory(provider || "");
     return buildProviderProfile(category, settings);

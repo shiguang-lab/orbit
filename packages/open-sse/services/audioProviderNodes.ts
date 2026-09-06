@@ -1,4 +1,4 @@
-import { getCachedProviderNodes } from "@shiguang-gateway/core-domain/runtime/read-cache";
+import { getCachedProviderNodes } from "@shiguang-gateway/core-domain/db/read-cache";
 import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
 import {
   buildDynamicAudioProvider,

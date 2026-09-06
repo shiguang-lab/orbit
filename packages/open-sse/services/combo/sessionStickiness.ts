@@ -146,7 +146,7 @@ async function resolveConnectionHealth(
   if (_connectionFetcherOverride) return _connectionFetcherOverride(connectionId, provider);
 
   try {
-    const mod = await import("@shiguang-gateway/core-domain/edge/read-cache");
+    const mod = await import("@shiguang-gateway/core-domain/db/read-cache");
     const getCachedProviderConnections = mod.getCachedProviderConnections as (
       filter: Record<string, unknown>
     ) => Promise<StickyConnectionHealth[]>;

@@ -44,7 +44,7 @@ import {
   readRequestBodyWithLimit,
   RequestBodyTooLargeError,
 } from "@shiguang-gateway/core-domain/shared/body-size-guard";
-import { getCachedSettings } from "@shiguang-gateway/core-domain/edge/read-cache";
+import { getCachedSettings } from "@shiguang-gateway/core-domain/db/read-cache";
 import {
   CHATGPT_WEB_RETIRED_ERROR_CODE,
   isCommonChatGptWebRetirementError,

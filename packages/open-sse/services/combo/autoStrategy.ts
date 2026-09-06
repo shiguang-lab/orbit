@@ -42,7 +42,7 @@ import {
   type ScoringWeights,
 } from "../autoCombo/scoring.ts";
 import type { RoutingHint } from "../manifestAdapter";
-import { getCachedProviderConnections } from "@shiguang-gateway/core-domain/edge/read-cache";
+import { getCachedProviderConnections } from "@shiguang-gateway/core-domain/db/read-cache";
 import {
   getSyncedAvailableModels,
   getCustomModels,

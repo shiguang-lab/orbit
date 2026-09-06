@@ -5,7 +5,7 @@
  * Scope (all vs subscription) lives in shared/utils/autoDisableBanned.ts.
  */
 
-import { getCachedSettings } from "@shiguang-gateway/core-domain/runtime/read-cache";
+import { getCachedSettings } from "@shiguang-gateway/core-domain/db/read-cache";
 import { updateProviderConnection } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { resolveProviderId, WEB_COOKIE_PROVIDERS } from "@shiguang-gateway/core-domain/catalog/providers";
 import { shouldAutoDisableBannedConnection } from "@shiguang-gateway/core-domain/runtime/auto-disable-banned";

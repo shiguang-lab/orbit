@@ -7,7 +7,7 @@ import {
   getCachedRawProviderConnections,
   getCachedProviderNodes,
   getCachedSettings,
-} from "@shiguang-gateway/core-domain/runtime/read-cache";
+} from "@shiguang-gateway/core-domain/db/read-cache";
 import {
   getProviderConnections,
   updateProviderConnection,

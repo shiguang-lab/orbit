@@ -1,4 +1,5 @@
-import { getProviderConnectionById, resolveProxyForConnection } from "@shiguang-gateway/core-domain/usage/codex-reset-support/local-db";
+import { getProviderConnectionById } from "@shiguang-gateway/core-domain/db/provider-connections";
+import { resolveProxyForConnection } from "@shiguang-gateway/core-domain/db/settings";
 import { isConnectionUnavailableToAuxiliaryActivity } from "@shiguang-gateway/core-domain/shared/connection-isolation";
 import {
   fetchAndPersistProviderLimits,

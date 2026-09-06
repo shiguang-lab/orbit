@@ -9,9 +9,9 @@ import type { ZedCredential } from "./keychain-reader.js";
 import { fingerprintZedCredential } from "./credential-fingerprint.js";
 import {
   confirmedAccountSchema,
-  zedImportSchema,
   type ConfirmedAccount,
 } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { zedImportSchema } from "@shiguang-gateway/core-domain/control/oauth-validation";
 
 export function isConfirmedAccount(value: unknown): value is ConfirmedAccount {
   return confirmedAccountSchema.safeParse(value).success;

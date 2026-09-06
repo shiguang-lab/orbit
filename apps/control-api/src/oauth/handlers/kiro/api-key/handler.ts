@@ -8,7 +8,7 @@ import {
 import { isCloudEnabled } from "@shiguang-gateway/core-domain/db/settings";
 import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
-import { kiroApiKeyImportSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { kiroApiKeyImportSchema } from "@shiguang-gateway/core-domain/control/oauth-validation";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { isAuthRequired, isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 import { buildKiroImportError } from "../import/handler.js";

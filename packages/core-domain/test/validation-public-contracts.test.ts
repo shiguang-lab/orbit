@@ -65,6 +65,39 @@ const contracts = {
       "validateProviderApiKeySchema",
     ],
   },
+  "./control/oauth-validation": {
+    entry: "./src/shared/validation/oauthExports.ts",
+    runtime: [
+      "applyLocalAgyAuthSchema",
+      "cursorImportSchema",
+      "kiroApiKeyImportSchema",
+      "kiroImportSchema",
+      "oauthDeviceCompleteSchema",
+      "oauthExchangeSchema",
+      "oauthImportTokenSchema",
+      "oauthPasteCredentialsSchema",
+      "oauthPollSchema",
+      "traeImportSchema",
+      "zedImportSchema",
+    ],
+  },
+  "./control/cloud-validation": {
+    entry: "./src/shared/validation/cloudExports.ts",
+    runtime: [
+      "cloudCredentialUpdateSchema",
+      "cloudModelAliasUpdateSchema",
+      "cloudResolveAliasSchema",
+      "cloudSyncActionSchema",
+    ],
+  },
+  "./control/volcengine-validation": {
+    entry: "./src/shared/validation/volcenginePlanExports.ts",
+    runtime: [
+      "volcenginePlanCodeSchema",
+      "volcenginePlanConnectSchema",
+      "volcenginePlanIdentitySchema",
+    ],
+  },
 } as const;
 
 test("validation subpaths expose only their declared runtime contracts", async () => {

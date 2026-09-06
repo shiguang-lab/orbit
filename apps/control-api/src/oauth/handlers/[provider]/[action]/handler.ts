@@ -30,12 +30,12 @@ import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";
 import { startLocalServer } from "../../../callback-listener.js";
 import { runWithProxyContextOrDirect } from "@shiguang-gateway/open-sse/utils/proxyFetch";
 import {
-  jsonObjectSchema,
   oauthDeviceCompleteSchema,
   oauthExchangeSchema,
   oauthImportTokenSchema,
   oauthPollSchema,
-} from "@shiguang-gateway/core-domain/shared/validation/schemas";
+} from "@shiguang-gateway/core-domain/control/oauth-validation";
+import { jsonObjectSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { isAuthRequired, isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";

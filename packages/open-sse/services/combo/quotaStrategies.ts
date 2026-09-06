@@ -33,7 +33,7 @@ import {
 import { PRE_SCREEN_CONCURRENCY } from "../comboConfig.ts";
 import { getQuotaFetcher } from "../quotaPreflight.ts";
 import { getCircuitBreaker } from "@shiguang-gateway/core-domain/resilience/circuit-breaker";
-import { getCachedProviderConnections } from "@shiguang-gateway/core-domain/edge/read-cache";
+import { getCachedProviderConnections } from "@shiguang-gateway/core-domain/db/read-cache";
 import { MAX_RR_COUNTERS, rrCounters } from "./rrState.ts";
 import type { ResolvedComboTarget, IsModelAvailable } from "./types.ts";
 import {

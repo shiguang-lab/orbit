@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { createProviderConnection } from "@shiguang-gateway/core-domain/control/oauth-persistence";
-import { traeImportSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { traeImportSchema } from "@shiguang-gateway/core-domain/control/oauth-validation";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 

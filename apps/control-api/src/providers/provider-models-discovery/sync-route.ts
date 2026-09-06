@@ -1,4 +1,4 @@
-import { getCachedProviderConnectionById } from "@shiguang-gateway/core-domain/control/provider-discovery-support/localDb";
+import { getCachedProviderConnectionById } from "@shiguang-gateway/core-domain/db/read-cache";
 import {
   deleteImportedCustomModels,
   deleteSyncedAvailableModelsForProvider,

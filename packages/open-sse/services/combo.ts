@@ -96,7 +96,7 @@ import { makeConnectionConcurrencyResolver, lookupPositiveCap } from "./combo/co
 import { acquireQuotaShareConcurrencySlot } from "./combo/quotaShareConcurrency.ts";
 import { canAffordRequest } from "@shiguang-gateway/core-domain/quota/scheduler";
 import { resolveConnectionTimeoutMs } from "../handlers/chatCore/upstreamTimeouts.ts";
-import { getCachedProviderConnectionById } from "@shiguang-gateway/core-domain/edge/read-cache";
+import { getCachedProviderConnectionById } from "@shiguang-gateway/core-domain/db/read-cache";
 import { orderTargetsByEvalScores } from "./evalRouting.ts";
 
 /**
@@ -135,7 +135,7 @@ import {
 } from "./combo/comboErrorAggregation.ts";
 import type { ComboErrorEntry } from "./combo/comboErrorAggregation.ts";
 import type { CompressionMode } from "./compression/types.ts";
-import { getCachedProviderConnections } from "@shiguang-gateway/core-domain/edge/read-cache";
+import { getCachedProviderConnections } from "@shiguang-gateway/core-domain/db/read-cache";
 import { isProviderInCooldown, recordProviderCooldown } from "./providerCooldownTracker.ts";
 import {
   resolveResilienceSettings,

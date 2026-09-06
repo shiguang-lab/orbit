@@ -2,7 +2,7 @@ import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/man
 import { bindVolcenginePlansFromConsoleCredentials } from "../volcengine-plan.binding.js";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import { formatValidationMessage, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { volcenginePlanConnectSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { volcenginePlanConnectSchema } from "@shiguang-gateway/core-domain/control/volcengine-validation";
 
 export async function POST(request: Request): Promise<Response> {
   const auth = await requireManagementAuth(request);

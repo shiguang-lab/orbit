@@ -369,7 +369,7 @@ import {
   shouldPreserveCacheControl,
   resolveConnectionCacheOverride,
 } from "../utils/cacheControlPolicy.ts";
-import { getCachedSettings } from "@shiguang-gateway/core-domain/edge/read-cache";
+import { getCachedSettings } from "@shiguang-gateway/core-domain/db/read-cache";
 import { applyCodexGlobalFastServiceTier } from "@shiguang-gateway/core-domain/edge/codex-fast-tier";
 import { buildUpstreamHeadersForExecute as buildUpstreamHeadersForExecuteFor } from "./chatCore/upstreamExecuteHeaders.ts";
 import {

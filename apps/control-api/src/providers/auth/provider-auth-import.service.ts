@@ -35,7 +35,7 @@ import {
   isValidationFailure,
   validateBody,
 } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { applyLocalAgyAuthSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { applyLocalAgyAuthSchema } from "@shiguang-gateway/core-domain/control/oauth-validation";
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 
 const ZIP_BODY_LIMIT = 11 * 1024 * 1024;

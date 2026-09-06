@@ -19,7 +19,7 @@ import {
   USAGE_FETCHER_PROVIDERS,
   type UsageFetcherProvider,
 } from "./../usage.ts";
-import { getCachedProviderConnections } from "@shiguang-gateway/core-domain/edge/read-cache";
+import { getCachedProviderConnections } from "@shiguang-gateway/core-domain/db/read-cache";
 import { defaultLogger as log } from "../../utils/logger.ts";
 import type { FreeAccessState } from "./strictZeroCostFilter";
 import { isStateStaleForReset } from "./subscriptionLadder";

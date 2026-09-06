@@ -1,6 +1,6 @@
 import { updateProviderConnection, getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { cloudCredentialUpdateSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { cloudCredentialUpdateSchema } from "@shiguang-gateway/core-domain/control/cloud-validation";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 
 export async function PUT(request: Request) {

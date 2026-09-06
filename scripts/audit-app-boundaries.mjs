@@ -104,7 +104,7 @@ const allowedCoreDomainSubpaths = {
     "shared/proxy-health",
     "quota/cache-lifecycle",
   ],
-  "apps/control-api": ["startup", "runtime/request", "db/ping", "db/health", "db/call-log-stats", "db/provider-connections", "db/model-aliases", "db/mitm-aliases", "db/proxies", "db/settings", "db/local-db", "db/provider-stats", "db/database-stats", "db/vacuum-scheduler", "catalog/provider-registry", "pricing/db", "pricing/defaults", "pricing/sync", "pricing/provider-prefixes", "pricing/validation", "pricing/modal-cost", "cache/db", "cache/services", "db/compression-analytics", "analytics/auto-routing-db", "analytics/diversity", "db-backups/db", "db-backups/validation", "metrics/combo", "metrics/request-telemetry", "metrics/observability", "metrics/tool-latency", "shared/numeric", "open-sse/utils/error.ts", "open-sse/services/deviceTracker.ts", "control/management-auth", "control/middleware-registry", "control/provider-credentials", "control/lkgp-cache", "control/management-password", "control/compliance", "runtime/feature-flags", "control/provider-validation", "control/provider-validation-schemas", "control/model-context-overrides", "control/model-test-data", "db/provider-nodes", "network/outbound-url-guard-policy", "network/safe-outbound-fetch", "control/authenticated", "control/registered-keys", "control/settings-config", "control/oauth-persistence", "memory/settings", "memory/runtime", "control/database-settings", "control/proxy-logs", "control/openrouter-provider-stats", "control/provider-health-matrix", "control/resilience-settings", "usage/stats", "usage/model-latency-stats", "usage/request-logs", "usage/pending-requests", "db/detailed-logs", "db/proxy-logs", "shared/log-env", "control/api-key-store", "control/cloud-sync", "control/api-key-exposure", "db/api-key-groups", "control/api-key-usage-limits", "shared/", "sse/logger", "sse/auth", "evals/db", "evals/runner", "evals/runtime", "evals/validation", "db/api-keys", "db/batches", "plugins/db", "plugins/manager", "plugins/marketplace", "shared/cors", "quota/dimensions", "quota/db", "quota/services", "quota/state", "compliance", "shared/combo-invariants", "catalog/combo-targets", "catalog/model-metadata", "catalog/provider-models"],
+  "apps/control-api": ["startup", "runtime/request", "db/ping", "db/health", "db/call-log-stats", "db/provider-connections", "db/model-aliases", "db/mitm-aliases", "db/hidden-models", "db/proxies", "db/settings", "db/read-cache", "db/local-db", "db/provider-stats", "db/database-stats", "db/vacuum-scheduler", "catalog/provider-registry", "pricing/db", "pricing/defaults", "pricing/sync", "pricing/provider-prefixes", "pricing/validation", "pricing/modal-cost", "cache/db", "cache/services", "db/compression-analytics", "analytics/auto-routing-db", "analytics/diversity", "db-backups/db", "db-backups/validation", "metrics/combo", "metrics/request-telemetry", "metrics/observability", "metrics/tool-latency", "shared/numeric", "open-sse/utils/error.ts", "open-sse/services/deviceTracker.ts", "control/management-auth", "control/middleware-registry", "control/provider-credentials", "control/lkgp-cache", "control/management-password", "control/compliance", "runtime/feature-flags", "control/provider-validation", "control/provider-validation-schemas", "control/oauth-validation", "control/cloud-validation", "control/volcengine-validation", "control/model-context-overrides", "control/model-test-data", "db/provider-nodes", "network/outbound-url-guard-policy", "network/safe-outbound-fetch", "control/authenticated", "control/registered-keys", "control/settings-config", "control/oauth-persistence", "memory/settings", "memory/runtime", "control/database-settings", "control/proxy-logs", "control/openrouter-provider-stats", "control/provider-health-matrix", "control/resilience-settings", "usage/stats", "usage/model-latency-stats", "usage/request-logs", "usage/pending-requests", "db/detailed-logs", "db/proxy-logs", "shared/log-env", "control/api-key-store", "control/cloud-sync", "control/api-key-exposure", "db/api-key-groups", "control/api-key-usage-limits", "shared/", "sse/logger", "sse/auth", "evals/db", "evals/runner", "evals/runtime", "evals/validation", "db/api-keys", "db/batches", "plugins/db", "plugins/manager", "plugins/marketplace", "shared/cors", "quota/dimensions", "quota/db", "quota/services", "quota/state", "compliance", "shared/combo-invariants", "catalog/combo-targets", "catalog/model-metadata", "catalog/provider-models"],
   "apps/edge-gateway": [
     "startup",
     "runtime/request",
@@ -129,7 +129,7 @@ const allowedCoreDomainSubpaths = {
     "edge/media-generation",
     "edge/specialty-catalog",
     "edge/rerank-validation-schemas",
-    "edge/rerank-provider-nodes",
+    "db/read-cache",
     "usage/call-logs",
     "pricing/modal-cost",
     "edge/gateway-response-meta",
@@ -139,7 +139,6 @@ const allowedCoreDomainSubpaths = {
     "edge/synced-endpoint-routing",
     "shared/body-size-guard",
     "shared/authz-headers",
-    "edge/read-cache",
     "shared/designer-web-retirement",
     "shared/chatgpt-web-retirement",
     "db/api-keys",
@@ -1247,6 +1246,11 @@ const retiredRedundantCoreExports = [
   "./control/resilience-circuit-breaker",
   "./edge/circuit-breaker",
   "./usage/reporting-support/shared/utils/circuitBreaker",
+  "./edge/rerank-provider-nodes",
+  "./edge/read-cache",
+  "./runtime/read-cache",
+  "./control/provider-discovery-support/localDb",
+  "./usage/codex-reset-support/local-db",
 ];
 for (const subpath of retiredRedundantCoreExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {

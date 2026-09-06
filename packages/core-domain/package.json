@@ -93,7 +93,6 @@
       "types": "./src/shared/validation/rerankExports.ts",
       "import": "./src/shared/validation/rerankExports.ts"
     },
-    "./edge/rerank-provider-nodes": "./src/lib/db/readCache.ts",
     "./edge/gateway-response-meta": {
       "types": "./src/public/gatewayResponseMeta.d.ts",
       "import": "./src/domain/gatewayResponseMeta.ts"
@@ -166,9 +165,9 @@
       "types": "./src/public/bodySizeGuard.d.ts",
       "import": "./src/shared/middleware/bodySizeGuard.ts"
     },
-    "./edge/read-cache": {
+    "./db/read-cache": {
       "types": "./src/public/readCache.d.ts",
-      "import": "./src/lib/db/readCache.ts"
+      "import": "./src/db/readCache.ts"
     },
     "./edge/media-generation": {
       "types": "./src/public/mediaGeneration.d.ts",
@@ -386,7 +385,6 @@
     "./control/provider-discovery-support/apiAuth": "./src/shared/utils/apiAuth.ts",
     "./control/provider-discovery-support/modelsDb": "./src/lib/db/models.ts",
     "./control/provider-discovery-support/alibabaProviderRegions": "./src/shared/constants/alibabaProviderRegions.ts",
-    "./control/provider-discovery-support/localDb": "./src/lib/localDb.ts",
     "./control/provider-discovery-support/modelDiscovery": "./src/lib/providerModels/modelDiscovery.ts",
     "./control/provider-discovery-support/outboundUrlGuardPolicy": "./src/shared/network/outboundUrlGuardPolicy.ts",
     "./control/provider-discovery-support/safeOutboundFetch": "./src/shared/network/safeOutboundFetch.ts",
@@ -727,6 +725,18 @@
     "./control/provider-validation-schemas": {
       "types": "./src/shared/validation/providerValidationExports.ts",
       "import": "./src/shared/validation/providerValidationExports.ts"
+    },
+    "./control/oauth-validation": {
+      "types": "./src/shared/validation/oauthExports.ts",
+      "import": "./src/shared/validation/oauthExports.ts"
+    },
+    "./control/cloud-validation": {
+      "types": "./src/shared/validation/cloudExports.ts",
+      "import": "./src/shared/validation/cloudExports.ts"
+    },
+    "./control/volcengine-validation": {
+      "types": "./src/shared/validation/volcenginePlanExports.ts",
+      "import": "./src/shared/validation/volcenginePlanExports.ts"
     },
     "./control/compliance": {
       "types": "./src/public/compliance.d.ts",
@@ -1105,7 +1115,7 @@
     },
     "./db/hidden-models": {
       "types": "./src/public/hiddenModelsDb.d.ts",
-      "import": "./src/lib/db/models/hiddenModels.ts"
+      "import": "./src/db/hiddenModels.ts"
     },
     "./domain/provider-error-classifier": "./src/domain/providerErrorClassifier.ts",
     "./domain/provider-error-signals": "./src/domain/providerErrorSignals.ts",
@@ -1174,7 +1184,6 @@
     },
     "./runtime/provider-ports": "./src/runtime/providerRuntimePorts.ts",
     "./runtime/provider-node-select": "./src/lib/db/providerNodeSelect.ts",
-    "./runtime/read-cache": "./src/lib/db/readCache.ts",
     "./runtime/proxy-logs": "./src/lib/db/proxyLogs.ts",
     "./runtime/proxy-log-lifecycle": "./src/runtime/proxyLogLifecycle.ts",
     "./runtime/api-keys": "./src/lib/db/apiKeys.ts",
@@ -1213,7 +1222,6 @@
     },
     "./runtime/api-key-policy-scopes": "./src/shared/constants/apiKeyPolicyScopes.ts",
     "./db/provider-limits-cache": "./src/lib/db/providerLimits.ts",
-    "./usage/codex-reset-support/local-db": "./src/lib/localDb.ts",
     "./usage/internal-command-support/api-key-usage-limits": "./src/lib/usage/apiKeyUsageLimits.ts",
     "./usage/provider-limits-support/providerLimits": "./src/lib/db/providerLimits.ts",
     "./usage/provider-limits-support/cloudSync": "./src/lib/cloudSync.ts",

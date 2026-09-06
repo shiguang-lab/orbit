@@ -10,11 +10,9 @@ import { resolveAlibabaProviderModelsUrl } from "@shiguang-gateway/core-domain/c
 import { getStaticModelsForProvider } from "@shiguang-gateway/open-sse/services/static-models";
 import { providerUsesCuratedModelsOnly } from "@shiguang-gateway/core-domain/control/provider-discovery-support/modelListingCapability";
 import { mergeModelsWithCustomPrecedence } from "@shiguang-gateway/core-domain/control/provider-discovery-support/modelMetadataPrecedence";
-import {
-  getCachedProviderConnectionById,
-  getModelIsHidden,
-  resolveProxyForProvider,
-} from "@shiguang-gateway/core-domain/control/provider-discovery-support/localDb";
+import { getCachedProviderConnectionById } from "@shiguang-gateway/core-domain/db/read-cache";
+import { getModelIsHidden } from "@shiguang-gateway/core-domain/db/hidden-models";
+import { resolveProxyForProvider } from "@shiguang-gateway/core-domain/db/proxies";
 import {
   SAFE_OUTBOUND_FETCH_PRESETS,
   SafeOutboundFetchError,

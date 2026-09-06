@@ -2,7 +2,7 @@
 import { finalizeTokens } from "@shiguang-gateway/open-sse/oauth/providers";
 import { persistOAuthConnection } from "@shiguang-gateway/core-domain/control/oauth-runtime/connectionPersistence";
 import { parsePastedCredentials } from "../../../paste-credentials.js";
-import { oauthPasteCredentialsSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { oauthPasteCredentialsSchema } from "@shiguang-gateway/core-domain/control/oauth-validation";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { isAuthRequired, isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";

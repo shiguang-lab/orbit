@@ -7,7 +7,7 @@ import {
   releaseDeviceFlowTicket,
 } from "./device-flow-tickets.js";
 import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { oauthDeviceCompleteSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { oauthDeviceCompleteSchema } from "@shiguang-gateway/core-domain/control/oauth-validation";
 import { finalizeTokens } from "@shiguang-gateway/open-sse/oauth/providers";
 
 export type CodexDeviceCompletionResult = { status: number; body: unknown };

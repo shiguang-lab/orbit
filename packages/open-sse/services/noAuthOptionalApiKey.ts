@@ -12,7 +12,7 @@ import { REGISTRY } from "../config/providerRegistry.ts";
 import { isAccountUnavailable } from "../services/accountFallback.ts";
 import { createLazyConnectionView } from "@shiguang-gateway/core-domain/db/provider-connection-view";
 import type { ProviderConnectionView } from "@shiguang-gateway/core-domain/db/provider-connection-view";
-import { getCachedRawProviderConnections } from "@shiguang-gateway/core-domain/edge/read-cache";
+import { getCachedRawProviderConnections } from "@shiguang-gateway/core-domain/db/read-cache";
 import { supportsApiKeyOnFreeProvider } from "@shiguang-gateway/core-domain/catalog/providers";
 
 export function noAuthProviderAcceptsOptionalApiKey(providerId: string): boolean {
