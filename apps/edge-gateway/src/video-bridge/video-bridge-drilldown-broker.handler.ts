@@ -5,14 +5,14 @@ import { createErrorResponse } from "@shiguang-gateway/core-domain/shared/error-
 import {
   resolveVideoBridgeDrilldownPrincipal,
   VIDEO_BRIDGE_DRILLDOWN_PATH,
-} from "@shiguang-gateway/core-domain/control/video-bridge-drilldown";
+} from "@shiguang-gateway/core-domain/edge/video-bridge-drilldown";
 import {
   VideoDrilldownAbortedError,
   VideoDrilldownCache,
   VideoDrilldownValidationError,
   VIDEO_DRILLDOWN_MAX_ENTRY_BYTES,
   VIDEO_DRILLDOWN_MAX_FRAME_DATA_URI_CHARS,
-} from "@shiguang-gateway/core-domain/control/video-bridge-drilldown";
+} from "@shiguang-gateway/core-domain/edge/video-bridge-drilldown";
 import { resolveModelSyncInternalBaseUrl } from "@shiguang-gateway/core-domain/shared/services/modelSyncScheduler";
 import * as log from "@shiguang-gateway/core-domain/sse/logger";
 

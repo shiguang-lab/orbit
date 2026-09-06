@@ -171,9 +171,9 @@ const allowedCoreDomainSubpaths = {
     "edge/codex-fast-tier",
     "shared/embedded-services",
     "shared/compatible-provider-id",
-    "control/video-bridge-drilldown",
-    "control/modality-bridge-stats",
-    "control/video-bridge-runtime",
+    "edge/video-bridge-drilldown",
+    "edge/video-bridge-stats",
+    "edge/video-bridge-runtime",
     "edge/video-bridge-extraction-runtime",
     "shared/error-response",
     "shared/pino-logger",
@@ -1056,7 +1056,10 @@ for (const app of appEntries) {
   }
   for (const file of walk(join(app.dir, "src"))) {
     const source = readFileSync(file, "utf8");
-    if (rel(app.dir) === "apps/control-api" && /\bgetJobRegistry\b|@shiguang-gateway\/core-domain\/worker\/jobs/.test(source)) {
+    if (
+      rel(app.dir) === "apps/control-api" &&
+      /\bgetJobRegistry\b|@shiguang-gateway\/core-domain\/(?:worker\/jobs|worker\/cloud-sync|control\/(?:cloud-sync-initialize|model-sync-scheduler))/.test(source)
+    ) {
       add("control-imports-worker-job-runtime", file, "control-api may only read job projections and send versioned worker commands");
     }
     if (legacyNames.some((name) => source.includes(name))) add("retired-runtime-reference", file);
@@ -1113,6 +1116,16 @@ if (existsSync(workerJobRegistry)) {
   if (/\bdomainModule\s*\(|\bmodulePath\s*:/.test(source)) {
     add("opaque-worker-job-import", workerJobRegistry, "worker jobs must use literal lazy imports so dependency audits can inspect every boundary");
   }
+  if (!/import\("@shiguang-gateway\/core-domain\/worker\/cloud-sync"\)[\s\S]*?exportName:\s*"ensureCloudSyncInitialized"/.test(source)) {
+    add("missing-worker-cloud-sync-owner", workerJobRegistry, "worker must remain the explicit owner of cloud sync and job-registry startup");
+  }
+}
+const controlAuthInit = join(packagesRoot, "core-domain", "src", "control", "auth-init.ts");
+if (
+  existsSync(controlAuthInit) &&
+  /initCloudSync|ensureCloudSyncInitialized|getJobRegistry|startModelSyncScheduler/.test(readFileSync(controlAuthInit, "utf8"))
+) {
+  add("control-init-starts-worker-runtime", controlAuthInit, "control /api/init must not start worker-owned schedulers or the job registry");
 }
 const coreDomainEntry = packageEntries.find(({ manifest }) => manifest?.name === "@shiguang-gateway/core-domain");
 if (coreDomainEntry) {
@@ -1136,6 +1149,9 @@ const retiredRedundantCoreExports = [
   "./control/feature-flags",
   "./edge/rate-limit",
   "./resilience/rate-limit",
+  "./control/modality-bridge-stats",
+  "./control/video-bridge-runtime",
+  "./control/video-bridge-drilldown",
 ];
 for (const subpath of retiredRedundantCoreExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {

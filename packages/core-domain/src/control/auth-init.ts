@@ -1,6 +1,5 @@
 import { safeOutboundFetch, SafeOutboundFetchError, getSafeOutboundFetchErrorStatus } from "../shared/network/safeOutboundFetch.ts";
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
-import ensureCloudSyncInitialized from "../lib/initCloudSync.ts";
 
 export type ControlResult = { status: number; body: unknown };
 
@@ -16,5 +15,11 @@ export async function issueDahlTokens(): Promise<ControlResult> {
 }
 
 export async function initializeControlRuntime(): Promise<ControlResult> {
-  return { status: 200, body: { initialized: await ensureCloudSyncInitialized() } };
+  return {
+    status: 200,
+    body: {
+      initialized: true,
+      backgroundServicesOwner: "worker",
+    },
+  };
 }

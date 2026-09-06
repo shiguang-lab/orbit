@@ -10,7 +10,7 @@ import {
   VideoDrilldownLifecycle,
   VideoDrilldownCache,
   type VideoDrilldownVariant,
-} from "@shiguang-gateway/core-domain/control/video-bridge-drilldown";
+} from "@shiguang-gateway/core-domain/edge/video-bridge-drilldown";
 
 const sharedLifecycle = new VideoDrilldownLifecycle({
   cache: new VideoDrilldownCache({

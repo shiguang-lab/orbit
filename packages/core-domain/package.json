@@ -299,11 +299,11 @@
       "types": "./src/public/managementAuth.d.ts",
       "import": "./src/lib/api/requireManagementAuth.ts"
     },
-    "./control/modality-bridge-stats": {
-      "types": "./src/public/modalityBridgeStats.d.ts",
+    "./edge/video-bridge-stats": {
+      "types": "./src/public/videoBridgeStats.d.ts",
       "import": "./src/lib/guardrails/modalityBridge/bridgeStats.ts"
     },
-    "./control/video-bridge-runtime": {
+    "./edge/video-bridge-runtime": {
       "types": "./src/public/videoBridgeRuntime.d.ts",
       "import": "./src/lib/guardrails/videoBridgeRuntime.ts"
     },
@@ -521,8 +521,8 @@
       "types": "./src/public/cursorTokenExtractor.d.ts",
       "import": "./src/lib/cursor/tokenExtractor.ts"
     },
-    "./control/video-bridge-drilldown": {
-      "types": "./src/lib/guardrails/videoBridgeDrilldownExports.ts",
+    "./edge/video-bridge-drilldown": {
+      "types": "./src/public/videoBridgeDrilldown.d.ts",
       "import": "./src/lib/guardrails/videoBridgeDrilldownExports.ts"
     },
     "./control/cursor-renewal": {
