@@ -508,16 +508,12 @@
       "types": "./src/public/cursorRenewal.d.ts",
       "import": "./src/lib/cursor/renewal.ts"
     },
-    "./shared/validation/providerSpecificData": {
-      "types": "./src/public/providerSpecificData.d.ts",
-      "import": "./src/shared/validation/providerSpecificData.ts"
-    },
     "./shared/constants/gitlabDuoSetupMessage": {
       "types": "./src/public/gitlabDuoSetupMessage.d.ts",
       "import": "./src/shared/constants/gitlabDuoSetupMessage.ts"
     },
-    "./shared/authz-route-guard": {
-      "types": "./src/public/authzRouteGuard.d.ts",
+    "./shared/authz-route-policy": {
+      "types": "./src/public/authzRoutePolicy.d.ts",
       "import": "./src/server/authz/routeGuard.ts"
     },
     "./shared/auto-disable-banned": {
@@ -531,10 +527,6 @@
     "./shared/cors-status": {
       "types": "./src/public/corsStatus.d.ts",
       "import": "./src/server/cors/origins.ts"
-    },
-    "./shared/authz-route-constants": {
-      "types": "./src/public/authzRouteConstants.d.ts",
-      "import": "./src/server/authz/routeGuard.ts"
     },
     "./control/lkgp-cache": {
       "types": "./src/public/lkgpCache.d.ts",
@@ -1170,6 +1162,7 @@
     "./runtime/provider-connections": "./src/lib/db/providers.ts",
     "./runtime/db-core": "./src/lib/db/core.ts",
     "./runtime/proxy-logs": "./src/lib/db/proxyLogs.ts",
+    "./runtime/proxy-log-lifecycle": "./src/runtime/proxyLogLifecycle.ts",
     "./runtime/api-keys": "./src/lib/db/apiKeys.ts",
     "./runtime/exclusive-leases": "./src/lib/db/exclusiveConnectionLeases.ts",
     "./runtime/settings": "./src/lib/db/settings.ts",

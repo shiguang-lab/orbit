@@ -18,6 +18,18 @@ import * as settings from "@shiguang-gateway/core-domain/control/settings";
 import * as proxies from "@shiguang-gateway/core-domain/db/proxies";
 import * as mitmAliases from "@shiguang-gateway/core-domain/db/mitm-aliases";
 import * as hiddenModels from "@shiguang-gateway/core-domain/db/hidden-models";
+import {
+  MAX_PROVIDER_SPECIFIC_TIMEOUT_MS,
+  isValidGheUrl,
+} from "@shiguang-gateway/core-domain/shared/provider-specific-data";
+import * as providerSpecificData from "@shiguang-gateway/core-domain/shared/provider-specific-data";
+import {
+  ALWAYS_PROTECTED_API_PATHS,
+  LOCAL_ONLY_API_PREFIXES,
+  isAlwaysProtectedPath,
+  isLoopbackHost,
+} from "@shiguang-gateway/core-domain/shared/authz-route-policy";
+import * as authzRoutePolicy from "@shiguang-gateway/core-domain/shared/authz-route-policy";
 import { z } from "zod";
 
 test("resolves the canonical API-key resolver export", async () => {
@@ -50,4 +62,36 @@ test("resolves the narrow model persistence contracts", () => {
   assert.equal(typeof mitmAliases.getMitmAlias, "function");
   assert.equal(typeof mitmAliases.setMitmAliasAll, "function");
   assert.equal(typeof hiddenModels.getHiddenModelsByProvider, "function");
+});
+
+test("resolves the canonical provider-data and authz route contracts", () => {
+  assert.deepEqual(Object.keys(providerSpecificData).sort(), [
+    "MAX_PROVIDER_SPECIFIC_TIMEOUT_MS",
+    "isValidGheUrl",
+    "validateProviderSpecificData",
+  ]);
+  assert.equal(MAX_PROVIDER_SPECIFIC_TIMEOUT_MS, 86_400_000);
+  assert.equal(isValidGheUrl("https://github.example.com"), true);
+  assert.equal(isValidGheUrl("http://github.example.com"), false);
+
+  assert.equal(isLoopbackHost("127.0.0.1:3000"), true);
+  assert.equal(isLoopbackHost("example.com"), false);
+  assert.equal(LOCAL_ONLY_API_PREFIXES.includes("/api/mcp/"), true);
+  assert.equal(ALWAYS_PROTECTED_API_PATHS.includes("/api/shutdown"), true);
+  assert.equal(isAlwaysProtectedPath("/api/shutdown"), true);
+  assert.deepEqual(Object.keys(authzRoutePolicy).sort(), [
+    "ALWAYS_PROTECTED_API_PATHS",
+    "LOCAL_ONLY_API_GET_EXEMPTIONS",
+    "LOCAL_ONLY_API_PATTERNS",
+    "LOCAL_ONLY_API_PREFIXES",
+    "LOCAL_ONLY_MANAGE_SCOPE_BYPASS_PREFIXES",
+    "SPAWN_CAPABLE_PATTERNS",
+    "SPAWN_CAPABLE_PREFIXES",
+    "classifyHostLocality",
+    "isAlwaysProtectedPath",
+    "isLocalOnlyBypassableByManageScope",
+    "isLocalOnlyPath",
+    "isLoopbackHost",
+    "isPrivateLanHost",
+  ]);
 });

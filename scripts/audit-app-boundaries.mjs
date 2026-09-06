@@ -207,6 +207,8 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
 allowedCoreDomainSubpaths["apps/edge-gateway"].push("runtime/model-sync-client");
 allowedCoreDomainSubpaths["apps/control-api"].push("runtime/model-sync-client");
 allowedCoreDomainSubpaths["apps/control-api"].push("db/files");
+allowedCoreDomainSubpaths["apps/control-api"].push("runtime/proxy-log-lifecycle");
+allowedCoreDomainSubpaths["apps/edge-gateway"].push("runtime/proxy-log-lifecycle");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/guardrails", "control/auth-init");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/assessment", "control/policies");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/provider-management");
@@ -277,7 +279,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/radar-intel-sync",
   "control/database-cleanup",
   "usage/call-logs",
-  "shared/authz-route-constants",
+  "shared/authz-route-policy",
   "db/provider-cc-alias",
   "db/provider-interception-rules",
   "db/provider-param-filters",
@@ -1164,6 +1166,9 @@ if (coreDomainEntry) {
   }
 }
 const retiredRedundantCoreExports = [
+  "./shared/validation/providerSpecificData",
+  "./shared/authz-route-guard",
+  "./shared/authz-route-constants",
   "./control/models",
   "./control/provider-discovery-support/providers",
   "./usage/provider-limits-support/providers",

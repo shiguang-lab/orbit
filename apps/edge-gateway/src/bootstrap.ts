@@ -1,11 +1,13 @@
 import { NestFactory } from "@nestjs/core";
 import { FastifyAdapter } from "@nestjs/platform-fastify";
 import { initializeUsageStorage } from "@shiguang-gateway/core-domain/startup";
+import { initializeProxyLogStorage } from "@shiguang-gateway/core-domain/runtime/proxy-log-lifecycle";
 import type { FastifyInstance } from "fastify";
 
 export async function bootstrapEdgeGateway() {
   await initializeUsageStorage();
   await import("@shiguang-gateway/open-sse/services/dbRuntimeHooks");
+  initializeProxyLogStorage();
   const { AppModule } = await import("./app.module.js");
   const adapter = new FastifyAdapter({
     logger: { level: process.env.LOG_LEVEL ?? "info" },

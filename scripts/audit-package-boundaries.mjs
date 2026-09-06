@@ -64,6 +64,7 @@ function callName(node) {
 function inspectExecutedNode(node, state, skipFunctionBodies = true) {
   if (ts.isCallExpression(node)) {
     const name = callName(node);
+    if (name === "getDbInstance") state.dbAccess = true;
     const isGlobalTimer =
       ts.isIdentifier(node.expression) ||
       (ts.isPropertyAccessExpression(node.expression) &&
@@ -112,6 +113,9 @@ function packageLifecycleFindings(file, source) {
         for (const signal of state.processSignals) {
           findings.push({ signature: `module-process-signal:${signal}:${declaration.name.text}`, line: sourceFile.getLineAndCharacterOfPosition(declaration.getStart()).line + 1 });
         }
+        if (state.dbAccess) {
+          findings.push({ signature: `module-db-access:${declaration.name.text}`, line: sourceFile.getLineAndCharacterOfPosition(declaration.getStart()).line + 1 });
+        }
         if (state.createsServer && state.listens) {
           findings.push({ signature: `module-listener:${declaration.name.text}`, line: sourceFile.getLineAndCharacterOfPosition(declaration.getStart()).line + 1 });
         }
@@ -128,6 +132,9 @@ function packageLifecycleFindings(file, source) {
     }
     for (const signal of directState.processSignals) {
       findings.push({ signature: `module-process-signal:${signal}:expression`, line: sourceFile.getLineAndCharacterOfPosition(statement.getStart()).line + 1 });
+    }
+    if (directState.dbAccess) {
+      findings.push({ signature: "module-db-access:expression", line: sourceFile.getLineAndCharacterOfPosition(statement.getStart()).line + 1 });
     }
     if (directState.createsServer && directState.listens) {
       findings.push({ signature: "module-listener:expression", line: sourceFile.getLineAndCharacterOfPosition(statement.getStart()).line + 1 });
@@ -150,6 +157,9 @@ function packageLifecycleFindings(file, source) {
       }
       for (const signal of state.processSignals) {
         findings.push({ signature: `startup-process-signal:${signal}:${name}`, line: sourceFile.getLineAndCharacterOfPosition(statement.getStart()).line + 1 });
+      }
+      if (state.dbAccess) {
+        findings.push({ signature: `startup-db-access:${name}`, line: sourceFile.getLineAndCharacterOfPosition(statement.getStart()).line + 1 });
       }
       if (state.createsServer && state.listens) {
         findings.push({ signature: `startup-listener:${name}`, line: sourceFile.getLineAndCharacterOfPosition(statement.getStart()).line + 1 });
@@ -283,11 +293,14 @@ if (process.argv.includes("--self-test")) {
     startServer();
     function startSweep() { setTimeout(run, 1000); }
     startSweep();
+    function hydrate() { getDbInstance(); }
+    hydrate();
   `;
   assert.deepEqual(packageLifecycleFindings("fixture.ts", lifecycleFixture).map(({ signature }) => signature), [
     "module-timer:setInterval:sweep",
     "startup-listener:startServer",
     "startup-timer:setTimeout:startSweep",
+    "startup-db-access:hydrate",
   ]);
   assert.deepEqual(
     packageLifecycleFindings("listener.ts", "const server = createServer(); server.listen(3000);").map(({ signature }) => signature),
@@ -482,7 +495,7 @@ const result = {
     "core-domain source may not import executable CLI implementations from package bin or apps/cli",
     "packages may not contain route.ts modules or retired dynamic compat dispatchers",
     "every explicit package export condition must resolve to an existing file",
-    "package source imports may not start timers or listeners; applications own lifecycle",
+    "package source imports may not start timers, listeners, or database access; applications own lifecycle",
   ],
   workspacePackageDependencyGraph: {
     nodes: [...packageDependencyGraph.keys()].sort(),

@@ -56,6 +56,7 @@ interface ProxyLogFilters {
 }
 
 const proxyLogs: ProxyLogEntry[] = [];
+let proxyLogStorageInitialized = false;
 
 // `public_ip` is the historical SQLite column name; API/UI expose the value as clientIp.
 
@@ -103,7 +104,12 @@ function loadFromDb() {
   }
 }
 
-loadFromDb();
+/** Hydrate persisted proxy logs once after the owning application starts. */
+export function initializeProxyLogStorage(): void {
+  if (proxyLogStorageInitialized) return;
+  proxyLogStorageInitialized = true;
+  loadFromDb();
+}
 
 // Default-off override that restores the verbose [ProxyEgress] console line (raw
 // client/egress IPs + account prefix). Kept OFF by default so the process log leaks
@@ -291,6 +297,17 @@ export function flushProxyLogsSync() {
   } catch (err: any) {
     console.warn("[proxyLogger] Failed to write proxy log batch to disk:", err?.message || err);
   }
+}
+
+/** Flush pending writes and release the logger-owned interval before DB shutdown. */
+export function closeProxyLogStorage(): void {
+  if (batchTimer) {
+    clearInterval(batchTimer);
+    batchTimer = null;
+  }
+  flushProxyLogsSync();
+  proxyLogs.length = 0;
+  proxyLogStorageInitialized = false;
 }
 
 // ──────────────── Query ────────────────

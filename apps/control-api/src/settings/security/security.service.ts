@@ -38,7 +38,7 @@ import {
   LOCAL_ONLY_API_PREFIXES,
   LOCAL_ONLY_MANAGE_SCOPE_BYPASS_PREFIXES,
   SPAWN_CAPABLE_PREFIXES,
-} from "@shiguang-gateway/core-domain/shared/authz-route-constants";
+} from "@shiguang-gateway/core-domain/shared/authz-route-policy";
 import { isDashboardSessionAuthenticated, isAuthRequired } from "@shiguang-gateway/core-domain/control/authenticated";
 import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/services/auth";
 
