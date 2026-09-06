@@ -27,7 +27,7 @@ import {
   isMicrosoftDesignerWebProviderRetiredError,
   isMicrosoftDesignerWebRetiredProviderId,
   MICROSOFT_DESIGNER_WEB_RETIRED_MESSAGE,
-} from "../../../../../shared/constants/designerWebRetirement.ts";
+} from "@shiguang-gateway/contracts/designer-web-retirement";
 import {
   resolveLocalSyncedEndpointRoute,
   type LocalSyncedEndpointRoute,
@@ -45,7 +45,7 @@ import {
   assertCommonChatGptWebModelAvailable,
   CHATGPT_WEB_RETIRED_ERROR_CODE,
   isCommonChatGptWebRetirementError,
-} from "../../../../../shared/constants/chatgptWebRetirement.ts";
+} from "@shiguang-gateway/contracts/chatgpt-web-retirement";
 
 export const dynamic = "force-dynamic";
 

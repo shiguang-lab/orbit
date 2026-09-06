@@ -35,7 +35,7 @@ import {
   extractImageEditInputFromJson,
   validateCodexImageEditReferences,
 } from "@shiguang-gateway/core-domain/edge/image-route-model";
-import { isMicrosoftDesignerWebProviderRetiredError } from "@shiguang-gateway/core-domain/shared/designer-web-retirement";
+import { isMicrosoftDesignerWebProviderRetiredError } from "@shiguang-gateway/contracts/designer-web-retirement";
 import { resolveProxyForConnection } from "@shiguang-gateway/core-domain/edge/local-db";
 import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
 import { isCodexFreePlan } from "@shiguang-gateway/open-sse/executors/codex/tools";
@@ -48,7 +48,7 @@ import { getCachedSettings } from "@shiguang-gateway/core-domain/edge/read-cache
 import {
   CHATGPT_WEB_RETIRED_ERROR_CODE,
   isCommonChatGptWebRetirementError,
-} from "@shiguang-gateway/core-domain/shared/chatgpt-web-retirement";
+} from "@shiguang-gateway/contracts/chatgpt-web-retirement";
 import { z } from "zod";
 
 // JSON edit body (Open WebUI / OpenAI-style). All fields optional — the prompt

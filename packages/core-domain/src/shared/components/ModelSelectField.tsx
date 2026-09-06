@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import Select from "./Select";
 import Input from "./Input";
 import { cn } from "../utils/cn.ts";
-import { isVisionModelId } from "../constants/visionModels.ts";
+import { isVisionModelId } from "@shiguang-gateway/contracts/vision-models";
 
 export interface ApiModel {
   provider: string;

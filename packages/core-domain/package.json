@@ -110,14 +110,6 @@
       "types": "./src/public/readCache.d.ts",
       "import": "./src/lib/db/readCache.ts"
     },
-    "./shared/designer-web-retirement": {
-      "types": "./src/public/designerWebRetirement.d.ts",
-      "import": "./src/shared/constants/designerWebRetirement.ts"
-    },
-    "./shared/chatgpt-web-retirement": {
-      "types": "./src/public/chatgptWebRetirement.d.ts",
-      "import": "./src/shared/constants/chatgptWebRetirement.ts"
-    },
     "./edge/audio-transcription-handler": {
       "types": "./src/public/edgeAudio.d.ts",
       "import": "./src/lib/audio/transcriptionRouteHandlers.ts"

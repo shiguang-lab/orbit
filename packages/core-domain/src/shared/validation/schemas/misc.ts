@@ -11,7 +11,7 @@ import { HIDEABLE_SIDEBAR_ITEM_IDS } from "../../constants/sidebarVisibility.ts"
 import {
   isForbiddenUpstreamHeaderName,
   isForbiddenCustomHeaderName,
-} from "../../constants/upstreamHeaders.ts";
+} from "@shiguang-gateway/contracts/upstream-headers";
 import { MAX_TIMER_TIMEOUT_MS } from "@shiguang-gateway/config/timeouts";
 
 export function isHttpUrl(value: string): boolean {

@@ -19,8 +19,8 @@ import { resolveComboTargets } from "../../../../open-sse/services/combo.ts";
 
 import { getComboByName, getCombos } from "../db/combos.ts";
 import { getCachedProviderNodes } from "../localDb.ts";
-import { assertMicrosoftDesignerWebProviderAvailable } from "../../shared/constants/designerWebRetirement.ts";
-import { assertCommonChatGptWebModelAvailable } from "../../shared/constants/chatgptWebRetirement.ts";
+import { assertMicrosoftDesignerWebProviderAvailable } from "@shiguang-gateway/contracts/designer-web-retirement";
+import { assertCommonChatGptWebModelAvailable } from "@shiguang-gateway/contracts/chatgpt-web-retirement";
 
 /**
  * Rewrite a `prefix/model` custom image model to its internal `<nodeId>/<model>` form.

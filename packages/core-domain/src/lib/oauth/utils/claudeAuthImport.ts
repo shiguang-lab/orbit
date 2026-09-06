@@ -4,7 +4,7 @@ import {
   createProviderConnection,
   updateProviderConnection,
 } from "../../localDb.ts";
-import { getClaudeCodeUserAgent } from "../../../shared/constants/claudeCodeClient.ts";
+import { getClaudeCodeUserAgent } from "@shiguang-gateway/contracts/claude-code-client";
 import { ClaudeAuthFileError } from "./claudeAuthFile.ts";
 
 type JsonRecord = Record<string, unknown>;

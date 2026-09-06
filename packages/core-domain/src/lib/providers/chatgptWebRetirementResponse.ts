@@ -6,7 +6,7 @@ import {
   CHATGPT_WEB_RETIRED_MESSAGE,
   isCommonChatGptWebRetiredProviderId,
   isCommonChatGptWebRetirementError,
-} from "../../shared/constants/chatgptWebRetirement.ts";
+} from "@shiguang-gateway/contracts/chatgpt-web-retirement";
 
 export function commonChatGptWebRetirementResponse(): Response {
   return errorResponse(410, CHATGPT_WEB_RETIRED_MESSAGE, {

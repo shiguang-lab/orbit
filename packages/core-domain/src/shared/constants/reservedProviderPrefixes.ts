@@ -24,12 +24,15 @@ import { REGISTRY } from "../../../../open-sse/config/providerRegistry.ts";
 import {
   isMicrosoftDesignerWebRetiredProviderId,
   RETIRED_MICROSOFT_DESIGNER_WEB_PROVIDER_IDS,
-} from "./designerWebRetirement.ts";
-import { isRuntimeRetiredProviderId, RUNTIME_RETIRED_PROVIDER_IDS } from "./providerRetirement";
+} from "@shiguang-gateway/contracts/designer-web-retirement";
+import {
+  isRuntimeRetiredProviderId,
+  RUNTIME_RETIRED_PROVIDER_IDS,
+} from "@shiguang-gateway/contracts/provider-retirement";
 import {
   isCommonChatGptWebRetiredProviderId,
   RETIRED_COMMON_CHATGPT_WEB_PROVIDER_IDS,
-} from "./chatgptWebRetirement.ts";
+} from "@shiguang-gateway/contracts/chatgpt-web-retirement";
 
 let _reserved: Set<string> | null = null;
 

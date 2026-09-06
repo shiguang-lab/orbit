@@ -5,7 +5,7 @@ import {
   MODEL_COMPAT_PROTOCOL_KEYS,
   type ModelCompatProtocolKey,
 } from "../../../shared/constants/modelCompat.ts";
-import { isForbiddenUpstreamHeaderName } from "../../../shared/constants/upstreamHeaders.ts";
+import { isForbiddenUpstreamHeaderName } from "@shiguang-gateway/contracts/upstream-headers";
 import { getKeyValue } from "./shared";
 import { finishModelCatalogWriteWithBackup } from "./modelCatalogWriteSignals";
 

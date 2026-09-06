@@ -15,7 +15,7 @@ import {
   CHATGPT_WEB_RETIRED_ERROR_CODE,
   CHATGPT_WEB_RETIRED_MESSAGE,
   isCommonChatGptWebRetiredProviderId,
-} from "@shiguang-gateway/core-domain/shared/chatgpt-web-retirement";
+} from "@shiguang-gateway/contracts/chatgpt-web-retirement";
 import { errorResponse } from "@shiguang-gateway/open-sse/utils/error";
 
 function rejectRetiredCommonChatGptWebProvider(providerId: unknown): Response | null {

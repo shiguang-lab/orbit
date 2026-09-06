@@ -14,8 +14,8 @@
  * header) tries to set — no new precedence logic is needed here.
  */
 
-import { getClaudeCodeUserAgent } from "./claudeCodeClient";
-import { getCodexCliRsHeaders } from "./codexClient";
+import { getClaudeCodeUserAgent } from "@shiguang-gateway/contracts/claude-code-client";
+import { getCodexCliRsHeaders } from "@shiguang-gateway/contracts/codex-client";
 
 export interface ClientIdentityProfile {
   readonly id: string;

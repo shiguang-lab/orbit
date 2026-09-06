@@ -1,7 +1,7 @@
-import { isVisionModelId } from "../../../../shared/constants/visionModels.ts";
+import { isVisionModelId } from "@shiguang-gateway/contracts/vision-models";
 
 // Vision-capability fields for catalog entries. Extracted verbatim from ./catalog.ts.
-// Vision detection is centralized in `@/shared/constants/visionModels` (#4072) so this
+// Vision detection is centralized in `@shiguang-gateway/contracts/vision-models` (#4072) so this
 // listing path, the routing fallback, and lite compression share one verdict.
 // Re-exported (here and from ./catalog.ts) for callers/tests that imported it from there.
 export { isVisionModelId };

@@ -9,7 +9,7 @@ import { HIDEABLE_SIDEBAR_GROUP_IDS } from "../../constants/sidebarGroupVisibili
 import {
   isForbiddenUpstreamHeaderName,
   isForbiddenCustomHeaderName,
-} from "../../constants/upstreamHeaders.ts";
+} from "@shiguang-gateway/contracts/upstream-headers";
 import { MAX_TIMER_TIMEOUT_MS } from "@shiguang-gateway/config/timeouts";
 import { AUTO_DISABLE_BANNED_SCOPES } from "../../utils/autoDisableBanned.ts";
 

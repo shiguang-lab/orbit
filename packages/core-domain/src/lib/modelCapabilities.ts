@@ -24,7 +24,7 @@ import { resolveAudioCapability, resolveVideoCapability } from "./modelCapabilit
 export type { ModelCapabilityResolutionSnapshot } from "./modelCapabilityResolutionSnapshot.ts";
 export { createModelCapabilityResolutionSnapshot } from "./modelCapabilityResolutionSnapshot.ts";
 export { resolveAudioCapability } from "./modelCapabilityModalities.ts";
-import { isVisionModelId } from "../shared/constants/visionModels.ts";
+import { isVisionModelId } from "@shiguang-gateway/contracts/vision-models";
 import { getUnsupportedParams } from "../../../open-sse/config/providerRegistry.ts";
 import {
   getLearnedThinkingCap,
@@ -453,7 +453,7 @@ function getSyncedCapabilityForResolved(
  * Last-resort vision fallback in resolveVisionCapability when there is no
  * synced/registry/spec capability data (e.g. Mistral Pixtral, which ships no
  * models.dev `attachment` flag and no registry `supportsVision`). Delegates to
- * the single shared source (`@/shared/constants/visionModels`, #4072) so routing,
+ * the single shared source (`@shiguang-gateway/contracts/vision-models`, #4072) so routing,
  * the `/v1/models` listing and lite compression can never disagree on whether a
  * model is vision-capable. The list is intentionally conservative — a false
  * positive would let an image request route to a text-only model.

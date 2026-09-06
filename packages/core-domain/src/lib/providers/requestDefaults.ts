@@ -4,7 +4,7 @@ const CLAUDE_CODE_COMPATIBLE_PROVIDER_PREFIX = "anthropic-compatible-cc-";
 import { normalizeExcludedModelPatterns } from "../../domain/connectionModelRules.ts";
 import { normalizeRoutingTags } from "../../domain/tagRouter.ts";
 import { normalizeOpenRouterPreset } from "../../shared/constants/openRouterPreset.ts";
-import { isForbiddenCustomHeaderName } from "../../shared/constants/upstreamHeaders.ts";
+import { isForbiddenCustomHeaderName } from "@shiguang-gateway/contracts/upstream-headers";
 import { normalizePeakHourProtection } from "./peakHourProtection.ts";
 import { isOpenAIResponsesStoreEnabled as isOpenAIResponsesStoreEnabledContract } from "@shiguang-gateway/contracts/responses-store";
 

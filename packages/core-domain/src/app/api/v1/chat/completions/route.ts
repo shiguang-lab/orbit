@@ -30,11 +30,11 @@ import { resolveModelAliasWithSeedFallbackOnBody } from "../../../../../lib/mode
 import {
   assertRuntimeModelProviderAvailable,
   isRuntimeProviderRetirementError,
-} from "../../../../../shared/constants/providerRetirement.ts";
+} from "@shiguang-gateway/contracts/provider-retirement";
 import {
   assertCommonChatGptWebModelAvailable,
   isCommonChatGptWebRetirementError,
-} from "../../../../../shared/constants/chatgptWebRetirement.ts";
+} from "@shiguang-gateway/contracts/chatgpt-web-retirement";
 
 let initPromise = null;
 

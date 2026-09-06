@@ -31,10 +31,10 @@ import {
 } from "../../lib/providers/peakHourProtection.ts";
 import { buildJinaEnvCredentials } from "../../lib/providers/jina.ts";
 import { buildGeminiEnvCredentials } from "../../lib/providers/gemini.ts";
-import { isCommonChatGptWebRetiredProviderId } from "../../shared/constants/chatgptWebRetirement.ts";
+import { isCommonChatGptWebRetiredProviderId } from "@shiguang-gateway/contracts/chatgpt-web-retirement";
 import { toNumber } from "../../shared/utils/numeric.ts";
-import { isMicrosoftDesignerWebRetiredProviderId } from "../../shared/constants/designerWebRetirement.ts";
-import { isRuntimeRetiredProviderId } from "../../shared/constants/providerRetirement.ts";
+import { isMicrosoftDesignerWebRetiredProviderId } from "@shiguang-gateway/contracts/designer-web-retirement";
+import { isRuntimeRetiredProviderId } from "@shiguang-gateway/contracts/provider-retirement";
 import {
   createLazyConnectionView,
   toProviderConnection,

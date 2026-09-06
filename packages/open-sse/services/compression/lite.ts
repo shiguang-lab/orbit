@@ -25,7 +25,7 @@ function normalizeMessageWhitespace(content: string): string {
   return content.replace(/\n{3,}/g, "\n\n").replace(/[ \t]+$/gm, "");
 }
 
-// Vision detection is centralized in `@/shared/constants/visionModels` (#4072) so
+// Vision detection is centralized in `@shiguang-gateway/contracts/vision-models` (#4072) so
 // the lite image-strip gate, the /v1/models listing, and the routing fallback can
 // never disagree. The shared list keeps the #3328 MiniMax M3 carve-out and the
 // pixtral/llava/qwen-vl/glm-4v/kimi-vl/mistral-medium-3 families this gate used to

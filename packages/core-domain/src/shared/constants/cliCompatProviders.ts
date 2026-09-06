@@ -1,4 +1,4 @@
-import { normalizeCliCompatProviderId } from "../utils/cliCompat";
+import { normalizeCliCompatProviderId } from "@shiguang-gateway/contracts/cli-compat";
 
 export { normalizeCliCompatProviderId };
 

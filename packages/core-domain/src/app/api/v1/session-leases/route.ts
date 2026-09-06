@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-import { isRuntimeProviderRetirementError } from "../../../../shared/constants/providerRetirement.ts";
-import { isCommonChatGptWebRetirementError } from "../../../../shared/constants/chatgptWebRetirement.ts";
+import { isRuntimeProviderRetirementError } from "@shiguang-gateway/contracts/provider-retirement";
+import { isCommonChatGptWebRetirementError } from "@shiguang-gateway/contracts/chatgpt-web-retirement";
 import { enforceApiKeyPolicy } from "../../../../shared/utils/apiKeyPolicy.ts";
 import { CORS_HEADERS, handleCorsOptions } from "../../../../shared/utils/cors.ts";
 import {

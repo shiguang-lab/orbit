@@ -1,5 +1,5 @@
 import type { IncomingHttpHeaders } from "node:http";
-import { isForbiddenUpstreamHeaderName } from "../shared/constants/upstreamHeaders.ts";
+import { isForbiddenUpstreamHeaderName } from "@shiguang-gateway/contracts/upstream-headers";
 import { maskSecret } from "./maskSecrets.ts";
 
 const MASKED_CREDENTIAL_HEADERS = new Set([

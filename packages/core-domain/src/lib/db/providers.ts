@@ -4,7 +4,7 @@
 
 import { v4 as uuidv4 } from "uuid";
 
-import { isCommonChatGptWebRetiredProviderId } from "../../shared/constants/chatgptWebRetirement.ts";
+import { isCommonChatGptWebRetiredProviderId } from "@shiguang-gateway/contracts/chatgpt-web-retirement";
 import { getDbInstance, rowToCamel, cleanNulls } from "./core";
 import { backupDbFile } from "./backup";
 import {
@@ -36,9 +36,9 @@ import {
   isMatchingOauthIdentity,
 } from "./webSessionDedup";
 import { pickCodexConnectionForUser } from "../oauth/utils/codexConnectionSelection.ts";
-import { isMicrosoftDesignerWebRetiredProviderId } from "../../shared/constants/designerWebRetirement.ts";
+import { isMicrosoftDesignerWebRetiredProviderId } from "@shiguang-gateway/contracts/designer-web-retirement";
 import { reconcileCodexUsageHistory } from "./providers/usageIdentityReconciliation";
-import { isRuntimeRetiredProviderId } from "../../shared/constants/providerRetirement.ts";
+import { isRuntimeRetiredProviderId } from "@shiguang-gateway/contracts/provider-retirement";
 
 /**
  * normalizeProviderSpecificData + the Codex fingerprint-seed invariant: Codex

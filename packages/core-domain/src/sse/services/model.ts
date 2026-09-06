@@ -26,16 +26,16 @@ import { getReservedProviderPrefixes } from "../../shared/constants/reservedProv
 import {
   assertMicrosoftDesignerWebProviderAvailable,
   isMicrosoftDesignerWebProviderRetiredError,
-} from "../../shared/constants/designerWebRetirement.ts";
+} from "@shiguang-gateway/contracts/designer-web-retirement";
 import {
   assertRuntimeProviderAvailable,
   isRuntimeProviderRetirementError,
-} from "../../shared/constants/providerRetirement.ts";
+} from "@shiguang-gateway/contracts/provider-retirement";
 import {
   assertCommonChatGptWebModelAvailable,
   assertCommonChatGptWebProviderAvailable,
   isCommonChatGptWebRetirementError,
-} from "../../shared/constants/chatgptWebRetirement.ts";
+} from "@shiguang-gateway/contracts/chatgpt-web-retirement";
 import { commonChatGptWebRetirementResponse } from "../../lib/providers/chatgptWebRetirementResponse.ts";
 import { errorResponse } from "../../../../open-sse/utils/error.ts";
 import { HTTP_STATUS } from "../../../../open-sse/config/constants.ts";
