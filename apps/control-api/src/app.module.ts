@@ -79,6 +79,7 @@ import { ConversationsModule } from "./conversations/conversations.module.js";
 import { DbHealthModule } from "./db-health/db-health.module.js";
 import { ConductorModule } from "./conductor/conductor.module.js";
 import { ChaosModule } from "./chaos/chaos.module.js";
+import { AdminModule } from "./admin/admin.module.js";
 
 @Module({
   imports: [
@@ -163,6 +164,7 @@ import { ChaosModule } from "./chaos/chaos.module.js";
     DbHealthModule,
     ConductorModule,
     ChaosModule,
+    AdminModule,
   ],
 })
 export class AppModule {}

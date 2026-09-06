@@ -46,6 +46,9 @@ import { VscodeOllamaModule } from "./vscode-ollama/vscode-ollama.module.js";
 import { DocsSearchModule } from "./docs-search/docs-search.module.js";
 import { AgentCardModule } from "./agent-card/agent-card.module.js";
 import { UsageCommandModule } from "./usage-command/usage-command.module.js";
+import { VscodeModelsModule } from "./vscode-models/vscode-models.module.js";
+import { VscodeResponsesModule } from "./vscode-responses/vscode-responses.module.js";
+import { VscodeCombosModule } from "./vscode-combos/vscode-combos.module.js";
 
 @Module({
   imports: [
@@ -97,6 +100,9 @@ import { UsageCommandModule } from "./usage-command/usage-command.module.js";
     DocsSearchModule,
     AgentCardModule,
     UsageCommandModule,
+    VscodeModelsModule,
+    VscodeResponsesModule,
+    VscodeCombosModule,
   ],
 })
 export class AppModule {}

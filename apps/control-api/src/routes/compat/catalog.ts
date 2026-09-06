@@ -73,6 +73,7 @@ export function controlRouteCatalog(): CompatRouteDefinition[] {
     "conversations",
     "conversations/[id]/tree",
     "db/health",
+    "admin/concurrency",
     "conductor/ask",
     "conductor/fleet",
     "chaos/config",

@@ -6,6 +6,8 @@ import { VscodeVersionService } from "./vscode-version.service.js";
 @Controller([
   "v1/vscode/:token/api/version",
   "api/v1/vscode/:token/api/version",
+  "v1/vscode/raw/:token/api/version",
+  "api/v1/vscode/raw/:token/api/version",
 ])
 export class VscodeVersionController {
   constructor(
