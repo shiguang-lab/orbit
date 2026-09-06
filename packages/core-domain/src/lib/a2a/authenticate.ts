@@ -10,7 +10,7 @@
 
 import { createHash, timingSafeEqual } from "crypto";
 import type { NextRequest } from "next/server";
-import { extractApiKey, isValidApiKey } from "../../sse/services/auth.ts";
+import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/services/auth";
 import { isRequireApiKeyEnabled } from "../../shared/utils/featureFlags.ts";
 
 function tokensMatch(provided: string, expected: string): boolean {

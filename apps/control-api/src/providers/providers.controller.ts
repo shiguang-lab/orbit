@@ -38,7 +38,7 @@ import { importProviders } from "./handlers/provider-import.js";
 import {
   getProviderModels as getProviderModelsDiscovery,
   syncProviderModels,
-} from "@shiguang-gateway/core-domain/control/provider-models-discovery";
+} from "./provider-models-discovery/index.js";
 import {
   DELETE as deleteProviderDetail,
   GET as getProviderDetail,

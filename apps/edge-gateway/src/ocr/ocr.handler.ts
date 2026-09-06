@@ -36,7 +36,7 @@ async function postHandler(request: Request): Promise<Response> {
   const [ocrHandler, ocrRegistry, auth, errorApi, constants, policyApi, validationApi, validationHelpers, rateLimit] = await Promise.all([
     load("@shiguang-gateway/open-sse/handlers/ocr"),
     load("@shiguang-gateway/open-sse/config/ocrRegistry"),
-    load("@shiguang-gateway/core-domain/sse/auth"),
+    load("@shiguang-gateway/open-sse/services/auth"),
     load("@shiguang-gateway/open-sse/utils/error"),
     load("@shiguang-gateway/open-sse/config/constants"),
     load("@shiguang-gateway/core-domain/shared/api-key-policy"),

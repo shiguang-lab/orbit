@@ -1,7 +1,7 @@
 import {
   PROVIDER_ID_TO_ALIAS,
   PROVIDER_MODELS,
-} from "../../../open-sse/config/providerModels.ts";
+} from "@shiguang-gateway/provider-catalog/provider-models";
 import { parseModel, resolveCanonicalProviderModel } from "../../../open-sse/services/model.ts";
 import {
   findModelSpecIdByExactOrAlias,
@@ -25,7 +25,7 @@ export type { ModelCapabilityResolutionSnapshot } from "./modelCapabilityResolut
 export { createModelCapabilityResolutionSnapshot } from "./modelCapabilityResolutionSnapshot.ts";
 export { resolveAudioCapability } from "./modelCapabilityModalities.ts";
 import { isVisionModelId } from "@shiguang-gateway/contracts/vision-models";
-import { getUnsupportedParams } from "../../../open-sse/config/providerRegistry.ts";
+import { getUnsupportedParams } from "@shiguang-gateway/provider-catalog/provider-registry";
 import {
   getLearnedThinkingCap,
   GEMINI_FALLBACK_THINKING_CAP,

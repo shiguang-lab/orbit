@@ -44,7 +44,7 @@ export function isVideoPromptOptional(parsed: VideoModelTarget): boolean {
 
 export async function resolveLocalOverrideCredentials(provider: string): Promise<any> {
   const [{ getProviderCredentialsWithQuotaPreflight }, { isAllRateLimitedCredentials }] = await Promise.all([
-    load("@shiguang-gateway/core-domain/sse/auth"),
+    load("@shiguang-gateway/open-sse/services/auth"),
     load("@shiguang-gateway/core-domain/edge/rate-limit"),
   ]);
   const localCredentials = await getProviderCredentialsWithQuotaPreflight(provider);

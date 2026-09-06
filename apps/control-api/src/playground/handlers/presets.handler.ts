@@ -9,7 +9,7 @@
 
 import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import { HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants";
-import { extractApiKey, isValidApiKey } from "@shiguang-gateway/core-domain/sse/auth";
+import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/services/auth";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { listPlaygroundPresets, createPlaygroundPreset } from "@shiguang-gateway/core-domain/control/playground-presets";
 import { PlaygroundPresetCreateSchema } from "@shiguang-gateway/core-domain/shared/schemas/playground";

@@ -14,7 +14,7 @@ import {
   getProviderCredentials,
   clearRecoveredProviderState,
   markAccountUnavailable,
-} from "../../sse/services/auth.ts";
+} from "@shiguang-gateway/open-sse/services/auth";
 import { getCachedProviderNodes } from "../db/readCache.ts";
 import { getComboByName, getCombos } from "../db/combos.ts";
 import { getDatabaseSettings } from "../db/databaseSettings.ts";

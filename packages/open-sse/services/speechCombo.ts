@@ -18,7 +18,7 @@ import { resolveDynamicAudioProviders } from "@shiguang-gateway/core-domain/edge
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
-} from "@shiguang-gateway/core-domain/sse/auth";
+} from "./auth.ts";
 import { isAllRateLimitedCredentials } from "@shiguang-gateway/core-domain/edge/rate-limit";
 import { handleAudioSpeech } from "../handlers/audioSpeech.ts";
 import { attachShiguangGatewayMetaToResponse } from "@shiguang-gateway/core-domain/edge/gateway-response-meta";

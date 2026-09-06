@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
-import { handleChat, buildClientRawRequest } from "@shiguang-gateway/core-domain/edge/chat-handler";
+import { handleChat, buildClientRawRequest } from "@shiguang-gateway/open-sse/handlers/chat";
 import { generateRequestId } from "@shiguang-gateway/core-domain/edge/request-id";
 import { errorResponse } from "@shiguang-gateway/open-sse/utils/error";
 import { initTranslators } from "@shiguang-gateway/open-sse/translator";

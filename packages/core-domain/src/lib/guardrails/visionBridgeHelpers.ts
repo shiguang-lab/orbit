@@ -7,7 +7,7 @@ import { fetchRemoteImage } from "../../shared/network/remoteImageFetch.ts";
 import { getRuntimePorts } from "../runtime/ports.ts";
 import { resolveSelfLoopBearer } from "../../shared/middleware/chatBodyAdmission.ts";
 import { getBestVisionModel, getFallbackModels, recordLatency } from "./visionBridgeRouter";
-import { REGISTRY } from "../../../../open-sse/config/providers/index.ts";
+import { REGISTRY } from "@shiguang-gateway/provider-catalog/providers";
 import { fetch as undiciFetch } from "undici";
 /**
  * Provider to environment variable mapping for API key resolution.

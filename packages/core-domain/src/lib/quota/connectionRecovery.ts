@@ -262,7 +262,7 @@ export async function runConnectionRecoveryTick(
   const clear =
     deps.clearConnectionError ??
     (async (connectionId: string, current: RecoverableConnectionInput) => {
-      const { clearAccountError } = await import("../../sse/services/auth.ts");
+      const { clearAccountError } = await import("@shiguang-gateway/open-sse/services/auth");
       await clearAccountError(connectionId, current);
     });
 

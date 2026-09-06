@@ -1,12 +1,2 @@
-import type { RegistryEntry } from "../../shared.ts";
-import { buildOpenAiCompatibleRegistryEntry } from "../../shared.ts";
-
-// International endpoint; audited free access is limited to non-commercial use.
-export const chatanywhereProvider: RegistryEntry = buildOpenAiCompatibleRegistryEntry({
-  id: "chatanywhere",
-  alias: "chatanywhere",
-  baseUrl: "https://api.chatanywhere.org/v1/chat/completions",
-  modelsUrl: "https://api.chatanywhere.org/v1/models",
-  models: [],
-  passthroughModels: true,
-});
+/** Compatibility facade; catalog ownership lives in @shiguang-gateway/provider-catalog. */
+export { chatanywhereProvider } from "@shiguang-gateway/provider-catalog/providers/registry/chatanywhere";

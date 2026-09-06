@@ -2,7 +2,7 @@ import { handleAudioTranslation } from "../../../../open-sse/handlers/audioTrans
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
-} from "../../sse/services/auth.ts";
+} from "@shiguang-gateway/open-sse/services/auth";
 import { parseTranslationModel, getTranslationProvider } from "../../../../open-sse/config/audioRegistry.ts";
 import { resolveDynamicAudioProviders } from "../edge/audioProviderNodes.ts";
 import { errorResponse } from "@shiguang-gateway/http-kernel/error-response";

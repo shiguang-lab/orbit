@@ -41,7 +41,7 @@ import { readSubjectFromHeaders } from "@shiguang-gateway/core-domain/shared/aut
 import { clearCliproxyapiUrlCache } from "@shiguang-gateway/open-sse/executors/cliproxyapi";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { extractApiKey } from "@shiguang-gateway/core-domain/sse/auth";
+import { extractApiKey } from "@shiguang-gateway/open-sse/services/auth";
 
 /**
  * Force this route to run dynamically per-request and never be cached/prerendered.

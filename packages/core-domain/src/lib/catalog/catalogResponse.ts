@@ -23,7 +23,7 @@ import {
   getFunctionalGatewaySettingsBulk,
 } from "../db/functionalGatewayMirrors.ts";
 import { buildFunctionalGatewayPredicate } from "./functionalGatewayPredicate";
-import { getPassthroughProviders, REGISTRY } from "../../../../open-sse/config/providerRegistry.ts";
+import { getPassthroughProviders, REGISTRY } from "@shiguang-gateway/provider-catalog/provider-registry";
 import { hasEligibleConnectionForModel } from "../../domain/connectionModelRules.ts";
 import { dedupeExactCatalogIds } from "./catalogDedupe";
 import { sortCatalogModelsProviderGrouped } from "./catalogOrder";
@@ -34,7 +34,7 @@ import {
 } from "../modelMetadataRegistry.ts";
 import { createModelCapabilityResolutionSnapshot } from "../modelCapabilityResolutionSnapshot.ts";
 import { isModelCatalogNamesEnabled } from "../../shared/utils/featureFlags.ts";
-import { extractApiKey } from "../../sse/services/auth.ts";
+import { extractApiKey } from "@shiguang-gateway/open-sse/services/auth";
 import { maybeOmitCatalogModelName } from "./catalogHelpers";
 import { isCodexModelCatalogClient } from "./catalogRequest";
 

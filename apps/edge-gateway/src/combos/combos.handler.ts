@@ -8,7 +8,7 @@
  * routing details (account/connection ids, weights, internal labels).
  */
 import { getCombos } from "@shiguang-gateway/core-domain/edge/local-db";
-import { extractApiKey, isValidApiKey } from "@shiguang-gateway/core-domain/sse/auth";
+import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/services/auth";
 import { isDashboardSessionAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/edge/feature-flags";
 import { errorResponse } from "@shiguang-gateway/open-sse/utils/error";

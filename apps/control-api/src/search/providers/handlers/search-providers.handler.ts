@@ -1,5 +1,5 @@
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
-import { getProviderCredentials } from "@shiguang-gateway/core-domain/sse/auth";
+import { getProviderCredentials } from "@shiguang-gateway/open-sse/services/auth";
 import { isAllRateLimitedCredentials } from "@shiguang-gateway/core-domain/edge/rate-limit";
 import { SEARCH_PROVIDERS, getSearchCredentialFallbacks } from "@shiguang-gateway/open-sse/config/searchRegistry";
 import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";

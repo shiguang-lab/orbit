@@ -67,7 +67,7 @@ export interface InternalUsageCommandDeps {
 type RequiredDeps = Required<InternalUsageCommandDeps>;
 
 async function normalizeDeps(deps: InternalUsageCommandDeps = {}): Promise<RequiredDeps> {
-  const auth = deps.isValidApiKey ? null : await import("../../sse/services/auth.ts");
+  const auth = deps.isValidApiKey ? null : await import("@shiguang-gateway/open-sse/services/auth");
   const apiKeys = deps.getApiKeyMetadata ? null : await import("../db/apiKeys.ts");
   const providers =
     deps.getProviderConnectionById && deps.getProviderConnections

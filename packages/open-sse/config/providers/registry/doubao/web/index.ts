@@ -1,15 +1,2 @@
-import type { RegistryEntry } from "../../../shared.ts";
-
-export const doubao_webProvider: RegistryEntry = {
-  id: "doubao-web",
-  alias: "db",
-  format: "openai",
-  executor: "doubao-web",
-  baseUrl: "https://www.dola.com/chat/completion",
-  authType: "apikey",
-  authHeader: "cookie",
-  models: [
-    { id: "dola-speed", name: "Dola Speed", toolCalling: false },
-    { id: "dola-pro", name: "Dola Pro", toolCalling: false },
-  ],
-};
+/** Compatibility facade; catalog ownership lives in @shiguang-gateway/provider-catalog. */
+export { doubao_webProvider } from "@shiguang-gateway/provider-catalog/providers/registry/doubao/web";

@@ -1,4 +1,4 @@
-type ChatRuntime = typeof import("@shiguang-gateway/core-domain/edge/chat-handler");
+type ChatRuntime = typeof import("@shiguang-gateway/open-sse/handlers/chat");
 
 let initialized = false;
 
@@ -11,7 +11,7 @@ async function runtime(): Promise<{
     (request: Request) => Promise<Response>;
 }> {
   const [chat, translator, admission] = await Promise.all([
-    load("@shiguang-gateway/core-domain/edge/chat-handler"),
+    load("@shiguang-gateway/open-sse/handlers/chat"),
     load("@shiguang-gateway/open-sse/translator"),
     load("@shiguang-gateway/core-domain/edge/chat-admission"),
   ]);

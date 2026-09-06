@@ -32,7 +32,7 @@ export class MusicService {
         log,
       ] = await Promise.all([
         load("@shiguang-gateway/open-sse/handlers/musicGeneration"),
-        load("@shiguang-gateway/core-domain/sse/auth"),
+        load("@shiguang-gateway/open-sse/services/auth"),
         load("@shiguang-gateway/open-sse/config/musicRegistry"),
         load("@shiguang-gateway/open-sse/utils/error"),
         load("@shiguang-gateway/core-domain/edge/media-generation"),

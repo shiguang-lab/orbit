@@ -57,7 +57,7 @@ async function postHandler(request: Request): Promise<Response> {
     load("@shiguang-gateway/open-sse/handlers/videoGeneration"),
     load("@shiguang-gateway/open-sse/handlers/videoGeneration/googleFlow"),
     load("@shiguang-gateway/core-domain/middleware/prompt-injection"),
-    load("@shiguang-gateway/core-domain/sse/auth"),
+    load("@shiguang-gateway/open-sse/services/auth"),
     load("@shiguang-gateway/open-sse/config/videoRegistry"),
     load("@shiguang-gateway/open-sse/utils/error"),
     load("@shiguang-gateway/open-sse/config/constants"),

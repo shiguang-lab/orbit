@@ -5,7 +5,7 @@
  * chaos runs, and tokenized compatibility adapters use this shared business
  * handler without importing an app-owned route module.
  */
-import { handleChat } from "../../sse/handlers/chat.ts";
+import { handleChat } from "@shiguang-gateway/open-sse/handlers/chat";
 import { handleCorsOptions } from "../../shared/utils/cors.ts";
 
 export async function POST(request: Request): Promise<Response> {

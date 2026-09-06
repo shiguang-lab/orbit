@@ -12,7 +12,7 @@
 import { z } from "zod";
 import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import { HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants";
-import { extractApiKey, isValidApiKey } from "@shiguang-gateway/core-domain/sse/auth";
+import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/services/auth";
 import {
   getPlaygroundPreset,
   updatePlaygroundPreset,

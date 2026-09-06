@@ -2,7 +2,7 @@ import { isCommonChatGptWebRetiredProviderId } from "@shiguang-gateway/contracts
 import { providerChatBodySchema, type ProviderChatBody } from "./provider-chat.schemas.js";
 
 type ProviderParams = { params: { provider: string } };
-type ChatRuntime = typeof import("@shiguang-gateway/core-domain/edge/chat-handler");
+type ChatRuntime = typeof import("@shiguang-gateway/open-sse/handlers/chat");
 
 let initialized = false;
 
@@ -15,7 +15,7 @@ async function runtime(): Promise<{
   getRegistryEntry: (provider: string) => { id: string; alias?: string } | null;
 }> {
   const [chat, sse, errorApi, constants, registry, admission] = await Promise.all([
-    import("@shiguang-gateway/core-domain/edge/chat-handler"),
+    import("@shiguang-gateway/open-sse/handlers/chat"),
     import("@shiguang-gateway/open-sse/translator"),
     import("@shiguang-gateway/open-sse/utils/error"),
     import("@shiguang-gateway/open-sse/config/constants"),

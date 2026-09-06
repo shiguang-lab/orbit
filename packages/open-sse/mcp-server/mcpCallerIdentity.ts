@@ -19,7 +19,7 @@
  * → the anonymous (`__anon__`) bucket, which only matches unauthenticated stores.
  */
 import { getMcpHttpAuthHeadersForInternalFetch } from "./httpAuthContext.ts";
-import { extractApiKey } from "@shiguang-gateway/core-domain/sse/auth";
+import { extractApiKey } from "../services/auth.ts";
 import { getApiKeyMetadata } from "@shiguang-gateway/core-domain/db/api-keys";
 
 type ApiKeyLookup = (rawKey: string) => Promise<{ id?: string | number | null } | null>;

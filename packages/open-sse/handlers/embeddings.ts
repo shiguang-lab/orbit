@@ -36,7 +36,7 @@ import {
   prepareStructuredEmbeddingRequest,
 } from "./embeddingStructuredInput.ts";
 import { MAX_EMBEDDING_INLINE_ITEM_BYTES } from "@shiguang-gateway/core-domain/edge/embedding-input-limits";
-import { markAccountUnavailable } from "@shiguang-gateway/core-domain/sse/auth";
+import { markAccountUnavailable } from "../services/auth.ts";
 import {
   collectJinaNativeModalities,
   isJinaNativeEmbeddingInput,

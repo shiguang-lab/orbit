@@ -120,10 +120,10 @@ function toWebHeaders(headers: import("http").IncomingMessage["headers"]): Heade
 // connection handling never pays that cost. Kept as a dynamic import (not a
 // top-level static one) to preserve the sidecar's decoupling from the SSE auth
 // graph at module-load time.
-let authModulePromise: Promise<typeof import("@shiguang-gateway/core-domain/sse/auth")> | null = null;
-function loadAuthModule(): Promise<typeof import("@shiguang-gateway/core-domain/sse/auth")> {
+let authModulePromise: Promise<typeof import("@shiguang-gateway/open-sse/services/auth")> | null = null;
+function loadAuthModule(): Promise<typeof import("@shiguang-gateway/open-sse/services/auth")> {
   if (!authModulePromise) {
-    authModulePromise = import("@shiguang-gateway/core-domain/sse/auth");
+    authModulePromise = import("@shiguang-gateway/open-sse/services/auth");
   }
   return authModulePromise;
 }

@@ -1,6 +1,6 @@
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 
-import { getProviderCredentialsWithQuotaPreflight } from "@shiguang-gateway/core-domain/sse/auth";
+import { getProviderCredentialsWithQuotaPreflight } from "./auth.ts";
 import { checkAndRefreshToken } from "@shiguang-gateway/open-sse/services/credentialTokenRefresh";
 import * as log from "../utils/sseLogger.ts";
 

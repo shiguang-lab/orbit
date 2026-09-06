@@ -1,4 +1,4 @@
-import { buildClientRawRequest, handleChat } from "../sse/handlers/chat.ts";
+import { buildClientRawRequest, handleChat } from "@shiguang-gateway/open-sse/handlers/chat";
 import { initTranslators } from "@shiguang-gateway/open-sse/translator";
 import {
   convertOpenAIResponseToGemini,

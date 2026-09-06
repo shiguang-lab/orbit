@@ -6,7 +6,7 @@
  * (#7339, Phase 4 of #3384).
  */
 
-import { getProviderCredentialsWithQuotaPreflight } from "../../sse/services/auth.ts";
+import { getProviderCredentialsWithQuotaPreflight } from "@shiguang-gateway/open-sse/services/auth";
 import { getInterceptionRules, type FetchInterceptionBackend } from "../db/interceptionRules.ts";
 import {
   handleWebFetch,

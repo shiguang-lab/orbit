@@ -1,6 +1,6 @@
 import { isAuthRequired, isDashboardSessionAuthenticated } from "../../shared/utils/apiAuth.ts";
 import { createErrorResponse } from "./errorResponse.ts";
-import { extractApiKey, isValidApiKey } from "../../sse/services/auth.ts";
+import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/services/auth";
 import { getApiKeyMetadata } from "../db/apiKeys.ts";
 import { isCliTokenAuthValid } from "../middleware/cliTokenAuth.ts";
 import { evaluateAccessTokenAuth } from "../../server/authz/accessTokenAuth.ts";

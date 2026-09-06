@@ -1,14 +1,2 @@
-import type { RegistryEntry } from "../../shared.ts";
-
-export const charmHyperProvider: RegistryEntry = {
-  id: "charm-hyper",
-  alias: "charm-hyper",
-  format: "openai",
-  executor: "default",
-  baseUrl: "https://hyper.charm.land/v1/chat/completions",
-  authType: "apikey",
-  authHeader: "bearer",
-  modelsUrl: "https://hyper.charm.land/v1/models",
-  models: [{ id: "hyper/auto", name: "Charm Hyper Auto" }],
-  passthroughModels: true,
-};
+/** Compatibility facade; catalog ownership lives in @shiguang-gateway/provider-catalog. */
+export { charmHyperProvider } from "@shiguang-gateway/provider-catalog/providers/registry/charm-hyper";

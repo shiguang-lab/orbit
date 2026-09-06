@@ -6,7 +6,7 @@ import {
   buildKimiCodeIdentityHeaders,
   normalizeKimiDeviceId,
   sanitizeKimiHeaderValue,
-} from "../../../../../open-sse/config/providers/registry/kimi/coding/runtime.ts";
+} from "@shiguang-gateway/provider-catalog/providers/registry/kimi/coding/runtime";
 import { getKimiDeviceModel } from "../../../../../open-sse/utils/kimiDevice.ts";
 import { resolveDataDir } from "../../dataPaths";
 import { KIMI_CODING_CONFIG } from "../constants/oauth";

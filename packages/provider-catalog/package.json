@@ -1,0 +1,1242 @@
+{
+  "name": "@shiguang-gateway/provider-catalog",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./provider-models": {
+      "types": "./dist/config/providerModels.d.ts",
+      "import": "./src/config/providerModels.ts"
+    },
+    "./provider-registry": {
+      "types": "./dist/config/providerRegistry.d.ts",
+      "import": "./src/config/providerRegistry.ts"
+    },
+    "./providers": {
+      "types": "./dist/config/providers/index.d.ts",
+      "import": "./src/config/providers/index.ts"
+    },
+    "./providers/alternateFormats": {
+      "types": "./dist/config/providers/alternateFormats.d.ts",
+      "import": "./src/config/providers/alternateFormats.ts"
+    },
+    "./providers/registry/adapta-web": {
+      "types": "./dist/config/providers/registry/adapta-web/index.d.ts",
+      "import": "./src/config/providers/registry/adapta-web/index.ts"
+    },
+    "./providers/registry/agentrouter": {
+      "types": "./dist/config/providers/registry/agentrouter/index.d.ts",
+      "import": "./src/config/providers/registry/agentrouter/index.ts"
+    },
+    "./providers/registry/agnes": {
+      "types": "./dist/config/providers/registry/agnes/index.d.ts",
+      "import": "./src/config/providers/registry/agnes/index.ts"
+    },
+    "./providers/registry/agy": {
+      "types": "./dist/config/providers/registry/agy/index.d.ts",
+      "import": "./src/config/providers/registry/agy/index.ts"
+    },
+    "./providers/registry/ai21": {
+      "types": "./dist/config/providers/registry/ai21/index.d.ts",
+      "import": "./src/config/providers/registry/ai21/index.ts"
+    },
+    "./providers/registry/aihorde": {
+      "types": "./dist/config/providers/registry/aihorde/index.d.ts",
+      "import": "./src/config/providers/registry/aihorde/index.ts"
+    },
+    "./providers/registry/aihorde/imageModels": {
+      "types": "./dist/config/providers/registry/aihorde/imageModels.d.ts",
+      "import": "./src/config/providers/registry/aihorde/imageModels.ts"
+    },
+    "./providers/registry/aimlapi": {
+      "types": "./dist/config/providers/registry/aimlapi/index.d.ts",
+      "import": "./src/config/providers/registry/aimlapi/index.ts"
+    },
+    "./providers/registry/ainative": {
+      "types": "./dist/config/providers/registry/ainative/index.d.ts",
+      "import": "./src/config/providers/registry/ainative/index.ts"
+    },
+    "./providers/registry/aion": {
+      "types": "./dist/config/providers/registry/aion/index.d.ts",
+      "import": "./src/config/providers/registry/aion/index.ts"
+    },
+    "./providers/registry/alibaba": {
+      "types": "./dist/config/providers/registry/alibaba/index.d.ts",
+      "import": "./src/config/providers/registry/alibaba/index.ts"
+    },
+    "./providers/registry/alibaba/cn": {
+      "types": "./dist/config/providers/registry/alibaba/cn/index.d.ts",
+      "import": "./src/config/providers/registry/alibaba/cn/index.ts"
+    },
+    "./providers/registry/ant-ling": {
+      "types": "./dist/config/providers/registry/ant-ling/index.d.ts",
+      "import": "./src/config/providers/registry/ant-ling/index.ts"
+    },
+    "./providers/registry/anthropic": {
+      "types": "./dist/config/providers/registry/anthropic/index.d.ts",
+      "import": "./src/config/providers/registry/anthropic/index.ts"
+    },
+    "./providers/registry/antigravity": {
+      "types": "./dist/config/providers/registry/antigravity/index.d.ts",
+      "import": "./src/config/providers/registry/antigravity/index.ts"
+    },
+    "./providers/registry/anyapi": {
+      "types": "./dist/config/providers/registry/anyapi/index.d.ts",
+      "import": "./src/config/providers/registry/anyapi/index.ts"
+    },
+    "./providers/registry/api-airforce": {
+      "types": "./dist/config/providers/registry/api-airforce/index.d.ts",
+      "import": "./src/config/providers/registry/api-airforce/index.ts"
+    },
+    "./providers/registry/auggie": {
+      "types": "./dist/config/providers/registry/auggie/index.d.ts",
+      "import": "./src/config/providers/registry/auggie/index.ts"
+    },
+    "./providers/registry/auriko": {
+      "types": "./dist/config/providers/registry/auriko/index.d.ts",
+      "import": "./src/config/providers/registry/auriko/index.ts"
+    },
+    "./providers/registry/bai": {
+      "types": "./dist/config/providers/registry/bai/index.d.ts",
+      "import": "./src/config/providers/registry/bai/index.ts"
+    },
+    "./providers/registry/baichuan": {
+      "types": "./dist/config/providers/registry/baichuan/index.d.ts",
+      "import": "./src/config/providers/registry/baichuan/index.ts"
+    },
+    "./providers/registry/baidu": {
+      "types": "./dist/config/providers/registry/baidu/index.d.ts",
+      "import": "./src/config/providers/registry/baidu/index.ts"
+    },
+    "./providers/registry/bailian-coding-plan": {
+      "types": "./dist/config/providers/registry/bailian-coding-plan/index.d.ts",
+      "import": "./src/config/providers/registry/bailian-coding-plan/index.ts"
+    },
+    "./providers/registry/baseten": {
+      "types": "./dist/config/providers/registry/baseten/index.d.ts",
+      "import": "./src/config/providers/registry/baseten/index.ts"
+    },
+    "./providers/registry/bazaarlink": {
+      "types": "./dist/config/providers/registry/bazaarlink/index.d.ts",
+      "import": "./src/config/providers/registry/bazaarlink/index.ts"
+    },
+    "./providers/registry/bedrock": {
+      "types": "./dist/config/providers/registry/bedrock/index.d.ts",
+      "import": "./src/config/providers/registry/bedrock/index.ts"
+    },
+    "./providers/registry/blackbox": {
+      "types": "./dist/config/providers/registry/blackbox/index.d.ts",
+      "import": "./src/config/providers/registry/blackbox/index.ts"
+    },
+    "./providers/registry/blackbox/web": {
+      "types": "./dist/config/providers/registry/blackbox/web/index.d.ts",
+      "import": "./src/config/providers/registry/blackbox/web/index.ts"
+    },
+    "./providers/registry/bluesminds": {
+      "types": "./dist/config/providers/registry/bluesminds/index.d.ts",
+      "import": "./src/config/providers/registry/bluesminds/index.ts"
+    },
+    "./providers/registry/byteplus": {
+      "types": "./dist/config/providers/registry/byteplus/index.d.ts",
+      "import": "./src/config/providers/registry/byteplus/index.ts"
+    },
+    "./providers/registry/bytez": {
+      "types": "./dist/config/providers/registry/bytez/index.d.ts",
+      "import": "./src/config/providers/registry/bytez/index.ts"
+    },
+    "./providers/registry/cerebras": {
+      "types": "./dist/config/providers/registry/cerebras/index.d.ts",
+      "import": "./src/config/providers/registry/cerebras/index.ts"
+    },
+    "./providers/registry/charm-hyper": {
+      "types": "./dist/config/providers/registry/charm-hyper/index.d.ts",
+      "import": "./src/config/providers/registry/charm-hyper/index.ts"
+    },
+    "./providers/registry/chat-oripe": {
+      "types": "./dist/config/providers/registry/chat-oripe/index.d.ts",
+      "import": "./src/config/providers/registry/chat-oripe/index.ts"
+    },
+    "./providers/registry/chatanywhere": {
+      "types": "./dist/config/providers/registry/chatanywhere/index.d.ts",
+      "import": "./src/config/providers/registry/chatanywhere/index.ts"
+    },
+    "./providers/registry/chatgpt-web-codex": {
+      "types": "./dist/config/providers/registry/chatgpt-web-codex/index.d.ts",
+      "import": "./src/config/providers/registry/chatgpt-web-codex/index.ts"
+    },
+    "./providers/registry/cheaperinference": {
+      "types": "./dist/config/providers/registry/cheaperinference/index.d.ts",
+      "import": "./src/config/providers/registry/cheaperinference/index.ts"
+    },
+    "./providers/registry/cheaperinference/imageModels": {
+      "types": "./dist/config/providers/registry/cheaperinference/imageModels.d.ts",
+      "import": "./src/config/providers/registry/cheaperinference/imageModels.ts"
+    },
+    "./providers/registry/chenzk": {
+      "types": "./dist/config/providers/registry/chenzk/index.d.ts",
+      "import": "./src/config/providers/registry/chenzk/index.ts"
+    },
+    "./providers/registry/chipotle": {
+      "types": "./dist/config/providers/registry/chipotle/index.d.ts",
+      "import": "./src/config/providers/registry/chipotle/index.ts"
+    },
+    "./providers/registry/chutes": {
+      "types": "./dist/config/providers/registry/chutes/index.d.ts",
+      "import": "./src/config/providers/registry/chutes/index.ts"
+    },
+    "./providers/registry/claude": {
+      "types": "./dist/config/providers/registry/claude/index.d.ts",
+      "import": "./src/config/providers/registry/claude/index.ts"
+    },
+    "./providers/registry/claude/web": {
+      "types": "./dist/config/providers/registry/claude/web/index.d.ts",
+      "import": "./src/config/providers/registry/claude/web/index.ts"
+    },
+    "./providers/registry/cline": {
+      "types": "./dist/config/providers/registry/cline/index.d.ts",
+      "import": "./src/config/providers/registry/cline/index.ts"
+    },
+    "./providers/registry/clinepass": {
+      "types": "./dist/config/providers/registry/clinepass/index.d.ts",
+      "import": "./src/config/providers/registry/clinepass/index.ts"
+    },
+    "./providers/registry/cloudcode-one": {
+      "types": "./dist/config/providers/registry/cloudcode-one/index.d.ts",
+      "import": "./src/config/providers/registry/cloudcode-one/index.ts"
+    },
+    "./providers/registry/cloudflare-ai": {
+      "types": "./dist/config/providers/registry/cloudflare-ai/index.d.ts",
+      "import": "./src/config/providers/registry/cloudflare-ai/index.ts"
+    },
+    "./providers/registry/cloudflare-playground": {
+      "types": "./dist/config/providers/registry/cloudflare-playground/index.d.ts",
+      "import": "./src/config/providers/registry/cloudflare-playground/index.ts"
+    },
+    "./providers/registry/clova-studio": {
+      "types": "./dist/config/providers/registry/clova-studio/index.d.ts",
+      "import": "./src/config/providers/registry/clova-studio/index.ts"
+    },
+    "./providers/registry/codebuddy-cn": {
+      "types": "./dist/config/providers/registry/codebuddy-cn/index.d.ts",
+      "import": "./src/config/providers/registry/codebuddy-cn/index.ts"
+    },
+    "./providers/registry/codestral": {
+      "types": "./dist/config/providers/registry/codestral/index.d.ts",
+      "import": "./src/config/providers/registry/codestral/index.ts"
+    },
+    "./providers/registry/codex": {
+      "types": "./dist/config/providers/registry/codex/index.d.ts",
+      "import": "./src/config/providers/registry/codex/index.ts"
+    },
+    "./providers/registry/codex-app-server": {
+      "types": "./dist/config/providers/registry/codex-app-server/index.d.ts",
+      "import": "./src/config/providers/registry/codex-app-server/index.ts"
+    },
+    "./providers/registry/cohere": {
+      "types": "./dist/config/providers/registry/cohere/index.d.ts",
+      "import": "./src/config/providers/registry/cohere/index.ts"
+    },
+    "./providers/registry/command-code": {
+      "types": "./dist/config/providers/registry/command-code/index.d.ts",
+      "import": "./src/config/providers/registry/command-code/index.ts"
+    },
+    "./providers/registry/conol-web": {
+      "types": "./dist/config/providers/registry/conol-web/index.d.ts",
+      "import": "./src/config/providers/registry/conol-web/index.ts"
+    },
+    "./providers/registry/copilot-m365-web": {
+      "types": "./dist/config/providers/registry/copilot-m365-web/index.d.ts",
+      "import": "./src/config/providers/registry/copilot-m365-web/index.ts"
+    },
+    "./providers/registry/copilot-web": {
+      "types": "./dist/config/providers/registry/copilot-web/index.d.ts",
+      "import": "./src/config/providers/registry/copilot-web/index.ts"
+    },
+    "./providers/registry/coze": {
+      "types": "./dist/config/providers/registry/coze/index.d.ts",
+      "import": "./src/config/providers/registry/coze/index.ts"
+    },
+    "./providers/registry/crof": {
+      "types": "./dist/config/providers/registry/crof/index.d.ts",
+      "import": "./src/config/providers/registry/crof/index.ts"
+    },
+    "./providers/registry/cursor": {
+      "types": "./dist/config/providers/registry/cursor/index.d.ts",
+      "import": "./src/config/providers/registry/cursor/index.ts"
+    },
+    "./providers/registry/dahl": {
+      "types": "./dist/config/providers/registry/dahl/index.d.ts",
+      "import": "./src/config/providers/registry/dahl/index.ts"
+    },
+    "./providers/registry/databricks": {
+      "types": "./dist/config/providers/registry/databricks/index.d.ts",
+      "import": "./src/config/providers/registry/databricks/index.ts"
+    },
+    "./providers/registry/deepai": {
+      "types": "./dist/config/providers/registry/deepai/index.d.ts",
+      "import": "./src/config/providers/registry/deepai/index.ts"
+    },
+    "./providers/registry/deepinfra": {
+      "types": "./dist/config/providers/registry/deepinfra/index.d.ts",
+      "import": "./src/config/providers/registry/deepinfra/index.ts"
+    },
+    "./providers/registry/deepseek": {
+      "types": "./dist/config/providers/registry/deepseek/index.d.ts",
+      "import": "./src/config/providers/registry/deepseek/index.ts"
+    },
+    "./providers/registry/deepseek/web": {
+      "types": "./dist/config/providers/registry/deepseek/web/index.d.ts",
+      "import": "./src/config/providers/registry/deepseek/web/index.ts"
+    },
+    "./providers/registry/devin-cli": {
+      "types": "./dist/config/providers/registry/devin-cli/index.d.ts",
+      "import": "./src/config/providers/registry/devin-cli/index.ts"
+    },
+    "./providers/registry/devin-cli-agentic": {
+      "types": "./dist/config/providers/registry/devin-cli-agentic/index.d.ts",
+      "import": "./src/config/providers/registry/devin-cli-agentic/index.ts"
+    },
+    "./providers/registry/devin-desktop": {
+      "types": "./dist/config/providers/registry/devin-desktop/index.d.ts",
+      "import": "./src/config/providers/registry/devin-desktop/index.ts"
+    },
+    "./providers/registry/devin/catalog": {
+      "types": "./dist/config/providers/registry/devin/catalog.d.ts",
+      "import": "./src/config/providers/registry/devin/catalog.ts"
+    },
+    "./providers/registry/dgrid": {
+      "types": "./dist/config/providers/registry/dgrid/index.d.ts",
+      "import": "./src/config/providers/registry/dgrid/index.ts"
+    },
+    "./providers/registry/dify": {
+      "types": "./dist/config/providers/registry/dify/index.d.ts",
+      "import": "./src/config/providers/registry/dify/index.ts"
+    },
+    "./providers/registry/digitalocean": {
+      "types": "./dist/config/providers/registry/digitalocean/index.d.ts",
+      "import": "./src/config/providers/registry/digitalocean/index.ts"
+    },
+    "./providers/registry/dit": {
+      "types": "./dist/config/providers/registry/dit/index.d.ts",
+      "import": "./src/config/providers/registry/dit/index.ts"
+    },
+    "./providers/registry/doubao": {
+      "types": "./dist/config/providers/registry/doubao/index.d.ts",
+      "import": "./src/config/providers/registry/doubao/index.ts"
+    },
+    "./providers/registry/doubao/web": {
+      "types": "./dist/config/providers/registry/doubao/web/index.d.ts",
+      "import": "./src/config/providers/registry/doubao/web/index.ts"
+    },
+    "./providers/registry/duckduckgo-web": {
+      "types": "./dist/config/providers/registry/duckduckgo-web/index.d.ts",
+      "import": "./src/config/providers/registry/duckduckgo-web/index.ts"
+    },
+    "./providers/registry/dxnt": {
+      "types": "./dist/config/providers/registry/dxnt/index.d.ts",
+      "import": "./src/config/providers/registry/dxnt/index.ts"
+    },
+    "./providers/registry/electronhub": {
+      "types": "./dist/config/providers/registry/electronhub/index.d.ts",
+      "import": "./src/config/providers/registry/electronhub/index.ts"
+    },
+    "./providers/registry/factory": {
+      "types": "./dist/config/providers/registry/factory/index.d.ts",
+      "import": "./src/config/providers/registry/factory/index.ts"
+    },
+    "./providers/registry/fastrouter": {
+      "types": "./dist/config/providers/registry/fastrouter/index.d.ts",
+      "import": "./src/config/providers/registry/fastrouter/index.ts"
+    },
+    "./providers/registry/featherless-ai": {
+      "types": "./dist/config/providers/registry/featherless-ai/index.d.ts",
+      "import": "./src/config/providers/registry/featherless-ai/index.ts"
+    },
+    "./providers/registry/fireworks": {
+      "types": "./dist/config/providers/registry/fireworks/index.d.ts",
+      "import": "./src/config/providers/registry/fireworks/index.ts"
+    },
+    "./providers/registry/free-ai": {
+      "types": "./dist/config/providers/registry/free-ai/index.d.ts",
+      "import": "./src/config/providers/registry/free-ai/index.ts"
+    },
+    "./providers/registry/freeaiapikey": {
+      "types": "./dist/config/providers/registry/freeaiapikey/index.d.ts",
+      "import": "./src/config/providers/registry/freeaiapikey/index.ts"
+    },
+    "./providers/registry/freebuff": {
+      "types": "./dist/config/providers/registry/freebuff/index.d.ts",
+      "import": "./src/config/providers/registry/freebuff/index.ts"
+    },
+    "./providers/registry/freeinference": {
+      "types": "./dist/config/providers/registry/freeinference/index.d.ts",
+      "import": "./src/config/providers/registry/freeinference/index.ts"
+    },
+    "./providers/registry/freemodel-dev": {
+      "types": "./dist/config/providers/registry/freemodel-dev/index.d.ts",
+      "import": "./src/config/providers/registry/freemodel-dev/index.ts"
+    },
+    "./providers/registry/freetheai": {
+      "types": "./dist/config/providers/registry/freetheai/index.d.ts",
+      "import": "./src/config/providers/registry/freetheai/index.ts"
+    },
+    "./providers/registry/friendliai": {
+      "types": "./dist/config/providers/registry/friendliai/index.d.ts",
+      "import": "./src/config/providers/registry/friendliai/index.ts"
+    },
+    "./providers/registry/g4f-gemini": {
+      "types": "./dist/config/providers/registry/g4f-gemini/index.d.ts",
+      "import": "./src/config/providers/registry/g4f-gemini/index.ts"
+    },
+    "./providers/registry/g4f-groq": {
+      "types": "./dist/config/providers/registry/g4f-groq/index.d.ts",
+      "import": "./src/config/providers/registry/g4f-groq/index.ts"
+    },
+    "./providers/registry/g4f-nvidia": {
+      "types": "./dist/config/providers/registry/g4f-nvidia/index.d.ts",
+      "import": "./src/config/providers/registry/g4f-nvidia/index.ts"
+    },
+    "./providers/registry/g4f-ollama": {
+      "types": "./dist/config/providers/registry/g4f-ollama/index.d.ts",
+      "import": "./src/config/providers/registry/g4f-ollama/index.ts"
+    },
+    "./providers/registry/g4f-pollinations": {
+      "types": "./dist/config/providers/registry/g4f-pollinations/index.d.ts",
+      "import": "./src/config/providers/registry/g4f-pollinations/index.ts"
+    },
+    "./providers/registry/galadriel": {
+      "types": "./dist/config/providers/registry/galadriel/index.d.ts",
+      "import": "./src/config/providers/registry/galadriel/index.ts"
+    },
+    "./providers/registry/gemini": {
+      "types": "./dist/config/providers/registry/gemini/index.d.ts",
+      "import": "./src/config/providers/registry/gemini/index.ts"
+    },
+    "./providers/registry/gemini/web": {
+      "types": "./dist/config/providers/registry/gemini/web/index.d.ts",
+      "import": "./src/config/providers/registry/gemini/web/index.ts"
+    },
+    "./providers/registry/ghe-copilot": {
+      "types": "./dist/config/providers/registry/ghe-copilot/index.d.ts",
+      "import": "./src/config/providers/registry/ghe-copilot/index.ts"
+    },
+    "./providers/registry/gigachat": {
+      "types": "./dist/config/providers/registry/gigachat/index.d.ts",
+      "import": "./src/config/providers/registry/gigachat/index.ts"
+    },
+    "./providers/registry/github": {
+      "types": "./dist/config/providers/registry/github/index.d.ts",
+      "import": "./src/config/providers/registry/github/index.ts"
+    },
+    "./providers/registry/github/retiredModels": {
+      "types": "./dist/config/providers/registry/github/retiredModels.d.ts",
+      "import": "./src/config/providers/registry/github/retiredModels.ts"
+    },
+    "./providers/registry/gitlab-duo": {
+      "types": "./dist/config/providers/registry/gitlab-duo/index.d.ts",
+      "import": "./src/config/providers/registry/gitlab-duo/index.ts"
+    },
+    "./providers/registry/gitlawb": {
+      "types": "./dist/config/providers/registry/gitlawb/index.d.ts",
+      "import": "./src/config/providers/registry/gitlawb/index.ts"
+    },
+    "./providers/registry/gitlawb/gmi": {
+      "types": "./dist/config/providers/registry/gitlawb/gmi/index.d.ts",
+      "import": "./src/config/providers/registry/gitlawb/gmi/index.ts"
+    },
+    "./providers/registry/glm": {
+      "types": "./dist/config/providers/registry/glm/index.d.ts",
+      "import": "./src/config/providers/registry/glm/index.ts"
+    },
+    "./providers/registry/glm/cn": {
+      "types": "./dist/config/providers/registry/glm/cn/index.d.ts",
+      "import": "./src/config/providers/registry/glm/cn/index.ts"
+    },
+    "./providers/registry/glm/t": {
+      "types": "./dist/config/providers/registry/glm/t/index.d.ts",
+      "import": "./src/config/providers/registry/glm/t/index.ts"
+    },
+    "./providers/registry/grok-cli": {
+      "types": "./dist/config/providers/registry/grok-cli/index.d.ts",
+      "import": "./src/config/providers/registry/grok-cli/index.ts"
+    },
+    "./providers/registry/grok-web": {
+      "types": "./dist/config/providers/registry/grok-web/index.d.ts",
+      "import": "./src/config/providers/registry/grok-web/index.ts"
+    },
+    "./providers/registry/groq": {
+      "types": "./dist/config/providers/registry/groq/index.d.ts",
+      "import": "./src/config/providers/registry/groq/index.ts"
+    },
+    "./providers/registry/haiper": {
+      "types": "./dist/config/providers/registry/haiper/index.d.ts",
+      "import": "./src/config/providers/registry/haiper/index.ts"
+    },
+    "./providers/registry/hcnsec": {
+      "types": "./dist/config/providers/registry/hcnsec/index.d.ts",
+      "import": "./src/config/providers/registry/hcnsec/index.ts"
+    },
+    "./providers/registry/helixmind": {
+      "types": "./dist/config/providers/registry/helixmind/index.d.ts",
+      "import": "./src/config/providers/registry/helixmind/index.ts"
+    },
+    "./providers/registry/helyxai": {
+      "types": "./dist/config/providers/registry/helyxai/index.d.ts",
+      "import": "./src/config/providers/registry/helyxai/index.ts"
+    },
+    "./providers/registry/heroku": {
+      "types": "./dist/config/providers/registry/heroku/index.d.ts",
+      "import": "./src/config/providers/registry/heroku/index.ts"
+    },
+    "./providers/registry/huggingchat": {
+      "types": "./dist/config/providers/registry/huggingchat/index.d.ts",
+      "import": "./src/config/providers/registry/huggingchat/index.ts"
+    },
+    "./providers/registry/huggingface": {
+      "types": "./dist/config/providers/registry/huggingface/index.d.ts",
+      "import": "./src/config/providers/registry/huggingface/index.ts"
+    },
+    "./providers/registry/hyperagent": {
+      "types": "./dist/config/providers/registry/hyperagent/index.d.ts",
+      "import": "./src/config/providers/registry/hyperagent/index.ts"
+    },
+    "./providers/registry/hyperbolic": {
+      "types": "./dist/config/providers/registry/hyperbolic/index.d.ts",
+      "import": "./src/config/providers/registry/hyperbolic/index.ts"
+    },
+    "./providers/registry/ideogram": {
+      "types": "./dist/config/providers/registry/ideogram/index.d.ts",
+      "import": "./src/config/providers/registry/ideogram/index.ts"
+    },
+    "./providers/registry/iflytek": {
+      "types": "./dist/config/providers/registry/iflytek/index.d.ts",
+      "import": "./src/config/providers/registry/iflytek/index.ts"
+    },
+    "./providers/registry/inception": {
+      "types": "./dist/config/providers/registry/inception/index.d.ts",
+      "import": "./src/config/providers/registry/inception/index.ts"
+    },
+    "./providers/registry/inference-net": {
+      "types": "./dist/config/providers/registry/inference-net/index.d.ts",
+      "import": "./src/config/providers/registry/inference-net/index.ts"
+    },
+    "./providers/registry/inner-ai": {
+      "types": "./dist/config/providers/registry/inner-ai/index.d.ts",
+      "import": "./src/config/providers/registry/inner-ai/index.ts"
+    },
+    "./providers/registry/internlm": {
+      "types": "./dist/config/providers/registry/internlm/index.d.ts",
+      "import": "./src/config/providers/registry/internlm/index.ts"
+    },
+    "./providers/registry/kenari": {
+      "types": "./dist/config/providers/registry/kenari/index.d.ts",
+      "import": "./src/config/providers/registry/kenari/index.ts"
+    },
+    "./providers/registry/kie": {
+      "types": "./dist/config/providers/registry/kie/index.d.ts",
+      "import": "./src/config/providers/registry/kie/index.ts"
+    },
+    "./providers/registry/kie/imageModels": {
+      "types": "./dist/config/providers/registry/kie/imageModels.d.ts",
+      "import": "./src/config/providers/registry/kie/imageModels.ts"
+    },
+    "./providers/registry/kie/models": {
+      "types": "./dist/config/providers/registry/kie/models.d.ts",
+      "import": "./src/config/providers/registry/kie/models.ts"
+    },
+    "./providers/registry/kilo-gateway": {
+      "types": "./dist/config/providers/registry/kilo-gateway/index.d.ts",
+      "import": "./src/config/providers/registry/kilo-gateway/index.ts"
+    },
+    "./providers/registry/kilocode": {
+      "types": "./dist/config/providers/registry/kilocode/index.d.ts",
+      "import": "./src/config/providers/registry/kilocode/index.ts"
+    },
+    "./providers/registry/kimi": {
+      "types": "./dist/config/providers/registry/kimi/index.d.ts",
+      "import": "./src/config/providers/registry/kimi/index.ts"
+    },
+    "./providers/registry/kimi/coding": {
+      "types": "./dist/config/providers/registry/kimi/coding/index.d.ts",
+      "import": "./src/config/providers/registry/kimi/coding/index.ts"
+    },
+    "./providers/registry/kimi/coding-apikey": {
+      "types": "./dist/config/providers/registry/kimi/coding-apikey/index.d.ts",
+      "import": "./src/config/providers/registry/kimi/coding-apikey/index.ts"
+    },
+    "./providers/registry/kimi/coding/runtime": {
+      "types": "./dist/config/providers/registry/kimi/coding/runtime.d.ts",
+      "import": "./src/config/providers/registry/kimi/coding/runtime.ts"
+    },
+    "./providers/registry/kimi/web": {
+      "types": "./dist/config/providers/registry/kimi/web/index.d.ts",
+      "import": "./src/config/providers/registry/kimi/web/index.ts"
+    },
+    "./providers/registry/kimi/web/runtime": {
+      "types": "./dist/config/providers/registry/kimi/web/runtime.d.ts",
+      "import": "./src/config/providers/registry/kimi/web/runtime.ts"
+    },
+    "./providers/registry/kiro": {
+      "types": "./dist/config/providers/registry/kiro/index.d.ts",
+      "import": "./src/config/providers/registry/kiro/index.ts"
+    },
+    "./providers/registry/lambda-ai": {
+      "types": "./dist/config/providers/registry/lambda-ai/index.d.ts",
+      "import": "./src/config/providers/registry/lambda-ai/index.ts"
+    },
+    "./providers/registry/leonardo": {
+      "types": "./dist/config/providers/registry/leonardo/index.d.ts",
+      "import": "./src/config/providers/registry/leonardo/index.ts"
+    },
+    "./providers/registry/liquid": {
+      "types": "./dist/config/providers/registry/liquid/index.d.ts",
+      "import": "./src/config/providers/registry/liquid/index.ts"
+    },
+    "./providers/registry/literouter": {
+      "types": "./dist/config/providers/registry/literouter/index.d.ts",
+      "import": "./src/config/providers/registry/literouter/index.ts"
+    },
+    "./providers/registry/llamagate": {
+      "types": "./dist/config/providers/registry/llamagate/index.d.ts",
+      "import": "./src/config/providers/registry/llamagate/index.ts"
+    },
+    "./providers/registry/llm-kiwi": {
+      "types": "./dist/config/providers/registry/llm-kiwi/index.d.ts",
+      "import": "./src/config/providers/registry/llm-kiwi/index.ts"
+    },
+    "./providers/registry/llm7": {
+      "types": "./dist/config/providers/registry/llm7/index.d.ts",
+      "import": "./src/config/providers/registry/llm7/index.ts"
+    },
+    "./providers/registry/llmgateway": {
+      "types": "./dist/config/providers/registry/llmgateway/index.d.ts",
+      "import": "./src/config/providers/registry/llmgateway/index.ts"
+    },
+    "./providers/registry/lmarena": {
+      "types": "./dist/config/providers/registry/lmarena/index.d.ts",
+      "import": "./src/config/providers/registry/lmarena/index.ts"
+    },
+    "./providers/registry/lmarena/directModels": {
+      "types": "./dist/config/providers/registry/lmarena/directModels.d.ts",
+      "import": "./src/config/providers/registry/lmarena/directModels.ts"
+    },
+    "./providers/registry/logfare": {
+      "types": "./dist/config/providers/registry/logfare/index.d.ts",
+      "import": "./src/config/providers/registry/logfare/index.ts"
+    },
+    "./providers/registry/longcat": {
+      "types": "./dist/config/providers/registry/longcat/index.d.ts",
+      "import": "./src/config/providers/registry/longcat/index.ts"
+    },
+    "./providers/registry/magnific": {
+      "types": "./dist/config/providers/registry/magnific/index.d.ts",
+      "import": "./src/config/providers/registry/magnific/index.ts"
+    },
+    "./providers/registry/maritalk": {
+      "types": "./dist/config/providers/registry/maritalk/index.d.ts",
+      "import": "./src/config/providers/registry/maritalk/index.ts"
+    },
+    "./providers/registry/meganova-ai": {
+      "types": "./dist/config/providers/registry/meganova-ai/index.d.ts",
+      "import": "./src/config/providers/registry/meganova-ai/index.ts"
+    },
+    "./providers/registry/meta-llama": {
+      "types": "./dist/config/providers/registry/meta-llama/index.d.ts",
+      "import": "./src/config/providers/registry/meta-llama/index.ts"
+    },
+    "./providers/registry/minimax": {
+      "types": "./dist/config/providers/registry/minimax/index.d.ts",
+      "import": "./src/config/providers/registry/minimax/index.ts"
+    },
+    "./providers/registry/minimax/cn": {
+      "types": "./dist/config/providers/registry/minimax/cn/index.d.ts",
+      "import": "./src/config/providers/registry/minimax/cn/index.ts"
+    },
+    "./providers/registry/mistral": {
+      "types": "./dist/config/providers/registry/mistral/index.d.ts",
+      "import": "./src/config/providers/registry/mistral/index.ts"
+    },
+    "./providers/registry/mixlayer": {
+      "types": "./dist/config/providers/registry/mixlayer/index.d.ts",
+      "import": "./src/config/providers/registry/mixlayer/index.ts"
+    },
+    "./providers/registry/mlx": {
+      "types": "./dist/config/providers/registry/mlx/index.d.ts",
+      "import": "./src/config/providers/registry/mlx/index.ts"
+    },
+    "./providers/registry/mnn-ai": {
+      "types": "./dist/config/providers/registry/mnn-ai/index.d.ts",
+      "import": "./src/config/providers/registry/mnn-ai/index.ts"
+    },
+    "./providers/registry/modal": {
+      "types": "./dist/config/providers/registry/modal/index.d.ts",
+      "import": "./src/config/providers/registry/modal/index.ts"
+    },
+    "./providers/registry/modelscope": {
+      "types": "./dist/config/providers/registry/modelscope/index.d.ts",
+      "import": "./src/config/providers/registry/modelscope/index.ts"
+    },
+    "./providers/registry/monsterapi": {
+      "types": "./dist/config/providers/registry/monsterapi/index.d.ts",
+      "import": "./src/config/providers/registry/monsterapi/index.ts"
+    },
+    "./providers/registry/moonshot": {
+      "types": "./dist/config/providers/registry/moonshot/index.d.ts",
+      "import": "./src/config/providers/registry/moonshot/index.ts"
+    },
+    "./providers/registry/morph": {
+      "types": "./dist/config/providers/registry/morph/index.d.ts",
+      "import": "./src/config/providers/registry/morph/index.ts"
+    },
+    "./providers/registry/muse-code": {
+      "types": "./dist/config/providers/registry/muse-code/index.d.ts",
+      "import": "./src/config/providers/registry/muse-code/index.ts"
+    },
+    "./providers/registry/muse-spark-web": {
+      "types": "./dist/config/providers/registry/muse-spark-web/index.d.ts",
+      "import": "./src/config/providers/registry/muse-spark-web/index.ts"
+    },
+    "./providers/registry/naga-ac": {
+      "types": "./dist/config/providers/registry/naga-ac/index.d.ts",
+      "import": "./src/config/providers/registry/naga-ac/index.ts"
+    },
+    "./providers/registry/naga-ai": {
+      "types": "./dist/config/providers/registry/naga-ai/index.d.ts",
+      "import": "./src/config/providers/registry/naga-ai/index.ts"
+    },
+    "./providers/registry/nanogpt": {
+      "types": "./dist/config/providers/registry/nanogpt/index.d.ts",
+      "import": "./src/config/providers/registry/nanogpt/index.ts"
+    },
+    "./providers/registry/nara": {
+      "types": "./dist/config/providers/registry/nara/index.d.ts",
+      "import": "./src/config/providers/registry/nara/index.ts"
+    },
+    "./providers/registry/navy": {
+      "types": "./dist/config/providers/registry/navy/index.d.ts",
+      "import": "./src/config/providers/registry/navy/index.ts"
+    },
+    "./providers/registry/nebius": {
+      "types": "./dist/config/providers/registry/nebius/index.d.ts",
+      "import": "./src/config/providers/registry/nebius/index.ts"
+    },
+    "./providers/registry/nlpcloud": {
+      "types": "./dist/config/providers/registry/nlpcloud/index.d.ts",
+      "import": "./src/config/providers/registry/nlpcloud/index.ts"
+    },
+    "./providers/registry/notion-web": {
+      "types": "./dist/config/providers/registry/notion-web/index.d.ts",
+      "import": "./src/config/providers/registry/notion-web/index.ts"
+    },
+    "./providers/registry/nous-research": {
+      "types": "./dist/config/providers/registry/nous-research/index.d.ts",
+      "import": "./src/config/providers/registry/nous-research/index.ts"
+    },
+    "./providers/registry/novita": {
+      "types": "./dist/config/providers/registry/novita/index.d.ts",
+      "import": "./src/config/providers/registry/novita/index.ts"
+    },
+    "./providers/registry/nscale": {
+      "types": "./dist/config/providers/registry/nscale/index.d.ts",
+      "import": "./src/config/providers/registry/nscale/index.ts"
+    },
+    "./providers/registry/nube": {
+      "types": "./dist/config/providers/registry/nube/index.d.ts",
+      "import": "./src/config/providers/registry/nube/index.ts"
+    },
+    "./providers/registry/nvidia": {
+      "types": "./dist/config/providers/registry/nvidia/index.d.ts",
+      "import": "./src/config/providers/registry/nvidia/index.ts"
+    },
+    "./providers/registry/ofoxai": {
+      "types": "./dist/config/providers/registry/ofoxai/index.d.ts",
+      "import": "./src/config/providers/registry/ofoxai/index.ts"
+    },
+    "./providers/registry/ollama-cloud": {
+      "types": "./dist/config/providers/registry/ollama-cloud/index.d.ts",
+      "import": "./src/config/providers/registry/ollama-cloud/index.ts"
+    },
+    "./providers/registry/oneminai": {
+      "types": "./dist/config/providers/registry/oneminai/index.d.ts",
+      "import": "./src/config/providers/registry/oneminai/index.ts"
+    },
+    "./providers/registry/openadapter": {
+      "types": "./dist/config/providers/registry/openadapter/index.d.ts",
+      "import": "./src/config/providers/registry/openadapter/index.ts"
+    },
+    "./providers/registry/openai": {
+      "types": "./dist/config/providers/registry/openai/index.d.ts",
+      "import": "./src/config/providers/registry/openai/index.ts"
+    },
+    "./providers/registry/opencode": {
+      "types": "./dist/config/providers/registry/opencode/index.d.ts",
+      "import": "./src/config/providers/registry/opencode/index.ts"
+    },
+    "./providers/registry/opencode/go": {
+      "types": "./dist/config/providers/registry/opencode/go/index.d.ts",
+      "import": "./src/config/providers/registry/opencode/go/index.ts"
+    },
+    "./providers/registry/opencode/zen": {
+      "types": "./dist/config/providers/registry/opencode/zen/index.d.ts",
+      "import": "./src/config/providers/registry/opencode/zen/index.ts"
+    },
+    "./providers/registry/openference": {
+      "types": "./dist/config/providers/registry/openference/index.d.ts",
+      "import": "./src/config/providers/registry/openference/index.ts"
+    },
+    "./providers/registry/openference-api": {
+      "types": "./dist/config/providers/registry/openference-api/index.d.ts",
+      "import": "./src/config/providers/registry/openference-api/index.ts"
+    },
+    "./providers/registry/openrouter": {
+      "types": "./dist/config/providers/registry/openrouter/index.d.ts",
+      "import": "./src/config/providers/registry/openrouter/index.ts"
+    },
+    "./providers/registry/openvecta": {
+      "types": "./dist/config/providers/registry/openvecta/index.d.ts",
+      "import": "./src/config/providers/registry/openvecta/index.ts"
+    },
+    "./providers/registry/opper": {
+      "types": "./dist/config/providers/registry/opper/index.d.ts",
+      "import": "./src/config/providers/registry/opper/index.ts"
+    },
+    "./providers/registry/orcarouter": {
+      "types": "./dist/config/providers/registry/orcarouter/index.d.ts",
+      "import": "./src/config/providers/registry/orcarouter/index.ts"
+    },
+    "./providers/registry/ovhcloud": {
+      "types": "./dist/config/providers/registry/ovhcloud/index.d.ts",
+      "import": "./src/config/providers/registry/ovhcloud/index.ts"
+    },
+    "./providers/registry/perplexity": {
+      "types": "./dist/config/providers/registry/perplexity/index.d.ts",
+      "import": "./src/config/providers/registry/perplexity/index.ts"
+    },
+    "./providers/registry/perplexity/web": {
+      "types": "./dist/config/providers/registry/perplexity/web/index.d.ts",
+      "import": "./src/config/providers/registry/perplexity/web/index.ts"
+    },
+    "./providers/registry/pioneer": {
+      "types": "./dist/config/providers/registry/pioneer/index.d.ts",
+      "import": "./src/config/providers/registry/pioneer/index.ts"
+    },
+    "./providers/registry/plamo": {
+      "types": "./dist/config/providers/registry/plamo/index.d.ts",
+      "import": "./src/config/providers/registry/plamo/index.ts"
+    },
+    "./providers/registry/poe": {
+      "types": "./dist/config/providers/registry/poe/index.d.ts",
+      "import": "./src/config/providers/registry/poe/index.ts"
+    },
+    "./providers/registry/poixe-ai": {
+      "types": "./dist/config/providers/registry/poixe-ai/index.d.ts",
+      "import": "./src/config/providers/registry/poixe-ai/index.ts"
+    },
+    "./providers/registry/pollinations": {
+      "types": "./dist/config/providers/registry/pollinations/index.d.ts",
+      "import": "./src/config/providers/registry/pollinations/index.ts"
+    },
+    "./providers/registry/poolside": {
+      "types": "./dist/config/providers/registry/poolside/index.d.ts",
+      "import": "./src/config/providers/registry/poolside/index.ts"
+    },
+    "./providers/registry/predibase": {
+      "types": "./dist/config/providers/registry/predibase/index.d.ts",
+      "import": "./src/config/providers/registry/predibase/index.ts"
+    },
+    "./providers/registry/promptql": {
+      "types": "./dist/config/providers/registry/promptql/index.d.ts",
+      "import": "./src/config/providers/registry/promptql/index.ts"
+    },
+    "./providers/registry/publicai": {
+      "types": "./dist/config/providers/registry/publicai/index.d.ts",
+      "import": "./src/config/providers/registry/publicai/index.ts"
+    },
+    "./providers/registry/qianfan": {
+      "types": "./dist/config/providers/registry/qianfan/index.d.ts",
+      "import": "./src/config/providers/registry/qianfan/index.ts"
+    },
+    "./providers/registry/qiniu": {
+      "types": "./dist/config/providers/registry/qiniu/index.d.ts",
+      "import": "./src/config/providers/registry/qiniu/index.ts"
+    },
+    "./providers/registry/qoder": {
+      "types": "./dist/config/providers/registry/qoder/index.d.ts",
+      "import": "./src/config/providers/registry/qoder/index.ts"
+    },
+    "./providers/registry/qwen-cloud": {
+      "types": "./dist/config/providers/registry/qwen-cloud/index.d.ts",
+      "import": "./src/config/providers/registry/qwen-cloud/index.ts"
+    },
+    "./providers/registry/qwen-cloud-token-plan": {
+      "types": "./dist/config/providers/registry/qwen-cloud-token-plan/index.d.ts",
+      "import": "./src/config/providers/registry/qwen-cloud-token-plan/index.ts"
+    },
+    "./providers/registry/regolo": {
+      "types": "./dist/config/providers/registry/regolo/index.d.ts",
+      "import": "./src/config/providers/registry/regolo/index.ts"
+    },
+    "./providers/registry/reka": {
+      "types": "./dist/config/providers/registry/reka/index.d.ts",
+      "import": "./src/config/providers/registry/reka/index.ts"
+    },
+    "./providers/registry/requesty": {
+      "types": "./dist/config/providers/registry/requesty/index.d.ts",
+      "import": "./src/config/providers/registry/requesty/index.ts"
+    },
+    "./providers/registry/routeway": {
+      "types": "./dist/config/providers/registry/routeway/index.d.ts",
+      "import": "./src/config/providers/registry/routeway/index.ts"
+    },
+    "./providers/registry/sambanova": {
+      "types": "./dist/config/providers/registry/sambanova/index.d.ts",
+      "import": "./src/config/providers/registry/sambanova/index.ts"
+    },
+    "./providers/registry/sarvam": {
+      "types": "./dist/config/providers/registry/sarvam/index.d.ts",
+      "import": "./src/config/providers/registry/sarvam/index.ts"
+    },
+    "./providers/registry/scaleway": {
+      "types": "./dist/config/providers/registry/scaleway/index.d.ts",
+      "import": "./src/config/providers/registry/scaleway/index.ts"
+    },
+    "./providers/registry/sealion": {
+      "types": "./dist/config/providers/registry/sealion/index.d.ts",
+      "import": "./src/config/providers/registry/sealion/index.ts"
+    },
+    "./providers/registry/segmind/imageModels": {
+      "types": "./dist/config/providers/registry/segmind/imageModels.d.ts",
+      "import": "./src/config/providers/registry/segmind/imageModels.ts"
+    },
+    "./providers/registry/segmind/videoModels": {
+      "types": "./dist/config/providers/registry/segmind/videoModels.d.ts",
+      "import": "./src/config/providers/registry/segmind/videoModels.ts"
+    },
+    "./providers/registry/sensenova": {
+      "types": "./dist/config/providers/registry/sensenova/index.d.ts",
+      "import": "./src/config/providers/registry/sensenova/index.ts"
+    },
+    "./providers/registry/siliconflow": {
+      "types": "./dist/config/providers/registry/siliconflow/index.d.ts",
+      "import": "./src/config/providers/registry/siliconflow/index.ts"
+    },
+    "./providers/registry/snowflake": {
+      "types": "./dist/config/providers/registry/snowflake/index.d.ts",
+      "import": "./src/config/providers/registry/snowflake/index.ts"
+    },
+    "./providers/registry/sparkdesk": {
+      "types": "./dist/config/providers/registry/sparkdesk/index.d.ts",
+      "import": "./src/config/providers/registry/sparkdesk/index.ts"
+    },
+    "./providers/registry/speka": {
+      "types": "./dist/config/providers/registry/speka/index.d.ts",
+      "import": "./src/config/providers/registry/speka/index.ts"
+    },
+    "./providers/registry/stability-ai/imageModels": {
+      "types": "./dist/config/providers/registry/stability-ai/imageModels.d.ts",
+      "import": "./src/config/providers/registry/stability-ai/imageModels.ts"
+    },
+    "./providers/registry/stepfun": {
+      "types": "./dist/config/providers/registry/stepfun/index.d.ts",
+      "import": "./src/config/providers/registry/stepfun/index.ts"
+    },
+    "./providers/registry/sumopod": {
+      "types": "./dist/config/providers/registry/sumopod/index.d.ts",
+      "import": "./src/config/providers/registry/sumopod/index.ts"
+    },
+    "./providers/registry/suno": {
+      "types": "./dist/config/providers/registry/suno/index.d.ts",
+      "import": "./src/config/providers/registry/suno/index.ts"
+    },
+    "./providers/registry/synthetic": {
+      "types": "./dist/config/providers/registry/synthetic/index.d.ts",
+      "import": "./src/config/providers/registry/synthetic/index.ts"
+    },
+    "./providers/registry/t3-web": {
+      "types": "./dist/config/providers/registry/t3-web/index.d.ts",
+      "import": "./src/config/providers/registry/t3-web/index.ts"
+    },
+    "./providers/registry/tabitoken": {
+      "types": "./dist/config/providers/registry/tabitoken/index.d.ts",
+      "import": "./src/config/providers/registry/tabitoken/index.ts"
+    },
+    "./providers/registry/tencent": {
+      "types": "./dist/config/providers/registry/tencent/index.d.ts",
+      "import": "./src/config/providers/registry/tencent/index.ts"
+    },
+    "./providers/registry/tencent-aistudio-web": {
+      "types": "./dist/config/providers/registry/tencent-aistudio-web/index.d.ts",
+      "import": "./src/config/providers/registry/tencent-aistudio-web/index.ts"
+    },
+    "./providers/registry/theoldllm": {
+      "types": "./dist/config/providers/registry/theoldllm/index.d.ts",
+      "import": "./src/config/providers/registry/theoldllm/index.ts"
+    },
+    "./providers/registry/tinycms": {
+      "types": "./dist/config/providers/registry/tinycms/index.d.ts",
+      "import": "./src/config/providers/registry/tinycms/index.ts"
+    },
+    "./providers/registry/together": {
+      "types": "./dist/config/providers/registry/together/index.d.ts",
+      "import": "./src/config/providers/registry/together/index.ts"
+    },
+    "./providers/registry/token-kiosk": {
+      "types": "./dist/config/providers/registry/token-kiosk/index.d.ts",
+      "import": "./src/config/providers/registry/token-kiosk/index.ts"
+    },
+    "./providers/registry/tokenreply": {
+      "types": "./dist/config/providers/registry/tokenreply/index.d.ts",
+      "import": "./src/config/providers/registry/tokenreply/index.ts"
+    },
+    "./providers/registry/tokenrouter": {
+      "types": "./dist/config/providers/registry/tokenrouter/index.d.ts",
+      "import": "./src/config/providers/registry/tokenrouter/index.ts"
+    },
+    "./providers/registry/trae": {
+      "types": "./dist/config/providers/registry/trae/index.d.ts",
+      "import": "./src/config/providers/registry/trae/index.ts"
+    },
+    "./providers/registry/typhoon": {
+      "types": "./dist/config/providers/registry/typhoon/index.d.ts",
+      "import": "./src/config/providers/registry/typhoon/index.ts"
+    },
+    "./providers/registry/udio": {
+      "types": "./dist/config/providers/registry/udio/index.d.ts",
+      "import": "./src/config/providers/registry/udio/index.ts"
+    },
+    "./providers/registry/uncloseai": {
+      "types": "./dist/config/providers/registry/uncloseai/index.d.ts",
+      "import": "./src/config/providers/registry/uncloseai/index.ts"
+    },
+    "./providers/registry/unorouter": {
+      "types": "./dist/config/providers/registry/unorouter/index.d.ts",
+      "import": "./src/config/providers/registry/unorouter/index.ts"
+    },
+    "./providers/registry/upstage": {
+      "types": "./dist/config/providers/registry/upstage/index.d.ts",
+      "import": "./src/config/providers/registry/upstage/index.ts"
+    },
+    "./providers/registry/v0-vercel": {
+      "types": "./dist/config/providers/registry/v0-vercel/index.d.ts",
+      "import": "./src/config/providers/registry/v0-vercel/index.ts"
+    },
+    "./providers/registry/venice": {
+      "types": "./dist/config/providers/registry/venice/index.d.ts",
+      "import": "./src/config/providers/registry/venice/index.ts"
+    },
+    "./providers/registry/veoaifree-web": {
+      "types": "./dist/config/providers/registry/veoaifree-web/index.d.ts",
+      "import": "./src/config/providers/registry/veoaifree-web/index.ts"
+    },
+    "./providers/registry/vercel-ai-gateway": {
+      "types": "./dist/config/providers/registry/vercel-ai-gateway/index.d.ts",
+      "import": "./src/config/providers/registry/vercel-ai-gateway/index.ts"
+    },
+    "./providers/registry/vertex": {
+      "types": "./dist/config/providers/registry/vertex/index.d.ts",
+      "import": "./src/config/providers/registry/vertex/index.ts"
+    },
+    "./providers/registry/vertex/partner": {
+      "types": "./dist/config/providers/registry/vertex/partner/index.d.ts",
+      "import": "./src/config/providers/registry/vertex/partner/index.ts"
+    },
+    "./providers/registry/void-ai": {
+      "types": "./dist/config/providers/registry/void-ai/index.d.ts",
+      "import": "./src/config/providers/registry/void-ai/index.ts"
+    },
+    "./providers/registry/volcengine": {
+      "types": "./dist/config/providers/registry/volcengine/index.d.ts",
+      "import": "./src/config/providers/registry/volcengine/index.ts"
+    },
+    "./providers/registry/volcengine/agent-plan": {
+      "types": "./dist/config/providers/registry/volcengine/agent-plan/index.d.ts",
+      "import": "./src/config/providers/registry/volcengine/agent-plan/index.ts"
+    },
+    "./providers/registry/volcengine/coding-plan": {
+      "types": "./dist/config/providers/registry/volcengine/coding-plan/index.d.ts",
+      "import": "./src/config/providers/registry/volcengine/coding-plan/index.ts"
+    },
+    "./providers/registry/wafer": {
+      "types": "./dist/config/providers/registry/wafer/index.d.ts",
+      "import": "./src/config/providers/registry/wafer/index.ts"
+    },
+    "./providers/registry/wandb": {
+      "types": "./dist/config/providers/registry/wandb/index.d.ts",
+      "import": "./src/config/providers/registry/wandb/index.ts"
+    },
+    "./providers/registry/writer": {
+      "types": "./dist/config/providers/registry/writer/index.d.ts",
+      "import": "./src/config/providers/registry/writer/index.ts"
+    },
+    "./providers/registry/x5lab": {
+      "types": "./dist/config/providers/registry/x5lab/index.d.ts",
+      "import": "./src/config/providers/registry/x5lab/index.ts"
+    },
+    "./providers/registry/xai": {
+      "types": "./dist/config/providers/registry/xai/index.d.ts",
+      "import": "./src/config/providers/registry/xai/index.ts"
+    },
+    "./providers/registry/xiaomi-mimo": {
+      "types": "./dist/config/providers/registry/xiaomi-mimo/index.d.ts",
+      "import": "./src/config/providers/registry/xiaomi-mimo/index.ts"
+    },
+    "./providers/registry/xiaomi-mimo-token-plan": {
+      "types": "./dist/config/providers/registry/xiaomi-mimo-token-plan/index.d.ts",
+      "import": "./src/config/providers/registry/xiaomi-mimo-token-plan/index.ts"
+    },
+    "./providers/registry/yi": {
+      "types": "./dist/config/providers/registry/yi/index.d.ts",
+      "import": "./src/config/providers/registry/yi/index.ts"
+    },
+    "./providers/registry/yolo-auto": {
+      "types": "./dist/config/providers/registry/yolo-auto/index.d.ts",
+      "import": "./src/config/providers/registry/yolo-auto/index.ts"
+    },
+    "./providers/registry/yuanbao-web": {
+      "types": "./dist/config/providers/registry/yuanbao-web/index.d.ts",
+      "import": "./src/config/providers/registry/yuanbao-web/index.ts"
+    },
+    "./providers/registry/zai": {
+      "types": "./dist/config/providers/registry/zai/index.d.ts",
+      "import": "./src/config/providers/registry/zai/index.ts"
+    },
+    "./providers/registry/zai-web": {
+      "types": "./dist/config/providers/registry/zai-web/index.d.ts",
+      "import": "./src/config/providers/registry/zai-web/index.ts"
+    },
+    "./providers/registry/zcode": {
+      "types": "./dist/config/providers/registry/zcode/index.d.ts",
+      "import": "./src/config/providers/registry/zcode/index.ts"
+    },
+    "./providers/registry/zed-hosted": {
+      "types": "./dist/config/providers/registry/zed-hosted/index.d.ts",
+      "import": "./src/config/providers/registry/zed-hosted/index.ts"
+    },
+    "./providers/registry/zenmux": {
+      "types": "./dist/config/providers/registry/zenmux/index.d.ts",
+      "import": "./src/config/providers/registry/zenmux/index.ts"
+    },
+    "./providers/registry/zenmux-free": {
+      "types": "./dist/config/providers/registry/zenmux-free/index.d.ts",
+      "import": "./src/config/providers/registry/zenmux-free/index.ts"
+    },
+    "./providers/registry/zerolimitai": {
+      "types": "./dist/config/providers/registry/zerolimitai/index.d.ts",
+      "import": "./src/config/providers/registry/zerolimitai/index.ts"
+    },
+    "./providers/registry/zylo-api": {
+      "types": "./dist/config/providers/registry/zylo-api/index.d.ts",
+      "import": "./src/config/providers/registry/zylo-api/index.ts"
+    },
+    "./providers/shared": {
+      "types": "./dist/config/providers/shared.d.ts",
+      "import": "./src/config/providers/shared.ts"
+    },
+    "./support/config/agyModels": {
+      "types": "./dist/config/agyModels.d.ts",
+      "import": "./src/config/agyModels.ts"
+    },
+    "./support/config/anthropicHeaders": {
+      "types": "./dist/config/anthropicHeaders.d.ts",
+      "import": "./src/config/anthropicHeaders.ts"
+    },
+    "./support/config/antigravityModelAliases": {
+      "types": "./dist/config/antigravityModelAliases.d.ts",
+      "import": "./src/config/antigravityModelAliases.ts"
+    },
+    "./support/config/antigravityUpstream": {
+      "types": "./dist/config/antigravityUpstream.d.ts",
+      "import": "./src/config/antigravityUpstream.ts"
+    },
+    "./support/config/codexClient": {
+      "types": "./dist/config/codexClient.d.ts",
+      "import": "./src/config/codexClient.ts"
+    },
+    "./support/config/context1m": {
+      "types": "./dist/config/context1m.d.ts",
+      "import": "./src/config/context1m.ts"
+    },
+    "./support/config/dynamicImageModelSources": {
+      "types": "./dist/config/dynamicImageModelSources.d.ts",
+      "import": "./src/config/dynamicImageModelSources.ts"
+    },
+    "./support/config/glmProvider": {
+      "types": "./dist/config/glmProvider.d.ts",
+      "import": "./src/config/glmProvider.ts"
+    },
+    "./support/config/grokBuild": {
+      "types": "./dist/config/grokBuild.d.ts",
+      "import": "./src/config/grokBuild.ts"
+    },
+    "./support/config/maritalk": {
+      "types": "./dist/config/maritalk.d.ts",
+      "import": "./src/config/maritalk.ts"
+    },
+    "./support/config/opencodeZenGoSharedModels": {
+      "types": "./dist/config/opencodeZenGoSharedModels.d.ts",
+      "import": "./src/config/opencodeZenGoSharedModels.ts"
+    },
+    "./support/config/providerHeaderProfiles": {
+      "types": "./dist/config/providerHeaderProfiles.d.ts",
+      "import": "./src/config/providerHeaderProfiles.ts"
+    },
+    "./support/services/antigravityHeaders": {
+      "types": "./dist/services/antigravityHeaders.d.ts",
+      "import": "./src/services/antigravityHeaders.ts"
+    },
+    "./support/services/antigravityVersion": {
+      "types": "./dist/services/antigravityVersion.d.ts",
+      "import": "./src/services/antigravityVersion.ts"
+    },
+    "./support/services/conolAuth": {
+      "types": "./dist/services/conolAuth.d.ts",
+      "import": "./src/services/conolAuth.ts"
+    },
+    "./support/services/conolModels": {
+      "types": "./dist/services/conolModels.d.ts",
+      "import": "./src/services/conolModels.ts"
+    },
+    "./support/services/hyperagentModels": {
+      "types": "./dist/services/hyperagentModels.d.ts",
+      "import": "./src/services/hyperagentModels.ts"
+    },
+    "./support/services/notionWebFallbackModels": {
+      "types": "./dist/services/notionWebFallbackModels.d.ts",
+      "import": "./src/services/notionWebFallbackModels.ts"
+    },
+    "./support/services/notionWebModels": {
+      "types": "./dist/services/notionWebModels.d.ts",
+      "import": "./src/services/notionWebModels.ts"
+    },
+    "./support/services/promptqlModels": {
+      "types": "./dist/services/promptqlModels.d.ts",
+      "import": "./src/services/promptqlModels.ts"
+    },
+    "./support/services/providerRequestDefaults": {
+      "types": "./dist/services/providerRequestDefaults.d.ts",
+      "import": "./src/services/providerRequestDefaults.ts"
+    },
+    "./support/utils/publicCreds": {
+      "types": "./dist/utils/publicCreds.d.ts",
+      "import": "./src/utils/publicCreds.ts"
+    },
+    "./support/utils/urlSanitize": {
+      "types": "./dist/utils/urlSanitize.d.ts",
+      "import": "./src/utils/urlSanitize.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json --pretty false",
+    "typecheck": "tsc -p tsconfig.json --noEmit --pretty false",
+    "test": "node --import tsx --test test/*.test.ts"
+  },
+  "dependencies": {
+    "@shiguang-gateway/config": "workspace:*",
+    "@shiguang-gateway/contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:"
+  }
+}

@@ -2,8 +2,8 @@
 // inworld, kie, aws-polly, bailian-coding-plan, reka, maritalk, nlpcloud, runwayml, nous-research,
 // poe. Extracted from validation.ts (god-file decomposition) — top-level functions with no
 // dispatcher-state captures; behavior is byte-identical to the original inline defs.
-import { getRegistryEntry } from "../../../../../open-sse/config/providerRegistry.ts";
-import { POE_DEFAULT_BASE_URL } from "../../../../../open-sse/config/providers/registry/poe/index.ts";
+import { getRegistryEntry } from "@shiguang-gateway/provider-catalog/provider-registry";
+import { POE_DEFAULT_BASE_URL } from "@shiguang-gateway/provider-catalog/providers/registry/poe";
 import { normalizeBaseUrl } from "./urlHelpers";
 import {
   applyCustomUserAgent,

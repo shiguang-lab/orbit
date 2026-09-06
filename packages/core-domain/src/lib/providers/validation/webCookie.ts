@@ -2,7 +2,7 @@
 // (god-file decomposition) — top-level functions with no dispatcher-state captures; behavior is
 // byte-identical to the original inline defs.
 import { WEB_COOKIE_PROVIDERS, isLocalProvider } from "../../../shared/constants/providers.ts";
-import { getRegistryEntry } from "../../../../../open-sse/config/providerRegistry.ts";
+import { getRegistryEntry } from "@shiguang-gateway/provider-catalog/provider-registry";
 import { extractZaiToken } from "../../../../../open-sse/executors/zai-web.ts";
 import { normalizeBaseUrl } from "./urlHelpers";
 import { STANDARD_USER_AGENT, buildBearerHeaders } from "./headers";

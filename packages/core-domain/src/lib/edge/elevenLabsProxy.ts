@@ -1,7 +1,7 @@
 import {
   clearRecoveredProviderState,
   getProviderCredentialsWithQuotaPreflight,
-} from "../../sse/services/auth.ts";
+} from "@shiguang-gateway/open-sse/services/auth";
 import {
   isAllRateLimitedCredentials,
   rateLimitedProviderResponse,

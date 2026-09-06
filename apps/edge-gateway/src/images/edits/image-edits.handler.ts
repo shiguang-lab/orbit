@@ -13,7 +13,7 @@ import { createInjectionGuard } from "@shiguang-gateway/core-domain/middleware/p
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
-} from "@shiguang-gateway/core-domain/sse/auth";
+} from "@shiguang-gateway/open-sse/services/auth";
 const getProviderCredentialsWithQuotaPreflightAny = getProviderCredentialsWithQuotaPreflight as any;
 import {
   parseImageModel,

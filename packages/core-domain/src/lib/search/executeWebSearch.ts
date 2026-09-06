@@ -1,4 +1,4 @@
-import { getProviderCredentials } from "../../sse/services/auth.ts";
+import { getProviderCredentials } from "@shiguang-gateway/open-sse/services/auth";
 import { recordCost } from "../../domain/costRules.ts";
 import * as defaultLog from "../../sse/utils/logger.ts";
 import {

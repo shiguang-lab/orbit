@@ -7,7 +7,7 @@ import { v1EmbeddingsSchema } from "@shiguang-gateway/core-domain/edge/embedding
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/edge/embeddings-validation-helpers";
 
 import { createEmbeddingResponse, type EmbeddingHandlerOptions } from "@shiguang-gateway/core-domain/edge/embeddings-service";
-import { extractApiKey, isValidApiKey } from "@shiguang-gateway/core-domain/sse/auth";
+import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/services/auth";
 import { withInjectionGuard } from "@shiguang-gateway/core-domain/middleware/prompt-injection";
 import { getSpecialtyModelsResponse } from "@shiguang-gateway/core-domain/edge/specialty-catalog";
 

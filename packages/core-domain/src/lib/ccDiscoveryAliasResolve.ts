@@ -18,8 +18,8 @@ import {
   stripCcDiscoveryAlias,
   type CcDiscoveryStripResult,
 } from "../../../open-sse/handlers/chatCore/ccDiscoveryAliasStrip.ts";
-import { getModelsByProviderId } from "../../../open-sse/config/providerModels.ts";
-import { getRegistryEntry } from "../../../open-sse/config/providerRegistry.ts";
+import { getModelsByProviderId } from "@shiguang-gateway/provider-catalog/provider-models";
+import { getRegistryEntry } from "@shiguang-gateway/provider-catalog/provider-registry";
 import { getProviderById, getProviderByAlias } from "../shared/constants/providers.ts";
 import { getCachedProviderNodes } from "./db/readCache.ts";
 import { getComboByName } from "./db/combos.ts";

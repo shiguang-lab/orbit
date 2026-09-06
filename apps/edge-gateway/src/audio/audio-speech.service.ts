@@ -24,7 +24,7 @@ export class AudioSpeechService {
       load("@shiguang-gateway/open-sse/handlers/audioSpeech"),
       load("@shiguang-gateway/open-sse/utils/error"),
       load("@shiguang-gateway/open-sse/config/audioRegistry"),
-      load("@shiguang-gateway/core-domain/sse/auth"),
+      load("@shiguang-gateway/open-sse/services/auth"),
       load("@shiguang-gateway/core-domain/shared/api-key-policy"),
       load("@shiguang-gateway/core-domain/edge/rate-limit"),
     ]);

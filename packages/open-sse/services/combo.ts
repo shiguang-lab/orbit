@@ -63,7 +63,7 @@ import {
   getLastSessionModel,
   getHandoff,
 } from "@shiguang-gateway/core-domain/db/context-handoffs";
-import { extractSessionAffinityKey } from "@shiguang-gateway/core-domain/sse/auth";
+import { extractSessionAffinityKey } from "./auth.ts";
 import { getHiddenModelsByProvider } from "@shiguang-gateway/core-domain/control/models";
 import { resolveModelLockoutSettings } from "@shiguang-gateway/core-domain/resilience/model-lockout-settings";
 import { fetchCodexQuota } from "./codexQuotaFetcher.ts";

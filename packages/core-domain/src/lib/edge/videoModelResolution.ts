@@ -1,6 +1,6 @@
 import { getAllCustomModels } from "../db/models.ts";
 import { parseVideoModel } from "../../../../open-sse/config/videoRegistry.ts";
-import { getProviderCredentialsWithQuotaPreflight } from "../../sse/services/auth.ts";
+import { getProviderCredentialsWithQuotaPreflight } from "@shiguang-gateway/open-sse/services/auth";
 import { isAllRateLimitedCredentials } from "./rateLimit.ts";
 
 export type VideoModelTarget = {

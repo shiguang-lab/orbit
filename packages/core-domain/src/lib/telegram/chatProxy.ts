@@ -10,7 +10,7 @@
  * (createApiKey) so the existing policy/rate-limit/model-allowlist machinery
  * applies unchanged. The key is cached in-memory per user id.
  */
-import { handleChat } from "../../sse/handlers/chat.ts";
+import { handleChat } from "@shiguang-gateway/open-sse/handlers/chat";
 import { createApiKey, getApiKeys } from "../db/apiKeys.ts";
 import { getConsistentMachineId } from "../../shared/utils/machineId.ts";
 import { randomUUID } from "node:crypto";

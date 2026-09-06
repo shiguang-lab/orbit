@@ -4,7 +4,7 @@ import { HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants";
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
-} from "@shiguang-gateway/core-domain/sse/auth";
+} from "@shiguang-gateway/open-sse/services/auth";
 import { getImageProvider } from "@shiguang-gateway/open-sse/config/imageRegistry";
 import * as log from "@shiguang-gateway/core-domain/sse/logger";
 import { toJsonErrorPayload } from "@shiguang-gateway/core-domain/shared/upstream-error";

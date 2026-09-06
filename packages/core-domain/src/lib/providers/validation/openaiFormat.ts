@@ -2,7 +2,7 @@
 // Extracted from validation.ts (god-file decomposition) — top-level functions; behavior is
 // byte-identical to the original inline defs.
 import { randomUUID } from "node:crypto";
-import { getRegistryEntry } from "../../../../../open-sse/config/providerRegistry.ts";
+import { getRegistryEntry } from "@shiguang-gateway/provider-catalog/provider-registry";
 import { COMMAND_CODE_VERSION } from "../../../../../open-sse/executors/commandCode.ts";
 import {
   discoverBedrockNativeModels,

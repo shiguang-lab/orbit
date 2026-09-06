@@ -5,7 +5,7 @@
 
 import { getResolvedModelCapabilities } from "../modelCapabilities.ts";
 import { getActiveSyncedCatalog } from "../db/models/activeSyncedCatalog.ts";
-import { PROVIDER_MODELS } from "../../../../open-sse/config/providerModels.ts";
+import { PROVIDER_MODELS } from "@shiguang-gateway/provider-catalog/provider-models";
 import { getRegisteredProviderEffortBaseModelId } from "../../../../open-sse/utils/registeredEffortVariants.ts";
 import { hasUsableCredentialsForModel } from "./visionBridgeCredentials";
 import { isVisionBridgeForcedModel } from "../../shared/constants/visionBridgeDefaults.ts";

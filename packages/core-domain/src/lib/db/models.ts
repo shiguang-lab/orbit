@@ -4,7 +4,7 @@
  * models/; this file re-exports their public APIs for backward compatibility.
  */
 
-import { isRetiredGitHubCopilotModelId } from "../../../../open-sse/config/providers/registry/github/retiredModels.ts";
+import { isRetiredGitHubCopilotModelId } from "@shiguang-gateway/provider-catalog/providers/registry/github/retiredModels";
 
 import type { SqliteAdapter } from "./adapters/types";
 import { getDbInstance } from "./core";

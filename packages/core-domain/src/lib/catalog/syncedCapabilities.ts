@@ -30,7 +30,7 @@ import { isSkippedEffortProvider } from "../../../../open-sse/utils/syncedEffort
 import {
   getRegistryModelThinkingEfforts,
   getRegistryThinkingEfforts,
-} from "../../../../open-sse/config/providerRegistry.ts";
+} from "@shiguang-gateway/provider-catalog/provider-registry";
 
 interface SyncedCapabilityFlags {
   id?: string;

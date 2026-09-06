@@ -1,5 +1,5 @@
 import { AsyncLocalStorage } from "node:async_hooks";
-import { extractApiKey, isValidApiKey } from "@shiguang-gateway/core-domain/sse/auth";
+import { extractApiKey, isValidApiKey } from "../services/auth.ts";
 import { getApiKeyMetadata } from "@shiguang-gateway/core-domain/db/api-keys";
 
 type McpHttpAuthContext = {

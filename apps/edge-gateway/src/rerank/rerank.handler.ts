@@ -63,7 +63,7 @@ async function postHandler(request: Request, _context: unknown): Promise<Respons
     { attachShiguangGatewayMetaHeaders },
     { generateRequestId },
   ] = await Promise.all([
-    load("@shiguang-gateway/core-domain/sse/auth"),
+    load("@shiguang-gateway/open-sse/services/auth"),
     load("@shiguang-gateway/core-domain/shared/api-key-policy"),
     load("@shiguang-gateway/core-domain/edge/rerank-validation-schemas"),
     load("@shiguang-gateway/core-domain/edge/rerank-validation-helpers"),

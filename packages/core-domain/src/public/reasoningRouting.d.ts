@@ -91,8 +91,6 @@ export function resolveReasoningSourceModels(
 ): Promise<{ normalized: string; aliases: string[] }>;
 export function validateCodexWsDecision(decision: ReasoningRuleDecision): string | null;
 
-export function getComboForModel(model: string): Promise<Record<string, unknown> | null>;
-export function getModelInfo(model: string): Promise<{ provider?: string | null; model?: string | null; [key: string]: unknown }>;
 export function resolveCodexWsModelInfo(
   requestedModel: string,
   resolve: (model: string) => Promise<{ provider?: string | null; model?: string | null; [key: string]: unknown }>,

@@ -162,19 +162,34 @@ const allowedCoreDomainSubpaths = {
 };
 
 allowedCoreDomainSubpaths["apps/control-api"].push("db/health");
+allowedCoreDomainSubpaths["apps/control-api"].push(
+  "db/agentic-conversations",
+  "usage/summary",
+  "catalog/provider-credential-requirement",
+  "runtime/build-sha",
+  "runtime/local-health",
+  "edge/credential-health-cache",
+  "resilience/model-lockout-settings",
+  "db/upstream-proxy",
+  "control/cli-token-auth",
+  "db/tier-config",
+);
+allowedCoreDomainSubpaths["apps/edge-gateway"].push("shared/services/modelSyncScheduler");
 allowedCoreDomainSubpaths["apps/control-api"].push("db/files");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/guardrails", "control/local-endpoints", "control/local-redis", "control/auth-init");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/assessment", "control/policies");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/provider-management");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/provider-connection");
-allowedCoreDomainSubpaths["apps/control-api"].push("control/provider-models-discovery", "control/fallback-policy");
+allowedCoreDomainSubpaths["apps/control-api"].push(
+  "control/provider-discovery-support/",
+  "control/fallback-policy",
+);
 allowedCoreDomainSubpaths["apps/control-api"].push("control/skills-github", "control/skills-executor");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/tunnels");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/jobs");
-allowedCoreDomainSubpaths["apps/control-api"].push("control/monitoring-health", "control/network-info");
-allowedCoreDomainSubpaths["apps/control-api"].push("control/free-provider-rankings", "control/free-tier-summary");
+allowedCoreDomainSubpaths["apps/control-api"].push("control/network-info");
+allowedCoreDomainSubpaths["apps/control-api"].push("control/free-provider-rankings");
 allowedCoreDomainSubpaths["apps/control-api"].push(
-  "control/settings-root",
   "control/env-repair",
   "control/telegram",
   "control/intelligence-sync",
@@ -239,7 +254,6 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "db/provider-interception-rules",
   "db/provider-param-filters",
   "control/web-session-contract",
-  "control/tier-config",
   "control/provider-auth-import",
   "control/free-onboarding",
   "control/cursor-availability",
@@ -293,7 +307,6 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/agent-skills",
   "control/provider-display-names",
   "control/mcp-management",
-  "control/mcp-transports",
   "control/copilot",
   "control/issue-agent",
   "control/proxy-subscriptions",
@@ -310,7 +323,6 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/resilience-connection-recovery",
   "control/resilience-types",
 );
-allowedCoreDomainSubpaths["apps/control-api"].push("control/compression-management");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/guardrails");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/headroom", "db/relayProxies", "shared/validation");
 allowedCoreDomainSubpaths["apps/control-api"].push("db/cc-discovery-metrics");
@@ -318,7 +330,6 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/playground-presets",
   "control/playground-prompt-improver",
   "shared/schemas/playground",
-  "control/conversations",
   "control/cli-tools-",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push("control/provider-management");

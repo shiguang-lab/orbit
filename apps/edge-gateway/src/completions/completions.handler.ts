@@ -1,4 +1,4 @@
-import { buildClientRawRequest, handleChat } from "@shiguang-gateway/core-domain/edge/chat-handler";
+import { buildClientRawRequest, handleChat } from "@shiguang-gateway/open-sse/handlers/chat";
 import { withChatAdmission } from "@shiguang-gateway/core-domain/edge/chat-admission";
 import { createInjectionGuard } from "@shiguang-gateway/core-domain/middleware/prompt-injection";
 import { initTranslators } from "@shiguang-gateway/open-sse/translator";

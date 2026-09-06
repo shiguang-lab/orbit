@@ -6,7 +6,7 @@ import { isRuntimeProviderRetirementError } from "@shiguang-gateway/contracts/pr
 import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
 import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
 import { isCommonChatGptWebRetirementError } from "@shiguang-gateway/contracts/chatgpt-web-retirement";
-import { getProviderCredentials } from "@shiguang-gateway/core-domain/sse/auth";
+import { getProviderCredentials } from "@shiguang-gateway/open-sse/services/auth";
 import * as log from "@shiguang-gateway/core-domain/sse/logger";
 
 const load = (specifier: string): Promise<any> => import(specifier);

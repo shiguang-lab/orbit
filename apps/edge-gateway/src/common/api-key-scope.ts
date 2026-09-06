@@ -1,4 +1,4 @@
-import { extractApiKey } from "@shiguang-gateway/core-domain/sse/auth";
+import { extractApiKey } from "@shiguang-gateway/open-sse/services/auth";
 import { getApiKeyMetadata } from "@shiguang-gateway/core-domain/db/api-keys";
 import { isDashboardSessionAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 

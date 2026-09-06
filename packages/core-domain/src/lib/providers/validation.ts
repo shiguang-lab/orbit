@@ -1,5 +1,5 @@
 import { getEmbeddingProvider } from "../../../../open-sse/config/embeddingRegistry.ts";
-import { getRegistryEntry } from "../../../../open-sse/config/providerRegistry.ts";
+import { getRegistryEntry } from "@shiguang-gateway/provider-catalog/provider-registry";
 import {
   isClaudeCodeCompatibleProvider,
   isAnthropicCompatibleProvider,

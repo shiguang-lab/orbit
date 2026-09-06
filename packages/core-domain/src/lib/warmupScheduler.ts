@@ -237,7 +237,7 @@ async function executeWarmup(): Promise<void> {
 }
 
 async function getWarmupHeaders(): Promise<Record<string, string>> {
-  const { getClaudeCliHeaders } = await import("../../../open-sse/config/providers/shared.ts");
+  const { getClaudeCliHeaders } = await import("@shiguang-gateway/provider-catalog/providers/shared");
   return getClaudeCliHeaders();
 }
 

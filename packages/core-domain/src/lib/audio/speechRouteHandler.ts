@@ -3,7 +3,7 @@ import { withInjectionGuard } from "../../middleware/promptInjectionGuard.ts";
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
-} from "../../sse/services/auth.ts";
+} from "@shiguang-gateway/open-sse/services/auth";
 import { parseSpeechModel, getSpeechProvider } from "../../../../open-sse/config/audioRegistry.ts";
 import { resolveDynamicAudioProviders } from "../edge/audioProviderNodes.ts";
 import { errorResponse } from "@shiguang-gateway/http-kernel/error-response";

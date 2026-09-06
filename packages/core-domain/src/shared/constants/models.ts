@@ -8,14 +8,14 @@ export {
   getModelTargetFormat,
   PROVIDER_ID_TO_ALIAS,
   getModelsByProviderId,
-} from "../../../../open-sse/config/providerModels.ts";
+} from "@shiguang-gateway/provider-catalog/provider-models";
 
 import {
   AI_PROVIDERS,
   isAnthropicCompatibleProvider,
   isOpenAICompatibleProvider,
 } from "./providers";
-import { PROVIDER_MODELS as MODELS } from "../../../../open-sse/config/providerModels.ts";
+import { PROVIDER_MODELS as MODELS } from "@shiguang-gateway/provider-catalog/provider-models";
 
 // Providers that accept any model (passthrough)
 const PASSTHROUGH_PROVIDERS = new Set(

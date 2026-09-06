@@ -3,7 +3,7 @@ import { withInjectionGuard } from "@shiguang-gateway/core-domain/middleware/pro
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
-} from "@shiguang-gateway/core-domain/sse/auth";
+} from "@shiguang-gateway/open-sse/services/auth";
 import {
   parseImageModel,
   getImageProvider,

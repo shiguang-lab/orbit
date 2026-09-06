@@ -9,7 +9,7 @@
  */
 
 import { NOAUTH_PROVIDERS, OAUTH_PROVIDERS, APIKEY_PROVIDERS } from "../shared/constants/providers.ts";
-import { REGISTRY } from "../../../open-sse/config/providerRegistry.ts";
+import { REGISTRY } from "@shiguang-gateway/provider-catalog/provider-registry";
 import { listModelIntelligence } from "./db/modelIntelligence";
 import { getProviderConnections } from "./db/providers";
 import { getProviderUsageSince, type ProviderUsageRow } from "./db/callLogStats";

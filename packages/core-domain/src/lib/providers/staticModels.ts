@@ -9,7 +9,7 @@ import {
 import { ANTIGRAVITY_PUBLIC_MODELS } from "../../../../open-sse/config/antigravityModelAliases.ts";
 import { getStaticQoderModels } from "../../../../open-sse/services/qoderCli.ts";
 import { getSearchProvider } from "../../../../open-sse/config/searchRegistry.ts";
-import { BAILIAN_CODING_PLAN_MODELS } from "../../../../open-sse/config/providers/registry/bailian-coding-plan/index.ts";
+import { BAILIAN_CODING_PLAN_MODELS } from "@shiguang-gateway/provider-catalog/providers/registry/bailian-coding-plan";
 
 import { getModelsByProviderId } from "../../shared/constants/models.ts";
 

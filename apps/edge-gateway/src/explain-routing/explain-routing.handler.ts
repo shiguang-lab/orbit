@@ -9,7 +9,7 @@ import {
 } from "@shiguang-gateway/open-sse/services/routing";
 import { isDashboardSessionAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/edge/feature-flags";
-import { extractApiKey, isValidApiKey } from "@shiguang-gateway/core-domain/sse/auth";
+import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/services/auth";
 
 export function OPTIONS(): Response {
   return new Response(null, {

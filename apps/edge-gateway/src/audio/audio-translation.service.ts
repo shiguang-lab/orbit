@@ -44,7 +44,7 @@ export class AudioTranslationService {
       { handleAudioTranslation },
     ] = await Promise.all([
       load("@shiguang-gateway/open-sse/config/audioRegistry"),
-      load("@shiguang-gateway/core-domain/sse/auth"),
+      load("@shiguang-gateway/open-sse/services/auth"),
       load("@shiguang-gateway/core-domain/edge/rate-limit"),
       load("@shiguang-gateway/open-sse/handlers/audioTranslation"),
     ]);

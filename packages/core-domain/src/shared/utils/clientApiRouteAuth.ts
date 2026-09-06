@@ -21,7 +21,7 @@
 
 import { errorResponse } from "@shiguang-gateway/http-kernel/error-response";
 import { HTTP_STATUS } from "@shiguang-gateway/contracts/http-status";
-import { extractApiKey, isValidApiKey } from "../../sse/services/auth.ts";
+import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/services/auth";
 import { isRequireApiKeyEnabled } from "./featureFlags.ts";
 import { isDashboardSessionAuthenticated } from "./apiAuth.ts";
 

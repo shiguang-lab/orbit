@@ -354,7 +354,7 @@ import {
   resolveConnectionTimeoutMs,
 } from "./chatCore/upstreamTimeouts.ts";
 import { getModelNormalizeToolCallId, getModelPreserveOpenAIDeveloperRole } from "@shiguang-gateway/core-domain/db/models-runtime";
-import { getProviderCredentials, extractSessionAffinityKey } from "@shiguang-gateway/core-domain/sse/auth";
+import { getProviderCredentials, extractSessionAffinityKey } from "../services/auth.ts";
 import { assertExclusiveConnectionLeaseFence } from "@shiguang-gateway/core-domain/db/exclusive-connection-leases";
 import { deleteSessionAccountAffinity } from "@shiguang-gateway/core-domain/db/session-account-affinity";
 import { getCacheControlSettings } from "@shiguang-gateway/core-domain/edge/cache-control";

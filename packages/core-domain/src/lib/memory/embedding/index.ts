@@ -4,7 +4,7 @@ import {
   getEmbeddingDimension,
   type EmbeddingProviderNodeRow,
 } from "../../../../../open-sse/config/embeddingRegistry.ts";
-import { getProviderCredentials } from "../../../sse/services/auth.ts";
+import { getProviderCredentials } from "@shiguang-gateway/open-sse/services/auth";
 import { getCachedProviderNodes } from "../../localDb.ts";
 import type { MemorySettingsExtended } from "../../../shared/schemas/memory.ts";
 import type {

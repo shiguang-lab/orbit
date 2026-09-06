@@ -1,4 +1,4 @@
-import { supportsXHighEffort } from "../../../../open-sse/config/providerModels.ts";
+import { supportsXHighEffort } from "@shiguang-gateway/provider-catalog/provider-models";
 import { parseModel } from "../../../../open-sse/services/model.ts";
 import { stripVscodeServiceTierVariantModelId } from "./serviceTierVariants.ts";
 import { extendCodexGpt56EffortValues } from "../../shared/reasoning/effortStandardization.ts";

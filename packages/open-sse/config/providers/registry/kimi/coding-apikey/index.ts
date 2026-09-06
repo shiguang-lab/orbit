@@ -1,9 +1,2 @@
-import type { RegistryEntry } from "../../../shared.ts";
-import { KIMI_CODING_SHARED } from "../coding/index.ts";
-
-export const kimi_coding_apikeyProvider: RegistryEntry = {
-  id: "kimi-coding-apikey",
-  alias: "kmca",
-  ...KIMI_CODING_SHARED,
-  authType: "apikey",
-};
+/** Compatibility facade; catalog ownership lives in @shiguang-gateway/provider-catalog. */
+export { kimi_coding_apikeyProvider } from "@shiguang-gateway/provider-catalog/providers/registry/kimi/coding-apikey";

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
-import { handleChat } from "@shiguang-gateway/core-domain/edge/chat-handler";
+import { handleChat } from "@shiguang-gateway/open-sse/handlers/chat";
 import {
   admitChatRequest,
   admitChatStructure,

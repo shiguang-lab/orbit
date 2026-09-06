@@ -1,11 +1,2 @@
-import type { RegistryEntry } from "../../shared.ts";
-import { buildOpenAiCompatibleRegistryEntry } from "../../shared.ts";
-
-export const zyloApiProvider: RegistryEntry = buildOpenAiCompatibleRegistryEntry({
-  id: "zylo-api",
-  alias: "zylo",
-  baseUrl: "https://api.zyloai.net/v1/chat/completions",
-  modelsUrl: "https://api.zyloai.net/v1/models",
-  models: [],
-  passthroughModels: true,
-});
+/** Compatibility facade; catalog ownership lives in @shiguang-gateway/provider-catalog. */
+export { zyloApiProvider } from "@shiguang-gateway/provider-catalog/providers/registry/zylo-api";

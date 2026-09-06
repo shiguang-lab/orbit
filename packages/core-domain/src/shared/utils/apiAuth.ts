@@ -11,7 +11,7 @@ import { jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { getSettings } from "../../lib/localDb.ts";
 import { isPublicApiRoute } from "../constants/publicApiRoutes.ts";
-import { extractApiKey } from "../../sse/services/auth.ts";
+import { extractApiKey } from "@shiguang-gateway/open-sse/services/auth";
 
 type RequestLike = {
   cookies?: {

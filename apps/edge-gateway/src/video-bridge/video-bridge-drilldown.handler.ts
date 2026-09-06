@@ -2,7 +2,7 @@ import { z } from "zod";
 import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
 import { handleCorsOptions } from "../common/cors.js";
 import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/shared/api-key-policy";
-import { extractApiKey, isValidApiKey } from "@shiguang-gateway/core-domain/sse/auth";
+import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/services/auth";
 import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
 import {
   isVideoBridgeDrilldownRemoteAccessEnabled,

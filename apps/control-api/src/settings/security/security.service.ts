@@ -40,7 +40,7 @@ import {
   SPAWN_CAPABLE_PREFIXES,
 } from "@shiguang-gateway/core-domain/shared/authz-route-constants";
 import { isDashboardSessionAuthenticated, isAuthRequired } from "@shiguang-gateway/core-domain/control/authenticated";
-import { extractApiKey, isValidApiKey } from "@shiguang-gateway/core-domain/control/api-key-auth";
+import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/services/auth";
 
 export interface AutoDisableAccountsConfig {
   enabled: boolean;

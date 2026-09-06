@@ -1,4 +1,4 @@
-import { handleChat } from "../../sse/handlers/chat.ts";
+import { handleChat } from "@shiguang-gateway/open-sse/handlers/chat";
 import { withChatAdmission } from "../../shared/middleware/withChatAdmission.ts";
 import { initTranslators } from "../../../../open-sse/translator/index.ts";
 

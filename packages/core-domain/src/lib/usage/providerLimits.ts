@@ -15,7 +15,7 @@ import { syncToCloud } from "../cloudSync.ts";
 import { setQuotaCache } from "../../domain/quotaCache.ts";
 import { buildClaudeExtraUsageConnectionUpdate } from "../providers/claudeExtraUsage.ts";
 import { isConnectionUnavailableToAuxiliaryActivity } from "../exclusiveLeaseIsolation.ts";
-import { clearRecoveredProviderState } from "../../sse/services/auth.ts";
+import { clearRecoveredProviderState } from "@shiguang-gateway/open-sse/services/auth";
 import { getMachineId } from "../../shared/utils/machine.ts";
 import { USAGE_SUPPORTED_PROVIDERS } from "../../shared/constants/providers.ts";
 import { mergeProviderLimitsCacheEntry, toProviderLimitsCacheEntry } from "./providerLimitsCache";

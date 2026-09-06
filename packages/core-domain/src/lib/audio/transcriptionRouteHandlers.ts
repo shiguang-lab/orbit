@@ -4,7 +4,7 @@ import { handleAudioTranscription } from "@shiguang-gateway/open-sse/handlers/au
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
-} from "@shiguang-gateway/core-domain/sse/auth";
+} from "@shiguang-gateway/open-sse/services/auth";
 import {
   parseTranscriptionModel,
   getTranscriptionProvider,

@@ -97,7 +97,7 @@ export class AudioTranscriptionService {
       { isAllRateLimitedCredentials, rateLimitedProviderResponse },
     ] = await Promise.all([
       load("@shiguang-gateway/open-sse/handlers/audioTranscription"),
-      load("@shiguang-gateway/core-domain/sse/auth"),
+      load("@shiguang-gateway/open-sse/services/auth"),
       load("@shiguang-gateway/open-sse/config/audioRegistry"),
       load("@shiguang-gateway/open-sse/utils/error"),
       load("@shiguang-gateway/core-domain/edge/rate-limit"),

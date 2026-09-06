@@ -14,7 +14,7 @@ import { getImageModelEntry, parseImageModel } from "../config/imageRegistry.ts"
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
-} from "@shiguang-gateway/core-domain/sse/auth";
+} from "./auth.ts";
 import { isAllRateLimitedCredentials } from "@shiguang-gateway/core-domain/edge/rate-limit";
 import { handleImageGeneration } from "../handlers/imageGeneration.ts";
 import { attachShiguangGatewayMetaHeaders } from "@shiguang-gateway/core-domain/edge/gateway-response-meta";

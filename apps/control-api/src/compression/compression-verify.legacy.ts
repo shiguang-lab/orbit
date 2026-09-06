@@ -3,7 +3,7 @@ import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/man
 import { judgeFidelityBatch } from "@shiguang-gateway/open-sse/services/compression/eval/fidelityCheck";
 import { createPricedJudgeClient } from "@shiguang-gateway/core-domain/control/compression-judge-client";
 import type { ProviderCredentials } from "@shiguang-gateway/open-sse/executors/base";
-import { getProviderCredentials } from "@shiguang-gateway/core-domain/sse/auth";
+import { getProviderCredentials } from "@shiguang-gateway/open-sse/services/auth";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 
 export const dynamic = "force-dynamic";

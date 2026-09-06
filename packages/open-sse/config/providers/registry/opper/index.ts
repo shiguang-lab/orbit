@@ -1,11 +1,2 @@
-import type { RegistryEntry } from "../../shared.ts";
-import { buildOpenAiCompatibleRegistryEntry } from "../../shared.ts";
-
-export const opperProvider: RegistryEntry = buildOpenAiCompatibleRegistryEntry({
-  id: "opper",
-  alias: "opper",
-  baseUrl: "https://api.opper.ai/v3/compat/chat/completions",
-  modelsUrl: "https://api.opper.ai/v3/compat/models",
-  models: [],
-  passthroughModels: true,
-});
+/** Compatibility facade; catalog ownership lives in @shiguang-gateway/provider-catalog. */
+export { opperProvider } from "@shiguang-gateway/provider-catalog/providers/registry/opper";

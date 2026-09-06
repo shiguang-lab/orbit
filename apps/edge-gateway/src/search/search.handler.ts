@@ -3,7 +3,7 @@ import {
   getProviderCredentialsWithQuotaPreflight,
   extractApiKey,
   isValidApiKey,
-} from "@shiguang-gateway/core-domain/sse/auth";
+} from "@shiguang-gateway/open-sse/services/auth";
 import {
   getAllSearchProviders,
   getSearchProvider,

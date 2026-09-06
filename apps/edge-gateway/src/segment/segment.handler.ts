@@ -16,7 +16,7 @@ export function OPTIONS() {
 async function postHandler(request: Request): Promise<Response> {
   const [jina, auth, errorApi, constants, policyApi, validationApi, validationHelpers, rateLimit] = await Promise.all([
     load("@shiguang-gateway/open-sse/handlers/jinaFoundation"),
-    load("@shiguang-gateway/core-domain/sse/auth"),
+    load("@shiguang-gateway/open-sse/services/auth"),
     load("@shiguang-gateway/open-sse/utils/error"),
     load("@shiguang-gateway/open-sse/config/constants"),
     load("@shiguang-gateway/core-domain/shared/api-key-policy"),

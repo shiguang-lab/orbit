@@ -48,7 +48,7 @@ export async function proxyElevenLabsRequest(
     { isAllRateLimitedCredentials, rateLimitedProviderResponse },
     { buildErrorBody },
   ] = await Promise.all([
-    load("@shiguang-gateway/core-domain/sse/auth"),
+    load("@shiguang-gateway/open-sse/services/auth"),
     load("@shiguang-gateway/core-domain/edge/rate-limit"),
     load("@shiguang-gateway/open-sse/utils/error"),
   ]);

@@ -28,7 +28,7 @@ export async function POST(request: Request, { params }: ProviderParams): Promis
       load("@shiguang-gateway/open-sse/utils/error"),
       load("@shiguang-gateway/open-sse/config/constants"),
       load("@shiguang-gateway/open-sse/config/providerRegistry"),
-      load("@shiguang-gateway/core-domain/sse/auth"),
+      load("@shiguang-gateway/open-sse/services/auth"),
       load("@shiguang-gateway/open-sse"),
       load("@shiguang-gateway/core-domain/sse/logger"),
       load("@shiguang-gateway/core-domain/shared/api-key-policy"),

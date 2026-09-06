@@ -1,5 +1,5 @@
-import { providerUsesAuthoritativeLiveCatalog } from "../../../../../open-sse/config/providerRegistry.ts";
-import { PROVIDER_ID_TO_ALIAS } from "../../../../../open-sse/config/providerModels.ts";
+import { providerUsesAuthoritativeLiveCatalog } from "@shiguang-gateway/provider-catalog/provider-registry";
+import { PROVIDER_ID_TO_ALIAS } from "@shiguang-gateway/provider-catalog/provider-models";
 import {
   getSyncedAvailableModels,
   getSyncedAvailableModelsByConnection,

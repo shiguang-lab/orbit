@@ -1,16 +1,2 @@
-import type { RegistryEntry } from "../../shared.ts";
-
-export const regoloProvider: RegistryEntry = {
-  id: "regolo",
-  alias: "regolo",
-  format: "openai",
-  executor: "default",
-  baseUrl: "https://api.regolo.ai",
-  authType: "apikey",
-  authHeader: "bearer",
-  models: [
-    { id: "regolo-chat", name: "Regolo Chat" },
-    { id: "regolo-fast", name: "Regolo Fast" },
-  ],
-  passthroughModels: true,
-};
+/** Compatibility facade; catalog ownership lives in @shiguang-gateway/provider-catalog. */
+export { regoloProvider } from "@shiguang-gateway/provider-catalog/providers/registry/regolo";

@@ -3,8 +3,8 @@ import { errorResponse } from "../utils/error.ts";
 import { HTTP_STATUS } from "@shiguang-gateway/contracts/http-status";
 import {
   validateApiKeyRoutingTarget,
-  type ApiKeyPolicyInfo as ApiKeyMetadata,
-} from "@shiguang-gateway/core-domain/shared/api-key-policy";
+  type ApiKeyMetadata,
+} from "@shiguang-gateway/core-domain/runtime/api-key-policy";
 import { resolveRequestRoutingTags } from "@shiguang-gateway/core-domain/edge/tag-router";
 import * as log from "../utils/sseLogger.ts";
 import {

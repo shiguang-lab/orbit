@@ -25,7 +25,7 @@ export class ModerationsService {
         { isAllRateLimitedCredentials, rateLimitedProviderResponse },
       ] = await Promise.all([
         load("@shiguang-gateway/open-sse/handlers/moderations"),
-        load("@shiguang-gateway/core-domain/sse/auth"),
+        load("@shiguang-gateway/open-sse/services/auth"),
         load("@shiguang-gateway/open-sse/config/moderationRegistry"),
         load("@shiguang-gateway/open-sse/utils/error"),
         load("@shiguang-gateway/core-domain/edge/moderation-validation-schemas"),

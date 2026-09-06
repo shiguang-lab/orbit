@@ -15,7 +15,7 @@
 import { createHmac } from "node:crypto";
 
 import { getModelCatalogCacheVersion } from "../db/readCache.ts";
-import { extractApiKey } from "../../sse/services/auth.ts";
+import { extractApiKey } from "@shiguang-gateway/open-sse/services/auth";
 
 import { isCodexModelCatalogClient } from "./catalogRequest";
 

@@ -55,7 +55,7 @@ export class ControlSecurityService implements OnModuleInit {
     const authzEngine: EngineAuthAdapter = {
       isValidApiKey: async (apiKey) => {
         try {
-          const { isValidApiKey } = await load("@shiguang-gateway/core-domain/sse/auth");
+          const { isValidApiKey } = await load("@shiguang-gateway/open-sse/services/auth");
           return await isValidApiKey(apiKey);
         } catch {
           return false;

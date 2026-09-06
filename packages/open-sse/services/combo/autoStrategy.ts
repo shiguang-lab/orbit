@@ -27,7 +27,7 @@ import type {
   HistoricalLatencyStatsEntry,
   ResolvedComboTarget,
 } from "./types.ts";
-import { extractSessionAffinityKey } from "@shiguang-gateway/core-domain/sse/auth";
+import { extractSessionAffinityKey } from "../auth.ts";
 import { isMicrosoftDesignerWebRetiredProviderId } from "@shiguang-gateway/contracts/designer-web-retirement";
 import { isRuntimeRetiredProviderId } from "@shiguang-gateway/contracts/provider-retirement";
 import { isCommonChatGptWebRetiredProviderId } from "@shiguang-gateway/contracts/chatgpt-web-retirement";

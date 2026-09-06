@@ -39,7 +39,7 @@ export async function OPTIONS(): Promise<Response> {
 /** POST /v1/session-leases — acquire, renew, or release one exclusive connection lease. */
 export async function POST(request: Request): Promise<Response> {
   const [auth, policyApi, leaseContext, localDb, modelApi, errorApi, contracts] = await Promise.all([
-    load("@shiguang-gateway/core-domain/sse/auth"),
+    load("@shiguang-gateway/open-sse/services/auth"),
     load("@shiguang-gateway/core-domain/shared/api-key-policy"),
     load("@shiguang-gateway/open-sse/services/leaseContext"),
     load("@shiguang-gateway/core-domain/edge/local-db"),

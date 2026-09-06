@@ -2,8 +2,6 @@ import { Injectable } from "@nestjs/common";
 import {
   createReasoningRoutingRule,
   deleteReasoningRoutingRule,
-  getComboForModel,
-  getModelInfo,
   getReasoningRoutingRuleById,
   getReasoningRoutingRules,
   reasoningRuleDataToInput,
@@ -16,6 +14,10 @@ import {
   type ReasoningRoutingRuleInput,
   type ReasoningRoutingSimulationInput,
 } from "@shiguang-gateway/core-domain/control/reasoning-routing";
+import {
+  getComboForModel,
+  getModelInfo,
+} from "@shiguang-gateway/open-sse/services/runtimeModel";
 import { getApiKeyById } from "@shiguang-gateway/core-domain/control/api-key-store";
 import {
   validateApiKeyRoutingTarget,

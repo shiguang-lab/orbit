@@ -22,7 +22,7 @@ import { resolveVideoCredentialProvider } from "../handlers/videoGeneration/goog
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
-} from "@shiguang-gateway/core-domain/sse/auth";
+} from "./auth.ts";
 import { isAllRateLimitedCredentials } from "@shiguang-gateway/core-domain/edge/rate-limit";
 import { handleVideoGeneration } from "../handlers/videoGeneration.ts";
 import {

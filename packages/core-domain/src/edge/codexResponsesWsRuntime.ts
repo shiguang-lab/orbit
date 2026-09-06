@@ -11,7 +11,7 @@ export {
 } from "../lib/ws/handshake.js";
 export { getModelInfo } from "@shiguang-gateway/open-sse/services/runtimeModel";
 export { resolveCcDiscoveryAliasStrip } from "../lib/ccDiscoveryAliasResolve.js";
-export { getProviderCredentialsWithQuotaPreflight } from "../sse/services/auth.js";
+export { getProviderCredentialsWithQuotaPreflight } from "@shiguang-gateway/open-sse/services/auth";
 export {
   enforceApiKeyPolicy,
   validateApiKeyRoutingTarget,

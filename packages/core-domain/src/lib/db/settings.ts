@@ -4,7 +4,7 @@
 
 import { getDbInstance } from "./core";
 import { backupDbFile } from "./backup";
-import { PROVIDER_ID_TO_ALIAS } from "../../../../open-sse/config/providerModels.ts";
+import { PROVIDER_ID_TO_ALIAS } from "@shiguang-gateway/provider-catalog/provider-models";
 import { invalidateDbCache } from "./readCache";
 import { encrypt, decrypt } from "./encryption";
 import { getProxyRegistryGeneration, resolveProxyForScopeFromRegistry } from "./proxies";

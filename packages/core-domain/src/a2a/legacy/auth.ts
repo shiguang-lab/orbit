@@ -16,7 +16,7 @@
  */
 
 import { requireManagementAuth } from "../../lib/api/requireManagementAuth.ts";
-import { extractApiKey, isValidApiKey } from "../../sse/services/auth.ts";
+import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/services/auth";
 import { isRequireApiKeyEnabled } from "../../shared/utils/featureFlags.ts";
 import { resolveA2AOwner } from "../../lib/a2a/authenticate.ts";
 

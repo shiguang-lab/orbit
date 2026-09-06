@@ -33,7 +33,7 @@ import {
   getRegistryThinkingEfforts,
   providerUsesAuthoritativeLiveCatalog,
   REGISTRY,
-} from "../../../../open-sse/config/providerRegistry.ts";
+} from "@shiguang-gateway/provider-catalog/provider-registry";
 import { CODEX_NATIVE_UNPREFIXED_MODELS } from "../../../../open-sse/services/model.ts";
 import { isModelSelectable } from "../../../../open-sse/services/modelLifecycle.ts";
 import { resolveNestedComboTargets } from "../../../../open-sse/services/combo.ts";
@@ -84,7 +84,7 @@ import {
   normalizeBlockedProviderSet,
 } from "../../shared/utils/noAuthProviders.ts";
 import { getSourcedTokenLimit, getTokenLimit } from "../../../../open-sse/services/contextManager.ts";
-import { extractApiKey } from "../../sse/services/auth.ts";
+import { extractApiKey } from "@shiguang-gateway/open-sse/services/auth";
 import type { ComboModelStep } from "../combos/steps.ts";
 import {
   type CustomModelEntry,

@@ -1,15 +1,2 @@
-import type { RegistryEntry } from "../../shared.ts";
-import { CHAT_OPENAI_COMPAT_MODELS } from "../../shared.ts";
-
-export const nanogptProvider: RegistryEntry = {
-  id: "nanogpt",
-  alias: "nanogpt",
-  format: "openai",
-  executor: "default",
-  baseUrl: "https://nano-gpt.com/api/v1/chat/completions",
-  modelsUrl: "https://nano-gpt.com/api/v1/models",
-  responsesBaseUrl: "https://nano-gpt.com/api/v1/responses",
-  authType: "apikey",
-  authHeader: "bearer",
-  models: CHAT_OPENAI_COMPAT_MODELS.nanogpt,
-};
+/** Compatibility facade; catalog ownership lives in @shiguang-gateway/provider-catalog. */
+export { nanogptProvider } from "@shiguang-gateway/provider-catalog/providers/registry/nanogpt";

@@ -8,7 +8,7 @@
  * @module shared/utils/apiKeyPolicy
  */
 
-import { extractApiKey } from "../../sse/services/auth.ts";
+import { extractApiKey } from "@shiguang-gateway/open-sse/services/auth";
 import {
   getApiKeyMetadata,
   getComboByName,

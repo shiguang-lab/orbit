@@ -14,7 +14,7 @@ import {
   SEARCH_PROVIDERS,
   VIDEO_PROVIDER_IDS,
 } from "../../../shared/constants/providers.ts";
-import { REGISTRY } from "../../../../../open-sse/config/providerRegistry.ts";
+import { REGISTRY } from "@shiguang-gateway/provider-catalog/provider-registry";
 
 type ProviderConnectionLike = {
   id?: string;

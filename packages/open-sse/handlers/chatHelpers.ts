@@ -1,5 +1,5 @@
 import { getModelInfo, getComboForModel, getModelInfoOrRetirementResponse } from "../services/runtimeModel";
-import { clearAccountError, markAccountUnavailable } from "@shiguang-gateway/core-domain/sse/auth";
+import { clearAccountError, markAccountUnavailable } from "../services/auth.ts";
 import { connectionHasExtraKeys } from "../services/apiKeyRotator.ts";
 import { createBuiltinAutoCombo } from "../services/autoCombo/builtinCatalog.ts";
 import * as log from "../utils/sseLogger.ts";

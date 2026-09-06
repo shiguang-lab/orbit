@@ -159,6 +159,9 @@ importers:
       '@shiguang-gateway/open-sse':
         specifier: workspace:*
         version: link:../../packages/open-sse
+      '@shiguang-gateway/rerank-catalog':
+        specifier: workspace:*
+        version: link:../../packages/rerank-catalog
       '@shiguang-gateway/web-route-compat':
         specifier: workspace:*
         version: link:../../packages/web-route-compat
@@ -285,6 +288,9 @@ importers:
       '@shiguang-gateway/http-kernel':
         specifier: workspace:*
         version: link:../../packages/http-kernel
+      '@shiguang-gateway/open-sse':
+        specifier: workspace:*
+        version: link:../../packages/open-sse
       fastify:
         specifier: 5.12.1
         version: 5.12.1
@@ -436,6 +442,9 @@ importers:
       '@shiguang-gateway/open-sse':
         specifier: workspace:*
         version: link:../open-sse
+      '@shiguang-gateway/provider-catalog':
+        specifier: workspace:*
+        version: link:../provider-catalog
       '@shiguang-gateway/rerank-catalog':
         specifier: workspace:*
         version: link:../rerank-catalog
@@ -754,6 +763,9 @@ importers:
       '@shiguang-gateway/network-guard':
         specifier: workspace:*
         version: link:../network-guard
+      '@shiguang-gateway/provider-catalog':
+        specifier: workspace:*
+        version: link:../provider-catalog
       '@shiguang-gateway/runtime-logging':
         specifier: workspace:*
         version: link:../runtime-logging
@@ -828,6 +840,25 @@ importers:
       tls-client-node:
         specifier: ^0.2.0
         version: 0.2.0
+
+  packages/provider-catalog:
+    dependencies:
+      '@shiguang-gateway/config':
+        specifier: workspace:*
+        version: link:../config
+      '@shiguang-gateway/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 22.20.1
+      tsx:
+        specifier: 'catalog:'
+        version: 4.23.13
+      typescript:
+        specifier: 'catalog:'
+        version: 5.8.3
 
   packages/rerank-catalog:
     devDependencies:

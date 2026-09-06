@@ -36,7 +36,4 @@ export {
   validateCodexWsDecision,
 } from "../lib/reasoningRouting/policy.js";
 
-// Model lookup and Codex transport resolution are part of the shared routing
-// policy used by the simulation endpoint and the edge request pipeline.
-export { getComboForModel, getModelInfo } from "@shiguang-gateway/open-sse/services/runtimeModel";
 export { resolveCodexWsModelInfo } from "../edge/codexResponsesWsModel.js";

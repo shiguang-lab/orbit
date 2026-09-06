@@ -29,7 +29,7 @@ import {
   extractApiKey,
   isValidApiKey,
   getProviderCredentialsWithQuotaPreflight,
-} from "@shiguang-gateway/core-domain/sse/auth";
+} from "@shiguang-gateway/open-sse/services/auth";
 import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/shared/api-key-policy";
 import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/edge/feature-flags";
 import { z } from "zod";
