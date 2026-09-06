@@ -16,8 +16,8 @@ import {
   buildSyncedModelIdsByCanonicalProvider,
   shouldSuppressStaticModelForExclusiveListing,
 } from "../v1/models/catalogSyncedCoverage.ts";
-import { buildAliasMaps } from "../v1/models/catalogProviderMaps.ts";
-import { resolveCanonicalProviderId as resolveCanonicalProviderIdFromMaps } from "../v1/models/catalogProviderMaps.ts";
+import { buildAliasMaps } from "../../../lib/catalog/catalogProviderMaps.ts";
+import { resolveCanonicalProviderId as resolveCanonicalProviderIdFromMaps } from "../../../lib/catalog/catalogProviderMaps.ts";
 
 interface GetModelsDependencies {
   createCapabilitySnapshot?: typeof createModelCapabilityResolutionSnapshot;

@@ -114,7 +114,7 @@ import {
   resolveCanonicalProviderId as resolveCanonicalProviderIdFromMaps,
   getProviderPrefixes as getProviderPrefixesFromMaps,
   getComboTargetModelId as getComboTargetModelIdFromMaps,
-} from "./catalogProviderMaps";
+} from "../../../../lib/catalog/catalogProviderMaps.ts";
 import {
   getModelCatalogAuthRejection,
   isCodexModelCatalogClient,

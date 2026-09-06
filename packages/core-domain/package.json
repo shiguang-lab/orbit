@@ -781,7 +781,7 @@
     },
     "./catalog/combo-targets": {
       "types": "./src/public/catalogComboTargets.d.ts",
-      "import": "./src/app/api/v1/models/catalogProviderMaps.ts"
+      "import": "./src/lib/catalog/catalogProviderMaps.ts"
     },
     "./catalog/model-metadata": {
       "types": "./src/public/catalogModelMetadata.d.ts",
