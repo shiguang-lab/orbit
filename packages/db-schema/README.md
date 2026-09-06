@@ -30,6 +30,13 @@ and invalidates entries for operator-facing cache management. Their canonical
 column definitions therefore belong to the shared catalog even though cache
 queries remain outside this package.
 
+Session stickiness and reasoning replay are likewise shared runtime contracts:
+`session_model_history` is written/read by the edge `open-sse` request path and
+maintained by combo invalidation, while `reasoning_cache` is persisted by the
+same streaming path and purged by the worker cleanup job. Their query logic
+stays in the consuming package/app; only the physical entity definitions live
+here.
+
 `src/index.ts` exports the complete `GATEWAY_TABLES`, `TABLE_OWNERSHIP`, and
 `GATEWAY_ENTITIES` catalogs. `assertGatewayEntities()` verifies that every
 catalog entry has a matching physical table name, owner, and non-empty column

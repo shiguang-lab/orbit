@@ -1,6 +1,45 @@
 import { column, type EntityDefinition } from "./definition.js";
 
 /**
+ * Persistent reasoning replay entries written by the streaming request path
+ * and periodically purged by the worker cleanup job.
+ */
+export const ReasoningCacheEntity: EntityDefinition = {
+  entityName: "ReasoningCache",
+  tableName: "reasoning_cache",
+  owner: "edge-gateway",
+  columns: [
+    column("tool_call_id", "TEXT", { nullable: false, primaryKey: true }),
+    column("provider", "TEXT", { nullable: false }),
+    column("model", "TEXT", { nullable: false }),
+    column("reasoning", "TEXT", { nullable: false }),
+    column("char_count", "INTEGER", { nullable: false, default: "0" }),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+    column("expires_at", "INTEGER", { nullable: false }),
+  ],
+};
+
+/**
+ * Model pins observed for a session/combo by the context-relay pipeline.
+ * Edge/open-sse writes and reads these rows; worker/control maintenance only
+ * treats the table as a shared persistence contract.
+ */
+export const SessionModelHistoryEntity: EntityDefinition = {
+  entityName: "SessionModelHistory",
+  tableName: "session_model_history",
+  owner: "edge-gateway",
+  columns: [
+    column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
+    column("session_id", "TEXT", { nullable: false }),
+    column("combo_name", "TEXT", { nullable: false }),
+    column("model_str", "TEXT", { nullable: false }),
+    column("provider", "TEXT", { nullable: false }),
+    column("connection_id", "TEXT"),
+    column("used_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
+/**
  * Persistent semantic responses written by the edge request pipeline and
  * inspected/invalidated by control-api cache operations.
  *
