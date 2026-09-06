@@ -13,3 +13,4 @@ export interface CompressionAnalyticsRow {
 }
 export function getLatestCompressionAnalyticsRun(): CompressionAnalyticsRow | null;
 export function getCompressionAnalyticsSummary(since?: string): any;
+export function getPerEngineAnalytics(engineId: string, days?: number): any;

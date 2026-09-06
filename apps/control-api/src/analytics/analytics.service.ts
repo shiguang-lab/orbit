@@ -5,7 +5,10 @@ import {
   getAutoRoutingVariantBreakdown,
   getAutoRoutingTopProviders,
 } from "@shiguang-gateway/core-domain/analytics/auto-routing-db";
-import { getCompressionAnalyticsSummary } from "@shiguang-gateway/core-domain/db/compression-analytics";
+import {
+  getCompressionAnalyticsSummary,
+  getPerEngineAnalytics,
+} from "@shiguang-gateway/core-domain/db/compression-analytics";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
 
@@ -41,6 +44,10 @@ export class AnalyticsService {
       ? sinceParam
       : "24h";
     return getCompressionAnalyticsSummary(validSince === "all" ? undefined : validSince);
+  }
+
+  getPerEngineCompressionAnalytics(engineId: string, days = 7) {
+    return getPerEngineAnalytics(engineId, days);
   }
 
   async getDiversityAnalytics() {

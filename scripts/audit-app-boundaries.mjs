@@ -221,6 +221,8 @@ const migratedRouteOwnership = {
     "api/analytics/auto-routing/route.ts",
     "api/analytics/compression/route.ts",
     "api/analytics/diversity/route.ts",
+    "api/context/analytics/route.ts",
+    "api/context/analytics/engine/route.ts",
     "api/db-backups/route.ts",
     "api/db-backups/export/route.ts",
     "api/db-backups/exportAll/route.ts",
