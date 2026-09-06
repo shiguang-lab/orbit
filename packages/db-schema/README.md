@@ -85,11 +85,12 @@ table constant, and ownership entry here; keep app-specific DDL/initialization
 in the owning Nest app rather than in a package migration. Shared bootstrap
 helpers must remain executor-based and must not access a database directly.
 
-The coverage audit reports app-private tables separately while they are being
-migrated. For example, `cloud_agent_credentials` and `cloud_agent_tasks`
-belong only to the `edge-gateway` cloud-agents module and keep their DDL in
-that app. If another app starts consuming one, promote it into this catalog
-and declare the new ownership contract before sharing it.
+The catalog also records app-private physical table shapes. For example,
+`cloud_agent_credentials` and `cloud_agent_tasks` belong only to the
+`edge-gateway` cloud-agents module, so their DDL/bootstrap and repositories
+stay in that app; the entity metadata remains here to satisfy the single
+schema-contract rule. If another app starts consuming one, update its
+ownership/access contract before sharing it.
 
 The catalog also includes internal SQLite metadata and legacy runtime tables
 (`db_meta`, `_shiguanggateway_migrations`, leases, affinity, domain state,
