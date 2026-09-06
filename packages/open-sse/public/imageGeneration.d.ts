@@ -3,4 +3,4 @@ export function handleAdobeFireflyImageGeneration(options: any): Promise<any>;
 export function handleCodexImageEdit(options: any): Promise<any>;
 export function handleOpenAIImageEdit(options: any): Promise<any>;
 export function handleOpenRouterImageEdit(options: any): Promise<any>;
-
+export function handleImageGeneration(options: any): Promise<any>;

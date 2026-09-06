@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import {
   GET as getImageGenerations,
   POST as imageGenerations,
-} from "@shiguang-gateway/core-domain/edge/image-generations-handler";
+} from "./generations/image-generations.handler.js";
 import { POST as imageEdits } from "./edits/image-edits.handler.js";
 import {
   GET as getImageUpscale,

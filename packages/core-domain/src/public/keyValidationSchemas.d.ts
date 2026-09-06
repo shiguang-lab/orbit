@@ -5,6 +5,7 @@ export const cloudSyncActionSchema: z.ZodTypeAny;
 export const setBudgetSchema: z.ZodTypeAny;
 export const updateKeyPermissionsSchema: z.ZodTypeAny;
 export const v1ImageUpscaleSchema: z.ZodTypeAny;
+export const v1ImageGenerationSchema: z.ZodTypeAny;
 export const MemorySettingsExtendedSchema: z.ZodTypeAny;
 export const createComboSchema: z.ZodTypeAny;
 export const updateComboSchema: z.ZodTypeAny;

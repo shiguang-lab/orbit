@@ -1,28 +1,35 @@
-import { handleImageGeneration } from "../../../../../../../open-sse/handlers/imageGeneration.ts";
-import { withInjectionGuard } from "../../../../../middleware/promptInjectionGuard.ts";
+import { handleImageGeneration } from "@shiguang-gateway/open-sse/handlers/imageGeneration";
+import { withInjectionGuard } from "@shiguang-gateway/core-domain/middleware/prompt-injection";
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
-} from "../../../../../sse/services/auth.ts";
+} from "@shiguang-gateway/core-domain/sse/auth";
 import {
   parseImageModel,
   getImageProvider,
   getImageModelEntry,
   modalitiesRequireImageInput,
-} from "../../../../../../../open-sse/config/imageRegistry.ts";
-import { errorResponse, unavailableResponse } from "../../../../../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../../../../../open-sse/config/constants.ts";
-import { isAllRateLimitedCredentials } from "../../../../../lib/edge/rateLimit.ts";
-import * as log from "../../../../../sse/utils/logger.ts";
-import { toJsonErrorPayload } from "../../../../../shared/utils/upstreamError.ts";
-import { enforceApiKeyPolicy } from "../../../../../shared/utils/apiKeyPolicy.ts";
-import { v1ImageGenerationSchema } from "../../../../../shared/validation/schemas.ts";
-import { isValidationFailure, validateBody } from "../../../../../shared/validation/helpers.ts";
+} from "@shiguang-gateway/open-sse/config/imageRegistry";
+import { errorResponse, unavailableResponse } from "@shiguang-gateway/open-sse/utils/error";
+import { HTTP_STATUS as OPEN_SSE_HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants";
+const HTTP_STATUS = {
+  ...OPEN_SSE_HTTP_STATUS,
+  GONE: 410,
+  SERVICE_UNAVAILABLE: 503,
+} as const;
+import { isAllRateLimitedCredentials } from "@shiguang-gateway/core-domain/edge/rate-limit";
+import * as log from "@shiguang-gateway/core-domain/sse/logger";
+import { toJsonErrorPayload } from "@shiguang-gateway/core-domain/shared/upstream-error";
+import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/shared/api-key-policy";
+import { v1ImageGenerationSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 
-import { getComboByName } from "../../../../../lib/db/combos.ts";
-import { getAllCustomModels } from "../../../../../lib/db/models.ts";
-import { resolveProxyForConnection } from "../../../../../lib/db/settings.ts";
-import { resolveImageRouteModel } from "../../../../../lib/images/imageRouteModel.ts";
+import {
+  getComboByName,
+  resolveProxyForConnection,
+} from "@shiguang-gateway/core-domain/edge/local-db";
+import { getAllCustomModels } from "@shiguang-gateway/core-domain/control/synced-models";
+import { resolveImageRouteModel } from "@shiguang-gateway/core-domain/edge/image-route-model";
 import {
   isMicrosoftDesignerWebProviderRetiredError,
   isMicrosoftDesignerWebRetiredProviderId,
@@ -31,16 +38,16 @@ import {
 import {
   resolveLocalSyncedEndpointRoute,
   type LocalSyncedEndpointRoute,
-} from "../../../../../lib/providerModels/syncedEndpointRouting.ts";
-import { runWithProxyContext } from "../../../../../../../open-sse/utils/proxyFetch.ts";
-import { attachShiguangGatewayMetaHeaders } from "../../../../../domain/gatewayResponseMeta.ts";
-import { calculateModalCost } from "../../../../../lib/usage/costCalculator.ts";
-import { generateRequestId } from "../../../../../shared/utils/requestId.ts";
-import { getSpecialtyModelsResponse } from "../../../../../lib/edge/specialtyCatalog.ts";
-import { enforceClientApiRouteAuth } from "../../../../../shared/utils/clientApiRouteAuth.ts";
-import { runWithCallLogApiKeyContext } from "../../../../../lib/usage/callLogApiKeyContext.ts";
-import { executeImageWithCredentialFallback } from "../../../../../sse/services/imageCredentialRetry.ts";
-import { AUTHZ_HEADER_PEER_LOCALITY } from "../../../../../server/authz/headers.ts";
+} from "@shiguang-gateway/core-domain/edge/synced-endpoint-routing";
+import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
+import { attachShiguangGatewayMetaHeaders } from "@shiguang-gateway/core-domain/edge/gateway-response-meta";
+import { calculateModalCost } from "@shiguang-gateway/core-domain/pricing/modal-cost";
+import { generateRequestId } from "@shiguang-gateway/core-domain/edge/request-id";
+import { getSpecialtyModelsResponse } from "@shiguang-gateway/core-domain/edge/specialty-catalog";
+import { enforceClientApiRouteAuth } from "@shiguang-gateway/core-domain/shared/client-api-auth";
+import { runWithCallLogApiKeyContext } from "@shiguang-gateway/core-domain/usage/call-log-api-key-context";
+import { executeImageWithCredentialFallback } from "@shiguang-gateway/core-domain/sse/image-credential-retry";
+import { AUTHZ_HEADER_PEER_LOCALITY } from "@shiguang-gateway/core-domain/shared/authz-headers";
 import {
   assertCommonChatGptWebModelAvailable,
   CHATGPT_WEB_RETIRED_ERROR_CODE,
@@ -107,7 +114,7 @@ function publicBaseUrlHeaders(headers: Headers): Record<string, string> {
   return out;
 }
 
-async function postHandler(request, context) {
+async function postHandler(request: Request, _context?: unknown) {
   let rawBody;
   try {
     rawBody = await request.json();
@@ -157,7 +164,7 @@ async function postHandler(request, context) {
   if (body.model && typeof body.model === "string" && !body.model.includes("/")) {
     const combo = await getComboByName(body.model as string);
     if (combo) {
-      const { executeImageCombo } = await import("../../../../../../../open-sse/services/imageCombo.ts");
+      const { executeImageCombo } = await import("@shiguang-gateway/open-sse/services/imageCombo");
       return executeImageCombo(body.model as string, body, { request, policy }, startTime, log);
     }
   }

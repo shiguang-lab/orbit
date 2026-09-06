@@ -141,6 +141,10 @@
       "types": "./public/combo.d.ts",
       "import": "./services/combo.ts"
     },
+    "./services/imageCombo": {
+      "types": "./public/imageCombo.d.ts",
+      "import": "./services/imageCombo.ts"
+    },
     "./services/refreshSerializer": {
       "types": "./public/refreshSerializer.d.ts",
       "import": "./services/refreshSerializer.ts"

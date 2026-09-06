@@ -29,4 +29,4 @@ export function getImageModelEntry(model: string | null | undefined): {
   imageRequired?: boolean;
   description?: string;
 } | null;
-
+export function modalitiesRequireImageInput(inputModalities: string[]): boolean;

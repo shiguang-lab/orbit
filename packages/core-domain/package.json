@@ -62,7 +62,10 @@
       "types": "./src/public/usageDb.d.ts",
       "import": "./src/lib/usageDb.ts"
     },
-    "./edge/gateway-response-meta": "./src/domain/gatewayResponseMeta.ts",
+    "./edge/gateway-response-meta": {
+      "types": "./src/public/gatewayResponseMeta.d.ts",
+      "import": "./src/domain/gatewayResponseMeta.ts"
+    },
     "./edge/request-id": "./src/shared/utils/requestId.ts",
     "./edge/embeddings-service": {
       "types": "./src/public/embeddingsService.d.ts",
@@ -92,10 +95,6 @@
       "types": "./src/public/edgeAudio.d.ts",
       "import": "./src/lib/audio/translationRouteHandler.ts"
     },
-    "./edge/image-generations-handler": {
-      "types": "./src/public/edgeImages.d.ts",
-      "import": "./src/app/api/v1/images/generations/handler.ts"
-    },
     "./edge/batches-validation-schemas": {
       "types": "./src/public/batchesValidationSchemas.d.ts",
       "import": "./src/shared/validation/schemas/apiV1.ts"
@@ -107,6 +106,10 @@
     "./edge/image-route-model": {
       "types": "./src/public/imageRouteModel.d.ts",
       "import": "./src/lib/images/imageRouteModel.ts"
+    },
+    "./edge/synced-endpoint-routing": {
+      "types": "./src/public/syncedEndpointRouting.d.ts",
+      "import": "./src/lib/providerModels/syncedEndpointRouting.ts"
     },
     "./shared/body-size-guard": {
       "types": "./src/public/bodySizeGuard.d.ts",
@@ -610,6 +613,14 @@
       "types": "./src/public/validationHelpers.d.ts",
       "import": "./src/shared/validation/helpers.ts"
     },
+    "./shared/client-api-auth": {
+      "types": "./src/public/clientApiRouteAuth.d.ts",
+      "import": "./src/shared/utils/clientApiRouteAuth.ts"
+    },
+    "./shared/authz-headers": {
+      "types": "./src/public/authzHeaders.d.ts",
+      "import": "./src/server/authz/headers.ts"
+    },
     "./shared/services/cliRuntime": {
       "types": "./src/public/cliRuntime.d.ts",
       "import": "./src/shared/services/cliRuntime.ts"
@@ -845,6 +856,14 @@
     "./pricing/modal-cost": {
       "types": "./src/public/modalCost.d.ts",
       "import": "./src/lib/usage/costCalculator.ts"
+    },
+    "./usage/call-log-api-key-context": {
+      "types": "./src/public/callLogApiKeyContext.d.ts",
+      "import": "./src/lib/usage/callLogApiKeyContext.ts"
+    },
+    "./sse/image-credential-retry": {
+      "types": "./src/public/imageCredentialRetry.d.ts",
+      "import": "./src/sse/services/imageCredentialRetry.ts"
     },
     "./metrics/request-telemetry": {
       "types": "./src/public/requestTelemetry.d.ts",
