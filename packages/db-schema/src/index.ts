@@ -16,6 +16,10 @@ import {
   ProviderConnectionEntity,
   ProviderNodeEntity,
   ProviderPlanEntity,
+  ProxyRegistryEntity,
+  ProxyAssignmentEntity,
+  ProxyScopeRotationEntity,
+  ProxySubscriptionEntity,
   SettingsEntity,
   TierAssignmentEntity,
   TierConfigEntity,
@@ -72,6 +76,7 @@ import type { EntityDefinition } from "./entities/definition.js";
 
 export * from "./entities/index.js";
 export * from "./gamification.js";
+export * from "./proxy.js";
 
 export const GATEWAY_TABLES = {
   settings: "key_value",
@@ -111,6 +116,10 @@ export const GATEWAY_TABLES = {
   tierAssignments: "tier_assignments",
   freeProxies: "free_proxies",
   freeProxySyncErrors: "free_proxy_sync_errors",
+  proxyRegistry: "proxy_registry",
+  proxyAssignments: "proxy_assignments",
+  proxyScopeRotation: "proxy_scope_rotation",
+  proxySubscriptions: "proxy_subscriptions",
   reasoningRoutingRules: "reasoning_routing_rules",
   quotaGroups: "quota_groups",
   quotaPools: "quota_pools",
@@ -189,6 +198,10 @@ export const TABLE_OWNERSHIP: readonly TableRef[] = [
   { table: GATEWAY_TABLES.tierAssignments, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.freeProxies, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.freeProxySyncErrors, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.proxyRegistry, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.proxyAssignments, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.proxyScopeRotation, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.proxySubscriptions, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.reasoningRoutingRules, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.quotaGroups, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.quotaPools, owner: "control-api", access: "read-write" },
@@ -261,6 +274,10 @@ export const GATEWAY_ENTITIES = {
   tierAssignments: TierAssignmentEntity,
   freeProxies: FreeProxyEntity,
   freeProxySyncErrors: FreeProxySyncErrorEntity,
+  proxyRegistry: ProxyRegistryEntity,
+  proxyAssignments: ProxyAssignmentEntity,
+  proxyScopeRotation: ProxyScopeRotationEntity,
+  proxySubscriptions: ProxySubscriptionEntity,
   reasoningRoutingRules: ReasoningRoutingRuleEntity,
   quotaGroups: QuotaGroupEntity,
   quotaPools: QuotaPoolEntity,

@@ -245,6 +245,90 @@ export const ProviderPlanEntity: EntityDefinition = {
   ],
 };
 
+/** Proxy registry and scope-pool tables are shared by control-plane writes and edge resolution. */
+export const ProxyRegistryEntity: EntityDefinition = {
+  entityName: "ProxyRegistry",
+  tableName: "proxy_registry",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("name", "TEXT", { nullable: false }),
+    column("type", "TEXT", { nullable: false }),
+    column("host", "TEXT", { nullable: false }),
+    column("port", "INTEGER", { nullable: false }),
+    column("username", "TEXT"),
+    column("password", "TEXT"),
+    column("region", "TEXT"),
+    column("notes", "TEXT"),
+    column("status", "TEXT", { nullable: false, default: "'active'" }),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+    column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+    column("source", "TEXT", { nullable: false, default: "'manual'" }),
+    column("quality_score", "INTEGER"),
+    column("latency_ms", "INTEGER"),
+    column("anonymity", "TEXT"),
+    column("google_access", "INTEGER", { default: "0" }),
+    column("last_validated", "TEXT"),
+    column("country_code", "TEXT"),
+    column("family", "TEXT", { nullable: false, default: "'auto'" }),
+    column("subscription_id", "TEXT"),
+  ],
+};
+
+export const ProxyAssignmentEntity: EntityDefinition = {
+  entityName: "ProxyAssignment",
+  tableName: "proxy_assignments",
+  owner: "control-api",
+  columns: [
+    column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
+    column("proxy_id", "TEXT", { nullable: false }),
+    column("scope", "TEXT", { nullable: false }),
+    column("scope_id", "TEXT"),
+    column("position", "INTEGER", { nullable: false, default: "0" }),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+    column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
+export const ProxyScopeRotationEntity: EntityDefinition = {
+  entityName: "ProxyScopeRotation",
+  tableName: "proxy_scope_rotation",
+  owner: "control-api",
+  columns: [
+    column("scope", "TEXT", { nullable: false, primaryKey: true }),
+    column("scope_id", "TEXT", { nullable: false, primaryKey: true }),
+    column("strategy", "TEXT", { nullable: false, default: "'round-robin'" }),
+    column("cursor", "INTEGER", { nullable: false, default: "0" }),
+    column("sticky_window_minutes", "INTEGER", { nullable: false, default: "30" }),
+    column("rotated_at", "TEXT"),
+    column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
+export const ProxySubscriptionEntity: EntityDefinition = {
+  entityName: "ProxySubscription",
+  tableName: "proxy_subscriptions",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("name", "TEXT", { nullable: false }),
+    column("url", "TEXT", { nullable: false }),
+    column("enabled", "INTEGER", { nullable: false, default: "0" }),
+    column("mode", "TEXT", { nullable: false, default: "'global'" }),
+    column("rule_providers", "TEXT"),
+    column("local_core_endpoint", "TEXT"),
+    column("update_interval_minutes", "INTEGER", { nullable: false, default: "60" }),
+    column("last_fetched_at", "TEXT"),
+    column("status", "TEXT", { nullable: false, default: "'empty'" }),
+    column("error", "TEXT"),
+    column("last_nodes", "TEXT"),
+    column("last_error_at", "TEXT"),
+    column("consecutive_failures", "INTEGER", { nullable: false, default: "0" }),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+    column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
 /** Installed plugin manifests/configuration managed by control and loaded by edge hooks. */
 export const PluginEntity: EntityDefinition = {
   entityName: "Plugin",
