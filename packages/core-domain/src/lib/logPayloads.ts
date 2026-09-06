@@ -83,6 +83,38 @@ export function cloneLogPayload<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
 }
 
+export function compactStructuredStreamPayload(payload: unknown): unknown {
+  const record =
+    payload && typeof payload === "object" && !Array.isArray(payload)
+      ? (payload as JsonRecord)
+      : {};
+  if (record._streamed !== true || !("summary" in record)) return payload;
+
+  const toString = (value: unknown, fallback: string): string =>
+    typeof value === "string" ? value : fallback;
+  const toNumber = (value: unknown, fallback: number): number => {
+    if (typeof value === "number" && Number.isFinite(value)) return value;
+    if (typeof value === "string" && value.trim()) {
+      const parsed = Number(value);
+      if (Number.isFinite(parsed)) return parsed;
+    }
+    return fallback;
+  };
+  const streamMeta: JsonRecord = {
+    format: toString(record._format, "sse-json"),
+    stage: toString(record._stage, "response"),
+    eventCount: toNumber(record._eventCount, 0),
+  };
+  if (record._truncated === true) streamMeta.truncated = true;
+  if (typeof record._droppedEvents === "number" && record._droppedEvents > 0) {
+    streamMeta.droppedEvents = record._droppedEvents;
+  }
+  const summary = cloneLogPayload(record.summary);
+  return summary && typeof summary === "object" && !Array.isArray(summary)
+    ? { ...(summary as JsonRecord), _shiguangGateway_stream: streamMeta }
+    : { summary, _shiguangGateway_stream: streamMeta };
+}
+
 export function normalizePayloadForLog(payload: unknown): unknown {
   if (typeof payload !== "string") return payload;
 

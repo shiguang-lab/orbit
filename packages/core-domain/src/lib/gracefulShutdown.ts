@@ -95,16 +95,19 @@ async function waitForDrain(): Promise<void> {
 /**
  * Perform cleanup: close DB connections, flush logs.
  */
-async function cleanup(): Promise<void> {
+export interface GracefulShutdownRuntimeHooks {
+  closeAuditDb?: () => boolean;
+  stopChatGptWebCodexRuntime?: () => Promise<void>;
+}
+
+async function cleanup(runtime: GracefulShutdownRuntimeHooks): Promise<void> {
   try {
     const [
-      { closeAuditDb },
       { closeDbInstance },
       { flushSpendBatchWriter },
       { closeLogRotation },
       { closeCallLogSaves },
     ] = await Promise.all([
-      import("../../../open-sse/mcp-server/audit.ts"),
       import("./db/core.ts"),
       import("./spend/batchWriter.ts"),
       import("./logRotation.ts"),
@@ -117,7 +120,7 @@ async function cleanup(): Promise<void> {
       );
     }
     await closeCallLogSaves();
-    if (closeAuditDb()) {
+    if (runtime.closeAuditDb?.()) {
       console.log("[Shutdown] MCP audit database checkpointed and closed.");
     }
     if (closeDbInstance()) {
@@ -126,23 +129,8 @@ async function cleanup(): Promise<void> {
     closeLogRotation();
     console.log("[Shutdown] Log rotation timer stopped.");
 
-    // Tear down any persistent VNC login browser containers so they don't leak
-    // past the server process. Best-effort; no-op if the feature was never used
-    // or the docker CLI is unavailable.
     try {
-      const { stopAllSessions, listSessions } = await import("./vncSession/service.ts");
-      if (listSessions().length > 0) {
-        await stopAllSessions();
-        console.log("[Shutdown] VNC login sessions stopped.");
-      }
-    } catch {
-      /* feature unused / docker missing */
-    }
-
-    try {
-      const { stopChatGptWebCodexRuntime } =
-        await import("../../../open-sse/executors/chatgpt-web-codex/runtime.ts");
-      await stopChatGptWebCodexRuntime();
+      await runtime.stopChatGptWebCodexRuntime?.();
       console.log("[Shutdown] ChatGPT Web (Codex) runtime stopped.");
     } catch {
       /* feature unused */
@@ -156,7 +144,7 @@ async function cleanup(): Promise<void> {
  * Initialize graceful shutdown handlers.
  * Should be called once during server startup.
  */
-export function initGracefulShutdown(): void {
+export function initGracefulShutdown(runtime: GracefulShutdownRuntimeHooks = {}): void {
   const state = getShutdownState();
   if (state.init) return;
   state.init = true;
@@ -169,7 +157,7 @@ export function initGracefulShutdown(): void {
     console.log(`\n[Shutdown] Received ${signal}. Draining ${state.activeRequests} request(s)...`);
 
     await waitForDrain();
-    await cleanup();
+    await cleanup(runtime);
 
     console.log("[Shutdown] Bye.");
     process.exit(0);

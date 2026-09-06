@@ -1,4 +1,4 @@
-import { wildcardMatch } from "../../../open-sse/services/wildcardRouter.ts";
+import { wildcardMatch } from "@shiguang-gateway/contracts/wildcard-match";
 
 type JsonRecord = Record<string, unknown>;
 

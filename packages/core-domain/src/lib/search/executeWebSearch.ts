@@ -1,22 +1,21 @@
-import { getProviderCredentials } from "@shiguang-gateway/open-sse/services/auth";
 import { recordCost } from "../../domain/costRules.ts";
 import * as defaultLog from "../../sse/utils/logger.ts";
-import {
-  getAllSearchProviders,
-  getSearchProvider,
-  resolveSearchProvider,
-  selectProvider,
-  supportsSearchType,
-  getSearchCredentialFallbacks,
-  SEARCH_PROVIDERS,
-  type SearchProviderConfig,
-} from "../../../../open-sse/config/searchRegistry.ts";
-import { handleSearch, type SearchResponse } from "../../../../open-sse/handlers/search.ts";
-import {
-  computeCacheKey,
-  getOrCoalesce,
-  SEARCH_CACHE_DEFAULT_TTL_MS,
-} from "../../../../open-sse/services/searchCache.ts";
+import { providerRuntimePorts } from "../../runtime/providerRuntimePorts.ts";
+
+type SearchProviderConfig = any;
+type SearchResponse = any;
+const searchRuntime = () => providerRuntimePorts.searchRuntime;
+const getAllSearchProviders = (...args: any[]) => searchRuntime().getAllSearchProviders(...args);
+const getSearchProvider = (...args: any[]) => searchRuntime().getSearchProvider(...args);
+const resolveSearchProvider = (...args: any[]) => searchRuntime().resolveSearchProvider(...args);
+const selectProvider = (...args: any[]) => searchRuntime().selectProvider(...args);
+const supportsSearchType = (...args: any[]) => searchRuntime().supportsSearchType(...args);
+const getSearchCredentialFallbacks = (...args: any[]) =>
+  searchRuntime().getSearchCredentialFallbacks(...args);
+const getSearchProviders = () => searchRuntime().SEARCH_PROVIDERS as Record<string, SearchProviderConfig>;
+const computeCacheKey = (...args: any[]) => searchRuntime().computeCacheKey(...args);
+const getOrCoalesce = (...args: any[]) => searchRuntime().getOrCoalesce(...args);
+const handleSearch = (...args: any[]) => searchRuntime().handleSearch(...args);
 
 type SearchLogger = typeof defaultLog;
 
@@ -45,6 +44,7 @@ export interface ExecuteWebSearchInput {
   strict_filters?: boolean;
   apiKeyId?: string | null;
   log?: SearchLogger;
+  resolveProviderCredentials: (providerId: string) => Promise<Record<string, any> | null>;
 }
 
 export interface ExecuteWebSearchResult {
@@ -61,11 +61,14 @@ export class WebSearchExecutionError extends Error {
   }
 }
 
-async function resolveSearchCredentials(providerId: string) {
-  const creds = await getProviderCredentials(providerId).catch(() => null);
+async function resolveSearchCredentials(
+  providerId: string,
+  resolveProviderCredentials: ExecuteWebSearchInput["resolveProviderCredentials"],
+) {
+  const creds = await resolveProviderCredentials(providerId).catch(() => null);
   if (creds) return creds;
   for (const fallbackId of getSearchCredentialFallbacks(providerId)) {
-    const fallback = await getProviderCredentials(fallbackId).catch(() => null);
+    const fallback = await resolveProviderCredentials(fallbackId).catch(() => null);
     if (fallback) return fallback;
   }
   return null;
@@ -166,7 +169,7 @@ export async function executeWebSearch(
   let alternateCredentials: Record<string, any> | null = null;
 
   if (input.provider) {
-    credentials = await resolveSearchCredentials(providerConfig.id);
+    credentials = await resolveSearchCredentials(providerConfig.id, input.resolveProviderCredentials);
     if (
       !credentials &&
       providerConfig.authType === "none" &&
@@ -190,12 +193,12 @@ export async function executeWebSearch(
     // credentials. Fallback-only free providers are a last resort, so a
     // configured paid provider is never skipped just because a cheaper
     // no-credentials provider appears first in the cost sort (issue #11524).
-    const candidateProviders = Object.values(SEARCH_PROVIDERS)
+    const candidateProviders = Object.values(getSearchProviders())
       .filter((provider) => !provider.fallbackOnly && supportsSearchType(provider, searchType))
       .sort((a, b) => a.costPerQuery - b.costPerQuery);
 
     for (const candidate of candidateProviders) {
-      const candidateCredentials = await resolveSearchCredentials(candidate.id);
+      const candidateCredentials = await resolveSearchCredentials(candidate.id, input.resolveProviderCredentials);
       if (candidateCredentials) {
         providerConfig = candidate;
         credentials = candidateCredentials;
@@ -206,7 +209,7 @@ export async function executeWebSearch(
     if (!credentials) {
       // Last resort: fallback-only providers so out-of-the-box search
       // still works when no credentialed provider is configured.
-      const fallbackProviders = Object.values(SEARCH_PROVIDERS)
+      const fallbackProviders = Object.values(getSearchProviders())
         .filter((provider) => provider.fallbackOnly && supportsSearchType(provider, searchType))
         .sort((a, b) => a.costPerQuery - b.costPerQuery);
 
@@ -216,7 +219,10 @@ export async function executeWebSearch(
           credentials = {};
           break;
         }
-        const fallbackCredentials = await resolveSearchCredentials(fallbackProvider.id);
+        const fallbackCredentials = await resolveSearchCredentials(
+          fallbackProvider.id,
+          input.resolveProviderCredentials,
+        );
         if (fallbackCredentials) {
           credentials = fallbackCredentials;
           break;
@@ -227,7 +233,7 @@ export async function executeWebSearch(
     if (!credentials) {
       throw new WebSearchExecutionError(
         `No credentials configured for any search provider. Add an API key for a search provider (${Object.keys(
-          SEARCH_PROVIDERS
+          getSearchProviders()
         ).join(", ")}) in the dashboard.`,
         400
       );
@@ -235,7 +241,7 @@ export async function executeWebSearch(
 
     // Exclude fallback-only providers from execution-time alternates.
     // They are reserved for last-resort primary selection.
-    const otherIds = Object.values(SEARCH_PROVIDERS)
+    const otherIds = Object.values(getSearchProviders())
       .filter((provider) => !provider.fallbackOnly && supportsSearchType(provider, searchType))
       .sort((a, b) => a.costPerQuery - b.costPerQuery)
       .map((provider) => provider.id)
@@ -243,7 +249,7 @@ export async function executeWebSearch(
 
     for (const providerId of otherIds) {
       const altConfig = getSearchProvider(providerId);
-      const altCreds = await resolveSearchCredentials(providerId);
+      const altCreds = await resolveSearchCredentials(providerId, input.resolveProviderCredentials);
       if (altConfig && altCreds) {
         alternateProviderId = providerId;
         alternateCredentials = altCreds;
@@ -266,7 +272,7 @@ export async function executeWebSearch(
       time_range: input.time_range,
     }
   );
-  const ttl = providerConfig.cacheTTLMs ?? SEARCH_CACHE_DEFAULT_TTL_MS;
+  const ttl = providerConfig.cacheTTLMs ?? searchRuntime().SEARCH_CACHE_DEFAULT_TTL_MS;
 
   const { data, cached } = await getOrCoalesce(cacheKey, ttl, async () => {
     const result = await handleSearch({

@@ -1,6 +1,11 @@
 import { WEB_COOKIE_PROVIDERS } from "../shared/constants/providers.ts";
-import { validateWebCookieProvider } from "./providers/validation/webCookie.ts";
 import { updateProviderConnection } from "./db/providers.ts";
+
+export type WebCookieProbe = (input: {
+  provider: string;
+  apiKey?: string;
+  providerSpecificData?: Record<string, unknown>;
+}) => Promise<{ valid: boolean; error?: string | null; errorCode?: string | null; unsupported?: boolean }>;
 
 /**
  * Verify-only background probe for web-cookie connections (#11488).
@@ -80,7 +85,7 @@ export async function checkWebCookieConnectionIfNeeded(params: {
     id?: string | null;
   }) => string;
   logPrefix: string;
-  probeFn?: typeof validateWebCookieProvider;
+  probeFn: WebCookieProbe;
   persistFn?: typeof updateProviderConnection;
 }): Promise<boolean> {
   const { conn, now, intervalMin, logWarn, getConnectionLogLabel, logPrefix } = params;
@@ -92,7 +97,7 @@ export async function checkWebCookieConnectionIfNeeded(params: {
     return true;
 
   const persist = params.persistFn || updateProviderConnection;
-  const probe = params.probeFn || validateWebCookieProvider;
+  const probe = params.probeFn;
   const label = `${String(conn.provider)}/${getConnectionLogLabel(conn)}`;
 
   const credential = readCredential(conn);

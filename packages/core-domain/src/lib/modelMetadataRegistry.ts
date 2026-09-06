@@ -1,6 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { parseModel } from "../../../open-sse/services/model.ts";
-import { getModelInfo } from "@shiguang-gateway/open-sse/services/runtimeModel";
+import { providerRuntimePorts } from "../runtime/providerRuntimePorts.ts";
 import { getModelAliases } from "./db/models.ts";
 import {
   getResolvedModelCapabilities,
@@ -635,7 +634,7 @@ export function enrichCatalogModelEntry<T extends JsonRecord>(
 }
 
 function buildAliasCandidates(alias: string) {
-  const parsed = parseModel(alias);
+  const parsed = providerRuntimePorts.parseModel(alias);
   const modelId = asNonEmptyString(parsed.model) || asNonEmptyString(alias);
   if (!modelId) return [];
   const canonicalModel = resolveStaticModelAlias(modelId);
@@ -654,7 +653,7 @@ function buildAliasCandidates(alias: string) {
 function normalizeAliasCandidates(candidates: string[] | undefined) {
   return uniqueStrings(
     (candidates || []).map((candidate) => {
-      const parsed = parseModel(candidate);
+      const parsed = providerRuntimePorts.parseModel(candidate);
       if (!parsed.provider || !parsed.model) return candidate;
       const providerAlias = PROVIDER_ID_TO_ALIAS[parsed.provider] || parsed.provider;
       return `${providerAlias}/${parsed.model}`;
@@ -663,7 +662,8 @@ function normalizeAliasCandidates(candidates: string[] | undefined) {
 }
 
 export async function resolveModelAliasLookup(
-  alias: string
+  alias: string,
+  getModelInfo: (model: string) => Promise<{ provider?: string | null; model?: string | null; [key: string]: unknown }>,
 ): Promise<{ ok: true; value: ResolvedAliasLookup } | { ok: false; error: AliasResolutionError }> {
   const normalizedAlias = asNonEmptyString(alias);
   if (!normalizedAlias) {
@@ -718,7 +718,7 @@ export async function resolveModelAliasLookup(
     };
   }
 
-  const parsed = parseModel(normalizedAlias);
+  const parsed = providerRuntimePorts.parseModel(normalizedAlias);
   if (parsed.provider && parsed.model) {
     const modelInfo = await getModelInfo(normalizedAlias);
     if (!modelInfo.provider || !modelInfo.model) {

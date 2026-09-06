@@ -1,4 +1,6 @@
 import type { CompressionConfig, CompressionResult } from "../types.ts";
+import type { EngineConfigField } from "@shiguang-gateway/contracts/compression-settings";
+export type { EngineConfigField } from "@shiguang-gateway/contracts/compression-settings";
 
 export type CompressionEngineTarget = "messages" | "tool_results" | "code_blocks";
 
@@ -9,18 +11,6 @@ export type CompressionStage = "pre-translation" | "post-translation";
 
 /** Whether an upstream route preserves OmniGlyph PNG bytes and dimensions. */
 export type ImageTransportFidelity = "byte-preserving" | "resizes" | "unknown";
-
-export interface EngineConfigField {
-  key: string;
-  type: "boolean" | "number" | "string" | "select" | "multiselect";
-  label: string;
-  i18nKey?: string;
-  description?: string;
-  defaultValue: unknown;
-  options?: Array<{ value: string; label: string }>;
-  min?: number;
-  max?: number;
-}
 
 export interface EngineValidationResult {
   valid: boolean;

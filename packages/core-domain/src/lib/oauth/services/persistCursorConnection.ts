@@ -7,11 +7,14 @@ import {
   getProviderConnections,
   updateProviderConnection,
 } from "../../../models/index.ts";
-import type { CursorTokenCredentials } from "./cursorLogin";
-
 export type PersistCursorAuthMethod = "deep_control" | "imported" | "cursor-agent";
 
-export type PersistCursorConnectionInput = CursorTokenCredentials & {
+export type PersistCursorConnectionInput = {
+  accessToken: string;
+  refreshToken: string;
+  expiresAt: Date;
+  accountId?: string;
+  email?: string;
   machineId?: string | null;
   authMethod: PersistCursorAuthMethod;
 };

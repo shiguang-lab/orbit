@@ -12,7 +12,7 @@ import { parseModel } from "../model.ts";
 import { isSelfInflictedUpstreamTimeout } from "../../handlers/chatCore/cooldownClassification.ts";
 import { isLocalStreamLifecycleError } from "@shiguang-gateway/core-domain/edge/circuit-breaker";
 import { CONTEXT_OVERFLOW_PATTERNS, MODEL_ACCESS_DENIED_PATTERNS } from "../accountFallback.ts";
-import { isResourceNotFoundResponse } from "../errorClassifier.ts";
+import { isResourceNotFoundResponse } from "@shiguang-gateway/core-domain/domain/provider-error-classifier";
 import { getTrustedLocalRateLimitResponse } from "../rateLimitManager/errors.ts";
 import type { ResolvedComboTarget } from "./types.ts";
 

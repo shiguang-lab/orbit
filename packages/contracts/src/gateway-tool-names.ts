@@ -1,0 +1,2 @@
+export const SHIGUANG_GATEWAY_WEB_SEARCH_FALLBACK_TOOL_NAME = "shiguangGateway_web_search";
+export const SHIGUANG_GATEWAY_WEB_FETCH_FALLBACK_TOOL_NAME = "shiguangGateway_web_fetch";

@@ -35,3 +35,9 @@ export {
   hasManageScope,
   hasMcpConnectOrManageScope,
 } from "./management-scopes.js";
+export {
+  extractApiKey,
+  isValidGatewayApiKey,
+  type ApiKeyRequestLike,
+  type AuthRequestHeaders,
+} from "./request-api-key.js";

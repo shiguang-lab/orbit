@@ -2,7 +2,7 @@ import {
   PROVIDER_ID_TO_ALIAS,
   PROVIDER_MODELS,
 } from "@shiguang-gateway/provider-catalog/provider-models";
-import { parseModel, resolveCanonicalProviderModel } from "../../../open-sse/services/model.ts";
+import { providerRuntimePorts } from "../runtime/providerRuntimePorts.js";
 import {
   findModelSpecIdByExactOrAlias,
   getAuthoritativeContextWindow,
@@ -10,26 +10,23 @@ import {
   getModelSpec,
   type ModelSpec,
 } from "@shiguang-gateway/contracts/model-specs";
-import { getSyncedCapability } from "./modelsDevSync.ts";
-import { MODELS_DEV_PROVIDER_MAP } from "./modelsDevSync/transform.ts";
-import { getModelContextOverride } from "./db/modelContextOverrides.ts";
+import { getSyncedCapability } from "./modelsDevSync.js";
+import { MODELS_DEV_PROVIDER_MAP } from "./modelsDevSync/transform.js";
+import { getModelContextOverride } from "./db/modelContextOverrides.js";
 import {
   getModelCapabilityOverride,
   getReasoningEffortsOverride,
-} from "./db/modelCapabilityOverrides.ts";
-import { getCustomModelVisionOverride } from "./db/models.ts";
-import type { ModelCapabilityResolutionSnapshot } from "./modelCapabilityResolutionSnapshot.ts";
-import { resolveAudioCapability, resolveVideoCapability } from "./modelCapabilityModalities.ts";
+} from "./db/modelCapabilityOverrides.js";
+import { getCustomModelVisionOverride } from "./db/models.js";
+import type { ModelCapabilityResolutionSnapshot } from "./modelCapabilityResolutionSnapshot.js";
+import { resolveAudioCapability, resolveVideoCapability } from "./modelCapabilityModalities.js";
 
-export type { ModelCapabilityResolutionSnapshot } from "./modelCapabilityResolutionSnapshot.ts";
-export { createModelCapabilityResolutionSnapshot } from "./modelCapabilityResolutionSnapshot.ts";
-export { resolveAudioCapability } from "./modelCapabilityModalities.ts";
+export type { ModelCapabilityResolutionSnapshot } from "./modelCapabilityResolutionSnapshot.js";
+export { createModelCapabilityResolutionSnapshot } from "./modelCapabilityResolutionSnapshot.js";
+export { resolveAudioCapability } from "./modelCapabilityModalities.js";
 import { isVisionModelId } from "@shiguang-gateway/contracts/vision-models";
 import { getUnsupportedParams } from "@shiguang-gateway/provider-catalog/provider-registry";
-import {
-  getLearnedThinkingCap,
-  GEMINI_FALLBACK_THINKING_CAP,
-} from "../../../open-sse/services/learnedThinkingCaps.ts";
+import { GEMINI_FALLBACK_THINKING_CAP } from "@shiguang-gateway/contracts/gemini-thinking-budget";
 
 const TOOL_CALLING_UNSUPPORTED_PATTERNS: string[] = [
   // Specialty / non-chat surfaces must never inherit optimistic tool defaults (#8016)
@@ -176,10 +173,10 @@ function getRegistryModel(providerIdOrAlias: string | null, modelId: string | nu
 
 function resolveCapabilityInput(input: CapabilityInput) {
   if (typeof input === "string") {
-    const parsed = parseModel(input);
+    const parsed = providerRuntimePorts.parseModel(input);
     const rawModel = toNonEmptyString(parsed.model);
     if (parsed.provider) {
-      const canonical = resolveCanonicalProviderModel(parsed.provider, rawModel);
+      const canonical = providerRuntimePorts.resolveCanonicalProviderModel(parsed.provider, rawModel);
       return {
         provider: canonical.provider,
         model: toNonEmptyString(canonical.model),
@@ -199,7 +196,7 @@ function resolveCapabilityInput(input: CapabilityInput) {
   const rawProvider = toNonEmptyString(input.provider);
   const rawModel = toNonEmptyString(input.model);
   if (rawProvider) {
-    const canonical = resolveCanonicalProviderModel(rawProvider, rawModel);
+    const canonical = providerRuntimePorts.resolveCanonicalProviderModel(rawProvider, rawModel);
     return {
       provider: canonical.provider,
       model: toNonEmptyString(canonical.model),
@@ -1034,7 +1031,7 @@ export function capThinkingBudget(input: CapabilityInput, budget: number): numbe
   // provider, preserving per-provider independence.
   const providerForLearned = resolved.provider ?? (modelLower.includes("gemini") ? "gemini" : null);
 
-  const learned = getLearnedThinkingCap(providerForLearned, modelId);
+  const learned = providerRuntimePorts.getLearnedThinkingCap(providerForLearned, modelId);
   if (learned !== null) {
     cap = cap === null ? learned : Math.min(cap, learned);
   }

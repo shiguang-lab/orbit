@@ -1,10 +1,12 @@
 import {
   DEFAULT_API_LIMITS,
-  PROVIDER_PROFILES,
+  resolveProviderProfiles,
   STREAM_THROUGHPUT_WATCHDOG,
-} from "../../../../open-sse/config/constants.ts";
+} from "@shiguang-gateway/contracts/resilience-defaults";
 
-import type { JsonRecord, ResilienceSettings, ResilienceSettingsPatch } from "./settings/types";
+const PROVIDER_PROFILES = resolveProviderProfiles(process.env);
+
+import type { JsonRecord, ResilienceSettings, ResilienceSettingsPatch } from "./settings/types.js";
 import {
   asRecord,
   toInteger,
@@ -20,7 +22,7 @@ import {
   normalizeQuotaPreflightSettings,
   normalizeStreamRecoverySettings,
   normalizeProviderQuotaOverrides,
-} from "./settings/normalize";
+} from "./settings/normalize.js";
 
 // Re-export the settings shape (moved to ./settings/types) so this module's
 // public API is unchanged.
@@ -38,7 +40,7 @@ export type {
   ProviderQuotaOverrideSettings,
   ResilienceSettings,
   ResilienceSettingsPatch,
-} from "./settings/types";
+} from "./settings/types.js";
 
 export const DEFAULT_REQUEST_QUEUE_MAX_WAIT_MS = (() => {
   const parsed = Number(process.env.RATE_LIMIT_MAX_WAIT_MS || "15000");

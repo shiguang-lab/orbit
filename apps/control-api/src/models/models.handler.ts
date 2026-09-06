@@ -1,7 +1,6 @@
 import {
   AI_MODELS,
   PROVIDER_ID_TO_ALIAS,
-  buildAliasMaps,
   buildSyncedModelIdsByCanonicalProvider,
   createModelCapabilityResolutionSnapshot,
   getAllActiveSyncedModels,
@@ -14,12 +13,15 @@ import {
   isValidationFailure,
   providerHasFreeModels,
   providerUsesExclusiveSyncedListing,
-  resolveCanonicalProviderId as resolveCanonicalProviderIdFromMaps,
   setModelAlias,
   shouldSuppressStaticModelForExclusiveListing,
   updateModelAliasSchema,
   validateBody,
 } from "@shiguang-gateway/core-domain/control/model-management";
+import {
+  buildAliasMaps,
+  resolveCanonicalProviderId as resolveCanonicalProviderIdFromMaps,
+} from "@shiguang-gateway/open-sse/catalog/provider-maps";
 
 interface GetModelsDependencies {
   createCapabilitySnapshot?: typeof createModelCapabilityResolutionSnapshot;

@@ -4,4 +4,4 @@ export function runEvalSuiteAgainstTarget(params: {
   target: any;
   apiKeyId?: string | null;
   runGroupId?: string | null;
-}): Promise<any>;
+}, postChatCompletion: (request: Request) => Promise<Response>): Promise<any>;

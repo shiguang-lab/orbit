@@ -1,4 +1,5 @@
 import { Injectable, type OnModuleInit } from "@nestjs/common";
+import "@shiguang-gateway/open-sse/services/runtime-settings-hooks";
 import { hydrateRequestRuntime } from "@shiguang-gateway/core-domain/runtime/request";
 import { ensureControlSchema } from "./control-schema.js";
 

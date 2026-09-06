@@ -258,7 +258,7 @@ import {
   classifyProviderError,
   PROVIDER_ERROR_TYPES,
   isEmptyContentResponse,
-} from "../services/errorClassifier.ts";
+} from "@shiguang-gateway/core-domain/domain/provider-error-classifier";
 import { updateProviderConnection, getProviderConnectionById } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { wasRefreshTokenRotated } from "../services/refreshSerializer.ts";
 import { connectionHasExtraKeys } from "../services/apiKeyRotator.ts";
@@ -354,7 +354,11 @@ import {
   resolveConnectionTimeoutMs,
 } from "./chatCore/upstreamTimeouts.ts";
 import { getModelNormalizeToolCallId, getModelPreserveOpenAIDeveloperRole } from "@shiguang-gateway/core-domain/db/models-runtime";
-import { getProviderCredentials, extractSessionAffinityKey } from "../services/auth.ts";
+import {
+  getProviderCredentials,
+  getProviderCredentialsWithQuotaPreflight,
+  extractSessionAffinityKey,
+} from "../services/auth.ts";
 import { assertExclusiveConnectionLeaseFence } from "@shiguang-gateway/core-domain/db/exclusive-connection-leases";
 import { deleteSessionAccountAffinity } from "@shiguang-gateway/core-domain/db/session-account-affinity";
 import { getCacheControlSettings } from "@shiguang-gateway/core-domain/edge/cache-control";
@@ -447,7 +451,7 @@ import { generateRequestId } from "@shiguang-gateway/contracts/request-id";
 import { isLocalStreamLifecycleError } from "@shiguang-gateway/core-domain/edge/circuit-breaker";
 import { shouldIsolateProbeFailures } from "@shiguang-gateway/core-domain/edge/probe-origin";
 import { writeTerminalStatus } from "@shiguang-gateway/core-domain/shared/terminal-status";
-import { extractFacts } from "@shiguang-gateway/core-domain/edge/memory-runtime";
+import { extractFacts } from "../services/memoryRuntime.ts";
 import { handleToolCallExecution } from "@shiguang-gateway/core-domain/edge/skills-runtime";
 import { MEMORY_BUILTIN_TOOL_NAMES } from "@shiguang-gateway/core-domain/edge/skills-runtime";
 import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "@shiguang-gateway/contracts/gateway-headers";
@@ -458,7 +462,7 @@ import {
   resolveClaudeCodeCompatibleSessionId,
 } from "../services/claudeCodeCompatible.ts";
 import { setGeminiThoughtSignatureMode } from "../services/geminiThoughtSignatureStore.ts";
-import { fetchLiveProviderLimits } from "@shiguang-gateway/core-domain/edge/provider-limits";
+import { fetchLiveProviderLimits } from "../services/providerLimits.ts";
 import { isClaudeExtraUsageBlockEnabled } from "@shiguang-gateway/core-domain/edge/claude-extra-usage";
 import {
   classifyModelScope429,
@@ -2858,6 +2862,7 @@ export async function handleChatCore({
   let quotaSoftDeprioritize = false;
   if (apiKeyInfo?.id && credentials?.connectionId) {
     try {
+      await import("../services/quotaSaturation.js");
       const { enforceQuotaShare } = await import("@shiguang-gateway/core-domain/quota/services");
       const decision = await enforceQuotaShare({
         apiKeyId: apiKeyInfo.id,
@@ -3750,7 +3755,7 @@ export async function handleChatCore({
 
     // Store rate-limit headers for quota saturation signals
     try {
-      const { storeRateLimitHeaders } = await import("@shiguang-gateway/core-domain/quota/saturation-signals");
+      const { storeRateLimitHeaders } = await import("../services/quotaSaturation.js");
       storeRateLimitHeaders(
         responseConnectionId,
         provider,
@@ -4277,7 +4282,7 @@ export async function handleChatCore({
               if (provider === "kimi-coding") {
                 try {
                   const { fetchAndPersistProviderLimits } =
-                    await import("@shiguang-gateway/core-domain/edge/provider-limits");
+                    await import("../services/providerLimits.ts");
                   const { usage } = await fetchAndPersistProviderLimits(
                     errorConnectionId,
                     "manual"
@@ -5127,6 +5132,10 @@ export async function handleChatCore({
           customSkillExecutionEnabled,
           provider,
           model: effectiveModel,
+          resolveProviderCredentials: (providerId, quotaPreflight) =>
+            quotaPreflight
+              ? getProviderCredentialsWithQuotaPreflight(providerId)
+              : getProviderCredentials(providerId),
         }
       );
     }

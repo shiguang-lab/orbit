@@ -36,6 +36,9 @@ import {
 import {
   buildProviderHealthMatrix,
 } from "@shiguang-gateway/core-domain/control/provider-health-matrix";
+import { getAllModelLockouts } from "@shiguang-gateway/open-sse/services/accountFallback";
+import { resolveProviderAlias } from "@shiguang-gateway/open-sse/services/model";
+import { getWebSessionPoolHealth } from "@shiguang-gateway/open-sse/services/webSessionPoolHealth";
 import {
   getAllExpirations,
   getExpirationSummary,
@@ -204,7 +207,11 @@ export class ProvidersService {
   }
 
   async getProviderHealthMatrix(options: Record<string, unknown>) {
-    return buildProviderHealthMatrix(options);
+    return buildProviderHealthMatrix(options, {
+      getAllModelLockouts,
+      resolveProviderAlias,
+      getWebSessionPoolHealth,
+    });
   }
 
   // Handlers for models & nodes

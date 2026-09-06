@@ -1,9 +1,8 @@
 /**
- * Shared embedded-service primitives used by the control app and worker.
+ * Shared embedded-service primitives used by control, edge, and streaming runtimes.
  *
  * HTTP route handlers stay in the owning app; this surface only exposes the
- * lifecycle, installer, API-key and model-sync capabilities that are shared
- * with worker bootstrap code.
+ * lifecycle, installer, API-key, and model-catalog capabilities.
  */
 export {
   getSupervisor,
@@ -24,7 +23,6 @@ export {
   update as updateNineRouter,
 } from "./installers/ninerouter.ts";
 export { InstallError, SERVICE_VERSION_PATTERN } from "./installers/utils.ts";
-export { syncServiceModels } from "./modelSync.ts";
 export { getServiceModels } from "../db/serviceModels.ts";
 export type { ServiceModel } from "../db/serviceModels.ts";
 export { isServiceBackendPluginId } from "./serviceBackends.ts";

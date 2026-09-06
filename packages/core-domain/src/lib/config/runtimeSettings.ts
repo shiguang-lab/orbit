@@ -1,9 +1,16 @@
 import { clearHealthCheckLogCache } from "../tokenHealthCheck.ts";
-import { setCustomBannedSignals } from "../../../../open-sse/services/accountFallback.ts";
 import {
-  setOperatorProviderErrorRules,
-  type OperatorProviderErrorRule,
-} from "../../../../open-sse/config/providerErrorRules.ts";
+  applyProviderBackgroundDegradation,
+  applyProviderBannedSignals,
+  applyProviderCliCompatProviders,
+  applyProviderErrorRules,
+  applyProviderModelAliases,
+  applyProviderPayloadRules,
+  applyProviderSystemTransforms,
+  applyProviderThoughtSignatureMode,
+  applyProviderUsageTokenBuffer,
+} from "./providerRuntimePort.js";
+import type { OperatorProviderErrorRule } from "@shiguang-gateway/contracts/runtime-settings";
 import { isAutomatedTestProcess } from "../../shared/utils/testProcess.ts";
 
 type JsonRecord = Record<string, unknown>;
@@ -287,51 +294,19 @@ function getPreviousSnapshot(): RuntimeSettingsSnapshot {
 }
 
 async function applyPayloadRulesSection(payloadRules: unknown) {
-  const { clearPayloadRulesConfigOverride, setPayloadRulesConfig } =
-    await import("../../../../open-sse/services/payloadRules.ts");
-
-  if (payloadRules === null || payloadRules === undefined) {
-    clearPayloadRulesConfigOverride();
-    return;
-  }
-
-  setPayloadRulesConfig(payloadRules);
+  await applyProviderPayloadRules(payloadRules);
 }
 
 async function applyModelAliasesSection(modelAliases: Record<string, string>) {
-  const { setCustomAliases } = await import("../../../../open-sse/services/modelDeprecation.ts");
-  setCustomAliases(modelAliases);
+  await applyProviderModelAliases(modelAliases);
 }
 
 async function applyBackgroundDegradationSection(backgroundDegradation: JsonRecord | null) {
-  const { getDefaultDegradationMap, getDefaultDetectionPatterns, setBackgroundDegradationConfig } =
-    await import("../../../../open-sse/services/backgroundTaskDetector.ts");
-
-  if (!backgroundDegradation) {
-    setBackgroundDegradationConfig({
-      enabled: false,
-      degradationMap: getDefaultDegradationMap(),
-      detectionPatterns: getDefaultDetectionPatterns(),
-    });
-    return;
-  }
-
-  setBackgroundDegradationConfig({
-    enabled: backgroundDegradation.enabled === true,
-    degradationMap: {
-      ...getDefaultDegradationMap(),
-      ...normalizeStringRecord(backgroundDegradation.degradationMap),
-    },
-    detectionPatterns:
-      normalizeStringArray(backgroundDegradation.detectionPatterns).length > 0
-        ? normalizeStringArray(backgroundDegradation.detectionPatterns)
-        : getDefaultDetectionPatterns(),
-  });
+  await applyProviderBackgroundDegradation(backgroundDegradation);
 }
 
 async function applyCliCompatProvidersSection(cliCompatProviders: string[]) {
-  const { setCliCompatProviders } = await import("../../../../open-sse/config/cliFingerprints.ts");
-  setCliCompatProviders(cliCompatProviders);
+  await applyProviderCliCompatProviders(cliCompatProviders);
 }
 
 async function applyCacheControlSection() {
@@ -340,21 +315,11 @@ async function applyCacheControlSection() {
 }
 
 async function applyUsageTrackingSection(newBuffer: number | null) {
-  const { invalidateBufferTokensCache, setBufferTokensCache } =
-    await import("../../../../open-sse/utils/usageTracking.ts");
-  if (typeof newBuffer === "number" && newBuffer >= 0) {
-    // Set the value directly so the first request after a settings save gets the
-    // correct count synchronously — no race window back to DEFAULT (2000).
-    setBufferTokensCache(newBuffer);
-  } else {
-    invalidateBufferTokensCache();
-  }
+  await applyProviderUsageTokenBuffer(newBuffer);
 }
 
 async function applyThoughtSignatureSection(mode: string) {
-  const { setGeminiThoughtSignatureMode } =
-    await import("../../../../open-sse/services/geminiThoughtSignatureStore.ts");
-  setGeminiThoughtSignatureMode(mode);
+  await applyProviderThoughtSignatureMode(mode);
 }
 
 async function applyCorsOriginsSection(corsOrigins: string) {
@@ -373,10 +338,8 @@ async function applyCorsOriginsSection(corsOrigins: string) {
  * `providers[PROVIDER_CC_BRIDGE]`.
  */
 async function applyCcBridgeTransformsSection(ccBridgeTransforms: unknown) {
-  const { setSystemTransformsConfig } =
-    await import("../../../../open-sse/services/systemTransforms.ts");
   if (ccBridgeTransforms && typeof ccBridgeTransforms === "object") {
-    setSystemTransformsConfig(ccBridgeTransforms);
+    await applyProviderSystemTransforms(ccBridgeTransforms);
   }
 }
 
@@ -389,19 +352,7 @@ function applyAuthzBypassSection(snapshot: AuthzBypassSnapshot) {
 }
 
 async function applySystemTransformsSection(systemTransforms: unknown) {
-  const { setSystemTransformsConfig, resetSystemTransformsConfig } =
-    await import("../../../../open-sse/services/systemTransforms.ts");
-
-  if (
-    systemTransforms === null ||
-    systemTransforms === undefined ||
-    typeof systemTransforms !== "object"
-  ) {
-    resetSystemTransformsConfig();
-    return;
-  }
-
-  setSystemTransformsConfig(systemTransforms);
+  await applyProviderSystemTransforms(systemTransforms);
 }
 
 async function applyModelsDevSyncSection(
@@ -572,7 +523,7 @@ export async function applyRuntimeSettings(
     force ||
     hasChanged(currentSnapshot.customBannedSignals, previousSnapshot.customBannedSignals)
   ) {
-    setCustomBannedSignals(currentSnapshot.customBannedSignals);
+    await applyProviderBannedSignals(currentSnapshot.customBannedSignals);
     markChanged("bannedSignals");
   }
 
@@ -580,7 +531,7 @@ export async function applyRuntimeSettings(
     force ||
     hasChanged(currentSnapshot.providerErrorRules, previousSnapshot.providerErrorRules)
   ) {
-    setOperatorProviderErrorRules(currentSnapshot.providerErrorRules ?? undefined);
+    await applyProviderErrorRules(currentSnapshot.providerErrorRules);
   }
 
   lastAppliedSnapshot = currentSnapshot;

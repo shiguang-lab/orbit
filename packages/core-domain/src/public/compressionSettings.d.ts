@@ -1,7 +1,7 @@
 import type {
   CompressionConfig,
   McpAccessibilityConfig,
-} from "../../../open-sse/services/compression/types.js";
+} from "@shiguang-gateway/contracts/compression-settings";
 
 export type CompressionSettings = CompressionConfig;
 

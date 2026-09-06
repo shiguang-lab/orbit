@@ -1,4 +1,4 @@
-import type { CompressionPipelineStep } from "../../../open-sse/services/compression/types.js";
+import type { CompressionPipelineStep } from "@shiguang-gateway/contracts/compression-settings";
 
 export interface CompressionCombo {
   id: string;

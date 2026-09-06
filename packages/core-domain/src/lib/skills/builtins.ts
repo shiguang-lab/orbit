@@ -373,6 +373,10 @@ export const builtinSkills: Record<string, SkillHandler> = {
       provider_options,
       strict_filters,
       apiKeyId: context.apiKeyId || null,
+      resolveProviderCredentials: async (providerId) => {
+        if (!context.resolveProviderCredentials) return null;
+        return await context.resolveProviderCredentials(providerId, false) as Record<string, any> | null;
+      },
     });
     return {
       success: true,
@@ -408,6 +412,10 @@ export const builtinSkills: Record<string, SkillHandler> = {
       provider,
       ruleProvider: context.provider ?? null,
       ruleModel: context.model ?? null,
+      resolveProviderCredentials: async (providerId) => {
+        if (!context.resolveProviderCredentials) return null;
+        return context.resolveProviderCredentials(providerId, true);
+      },
     });
     return {
       success: true,

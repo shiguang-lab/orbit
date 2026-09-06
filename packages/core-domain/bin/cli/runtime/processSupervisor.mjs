@@ -60,7 +60,7 @@ export class ServerSupervisor {
       process.versions.bun
         ? [
             "--preload",
-            join(dirname(this.serverPath), "../open-sse/utils/setupPolyfill.ts"),
+            join(dirname(this.serverPath), "../src/runtime/setupPolyfill.ts"),
             this.serverPath,
           ]
         : buildNodeRuntimeArgs(process.env, this.memoryLimit, this.serverPath),

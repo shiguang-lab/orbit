@@ -1,4 +1,4 @@
-import { fetchAndPersistProviderLimits } from "@shiguang-gateway/core-domain/control/usage";
+import { fetchAndPersistProviderLimits } from "@shiguang-gateway/open-sse/services/providerLimits";
 
 /**
  * GET /api/usage/[connectionId] - Get live usage data for a specific connection

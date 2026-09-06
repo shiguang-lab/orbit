@@ -1,4 +1,4 @@
-import { systemMessageMustBeFirst } from "@shiguang-gateway/core-domain/edge/memory-runtime";
+import { systemMessageMustBeFirst } from "../../services/memoryRuntime.ts";
 
 type Message = { role: string; content: unknown; [key: string]: unknown };
 

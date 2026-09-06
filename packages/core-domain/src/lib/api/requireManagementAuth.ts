@@ -1,7 +1,8 @@
 import { isAuthRequired, isDashboardSessionAuthenticated } from "../../shared/utils/apiAuth.ts";
 import { createErrorResponse } from "./errorResponse.ts";
-import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/services/auth";
+import { extractApiKey, isValidGatewayApiKey } from "@shiguang-gateway/auth";
 import { getApiKeyMetadata } from "../db/apiKeys.ts";
+import { validateApiKey } from "../db/apiKeys.ts";
 import { isCliTokenAuthValid } from "../middleware/cliTokenAuth.ts";
 import { evaluateAccessTokenAuth } from "../../server/authz/accessTokenAuth.ts";
 import { isTrustedLoopbackInternalServiceRequest } from "./internalServiceAuth.ts";
@@ -120,7 +121,7 @@ export async function requireManagementAuth(
   if (apiKey) {
     let meta: Awaited<ReturnType<typeof getApiKeyMetadata>>;
     try {
-      if (!(await isValidApiKey(apiKey))) {
+      if (!(await isValidGatewayApiKey(apiKey, validateApiKey))) {
         return invalidManagementTokenResponse(options);
       }
       meta = await getApiKeyMetadata(apiKey);

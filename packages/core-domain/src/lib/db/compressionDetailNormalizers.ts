@@ -13,7 +13,7 @@ import {
   type CcrConfig,
   type CompressionConfig,
   type SessionDedupConfig,
-} from "../../../../open-sse/services/compression/types.ts";
+} from "@shiguang-gateway/contracts/compression-settings";
 
 function toRecord(value: unknown): Record<string, unknown> {
   return value && typeof value === "object" ? (value as Record<string, unknown>) : {};

@@ -1,12 +1,11 @@
 import { z } from "zod";
 import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
 import { handleChat } from "@shiguang-gateway/open-sse/handlers/chat";
+import { getComboForModel, getModelInfo } from "@shiguang-gateway/open-sse/services/runtimeModel";
 import {
   admitChatRequest,
   admitChatStructure,
   CHAT_ADMISSION_QUEUE_MAX_MS,
-  getComboForModel,
-  getModelInfo,
   releaseChatAdmissionAfterHandler,
   releaseChatAdmissionWhenDone,
   resolveResponsesApiModel,

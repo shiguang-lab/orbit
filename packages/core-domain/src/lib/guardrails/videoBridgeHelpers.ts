@@ -1,4 +1,4 @@
-import { detectMediaParts, type MediaPart } from "../../../../open-sse/utils/mediaParts.ts";
+import { detectMediaParts, type MediaPart } from "@shiguang-gateway/contracts/media-parts";
 
 import { fetchRemoteMedia, type RemoteMediaFetchResult } from "../../shared/network/remoteImageFetch.ts";
 import type { VideoAnalysisMode } from "../../shared/constants/modalityBridgeDefaults.ts";

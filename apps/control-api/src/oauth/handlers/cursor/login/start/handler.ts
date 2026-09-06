@@ -3,7 +3,7 @@ import { isAuthRequired, isAuthenticated } from "@shiguang-gateway/core-domain/c
 import {
   createCursorLoginSession,
   generateCursorAuthParams,
-} from "@shiguang-gateway/core-domain/control/oauth-runtime/services/cursorLogin";
+} from "@shiguang-gateway/open-sse/oauth/services/cursor-login";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 
 async function requireOAuthAuth(request: Request) {

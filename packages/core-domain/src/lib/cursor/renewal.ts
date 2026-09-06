@@ -196,7 +196,7 @@ export type CursorRenewalResult =
 /** Cursor's ~24h import-token lifetime — the single shared source for both
  * the sweep (Task 3) and the manual-refresh route (Task 4) when computing a
  * fresh expiry after a renewal. The pre-existing independent `86400` literals
- * in src/lib/oauth/services/cursor.ts and src/lib/oauth/providers/cursor.ts
+ * in packages/open-sse/oauth/services/cursor.ts and oauth/providers/cursor.ts
  * are for INITIAL token import, a separate code path — left untouched. */
 export const CURSOR_TOKEN_LIFETIME_S = 86400;
 

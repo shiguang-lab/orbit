@@ -6,27 +6,8 @@
  * Integrates into the existing model resolution pipeline.
  */
 
-/**
- * Match a model name against a pattern with glob wildcards.
- * Supports * (wildcard sequence) and ? (single char).
- *
- * @param {string} model - Model name to match
- * @param {string} pattern - Pattern with wildcards
- * @returns {boolean}
- */
-export function wildcardMatch(model, pattern) {
-  if (!model || !pattern) return false;
-  if (pattern === "*") return true;
-  if (pattern === model) return true;
-
-  // Convert glob pattern to regex
-  const regexStr = pattern
-    .replace(/[.+^${}()|[\]\\]/g, "\\$&")
-    .replace(/\*/g, ".*")
-    .replace(/\?/g, ".");
-  const regex = new RegExp(`^${regexStr}$`, "i");
-  return regex.test(model);
-}
+import { wildcardMatch } from "@shiguang-gateway/contracts/wildcard-match";
+export { wildcardMatch } from "@shiguang-gateway/contracts/wildcard-match";
 
 /**
  * Calculate specificity score for a pattern.

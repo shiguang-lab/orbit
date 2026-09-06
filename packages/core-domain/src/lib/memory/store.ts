@@ -7,7 +7,7 @@ import { upsertSemanticMemoryPoint, deleteSemanticMemoryPoint } from "./qdrant";
 import { Memory, MemoryType } from "./types";
 import { logger } from "@shiguang-gateway/runtime-logging";
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
-import { resolveEmbeddingSource, embed } from "./embedding";
+import { resolveEmbeddingSource, embed } from "./embeddingPort.ts";
 import { getVectorStore } from "./vectorStore";
 import { getMemorySettings } from "./settings";
 import { markMemoryNeedsReindex } from "../localDb.ts";

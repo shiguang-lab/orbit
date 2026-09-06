@@ -58,7 +58,7 @@ import {
   normalizeDatabricksChatUrl,
   normalizeSnowflakeChatUrl,
   normalizeGigachatChatUrl,
-} from "@shiguang-gateway/core-domain/edge/provider-url-validation";
+} from "../services/providerValidation/urlHelpers.ts";
 import { forwardOpencodeClientHeaders } from "../utils/opencodeHeaders.ts";
 import { resolveZaiUrl } from "./default/zaiFormatOverride.ts";
 import { normalizePoolConfig } from "./default/poolConfig.ts";

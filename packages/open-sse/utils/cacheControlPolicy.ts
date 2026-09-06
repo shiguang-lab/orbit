@@ -15,12 +15,12 @@
  */
 
 import type { RoutingStrategyValue } from "@shiguang-gateway/contracts/routing-strategies";
+import type { CacheControlMode } from "@shiguang-gateway/contracts/cache-control";
+export type { CacheControlMode } from "@shiguang-gateway/contracts/cache-control";
 
 /**
  * Cache control preservation modes
  */
-export type CacheControlMode = "auto" | "always" | "never";
-
 /**
  * Cache control settings from the database
  */

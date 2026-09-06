@@ -1,6 +1,6 @@
 import { Controller, Delete, Get, Head, Options, Param, Patch, Post, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { proxyRequest } from "@shiguang-gateway/core-domain/control/embedded-service-proxy";
+import { proxyRequest } from "./embedded-service-proxy.js";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 
 type EmbedParams = { name: string; "*"?: string };

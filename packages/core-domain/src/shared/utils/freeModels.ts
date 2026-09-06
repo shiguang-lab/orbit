@@ -1,7 +1,7 @@
-import { FREE_MODEL_BUDGETS, grantsFreeAccess } from "../../../../open-sse/config/freeModelCatalog.ts";
-import { resolveProviderId } from "../constants/providers.ts";
+import { providerRuntimePorts } from "../../runtime/providerRuntimePorts.js";
+import { resolveProviderId } from "../constants/providers.js";
 import { globToRegex } from "@shiguang-gateway/contracts/glob-pattern";
-import { AI_MODELS } from "../constants/models.ts";
+import { AI_MODELS } from "../constants/models.js";
 
 /**
  * Free-model detection shared between the "import only free models" connection
@@ -23,13 +23,19 @@ import { AI_MODELS } from "../constants/models.ts";
  */
 
 /** Catalogued entries whose regime still grants free access. */
-const FREE_BUDGETS = FREE_MODEL_BUDGETS.filter((m) => grantsFreeAccess(m.freeType));
+const getFreeModelBudgets = () => providerRuntimePorts.getFreeModelCatalog();
+const getFreeBudgets = () =>
+  getFreeModelBudgets().filter((model) => providerRuntimePorts.grantsFreeAccess(model.freeType));
 
 /** Provider ids that have at least one documented free model. */
-export const PROVIDERS_WITH_FREE_MODELS: Set<string> = new Set(FREE_BUDGETS.map((m) => m.provider));
+function providersWithFreeModels(): Set<string> {
+  return new Set(getFreeBudgets().map((model) => model.provider));
+}
+
+export const PROVIDERS_WITH_FREE_MODELS = providersWithFreeModels();
 
 export function listFreeModels() {
-  return FREE_MODEL_BUDGETS.map((model) => ({
+  return getFreeModelBudgets().map((model) => ({
     provider: model.provider,
     modelId: model.modelId,
     displayName: model.displayName,
@@ -41,9 +47,9 @@ export function listFreeModels() {
   }));
 }
 
-const FREE_MODEL_IDS_BY_PROVIDER: Map<string, Set<string>> = (() => {
+function freeModelIdsByProvider(): Map<string, Set<string>> {
   const map = new Map<string, Set<string>>();
-  for (const m of FREE_BUDGETS) {
+  for (const m of getFreeBudgets()) {
     let set = map.get(m.provider);
     if (!set) {
       set = new Set<string>();
@@ -52,14 +58,14 @@ const FREE_MODEL_IDS_BY_PROVIDER: Map<string, Set<string>> = (() => {
     set.add(m.modelId);
   }
   return map;
-})();
+}
 
 /** Whether the given provider exposes any documented free models. Accepts a provider id or alias. */
 export function providerHasFreeModels(providerId: string | undefined | null): boolean {
   if (typeof providerId !== "string") return false;
   return (
-    PROVIDERS_WITH_FREE_MODELS.has(providerId) ||
-    PROVIDERS_WITH_FREE_MODELS.has(resolveProviderId(providerId))
+    providersWithFreeModels().has(providerId) ||
+    providersWithFreeModels().has(resolveProviderId(providerId))
   );
 }
 
@@ -83,10 +89,8 @@ export function isFreeModel(provider: string, model: FreeModelCandidate): boolea
   if (isZeroPrice(model.pricing?.prompt) && isZeroPrice(model.pricing?.completion)) return true;
   if (typeof model.id === "string") {
     const canonical = resolveProviderId(provider);
-    if (
-      FREE_MODEL_IDS_BY_PROVIDER.get(provider)?.has(model.id) ||
-      FREE_MODEL_IDS_BY_PROVIDER.get(canonical)?.has(model.id)
-    ) {
+    const idsByProvider = freeModelIdsByProvider();
+    if (idsByProvider.get(provider)?.has(model.id) || idsByProvider.get(canonical)?.has(model.id)) {
       return true;
     }
   }

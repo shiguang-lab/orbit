@@ -26,7 +26,7 @@ import {
   SPAWN_CAPABLE_PREFIXES,
   SPAWN_CAPABLE_PATTERNS,
 } from "../../shared/constants/spawnCapablePrefixes.ts";
-import { VNC_ROUTE_PREFIX } from "../../lib/vncSession/manifest.ts";
+const VNC_ROUTE_PREFIX = "/api/vnc-session";
 
 const LOOPBACK_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
 

@@ -5,14 +5,9 @@ export {
   getErrorInfo,
 } from "@shiguang-gateway/http-kernel/error-response";
 export type { ErrorInfo } from "@shiguang-gateway/http-kernel/error-response";
+export type { ConfiguredErrorReason } from "@shiguang-gateway/contracts/runtime-settings";
 
-export type ConfiguredErrorReason =
-  | "auth_error"
-  | "quota_exhausted"
-  | "rate_limit_exceeded"
-  | "model_capacity"
-  | "server_error"
-  | "unknown";
+import type { ConfiguredErrorReason } from "@shiguang-gateway/contracts/runtime-settings";
 
 export type ErrorRule = {
   id: string;

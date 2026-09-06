@@ -1,12 +1,3 @@
-export const AWS_REGION_PATTERN: RegExp;
-export const KIRO_CONFIG: any;
-export function resolveBrowserOAuthRedirectUri(...args: any[]): any;
-export function getProvider(...args: any[]): any;
-export function generateAuthData(...args: any[]): any;
-export function exchangeTokens(...args: any[]): Promise<any>;
-export function finalizeTokens(...args: any[]): Promise<any>;
-export function requestDeviceCode(...args: any[]): Promise<any>;
-export function pollForToken(...args: any[]): Promise<any>;
 export function persistOAuthConnection(...args: any[]): Promise<any>;
 export function findExistingOAuthConnectionMatch(...args: any[]): any;
 export function buildOAuthConnectionCreatePayload(...args: any[]): any;
@@ -20,16 +11,5 @@ export function normalizeCodexImportRecord(...args: any[]): any;
 export function flattenCodexImportPayload(...args: any[]): any;
 export function extractCodexAccountInfo(...args: any[]): any;
 export function parseCodexSessionJson(...args: any[]): any;
-export function getCursorTokenExpiry(...args: any[]): any;
-export function credentialsFromCursorTokens(...args: any[]): any;
-export function generateCursorAuthParams(...args: any[]): Promise<any>;
-export function clearCursorLoginSessions(...args: any[]): any;
-export function createCursorLoginSession(...args: any[]): any;
-export function getCursorLoginSession(...args: any[]): any;
-export function cancelCursorLoginSession(...args: any[]): any;
-export function pollCursorAuthOnce(...args: any[]): Promise<any>;
 export function persistCursorConnection(...args: any[]): Promise<any>;
-export class CursorService { [key: string]: any; }
-export class KiroService { [key: string]: any; }
-export function startLocalServer(...args: any[]): any;
 export function cliProxyAuthImport(...args: any[]): any;

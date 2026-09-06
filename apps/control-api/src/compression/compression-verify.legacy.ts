@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { judgeFidelityBatch } from "@shiguang-gateway/open-sse/services/compression/eval/fidelityCheck";
-import { createPricedJudgeClient } from "@shiguang-gateway/core-domain/control/compression-judge-client";
+import { createPricedJudgeClient } from "./judge-model-client.js";
 import type { ProviderCredentials } from "@shiguang-gateway/open-sse/executors/base";
 import { getProviderCredentials } from "@shiguang-gateway/open-sse/services/auth";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";

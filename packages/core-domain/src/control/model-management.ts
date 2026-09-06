@@ -33,11 +33,6 @@ export {
   shouldSuppressStaticModelForExclusiveListing,
 } from "../lib/catalog/catalogSyncedCoverage.js";
 export {
-  buildAliasMaps,
-  resolveCanonicalProviderId,
-} from "../lib/catalog/catalogProviderMaps.js";
-export { getUnifiedModelsResponse } from "../lib/catalog/catalog.js";
-export {
   getOpenRouterCatalog,
   refreshOpenRouterCatalog,
 } from "../lib/catalog/openrouterCatalog.js";

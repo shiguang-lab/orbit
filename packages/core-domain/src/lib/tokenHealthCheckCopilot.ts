@@ -11,7 +11,7 @@
  */
 
 import { getProviderConnectionById, updateProviderConnection } from "./localDb.ts";
-import { refreshCopilotToken } from "../../../open-sse/services/tokenRefresh.ts";
+import { providerRuntimePorts } from "../runtime/providerRuntimePorts.js";
 
 type HealthCheckLogger = {
   info: (tag: string, msg: string) => void;
@@ -58,7 +58,11 @@ export async function refreshGithubCopilotSubTokenIfNeeded(params: {
 
   log(`${logPrefix} Refreshing GitHub Copilot sub-token for ${getConnectionLogLabel(conn)}`);
   try {
-    const copilotResult = await refreshCopilotToken(accessTokenForCopilot, healthCheckLog, proxyConfig);
+    const copilotResult = await providerRuntimePorts.refreshCopilotToken(
+      accessTokenForCopilot,
+      healthCheckLog,
+      proxyConfig
+    );
     if (copilotResult?.token) {
       await updateProviderConnection(conn.id, {
         providerSpecificData: {

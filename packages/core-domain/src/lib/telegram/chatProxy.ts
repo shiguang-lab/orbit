@@ -10,7 +10,6 @@
  * (createApiKey) so the existing policy/rate-limit/model-allowlist machinery
  * applies unchanged. The key is cached in-memory per user id.
  */
-import { handleChat } from "@shiguang-gateway/open-sse/handlers/chat";
 import { createApiKey, getApiKeys } from "../db/apiKeys.ts";
 import { getConsistentMachineId } from "../../shared/utils/machineId.ts";
 import { randomUUID } from "node:crypto";
@@ -93,7 +92,8 @@ async function extractResponseText(response: Response): Promise<string> {
 export async function proxyChat(
   telegramUserId: number,
   prompt: string,
-  model = DEFAULT_MODEL
+  handleChat: (request: Request, context: null, trace: null) => Promise<Response>,
+  model = DEFAULT_MODEL,
 ): Promise<string> {
   if (!prompt?.trim()) return "";
   const apiKey = await resolveUserApiKey(telegramUserId);

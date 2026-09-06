@@ -11,13 +11,15 @@ import {
   getCacheMetrics,
   getCacheTrend,
   getCachedSettings,
+  clearMemoryCache,
+  getMemoryCacheStats,
+} from "@shiguang-gateway/core-domain/cache/services";
+import {
   clearReasoningCacheAll,
   deleteReasoningCacheEntry,
   getReasoningCacheServiceEntries,
   getReasoningCacheServiceStats,
-  clearMemoryCache,
-  getMemoryCacheStats,
-} from "@shiguang-gateway/core-domain/cache/services";
+} from "@shiguang-gateway/open-sse/services/reasoningCache";
 import {
   listSemanticCacheEntries,
   deleteSemanticCacheBySignature,

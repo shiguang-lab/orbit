@@ -16,7 +16,7 @@ import {
   parseApiKeyUsageLimitFields,
 } from "./apiKeyUsageLimitFields";
 import { setNoLog } from "../compliance/noLog";
-import { resolveModelAlias } from "../../../../open-sse/services/modelDeprecation.ts";
+import { resolveModelAlias } from "./runtimeHooks.ts";
 import { getProviderAlias, resolveProviderId } from "../../shared/constants/providers.ts";
 import { getSyncedAvailableModelsByConnection, getCustomModels, getModelIsHidden } from "./models";
 import {

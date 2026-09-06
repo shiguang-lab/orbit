@@ -1,11 +1,29 @@
-import {
-  createCodexAccountPool,
-  getCodexParentAccountDiagnostic,
-} from "../../../../open-sse/services/codexAccount/index.ts";
-import type { AdaptiveAdmissionPublicSnapshot } from "../../../../open-sse/services/admission/runtime.ts";
 import type { PerConnectionAdmissionController } from "../../shared/middleware/chatBodyAdmission.ts";
 
 type JsonRecord = Record<string, unknown>;
+
+type AdaptiveAdmissionPublicSnapshot = {
+  mode: string;
+  currentLimit: number;
+  minLimit: number;
+  maxLimit: number;
+  activeCost: number;
+  activeCount: number;
+  queuedCost: number;
+  queuedCount: number;
+  admittedCount: number;
+  rejectedCount: number;
+  wouldAdmitCount: number;
+  wouldQueueCount: number;
+  wouldRejectCount: number;
+  utilization: number;
+  pressure: string;
+  resourceSeverity: string;
+  resourceReason: string;
+  resourceObservedAtMs: number;
+  pressureGuardRejectCount: number;
+  shutdown: boolean;
+};
 
 /** Process-wide structural chat-admission snapshot type (chatBodyAdmission.ts). */
 export type ChatAdmissionSnapshot = ReturnType<PerConnectionAdmissionController["snapshot"]>;
@@ -217,6 +235,14 @@ interface BuildHealthPayloadOptions {
   adaptiveAdmission?: AdaptiveAdmissionPublicSnapshot | null;
   /** #11244: optional structural chat-admission snapshot; projected, never raw-spread. */
   chatAdmission?: ChatAdmissionSnapshot | null;
+  getCodexAccountDiagnostic?: (
+    connection: { id: string; provider: string; providerSpecificData: Readonly<Record<string, unknown>> },
+    nowMs: number
+  ) => {
+    status: "available" | "partially_limited" | "fully_limited";
+    quota: { observedScopeCount: number };
+    cooldown: { soonestRetryAfterMs: number };
+  };
 }
 
 function limitMonitors(monitors: QuotaMonitorSnapshot[], maxItems = 8): QuotaMonitorSnapshot[] {
@@ -351,7 +377,8 @@ export interface CodexAccountPoolsSummary {
 
 export function summarizeCodexAccountPools(
   connections: BuildHealthPayloadOptions["connections"],
-  nowMs: number
+  nowMs: number,
+  getDiagnostic?: BuildHealthPayloadOptions["getCodexAccountDiagnostic"]
 ): CodexAccountPoolsSummary {
   const summary: CodexAccountPoolsSummary = {
     total: 0,
@@ -361,14 +388,15 @@ export function summarizeCodexAccountPools(
     quotaObserved: 0,
     soonestRetryAfterMs: 0,
   };
+  if (!getDiagnostic) return summary;
   for (const connection of connections) {
     if (connection.provider !== "codex" || !connection.id) continue;
-    const diagnostic = getCodexParentAccountDiagnostic(
-      createCodexAccountPool({
+    const diagnostic = getDiagnostic(
+      {
         id: connection.id,
         provider: connection.provider,
         providerSpecificData: connection.providerSpecificData ?? {},
-      }),
+      },
       nowMs
     );
     summary.total += 1;
@@ -405,6 +433,7 @@ export function buildHealthPayload({
   credentialHealth,
   adaptiveAdmission = null,
   chatAdmission = null,
+  getCodexAccountDiagnostic,
   buildSha = null,
 }: BuildHealthPayloadOptions) {
   const timestamp = new Date().toISOString();
@@ -450,7 +479,7 @@ export function buildHealthPayload({
 
   const nowMs = Date.now();
   const connectionHealth = summarizeConnectionCooldown(connections, nowMs);
-  const codexAccountPools = summarizeCodexAccountPools(connections, nowMs);
+  const codexAccountPools = summarizeCodexAccountPools(connections, nowMs, getCodexAccountDiagnostic);
 
   const configuredProviders = new Set(
     connections.map((connection) => connection.provider).filter(Boolean)

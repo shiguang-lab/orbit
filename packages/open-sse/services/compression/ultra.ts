@@ -1,4 +1,5 @@
 import { pruneByScore } from "./ultraHeuristic.ts";
+import { registerDbRuntimeHooks } from "@shiguang-gateway/core-domain/db/runtime-hooks";
 import { extractPreservedBlocks } from "./preservation.ts";
 import { DEFAULT_ULTRA_CONFIG } from "./types.ts";
 import type { UltraConfig, CompressionStats, CompressionMode } from "./types.ts";
@@ -319,3 +320,5 @@ export async function maybePrewarmUltraSlmOnConfig(config: {
     // best-effort
   }
 }
+
+registerDbRuntimeHooks({ maybePrewarmUltraSlmOnConfig });

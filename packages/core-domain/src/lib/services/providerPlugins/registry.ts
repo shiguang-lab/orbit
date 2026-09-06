@@ -13,7 +13,7 @@ const NINEROUTER_DEFAULT_PORT = 20130;
  * compiler forces every future backend migration (cliproxyapi, ...) to be an explicit,
  * reviewable addition to this object rather than a silent widening that could be missed.
  *
- * Values below are relocated verbatim from `src/lib/services/bootstrap.ts`'s inline
+ * Values below are relocated verbatim from the control app's embedded-service bootstrap
  * `SERVICES[]` entry and `serviceBackends.ts`'s `SERVICE_BACKEND_MANIFEST_TEMPLATE["9router"]`
  * — no value changes, pure consolidation into one shape.
  */

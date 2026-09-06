@@ -21,7 +21,7 @@
  * when to schedule it, so importing this module in tests never spawns a timer.
  */
 
-import { cooldownUntilMs } from "../../../../open-sse/services/accountFallback.ts";
+import { storedInstantToEpochMs as cooldownUntilMs } from "@shiguang-gateway/contracts/runtime-settings";
 import { isAutomatedTestProcess } from "../../shared/utils/testProcess.ts";
 
 /**
@@ -262,8 +262,21 @@ export async function runConnectionRecoveryTick(
   const clear =
     deps.clearConnectionError ??
     (async (connectionId: string, current: RecoverableConnectionInput) => {
-      const { clearAccountError } = await import("@shiguang-gateway/open-sse/services/auth");
-      await clearAccountError(connectionId, current);
+      if (
+        !current.testStatus ||
+        (current.testStatus === "active" && !current.rateLimitedUntil)
+      ) return;
+      const { updateProviderConnection } = await import("../db/providers.ts");
+      await updateProviderConnection(connectionId, {
+        testStatus: "active",
+        lastError: null,
+        lastErrorAt: null,
+        lastErrorType: null,
+        lastErrorSource: null,
+        errorCode: null,
+        rateLimitedUntil: null,
+        backoffLevel: 0,
+      });
     });
 
   for (const connection of recoverable) {

@@ -18,15 +18,16 @@ function readProviderStatusRows(): ProviderStatusRow[] {
     .all();
 }
 
-export async function buildShiguangGatewayStatus() {
-  const [connections, circuitModule, quotaMonitorModule] = await Promise.all([
+export async function buildShiguangGatewayStatus(
+  getQuotaMonitorSummary: () => { active: number } | null,
+) {
+  const [connections, circuitModule] = await Promise.all([
     Promise.resolve(readProviderStatusRows()),
     import("../shared/utils/circuitBreaker.ts").catch(() => null),
-    import("../../../open-sse/services/quotaMonitor").catch(() => null),
   ]);
   const pools = listPools().items;
   const circuitStatuses = circuitModule?.getAllCircuitBreakerStatuses() ?? null;
-  const quotaSummary = quotaMonitorModule?.getQuotaMonitorSummary() ?? null;
+  const quotaSummary = getQuotaMonitorSummary();
   const active = connections.filter(
     (connection) => connection.is_active !== 0 && connection.is_active !== false
   );

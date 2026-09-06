@@ -3,8 +3,10 @@ import { skillRegistry } from "./registry";
 import { builtinSkills } from "./builtins";
 import { memoryBuiltinHandlers, MEMORY_BUILTIN_TOOL_NAMES } from "./memoryBuiltins";
 import { detectProvider, decodeSkillToolName } from "./injection";
-import { SHIGUANG_GATEWAY_WEB_SEARCH_FALLBACK_TOOL_NAME } from "../../../../open-sse/services/webSearchFallback.ts";
-import { SHIGUANG_GATEWAY_WEB_FETCH_FALLBACK_TOOL_NAME } from "../../../../open-sse/services/webFetchInterception.ts";
+import {
+  SHIGUANG_GATEWAY_WEB_FETCH_FALLBACK_TOOL_NAME,
+  SHIGUANG_GATEWAY_WEB_SEARCH_FALLBACK_TOOL_NAME,
+} from "@shiguang-gateway/contracts/gateway-tool-names";
 import { logger } from "@shiguang-gateway/runtime-logging";
 
 const log = logger("SKILLS_INTERCEPTION");
@@ -26,6 +28,7 @@ interface ExecutionContext {
   // builtin/skill ignores these.
   provider?: string;
   model?: string;
+  resolveProviderCredentials?: (providerId: string, quotaPreflight?: boolean) => Promise<unknown>;
 }
 
 const BUILTIN_TOOL_ALIASES: Record<string, string> = {
@@ -119,6 +122,7 @@ export async function interceptToolCalls(
                   sessionId: context.sessionId,
                   provider: context.provider,
                   model: context.model,
+                  resolveProviderCredentials: context.resolveProviderCredentials,
                 }
               );
 

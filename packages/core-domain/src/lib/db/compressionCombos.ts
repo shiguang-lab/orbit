@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import type {
   CompressionEngineId,
   CompressionPipelineStep,
-} from "../../../../open-sse/services/compression/types.ts";
+} from "@shiguang-gateway/contracts/compression-settings";
 
 import { backupDbFile } from "./backup";
 import { getDbInstance, rowToCamel } from "./core";

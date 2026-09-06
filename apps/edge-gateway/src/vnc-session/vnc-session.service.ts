@@ -1,11 +1,12 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, type OnApplicationShutdown } from "@nestjs/common";
 import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
-import { getVncSessionCatalog } from "@shiguang-gateway/core-domain/edge/vnc-session";
+import { getVncSessionCatalog } from "./runtime/catalog.js";
 import {
   deleteVncSession,
   getVncSession,
   postVncSession,
-} from "@shiguang-gateway/core-domain/edge/vnc-session-params";
+} from "./runtime/operations.js";
+import { stopAllSessions } from "./runtime/service.js";
 
 function resultResponse(result: { value?: unknown; error?: { status: number; message: string } }): Response {
   if (result.error) return Response.json(buildErrorBody(result.error.status, result.error.message), { status: result.error.status });
@@ -13,7 +14,7 @@ function resultResponse(result: { value?: unknown; error?: { status: number; mes
 }
 
 @Injectable()
-export class VncSessionService {
+export class VncSessionService implements OnApplicationShutdown {
   handleCatalog(): Response { return Response.json(getVncSessionCatalog()); }
   async handleGet(connectionId: string, sessionId?: string): Promise<Response> {
     return resultResponse(await getVncSession(connectionId, sessionId));
@@ -23,5 +24,9 @@ export class VncSessionService {
   }
   async handleDelete(connectionId?: string, sessionId?: string): Promise<Response> {
     return resultResponse(await deleteVncSession(connectionId, sessionId));
+  }
+
+  async onApplicationShutdown(): Promise<void> {
+    await stopAllSessions();
   }
 }

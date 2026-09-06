@@ -35,8 +35,8 @@ import {
   isVideoPromptOptional,
   resolveLocalOverrideCredentials,
   resolveVideoModelTarget,
-} from "@shiguang-gateway/core-domain/edge/video-model-resolution";
-import type { VideoModelTarget } from "@shiguang-gateway/core-domain/edge/video-model-resolution";
+} from "./videoModelResolution.ts";
+import type { VideoModelTarget } from "./videoModelResolution.ts";
 import { toJsonErrorPayload } from "@shiguang-gateway/core-domain/shared/upstream-error";
 import { HTTP_STATUS } from "../config/constants.ts";
 import { errorResponse } from "../utils/error.ts";

@@ -56,4 +56,3 @@ export {
   bulkImportProviderSchema,
   bulkWebSessionImportSchema,
 } from "../shared/validation/schemas/provider.js";
-export { validateProviderApiKey } from "../lib/providers/validation.js";

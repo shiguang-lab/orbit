@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { buildComboHealthDashboardResponse } from "@shiguang-gateway/core-domain/usage/combo-health-dashboard";
+import { buildComboHealthDashboardResponse } from "../reporting/comboHealthDashboard.js";
 
 const schema = z.object({ range: z.enum(["1h", "24h", "7d", "30d"]).default("24h"), horizon: z.enum(["24h", "7d", "30d"]).default("30d"), comboId: z.string().uuid().optional(), taskType: z.string().trim().min(1).max(64).optional() });
 

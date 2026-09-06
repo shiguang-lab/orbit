@@ -8,7 +8,7 @@
  * `buildErrorBody` instead so the client sees a proper error (hard rule #12).
  */
 import { buildErrorBody } from "../utils/error.ts";
-import { isGeoBlockedError } from "../services/errorClassifier.ts";
+import { isGeoBlockedError } from "@shiguang-gateway/core-domain/domain/provider-error-classifier";
 
 // The dashboard "Test Connection" for antigravity only probes the OAuth userinfo
 // endpoint (https://www.googleapis.com/oauth2/v1/userinfo), which is NOT

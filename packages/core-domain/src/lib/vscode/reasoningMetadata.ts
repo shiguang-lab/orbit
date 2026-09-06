@@ -1,5 +1,5 @@
 import { supportsXHighEffort } from "@shiguang-gateway/provider-catalog/provider-models";
-import { parseModel } from "../../../../open-sse/services/model.ts";
+import { providerRuntimePorts } from "../../runtime/providerRuntimePorts.js";
 import { stripVscodeServiceTierVariantModelId } from "./serviceTierVariants.ts";
 import { extendCodexGpt56EffortValues } from "../../shared/reasoning/effortStandardization.ts";
 
@@ -114,7 +114,7 @@ export function getReasoningEffortValues(model: VscodeCatalogModel) {
   if (!isReasoningCapableModel(model)) return undefined;
 
   const modelId = getCatalogModelName(model);
-  const parsed = parseModel(modelId);
+  const parsed = providerRuntimePorts.parseModel(modelId);
   const providerId = parsed.provider || model.owned_by || "";
   const providerModelId = parsed.model || model.root || modelId.split("/").pop() || modelId;
   const values = ["none", "low", "medium", "high"];
@@ -182,7 +182,7 @@ export function getReasoningVariantBaseModelId(modelId: string) {
 
 function getCodexGpt56DefaultReasoningEffort(model: VscodeCatalogModel) {
   const modelId = getCatalogModelName(model);
-  const parsed = parseModel(modelId);
+  const parsed = providerRuntimePorts.parseModel(modelId);
   const providerId = (parsed.provider || model.owned_by || "").trim().toLowerCase();
   if (providerId !== "codex" && providerId !== "cx") return undefined;
 

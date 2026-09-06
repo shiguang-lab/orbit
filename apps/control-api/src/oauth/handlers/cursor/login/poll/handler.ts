@@ -7,7 +7,7 @@ import {
   peekCursorLoginSession,
   pollCursorAuthOnce,
   consumeCursorLoginSession,
-} from "@shiguang-gateway/core-domain/control/oauth-runtime/services/cursorLogin";
+} from "@shiguang-gateway/open-sse/oauth/services/cursor-login";
 import { persistCursorConnection } from "@shiguang-gateway/core-domain/control/oauth-runtime/services/persistCursorConnection";
 import { isCloudEnabled } from "@shiguang-gateway/core-domain/control/models";
 import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";

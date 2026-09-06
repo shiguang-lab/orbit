@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { isAuthRequired, isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
-import { KIRO_CONFIG } from "@shiguang-gateway/core-domain/control/oauth-runtime/constants/oauth";
+import { KIRO_CONFIG } from "@shiguang-gateway/open-sse/oauth/constants";
 
 /**
  * GET /api/oauth/kiro/social-authorize

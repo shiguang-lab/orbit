@@ -15,4 +15,3 @@ export function openDatabaseAsync(path: string, options?: any): Promise<any>;
 export function getTableNamesFromAdapter(db: any): string[];
 export function countImportedRows(): { connCount: number; nodeCount: number; comboCount: number; keyCount: number };
 export function unlinkFileWithRetry(filePath: string): Promise<void>;
-export function setSystemPromptConfig(prompt: any): void;

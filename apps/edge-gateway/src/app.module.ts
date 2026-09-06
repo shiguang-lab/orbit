@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import "@shiguang-gateway/open-sse/services/dbRuntimeHooks";
 import { HttpKernelModule } from "@shiguang-gateway/http-kernel";
 import { ProcessHealthModule } from "./process-health/process-health.module.js";
 import { EdgeRuntimeModule } from "./runtime/edge-runtime.module.js";

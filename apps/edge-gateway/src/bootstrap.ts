@@ -1,9 +1,10 @@
 import { NestFactory } from "@nestjs/core";
 import { FastifyAdapter } from "@nestjs/platform-fastify";
 import type { FastifyInstance } from "fastify";
-import { AppModule } from "./app.module.js";
 
 export async function bootstrapEdgeGateway() {
+  await import("@shiguang-gateway/open-sse/services/dbRuntimeHooks");
+  const { AppModule } = await import("./app.module.js");
   const adapter = new FastifyAdapter({
     logger: { level: process.env.LOG_LEVEL ?? "info" },
     bodyLimit: 512 * 1024 * 1024,

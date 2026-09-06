@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 
-import { AUDIO_TRANSCRIPTION_PROVIDERS } from "../../../../open-sse/config/audioRegistry.ts";
-import { detectMediaParts } from "../../../../open-sse/utils/mediaParts.ts";
+import { providerRuntimePorts } from "../../runtime/providerRuntimePorts.ts";
+import { detectMediaParts } from "@shiguang-gateway/contracts/media-parts";
 
 import { getRuntimePorts } from "../runtime/ports.ts";
 import { fetchRemoteImage } from "../../shared/network/remoteImageFetch.ts";
@@ -151,13 +151,7 @@ export function replaceAudioParts<TBody extends { messages?: AudioMessage[] }>(
 }
 
 function listTranscriptionModels(): string[] {
-  const models: string[] = [];
-  for (const [providerId, provider] of Object.entries(AUDIO_TRANSCRIPTION_PROVIDERS)) {
-    for (const model of provider.models) {
-      models.push(model.id.startsWith(`${providerId}/`) ? model.id : `${providerId}/${model.id}`);
-    }
-  }
-  return models;
+  return providerRuntimePorts.getAudioTranscriptionModels();
 }
 
 /** Select a configured STT model, or the first catalog model with usable credentials. */

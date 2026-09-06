@@ -95,7 +95,7 @@ const KNOWN_PLANS: Record<string, KnownPlanShape> = {
   // Daily: 864 requests, 18M tokens (from API headers)
   // Weekly: derived from daily * 7
   // #6844: this static estimate is now the fallback used only when the live
-  // grok-cli quota fetcher (open-sse/services/grokCliQuotaFetcher.ts) returns
+  // The grok-cli provider quota fetcher returns
   // null (both credentials missing and upstream fetch/parse failures fail
   // open to this static plan) — the shared weekly percent-based credit pool
   // it estimates is not observable from local request/token counters alone.

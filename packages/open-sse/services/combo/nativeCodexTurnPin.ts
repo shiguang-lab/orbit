@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { registerDbRuntimeHooks } from "@shiguang-gateway/core-domain/db/runtime-hooks";
 
 import type { ResolvedComboTarget } from "./types.ts";
 
@@ -153,3 +154,9 @@ export function revokeNativeCodexTurnPinsForConnection(connectionId: string): nu
 export function clearNativeCodexTurnPinsForTests(): void {
   pins.clear();
 }
+
+registerDbRuntimeHooks({
+  revokeNativeCodexTurnPinsForConnection(connectionId) {
+    revokeNativeCodexTurnPinsForConnection(connectionId);
+  },
+});

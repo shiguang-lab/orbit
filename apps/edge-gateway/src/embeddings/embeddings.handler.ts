@@ -6,10 +6,10 @@ import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/edge/featu
 import { v1EmbeddingsSchema } from "@shiguang-gateway/core-domain/edge/embeddings-validation-schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/edge/embeddings-validation-helpers";
 
-import { createEmbeddingResponse, type EmbeddingHandlerOptions } from "@shiguang-gateway/core-domain/edge/embeddings-service";
+import { createEmbeddingResponse, type EmbeddingHandlerOptions } from "@shiguang-gateway/open-sse/services/embedding-route";
 import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/services/auth";
 import { withInjectionGuard } from "@shiguang-gateway/core-domain/middleware/prompt-injection";
-import { getSpecialtyModelsResponse } from "@shiguang-gateway/core-domain/edge/specialty-catalog";
+import { getSpecialtyModelsResponse } from "@shiguang-gateway/open-sse/catalog/specialty";
 
 export const dynamic = "force-dynamic";
 

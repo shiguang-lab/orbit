@@ -17,7 +17,7 @@ import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import {
   buildProviderHealthAutopilotReport,
   executeProviderHealthAutopilotAction,
-} from "@shiguang-gateway/core-domain/control/provider-health-autopilot";
+} from "./provider-health-autopilot.js";
 
 const setupSchema = z.object({
   providerIds: z.array(z.string().trim().min(1)).min(1).max(20),

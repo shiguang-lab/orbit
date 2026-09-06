@@ -27,3 +27,6 @@ export interface ChaosRunResult {
   summary?: string;
 }
 export declare function executeChaosRun(input: ChaosRunInput): Promise<ChaosRunResult>;
+export declare function setChaosChatDispatch(
+  postChatCompletion: (request: Request) => Promise<Response>,
+): void;

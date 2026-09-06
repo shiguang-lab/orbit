@@ -2,7 +2,7 @@
 import { z } from "zod";
 import { isAuthRequired, isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { cancelCursorLoginSession } from "@shiguang-gateway/core-domain/control/oauth-runtime/services/cursorLogin";
+import { cancelCursorLoginSession } from "@shiguang-gateway/open-sse/oauth/services/cursor-login";
 
 const cancelSchema = z.object({
   sessionId: z.string().trim().min(1, "sessionId is required"),

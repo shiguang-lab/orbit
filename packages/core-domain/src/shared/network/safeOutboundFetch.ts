@@ -1,4 +1,4 @@
-import { runWithProxyContext, getOriginalFetch } from "../../../../open-sse/utils/proxyFetch.ts";
+import { providerRuntimePorts } from "../../runtime/providerRuntimePorts.js";
 import { FetchTimeoutError, fetchWithTimeout } from "../utils/fetchTimeout.ts";
 import {
   OutboundUrlGuardError,
@@ -307,13 +307,13 @@ export async function safeOutboundFetch(url: string | URL, options: SafeOutbound
           signal,
           timeoutMs,
           // When bypassing the proxy patch, use the original native fetch directly.
-          fetchFn: bypassProxyPatch ? getOriginalFetch() : undefined,
+          fetchFn: bypassProxyPatch ? providerRuntimePorts.getOriginalFetch() : undefined,
         });
 
       const response = bypassProxyPatch
         ? await executeFetch()
         : proxyConfig
-          ? await runWithProxyContext(proxyConfig, executeFetch)
+          ? await providerRuntimePorts.runWithProxy(proxyConfig, executeFetch)
           : await executeFetch();
 
       if (!allowRedirect && response.status >= 300 && response.status < 400) {

@@ -14,6 +14,7 @@
  *      as a chat prompt proxied through the ShiguangGateway pipeline.
  */
 import { z } from "zod";
+import { handleChat } from "@shiguang-gateway/open-sse/handlers/chat";
 import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import {
   extractChatMessage,
@@ -102,7 +103,7 @@ export async function POST(request: Request) {
     // Resolve the Telegram user id from the verified initData for key mapping.
     const telegramUserId = extractInitDataUserId(initData);
     // Proxy synchronously and return the reply (Mini App awaits the fetch).
-    const reply = await proxyChat(telegramUserId, message);
+    const reply = await proxyChat(telegramUserId, message, handleChat);
     return Response.json({ ok: true, reply: reply || "⚠️ Empty gateway response." });
   }
 
@@ -144,7 +145,7 @@ async function handleAndReply(chatId: number, text: string, messageId?: number):
       return;
     }
 
-    const answer = await proxyChat(chatId, trimmed);
+    const answer = await proxyChat(chatId, trimmed, handleChat);
     const reply = answer || "⚠️ The gateway returned an empty response.";
     await sendTelegramMessage({
       chat_id: chatId,

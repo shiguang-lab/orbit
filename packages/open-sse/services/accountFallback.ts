@@ -78,6 +78,29 @@ import {
   buildWeeklyQuotaFallback,
   buildSessionQuotaFallback,
 } from "./quotaTextCooldowns.ts";
+import {
+  ACCOUNT_DEACTIVATED_SIGNALS,
+  CREDITS_EXHAUSTED_SIGNALS,
+  OAUTH_INVALID_TOKEN_SIGNALS,
+  getMergedBannedSignals,
+  isAccountDeactivated,
+  isCreditsExhausted,
+  isDailyQuotaExhausted,
+  isOAuthInvalidToken,
+  setCustomBannedSignals,
+} from "@shiguang-gateway/core-domain/domain/provider-error-signals";
+
+export {
+  ACCOUNT_DEACTIVATED_SIGNALS,
+  CREDITS_EXHAUSTED_SIGNALS,
+  OAUTH_INVALID_TOKEN_SIGNALS,
+  getMergedBannedSignals,
+  isAccountDeactivated,
+  isCreditsExhausted,
+  isDailyQuotaExhausted,
+  isOAuthInvalidToken,
+  setCustomBannedSignals,
+} from "@shiguang-gateway/core-domain/domain/provider-error-signals";
 import { parseDayGranularityResetMs, shouldPreserveQuotaSignals } from "./quotaResetParsing.ts";
 import { evictLockoutOverflow } from "./accountFallback/lockoutEviction.ts";
 export { MODEL_LOCKOUT_EVICTION_CAP } from "./accountFallback/lockoutEviction.ts";
@@ -176,78 +199,6 @@ const _connectionFailureSweep = setInterval(() => {
 if (typeof _connectionFailureSweep === "object" && "unref" in _connectionFailureSweep) {
   (_connectionFailureSweep as { unref?: () => void }).unref?.();
 }
-
-// T06 (sub2api PR #1037): Signals that indicate permanent account deactivation.
-// When a 401 body contains these strings, the account is permanently dead
-// and should NOT be retried after token refresh.
-export const ACCOUNT_DEACTIVATED_SIGNALS = [
-  "account_deactivated",
-  "account has been deactivated",
-  "account has been disabled",
-  "your account has been suspended",
-  "this account is deactivated",
-  // AG (Antigravity/Google Cloud Code) permanent ban signals
-  "verify your account to continue",
-  "this service has been disabled in this account for violation",
-  "this service has been disabled in this account",
-];
-
-// Custom banned signals — loaded from DB settings at runtime.
-// Combined with ACCOUNT_DEACTIVATED_SIGNALS in isAccountDeactivated().
-let _customBannedSignals: string[] = [];
-
-export function setCustomBannedSignals(signals: string[]): void {
-  _customBannedSignals = signals;
-}
-
-export function getMergedBannedSignals(): string[] {
-  if (_customBannedSignals.length === 0) return ACCOUNT_DEACTIVATED_SIGNALS;
-  return [...ACCOUNT_DEACTIVATED_SIGNALS, ..._customBannedSignals];
-}
-
-// T10 (sub2api PR #1169): Signals that indicate billing credits are exhausted.
-// Distinct from rate-limit 429 — the account won't recover until credits are added.
-export const CREDITS_EXHAUSTED_SIGNALS = [
-  "insufficient_quota",
-  "billing_hard_limit_reached",
-  "exceeded your current quota",
-  "exceeded your current usage quota",
-  "credit_balance_too_low",
-  "your credit balance is too low",
-  "credits exhausted",
-  "out of credits",
-  "payment required",
-  "free tier of the model has been exhausted",
-  // #8631: narrower than a bare "has been exhausted" — that generic phrase also
-  // appears in Gemini's transient RPM/TPM 429 body ("Resource has been exhausted
-  // (e.g. check quota)."), which must stay RATE_LIMIT_EXCEEDED, not terminal.
-  // Anchoring on "tier" keeps free-tier depletion wording matched while excluding
-  // Gemini's "resource has been exhausted" rate-limit phrasing.
-  "tier has been exhausted",
-  // #5239: providers (e.g. DeepSeek/GLM-style) return "Insufficient account balance"
-  // on a depleted key. 402 is already terminalized by status, but catch non-402
-  // out-of-credit bodies here too.
-  "insufficient balance",
-  "insufficient_balance",
-  "insufficient account balance",
-  "insufficient credit balance",
-  // Command Code returns 400 "You have insufficient credits to make this
-  // request. Please purchase more credits to continue using the service."
-  // when the account's billing credits run out. Without this signal the
-  // error stays unclassified (errorType=null), so the connection is never
-  // marked credits_exhausted and keeps being re-selected on every request.
-  "insufficient credits",
-  "insufficient credit",
-];
-
-// T11: Signals that indicate OAuth token is invalid/expired (not permanent deactivation)
-export const OAUTH_INVALID_TOKEN_SIGNALS = [
-  "invalid authentication credentials",
-  "oauth 2",
-  "login cookie",
-  "valid authentication credential",
-  "invalid credentials",
-];
 
 // A model that upstream has permanently retired — Gemini's deprecated-model 404
 // ("This model models/gemini-2.5-flash is no longer available to new users...")
@@ -459,22 +410,6 @@ const PARAM_VALIDATION_PATTERNS = [
 ];
 
 /**
- * T06: Returns true if response body indicates the account is permanently deactivated.
- */
-export function isAccountDeactivated(errorText: string): boolean {
-  const lower = String(errorText || "").toLowerCase();
-  return getMergedBannedSignals().some((sig) => lower.includes(sig));
-}
-
-/**
- * T10: Returns true if response body indicates credits/quota are permanently exhausted.
- */
-export function isCreditsExhausted(errorText: string): boolean {
-  const lower = String(errorText || "").toLowerCase();
-  return CREDITS_EXHAUSTED_SIGNALS.some((sig) => lower.includes(sig));
-}
-
-/**
  * Returns true if the response body indicates the requested model has been
  * permanently retired by the provider (see MODEL_PERMANENTLY_UNAVAILABLE_PATTERNS).
  */
@@ -500,15 +435,6 @@ export function isEndpointPermanentlyMoved(errorText: string): boolean {
 export function isAccountSuspendedForBilling(errorText: string): boolean {
   const text = String(errorText || "");
   return ACCOUNT_SUSPENDED_BILLING_PATTERNS.some((p) => p.test(text));
-}
-
-/**
- * T11: Returns true if response body indicates OAuth token is invalid/expired.
- * This is different from permanent account deactivation - token refresh can recover.
- */
-export function isOAuthInvalidToken(errorText: string): boolean {
-  const lower = String(errorText || "").toLowerCase();
-  return OAUTH_INVALID_TOKEN_SIGNALS.some((sig) => lower.includes(sig));
 }
 
 // ─── Resilience Profile Helper ──────────────────────────────────────────────
@@ -1593,22 +1519,6 @@ export function getMsUntilTomorrow(): number {
   return ms > 0 && ms <= 25 * 60 * 60 * 1000 ? ms : 24 * 60 * 60 * 1000;
 }
 
-/**
- * Check if error text indicates daily quota exhaustion (as opposed to rate limiting).
- * Daily quota errors typically mention "today's quota" or "try again tomorrow".
- * @param {string} errorText - Error message text
- * @returns {boolean} True if daily quota is exhausted
- */
-export function isDailyQuotaExhausted(errorText: string): boolean {
-  if (!errorText) return false;
-  const lower = errorText.toLowerCase();
-  return (
-    lower.includes("today's quota") ||
-    lower.includes("daily quota") ||
-    lower.includes("try again tomorrow")
-  );
-}
-
 // ─── Configurable Backoff ───────────────────────────────────────────────────
 
 /**
@@ -2205,14 +2115,8 @@ export function checkFallbackError(
  * "1781696905131.0", which `new Date(...)` cannot parse (→ NaN). Accept numeric
  * epoch strings/numbers as well as ISO strings and Date objects (#3954).
  */
-export function cooldownUntilMs(value: string | number | Date | null | undefined): number {
-  if (value === null || value === undefined || value === "") return NaN;
-  if (value instanceof Date) return value.getTime();
-  if (typeof value === "number") return value;
-  const raw = value.trim();
-  if (/^\d+(\.\d+)?$/.test(raw)) return Number(raw);
-  return new Date(raw).getTime();
-}
+export { storedInstantToEpochMs as cooldownUntilMs } from "@shiguang-gateway/contracts/runtime-settings";
+import { storedInstantToEpochMs as cooldownUntilMs } from "@shiguang-gateway/contracts/runtime-settings";
 
 /**
  * Check if account is currently unavailable (cooldown not expired)

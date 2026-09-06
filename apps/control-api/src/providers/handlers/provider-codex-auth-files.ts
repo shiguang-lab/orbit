@@ -4,7 +4,7 @@ import {
   CodexAuthFileError,
   buildCodexAuthFile,
   writeCodexAuthFileToLocalCliIfNeeded,
-} from "@shiguang-gateway/core-domain/control/provider-auth-files/codex";
+} from "@shiguang-gateway/open-sse/oauth/provider-auth-files/codex";
 import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/control/compliance";
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 

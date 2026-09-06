@@ -16,28 +16,18 @@
  * @module domain/quotaCache
  */
 
-import { getUsageForProvider } from "../../../open-sse/services/usage.ts";
-import { getCachedProviderConnectionById, resolveProxyForConnection } from "../lib/localDb.ts";
-import { runWithProxyContext } from "../../../open-sse/utils/proxyFetch.ts";
-import { safePercentage } from "../shared/utils/formatting.ts";
+import { getCachedProviderConnectionById, resolveProxyForConnection } from "../lib/localDb.js";
+import { providerRuntimePorts, type CodexQuotaHydration } from "../runtime/providerRuntimePorts.js";
+import { safePercentage } from "../shared/utils/formatting.js";
 import {
   saveQuotaSnapshot,
   cleanupOldSnapshots,
   getLatestQuotaSnapshotsForConnection,
-} from "../lib/db/quotaSnapshots.ts";
-import { recordProviderQuotaResetEventIfChanged } from "../lib/db/quotaResetEvents.ts";
-import {
-  CODEX_SPARK_QUOTA_SESSION,
-  CODEX_SPARK_QUOTA_WEEKLY,
-  getCodexQuotaWindowFilterForModel,
-} from "../../../open-sse/config/codexQuotaScopes.ts";
-import {
-  createCodexAccountPool,
-  getCodexChildQuotaHydration,
-  resolveCodexAccount,
-  type CodexPersistedQuotaState,
-} from "../../../open-sse/services/codexAccount/index.ts";
-import { getAntigravityQuotaFamily } from "../../../open-sse/services/antigravityQuotaFamily.ts";
+} from "../lib/db/quotaSnapshots.js";
+import { recordProviderQuotaResetEventIfChanged } from "../lib/db/quotaResetEvents.js";
+const CODEX_SPARK_QUOTA_SESSION = "gpt_5_3_codex_spark_session";
+const CODEX_SPARK_QUOTA_WEEKLY = "gpt_5_3_codex_spark_weekly";
+type CodexPersistedQuotaState = NonNullable<CodexQuotaHydration>["quotaState"];
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -272,7 +262,7 @@ function resolveAntigravityQuotaWindowsForModel(
   quotaNames: string[],
   requestedModel: string
 ): string[] {
-  const requestedFamily = getAntigravityQuotaFamily(requestedModel);
+  const requestedFamily = providerRuntimePorts.getAntigravityQuotaFamily(requestedModel);
   const cleanRequestedModel = requestedModel.replace(/^(antigravity|agy)\//, "");
   const bareModel = cleanRequestedModel.includes("/")
     ? cleanRequestedModel.slice(cleanRequestedModel.lastIndexOf("/") + 1)
@@ -301,7 +291,7 @@ function resolveAntigravityQuotaWindowsForModel(
   if (scoped.length > 0) return scoped;
 
   return quotaNames.filter(
-    (windowName) => getAntigravityQuotaFamily(windowName) === requestedFamily
+    (windowName) => providerRuntimePorts.getAntigravityQuotaFamily(windowName) === requestedFamily
   );
 }
 
@@ -364,15 +354,12 @@ export function hydrateCodexQuotaCacheForRequest(
   requestedModel: string | null
 ): void {
   if (connection.provider !== "codex" || !requestedModel?.trim()) return;
-  const pool = createCodexAccountPool({
+  const hydration = providerRuntimePorts.getCodexQuotaHydration({
     id: connection.id,
     provider: connection.provider,
     providerSpecificData: connection.providerSpecificData ?? {},
-  });
-  const account = resolveCodexAccount(pool, requestedModel);
-  if (account.kind !== "child") return;
-  const hydration = getCodexChildQuotaHydration(account);
-  if (!hydration.quotaState) return;
+  }, requestedModel);
+  if (!hydration) return;
 
   const { cache } = getState();
   const entry = cache.get(connection.id) ||
@@ -414,7 +401,7 @@ function isCodexQuotaExhausted(
   if (!requestedModel) return entry.exhausted;
   const quotaNames = Object.keys(entry.quotas || {});
   if (quotaNames.length === 0) return entry.exhausted;
-  const filterWindow = getCodexQuotaWindowFilterForModel(requestedModel);
+  const filterWindow = providerRuntimePorts.getCodexQuotaWindowFilter(requestedModel);
   const scopedWindowNames = quotaNames.filter((windowName) => filterWindow?.(windowName));
   return (
     scopedWindowNames.length > 0 &&
@@ -723,9 +710,10 @@ async function refreshEntry(entry: QuotaCacheEntry) {
     }
 
     const proxyInfo = await resolveProxyForConnection(entry.connectionId);
-    const usage = await runWithProxyContext(proxyInfo?.proxy || null, () =>
-      getUsageForProvider(connection)
-    );
+    const usage = (await providerRuntimePorts.fetchUsageWithProxy(
+      connection,
+      proxyInfo?.proxy || null
+    )) as { quotas?: Record<string, unknown> } | null;
 
     if (usage?.quotas) {
       setQuotaCache(entry.connectionId, entry.provider, usage.quotas);

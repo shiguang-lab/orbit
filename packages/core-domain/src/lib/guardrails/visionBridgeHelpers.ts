@@ -1,8 +1,8 @@
 /**
  * Vision Bridge helper functions for image processing.
  */
-import { detectMediaParts, type MediaPart } from "../../../../open-sse/utils/mediaParts.ts";
-import { normalizeDataUri } from "../../../../open-sse/utils/imageNormalize.ts";
+import { detectMediaParts, type MediaPart } from "@shiguang-gateway/contracts/media-parts";
+import { providerRuntimePorts } from "../../runtime/providerRuntimePorts.ts";
 import { fetchRemoteImage } from "../../shared/network/remoteImageFetch.ts";
 import { getRuntimePorts } from "../runtime/ports.ts";
 import { resolveSelfLoopBearer } from "../../shared/middleware/chatBodyAdmission.ts";
@@ -320,7 +320,7 @@ async function fetchRemoteImageAsDataUri(
   // model self-call — scoped to this bridge-fetched image only, never the
   // user's raw passthrough payload (opt-in principle, HR#20).
   // `normalizeDataUri` never throws and is a passthrough for non-image bytes.
-  return normalizeDataUri(dataUri);
+  return providerRuntimePorts.normalizeDataUri(dataUri);
 }
 
 async function normalizeVisionImageInput(

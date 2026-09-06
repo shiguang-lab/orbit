@@ -3,7 +3,7 @@ import {
   clearModelUnavailability,
   getAvailabilityReport,
   resetAllAvailability,
-} from "@shiguang-gateway/core-domain/control/model-availability";
+} from "../model-availability.js";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";

@@ -1,47 +1,39 @@
 import { Injectable } from "@nestjs/common";
+import * as jsonRpcRoute from "./legacy/jsonrpc.js";
+import * as tasksRoute from "./legacy/tasks.js";
+import * as taskByIdRoute from "./legacy/task-by-id.js";
+import * as taskCancelRoute from "./legacy/task-cancel.js";
+import * as statusRoute from "./legacy/status.js";
 
 /**
  * Edge-owned A2A application service.
  *
  * The transport and route registration live in this app. The current skill
- * implementation remains behind an explicit legacy package export while its
- * provider/DB dependencies are migrated domain by domain. Dynamic loading is
- * intentional: it keeps the Nest app boundary independent of the Next route
- * tree and avoids importing package internals during compilation.
+ * implementation is app-owned and calls core through its transport-neutral A2A runtime contract.
  */
 @Injectable()
 export class A2aService {
-  private load(specifier: string): Promise<Record<string, any>> {
-    return import(specifier as string) as Promise<Record<string, any>>;
-  }
-
   async handleRpc(request: Request, method: "POST" | "OPTIONS"): Promise<Response> {
-    const route = await this.load("@shiguang-gateway/core-domain/a2a/legacy-jsonrpc");
-    return route[method](request);
+    return jsonRpcRoute[method](request);
   }
 
   async listTasks(request: Request): Promise<Response> {
-    const route = await this.load("@shiguang-gateway/core-domain/a2a/legacy-tasks");
-    return route.GET(request);
+    return tasksRoute.GET(request);
   }
 
   async delegateTask(request: Request): Promise<Response> {
-    const route = await this.load("@shiguang-gateway/core-domain/a2a/legacy-tasks");
-    return route.POST(request);
+    return tasksRoute.POST(request);
   }
 
   async getTask(request: Request, params: { id: string }): Promise<Response> {
-    const route = await this.load("@shiguang-gateway/core-domain/a2a/legacy-task-by-id");
-    return route.GET(request, { params });
+    return taskByIdRoute.GET(request, { params: Promise.resolve(params) });
   }
 
   async cancelTask(request: Request, params: { id: string }): Promise<Response> {
-    const route = await this.load("@shiguang-gateway/core-domain/a2a/legacy-task-cancel");
-    return route.POST(request, { params });
+    return taskCancelRoute.POST(request, { params: Promise.resolve(params) });
   }
 
   async status(request: Request): Promise<Response> {
-    const route = await this.load("@shiguang-gateway/core-domain/a2a/legacy-status");
-    return route.GET(request);
+    return statusRoute.GET(request);
   }
 }

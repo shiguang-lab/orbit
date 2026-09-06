@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import type { RequestPipelinePayloads } from "../../../../open-sse/utils/requestLogger.js";
+import type { RequestPipelinePayloads } from "@shiguang-gateway/contracts/request-pipeline-payloads";
 import { resolveDataDir } from "../dataPaths.js";
 import { getCallLogPipelineMaxSizeBytes, isChatDebugFileEnabled } from "../logEnv.js";
 

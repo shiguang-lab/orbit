@@ -1,6 +1,6 @@
 import { getDbInstance } from "./core";
-import type { TierConfig } from "../../../../open-sse/services/tierTypes";
-import { validateTierConfig, DEFAULT_TIER_CONFIG } from "../../../../open-sse/services/tierConfig";
+import type { TierConfig } from "@shiguang-gateway/contracts/tier-types";
+import { validateTierConfig, DEFAULT_TIER_CONFIG } from "@shiguang-gateway/contracts/tier-config";
 import { defaultLogger as log } from "@shiguang-gateway/runtime-logging";
 
 const TABLE = "tier_config";

@@ -766,7 +766,7 @@ export async function resolveProxyForConnection(
 
   // Step 11: Auto-selection fallback (only when global proxy is enabled)
   try {
-    const { selectWorkingProxyFallback } = await import("../../../../open-sse/utils/proxyFallback.ts");
+    const { selectWorkingProxyFallback } = await import("./runtimeHooks.ts");
     const fallback = await selectWorkingProxyFallback(connectionId);
     if (fallback) {
       // Auto-selected proxies are probed via a URL roundtrip that drops any

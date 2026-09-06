@@ -2,14 +2,18 @@ import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/man
 import { getCachedSettings } from "@shiguang-gateway/core-domain/cache/services";
 import {
   getAuditStats,
-  getMcpHttpStatus,
-  isMcpHeartbeatOnline,
-  isMcpHttpTransportReady,
-  isProcessAlive,
   queryAuditEntries,
+} from "@shiguang-gateway/open-sse/mcp-server/audit";
+import {
+  getMcpHttpStatus,
+  isMcpHttpTransportReady,
+} from "@shiguang-gateway/open-sse/mcp-server/httpTransport";
+import {
+  isMcpHeartbeatOnline,
+  isProcessAlive,
   readMcpHeartbeat,
   resolveMcpHeartbeatPath,
-} from "@shiguang-gateway/core-domain/control/mcp-management";
+} from "@shiguang-gateway/open-sse/mcp-server/runtimeHeartbeat";
 
 export async function getStatus(request: Request): Promise<Response> {
   const authError = await requireManagementAuth(request, { acceptMcpConnectScope: true });

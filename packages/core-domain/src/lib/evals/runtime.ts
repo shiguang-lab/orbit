@@ -1,4 +1,3 @@
-import { POST as postChatCompletion } from "../edge/chatCompletionsCompat.ts";
 import type { PersistedEvalRun, EvalTargetType } from "../db/evals.ts";
 import { saveEvalRun } from "../db/evals.ts";
 import { getApiKeyById, getCombos } from "../localDb.ts";
@@ -185,7 +184,8 @@ function resolveCaseModel(evalCase: Record<string, unknown>, target: EvalTargetI
 async function executeEvalCase(
   evalCase: Record<string, unknown>,
   target: EvalTargetInput,
-  apiKey: string | null
+  apiKey: string | null,
+  postChatCompletion: (request: Request) => Promise<Response>,
 ): Promise<{ output: string; durationMs: number; error?: string }> {
   const input =
     evalCase.input && typeof evalCase.input === "object" && !Array.isArray(evalCase.input)
@@ -255,7 +255,7 @@ export async function runEvalSuiteAgainstTarget(input: {
   target?: EvalTargetInput | null;
   apiKeyId?: string;
   runGroupId?: string | null;
-}): Promise<PersistedEvalRun> {
+}, postChatCompletion: (request: Request) => Promise<Response>): Promise<PersistedEvalRun> {
   const suite = getSuite(input.suiteId);
   if (!suite) {
     throw new Error(`Suite not found: ${input.suiteId}`);
@@ -283,7 +283,8 @@ export async function runEvalSuiteAgainstTarget(input: {
     const execution = await executeEvalCase(
       (evalCase || {}) as Record<string, unknown>,
       normalizedTarget,
-      resolvedApiKey
+      resolvedApiKey,
+      postChatCompletion,
     );
     outputs[evalCase.id] = execution.output;
     caseMetrics[evalCase.id] = {

@@ -10,59 +10,9 @@
  * - Response path: TitleCase → lowercase (for clients expecting lowercase)
  */
 
-import { EXTRA_TOOL_RENAME_MAP } from "./claudeCodeExtraRemap.ts";
+import { CLAUDE_TOOL_RENAME_MAP } from "@shiguang-gateway/contracts/claude-tool-names";
 
-const TOOL_RENAME_MAP: Record<string, string> = {
-  ...EXTRA_TOOL_RENAME_MAP,
-  bash: "Bash",
-  read: "Read",
-  write: "Write",
-  edit: "Edit",
-  glob: "Glob",
-  grep: "Grep",
-  task: "Task",
-  agent: "Agent",
-  webfetch: "WebFetch",
-  websearch: "WebSearch",
-  todowrite: "TodoWrite",
-  todoread: "TodoRead",
-  question: "Question",
-  askuserquestion: "AskUserQuestion",
-  skill: "Skill",
-  slashcommand: "SlashCommand",
-  multiedit: "MultiEdit",
-  notebook: "Notebook",
-  notebookedit: "NotebookEdit",
-  notebookread: "NotebookRead",
-  lsp: "Lsp",
-  apply_patch: "ApplyPatch",
-  applypatch: "ApplyPatch",
-  bashoutput: "BashOutput",
-  killshell: "KillShell",
-  killbash: "KillBash",
-  enterplanmode: "EnterPlanMode",
-  exitplanmode: "ExitPlanMode",
-  enterworktree: "EnterWorktree",
-  exitworktree: "ExitWorktree",
-  artifact: "Artifact",
-  designsync: "DesignSync",
-  monitor: "Monitor",
-  sendmessage: "SendMessage",
-  listagents: "ListAgents",
-  pushnotification: "PushNotification",
-  reportfindings: "ReportFindings",
-  schedulewakeup: "ScheduleWakeup",
-  croncreate: "CronCreate",
-  crondelete: "CronDelete",
-  cronlist: "CronList",
-  taskoutput: "TaskOutput",
-  taskstop: "TaskStop",
-  taskcreate: "TaskCreate",
-  taskupdate: "TaskUpdate",
-  tasklist: "TaskList",
-  taskget: "TaskGet",
-  workflow: "Workflow",
-};
+const TOOL_RENAME_MAP: Record<string, string> = { ...CLAUDE_TOOL_RENAME_MAP };
 
 const REVERSE_MAP: Record<string, string> = {};
 for (const [k, v] of Object.entries(TOOL_RENAME_MAP)) {
@@ -403,8 +353,7 @@ export function cloakThirdPartyToolNames(
   const aliasFor = (original: string): string => {
     const existing = assigned.get(original);
     if (existing) return existing;
-    // Prefer the established Claude Code rename maps (TOOL_RENAME_MAP spreads
-    // EXTRA_TOOL_RENAME_MAP) so the CPA path matches the native path exactly:
+    // Prefer the shared Claude Code rename map so the CPA path matches the native path exactly:
     // subagents->SubDispatch, session_status->CheckStatus, webfetch->WebFetch, …
     // Then harness-canonical (read_file->Read), then a generic PascalCase.
     const base =

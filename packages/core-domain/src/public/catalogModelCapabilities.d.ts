@@ -3,7 +3,7 @@ export type ModelCapabilityInput =
   | { provider?: string | null; model?: string | null };
 
 export interface ModelCapabilityResolutionSnapshot {
-  readonly synced: ReadonlyMap<string, unknown>;
+  readonly synced: Readonly<Record<string, Readonly<Record<string, unknown>>>>;
   readonly maxTokenOverrides: ReadonlyMap<string, ReadonlyMap<string, number>>;
   readonly maxInputTokenOverrides: ReadonlyMap<string, ReadonlyMap<string, number>>;
   readonly reasoningEffortsOverrides: ReadonlyMap<string, ReadonlyMap<string, readonly unknown[]>>;

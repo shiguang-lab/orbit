@@ -233,7 +233,7 @@ async function resolveSaturation(
   if (_fetcherOverride) return _fetcherOverride(connectionId);
 
   try {
-    const mod = await import("@shiguang-gateway/core-domain/quota/saturation-signals");
+    const mod = await import("../quotaSaturation.js");
     const getSaturation = mod.getSaturation as (
       connectionId: string,
       provider: string,

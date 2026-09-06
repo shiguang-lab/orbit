@@ -10,7 +10,3 @@ export function getCacheMetrics(): Promise<any>;
 export function resetCacheMetrics(): Promise<any>;
 export function getCacheTrend(hours: number): Promise<any>;
 export function getCachedSettings(): Promise<any>;
-export function clearReasoningCacheAll(provider?: string): number;
-export function deleteReasoningCacheEntry(toolCallId: string): boolean;
-export function getReasoningCacheServiceEntries(options: { limit?: number; offset?: number; provider?: string; model?: string }): any[];
-export function getReasoningCacheServiceStats(): any;

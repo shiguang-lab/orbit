@@ -4,6 +4,6 @@
   "private": true,
   "type": "module",
   "scripts": { "dev": "tsx --tsconfig tsconfig.json watch src/main.ts", "start": "tsx --tsconfig tsconfig.json src/main.ts", "build": "tsc -p tsconfig.json --pretty false", "typecheck": "tsc -p tsconfig.json --noEmit --pretty false" },
-  "dependencies": { "@nestjs/common": "^11.2.3", "@nestjs/core": "^11.2.3", "@nestjs/platform-fastify": "^11.2.3", "@shiguang-gateway/contracts": "workspace:*", "@shiguang-gateway/core-domain": "workspace:*", "@shiguang-gateway/db-schema": "workspace:*", "@shiguang-gateway/error-sanitization": "workspace:*", "@shiguang-gateway/http-kernel": "workspace:*", "@shiguang-gateway/open-sse": "workspace:*", "@shiguang-gateway/rerank-catalog": "workspace:*", "@shiguang-gateway/web-route-compat": "workspace:*", "fastify": "catalog:", "tsx": "^4.23.13", "zod": "catalog:" },
-  "devDependencies": { "@types/node": "catalog:", "typescript": "catalog:" }
+  "dependencies": { "@nestjs/common": "^11.2.3", "@nestjs/core": "^11.2.3", "@nestjs/platform-fastify": "^11.2.3", "@shiguang-gateway/contracts": "workspace:*", "@shiguang-gateway/core-domain": "workspace:*", "@shiguang-gateway/db-schema": "workspace:*", "@shiguang-gateway/error-sanitization": "workspace:*", "@shiguang-gateway/http-kernel": "workspace:*", "@shiguang-gateway/open-sse": "workspace:*", "@shiguang-gateway/rerank-catalog": "workspace:*", "@shiguang-gateway/web-route-compat": "workspace:*", "fastify": "catalog:", "tsx": "^4.23.13", "ws": "^8.21.3", "zod": "catalog:" },
+  "devDependencies": { "@types/node": "catalog:", "@types/ws": "^8.18.1", "typescript": "catalog:" }
 }

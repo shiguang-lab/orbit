@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { buildShiguangGatewayStatus } from "@shiguang-gateway/core-domain/control/gateway-status";
+import { getQuotaMonitorSummary } from "@shiguang-gateway/open-sse/services/quotaMonitor";
 
 @Injectable()
 export class GatewayService {
@@ -7,7 +8,7 @@ export class GatewayService {
     return {
       generatedAt: new Date().toISOString(),
       liveRequestExecuted: false,
-      ...(await buildShiguangGatewayStatus()),
+      ...(await buildShiguangGatewayStatus(getQuotaMonitorSummary)),
     };
   }
 

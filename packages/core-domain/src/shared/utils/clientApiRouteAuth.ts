@@ -21,7 +21,8 @@
 
 import { errorResponse } from "@shiguang-gateway/http-kernel/error-response";
 import { HTTP_STATUS } from "@shiguang-gateway/contracts/http-status";
-import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/services/auth";
+import { extractApiKey, isValidGatewayApiKey } from "@shiguang-gateway/auth";
+import { validateApiKey } from "../../lib/db/apiKeys.ts";
 import { isRequireApiKeyEnabled } from "./featureFlags.ts";
 import { isDashboardSessionAuthenticated } from "./apiAuth.ts";
 
@@ -36,7 +37,7 @@ export async function enforceClientApiRouteAuth(request: Request): Promise<Respo
   const apiKeyRaw = extractApiKey(request);
 
   if (apiKeyRaw) {
-    if (await isValidApiKey(apiKeyRaw)) return null;
+    if (await isValidGatewayApiKey(apiKeyRaw, validateApiKey)) return null;
     return isRequireApiKeyEnabled()
       ? errorResponse(HTTP_STATUS.UNAUTHORIZED, "Invalid API key")
       : null;

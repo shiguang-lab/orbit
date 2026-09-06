@@ -6,7 +6,7 @@
  */
 
 import { getSettings } from "./db/settings";
-import type { CacheControlMode } from "../../../open-sse/utils/cacheControlPolicy.ts";
+import type { CacheControlMode } from "@shiguang-gateway/contracts/cache-control";
 
 let cachedSettings: CacheControlMode | null = null;
 

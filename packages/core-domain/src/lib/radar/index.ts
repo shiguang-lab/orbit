@@ -9,7 +9,10 @@
  * All heavy lifting (sync, verify, schema, merge) lives in sibling files.
  */
 
-import { FREE_MODEL_BUDGETS } from "../../../../open-sse/config/freeModelCatalog.ts";
+import {
+  providerRuntimePorts,
+  type FreeModelBudgetContract,
+} from "../../runtime/providerRuntimePorts.ts";
 import { RadarFeedSchema, type RadarFeed, type RadarReferral } from "./feedSchema";
 import { RadarReferralsFeedSchema, type RadarReferralsFeed } from "./referralsFeedSchema";
 import {
@@ -75,7 +78,7 @@ export interface GetRadarCatalogDeps {
  * Convert the static `FreeModelBudget[]` into `MergedEntry[]` so the
  * merge function has a uniform input shape.
  */
-export function baselineToMergedEntries(budgets: typeof FREE_MODEL_BUDGETS): MergedEntry[] {
+export function baselineToMergedEntries(budgets: readonly FreeModelBudgetContract[]): MergedEntry[] {
   return budgets.map((b) => ({
     provider: b.provider,
     modelId: b.modelId,
@@ -116,7 +119,7 @@ export function getRadarCatalog(deps: GetRadarCatalogDeps = {}): RadarCatalogRes
   } = deps;
 
   // Resolve baseline
-  const baseline = baselineInput ?? baselineToMergedEntries(FREE_MODEL_BUDGETS);
+  const baseline = baselineInput ?? baselineToMergedEntries(providerRuntimePorts.getFreeModelCatalog());
 
   // Flag gate
   const flagOn = getFlag("RADAR_ENABLED");

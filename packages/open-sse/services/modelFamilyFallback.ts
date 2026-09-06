@@ -17,7 +17,7 @@ import {
   CONTEXT_OVERFLOW_REGEX,
   containsModelUnavailableMessage,
   isResourceNotFoundResponse,
-} from "./errorClassifier.ts";
+} from "@shiguang-gateway/core-domain/domain/provider-error-classifier";
 import { getRegistryEntry } from "../config/providerRegistry.ts";
 import { isModelSelectable } from "./modelLifecycle.ts";
 

@@ -1,5 +1,5 @@
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { explainRouteByRequestId } from "@shiguang-gateway/core-domain/usage/route-explain";
+import { explainRouteByRequestId } from "../reporting/routeExplain.js";
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   const authError = await requireManagementAuth(request);

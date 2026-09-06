@@ -19,10 +19,10 @@ import {
   getTableNamesFromAdapter,
   countImportedRows,
   unlinkFileWithRetry,
-  setSystemPromptConfig,
   exportAllSummaryRows,
   CALL_LOGS_DIR,
 } from "@shiguang-gateway/core-domain/db-backups/db";
+import { setSystemPromptConfig } from "@shiguang-gateway/open-sse/services/systemPrompt";
 import { getSettings } from "@shiguang-gateway/core-domain/control/settings";
 
 const DEFAULT_MAX_UPLOAD_MB = 100;

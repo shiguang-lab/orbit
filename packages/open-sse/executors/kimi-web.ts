@@ -29,7 +29,8 @@ import {
   sanitizeErrorMessage,
 } from "../utils/error.ts";
 import { extractKimiAccessToken } from "@shiguang-gateway/core-domain/edge/web-cookie-auth";
-import { exchangeKimiRefreshToken } from "@shiguang-gateway/core-domain/control/kimi-token-refresh";
+import { exchangeKimiRefreshToken } from "../services/kimiTokenRefresh.js";
+import { getKimiWebBaseUrl } from "../config/kimiWebRuntime.js";
 import {
   type KimiWebModelConfig,
   resolveKimiWebContextLength,
@@ -39,13 +40,7 @@ import {
 
 export { extractKimiAccessToken };
 
-export function getKimiWebBaseUrl(): string {
-  const envUrl = process.env.KIMI_WEB_BASE_URL?.trim();
-  if (envUrl) {
-    return envUrl.replace(/\/+$/, "");
-  }
-  return "https://www.kimi.ai";
-}
+export { getKimiWebBaseUrl };
 
 export function getKimiWebChatUrl(): string {
   const envChat = process.env.KIMI_WEB_CHAT_URL?.trim();

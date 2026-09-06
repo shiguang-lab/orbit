@@ -2,7 +2,7 @@ import { buildGitLabOAuthEndpoints, resolveGitLabOAuthBaseUrl } from "@shiguang-
 import { ANTIGRAVITY_RUNTIME_BASE_URLS } from "@shiguang-gateway/open-sse/config/antigravity-upstream";
 import { getAntigravityContentHeaders } from "@shiguang-gateway/open-sse/services/antigravity-headers";
 import { getAntigravityClientProfile } from "@shiguang-gateway/open-sse/services/antigravity-client-profile";
-import { isGeoBlockedError } from "@shiguang-gateway/open-sse/services/error-classifier";
+import { isGeoBlockedError } from "@shiguang-gateway/core-domain/domain/provider-error-classifier";
 
 // Real model-surface probe for antigravity/agy. The previous probe only hit the
 // OAuth userinfo endpoint, which is NOT geo-restricted — so "Test Connection"

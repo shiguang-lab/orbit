@@ -3,4 +3,3 @@ export function executeRecordedTriageChatCompletion(input: any, post: (request: 
 export class RecordedTriageTimeoutError extends Error { constructor(timeoutMs: number); }
 export function normalizeGitHubIssueExport(input: unknown): any;
 export function createRecordedTriageRun(input: any): any;
-export function postChatCompletion(request: Request): Promise<Response>;

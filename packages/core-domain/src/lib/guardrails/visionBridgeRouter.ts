@@ -6,7 +6,7 @@
 import { getResolvedModelCapabilities } from "../modelCapabilities.ts";
 import { getActiveSyncedCatalog } from "../db/models/activeSyncedCatalog.ts";
 import { PROVIDER_MODELS } from "@shiguang-gateway/provider-catalog/provider-models";
-import { getRegisteredProviderEffortBaseModelId } from "../../../../open-sse/utils/registeredEffortVariants.ts";
+import { providerRuntimePorts } from "../../runtime/providerRuntimePorts.ts";
 import { hasUsableCredentialsForModel } from "./visionBridgeCredentials";
 import { isVisionBridgeForcedModel } from "../../shared/constants/visionBridgeDefaults.ts";
 
@@ -145,7 +145,10 @@ function createCatalogModelPredicate(
       return true;
     }
 
-    const effortBaseModelId = getRegisteredProviderEffortBaseModelId(providerAlias, model.id);
+    const effortBaseModelId = providerRuntimePorts.getRegisteredProviderEffortBaseModelId(
+      providerAlias,
+      model.id
+    );
     return effortBaseModelId !== null && liveIds.has(effortBaseModelId);
   };
 }

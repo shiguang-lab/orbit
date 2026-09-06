@@ -60,7 +60,7 @@ const appByName = new Map(appEntries.filter((entry) => entry.manifest?.name).map
 const allowedCoreDomainSubpaths = {
   "apps/realtime": ["startup", "events/eventBus", "shared/test-process", "shared/http-client-abort-guard", "sse/auth", "db/compression-analytics"],
   "apps/worker": ["startup", "worker/", "db/local-db"],
-  "apps/control-api": ["startup", "runtime/request", "domain/degradation", "db/ping", "db/health", "db/call-log-stats", "db/provider-connections", "db/model-aliases", "db/local-db", "db/provider-stats", "db/database-stats", "db/vacuum-scheduler", "catalog/provider-metadata", "catalog/provider-registry", "catalog/provider-node-prefixes", "pricing/db", "pricing/defaults", "pricing/sync", "pricing/provider-prefixes", "pricing/validation", "cache/db", "cache/services", "db/compression-analytics", "analytics/auto-routing-db", "analytics/diversity", "db-backups/db", "db-backups/validation", "metrics/combo", "metrics/request-telemetry", "metrics/observability", "metrics/tool-latency", "shared/numeric", "open-sse/utils/error.ts", "open-sse/services/deviceTracker.ts", "control/management-auth", "control/middleware-registry", "control/provider-credentials", "control/lkgp-cache", "control/management-password", "control/compliance", "control/feature-flags", "control/provider-validation", "control/provider-validation-schemas", "control/provider-model-store", "control/provider-model-aliases", "control/model-context-overrides", "control/model-test-data", "db/provider-nodes", "network/outbound-url-guard-policy", "network/safe-outbound-fetch", "control/gateway-status", "control/authenticated", "control/registered-keys", "control/synced-models", "control/settings", "memory/settings", "memory/runtime", "control/database-settings", "control/proxy-logs", "control/openrouter-provider-stats", "control/provider-health-matrix", "control/provider-expiration", "control/resilience-settings", "edge/usage-db", "db/detailed-logs", "db/proxy-logs", "shared/log-env", "control/api-key-store", "control/cloud-sync", "control/api-key-exposure", "db/api-key-groups", "control/api-key-usage-limits", "shared/", "sse/logger", "sse/auth", "evals/db", "evals/runner", "evals/runtime", "evals/validation", "db/api-keys", "db/batches", "plugins/db", "plugins/manager", "plugins/marketplace", "shared/cors", "quota/schemas", "quota/db", "quota/services", "quota/state", "compliance", "shared/combo-invariants", "catalog/combo-targets", "catalog/model-metadata", "catalog/provider-models"],
+  "apps/control-api": ["startup", "runtime/request", "domain/degradation", "db/ping", "db/health", "db/call-log-stats", "db/provider-connections", "db/model-aliases", "db/local-db", "db/provider-stats", "db/database-stats", "db/vacuum-scheduler", "catalog/provider-metadata", "catalog/provider-registry", "catalog/provider-node-prefixes", "pricing/db", "pricing/defaults", "pricing/sync", "pricing/provider-prefixes", "pricing/validation", "pricing/modal-cost", "cache/db", "cache/services", "db/compression-analytics", "analytics/auto-routing-db", "analytics/diversity", "db-backups/db", "db-backups/validation", "metrics/combo", "metrics/request-telemetry", "metrics/observability", "metrics/tool-latency", "shared/numeric", "open-sse/utils/error.ts", "open-sse/services/deviceTracker.ts", "control/management-auth", "control/middleware-registry", "control/provider-credentials", "control/lkgp-cache", "control/management-password", "control/compliance", "control/feature-flags", "control/provider-validation", "control/provider-validation-schemas", "control/model-context-overrides", "control/model-test-data", "db/provider-nodes", "network/outbound-url-guard-policy", "network/safe-outbound-fetch", "control/gateway-status", "control/authenticated", "control/registered-keys", "control/synced-models", "control/settings", "memory/settings", "memory/runtime", "control/database-settings", "control/proxy-logs", "control/openrouter-provider-stats", "control/provider-health-matrix", "control/provider-expiration", "control/resilience-settings", "edge/usage-db", "db/detailed-logs", "db/proxy-logs", "shared/log-env", "control/api-key-store", "control/cloud-sync", "control/api-key-exposure", "db/api-key-groups", "control/api-key-usage-limits", "shared/", "sse/logger", "sse/auth", "evals/db", "evals/runner", "evals/runtime", "evals/validation", "db/api-keys", "db/batches", "plugins/db", "plugins/manager", "plugins/marketplace", "shared/cors", "quota/schemas", "quota/db", "quota/services", "quota/state", "compliance", "shared/combo-invariants", "catalog/combo-targets", "catalog/model-metadata", "catalog/provider-models"],
   "apps/edge-gateway": [
     "startup",
     "runtime/request",
@@ -131,6 +131,8 @@ const allowedCoreDomainSubpaths = {
     "db/ping",
     "db/encryption",
     "db/provider-connections",
+    "edge/provider-constants",
+    "control/provider-discovery-support/exclusiveLeaseIsolation",
     "db/upstream-proxy",
     "control/management-auth",
     "shared/cors-status",
@@ -151,17 +153,16 @@ const allowedCoreDomainSubpaths = {
     "shared/cors",
     "shared/validation-helpers",
     "edge/v1beta-models",
-    "edge/v1beta-generate",
-    "edge/vnc-session",
-    "edge/vnc-session-params",
-    // A2A transport is owned by edge-gateway; these explicit dynamic imports
-    // are transitional facades for the legacy skill implementation while its
-    // provider/DB dependencies are moved into edge-owned modules.
-    "a2a/legacy-",
+    // A2A transport is app-owned; core exposes only the transport-neutral task runtime.
+    "a2a/runtime",
   ],
 };
 
 allowedCoreDomainSubpaths["apps/control-api"].push("db/health");
+allowedCoreDomainSubpaths["apps/control-api"].push(
+  "domain/provider-error-classifier",
+  "usage/reporting-support/",
+);
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "db/agentic-conversations",
   "usage/summary",
@@ -194,7 +195,6 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/telegram",
   "control/intelligence-sync",
   "control/routing-preview",
-  "control/embedded-service-proxy",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/usage",
@@ -219,6 +219,8 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/cli-access-scopes",
   "control/login-guard",
   "control/access-token-auth",
+  "control/provider-model-store",
+  "control/provider-model-aliases",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "catalog/display-names",
@@ -333,6 +335,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/cli-tools-",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push("control/provider-management");
+allowedCoreDomainSubpaths["apps/control-api"].push("control/embedded-services-runtime-support");
 
 // Route files that have completed a physical ownership move. Keep this list
 // small and explicit: adding an entry is the acceptance record for a domain

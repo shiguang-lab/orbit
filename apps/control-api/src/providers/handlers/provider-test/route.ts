@@ -8,7 +8,7 @@ import {
 } from "@shiguang-gateway/core-domain/db/local-db";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
 import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";
-import { validateProviderApiKey } from "@shiguang-gateway/core-domain/control/provider-validation";
+import { validateProviderApiKey } from "@shiguang-gateway/open-sse/services/provider-validation";
 import { getCliRuntimeStatus } from "@shiguang-gateway/core-domain/shared/services/cliRuntime";
 import { buildQoderCliNotFoundHint } from "@shiguang-gateway/open-sse/services/qoder-cli-resolve";
 // Use the shared open-sse token refresh with built-in dedup/race-condition cache
@@ -29,12 +29,12 @@ import { isOpenAICompatibleProvider, providerAllowsOptionalApiKey } from "@shigu
 import { shouldUseApiKeyConnectionTest } from "./webSessionTestDispatch.js";
 import { testCodexAppServerConnection, makeDiagnosis } from "./codexAppServerHealth.js";
 import { recoverKeyHealth } from "@shiguang-gateway/open-sse/services/api-key-rotator";
-import { shouldClearErrorStateOnValidProbe } from "@shiguang-gateway/core-domain/edge/provider-limits";
+import { shouldClearErrorStateOnValidProbe } from "@shiguang-gateway/open-sse/services/providerLimits";
 import { isConnectionUnavailableToAuxiliaryActivity } from "@shiguang-gateway/core-domain/shared/connection-isolation";
 import { classifyAmbiguousOrAuthError, type ClassifyFailureArgs } from "./mistralAmbiguousAuth.js";
 import { buildApiKeyConnectionTestResult } from "./apiKeyTestResult.js";
 import { classifyOAuthProbeInconclusive, OAUTH_TEST_CONFIG } from "./oauthTestConfig.js";
-import { isGeoBlockedError } from "@shiguang-gateway/open-sse/services/error-classifier";
+import { isGeoBlockedError } from "@shiguang-gateway/core-domain/domain/provider-error-classifier";
 import * as retirement from "@shiguang-gateway/core-domain/lib/providers/chatgptWebRetirementResponse";
 
 // Match the API-key path's 30s timeout so a hung OAuth upstream cannot block the test queue.

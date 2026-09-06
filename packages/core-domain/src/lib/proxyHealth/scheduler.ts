@@ -29,11 +29,7 @@ import {
   type EgressSharingSummary,
   type EgressSharingWarning,
 } from "../proxyEgress.ts";
-import {
-  createProxyDispatcher,
-  clearDispatcherCache,
-  proxyConfigToUrl,
-} from "../../../../open-sse/utils/proxyDispatcher.ts";
+import { providerRuntimePorts } from "../../runtime/providerRuntimePorts.ts";
 import { fetch as undiciFetch } from "undici";
 import {
   classifyProbeStatus,
@@ -151,7 +147,7 @@ async function testOneProxy(proxy: {
 }): Promise<ProxyProbeOutcome> {
   let proxyUrl: string | null;
   try {
-    proxyUrl = proxyConfigToUrl(proxy);
+    proxyUrl = providerRuntimePorts.proxyConfigToUrl(proxy);
   } catch {
     proxyUrl = null;
   }
@@ -165,7 +161,7 @@ async function testOneProxy(proxy: {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), TEST_TIMEOUT_MS);
   try {
-    const dispatcher = createProxyDispatcher(proxyUrl);
+    const dispatcher = providerRuntimePorts.createProxyDispatcher(proxyUrl);
     const resp = await undiciFetch(target, {
       method,
       signal: controller.signal,
@@ -263,7 +259,7 @@ async function sweep(): Promise<void> {
           failureMap.delete(id);
           removed++;
           try {
-            clearDispatcherCache();
+            providerRuntimePorts.clearProxyDispatcherCache();
           } catch {
             /* non-critical */
           }

@@ -26,7 +26,7 @@ import {
 } from "../alibabaFreeTier.ts";
 import { RateLimitReason } from "../../config/constants.ts";
 import { isProviderCircuitOpenResult, isRequestScopedUpstreamFailure } from "./comboPredicates.ts";
-import { isCloudflareFingerprintRejection } from "../errorClassifier.ts";
+import { isCloudflareFingerprintRejection } from "@shiguang-gateway/core-domain/domain/provider-error-classifier";
 // #10334 — agentrouter-exclusive predicate shared with the persistence layer
 // (markAccountUnavailable) so the same-request combo skip and the persisted
 // connection cooldown agree on exactly which fallbackResult shapes qualify.

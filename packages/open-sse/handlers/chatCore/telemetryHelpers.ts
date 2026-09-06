@@ -1,4 +1,4 @@
-import { fetchLiveProviderLimits } from "@shiguang-gateway/core-domain/edge/provider-limits";
+import { fetchLiveProviderLimits } from "../../services/providerLimits.ts";
 import { isClaudeExtraUsageBlockEnabled } from "@shiguang-gateway/core-domain/edge/claude-extra-usage";
 
 // #4604 — Lazy backoff for the best-effort live-WS sidecar bridge. In single-port

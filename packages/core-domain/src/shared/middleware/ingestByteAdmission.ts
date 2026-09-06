@@ -1,4 +1,4 @@
-import type { PressureSeverity } from "../../../../open-sse/utils/resourcePressure.ts";
+import type { PressureSeverity } from "@shiguang-gateway/contracts/resource-pressure";
 
 import type { IngestBudgetSource } from "./admissionBudget";
 

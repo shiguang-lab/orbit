@@ -1,15 +1,12 @@
-import type { ProviderPluginManifestEntry } from "../../../../../open-sse/config/providerPluginManifest.ts";
-import type { ServiceBackendPluginId } from "../serviceBackends";
+import type {
+  ServiceBackendManifestTemplateEntry,
+  ServiceBackendPluginId,
+} from "../serviceBackends";
 import type { resolveSpawnArgs as resolveNinerouterSpawnArgs } from "../installers/ninerouter";
 
 export type { ServiceBackendPluginId } from "../serviceBackends";
 
 /** Manifest fields an embedded service backend contributes today, per `SERVICE_BACKEND_MANIFEST_TEMPLATE`. */
-export type ServiceBackendManifestTemplateEntry = Pick<
-  ProviderPluginManifestEntry,
-  "format" | "executor" | "auth" | "endpoints" | "capabilities" | "passthroughModels" | "sidecar"
->;
-
 /**
  * A pluggable provider-backend contract for embedded services (9router, cliproxyapi).
  *

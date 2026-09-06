@@ -1,4 +1,4 @@
-import { isResourceNotFoundResponse } from "../services/errorClassifier.ts";
+import { isResourceNotFoundResponse } from "@shiguang-gateway/core-domain/domain/provider-error-classifier";
 
 type HealthLogger = {
   info(tag: string, message: string): void;

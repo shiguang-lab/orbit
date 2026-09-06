@@ -15,4 +15,3 @@ export {
 export { getDbInstance, resetDbInstance, SQLITE_FILE } from "./db/core.ts";
 export { openDatabaseAsync } from "./db/adapters/driverFactory.ts";
 export { CALL_LOGS_DIR } from "./usage/callLogArtifacts.ts";
-export { setSystemPromptConfig } from "../../../open-sse/services/systemPrompt.ts";

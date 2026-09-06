@@ -29,7 +29,7 @@ import {
   resolveProxyForConnection,
 } from "@shiguang-gateway/core-domain/edge/local-db";
 import { getAllCustomModels } from "@shiguang-gateway/core-domain/control/synced-models";
-import { resolveImageRouteModel } from "@shiguang-gateway/core-domain/edge/image-route-model";
+import { resolveImageRouteModel } from "../image-route-model.js";
 import {
   isMicrosoftDesignerWebProviderRetiredError,
   isMicrosoftDesignerWebRetiredProviderId,
@@ -43,7 +43,7 @@ import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch
 import { attachShiguangGatewayMetaHeaders } from "@shiguang-gateway/core-domain/edge/gateway-response-meta";
 import { calculateModalCost } from "@shiguang-gateway/core-domain/pricing/modal-cost";
 import { generateRequestId } from "@shiguang-gateway/core-domain/edge/request-id";
-import { getSpecialtyModelsResponse } from "@shiguang-gateway/core-domain/edge/specialty-catalog";
+import { getSpecialtyModelsResponse } from "@shiguang-gateway/open-sse/catalog/specialty";
 import { enforceClientApiRouteAuth } from "@shiguang-gateway/core-domain/shared/client-api-auth";
 import { runWithCallLogApiKeyContext } from "@shiguang-gateway/core-domain/usage/call-log-api-key-context";
 import { executeImageWithCredentialFallback } from "@shiguang-gateway/open-sse/services/imageCredentialRetry";

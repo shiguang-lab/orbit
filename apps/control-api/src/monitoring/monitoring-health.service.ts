@@ -5,6 +5,10 @@ import { readRunningBuildSha } from "@shiguang-gateway/core-domain/runtime/build
 import { buildHealthPayload } from "@shiguang-gateway/core-domain/metrics/observability";
 import { APP_CONFIG } from "@shiguang-gateway/core-domain/shared/app-config";
 import { AI_PROVIDERS } from "@shiguang-gateway/core-domain/shared/constants/providers";
+import {
+  createCodexAccountPool,
+  getCodexParentAccountDiagnostic,
+} from "@shiguang-gateway/open-sse/services/codexAccount/index";
 
 const HEALTH_PAYLOAD_TTL_MS = 1_000;
 
@@ -117,6 +121,8 @@ async function buildMonitoringHealthSnapshot(): Promise<unknown> {
     chatAdmission: chatAdmissionModule.status === "fulfilled"
       ? readHealthValue("chat admission", () => chatAdmissionModule.value.perConnectionAdmissionController.snapshot(), null)
       : null,
+    getCodexAccountDiagnostic: (connection, nowMs) =>
+      getCodexParentAccountDiagnostic(createCodexAccountPool(connection), nowMs),
   });
 }
 

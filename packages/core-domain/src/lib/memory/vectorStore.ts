@@ -8,7 +8,7 @@
 // vec0 rejects numeric (non-BigInt) values for named PKs in this version.
 
 import { createRequire } from "module";
-import type { EmbeddingResolution } from "./embedding/types";
+import type { EmbeddingResolution } from "./embeddingPort.ts";
 import {
   getMemoryVecMeta,
   setMemoryVecMeta,

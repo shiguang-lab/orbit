@@ -10,8 +10,8 @@
 
 import { createHash, timingSafeEqual } from "crypto";
 import type { NextRequest } from "next/server";
-import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/services/auth";
 import { isRequireApiKeyEnabled } from "../../shared/utils/featureFlags.ts";
+import { extractA2AApiKey, isValidA2AApiKey } from "./apiKey.ts";
 
 function tokensMatch(provided: string, expected: string): boolean {
   const a = Buffer.from(provided);
@@ -27,9 +27,9 @@ function tokensMatch(provided: string, expected: string): boolean {
  * same local-first default as /v1).
  */
 export async function authenticateA2ARequest(req: NextRequest | Request): Promise<boolean> {
-  const apiKey = extractApiKey(req as NextRequest);
+  const apiKey = extractA2AApiKey(req);
   if (isRequireApiKeyEnabled()) {
-    return apiKey ? await isValidApiKey(apiKey) : false;
+    return apiKey ? await isValidA2AApiKey(apiKey) : false;
   }
 
   const configuredKey = process.env.SHIGUANG_GATEWAY_API_KEY;
@@ -47,7 +47,7 @@ export async function authenticateA2ARequest(req: NextRequest | Request): Promis
  * posture — ownerless tasks stay visible to everyone, by design).
  */
 export function resolveA2AOwner(req: NextRequest | Request): string | undefined {
-  const apiKey = extractApiKey(req as NextRequest);
+  const apiKey = extractA2AApiKey(req);
   if (!apiKey) return undefined;
   return createHash("sha256").update(apiKey).digest("hex").slice(0, 32);
 }

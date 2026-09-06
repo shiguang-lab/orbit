@@ -28,8 +28,8 @@ interface BucketEntry {
 }
 
 /**
- * Minimal shape of a parsed UsageQuota entry, as produced by getClaudeUsage in
- * open-sse/services/usage.ts. `used` = % consumed (0..100); `total` = 100 for
+ * Minimal shape of a parsed UsageQuota entry, as produced by the provider usage
+ * runtime. `used` = % consumed (0..100); `total` = 100 for
  * percent-based windows; `resetAt` = ISO 8601 string or null (already
  * normalized upstream by parseResetTime).
  */

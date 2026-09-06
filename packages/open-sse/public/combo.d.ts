@@ -11,3 +11,14 @@ export declare function resolveNestedComboTargets(combo: unknown, combos: unknow
   provider?: string | null;
   providerId?: string | null;
 }>;
+export declare function resolveComboTargets(
+  combo: unknown,
+  combos: unknown,
+  maxDepth?: number,
+  hiddenModelsByProvider?: ReadonlyMap<string, ReadonlySet<string>>,
+): Array<{
+  modelStr: string;
+  provider?: string | null;
+  providerId?: string | null;
+  connectionId?: string | null;
+}>;

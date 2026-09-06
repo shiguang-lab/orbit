@@ -1,5 +1,5 @@
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getAuditStats, queryAuditEntries } from "@shiguang-gateway/core-domain/control/mcp-management";
+import { getAuditStats, queryAuditEntries } from "@shiguang-gateway/open-sse/mcp-server/audit";
 
 function parseBooleanParam(value: string | null): boolean | undefined {
   if (value === "true" || value === "1") return true;

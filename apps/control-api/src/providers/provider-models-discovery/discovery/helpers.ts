@@ -1,5 +1,5 @@
 import { isSelfHostedChatProvider } from "@shiguang-gateway/core-domain/control/provider-discovery-support/providers";
-import { getStaticModelsForProvider, type LocalCatalogModel } from "@shiguang-gateway/core-domain/control/provider-discovery-support/staticModels";
+import { getStaticModelsForProvider, type LocalCatalogModel } from "@shiguang-gateway/open-sse/services/static-models";
 import { SAFE_OUTBOUND_FETCH_PRESETS, safeOutboundFetch } from "@shiguang-gateway/core-domain/control/provider-discovery-support/safeOutboundFetch";
 import { getProviderValidationGuard } from "@shiguang-gateway/core-domain/control/provider-discovery-support/outboundUrlGuardPolicy";
 import {

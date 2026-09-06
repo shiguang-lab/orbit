@@ -4,8 +4,6 @@ import {
   attachReasoningRuleDirective,
   applyReasoningRuleDirective,
   authorizeWebSocketHandshake,
-  buildManagedLeaseErrorResponse,
-  checkAndRefreshToken,
   DEFAULT_MEMORY_SETTINGS,
   enforceApiKeyPolicy,
   extractReasoningIntent,
@@ -15,11 +13,7 @@ import {
   getComboByName,
   getComboModelString,
   getMemorySettings,
-  getModelInfo,
-  getProviderCredentialsWithQuotaPreflight,
-  isExclusiveLeaseManagedKey,
   isFeatureFlagEnabled,
-  LeaseContextError,
   resolveCcDiscoveryAliasStrip,
   resolveCodexWsModelInfo,
   resolveReasoningSourceModels,
@@ -30,6 +24,14 @@ import {
   validateApiKeyRoutingTarget,
   validateCodexWsDecision,
 } from "@shiguang-gateway/core-domain/edge/codex-responses-ws-runtime";
+import { getProviderCredentialsWithQuotaPreflight } from "@shiguang-gateway/open-sse/services/auth";
+import { checkAndRefreshToken } from "@shiguang-gateway/open-sse/services/credentialTokenRefresh";
+import {
+  buildManagedLeaseErrorResponse,
+  isExclusiveLeaseManagedKey,
+  LeaseContextError,
+} from "@shiguang-gateway/open-sse/services/leaseContext";
+import { getModelInfo } from "@shiguang-gateway/open-sse/services/runtimeModel";
 import {
   CodexExecutor,
   logger,

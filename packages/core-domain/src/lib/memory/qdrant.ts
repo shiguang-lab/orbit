@@ -1,5 +1,5 @@
 import { getSettings } from "../db/settings.ts";
-import { createEmbeddingResponse } from "../embeddings/service.ts";
+import { embedProviderModel } from "./embeddingPort.ts";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -283,24 +283,7 @@ async function getCollectionVectorName(cfg: QdrantConfig): Promise<string | null
 
 async function embedText(cfg: QdrantConfig, text: string): Promise<number[]> {
   const modelStr = cfg.embeddingModel.trim();
-  if (!modelStr.includes("/")) {
-    throw new Error(`Invalid embedding model '${modelStr}'. Use provider/model format.`);
-  }
-
-  const res = await createEmbeddingResponse({
-    model: modelStr,
-    input: text,
-  });
-  if (!res.ok) {
-    const txt = await res.text().catch(() => "");
-    throw new Error(txt.slice(0, 300) || `Embeddings request failed (${res.status})`);
-  }
-  const data = (await res.json().catch(() => null)) as any;
-  const vec = data?.data?.[0]?.embedding;
-  if (!Array.isArray(vec) || vec.length === 0) {
-    throw new Error("Embedding response missing vector");
-  }
-  return vec as number[];
+  return embedProviderModel(text, modelStr);
 }
 
 export async function upsertSemanticMemoryPoint(input: {

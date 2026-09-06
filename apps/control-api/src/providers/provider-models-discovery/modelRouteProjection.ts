@@ -3,7 +3,7 @@ import { filterChatSelectableModels } from "@shiguang-gateway/open-sse/services/
 import { filterSelectableModels } from "@shiguang-gateway/open-sse/services/modelLifecycle";
 import { getModelIsHidden } from "@shiguang-gateway/core-domain/control/provider-discovery-support/modelsDb";
 import { getSettings } from "@shiguang-gateway/core-domain/control/provider-discovery-support/settings";
-import { getStaticModelsForProvider } from "@shiguang-gateway/core-domain/control/provider-discovery-support/staticModels";
+import { getStaticModelsForProvider } from "@shiguang-gateway/open-sse/services/static-models";
 import { SAFE_OUTBOUND_FETCH_PRESETS, safeOutboundFetch } from "@shiguang-gateway/core-domain/control/provider-discovery-support/safeOutboundFetch";
 import { getProviderOutboundGuard } from "@shiguang-gateway/core-domain/control/provider-discovery-support/outboundUrlGuardPolicy";
 import { getModelsByProviderId } from "@shiguang-gateway/core-domain/control/provider-discovery-support/models";

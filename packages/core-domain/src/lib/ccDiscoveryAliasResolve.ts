@@ -17,7 +17,7 @@
 import {
   stripCcDiscoveryAlias,
   type CcDiscoveryStripResult,
-} from "../../../open-sse/handlers/chatCore/ccDiscoveryAliasStrip.ts";
+} from "@shiguang-gateway/contracts/cc-discovery-alias";
 import { getModelsByProviderId } from "@shiguang-gateway/provider-catalog/provider-models";
 import { getRegistryEntry } from "@shiguang-gateway/provider-catalog/provider-registry";
 import { getProviderById, getProviderByAlias } from "../shared/constants/providers.ts";

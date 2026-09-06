@@ -14,7 +14,7 @@
 import { getComboByName, getCombos } from "@shiguang-gateway/core-domain/db/combos";
 import { resolveComboTargets } from "./combo.ts";
 import { parseSpeechModel, getSpeechProvider } from "../config/audioRegistry.ts";
-import { resolveDynamicAudioProviders } from "@shiguang-gateway/core-domain/edge/audio-provider-nodes";
+import { resolveDynamicAudioProviders } from "./audioProviderNodes.ts";
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,

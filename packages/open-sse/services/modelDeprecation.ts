@@ -8,6 +8,7 @@
  */
 
 import { hasKnownProviderModel } from "./model.ts";
+import { registerDbRuntimeHooks } from "@shiguang-gateway/core-domain/db/runtime-hooks";
 
 // ── Built-in Deprecation Aliases ────────────────────────────────────────────
 // These are known renames/retirements across providers.
@@ -189,3 +190,5 @@ export function removeCustomAlias(from: string): boolean {
 export function getBuiltInAliases(): Record<string, string> {
   return { ...BUILT_IN_ALIASES };
 }
+
+registerDbRuntimeHooks({ resolveModelAlias });

@@ -26,7 +26,7 @@ import {
   parseAndValidateClaudeAuth,
   parseAndValidateCodexAuth,
   sanitizeProviderSpecificDataForResponse,
-} from "@shiguang-gateway/core-domain/control/provider-auth-import";
+} from "@shiguang-gateway/open-sse/oauth/provider-auth-import";
 import {
   getAuditRequestContext,
   logAuditEvent,

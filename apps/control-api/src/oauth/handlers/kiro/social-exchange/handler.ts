@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { z } from "zod";
-import { KiroService } from "@shiguang-gateway/core-domain/control/oauth-runtime/services/kiro";
+import { KiroService } from "@shiguang-gateway/open-sse/oauth/services/kiro";
 import {
   createProviderConnection,
   getProviderConnections,
@@ -11,7 +11,7 @@ import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/uti
 import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";
 import { isAuthRequired, isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { KIRO_CONFIG } from "@shiguang-gateway/core-domain/control/oauth-runtime/constants/oauth";
+import { KIRO_CONFIG } from "@shiguang-gateway/open-sse/oauth/constants";
 import { findKiroConnectionByIdentity } from "@shiguang-gateway/core-domain/control/oauth-runtime/kiroConnectionIdentity";
 import { classifyKiroSocialPoll } from "@shiguang-gateway/core-domain/control/oauth-runtime/kiroSocialPoll";
 

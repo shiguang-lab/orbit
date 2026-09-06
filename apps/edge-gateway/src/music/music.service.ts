@@ -6,7 +6,7 @@ const load = (specifier: string): Promise<any> => import(specifier as string);
 export class MusicService {
   async handleGetGenerations(req?: Request): Promise<Response> {
     const { getSpecialtyModelsResponse } = await load(
-      "@shiguang-gateway/core-domain/edge/specialty-catalog"
+      "@shiguang-gateway/open-sse/catalog/specialty"
     );
     return getSpecialtyModelsResponse(
       req,

@@ -1,7 +1,10 @@
-import { getProviderConnectionById } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { refreshKimiProviderConnection } from "@shiguang-gateway/core-domain/control/kimi-token-refresh";
+import {
+  getProviderConnectionById,
+  updateProviderConnection,
+} from "@shiguang-gateway/core-domain/db/provider-connections";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { parseKimiJwt } from "@shiguang-gateway/open-sse/utils/kimiJwt";
+import { exchangeKimiRefreshToken } from "@shiguang-gateway/open-sse/services/kimiTokenRefresh";
 
 /** POST /api/providers/:id/refresh-token. */
 export async function POST(request: Request, id: string): Promise<Response> {
@@ -14,10 +17,28 @@ export async function POST(request: Request, id: string): Promise<Response> {
   if (provider !== "kimi-web" && provider !== "kimi_web") {
     return Response.json({ error: `Manual token refresh not supported for provider ${connection.provider}` }, { status: 400 });
   }
-  const result = await refreshKimiProviderConnection(id);
+  const providerData = connection.providerSpecificData as Record<string, unknown> | undefined;
+  const refreshToken =
+    (typeof connection.refreshToken === "string" && connection.refreshToken) ||
+    (typeof providerData?.refreshToken === "string" ? providerData.refreshToken : "");
+  if (!refreshToken) {
+    return Response.json({ error: "Connection does not contain a refresh_token" }, { status: 400 });
+  }
+  const result = await exchangeKimiRefreshToken(refreshToken);
   if (!result.success || !result.accessToken) {
     return Response.json({ error: result.error || "Failed to refresh Kimi token" }, { status: 400 });
   }
+  await updateProviderConnection(id, {
+    apiKey: result.accessToken,
+    accessToken: result.accessToken,
+    refreshToken: result.refreshToken,
+    expiresAt: result.expiresAtSec
+      ? new Date(result.expiresAtSec * 1000).toISOString()
+      : undefined,
+    testStatus: "active",
+    lastError: null,
+    errorCode: null,
+  });
   const payload = parseKimiJwt(result.accessToken);
   return Response.json({
     success: true,

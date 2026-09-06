@@ -137,7 +137,7 @@ import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/runtime/api-k
 import { hasProviderQuotaBypassScope } from "@shiguang-gateway/core-domain/runtime/api-key-policy-scopes";
 import { isMicrosoftDesignerWebProviderRetiredError } from "@shiguang-gateway/contracts/designer-web-retirement";
 import { cloneBoundedForLog } from "../utils/requestLogger.ts";
-import { handleInternalUsageCommand } from "@shiguang-gateway/core-domain/runtime/internal-usage-command";
+import { handleInternalUsageCommand } from "../services/internalUsageCommand.ts";
 import {
   applyTaskAwareRouting,
   getTaskRoutingConfig,

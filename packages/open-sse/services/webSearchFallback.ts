@@ -1,6 +1,7 @@
 import { FORMATS } from "../translator/formats.ts";
 
-export const SHIGUANG_GATEWAY_WEB_SEARCH_FALLBACK_TOOL_NAME = "shiguangGateway_web_search";
+export { SHIGUANG_GATEWAY_WEB_SEARCH_FALLBACK_TOOL_NAME } from "@shiguang-gateway/contracts/gateway-tool-names";
+import { SHIGUANG_GATEWAY_WEB_SEARCH_FALLBACK_TOOL_NAME } from "@shiguang-gateway/contracts/gateway-tool-names";
 // Prefix match — Anthropic sends date-suffixed variants (web_search_20250305, …).
 // The other two detectors (openai-responses/helpers.ts, webSearchRouting.ts) already
 // use /^web_search/ prefix matching; this aligns the fallback detector with them.

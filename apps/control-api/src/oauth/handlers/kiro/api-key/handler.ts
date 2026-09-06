@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { KiroService } from "@shiguang-gateway/core-domain/control/oauth-runtime/services/kiro";
+import { KiroService } from "@shiguang-gateway/open-sse/oauth/services/kiro";
 import {
   createProviderConnection,
   getProviderConnections,

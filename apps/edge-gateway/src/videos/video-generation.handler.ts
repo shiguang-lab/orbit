@@ -25,7 +25,7 @@ export async function OPTIONS(): Promise<Response> {
 
 export async function GET(request?: Request): Promise<Response> {
   const [{ getSpecialtyModelsResponse }] = await Promise.all([
-    load("@shiguang-gateway/core-domain/edge/specialty-catalog"),
+    load("@shiguang-gateway/open-sse/catalog/specialty"),
   ]);
   return getSpecialtyModelsResponse(
     request,

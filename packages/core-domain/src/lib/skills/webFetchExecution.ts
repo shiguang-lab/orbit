@@ -6,26 +6,22 @@
  * (#7339, Phase 4 of #3384).
  */
 
-import { getProviderCredentialsWithQuotaPreflight } from "@shiguang-gateway/open-sse/services/auth";
 import { getInterceptionRules, type FetchInterceptionBackend } from "../db/interceptionRules.ts";
-import {
-  handleWebFetch,
-  type WebFetchCredentials,
-  type WebFetchFormat,
-  type WebFetchResponse,
-  WEB_FETCH_PROVIDERS,
-  EXPLICIT_ONLY_WEB_FETCH_PROVIDERS,
-  ANONYMOUS_CAPABLE_WEB_FETCH_PROVIDERS,
-  type WebFetchProviderId,
-} from "../../../../open-sse/handlers/webFetch.ts";
+import { providerRuntimePorts } from "../../runtime/providerRuntimePorts.ts";
+
+type WebFetchProviderId = string;
+type WebFetchFormat = "markdown" | "html" | "links" | "screenshot";
+type WebFetchCredentials = Record<string, unknown>;
+type WebFetchResponse = any;
+const runtime = () => providerRuntimePorts.webFetchRuntime;
+const webFetchProviders = () => runtime().WEB_FETCH_PROVIDERS as readonly string[];
+const explicitOnlyProviders = () =>
+  runtime().EXPLICIT_ONLY_WEB_FETCH_PROVIDERS as ReadonlySet<string>;
+const anonymousCapableProviders = () =>
+  runtime().ANONYMOUS_CAPABLE_WEB_FETCH_PROVIDERS as ReadonlySet<string>;
 
 // Providers that only understand their own URL shape (context7 takes a library
 // reference, not a generic web URL): explicit requests only, never auto-selected.
-const EXPLICIT_ONLY_PROVIDERS = EXPLICIT_ONLY_WEB_FETCH_PROVIDERS;
-
-// Providers whose upstream serves an anonymous tier: usable without a key.
-const ANONYMOUS_CAPABLE_PROVIDERS = ANONYMOUS_CAPABLE_WEB_FETCH_PROVIDERS;
-
 const FETCH_BACKEND_TO_PROVIDER: Record<FetchInterceptionBackend, WebFetchProviderId> = {
   firecrawl: "firecrawl",
   jina: "jina-reader",
@@ -42,6 +38,7 @@ export interface ExecuteWebFetchInput {
   /** Provider/model that owns the interception rule row, used to resolve a pinned backend. */
   ruleProvider?: string | null;
   ruleModel?: string | null;
+  resolveProviderCredentials: (providerId: string) => Promise<unknown>;
 }
 
 export class WebFetchExecutionError extends Error {
@@ -54,7 +51,7 @@ export class WebFetchExecutionError extends Error {
 }
 
 function isKnownWebFetchProvider(value: unknown): value is WebFetchProviderId {
-  return typeof value === "string" && (WEB_FETCH_PROVIDERS as readonly string[]).includes(value);
+  return typeof value === "string" && webFetchProviders().includes(value);
 }
 
 function resolvePinnedBackend(input: ExecuteWebFetchInput): WebFetchProviderId | undefined {
@@ -89,22 +86,25 @@ export function normalizeWebFetchCredentials(value: unknown): WebFetchCredential
 }
 
 async function resolveCredentials(
-  providerId: WebFetchProviderId
+  providerId: WebFetchProviderId,
+  resolveProviderCredentials: ExecuteWebFetchInput["resolveProviderCredentials"],
 ): Promise<WebFetchCredentials | null> {
   try {
-    return normalizeWebFetchCredentials(await getProviderCredentialsWithQuotaPreflight(providerId));
+    return normalizeWebFetchCredentials(await resolveProviderCredentials(providerId));
   } catch {
     return null;
   }
 }
 
-async function autoSelectProvider(): Promise<{
+async function autoSelectProvider(
+  resolveProviderCredentials: ExecuteWebFetchInput["resolveProviderCredentials"],
+): Promise<{
   provider: WebFetchProviderId;
   credentials: WebFetchCredentials;
 } | null> {
-  for (const providerId of WEB_FETCH_PROVIDERS) {
-    if (EXPLICIT_ONLY_PROVIDERS.has(providerId)) continue;
-    const credentials = await resolveCredentials(providerId);
+  for (const providerId of webFetchProviders()) {
+    if (explicitOnlyProviders().has(providerId)) continue;
+    const credentials = await resolveCredentials(providerId, resolveProviderCredentials);
     if (credentials) return { provider: providerId, credentials };
   }
   return null;
@@ -114,21 +114,23 @@ async function resolveProviderAndCredentials(
   input: ExecuteWebFetchInput
 ): Promise<{ provider: WebFetchProviderId; credentials: WebFetchCredentials }> {
   const pinnedProvider = resolvePinnedBackend(input);
-  const pinnedCredentials = pinnedProvider ? await resolveCredentials(pinnedProvider) : null;
+  const pinnedCredentials = pinnedProvider
+    ? await resolveCredentials(pinnedProvider, input.resolveProviderCredentials)
+    : null;
   if (pinnedProvider && pinnedCredentials) {
     return { provider: pinnedProvider, credentials: pinnedCredentials };
   }
-  if (pinnedProvider && ANONYMOUS_CAPABLE_PROVIDERS.has(pinnedProvider)) {
+  if (pinnedProvider && anonymousCapableProviders().has(pinnedProvider)) {
     // Anonymous tier: no connection configured (or the credential resolution
     // came back rate-limited — the anonymous tier does not consume key quota,
     // so a rate-limited key must not block the anonymous attempt either).
     return { provider: pinnedProvider, credentials: {} };
   }
 
-  const auto = await autoSelectProvider();
+  const auto = await autoSelectProvider(input.resolveProviderCredentials);
   if (!auto) {
     throw new WebFetchExecutionError(
-      `No credentials configured for any web-fetch provider. Add an API key for one of: ${WEB_FETCH_PROVIDERS.join(", ")}.`,
+      `No credentials configured for any web-fetch provider. Add an API key for one of: ${webFetchProviders().join(", ")}.`,
       400
     );
   }
@@ -142,7 +144,7 @@ export async function executeWebFetch(input: ExecuteWebFetchInput): Promise<WebF
 
   const { provider, credentials } = await resolveProviderAndCredentials(input);
 
-  const result = await handleWebFetch(
+  const result = await runtime().handleWebFetch(
     {
       url: input.url,
       format: input.format,

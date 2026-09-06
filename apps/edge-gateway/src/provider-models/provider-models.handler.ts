@@ -1,4 +1,4 @@
-import { getUnifiedModelsResponse } from "@shiguang-gateway/core-domain/catalog/unified";
+import { getUnifiedModelsResponse } from "@shiguang-gateway/open-sse/catalog/unified";
 import { getServiceModels, isServiceBackendPluginId } from "@shiguang-gateway/core-domain/shared/embedded-services";
 import { getProviderByAlias, getProviderById } from "@shiguang-gateway/core-domain/catalog/providers";
 import { isCompatibleProviderConnectionId } from "@shiguang-gateway/core-domain/shared/compatible-provider-id";

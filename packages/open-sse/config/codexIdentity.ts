@@ -2,6 +2,28 @@ import { createHash, randomUUID } from "node:crypto";
 
 import { normalizeCodexSessionId } from "./codexClient.ts";
 import { isCrossAccountCodexTurnState, readCodexTurnStateHeader } from "./codexTurnState.ts";
+import {
+  CODEX_FINGERPRINT_MODES,
+  CODEX_FINGERPRINT_MODE_KEY,
+  CODEX_FINGERPRINT_SEED_KEY,
+  codexFingerprintModeRequiresSeed,
+  ensureCodexFingerprintSeed,
+  getCodexFingerprintMode,
+  getCodexFingerprintSeed,
+  isCodexOAuthCredentials,
+  type CodexFingerprintMode,
+} from "@shiguang-gateway/contracts/codex-fingerprint-seed";
+export {
+  CODEX_FINGERPRINT_MODES,
+  CODEX_FINGERPRINT_MODE_KEY,
+  CODEX_FINGERPRINT_SEED_KEY,
+  codexFingerprintModeRequiresSeed,
+  ensureCodexFingerprintSeed,
+  getCodexFingerprintMode,
+  getCodexFingerprintSeed,
+  isCodexOAuthCredentials,
+  type CodexFingerprintMode,
+} from "@shiguang-gateway/contracts/codex-fingerprint-seed";
 
 const CODEX_INSTALLATION_SALT = "shiguangGateway-codex-installation";
 const CODEX_SESSION_SEED_PREFIX = "shiguangGateway:codex-session-id:v1:";
@@ -15,16 +37,6 @@ const CODEX_INSTALLATION_SEED_PREFIX_V2 = "shiguangGateway:codex-installation:v2
 const CODEX_SESSION_SEED_PREFIX_V2 = "shiguangGateway:codex-session-id:v2:";
 const CODEX_THREAD_SEED_PREFIX_V2 = "shiguangGateway:codex-thread-id:v2:";
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-
-export const CODEX_FINGERPRINT_MODES = ["off", "device", "session", "full"] as const;
-export type CodexFingerprintMode = (typeof CODEX_FINGERPRINT_MODES)[number];
-export const CODEX_FINGERPRINT_MODE_KEY = "codexFingerprintMode";
-/**
- * System-managed per-connection random seed used as the fingerprint
- * derivation source. Never sent upstream, stripped from API responses, and
- * preserved across connection updates (sub2api `codex_fingerprint_seed`).
- */
-export const CODEX_FINGERPRINT_SEED_KEY = "codexFingerprintSeed";
 
 export type CodexClientIdentity = {
   mode: CodexFingerprintMode;
@@ -87,61 +99,6 @@ function accountSeed(
   );
 }
 
-/** The persisted system-managed random seed, when present and a valid UUID. */
-export function getCodexFingerprintSeed(
-  providerSpecificData?: Record<string, unknown> | null
-): string | null {
-  return normalizeUuid(providerSpecificData?.[CODEX_FINGERPRINT_SEED_KEY]);
-}
-
-/** Modes that rewrite account-scoped identifiers and therefore need a stable seed. */
-export function codexFingerprintModeRequiresSeed(mode: CodexFingerprintMode): boolean {
-  return mode === "device" || mode === "session" || mode === "full";
-}
-
-/**
- * Ensure a Codex OAuth connection carries a persisted fingerprint seed when its
- * convergence mode derives account-scoped identifiers. Called at connection
- * create/update time (the persistence layer owns the write); the request path
- * only ever READS the seed, so an identity never rotates mid-flight.
- *
- * Semantics mirror sub2api v0.1.178 `prepareCodexFingerprintExtraFor{Create,Update}`:
- * - the key is system-managed: any client-supplied value is stripped first;
- * - an existing valid seed is ALWAYS carried forward (even when the new mode
- *   is `off` — it stays dormant, ready if convergence is re-enabled later);
- * - otherwise a fresh seed is created only when the mode requires one
- *   (device/session/full; the ShiguangGateway default is session).
- *
- * Returns the (possibly new) providerSpecificData, or undefined when there is
- * nothing to store. Pre-seed connections keep their legacy connection-id
- * derived identity until the next save — one deliberate rotation, same as
- * sub2api's migration-225 backfill.
- */
-export function ensureCodexFingerprintSeed(
-  providerSpecificData?: Record<string, unknown> | null,
-  credentials?: { accessToken?: unknown; refreshToken?: unknown } | null,
-  existingProviderSpecificData?: Record<string, unknown> | null
-): Record<string, unknown> | undefined {
-  const psd: Record<string, unknown> = { ...(providerSpecificData || {}) };
-  // System-managed key: never trust an inbound value, regardless of auth type.
-  delete psd[CODEX_FINGERPRINT_SEED_KEY];
-  if (!isCodexOAuthCredentials(credentials)) {
-    return Object.keys(psd).length > 0 ? psd : undefined;
-  }
-
-  const existingSeed = getCodexFingerprintSeed(existingProviderSpecificData);
-  if (existingSeed) {
-    psd[CODEX_FINGERPRINT_SEED_KEY] = existingSeed;
-    return psd;
-  }
-  const mode = getCodexFingerprintMode(psd, true);
-  if (codexFingerprintModeRequiresSeed(mode)) {
-    psd[CODEX_FINGERPRINT_SEED_KEY] = randomUUID();
-    return psd;
-  }
-  return Object.keys(psd).length > 0 ? psd : undefined;
-}
-
 function readNamedHeader(
   headers: Headers | Record<string, unknown> | null | undefined,
   name: string
@@ -155,32 +112,6 @@ function readNamedHeader(
     }
   }
   return "";
-}
-
-export function isCodexOAuthCredentials(
-  credentials?: {
-    accessToken?: unknown;
-    refreshToken?: unknown;
-  } | null
-): boolean {
-  return Boolean(
-    nonEmptyString(credentials?.accessToken) || nonEmptyString(credentials?.refreshToken)
-  );
-}
-
-export function getCodexFingerprintMode(
-  providerSpecificData?: Record<string, unknown> | null,
-  isOAuth = true
-): CodexFingerprintMode {
-  if (!isOAuth) return "off";
-  const raw = (
-    nonEmptyString(providerSpecificData?.[CODEX_FINGERPRINT_MODE_KEY]) ||
-    nonEmptyString(providerSpecificData?.codex_fingerprint_mode) ||
-    ""
-  ).toLowerCase();
-  return (CODEX_FINGERPRINT_MODES as readonly string[]).includes(raw)
-    ? (raw as CodexFingerprintMode)
-    : "session";
 }
 
 export function getCodexInstallationId(

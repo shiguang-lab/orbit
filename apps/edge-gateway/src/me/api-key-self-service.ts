@@ -370,7 +370,7 @@ async function normalizeDeps(deps: ApiKeySelfServiceDeps): Promise<RequiredDeps>
       : await import("@shiguang-gateway/core-domain/db/provider-connections");
   const providerLimits = deps.fetchAndPersistProviderLimits
     ? null
-    : await import("@shiguang-gateway/core-domain/edge/provider-limits");
+    : await import("@shiguang-gateway/open-sse/services/providerLimits");
 
   return {
     now: deps.now ?? Date.now,

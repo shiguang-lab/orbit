@@ -1,0 +1,23 @@
+import { getTaskManager } from "@shiguang-gateway/core-domain/a2a/runtime";
+import { authorizeA2ATaskRoute } from "./auth.js";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+
+export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  // GHSA-jcm5-6wpp-wjj8: this route had no auth call at all. The owner check
+  // happens inside cancelTask: another principal's task throws the same
+  // "not found" a missing one would (no existence oracle).
+  const auth = await authorizeA2ATaskRoute(request);
+  if (auth instanceof Response) return auth;
+  try {
+    const { id } = await params;
+    const tm = getTaskManager();
+    const task = tm.cancelTask(id, auth.owner);
+    return Response.json({ task: { id: task.id, state: task.state } });
+  } catch (error) {
+    const message = sanitizeErrorMessage(
+      error instanceof Error ? error.message : "Failed to cancel A2A task"
+    );
+    const status = message.includes("not found") ? 404 : 400;
+    return Response.json({ error: message }, { status });
+  }
+}

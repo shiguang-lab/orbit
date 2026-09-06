@@ -1,7 +1,9 @@
+import type { PressureSeverity } from "@shiguang-gateway/contracts/resource-pressure";
+export type { PressureSeverity } from "@shiguang-gateway/contracts/resource-pressure";
+
 const MB = 1024 * 1024;
 const MAX_SUSTAINED_SAMPLES = 10_000;
 
-export type PressureSeverity = "normal" | "high" | "critical";
 
 export type PressureReason =
   | "none"

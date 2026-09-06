@@ -3,7 +3,7 @@ import {
   getProviderLimitsSyncIntervalMinutes,
   getSanitizedCachedProviderLimitsMap,
   syncAllProviderLimits,
-} from "@shiguang-gateway/core-domain/control/usage";
+} from "@shiguang-gateway/open-sse/services/providerLimits";
 
 /**
  * GET /api/usage/provider-limits

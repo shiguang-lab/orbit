@@ -3,7 +3,7 @@ import {
   CodexResetCreditError,
   consumeCodexResetCredit,
   listCodexResetCredits,
-} from "@shiguang-gateway/core-domain/usage/codex-reset-credits";
+} from "@shiguang-gateway/open-sse/services/codexResetCredits";
 
 const connectionId = (value: string | null) => {
   const trimmed = value?.trim() ?? "";

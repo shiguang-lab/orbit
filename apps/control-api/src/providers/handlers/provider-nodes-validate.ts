@@ -1,6 +1,6 @@
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/control/compliance";
-import { validateClaudeCodeCompatibleProvider } from "@shiguang-gateway/core-domain/control/provider-validation";
+import { validateClaudeCodeCompatibleProvider } from "@shiguang-gateway/open-sse/services/provider-validation";
 import {
   SAFE_OUTBOUND_FETCH_PRESETS,
   SafeOutboundFetchError,

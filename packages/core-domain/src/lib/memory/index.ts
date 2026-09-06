@@ -12,7 +12,7 @@ export * from "./types";
 export * from "./store";
 export * from "./retrieval";
 export * from "./vectorStore";
-export * from "./embedding";
+export * from "./embeddingPort.ts";
 export * from "./sqliteBackend";
 export * from "./genericBackend";
 

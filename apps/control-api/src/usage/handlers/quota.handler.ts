@@ -2,7 +2,7 @@ import { getProviderConnections } from "@shiguang-gateway/core-domain/control/us
 import {
   getLearnedLimits,
   getRateLimitStatus,
-} from "@shiguang-gateway/core-domain/control/usage";
+} from "@shiguang-gateway/open-sse/services/rateLimitManagerRuntime";
 import {
   normalizeQuotaResponse,
   sanitizeQuotaProvider,

@@ -8,7 +8,7 @@ import {
   countMemoryReindexPending,
   markMemoryNeedsReindex,
 } from "../localDb.ts";
-import { resolveEmbeddingSource, embed } from "./embedding";
+import { resolveEmbeddingSource, embed } from "./embeddingPort.ts";
 import { getVectorStore } from "./vectorStore";
 import { getMemorySettings } from "./settings";
 import { logger } from "@shiguang-gateway/runtime-logging";

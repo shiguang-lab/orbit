@@ -1,7 +1,7 @@
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { getCachedProviderConnectionById } from "@shiguang-gateway/core-domain/db/local-db";
 import { createProviderConnection, updateProviderConnection } from "@shiguang-gateway/core-domain/control/models";
-import { sanitizeProviderSpecificDataForResponse } from "@shiguang-gateway/core-domain/control/provider-auth-import";
+import { sanitizeProviderSpecificDataForResponse } from "@shiguang-gateway/open-sse/oauth/provider-auth-import";
 import { CommandCodeAuthRepository } from "../command-code-auth.repository.js";
 import { commandCodeApplySchema, noStoreJson, stateHash } from "./shared.handler.js";
 

@@ -2,8 +2,8 @@ import {
   getOrCreateApiKey,
   getServiceModels,
   getSupervisor,
-  syncServiceModels,
 } from "@shiguang-gateway/core-domain/shared/embedded-services";
+import { syncServiceModels } from "../../embedded-service-model-sync.js";
 import { createErrorResponse, sanitizeErrorMessage } from "@shiguang-gateway/core-domain/shared/error-response";
 
 const TOOL = "9router";

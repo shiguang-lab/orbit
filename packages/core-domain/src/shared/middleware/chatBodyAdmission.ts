@@ -37,10 +37,8 @@ import {
   IngestByteAdmissionController,
   type IngestBudgetAcquireResult,
 } from "./ingestByteAdmission";
-import {
-  getResourcePressureObservation,
-  type PressureSeverity,
-} from "../../../../open-sse/utils/resourcePressure.ts";
+import type { PressureSeverity } from "@shiguang-gateway/contracts/resource-pressure";
+import { providerRuntimePorts } from "../../runtime/providerRuntimePorts.js";
 
 function parsePositiveInt(value: string | undefined, fallback: number): number {
   const parsed = Number.parseInt(String(value), 10);
@@ -211,7 +209,7 @@ export type ChatAdmissionShedReason =
 /** Read cached pressure severity; sampling failures must not cause false sheds. */
 export function defaultPressureSeverity(): PressureSeverity {
   try {
-    return getResourcePressureObservation().state.severity;
+    return providerRuntimePorts.getPressureSeverity();
   } catch {
     return "normal";
   }

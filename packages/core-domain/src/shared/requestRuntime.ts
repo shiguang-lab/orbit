@@ -1,3 +1,5 @@
+import { providerRuntimePorts } from "../runtime/providerRuntimePorts.js";
+
 /** Shared, side-effectful hydration required by every HTTP request process. */
 export async function hydrateRequestRuntime(): Promise<void> {
   const load = (specifier: string): Promise<any> => import(specifier as string);
@@ -28,15 +30,7 @@ export async function hydrateRequestRuntime(): Promise<void> {
   });
   startRuntimeConfigHotReload({ skipBackgroundServices: true });
 
-  const [{ setSystemPromptConfig }, { hydrateThinkingBudgetConfig }, { hydrateTaskRoutingConfig }] =
-    await Promise.all([
-      load("../../../open-sse/services/systemPrompt"),
-      load("../../../open-sse/services/thinkingBudget"),
-      load("../../../open-sse/services/taskAwareRouter"),
-    ]);
-  if (settings.systemPrompt) setSystemPromptConfig(settings.systemPrompt);
-  hydrateThinkingBudgetConfig(settings);
-  hydrateTaskRoutingConfig(settings);
+  providerRuntimePorts.hydrateRoutingSettings(settings);
 
   registerDefaultGuardrails();
   registerBuiltinSkills(skillExecutor);

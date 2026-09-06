@@ -7,7 +7,7 @@ import {
 import { getRegistryEntry } from "@shiguang-gateway/open-sse/config/providerRegistry";
 import { getModelsByProviderId } from "@shiguang-gateway/core-domain/control/provider-discovery-support/models";
 import { resolveAlibabaProviderModelsUrl } from "@shiguang-gateway/core-domain/control/provider-discovery-support/alibabaProviderRegions";
-import { getStaticModelsForProvider } from "@shiguang-gateway/core-domain/control/provider-discovery-support/staticModels";
+import { getStaticModelsForProvider } from "@shiguang-gateway/open-sse/services/static-models";
 import { providerUsesCuratedModelsOnly } from "@shiguang-gateway/core-domain/control/provider-discovery-support/modelListingCapability";
 import { mergeModelsWithCustomPrecedence } from "@shiguang-gateway/core-domain/control/provider-discovery-support/modelMetadataPrecedence";
 import {
@@ -89,7 +89,7 @@ import { parseGeminiModelsList } from "@shiguang-gateway/core-domain/control/pro
 import { getSyncedAvailableModels, getCustomModels } from "@shiguang-gateway/core-domain/control/provider-discovery-support/modelsDb";
 import { isConnectionUnavailableToAuxiliaryActivity } from "@shiguang-gateway/core-domain/control/provider-discovery-support/exclusiveLeaseIsolation";
 import { fetchCursorAgentModels } from "@shiguang-gateway/core-domain/control/provider-discovery-support/cursorAgent";
-import { fetchCursorAvailableModels } from "@shiguang-gateway/core-domain/control/provider-discovery-support/cursorAvailableModels";
+import { fetchCursorAvailableModels } from "@shiguang-gateway/open-sse/oauth/services/cursor-models";
 import { ensureCursorAutoCatalogEntry } from "@shiguang-gateway/core-domain/control/provider-discovery-support/cursorAutoCatalog";
 import {
   type JsonRecord,

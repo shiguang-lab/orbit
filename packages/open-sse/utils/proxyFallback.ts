@@ -9,6 +9,7 @@
  */
 
 import { fetch as undiciFetch } from "undici";
+import { registerDbRuntimeHooks } from "@shiguang-gateway/core-domain/db/runtime-hooks";
 import { createProxyDispatcher, normalizeProxyUrl } from "./proxyDispatcher.ts";
 import { resolveProxyForScopeFromRegistry, listProxies, listOneproxyProxies } from "@shiguang-gateway/core-domain/edge/local-db";
 import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/edge/feature-flags";
@@ -437,3 +438,5 @@ export async function selectWorkingProxyFallback(_connectionId?: string): Promis
     return null;
   }
 }
+
+registerDbRuntimeHooks({ selectWorkingProxyFallback });

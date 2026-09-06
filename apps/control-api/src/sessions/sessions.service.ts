@@ -3,7 +3,7 @@ import { getActiveSessions, getActiveSessionCount, getAllActiveSessionCountsByKe
 import { getWebSessionPoolHealth } from "@shiguang-gateway/open-sse/services/webSessionPoolHealth";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { explainRouteByRequestId } from "@shiguang-gateway/core-domain/usage/route-explain";
+import { explainRouteByRequestId } from "../usage/reporting/routeExplain.js";
 
 @Injectable()
 export class SessionsService {

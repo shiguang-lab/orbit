@@ -10,7 +10,6 @@
  */
 import { getProviderConnections } from "../../models/index.ts";
 import { getChaosConfig, type ChaosConfig } from "./chaosConfig.ts";
-import { POST as postChatCompletion } from "../edge/chatCompletionsCompat.ts";
 
 // Wrapped in an object (rather than called as a bare imported function) so unit
 // tests can swap it out via `mock.method(chatDispatch, "postChatCompletion", ...)`
@@ -18,8 +17,16 @@ import { POST as postChatCompletion } from "../edge/chatCompletionsCompat.ts";
 // dispatch.ts uses for its `dispatch` export (ES module named bindings are
 // read-only and cannot be mocked directly).
 export const chatDispatch = {
-  postChatCompletion,
+  postChatCompletion: async (_request: Request): Promise<Response> => {
+    throw new Error("Chaos chat dispatch is not configured");
+  },
 };
+
+export function setChaosChatDispatch(
+  postChatCompletion: (request: Request) => Promise<Response>,
+): void {
+  chatDispatch.postChatCompletion = postChatCompletion;
+}
 
 // ── Exported types ───────────────────────────────────────────────────────────
 

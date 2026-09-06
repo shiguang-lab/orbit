@@ -10,7 +10,7 @@
  * On by default; opt out via Dashboard Feature Flags or ARENA_ELO_SYNC_ENABLED=false.
  */
 
-import { resolveScoresAs } from "../../../open-sse/services/autoCombo/scoresAs.ts";
+import { providerRuntimePorts } from "../runtime/providerRuntimePorts.ts";
 
 import { isArenaEloSyncEnabled } from "../shared/utils/featureFlags.ts";
 
@@ -395,7 +395,7 @@ function withSynthesizedBaseRows(
 
   const best = new Map<string, Omit<ModelIntelligenceEntry, "syncedAt">>();
   for (const entry of entries) {
-    const { base, via } = resolveScoresAs(entry.model);
+    const { base, via } = providerRuntimePorts.resolveScoresAs(entry.model);
     if (via === null || base === entry.model) continue;
 
     const key = keyOf(base, entry.category);

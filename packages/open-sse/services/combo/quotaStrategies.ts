@@ -599,7 +599,7 @@ export function __setHeadroomSaturationFetcherForTests(fetcher: SaturationFetche
 
 async function resolveHeadroomSaturationFetcher(): Promise<SaturationFetcher> {
   if (_headroomSaturationFetcherOverride) return _headroomSaturationFetcherOverride;
-  const mod = await import("@shiguang-gateway/core-domain/quota/saturation-signals");
+  const mod = await import("../quotaSaturation.js");
   return mod.getSaturation as SaturationFetcher;
 }
 

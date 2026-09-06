@@ -82,6 +82,10 @@
       "types": "./src/codex-client.ts",
       "import": "./src/codex-client.ts"
     },
+    "./codex-fingerprint-seed": {
+      "types": "./src/codex-fingerprint-seed.ts",
+      "import": "./src/codex-fingerprint-seed.ts"
+    },
     "./vision-models": {
       "types": "./src/vision-models.ts",
       "import": "./src/vision-models.ts"
@@ -130,9 +134,37 @@
       "types": "./src/usage/tokenAccounting.ts",
       "import": "./src/usage/tokenAccounting.ts"
     },
+    "./request-pipeline-payloads": {
+      "types": "./src/request-pipeline-payloads.ts",
+      "import": "./src/request-pipeline-payloads.ts"
+    },
     "./request-id": {
       "types": "./src/request-id.ts",
       "import": "./src/request-id.ts"
+    },
+    "./tier-types": {
+      "types": "./src/tier-types.ts",
+      "import": "./src/tier-types.ts"
+    },
+    "./tier-config": {
+      "types": "./src/tier-config.ts",
+      "import": "./src/tier-config.ts"
+    },
+    "./compression-exclusions": {
+      "types": "./src/compression-exclusions.ts",
+      "import": "./src/compression-exclusions.ts"
+    },
+    "./compression-preserve-system-prompt": {
+      "types": "./src/compression-preserve-system-prompt.ts",
+      "import": "./src/compression-preserve-system-prompt.ts"
+    },
+    "./compression-context-budget": {
+      "types": "./src/compression-context-budget.ts",
+      "import": "./src/compression-context-budget.ts"
+    },
+    "./compression-settings": {
+      "types": "./src/compression-settings.ts",
+      "import": "./src/compression-settings.ts"
     },
     "./numeric": {
       "types": "./src/numeric.ts",
@@ -141,6 +173,50 @@
     "./http-status": {
       "types": "./src/http-status.ts",
       "import": "./src/http-status.ts"
+    },
+    "./claude-tool-names": {
+      "types": "./src/claude-tool-names.ts",
+      "import": "./src/claude-tool-names.ts"
+    },
+    "./provider-url": {
+      "types": "./src/provider-url.ts",
+      "import": "./src/provider-url.ts"
+    },
+    "./wildcard-match": {
+      "types": "./src/wildcard-match.ts",
+      "import": "./src/wildcard-match.ts"
+    },
+    "./cache-control": {
+      "types": "./src/cache-control.ts",
+      "import": "./src/cache-control.ts"
+    },
+    "./resource-pressure": {
+      "types": "./src/resource-pressure.ts",
+      "import": "./src/resource-pressure.ts"
+    },
+    "./media-parts": {
+      "types": "./src/media-parts.ts",
+      "import": "./src/media-parts.ts"
+    },
+    "./cc-discovery-alias": {
+      "types": "./src/cc-discovery-alias.ts",
+      "import": "./src/cc-discovery-alias.ts"
+    },
+    "./gateway-tool-names": {
+      "types": "./src/gateway-tool-names.ts",
+      "import": "./src/gateway-tool-names.ts"
+    },
+    "./runtime-settings": {
+      "types": "./src/runtime-settings.ts",
+      "import": "./src/runtime-settings.ts"
+    },
+    "./gemini-thinking-budget": {
+      "types": "./src/gemini-thinking-budget.ts",
+      "import": "./src/gemini-thinking-budget.ts"
+    },
+    "./resilience-defaults": {
+      "types": "./src/resilience-defaults.ts",
+      "import": "./src/resilience-defaults.ts"
     }
   },
   "scripts": {

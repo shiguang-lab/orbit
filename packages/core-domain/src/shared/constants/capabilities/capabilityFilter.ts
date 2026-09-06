@@ -15,14 +15,43 @@
  * #5696
  */
 
-import { getResolvedModelCapabilities } from "../../../lib/modelCapabilities.ts";
-import { evaluateContextLimit } from "../../../../../open-sse/services/combo/contextOverrideGate.ts";
-import { isRecord } from "../../../../../open-sse/services/combo/comboData.ts";
-import {
-  hasEstimableContent,
-  providerSupportsEmulatedToolCalling,
-} from "../../../../../open-sse/services/combo/comboStructure.ts";
-import { estimateTokens } from "../../../../../open-sse/services/contextManager.ts";
+import { getResolvedModelCapabilities } from "../../../lib/modelCapabilities.js";
+import { getResolvedModelContextOverride } from "../../../lib/modelCapabilities.js";
+import { getProviderByAlias, getProviderById } from "../providers.js";
+import { providerRuntimePorts } from "../../../runtime/providerRuntimePorts.js";
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function hasEstimableContent(value: unknown): boolean {
+  if (value === undefined || value === null) return false;
+  if (Array.isArray(value)) return value.length > 0;
+  if (typeof value === "object") return Object.keys(value).length > 0;
+  return true;
+}
+
+function providerSupportsEmulatedToolCalling(providerIdOrAlias: string | null | undefined) {
+  if (!providerIdOrAlias) return false;
+  const provider = getProviderById(providerIdOrAlias) || getProviderByAlias(providerIdOrAlias);
+  return provider?.toolCalling === "emulated";
+}
+
+function evaluateContextLimit(
+  capabilities: { maxInputTokens?: number | null; contextWindow?: number | null },
+  requirements: { estimatedInputTokens: number; requiredContextTokens: number },
+  modelStr?: string
+): boolean | null {
+  const override = modelStr ? getResolvedModelContextOverride(modelStr) : null;
+  if (override != null) return override >= requirements.requiredContextTokens;
+  if (capabilities.maxInputTokens == null && capabilities.contextWindow == null) return null;
+  return (
+    (capabilities.maxInputTokens == null ||
+      capabilities.maxInputTokens >= requirements.estimatedInputTokens) &&
+    (capabilities.contextWindow == null ||
+      capabilities.contextWindow >= requirements.requiredContextTokens)
+  );
+}
 
 // ── Types ─────────────────────────────────────────────────────────────────
 
@@ -61,7 +90,9 @@ function estimateRequestInputTokens(body: Record<string, unknown>): number {
   for (const key of ["messages", "input", "tools", "functions", "response_format"]) {
     if (hasEstimableContent(body[key])) estimatePayload[key] = body[key];
   }
-  return Object.keys(estimatePayload).length > 0 ? estimateTokens(estimatePayload) : 0;
+  return Object.keys(estimatePayload).length > 0
+    ? providerRuntimePorts.estimateTokens(estimatePayload)
+    : 0;
 }
 
 function getPositiveTokenCount(value: unknown): number {

@@ -10,7 +10,8 @@
 
 import { FORMATS } from "../translator/formats.ts";
 
-export const SHIGUANG_GATEWAY_WEB_FETCH_FALLBACK_TOOL_NAME = "shiguangGateway_web_fetch";
+export { SHIGUANG_GATEWAY_WEB_FETCH_FALLBACK_TOOL_NAME } from "@shiguang-gateway/contracts/gateway-tool-names";
+import { SHIGUANG_GATEWAY_WEB_FETCH_FALLBACK_TOOL_NAME } from "@shiguang-gateway/contracts/gateway-tool-names";
 // "web_fetch" mirrors the Responses-API-style built-in tool type convention already
 // used for web_search; "web_fetch_20250910" is Anthropic's dated server-tool type.
 const WEB_FETCH_TOOL_TYPES = new Set(["web_fetch", "web_fetch_20250910"]);

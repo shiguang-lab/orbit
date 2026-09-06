@@ -1,4 +1,4 @@
-import { getUnifiedModelsResponse } from "../catalog/catalog.js";
+import type { VscodeModelsResolver } from "./models.js";
 import { getCanonicalModelMetadata } from "../modelMetadataRegistry.js";
 import { getProviderConnections } from "../db/providers.js";
 import { CORS_HEADERS, handleCorsOptions } from "../../shared/utils/cors.js";
@@ -251,10 +251,10 @@ export async function OPTIONS() {
   return handleCorsOptions();
 }
 
-export async function GET(request: Request, { params }: { params?: Promise<{ token: string }> | { token: string } } = {}) {
+export async function GET(request: Request, { params }: { params?: Promise<{ token: string }> | { token: string } }, resolveModels: VscodeModelsResolver) {
   const resolvedParams = params ? await params : undefined;
   const authorizedRequest = withPathTokenApiKey(request, resolvedParams?.token);
-  const response = await getUnifiedModelsResponse(authorizedRequest, { "Content-Type": "application/json", ...CORS_HEADERS });
+  const response = await resolveModels(authorizedRequest, { "Content-Type": "application/json", ...CORS_HEADERS });
   const body = (await response.json()) as { data?: OpenAiCatalogModel[] };
   if (!response.ok) return Response.json(body, { status: response.status, headers: { ...CORS_HEADERS } });
   const usableModels = Array.isArray(body.data) ? body.data.filter(isUsableChatModel) : [];
@@ -279,13 +279,13 @@ function matchesRequestedModel(model: OpenAiCatalogModel, requestedName: string)
   return [model.id, model.name, model.root, canonicalMetadata?.qualifiedId, canonicalMetadata?.model, ...getFamilyFirstModelCandidates(actualModelId, family)].some((value) => value === requestedName);
 }
 
-export async function POST(request: Request, { params }: { params?: Promise<{ token: string }> | { token: string } } = {}) {
+export async function POST(request: Request, { params }: { params?: Promise<{ token: string }> | { token: string } }, resolveModels: VscodeModelsResolver) {
   const resolvedParams = params ? await params : undefined;
   const authorizedRequest = withPathTokenApiKey(request, resolvedParams?.token);
   const payload = await request.clone().json().catch(() => null);
   const requestedName = getRequestedModelName(payload);
   if (!requestedName) return Response.json({ error: "Model name is required" }, { status: 400, headers: { ...CORS_HEADERS } });
-  const catalogResponse = await getUnifiedModelsResponse(authorizedRequest, { "Content-Type": "application/json", ...CORS_HEADERS });
+  const catalogResponse = await resolveModels(authorizedRequest, { "Content-Type": "application/json", ...CORS_HEADERS });
   const catalogBody = (await catalogResponse.json()) as { data?: OpenAiCatalogModel[] };
   if (!catalogResponse.ok) return Response.json(catalogBody, { status: catalogResponse.status, headers: { ...CORS_HEADERS } });
   const expandedModels = Array.isArray(catalogBody.data) ? expandVscodeServiceTierModels(catalogBody.data.filter(isUsableChatModel)) : [];

@@ -10,6 +10,7 @@ import {
 import { getApiKeys } from "@shiguang-gateway/core-domain/db/api-keys";
 import { listSuites, getSuite, runSuite, createScorecard } from "@shiguang-gateway/core-domain/evals/runner";
 import { buildEvalTargetOptions, runEvalSuiteAgainstTarget } from "@shiguang-gateway/core-domain/evals/runtime";
+import { POST as postChatCompletion } from "@shiguang-gateway/open-sse/services/chat-completions-compat";
 import { ensureEvalsSchema } from "./evals-schema.js";
 
 @Injectable()
@@ -66,7 +67,7 @@ export class EvalsService implements OnModuleInit {
           target: entry,
           apiKeyId,
           runGroupId,
-        })
+        }, postChatCompletion)
       )
     );
 

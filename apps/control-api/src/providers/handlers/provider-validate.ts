@@ -6,7 +6,7 @@ import {
   isOpenAICompatibleProvider,
   isAnthropicCompatibleProvider,
 } from "@shiguang-gateway/core-domain/catalog/provider-metadata";
-import { validateProviderApiKey } from "@shiguang-gateway/core-domain/control/provider-validation";
+import { validateProviderApiKey } from "@shiguang-gateway/open-sse/services/provider-validation";
 import { getProxyForLevel, resolveProxyForProvider } from "@shiguang-gateway/core-domain/db/local-db";
 import { validateProviderApiKeySchema } from "@shiguang-gateway/core-domain/control/provider-validation-schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";

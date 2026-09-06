@@ -9,7 +9,8 @@
  * mutate `process.env`.
  */
 
-import { sleep } from "../../../../open-sse/utils/sleep.ts";
+const sleep = (milliseconds: number) =>
+  new Promise<void>((resolve) => setTimeout(resolve, milliseconds));
 
 export const DEFAULT_PROBE_TARGET = "https://httpbin.org/ip";
 export const DEFAULT_PROBE_CONCURRENCY = 10;

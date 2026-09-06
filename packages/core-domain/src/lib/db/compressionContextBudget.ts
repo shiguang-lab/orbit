@@ -9,7 +9,7 @@ import {
   type ContextBudgetMode,
   type ContextBudgetPolicy,
   type LadderStage,
-} from "../../../../open-sse/services/compression/adaptiveCompression/types.ts";
+} from "@shiguang-gateway/contracts/compression-context-budget";
 
 type JsonRecord = Record<string, unknown>;
 

@@ -1,5 +1,5 @@
 // @ts-nocheck
-import "./setupPolyfill.ts";
+import "@shiguang-gateway/core-domain/runtime/setup-polyfill";
 import { AsyncLocalStorage } from "node:async_hooks";
 import { fetch as undiciFetch, Agent } from "undici";
 import {

@@ -28,8 +28,11 @@ import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain
 import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import { validateApiKey, getApiKeyMetadata } from "@shiguang-gateway/core-domain/db/api-keys";
 import { getChaosConfig } from "@shiguang-gateway/core-domain/chaos/config";
-import { executeChaosRun, type ChaosRunResult } from "@shiguang-gateway/core-domain/chaos/executor";
+import { executeChaosRun, setChaosChatDispatch, type ChaosRunResult } from "@shiguang-gateway/core-domain/chaos/executor";
 import * as log from "@shiguang-gateway/core-domain/sse/logger";
+import { POST as postChatCompletion } from "@shiguang-gateway/open-sse/services/chat-completions-compat";
+
+setChaosChatDispatch(postChatCompletion);
 
 export const dynamic = "force-dynamic";
 

@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { PROVIDER_MODELS } from "@shiguang-gateway/core-domain/catalog/provider-models";
-import { buildAliasMaps, getComboTargetModelId } from "@shiguang-gateway/core-domain/catalog/combo-targets";
+import { buildAliasMaps, getComboTargetModelId } from "@shiguang-gateway/open-sse/catalog/provider-maps";
 import { getCanonicalModelMetadata } from "@shiguang-gateway/core-domain/catalog/model-metadata";
 import { normalizeComboModels } from "@shiguang-gateway/core-domain/shared/combo-steps";
 import { ComboInvariantError } from "@shiguang-gateway/core-domain/shared/combo-invariants";

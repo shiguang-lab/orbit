@@ -12,7 +12,7 @@ import {
 } from "@shiguang-gateway/core-domain/control/models";
 import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
-import { KiroService } from "@shiguang-gateway/core-domain/control/oauth-runtime/services/kiro";
+import { KiroService } from "@shiguang-gateway/open-sse/oauth/services/kiro";
 import { findKiroConnectionByIdentity } from "@shiguang-gateway/core-domain/control/oauth-runtime/kiroConnectionIdentity";
 import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
 import {
@@ -221,7 +221,7 @@ async function tryKiroCliSqlite(): Promise<{
  * The ARN's region segment is preserved verbatim (#2314). #2059 originally
  * forced every ARN's region to us-east-1, which 403s the runtime gateway for
  * IDC accounts that live in a non-us-east-1 region. The OAuth device-code
- * path (src/lib/oauth/providers/kiro.ts) already discovers the correct
+ * path (packages/open-sse/oauth/providers/kiro.ts) already discovers the correct
  * region-matched ARN, so this fallback now mirrors that behavior instead of
  * rewriting it.
  */

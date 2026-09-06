@@ -1,5 +1,5 @@
-import type { RequestPipelinePayloads } from "../../../../../open-sse/utils/requestLogger.ts";
-import { classifyProviderError } from "../../../../../open-sse/services/errorClassifier.ts";
+import type { RequestPipelinePayloads } from "@shiguang-gateway/contracts/request-pipeline-payloads";
+import { classifyProviderError } from "../../../domain/providerErrorClassifier.ts";
 import { sanitizePII } from "../../piiSanitizer";
 import { omitEncryptedReasoningFromLogChunks, protectPayloadForLog } from "../../logPayloads";
 import type { CallLogDetailState } from "../callLogArtifacts";

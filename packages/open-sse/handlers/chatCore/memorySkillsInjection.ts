@@ -1,6 +1,6 @@
-import { retrieveMemories } from "@shiguang-gateway/core-domain/edge/memory-runtime";
-import { getMemorySettings, DEFAULT_MEMORY_SETTINGS, toMemoryRetrievalConfig } from "@shiguang-gateway/core-domain/edge/memory-runtime";
-import { injectMemory, shouldInjectMemory } from "@shiguang-gateway/core-domain/edge/memory-runtime";
+import { retrieveMemories } from "../../services/memoryRuntime.ts";
+import { getMemorySettings, DEFAULT_MEMORY_SETTINGS, toMemoryRetrievalConfig } from "../../services/memoryRuntime.ts";
+import { injectMemory, shouldInjectMemory } from "../../services/memoryRuntime.ts";
 import { injectSkills } from "@shiguang-gateway/core-domain/edge/skills-runtime";
 import { buildMemoryToolsForProvider } from "@shiguang-gateway/core-domain/edge/skills-runtime";
 import { skillRegistry } from "@shiguang-gateway/core-domain/edge/skills-runtime";

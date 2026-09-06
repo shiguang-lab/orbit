@@ -1,6 +1,9 @@
 import { getPendingById } from "@shiguang-gateway/core-domain/edge/usage-db";
 import { getChatLogMaxDepth, getChatLogArrayTailItems } from "@shiguang-gateway/config/logEnv";
 import { sanitizeErrorMessage } from "./error.ts";
+import type { RequestPipelinePayloads } from "@shiguang-gateway/contracts/request-pipeline-payloads";
+
+export type { RequestPipelinePayloads } from "@shiguang-gateway/contracts/request-pipeline-payloads";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -10,21 +13,6 @@ type HeaderInput =
   | { entries?: () => IterableIterator<[string, string]> }
   | null
   | undefined;
-
-export type RequestPipelinePayloads = {
-  routeDecision?: JsonRecord;
-  clientRawRequest?: JsonRecord;
-  openaiRequest?: JsonRecord;
-  providerRequest?: JsonRecord;
-  providerResponse?: JsonRecord;
-  clientResponse?: JsonRecord;
-  error?: JsonRecord;
-  streamChunks?: {
-    provider?: string[];
-    openai?: string[];
-    client?: string[];
-  };
-};
 
 type RequestLogger = {
   sessionPath: null;

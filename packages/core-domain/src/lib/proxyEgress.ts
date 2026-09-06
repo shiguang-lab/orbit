@@ -13,11 +13,7 @@
  * entering and leaving by.
  */
 import { request as undiciRequest } from "undici";
-import {
-  createProxyDispatcher,
-  proxyConfigToUrl,
-} from "../../../open-sse/utils/proxyDispatcher.ts";
-import { rotationGroupFor } from "../../../open-sse/services/refreshSerializer.ts";
+import { providerRuntimePorts } from "../runtime/providerRuntimePorts.ts";
 import { probeEchoTargets } from "./proxyEchoTarget";
 
 const EGRESS_PROBE_TIMEOUT_MS = 6000;
@@ -36,7 +32,7 @@ const egressCache = new Map<string, { ip: string | null; at: number }>();
 async function defaultEgressProbe(proxyUrl: string | null): Promise<EgressProbeResult> {
   const start = Date.now();
   try {
-    const dispatcher = proxyUrl ? createProxyDispatcher(proxyUrl) : undefined;
+    const dispatcher = proxyUrl ? providerRuntimePorts.createProxyDispatcher(proxyUrl) : undefined;
     // #9694: each echo target gets its own controller, so exhausting the budget
     // on an unreachable IPv6-first target does not abort the IPv4 attempt.
     const { result: text } = await probeEchoTargets(async (url, timeoutMs) => {
@@ -173,7 +169,7 @@ export function analyzeEgressSharing(connections: ConnectionEgress[]): {
     const label = c.account || c.connectionId;
     (byEgressIp[c.egressIp] ??= []).push(label);
 
-    const group = rotationGroupFor(c.provider) || `provider:${c.provider}`;
+    const group = providerRuntimePorts.rotationGroupFor(c.provider) || `provider:${c.provider}`;
     let groups = byIpGroup.get(c.egressIp);
     if (!groups) {
       groups = new Map();
@@ -338,7 +334,7 @@ export async function diagnoseAllEgressIps(deps?: {
       host?: string;
       port?: number | string;
     } | null;
-    const proxyUrl = proxyObj ? proxyConfigToUrl(proxyObj) : null;
+    const proxyUrl = proxyObj ? providerRuntimePorts.proxyConfigToUrl(proxyObj) : null;
     const egress = await resolveEgressIp(proxyUrl);
     results.push({
       connectionId: c.id,
@@ -419,7 +415,7 @@ export async function validateProxyPool(deps?: {
   const report: ProxyValidationResult[] = [];
 
   for (const p of proxies) {
-    const url = proxyConfigToUrl({
+    const url = providerRuntimePorts.proxyConfigToUrl({
       type: p.type,
       host: p.host,
       port: p.port,

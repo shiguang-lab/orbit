@@ -18,7 +18,7 @@ import type { QuotaUnit } from "./dimensions";
 import { dimensionKeyToString } from "./dimensions";
 import { decideFairShare } from "./fairShare";
 import { resolvePlan } from "./planResolver";
-import { getSaturation } from "./saturationSignals";
+import { getSaturation } from "./saturationPort.js";
 import { getQuotaStore } from "./QuotaStore";
 import { listAllocationsForApiKey, getPool } from "../db/quotaPools.ts";
 import { getModelCap } from "../db/quotaModelCaps.ts";

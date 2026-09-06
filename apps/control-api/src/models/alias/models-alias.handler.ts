@@ -13,6 +13,7 @@ import {
   validateBody,
 } from "@shiguang-gateway/core-domain/control/model-management";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { getModelInfo } from "@shiguang-gateway/open-sse/services/runtimeModel";
 
 // GET /api/models/alias - Get all aliases
 export async function GET(request: Request) {
@@ -28,7 +29,7 @@ export async function GET(request: Request) {
     }
 
     if (alias) {
-      const resolved = await resolveModelAliasLookup(alias);
+      const resolved = await resolveModelAliasLookup(alias, getModelInfo);
       if (!resolved.ok) {
         return Response.json(
           {

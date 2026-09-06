@@ -3,10 +3,9 @@ import {
   getSyncedAvailableModelsForConnection,
   replaceSyncedAvailableModelsForConnection,
   type SyncedAvailableModel,
-} from "../db/models.ts";
-import { CANONICAL_EFFORT_VALUES } from "../../shared/reasoning/effortStandardization.ts";
-import { isObsoleteKiroModelAlias } from "../../../../open-sse/services/kiroModels.ts";
-import { filterSelectableModels } from "../../../../open-sse/services/modelLifecycle.ts";
+} from "../db/models.js";
+import { CANONICAL_EFFORT_VALUES } from "../../shared/reasoning/effortStandardization.js";
+import { providerRuntimePorts } from "../../runtime/providerRuntimePorts.js";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -369,7 +368,7 @@ export async function getCachedDiscoveredModels(
 ): Promise<SyncedAvailableModel[]> {
   const models = await getSyncedAvailableModelsForConnection(providerId, connectionId);
   return providerId === "kiro"
-    ? models.filter((model) => !isObsoleteKiroModelAlias(model.id))
+    ? models.filter((model) => !providerRuntimePorts.isObsoleteKiroModelAlias(model.id))
     : models;
 }
 
@@ -382,7 +381,7 @@ export async function persistDiscoveredModels(
   // models must persist so per-connection endpoint routing (#11088) and the
   // /v1/models catalog can see them. Chat selectability is applied at read time
   // (auto-pool expansion, chat projections), not at write time.
-  const normalized = filterSelectableModels(
+  const normalized = providerRuntimePorts.filterSelectableModels(
     providerId,
     normalizeDiscoveredModels(models, providerId)
   );

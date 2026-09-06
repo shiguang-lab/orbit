@@ -140,10 +140,10 @@ async function main() {
     const marker = logs.match(/\[worker\] started: (.*)/)?.[1] ?? "";
     const expected = [
       "cloud-sync-and-job-registry", "quota-cache-refresh", "spend-batch-writer",
-      "quota-auto-ping", "connection-recovery", "radar-sync", "embedded-services",
+      "quota-auto-ping", "connection-recovery", "radar-sync",
       "models-dev-sync", "pricing-sync", "cleanup", "warmup", "provider-limits",
       "subscription", "session-affinity-cleanup", "credential-health", "vacuum-scheduler",
-      "audit-log", "audit-log-retention", "memory-backends", "embed-ws-proxy", "conductor-bridge", "arena-elo-sync",
+      "audit-log", "audit-log-retention", "memory-backends", "conductor-bridge", "arena-elo-sync",
       "openrouter-provider-stats", "context-window-reconcile", "memory-decay",
       "runtime-config-hot-reload", "reasoning-cache-cleanup", "backup-schedule", "proxy-health", "free-proxy-auto-sync",
       "batch-processor", "auto-refresh-daemon",

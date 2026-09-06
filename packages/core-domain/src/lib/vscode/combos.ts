@@ -6,7 +6,7 @@
  * - GET /api/v1/vscode/combos/{token}/api/version → returns Ollama-compatible version
  * - GET /api/v1/vscode/combos/{token}/api/tags → exposes combo catalog in Ollama format
  */
-import { getUnifiedModelsResponse } from "../catalog/catalog.js";
+import type { VscodeModelsResolver } from "./models.js";
 import {
 	buildReasoningConfigSchema,
 	buildSupportedReasoningEfforts,
@@ -46,8 +46,8 @@ function isComboCatalogEntry(model: ComboCatalogEntry) {
 	return typeof model.owned_by === "string" && model.owned_by.trim().toLowerCase() === "combo";
 }
 
-async function buildComboCatalog(request: Request) {
-	const response = await getUnifiedModelsResponse(request, {
+async function buildComboCatalog(request: Request, resolveModels: VscodeModelsResolver) {
+	const response = await resolveModels(request, {
 		"Content-Type": "application/json",
 		...CORS_HEADERS,
 	});
@@ -314,7 +314,8 @@ export async function GET(
 		params,
 	}: {
 		params: Promise<{ token: string; slug?: string[] }> | { token: string; slug?: string[] };
-	}
+	},
+	resolveModels: VscodeModelsResolver,
 ) {
 	const resolvedParams = await params;
 	const slugPath = (resolvedParams.slug || []).join("/");
@@ -330,7 +331,7 @@ export async function GET(
 
 	// Handle /api/tags request (redirect to models for compatibility)
 	if (slugPath === "api/tags") {
-		const catalog = await buildComboCatalog(authorizedRequest);
+		const catalog = await buildComboCatalog(authorizedRequest, resolveModels);
 		if (catalog.status < 200 || catalog.status >= 300) {
 			return Response.json(catalog.body, {
 				status: catalog.status,
@@ -345,7 +346,7 @@ export async function GET(
 
 	// Default: return combos metadata
 	try {
-		const catalog = await buildComboCatalog(authorizedRequest);
+		const catalog = await buildComboCatalog(authorizedRequest, resolveModels);
 		if (catalog.status < 200 || catalog.status >= 300) {
 			return Response.json(catalog.body, {
 				status: catalog.status,
@@ -375,7 +376,8 @@ export async function POST(
 		params,
 	}: {
 		params: Promise<{ token: string; slug?: string[] }> | { token: string; slug?: string[] };
-	}
+	},
+	resolveModels: VscodeModelsResolver,
 ) {
 	const resolvedParams = await params;
 	const slugPath = (resolvedParams.slug || []).join("/");
@@ -396,7 +398,7 @@ export async function POST(
 		);
 	}
 
-	const catalog = await buildComboCatalog(authorizedRequest);
+	const catalog = await buildComboCatalog(authorizedRequest, resolveModels);
 	if (catalog.status < 200 || catalog.status >= 300) {
 		return Response.json(catalog.body, {
 			status: catalog.status,

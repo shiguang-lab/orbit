@@ -1,12 +1,12 @@
 import { z } from "zod";
-import { retrieveMemories } from "@shiguang-gateway/core-domain/edge/memory-runtime";
-import { createMemory, deleteMemory, listMemories } from "@shiguang-gateway/core-domain/edge/memory-runtime";
-import { MemoryType } from "@shiguang-gateway/core-domain/edge/memory-runtime";
+import { retrieveMemories } from "../../services/memoryRuntime.ts";
+import { createMemory, deleteMemory, listMemories } from "../../services/memoryRuntime.ts";
+import { MemoryType } from "../../services/memoryRuntime.ts";
 import {
   getMemorySettings,
   toMemoryRetrievalConfig,
   DEFAULT_MEMORY_SETTINGS,
-} from "@shiguang-gateway/core-domain/edge/memory-runtime";
+} from "../../services/memoryRuntime.ts";
 import { resolveMcpCallerApiKeyId } from "../mcpCallerIdentity.ts";
 
 /**

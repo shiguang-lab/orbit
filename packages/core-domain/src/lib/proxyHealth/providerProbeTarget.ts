@@ -11,7 +11,10 @@
  */
 
 import { getRegistryEntry } from "@shiguang-gateway/provider-catalog/provider-registry";
-import { normalizeBaseUrl, addModelsSuffix } from "../providers/validation/urlHelpers.ts";
+import {
+  normalizeProviderBaseUrl as normalizeBaseUrl,
+  addProviderModelsSuffix as addModelsSuffix,
+} from "@shiguang-gateway/contracts/provider-url";
 import { getProxyWhereUsed } from "../db/proxies.ts";
 
 type ProbeEnv = Record<string, string | undefined>;

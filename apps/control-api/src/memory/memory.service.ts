@@ -13,7 +13,7 @@ import {
   verifyExtractionPipeline,
   type Memory,
   type MemoryType,
-} from "@shiguang-gateway/core-domain/memory/runtime";
+} from "@shiguang-gateway/open-sse/services/memoryRuntime";
 import { getSettings, updateSettings } from "@shiguang-gateway/core-domain/control/settings";
 import {
   invalidateMemorySettingsCache,

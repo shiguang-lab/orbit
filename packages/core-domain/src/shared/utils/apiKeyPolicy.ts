@@ -8,7 +8,7 @@
  * @module shared/utils/apiKeyPolicy
  */
 
-import { extractApiKey } from "@shiguang-gateway/open-sse/services/auth";
+import { extractApiKey } from "@shiguang-gateway/auth";
 import {
   getApiKeyMetadata,
   getComboByName,
@@ -18,7 +18,7 @@ import {
 import { isDashboardSessionAuthenticated } from "./apiAuth";
 import { resolveComboForModel } from "../../lib/db/modelComboMappings.ts";
 import { checkBudget } from "../../domain/costRules.ts";
-import { checkTokenLimits } from "../../../../open-sse/services/tokenLimitCounter.ts";
+import { providerRuntimePorts } from "../../runtime/providerRuntimePorts.js";
 import {
   errorResponse,
   buildErrorBody,
@@ -597,7 +597,11 @@ function validateTokenLimit(context: PolicyContext): Response | null {
   const { apiKeyInfo, modelStr } = context;
   if (!apiKeyInfo.id) return null;
   try {
-    const breach = checkTokenLimits(apiKeyInfo.id, undefined, modelStr ?? undefined);
+    const breach = providerRuntimePorts.checkTokenLimits(
+      apiKeyInfo.id,
+      undefined,
+      modelStr ?? undefined
+    );
     if (!breach) return null;
     const scopeLabel =
       breach.scopeType === "global" ? "account" : `${breach.scopeType} "${breach.scopeValue}"`;

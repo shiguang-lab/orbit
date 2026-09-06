@@ -18,13 +18,14 @@ import {
   getSettings,
   resolveProxyForConnection,
 } from "./localDb.ts";
-import {
+import { providerRuntimePorts } from "../runtime/providerRuntimePorts.js";
+const {
   getAccessToken,
-  getDeprecationNotice,
+  getTokenRefreshDeprecationNotice: getDeprecationNotice,
   supportsTokenRefresh,
   isUnrecoverableRefreshError,
   refreshCopilotToken,
-} from "../../../open-sse/services/tokenRefresh.ts";
+} = providerRuntimePorts;
 import { pickMaskedDisplayValue } from "../shared/utils/maskEmail.ts";
 import { isAutomatedTestProcess } from "../shared/utils/testProcess.ts";
 import { refreshGithubCopilotSubTokenIfNeeded } from "./tokenHealthCheckCopilot.ts";
@@ -33,6 +34,7 @@ import { checkKimiWebConnectionIfNeeded } from "./tokenHealthCheckKimi.ts";
 import {
   checkWebCookieConnectionIfNeeded,
   isWebCookieHealthProbeCandidate,
+  type WebCookieProbe,
 } from "./tokenHealthCheckWebCookie.ts";
 
 const LOG_PREFIX = "[HealthCheck]";
@@ -436,7 +438,7 @@ function getHCState() {
 /**
  * Start the health-check scheduler (idempotent).
  */
-export function initTokenHealthCheck() {
+export function initTokenHealthCheck(dependencies: { probeWebCookie: WebCookieProbe }) {
   const state = getHCState();
   if (state.initialized || isHealthCheckDisabled()) return;
   state.initialized = true;
@@ -445,8 +447,8 @@ export function initTokenHealthCheck() {
 
   const timer = setTimeout(() => {
     state.initTimeout = null;
-    sweep();
-    state.interval = setInterval(sweep, TICK_MS);
+    sweep(dependencies);
+    state.interval = setInterval(() => sweep(dependencies), TICK_MS);
     if (state.interval && typeof state.interval === "object" && "unref" in state.interval) {
       (state.interval as { unref?: () => void }).unref?.();
     }
@@ -475,7 +477,7 @@ export function stopTokenHealthCheck() {
 
 // ── Core sweep (batch concurrent) ──────────────────────────────────────────
 /** Returns the number of connections swept, which the job registry records. */
-export async function sweep(): Promise<number> {
+export async function sweep(dependencies: { probeWebCookie: WebCookieProbe }): Promise<number> {
   const state = getHCState();
   if (state.sweeping) {
     log(`${LOG_PREFIX} Sweep skipped — previous sweep still in progress`);
@@ -509,7 +511,7 @@ export async function sweep(): Promise<number> {
       for (let i = offset; i < batchEnd; i++) {
         const conn = connections[i];
         batch.push(
-          checkConnection(conn).catch((err: Error) => {
+          checkConnection(conn, dependencies).catch((err: Error) => {
             logError(`${LOG_PREFIX} Error checking ${conn.name || conn.id}:`, err.message);
           })
         );
@@ -543,7 +545,7 @@ export async function sweep(): Promise<number> {
 /**
  * Check a single connection and refresh if due.
  */
-export async function checkConnection(conn) {
+export async function checkConnection(conn, dependencies: { probeWebCookie: WebCookieProbe }) {
   if (!conn?.id) return;
 
   const latestConnection = (await getCachedProviderConnectionById(conn.id)) || conn;
@@ -658,6 +660,7 @@ export async function checkConnection(conn) {
       logError,
       getConnectionLogLabel,
       logPrefix: LOG_PREFIX,
+      probeFn: dependencies.probeWebCookie,
     });
     return;
   }

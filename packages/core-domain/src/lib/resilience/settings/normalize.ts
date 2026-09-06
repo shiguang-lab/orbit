@@ -8,7 +8,7 @@
  * @module lib/resilience/settings/normalize
  */
 
-import { resolveFeatureFlag } from "../../../shared/utils/featureFlags.ts";
+import { resolveFeatureFlag } from "../../../shared/utils/featureFlags.js";
 import type {
   JsonRecord,
   RequestQueueSettings,
@@ -21,7 +21,7 @@ import type {
   QuotaPreflightSettings,
   StreamRecoverySettings,
   ProviderQuotaOverrideSettings,
-} from "./types";
+} from "./types.js";
 
 export function asRecord(value: unknown): JsonRecord {
   return value && typeof value === "object" && !Array.isArray(value) ? (value as JsonRecord) : {};

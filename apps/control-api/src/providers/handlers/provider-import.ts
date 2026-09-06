@@ -4,9 +4,10 @@ import {
   isAnthropicCompatibleProvider, isOpenAICompatibleProvider, isManagedProviderConnectionId,
   getConsistentMachineId, resolveBulkNameCollisions, syncToCloud, bulkImportProviderSchema,
   isValidationFailure, validateBody, normalizeProviderSpecificData, sanitizeProviderSpecificDataForResponse,
-  requireManagementAuth, validateProviderApiKey, getProxyForLevel, resolveProxyForProvider,
+  requireManagementAuth, getProxyForLevel, resolveProxyForProvider,
   rejectRetiredCommonChatGptWebProvider,
 } from "@shiguang-gateway/core-domain/control/provider-management";
+import { validateProviderApiKey } from "@shiguang-gateway/open-sse/services/provider-validation";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
 

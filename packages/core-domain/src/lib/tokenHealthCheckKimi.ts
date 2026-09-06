@@ -1,6 +1,8 @@
-import { isKimiTokenExpiringSoon } from "../../../open-sse/utils/kimiJwt.ts";
-import { exchangeKimiRefreshToken } from "./kimi/tokenRefresh.ts";
-import { updateProviderConnection } from "./db/providers.ts";
+import {
+  providerRuntimePorts,
+  type KimiRefreshResult,
+} from "../runtime/providerRuntimePorts.js";
+import { updateProviderConnection } from "./db/providers.js";
 
 /**
  * Refresh window, spread over [60, 240) seconds before expiry so a fleet of
@@ -25,7 +27,7 @@ export async function checkKimiWebConnectionIfNeeded(params: {
   logError: (msg: string, ...args: any[]) => void;
   getConnectionLogLabel: (conn: any) => string;
   logPrefix: string;
-  exchangeFn?: typeof exchangeKimiRefreshToken;
+  exchangeFn?: (refreshToken: string, baseUrl?: string) => Promise<KimiRefreshResult>;
   persistFn?: typeof updateProviderConnection;
   /**
    * Seconds before expiry at which a refresh is triggered. Defaults to the random
@@ -43,7 +45,7 @@ export async function checkKimiWebConnectionIfNeeded(params: {
 
   const token = conn.apiKey || conn.accessToken;
   const jitterSec = (params.jitterSecFn ?? defaultKimiRefreshJitterSec)();
-  const expiringSoon = isKimiTokenExpiringSoon(token, jitterSec);
+  const expiringSoon = providerRuntimePorts.isKimiTokenExpiringSoon(token, jitterSec);
 
   if (!expiringSoon) return true;
 
@@ -51,7 +53,7 @@ export async function checkKimiWebConnectionIfNeeded(params: {
     `${logPrefix} Kimi Web connection ${getConnectionLogLabel(conn)} token expiring soon; refreshing in background...`
   );
 
-  const exchange = params.exchangeFn || exchangeKimiRefreshToken;
+  const exchange = params.exchangeFn || providerRuntimePorts.exchangeKimiRefreshToken;
   const persist = params.persistFn || updateProviderConnection;
 
   const res = await exchange(refreshToken);

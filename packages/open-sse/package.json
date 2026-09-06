@@ -5,8 +5,54 @@
   "type": "module",
   "private": true,
   "exports": {
+    "./oauth/providers": {
+      "types": "./public/oauthRuntime.d.ts",
+      "import": "./oauth/providers.ts"
+    },
+    "./oauth/codex-device-completion": {
+      "types": "./public/oauthCodexDeviceCompletion.d.ts",
+      "import": "./oauth/codexDeviceCompletion.ts"
+    },
+    "./oauth/constants": {
+      "types": "./public/oauthConstants.d.ts",
+      "import": "./oauth/constants/oauth.ts"
+    },
+    "./oauth/services/cursor": {
+      "types": "./public/oauthRuntime.d.ts",
+      "import": "./oauth/services/cursor.ts"
+    },
+    "./oauth/services/cursor-login": {
+      "types": "./public/oauthRuntime.d.ts",
+      "import": "./oauth/services/cursorLogin.ts"
+    },
+    "./oauth/services/cursor-models": {
+      "types": "./public/oauthCursorModels.d.ts",
+      "import": "./oauth/services/cursorAvailableModels.ts"
+    },
+    "./oauth/services/kiro": {
+      "types": "./public/oauthRuntime.d.ts",
+      "import": "./oauth/services/kiro.ts"
+    },
+    "./oauth/provider-auth-import": {
+      "types": "./public/oauthProviderAuthImport.d.ts",
+      "import": "./oauth/providerAuthImport.ts"
+    },
+    "./oauth/provider-auth-files/claude": {
+      "types": "./public/oauthProviderAuthFiles.d.ts",
+      "import": "./oauth/utils/claudeAuthFile.ts"
+    },
+    "./oauth/provider-auth-files/codex": {
+      "types": "./public/oauthProviderAuthFiles.d.ts",
+      "import": "./oauth/utils/codexAuthFile.ts"
+    },
+    "./oauth/utils/server": {
+      "types": "./public/oauthRuntime.d.ts",
+      "import": "./oauth/utils/server.ts"
+    },
     "./executors/base": "./executors/base.ts",
+    "./services/reasoningCache": "./services/reasoningCache.ts",
     "./services/compression/eval/fidelityCheck": "./services/compression/eval/fidelityCheck.ts",
+    "./services/compression/eval/types": "./services/compression/eval/types.ts",
     ".": {
       "types": "./index.ts",
       "import": "./index.ts"
@@ -102,6 +148,34 @@
     "./translator/formats": "./translator/formats.ts",
     "./translator/response/openai-to-gemini-sse": "./translator/response/openai-to-gemini-sse.ts",
     "./services/provider": "./services/provider.ts",
+    "./services/embedding-route": {
+      "types": "./public/embeddingRoute.d.ts",
+      "import": "./services/embeddingRoute/service.ts"
+    },
+    "./services/provider-validation": {
+      "types": "./public/providerValidation.d.ts",
+      "import": "./services/providerValidation.ts"
+    },
+    "./services/provider-validation/url-helpers": {
+      "types": "./public/providerValidationUrlHelpers.d.ts",
+      "import": "./services/providerValidation/urlHelpers.ts"
+    },
+    "./services/provider-validation/search-providers": {
+      "types": "./public/providerValidationSearchProviders.d.ts",
+      "import": "./services/providerValidation/searchProviders.ts"
+    },
+    "./services/provider-validation/web-cookie": {
+      "types": "./public/providerValidationWebCookie.d.ts",
+      "import": "./services/providerValidation/webCookie.ts"
+    },
+    "./services/static-models": {
+      "types": "./public/staticModels.d.ts",
+      "import": "./services/staticModels.ts"
+    },
+    "./services/web-session-contract": {
+      "types": "./public/webSessionContract.d.ts",
+      "import": "./services/webSessionContract.ts"
+    },
     "./transformer/responsesTransformer": "./transformer/responsesTransformer.ts",
     "./handlers/imageGeneration": {
       "types": "./public/imageGeneration.d.ts",
@@ -141,6 +215,18 @@
     "./services/auth": {
       "types": "./public/auth.d.ts",
       "import": "./services/auth.ts"
+    },
+    "./catalog/unified": {
+      "types": "./public/catalogUnified.d.ts",
+      "import": "./catalog/catalog.ts"
+    },
+    "./catalog/specialty": {
+      "types": "./public/specialtyCatalog.d.ts",
+      "import": "./catalog/specialtyCatalog.ts"
+    },
+    "./catalog/provider-maps": {
+      "types": "./public/catalogProviderMaps.d.ts",
+      "import": "./catalog/catalogProviderMaps.ts"
     },
     "./services/authExpiredCredentials": "./services/authExpiredCredentials.ts",
     "./services/autoDisableBannedAccount": "./services/autoDisableBannedAccount.ts",
@@ -276,10 +362,6 @@
       "types": "./services/apiKeyRotator.ts",
       "import": "./services/apiKeyRotator.ts"
     },
-    "./services/error-classifier": {
-      "types": "./services/errorClassifier.ts",
-      "import": "./services/errorClassifier.ts"
-    },
     "./services/antigravity-headers": {
       "types": "./services/antigravityHeaders.ts",
       "import": "./services/antigravityHeaders.ts"
@@ -319,6 +401,18 @@
     "./services/codex-responses-ws-runtime": {
       "types": "./services/codexResponsesWsRuntime.ts",
       "import": "./services/codexResponsesWsRuntime.ts"
+    },
+    "./services/audio-provider-nodes": {
+      "types": "./public/audioProviderNodes.d.ts",
+      "import": "./services/audioProviderNodes.ts"
+    },
+    "./services/video-model-resolution": {
+      "types": "./public/videoModelResolution.d.ts",
+      "import": "./services/videoModelResolution.ts"
+    },
+    "./services/chat-completions-compat": {
+      "types": "./public/chatCompletionsCompat.d.ts",
+      "import": "./services/chatCompletionsCompat.ts"
     },
     "./services/taskAwareRouter": {
       "types": "./public/taskAwareRouter.d.ts",
@@ -385,6 +479,14 @@
     "./services/conversationTurnContent": "./services/conversationTurnContent.ts",
     "./services/quotaMonitor": "./services/quotaMonitor.ts",
     "./services/quotaTrackersBatch": "./services/quotaTrackersBatch.ts",
+    "./services/quota-saturation": {
+      "types": "./public/quotaSaturation.d.ts",
+      "import": "./services/quotaSaturation.ts"
+    },
+    "./services/runtime-settings-hooks": {
+      "types": "./public/runtimeSettingsHooks.d.ts",
+      "import": "./services/runtimeSettingsHooks.ts"
+    },
     "./services/tierTypes": "./services/tierTypes.ts",
     "./services/accountSemaphore": "./services/accountSemaphore.ts",
     "./services/autoCombo/providerDiversity": "./services/autoCombo/providerDiversity.ts",
@@ -425,6 +527,26 @@
     "./handlers/videoGeneration/googleFlow": "./handlers/videoGeneration/googleFlow.ts",
     "./config/videoRegistry": "./config/videoRegistry.ts",
     "./services/videoCombo": "./services/videoCombo.ts",
+    "./services/codexResetCredits": "./services/codexResetCredits.ts",
+    "./services/internalUsageCommand": "./services/internalUsageCommand.ts",
+    "./services/providerLimits": "./services/providerLimits.ts",
+    "./services/kimiTokenRefresh": "./services/kimiTokenRefresh.ts",
+    "./services/dbRuntimeHooks": {
+      "types": "./public/dbRuntimeHooks.d.ts",
+      "import": "./services/dbRuntimeHooks.ts"
+    },
+    "./services/autoRefreshDaemon.ts": "./services/autoRefreshDaemon.ts",
+    "./handlers/chat-core/cliproxyapi-credentials": "./handlers/chatCore/cliproxyapiCredentials.ts",
+    "./services/usage/codex": "./services/usage/codex.ts",
+    "./services/memoryRuntime": {
+      "types": "./public/memoryRuntime.d.ts",
+      "import": "./services/memoryRuntime.ts"
+    },
+    "./services/autoCombo/scoring": "./services/autoCombo/scoring.ts",
+    "./services/autoCombo/modePacks": "./services/autoCombo/modePacks.ts",
+    "./services/autoCombo/taskFitness": "./services/autoCombo/taskFitness.ts",
+    "./services/accountFallbackRuntime": "./services/accountFallback.ts",
+    "./services/rateLimitManagerRuntime": "./services/rateLimitManager.ts",
     "./services/adobeFireflyModels": "./services/adobeFireflyModels.ts",
     "./services/conolAuth": "./services/conolAuth.ts",
     "./services/conolModels": "./services/conolModels.ts",
@@ -467,7 +589,9 @@
   },
   "dependencies": {
     "@aws-sdk/client-bedrock-runtime": "^3.1126.0",
+    "@huggingface/transformers": "^4.2.0",
     "@modelcontextprotocol/sdk": "^1.30.0",
+    "@shiguang-gateway/auth": "workspace:*",
     "@shiguang-gateway/config": "workspace:*",
     "@shiguang-gateway/contracts": "workspace:*",
     "@shiguang-gateway/core-domain": "workspace:*",
@@ -475,6 +599,7 @@
     "@shiguang-gateway/http-kernel": "workspace:*",
     "@shiguang-gateway/network-guard": "workspace:*",
     "@shiguang-gateway/provider-catalog": "workspace:*",
+    "@shiguang-gateway/rerank-catalog": "workspace:*",
     "@shiguang-gateway/runtime-logging": "workspace:*",
     "@toon-format/toon": "^4.1.1",
     "bottleneck": "^2.19.5",

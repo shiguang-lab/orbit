@@ -1,4 +1,5 @@
 import { ensureSecrets } from "@shiguang-gateway/core-domain/startup";
+import "@shiguang-gateway/open-sse/services/runtime-settings-hooks";
 import { assertGatewayEntities } from "@shiguang-gateway/db-schema";
 import { bootstrapWorker } from "./bootstrap.js";
 

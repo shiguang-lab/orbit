@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { finalizeTokens } from "@shiguang-gateway/core-domain/control/oauth-runtime/providers";
+import { finalizeTokens } from "@shiguang-gateway/open-sse/oauth/providers";
 import { persistOAuthConnection } from "@shiguang-gateway/core-domain/control/oauth-runtime/connectionPersistence";
 import { parsePastedCredentials } from "@shiguang-gateway/core-domain/control/oauth-runtime/pasteCredentials";
 import { oauthPasteCredentialsSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";

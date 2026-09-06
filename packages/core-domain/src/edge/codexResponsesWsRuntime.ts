@@ -9,14 +9,11 @@ export {
   authorizeWebSocketHandshake,
   extractWsTokenFromRequest,
 } from "../lib/ws/handshake.js";
-export { getModelInfo } from "@shiguang-gateway/open-sse/services/runtimeModel";
 export { resolveCcDiscoveryAliasStrip } from "../lib/ccDiscoveryAliasResolve.js";
-export { getProviderCredentialsWithQuotaPreflight } from "@shiguang-gateway/open-sse/services/auth";
 export {
   enforceApiKeyPolicy,
   validateApiKeyRoutingTarget,
 } from "../shared/utils/apiKeyPolicy.js";
-export { checkAndRefreshToken } from "@shiguang-gateway/open-sse/services/credentialTokenRefresh";
 export { isFeatureFlagEnabled } from "../shared/utils/featureFlags.js";
 export { formatMemoryContext } from "../lib/memory/injection.js";
 export { retrieveMemories } from "../lib/memory/retrieval.js";
@@ -36,11 +33,6 @@ export {
 export { resolveRequestRoutingTags } from "../domain/tagRouter.js";
 export { getComboByName } from "../lib/db/combos.js";
 export { getComboModelString } from "../lib/combos/steps.js";
-export {
-  buildManagedLeaseErrorResponse,
-  isExclusiveLeaseManagedKey,
-  LeaseContextError,
-} from "@shiguang-gateway/open-sse/services/leaseContext";
 export { saveCallLog } from "../lib/usage/callLogs.js";
 export { saveRequestUsage } from "../lib/usage/usageHistory.js";
 export { logProxyEvent } from "../lib/proxyLogger.js";

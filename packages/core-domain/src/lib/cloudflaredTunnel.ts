@@ -4,7 +4,7 @@ import { promisify } from "util";
 import fs from "fs/promises";
 import fsSync from "fs";
 import path from "path";
-import proxyFetch from "../../../open-sse/utils/proxyFetch.ts";
+import { providerRuntimePorts } from "../runtime/providerRuntimePorts.ts";
 import { resolveDataDir } from "./dataPaths.ts";
 import { getRuntimePorts } from "./runtime/ports.ts";
 
@@ -593,7 +593,7 @@ export function verifyCloudflaredDownloadDigest(
 }
 
 async function resolveCloudflaredDownloadSpec(spec: AssetSpec): Promise<ResolvedAssetSpec> {
-  const response = await proxyFetch(CLOUDFLARED_RELEASE_API_URL, {
+  const response = await providerRuntimePorts.proxyFetch(CLOUDFLARED_RELEASE_API_URL, {
     headers: { Accept: "application/vnd.github+json" },
     redirect: "follow",
   });

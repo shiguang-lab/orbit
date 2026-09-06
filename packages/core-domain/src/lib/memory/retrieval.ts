@@ -3,11 +3,14 @@ import { Memory, MemoryConfig } from "./types";
 import { MemoryConfigSchema } from "./schemas";
 import { logger } from "@shiguang-gateway/runtime-logging";
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
-import { resolveEmbeddingSource, embed } from "./embedding";
+import {
+  resolveEmbeddingSource,
+  embed,
+  getEmbeddingCacheStats,
+} from "./embeddingPort.ts";
 import { getVectorStore } from "./vectorStore";
 import { getMemorySettings } from "./settings";
 import { recordMemoryAccess } from "./store";
-import { stats as embeddingCacheStats } from "./embedding/cache";
 import { getQdrantConfig, checkQdrantHealth, searchSemanticMemory } from "./qdrant";
 import type { MemoryEngineStatus } from "../../shared/schemas/memory.ts";
 import { estimateTokens, parseMetadata, rowToMemory, getRelevanceScore } from "./retrieval/scoring";
@@ -968,7 +971,7 @@ export async function retrievePreview(
 export async function engineStatus(): Promise<MemoryEngineStatus> {
   const settings = await getMemorySettings();
   const resolution = resolveEmbeddingSource(settings);
-  const cacheStats = embeddingCacheStats();
+  const cacheStats = getEmbeddingCacheStats();
 
   // Vector store
   const vec = getVectorStore();

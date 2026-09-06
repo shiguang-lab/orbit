@@ -25,7 +25,12 @@
 // cap; 24576 is the flash-tier cap (gemini-2.5-flash in MODEL_SPECS); 8192 is a
 // conservative floor that every thinking-capable Gemini accepts. A failed budget
 // walks to the first step strictly below it.
-const GEMINI_STEPDOWN: readonly number[] = [32768, 24576, 8192];
+import {
+  GEMINI_FALLBACK_THINKING_CAP,
+  GEMINI_THINKING_BUDGET_STEPDOWN,
+} from "@shiguang-gateway/contracts/gemini-thinking-budget";
+
+const GEMINI_STEPDOWN = GEMINI_THINKING_BUDGET_STEPDOWN;
 
 /**
  * Proactive cap applied by `capThinkingBudget` (src/lib/modelCapabilities.ts)
@@ -34,7 +39,7 @@ const GEMINI_STEPDOWN: readonly number[] = [32768, 24576, 8192];
  * the maximum reasoning the family is known to accept, rather than letting an
  * xhigh budget (131072) through to a 400.
  */
-export const GEMINI_FALLBACK_THINKING_CAP: number = GEMINI_STEPDOWN[0];
+export { GEMINI_FALLBACK_THINKING_CAP } from "@shiguang-gateway/contracts/gemini-thinking-budget";
 
 // key: `${provider}:${model}` lowercased → highest budget known to be accepted.
 const learnedCaps = new Map<string, number>();

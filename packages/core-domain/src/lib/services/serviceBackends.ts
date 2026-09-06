@@ -1,8 +1,16 @@
-import type { ProviderPluginManifestEntry } from "../../../../open-sse/config/providerPluginManifest.ts";
-
 export const SERVICE_BACKEND_PLUGIN_IDS = ["9router", "cliproxyapi"] as const;
 
 export type ServiceBackendPluginId = (typeof SERVICE_BACKEND_PLUGIN_IDS)[number];
+
+export interface ServiceBackendManifestTemplateEntry {
+  format: string;
+  executor: string;
+  auth: { type: string; header: string };
+  endpoints: { modelsUrl: string };
+  capabilities: string[];
+  passthroughModels: boolean;
+  sidecar: { eligible: boolean; reasons: string[] };
+}
 
 export const SERVICE_BACKEND_EXPOSURE_TOOL_BY_PLUGIN_ID: Record<
   ServiceBackendPluginId,
@@ -14,10 +22,7 @@ export const SERVICE_BACKEND_EXPOSURE_TOOL_BY_PLUGIN_ID: Record<
 
 export const SERVICE_BACKEND_MANIFEST_TEMPLATE: Record<
   ServiceBackendPluginId,
-  Pick<
-    ProviderPluginManifestEntry,
-    "format" | "executor" | "auth" | "endpoints" | "capabilities" | "passthroughModels" | "sidecar"
-  >
+  ServiceBackendManifestTemplateEntry
 > = {
   "9router": {
     format: "openai",

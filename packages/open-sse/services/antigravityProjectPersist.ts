@@ -9,7 +9,7 @@
  * fresh round-trip. This module is the single best-effort write path both call
  * sites (`open-sse/executors/antigravity.ts` and the models-discovery
  * normalizer) funnel through, mirroring the shape `mapAntigravityTokens()`
- * already persists at OAuth-exchange time (`src/lib/oauth/providers/antigravity.ts`).
+ * already persists at OAuth-exchange time (`oauth/providers/antigravity.ts`).
  */
 
 import { updateProviderConnection } from "@shiguang-gateway/core-domain/db/provider-connections";

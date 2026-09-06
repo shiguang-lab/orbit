@@ -8,7 +8,7 @@ import {
   requestDeviceCode,
   pollForToken,
   resolveBrowserOAuthRedirectUri,
-} from "@shiguang-gateway/core-domain/control/oauth-runtime/providers";
+} from "@shiguang-gateway/open-sse/oauth/providers";
 import {
   persistOAuthConnection,
   buildOAuthConnectionCreatePayload,
@@ -24,10 +24,10 @@ import {
 } from "@shiguang-gateway/core-domain/control/models";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
 import { isValidGheUrl } from "@shiguang-gateway/core-domain/shared/validation/providerSpecificData";
-import { AWS_REGION_PATTERN } from "@shiguang-gateway/core-domain/control/oauth-runtime/constants/oauth";
+import { AWS_REGION_PATTERN } from "@shiguang-gateway/open-sse/oauth/constants";
 import { antigravityDegradedProjectState } from "@shiguang-gateway/core-domain/control/oauth-runtime/antigravityProjectGate";
 import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";
-import { startLocalServer } from "@shiguang-gateway/core-domain/control/oauth-runtime/utils/server";
+import { startLocalServer } from "@shiguang-gateway/open-sse/oauth/utils/server";
 import { runWithProxyContextOrDirect } from "@shiguang-gateway/open-sse/utils/proxyFetch";
 import {
   jsonObjectSchema,

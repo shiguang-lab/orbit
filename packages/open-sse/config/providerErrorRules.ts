@@ -17,6 +17,8 @@
  */
 
 import type { ConfiguredErrorReason } from "./errorConfig.ts";
+import type { OperatorProviderErrorRule } from "@shiguang-gateway/contracts/runtime-settings";
+export type { OperatorProviderErrorRule } from "@shiguang-gateway/contracts/runtime-settings";
 
 export type ProviderErrorRule = {
   id: string;
@@ -59,14 +61,6 @@ export type ProviderErrorRuleMatch = {
  * schema. An operator rule is consulted BEFORE the built-in `providerRuleRegistry`
  * and wins on the first status+substring match for a provider.
  */
-export type OperatorProviderErrorRule = {
-  status: number;
-  match: string;
-  scope: "model" | "provider" | "connection";
-  reason?: ConfiguredErrorReason;
-  cooldownMs?: number;
-};
-
 let operatorProviderErrorRules: Record<string, OperatorProviderErrorRule[]> = {};
 
 /**

@@ -14,6 +14,7 @@
  * 3+ consecutive times are marked as "invalid" and skipped during rotation.
  * Health status is persisted in providerSpecificData.apiKeyHealth.
  */
+import { registerDbRuntimeHooks } from "@shiguang-gateway/core-domain/db/runtime-hooks";
 
 // In-memory round-robin index per connection
 const _keyIndexes = new Map<string, number>();
@@ -409,3 +410,5 @@ export function removeConnectionIndex(connectionId: string): void {
 }
 
 export type { KeyHealth };
+
+registerDbRuntimeHooks({ removeConnectionHealth, removeConnectionIndex });

@@ -10,22 +10,21 @@ import {
   getSyncedAvailableModels,
   type ModelCompatPatch,
   type SyncedAvailableModel,
-} from "../db/models.ts";
-import { getProviderConnections } from "../db/providers.ts";
+} from "../db/models.js";
+import { getProviderConnections } from "../db/providers.js";
 import {
   syncManagedAvailableModelAliases,
   usesManagedAvailableModels,
-} from "./managedAvailableModels.ts";
-import { normalizeDiscoveredModels } from "./modelDiscovery.ts";
+} from "./managedAvailableModels.js";
+import { normalizeDiscoveredModels } from "./modelDiscovery.js";
 import {
   ANTIGRAVITY_MODEL_ALIASES,
   ANTIGRAVITY_REVERSE_MODEL_ALIASES,
   isDiscoverableAntigravityModelId,
-} from "../../../../open-sse/config/antigravityModelAliases.ts";
-import { isDiscoverableAgyModelId } from "../../../../open-sse/config/agyModels.ts";
-import { filterChatSelectableModels } from "../../../../open-sse/services/modelEndpointPolicy.ts";
-import { filterSelectableModels } from "../../../../open-sse/services/modelLifecycle.ts";
-import { isSelfHostedChatProvider } from "../../shared/constants/providers.ts";
+} from "@shiguang-gateway/provider-catalog/support/config/antigravityModelAliases";
+import { isDiscoverableAgyModelId } from "@shiguang-gateway/provider-catalog/support/config/agyModels";
+import { providerRuntimePorts } from "../../runtime/providerRuntimePorts.js";
+import { isSelfHostedChatProvider } from "../../shared/constants/providers.js";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -271,10 +270,13 @@ export async function importManagedModels({
   // provider keeps the import-time chat filter: the read-time path is gated on
   // isSelfHostedChatProvider, so dropping it globally leaked image/video models
   // into OpenAI chat selections (#11271).
-  const selectableModels = filterSelectableModels(providerId, providerFilteredModels);
+  const selectableModels = providerRuntimePorts.filterSelectableModels(
+    providerId,
+    providerFilteredModels
+  );
   const discoveredModels = isSelfHostedChatProvider(providerId)
     ? selectableModels
-    : filterChatSelectableModels(providerId, selectableModels);
+    : providerRuntimePorts.filterChatSelectableModels(providerId, selectableModels);
   const candidateImportedModels = normalizeImportedModels(discoveredModels);
   const importedIds = new Set(candidateImportedModels.map((model) => model.id));
 

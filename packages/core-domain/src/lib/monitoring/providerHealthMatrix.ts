@@ -2,9 +2,6 @@ import { getSyncedAvailableModelsByConnection } from "../db/models.ts";
 import { getProviderConnections } from "../db/providers.ts";
 import { getDbInstance } from "../db/core.ts";
 import { getAllCircuitBreakerStatuses } from "../../shared/utils/circuitBreaker.ts";
-import { getAllModelLockouts } from "../../../../open-sse/services/accountFallback.ts";
-import { resolveProviderAlias } from "../../../../open-sse/services/model.ts";
-import { getWebSessionPoolHealth } from "../../../../open-sse/services/webSessionPoolHealth.ts";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -133,11 +130,6 @@ const TERMINAL_STATUSES = new Set(["banned", "expired", "credits_exhausted"]);
 
 function toString(value: unknown): string | null {
   return typeof value === "string" && value.trim() ? value.trim() : null;
-}
-
-function canonicalProviderId(value: unknown): string | null {
-  const provider = toString(value);
-  return provider ? (resolveProviderAlias(provider) ?? provider) : null;
 }
 
 function toNumber(value: unknown): number {
@@ -346,8 +338,17 @@ function classifyProvider(
 }
 
 export async function buildProviderHealthMatrix(
-  options: ProviderHealthMatrixOptions = {}
+  options: ProviderHealthMatrixOptions = {},
+  runtime: {
+    getAllModelLockouts: () => unknown[];
+    resolveProviderAlias: (provider: string) => string | null;
+    getWebSessionPoolHealth: (provider?: string) => { providers: any[] };
+  }
 ): Promise<ProviderHealthMatrixResponse> {
+  const canonicalProviderId = (value: unknown): string | null => {
+    const provider = toString(value);
+    return provider ? (runtime.resolveProviderAlias(provider) ?? provider) : null;
+  };
   const now = Date.now();
   const checkedAt = new Date(now).toISOString();
   const range = normalizeRange(options.range);
@@ -361,7 +362,7 @@ export async function buildProviderHealthMatrix(
   const [connections, breakers, lockouts, rawStats] = await Promise.all([
     getProviderConnections({}),
     getAllCircuitBreakerStatuses(),
-    getAllModelLockouts(),
+    runtime.getAllModelLockouts(),
     Promise.resolve(queryCallLogTargetStats(cutoff, null)),
   ]);
 
@@ -597,7 +598,7 @@ export async function buildProviderHealthMatrix(
     }
   }
 
-  const poolReport = getWebSessionPoolHealth(providerFilter ?? undefined);
+  const poolReport = runtime.getWebSessionPoolHealth(providerFilter ?? undefined);
 
   return {
     checkedAt,

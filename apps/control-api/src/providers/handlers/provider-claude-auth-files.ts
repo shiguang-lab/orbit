@@ -4,7 +4,7 @@ import {
   ClaudeAuthFileError,
   buildClaudeAuthFile,
   writeClaudeAuthFileToLocalCli,
-} from "@shiguang-gateway/core-domain/control/provider-auth-files/claude";
+} from "@shiguang-gateway/open-sse/oauth/provider-auth-files/claude";
 import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/control/compliance";
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 

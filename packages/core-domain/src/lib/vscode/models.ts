@@ -1,4 +1,3 @@
-import { getUnifiedModelsResponse } from "../catalog/catalog";
 import { getProviderConnections } from "../db/providers.ts";
 import { getResolvedModelCapabilities } from "../modelCapabilities.ts";
 import { getCanonicalModelMetadata } from "../modelMetadataRegistry.ts";
@@ -64,6 +63,11 @@ type VscodeModelsCatalogResponse = {
 type EnrichModelForVscodeOptions = {
   preserveNativeId?: boolean;
 };
+
+export type VscodeModelsResolver = (
+  request: Request,
+  headers?: Record<string, string>,
+) => Promise<Response>;
 
 function usesResponsesApi(model: CatalogModelEntry) {
   return (
@@ -209,8 +213,11 @@ export function expandVscodeRawModels(models: CatalogModelEntry[]) {
   return models;
 }
 
-export async function getVscodeModelsCatalogResponse(request: Request): Promise<VscodeModelsCatalogResponse> {
-  const response = await getUnifiedModelsResponse(request, {
+export async function getVscodeModelsCatalogResponse(
+  request: Request,
+  resolveModels: VscodeModelsResolver,
+): Promise<VscodeModelsCatalogResponse> {
+  const response = await resolveModels(request, {
     "Content-Type": "application/json",
     ...CORS_HEADERS,
   });
@@ -278,11 +285,12 @@ function filterCanonicalTagModels(models: CatalogModelEntry[]) {
 
 export async function GET(
   request: Request,
-  { params }: { params?: Promise<{ token: string }> | { token: string } } = {},
+  { params }: { params?: Promise<{ token: string }> | { token: string } },
+  resolveModels: VscodeModelsResolver,
 ) {
   const resolvedParams = params ? await params : undefined;
   const authorizedRequest = withPathTokenApiKey(request, resolvedParams?.token);
-  const response = await getUnifiedModelsResponse(authorizedRequest, {
+  const response = await resolveModels(authorizedRequest, {
     "Content-Type": "application/json",
     ...CORS_HEADERS,
   });
@@ -304,11 +312,12 @@ export async function GET(
 
 export async function GET_RAW(
   request: Request,
-  { params }: { params?: Promise<{ token: string }> | { token: string } } = {},
+  { params }: { params?: Promise<{ token: string }> | { token: string } },
+  resolveModels: VscodeModelsResolver,
 ) {
   const resolvedParams = params ? await params : undefined;
   const authorizedRequest = withPathTokenApiKey(request, resolvedParams?.token);
-  const catalog = await getVscodeModelsCatalogResponse(authorizedRequest);
+  const catalog = await getVscodeModelsCatalogResponse(authorizedRequest, resolveModels);
   if (catalog.status < 200 || catalog.status >= 300 || !Array.isArray(catalog.body.data)) {
     return Response.json(catalog.body, {
       status: catalog.status,

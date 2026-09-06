@@ -1,1 +1,3 @@
-export function buildShiguangGatewayStatus(): Promise<Record<string, unknown>>;
+export function buildShiguangGatewayStatus(
+  getQuotaMonitorSummary: () => { active: number } | null,
+): Promise<Record<string, unknown>>;

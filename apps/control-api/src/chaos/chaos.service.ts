@@ -6,9 +6,12 @@ import {
   resetChaosConfig,
   setChaosConfig,
 } from "@shiguang-gateway/core-domain/chaos/config";
-import { executeChaosRun, type ChaosRunResult } from "@shiguang-gateway/core-domain/chaos/executor";
+import { executeChaosRun, setChaosChatDispatch, type ChaosRunResult } from "@shiguang-gateway/core-domain/chaos/executor";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { POST as postChatCompletion } from "@shiguang-gateway/open-sse/services/chat-completions-compat";
+
+setChaosChatDispatch(postChatCompletion);
 
 const runSchema = z.object({
   task: z.string().min(1, "Task is required").max(100_000, "task too long"),

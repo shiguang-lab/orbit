@@ -1,4 +1,4 @@
-import "./setupPolyfill.ts";
+import "@shiguang-gateway/core-domain/runtime/setup-polyfill";
 import { Agent, ProxyAgent, type Dispatcher } from "undici";
 import { getUpstreamTimeoutConfig } from "@shiguang-gateway/config/timeouts";
 import { stripIpv6Brackets, detectIpLiteralFamily, parseProxyFamily } from "./proxyFamily.ts";

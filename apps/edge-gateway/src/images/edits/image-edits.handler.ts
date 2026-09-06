@@ -34,7 +34,7 @@ import {
   resolveImageRouteModel,
   extractImageEditInputFromJson,
   validateCodexImageEditReferences,
-} from "@shiguang-gateway/core-domain/edge/image-route-model";
+} from "../image-route-model.js";
 import { isMicrosoftDesignerWebProviderRetiredError } from "@shiguang-gateway/contracts/designer-web-retirement";
 import { resolveProxyForConnection } from "@shiguang-gateway/core-domain/edge/local-db";
 import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";

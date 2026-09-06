@@ -3,7 +3,8 @@ import { isModelSyncInternalRequest } from "../../../shared/services/modelSyncSc
 import { isAuthRequired, isDashboardSessionAuthenticated } from "../../../shared/utils/apiAuth";
 import type { AuthOutcome, PolicyContext, RoutePolicy } from "../context";
 import { allow, reject } from "../context";
-import { extractApiKey, isValidApiKey } from "../../../sse/services/auth";
+import { extractApiKey, isValidGatewayApiKey } from "@shiguang-gateway/auth";
+import { validateApiKey } from "../../../lib/db/apiKeys.ts";
 import { getApiKeyMetadata } from "../../../lib/db/apiKeys";
 import { hasManageScope } from "../../../lib/api/requireManagementAuth";
 import {
@@ -107,7 +108,7 @@ export const managementPolicy: RoutePolicy = {
         const apiKey = extractApiKey(ctx.request as unknown as Request, { allowUrl: false });
         if (apiKey) {
           try {
-            if (await isValidApiKey(apiKey)) {
+            if (await isValidGatewayApiKey(apiKey, validateApiKey)) {
               const meta = await getApiKeyMetadata(apiKey);
               // #7895: the `/api/mcp/` carve-out ALSO accepts the narrow
               // `mcp:connect` scope, so remote MCP-only callers don't need
@@ -229,7 +230,7 @@ export const managementPolicy: RoutePolicy = {
       const apiKey = extractApiKey(ctx.request as unknown as Request, { allowUrl: false });
       if (apiKey) {
         try {
-          if (await isValidApiKey(apiKey)) {
+          if (await isValidGatewayApiKey(apiKey, validateApiKey)) {
             const meta = await getApiKeyMetadata(apiKey);
             if (meta && hasMcpConnectOrManageScope(meta.scopes)) {
               const grantedBy = meta.scopes.includes("admin")
@@ -266,7 +267,7 @@ export const managementPolicy: RoutePolicy = {
     // the gap so management auth is consistent across the policy layer.
     //
     // Error handling mirrors `requireManagementAuth.ts`: a thrown
-    // isValidApiKey / getApiKeyMetadata indicates the auth backend is
+    // API-key validation / metadata lookup indicates the auth backend is
     // unhealthy, which is a 503, not a 403 — masking it as an auth failure
     // would tell callers their credentials are wrong when the real problem
     // is that the server cannot validate any credential right now.
@@ -301,7 +302,7 @@ export const managementPolicy: RoutePolicy = {
     const apiKey = extractApiKey(ctx.request as unknown as Request, { allowUrl: false });
     if (apiKey) {
       try {
-        if (await isValidApiKey(apiKey)) {
+        if (await isValidGatewayApiKey(apiKey, validateApiKey)) {
           const meta = await getApiKeyMetadata(apiKey);
           // getApiKeyMetadata returns null whenever the row has no id,
           // so when `meta` is truthy `meta.id` is guaranteed non-empty.
