@@ -87,7 +87,8 @@ that app's `src/routes` tree. The parity audits aggregate those app-owned trees
 with the remaining domain handlers, so each move is independently verifiable.
 
 The current migration wave has moved the control auth (status, CSRF, password login,
-logout and OIDC), health/status/process-control/version-manager, rate-limit toggle,
+logout and OIDC), health/status/process-control/version-manager/Bifrost controls,
+rate-limit toggle and proxy connectivity test,
 token-health/synced-models/provider-stats/provider-metrics/provider-nodes list/validation/provider-models, provider validation/observability (OpenRouter stats, quota windows, expiration, health matrix), combo management (builder options, duplicate, metrics, reorder, auto and test), webhook management, memory settings, and complete API-key management groups (including app-owned root handlers, devices, regeneration, reveal, usage limits, key groups, memberships, and permissions), and the edge files, music,
 speech-to-text, embeddings, audio-transcriptions, audio-speech, audio-translations, text-to-speech, image edits/generations/upscale, moderation, rerank, ElevenLabs voices, plus WebSocket handshake routes. Remaining route groups stay in
 `core-domain` until their dependencies can move without reintroducing a
