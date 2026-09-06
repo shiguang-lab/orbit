@@ -1,4 +1,4 @@
-import { NOAUTH_PROVIDERS } from "../../shared/constants/providers.ts";
+import { NOAUTH_PROVIDERS } from "@shiguang-gateway/contracts/config/providerCatalog";
 import { REGISTRY } from "@shiguang-gateway/provider-catalog/provider-registry";
 
 interface NoAuthOnboardingMetadata {

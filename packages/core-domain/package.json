@@ -407,10 +407,6 @@
     "./control/provider-discovery-support/exclusiveLeaseIsolation": "./src/lib/exclusiveLeaseIsolation.ts",
     "./control/provider-discovery-support/freeModels": "./src/shared/utils/freeModels.ts",
     "./control/provider-discovery-support/callLogs": "./src/lib/usage/callLogs.ts",
-    "./control/free-onboarding": {
-      "types": "./src/public/freeOnboarding.d.ts",
-      "import": "./src/lib/providers/freeOnboarding.ts"
-    },
     "./control/cursor-availability": {
       "types": "./src/public/cursorAvailability.d.ts",
       "import": "./src/lib/cursor/renewal.ts"

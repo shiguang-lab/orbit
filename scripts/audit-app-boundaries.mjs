@@ -292,7 +292,6 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "db/provider-param-filters",
   "control/web-session-contract",
   "control/provider-auth-import",
-  "control/free-onboarding",
   "control/cursor-availability",
   "control/provider-health-autopilot",
   "control/dario-installer",
@@ -912,6 +911,10 @@ const retiredCoreGatewayStatus = join(packagesRoot, "core-domain", "src", "lib",
 if (existsSync(retiredCoreGatewayStatus)) {
   add("control-runtime-in-core-domain", retiredCoreGatewayStatus, "Gateway status composition belongs in apps/control-api");
 }
+const retiredCoreFreeOnboarding = join(packagesRoot, "core-domain", "src", "lib", "providers", "freeOnboarding.ts");
+if (existsSync(retiredCoreFreeOnboarding)) {
+  add("control-runtime-in-core-domain", retiredCoreFreeOnboarding, "Provider onboarding orchestration belongs in apps/control-api");
+}
 
 // The shared HTTP package must never regain a generic app factory or a
 // caller-selected surface. Those APIs collapse independently deployable apps
@@ -1072,6 +1075,7 @@ if (existsSync(workerJobRegistry)) {
 }
 const coreDomainEntry = packageEntries.find(({ manifest }) => manifest?.name === "@shiguang-gateway/core-domain");
 const retiredAppOwnedExports = [
+  "./control/free-onboarding",
   "./control/gateway-status",
   "./control/routing-preview",
   "./control/copilot",

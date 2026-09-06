@@ -10,7 +10,7 @@ import {
   selectUnconfiguredFreeOnboardingProviders,
   setupFreeProviderConnections,
   withFreeProviderSetupLock,
-} from "@shiguang-gateway/core-domain/control/free-onboarding";
+} from "./runtime/free-onboarding.js";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { getCachedCursorAgentAvailability } from "@shiguang-gateway/core-domain/control/cursor-availability";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
