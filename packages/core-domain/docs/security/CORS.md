@@ -73,7 +73,7 @@ credential-theft vector on the shared CORS path.
 
 The Cloud-Agent routes (`/api/v1/agents/{health,credentials,tasks,tasks/[id]}`) set
 their **own** CORS headers
-(`src/lib/cloudAgent/api.ts`, `getCloudAgentCorsHeaders`) and **do** emit
+(`apps/edge-gateway/src/cloud-agents/domain/api.ts`, `getCloudAgentCorsHeaders`) and **do** emit
 `Access-Control-Allow-Origin: <origin>|*` together with
 `Access-Control-Allow-Credentials: true`. This is the single surface where
 origin-echo and credentials coexist, and it is **independent of
@@ -157,7 +157,7 @@ Security tab), not in the proxy.
 | Runtime status for the dashboard                | `src/app/api/settings/authz-inventory/route.ts`                      |
 | Dashboard warning banner                        | `src/app/(dashboard)/dashboard/settings/components/AuthzSection.tsx` |
 | CORS Allowed Origins field                      | `src/app/(dashboard)/dashboard/settings/components/SecurityTab.tsx`  |
-| Cloud-Agent per-route CORS (the exception)      | `src/lib/cloudAgent/api.ts`                                          |
+| Cloud-Agent per-route CORS (the exception)      | `apps/edge-gateway/src/cloud-agents/domain/api.ts`                                          |
 
 ## See also
 

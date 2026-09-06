@@ -388,7 +388,7 @@ Cloud Agents wraps third-party hosted code-agent platforms (Codex Cloud, Devin,
 Jules) behind a uniform DB-backed task lifecycle. All task creation/inspection
 endpoints require management authentication.
 
-- Module root: `src/lib/cloudAgent/` (`baseAgent.ts`, `registry.ts`, `api.ts`,
+- Module root: `apps/edge-gateway/src/cloud-agents/domain/` (`baseAgent.ts`, `registry.ts`, `api.ts`,
   `types.ts`, `db.ts`, plus per-agent subdirectories under `agents/`)
 - Per-agent implementations: `agents/codex/`, `agents/devin/`, `agents/jules/`
 - Public endpoints: `/api/v1/agents/tasks/*` (list/create/get/cancel)
