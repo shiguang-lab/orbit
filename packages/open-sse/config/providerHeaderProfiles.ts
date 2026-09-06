@@ -1,5 +1,5 @@
 import { getAntigravityContentHeaders } from "../services/antigravityHeaders.ts";
-import type { AntigravityClientProfile } from "../../core-domain/src/shared/constants/antigravityClientProfile.ts";
+import type { AntigravityClientProfile } from "@shiguang-gateway/contracts/provider-client-profiles";
 
 // GitHub Copilot request identity. Ported to match the GitHub Copilot CLI
 // (`copilot` npm package) wire identity that Hermes captured live, NOT the

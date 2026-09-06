@@ -1,5 +1,5 @@
 import { ANTIGRAVITY_CONFIG } from "../constants/oauth";
-import type { AntigravityClientProfile } from "../../../shared/constants/antigravityClientProfile.ts";
+import type { AntigravityClientProfile } from "@shiguang-gateway/contracts/provider-client-profiles";
 import {
   getAntigravityContentHeaders,
   getAntigravityIdeNodeHeaders,

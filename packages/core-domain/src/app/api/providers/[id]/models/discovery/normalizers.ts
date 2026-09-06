@@ -15,7 +15,7 @@ import {
   getClientVisibleAgyModelName,
   isDiscoverableAgyModelId,
 } from "../../../../../../../../open-sse/config/agyModels.ts";
-import { normalizeAntigravityClientProfile } from "../../../../../../shared/constants/antigravityClientProfile.ts";
+import { normalizeAntigravityClientProfile } from "@shiguang-gateway/contracts/provider-client-profiles";
 import { ensureAntigravityProjectAssigned } from "../../../../../../../../open-sse/services/antigravityProjectBootstrap.ts";
 import { persistDiscoveredAntigravityProjectId } from "../../../../../../../../open-sse/services/antigravityProjectPersist.ts";
 import { asRecord, toNonEmptyString } from "./helpers";

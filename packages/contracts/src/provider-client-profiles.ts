@@ -1,3 +1,10 @@
+/**
+ * Shared provider client identity contracts.
+ *
+ * The profile is persisted by management APIs and consumed by both the
+ * provider OAuth integration and the streaming engine.  Keep this module
+ * transport-neutral: request/header application belongs to the owning app.
+ */
 export const ANTIGRAVITY_CLIENT_PROFILE_VALUES = ["ide", "cli"] as const;
 
 export type AntigravityClientProfile = (typeof ANTIGRAVITY_CLIENT_PROFILE_VALUES)[number];
