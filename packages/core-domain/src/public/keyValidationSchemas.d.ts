@@ -7,6 +7,8 @@ export const MemorySettingsExtendedSchema: z.ZodTypeAny;
 export const createComboSchema: z.ZodTypeAny;
 export const updateComboSchema: z.ZodTypeAny;
 export const updateComboDefaultsSchema: z.ZodTypeAny;
+export const codexProfileNameSchema: z.ZodTypeAny;
+export const codexProfileIdSchema: z.ZodTypeAny;
 export const paginationSchema: z.ZodTypeAny;
 export const toggleRateLimitSchema: z.ZodTypeAny;
 export const versionManagerToolSchema: z.ZodTypeAny;

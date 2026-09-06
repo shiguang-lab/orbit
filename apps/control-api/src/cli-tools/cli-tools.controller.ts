@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Post, Req, Res } from "@nestjs/common";
+import { Controller, Delete, Get, Post, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 import { CliToolsService } from "./cli-tools.service.js";
@@ -44,5 +44,40 @@ export class CliToolsController {
   @Delete("pi-settings")
   piDelete(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
     return this.routes.dispatch(req, reply, (request) => this.cliTools.piDelete(request));
+  }
+
+  @Get("codex-settings")
+  codexSettingsGet(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(req, reply, (request) => this.cliTools.codexSettingsGet(request));
+  }
+  @Post("codex-settings")
+  codexSettingsPost(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(req, reply, (request) => this.cliTools.codexSettingsPost(request));
+  }
+  @Delete("codex-settings")
+  codexSettingsDelete(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(req, reply, (request) => this.cliTools.codexSettingsDelete(request));
+  }
+
+  @Get("codex-profiles")
+  codexProfilesGet(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(req, reply, (request) => this.cliTools.codexProfilesGet(request));
+  }
+  @Post("codex-profiles")
+  codexProfilesPost(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(req, reply, (request) => this.cliTools.codexProfilesPost(request));
+  }
+  @Put("codex-profiles")
+  codexProfilesPut(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(req, reply, (request) => this.cliTools.codexProfilesPut(request));
+  }
+  @Delete("codex-profiles")
+  codexProfilesDelete(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(req, reply, (request) => this.cliTools.codexProfilesDelete(request));
+  }
+
+  @Get("status")
+  cliStatusGet(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(req, reply, (request) => this.cliTools.cliStatusGet(request));
   }
 }

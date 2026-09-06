@@ -1,5 +1,3 @@
-"use server";
-
 import fs from "fs/promises";
 import path from "path";
 import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";

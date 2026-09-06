@@ -540,6 +540,26 @@
       "types": "./src/public/apiKeyResolver.d.ts",
       "import": "./src/shared/services/apiKeyResolver.ts"
     },
+    "./shared/data-paths": {
+      "types": "./src/public/dataPaths.d.ts",
+      "import": "./src/lib/dataPaths.ts"
+    },
+    "./shared/utils/codexBaseUrl": {
+      "types": "./src/public/codexBaseUrl.d.ts",
+      "import": "./src/shared/utils/codexBaseUrl.ts"
+    },
+    "./shared/utils/codexConfig": {
+      "types": "./src/public/codexConfig.d.ts",
+      "import": "./src/shared/utils/codexConfig.ts"
+    },
+    "./shared/utils/turkishText": {
+      "types": "./src/public/turkishText.d.ts",
+      "import": "./src/shared/utils/turkishText.ts"
+    },
+    "./shared/cli-tool-config-status": {
+      "types": "./src/public/cliToolConfigStatus.d.ts",
+      "import": "./src/lib/cliTools/checkToolConfigStatus.ts"
+    },
     "./shared/validation/schemas/cli": {
       "types": "./src/public/cliSchemas.d.ts",
       "import": "./src/shared/validation/schemas/cli.ts"

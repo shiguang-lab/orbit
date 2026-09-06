@@ -31,3 +31,19 @@ export function deleteCliToolLastConfigured(toolId: string): void {
   if (!db) return;
   db.prepare("DELETE FROM key_value WHERE namespace = ? AND key = ?").run("cliToolLastConfig", toolId);
 }
+
+export function getAllCliToolLastConfigured(): Record<string, string> {
+  const db = database();
+  if (!db) return {};
+  const rows = db.prepare("SELECT key, value FROM key_value WHERE namespace = ?").all("cliToolLastConfig") as Array<{ key: string; value: string }>;
+  const result: Record<string, string> = {};
+  for (const row of rows) {
+    try {
+      const value = JSON.parse(row.value) as unknown;
+      if (typeof value === "string") result[row.key] = value;
+    } catch {
+      // Ignore malformed legacy values.
+    }
+  }
+  return result;
+}

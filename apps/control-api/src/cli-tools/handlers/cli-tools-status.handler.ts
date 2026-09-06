@@ -1,10 +1,7 @@
-"use server";
-
-import { NextResponse } from "next/server";
-import { requireCliToolsAuth } from "../../../../lib/api/requireCliToolsAuth.ts";
-import { getCliRuntimeStatus, CLI_TOOL_IDS } from "../../../../shared/services/cliRuntime.ts";
-import { getAllCliToolLastConfigured } from "../../../../lib/db/cliToolState.ts";
-import { checkToolConfigStatus } from "../../../../lib/cliTools/checkToolConfigStatus.ts";
+import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { getCliRuntimeStatus, CLI_TOOL_IDS } from "@shiguang-gateway/core-domain/shared/services/cliRuntime";
+import { getAllCliToolLastConfigured } from "../cli-tool-state.js";
+import { checkToolConfigStatus } from "@shiguang-gateway/core-domain/shared/cli-tool-config-status";
 
 /**
  * GET /api/cli-tools/status
@@ -16,7 +13,15 @@ export async function GET(request: Request) {
   if (authError) return authError;
 
   try {
-    const statuses = {};
+    const statuses: Record<string, {
+      installed: boolean;
+      runnable: boolean;
+      command?: string;
+      commandPath?: string;
+      reason?: string | null;
+      configStatus?: string;
+      lastConfiguredAt?: string;
+    }> = {};
 
     // Run all runtime checks in parallel with individual timeouts
     const RUNTIME_CHECK_TIMEOUT = 5000; // 5s per tool max
@@ -46,7 +51,7 @@ export async function GET(request: Request) {
           statuses[toolId] = {
             installed: false,
             runnable: false,
-            reason: error.message || "Check failed",
+            reason: error instanceof Error ? error.message : "Check failed",
           };
         }
       })
@@ -89,9 +94,9 @@ export async function GET(request: Request) {
       /* non-critical */
     }
 
-    return NextResponse.json(statuses);
+    return Response.json(statuses);
   } catch (error) {
     console.log("Error fetching CLI tool statuses:", error);
-    return NextResponse.json({ error: "Failed to fetch statuses" }, { status: 500 });
+    return Response.json({ error: "Failed to fetch statuses" }, { status: 500 });
   }
 }
