@@ -306,3 +306,70 @@ export const ReasoningRoutingRuleEntity: EntityDefinition = {
     column("updated_at", "TEXT", { nullable: false }),
   ],
 };
+
+/** Quota-share groups configured by control and consumed by edge enforcement. */
+export const QuotaGroupEntity: EntityDefinition = {
+  entityName: "QuotaGroup",
+  tableName: "quota_groups",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("name", "TEXT", { nullable: false }),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
+/** Quota pools map provider connections into a shareable budget. */
+export const QuotaPoolEntity: EntityDefinition = {
+  entityName: "QuotaPool",
+  tableName: "quota_pools",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("connection_id", "TEXT", { nullable: false }),
+    column("name", "TEXT", { nullable: false }),
+    column("created_at", "TEXT", { nullable: false, default: "CURRENT_TIMESTAMP" }),
+    column("group_id", "TEXT"),
+  ],
+};
+
+/** Per-key allocations and policy caps within a quota pool. */
+export const QuotaAllocationEntity: EntityDefinition = {
+  entityName: "QuotaAllocation",
+  tableName: "quota_allocations",
+  owner: "control-api",
+  columns: [
+    column("pool_id", "TEXT", { nullable: false, primaryKey: true }),
+    column("api_key_id", "TEXT", { nullable: false, primaryKey: true }),
+    column("weight", "REAL", { nullable: false }),
+    column("cap_value", "REAL"),
+    column("cap_unit", "TEXT"),
+    column("policy", "TEXT", { nullable: false, default: "'hard'" }),
+  ],
+};
+
+/** Authoritative multi-provider membership for a quota pool. */
+export const QuotaPoolConnectionEntity: EntityDefinition = {
+  entityName: "QuotaPoolConnection",
+  tableName: "quota_pool_connections",
+  owner: "control-api",
+  columns: [
+    column("pool_id", "TEXT", { nullable: false, primaryKey: true }),
+    column("connection_id", "TEXT", { nullable: false, primaryKey: true }),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
+/** Optional per-model budget caps within a key allocation. */
+export const QuotaAllocationModelCapEntity: EntityDefinition = {
+  entityName: "QuotaAllocationModelCap",
+  tableName: "quota_allocation_model_caps",
+  owner: "control-api",
+  columns: [
+    column("pool_id", "TEXT", { nullable: false, primaryKey: true }),
+    column("api_key_id", "TEXT", { nullable: false, primaryKey: true }),
+    column("model", "TEXT", { nullable: false, primaryKey: true }),
+    column("cap_value", "REAL", { nullable: false }),
+    column("cap_unit", "TEXT", { nullable: false }),
+  ],
+};

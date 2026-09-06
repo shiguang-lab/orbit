@@ -18,6 +18,11 @@ import {
   FreeProxyEntity,
   FreeProxySyncErrorEntity,
   ReasoningRoutingRuleEntity,
+  QuotaGroupEntity,
+  QuotaPoolEntity,
+  QuotaAllocationEntity,
+  QuotaPoolConnectionEntity,
+  QuotaAllocationModelCapEntity,
 } from "./entities/control.entity.js";
 import {
   AgenticConversationEntity,
@@ -27,6 +32,7 @@ import {
   ConversationTurnNodeEntity,
   FileEntity,
   ProviderQuotaStateEntity,
+  QuotaConsumptionEntity,
 } from "./entities/edge.entity.js";
 import {
   AuditLogEntity,
@@ -76,6 +82,12 @@ export const GATEWAY_TABLES = {
   freeProxies: "free_proxies",
   freeProxySyncErrors: "free_proxy_sync_errors",
   reasoningRoutingRules: "reasoning_routing_rules",
+  quotaGroups: "quota_groups",
+  quotaPools: "quota_pools",
+  quotaAllocations: "quota_allocations",
+  quotaPoolConnections: "quota_pool_connections",
+  quotaAllocationModelCaps: "quota_allocation_model_caps",
+  quotaConsumption: "quota_consumption",
 } as const;
 
 export type GatewayTable = (typeof GATEWAY_TABLES)[keyof typeof GATEWAY_TABLES];
@@ -124,6 +136,12 @@ export const TABLE_OWNERSHIP: readonly TableRef[] = [
   { table: GATEWAY_TABLES.freeProxies, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.freeProxySyncErrors, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.reasoningRoutingRules, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.quotaGroups, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.quotaPools, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.quotaAllocations, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.quotaPoolConnections, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.quotaAllocationModelCaps, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.quotaConsumption, owner: "edge-gateway", access: "read-write" },
 ];
 
 /**
@@ -166,6 +184,12 @@ export const GATEWAY_ENTITIES = {
   freeProxies: FreeProxyEntity,
   freeProxySyncErrors: FreeProxySyncErrorEntity,
   reasoningRoutingRules: ReasoningRoutingRuleEntity,
+  quotaGroups: QuotaGroupEntity,
+  quotaPools: QuotaPoolEntity,
+  quotaAllocations: QuotaAllocationEntity,
+  quotaPoolConnections: QuotaPoolConnectionEntity,
+  quotaAllocationModelCaps: QuotaAllocationModelCapEntity,
+  quotaConsumption: QuotaConsumptionEntity,
 } satisfies Record<keyof typeof GATEWAY_TABLES, EntityDefinition>;
 
 /** Runtime guard used by architecture checks and tests. */

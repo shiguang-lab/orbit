@@ -105,3 +105,17 @@ export const ProviderQuotaStateEntity: EntityDefinition = {
     column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
   ],
 };
+
+/** Sliding-window quota counters updated on the edge request hot path. */
+export const QuotaConsumptionEntity: EntityDefinition = {
+  entityName: "QuotaConsumption",
+  tableName: "quota_consumption",
+  owner: "edge-gateway",
+  columns: [
+    column("api_key_id", "TEXT", { nullable: false, primaryKey: true }),
+    column("dimension_key", "TEXT", { nullable: false, primaryKey: true }),
+    column("bucket_index", "INTEGER", { nullable: false, primaryKey: true }),
+    column("consumed", "REAL", { nullable: false, default: "0" }),
+    column("updated_at", "INTEGER", { nullable: false }),
+  ],
+};
