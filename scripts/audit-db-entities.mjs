@@ -49,10 +49,16 @@ function workspaceAppConsumers(name, appEntries, packageEntries, dependents, see
   return [...apps].sort();
 }
 
-function classifySqlLine(line) {
-  return /\b(?:INSERT(?:\s+OR\s+(?:REPLACE|ROLLBACK|ABORT|FAIL|IGNORE))?\s+INTO|REPLACE\s+INTO|UPDATE(?:\s+OR\s+(?:ROLLBACK|ABORT|REPLACE|FAIL|IGNORE))?|DELETE\s+FROM|CREATE\s+TABLE|ALTER\s+TABLE|DROP\s+TABLE)\b/i.test(line)
-    ? "write"
-    : "read";
+function classifySqlLine(line, tableName) {
+  // Require the SQL verb to be attached to the table token.  A prose line
+  // such as "Files were updated" must not become write evidence merely
+  // because it contains the words "files" and "update".
+  const table = tableName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const writePattern = new RegExp(
+    `\\b(?:INSERT(?:\\s+OR\\s+(?:REPLACE|ROLLBACK|ABORT|FAIL|IGNORE))?\\s+INTO|REPLACE\\s+INTO|UPDATE(?:\\s+OR\\s+(?:ROLLBACK|ABORT|REPLACE|FAIL|IGNORE))?|DELETE\\s+FROM|CREATE\\s+TABLE(?:\\s+IF\\s+NOT\\s+EXISTS)?|ALTER\\s+TABLE|DROP\\s+TABLE)\\s+(?:["']|\\x60)?${table}\\b`,
+    "i",
+  );
+  return writePattern.test(line) ? "write" : "read";
 }
 
 function collectUsage(entities, appEntries, packageEntries, appConsumers) {
@@ -72,7 +78,7 @@ function collectUsage(entities, appEntries, packageEntries, appConsumers) {
       const token = new RegExp(`\\b${entity.tableName.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\b`, "i");
       const matches = source.split(/\r?\n/).filter((line) => token.test(line));
       if (matches.length === 0) continue;
-      const reads = matches.filter((line) => classifySqlLine(line) === "read").length;
+      const reads = matches.filter((line) => classifySqlLine(line, entity.tableName) === "read").length;
       const writes = matches.length - reads;
       if (kind === "app") {
         usage[key].directApps[unit] ??= { reads: 0, writes: 0 };
