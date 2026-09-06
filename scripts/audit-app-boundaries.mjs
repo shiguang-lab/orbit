@@ -128,6 +128,10 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "shared/free-models",
   "shared/cors-status",
   "shared/authz-route-constants",
+  "db/provider-cc-alias",
+  "db/provider-interception-rules",
+  "db/provider-param-filters",
+  "control/web-session-contract",
 );
 
 // Route files that have completed a physical ownership move. Keep this list
@@ -167,6 +171,11 @@ const migratedRouteOwnership = {
     "api/provider-nodes/validate/route.ts",
     "api/providers/validate/route.ts",
     "api/providers/[id]/refresh/route.ts",
+    "api/providers/[id]/cc-alias/route.ts",
+    "api/providers/[id]/interception-rules/route.ts",
+    "api/providers/[id]/param-filters/route.ts",
+    "api/providers/client/route.ts",
+    "api/providers/web-session-contract/route.ts",
     "api/keys/route.ts",
     "api/keys/[id]/route.ts",
     "api/keys/[id]/devices/route.ts",

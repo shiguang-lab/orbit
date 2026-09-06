@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -13,17 +14,111 @@ import {
 } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { ProvidersService } from "./providers.service.js";
+import { ProviderPolicyService } from "./provider-policy.service.js";
+import { ProviderClientService } from "./provider-client.service.js";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import {
+  updateCcAliasSettingSchema,
+  updateInterceptionRulesSchema,
+  updateParamFilterConfigSchema,
+} from "@shiguang-gateway/core-domain/shared/validation/schemas";
 
 @Controller("api")
 export class ProvidersController {
   constructor(
     @Inject(ProvidersService) private readonly providersService: ProvidersService,
-    @Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher
+    @Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher,
+    @Inject(ProviderPolicyService) private readonly providerPolicy: ProviderPolicyService,
+    @Inject(ProviderClientService) private readonly providerClient: ProviderClientService,
   ) {}
+
+  @Get("providers/:id/cc-alias")
+  async getCcAlias(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    if (!(await this.authorizeManagement(request, reply))) return;
+    try { return reply.send(this.providerPolicy.getCcAlias(id)); }
+    catch (error) { return reply.status(500).send(buildErrorBody(500, String(error))); }
+  }
+
+  @Put("providers/:id/cc-alias")
+  async updateCcAlias(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply, @Body() body: unknown) {
+    if (!(await this.authorizeManagement(request, reply))) return;
+    const validation = validateBody(updateCcAliasSettingSchema, body);
+    if (isValidationFailure(validation)) return reply.status(400).send({ error: validation.error });
+    try {
+      this.providerPolicy.updateCcAlias(id, validation.data);
+      return reply.send({ success: true });
+    } catch (error) { return reply.status(500).send(buildErrorBody(500, String(error))); }
+  }
+
+  @Get("providers/:id/interception-rules")
+  async getInterceptionRules(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    if (!(await this.authorizeManagement(request, reply))) return;
+    try { return reply.send(this.providerPolicy.getInterception(id)); }
+    catch (error) { return reply.status(500).send(buildErrorBody(500, String(error))); }
+  }
+
+  @Put("providers/:id/interception-rules")
+  async updateInterceptionRules(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply, @Body() body: unknown) {
+    if (!(await this.authorizeManagement(request, reply))) return;
+    const validation = validateBody(updateInterceptionRulesSchema, body);
+    if (isValidationFailure(validation)) return reply.status(400).send({ error: validation.error });
+    try {
+      this.providerPolicy.updateInterception(id, validation.data);
+      return reply.send({ success: true });
+    } catch (error) { return reply.status(500).send(buildErrorBody(500, String(error))); }
+  }
+
+  @Delete("providers/:id/interception-rules")
+  async deleteInterceptionRules(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    if (!(await this.authorizeManagement(request, reply))) return;
+    try { this.providerPolicy.deleteInterception(id); return reply.send({ success: true }); }
+    catch (error) { return reply.status(500).send(buildErrorBody(500, String(error))); }
+  }
+
+  @Get("providers/:id/param-filters")
+  async getParamFilters(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    if (!(await this.authorizeManagement(request, reply))) return;
+    try { return reply.send(this.providerPolicy.getParamFilters(id)); }
+    catch (error) { return reply.status(500).send(buildErrorBody(500, String(error))); }
+  }
+
+  @Put("providers/:id/param-filters")
+  async updateParamFilters(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply, @Body() body: unknown) {
+    if (!(await this.authorizeManagement(request, reply))) return;
+    const validation = validateBody(updateParamFilterConfigSchema, body);
+    if (isValidationFailure(validation)) return reply.status(400).send({ error: validation.error });
+    const { block, allow, models, autoLearn } = validation.data;
+    try {
+      this.providerPolicy.updateParamFilters(id, { block: block ?? [], allow: allow ?? [], models, autoLearn: autoLearn ?? false });
+      return reply.send({ success: true });
+    } catch (error) { return reply.status(500).send(buildErrorBody(500, String(error))); }
+  }
+
+  @Delete("providers/:id/param-filters")
+  async deleteParamFilters(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    if (!(await this.authorizeManagement(request, reply))) return;
+    try { this.providerPolicy.deleteParamFilters(id); return reply.send({ success: true }); }
+    catch (error) { return reply.status(500).send(buildErrorBody(500, String(error))); }
+  }
+
+  @Get("providers/client")
+  async providerClientConnections(@Res() reply: FastifyReply) {
+    try { return reply.send(await this.providerClient.listConnections()); }
+    catch (error) {
+      console.log("Error fetching providers for client:", error);
+      return reply.status(500).send({ error: "Failed to fetch providers" });
+    }
+  }
+
+  @Get("providers/web-session-contract")
+  async webSessionContract(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    if (!(await this.authorizeManagement(request, reply))) return;
+    return reply.send(this.providerClient.getWebSessionContract());
+  }
 
   @Post("providers/:id/refresh")
   refreshProvider(
@@ -273,5 +368,12 @@ export class ProvidersController {
       console.error("Failed to build provider health matrix", error);
       return reply.status(500).send(buildErrorBody(500, "Failed to build provider health matrix"));
     }
+  }
+
+  private async authorizeManagement(request: FastifyRequest, reply: FastifyReply): Promise<boolean> {
+    const authError = await requireManagementAuth(request.raw as unknown as Request);
+    if (!authError) return true;
+    reply.status(authError.status).send(await authError.json());
+    return false;
   }
 }

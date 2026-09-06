@@ -24,3 +24,6 @@ export const updateAutoDisableAccountsSchema: z.ZodTypeAny;
 export const updateIpFilterSchema: z.ZodTypeAny;
 export const updatePayloadRulesSchema: z.ZodTypeAny;
 export const updateRequireLoginSchema: z.ZodTypeAny;
+export const updateParamFilterConfigSchema: z.ZodTypeAny;
+export const updateInterceptionRulesSchema: z.ZodTypeAny;
+export const updateCcAliasSettingSchema: z.ZodTypeAny;

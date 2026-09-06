@@ -206,6 +206,10 @@
       "types": "./src/public/settings.d.ts",
       "import": "./src/lib/db/settings.ts"
     },
+    "./control/settings-config": {
+      "types": "./src/public/settingsConfig.d.ts",
+      "import": "./src/control/settingsConfig.ts"
+    },
     "./shared/auto-disable-banned": {
       "types": "./src/public/autoDisableBanned.d.ts",
       "import": "./src/shared/utils/autoDisableBanned.ts"
@@ -329,6 +333,22 @@
     "./control/provider-validation": {
       "types": "./src/public/providerValidation.d.ts",
       "import": "./src/lib/providers/validation.ts"
+    },
+    "./control/web-session-contract": {
+      "types": "./src/public/webSessionContract.d.ts",
+      "import": "./src/lib/providers/webSessionContract.ts"
+    },
+    "./db/provider-cc-alias": {
+      "types": "./src/public/providerCcAlias.d.ts",
+      "import": "./src/lib/db/ccDiscoveryAliases.ts"
+    },
+    "./db/provider-interception-rules": {
+      "types": "./src/public/providerInterceptionRules.d.ts",
+      "import": "./src/lib/db/interceptionRules.ts"
+    },
+    "./db/provider-param-filters": {
+      "types": "./src/public/providerParamFilters.d.ts",
+      "import": "./src/lib/db/paramFilters.ts"
     },
     "./db/provider-nodes": {
       "types": "./src/public/providerNodesDb.d.ts",
