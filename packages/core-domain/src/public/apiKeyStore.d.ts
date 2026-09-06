@@ -1,6 +1,7 @@
 export function getApiKeys(limit?: number, offset?: number): Promise<any[]>;
 export function getApiKeysCount(): number;
-export function createApiKey(name: string, machineId: string, scopes: string[], options?: { allowedConnections?: string[] }): Promise<any>;
+export function createApiKey(name: string, machineId: string, scopes?: string[], options?: { allowedConnections?: string[] }): Promise<any>;
+export function revokeApiKey(id: string): Promise<boolean>;
 export function pickApiKeyForInternalUse(reason?: string): Promise<string | null>;
 export function updateApiKeyPermissions(id: string, payload: Record<string, unknown>): Promise<any>;
 export function getApiKeyById(id: string): Promise<any | null>;

@@ -1,1 +1,1 @@
-export { getComboByName, getCombos } from "../lib/db/combos.js";
+export { createCombo, getComboByName, getCombos } from "../lib/db/combos.js";

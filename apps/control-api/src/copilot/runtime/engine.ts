@@ -6,8 +6,8 @@
  * knowledge from the system prompt.
  */
 
-import { getCopilotSystemPrompt } from "./systemPrompt";
-import { COPILOT_TOOLS, getCopilotTool, getCopilotToolDescriptions } from "./tools";
+import { getCopilotSystemPrompt } from "./system-prompt.js";
+import { COPILOT_TOOLS, getCopilotTool, getCopilotToolDescriptions } from "./tools.js";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 

@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { processCopilotChat } from "@shiguang-gateway/core-domain/control/copilot";
+import { processCopilotChat } from "./runtime/engine.js";
 
 @Injectable()
 export class CopilotService {

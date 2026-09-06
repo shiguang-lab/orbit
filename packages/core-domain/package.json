@@ -356,10 +356,6 @@
       "types": "./src/public/jobs.d.ts",
       "import": "./src/control/jobs.ts"
     },
-    "./control/copilot": {
-      "types": "./src/public/copilot.d.ts",
-      "import": "./src/control/copilot.ts"
-    },
     "./shared/validation-helpers": {
       "types": "./src/public/validationHelpers.d.ts",
       "import": "./src/shared/validation/helpers.ts"

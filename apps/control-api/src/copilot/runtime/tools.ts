@@ -10,10 +10,10 @@ import { promisify } from "node:util";
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 
 const execFileAsync = promisify(execFile);
-import { classifyCommand } from "./commandClassification";
-import { createCombo, getCombos, updateCombo } from "../db/combos.ts";
-import { getProviderConnections } from "../db/providers.ts";
-import { createApiKey, revokeApiKey, getApiKeys } from "../db/apiKeys.ts";
+import { classifyCommand } from "./command-classification.js";
+import { createCombo, getCombos } from "@shiguang-gateway/core-domain/db/combos";
+import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
+import { createApiKey, revokeApiKey, getApiKeys } from "@shiguang-gateway/core-domain/control/api-key-store";
 import {
   searchSymbols,
   findCallers,
@@ -23,8 +23,8 @@ import {
   getCodeGraphStats,
   isCodeGraphAvailable,
   type CodeGraphQueryResult,
-} from "./codegraphKnowledge";
-import { getAllKeyGroups } from "../db/apiKeyGroups.ts";
+} from "./codegraph-knowledge.js";
+import { getAllKeyGroups } from "@shiguang-gateway/core-domain/db/api-key-groups";
 
 // ── Tool Types ───────────────────────────────────────────────────────────────
 
