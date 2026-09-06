@@ -37,8 +37,10 @@ import { AutoComboCandidatesModule } from "./auto-combo-candidates/auto-combo-ca
 import { MessagesModule } from "./messages/messages.module.js";
 import { ResponsesModule } from "./responses/responses.module.js";
 import { RelayBifrostModule } from "./relay-bifrost/relay-bifrost.module.js";
+import { RelayChatModule } from "./relay-chat/relay-chat.module.js";
 import { VscodeVersionModule } from "./vscode-version/vscode-version.module.js";
 import { SearchModule } from "./search/search.module.js";
+import { VscodeChatModule } from "./vscode-chat/vscode-chat.module.js";
 
 @Module({
   imports: [
@@ -81,8 +83,10 @@ import { SearchModule } from "./search/search.module.js";
     MessagesModule,
     ResponsesModule,
     RelayBifrostModule,
+    RelayChatModule,
     VscodeVersionModule,
     SearchModule,
+    VscodeChatModule,
   ],
 })
 export class AppModule {}

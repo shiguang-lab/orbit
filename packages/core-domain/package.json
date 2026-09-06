@@ -32,6 +32,10 @@
       "types": "./src/public/chatHandler.d.ts",
       "import": "./src/sse/handlers/chat.ts"
     },
+    "./edge/vscode-token": {
+      "types": "./src/public/vscodeToken.d.ts",
+      "import": "./src/lib/vscode/tokenizedRequest.ts"
+    },
     "./edge/chat-admission": {
       "types": "./src/public/chatAdmission.d.ts",
       "import": "./src/shared/middleware/withChatAdmission.ts"
@@ -43,6 +47,10 @@
     "./edge/relay-bifrost": {
       "types": "./src/public/relayBifrost.d.ts",
       "import": "./src/lib/edge/relayBifrost.ts"
+    },
+    "./edge/relay-chat": {
+      "types": "./src/public/relayChat.d.ts",
+      "import": "./src/app/api/v1/relay/chat/completions/route.ts"
     },
     "./edge/count-tokens-validation": {
       "types": "./src/public/countTokensValidation.d.ts",
