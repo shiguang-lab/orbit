@@ -4,8 +4,8 @@ import {
   markForbidden as sqliteMarkForbidden,
   upsertWarmupState as sqliteUpsertWarmupState,
 } from "../db/connectionRuntimeState.ts";
-import { logger } from "../../../../open-sse/utils/logger.ts";
-import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+import { logger } from "@shiguang-gateway/runtime-logging";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 import type { WarmupResult } from "./core";
 
 const log = logger("WarmupCircuitBreaker");

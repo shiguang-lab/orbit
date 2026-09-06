@@ -1,7 +1,7 @@
 import { getProviderConnectionById, updateProviderConnection } from "../db/providers.ts";
 import { getKimiWebBaseUrl } from "../../../../open-sse/executors/kimi-web.ts";
 import { parseKimiJwt } from "../../../../open-sse/utils/kimiJwt.ts";
-import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 
 export interface KimiRefreshResult {
   success: boolean;

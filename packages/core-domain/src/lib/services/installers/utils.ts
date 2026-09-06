@@ -6,7 +6,7 @@
  */
 
 import { execFile } from "node:child_process";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 
 const DEFAULT_TIMEOUT_MS = 300_000; // 5 min — npm install can be slow
 

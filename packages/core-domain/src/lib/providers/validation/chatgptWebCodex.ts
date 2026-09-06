@@ -7,7 +7,7 @@ import {
   connectionRuntimePaths,
   ensureConnectionStorageState,
 } from "../../../../../open-sse/executors/chatgpt-web-codex/storageState.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 
 export async function validateChatGptWebCodexProvider({
   apiKey,

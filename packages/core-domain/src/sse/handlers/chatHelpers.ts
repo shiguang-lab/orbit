@@ -18,7 +18,7 @@ import {
   unavailableResponse,
 } from "../../../../open-sse/utils/error.ts";
 import { inheritTrustedLocalRateLimitResponse } from "../../../../open-sse/services/rateLimitManager/errors.ts";
-import { HTTP_STATUS } from "../../../../open-sse/config/constants.ts";
+import { HTTP_STATUS } from "@shiguang-gateway/contracts/http-status";
 import {
   runWithProxyContext,
   runWithAppliedProxyCapture,

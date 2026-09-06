@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 import { createErrorResponse } from "../lib/api/errorResponse.ts";
 import {
   resolveVideoBridgeDrilldownPrincipal,

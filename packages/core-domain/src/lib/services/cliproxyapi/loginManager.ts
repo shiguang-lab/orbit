@@ -15,7 +15,7 @@ import os from "os";
 import { DATA_DIR } from "../../db/core.ts";
 import { scanCliProxyAuthDir, toConnectionPayload } from "../../oauth/utils/cliProxyAuthImport.ts";
 import { createProviderConnection } from "../../../models/index.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 
 export type CliproxyLoginProvider =
   | "codex"

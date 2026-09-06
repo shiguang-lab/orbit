@@ -21,7 +21,7 @@
 import { RadarReferralsFeedSchema, type RadarReferralsFeed } from "./referralsFeedSchema";
 import { RadarTierSchema, type RadarTier } from "./feedSchema";
 import { verifyFeedBytes } from "./verify";
-import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 import { isFeatureFlagEnabled } from "../../shared/utils/featureFlags.ts";
 import type { RadarSettingsSnapshot } from "./sync";
 

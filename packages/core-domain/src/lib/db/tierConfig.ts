@@ -1,7 +1,7 @@
 import { getDbInstance } from "./core";
 import type { TierConfig } from "../../../../open-sse/services/tierTypes";
 import { validateTierConfig, DEFAULT_TIER_CONFIG } from "../../../../open-sse/services/tierConfig";
-import { defaultLogger as log } from "../../../../open-sse/utils/logger.ts";
+import { defaultLogger as log } from "@shiguang-gateway/runtime-logging";
 
 const TABLE = "tier_config";
 const CORRUPTED_VALUE_PREVIEW_LEN = 200;

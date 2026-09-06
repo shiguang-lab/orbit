@@ -6,7 +6,7 @@ import {
 import { parseTranslationModel, getTranslationProvider } from "../../../../open-sse/config/audioRegistry.ts";
 import { resolveDynamicAudioProviders } from "../edge/audioProviderNodes.ts";
 import { errorResponse } from "../../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../../open-sse/config/constants.ts";
+import { HTTP_STATUS } from "@shiguang-gateway/contracts/http-status";
 import { enforceApiKeyPolicy } from "../../shared/utils/apiKeyPolicy.ts";
 import {
   isAllRateLimitedCredentials,

@@ -25,7 +25,8 @@ import {
   getProviderOutboundGuard,
   getProviderValidationGuard,
 } from "../../shared/network/outboundUrlGuardPolicy.ts";
-import { errorResponse, sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+import { errorResponse } from "../../../../open-sse/utils/error.ts";
 import { getStaticQoderModels } from "../../../../open-sse/services/qoderCli.ts";
 import { deriveConfigFromRegistryModelsUrl } from "./discoveryConfig";
 import { resolveZedModels } from "../../../../open-sse/shared/zedAuth.ts";

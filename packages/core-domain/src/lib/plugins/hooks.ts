@@ -7,7 +7,7 @@
  * @module plugins/hooks
  */
 
-import { logger } from "../../../../open-sse/utils/logger.ts";
+import { logger } from "@shiguang-gateway/runtime-logging";
 
 const log = logger("PLUGIN_HOOKS");
 

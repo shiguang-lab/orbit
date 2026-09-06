@@ -7,7 +7,7 @@
 
 import { execFile, execSync } from "node:child_process";
 import { promisify } from "node:util";
-import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 
 const execFileAsync = promisify(execFile);
 import { classifyCommand } from "./commandClassification";

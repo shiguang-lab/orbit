@@ -93,14 +93,14 @@ function ensureDir() {
 }
 
 // Level tokens the in-repo tagged logger puts in front of the component. Keep in sync with
-// LEVELS in open-sse/utils/logger.ts — that module keeps the type internal, so the list
+// LEVELS in runtime-logging — that module keeps the type internal, so the list
 // cannot be imported today.
 const LEVEL_TOKENS = new Set(["DEBUG", "INFO", "WARN", "WARNING", "ERROR", "FATAL", "TRACE"]);
 
 /**
  * Try to extract component name from message patterns like [COMPONENT] or [component].
  *
- * The tagged logger emits `[LEVEL] [TAG] message` (open-sse/utils/logger.ts), so taking the
+ * The tagged logger emits `[LEVEL] [TAG] message` (runtime-logging), so taking the
  * first bracket recorded the level as the component and dropped the real one — the log stopped
  * being filterable by component, which is the point of the field. Level tokens are skipped; the
  * level already travels in the entry's own `level` field.

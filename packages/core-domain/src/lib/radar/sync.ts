@@ -13,7 +13,7 @@
 
 import { RadarFeedSchema, RadarTierSchema, type RadarFeed, type RadarTier } from "./feedSchema";
 import { verifyFeedBytes } from "./verify";
-import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 import { isFeatureFlagEnabled } from "../../shared/utils/featureFlags.ts";
 
 // ---------------------------------------------------------------------------

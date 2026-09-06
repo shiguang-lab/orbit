@@ -6,7 +6,7 @@ import {
   discoverConolModels,
   type ConolModel,
 } from "../../../../open-sse/services/conolModels.ts";
-import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 
 interface DiscoveryWarnings {
   cacheWarning?: string;

@@ -8,7 +8,7 @@ import {
   toAdobeMediaCapabilitiesApi,
   type AdobeFireflyCatalogModel,
 } from "../../../../open-sse/services/adobeFireflyModels.ts";
-import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 
 type AdobeProviderData = { cookie?: unknown; access_token?: unknown; accessToken?: unknown };
 

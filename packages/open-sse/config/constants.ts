@@ -1,4 +1,5 @@
 import { getUpstreamTimeoutConfig } from "@shiguang-gateway/config/timeouts";
+export { HTTP_STATUS } from "@shiguang-gateway/contracts/http-status";
 import { resolvePublicCred } from "../utils/publicCreds.ts";
 import type { LegacyProvider } from "./providerRegistry.ts";
 import { loadProviderCredentials } from "./credentialLoader.ts";
@@ -162,24 +163,6 @@ export const PROVIDER_MAX_TOKENS: Record<string, number> = {
 };
 
 export const DEFAULT_PROVIDER_MAX_TOKENS = 32000;
-
-// HTTP status codes
-export const HTTP_STATUS = {
-  BAD_REQUEST: 400,
-  UNAUTHORIZED: 401,
-  PAYMENT_REQUIRED: 402,
-  FORBIDDEN: 403,
-  NOT_FOUND: 404,
-  NOT_ACCEPTABLE: 406,
-  UNPROCESSABLE_ENTITY: 422,
-  REQUEST_TIMEOUT: 408,
-  GONE: 410,
-  RATE_LIMITED: 429,
-  SERVER_ERROR: 500,
-  BAD_GATEWAY: 502,
-  SERVICE_UNAVAILABLE: 503,
-  GATEWAY_TIMEOUT: 504,
-};
 
 /**
  * #10360 — stable error code for an INTERNAL violation of the executor

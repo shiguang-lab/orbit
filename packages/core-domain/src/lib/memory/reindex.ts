@@ -11,8 +11,8 @@ import {
 import { resolveEmbeddingSource, embed } from "./embedding";
 import { getVectorStore } from "./vectorStore";
 import { getMemorySettings } from "./settings";
-import { logger } from "../../../../open-sse/utils/logger.ts";
-import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+import { logger } from "@shiguang-gateway/runtime-logging";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 
 const log = logger("MEMORY_REINDEX");
 

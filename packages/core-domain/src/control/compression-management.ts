@@ -20,4 +20,4 @@ export {
   retrieveBlock,
 } from "@shiguang-gateway/open-sse/services/compression/engines/ccr/index";
 export { queryBlock } from "@shiguang-gateway/open-sse/services/compression/engines/ccr/ccrQuery";
-export { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+export { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";

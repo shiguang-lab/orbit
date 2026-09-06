@@ -137,6 +137,10 @@
     "./numeric": {
       "types": "./src/numeric.ts",
       "import": "./src/numeric.ts"
+    },
+    "./http-status": {
+      "types": "./src/http-status.ts",
+      "import": "./src/http-status.ts"
     }
   },
   "scripts": {

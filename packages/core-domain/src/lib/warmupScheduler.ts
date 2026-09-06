@@ -4,7 +4,7 @@ import { resolveProxyForConnection } from "./db/settings.ts";
 import { extractResolvedProxyConfig } from "./tokenHealthCheck.ts";
 import { refreshAndUpdateCredentials } from "./usage/providerLimits.ts";
 import { runWithProxyContext } from "../../../open-sse/utils/proxyFetch.ts";
-import { logger } from "../../../open-sse/utils/logger.ts";
+import { logger } from "@shiguang-gateway/runtime-logging";
 import { matchesCron } from "./jobs/cronMatch.ts";
 import { getCircuitBreakerStore } from "./warmupScheduler/circuitBreakerFactory";
 import { TERMINAL_CONNECTION_STATUSES } from "./quota/connectionRecovery.ts";

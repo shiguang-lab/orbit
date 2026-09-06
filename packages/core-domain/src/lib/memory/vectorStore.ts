@@ -16,8 +16,8 @@ import {
   countMemoryReindexPending,
 } from "../localDb";
 import { getDbInstance } from "../db/core";
-import { logger } from "../../../../open-sse/utils/logger.ts";
-import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+import { logger } from "@shiguang-gateway/runtime-logging";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 
 const _require = createRequire(import.meta.url);
 

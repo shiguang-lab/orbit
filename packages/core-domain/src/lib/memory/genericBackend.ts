@@ -4,7 +4,7 @@
  * Supports Obsidian, Notion, custom backends, etc.
  */
 
-import { logger } from "../../../../open-sse/utils/logger.ts";
+import { logger } from "@shiguang-gateway/runtime-logging";
 import type {
   MemoryBackend,
   CreateMemoryInput,

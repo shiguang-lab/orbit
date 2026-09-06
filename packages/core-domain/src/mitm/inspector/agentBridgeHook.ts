@@ -8,7 +8,7 @@
 
 import { randomUUID } from "node:crypto";
 import type { IncomingMessage } from "node:http";
-import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 import { maskSecret } from "../maskSecrets.ts";
 import { sanitizeHeaders } from "../sanitizeHeaders.ts";
 import type { AgentId } from "../types.ts";

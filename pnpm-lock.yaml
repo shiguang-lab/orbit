@@ -424,6 +424,9 @@ importers:
       '@shiguang-gateway/db-schema':
         specifier: workspace:*
         version: link:../db-schema
+      '@shiguang-gateway/error-sanitization':
+        specifier: workspace:*
+        version: link:../error-sanitization
       '@shiguang-gateway/network-guard':
         specifier: workspace:*
         version: link:../network-guard
@@ -433,6 +436,9 @@ importers:
       '@shiguang-gateway/rerank-catalog':
         specifier: workspace:*
         version: link:../rerank-catalog
+      '@shiguang-gateway/runtime-logging':
+        specifier: workspace:*
+        version: link:../runtime-logging
       '@swc/helpers':
         specifier: ^0.5.23
         version: 0.5.23
@@ -736,6 +742,9 @@ importers:
       '@shiguang-gateway/network-guard':
         specifier: workspace:*
         version: link:../network-guard
+      '@shiguang-gateway/runtime-logging':
+        specifier: workspace:*
+        version: link:../runtime-logging
       '@toon-format/toon':
         specifier: ^4.1.1
         version: 4.1.1
@@ -810,6 +819,19 @@ importers:
 
   packages/rerank-catalog:
     devDependencies:
+      typescript:
+        specifier: 'catalog:'
+        version: 5.8.3
+
+  packages/runtime-logging:
+    dependencies:
+      '@shiguang-gateway/config':
+        specifier: workspace:*
+        version: link:../config
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 22.20.1
       typescript:
         specifier: 'catalog:'
         version: 5.8.3

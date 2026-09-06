@@ -1,6 +1,6 @@
 import { skillRegistry } from "./registry";
 import { Skill } from "./types";
-import { logger } from "../../../../open-sse/utils/logger.ts";
+import { logger } from "@shiguang-gateway/runtime-logging";
 
 const log = logger("SKILLS_INJECTION");
 

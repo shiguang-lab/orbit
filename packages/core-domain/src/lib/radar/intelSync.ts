@@ -2,7 +2,7 @@
 
 import crypto from "node:crypto";
 
-import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 
 import { isFeatureFlagEnabled } from "../../shared/utils/featureFlags.ts";
 

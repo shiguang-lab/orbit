@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-export { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+export { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 
 export type ApiErrorType = "invalid_request" | "not_found" | "conflict" | "server_error";
 

@@ -1,5 +1,5 @@
 import { errorResponse } from "../../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../../open-sse/config/constants.ts";
+import { HTTP_STATUS } from "@shiguang-gateway/contracts/http-status";
 
 import { attachShiguangGatewayMetaHeaders } from "../../domain/gatewayResponseMeta.ts";
 import { calculateModalCost } from "../usage/costCalculator.ts";

@@ -22,9 +22,9 @@ import { checkTokenLimits } from "../../../../open-sse/services/tokenLimitCounte
 import {
   errorResponse,
   buildErrorBody,
-  sanitizeErrorMessage,
 } from "../../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../../open-sse/config/constants.ts";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+import { HTTP_STATUS } from "@shiguang-gateway/contracts/http-status";
 import * as log from "../../sse/utils/logger.ts";
 import { checkRateLimit, RateLimitRule } from "./rateLimiter";
 import { resolveEndpointCategory } from "../constants/endpointCategories.ts";

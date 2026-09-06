@@ -4,7 +4,7 @@ import {
   convertOpenAIResponseToGemini,
   transformOpenAISSEToGeminiSSE,
 } from "@shiguang-gateway/open-sse/translator/response/openai-to-gemini-sse";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 import { v1betaGeminiGenerateSchema } from "../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../shared/validation/helpers.ts";
 import { convertGeminiToInternal } from "./geminiRequest.ts";

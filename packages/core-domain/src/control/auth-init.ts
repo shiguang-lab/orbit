@@ -9,7 +9,7 @@ import {
 import { validateBody, isValidationFailure } from "../shared/validation/helpers.ts";
 import { oauthDeviceCompleteSchema } from "../shared/validation/schemas.ts";
 import { safeOutboundFetch, SafeOutboundFetchError, getSafeOutboundFetchErrorStatus } from "../shared/network/safeOutboundFetch.ts";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 import ensureCloudSyncInitialized from "../lib/initCloudSync.ts";
 
 export type ControlResult = { status: number; body: unknown };

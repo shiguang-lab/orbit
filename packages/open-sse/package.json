@@ -395,6 +395,7 @@
     "@shiguang-gateway/core-domain": "workspace:*",
     "@shiguang-gateway/error-sanitization": "workspace:*",
     "@shiguang-gateway/network-guard": "workspace:*",
+    "@shiguang-gateway/runtime-logging": "workspace:*",
     "@toon-format/toon": "^4.1.1",
     "bottleneck": "^2.19.5",
     "fflate": "^0.8.3",

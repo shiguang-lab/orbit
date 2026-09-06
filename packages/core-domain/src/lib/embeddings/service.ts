@@ -7,7 +7,7 @@ import {
   type EmbeddingProvider,
 } from "../../../../open-sse/config/embeddingRegistry.ts";
 import { errorResponse, unavailableResponse } from "../../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../../open-sse/config/constants.ts";
+import { HTTP_STATUS } from "@shiguang-gateway/contracts/http-status";
 import * as log from "../../sse/utils/logger.ts";
 import { toJsonErrorPayload } from "../../shared/utils/upstreamError.ts";
 import {

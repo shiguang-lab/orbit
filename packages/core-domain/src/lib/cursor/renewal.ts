@@ -1,5 +1,5 @@
 import { homedir } from "os";
-import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 import { createKeyedMutex } from "../../shared/utils/keyedMutex.ts";
 import { resolveCursorAgentBinary, runCursorAgent } from "../providerModels/cursorAgent.ts";
 import { tryAgentAuth, tryIdeAuth } from "./tokenExtractor.ts";

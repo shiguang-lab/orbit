@@ -17,7 +17,7 @@ import {
   getRuns as dbGetRuns,
 } from "../db/jobRegistryDb";
 import { isEnvEnabled } from "./core";
-import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 import type { JobDefinition, HandlerResult, JobRun } from "./core";
 
 function errMessage(err: unknown): string {

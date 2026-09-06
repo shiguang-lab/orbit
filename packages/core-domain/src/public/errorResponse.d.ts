@@ -7,4 +7,4 @@ export function createErrorResponse(payload: {
   details?: unknown;
 }): Response;
 export function createErrorResponseFromUnknown(error: unknown, fallbackMessage?: string): Response;
-export { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+export { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";

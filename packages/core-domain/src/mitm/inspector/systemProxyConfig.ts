@@ -16,7 +16,7 @@
 
 import { execFile, type ExecFileOptions } from "node:child_process";
 import os from "node:os";
-import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 
 export type Platform = "linux" | "macos" | "windows";
 

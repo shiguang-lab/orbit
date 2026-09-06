@@ -45,10 +45,8 @@ import { resolveCompressionSettings } from "../../../../open-sse/handlers/chatCo
 import type { CompressionExclusions } from "../../../../open-sse/services/compression/exclusions.ts";
 import { resolveComboConfig } from "../../../../open-sse/services/comboConfig.ts";
 import { injectHandoffIntoBody } from "../../../../open-sse/services/contextHandoff.ts";
-import {
-  HTTP_STATUS,
-  ANTIGRAVITY_PRE_RESPONSE_TIMEOUT_CODE,
-} from "../../../../open-sse/config/constants.ts";
+import { HTTP_STATUS } from "@shiguang-gateway/contracts/http-status";
+import { ANTIGRAVITY_PRE_RESPONSE_TIMEOUT_CODE } from "../../../../open-sse/config/constants.ts";
 import {
   getTargetFormat,
   detectFormatFromEndpoint,

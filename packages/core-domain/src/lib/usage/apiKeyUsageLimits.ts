@@ -2,7 +2,8 @@ import { getDbInstance } from "../db/core.ts";
 import type { ProviderLimitsCacheEntry } from "../db/providerLimits.ts";
 import { getProviderQuotaWindowStartIso } from "../db/quotaResetEvents.ts";
 import { calculateCost } from "./costCalculator";
-import { buildErrorBody, sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+import { buildErrorBody } from "../../../../open-sse/utils/error.ts";
 
 const FORTALEZA_UTC_OFFSET_MS = 3 * 60 * 60 * 1000;
 const DAY_MS = 24 * 60 * 60 * 1000;

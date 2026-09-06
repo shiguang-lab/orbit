@@ -7,7 +7,7 @@ import {
   stopSession,
   type VncSession,
 } from "../lib/vncSession/service.ts";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 
 export type VncOperationResult =
   | { value: unknown; error?: never }

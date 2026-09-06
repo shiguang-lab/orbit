@@ -4,7 +4,7 @@
  * Stores extracted facts asynchronously (non-blocking).
  */
 
-import { logger } from "../../../../open-sse/utils/logger.ts";
+import { logger } from "@shiguang-gateway/runtime-logging";
 import { createMemory } from "./store";
 import { MemoryType } from "./types";
 

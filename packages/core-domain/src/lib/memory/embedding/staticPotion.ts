@@ -9,7 +9,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import os from "node:os";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 import type { EmbeddingResult, EmbeddingError } from "./types";
 
 const MODEL_ID = "minishlab/potion-base-8M";

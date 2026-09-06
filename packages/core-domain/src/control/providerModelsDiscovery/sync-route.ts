@@ -27,7 +27,7 @@ import {
 import { replaceSyncedAvailableModelsForConnection } from "../../lib/db/models.ts";
 import { getProviderModels } from "./models-route";
 import { isDegradedDiscovery } from "./degradedLocalCatalog";
-import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 
 type JsonRecord = Record<string, unknown>;
 

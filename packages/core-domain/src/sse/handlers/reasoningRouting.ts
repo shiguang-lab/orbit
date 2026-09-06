@@ -1,6 +1,6 @@
 import { getComboForModel, getModelInfo } from "../services/model";
 import { errorResponse } from "../../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../../open-sse/config/constants.ts";
+import { HTTP_STATUS } from "@shiguang-gateway/contracts/http-status";
 import { validateApiKeyRoutingTarget, type ApiKeyMetadata } from "../../shared/utils/apiKeyPolicy.ts";
 import { resolveRequestRoutingTags } from "../../domain/tagRouter.ts";
 import * as log from "../utils/logger";

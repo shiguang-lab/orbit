@@ -6,7 +6,7 @@
 
 import { randomUUID } from "node:crypto";
 import { refreshCursorToken as refreshCursorTokenOpenSse } from "../../../../../open-sse/services/tokenRefresh/providers/cursor.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 import { generatePKCE } from "../utils/pkce";
 import { CURSOR_CONFIG } from "../constants/oauth";
 

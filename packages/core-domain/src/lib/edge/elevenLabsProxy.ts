@@ -8,8 +8,8 @@ import {
 } from "./rateLimit.ts";
 import {
   buildErrorBody,
-  sanitizeErrorMessage,
 } from "../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 import { CORS_HEADERS, handleCorsOptions } from "../../shared/utils/cors.ts";
 
 const ELEVENLABS_API_BASE = "https://api.elevenlabs.io/v1";

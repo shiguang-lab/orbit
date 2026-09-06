@@ -7,7 +7,7 @@ import {
 import { invalidateCodexQuotaCache } from "../../../../open-sse/services/codexQuotaFetcher.ts";
 import { getCodexBackendIdentityHeaders } from "../../../../open-sse/config/codexClient.ts";
 import { runWithProxyContext } from "../../../../open-sse/utils/proxyFetch.ts";
-import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 
 const CODEX_RESET_CREDIT_CONSUME_URL =
   "https://chatgpt.com/backend-api/wham/rate-limit-reset-credits/consume";

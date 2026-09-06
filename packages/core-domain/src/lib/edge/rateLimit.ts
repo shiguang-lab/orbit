@@ -1,4 +1,4 @@
-import { HTTP_STATUS } from "../../../../open-sse/config/constants.ts";
+import { HTTP_STATUS } from "@shiguang-gateway/contracts/http-status";
 import { unavailableResponse } from "../../../../open-sse/utils/error.ts";
 
 /** Credentials result returned when every account for a provider is cooling down. */

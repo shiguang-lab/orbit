@@ -20,7 +20,7 @@
  */
 
 import { errorResponse } from "../../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../../open-sse/config/constants.ts";
+import { HTTP_STATUS } from "@shiguang-gateway/contracts/http-status";
 import { extractApiKey, isValidApiKey } from "../../sse/services/auth.ts";
 import { isRequireApiKeyEnabled } from "./featureFlags.ts";
 import { isDashboardSessionAuthenticated } from "./apiAuth.ts";
