@@ -1,5 +1,5 @@
-import { getProxyLogs, clearProxyLogs } from "../../../../lib/proxyLogger.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { getProxyLogs, clearProxyLogs } from "@shiguang-gateway/core-domain/control/proxy-logs";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 
 function serverErrorResponse(error: unknown): Response {
   return Response.json(
@@ -27,7 +27,8 @@ export async function GET(request: Request) {
     if (searchParams.get("provider")) filters.provider = searchParams.get("provider");
     if (searchParams.get("level")) filters.level = searchParams.get("level");
     if (searchParams.get("search")) filters.search = searchParams.get("search");
-    if (searchParams.get("limit")) filters.limit = parseInt(searchParams.get("limit"), 10);
+    const limitParam = searchParams.get("limit");
+    if (limitParam) filters.limit = parseInt(limitParam, 10);
 
     const logs = getProxyLogs(filters);
     return Response.json(logs);

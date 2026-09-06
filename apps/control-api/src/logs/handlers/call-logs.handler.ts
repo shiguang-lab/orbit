@@ -1,11 +1,9 @@
-import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
-import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
-import { getCallLogs } from "../../../../lib/usageDb.ts";
-import { getCompletedDetails, getPendingById } from "../../../../lib/usage/usageHistory.ts";
-import { getProviderConnections } from "../../../../lib/db/providers.ts";
-import { getProviderNodes } from "../../../../models/index.ts";
-import { matchesSearch } from "../../../../shared/utils/turkishText.ts";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { getCallLogs, getCompletedDetails, getPendingById } from "@shiguang-gateway/core-domain/edge/usage-db";
+import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
+import { getProviderNodes } from "@shiguang-gateway/core-domain/db/provider-nodes";
+import { matchesSearch } from "@shiguang-gateway/core-domain/shared/turkish-text";
 
 type CallLogListRowsInput = {
   logs: any[];
@@ -202,8 +200,10 @@ export async function GET(request: Request) {
     if (searchParams.get("combo")) filter.combo = searchParams.get("combo");
     if (searchParams.get("search")) filter.search = searchParams.get("search");
     if (searchParams.get("correlationId")) filter.correlationId = searchParams.get("correlationId");
-    if (searchParams.get("limit")) filter.limit = parseInt(searchParams.get("limit"));
-    if (searchParams.get("offset")) filter.offset = parseInt(searchParams.get("offset"));
+    const limitParam = searchParams.get("limit");
+    const offsetParam = searchParams.get("offset");
+    if (limitParam) filter.limit = parseInt(limitParam, 10);
+    if (offsetParam) filter.offset = parseInt(offsetParam, 10);
     // Home Recent Requests feed sets excludeTests=1 so connection-test probe rows
     // are dropped at the SQL layer (before LIMIT), not client-side after slicing.
     if (searchParams.get("excludeTests") === "1") filter.excludeTests = true;
@@ -235,9 +235,9 @@ export async function GET(request: Request) {
     });
 
     const filtered = rows.filter((r: any) => rowMatchesFilter(r, filter));
-    return NextResponse.json(filtered);
+    return Response.json(filtered);
   } catch (error) {
     console.error("[API ERROR] /api/usage/call-logs failed:", error);
-    return NextResponse.json({ error: "Failed to fetch call logs" }, { status: 500 });
+    return Response.json({ error: "Failed to fetch call logs" }, { status: 500 });
   }
 }

@@ -10,12 +10,11 @@
  *   - component: filter by component/module name
  */
 
-import { NextRequest, NextResponse } from "next/server";
-import { readFileSync, existsSync } from "fs";
-import { getAppLogFilePath } from "../../../../lib/logEnv.ts";
-import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
-import { matchesSearch } from "../../../../shared/utils/turkishText.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { readFileSync, existsSync } from "node:fs";
+import { getAppLogFilePath } from "@shiguang-gateway/core-domain/shared/log-env";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { matchesSearch } from "@shiguang-gateway/core-domain/shared/turkish-text";
+import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 
 const LEVEL_ORDER: Record<string, number> = {
   trace: 5,
@@ -63,7 +62,7 @@ function stringifyLogValue(value: unknown): string {
   }
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(req: Request) {
   const authError = await requireManagementAuth(req);
   if (authError) return authError;
 
@@ -77,7 +76,7 @@ export async function GET(req: NextRequest) {
     const logPath = getLogFilePath();
 
     if (!existsSync(logPath)) {
-      return NextResponse.json([], { status: 200 });
+      return Response.json([], { status: 200 });
     }
 
     const raw = readFileSync(logPath, "utf-8");
@@ -133,14 +132,14 @@ export async function GET(req: NextRequest) {
     // Return last N entries (most recent)
     const result = entries.slice(-limit);
 
-    return NextResponse.json(result, {
+    return Response.json(result, {
       status: 200,
       headers: {
         "Cache-Control": "no-store, no-cache, must-revalidate",
       },
     });
   } catch (err: any) {
-    return NextResponse.json(
+    return Response.json(
       { error: sanitizeErrorMessage(err?.message) || "Failed to read logs" },
       { status: 500 }
     );

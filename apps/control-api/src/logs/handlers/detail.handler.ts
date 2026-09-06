@@ -2,19 +2,18 @@
  * GET  /api/logs/detail  — List legacy detailed request logs + current enabled flag
  * POST /api/logs/detail — Enable/disable pipeline capture for unified call log artifacts
  */
-import { NextRequest, NextResponse } from "next/server";
-import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import {
   getRequestDetailLogs,
   getRequestDetailLogCount,
   isDetailedLoggingEnabled,
-} from "../../../../lib/db/detailedLogs.ts";
-import { getUserDatabaseSettings, updateDatabaseSettings } from "../../../../lib/db/databaseSettings.ts";
-import { updateSettings } from "../../../../lib/db/settings.ts";
+} from "@shiguang-gateway/core-domain/db/detailed-logs";
+import { getUserDatabaseSettings, updateDatabaseSettings } from "@shiguang-gateway/core-domain/control/database-settings";
+import { updateSettings } from "@shiguang-gateway/core-domain/control/settings";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req: NextRequest) {
+export async function GET(req: Request) {
   const authError = await requireManagementAuth(req);
   if (authError) return authError;
 
@@ -26,10 +25,10 @@ export async function GET(req: NextRequest) {
   const total = getRequestDetailLogCount();
   const enabled = await isDetailedLoggingEnabled();
 
-  return NextResponse.json({ enabled, total, logs });
+  return Response.json({ enabled, total, logs });
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   const authError = await requireManagementAuth(req);
   if (authError) return authError;
 
@@ -46,7 +45,7 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  return NextResponse.json({
+  return Response.json({
     success: true,
     enabled,
     message: enabled

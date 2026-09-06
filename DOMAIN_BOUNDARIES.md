@@ -7,7 +7,7 @@ port or selecting a surface at runtime.
 | App | Owns | Reads/writes | Acceptance |
 | --- | --- | --- | --- |
 | `edge-gateway` | Public `/v1`, `/v1beta`, A2A and provider execution; no live-dashboard listener | Provider connections, batches/files (through app-owned Nest modules and handlers) | `pnpm --filter @shiguang-gateway/edge-gateway typecheck && pnpm --filter @shiguang-gateway/edge-gateway build && pnpm smoke:split-deployment` |
-| `control-api` | Admin `/api`, authz, CRUD, settings and audit commands; migrated health route group in `apps/control-api/src/routes/api` | Control-plane tables | `pnpm --filter @shiguang-gateway/control-api typecheck && pnpm --filter @shiguang-gateway/control-api build` |
+| `control-api` | Admin `/api`, authz, CRUD, settings, logs and audit commands; migrated health route group in `apps/control-api/src/routes/api` | Control-plane tables and read-only usage projections | `pnpm --filter @shiguang-gateway/control-api typecheck && pnpm --filter @shiguang-gateway/control-api build` |
 | `realtime` | Live dashboard WebSocket transport (`apps/realtime/src/live-ws`) | Event projections only | `pnpm --filter @shiguang-gateway/realtime typecheck && pnpm --filter @shiguang-gateway/realtime build` |
 | `worker` | Schedulers, sync, cleanup and background writes; task manifest/runner in `apps/worker/src/jobs` | Usage, quota, audit and job tables | `pnpm --filter @shiguang-gateway/worker typecheck && pnpm --filter @shiguang-gateway/worker build && pnpm smoke:worker` |
 | `importer` | One-shot snapshot import and migration | Import target only | `pnpm --filter @shiguang-gateway/importer typecheck && pnpm --filter @shiguang-gateway/importer build` |
@@ -34,6 +34,17 @@ live only in `apps/worker/src/jobs`; the package exports implementations, not a
 process-wide scheduler registry. `packages/http-kernel` contains only transport-level
 Fastify middleware and the compatibility dispatch protocol. Each HTTP app constructs
 Nest/Fastify itself; the shared package has no app factory and accepts no app selector.
+
+### Job control boundary
+
+The `/api/jobs` management surface is intentionally still served by the compatibility
+catalog. `JobRegistry` owns process-local timers and handlers, and those handlers are
+registered only by `apps/worker`; a control process can update the persisted `jobs.enabled`
+flag but cannot safely invoke or stop a worker timer. Moving `run-now`, `enable`, or
+`disable` into `control-api` requires a versioned contracts command and a worker-owned
+HTTP/IPC command endpoint. Until that contract exists, the job route remains a documented
+legacy seam rather than a misleading Nest controller that would report success without
+affecting the worker.
 
 The package rule is enforced by `pnpm audit:package-boundaries --strict`: a package must
 have at least two workspace consumers and must not contain app-owned route trees. The

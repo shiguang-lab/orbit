@@ -1,7 +1,5 @@
-import { NextResponse } from "next/server";
-import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
-import { getCallLogById } from "../../../../lib/usageDb.ts";
-import { getCompletedDetails, getPendingById } from "../../../../lib/usage/usageHistory.ts";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { getCallLogById, getCompletedDetails, getPendingById } from "@shiguang-gateway/core-domain/edge/usage-db";
 
 // Each logged chunk-array element is one raw network read, timestamp-prefixed
 // for the debug display — NOT one complete SSE `data:` line. A single JSON
@@ -66,7 +64,7 @@ export async function GET(
 
   try {
     const { id } = await params;
-    if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
+    if (!id) return Response.json({ error: "Missing id" }, { status: 400 });
 
     // Prefer in-flight active pending requests first to avoid races where
     // an entry moves to completed between the call-logs list and detail fetch.
@@ -101,7 +99,7 @@ export async function GET(
           partialAssistantText: extractPartialAssistantText(pendingRequestDetail.streamChunks),
         };
 
-        return NextResponse.json(activeEntry);
+        return Response.json(activeEntry);
       }
     } catch (e) {
       console.warn("/api/logs/[id] - failed to read active pending detail:", e);
@@ -157,11 +155,11 @@ export async function GET(
       }
     }
 
-    if (!persistedRequest) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (!persistedRequest) return Response.json({ error: "Not found" }, { status: 404 });
 
-    return NextResponse.json(persistedRequest);
+    return Response.json(persistedRequest);
   } catch (err) {
     console.error("[API ERROR] /api/logs/[id] failed:", err);
-    return NextResponse.json({ error: "Failed to fetch log" }, { status: 500 });
+    return Response.json({ error: "Failed to fetch log" }, { status: 500 });
   }
 }
