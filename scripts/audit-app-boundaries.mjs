@@ -168,7 +168,6 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "usage/summary",
   "catalog/provider-credential-requirement",
   "runtime/build-sha",
-  "runtime/local-health",
   "edge/credential-health-cache",
   "resilience/model-lockout-settings",
   "db/upstream-proxy",

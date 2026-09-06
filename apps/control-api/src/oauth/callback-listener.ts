@@ -1,24 +1,18 @@
-import http from "http";
-import { URL } from "url";
+import http from "node:http";
+import { URL } from "node:url";
 
-/**
- * Start a local HTTP server to receive OAuth callback
- * @param {Function} onCallback - Called with query params when callback received
- * @param {number} fixedPort - Optional fixed port number (default: random)
- * @returns {Promise<{server: http.Server, port: number, close: Function}>}
- */
+/** Start the control-plane loopback listener used by browser OAuth callbacks. */
 export function startLocalServer(
   onCallback: (params: Record<string, string>) => void,
-  fixedPort: number | null = null
-): Promise<{ server: any; port: number; close: () => void }> {
+  fixedPort: number | null = null,
+): Promise<{ server: http.Server; port: number; close: () => void }> {
   return new Promise((resolve, reject) => {
     const server = http.createServer((req, res) => {
-      const url = new URL(req.url || "/", `http://localhost`);
+      const url = new URL(req.url || "/", "http://127.0.0.1");
 
       if (url.pathname === "/callback" || url.pathname === "/auth/callback") {
         const params = Object.fromEntries(url.searchParams);
 
-        // Send success response to browser with auto-close attempt
         res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
         res.end(`<!DOCTYPE html>
 <html>
@@ -59,7 +53,6 @@ export function startLocalServer(
 </body>
 </html>`);
 
-        // Call callback with params
         onCallback(params);
       } else {
         res.writeHead(404);
@@ -67,56 +60,26 @@ export function startLocalServer(
       }
     });
 
-    // Listen on fixed port or find available port
     const portToUse = fixedPort || 0;
-    server.listen(portToUse, "0.0.0.0", () => {
-      const addr = server.address() as { port: number };
+    server.listen(portToUse, "127.0.0.1", () => {
+      const address = server.address() as { port: number };
       resolve({
         server,
-        port: addr.port,
+        port: address.port,
         close: () => server.close(),
       });
     });
 
-    server.on("error", (err: any) => {
-      if (err.code === "EADDRINUSE" && fixedPort) {
+    server.on("error", (error: NodeJS.ErrnoException) => {
+      if (error.code === "EADDRINUSE" && fixedPort) {
         reject(
           new Error(
-            `Port ${fixedPort} is already in use. Please close other applications using this port.`
-          )
+            `Port ${fixedPort} is already in use. Please close other applications using this port.`,
+          ),
         );
       } else {
-        reject(err);
+        reject(error);
       }
     });
-  });
-}
-
-/**
- * Wait for callback with timeout
- * @param {number} timeoutMs - Timeout in milliseconds
- * @returns {Promise<Object>} - Callback params
- */
-export function waitForCallback(timeoutMs = 300000) {
-  return new Promise((resolve, reject) => {
-    let resolved = false;
-
-    const timeout = setTimeout(() => {
-      if (!resolved) {
-        resolved = true;
-        reject(new Error("Authentication timeout"));
-      }
-    }, timeoutMs);
-
-    const onCallback = (params: Record<string, string>) => {
-      if (!resolved) {
-        resolved = true;
-        clearTimeout(timeout);
-        resolve(params);
-      }
-    };
-
-    // Return the callback function
-    (resolve as any).__onCallback = onCallback;
   });
 }

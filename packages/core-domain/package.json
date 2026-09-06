@@ -837,10 +837,6 @@
       "types": "./src/public/buildSha.d.ts",
       "import": "./src/lib/monitoring/buildSha.ts"
     },
-    "./runtime/local-health": {
-      "types": "./src/public/localHealth.d.ts",
-      "import": "./src/lib/localHealthCheck.ts"
-    },
     "./catalog/provider-credential-requirement": {
       "types": "./src/public/providerCredentialRequirement.d.ts",
       "import": "./src/shared/utils/providerCredentialRequirement.ts"

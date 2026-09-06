@@ -62,6 +62,7 @@ const LOG_PREFIX = "[ProxyHealth]";
 
 declare global {
   var __proxyHealthInterval: ReturnType<typeof setInterval> | undefined;
+  var __proxyHealthStartupTimer: ReturnType<typeof setTimeout> | undefined;
   var __proxyHealthConsecutiveFailures: Map<string, number> | undefined;
 }
 
@@ -283,15 +284,17 @@ function scheduleSweep(): void {
   }, interval);
 }
 
-export function initProxyHealthCheck(): void {
+export function startProxyHealthCheck(): void {
   if (!isEnabled() || isBuildProcess() || isBackgroundServicesDisabled()) return;
-  if (globalThis.__proxyHealthInterval) return;
+  if (globalThis.__proxyHealthInterval || globalThis.__proxyHealthStartupTimer) return;
 
-  setTimeout(() => {
+  globalThis.__proxyHealthStartupTimer = setTimeout(() => {
+    globalThis.__proxyHealthStartupTimer = undefined;
     console.log(`${LOG_PREFIX} Starting proxy health scheduler (interval: ${getIntervalMs()}ms)`);
     void sweep().catch(() => {});
     scheduleSweep();
   }, INITIAL_DELAY_MS);
+  globalThis.__proxyHealthStartupTimer.unref?.();
 }
 
 export function stopProxyHealthCheck(): void {
@@ -299,11 +302,12 @@ export function stopProxyHealthCheck(): void {
     clearInterval(globalThis.__proxyHealthInterval);
     globalThis.__proxyHealthInterval = undefined;
   }
+  if (globalThis.__proxyHealthStartupTimer) {
+    clearTimeout(globalThis.__proxyHealthStartupTimer);
+    globalThis.__proxyHealthStartupTimer = undefined;
+  }
 }
 
 export async function forceProxyHealthSweep(): Promise<void> {
   await sweep();
 }
-
-// Auto-initialize on first import
-initProxyHealthCheck();

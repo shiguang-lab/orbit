@@ -2,7 +2,7 @@
  * Credential Health Check Scheduler
  *
  * Background scheduler that periodically tests provider credential health.
- * Follows the pattern from localHealthCheck.ts — runs on a configurable
+ * Runs on a configurable
  * interval with exponential backoff on failure.
  *
  * Reuses the existing testSingleConnection() infrastructure so all 20+

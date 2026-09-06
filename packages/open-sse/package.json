@@ -45,10 +45,6 @@
       "types": "./public/oauthProviderAuthFiles.d.ts",
       "import": "./oauth/utils/codexAuthFile.ts"
     },
-    "./oauth/utils/server": {
-      "types": "./public/oauthRuntime.d.ts",
-      "import": "./oauth/utils/server.ts"
-    },
     "./executors/base": "./executors/base.ts",
     "./services/reasoningCache": "./services/reasoningCache.ts",
     "./services/compression/eval/fidelityCheck": "./services/compression/eval/fidelityCheck.ts",

@@ -39,6 +39,8 @@ declare global {
 }
 
 let isRunning = false;
+let startupPending = false;
+let startupGeneration = 0;
 
 type SyncCycleRunner = () => Promise<FreeProxySyncCycleResult>;
 let _syncCycleRunner: SyncCycleRunner = () => runFreeProxySyncCycle();
@@ -98,10 +100,14 @@ async function computeInitialDelayMs(intervalMs: number): Promise<number> {
   return Math.max(intervalMs - elapsedMs, STARTUP_DELAY_MS);
 }
 
-/** Guarded entrypoint — auto-called at module bottom, matching `proxyHealth/scheduler.ts`. */
-export function initFreeProxyAutoSync(): void {
+/** Start the worker-owned scheduler. Repeated calls are a no-op. */
+export function startFreeProxyAutoSync(): void {
   if (!isFreeProxyAutoSyncEnabled() || isBuildProcess() || isBackgroundServicesDisabled()) return;
-  if (globalThis.__freeProxyAutoSyncInterval || globalThis.__freeProxyAutoSyncStartupTimer) return;
+  if (
+    startupPending ||
+    globalThis.__freeProxyAutoSyncInterval ||
+    globalThis.__freeProxyAutoSyncStartupTimer
+  ) return;
 
   if (getEnabledProviders().length === 0) {
     console.log(`${LOG_PREFIX} No enabled providers — skipping scheduling`);
@@ -110,20 +116,31 @@ export function initFreeProxyAutoSync(): void {
 
   const intervalMs = getFreeProxyAutoSyncIntervalMs();
   console.log(`${LOG_PREFIX} Starting scheduler (interval: ${intervalMs}ms)`);
+  startupPending = true;
+  const generation = ++startupGeneration;
 
   void (async () => {
-    const initialDelayMs = await computeInitialDelayMs(intervalMs);
-    globalThis.__freeProxyAutoSyncStartupTimer = setTimeout(() => {
-      globalThis.__freeProxyAutoSyncStartupTimer = undefined;
-      void runCycle();
-      scheduleInterval(intervalMs);
-    }, initialDelayMs);
-    globalThis.__freeProxyAutoSyncStartupTimer.unref?.();
+    try {
+      const initialDelayMs = await computeInitialDelayMs(intervalMs);
+      if (!startupPending || generation !== startupGeneration) return;
+      startupPending = false;
+      globalThis.__freeProxyAutoSyncStartupTimer = setTimeout(() => {
+        globalThis.__freeProxyAutoSyncStartupTimer = undefined;
+        void runCycle();
+        scheduleInterval(intervalMs);
+      }, initialDelayMs);
+      globalThis.__freeProxyAutoSyncStartupTimer.unref?.();
+    } catch (error) {
+      if (generation === startupGeneration) startupPending = false;
+      console.error(`${LOG_PREFIX} Failed to schedule:`, error);
+    }
   })();
 }
 
 /** Test/shutdown seam — clears both the startup timer and the recurring interval. */
 export function stopFreeProxyAutoSync(): void {
+  startupGeneration += 1;
+  startupPending = false;
   if (globalThis.__freeProxyAutoSyncInterval) {
     clearInterval(globalThis.__freeProxyAutoSyncInterval);
     globalThis.__freeProxyAutoSyncInterval = undefined;
@@ -138,6 +155,3 @@ export function stopFreeProxyAutoSync(): void {
 export async function forceFreeProxySyncCycle(): Promise<void> {
   await runCycle();
 }
-
-// Auto-initialize on first import
-initFreeProxyAutoSync();

@@ -27,7 +27,7 @@ import { isValidGheUrl } from "@shiguang-gateway/core-domain/shared/validation/p
 import { AWS_REGION_PATTERN } from "@shiguang-gateway/open-sse/oauth/constants";
 import { antigravityDegradedProjectState } from "@shiguang-gateway/core-domain/control/oauth-runtime/antigravityProjectGate";
 import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";
-import { startLocalServer } from "@shiguang-gateway/open-sse/oauth/utils/server";
+import { startLocalServer } from "../../../callback-listener.js";
 import { runWithProxyContextOrDirect } from "@shiguang-gateway/open-sse/utils/proxyFetch";
 import {
   jsonObjectSchema,

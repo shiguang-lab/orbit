@@ -9,6 +9,7 @@ import {
   createCodexAccountPool,
   getCodexParentAccountDiagnostic,
 } from "@shiguang-gateway/open-sse/services/codexAccount/index";
+import { LocalProviderHealthService } from "./local-provider-health.service.js";
 
 const HEALTH_PAYLOAD_TTL_MS = 1_000;
 
@@ -48,7 +49,7 @@ function readHealthValue<T>(label: string, reader: () => T, fallback: T): T {
   }
 }
 
-async function buildMonitoringHealthSnapshot(): Promise<unknown> {
+async function buildMonitoringHealthSnapshot(localProviders: Record<string, unknown>): Promise<unknown> {
   const [
     circuitBreakerModule,
     rateLimitModule,
@@ -57,7 +58,6 @@ async function buildMonitoringHealthSnapshot(): Promise<unknown> {
     quotaMonitorModule,
     sessionManagerModule,
     credentialHealthModule,
-    localHealthModule,
     adaptiveAdmissionModule,
     chatAdmissionModule,
     settingsResult,
@@ -70,7 +70,6 @@ async function buildMonitoringHealthSnapshot(): Promise<unknown> {
     import("@shiguang-gateway/open-sse/services/quotaMonitor"),
     import("@shiguang-gateway/open-sse/services/sessionManager"),
     import("@shiguang-gateway/core-domain/edge/credential-health-cache"),
-    import("@shiguang-gateway/core-domain/runtime/local-health"),
     import("@shiguang-gateway/open-sse/services/admission/runtime"),
     import("@shiguang-gateway/core-domain/shared/middleware/chatBodyAdmission"),
     getCachedSettings(),
@@ -94,9 +93,7 @@ async function buildMonitoringHealthSnapshot(): Promise<unknown> {
     lockouts: accountFallbackModule.status === "fulfilled"
       ? readHealthValue("model lockouts", () => accountFallbackModule.value.getAllModelLockouts(), [])
       : [],
-    localProviders: localHealthModule.status === "fulfilled"
-      ? readHealthValue("local providers", () => localHealthModule.value.getAllHealthStatuses(), {})
-      : {},
+    localProviders,
     inflightRequests: requestDedupModule.status === "fulfilled"
       ? readHealthValue("inflight requests", () => requestDedupModule.value.getInflightCount(), 0)
       : 0,
@@ -147,6 +144,8 @@ function publicHealthView(payload: unknown): Record<string, unknown> {
 export class MonitoringHealthService {
   private cache: { payload: unknown; expiresAt: number } | null = null;
 
+  constructor(private readonly localProviderHealth: LocalProviderHealthService) {}
+
   async read(fullView: boolean): Promise<Response> {
     const now = Date.now();
     if (this.cache && now <= this.cache.expiresAt) {
@@ -154,7 +153,7 @@ export class MonitoringHealthService {
     }
 
     try {
-      const payload = await buildMonitoringHealthSnapshot();
+      const payload = await buildMonitoringHealthSnapshot(this.localProviderHealth.getAllHealthStatuses());
       this.cache = { payload, expiresAt: Date.now() + HEALTH_PAYLOAD_TTL_MS };
       return Response.json(fullView ? payload : publicHealthView(payload));
     } catch (error) {

@@ -2,7 +2,7 @@
  * Credential Health Cache
  *
  * In-memory cache for provider credential health status.
- * Follows the same pattern as localHealthCheck.ts — globalThis singleton
+ * Process-local globalThis singleton
  * survives HMR re-evaluation.
  *
  * Tracks testStatus, lastError, lastTested per connectionId with

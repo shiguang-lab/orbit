@@ -34,6 +34,4 @@ export function refreshCursorAccessToken(...args: any[]): Promise<any>;
 export function persistCursorConnection(...args: any[]): Promise<any>;
 export class CursorService { [key: string]: any; }
 export class KiroService { [key: string]: any; }
-export function startLocalServer(...args: any[]): any;
-export function waitForCallback(...args: any[]): any;
 export function cliProxyAuthImport(...args: any[]): any;

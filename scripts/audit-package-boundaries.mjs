@@ -23,6 +23,8 @@ const add = (rule, file, detail) => violations.push({ rule, file: rel(file), det
 
 function isAppOwnedSource(file) {
   const path = rel(file);
+  const basename = file.split(sep).pop() || "";
+  if (basename === "route.ts" || basename.endsWith(".route.ts")) return true;
   if (/\/src\/(app|routes)\//.test(path)) return true;
   // `src/control` is the reviewed package-contract namespace. Only transport
   // or route orchestration belongs in apps; pure re-export contracts remain in
@@ -30,6 +32,11 @@ function isAppOwnedSource(file) {
   if (!/\/src\/control\//.test(path)) return false;
   const source = readFileSync(file, "utf8");
   return /from ["'](?:next\/|@nestjs\/)|export\s+(?:async\s+)?function\s+(?:GET|POST|PUT|PATCH|DELETE)\b/.test(source);
+}
+
+function isRetiredDynamicCompatDispatcher(file, source) {
+  const basename = file.split(sep).pop() || "";
+  return basename === "compat-dispatcher.ts" && /\b(?:import\s*\(|pathToFileURL\s*\()/.test(source);
 }
 
 function walk(dir, out = []) {
@@ -120,7 +127,15 @@ if (process.argv.includes("--self-test")) {
     "../b/x.js",
     "./required.cjs",
   ]);
-  console.log(JSON.stringify({ status: "PASS", checks: ["core-domain/open-sse SCC", "self-loop", "package ownership", "relative import extraction"] }, null, 2));
+  assert.equal(isAppOwnedSource(resolve(repoRoot, "packages/a/src/feature/route.ts")), true);
+  assert.equal(isAppOwnedSource(resolve(repoRoot, "packages/a/src/feature/legacy.route.ts")), true);
+  assert.equal(isAppOwnedSource(resolve(repoRoot, "packages/a/src/feature/handler.ts")), false);
+  const compatDispatcher = resolve(repoRoot, "packages/web-route-compat/src/compat-dispatcher.ts");
+  assert.equal(isRetiredDynamicCompatDispatcher(compatDispatcher, 'await import("./route.js")'), true);
+  assert.equal(isRetiredDynamicCompatDispatcher(compatDispatcher, "pathToFileURL(file).href"), true);
+  assert.equal(isRetiredDynamicCompatDispatcher(compatDispatcher, "export function dispatch() {}"), false);
+  assert.equal(isRetiredDynamicCompatDispatcher(resolve(repoRoot, "packages/a/src/loader.ts"), 'await import("./route.js")'), false);
+  console.log(JSON.stringify({ status: "PASS", checks: ["core-domain/open-sse SCC", "self-loop", "package ownership", "relative import extraction", "route basename ownership", "retired dynamic compat dispatcher"] }, null, 2));
   process.exit(0);
 }
 
@@ -226,6 +241,15 @@ function appConsumers(name, seen = new Set()) {
 
 const legacyMixed = new Set();
 
+for (const entry of packageEntries) {
+  for (const file of walk(join(entry.dir, "src"))) {
+    const source = readFileSync(file, "utf8");
+    if (isRetiredDynamicCompatDispatcher(file, source)) {
+      add("retired-dynamic-compat-dispatcher", file, "move route loading and dynamic module resolution into the owning app; packages may expose only static compatibility contracts");
+    }
+  }
+}
+
 // Legacy packages are still consumed by applications, so do not let their
 // transitional status hide the two boundary leaks that are cheapest to detect:
 // app-owned source trees and catch-all package exports.  These are audit-only
@@ -269,6 +293,7 @@ const result = {
     "packages contain only capabilities shared by multiple workspace units; app-specific code belongs in apps",
     "dependencies and optionalDependencies between workspace packages must form an acyclic graph without self-dependencies",
     "a package may not import another package through a relative source path; use a declared published contract",
+    "packages may not contain route.ts modules or retired dynamic compat dispatchers",
   ],
   workspacePackageDependencyGraph: {
     nodes: [...packageDependencyGraph.keys()].sort(),
