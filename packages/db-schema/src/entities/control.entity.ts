@@ -172,6 +172,69 @@ export const ApiKeyEntity: EntityDefinition = {
   ],
 };
 
+/** API keys provisioned for a provider/account by the control plane. */
+export const RegisteredKeyEntity: EntityDefinition = {
+  entityName: "RegisteredKey",
+  tableName: "registered_keys",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("key", "TEXT", { nullable: false }),
+    column("key_prefix", "TEXT", { nullable: false }),
+    column("name", "TEXT", { nullable: false }),
+    column("provider", "TEXT", { nullable: false, default: "''" }),
+    column("account_id", "TEXT", { nullable: false, default: "''" }),
+    column("is_active", "INTEGER", { nullable: false, default: "1" }),
+    column("revoked_at", "TEXT"),
+    column("expires_at", "TEXT"),
+    column("idempotency_key", "TEXT"),
+    column("daily_budget", "INTEGER"),
+    column("hourly_budget", "INTEGER"),
+    column("daily_used", "INTEGER", { nullable: false, default: "0" }),
+    column("hourly_used", "INTEGER", { nullable: false, default: "0" }),
+    column("last_reset_day", "TEXT", { nullable: false, default: "''" }),
+    column("last_reset_hour", "TEXT", { nullable: false, default: "''" }),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+    column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
+/** Per-provider issuance limits for registered keys. */
+export const ProviderKeyLimitEntity: EntityDefinition = {
+  entityName: "ProviderKeyLimit",
+  tableName: "provider_key_limits",
+  owner: "control-api",
+  columns: [
+    column("provider", "TEXT", { nullable: false, primaryKey: true }),
+    column("max_active_keys", "INTEGER"),
+    column("daily_issue_limit", "INTEGER"),
+    column("hourly_issue_limit", "INTEGER"),
+    column("daily_issued", "INTEGER", { nullable: false, default: "0" }),
+    column("hourly_issued", "INTEGER", { nullable: false, default: "0" }),
+    column("last_reset_day", "TEXT", { nullable: false, default: "''" }),
+    column("last_reset_hour", "TEXT", { nullable: false, default: "''" }),
+    column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
+/** Per-account issuance limits for registered keys. */
+export const AccountKeyLimitEntity: EntityDefinition = {
+  entityName: "AccountKeyLimit",
+  tableName: "account_key_limits",
+  owner: "control-api",
+  columns: [
+    column("account_id", "TEXT", { nullable: false, primaryKey: true }),
+    column("max_active_keys", "INTEGER"),
+    column("daily_issue_limit", "INTEGER"),
+    column("hourly_issue_limit", "INTEGER"),
+    column("daily_issued", "INTEGER", { nullable: false, default: "0" }),
+    column("hourly_issued", "INTEGER", { nullable: false, default: "0" }),
+    column("last_reset_day", "TEXT", { nullable: false, default: "''" }),
+    column("last_reset_hour", "TEXT", { nullable: false, default: "''" }),
+    column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
 export const ComboEntity: EntityDefinition = {
   entityName: "Combo",
   tableName: "combos",
