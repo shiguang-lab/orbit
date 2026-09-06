@@ -162,6 +162,38 @@
       "types": "./src/public/routeExplain.d.ts",
       "import": "./src/lib/usage/routeExplain.ts"
     },
+    "./usage/codex-reset-credits": {
+      "types": "./src/public/codexResetCredits.d.ts",
+      "import": "./src/lib/usage/codexResetCredits.ts"
+    },
+    "./usage/combo-forecast": {
+      "types": "./src/public/comboForecast.d.ts",
+      "import": "./src/lib/usage/comboForecast.ts"
+    },
+    "./usage/combo-health": {
+      "types": "./src/public/comboHealth.d.ts",
+      "import": "./src/lib/usage/comboHealth.ts"
+    },
+    "./usage/combo-health-dashboard": {
+      "types": "./src/public/comboHealthDashboard.d.ts",
+      "import": "./src/lib/usage/comboHealthDashboard.ts"
+    },
+    "./usage/combo-scoring-inspector": {
+      "types": "./src/public/comboScoringInspector.d.ts",
+      "import": "./src/lib/usage/comboScoringInspector.ts"
+    },
+    "./usage/combo-health-autopilot": {
+      "types": "./src/public/comboHealthAutopilot.d.ts",
+      "import": "./src/lib/monitoring/comboHealthAutopilot.ts"
+    },
+    "./db/quota-snapshots": {
+      "types": "./src/public/quotaSnapshots.d.ts",
+      "import": "./src/lib/db/quotaSnapshots.ts"
+    },
+    "./shared/utilization": {
+      "types": "./src/public/utilization.d.ts",
+      "import": "./src/shared/types/utilization.ts"
+    },
     "./db/compression-run-telemetry": {
       "types": "./src/public/compressionRunTelemetry.d.ts",
       "import": "./src/lib/db/compressionRunTelemetry.ts"
@@ -218,6 +250,10 @@
     "./shared/version-manager": {
       "types": "./src/public/versionManagerControl.d.ts",
       "import": "./src/lib/versionManager/controlExports.ts"
+    },
+    "./control/dario-installer": {
+      "types": "./src/public/darioInstaller.d.ts",
+      "import": "./src/lib/services/installers/dario.ts"
     },
     "./shared/webhook-dispatcher": {
       "types": "./src/public/webhookDispatcher.d.ts",

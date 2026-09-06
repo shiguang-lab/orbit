@@ -45,6 +45,7 @@ import { ObsidianSettingsModule } from "./settings/obsidian/obsidian.module.js";
 import { LocalCorpusModule } from "./settings/local-corpus/local-corpus.module.js";
 import { ProxySettingsModule } from "./settings/proxy/proxy-settings.module.js";
 import { QuotaSettingsModule } from "./settings/quota/quota.module.js";
+import { DarioAdminModule } from "./services/dario-admin.module.js";
 import { UsageModule } from "./usage/usage.module.js";
 
 @Module({
@@ -95,6 +96,7 @@ import { UsageModule } from "./usage/usage.module.js";
     LocalCorpusModule,
     ProxySettingsModule,
     QuotaSettingsModule,
+    DarioAdminModule,
     UsageModule,
   ],
 })
