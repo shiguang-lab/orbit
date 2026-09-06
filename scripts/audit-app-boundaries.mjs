@@ -246,7 +246,6 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
 );
 
 allowedCoreDomainSubpaths["apps/control-api"].push(
-  "control/provider-test-batch",
   "control/token-health-check",
   "control/oauth-gitlab",
   "lib/providers/chatgptWebRetirementResponse",
@@ -921,6 +920,10 @@ const retiredCoreRelayBifrostFacade = join(packagesRoot, "core-domain", "src", "
 if (existsSync(retiredCoreRelayBifrostFacade)) {
   add("redundant-core-domain-facade", retiredCoreRelayBifrostFacade, "Edge handlers must use the shared relay proxy DB contract directly");
 }
+const retiredCoreProviderTestBatchFacade = join(packagesRoot, "core-domain", "src", "lib", "providers", "testBatch.ts");
+if (existsSync(retiredCoreProviderTestBatchFacade)) {
+  add("redundant-core-domain-facade", retiredCoreProviderTestBatchFacade, "Provider batch validation belongs in apps/control-api");
+}
 
 // The shared HTTP package must never regain a generic app factory or a
 // caller-selected surface. Those APIs collapse independently deployable apps
@@ -1096,6 +1099,7 @@ for (const subpath of retiredRedundantCoreExports) {
   }
 }
 const retiredAppOwnedExports = [
+  "./control/provider-test-batch",
   "./edge/relay-bifrost",
   "./catalog/project-combo",
   "./control/free-onboarding",

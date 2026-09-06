@@ -53,10 +53,6 @@
       "types": "./src/public/httpClientAbortGuard.d.ts",
       "import": "./src/shared/utils/httpClientAbortGuard.mjs"
     },
-    "./control/provider-test-batch": {
-      "types": "./src/public/providerTestBatch.d.ts",
-      "import": "./src/lib/providers/testBatch.ts"
-    },
     "./control/token-health-check": {
       "types": "./src/lib/tokenHealthCheck.ts",
       "import": "./src/lib/tokenHealthCheck.ts"

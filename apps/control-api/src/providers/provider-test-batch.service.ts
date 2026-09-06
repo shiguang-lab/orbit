@@ -2,7 +2,6 @@ import { Injectable } from "@nestjs/common";
 import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import {
-  providersBatchTestSchema,
   getProviderConnectionFamilyIds,
   AI_PROVIDERS,
   NOAUTH_PROVIDERS,
@@ -17,9 +16,10 @@ import {
   IDE_PROVIDER_IDS,
   OPENAI_COMPATIBLE_PREFIX,
   ANTHROPIC_COMPATIBLE_PREFIX,
-} from "@shiguang-gateway/core-domain/control/provider-test-batch";
+} from "@shiguang-gateway/core-domain/catalog/providers";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import { testSingleConnection } from "./handlers/provider-test/provider-test.handler.js";
+import { providersBatchTestSchema } from "./runtime/provider-test-batch-schema.js";
 
 @Injectable()
 export class ProviderTestBatchService {
