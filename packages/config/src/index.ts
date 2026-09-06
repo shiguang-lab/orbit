@@ -30,3 +30,5 @@ export function resolveConfig(env: Record<string, string | undefined> = {}): Shi
 export function resolveNodeConfig(): ShiguangGatewayConfig {
   return resolveConfig(process.env as Record<string, string | undefined>);
 }
+
+export * from "./dataPaths.js";

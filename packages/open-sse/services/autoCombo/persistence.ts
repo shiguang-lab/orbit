@@ -7,7 +7,7 @@
 
 import fs from "fs";
 import path from "path";
-import { resolveDataDir } from "../../../core-domain/src/lib/dataPaths.ts";
+import { resolveDataDir } from "@shiguang-gateway/config/dataPaths";
 
 export interface AdaptationState {
   comboId: string;

@@ -17,6 +17,10 @@
     "./timeouts": {
       "types": "./src/timeouts.ts",
       "import": "./src/timeouts.ts"
+    },
+    "./dataPaths": {
+      "types": "./src/dataPaths.ts",
+      "import": "./src/dataPaths.ts"
     }
   },
   "scripts": {

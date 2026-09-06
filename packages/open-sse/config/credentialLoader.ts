@@ -16,6 +16,7 @@
 
 import { readFileSync, existsSync } from "fs";
 import { join } from "path";
+import { resolveDataDir } from "@shiguang-gateway/config/dataPaths";
 
 // Fields that can be overridden per provider
 const CREDENTIAL_FIELDS = [
@@ -41,18 +42,6 @@ function credGlobals(): CredGlobals {
 }
 
 function resolveCredentialsPath(): string {
-  let resolveDataDir: (options?: { isCloud?: boolean }) => string;
-
-  try {
-    resolveDataDir = require("../../core-domain/src/lib/dataPaths.ts").resolveDataDir;
-  } catch (err) {
-    const fallbackDataDir = process.env.DATA_DIR || join(process.cwd(), "data");
-    console.warn(
-      `[CREDENTIALS] Could not load dataPaths module, using fallback: ${fallbackDataDir}`
-    );
-    return join(fallbackDataDir, "provider-credentials.json");
-  }
-
   return join(resolveDataDir(), "provider-credentials.json");
 }
 
