@@ -2,7 +2,10 @@
 
 This package is the canonical database contract for the deployable apps.  It
 contains one ORM-neutral entity definition for every governed table, while the
-SQL that creates an app-owned table remains in that app.
+SQL that creates an app-owned table remains in that app. The gamification
+bootstrap is the one shared schema helper (`src/gamification.ts`) because both
+the control and edge runtimes may access its tables; callers provide their own
+SQLite executor.
 
 ## Entity catalog
 
@@ -30,7 +33,8 @@ The metadata is intentionally ORM-neutral because the runtime uses the shared
 synchronous SQLite adapter. Queries and mutations stay in the owning
 app/domain implementation. Add every governed table's entity definition,
 table constant, and ownership entry here; keep app-specific DDL/initialization
-in the owning Nest app rather than in a package migration.
+in the owning Nest app rather than in a package migration. Shared bootstrap
+helpers must remain executor-based and must not access a database directly.
 
 The coverage audit reports app-private tables separately while they are being
 migrated. For example, `cloud_agent_credentials` and `cloud_agent_tasks`
