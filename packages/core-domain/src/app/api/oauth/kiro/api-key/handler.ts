@@ -11,7 +11,7 @@ import { getConsistentMachineId } from "../../../../../shared/utils/machineId.ts
 import { kiroApiKeyImportSchema } from "../../../../../shared/validation/schemas.ts";
 import { isValidationFailure, validateBody } from "../../../../../shared/validation/helpers.ts";
 import { isAuthRequired, isAuthenticated } from "../../../../../shared/utils/apiAuth.ts";
-import { buildKiroImportError } from "../import/route";
+import { buildKiroImportError } from "../import/handler";
 import { buildKiroApiKeyConnectionName, isKiroApiKeyImportClientError } from "./helpers";
 import { findKiroConnectionByIdentity } from "../../../../../lib/oauth/kiroConnectionIdentity.ts";
 

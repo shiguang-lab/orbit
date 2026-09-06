@@ -85,7 +85,7 @@ async function runBrowserFlow(def, opts) {
   // backend OAuth provider key the server's /api/oauth/[provider]/... route
   // expects (e.g. "claude"). The previous implementation called a non-existent
   // `/api/oauth/${def.id}/start` action — no such action exists on the server
-  // (src/app/api/oauth/[provider]/[action]/route.ts), so the browser flow was
+  // (control OAuth flow handler), so the browser flow was
   // broken for every browser-flow provider. Use the real `authorize` action and
   // complete the PKCE (authorization_code / authorization_code_pkce) flow with a
   // manual code paste, mirroring the dashboard's manual "input" step.

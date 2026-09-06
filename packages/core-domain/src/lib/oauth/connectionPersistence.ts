@@ -55,7 +55,7 @@ function isSameCodexAccount(
  * Find the existing OAuth connection (if any) that an incoming token payload
  * should be merged into, shared by every OAuth-completion call site
  * (persistOAuthConnection, and the exchange/poll/poll-callback branches in
- * `src/app/api/oauth/[provider]/[action]/route.ts`). Matches by explicit
+ * control OAuth flow handler. Matches by explicit
  * connectionId first, then by same email + auth type — with Codex requiring
  * workspaceId/chatgptUserId agreement (#7737) to avoid silently overwriting
  * a different Codex account that merely shares an email.

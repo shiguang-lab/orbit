@@ -8,7 +8,7 @@
  * attach the bearer token here and forward to Dario on loopback.
  *
  * Auth gating mirrors the CLIProxyAPI OAuth import route
- * (src/app/api/oauth/cliproxy-import/route.ts): when auth is required and the
+ * (control OAuth CLIProxy import handler): when auth is required and the
  * caller isn't authenticated, 401. The routes live under /api/services/ which
  * routeGuard.ts already classifies LOCAL_ONLY.
  */
