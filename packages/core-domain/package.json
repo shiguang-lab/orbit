@@ -1024,6 +1024,10 @@
       "types": "./src/public/skillsGithub.d.ts",
       "import": "./src/lib/skills/githubCollector.ts"
     },
+    "./control/middleware-registry": {
+      "types": "./src/public/middlewareRegistry.d.ts",
+      "import": "./src/lib/middleware/registry.ts"
+    },
     "./shared/types/pagination": {
       "types": "./src/public/pagination.d.ts",
       "import": "./src/shared/types/pagination.ts"

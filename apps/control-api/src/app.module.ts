@@ -68,6 +68,7 @@ import { SkillsModule } from "./skills/skills.module.js";
 import { McpModule } from "./mcp/mcp.module.js";
 import { CompressionManagementModule } from "./compression/compression-management.module.js";
 import { ProxySubscriptionsModule } from "./proxy-subscriptions/proxy-subscriptions.module.js";
+import { MiddlewareHooksModule } from "./middleware-hooks/middleware-hooks.module.js";
 
 @Module({
   imports: [
@@ -141,6 +142,7 @@ import { ProxySubscriptionsModule } from "./proxy-subscriptions/proxy-subscripti
     McpModule,
     CompressionManagementModule,
     ProxySubscriptionsModule,
+    MiddlewareHooksModule,
   ],
 })
 export class AppModule {}
