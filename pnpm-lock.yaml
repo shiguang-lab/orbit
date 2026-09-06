@@ -159,6 +159,9 @@ importers:
       '@shiguang-gateway/open-sse':
         specifier: workspace:*
         version: link:../../packages/open-sse
+      '@shiguang-gateway/provider-catalog':
+        specifier: workspace:*
+        version: link:../../packages/provider-catalog
       '@shiguang-gateway/rerank-catalog':
         specifier: workspace:*
         version: link:../../packages/rerank-catalog
@@ -174,6 +177,9 @@ importers:
       js-yaml:
         specifier: ^5.4.1
         version: 5.4.1
+      jsonc-parser:
+        specifier: ^3.3.1
+        version: 3.3.1
       parse5:
         specifier: ^8.0.1
         version: 8.0.1

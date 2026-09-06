@@ -5,12 +5,12 @@ import * as yaml from "js-yaml";
 import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { getRuntimePorts } from "@shiguang-gateway/core-domain/control/cli-tools-runtime-ports";
 import { getCliPrimaryConfigPath, getOpenCodeConfigPath } from "@shiguang-gateway/core-domain/control/cli-tools-runtime";
-import { mergeOpenCodeConfigText } from "@shiguang-gateway/core-domain/shared/services/opencodeConfig";
 import { guideSettingsSaveSchema } from "@shiguang-gateway/core-domain/control/cli-tools-validation-schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/control/cli-tools-validation-helpers";
 import { resolveApiKey, getOrCreateApiKey } from "@shiguang-gateway/core-domain/control/cli-tools-api-key-resolver";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import { guardCliConfigWrite } from "@shiguang-gateway/core-domain/control/cli-tools-config-guard";
+import { mergeOpenCodeConfigText } from "./opencode-config.js";
 
 /**
  * Where each guide tool's config lands, and the host command that writes the

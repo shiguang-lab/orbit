@@ -23,7 +23,7 @@ export function antigravityToOpenAIRequest(model, body, stream) {
   };
 
   // Explicit per-alias reasoning-effort override (Antigravity MITM layer only —
-  // `src/mitm/aliasConfig.ts` / `src/mitm/_internal/aliasConfig.cjs`). Set at the same
+  // the control app's `cli-tools/mitm-alias.ts` / `src/mitm/_internal/aliasConfig.cjs`). Set at the same
   // envelope level as `model` (top-level `body`, sibling of `.request`), so it survives
   // regardless of which cloudcode envelope shape the caller used. When present it takes
   // priority over the thinkingConfig-derived value below: an explicit "none" suppresses

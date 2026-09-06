@@ -1,7 +1,7 @@
 "use strict";
 
 // =========================================================================
-// CJS mirror of `src/mitm/aliasConfig.ts` for the standalone proxy process
+// Standalone CJS implementation for the child proxy process; the control app owns its API-side normalization.
 // (server.cjs, spawned by manager.ts — runs as plain CommonJS, cannot import
 // the ESM/TS source tree). Keep the two in sync when the alias-entry shape
 // or the reasoning-effort vocabulary changes.

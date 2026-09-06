@@ -164,7 +164,6 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "db/agentic-conversations",
   "usage/summary",
-  "catalog/provider-credential-requirement",
   "edge/credential-health-cache",
   "resilience/model-lockout-settings",
   "db/upstream-proxy",
@@ -1000,6 +999,9 @@ const retiredAppOwnedExports = [
   "./shared/node-runtime-support",
   "./shared/validation/free-proxy-schemas",
   "./shared/services/droidCustomModels",
+  "./catalog/provider-credential-requirement",
+  "./shared/services/opencodeConfig",
+  "./control/cli-tools-mitm-alias",
 ];
 for (const subpath of retiredAppOwnedExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {

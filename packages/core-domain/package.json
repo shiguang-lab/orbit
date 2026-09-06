@@ -796,10 +796,6 @@
       "types": "./src/public/appConfig.d.ts",
       "import": "./src/shared/constants/appConfig.ts"
     },
-    "./catalog/provider-credential-requirement": {
-      "types": "./src/public/providerCredentialRequirement.d.ts",
-      "import": "./src/shared/utils/providerCredentialRequirement.ts"
-    },
     "./shared/validation/settings-schema": {
       "types": "./src/shared/validation/settingsSchemas.ts",
       "import": "./src/shared/validation/settingsSchemas.ts"
@@ -1312,7 +1308,6 @@
     "./shared/constants/cliTools": "./src/shared/constants/cliTools.ts",
     "./shared/middleware/chatBodyAdmission": "./src/shared/middleware/chatBodyAdmission.ts",
     "./shared/services/grokBuildConfig": "./src/shared/services/grokBuildConfig.ts",
-    "./shared/services/opencodeConfig": "./src/shared/services/opencodeConfig.ts",
     "./shared/services/qwenCodeConfig": "./src/shared/services/qwenCodeConfig.ts",
     "./shared/types/cliBatchStatus": "./src/shared/types/cliBatchStatus.ts",
     "./shared/utils/resolveGatewayBaseUrl": "./src/shared/utils/resolveGatewayBaseUrl.ts",
@@ -1417,7 +1412,6 @@
     "./control/cli-tools-runtime-ports": "./src/lib/runtime/ports.ts",
     "./control/cli-tools-mitm": "./src/mitm/systemCommands.ts",
     "./control/cli-tools-mitm-dns": "./src/mitm/dns/dnsConfig.ts",
-    "./control/cli-tools-mitm-alias": "./src/mitm/aliasConfig.ts",
     "./control/cli-tools-mitm-manager": "./src/mitm/manager.runtime.ts",
     "./control/cli-tools-status": { "types": "./src/lib/cliTools/checkToolConfigStatus.ts", "import": "./src/lib/cliTools/checkToolConfigStatus.ts" },
     "./control/cli-tools-combo": { "types": "./src/lib/combos/steps.ts", "import": "./src/lib/combos/steps.ts" },

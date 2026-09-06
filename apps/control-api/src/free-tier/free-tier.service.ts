@@ -3,7 +3,7 @@ import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
 import { computeFreeProviderRankings } from "@shiguang-gateway/core-domain/control/free-provider-rankings";
 import { getRadarCatalog } from "@shiguang-gateway/core-domain/control/radar";
 import { sumUsageTokensThisMonth } from "@shiguang-gateway/core-domain/usage/summary";
-import { listNoCredentialProviders } from "@shiguang-gateway/core-domain/catalog/provider-credential-requirement";
+import { listNoCredentialProviders } from "./provider-credential-requirement.js";
 import {
   computeFreeModelTotals,
   type FreeModelBudget,

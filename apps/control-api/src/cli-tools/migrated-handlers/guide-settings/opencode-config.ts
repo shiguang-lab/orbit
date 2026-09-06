@@ -31,7 +31,7 @@ const normalizeModelLabels = (labels: unknown): Record<string, string> => {
   return Object.fromEntries(
     Object.entries(labels)
       .map(([key, value]) => [normalizeValue(key), String(value || "").trim()])
-      .filter(([key, value]) => key && value)
+      .filter(([key, value]) => key && value),
   );
 };
 
@@ -61,14 +61,11 @@ export const buildOpenCodeProviderConfig = ({
     string,
     { name: string; limit: { context: number; output: number } }
   > = {};
-  for (const m of uniqueModels) {
-    if (m) {
-      modelsRecord[m] = {
-        name: getModelEntryName(m, normalizedLabels),
-        limit: {
-          context: 128_000,
-          output: 8_192,
-        },
+  for (const currentModel of uniqueModels) {
+    if (currentModel) {
+      modelsRecord[currentModel] = {
+        name: getModelEntryName(currentModel, normalizedLabels),
+        limit: { context: 128_000, output: 8_192 },
       };
     }
   }
@@ -85,7 +82,7 @@ export const buildOpenCodeProviderConfig = ({
 };
 
 export const buildOpenCodeV2ProviderConfig = (
-  input: OpenCodeConfigInput
+  input: OpenCodeConfigInput,
 ): Record<string, any> => {
   const v1Config = buildOpenCodeProviderConfig(input);
   return {
@@ -101,17 +98,13 @@ export const buildOpenCodeV2ProviderConfig = (
 
 export const buildOpenCodeConfigDocument = (input: OpenCodeConfigInput) => ({
   $schema: "https://opencode.ai/config.json",
-  provider: {
-    shiguangGateway: buildOpenCodeProviderConfig(input),
-  },
-  providers: {
-    shiguangGateway: buildOpenCodeV2ProviderConfig(input),
-  },
+  provider: { shiguangGateway: buildOpenCodeProviderConfig(input) },
+  providers: { shiguangGateway: buildOpenCodeV2ProviderConfig(input) },
 });
 
 export const mergeOpenCodeConfig = (
   existingConfig: Record<string, any> | null | undefined,
-  input: OpenCodeConfigInput
+  input: OpenCodeConfigInput,
 ) => {
   const safeConfig =
     existingConfig && typeof existingConfig === "object" && !Array.isArray(existingConfig)
@@ -146,7 +139,7 @@ export const mergeOpenCodeConfig = (
 
 export const mergeOpenCodeConfigText = (
   existingText: string | null | undefined,
-  input: OpenCodeConfigInput
+  input: OpenCodeConfigInput,
 ) => {
   const providerConfig = buildOpenCodeProviderConfig(input);
   const v2ProviderConfig = buildOpenCodeV2ProviderConfig(input);
@@ -165,19 +158,16 @@ export const mergeOpenCodeConfigText = (
       ? `${printParseErrorCode(errors[0].error)} at offset ${errors[0].offset}`
       : "root must be an object";
     throw new Error(
-      `Existing OpenCode config is invalid JSONC (${detail}); refusing to overwrite it.`
+      `Existing OpenCode config is invalid JSONC (${detail}); refusing to overwrite it.`,
     );
   }
 
   let nextText = content;
-
   const schemaEdits = modify(
     nextText,
     ["$schema"],
     parsed.$schema || "https://opencode.ai/config.json",
-    {
-      formattingOptions: { insertSpaces: true, tabSize: 2 },
-    }
+    { formattingOptions: { insertSpaces: true, tabSize: 2 } },
   );
   nextText = applyEdits(nextText, schemaEdits);
 
@@ -189,6 +179,5 @@ export const mergeOpenCodeConfigText = (
   const v2ProviderEdits = modify(nextText, ["providers", "shiguangGateway"], v2ProviderConfig, {
     formattingOptions: { insertSpaces: true, tabSize: 2 },
   });
-
   return applyEdits(nextText, v2ProviderEdits);
 };
