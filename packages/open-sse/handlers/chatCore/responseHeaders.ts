@@ -2,7 +2,7 @@ import {
   attachShiguangGatewayMetaHeaders,
   buildShiguangGatewayResponseMetaHeaders,
 } from "../../../core-domain/src/domain/gatewayResponseMeta.ts";
-import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "../../../core-domain/src/shared/constants/headers.ts";
+import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "@shiguang-gateway/contracts/gateway-headers";
 import { defaultLogger } from "../../utils/logger.ts";
 
 const STREAMING_RESPONSE_HEADER_DENYLIST = new Set([

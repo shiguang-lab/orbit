@@ -25,6 +25,10 @@
     "./batch": {
       "types": "./src/batch.ts",
       "import": "./src/batch.ts"
+    },
+    "./gateway-headers": {
+      "types": "./src/gateway-headers.ts",
+      "import": "./src/gateway-headers.ts"
     }
   },
   "scripts": {

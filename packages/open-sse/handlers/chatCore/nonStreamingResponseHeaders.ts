@@ -8,7 +8,7 @@
  * (returns a fresh map; only mutates the map it owns). Behaviour is byte-identical to the previous
  * inline block, including `latencyMs: now - startTime`.
  */
-import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "../../../core-domain/src/shared/constants/headers.ts";
+import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "@shiguang-gateway/contracts/gateway-headers";
 import { attachShiguangGatewayMetaHeaders as defaultAttachMeta } from "../../../core-domain/src/domain/gatewayResponseMeta.ts";
 
 export function buildNonStreamingResponseHeaders(

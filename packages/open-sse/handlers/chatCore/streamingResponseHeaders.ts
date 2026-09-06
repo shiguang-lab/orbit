@@ -8,7 +8,7 @@
  * optional compression header. Pure builder (returns a fresh map). Behaviour is byte-identical to
  * the previous inline block.
  */
-import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "../../../core-domain/src/shared/constants/headers.ts";
+import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "@shiguang-gateway/contracts/gateway-headers";
 import { buildStreamingResponseHeaders as defaultBuildStreaming } from "./responseHeaders.ts";
 
 export function assembleStreamingResponseHeaders(

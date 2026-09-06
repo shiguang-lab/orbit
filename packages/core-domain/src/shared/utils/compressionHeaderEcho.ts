@@ -10,7 +10,7 @@
  * directly from the request header. Existing header values from the inner pipeline
  * (which carry richer `tokens=...; rules: ...` annotations) are never overwritten.
  */
-import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "../constants/headers.ts";
+import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "@shiguang-gateway/contracts/gateway-headers";
 
 const COMPRESSION_REQUEST_HEADER = "x-shiguangGateway-compression";
 const COMPRESSION_RESPONSE_HEADER = SHIGUANG_GATEWAY_RESPONSE_HEADERS.compression;

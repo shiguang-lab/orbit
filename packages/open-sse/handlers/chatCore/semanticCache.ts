@@ -8,7 +8,7 @@ import { trackPendingRequest } from "../../../core-domain/src/lib/usageDb.ts";
 import { synthesizeOpenAiSseFromJson } from "../../utils/jsonToSse.ts";
 import { attachShiguangGatewayMetaHeaders } from "../../../core-domain/src/domain/gatewayResponseMeta.ts";
 import { extractUsageFromResponse } from "../usageExtractor.ts";
-import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "../../../core-domain/src/shared/constants/headers.ts";
+import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "@shiguang-gateway/contracts/gateway-headers";
 
 export async function checkSemanticCache({
   semanticCacheEnabled,

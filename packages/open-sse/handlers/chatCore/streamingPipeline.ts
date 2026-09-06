@@ -21,7 +21,7 @@ import {
 } from "../../utils/progressTracker.ts";
 import { createPiiSseTransform as defaultPiiSse } from "../../../core-domain/src/lib/streamingPiiTransform.ts";
 import { isFeatureFlagEnabled as defaultFeatureFlag } from "../../../core-domain/src/shared/utils/featureFlags.ts";
-import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "../../../core-domain/src/shared/constants/headers.ts";
+import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "@shiguang-gateway/contracts/gateway-headers";
 import { SSE_HEARTBEAT_INTERVAL_MS } from "../../config/constants.ts";
 /**
  * Pipeline assembly instrumentation — performance.mark() along the SSE hot path.

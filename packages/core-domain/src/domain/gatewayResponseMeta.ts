@@ -1,5 +1,5 @@
 import { getProviderAlias } from "../shared/constants/providers.ts";
-import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "../shared/constants/headers.ts";
+import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "@shiguang-gateway/contracts/gateway-headers";
 import { APP_CONFIG } from "../shared/constants/appConfig.ts";
 
 type UsageLike = Record<string, unknown> | null | undefined;

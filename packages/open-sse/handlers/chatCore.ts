@@ -450,7 +450,7 @@ import { writeTerminalStatus } from "../../core-domain/src/shared/utils/terminal
 import { extractFacts } from "../../core-domain/src/lib/memory/extraction.ts";
 import { handleToolCallExecution } from "../../core-domain/src/lib/skills/interception.ts";
 import { MEMORY_BUILTIN_TOOL_NAMES } from "../../core-domain/src/lib/skills/memoryBuiltins.ts";
-import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "../../core-domain/src/shared/constants/headers.ts";
+import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "@shiguang-gateway/contracts/gateway-headers";
 import { resolveProviderId } from "../../core-domain/src/shared/constants/providers.ts";
 import { getClaudeCodeCompatibleRequestDefaults } from "../../core-domain/src/lib/providers/requestDefaults.ts";
 import {
