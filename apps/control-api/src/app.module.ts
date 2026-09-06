@@ -52,6 +52,7 @@ import { GamificationModule } from "./gamification/gamification.module.js";
 import { CliToolsModule } from "./cli-tools/cli-tools.module.js";
 import { CliproxyModule } from "./services/cliproxy/cliproxy.module.js";
 import { MuxModule } from "./services/mux/mux.module.js";
+import { EmbeddedServiceLogsModule } from "./services/embedded-service-logs.module.js";
 import { SyncModule } from "./sync/sync.module.js";
 
 @Module({
@@ -110,6 +111,7 @@ import { SyncModule } from "./sync/sync.module.js";
     CliToolsModule,
     CliproxyModule,
     MuxModule,
+    EmbeddedServiceLogsModule,
     SyncModule,
   ],
 })

@@ -24,6 +24,10 @@ const MAX_FILTER_LEN = 200;
 const encoder = new TextEncoder();
 
 async function getOrInitNamedSupervisor(name: string) {
+  // Embedded-service log transport is owned by control-api for these apps.
+  // Keep the legacy route from competing with the Nest controller.
+  if (name === "mux" || name === "cliproxy") return null;
+
   const existing = getSupervisor(name);
   if (existing) return existing;
 
@@ -32,9 +36,6 @@ async function getOrInitNamedSupervisor(name: string) {
     return getOrInitSupervisor();
   }
 
-  // Mux lifecycle construction is owned by apps/control-api. Its worker
-  // bootstrap registers the shared supervisor before log streaming begins.
-  if (name === "mux") return null;
   if (name === "bifrost") {
     const { getOrInitSupervisor } = await import("../../bifrost/_lib");
     return getOrInitSupervisor();
