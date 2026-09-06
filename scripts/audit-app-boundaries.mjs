@@ -667,6 +667,7 @@ const migratedRouteOwnership = {
     "api/v1/responses/route.ts",
     "api/v1/antigravity/route.ts",
     "api/v1/auto-combo/[channel]/candidates/route.ts",
+    "api/v1/vscode/[token]/api/version/route.ts",
   ],
 };
 

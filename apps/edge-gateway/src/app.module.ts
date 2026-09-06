@@ -35,6 +35,7 @@ import { AntigravityModule } from "./antigravity/antigravity.module.js";
 import { AutoComboCandidatesModule } from "./auto-combo-candidates/auto-combo-candidates.module.js";
 import { MessagesModule } from "./messages/messages.module.js";
 import { ResponsesModule } from "./responses/responses.module.js";
+import { VscodeVersionModule } from "./vscode-version/vscode-version.module.js";
 
 @Module({
   imports: [
@@ -75,6 +76,7 @@ import { ResponsesModule } from "./responses/responses.module.js";
     AutoComboCandidatesModule,
     MessagesModule,
     ResponsesModule,
+    VscodeVersionModule,
   ],
 })
 export class AppModule {}
