@@ -7,6 +7,7 @@ export const UsageHistoryEntity: EntityDefinition = {
     column("tokens_input", "INTEGER", { default: "0" }), column("tokens_output", "INTEGER", { default: "0" }),
     column("tokens_cache_read", "INTEGER", { default: "0" }), column("tokens_cache_creation", "INTEGER", { default: "0" }),
     column("tokens_reasoning", "INTEGER", { default: "0" }), column("service_tier", "TEXT", { default: "'standard'" }),
+    column("account_key", "TEXT"), column("account_label", "TEXT"), column("account_label_priority", "INTEGER", { default: "0" }),
     column("status", "TEXT"), column("success", "INTEGER", { default: "1" }), column("latency_ms", "INTEGER", { default: "0" }),
     column("ttft_ms", "INTEGER", { default: "0" }), column("error_code", "TEXT"), column("timestamp", "TEXT", { nullable: false }),
     column("combo_strategy", "TEXT", { default: "'direct'" }), column("endpoint", "TEXT"),
@@ -23,6 +24,7 @@ export const CallLogEntity: EntityDefinition = {
     column("api_key_id", "TEXT"), column("api_key_name", "TEXT"), column("combo_name", "TEXT"), column("combo_step_id", "TEXT"), column("combo_execution_key", "TEXT"),
     column("error_summary", "TEXT"), column("detail_state", "TEXT", { default: "'none'" }), column("artifact_relpath", "TEXT"), column("artifact_size_bytes", "INTEGER", { default: "NULL" }), column("artifact_sha256", "TEXT", { default: "NULL" }),
     column("has_request_body", "INTEGER", { default: "0" }), column("has_response_body", "INTEGER", { default: "0" }), column("has_pipeline_details", "INTEGER", { default: "0" }), column("request_summary", "TEXT"),
+    column("model_pinned", "INTEGER", { default: "0" }),
     column("tokens_compressed", "INTEGER", { default: "NULL" }), column("correlation_id", "TEXT"), column("reasoning_source", "TEXT", { default: "NULL" }), column("reasoning_chars", "INTEGER", { default: "NULL" }), column("session_tag", "TEXT", { default: "NULL" }), column("response_id", "TEXT", { default: "NULL" }), column("error_type", "TEXT", { default: "NULL" }),
   ],
 };

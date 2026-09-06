@@ -40,6 +40,7 @@ function normalizeName(name) {
 }
 
 const declarationPattern = /\b(?:CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?|ALTER\s+TABLE)\s+([`"[]?[A-Za-z_][A-Za-z0-9_$-]*[`"\]]?)/gi;
+const alterColumnPattern = /\bALTER\s+TABLE\s+([`"[]?[A-Za-z_][A-Za-z0-9_$-]*[`"\]]?)\s+ADD\s+(?:COLUMN\s+)?([`"[]?[A-Za-z_][A-Za-z0-9_$-]*[`"\]]?)/gi;
 const sqlEvidencePattern = /\b(?:CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?|ALTER\s+TABLE|INSERT\s+INTO|UPDATE|DELETE\s+FROM|SELECT[\s\S]{0,160}?\bFROM)\b/i;
 const sqlNoise = new Set([
   "add", "alter", "and", "as", "by", "column", "create", "delete", "drop", "fail", "from", "if",
@@ -47,6 +48,7 @@ const sqlNoise = new Set([
 ]);
 const files = [...walk(join(repoRoot, "apps")), ...walk(join(repoRoot, "packages"))];
 const declarations = new Map();
+const alterColumns = new Map();
 for (const file of files) {
   const source = stripSqlComments(readFileSync(file, "utf8"));
   for (const match of source.matchAll(declarationPattern)) {
@@ -55,6 +57,16 @@ for (const file of files) {
     const list = declarations.get(table) ?? [];
     if (list.length < 8) list.push(relative(repoRoot, file));
     declarations.set(table, list);
+  }
+  for (const match of source.matchAll(alterColumnPattern)) {
+    const table = normalizeName(match[1]);
+    const column = normalizeName(match[2]);
+    if (sqlNoise.has(table) || sqlNoise.has(column)) continue;
+    const list = alterColumns.get(table) ?? new Map();
+    const filesForColumn = list.get(column) ?? [];
+    if (filesForColumn.length < 4) filesForColumn.push(relative(repoRoot, file));
+    list.set(column, filesForColumn);
+    alterColumns.set(table, list);
   }
 }
 
@@ -70,6 +82,14 @@ try {
   schema.assertGatewayEntities();
   const canonical = new Set(Object.values(schema.GATEWAY_TABLES).map(normalizeName));
   const uncovered = [...declarations.keys()].filter((table) => !canonical.has(table)).sort();
+  const columnDrift = {};
+  for (const [table, columns] of alterColumns) {
+    const entity = Object.values(schema.GATEWAY_ENTITIES).find((item) => normalizeName(item.tableName) === table);
+    if (!entity) continue;
+    const known = new Set(entity.columns.map((item) => normalizeName(item.name)));
+    const missing = [...columns.keys()].filter((column) => !known.has(column)).sort();
+    if (missing.length) columnDrift[table] = Object.fromEntries(missing.map((column) => [column, columns.get(column)]));
+  }
   // Browser-only code cannot prove database ownership.  Restrict evidence to
   // server apps and SQL-looking lines so UI strings such as "users" do not
   // turn into false positives.
@@ -82,6 +102,14 @@ try {
       .filter((file) => readFileSync(file, "utf8").split(/\r?\n/).some((line) => token.test(line) && sqlEvidencePattern.test(line)))
       .map((file) => relative(repoRoot, file));
     if (evidence.length) directAppEvidence.set(table, evidence.slice(0, 8));
+  }
+  if (Object.keys(columnDrift).length) {
+    console.log(`entity ALTER COLUMN drift: ${Object.keys(columnDrift).length} table(s)`);
+    for (const [table, columns] of Object.entries(columnDrift)) {
+      for (const [column, evidence] of Object.entries(columns)) console.log(`  ${table}.${column} (${evidence.join(", ")})`);
+    }
+  } else {
+    console.log("entity ALTER COLUMN drift: none");
   }
 
   console.log(`db-schema coverage: canonical=${canonical.size}, declared=${declarations.size}, uncovered=${uncovered.length}`);
@@ -97,11 +125,12 @@ try {
       declared: Object.fromEntries([...declarations.entries()].sort()),
       uncovered,
       directAppEvidence: Object.fromEntries(directAppEvidence),
+      columnDrift,
     }, null, 2));
   }
   // Strict mode only fails when an uncovered table is referenced by app code.
   // Package-local tables are intentionally left for the owning app migration.
-  if (process.argv.includes("--strict") && directAppEvidence.size) process.exitCode = 1;
+  if (process.argv.includes("--strict") && (directAppEvidence.size || Object.keys(columnDrift).length)) process.exitCode = 1;
 } finally {
   rmSync(outputDir, { recursive: true, force: true });
 }
