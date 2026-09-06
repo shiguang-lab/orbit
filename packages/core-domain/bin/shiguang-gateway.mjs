@@ -25,7 +25,7 @@ try {
 }
 import { isNativeBinaryCompatible } from "../scripts/build/native-binary-compat.mjs";
 import { getNodeRuntimeSupport, getNodeRuntimeWarning } from "./nodeRuntimeSupport.mjs";
-import { getDefaultDataDir } from "./cli/data-dir.mjs";
+import { getDefaultDataDir } from "@shiguang-gateway/config/dataPaths";
 import { shouldProvisionStorageKey } from "./cli/utils/storageKeyProvision.mjs";
 import { isVersionFastPath } from "./cli/utils/versionFastPath.mjs";
 import { parseEnvValue } from "./cli/utils/parseEnvValue.mjs";

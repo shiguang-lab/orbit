@@ -41,7 +41,7 @@ export const WORKER_JOBS: readonly WorkerJob[] = [
   { name: "memory-decay", mode: "call", modulePath: domainModule("lib/memory/typedDecay"), exportName: "startMemoryDecaySweep", stopExportName: "stopMemoryDecaySweep" },
   { name: "runtime-config-hot-reload", mode: "call", modulePath: domainModule("lib/config/hotReload"), exportName: "startRuntimeConfigHotReload", stopExportName: "stopRuntimeConfigHotReloadForTests" },
   { name: "reasoning-cache-cleanup", mode: "call", modulePath: "./reasoning-cache-cleanup.js", exportName: "startReasoningCacheCleanupJob", stopExportName: "stopReasoningCacheCleanupJob" },
-  { name: "backup-schedule", mode: "call", modulePath: domainModule("lib/jobs/backupScheduleJob"), exportName: "startBackupScheduleJob", stopExportName: "stopBackupScheduleJob" },
+  { name: "backup-schedule", mode: "call", modulePath: "./backup-schedule.js", exportName: "startBackupScheduleJob", stopExportName: "stopBackupScheduleJob" },
   { name: "proxy-health", mode: "call", modulePath: domainModule("lib/proxyHealth/scheduler"), exportName: "startProxyHealthCheck", stopExportName: "stopProxyHealthCheck" },
   { name: "free-proxy-auto-sync", mode: "call", modulePath: domainModule("lib/freeProxyProviders/scheduler"), exportName: "startFreeProxyAutoSync", stopExportName: "stopFreeProxyAutoSync" },
   { name: "batch-processor", mode: "import", modulePath: "./batch-processor.js" },

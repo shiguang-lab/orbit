@@ -108,6 +108,39 @@ if (kernelManifest?.exports && Object.keys(kernelManifest.exports).some((key) =>
   fail("http-kernel-scope", join(root, "packages/http-kernel/package.json"), "kernel exports only Nest transport modules");
 }
 
+// Package code must consume the data-only CLI capability contract. Reading the
+// CLI application's source tree makes behavior depend on cwd and bypasses the
+// package boundary entirely.
+const cliRegistryParserPath = join(
+  root,
+  "packages/core-domain/src/lib/agentSkills/cliRegistryParser.ts"
+);
+if (existsSync(cliRegistryParserPath)) {
+  const source = readFileSync(cliRegistryParserPath, "utf8");
+  for (const [pattern, detail] of [
+    [/from\s+["']node:fs["']/, "must not read the filesystem"],
+    [/from\s+["']node:path["']/, "must not derive application paths"],
+    [/process\.cwd\s*\(/, "must not depend on the caller cwd"],
+    [/bin[\\/]cli[\\/]commands/, "must not inspect CLI application source"],
+  ]) {
+    if (pattern.test(source)) fail("cli-capability-contract", cliRegistryParserPath, detail);
+  }
+  if (!source.includes("@shiguang-gateway/contracts/cli-capabilities")) {
+    fail("cli-capability-contract", cliRegistryParserPath, "must consume the published manifest contract");
+  }
+}
+
+const agentSkillsGeneratorPath = join(
+  root,
+  "packages/core-domain/src/lib/agentSkills/generator.ts"
+);
+if (existsSync(agentSkillsGeneratorPath)) {
+  const source = readFileSync(agentSkillsGeneratorPath, "utf8");
+  if (/cliRegistry\s*=\s*\{\s*commands:\s*new Map\(\),\s*families:\s*new Map\(\)/s.test(source)) {
+    fail("cli-capability-contract", agentSkillsGeneratorPath, "must not silently replace manifest errors with an empty registry");
+  }
+}
+
 const report = {
   status: failures.length ? "FAIL" : "PASS",
   apps: Object.keys(appKinds),

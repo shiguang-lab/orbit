@@ -110,6 +110,10 @@
       "types": "./src/cli-compat.ts",
       "import": "./src/cli-compat.ts"
     },
+    "./cli-capabilities": {
+      "types": "./src/cli-capabilities.ts",
+      "import": "./src/cli-capabilities.ts"
+    },
     "./formatting": {
       "types": "./src/formatting.ts",
       "import": "./src/formatting.ts"

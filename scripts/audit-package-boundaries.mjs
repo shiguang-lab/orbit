@@ -226,6 +226,14 @@ function importedSpecifiers(source) {
   return [...source.matchAll(importSpecifierPattern)].map((match) => match[1] ?? match[2]).filter(Boolean);
 }
 
+function isCoreSourceCliImplementationImport(file, specifier) {
+  if (!rel(file).startsWith("packages/core-domain/src/")) return false;
+  if (specifier === "@shiguang-gateway/cli" || specifier.startsWith("@shiguang-gateway/cli/")) return true;
+  if (!specifier.startsWith(".")) return false;
+  const target = rel(resolve(dirname(file), specifier));
+  return target.startsWith("packages/core-domain/bin/") || target.startsWith("apps/cli/");
+}
+
 if (process.argv.includes("--self-test")) {
   const graph = new Map([
     ["@shiguang-gateway/core-domain", new Set(["@shiguang-gateway/open-sse"])],
@@ -252,6 +260,10 @@ if (process.argv.includes("--self-test")) {
     "../b/x.js",
     "./required.cjs",
   ]);
+  const coreCliConsumer = resolve(repoRoot, "packages/core-domain/src/lib/cli-helper/sync.ts");
+  assert.equal(isCoreSourceCliImplementationImport(coreCliConsumer, "../../../bin/cli/setup.mjs"), true);
+  assert.equal(isCoreSourceCliImplementationImport(coreCliConsumer, "@shiguang-gateway/cli"), true);
+  assert.equal(isCoreSourceCliImplementationImport(coreCliConsumer, "@shiguang-gateway/cli-profile-config/codex"), false);
   assert.equal(isAppOwnedSource(resolve(repoRoot, "packages/a/src/feature/route.ts")), true);
   assert.equal(isAppOwnedSource(resolve(repoRoot, "packages/a/src/feature/legacy.route.ts")), true);
   assert.equal(isAppOwnedSource(resolve(repoRoot, "packages/a/src/feature/handler.ts")), false);
@@ -284,7 +296,7 @@ if (process.argv.includes("--self-test")) {
     packageLifecycleFindings("signal.ts", 'process.once("SIGTERM", shutdown);').map(({ signature }) => signature),
     ["module-process-signal:SIGTERM:expression"],
   );
-  console.log(JSON.stringify({ status: "PASS", checks: ["core-domain/open-sse SCC", "self-loop", "package ownership", "relative import extraction", "route basename ownership", "retired dynamic compat dispatcher", "package runtime export targets", "package lifecycle ownership"] }, null, 2));
+  console.log(JSON.stringify({ status: "PASS", checks: ["core-domain/open-sse SCC", "self-loop", "package ownership", "relative import extraction", "core source cannot import CLI implementations", "route basename ownership", "retired dynamic compat dispatcher", "package runtime export targets", "package lifecycle ownership"] }, null, 2));
   process.exit(0);
 }
 
@@ -339,6 +351,13 @@ for (const entry of packageEntries) {
   for (const file of walk(entry.dir)) {
     const source = readFileSync(file, "utf8");
     for (const specifier of importedSpecifiers(source)) {
+      if (isCoreSourceCliImplementationImport(file, specifier)) {
+        add(
+          "core-source-imports-cli-implementation",
+          file,
+          `core-domain source imports ${specifier}; move shared generators to a focused published package`,
+        );
+      }
       if (!specifier.startsWith(".")) continue;
       const targetOwner = packageOwner(resolve(dirname(file), specifier), packageEntries);
       if (targetOwner && targetOwner !== entry) {
@@ -456,6 +475,7 @@ const result = {
     "packages contain only capabilities shared by multiple workspace units; app-specific code belongs in apps",
     "dependencies and optionalDependencies between workspace packages must form an acyclic graph without self-dependencies",
     "a package may not import another package through a relative source path; use a declared published contract",
+    "core-domain source may not import executable CLI implementations from package bin or apps/cli",
     "packages may not contain route.ts modules or retired dynamic compat dispatchers",
     "every explicit package runtime export must resolve to an existing file",
     "package source imports may not start timers or listeners; applications own lifecycle",

@@ -85,8 +85,6 @@ COPY --from=build --chown=node:node /app/packages/core-domain/tsconfig.json ./pa
 COPY --from=build --chown=node:node /app/packages/http-kernel/src ./packages/http-kernel/src
 COPY --from=build --chown=node:node /app/packages/core-domain/src ./packages/core-domain/src
 COPY --from=build --chown=node:node /app/packages/open-sse ./packages/open-sse
-# Worker scheduler jobs invoke the packaged CLI backup command at runtime.
-COPY --from=build --chown=node:node /app/packages/core-domain/bin ./packages/core-domain/bin
 # Edge-owned route modules are loaded from source by the tsx catch-all loader.
 COPY --from=build --chown=node:node /app/apps/edge-gateway/src/routes ./apps/edge-gateway/src/routes
 COPY --from=build --chown=node:node /app/packages/http-kernel/package.json ./packages/http-kernel/package.json
@@ -101,6 +99,9 @@ COPY --from=build --chown=node:node /app/packages/contracts/tsconfig.json ./pack
 COPY --from=build --chown=node:node /app/packages/config/src ./packages/config/src
 COPY --from=build --chown=node:node /app/packages/config/package.json ./packages/config/package.json
 COPY --from=build --chown=node:node /app/packages/config/tsconfig.json ./packages/config/tsconfig.json
+COPY --from=build --chown=node:node /app/packages/cli-profile-config/src ./packages/cli-profile-config/src
+COPY --from=build --chown=node:node /app/packages/cli-profile-config/package.json ./packages/cli-profile-config/package.json
+COPY --from=build --chown=node:node /app/packages/cli-profile-config/tsconfig.json ./packages/cli-profile-config/tsconfig.json
 COPY --from=build --chown=node:node /app/packages/db-schema/src ./packages/db-schema/src
 COPY --from=build --chown=node:node /app/packages/db-schema/package.json ./packages/db-schema/package.json
 COPY --from=build --chown=node:node /app/packages/db-schema/tsconfig.json ./packages/db-schema/tsconfig.json

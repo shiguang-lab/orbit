@@ -1,10 +1,11 @@
 import path from "node:path";
-import { ensureCliConfigWriteAllowed, getCliConfigPaths } from "../../shared/services/cliRuntime";
+import { syncClaudeProfilesFromModels } from "@shiguang-gateway/cli-profile-config/claude";
+import { ensureCliConfigWriteAllowed, getCliConfigPaths } from "../../shared/services/cliRuntime.js";
 import {
   fetchModelSyncInternal,
   getModelSyncInternalBaseUrl,
-} from "../../shared/services/modelSyncScheduler";
-import { isFeatureFlagEnabled } from "../../shared/utils/featureFlags";
+} from "../../shared/services/modelSyncScheduler.js";
+import { isFeatureFlagEnabled } from "../../shared/utils/featureFlags.js";
 
 type SyncResult =
   | {
@@ -68,7 +69,7 @@ export async function autoSyncClaudeProfilesFromLiveCatalog(
   // so getCliConfigPaths("claude") exposes `settings` (NOT `config`). The profiles are written
   // under <claudeHome>/profiles/<name>/settings.json, where claudeHome = dirname(settings).
   const claudePaths = getCliConfigPaths("claude");
-  if (!claudePaths?.settings) {
+  if (!claudePaths || !("settings" in claudePaths) || !claudePaths.settings) {
     return { ok: false, skipped: true, reason: "claude_config_path_unavailable" };
   }
   const claudeHome = path.dirname(claudePaths.settings);
@@ -77,11 +78,6 @@ export async function autoSyncClaudeProfilesFromLiveCatalog(
   // Strip a trailing /v1 (Claude Code appends the version segment itself).
   const profileBaseUrl = internalBase.replace(/\/v1$/, "");
 
-  // Reuse the CLI generator so automatic sync and `shiguangGateway setup-claude` stay
-  // behaviorally identical.
-  // @ts-ignore - bin CLI modules are shipped as ESM JavaScript, without TS declarations.
-  const { syncClaudeProfilesFromModels } =
-    await import("../../../bin/cli/commands/setup-claude.mjs");
   const result = await syncClaudeProfilesFromModels(models, {
     claudeHome,
     baseUrl: profileBaseUrl,

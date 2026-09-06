@@ -1,5 +1,5 @@
 import { printHeading } from "../io.mjs";
-import { resolveDataDir, resolveStoragePath } from "../data-dir.mjs";
+import { resolveDataDir, resolveStoragePath } from "@shiguang-gateway/config/dataPaths";
 import { t } from "../i18n.mjs";
 import path from "node:path";
 import fs from "node:fs";

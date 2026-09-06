@@ -19,7 +19,7 @@
  */
 
 import { createInterface } from "node:readline";
-import { resolveDataDir, resolveStoragePath } from "./cli/data-dir.mjs";
+import { resolveDataDir, resolveStoragePath } from "@shiguang-gateway/config/dataPaths";
 import { readManagementPasswordState, resetManagementPassword } from "./cli/sqlite.mjs";
 
 // Resolve data directory — same logic as the server

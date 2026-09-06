@@ -1,24 +1,23 @@
 import {
   copyFileSync,
   createReadStream,
-  createWriteStream,
   existsSync,
-  mkdirSync,
   readdirSync,
   readFileSync,
   statSync,
-  unlinkSync,
-  writeFileSync,
 } from "node:fs";
-import { createCipheriv, createDecipheriv, randomBytes, scryptSync } from "node:crypto";
-import { dirname, join, extname, basename } from "node:path";
+import { randomBytes } from "node:crypto";
+import { join } from "node:path";
 import { Readable } from "node:stream";
-import { pipeline } from "node:stream/promises";
-import { resolveDataDir } from "../data-dir.mjs";
+import { resolveDataDir } from "@shiguang-gateway/config/dataPaths";
 import { getBaseUrl, isServerUp } from "../api.mjs";
 import { t } from "../i18n.mjs";
-import { backupSqliteFile } from "../sqlite.mjs";
 import { CLI_TOKEN_HEADER, getCliToken } from "../utils/cliToken.mjs";
+import {
+  createBackup,
+  readBackupScheduleResult,
+  writeBackupSchedule,
+} from "@shiguang-gateway/core-domain/backup/runtime";
 
 function getBackupDir() {
   return join(resolveDataDir(), "backups");
@@ -101,58 +100,6 @@ export function registerRestore(program) {
     });
 }
 
-function matchesGlob(fileName, pattern) {
-  if (!pattern.includes("*")) return fileName === pattern;
-  const parts = pattern.split("*");
-  let pos = 0;
-  for (let i = 0; i < parts.length; i++) {
-    const part = parts[i];
-    if (!part) continue;
-    if (i === 0) {
-      if (!fileName.startsWith(part)) return false;
-      pos = part.length;
-    } else if (i === parts.length - 1) {
-      if (!fileName.endsWith(part)) return false;
-      if (fileName.length < pos + part.length) return false;
-    } else {
-      const idx = fileName.indexOf(part, pos);
-      if (idx === -1) return false;
-      pos = idx + part.length;
-    }
-  }
-  return true;
-}
-
-function shouldExclude(fileName, patterns) {
-  if (!patterns || patterns.length === 0) return false;
-  return patterns.some((p) => matchesGlob(fileName, p));
-}
-
-async function encryptFile(srcPath, destPath, passphrase) {
-  const salt = randomBytes(16);
-  const iv = randomBytes(12);
-  const key = scryptSync(passphrase, salt, 32);
-  const cipher = createCipheriv("aes-256-gcm", key, iv);
-  const tmpCipherPath = `${destPath}.ciphertext`;
-  await pipeline(createReadStream(srcPath), cipher, createWriteStream(tmpCipherPath));
-  const authTag = cipher.getAuthTag();
-  // Format: salt(16) + iv(12) + authTag(16) + ciphertext
-  const out = createWriteStream(destPath);
-  try {
-    await new Promise((resolve, reject) => {
-      out.write(Buffer.concat([salt, iv, authTag]), (err) => {
-        if (err) reject(err);
-        else resolve();
-      });
-    });
-    await pipeline(createReadStream(tmpCipherPath), out);
-  } finally {
-    try {
-      unlinkSync(tmpCipherPath);
-    } catch {}
-  }
-}
-
 async function promptPassphrase() {
   const readline = await import("node:readline");
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
@@ -164,29 +111,7 @@ async function promptPassphrase() {
   );
 }
 
-async function pruneBackups(backupDir, retention) {
-  if (!retention || retention <= 0 || !existsSync(backupDir)) return;
-  try {
-    const dirs = readdirSync(backupDir)
-      .filter((f) => f.startsWith("shiguangGateway-backup-"))
-      .sort()
-      .reverse();
-    for (const old of dirs.slice(retention)) {
-      const { rmSync } = await import("node:fs");
-      rmSync(join(backupDir, old), { recursive: true, force: true });
-    }
-  } catch {}
-}
-
 export async function runBackupCommand(opts = {}) {
-  const dataDir = resolveDataDir();
-  const backupDir = getBackupDir();
-  const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
-  const safeName = opts.name ? String(opts.name).replace(/[/\\]/g, "_") : null;
-  const backupName = safeName ? `shiguangGateway-backup-${safeName}` : `shiguangGateway-backup-${timestamp}`;
-  const backupPath = join(backupDir, backupName);
-  const excludePatterns = opts.exclude || [];
-
   console.log(t("backup.creating"));
 
   let passphrase = null;
@@ -203,64 +128,22 @@ export async function runBackupCommand(opts = {}) {
   }
 
   try {
-    if (!existsSync(backupDir)) mkdirSync(backupDir, { recursive: true });
-
-    let backedUp = 0;
-    let skipped = 0;
-
-    for (const file of FILES_TO_BACKUP) {
-      if (shouldExclude(file.name, excludePatterns)) {
-        skipped++;
-        continue;
-      }
-      const sourcePath = join(dataDir, file.name);
-      if (existsSync(sourcePath)) {
-        const destName = opts.encrypt ? `${file.name}.enc` : file.name;
-        const destPath = join(backupPath, destName);
-        mkdirSync(dirname(destPath), { recursive: true });
-        if (file.name.endsWith(".sqlite")) {
-          const tmpPath = destPath.replace(/\.enc$/, "");
-          await backupSqliteFile(sourcePath, tmpPath);
-          if (opts.encrypt) {
-            await encryptFile(tmpPath, destPath, passphrase);
-            unlinkSync(tmpPath);
-          }
-        } else if (opts.encrypt) {
-          await encryptFile(sourcePath, destPath, passphrase);
-        } else {
-          copyFileSync(sourcePath, destPath);
-        }
-        backedUp++;
-      } else {
-        skipped++;
-      }
-    }
-
-    if (backedUp > 0) {
-      const info = {
-        timestamp: new Date().toISOString(),
-        version: "shiguangGateway-cli-v1",
-        encrypted: !!opts.encrypt,
-        files: FILES_TO_BACKUP.filter(
-          (f) => existsSync(join(dataDir, f.name)) && !shouldExclude(f.name, excludePatterns)
-        ).map((f) => (opts.encrypt ? `${f.name}.enc` : f.name)),
-      };
-      writeFileSync(join(backupPath, "backup-info.json"), JSON.stringify(info, null, 2), "utf8");
-
-      if (opts.cloud) {
-        const cloudCode = await _uploadBackupToCloud(backupPath, info);
-        if (cloudCode !== 0) {
-          console.warn(t("backup.cloudFailed"));
-        }
-      }
-
-      if (opts.retention) {
-        await pruneBackups(backupDir, opts.retention);
-      }
-
-      console.log(t("backup.done", { path: backupPath }));
+    const result = await createBackup({
+      dataDir: resolveDataDir(),
+      name: opts.name ? String(opts.name) : undefined,
+      encrypt: Boolean(opts.encrypt),
+      passphrase,
+      exclude: opts.exclude || [],
+      retention: opts.retention,
+      upload: opts.cloud
+        ? async (backupPath, info) => (await _uploadBackupToCloud(backupPath, info)) === 0
+        : undefined,
+    });
+    if (result.backedUp > 0) {
+      if (opts.cloud && result.cloudUploaded === false) console.warn(t("backup.cloudFailed"));
+      console.log(t("backup.done", { path: result.backupPath }));
       console.log(
-        `\x1b[2m  ${backedUp} backed up, ${skipped} skipped${opts.encrypt ? " (encrypted)" : ""}\x1b[0m`
+        `\x1b[2m  ${result.backedUp} backed up, ${result.skipped} skipped${result.encrypted ? " (encrypted)" : ""}\x1b[0m`
       );
       return 0;
     }
@@ -330,12 +213,11 @@ async function* createBackupMultipartStream(backupPath, info, boundary) {
   yield encode(`--${boundary}--\r\n`);
 }
 
-function getSchedulePath() {
-  return join(resolveDataDir(), "backup-schedule.json");
-}
-
 export async function runBackupAutoEnableCommand(opts = {}) {
-  const schedulePath = getSchedulePath();
+  if (opts.cloud || opts.encrypt) {
+    console.error("Scheduled cloud or encrypted backups require a non-interactive adapter and are not supported.");
+    return 1;
+  }
   const schedule = {
     enabled: true,
     cron: opts.cron || "0 3 * * *",
@@ -344,32 +226,39 @@ export async function runBackupAutoEnableCommand(opts = {}) {
     retention: opts.retention || null,
     updatedAt: new Date().toISOString(),
   };
-  mkdirSync(dirname(schedulePath), { recursive: true });
-  writeFileSync(schedulePath, JSON.stringify(schedule, null, 2), "utf8");
+  writeBackupSchedule(schedule, resolveDataDir());
   console.log(t("backup.auto.enabled", { cron: schedule.cron }));
   console.log(t("backup.auto.hint"));
   return 0;
 }
 
 export async function runBackupAutoDisableCommand() {
-  const schedulePath = getSchedulePath();
-  if (existsSync(schedulePath)) {
-    const schedule = JSON.parse(readFileSync(schedulePath, "utf8"));
+  const result = readBackupScheduleResult(resolveDataDir());
+  if (result.status === "invalid") {
+    console.error("Backup schedule is invalid JSON; refusing to overwrite it.");
+    return 1;
+  }
+  if (result.status === "valid") {
+    const schedule = result.schedule;
     schedule.enabled = false;
     schedule.updatedAt = new Date().toISOString();
-    writeFileSync(schedulePath, JSON.stringify(schedule, null, 2), "utf8");
+    writeBackupSchedule(schedule, resolveDataDir());
   }
   console.log(t("backup.auto.disabled"));
   return 0;
 }
 
 export async function runBackupAutoStatusCommand() {
-  const schedulePath = getSchedulePath();
-  if (!existsSync(schedulePath)) {
+  const result = readBackupScheduleResult(resolveDataDir());
+  if (result.status === "missing") {
     console.log(t("backup.auto.notConfigured"));
     return 0;
   }
-  const schedule = JSON.parse(readFileSync(schedulePath, "utf8"));
+  if (result.status === "invalid") {
+    console.error("Backup schedule is invalid JSON.");
+    return 1;
+  }
+  const schedule = result.schedule;
   const statusLabel = schedule.enabled ? "\x1b[32m● enabled\x1b[0m" : "\x1b[31m○ disabled\x1b[0m";
   console.log(`${t("backup.auto.title")}: ${statusLabel}`);
   console.log(`  cron:      ${schedule.cron}`);

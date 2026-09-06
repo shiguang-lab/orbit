@@ -1,0 +1,29 @@
+{
+  "name": "@shiguang-gateway/cli-profile-config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./model-profile": {
+      "types": "./types/model-profile.d.ts",
+      "import": "./src/model-profile.mjs"
+    },
+    "./codex": {
+      "types": "./types/codex.d.ts",
+      "import": "./src/codex.mjs"
+    },
+    "./claude": {
+      "types": "./types/claude.d.ts",
+      "import": "./src/claude.mjs"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit --pretty false",
+    "test": "node --import tsx --test test/*.test.ts"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:"
+  }
+}

@@ -5,7 +5,7 @@ import path from "node:path";
 import { createDecipheriv, scryptSync } from "node:crypto";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { isLoopbackUrl } from "../api.mjs";
-import { resolveDataDir, resolveStoragePath } from "../data-dir.mjs";
+import { resolveDataDir, resolveStoragePath } from "@shiguang-gateway/config/dataPaths";
 import { getCliToken, CLI_TOKEN_HEADER } from "../utils/cliToken.mjs";
 import { printHeading } from "../io.mjs";
 import { t } from "../i18n.mjs";

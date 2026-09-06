@@ -10,7 +10,7 @@ import {
 import { join, sep } from "node:path";
 import { spawnSync } from "node:child_process";
 import { platform } from "node:os";
-import { resolveDataDir } from "../data-dir.mjs";
+import { resolveDataDir } from "@shiguang-gateway/config/dataPaths";
 
 const BETTER_SQLITE3_VERSION = "12.10.1";
 

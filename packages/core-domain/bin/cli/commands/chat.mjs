@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { apiFetch } from "../api.mjs";
 import { emit } from "../output.mjs";
 import { t } from "../i18n.mjs";
-import { resolveDataDir } from "../data-dir.mjs";
+import { resolveDataDir } from "@shiguang-gateway/config/dataPaths";
 
 function resolveHistoryPath() {
   return join(resolveDataDir(), "cli-history.jsonl");

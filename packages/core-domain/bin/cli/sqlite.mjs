@@ -1,5 +1,5 @@
 import fs from "node:fs";
-import { resolveDataDir, resolveStoragePath } from "./data-dir.mjs";
+import { resolveDataDir, resolveStoragePath } from "@shiguang-gateway/config/dataPaths";
 import { ensureProviderSchema } from "./provider-store.mjs";
 import { ensureSettingsSchema, hashManagementPassword, updateSettings } from "./settings-store.mjs";
 
@@ -157,24 +157,6 @@ export async function withReadonlySqlite(dbPath, callback) {
   const db = await openSqliteDatabase(dbPath, { readonly: true, fileMustExist: true });
   try {
     return await callback(db);
-  } finally {
-    db.close();
-  }
-}
-
-export async function backupSqliteFile(sourcePath, destPath) {
-  const db = await openSqliteDatabase(sourcePath, { readonly: true });
-  try {
-    if (typeof db.backup === "function") {
-      await db.backup(destPath);
-    } else if (sourcePath === ":memory:" && typeof db.serialize === "function") {
-      fs.writeFileSync(destPath, Buffer.from(db.serialize()));
-    } else {
-      try {
-        db.exec("PRAGMA wal_checkpoint(TRUNCATE)");
-      } catch {}
-      fs.copyFileSync(sourcePath, destPath);
-    }
   } finally {
     db.close();
   }

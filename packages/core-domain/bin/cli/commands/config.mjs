@@ -3,7 +3,7 @@ import { t } from "../i18n.mjs";
 import path from "node:path";
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
-import { resolveDataDir } from "../data-dir.mjs";
+import { resolveDataDir } from "@shiguang-gateway/config/dataPaths";
 import { registerContexts } from "./contexts.mjs";
 import { guardHostConfigTarget } from "../utils/config-home-guard.mjs";
 

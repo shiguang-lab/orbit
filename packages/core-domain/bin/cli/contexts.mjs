@@ -1,6 +1,6 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync, chmodSync } from "node:fs";
 import { join, dirname } from "node:path";
-import { resolveDataDir } from "./data-dir.mjs";
+import { resolveDataDir } from "@shiguang-gateway/config/dataPaths";
 
 const CONFIG_VERSION = 1;
 const KEYCHAIN_SERVICE = "shiguangGateway-cli";

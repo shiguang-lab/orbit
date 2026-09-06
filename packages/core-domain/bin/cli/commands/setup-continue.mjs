@@ -13,7 +13,7 @@ import { join } from "node:path";
 import os from "node:os";
 import { printHeading, printInfo, printSuccess, printError } from "../io.mjs";
 import { resolveActiveContext } from "../contexts.mjs";
-import { categoriseModel } from "./setup-codex.mjs";
+import { categoriseModel } from "@shiguang-gateway/cli-profile-config/model-profile";
 import { guardHostConfigTarget } from "../utils/config-home-guard.mjs";
 
 const SECRET_REF = "${{ secrets.SHIGUANG_GATEWAY_API_KEY }}";

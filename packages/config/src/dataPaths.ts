@@ -58,6 +58,10 @@ export function resolveDataDir({ isCloud = false }: { isCloud?: boolean } = {}):
   return getDefaultDataDir();
 }
 
+export function resolveStoragePath(dataDir = resolveDataDir()): string {
+  return path.join(dataDir, "storage.sqlite");
+}
+
 export function isTestContext(): boolean {
   return (
     process.env.NODE_ENV === "test" ||

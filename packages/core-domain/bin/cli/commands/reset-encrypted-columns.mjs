@@ -1,5 +1,5 @@
 import { existsSync } from "node:fs";
-import { resolveDataDir } from "../data-dir.mjs";
+import { resolveDataDir } from "@shiguang-gateway/config/dataPaths";
 import { join } from "node:path";
 
 const ENCRYPTED_PATTERN = "enc:v1:%";

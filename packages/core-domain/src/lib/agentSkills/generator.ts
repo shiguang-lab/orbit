@@ -18,11 +18,11 @@ import fs from "node:fs";
 import path from "node:path";
 import { getCatalog, getSkillsDir, refreshCatalog } from "./catalog";
 import { parseOpenapi } from "./openapiParser";
-import { parseCliRegistry } from "./cliRegistryParser";
+import { parseCliRegistry } from "./cliRegistryParser.js";
 import { resolveGatewayBaseUrl } from "../../shared/utils/resolveGatewayBaseUrl";
 import type { AgentSkill, GeneratorOptions, GeneratorReport } from "./types";
 import type { ParsedOpenapi } from "./openapiParser";
-import type { ParsedCliRegistry } from "./cliRegistryParser";
+import type { ParsedCliRegistry } from "./cliRegistryParser.js";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -306,11 +306,7 @@ export async function generateAgentSkills(opts: GeneratorOptions): Promise<Gener
       }
     }
     if (!_cliRegistry) {
-      try {
-        _cliRegistry = parseCliRegistry();
-      } catch {
-        _cliRegistry = { commands: new Map(), families: new Map() };
-      }
+      _cliRegistry = parseCliRegistry();
     }
     return { openapi: _openapi, cliRegistry: _cliRegistry };
   }

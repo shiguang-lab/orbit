@@ -1267,7 +1267,7 @@
     "./worker/lib/contextWindowResolver.ts": "./src/lib/contextWindowResolver.ts",
     "./worker/lib/memory/typedDecay.ts": "./src/lib/memory/typedDecay.ts",
     "./worker/lib/config/hotReload.ts": "./src/lib/config/hotReload.ts",
-    "./worker/lib/jobs/backupScheduleJob.ts": "./src/lib/jobs/backupScheduleJob.ts",
+    "./backup/runtime": "./src/lib/backup/runtime.ts",
     "./worker/lib/proxyHealth/scheduler.ts": "./src/lib/proxyHealth/scheduler.ts",
     "./worker/lib/freeProxyProviders/scheduler.ts": "./src/lib/freeProxyProviders/scheduler.ts",
     "./lib/modelAliasResolver": "./src/lib/modelAliasResolver.ts",
@@ -1603,6 +1603,7 @@
   },
   "dependencies": {
     "@shiguang-gateway/auth": "workspace:*",
+    "@shiguang-gateway/cli-profile-config": "workspace:*",
     "@aws-sdk/client-bedrock-runtime": "^3.1126.0",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",

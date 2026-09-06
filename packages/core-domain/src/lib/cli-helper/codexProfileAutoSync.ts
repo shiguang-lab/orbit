@@ -1,10 +1,11 @@
 import path from "node:path";
-import { ensureCliConfigWriteAllowed, getCliConfigPaths } from "../../shared/services/cliRuntime";
+import { syncCodexProfilesFromModels } from "@shiguang-gateway/cli-profile-config/codex";
+import { ensureCliConfigWriteAllowed, getCliConfigPaths } from "../../shared/services/cliRuntime.js";
 import {
   fetchModelSyncInternal,
   getModelSyncInternalBaseUrl,
-} from "../../shared/services/modelSyncScheduler";
-import { isFeatureFlagEnabled } from "../../shared/utils/featureFlags";
+} from "../../shared/services/modelSyncScheduler.js";
+import { isFeatureFlagEnabled } from "../../shared/utils/featureFlags.js";
 
 type SyncResult =
   | {
@@ -69,10 +70,6 @@ export async function autoSyncCodexProfilesFromLiveCatalog(
   }
   const codexHome = path.dirname(codexPaths.config);
 
-  // Reuse the CLI generator so automatic sync and `shiguangGateway setup-codex`
-  // stay behaviorally identical.
-  // @ts-ignore - bin CLI modules are shipped as ESM JavaScript, without TS declarations.
-  const { syncCodexProfilesFromModels } = await import("../../../bin/cli/commands/setup-codex.mjs");
   const result = await syncCodexProfilesFromModels(models, { codexHome });
 
   return {
