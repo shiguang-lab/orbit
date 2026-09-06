@@ -167,7 +167,6 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "db/agentic-conversations",
   "usage/summary",
   "catalog/provider-credential-requirement",
-  "runtime/build-sha",
   "edge/credential-health-cache",
   "resilience/model-lockout-settings",
   "db/upstream-proxy",
@@ -981,6 +980,17 @@ const controlJobsContract = join(packagesRoot, "core-domain", "src", "control", 
 if (existsSync(controlJobsContract) && /\bgetJobRegistry\b|\.\.\/lib\/jobRegistry\/index/.test(readFileSync(controlJobsContract, "utf8"))) {
   add("control-job-contract-exposes-worker-runtime", controlJobsContract, "control jobs contract must expose DB projections only");
 }
+const coreDomainEntry = packageEntries.find(({ manifest }) => manifest?.name === "@shiguang-gateway/core-domain");
+const retiredControlOnlyExports = [
+  "./runtime/build-sha",
+  "./control/oauth-runtime/antigravityProjectGate",
+  "./control/cli-tools-batch-cache",
+];
+for (const subpath of retiredControlOnlyExports) {
+  if (coreDomainEntry?.manifest?.exports?.[subpath]) {
+    add("control-only-capability-exported-by-core-domain", join(coreDomainEntry.dir, "package.json"), subpath);
+  }
+}
 for (const pkg of packageEntries) {
   const declared = new Set(Object.keys({ ...(pkg.manifest?.dependencies ?? {}), ...(pkg.manifest?.devDependencies ?? {}), ...(pkg.manifest?.optionalDependencies ?? {}) }));
   for (const name of declared) {
@@ -1016,6 +1026,7 @@ const report = {
     "http-kernel exposes no app factory or surface selector",
     "control-api cannot import the worker-owned JobRegistry runtime",
     "core-domain control jobs contract cannot expose the worker-owned registry",
+    "migrated control-only capabilities cannot be re-exported by core-domain",
     "legacy runtime package names are retired",
   ],
   violations,

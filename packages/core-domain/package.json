@@ -600,10 +600,6 @@
       "types": "./src/public/oauthRuntime.d.ts",
       "import": "./src/lib/oauth/pasteCredentials.ts"
     },
-    "./control/oauth-runtime/antigravityProjectGate": {
-      "types": "./src/public/oauthRuntime.d.ts",
-      "import": "./src/lib/oauth/antigravityProjectGate.ts"
-    },
     "./control/oauth-runtime/kiroConnectionIdentity": {
       "types": "./src/public/oauthRuntime.d.ts",
       "import": "./src/lib/oauth/kiroConnectionIdentity.ts"
@@ -836,10 +832,6 @@
     "./shared/app-config": {
       "types": "./src/public/appConfig.d.ts",
       "import": "./src/shared/constants/appConfig.ts"
-    },
-    "./runtime/build-sha": {
-      "types": "./src/public/buildSha.d.ts",
-      "import": "./src/lib/monitoring/buildSha.ts"
     },
     "./catalog/provider-credential-requirement": {
       "types": "./src/public/providerCredentialRequirement.d.ts",
@@ -1472,7 +1464,6 @@
     "./control/cli-tools-config-generator": "./src/lib/cli-helper/config-generator/index.ts",
     "./control/cli-tools-tool-detector": "./src/lib/cli-helper/tool-detector.ts",
     "./control/cli-tools-config-guard": "./src/lib/api/cliConfigWriteGuard.ts",
-    "./control/cli-tools-batch-cache": "./src/lib/cliTools/batchStatusCache.ts",
     "./control/cli-tools-hermes-agent": "./src/lib/cli-helper/config-generator/hermes-agent.ts",
     "./control/cli-tools-hermes-home": "./src/lib/cli-helper/config-generator/hermesHome.ts",
     "./control/cli-tools-omp": "./src/lib/db/omp.ts",

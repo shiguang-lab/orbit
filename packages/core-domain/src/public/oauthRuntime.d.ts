@@ -4,7 +4,6 @@ export function buildOAuthConnectionCreatePayload(...args: any[]): any;
 export function createDeviceFlowTicket(...args: any[]): any;
 export function getDeviceFlowTicketStatus(...args: any[]): any;
 export function parsePastedCredentials(...args: any[]): any;
-export function antigravityDegradedProjectState(...args: any[]): any;
 export function findKiroConnectionByIdentity(...args: any[]): any;
 export function classifyKiroSocialPoll(...args: any[]): any;
 export function normalizeCodexImportRecord(...args: any[]): any;

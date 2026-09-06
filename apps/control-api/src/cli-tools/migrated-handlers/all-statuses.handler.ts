@@ -19,7 +19,7 @@ import {
   parseGrokBuildConfig,
   resolveGrokBuildConfigPath,
 } from "@shiguang-gateway/core-domain/shared/services/grokBuildConfig";
-import { getCached, setCached } from "@shiguang-gateway/core-domain/control/cli-tools-batch-cache";
+import { getCached, setCached } from "../batch-status-cache.js";
 import type { ToolBatchStatus, ToolBatchStatusMap } from "@shiguang-gateway/core-domain/shared/types/cliBatchStatus";
 
 const logger = pino({ name: "cli-tools-all-statuses-api" });

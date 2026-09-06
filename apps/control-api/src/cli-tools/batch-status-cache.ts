@@ -1,8 +1,7 @@
-// DRY: shared between /api/cli-tools/status and /api/cli-tools/all-statuses (plan 14 F2)
 // In-memory mtime-based cache for batch CLI tool status results.
 // Cache invalidated when mtime changes or its short TTL expires.
 
-import type { ToolBatchStatus } from "../../shared/types/cliBatchStatus.ts";
+import type { ToolBatchStatus } from "@shiguang-gateway/core-domain/shared/types/cliBatchStatus";
 
 export interface CacheEntry {
   mtimeMs: number;
