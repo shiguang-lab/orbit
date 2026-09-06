@@ -9,7 +9,7 @@
  * getClaudePlanLabel (__testing). Behavior-preserving move.
  */
 
-import { safePercentage } from "../../../core-domain/src/shared/utils/formatting.ts";
+import { safePercentage } from "@shiguang-gateway/contracts/formatting";
 import { CLAUDE_CODE_VERSION, fetchClaudeBootstrap } from "../../executors/claudeIdentity.ts";
 import { isClaudeOauthUsageCoolingDown, markClaudeOauthUsage429 } from "../claudeUsageCooldown.ts";
 import { toRecord } from "./scalars.ts";

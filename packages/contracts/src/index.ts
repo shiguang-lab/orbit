@@ -231,6 +231,7 @@ export * from "./designer-web-retirement.js";
 export * from "./provider-retirement.js";
 export * from "./chatgpt-web-retirement.js";
 export * from "./cli-compat.js";
+export * from "./formatting.js";
 
 export interface ComboBuilderModelOption {
   id: string;

@@ -8,7 +8,7 @@
  * usage.ts imports getKimiUsage (dispatcher). Behavior-preserving move.
  */
 
-import { safePercentage } from "../../../core-domain/src/shared/utils/formatting.ts";
+import { safePercentage } from "@shiguang-gateway/contracts/formatting";
 import {
   KIMI_CODE_ADDITIONAL_CREDITS_URL,
   type KimiBillingStatus,

@@ -154,9 +154,10 @@ export function truncateUrl(url: string | null | undefined, max = 50) {
  * Safely extract a finite number, returning undefined for invalid values.
  * Used by quota normalization in both backend (quotaCache) and frontend (ProviderLimits).
  */
-export function safePercentage(value: unknown): number | undefined {
-  return typeof value === "number" && isFinite(value) ? value : undefined;
-}
+// Kept as a compatibility re-export for existing core-domain callers.  The
+// implementation lives in the transport-neutral contracts package so shared
+// runtimes do not need to import the legacy domain source tree.
+export { safePercentage } from "@shiguang-gateway/contracts";
 
 /**
  * Format a reset countdown as a human-readable string: "2h 35m" or "4m 30s".
