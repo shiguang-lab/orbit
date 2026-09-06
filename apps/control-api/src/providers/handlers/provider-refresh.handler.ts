@@ -1,18 +1,24 @@
-import { NextResponse } from "next/server";
-import { getCachedProviderConnectionById } from "../../../../../lib/localDb.ts";
-import { updateProviderConnection } from "../../../../../lib/db/providers.ts";
+
+import { getCachedProviderConnectionById } from "@shiguang-gateway/core-domain/db/local-db";
+import { updateProviderConnection } from "@shiguang-gateway/core-domain/db/provider-connections";
+import {
+  updateProviderCredentials,
+  resolveCopilotTokenBaseUrl,
+} from "@shiguang-gateway/core-domain/control/provider-credentials";
 import {
   getAccessToken,
-  updateProviderCredentials,
   refreshCopilotToken,
-  resolveCopilotTokenBaseUrl,
-} from "../../../../../sse/services/tokenRefresh.ts";
-import { rotationGroupFor } from "../../../../../../../open-sse/services/refreshSerializer.ts";
+} from "@shiguang-gateway/open-sse/services/token-refresh";
+import { rotationGroupFor } from "@shiguang-gateway/open-sse/services/refreshSerializer";
 
 type RefreshResult = {
   accessToken?: string;
   expiresIn?: number;
+  expiresAt?: string;
   error?: string;
+  code?: string;
+  reason?: string;
+  migrateTo?: string;
 };
 
 /**
@@ -23,31 +29,29 @@ type RefreshResult = {
  *
  * T12 — Manual Token Refresh UI
  */
-export async function POST(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function handleProviderRefresh(_request: Request, id: string) {
   try {
-    const { id } = await params;
-
     const connection = await getCachedProviderConnectionById(id);
     if (!connection) {
-      return NextResponse.json({ error: "Connection not found" }, { status: 404 });
+      return Response.json({ error: "Connection not found" }, { status: 404 });
     }
 
     if (connection.authType !== "oauth") {
-      return NextResponse.json(
+      return Response.json(
         { error: "Only OAuth connections support manual token refresh" },
         { status: 400 }
       );
     }
 
     if (!connection.refreshToken && !connection.accessToken) {
-      return NextResponse.json(
+      return Response.json(
         { error: "No token credentials available for refresh" },
         { status: 422 }
       );
     }
 
     if (typeof connection.provider !== "string" || connection.provider.length === 0) {
-      return NextResponse.json({ error: "Connection provider is invalid" }, { status: 422 });
+      return Response.json({ error: "Connection provider is invalid" }, { status: 422 });
     }
 
     const provider = connection.provider;
@@ -59,7 +63,7 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
     // the serializer only prevents concurrent sibling refreshes.
     const rotationGroup = rotationGroupFor(provider);
     if (rotationGroup === "openai-auth0") {
-      return NextResponse.json({
+      return Response.json({
         success: true,
         skipped: true,
         connectionId: id,
@@ -107,7 +111,7 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
         resolveCopilotTokenBaseUrl(provider, credentials)
       );
       if (!copilotResult?.token) {
-        return NextResponse.json(
+        return Response.json(
           { error: "Token refresh failed — provider returned no new token" },
           { status: 502 }
         );
@@ -135,7 +139,7 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
             ? new Date(copilotResult.expiresAt).getTime()
             : (copilotResult.expiresAt as number | undefined);
 
-      return NextResponse.json({
+      return Response.json({
         success: true,
         connectionId: id,
         provider,
@@ -177,7 +181,7 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
             ? { lastErrorType: "provider_deprecated", errorCode: "provider_deprecated" }
             : {}),
         });
-        return NextResponse.json(
+        return Response.json(
           {
             error: isDeprecated
               ? "This provider was deprecated and can no longer be refreshed"
@@ -191,7 +195,7 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
     }
 
     if (!newCredentials?.accessToken) {
-      return NextResponse.json(
+      return Response.json(
         { error: "Token refresh failed — provider returned no new token" },
         { status: 502 }
       );
@@ -209,7 +213,7 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
         ? new Date(Date.now() + resolvedCreds.expiresIn * 1000).toISOString()
         : null;
 
-    return NextResponse.json({
+    return Response.json({
       success: true,
       connectionId: id,
       provider,
@@ -218,7 +222,7 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
     });
   } catch (error) {
     console.error("[T12] Token refresh failed:", error);
-    return NextResponse.json(
+    return Response.json(
       { error: "Token refresh failed", details: (error as Error).message },
       { status: 500 }
     );

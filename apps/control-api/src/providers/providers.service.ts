@@ -42,6 +42,7 @@ import {
 } from "@shiguang-gateway/core-domain/control/provider-expiration";
 import { resolveResilienceSettings } from "@shiguang-gateway/core-domain/control/resilience-settings";
 import { getCachedSettings } from "@shiguang-gateway/core-domain/cache/services";
+import { handleProviderRefresh } from "./handlers/provider-refresh.handler.js";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
 
@@ -204,6 +205,10 @@ export class ProvidersService {
   }
 
   // Handlers for models & nodes
+  async handleRefreshProvider(request: Request, id: string) {
+    return handleProviderRefresh(request, id);
+  }
+
   async handleGetProviderModels(request: Request) {
     return getProviderModelsHandler(request);
   }

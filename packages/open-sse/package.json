@@ -69,6 +69,14 @@
       "types": "./public/combo.d.ts",
       "import": "./services/combo.ts"
     },
+    "./services/refreshSerializer": {
+      "types": "./public/refreshSerializer.d.ts",
+      "import": "./services/refreshSerializer.ts"
+    },
+    "./services/token-refresh": {
+      "types": "./public/tokenRefresh.d.ts",
+      "import": "./services/tokenRefresh.ts"
+    },
     "./services/context-manager": {
       "types": "./public/contextManager.d.ts",
       "import": "./services/contextManager.ts"

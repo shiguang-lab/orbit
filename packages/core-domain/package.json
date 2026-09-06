@@ -162,6 +162,10 @@
       "types": "./src/public/managementAuth.d.ts",
       "import": "./src/lib/api/requireManagementAuth.ts"
     },
+    "./control/provider-credentials": {
+      "types": "./src/public/providerCredentials.d.ts",
+      "import": "./src/sse/services/tokenRefresh.ts"
+    },
     "./shared/version-manager": {
       "types": "./src/public/versionManagerControl.d.ts",
       "import": "./src/lib/versionManager/controlExports.ts"

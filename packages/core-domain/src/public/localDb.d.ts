@@ -251,3 +251,5 @@ export function listBatches(apiKeyId?: string, limit?: number, after?: string): 
 export function countBatches(apiKeyId?: string): number;
 export function deleteBatch(id: string): boolean;
 export function deleteCompletedBatches(): { deletedBatches: number; deletedFiles: number };
+
+export function getCachedProviderConnectionById(id: string): Promise<Record<string, any> | null>;

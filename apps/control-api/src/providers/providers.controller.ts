@@ -25,6 +25,20 @@ export class ProvidersController {
     @Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher
   ) {}
 
+  @Post("providers/:id/refresh")
+  refreshProvider(
+    @Param("id") id: string,
+    @Req() request: FastifyRequest,
+    @Res() reply: FastifyReply
+  ) {
+    return this.routes.dispatch(
+      request,
+      reply,
+      (req) => this.providersService.handleRefreshProvider(req, id),
+      { id }
+    );
+  }
+
   @Get("provider-metrics")
   metrics(@Res() reply: FastifyReply) {
     try {
