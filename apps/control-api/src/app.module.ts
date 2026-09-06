@@ -37,6 +37,7 @@ import { QdrantModule } from "./settings/qdrant/qdrant.module.js";
 import { ReasoningRoutingModule } from "./settings/reasoning-routing/reasoning-routing.module.js";
 import { TaskRoutingModule } from "./settings/task-routing/task-routing.module.js";
 import { ModelAliasesModule } from "./settings/model-aliases/model-aliases.module.js";
+import { CcDiscoveryMetricsModule } from "./settings/cc-discovery-metrics/cc-discovery-metrics.module.js";
 
 @Module({
   imports: [
@@ -78,6 +79,7 @@ import { ModelAliasesModule } from "./settings/model-aliases/model-aliases.modul
     ReasoningRoutingModule,
     TaskRoutingModule,
     ModelAliasesModule,
+    CcDiscoveryMetricsModule,
   ],
 })
 export class AppModule {}

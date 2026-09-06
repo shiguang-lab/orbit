@@ -141,6 +141,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/reasoning-routing",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push("catalog/providers");
+allowedCoreDomainSubpaths["apps/control-api"].push("db/cc-discovery-metrics");
 
 // Route files that have completed a physical ownership move. Keep this list
 // small and explicit: adding an entry is the acceptance record for a domain
@@ -302,6 +303,7 @@ const migratedRouteOwnership = {
     "api/settings/reasoning-routing-rules/route.ts",
     "api/settings/reasoning-routing-rules/[id]/route.ts",
     "api/settings/reasoning-routing-rules/simulate/route.ts",
+    "api/settings/cc-discovery-metrics/route.ts",
     "api/settings/task-routing/route.ts",
     "api/settings/model-aliases/route.ts",
     "api/settings/proxy/test/route.ts",

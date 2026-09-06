@@ -370,6 +370,10 @@
       "types": "./src/public/providerCcAlias.d.ts",
       "import": "./src/lib/db/ccDiscoveryAliases.ts"
     },
+    "./db/cc-discovery-metrics": {
+      "types": "./src/public/ccDiscoveryMetrics.d.ts",
+      "import": "./src/lib/db/ccDiscoveryMetrics.ts"
+    },
     "./db/provider-interception-rules": {
       "types": "./src/public/providerInterceptionRules.d.ts",
       "import": "./src/lib/db/interceptionRules.ts"

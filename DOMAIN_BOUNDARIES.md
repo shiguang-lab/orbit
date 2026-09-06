@@ -107,7 +107,7 @@ rate-limit toggle, proxy connectivity/registry management, free-proxy catalog/li
 promotion, settings/database maintenance and feature flags, OneProxy compatibility redirects, compression settings,
 MCP accessibility configuration, compression run telemetry and Caveman rule metadata, provider token refresh,
 Qdrant configuration, health, semantic-search diagnostics, cleanup, and embedding-model discovery,
-reasoning-routing rule CRUD and policy simulation,
+reasoning-routing rule CRUD and policy simulation, Claude Code discovery-alias usage metrics,
 task-aware routing configuration and detection diagnostics,
 model-alias settings (built-in/custom alias inspection and management),
 token-health/synced-models/provider-stats/provider-metrics/provider-nodes list/validation/provider-models, provider validation/observability (OpenRouter stats, quota windows, expiration, health matrix), provider policy settings (Claude Code aliases, parameter filters, web interception rules, tier configuration), client connection export and web-session contract, combo management (builder options, duplicate, metrics, reorder, auto and test), webhook management, memory settings, and complete API-key management groups (including app-owned root handlers, devices, regeneration, reveal, usage limits, key groups, memberships, and permissions), and the edge files, music,
