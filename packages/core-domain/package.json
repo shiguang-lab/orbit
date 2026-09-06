@@ -217,6 +217,26 @@
       "types": "./src/public/syncedModels.d.ts",
       "import": "./src/lib/db/models.ts"
     },
+    "./shared/connection-isolation": {
+      "types": "./src/public/connectionIsolation.d.ts",
+      "import": "./src/lib/exclusiveLeaseIsolation.ts"
+    },
+    "./shared/combo-test": {
+      "types": "./src/public/comboTest.d.ts",
+      "import": "./src/lib/combos/testHealth.ts"
+    },
+    "./shared/probe-origin": {
+      "types": "./src/public/probeOrigin.d.ts",
+      "import": "./src/shared/utils/probeOrigin.ts"
+    },
+    "./shared/classify-429": {
+      "types": "./src/public/classify429.d.ts",
+      "import": "./src/shared/utils/classify429.ts"
+    },
+    "./shared/free-models": {
+      "types": "./src/public/freeModels.d.ts",
+      "import": "./src/shared/utils/freeModels.ts"
+    },
     "./db/provider-stats": {
       "types": "./src/public/providerStatsDb.d.ts",
       "import": "./src/lib/db/providerStats.ts"
@@ -244,6 +264,10 @@
     "./pricing/validation": {
       "types": "./src/public/pricingValidation.d.ts",
       "import": "./src/shared/validation/pricingExports.ts"
+    },
+    "./pricing/modal-cost": {
+      "types": "./src/public/modalCost.d.ts",
+      "import": "./src/lib/usage/costCalculator.ts"
     },
     "./metrics/request-telemetry": {
       "types": "./src/public/requestTelemetry.d.ts",

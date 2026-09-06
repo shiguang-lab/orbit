@@ -1,27 +1,13 @@
 import { randomUUID } from "node:crypto";
-import { POST as postChatCompletion } from "../../app/api/v1/chat/completions/route.ts";
-import { POST as postAudioTranscription } from "../audio/transcriptionRouteHandlers.ts";
-import { handleValidatedEmbeddingRequestBody } from "../embeddings/routeHandlers.ts";
-import { POST as postRerank } from "../rerank/routeHandlers.ts";
 import {
   buildComboTestRequestBody,
   extractComboTestResponseText,
   extractComboTestStreamResult,
-} from "../combos/testHealth.ts";
-import { getCustomModels } from "../db/models.ts";
-import { getProviderNodeById } from "../db/providers.ts";
-import { sanitizeErrorMessage } from "../../../../open-sse/utils/error.ts";
-import { withRateLimit } from "../../../../open-sse/services/rateLimitManager.ts";
-import {
-  isCreditsExhausted,
-  isDailyQuotaExhausted,
-} from "../../../../open-sse/services/accountFallback.ts";
-import { looksLikeQuotaExhausted } from "../../shared/utils/classify429.ts";
-import { getTrustedLocalRateLimitError } from "../../../../open-sse/services/rateLimitManager/errors.ts";
-import { runAsProbe } from "../../shared/utils/probeOrigin.ts";
-import { isConnectionUnavailableToAuxiliaryActivity } from "../exclusiveLeaseIsolation.ts";
+} from "@shiguang-gateway/core-domain/shared/combo-test";
+import { getCustomModels, getProviderNodeById, isConnectionUnavailableToAuxiliaryActivity } from "./model-test-data.js";
+import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { runAsProbe } from "@shiguang-gateway/core-domain/shared/probe-origin";
 
-const INTERNAL_ORIGIN = "http://shiguangGateway.internal";
 export const DEFAULT_MODEL_TEST_TIMEOUT_MS = 30_000;
 const DOLA_PRO_TEST_TIMEOUT_MS = 90_000;
 const DOUBAO_WEB_PROVIDER_ID = "doubao-web";
@@ -29,6 +15,15 @@ const ZAI_WEB_PROVIDER_ID = "zai-web";
 const ZAI_WEB_TEST_TIMEOUT_MS = 60_000;
 const SLOW_WEB_TEST_MODELS = new Set(["dola-pro"]);
 const STREAMING_CHAT_TEST_MAX_TOKENS = 64;
+const load = (specifier: string): Promise<any> => import(specifier as string);
+
+function edgeGatewayBaseUrl(): string {
+  const configured = process.env.EDGE_GATEWAY_URL?.trim();
+  if (configured) return configured.replace(/\/$/, "");
+  const host = (process.env.EDGE_GATEWAY_HOST ?? "127.0.0.1").trim();
+  const normalizedHost = host === "0.0.0.0" || host === "::" || host === "[::]" ? "127.0.0.1" : host;
+  return `http://${normalizedHost}:${process.env.EDGE_GATEWAY_PORT ?? "8787"}`;
+}
 
 function asRecord(value: unknown): Record<string, unknown> {
   return value && typeof value === "object" && !Array.isArray(value)
@@ -166,7 +161,7 @@ export function buildInternalChatRequest(
   signal: AbortSignal,
   connectionId?: string
 ) {
-  return new Request(`${INTERNAL_ORIGIN}/v1/chat/completions`, {
+  return new Request(`${edgeGatewayBaseUrl()}/v1/chat/completions`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -189,7 +184,7 @@ export function buildInternalRerankRequest(
   signal: AbortSignal,
   connectionId?: string
 ) {
-  return new Request(`${INTERNAL_ORIGIN}/v1/rerank`, {
+  return new Request(`${edgeGatewayBaseUrl()}/v1/rerank`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -227,7 +222,7 @@ export function buildInternalAudioTranscriptionRequest(
   formData.set("model", model);
   formData.set("file", buildTinyWavFile());
 
-  return new Request(`${INTERNAL_ORIGIN}/v1/audio/transcriptions`, {
+  return new Request(`${edgeGatewayBaseUrl()}/v1/audio/transcriptions`, {
     method: "POST",
     headers: {
       "X-Internal-Test": "combo-health-check",
@@ -237,6 +232,26 @@ export function buildInternalAudioTranscriptionRequest(
       ...(connectionId ? { "X-ShiguangGateway-Connection": connectionId } : {}),
     },
     body: formData,
+    signal,
+  });
+}
+
+function buildInternalEmbeddingRequest(
+  testBody: Record<string, unknown>,
+  signal: AbortSignal,
+  connectionId?: string,
+) {
+  return new Request(`${edgeGatewayBaseUrl()}/v1/embeddings`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Internal-Test": "combo-health-check",
+      "X-ShiguangGateway-No-Cache": "true",
+      "X-ShiguangGateway-Compression": "off",
+      "X-Request-Id": `model-test-${randomUUID()}`,
+      ...(connectionId ? { "X-ShiguangGateway-Connection": connectionId } : {}),
+    },
+    body: JSON.stringify(testBody),
     signal,
   });
 }
@@ -367,15 +382,19 @@ function isBotBlockMessage(message: string): boolean {
  * Reuses the routing path's existing quota vocabulary from accountFallback.ts
  * and classify429.ts instead of inventing a new vocabulary.
  */
-export function classifyTestErrorQuota(errorText: string): {
+export async function classifyTestErrorQuota(errorText: string): Promise<{
   isQuota?: boolean;
   isTransient?: boolean;
-} {
+}> {
   const trimmed = typeof errorText === "string" ? errorText.trim() : "";
   if (!trimmed) return {};
 
   // Check daily-quota FIRST — it's the more specific (transient) classification
   // and should win over credits-exhausted if both match.
+  const [{ isCreditsExhausted, isDailyQuotaExhausted }, { looksLikeQuotaExhausted }] = await Promise.all([
+    load("@shiguang-gateway/open-sse/services/accountFallback"),
+    load("@shiguang-gateway/core-domain/shared/classify-429"),
+  ]);
   if (isDailyQuotaExhausted(trimmed)) {
     return { isQuota: true, isTransient: true };
   }
@@ -468,26 +487,20 @@ export async function runSingleModelTest(
   }, effectiveTimeoutMs);
 
   const runInner = async (signal: AbortSignal): Promise<Response> => {
-    if (isEmbedding) {
-      return handleValidatedEmbeddingRequestBody(
-        testBody as Record<string, unknown> & { model: string },
-        { connectionId: connectionId || undefined }
-      );
-    }
-    if (isRerank) {
-      return postRerank(buildInternalRerankRequest(testBody, signal, connectionId));
-    }
-    if (isAudioTranscription) {
-      return postAudioTranscription(
-        buildInternalAudioTranscriptionRequest(fullModelStr, signal, connectionId)
-      );
-    }
-    return postChatCompletion(buildInternalChatRequest(testBody, signal, connectionId));
+    const request = isEmbedding
+      ? buildInternalEmbeddingRequest(testBody, signal, connectionId)
+      : isRerank
+        ? buildInternalRerankRequest(testBody, signal, connectionId)
+        : isAudioTranscription
+          ? buildInternalAudioTranscriptionRequest(fullModelStr, signal, connectionId)
+          : buildInternalChatRequest(testBody, signal, connectionId);
+    return fetch(request);
   };
 
   let res: Response;
   try {
     if (connectionId) {
+      const { withRateLimit } = await load("@shiguang-gateway/open-sse/services/rateLimitManager");
       res = await withRateLimit(
         providerId,
         connectionId,
@@ -495,7 +508,7 @@ export async function runSingleModelTest(
         // T-PROBE: wrap the scheduled fn, not the withRateLimit call — a
         // queued Bottleneck job executes from its own async resource and
         // would otherwise run outside the probe context below.
-        (signal) => runAsProbe(() => runInner(signal)),
+        (signal: AbortSignal) => runAsProbe(() => runInner(signal)),
         controller.signal
       );
     } else {
@@ -527,6 +540,7 @@ export async function runSingleModelTest(
         rateLimited: true,
       };
     }
+    const { getTrustedLocalRateLimitError } = await load("@shiguang-gateway/open-sse/services/rateLimitManager/errors");
     const localRateLimitFailure = getTrustedLocalRateLimitError(error);
     return {
       modelId: fullModelStr,
@@ -602,7 +616,7 @@ export async function runSingleModelTest(
       // #9511: Check quota BEFORE bot-block — 403 with quota wording is a quota
       // error, not a bot-block. A bare 403 status without quota/bot wording still
       // falls through to the generic error branch.
-      const quotaFlags = classifyTestErrorQuota(error);
+      const quotaFlags = await classifyTestErrorQuota(error);
       const isBotBlock =
         !quotaFlags.isQuota && (streamError.statusCode === 403 || isBotBlockMessage(error));
       return {
@@ -672,7 +686,7 @@ export async function runSingleModelTest(
   // #9511: classify quota signals on the generic error branch so that
   // 401/402/403 "insufficient balance" / "quota exhausted" errors are
   // NOT auto-hidden by Test All.
-  const quotaFlags = classifyTestErrorQuota(errorMsg);
+  const quotaFlags = await classifyTestErrorQuota(errorMsg);
   return {
     modelId: fullModelStr,
     status: "error",
