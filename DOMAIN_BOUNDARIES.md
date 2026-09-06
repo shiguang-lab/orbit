@@ -74,11 +74,20 @@ enforced each app's write boundary. A domain migration must move its queries and
 mutations into the owner app and should make the row `PASS-direct`; an app-only
 temporary table must not be added to `db-schema`.
 
+Run `pnpm audit:db-schema-coverage -- --strict` for the broader migration inventory.
+It compares static `CREATE TABLE`/`ALTER TABLE` declarations with the canonical
+entity catalog and fails if a deployable server app contains SQL for an uncovered
+table. Remaining package-only declarations are legacy internals in `core-domain`;
+they must be classified as app-private or promoted into `db-schema` as their owning
+domain is migrated. New tables are rejected from app code until their classification
+is explicit.
+
 Route migration is physical: handlers already accepted by an app live below
 that app's `src/routes` tree. The parity audits aggregate those app-owned trees
 with the remaining domain handlers, so each move is independently verifiable.
 
-The current migration wave has moved the control auth/health/status/process-control/
+The current migration wave has moved the control auth (status, CSRF, password login,
+logout and OIDC), health/status/process-control/version-manager, rate-limit toggle,
 token-health/synced-models/provider-stats/provider-metrics/provider-nodes list/validation/provider-models, provider validation/observability (OpenRouter stats, quota windows, expiration, health matrix), combo management (builder options, duplicate, metrics, reorder, auto and test), webhook management, memory settings, and complete API-key management groups (including app-owned root handlers, devices, regeneration, reveal, usage limits, key groups, memberships, and permissions), and the edge files, music,
 speech-to-text, embeddings, audio-transcriptions, audio-speech, audio-translations, text-to-speech, image edits/generations/upscale, moderation, rerank, ElevenLabs voices, plus WebSocket handshake routes. Remaining route groups stay in
 `core-domain` until their dependencies can move without reintroducing a
