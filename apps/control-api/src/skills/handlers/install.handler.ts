@@ -1,9 +1,8 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
-import { GLOBAL_SKILL_OWNER_ID, skillRegistry } from "../../../../lib/skills/registry.ts";
-import { validateBody, isValidationFailure } from "../../../../shared/validation/helpers.ts";
-import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
+import { GLOBAL_SKILL_OWNER_ID, skillRegistry } from "@shiguang-gateway/core-domain/control/skills-registry";
+import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 
 const installManifestSchema = z.object({
   name: z.string().min(1).max(100),
@@ -28,7 +27,7 @@ export async function POST(request: Request) {
     const rawBody = await request.json();
     const validation = validateBody(installManifestSchema, rawBody);
     if (isValidationFailure(validation)) {
-      return NextResponse.json(validation.error, { status: 400 });
+      return Response.json(validation.error, { status: 400 });
     }
 
     const { name, version, description, schema, handlerCode, apiKeyId } = validation.data;
@@ -43,9 +42,9 @@ export async function POST(request: Request) {
       enabled: true,
     });
 
-    return NextResponse.json({ success: true, id: skill.id });
+    return Response.json({ success: true, id: skill.id });
   } catch (err: unknown) {
     const error = sanitizeErrorMessage(err instanceof Error ? err.message : String(err));
-    return NextResponse.json({ error }, { status: 500 });
+    return Response.json({ error }, { status: 500 });
   }
 }

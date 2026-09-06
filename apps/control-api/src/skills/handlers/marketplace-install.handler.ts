@@ -1,11 +1,10 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
-import { validateBody, isValidationFailure } from "../../../../../shared/validation/helpers.ts";
-import { GLOBAL_SKILL_OWNER_ID, skillRegistry } from "../../../../../lib/skills/registry.ts";
-import { getSkillsProviderSetting } from "../../../../../lib/skills/providerSettings.ts";
+import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { GLOBAL_SKILL_OWNER_ID, skillRegistry } from "@shiguang-gateway/core-domain/control/skills-registry";
+import { getSkillsProviderSetting } from "@shiguang-gateway/core-domain/control/skills-provider-settings";
 
-import { isAuthenticated } from "../../../../../shared/utils/apiAuth.ts";
-import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
+import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
+import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 
 const marketplaceInstallSchema = z.object({
   name: z.string().min(1).max(64),
@@ -17,12 +16,12 @@ const marketplaceInstallSchema = z.object({
 
 export async function POST(request: Request) {
   if (!(await isAuthenticated(request))) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
   try {
     const provider = await getSkillsProviderSetting();
     if (provider !== "skillsmp") {
-      return NextResponse.json(
+      return Response.json(
         {
           error:
             "Active skills provider is not SkillsMP. Switch provider in Settings → Memory & Skills.",
@@ -34,7 +33,7 @@ export async function POST(request: Request) {
     const rawBody = await request.json();
     const validation = validateBody(marketplaceInstallSchema, rawBody);
     if (isValidationFailure(validation)) {
-      return NextResponse.json(validation.error, { status: 400 });
+      return Response.json(validation.error, { status: 400 });
     }
     const { name, description, skillMdContent, version } = validation.data;
 
@@ -52,9 +51,9 @@ export async function POST(request: Request) {
       installCount: 1,
     });
 
-    return NextResponse.json({ success: true, id: skill.id });
+    return Response.json({ success: true, id: skill.id });
   } catch (err: unknown) {
     const error = sanitizeErrorMessage(err instanceof Error ? err.message : String(err));
-    return NextResponse.json({ error }, { status: 500 });
+    return Response.json({ error }, { status: 500 });
   }
 }

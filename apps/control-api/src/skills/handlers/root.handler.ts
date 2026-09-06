@@ -1,10 +1,9 @@
-import { NextResponse } from "next/server";
-import { skillRegistry } from "../../../lib/skills/registry.ts";
-import { parsePaginationParams, buildPaginatedResponse } from "../../../shared/types/pagination.ts";
-import { getSkillsProviderSetting } from "../../../lib/skills/providerSettings.ts";
-import { requireManagementAuth } from "../../../lib/api/requireManagementAuth.ts";
-import { matchesSearch } from "../../../shared/utils/turkishText.ts";
-import { sanitizeErrorMessage } from "../../../../../open-sse/utils/error.ts";
+import { skillRegistry } from "@shiguang-gateway/core-domain/control/skills-registry";
+import { parsePaginationParams, buildPaginatedResponse } from "@shiguang-gateway/core-domain/shared/types/pagination";
+import { getSkillsProviderSetting } from "@shiguang-gateway/core-domain/control/skills-provider-settings";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { matchesSearch } from "@shiguang-gateway/core-domain/shared/utils/turkishText";
+import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 
 const POPULAR_BY_PROVIDER = {
   skillsmp: ["web-search", "file-reader", "sql-assistant", "devops-helper", "docs-assistant"],
@@ -50,7 +49,7 @@ export async function GET(request?: Request) {
     const params = parsePaginationParams(parsedUrl.searchParams);
     const paged = allSkills.slice((params.page - 1) * params.limit, params.page * params.limit);
     const response = buildPaginatedResponse(paged, allSkills.length, params);
-    return NextResponse.json({
+    return Response.json({
       ...response,
       skills: response.data,
       provider,
@@ -58,6 +57,6 @@ export async function GET(request?: Request) {
     });
   } catch (err: unknown) {
     const error = sanitizeErrorMessage(err instanceof Error ? err.message : String(err));
-    return NextResponse.json({ error }, { status: 500 });
+    return Response.json({ error }, { status: 500 });
   }
 }

@@ -999,6 +999,30 @@
     "./a2a/legacy-status": {
       "types": "./src/public/a2aLegacyRoute.d.ts",
       "import": "./src/a2a/legacy/status.ts"
+    },
+    "./control/skills-registry": {
+      "types": "./src/public/skillsRegistry.d.ts",
+      "import": "./src/lib/skills/registry.ts"
+    },
+    "./control/skills-db": {
+      "types": "./src/public/skillsDb.d.ts",
+      "import": "./src/lib/db/skills.ts"
+    },
+    "./control/skills-provider-settings": {
+      "types": "./src/public/skillsProviderSettings.d.ts",
+      "import": "./src/lib/skills/providerSettings.ts"
+    },
+    "./control/skills-github": {
+      "types": "./src/public/skillsGithub.d.ts",
+      "import": "./src/lib/skills/githubCollector.ts"
+    },
+    "./control/skills-skillssh": {
+      "types": "./src/public/skillsSkillssh.d.ts",
+      "import": "./src/lib/skills/skillssh.ts"
+    },
+    "./shared/types/pagination": {
+      "types": "./src/public/pagination.d.ts",
+      "import": "./src/shared/types/pagination.ts"
     }
   },
   "dependencies": {

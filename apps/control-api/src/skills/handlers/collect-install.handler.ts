@@ -12,11 +12,10 @@
  *
  * Returns: { ok, results: { target, action, destDir, error? }[] }
  */
-import { NextResponse } from "next/server";
 import { z } from "zod";
-import { validateBody, isValidationFailure } from "../../../../../shared/validation/helpers.ts";
-import { sanitizeErrorMessage, buildErrorBody } from "../../../../../../../open-sse/utils/error.ts";
-import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
+import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { sanitizeErrorMessage, buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 
 const installSchema = z.object({
   repoName: z.string().min(1, "repoName is required"),
@@ -91,13 +90,13 @@ export async function POST(request: Request) {
     const rawBody = await request.json();
     const validation = validateBody(installSchema, rawBody);
     if (isValidationFailure(validation)) {
-      return NextResponse.json(buildErrorBody(400, validation.error.message), { status: 400 });
+      return Response.json(buildErrorBody(400, validation.error.message), { status: 400 });
     }
 
     const { repoName, targets, description } = validation.data;
     const skillName = repoName.split("/").pop() || repoName;
 
-    const results = targets.map((target) => {
+    const results = (targets as string[]).map((target: string) => {
       try {
         const destDir = resolveDestDir(target, skillName, description);
         return {
@@ -117,14 +116,14 @@ export async function POST(request: Request) {
       }
     });
 
-    return NextResponse.json({
-      ok: results.every((r) => r.ok),
+    return Response.json({
+      ok: results.every((r: { ok: boolean }) => r.ok),
       repoName,
       skillName,
       results,
     });
   } catch (err) {
     const msg = sanitizeErrorMessage(err);
-    return NextResponse.json(buildErrorBody(500, msg), { status: 500 });
+    return Response.json(buildErrorBody(500, msg), { status: 500 });
   }
 }

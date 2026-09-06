@@ -62,6 +62,7 @@ import { AgentBridgeModule } from "./tools/agent-bridge/agent-bridge.module.js";
 import { RegisteredKeysModule } from "./registered-keys/registered-keys.module.js";
 import { PlaygroundModule } from "./playground/playground.module.js";
 import { CloudModule } from "./cloud/cloud.module.js";
+import { SkillsModule } from "./skills/skills.module.js";
 
 @Module({
   imports: [
@@ -129,6 +130,7 @@ import { CloudModule } from "./cloud/cloud.module.js";
     RegisteredKeysModule,
     PlaygroundModule,
     CloudModule,
+    SkillsModule,
   ],
 })
 export class AppModule {}
