@@ -601,7 +601,7 @@ async function startMitmInternal(
   let ingestToken = process.env.INSPECTOR_INTERNAL_INGEST_TOKEN || "";
   if (!ingestToken) {
     try {
-      const ingestMod = await import("../app/api/tools/traffic-inspector/internal/ingest/route.ts");
+      const ingestMod = await import("../lib/inspector/ingestToken.ts");
       if (typeof ingestMod.getIngestTokenForBootstrap === "function") {
         ingestToken = ingestMod.getIngestTokenForBootstrap();
       }
