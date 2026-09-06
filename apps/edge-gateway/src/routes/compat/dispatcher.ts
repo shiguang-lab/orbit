@@ -40,13 +40,13 @@ export function registerEdgeCompatRoutes(app: FastifyInstance): Promise<void> {
       return reply.status(405).send({ error: { type: "method_not_allowed", message: `${request.method} is not supported` }, requestId: request.id });
     }
   });
-  const accepts = (pathname: string) => pathname === "/api/v1" || pathname.startsWith("/api/v1/") || pathname === "/api/v1beta" || pathname.startsWith("/api/v1beta/") || pathname === "/v1" || pathname.startsWith("/v1/") || pathname === "/v1beta" || pathname.startsWith("/v1beta/") || pathname === "/a2a" || pathname.startsWith("/a2a/") || pathname === "/api/a2a" || pathname.startsWith("/api/a2a/") || pathname === "/.well-known/agent.json" || pathname === "/api/.well-known/agent.json" || pathname === "/authorize";
+  const accepts = (pathname: string) => pathname === "/api/v1" || pathname.startsWith("/api/v1/") || pathname === "/api/v1beta" || pathname.startsWith("/api/v1beta/") || pathname === "/v1" || pathname.startsWith("/v1/") || pathname === "/v1beta" || pathname.startsWith("/v1beta/") || pathname === "/a2a" || pathname.startsWith("/a2a/") || pathname === "/api/a2a" || pathname.startsWith("/api/a2a/") || pathname === "/authorize";
   registerCompatDispatcher(app, {
     definitions,
     accepts,
     // `/a2a` is registered by A2aRootController. Keep the wildcard for
     // legacy protocol subpaths, but do not register a duplicate exact route.
-    rootPaths: ["/v1", "/v1/*", "/v1beta", "/v1beta/*", "/a2a/*", "/.well-known/agent.json", "/authorize"],
+    rootPaths: ["/v1", "/v1/*", "/v1beta", "/v1beta/*", "/a2a/*", "/authorize"],
   });
   return Promise.resolve();
 }

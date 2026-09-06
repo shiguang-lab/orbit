@@ -71,6 +71,7 @@ import { ProxySubscriptionsModule } from "./proxy-subscriptions/proxy-subscripti
 import { MiddlewareHooksModule } from "./middleware-hooks/middleware-hooks.module.js";
 import { SearchProvidersModule } from "./search/providers/search-providers.module.js";
 import { IssuesModule } from "./issues/issues.module.js";
+import { AcpModule } from "./acp/acp.module.js";
 
 @Module({
   imports: [
@@ -147,6 +148,7 @@ import { IssuesModule } from "./issues/issues.module.js";
     MiddlewareHooksModule,
     SearchProvidersModule,
     IssuesModule,
+    AcpModule,
   ],
 })
 export class AppModule {}

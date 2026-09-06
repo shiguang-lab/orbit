@@ -20,6 +20,9 @@ const localApiExtensions = new Set([
   // it is intentionally represented by a Nest controller rather than the
   // historical Next app route.
   "docs/api/search/route.ts",
+  // Agent Card discovery is now served by edge-gateway's Nest controller.
+  ".well-known/agent.json/route.ts",
+  ".well-known/agent-card.json/route.ts",
 ]);
 const normalizeRoutePath = (value) => value.replace(new RegExp("omni" + "route", "gi"), "gateway");
 

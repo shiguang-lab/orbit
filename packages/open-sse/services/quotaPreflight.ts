@@ -18,7 +18,7 @@
  * it — once you invoke preflight, it runs the fetcher and evaluates.
  */
 
-import { isCompatibleProviderConnectionId } from "../../core-domain/src/shared/utils/compatibleProviderId.ts";
+import { isCompatibleProviderConnectionId } from "@shiguang-gateway/contracts/compatible-provider-id";
 import { isFeatureFlagEnabled } from "../../core-domain/src/shared/utils/featureFlags.ts";
 import { fetchNewApiAggregatorQuota } from "./newApiAggregatorQuotaFetcher.ts";
 

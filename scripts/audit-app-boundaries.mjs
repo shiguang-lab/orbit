@@ -76,6 +76,7 @@ const allowedCoreDomainSubpaths = {
     "edge/vscode-token",
     "edge/vscode-models",
     "edge/vscode-ollama",
+    "edge/fleet-skills",
     "control/settings",
     "edge/count-tokens-validation",
     "control/authenticated",
@@ -142,7 +143,7 @@ const allowedCoreDomainSubpaths = {
   ],
 };
 
-allowedCoreDomainSubpaths["apps/control-api"].push("control/provider-test-batch");
+allowedCoreDomainSubpaths["apps/control-api"].push("control/provider-test-batch", "control/acp");
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "catalog/display-names",
   "catalog/managed-available-models",
@@ -630,6 +631,7 @@ const migratedRouteOwnership = {
     "api/mcp/audit/stats/route.ts",
     "api/mcp/status/route.ts",
     "api/mcp/tools/route.ts",
+    "api/acp/agents/route.ts",
   ],
   "apps/edge-gateway": [
     // A2A protocol and task-management routes are owned by the edge Nest app.

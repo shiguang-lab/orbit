@@ -44,9 +44,17 @@
       "types": "./src/public/vscodeOllama.d.ts",
       "import": "./src/lib/vscode/ollama.ts"
     },
+    "./edge/fleet-skills": {
+      "types": "./src/public/fleetSkills.d.ts",
+      "import": "./src/lib/conductor/fleetSkills.ts"
+    },
     "./control/provider-test-batch": {
       "types": "./src/public/providerTestBatch.d.ts",
       "import": "./src/lib/providers/testBatch.ts"
+    },
+    "./control/acp": {
+      "types": "./src/public/acp.d.ts",
+      "import": "./src/lib/acp/registry.ts"
     },
     "./edge/chat-admission": {
       "types": "./src/public/chatAdmission.d.ts",

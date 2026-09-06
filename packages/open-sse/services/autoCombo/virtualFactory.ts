@@ -11,7 +11,7 @@ import { isRuntimeRetiredProviderId } from "@shiguang-gateway/contracts/provider
 import { isCommonChatGptWebRetiredProviderId } from "@shiguang-gateway/contracts/chatgpt-web-retirement";
 import { hasUsableWebSessionCredential } from "@shiguang-gateway/contracts/config/webSessionCredentials";
 import { toNumber } from "@shiguang-gateway/contracts/numeric";
-import { isCompatibleProviderConnectionId } from "../../../core-domain/src/shared/utils/compatibleProviderId.ts";
+import { isCompatibleProviderConnectionId } from "@shiguang-gateway/contracts/compatible-provider-id";
 import { defaultLogger as log } from "../../utils/logger.ts";
 import { getTokenLimit } from "../contextManager";
 import {
