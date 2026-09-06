@@ -26,12 +26,12 @@ import { ProviderModelsModule } from "./provider-models/provider-models.module.j
 import { ModelsModule } from "./models/models.module.js";
 import { ProviderChatModule } from "./provider-chat/provider-chat.module.js";
 import { ProviderEmbeddingsModule } from "./provider-embeddings/provider-embeddings.module.js";
+import { CompletionsModule } from "./completions/completions.module.js";
 import { MeModule } from "./me/me.module.js";
 import { ExplainRoutingModule } from "./explain-routing/explain-routing.module.js";
 import { VideoBridgeDrilldownModule } from "./video-bridge/video-bridge-drilldown.module.js";
 import { ProviderImagesModule } from "./provider-images/provider-images.module.js";
 import { AntigravityModule } from "./antigravity/antigravity.module.js";
-import { AutoComboCandidatesModule } from "./auto-combo-candidates/auto-combo-candidates.module.js";
 
 @Module({
   imports: [
@@ -63,12 +63,12 @@ import { AutoComboCandidatesModule } from "./auto-combo-candidates/auto-combo-ca
     ModelsModule,
     ProviderChatModule,
     ProviderEmbeddingsModule,
+    CompletionsModule,
     MeModule,
     ExplainRoutingModule,
     VideoBridgeDrilldownModule,
     ProviderImagesModule,
     AntigravityModule,
-    AutoComboCandidatesModule,
   ],
 })
 export class AppModule {}

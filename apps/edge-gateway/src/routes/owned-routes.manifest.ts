@@ -51,6 +51,7 @@ export const ownedEdgeRoutes: readonly OwnedRoute[] = [
   { path: "/v1/providers/:provider/models", methods: ["GET", "OPTIONS"] },
   { path: "/v1/providers/:provider/embeddings", methods: ["OPTIONS", "POST"] },
   { path: "/v1/providers/:provider/images/generations", methods: ["OPTIONS", "POST"] },
+  { path: "/v1/completions", methods: ["OPTIONS", "POST"] },
   { path: "/v1/video-bridge/drilldown", methods: ["DELETE", "GET", "OPTIONS"] },
   { path: "/v1/me/status", methods: ["GET"] },
 ];
