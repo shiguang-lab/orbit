@@ -13,7 +13,7 @@
 // — normalizeNvidiaNimImages() accepts every variant so a NIM response-shape change
 // degrades to "no images" rather than throwing.
 
-import { saveCallLog } from "../../../../core-domain/src/lib/usageDb.ts";
+import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
 import { sanitizeErrorMessage } from "../../../utils/error.ts";
 
 const FLUX_1_DEV = "black-forest-labs/flux.1-dev";

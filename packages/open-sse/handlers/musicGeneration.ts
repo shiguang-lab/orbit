@@ -24,7 +24,7 @@ import {
   extractComfyOutputFiles,
   resolveComfyUiBaseUrl,
 } from "../utils/comfyuiClient.ts";
-import { saveCallLog } from "../../core-domain/src/lib/usageDb.ts";
+import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
 import {
   getKieCallbackUrl,
   getKieTaskId,

@@ -4,7 +4,7 @@
  * from combo config to filter and sort targets by context window size.
  */
 
-import { getModelContextLimit } from "../../../core-domain/src/lib/modelCapabilities";
+import { getModelContextLimit } from "@shiguang-gateway/core-domain/catalog/model-capabilities";
 import type { ComboLogger, ResolvedComboTarget } from "./types.ts";
 
 export interface ContextRequirements {

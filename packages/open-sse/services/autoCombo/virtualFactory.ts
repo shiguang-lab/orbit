@@ -18,7 +18,7 @@ import {
   createModelCapabilityResolutionSnapshot,
   getResolvedModelCapabilities,
   type ModelCapabilityResolutionSnapshot,
-} from "../../../core-domain/src/lib/modelCapabilities.ts";
+} from "@shiguang-gateway/core-domain/catalog/model-capabilities";
 import {
   buildAutoCandidateFilter,
   tierToWeightVariant,

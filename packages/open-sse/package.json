@@ -392,6 +392,7 @@
     "@modelcontextprotocol/sdk": "^1.30.0",
     "@shiguang-gateway/config": "workspace:*",
     "@shiguang-gateway/contracts": "workspace:*",
+    "@shiguang-gateway/core-domain": "workspace:*",
     "@shiguang-gateway/error-sanitization": "workspace:*",
     "@shiguang-gateway/network-guard": "workspace:*",
     "@toon-format/toon": "^4.1.1",

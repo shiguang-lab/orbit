@@ -10,7 +10,7 @@
  * unchanged.
  */
 
-import { saveRequestUsage } from "../../../core-domain/src/lib/usageDb.ts";
+import { saveRequestUsage } from "@shiguang-gateway/core-domain/edge/usage-db";
 import { formatUsageLog } from "@shiguang-gateway/contracts/usage/tokenAccounting";
 import { COLORS } from "../../utils/stream.ts";
 import { recordTokenUsage } from "../../services/tokenLimitCounter.ts";

@@ -23,21 +23,21 @@ import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
 } from "../../core-domain/src/sse/services/auth.ts";
-import { isAllRateLimitedCredentials } from "../../core-domain/src/lib/edge/rateLimit.ts";
+import { isAllRateLimitedCredentials } from "@shiguang-gateway/core-domain/edge/rate-limit";
 import { handleVideoGeneration } from "../handlers/videoGeneration.ts";
 import {
   isMediaGenerationFailure,
   promptRequiredResponse,
   successfulMediaGenerationResponse,
-} from "../../core-domain/src/lib/edge/mediaGenerationRoute.ts";
-import type { MediaGenerationResultLike } from "../../core-domain/src/lib/edge/mediaGenerationRoute.ts";
+} from "@shiguang-gateway/core-domain/edge/media-generation";
+import type { MediaGenerationResultLike } from "@shiguang-gateway/core-domain/edge/media-generation";
 import {
   isVideoPromptOptional,
   resolveLocalOverrideCredentials,
   resolveVideoModelTarget,
-} from "../../core-domain/src/lib/edge/videoModelResolution.ts";
-import type { VideoModelTarget } from "../../core-domain/src/lib/edge/videoModelResolution.ts";
-import { toJsonErrorPayload } from "../../core-domain/src/shared/utils/upstreamError.ts";
+} from "@shiguang-gateway/core-domain/edge/video-model-resolution";
+import type { VideoModelTarget } from "@shiguang-gateway/core-domain/edge/video-model-resolution";
+import { toJsonErrorPayload } from "@shiguang-gateway/core-domain/shared/upstream-error";
 import { HTTP_STATUS } from "../config/constants.ts";
 import { errorResponse } from "../utils/error.ts";
 import * as logger from "../../core-domain/src/sse/utils/logger.ts";

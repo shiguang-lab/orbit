@@ -7,7 +7,7 @@
 // Both come from providerConfig so a local override can still use the
 // legacy api.freepik.com / x-freepik-api-key pair if needed.
 
-import { saveCallLog } from "../../../../core-domain/src/lib/usageDb.ts";
+import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
 import { sleep } from "../../../utils/sleep.ts";
 import { sanitizeErrorMessage } from "../../../utils/error.ts";
 

@@ -19,7 +19,7 @@
 import { logToolCall } from "../audit.ts";
 import { getMcpHttpAuthHeadersForInternalFetch } from "../httpAuthContext.ts";
 import { normalizeQuotaResponse } from "../../../core-domain/src/shared/contracts/quota.ts";
-import { resolveGatewayBaseUrl } from "../../../core-domain/src/shared/utils/resolveGatewayBaseUrl.ts";
+import { resolveGatewayBaseUrl } from "@shiguang-gateway/core-domain/shared/utils/resolveGatewayBaseUrl";
 import {
   getComboModelProvider,
   getComboModelString,
@@ -28,8 +28,8 @@ import {
 import type {
   AutoRoutingStrategyValue,
   RoutingStrategyValue,
-} from "../../../core-domain/src/shared/constants/routingStrategies.ts";
-import { normalizeRoutingStrategy } from "../../../core-domain/src/shared/constants/routingStrategies.ts";
+} from "@shiguang-gateway/contracts/routing-strategies";
+import { normalizeRoutingStrategy } from "@shiguang-gateway/contracts/routing-strategies";
 
 const SHIGUANG_GATEWAY_BASE_URL = resolveGatewayBaseUrl();
 const SHIGUANG_GATEWAY_API_KEY = process.env.SHIGUANG_GATEWAY_API_KEY || "";

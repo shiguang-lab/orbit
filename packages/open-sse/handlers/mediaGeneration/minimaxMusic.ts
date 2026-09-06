@@ -20,7 +20,7 @@
  * OpenAI-shaped payload the other music branches return).
  */
 
-import { saveCallLog } from "../../../core-domain/src/lib/usageDb.ts";
+import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
 import { sanitizeErrorMessage } from "../../utils/error.ts";
 
 type MinimaxMusicBody = Record<string, unknown>;

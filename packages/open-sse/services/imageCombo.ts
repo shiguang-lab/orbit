@@ -15,12 +15,12 @@ import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
 } from "../../core-domain/src/sse/services/auth.ts";
-import { isAllRateLimitedCredentials } from "../../core-domain/src/lib/edge/rateLimit.ts";
+import { isAllRateLimitedCredentials } from "@shiguang-gateway/core-domain/edge/rate-limit";
 import { handleImageGeneration } from "../handlers/imageGeneration.ts";
 import { attachShiguangGatewayMetaHeaders } from "../../core-domain/src/domain/gatewayResponseMeta.ts";
 import { generateRequestId } from "@shiguang-gateway/contracts/request-id";
 import { calculateModalCost } from "../../core-domain/src/lib/usage/costCalculator.ts";
-import { toJsonErrorPayload } from "../../core-domain/src/shared/utils/upstreamError.ts";
+import { toJsonErrorPayload } from "@shiguang-gateway/core-domain/shared/upstream-error";
 import { HTTP_STATUS } from "../config/constants.ts";
 import { errorResponse } from "../utils/error.ts";
 import * as logger from "../../core-domain/src/sse/utils/logger.ts";

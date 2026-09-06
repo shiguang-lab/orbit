@@ -1,4 +1,4 @@
-import { resolveAlibabaProviderMediaBaseUrl } from "../../../../core-domain/src/shared/constants/alibabaProviderRegions.ts";
+import { resolveAlibabaProviderMediaBaseUrl } from "@shiguang-gateway/core-domain/edge/alibaba-provider-regions";
 
 import { isJsonObject } from "../../../utils/kieTask.ts";
 import { sanitizeErrorMessage } from "../../../utils/error.ts";

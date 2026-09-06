@@ -160,7 +160,7 @@ async function filterAlibabaFreeDrainedModelIds(
     return modelIds;
   }
   try {
-    const { getProviderConnections } = await import("../../../core-domain/src/lib/db/providers.ts");
+    const { getProviderConnections } = await import("@shiguang-gateway/core-domain/db/provider-connections");
     const connections = await getProviderConnections({ provider: providerId });
     const connection = connections.find((entry) => entry.id === connectionId);
     if (!connection) return modelIds;

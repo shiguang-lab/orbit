@@ -92,7 +92,7 @@ import {
 } from "../services/compression/engines/mcpAccessibility/constants.ts";
 import { getDbInstance } from "../../core-domain/src/lib/db/core.ts";
 import { normalizeQuotaResponse } from "../../core-domain/src/shared/contracts/quota.ts";
-import { resolveGatewayBaseUrl } from "../../core-domain/src/shared/utils/resolveGatewayBaseUrl.ts";
+import { resolveGatewayBaseUrl } from "@shiguang-gateway/core-domain/shared/utils/resolveGatewayBaseUrl";
 import { sanitizeErrorMessage } from "../utils/error.ts";
 import { mcpFetchTimeoutSignal } from "./fetchTimeout.ts";
 import { getMcpModelsCatalog } from "./catalog.ts";

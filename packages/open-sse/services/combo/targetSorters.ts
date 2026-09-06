@@ -7,8 +7,8 @@
  * in combo.ts) are imported back from this module. No barrel import — pure leaf.
  */
 
-import { getCircuitBreaker } from "../../../core-domain/src/shared/utils/circuitBreaker";
-import { secureRandomFloat, secureRandomInt } from "../../../core-domain/src/shared/utils/secureRandom";
+import { getCircuitBreaker } from "@shiguang-gateway/core-domain/edge/circuit-breaker";
+import { secureRandomFloat, secureRandomInt } from "@shiguang-gateway/core-domain/shared/secure-random";
 import { getComboStepTarget, getComboStepWeight } from "../../../core-domain/src/lib/combos/steps.ts";
 import { getComboMetrics } from "../comboMetrics.ts";
 import { parseModel } from "../model.ts";
@@ -65,7 +65,7 @@ export function orderTargetsForWeightedFallback<T extends { executionKey: string
  */
 export async function sortModelsByCost(models: string[]): Promise<string[]> {
   try {
-    const { getPricingForModel } = await import("../../../core-domain/src/lib/localDb");
+    const { getPricingForModel } = await import("@shiguang-gateway/core-domain/edge/local-db");
     const withCost = await Promise.all(
       models.map(async (modelStr) => {
         const parsed = parseModel(modelStr);

@@ -10,7 +10,7 @@ import { EXECUTOR_CONTRACT_VIOLATION_CODE } from "../../config/constants.ts";
 import { errorResponse } from "../../utils/error.ts";
 import { parseModel } from "../model.ts";
 import { isSelfInflictedUpstreamTimeout } from "../../handlers/chatCore/cooldownClassification.ts";
-import { isLocalStreamLifecycleError } from "../../../core-domain/src/shared/utils/circuitBreaker.ts";
+import { isLocalStreamLifecycleError } from "@shiguang-gateway/core-domain/edge/circuit-breaker";
 import { CONTEXT_OVERFLOW_PATTERNS, MODEL_ACCESS_DENIED_PATTERNS } from "../accountFallback.ts";
 import { isResourceNotFoundResponse } from "../errorClassifier.ts";
 import { getTrustedLocalRateLimitResponse } from "../rateLimitManager/errors.ts";

@@ -13,7 +13,7 @@ import {
   fetchWithTimeout,
   FetchTimeoutError,
   getConfiguredTimeout,
-} from "../../../core-domain/src/shared/utils/fetchTimeout.ts";
+} from "@shiguang-gateway/core-domain/shared/fetch-timeout";
 import { sanitizeErrorMessage } from "../../utils/error.ts";
 import { sleep } from "../../utils/sleep.ts";
 

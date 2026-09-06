@@ -14,7 +14,7 @@ import {
   countTextTokens,
   tokenizerContextFromBody,
   type TokenizerContext,
-} from "../../../core-domain/src/shared/utils/tiktokenCounter.ts";
+} from "@shiguang-gateway/core-domain/shared/tokenizer";
 import { createCompressionStats } from "./stats.ts";
 
 interface HardBudgetOptions {

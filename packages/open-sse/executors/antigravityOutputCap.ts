@@ -1,4 +1,4 @@
-import { getExplicitModelOutputCap } from "../../core-domain/src/lib/modelCapabilities.ts";
+import { getExplicitModelOutputCap } from "@shiguang-gateway/core-domain/catalog/model-capabilities";
 import { isDiscoverableAntigravityModelId } from "../config/antigravityModelAliases";
 
 /**

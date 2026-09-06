@@ -9,7 +9,7 @@ import {
   buildGeminiThoughtSignatureKey,
   resolveGeminiThoughtSignature,
 } from "../../services/geminiThoughtSignatureStore.ts";
-import { capMaxOutputTokens, capThinkingBudget } from "../../../core-domain/src/lib/modelCapabilities.ts";
+import { capMaxOutputTokens, capThinkingBudget } from "@shiguang-gateway/core-domain/catalog/model-capabilities";
 import { getModelSpec } from "@shiguang-gateway/contracts/model-specs";
 import {
   buildChangedToolNameMap,

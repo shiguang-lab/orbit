@@ -21,11 +21,11 @@ import {
   type EmbeddingModality,
   type EmbeddingProvider,
 } from "../config/embeddingRegistry.ts";
-import { saveCallLog } from "../../core-domain/src/lib/usageDb.ts";
+import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
 import { createRequestLogger } from "../utils/requestLogger.ts";
 import { isDetailedLoggingEnabled } from "../../core-domain/src/lib/db/detailedLogs.ts";
 import { getCallLogPipelineCaptureStreamChunks } from "@shiguang-gateway/config/logEnv";
-import { toJsonErrorPayload } from "../../core-domain/src/shared/utils/upstreamError.ts";
+import { toJsonErrorPayload } from "@shiguang-gateway/core-domain/shared/upstream-error";
 import { stripStaleEncodingHeaders } from "../utils/upstreamResponseHeaders.ts";
 import { sanitizeErrorMessage } from "../utils/error.ts";
 import { stripTrailingSlashes } from "../utils/urlSanitize.ts";

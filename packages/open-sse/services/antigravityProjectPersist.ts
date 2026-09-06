@@ -12,7 +12,7 @@
  * already persists at OAuth-exchange time (`src/lib/oauth/providers/antigravity.ts`).
  */
 
-import { updateProviderConnection } from "../../core-domain/src/lib/db/providers.ts";
+import { updateProviderConnection } from "@shiguang-gateway/core-domain/db/provider-connections";
 
 /**
  * Write `discoveredProjectId` onto both the `projectId` column and

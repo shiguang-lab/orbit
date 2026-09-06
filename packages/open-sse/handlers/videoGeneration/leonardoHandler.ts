@@ -6,7 +6,7 @@
  * baseline — mirrors the existing `googleFlowHandler.ts` extraction.
  */
 
-import { saveCallLog } from "../../../core-domain/src/lib/usageDb.ts";
+import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));

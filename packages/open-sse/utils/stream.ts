@@ -1,6 +1,6 @@
 import { translateResponse, initState } from "../translator/index.ts";
 import { FORMATS } from "../translator/formats.ts";
-import { trackPendingRequest, appendRequestLog } from "../../core-domain/src/lib/usageDb.ts";
+import { trackPendingRequest, appendRequestLog } from "@shiguang-gateway/core-domain/edge/usage-db";
 import {
   extractUsage,
   hasValidUsage,
@@ -40,7 +40,7 @@ import {
   isResponsesCommentaryMessageItem,
   sanitizeStreamingChunk,
 } from "../handlers/responseSanitizer.ts";
-import { isFeatureFlagEnabled } from "../../core-domain/src/shared/utils/featureFlags.ts";
+import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/edge/feature-flags";
 import {
   shouldDropResponsesCommentaryEvent,
   createTranslateCommentaryFilter,

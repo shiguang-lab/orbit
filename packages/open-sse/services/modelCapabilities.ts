@@ -2,4 +2,4 @@ export {
   getResolvedModelCapabilities,
   supportsReasoning,
   supportsToolCalling,
-} from "../../core-domain/src/lib/modelCapabilities.ts";
+} from "@shiguang-gateway/core-domain/catalog/model-capabilities";

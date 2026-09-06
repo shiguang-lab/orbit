@@ -22,9 +22,9 @@
 import { SignJWT, jwtVerify, type JWTPayload } from "jose";
 import { z } from "zod";
 import { getApiKeyById, getApiKeyMetadata, validateApiKey } from "../../core-domain/src/lib/db/apiKeys.ts";
-import { getProviderConnections } from "../../core-domain/src/lib/db/providers.ts";
+import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { saveCallLog } from "../../core-domain/src/lib/usage/callLogs.ts";
-import { isRequireApiKeyEnabled } from "../../core-domain/src/shared/utils/featureFlags.ts";
+import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/edge/feature-flags";
 import { HTTP_STATUS } from "../config/constants.ts";
 import {
   CURSOR_API_BASE_URL,

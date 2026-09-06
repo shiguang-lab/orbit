@@ -4,7 +4,7 @@ import {
   getCodexRateLimitKey,
   type CodexQuotaScope,
 } from "../config/codexQuotaScopes.ts";
-import { isFeatureFlagEnabled } from "../../core-domain/src/shared/utils/featureFlags.ts";
+import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/edge/feature-flags";
 import {
   BaseExecutor,
   mergeUpstreamExtraHeaders,

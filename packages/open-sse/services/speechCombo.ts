@@ -14,17 +14,17 @@
 import { getComboByName, getCombos } from "../../core-domain/src/lib/db/combos.ts";
 import { resolveComboTargets } from "./combo.ts";
 import { parseSpeechModel, getSpeechProvider } from "../config/audioRegistry.ts";
-import { resolveDynamicAudioProviders } from "../../core-domain/src/lib/edge/audioProviderNodes.ts";
+import { resolveDynamicAudioProviders } from "@shiguang-gateway/core-domain/edge/audio-provider-nodes";
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
 } from "../../core-domain/src/sse/services/auth.ts";
-import { isAllRateLimitedCredentials } from "../../core-domain/src/lib/edge/rateLimit.ts";
+import { isAllRateLimitedCredentials } from "@shiguang-gateway/core-domain/edge/rate-limit";
 import { handleAudioSpeech } from "../handlers/audioSpeech.ts";
 import { attachShiguangGatewayMetaToResponse } from "../../core-domain/src/domain/gatewayResponseMeta.ts";
 import { generateRequestId } from "@shiguang-gateway/contracts/request-id";
 import { calculateModalCost } from "../../core-domain/src/lib/usage/costCalculator.ts";
-import { toJsonErrorPayload } from "../../core-domain/src/shared/utils/upstreamError.ts";
+import { toJsonErrorPayload } from "@shiguang-gateway/core-domain/shared/upstream-error";
 import { HTTP_STATUS } from "../config/constants.ts";
 import { errorResponse } from "../utils/error.ts";
 

@@ -14,7 +14,7 @@ import { extractProviderWarnings } from "../../../core-domain/src/lib/compliance
 import { logAuditEvent } from "../../../core-domain/src/lib/compliance/index.ts";
 import { emit } from "../../../core-domain/src/lib/events/eventBus.ts";
 import type { RequestCompletedPayload, RequestFailedPayload } from "../../../core-domain/src/lib/events/types.ts";
-import { saveCallLog } from "../../../core-domain/src/lib/usageDb.ts";
+import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
 import { FORMATS } from "../../translator/formats.ts";
 import { takeEarlyKeepaliveBytes } from "../../utils/earlyKeepaliveByteBuffer.ts";
 import { cloneBoundedChatLogPayload, truncateForLog } from "./logTruncation.ts";

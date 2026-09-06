@@ -10,7 +10,7 @@
  * compression usage-receipt attach stays in the handler (it is a handler-bound closure).
  */
 
-import { saveRequestUsage } from "../../../core-domain/src/lib/usageDb.ts";
+import { saveRequestUsage } from "@shiguang-gateway/core-domain/edge/usage-db";
 import { recordTokenUsage } from "../../services/tokenLimitCounter.ts";
 import { computeBillableTokens } from "./upstreamTimeouts.ts";
 import { type EffectiveServiceTier } from "./serviceTier.ts";

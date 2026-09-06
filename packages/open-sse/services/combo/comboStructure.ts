@@ -13,10 +13,10 @@
  * No barrel import — depends only on sibling leaves.
  */
 
-import { getModelContextLimit } from "../../../core-domain/src/lib/modelCapabilities";
+import { getModelContextLimit } from "@shiguang-gateway/core-domain/catalog/model-capabilities";
 import { getHiddenModelsByProvider } from "../../../core-domain/src/lib/db/models";
 import { getComboModelString, normalizeComboStep } from "../../../core-domain/src/lib/combos/steps.ts";
-import { getProviderByAlias, getProviderById } from "../../../core-domain/src/shared/constants/providers.ts";
+import { getProviderByAlias, getProviderById } from "@shiguang-gateway/core-domain/edge/provider-constants";
 import { estimateTokens } from "../contextManager.ts";
 import { containsMediaKind } from "../../utils/mediaParts.ts";
 import { getResolvedModelCapabilities } from "../modelCapabilities.ts";

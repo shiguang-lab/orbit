@@ -35,7 +35,7 @@ import {
   getDefaultThinkingBudget,
   getResolvedModelCapabilities,
   supportsReasoning,
-} from "../../core-domain/src/lib/modelCapabilities.ts";
+} from "@shiguang-gateway/core-domain/catalog/model-capabilities";
 
 // Effort → budget token mapping
 export const EFFORT_BUDGETS: Record<string, number> = {

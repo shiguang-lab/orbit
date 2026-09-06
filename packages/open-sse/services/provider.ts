@@ -8,7 +8,7 @@ import {
   joinClaudeCodeCompatibleUrl,
 } from "./claudeCodeCompatible.ts";
 import { getClaudeCodeCompatibleRequestDefaults } from "../../core-domain/src/lib/providers/requestDefaults.ts";
-import { buildClineHeaders } from "../../core-domain/src/shared/utils/clineAuth.ts";
+import { buildClineHeaders } from "@shiguang-gateway/core-domain/edge/cline-auth";
 import { usesCcWireImage } from "./ccWireImageBuiltins.ts";
 
 const OPENAI_COMPATIBLE_PREFIX = "openai-compatible-";

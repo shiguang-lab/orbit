@@ -14,7 +14,7 @@ import { getAntigravityEnvelopeUserAgent } from "../services/antigravityIdentity
 import { kieExecutor } from "../executors/kie.ts";
 import { mapImageSize } from "../translator/image/sizeMapper.ts";
 import { getCodexClientVersion, getCodexUserAgent } from "../config/codexClient.ts";
-import { saveCallLog } from "../../core-domain/src/lib/usageDb.ts";
+import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
 import { sleep } from "../utils/sleep.ts";
 import {
   getKieErrorMessage,
@@ -35,7 +35,7 @@ import {
   FetchTimeoutError,
   fetchWithTimeout,
   getConfiguredTimeout,
-} from "../../core-domain/src/shared/utils/fetchTimeout.ts";
+} from "@shiguang-gateway/core-domain/shared/fetch-timeout";
 import { sanitizeErrorMessage, sanitizeUpstreamDetails } from "../utils/error.ts";
 import {
   isMicrosoftDesignerWebRetiredProviderId,

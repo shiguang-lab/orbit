@@ -13,7 +13,7 @@
  * `resolveShadowTargets`, never during module init.
  */
 
-import { secureRandomFloat } from "../../../core-domain/src/shared/utils/secureRandom";
+import { secureRandomFloat } from "@shiguang-gateway/core-domain/shared/secure-random";
 import { recordComboShadowRequest } from "../comboMetrics.ts";
 import { isRecord } from "./comboData.ts";
 import { filterVisibleComboTargets, resolveNestedComboTargets } from "./comboStructure.ts";

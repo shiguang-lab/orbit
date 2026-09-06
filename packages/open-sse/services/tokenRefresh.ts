@@ -637,7 +637,7 @@ async function _getAccessTokenWithStalenessCheck(provider, credentials, log, pro
   // We MUST check if the DB has a newer token before proceeding with a network refresh.
   if (credentials.connectionId) {
     try {
-      const { getProviderConnectionById } = await import("../../core-domain/src/lib/db/providers.ts");
+      const { getProviderConnectionById } = await import("@shiguang-gateway/core-domain/db/provider-connections");
       const dbConnection = await getProviderConnectionById(credentials.connectionId);
       if (dbConnection && dbConnection.refreshToken) {
         const now = Date.now();

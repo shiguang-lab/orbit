@@ -200,16 +200,16 @@ import {
   getResolvedModelCapabilities,
   getExplicitModelOutputCap,
   resolveInputTokenCapForGate,
-} from "../../core-domain/src/lib/modelCapabilities.ts";
+} from "@shiguang-gateway/core-domain/catalog/model-capabilities";
 import {
   checkRequestCapabilityFit,
   deriveRequestCapabilityRequirements,
   buildCapabilityMismatchMessage,
-} from "../../core-domain/src/shared/constants/capabilities/capabilityFilter.ts";
+} from "@shiguang-gateway/core-domain/edge/capability-filter";
 import {
   areContextWindowChecksDisabled,
   isFeatureFlagEnabled,
-} from "../../core-domain/src/shared/utils/featureFlags.ts";
+} from "@shiguang-gateway/core-domain/edge/feature-flags";
 import { resolveNoAuthEchoModel } from "./chatCore/noAuthEchoModel.ts";
 import {
   REASONING_BUFFER_MIN_TRIGGER,
@@ -259,7 +259,7 @@ import {
   PROVIDER_ERROR_TYPES,
   isEmptyContentResponse,
 } from "../services/errorClassifier.ts";
-import { updateProviderConnection, getProviderConnectionById } from "../../core-domain/src/lib/db/providers.ts";
+import { updateProviderConnection, getProviderConnectionById } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { wasRefreshTokenRotated } from "../services/refreshSerializer.ts";
 import { connectionHasExtraKeys } from "../services/apiKeyRotator.ts";
 import { recordKeyHealthStatus as recordKeyHealthStatusFor } from "./chatCore/keyHealth.ts";
@@ -296,7 +296,7 @@ import { emit } from "../../core-domain/src/lib/events/eventBus.ts";
 import { adaptBodyForCompression } from "../services/compression/bodyAdapter.ts";
 import { ensureEngineBreakdown } from "../services/compression/engineBreakdown.ts";
 import { handleBypassRequest } from "../utils/bypassHandler.ts";
-import { saveRequestUsage, trackPendingRequest, appendRequestLog } from "../../core-domain/src/lib/usageDb.ts";
+import { saveRequestUsage, trackPendingRequest, appendRequestLog } from "@shiguang-gateway/core-domain/edge/usage-db";
 import { finalizePendingScope, updatePendingScope } from "../../core-domain/src/lib/usage/pendingRequestScope.ts";
 import { recordCost } from "../../core-domain/src/domain/costRules.ts";
 import { calculateCost } from "../../core-domain/src/lib/usage/costCalculator.ts";
@@ -444,14 +444,14 @@ import {
   stripMarkdownCodeFence,
 } from "../utils/aiSdkCompat.ts";
 import { generateRequestId } from "@shiguang-gateway/contracts/request-id";
-import { isLocalStreamLifecycleError } from "../../core-domain/src/shared/utils/circuitBreaker.ts";
-import { shouldIsolateProbeFailures } from "../../core-domain/src/shared/utils/probeOrigin.ts";
-import { writeTerminalStatus } from "../../core-domain/src/shared/utils/terminalStatus.ts";
+import { isLocalStreamLifecycleError } from "@shiguang-gateway/core-domain/edge/circuit-breaker";
+import { shouldIsolateProbeFailures } from "@shiguang-gateway/core-domain/edge/probe-origin";
+import { writeTerminalStatus } from "@shiguang-gateway/core-domain/shared/terminal-status";
 import { extractFacts } from "../../core-domain/src/lib/memory/extraction.ts";
 import { handleToolCallExecution } from "../../core-domain/src/lib/skills/interception.ts";
 import { MEMORY_BUILTIN_TOOL_NAMES } from "../../core-domain/src/lib/skills/memoryBuiltins.ts";
 import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "@shiguang-gateway/contracts/gateway-headers";
-import { resolveProviderId } from "../../core-domain/src/shared/constants/providers.ts";
+import { resolveProviderId } from "@shiguang-gateway/core-domain/edge/provider-constants";
 import { getClaudeCodeCompatibleRequestDefaults } from "../../core-domain/src/lib/providers/requestDefaults.ts";
 import {
   buildClaudeCodeCompatibleRequest,
@@ -1427,7 +1427,7 @@ export async function handleChatCore({
       };
       if ((isCombo && comboName) || routingComboId) {
         try {
-          const { getComboByName } = await import("../../core-domain/src/lib/localDb");
+          const { getComboByName } = await import("@shiguang-gateway/core-domain/edge/local-db");
           let comboConfig = await getComboByName(comboName);
           if (!comboConfig && comboName?.startsWith("combo/")) {
             comboConfig = await getComboByName(comboName.substring(6));
@@ -1918,7 +1918,7 @@ export async function handleChatCore({
     if (isCombo && comboName) {
       log?.info?.("CONTEXT", `Attempting to resolve combo limits for comboName=${comboName}`);
       try {
-        const { getComboByName } = await import("../../core-domain/src/lib/localDb");
+        const { getComboByName } = await import("@shiguang-gateway/core-domain/edge/local-db");
         const { resolveComboTargets } = await import("../services/combo.ts");
         let comboConfig = await getComboByName(comboName);
         if (!comboConfig && comboName.startsWith("combo/")) {
@@ -3344,7 +3344,7 @@ export async function handleChatCore({
                       antigravityByopExcludedIds.push(String(byopFailedId));
                     }
                     try {
-                      const { setConnectionRateLimitUntil } = await import("../../core-domain/src/lib/db/providers.ts");
+                      const { setConnectionRateLimitUntil } = await import("@shiguang-gateway/core-domain/db/provider-connections");
                       setConnectionRateLimitUntil(
                         String(byopFailedId),
                         Date.now() + COOLDOWN_MS.gcpProjectRequired
@@ -4429,7 +4429,7 @@ export async function handleChatCore({
           // not push a connection into a day-long cooldown (#9817).
           if (!(await shouldIsolateProbeFailures())) {
             try {
-              const { setConnectionRateLimitUntil } = await import("../../core-domain/src/lib/db/providers.ts");
+              const { setConnectionRateLimitUntil } = await import("@shiguang-gateway/core-domain/db/provider-connections");
               setConnectionRateLimitUntil(errorConnectionId, Date.now() + geoCooldownMs);
             } catch {
               // DB write failure must never break the fallback loop
@@ -4451,7 +4451,7 @@ export async function handleChatCore({
             errorCode: statusCode,
           });
           try {
-            const { setConnectionRateLimitUntil } = await import("../../core-domain/src/lib/db/providers.ts");
+            const { setConnectionRateLimitUntil } = await import("@shiguang-gateway/core-domain/db/provider-connections");
             setConnectionRateLimitUntil(errorConnectionId, Date.now() + byopCooldownMs);
           } catch {
             // best-effort — never break the error path

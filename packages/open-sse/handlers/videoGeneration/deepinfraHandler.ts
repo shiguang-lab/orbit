@@ -12,7 +12,7 @@
  */
 
 import { sanitizeErrorMessage } from "../../utils/error.ts";
-import { saveCallLog } from "../../../core-domain/src/lib/usageDb.ts";
+import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
 
 interface DeepinfraHandlerArgs {
   model: string;

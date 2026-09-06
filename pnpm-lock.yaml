@@ -727,6 +727,9 @@ importers:
       '@shiguang-gateway/contracts':
         specifier: workspace:*
         version: link:../contracts
+      '@shiguang-gateway/core-domain':
+        specifier: workspace:*
+        version: link:../core-domain
       '@shiguang-gateway/error-sanitization':
         specifier: workspace:*
         version: link:../error-sanitization

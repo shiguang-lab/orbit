@@ -1,6 +1,6 @@
 import { getCodexRequestDefaults } from "../../core-domain/src/lib/providers/requestDefaults.ts";
-import { getProviderConnections } from "../../core-domain/src/lib/db/providers.ts";
-import { AI_PROVIDERS } from "../../core-domain/src/shared/constants/providers.ts";
+import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
+import { AI_PROVIDERS } from "@shiguang-gateway/core-domain/edge/provider-constants";
 import { NOAUTH_PROVIDERS } from "@shiguang-gateway/contracts/config/providerCatalog";
 
 type JsonRecord = Record<string, unknown>;

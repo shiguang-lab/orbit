@@ -10,8 +10,8 @@
 
 import { fetch as undiciFetch } from "undici";
 import { createProxyDispatcher, normalizeProxyUrl } from "./proxyDispatcher.ts";
-import { resolveProxyForScopeFromRegistry, listProxies, listOneproxyProxies } from "../../core-domain/src/lib/localDb.ts";
-import { isFeatureFlagEnabled } from "../../core-domain/src/shared/utils/featureFlags.ts";
+import { resolveProxyForScopeFromRegistry, listProxies, listOneproxyProxies } from "@shiguang-gateway/core-domain/edge/local-db";
+import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/edge/feature-flags";
 
 // ---------------------------------------------------------------------------
 // Types

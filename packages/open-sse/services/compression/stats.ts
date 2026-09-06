@@ -11,7 +11,7 @@ import {
   countTextTokens,
   isCodexTokenizerContext,
   tokenizerContextFromBody,
-} from "../../../core-domain/src/shared/utils/tiktokenCounter.ts";
+} from "@shiguang-gateway/core-domain/shared/tokenizer";
 import {
   anthropicImageTokens,
   ANTHROPIC_IMAGE_BLOCK_OVERHEAD_TOKENS,

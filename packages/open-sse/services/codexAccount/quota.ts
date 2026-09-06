@@ -3,7 +3,7 @@ import {
   getCodexModelScope,
   parseCodexQuotaHeaders,
 } from "../../executors/codex.ts";
-import { updateCodexScopedQuotaState } from "../../../core-domain/src/lib/db/providers.ts";
+import { updateCodexScopedQuotaState } from "@shiguang-gateway/core-domain/db/provider-connections";
 import type { CodexQuotaScope } from "../../config/codexQuotaScopes.ts";
 
 export interface PersistCodexChildQuotaResult {

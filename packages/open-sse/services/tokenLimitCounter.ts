@@ -20,7 +20,7 @@ import {
   getTokenLimitsForRequest,
   logTokenLimitReset,
   type TokenLimit,
-} from "../../core-domain/src/lib/localDb.ts";
+} from "@shiguang-gateway/core-domain/edge/local-db";
 
 interface CacheEntry {
   windowStart: string;

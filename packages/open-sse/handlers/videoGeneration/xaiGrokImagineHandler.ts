@@ -9,7 +9,7 @@
  */
 
 import { isJsonObject } from "../../utils/kieTask.ts";
-import { saveCallLog } from "../../../core-domain/src/lib/usageDb.ts";
+import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
 import { sanitizeErrorMessage } from "../../utils/error.ts";
 
 interface XaiVideoBody {

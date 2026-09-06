@@ -34,20 +34,20 @@ import { resolveModelLockoutSettings } from "../../core-domain/src/lib/resilienc
 import {
   getAllCircuitBreakerStatuses,
   getCircuitBreaker,
-} from "../../core-domain/src/shared/utils/circuitBreaker";
+} from "@shiguang-gateway/core-domain/edge/circuit-breaker";
 import {
   classify429FromError,
   looksLikeQuotaExhausted,
   type FailureKind,
-} from "../../core-domain/src/shared/utils/classify429";
+} from "@shiguang-gateway/core-domain/edge/classify-429";
 import { recordProviderSuccess as resetCooldownFailureCount } from "./providerCooldownTracker.ts";
 import {
   getProviderById,
   resolveProviderId,
   isLocalProvider as isLocalProviderId,
   isSelfHostedChatProvider,
-} from "../../core-domain/src/shared/constants/providers";
-import { resolveUseUpstream429BreakerHints } from "../../core-domain/src/shared/utils/providerHints";
+} from "@shiguang-gateway/core-domain/edge/provider-constants";
+import { resolveUseUpstream429BreakerHints } from "@shiguang-gateway/core-domain/edge/provider-hints";
 import { getCodexModelScope } from "../config/codexQuotaScopes.ts";
 import { getQuotaScopedModelForProvider } from "./antigravityQuotaFamily.ts";
 import {
@@ -56,7 +56,7 @@ import {
   isRpmExhausted,
   isTpmExhausted,
 } from "./geminiRateLimitTracker.ts";
-import { setConnectionRateLimitUntil } from "../../core-domain/src/lib/db/providers.ts";
+import { setConnectionRateLimitUntil } from "@shiguang-gateway/core-domain/db/provider-connections";
 import {
   parseRetryHintFromJsonBody,
   parseDetailedRetryHintFromJsonBody,

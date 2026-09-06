@@ -27,10 +27,10 @@
  * unchanged and keeps excluding these candidates before dispatch.
  */
 import { buildErrorBody } from "../utils/error.ts";
-import { getCircuitBreaker } from "../../core-domain/src/shared/utils/circuitBreaker.ts";
+import { getCircuitBreaker } from "@shiguang-gateway/core-domain/edge/circuit-breaker";
 import { isModelLocked } from "../services/accountFallback.ts";
 import { parseModel } from "../services/model.ts";
-import { getProviderConnectionById } from "../../core-domain/src/lib/db/providers.ts";
+import { getProviderConnectionById } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { getExcludedConnectionIds } from "../../core-domain/src/lib/db/autoCandidateOverrides.ts";
 
 /**

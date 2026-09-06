@@ -18,9 +18,9 @@
  */
 import type { AutoVariant } from "./autoPrefix";
 import { classifyTier } from "../tierResolver";
-import { getResolvedModelCapabilities } from "../../../core-domain/src/lib/modelCapabilities.ts";
+import { getResolvedModelCapabilities } from "@shiguang-gateway/core-domain/catalog/model-capabilities";
 import { isVisionModelId } from "@shiguang-gateway/contracts/vision-models";
-import { isVisionBridgeForcedModel } from "../../../core-domain/src/shared/constants/visionBridgeDefaults.ts";
+import { isVisionBridgeForcedModel } from "@shiguang-gateway/core-domain/edge/vision-bridge-defaults";
 
 export type AutoCategory = "coding" | "reasoning" | "vision" | "chat" | "multimodal";
 export type AutoTier =

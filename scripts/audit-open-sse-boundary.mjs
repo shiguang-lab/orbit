@@ -79,7 +79,7 @@ for (const file of files) {
     if (!specifier) continue;
     const relativeTarget = specifier.startsWith(".") ? resolve(dirname(file), specifier) : null;
     const reachesCoreDomain = relativeTarget && (relativeTarget === coreDomainDir || relativeTarget.startsWith(`${coreDomainDir}${sep}`));
-    if (reachesCoreDomain || specifier === "@shiguang-gateway/core-domain" || specifier.startsWith("@shiguang-gateway/core-domain/")) {
+    if (reachesCoreDomain) {
       const current = coreDomainRefs.get(specifier) ?? { count: 0, files: new Set() };
       current.count += 1;
       current.files.add(rel(file));

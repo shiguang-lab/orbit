@@ -22,7 +22,7 @@
  * every model, not just overridden ones.
  */
 
-import { getResolvedModelContextOverride } from "../../../core-domain/src/lib/modelCapabilities";
+import { getResolvedModelContextOverride } from "@shiguang-gateway/core-domain/catalog/model-capabilities";
 
 /**
  * Resolve the context-fit verdict from a persisted per-model override, if one

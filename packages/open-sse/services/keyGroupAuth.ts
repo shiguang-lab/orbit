@@ -12,7 +12,7 @@
  *   - Provider-specific rules: "openai/gpt-4"
  */
 
-import { checkKeyModelAccess, getKeyGroupsForApiKey } from "../../core-domain/src/lib/localDb.ts";
+import { checkKeyModelAccess, getKeyGroupsForApiKey } from "@shiguang-gateway/core-domain/edge/local-db";
 
 export interface KeyGroupAuthResult {
   /** Whether the request is authorized */

@@ -32,7 +32,7 @@ import {
 } from "../accountFallback.ts";
 import { PRE_SCREEN_CONCURRENCY } from "../comboConfig.ts";
 import { getQuotaFetcher } from "../quotaPreflight.ts";
-import { getCircuitBreaker } from "../../../core-domain/src/shared/utils/circuitBreaker";
+import { getCircuitBreaker } from "@shiguang-gateway/core-domain/edge/circuit-breaker";
 import { getCachedProviderConnections } from "../../../core-domain/src/lib/db/readCache";
 import { MAX_RR_COUNTERS, rrCounters } from "./rrState.ts";
 import type { ResolvedComboTarget, IsModelAvailable } from "./types.ts";

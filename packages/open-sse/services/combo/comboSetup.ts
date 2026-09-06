@@ -9,7 +9,7 @@
  *
  * See _tasks/quality/2026-06-19-DESIGN-godfiles-decomposition.md §4.
  */
-import { normalizeRoutingStrategy } from "../../../core-domain/src/shared/constants/routingStrategies.ts";
+import { normalizeRoutingStrategy } from "@shiguang-gateway/contracts/routing-strategies";
 import {
   resolveContextRelayConfig,
   resolveUniversalHandoffConfig,

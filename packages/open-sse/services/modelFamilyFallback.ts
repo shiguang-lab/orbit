@@ -11,7 +11,7 @@
  * (commit 6cea566, Mar 8 2026).
  */
 
-import { getModelContextLimit } from "../../core-domain/src/lib/modelCapabilities";
+import { getModelContextLimit } from "@shiguang-gateway/core-domain/catalog/model-capabilities";
 import { parseModel } from "./model.ts";
 import {
   CONTEXT_OVERFLOW_REGEX,

@@ -107,8 +107,8 @@ import {
   stripStainlessHeadersForOpenAICompat,
 } from "./base/headers.ts";
 import { applyPeerTraceHeader } from "../../core-domain/src/shared/resilience/peerRouting.ts";
-import { applyClineProtocolHeaders } from "../../core-domain/src/shared/utils/clineAuth.ts";
-import { isProbeContext } from "../../core-domain/src/shared/utils/probeOrigin.ts";
+import { applyClineProtocolHeaders } from "@shiguang-gateway/core-domain/edge/cline-auth";
+import { isProbeContext } from "@shiguang-gateway/core-domain/edge/probe-origin";
 import {
   parseAndValidatePublicUrl,
   parseAndValidateNonMetadataUrl,

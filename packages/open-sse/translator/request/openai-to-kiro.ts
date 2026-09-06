@@ -5,7 +5,7 @@
 import { register } from "../registry.ts";
 import { FORMATS } from "../formats.ts";
 import { v4 as uuidv4, v5 as uuidv5 } from "uuid";
-import { capMaxOutputTokens, capThinkingBudget } from "../../../core-domain/src/lib/modelCapabilities.ts";
+import { capMaxOutputTokens, capThinkingBudget } from "@shiguang-gateway/core-domain/catalog/model-capabilities";
 import {
   parseToolInput,
   normalizeKiroToolSchema,

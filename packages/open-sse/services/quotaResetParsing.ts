@@ -1,4 +1,4 @@
-import { looksLikeQuotaExhausted } from "../../core-domain/src/shared/utils/classify429";
+import { looksLikeQuotaExhausted } from "@shiguang-gateway/core-domain/edge/classify-429";
 import { getProviderCategory } from "../config/providerRegistry.ts";
 
 /**

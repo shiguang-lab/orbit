@@ -4,7 +4,7 @@
 // Credentials: IMS access_token (JWT) or full Cookie header from
 // firefly.adobe.com / new.express.adobe.com.
 
-import { saveCallLog } from "../../../core-domain/src/lib/usageDb.ts";
+import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
 import { sanitizeErrorMessage } from "../../utils/error.ts";
 import {
   AdobeFireflyError,

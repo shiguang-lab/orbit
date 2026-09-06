@@ -9,7 +9,7 @@ import { REGISTRY } from "../config/providerRegistry.ts";
 import {
   getModelContextLimit,
   type ModelCapabilityResolutionSnapshot,
-} from "../../core-domain/src/lib/modelCapabilities.ts";
+} from "@shiguang-gateway/core-domain/catalog/model-capabilities";
 import { parseModel } from "./model.ts";
 import { jsonLength } from "../utils/jsonSize.ts";
 

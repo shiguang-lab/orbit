@@ -284,8 +284,12 @@
       "import": "./src/lib/audio/transcriptionRouteHandlers.ts"
     },
     "./edge/media-generation": {
-      "types": "./src/public/edgeMusic.d.ts",
+      "types": "./src/public/mediaGeneration.d.ts",
       "import": "./src/lib/edge/mediaGenerationRoute.ts"
+    },
+    "./edge/video-model-resolution": {
+      "types": "./src/public/videoModelResolution.d.ts",
+      "import": "./src/lib/edge/videoModelResolution.ts"
     },
     "./edge/specialty-catalog": {
       "types": "./src/public/specialtyCatalog.d.ts",
@@ -1102,6 +1106,22 @@
       "types": "./src/public/probeOrigin.d.ts",
       "import": "./src/shared/utils/probeOrigin.ts"
     },
+    "./shared/fetch-timeout": {
+      "types": "./src/shared/utils/fetchTimeout.ts",
+      "import": "./src/shared/utils/fetchTimeout.ts"
+    },
+    "./shared/secure-random": {
+      "types": "./src/shared/utils/secureRandom.ts",
+      "import": "./src/shared/utils/secureRandom.ts"
+    },
+    "./shared/shuffle-deck": {
+      "types": "./src/shared/utils/shuffleDeck.ts",
+      "import": "./src/shared/utils/shuffleDeck.ts"
+    },
+    "./shared/terminal-status": {
+      "types": "./src/shared/utils/terminalStatus.ts",
+      "import": "./src/shared/utils/terminalStatus.ts"
+    },
     "./shared/classify-429": {
       "types": "./src/public/classify429.d.ts",
       "import": "./src/shared/utils/classify429.ts"
@@ -1117,6 +1137,42 @@
     "./catalog/provider-metadata": {
       "types": "./src/public/providerMetadata.d.ts",
       "import": "./src/shared/constants/providers.ts"
+    },
+    "./edge/alibaba-provider-regions": {
+      "types": "./src/shared/constants/alibabaProviderRegions.ts",
+      "import": "./src/shared/constants/alibabaProviderRegions.ts"
+    },
+    "./edge/capability-filter": {
+      "types": "./src/shared/constants/capabilities/capabilityFilter.ts",
+      "import": "./src/shared/constants/capabilities/capabilityFilter.ts"
+    },
+    "./edge/cline-auth": {
+      "types": "./src/shared/utils/clineAuth.ts",
+      "import": "./src/shared/utils/clineAuth.ts"
+    },
+    "./edge/provider-hints": {
+      "types": "./src/shared/utils/providerHints.ts",
+      "import": "./src/shared/utils/providerHints.ts"
+    },
+    "./edge/provider-constants": {
+      "types": "./src/shared/constants/providers.ts",
+      "import": "./src/shared/constants/providers.ts"
+    },
+    "./edge/circuit-breaker": {
+      "types": "./src/shared/utils/circuitBreaker.ts",
+      "import": "./src/shared/utils/circuitBreaker.ts"
+    },
+    "./edge/probe-origin": {
+      "types": "./src/shared/utils/probeOrigin.ts",
+      "import": "./src/shared/utils/probeOrigin.ts"
+    },
+    "./edge/classify-429": {
+      "types": "./src/shared/utils/classify429.ts",
+      "import": "./src/shared/utils/classify429.ts"
+    },
+    "./edge/vision-bridge-defaults": {
+      "types": "./src/shared/constants/visionBridgeDefaults.ts",
+      "import": "./src/shared/constants/visionBridgeDefaults.ts"
     },
     "./pricing/db": {
       "types": "./src/public/pricingDb.d.ts",

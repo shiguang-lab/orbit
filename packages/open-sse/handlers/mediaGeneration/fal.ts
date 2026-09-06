@@ -1,9 +1,9 @@
-import { saveCallLog } from "../../../core-domain/src/lib/usageDb.ts";
+import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
 import {
   FetchTimeoutError,
   fetchWithTimeout,
   getConfiguredTimeout,
-} from "../../../core-domain/src/shared/utils/fetchTimeout.ts";
+} from "@shiguang-gateway/core-domain/shared/fetch-timeout";
 import { sanitizeErrorMessage } from "../../utils/error.ts";
 
 type MediaKind = "video" | "music";

@@ -187,7 +187,7 @@ export function setProxyConfig(config: Record<string, unknown>): Promise<Record<
 export function deleteProxyForLevel(level: string, id: string | null): Promise<Record<string, any>>;
 export function resolveProxyForProvider(provider: string): Promise<unknown | null>;
 
-export function getComboByName(name: string): Promise<unknown>;
+export function getComboByName(name: string): Promise<any>;
 export function getComboById(id: string): Promise<unknown>;
 export function getCombos(limit?: number, offset?: number): Promise<unknown[]>;
 export function getCombosCount(): number;
@@ -263,3 +263,37 @@ export function deleteCompletedBatches(): { deletedBatches: number; deletedFiles
 export function getCachedProviderConnectionById(id: string): Promise<Record<string, any> | null>;
 export function updateProviderConnection(id: string, data: Record<string, unknown>): Promise<unknown>;
 export function isCloudEnabled(): Promise<boolean>;
+export function getUpstreamProxyConfig(providerId: string): Promise<Record<string, any> | null>;
+export function getCombosCacheVersion(): number;
+export function getLKGP(comboName: string, modelId: string): Promise<{ provider: string; connectionId?: string } | null>;
+export function setLKGP(comboName: string, modelId: string, providerId: string, connectionId?: string): Promise<void>;
+export function clearLKGP(comboName: string, modelId: string): Promise<void>;
+export function getPricingForModel(provider: string, model: string): Promise<any>;
+export function getKeyGroupsForApiKey(keyId: string): any[];
+export function checkKeyModelAccess(keyId: string, model: string, provider?: string): {
+  allowed: boolean;
+  matchedRules: any[];
+  deniedBy: any | null;
+};
+export function getCachedProviderConnections(filter?: Record<string, unknown>): Promise<any[]>;
+export function getActiveProvidersWithSyncedModel(modelId: string): Promise<string[]>;
+export function getCachedSettings(): Promise<Record<string, any>>;
+export function getSettings(): Promise<Record<string, any>>;
+export type TokenLimit = Record<string, any> & { id: string; resetInterval: string; resetTime?: string | null };
+export function getTokenLimitsForRequest(apiKeyId: string, provider: string, model: string): TokenLimit[];
+export function resetWindowIfElapsed(limit: TokenLimit, now?: number): {
+  windowStart: string;
+  didReset: boolean;
+  periodStartAt: number;
+  nextResetAt: number;
+};
+export function getWindowUsage(limit: TokenLimit, now?: number): number;
+export function incrementWindowTokens(limitId: string, windowStart: string, tokens: number): number;
+export function logTokenLimitReset(limitId: string, prevTokens: number, windowStart: string): void;
+export function resolveProxyForScopeFromRegistry(scope: string, scopeId?: string | null): Promise<any | null>;
+export function listOneproxyProxies(options?: {
+  protocol?: string;
+  countryCode?: string;
+  minQuality?: number;
+  limit?: number;
+}): Promise<any[]>;

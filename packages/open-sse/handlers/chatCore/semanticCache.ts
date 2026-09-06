@@ -4,7 +4,7 @@ import {
   isCacheableForRead,
 } from "../../../core-domain/src/lib/semanticCache.ts";
 import { calculateCost } from "../../../core-domain/src/lib/usage/costCalculator.ts";
-import { trackPendingRequest } from "../../../core-domain/src/lib/usageDb.ts";
+import { trackPendingRequest } from "@shiguang-gateway/core-domain/edge/usage-db";
 import { synthesizeOpenAiSseFromJson } from "../../utils/jsonToSse.ts";
 import { attachShiguangGatewayMetaHeaders } from "../../../core-domain/src/domain/gatewayResponseMeta.ts";
 import { extractUsageFromResponse } from "../usageExtractor.ts";

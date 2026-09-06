@@ -2,7 +2,7 @@
  * Token Usage Tracking - Extract, normalize, estimate and log token usage
  */
 
-import { appendRequestLog } from "../../core-domain/src/lib/usageDb.ts";
+import { appendRequestLog } from "@shiguang-gateway/core-domain/edge/usage-db";
 import {
   getLoggedInputTokens,
   getLoggedOutputTokens,

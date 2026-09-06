@@ -225,7 +225,7 @@ export async function propagateAlibabaFreeTierEligibilityToSiblings(
   if (!shared.alibabaFreeTierQuotaLastSyncAt) return;
 
   const { getProviderConnections, updateProviderConnection } =
-    await import("../../core-domain/src/lib/db/providers.ts");
+    await import("@shiguang-gateway/core-domain/db/provider-connections");
   const connections = await getProviderConnections({ provider });
 
   for (const connection of connections) {
@@ -506,7 +506,7 @@ export function scheduleAlibabaFreeTierQuotaRefresh(
         connection.providerSpecificData
       );
       if (!merged) return;
-      const { updateProviderConnection } = await import("../../core-domain/src/lib/db/providers.ts");
+      const { updateProviderConnection } = await import("@shiguang-gateway/core-domain/db/provider-connections");
       await updateProviderConnection(connection.id, { providerSpecificData: merged });
       await propagateAlibabaFreeTierEligibilityToSiblings(provider, connection.id, merged);
     } catch (error) {

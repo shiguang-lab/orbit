@@ -2,8 +2,8 @@ import {
   fetchWithTimeout,
   FetchTimeoutError,
   getConfiguredTimeout,
-} from "../../../core-domain/src/shared/utils/fetchTimeout.ts";
-import { saveCallLog } from "../../../core-domain/src/lib/usageDb.ts";
+} from "@shiguang-gateway/core-domain/shared/fetch-timeout";
+import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
 import { sanitizeErrorMessage } from "../../utils/error.ts";
 
 interface LogLike {

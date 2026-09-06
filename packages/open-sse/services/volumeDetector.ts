@@ -155,7 +155,7 @@ export async function recommendStrategyOverride(
 
   // Check if adaptive routing is enabled globally
   try {
-    const { getSettings } = await import("../../core-domain/src/lib/localDb.ts");
+    const { getSettings } = await import("@shiguang-gateway/core-domain/edge/local-db");
     const settings = await getSettings();
     if (!settings.adaptiveVolumeRouting) {
       return noOverride;

@@ -1,7 +1,7 @@
 import {
   getExplicitModelOutputCap,
   getResolvedModelCapabilities,
-} from "../../core-domain/src/lib/modelCapabilities.ts";
+} from "@shiguang-gateway/core-domain/catalog/model-capabilities";
 
 /**
  * Below this caller-supplied `max_tokens`, the request is treated as a probe

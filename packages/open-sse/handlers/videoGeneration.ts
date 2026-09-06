@@ -42,14 +42,14 @@ import {
   extractComfyOutputFiles,
   resolveComfyUiBaseUrl,
 } from "../utils/comfyuiClient.ts";
-import { saveCallLog } from "../../core-domain/src/lib/usageDb.ts";
+import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
 import { getAllCustomModels } from "../../core-domain/src/lib/db/models.ts";
 import { sanitizeErrorMessage } from "../utils/error.ts";
 import {
   FetchTimeoutError,
   fetchWithTimeout,
   getConfiguredTimeout,
-} from "../../core-domain/src/shared/utils/fetchTimeout.ts";
+} from "@shiguang-gateway/core-domain/shared/fetch-timeout";
 import { handleFalVideoGeneration } from "./mediaGeneration/fal.ts";
 
 /**
