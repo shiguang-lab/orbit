@@ -5,7 +5,8 @@
  * LOCAL_ONLY: not process-spawning; management-scoped via requireManagementAuth.
  */
 import { CORS_HEADERS, handleCorsOptions } from "@shiguang-gateway/core-domain/shared/cors";
-import { getXp, getAggregateXp } from "@shiguang-gateway/core-domain/control/gamification-db";
+import { getXp } from "@shiguang-gateway/core-domain/control/gamification-db";
+import { getAggregateXp } from "../domain/profile.js";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 
 export async function OPTIONS() {

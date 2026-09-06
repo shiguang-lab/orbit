@@ -36,4 +36,4 @@ export { transferTokens, getBalance, getHistory } from "./sharing.js";
 export { createInvite, redeemInvite as redeemInviteCode, listInvites, revokeInvite } from "./invites.js";
 export { connectServer, disconnectServer, listServers } from "./servers.js";
 
-export { getBadges, getAllEarnedBadges, getBadgeDefinitions, getXp, getAggregateXp, getConnectedServerByKeyHash } from "../db/gamification.js";
+export { getBadges, getBadgeDefinitions, getXp, getConnectedServerByKeyHash } from "../db/gamification.js";

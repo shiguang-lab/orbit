@@ -2,6 +2,7 @@ export type LeaderboardScope = "global" | "weekly" | "monthly" | "tokens_shared"
 export interface LeaderboardEntry { apiKeyId: string; scope: LeaderboardScope; score: number; rank?: number; }
 export function getAnomalies(): Promise<unknown[]>;
 export function updateScore(apiKeyId: string, scope: string, points: number): Promise<void> | void;
+export function calculateLevel(totalXp: number): number;
 export function getTopN(scope: LeaderboardScope, limit: number): Promise<unknown[]>;
 export function getRank(apiKeyId: string, scope: LeaderboardScope): Promise<number | null>;
 export function getNeighbors(apiKeyId: string, scope: LeaderboardScope): Promise<unknown[]>;

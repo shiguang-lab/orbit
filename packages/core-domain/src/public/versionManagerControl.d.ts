@@ -29,6 +29,7 @@ export function getSupervisor(tool: string): {
   getStatus(): SupervisorStatus;
 } | null;
 export function registerSupervisor(supervisor: unknown): void;
+export function unregisterSupervisor(tool: string): void;
 
 export class ServiceSupervisor {
   constructor(options: Record<string, unknown>);
