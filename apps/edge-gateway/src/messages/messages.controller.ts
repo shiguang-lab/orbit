@@ -19,4 +19,14 @@ export class MessagesController {
   options(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
     return this.routes.dispatch(request, reply, () => this.service.options());
   }
+
+  @Post("count_tokens")
+  countTokens(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, (req) => this.service.countTokens(req));
+  }
+
+  @Options("count_tokens")
+  countTokensOptions(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, () => this.service.countTokensOptions());
+  }
 }

@@ -1,17 +1,15 @@
-import { CORS_HEADERS } from "../../../../../shared/utils/cors.ts";
-import { v1CountTokensSchema } from "../../../../../shared/validation/schemas.ts";
-import { isValidationFailure, validateBody } from "../../../../../shared/validation/helpers.ts";
-import { countTextTokens, type TokenizerContext } from "../../../../../shared/utils/tiktokenCounter.ts";
+import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
+import { v1CountTokensSchema } from "@shiguang-gateway/core-domain/edge/count-tokens-validation";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { countTextTokens, type TokenizerContext } from "@shiguang-gateway/core-domain/shared/tokenizer";
 import { isRuntimeProviderRetirementError } from "@shiguang-gateway/contracts/provider-retirement";
-import { getExecutor } from "../../../../../../../open-sse/executors/index.ts";
-import { buildErrorBody } from "../../../../../../../open-sse/utils/error.ts";
-import { runWithProxyContext } from "../../../../../../../open-sse/utils/proxyFetch.ts";
+import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
+import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
 import { isCommonChatGptWebRetirementError } from "@shiguang-gateway/contracts/chatgpt-web-retirement";
-import { getModelInfo } from "../../../../../sse/services/model.ts";
-import { extractApiKey, getProviderCredentials, isValidApiKey } from "../../../../../sse/services/auth.ts";
-import { safeResolveProxy } from "../../../../../sse/handlers/chatHelpers.ts";
-import * as log from "../../../../../sse/utils/logger.ts";
-import { isInputTokenCountPlausible } from "../../../../../../../open-sse/utils/usageTracking.ts";
+import { getProviderCredentials } from "@shiguang-gateway/core-domain/sse/auth";
+import * as log from "@shiguang-gateway/core-domain/sse/logger";
+
+const load = (specifier: string): Promise<any> => import(specifier);
 
 /**
  * Handle CORS preflight
@@ -24,8 +22,8 @@ export async function OPTIONS() {
  * POST /v1/messages/count_tokens - Hybrid token count response.
  * Uses real provider-side count when supported, falling back to estimation.
  */
-export async function POST(request) {
-  let rawBody;
+export async function POST(request: Request): Promise<Response> {
+  let rawBody: unknown;
   try {
     rawBody = await request.json();
   } catch {
@@ -54,6 +52,16 @@ export async function POST(request) {
   }
 
   try {
+    const [modelApi, proxyApi, executorApi, usageApi] = await Promise.all([
+      load("@shiguang-gateway/core-domain/sse/services/model"),
+      load("@shiguang-gateway/core-domain/sse/handlers/chatHelpers"),
+      load("@shiguang-gateway/open-sse/executors/index"),
+      load("@shiguang-gateway/open-sse/utils/usageTracking"),
+    ]);
+    const { getModelInfo } = modelApi;
+    const { safeResolveProxy } = proxyApi;
+    const { getExecutor } = executorApi;
+    const { isInputTokenCountPlausible } = usageApi;
     const modelInfo = await getModelInfo(requestedModel);
     if (!modelInfo?.provider || !modelInfo?.model) {
       return estimated;
@@ -77,14 +85,14 @@ export async function POST(request) {
       undefined,
       modelInfo.provider
     );
-    const counted = await runWithProxyContext(proxyInfo?.proxy || null, () =>
+    const counted = (await runWithProxyContext(proxyInfo?.proxy || null, () =>
       executor?.countTokens?.({
         model: modelInfo.model,
         body,
         credentials,
         log,
       })
-    );
+    )) as { input_tokens?: unknown; source?: string } | null | undefined;
 
     if (
       !counted ||
@@ -128,7 +136,7 @@ export async function POST(request) {
   }
 }
 
-function safeStringify(value) {
+function safeStringify(value: unknown): string {
   if (typeof value === "string") return value;
   try {
     return JSON.stringify(value) ?? "";
@@ -142,24 +150,23 @@ function safeStringify(value) {
 // content, and `thinking` blocks — counting only `text` (as before) reported
 // near-zero for those messages and silently broke Claude Code's auto-compaction
 // (#2337). Image / redacted_thinking blocks are not text-estimable and count 0.
-function estimateContentBlockTokens(part, tokenizerContext: TokenizerContext) {
+function estimateContentBlockTokens(part: unknown, tokenizerContext: TokenizerContext): number {
   if (!part || typeof part !== "object") return 0;
+  const block = part as Record<string, unknown>;
   let tokens = 0;
-  switch (part.type) {
+  switch (block.type) {
     case "text":
-      if (typeof part.text === "string") tokens += countTextTokens(part.text, tokenizerContext);
+      if (typeof block.text === "string") tokens += countTextTokens(block.text, tokenizerContext);
       break;
     case "tool_use":
-      if (typeof part.name === "string") tokens += countTextTokens(part.name, tokenizerContext);
-      if (part.input !== undefined)
-        tokens += countTextTokens(safeStringify(part.input), tokenizerContext);
+      if (typeof block.name === "string") tokens += countTextTokens(block.name, tokenizerContext);
+      if (block.input !== undefined) tokens += countTextTokens(safeStringify(block.input), tokenizerContext);
       break;
     case "tool_result":
-      tokens += estimateToolResultTokens(part.content, tokenizerContext);
+      tokens += estimateToolResultTokens(block.content, tokenizerContext);
       break;
     case "thinking":
-      if (typeof part.thinking === "string")
-        tokens += countTextTokens(part.thinking, tokenizerContext);
+      if (typeof block.thinking === "string") tokens += countTextTokens(block.thinking, tokenizerContext);
       break;
     default:
       break;
@@ -169,7 +176,7 @@ function estimateContentBlockTokens(part, tokenizerContext: TokenizerContext) {
 
 // A `tool_result` content can be a plain string or an array of nested blocks
 // (text / image). Count string content and nested text blocks.
-function estimateToolResultTokens(content, tokenizerContext: TokenizerContext) {
+function estimateToolResultTokens(content: unknown, tokenizerContext: TokenizerContext): number {
   if (typeof content === "string") return countTextTokens(content, tokenizerContext);
   if (Array.isArray(content)) {
     let tokens = 0;
@@ -183,7 +190,7 @@ function estimateToolResultTokens(content, tokenizerContext: TokenizerContext) {
   return 0;
 }
 
-function buildEstimatedCountResponse(body, tokenizerContext: TokenizerContext = {}) {
+function buildEstimatedCountResponse(body: Record<string, unknown>, tokenizerContext: TokenizerContext = {}): Response {
   const messages = Array.isArray(body?.messages) ? body.messages : [];
   let inputTokens = 0;
 
