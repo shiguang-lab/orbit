@@ -69,7 +69,7 @@ async function buildMonitoringHealthSnapshot(localProviders: Record<string, unkn
     import("@shiguang-gateway/open-sse/services/requestDedup"),
     import("@shiguang-gateway/open-sse/services/quotaMonitor"),
     import("@shiguang-gateway/open-sse/services/sessionManager"),
-    import("@shiguang-gateway/core-domain/edge/credential-health-cache"),
+    import("@shiguang-gateway/core-domain/resilience/credential-health-cache"),
     import("@shiguang-gateway/open-sse/services/admission/runtime"),
     import("@shiguang-gateway/core-domain/shared/middleware/chatBodyAdmission"),
     getCachedSettings(),
@@ -118,7 +118,10 @@ async function buildMonitoringHealthSnapshot(localProviders: Record<string, unkn
     chatAdmission: chatAdmissionModule.status === "fulfilled"
       ? readHealthValue("chat admission", () => chatAdmissionModule.value.perConnectionAdmissionController.snapshot(), null)
       : null,
-    getCodexAccountDiagnostic: (connection, nowMs) =>
+    getCodexAccountDiagnostic: (
+      connection: Parameters<typeof createCodexAccountPool>[0],
+      nowMs: number,
+    ) =>
       getCodexParentAccountDiagnostic(createCodexAccountPool(connection), nowMs),
   });
 }

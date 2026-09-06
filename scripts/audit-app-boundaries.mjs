@@ -203,7 +203,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push("db/models-runtime");
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "db/agentic-conversations",
   "usage/summary",
-  "edge/credential-health-cache",
+  "resilience/credential-health-cache",
   "resilience/model-lockout-settings",
   "db/upstream-proxy",
   "control/cli-token-auth",
@@ -1124,6 +1124,7 @@ const retiredRedundantCoreExports = [
   "./control/cost-rules",
   "./control/cli-tools-config-generator",
   "./control/cli-tools-tool-detector",
+  "./edge/credential-health-cache",
 ];
 for (const subpath of retiredRedundantCoreExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {

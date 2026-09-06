@@ -17,7 +17,7 @@ import {
   isCredentialHealthy,
   isCredentialStale,
   getCredentialHealthSummary,
-} from "@shiguang-gateway/core-domain/edge/credential-health-cache";
+} from "@shiguang-gateway/core-domain/resilience/credential-health-cache";
 
 export interface CredentialGateResult {
   /** true = healthy, false = skip (bad), undefined = unknown */
@@ -81,4 +81,4 @@ export function logCredentialSkip(log: any, modelStr: string, reason: string): v
 }
 
 // Re-export cache functions for convenience
-export { getCredentialHealthSummary } from "@shiguang-gateway/core-domain/edge/credential-health-cache";
+export { getCredentialHealthSummary } from "@shiguang-gateway/core-domain/resilience/credential-health-cache";

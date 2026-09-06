@@ -148,7 +148,7 @@
       "types": "./src/public/tagRouter.d.ts",
       "import": "./src/domain/tagRouter.ts"
     },
-    "./edge/credential-health-cache": {
+    "./resilience/credential-health-cache": {
       "types": "./src/public/credentialHealthCache.d.ts",
       "import": "./src/lib/credentialHealth/cache.ts"
     },
