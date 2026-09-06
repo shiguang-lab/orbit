@@ -87,9 +87,13 @@ breakdowns while control analytics and realtime diagnostics read them; and worke
 syncs model capabilities consumed by edge routing. Gamification tables are initialized from the
 single executor-only helper in `packages/db-schema` by both control and edge because the
 streaming event path writes leaderboard/XP rows while the control API serves management views.
-Runtime-only tables such as `session_model_history` remain package-only
-until another deployable app needs them; a shared package import alone is not a
-reason to promote an app-private table.
+The replay/relay tables `reasoning_cache`, `session_model_history`, and
+`context_handoffs` are now explicitly promoted because the edge streaming path
+and worker maintenance share them. Likewise `skills` is a shared contract:
+control-api manages definitions while the edge/open-sse execution path reads
+and records executions. A shared package import alone is not a reason to
+promote an app-private table; each promotion requires concrete cross-app
+read/write evidence.
 
 The SQL scan currently finds table references in `core-domain` rather than direct
 app source, so the report labels these rows `PASS-indirect-declared-owner`. This is
