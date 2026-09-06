@@ -53,6 +53,10 @@
       "types": "./public/providerRegistry.d.ts",
       "import": "./config/providerRegistry.ts"
     },
+    "./translator": {
+      "types": "./public/translator.d.ts",
+      "import": "./translator/index.ts"
+    },
     "./handlers/imageGeneration": {
       "types": "./public/imageGeneration.d.ts",
       "import": "./handlers/imageGeneration.ts"

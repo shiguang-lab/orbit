@@ -68,6 +68,8 @@ const allowedCoreDomainSubpaths = {
     "middleware/prompt-injection",
     "sse/auth",
     "sse/logger",
+    "edge/chat-handler",
+    "edge/chat-admission",
     "control/authenticated",
     "shared/api-key-policy",
     "shared/upstream-error",

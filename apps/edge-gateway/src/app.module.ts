@@ -23,6 +23,7 @@ import { ClassifyModule } from "./classify/classify.module.js";
 import { CombosModule } from "./combos/combos.module.js";
 import { ProviderModelsModule } from "./provider-models/provider-models.module.js";
 import { ModelsModule } from "./models/models.module.js";
+import { ProviderChatModule } from "./provider-chat/provider-chat.module.js";
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { ModelsModule } from "./models/models.module.js";
     CombosModule,
     ProviderModelsModule,
     ModelsModule,
+    ProviderChatModule,
   ],
 })
 export class AppModule {}

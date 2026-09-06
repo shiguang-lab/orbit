@@ -28,6 +28,14 @@
       "types": "./src/public/auth.d.ts",
       "import": "./src/sse/services/auth.ts"
     },
+    "./edge/chat-handler": {
+      "types": "./src/public/chatHandler.d.ts",
+      "import": "./src/sse/handlers/chat.ts"
+    },
+    "./edge/chat-admission": {
+      "types": "./src/public/chatAdmission.d.ts",
+      "import": "./src/shared/middleware/withChatAdmission.ts"
+    },
     "./sse/logger": {
       "types": "./src/public/logger.d.ts",
       "import": "./src/sse/utils/logger.ts"
