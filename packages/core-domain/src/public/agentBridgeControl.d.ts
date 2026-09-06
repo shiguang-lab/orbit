@@ -59,6 +59,12 @@ export function getMitmStatus(agentId?: string): Promise<MitmStatus>;
 export function getAllAgentsStatus(): Array<Record<string, unknown>>;
 export function getCachedPassword(): string | null;
 export function setCachedPassword(password: string | null | undefined): void;
+export function repairMitm(sudoPassword: string): Promise<{ repaired: string[] }>;
+export function startMitm(apiKey: string, sudoPassword: string, options?: { port?: number }): Promise<Record<string, unknown>>;
+export function stopMitm(sudoPassword: string): Promise<Record<string, unknown>>;
+export function addDNSEntry(sudoPassword: string, agentId?: string): Promise<void>;
+export function removeDNSEntry(sudoPassword: string, agentId?: string): Promise<void>;
+export function setCachedPassword(password: string | null | undefined): void;
 export function checkCertInstalled(certPath: string): Promise<boolean>;
 export function resolveMitmDataDir(): string;
 export interface DiagnosticCheck { name: string; ok: boolean; hint: string | null }
@@ -73,6 +79,24 @@ export function summarizeDiagnostics(input: {
 export function checkDNSEntryForAgent(agentId?: string): boolean;
 export function isSudoPasswordRequired(): boolean;
 export function generateCert(options?: { force?: boolean }): Promise<{ key: string; cert: string }>;
+export function configureUpstreamCa(pemPath?: string): void;
+export interface CaptureManagerStatus {
+  running: boolean;
+  available: boolean;
+  startedAt?: string;
+  interceptCount?: number;
+  onPort?: number;
+}
+export interface StartCaptureModeOptions {
+  cfg: Record<string, number>;
+  installCa: (caPem: string) => Promise<void>;
+  uninstallCa: () => Promise<void>;
+}
+export function startCaptureMode(options: StartCaptureModeOptions): Promise<CaptureManagerStatus>;
+export function stopCaptureMode(): Promise<CaptureManagerStatus>;
+export function getCaptureStatus(): CaptureManagerStatus;
+export function installTproxyCa(caPem: string, sudoPassword?: string): Promise<void>;
+export function uninstallTproxyCa(sudoPassword?: string): Promise<void>;
 export interface CertInstallResult {
   installed: boolean;
   skipped?: boolean;

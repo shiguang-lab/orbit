@@ -25,12 +25,19 @@ export {
   getMitmStatus,
   getAllAgentsStatus,
   getCachedPassword,
+  setCachedPassword,
+  repairMitm,
 } from "../../mitm/manager.ts";
+export { startMitm, stopMitm } from "../../mitm/manager.runtime.ts";
+export { addDNSEntry, removeDNSEntry } from "../../mitm/dns/dnsConfig.ts";
 export { checkCertInstalled, installCertResult, uninstallCert } from "../../mitm/cert/install.ts";
 export { resolveMitmDataDir } from "../../mitm/dataDir.ts";
 export { summarizeDiagnostics } from "../../mitm/inspector/diagnostics.ts";
 export { checkDNSEntryForAgent, isSudoPasswordRequired } from "../../mitm/dns/dnsConfig.ts";
 export { generateCert } from "../../mitm/cert/generate.ts";
+export { configureUpstreamCa } from "../../mitm/upstreamTrust.ts";
+export { startCaptureMode, stopCaptureMode, getCaptureStatus } from "../../mitm/tproxy/captureManager.ts";
+export { installTproxyCa, uninstallTproxyCa } from "../../mitm/tproxy/caTrust.ts";
 export {
   isMitmSudoPasswordRequired,
   normalizeMitmSudoPasswordInput,
