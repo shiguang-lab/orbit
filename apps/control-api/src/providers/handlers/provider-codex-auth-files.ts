@@ -5,7 +5,7 @@ import {
   buildCodexAuthFile,
   writeCodexAuthFileToLocalCliIfNeeded,
 } from "@shiguang-gateway/open-sse/oauth/provider-auth-files/codex";
-import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/control/compliance";
+import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/compliance/audit-log";
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 
 function errorResponse(error: unknown, fallback: string): Response {

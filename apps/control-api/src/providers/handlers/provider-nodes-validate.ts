@@ -1,5 +1,5 @@
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/control/compliance";
+import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/compliance/audit-log";
 import { validateClaudeCodeCompatibleProvider } from "@shiguang-gateway/open-sse/services/provider-validation";
 import {
   SAFE_OUTBOUND_FETCH_PRESETS,

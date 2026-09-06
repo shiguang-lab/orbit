@@ -1,0 +1,82 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import test from "node:test";
+import { fileURLToPath, pathToFileURL } from "node:url";
+
+const packageRoot = fileURLToPath(new URL("..", import.meta.url));
+const repoRoot = path.resolve(packageRoot, "../..");
+const manifest = JSON.parse(
+  fs.readFileSync(path.join(packageRoot, "package.json"), "utf8"),
+) as { exports: Record<string, { types?: string; import?: string } | string> };
+
+const contracts = {
+  "./resilience/connection-recovery-policy": {
+    entry: "./src/resilience/connectionRecoveryPolicy.ts",
+    runtime: ["TERMINAL_CONNECTION_STATUSES"],
+  },
+  "./worker/connection-recovery-lifecycle": {
+    entry: "./src/worker/connectionRecoveryLifecycle.ts",
+    runtime: ["initConnectionRecoveryScheduler", "stopConnectionRecoveryScheduler"],
+  },
+} as const;
+const retiredSubpaths = [
+  "./shared/connection-recovery-policy",
+  "./control/resilience-connection-recovery",
+  "./worker/connection-recovery",
+] as const;
+
+function sourceFiles(dir: string): string[] {
+  const files: string[] = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (["node_modules", "dist", ".turbo"].includes(entry.name)) continue;
+    const target = path.join(dir, entry.name);
+    if (entry.isDirectory()) files.push(...sourceFiles(target));
+    else if (/\.(?:[cm]?[jt]sx?)$/.test(entry.name)) files.push(target);
+  }
+  return files;
+}
+
+test("connection recovery policy and worker lifecycle have distinct narrow contracts", async () => {
+  for (const [subpath, contract] of Object.entries(contracts)) {
+    assert.deepEqual(manifest.exports[subpath], {
+      types: contract.entry,
+      import: contract.entry,
+    });
+    const runtime = await import(pathToFileURL(path.join(packageRoot, contract.entry)).href);
+    assert.deepEqual(Object.keys(runtime).sort(), [...contract.runtime].sort(), `${subpath} runtime`);
+  }
+  assert.equal(fs.existsSync(path.join(packageRoot, "src/public/connectionRecovery.d.ts")), false);
+});
+
+test("scenario-specific connection recovery aliases stay retired", () => {
+  for (const subpath of retiredSubpaths) assert.equal(manifest.exports[subpath], undefined, subpath);
+
+  const retiredImportPattern = new RegExp(
+    `core-domain/(?:${retiredSubpaths
+      .map((subpath) => subpath.slice(2).replaceAll("/", "\\/"))
+      .join("|")})(?:["'])`,
+  );
+  for (const root of ["apps", "packages/open-sse"]) {
+    for (const file of sourceFiles(path.join(repoRoot, root))) {
+      assert.doesNotMatch(fs.readFileSync(file, "utf8"), retiredImportPattern, file);
+    }
+  }
+});
+
+test("connection recovery lifecycle remains worker-only", () => {
+  const lifecycleImport = /core-domain\/worker\/connection-recovery-lifecycle/;
+  for (const root of [
+    "apps/admin",
+    "apps/cli",
+    "apps/control-api",
+    "apps/edge-gateway",
+    "apps/importer",
+    "apps/realtime",
+    "packages/open-sse",
+  ]) {
+    for (const file of sourceFiles(path.join(repoRoot, root))) {
+      assert.doesNotMatch(fs.readFileSync(file, "utf8"), lifecycleImport, file);
+    }
+  }
+});

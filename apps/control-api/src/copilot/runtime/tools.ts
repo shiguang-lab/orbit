@@ -13,7 +13,7 @@ const execFileAsync = promisify(execFile);
 import { classifyCommand } from "./command-classification.js";
 import { createCombo, getCombos } from "@shiguang-gateway/core-domain/db/combos";
 import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { createApiKey, revokeApiKey, getApiKeys } from "@shiguang-gateway/core-domain/control/api-key-store";
+import { createApiKey, revokeApiKey, getApiKeys } from "@shiguang-gateway/core-domain/db/api-keys";
 import {
   searchSymbols,
   findCallers,

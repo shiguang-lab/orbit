@@ -11,7 +11,7 @@
  */
 
 import { extractProviderWarnings } from "@shiguang-gateway/core-domain/compliance/provider-audit";
-import { logAuditEvent } from "@shiguang-gateway/core-domain/compliance";
+import { logAuditEvent } from "@shiguang-gateway/core-domain/compliance/audit-log";
 import { emit } from "@shiguang-gateway/core-domain/events/eventBus";
 import type { RequestCompletedPayload, RequestFailedPayload } from "@shiguang-gateway/core-domain/events/types";
 import { saveCallLog } from "@shiguang-gateway/core-domain/usage/call-logs";

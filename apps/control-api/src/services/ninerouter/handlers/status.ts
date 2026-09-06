@@ -7,7 +7,7 @@ import {
 } from "@shiguang-gateway/core-domain/shared/embedded-services";
 import { getServiceRow } from "@shiguang-gateway/core-domain/shared/version-manager";
 import { createErrorResponse, sanitizeErrorMessage } from "@shiguang-gateway/core-domain/shared/error-response";
-import { logAuditEvent } from "@shiguang-gateway/core-domain/control/compliance";
+import { logAuditEvent } from "@shiguang-gateway/core-domain/compliance/audit-log";
 
 const TOOL = "9router";
 

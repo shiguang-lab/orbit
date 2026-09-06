@@ -8,7 +8,7 @@ import { extractApiKey } from "../services/auth.ts";
 // CLI client detection. Extracted verbatim from ./catalog.ts.
 
 async function validateCatalogApiKey(apiKey: string): Promise<boolean> {
-  const { validateApiKey } = await import("@shiguang-gateway/core-domain/runtime/api-keys");
+  const { validateApiKey } = await import("@shiguang-gateway/core-domain/db/api-keys");
   return validateApiKey(apiKey);
 }
 

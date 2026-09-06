@@ -1,4 +1,4 @@
-import { getApiKeys, createApiKey, pickApiKeyForInternalUse } from "@shiguang-gateway/core-domain/control/api-key-store";
+import { getApiKeys, createApiKey, pickApiKeyForInternalUse } from "@shiguang-gateway/core-domain/db/api-keys";
 import { isCloudEnabled, updateSettings } from "@shiguang-gateway/core-domain/db/settings";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
 import { syncToCloud, fetchWithTimeout, CLOUD_URL } from "@shiguang-gateway/core-domain/control/cloud-sync";

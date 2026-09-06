@@ -291,7 +291,7 @@ import {
   getCallLogPipelineCaptureStreamChunks,
   getCallLogPipelineMaxSizeBytes,
 } from "@shiguang-gateway/config/logEnv";
-import { logAuditEvent } from "@shiguang-gateway/core-domain/compliance";
+import { logAuditEvent } from "@shiguang-gateway/core-domain/compliance/audit-log";
 import { emit } from "@shiguang-gateway/core-domain/events/eventBus";
 import { adaptBodyForCompression } from "../services/compression/bodyAdapter.ts";
 import { ensureEngineBreakdown } from "../services/compression/engineBreakdown.ts";

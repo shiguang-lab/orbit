@@ -796,7 +796,7 @@ async function buildUnifiedModelsResponseCore(
     const earlyApiKey = extractApiKey(request);
     if (earlyApiKey) {
       const { getApiKeyMetadata } = await import(
-        "@shiguang-gateway/core-domain/runtime/api-keys"
+        "@shiguang-gateway/core-domain/db/api-keys"
       );
       const earlyKeyMeta = await getApiKeyMetadata(earlyApiKey);
       if (earlyKeyMeta?.allowedQuotas && earlyKeyMeta.allowedQuotas.length > 0) {
@@ -1871,7 +1871,7 @@ async function buildUnifiedModelsResponseCore(
     let finalModels = models;
     if (apiKey) {
       const { isModelAllowedForKey, getApiKeyMetadata } = await import(
-        "@shiguang-gateway/core-domain/runtime/api-keys"
+        "@shiguang-gateway/core-domain/db/api-keys"
       );
 
       // Quota-exclusive keys (allowedQuotas non-empty): list ONLY the pool's qtSd/*

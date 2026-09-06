@@ -8,7 +8,7 @@ import {
 import { matchesCron } from "@shiguang-gateway/core-domain/jobs/cron-match";
 import {
   TERMINAL_CONNECTION_STATUSES,
-} from "@shiguang-gateway/core-domain/shared/connection-recovery-policy";
+} from "@shiguang-gateway/core-domain/resilience/connection-recovery-policy";
 import {
   isConnectionUnavailableToAuxiliaryActivity,
 } from "@shiguang-gateway/core-domain/shared/connection-isolation";

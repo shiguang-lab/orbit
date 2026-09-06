@@ -18,7 +18,7 @@ import {
   getComboForModel,
   getModelInfo,
 } from "@shiguang-gateway/open-sse/services/runtimeModel";
-import { getApiKeyById } from "@shiguang-gateway/core-domain/control/api-key-store";
+import { getApiKeyById } from "@shiguang-gateway/core-domain/db/api-keys";
 import {
   validateApiKeyRoutingTarget,
   type ApiKeyMetadata,

@@ -18,7 +18,7 @@ import {
 } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
 import { getRecentEgressIpForConnection, EGRESS_IP_LOOKUP_WINDOW_MS } from "@shiguang-gateway/core-domain/runtime/proxy-logs";
-import { validateApiKey } from "@shiguang-gateway/core-domain/runtime/api-keys";
+import { validateApiKey } from "@shiguang-gateway/core-domain/db/api-keys";
 import {
   getActiveExclusiveConnectionLease,
   hashLeaseOwnerId,

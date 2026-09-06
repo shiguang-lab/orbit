@@ -66,7 +66,7 @@ export class ControlSecurityService implements OnModuleInit {
       },
       getApiKeyMetadata: async (apiKey) => {
         try {
-          const { getApiKeyMetadata } = await load("@shiguang-gateway/core-domain/control/api-key-store");
+          const { getApiKeyMetadata } = await load("@shiguang-gateway/core-domain/db/api-keys");
           const meta = await getApiKeyMetadata(apiKey);
           return meta ? { scopes: meta.scopes ?? [], name: meta.name } : null;
         } catch {

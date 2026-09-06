@@ -30,7 +30,7 @@ import {
 import {
   getAuditRequestContext,
   logAuditEvent,
-} from "@shiguang-gateway/core-domain/control/compliance";
+} from "@shiguang-gateway/core-domain/compliance/audit-log";
 import {
   isValidationFailure,
   validateBody,

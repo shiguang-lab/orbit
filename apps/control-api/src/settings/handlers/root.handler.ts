@@ -24,7 +24,7 @@ import {
   verifyManagementPassword,
 } from "@shiguang-gateway/core-domain/control/management-password";
 import { isPaidModelTarget } from "@shiguang-gateway/core-domain/catalog/free-models";
-import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/control/compliance";
+import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/compliance/audit-log";
 import {
   isAuthRequired,
   isDashboardSessionAuthenticated,

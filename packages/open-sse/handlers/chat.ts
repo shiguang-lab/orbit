@@ -65,7 +65,7 @@ import { isRuntimeProviderRetirementError } from "@shiguang-gateway/contracts/pr
 import { isCommonChatGptWebRetirementError } from "@shiguang-gateway/contracts/chatgpt-web-retirement";
 import { deleteHandoff, getHandoff } from "@shiguang-gateway/core-domain/runtime/context-handoffs";
 import { getComboByName, updateCombo } from "@shiguang-gateway/core-domain/runtime/combos-db";
-import { isModelAllowedForKey } from "@shiguang-gateway/core-domain/runtime/api-keys";
+import { isModelAllowedForKey } from "@shiguang-gateway/core-domain/db/api-keys";
 import { promoteSuccessfulComboModel } from "@shiguang-gateway/core-domain/runtime/combo-auto-promote";
 import {
   deleteSessionAccountAffinity,
@@ -132,7 +132,7 @@ import { markAccountExhaustedFrom429 } from "@shiguang-gateway/core-domain/quota
 import { resolveForcedConnectionForCredentialPool } from "@shiguang-gateway/open-sse/services/sessionAffinityPin";
 import { RequestTelemetry, recordTelemetry } from "@shiguang-gateway/core-domain/runtime/request-telemetry";
 import { generateRequestId } from "@shiguang-gateway/core-domain/runtime/request-id";
-import { logAuditEvent } from "@shiguang-gateway/core-domain/compliance";
+import { logAuditEvent } from "@shiguang-gateway/core-domain/compliance/audit-log";
 import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/runtime/api-key-policy";
 import { hasProviderQuotaBypassScope } from "@shiguang-gateway/core-domain/runtime/api-key-policy-scopes";
 import { isMicrosoftDesignerWebProviderRetiredError } from "@shiguang-gateway/contracts/designer-web-retirement";

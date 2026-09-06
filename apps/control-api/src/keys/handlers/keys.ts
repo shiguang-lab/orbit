@@ -3,7 +3,7 @@ import {
   getApiKeysCount,
   createApiKey,
   updateApiKeyPermissions,
-} from "@shiguang-gateway/core-domain/control/api-key-store";
+} from "@shiguang-gateway/core-domain/db/api-keys";
 import { isCloudEnabled } from "@shiguang-gateway/core-domain/db/settings";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
 import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";

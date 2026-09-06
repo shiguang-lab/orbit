@@ -1,5 +1,5 @@
 import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getApiKeys } from "@shiguang-gateway/core-domain/control/api-key-store";
+import { getApiKeys } from "@shiguang-gateway/core-domain/db/api-keys";
 import { maskStoredApiKey } from "@shiguang-gateway/core-domain/control/api-key-exposure";
 
 // GET /api/cli-tools/keys - List API keys with raw values for authenticated CLI tools UI only

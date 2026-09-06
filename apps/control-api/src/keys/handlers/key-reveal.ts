@@ -1,4 +1,4 @@
-import { getApiKeyById } from "@shiguang-gateway/core-domain/control/api-key-store";
+import { getApiKeyById } from "@shiguang-gateway/core-domain/db/api-keys";
 import { isApiKeyRevealEnabled } from "@shiguang-gateway/core-domain/control/api-key-exposure";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import * as log from "@shiguang-gateway/core-domain/sse/logger";

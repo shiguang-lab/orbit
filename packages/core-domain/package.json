@@ -599,7 +599,10 @@
       "import": "./src/shared/proxy-health.ts"
     },
     "./shared/proxy-log-settings": { "types": "./src/public/proxyLogSettings.d.ts", "import": "./src/lib/proxyLogger.ts" },
-    "./shared/connection-recovery-policy": { "types": "./src/public/connectionRecovery.d.ts", "import": "./src/lib/quota/connectionRecovery.ts" },
+    "./resilience/connection-recovery-policy": {
+      "types": "./src/resilience/connectionRecoveryPolicy.ts",
+      "import": "./src/resilience/connectionRecoveryPolicy.ts"
+    },
     "./shared/credential-probe-policy": { "types": "./src/public/credentialProbePolicy.d.ts", "import": "./src/lib/credentialHealth/probePolicy.ts" },
     "./db/connection-runtime-state": { "types": "./src/public/connectionRuntimeState.d.ts", "import": "./src/lib/db/connectionRuntimeState.ts" },
     "./shared/proxy-egress": {
@@ -617,10 +620,6 @@
     "./shared/log-env": {
       "types": "./src/public/logEnv.d.ts",
       "import": "./src/lib/logEnv.ts"
-    },
-    "./control/api-key-store": {
-      "types": "./src/public/apiKeyStore.d.ts",
-      "import": "./src/lib/db/apiKeys.ts"
     },
     "./shared/api-key-resolver": {
       "types": "./src/public/apiKeyResolver.d.ts",
@@ -733,10 +732,6 @@
     "./control/volcengine-validation": {
       "types": "./src/shared/validation/volcenginePlanExports.ts",
       "import": "./src/shared/validation/volcenginePlanExports.ts"
-    },
-    "./control/compliance": {
-      "types": "./src/public/compliance.d.ts",
-      "import": "./src/lib/compliance/index.ts"
     },
     "./db/provider-cc-alias": {
       "types": "./src/public/providerCcAlias.d.ts",
@@ -878,10 +873,6 @@
     "./control/provider-health-matrix": {
       "types": "./src/public/providerHealthMatrix.d.ts",
       "import": "./src/lib/monitoring/providerHealthMatrix.ts"
-    },
-    "./control/resilience-connection-recovery": {
-      "types": "./src/public/connectionRecovery.d.ts",
-      "import": "./src/lib/quota/connectionRecovery.ts"
     },
     "./shared/connection-isolation": {
       "types": "./src/shared/connectionIsolation.ts",
@@ -1113,7 +1104,10 @@
       "import": "./src/quota/cacheLifecycle.ts"
     },
     "./worker/spend-batch-writer": "./src/lib/spend/batchWriter.ts",
-    "./worker/connection-recovery": "./src/lib/quota/connectionRecovery.ts",
+    "./worker/connection-recovery-lifecycle": {
+      "types": "./src/worker/connectionRecoveryLifecycle.ts",
+      "import": "./src/worker/connectionRecoveryLifecycle.ts"
+    },
     "./worker/radar-scheduler": { "types": "./src/public/radar.d.ts", "import": "./src/lib/radar/scheduler.ts" },
     "./control/embedded-services-runtime-support": "./src/control/embedded-services-runtime-support.ts",
     "./worker/model-sync": "./src/lib/modelsDevSync.ts",
@@ -1123,7 +1117,6 @@
     "./worker/proxy-subscription": "./src/lib/proxySubscription/subscriptionService.ts",
     "./worker/session-affinity": "./src/lib/db/sessionAccountAffinity.ts",
     "./worker/database-vacuum": "./src/lib/db/vacuumScheduler.ts",
-    "./worker/compliance": "./src/lib/compliance/index.ts",
     "./worker/memory": "./src/lib/memory/index.ts",
     "./worker/arena-elo-sync": "./src/lib/arenaEloSync.ts",
     "./worker/openrouter-provider-stats": "./src/lib/catalog/openrouterProviderStats.ts",
@@ -1174,7 +1167,6 @@
     "./runtime/provider-node-select": "./src/lib/db/providerNodeSelect.ts",
     "./runtime/proxy-logs": "./src/lib/db/proxyLogs.ts",
     "./runtime/proxy-log-lifecycle": "./src/runtime/proxyLogLifecycle.ts",
-    "./runtime/api-keys": "./src/lib/db/apiKeys.ts",
     "./runtime/exclusive-leases": "./src/lib/db/exclusiveConnectionLeases.ts",
     "./runtime/peak-hour-protection": "./src/lib/providers/peakHourProtection.ts",
     "./runtime/jina-credentials": "./src/lib/providers/jina.ts",
@@ -1300,7 +1292,7 @@
     },
     "./db/api-keys": {
       "types": "./src/public/apiKeysDb.d.ts",
-      "import": "./src/lib/db/apiKeys.ts"
+      "import": "./src/db/apiKeys.ts"
     },
     "./db/files": {
       "types": "./src/public/filesDb.d.ts",
@@ -1374,9 +1366,13 @@
       "types": "./src/public/quotaRuntime.d.ts",
       "import": "./src/lib/quota/types.ts"
     },
-    "./compliance": {
-      "types": "./src/public/compliance.d.ts",
-      "import": "./src/lib/compliance/index.ts"
+    "./compliance/audit-log": {
+      "types": "./src/public/complianceAuditLog.d.ts",
+      "import": "./src/compliance/auditLog.ts"
+    },
+    "./compliance/lifecycle": {
+      "types": "./src/public/complianceLifecycle.d.ts",
+      "import": "./src/compliance/lifecycle.ts"
     },
     "./compliance/provider-audit": {
       "types": "./src/public/providerAudit.d.ts",

@@ -10,7 +10,7 @@ import {
   PoolUpdateSchema,
   QuotaPreviewQuerySchema,
 } from "./schemas.js";
-import { logAuditEvent, getAuditRequestContext } from "@shiguang-gateway/core-domain/compliance";
+import { logAuditEvent, getAuditRequestContext } from "@shiguang-gateway/core-domain/compliance/audit-log";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
 const { buildErrorBody } = await load("@shiguang-gateway/open-sse/utils/error");

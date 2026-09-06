@@ -3,7 +3,7 @@ import {
   getSettings,
   updateSettings,
 } from "@shiguang-gateway/core-domain/db/settings";
-import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/control/compliance";
+import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/compliance/audit-log";
 import { QuotaStoreSettingsSchema } from "../../quota/schemas.js";
 import {
   getQuotaAnalyticsSummary,

@@ -1,4 +1,4 @@
-import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/control/compliance";
+import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/compliance/audit-log";
 import { createErrorResponse, createErrorResponseFromUnknown } from "@shiguang-gateway/core-domain/shared/error-response";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { revokeSyncTokenById } from "@shiguang-gateway/core-domain/control/sync-tokens";

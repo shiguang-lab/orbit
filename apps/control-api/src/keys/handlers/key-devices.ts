@@ -1,4 +1,4 @@
-import { getApiKeyById } from "@shiguang-gateway/core-domain/control/api-key-store";
+import { getApiKeyById } from "@shiguang-gateway/core-domain/db/api-keys";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { getDeviceCount, getDeviceDetails } from "@shiguang-gateway/open-sse/services/deviceTracker";
 import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";

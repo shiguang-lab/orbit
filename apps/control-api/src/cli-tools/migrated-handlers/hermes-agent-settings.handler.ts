@@ -9,7 +9,7 @@ import {
   getCurrentHermesAgentRoles,
 } from "@shiguang-gateway/core-domain/control/cli-tools-hermes-agent";
 import { getHermesConfigPath } from "@shiguang-gateway/core-domain/control/cli-tools-hermes-home";
-import { getApiKeyById } from "@shiguang-gateway/core-domain/control/api-key-store";
+import { getApiKeyById } from "@shiguang-gateway/core-domain/db/api-keys";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 
 const hermesAgentSettingsSchema = z.object({

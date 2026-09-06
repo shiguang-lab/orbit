@@ -206,7 +206,7 @@ export async function finalizeCatalogResponse(
   const apiKey = extractApiKey(request);
   if (apiKey) {
     const { getApiKeyMetadata, isModelAllowedForKey } = await import(
-      "@shiguang-gateway/core-domain/runtime/api-keys"
+      "@shiguang-gateway/core-domain/db/api-keys"
     );
     const keyMeta = await getApiKeyMetadata(apiKey);
     if (keyMeta && keyMeta.id !== "env-key" && !keyMeta.allowedQuotas?.length) {

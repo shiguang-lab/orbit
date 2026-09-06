@@ -10,7 +10,7 @@ import { createMultiBackup } from "@shiguang-gateway/core-domain/shared/services
 import { saveCliToolLastConfigured, deleteCliToolLastConfigured } from "../cli-tool-state.js";
 import { cliModelConfigSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas/cli";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { getApiKeyById } from "@shiguang-gateway/core-domain/control/api-key-store";
+import { getApiKeyById } from "@shiguang-gateway/core-domain/db/api-keys";
 import { normalizeCodexBaseUrl } from "../codex-settings/base-url.js";
 import { migrateCodexFeatureFlags } from "../codex-settings/feature-flags.js";
 

@@ -3,7 +3,7 @@ import type { FastifyRequest } from "fastify";
 import { createRemoteJWKSet, jwtVerify, SignJWT } from "jose";
 import { issueDashboardCsrfToken } from "@shiguang-gateway/auth";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/control/compliance";
+import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/compliance/audit-log";
 import { ensurePersistentManagementPasswordHash, getStoredManagementPassword, verifyManagementPassword } from "@shiguang-gateway/core-domain/control/management-password";
 import { getSettings, updateSettings } from "@shiguang-gateway/core-domain/db/settings";
 import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";

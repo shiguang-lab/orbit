@@ -21,6 +21,8 @@ const ignored = new Set(["node_modules", "dist", ".turbo", ".git"]);
 const legacyNames = ["gateway" + "-runtime", "server" + "-runtime"];
 const quotaCacheLifecycleSpecifier =
   "@shiguang-gateway/core-domain/quota/cache-lifecycle";
+const complianceLifecycleSpecifier =
+  "@shiguang-gateway/core-domain/compliance/lifecycle";
 const violations = [];
 
 const readJson = (file) => {
@@ -92,7 +94,7 @@ const allowedCoreDomainSubpaths = {
     "runtime/model-sync-client",
     "runtime/model-sync-operation",
     "shared/connection-isolation",
-    "shared/connection-recovery-policy",
+    "resilience/connection-recovery-policy",
     "resilience/circuit-breaker",
     "resilience/credential-health-cache",
     "shared/credential-probe-policy",
@@ -104,7 +106,7 @@ const allowedCoreDomainSubpaths = {
     "shared/proxy-health",
     "quota/cache-lifecycle",
   ],
-  "apps/control-api": ["startup", "runtime/request", "db/ping", "db/health", "db/call-log-stats", "db/provider-connections", "db/model-aliases", "db/mitm-aliases", "db/hidden-models", "db/proxies", "db/settings", "db/read-cache", "db/local-db", "db/provider-stats", "db/database-stats", "db/vacuum-scheduler", "catalog/provider-registry", "pricing/db", "pricing/defaults", "pricing/sync", "pricing/provider-prefixes", "pricing/validation", "pricing/modal-cost", "cache/db", "cache/services", "db/compression-analytics", "analytics/auto-routing-db", "analytics/diversity", "db-backups/db", "db-backups/validation", "metrics/combo", "metrics/request-telemetry", "metrics/observability", "metrics/tool-latency", "shared/numeric", "open-sse/utils/error.ts", "open-sse/services/deviceTracker.ts", "control/management-auth", "control/middleware-registry", "control/provider-credentials", "control/lkgp-cache", "control/management-password", "control/compliance", "runtime/feature-flags", "control/provider-validation", "control/provider-validation-schemas", "control/oauth-validation", "control/cloud-validation", "control/volcengine-validation", "control/model-context-overrides", "control/model-test-data", "db/provider-nodes", "network/outbound-url-guard-policy", "network/safe-outbound-fetch", "control/authenticated", "control/registered-keys", "control/settings-config", "control/oauth-persistence", "memory/settings", "memory/runtime", "control/database-settings", "control/proxy-logs", "control/openrouter-provider-stats", "control/provider-health-matrix", "resilience/settings", "routing/connection-model-rules", "usage/stats", "usage/model-latency-stats", "usage/request-logs", "usage/pending-requests", "db/detailed-logs", "db/proxy-logs", "shared/log-env", "control/api-key-store", "control/cloud-sync", "control/api-key-exposure", "db/api-key-groups", "control/api-key-usage-limits", "shared/", "sse/logger", "sse/auth", "evals/db", "evals/runner", "evals/runtime", "evals/validation", "db/api-keys", "db/batches", "plugins/db", "plugins/manager", "plugins/marketplace", "shared/cors", "quota/dimensions", "quota/db", "quota/services", "quota/state", "compliance", "shared/combo-invariants", "catalog/combo-targets", "catalog/model-metadata", "catalog/provider-models"],
+  "apps/control-api": ["startup", "runtime/request", "db/ping", "db/health", "db/call-log-stats", "db/provider-connections", "db/model-aliases", "db/mitm-aliases", "db/hidden-models", "db/proxies", "db/settings", "db/read-cache", "db/local-db", "db/provider-stats", "db/database-stats", "db/vacuum-scheduler", "catalog/provider-registry", "pricing/db", "pricing/defaults", "pricing/sync", "pricing/provider-prefixes", "pricing/validation", "pricing/modal-cost", "cache/db", "cache/services", "db/compression-analytics", "analytics/auto-routing-db", "analytics/diversity", "db-backups/db", "db-backups/validation", "metrics/combo", "metrics/request-telemetry", "metrics/observability", "metrics/tool-latency", "shared/numeric", "open-sse/utils/error.ts", "open-sse/services/deviceTracker.ts", "control/management-auth", "control/middleware-registry", "control/provider-credentials", "control/lkgp-cache", "control/management-password", "runtime/feature-flags", "control/provider-validation", "control/provider-validation-schemas", "control/oauth-validation", "control/cloud-validation", "control/volcengine-validation", "control/model-context-overrides", "control/model-test-data", "db/provider-nodes", "network/outbound-url-guard-policy", "network/safe-outbound-fetch", "control/authenticated", "control/registered-keys", "control/settings-config", "control/oauth-persistence", "memory/settings", "memory/runtime", "control/database-settings", "control/proxy-logs", "control/openrouter-provider-stats", "control/provider-health-matrix", "resilience/settings", "routing/connection-model-rules", "usage/stats", "usage/model-latency-stats", "usage/request-logs", "usage/pending-requests", "db/detailed-logs", "db/proxy-logs", "shared/log-env", "control/cloud-sync", "control/api-key-exposure", "db/api-key-groups", "control/api-key-usage-limits", "shared/", "sse/logger", "sse/auth", "evals/db", "evals/runner", "evals/runtime", "evals/validation", "db/api-keys", "db/batches", "plugins/db", "plugins/manager", "plugins/marketplace", "shared/cors", "quota/dimensions", "quota/db", "quota/services", "quota/state", "shared/combo-invariants", "catalog/combo-targets", "catalog/model-metadata", "catalog/provider-models"],
   "apps/edge-gateway": [
     "startup",
     "runtime/request",
@@ -189,6 +191,9 @@ const allowedCoreDomainSubpaths = {
     "a2a/runtime",
   ],
 };
+
+allowedCoreDomainSubpaths["apps/control-api"].push("compliance/audit-log");
+allowedCoreDomainSubpaths["apps/worker"].push("compliance/lifecycle");
 
 for (const app of ["apps/control-api", "apps/edge-gateway", "apps/realtime", "apps/worker"]) {
   allowedCoreDomainSubpaths[app].push("db/runtime-lifecycle");
@@ -350,7 +355,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push("catalog/providers");
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "resilience/circuit-breaker",
   "control/model-availability",
-  "control/resilience-connection-recovery",
+  "resilience/connection-recovery-policy",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push("control/guardrails");
 allowedCoreDomainSubpaths["apps/control-api"].push("db/relayProxies", "shared/validation");
@@ -1095,6 +1100,13 @@ for (const app of appEntries) {
           "only the worker may own quota cache background refresh lifecycle",
         );
       }
+      if (specifier === complianceLifecycleSpecifier && rel(app.dir) !== "apps/worker") {
+        add(
+          "compliance-lifecycle-outside-worker",
+          file,
+          "only the worker may invoke compliance initialization and retention lifecycle",
+        );
+      }
       if (specifier.startsWith(".")) {
         const target = resolve(file, "..", specifier);
         if (target.includes(`${sep}apps${sep}`) && !target.startsWith(`${app.dir}${sep}`)) add("cross-app-relative-import", file, specifier);
@@ -1258,8 +1270,13 @@ const retiredRedundantCoreExports = [
   "./control/provider-discovery-support/freeModels",
   "./shared/free-models",
   "./runtime/free-models",
+  "./control/api-key-store",
+  "./runtime/api-keys",
   "./control/provider-discovery-support/callLogs",
   "./usage/reporting-support/call-logs",
+  "./control/compliance",
+  "./worker/compliance",
+  "./compliance",
 ];
 for (const subpath of retiredRedundantCoreExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {
@@ -1366,6 +1383,13 @@ for (const pkg of packageEntries) {
           "quota-cache-lifecycle-in-shared-package",
           file,
           "shared packages may query or update quota cache state but must not own its scheduler",
+        );
+      }
+      if (specifier === complianceLifecycleSpecifier) {
+        add(
+          "compliance-lifecycle-in-shared-package",
+          file,
+          "shared packages may use audit-log operations but must not invoke compliance lifecycle",
         );
       }
       const workspace = workspaceByName.get(specifier) ?? [...workspaceByName.entries()].find(([name]) => specifier.startsWith(`${name}/`))?.[1];

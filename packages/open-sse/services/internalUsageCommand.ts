@@ -68,7 +68,7 @@ type RequiredDeps = Required<InternalUsageCommandDeps>;
 
 async function normalizeDeps(deps: InternalUsageCommandDeps = {}): Promise<RequiredDeps> {
   const auth = deps.isValidApiKey ? null : await import("./auth.ts");
-  const apiKeys = deps.getApiKeyMetadata ? null : await import("@shiguang-gateway/core-domain/runtime/api-keys");
+  const apiKeys = deps.getApiKeyMetadata ? null : await import("@shiguang-gateway/core-domain/db/api-keys");
   const providers =
     deps.getProviderConnectionById && deps.getProviderConnections
       ? null
