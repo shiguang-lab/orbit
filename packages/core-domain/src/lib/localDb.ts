@@ -340,21 +340,6 @@ export type { Webhook, WebhookKind } from "./db/webhooks";
 
 export { insertDelivery, getDeliveries } from "./db/webhookDeliveries";
 
-export {
-  upsertDiscoveryResult,
-  getDiscoveryResults,
-  getDiscoveryResultById,
-  markVerified,
-  deleteDiscoveryResult,
-} from "./db/discoveryResults";
-
-export type {
-  DiscoveryResult,
-  DiscoveryMethod,
-  DiscoveryAuthType,
-  DiscoveryRiskLevel,
-  DiscoveryStatus,
-} from "./db/discoveryResults";
 export type { WebhookDelivery } from "./db/webhookDeliveries";
 
 export {

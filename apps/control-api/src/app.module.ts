@@ -10,6 +10,7 @@ import { DbBackupsModule } from "./db-backups/db-backups.module.js";
 import { CacheModule } from "./cache/cache.module.js";
 import { PricingModule } from "./pricing/pricing.module.js";
 import { ProvidersModule } from "./providers/providers.module.js";
+import { DiscoveryModule } from "./discovery/discovery.module.js";
 import { EvalsModule } from "./evals/evals.module.js";
 import { AssessmentModule } from "./assessment/assessment.module.js";
 import { PluginsModule } from "./plugins/plugins.module.js";
@@ -77,6 +78,7 @@ import { ProxySubscriptionsModule } from "./proxy-subscriptions/proxy-subscripti
     AuthModule,
     GatewayModule,
     ProvidersModule,
+    DiscoveryModule,
     KeysModule,
     AnalyticsModule,
     DbBackupsModule,
