@@ -7,8 +7,8 @@
  * handler exposes.
  */
 
-import { saveCallLog } from "../../../core-domain/src/lib/usageDb.ts";
-import { fetchRemoteImage } from "../../../core-domain/src/shared/network/remoteImageFetch.ts";
+import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
+import { fetchRemoteImage } from "@shiguang-gateway/core-domain/network/remote-image-fetch";
 
 export const UPSCALE_CALL_LOG_PATH = "/v1/images/upscale";
 

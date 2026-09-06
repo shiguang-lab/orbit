@@ -7,16 +7,7 @@
  *   3. POST the upsample job, poll the BKS result link, return the presigned URL.
  */
 
-import {
-  AdobeFireflyError,
-  resolveAdobeAccessToken,
-  resolveAdobeSourceImageIds,
-} from "../../services/adobeFireflyClient.ts";
-import {
-  adobeFireflyUpscaleImage,
-  resolveAdobeUpscaleModel,
-} from "../../services/adobeFireflyUpscale.ts";
-import { sanitizeErrorMessage } from "../../utils/error.ts";
+import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import {
   extractUpscaleSourceImage,
   saveUpscaleErrorResult,
@@ -24,7 +15,9 @@ import {
   type UpscaleCredentials,
   type UpscaleHandlerResult,
   type UpscaleLogger,
-} from "./shared.ts";
+} from "./shared.js";
+
+const load = (specifier: string): Promise<any> => import(specifier as string);
 
 export async function handleAdobeFireflyImageUpscale({
   model,
@@ -41,6 +34,10 @@ export async function handleAdobeFireflyImageUpscale({
   log?: UpscaleLogger;
   fetchImpl?: typeof fetch;
 }): Promise<UpscaleHandlerResult> {
+  const [{ AdobeFireflyError, resolveAdobeAccessToken, resolveAdobeSourceImageIds }, { adobeFireflyUpscaleImage, resolveAdobeUpscaleModel }] = await Promise.all([
+    load("@shiguang-gateway/open-sse/services/adobeFireflyClient.ts"),
+    load("@shiguang-gateway/open-sse/services/adobeFireflyUpscale.ts"),
+  ]);
   const startTime = Date.now();
 
   const resolved = resolveAdobeUpscaleModel(model);
@@ -129,14 +126,15 @@ export async function handleAdobeFireflyImageUpscale({
       },
     });
   } catch (err) {
-    if (err instanceof AdobeFireflyError) {
-      log?.error?.("IMAGE", `${provider} adobe-firefly upscale error ${err.status}: ${err.message}`);
+    const error = err as any;
+    if (error instanceof AdobeFireflyError) {
+      log?.error?.("IMAGE", `${provider} adobe-firefly upscale error ${error.status}: ${error.message}`);
       return saveUpscaleErrorResult({
         provider,
         model,
-        status: err.status,
+        status: error.status,
         startTime,
-        error: err.message,
+        error: error.message,
       });
     }
     const errorText = sanitizeErrorMessage(err instanceof Error ? err.message : String(err));

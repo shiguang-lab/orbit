@@ -66,7 +66,6 @@ const allowedCoreDomainSubpaths = {
     "runtime/request",
     "edge/image-edits-handler",
     "edge/image-generations-handler",
-    "edge/image-upscale-handler",
     "edge/batches-validation-schemas",
     "middleware/prompt-injection",
     "sse/auth",
@@ -98,6 +97,7 @@ const allowedCoreDomainSubpaths = {
     "edge/ws-cors",
     "edge/ws-path",
     "edge/ws-handshake",
+    "network/remote-image-fetch",
   ],
 };
 

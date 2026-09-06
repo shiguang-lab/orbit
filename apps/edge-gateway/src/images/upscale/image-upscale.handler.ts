@@ -17,17 +17,17 @@
  * plus an `upscale` metadata block, so existing image clients need no changes.
  */
 
-import { getUpscaleProvider, parseUpscaleModel } from "../config/upscaleRegistry.ts";
-import { handleAdobeFireflyImageUpscale } from "./imageUpscale/adobeFirefly.ts";
-import { handleStabilityImageUpscale } from "./imageUpscale/stability.ts";
-import { handleTopazImageUpscale } from "./imageUpscale/topaz.ts";
+import { getUpscaleProvider, parseUpscaleModel } from "./upscale-registry.js";
+import { handleAdobeFireflyImageUpscale } from "./providers/adobeFirefly.js";
+import { handleStabilityImageUpscale } from "./providers/stability.js";
+import { handleTopazImageUpscale } from "./providers/topaz.js";
 import type {
   UpscaleCredentials,
   UpscaleHandlerResult,
   UpscaleLogger,
-} from "./imageUpscale/shared.ts";
+} from "./providers/shared.js";
 
-export type { UpscaleHandlerResult } from "./imageUpscale/shared.ts";
+export type { UpscaleHandlerResult } from "./providers/shared.js";
 
 export async function handleImageUpscale({
   body,

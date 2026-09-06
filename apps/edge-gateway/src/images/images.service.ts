@@ -7,7 +7,7 @@ import { POST as imageEdits } from "@shiguang-gateway/core-domain/edge/image-edi
 import {
   GET as getImageUpscale,
   POST as imageUpscale,
-} from "@shiguang-gateway/core-domain/edge/image-upscale-handler";
+} from "./upscale/image-upscale.route.js";
 
 @Injectable()
 export class ImagesService {
@@ -24,7 +24,7 @@ export class ImagesService {
   }
 
   handleGetUpscale(req?: Request) {
-    return getImageUpscale(req);
+    return getImageUpscale();
   }
 
   handleUpscale(req: Request) {

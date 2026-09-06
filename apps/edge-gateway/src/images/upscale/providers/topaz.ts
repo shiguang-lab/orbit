@@ -31,8 +31,8 @@ import {
   type UpscaleCredentials,
   type UpscaleHandlerResult,
   type UpscaleLogger,
-} from "./shared.ts";
-import { sanitizeErrorMessage } from "../../utils/error.ts";
+} from "./shared.js";
+import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 
 /** Topaz caps a single output edge well below this; keeps a 4x pass on a huge source sane. */
 const MAX_OUTPUT_EDGE = 16000;

@@ -34,6 +34,10 @@
     },
     "./middleware/prompt-injection": "./src/middleware/promptInjectionGuard.ts",
     "./shared/api-key-policy": "./src/shared/utils/apiKeyPolicy.ts",
+    "./shared/upstream-error": {
+      "types": "./src/public/upstreamError.d.ts",
+      "import": "./src/shared/utils/upstreamError.ts"
+    },
     "./edge/music-rate-limit": "./src/app/api/v1/_shared/rateLimit.ts",
     "./edge/rate-limit": "./src/app/api/v1/_shared/rateLimit.ts",
     "./edge/rerank-validation-schemas": {
@@ -42,7 +46,10 @@
     },
     "./edge/rerank-validation-helpers": "./src/shared/validation/helpers.ts",
     "./edge/rerank-provider-nodes": "./src/lib/db/readCache.ts",
-    "./edge/usage-db": "./src/lib/usageDb.ts",
+    "./edge/usage-db": {
+      "types": "./src/public/usageDb.d.ts",
+      "import": "./src/lib/usageDb.ts"
+    },
     "./edge/gateway-response-meta": "./src/domain/gatewayResponseMeta.ts",
     "./edge/request-id": "./src/shared/utils/requestId.ts",
     "./edge/embeddings-service": "./src/lib/embeddings/service.ts",
@@ -65,10 +72,6 @@
     "./edge/image-generations-handler": {
       "types": "./src/public/edgeImages.d.ts",
       "import": "./src/app/api/v1/images/generations/handler.ts"
-    },
-    "./edge/image-upscale-handler": {
-      "types": "./src/public/edgeImages.d.ts",
-      "import": "./src/app/api/v1/images/upscale/handler.ts"
     },
     "./edge/batches-validation-schemas": {
       "types": "./src/public/batchesValidationSchemas.d.ts",
@@ -194,6 +197,10 @@
     "./network/safe-outbound-fetch": {
       "types": "./src/public/safeOutboundFetch.d.ts",
       "import": "./src/shared/network/safeOutboundFetch.ts"
+    },
+    "./network/remote-image-fetch": {
+      "types": "./src/public/remoteImageFetch.d.ts",
+      "import": "./src/shared/network/remoteImageFetch.ts"
     },
     "./shared/constants/selfServiceScopes": {
       "types": "./src/public/selfServiceScopes.d.ts",

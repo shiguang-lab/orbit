@@ -24,8 +24,8 @@ import {
   type UpscaleCredentials,
   type UpscaleHandlerResult,
   type UpscaleLogger,
-} from "./shared.ts";
-import { sanitizeErrorMessage } from "../../utils/error.ts";
+} from "./shared.js";
+import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 
 const UPSCALE_ENDPOINTS: Record<string, string> = {
   fast: "/v2beta/stable-image/upscale/fast",

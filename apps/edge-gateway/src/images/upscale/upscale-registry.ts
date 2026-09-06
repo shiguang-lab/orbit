@@ -16,7 +16,6 @@
  * extra setup.
  */
 
-import { parseModelFromRegistry, getAllModelsFromRegistry } from "./registryUtils.ts";
 
 /** Scale factors offered by default when a model does not restrict them. */
 export const DEFAULT_UPSCALE_FACTORS: readonly number[] = Object.freeze([2, 4]);
@@ -141,14 +140,36 @@ export function getUpscaleProvider(providerId: string | null | undefined): Upsca
 
 /** Parse `provider/model` (or a bare, unambiguous model id) against the upscale registry. */
 export function parseUpscaleModel(modelStr: string | null) {
-  return parseModelFromRegistry(modelStr, UPSCALE_PROVIDERS);
+  if (!modelStr) return { provider: null, model: null };
+  for (const [providerId, config] of Object.entries(UPSCALE_PROVIDERS)) {
+    if (modelStr.startsWith(`${providerId}/`)) {
+      return { provider: providerId, model: modelStr.slice(providerId.length + 1) };
+    }
+    if (config.alias && modelStr.startsWith(`${config.alias}/`)) {
+      return { provider: providerId, model: modelStr.slice(config.alias.length + 1) };
+    }
+    if (config.models.some((entry) => entry.id === modelStr)) {
+      return { provider: providerId, model: modelStr };
+    }
+  }
+  return { provider: null, model: modelStr };
 }
 
 /** Flat catalog for `GET /v1/images/upscale`. */
 export function getAllUpscaleModels() {
-  return getAllModelsFromRegistry(UPSCALE_PROVIDERS, (_providerId, config) => ({
-    format: config.format,
-  }));
+  return Object.entries(UPSCALE_PROVIDERS).flatMap(([provider, config]) =>
+    config.models.flatMap((model) => {
+      const prefixes = [provider, config.alias].filter(
+        (prefix): prefix is string => Boolean(prefix),
+      );
+      return prefixes.map((prefix) => ({
+        id: `${prefix}/${model.id}`,
+        name: model.name,
+        provider,
+        format: config.format,
+      }));
+    }),
+  );
 }
 
 /** Registry row for a `provider/model` string, or null when unknown. */

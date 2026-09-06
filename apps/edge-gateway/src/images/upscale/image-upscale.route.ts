@@ -1,29 +1,18 @@
-import { handleImageUpscale } from "../../../../../../../open-sse/handlers/imageUpscale.ts";
+import { handleImageUpscale } from "./image-upscale.handler.js";
 import {
   getUpscaleProvider,
   getAllUpscaleModels,
   parseUpscaleModel,
-} from "../../../../../../../open-sse/config/upscaleRegistry.ts";
-import { extractUpscaleSourceImage } from "../../../../../../../open-sse/handlers/imageUpscale/shared.ts";
-import { withInjectionGuard } from "../../../../../middleware/promptInjectionGuard.ts";
-import {
-  getProviderCredentialsWithQuotaPreflight,
-  clearRecoveredProviderState,
-} from "../../../../../sse/services/auth.ts";
-import { errorResponse, unavailableResponse } from "../../../../../../../open-sse/utils/error.ts";
-import { HTTP_STATUS } from "../../../../../../../open-sse/config/constants.ts";
-import * as log from "../../../../../sse/utils/logger.ts";
-import { toJsonErrorPayload } from "../../../../../shared/utils/upstreamError.ts";
-import { enforceApiKeyPolicy } from "../../../../../shared/utils/apiKeyPolicy.ts";
-import { v1ImageUpscaleSchema } from "../../../../../shared/validation/schemas.ts";
-import { isValidationFailure, validateBody } from "../../../../../shared/validation/helpers.ts";
-import { resolveProxyForConnection } from "../../../../../lib/db/settings.ts";
-import { runWithProxyContext } from "../../../../../../../open-sse/utils/proxyFetch.ts";
-import { attachShiguangGatewayMetaHeaders } from "../../../../../domain/gatewayResponseMeta.ts";
-import { calculateModalCost } from "../../../../../lib/usage/costCalculator.ts";
-import { generateRequestId } from "../../../../../shared/utils/requestId.ts";
-
-export const dynamic = "force-dynamic";
+} from "./upscale-registry.js";
+import { extractUpscaleSourceImage } from "./providers/shared.js";
+const load = (specifier: string): Promise<any> => import(specifier as string);
+const HTTP_STATUS = { BAD_REQUEST: 400, RATE_LIMITED: 429, BAD_GATEWAY: 502 } as const;
+const log = {
+  info: (_scope: string, message: string) => console.info(message),
+  error: (_scope: string, message: string) => console.error(message),
+  warn: (_scope: string, message: string) => console.warn(message),
+  debug: (_scope: string, message: string) => console.debug(message),
+};
 
 /**
  * `/v1/images/upscale` — image→image super-resolution.
@@ -32,7 +21,7 @@ export const dynamic = "force-dynamic";
  * text-to-image path, always needs a source image, and its meaningful controls (scale
  * factor, creativity level) do not exist on the generation contract.
  *
- * Providers are declared in `open-sse/config/upscaleRegistry.ts`:
+ * Providers are declared in this app's `upscale-registry.ts`:
  *   - `adobe-firefly/topaz-standard` · `adobe-firefly/topaz-bloom` (Topaz via Firefly 3P)
  *   - `stability-ai/fast` · `stability-ai/conservative` · `stability-ai/creative`
  *   - `topaz/topaz-enhance` (Topaz Labs native API)
@@ -118,6 +107,30 @@ async function readUpscaleBody(request: Request): Promise<Record<string, unknown
 }
 
 async function postHandler(request: Request) {
+  const [errorApi, authApi, policyApi, validationApi, validationHelpers, settingsApi, proxyApi, metaApi, pricingApi, requestIdApi, upstreamErrorApi] = await Promise.all([
+    load("@shiguang-gateway/open-sse/utils/error.ts"),
+    load("@shiguang-gateway/core-domain/sse/auth"),
+    load("@shiguang-gateway/core-domain/shared/api-key-policy"),
+    load("@shiguang-gateway/core-domain/shared/validation/schemas"),
+    load("@shiguang-gateway/core-domain/shared/validation/helpers"),
+    load("@shiguang-gateway/core-domain/control/settings"),
+    load("@shiguang-gateway/open-sse/utils/proxyFetch.ts"),
+    load("@shiguang-gateway/core-domain/edge/gateway-response-meta"),
+    load("@shiguang-gateway/core-domain/pricing/modal-cost"),
+    load("@shiguang-gateway/core-domain/edge/request-id"),
+    load("@shiguang-gateway/core-domain/shared/upstream-error"),
+  ]);
+  const { errorResponse, unavailableResponse } = errorApi;
+  const { getProviderCredentialsWithQuotaPreflight, clearRecoveredProviderState } = authApi;
+  const { enforceApiKeyPolicy } = policyApi;
+  const { v1ImageUpscaleSchema } = validationApi;
+  const { validateBody, isValidationFailure } = validationHelpers;
+  const { resolveProxyForConnection } = settingsApi;
+  const { runWithProxyContext } = proxyApi;
+  const { attachShiguangGatewayMetaHeaders } = metaApi;
+  const { calculateModalCost } = pricingApi;
+  const { generateRequestId } = requestIdApi;
+  const { toJsonErrorPayload } = upstreamErrorApi;
   const rawBody = await readUpscaleBody(request);
   if (!rawBody) {
     return errorResponse(
@@ -271,4 +284,7 @@ async function postHandler(request: Request) {
   });
 }
 
-export const POST = withInjectionGuard(postHandler);
+export async function POST(request: Request) {
+  const { withInjectionGuard } = await load("@shiguang-gateway/core-domain/middleware/prompt-injection");
+  return withInjectionGuard(postHandler)(request);
+}
