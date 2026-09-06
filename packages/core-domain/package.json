@@ -234,6 +234,14 @@
       "types": "./src/public/proxyEchoTarget.d.ts",
       "import": "./src/lib/proxyEchoTarget.ts"
     },
+    "./shared/proxy-health": {
+      "types": "./src/public/proxyHealth.d.ts",
+      "import": "./src/shared/proxy-health.ts"
+    },
+    "./shared/proxy-egress": {
+      "types": "./src/public/proxyEgress.d.ts",
+      "import": "./src/shared/proxy-egress.ts"
+    },
     "./db/detailed-logs": {
       "types": "./src/public/detailedLogs.d.ts",
       "import": "./src/lib/db/detailedLogs.ts"

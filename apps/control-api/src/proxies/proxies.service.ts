@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { Injectable } from "@nestjs/common";
+import { fetch as undiciFetch } from "undici";
 import {
   addProxyToScopePool,
   assignProxyToScope,
@@ -23,8 +24,11 @@ import {
   updateProxy,
   updateProxyAndAssign,
   upsertProxy,
+  migrateLegacyProxyConfigToRegistry,
 } from "@shiguang-gateway/core-domain/db/local-db";
+import { decrypt } from "@shiguang-gateway/core-domain/db/encryption";
 import { clearDispatcherCache } from "@shiguang-gateway/open-sse/utils/proxyDispatcher";
+import { createProxyDispatcher, proxyConfigToUrl } from "@shiguang-gateway/open-sse/utils/proxyDispatcher";
 import {
   bulkImportProxiesSchema,
   bulkProxyAssignmentSchema,
@@ -36,9 +40,113 @@ import {
 } from "@shiguang-gateway/core-domain/shared/validation/schemas";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import {
+  classifyProbeStatus,
+  resolveHealthCheckStatusWrite,
+  resolveProbeConcurrency,
+  resolveProbeStaggerMs,
+  resolveProbeTarget,
+  waitForProbeSlot,
+  resolveProviderProbeTarget,
+} from "@shiguang-gateway/core-domain/shared/proxy-health";
+import {
+  diagnoseAllEgressIps,
+  getRecentEgressSharingSummary,
+  validateProxyPool,
+} from "@shiguang-gateway/core-domain/shared/proxy-egress";
 import { z } from "zod";
 
 type ApiResult = Response;
+
+export interface ProxyOperationResult {
+  status: number;
+  body: unknown;
+}
+
+const TEST_TIMEOUT_MS = 5000;
+const TEST_URL = resolveProbeTarget();
+const CONCURRENCY = resolveProbeConcurrency();
+const STAGGER_MS = resolveProbeStaggerMs();
+
+interface AutoTestResult {
+  proxyId: string;
+  host: string;
+  port: number;
+  alive: boolean;
+  blockedByTarget?: boolean;
+  latencyMs: number | null;
+  error?: string;
+}
+
+async function testSingleProxy(proxy: {
+  id: string;
+  type: string;
+  host: string;
+  port: number;
+  username?: string;
+  password?: string;
+  family?: string;
+}): Promise<AutoTestResult> {
+  let proxyUrl: string | null;
+  try {
+    proxyUrl = proxyConfigToUrl(proxy);
+  } catch {
+    proxyUrl = null;
+  }
+  if (!proxyUrl) {
+    return {
+      proxyId: proxy.id,
+      host: proxy.host,
+      port: proxy.port,
+      alive: false,
+      latencyMs: null,
+      error: "Invalid proxy config (check type, host, port)",
+    };
+  }
+
+  const start = Date.now();
+  const providerTarget = await resolveProviderProbeTarget(proxy.id);
+  const target = providerTarget ?? TEST_URL;
+  const method = providerTarget ? "GET" : "HEAD";
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), TEST_TIMEOUT_MS);
+  try {
+    const dispatcher = createProxyDispatcher(proxyUrl);
+    const response = await undiciFetch(target, {
+      method,
+      signal: controller.signal,
+      dispatcher,
+      headers: { "User-Agent": "ShiguangGateway/1.0" },
+    });
+    const latencyMs = Date.now() - start;
+    const outcome = classifyProbeStatus(response.status);
+    const alive = outcome === "ok" || outcome === "blocked";
+    const statusWrite = resolveHealthCheckStatusWrite(alive);
+    if (statusWrite) await updateProxy(proxy.id, { status: statusWrite }).catch(() => {});
+    return {
+      proxyId: proxy.id,
+      host: proxy.host,
+      port: proxy.port,
+      alive,
+      ...(outcome === "blocked" ? { blockedByTarget: true } : {}),
+      latencyMs,
+    };
+  } catch (error) {
+    const latencyMs = Date.now() - start;
+    const statusWrite = resolveHealthCheckStatusWrite(false);
+    if (statusWrite) await updateProxy(proxy.id, { status: statusWrite }).catch(() => {});
+    return {
+      proxyId: proxy.id,
+      host: proxy.host,
+      port: proxy.port,
+      alive: false,
+      latencyMs,
+      error: error instanceof Error ? error.message : "Connection failed",
+    };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
 
 function errorResponse(status: number, message: string, type?: string, details?: unknown): Response {
   return Response.json(
@@ -358,4 +466,188 @@ export class ProxiesService {
       return errorFromUnknown(error, operation === "activate" ? "Failed to batch update proxy status" : "Failed to batch delete proxies");
     }
   }
+
+  /** Operator-triggered reachability probe for the entire proxy registry. */
+  async autoTest(body: unknown): Promise<ProxyOperationResult> {
+    const validation = validateBody(
+      z.object({ ids: z.array(z.string()).optional(), autoRemove: z.boolean().optional().default(false) }),
+      body,
+    );
+    if (isValidationFailure(validation)) {
+      return { status: 400, body: { error: validation.error.message, type: "invalid_request" } };
+    }
+
+    try {
+      const { ids: specificIds, autoRemove } = validation.data;
+      const allProxies = (await listProxies({ includeSecrets: true })).items;
+      const proxiesToTest = specificIds ? allProxies.filter((proxy) => specificIds.includes(proxy.id)) : allProxies;
+      if (proxiesToTest.length === 0) return { status: 200, body: { results: [], removed: [] } };
+
+      const results: AutoTestResult[] = [];
+      for (let i = 0; i < proxiesToTest.length; i += CONCURRENCY) {
+        const batch = proxiesToTest.slice(i, i + CONCURRENCY);
+        const batchResults = await Promise.allSettled(
+          batch.map(async (proxy, indexInBatch) => {
+            await waitForProbeSlot(indexInBatch, STAGGER_MS);
+            return testSingleProxy(proxy);
+          }),
+        );
+        for (const result of batchResults) {
+          if (result.status === "fulfilled") results.push(result.value as AutoTestResult);
+        }
+      }
+
+      const removed: string[] = [];
+      if (autoRemove) {
+        for (const result of results) {
+          if (result.alive) continue;
+          try {
+            if (await deleteProxyById(result.proxyId, { force: true })) removed.push(result.proxyId);
+          } catch {
+            // A failed cleanup must not hide the probe result.
+          }
+        }
+      }
+
+      return {
+        status: 200,
+        body: {
+          tested: results.length,
+          alive: results.filter((result) => result.alive).length,
+          dead: results.filter((result) => !result.alive).length,
+          removed: removed.length,
+          results,
+        },
+      };
+    } catch (error) {
+      return errorFromUnknownResult(error, "Failed to auto-test proxies");
+    }
+  }
+
+  async diagnoseEgress(): Promise<ProxyOperationResult> {
+    try {
+      const [diagnostic, { summary }] = await Promise.all([
+        diagnoseAllEgressIps(),
+        getRecentEgressSharingSummary(),
+      ]);
+      return { status: 200, body: { ...diagnostic, summary } };
+    } catch (error) {
+      return errorFromUnknownResult(error, "Failed to diagnose egress IPs");
+    }
+  }
+
+  async validateEgress(): Promise<ProxyOperationResult> {
+    try {
+      const report = await validateProxyPool();
+      const dead = report.filter((result: { alive: boolean }) => !result.alive);
+      return {
+        status: 200,
+        body: { validated: report.length, alive: report.length - dead.length, dead: dead.length, report },
+      };
+    } catch (error) {
+      return errorFromUnknownResult(error, "Failed to validate proxy pool");
+    }
+  }
+
+  async migrateLegacy(body: unknown): Promise<ProxyOperationResult> {
+    const validation = validateBody(z.object({ force: z.boolean().optional() }), body);
+    if (isValidationFailure(validation)) {
+      return {
+        status: 400,
+        body: {
+          error: {
+            message: validation.error.message,
+            details: (validation.error as { details?: unknown }).details,
+            type: "invalid_request",
+          },
+        },
+      };
+    }
+    try {
+      return { status: 200, body: await migrateLegacyProxyConfigToRegistry({ force: validation.data.force === true }) };
+    } catch (error) {
+      return errorFromUnknownResult(error, "Failed to migrate legacy proxy config");
+    }
+  }
+
+  async repairRelay(id: string): Promise<ProxyOperationResult> {
+    if (!id.trim()) return { status: 400, body: { error: "Invalid proxy id", type: "invalid_request" } };
+    try {
+      const proxy = await getProxyById(id, { includeSecrets: true });
+      if (!proxy) return { status: 404, body: { error: "Proxy not found", type: "not_found" } };
+      if (!isRelayProxyType(proxy.type)) {
+        return {
+          status: 400,
+          body: {
+            error: "Repair is only available for relay proxies (vercel/deno/cloudflare)",
+            type: "invalid_request",
+          },
+        };
+      }
+
+      const mode = relayRepairMode(proxy.notes, proxy.type);
+      if (mode === "noop") return { status: 200, body: { repaired: false, mode } };
+      if (mode === "redeploy") {
+        return {
+          status: 409,
+          body: {
+            error:
+              "Relay auth is unrecoverable (no stored token, encrypted blob absent or undecryptable — likely a STORAGE_ENCRYPTION_KEY rotation). Redeploy the relay to write a fresh relayAuth.",
+            type: "conflict",
+          },
+        };
+      }
+
+      let encrypted: string | undefined;
+      let existingNotes: Record<string, unknown> = {};
+      try {
+        existingNotes = JSON.parse(proxy.notes ?? "{}") as Record<string, unknown>;
+        if (typeof existingNotes.relayAuthEnc === "string") encrypted = existingNotes.relayAuthEnc;
+      } catch {
+        encrypted = undefined;
+      }
+      const decrypted = typeof encrypted === "string" ? decrypt(encrypted) : undefined;
+      if (!decrypted) {
+        return {
+          status: 409,
+          body: {
+            error:
+              "Relay auth is unrecoverable (encrypted blob could not be decrypted — likely a STORAGE_ENCRYPTION_KEY rotation). Redeploy the relay to write a fresh relayAuth.",
+            type: "conflict",
+          },
+        };
+      }
+
+      const { relayAuthEnc: _dropped, ...rest } = existingNotes;
+      await updateProxy(id, { notes: JSON.stringify({ ...rest, relayAuth: decrypted }) });
+      return { status: 200, body: { repaired: true, mode: "recovered" } };
+    } catch (error) {
+      return errorFromUnknownResult(error, "Failed to repair relay");
+    }
+  }
+}
+
+function errorFromUnknownResult(error: unknown, fallback: string): ProxyOperationResult {
+  const value = error as { message?: unknown; status?: unknown; type?: unknown; details?: unknown };
+  const status = Number(value?.status) || 500;
+  return {
+    status,
+    body: {
+      error: {
+        message: typeof value?.message === "string" ? value.message : fallback,
+        type:
+          typeof value?.type === "string"
+            ? value.type
+            : status === 404
+              ? "not_found"
+              : status === 409
+                ? "conflict"
+                : status >= 500
+                  ? "server_error"
+                  : "invalid_request",
+        details: value?.details,
+      },
+      requestId: randomUUID(),
+    },
+  };
 }

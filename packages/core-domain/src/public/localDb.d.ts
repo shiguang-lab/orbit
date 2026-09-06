@@ -75,6 +75,11 @@ export function redactProxySecrets(proxy: ProxyRegistryRecord): ProxyRegistryRec
 export function isRelayProxyType(type: unknown): boolean;
 export function isRelayAuthMissing(notes: unknown, type: unknown): boolean;
 export function relayRepairMode(notes: unknown, type: unknown): "noop" | "recovered" | "redeploy" | null;
+export function migrateLegacyProxyConfigToRegistry(options?: { force?: boolean }): Promise<{
+  migrated: number;
+  skipped?: boolean;
+  reason?: "registry_not_empty";
+}>;
 export function recordRelayProbe(alive: boolean): void;
 export function getRelayProbeStats(): { total: number; alive: number; lastProbeAt: string | null };
 

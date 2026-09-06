@@ -1,17 +1,20 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
   Inject,
   Patch,
+  Param,
   Post,
   Put,
   Req,
   Res,
 } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
-import { ProxiesService } from "./proxies.service.js";
+import { ProxiesService, type ProxyOperationResult } from "./proxies.service.js";
 
 @Controller("api/settings/proxies")
 export class ProxiesController {
@@ -19,6 +22,17 @@ export class ProxiesController {
     @Inject(ProxiesService) private readonly proxies: ProxiesService,
     @Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher,
   ) {}
+
+  private async authorize(request: FastifyRequest, reply: FastifyReply): Promise<boolean> {
+    const authError = await requireManagementAuth(request.raw as unknown as Request);
+    if (!authError) return true;
+    reply.status(authError.status).send(await authError.json());
+    return false;
+  }
+
+  private sendOperation(reply: FastifyReply, result: ProxyOperationResult) {
+    return reply.status(result.status).send(result.body);
+  }
 
   @Get()
   list(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
@@ -93,5 +107,47 @@ export class ProxiesController {
   @Post("batch-delete")
   batchDelete(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
     return this.routes.dispatch(request, reply, (req) => this.proxies.batchDelete(req));
+  }
+
+  @Post("auto-test")
+  async autoTest(
+    @Req() request: FastifyRequest,
+    @Res() reply: FastifyReply,
+    @Body() body: unknown,
+  ) {
+    if (!(await this.authorize(request, reply))) return;
+    return this.sendOperation(reply, await this.proxies.autoTest(body));
+  }
+
+  @Get("egress")
+  async diagnoseEgress(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    if (!(await this.authorize(request, reply))) return;
+    return this.sendOperation(reply, await this.proxies.diagnoseEgress());
+  }
+
+  @Post("egress")
+  async validateEgress(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    if (!(await this.authorize(request, reply))) return;
+    return this.sendOperation(reply, await this.proxies.validateEgress());
+  }
+
+  @Post("migrate")
+  async migrate(
+    @Req() request: FastifyRequest,
+    @Res() reply: FastifyReply,
+    @Body() body: unknown,
+  ) {
+    if (!(await this.authorize(request, reply))) return;
+    return this.sendOperation(reply, await this.proxies.migrateLegacy(body));
+  }
+
+  @Post(":id/repair-relay")
+  async repairRelay(
+    @Req() request: FastifyRequest,
+    @Res() reply: FastifyReply,
+    @Param("id") id: string,
+  ) {
+    if (!(await this.authorize(request, reply))) return;
+    return this.sendOperation(reply, await this.proxies.repairRelay(id));
   }
 }
