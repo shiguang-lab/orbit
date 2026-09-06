@@ -15,6 +15,10 @@
     "./credential-blob": {
       "types": "./src/credential-blob.ts",
       "import": "./src/credential-blob.ts"
+    },
+    "./dashboard-session": {
+      "types": "./src/dashboard-session.ts",
+      "import": "./src/dashboard-session.ts"
     }
   },
   "scripts": {

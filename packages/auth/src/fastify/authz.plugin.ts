@@ -8,8 +8,12 @@
  *  - 管理 scope 判定：统一复用 management-scopes 契约。
  */
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import { jwtVerify } from "jose";
 import { isAdminIdentity, resolveGatewayIdentity } from "../gateway-session.js";
+import {
+  getCookieValueFromHeader,
+  isDashboardSessionAuthenticated,
+} from "../dashboard-session.js";
+export { getCookieValueFromHeader } from "../dashboard-session.js";
 import {
   hasManageScope,
   MANAGE_SCOPE,
@@ -37,34 +41,6 @@ export interface AuthzOptions {
   /** 本地开发模式(SG_DEV_IDENTITY=1 或 broker 已配置)：放行管理端点(仅本地，生产绝不可用) */
   devMode?: boolean;
   remoteSession?: (request: FastifyRequest) => Promise<boolean>;
-}
-
-/** 从 Cookie 头解析 auth_token(与原 getCookieValueFromHeader 一致) */
-export function getCookieValueFromHeader(
-  headers: FastifyRequest["headers"],
-  name: string,
-): string | null {
-  const raw = headers.cookie;
-  const cookieHeader = Array.isArray(raw) ? raw[0] : raw;
-  if (!cookieHeader) return null;
-  for (const part of cookieHeader.split(";")) {
-    const [k, ...v] = part.trim().split("=");
-    if (k === name) return v.join("=") || null;
-  }
-  return null;
-}
-
-async function isDashboardSessionAuthenticated(request: FastifyRequest): Promise<boolean> {
-  if (!process.env.JWT_SECRET) return false;
-  const token = getCookieValueFromHeader(request.headers, "auth_token");
-  if (!token) return false;
-  try {
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-    await jwtVerify(token, secret);
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 async function isAuthRequired(options: AuthzOptions, request: FastifyRequest): Promise<boolean> {

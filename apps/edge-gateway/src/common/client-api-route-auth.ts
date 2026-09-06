@@ -24,7 +24,7 @@ import { HTTP_STATUS } from "@shiguang-gateway/contracts/http-status";
 import { extractApiKey, isValidGatewayApiKey } from "@shiguang-gateway/auth";
 import { validateApiKey } from "@shiguang-gateway/core-domain/db/api-keys";
 import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/edge/feature-flags";
-import { isDashboardSessionAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
+import { isDashboardSessionAuthenticated } from "@shiguang-gateway/auth/dashboard-session";
 
 export interface ClientApiRouteAuthDependencies {
   extractApiKey: (request: Request) => string | null;

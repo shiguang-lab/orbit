@@ -7,10 +7,12 @@
  * @module shared/utils/apiAuth
  */
 
-import { jwtVerify } from "jose";
 import { getSettings } from "../../lib/localDb.ts";
 import { isPublicApiRoute } from "../constants/publicApiRoutes.ts";
 import { extractApiKey } from "@shiguang-gateway/auth";
+import { isDashboardSessionAuthenticated } from "@shiguang-gateway/auth/dashboard-session";
+
+export { isDashboardSessionAuthenticated } from "@shiguang-gateway/auth/dashboard-session";
 
 type RequestLike = {
   cookies?: {
@@ -135,20 +137,6 @@ export function isLoopbackRequest(request: RequestLike | Request | null | undefi
   return false;
 }
 
-function getCookieValueFromHeader(headers: Headers | undefined, name: string): string | null {
-  const cookieHeader = headers?.get("cookie") || headers?.get("Cookie");
-  if (!cookieHeader) return null;
-
-  for (const segment of cookieHeader.split(";")) {
-    const [rawKey, ...rawValue] = segment.split("=");
-    if (!rawKey || rawValue.length === 0) continue;
-    if (rawKey.trim() !== name) continue;
-    return rawValue.join("=").trim();
-  }
-
-  return null;
-}
-
 function getRequestApiKey(
   request: RequestLike | Request | null | undefined,
   opts?: { allowUrl?: boolean }
@@ -213,37 +201,6 @@ export function isManagementApiRequest(request: RequestLike | Request): boolean 
   if (!pathname?.startsWith("/api/")) return false;
   if (pathname.startsWith("/api/v1/")) return false;
   return !isPublicApiRoute(pathname, getRequestMethod(request));
-}
-
-export async function isDashboardSessionAuthenticated(
-  request?: RequestLike | Request | null
-): Promise<boolean> {
-  if (!process.env.JWT_SECRET) return false;
-
-  let token =
-    request &&
-    typeof request === "object" &&
-    "cookies" in request &&
-    request.cookies?.get?.("auth_token")?.value
-      ? request.cookies.get("auth_token")?.value || null
-      : null;
-
-  const requestHeaders =
-    request && typeof request === "object" && "headers" in request ? request.headers : undefined;
-
-  if (!token) {
-    token = getCookieValueFromHeader(requestHeaders, "auth_token");
-  }
-
-  if (!token) return false;
-
-  try {
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-    await jwtVerify(token, secret);
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 // ──────────────── Auth Verification ────────────────

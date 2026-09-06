@@ -115,7 +115,6 @@ const allowedCoreDomainSubpaths = {
     "edge/service-registry",
     "control/settings",
     "edge/count-tokens-validation",
-    "control/authenticated",
     "shared/api-key-policy",
     "shared/upstream-error",
     "shared/validation/schemas",
