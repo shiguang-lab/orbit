@@ -80,7 +80,10 @@
       "types": "./src/public/validationHelpers.d.ts",
       "import": "./src/shared/validation/helpers.ts"
     },
-    "./edge/audio-provider-nodes": "./src/app/api/v1/_shared/audioProviderNodes.ts",
+    "./edge/audio-provider-nodes": {
+      "types": "./src/public/audioProviderNodes.d.ts",
+      "import": "./src/lib/edge/audioProviderNodes.ts"
+    },
     "./edge/audio-speech-handler": {
       "types": "./src/public/edgeAudio.d.ts",
       "import": "./src/lib/audio/speechRouteHandler.ts"

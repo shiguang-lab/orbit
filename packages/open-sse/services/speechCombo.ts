@@ -14,7 +14,7 @@
 import { getComboByName, getCombos } from "../../core-domain/src/lib/db/combos.ts";
 import { resolveComboTargets } from "./combo.ts";
 import { parseSpeechModel, getSpeechProvider } from "../config/audioRegistry.ts";
-import { resolveDynamicAudioProviders } from "../../core-domain/src/app/api/v1/_shared/audioProviderNodes.ts";
+import { resolveDynamicAudioProviders } from "../../core-domain/src/lib/edge/audioProviderNodes.ts";
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,

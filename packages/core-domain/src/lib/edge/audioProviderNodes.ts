@@ -20,14 +20,14 @@
  *    operator decision rather than a silent default (cf. #3963).
  */
 
-import { getCachedProviderNodes } from "../../../../lib/db/readCache.ts";
-import { isFeatureFlagEnabled } from "../../../../shared/utils/featureFlags.ts";
+import { getCachedProviderNodes } from "../db/readCache.ts";
+import { isFeatureFlagEnabled } from "../../shared/utils/featureFlags.ts";
 import {
   buildDynamicAudioProvider,
   isLoopbackNodeHost,
   type AudioProvider,
   type ProviderNodeRow,
-} from "../../../../../../open-sse/config/audioRegistry.ts";
+} from "../../../../open-sse/config/audioRegistry.ts";
 
 /** Feature flag gating remote (non-loopback) audio provider nodes. Default OFF. */
 export const AUDIO_REMOTE_NODES_FLAG = "AUDIO_REMOTE_PROVIDER_NODES";
