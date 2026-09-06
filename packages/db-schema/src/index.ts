@@ -65,6 +65,8 @@ import {
   QuotaConsumptionEntity,
   CompressionAnalyticsEntity,
   CompressionEngineBreakdownEntity,
+  SemanticCacheEntity,
+  CacheMetricEntity,
 } from "./entities/edge.entity.js";
 import {
   AuditLogEntity,
@@ -154,6 +156,8 @@ export const GATEWAY_TABLES = {
   quotaConsumption: "quota_consumption",
   compressionAnalytics: "compression_analytics",
   compressionEngineBreakdown: "compression_engine_breakdown",
+  semanticCache: "semantic_cache",
+  cacheMetrics: "cache_metrics",
 } as const;
 
 export type GatewayTable = (typeof GATEWAY_TABLES)[keyof typeof GATEWAY_TABLES];
@@ -240,6 +244,8 @@ export const TABLE_OWNERSHIP: readonly TableRef[] = [
   { table: GATEWAY_TABLES.quotaConsumption, owner: "edge-gateway", access: "read-write" },
   { table: GATEWAY_TABLES.compressionAnalytics, owner: "edge-gateway", access: "read-write" },
   { table: GATEWAY_TABLES.compressionEngineBreakdown, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.semanticCache, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.cacheMetrics, owner: "edge-gateway", access: "read-write" },
 ];
 
 /**
@@ -320,6 +326,8 @@ export const GATEWAY_ENTITIES = {
   quotaConsumption: QuotaConsumptionEntity,
   compressionAnalytics: CompressionAnalyticsEntity,
   compressionEngineBreakdown: CompressionEngineBreakdownEntity,
+  semanticCache: SemanticCacheEntity,
+  cacheMetrics: CacheMetricEntity,
 } satisfies Record<keyof typeof GATEWAY_TABLES, EntityDefinition>;
 
 /** Runtime guard used by architecture checks and tests. */

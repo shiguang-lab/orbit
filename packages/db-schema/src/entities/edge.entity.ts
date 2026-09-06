@@ -1,5 +1,42 @@
 import { column, type EntityDefinition } from "./definition.js";
 
+/**
+ * Persistent semantic responses written by the edge request pipeline and
+ * inspected/invalidated by control-api cache operations.
+ *
+ * `semantic_cache` is created by the core SQLite bootstrap and is intentionally
+ * represented here as a shared contract; query and cache policy code remains
+ * in the consuming apps/packages.
+ */
+export const SemanticCacheEntity: EntityDefinition = {
+  entityName: "SemanticCache",
+  tableName: "semantic_cache",
+  owner: "edge-gateway",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("signature", "TEXT", { nullable: false }),
+    column("model", "TEXT", { nullable: false }),
+    column("prompt_hash", "TEXT", { nullable: false }),
+    column("response", "TEXT", { nullable: false }),
+    column("tokens_saved", "INTEGER", { default: "0" }),
+    column("hit_count", "INTEGER", { default: "0" }),
+    column("created_at", "TEXT", { nullable: false }),
+    column("expires_at", "TEXT", { nullable: false }),
+  ],
+};
+
+/** Rolling semantic-cache hit/miss counters shared by edge and control views. */
+export const CacheMetricEntity: EntityDefinition = {
+  entityName: "CacheMetric",
+  tableName: "cache_metrics",
+  owner: "edge-gateway",
+  columns: [
+    column("key", "TEXT", { nullable: false, primaryKey: true }),
+    column("value", "INTEGER", { nullable: false, default: "0" }),
+    column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
 export const FileEntity: EntityDefinition = {
   entityName: "File",
   tableName: "files",

@@ -24,6 +24,12 @@ its `compression_engine_breakdown` rows. They are written by the streaming
 request path and read by control/realtime diagnostics, so their complete
 receipt/RTK column shape is kept here rather than re-declared by consumers.
 
+It also includes `semantic_cache` and its `cache_metrics` counters. The edge
+request pipeline owns cache writes and hit accounting, while control-api reads
+and invalidates entries for operator-facing cache management. Their canonical
+column definitions therefore belong to the shared catalog even though cache
+queries remain outside this package.
+
 `src/index.ts` exports the complete `GATEWAY_TABLES`, `TABLE_OWNERSHIP`, and
 `GATEWAY_ENTITIES` catalogs. `assertGatewayEntities()` verifies that every
 catalog entry has a matching physical table name, owner, and non-empty column
