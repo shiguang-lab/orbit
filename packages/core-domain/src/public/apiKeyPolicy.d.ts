@@ -1,4 +1,6 @@
 export interface ApiKeyPolicyInfo {
+  id?: string;
+  name?: string;
   allowedConnections?: string[] | null;
   [key: string]: unknown;
 }
@@ -8,4 +10,3 @@ export interface ApiKeyPolicyResult {
   rejection: Response | null;
 }
 export function enforceApiKeyPolicy(request: Request, modelStr: string | null): Promise<ApiKeyPolicyResult>;
-

@@ -58,13 +58,22 @@
     },
     "./edge/gateway-response-meta": "./src/domain/gatewayResponseMeta.ts",
     "./edge/request-id": "./src/shared/utils/requestId.ts",
-    "./edge/embeddings-service": "./src/lib/embeddings/service.ts",
-    "./edge/feature-flags": "./src/shared/utils/featureFlags.ts",
+    "./edge/embeddings-service": {
+      "types": "./src/public/embeddingsService.d.ts",
+      "import": "./src/lib/embeddings/service.ts"
+    },
+    "./edge/feature-flags": {
+      "types": "./src/public/featureFlags.d.ts",
+      "import": "./src/shared/utils/featureFlags.ts"
+    },
     "./edge/embeddings-validation-schemas": {
       "types": "./src/public/embeddingsValidationSchemas.d.ts",
       "import": "./src/shared/validation/schemas.ts"
     },
-    "./edge/embeddings-validation-helpers": "./src/shared/validation/helpers.ts",
+    "./edge/embeddings-validation-helpers": {
+      "types": "./src/public/validationHelpers.d.ts",
+      "import": "./src/shared/validation/helpers.ts"
+    },
     "./edge/audio-provider-nodes": "./src/app/api/v1/_shared/audioProviderNodes.ts",
     "./edge/audio-speech-handler": {
       "types": "./src/public/edgeAudio.d.ts",
@@ -114,7 +123,10 @@
       "types": "./src/public/edgeMusic.d.ts",
       "import": "./src/app/api/v1/_shared/mediaGenerationRoute.ts"
     },
-    "./edge/specialty-catalog": "./src/app/api/v1/_shared/specialtyCatalog.ts",
+    "./edge/specialty-catalog": {
+      "types": "./src/public/specialtyCatalog.d.ts",
+      "import": "./src/app/api/v1/_shared/specialtyCatalog.ts"
+    },
     "./edge/ws-cors": "./src/shared/utils/cors.ts",
     "./edge/ws-path": "./src/shared/utils/wsPath.ts",
     "./edge/ws-handshake": {
