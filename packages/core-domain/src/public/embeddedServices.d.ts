@@ -39,3 +39,4 @@ export interface ServiceModel {
 
 export function getServiceModels(tool: string): ServiceModel[];
 export function syncServiceModels(tool: string, baseUrl: string, apiKey: string): Promise<number>;
+export function isServiceBackendPluginId(pluginId: string): pluginId is "9router" | "cliproxyapi";

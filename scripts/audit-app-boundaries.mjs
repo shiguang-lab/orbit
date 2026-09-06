@@ -116,6 +116,10 @@ const allowedCoreDomainSubpaths = {
     "control/management-auth",
     "shared/cors-status",
     "network/remote-image-fetch",
+    "catalog/unified",
+    "catalog/providers",
+    "shared/embedded-services",
+    "shared/compatible-provider-id",
     // A2A transport is owned by edge-gateway; these explicit dynamic imports
     // are transitional facades for the legacy skill implementation while its
     // provider/DB dependencies are moved into edge-owned modules.

@@ -27,3 +27,4 @@ export { InstallError, SERVICE_VERSION_PATTERN } from "./installers/utils.ts";
 export { syncServiceModels } from "./modelSync.ts";
 export { getServiceModels } from "../db/serviceModels.ts";
 export type { ServiceModel } from "../db/serviceModels.ts";
+export { isServiceBackendPluginId } from "./serviceBackends.ts";

@@ -21,6 +21,7 @@ import { CloudAgentsModule } from "./cloud-agents/cloud-agents.module.js";
 import { SessionLeasesModule } from "./session-leases/session-leases.module.js";
 import { ClassifyModule } from "./classify/classify.module.js";
 import { CombosModule } from "./combos/combos.module.js";
+import { ProviderModelsModule } from "./provider-models/provider-models.module.js";
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { CombosModule } from "./combos/combos.module.js";
     SessionLeasesModule,
     ClassifyModule,
     CombosModule,
+    ProviderModelsModule,
   ],
 })
 export class AppModule {}

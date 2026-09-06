@@ -49,6 +49,10 @@
       "types": "./public/providerPluginManifestRegistry.d.ts",
       "import": "./config/providerPluginManifestRegistry.ts"
     },
+    "./config/providerRegistry": {
+      "types": "./public/providerRegistry.d.ts",
+      "import": "./config/providerRegistry.ts"
+    },
     "./handlers/imageGeneration": {
       "types": "./public/imageGeneration.d.ts",
       "import": "./handlers/imageGeneration.ts"

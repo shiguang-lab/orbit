@@ -5,3 +5,5 @@ export function isClaudeCodeCompatibleProvider(providerId: unknown): providerId 
 export function isOpenAICompatibleProvider(providerId: unknown): providerId is string;
 export function providerAllowsOptionalApiKey(providerId: unknown): boolean;
 export function resolveProviderId(aliasOrId: string): string;
+export function getProviderById(id: string): { id: string; alias?: string; [key: string]: unknown } | undefined;
+export function getProviderByAlias(alias: string): { id: string; alias?: string; [key: string]: unknown } | null;

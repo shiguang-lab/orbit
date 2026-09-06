@@ -288,6 +288,10 @@
       "types": "./src/public/embeddedServices.d.ts",
       "import": "./src/lib/services/embeddedExports.ts"
     },
+    "./shared/compatible-provider-id": {
+      "types": "./src/public/compatibleProviderId.d.ts",
+      "import": "./src/shared/utils/compatibleProviderId.ts"
+    },
     "./control/dario-installer": {
       "types": "./src/public/darioInstaller.d.ts",
       "import": "./src/lib/services/installers/dario.ts"
@@ -795,7 +799,7 @@
       "import": "./src/lib/catalog/catalogProviderMaps.ts"
     },
     "./catalog/unified": {
-      "types": "./src/lib/catalog/catalog.ts",
+      "types": "./src/public/catalogUnified.d.ts",
       "import": "./src/lib/catalog/catalog.ts"
     },
     "./catalog/model-metadata": {
