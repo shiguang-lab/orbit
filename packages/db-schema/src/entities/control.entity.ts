@@ -210,3 +210,33 @@ export const ModelCapabilityOverrideEntity: EntityDefinition = {
     column("refreshed_at", "TEXT", { nullable: false, default: "datetime('now')" }),
   ],
 };
+
+/** Operator-managed provider/model routing-tier overrides. */
+export const TierConfigEntity: EntityDefinition = {
+  entityName: "TierConfig",
+  tableName: "tier_config",
+  owner: "control-api",
+  columns: [
+    column("key", "TEXT", { nullable: false, primaryKey: true }),
+    column("value", "TEXT", { nullable: false }),
+    column("updated_at", "TEXT", { default: "datetime('now')" }),
+  ],
+};
+
+/** Materialized tier assignments retained for routing diagnostics. */
+export const TierAssignmentEntity: EntityDefinition = {
+  entityName: "TierAssignment",
+  tableName: "tier_assignments",
+  owner: "control-api",
+  columns: [
+    column("provider", "TEXT", { nullable: false, primaryKey: true }),
+    column("model", "TEXT", { nullable: false, primaryKey: true }),
+    column("tier", "TEXT", { nullable: false }),
+    column("cost_per_1m_input", "REAL", { default: "0" }),
+    column("cost_per_1m_output", "REAL", { default: "0" }),
+    column("has_free_tier", "INTEGER", { default: "0" }),
+    column("free_quota_limit", "INTEGER"),
+    column("reason", "TEXT"),
+    column("updated_at", "TEXT", { default: "datetime('now')" }),
+  ],
+};

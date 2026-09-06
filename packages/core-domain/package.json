@@ -202,6 +202,10 @@
       "types": "./src/public/settingsConfig.d.ts",
       "import": "./src/control/settingsConfig.ts"
     },
+    "./control/tier-config": {
+      "types": "./src/public/tierConfig.d.ts",
+      "import": "./src/control/tierConfig.ts"
+    },
     "./shared/auto-disable-banned": {
       "types": "./src/public/autoDisableBanned.d.ts",
       "import": "./src/shared/utils/autoDisableBanned.ts"

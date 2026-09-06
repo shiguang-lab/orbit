@@ -132,6 +132,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "db/provider-interception-rules",
   "db/provider-param-filters",
   "control/web-session-contract",
+  "control/tier-config",
 );
 
 // Route files that have completed a physical ownership move. Keep this list
@@ -264,6 +265,7 @@ const migratedRouteOwnership = {
     "api/settings/cache-config/route.ts",
     "api/settings/cache-metrics/route.ts",
     "api/settings/lkgp-cache/route.ts",
+    "api/settings/tier-config/route.ts",
     "api/settings/oneproxy/route.ts",
     "api/settings/oneproxy/rotate/route.ts",
     "api/settings/proxy/test/route.ts",

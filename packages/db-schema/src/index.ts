@@ -12,6 +12,8 @@ import {
   ProviderNodeEntity,
   ProviderPlanEntity,
   SettingsEntity,
+  TierAssignmentEntity,
+  TierConfigEntity,
   WebhookEntity,
 } from "./entities/control.entity.js";
 import {
@@ -66,6 +68,8 @@ export const GATEWAY_TABLES = {
   modelCapabilities: "model_capabilities",
   modelContextOverrides: "model_context_overrides",
   modelCapabilityOverrides: "model_capability_overrides",
+  tierConfig: "tier_config",
+  tierAssignments: "tier_assignments",
 } as const;
 
 export type GatewayTable = (typeof GATEWAY_TABLES)[keyof typeof GATEWAY_TABLES];
@@ -109,6 +113,8 @@ export const TABLE_OWNERSHIP: readonly TableRef[] = [
   { table: GATEWAY_TABLES.modelCapabilities, owner: "worker", access: "read-write" },
   { table: GATEWAY_TABLES.modelContextOverrides, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.modelCapabilityOverrides, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.tierConfig, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.tierAssignments, owner: "control-api", access: "read-write" },
 ];
 
 /**
@@ -146,6 +152,8 @@ export const GATEWAY_ENTITIES = {
   modelCapabilities: ModelCapabilitiesEntity,
   modelContextOverrides: ModelContextOverrideEntity,
   modelCapabilityOverrides: ModelCapabilityOverrideEntity,
+  tierConfig: TierConfigEntity,
+  tierAssignments: TierAssignmentEntity,
 } satisfies Record<keyof typeof GATEWAY_TABLES, EntityDefinition>;
 
 /** Runtime guard used by architecture checks and tests. */
