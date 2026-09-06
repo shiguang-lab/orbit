@@ -206,6 +206,10 @@
       "types": "./src/public/settings.d.ts",
       "import": "./src/lib/db/settings.ts"
     },
+    "./control/lkgp-cache": {
+      "types": "./src/public/lkgpCache.d.ts",
+      "import": "./src/control/lkgpCache.ts"
+    },
     "./memory/settings": {
       "types": "./src/public/memorySettings.d.ts",
       "import": "./src/lib/memory/settings.ts"

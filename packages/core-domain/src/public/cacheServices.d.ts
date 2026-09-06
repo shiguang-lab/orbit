@@ -7,6 +7,7 @@ export function clearMemoryCache(): void;
 export function getMemoryCacheStats(): any;
 export function getIdempotencyStats(): Promise<any>;
 export function getCacheMetrics(): Promise<any>;
+export function resetCacheMetrics(): Promise<any>;
 export function getCacheTrend(hours: number): Promise<any>;
 export function getCachedSettings(): Promise<any>;
 export function clearReasoningCacheAll(provider?: string): number;

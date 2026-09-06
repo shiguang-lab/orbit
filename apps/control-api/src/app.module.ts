@@ -24,6 +24,7 @@ import { VersionManagerModule } from "./version-manager/version-manager.module.j
 import { BifrostModule } from "./bifrost/bifrost.module.js";
 import { ProxyModule } from "./proxy/proxy.module.js";
 import { ProxiesModule } from "./proxies/proxies.module.js";
+import { CacheSettingsModule } from "./cache-settings/cache-settings.module.js";
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { ProxiesModule } from "./proxies/proxies.module.js";
     BifrostModule,
     ProxyModule,
     ProxiesModule,
+    CacheSettingsModule,
   ],
 })
 export class AppModule {}
