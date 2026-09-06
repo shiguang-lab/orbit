@@ -6,3 +6,8 @@ export declare function validateComboDAG(
   depth?: number,
   maxDepth?: number,
 ): void;
+export declare function resolveNestedComboTargets(combo: unknown, combos: unknown[]): Array<{
+  modelStr?: string;
+  provider?: string | null;
+  providerId?: string | null;
+}>;

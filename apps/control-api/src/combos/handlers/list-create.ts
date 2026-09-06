@@ -17,7 +17,7 @@ import {
   ComboInvariantError,
   computeComboContextLength,
   validateCompositeTiersConfig,
-} from "@shiguang-gateway/core-domain/control/combo-admin";
+} from "../combo-admin.js";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 
 export async function listCombos(request: Request): Promise<Response> {

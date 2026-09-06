@@ -343,9 +343,17 @@
       "types": "./src/public/comboTest.d.ts",
       "import": "./src/lib/combos/testHealth.ts"
     },
-    "./control/combo-admin": {
-      "types": "./src/public/comboAdmin.d.ts",
-      "import": "./src/lib/combos/adminExports.ts"
+    "./shared/combo-invariants": {
+      "types": "./src/public/comboInvariants.d.ts",
+      "import": "./src/lib/combos/invariants.ts"
+    },
+    "./catalog/combo-targets": {
+      "types": "./src/public/catalogComboTargets.d.ts",
+      "import": "./src/app/api/v1/models/catalogProviderMaps.ts"
+    },
+    "./catalog/model-metadata": {
+      "types": "./src/public/catalogModelMetadata.d.ts",
+      "import": "./src/lib/modelMetadataRegistry.ts"
     },
     "./catalog/display-names": { "types": "./src/public/catalogDisplayNames.d.ts", "import": "./src/lib/display/names.ts" },
     "./catalog/managed-available-models": { "types": "./src/public/catalogManagedModels.d.ts", "import": "./src/lib/providers/managedAvailableModels.ts" },

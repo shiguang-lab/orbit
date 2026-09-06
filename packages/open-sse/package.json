@@ -65,6 +65,10 @@
       "types": "./public/combo.d.ts",
       "import": "./services/combo.ts"
     },
+    "./services/context-manager": {
+      "types": "./public/contextManager.d.ts",
+      "import": "./services/contextManager.ts"
+    },
     "./*": {
       "types": "./*",
       "import": "./*"

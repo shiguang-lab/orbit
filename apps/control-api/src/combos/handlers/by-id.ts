@@ -17,7 +17,7 @@ import {
   comboErrorResponse,
   ComboInvariantError,
   validateCompositeTiersConfig,
-} from "@shiguang-gateway/core-domain/control/combo-admin";
+} from "../combo-admin.js";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 
 type ComboRow = {
