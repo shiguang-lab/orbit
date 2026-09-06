@@ -64,6 +64,7 @@ export function controlRouteCatalog(): CompatRouteDefinition[] {
     "providers/bulk",
     "providers/import",
     "providers/[id]",
+    "providers/[id]/test",
     "providers/[id]/login",
     "cli/connect",
     "cli/whoami",
@@ -171,6 +172,9 @@ export function controlRouteCatalog(): CompatRouteDefinition[] {
     "network/info",
     "free-provider-rankings",
     "free-tier/summary",
+    "github-skills",
+    "skills/executions",
+    "search/stats",
   ]);
   return coreRoutes.filter((route) => !migrated.has(route.segments.join("/")));
 }

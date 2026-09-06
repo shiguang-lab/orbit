@@ -23,3 +23,15 @@ export interface SearchProviderCountRow {
 }
 export function getSearchAggregateStats(todayIso: string): SearchAggregateStats;
 export function getSearchProviderCounts(): SearchProviderCountRow[];
+export interface SearchProviderStatRow {
+  provider: string;
+  requests: number;
+  avg_latency_ms: number;
+}
+export interface SearchRecentRow {
+  request_summary: string | null;
+  provider: string;
+  timestamp: string;
+}
+export function getSearchProviderStats(): SearchProviderStatRow[];
+export function getRecentSearchLogs(): SearchRecentRow[];

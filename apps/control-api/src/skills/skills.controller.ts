@@ -2,6 +2,7 @@ import { Controller, Delete, Get, Param, Post, Put, Req, Res } from "@nestjs/com
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 import { SkillsService } from "./skills.service.js";
+import * as executions from "./handlers/executions.handler.js";
 
 @Controller("api/skills")
 export class SkillsController {
@@ -56,4 +57,15 @@ export class SkillsController {
   collectInstall(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
     return this.routes.dispatch(req, reply, (request) => this.skills.collectInstall(request));
   }
+
+  @Get("executions")
+  executions(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(req, reply, executions.GET);
+  }
+
+  @Post("executions")
+  execute(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(req, reply, executions.POST);
+  }
+
 }

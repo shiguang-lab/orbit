@@ -14,6 +14,7 @@ import {
 } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { ProvidersService } from "./providers.service.js";
+import { POST as testProviderConnection } from "./handlers/provider-test/route.js";
 import { ProviderPolicyService } from "./provider-policy.service.js";
 import { ProviderClientService } from "./provider-client.service.js";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
@@ -474,6 +475,20 @@ export class ProvidersController {
       console.error("Failed to build provider health matrix", error);
       return reply.status(500).send(buildErrorBody(500, "Failed to build provider health matrix"));
     }
+  }
+
+  @Post("providers/:id/test")
+  testProvider(
+    @Param("id") id: string,
+    @Req() request: FastifyRequest,
+    @Res() reply: FastifyReply,
+  ) {
+    return this.routes.dispatch(
+      request,
+      reply,
+      (req) => testProviderConnection(req, { params: Promise.resolve({ id }) }),
+      { id },
+    );
   }
 
   private async authorizeManagement(request: FastifyRequest, reply: FastifyReply): Promise<boolean> {

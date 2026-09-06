@@ -261,3 +261,5 @@ export function deleteBatch(id: string): boolean;
 export function deleteCompletedBatches(): { deletedBatches: number; deletedFiles: number };
 
 export function getCachedProviderConnectionById(id: string): Promise<Record<string, any> | null>;
+export function updateProviderConnection(id: string, data: Record<string, unknown>): Promise<unknown>;
+export function isCloudEnabled(): Promise<boolean>;

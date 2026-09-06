@@ -108,6 +108,14 @@
       "types": "./src/public/providerTestBatch.d.ts",
       "import": "./src/lib/providers/testBatch.ts"
     },
+    "./control/token-health-check": {
+      "types": "./src/lib/tokenHealthCheck.ts",
+      "import": "./src/lib/tokenHealthCheck.ts"
+    },
+    "./control/oauth-gitlab": {
+      "types": "./src/lib/oauth/gitlab.ts",
+      "import": "./src/lib/oauth/gitlab.ts"
+    },
     "./control/acp": {
       "types": "./src/public/acp.d.ts",
       "import": "./src/lib/acp/registry.ts"
@@ -1339,6 +1347,10 @@
     "./control/skills-github": {
       "types": "./src/public/skillsGithub.d.ts",
       "import": "./src/lib/skills/githubCollector.ts"
+    },
+    "./control/skills-executor": {
+      "types": "./src/public/skillsExecutor.d.ts",
+      "import": "./src/lib/skills/executor.ts"
     },
     "./control/middleware-registry": {
       "types": "./src/public/middlewareRegistry.d.ts",

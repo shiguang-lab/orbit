@@ -223,6 +223,42 @@
       "types": "./public/tokenRefresh.d.ts",
       "import": "./services/tokenRefresh.ts"
     },
+    "./services/qoder-cli-resolve": {
+      "types": "./services/qoderCliResolve.ts",
+      "import": "./services/qoderCliResolve.ts"
+    },
+    "./services/api-key-rotator": {
+      "types": "./services/apiKeyRotator.ts",
+      "import": "./services/apiKeyRotator.ts"
+    },
+    "./services/error-classifier": {
+      "types": "./services/errorClassifier.ts",
+      "import": "./services/errorClassifier.ts"
+    },
+    "./services/antigravity-headers": {
+      "types": "./services/antigravityHeaders.ts",
+      "import": "./services/antigravityHeaders.ts"
+    },
+    "./services/antigravity-client-profile": {
+      "types": "./services/antigravityClientProfile.ts",
+      "import": "./services/antigravityClientProfile.ts"
+    },
+    "./config/antigravity-upstream": {
+      "types": "./config/antigravityUpstream.ts",
+      "import": "./config/antigravityUpstream.ts"
+    },
+    "./executors/codex": {
+      "types": "./executors/codex.ts",
+      "import": "./executors/codex.ts"
+    },
+    "./executors/codex/app-server-config": {
+      "types": "./executors/codex/appServerConfig.ts",
+      "import": "./executors/codex/appServerConfig.ts"
+    },
+    "./executors/codex/app-server-auth-probe": {
+      "types": "./executors/codex/appServerAuthProbe.ts",
+      "import": "./executors/codex/appServerAuthProbe.ts"
+    },
     "./services/kiro-external-idp": {
       "types": "./services/kiroExternalIdp.ts",
       "import": "./services/kiroExternalIdp.ts"

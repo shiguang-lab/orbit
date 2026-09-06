@@ -165,6 +165,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push("control/assessment", "contro
 allowedCoreDomainSubpaths["apps/control-api"].push("control/provider-management");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/provider-connection");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/provider-models-discovery", "control/fallback-policy");
+allowedCoreDomainSubpaths["apps/control-api"].push("control/skills-github", "control/skills-executor");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/tunnels");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/jobs");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/monitoring-health", "control/network-info");
@@ -178,6 +179,9 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
 
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/provider-test-batch",
+  "control/token-health-check",
+  "control/oauth-gitlab",
+  "lib/providers/chatgptWebRetirementResponse",
   "control/provider-bulk-web-session",
   "control/acp",
   "conductor/faro-proxy",

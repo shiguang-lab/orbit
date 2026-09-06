@@ -13,3 +13,4 @@ export interface GitHubSkillRepo {
 }
 export interface SearchOptions { token?: string; minStars?: number; maxResults?: number; }
 export function searchGitHubSkills(options?: SearchOptions): Promise<{ repos: GitHubSkillRepo[]; errors: string[] }>;
+export function resolveInstallPath(target: string, skillName: string, description?: string): string;

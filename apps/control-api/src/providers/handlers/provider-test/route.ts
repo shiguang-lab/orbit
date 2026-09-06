@@ -1,47 +1,46 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
-import { isValidationFailure, validateBody } from "../../../../../shared/validation/helpers.ts";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import {
   getCachedProviderConnectionById,
   updateProviderConnection,
   isCloudEnabled,
   resolveProxyForConnection,
-} from "../../../../../lib/localDb.ts";
-import { getConsistentMachineId } from "../../../../../shared/utils/machineId.ts";
-import { syncToCloud } from "../../../../../lib/cloudSync.ts";
-import { validateProviderApiKey } from "../../../../../lib/providers/validation.ts";
-import { getCliRuntimeStatus } from "../../../../../shared/services/cliRuntime.ts";
-import { buildQoderCliNotFoundHint } from "../../../../../../../open-sse/services/qoderCliResolve.ts";
+} from "@shiguang-gateway/core-domain/db/local-db";
+import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
+import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";
+import { validateProviderApiKey } from "@shiguang-gateway/core-domain/control/provider-validation";
+import { getCliRuntimeStatus } from "@shiguang-gateway/core-domain/shared/services/cliRuntime";
+import { buildQoderCliNotFoundHint } from "@shiguang-gateway/open-sse/services/qoder-cli-resolve";
 // Use the shared open-sse token refresh with built-in dedup/race-condition cache
-import { getAccessToken } from "../../../../../../../open-sse/services/tokenRefresh.ts";
-import { rotationGroupFor } from "../../../../../../../open-sse/services/refreshSerializer.ts";
-import { saveCallLog } from "../../../../../lib/usageDb.ts";
-import { shouldHideLogs } from "../../../../../lib/tokenHealthCheck.ts";
-import { logProxyEvent } from "../../../../../lib/proxyLogger.ts";
-import { runWithProxyContext } from "../../../../../../../open-sse/utils/proxyFetch.ts";
+import { getAccessToken } from "@shiguang-gateway/open-sse/services/token-refresh";
+import { rotationGroupFor } from "@shiguang-gateway/open-sse/services/refreshSerializer";
+import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
+import { shouldHideLogs } from "@shiguang-gateway/core-domain/control/token-health-check";
+import { logProxyEvent } from "@shiguang-gateway/core-domain/control/proxy-logs";
+import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
 import {
   buildGitLabDuoProbeBody,
   buildGitLabDuoProbeHeaders,
   buildGitLabOAuthEndpoints,
   resolveGitLabOAuthBaseUrl,
   shouldFallbackToPublicCodeSuggestions,
-} from "../../../../../lib/oauth/gitlab.ts";
-import { isOpenAICompatibleProvider, providerAllowsOptionalApiKey } from "../../../../../shared/constants/providers.ts";
-import { shouldUseApiKeyConnectionTest } from "./webSessionTestDispatch";
-import { testCodexAppServerConnection, makeDiagnosis } from "./codexAppServerHealth";
-import { recoverKeyHealth } from "../../../../../../../open-sse/services/apiKeyRotator.ts";
-import { shouldClearErrorStateOnValidProbe } from "../../../../../lib/usage/providerLimits.ts";
-import { isConnectionUnavailableToAuxiliaryActivity } from "../../../../../lib/exclusiveLeaseIsolation.ts";
-import { classifyAmbiguousOrAuthError, type ClassifyFailureArgs } from "./mistralAmbiguousAuth";
-import { buildApiKeyConnectionTestResult } from "./apiKeyTestResult";
-import { classifyOAuthProbeInconclusive, OAUTH_TEST_CONFIG } from "./oauthTestConfig";
-import { isGeoBlockedError } from "../../../../../../../open-sse/services/errorClassifier.ts";
-import * as retirement from "../../../../../lib/providers/chatgptWebRetirementResponse.ts";
+} from "@shiguang-gateway/core-domain/control/oauth-gitlab";
+import { isOpenAICompatibleProvider, providerAllowsOptionalApiKey } from "@shiguang-gateway/core-domain/shared/constants/providers";
+import { shouldUseApiKeyConnectionTest } from "./webSessionTestDispatch.js";
+import { testCodexAppServerConnection, makeDiagnosis } from "./codexAppServerHealth.js";
+import { recoverKeyHealth } from "@shiguang-gateway/open-sse/services/api-key-rotator";
+import { shouldClearErrorStateOnValidProbe } from "@shiguang-gateway/core-domain/edge/provider-limits";
+import { isConnectionUnavailableToAuxiliaryActivity } from "@shiguang-gateway/core-domain/shared/connection-isolation";
+import { classifyAmbiguousOrAuthError, type ClassifyFailureArgs } from "./mistralAmbiguousAuth.js";
+import { buildApiKeyConnectionTestResult } from "./apiKeyTestResult.js";
+import { classifyOAuthProbeInconclusive, OAUTH_TEST_CONFIG } from "./oauthTestConfig.js";
+import { isGeoBlockedError } from "@shiguang-gateway/open-sse/services/error-classifier";
+import * as retirement from "@shiguang-gateway/core-domain/lib/providers/chatgptWebRetirementResponse";
 
 // Match the API-key path's 30s timeout so a hung OAuth upstream cannot block the test queue.
 const OAUTH_TEST_TIMEOUT_MS = 30_000;
 
-import { CLI_RUNTIME_PROVIDER_MAP } from "./cliRuntimeProviderMap";
+import { CLI_RUNTIME_PROVIDER_MAP } from "./cliRuntimeProviderMap.js";
 
 /** POST body is optional; when present, only known fields are validated. */
 const providerConnectionTestBodySchema = z.object({
@@ -1239,21 +1238,21 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     }
     const validation = validateBody(providerConnectionTestBodySchema, rawBody);
     if (isValidationFailure(validation)) {
-      return NextResponse.json({ error: validation.error }, { status: 400 });
+      return Response.json({ error: validation.error }, { status: 400 });
     }
     const { validationModelId } = validation.data;
 
     const data = await testSingleConnection(id, validationModelId);
 
     if (data.error === "Connection not found") {
-      return NextResponse.json({ error: "Connection not found" }, { status: 404 });
+      return Response.json({ error: "Connection not found" }, { status: 404 });
     }
 
-    return NextResponse.json(data);
+    return Response.json(data);
   } catch (error) {
     const retired = retirement.responseForError(error);
     if (retired) return retired;
     console.log("Error testing connection:", error);
-    return NextResponse.json({ error: "Test failed" }, { status: 500 });
+    return Response.json({ error: "Test failed" }, { status: 500 });
   }
 }

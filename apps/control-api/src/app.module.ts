@@ -105,6 +105,7 @@ import { ProxyFallbackModule } from "./proxy-fallback/proxy-fallback.module.js";
 import { MonitoringModule } from "./monitoring/monitoring.module.js";
 import { NetworkModule } from "./network/network.module.js";
 import { FreeTierModule } from "./free-tier/free-tier.module.js";
+import { SearchStatsModule } from "./search/stats/search-stats.module.js";
 
 @Module({
   imports: [
@@ -215,6 +216,7 @@ import { FreeTierModule } from "./free-tier/free-tier.module.js";
     MonitoringModule,
     NetworkModule,
     FreeTierModule,
+    SearchStatsModule,
   ],
 })
 export class AppModule {}

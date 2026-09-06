@@ -57,7 +57,7 @@ export async function testCodexAppServerConnection(
   // Dynamic import (not a static top-level import) so this executor-config module
   // stays behind the open-sse boundary the no-restricted-imports lint rule enforces.
   const { resolveAppServerConfig } = await import(
-    "../../../../../../../open-sse/executors/codex/appServerConfig.ts"
+    "@shiguang-gateway/open-sse/executors/codex/app-server-config"
   );
   const config = resolveAppServerConfig(psd);
   if (!config) {
@@ -106,8 +106,8 @@ export async function testCodexAppServerConnection(
     try {
       const [{ probeCodexAppServerAuth }, { getCodexAppServerWebsocketTransport }] =
         await Promise.all([
-          import("../../../../../../../open-sse/executors/codex/appServerAuthProbe.ts"),
-          import("../../../../../../../open-sse/executors/codex.ts"),
+          import("@shiguang-gateway/open-sse/executors/codex/app-server-auth-probe"),
+          import("@shiguang-gateway/open-sse/executors/codex"),
         ]);
       authStatus = await probeCodexAppServerAuth(config, getCodexAppServerWebsocketTransport(), 8000);
     } catch (probeErr: any) {
