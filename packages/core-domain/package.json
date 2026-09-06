@@ -142,6 +142,10 @@
       "types": "./src/public/compressionSettings.d.ts",
       "import": "./src/lib/db/compression.ts"
     },
+    "./control/compression-combos": {
+      "types": "./src/public/compressionCombos.d.ts",
+      "import": "./src/lib/db/compressionCombos.ts"
+    },
     "./db/compression-run-telemetry": {
       "types": "./src/public/compressionRunTelemetry.d.ts",
       "import": "./src/lib/db/compressionRunTelemetry.ts"

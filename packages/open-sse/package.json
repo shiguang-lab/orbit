@@ -89,6 +89,10 @@
       "types": "./public/cavemanRules.d.ts",
       "import": "./services/compression/cavemanRules.ts"
     },
+    "./services/compression/deriveDefaultPlan": {
+      "types": "./public/deriveDefaultPlan.d.ts",
+      "import": "./services/compression/deriveDefaultPlan.ts"
+    },
     "./services/compression/engines/rtk": {
       "types": "./public/rtk.d.ts",
       "import": "./services/compression/engines/rtk/index.ts"

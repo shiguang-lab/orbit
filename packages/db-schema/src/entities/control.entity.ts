@@ -84,6 +84,38 @@ export const ComboEntity: EntityDefinition = {
   ],
 };
 
+/** Named compression pipelines managed by control-api and consumed by edge runtime. */
+export const CompressionComboEntity: EntityDefinition = {
+  entityName: "CompressionCombo",
+  tableName: "compression_combos",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("name", "TEXT", { nullable: false }),
+    column("description", "TEXT", { default: "''" }),
+    column("pipeline", "TEXT", { nullable: false, default: "'[]'" }),
+    column("language_packs", "TEXT", { default: "'[\"en\"]'" }),
+    column("output_mode", "INTEGER", { default: "0" }),
+    column("output_mode_intensity", "TEXT", { default: "'full'" }),
+    column("is_default", "INTEGER", { default: "0" }),
+    column("created_at", "TEXT", { default: "datetime('now')" }),
+    column("updated_at", "TEXT", { default: "datetime('now')" }),
+  ],
+};
+
+/** Routing-combo assignments for named compression pipelines. */
+export const CompressionComboAssignmentEntity: EntityDefinition = {
+  entityName: "CompressionComboAssignment",
+  tableName: "compression_combo_assignments",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("compression_combo_id", "TEXT", { nullable: false }),
+    column("routing_combo_id", "TEXT", { nullable: false }),
+    column("created_at", "TEXT", { default: "datetime('now')" }),
+  ],
+};
+
 export const ModelComboMappingEntity: EntityDefinition = {
   entityName: "ModelComboMapping",
   tableName: "model_combo_mappings",
