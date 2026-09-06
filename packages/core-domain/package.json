@@ -162,6 +162,10 @@
       "types": "./src/public/managementAuth.d.ts",
       "import": "./src/lib/api/requireManagementAuth.ts"
     },
+    "./shared/public-safe-error": {
+      "types": "./src/public/publicSafeTunnelError.d.ts",
+      "import": "./src/lib/api/publicSafeTunnelError.ts"
+    },
     "./shared/error-response": {
       "types": "./src/public/errorResponse.d.ts",
       "import": "./src/lib/api/errorResponse.ts"
@@ -322,6 +326,10 @@
     "./control/api-key-store": {
       "types": "./src/public/apiKeyStore.d.ts",
       "import": "./src/lib/db/apiKeys.ts"
+    },
+    "./shared/api-key-resolver": {
+      "types": "./src/public/apiKeyResolver.d.ts",
+      "import": "./src/shared/services/apiKeyResolver.ts"
     },
     "./control/cloud-sync": {
       "types": "./src/public/cloudSync.d.ts",
@@ -549,6 +557,10 @@
     "./control/reasoning-routing": {
       "types": "./src/public/reasoningRouting.d.ts",
       "import": "./src/control/reasoningRouting.ts"
+    },
+    "./shared/mitm": {
+      "types": "./src/public/mitm.d.ts",
+      "import": "./src/shared/mitm.ts"
     },
     "./db/model-aliases": {
       "types": "./src/public/modelAliasesDb.d.ts",

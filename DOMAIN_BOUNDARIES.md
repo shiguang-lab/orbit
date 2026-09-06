@@ -115,6 +115,7 @@ Qdrant configuration, health, semantic-search diagnostics, cleanup, and embeddin
 reasoning-routing rule CRUD and policy simulation, Claude Code discovery-alias usage metrics,
 task-aware routing configuration and detection diagnostics,
 model-alias settings (built-in/custom alias inspection and management),
+MITM settings/status, certificate download and regeneration, and start/stop controls,
 Notion integration token settings and Obsidian REST/WebDAV settings,
 local-corpus source configuration and index lifecycle,
 compression analytics summary and per-engine diagnostics,

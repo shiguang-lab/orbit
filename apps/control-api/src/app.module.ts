@@ -34,6 +34,7 @@ import { FreeProxiesModule } from "./settings/free-proxies/free-proxies.module.j
 import { ProviderAuthImportModule } from "./providers/auth/provider-auth-import.module.js";
 import { CompressionModule } from "./settings/compression/compression.module.js";
 import { QdrantModule } from "./settings/qdrant/qdrant.module.js";
+import { MitmModule } from "./settings/mitm/mitm.module.js";
 import { ReasoningRoutingModule } from "./settings/reasoning-routing/reasoning-routing.module.js";
 import { TaskRoutingModule } from "./settings/task-routing/task-routing.module.js";
 import { ModelAliasesModule } from "./settings/model-aliases/model-aliases.module.js";
@@ -81,6 +82,7 @@ import { QuotaSettingsModule } from "./settings/quota/quota.module.js";
     ProviderAuthImportModule,
     CompressionModule,
     QdrantModule,
+    MitmModule,
     ReasoningRoutingModule,
     TaskRoutingModule,
     ModelAliasesModule,
