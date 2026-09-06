@@ -146,6 +146,10 @@
       "types": "./src/public/compressionCombos.d.ts",
       "import": "./src/lib/db/compressionCombos.ts"
     },
+    "./control/cost-rules": {
+      "types": "./src/public/costRules.d.ts",
+      "import": "./src/domain/costRules.ts"
+    },
     "./db/compression-run-telemetry": {
       "types": "./src/public/compressionRunTelemetry.d.ts",
       "import": "./src/lib/db/compressionRunTelemetry.ts"
@@ -181,6 +185,18 @@
     "./control/provider-auth-import": {
       "types": "./src/public/providerAuthImport.d.ts",
       "import": "./src/control/providerAuthImport.ts"
+    },
+    "./control/free-onboarding": {
+      "types": "./src/public/freeOnboarding.d.ts",
+      "import": "./src/lib/providers/freeOnboarding.ts"
+    },
+    "./control/cursor-availability": {
+      "types": "./src/public/cursorAvailability.d.ts",
+      "import": "./src/lib/cursor/renewal.ts"
+    },
+    "./control/provider-health-autopilot": {
+      "types": "./src/public/providerHealthAutopilot.d.ts",
+      "import": "./src/lib/monitoring/providerHealthAutopilot.ts"
     },
     "./control/notion-db": { "types": "./src/public/notionDb.d.ts", "import": "./src/lib/db/notion.ts" },
     "./control/notion-client": { "types": "./src/public/notionClient.d.ts", "import": "./src/lib/notion/api.ts" },
@@ -230,6 +246,10 @@
     "./control/settings-config": {
       "types": "./src/public/settingsConfig.d.ts",
       "import": "./src/control/settingsConfig.ts"
+    },
+    "./control/oauth-handlers": {
+      "types": "./src/public/oauthHandlers.d.ts",
+      "import": "./src/control/oauthHandlers.ts"
     },
     "./control/tier-config": {
       "types": "./src/public/tierConfig.d.ts",

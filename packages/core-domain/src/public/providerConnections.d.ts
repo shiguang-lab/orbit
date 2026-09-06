@@ -1,4 +1,5 @@
 export interface ProviderConnectionSummary {
+  provider?: unknown;
   isActive?: boolean;
   refreshToken?: string | null;
   testStatus?: string | null;
@@ -13,6 +14,7 @@ export function getProviderConnections(
   limit?: number,
   offset?: number,
 ): ProviderConnectionSummary[];
+export function createProviderConnection(data: Record<string, unknown>): Promise<{ id?: unknown } | null>;
 export function updateProviderConnection(
   id: string,
   data: Record<string, unknown>,
