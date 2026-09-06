@@ -1,4 +1,4 @@
-import { Controller, Get, Req, Res } from "@nestjs/common";
+import { Controller, Delete, Get, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 import { McpService } from "./mcp.service.js";
@@ -25,5 +25,30 @@ export class McpController {
   @Get("tools")
   tools(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
     return this.routes.dispatch(req, reply, (request) => this.service.listTools(request));
+  }
+
+  @Get("sse")
+  sseGet(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(req, reply, (request) => this.service.sse(request));
+  }
+
+  @Post("sse")
+  ssePost(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(req, reply, (request) => this.service.sse(request));
+  }
+
+  @Post("stream")
+  streamPost(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(req, reply, (request) => this.service.stream(request));
+  }
+
+  @Get("stream")
+  streamGet(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(req, reply, (request) => this.service.stream(request));
+  }
+
+  @Delete("stream")
+  streamDelete(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(req, reply, (request) => this.service.stream(request));
   }
 }

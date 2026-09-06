@@ -395,6 +395,22 @@
       "types": "./src/public/mcpManagement.d.ts",
       "import": "./src/lib/mcp/mcpManagementExports.ts"
     },
+    "./control/mcp-transports": {
+      "types": "./src/public/mcpTransports.d.ts",
+      "import": "./src/control/mcp-transports.ts"
+    },
+    "./control/copilot": {
+      "types": "./src/public/copilot.d.ts",
+      "import": "./src/control/copilot.ts"
+    },
+    "./control/issue-agent": {
+      "types": "./src/public/issueAgent.d.ts",
+      "import": "./src/control/issue-agent.ts"
+    },
+    "./shared/validation-helpers": {
+      "types": "./src/public/validationHelpers.d.ts",
+      "import": "./src/shared/validation/helpers.ts"
+    },
     "./control/gamification": {
       "types": "./src/public/gamification.d.ts",
       "import": "./src/lib/gamification/index.ts"

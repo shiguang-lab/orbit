@@ -247,6 +247,10 @@
       "types": "./public/searchCache.d.ts",
       "import": "./services/searchCache.ts"
     },
+    "./mcp-server/httpTransport": {
+      "types": "./mcp-server/httpTransport.ts",
+      "import": "./mcp-server/httpTransport.ts"
+    },
     "./services/qoderCli": {
       "types": "./services/qoderCli.ts",
       "import": "./services/qoderCli.ts"

@@ -1,27 +1,25 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
-import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
-import { compressionPreviewConfigSchema } from "../../../../shared/validation/compressionConfigSchemas.ts";
+import { compressionPreviewConfigSchema } from "@shiguang-gateway/core-domain/shared/validation/compression-config-schemas";
 import {
   applyCompression,
   applyCompressionAsync,
-} from "../../../../../../open-sse/services/compression/strategySelector.ts";
+} from "@shiguang-gateway/open-sse/services/compression/strategySelector";
 import type {
   CompressionConfig,
   CompressionMode,
-} from "../../../../../../open-sse/services/compression/types.ts";
+} from "@shiguang-gateway/open-sse/services/compression/types";
 import {
   buildCompressionPreviewDiff,
   type HeatmapMode,
-} from "../../../../../../open-sse/services/compression/diffHelper.ts";
-import { sanitizeErrorMessage } from "../../../../../../open-sse/utils/error.ts";
-import { countTextTokens } from "../../../../shared/utils/tiktokenCounter.ts";
+} from "@shiguang-gateway/open-sse/services/compression/diffHelper";
+import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { countTextTokens } from "@shiguang-gateway/core-domain/shared/tokenizer";
 import {
   ensureEngineBreakdown,
   reconcileSingleEngineTokens,
-} from "../../../../../../open-sse/services/compression/engineBreakdown.ts";
-import { summarizeEncoderCandidates } from "../../../../../../open-sse/services/compression/engines/headroom/encoderComparison.ts";
-import { DEFAULT_MIN_ROWS } from "../../../../../../open-sse/services/compression/engines/headroom/smartcrusher.ts";
+} from "@shiguang-gateway/open-sse/services/compression/engineBreakdown";
+import { summarizeEncoderCandidates } from "@shiguang-gateway/open-sse/services/compression/engines/headroom/encoderComparison";
+import { DEFAULT_MIN_ROWS } from "@shiguang-gateway/open-sse/services/compression/engines/headroom/smartcrusher";
 
 export const PreviewCompressionConfigSchema = compressionPreviewConfigSchema;
 
@@ -207,20 +205,10 @@ async function dispatchCompression(
   });
 }
 
-export async function POST(req: Request) {
-  const authError = await requireManagementAuth(req);
-  if (authError) return authError;
-
-  let body: unknown;
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
-  }
-
+export async function preview(body: unknown): Promise<Response> {
   const parsed = PreviewRequestSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json(
+    return Response.json(
       { error: "Invalid request", details: parsed.error.issues },
       { status: 400 }
     );
@@ -309,7 +297,7 @@ export async function POST(req: Request) {
     }
     const fallbackReason = fallbackReasons[0] ?? null;
 
-    return NextResponse.json({
+    return Response.json({
       encoderComparison,
       original: originalText,
       compressed: compressedText,
@@ -349,7 +337,7 @@ export async function POST(req: Request) {
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error("[/api/compression/preview]", msg);
-    return NextResponse.json(
+    return Response.json(
       { error: "Compression failed", details: sanitizeErrorMessage(msg) },
       { status: 500 }
     );

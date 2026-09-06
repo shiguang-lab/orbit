@@ -2,6 +2,10 @@ import { Injectable } from "@nestjs/common";
 import { listAuditEntries, getAuditStatistics } from "./handlers/audit.handler.js";
 import { getStatus } from "./handlers/status.handler.js";
 import { listTools } from "./handlers/tools.handler.js";
+import {
+  handleMcpSSE,
+  handleMcpStreamableHTTP,
+} from "@shiguang-gateway/core-domain/control/mcp-transports";
 
 @Injectable()
 export class McpService {
@@ -9,4 +13,6 @@ export class McpService {
   getAuditStatistics(request: Request) { return getAuditStatistics(request); }
   getStatus(request: Request) { return getStatus(request); }
   listTools(request: Request) { return listTools(request); }
+  sse(request: Request) { return handleMcpSSE(request); }
+  stream(request: Request) { return handleMcpStreamableHTTP(request); }
 }

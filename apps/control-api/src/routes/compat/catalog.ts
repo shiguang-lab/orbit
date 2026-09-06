@@ -158,6 +158,10 @@ export function controlRouteCatalog(): CompatRouteDefinition[] {
     "init",
     "tags",
     "telemetry/summary",
+    "mcp/sse",
+    "mcp/stream",
+    "copilot/chat",
+    "issue-agent/runs",
   ]);
   return coreRoutes.filter((route) => !migrated.has(route.segments.join("/")));
 }

@@ -98,6 +98,8 @@ import { FreeModelsModule } from "./free-models/free-models.module.js";
 import { AuthInitModule } from "./auth-init/auth-init.module.js";
 import { TagsModule } from "./tags/tags.module.js";
 import { TelemetryModule } from "./telemetry/telemetry.module.js";
+import { CopilotModule } from "./copilot/copilot.module.js";
+import { IssueAgentModule } from "./issue-agent/issue-agent.module.js";
 
 @Module({
   imports: [
@@ -201,6 +203,8 @@ import { TelemetryModule } from "./telemetry/telemetry.module.js";
     AuthInitModule,
     TagsModule,
     TelemetryModule,
+    CopilotModule,
+    IssueAgentModule,
   ],
 })
 export class AppModule {}
