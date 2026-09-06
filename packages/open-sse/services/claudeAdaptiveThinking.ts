@@ -1,7 +1,7 @@
 import {
   getMaxEffortWhenThinkingDisabled,
   isAdaptiveThinkingOnly,
-} from "../../core-domain/src/shared/constants/modelSpecs.ts";
+} from "@shiguang-gateway/contracts/model-specs";
 
 type JsonRecord = Record<string, unknown>;
 const DIRECT_ANTHROPIC_API_PROVIDERS = new Set(["anthropic", "claude"]);

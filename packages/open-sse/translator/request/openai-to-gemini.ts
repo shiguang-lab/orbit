@@ -16,7 +16,7 @@ import {
   capThinkingBudget,
   getDefaultThinkingBudget,
 } from "../../../core-domain/src/lib/modelCapabilities.ts";
-import { getModelSpec } from "../../../core-domain/src/shared/constants/modelSpecs.ts";
+import { getModelSpec } from "@shiguang-gateway/contracts/model-specs";
 
 import {
   DEFAULT_SAFETY_SETTINGS,

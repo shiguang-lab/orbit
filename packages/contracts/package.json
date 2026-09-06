@@ -33,6 +33,10 @@
     "./provider-client-profiles": {
       "types": "./src/provider-client-profiles.ts",
       "import": "./src/provider-client-profiles.ts"
+    },
+    "./model-specs": {
+      "types": "./src/model-specs.ts",
+      "import": "./src/model-specs.ts"
     }
   },
   "scripts": {

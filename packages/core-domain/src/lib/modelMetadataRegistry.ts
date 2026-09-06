@@ -14,7 +14,7 @@ import {
   getAuthoritativeProviderContextWindow,
   getModelSpec,
   resolveModelAlias as resolveStaticModelAlias,
-} from "../shared/constants/modelSpecs.ts";
+} from "@shiguang-gateway/contracts/model-specs";
 import { AI_PROVIDERS } from "../shared/constants/providers.ts";
 import { PROVIDER_ID_TO_ALIAS, PROVIDER_MODELS } from "../shared/constants/models.ts";
 import {

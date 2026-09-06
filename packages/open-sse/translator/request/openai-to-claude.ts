@@ -10,7 +10,7 @@ import { DEFAULT_THINKING_CLAUDE_SIGNATURE } from "../../config/defaultThinkingS
 import {
   getDefaultThinkingBudget,
   isAdaptiveThinkingOnly,
-} from "../../../core-domain/src/shared/constants/modelSpecs.ts";
+} from "@shiguang-gateway/contracts/model-specs";
 import { fitThinkingToMaxTokens } from "./openai-to-claude/thinkingBudget.ts";
 import { enforceToolResultAdjacency } from "./openai-to-claude/toolResultAdjacency.ts";
 import { sanitizeToolResultId } from "./openai-to-claude/sanitizeToolResultId.ts";

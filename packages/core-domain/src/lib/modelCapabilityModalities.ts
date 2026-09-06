@@ -1,4 +1,4 @@
-import type { ModelSpec } from "../shared/constants/modelSpecs.ts";
+import type { ModelSpec } from "@shiguang-gateway/contracts/model-specs";
 
 type ModalityName = "audio" | "video";
 type ModalityCapabilityKey = "supportsAudio" | "supportsVideo";

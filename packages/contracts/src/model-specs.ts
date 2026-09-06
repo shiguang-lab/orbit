@@ -10,7 +10,7 @@ export interface ModelSpec {
   defaultThinkingBudget?: number;
   thinkingBudgetCap?: number;
   thinkingOverhead?: number; // buffer de tokens para thinking
-  adaptiveMaxTokens?: number; // tokens disponíveis para output quando thinking ativo
+  adaptiveMaxTokens?: number; // tokens disponÃ­veis para output quando thinking ativo
   aliases?: string[]; // IDs alternativos para este modelo
   supportsThinking?: boolean;
   supportsTools?: boolean;
@@ -31,7 +31,7 @@ export interface ModelSpec {
   // rejects disabled thinking with xhigh/max, while accepting it through high.
   maxEffortWhenThinkingDisabled?: "high";
   // Explicit operator override for the no-thinking gateway alias (Fase 8.1). When unset,
-  // the catalog auto-advertises a `no-think/…` variant for
+  // the catalog auto-advertises a `no-think/â¦` variant for
   // Claude-family thinking-capable models that honor `disabled`. Set `true` to force the
   // variant on for any other model, or `false` to suppress it. See open-sse/utils/noThinkingAlias.ts.
   noThinkingAlias?: boolean;
@@ -39,10 +39,10 @@ export interface ModelSpec {
   // `reasoning_effort` / `reasoning` / `thinking` field of any shape, the resolved
   // upstream model's `defaultReasoningEffort` is injected as `reasoning_effort` on the
   // OpenAI-format dispatch path before the request leaves the gateway. An explicit
-  // client value — including one forwarded verbatim through a combo leg — always wins;
+  // client value â including one forwarded verbatim through a combo leg â always wins;
   // this is a no-op for it. Unset preserves current behavior (no injection). Lets an
   // operator strip-by-default a thinks-by-default model (measured: gemini-flash-lite
-  // burns ~277 reasoning tokens on a plain request; `reasoning_effort:"none"` → 0)
+  // burns ~277 reasoning tokens on a plain request; `reasoning_effort:"none"` â 0)
   // without patching every client. See open-sse/services/defaultReasoningEffort.ts.
   defaultReasoningEffort?: "none" | "low" | "medium" | "high";
 }
@@ -143,7 +143,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     aliases: ["openai/gpt-5.4"],
   },
 
-  // ── GPT-4o family ──────────────────────────────────────────────
+  // ââ GPT-4o family ââââââââââââââââââââââââââââââââââââââââââââââ
   "gpt-4o-mini": {
     maxOutputTokens: 16384,
     contextWindow: 128000,
@@ -161,7 +161,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     aliases: ["openai/gpt-4o"],
   },
 
-  // ── Gemini 2.5 Flash ─────────────────────────────────────────────
+  // ââ Gemini 2.5 Flash âââââââââââââââââââââââââââââââââââââââââââââ
   "gemini-2.5-flash": {
     maxOutputTokens: 65536,
     contextWindow: 1048576,
@@ -172,7 +172,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     supportsTools: true,
     supportsVision: true,
   },
-  // ── Gemini 3.7 Flash (current Antigravity/AGY live tiers) ─────────
+  // ââ Gemini 3.7 Flash (current Antigravity/AGY live tiers) âââââââââ
   // The tier suffix configures the thinking budget passed to the upstream
   // gemini-3.7-flash-tiered backend (high: 24.5k, medium: 8k, low: 1k).
   "gemini-3.7-flash-high": {
@@ -229,7 +229,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
   "gemini-3.6-flash-medium": { ...GEMINI_36_FLASH_MODEL_SPEC },
   "gemini-3.6-flash-low": { ...GEMINI_36_FLASH_MODEL_SPEC },
 
-  // ── Gemini 3 Flash series ───────────────────────────────────────
+  // ââ Gemini 3 Flash series âââââââââââââââââââââââââââââââââââââââ
   "gemini-3-flash": {
     maxOutputTokens: 65536,
     contextWindow: 1048576,
@@ -241,7 +241,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     aliases: ["gemini-3-flash-preview", "gemini-3.1-flash-lite-preview"],
   },
 
-  // ── Gemini 3.1 Pro ───────────────────────────────────────────────
+  // ââ Gemini 3.1 Pro âââââââââââââââââââââââââââââââââââââââââââââââ
   "gemini-3.1-pro": {
     maxOutputTokens: 65535,
     contextWindow: 1048576,
@@ -261,7 +261,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     ],
   },
 
-  // ── Gemini 3.1 Pro Low (deprecated, kept for back-compat) ────────
+  // ââ Gemini 3.1 Pro Low (deprecated, kept for back-compat) ââââââââ
   "gemini-3.1-pro-low": {
     maxOutputTokens: 65535,
     contextWindow: 1048576,
@@ -273,7 +273,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     aliases: ["gemini-3-pro-low"],
   },
 
-  // ── Claude Opus 4.5 ─────────────────────────────────────────────
+  // ââ Claude Opus 4.5 âââââââââââââââââââââââââââââââââââââââââââââ
   "claude-opus-4-5": {
     maxOutputTokens: 32768,
     contextWindow: 200000,
@@ -284,7 +284,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     supportsVision: true,
   },
 
-  // ── Claude Sonnet 4.5 ───────────────────────────────────────────
+  // ââ Claude Sonnet 4.5 âââââââââââââââââââââââââââââââââââââââââââ
   "claude-sonnet-4-5": {
     maxOutputTokens: 64000,
     contextWindow: 200000,
@@ -295,7 +295,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     aliases: BEDROCK_CLAUDE_ALIASES("claude-sonnet-4-5", "claude-sonnet-4-5-20250929"),
   },
 
-  // ── Claude Opus 4.5 (full ID — overrides prefix match on claude-opus-4-5) ──
+  // ââ Claude Opus 4.5 (full ID â overrides prefix match on claude-opus-4-5) ââ
   "claude-opus-4-5-20251101": {
     maxOutputTokens: 64000,
     contextWindow: 200000,
@@ -306,7 +306,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     supportsVision: true,
   },
 
-  // ── Claude Sonnet 4.6 ───────────────────────────────────────────
+  // ââ Claude Sonnet 4.6 âââââââââââââââââââââââââââââââââââââââââââ
   "claude-sonnet-4-6": {
     maxOutputTokens: 64000,
     contextWindow: 1000000,
@@ -317,7 +317,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     aliases: BEDROCK_CLAUDE_ALIASES("claude-sonnet-4-6", "claude-sonnet-4.6"),
   },
 
-  // ── Claude Sonnet 5 ─────────────────────────────────────────────
+  // ââ Claude Sonnet 5 âââââââââââââââââââââââââââââââââââââââââââââ
   "claude-sonnet-5": {
     // 1M context, 128K max output. Adaptive-thinking-only (manual
     // budget_tokens / thinking.type:"enabled" return 400; effort-steered);
@@ -333,7 +333,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     aliases: BEDROCK_CLAUDE_ALIASES("claude-sonnet-5"),
   },
 
-  // ── Claude Opus 4.6 ─────────────────────────────────────────────
+  // ââ Claude Opus 4.6 âââââââââââââââââââââââââââââââââââââââââââââ
   "claude-opus-4-6": {
     maxOutputTokens: 128000,
     contextWindow: 1000000,
@@ -348,7 +348,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     aliases: BEDROCK_CLAUDE_ALIASES("claude-opus-4-6", "claude-opus-4.6"),
   },
 
-  // ── Claude Opus 4.7 ─────────────────────────────────────────────
+  // ââ Claude Opus 4.7 âââââââââââââââââââââââââââââââââââââââââââââ
   "claude-opus-4-7": {
     maxOutputTokens: 128000,
     contextWindow: 1000000,
@@ -366,7 +366,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     aliases: BEDROCK_CLAUDE_ALIASES("claude-opus-4-7", "claude-opus-4.7"),
   },
 
-  // ── Claude Fable 5 ──────────────────────────────────────────────
+  // ââ Claude Fable 5 ââââââââââââââââââââââââââââââââââââââââââââââ
   "claude-fable-5": {
     maxOutputTokens: 128000,
     contextWindow: 1000000,
@@ -377,12 +377,12 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     supportsVision: true,
     // Fable 5 defaults to adaptive thinking and rejects `thinking.type:"disabled"` (#3554).
     rejectsThinkingDisabled: true,
-    // …and, like Opus 4.7+, rejects manual budgets/`type:"enabled"` (adaptive-only).
+    // â¦and, like Opus 4.7+, rejects manual budgets/`type:"enabled"` (adaptive-only).
     adaptiveThinkingOnly: true,
     aliases: BEDROCK_CLAUDE_ALIASES("claude-fable-5"),
   },
 
-  // ── Claude Opus 5 ───────────────────────────────────────────────
+  // ââ Claude Opus 5 âââââââââââââââââââââââââââââââââââââââââââââââ
   "claude-opus-5": {
     maxOutputTokens: 128000,
     contextWindow: 1000000,
@@ -396,7 +396,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     aliases: BEDROCK_CLAUDE_ALIASES("claude-opus-5"),
   },
 
-  // ── Claude Opus 4.8 ─────────────────────────────────────────────
+  // ââ Claude Opus 4.8 âââââââââââââââââââââââââââââââââââââââââââââ
   "claude-opus-4-8": {
     maxOutputTokens: 128000,
     contextWindow: 1000000,
@@ -411,7 +411,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     aliases: BEDROCK_CLAUDE_ALIASES("claude-opus-4-8", "claude-opus-4.8", "claude-opus-4.8-fast"),
   },
 
-  // ── Claude Sonnet 4.5 ───────────────────────────────────────────
+  // ââ Claude Sonnet 4.5 âââââââââââââââââââââââââââââââââââââââââââ
   "claude-sonnet-4-5-20250929": {
     maxOutputTokens: 64000,
     contextWindow: 200000,
@@ -422,7 +422,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     aliases: ["claude-sonnet-4.5"],
   },
 
-  // ── Claude Haiku 4.5 ────────────────────────────────────────────
+  // ââ Claude Haiku 4.5 ââââââââââââââââââââââââââââââââââââââââââââ
   "claude-haiku-4-5-20251001": {
     maxOutputTokens: 64000,
     contextWindow: 200000,
@@ -433,7 +433,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     aliases: ["claude-haiku-4.5"],
   },
 
-  // ── Kimi K3 (Moonshot API — 1M context/output, native vision) ────
+  // ââ Kimi K3 (Moonshot API â 1M context/output, native vision) ââââ
   // `k3` is the Kimi Coding / kimi-coding-apikey wire id (#8250).
   "kimi-k3": {
     maxOutputTokens: 1048576,
@@ -445,7 +445,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     aliases: ["k3"],
   },
 
-  // ── Kimi K2.6 (Moonshot API — 262K native) ──────────────────────
+  // ââ Kimi K2.6 (Moonshot API â 262K native) ââââââââââââââââââââââ
   "kimi-k2.6": {
     maxOutputTokens: 262144,
     contextWindow: 262144,
@@ -456,7 +456,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     aliases: ["kimi-k2.6-thinking"],
   },
 
-  // ── Kimi K2.7 Code (Moonshot — 262K native, parity with K2.6) ───
+  // ââ Kimi K2.7 Code (Moonshot â 262K native, parity with K2.6) âââ
   // #3761: importing this via Ollama Cloud's sparse /v1/models gave it no caps, so it
   // fell back to the 128K/8K defaults and lost vision/thinking. Pin the real values.
   "kimi-k2.7-code": {
@@ -469,7 +469,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     aliases: ["kimi-k2.7", "kimi-k2.7-code-thinking", "kimi-k2.7-code-highspeed"],
   },
 
-  // ── Kimi K2.5 (Moonshot — 262K native, parity with K2.6) ────────
+  // ââ Kimi K2.5 (Moonshot â 262K native, parity with K2.6) ââââââââ
   "kimi-k2.5": {
     maxOutputTokens: 262144,
     contextWindow: 262144,
@@ -480,7 +480,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     aliases: ["kimi-k2.5-thinking"],
   },
 
-  // ── Qwen3.x Plus / Max (Bailian — multimodal text/image/video, 1M context) ─
+  // ââ Qwen3.x Plus / Max (Bailian â multimodal text/image/video, 1M context) â
   "qwen3-max": {
     maxOutputTokens: 65536,
     contextWindow: 1000000,
@@ -516,10 +516,10 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     supportsVision: true,
   },
 
-  // ── Xiaomi MiMo V2.5 (1M context, consensus across 7+ sync sources) ──
+  // ââ Xiaomi MiMo V2.5 (1M context, consensus across 7+ sync sources) ââ
   // Vision: ONLY mimo-v2.5 and mimo-v2-omni accept images per Xiaomi's docs
   // (mimo.mi.com .../image-understanding). The *-pro chat models are TEXT-ONLY;
-  // models.dev mislabels them (hermes-agent#18884) — a hard override in
+  // models.dev mislabels them (hermes-agent#18884) â a hard override in
   // src/lib/modelCapabilities.ts also beats that wrong synced attachment.
   "mimo-v2.5-pro": {
     maxOutputTokens: 131072,
@@ -551,8 +551,8 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     supportsTools: true,
   },
 
-  // ── Z.AI GLM-5.3 (1M context mirrored from 5.2 — same base model; 128K max
-  // output; effort via reasoning_effort param, tiers are ShiguangGateway aliases) ──
+  // ââ Z.AI GLM-5.3 (1M context mirrored from 5.2 â same base model; 128K max
+  // output; effort via reasoning_effort param, tiers are ShiguangGateway aliases) ââ
   "glm-5.3": {
     maxOutputTokens: 131072,
     contextWindow: 1000000,
@@ -582,7 +582,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     supportsTools: true,
   },
 
-  // ── Z.AI GLM-5.2 (1M context, 128K max output, effort tiers) ────
+  // ââ Z.AI GLM-5.2 (1M context, 128K max output, effort tiers) ââââ
   "glm-5.2": {
     maxOutputTokens: 131072,
     contextWindow: 1000000,
@@ -605,7 +605,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     supportsTools: true,
   },
 
-  // ── Z.AI GLM-5.x (200K context, 128K max output) ─────────────────
+  // ââ Z.AI GLM-5.x (200K context, 128K max output) âââââââââââââââââ
   "glm-5.1": {
     maxOutputTokens: 128000,
     contextWindow: 200000,
@@ -621,7 +621,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     supportsTools: true,
   },
 
-  // ── MiniMax M3 (1M context, 512K max output) ─────────────────────
+  // ââ MiniMax M3 (1M context, 512K max output) âââââââââââââââââââââ
   // max output verified against MiniMax docs / OpenRouter / Artificial
   // Analysis (Nov 2025 launch): 1,048,576-token context, up to 512K output.
   "minimax-m3": {
@@ -633,7 +633,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     aliases: ["MiniMax-M3", "MiniMaxAI/MiniMax-M3"],
   },
 
-  // ── MiniMax M2.x (200K context family) ───────────────────────────
+  // ââ MiniMax M2.x (200K context family) âââââââââââââââââââââââââââ
   "minimax-m2.7": {
     maxOutputTokens: 131072,
     contextWindow: 204800,
@@ -651,7 +651,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     aliases: ["MiniMax-M2.5"],
   },
 
-  // ── DeepSeek V4 (1M context, 384K max output) ────────────────────
+  // ââ DeepSeek V4 (1M context, 384K max output) ââââââââââââââââââââ
   "deepseek-v4-pro": {
     maxOutputTokens: 384000,
     contextWindow: 1000000,
@@ -670,7 +670,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
     supportsTools: true,
   },
 
-  // ── Tencent Hunyuan 3 Preview ────────────────────────────────────
+  // ââ Tencent Hunyuan 3 Preview ââââââââââââââââââââââââââââââââââââ
   "hy3-preview": {
     maxOutputTokens: 262144,
     contextWindow: 262144,
@@ -684,7 +684,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
 };
 
 // #8697-adjacent: getCanonicalModelSpecId() re-scanned Object.keys/entries(MODEL_SPECS)
-// up to 3 times per call (exact ci, alias ci, prefix) — the top hotspot in a full
+// up to 3 times per call (exact ci, alias ci, prefix) â the top hotspot in a full
 // catalog-rebuild profile once the pricing-path bottlenecks were fixed. MODEL_SPECS is
 // a static module constant (never mutated at runtime), so the lowercase index below is
 // built once, lazily, on first use and never invalidated. Iteration order for the
@@ -718,7 +718,7 @@ function getModelSpecIndex() {
 }
 
 /**
- * Exact + alias case-insensitive lookup only (no prefix phase) — shared by
+ * Exact + alias case-insensitive lookup only (no prefix phase) â shared by
  * modelCapabilities.ts's getStaticSpecCanonicalModelId(), which tries multiple id
  * candidates and never wanted prefix matching. Reuses the same lazy index as
  * getCanonicalModelSpecId() below instead of each caller maintaining its own cache
@@ -727,7 +727,7 @@ function getModelSpecIndex() {
  * Contract: returns `null` for `__default__` (never a real canonical id), for an
  * unrecognized `modelId`, or for an empty string. Matching is case-insensitive on
  * both the canonical id and its aliases; there is no prefix-matching phase (unlike
- * getCanonicalModelSpecId() below) — callers that need prefix matching should use
+ * getCanonicalModelSpecId() below) â callers that need prefix matching should use
  * that function instead.
  */
 export function findModelSpecIdByExactOrAlias(modelId: string): string | null {
@@ -756,7 +756,7 @@ export function getCanonicalModelSpecId(modelId: string): string | null {
   const aliasHit = index.aliasCi.get(lower);
   if (aliasHit) return aliasHit;
 
-  // Prefix matching (case-insensitive) — same insertion-order iteration as before,
+  // Prefix matching (case-insensitive) â same insertion-order iteration as before,
   // first match wins.
   for (const [lowerKey, canonical] of index.prefixCandidates) {
     if (lower.startsWith(lowerKey)) return canonical;
@@ -794,7 +794,7 @@ export function getAuthoritativeProviderContextWindow(
  *
  * A combo/route can swap the upstream model AFTER the client already chose its `thinking`
  * value. Claude Code sends `thinking:{type:"disabled"}` for internal title/name-generation
- * calls — valid for opus/sonnet, but claude-fable-5 defaults to adaptive thinking and rejects
+ * calls â valid for opus/sonnet, but claude-fable-5 defaults to adaptive thinking and rejects
  * `type:"disabled"` with an upstream 400. When the resolved target model is flagged
  * `rejectsThinkingDisabled`, drop the now-invalid `thinking` so the model uses its adaptive
  * default instead of hard-failing. Models that accept `disabled` are left untouched, and any
@@ -832,7 +832,7 @@ export function getDefaultThinkingBudget(modelId: string): number {
 /**
  * True when the resolved model only supports adaptive thinking and rejects manual
  * extended thinking. For these models (Claude Opus 4.7+/Fable 5) a `thinking.type:"enabled"`
- * or any `thinking.budget_tokens` is a hard 400 — reasoning must be steered via
+ * or any `thinking.budget_tokens` is a hard 400 â reasoning must be steered via
  * `output_config.effort`. Used by the request flow to collapse manual thinking to
  * `{type:"adaptive"}` before dispatch. Matches dated/Bedrock aliases via getModelSpec.
  */
@@ -854,11 +854,12 @@ export function capThinkingBudget(modelId: string, budget: number): number {
 }
 
 // #8697-adjacent: rescanned Object.entries(MODEL_SPECS) on every call, unconditionally
-// once per model in a catalog rebuild — verified 1:1 call ratio (no early
-// short-circuit). Case-sensitive exact match (Array.includes(), no .toLowerCase()) —
+// once per model in a catalog rebuild â verified 1:1 call ratio (no early
+// short-circuit). Case-sensitive exact match (Array.includes(), no .toLowerCase()) â
 // deliberately NOT reusing the case-insensitive aliasCi index above, which would
 // silently broaden matches and change behavior.
 export function resolveModelAlias(modelId: string): string {
   const hit = getModelSpecIndex().aliasExact.get(modelId);
   return hit ?? modelId;
 }
+

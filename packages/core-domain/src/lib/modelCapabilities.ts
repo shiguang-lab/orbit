@@ -9,7 +9,7 @@ import {
   getAuthoritativeProviderContextWindow,
   getModelSpec,
   type ModelSpec,
-} from "../shared/constants/modelSpecs.ts";
+} from "@shiguang-gateway/contracts/model-specs";
 import { getSyncedCapability } from "./modelsDevSync.ts";
 import { MODELS_DEV_PROVIDER_MAP } from "./modelsDevSync/transform.ts";
 import { getModelContextOverride } from "./db/modelContextOverrides.ts";

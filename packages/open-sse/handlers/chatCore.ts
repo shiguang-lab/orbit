@@ -218,7 +218,7 @@ import {
   isTinyBudgetReasoningProbe,
   toPositiveInteger,
 } from "../services/reasoningTokenBuffer.ts";
-import { normalizeThinkingForModel } from "../../core-domain/src/shared/constants/modelSpecs.ts";
+import { normalizeThinkingForModel } from "@shiguang-gateway/contracts/model-specs";
 import {
   buildErrorBody,
   createErrorResult,
