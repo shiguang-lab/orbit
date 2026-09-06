@@ -2,7 +2,7 @@ import {
   createProviderConnection,
   getProviderConnections,
   updateProviderConnection,
-} from "../../models/index.ts";
+} from "@shiguang-gateway/core-domain/control/models";
 
 type JsonRecord = Record<string, unknown>;
 

@@ -14,6 +14,7 @@ export * from "./schemas/evals";
 export * from "./schemas/translator";
 export * from "./schemas/cloud";
 export * from "./schemas/misc";
+export * from "./schemas/volcenginePlan";
 export * from "./schemas/reasoningRouting";
 export * from "../schemas/memory";
 export { validateBody, isValidationFailure } from "./helpers";

@@ -4,7 +4,7 @@
  * Anthropic/OpenAI/Google/xAI depending on the requested model.
  *
  * Distinct from the pre-existing `zed` provider id, which is a Zed IDE
- * credential-import surface (src/lib/zed-oauth/ + src/mitm/detection/zed.ts) —
+ * credential-import surface (apps/control-api/src/providers/zed + src/mitm/detection/zed.ts) —
  * that surface only detects/imports local Zed IDE keychain credentials, it does
  * not proxy chat completions. This executor is the NEW cloud-proxy
  * capability; registry id `zed-hosted` avoids colliding with the IDE id.

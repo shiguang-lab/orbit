@@ -1,5 +1,4 @@
-import { NextResponse } from "next/server";
-import { requireManagementAuth } from "../../../../../../../lib/api/requireManagementAuth.ts";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 
 /**
  * POST /api/providers/volcengine-plan/connect/[sessionId]/cancel
@@ -8,7 +7,7 @@ import { requireManagementAuth } from "../../../../../../../lib/api/requireManag
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ sessionId: string }> }
-): Promise<NextResponse> {
+): Promise<Response> {
   const auth = await requireManagementAuth(request);
   if (auth) return auth;
 
@@ -16,16 +15,16 @@ export async function POST(
 
   try {
     const { volcengineConsoleAutoLoginService } =
-      await import("../../../../../../../../../open-sse/services/volcengineConsoleAutoLogin.ts");
+      await import("@shiguang-gateway/open-sse/services/volcengineConsoleAutoLogin");
     const session = await volcengineConsoleAutoLoginService.cancel(sessionId);
     if (!session) {
-      return NextResponse.json(
+      return Response.json(
         { success: false, error: "Unknown or expired Volcano login session" },
         { status: 404 }
       );
     }
-    return NextResponse.json({ success: true, session });
+    return Response.json({ success: true, session });
   } catch {
-    return NextResponse.json({ success: false, error: "Cancel failed" }, { status: 500 });
+    return Response.json({ success: false, error: "Cancel failed" }, { status: 500 });
   }
 }

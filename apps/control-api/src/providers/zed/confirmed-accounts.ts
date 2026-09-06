@@ -5,22 +5,25 @@
  *
  * See docs/security/SOCKET_DEV_FINDINGS.md §2.
  */
-import type { ZedCredential } from "./keychain-reader";
-import { fingerprintZedCredential } from "./credentialFingerprint";
+import type { ZedCredential } from "./keychain-reader.js";
+import { fingerprintZedCredential } from "./credential-fingerprint.js";
 import {
   confirmedAccountSchema,
   zedImportSchema,
   type ConfirmedAccount,
-} from "../../shared/validation/schemas.ts";
+} from "@shiguang-gateway/core-domain/shared/validation/schemas";
 
 export function isConfirmedAccount(value: unknown): value is ConfirmedAccount {
   return confirmedAccountSchema.safeParse(value).success;
 }
 
 export function parseConfirmedAccounts(body: unknown): ConfirmedAccount[] | null {
-  const result = zedImportSchema.safeParse(body);
+  const result = zedImportSchema.safeParse(body) as {
+    success: boolean;
+    data?: { confirmedAccounts: ConfirmedAccount[] };
+  };
   if (!result.success) return null;
-  return result.data.confirmedAccounts;
+  return result.data?.confirmedAccounts ?? null;
 }
 
 export function filterCredentialsByConfirmation(

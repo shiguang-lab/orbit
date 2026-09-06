@@ -50,3 +50,13 @@ export const traeImportSchema: z.ZodTypeAny;
 export const cloudCredentialUpdateSchema: z.ZodTypeAny;
 export const cloudResolveAliasSchema: z.ZodTypeAny;
 export const cloudModelAliasUpdateSchema: z.ZodTypeAny;
+export const volcenginePlanConnectSchema: z.ZodTypeAny;
+export const volcenginePlanCodeSchema: z.ZodTypeAny;
+export const volcenginePlanIdentitySchema: z.ZodTypeAny;
+export const confirmedAccountSchema: z.ZodTypeAny;
+export const zedImportSchema: z.ZodTypeAny;
+export type ConfirmedAccount = {
+  service: string;
+  account: string;
+  fingerprint: string;
+};

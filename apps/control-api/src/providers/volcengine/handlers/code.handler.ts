@@ -1,9 +1,8 @@
-import { NextResponse } from "next/server";
-import { requireManagementAuth } from "../../../../../../../lib/api/requireManagementAuth.ts";
-import { bindVolcenginePlansFromConsoleCredentials } from "../../../../../../../lib/providers/volcenginePlanBinding.ts";
-import { sanitizeErrorMessage } from "../../../../../../../../../open-sse/utils/error.ts";
-import { formatValidationMessage, validateBody } from "../../../../../../../shared/validation/helpers.ts";
-import { volcenginePlanCodeSchema } from "../../../../../../../shared/validation/schemas/volcenginePlan.ts";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { bindVolcenginePlansFromConsoleCredentials } from "../volcengine-plan.binding.js";
+import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { formatValidationMessage, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { volcenginePlanCodeSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
 
 /**
  * POST /api/providers/volcengine-plan/connect/[sessionId]/code
@@ -14,7 +13,7 @@ import { volcenginePlanCodeSchema } from "../../../../../../../shared/validation
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ sessionId: string }> }
-): Promise<NextResponse> {
+): Promise<Response> {
   const auth = await requireManagementAuth(request);
   if (auth) return auth;
 
@@ -25,7 +24,7 @@ export async function POST(
   // it (the previous behavior) hides the real cause.
   const validation = validateBody(volcenginePlanCodeSchema, raw);
   if (!validation.success) {
-    return NextResponse.json(
+    return Response.json(
       { success: false, error: formatValidationMessage(validation.error) },
       { status: 400 }
     );
@@ -34,11 +33,11 @@ export async function POST(
 
   try {
     const { volcengineConsoleAutoLoginService } = await import(
-      "../../../../../../../../../open-sse/services/volcengineConsoleAutoLogin.ts"
+      "@shiguang-gateway/open-sse/services/volcengineConsoleAutoLogin"
     );
 
     if (!volcengineConsoleAutoLoginService.getStatus(sessionId)) {
-      return NextResponse.json(
+      return Response.json(
         { success: false, error: "Unknown or expired Volcano login session" },
         { status: 404 }
       );
@@ -48,7 +47,7 @@ export async function POST(
       timeout,
     });
     if (!session) {
-      return NextResponse.json(
+      return Response.json(
         { success: false, error: "Unknown or expired Volcano login session" },
         { status: 404 }
       );
@@ -59,13 +58,13 @@ export async function POST(
       const bound = await volcengineConsoleAutoLoginService.withBinding(sessionId, (credentials) =>
         bindVolcenginePlansFromConsoleCredentials(credentials)
       );
-      return NextResponse.json({ success: true, session: bound ?? session });
+      return Response.json({ success: true, session: bound ?? session });
     }
 
-    return NextResponse.json({ success: false, session });
+    return Response.json({ success: false, session });
   } catch (error) {
     const message = sanitizeErrorMessage(error instanceof Error ? error.message : error);
-    return NextResponse.json(
+    return Response.json(
       { success: false, error: `Volcano code submission failed: ${message}` },
       { status: 500 }
     );

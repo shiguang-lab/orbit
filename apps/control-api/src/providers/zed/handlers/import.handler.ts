@@ -23,16 +23,15 @@
  * Security: protected by requireManagementAuth.
  */
 
-import { NextResponse } from "next/server";
-import { discoverZedCredentials, isZedInstalled } from "../../../../../lib/zed-oauth/keychain-reader.ts";
-import { partitionZedCredentials } from "../../../../../lib/zed-oauth/importUtils.ts";
+import { discoverZedCredentials, isZedInstalled } from "../keychain-reader.js";
+import { partitionZedCredentials } from "../import-utils.js";
 import {
   filterCredentialsByConfirmation,
   parseConfirmedAccounts,
-} from "../../../../../lib/zed-oauth/confirmedAccounts.ts";
-import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
-import { createProviderConnection } from "../../../../../lib/db/providers.ts";
-import { isRunningInDocker } from "../../../../../lib/zed-oauth/dockerDetect.ts";
+} from "../confirmed-accounts.js";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { createProviderConnection } from "@shiguang-gateway/core-domain/db/provider-connections";
+import { isRunningInDocker } from "../docker-detect.js";
 
 const LEGACY_ONE_STEP_ENABLED = process.env.SHIGUANG_GATEWAY_ZED_IMPORT_LEGACY_ONE_STEP === "true";
 
@@ -51,7 +50,7 @@ interface ImportResponse {
   zedDockerEnvironment?: boolean;
 }
 
-export async function POST(request: Request): Promise<NextResponse<ImportResponse> | Response> {
+export async function POST(request: Request): Promise<Response> {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 
@@ -66,7 +65,7 @@ export async function POST(request: Request): Promise<NextResponse<ImportRespons
   const confirmed = parseConfirmedAccounts(body);
 
   if (!LEGACY_ONE_STEP_ENABLED && confirmed === null) {
-    return NextResponse.json(
+    return Response.json(
       {
         success: false,
         error:
@@ -80,7 +79,7 @@ export async function POST(request: Request): Promise<NextResponse<ImportRespons
 
   try {
     if (isRunningInDocker()) {
-      return NextResponse.json(
+      return Response.json(
         {
           success: false,
           error:
@@ -95,7 +94,7 @@ export async function POST(request: Request): Promise<NextResponse<ImportRespons
 
     const zedInstalled = await isZedInstalled();
     if (!zedInstalled) {
-      return NextResponse.json(
+      return Response.json(
         {
           success: false,
           error: "Zed IDE does not appear to be installed on this system.",
@@ -132,7 +131,7 @@ export async function POST(request: Request): Promise<NextResponse<ImportRespons
           allCredentials.length
         );
       }
-      return NextResponse.json({
+      return Response.json({
         success: true,
         count: 0,
         providers: [],
@@ -183,7 +182,7 @@ export async function POST(request: Request): Promise<NextResponse<ImportRespons
       uniqueProviders.length
     );
 
-    return NextResponse.json({
+    return Response.json({
       success: true,
       count: savedCount,
       providers: uniqueProviders,
@@ -194,7 +193,7 @@ export async function POST(request: Request): Promise<NextResponse<ImportRespons
     console.error("[Zed Import] Error importing credentials:", error);
 
     if (error?.message?.includes("User canceled") || error?.message?.includes("denied")) {
-      return NextResponse.json(
+      return Response.json(
         {
           success: false,
           error: "Keychain access denied. Please grant permission when prompted by your OS.",
@@ -204,7 +203,7 @@ export async function POST(request: Request): Promise<NextResponse<ImportRespons
     }
 
     if (error?.message?.includes("not found") || error?.message?.includes("ENOENT")) {
-      return NextResponse.json(
+      return Response.json(
         {
           success: false,
           error:
@@ -214,7 +213,7 @@ export async function POST(request: Request): Promise<NextResponse<ImportRespons
       );
     }
 
-    return NextResponse.json(
+    return Response.json(
       {
         success: false,
         error: "Failed to import credentials",

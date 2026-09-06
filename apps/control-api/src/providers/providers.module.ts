@@ -6,9 +6,11 @@ import { ProviderPolicyService } from "./provider-policy.service.js";
 import { ProviderClientService } from "./provider-client.service.js";
 import { ProviderOnboardingController } from "./provider-onboarding.controller.js";
 import { ProviderOnboardingService } from "./provider-onboarding.service.js";
+import { ZedImportModule } from "./zed/zed-import.module.js";
+import { VolcenginePlanModule } from "./volcengine/volcengine-plan.module.js";
 
 @Module({
-  imports: [CommonModule],
+  imports: [CommonModule, ZedImportModule, VolcenginePlanModule],
   controllers: [ProvidersController, ProviderOnboardingController],
   providers: [ProvidersService, ProviderPolicyService, ProviderClientService, ProviderOnboardingService],
 })

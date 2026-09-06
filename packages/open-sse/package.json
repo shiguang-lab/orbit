@@ -149,6 +149,14 @@
       "types": "./public/taskAwareRouter.d.ts",
       "import": "./services/taskAwareRouter.ts"
     },
+    "./services/volcengineConsoleAutoLogin": {
+      "types": "./public/volcengineConsoleAutoLogin.d.ts",
+      "import": "./services/volcengineConsoleAutoLogin.ts"
+    },
+    "./services/inAppLoginService": {
+      "types": "./public/inAppLoginService.d.ts",
+      "import": "./services/inAppLoginService.ts"
+    },
     "./*": {
       "types": "./*",
       "import": "./*"

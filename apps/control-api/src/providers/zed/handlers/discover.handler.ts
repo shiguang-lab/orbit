@@ -15,12 +15,11 @@
  * raw token, only a 16-char fingerprint of `sha256(service|account|token)`.
  */
 
-import { NextResponse } from "next/server";
-import { discoverZedCredentials, isZedInstalled } from "../../../../../lib/zed-oauth/keychain-reader.ts";
-import { partitionZedCredentials } from "../../../../../lib/zed-oauth/importUtils.ts";
-import { fingerprintZedCredential } from "../../../../../lib/zed-oauth/credentialFingerprint.ts";
-import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
-import { isRunningInDocker } from "../../../../../lib/zed-oauth/dockerDetect.ts";
+import { discoverZedCredentials, isZedInstalled } from "../keychain-reader.js";
+import { partitionZedCredentials } from "../import-utils.js";
+import { fingerprintZedCredential } from "../credential-fingerprint.js";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { isRunningInDocker } from "../docker-detect.js";
 
 interface DiscoverCandidate {
   provider: string;
@@ -39,13 +38,13 @@ interface DiscoverResponse {
   error?: string;
 }
 
-export async function POST(request: Request): Promise<NextResponse<DiscoverResponse> | Response> {
+export async function POST(request: Request): Promise<Response> {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 
   try {
     if (isRunningInDocker()) {
-      return NextResponse.json(
+      return Response.json(
         {
           success: false,
           error:
@@ -60,7 +59,7 @@ export async function POST(request: Request): Promise<NextResponse<DiscoverRespo
 
     const zedInstalled = await isZedInstalled();
     if (!zedInstalled) {
-      return NextResponse.json(
+      return Response.json(
         {
           success: false,
           error: "Zed IDE does not appear to be installed on this system.",
@@ -81,7 +80,7 @@ export async function POST(request: Request): Promise<NextResponse<DiscoverRespo
       fingerprint: fingerprintZedCredential(cred.service, cred.account, cred.token),
     }));
 
-    return NextResponse.json({
+    return Response.json({
       success: true,
       zedInstalled: true,
       count: candidates.length,
@@ -97,7 +96,7 @@ export async function POST(request: Request): Promise<NextResponse<DiscoverRespo
     console.error("[Zed Discover] Error reading keychain:", error);
 
     if (error?.message?.includes("User canceled") || error?.message?.includes("denied")) {
-      return NextResponse.json(
+      return Response.json(
         {
           success: false,
           error: "Keychain access denied. Please grant permission when prompted by your OS.",
@@ -106,7 +105,7 @@ export async function POST(request: Request): Promise<NextResponse<DiscoverRespo
       );
     }
 
-    return NextResponse.json(
+    return Response.json(
       {
         success: false,
         error: "Failed to discover Zed credentials",

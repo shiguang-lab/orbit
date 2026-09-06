@@ -1,18 +1,17 @@
-import { NextResponse } from "next/server";
-import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
-import { bindVolcenginePlansFromConsoleCredentials } from "../../../../../lib/providers/volcenginePlanBinding.ts";
-import { sanitizeErrorMessage } from "../../../../../../../open-sse/utils/error.ts";
-import { formatValidationMessage, validateBody } from "../../../../../shared/validation/helpers.ts";
-import { volcenginePlanConnectSchema } from "../../../../../shared/validation/schemas/volcenginePlan.ts";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { bindVolcenginePlansFromConsoleCredentials } from "../volcengine-plan.binding.js";
+import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { formatValidationMessage, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { volcenginePlanConnectSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas";
 
-export async function POST(request: Request): Promise<NextResponse> {
+export async function POST(request: Request): Promise<Response> {
   const auth = await requireManagementAuth(request);
   if (auth) return auth;
 
   const raw = await request.json().catch(() => ({}));
   const validation = validateBody(volcenginePlanConnectSchema, raw);
   if (!validation.success) {
-    return NextResponse.json(
+    return Response.json(
       { success: false, error: formatValidationMessage(validation.error) },
       { status: 400 }
     );
@@ -23,16 +22,16 @@ export async function POST(request: Request): Promise<NextResponse> {
   if (phone) {
     try {
       const { volcengineConsoleAutoLoginService } = await import(
-        "../../../../../../../open-sse/services/volcengineConsoleAutoLogin.ts"
+        "@shiguang-gateway/open-sse/services/volcengineConsoleAutoLogin"
       );
       const started = await volcengineConsoleAutoLoginService.startLogin(phone, { timeout });
       if (!started.ok) {
-        return NextResponse.json({ success: false, error: started.error }, { status: 400 });
+        return Response.json({ success: false, error: started.error }, { status: 400 });
       }
-      return NextResponse.json({ success: true, session: started.session });
+      return Response.json({ success: true, session: started.session });
     } catch (error) {
       const message = sanitizeErrorMessage(error instanceof Error ? error.message : error);
-      return NextResponse.json(
+      return Response.json(
         { success: false, error: `Volcano auto login failed to start: ${message}` },
         { status: 500 }
       );
@@ -41,20 +40,20 @@ export async function POST(request: Request): Promise<NextResponse> {
 
   // Legacy manual flow: headful browser login on the server machine.
   try {
-    const { inAppLoginService } = await import("../../../../../../../open-sse/services/inAppLoginService.ts");
+    const { inAppLoginService } = await import("@shiguang-gateway/open-sse/services/inAppLoginService");
     const login = await inAppLoginService.startLogin("volcengine-console", { timeout });
     if (!login.success || !login.credentials) {
-      return NextResponse.json(
+      return Response.json(
         { success: false, error: login.error || "Volcano console login failed" },
         { status: 400 }
       );
     }
 
     const binding = await bindVolcenginePlansFromConsoleCredentials(login.credentials);
-    return NextResponse.json({ success: true, binding });
+    return Response.json({ success: true, binding });
   } catch (error) {
     const message = sanitizeErrorMessage(error instanceof Error ? error.message : error);
-    return NextResponse.json(
+    return Response.json(
       { success: false, error: `Volcano account binding failed: ${message}` },
       { status: 500 }
     );

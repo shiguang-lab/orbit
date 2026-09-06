@@ -1,5 +1,5 @@
-import { AI_PROVIDERS } from "../../shared/constants/providers.ts";
-import type { ZedCredential } from "./keychain-reader";
+import { AI_PROVIDERS } from "@shiguang-gateway/core-domain/catalog/providers";
+import type { ZedCredential } from "./keychain-reader.js";
 
 export interface PartitionedZedCredentials {
   importable: ZedCredential[];
