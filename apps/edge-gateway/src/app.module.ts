@@ -25,6 +25,7 @@ import { MuseCodeModule } from "./muse-code/muse-code.module.js";
 import { ProviderModelsModule } from "./provider-models/provider-models.module.js";
 import { ModelsModule } from "./models/models.module.js";
 import { ProviderChatModule } from "./provider-chat/provider-chat.module.js";
+import { ProviderEmbeddingsModule } from "./provider-embeddings/provider-embeddings.module.js";
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { ProviderChatModule } from "./provider-chat/provider-chat.module.js";
     ProviderModelsModule,
     ModelsModule,
     ProviderChatModule,
+    ProviderEmbeddingsModule,
   ],
 })
 export class AppModule {}

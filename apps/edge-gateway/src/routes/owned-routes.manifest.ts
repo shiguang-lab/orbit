@@ -46,6 +46,7 @@ export const ownedEdgeRoutes: readonly OwnedRoute[] = [
   { path: "/v1/videos/generations", methods: ["GET", "OPTIONS", "POST"] },
   { path: "/v1/ws", methods: ["GET", "OPTIONS"] },
   { path: "/v1/providers/:provider/models", methods: ["GET", "OPTIONS"] },
+  { path: "/v1/providers/:provider/embeddings", methods: ["OPTIONS", "POST"] },
 ];
 
 /** Paths physically owned by edge-gateway, expressed as compatibility catalog segments. */
