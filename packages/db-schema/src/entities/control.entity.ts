@@ -183,3 +183,30 @@ export const PluginEntity: EntityDefinition = {
     column("activated_at", "TEXT"),
   ],
 };
+
+/** Operator overrides applied by edge model resolution and managed in control. */
+export const ModelContextOverrideEntity: EntityDefinition = {
+  entityName: "ModelContextOverride",
+  tableName: "model_context_overrides",
+  owner: "control-api",
+  columns: [
+    column("provider", "TEXT", { nullable: false, primaryKey: true }),
+    column("model_id", "TEXT", { nullable: false, primaryKey: true }),
+    column("real_context", "INTEGER", { nullable: false }),
+    column("source", "TEXT", { nullable: false, default: "'manual'" }),
+    column("refreshed_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
+export const ModelCapabilityOverrideEntity: EntityDefinition = {
+  entityName: "ModelCapabilityOverride",
+  tableName: "model_capability_overrides",
+  owner: "control-api",
+  columns: [
+    column("provider", "TEXT", { nullable: false, primaryKey: true }),
+    column("model_id", "TEXT", { nullable: false, primaryKey: true }),
+    column("override_key", "TEXT", { nullable: false, primaryKey: true }),
+    column("override_value", "TEXT", { nullable: false }),
+    column("refreshed_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};

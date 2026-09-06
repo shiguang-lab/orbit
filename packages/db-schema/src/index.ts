@@ -5,6 +5,8 @@ import {
   KeyGroupEntity,
   ModelComboMappingEntity,
   ApiKeyTokenLimitEntity,
+  ModelCapabilityOverrideEntity,
+  ModelContextOverrideEntity,
   PluginEntity,
   ProviderConnectionEntity,
   ProviderNodeEntity,
@@ -62,6 +64,8 @@ export const GATEWAY_TABLES = {
   providerPlans: "provider_plans",
   plugins: "plugins",
   modelCapabilities: "model_capabilities",
+  modelContextOverrides: "model_context_overrides",
+  modelCapabilityOverrides: "model_capability_overrides",
 } as const;
 
 export type GatewayTable = (typeof GATEWAY_TABLES)[keyof typeof GATEWAY_TABLES];
@@ -103,6 +107,8 @@ export const TABLE_OWNERSHIP: readonly TableRef[] = [
   { table: GATEWAY_TABLES.providerPlans, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.plugins, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.modelCapabilities, owner: "worker", access: "read-write" },
+  { table: GATEWAY_TABLES.modelContextOverrides, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.modelCapabilityOverrides, owner: "control-api", access: "read-write" },
 ];
 
 /**
@@ -138,6 +144,8 @@ export const GATEWAY_ENTITIES = {
   providerPlans: ProviderPlanEntity,
   plugins: PluginEntity,
   modelCapabilities: ModelCapabilitiesEntity,
+  modelContextOverrides: ModelContextOverrideEntity,
+  modelCapabilityOverrides: ModelCapabilityOverrideEntity,
 } satisfies Record<keyof typeof GATEWAY_TABLES, EntityDefinition>;
 
 /** Runtime guard used by architecture checks and tests. */

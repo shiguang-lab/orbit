@@ -65,13 +65,13 @@ The entity write owners are intentionally narrower than those consumers:
 
 | Owner | Entities |
 | --- | --- |
-| `control-api` | settings, providerConnections, providerNodes, apiKeys, apiKeyGroups, combos, modelComboMappings, webhooks, apiKeyTokenLimits, providerPlans, plugins |
+| `control-api` | settings, providerConnections, providerNodes, apiKeys, apiKeyGroups, combos, modelComboMappings, webhooks, apiKeyTokenLimits, providerPlans, plugins, modelContextOverrides, modelCapabilityOverrides |
 | `edge-gateway` | batches, files, agenticConversations, conversationTurnNodes, apiKeyTokenCounters, apiKeyTokenLimitResetLogs, providerQuotaState |
 | `worker` | usageHistory, callLogs, proxyLogs, quotaSnapshots, auditLogs, memories, jobs, modelCapabilities |
 
 The promoted entities have concrete cross-app evidence: edge creates conversation
 roots/turn identities while control reads them; control configures token limits,
-provider plans and plugins while edge enforces or executes them; edge owns the
+provider plans, plugins and model capability overrides while edge enforces or executes them; edge owns the
 hot-path token/quota ledgers; and worker syncs model capabilities consumed by edge
 routing. Runtime-only tables such as `session_model_history` remain package-only
 until another deployable app needs them; a shared package import alone is not a
