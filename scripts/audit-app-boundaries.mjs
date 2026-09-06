@@ -638,6 +638,7 @@ const migratedRouteOwnership = {
     "api/v1/images/edits/route.ts",
     "api/v1/images/generations/route.ts",
     "api/v1/images/upscale/route.ts",
+    "api/v1/providers/[provider]/images/generations/route.ts",
     "api/v1/web/fetch/route.ts",
     "api/v1/ocr/route.ts",
     "api/v1/segment/route.ts",
