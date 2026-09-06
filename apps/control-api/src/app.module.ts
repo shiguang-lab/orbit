@@ -50,6 +50,7 @@ import { NinerouterModule } from "./services/ninerouter/ninerouter.module.js";
 import { UsageModule } from "./usage/usage.module.js";
 import { GamificationModule } from "./gamification/gamification.module.js";
 import { CliToolsModule } from "./cli-tools/cli-tools.module.js";
+import { CliproxyModule } from "./services/cliproxy/cliproxy.module.js";
 import { SyncModule } from "./sync/sync.module.js";
 
 @Module({
@@ -106,6 +107,7 @@ import { SyncModule } from "./sync/sync.module.js";
     UsageModule,
     GamificationModule,
     CliToolsModule,
+    CliproxyModule,
     SyncModule,
   ],
 })

@@ -27,11 +27,6 @@ async function getOrInitNamedSupervisor(name: string) {
   const existing = getSupervisor(name);
   if (existing) return existing;
 
-  if (name === "cliproxy") {
-    const { getOrInitSupervisor } = await import("../../cliproxy/_lib");
-    return getOrInitSupervisor();
-  }
-
   if (name === "9router") {
     const { getOrInitSupervisor } = await import("../../9router/_lib");
     return getOrInitSupervisor();
