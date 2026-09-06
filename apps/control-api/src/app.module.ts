@@ -59,6 +59,8 @@ import { RadarModule } from "./radar/radar.module.js";
 import { ResilienceModule } from "./resilience/resilience.module.js";
 import { ToolsModule } from "./tools/tools.module.js";
 import { RegisteredKeysModule } from "./registered-keys/registered-keys.module.js";
+import { PlaygroundModule } from "./playground/playground.module.js";
+import { CloudModule } from "./cloud/cloud.module.js";
 
 @Module({
   imports: [
@@ -123,6 +125,8 @@ import { RegisteredKeysModule } from "./registered-keys/registered-keys.module.j
     ResilienceModule,
     ToolsModule,
     RegisteredKeysModule,
+    PlaygroundModule,
+    CloudModule,
   ],
 })
 export class AppModule {}
