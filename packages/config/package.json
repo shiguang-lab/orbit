@@ -21,6 +21,10 @@
     "./dataPaths": {
       "types": "./src/dataPaths.ts",
       "import": "./src/dataPaths.ts"
+    },
+    "./oauth": {
+      "types": "./src/oauth.ts",
+      "import": "./src/oauth.ts"
     }
   },
   "scripts": {

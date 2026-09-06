@@ -18,6 +18,11 @@ import {
 import { resolvePublicCred } from "../../../../../open-sse/utils/publicCreds.ts";
 import { CURSOR_AGENT_CLI_VERSION } from "../../../../../open-sse/utils/cursorAgentCliVersion.ts";
 import { buildGitLabOAuthEndpoints, GITLAB_DUO_DEFAULT_BASE_URL } from "../gitlab";
+import {
+  CODEBUDDY_CN_CONFIG as SHARED_CODEBUDDY_CN_CONFIG,
+  AWS_REGION_PATTERN as SHARED_AWS_REGION_PATTERN,
+  assertValidAwsRegion as sharedAssertValidAwsRegion,
+} from "@shiguang-gateway/config/oauth";
 
 /**
  * OAuth Configuration Constants
@@ -103,15 +108,7 @@ export const QODER_CONFIG = {
 // CodeBuddy CN (Tencent — copilot.tencent.com) OAuth Configuration
 // (Custom Device-Auth Flow: POST stateUrl → open authUrl → GET pollUrl?state=).
 // No client_id/secret — the upstream CLI ships none.
-export const CODEBUDDY_CN_CONFIG = {
-  baseUrl: "https://copilot.tencent.com",
-  stateUrl: "https://copilot.tencent.com/v2/plugin/auth/state",
-  tokenUrl: "https://copilot.tencent.com/v2/plugin/auth/token",
-  refreshUrl: "https://copilot.tencent.com/v2/plugin/auth/token/refresh",
-  userAgent: "CLI/2.63.2 CodeBuddy/2.63.2",
-  platform: "CLI",
-  pollInterval: 5000,
-};
+export const CODEBUDDY_CN_CONFIG = SHARED_CODEBUDDY_CN_CONFIG;
 
 // Grok Build (xAI) OAuth Configuration (Device Code + import-token fallback)
 // Public client_id resolved through resolvePublicCred so it is never a literal.
@@ -318,14 +315,8 @@ export const GITLAB_DUO_CONFIG = {
 // region like "127.0.0.1" or "evil.com" would redirect the proxy's outbound
 // fetch to an attacker-controlled host. Canonical AWS region shape only:
 // two letters, dash, one-or-more letters, dash, one-or-two digits.
-export const AWS_REGION_PATTERN = /^[a-z]{2}-[a-z]+-\d{1,2}$/;
-
-export function assertValidAwsRegion(region: string): string {
-  if (typeof region !== "string" || !AWS_REGION_PATTERN.test(region)) {
-    throw new Error("Invalid region");
-  }
-  return region;
-}
+export const AWS_REGION_PATTERN = SHARED_AWS_REGION_PATTERN;
+export const assertValidAwsRegion = sharedAssertValidAwsRegion;
 
 // Kiro OAuth Configuration
 // Supports multiple auth methods:

@@ -15,8 +15,7 @@ export async function refreshCodebuddyCnToken(
   proxyConfig: unknown = null
 ) {
   if (!refreshToken) return null;
-  const { CODEBUDDY_CN_CONFIG } = await import("../../../../core-domain/src/lib/oauth/constants/oauth.ts");
-  const oauth = CODEBUDDY_CN_CONFIG;
+  const { CODEBUDDY_CN_CONFIG: oauth } = await import("@shiguang-gateway/config/oauth");
   try {
     const response = await runWithProxyContext(proxyConfig, () =>
       fetch(oauth.refreshUrl, {
