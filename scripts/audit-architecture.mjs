@@ -50,6 +50,20 @@ for (const legacyUiPath of ["src/shared/components", "src/shared/hooks"]) {
     );
   }
 }
+const coreDomainDir = join(root, "packages/core-domain");
+const coreDomainManifest = readJson(join(coreDomainDir, "package.json"));
+if (coreDomainManifest?.dependencies?.next || coreDomainManifest?.dependencies?.["next-intl"]) {
+  fail(
+    "domain-transport-dependency",
+    join(coreDomainDir, "package.json"),
+    "core-domain must not depend on the retired Next.js application transport",
+  );
+}
+for (const file of walkFiles(join(coreDomainDir, "src"), (path) => /\.[cm]?[jt]sx?$/.test(path))) {
+  if (/from\s+["']next(?:\/[^"']*)?["']/.test(readFileSync(file, "utf8"))) {
+    fail("domain-transport-import", file, "transport-neutral domain source must not import Next.js");
+  }
+}
 
 for (const [name, shape] of Object.entries(appKinds)) {
   const dir = join(root, "apps", name);

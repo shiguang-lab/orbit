@@ -9,7 +9,6 @@
  */
 
 import { createHash, timingSafeEqual } from "crypto";
-import type { NextRequest } from "next/server";
 import { isRequireApiKeyEnabled } from "../../shared/utils/featureFlags.ts";
 import { extractA2AApiKey, isValidA2AApiKey } from "./apiKey.ts";
 
@@ -26,7 +25,7 @@ function tokensMatch(provided: string, expected: string): boolean {
  * otherwise honor the legacy explicit A2A key; otherwise stay keyless (the
  * same local-first default as /v1).
  */
-export async function authenticateA2ARequest(req: NextRequest | Request): Promise<boolean> {
+export async function authenticateA2ARequest(req: Request): Promise<boolean> {
   const apiKey = extractA2AApiKey(req);
   if (isRequireApiKeyEnabled()) {
     return apiKey ? await isValidA2AApiKey(apiKey) : false;
@@ -46,7 +45,7 @@ export async function authenticateA2ARequest(req: NextRequest | Request): Promis
  * caller's API key, or `undefined` when the call carries no key (keyless
  * posture — ownerless tasks stay visible to everyone, by design).
  */
-export function resolveA2AOwner(req: NextRequest | Request): string | undefined {
+export function resolveA2AOwner(req: Request): string | undefined {
   const apiKey = extractA2AApiKey(req);
   if (!apiKey) return undefined;
   return createHash("sha256").update(apiKey).digest("hex").slice(0, 32);

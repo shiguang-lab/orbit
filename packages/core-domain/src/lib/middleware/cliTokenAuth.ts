@@ -1,5 +1,4 @@
 import crypto from "node:crypto";
-import { headers } from "next/headers";
 
 import { getLegacyCliTokenSync, getMachineTokenSync } from "../machineToken.ts";
 import { AUTHZ_HEADER_PEER_LOCALITY } from "../../server/authz/headers.ts";
@@ -17,22 +16,11 @@ export function isLoopback(ip: string): boolean {
 }
 
 /**
- * Read a header value preferring the Request's own headers (works in any
- * context — App Router request handlers, unit tests, raw fetch) and falling
- * back to `next/headers` only when the request object isn't carrying them.
- *
- * Calling `headers()` outside a request scope throws (see Next.js
- * `next-dynamic-api-wrong-context`), so we guard the import.
+ * Read a header from the explicit request. Transport adapters are responsible
+ * for preserving the peer-derived headers before entering this shared guard.
  */
 async function readHeader(request: Request, name: string): Promise<string | null> {
-  const fromRequest = request.headers?.get(name);
-  if (fromRequest != null) return fromRequest;
-  try {
-    const hdrs = await headers();
-    return hdrs.get(name);
-  } catch {
-    return null;
-  }
+  return request.headers?.get(name) ?? null;
 }
 
 function firstHeaderIp(value: string | null): string | null {

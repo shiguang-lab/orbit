@@ -8,7 +8,6 @@
  */
 
 import { jwtVerify } from "jose";
-import { cookies } from "next/headers";
 import { getSettings } from "../../lib/localDb.ts";
 import { isPublicApiRoute } from "../constants/publicApiRoutes.ts";
 import { extractApiKey } from "@shiguang-gateway/auth";
@@ -236,15 +235,6 @@ export async function isDashboardSessionAuthenticated(
     token = getCookieValueFromHeader(requestHeaders, "auth_token");
   }
 
-  if (!token) {
-    try {
-      const cookieStore = await cookies();
-      token = cookieStore.get("auth_token")?.value || null;
-    } catch {
-      token = null;
-    }
-  }
-
   if (!token) return false;
 
   try {
@@ -287,7 +277,7 @@ export async function verifyAuth(request: any): Promise<string | null> {
 /**
  * Check if a request is authenticated — boolean convenience wrapper for route handlers.
  *
- * Uses `cookies()` from next/headers (App Router compatible) and Bearer API key.
+ * Uses the explicit request cookie/header data and Bearer API key.
  * Returns true if authenticated, false otherwise.
  *
  * Unlike `verifyAuth`, this does NOT check `isAuthRequired()` — callers that
