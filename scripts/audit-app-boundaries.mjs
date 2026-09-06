@@ -122,6 +122,12 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "shared/webhook-dispatcher",
   "shared/webhook-events",
   "shared/webhook-integrations/",
+  "control/api-key-auth",
+  "shared/auto-disable-banned",
+  "shared/node-runtime-support",
+  "shared/free-models",
+  "shared/cors-status",
+  "shared/authz-route-constants",
 );
 
 // Route files that have completed a physical ownership move. Keep this list
@@ -240,6 +246,12 @@ const migratedRouteOwnership = {
     "api/settings/database/vacuum/route.ts",
     "api/settings/database/refresh-stats/route.ts",
     "api/settings/feature-flags/route.ts",
+    "api/settings/auto-disable-accounts/route.ts",
+    "api/settings/background-degradation/route.ts",
+    "api/settings/require-login/route.ts",
+    "api/settings/ip-filter/route.ts",
+    "api/settings/payload-rules/route.ts",
+    "api/settings/authz-inventory/route.ts",
     "api/settings/cache-config/route.ts",
     "api/settings/cache-metrics/route.ts",
     "api/settings/lkgp-cache/route.ts",

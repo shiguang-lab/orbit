@@ -206,6 +206,26 @@
       "types": "./src/public/settings.d.ts",
       "import": "./src/lib/db/settings.ts"
     },
+    "./shared/auto-disable-banned": {
+      "types": "./src/public/autoDisableBanned.d.ts",
+      "import": "./src/shared/utils/autoDisableBanned.ts"
+    },
+    "./shared/node-runtime-support": {
+      "types": "./src/public/nodeRuntimeSupport.d.ts",
+      "import": "./src/shared/utils/nodeRuntimeSupport.ts"
+    },
+    "./shared/free-models": {
+      "types": "./src/public/freeModels.d.ts",
+      "import": "./src/shared/utils/freeModels.ts"
+    },
+    "./shared/cors-status": {
+      "types": "./src/public/corsStatus.d.ts",
+      "import": "./src/server/cors/origins.ts"
+    },
+    "./shared/authz-route-constants": {
+      "types": "./src/public/authzRouteConstants.d.ts",
+      "import": "./src/server/authz/routeGuard.ts"
+    },
     "./control/lkgp-cache": {
       "types": "./src/public/lkgpCache.d.ts",
       "import": "./src/control/lkgpCache.ts"
@@ -346,6 +366,10 @@
     "./control/authenticated": {
       "types": "./src/public/authenticated.d.ts",
       "import": "./src/shared/utils/apiAuth.ts"
+    },
+    "./control/api-key-auth": {
+      "types": "./src/public/apiKeyAuth.d.ts",
+      "import": "./src/sse/services/auth.ts"
     },
     "./control/synced-models": {
       "types": "./src/public/syncedModels.d.ts",

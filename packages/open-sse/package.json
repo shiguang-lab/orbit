@@ -65,6 +65,18 @@
       "types": "./public/thinkingBudget.d.ts",
       "import": "./services/thinkingBudget.ts"
     },
+    "./services/backgroundTaskDetector": {
+      "types": "./public/backgroundTaskDetector.d.ts",
+      "import": "./services/backgroundTaskDetector.ts"
+    },
+    "./services/ipFilter": {
+      "types": "./public/ipFilter.d.ts",
+      "import": "./services/ipFilter.ts"
+    },
+    "./services/payloadRules": {
+      "types": "./public/payloadRules.d.ts",
+      "import": "./services/payloadRules.ts"
+    },
     "./services/combo": {
       "types": "./public/combo.d.ts",
       "import": "./services/combo.ts"

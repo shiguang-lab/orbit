@@ -12,3 +12,5 @@ export function ensurePersistentManagementPasswordHash(options?: {
 }): Promise<EnsuredManagementPassword>;
 export function getStoredManagementPassword(settings: Record<string, unknown> | null | undefined): string;
 export function verifyManagementPassword(password: string, hash: string): Promise<boolean>;
+export function hasManagementPasswordConfigured(settings: Record<string, unknown> | null | undefined): boolean;
+export function hashManagementPassword(password: string): Promise<string>;
