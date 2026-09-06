@@ -15,7 +15,6 @@ export * from "./schemas/translator";
 export * from "./schemas/cloud";
 export * from "./schemas/misc";
 export * from "./schemas/reasoningRouting";
-export * from "./memory";
-export * from "./memory";
+export * from "../schemas/memory";
 export { validateBody, isValidationFailure } from "./helpers";
 export type { ValidationResult } from "./helpers";
