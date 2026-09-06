@@ -19,7 +19,7 @@ import { ProviderClientService } from "./provider-client.service.js";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
+import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import {
   updateCcAliasSettingSchema,
@@ -40,7 +40,7 @@ export class ProvidersController {
   async getCcAlias(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply) {
     if (!(await this.authorizeManagement(request, reply))) return;
     try { return reply.send(this.providerPolicy.getCcAlias(id)); }
-    catch (error) { return reply.status(500).send(buildErrorBody(500, String(error))); }
+    catch (error) { return reply.status(500).send(buildErrorBody(500, sanitizeErrorMessage(error))); }
   }
 
   @Put("providers/:id/cc-alias")
@@ -51,14 +51,14 @@ export class ProvidersController {
     try {
       this.providerPolicy.updateCcAlias(id, validation.data);
       return reply.send({ success: true });
-    } catch (error) { return reply.status(500).send(buildErrorBody(500, String(error))); }
+    } catch (error) { return reply.status(500).send(buildErrorBody(500, sanitizeErrorMessage(error))); }
   }
 
   @Get("providers/:id/interception-rules")
   async getInterceptionRules(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply) {
     if (!(await this.authorizeManagement(request, reply))) return;
     try { return reply.send(this.providerPolicy.getInterception(id)); }
-    catch (error) { return reply.status(500).send(buildErrorBody(500, String(error))); }
+    catch (error) { return reply.status(500).send(buildErrorBody(500, sanitizeErrorMessage(error))); }
   }
 
   @Put("providers/:id/interception-rules")
@@ -69,21 +69,21 @@ export class ProvidersController {
     try {
       this.providerPolicy.updateInterception(id, validation.data);
       return reply.send({ success: true });
-    } catch (error) { return reply.status(500).send(buildErrorBody(500, String(error))); }
+    } catch (error) { return reply.status(500).send(buildErrorBody(500, sanitizeErrorMessage(error))); }
   }
 
   @Delete("providers/:id/interception-rules")
   async deleteInterceptionRules(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply) {
     if (!(await this.authorizeManagement(request, reply))) return;
     try { this.providerPolicy.deleteInterception(id); return reply.send({ success: true }); }
-    catch (error) { return reply.status(500).send(buildErrorBody(500, String(error))); }
+    catch (error) { return reply.status(500).send(buildErrorBody(500, sanitizeErrorMessage(error))); }
   }
 
   @Get("providers/:id/param-filters")
   async getParamFilters(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply) {
     if (!(await this.authorizeManagement(request, reply))) return;
     try { return reply.send(this.providerPolicy.getParamFilters(id)); }
-    catch (error) { return reply.status(500).send(buildErrorBody(500, String(error))); }
+    catch (error) { return reply.status(500).send(buildErrorBody(500, sanitizeErrorMessage(error))); }
   }
 
   @Put("providers/:id/param-filters")
@@ -95,14 +95,14 @@ export class ProvidersController {
     try {
       this.providerPolicy.updateParamFilters(id, { block: block ?? [], allow: allow ?? [], models, autoLearn: autoLearn ?? false });
       return reply.send({ success: true });
-    } catch (error) { return reply.status(500).send(buildErrorBody(500, String(error))); }
+    } catch (error) { return reply.status(500).send(buildErrorBody(500, sanitizeErrorMessage(error))); }
   }
 
   @Delete("providers/:id/param-filters")
   async deleteParamFilters(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply) {
     if (!(await this.authorizeManagement(request, reply))) return;
     try { this.providerPolicy.deleteParamFilters(id); return reply.send({ success: true }); }
-    catch (error) { return reply.status(500).send(buildErrorBody(500, String(error))); }
+    catch (error) { return reply.status(500).send(buildErrorBody(500, sanitizeErrorMessage(error))); }
   }
 
   @Get("providers/client")
