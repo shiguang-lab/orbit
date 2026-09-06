@@ -28,3 +28,6 @@ export const updateRequireLoginSchema: z.ZodTypeAny;
 export const updateParamFilterConfigSchema: z.ZodTypeAny;
 export const updateInterceptionRulesSchema: z.ZodTypeAny;
 export const updateCcAliasSettingSchema: z.ZodTypeAny;
+export const taskRoutingModelMapSchema: z.ZodTypeAny;
+export const taskRoutingActionSchema: z.ZodTypeAny;
+export const updateTaskRoutingSchema: z.ZodTypeAny;

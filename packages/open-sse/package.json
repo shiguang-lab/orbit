@@ -73,6 +73,10 @@
       "types": "./public/backgroundTaskDetector.d.ts",
       "import": "./services/backgroundTaskDetector.ts"
     },
+    "./services/modelDeprecation": {
+      "types": "./public/modelDeprecation.d.ts",
+      "import": "./services/modelDeprecation.ts"
+    },
     "./services/ipFilter": {
       "types": "./public/ipFilter.d.ts",
       "import": "./services/ipFilter.ts"
@@ -104,6 +108,10 @@
     "./services/context-manager": {
       "types": "./public/contextManager.d.ts",
       "import": "./services/contextManager.ts"
+    },
+    "./services/taskAwareRouter": {
+      "types": "./public/taskAwareRouter.d.ts",
+      "import": "./services/taskAwareRouter.ts"
     },
     "./*": {
       "types": "./*",
