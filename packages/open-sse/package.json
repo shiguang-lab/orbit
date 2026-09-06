@@ -25,6 +25,18 @@
       "types": "./public/proxyDispatcher.d.ts",
       "import": "./utils/proxyDispatcher.ts"
     },
+    "./utils/earlyStreamKeepalive": {
+      "types": "./public/earlyStreamKeepalive.d.ts",
+      "import": "./utils/earlyStreamKeepalive.ts"
+    },
+    "./utils/keepaliveThreshold": {
+      "types": "./public/keepaliveThreshold.d.ts",
+      "import": "./utils/keepaliveThreshold.ts"
+    },
+    "./utils/aiSdkCompat": {
+      "types": "./public/aiSdkCompat.d.ts",
+      "import": "./utils/aiSdkCompat.ts"
+    },
     "./utils/logger": {
       "types": "./public/logger.d.ts",
       "import": "./utils/logger.ts"
