@@ -110,7 +110,9 @@ token-health/synced-models/provider-stats/provider-metrics/provider-nodes list/v
 speech-to-text, embeddings, audio-transcriptions, audio-speech, audio-translations, text-to-speech, image edits/generations/upscale, moderation, rerank, ElevenLabs voices, plus WebSocket handshake routes. Remaining route groups stay in
 `core-domain` until their dependencies can move without reintroducing a
 cross-app adapter; each subsequent move must update app registration and rerun
-the parity, import, and split-deployment smoke gates.
+the parity, import, and split-deployment smoke gates. Provider credential import
+and archive extraction (Claude, Codex, and Agy) are owned by the control
+`providers/auth` Nest feature; provider execution remains edge-owned.
 
 Nest HTTP apps keep transport entry points in `*.controller.ts` files registered
 through `*.module.ts`; app source must not add Next-style `*.route.ts` modules.
