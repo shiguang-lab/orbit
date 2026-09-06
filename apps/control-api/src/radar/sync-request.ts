@@ -1,26 +1,13 @@
 import { z } from "zod";
+import { readRequestBodyWithLimit, RequestBodyTooLargeError } from "@shiguang-gateway/core-domain/shared/body-size-guard";
 
-import {
-  readRequestBodyWithLimit,
-  RequestBodyTooLargeError,
-} from "../../../shared/middleware/bodySizeGuard.ts";
-
-/** Every Radar sync trigger is parameterless: absent or exactly `{}` only. */
 export const RadarSyncBodySchema = z.object({}).strict().optional();
-
 export const RADAR_SYNC_BODY_LIMIT_BYTES = 1024;
-
 export type RadarSyncBodyResult = "valid" | "invalid" | "too_large" | "read_error";
-
-export function radarSyncBodyError(
-  result: RadarSyncBodyResult
-): { status: 400 | 413; message: string } | null {
+export function radarSyncBodyError(result: RadarSyncBodyResult): { status: 400 | 413; message: string } | null {
   if (result === "valid") return null;
-  return result === "too_large"
-    ? { status: 413, message: "Request body too large" }
-    : { status: 400, message: "Invalid request body" };
+  return result === "too_large" ? { status: 413, message: "Request body too large" } : { status: 400, message: "Invalid request body" };
 }
-
 export async function validateRadarSyncBody(request: Request): Promise<RadarSyncBodyResult> {
   let rawBody: string;
   try {
@@ -30,12 +17,5 @@ export async function validateRadarSyncBody(request: Request): Promise<RadarSync
     return error instanceof RequestBodyTooLargeError ? "too_large" : "read_error";
   }
   if (rawBody.trim() === "") return "valid";
-
-  try {
-    return RadarSyncBodySchema.safeParse(JSON.parse(rawBody) as unknown).success
-      ? "valid"
-      : "invalid";
-  } catch {
-    return "invalid";
-  }
+  try { return RadarSyncBodySchema.safeParse(JSON.parse(rawBody) as unknown).success ? "valid" : "invalid"; } catch { return "invalid"; }
 }

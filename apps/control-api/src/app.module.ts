@@ -54,6 +54,7 @@ import { CliproxyModule } from "./services/cliproxy/cliproxy.module.js";
 import { MuxModule } from "./services/mux/mux.module.js";
 import { EmbeddedServiceLogsModule } from "./services/embedded-service-logs.module.js";
 import { SyncModule } from "./sync/sync.module.js";
+import { RadarModule } from "./radar/radar.module.js";
 
 @Module({
   imports: [
@@ -113,6 +114,7 @@ import { SyncModule } from "./sync/sync.module.js";
     MuxModule,
     EmbeddedServiceLogsModule,
     SyncModule,
+    RadarModule,
   ],
 })
 export class AppModule {}

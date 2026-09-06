@@ -222,6 +222,14 @@
       "types": "./src/public/gamificationDb.d.ts",
       "import": "./src/lib/db/gamification.ts"
     },
+    "./control/radar": { "types": "./src/public/radar.d.ts", "import": "./src/lib/radar/index.ts" },
+    "./control/radar-db": { "types": "./src/public/radar.d.ts", "import": "./src/lib/db/radar.ts" },
+    "./control/radar-sync": { "types": "./src/public/radar.d.ts", "import": "./src/lib/radar/sync.ts" },
+    "./control/radar-referrals-sync": { "types": "./src/public/radar.d.ts", "import": "./src/lib/radar/referralsSync.ts" },
+    "./control/radar-offers-sync": { "types": "./src/public/radar.d.ts", "import": "./src/lib/radar/offersSync.ts" },
+    "./control/radar-intel-sync": { "types": "./src/public/radar.d.ts", "import": "./src/lib/radar/intelSync.ts" },
+    "./control/radar-links": { "types": "./src/public/radar.d.ts", "import": "./src/lib/radar/links.ts" },
+    "./control/radar-supporter-key": { "types": "./src/public/radar.d.ts", "import": "./src/lib/radar/supporterKey.ts" },
     "./shared/public-safe-error": {
       "types": "./src/public/publicSafeTunnelError.d.ts",
       "import": "./src/lib/api/publicSafeTunnelError.ts"
@@ -800,7 +808,7 @@
     "./worker/lib/spend/batchWriter.ts": "./src/lib/spend/batchWriter.ts",
     "./worker/lib/services/quotaAutoPing.ts": "./src/lib/services/quotaAutoPing.ts",
     "./worker/lib/quota/connectionRecovery.ts": "./src/lib/quota/connectionRecovery.ts",
-    "./worker/lib/radar/scheduler.ts": "./src/lib/radar/scheduler.ts",
+    "./worker/lib/radar/scheduler.ts": { "types": "./src/public/radar.d.ts", "import": "./src/lib/radar/scheduler.ts" },
     "./worker/lib/services/bootstrap.ts": "./src/lib/services/bootstrap.ts",
     "./worker/lib/modelsDevSync.ts": "./src/lib/modelsDevSync.ts",
     "./worker/lib/pricingSync.ts": "./src/lib/pricingSync.ts",
