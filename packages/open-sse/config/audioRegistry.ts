@@ -7,11 +7,7 @@
  * - /v1/audio/speech (TTS API)
  */
 
-import { getRegistryEntry } from "./providerRegistry.ts";
-
-function getProviderAlias(providerId: string): string {
-  return getRegistryEntry(providerId)?.alias || providerId;
-}
+import { getProviderAlias } from "./providerConstants.ts";
 
 interface AudioModel {
   id: string;

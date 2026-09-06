@@ -38,10 +38,27 @@ const SELF_HOSTED_CHAT_PROVIDER_IDS = new Set([
   "oobabooga",
 ]);
 
+// Aliases needed by the audio registry's model-prefix parser. These providers
+// are intentionally not part of open-sse's chat registry, so resolve the
+// small execution-facing map locally instead of importing core-domain data.
+const PROVIDER_ALIASES: Readonly<Record<string, string>> = {
+  deepgram: "dg",
+  assemblyai: "aai",
+  soniox: "sx",
+  elevenlabs: "el",
+  "aws-polly": "polly",
+  "rev-ai": "revai",
+  speechmatics: "sm",
+};
+
 export function isLocalProvider(providerId: unknown): boolean {
   return typeof providerId === "string" && LOCAL_PROVIDER_IDS.has(providerId);
 }
 
 export function isSelfHostedChatProvider(providerId: unknown): boolean {
   return typeof providerId === "string" && SELF_HOSTED_CHAT_PROVIDER_IDS.has(providerId);
+}
+
+export function getProviderAlias(providerId: string): string {
+  return PROVIDER_ALIASES[providerId] || providerId;
 }
