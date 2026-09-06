@@ -21,6 +21,7 @@ import { CloudAgentsModule } from "./cloud-agents/cloud-agents.module.js";
 import { SessionLeasesModule } from "./session-leases/session-leases.module.js";
 import { ClassifyModule } from "./classify/classify.module.js";
 import { CombosModule } from "./combos/combos.module.js";
+import { MuseCodeModule } from "./muse-code/muse-code.module.js";
 import { ProviderModelsModule } from "./provider-models/provider-models.module.js";
 import { ModelsModule } from "./models/models.module.js";
 import { ProviderChatModule } from "./provider-chat/provider-chat.module.js";
@@ -50,6 +51,7 @@ import { ProviderChatModule } from "./provider-chat/provider-chat.module.js";
     SessionLeasesModule,
     ClassifyModule,
     CombosModule,
+    MuseCodeModule,
     ProviderModelsModule,
     ModelsModule,
     ProviderChatModule,

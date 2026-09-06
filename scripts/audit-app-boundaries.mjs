@@ -647,6 +647,7 @@ const migratedRouteOwnership = {
     "api/v1/batches/[id]/cancel/route.ts",
     "api/v1/batches/delete-completed/route.ts",
     "api/v1/models/[...model]/route.ts",
+    "api/v1/muse-code/models/route.ts",
   ],
 };
 

@@ -10,7 +10,7 @@
  * modalities, limit, cost.
  */
 
-import { muse_codeProvider } from "../../../../../../../open-sse/config/providers/registry/muse-code/index.ts";
+import { REGISTRY } from "@shiguang-gateway/open-sse/config/providerRegistry";
 
 const MUSECODE_TIMESTAMP = Math.floor(Date.now() / 1000);
 
@@ -33,7 +33,18 @@ interface MuseCodeModel {
 function buildModelCatalog(): MuseCodeModel[] {
   const data: MuseCodeModel[] = [];
 
-  for (const model of muse_codeProvider.models) {
+  const museCodeProvider = REGISTRY["muse-code"] as {
+    models?: Array<{
+      id: string;
+      name: string;
+      supportsVision?: boolean;
+      supportsReasoning?: boolean;
+      toolCalling?: boolean;
+      contextLength?: number;
+    }>;
+  } | undefined;
+
+  for (const model of museCodeProvider?.models ?? []) {
     let family = "llama";
     if (model.id.includes("llama-4")) family = "llama-4";
     else if (model.id.includes("llama-3.3")) family = "llama-3.3";
