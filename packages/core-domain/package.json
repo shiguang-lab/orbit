@@ -259,6 +259,10 @@
       "types": "./src/public/versionManagerControl.d.ts",
       "import": "./src/lib/versionManager/controlExports.ts"
     },
+    "./shared/embedded-services": {
+      "types": "./src/public/embeddedServices.d.ts",
+      "import": "./src/lib/services/embeddedExports.ts"
+    },
     "./control/dario-installer": {
       "types": "./src/public/darioInstaller.d.ts",
       "import": "./src/lib/services/installers/dario.ts"

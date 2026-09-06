@@ -166,7 +166,8 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "usage/provider-window-costs",
     "usage/route-explain",
     "db/quota-snapshots",
-    "shared/utilization",
+  "shared/utilization",
+  "shared/embedded-services",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push("catalog/providers");
 allowedCoreDomainSubpaths["apps/control-api"].push("db/cc-discovery-metrics");
@@ -372,6 +373,17 @@ const migratedRouteOwnership = {
     "api/services/dario/admin/import-from-gateway/route.ts",
     "api/services/dario/admin/login-complete/route.ts",
     "api/services/dario/admin/login-start/route.ts",
+    "api/services/9router/status/route.ts",
+    "api/services/9router/models/route.ts",
+    "api/services/9router/install/route.ts",
+    "api/services/9router/auto-start/route.ts",
+    "api/services/9router/auto-restart-adopted/route.ts",
+    "api/services/9router/provider-expose/route.ts",
+    "api/services/9router/start/route.ts",
+    "api/services/9router/restart/route.ts",
+    "api/services/9router/stop/route.ts",
+    "api/services/9router/rotate-key/route.ts",
+    "api/services/9router/update/route.ts",
     "api/usage/budget/route.ts",
     "api/usage/budget/bulk/route.ts",
     "api/usage/history/route.ts",
