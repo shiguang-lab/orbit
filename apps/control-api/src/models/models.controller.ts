@@ -1,5 +1,6 @@
-import { Controller, Inject, Post, Req, Res } from "@nestjs/common";
+import { Controller, Get, Inject, Post, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
+import { GET as getModels, PUT as putModelAlias } from "@shiguang-gateway/core-domain/control/models-route";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 import { ModelsService } from "./models.service.js";
 
@@ -9,6 +10,16 @@ export class ModelsController {
     @Inject(ModelsService) private readonly models: ModelsService,
     @Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher,
   ) {}
+
+  @Get()
+  get(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, (req) => getModels(req));
+  }
+
+  @Put()
+  put(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, (req) => putModelAlias(req));
+  }
 
   @Post("test")
   test(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {

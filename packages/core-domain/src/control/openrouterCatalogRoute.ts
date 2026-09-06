@@ -6,13 +6,13 @@
  *   ?refresh=true  — Force-refresh, ignores TTL
  */
 
-import { NextRequest, NextResponse } from "next/server";
-import { isAuthenticated } from "../../../../shared/utils/apiAuth.ts";
-import { getOpenRouterCatalog, refreshOpenRouterCatalog } from "../../../../lib/catalog/openrouterCatalog.ts";
-import { getSettings } from "../../../../lib/db/settings.ts";
-import { isFreeModel } from "../../../../shared/utils/freeModels.ts";
+import { NextResponse } from "next/server";
+import { isAuthenticated } from "../shared/utils/apiAuth.ts";
+import { getOpenRouterCatalog, refreshOpenRouterCatalog } from "../lib/catalog/openrouterCatalog.ts";
+import { getSettings } from "../lib/db/settings.ts";
+import { isFreeModel } from "../shared/utils/freeModels.ts";
 
-export async function GET(req: NextRequest) {
+export async function GET(req: Request) {
   // Require authentication (dashboard/API key)
   if (!(await isAuthenticated(req))) {
     return NextResponse.json(
@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
   const applyFilter = <T extends { id?: string }>(data: T[]): T[] =>
     hidePaid ? data.filter((m) => isFreeModel("or", m as { id: string; pricing?: unknown })) : data;
 
-  const forceRefresh = req.nextUrl.searchParams.get("refresh") === "true";
+  const forceRefresh = new URL(req.url).searchParams.get("refresh") === "true";
 
   if (forceRefresh) {
     const result = await refreshOpenRouterCatalog();

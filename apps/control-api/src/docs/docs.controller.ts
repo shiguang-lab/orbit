@@ -1,12 +1,13 @@
-import { Controller, Get, Req, Res } from "@nestjs/common";
+import { Controller, Get, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
-import { GET as docs } from "./handlers/docs.handler.js";
-import { GET as codexCli } from "./handlers/codex-cli.handler.js";
+import { getDocs, getCodexCli, getOpenApiSpec, postOpenApiTry } from "./handlers/index.js";
 
-@Controller("api/docs")
+@Controller()
 export class DocsController {
   constructor(private readonly routes: WebRouteDispatcher) {}
-  @Get() get(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, () => docs()); }
-  @Get("codex-cli") codex(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, () => codexCli()); }
+  @Get("api/docs") get(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, () => getDocs()); }
+  @Get("api/docs/codex-cli") codex(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, () => getCodexCli()); }
+  @Get("api/openapi/spec") spec(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, () => getOpenApiSpec()); }
+  @Post("api/openapi/try") tryIt(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, (request) => postOpenApiTry(request)); }
 }

@@ -552,6 +552,22 @@
       "types": "./src/public/controlModels.d.ts",
       "import": "./src/models/index.ts"
     },
+    "./control/model-alias-routes": {
+      "types": "./src/public/modelRouteHandlers.d.ts",
+      "import": "./src/control/modelAliasRoutes.ts"
+    },
+    "./control/model-catalog-route": {
+      "types": "./src/public/modelRouteHandlers.d.ts",
+      "import": "./src/control/modelCatalogRoute.ts"
+    },
+    "./control/models-route": {
+      "types": "./src/public/modelRouteHandlers.d.ts",
+      "import": "./src/control/modelsRoute.ts"
+    },
+    "./control/openrouter-catalog-route": {
+      "types": "./src/public/modelRouteHandlers.d.ts",
+      "import": "./src/control/openrouterCatalogRoute.ts"
+    },
     "./control/traffic-inspector": {
       "types": "./src/public/trafficInspectorControl.d.ts",
       "import": "./src/lib/inspector/trafficInspectorControlExports.ts"

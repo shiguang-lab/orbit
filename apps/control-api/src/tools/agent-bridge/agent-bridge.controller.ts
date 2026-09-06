@@ -27,4 +27,13 @@ export class AgentBridgeController {
   @Delete("cert") certDelete(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, (r) => this.service.certDelete(r)); }
   @Post("cert/regenerate") certRegenerate(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, () => this.service.certRegenerate()); }
   @Get("cert/download") certDownload(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, () => this.service.certDownload()); }
+  @Post("agents/:id/dns") dns(@Param("id") id: string, @Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, (r) => this.service.dns(r, id)); }
+  @Post("repair") repair(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, (r) => this.service.repair(r)); }
+  @Post("server") server(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, (r) => this.service.server(r)); }
+  @Get("tproxy") tproxyGet(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, () => this.service.tproxyGet()); }
+  @Post("tproxy") tproxyPost(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, (r) => this.service.tproxyPost(r)); }
+  @Delete("tproxy") tproxyDelete(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, () => this.service.tproxyDelete()); }
+  @Get("upstream-ca") upstreamCaGet(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, () => this.service.upstreamCaGet()); }
+  @Post("upstream-ca") upstreamCaPost(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, (r) => this.service.upstreamCaPost(r)); }
+  @Post("upstream-ca/test") upstreamCaTest(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, (r) => this.service.upstreamCaTest(r)); }
 }

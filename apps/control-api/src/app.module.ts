@@ -83,6 +83,7 @@ import { ChaosModule } from "./chaos/chaos.module.js";
 import { AdminModule } from "./admin/admin.module.js";
 import { JobsModule } from "./jobs/jobs.module.js";
 import { TunnelsModule } from "./tunnels/tunnels.module.js";
+import { DocsModule } from "./docs/docs.module.js";
 
 @Module({
   imports: [
@@ -171,6 +172,7 @@ import { TunnelsModule } from "./tunnels/tunnels.module.js";
     AdminModule,
     JobsModule,
     TunnelsModule,
+    DocsModule,
   ],
 })
 export class AppModule {}

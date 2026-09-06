@@ -1,15 +1,15 @@
 import { NextResponse } from "next/server";
-import { getModelAliases, setModelAlias, deleteModelAlias, isCloudEnabled } from "../../../../models/index.ts";
-import { getConsistentMachineId } from "../../../../shared/utils/machineId.ts";
-import { syncToCloud } from "../../../../lib/cloudSync.ts";
-import { cloudModelAliasUpdateSchema } from "../../../../shared/validation/schemas.ts";
-import { isValidationFailure, validateBody } from "../../../../shared/validation/helpers.ts";
+import { getModelAliases, setModelAlias, deleteModelAlias, isCloudEnabled } from "../models/index.ts";
+import { getConsistentMachineId } from "../shared/utils/machineId.ts";
+import { syncToCloud } from "../lib/cloudSync.ts";
+import { cloudModelAliasUpdateSchema } from "../shared/validation/schemas.ts";
+import { isValidationFailure, validateBody } from "../shared/validation/helpers.ts";
 import {
   INTERNAL_PROXY_ERROR,
   getCatalogDiagnosticsHeaders,
   resolveModelAliasLookup,
-} from "../../../../lib/modelMetadataRegistry.ts";
-import { requireManagementAuth } from "../../../../lib/api/requireManagementAuth.ts";
+} from "../lib/modelMetadataRegistry.ts";
+import { requireManagementAuth } from "../lib/api/requireManagementAuth.ts";
 
 // GET /api/models/alias - Get all aliases
 export async function GET(request) {

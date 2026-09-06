@@ -9,15 +9,16 @@ export interface AgentBridgeImportResult {
   customHosts: number;
   agents: number;
 }
-export const AgentBridgeConfigSchema: { safeParse(input: unknown): { success: boolean; data?: AgentBridgeConfig; error?: { issues: Array<{ message: string }> } } };
-export const AgentBridgeBypassUpsertSchema: { safeParse(input: unknown): { success: boolean; data?: { patterns: string[] }; error?: { flatten(): unknown } } };
-export const AgentBridgeMappingPutSchema: { safeParse(input: unknown): { success: boolean; data?: { mappings: Array<{ source: string; target: string }> }; error?: { flatten(): unknown } } };
-export const AgentBridgeStateRowSchema: { safeParse(input: unknown): { success: boolean } };
-export const AgentBridgeMappingRowSchema: { safeParse(input: unknown): { success: boolean } };
-export const AgentBridgeBypassRowSchema: { safeParse(input: unknown): { success: boolean } };
-export const AgentBridgeServerActionSchema: { safeParse(input: unknown): { success: boolean } };
-export const AgentBridgeDnsActionSchema: { safeParse(input: unknown): { success: boolean } };
-export const AgentBridgeUpstreamCaPostSchema: { safeParse(input: unknown): { success: boolean } };
+type SafeParseResult<T> = { success: true; data: T; error?: never } | { success: false; data?: never; error: { flatten(): unknown; issues?: Array<{ message: string }> } };
+export const AgentBridgeConfigSchema: { safeParse(input: unknown): SafeParseResult<AgentBridgeConfig> };
+export const AgentBridgeBypassUpsertSchema: { safeParse(input: unknown): SafeParseResult<{ patterns: string[] }> };
+export const AgentBridgeMappingPutSchema: { safeParse(input: unknown): SafeParseResult<{ mappings: Array<{ source: string; target: string }> }> };
+export const AgentBridgeStateRowSchema: { safeParse(input: unknown): SafeParseResult<AgentBridgeStateRow> };
+export const AgentBridgeMappingRowSchema: { safeParse(input: unknown): SafeParseResult<AgentBridgeMappingRow> };
+export const AgentBridgeBypassRowSchema: { safeParse(input: unknown): SafeParseResult<AgentBridgeBypassRow> };
+export const AgentBridgeServerActionSchema: { safeParse(input: unknown): SafeParseResult<{ action: "start" | "stop" | "restart" | "trust-cert" | "regenerate-cert" }> };
+export const AgentBridgeDnsActionSchema: { safeParse(input: unknown): SafeParseResult<{ enabled: boolean }> };
+export const AgentBridgeUpstreamCaPostSchema: { safeParse(input: unknown): SafeParseResult<{ path: string }> };
 
 export interface AgentBridgeStateRow {
   agent_id: string;

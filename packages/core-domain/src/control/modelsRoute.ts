@@ -1,23 +1,23 @@
 import { NextResponse } from "next/server";
-import { getModelAliases, setModelAlias, getProviderConnections } from "../../../models/index.ts";
-import { AI_MODELS, PROVIDER_ID_TO_ALIAS } from "../../../shared/constants/models.ts";
-import { updateModelAliasSchema } from "../../../shared/validation/schemas.ts";
-import { isValidationFailure, validateBody } from "../../../shared/validation/helpers.ts";
-import { hasEligibleConnectionForModel } from "../../../domain/connectionModelRules.ts";
-import { getSettings } from "../../../lib/db/settings.ts";
+import { getModelAliases, setModelAlias, getProviderConnections } from "../models/index.ts";
+import { AI_MODELS, PROVIDER_ID_TO_ALIAS } from "../shared/constants/models.ts";
+import { updateModelAliasSchema } from "../shared/validation/schemas.ts";
+import { isValidationFailure, validateBody } from "../shared/validation/helpers.ts";
+import { hasEligibleConnectionForModel } from "../domain/connectionModelRules.ts";
+import { getSettings } from "../lib/db/settings.ts";
 import {
   createModelCapabilityResolutionSnapshot,
   getResolvedModelCapabilities,
-} from "../../../lib/modelCapabilities.ts";
-import { isFreeModel, providerHasFreeModels } from "../../../shared/utils/freeModels.ts";
-import { getAllActiveSyncedModels } from "../../../lib/db/models/activeSyncedCatalog.ts";
-import { providerUsesExclusiveSyncedListing } from "../../../lib/providers/modelListingCapability.ts";
+} from "../lib/modelCapabilities.ts";
+import { isFreeModel, providerHasFreeModels } from "../shared/utils/freeModels.ts";
+import { getAllActiveSyncedModels } from "../lib/db/models/activeSyncedCatalog.ts";
+import { providerUsesExclusiveSyncedListing } from "../lib/providers/modelListingCapability.ts";
 import {
   buildSyncedModelIdsByCanonicalProvider,
   shouldSuppressStaticModelForExclusiveListing,
-} from "../../../lib/catalog/catalogSyncedCoverage.ts";
-import { buildAliasMaps } from "../../../lib/catalog/catalogProviderMaps.ts";
-import { resolveCanonicalProviderId as resolveCanonicalProviderIdFromMaps } from "../../../lib/catalog/catalogProviderMaps.ts";
+} from "../lib/catalog/catalogSyncedCoverage.ts";
+import { buildAliasMaps } from "../lib/catalog/catalogProviderMaps.ts";
+import { resolveCanonicalProviderId as resolveCanonicalProviderIdFromMaps } from "../lib/catalog/catalogProviderMaps.ts";
 
 interface GetModelsDependencies {
   createCapabilitySnapshot?: typeof createModelCapabilityResolutionSnapshot;
