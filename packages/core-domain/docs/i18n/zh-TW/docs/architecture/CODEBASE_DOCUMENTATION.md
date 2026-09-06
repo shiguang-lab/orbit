@@ -417,7 +417,7 @@ server/
   `errorCodes.ts`、`publicApiRoutes.ts`、`batch.ts`、`batchEndpoints.ts`、
   `bodySize.ts`、`colors.ts`、`appConfig.ts`、`config.ts`、
   `sidebarVisibility.ts`、`visionBridgeDefaults.ts`。
-- `validation/` — `schemas.ts`（約 80 個 Zod 架構）、`compressionConfigSchemas.ts`、
+- `validation/` — `schemas.ts`（約 80 個 Zod 架構）、
   `oneproxySchemas.ts`、`providerSchema.ts`、`settingsSchemas.ts`、`helpers.ts`。
 - `contracts/` — 發布到 npm 的公開 API 合約。
 - `types/` — 共用 TS 型別。

@@ -6,7 +6,7 @@ import {
   isValidationFailure,
   validateBody,
 } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { rtkConfigSchema } from "@shiguang-gateway/core-domain/shared/validation/compression-config-schemas";
+import { rtkConfigSchema } from "../../compression/compression-config-schemas.js";
 import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
 import {
   RTK_TOML_MAX_BYTES,

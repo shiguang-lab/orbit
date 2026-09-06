@@ -30,15 +30,13 @@ function providerData(connection: KiroConnectionLike): Record<string, unknown> {
     : {};
 }
 
-/** True when the identity carries something that identifies the ACCOUNT (not the profile). */
 function hasAccountIdentifier(identity: KiroConnectionIdentity): boolean {
   return Boolean(folded(identity.email) || trimmed(identity.clientId));
 }
 
-/** True when a shared field is present on both sides and disagrees — different accounts. */
 function contradictsAccount(
   connection: KiroConnectionLike,
-  identity: KiroConnectionIdentity
+  identity: KiroConnectionIdentity,
 ): boolean {
   const email = folded(identity.email);
   const existingEmail = folded(connection.email);
@@ -51,10 +49,9 @@ function contradictsAccount(
   return false;
 }
 
-/** Find an existing Kiro account without comparing OAuth tokens or API keys. */
 export function findKiroConnectionByIdentity(
   connections: KiroConnectionLike[],
-  identity: KiroConnectionIdentity
+  identity: KiroConnectionIdentity,
 ): KiroConnectionLike | null {
   const authType = folded(identity.authType);
   const candidates = authType
@@ -64,13 +61,8 @@ export function findKiroConnectionByIdentity(
   const profileArn = trimmed(identity.profileArn);
   if (profileArn) {
     const match = candidates.find(
-      (connection) => trimmed(providerData(connection).profileArn) === profileArn
+      (connection) => trimmed(providerData(connection).profileArn) === profileArn,
     );
-    // A profile ARN identifies the CodeWhisperer PROFILE, not the account: distinct
-    // Builder ID accounts (Google/GitHub social login) share the same ARN. Accepting it
-    // as identity made a second social login overwrite the first connection (#10815).
-    // Only trust the ARN when the incoming identity carries an account-level identifier
-    // that does not contradict the stored one.
     if (match && hasAccountIdentifier(identity) && !contradictsAccount(match, identity)) {
       return match;
     }
@@ -79,7 +71,7 @@ export function findKiroConnectionByIdentity(
   const clientId = trimmed(identity.clientId);
   if (clientId) {
     const match = candidates.find(
-      (connection) => trimmed(providerData(connection).clientId) === clientId
+      (connection) => trimmed(providerData(connection).clientId) === clientId,
     );
     if (match) return match;
   }

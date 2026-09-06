@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { compressionPreviewConfigSchema } from "@shiguang-gateway/core-domain/shared/validation/compression-config-schemas";
+import { compressionPreviewConfigSchema } from "./compression-config-schemas.js";
 import {
   applyCompression,
   applyCompressionAsync,

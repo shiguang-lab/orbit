@@ -9,7 +9,7 @@ import {
 import {
   compressionSettingsUpdateSchema,
   mcpAccessibilityConfigSchema,
-} from "@shiguang-gateway/core-domain/shared/validation/compression-config-schemas";
+} from "../../compression/compression-config-schemas.js";
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 import { CompressionSettingsService } from "./compression.service.js";
 

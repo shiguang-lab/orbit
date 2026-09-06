@@ -2,7 +2,7 @@ import { z } from "zod";
 import {
   cavemanIntensitySchema,
   stackedPipelineStepSchema,
-} from "@shiguang-gateway/core-domain/shared/validation/compression-config-schemas";
+} from "../compression/compression-config-schemas.js";
 
 export const compressionComboCreateSchema = z
   .object({

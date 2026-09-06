@@ -13,7 +13,7 @@ import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain
 import { isAuthRequired, isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
 import { buildKiroImportError } from "../import/handler.js";
 import { buildKiroApiKeyConnectionName, isKiroApiKeyImportClientError } from "./helpers.js";
-import { findKiroConnectionByIdentity } from "@shiguang-gateway/core-domain/control/oauth-runtime/kiroConnectionIdentity";
+import { findKiroConnectionByIdentity } from "../connection-identity.js";
 
 async function requireKiroApiKeyImportAuth(request: Request) {
   if (!(await isAuthRequired(request))) return null;

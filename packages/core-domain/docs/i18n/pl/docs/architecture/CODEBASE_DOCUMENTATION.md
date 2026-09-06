@@ -422,7 +422,7 @@ Podzielone na skupione podkatalogi:
   `errorCodes.ts`, `publicApiRoutes.ts`, `batch.ts`, `batchEndpoints.ts`,
   `bodySize.ts`, `colors.ts`, `appConfig.ts`, `config.ts`,
   `sidebarVisibility.ts`, `visionBridgeDefaults.ts`.
-- `validation/` — `schemas.ts` (~80 schematów Zod), `compressionConfigSchemas.ts`,
+- `validation/` — `schemas.ts` (~80 schematów Zod),
   `oneproxySchemas.ts`, `providerSchema.ts`, `settingsSchemas.ts`, `helpers.ts`.
 - `contracts/` — publiczne kontrakty API dostarczane do npm.
 - `types/` — współdzielone typy TS.

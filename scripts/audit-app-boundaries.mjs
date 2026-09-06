@@ -266,7 +266,6 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/cost-rules",
   "control/qdrant",
   "db/compression-run-telemetry",
-  "shared/validation/compression-config-schemas",
   "control/reasoning-routing",
   "shared/local-corpus",
   "control/notion-db",
@@ -1003,6 +1002,9 @@ const retiredAppOwnedExports = [
   "./control/cli-tools-mitm-alias",
   "./control/provider-expiration",
   "./control/resilience-types",
+  "./control/oauth-runtime/kiroConnectionIdentity",
+  "./shared/validation/compression-config-schemas",
+  "./shared/combo-test",
 ];
 for (const subpath of retiredAppOwnedExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {

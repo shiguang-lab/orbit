@@ -11,7 +11,6 @@ export function persistOAuthConnection(...args: any[]): Promise<any>;
 export function findExistingOAuthConnectionMatch(...args: any[]): any;
 export function buildOAuthConnectionCreatePayload(...args: any[]): any;
 export function parsePastedCredentials(...args: any[]): any;
-export function findKiroConnectionByIdentity(...args: any[]): any;
 export function classifyKiroSocialPoll(...args: any[]): any;
 export function normalizeCodexImportRecord(...args: any[]): any;
 export function flattenCodexImportPayload(...args: any[]): any;

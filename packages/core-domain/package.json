@@ -575,10 +575,6 @@
       "types": "./src/public/oauthRuntime.d.ts",
       "import": "./src/lib/oauth/pasteCredentials.ts"
     },
-    "./control/oauth-runtime/kiroConnectionIdentity": {
-      "types": "./src/public/oauthRuntime.d.ts",
-      "import": "./src/lib/oauth/kiroConnectionIdentity.ts"
-    },
     "./control/oauth-runtime/kiroSocialPoll": {
       "types": "./src/public/oauthRuntime.d.ts",
       "import": "./src/lib/oauth/kiroSocialPoll.ts"
@@ -840,10 +836,6 @@
       "types": "./src/public/cliSchemas.d.ts",
       "import": "./src/shared/validation/schemas/cli.ts"
     },
-    "./shared/validation/compression-config-schemas": {
-      "types": "./src/public/compressionConfigSchemas.d.ts",
-      "import": "./src/shared/validation/compressionConfigSchemas.ts"
-    },
     "./control/provider-validation-schemas": {
       "types": "./src/public/providerValidationSchemas.d.ts",
       "import": "./src/shared/validation/schemas.ts"
@@ -1028,10 +1020,6 @@
     "./shared/connection-isolation": {
       "types": "./src/public/connectionIsolation.d.ts",
       "import": "./src/lib/exclusiveLeaseIsolation.ts"
-    },
-    "./shared/combo-test": {
-      "types": "./src/public/comboTest.d.ts",
-      "import": "./src/lib/combos/testHealth.ts"
     },
     "./shared/combo-invariants": {
       "types": "./src/public/comboInvariants.d.ts",

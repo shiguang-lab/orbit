@@ -3,7 +3,7 @@ import {
   buildComboTestRequestBody,
   extractComboTestResponseText,
   extractComboTestStreamResult,
-} from "@shiguang-gateway/core-domain/shared/combo-test";
+} from "../combos/combo-test.js";
 import { getCustomModels, getProviderNodeById, isConnectionUnavailableToAuxiliaryActivity } from "./model-test-data.js";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import { runAsProbe } from "@shiguang-gateway/core-domain/shared/probe-origin";

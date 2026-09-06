@@ -13,7 +13,7 @@ import {
 import { syncToCloud } from "@shiguang-gateway/core-domain/control/cloud-sync";
 import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
 import { KiroService } from "@shiguang-gateway/open-sse/oauth/services/kiro";
-import { findKiroConnectionByIdentity } from "@shiguang-gateway/core-domain/control/oauth-runtime/kiroConnectionIdentity";
+import { findKiroConnectionByIdentity } from "../connection-identity.js";
 import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
 import {
   emailFromExternalIdpToken,

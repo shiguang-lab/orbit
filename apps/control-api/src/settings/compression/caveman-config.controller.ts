@@ -5,7 +5,7 @@ import {
   isValidationFailure,
   validateBody,
 } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { compressionSettingsUpdateSchema } from "@shiguang-gateway/core-domain/shared/validation/compression-config-schemas";
+import { compressionSettingsUpdateSchema } from "../../compression/compression-config-schemas.js";
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 import { CompressionSettingsService } from "./compression.service.js";
 

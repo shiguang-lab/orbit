@@ -61,7 +61,7 @@ compression config:
 - Type: `ContextEditingConfig { enabled: boolean }` in
   `open-sse/services/compression/types.ts`.
 - Default: `DEFAULT_CONTEXT_EDITING_CONFIG = { enabled: false }`.
-- Zod schema: `contextEditingConfigSchema` in `src/shared/validation/compressionConfigSchemas.ts`.
+- Zod schema: `contextEditingConfigSchema` in `apps/control-api/src/compression/compression-config-schemas.ts`.
 - Storage: persisted with the rest of the compression settings (normalized in
   `src/lib/db/compression.ts`).
 

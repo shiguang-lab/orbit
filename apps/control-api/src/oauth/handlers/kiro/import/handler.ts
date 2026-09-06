@@ -14,7 +14,7 @@ import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
-import { findKiroConnectionByIdentity } from "@shiguang-gateway/core-domain/control/oauth-runtime/kiroConnectionIdentity";
+import { findKiroConnectionByIdentity } from "../connection-identity.js";
 import {
   emailFromExternalIdpToken,
   isExternalIdpAuthMethod,
