@@ -32,8 +32,14 @@
       "types": "./src/public/logger.d.ts",
       "import": "./src/sse/utils/logger.ts"
     },
-    "./middleware/prompt-injection": "./src/middleware/promptInjectionGuard.ts",
-    "./shared/api-key-policy": "./src/shared/utils/apiKeyPolicy.ts",
+    "./middleware/prompt-injection": {
+      "types": "./src/public/promptInjection.d.ts",
+      "import": "./src/middleware/promptInjectionGuard.ts"
+    },
+    "./shared/api-key-policy": {
+      "types": "./src/public/apiKeyPolicy.d.ts",
+      "import": "./src/shared/utils/apiKeyPolicy.ts"
+    },
     "./shared/upstream-error": {
       "types": "./src/public/upstreamError.d.ts",
       "import": "./src/shared/utils/upstreamError.ts"
@@ -92,8 +98,14 @@
       "types": "./src/public/readCache.d.ts",
       "import": "./src/lib/db/readCache.ts"
     },
-    "./shared/designer-web-retirement": "./src/shared/constants/designerWebRetirement.ts",
-    "./shared/chatgpt-web-retirement": "./src/shared/constants/chatgptWebRetirement.ts",
+    "./shared/designer-web-retirement": {
+      "types": "./src/public/designerWebRetirement.d.ts",
+      "import": "./src/shared/constants/designerWebRetirement.ts"
+    },
+    "./shared/chatgpt-web-retirement": {
+      "types": "./src/public/chatgptWebRetirement.d.ts",
+      "import": "./src/shared/constants/chatgptWebRetirement.ts"
+    },
     "./edge/audio-transcription-handler": {
       "types": "./src/public/edgeAudio.d.ts",
       "import": "./src/lib/audio/transcriptionRouteHandlers.ts"

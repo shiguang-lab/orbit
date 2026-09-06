@@ -3,13 +3,11 @@ import {
   handleCodexImageEdit,
   handleOpenAIImageEdit,
   handleOpenRouterImageEdit,
-// @ts-ignore open-sse exposes runtime TypeScript modules without per-handler declarations.
 } from "@shiguang-gateway/open-sse/handlers/imageGeneration";
 import {
   handleFalAIImageEdit,
   FAL_IMAGE_EDIT_MAX_REFERENCES,
   isFalImageEditModel,
-// @ts-ignore open-sse exposes runtime TypeScript modules without per-handler declarations.
 } from "@shiguang-gateway/open-sse/handlers/imageGeneration/providers/fal";
 import { createInjectionGuard } from "@shiguang-gateway/core-domain/middleware/prompt-injection";
 import {
@@ -21,7 +19,6 @@ import {
   parseImageModel,
   getImageProvider,
   getImageModelEntry,
-// @ts-ignore open-sse exposes runtime TypeScript modules without per-handler declarations.
 } from "@shiguang-gateway/open-sse/config/imageRegistry";
 import { errorResponse, unavailableResponse } from "@shiguang-gateway/open-sse/utils/error";
 import { HTTP_STATUS as OPEN_SSE_HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants";
@@ -41,7 +38,6 @@ import {
 import { isMicrosoftDesignerWebProviderRetiredError } from "@shiguang-gateway/core-domain/shared/designer-web-retirement";
 import { resolveProxyForConnection } from "@shiguang-gateway/core-domain/edge/local-db";
 import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
-// @ts-expect-error open-sse exposes runtime TypeScript modules without per-handler declarations.
 import { isCodexFreePlan } from "@shiguang-gateway/open-sse/executors/codex/tools";
 import {
   getBodySizeLimit,

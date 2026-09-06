@@ -25,6 +25,22 @@
       "types": "./public/constants.d.ts",
       "import": "./config/constants.ts"
     },
+    "./handlers/imageGeneration": {
+      "types": "./public/imageGeneration.d.ts",
+      "import": "./handlers/imageGeneration.ts"
+    },
+    "./handlers/imageGeneration/providers/fal": {
+      "types": "./public/imageGenerationFal.d.ts",
+      "import": "./handlers/imageGeneration/providers/fal.ts"
+    },
+    "./config/imageRegistry": {
+      "types": "./public/imageRegistry.d.ts",
+      "import": "./config/imageRegistry.ts"
+    },
+    "./executors/codex/tools": {
+      "types": "./public/codexTools.d.ts",
+      "import": "./executors/codex/tools.ts"
+    },
     "./services/deviceTracker": {
       "types": "./public/deviceTracker.d.ts",
       "import": "./services/deviceTracker.ts"
