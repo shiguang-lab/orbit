@@ -79,12 +79,16 @@ import { BatchesModule } from "./batches/batches.module.js";
 import { AgentSkillsModule } from "./agent-skills/agent-skills.module.js";
 import { ConversationsModule } from "./conversations/conversations.module.js";
 import { DbHealthModule } from "./db-health/db-health.module.js";
+import { LocalRedisModule } from "./local-redis/local-redis.module.js";
+import { StorageModule } from "./storage/storage.module.js";
 import { ConductorModule } from "./conductor/conductor.module.js";
 import { ChaosModule } from "./chaos/chaos.module.js";
 import { AdminModule } from "./admin/admin.module.js";
 import { JobsModule } from "./jobs/jobs.module.js";
 import { TunnelsModule } from "./tunnels/tunnels.module.js";
 import { DocsModule } from "./docs/docs.module.js";
+import { GuardrailsModule } from "./guardrails/guardrails.module.js";
+import { HeadroomModule } from "./headroom/headroom.module.js";
 
 @Module({
   imports: [
@@ -169,12 +173,16 @@ import { DocsModule } from "./docs/docs.module.js";
     AgentSkillsModule,
     ConversationsModule,
     DbHealthModule,
+    LocalRedisModule,
+    StorageModule,
     ConductorModule,
     ChaosModule,
     AdminModule,
     JobsModule,
     TunnelsModule,
     DocsModule,
+    GuardrailsModule,
+    HeadroomModule,
   ],
 })
 export class AppModule {}

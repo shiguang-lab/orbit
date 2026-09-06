@@ -33,6 +33,8 @@ import { CompletionsModule } from "./completions/completions.module.js";
 import { MeModule } from "./me/me.module.js";
 import { ExplainRoutingModule } from "./explain-routing/explain-routing.module.js";
 import { VideoBridgeDrilldownModule } from "./video-bridge/video-bridge-drilldown.module.js";
+import { VideoBridgeRuntimeModule } from "./video-bridge/video-bridge-runtime.module.js";
+import { VideoBridgeStatsModule } from "./video-bridge/video-bridge-stats.module.js";
 import { ProviderImagesModule } from "./provider-images/provider-images.module.js";
 import { AntigravityModule } from "./antigravity/antigravity.module.js";
 import { AutoComboCandidatesModule } from "./auto-combo-candidates/auto-combo-candidates.module.js";
@@ -91,6 +93,8 @@ import { TranslatorModule } from "./translator/translator.module.js";
     MeModule,
     ExplainRoutingModule,
     VideoBridgeDrilldownModule,
+    VideoBridgeRuntimeModule,
+    VideoBridgeStatsModule,
     ProviderImagesModule,
     AntigravityModule,
     AutoComboCandidatesModule,

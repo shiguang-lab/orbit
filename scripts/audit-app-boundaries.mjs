@@ -138,6 +138,9 @@ const allowedCoreDomainSubpaths = {
     "shared/embedded-services",
     "shared/compatible-provider-id",
     "control/video-bridge-drilldown",
+    "control/modality-bridge-stats",
+    "control/video-bridge-runtime",
+    "shared/error-response",
     "shared/constants/selfServiceScopes",
     "control/cost-rules",
     "edge/provider-limits",
@@ -155,6 +158,7 @@ const allowedCoreDomainSubpaths = {
 };
 
 allowedCoreDomainSubpaths["apps/control-api"].push("db/health");
+allowedCoreDomainSubpaths["apps/control-api"].push("control/guardrails", "control/local-endpoints", "control/local-redis");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/tunnels");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/jobs");
 allowedCoreDomainSubpaths["apps/control-api"].push(
@@ -284,6 +288,8 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/resilience-types",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push("control/compression-management");
+allowedCoreDomainSubpaths["apps/control-api"].push("control/guardrails");
+allowedCoreDomainSubpaths["apps/control-api"].push("control/headroom");
 allowedCoreDomainSubpaths["apps/control-api"].push("db/cc-discovery-metrics");
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/playground-presets",
@@ -316,6 +322,11 @@ const migratedRouteOwnership = {
     "api/health/ping/route.ts",
     "api/health/degradation/route.ts",
     "api/db/health/route.ts",
+    "api/guardrails/route.ts",
+    "api/guardrails/test/route.ts",
+    "api/headroom/start/route.ts",
+    "api/headroom/stop/route.ts",
+    "api/headroom/status/route.ts",
     "api/tools/agent-bridge/agents/[id]/dns/route.ts",
     "api/tools/agent-bridge/repair/route.ts",
     "api/tools/agent-bridge/server/route.ts",
@@ -732,6 +743,8 @@ const migratedRouteOwnership = {
     "api/v1/images/upscale/route.ts",
     "api/v1/providers/[provider]/images/generations/route.ts",
     "api/v1/video-bridge/drilldown/route.ts",
+    "api/modality-bridge/stats/route.ts",
+    "api/modality-bridge/video/runtime/route.ts",
     "api/v1/web/fetch/route.ts",
     "api/v1/ocr/route.ts",
     "api/v1/segment/route.ts",

@@ -331,6 +331,14 @@
       "types": "./src/public/managementAuth.d.ts",
       "import": "./src/lib/api/requireManagementAuth.ts"
     },
+    "./control/modality-bridge-stats": {
+      "types": "./src/public/modalityBridgeStats.d.ts",
+      "import": "./src/lib/guardrails/modalityBridge/bridgeStats.ts"
+    },
+    "./control/video-bridge-runtime": {
+      "types": "./src/public/videoBridgeRuntime.d.ts",
+      "import": "./src/lib/guardrails/videoBridgeRuntime.ts"
+    },
     "./control/agent-skills": {
       "types": "./src/public/agentSkills.d.ts",
       "import": "./src/lib/agentSkills/index.ts"
@@ -338,6 +346,18 @@
     "./control/conversations": {
       "types": "./src/public/conversations.d.ts",
       "import": "./src/control/conversations.ts"
+    },
+    "./control/guardrails": {
+      "types": "./src/public/guardrails.d.ts",
+      "import": "./src/control/guardrails.ts"
+    },
+    "./control/headroom": {
+      "types": "./src/public/headroom.d.ts",
+      "import": "./src/control/headroom.ts"
+    },
+    "./control/local-redis": {
+      "types": "./src/public/localRedis.d.ts",
+      "import": "./src/control/localRedis.ts"
     },
     "./control/tunnels": {
       "types": "./src/public/tunnels.d.ts",
@@ -906,6 +926,7 @@
       "types": "./src/public/authenticated.d.ts",
       "import": "./src/shared/utils/apiAuth.ts"
     },
+    "./control/local-endpoints": "./src/lib/security/localEndpoints.ts",
     "./control/registered-keys": {
       "types": "./src/public/registeredKeys.d.ts",
       "import": "./src/lib/db/registeredKeys.ts"
