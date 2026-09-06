@@ -824,10 +824,6 @@
       "import": "./src/shared/constants/providers.ts"
     },
     "./control/cli-token-auth": "./src/lib/middleware/cliTokenAuth.ts",
-    "./control/gateway-status": {
-      "types": "./src/public/gatewayStatus.d.ts",
-      "import": "./src/lib/gatewayStatus.ts"
-    },
     "./db/provider-connections": {
       "types": "./src/public/providerConnections.d.ts",
       "import": "./src/lib/db/providers.ts"

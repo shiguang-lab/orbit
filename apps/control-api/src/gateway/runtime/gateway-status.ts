@@ -1,5 +1,5 @@
-import { getDbInstance, pingDb } from "./db/core.ts";
-import { listPools } from "./db/quotaPools.ts";
+import { getDbInstance, pingDb } from "@shiguang-gateway/core-domain/db/ping";
+import { listPools } from "@shiguang-gateway/core-domain/quota/db";
 
 interface ProviderStatusRow {
   id: string;
@@ -7,6 +7,17 @@ interface ProviderStatusRow {
   is_active: number | boolean | null;
   test_status: string | null;
   last_error: string | null;
+}
+
+interface QuotaPoolStatus {
+  id: string;
+  name: string;
+  connectionIds: string[];
+  allocations: unknown[];
+}
+
+interface CircuitStatus {
+  state: string;
 }
 
 function readProviderStatusRows(): ProviderStatusRow[] {
@@ -23,11 +34,33 @@ export async function buildShiguangGatewayStatus(
 ) {
   const [connections, circuitModule] = await Promise.all([
     Promise.resolve(readProviderStatusRows()),
-    import("../shared/utils/circuitBreaker.ts").catch(() => null),
+    import("@shiguang-gateway/core-domain/control/resilience-circuit-breaker").catch(() => null),
   ]);
   const pools = listPools().items;
   const circuitStatuses = circuitModule?.getAllCircuitBreakerStatuses() ?? null;
   const quotaSummary = getQuotaMonitorSummary();
+  return buildGatewayStatusSnapshot({
+    connections,
+    pools,
+    circuitStatuses,
+    quotaSummary,
+    dbHealthy: pingDb(),
+  });
+}
+
+export function buildGatewayStatusSnapshot({
+  connections,
+  pools,
+  circuitStatuses,
+  quotaSummary,
+  dbHealthy,
+}: {
+  connections: ProviderStatusRow[];
+  pools: QuotaPoolStatus[];
+  circuitStatuses: CircuitStatus[] | null;
+  quotaSummary: { active: number } | null;
+  dbHealthy: boolean;
+}) {
   const active = connections.filter(
     (connection) => connection.is_active !== 0 && connection.is_active !== false
   );
@@ -37,7 +70,7 @@ export async function buildShiguangGatewayStatus(
   const healthy = active.filter((connection) => connection.test_status === "active");
 
   return {
-    gateway: pingDb() ? "healthy" : "degraded",
+    gateway: dbHealthy ? "healthy" : "degraded",
     catalog: { available: true },
     providers: {
       configured: connections.length,

@@ -99,7 +99,7 @@ const allowedCoreDomainSubpaths = {
     "shared/proxy-egress",
     "shared/proxy-health",
   ],
-  "apps/control-api": ["startup", "runtime/request", "db/ping", "db/health", "db/call-log-stats", "db/provider-connections", "db/model-aliases", "db/local-db", "db/provider-stats", "db/database-stats", "db/vacuum-scheduler", "catalog/provider-metadata", "catalog/provider-registry", "catalog/provider-node-prefixes", "pricing/db", "pricing/defaults", "pricing/sync", "pricing/provider-prefixes", "pricing/validation", "pricing/modal-cost", "cache/db", "cache/services", "db/compression-analytics", "analytics/auto-routing-db", "analytics/diversity", "db-backups/db", "db-backups/validation", "metrics/combo", "metrics/request-telemetry", "metrics/observability", "metrics/tool-latency", "shared/numeric", "open-sse/utils/error.ts", "open-sse/services/deviceTracker.ts", "control/management-auth", "control/middleware-registry", "control/provider-credentials", "control/lkgp-cache", "control/management-password", "control/compliance", "control/feature-flags", "control/provider-validation", "control/provider-validation-schemas", "control/model-context-overrides", "control/model-test-data", "db/provider-nodes", "network/outbound-url-guard-policy", "network/safe-outbound-fetch", "control/gateway-status", "control/authenticated", "control/registered-keys", "control/synced-models", "control/settings", "memory/settings", "memory/runtime", "control/database-settings", "control/proxy-logs", "control/openrouter-provider-stats", "control/provider-health-matrix", "control/resilience-settings", "edge/usage-db", "db/detailed-logs", "db/proxy-logs", "shared/log-env", "control/api-key-store", "control/cloud-sync", "control/api-key-exposure", "db/api-key-groups", "control/api-key-usage-limits", "shared/", "sse/logger", "sse/auth", "evals/db", "evals/runner", "evals/runtime", "evals/validation", "db/api-keys", "db/batches", "plugins/db", "plugins/manager", "plugins/marketplace", "shared/cors", "quota/dimensions", "quota/db", "quota/services", "quota/state", "compliance", "shared/combo-invariants", "catalog/combo-targets", "catalog/model-metadata", "catalog/provider-models"],
+  "apps/control-api": ["startup", "runtime/request", "db/ping", "db/health", "db/call-log-stats", "db/provider-connections", "db/model-aliases", "db/local-db", "db/provider-stats", "db/database-stats", "db/vacuum-scheduler", "catalog/provider-metadata", "catalog/provider-registry", "catalog/provider-node-prefixes", "pricing/db", "pricing/defaults", "pricing/sync", "pricing/provider-prefixes", "pricing/validation", "pricing/modal-cost", "cache/db", "cache/services", "db/compression-analytics", "analytics/auto-routing-db", "analytics/diversity", "db-backups/db", "db-backups/validation", "metrics/combo", "metrics/request-telemetry", "metrics/observability", "metrics/tool-latency", "shared/numeric", "open-sse/utils/error.ts", "open-sse/services/deviceTracker.ts", "control/management-auth", "control/middleware-registry", "control/provider-credentials", "control/lkgp-cache", "control/management-password", "control/compliance", "control/feature-flags", "control/provider-validation", "control/provider-validation-schemas", "control/model-context-overrides", "control/model-test-data", "db/provider-nodes", "network/outbound-url-guard-policy", "network/safe-outbound-fetch", "control/authenticated", "control/registered-keys", "control/synced-models", "control/settings", "memory/settings", "memory/runtime", "control/database-settings", "control/proxy-logs", "control/openrouter-provider-stats", "control/provider-health-matrix", "control/resilience-settings", "edge/usage-db", "db/detailed-logs", "db/proxy-logs", "shared/log-env", "control/api-key-store", "control/cloud-sync", "control/api-key-exposure", "db/api-key-groups", "control/api-key-usage-limits", "shared/", "sse/logger", "sse/auth", "evals/db", "evals/runner", "evals/runtime", "evals/validation", "db/api-keys", "db/batches", "plugins/db", "plugins/manager", "plugins/marketplace", "shared/cors", "quota/dimensions", "quota/db", "quota/services", "quota/state", "compliance", "shared/combo-invariants", "catalog/combo-targets", "catalog/model-metadata", "catalog/provider-models"],
   "apps/edge-gateway": [
     "startup",
     "runtime/request",
@@ -908,6 +908,10 @@ const retiredCoreRoutingPreview = join(packagesRoot, "core-domain", "src", "lib"
 if (existsSync(retiredCoreRoutingPreview)) {
   add("control-runtime-in-core-domain", retiredCoreRoutingPreview, "Routing preview runtime belongs in apps/control-api");
 }
+const retiredCoreGatewayStatus = join(packagesRoot, "core-domain", "src", "lib", "gatewayStatus.ts");
+if (existsSync(retiredCoreGatewayStatus)) {
+  add("control-runtime-in-core-domain", retiredCoreGatewayStatus, "Gateway status composition belongs in apps/control-api");
+}
 
 // The shared HTTP package must never regain a generic app factory or a
 // caller-selected surface. Those APIs collapse independently deployable apps
@@ -1068,6 +1072,7 @@ if (existsSync(workerJobRegistry)) {
 }
 const coreDomainEntry = packageEntries.find(({ manifest }) => manifest?.name === "@shiguang-gateway/core-domain");
 const retiredAppOwnedExports = [
+  "./control/gateway-status",
   "./control/routing-preview",
   "./control/copilot",
   "./control/telegram",

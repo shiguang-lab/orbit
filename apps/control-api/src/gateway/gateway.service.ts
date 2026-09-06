@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { buildShiguangGatewayStatus } from "@shiguang-gateway/core-domain/control/gateway-status";
 import { getQuotaMonitorSummary } from "@shiguang-gateway/open-sse/services/quotaMonitor";
+import { buildShiguangGatewayStatus } from "./runtime/gateway-status.js";
 
 @Injectable()
 export class GatewayService {
