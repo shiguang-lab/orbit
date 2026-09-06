@@ -70,6 +70,7 @@ import { CompressionManagementModule } from "./compression/compression-managemen
 import { ProxySubscriptionsModule } from "./proxy-subscriptions/proxy-subscriptions.module.js";
 import { MiddlewareHooksModule } from "./middleware-hooks/middleware-hooks.module.js";
 import { SearchProvidersModule } from "./search/providers/search-providers.module.js";
+import { IssuesModule } from "./issues/issues.module.js";
 
 @Module({
   imports: [
@@ -145,6 +146,7 @@ import { SearchProvidersModule } from "./search/providers/search-providers.modul
     ProxySubscriptionsModule,
     MiddlewareHooksModule,
     SearchProvidersModule,
+    IssuesModule,
   ],
 })
 export class AppModule {}

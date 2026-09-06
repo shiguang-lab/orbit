@@ -323,6 +323,7 @@ const migratedRouteOwnership = {
     "api/v1/providers/suggested-models/route.ts",
     "api/v1/providers/[provider]/limits/route.ts",
     "api/v1/provider-plugin-manifest/route.ts",
+    "api/v1/issues/report/route.ts",
     "api/middleware/hooks/route.ts",
     "api/middleware/hooks/[name]/route.ts",
     "api/discovery/results/route.ts",

@@ -1,7 +1,6 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
-import { isAuthenticated } from "../../../../../shared/utils/apiAuth.ts";
-import { isValidationFailure, validateBody } from "../../../../../shared/validation/helpers.ts";
+import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 
 const reportSchema = z.object({
   title: z.string().min(1).max(300),
@@ -17,26 +16,24 @@ const reportSchema = z.object({
  * POST /api/v1/issues/report
  *
  * Optionally report a quota-exceeded or key-issuance failure event to GitHub.
- *
- * Requires GITHUB_ISSUES_REPO (format: owner/repo) and GITHUB_ISSUES_TOKEN
- * environment variables to be set. If not configured, returns 202 (accepted but
- * logged only).
+ * When GitHub reporting is not configured, the event is still logged and
+ * acknowledged with 202 so clients do not need a second fallback path.
  */
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<Response> {
   if (!(await isAuthenticated(request))) {
-    return NextResponse.json({ error: { message: "Authentication required" } }, { status: 401 });
+    return Response.json({ error: { message: "Authentication required" } }, { status: 401 });
   }
 
   let rawBody: unknown;
   try {
     rawBody = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    return Response.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
   const validation = validateBody(reportSchema, rawBody);
   if (isValidationFailure(validation)) {
-    return NextResponse.json({ error: validation.error }, { status: 400 });
+    return Response.json({ error: validation.error }, { status: 400 });
   }
 
   const {
@@ -52,7 +49,6 @@ export async function POST(request: Request) {
   const repo = process.env.GITHUB_ISSUES_REPO;
   const token = process.env.GITHUB_ISSUES_TOKEN;
 
-  // ── Structured body for the GitHub issue ──
   const issueBody = [
     `## ${errorCode ?? "Key Issuance Event"}`,
     "",
@@ -71,24 +67,21 @@ export async function POST(request: Request) {
     .filter(Boolean)
     .join("\n");
 
-  // ── Log locally regardless ──
   console.log(
-    `[issues/report] title="${title}" errorCode=${errorCode ?? "—"} provider=${provider ?? "—"} accountId=${accountId ?? "—"}`
+    `[issues/report] title="${title}" errorCode=${errorCode ?? "—"} provider=${provider ?? "—"} accountId=${accountId ?? "—"}`,
   );
 
   if (!repo || !token) {
-    // No GitHub config — log only
-    return NextResponse.json(
+    return Response.json(
       {
         logged: true,
         githubIssueCreated: false,
         reason: !repo ? "GITHUB_ISSUES_REPO not configured" : "GITHUB_ISSUES_TOKEN not configured",
       },
-      { status: 202 }
+      { status: 202 },
     );
   }
 
-  // ── Create GitHub issue ──
   try {
     const [owner, repoName] = repo.split("/");
     const ghRes = await fetch(`https://api.github.com/repos/${owner}/${repoName}/issues`, {
@@ -109,24 +102,24 @@ export async function POST(request: Request) {
     if (!ghRes.ok) {
       const errText = await ghRes.text();
       console.error(`[issues/report] GitHub API error ${ghRes.status}: ${errText}`);
-      return NextResponse.json(
+      return Response.json(
         { logged: true, githubIssueCreated: false, githubError: ghRes.status },
-        { status: 207 }
+        { status: 207 },
       );
     }
 
-    const ghData = await ghRes.json();
-    return NextResponse.json({
+    const ghData = (await ghRes.json()) as { html_url?: string; number?: number };
+    return Response.json({
       logged: true,
       githubIssueCreated: true,
       githubIssueUrl: ghData.html_url,
       githubIssueNumber: ghData.number,
     });
-  } catch (err) {
-    console.error("[issues/report] GitHub fetch failed:", err);
-    return NextResponse.json(
+  } catch (error) {
+    console.error("[issues/report] GitHub fetch failed:", error);
+    return Response.json(
       { logged: true, githubIssueCreated: false, error: "GitHub request failed" },
-      { status: 207 }
+      { status: 207 },
     );
   }
 }
