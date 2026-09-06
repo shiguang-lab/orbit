@@ -121,6 +121,10 @@
       "types": "./public/model.d.ts",
       "import": "./services/model.ts"
     },
+    "./services/routing": {
+      "types": "./public/routing.d.ts",
+      "import": "./services/routing/index.ts"
+    },
     "./services/ipFilter": {
       "types": "./public/ipFilter.d.ts",
       "import": "./services/ipFilter.ts"
