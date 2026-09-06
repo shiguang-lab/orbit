@@ -1,15 +1,14 @@
-import { randomBytes } from "crypto";
-import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
-import { createErrorResponse, createErrorResponseFromUnknown } from "../../../../../lib/api/errorResponse.ts";
-import { isValidationFailure, validateBody } from "../../../../../shared/validation/helpers.ts";
-import { vercelDeploySchema } from "../../../../../shared/validation/freeProxySchemas.ts";
-import { createProxy } from "../../../../../lib/localDb.ts";
-import { encrypt } from "../../../../../lib/db/encryption.ts";
+import { randomBytes } from "node:crypto";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { createErrorResponse, createErrorResponseFromUnknown } from "@shiguang-gateway/core-domain/shared/error-response";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { vercelDeploySchema } from "@shiguang-gateway/core-domain/shared/validation/free-proxy-schemas";
+import { createProxy } from "@shiguang-gateway/core-domain/edge/local-db";
+import { encrypt } from "@shiguang-gateway/core-domain/db/encryption";
 // Shared SSRF-safe relay-path resolver — the same pure guard embedded in the
 // Deno Deploy worker. Both edge relays must enforce identical path validation,
 // so they import one source of truth rather than diverging copies.
-import { resolveRelayTarget } from "../deno-deploy/route";
-import { isPrivateRelayHostname } from "../../../../../lib/proxyRelay/privateHostname.ts";
+import { resolveRelayTarget, isPrivateRelayHostname } from "./proxy-relay.js";
 
 const VERCEL_API_BASE = process.env.VERCEL_API_BASE || "https://api.vercel.com";
 const POLL_INTERVAL_MS = 3000;
@@ -178,20 +177,9 @@ async function pollDeployment(deploymentApiUrl: string, token: string): Promise<
   return "ERROR";
 }
 
-export async function POST(request: Request) {
+export async function deployVercel(request: Request, rawBody: unknown) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
-
-  let rawBody: unknown = {};
-  try {
-    rawBody = await request.json();
-  } catch {
-    return createErrorResponse({
-      status: 400,
-      message: "Invalid JSON body",
-      type: "invalid_request",
-    });
-  }
 
   const validation = validateBody(vercelDeploySchema, rawBody);
   if (isValidationFailure(validation)) {

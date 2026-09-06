@@ -1,11 +1,11 @@
-import { randomBytes } from "crypto";
-import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
-import { createErrorResponse, createErrorResponseFromUnknown } from "../../../../../lib/api/errorResponse.ts";
-import { isValidationFailure, validateBody } from "../../../../../shared/validation/helpers.ts";
-import { denoDeploySchema } from "../../../../../shared/validation/freeProxySchemas.ts";
-import { createProxy } from "../../../../../lib/localDb.ts";
-import { encrypt } from "../../../../../lib/db/encryption.ts";
-import { isPrivateRelayHostname } from "../../../../../lib/proxyRelay/privateHostname.ts";
+import { randomBytes } from "node:crypto";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { createErrorResponse, createErrorResponseFromUnknown } from "@shiguang-gateway/core-domain/shared/error-response";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { denoDeploySchema } from "@shiguang-gateway/core-domain/shared/validation/free-proxy-schemas";
+import { createProxy } from "@shiguang-gateway/core-domain/edge/local-db";
+import { encrypt } from "@shiguang-gateway/core-domain/db/encryption";
+import { isPrivateRelayHostname } from "./proxy-relay.js";
 
 const DENO_API_BASE = process.env.DENO_DEPLOY_API_BASE || "https://api.deno.com/v2";
 const POLL_INTERVAL_MS = 2000;
@@ -157,20 +157,9 @@ async function pollRevision(
   return "timeout";
 }
 
-export async function POST(request: Request) {
+export async function deployDeno(request: Request, rawBody: unknown) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
-
-  let rawBody: unknown = {};
-  try {
-    rawBody = await request.json();
-  } catch {
-    return createErrorResponse({
-      status: 400,
-      message: "Invalid JSON body",
-      type: "invalid_request",
-    });
-  }
 
   const validation = validateBody(denoDeploySchema, rawBody);
   if (isValidationFailure(validation)) {

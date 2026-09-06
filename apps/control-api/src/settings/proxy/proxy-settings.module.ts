@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { ProxySettingsController } from "./proxy-settings.controller.js";
 import { ProxySettingsService } from "./proxy-settings.service.js";
+import { ProxyDeployService } from "./proxy-deploy.service.js";
 
-@Module({ controllers: [ProxySettingsController], providers: [ProxySettingsService] })
+@Module({ controllers: [ProxySettingsController], providers: [ProxySettingsService, ProxyDeployService] })
 export class ProxySettingsModule {}

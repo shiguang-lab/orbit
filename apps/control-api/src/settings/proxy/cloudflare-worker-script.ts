@@ -28,9 +28,9 @@
  *    the same proxyFetch relay short-circuit work unchanged.
  *  - SSRF guard is inlined so a leaked relay URL cannot scan internal IPs.
  */
-import { randomUUID } from "crypto";
-import { resolveRelayTarget } from "../../app/api/settings/proxy/deno-deploy/route.ts";
-import { isPrivateRelayHostname } from "./privateHostname.ts";
+import { randomUUID } from "node:crypto";
+import { resolveRelayTarget } from "./proxy-relay.js";
+import { isPrivateRelayHostname } from "./proxy-relay.js";
 
 /**
  * Build the multipart/form-data request body for Cloudflare's Worker

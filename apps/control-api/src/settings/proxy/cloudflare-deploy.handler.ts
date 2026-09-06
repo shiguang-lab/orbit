@@ -1,14 +1,14 @@
-import { randomBytes } from "crypto";
-import { requireManagementAuth } from "../../../../../lib/api/requireManagementAuth.ts";
-import { createErrorResponse, createErrorResponseFromUnknown } from "../../../../../lib/api/errorResponse.ts";
-import { isValidationFailure, validateBody } from "../../../../../shared/validation/helpers.ts";
-import { cloudflareDeploySchema } from "../../../../../shared/validation/freeProxySchemas.ts";
-import { createProxy } from "../../../../../lib/localDb.ts";
-import { encrypt } from "../../../../../lib/db/encryption.ts";
+import { randomBytes } from "node:crypto";
+import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { createErrorResponse, createErrorResponseFromUnknown } from "@shiguang-gateway/core-domain/shared/error-response";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { cloudflareDeploySchema } from "@shiguang-gateway/core-domain/shared/validation/free-proxy-schemas";
+import { createProxy } from "@shiguang-gateway/core-domain/edge/local-db";
+import { encrypt } from "@shiguang-gateway/core-domain/db/encryption";
 import {
   buildCloudflareWorkerScript,
   buildCloudflareWorkerUploadRequest,
-} from "../../../../../lib/proxyRelay/cloudflareWorkerScript.ts";
+} from "./cloudflare-worker-script.js";
 
 // Port of upstream decolua/9router PR #1360 — Cloudflare Workers proxy relay.
 // Architecture mirrors src/app/api/settings/proxy/vercel-deploy/route.ts so the
@@ -19,20 +19,9 @@ import {
 const CLOUDFLARE_API_BASE =
   process.env.CLOUDFLARE_API_BASE || "https://api.cloudflare.com/client/v4";
 
-export async function POST(request: Request) {
+export async function deployCloudflare(request: Request, rawBody: unknown) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
-
-  let rawBody: unknown = {};
-  try {
-    rawBody = await request.json();
-  } catch {
-    return createErrorResponse({
-      status: 400,
-      message: "Invalid JSON body",
-      type: "invalid_request",
-    });
-  }
 
   const validation = validateBody(cloudflareDeploySchema, rawBody);
   if (isValidationFailure(validation)) {
