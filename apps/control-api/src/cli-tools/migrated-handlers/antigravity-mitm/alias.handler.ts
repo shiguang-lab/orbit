@@ -3,7 +3,7 @@
 import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { getMitmAlias, setMitmAliasAll } from "@shiguang-gateway/core-domain/control/models";
 import { cliMitmAliasUpdateSchema } from "@shiguang-gateway/core-domain/control/cli-tools-validation-schemas";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/control/cli-tools-validation-helpers";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { hasInvalidReasoningEffort, normalizeAliasMappings } from "../../mitm-alias.js";
 
 // GET - Get MITM aliases for a tool

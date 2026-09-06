@@ -6,8 +6,8 @@ import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/
 import { getRuntimePorts } from "@shiguang-gateway/core-domain/control/cli-tools-runtime-ports";
 import { getCliPrimaryConfigPath, getOpenCodeConfigPath } from "@shiguang-gateway/core-domain/control/cli-tools-runtime";
 import { guideSettingsSaveSchema } from "@shiguang-gateway/core-domain/control/cli-tools-validation-schemas";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/control/cli-tools-validation-helpers";
-import { resolveApiKey, getOrCreateApiKey } from "@shiguang-gateway/core-domain/control/cli-tools-api-key-resolver";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { resolveApiKey, getOrCreateApiKey } from "@shiguang-gateway/core-domain/shared/api-key-resolver";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import { guardCliConfigWrite } from "@shiguang-gateway/core-domain/control/cli-tools-config-guard";
 import { mergeOpenCodeConfigText } from "./opencode-config.js";

@@ -16,7 +16,7 @@ import {
   fetchModelSyncInternal,
   getModelSyncInternalBaseUrl,
   isModelSyncInternalRequest,
-} from "@shiguang-gateway/core-domain/control/provider-discovery-support/modelSyncScheduler";
+} from "@shiguang-gateway/core-domain/runtime/model-sync-client";
 import { autoSyncCodexProfilesFromLiveCatalog } from "@shiguang-gateway/core-domain/control/provider-discovery-support/codexProfileAutoSync";
 import { autoSyncClaudeProfilesFromLiveCatalog } from "@shiguang-gateway/core-domain/control/provider-discovery-support/claudeProfileAutoSync";
 import { providerUsesCuratedModelsOnly } from "@shiguang-gateway/core-domain/control/provider-discovery-support/modelListingCapability";

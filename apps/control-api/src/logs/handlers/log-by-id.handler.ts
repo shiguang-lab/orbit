@@ -1,5 +1,9 @@
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getCallLogById, getCompletedDetails, getPendingById } from "@shiguang-gateway/core-domain/edge/usage-db";
+import { getCallLogById } from "@shiguang-gateway/core-domain/usage/call-logs";
+import {
+  getCompletedDetails,
+  getPendingById,
+} from "@shiguang-gateway/core-domain/usage/pending-requests";
 
 // Each logged chunk-array element is one raw network read, timestamp-prefixed
 // for the debug display — NOT one complete SSE `data:` line. A single JSON
@@ -106,7 +110,7 @@ export async function GET(
     }
 
     // Next, try persistent call log by id
-    let persistedRequest = await getCallLogById(id);
+    let persistedRequest: Record<string, any> | null = await getCallLogById(id);
 
     // If persistent call log doesn't have payloads, try the in-memory completedDetails cache
     if (

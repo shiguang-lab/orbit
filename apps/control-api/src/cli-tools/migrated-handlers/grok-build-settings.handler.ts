@@ -11,7 +11,7 @@ import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/
 import { guardCliConfigWrite } from "@shiguang-gateway/core-domain/control/cli-tools-config-guard";
 import { deleteCliToolLastConfigured, saveCliToolLastConfigured } from "../cli-tool-state.js";
 import { getResolvedModelCapabilities } from "@shiguang-gateway/core-domain/catalog/model-capabilities";
-import { resolveApiKey } from "@shiguang-gateway/core-domain/control/cli-tools-api-key-resolver";
+import { resolveApiKey } from "@shiguang-gateway/core-domain/shared/api-key-resolver";
 import { createBackup } from "@shiguang-gateway/core-domain/control/cli-tools-backups";
 import { getCliConfigHome, getCliRuntimeStatus } from "@shiguang-gateway/core-domain/control/cli-tools-runtime";
 import {

@@ -1,5 +1,5 @@
 import { isJsonObject } from "../../utils/kieTask.ts";
-import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
+import { saveCallLog } from "@shiguang-gateway/core-domain/usage/call-logs";
 import { resolveAlibabaProviderMediaBaseUrl } from "@shiguang-gateway/core-domain/edge/alibaba-provider-regions";
 import { sanitizeErrorMessage } from "../../utils/error.ts";
 

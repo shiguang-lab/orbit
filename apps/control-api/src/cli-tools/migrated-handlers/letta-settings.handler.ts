@@ -5,7 +5,7 @@ import path from "path";
 import os from "os";
 import { exec } from "child_process";
 import { promisify } from "util";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/control/cli-tools-validation-helpers";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { cliAuthOnlyConfigSchema } from "@shiguang-gateway/core-domain/control/cli-tools-validation-cli";
 import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";

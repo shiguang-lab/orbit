@@ -45,7 +45,7 @@ export {
   buildModelSyncInternalHeaders,
   fetchModelSyncInternal,
   getModelSyncInternalBaseUrl,
-} from "../shared/services/modelSyncScheduler.js";
+} from "../shared/services/modelSyncClient.js";
 export { getConsistentMachineId } from "../shared/utils/machineId.js";
 export { resolveBulkNameCollisions } from "../shared/utils/bulkApiKeyParser.js";
 export { isValidationFailure, validateBody } from "../shared/validation/helpers.js";

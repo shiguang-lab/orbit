@@ -520,7 +520,7 @@ Główna baza stanu (SQLite):
 
 Persystencja użycia:
 
-- fasada: `src/lib/usageDb.ts` (zdekomponowane moduły w `src/lib/usage/*`)
+- fasada: `src/lib/usage/*` (zdekomponowane moduły w `src/lib/usage/*`)
 - Tabele SQLite w `storage.sqlite`: `usage_history`, `call_logs`, `proxy_logs`
 - opcjonalne artefakty plikowe pozostają dla kompatybilności/debug (`${DATA_DIR}/log.txt`, `${DATA_DIR}/call_logs/`, `<repo>/logs/...`)
 - legacy pliki JSON są migrowane do SQLite przez migracje startowe, gdy są obecne
@@ -544,9 +544,9 @@ DB stanu domeny (SQLite):
 
 ## 5) Synchronizacja chmurowa
 
-- Inicjalizacja schedulera: `src/lib/initCloudSync.ts`, `src/shared/services/initializeCloudSync.ts`, `src/shared/services/modelSyncScheduler.ts`
+- Inicjalizacja schedulera: `src/lib/initCloudSync.ts`, `src/shared/services/initializeCloudSync.ts`, `apps/worker/src/jobs/model-sync-scheduler.ts`
 - Zadanie okresowe: `src/shared/services/cloudSyncScheduler.ts`
-- Zadanie okresowe: `src/shared/services/modelSyncScheduler.ts`
+- Zadanie okresowe: `apps/worker/src/jobs/model-sync-scheduler.ts`
 - Trasa sterująca: `src/app/api/sync/cloud/route.ts`
 
 ## Cykl życia żądania (`/v1/chat/completions`)
@@ -889,7 +889,7 @@ flowchart LR
 
 - `src/lib/db/*`: trwała konfiguracja/stan i persystencja domeny na SQLite
 - `src/lib/localDb.ts`: re-eksport kompatybilności dla modułów DB
-- `src/lib/usageDb.ts`: fasada historii użycia/call logs nad tabelami SQLite
+- `src/lib/usage/*`: fasada historii użycia/call logs nad tabelami SQLite
 
 ## Pokrycie executorów dostawców (Strategy Pattern)
 

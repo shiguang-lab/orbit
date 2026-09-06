@@ -17,8 +17,8 @@
 
 import {
   getModelSyncInternalBaseUrl,
-  syncConnectionModels,
-} from "../../shared/services/modelSyncScheduler.ts";
+} from "../../shared/services/modelSyncClient.ts";
+import { syncConnectionModels } from "../../shared/services/modelSyncOperation.ts";
 
 /** Providers whose connections support live model discovery. Extend as other
  * discovery-capable providers get wired to the reactive trigger. */

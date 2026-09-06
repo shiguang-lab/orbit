@@ -30,7 +30,7 @@ export class ModerationsService {
         load("@shiguang-gateway/open-sse/config/moderationRegistry"),
         load("@shiguang-gateway/open-sse/utils/error"),
         load("@shiguang-gateway/core-domain/edge/moderation-validation-schemas"),
-        load("@shiguang-gateway/core-domain/edge/moderation-validation-helpers"),
+        load("@shiguang-gateway/core-domain/shared/validation/helpers"),
         load("@shiguang-gateway/core-domain/shared/api-key-policy"),
       ]);
 

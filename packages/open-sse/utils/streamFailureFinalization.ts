@@ -1,7 +1,7 @@
 import {
   finalizeMostRecentPendingRequest,
   finalizePendingRequestById,
-} from "@shiguang-gateway/core-domain/edge/usage-db";
+} from "@shiguang-gateway/core-domain/usage/pending-requests";
 
 import { HTTP_STATUS } from "../config/constants.ts";
 import { buildErrorBody } from "./error.ts";

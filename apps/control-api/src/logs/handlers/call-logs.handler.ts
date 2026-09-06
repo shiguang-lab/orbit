@@ -1,6 +1,10 @@
 export const dynamic = "force-dynamic";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getCallLogs, getCompletedDetails, getPendingById } from "@shiguang-gateway/core-domain/edge/usage-db";
+import { getCallLogs } from "@shiguang-gateway/core-domain/usage/call-logs";
+import {
+  getCompletedDetails,
+  getPendingById,
+} from "@shiguang-gateway/core-domain/usage/pending-requests";
 import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
 import { getProviderNodes } from "@shiguang-gateway/core-domain/db/provider-nodes";
 import { matchesSearch } from "../../common/turkish-text.js";

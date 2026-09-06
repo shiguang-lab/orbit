@@ -519,7 +519,7 @@ FSM 状态转换反馈到 Auto Combo 的评分中，使后台/自动化任务偏
 
 用量持久化：
 
-- 门面：`src/lib/usageDb.ts`（拆解后的模块位于 `src/lib/usage/*`）
+- 门面：`src/lib/usage/*`（拆解后的模块位于 `src/lib/usage/*`）
 - `storage.sqlite` 中的 SQLite 表：`usage_history`、`call_logs`、`proxy_logs`
 - 可选的文件工件保留以便兼容/调试（`${DATA_DIR}/log.txt`、`${DATA_DIR}/call_logs/`、`<repo>/logs/...`）
 - 存在旧 JSON 文件时，启动迁移会将其迁移到 SQLite
@@ -543,9 +543,9 @@ FSM 状态转换反馈到 Auto Combo 的评分中，使后台/自动化任务偏
 
 ## 5) 云端同步
 
-- 调度器初始化：`src/lib/initCloudSync.ts`、`src/shared/services/initializeCloudSync.ts`、`src/shared/services/modelSyncScheduler.ts`
+- 调度器初始化：`src/lib/initCloudSync.ts`、`src/shared/services/initializeCloudSync.ts`、`apps/worker/src/jobs/model-sync-scheduler.ts`
 - 周期任务：`src/shared/services/cloudSyncScheduler.ts`
-- 周期任务：`src/shared/services/modelSyncScheduler.ts`
+- 周期任务：`apps/worker/src/jobs/model-sync-scheduler.ts`
 - 控制路由：`src/app/api/sync/cloud/route.ts`
 
 ## 请求生命周期 (`/v1/chat/completions`)
@@ -887,7 +887,7 @@ flowchart LR
 
 - `src/lib/db/*`：SQLite 上的持久化配置/状态和域持久化
 - `src/lib/localDb.ts`：DB 模块的兼容性重新导出
-- `src/lib/usageDb.ts`：SQLite 表之上的用量历史/调用日志门面
+- `src/lib/usage/*`：SQLite 表之上的用量历史/调用日志门面
 
 ## 服务商执行器覆盖（策略模式）
 

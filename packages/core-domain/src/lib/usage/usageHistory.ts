@@ -26,7 +26,6 @@ import {
 } from "./usageHistory/helpers.js";
 import type { ModelLatencyStatsEntry } from "./usageHistory/helpers.js";
 import {
-  clearCompletedDetails,
   maybeEnrichCompletedDetail,
   scheduleCompletedDetailCleanup,
   storeCompletedDetail,
@@ -474,24 +473,6 @@ export function finalizeMostRecentPendingRequest(
 
 export { getCompletedDetails } from "./completedRequestDetails.js";
 
-export function updatePendingRequestStreamChunks(
-  model: string,
-  provider: string,
-  connectionId: string | null,
-  streamChunks: {
-    provider?: string[];
-    openai?: string[];
-    client?: string[];
-  } | null
-) {
-  if (!connectionId) return;
-  const modelKey = provider ? `${model} (${provider})` : model;
-  if (!isSafeKey(modelKey)) return;
-  const details = pendingRequests.details[connectionId]?.[modelKey];
-  if (!details?.length) return;
-  details[0].streamChunks = streamChunks;
-}
-
 /**
  * Get the pending requests state (for usageStats).
  * @returns {{ byModel: Record<string, number>, byAccount: Record<string, Record<string, number>> }}
@@ -511,88 +492,6 @@ export function getPendingById(): Map<string, PendingRequestDetail> {
  * Clear all pending request counts.
  * Used for admin reset when counts leak due to uncaught timeouts or process-level errors.
  */
-export function clearPendingRequests() {
-  pendingRequests.byModel = Object.create(null) as Record<string, number>;
-  pendingRequests.byAccount = Object.create(null) as Record<string, Record<string, number>>;
-  pendingRequests.details = Object.create(null) as Record<
-    string,
-    Record<string, PendingRequestDetail[]>
-  >;
-  pendingById.clear();
-  clearCompletedDetails();
-}
-
-// ──────────────── getUsageDb Shim (backward compat) ────────────────
-
-const MAX_ROWS = 10000;
-
-/**
- * Returns an object compatible with the old LowDB interface.
- * Only `api/usage/analytics/route.js` uses this — it reads `db.data.history`.
- *
- * @param sinceIso - ISO timestamp to filter from (inclusive)
- * @param limit - Max rows to return (default 10,000)
- * @param cursor - Timestamp cursor for pagination (exclusive, for next page)
- */
-export async function getUsageDb(sinceIso?: string | null, limit?: number, cursor?: string | null) {
-  const db = getDbInstance();
-  const maxRows = Number.isFinite(Number(limit)) && Number(limit) > 0 ? Number(limit) : MAX_ROWS;
-
-  let rows;
-  if (cursor) {
-    // Cursor-based pagination (next page after cursor)
-    // Use > cursor to get rows after the last timestamp of previous page (ASC order)
-    rows = sinceIso
-      ? db
-          .prepare(
-            `SELECT * FROM usage_history WHERE timestamp >= ? AND timestamp > ? ORDER BY timestamp ASC LIMIT ?`
-          )
-          .all(sinceIso, cursor, maxRows)
-      : db
-          .prepare(`SELECT * FROM usage_history WHERE timestamp > ? ORDER BY timestamp ASC LIMIT ?`)
-          .all(cursor, maxRows);
-  } else if (sinceIso) {
-    // Initial query with date filter
-    rows = db
-      .prepare(`SELECT * FROM usage_history WHERE timestamp >= ? ORDER BY timestamp ASC LIMIT ?`)
-      .all(sinceIso, maxRows);
-  } else {
-    // No filter - get all (with limit)
-    rows = db.prepare(`SELECT * FROM usage_history ORDER BY timestamp ASC LIMIT ?`).all(maxRows);
-  }
-
-  const history = rows.map((row) => {
-    const r = asRecord(row);
-    return {
-      provider: toStringOrNull(r.provider),
-      model: toStringOrNull(r.model),
-      connectionId: toStringOrNull(r.connection_id),
-      apiKeyId: toStringOrNull(r.api_key_id),
-      apiKeyName: toStringOrNull(r.api_key_name),
-      serviceTier: normalizeServiceTier(r.service_tier),
-      tokens: {
-        input: toNumber(r.tokens_input),
-        output: toNumber(r.tokens_output),
-        cacheRead: toNumber(r.tokens_cache_read),
-        cacheCreation: toNumber(r.tokens_cache_creation),
-        reasoning: toNumber(r.tokens_reasoning),
-      },
-      status: toStringOrNull(r.status),
-      success: toNumber(r.success) === 1,
-      latencyMs: toNumber(r.latency_ms),
-      timeToFirstTokenMs: toNumber(r.ttft_ms),
-      errorCode: toStringOrNull(r.error_code),
-      timestamp: toStringOrNull(r.timestamp),
-    };
-  });
-
-  // Provide next cursor if we hit the limit (more rows exist)
-  const nextCursor =
-    rows.length === maxRows ? toStringOrNull(asRecord(rows[rows.length - 1]).timestamp) : null;
-
-  return { data: { history, nextCursor } };
-}
-
 // ──────────────── Save Request Usage ────────────────
 
 /**
@@ -749,73 +648,6 @@ export async function saveRequestUsage(entry: UsageEntry) {
   } catch (error) {
     console.error("Failed to save usage stats:", error);
   }
-}
-
-// ──────────────── Get Usage History ────────────────
-
-export interface UsageHistoryFilter {
-  provider?: string;
-  model?: string;
-  startDate?: string | number | Date;
-  endDate?: string | number | Date;
-}
-
-/**
- * Get usage history with optional filters.
- */
-export async function getUsageHistory(filter: UsageHistoryFilter = {}) {
-  const db = getDbInstance();
-  let sql = "SELECT * FROM usage_history";
-  const conditions: string[] = [];
-  const params: Record<string, unknown> = {};
-
-  if (filter.provider) {
-    conditions.push("provider = @provider");
-    params.provider = filter.provider;
-  }
-  if (filter.model) {
-    conditions.push("model = @model");
-    params.model = filter.model;
-  }
-  if (filter.startDate) {
-    conditions.push("timestamp >= @startDate");
-    params.startDate = new Date(filter.startDate).toISOString();
-  }
-  if (filter.endDate) {
-    conditions.push("timestamp <= @endDate");
-    params.endDate = new Date(filter.endDate).toISOString();
-  }
-
-  if (conditions.length > 0) {
-    sql += " WHERE " + conditions.join(" AND ");
-  }
-  sql += " ORDER BY timestamp ASC";
-
-  const rows = db.prepare(sql).all(params);
-  return rows.map((row) => {
-    const r = asRecord(row);
-    return {
-      provider: toStringOrNull(r.provider),
-      model: toStringOrNull(r.model),
-      connectionId: toStringOrNull(r.connection_id),
-      apiKeyId: toStringOrNull(r.api_key_id),
-      apiKeyName: toStringOrNull(r.api_key_name),
-      serviceTier: normalizeServiceTier(r.service_tier),
-      tokens: {
-        input: toNumber(r.tokens_input),
-        output: toNumber(r.tokens_output),
-        cacheRead: toNumber(r.tokens_cache_read),
-        cacheCreation: toNumber(r.tokens_cache_creation),
-        reasoning: toNumber(r.tokens_reasoning),
-      },
-      status: toStringOrNull(r.status),
-      success: toNumber(r.success) === 1,
-      latencyMs: toNumber(r.latency_ms),
-      timeToFirstTokenMs: toNumber(r.ttft_ms),
-      errorCode: toStringOrNull(r.error_code),
-      timestamp: toStringOrNull(r.timestamp),
-    };
-  });
 }
 
 export type { ModelLatencyStatsEntry } from "./usageHistory/helpers.js";

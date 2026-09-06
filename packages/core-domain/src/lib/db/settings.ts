@@ -365,9 +365,7 @@ export async function updateSettings(
   // Onboarding / setup finished → one-shot Codex catalog revalidation (init case).
   if (setupJustCompleted) {
     void import("../../shared/services/codexCatalogRevalidation.ts")
-      .then(({ scheduleCodexCatalogRevalidationAfterInit }) => {
-        scheduleCodexCatalogRevalidationAfterInit();
-      })
+      .then(({ revalidateCodexCatalogs }) => revalidateCodexCatalogs({ reason: "init" }))
       .catch(() => {
         // non-fatal
       });

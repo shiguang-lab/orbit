@@ -207,7 +207,7 @@ export async function handleRerank({
     load("@shiguang-gateway/core-domain/edge/gateway-response-meta"),
     load("@shiguang-gateway/core-domain/pricing/modal-cost"),
     load("@shiguang-gateway/core-domain/edge/request-id"),
-    load("@shiguang-gateway/core-domain/edge/usage-db"),
+    load("@shiguang-gateway/core-domain/usage/call-logs"),
     load("@shiguang-gateway/core-domain/control/settings"),
   ]);
   const startTime = Date.now();

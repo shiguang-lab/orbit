@@ -6,7 +6,7 @@ import path from "path";
 import os from "os";
 import fs from "fs/promises";
 import { load as yamlLoad, dump as yamlDump } from "js-yaml";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/control/cli-tools-validation-helpers";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { cliAuthOnlyConfigSchema } from "@shiguang-gateway/core-domain/control/cli-tools-validation-cli";
 import { getOmpCredentials, saveOmpCredentials, deleteOmpCredentials } from "@shiguang-gateway/core-domain/control/cli-tools-omp";
 import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";

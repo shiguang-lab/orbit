@@ -8,7 +8,7 @@
  * query, API key, or proxy credentials).
  */
 
-import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
+import { saveCallLog } from "@shiguang-gateway/core-domain/usage/call-logs";
 import { sanitizeErrorMessage } from "../../utils/error.ts";
 import { formatSearchProviderFailure } from "./providerFailure.ts";
 import type { SearchProviderConfig } from "../../config/searchRegistry.ts";

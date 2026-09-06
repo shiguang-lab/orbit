@@ -11,8 +11,8 @@ import {
 import { createBackup } from "@shiguang-gateway/core-domain/control/cli-tools-backups";
 import { saveCliToolLastConfigured, deleteCliToolLastConfigured } from "../cli-tool-state.js";
 import { cliModelConfigSchema } from "@shiguang-gateway/core-domain/control/cli-tools-validation-schemas";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/control/cli-tools-validation-helpers";
-import { resolveApiKey } from "@shiguang-gateway/core-domain/control/cli-tools-api-key-resolver";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { resolveApiKey } from "@shiguang-gateway/core-domain/shared/api-key-resolver";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 
 const TOOL_ID = "smelt";

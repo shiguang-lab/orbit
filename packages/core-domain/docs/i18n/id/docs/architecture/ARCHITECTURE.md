@@ -296,7 +296,7 @@ DB status utama (SQLite):
 
 Persistensi penggunaan:
 
-- Fasad: `src/lib/usageDb.ts` (modul terurai dalam `src/lib/usage/*`)
+- Fasad: `src/lib/usage/*` (modul terurai dalam `src/lib/usage/*`)
 - Tabel SQLite dalam `storage.sqlite`: `usage_history`, `call_logs`, `proxy_logs`
 - Artefak file opsional tetap ada untuk kompatibilitas/debug (`${DATA_DIR}/log.txt`, `${DATA_DIR}/call_logs/`, `<repo>/logs/...`)
 - File JSON lama dimigrasikan ke SQLite oleh migrasi startup jika ada
@@ -320,9 +320,9 @@ DB Status Domain (SQLite):
 
 ## 5) Sinkronisasi Cloud
 
-- Inisialisasi penjadwal: `src/lib/initCloudSync.ts`, `src/shared/services/initializeCloudSync.ts`, `src/shared/services/modelSyncScheduler.ts`
+- Inisialisasi penjadwal: `src/lib/initCloudSync.ts`, `src/shared/services/initializeCloudSync.ts`, `apps/worker/src/jobs/model-sync-scheduler.ts`
 - Tugas berkala: `src/shared/services/cloudSyncScheduler.ts`
-- Tugas berkala: `src/shared/services/modelSyncScheduler.ts`
+- Tugas berkala: `apps/worker/src/jobs/model-sync-scheduler.ts`
 - Route kontrol: `src/app/api/sync/cloud/route.ts`
 
 ## Siklus Hidup Permintaan (`/v1/chat/completions`)
@@ -656,7 +656,7 @@ flowchart LR
 
 - `src/lib/db/*`: konfigurasi/status persisten dan persistensi domain di SQLite
 - `src/lib/localDb.ts`: ekspor ulang kompatibilitas untuk modul DB
-- `src/lib/usageDb.ts`: riwayat penggunaan/log panggilan fasad di atas tabel SQLite
+- `src/lib/usage/*`: riwayat penggunaan/log panggilan fasad di atas tabel SQLite
 
 ## Cakupan Pelaksana Penyedia (Pola Strategi)
 

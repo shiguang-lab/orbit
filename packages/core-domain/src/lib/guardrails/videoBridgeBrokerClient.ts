@@ -3,7 +3,7 @@ import { z } from "zod";
 import {
   fetchModelSyncInternal,
   resolveModelSyncInternalBaseUrl,
-} from "../../shared/services/modelSyncScheduler.ts";
+} from "../../shared/services/modelSyncClient.ts";
 
 import {
   VIDEO_BRIDGE_BROKER_PATH,

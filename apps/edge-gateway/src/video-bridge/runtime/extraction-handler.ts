@@ -17,7 +17,7 @@ import {
   type VideoExtractionQueue,
   VideoExtractionQueueError,
 } from "./extraction-queue.js";
-import { resolveModelSyncInternalBaseUrl } from "@shiguang-gateway/core-domain/shared/services/modelSyncScheduler";
+import { resolveModelSyncInternalBaseUrl } from "@shiguang-gateway/core-domain/runtime/model-sync-client";
 import { createLogger } from "@shiguang-gateway/core-domain/shared/pino-logger";
 
 const log = createLogger("video-bridge-broker");

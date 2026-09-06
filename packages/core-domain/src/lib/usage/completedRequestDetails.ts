@@ -44,12 +44,6 @@ export function scheduleCompletedDetailCleanup(id: string) {
   completedDetailTimers.set(id, timer);
 }
 
-export function clearCompletedDetails() {
-  for (const timer of completedDetailTimers.values()) clearTimeout(timer);
-  completedDetailTimers.clear();
-  completedDetails.clear();
-}
-
 export function maybeEnrichCompletedDetail(updated: PendingRequestDetail, connectionId: string) {
   void (async () => {
     try {

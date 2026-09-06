@@ -14,7 +14,7 @@ import { buildQoderCliNotFoundHint } from "@shiguang-gateway/open-sse/services/q
 // Use the shared open-sse token refresh with built-in dedup/race-condition cache
 import { getAccessToken } from "@shiguang-gateway/open-sse/services/token-refresh";
 import { rotationGroupFor } from "@shiguang-gateway/open-sse/services/refreshSerializer";
-import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
+import { saveCallLog } from "@shiguang-gateway/core-domain/usage/call-logs";
 import { shouldHideLogs } from "@shiguang-gateway/core-domain/control/token-health-check";
 import { logProxyEvent } from "@shiguang-gateway/core-domain/control/proxy-logs";
 import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";

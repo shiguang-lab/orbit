@@ -520,7 +520,8 @@ Primary state DB (SQLite):
 
 Usage persistence:
 
-- facade: `src/lib/usageDb.ts` (decomposed modules in `src/lib/usage/*`)
+- explicit package contracts: `usage/history`, `usage/model-latency-stats`,
+  `usage/request-logs`, `usage/pending-requests`, `usage/call-logs`, and `usage/stats`
 - SQLite tables in `storage.sqlite`: `usage_history`, `call_logs`, `proxy_logs`
 - optional file artifacts remain for compatibility/debug (`${DATA_DIR}/log.txt`, `${DATA_DIR}/call_logs/`, `<repo>/logs/...`)
 - legacy JSON files are migrated to SQLite by startup migrations when present
@@ -544,9 +545,9 @@ Domain State DB (SQLite):
 
 ## 5) Cloud Sync
 
-- Scheduler init: `src/lib/initCloudSync.ts`, `src/shared/services/initializeCloudSync.ts`, `src/shared/services/modelSyncScheduler.ts`
+- Scheduler init: `src/lib/initCloudSync.ts`, `src/shared/services/initializeCloudSync.ts`, `apps/worker/src/jobs/model-sync-scheduler.ts`
 - Periodic task: `src/shared/services/cloudSyncScheduler.ts`
-- Periodic task: `src/shared/services/modelSyncScheduler.ts`
+- Periodic task: `apps/worker/src/jobs/model-sync-scheduler.ts`
 - Control route: `src/app/api/sync/cloud/route.ts`
 
 ## Request Lifecycle (`/v1/chat/completions`)
@@ -889,7 +890,7 @@ flowchart LR
 
 - `src/lib/db/*`: persistent config/state and domain persistence on SQLite
 - `src/lib/localDb.ts`: compatibility re-export for DB modules
-- `src/lib/usageDb.ts`: usage history/call logs facade on top of SQLite tables
+- `src/lib/usage/*`: focused usage history, pending-request, statistics, and call-log modules
 
 ## Provider Executor Coverage (Strategy Pattern)
 

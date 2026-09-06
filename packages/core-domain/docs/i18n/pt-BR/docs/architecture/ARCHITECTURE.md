@@ -501,7 +501,7 @@ Banco de dados de estado primário (SQLite):
 
 Persistência de uso:
 
-- fachada: `src/lib/usageDb.ts` (módulos decompostos em `src/lib/usage/*`)
+- fachada: `src/lib/usage/*` (módulos decompostos em `src/lib/usage/*`)
 - tabelas SQLite em `storage.sqlite`: `usage_history`, `call_logs`, `proxy_logs`
 - artefatos de arquivo opcionais permanecem para compatibilidade/debug (`${DATA_DIR}/log.txt`, `${DATA_DIR}/call_logs/`, `<repo>/logs/...`)
 - arquivos JSON legados são migrados para SQLite por migrações de inicialização quando presentes
@@ -525,9 +525,9 @@ Banco de dados de estado de domínio (SQLite):
 
 ## 5) Sincronização na Nuvem
 
-- Inicialização do agendador: `src/lib/initCloudSync.ts`, `src/shared/services/initializeCloudSync.ts`, `src/shared/services/modelSyncScheduler.ts`
+- Inicialização do agendador: `src/lib/initCloudSync.ts`, `src/shared/services/initializeCloudSync.ts`, `apps/worker/src/jobs/model-sync-scheduler.ts`
 - Tarefa periódica: `src/shared/services/cloudSyncScheduler.ts`
-- Tarefa periódica: `src/shared/services/modelSyncScheduler.ts`
+- Tarefa periódica: `apps/worker/src/jobs/model-sync-scheduler.ts`
 - Rota de controle: `src/app/api/sync/cloud/route.ts`
 
 ## Ciclo de Vida da Solicitação (`/v1/chat/completions`)
@@ -870,7 +870,7 @@ flowchart LR
 
 - `src/lib/db/*`: configuração/persistência de estado e domínio persistente no SQLite
 - `src/lib/localDb.ts`: re-exportação de compatibilidade para módulos de DB
-- `src/lib/usageDb.ts`: fachada de histórico de uso/logs de chamadas sobre tabelas SQLite
+- `src/lib/usage/*`: fachada de histórico de uso/logs de chamadas sobre tabelas SQLite
 
 ## Cobertura do Executor do Provedor (Padrão de Estratégia)
 

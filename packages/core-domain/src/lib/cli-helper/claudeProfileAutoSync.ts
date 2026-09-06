@@ -4,7 +4,7 @@ import { ensureCliConfigWriteAllowed, getCliConfigPaths } from "../../shared/ser
 import {
   fetchModelSyncInternal,
   getModelSyncInternalBaseUrl,
-} from "../../shared/services/modelSyncScheduler.js";
+} from "../../shared/services/modelSyncClient.js";
 import { isFeatureFlagEnabled } from "../../shared/utils/featureFlags.js";
 
 type SyncResult =

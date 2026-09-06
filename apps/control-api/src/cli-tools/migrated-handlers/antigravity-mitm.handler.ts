@@ -5,8 +5,8 @@ export const runtime = "nodejs";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { cliMitmStartSchema, cliMitmStopSchema } from "@shiguang-gateway/core-domain/control/cli-tools-validation-schemas";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/control/cli-tools-validation-helpers";
-import { resolveApiKey } from "@shiguang-gateway/core-domain/control/cli-tools-api-key-resolver";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { resolveApiKey } from "@shiguang-gateway/core-domain/shared/api-key-resolver";
 import { isRoot } from "@shiguang-gateway/core-domain/control/cli-tools-mitm";
 import { isSudoPasswordRequired } from "@shiguang-gateway/core-domain/control/cli-tools-mitm-dns";
 

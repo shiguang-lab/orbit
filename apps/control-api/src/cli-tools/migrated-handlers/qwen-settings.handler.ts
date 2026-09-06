@@ -22,7 +22,7 @@ import {
   getCliConfigPaths,
   getCliRuntimeStatus,
 } from "@shiguang-gateway/core-domain/control/cli-tools-runtime";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/control/cli-tools-validation-helpers";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { cliModelConfigSchema } from "@shiguang-gateway/core-domain/control/cli-tools-validation-schemas";
 
 const logger = pino({ name: "qwen-code-settings-api" });

@@ -67,9 +67,9 @@ async function postHandler(request: Request, _context: unknown): Promise<Respons
     load("@shiguang-gateway/open-sse/services/auth"),
     load("@shiguang-gateway/core-domain/shared/api-key-policy"),
     load("@shiguang-gateway/core-domain/edge/rerank-validation-schemas"),
-    load("@shiguang-gateway/core-domain/edge/rerank-validation-helpers"),
+    load("@shiguang-gateway/core-domain/shared/validation/helpers"),
     load("@shiguang-gateway/core-domain/edge/rerank-provider-nodes"),
-    load("@shiguang-gateway/core-domain/edge/usage-db"),
+    load("@shiguang-gateway/core-domain/usage/call-logs"),
     load("@shiguang-gateway/core-domain/edge/gateway-response-meta"),
     load("@shiguang-gateway/core-domain/edge/request-id"),
   ]);

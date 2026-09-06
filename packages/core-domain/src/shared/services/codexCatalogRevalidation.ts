@@ -169,7 +169,7 @@ export async function waitForLoopbackHttpReady(options?: {
   const maxWaitMs = options?.maxWaitMs ?? 15_000;
   const pollMs = options?.pollMs ?? 50;
   const { fetchModelSyncInternal, resolveModelSyncInternalBaseUrl } =
-    await import("./modelSyncScheduler");
+    await import("./modelSyncClient.js");
   const baseUrl = resolveModelSyncInternalBaseUrl(options?.apiBaseUrl);
   const deadline = Date.now() + maxWaitMs;
   let lastErr: unknown;
@@ -206,7 +206,7 @@ export async function liveResyncCodexConnections(
   }
 
   const { buildModelSyncInternalHeaders, fetchModelSyncInternal, resolveModelSyncInternalBaseUrl } =
-    await import("./modelSyncScheduler");
+    await import("./modelSyncClient.js");
   const base = resolveModelSyncInternalBaseUrl(apiBaseUrl);
   const results = await Promise.allSettled(
     connections.map(async (conn) => {
@@ -341,7 +341,7 @@ async function performCodexCatalogRevalidation(
   options: CodexCatalogRevalidationRequest
 ): Promise<void> {
   const appVersion = resolveCodexCatalogAppVersion();
-  const { resolveModelSyncInternalBaseUrl } = await import("./modelSyncScheduler");
+  const { resolveModelSyncInternalBaseUrl } = await import("./modelSyncClient.js");
   const apiBaseUrl = resolveModelSyncInternalBaseUrl(options.apiBaseUrl);
 
   await executeCodexCatalogRevalidation({
@@ -373,23 +373,4 @@ export async function revalidateCodexCatalogsOnStartup(options?: {
     : "first-start";
   if (!reason) return;
   await revalidateCodexCatalogs({ apiBaseUrl: options?.apiBaseUrl, reason });
-}
-
-function scheduleRun(run: () => Promise<void>): void {
-  const timer = setTimeout(() => {
-    void run().catch(() => {
-      // silent — success line only on full success
-    });
-  }, 0);
-  timer.unref?.();
-}
-
-/** Fire-and-forget boot schedule (first-start / upgrade only). */
-export function scheduleCodexCatalogRevalidation(options?: { apiBaseUrl?: string }): void {
-  scheduleRun(() => revalidateCodexCatalogsOnStartup({ apiBaseUrl: options?.apiBaseUrl }));
-}
-
-/** Fire-and-forget after setup/onboarding completes. */
-export function scheduleCodexCatalogRevalidationAfterInit(options?: { apiBaseUrl?: string }): void {
-  scheduleRun(() => revalidateCodexCatalogs({ apiBaseUrl: options?.apiBaseUrl, reason: "init" }));
 }

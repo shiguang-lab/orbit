@@ -4,7 +4,7 @@ import * as log from "@shiguang-gateway/core-domain/sse/logger";
 import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/shared/api-key-policy";
 import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
 import { v1EmbeddingsSchema } from "@shiguang-gateway/core-domain/edge/embeddings-validation-schemas";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/edge/embeddings-validation-helpers";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 
 import { createEmbeddingResponse, type EmbeddingHandlerOptions } from "@shiguang-gateway/open-sse/services/embedding-route";
 import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/services/auth";

@@ -2,7 +2,7 @@ import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/man
 import {
   listMultiTurnConversations,
 } from "@shiguang-gateway/core-domain/db/agentic-conversations";
-import { getPendingById } from "@shiguang-gateway/core-domain/edge/usage-db";
+import { getPendingById } from "@shiguang-gateway/core-domain/usage/pending-requests";
 
 export async function GET(request: Request) {
   const authError = await requireManagementAuth(request);

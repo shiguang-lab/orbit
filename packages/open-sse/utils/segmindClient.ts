@@ -8,7 +8,7 @@
 // Factored out so each per-modality handler stays a thin body-builder +
 // response-formatter (keeps both under the complexity/max-lines ratchets).
 
-import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
+import { saveCallLog } from "@shiguang-gateway/core-domain/usage/call-logs";
 import { sanitizeErrorMessage } from "./error.ts";
 
 export interface SegmindLogger {

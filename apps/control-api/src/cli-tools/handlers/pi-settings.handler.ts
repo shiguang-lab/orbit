@@ -10,7 +10,7 @@ import { createBackup } from "@shiguang-gateway/core-domain/shared/services/back
 import { saveCliToolLastConfigured, deleteCliToolLastConfigured } from "../cli-tool-state.js";
 import { cliModelConfigSchema } from "@shiguang-gateway/core-domain/shared/validation/schemas/cli";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { resolveApiKey } from "@shiguang-gateway/core-domain/shared/services/apiKeyResolver";
+import { resolveApiKey } from "@shiguang-gateway/core-domain/shared/api-key-resolver";
 import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 
 const TOOL_ID = "pi";

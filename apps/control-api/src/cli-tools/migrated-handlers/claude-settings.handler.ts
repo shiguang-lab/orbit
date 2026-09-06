@@ -12,7 +12,7 @@ import { createBackup } from "@shiguang-gateway/core-domain/control/cli-tools-ba
 import { normalizeClaudeBaseUrl } from "../claude-cli-config.js";
 import { saveCliToolLastConfigured, deleteCliToolLastConfigured } from "../cli-tool-state.js";
 import { cliSettingsEnvSchema } from "@shiguang-gateway/core-domain/control/cli-tools-validation-schemas";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/control/cli-tools-validation-helpers";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { getApiKeyById } from "@shiguang-gateway/core-domain/control/api-key-store";
 import { readJsoncConfig } from "./_lib/jsoncConfig.js";
 

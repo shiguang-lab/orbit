@@ -2,7 +2,7 @@
 // Family: imagen3 | Module: imagen3 | Lines: 3670-3777 (108 LOC)
 // Ref: see open-sse/handlers/imageGeneration.ts top-of-file comment for split rationale
 
-import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
+import { saveCallLog } from "@shiguang-gateway/core-domain/usage/call-logs";
 import { mapImageSize } from "../../../translator/image/sizeMapper.ts";
 
 type Imagen3ImageGenArgs = {

@@ -17,7 +17,8 @@
  * Best-effort: both writes swallow their own errors — logging a rejection must
  * never turn into a second failure on the response path.
  */
-import { saveCallLog, saveRequestUsage } from "@shiguang-gateway/core-domain/runtime/usage-db";
+import { saveCallLog } from "@shiguang-gateway/core-domain/usage/call-logs";
+import { saveRequestUsage } from "@shiguang-gateway/core-domain/usage/history";
 
 export interface RejectedRequestUsageInput {
   status: number;

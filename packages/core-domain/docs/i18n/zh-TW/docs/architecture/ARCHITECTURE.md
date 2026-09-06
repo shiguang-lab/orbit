@@ -496,7 +496,7 @@ FSM 轉換結果饋入自動組合的評分，對背景/自動化任務偏向較
 
 用量持久化：
 
-- 外觀：`src/lib/usageDb.ts`（`src/lib/usage/*` 中的分解模組）
+- 外觀：`src/lib/usage/*`（`src/lib/usage/*` 中的分解模組）
 - `storage.sqlite` 中的 SQLite 表格：`usage_history`、`call_logs`、`proxy_logs`
 - 為相容性/除錯目的保留的選用檔案工件（`${DATA_DIR}/log.txt`、`${DATA_DIR}/call_logs/`、`<repo>/logs/...`）
 - 舊版 JSON 檔案在啟動遷移時會移轉至 SQLite（若存在）
@@ -520,9 +520,9 @@ FSM 轉換結果饋入自動組合的評分，對背景/自動化任務偏向較
 
 ## 5) 雲端同步
 
-- 排程器初始化：`src/lib/initCloudSync.ts`、`src/shared/services/initializeCloudSync.ts`、`src/shared/services/modelSyncScheduler.ts`
+- 排程器初始化：`src/lib/initCloudSync.ts`、`src/shared/services/initializeCloudSync.ts`、`apps/worker/src/jobs/model-sync-scheduler.ts`
 - 定期任務：`src/shared/services/cloudSyncScheduler.ts`
-- 定期任務：`src/shared/services/modelSyncScheduler.ts`
+- 定期任務：`apps/worker/src/jobs/model-sync-scheduler.ts`
 - 控制路由：`src/app/api/sync/cloud/route.ts`
 
 ## 請求生命週期（`/v1/chat/completions`）
@@ -865,7 +865,7 @@ flowchart LR
 
 - `src/lib/db/*`：SQLite 上的持久設定/狀態與領域持久化
 - `src/lib/localDb.ts`：DB 模組的相容性重新匯出
-- `src/lib/usageDb.ts`：基於 SQLite 表格的用量歷史/呼叫記錄外觀
+- `src/lib/usage/*`：基於 SQLite 表格的用量歷史/呼叫記錄外觀
 
 ## 提供者執行器覆蓋範圍（策略模式）
 

@@ -1,5 +1,5 @@
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getCallLogById } from "@shiguang-gateway/core-domain/edge/usage-db";
+import { getCallLogById } from "@shiguang-gateway/core-domain/usage/call-logs";
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {

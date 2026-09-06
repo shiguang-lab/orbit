@@ -1,4 +1,4 @@
-import { getPendingById } from "@shiguang-gateway/core-domain/edge/usage-db";
+import { getPendingById } from "@shiguang-gateway/core-domain/usage/pending-requests";
 import { getChatLogMaxDepth, getChatLogArrayTailItems } from "@shiguang-gateway/config/logEnv";
 import { sanitizeErrorMessage } from "./error.ts";
 import type { RequestPipelinePayloads } from "@shiguang-gateway/contracts/request-pipeline-payloads";
@@ -312,7 +312,7 @@ function makeStreamChunkMethods(options: RequestLoggerOptions, captureChunks: bo
     } catch (e) {
       // Do not allow logging failures to disrupt request handling
       try {
-        console.warn("[requestLogger] updatePendingRequestStreamChunks failed:", e);
+        console.warn("[requestLogger] pending stream-chunk update failed:", e);
       } catch {}
     }
   };

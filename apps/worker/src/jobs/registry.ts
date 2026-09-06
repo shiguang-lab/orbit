@@ -9,6 +9,7 @@ export interface WorkerJob {
 
 export const WORKER_JOBS: readonly WorkerJob[] = [
   { name: "cloud-sync-and-job-registry", mode: "call", loadModule: () => import("@shiguang-gateway/core-domain/worker/cloud-sync"), exportName: "ensureCloudSyncInitialized" },
+  { name: "model-sync", mode: "call", loadModule: () => import("./model-sync-scheduler.js"), exportName: "startModelSyncScheduler", stopExportName: "stopModelSyncScheduler" },
   { name: "quota-cache-refresh", mode: "call", loadModule: () => import("@shiguang-gateway/core-domain/worker/quota-cache"), exportName: "startBackgroundRefresh", stopExportName: "stopBackgroundRefresh" },
   { name: "spend-batch-writer", mode: "call", loadModule: () => import("@shiguang-gateway/core-domain/worker/spend-batch-writer"), exportName: "startSpendBatchWriter", stopExportName: "stopSpendBatchWriter" },
   { name: "quota-auto-ping", mode: "call", loadModule: () => import("./quota-auto-ping.js"), exportName: "startQuotaAutoPing", stopExportName: "stopQuotaAutoPing" },

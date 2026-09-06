@@ -1,5 +1,5 @@
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getRecentLogs } from "@shiguang-gateway/core-domain/edge/usage-db";
+import { getRecentLogs } from "@shiguang-gateway/core-domain/usage/request-logs";
 
 export async function GET(request: Request) {
   const authError = await requireManagementAuth(request);

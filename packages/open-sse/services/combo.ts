@@ -431,7 +431,7 @@ export async function buildAutoCandidates(
   const quotaPromises = new Map<string, Promise<unknown>>();
   let historicalLatencyStats: Record<string, HistoricalLatencyStatsEntry> = {};
   try {
-    const { getModelLatencyStats } = await import("@shiguang-gateway/core-domain/edge/usage-db");
+    const { getModelLatencyStats } = await import("@shiguang-gateway/core-domain/usage/model-latency-stats");
     historicalLatencyStats = await getModelLatencyStats({
       windowHours: 24,
       minSamples: 3,

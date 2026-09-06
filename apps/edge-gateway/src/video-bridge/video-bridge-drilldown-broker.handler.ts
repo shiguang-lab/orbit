@@ -13,7 +13,7 @@ import {
   VIDEO_DRILLDOWN_MAX_ENTRY_BYTES,
   VIDEO_DRILLDOWN_MAX_FRAME_DATA_URI_CHARS,
 } from "@shiguang-gateway/core-domain/edge/video-bridge-drilldown";
-import { resolveModelSyncInternalBaseUrl } from "@shiguang-gateway/core-domain/shared/services/modelSyncScheduler";
+import { resolveModelSyncInternalBaseUrl } from "@shiguang-gateway/core-domain/runtime/model-sync-client";
 import * as log from "@shiguang-gateway/core-domain/sse/logger";
 
 export const dynamic = "force-dynamic";

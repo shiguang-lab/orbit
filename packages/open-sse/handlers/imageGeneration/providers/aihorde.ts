@@ -1,4 +1,4 @@
-import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
+import { saveCallLog } from "@shiguang-gateway/core-domain/usage/call-logs";
 import { fetchRemoteImage } from "@shiguang-gateway/core-domain/network/remote-image-fetch";
 import { safeOutboundFetch } from "@shiguang-gateway/core-domain/network/safe-outbound-fetch";
 import { sleep } from "../../../utils/sleep.ts";

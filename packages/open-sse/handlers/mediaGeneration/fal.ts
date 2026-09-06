@@ -1,4 +1,4 @@
-import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
+import { saveCallLog } from "@shiguang-gateway/core-domain/usage/call-logs";
 import {
   FetchTimeoutError,
   fetchWithTimeout,

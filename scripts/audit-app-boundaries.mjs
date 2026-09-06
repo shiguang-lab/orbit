@@ -87,6 +87,8 @@ const allowedCoreDomainSubpaths = {
     "db/connection-runtime-state",
     "runtime/settings",
     "runtime/provider-ports",
+    "runtime/model-sync-client",
+    "runtime/model-sync-operation",
     "shared/connection-isolation",
     "shared/connection-recovery-policy",
     "shared/circuit-breaker",
@@ -99,7 +101,7 @@ const allowedCoreDomainSubpaths = {
     "shared/proxy-egress",
     "shared/proxy-health",
   ],
-  "apps/control-api": ["startup", "runtime/request", "db/ping", "db/health", "db/call-log-stats", "db/provider-connections", "db/model-aliases", "db/local-db", "db/provider-stats", "db/database-stats", "db/vacuum-scheduler", "catalog/provider-metadata", "catalog/provider-registry", "catalog/provider-node-prefixes", "pricing/db", "pricing/defaults", "pricing/sync", "pricing/provider-prefixes", "pricing/validation", "pricing/modal-cost", "cache/db", "cache/services", "db/compression-analytics", "analytics/auto-routing-db", "analytics/diversity", "db-backups/db", "db-backups/validation", "metrics/combo", "metrics/request-telemetry", "metrics/observability", "metrics/tool-latency", "shared/numeric", "open-sse/utils/error.ts", "open-sse/services/deviceTracker.ts", "control/management-auth", "control/middleware-registry", "control/provider-credentials", "control/lkgp-cache", "control/management-password", "control/compliance", "runtime/feature-flags", "control/provider-validation", "control/provider-validation-schemas", "control/model-context-overrides", "control/model-test-data", "db/provider-nodes", "network/outbound-url-guard-policy", "network/safe-outbound-fetch", "control/authenticated", "control/registered-keys", "control/settings", "memory/settings", "memory/runtime", "control/database-settings", "control/proxy-logs", "control/openrouter-provider-stats", "control/provider-health-matrix", "control/resilience-settings", "edge/usage-db", "db/detailed-logs", "db/proxy-logs", "shared/log-env", "control/api-key-store", "control/cloud-sync", "control/api-key-exposure", "db/api-key-groups", "control/api-key-usage-limits", "shared/", "sse/logger", "sse/auth", "evals/db", "evals/runner", "evals/runtime", "evals/validation", "db/api-keys", "db/batches", "plugins/db", "plugins/manager", "plugins/marketplace", "shared/cors", "quota/dimensions", "quota/db", "quota/services", "quota/state", "compliance", "shared/combo-invariants", "catalog/combo-targets", "catalog/model-metadata", "catalog/provider-models"],
+  "apps/control-api": ["startup", "runtime/request", "db/ping", "db/health", "db/call-log-stats", "db/provider-connections", "db/model-aliases", "db/local-db", "db/provider-stats", "db/database-stats", "db/vacuum-scheduler", "catalog/provider-metadata", "catalog/provider-registry", "catalog/provider-node-prefixes", "pricing/db", "pricing/defaults", "pricing/sync", "pricing/provider-prefixes", "pricing/validation", "pricing/modal-cost", "cache/db", "cache/services", "db/compression-analytics", "analytics/auto-routing-db", "analytics/diversity", "db-backups/db", "db-backups/validation", "metrics/combo", "metrics/request-telemetry", "metrics/observability", "metrics/tool-latency", "shared/numeric", "open-sse/utils/error.ts", "open-sse/services/deviceTracker.ts", "control/management-auth", "control/middleware-registry", "control/provider-credentials", "control/lkgp-cache", "control/management-password", "control/compliance", "runtime/feature-flags", "control/provider-validation", "control/provider-validation-schemas", "control/model-context-overrides", "control/model-test-data", "db/provider-nodes", "network/outbound-url-guard-policy", "network/safe-outbound-fetch", "control/authenticated", "control/registered-keys", "control/settings", "memory/settings", "memory/runtime", "control/database-settings", "control/proxy-logs", "control/openrouter-provider-stats", "control/provider-health-matrix", "control/resilience-settings", "usage/stats", "usage/model-latency-stats", "usage/request-logs", "usage/pending-requests", "db/detailed-logs", "db/proxy-logs", "shared/log-env", "control/api-key-store", "control/cloud-sync", "control/api-key-exposure", "db/api-key-groups", "control/api-key-usage-limits", "shared/", "sse/logger", "sse/auth", "evals/db", "evals/runner", "evals/runtime", "evals/validation", "db/api-keys", "db/batches", "plugins/db", "plugins/manager", "plugins/marketplace", "shared/cors", "quota/dimensions", "quota/db", "quota/services", "quota/state", "compliance", "shared/combo-invariants", "catalog/combo-targets", "catalog/model-metadata", "catalog/provider-models"],
   "apps/edge-gateway": [
     "startup",
     "runtime/request",
@@ -124,9 +126,8 @@ const allowedCoreDomainSubpaths = {
     "edge/media-generation",
     "edge/specialty-catalog",
     "edge/rerank-validation-schemas",
-    "edge/rerank-validation-helpers",
     "edge/rerank-provider-nodes",
-    "edge/usage-db",
+    "usage/call-logs",
     "pricing/modal-cost",
     "edge/gateway-response-meta",
     "edge/request-id",
@@ -146,9 +147,7 @@ const allowedCoreDomainSubpaths = {
     "edge/embeddings-handler",
     "runtime/feature-flags",
     "edge/embeddings-validation-schemas",
-    "edge/embeddings-validation-helpers",
     "edge/moderation-validation-schemas",
-    "edge/moderation-validation-helpers",
     "db/models-runtime",
     "usage/call-log-api-key-context",
     "sse/image-credential-retry",
@@ -182,7 +181,6 @@ const allowedCoreDomainSubpaths = {
     "edge/provider-limits",
     "edge/internal-usage",
     "shared/cors",
-    "shared/validation-helpers",
     "shared/middleware/chatBodyAdmission",
     // A2A transport is app-owned; core exposes only the transport-neutral task runtime.
     "a2a/runtime",
@@ -208,7 +206,8 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/cli-token-auth",
   "db/tier-config",
 );
-allowedCoreDomainSubpaths["apps/edge-gateway"].push("shared/services/modelSyncScheduler");
+allowedCoreDomainSubpaths["apps/edge-gateway"].push("runtime/model-sync-client");
+allowedCoreDomainSubpaths["apps/control-api"].push("runtime/model-sync-client");
 allowedCoreDomainSubpaths["apps/control-api"].push("db/files");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/guardrails", "control/auth-init");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/assessment", "control/policies");
@@ -330,7 +329,6 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/sync-bundle",
   "control/sync-tokens",
   "control/cloud-sync-initialize",
-  "control/model-sync-scheduler",
   "control/skills-registry",
   "control/skills-github",
   "control/agent-skills",
@@ -922,6 +920,14 @@ const retiredCoreProviderTestBatchFacade = join(packagesRoot, "core-domain", "sr
 if (existsSync(retiredCoreProviderTestBatchFacade)) {
   add("redundant-core-domain-facade", retiredCoreProviderTestBatchFacade, "Provider batch validation belongs in apps/control-api");
 }
+const retiredCoreUsageDbFacade = join(packagesRoot, "core-domain", "src", "lib", "usageDb.ts");
+if (existsSync(retiredCoreUsageDbFacade)) {
+  add("redundant-core-domain-facade", retiredCoreUsageDbFacade, "Usage capabilities must use their explicit usage/* contracts");
+}
+const retiredCoreUsageDbDeclaration = join(packagesRoot, "core-domain", "src", "public", "usageDb.d.ts");
+if (existsSync(retiredCoreUsageDbDeclaration)) {
+  add("orphan-public-declaration", retiredCoreUsageDbDeclaration, "The mixed usage database contract is retired");
+}
 const retiredCoreClientApiAuth = join(packagesRoot, "core-domain", "src", "shared", "utils", "clientApiRouteAuth.ts");
 if (existsSync(retiredCoreClientApiAuth)) {
   add("edge-runtime-in-core-domain", retiredCoreClientApiAuth, "Client API route authentication belongs in apps/edge-gateway");
@@ -1119,6 +1125,9 @@ if (existsSync(workerJobRegistry)) {
   if (!/import\("@shiguang-gateway\/core-domain\/worker\/cloud-sync"\)[\s\S]*?exportName:\s*"ensureCloudSyncInitialized"/.test(source)) {
     add("missing-worker-cloud-sync-owner", workerJobRegistry, "worker must remain the explicit owner of cloud sync and job-registry startup");
   }
+  if (!/import\("\.\/model-sync-scheduler\.js"\)[\s\S]*?exportName:\s*"startModelSyncScheduler"/.test(source)) {
+    add("missing-worker-model-sync-owner", workerJobRegistry, "worker must remain the explicit owner of model-sync scheduler startup");
+  }
 }
 const controlAuthInit = join(packagesRoot, "core-domain", "src", "control", "auth-init.ts");
 if (
@@ -1126,6 +1135,16 @@ if (
   /initCloudSync|ensureCloudSyncInitialized|getJobRegistry|startModelSyncScheduler/.test(readFileSync(controlAuthInit, "utf8"))
 ) {
   add("control-init-starts-worker-runtime", controlAuthInit, "control /api/init must not start worker-owned schedulers or the job registry");
+}
+const retiredCoreModelSyncScheduler = join(packagesRoot, "core-domain", "src", "shared", "services", "modelSyncScheduler.ts");
+if (existsSync(retiredCoreModelSyncScheduler)) {
+  add("worker-scheduler-in-core-domain", retiredCoreModelSyncScheduler, "model-sync timer lifecycle belongs in apps/worker");
+}
+for (const modelSyncLeaf of ["modelSyncClient.ts", "modelSyncOperation.ts"]) {
+  const file = join(packagesRoot, "core-domain", "src", "shared", "services", modelSyncLeaf);
+  if (existsSync(file) && /\bset(?:Timeout|Interval)\s*\(/.test(readFileSync(file, "utf8"))) {
+    add("model-sync-lifecycle-in-shared-leaf", file, "neutral model-sync client and operation modules must not create timers");
+  }
 }
 const coreDomainEntry = packageEntries.find(({ manifest }) => manifest?.name === "@shiguang-gateway/core-domain");
 if (coreDomainEntry) {
@@ -1138,6 +1157,8 @@ if (coreDomainEntry) {
   }
 }
 const retiredRedundantCoreExports = [
+  "./edge/usage-db",
+  "./runtime/usage-db",
   "./edge/music-rate-limit",
   "./catalog/quota-runtime",
   "./control/synced-models",
@@ -1152,6 +1173,18 @@ const retiredRedundantCoreExports = [
   "./control/modality-bridge-stats",
   "./control/video-bridge-runtime",
   "./control/video-bridge-drilldown",
+  "./shared/services/apiKeyResolver",
+  "./control/cli-tools-api-key-resolver",
+  "./edge/rerank-validation-helpers",
+  "./edge/embeddings-validation-helpers",
+  "./edge/moderation-validation-helpers",
+  "./shared/validation-helpers",
+  "./control/cli-tools-validation-helpers",
+  "./models/index",
+  "./shared/utils/bulkApiKeyParser",
+  "./control/provider-discovery-support/modelSyncScheduler",
+  "./control/model-sync-scheduler",
+  "./shared/services/modelSyncScheduler",
 ];
 for (const subpath of retiredRedundantCoreExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {

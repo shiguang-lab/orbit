@@ -32,7 +32,7 @@ export async function POST(request: Request, { params }: ProviderParams): Promis
       load("@shiguang-gateway/open-sse"),
       load("@shiguang-gateway/core-domain/sse/logger"),
       load("@shiguang-gateway/core-domain/shared/api-key-policy"),
-      load("@shiguang-gateway/core-domain/edge/embeddings-validation-helpers"),
+      load("@shiguang-gateway/core-domain/shared/validation/helpers"),
     ]);
   const { errorResponse, unavailableResponse } = errorApi;
   const { HTTP_STATUS } = constants;
@@ -117,4 +117,3 @@ export async function POST(request: Request, { params }: ProviderParams): Promis
     headers: { "Content-Type": "application/json" },
   });
 }
-

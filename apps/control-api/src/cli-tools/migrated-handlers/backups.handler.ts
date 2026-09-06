@@ -4,7 +4,7 @@ import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/
 import { listBackups, restoreBackup, deleteBackup } from "@shiguang-gateway/core-domain/control/cli-tools-backups";
 import { ensureCliConfigWriteAllowed } from "@shiguang-gateway/core-domain/control/cli-tools-runtime";
 import { cliBackupMutationSchema } from "@shiguang-gateway/core-domain/control/cli-tools-validation-schemas";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/control/cli-tools-validation-helpers";
+import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 
 const VALID_TOOLS = ["claude", "codex", "droid", "grok-build", "openclaw", "cline", "kilo", "qwen"];

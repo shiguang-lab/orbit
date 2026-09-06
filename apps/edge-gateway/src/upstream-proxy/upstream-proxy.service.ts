@@ -8,7 +8,7 @@ import { isClaudeCodeCompatibleProvider } from "@shiguang-gateway/core-domain/ca
 import {
   isValidationFailure,
   validateBody,
-} from "@shiguang-gateway/core-domain/shared/validation-helpers";
+} from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { z } from "zod";
 
 const upstreamProxySchema = z.object({

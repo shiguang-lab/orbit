@@ -1,6 +1,7 @@
 import { translateResponse, initState } from "../translator/index.ts";
 import { FORMATS } from "../translator/formats.ts";
-import { trackPendingRequest, appendRequestLog } from "@shiguang-gateway/core-domain/edge/usage-db";
+import { trackPendingRequest } from "@shiguang-gateway/core-domain/usage/pending-requests";
+import { appendRequestLog } from "@shiguang-gateway/core-domain/usage/request-logs";
 import {
   extractUsage,
   hasValidUsage,

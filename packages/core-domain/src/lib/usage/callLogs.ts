@@ -51,7 +51,7 @@ import {
   scheduleCallLogRotation,
 } from "./callLogRotation";
 
-// Re-exported for existing importers (usageDb.ts, compliance/index.ts, purge-logs route,
+// Re-exported for the compliance worker, purge-logs route,
 // and the call-log rotation/cap test suite) — the implementation now lives in
 // ./callLogRotation.ts (extracted to satisfy the file-size gate, #10125).
 export {

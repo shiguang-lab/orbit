@@ -21,7 +21,7 @@ import {
   type EmbeddingModality,
   type EmbeddingProvider,
 } from "../config/embeddingRegistry.ts";
-import { saveCallLog } from "@shiguang-gateway/core-domain/edge/usage-db";
+import { saveCallLog } from "@shiguang-gateway/core-domain/usage/call-logs";
 import { createRequestLogger } from "../utils/requestLogger.ts";
 import { isDetailedLoggingEnabled } from "@shiguang-gateway/core-domain/db/detailed-logs";
 import { getCallLogPipelineCaptureStreamChunks } from "@shiguang-gateway/config/logEnv";

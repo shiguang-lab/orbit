@@ -1,4 +1,4 @@
-import { trackPendingRequest } from "@shiguang-gateway/core-domain/edge/usage-db";
+import { trackPendingRequest } from "@shiguang-gateway/core-domain/usage/pending-requests";
 import { STREAM_IDLE_TIMEOUT_MS } from "../config/constants.ts";
 import { FORMATS } from "../translator/formats.ts";
 import { PENDING_REQUEST_CLEARED_MARKER } from "./stream.ts";
