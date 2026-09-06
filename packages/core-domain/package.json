@@ -162,6 +162,34 @@
       "types": "./src/public/managementAuth.d.ts",
       "import": "./src/lib/api/requireManagementAuth.ts"
     },
+    "./shared/webhook-dispatcher": {
+      "types": "./src/public/webhookDispatcher.d.ts",
+      "import": "./src/lib/webhookDispatcher.ts"
+    },
+    "./shared/webhook-events": {
+      "types": "./src/public/webhookEvents.d.ts",
+      "import": "./src/lib/webhooks/eventDescriptions.ts"
+    },
+    "./shared/webhook-integrations/slack": {
+      "types": "./src/public/webhookIntegrations.d.ts",
+      "import": "./src/lib/webhooks/integrations/slack.ts"
+    },
+    "./shared/webhook-integrations/telegram": {
+      "types": "./src/public/webhookIntegrations.d.ts",
+      "import": "./src/lib/webhooks/integrations/telegram.ts"
+    },
+    "./shared/webhook-integrations/discord": {
+      "types": "./src/public/webhookIntegrations.d.ts",
+      "import": "./src/lib/webhooks/integrations/discord.ts"
+    },
+    "./db/encryption": {
+      "types": "./src/public/encryption.d.ts",
+      "import": "./src/lib/db/encryption.ts"
+    },
+    "./db/webhook-deliveries": {
+      "types": "./src/public/webhookDeliveries.d.ts",
+      "import": "./src/lib/db/webhookDeliveries.ts"
+    },
     "./control/management-password": {
       "types": "./src/public/managementPassword.d.ts",
       "import": "./src/lib/auth/managementPassword.ts"
@@ -169,6 +197,10 @@
     "./control/settings": {
       "types": "./src/public/settings.d.ts",
       "import": "./src/lib/db/settings.ts"
+    },
+    "./memory/settings": {
+      "types": "./src/public/memorySettings.d.ts",
+      "import": "./src/lib/memory/settings.ts"
     },
     "./control/database-settings": {
       "types": "./src/public/databaseSettings.d.ts",

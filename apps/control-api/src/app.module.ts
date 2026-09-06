@@ -16,6 +16,8 @@ import { QuotaModule } from "./quota/quota.module.js";
 import { ModelsModule } from "./models/models.module.js";
 import { CombosModule } from "./combos/combos.module.js";
 import { LogsModule } from "./logs/logs.module.js";
+import { WebhooksModule } from "./webhooks/webhooks.module.js";
+import { MemoryModule } from "./memory/memory.module.js";
 
 @Module({
   imports: [
@@ -36,6 +38,8 @@ import { LogsModule } from "./logs/logs.module.js";
     ModelsModule,
     CombosModule,
     LogsModule,
+    WebhooksModule,
+    MemoryModule,
   ],
 })
 export class AppModule {}
