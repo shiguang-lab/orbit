@@ -20,7 +20,7 @@
  * only catalog advertisement / candidate-pool membership is filtered, exactly
  * like `hideAutoCombos` already behaves.
  */
-import { globToRegex } from "./globPattern";
+import { globToRegex } from "./glob-pattern";
 
 export interface ModelExposureListSettings {
   modelVisibilityAllowlist?: unknown;

@@ -50,6 +50,14 @@
       "types": "./src/kimi-billing.ts",
       "import": "./src/kimi-billing.ts"
     },
+    "./glob-pattern": {
+      "types": "./src/glob-pattern.ts",
+      "import": "./src/glob-pattern.ts"
+    },
+    "./model-exposure": {
+      "types": "./src/model-exposure.ts",
+      "import": "./src/model-exposure.ts"
+    },
     "./routing-strategies": {
       "types": "./src/routing-strategies.ts",
       "import": "./src/routing-strategies.ts"

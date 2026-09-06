@@ -17,7 +17,7 @@
 import {
   isModelExposureAllowed,
   type ModelExposureListSettings,
-} from "../../../core-domain/src/shared/utils/modelExposureList.ts";
+} from "@shiguang-gateway/contracts/model-exposure";
 
 interface ExposureFilterCandidate {
   provider: string;

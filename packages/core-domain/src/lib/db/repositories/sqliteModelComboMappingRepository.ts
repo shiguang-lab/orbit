@@ -14,7 +14,7 @@ import type {
   ModelComboMappingRepository,
   UpdateModelComboMappingInput,
 } from "../../../domain/persistence/comboRepositories.ts";
-import { globToRegex } from "../../../shared/utils/globPattern.ts";
+import { globToRegex } from "@shiguang-gateway/contracts/glob-pattern";
 import { getDbInstance } from "../core";
 
 export type { ModelComboMapping } from "../../../domain/persistence/comboRepositories.ts";
