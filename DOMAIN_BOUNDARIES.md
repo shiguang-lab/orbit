@@ -79,11 +79,16 @@ that app's `src/routes` tree. The parity audits aggregate those app-owned trees
 with the remaining domain handlers, so each move is independently verifiable.
 
 The current migration wave has moved the control auth/health/status/process-control/
-token-health/synced-models/provider-stats/provider-metrics/provider-nodes list/validation/provider-models and complete API-key management groups (including app-owned root handlers, devices, regeneration, reveal, usage limits, key groups, memberships, and permissions), and the edge files, music,
+token-health/synced-models/provider-stats/provider-metrics/provider-nodes list/validation/provider-models, provider validation/observability (OpenRouter stats, quota windows, expiration, health matrix), combo management (builder options, duplicate, metrics, reorder, auto and test), and complete API-key management groups (including app-owned root handlers, devices, regeneration, reveal, usage limits, key groups, memberships, and permissions), and the edge files, music,
 speech-to-text, embeddings, audio-transcriptions, audio-speech, audio-translations, text-to-speech, image edits/generations/upscale, moderation, rerank, ElevenLabs voices, plus WebSocket handshake routes. Remaining route groups stay in
 `core-domain` until their dependencies can move without reintroducing a
 cross-app adapter; each subsequent move must update app registration and rerun
 the parity, import, and split-deployment smoke gates.
+
+Nest HTTP apps keep transport entry points in `*.controller.ts` files registered
+through `*.module.ts`; app source must not add Next-style `*.route.ts` modules.
+Raw request/response compatibility handlers use the `*.handler.ts` suffix and
+are invoked by an app-owned service.
 
 No app may import another app, reach into a package through a relative source
 path, or pass a surface flag to a generic process factory. The boundary audit
