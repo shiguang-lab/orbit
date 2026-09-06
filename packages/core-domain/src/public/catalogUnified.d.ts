@@ -1,5 +1,5 @@
 export interface UnifiedModelsResponseOptions {
-  scheduleBackgroundRefresh?: (task: Promise<unknown>) => void;
+  scheduleBackgroundRefresh?: (task: () => Promise<unknown>) => void;
 }
 
 export function getUnifiedModelsResponse(

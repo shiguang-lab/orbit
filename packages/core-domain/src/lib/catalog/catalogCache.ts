@@ -14,8 +14,6 @@
  */
 import { createHmac } from "node:crypto";
 
-import { after } from "next/server";
-
 import { getModelCatalogCacheVersion } from "../db/readCache.ts";
 import { extractApiKey } from "../../sse/services/auth.ts";
 
@@ -57,8 +55,8 @@ export type CatalogPayload = {
 export const CATALOG_STALE_WHILE_REVALIDATE_MS = 30_000;
 
 /**
- * Schedules the stale-while-revalidate rebuild. Injected so the App Router route can
- * hand over Next's `after()` and a test can hand over a deterministic hook.
+ * Schedules the stale-while-revalidate rebuild. A transport may inject a
+ * post-response scheduler; the package default is framework agnostic.
  *
  * The task returns a promise, so a scheduler that awaits it (as `after()` does) keeps
  * the runtime alive until the rebuild finishes.
@@ -66,28 +64,13 @@ export const CATALOG_STALE_WHILE_REVALIDATE_MS = 30_000;
 export type BackgroundRefreshScheduler = (task: () => Promise<unknown>) => void;
 
 /**
- * Default scheduler: Next's `after()`, which runs the task once the response has been
- * flushed to the client.
- *
- * That flush guarantee is the whole point of #8728. The builder is overwhelmingly
- * synchronous under the single-threaded App Router, so a rebuild that starts before the
- * flush pins the event loop and the "served immediately" stale body only reaches the
- * client once the rebuild has finished — the stale path stops being cheap, which is what
- * it exists for. `setTimeout(…, 0)` defers by a macrotask but does not wait for the
- * flush, so it never delivered that guarantee.
- *
- * `after()` throws outside a Next request scope — the CLI/Electron server, unit tests —
- * so fall back to the macrotask there. Those callers have no response being flushed, so
- * the deferral is all they ever needed.
+ * Default scheduler: defer the task to the next event-loop turn. Framework-owned
+ * transports may inject a stronger post-response scheduler when they have one.
  */
 export function defaultBackgroundRefreshScheduler(task: () => Promise<unknown>): void {
-  try {
-    after(task);
-  } catch {
-    setTimeout(() => {
-      void task();
-    }, 0);
-  }
+  setImmediate(() => {
+    void task();
+  });
 }
 
 /**

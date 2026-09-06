@@ -22,6 +22,7 @@ import { SessionLeasesModule } from "./session-leases/session-leases.module.js";
 import { ClassifyModule } from "./classify/classify.module.js";
 import { CombosModule } from "./combos/combos.module.js";
 import { ProviderModelsModule } from "./provider-models/provider-models.module.js";
+import { ModelsModule } from "./models/models.module.js";
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { ProviderModelsModule } from "./provider-models/provider-models.module.j
     ClassifyModule,
     CombosModule,
     ProviderModelsModule,
+    ModelsModule,
   ],
 })
 export class AppModule {}
