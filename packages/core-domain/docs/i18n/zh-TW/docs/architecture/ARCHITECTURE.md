@@ -424,7 +424,7 @@ Jules）包裝在統一的 DB 支援任務生命週期後方。所有任務建�
 - 模型可用性快照：`src/domain/modelAvailability.ts`
 - 提供者到期追蹤：`src/domain/providerExpiration.ts`
 - 配額快取：`src/domain/quotaCache.ts`
-- 降級狀態：`src/domain/degradation.ts`
+- 降級狀態：`apps/control-api/src/health/degradation.ts`
 - 設定稽核：`src/domain/configAudit.ts`
 - ShiguangGateway 回應中繼資料建置器：`src/domain/shiguang-gatewayResponseMeta.ts`
 - 評估子系統：`src/domain/assessment/` — 定期評估任務

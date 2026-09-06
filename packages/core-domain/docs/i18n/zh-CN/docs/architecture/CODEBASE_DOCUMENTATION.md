@@ -380,7 +380,6 @@ v1/
 
 ```
 server/
-├── auth/loginGuard.ts
 ├── authz/
 │   ├── classify.ts        将路由分类为公开 vs 管理
 │   ├── assertAuth.ts      断言辅助工具

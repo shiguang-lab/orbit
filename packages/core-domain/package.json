@@ -433,7 +433,6 @@
     "./control/radar-referrals-sync": { "types": "./src/public/radar.d.ts", "import": "./src/lib/radar/referralsSync.ts" },
     "./control/radar-offers-sync": { "types": "./src/public/radar.d.ts", "import": "./src/lib/radar/offersSync.ts" },
     "./control/radar-intel-sync": { "types": "./src/public/radar.d.ts", "import": "./src/lib/radar/intelSync.ts" },
-    "./control/radar-links": { "types": "./src/public/radar.d.ts", "import": "./src/lib/radar/links.ts" },
     "./control/proxy-subscriptions": {
       "types": "./src/public/proxySubscriptions.d.ts",
       "import": "./src/lib/proxySubscription/index.ts"
@@ -546,10 +545,6 @@
     "./control/cli-access-scopes": {
       "types": "./src/public/cliAccessScopes.d.ts",
       "import": "./src/lib/accessTokens/scopes.ts"
-    },
-    "./control/login-guard": {
-      "types": "./src/public/loginGuard.d.ts",
-      "import": "./src/server/auth/loginGuard.ts"
     },
     "./control/access-token-auth": {
       "types": "./src/public/accessTokenAuth.d.ts",
@@ -1251,10 +1246,6 @@
     "./db/model-aliases": {
       "types": "./src/public/modelAliasesDb.d.ts",
       "import": "./src/lib/db/models/aliases.ts"
-    },
-    "./domain/degradation": {
-      "types": "./src/public/degradation.d.ts",
-      "import": "./src/domain/degradation.ts"
     },
     "./domain/provider-error-classifier": "./src/domain/providerErrorClassifier.ts",
     "./domain/provider-error-signals": "./src/domain/providerErrorSignals.ts",

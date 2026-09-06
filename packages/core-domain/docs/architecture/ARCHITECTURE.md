@@ -432,7 +432,7 @@ have to assemble lockout/budget/fallback logic themselves.
 - Model availability snapshots: `src/domain/modelAvailability.ts`
 - Provider expiration tracking: `src/domain/providerExpiration.ts`
 - Quota cache: `src/domain/quotaCache.ts`
-- Degradation state: `src/domain/degradation.ts`
+- Degradation state: `apps/control-api/src/health/degradation.ts`
 - Configuration audit: `src/domain/configAudit.ts`
 - ShiguangGateway response metadata builder: `src/domain/shiguang-gatewayResponseMeta.ts`
 - Assessment subsystem: `src/domain/assessment/` — periodic evaluation jobs

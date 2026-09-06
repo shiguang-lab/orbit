@@ -31,7 +31,7 @@ import {
 } from "@shiguang-gateway/core-domain/control/authenticated";
 import { isCliTokenAuthValid } from "@shiguang-gateway/core-domain/control/cli-token-auth";
 import { getApiKeyMetadata } from "@shiguang-gateway/core-domain/db/api-keys";
-import { getRadarAdminUrl } from "@shiguang-gateway/core-domain/control/radar-links";
+import { getRadarAdminUrl } from "../../radar/radar-links.js";
 import {
   AUTHZ_HEADER_AUTH_ID,
   AUTHZ_HEADER_AUTH_KIND,

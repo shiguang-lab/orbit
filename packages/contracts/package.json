@@ -225,6 +225,10 @@
     "./resilience-defaults": {
       "types": "./src/resilience-defaults.ts",
       "import": "./src/resilience-defaults.ts"
+    },
+    "./radar-admin-url": {
+      "types": "./src/radar-admin-url.ts",
+      "import": "./src/radar-admin-url.ts"
     }
   },
   "scripts": {

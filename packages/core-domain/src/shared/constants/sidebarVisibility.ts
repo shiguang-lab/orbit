@@ -2,7 +2,7 @@ export * from "./sidebarVisibility/types";
 export { COMPRESSION_CONTEXT_GROUP, SIDEBAR_SECTIONS } from "./sidebarVisibility/sections";
 
 import { HIDEABLE_SIDEBAR_ITEM_IDS } from "./sidebarVisibility/types";
-import { parseRadarAdminUrl } from "../validation/radarAdminUrl";
+import { parseRadarAdminUrl } from "@shiguang-gateway/contracts/radar-admin-url";
 import type {
   HideableSidebarItemId,
   SidebarItemId,

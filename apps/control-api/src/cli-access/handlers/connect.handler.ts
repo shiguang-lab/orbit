@@ -7,7 +7,7 @@ import {
   verifyManagementPassword,
 } from "@shiguang-gateway/core-domain/control/management-password";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { checkLoginGuard, clearLoginAttempts, recordLoginFailure } from "@shiguang-gateway/core-domain/control/login-guard";
+import { checkLoginGuard, clearLoginAttempts, recordLoginFailure } from "../../auth/login.guard.js";
 import { createAccessToken } from "@shiguang-gateway/core-domain/control/cli-access-tokens";
 import { ACCESS_SCOPES } from "@shiguang-gateway/core-domain/control/cli-access-scopes";
 

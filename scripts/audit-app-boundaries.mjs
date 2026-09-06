@@ -60,7 +60,7 @@ const appByName = new Map(appEntries.filter((entry) => entry.manifest?.name).map
 const allowedCoreDomainSubpaths = {
   "apps/realtime": ["startup", "events/eventBus", "shared/test-process", "shared/http-client-abort-guard", "sse/auth", "db/compression-analytics"],
   "apps/worker": ["startup", "worker/", "db/local-db"],
-  "apps/control-api": ["startup", "runtime/request", "domain/degradation", "db/ping", "db/health", "db/call-log-stats", "db/provider-connections", "db/model-aliases", "db/local-db", "db/provider-stats", "db/database-stats", "db/vacuum-scheduler", "catalog/provider-metadata", "catalog/provider-registry", "catalog/provider-node-prefixes", "pricing/db", "pricing/defaults", "pricing/sync", "pricing/provider-prefixes", "pricing/validation", "pricing/modal-cost", "cache/db", "cache/services", "db/compression-analytics", "analytics/auto-routing-db", "analytics/diversity", "db-backups/db", "db-backups/validation", "metrics/combo", "metrics/request-telemetry", "metrics/observability", "metrics/tool-latency", "shared/numeric", "open-sse/utils/error.ts", "open-sse/services/deviceTracker.ts", "control/management-auth", "control/middleware-registry", "control/provider-credentials", "control/lkgp-cache", "control/management-password", "control/compliance", "control/feature-flags", "control/provider-validation", "control/provider-validation-schemas", "control/model-context-overrides", "control/model-test-data", "db/provider-nodes", "network/outbound-url-guard-policy", "network/safe-outbound-fetch", "control/gateway-status", "control/authenticated", "control/registered-keys", "control/synced-models", "control/settings", "memory/settings", "memory/runtime", "control/database-settings", "control/proxy-logs", "control/openrouter-provider-stats", "control/provider-health-matrix", "control/resilience-settings", "edge/usage-db", "db/detailed-logs", "db/proxy-logs", "shared/log-env", "control/api-key-store", "control/cloud-sync", "control/api-key-exposure", "db/api-key-groups", "control/api-key-usage-limits", "shared/", "sse/logger", "sse/auth", "evals/db", "evals/runner", "evals/runtime", "evals/validation", "db/api-keys", "db/batches", "plugins/db", "plugins/manager", "plugins/marketplace", "shared/cors", "quota/schemas", "quota/db", "quota/services", "quota/state", "compliance", "shared/combo-invariants", "catalog/combo-targets", "catalog/model-metadata", "catalog/provider-models"],
+  "apps/control-api": ["startup", "runtime/request", "db/ping", "db/health", "db/call-log-stats", "db/provider-connections", "db/model-aliases", "db/local-db", "db/provider-stats", "db/database-stats", "db/vacuum-scheduler", "catalog/provider-metadata", "catalog/provider-registry", "catalog/provider-node-prefixes", "pricing/db", "pricing/defaults", "pricing/sync", "pricing/provider-prefixes", "pricing/validation", "pricing/modal-cost", "cache/db", "cache/services", "db/compression-analytics", "analytics/auto-routing-db", "analytics/diversity", "db-backups/db", "db-backups/validation", "metrics/combo", "metrics/request-telemetry", "metrics/observability", "metrics/tool-latency", "shared/numeric", "open-sse/utils/error.ts", "open-sse/services/deviceTracker.ts", "control/management-auth", "control/middleware-registry", "control/provider-credentials", "control/lkgp-cache", "control/management-password", "control/compliance", "control/feature-flags", "control/provider-validation", "control/provider-validation-schemas", "control/model-context-overrides", "control/model-test-data", "db/provider-nodes", "network/outbound-url-guard-policy", "network/safe-outbound-fetch", "control/gateway-status", "control/authenticated", "control/registered-keys", "control/synced-models", "control/settings", "memory/settings", "memory/runtime", "control/database-settings", "control/proxy-logs", "control/openrouter-provider-stats", "control/provider-health-matrix", "control/resilience-settings", "edge/usage-db", "db/detailed-logs", "db/proxy-logs", "shared/log-env", "control/api-key-store", "control/cloud-sync", "control/api-key-exposure", "db/api-key-groups", "control/api-key-usage-limits", "shared/", "sse/logger", "sse/auth", "evals/db", "evals/runner", "evals/runtime", "evals/validation", "db/api-keys", "db/batches", "plugins/db", "plugins/manager", "plugins/marketplace", "shared/cors", "quota/schemas", "quota/db", "quota/services", "quota/state", "compliance", "shared/combo-invariants", "catalog/combo-targets", "catalog/model-metadata", "catalog/provider-models"],
   "apps/edge-gateway": [
     "startup",
     "runtime/request",
@@ -216,7 +216,6 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
 allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/cli-access-tokens",
   "control/cli-access-scopes",
-  "control/login-guard",
   "control/access-token-auth",
   "control/provider-model-store",
   "control/provider-model-aliases",
@@ -244,7 +243,6 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/radar-referrals-sync",
   "control/radar-offers-sync",
   "control/radar-intel-sync",
-  "control/radar-links",
   "worker/lib/radar/scheduler.ts",
   "worker/lib/db/cleanup.ts",
   "usage/call-logs",
@@ -1005,6 +1003,9 @@ const retiredAppOwnedExports = [
   "./control/oauth-runtime/kiroConnectionIdentity",
   "./shared/validation/compression-config-schemas",
   "./shared/combo-test",
+  "./control/login-guard",
+  "./domain/degradation",
+  "./control/radar-links",
 ];
 for (const subpath of retiredAppOwnedExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {

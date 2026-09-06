@@ -432,7 +432,7 @@ same składać logiki lockout/budget/fallback.
 - Snapshoty dostępności modeli: `src/domain/modelAvailability.ts`
 - Śledzenie wygaśnięcia dostawców: `src/domain/providerExpiration.ts`
 - Cache quota: `src/domain/quotaCache.ts`
-- Stan degradacji: `src/domain/degradation.ts`
+- Stan degradacji: `apps/control-api/src/health/degradation.ts`
 - Audyt konfiguracji: `src/domain/configAudit.ts`
 - Builder metadanych odpowiedzi ShiguangGateway: `src/domain/shiguang-gatewayResponseMeta.ts`
 - Podsystem assessment: `src/domain/assessment/` — okresowe zadania ewaluacji

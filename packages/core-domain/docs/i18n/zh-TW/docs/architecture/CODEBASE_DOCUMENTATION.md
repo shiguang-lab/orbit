@@ -394,7 +394,6 @@ v1/
 
 ```
 server/
-├── auth/loginGuard.ts
 ├── authz/
 │   ├── classify.ts        將路由分類為公開或管理
 │   ├── assertAuth.ts      斷言輔助程式

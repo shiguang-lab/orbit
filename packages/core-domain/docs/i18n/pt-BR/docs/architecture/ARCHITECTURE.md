@@ -414,7 +414,7 @@ precisem montar a lógica de bloqueio/orçamento/fallback por conta própria.
 - Instantâneas de disponibilidade do modelo: `src/domain/modelAvailability.ts`
 - Rastreamento de expiração de provedores: `src/domain/providerExpiration.ts`
 - Cache de cota: `src/domain/quotaCache.ts`
-- Estado de degradação: `src/domain/degradation.ts`
+- Estado de degradação: `apps/control-api/src/health/degradation.ts`
 - Auditoria de configuração: `src/domain/configAudit.ts`
 - Construtor de metadados de resposta ShiguangGateway: `src/domain/shiguang-gatewayResponseMeta.ts`
 - Subsistema de avaliação: `src/domain/assessment/` — trabalhos de avaliação periódica

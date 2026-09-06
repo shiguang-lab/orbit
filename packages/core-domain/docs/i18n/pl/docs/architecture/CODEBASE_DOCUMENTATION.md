@@ -399,7 +399,6 @@ Nie może być importowany z komponentów klienckich.
 
 ```
 server/
-├── auth/loginGuard.ts
 ├── authz/
 │   ├── classify.ts        Klasyfikuje trasy jako public vs management
 │   ├── assertAuth.ts      Helper asercji

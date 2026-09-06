@@ -18,7 +18,4 @@ export function listRadarLocalModelState(...args: any[]): any;
 export function setRadarLocalModelOverride(...args: any[]): any;
 export function setRadarModelTombstone(...args: any[]): any;
 export function clearRadarLocalModelOverride(...args: any[]): any;
-export function getContributorClaimUrl(...args: any[]): string;
-export function getSupporterPlansUrl(...args: any[]): string;
-export function getRadarAdminUrl(...args: any[]): string | null;
 export function ensureRadarSyncScheduler(...args: any[]): any;

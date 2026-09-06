@@ -4,7 +4,7 @@ import {
   getDegradationReport,
   getDegradationSummary,
   hasAnyDegradation,
-} from "@shiguang-gateway/core-domain/domain/degradation";
+} from "./degradation.js";
 
 @Injectable()
 export class HealthService {

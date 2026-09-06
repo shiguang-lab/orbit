@@ -398,7 +398,6 @@ Cannot be imported from client components.
 
 ```
 server/
-├── auth/loginGuard.ts
 ├── authz/
 │   ├── classify.ts        Classifies routes as public vs management
 │   ├── assertAuth.ts      Assertion helper
