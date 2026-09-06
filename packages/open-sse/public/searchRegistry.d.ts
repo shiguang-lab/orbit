@@ -17,3 +17,4 @@ export interface SearchProviderConfig {
 }
 
 export const SEARCH_PROVIDERS: Record<string, SearchProviderConfig>;
+export function getSearchCredentialFallbacks(providerId: string): string[];

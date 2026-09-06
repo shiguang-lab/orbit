@@ -204,6 +204,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/model-context-overrides",
   "pricing/provider-prefixes",
   "shared/reasoning-efforts-override",
+  "edge/rate-limit",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push("catalog/providers");
 allowedCoreDomainSubpaths["apps/control-api"].push(
@@ -304,6 +305,7 @@ const migratedRouteOwnership = {
     "api/providers/command-code/auth/status/route.ts",
     "api/providers/command-code/auth/apply/route.ts",
     "api/v1/search/analytics/route.ts",
+    "api/search/providers/route.ts",
     "api/v1/providers/suggested-models/route.ts",
     "api/middleware/hooks/route.ts",
     "api/middleware/hooks/[name]/route.ts",
