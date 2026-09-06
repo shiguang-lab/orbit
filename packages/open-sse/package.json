@@ -69,6 +69,10 @@
       "types": "./public/providerRegistry.d.ts",
       "import": "./config/providerRegistry.ts"
     },
+    "./config/providerConstants": {
+      "types": "./public/providerConstants.d.ts",
+      "import": "./config/providerConstants.ts"
+    },
     "./translator": {
       "types": "./public/translator.d.ts",
       "import": "./translator/index.ts"

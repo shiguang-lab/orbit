@@ -114,7 +114,10 @@ import {
   parseAndValidateNonMetadataUrl,
 } from "@shiguang-gateway/network-guard";
 import { getProviderValidationGuard } from "../../core-domain/src/shared/network/outboundUrlGuardPolicy.ts";
-import { isLocalProvider, isSelfHostedChatProvider } from "../../core-domain/src/shared/constants/providers.ts";
+import {
+  isLocalProvider,
+  isSelfHostedChatProvider,
+} from "../config/providerConstants.ts";
 // Header helpers extracted to a pure leaf; re-exported for external importers
 // (executors + tests) that import them from "./base.ts".
 export {
