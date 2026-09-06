@@ -93,6 +93,9 @@ import {
   A2aTaskEntity,
   A2aTaskEventEntity,
   RoutingDecisionEntity,
+  CcrBlockEntity,
+  CompressionCacheStatsEntity,
+  MemoryVecMetaEntity,
 } from "./entities/edge.entity.js";
 import {
   AuditLogEntity,
@@ -220,6 +223,9 @@ export const GATEWAY_TABLES = {
   a2aTasks: "a2a_tasks",
   a2aTaskEvents: "a2a_task_events",
   routingDecisions: "routing_decisions",
+  ccrBlocks: "ccr_blocks",
+  compressionCacheStats: "compression_cache_stats",
+  memoryVecMeta: "memory_vec_meta",
 } as const;
 
 export type GatewayTable = (typeof GATEWAY_TABLES)[keyof typeof GATEWAY_TABLES];
@@ -339,6 +345,9 @@ export const TABLE_OWNERSHIP: readonly TableRef[] = [
   { table: GATEWAY_TABLES.a2aTasks, owner: "edge-gateway", access: "read-write" },
   { table: GATEWAY_TABLES.a2aTaskEvents, owner: "edge-gateway", access: "read-write" },
   { table: GATEWAY_TABLES.routingDecisions, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.ccrBlocks, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.compressionCacheStats, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.memoryVecMeta, owner: "edge-gateway", access: "read-write" },
 ];
 
 /**
@@ -452,6 +461,9 @@ export const GATEWAY_ENTITIES = {
   a2aTasks: A2aTaskEntity,
   a2aTaskEvents: A2aTaskEventEntity,
   routingDecisions: RoutingDecisionEntity,
+  ccrBlocks: CcrBlockEntity,
+  compressionCacheStats: CompressionCacheStatsEntity,
+  memoryVecMeta: MemoryVecMetaEntity,
 } satisfies Record<keyof typeof GATEWAY_TABLES, EntityDefinition>;
 
 /** Runtime guard used by architecture checks and tests. */

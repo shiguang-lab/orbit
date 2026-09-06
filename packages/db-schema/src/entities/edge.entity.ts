@@ -450,3 +450,56 @@ export const RoutingDecisionEntity: EntityDefinition = {
     column("created_at", "TEXT", { default: "datetime('now')" }),
   ],
 };
+
+/** Durable CCR blocks written by the edge compression pipeline and pruned by runtime cleanup. */
+export const CcrBlockEntity: EntityDefinition = {
+  entityName: "CcrBlock",
+  tableName: "ccr_blocks",
+  owner: "edge-gateway",
+  columns: [
+    column("principal_id", "TEXT", { nullable: false, primaryKey: true }),
+    column("hash", "TEXT", { nullable: false, primaryKey: true }),
+    column("content", "TEXT", { nullable: false }),
+    column("bytes", "INTEGER", { nullable: false }),
+    column("chars", "INTEGER", { nullable: false }),
+    column("lines", "INTEGER", { nullable: false }),
+    column("content_type", "TEXT", { nullable: false, default: "'text/plain'" }),
+    column("source", "TEXT", { nullable: false, default: "'compression'" }),
+    column("created_at", "INTEGER", { nullable: false }),
+    column("last_accessed_at", "INTEGER", { nullable: false }),
+    column("expires_at", "INTEGER", { nullable: false }),
+  ],
+};
+
+/** Compression/cache telemetry emitted by edge requests and consumed by maintenance/MCP views. */
+export const CompressionCacheStatsEntity: EntityDefinition = {
+  entityName: "CompressionCacheStats",
+  tableName: "compression_cache_stats",
+  owner: "edge-gateway",
+  columns: [
+    column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
+    column("provider", "TEXT", { nullable: false }),
+    column("model", "TEXT", { nullable: false, default: "''" }),
+    column("compression_mode", "TEXT", { nullable: false }),
+    column("cache_control_present", "INTEGER", { nullable: false, default: "0" }),
+    column("estimated_cache_hit", "INTEGER", { nullable: false, default: "0" }),
+    column("tokens_saved_compression", "INTEGER", { nullable: false, default: "0" }),
+    column("tokens_saved_caching", "INTEGER", { nullable: false, default: "0" }),
+    column("net_savings", "INTEGER", { nullable: false, default: "0" }),
+    column("created_at", "TEXT", { default: "CURRENT_TIMESTAMP" }),
+  ],
+};
+
+/** Singleton vector-index metadata shared by edge retrieval and control reindex administration. */
+export const MemoryVecMetaEntity: EntityDefinition = {
+  entityName: "MemoryVecMeta",
+  tableName: "memory_vec_meta",
+  owner: "edge-gateway",
+  columns: [
+    column("id", "INTEGER", { nullable: false, primaryKey: true }),
+    column("active_dim", "INTEGER"),
+    column("embedding_signature", "TEXT"),
+    column("last_reset_at", "TEXT"),
+    column("vec_loaded", "INTEGER", { nullable: false, default: "0" }),
+  ],
+};
