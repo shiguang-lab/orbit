@@ -136,11 +136,11 @@ function sanitizeErrorMessage(message) {
 // in <DATA_DIR>/mitm/bypass.json written by `manager.writeBypassJson()`.
 // =========================================================================
 
-const bypassShim = require("./_internal/bypass.cjs");
-const ingestShim = require("./_internal/ingest.cjs");
-const forwardShim = require("./_internal/forwardTarget.cjs");
-const aliasConfigShim = require("./_internal/aliasConfig.cjs");
-const standaloneRoutingShim = require("./_internal/standaloneRouting.cjs");
+const bypassShim = require("../../mitm/_internal/bypass.cjs");
+const ingestShim = require("../../mitm/_internal/ingest.cjs");
+const forwardShim = require("../../mitm/_internal/forwardTarget.cjs");
+const aliasConfigShim = require("../../mitm/_internal/aliasConfig.cjs");
+const standaloneRoutingShim = require("../../mitm/_internal/standaloneRouting.cjs");
 
 // Inspector capture (D4 fallback). The standalone proxy intercepts AgentBridge
 // traffic inline (no MitmHandlerBase / agentBridgeHook), so it posts captured
@@ -256,7 +256,7 @@ function loadLegacySslOptions() {
 // `tproxy/dynamicCert.ts` — see that file's header for why it's duplicated
 // rather than imported). Resolved once during async bootstrap below.
 async function loadRootCaSslOptions() {
-  const { loadOrCreateMitmCa, issueLeafCert, DynamicCertStore } = require("./_internal/rootCaShim.cjs");
+  const { loadOrCreateMitmCa, issueLeafCert, DynamicCertStore } = require("../../mitm/_internal/rootCaShim.cjs");
   const ca = await loadOrCreateMitmCa(certDir);
   const certStore = new DynamicCertStore({ key: ca.key, cert: ca.cert });
   const defaultHost = [...TARGET_HOSTS][0];
@@ -273,7 +273,7 @@ async function loadRootCaSslOptions() {
 }
 
 // Log directory for request/response dumps
-const LOG_DIR = path.join(__dirname, "../../logs/mitm");
+const LOG_DIR = path.join(__dirname, "../../../logs/mitm");
 if (ENABLE_FILE_LOG && !fs.existsSync(LOG_DIR)) fs.mkdirSync(LOG_DIR, { recursive: true });
 
 // Safe log filename: only alphanumeric + hyphens, anchored inside LOG_DIR

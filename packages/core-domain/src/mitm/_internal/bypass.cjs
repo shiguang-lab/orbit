@@ -1,5 +1,5 @@
 /**
- * Bypass / passthrough routing primitives used by `src/mitm/server.cjs`.
+ * Bypass / passthrough routing primitives used by `src/bin/mitm/server.cjs`.
  *
  * This file exists because:
  *   - `server.cjs` runs as a standalone CommonJS process and cannot import

@@ -60,7 +60,7 @@ IDE Agent (VS Code / Cursor / etc.)
 /etc/hosts — 127.0.0.1 api.githubcopilot.com   ← DNS redirect
     │
     ▼
-src/mitm/server.cjs  (port 443, CJS child process)
+src/bin/mitm/server.cjs  (port 443, CJS child process)
     │  resolves target by Host header SNI
     │  generates per-SNI TLS cert signed by AgentBridge CA
     ├── Bypass list match? → TCP passthrough (no decrypt)
@@ -72,7 +72,7 @@ src/mitm/server.cjs  (port 443, CJS child process)
     └── No match? → TCP passthrough (no decrypt)
 ```
 
-### 2.2 MITM server (`src/mitm/server.cjs`)
+### 2.2 MITM server (`src/bin/mitm/server.cjs`)
 
 The core MITM server runs as a Node.js CJS child process (to avoid rewriting the existing CJS codebase). It:
 
@@ -193,7 +193,7 @@ Use the AgentBridge Server Card at `/dashboard/tools/agent-bridge`:
 
 | Action          | Description                                                             |
 | --------------- | ----------------------------------------------------------------------- |
-| Start Server    | Spawns `src/mitm/server.cjs` on port 443                                |
+| Start Server    | Spawns `src/bin/mitm/server.cjs` on port 443                                |
 | Stop Server     | Gracefully shuts down the child process                                 |
 | Restart Server  | Stop + start (picks up target changes)                                  |
 | Trust Cert      | Installs `DATA_DIR/mitm/ca.crt` into OS trust store                     |

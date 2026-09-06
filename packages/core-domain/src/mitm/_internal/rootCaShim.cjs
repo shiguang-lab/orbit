@@ -1,6 +1,6 @@
 /**
  * CJS twin of the root-CA persistence + per-host leaf issuance used by
- * `src/mitm/server.cjs` (#6684).
+ * `src/bin/mitm/server.cjs` (#6684).
  *
  * This file exists for the same reason the sibling `_internal/*.cjs` shims
  * do: `server.cjs` runs as a standalone CommonJS process (spawned via plain

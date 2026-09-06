@@ -5,7 +5,7 @@ import { getApiKeyMetadata } from "../db/apiKeys.ts";
 import { validateApiKey } from "../db/apiKeys.ts";
 import { isCliTokenAuthValid } from "../middleware/cliTokenAuth.ts";
 import { evaluateAccessTokenAuth } from "../../server/authz/accessTokenAuth.ts";
-import { isTrustedLoopbackInternalServiceRequest } from "./internalServiceAuth.ts";
+import { isTrustedLoopbackInternalServiceRequest } from "@shiguang-gateway/auth/internal-service";
 import { AUTHZ_HEADER_AUTH_KIND, AUTHZ_HEADER_AUTH_LABEL } from "../../server/authz/headers.ts";
 import {
   hasManageScope as hasManageScopeShared,

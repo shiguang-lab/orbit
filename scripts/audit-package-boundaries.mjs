@@ -40,6 +40,10 @@ function isRetiredDynamicCompatDispatcher(file, source) {
   return basename === "compat-dispatcher.ts" && /\b(?:import\s*\(|pathToFileURL\s*\()/.test(source);
 }
 
+function isPackageExecutableSource(file) {
+  return /\/packages\/[^/]+\/src\/bin\//.test(`/${rel(file)}`);
+}
+
 function callName(node) {
   if (ts.isIdentifier(node.expression)) return node.expression.text;
   if (ts.isPropertyAccessExpression(node.expression)) return node.expression.name.text;
@@ -223,6 +227,8 @@ if (process.argv.includes("--self-test")) {
   assert.equal(isRetiredDynamicCompatDispatcher(compatDispatcher, "pathToFileURL(file).href"), true);
   assert.equal(isRetiredDynamicCompatDispatcher(compatDispatcher, "export function dispatch() {}"), false);
   assert.equal(isRetiredDynamicCompatDispatcher(resolve(repoRoot, "packages/a/src/loader.ts"), 'await import("./route.js")'), false);
+  assert.equal(isPackageExecutableSource(resolve(repoRoot, "packages/a/src/bin/worker.cjs")), true);
+  assert.equal(isPackageExecutableSource(resolve(repoRoot, "packages/a/src/lib/worker.cjs")), false);
   const lifecycleFixture = `
     const sweep = setInterval(run, 1000);
     const request = () => setTimeout(abort, 1000);
@@ -345,14 +351,6 @@ function appConsumers(name, seen = new Set()) {
 }
 
 const legacyMixed = new Set();
-const knownPackageLifecycleDebt = new Map([
-  [
-    "packages/core-domain/src/mitm/server.cjs",
-    ["startup-listener:startMitmServer"],
-  ],
-]);
-const packageLifecycleDebt = [];
-const seenPackageLifecycleDebtFiles = new Set();
 
 for (const entry of packageEntries) {
   for (const file of walk(join(entry.dir, "src"))) {
@@ -360,24 +358,11 @@ for (const entry of packageEntries) {
     if (isRetiredDynamicCompatDispatcher(file, source)) {
       add("retired-dynamic-compat-dispatcher", file, "move route loading and dynamic module resolution into the owning app; packages may expose only static compatibility contracts");
     }
-    const path = rel(file);
-    if (knownPackageLifecycleDebt.has(path)) seenPackageLifecycleDebtFiles.add(path);
-    const expected = new Set(knownPackageLifecycleDebt.get(path) ?? []);
-    for (const finding of packageLifecycleFindings(file, source)) {
-      if (expected.delete(finding.signature)) {
-        packageLifecycleDebt.push({ file: path, ...finding });
-      } else {
+    if (!isPackageExecutableSource(file)) {
+      for (const finding of packageLifecycleFindings(file, source)) {
         add("package-import-time-lifecycle", file, `${finding.signature} at line ${finding.line}; move startup ownership into an app lifecycle`);
       }
     }
-    for (const stale of expected) {
-      add("stale-package-lifecycle-debt", file, `${stale} is no longer present; remove the obsolete debt entry`);
-    }
-  }
-}
-for (const path of knownPackageLifecycleDebt.keys()) {
-  if (!seenPackageLifecycleDebtFiles.has(path)) {
-    add("stale-package-lifecycle-debt", resolve(repoRoot, path), "file is no longer present in package source; remove the obsolete debt entry");
   }
 }
 
@@ -440,7 +425,6 @@ const result = {
     appConsumers: appConsumers(entry.manifest?.name),
     classification: legacyMixed.has(entry.manifest?.name) ? "legacy-mixed" : "shared",
   })),
-  packageLifecycleDebt,
   violations,
 };
 console.log(JSON.stringify(result, null, 2));

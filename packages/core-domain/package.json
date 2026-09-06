@@ -1250,10 +1250,6 @@
       "types": "./src/public/mcpComboSteps.d.ts",
       "import": "./src/lib/combos/steps.ts"
     },
-    "./edge/internal-service-auth": {
-      "types": "./src/public/internalServiceAuth.d.ts",
-      "import": "./src/lib/api/internalServiceAuth.ts"
-    },
     "./shared/quota-contract": {
       "types": "./src/public/quotaContract.d.ts",
       "import": "./src/shared/contracts/quota.ts"

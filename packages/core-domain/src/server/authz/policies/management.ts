@@ -12,7 +12,7 @@ import {
   MCP_CONNECT_SCOPE,
 } from "@shiguang-gateway/auth";
 import { evaluateAccessTokenAuth } from "../accessTokenAuth";
-import { isInternalServiceRequest } from "../../../lib/api/internalServiceAuth";
+import { isInternalServiceRequest } from "@shiguang-gateway/auth/internal-service";
 import {
   VIDEO_BRIDGE_BROKER_PATH,
   VIDEO_BRIDGE_DRILLDOWN_PATH,

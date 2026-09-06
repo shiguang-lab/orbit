@@ -5,7 +5,7 @@ import { tunnelCommandSchema } from "@shiguang-gateway/contracts/tunnel-command"
 import {
   INTERNAL_SERVICE_AUTH_HEADER,
   isInternalServiceRequest,
-} from "@shiguang-gateway/core-domain/edge/internal-service-auth";
+} from "@shiguang-gateway/auth/internal-service";
 import { toPublicSafeTunnelError } from "@shiguang-gateway/core-domain/shared/public-safe-error";
 import { TunnelsService } from "./tunnels.service.js";
 

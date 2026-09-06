@@ -49,7 +49,7 @@ import {
   type McpToolExtraLike,
 } from "./scopeEnforcement.ts";
 import { getMcpHttpAuthHeadersForInternalFetch } from "./httpAuthContext.ts";
-import { getInternalServiceAuthHeaders } from "@shiguang-gateway/core-domain/edge/internal-service-auth";
+import { getInternalServiceAuthHeaders } from "@shiguang-gateway/auth/internal-service";
 import {
   handleSimulateRoute,
   handleSetBudgetGuard,

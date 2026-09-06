@@ -7,6 +7,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./src/index.ts"
+    },
+    "./internal-service": {
+      "types": "./src/internal-service.ts",
+      "import": "./src/internal-service.ts"
     }
   },
   "scripts": {

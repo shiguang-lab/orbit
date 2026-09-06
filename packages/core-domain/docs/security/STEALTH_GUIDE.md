@@ -165,7 +165,7 @@ Target intercepted host: **`daily-cloudcode-pa.googleapis.com`** (Antigravity's 
 1. Generate self-signed cert via `selfsigned` (RSA-2048, SHA-256, 1y) — `cert/generate.ts`
 2. Install cert to system trust store — `cert/install.ts`
 3. Add hosts entry `127.0.0.1 daily-cloudcode-pa.googleapis.com` — `dns/dnsConfig.ts`
-4. Spawn `src/mitm/server.cjs` with `ROUTER_API_KEY` + `MITM_LOCAL_PORT` (default `443`)
+4. Spawn `src/bin/mitm/server.cjs` with `ROUTER_API_KEY` + `MITM_LOCAL_PORT` (default `443`)
 5. Persist PID to `<DATA_DIR>/mitm/.mitm.pid`
 
 ### Linux dynamic trust-store detection — `cert/install.ts`

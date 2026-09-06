@@ -227,7 +227,7 @@ export function getAllAgentsStatus(): AgentStatus[] {
     detection: detectAgent(t.id),
   }));
 }
-const MITM_SERVER_URL = new URL("./server.cjs", import.meta.url);
+const MITM_SERVER_URL = new URL("../bin/mitm/server.cjs", import.meta.url);
 const urlPath =
   process.platform === "win32" && MITM_SERVER_URL.pathname.startsWith("/")
     ? decodeURIComponent(MITM_SERVER_URL.pathname.slice(1))
@@ -236,7 +236,13 @@ const urlPath =
 // Lazy-resolve to avoid module-level fs.existsSync + process.cwd() at module scope,
 // which causes Turbopack's NFT tracer to follow the path into the entire src/ tree.
 function resolveMitmServerPath(): string {
-  const cwdPath = path.join(/* turbopackIgnore: true */ process.cwd(), "src", "mitm", "server.cjs");
+  const cwdPath = path.join(
+    /* turbopackIgnore: true */ process.cwd(),
+    "src",
+    "bin",
+    "mitm",
+    "server.cjs"
+  );
   return fs.existsSync(cwdPath) ? cwdPath : urlPath;
 }
 

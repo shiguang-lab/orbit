@@ -42,6 +42,10 @@ process-wide scheduler registry. `packages/http-kernel` contains only shared Nes
 transport middleware, filters and interceptors. `packages/web-handler-adapter` adapts
 an explicitly selected Web Request handler to Fastify without route discovery. Each HTTP app constructs
 Nest/Fastify itself; the shared package has no app factory and accepts no app selector.
+Package `src/bin` trees are executable-only entries: they may open a listener only when an owning app
+explicitly spawns them, and application/library imports must never evaluate those files. The AgentBridge
+MITM child entry is `packages/core-domain/src/bin/mitm/server.cjs`, spawned only by the control-owned
+MITM manager.
 The free-proxy provider/database primitives are exposed through the explicit
 `core-domain/shared/free-proxies` contract: control owns the HTTP catalog and
 promotion module, while worker may invoke the same primitives from its explicit

@@ -165,7 +165,7 @@ Cel interceptowanego hosta: **`daily-cloudcode-pa.googleapis.com`** (upstream An
 1. Wygeneruj self-signed cert przez `selfsigned` (RSA-2048, SHA-256, 1y) — `cert/generate.ts`
 2. Zainstaluj cert w systemowym trust store — `cert/install.ts`
 3. Dodaj wpis hosts `127.0.0.1 daily-cloudcode-pa.googleapis.com` — `dns/dnsConfig.ts`
-4. Spawn `src/mitm/server.cjs` z `ROUTER_API_KEY` + `MITM_LOCAL_PORT` (domyślnie `443`)
+4. Spawn `src/bin/mitm/server.cjs` z `ROUTER_API_KEY` + `MITM_LOCAL_PORT` (domyślnie `443`)
 5. Zapisz PID do `<DATA_DIR>/mitm/.mitm.pid`
 
 ### Dynamiczna detekcja trust-store na Linux — `cert/install.ts`

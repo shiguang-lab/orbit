@@ -189,10 +189,8 @@ allowedCoreDomainSubpaths["apps/control-api"].push("control/skills-github", "con
 // reach them through the authenticated internal tunnel command contract.
 allowedCoreDomainSubpaths["apps/edge-gateway"].push("edge/tunnels");
 allowedCoreDomainSubpaths["apps/edge-gateway"].push(
-  "edge/internal-service-auth",
   "shared/public-safe-error",
 );
-allowedCoreDomainSubpaths["apps/control-api"].push("edge/internal-service-auth");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/jobs");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/network-info");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/free-provider-rankings");

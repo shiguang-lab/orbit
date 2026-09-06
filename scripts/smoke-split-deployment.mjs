@@ -166,7 +166,7 @@ try {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      "x-shiguangGateway-internal-service-token": baseEnv.SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN,
+      "x-shiguang-gateway-internal-service-token": baseEnv.SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN,
     },
     body: JSON.stringify({ version: 1, command: "ngrok.status" }),
   });

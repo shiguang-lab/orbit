@@ -118,7 +118,7 @@ Loader sonduje, w kolejności priorytetu:
 
 ## §4 Dynamiczne CA per-SNI i instalator trust-store
 
-> **Aktualizacja #6684:** statyczny serwer AgentBridge (`src/mitm/server.cjs`) teraz
+> **Aktualizacja #6684:** statyczny serwer AgentBridge (`src/bin/mitm/server.cjs`) teraz
 > współdzieli ten sam wzorzec architektury CA/leaf zamiast pojedynczego statycznego
 > self-signed leaf. Używa **oddzielnej** instancji CA
 > (`src/mitm/cert/rootCa.ts`, persystowanej w `<DATA_DIR>/mitm/ca.key`/`ca.crt`)
