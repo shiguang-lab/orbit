@@ -90,6 +90,24 @@ const legacyMixed = new Set([
   "@shiguang-gateway/open-sse",
 ]);
 
+// Legacy packages are still consumed by applications, so do not let their
+// transitional status hide the two boundary leaks that are cheapest to detect:
+// app-owned source trees and catch-all package exports.  These are audit-only
+// findings; removing an export or moving a route requires an import migration.
+for (const entry of packageEntries) {
+  const name = entry.manifest?.name;
+  if (!legacyMixed.has(name)) continue;
+  for (const file of walk(join(entry.dir, "src"))) {
+    if (/\/src\/(app|control|routes)\//.test(rel(file))) {
+      add("legacy-app-owned-code", file, `${name} exposes app-owned routes/orchestration from a transitional package; migrate this file into apps/*`);
+    }
+  }
+  const exportsField = entry.manifest?.exports;
+  if (exportsField && Object.prototype.hasOwnProperty.call(exportsField, "./*")) {
+    add("legacy-wildcard-export", join(entry.dir, "package.json"), `${name} exposes every internal subpath through ./*; replace with an explicit reviewed surface as imports migrate`);
+  }
+}
+
 for (const entry of packageEntries) {
   const name = entry.manifest?.name;
   const consumers = workspaceConsumers(name);
