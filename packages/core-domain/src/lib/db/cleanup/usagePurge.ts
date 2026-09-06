@@ -7,8 +7,8 @@
  *
  * @module lib/db/cleanup/usagePurge
  */
-import { getDbInstance } from "../core";
-import { cleanupEmptyCallLogDirs, deleteCallArtifact } from "../../usage/callLogArtifacts.ts";
+import { getDbInstance } from "../core.js";
+import { cleanupEmptyCallLogDirs, deleteCallArtifact } from "../../usage/callLogArtifacts.js";
 
 export type DeleteByPeriodTarget = {
   table: string;

@@ -4,10 +4,10 @@
  * @module lib/db/cleanup
  */
 
-import { getDbInstance } from "./core";
-import { getUserDatabaseSettings } from "./databaseSettings";
-import { rollupUsageHistoryBeforeDate } from "../usage/aggregateHistory.ts";
-import { purgeCallLogArtifactDirectory } from "../usage/callLogArtifacts.ts";
+import { getDbInstance } from "./core.js";
+import { getUserDatabaseSettings } from "./databaseSettings.js";
+import { rollupUsageHistoryBeforeDate } from "../usage/aggregateHistory.js";
+import { purgeCallLogArtifactDirectory } from "../usage/callLogArtifacts.js";
 import {
   collectCallLogArtifactsBefore,
   deleteAllFromTable,
@@ -15,7 +15,7 @@ import {
   deleteFromTableBefore,
   tableExists,
   type DeleteByPeriodTarget,
-} from "./cleanup/usagePurge";
+} from "./cleanup/usagePurge.js";
 
 interface CleanupResult {
   deleted: number;
@@ -605,7 +605,21 @@ function isResetUsageHistoryPeriod(period: string): period is ResetUsageHistoryP
  *   every row in all three tables; any other value deletes rows strictly
  *   older than `now - period`. Throws on an invalid period.
  */
-const RESET_TARGETS: Array<DeleteByPeriodTarget & { resultKey: keyof ResetUsageHistoryResult }> = [
+type ResetResultKey =
+  | "deletedUsageHistory"
+  | "deletedDailySummary"
+  | "deletedHourlySummary"
+  | "deletedCallLogs"
+  | "deletedRequestDetailLogs"
+  | "deletedProxyLogs"
+  | "deletedRelayLogs"
+  | "deletedCompressionAnalytics"
+  | "deletedCompressionRunTelemetry"
+  | "deletedRoutingDecisions"
+  | "deletedQuotaConsumption"
+  | "deletedTokenLedger";
+
+const RESET_TARGETS: Array<DeleteByPeriodTarget & { resultKey: ResetResultKey }> = [
   { table: "usage_history", column: "timestamp", cutoff: "iso", resultKey: "deletedUsageHistory" },
   {
     table: "daily_usage_summary",

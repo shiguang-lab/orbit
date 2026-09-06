@@ -5,8 +5,8 @@
  * @module lib/usage/aggregateHistory
  */
 
-import { getDbInstance } from "../db/core";
-import { getUserDatabaseSettings } from "../db/databaseSettings";
+import { getDbInstance } from "../db/core.js";
+import { getUserDatabaseSettings } from "../db/databaseSettings.js";
 
 interface AggregationResult {
   processed: number;

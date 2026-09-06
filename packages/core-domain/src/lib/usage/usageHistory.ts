@@ -7,12 +7,12 @@
  * @module lib/usage/usageHistory
  */
 
-import { getDbInstance } from "../db/core";
-import { protectPayloadForLog } from "../logPayloads";
+import { getDbInstance } from "../db/core.js";
+import { protectPayloadForLog } from "../logPayloads.js";
 import {
   resolveOrphanedUsageAccountIdentity,
   resolveUsageAccountIdentity,
-} from "./accountIdentity";
+} from "./accountIdentity.js";
 import {
   accumulateLatencySample,
   asRecord,
@@ -23,16 +23,16 @@ import {
   toNumber,
   toStringOrNull,
   truncatePendingPreview,
-} from "./usageHistory/helpers";
-import type { ModelLatencyStatsEntry } from "./usageHistory/helpers";
+} from "./usageHistory/helpers.js";
+import type { ModelLatencyStatsEntry } from "./usageHistory/helpers.js";
 import {
   clearCompletedDetails,
   maybeEnrichCompletedDetail,
   scheduleCompletedDetailCleanup,
   storeCompletedDetail,
-} from "./completedRequestDetails";
-import { shouldPersistToDisk } from "./migrations";
-import { emitUsageRecorded } from "./usageEvents";
+} from "./completedRequestDetails.js";
+import { shouldPersistToDisk } from "./migrations.js";
+import { emitUsageRecorded } from "./usageEvents.js";
 import {
   getLoggedInputTokens,
   getLoggedOutputTokens,
@@ -472,7 +472,7 @@ export function finalizeMostRecentPendingRequest(
   finalizePendingDetailAt(connectionId, modelKey, details.length - 1, metadata);
 }
 
-export { getCompletedDetails } from "./completedRequestDetails";
+export { getCompletedDetails } from "./completedRequestDetails.js";
 
 export function updatePendingRequestStreamChunks(
   model: string,
@@ -818,7 +818,7 @@ export async function getUsageHistory(filter: UsageHistoryFilter = {}) {
   });
 }
 
-export type { ModelLatencyStatsEntry } from "./usageHistory/helpers";
+export type { ModelLatencyStatsEntry } from "./usageHistory/helpers.js";
 
 /**
  * Aggregate rolling latency stats per provider/model from usage_history.
