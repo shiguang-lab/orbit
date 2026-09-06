@@ -159,7 +159,9 @@ const allowedCoreDomainSubpaths = {
 };
 
 allowedCoreDomainSubpaths["apps/control-api"].push("db/health");
+allowedCoreDomainSubpaths["apps/control-api"].push("db/files");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/guardrails", "control/local-endpoints", "control/local-redis");
+allowedCoreDomainSubpaths["apps/control-api"].push("control/assessment", "control/policies");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/tunnels");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/jobs");
 allowedCoreDomainSubpaths["apps/control-api"].push(

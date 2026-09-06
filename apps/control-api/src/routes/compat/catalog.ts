@@ -145,6 +145,9 @@ export function controlRouteCatalog(): CompatRouteDefinition[] {
     "session-pools/[provider]",
     "routing/decisions/[requestId]",
     "compliance/audit-log",
+    "files",
+    "files/[id]/content",
+    "free-models",
   ]);
   return coreRoutes.filter((route) => !migrated.has(route.segments.join("/")));
 }

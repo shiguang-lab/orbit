@@ -363,6 +363,14 @@
       "types": "./src/public/guardrails.d.ts",
       "import": "./src/control/guardrails.ts"
     },
+    "./control/assessment": {
+      "types": "./src/public/assessment.d.ts",
+      "import": "./src/control/assessment.ts"
+    },
+    "./control/policies": {
+      "types": "./src/public/policies.d.ts",
+      "import": "./src/control/policies.ts"
+    },
     "./control/headroom": {
       "types": "./src/public/headroom.d.ts",
       "import": "./src/control/headroom.ts"

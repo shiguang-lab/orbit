@@ -13,6 +13,7 @@ import { ProvidersModule } from "./providers/providers.module.js";
 import { DiscoveryModule } from "./discovery/discovery.module.js";
 import { EvalsModule } from "./evals/evals.module.js";
 import { AssessmentModule } from "./assessment/assessment.module.js";
+import { PoliciesModule } from "./policies/policies.module.js";
 import { PluginsModule } from "./plugins/plugins.module.js";
 import { QuotaModule } from "./quota/quota.module.js";
 import { ModelsModule } from "./models/models.module.js";
@@ -92,6 +93,8 @@ import { HeadroomModule } from "./headroom/headroom.module.js";
 import { RelayModule } from "./relay/relay.module.js";
 import { SessionsModule } from "./sessions/sessions.module.js";
 import { ComplianceModule } from "./compliance/compliance.module.js";
+import { FilesModule } from "./files/files.module.js";
+import { FreeModelsModule } from "./free-models/free-models.module.js";
 
 @Module({
   imports: [
@@ -110,6 +113,7 @@ import { ComplianceModule } from "./compliance/compliance.module.js";
     PricingModule,
     EvalsModule,
     AssessmentModule,
+    PoliciesModule,
     PluginsModule,
     QuotaModule,
     ModelsModule,
@@ -189,6 +193,8 @@ import { ComplianceModule } from "./compliance/compliance.module.js";
     RelayModule,
     SessionsModule,
     ComplianceModule,
+    FilesModule,
+    FreeModelsModule,
   ],
 })
 export class AppModule {}

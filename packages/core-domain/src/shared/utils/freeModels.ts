@@ -28,6 +28,19 @@ const FREE_BUDGETS = FREE_MODEL_BUDGETS.filter((m) => grantsFreeAccess(m.freeTyp
 /** Provider ids that have at least one documented free model. */
 export const PROVIDERS_WITH_FREE_MODELS: Set<string> = new Set(FREE_BUDGETS.map((m) => m.provider));
 
+export function listFreeModels() {
+  return FREE_MODEL_BUDGETS.map((model) => ({
+    provider: model.provider,
+    modelId: model.modelId,
+    displayName: model.displayName,
+    monthlyTokens: model.monthlyTokens,
+    creditTokens: model.creditTokens,
+    freeType: model.freeType,
+    poolKey: model.poolKey,
+    tos: model.tos,
+  }));
+}
+
 const FREE_MODEL_IDS_BY_PROVIDER: Map<string, Set<string>> = (() => {
   const map = new Map<string, Set<string>>();
   for (const m of FREE_BUDGETS) {
