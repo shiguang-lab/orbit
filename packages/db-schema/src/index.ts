@@ -4,12 +4,23 @@ import {
   ComboEntity,
   KeyGroupEntity,
   ModelComboMappingEntity,
+  ApiKeyTokenLimitEntity,
+  PluginEntity,
   ProviderConnectionEntity,
   ProviderNodeEntity,
+  ProviderPlanEntity,
   SettingsEntity,
   WebhookEntity,
 } from "./entities/control.entity.js";
-import { BatchEntity, FileEntity } from "./entities/edge.entity.js";
+import {
+  AgenticConversationEntity,
+  ApiKeyTokenCounterEntity,
+  ApiKeyTokenLimitResetLogEntity,
+  BatchEntity,
+  ConversationTurnNodeEntity,
+  FileEntity,
+  ProviderQuotaStateEntity,
+} from "./entities/edge.entity.js";
 import {
   AuditLogEntity,
   CallLogEntity,
@@ -18,6 +29,7 @@ import {
   ProxyLogEntity,
   QuotaSnapshotEntity,
   UsageHistoryEntity,
+  ModelCapabilitiesEntity,
 } from "./entities/worker.entity.js";
 import type { EntityDefinition } from "./entities/definition.js";
 
@@ -41,6 +53,15 @@ export const GATEWAY_TABLES = {
   files: "files",
   webhooks: "webhooks",
   jobs: "jobs",
+  agenticConversations: "agentic_conversations",
+  conversationTurnNodes: "conversation_turn_nodes",
+  apiKeyTokenLimits: "api_key_token_limits",
+  apiKeyTokenCounters: "api_key_token_counters",
+  apiKeyTokenLimitResetLogs: "api_key_token_limit_reset_logs",
+  providerQuotaState: "provider_quota_state",
+  providerPlans: "provider_plans",
+  plugins: "plugins",
+  modelCapabilities: "model_capabilities",
 } as const;
 
 export type GatewayTable = (typeof GATEWAY_TABLES)[keyof typeof GATEWAY_TABLES];
@@ -73,6 +94,15 @@ export const TABLE_OWNERSHIP: readonly TableRef[] = [
   { table: GATEWAY_TABLES.files, owner: "edge-gateway", access: "read-write" },
   { table: GATEWAY_TABLES.webhooks, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.jobs, owner: "worker", access: "read-write" },
+  { table: GATEWAY_TABLES.agenticConversations, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.conversationTurnNodes, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.apiKeyTokenLimits, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.apiKeyTokenCounters, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.apiKeyTokenLimitResetLogs, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.providerQuotaState, owner: "edge-gateway", access: "read-write" },
+  { table: GATEWAY_TABLES.providerPlans, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.plugins, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.modelCapabilities, owner: "worker", access: "read-write" },
 ];
 
 /**
@@ -99,6 +129,15 @@ export const GATEWAY_ENTITIES = {
   files: FileEntity,
   webhooks: WebhookEntity,
   jobs: JobEntity,
+  agenticConversations: AgenticConversationEntity,
+  conversationTurnNodes: ConversationTurnNodeEntity,
+  apiKeyTokenLimits: ApiKeyTokenLimitEntity,
+  apiKeyTokenCounters: ApiKeyTokenCounterEntity,
+  apiKeyTokenLimitResetLogs: ApiKeyTokenLimitResetLogEntity,
+  providerQuotaState: ProviderQuotaStateEntity,
+  providerPlans: ProviderPlanEntity,
+  plugins: PluginEntity,
+  modelCapabilities: ModelCapabilitiesEntity,
 } satisfies Record<keyof typeof GATEWAY_TABLES, EntityDefinition>;
 
 /** Runtime guard used by architecture checks and tests. */

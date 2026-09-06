@@ -63,9 +63,17 @@ The entity write owners are intentionally narrower than those consumers:
 
 | Owner | Entities |
 | --- | --- |
-| `control-api` | settings, providerConnections, providerNodes, apiKeys, apiKeyGroups, combos, modelComboMappings, webhooks |
-| `edge-gateway` | batches, files |
-| `worker` | usageHistory, callLogs, proxyLogs, quotaSnapshots, auditLogs, memories, jobs |
+| `control-api` | settings, providerConnections, providerNodes, apiKeys, apiKeyGroups, combos, modelComboMappings, webhooks, apiKeyTokenLimits, providerPlans, plugins |
+| `edge-gateway` | batches, files, agenticConversations, conversationTurnNodes, apiKeyTokenCounters, apiKeyTokenLimitResetLogs, providerQuotaState |
+| `worker` | usageHistory, callLogs, proxyLogs, quotaSnapshots, auditLogs, memories, jobs, modelCapabilities |
+
+The promoted entities have concrete cross-app evidence: edge creates conversation
+roots/turn identities while control reads them; control configures token limits,
+provider plans and plugins while edge enforces or executes them; edge owns the
+hot-path token/quota ledgers; and worker syncs model capabilities consumed by edge
+routing. Runtime-only tables such as `session_model_history` remain package-only
+until another deployable app needs them; a shared package import alone is not a
+reason to promote an app-private table.
 
 The SQL scan currently finds table references in `core-domain` rather than direct
 app source, so the report labels these rows `PASS-indirect-declared-owner`. This is

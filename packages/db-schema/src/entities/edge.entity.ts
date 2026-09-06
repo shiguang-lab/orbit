@@ -29,3 +29,79 @@ export const BatchEntity: EntityDefinition = {
     column("output_expires_after_seconds", "INTEGER"), column("output_expires_after_anchor", "TEXT"),
   ],
 };
+
+/** Conversation roots are created on public requests and read by control dashboards. */
+export const AgenticConversationEntity: EntityDefinition = {
+  entityName: "AgenticConversation",
+  tableName: "agentic_conversations",
+  owner: "edge-gateway",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("api_key_id", "TEXT"),
+    column("fingerprint_hash", "TEXT", { nullable: false }),
+    column("last_message_count", "INTEGER", { nullable: false }),
+    column("last_messages_hash", "TEXT", { nullable: false }),
+    column("turn_count", "INTEGER", { nullable: false, default: "1" }),
+    column("first_seen_at", "TEXT", { nullable: false }),
+    column("last_seen_at", "TEXT", { nullable: false }),
+  ],
+};
+
+/** Identity-only turn nodes written by edge requests and traversed by control views. */
+export const ConversationTurnNodeEntity: EntityDefinition = {
+  entityName: "ConversationTurnNode",
+  tableName: "conversation_turn_nodes",
+  owner: "edge-gateway",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("conversation_id", "TEXT", { nullable: false }),
+    column("parent_id", "TEXT"),
+    column("role", "TEXT", { nullable: false }),
+    column("content_hash", "TEXT", { nullable: false, default: "''" }),
+    column("last_correlation_id", "TEXT"),
+    column("first_seen_at", "TEXT", { nullable: false }),
+    column("last_seen_at", "TEXT", { nullable: false }),
+  ],
+};
+
+/** Hot-path rolling counters and reset audit rows are owned by edge execution. */
+export const ApiKeyTokenCounterEntity: EntityDefinition = {
+  entityName: "ApiKeyTokenCounter",
+  tableName: "api_key_token_counters",
+  owner: "edge-gateway",
+  columns: [
+    column("limit_id", "TEXT", { nullable: false, primaryKey: true }),
+    column("window_start", "TEXT", { nullable: false, primaryKey: true }),
+    column("tokens_used", "INTEGER", { nullable: false, default: "0" }),
+    column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
+export const ApiKeyTokenLimitResetLogEntity: EntityDefinition = {
+  entityName: "ApiKeyTokenLimitResetLog",
+  tableName: "api_key_token_limit_reset_logs",
+  owner: "edge-gateway",
+  columns: [
+    column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
+    column("limit_id", "TEXT", { nullable: false }),
+    column("reset_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+    column("prev_tokens", "INTEGER", { nullable: false, default: "0" }),
+    column("window_start", "TEXT", { nullable: false }),
+  ],
+};
+
+/** Per-connection/model quota ledger updated during edge dispatch. */
+export const ProviderQuotaStateEntity: EntityDefinition = {
+  entityName: "ProviderQuotaState",
+  tableName: "provider_quota_state",
+  owner: "edge-gateway",
+  columns: [
+    column("connection_id", "TEXT", { nullable: false, primaryKey: true }),
+    column("model", "TEXT", { nullable: false, primaryKey: true }),
+    column("tokens_used", "INTEGER", { nullable: false, default: "0" }),
+    column("token_limit", "INTEGER", { nullable: false, default: "0" }),
+    column("window_start", "INTEGER", { nullable: false }),
+    column("window_reset", "INTEGER", { nullable: false }),
+    column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};

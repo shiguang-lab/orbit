@@ -120,3 +120,66 @@ export const KeyGroupEntity: EntityDefinition = {
     column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }), column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
   ],
 };
+
+/** Operator-managed token budgets consumed by the edge request pipeline. */
+export const ApiKeyTokenLimitEntity: EntityDefinition = {
+  entityName: "ApiKeyTokenLimit",
+  tableName: "api_key_token_limits",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("api_key_id", "TEXT", { nullable: false }),
+    column("scope_type", "TEXT", { nullable: false }),
+    column("scope_value", "TEXT", { nullable: false, default: "''" }),
+    column("token_limit", "INTEGER", { nullable: false }),
+    column("reset_interval", "TEXT", { nullable: false, default: "'monthly'" }),
+    column("reset_time", "TEXT"),
+    column("enabled", "INTEGER", { nullable: false, default: "1" }),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+    column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
+/** Per-connection quota plans configured by the control plane and read by edge routing. */
+export const ProviderPlanEntity: EntityDefinition = {
+  entityName: "ProviderPlan",
+  tableName: "provider_plans",
+  owner: "control-api",
+  columns: [
+    column("connection_id", "TEXT", { nullable: false, primaryKey: true }),
+    column("provider", "TEXT", { nullable: false }),
+    column("dimensions_json", "TEXT", { nullable: false }),
+    column("source", "TEXT", { nullable: false, default: "'manual'" }),
+    column("updated_at", "TEXT", { nullable: false, default: "CURRENT_TIMESTAMP" }),
+  ],
+};
+
+/** Installed plugin manifests/configuration managed by control and loaded by edge hooks. */
+export const PluginEntity: EntityDefinition = {
+  entityName: "Plugin",
+  tableName: "plugins",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("name", "TEXT", { nullable: false }),
+    column("version", "TEXT", { nullable: false, default: "'1.0.0'" }),
+    column("description", "TEXT"),
+    column("author", "TEXT"),
+    column("license", "TEXT", { default: "'MIT'" }),
+    column("main", "TEXT", { nullable: false, default: "'index.js'" }),
+    column("source", "TEXT", { nullable: false, default: "'local'" }),
+    column("tags", "TEXT", { default: "'[]'" }),
+    column("status", "TEXT", { nullable: false, default: "'installed'" }),
+    column("enabled", "INTEGER", { nullable: false, default: "0" }),
+    column("manifest", "TEXT", { nullable: false }),
+    column("config", "TEXT", { default: "'{}'" }),
+    column("config_schema", "TEXT", { default: "'{}'" }),
+    column("hooks", "TEXT", { default: "'[]'" }),
+    column("permissions", "TEXT", { default: "'[]'" }),
+    column("plugin_dir", "TEXT", { nullable: false }),
+    column("error_message", "TEXT"),
+    column("installed_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+    column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+    column("activated_at", "TEXT"),
+  ],
+};

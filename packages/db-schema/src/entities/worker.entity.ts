@@ -58,3 +58,32 @@ export const JobEntity: EntityDefinition = {
     column("id", "TEXT", { nullable: false, primaryKey: true }), column("type", "TEXT", { nullable: false, default: "'interval'" }), column("cron", "TEXT"), column("interval_ms", "INTEGER"), column("enabled", "INTEGER", { nullable: false, default: "1" }), column("env_flag", "TEXT"), column("config", "TEXT", { nullable: false, default: "'{}'" }), column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }), column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
   ],
 };
+
+/** Models.dev capability snapshots synced by worker and consumed by edge routing. */
+export const ModelCapabilitiesEntity: EntityDefinition = {
+  entityName: "ModelCapabilities",
+  tableName: "model_capabilities",
+  owner: "worker",
+  columns: [
+    column("provider", "TEXT", { nullable: false, primaryKey: true }),
+    column("model_id", "TEXT", { nullable: false, primaryKey: true }),
+    column("tool_call", "INTEGER"),
+    column("reasoning", "INTEGER"),
+    column("attachment", "INTEGER"),
+    column("structured_output", "INTEGER"),
+    column("temperature", "INTEGER"),
+    column("modalities_input", "TEXT"),
+    column("modalities_output", "TEXT"),
+    column("knowledge_cutoff", "TEXT"),
+    column("release_date", "TEXT"),
+    column("last_updated", "TEXT"),
+    column("status", "TEXT"),
+    column("family", "TEXT"),
+    column("open_weights", "INTEGER"),
+    column("limit_context", "INTEGER"),
+    column("limit_input", "INTEGER"),
+    column("limit_output", "INTEGER"),
+    column("interleaved_field", "TEXT"),
+    column("last_synced", "TEXT"),
+  ],
+};
