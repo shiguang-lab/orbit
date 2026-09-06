@@ -162,6 +162,10 @@
       "types": "./src/public/managementAuth.d.ts",
       "import": "./src/lib/api/requireManagementAuth.ts"
     },
+    "./shared/version-manager": {
+      "types": "./src/public/versionManagerControl.d.ts",
+      "import": "./src/lib/versionManager/controlExports.ts"
+    },
     "./shared/webhook-dispatcher": {
       "types": "./src/public/webhookDispatcher.d.ts",
       "import": "./src/lib/webhookDispatcher.ts"

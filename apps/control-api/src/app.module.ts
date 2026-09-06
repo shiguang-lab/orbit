@@ -20,6 +20,7 @@ import { WebhooksModule } from "./webhooks/webhooks.module.js";
 import { MemoryModule } from "./memory/memory.module.js";
 import { SettingsModule } from "./settings/settings.module.js";
 import { RateLimitsModule } from "./rate-limits/rate-limits.module.js";
+import { VersionManagerModule } from "./version-manager/version-manager.module.js";
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { RateLimitsModule } from "./rate-limits/rate-limits.module.js";
     MemoryModule,
     SettingsModule,
     RateLimitsModule,
+    VersionManagerModule,
   ],
 })
 export class AppModule {}
