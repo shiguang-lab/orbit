@@ -320,7 +320,7 @@ shiguang-gateway launch-codex --profile glm52 -- --yolo "fix this bug"
 ```
 
 Codex is also a target of the two generic manifest-driven entry points
-(`bin/cli/cli-manifest.mjs`):
+(`apps/cli/src/cli/cli-manifest.mjs`):
 
 ```bash
 # Interactive model picker → writes ~/.codex/<name>.config.toml (TOML, env_key)

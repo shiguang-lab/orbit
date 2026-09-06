@@ -296,7 +296,7 @@ if (process.argv.includes("--self-test")) {
     packageLifecycleFindings("signal.ts", 'process.once("SIGTERM", shutdown);').map(({ signature }) => signature),
     ["module-process-signal:SIGTERM:expression"],
   );
-  console.log(JSON.stringify({ status: "PASS", checks: ["core-domain/open-sse SCC", "self-loop", "package ownership", "relative import extraction", "core source cannot import CLI implementations", "route basename ownership", "retired dynamic compat dispatcher", "package runtime export targets", "package lifecycle ownership"] }, null, 2));
+  console.log(JSON.stringify({ status: "PASS", checks: ["core-domain/open-sse SCC", "self-loop", "package ownership", "relative import extraction", "core source cannot import CLI implementations", "core CLI cannot cross into core source by relative path", "route basename ownership", "retired dynamic compat dispatcher", "package runtime export targets", "package lifecycle ownership"] }, null, 2));
   process.exit(0);
 }
 

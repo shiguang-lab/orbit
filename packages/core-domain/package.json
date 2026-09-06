@@ -1321,6 +1321,7 @@
     "./runtime/middleware-registry": "./src/lib/middleware/registry.ts",
     "./runtime/context-handoffs": "./src/lib/db/contextHandoffs.ts",
     "./runtime/combos-db": "./src/lib/db/combos.ts",
+    "./runtime/recovery-db": "./src/lib/db/recovery.ts",
     "./runtime/combo-auto-promote": "./src/lib/combos/autoPromote.ts",
     "./runtime/session-affinity-db": "./src/lib/db/sessionAccountAffinity.ts",
     "./runtime/request-defaults": "./src/lib/providers/requestDefaults.ts",
@@ -1369,6 +1370,30 @@
     "./runtime/proxies": "./src/lib/db/proxies.ts",
     "./runtime/nvidia-validation-model": "./src/lib/providers/nvidiaValidationModel.ts",
     "./runtime/modal-validation": "./src/shared/constants/modal.ts",
+    "./cli/doctor-checks": {
+      "types": "./src/public/cliDoctorChecks.ts",
+      "import": "./src/public/cliDoctorChecks.ts"
+    },
+    "./cli/log-streamer": {
+      "types": "./src/public/cliLogStreamer.ts",
+      "import": "./src/public/cliLogStreamer.ts"
+    },
+    "./cli/opencode-config": {
+      "types": "./src/public/cliOpencodeConfig.ts",
+      "import": "./src/public/cliOpencodeConfig.ts"
+    },
+    "./cli/windows-process": {
+      "types": "./src/public/cliWindowsProcess.ts",
+      "import": "./src/public/cliWindowsProcess.ts"
+    },
+    "./cli/sqlite-driver": {
+      "types": "./src/public/cliSqliteDriver.ts",
+      "import": "./src/public/cliSqliteDriver.ts"
+    },
+    "./cli/container-guard": {
+      "types": "./src/public/cliContainerGuard.ts",
+      "import": "./src/public/cliContainerGuard.ts"
+    },
     "./control/cli-tools-config-generator": "./src/lib/cli-helper/config-generator/index.ts",
     "./control/cli-tools-tool-detector": "./src/lib/cli-helper/tool-detector.ts",
     "./control/cli-tools-config-guard": "./src/lib/api/cliConfigWriteGuard.ts",
@@ -1688,7 +1713,6 @@
     "turndown": "^7.2.4",
     "turndown-plugin-gfm": "^1.0.2",
     "undici": "^8.10.1",
-    "update-notifier": "^7.3.1",
     "uuid": "^14.0.2",
     "ws": "^8.21.3",
     "xxhash-wasm": "^1.1.0",

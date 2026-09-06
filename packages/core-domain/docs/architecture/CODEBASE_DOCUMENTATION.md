@@ -54,7 +54,7 @@ ShiguangGateway/
 ├── src/                  Next.js application (App Router, libs, domain, server, shared)
 ├── open-sse/             Streaming engine workspace (@shiguang-gateway/open-sse)
 ├── electron/             Desktop wrapper (Electron 41 main + preload)
-├── bin/                  CLI entry points (shiguang-gateway, reset-password)
+├── apps/cli/             CLI application (shiguang-gateway, reset-password)
 ├── tests/                Unit, integration, e2e, protocols-e2e, translator, security, fixtures
 ├── scripts/              Build, sync, check, migration, and runtime helper scripts
 ├── docs/                 Public documentation (this directory)
@@ -300,7 +300,7 @@ table groups the actual directories and notable top-level files.
 | `runtime/`        | Runtime feature detection                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | `search/`         | `executeWebSearch.ts`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | `services/`       | Embedded services framework: `ServiceSupervisor.ts` (generic child-process supervisor with operation lock, ring buffer, health checker), `bootstrap.ts` (process-level registration and auto-start), `registry.ts` (tool → supervisor map), `apiKey.ts` (AES-256-GCM key store), `modelSync.ts` (periodic model sync), `ringBuffer.ts` (5 MB circular log buffer), `healthCheck.ts` (HTTP health probe), `types.ts`, `embedWsProxy.ts` (WebSocket proxy), `installers/{ninerouter,cliproxy}.ts`. See `docs/frameworks/EMBEDDED-SERVICES.md`                                                                                                                                      |
-| `agentSkills/`    | Agent Skills catalog + generator: `catalog.ts` (getCatalog/getSkillById/filterCatalog/computeCoverage), `generator.ts` (generateAgentSkills → writes `skills/{id}/SKILL.md`), `openapiParser.ts` (extracts REST endpoints from OpenAPI spec), `cliRegistryParser.ts` (extracts CLI subcommands from bin/cli-registry), `schemas.ts` (Zod: AgentSkillSchema, SkillCoverageSchema, ListQuerySchema, GenerateBodySchema), `types.ts` (AgentSkill, SkillCoverage, SkillMarkdown, GeneratorReport). Consumed by REST routes (`/api/agent-skills/*`), MCP tools (`shiguang-gateway_agent_skills_*`), and A2A skill `list-capabilities`. See [AGENT-SKILLS.md](../frameworks/AGENT-SKILLS.md). |
+| `agentSkills/`    | Agent Skills catalog + generator: `catalog.ts` (getCatalog/getSkillById/filterCatalog/computeCoverage), `generator.ts` (generateAgentSkills → writes `skills/{id}/SKILL.md`), `openapiParser.ts` (extracts REST endpoints from OpenAPI spec), `cliRegistryParser.ts` (extracts CLI subcommands from `apps/cli/src/cli/commands/registry.mjs`), `schemas.ts` (Zod: AgentSkillSchema, SkillCoverageSchema, ListQuerySchema, GenerateBodySchema), `types.ts` (AgentSkill, SkillCoverage, SkillMarkdown, GeneratorReport). Consumed by REST routes (`/api/agent-skills/*`), MCP tools (`shiguang-gateway_agent_skills_*`), and A2A skill `list-capabilities`. See [AGENT-SKILLS.md](../frameworks/AGENT-SKILLS.md). |
 | `skills/`         | Skill framework: `registry.ts`, `executor.ts`, `interception.ts`, `injection.ts`, `sandbox.ts`, `custom.ts`, `hybrid.ts`, `builtins.ts`, `a2a.ts`, `providerSettings.ts`, `schemas.ts`, `skillssh.ts`, `types.ts`, plus `builtin/browser.ts`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `spend/`          | `batchWriter.ts` (write-behind buffer)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | `sync/`           | `bundle.ts`, `tokens.ts` (Cloud Sync)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
@@ -597,35 +597,36 @@ Five npm scripts at the workspace root: `electron:dev`, `electron:build`,
 
 ---
 
-## 6. `bin/` — CLI
+## 6. `apps/cli/` — CLI application
 
 ```
-bin/
-├── shiguang-gateway.mjs           Main CLI entry (Node ESM)
-├── reset-password.mjs      Reset the management password from CLI
-├── mcp-server.mjs          MCP server launcher (stdio)
-├── nodeRuntimeSupport.mjs  Node version guard
-└── cli/
-    ├── program.mjs         Commander program builder
-    ├── runtime.mjs         withRuntime helper (server-first/db-fallback)
-    ├── output.mjs          Output formatters (json/jsonl/table/csv)
-    ├── i18n.mjs            t() helper with locales
-    ├── api.mjs             API fetch helper
-    ├── data-dir.mjs
-    ├── encryption.mjs
-    ├── sqlite.mjs
-    └── commands/
-        ├── registry.mjs    Command registration
-        ├── setup.mjs
-        ├── doctor.mjs
-        ├── providers.mjs
-        └── ...             (one file per command/group)
+apps/cli/
+├── package.json            Executable names, dependencies, and package exports
+└── src/
+    ├── shiguang-gateway.mjs     Main CLI entry (Node ESM)
+    ├── reset-password.mjs       Reset the management password from CLI
+    ├── mcp-server.mjs           MCP server launcher (stdio)
+    ├── nodeRuntimeSupport.mjs   Node version guard
+    └── cli/
+        ├── program.mjs         Commander program builder
+        ├── runtime.mjs         withRuntime helper (server-first/db-fallback)
+        ├── output.mjs          Output formatters (json/jsonl/table/csv)
+        ├── i18n.mjs            t() helper with locales
+        ├── api.mjs             API fetch helper
+        ├── encryption.mjs
+        ├── sqlite.mjs
+        └── commands/
+            ├── registry.mjs    Command registration
+            ├── setup.mjs
+            ├── doctor.mjs
+            ├── providers.mjs
+            └── ...             (one file per command/group)
 ```
 
-Two binaries are exposed in `package.json` → `bin`:
+The CLI application exposes these binaries in `apps/cli/package.json` → `bin`:
 
-- `shiguang-gateway` → `bin/shiguang-gateway.mjs`
-- `shiguang-gateway-reset-password` → `bin/reset-password.mjs`
+- `shiguang-gateway` → `apps/cli/src/shiguang-gateway.mjs`
+- `shiguang-gateway-reset-password` → `apps/cli/src/reset-password.mjs`
 
 ---
 

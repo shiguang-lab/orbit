@@ -32,7 +32,7 @@ src/lib/agentSkills/
   catalog.ts                           — getCatalog(), getSkillById(), filterCatalog(), computeCoverage()
   generator.ts                         — generateAgentSkills() writes SKILL.md to skills/{id}/
   openapiParser.ts                     — extracts REST endpoints from docs/openapi.yaml
-  cliRegistryParser.ts                 — extracts CLI subcommands from bin/cli-registry.ts
+  cliRegistryParser.ts                 — extracts CLI subcommands from apps/cli/src/cli/commands/registry.mjs
   schemas.ts                           — Zod schemas: AgentSkillSchema, SkillCoverageSchema, etc.
   types.ts                             — TypeScript interfaces: AgentSkill, SkillCoverage, etc.
 

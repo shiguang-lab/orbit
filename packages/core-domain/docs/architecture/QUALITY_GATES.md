@@ -198,7 +198,7 @@ Runs on pull requests only.
 
 | Script                 | Validates                                                                                                                  | Blocking |
 | ---------------------- | -------------------------------------------------------------------------------------------------------------------------- | -------- |
-| `check:pr-test-policy` | PRs that change production code in `src/`, `open-sse/`, `electron/`, or `bin/` must include or update tests (Hard Rule #8) | Yes      |
+| `check:pr-test-policy` | PRs that change production code in `src/`, `open-sse/`, `electron/`, or `apps/cli/src/` must include or update tests (Hard Rule #8) | Yes      |
 | `check:test-masking`   | Changed test files do not reduce net assert count or add `assert.ok(true)` tautologies                                     | Yes      |
 | `check:pr-evidence`    | PR body cites test/VPS evidence for the change (mechanizes Hard Rule #18 by grepping PR prose — fragile, see Backlog)      | Yes      |
 

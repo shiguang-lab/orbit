@@ -17,7 +17,7 @@ change type to its contracts, focused checks, and CI coverage.
 2. **Name the contracts.** Identify every catalog, schema, generated artifact, public API, or user
    interface that the change affects. The table below gives the minimum starting set.
 3. **Write or update focused tests.** Production changes in `src/`, `open-sse/`, `electron/`, or
-   `bin/` require an automated test in the same PR. Run the smallest test files that prove the
+   `apps/cli/src/` require an automated test in the same PR. Run the smallest test files that prove the
    behavior, then the listed focused gates.
 4. **Let CI run the broad matrix.** The complete unit shards, Vitest, coverage ratchet, and
    production build run on the PR. Run a broad suite locally only when a focused failure points to
@@ -110,7 +110,7 @@ or documented manual check appropriate to the change.
 **Contracts**
 
 - `src/i18n/messages/en.json` is the UI source; `config/i18n.json` is the locale source.
-- CLI catalogs live separately under `bin/cli/locales/`.
+- CLI catalogs live separately under `apps/cli/src/cli/locales/`.
 - Preserve ICU placeholders and tags exactly. Do not translate product/provider/model names,
   protocol and header names, commands, code/JSON identifiers, URLs, environment variables, or
   protected terms such as `ShiguangGateway`, `OAuth`, `MCP`, and `A2A`. The current source list is
@@ -136,7 +136,7 @@ you have reviewed the resulting diff.
 
 **Contracts**
 
-- Public commands and flags in `bin/cli/`, generated API commands, exit codes, stdout/stderr and
+- Public commands and flags in `apps/cli/src/cli/`, generated API commands, exit codes, stdout/stderr and
   JSON output shapes, config/environment behavior, and packaged files.
 - CLI user-facing strings must use the CLI i18n layer and keep `en`/`pt-BR` catalogs aligned.
 - Preserve Node as the supported runtime and the published binary contract.

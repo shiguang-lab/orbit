@@ -62,7 +62,7 @@ Default salt: `shiguang-gateway-cli-auth-v1`
 
 Before the HMAC format above, the CLI derived its token as
 `SHA-256(machineId + salt).hex[0..32]` (a 32-char prefix) in
-`bin/cli/utils/cliToken.mjs` (`getLegacyCliTokenSync` in `src/lib/machineToken.ts`).
+`apps/cli/src/cli/utils/cliToken.mjs` (`getLegacyCliTokenSync` in `src/lib/machineToken.ts`).
 
 For backwards compatibility the server accepts **both** formats: the verifier builds
 `expectedTokens = [getMachineTokenSync(), getLegacyCliTokenSync()]` and compares the

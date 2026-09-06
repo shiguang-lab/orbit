@@ -18,7 +18,7 @@ ShiguangGateway/
 ├── src/                  # Next.js 16 application (UI + API routes + libs + domain + server)
 ├── open-sse/             # Streaming engine workspace (handlers, executors, translator, MCP server)
 ├── electron/             # Desktop wrapper (Electron 41 + electron-builder 26.10)
-├── bin/                  # CLI entry point and command handlers
+├── apps/cli/             # CLI application, entry points, and command handlers
 ├── scripts/              # Build, check, sync, and one-off scripts
 ├── docs/                 # Public documentation (you are here)
 ├── tests/                # All test suites (unit, integration, e2e, protocols-e2e)
@@ -312,12 +312,12 @@ open-sse/
 
 ---
 
-## `bin/` — CLI
+## `apps/cli/src/` — CLI application
 
 | File                                                                                                        | Purpose                                                                                                                    |
 | ----------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `shiguang-gateway.mjs`                                                                                             | Main CLI entry — `shiguang-gateway serve`, `shiguang-gateway setup`, `shiguang-gateway doctor`, `shiguang-gateway providers`, `shiguang-gateway combos`, etc. |
-| `reset-password.mjs`                                                                                        | Standalone password reset CLI                                                                                              |
+| `apps/cli/src/shiguang-gateway.mjs`                                                                                | Main CLI entry — `shiguang-gateway serve`, `shiguang-gateway setup`, `shiguang-gateway doctor`, `shiguang-gateway providers`, `shiguang-gateway combos`, etc. |
+| `apps/cli/src/reset-password.mjs`                                                                           | Standalone password reset CLI                                                                                              |
 | `cli/commands/setup.mjs`                                                                                    | Interactive + non-interactive setup wizard                                                                                 |
 | `cli/commands/doctor.mjs`                                                                                   | System health diagnostics (8+ checks)                                                                                      |
 | `cli/commands/providers.mjs`                                                                                | Provider list/test/validate                                                                                                |

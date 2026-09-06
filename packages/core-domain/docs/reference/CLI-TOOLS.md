@@ -64,7 +64,7 @@ without model auto-discovery (Cline, Kilo, Roo, Goose, Aider, Qwen) take
 `--model <id>` (and `--yes` for non-interactive runs). To launch a CLI with the
 right env injected and no config written at all, use the generic
 `shiguang-gateway run <target>` launcher (claude, codex, aider, goose, opencode, qwen,
-gemini — targets and aliases come from `bin/cli/cli-manifest.mjs`); the legacy
+gemini — targets and aliases come from `apps/cli/src/cli/cli-manifest.mjs`); the legacy
 per-tool launchers `shiguang-gateway launch` (Claude Code) and `shiguang-gateway launch-codex`
 (Codex) remain available. Gemini CLI is launch-only: it is an `shiguang-gateway run`
 target but has no `setup-*`/`configure` recipe.
@@ -127,10 +127,10 @@ declaring source, and a drift test keeps them aligned:
 | ---------------- | ------------------------------------------------------------------ | ----------------------------------------------------------------- |
 | **Cataloged**    | Appears in the dashboard catalog (name, vendor, docs, config type) | `src/shared/constants/cliTools.ts` (`CLI_TOOLS`)                  |
 | **Detectable**   | Binary/config detection, health checks, config paths               | `src/shared/services/cliRuntime.ts` (`CLI_TOOLS` runtime catalog) |
-| **Configurable** | Supported by `shiguang-gateway configure <cli>` (setup recipe exists)     | `bin/cli/cli-manifest.mjs` (`configure: true`)                    |
-| **Launchable**   | Supported by `shiguang-gateway run <target>` (env/args injection defined) | `bin/cli/cli-manifest.mjs` (`run: true`)                          |
+| **Configurable** | Supported by `shiguang-gateway configure <cli>` (setup recipe exists)     | `apps/cli/src/cli/cli-manifest.mjs` (`configure: true`)                    |
+| **Launchable**   | Supported by `shiguang-gateway run <target>` (env/args injection defined) | `apps/cli/src/cli/cli-manifest.mjs` (`run: true`)                          |
 
-`bin/cli/cli-manifest.mjs` is the canonical executable manifest for the CLI command
+`apps/cli/src/cli/cli-manifest.mjs` is the canonical executable manifest for the CLI command
 surfaces: `run`, `configure` and the shell-completion generators all derive their
 target lists, alias resolution (for example `kilocode`/`kilo-code`/`kilo_cli` → `kilo`)
 and `--model` flag wiring from it. The drift guard
@@ -601,7 +601,7 @@ under `/dashboard/cli-tools → Kiro`.
 
 ## 10. Internal ShiguangGateway CLI
 
-The `shiguang-gateway` binary provides commands for server lifecycle, setup, diagnostics, and provider management. Entry point: `bin/shiguang-gateway.mjs`.
+The `shiguang-gateway` binary provides commands for server lifecycle, setup, diagnostics, and provider management. Entry point: `apps/cli/src/shiguang-gateway.mjs`.
 
 ```bash
 shiguang-gateway                              # Start server (default port 20128)

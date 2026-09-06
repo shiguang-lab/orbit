@@ -201,4 +201,4 @@ flowchart LR
 | `docker-compose.prod.yml` | Prod Redis container (image `redis:8.6.2-alpine`) |
 | `.env.example` | Redis env vars documentation |
 | `src/app/api/local/redis/` | API routes for dev container orchestration |
-| `bin/cli/commands/redis.mjs` | CLI commands for dev container orchestration |
+| `apps/cli/src/cli/commands/redis.mjs` | CLI commands for dev container orchestration |

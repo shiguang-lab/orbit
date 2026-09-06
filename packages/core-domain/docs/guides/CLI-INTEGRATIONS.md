@@ -17,7 +17,7 @@ supports it. Commands that persist a tool-local environment file are noted below
 There is also a generic launcher — `shiguang-gateway run <target>` — that spawns
 `claude`, `codex`, `aider`, `goose`, `opencode`, `qwen` or `gemini` with the
 right env injected, without writing any config at all. Targets and their
-aliases come from the canonical manifest `bin/cli/cli-manifest.mjs`
+aliases come from the canonical manifest `apps/cli/src/cli/cli-manifest.mjs`
 (`claude-code|cc|anthropic`, `codex-cli|openai-codex|openai`, `goose-cli`,
 `open-code`, `qwen-code`, `gemini-cli`), and `shiguang-gateway completion` offers the
 same manifest-derived target words. The legacy per-tool launchers —
@@ -94,7 +94,7 @@ Notes on flags (verified in the command source):
   also accept `--yes` for non-interactive runs (which then requires `--model`).
   `setup-opencode` takes `--model` to set the default top-level model.
 - `--model <id>` on `shiguang-gateway run` follows the manifest's per-target wiring
-  (`bin/cli/cli-manifest.mjs`): **aider** receives `--model openai/<id>` and
+  (`apps/cli/src/cli/cli-manifest.mjs`): **aider** receives `--model openai/<id>` and
   **opencode** `--model shiguang-gateway/<id>` (the prefix is added only when the id
   does not already carry it); **qwen** and **gemini** receive the id verbatim;
   **claude** gets it via `ANTHROPIC_MODEL`, **goose** via `GOOSE_MODEL`, and

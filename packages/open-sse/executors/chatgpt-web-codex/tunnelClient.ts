@@ -10,6 +10,7 @@ import {
   rmSync,
   writeFileSync,
 } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { basename, join } from "node:path";
 
 import { unzipSync } from "fflate";
@@ -50,6 +51,41 @@ type SupervisorLease = {
   pid: number;
   startedAt: string;
 };
+
+export function resolveChatGptWebCodexMcpCommandEntry(
+  moduleUrl: string = import.meta.url,
+  exists: (path: string) => boolean = existsSync
+): string | null {
+  const candidates = [
+    fileURLToPath(new URL("./mcpCommand.js", moduleUrl)),
+    fileURLToPath(new URL("./mcpCommand.ts", moduleUrl)),
+  ];
+  return candidates.find((candidate) => exists(candidate)) ?? null;
+}
+
+export function buildChatGptWebCodexMcpCommand(
+  brokerSocketPath: string,
+  options: {
+    moduleUrl?: string;
+    exists?: (path: string) => boolean;
+    nodeExecutable?: string;
+    tsxImport?: string;
+  } = {}
+): string {
+  const entry = resolveChatGptWebCodexMcpCommandEntry(
+    options.moduleUrl ?? import.meta.url,
+    options.exists ?? existsSync
+  );
+  if (!entry) throw new Error("ChatGPT Web (Codex) MCP command entrypoint was not found");
+  const args = [
+    options.nodeExecutable ?? process.execPath,
+    ...(entry.endsWith(".ts") ? ["--import", options.tsxImport ?? import.meta.resolve("tsx")] : []),
+    entry,
+    "--broker-socket",
+    brokerSocketPath,
+  ];
+  return args.map((value) => JSON.stringify(value)).join(" ");
+}
 
 function sha256(bytes: Uint8Array): string {
   return createHash("sha256").update(bytes).digest("hex");
@@ -275,14 +311,7 @@ export async function startTunnelRuntime(config: TunnelRuntimeConfig): Promise<C
   runtimeKeyFiles.add(runtimeKeyFile);
   const alias = config.alias ?? "shiguangGateway-chatgpt-web-codex";
   const profile = config.profile ?? "shiguangGateway";
-  const mcpCommand = [
-    process.execPath,
-    join(process.cwd(), "bin", "chatgpt-web-codex-mcp.mjs"),
-    "--broker-socket",
-    config.brokerSocketPath,
-  ]
-    .map((value) => JSON.stringify(value))
-    .join(" ");
+  const mcpCommand = buildChatGptWebCodexMcpCommand(config.brokerSocketPath);
   return spawn(
     binary,
     [

@@ -29,12 +29,17 @@ const walkFiles = (dir, predicate, out = []) => {
 
 const appKinds = {
   admin: { entry: "main.tsx", nest: false },
+  cli: { entry: "shiguang-gateway.mjs", nest: false },
   "control-api": { entry: "main.ts", nest: true },
   "edge-gateway": { entry: "main.ts", nest: true },
   realtime: { entry: "main.ts", nest: true },
   worker: { entry: "main.ts", nest: true },
   importer: { entry: "main.ts", nest: false },
 };
+
+if (existsSync(join(root, "packages/core-domain/bin"))) {
+  fail("cli-app-ownership", join(root, "packages/core-domain/bin"), "CLI executable source belongs in apps/cli");
+}
 
 for (const [name, shape] of Object.entries(appKinds)) {
   const dir = join(root, "apps", name);

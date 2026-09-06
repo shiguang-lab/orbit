@@ -94,7 +94,7 @@ When you need to embed a new upstream-provided value that:
 
 ### 3. Forbidden patterns
 
-❌ **Never** do any of the following in production code (`src/`, `open-sse/`, `electron/`, `bin/`):
+❌ **Never** do any of the following in production code (`src/`, `open-sse/`, `electron/`, `apps/cli/src/`):
 
 ```ts
 // BAD: literal value triggers Secret Scanning + Semgrep

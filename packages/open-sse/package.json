@@ -42,6 +42,7 @@
       "import": "./oauth/utils/codexAuthFile.ts"
     },
     "./executors/base": "./executors/base.ts",
+    "./executors/chatgpt-web-codex/mcp-command": "./executors/chatgpt-web-codex/mcpCommand.ts",
     "./services/reasoningCache": "./services/reasoningCache.ts",
     "./services/compression/eval/fidelityCheck": "./services/compression/eval/fidelityCheck.ts",
     "./services/compression/eval/types": "./services/compression/eval/types.ts",
@@ -434,6 +435,7 @@
       "types": "./mcp-server/httpTransport.ts",
       "import": "./mcp-server/httpTransport.ts"
     },
+    "./mcp-server/entry": "./mcp-server/server.ts",
     "./services/qoderCli": {
       "types": "./services/qoderCli.ts",
       "import": "./services/qoderCli.ts"
@@ -607,6 +609,7 @@
     "socks": "^2.8.10",
     "turndown": "^7.2.4",
     "turndown-plugin-gfm": "^1.0.2",
+    "tsx": "catalog:",
     "undici": "^8.10.1",
     "uuid": "^14.0.2",
     "ws": "^8.21.3",

@@ -302,7 +302,7 @@ shiguang-gateway run codex --dry-run --json
 ```
 
 Targets: `claude`, `codex`, `aider`, `goose`, `opencode`, `qwen`, `gemini`
-(single source: `bin/cli/cli-manifest.mjs`). Qwen and Gemini run with a
+(single source: `apps/cli/src/cli/cli-manifest.mjs`). Qwen and Gemini run with a
 temporary isolated home that is removed on exit, so the launch never touches —
 or leaks into — your personal tool configuration.
 

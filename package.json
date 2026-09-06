@@ -9,6 +9,7 @@
     }
   },
   "scripts": {
+    "cli": "pnpm --filter @shiguang-gateway/cli exec node src/shiguang-gateway.mjs",
     "build": "turbo run build",
     "dev": "turbo run dev",
     "typecheck": "turbo run typecheck",
@@ -19,6 +20,7 @@
     "audit:app-boundaries": "node scripts/audit-app-boundaries.mjs --strict",
     "audit:architecture": "node scripts/audit-architecture.mjs --strict",
     "audit:package-boundaries": "node scripts/audit-package-boundaries.mjs --strict",
+    "audit:cli-paths": "node scripts/audit-cli-path-contracts.mjs",
     "audit:db-entities": "node scripts/audit-db-entities.mjs",
     "audit:db-schema-coverage": "node scripts/audit-db-schema-coverage.mjs",
     "audit:open-sse-boundary": "node scripts/audit-open-sse-boundary.mjs --strict",

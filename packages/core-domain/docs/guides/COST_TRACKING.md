@@ -195,7 +195,7 @@ noted.
 ## CLI
 
 ShiguangGateway's CLI exposes cost, usage, and pricing commands (registered in
-[`bin/cli/commands/registry.mjs`](../../bin/cli/commands/registry.mjs)).
+[`apps/cli/src/cli/commands/registry.mjs`](../../../../apps/cli/src/cli/commands/registry.mjs)).
 
 ### `shiguang-gateway cost`
 

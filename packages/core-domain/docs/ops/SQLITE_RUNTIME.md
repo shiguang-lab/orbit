@@ -75,9 +75,9 @@ shiguang-gateway config db-info  # (if CLI command exists)
 
 Implementation:
 
-- `bin/cli/runtime/magicBytes.mjs` — binary magic-byte validation helpers
-- `bin/cli/runtime/sqliteRuntime.mjs` — 5-step runtime resolver + lazy installer
-- `bin/cli/runtime/index.mjs` — startup orchestrator (`warmUpRuntimes()`)
+- `apps/cli/src/cli/runtime/magicBytes.mjs` — binary magic-byte validation helpers
+- `apps/cli/src/cli/runtime/sqliteRuntime.mjs` — 5-step runtime resolver + lazy installer
+- `apps/cli/src/cli/runtime/index.mjs` — startup orchestrator (`warmUpRuntimes()`)
 - `scripts/postinstall.mjs` — npm post-install hook (non-fatal warm-up)
 - `src/lib/db/core.ts` — `ensureDbInitialized()` / `getDriverInfo()` exports
 

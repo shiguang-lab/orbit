@@ -140,7 +140,7 @@ matrix automatically, without any label.
 - [ ] `npm run check:cycles` — no circular deps
 - [ ] `npm run check:any-budget:t11` — within budget
 - [ ] `npm run check:route-validation:t06` — clean
-- [ ] `npm run check:node-runtime` — supported runtime floor met (`>=22.22.2 <23`, `>=24.0.0 <27`, per `SUPPORTED_NODE_RANGE` in `bin/nodeRuntimeSupport.mjs`; aligned with `package.json` `engines`)
+- [ ] `npm run check:node-runtime` — supported runtime floor met (`>=22.22.2 <23`, `>=24.0.0 <27`, per `SUPPORTED_NODE_RANGE` in `apps/cli/src/nodeRuntimeSupport.mjs`; aligned with `package.json` `engines`)
 
 ### Testing
 
@@ -401,7 +401,7 @@ If release has critical issue:
 - Never skip Husky hooks (`--no-verify`)
 - Never commit secrets, credentials, or `.env` files
 - Coverage must stay ≥60/60/60/60 (statements/lines/functions/branches)
-- Always include or update tests when changing production code in `src/`, `open-sse/`, `electron/`, or `bin/`
+- Always include or update tests when changing production code in `src/`, `open-sse/`, `electron/`, or `apps/cli/src/`
 
 ## Automated Sync Check
 

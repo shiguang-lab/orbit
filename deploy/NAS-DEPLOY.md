@@ -143,8 +143,18 @@ docker compose pull
 docker compose up -d --remove-orphans
 ```
 
-回滚只需改回上一个镜像 tag。升级前后保留 `shiguang-gateway_data` volume 和 importer manifest，禁止
-用空 volume 覆盖现有数据。
+按同一个已发布 tag 回滚六个 split 镜像时，在仓库根执行：
+
+```bash
+scripts/ops/rollback.sh <previous-release-tag>
+```
+
+该脚本会设置六个 compose image 变量、拉取完整镜像族，并只重建常驻的 admin、edge、control、
+realtime 与 worker；migration profile 下的 importer 只拉取、不启动。变量只作用于本次脚本调用，
+后续手工执行 `docker compose up` 前还应把同一 tag 的六个地址持久化到 `.env`。若按 digest 固定镜像，六个
+repository 的 digest 各不相同，应直接分别更新 `.env` 中六个 `SHIGUANG_GATEWAY_*_IMAGE`，不能向
+脚本传一个共享 digest。升级前后保留 `shiguang-gateway_data` volume 和 importer manifest，禁止用空
+volume 覆盖现有数据。
 
 ## 反向代理与 SSO
 
