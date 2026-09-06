@@ -307,6 +307,7 @@ const migratedRouteOwnership = {
     "api/v1/search/analytics/route.ts",
     "api/search/providers/route.ts",
     "api/v1/providers/suggested-models/route.ts",
+    "api/v1/provider-plugin-manifest/route.ts",
     "api/middleware/hooks/route.ts",
     "api/middleware/hooks/[name]/route.ts",
     "api/discovery/results/route.ts",

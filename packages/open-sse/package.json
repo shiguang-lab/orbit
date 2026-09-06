@@ -41,6 +41,14 @@
       "types": "./public/searchRegistry.d.ts",
       "import": "./config/searchRegistry.ts"
     },
+    "./config/providerPluginManifest": {
+      "types": "./public/providerPluginManifest.d.ts",
+      "import": "./config/providerPluginManifest.ts"
+    },
+    "./config/providerPluginManifestRegistry": {
+      "types": "./public/providerPluginManifestRegistry.d.ts",
+      "import": "./config/providerPluginManifestRegistry.ts"
+    },
     "./handlers/imageGeneration": {
       "types": "./public/imageGeneration.d.ts",
       "import": "./handlers/imageGeneration.ts"

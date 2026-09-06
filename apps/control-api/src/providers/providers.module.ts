@@ -10,9 +10,10 @@ import { ZedImportModule } from "./zed/zed-import.module.js";
 import { VolcenginePlanModule } from "./volcengine/volcengine-plan.module.js";
 import { CommandCodeAuthModule } from "./command-code/command-code-auth.module.js";
 import { SuggestedModelsModule } from "./suggested-models/suggested-models.module.js";
+import { ProviderPluginManifestModule } from "./plugin-manifest/provider-plugin-manifest.module.js";
 
 @Module({
-  imports: [CommonModule, ZedImportModule, VolcenginePlanModule, CommandCodeAuthModule, SuggestedModelsModule],
+  imports: [CommonModule, ZedImportModule, VolcenginePlanModule, CommandCodeAuthModule, SuggestedModelsModule, ProviderPluginManifestModule],
   controllers: [ProvidersController, ProviderOnboardingController],
   providers: [ProvidersService, ProviderPolicyService, ProviderClientService, ProviderOnboardingService],
 })
