@@ -17,6 +17,15 @@ const readJson = (file) => {
   try { return JSON.parse(readFileSync(file, "utf8")); } catch { return null; }
 };
 const fail = (rule, file, detail) => failures.push({ rule, file: rel(file), ...(detail ? { detail } : {}) });
+const walkFiles = (dir, predicate, out = []) => {
+  if (!existsSync(dir)) return out;
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const path = join(dir, entry.name);
+    if (entry.isDirectory()) walkFiles(path, predicate, out);
+    else if (predicate(path)) out.push(path);
+  }
+  return out;
+};
 
 const appKinds = {
   admin: { entry: "main.tsx", nest: false },
@@ -40,6 +49,29 @@ for (const [name, shape] of Object.entries(appKinds)) {
     }
     if (!manifest.scripts?.build || !manifest.scripts?.typecheck) {
       fail("nest-app-scripts", manifestPath, "build and typecheck scripts are required");
+    }
+
+    // Nest applications expose HTTP transport through controllers. A source
+    // file named `*.route.ts` is a Next/Fastify route-module convention and
+    // bypasses Nest's module graph; keep transport adapters behind services or
+    // handlers instead. Also verify that files using Nest's canonical suffixes
+    // carry the matching decorator so naming and registration cannot drift.
+    const nestSourceFiles = walkFiles(src, (path) => path.endsWith(".ts"));
+    for (const file of nestSourceFiles) {
+      const source = readFileSync(file, "utf8");
+      if (file.endsWith(".route.ts")) {
+        fail("nest-route-file-naming", file, "use a Nest controller/service/handler instead of *.route.ts");
+      }
+      const basename = file.split(sep).pop() || "";
+      if (basename.endsWith(".module.ts") && !/@Module\s*\(/.test(source)) {
+        fail("nest-module-decorator", file, "*.module.ts must declare @Module");
+      }
+      if (basename.endsWith(".controller.ts") && !/@Controller\s*\(/.test(source)) {
+        fail("nest-controller-decorator", file, "*.controller.ts must declare @Controller");
+      }
+      if (basename.endsWith(".service.ts") && !/@Injectable\s*\(/.test(source)) {
+        fail("nest-service-decorator", file, "*.service.ts must declare @Injectable");
+      }
     }
   }
   for (const scriptName of ["dev", "start"]) {

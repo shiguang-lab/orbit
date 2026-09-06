@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { GET, OPTIONS, POST } from "./video-generation.route.js";
+import { GET, OPTIONS, POST } from "./video-generation.handler.js";
 
 @Injectable()
 export class VideosService {
@@ -15,4 +15,3 @@ export class VideosService {
     return POST(request);
   }
 }
-

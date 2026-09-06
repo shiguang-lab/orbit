@@ -3,11 +3,11 @@ import {
   GET as getImageGenerations,
   POST as imageGenerations,
 } from "@shiguang-gateway/core-domain/edge/image-generations-handler";
-import { POST as imageEdits } from "./edits/image-edits.route.js";
+import { POST as imageEdits } from "./edits/image-edits.handler.js";
 import {
   GET as getImageUpscale,
   POST as imageUpscale,
-} from "./upscale/image-upscale.route.js";
+} from "./upscale/image-upscale.handler.js";
 
 @Injectable()
 export class ImagesService {

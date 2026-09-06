@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { OPTIONS, POST } from "./segment.route.js";
+import { OPTIONS, POST } from "./segment.handler.js";
 
 @Injectable()
 export class SegmentService {
