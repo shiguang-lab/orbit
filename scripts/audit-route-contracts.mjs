@@ -23,6 +23,9 @@ const localApiExtensions = new Set([
   // Agent Card discovery is now served by edge-gateway's Nest controller.
   ".well-known/agent.json/route.ts",
   ".well-known/agent-card.json/route.ts",
+  // Private, token-authenticated control-to-edge command surface. It has no
+  // historical public Next route contract and is not exposed by control-api.
+  "internal/tunnels/command/route.ts",
 ]);
 const normalizeRoutePath = (value) => value.replace(new RegExp("omni" + "route", "gi"), "gateway");
 
@@ -137,6 +140,18 @@ const refFiles = walk(referenceApi);
 const localFiles = localApiRoots.flatMap((root) => walk(root));
 const controllerFiles = controllerRoots.flatMap((root) => walkControllers(root));
 
+// The two former catch-all route files no longer exist. Their method contract
+// is implemented by native Nest fallback handling and remains part of parity.
+const retiredCompatDispatcherFiles = [
+  join(repoRoot, "packages", "web-route-compat"),
+  join(repoRoot, "packages", "web-handler-adapter", "src", "compat-dispatcher.ts"),
+  join(repoRoot, "apps", "edge-gateway", "src", "routes", "compat", "dispatcher.ts"),
+  join(repoRoot, "apps", "control-api", "src", "routes", "compat", "dispatcher.ts"),
+];
+const nativeFallbackContracts = retiredCompatDispatcherFiles.every((path) => !existsSync(path))
+  ? ["[...gatewayApiCatchAll]/route.ts", "v1/[...gatewayCatchAll]/route.ts"]
+  : [];
+
 const localPath = (file) => {
   const root = localApiRoots.find((candidate) => file === candidate || file.startsWith(`${candidate}/`));
   return root ? relative(root, file).split("\\").join("/") : file;
@@ -144,6 +159,10 @@ const localPath = (file) => {
 
 const refMap = new Map(refFiles.map((file) => [normalizeRoutePath(relative(referenceApi, file).split("\\").join("/")), contract(file)]));
 const localMap = new Map();
+
+for (const routePath of nativeFallbackContracts) {
+  localMap.set(routePath, [...methods].sort());
+}
 
 for (const file of localFiles) {
   const pathKey = localPath(file);

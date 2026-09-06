@@ -32,6 +32,9 @@ const localApiExtensions = new Set([
   "docs/api/search/route.ts",
   ".well-known/agent.json/route.ts",
   ".well-known/agent-card.json/route.ts",
+  // Private authenticated control-to-edge command surface, outside the
+  // frozen public API contract.
+  "internal/tunnels/command/route.ts",
 ]);
 // Root A2A transport is intentionally implemented by the edge Nest app; the
 // legacy Next root route is removed as part of that physical migration.

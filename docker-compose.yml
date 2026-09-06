@@ -31,6 +31,8 @@ services:
       SQLITE_FILE: /app/data/storage.sqlite
       JWT_SECRET: ${JWT_SECRET:?Set a stable JWT_SECRET}
       API_KEY_SECRET: ${API_KEY_SECRET:?Set a stable API_KEY_SECRET}
+      SHIGUANG_GATEWAY_WORKER_COMMAND_TOKEN: ${SHIGUANG_GATEWAY_WORKER_COMMAND_TOKEN:-}
+      SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN: ${SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN:?Set a shared internal service token}
       # Required for decrypting imported provider credentials. Never rotate this
       # value implicitly after migration; use the documented key-rotation flow.
       STORAGE_ENCRYPTION_KEY: ${STORAGE_ENCRYPTION_KEY:?Set a stable STORAGE_ENCRYPTION_KEY}
@@ -71,7 +73,9 @@ services:
       APP_NAME: control-api
       CONTROL_API_HOST: 0.0.0.0
       CONTROL_API_PORT: 8788
+      EDGE_GATEWAY_URL: http://shiguang-gateway-edge:8787
       INTERNAL_BASE_URL: ${INTERNAL_BASE_URL:-http://shiguang-gateway-control:8788}
+      SHIGUANG_GATEWAY_WORKER_COMMAND_URL: ${SHIGUANG_GATEWAY_WORKER_COMMAND_URL:-http://shiguang-gateway-worker:8791}
     volumes:
       - shiguang-gateway_data:/app/data
       - shiguang-gateway_home:/home/node
@@ -110,6 +114,8 @@ services:
     environment:
       <<: *gateway-env
       APP_NAME: worker
+      WORKER_COMMAND_HOST: 0.0.0.0
+      WORKER_COMMAND_PORT: 8791
     volumes:
       - shiguang-gateway_data:/app/data
       - shiguang-gateway_home:/home/node

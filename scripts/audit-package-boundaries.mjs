@@ -8,6 +8,7 @@
 import assert from "node:assert/strict";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { dirname, join, relative, resolve, sep } from "node:path";
+import ts from "typescript";
 
 const repoRoot = resolve(import.meta.dirname, "..");
 const strict = process.argv.includes("--strict");
@@ -37,6 +38,93 @@ function isAppOwnedSource(file) {
 function isRetiredDynamicCompatDispatcher(file, source) {
   const basename = file.split(sep).pop() || "";
   return basename === "compat-dispatcher.ts" && /\b(?:import\s*\(|pathToFileURL\s*\()/.test(source);
+}
+
+function callName(node) {
+  if (ts.isIdentifier(node.expression)) return node.expression.text;
+  if (ts.isPropertyAccessExpression(node.expression)) return node.expression.name.text;
+  return null;
+}
+
+function inspectExecutedNode(node, state, skipFunctionBodies = true) {
+  if (ts.isCallExpression(node)) {
+    const name = callName(node);
+    const isGlobalTimer =
+      ts.isIdentifier(node.expression) ||
+      (ts.isPropertyAccessExpression(node.expression) &&
+        ts.isIdentifier(node.expression.expression) &&
+        ["globalThis", "window"].includes(node.expression.expression.text));
+    if (isGlobalTimer && (name === "setInterval" || name === "setTimeout")) state.timers.add(name);
+    if (name === "createServer") state.createsServer = true;
+    if (name === "listen") state.listens = true;
+  }
+  if (skipFunctionBodies && ts.isFunctionLike(node)) return;
+  ts.forEachChild(node, (child) => inspectExecutedNode(child, state, skipFunctionBodies));
+}
+
+function packageLifecycleFindings(file, source) {
+  const sourceFile = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true);
+  const functions = new Map();
+  for (const statement of sourceFile.statements) {
+    if (ts.isFunctionDeclaration(statement) && statement.name && statement.body) {
+      functions.set(statement.name.text, statement);
+    }
+  }
+
+  const findings = [];
+  const moduleState = { timers: new Set(), createsServer: false, listens: false };
+  for (const statement of sourceFile.statements) {
+    if (ts.isVariableStatement(statement)) {
+      for (const declaration of statement.declarationList.declarations) {
+        if (!declaration.initializer || !ts.isIdentifier(declaration.name)) continue;
+        const state = { timers: new Set(), createsServer: false, listens: false };
+        inspectExecutedNode(declaration.initializer, state);
+        inspectExecutedNode(declaration.initializer, moduleState);
+        for (const timer of state.timers) {
+          findings.push({ signature: `module-timer:${timer}:${declaration.name.text}`, line: sourceFile.getLineAndCharacterOfPosition(declaration.getStart()).line + 1 });
+        }
+        if (state.createsServer && state.listens) {
+          findings.push({ signature: `module-listener:${declaration.name.text}`, line: sourceFile.getLineAndCharacterOfPosition(declaration.getStart()).line + 1 });
+        }
+      }
+      continue;
+    }
+    if (!ts.isExpressionStatement(statement)) continue;
+
+    const directState = { timers: new Set(), createsServer: false, listens: false };
+    inspectExecutedNode(statement.expression, directState);
+    inspectExecutedNode(statement.expression, moduleState);
+    for (const timer of directState.timers) {
+      findings.push({ signature: `module-timer:${timer}:expression`, line: sourceFile.getLineAndCharacterOfPosition(statement.getStart()).line + 1 });
+    }
+    if (directState.createsServer && directState.listens) {
+      findings.push({ signature: "module-listener:expression", line: sourceFile.getLineAndCharacterOfPosition(statement.getStart()).line + 1 });
+    }
+
+    const invoked = new Set();
+    const collectInvoked = (node) => {
+      if (ts.isCallExpression(node) && ts.isIdentifier(node.expression)) invoked.add(node.expression.text);
+      if (ts.isFunctionLike(node)) return;
+      ts.forEachChild(node, collectInvoked);
+    };
+    collectInvoked(statement.expression);
+    for (const name of invoked) {
+      const declaration = functions.get(name);
+      if (!declaration?.body) continue;
+      const state = { timers: new Set(), createsServer: false, listens: false };
+      inspectExecutedNode(declaration.body, state, false);
+      for (const timer of state.timers) {
+        findings.push({ signature: `startup-timer:${timer}:${name}`, line: sourceFile.getLineAndCharacterOfPosition(statement.getStart()).line + 1 });
+      }
+      if (state.createsServer && state.listens) {
+        findings.push({ signature: `startup-listener:${name}`, line: sourceFile.getLineAndCharacterOfPosition(statement.getStart()).line + 1 });
+      }
+    }
+  }
+  if (moduleState.createsServer && moduleState.listens && !findings.some(({ signature }) => signature.startsWith("module-listener:"))) {
+    findings.push({ signature: "module-listener:source", line: 1 });
+  }
+  return findings;
 }
 
 function walk(dir, out = []) {
@@ -135,7 +223,24 @@ if (process.argv.includes("--self-test")) {
   assert.equal(isRetiredDynamicCompatDispatcher(compatDispatcher, "pathToFileURL(file).href"), true);
   assert.equal(isRetiredDynamicCompatDispatcher(compatDispatcher, "export function dispatch() {}"), false);
   assert.equal(isRetiredDynamicCompatDispatcher(resolve(repoRoot, "packages/a/src/loader.ts"), 'await import("./route.js")'), false);
-  console.log(JSON.stringify({ status: "PASS", checks: ["core-domain/open-sse SCC", "self-loop", "package ownership", "relative import extraction", "route basename ownership", "retired dynamic compat dispatcher"] }, null, 2));
+  const lifecycleFixture = `
+    const sweep = setInterval(run, 1000);
+    const request = () => setTimeout(abort, 1000);
+    function startServer() { const server = createServer(); server.setTimeout(1000); server.listen(3000); }
+    startServer();
+    function startSweep() { setTimeout(run, 1000); }
+    startSweep();
+  `;
+  assert.deepEqual(packageLifecycleFindings("fixture.ts", lifecycleFixture).map(({ signature }) => signature), [
+    "module-timer:setInterval:sweep",
+    "startup-listener:startServer",
+    "startup-timer:setTimeout:startSweep",
+  ]);
+  assert.deepEqual(
+    packageLifecycleFindings("listener.ts", "const server = createServer(); server.listen(3000);").map(({ signature }) => signature),
+    ["module-listener:source"],
+  );
+  console.log(JSON.stringify({ status: "PASS", checks: ["core-domain/open-sse SCC", "self-loop", "package ownership", "relative import extraction", "route basename ownership", "retired dynamic compat dispatcher", "package lifecycle ownership"] }, null, 2));
   process.exit(0);
 }
 
@@ -240,6 +345,14 @@ function appConsumers(name, seen = new Set()) {
 }
 
 const legacyMixed = new Set();
+const knownPackageLifecycleDebt = new Map([
+  [
+    "packages/core-domain/src/mitm/server.cjs",
+    ["startup-listener:startMitmServer"],
+  ],
+]);
+const packageLifecycleDebt = [];
+const seenPackageLifecycleDebtFiles = new Set();
 
 for (const entry of packageEntries) {
   for (const file of walk(join(entry.dir, "src"))) {
@@ -247,6 +360,24 @@ for (const entry of packageEntries) {
     if (isRetiredDynamicCompatDispatcher(file, source)) {
       add("retired-dynamic-compat-dispatcher", file, "move route loading and dynamic module resolution into the owning app; packages may expose only static compatibility contracts");
     }
+    const path = rel(file);
+    if (knownPackageLifecycleDebt.has(path)) seenPackageLifecycleDebtFiles.add(path);
+    const expected = new Set(knownPackageLifecycleDebt.get(path) ?? []);
+    for (const finding of packageLifecycleFindings(file, source)) {
+      if (expected.delete(finding.signature)) {
+        packageLifecycleDebt.push({ file: path, ...finding });
+      } else {
+        add("package-import-time-lifecycle", file, `${finding.signature} at line ${finding.line}; move startup ownership into an app lifecycle`);
+      }
+    }
+    for (const stale of expected) {
+      add("stale-package-lifecycle-debt", file, `${stale} is no longer present; remove the obsolete debt entry`);
+    }
+  }
+}
+for (const path of knownPackageLifecycleDebt.keys()) {
+  if (!seenPackageLifecycleDebtFiles.has(path)) {
+    add("stale-package-lifecycle-debt", resolve(repoRoot, path), "file is no longer present in package source; remove the obsolete debt entry");
   }
 }
 
@@ -294,6 +425,7 @@ const result = {
     "dependencies and optionalDependencies between workspace packages must form an acyclic graph without self-dependencies",
     "a package may not import another package through a relative source path; use a declared published contract",
     "packages may not contain route.ts modules or retired dynamic compat dispatchers",
+    "package source imports may not start timers or listeners; applications own lifecycle",
   ],
   workspacePackageDependencyGraph: {
     nodes: [...packageDependencyGraph.keys()].sort(),
@@ -308,6 +440,7 @@ const result = {
     appConsumers: appConsumers(entry.manifest?.name),
     classification: legacyMixed.has(entry.manifest?.name) ? "legacy-mixed" : "shared",
   })),
+  packageLifecycleDebt,
   violations,
 };
 console.log(JSON.stringify(result, null, 2));

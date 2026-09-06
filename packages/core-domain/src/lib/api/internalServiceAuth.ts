@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { timingSafeEqual } from "node:crypto";
-import { AUTHZ_HEADER_PEER_LOCALITY } from "../../server/authz/headers.ts";
+import { AUTHZ_HEADER_PEER_LOCALITY } from "../../server/authz/headers.js";
 
 export const INTERNAL_SERVICE_AUTH_HEADER = "x-shiguangGateway-internal-service-token";
 

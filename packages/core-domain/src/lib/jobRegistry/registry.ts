@@ -158,6 +158,10 @@ export class JobRegistry {
     }
   }
 
+  hasHandler(jobId: string): boolean {
+    return this.handlers.has(jobId);
+  }
+
   getRuns(jobId: string, limit = 20): JobRun[] {
     return dbGetRuns(jobId, limit);
   }

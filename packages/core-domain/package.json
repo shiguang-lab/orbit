@@ -412,13 +412,17 @@
       "types": "./src/public/localRedis.d.ts",
       "import": "./src/control/localRedis.ts"
     },
-    "./control/tunnels": {
-      "types": "./src/public/tunnels.d.ts",
-      "import": "./src/control/tunnels.ts"
+    "./edge/tunnels": {
+      "types": "./src/public/edgeTunnels.d.ts",
+      "import": "./src/edge/tunnels.ts"
     },
     "./control/jobs": {
       "types": "./src/public/jobs.d.ts",
       "import": "./src/control/jobs.ts"
+    },
+    "./worker/jobs": {
+      "types": "./src/public/workerJobs.d.ts",
+      "import": "./src/worker/jobs.ts"
     },
     "./control/copilot": {
       "types": "./src/public/copilot.d.ts",

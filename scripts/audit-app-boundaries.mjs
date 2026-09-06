@@ -185,7 +185,14 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/fallback-policy",
 );
 allowedCoreDomainSubpaths["apps/control-api"].push("control/skills-github", "control/skills-executor");
-allowedCoreDomainSubpaths["apps/control-api"].push("control/tunnels");
+// Host tunnel processes belong to the public edge runtime. Control may only
+// reach them through the authenticated internal tunnel command contract.
+allowedCoreDomainSubpaths["apps/edge-gateway"].push("edge/tunnels");
+allowedCoreDomainSubpaths["apps/edge-gateway"].push(
+  "edge/internal-service-auth",
+  "shared/public-safe-error",
+);
+allowedCoreDomainSubpaths["apps/control-api"].push("edge/internal-service-auth");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/jobs");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/network-info");
 allowedCoreDomainSubpaths["apps/control-api"].push("control/free-provider-rankings");
@@ -942,6 +949,9 @@ for (const app of appEntries) {
   }
   for (const file of walk(join(app.dir, "src"))) {
     const source = readFileSync(file, "utf8");
+    if (rel(app.dir) === "apps/control-api" && /\bgetJobRegistry\b|@shiguang-gateway\/core-domain\/worker\/jobs/.test(source)) {
+      add("control-imports-worker-job-runtime", file, "control-api may only read job projections and send versioned worker commands");
+    }
     if (legacyNames.some((name) => source.includes(name))) add("retired-runtime-reference", file);
     for (const match of source.matchAll(importRe)) {
       const specifier = match[1] ?? match[2] ?? "";
@@ -969,6 +979,10 @@ for (const app of appEntries) {
 
 // Shared packages must stay below apps; importing an app from packages would
 // create a deployment cycle and silently couple independently deployable units.
+const controlJobsContract = join(packagesRoot, "core-domain", "src", "control", "jobs.ts");
+if (existsSync(controlJobsContract) && /\bgetJobRegistry\b|\.\.\/lib\/jobRegistry\/index/.test(readFileSync(controlJobsContract, "utf8"))) {
+  add("control-job-contract-exposes-worker-runtime", controlJobsContract, "control jobs contract must expose DB projections only");
+}
 for (const pkg of packageEntries) {
   const declared = new Set(Object.keys({ ...(pkg.manifest?.dependencies ?? {}), ...(pkg.manifest?.devDependencies ?? {}), ...(pkg.manifest?.optionalDependencies ?? {}) }));
   for (const name of declared) {
@@ -1002,6 +1016,8 @@ const report = {
     "A2A transport and task routes belong only to apps/edge-gateway",
     "realtime WebSocket implementation and export belong only to apps/realtime",
     "http-kernel exposes no app factory or surface selector",
+    "control-api cannot import the worker-owned JobRegistry runtime",
+    "core-domain control jobs contract cannot expose the worker-owned registry",
     "legacy runtime package names are retired",
   ],
   violations,

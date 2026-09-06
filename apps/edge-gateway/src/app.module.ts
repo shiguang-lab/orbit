@@ -61,6 +61,7 @@ import { TranslatorModule } from "./translator/translator.module.js";
 import { CodexResponsesWsModule } from "./codex-responses-ws/codex-responses-ws.module.js";
 import { CursorCliModule } from "./cursor-cli/cursor-cli.module.js";
 import { UpstreamProxyModule } from "./upstream-proxy/upstream-proxy.module.js";
+import { TunnelsModule } from "./tunnels/tunnels.module.js";
 
 @Module({
   imports: [
@@ -125,6 +126,7 @@ import { UpstreamProxyModule } from "./upstream-proxy/upstream-proxy.module.js";
     CodexResponsesWsModule,
     CursorCliModule,
     UpstreamProxyModule,
+    TunnelsModule,
   ],
 })
 export class AppModule {}

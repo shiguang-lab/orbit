@@ -7,9 +7,9 @@ port or selecting a surface at runtime.
 | App | Owns | Reads/writes | Acceptance |
 | --- | --- | --- | --- |
 | `edge-gateway` | Public `/v1`, `/v1beta`, A2A, cloud-agent tasks and provider execution; no live-dashboard listener | Provider connections, cloud-agent credentials/tasks, batches/files (through app-owned Nest modules and handlers) | `pnpm --filter @shiguang-gateway/edge-gateway typecheck && pnpm --filter @shiguang-gateway/edge-gateway build && pnpm smoke:split-deployment` |
-| `control-api` | Admin `/api`, authz, CRUD, settings, logs, audit commands, free-proxy catalog/promotion and system version/update controls; local-only provider discovery management; migrated health route group in `apps/control-api/src/routes/api`; named compression-combo CRUD and assignments; AgentBridge state, mappings and bypass administration; Traffic Inspector session CRUD under `apps/control-api/src/tools/traffic-inspector` | Control-plane tables and read-only usage projections | `pnpm --filter @shiguang-gateway/control-api typecheck && pnpm --filter @shiguang-gateway/control-api build` |
+| `control-api` | Admin `/api`, authz, CRUD, settings, logs, audit commands, free-proxy catalog/promotion and system version/update controls; local-only provider discovery management; Jobs projections and worker command client; migrated health route group in `apps/control-api/src/routes/api`; named compression-combo CRUD and assignments; AgentBridge state, mappings and bypass administration; Traffic Inspector session CRUD under `apps/control-api/src/tools/traffic-inspector` | Control-plane tables and read-only usage/job projections | `pnpm --filter @shiguang-gateway/control-api typecheck && pnpm --filter @shiguang-gateway/control-api build` |
 | `realtime` | Live dashboard WebSocket transport (`apps/realtime/src/live-ws`) | Event projections only | `pnpm --filter @shiguang-gateway/realtime typecheck && pnpm --filter @shiguang-gateway/realtime build` |
-| `worker` | Schedulers, sync, cleanup and background writes; task manifest/runner in `apps/worker/src/jobs` | Usage, quota, audit and job tables | `pnpm --filter @shiguang-gateway/worker typecheck && pnpm --filter @shiguang-gateway/worker build && pnpm smoke:worker` |
+| `worker` | Schedulers, sync, cleanup and background writes; task manifest/runner and authenticated internal Jobs command endpoint in `apps/worker/src/jobs` | Usage, quota, audit and job tables | `pnpm --filter @shiguang-gateway/worker typecheck && pnpm --filter @shiguang-gateway/worker build && pnpm smoke:worker` |
 | `importer` | One-shot snapshot import and migration | Import target only | `pnpm --filter @shiguang-gateway/importer typecheck && pnpm --filter @shiguang-gateway/importer build` |
 | `admin` | Browser UI; no database access | `contracts` and same-origin APIs | `pnpm --filter @shiguang-gateway/admin typecheck && pnpm --filter @shiguang-gateway/admin build` |
 
@@ -50,27 +50,28 @@ background timer.
 
 ### Job control boundary
 
-The `/api/jobs` management surface is intentionally still served by the compatibility
-catalog. `JobRegistry` owns process-local timers and handlers, and those handlers are
-registered only by `apps/worker`; a control process can update the persisted `jobs.enabled`
-flag but cannot safely invoke or stop a worker timer. Moving `run-now`, `enable`, or
-`disable` into `control-api` requires a versioned contracts command and a worker-owned
-HTTP/IPC command endpoint. Until that contract exists, the job route remains a documented
-legacy seam rather than a misleading Nest controller that would report success without
-affecting the worker.
+`control-api` serves `/api/jobs` but reads only persisted job/run projections through
+`core-domain/control/jobs`. It never imports or constructs `JobRegistry`. Mutating actions
+use the versioned `@shiguang-gateway/contracts/job-command` protocol and are executed by
+the worker-owned internal endpoint; only that process imports `core-domain/worker/jobs`,
+registers handlers and owns timers. The listener defaults to `127.0.0.1:8791` for a local
+deployment; split deployment sets `WORKER_COMMAND_HOST`, `WORKER_COMMAND_PORT`, and
+`SHIGUANG_GATEWAY_WORKER_COMMAND_URL`. Both processes use
+`SHIGUANG_GATEWAY_WORKER_COMMAND_TOKEN`, falling back to their shared `JWT_SECRET`.
+Unreachable, unauthenticated, disabled, unregistered and rejected commands are non-2xx and
+must never be reported as successful control operations.
 
 ### Tunnel control boundary
 
-The `/api/tunnels/*` surface is intentionally outside `control-api`. The
-cloudflared, ngrok and Tailscale handlers start, stop, install or authenticate
-host-level tunnel daemons (including `tailscaled`) and may invoke `sudo` or
-write host configuration. They are runtime/system-process controls, not
-control-plane CRUD or status projections. Moving them into a normal
-control-api Nest module would put privileged process operations behind the
-wrong app boundary and could cause a control process to act on a different
-host than the one serving the tunnel. Keep these handlers in the runtime-owned
-compatibility seam until a dedicated host-agent contract exists; do not add
-new tunnel handlers to `apps/control-api`.
+`control-api` owns the operator-facing `/api/tunnels/*` routes, their validation, and
+public-safe response projection. Cloudflared, ngrok, and Tailscale host processes are
+owned and executed only by `edge-gateway`, the host serving the public API endpoint.
+Control sends the typed `@shiguang-gateway/contracts/tunnel-command` protocol to the
+edge-owned `POST /api/internal/tunnels/command` endpoint. This internal endpoint requires
+the shared `SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN`; it is never an operator-facing API.
+Split deployments also set `EDGE_GATEWAY_URL` on control so a control replica cannot
+accidentally operate on its own host. Tailscale install progress is streamed back through
+the authenticated internal hop. Only edge may import `core-domain/edge/tunnels`.
 
 The package rule is enforced by `pnpm audit:package-boundaries --strict`: a package must
 have at least two workspace consumers and must not contain app-owned route trees. The

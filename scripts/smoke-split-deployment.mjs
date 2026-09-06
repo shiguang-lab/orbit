@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 /** Local acceptance smoke for the split deployment surfaces. */
+import { readFileSync } from "node:fs";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -14,9 +15,12 @@ const baseEnv = {
   NODE_ENV: "production",
   JWT_SECRET: "split-smoke-jwt-secret-1234567890",
   API_KEY_SECRET: "split-smoke-api-secret-1234567890",
+  STORAGE_ENCRYPTION_KEY: "split-smoke-storage-secret-1234567890",
+  SHIGUANG_GATEWAY_WORKER_COMMAND_TOKEN: "split-smoke-worker-command-token",
   DATA_DIR: dataDir,
   SQLITE_FILE: join(dataDir, "storage.sqlite"),
   SHIGUANG_GATEWAY_ENABLE_LIVE_WS: "false",
+  SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN: "split-smoke-internal-service-token",
   LOG_LEVEL: "silent",
 };
 const services = [
@@ -24,7 +28,16 @@ const services = [
   { name: "control-api", port: 18888, live: false },
   { name: "realtime", port: 18889, live: true },
 ];
+const workerService = { name: "worker", port: 18891, live: false };
 const children = [];
+
+const tunnelControllerSource = readFileSync(
+  join(repoRoot, "apps/control-api/src/tunnels/tunnels.controller.ts"),
+  "utf8",
+);
+if (!tunnelControllerSource.includes("encoder.encode(`event: ${event}\\ndata: ${JSON.stringify(payload)}\\n\\n`)")) {
+  throw new Error("control tunnel install projection must emit valid SSE line breaks");
+}
 
 function appendOutput(service, chunk) {
   service.output = `${service.output}${chunk}`.slice(-8_000);
@@ -51,6 +64,13 @@ function start(service) {
   } else if (service.name === "control-api") {
     env.CONTROL_API_PORT = String(service.port);
     env.CONTROL_API_HOST = "127.0.0.1";
+    env.EDGE_GATEWAY_URL = "http://127.0.0.1:18887";
+    env.SHIGUANG_GATEWAY_WORKER_COMMAND_URL = "http://127.0.0.1:18891";
+  } else if (service.name === "worker") {
+    env.WORKER_COMMAND_HOST = "127.0.0.1";
+    env.WORKER_COMMAND_PORT = String(service.port);
+    env.SHIGUANG_GATEWAY_BASE_URL = "http://127.0.0.1:18887";
+    env.INTERNAL_BASE_URL = "http://127.0.0.1:18887";
   } else {
     env.REALTIME_PORT = String(service.port);
     env.REALTIME_HOST = "127.0.0.1";
@@ -128,6 +148,34 @@ try {
   services.forEach(start);
   await waitHttp(18887, "/healthz");
   await waitHttp(18887, "/readyz");
+  start(workerService);
+  await waitHttp(18891, "/internal/jobs/commands/v1", 401, "POST");
+  const authenticatedJobCommand = await fetch("http://127.0.0.1:18891/internal/jobs/commands/v1", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-shiguang-worker-command-token": baseEnv.SHIGUANG_GATEWAY_WORKER_COMMAND_TOKEN,
+    },
+    body: JSON.stringify({ version: 1, command: "run-now", jobId: "missing-split-smoke-job" }),
+  });
+  if (authenticatedJobCommand.status !== 404) {
+    throw new Error(`authenticated worker job command returned ${authenticatedJobCommand.status}`);
+  }
+  await waitHttp(18887, "/api/internal/tunnels/command", 401, "POST");
+  const tunnelStatus = await fetch("http://127.0.0.1:18887/api/internal/tunnels/command", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-shiguangGateway-internal-service-token": baseEnv.SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN,
+    },
+    body: JSON.stringify({ version: 1, command: "ngrok.status" }),
+  });
+  if (!tunnelStatus.ok) {
+    const edgeOutput = services.find((service) => service.name === "edge-gateway")?.output ?? "";
+    throw new Error(
+      `authenticated edge tunnel command failed: ${tunnelStatus.status} ${await tunnelStatus.text()}\n${edgeOutput}`,
+    );
+  }
   await waitHttp(18887, "/.well-known/agent.json");
   await waitHttp(18887, "/api/v1/models");
   await waitHttp(18887, "/v1/models");

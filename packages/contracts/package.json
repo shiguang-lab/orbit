@@ -194,6 +194,14 @@
       "types": "./src/resource-pressure.ts",
       "import": "./src/resource-pressure.ts"
     },
+    "./tunnel-command": {
+      "types": "./src/tunnel-command.ts",
+      "import": "./src/tunnel-command.ts"
+    },
+    "./job-command": {
+      "types": "./src/job-command.ts",
+      "import": "./src/job-command.ts"
+    },
     "./media-parts": {
       "types": "./src/media-parts.ts",
       "import": "./src/media-parts.ts"

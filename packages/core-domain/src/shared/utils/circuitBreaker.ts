@@ -515,8 +515,7 @@ export function __getCircuitRegistrySizeForTests(): number {
   return registry.size;
 }
 
-const _registrySweep = setInterval(() => {
-  const now = Date.now();
+function purgeColdBreakers(now = Date.now()): void {
   for (const [name, breaker] of registry) {
     const status = breaker.getStatus();
     if (
@@ -530,9 +529,6 @@ const _registrySweep = setInterval(() => {
       } catch {}
     }
   }
-}, 5 * 60_000);
-if (typeof _registrySweep === "object" && "unref" in _registrySweep) {
-  (_registrySweep as { unref?: () => void }).unref?.();
 }
 
 /**
@@ -564,6 +560,7 @@ function evictColdBreakersIfNeeded(): void {
 }
 
 export function getCircuitBreaker(name: string, options?: CircuitBreakerOptions): CircuitBreaker {
+  purgeColdBreakers();
   if (!registry.has(name)) {
     evictColdBreakersIfNeeded();
     registry.set(name, new CircuitBreaker(name, options));
@@ -618,6 +615,7 @@ export function getCircuitBreaker(name: string, options?: CircuitBreakerOptions)
 }
 
 export function getAllCircuitBreakerStatuses() {
+  purgeColdBreakers();
   try {
     const persisted = loadAllCircuitBreakerStates();
     for (const cb of persisted) {

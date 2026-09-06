@@ -65,6 +65,8 @@ async function main() {
     SQLITE_FILE: join(dataDir, "storage.sqlite"),
     EDGE_GATEWAY_HOST: "127.0.0.1",
     EDGE_GATEWAY_PORT: "18897",
+    WORKER_COMMAND_HOST: "127.0.0.1",
+    WORKER_COMMAND_PORT: "18898",
     SHIGUANG_GATEWAY_BASE_URL: "http://127.0.0.1:18897",
     INTERNAL_BASE_URL: "http://127.0.0.1:18897",
     // Exercise the real scheduler start paths. The empty test database contains
@@ -137,6 +139,21 @@ async function main() {
     assertRunning(worker);
     const logs = output.join("");
     if (!logs.includes("[worker] started:")) throw new Error("worker startup marker missing");
+    const unauthorized = await fetch("http://127.0.0.1:18898/internal/jobs/commands/v1", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ version: 1, command: "run-now", jobId: "missing" }),
+    });
+    if (unauthorized.status !== 401) throw new Error(`worker command endpoint accepted unauthenticated request: ${unauthorized.status}`);
+    const authenticated = await fetch("http://127.0.0.1:18898/internal/jobs/commands/v1", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-shiguang-worker-command-token": baseEnv.JWT_SECRET,
+      },
+      body: JSON.stringify({ version: 1, command: "run-now", jobId: "missing" }),
+    });
+    if (authenticated.status !== 404) throw new Error(`worker command endpoint did not execute authenticated command: ${authenticated.status}`);
     const marker = logs.match(/\[worker\] started: (.*)/)?.[1] ?? "";
     const expected = [
       "cloud-sync-and-job-registry", "quota-cache-refresh", "spend-batch-writer",

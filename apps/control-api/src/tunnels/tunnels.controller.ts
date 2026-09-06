@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, Res } from "@nestjs/common";
+import { Body, Controller, Get, Inject, Post, Req, Res } from "@nestjs/common";
 import { Readable } from "node:stream";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
@@ -23,7 +23,7 @@ const tailscaleSudoSchema = z.object({ sudoPassword: z.string().optional() });
 /** HTTP transport for operator-managed public tunnel processes. */
 @Controller("api/tunnels")
 export class TunnelsController {
-  constructor(private readonly tunnels: TunnelsService) {}
+  constructor(@Inject(TunnelsService) private readonly tunnels: TunnelsService) {}
 
   private async authorize(request: FastifyRequest, reply: FastifyReply): Promise<boolean> {
     if (await isAuthenticated(request.raw as unknown as Request)) return true;
@@ -165,7 +165,7 @@ export class TunnelsController {
     const stream = new ReadableStream<Uint8Array>({
       start: (controller) => {
         const pushEvent = (event: string, payload: unknown) => {
-          controller.enqueue(encoder.encode(`event: ${event}\\ndata: ${JSON.stringify(payload)}\\n\\n`));
+          controller.enqueue(encoder.encode(`event: ${event}\ndata: ${JSON.stringify(payload)}\n\n`));
         };
         void (async () => {
           try {
