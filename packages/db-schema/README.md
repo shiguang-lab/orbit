@@ -21,6 +21,13 @@ Every table that is part of an app boundary is represented by an
 - `worker.entity.ts` — asynchronous jobs, usage, logs, model data, and
   provider quota-reset observations owned by `worker`
 
+Entity declarations live only in `src/entities/*.entity.ts`; the
+`src/entities/index.ts` barrel is the single source-level aggregation point.
+`src/index.ts` then maps those declarations to the physical table constants,
+ownership map, and complete `GATEWAY_ENTITIES` catalog. The `audit:db-entities`
+check enforces this layout so a bootstrap helper or app implementation cannot
+silently introduce a second entity definition.
+
 The edge catalog also owns the A2A lifecycle (`a2a_tasks`,
 `a2a_task_events`) and routing explainability (`routing_decisions`) records.
 The edge A2A/routing runtime emits these rows while control/MCP surfaces read
