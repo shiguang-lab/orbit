@@ -1,6 +1,7 @@
 /** Database boundary shared by deployable apps. Queries and mutations remain app-owned. */
 import {
   ApiKeyEntity,
+  ConfigAuditLogEntity,
   ComboEntity,
   CompressionComboEntity,
   CompressionComboAssignmentEntity,
@@ -10,6 +11,8 @@ import {
   ModelCapabilityOverrideEntity,
   ModelContextOverrideEntity,
   PluginEntity,
+  PlaygroundPresetEntity,
+  PluginMetricEntity,
   ProviderConnectionEntity,
   ProviderNodeEntity,
   ProviderPlanEntity,
@@ -54,6 +57,9 @@ export * from "./entities/index.js";
 
 export const GATEWAY_TABLES = {
   settings: "key_value",
+  configAuditLog: "config_audit_log",
+  playgroundPresets: "playground_presets",
+  pluginMetrics: "plugin_metrics",
   providerConnections: "provider_connections",
   providerNodes: "provider_nodes",
   apiKeys: "api_keys",
@@ -112,6 +118,9 @@ export interface TableRef {
  */
 export const TABLE_OWNERSHIP: readonly TableRef[] = [
   { table: GATEWAY_TABLES.settings, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.configAuditLog, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.playgroundPresets, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.pluginMetrics, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.providerConnections, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.providerNodes, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.apiKeys, owner: "control-api", access: "read-write" },
@@ -157,13 +166,16 @@ export const TABLE_OWNERSHIP: readonly TableRef[] = [
 ];
 
 /**
- * Canonical physical entities for the tables shared by more than one app.
- * The mapped keys intentionally follow the public vocabulary above; each
- * entity keeps a Nest/ORM-style stable `entityName` and an exact SQLite
- * `tableName`.
+ * Canonical physical entities for every table whose structure is governed by
+ * the deployable apps.  The mapped keys intentionally follow the public
+ * vocabulary above; each entity keeps a Nest/ORM-style stable `entityName`
+ * and an exact SQLite `tableName`.
  */
 export const GATEWAY_ENTITIES = {
   settings: SettingsEntity,
+  configAuditLog: ConfigAuditLogEntity,
+  playgroundPresets: PlaygroundPresetEntity,
+  pluginMetrics: PluginMetricEntity,
   providerConnections: ProviderConnectionEntity,
   providerNodes: ProviderNodeEntity,
   apiKeys: ApiKeyEntity,

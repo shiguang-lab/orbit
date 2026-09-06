@@ -1,5 +1,6 @@
 import { Injectable, type OnModuleInit } from "@nestjs/common";
 import { hydrateRequestRuntime } from "@shiguang-gateway/core-domain/runtime/request";
+import { ensureControlSchema } from "./control-schema.js";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
 
@@ -14,6 +15,7 @@ export class ControlRuntimeService implements OnModuleInit {
   initialize(): Promise<void> {
     if (!this.initialization) {
       this.initialization = hydrateRequestRuntime()
+        .then(() => ensureControlSchema())
         .then(async () => {
           const [{ ensurePersistentManagementPasswordHash }, { getSettings }] = await Promise.all([
             load("@shiguang-gateway/core-domain/control/management-password"),

@@ -11,6 +11,57 @@ export const SettingsEntity: EntityDefinition = {
   ],
 };
 
+/** Configuration change history maintained by the control plane. */
+export const ConfigAuditLogEntity: EntityDefinition = {
+  entityName: "ConfigAuditLog",
+  tableName: "config_audit_log",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("timestamp", "TEXT", { nullable: false }),
+    column("action", "TEXT", { nullable: false }),
+    column("target", "TEXT", { nullable: false }),
+    column("target_id", "TEXT", { nullable: false }),
+    column("target_name", "TEXT", { nullable: false }),
+    column("before_json", "TEXT"),
+    column("after_json", "TEXT"),
+    column("diff_json", "TEXT", { nullable: false }),
+    column("source", "TEXT", { nullable: false }),
+    column("note", "TEXT"),
+  ],
+};
+
+/** Playground request presets maintained by the control plane. */
+export const PlaygroundPresetEntity: EntityDefinition = {
+  entityName: "PlaygroundPreset",
+  tableName: "playground_presets",
+  owner: "control-api",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("name", "TEXT", { nullable: false }),
+    column("endpoint", "TEXT", { nullable: false }),
+    column("model", "TEXT", { nullable: false }),
+    column("system", "TEXT"),
+    column("params_json", "TEXT", { nullable: false, default: "'{}'" }),
+    column("created_at", "TEXT", { nullable: false, default: "CURRENT_TIMESTAMP" }),
+  ],
+};
+
+/** Aggregate plugin execution metrics maintained by the control plane. */
+export const PluginMetricEntity: EntityDefinition = {
+  entityName: "PluginMetric",
+  tableName: "plugin_metrics",
+  owner: "control-api",
+  columns: [
+    column("plugin_name", "TEXT", { nullable: false, primaryKey: true }),
+    column("event", "TEXT", { nullable: false, primaryKey: true }),
+    column("calls", "INTEGER", { nullable: false, default: "0" }),
+    column("errors", "INTEGER", { nullable: false, default: "0" }),
+    column("total_duration_ms", "REAL", { nullable: false, default: "0" }),
+    column("last_called_at", "TEXT"),
+  ],
+};
+
 export const ProviderConnectionEntity: EntityDefinition = {
   entityName: "ProviderConnection",
   tableName: "provider_connections",
