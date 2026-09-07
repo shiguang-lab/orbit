@@ -367,7 +367,7 @@ try {
   if (sourceHome) {
     const copied = externalState.filter((entry) => entry.status === "copied").length;
     const missing = externalState.filter((entry) => entry.status === "missing").length;
-    console.log(`External state: copied ${copied}, missing ${missing} (missing entries require re-authentication)`);
+    console.log(`External state: copied ${copied}, absent ${missing} (check only entries required by enabled providers)`);
   }
   if (backupPath) console.log(`Previous target preserved at ${backupPath}`);
 } catch (error) {
