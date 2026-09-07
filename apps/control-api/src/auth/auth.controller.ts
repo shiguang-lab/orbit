@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Inject, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { AuthService } from "./auth.service.js";
+import { handleSession } from "@shiguang-gateway/auth";
 
 function readCookie(req: FastifyRequest, name: string): string | null {
   const header = (req.headers.cookie as string) ?? "";
@@ -20,6 +21,11 @@ export class AuthController {
     if (result.cookies?.length) reply.header("set-cookie", result.cookies);
     if (result.location) return reply.redirect(result.location, result.status);
     return reply.status(result.status).send(result.body);
+  }
+
+  @Get("session")
+  async session(@Req() request: FastifyRequest, @Res() reply: FastifyReply): Promise<unknown> {
+    return handleSession(request, reply, false, undefined, process.env.SHIGUANG_GATEWAY_AUTH_MODE !== "shiguang");
   }
 
   @Get("status")

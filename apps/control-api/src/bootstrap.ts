@@ -1,9 +1,11 @@
 import { NestFactory } from "@nestjs/core";
 import { FastifyAdapter } from "@nestjs/platform-fastify";
 import type { FastifyInstance } from "fastify";
+import { installRuntimePorts } from "@shiguang-gateway/open-sse/services/dbRuntimeHooks";
 
 /** Construct the control API application with its fixed route boundary. */
 export async function bootstrapControlApi() {
+  installRuntimePorts();
   const { AppModule } = await import("./app.module.js");
   const adapter = new FastifyAdapter({
     logger: { level: process.env.LOG_LEVEL ?? "info" },
