@@ -58,22 +58,53 @@ test("close unsubscribes and aborts pending delivery without reporting shutdown 
   let listener!: (event: string, payload: unknown) => void;
   let signal: AbortSignal | undefined;
   let unsubscribed = 0;
+  let dispatched = 0;
   const errors: unknown[] = [];
   const publisher = startRealtimePublisher({
     url: "http://realtime/events",
     subscribe: (callback) => { listener = callback; return () => { unsubscribed++; }; },
     headers: () => ({}), onError: (error) => errors.push(error),
     fetch: (async (_url, init) => {
+      dispatched++;
       signal = init?.signal as AbortSignal;
       return new Promise<Response>((_resolve, reject) => signal!.addEventListener("abort", () => reject(new Error("aborted")), { once: true }));
     }) as typeof fetch,
   });
   listener("combo.target.attempt", {});
+  listener("combo.target.succeeded", {});
   await Promise.resolve();
   await Promise.all([publisher.close(), publisher.close()]);
   assert.equal(signal?.aborted, true);
   assert.equal(unsubscribed, 1);
+  assert.equal(dispatched, 1);
   assert.equal(errors.length, 0);
+});
+
+test("a delayed first response keeps later events queued in emission order", async () => {
+  let listener!: (event: string, payload: unknown) => void;
+  let releaseFirst!: (response: Response) => void;
+  let secondStarted!: () => void;
+  const second = new Promise<void>((resolve) => { secondStarted = resolve; });
+  const sent: string[] = [];
+  const publisher = startRealtimePublisher({
+    url: "http://realtime/events", headers: () => ({}),
+    subscribe: (callback) => { listener = callback; return () => {}; },
+    onError: (error) => assert.fail(String(error)),
+    fetch: (async (_url, init) => {
+      sent.push(JSON.parse(String(init?.body)).event);
+      if (sent.length === 1) return new Promise<Response>((resolve) => { releaseFirst = resolve; });
+      secondStarted();
+      return new Response(null, { status: 202 });
+    }) as typeof fetch,
+  });
+  listener("request.started", {});
+  listener("request.completed", {});
+  await new Promise((resolve) => setTimeout(resolve, 30));
+  assert.deepEqual(sent, ["request.started"]);
+  releaseFirst(new Response(null, { status: 202 }));
+  await second;
+  assert.deepEqual(sent, ["request.started", "request.completed"]);
+  await publisher.close();
 });
 
 test("an unconfigured transport does not subscribe", async () => {

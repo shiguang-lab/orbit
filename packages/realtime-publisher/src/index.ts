@@ -8,41 +8,52 @@ export interface RealtimePublisherOptions {
 
 /** A best-effort transport owned and closed by its emitting application. */
 export function startRealtimePublisher(options: RealtimePublisherOptions): { close(): Promise<void> } {
-  const pending = new Map<AbortController, Promise<void>>();
+  let pendingCount = 0;
+  let delivery = Promise.resolve();
+  let active: AbortController | undefined;
   const fetchImpl = options.fetch ?? globalThis.fetch;
   let closed = false;
   const unsubscribe = options.url ? options.subscribe((event, payload) => {
     if (closed) return;
-    if (pending.size >= 128) return; // Bound telemetry work when realtime is unavailable.
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 1500);
-    const delivery = Promise.resolve().then(async () => {
-      const response = await fetchImpl(options.url!, {
-        method: "POST",
-        headers: { ...options.headers(), "content-type": "application/json" },
-        body: JSON.stringify({ event, payload, timestamp: Date.now() }),
-        signal: controller.signal,
-      });
-      await response.body?.cancel();
-      if (!response.ok) throw new Error(`Realtime event delivery returned ${response.status}`);
+    if (pendingCount >= 128) return; // Bound queued telemetry while realtime is unavailable.
+    pendingCount++;
+    const timestamp = Date.now();
+    // One asynchronous chain preserves this application's emission order.
+    // Queued events receive their timeout only when they begin transmission.
+    delivery = delivery.then(async () => {
+      if (closed) return;
+      const controller = new AbortController();
+      active = controller;
+      const timeout = setTimeout(() => controller.abort(), 1500);
+      try {
+        const response = await fetchImpl(options.url!, {
+          method: "POST",
+          headers: { ...options.headers(), "content-type": "application/json" },
+          body: JSON.stringify({ event, payload, timestamp }),
+          signal: controller.signal,
+        });
+        await response.body?.cancel();
+        if (!response.ok) throw new Error(`Realtime event delivery returned ${response.status}`);
+      } finally {
+        clearTimeout(timeout);
+        active = undefined;
+      }
     }).catch((error) => {
       if (!closed) {
         try { options.onError(error); } catch { /* Telemetry must not break its emitter. */ }
       }
     }).finally(() => {
-      clearTimeout(timeout);
-      pending.delete(controller);
+      pendingCount--;
     });
-    pending.set(controller, delivery);
   }) : () => {};
   return {
     async close() {
       if (!closed) {
         closed = true;
         unsubscribe();
-        for (const controller of pending.keys()) controller.abort();
+        active?.abort();
       }
-      await Promise.allSettled(pending.values());
+      await delivery;
     },
   };
 }
