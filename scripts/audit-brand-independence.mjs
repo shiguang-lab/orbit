@@ -30,6 +30,7 @@ const ssoDocuments = new Set([
 ]);
 const ssoTests = new Set([
   "apps/control/test/auth-session.test.ts",
+  "apps/control/test/search-analytics.test.ts",
   "packages/auth/test/configured-entitlement.test.ts",
   "apps/realtime/test/live-server-sso.test.ts",
 ]);

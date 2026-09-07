@@ -65,12 +65,12 @@ test("frontend client, HTTP SSO route, SQLite aggregates and page agree for popu
   insert.run("search-3", yesterday, "search", "tavily-search", 200, 198);
   insert.run("chat-ignored", today, "chat", "openai", 200, 9999);
 
-  // Load the actual admin client/page; only the local test gateway supplies its signed identity.
-  const adminRequire = createRequire(new URL("../../admin/package.json", import.meta.url));
-  const { createServer } = await import(adminRequire.resolve("vite"));
-  const { createElement } = adminRequire("react");
-  const { renderToStaticMarkup } = adminRequire("react-dom/server");
-  const vite = await createServer({ root: new URL("../../admin", import.meta.url).pathname, server: { middlewareMode: true, hmr: false }, optimizeDeps: { noDiscovery: true, include: [] } });
+  // Load the actual console client/page; only the local test gateway supplies its signed identity.
+  const consoleRequire = createRequire(new URL("../../console/package.json", import.meta.url));
+  const { createServer } = await import(consoleRequire.resolve("vite"));
+  const { createElement } = consoleRequire("react");
+  const { renderToStaticMarkup } = consoleRequire("react-dom/server");
+  const vite = await createServer({ root: new URL("../../console", import.meta.url).pathname, server: { middlewareMode: true, hmr: false }, optimizeDeps: { noDiscovery: true, include: [] } });
   const { QueryClient, QueryClientProvider } = await vite.ssrLoadModule("@tanstack/react-query");
   const client = new QueryClient({ defaultOptions: { queries: { staleTime: Infinity, retry: false } } });
   const originalFetch = globalThis.fetch;
