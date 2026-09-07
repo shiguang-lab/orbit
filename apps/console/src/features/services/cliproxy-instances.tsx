@@ -554,25 +554,15 @@ export default function CliproxyInstances() {
 
   const modelAliasesQuery = useQuery({
     queryKey: ["managed-instance-model-aliases", node?.id, instance?.id],
-    queryFn: async () => {
-      try {
-        const res = await api<Record<string, { name: string; alias: string }[]>>(
-          `${instancePath(node!.id, instance!.id)}/management`,
-          {
-            method: "POST",
-            body: JSON.stringify({ method: "GET", path: "oauth-model-alias" }),
-          },
-        );
-        return res;
-      } catch {
-        return {};
-      }
-    },
+    queryFn: () => api<{ "oauth-model-alias": Record<string, ModelAlias[]> }>(
+      `${instancePath(node!.id, instance!.id)}/management`,
+      { method: "POST", body: JSON.stringify({ method: "GET", path: "oauth-model-alias" }) },
+    ),
     enabled: Boolean(node?.online && instance?.healthy),
   });
 
   const mappingsList: [string, string][] = Object.values(
-    modelAliasesQuery.data ?? {},
+    modelAliasesQuery.data?.["oauth-model-alias"] ?? {},
   ).flatMap((list) =>
     Array.isArray(list)
       ? list.map((item) => [item.alias, item.name] as [string, string])
@@ -1047,7 +1037,6 @@ export default function CliproxyInstances() {
                               styles={{ body: { flex: 1, padding: 8, display: "flex", flexDirection: "column" } }}
                               extra={
                                 <Button
-                                  size="small"
                                   icon={<PlusOutlined />}
                                   onClick={() => setMountModalOpen(true)}
                                 >
@@ -1090,12 +1079,12 @@ export default function CliproxyInstances() {
                                     ),
                                   },
                                   {
-                                    title: tt("延迟", "Latency"),
-                                    key: "latencyMs",
+                                    title: tt("模型", "Models"),
+                                    key: "modelCount",
                                     width: 70,
-                                    render: () => (
-                                      <span style={{ fontFamily: "monospace", color: "#10b981", fontWeight: 600, fontSize: 11 }}>
-                                        {instance.latencyMs ? `${instance.latencyMs}ms` : "—"}
+                                    render: (_, record) => (
+                                      <span style={{ fontFamily: "monospace", fontWeight: 600, fontSize: 11 }}>
+                                        {record.models.length}
                                       </span>
                                     ),
                                   },
@@ -1105,10 +1094,9 @@ export default function CliproxyInstances() {
                                     width: 65,
                                     render: () => (
                                       <Button
-                                        size="small"
                                         onClick={() => void handleRefreshNode(node.id)}
                                       >
-                                        {tt("测试", "Test")}
+                                        {tt("刷新", "Refresh")}
                                       </Button>
                                     ),
                                   },
@@ -1126,7 +1114,6 @@ export default function CliproxyInstances() {
                               styles={{ body: { flex: 1, display: "flex", flexDirection: "column", padding: "10px 14px" } }}
                               extra={
                                 <Button
-                                  size="small"
                                   type="primary"
                                   style={{ background: "#6366f1" }}
                                   onClick={() => setMappingModalOpen(true)}
@@ -1138,6 +1125,7 @@ export default function CliproxyInstances() {
                               <Typography.Paragraph type="secondary" style={{ fontSize: 11, margin: "0 0 6px 0" }}>
                                 {tt("配置客户端请求模型到 CLI 上游真实模型的自动重写：", "Configure automatic rewriting of client request models to CLI upstream models:")}
                               </Typography.Paragraph>
+                              {modelAliasesQuery.error && <Alert type="error" message={modelAliasesQuery.error.message} />}
                               <div style={{ display: "flex", flexDirection: "column", gap: 6, flex: 1, maxHeight: 110, overflowY: "auto", paddingRight: 2 }}>
                                 {mappingsList.length === 0 ? (
                                   <Empty
@@ -1169,7 +1157,8 @@ export default function CliproxyInstances() {
                               <div style={{ marginTop: 8, paddingTop: 6, borderTop: `1px solid ${token.colorBorderSecondary}` }}>
                                 <Typography.Text type="secondary" style={{ fontSize: 11 }}>{tt("终端导出指引：", "Terminal Export Guide:")}</Typography.Text>
                                 <pre className={styles.codeSnippet} style={{ marginTop: 4 }}>
-                                  {`export OPENAI_BASE_URL="http://127.0.0.1:${instance.port || 8317}/v1"`}
+                                  {`export OPENAI_BASE_URL="${typeof window === "undefined" ? "" : window.location.origin}/v1"
+# model: ${node.scopePrefix}/<model>`}
                                 </pre>
                               </div>
                             </Card>
@@ -1187,7 +1176,6 @@ export default function CliproxyInstances() {
                               <Space size={4}>
                                 <Button
                                   type="text"
-                                  size="small"
                                   icon={<CopyOutlined style={{ fontSize: 14 }} />}
                                   onClick={() => {
                                     const allLogs = logsQuery.data?.text ?? "";
@@ -1197,12 +1185,10 @@ export default function CliproxyInstances() {
                                 />
                                 <Button
                                   type="text"
-                                  size="small"
-                                  danger
-                                  icon={<DeleteOutlined style={{ fontSize: 14 }} />}
-                                  onClick={() => {
-                                    message.success(tt("日志已清空", "Logs cleared"));
-                                  }}
+                                  aria-label={tt("刷新日志", "Refresh logs")}
+                                  icon={<ReloadOutlined style={{ fontSize: 14 }} />}
+                                  loading={logsQuery.isFetching}
+                                  onClick={() => void logsQuery.refetch()}
                                 />
                               </Space>
                             </Flex>
@@ -1569,7 +1555,6 @@ export default function CliproxyInstances() {
                                     render: (_, record) => (
                                       <Space size={8}>
                                         <Button
-                                          size="small"
                                           disabled={busy}
                                           onClick={() =>
                                             mutation.mutate(async () => {
@@ -1606,7 +1591,7 @@ export default function CliproxyInstances() {
                                             })
                                           }
                                         >
-                                          <Button size="small" danger>
+                                          <Button danger>
                                             {tt("删除", "Delete")}
                                           </Button>
                                         </Popconfirm>
@@ -1899,7 +1884,6 @@ export default function CliproxyInstances() {
                   render: (_, item) => (
                     <Space size={6} onClick={(e) => e.stopPropagation()}>
                       <Button
-                        size="small"
                         type="link"
                         icon={<SettingOutlined />}
                         style={{ paddingInline: 2 }}
@@ -1911,7 +1895,6 @@ export default function CliproxyInstances() {
                         {tt("管理", "Manage")}
                       </Button>
                       <Button
-                        size="small"
                         type="link"
                         icon={<ReloadOutlined />}
                         style={{ paddingInline: 2 }}
@@ -1933,7 +1916,6 @@ export default function CliproxyInstances() {
                         }}
                       >
                         <Button
-                          size="small"
                           type="link"
                           danger
                           icon={<DeleteOutlined />}
@@ -2162,7 +2144,6 @@ export default function CliproxyInstances() {
                       </Tooltip>
                       <Space size={6} onClick={(e) => e.stopPropagation()}>
                         <Button
-                          size="small"
                           icon={<ReloadOutlined />}
                           onClick={(e) => {
                             e.stopPropagation();
@@ -2182,7 +2163,6 @@ export default function CliproxyInstances() {
                           }}
                         >
                           <Button
-                            size="small"
                             danger
                             icon={<DeleteOutlined />}
                             onClick={(e) => e.stopPropagation()}
@@ -2191,7 +2171,6 @@ export default function CliproxyInstances() {
                           </Button>
                         </Popconfirm>
                         <Button
-                          size="small"
                           type="primary"
                           ghost
                           icon={<SettingOutlined />}
@@ -2402,7 +2381,6 @@ export function InstanceLogs({
           </Space>
           <Space size={8}>
             <Button
-              size="small"
               icon={<CopyOutlined />}
               disabled={!logs.data?.text}
               onClick={() => {
@@ -2415,7 +2393,6 @@ export function InstanceLogs({
               {tt("复制日志", "Copy logs")}
             </Button>
             <Button
-              size="small"
               icon={<ReloadOutlined />}
               disabled={!enabled}
               loading={logs.isFetching}
@@ -2457,6 +2434,7 @@ function InstanceSettings({
 }) {
   const { tt } = useI18n();
   const { message } = App.useApp();
+  const client = useQueryClient();
   const [channel, setChannel] = useState("codex");
   const [form] = Form.useForm();
   const request = (method: string, path: string, payload?: unknown) =>
@@ -2516,6 +2494,8 @@ function InstanceSettings({
         await request("PUT", "routing/strategy", { value: values.strategy });
       }
       await settings.refetch();
+      await client.invalidateQueries({ queryKey: ["managed-instance-model-aliases", nodeId, instanceId] });
+      await client.invalidateQueries({ queryKey: ["service-nodes"] });
       message.success(tt("已保存", "Saved"));
     },
     onError: (error) => message.error(error.message),
