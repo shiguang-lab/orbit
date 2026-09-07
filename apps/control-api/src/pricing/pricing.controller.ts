@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Body, Controller, Delete, Get, Inject, Patch, Post, Req, Res, Query } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { PricingService } from "./pricing.service.js";
@@ -19,7 +20,7 @@ export class PricingController {
     @Res() reply: FastifyReply,
     @Query("includeSources") includeSources?: string
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -37,7 +38,7 @@ export class PricingController {
     @Res() reply: FastifyReply,
     @Body() body: unknown
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -61,7 +62,7 @@ export class PricingController {
     @Query("provider") provider?: string,
     @Query("model") model?: string
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -99,7 +100,7 @@ export class PricingController {
     @Res() reply: FastifyReply,
     @Body() body: unknown
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -125,7 +126,7 @@ export class PricingController {
     @Req() req: FastifyRequest,
     @Res() reply: FastifyReply
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -141,7 +142,7 @@ export class PricingController {
     @Req() req: FastifyRequest,
     @Res() reply: FastifyReply
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 

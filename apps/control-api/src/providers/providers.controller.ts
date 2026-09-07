@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import {
   Body,
   Controller,
@@ -292,7 +293,7 @@ export class ProvidersController {
     @Res() reply: FastifyReply,
     @Query("provider") provider?: string
   ) {
-    const rawReq = request.raw as unknown as Request;
+    const rawReq = toWebRequest(request);
     if (!(await isAuthenticated(rawReq))) {
       return reply
         .status(401)
@@ -402,7 +403,7 @@ export class ProvidersController {
 
   @Get("providers/openrouter-stats")
   async openRouterStats(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    if (!(await isAuthenticated(request.raw as unknown as Request))) {
+    if (!(await isAuthenticated(toWebRequest(request)))) {
       return reply
         .status(401)
         .send({ error: { message: "Authentication required", type: "invalid_request_error" } });
@@ -440,7 +441,7 @@ export class ProvidersController {
 
   @Get("providers/quota-windows")
   async quotaWindows(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    const authError = await requireManagementAuth(request.raw as unknown as Request);
+    const authError = await requireManagementAuth(toWebRequest(request));
     if (authError) return reply.status(authError.status).send(await authError.json());
     try {
       return reply.send(await this.providersService.getQuotaWindows());
@@ -462,7 +463,7 @@ export class ProvidersController {
 
   @Get("providers/health-matrix")
   async providerHealthMatrix(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    const authError = await requireManagementAuth(request.raw as unknown as Request);
+    const authError = await requireManagementAuth(toWebRequest(request));
     if (authError) return reply.status(authError.status).send(await authError.json());
     const query = new URL(request.raw.url ?? "", "http://localhost").searchParams;
     const providerRaw = query.get("provider");
@@ -503,7 +504,7 @@ export class ProvidersController {
   }
 
   private async authorizeManagement(request: FastifyRequest, reply: FastifyReply): Promise<boolean> {
-    const authError = await requireManagementAuth(request.raw as unknown as Request);
+    const authError = await requireManagementAuth(toWebRequest(request));
     if (!authError) return true;
     reply.status(authError.status).send(await authError.json());
     return false;

@@ -32,6 +32,7 @@ const env = {
   SHIGUANG_GATEWAY_ENABLE_LIVE_WS: target === "realtime" ? "true" : "false",
   SHIGUANG_GATEWAY_DISABLE_BACKGROUND_SERVICES: "0", SHIGUANG_GATEWAY_ENABLE_RUNTIME_BACKGROUND_TASKS: "1",
   QUOTA_STORE_DRIVER: "sqlite", LOG_LEVEL: "warn",
+  SHIGUANG_GATEWAY_AUTH_MODE: "shiguang",
 };
 try {
   docker(["volume", "create", volume]);
@@ -52,6 +53,13 @@ try {
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
   if (!healthySince || Date.now() - healthySince < 5000) throw new Error(`${target} did not remain healthy`);
+  if (target === "control-api") {
+    const authProbe = `fetch('http://127.0.0.1:8788/api/providers/test-batch', {
+      method:'POST', headers:{'content-type':'application/json'},
+      body:JSON.stringify({mode:'selected',connectionIds:[]}), signal:AbortSignal.timeout(5000)
+    }).then(r=>{if(r.status!==401)throw new Error('management auth status='+r.status)}).catch(e=>{console.error(e.message);process.exit(1)})`;
+    docker(["exec", name, "node", "-e", authProbe]);
+  }
   const logs = docker(["logs", name]);
   const output = `${logs.stdout}\n${logs.stderr}`;
   if (/ERR_MODULE_NOT_FOUND|Cannot find (?:package|module)|ERR_DLOPEN_FAILED/.test(output)) {

@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Body, Controller, Get, Post, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
@@ -18,7 +19,7 @@ export class SettingsSecurityController {
   constructor(private readonly security: SettingsSecurityService) {}
 
   private async authorize(request: FastifyRequest, reply: FastifyReply): Promise<boolean> {
-    const authError = await requireManagementAuth(request.raw as unknown as Request);
+    const authError = await requireManagementAuth(toWebRequest(request));
     if (!authError) return true;
     reply.status(authError.status).send(await authError.json());
     return false;
@@ -68,14 +69,14 @@ export class SettingsSecurityController {
 
   @Get("require-login")
   async getRequireLogin(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    return reply.send(await this.security.getRequireLogin(request.raw as unknown as Request));
+    return reply.send(await this.security.getRequireLogin(toWebRequest(request)));
   }
 
   @Post("require-login")
   async updateRequireLogin(@Req() request: FastifyRequest, @Res() reply: FastifyReply, @Body() body: unknown) {
     const validation = validateBody(updateRequireLoginSchema, body);
     if (isValidationFailure(validation)) return reply.status(400).send({ error: validation.error });
-    const result = await this.security.updateRequireLogin(request.raw as unknown as Request, validation.data);
+    const result = await this.security.updateRequireLogin(toWebRequest(request), validation.data);
     if (result.unauthorized) return reply.status(401).send({ error: "Unauthorized" });
     return reply.send({ success: true });
   }
@@ -114,7 +115,7 @@ export class SettingsSecurityController {
 
   @Get("authz-inventory")
   async getAuthzInventory(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    const result = await this.security.getAuthzInventory(request.raw as unknown as Request);
+    const result = await this.security.getAuthzInventory(toWebRequest(request));
     if (result.error) {
       return reply.status(result.error.status).send(result.error.body);
     }

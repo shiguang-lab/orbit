@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Controller, Get, Inject, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { GatewayService } from "./gateway.service.js";
@@ -19,7 +20,7 @@ export class GatewayController {
 
   @Get("gateway/status")
   async status(@Req() request: FastifyRequest, @Res() reply: FastifyReply): Promise<unknown> {
-    const rawReq = request.raw as unknown as Request;
+    const rawReq = toWebRequest(request);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 

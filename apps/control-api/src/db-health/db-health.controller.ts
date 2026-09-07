@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Controller, Get, Inject, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
@@ -9,7 +10,7 @@ export class DbHealthController {
 
   @Get()
   async get(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    if (!(await isAuthenticated(request.raw as unknown as Request))) {
+    if (!(await isAuthenticated(toWebRequest(request)))) {
       return reply.status(401).send({ error: { message: "Authentication required" } });
     }
 
@@ -24,7 +25,7 @@ export class DbHealthController {
 
   @Post()
   async post(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    if (!(await isAuthenticated(request.raw as unknown as Request))) {
+    if (!(await isAuthenticated(toWebRequest(request)))) {
       return reply.status(401).send({ error: { message: "Authentication required" } });
     }
 

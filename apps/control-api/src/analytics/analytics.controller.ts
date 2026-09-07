@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Controller, Get, Inject, Query, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { AnalyticsService } from "./analytics.service.js";
@@ -9,7 +10,7 @@ export class AnalyticsController {
 
   @Get("auto-routing")
   async getAutoRouting(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -22,7 +23,7 @@ export class AnalyticsController {
     @Res() reply: FastifyReply,
     @Query("since") since?: string
   ) {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 

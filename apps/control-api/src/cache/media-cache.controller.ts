@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Controller, Get, Inject, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
@@ -10,7 +11,7 @@ export class MediaCacheController {
 
   @Get("stats")
   async getStats(@Req() req: FastifyRequest, @Res() reply: FastifyReply): Promise<unknown> {
-    if (!(await isAuthenticated(req.raw as unknown as Request))) {
+    if (!(await isAuthenticated(toWebRequest(req)))) {
       return reply.status(401).send({ error: "Unauthorized" });
     }
     try {
@@ -22,7 +23,7 @@ export class MediaCacheController {
 
   @Post("purge")
   async purge(@Req() req: FastifyRequest, @Res() reply: FastifyReply): Promise<unknown> {
-    if (!(await isAuthenticated(req.raw as unknown as Request))) {
+    if (!(await isAuthenticated(toWebRequest(req)))) {
       return reply.status(401).send({ error: "Unauthorized" });
     }
     try {

@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Controller, Get, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { HeadroomService } from "./headroom.service.js";
@@ -8,17 +9,17 @@ export class HeadroomController {
 
   @Post("start")
   async start(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    return this.send(reply, await this.headroom.start(request.raw as unknown as Request));
+    return this.send(reply, await this.headroom.start(toWebRequest(request)));
   }
 
   @Post("stop")
   async stop(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    return this.send(reply, await this.headroom.stop(request.raw as unknown as Request));
+    return this.send(reply, await this.headroom.stop(toWebRequest(request)));
   }
 
   @Get("status")
   async status(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    return this.send(reply, await this.headroom.status(request.raw as unknown as Request));
+    return this.send(reply, await this.headroom.status(toWebRequest(request)));
   }
 
   private async send(reply: FastifyReply, response: Response) {

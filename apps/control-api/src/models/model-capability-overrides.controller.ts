@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Body, Controller, Delete, Get, Patch, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
@@ -10,14 +11,14 @@ export class ModelCapabilityOverridesController {
 
   @Get()
   async list(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    const authError = await requireManagementAuth(request.raw as unknown as Request);
+    const authError = await requireManagementAuth(toWebRequest(request));
     if (authError) return reply.status(authError.status).send(await authError.json());
     return reply.send(await this.overrides.list());
   }
 
   @Patch()
   async upsert(@Req() request: FastifyRequest, @Res() reply: FastifyReply, @Body() body: unknown) {
-    const authError = await requireManagementAuth(request.raw as unknown as Request);
+    const authError = await requireManagementAuth(toWebRequest(request));
     if (authError) return reply.status(authError.status).send(await authError.json());
     const result = await this.overrides.upsert(body);
     if (!result.ok) return reply.status(result.status).send({ error: result.error });
@@ -26,7 +27,7 @@ export class ModelCapabilityOverridesController {
 
   @Delete()
   async remove(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    const authError = await requireManagementAuth(request.raw as unknown as Request);
+    const authError = await requireManagementAuth(toWebRequest(request));
     if (authError) return reply.status(authError.status).send(await authError.json());
     const url = new URL(request.url, "http://control-api");
     const result = await this.overrides.remove(url.searchParams.get("target") || "", url.searchParams.get("key") || "");

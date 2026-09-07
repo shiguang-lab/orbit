@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Body, Controller, Delete, Get, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
@@ -7,19 +8,10 @@ import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 import { obsidianVaultSchema } from "./obsidian.schemas.js";
 import { ObsidianSettingsService } from "./obsidian.service.js";
 
-function toWebRequest(request: FastifyRequest): Request {
-  const headers = new Headers();
-  for (const [name, value] of Object.entries(request.headers)) {
-    if (typeof value === "string") headers.set(name, value);
-    else if (Array.isArray(value)) headers.set(name, value.filter((item): item is string => typeof item === "string").join(", "));
-  }
-  return new Request(`http://${String(request.headers.host ?? "control-api")}${request.url}`, { method: request.method, headers });
-}
-
 @Controller("api/settings/obsidian/webdav")
 export class ObsidianWebdavController {
   constructor(private readonly obsidian: ObsidianSettingsService) {}
-  private async authorize(request: FastifyRequest, reply: FastifyReply) { if (await isAuthenticated(request.raw as unknown as Request)) return true; reply.status(401).send({ error: { message: "Authentication required" } }); return false; }
+  private async authorize(request: FastifyRequest, reply: FastifyReply) { if (await isAuthenticated(toWebRequest(request))) return true; reply.status(401).send({ error: { message: "Authentication required" } }); return false; }
 
   @Get()
   async status(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {

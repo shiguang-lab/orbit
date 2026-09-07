@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import {
   Body,
   Controller,
@@ -251,14 +252,14 @@ export class MemoryController {
   }
 
   private async authorize(req: FastifyRequest, reply: FastifyReply): Promise<boolean> {
-    const error = await requireManagementAuth(req.raw as unknown as Request);
+    const error = await requireManagementAuth(toWebRequest(req));
     if (!error) return true;
     reply.status(error.status).send(await error.json());
     return false;
   }
 
   private async authenticated(req: FastifyRequest, reply: FastifyReply): Promise<boolean> {
-    if (await isAuthenticated(req.raw as unknown as Request)) return true;
+    if (await isAuthenticated(toWebRequest(req))) return true;
     reply.status(401).send({ error: "Unauthorized" });
     return false;
   }

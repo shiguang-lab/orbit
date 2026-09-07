@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Body, Controller, Get, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
@@ -16,7 +17,7 @@ export class CavemanConfigController {
 
   @Get()
   async get(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    if (!(await isAuthenticated(request.raw as unknown as Request))) {
+    if (!(await isAuthenticated(toWebRequest(request)))) {
       return reply.status(401).send({ error: "Unauthorized" });
     }
     try {
@@ -32,7 +33,7 @@ export class CavemanConfigController {
     @Res() reply: FastifyReply,
     @Body() body: unknown,
   ) {
-    if (!(await isAuthenticated(request.raw as unknown as Request))) {
+    if (!(await isAuthenticated(toWebRequest(request)))) {
       return reply.status(401).send({ error: "Unauthorized" });
     }
     const validation = validateBody(compressionSettingsUpdateSchema, body);

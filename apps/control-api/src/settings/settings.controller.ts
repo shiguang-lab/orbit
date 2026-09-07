@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Body, Controller, Delete, Get, Inject, Patch, Post, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
@@ -82,7 +83,7 @@ export class SettingsController {
   }
 
   private async authorize(request: FastifyRequest, reply: FastifyReply): Promise<boolean> {
-    const authError = await requireManagementAuth(request.raw as unknown as Request);
+    const authError = await requireManagementAuth(toWebRequest(request));
     if (!authError) return true;
     reply.status(authError.status).send(await authError.json());
     return false;
@@ -92,7 +93,7 @@ export class SettingsController {
     request: FastifyRequest,
     reply: FastifyReply,
   ): Promise<boolean> {
-    if (await isAuthenticated(request.raw as unknown as Request)) return true;
+    if (await isAuthenticated(toWebRequest(request))) return true;
     reply.status(401).send({ error: "Unauthorized" });
     return false;
   }

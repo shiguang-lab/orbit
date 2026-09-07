@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Controller, Get, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/runtime/api-key-policy";
@@ -11,7 +12,7 @@ export class SearchAnalyticsController {
 
   @Get("analytics")
   async get(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    const policy = await enforceApiKeyPolicy(request.raw as unknown as Request, "analytics");
+    const policy = await enforceApiKeyPolicy(toWebRequest(request), "analytics");
     if (policy.rejection) {
       return reply.status(policy.rejection.status).headers(CORS_HEADERS).send(await policy.rejection.json());
     }

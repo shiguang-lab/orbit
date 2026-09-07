@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Body, Controller, Delete, Get, Inject, Options, Param, Post, Put, Query, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { PluginsService } from "./plugins.service.js";
@@ -37,7 +38,7 @@ export class PluginsController {
     @Res() reply: FastifyReply,
     @Query("status") status?: string
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).headers(CORS_HEADERS).send(await authError.json());
 
@@ -60,7 +61,7 @@ export class PluginsController {
     @Res() reply: FastifyReply,
     @Body() body: unknown
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).headers(CORS_HEADERS).send(await authError.json());
 
@@ -87,7 +88,7 @@ export class PluginsController {
     @Req() req: FastifyRequest,
     @Res() reply: FastifyReply
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).headers(CORS_HEADERS).send(await authError.json());
 
@@ -110,7 +111,7 @@ export class PluginsController {
     @Res() reply: FastifyReply,
     @Body() body: unknown
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).headers(CORS_HEADERS).send(await authError.json());
 
@@ -137,7 +138,7 @@ export class PluginsController {
     @Req() req: FastifyRequest,
     @Res() reply: FastifyReply
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).headers(CORS_HEADERS).send(await authError.json());
 
@@ -160,7 +161,7 @@ export class PluginsController {
     @Res() reply: FastifyReply,
     @Param("name") name: string
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).headers(CORS_HEADERS).send(await authError.json());
 
@@ -183,7 +184,7 @@ export class PluginsController {
     @Res() reply: FastifyReply,
     @Param("name") name: string
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).headers(CORS_HEADERS).send(await authError.json());
 
@@ -206,7 +207,7 @@ export class PluginsController {
     @Res() reply: FastifyReply,
     @Param("name") name: string
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).headers(CORS_HEADERS).send(await authError.json());
 
@@ -224,7 +225,7 @@ export class PluginsController {
     @Param("name") name: string,
     @Body() body: unknown
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).headers(CORS_HEADERS).send(await authError.json());
 
@@ -255,7 +256,7 @@ export class PluginsController {
     @Res() reply: FastifyReply,
     @Param("name") name: string
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).headers(CORS_HEADERS).send(await authError.json());
 
@@ -272,7 +273,7 @@ export class PluginsController {
     @Res() reply: FastifyReply,
     @Param("name") name: string
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).headers(CORS_HEADERS).send(await authError.json());
 

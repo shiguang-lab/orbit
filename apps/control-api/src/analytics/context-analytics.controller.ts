@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Controller, Get, Inject, Query, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
@@ -14,7 +15,7 @@ export class ContextAnalyticsController {
     @Res() reply: FastifyReply,
     @Query("since") since?: string,
   ) {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -34,7 +35,7 @@ export class ContextAnalyticsController {
     @Query("engineId") engineId?: string,
     @Query("days") daysParam?: string,
   ) {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 

@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Controller, Get, Inject, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
@@ -8,7 +9,7 @@ export class AdminConcurrencyController {
   constructor(@Inject(AdminConcurrencyService) private readonly concurrency: AdminConcurrencyService) {}
 
   private async authorize(request: FastifyRequest, reply: FastifyReply): Promise<boolean> {
-    const error = await requireManagementAuth(request.raw as unknown as Request);
+    const error = await requireManagementAuth(toWebRequest(request));
     if (!error) return true;
     reply.status(error.status).send(await error.json());
     return false;

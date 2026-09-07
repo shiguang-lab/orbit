@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Body, Controller, Delete, Get, Param, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
@@ -8,7 +9,7 @@ export class FreeProxiesController {
   constructor(private readonly freeProxies: FreeProxiesService) {}
 
   private async authorize(request: FastifyRequest, reply: FastifyReply): Promise<boolean> {
-    const authError = await requireManagementAuth(request.raw as unknown as Request);
+    const authError = await requireManagementAuth(toWebRequest(request));
     if (!authError) return true;
     reply.status(authError.status).send(await authError.json());
     return false;
@@ -17,14 +18,14 @@ export class FreeProxiesController {
   @Get()
   async list(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
     if (!(await this.authorize(request, reply))) return;
-    const result = await this.freeProxies.list(request.raw as unknown as Request);
+    const result = await this.freeProxies.list(toWebRequest(request));
     return reply.status(result.status).send(result.body);
   }
 
   @Delete()
   async remove(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
     if (!(await this.authorize(request, reply))) return;
-    const result = await this.freeProxies.remove(request.raw as unknown as Request);
+    const result = await this.freeProxies.remove(toWebRequest(request));
     return reply.status(result.status).send(result.body);
   }
 
@@ -42,7 +43,7 @@ export class FreeProxiesController {
     @Body() body: unknown,
   ) {
     if (!(await this.authorize(request, reply))) return;
-    const result = await this.freeProxies.sync(request.raw as unknown as Request, body);
+    const result = await this.freeProxies.sync(toWebRequest(request), body);
     return reply.status(result.status).send(result.body);
   }
 

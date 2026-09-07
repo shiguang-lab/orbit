@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Put, Query, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { QuotaService } from "./quota.service.js";
@@ -21,7 +22,7 @@ export class QuotaController {
 
   @Get("groups")
   async getGroups(@Req() req: FastifyRequest, @Res() reply: FastifyReply): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -39,7 +40,7 @@ export class QuotaController {
     @Res() reply: FastifyReply,
     @Body() body: unknown
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -63,7 +64,7 @@ export class QuotaController {
     @Param("id") id: string,
     @Body() body: unknown
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -87,7 +88,7 @@ export class QuotaController {
     @Res() reply: FastifyReply,
     @Param("id") id: string
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -112,7 +113,7 @@ export class QuotaController {
     @Res() reply: FastifyReply,
     @Param("id") id: string
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -127,7 +128,7 @@ export class QuotaController {
 
   @Get("plans")
   async getPlans(@Req() req: FastifyRequest, @Res() reply: FastifyReply): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -145,7 +146,7 @@ export class QuotaController {
     @Res() reply: FastifyReply,
     @Param("connectionId") connectionId: string
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -164,7 +165,7 @@ export class QuotaController {
     @Param("connectionId") connectionId: string,
     @Body() body: unknown
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -196,7 +197,7 @@ export class QuotaController {
     @Res() reply: FastifyReply,
     @Param("connectionId") connectionId: string
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -224,7 +225,7 @@ export class QuotaController {
     @Query("limit") limit?: string,
     @Query("offset") offset?: string
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -245,7 +246,7 @@ export class QuotaController {
     @Body() body: unknown,
     @Query("ensure") ensure?: string
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -285,7 +286,7 @@ export class QuotaController {
     @Res() reply: FastifyReply,
     @Param("id") id: string
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -305,7 +306,7 @@ export class QuotaController {
     @Param("id") id: string,
     @Body() body: any
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -343,7 +344,7 @@ export class QuotaController {
     @Res() reply: FastifyReply,
     @Param("id") id: string
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -372,7 +373,7 @@ export class QuotaController {
     @Param("id") id: string,
     @Query("limit") limit?: string
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -391,7 +392,7 @@ export class QuotaController {
     @Res() reply: FastifyReply,
     @Param("id") id: string
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -414,7 +415,7 @@ export class QuotaController {
     @Query("estimatedUsd") estimatedUsd?: string,
     @Query("estimatedRequests") estimatedRequests?: string
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 

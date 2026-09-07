@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Body, Controller, Delete, Get, Inject, Patch, Post, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import fs from "fs";
@@ -16,7 +17,7 @@ export class DbBackupsController {
 
   @Get()
   async getBackups(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     if (!(await isAuthenticated(rawReq))) {
       return reply.status(401).send({ error: "Unauthorized" });
     }
@@ -33,7 +34,7 @@ export class DbBackupsController {
 
   @Put()
   async createBackup(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     if (!(await isAuthenticated(rawReq))) {
       return reply.status(401).send({ error: "Unauthorized" });
     }
@@ -57,7 +58,7 @@ export class DbBackupsController {
     @Res() reply: FastifyReply,
     @Body() body: unknown
   ) {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     if (!(await isAuthenticated(rawReq))) {
       return reply.status(401).send({ error: "Unauthorized" });
     }
@@ -83,7 +84,7 @@ export class DbBackupsController {
     @Res() reply: FastifyReply,
     @Body() body: unknown
   ) {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     if (!(await isAuthenticated(rawReq))) {
       return reply.status(401).send({ error: "Unauthorized" });
     }
@@ -109,7 +110,7 @@ export class DbBackupsController {
     @Res() reply: FastifyReply,
     @Body() body: unknown
   ) {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     if (!(await isAuthenticated(rawReq))) {
       return reply.status(401).send({ error: "Unauthorized" });
     }
@@ -131,7 +132,7 @@ export class DbBackupsController {
 
   @Get("export")
   async exportBackup(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     if (await isAuthRequired(rawReq)) {
       if (!(await isAuthenticated(rawReq))) {
         return reply.status(401).send({ error: "Unauthorized" });
@@ -160,7 +161,7 @@ export class DbBackupsController {
 
   @Get("exportAll")
   async exportAllBackups(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     if (!(await isAuthenticated(rawReq))) {
       return reply.status(401).send({ error: "Unauthorized" });
     }
@@ -184,7 +185,7 @@ export class DbBackupsController {
 
   @Post("import")
   async importBackup(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     if (await isAuthRequired(rawReq)) {
       if (!(await isAuthenticated(rawReq))) {
         return reply.status(401).send({ error: "Unauthorized" });
@@ -198,7 +199,7 @@ export class DbBackupsController {
       const contentType = req.headers["content-type"] || "";
       if (contentType.includes("multipart/form-data")) {
         // Handle multipart if available via fastify/web request
-        const formData = await (req.raw as any).formData?.();
+        const formData = await rawReq.formData();
         if (formData) {
           const file = formData.get("file") as File | null;
           if (!file) {

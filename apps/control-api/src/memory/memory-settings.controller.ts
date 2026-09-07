@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Body, Controller, Get, Inject, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
@@ -38,7 +39,7 @@ export class MemorySettingsController {
   }
 
   private async authorize(req: FastifyRequest, reply: FastifyReply): Promise<boolean> {
-    const error = await requireManagementAuth(req.raw as unknown as Request);
+    const error = await requireManagementAuth(toWebRequest(req));
     if (!error) return true;
     reply.status(error.status).send(await error.json());
     return false;

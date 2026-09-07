@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Controller, Get, Param, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
@@ -9,7 +10,7 @@ export class FilesController {
 
   @Get()
   async list(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    const authError = await requireManagementAuth(request.raw as unknown as Request);
+    const authError = await requireManagementAuth(toWebRequest(request));
     if (authError) return reply.status(authError.status).send(await authError.json());
     try {
       const rawLimit = new URL(request.raw.url ?? "", "http://localhost").searchParams.get("limit");
@@ -23,7 +24,7 @@ export class FilesController {
 
   @Get(":id/content")
   async content(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    const authError = await requireManagementAuth(request.raw as unknown as Request);
+    const authError = await requireManagementAuth(toWebRequest(request));
     if (authError) return reply.status(authError.status).send(await authError.json());
     const result = this.files.content(id);
     if (result.status !== 200) return reply.status(result.status).send(result.body);

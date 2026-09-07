@@ -6,7 +6,7 @@ export type WebRouteHandler = (
   context?: { params: Record<string, string> },
 ) => Promise<Response> | Response;
 
-async function toRequest(request: FastifyRequest): Promise<Request> {
+export function toWebRequest(request: FastifyRequest): Request {
   const headers = new Headers();
   for (const [key, value] of Object.entries(request.headers)) {
     if (typeof value === "string") headers.set(key, value);
@@ -38,7 +38,7 @@ export async function dispatchWebRoute(
   handler: WebRouteHandler,
   params: Record<string, string> = {},
 ): Promise<unknown> {
-  const response = await handler(await toRequest(request), { params });
+  const response = await handler(toWebRequest(request), { params });
   response.headers.forEach((value, key) => reply.header(key, value));
   reply.code(response.status);
   if (!response.body) return reply.send();

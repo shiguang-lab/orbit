@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Body, Controller, Delete, Get, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
@@ -25,7 +26,7 @@ export class CacheSettingsController {
 
   @Get("cache-config")
   async getCacheConfig(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    if (!(await isAuthenticated(request.raw as unknown as Request))) {
+    if (!(await isAuthenticated(toWebRequest(request)))) {
       return reply.status(401).send({ error: "Unauthorized" });
     }
     try {
@@ -41,7 +42,7 @@ export class CacheSettingsController {
     @Res() reply: FastifyReply,
     @Body() body: unknown,
   ) {
-    if (!(await isAuthenticated(request.raw as unknown as Request))) {
+    if (!(await isAuthenticated(toWebRequest(request)))) {
       return reply.status(401).send({ error: "Unauthorized" });
     }
     let rawBody: unknown;
@@ -84,7 +85,7 @@ export class CacheSettingsController {
 
   @Delete("lkgp-cache")
   async clearLkgp(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    if (!(await isAuthenticated(request.raw as unknown as Request))) {
+    if (!(await isAuthenticated(toWebRequest(request)))) {
       return reply.status(401).send({ error: "Unauthorized" });
     }
     try {
@@ -96,7 +97,7 @@ export class CacheSettingsController {
   }
 
   private async authorizeManagement(request: FastifyRequest, reply: FastifyReply): Promise<boolean> {
-    const authError = await requireManagementAuth(request.raw as unknown as Request);
+    const authError = await requireManagementAuth(toWebRequest(request));
     if (!authError) return true;
     reply.status(authError.status).send(await authError.json());
     return false;

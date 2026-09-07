@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Body, Controller, Get, Inject, Post, Req, Res } from "@nestjs/common";
 import { Readable } from "node:stream";
 import type { FastifyReply, FastifyRequest } from "fastify";
@@ -26,7 +27,7 @@ export class TunnelsController {
   constructor(@Inject(TunnelsService) private readonly tunnels: TunnelsService) {}
 
   private async authorize(request: FastifyRequest, reply: FastifyReply): Promise<boolean> {
-    if (await isAuthenticated(request.raw as unknown as Request)) return true;
+    if (await isAuthenticated(toWebRequest(request))) return true;
     reply.status(401).send({ error: "Unauthorized" });
     return false;
   }

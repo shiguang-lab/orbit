@@ -62,6 +62,8 @@ jobs:
           pnpm --filter @shiguang-gateway/realtime-publisher test
           pnpm --filter @shiguang-gateway/importer test
           pnpm --filter @shiguang-gateway/http-kernel test
+          pnpm --filter @shiguang-gateway/control-api exec node --import tsx --test ../../packages/web-handler-adapter/test/web-request.test.ts
+          pnpm --filter @shiguang-gateway/control-api exec node --import tsx --test test/settings-import-request.test.ts
           pnpm --filter @shiguang-gateway/edge-gateway exec tsx --test test/dispatcher-module-injection.test.ts
           pnpm smoke:route-imports
           pnpm smoke:split-deployment

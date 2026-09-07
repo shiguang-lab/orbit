@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Body, Controller, Delete, Get, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
@@ -11,7 +12,7 @@ export class NotionSettingsController {
   constructor(private readonly notion: NotionSettingsService) {}
 
   private async authorize(request: FastifyRequest, reply: FastifyReply) {
-    if (await isAuthenticated(request.raw as unknown as Request)) return true;
+    if (await isAuthenticated(toWebRequest(request))) return true;
     reply.status(401).send({ error: "Unauthorized" });
     return false;
   }

@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Body, Controller, Get, Patch, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
@@ -39,27 +40,12 @@ async function readRequestBody(request: FastifyRequest): Promise<string> {
   const body = request.body as unknown;
 
   if (contentType.includes("multipart/form-data")) {
-    const formData = await (request.raw as unknown as { formData?: () => Promise<FormData> }).formData?.();
-    if (formData) {
-      const file = formData.get("file");
-      if (file && typeof file === "object" && "text" in file && typeof file.text === "function") {
-        return (file.text as () => Promise<string>)();
-      }
-      if (typeof file === "string") return file;
+    const formData = await toWebRequest(request).formData();
+    const file = formData.get("file");
+    if (file && typeof file === "object" && "text" in file && typeof file.text === "function") {
+      return file.text();
     }
-    if (Buffer.isBuffer(body)) {
-      // The control bootstrap uses Fastify's buffer parser. When no multipart
-      // plugin is installed, extract the JSON file part from that buffer.
-      const boundary = /boundary=([^;]+)/i.exec(contentType)?.[1]?.trim();
-      if (boundary) {
-        const raw = body.toString("utf8");
-        const part = raw.split(`--${boundary}`).find((chunk) => /name="file"/i.test(chunk));
-        const separator = part?.indexOf("\r\n\r\n") ?? -1;
-        if (part && separator >= 0) {
-          return part.slice(separator + 4).replace(/\r\n--\s*$/, "").trim();
-        }
-      }
-    }
+    if (typeof file === "string") return file;
     return "";
   }
 
@@ -79,22 +65,22 @@ export class SettingsConfigController {
   constructor(private readonly settingsConfig: SettingsConfigService) {}
 
   private async authorize(request: FastifyRequest, reply: FastifyReply): Promise<boolean> {
-    const authError = await requireManagementAuth(request.raw as unknown as Request);
+    const authError = await requireManagementAuth(toWebRequest(request));
     if (!authError) return true;
     reply.status(authError.status).send(await authError.json());
     return false;
   }
 
   private async authorizeAuthenticated(request: FastifyRequest, reply: FastifyReply): Promise<boolean> {
-    if (await isAuthenticated(request.raw as unknown as Request)) return true;
+    if (await isAuthenticated(toWebRequest(request))) return true;
     reply.status(401).send({ error: "Unauthorized" });
     return false;
   }
 
   @Get("export-json")
   async exportJson(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    if (await isAuthRequired(request.raw as unknown as Request)) {
-      if (!(await isAuthenticated(request.raw as unknown as Request))) {
+    if (await isAuthRequired(toWebRequest(request))) {
+      if (!(await isAuthenticated(toWebRequest(request)))) {
         return reply.status(401).send({ error: "Unauthorized" });
       }
     }
@@ -114,8 +100,8 @@ export class SettingsConfigController {
 
   @Post("import-json")
   async importJson(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    if (await isAuthRequired(request.raw as unknown as Request)) {
-      if (!(await isAuthenticated(request.raw as unknown as Request))) {
+    if (await isAuthRequired(toWebRequest(request))) {
+      if (!(await isAuthenticated(toWebRequest(request)))) {
         return reply.status(401).send({ error: "Unauthorized" });
       }
     }

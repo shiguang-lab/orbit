@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Controller, Delete, Get, Inject, Query, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { CacheService } from "./cache.service.js";
@@ -13,7 +14,7 @@ export class CacheController {
     @Res() reply: FastifyReply,
     @Query("trendHours") trendHours?: string
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     if (!(await isAuthenticated(rawReq))) {
       return reply.status(401).send({ error: "Unauthorized" });
     }
@@ -35,7 +36,7 @@ export class CacheController {
     @Query("signature") signature?: string,
     @Query("staleMs") staleMsParam?: string
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     if (!(await isAuthenticated(rawReq))) {
       return reply.status(401).send({ error: "Unauthorized" });
     }
@@ -74,7 +75,7 @@ export class CacheController {
     @Query("sortBy") sortBy?: string,
     @Query("sortOrder") sortOrder?: string
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     if (!(await isAuthenticated(rawReq))) {
       return reply.status(401).send({ error: "Unauthorized" });
     }
@@ -101,7 +102,7 @@ export class CacheController {
     @Query("signature") signature?: string,
     @Query("model") model?: string
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     if (!(await isAuthenticated(rawReq))) {
       return reply.status(401).send({ error: "Unauthorized" });
     }
@@ -127,7 +128,7 @@ export class CacheController {
     @Query("limit") limit?: string,
     @Query("offset") offset?: string
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     if (!(await isAuthenticated(rawReq))) {
       return reply.status(401).send({ error: "Unauthorized" });
     }
@@ -152,7 +153,7 @@ export class CacheController {
     @Query("toolCallId") toolCallId?: string,
     @Query("provider") provider?: string
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     if (!(await isAuthenticated(rawReq))) {
       return reply.status(401).send({ error: "Unauthorized" });
     }
@@ -167,7 +168,7 @@ export class CacheController {
 
   @Get("stats")
   async getStats(@Req() req: FastifyRequest, @Res() reply: FastifyReply): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     if (!(await isAuthenticated(rawReq))) {
       return reply.status(401).send({ error: "Unauthorized" });
     }
@@ -182,7 +183,7 @@ export class CacheController {
 
   @Delete("stats")
   async deleteStats(@Req() req: FastifyRequest, @Res() reply: FastifyReply): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     if (!(await isAuthenticated(rawReq))) {
       return reply.status(401).send({ error: "Unauthorized" });
     }

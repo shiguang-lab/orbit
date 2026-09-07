@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Controller, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { preview } from "./compression-preview.legacy.js";
@@ -13,7 +14,7 @@ export class CompressionLegacyController {
 
   @Post("compare/verify")
   verify(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    return this.dispatch(reply, verify(request.raw as unknown as Request));
+    return this.dispatch(reply, verify(toWebRequest(request)));
   }
 
   private async dispatch(reply: FastifyReply, response: Promise<Response>) {

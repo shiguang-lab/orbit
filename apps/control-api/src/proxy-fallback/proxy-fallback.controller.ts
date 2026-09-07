@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Controller, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
@@ -10,7 +11,7 @@ export class ProxyFallbackController {
 
   @Post("test")
   async test(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
-    const authError = await requireManagementAuth(req.raw as unknown as Request);
+    const authError = await requireManagementAuth(toWebRequest(req));
     if (authError) return reply.status(authError.status).send(await authError.json());
     return this.routes.dispatch(req, reply, (request) => this.service.test(request));
   }

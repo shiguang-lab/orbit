@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Body, Controller, Get, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
@@ -20,7 +21,7 @@ export class SettingsCompressionController {
 
   @Get()
   async getSettings(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    if (!(await isAuthenticated(request.raw as unknown as Request))) {
+    if (!(await isAuthenticated(toWebRequest(request)))) {
       return reply.status(401).send({ error: "Unauthorized" });
     }
     try {
@@ -36,7 +37,7 @@ export class SettingsCompressionController {
     @Res() reply: FastifyReply,
     @Body() body: unknown,
   ) {
-    if (!(await isAuthenticated(request.raw as unknown as Request))) {
+    if (!(await isAuthenticated(toWebRequest(request)))) {
       return reply.status(401).send({ error: "Unauthorized" });
     }
     const validation = validateBody(compressionSettingsUpdateSchema, body);
@@ -52,7 +53,7 @@ export class SettingsCompressionController {
 
   @Get("mcp-accessibility")
   async getMcpAccessibility(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    if (!(await isAuthenticated(request.raw as unknown as Request))) {
+    if (!(await isAuthenticated(toWebRequest(request)))) {
       return reply.status(401).send({ error: "Unauthorized" });
     }
     try {
@@ -68,7 +69,7 @@ export class SettingsCompressionController {
     @Res() reply: FastifyReply,
     @Body() body: unknown,
   ) {
-    if (!(await isAuthenticated(request.raw as unknown as Request))) {
+    if (!(await isAuthenticated(toWebRequest(request)))) {
       return reply.status(401).send({ error: "Unauthorized" });
     }
     const validation = validateBody(mcpAccessibilityConfigSchema, body);
@@ -84,7 +85,7 @@ export class SettingsCompressionController {
 
   @Get("run-telemetry")
   async getRunTelemetry(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    if (!(await isAuthenticated(request.raw as unknown as Request))) {
+    if (!(await isAuthenticated(toWebRequest(request)))) {
       return reply.status(401).send({ error: "Unauthorized" });
     }
     return reply.send(this.compression.getRunTelemetry());
@@ -98,7 +99,7 @@ export class CompressionRulesController {
 
   @Get("rules")
   async getRules(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    const authError = await requireManagementAuth(request.raw as unknown as Request);
+    const authError = await requireManagementAuth(toWebRequest(request));
     if (authError) {
       return reply.status(authError.status).send(await authError.json());
     }

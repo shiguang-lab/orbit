@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Body, Controller, Delete, Get, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
@@ -22,7 +23,7 @@ export class AcpController {
 
   @Get()
   async get(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    if (!(await isAuthenticated(request.raw as unknown as Request))) return reply.status(401).send({ error: "Unauthorized" });
+    if (!(await isAuthenticated(toWebRequest(request)))) return reply.status(401).send({ error: "Unauthorized" });
     try {
       return reply.send(await this.acp.list());
     } catch (error) {
@@ -33,7 +34,7 @@ export class AcpController {
 
   @Post()
   async post(@Req() request: FastifyRequest, @Res() reply: FastifyReply, @Body() body: unknown) {
-    if (!(await isAuthenticated(request.raw as unknown as Request))) return reply.status(401).send({ error: "Unauthorized" });
+    if (!(await isAuthenticated(toWebRequest(request)))) return reply.status(401).send({ error: "Unauthorized" });
     const validation = validateBody(customAgentBodySchema, body);
     if (isValidationFailure(validation)) return reply.status(400).send({ error: validation.error });
     try {
@@ -48,7 +49,7 @@ export class AcpController {
 
   @Delete()
   async delete(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    if (!(await isAuthenticated(request.raw as unknown as Request))) return reply.status(401).send({ error: "Unauthorized" });
+    if (!(await isAuthenticated(toWebRequest(request)))) return reply.status(401).send({ error: "Unauthorized" });
     try {
       const agentId = typeof request.query === "object" && request.query !== null && "id" in request.query
         ? String((request.query as { id?: unknown }).id ?? "") || null

@@ -1,3 +1,4 @@
+import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
 import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { EvalsService } from "./evals.service.js";
@@ -18,7 +19,7 @@ export class EvalsController {
 
   @Get()
   async getEvals(@Req() req: FastifyRequest, @Res() reply: FastifyReply): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -36,7 +37,7 @@ export class EvalsController {
     @Res() reply: FastifyReply,
     @Body() body: unknown
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -59,7 +60,7 @@ export class EvalsController {
     @Res() reply: FastifyReply,
     @Body() body: unknown
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -82,7 +83,7 @@ export class EvalsController {
     @Res() reply: FastifyReply,
     @Param("suiteId") suiteId: string
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -104,7 +105,7 @@ export class EvalsController {
     @Param("suiteId") suiteId: string,
     @Body() body: unknown
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -132,7 +133,7 @@ export class EvalsController {
     @Res() reply: FastifyReply,
     @Param("suiteId") suiteId: string
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
@@ -153,7 +154,7 @@ export class EvalsController {
     @Res() reply: FastifyReply,
     @Param("suiteId") suiteId: string
   ): Promise<unknown> {
-    const rawReq = req.raw as unknown as Request;
+    const rawReq = toWebRequest(req);
     const authError = await requireManagementAuth(rawReq);
     if (authError) return reply.status(authError.status).send(await authError.json());
 
