@@ -48,6 +48,7 @@ import {
 } from "@/entities/api";
 import { useI18n } from "@/i18n";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { getConnectionHealth } from "./connection-health";
 
 interface ProviderGroup {
   key: string;
@@ -61,6 +62,7 @@ interface ProviderGroup {
   connections: ProviderConnection[];
   connected: number;
   errorCount: number;
+  warningCount: number;
   serviceKinds?: string[];
   deprecated?: boolean;
   deprecationReason?: string;
@@ -122,35 +124,22 @@ const useProviderStyles = createStyles(({ token }) => ({
 }));
 
 function connectionState(connection: ProviderConnection, t: (key: string) => string) {
-  if (connection.isActive === false) {
+  const health = getConnectionHealth(connection);
+  if (health === "disabled") {
     return { label: t("providers.statusDisabled"), color: "default", icon: <MaterialIcon name="cancel" /> };
   }
-  if (isConnectionErrored(connection)) {
+  if (health === "error") {
     return { label: t("providers.statusError"), color: "error", icon: <MaterialIcon name="error" /> };
+  }
+  if (health === "warning") {
+    return { label: t("providers.statusWarning"), color: "warning", icon: <MaterialIcon name="warning" /> };
   }
   return { label: t("apiKeys.active"), color: "success", icon: <MaterialIcon name="check_circle" /> };
 }
 
 function isConnectionConnected(connection: ProviderConnection): boolean {
-  if (connection.isActive === false) return false;
-  const status = connection.testStatus ?? "unknown";
-  if (status === "error" || status === "expired" || status === "unavailable") {
-    if (status !== "unavailable") return false;
-    const cooldown = connection.rateLimitedUntil ? new Date(connection.rateLimitedUntil).getTime() : NaN;
-    return !Number.isFinite(cooldown) || cooldown <= Date.now();
-  }
-  return status === "active" || status === "success" || status === "unknown";
-}
-
-function isConnectionErrored(connection: ProviderConnection): boolean {
-  if (connection.isActive === false) return false;
-  const status = connection.testStatus ?? "unknown";
-  if (status === "error" || status === "expired") return true;
-  if (status === "unavailable") {
-    const cooldown = connection.rateLimitedUntil ? new Date(connection.rateLimitedUntil).getTime() : NaN;
-    return Number.isFinite(cooldown) && cooldown > Date.now();
-  }
-  return Boolean(connection.lastErrorType || connection.errorCode || connection.lastError);
+  const health = getConnectionHealth(connection);
+  return health === "connected" || health === "warning";
 }
 
 function SummaryChip({
@@ -307,6 +296,7 @@ export default function ProvidersPage() {
           connections: [],
           connected: 0,
           errorCount: 0,
+          warningCount: 0,
           blocked: category.key === "no-auth" && (settingsQuery.data?.blockedProviders ?? []).includes(provider.id),
           upstreamProxyStatus,
           codexServiceTier:
@@ -332,11 +322,15 @@ export default function ProvidersPage() {
         connections: [],
         connected: 0,
         errorCount: 0,
+        warningCount: 0,
       };
       group.connections.push(connection);
       if (isConnectionConnected(connection)) group.connected += 1;
-      if (isConnectionErrored(connection)) {
+      const health = getConnectionHealth(connection);
+      if (health === "error") {
         group.errorCount += 1;
+      } else if (health === "warning") {
+        group.warningCount += 1;
       }
       map.set(key, group);
     }
@@ -357,6 +351,7 @@ export default function ProvidersPage() {
         connections: [],
         connected: 0,
         errorCount: 0,
+        warningCount: 0,
       });
     }
 
@@ -879,12 +874,12 @@ function ProviderCard({ group, onOpen, onTest, testing, onToggle, togglingId }: 
         </Flex>
       )}
 
-      {group.errorCount > 0 && (
+      {group.errorCount + group.warningCount > 0 && (
         <Alert
           type="warning"
           showIcon
           icon={<MaterialIcon name="info" />}
-          title={t("providersPage.needsAttention", { count: group.errorCount })}
+          title={t("providersPage.needsAttention", { count: group.errorCount + group.warningCount })}
           style={{ marginTop: 10 }}
         />
       )}
@@ -915,8 +910,8 @@ function ProviderCard({ group, onOpen, onTest, testing, onToggle, togglingId }: 
               {group.blocked ? "已禁用" : "免鉴权可用"}
             </Tag>
           ) : group.connections.length > 0 ? (
-            <Tag color={group.errorCount > 0 ? "error" : group.connected > 0 ? "success" : "default"} style={{ margin: 0 }}>
-              {group.errorCount > 0 ? t("providersPage.errorCount", { count: group.errorCount }) : group.connected > 0 ? t("providersPage.connectedCount", { count: group.connected }) : t("providersPage.notConnected")}
+            <Tag color={group.errorCount > 0 ? "error" : group.warningCount > 0 ? "warning" : group.connected > 0 ? "success" : "default"} style={{ margin: 0 }}>
+              {group.errorCount > 0 ? t("providersPage.errorCount", { count: group.errorCount }) : group.warningCount > 0 ? t("providersPage.warningCount", { count: group.warningCount }) : group.connected > 0 ? t("providersPage.connectedCount", { count: group.connected }) : t("providersPage.notConnected")}
             </Tag>
           ) : <Typography.Text type="secondary" style={{ fontSize: 12, lineHeight: "24px" }}>{t("providersPage.noConnections")}</Typography.Text>}
           {group.expiryStatus === "expired" && <Tag color="error" style={{ margin: 0 }}>{t("apiKeys.expired")}</Tag>}
@@ -1085,17 +1080,12 @@ function ProviderRiskIndicator({
           display: "inline-flex",
           alignItems: "center",
           justifyContent: "center",
-          width: 15,
-          height: 15,
-          borderRadius: "50%",
           color: "#d97706",
-          border: "1px solid currentColor",
-          fontSize: 10,
-          lineHeight: 1,
           flex: "none",
+          cursor: "help",
         }}
       >
-        <MaterialIcon name="help_outline" />
+        <MaterialIcon name="help_outline" size={15} />
       </span>
     </Tooltip>
   );

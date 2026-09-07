@@ -45,6 +45,7 @@ import { ProviderParamFilterSection } from "./components/ProviderParamFilterSect
 import { ProviderInterceptionSection } from "./components/ProviderInterceptionSection";
 import { ProviderCcAliasSection } from "./components/ProviderCcAliasSection";
 import { useBreadcrumbTitle } from "@/shell/useBreadcrumbTitle";
+import { getConnectionHealth, resolveOAuthRedirectUri } from "./connection-health";
 
 const useStyles = createStyles(({ token }) => ({
   // Orbit's dashboard is fluid (capped only by the shell at very wide
@@ -140,9 +141,11 @@ function classify(providerId: string, info: (ProviderCatalogEntry & { category: 
 }
 
 function connectionStatus(connection: ProviderConnection, t: (key: string, fallback?: string) => string, className?: string) {
-  if (connection.isActive === false) return <Tag className={className}>{t("providers.statusDisabled", "已禁用")}</Tag>;
-  if (connection.testStatus === "error" || connection.lastError) return <Tag className={className} color="error">{t("providers.statusError", "异常")}</Tag>;
-  if (connection.testStatus === "active" || connection.testStatus === "success") return <Tag className={className} color="success">{t("providers.statusConnected", "已连接")}</Tag>;
+  const health = getConnectionHealth(connection);
+  if (health === "disabled") return <Tag className={className}>{t("providers.statusDisabled", "已禁用")}</Tag>;
+  if (health === "error") return <Tag className={className} color="error">{t("providers.statusError", "异常")}</Tag>;
+  if (health === "warning") return <Tag className={className} color="warning">{t("providers.statusWarning", "需检查")}</Tag>;
+  if (health === "connected") return <Tag className={className} color="success">{t("providers.statusConnected", "已连接")}</Tag>;
   return <Tag className={className} color="processing">{t("providers.statusUntested", "未测试")}</Tag>;
 }
 
@@ -300,7 +303,7 @@ export default function ProviderDetailPage() {
     const query = accountSearch.trim().toLocaleLowerCase();
     return connections.filter((connection) => {
       const matchesQuery = !query || [connection.name, connection.id, connection.authType].some((value) => String(value ?? "").toLocaleLowerCase().includes(query));
-      const isError = connection.testStatus === "error" || Boolean(connection.lastError);
+      const isError = getConnectionHealth(connection) === "error";
       const matchesHealth = healthFilter === "all" || (healthFilter === "active" && connection.isActive !== false && !isError) || (healthFilter === "error" && isError) || (healthFilter === "disabled" && connection.isActive === false) || (healthFilter === "banned" && connection.testStatus === "banned") || (healthFilter === "exhausted" && connection.testStatus === "credits_exhausted");
       return matchesQuery && matchesHealth;
     });
@@ -354,7 +357,6 @@ export default function ProviderDetailPage() {
     setOauthCallbackUrl("");
     setOauthDevice(null);
     try {
-      const port = window.location.port || "8787";
       if (DEVICE_CODE_PROVIDERS.has(providerId)) {
         const payload = await api<{ device_code?: string; verification_uri?: string; verification_uri_complete?: string; codeVerifier?: string; interval?: number; error?: string }>(
           `/oauth/${encodeURIComponent(providerId)}/device-code`
@@ -368,10 +370,7 @@ export default function ProviderDetailPage() {
         window.open(verificationUrl, "orbit-oauth", "width=600,height=720");
         return;
       }
-      const isGoogleLoopback = providerId === "agy" || providerId === "antigravity";
-      const redirectUri = isGoogleLoopback
-        ? `http://127.0.0.1:${port}/callback`
-        : `${window.location.origin}/callback`;
+      const redirectUri = resolveOAuthRedirectUri(providerId, window.location);
       const payload = await api<{ authUrl?: string; redirectUri?: string; codeVerifier?: string; error?: string }>(
         `/oauth/${encodeURIComponent(providerId)}/authorize?redirect_uri=${encodeURIComponent(redirectUri)}`
       );
@@ -1531,7 +1530,7 @@ export default function ProviderDetailPage() {
                   <Button className={styles.actionButton} size="small" color={row.perKeyProxyEnabled ? "purple" : "default"} variant="filled" icon={<MaterialIcon name="key" />} onClick={() => featureMutation.mutate({ id: row.id, patch: { perKeyProxyEnabled: !row.perKeyProxyEnabled } })}>{t("providers.perKey")}</Button>
                   {row.baseUrl && <Tag>{row.baseUrl}</Tag>}
                   {row.defaultModel && <Tag color="blue">{row.defaultModel}</Tag>}
-                  {row.lastError && <Tag color="error">{row.lastError}</Tag>}
+                  {row.lastError && <Tag color={getConnectionHealth(row) === "error" ? "error" : "warning"}>{row.lastError}</Tag>}
                 </Space>
                 <Space size={[6, 4]} wrap align="center" className={styles.connectionActions}>
                   {/* Switch placed as the FIRST action on the right */}
@@ -1686,7 +1685,7 @@ export default function ProviderDetailPage() {
               value={oauthCallbackUrl}
               onChange={(event) => setOauthCallbackUrl(event.target.value)}
               autoSize={{ minRows: 3, maxRows: 5 }}
-              placeholder="粘贴 http://127.0.0.1:8787/callback?code=...&state=..."
+              placeholder="粘贴 http://127.0.0.1:20128/callback?code=...&state=..."
             />
           </>}
           {oauthError && <Alert showIcon type="error" message={oauthError} />}
