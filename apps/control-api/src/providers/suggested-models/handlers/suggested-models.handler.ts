@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
-import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
-import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
+import { isAuthenticated } from "@orbit/core/control/authenticated";
+import { CORS_HEADERS } from "@orbit/contracts/cors";
+import { buildErrorBody } from "@orbit/inference/utils/error";
 
 const HF_MODELS_API_URL = "https://huggingface.co/api/models";
 const HF_SEARCH_PAGE_SIZE = 100;

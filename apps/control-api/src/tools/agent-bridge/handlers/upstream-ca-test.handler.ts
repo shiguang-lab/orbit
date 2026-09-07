@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
-import { AgentBridgeUpstreamCaPostSchema } from "@shiguang-gateway/core-domain/control/agent-bridge";
-import { errorResponse, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { AgentBridgeUpstreamCaPostSchema } from "@orbit/core/control/agent-bridge";
+import { errorResponse, sanitizeErrorMessage } from "@orbit/inference/utils/error";
 export async function POST(request: Request): Promise<Response> {
   let body: unknown; try { body = await request.json(); } catch { return errorResponse(400, "Invalid JSON body"); }
   const parsed = AgentBridgeUpstreamCaPostSchema.safeParse(body);

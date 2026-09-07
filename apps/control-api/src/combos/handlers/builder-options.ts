@@ -1,4 +1,4 @@
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import { getComboBuilderOptions } from "../builder-options.js";
 
 /** GET /api/combos/builder/options. Control-plane picker metadata. */

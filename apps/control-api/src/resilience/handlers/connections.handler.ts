@@ -1,9 +1,9 @@
 import { z } from "zod";
 
-import { getRawProviderConnections, getProviderConnectionsCount } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { resolveProviderId } from "@shiguang-gateway/core-domain/catalog/providers";
-import { TERMINAL_CONNECTION_STATUSES } from "@shiguang-gateway/core-domain/resilience/connection-recovery-policy";
-import { sanitizeErrorMessage, buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
+import { getRawProviderConnections, getProviderConnectionsCount } from "@orbit/core/db/provider-connections";
+import { resolveProviderId } from "@orbit/providers/catalog";
+import { TERMINAL_CONNECTION_STATUSES } from "@orbit/core/resilience/connection-recovery-policy";
+import { sanitizeErrorMessage, buildErrorBody } from "@orbit/inference/utils/error";
 import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 import type {
   ResilienceConnectionsResponse,

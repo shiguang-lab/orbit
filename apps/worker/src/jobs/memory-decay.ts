@@ -1,5 +1,5 @@
-import type { EdgeRuntimeCommand } from "@shiguang-gateway/contracts/edge-runtime-command";
-import { getInternalServiceAuthHeaders } from "@shiguang-gateway/auth/internal-service";
+import type { EdgeRuntimeCommand } from "@orbit/contracts/edge-runtime-command";
+import { getInternalServiceAuthHeaders } from "@orbit/auth/internal-service";
 
 type ExecuteDecay = () => Promise<unknown>;
 

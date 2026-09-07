@@ -1,4 +1,4 @@
-import { runNow as runVacuumNow } from "@shiguang-gateway/core-domain/db/vacuum";
+import { runNow as runVacuumNow } from "@orbit/core/db/vacuum";
 import {
   getVacuumIntervalMs,
   getVacuumScheduleSettings,
@@ -6,7 +6,7 @@ import {
   resolveNextRunAt,
   writeVacuumState,
   type VacuumSchedulerState,
-} from "@shiguang-gateway/core-domain/db/vacuum-schedule";
+} from "@orbit/core/db/vacuum-schedule";
 
 const MAX_TIMER_TIMEOUT_MS = 2_147_483_647;
 type Timer = ReturnType<typeof setTimeout>;

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import Fastify from "fastify";
-import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
+import { toWebRequest } from "@orbit/http/web-handler";
 
 test("settings import preserves a multipart JSON file through the Fastify buffer parser", async () => {
   const app = Fastify();

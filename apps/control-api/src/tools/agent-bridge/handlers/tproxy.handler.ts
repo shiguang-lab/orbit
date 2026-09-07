@@ -1,5 +1,5 @@
-import { getCaptureStatus, installTproxyCa, startCaptureMode, stopCaptureMode, uninstallTproxyCa } from "@shiguang-gateway/core-domain/control/agent-bridge";
-import { errorResponse, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { getCaptureStatus, installTproxyCa, startCaptureMode, stopCaptureMode, uninstallTproxyCa } from "@orbit/core/control/agent-bridge";
+import { errorResponse, sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import { z } from "zod";
 
 export const StartTproxyBodySchema = z.object({ dport: z.number().int().min(1).max(65535).default(443), mark: z.number().int().min(1).default(0x2333), onPort: z.number().int().min(1).max(65535).default(8443), routeTable: z.number().int().min(1).default(233), bypassMark: z.number().int().min(1).default(0x539), sudoPassword: z.string().optional() });

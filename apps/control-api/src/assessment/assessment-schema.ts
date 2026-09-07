@@ -1,9 +1,9 @@
-import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
+import { getDbInstance } from "@orbit/core/db/connection";
 
 /**
  * SQLite schema for the control-plane model assessment engine.
  *
- * Entity metadata lives in packages/db-schema; this module owns the concrete
+ * Entity metadata lives in packages/contracts/src/db-schema; this module owns the concrete
  * DDL and startup initialization because assessment data is only written by
  * control-api.  Keep this helper idempotent so existing installations can
  * start without a separate migration package.

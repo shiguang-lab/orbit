@@ -1,0 +1,2 @@
+/** Compatibility facade; catalog support ownership lives in @orbit/providers. */
+export { ANTIGRAVITY_IDE_NODE_API_CLIENT, ANTIGRAVITY_IDE_NODE_X_GOOG_API_CLIENT, antigravityCliUserAgent, antigravityIdeNodeUserAgent, antigravityIdeUserAgent, getAntigravityContentHeaders, getAntigravityIdeNodeHeaders, getAntigravityLoadCodeAssistMetadata, getAntigravityOAuthUserAgent } from "@orbit/providers/support/services/antigravityHeaders";

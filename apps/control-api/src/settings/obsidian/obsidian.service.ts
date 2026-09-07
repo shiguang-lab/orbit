@@ -5,13 +5,13 @@ import {
   getObsidianConfig,
   setObsidianBaseUrl,
   setObsidianToken,
-} from "@shiguang-gateway/core-domain/db/obsidian-config";
-import { createObsidianClient } from "@shiguang-gateway/core-domain/integrations/obsidian-client";
+} from "@orbit/core/db/obsidian-config";
+import { createObsidianClient } from "@orbit/core/integrations/obsidian-client";
 import {
   disableObsidianVaultSync,
   enableObsidianVaultSync,
   getObsidianSyncStatus,
-} from "@shiguang-gateway/core-domain/control/obsidian-sync";
+} from "@orbit/core/control/obsidian-sync";
 
 @Injectable()
 export class ObsidianSettingsService {

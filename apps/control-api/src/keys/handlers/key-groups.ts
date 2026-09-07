@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { createKeyGroup, getAllKeyGroups } from "@shiguang-gateway/core-domain/db/api-key-groups";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { createKeyGroup, getAllKeyGroups } from "@orbit/core/db/api-key-groups";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 import { json } from "./response.js";
 
 const createKeyGroupSchema = z.object({ name: z.string().trim().min(1, "name is required"), description: z.string().optional().default("") });

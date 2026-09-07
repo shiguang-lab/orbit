@@ -1,7 +1,7 @@
-import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
+import { toWebRequest } from "@orbit/http/web-handler";
 import { Body, Controller, Delete, Get, Patch, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import { ModelCapabilityOverridesService } from "./model-capability-overrides.service.js";
 
 /** Management transport for model capability and context-window overrides. */

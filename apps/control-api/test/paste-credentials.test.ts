@@ -4,7 +4,7 @@ import {
   CREDENTIAL_BLOB_PREFIX,
   decodeCredentialBlob,
   encodeCredentialBlob,
-} from "@shiguang-gateway/auth/credential-blob";
+} from "@orbit/auth/credential-blob";
 import {
   PASTE_CREDENTIAL_PROVIDERS,
   parsePastedCredentials,

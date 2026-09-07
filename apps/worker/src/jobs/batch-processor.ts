@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import type { BatchItemCheckpoint, BatchRecord } from "@shiguang-gateway/core-domain/db/batches";
+import type { BatchItemCheckpoint, BatchRecord } from "@orbit/core/db/batches";
 import {
   countBatchItemCheckpoints,
   ensureBatchItemCheckpoints,
@@ -11,13 +11,13 @@ import {
   markBatchItemProcessing,
   markBatchItemResult,
   updateBatch,
-} from "@shiguang-gateway/core-domain/db/batches";
-import { createFile, deleteFile, getFileContent, listFiles } from "@shiguang-gateway/core-domain/db/files";
-import { getApiKeyById } from "@shiguang-gateway/core-domain/db/api-keys";
+} from "@orbit/core/db/batches";
+import { createFile, deleteFile, getFileContent, listFiles } from "@orbit/core/db/files";
+import { getApiKeyById } from "@orbit/core/db/api-keys";
 import {
   DEFAULT_BATCH_EXPIRATION_SECONDS,
   type SupportedBatchEndpoint,
-} from "@shiguang-gateway/contracts/batch";
+} from "@orbit/contracts/batch";
 
 const dispatch = {
   async dispatchBatchApiRequest({

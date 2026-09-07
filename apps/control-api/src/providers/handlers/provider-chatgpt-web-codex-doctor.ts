@@ -1,6 +1,6 @@
-import { getProviderConnectionById } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getChatGptWebCodexDoctorStatus } from "@shiguang-gateway/open-sse/services/chatgptWebCodexAdmin";
+import { getProviderConnectionById } from "@orbit/core/db/provider-connections";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { getChatGptWebCodexDoctorStatus } from "@orbit/inference/services/chatgptWebCodexAdmin";
 
 /** GET /api/providers/:id/chatgpt-web-codex-doctor. */
 export async function GET(request: Request, id: string): Promise<Response> {

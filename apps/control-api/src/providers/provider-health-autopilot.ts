@@ -1,8 +1,8 @@
 import { createHash } from "crypto";
 
-import { getProviderConnections, updateProviderConnection } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { getCachedProviderConnectionById } from "@shiguang-gateway/core-domain/db/read-cache";
-import { resolveProviderAlias } from "@shiguang-gateway/open-sse/services/model";
+import { getProviderConnections, updateProviderConnection } from "@orbit/core/db/provider-connections";
+import { getCachedProviderConnectionById } from "@orbit/core/db/read-cache";
+import { resolveProviderAlias } from "@orbit/inference/services/model";
 import { executeEdgeRuntimeCommand } from "../edge-runtime/client.js";
 
 type JsonRecord = Record<string, unknown>;

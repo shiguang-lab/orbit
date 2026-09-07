@@ -1,7 +1,7 @@
-import { updateProviderConnection, getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { cloudCredentialUpdateSchema } from "@shiguang-gateway/core-domain/control/cloud-validation";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { updateProviderConnection, getProviderConnections } from "@orbit/core/db/provider-connections";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { cloudCredentialUpdateSchema } from "@orbit/core/control/cloud-validation";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 
 export async function PUT(request: Request) {
   const authError = await requireManagementAuth(request, { alwaysRequireAuth: true, invalidApiKeyStatus: 401 });

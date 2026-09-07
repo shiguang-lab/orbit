@@ -4,36 +4,36 @@ import {
   getSettingsRevision,
   updateSettings,
   SettingsRevisionConflictError,
-} from "@shiguang-gateway/core-domain/db/settings";
-import { getRuntimePorts } from "@shiguang-gateway/core-domain/control/cli-tools-runtime-ports";
-import { updateSettingsSchema } from "@shiguang-gateway/core-domain/shared/validation/settings-schema";
-import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
-import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
-import { resolveModelLockoutSettings } from "@shiguang-gateway/core-domain/resilience/model-lockout-settings";
+} from "@orbit/core/db/settings";
+import { getRuntimePorts } from "@orbit/core/control/cli-tools-runtime-ports";
+import { updateSettingsSchema } from "@orbit/core/shared/validation/settings-schema";
+import { getConsistentMachineId } from "@orbit/core/shared/utils/machineId";
+import { isFeatureFlagEnabled } from "@orbit/core/runtime/feature-flags";
+import { resolveModelLockoutSettings } from "@orbit/core/resilience/model-lockout-settings";
 import {
   getUpstreamProxyConfig,
   upsertUpstreamProxyConfig,
   validateProxyUrl,
-} from "@shiguang-gateway/core-domain/db/upstream-proxy";
-import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { isPaidModelTarget } from "@shiguang-gateway/core-domain/catalog/free-models";
-import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/compliance/audit-log";
+} from "@orbit/core/db/upstream-proxy";
+import { getProviderConnections } from "@orbit/core/db/provider-connections";
+import { isPaidModelTarget } from "@orbit/core/catalog/free-models";
+import { getAuditRequestContext, logAuditEvent } from "@orbit/core/compliance/audit-log";
 import {
   isAuthRequired,
   isDashboardSessionAuthenticated,
-} from "@shiguang-gateway/core-domain/control/authenticated";
-import { isCliTokenAuthValid } from "@shiguang-gateway/core-domain/control/cli-token-auth";
-import { getApiKeyMetadata } from "@shiguang-gateway/core-domain/db/api-keys";
+} from "@orbit/core/control/authenticated";
+import { isCliTokenAuthValid } from "@orbit/core/control/cli-token-auth";
+import { getApiKeyMetadata } from "@orbit/core/db/api-keys";
 import { getRadarAdminUrl } from "../../radar/radar-links.js";
 import {
   AUTHZ_HEADER_AUTH_ID,
   AUTHZ_HEADER_AUTH_KIND,
   AUTHZ_HEADER_PEER_LOCALITY,
-} from "@shiguang-gateway/core-domain/shared/authz-headers";
-import { readSubjectFromHeaders } from "@shiguang-gateway/core-domain/shared/authz-subject";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { extractApiKey } from "@shiguang-gateway/open-sse/services/auth";
+} from "@orbit/core/shared/authz-headers";
+import { readSubjectFromHeaders } from "@orbit/core/shared/authz-subject";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
+import { extractApiKey } from "@orbit/inference/services/auth";
 import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 
 /**

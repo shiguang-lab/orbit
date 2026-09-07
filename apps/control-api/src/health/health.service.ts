@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { pingDb } from "@shiguang-gateway/core-domain/db/ping";
+import { pingDb } from "@orbit/core/db/ping";
 import {
   getDegradationReport,
   getDegradationSummary,

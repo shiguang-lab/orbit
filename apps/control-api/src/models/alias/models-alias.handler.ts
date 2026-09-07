@@ -11,9 +11,9 @@ import {
   setModelAlias,
   syncToCloud,
   validateBody,
-} from "@shiguang-gateway/core-domain/control/model-management";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getModelInfo } from "@shiguang-gateway/open-sse/services/runtimeModel";
+} from "@orbit/core/control/model-management";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { getModelInfo } from "@orbit/inference/services/runtimeModel";
 
 // GET /api/models/alias - Get all aliases
 export async function GET(request: Request) {

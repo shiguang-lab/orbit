@@ -1,4 +1,4 @@
-import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
+import { getDbInstance } from "@orbit/core/db/connection";
 
 /**
  * AgentBridge persistence belongs to the control plane.  The bridge state is

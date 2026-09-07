@@ -12,7 +12,7 @@ import {
   isAuthenticated,
   isFreeModel,
   refreshOpenRouterCatalog,
-} from "@shiguang-gateway/core-domain/control/model-management";
+} from "@orbit/core/control/model-management";
 
 export async function GET(req: Request) {
   // Require authentication (dashboard/API key)

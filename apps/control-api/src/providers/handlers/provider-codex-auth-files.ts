@@ -1,12 +1,12 @@
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { ensureCliConfigWriteAllowed } from "@shiguang-gateway/core-domain/cli/runtime";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { ensureCliConfigWriteAllowed } from "@orbit/core/cli/runtime";
 import {
   CodexAuthFileError,
   buildCodexAuthFile,
   writeCodexAuthFileToLocalCliIfNeeded,
-} from "@shiguang-gateway/open-sse/oauth/provider-auth-files/codex";
-import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/compliance/audit-log";
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+} from "@orbit/inference/oauth/provider-auth-files/codex";
+import { getAuditRequestContext, logAuditEvent } from "@orbit/core/compliance/audit-log";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 
 function errorResponse(error: unknown, fallback: string): Response {
   if (error instanceof CodexAuthFileError) return Response.json({ error: error.message, code: error.code }, { status: error.status });

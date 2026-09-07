@@ -6,10 +6,10 @@ import {
   normalizeProviderSpecificData, sanitizeProviderSpecificDataForResponse, requireManagementAuth,
   isManagedProviderConnectionId, getProxyForLevel, resolveProxyForProvider,
   rejectRetiredCommonChatGptWebProvider,
-} from "@shiguang-gateway/core-domain/control/provider-management";
-import { validateProviderApiKey } from "@shiguang-gateway/open-sse/services/provider-validation";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
-import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
+} from "@orbit/core/control/provider-management";
+import { validateProviderApiKey } from "@orbit/inference/services/provider-validation";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
+import { runWithProxyContext } from "@orbit/inference/utils/proxyFetch";
 
 // POST /api/providers/bulk — create multiple API-key connections for a single provider.
 // Partial-failure semantics: each entry succeeds or fails independently; the

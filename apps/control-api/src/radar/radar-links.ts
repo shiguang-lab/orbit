@@ -19,7 +19,7 @@
  * (spec D14: no pricing in the OSS repo).
  */
 
-import { parseRadarAdminUrl } from "@shiguang-gateway/contracts/radar-admin-url";
+import { parseRadarAdminUrl } from "@orbit/contracts/radar-admin-url";
 
 /** Default contributor-claim entry point — starts the GitHub OAuth flow. */
 const DEFAULT_CONTRIBUTOR_CLAIM_URL = "https://radar.shiguangGateway.online/auth/github";

@@ -183,10 +183,6 @@ export function FreeTiersPage() {
     return copy;
   }, [data.perModel, keylessOnly, providerFilter, search, sortBy, data.noCredentialProviders]);
 
-  if (summaryQuery.isLoading && !summaryQuery.data) {
-    return <PageSkeleton />;
-  }
-
   // Bar segments for stacked progress bar
   const providerColorMap = new Map<string, string>();
   allProviders.forEach((p, idx) => {
@@ -219,6 +215,10 @@ export function FreeTiersPage() {
     }
     return [...seenPools.values(), ...looseSegments];
   }, [data.perModel, providerColorMap]);
+
+  if (summaryQuery.isLoading && !summaryQuery.data) {
+    return <PageSkeleton />;
+  }
 
   const totalBarTokens = barSegments.reduce((s, seg) => s + seg.tokens, 0) || 1;
   const freshness = relativeTimeFromNow(data.catalogUpdatedAt);

@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { isAuthenticated } from "@orbit/core/control/authenticated";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 
 const reportSchema = z.object({
   title: z.string().min(1).max(300),

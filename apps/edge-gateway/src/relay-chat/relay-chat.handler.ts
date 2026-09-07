@@ -6,16 +6,16 @@
  * to the internal ShiguangGateway chat completions pipeline.
  */
 
-import { CORS_HEADERS, handleCorsOptions } from "@shiguang-gateway/core-domain/shared/cors";
-import { handleChat } from "@shiguang-gateway/open-sse/handlers/chat";
+import { CORS_HEADERS, handleCorsOptions } from "@orbit/core/shared/cors";
+import { handleChat } from "@orbit/inference/handlers/chat";
 import { withChatAdmission } from "../chat-admission.js";
-import { createInjectionGuard } from "@shiguang-gateway/core-domain/middleware/prompt-injection";
-import { getRelayTokenByHash, checkRateLimit, recordRelayUsage } from "@shiguang-gateway/core-domain/db/relayProxies";
+import { createInjectionGuard } from "@orbit/core/middleware/prompt-injection";
+import { getRelayTokenByHash, checkRateLimit, recordRelayUsage } from "@orbit/core/db/relayProxies";
 import {
   buildErrorBody,
   parseUpstreamError,
   sanitizeErrorMessage,
-} from "@shiguang-gateway/open-sse/utils/error";
+} from "@orbit/inference/utils/error";
 import {
   checkIpRateLimit,
   extractToken,
@@ -31,10 +31,10 @@ import {
   shouldTryBifrostForRequest,
   type BifrostRoutingConfig,
 } from "./routingBackend.js";
-import { getProviderPluginManifestEntryForModel } from "@shiguang-gateway/open-sse/config/providerPluginManifestRegistry";
-import { getProviderPluginManifestHeader } from "@shiguang-gateway/open-sse/config/providerPluginManifestUrl";
+import { getProviderPluginManifestEntryForModel } from "@orbit/inference/config/providerPluginManifestRegistry";
+import { getProviderPluginManifestHeader } from "@orbit/inference/config/providerPluginManifestUrl";
 import { finalizeReadableStream } from "./streamFinalizer.js";
-import { stripStaleEncodingHeaders } from "@shiguang-gateway/open-sse/utils/upstreamResponseHeaders";
+import { stripStaleEncodingHeaders } from "@orbit/inference/utils/upstreamResponseHeaders";
 import {
   clearBifrostFailure,
   getActiveBifrostCooldown,

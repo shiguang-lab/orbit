@@ -1,4 +1,4 @@
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import { explainRouteByRequestId } from "../reporting/routeExplain.js";
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {

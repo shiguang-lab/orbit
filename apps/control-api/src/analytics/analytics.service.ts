@@ -1,14 +1,14 @@
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 import { Injectable } from "@nestjs/common";
 import {
   getAutoRoutingTotalCount,
   getAutoRoutingVariantBreakdown,
   getAutoRoutingTopProviders,
-} from "@shiguang-gateway/core-domain/analytics/auto-routing-db";
+} from "@orbit/core/analytics/auto-routing-db";
 import {
   getCompressionAnalyticsSummary,
   getPerEngineAnalytics,
-} from "@shiguang-gateway/core-domain/db/compression-analytics";
+} from "@orbit/core/db/compression-analytics";
 import { executeEdgeRuntimeCommand } from "../edge-runtime/client.js";
 
 @Injectable()

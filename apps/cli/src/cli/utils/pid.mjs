@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { resolveDataDir } from "@shiguang-gateway/config/dataPaths";
+import { resolveDataDir } from "@orbit/config/dataPaths";
 
 // #9455: "supervisor" must be tracked so killAllSubprocesses() can stop the
 // supervisor process, not just the child server it spawned (and respawns).

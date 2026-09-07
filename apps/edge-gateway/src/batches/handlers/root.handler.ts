@@ -1,6 +1,6 @@
-import { createBatch, listBatches, countBatches } from "@shiguang-gateway/core-domain/db/batches";
-import { getFile } from "@shiguang-gateway/core-domain/db/files";
-import { v1BatchCreateSchema } from "@shiguang-gateway/core-domain/edge/batches-validation-schemas";
+import { createBatch, listBatches, countBatches } from "@orbit/core/db/batches";
+import { getFile } from "@orbit/core/db/files";
+import { v1BatchCreateSchema } from "@orbit/core/edge/batches-validation-schemas";
 import { getApiKeyRequestScope } from "../../common/api-key-scope.js";
 import { CORS_HEADERS, handleCorsOptions, jsonResponse } from "../../common/cors.js";
 import { formatBatchResponse } from "./format-batch-response.js";

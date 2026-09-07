@@ -9,14 +9,14 @@ import {
   isApiKeyRevealEnabled, maskStoredApiKey, cleanupProviderModelsAfterConnectionDelete,
   buildModelSyncInternalHeaders, fetchModelSyncInternal, getModelSyncInternalBaseUrl,
   isAutoFetchModelsEnabled, rejectRetiredCommonChatGptWebProvider,
-} from "@shiguang-gateway/core-domain/control/provider-management";
-import { normalizeQoderPatProviderData } from "@shiguang-gateway/open-sse/services/qoderCli";
-import { projectCodexAccountPool } from "@shiguang-gateway/open-sse/services/codexAccount/index";
+} from "@orbit/core/control/provider-management";
+import { normalizeQoderPatProviderData } from "@orbit/inference/services/qoderCli";
+import { projectCodexAccountPool } from "@orbit/inference/services/codexAccount/index";
 import {
   CODEX_SPARK_QUOTA_SESSION,
   CODEX_SPARK_QUOTA_WEEKLY,
-} from "@shiguang-gateway/open-sse/config/codexQuotaScopes";
-import { finalizeValidatedChatGptWebCodexSecrets } from "@shiguang-gateway/open-sse/services/chatgptWebCodexAdmin";
+} from "@orbit/inference/config/codexQuotaScopes";
+import { finalizeValidatedChatGptWebCodexSecrets } from "@orbit/inference/services/chatgptWebCodexAdmin";
 import { testSingleConnection } from "./provider-test/provider-test.handler.js";
 
 type ProviderIdentity = { id: string; provider: string };
@@ -260,7 +260,7 @@ export async function createProvider(request: Request) {
       // works. The auto-test fired below flips this to true on success (or on
       // an "unsupported" test, which cannot be verified either way and keeps
       // the historical trust-it default) — see testSingleConnection in
-      // @shiguang-gateway/core-domain/control/provider-test-batch. A connection that fails its test, or is never
+      // @orbit/core/control/provider-test-batch. A connection that fails its test, or is never
       // tested because auto-test itself errors, simply stays hidden until the
       // operator fixes the credential and re-tests it manually.
       isActive: false,

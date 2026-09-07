@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { getSettings } from "@shiguang-gateway/core-domain/db/settings";
+import { getSettings } from "@orbit/core/db/settings";
 import { updatePersistedRuntimeSettings } from "./runtime-settings-persistence.js";
 import {
   getDatabaseSettings,
   updateDatabaseSettings,
-} from "@shiguang-gateway/core-domain/db/database-settings";
-import { getDatabaseStats } from "@shiguang-gateway/core-domain/db/database-stats";
-import { getState as getVacuumState, runNow as runVacuumNow } from "@shiguang-gateway/core-domain/db/vacuum";
+} from "@orbit/core/db/database-settings";
+import { getDatabaseStats } from "@orbit/core/db/database-stats";
+import { getState as getVacuumState, runNow as runVacuumNow } from "@orbit/core/db/vacuum";
 import {
   ADAPTIVE_VIRTUAL_LANES_FLAG_KEY,
   FEATURE_FLAG_DEFINITIONS,
@@ -17,7 +17,7 @@ import {
   resolveAdaptiveVirtualLanesFlag,
   resolveAllFeatureFlags,
   setFeatureFlagOverride,
-} from "@shiguang-gateway/core-domain/runtime/feature-flags";
+} from "@orbit/core/runtime/feature-flags";
 import {
   GET as getRootSettings,
   PATCH as patchRootSettings,

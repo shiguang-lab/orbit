@@ -4,7 +4,7 @@
  * Google's `firstparty/nativeapp` consent for embedded desktop clients only
  * releases the authorization code when the loopback redirect is reachable, which
  * never happens on a remote VPS install. The remote login helper runs the OAuth
- * locally and emits a credential blob (see @shiguang-gateway/auth/credential-blob); the dashboard
+ * locally and emits a credential blob (see @orbit/auth/credential-blob); the dashboard
  * POSTs that blob to /api/oauth/<provider>/paste-credentials, which decodes it
  * and persists the connection via the same finalize path as `device-complete`.
  *
@@ -17,7 +17,7 @@
 import {
   decodeCredentialBlob,
   type CredentialBlob,
-} from "@shiguang-gateway/auth/credential-blob";
+} from "@orbit/auth/credential-blob";
 
 /**
  * Providers eligible for the paste-credentials flow: Google native-loopback

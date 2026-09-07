@@ -1,14 +1,14 @@
 import {
   discoverAdobeFireflyModels,
   resolveAdobeAccessToken,
-} from "@shiguang-gateway/open-sse/services/adobeFireflyClient";
+} from "@orbit/inference/services/adobeFireflyClient";
 import {
   getAdobeFireflyFallbackCatalog,
   mapDiscoveredToCatalog,
   toAdobeMediaCapabilitiesApi,
   type AdobeFireflyCatalogModel,
-} from "@shiguang-gateway/open-sse/services/adobeFireflyModels";
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+} from "@orbit/inference/services/adobeFireflyModels";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 
 type AdobeProviderData = { cookie?: unknown; access_token?: unknown; accessToken?: unknown };
 

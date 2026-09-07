@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import Fastify from "fastify";
-import { authzPlugin, type EngineAuthAdapter } from "@shiguang-gateway/auth";
+import { authzPlugin, type EngineAuthAdapter } from "@orbit/auth";
 import { installControlLocalOnlyGuard } from "../src/infrastructure/control-local-only.guard.js";
 
 function engine(options: { authRequired: boolean; validManageKey?: string }): EngineAuthAdapter {

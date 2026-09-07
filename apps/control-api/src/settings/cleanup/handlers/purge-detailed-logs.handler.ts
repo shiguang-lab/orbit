@@ -1,6 +1,6 @@
 // @ts-nocheck
-import { purgeDetailedLogs } from "@shiguang-gateway/core-domain/db/cleanup";
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
+import { purgeDetailedLogs } from "@orbit/core/db/cleanup";
+import { isAuthenticated } from "@orbit/core/control/authenticated";
 
 export async function POST(request: Request) {
   if (!(await isAuthenticated(request))) {

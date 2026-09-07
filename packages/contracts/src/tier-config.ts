@@ -16,7 +16,7 @@
 import { z } from "zod";
 import type { TierConfig, ProviderTierOverride, ModelTierOverride } from "./tier-types.js";
 import { PROVIDER_TIER } from "./tier-types.js";
-import { NOAUTH_PROVIDERS } from "@shiguang-gateway/contracts/config/providerCatalog";
+import { NOAUTH_PROVIDERS } from "@orbit/contracts/config/providerCatalog";
 
 export const providerTierOverrideSchema = z.object({
   provider: z.string().min(1),

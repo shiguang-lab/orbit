@@ -1,10 +1,10 @@
 // HTTP orchestration for the edge rerank domain.
 import { handleRerank } from "./provider-handler.js";
-import { parseRerankModel } from "@shiguang-gateway/rerank-catalog";
-import { errorResponse } from "@shiguang-gateway/open-sse/utils/error";
-import { HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants";
-import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
-import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
+import { parseRerankModel } from "@orbit/providers/rerank";
+import { errorResponse } from "@orbit/inference/utils/error";
+import { HTTP_STATUS } from "@orbit/inference/config/constants";
+import { CORS_HEADERS } from "@orbit/contracts/cors";
+import { isAllRateLimitedCredentials } from "@orbit/inference/services/credential-selection";
 import { rateLimitedProviderResponse } from "../common/provider-rate-limit-response.js";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
@@ -64,14 +64,14 @@ async function postHandler(request: Request, _context: unknown): Promise<Respons
     { attachShiguangGatewayMetaHeaders },
     { generateRequestId },
   ] = await Promise.all([
-    load("@shiguang-gateway/open-sse/services/auth"),
-    load("@shiguang-gateway/core-domain/runtime/api-key-policy"),
-    load("@shiguang-gateway/core-domain/edge/rerank-validation-schemas"),
-    load("@shiguang-gateway/core-domain/shared/validation/helpers"),
-    load("@shiguang-gateway/core-domain/db/read-cache"),
-    load("@shiguang-gateway/core-domain/usage/call-logs"),
-    load("@shiguang-gateway/core-domain/edge/gateway-response-meta"),
-    load("@shiguang-gateway/core-domain/runtime/request-id"),
+    load("@orbit/inference/services/auth"),
+    load("@orbit/core/runtime/api-key-policy"),
+    load("@orbit/core/edge/rerank-validation-schemas"),
+    load("@orbit/core/shared/validation/helpers"),
+    load("@orbit/core/db/read-cache"),
+    load("@orbit/core/usage/call-logs"),
+    load("@orbit/core/edge/gateway-response-meta"),
+    load("@orbit/core/runtime/request-id"),
   ]);
   let rawBody;
   try {
@@ -303,6 +303,6 @@ async function postHandler(request: Request, _context: unknown): Promise<Respons
 }
 
 export async function POST(request: Request): Promise<Response> {
-  const { withInjectionGuard } = await load("@shiguang-gateway/core-domain/middleware/prompt-injection");
+  const { withInjectionGuard } = await load("@orbit/core/middleware/prompt-injection");
   return withInjectionGuard((guardedRequest: Request) => postHandler(guardedRequest, undefined))(request);
 }

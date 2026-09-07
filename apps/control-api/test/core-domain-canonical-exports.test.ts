@@ -3,39 +3,39 @@ import test from "node:test";
 import {
   getOrCreateApiKey,
   resolveApiKey,
-} from "@shiguang-gateway/core-domain/shared/api-key-resolver";
+} from "@orbit/core/shared/api-key-resolver";
 import {
   formatValidationMessage,
   isValidationFailure,
   validateBody,
   validatedJsonBody,
-} from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import * as oauthPersistence from "@shiguang-gateway/core-domain/control/oauth-persistence";
-import * as providerConnections from "@shiguang-gateway/core-domain/db/provider-connections";
-import * as modelAliases from "@shiguang-gateway/core-domain/db/model-aliases";
-import * as apiKeys from "@shiguang-gateway/core-domain/db/api-keys";
-import * as settings from "@shiguang-gateway/core-domain/db/settings";
-import * as proxies from "@shiguang-gateway/core-domain/db/proxies";
-import * as mitmAliases from "@shiguang-gateway/core-domain/db/mitm-aliases";
-import * as hiddenModels from "@shiguang-gateway/core-domain/db/hidden-models";
+} from "@orbit/core/shared/validation/helpers";
+import * as oauthPersistence from "@orbit/core/control/oauth-persistence";
+import * as providerConnections from "@orbit/core/db/provider-connections";
+import * as modelAliases from "@orbit/core/db/model-aliases";
+import * as apiKeys from "@orbit/core/db/api-keys";
+import * as settings from "@orbit/core/db/settings";
+import * as proxies from "@orbit/core/db/proxies";
+import * as mitmAliases from "@orbit/core/db/mitm-aliases";
+import * as hiddenModels from "@orbit/core/db/hidden-models";
 import {
   MAX_PROVIDER_SPECIFIC_TIMEOUT_MS,
   isValidGheUrl,
-} from "@shiguang-gateway/core-domain/shared/provider-specific-data";
-import * as providerSpecificData from "@shiguang-gateway/core-domain/shared/provider-specific-data";
+} from "@orbit/core/shared/provider-specific-data";
+import * as providerSpecificData from "@orbit/core/shared/provider-specific-data";
 import {
   ALWAYS_PROTECTED_API_PATHS,
   LOCAL_ONLY_API_PREFIXES,
   isAlwaysProtectedPath,
   isLoopbackHost,
-} from "@shiguang-gateway/core-domain/shared/authz-route-policy";
-import * as authzRoutePolicy from "@shiguang-gateway/core-domain/shared/authz-route-policy";
-import * as apiKeyPolicy from "@shiguang-gateway/core-domain/runtime/api-key-policy";
-import * as upstreamError from "@shiguang-gateway/core-domain/shared/upstream-error";
-import * as requestId from "@shiguang-gateway/core-domain/runtime/request-id";
-import * as credentialHealth from "@shiguang-gateway/core-domain/resilience/credential-health-cache";
-import * as modelLockout from "@shiguang-gateway/core-domain/resilience/model-lockout-settings";
-import * as cors from "@shiguang-gateway/core-domain/shared/cors";
+} from "@orbit/core/shared/authz-route-policy";
+import * as authzRoutePolicy from "@orbit/core/shared/authz-route-policy";
+import * as apiKeyPolicy from "@orbit/core/runtime/api-key-policy";
+import * as upstreamError from "@orbit/core/shared/upstream-error";
+import * as requestId from "@orbit/core/runtime/request-id";
+import * as credentialHealth from "@orbit/core/resilience/credential-health-cache";
+import * as modelLockout from "@orbit/core/resilience/model-lockout-settings";
+import * as cors from "@orbit/core/shared/cors";
 import { z } from "zod";
 
 test("resolves the canonical API-key resolver export", async () => {

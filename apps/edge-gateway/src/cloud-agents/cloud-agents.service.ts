@@ -28,7 +28,7 @@ export class CloudAgentsService {
   async health(request: Request): Promise<Response> {
     const [cloudAgent, errors] = await Promise.all([
       import("./domain/health.js"),
-      load("@shiguang-gateway/open-sse/utils/error"),
+      load("@orbit/inference/utils/error"),
     ]);
 
     try {

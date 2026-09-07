@@ -22,9 +22,9 @@
  */
 
 import { readFileSync, existsSync } from "fs";
-import { getAppLogFilePath } from "@shiguang-gateway/core-domain/logging/environment";
-import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { getAppLogFilePath } from "@orbit/core/logging/environment";
+import { requireManagementAuth as requireCliToolsAuth } from "@orbit/core/control/management-auth";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 
 // Map pino numeric levels to string levels
 const NUMERIC_LEVEL_MAP: Record<number, string> = {

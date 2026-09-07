@@ -39,7 +39,7 @@
     "loginEnabled": "登录：已启用（密码已更新）",
     "loginDisabled": "登录：已禁用",
     "providerInfo": "提供者：{info}",
-    "opencode": "安装并配置随附的 @shiguang-gateway/opencode-plugin 以用于 OpenCode"
+    "opencode": "安装并配置随附的 @orbit/opencode-plugin 以用于 OpenCode"
   },
   "doctor": {
     "title": "ShiguangGateway 诊断",

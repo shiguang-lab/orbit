@@ -19,12 +19,12 @@
  * @module apps/edge-gateway/common/client-api-route-auth
  */
 
-import { errorResponse } from "@shiguang-gateway/http-kernel/error-response";
-import { HTTP_STATUS } from "@shiguang-gateway/contracts/http-status";
-import { extractApiKey, isValidGatewayApiKey } from "@shiguang-gateway/auth";
-import { validateApiKey } from "@shiguang-gateway/core-domain/db/api-keys";
-import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
-import { isDashboardSessionAuthenticated } from "@shiguang-gateway/auth/dashboard-session";
+import { errorResponse } from "@orbit/utils/errors/error-response";
+import { HTTP_STATUS } from "@orbit/contracts/http-status";
+import { extractApiKey, isValidGatewayApiKey } from "@orbit/auth";
+import { validateApiKey } from "@orbit/core/db/api-keys";
+import { isRequireApiKeyEnabled } from "@orbit/core/runtime/feature-flags";
+import { isDashboardSessionAuthenticated } from "@orbit/auth/dashboard-session";
 
 export interface ClientApiRouteAuthDependencies {
   extractApiKey: (request: Request) => string | null;

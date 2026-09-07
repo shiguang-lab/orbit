@@ -65,5 +65,5 @@ test("full env sync creates the file and generates a machine salt", () => {
 test("source updater invokes the control-owned env sync entrypoint", () => {
   const script = buildSourceUpdateScript("1.2.3");
   assert.match(script, /apps\/control-api.*env-sync\.ts/);
-  assert.doesNotMatch(script, /packages\/core-domain\/scripts\/dev\/sync-env/);
+  assert.doesNotMatch(script, /packages\/core\/scripts\/dev\/sync-env/);
 });

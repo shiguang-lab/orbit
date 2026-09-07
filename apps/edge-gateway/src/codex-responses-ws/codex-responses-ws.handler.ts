@@ -3,21 +3,21 @@ import { z } from "zod";
 import {
   authorizeWebSocketHandshake,
   extractWsTokenFromRequest,
-} from "@shiguang-gateway/core-domain/edge/ws-handshake";
+} from "@orbit/core/edge/ws-handshake";
 import {
   enforceApiKeyPolicy,
   validateApiKeyRoutingTarget,
-} from "@shiguang-gateway/core-domain/runtime/api-key-policy";
-import { getApiKeyMetadata } from "@shiguang-gateway/core-domain/db/api-keys";
-import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
-import { resolveCcDiscoveryAliasStrip } from "@shiguang-gateway/core-domain/runtime/cc-discovery-alias";
+} from "@orbit/core/runtime/api-key-policy";
+import { getApiKeyMetadata } from "@orbit/core/db/api-keys";
+import { isFeatureFlagEnabled } from "@orbit/core/runtime/feature-flags";
+import { resolveCcDiscoveryAliasStrip } from "@orbit/core/runtime/cc-discovery-alias";
 import {
   DEFAULT_MEMORY_SETTINGS,
   formatMemoryContext,
   getMemorySettings,
   retrieveMemories,
   toMemoryRetrievalConfig,
-} from "@shiguang-gateway/core-domain/edge/memory-runtime";
+} from "@orbit/core/edge/memory-runtime";
 import {
   applyReasoningRuleDirective,
   attachReasoningRuleDirective,
@@ -25,21 +25,21 @@ import {
   resolveReasoningSourceModels,
   resolveReasoningRoutingRule,
   validateCodexWsDecision,
-} from "@shiguang-gateway/core-domain/routing/reasoning-policy";
-import { resolveRequestRoutingTags } from "@shiguang-gateway/core-domain/edge/tag-router";
-import { getComboByName } from "@shiguang-gateway/core-domain/db/combos";
-import { getComboModelString } from "@shiguang-gateway/core-domain/routing/combo-steps";
+} from "@orbit/core/routing/reasoning-policy";
+import { resolveRequestRoutingTags } from "@orbit/core/edge/tag-router";
+import { getComboByName } from "@orbit/core/db/combos";
+import { getComboModelString } from "@orbit/core/routing/combo-steps";
 import {
   resolveCodexWsModelInfo,
-} from "@shiguang-gateway/core-domain/edge/codex-responses-model";
-import { getProviderCredentialsWithQuotaPreflight } from "@shiguang-gateway/open-sse/services/auth";
-import { checkAndRefreshToken } from "@shiguang-gateway/open-sse/services/credentialTokenRefresh";
+} from "@orbit/core/edge/codex-responses-model";
+import { getProviderCredentialsWithQuotaPreflight } from "@orbit/inference/services/auth";
+import { checkAndRefreshToken } from "@orbit/inference/services/credentialTokenRefresh";
 import {
   buildManagedLeaseErrorResponse,
   isExclusiveLeaseManagedKey,
   LeaseContextError,
-} from "@shiguang-gateway/open-sse/services/leaseContext";
-import { getModelInfo } from "@shiguang-gateway/open-sse/services/runtimeModel";
+} from "@orbit/inference/services/leaseContext";
+import { getModelInfo } from "@orbit/inference/services/runtimeModel";
 import {
   CodexExecutor,
   logger,
@@ -47,7 +47,7 @@ import {
   resolveProxy,
   sanitizeErrorMessage,
   withCodexFingerprintCredentials,
-} from "@shiguang-gateway/open-sse/services/codex-responses-ws-runtime";
+} from "@orbit/inference/services/codex-responses-ws-runtime";
 import { persistResponsesWsCallHistory } from "./history.js";
 import { applyResponsesWsCompression } from "./compression.js";
 

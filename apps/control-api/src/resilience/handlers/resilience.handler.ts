@@ -1,17 +1,17 @@
-import { getCachedSettings, getSettings } from "@shiguang-gateway/core-domain/db/settings";
+import { getCachedSettings, getSettings } from "@orbit/core/db/settings";
 import {
   buildLegacyResilienceCompat,
   mergeResilienceSettings,
   resolveResilienceSettings,
   type ResilienceSettings,
   type ResilienceSettingsPatch,
-} from "@shiguang-gateway/core-domain/resilience/settings";
-import { updateResilienceSchema } from "@shiguang-gateway/core-domain/validation/settings";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+} from "@orbit/core/resilience/settings";
+import { updateResilienceSchema } from "@orbit/core/validation/settings";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 import {
   persistResilienceSettings,
-} from "@shiguang-gateway/core-domain/resilience/settings-runtime";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+} from "@orbit/core/resilience/settings-runtime";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 
 type JsonRecord = Record<string, unknown>;

@@ -5,15 +5,15 @@ import {
   updatePricing,
   resetPricing,
   resetAllPricing,
-} from "@shiguang-gateway/core-domain/pricing/db";
-import { getDefaultPricing } from "@shiguang-gateway/core-domain/pricing/defaults";
-import { getProviderPrefixIndex } from "@shiguang-gateway/core-domain/pricing/provider-prefixes";
-import { getAllCustomModels, getAllSyncedAvailableModels } from "@shiguang-gateway/core-domain/db/models";
+} from "@orbit/core/pricing/db";
+import { getDefaultPricing } from "@orbit/core/pricing/defaults";
+import { getProviderPrefixIndex } from "@orbit/core/pricing/provider-prefixes";
+import { getAllCustomModels, getAllSyncedAvailableModels } from "@orbit/core/db/models";
 import {
   syncPricingFromSources,
   getSyncStatus,
   clearSyncedPricing,
-} from "@shiguang-gateway/core-domain/pricing/sync";
+} from "@orbit/core/pricing/sync";
 
 function asRecord(value: unknown): Record<string, unknown> {
   return value && typeof value === "object" && !Array.isArray(value)
@@ -62,7 +62,7 @@ export class PricingService {
   async getModelsCatalog() {
     const catalog: Record<string, any> = {};
     const { REGISTRY } = await load(
-      "@shiguang-gateway/open-sse/config/providerRegistry",
+      "@orbit/inference/config/providerRegistry",
     );
     const registry = REGISTRY as Record<string, any>;
 

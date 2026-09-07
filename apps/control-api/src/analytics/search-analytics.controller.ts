@@ -1,28 +1,25 @@
-import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
-import { Controller, Get, Req, Res } from "@nestjs/common";
+import { toWebRequest } from "@orbit/http/web-handler";
+import { Controller, Get, Inject, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/runtime/api-key-policy";
-import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import { SearchAnalyticsService } from "./search-analytics.service.js";
 
-/** API-key policy protected search analytics endpoint. */
-@Controller("api/v1/search")
+/** Dashboard search aggregates use the SSO management surface. */
+@Controller("api/search")
 export class SearchAnalyticsController {
-  constructor(private readonly searchAnalyticsService: SearchAnalyticsService) {}
+  constructor(@Inject(SearchAnalyticsService) private readonly searchAnalyticsService: SearchAnalyticsService) {}
 
   @Get("analytics")
   async get(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    const policy = await enforceApiKeyPolicy(toWebRequest(request), "analytics");
-    if (policy.rejection) {
-      return reply.status(policy.rejection.status).headers(CORS_HEADERS).send(await policy.rejection.json());
-    }
+    const authError = await requireManagementAuth(toWebRequest(request));
+    if (authError) return reply.status(authError.status).send(await authError.json());
 
     try {
-      return reply.headers(CORS_HEADERS).send(this.searchAnalyticsService.getSearchAnalytics());
+      return reply.header("cache-control", "no-store").send(this.searchAnalyticsService.getSearchAnalytics());
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
-      console.error("[/api/v1/search/analytics]", message);
-      return reply.status(500).headers(CORS_HEADERS).send({ error: "Internal server error" });
+      console.error("[/api/search/analytics]", message);
+      return reply.status(500).send({ error: "Failed to load search analytics" });
     }
   }
 }

@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { clearRadarLocalModelOverride, listRadarLocalModelState, setRadarLocalModelOverride, setRadarModelTombstone } from "@shiguang-gateway/core-domain/radar/store";
-import { readRequestBodyWithLimit, RequestBodyTooLargeError } from "@shiguang-gateway/core-domain/shared/body-size-guard";
+import { clearRadarLocalModelOverride, listRadarLocalModelState, setRadarLocalModelOverride, setRadarModelTombstone } from "@orbit/core/radar/store";
+import { readRequestBodyWithLimit, RequestBodyTooLargeError } from "@orbit/core/shared/body-size-guard";
 import { authorize, error, handleCorsOptions, json, internalError } from "../common.js";
 const providerSchema = z.string().trim().regex(/^[a-z0-9][a-z0-9._-]{0,99}$/i);
 const modelIdSchema = z.string().trim().min(1).max(200).refine((value) => !/[\u0000-\u001f\u007f]/.test(value));

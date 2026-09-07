@@ -1,5 +1,5 @@
-import { ensureSecrets } from "@shiguang-gateway/core-domain/startup";
-import { assertGatewayEntities } from "@shiguang-gateway/db-schema";
+import { ensureSecrets } from "@orbit/core/startup";
+import { assertGatewayEntities } from "@orbit/contracts/db-schema";
 import { bootstrapControlApi } from "./bootstrap.js";
 
 async function main(): Promise<void> {

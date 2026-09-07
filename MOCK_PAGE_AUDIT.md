@@ -478,10 +478,10 @@ CLI/Devtools  Compression  Costs  Agentic  Audit  Batch/Media
 建议验证命令：
 
 ```bash
-pnpm --filter @shiguang-gateway/admin typecheck
-pnpm --filter @shiguang-gateway/control-api typecheck
-pnpm --filter @shiguang-gateway/http-kernel test
-pnpm --filter @shiguang-gateway/admin build
+pnpm --filter @orbit/admin typecheck
+pnpm --filter @orbit/control-api typecheck
+pnpm --filter @orbit/http test
+pnpm --filter @orbit/admin build
 ```
 
 ## 10. 第一批可直接领取的任务包

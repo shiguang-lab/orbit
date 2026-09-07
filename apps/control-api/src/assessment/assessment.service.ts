@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { Assessor, Categorizer, SelfHealer } from "@shiguang-gateway/core-domain/control/assessment";
-import type { AssessmentScope, AssessmentTrigger, ModelCategory } from "@shiguang-gateway/core-domain/control/assessment";
-import { validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { Assessor, Categorizer, SelfHealer } from "@orbit/core/control/assessment";
+import type { AssessmentScope, AssessmentTrigger, ModelCategory } from "@orbit/core/control/assessment";
+import { validateBody } from "@orbit/core/shared/validation/helpers";
 import { z } from "zod";
 
 const modelCategories = new Set<ModelCategory>([

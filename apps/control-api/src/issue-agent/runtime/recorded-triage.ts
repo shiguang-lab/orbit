@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { redactSecrets } from "@shiguang-gateway/runtime-logging/redaction";
+import { redactSecrets } from "@orbit/utils/logging/redaction";
 
 export interface RecordedTriageComment {
   author?: string;

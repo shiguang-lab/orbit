@@ -1,15 +1,15 @@
 import {
   getOrCreateApiKey,
   maskApiKey,
-} from "@shiguang-gateway/core-domain/embedded-services/api-key";
-import { getSupervisor } from "@shiguang-gateway/core-domain/control/embedded-services-lifecycle";
-import { getServiceRow } from "@shiguang-gateway/core-domain/embedded-services/status";
+} from "@orbit/core/embedded-services/api-key";
+import { getSupervisor } from "@orbit/core/control/embedded-services-lifecycle";
+import { getServiceRow } from "@orbit/core/embedded-services/status";
 import {
   getNineRouterInstalledVersion,
   getNineRouterLatestVersion,
-} from "@shiguang-gateway/core-domain/control/embedded-services-install";
-import { createErrorResponse, sanitizeErrorMessage } from "@shiguang-gateway/core-domain/shared/error-response";
-import { logAuditEvent } from "@shiguang-gateway/core-domain/compliance/audit-log";
+} from "@orbit/core/control/embedded-services-install";
+import { createErrorResponse, sanitizeErrorMessage } from "@orbit/utils/errors/api-response";
+import { logAuditEvent } from "@orbit/core/compliance/audit-log";
 
 const TOOL = "9router";
 

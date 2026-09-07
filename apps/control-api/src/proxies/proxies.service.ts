@@ -22,12 +22,12 @@ import {
   updateProxyAndAssign,
   upsertProxy,
   migrateLegacyProxyConfigToRegistry,
-} from "@shiguang-gateway/core-domain/db/proxy-registry";
-import { getProxyById } from "@shiguang-gateway/core-domain/db/proxies";
-import { resolveProxyForConnection } from "@shiguang-gateway/core-domain/db/settings";
-import { getRelayProbeStats } from "@shiguang-gateway/core-domain/db/relay-probe-stats";
-import { decrypt } from "@shiguang-gateway/core-domain/db/encryption";
-import { createProxyDispatcher, proxyConfigToUrl } from "@shiguang-gateway/open-sse/utils/proxyDispatcher";
+} from "@orbit/core/db/proxy-registry";
+import { getProxyById } from "@orbit/core/db/proxies";
+import { resolveProxyForConnection } from "@orbit/core/db/settings";
+import { getRelayProbeStats } from "@orbit/core/db/relay-probe-stats";
+import { decrypt } from "@orbit/core/db/encryption";
+import { createProxyDispatcher, proxyConfigToUrl } from "@orbit/inference/utils/proxyDispatcher";
 import { executeEdgeRuntimeCommand } from "../edge-runtime/client.js";
 import {
   bulkImportProxiesSchema,
@@ -37,9 +37,9 @@ import {
   proxyPoolMemberSchema,
   proxyRotationStrategySchema,
   updateProxyRegistrySchema,
-} from "@shiguang-gateway/core-domain/validation/proxy";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+} from "@orbit/core/validation/proxy";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import {
   classifyProbeStatus,
   resolveHealthCheckStatusWrite,
@@ -48,12 +48,12 @@ import {
   resolveProbeTarget,
   waitForProbeSlot,
   resolveProviderProbeTarget,
-} from "@shiguang-gateway/core-domain/shared/proxy-health";
+} from "@orbit/core/shared/proxy-health";
 import {
   diagnoseAllEgressIps,
   getRecentEgressSharingSummary,
   validateProxyPool,
-} from "@shiguang-gateway/core-domain/shared/proxy-egress";
+} from "@orbit/core/shared/proxy-egress";
 import { z } from "zod";
 
 type ApiResult = Response;
@@ -445,7 +445,7 @@ export class ProxiesService {
         return Response.json({ success: true, removed });
       }
       const strategy = String(data.strategy);
-      const applied = await import("@shiguang-gateway/core-domain/db/proxy-registry").then(({ setScopeRotationStrategy }) => setScopeRotationStrategy(scope, scopeId, strategy, { stickyWindowMinutes: data.stickyWindowMinutes as number | undefined }));
+      const applied = await import("@orbit/core/db/proxy-registry").then(({ setScopeRotationStrategy }) => setScopeRotationStrategy(scope, scopeId, strategy, { stickyWindowMinutes: data.stickyWindowMinutes as number | undefined }));
       await invalidateEdgeProxyDispatcherCache();
       return Response.json({ success: true, strategy: applied });
     } catch (error) {

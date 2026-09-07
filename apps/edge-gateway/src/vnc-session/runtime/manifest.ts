@@ -1,8 +1,8 @@
-import { WEB_COOKIE_PROVIDERS } from "@shiguang-gateway/core-domain/catalog/providers";
+import { WEB_COOKIE_PROVIDERS } from "@orbit/providers/catalog";
 import {
   getWebSessionCredentialRequirement,
   type WebSessionCredentialRequirement,
-} from "@shiguang-gateway/contracts/config/webSessionCredentials";
+} from "@orbit/contracts/config/webSessionCredentials";
 
 export interface VncProviderEntry {
   /** Provider id stored in provider_connections.provider. */

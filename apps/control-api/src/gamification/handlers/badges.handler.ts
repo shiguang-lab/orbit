@@ -5,10 +5,10 @@
  *
  * LOCAL_ONLY: not process-spawning; management-scoped via requireManagementAuth.
  */
-import { CORS_HEADERS, handleCorsOptions } from "@shiguang-gateway/core-domain/shared/cors";
-import { getBadgeDefinitions } from "@shiguang-gateway/core-domain/gamification/profile";
-import { seedBuiltinBadges } from "@shiguang-gateway/core-domain/control/gamification";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { CORS_HEADERS, handleCorsOptions } from "@orbit/core/shared/cors";
+import { getBadgeDefinitions } from "@orbit/core/gamification/profile";
+import { seedBuiltinBadges } from "@orbit/core/control/gamification";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 
 export async function OPTIONS() {
   return handleCorsOptions();

@@ -5,8 +5,8 @@ import {
   getModelComboMappingById,
   getModelComboMappings,
   updateModelComboMapping,
-} from "@shiguang-gateway/core-domain/db/model-combo-mappings";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+} from "@orbit/core/db/model-combo-mappings";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import { json } from "./response.js";
 
 const paginationSchema = z.object({

@@ -1,4 +1,4 @@
-import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
+import { toWebRequest } from "@orbit/http/web-handler";
 import { Controller, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { preview } from "./compression-preview.legacy.js";

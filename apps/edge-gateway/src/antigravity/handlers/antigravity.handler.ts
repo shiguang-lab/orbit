@@ -1,4 +1,4 @@
-type ChatRuntime = typeof import("@shiguang-gateway/open-sse/handlers/chat");
+type ChatRuntime = typeof import("@orbit/inference/handlers/chat");
 
 let initialized = false;
 
@@ -11,8 +11,8 @@ async function runtime(): Promise<{
     (request: Request) => Promise<Response>;
 }> {
   const [chat, translator, admission] = await Promise.all([
-    load("@shiguang-gateway/open-sse/handlers/chat"),
-    load("@shiguang-gateway/open-sse/translator"),
+    load("@orbit/inference/handlers/chat"),
+    load("@orbit/inference/translator"),
     import("../../chat-admission.js"),
   ]);
   return {

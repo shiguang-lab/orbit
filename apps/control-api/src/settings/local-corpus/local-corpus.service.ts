@@ -3,12 +3,12 @@ import {
   clearLocalCorpusRoot,
   getLocalCorpusConfig,
   setLocalCorpusRoot,
-} from "@shiguang-gateway/core-domain/shared/local-corpus";
+} from "@orbit/core/shared/local-corpus";
 import {
   canonicalizeLocalCorpusRoot,
   getConfiguredLocalCorpusStatus,
   resetLocalCorpusIndex,
-} from "@shiguang-gateway/core-domain/shared/local-corpus";
+} from "@orbit/core/shared/local-corpus";
 
 /** Use cases for the control-plane local corpus settings surface. */
 @Injectable()

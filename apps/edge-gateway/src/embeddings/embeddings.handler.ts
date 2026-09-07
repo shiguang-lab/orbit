@@ -1,15 +1,15 @@
-import { errorResponse } from "@shiguang-gateway/open-sse/utils/error";
-import { HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants";
-import * as log from "@shiguang-gateway/core-domain/sse/logger";
-import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/runtime/api-key-policy";
-import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
-import { v1EmbeddingsSchema } from "@shiguang-gateway/core-domain/edge/embeddings-validation-schemas";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { errorResponse } from "@orbit/inference/utils/error";
+import { HTTP_STATUS } from "@orbit/inference/config/constants";
+import * as log from "@orbit/core/sse/logger";
+import { enforceApiKeyPolicy } from "@orbit/core/runtime/api-key-policy";
+import { isRequireApiKeyEnabled } from "@orbit/core/runtime/feature-flags";
+import { v1EmbeddingsSchema } from "@orbit/core/edge/embeddings-validation-schemas";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 
-import { createEmbeddingResponse, type EmbeddingHandlerOptions } from "@shiguang-gateway/open-sse/services/embedding-route";
-import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/services/auth";
-import { withInjectionGuard } from "@shiguang-gateway/core-domain/middleware/prompt-injection";
-import { getSpecialtyModelsResponse } from "@shiguang-gateway/open-sse/catalog/specialty";
+import { createEmbeddingResponse, type EmbeddingHandlerOptions } from "@orbit/inference/services/embedding-route";
+import { extractApiKey, isValidApiKey } from "@orbit/inference/services/auth";
+import { withInjectionGuard } from "@orbit/core/middleware/prompt-injection";
+import { getSpecialtyModelsResponse } from "@orbit/inference/catalog/specialty";
 
 export const dynamic = "force-dynamic";
 

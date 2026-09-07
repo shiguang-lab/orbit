@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { buildErrorBody, sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import { QuotaSettingsService } from "./quota.service.js";
 
 function toWebRequest(request: FastifyRequest): Request {

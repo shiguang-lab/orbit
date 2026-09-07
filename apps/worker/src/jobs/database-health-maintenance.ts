@@ -1,7 +1,7 @@
 import {
   runManagedDbHealthCheck,
   runManagedWalCheckpoint,
-} from "@shiguang-gateway/core-domain/db/health";
+} from "@orbit/core/db/health";
 
 const DEFAULT_INTERVAL_MS = 6 * 60 * 60 * 1000;
 type Timer = ReturnType<typeof setInterval>;

@@ -1,9 +1,9 @@
-import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
+import { getDbInstance } from "@orbit/core/db/connection";
 
 /**
  * SQLite schema owned by the control-plane eval module.
  *
- * The entity metadata for these tables is published from packages/db-schema;
+ * The entity metadata for these tables is published from packages/contracts/src/db-schema;
  * this app owns the concrete DDL because only control-api creates and updates
  * suites, cases, and run history.
  */

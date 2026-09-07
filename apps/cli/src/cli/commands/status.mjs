@@ -1,5 +1,5 @@
 import { printHeading } from "../io.mjs";
-import { resolveDataDir, resolveStoragePath } from "@shiguang-gateway/config/dataPaths";
+import { resolveDataDir, resolveStoragePath } from "@orbit/config/dataPaths";
 import { t } from "../i18n.mjs";
 import path from "node:path";
 import fs from "node:fs";
@@ -55,7 +55,7 @@ export async function runStatusCommand(opts = {}) {
   if (isVerbose || !isJson) {
     try {
       const { detectAllTools } = await import(
-        "@shiguang-gateway/core-domain/cli/tool-detector"
+        "@orbit/core/cli/tool-detector"
       );
       const tools = await detectAllTools();
       status.tools = tools.map((t) => ({

@@ -3,23 +3,23 @@ import { compressionPreviewConfigSchema } from "./compression-config-schemas.js"
 import {
   applyCompression,
   applyCompressionAsync,
-} from "@shiguang-gateway/open-sse/services/compression/strategySelector";
+} from "@orbit/inference/services/compression/strategySelector";
 import type {
   CompressionConfig,
   CompressionMode,
-} from "@shiguang-gateway/open-sse/services/compression/types";
+} from "@orbit/inference/services/compression/types";
 import {
   buildCompressionPreviewDiff,
   type HeatmapMode,
-} from "@shiguang-gateway/open-sse/services/compression/diffHelper";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
-import { countTextTokens } from "@shiguang-gateway/core-domain/shared/tokenizer";
+} from "@orbit/inference/services/compression/diffHelper";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
+import { countTextTokens } from "@orbit/core/shared/tokenizer";
 import {
   ensureEngineBreakdown,
   reconcileSingleEngineTokens,
-} from "@shiguang-gateway/open-sse/services/compression/engineBreakdown";
-import { summarizeEncoderCandidates } from "@shiguang-gateway/open-sse/services/compression/engines/headroom/encoderComparison";
-import { DEFAULT_MIN_ROWS } from "@shiguang-gateway/open-sse/services/compression/engines/headroom/smartcrusher";
+} from "@orbit/inference/services/compression/engineBreakdown";
+import { summarizeEncoderCandidates } from "@orbit/inference/services/compression/engines/headroom/encoderComparison";
+import { DEFAULT_MIN_ROWS } from "@orbit/inference/services/compression/engines/headroom/smartcrusher";
 
 export const PreviewCompressionConfigSchema = compressionPreviewConfigSchema;
 

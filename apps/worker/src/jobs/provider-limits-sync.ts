@@ -3,7 +3,7 @@ import {
   getProviderLimitsSyncIntervalMinutes,
   getProviderLimitsSyncIntervalMs,
   syncAllProviderLimits,
-} from "@shiguang-gateway/open-sse/services/providerLimits";
+} from "@orbit/inference/services/providerLimits";
 
 const STARTUP_DELAY_MS = 5_000;
 

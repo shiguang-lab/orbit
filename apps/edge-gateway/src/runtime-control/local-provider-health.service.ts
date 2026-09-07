@@ -1,5 +1,5 @@
 import { Injectable, type OnModuleDestroy, type OnModuleInit } from "@nestjs/common";
-import { getCachedProviderNodes } from "@shiguang-gateway/core-domain/db/read-cache";
+import { getCachedProviderNodes } from "@orbit/core/db/read-cache";
 
 export interface LocalProviderHealthStatus {
   nodeId: string;

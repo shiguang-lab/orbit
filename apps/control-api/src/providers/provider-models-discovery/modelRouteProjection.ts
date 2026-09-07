@@ -1,13 +1,13 @@
-import { getRegistryEntry } from "@shiguang-gateway/open-sse/config/providerRegistry";
-import { filterChatSelectableModels } from "@shiguang-gateway/open-sse/services/modelEndpointPolicy";
-import { filterSelectableModels } from "@shiguang-gateway/open-sse/services/modelLifecycle";
-import { getModelIsHidden } from "@shiguang-gateway/core-domain/db/hidden-models";
-import { getSettings } from "@shiguang-gateway/core-domain/db/settings";
-import { getStaticModelsForProvider } from "@shiguang-gateway/open-sse/services/static-models";
-import { SAFE_OUTBOUND_FETCH_PRESETS, safeOutboundFetch } from "@shiguang-gateway/core-domain/network/safe-outbound-fetch";
-import { getProviderOutboundGuard } from "@shiguang-gateway/core-domain/network/outbound-url-guard-policy";
-import { getModelsByProviderId } from "@shiguang-gateway/core-domain/catalog/provider-models";
-import { isProviderBlockedByIdOrAlias } from "@shiguang-gateway/core-domain/catalog/no-auth-providers";
+import { getRegistryEntry } from "@orbit/inference/config/providerRegistry";
+import { filterChatSelectableModels } from "@orbit/inference/services/modelEndpointPolicy";
+import { filterSelectableModels } from "@orbit/inference/services/modelLifecycle";
+import { getModelIsHidden } from "@orbit/core/db/hidden-models";
+import { getSettings } from "@orbit/core/db/settings";
+import { getStaticModelsForProvider } from "@orbit/inference/services/static-models";
+import { SAFE_OUTBOUND_FETCH_PRESETS, safeOutboundFetch } from "@orbit/core/network/safe-outbound-fetch";
+import { getProviderOutboundGuard } from "@orbit/core/network/outbound-url-guard-policy";
+import { getModelsByProviderId } from "@orbit/core/catalog/provider-models";
+import { isProviderBlockedByIdOrAlias } from "@orbit/core/catalog/no-auth-providers";
 import { mergeLocalCatalogModels } from "./discovery/helpers.js";
 
 export function filterModelsForRoute<

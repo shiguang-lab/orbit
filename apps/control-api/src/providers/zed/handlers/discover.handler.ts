@@ -18,7 +18,7 @@
 import { discoverZedCredentials, isZedInstalled } from "../keychain-reader.js";
 import { partitionZedCredentials } from "../import-utils.js";
 import { fingerprintZedCredential } from "../credential-fingerprint.js";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import { isRunningInDocker } from "../docker-detect.js";
 
 interface DiscoverCandidate {

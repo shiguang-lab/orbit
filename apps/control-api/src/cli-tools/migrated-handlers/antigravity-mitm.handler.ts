@@ -2,13 +2,13 @@
 // Dynamic imports prevent Turbopack from statically resolving native modules
 export const runtime = "nodejs";
 
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
-import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { cliMitmStartSchema, cliMitmStopSchema } from "@shiguang-gateway/core-domain/control/cli-tools-validation-schemas";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { resolveApiKey } from "@shiguang-gateway/core-domain/shared/api-key-resolver";
-import { isRoot } from "@shiguang-gateway/core-domain/control/cli-tools-mitm";
-import { isSudoPasswordRequired } from "@shiguang-gateway/core-domain/control/cli-tools-mitm-dns";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
+import { requireManagementAuth as requireCliToolsAuth } from "@orbit/core/control/management-auth";
+import { cliMitmStartSchema, cliMitmStopSchema } from "@orbit/core/control/cli-tools-validation-schemas";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
+import { resolveApiKey } from "@orbit/core/shared/api-key-resolver";
+import { isRoot } from "@orbit/core/control/cli-tools-mitm";
+import { isSudoPasswordRequired } from "@orbit/core/control/cli-tools-mitm-dns";
 
 // GET - Check MITM status
 export async function GET(request: Request) {
@@ -16,7 +16,7 @@ export async function GET(request: Request) {
   if (authError) return authError;
 
   try {
-    const { getMitmStatus, getCachedPassword } = await import("@shiguang-gateway/core-domain/control/cli-tools-mitm-manager");
+    const { getMitmStatus, getCachedPassword } = await import("@orbit/core/control/cli-tools-mitm-manager");
     const status = await getMitmStatus();
     const isWin = process.platform === "win32";
     const hasCachedPassword = !!getCachedPassword();
@@ -75,7 +75,7 @@ export async function POST(request: Request) {
       );
     }
     const { startMitm, getCachedPassword, setCachedPassword } =
-      await import("@shiguang-gateway/core-domain/control/cli-tools-mitm-manager");
+      await import("@orbit/core/control/cli-tools-mitm-manager");
     const isWin = process.platform === "win32";
     const isRootUser = !isWin && isRoot();
     const pwd = sudoPassword || getCachedPassword() || "";
@@ -131,7 +131,7 @@ export async function DELETE(request: Request) {
     }
     const { sudoPassword } = validation.data;
     const { stopMitm, getCachedPassword, setCachedPassword } =
-      await import("@shiguang-gateway/core-domain/control/cli-tools-mitm-manager");
+      await import("@orbit/core/control/cli-tools-mitm-manager");
     const isWin = process.platform === "win32";
     const isRootUser = !isWin && isRoot();
     const pwd = sudoPassword || getCachedPassword() || "";

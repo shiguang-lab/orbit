@@ -15,20 +15,20 @@ import {
   listFreeProxies,
   promoteFreeProxyToPool,
   runFreeProxySyncCycle,
-} from "@shiguang-gateway/core-domain/shared/free-proxies";
+} from "@orbit/core/shared/free-proxies";
 import type {
   FreeProxyProvider,
   FreeProxySourceId,
-} from "@shiguang-gateway/core-domain/shared/free-proxies";
+} from "@orbit/core/shared/free-proxies";
 import {
   createProxyDispatcher,
   proxyConfigToUrl,
-} from "@shiguang-gateway/open-sse/utils/proxyDispatcher";
-import { probeEchoTargets } from "@shiguang-gateway/core-domain/shared/proxy-echo-target";
+} from "@orbit/inference/utils/proxyDispatcher";
+import { probeEchoTargets } from "@orbit/core/shared/proxy-echo-target";
 import {
   isValidationFailure,
   validateBody,
-} from "@shiguang-gateway/core-domain/shared/validation/helpers";
+} from "@orbit/core/shared/validation/helpers";
 import {
   freeProxyBulkAddSchema,
   freeProxyListSchema,

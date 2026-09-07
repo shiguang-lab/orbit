@@ -1,15 +1,15 @@
-import type { EdgeRuntimeCommand } from "@shiguang-gateway/contracts/edge-runtime-command";
-import { calculateCost } from "@shiguang-gateway/core-domain/pricing/cost-calculator";
-import type { ExecuteInput, ProviderCredentials } from "@shiguang-gateway/open-sse/executors/base";
-import { getExecutor } from "@shiguang-gateway/open-sse/executors/index";
-import { getProviderCredentials } from "@shiguang-gateway/open-sse/services/auth";
-import { judgeFidelityBatch } from "@shiguang-gateway/open-sse/services/compression/eval/fidelityCheck";
+import type { EdgeRuntimeCommand } from "@orbit/contracts/edge-runtime-command";
+import { calculateCost } from "@orbit/core/pricing/cost-calculator";
+import type { ExecuteInput, ProviderCredentials } from "@orbit/inference/executors/base";
+import { getExecutor } from "@orbit/inference/executors/index";
+import { getProviderCredentials } from "@orbit/inference/services/auth";
+import { judgeFidelityBatch } from "@orbit/inference/services/compression/eval/fidelityCheck";
 import type {
   ChatTurn,
   ModelCallResult,
   ModelClient,
-} from "@shiguang-gateway/open-sse/services/compression/eval/types";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+} from "@orbit/inference/services/compression/eval/types";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 
 type CompressionVerifyCommand = Extract<EdgeRuntimeCommand, { command: "compression.verify" }>;
 

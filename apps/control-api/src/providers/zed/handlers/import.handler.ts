@@ -29,8 +29,8 @@ import {
   filterCredentialsByConfirmation,
   parseConfirmedAccounts,
 } from "../confirmed-accounts.js";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { createProviderConnection } from "@shiguang-gateway/core-domain/db/provider-connections";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { createProviderConnection } from "@orbit/core/db/provider-connections";
 import { isRunningInDocker } from "../docker-detect.js";
 
 const LEGACY_ONE_STEP_ENABLED = process.env.SHIGUANG_GATEWAY_ZED_IMPORT_LEGACY_ONE_STEP === "true";

@@ -3,15 +3,15 @@ import {
   getAllFallbackChains,
   registerFallback,
   removeFallback,
-} from "@shiguang-gateway/core-domain/control/fallback-policy";
+} from "@orbit/core/control/fallback-policy";
 import {
   isValidationFailure,
   validateBody,
-} from "@shiguang-gateway/core-domain/shared/validation/helpers";
+} from "@orbit/core/shared/validation/helpers";
 import {
   registerFallbackSchema,
   removeFallbackSchema,
-} from "@shiguang-gateway/core-domain/validation/routing";
+} from "@orbit/core/validation/routing";
 
 @Injectable()
 export class FallbackService {

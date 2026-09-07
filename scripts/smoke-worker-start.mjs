@@ -85,7 +85,7 @@ async function main() {
   process.once("SIGTERM", onTerminate);
 
   function start(filter) {
-    const child = spawn("pnpm", ["--filter", `@shiguang-gateway/${filter}`, "start"], {
+    const child = spawn("pnpm", ["--filter", `@orbit/${filter}`, "start"], {
       cwd: repoRoot,
       env: { ...baseEnv, APP_NAME: filter },
       stdio: ["ignore", "pipe", "pipe"],

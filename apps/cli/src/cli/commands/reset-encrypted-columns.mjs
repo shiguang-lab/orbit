@@ -1,5 +1,5 @@
 import { existsSync } from "node:fs";
-import { resolveDataDir } from "@shiguang-gateway/config/dataPaths";
+import { resolveDataDir } from "@orbit/config/dataPaths";
 import { join } from "node:path";
 import { isServerUp } from "../api.mjs";
 

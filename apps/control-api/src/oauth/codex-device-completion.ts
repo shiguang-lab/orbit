@@ -1,14 +1,14 @@
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
-import { persistOAuthConnection } from "@shiguang-gateway/core-domain/control/oauth-runtime/connectionPersistence";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
+import { persistOAuthConnection } from "@orbit/core/control/oauth-runtime/connectionPersistence";
 import {
   claimDeviceFlowTicket,
   completeDeviceFlowTicket,
   peekDeviceFlowTicket,
   releaseDeviceFlowTicket,
 } from "./device-flow-tickets.js";
-import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { oauthDeviceCompleteSchema } from "@shiguang-gateway/core-domain/control/oauth-validation";
-import { finalizeTokens } from "@shiguang-gateway/open-sse/oauth/providers";
+import { validateBody, isValidationFailure } from "@orbit/core/shared/validation/helpers";
+import { oauthDeviceCompleteSchema } from "@orbit/core/control/oauth-validation";
+import { finalizeTokens } from "@orbit/inference/oauth/providers";
 
 export type CodexDeviceCompletionResult = { status: number; body: unknown };
 

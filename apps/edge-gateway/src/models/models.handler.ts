@@ -1,4 +1,4 @@
-import { getUnifiedModelsResponse } from "@shiguang-gateway/open-sse/catalog/unified";
+import { getUnifiedModelsResponse } from "@orbit/inference/catalog/unified";
 import { CORS_HEADERS, handleCorsOptions } from "../common/cors.js";
 
 /** CORS preflight for the OpenAI-compatible model catalog endpoints. */

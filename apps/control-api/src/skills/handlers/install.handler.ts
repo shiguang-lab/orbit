@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { GLOBAL_SKILL_OWNER_ID, skillRegistry } from "@shiguang-gateway/core-domain/control/skills-registry";
-import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { GLOBAL_SKILL_OWNER_ID, skillRegistry } from "@orbit/core/control/skills-registry";
+import { validateBody, isValidationFailure } from "@orbit/core/shared/validation/helpers";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 
 const installManifestSchema = z.object({
   name: z.string().min(1).max(100),

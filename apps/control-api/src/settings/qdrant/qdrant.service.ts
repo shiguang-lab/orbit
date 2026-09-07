@@ -1,21 +1,21 @@
 import { Injectable } from "@nestjs/common";
 import {
   getSettings,
-} from "@shiguang-gateway/core-domain/db/settings";
+} from "@orbit/core/db/settings";
 import { updatePersistedRuntimeSettings } from "../runtime-settings-persistence.js";
 import {
   checkQdrantHealth,
   cleanupSemanticMemoryPoints,
   normalizeQdrantConfig,
   searchSemanticMemory,
-} from "@shiguang-gateway/core-domain/control/qdrant";
+} from "@orbit/core/control/qdrant";
 import {
   getMemorySettings,
   invalidateMemorySettingsCache,
-} from "@shiguang-gateway/core-domain/memory/settings";
-import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { providerAllowsOptionalApiKey } from "@shiguang-gateway/core-domain/catalog/providers";
-import { getAllEmbeddingModels } from "@shiguang-gateway/open-sse/config/embeddingRegistry";
+} from "@orbit/core/memory/settings";
+import { getProviderConnections } from "@orbit/core/db/provider-connections";
+import { providerAllowsOptionalApiKey } from "@orbit/providers/catalog";
+import { getAllEmbeddingModels } from "@orbit/inference/config/embeddingRegistry";
 
 type EmbeddingModelOption = {
   value: string;

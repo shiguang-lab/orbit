@@ -1,12 +1,12 @@
-import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
-import { Body, Controller, Delete, Get, Post, Put, Req, Res } from "@nestjs/common";
+import { toWebRequest } from "@orbit/http/web-handler";
+import { Body, Controller, Delete, Get, Inject, Post, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { ProxySettingsService } from "./proxy-settings.service.js";
 import { ProxyDeployService } from "./proxy-deploy.service.js";
 
 @Controller("api/settings/proxy")
 export class ProxySettingsController {
-  constructor(private readonly settings: ProxySettingsService, private readonly deploy: ProxyDeployService) {}
+  constructor(@Inject(ProxySettingsService) private readonly settings: ProxySettingsService, @Inject(ProxyDeployService) private readonly deploy: ProxyDeployService) {}
   private async send(reply: FastifyReply, response: Response) { return reply.status(response.status).send(await response.json()); }
   @Get()
   async get(@Req() request: FastifyRequest, @Res() reply: FastifyReply) { return this.send(reply, await this.settings.get(toWebRequest(request))); }

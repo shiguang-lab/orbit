@@ -1,23 +1,23 @@
-import { SAFE_OUTBOUND_FETCH_PRESETS, safeOutboundFetch } from "@shiguang-gateway/core-domain/network/safe-outbound-fetch";
-import { getProviderOutboundGuard } from "@shiguang-gateway/core-domain/network/outbound-url-guard-policy";
+import { SAFE_OUTBOUND_FETCH_PRESETS, safeOutboundFetch } from "@orbit/core/network/safe-outbound-fetch";
+import { getProviderOutboundGuard } from "@orbit/core/network/outbound-url-guard-policy";
 import {
   getAntigravityModelsDiscoveryUrls,
   getAntigravityFetchAvailableModelsUrls,
-} from "@shiguang-gateway/open-sse/config/antigravity-upstream";
-import { getAntigravityContentHeaders } from "@shiguang-gateway/open-sse/services/antigravity-headers";
-import { resolveAntigravityClientVersion } from "@shiguang-gateway/open-sse/services/antigravity-client-profile";
+} from "@orbit/inference/config/antigravity-upstream";
+import { getAntigravityContentHeaders } from "@orbit/inference/services/antigravity-headers";
+import { resolveAntigravityClientVersion } from "@orbit/inference/services/antigravity-client-profile";
 import {
   getClientVisibleAntigravityModelName,
   isDiscoverableAntigravityModelId,
   toClientAntigravityModelId,
-} from "@shiguang-gateway/open-sse/config/antigravityModelAliases";
+} from "@orbit/inference/config/antigravityModelAliases";
 import {
   getClientVisibleAgyModelName,
   isDiscoverableAgyModelId,
-} from "@shiguang-gateway/open-sse/config/agyModels";
-import { normalizeAntigravityClientProfile } from "@shiguang-gateway/contracts/provider-client-profiles";
-import { ensureAntigravityProjectAssigned } from "@shiguang-gateway/open-sse/services/antigravityProjectBootstrap";
-import { persistDiscoveredAntigravityProjectId } from "@shiguang-gateway/open-sse/services/antigravityProjectPersist";
+} from "@orbit/inference/config/agyModels";
+import { normalizeAntigravityClientProfile } from "@orbit/contracts/provider-client-profiles";
+import { ensureAntigravityProjectAssigned } from "@orbit/inference/services/antigravityProjectBootstrap";
+import { persistDiscoveredAntigravityProjectId } from "@orbit/inference/services/antigravityProjectPersist";
 import { asRecord, toNonEmptyString } from "./helpers.js";
 
 const antigravityDiscoveryInflight = new Map<

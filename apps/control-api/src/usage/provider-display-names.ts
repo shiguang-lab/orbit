@@ -1,5 +1,5 @@
-import { getProviderById } from "@shiguang-gateway/core-domain/catalog/providers";
-import { getProviderNodes } from "@shiguang-gateway/core-domain/db/provider-nodes";
+import { getProviderById } from "@orbit/providers/catalog";
+import { getProviderNodes } from "@orbit/core/db/provider-nodes";
 
 function toStringValue(value: unknown, fallback = ""): string {
   return typeof value === "string" && value.trim().length > 0 ? value : fallback;

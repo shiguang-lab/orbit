@@ -20,12 +20,12 @@
 
 import {
   getSupervisor,
-} from "@shiguang-gateway/core-domain/control/embedded-services-lifecycle";
-import { getOrCreateApiKey } from "@shiguang-gateway/core-domain/embedded-services/api-key";
+} from "@orbit/core/control/embedded-services-lifecycle";
+import { getOrCreateApiKey } from "@orbit/core/embedded-services/api-key";
 import { rewriteHtml } from "./embedded-service-html-rewriter.js";
 import { toUpstreamPath } from "./embedded-service-embed-path.js";
-import { createErrorResponse } from "@shiguang-gateway/core-domain/shared/error-response";
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+import { createErrorResponse } from "@orbit/utils/errors/api-response";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 
 // ─── constants ────────────────────────────────────────────────────────────────
 

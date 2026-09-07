@@ -7,7 +7,7 @@
  */
 import { copyFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
+import { isAuthenticated } from "@orbit/core/control/authenticated";
 import { getEnvSyncPlan, syncEnv } from "../runtime/env-sync.js";
 
 function createEnvBackup() {

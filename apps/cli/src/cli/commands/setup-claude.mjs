@@ -18,7 +18,7 @@
 
 import { join } from "node:path";
 import os from "node:os";
-import { syncClaudeProfilesFromModels } from "@shiguang-gateway/cli-profile-config/claude";
+import { syncClaudeProfilesFromModels } from "@orbit/config/cli/claude";
 import { printHeading, printInfo, printSuccess, printError } from "../io.mjs";
 import { guardHostConfigTarget } from "../utils/config-home-guard.mjs";
 /**

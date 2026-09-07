@@ -1,7 +1,7 @@
 import {
   listSubscriptions,
   syncSubscription,
-} from "@shiguang-gateway/core-domain/proxy-subscriptions/management";
+} from "@orbit/core/proxy-subscriptions/management";
 
 let schedulerTimer: ReturnType<typeof setInterval> | null = null;
 

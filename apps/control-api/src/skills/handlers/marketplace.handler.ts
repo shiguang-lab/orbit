@@ -1,6 +1,6 @@
-import { getSettings } from "@shiguang-gateway/core-domain/db/settings";
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { getSettings } from "@orbit/core/db/settings";
+import { isAuthenticated } from "@orbit/core/control/authenticated";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import type { SkillsProviderSettingsService } from "../providers/skills-provider-settings.service.js";
 
 const POPULAR_BY_PROVIDER = {

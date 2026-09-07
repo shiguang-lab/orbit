@@ -1,4 +1,4 @@
-import { ALL_TARGETS, detectAgent } from "@shiguang-gateway/core-domain/control/agent-bridge";
+import { ALL_TARGETS, detectAgent } from "@orbit/core/control/agent-bridge";
 import { failure, notFound } from "./common.js";
 
 const VALID_IDS = new Set(ALL_TARGETS.map((target) => target.id));

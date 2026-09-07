@@ -1,19 +1,19 @@
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getCachedSettings } from "@shiguang-gateway/core-domain/cache/services";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { getCachedSettings } from "@orbit/core/cache/services";
 import {
   getAuditStats,
   queryAuditEntries,
-} from "@shiguang-gateway/open-sse/mcp-server/audit";
+} from "@orbit/inference/mcp-server/audit";
 import {
   getMcpHttpStatus,
   isMcpHttpTransportReady,
-} from "@shiguang-gateway/open-sse/mcp-server/httpTransport";
+} from "@orbit/inference/mcp-server/httpTransport";
 import {
   isMcpHeartbeatOnline,
   isProcessAlive,
   readMcpHeartbeat,
   resolveMcpHeartbeatPath,
-} from "@shiguang-gateway/open-sse/mcp-server/runtimeHeartbeat";
+} from "@orbit/inference/mcp-server/runtimeHeartbeat";
 
 export async function getStatus(request: Request): Promise<Response> {
   const authError = await requireManagementAuth(request, { acceptMcpConnectScope: true });

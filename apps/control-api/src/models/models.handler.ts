@@ -17,11 +17,11 @@ import {
   shouldSuppressStaticModelForExclusiveListing,
   updateModelAliasSchema,
   validateBody,
-} from "@shiguang-gateway/core-domain/control/model-management";
+} from "@orbit/core/control/model-management";
 import {
   buildAliasMaps,
   resolveCanonicalProviderId as resolveCanonicalProviderIdFromMaps,
-} from "@shiguang-gateway/open-sse/catalog/provider-maps";
+} from "@orbit/inference/catalog/provider-maps";
 
 interface GetModelsDependencies {
   createCapabilitySnapshot?: typeof createModelCapabilityResolutionSnapshot;

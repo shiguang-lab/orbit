@@ -1,11 +1,11 @@
-import { getAggregatedSnapshots } from "@shiguang-gateway/core-domain/usage/quota-snapshots";
-import { getProviderConnectionById } from "@shiguang-gateway/core-domain/db/provider-connections";
+import { getAggregatedSnapshots } from "@orbit/core/usage/quota-snapshots";
+import { getProviderConnectionById } from "@orbit/core/db/provider-connections";
 import type {
   ConnectionMetaEntry,
   ProviderUtilizationResponse,
   UtilizationTimeRange,
-} from "@shiguang-gateway/core-domain/usage/utilization";
-import { BUCKET_SIZES } from "@shiguang-gateway/core-domain/usage/utilization";
+} from "@orbit/core/usage/utilization";
+import { BUCKET_SIZES } from "@orbit/core/usage/utilization";
 
 const VALID_RANGES: UtilizationTimeRange[] = ["1h", "24h", "7d", "30d"];
 

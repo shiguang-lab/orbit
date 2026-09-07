@@ -10,8 +10,8 @@ import { fingerprintZedCredential } from "./credential-fingerprint.js";
 import {
   confirmedAccountSchema,
   type ConfirmedAccount,
-} from "@shiguang-gateway/core-domain/control/provider-validation-schemas";
-import { zedImportSchema } from "@shiguang-gateway/core-domain/control/oauth-validation";
+} from "@orbit/core/control/provider-validation-schemas";
+import { zedImportSchema } from "@orbit/core/control/oauth-validation";
 
 export function isConfirmedAccount(value: unknown): value is ConfirmedAccount {
   return confirmedAccountSchema.safeParse(value).success;

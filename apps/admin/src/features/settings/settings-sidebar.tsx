@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import {
   Button,
   Card,
@@ -67,6 +67,58 @@ const useStyles = createStyles(({ token }) => ({
       background: token.colorFillAlter,
       borderColor: token.colorBorder,
     },
+  },
+  itemRowDragging: {
+    opacity: 0.35,
+    borderStyle: "dashed",
+    borderColor: token.colorBorder,
+  },
+  itemRowDropTarget: {
+    borderColor: token.colorPrimary,
+    background: token.colorPrimaryBg,
+    boxShadow: `0 0 0 1px ${token.colorPrimary}`,
+  },
+  dragHandle: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: 22,
+    height: 28,
+    borderRadius: 4,
+    cursor: "grab",
+    color: token.colorTextTertiary,
+    transition: "color 0.15s, background-color 0.15s",
+    userSelect: "none",
+    flexShrink: 0,
+    "&:hover": {
+      color: token.colorPrimary,
+      background: token.colorPrimaryBg,
+    },
+    "&:active": {
+      cursor: "grabbing",
+    },
+  },
+  dragHandleDisabled: {
+    cursor: "not-allowed",
+    color: token.colorTextDisabled,
+    "&:hover": {
+      color: token.colorTextDisabled,
+      background: "transparent",
+    },
+  },
+  sectionHeaderRow: {
+    width: "100%",
+    paddingRight: 8,
+    borderRadius: 6,
+    transition: "all 0.2s",
+  },
+  sectionHeaderDropTarget: {
+    outline: `2px dashed ${token.colorPrimary}`,
+    background: token.colorPrimaryBg,
+    borderRadius: 6,
+  },
+  sectionHeaderDragging: {
+    opacity: 0.4,
   },
 }));
 
@@ -368,17 +420,109 @@ export function SettingsSidebarPage() {
     saveMutation.mutate({ sidebarSectionOrder: newOrder, sidebarActivePreset: "custom" });
   };
 
-  const handleMoveItem = (secKey: string, index: number, direction: "up" | "down", currentItems: NavItem[]) => {
-    const targetIdx = direction === "up" ? index - 1 : index + 1;
-    if (targetIdx < 0 || targetIdx >= currentItems.length) return;
+  // Item drag-and-drop state
+  const [draggingItem, setDraggingItem] = useState<{ secKey: string; index: number; key: string } | null>(null);
+  const [dragOverItem, setDragOverItem] = useState<{ secKey: string; index: number; key: string } | null>(null);
+  const draggingItemRef = useRef<{ secKey: string; index: number; key: string } | null>(null);
+
+  const resetItemDragState = () => {
+    draggingItemRef.current = null;
+    setDraggingItem(null);
+    setDragOverItem(null);
+  };
+
+  const handleItemDragStart = (e: React.DragEvent, secKey: string, index: number, key: string, disabled: boolean) => {
+    if (disabled) {
+      e.preventDefault();
+      return;
+    }
+    const itemInfo = { secKey, index, key };
+    draggingItemRef.current = itemInfo;
+    setDraggingItem(itemInfo);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", key);
+  };
+
+  const handleItemDragEnd = () => {
+    resetItemDragState();
+  };
+
+  const handleItemDragOver = (e: React.DragEvent, secKey: string, index: number, key: string) => {
+    e.preventDefault();
+    const active = draggingItemRef.current;
+    if (!active) return;
+    if (active.secKey !== secKey || active.index === index) return;
+    e.dataTransfer.dropEffect = "move";
+    setDragOverItem({ secKey, index, key });
+  };
+
+  const handleItemDrop = (e: React.DragEvent, secKey: string, dropIndex: number, currentItems: NavItem[]) => {
+    e.preventDefault();
+    const active = draggingItemRef.current;
+    resetItemDragState();
+
+    if (!active || active.secKey !== secKey || active.index === dropIndex) return;
+
     const currentKeys = currentItems.map((i) => i.key);
-    const temp = currentKeys[index];
-    currentKeys[index] = currentKeys[targetIdx];
-    currentKeys[targetIdx] = temp;
+    const [removed] = currentKeys.splice(active.index, 1);
+    currentKeys.splice(dropIndex, 0, removed);
+
     const nextItemOrder = { ...itemOrder, [secKey]: currentKeys };
     setItemOrder(nextItemOrder);
     setActivePreset("custom");
     saveMutation.mutate({ sidebarItemOrder: nextItemOrder, sidebarActivePreset: "custom" });
+    messageApi.success(tt("菜单排序已保存", "Menu item order saved"));
+  };
+
+  // Section drag-and-drop state
+  const [draggingSectionIndex, setDraggingSectionIndex] = useState<number | null>(null);
+  const [dragOverSectionIndex, setDragOverSectionIndex] = useState<number | null>(null);
+  const draggingSectionIndexRef = useRef<number | null>(null);
+
+  const resetSectionDragState = () => {
+    draggingSectionIndexRef.current = null;
+    setDraggingSectionIndex(null);
+    setDragOverSectionIndex(null);
+  };
+
+  const handleSectionDragStart = (e: React.DragEvent, index: number, secKey: string, disabled: boolean) => {
+    if (disabled) {
+      e.preventDefault();
+      return;
+    }
+    draggingSectionIndexRef.current = index;
+    setDraggingSectionIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", secKey);
+  };
+
+  const handleSectionDragEnd = () => {
+    resetSectionDragState();
+  };
+
+  const handleSectionDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    const activeIndex = draggingSectionIndexRef.current;
+    if (activeIndex === null || activeIndex === index) return;
+    e.dataTransfer.dropEffect = "move";
+    setDragOverSectionIndex(index);
+  };
+
+  const handleSectionDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    const fromIndex = draggingSectionIndexRef.current;
+    resetSectionDragState();
+
+    if (fromIndex === null || fromIndex === dropIndex) return;
+
+    const newOrder = orderedSections.map((s) => s.key);
+    const [removed] = newOrder.splice(fromIndex, 1);
+    newOrder.splice(dropIndex, 0, removed);
+
+    setSectionOrder(newOrder);
+    setActivePreset("custom");
+    saveMutation.mutate({ sidebarSectionOrder: newOrder, sidebarActivePreset: "custom" });
+    messageApi.success(tt("分组排序已保存", "Section order saved"));
   };
 
   const handleSetSectionAllVisible = (sec: NavSection, visible: boolean) => {
@@ -586,56 +730,79 @@ export function SettingsSidebarPage() {
 
               const visibleCount = sortedItems.filter((i) => !hiddenItems.has(i.key)).length;
               const isGroupLabelHidden = hiddenGroupLabels.has(sec.key);
+              const sectionDragDisabled = Boolean(queryClean) || orderedSections.length < 2;
+              const isSectionDragged = draggingSectionIndex === secIdx;
+              const isSectionDropTarget = dragOverSectionIndex === secIdx && draggingSectionIndex !== secIdx;
 
               return {
                 key: sec.key,
                 label: (
-                  <Flex justify="space-between" align="center" style={{ width: "100%", paddingRight: 8 }} wrap gap={8}>
-                    <Flex align="center" gap={10}>
-                      <MaterialIcon name={sec.icon || "folder"} size={18} />
-                      <Text strong style={{ fontSize: 14 }}>{sectionTitle}</Text>
-                      <Tag color={visibleCount > 0 ? "blue" : "default"}>
-                        {tt(`${visibleCount} / ${sortedItems.length} 可见`, `${visibleCount} / ${sortedItems.length} Visible`)}
-                      </Tag>
-                      {isGroupLabelHidden && <Tag color="warning">{tt("分组标题已隐藏", "Title Hidden")}</Tag>}
-                    </Flex>
-                    <Space onClick={(e) => e.stopPropagation()}>
-                      <Button
-                        size="small"
-                        onClick={() => handleSetSectionAllVisible(sec, true)}
-                      >
-                        {tt("全显", "Show All")}
-                      </Button>
-                      <Button
-                        size="small"
-                        onClick={() => handleSetSectionAllVisible(sec, false)}
-                      >
-                        {tt("全隐", "Hide All")}
-                      </Button>
-                      <Tooltip title={tt("隐藏/显示该分组在侧栏的文本标题", "Toggle section header text visibility in the sidebar")}>
+                  <div
+                    className={`${styles.sectionHeaderRow} ${isSectionDragged ? styles.sectionHeaderDragging : ""} ${isSectionDropTarget ? styles.sectionHeaderDropTarget : ""}`}
+                    onDragOver={(e) => handleSectionDragOver(e, secIdx)}
+                    onDrop={(e) => handleSectionDrop(e, secIdx)}
+                  >
+                    <Flex justify="space-between" align="center" wrap gap={8}>
+                      <Flex align="center" gap={8}>
+                        <div
+                          draggable={!sectionDragDisabled}
+                          onDragStart={(e) => handleSectionDragStart(e, secIdx, sec.key, sectionDragDisabled)}
+                          onDragEnd={handleSectionDragEnd}
+                          className={`${styles.dragHandle} ${sectionDragDisabled ? styles.dragHandleDisabled : ""}`}
+                          title={
+                            sectionDragDisabled
+                              ? (queryClean ? tt("搜索状态下不可拖动排序", "Drag reordering disabled while searching") : tt("单项不可拖动", "Cannot drag single item"))
+                              : tt("按住并拖动以调整分类顺序", "Drag to reorder section")
+                          }
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <MaterialIcon name="drag_indicator" size={18} />
+                        </div>
+                        <MaterialIcon name={sec.icon || "folder"} size={18} />
+                        <Text strong style={{ fontSize: 14 }}>{sectionTitle}</Text>
+                        <Tag color={visibleCount > 0 ? "blue" : "default"}>
+                          {tt(`${visibleCount} / ${sortedItems.length} 可见`, `${visibleCount} / ${sortedItems.length} Visible`)}
+                        </Tag>
+                        {isGroupLabelHidden && <Tag color="warning">{tt("分组标题已隐藏", "Title Hidden")}</Tag>}
+                      </Flex>
+                      <Space onClick={(e) => e.stopPropagation()}>
                         <Button
                           size="small"
-                          type={isGroupLabelHidden ? "primary" : "default"}
-                          danger={isGroupLabelHidden}
-                          onClick={() => handleToggleSectionLabel(sec.key)}
+                          onClick={() => handleSetSectionAllVisible(sec, true)}
                         >
-                          {isGroupLabelHidden ? tt("显示分组标题", "Show Title") : tt("隐藏分组标题", "Hide Title")}
+                          {tt("全显", "Show All")}
                         </Button>
-                      </Tooltip>
-                      <Button
-                        size="small"
-                        disabled={secIdx === 0}
-                        icon={<MaterialIcon name="arrow_upward" size={14} />}
-                        onClick={() => handleMoveSection(secIdx, "up")}
-                      />
-                      <Button
-                        size="small"
-                        disabled={secIdx === orderedSections.length - 1}
-                        icon={<MaterialIcon name="arrow_downward" size={14} />}
-                        onClick={() => handleMoveSection(secIdx, "down")}
-                      />
-                    </Space>
-                  </Flex>
+                        <Button
+                          size="small"
+                          onClick={() => handleSetSectionAllVisible(sec, false)}
+                        >
+                          {tt("全隐", "Hide All")}
+                        </Button>
+                        <Tooltip title={tt("隐藏/显示该分组在侧栏的文本标题", "Toggle section header text visibility in the sidebar")}>
+                          <Button
+                            size="small"
+                            type={isGroupLabelHidden ? "primary" : "default"}
+                            danger={isGroupLabelHidden}
+                            onClick={() => handleToggleSectionLabel(sec.key)}
+                          >
+                            {isGroupLabelHidden ? tt("显示分组标题", "Show Title") : tt("隐藏分组标题", "Hide Title")}
+                          </Button>
+                        </Tooltip>
+                        <Button
+                          size="small"
+                          disabled={secIdx === 0}
+                          icon={<MaterialIcon name="arrow_upward" size={14} />}
+                          onClick={() => handleMoveSection(secIdx, "up")}
+                        />
+                        <Button
+                          size="small"
+                          disabled={secIdx === orderedSections.length - 1}
+                          icon={<MaterialIcon name="arrow_downward" size={14} />}
+                          onClick={() => handleMoveSection(secIdx, "down")}
+                        />
+                      </Space>
+                    </Flex>
+                  </div>
                 ),
                 children: (
                   <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -643,29 +810,36 @@ export function SettingsSidebarPage() {
                       const isHidden = hiddenItems.has(item.key);
                       const isProtected = PROTECTED_ITEMS.has(item.key);
                       const localizedItemLabel = translate(locale, `nav.item.${item.key}`, item.label);
+                      const itemDragDisabled = Boolean(queryClean) || sortedItems.length < 2;
+                      const isItemDragged = draggingItem?.secKey === sec.key && draggingItem?.index === itemIdx;
+                      const isItemDropTarget =
+                        dragOverItem?.secKey === sec.key &&
+                        dragOverItem?.index === itemIdx &&
+                        draggingItem?.index !== itemIdx;
 
                       return (
-                        <div key={item.key} className={styles.itemRow}>
+                        <div
+                          key={item.key}
+                          className={`${styles.itemRow} ${isItemDragged ? styles.itemRowDragging : ""} ${isItemDropTarget ? styles.itemRowDropTarget : ""}`}
+                          onDragOver={(e) => handleItemDragOver(e, sec.key, itemIdx, item.key)}
+                          onDrop={(e) => handleItemDrop(e, sec.key, itemIdx, sortedItems)}
+                        >
                           <Flex justify="space-between" align="center" wrap gap={8}>
-                            <Flex align="center" gap={12}>
-                              <Space size={2}>
-                                <Button
-                                  type="text"
-                                  size="small"
-                                  disabled={itemIdx === 0}
-                                  icon={<MaterialIcon name="arrow_drop_up" size={18} />}
-                                  onClick={() => handleMoveItem(sec.key, itemIdx, "up", sortedItems)}
-                                  style={{ padding: 0, width: 22, height: 22 }}
-                                />
-                                <Button
-                                  type="text"
-                                  size="small"
-                                  disabled={itemIdx === sortedItems.length - 1}
-                                  icon={<MaterialIcon name="arrow_drop_down" size={18} />}
-                                  onClick={() => handleMoveItem(sec.key, itemIdx, "down", sortedItems)}
-                                  style={{ padding: 0, width: 22, height: 22 }}
-                                />
-                              </Space>
+                            <Flex align="center" gap={10}>
+                              <div
+                                draggable={!itemDragDisabled}
+                                onDragStart={(e) => handleItemDragStart(e, sec.key, itemIdx, item.key, itemDragDisabled)}
+                                onDragEnd={handleItemDragEnd}
+                                className={`${styles.dragHandle} ${itemDragDisabled ? styles.dragHandleDisabled : ""}`}
+                                title={
+                                  itemDragDisabled
+                                    ? (queryClean ? tt("搜索状态下不可拖动排序", "Drag reordering disabled while searching") : tt("单项不可拖动", "Cannot drag single item"))
+                                    : tt("按住并拖动以调整菜单顺序", "Drag to reorder menu item")
+                                }
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <MaterialIcon name="drag_indicator" size={18} />
+                              </div>
 
                               <MaterialIcon name={item.icon || "circle"} size={18} />
                               <div>

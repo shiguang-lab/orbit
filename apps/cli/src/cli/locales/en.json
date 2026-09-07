@@ -27,7 +27,7 @@
     "loginEnabled": "Login: enabled (password updated)",
     "loginDisabled": "Login: disabled",
     "providerInfo": "Provider: {info}",
-    "opencode": "Install and configure the bundled @shiguang-gateway/opencode-plugin for OpenCode"
+    "opencode": "Install and configure the bundled @orbit/opencode-plugin for OpenCode"
   },
   "doctor": {
     "title": "ShiguangGateway Doctor",

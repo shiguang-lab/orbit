@@ -1,11 +1,11 @@
 import { randomUUID } from "node:crypto";
-import { PROVIDER_MODELS } from "@shiguang-gateway/core-domain/catalog/provider-models";
-import { buildAliasMaps, getComboTargetModelId } from "@shiguang-gateway/open-sse/catalog/provider-maps";
-import { getCanonicalModelMetadata } from "@shiguang-gateway/core-domain/catalog/model-metadata";
-import { normalizeComboModels } from "@shiguang-gateway/core-domain/routing/combo-steps";
-import { ComboInvariantError } from "@shiguang-gateway/core-domain/shared/combo-invariants";
-import { getSourcedTokenLimit } from "@shiguang-gateway/open-sse/services/context-manager";
-import { resolveNestedComboTargets } from "@shiguang-gateway/open-sse/services/combo";
+import { PROVIDER_MODELS } from "@orbit/core/catalog/provider-models";
+import { buildAliasMaps, getComboTargetModelId } from "@orbit/inference/catalog/provider-maps";
+import { getCanonicalModelMetadata } from "@orbit/core/catalog/model-metadata";
+import { normalizeComboModels } from "@orbit/core/routing/combo-steps";
+import { ComboInvariantError } from "@orbit/core/shared/combo-invariants";
+import { getSourcedTokenLimit } from "@orbit/inference/services/context-manager";
+import { resolveNestedComboTargets } from "@orbit/inference/services/combo";
 
 type RecordLike = Record<string, unknown>;
 type ComboErrorCode = "COMBO_001" | "COMBO_002" | "COMBO_003" | "COMBO_004" | "COMBO_005" | "COMBO_006" | "COMBO_007" | "COMBO_008" | "VALID_001" | "VALID_002" | "INTERNAL_001";

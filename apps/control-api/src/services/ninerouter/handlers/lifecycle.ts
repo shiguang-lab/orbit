@@ -5,17 +5,17 @@ import {
   ServiceSupervisor,
   getServiceRow,
   updateServiceField,
-} from "@shiguang-gateway/core-domain/control/embedded-services-lifecycle";
-import { getServiceModels } from "@shiguang-gateway/core-domain/embedded-services/catalog";
-import { generateServiceApiKey, getOrCreateApiKey } from "@shiguang-gateway/core-domain/embedded-services/api-key";
+} from "@orbit/core/control/embedded-services-lifecycle";
+import { getServiceModels } from "@orbit/core/embedded-services/catalog";
+import { generateServiceApiKey, getOrCreateApiKey } from "@orbit/core/embedded-services/api-key";
 import {
   getNineRouterInstalledVersion,
   getNineRouterLatestVersion,
   resolveNineRouterSpawnArgs,
   updateNineRouter,
-} from "@shiguang-gateway/core-domain/control/embedded-services-install";
-import { encrypt } from "@shiguang-gateway/core-domain/db/encryption";
-import { createErrorResponse, sanitizeErrorMessage } from "@shiguang-gateway/core-domain/shared/error-response";
+} from "@orbit/core/control/embedded-services-install";
+import { encrypt } from "@orbit/core/db/encryption";
+import { createErrorResponse, sanitizeErrorMessage } from "@orbit/utils/errors/api-response";
 
 const TOOL = "9router";
 const PORT = 20130;

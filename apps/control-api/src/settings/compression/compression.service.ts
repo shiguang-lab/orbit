@@ -4,17 +4,17 @@ import {
   getMcpAccessibilityConfig,
   setMcpAccessibilityConfig,
   updateCompressionSettings,
-} from "@shiguang-gateway/core-domain/control/compression-settings";
-import { getCompressionRunTelemetrySummary } from "@shiguang-gateway/core-domain/db/compression-run-telemetry";
-import { getCavemanRuleMetadata } from "@shiguang-gateway/open-sse/services/compression/cavemanRules";
+} from "@orbit/core/control/compression-settings";
+import { getCompressionRunTelemetrySummary } from "@orbit/core/db/compression-run-telemetry";
+import { getCavemanRuleMetadata } from "@orbit/inference/services/compression/cavemanRules";
 import {
   discoverRepeatedNoise,
-} from "@shiguang-gateway/open-sse/services/compression/engines/rtk";
+} from "@orbit/inference/services/compression/engines/rtk";
 import {
   getRtkFilterCatalog,
   getRtkFilterLoadDiagnostics,
   loadRtkFilters,
-} from "@shiguang-gateway/open-sse/services/compression/engines/rtk/filterLoader";
+} from "@orbit/inference/services/compression/engines/rtk/filterLoader";
 import {
   commandToId,
   detectCommandType,
@@ -22,16 +22,16 @@ import {
   processRtkText,
   readRtkRawOutput,
   suggestFilter,
-} from "@shiguang-gateway/open-sse/services/compression/engines/rtk";
+} from "@orbit/inference/services/compression/engines/rtk";
 import {
   installGlobalRtkTomlV1,
   parseRtkTomlV1,
   type RtkTomlCompatibilityResult,
-} from "@shiguang-gateway/open-sse/services/compression/engines/rtk/tomlCompatibility";
+} from "@orbit/inference/services/compression/engines/rtk/tomlCompatibility";
 import {
   DEFAULT_RTK_CONFIG,
   type RtkConfig,
-} from "@shiguang-gateway/contracts/compression-settings";
+} from "@orbit/contracts/compression-settings";
 
 const EMPTY_TELEMETRY_SUMMARY = {
   totalRuns: 0,

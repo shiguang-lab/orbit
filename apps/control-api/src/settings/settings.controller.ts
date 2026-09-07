@@ -1,19 +1,19 @@
-import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
+import { toWebRequest } from "@orbit/http/web-handler";
 import { Body, Controller, Delete, Get, Inject, Patch, Post, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import {
   isValidationFailure,
   validateBody,
-} from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { databaseSettingsSchema } from "@shiguang-gateway/core-domain/validation/settings";
+} from "@orbit/core/shared/validation/helpers";
+import { databaseSettingsSchema } from "@orbit/core/validation/settings";
 import { SettingsService } from "./settings.service.js";
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
+import { isAuthenticated } from "@orbit/core/control/authenticated";
 import {
   FEATURE_FLAG_DEFINITIONS,
-} from "@shiguang-gateway/core-domain/runtime/feature-flags";
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+} from "@orbit/core/runtime/feature-flags";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 
 const databaseSettingsPatchSchema = databaseSettingsSchema.partial().strict();

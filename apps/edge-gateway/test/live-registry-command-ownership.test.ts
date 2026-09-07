@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import test from "node:test";
-import { edgeRuntimeCommandSchema } from "@shiguang-gateway/contracts/edge-runtime-command";
+import { edgeRuntimeCommandSchema } from "@orbit/contracts/edge-runtime-command";
 import { LocalProviderHealthService } from "../src/runtime-control/local-provider-health.service.js";
 import { RuntimeControlService } from "../src/runtime-control/runtime-control.service.js";
 
@@ -110,12 +110,12 @@ test("edge command service owns live registry reads and mutations", () => {
   ]) {
     assert.match(service, new RegExp(`open-sse/services/${runtime}`), runtime);
   }
-  assert.match(service, /open-sse\/services\/providerLimits/);
-  assert.match(service, /open-sse\/services\/codexResetCredits/);
+  assert.match(service, /inference\/services\/providerLimits/);
+  assert.match(service, /inference\/services\/codexResetCredits/);
 });
 
 test("control consumers proxy instead of importing edge singleton registries", () => {
-  const forbidden = /open-sse\/services\/(?:deviceTracker|comboMetrics|autoCombo\/providerDiversity|combo\/decisionTrace|toolLatencyTracker|searchCache|reasoningCache|quotaPreflight)/;
+  const forbidden = /inference\/services\/(?:deviceTracker|comboMetrics|autoCombo\/providerDiversity|combo\/decisionTrace|toolLatencyTracker|searchCache|reasoningCache|quotaPreflight)/;
   for (const path of [
     "apps/control-api/src/keys/handlers/key-devices.ts",
     "apps/control-api/src/providers/providers.service.ts",
@@ -131,16 +131,16 @@ test("control consumers proxy instead of importing edge singleton registries", (
     assert.match(source, /executeEdgeRuntimeCommand/, path);
   }
   const proxyLogs = read("apps/control-api/src/logs/handlers/proxy-logs.handler.ts");
-  assert.doesNotMatch(proxyLogs, /core-domain\/logging\/proxy-logs/);
+  assert.doesNotMatch(proxyLogs, /core\/logging\/proxy-logs/);
   assert.match(proxyLogs, /executeEdgeRuntimeCommand/);
   const providerTest = read(
     "apps/control-api/src/providers/handlers/provider-test/provider-test.handler.ts",
   );
-  assert.doesNotMatch(providerTest, /core-domain\/logging\/proxy-logs/);
+  assert.doesNotMatch(providerTest, /core\/logging\/proxy-logs/);
   assert.match(providerTest, /command: "proxy-logs\.record"/);
 
   const memory = read("apps/control-api/src/memory/memory.service.ts");
-  assert.doesNotMatch(memory, /open-sse\/services\/memoryRuntime/);
+  assert.doesNotMatch(memory, /inference\/services\/memoryRuntime/);
   assert.match(memory, /executeEdgeRuntimeCommand/);
 
   for (const path of [
@@ -149,7 +149,7 @@ test("control consumers proxy instead of importing edge singleton registries", (
     "apps/control-api/src/usage/handlers/codex-reset-credit.handler.ts",
   ]) {
     const source = read(path);
-    assert.doesNotMatch(source, /open-sse\/services\/(?:providerLimits|codexResetCredits)/, path);
+    assert.doesNotMatch(source, /inference\/services\/(?:providerLimits|codexResetCredits)/, path);
     assert.match(source, /executeEdgeRuntimeCommand/, path);
   }
 });
@@ -157,14 +157,14 @@ test("control consumers proxy instead of importing edge singleton registries", (
 test("edge commands operate on the live registry instances", async () => {
   const runtime = new RuntimeControlService(new LocalProviderHealthService());
   const [devices, combos, diversity, traces, latency, reasoning, quota, semantic] = await Promise.all([
-    import("@shiguang-gateway/open-sse/services/deviceTracker"),
-    import("@shiguang-gateway/open-sse/services/comboMetrics"),
-    import("@shiguang-gateway/open-sse/services/autoCombo/providerDiversity"),
-    import("@shiguang-gateway/open-sse/services/combo/decisionTrace"),
-    import("@shiguang-gateway/open-sse/services/toolLatencyTracker"),
-    import("@shiguang-gateway/open-sse/services/reasoningCache"),
-    import("@shiguang-gateway/open-sse/services/quotaPreflight"),
-    import("@shiguang-gateway/core-domain/cache/semantic"),
+    import("@orbit/inference/services/deviceTracker"),
+    import("@orbit/inference/services/comboMetrics"),
+    import("@orbit/inference/services/autoCombo/providerDiversity"),
+    import("@orbit/inference/services/combo/decisionTrace"),
+    import("@orbit/inference/services/toolLatencyTracker"),
+    import("@orbit/inference/services/reasoningCache"),
+    import("@orbit/inference/services/quotaPreflight"),
+    import("@orbit/core/cache/semantic"),
   ]);
 
   devices.clearDeviceTracker();
@@ -279,7 +279,7 @@ test("edge commands operate on the live registry instances", async () => {
 
 test("edge owns proxy-log clearing and memory CRUD state", async () => {
   const runtime = new RuntimeControlService(new LocalProviderHealthService());
-  const { getDbInstance } = await import("@shiguang-gateway/core-domain/db/connection");
+  const { getDbInstance } = await import("@orbit/core/db/connection");
 
   await runtime.execute({
     version: 1,
@@ -305,7 +305,7 @@ test("edge owns proxy-log clearing and memory CRUD state", async () => {
     .get("owner-test") as { count: number };
   assert.equal(persisted.count, 0, "cleared pending rows must not be flushed back to SQLite");
 
-  const memoryRuntime = await import("@shiguang-gateway/core-domain/edge/memory-runtime");
+  const memoryRuntime = await import("@orbit/core/edge/memory-runtime");
   await memoryRuntime.initMemoryBackends();
   const created = await runtime.execute({
     version: 1,

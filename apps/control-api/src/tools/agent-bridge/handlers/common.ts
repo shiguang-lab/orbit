@@ -1,4 +1,4 @@
-import { errorResponse, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { errorResponse, sanitizeErrorMessage } from "@orbit/inference/utils/error";
 
 export function failure(error: unknown, status = 500): Response {
   return errorResponse(status, sanitizeErrorMessage(error instanceof Error ? error.message : String(error)));

@@ -1,6 +1,6 @@
-import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
-import { pingDb } from "@shiguang-gateway/core-domain/db/ping";
-import { listPools } from "@shiguang-gateway/core-domain/quota/db";
+import { getDbInstance } from "@orbit/core/db/connection";
+import { pingDb } from "@orbit/core/db/ping";
+import { listPools } from "@orbit/core/quota/db";
 
 interface ProviderStatusRow {
   id: string;

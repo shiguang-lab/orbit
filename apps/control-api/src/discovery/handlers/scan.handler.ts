@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { createErrorResponse, createErrorResponseFromUnknown } from "@shiguang-gateway/core-domain/shared/error-response";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { createErrorResponse, createErrorResponseFromUnknown } from "@orbit/utils/errors/api-response";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 import { persistDiscoveryResult, scanProvider } from "../discovery.scanner.js";
 
 const scanRequestSchema = z.object({ providerId: z.string().min(1).max(200) });

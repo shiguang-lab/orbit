@@ -1,9 +1,9 @@
-import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
+import { getDbInstance } from "@orbit/core/db/connection";
 import { ensureLoginGuardSchema } from "../auth/login.guard.js";
 
 /**
  * Tables owned exclusively by control-api.  They intentionally live beside
- * the owning Nest app; packages/db-schema contains only their canonical
+ * the owning Nest app; packages/contracts/src/db-schema contains only their canonical
  * entity metadata and ownership declaration.
  */
 const CONTROL_SCHEMA_SQL = `

@@ -1,4 +1,4 @@
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import {
   deleteSubscription,
   firstIssueMessage,
@@ -6,8 +6,8 @@ import {
   proxySubscriptionUpdateSchema,
   redactSubscriptionUrl,
   updateSubscription,
-} from "@shiguang-gateway/core-domain/proxy-subscriptions/management";
-import { createErrorResponseFromUnknown } from "@shiguang-gateway/core-domain/shared/error-response";
+} from "@orbit/core/proxy-subscriptions/management";
+import { createErrorResponseFromUnknown } from "@orbit/utils/errors/api-response";
 
 type RouteContext = { params: { id: string } };
 

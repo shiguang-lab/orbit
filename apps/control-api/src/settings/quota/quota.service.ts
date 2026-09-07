@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import {
   getSettings,
-} from "@shiguang-gateway/core-domain/db/settings";
+} from "@orbit/core/db/settings";
 import { updatePersistedRuntimeSettings } from "../runtime-settings-persistence.js";
-import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/compliance/audit-log";
+import { getAuditRequestContext, logAuditEvent } from "@orbit/core/compliance/audit-log";
 import { QuotaStoreSettingsSchema } from "../../quota/schemas.js";
 import {
   getQuotaAnalyticsSummary,
@@ -11,7 +11,7 @@ import {
   resetExpiredQuotaWindows,
   clearProviderQuota,
   resetQuotaStoreSingleton,
-} from "@shiguang-gateway/core-domain/quota/state";
+} from "@orbit/core/quota/state";
 
 function quotaStoreResponse(driver: string, redisUrlConfigured: boolean) {
   return { driver, redisUrlConfigured, redisUrl: null };

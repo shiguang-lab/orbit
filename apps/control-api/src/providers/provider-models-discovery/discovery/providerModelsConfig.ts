@@ -1,30 +1,30 @@
-import { getAntigravityModelsDiscoveryUrls } from "@shiguang-gateway/open-sse/config/antigravity-upstream";
+import { getAntigravityModelsDiscoveryUrls } from "@orbit/inference/config/antigravity-upstream";
 import {
   GROK_BUILD_DEFAULT_CONTEXT_WINDOW,
   getGrokBuildModelsHeaders,
   GROK_BUILD_MODELS_URL,
   GROK_BUILD_SUPPORTED_REASONING_EFFORTS,
-} from "@shiguang-gateway/open-sse/config/grokBuild";
-import { getAntigravityContentHeaders } from "@shiguang-gateway/open-sse/services/antigravity-headers";
+} from "@orbit/inference/config/grokBuild";
+import { getAntigravityContentHeaders } from "@orbit/inference/services/antigravity-headers";
 import { parseGeminiModelsList } from "./gemini-models-parser.js";
 import {
   CLINE_MODELS_ENDPOINT,
   CLINEPASS_MODELS_ENDPOINT,
   parseClineModels,
   parseClinepassRecommendedModels,
-} from "@shiguang-gateway/open-sse/services/clinepassModels";
-import { buildClaudeCodeCompatibleHeaders } from "@shiguang-gateway/open-sse/services/claudeCodeCompatible";
+} from "@orbit/inference/services/clinepassModels";
+import { buildClaudeCodeCompatibleHeaders } from "@orbit/inference/services/claudeCodeCompatible";
 import {
   buildKimiCodeIdentityHeaders,
   getKimiCodeCliUserAgent,
   KIMI_CODING_MODELS_URL,
-} from "@shiguang-gateway/open-sse/config/providers/registry/kimi/coding/runtime";
-import { ALIBABA_MODEL_STUDIO_MODELS } from "@shiguang-gateway/open-sse/config/providers/registry/alibaba/index";
-import { QWEN_CLOUD_TEXT_MODELS } from "@shiguang-gateway/open-sse/config/providers/registry/qwen-cloud/index";
-import { filterAlibabaFreeEligibleModels } from "@shiguang-gateway/open-sse/services/alibabaFreeTierDiscovery";
-import { shouldUseLiveAlibabaFreeModelDiscovery } from "@shiguang-gateway/open-sse/services/alibabaFreeTier";
-import { isDashscopeTextModelId } from "@shiguang-gateway/open-sse/services/dashscopeTextModels";
-import { extractZaiToken } from "@shiguang-gateway/open-sse/services/zaiWebCredentials";
+} from "@orbit/inference/config/providers/registry/kimi/coding/runtime";
+import { ALIBABA_MODEL_STUDIO_MODELS } from "@orbit/inference/config/providers/registry/alibaba/index";
+import { QWEN_CLOUD_TEXT_MODELS } from "@orbit/inference/config/providers/registry/qwen-cloud/index";
+import { filterAlibabaFreeEligibleModels } from "@orbit/inference/services/alibabaFreeTierDiscovery";
+import { shouldUseLiveAlibabaFreeModelDiscovery } from "@orbit/inference/services/alibabaFreeTier";
+import { isDashscopeTextModelId } from "@orbit/inference/services/dashscopeTextModels";
+import { extractZaiToken } from "@orbit/inference/services/zaiWebCredentials";
 import { normalizeOpenAiLikeModelsResponse } from "./normalizers.js";
 
 const QWEN_CLOUD_TEXT_MODEL_IDS = new Set(QWEN_CLOUD_TEXT_MODELS.map((model) => model.id));

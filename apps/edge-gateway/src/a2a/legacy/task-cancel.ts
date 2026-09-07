@@ -1,6 +1,6 @@
-import { getTaskManager } from "@shiguang-gateway/core-domain/a2a/runtime";
+import { getTaskManager } from "@orbit/core/a2a/runtime";
 import { authorizeA2ATaskRoute } from "./auth.js";
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   // GHSA-jcm5-6wpp-wjj8: this route had no auth call at all. The owner check

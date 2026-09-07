@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { getSearchAggregateStats, getSearchProviderCounts } from "@shiguang-gateway/core-domain/db/call-log-stats";
-import { SEARCH_PROVIDERS } from "@shiguang-gateway/open-sse/config/searchRegistry";
+import { getSearchAggregateStats, getSearchProviderCounts } from "@orbit/core/db/call-log-stats";
+import { SEARCH_PROVIDERS } from "@orbit/inference/config/searchRegistry";
 
 export interface SearchAnalyticsResponse {
   total: number;

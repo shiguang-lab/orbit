@@ -6,14 +6,14 @@ import {
   isSocks5ProxyEnabled,
   proxyConfigToUrl,
   proxyUrlForLogs,
-} from "@shiguang-gateway/open-sse/utils/proxyDispatcher";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
-import { getProxyById } from "@shiguang-gateway/core-domain/db/proxies";
-import { extractRelayAuth } from "@shiguang-gateway/core-domain/db/proxy-registry";
-import { recordRelayProbe } from "@shiguang-gateway/core-domain/db/relay-probe-stats";
-import { probeEchoTargets } from "@shiguang-gateway/core-domain/shared/proxy-echo-target";
-import { testProxySchema } from "@shiguang-gateway/core-domain/validation/proxy";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+} from "@orbit/inference/utils/proxyDispatcher";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
+import { getProxyById } from "@orbit/core/db/proxies";
+import { extractRelayAuth } from "@orbit/core/db/proxy-registry";
+import { recordRelayProbe } from "@orbit/core/db/relay-probe-stats";
+import { probeEchoTargets } from "@orbit/core/shared/proxy-echo-target";
+import { testProxySchema } from "@orbit/core/validation/proxy";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 import { buildRelayTestResult } from "./relay-test-result.js";
 
 const BASE_SUPPORTED_PROXY_TYPES = new Set(["http", "https"]);

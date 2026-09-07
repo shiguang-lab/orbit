@@ -1,3 +1,0 @@
-/** Compatibility facade; catalog ownership lives in @shiguang-gateway/provider-catalog. */
-export { CLAUDE_EFFORT_SUFFIXES, PROVIDER_ID_TO_ALIAS, PROVIDER_MODELS, findModelName, findRegistryModelById, findRegistryScoresAs, getDefaultModel, getModelStripTypes, getModelTargetFormat, getModelTimeoutMs, getModelsByProviderId, getProviderModel, getProviderModels, isValidModel, splitClaudeEffortSuffix, supportsClaudeMaxEffort, supportsXHighEffort, supportsXHighEffortForMaxNormalization } from "@shiguang-gateway/provider-catalog/provider-models";
-export type { ClaudeEffortSuffix } from "@shiguang-gateway/provider-catalog/provider-models";

@@ -1,0 +1,2 @@
+/** Compatibility facade; catalog support ownership lives in @orbit/providers. */
+export { ANTIGRAVITY_MODEL_ALIASES, ANTIGRAVITY_PRO_FALLBACK_CHAINS, ANTIGRAVITY_PUBLIC_MODELS, ANTIGRAVITY_REVERSE_MODEL_ALIASES, getAntigravityModelFallbacks, getClientVisibleAntigravityModelName, isDiscoverableAntigravityModelId, isUserCallableAntigravityModelId, resolveAntigravityModelId, toClientAntigravityModelId, toClientAntigravityQuotaModelId } from "@orbit/providers/support/config/antigravityModelAliases";

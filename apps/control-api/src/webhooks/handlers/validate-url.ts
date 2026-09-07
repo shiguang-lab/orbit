@@ -4,10 +4,10 @@
  */
 
 import { z } from "zod";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { OutboundUrlGuardError } from "@shiguang-gateway/network-guard";
-import { parseAndValidateWebhookUrl } from "@shiguang-gateway/core-domain/network/outbound-url-guard-policy";
-import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { OutboundUrlGuardError } from "@orbit/utils/network";
+import { parseAndValidateWebhookUrl } from "@orbit/core/network/outbound-url-guard-policy";
+import { validateBody, isValidationFailure } from "@orbit/core/shared/validation/helpers";
 
 const validateUrlSchema = z.object({
   url: z.string().min(1).max(2000),

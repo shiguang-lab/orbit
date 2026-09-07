@@ -1,9 +1,9 @@
-import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
+import { toWebRequest } from "@orbit/http/web-handler";
 import { Body, Controller, Get, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { buildErrorBody } from "@orbit/inference/utils/error";
 import { TierConfigService } from "./tier-config.service.js";
 
 const tierOverridePutSchema = z

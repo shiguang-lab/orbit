@@ -7,7 +7,7 @@ import {
   maskApiKey,
 } from "../domain/credentials.js";
 import { getCloudAgentCorsHeaders, requireCloudAgentManagementAuth } from "../domain/api.js";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 
 const SaveCredentialSchema = z.object({
   providerId: z.enum(["jules", "devin", "codex-cloud", "cursor-cloud"]),

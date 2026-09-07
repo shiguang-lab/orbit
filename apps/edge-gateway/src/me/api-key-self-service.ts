@@ -1,8 +1,8 @@
 import {
   hasSelfAccountQuotaScope,
   hasSelfUsageScope,
-} from "@shiguang-gateway/core-domain/shared/constants/selfServiceScopes";
-import { USAGE_SUPPORTED_PROVIDERS } from "@shiguang-gateway/core-domain/catalog/providers";
+} from "@orbit/core/shared/constants/selfServiceScopes";
+import { USAGE_SUPPORTED_PROVIDERS } from "@orbit/providers/catalog";
 
 type JsonRecord = Record<string, unknown>;
 type DateLike = number | string | Date | null | undefined;
@@ -360,17 +360,17 @@ async function normalizeDeps(deps: ApiKeySelfServiceDeps): Promise<RequiredDeps>
   const costRules =
     deps.getCostSummary && deps.checkBudget
       ? null
-      : await import("@shiguang-gateway/core-domain/usage/cost-rules");
+      : await import("@orbit/core/usage/cost-rules");
   const dbCore = deps.getDbInstance
     ? null
-    : await import("@shiguang-gateway/core-domain/db/connection");
+    : await import("@orbit/core/db/connection");
   const localDb =
     deps.getProviderConnectionById && deps.getProviderConnections
       ? null
-      : await import("@shiguang-gateway/core-domain/db/provider-connections");
+      : await import("@orbit/core/db/provider-connections");
   const providerLimits = deps.fetchAndPersistProviderLimits
     ? null
-    : await import("@shiguang-gateway/open-sse/services/providerLimits");
+    : await import("@orbit/inference/services/providerLimits");
 
   return {
     now: deps.now ?? Date.now,

@@ -1,15 +1,15 @@
 import {
   AgentBridgeConfigSchema,
   ALL_TARGETS,
-} from "@shiguang-gateway/core-domain/control/agent-bridge";
+} from "@orbit/core/control/agent-bridge";
 import {
   addCustomHost,
   listCustomHosts,
-} from "@shiguang-gateway/core-domain/control/traffic-inspector";
+} from "@orbit/core/control/traffic-inspector";
 import type {
   AgentBridgeConfig,
   AgentBridgeImportResult,
-} from "@shiguang-gateway/core-domain/control/agent-bridge";
+} from "@orbit/core/control/agent-bridge";
 import { agentBridgePersistence } from "./agent-bridge.persistence.js";
 
 export { AgentBridgeConfigSchema };

@@ -10,8 +10,8 @@
  * (createApiKey) so the existing policy/rate-limit/model-allowlist machinery
  * applies unchanged. The key is cached in-memory per user id.
  */
-import { createApiKey, getApiKeys } from "@shiguang-gateway/core-domain/db/api-keys";
-import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
+import { createApiKey, getApiKeys } from "@orbit/core/db/api-keys";
+import { getConsistentMachineId } from "@orbit/core/shared/utils/machineId";
 
 const DEFAULT_MODEL = process.env.TELEGRAM_DEFAULT_MODEL || "auto/chat";
 

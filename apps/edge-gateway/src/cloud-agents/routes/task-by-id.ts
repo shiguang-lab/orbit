@@ -13,7 +13,7 @@ import {
   serializeCloudAgentTask,
 } from "../domain/api.js";
 import { z } from "zod";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 
 let _tableInit = false;
 function ensureTable() {

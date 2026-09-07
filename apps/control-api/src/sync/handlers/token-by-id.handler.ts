@@ -1,7 +1,7 @@
-import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/compliance/audit-log";
-import { createErrorResponse, createErrorResponseFromUnknown } from "@shiguang-gateway/core-domain/shared/error-response";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { revokeSyncTokenById } from "@shiguang-gateway/core-domain/control/sync-tokens";
+import { getAuditRequestContext, logAuditEvent } from "@orbit/core/compliance/audit-log";
+import { createErrorResponse, createErrorResponseFromUnknown } from "@orbit/utils/errors/api-response";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { revokeSyncTokenById } from "@orbit/core/control/sync-tokens";
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
   const authError = await requireManagementAuth(request);

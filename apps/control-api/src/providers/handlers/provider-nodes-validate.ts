@@ -1,16 +1,16 @@
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/compliance/audit-log";
-import { validateClaudeCodeCompatibleProvider } from "@shiguang-gateway/open-sse/services/provider-validation";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { getAuditRequestContext, logAuditEvent } from "@orbit/core/compliance/audit-log";
+import { validateClaudeCodeCompatibleProvider } from "@orbit/inference/services/provider-validation";
 import {
   SAFE_OUTBOUND_FETCH_PRESETS,
   SafeOutboundFetchError,
   getSafeOutboundFetchErrorStatus,
   safeOutboundFetch,
-} from "@shiguang-gateway/core-domain/network/safe-outbound-fetch";
-import { getProviderValidationGuard } from "@shiguang-gateway/core-domain/network/outbound-url-guard-policy";
-import { isCcCompatibleProviderEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
-import { providerNodeValidateSchema } from "@shiguang-gateway/core-domain/control/provider-validation-schemas";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+} from "@orbit/core/network/safe-outbound-fetch";
+import { getProviderValidationGuard } from "@orbit/core/network/outbound-url-guard-policy";
+import { isCcCompatibleProviderEnabled } from "@orbit/core/runtime/feature-flags";
+import { providerNodeValidateSchema } from "@orbit/core/control/provider-validation-schemas";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 
 // Matches a base URL whose host is localhost / 127.0.0.1 (with an optional port).
 const LOCALHOST_BASE_URL_RE = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?(?:[/?#]|$)/i;

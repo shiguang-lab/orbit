@@ -5,10 +5,10 @@ import path from "path";
 import os from "os";
 import { exec } from "child_process";
 import { promisify } from "util";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { cliAuthOnlyConfigSchema } from "@shiguang-gateway/core-domain/control/cli-tools-config-validation";
-import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
+import { cliAuthOnlyConfigSchema } from "@orbit/core/control/cli-tools-config-validation";
+import { requireManagementAuth as requireCliToolsAuth } from "@orbit/core/control/management-auth";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import { errorCode, isJsonObject, parseJsonObject, type JsonObject } from "./_lib/jsonObject.js";
 
 const execAsync = promisify(exec);

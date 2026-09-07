@@ -1,5 +1,5 @@
-import { AgentBridgeUpstreamCaPostSchema, configureUpstreamCa, resolveMitmDataDir } from "@shiguang-gateway/core-domain/control/agent-bridge";
-import { errorResponse, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { AgentBridgeUpstreamCaPostSchema, configureUpstreamCa, resolveMitmDataDir } from "@orbit/core/control/agent-bridge";
+import { errorResponse, sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import fs from "node:fs";
 import path from "node:path";
 

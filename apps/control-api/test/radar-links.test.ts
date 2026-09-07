@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { afterEach, test } from "node:test";
-import { parseRadarAdminUrl, radarAdminUrlSchema } from "@shiguang-gateway/contracts/radar-admin-url";
+import { parseRadarAdminUrl, radarAdminUrlSchema } from "@orbit/contracts/radar-admin-url";
 import {
   getContributorClaimUrl,
   getRadarAdminUrl,

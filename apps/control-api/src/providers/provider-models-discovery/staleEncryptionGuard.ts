@@ -1,4 +1,4 @@
-import { buildErrorBody } from "@shiguang-gateway/http-kernel/error-response";
+import { buildErrorBody } from "@orbit/utils/errors/error-response";
 
 /**
  * #6148 — Stale STORAGE_ENCRYPTION_KEY guard for model-discovery.

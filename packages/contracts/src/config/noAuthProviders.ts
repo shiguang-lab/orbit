@@ -7,7 +7,7 @@ const noAuthProviderEntries = Object.values(NOAUTH_PROVIDERS) as NoAuthProviderE
 
 // Search providers are resolved in open-sse but their aliases are owned by the
 // provider catalog. Keeping this small alias table here avoids making the
-// streaming package import the legacy core-domain catalog.
+// streaming package import the legacy core catalog.
 const SEARCH_PROVIDER_ALIASES: Readonly<Record<string, string>> = {
   "perplexity-search": "pplx-search",
   "anysearch-search": "anysearch",

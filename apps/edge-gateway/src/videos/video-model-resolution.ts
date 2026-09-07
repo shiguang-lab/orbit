@@ -1,4 +1,4 @@
-import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
+import { isAllRateLimitedCredentials } from "@orbit/inference/services/credential-selection";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
 
@@ -10,8 +10,8 @@ export type VideoModelTarget = {
 
 export async function resolveVideoModelTarget(modelStr: string | null | undefined): Promise<VideoModelTarget> {
   const [{ parseVideoModel }, { getAllCustomModels }] = await Promise.all([
-    load("@shiguang-gateway/open-sse/config/videoRegistry"),
-    load("@shiguang-gateway/core-domain/db/models"),
+    load("@orbit/inference/config/videoRegistry"),
+    load("@orbit/core/db/models"),
   ]);
   const parsed = parseVideoModel(modelStr ?? null);
   if (parsed.provider) return { provider: parsed.provider, model: parsed.model, isCustomModel: false };
@@ -46,7 +46,7 @@ export function isVideoPromptOptional(parsed: VideoModelTarget): boolean {
 
 export async function resolveLocalOverrideCredentials(provider: string): Promise<any> {
   const { getProviderCredentialsWithQuotaPreflight } = await load(
-    "@shiguang-gateway/open-sse/services/auth",
+    "@orbit/inference/services/auth",
   );
   const localCredentials = await getProviderCredentialsWithQuotaPreflight(provider);
   return localCredentials && !isAllRateLimitedCredentials(localCredentials) ? localCredentials : null;

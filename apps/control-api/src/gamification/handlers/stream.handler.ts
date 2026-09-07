@@ -5,9 +5,9 @@
  * Supports all leaderboard scopes (global, weekly, monthly, tokens_shared, contributions).
  */
 
-import { type LeaderboardScope, getTopN } from "@shiguang-gateway/core-domain/control/gamification";
-import { CORS_HEADERS } from "@shiguang-gateway/core-domain/shared/cors";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { type LeaderboardScope, getTopN } from "@orbit/core/control/gamification";
+import { CORS_HEADERS } from "@orbit/core/shared/cors";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 
 const VALID_SCOPES: ReadonlySet<string> = new Set([
   "global",

@@ -1,23 +1,23 @@
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/compliance/audit-log";
-import { getProviderNodeById } from "@shiguang-gateway/core-domain/db/provider-nodes";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { getAuditRequestContext, logAuditEvent } from "@orbit/core/compliance/audit-log";
+import { getProviderNodeById } from "@orbit/core/db/provider-nodes";
 import {
   isClaudeCodeCompatibleProvider,
   isOpenAICompatibleProvider,
   isAnthropicCompatibleProvider,
-} from "@shiguang-gateway/core-domain/catalog/providers";
-import { validateProviderApiKey } from "@shiguang-gateway/open-sse/services/provider-validation";
-import { getProxyForLevel } from "@shiguang-gateway/core-domain/db/proxy-settings";
-import { resolveProxyForProvider } from "@shiguang-gateway/core-domain/db/proxies";
-import { validateProviderApiKeySchema } from "@shiguang-gateway/core-domain/control/provider-validation-schemas";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { runWithProxyContextOrDirect } from "@shiguang-gateway/open-sse/utils/proxyFetch";
+} from "@orbit/providers/catalog";
+import { validateProviderApiKey } from "@orbit/inference/services/provider-validation";
+import { getProxyForLevel } from "@orbit/core/db/proxy-settings";
+import { resolveProxyForProvider } from "@orbit/core/db/proxies";
+import { validateProviderApiKeySchema } from "@orbit/core/control/provider-validation-schemas";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
+import { runWithProxyContextOrDirect } from "@orbit/inference/utils/proxyFetch";
 import {
   CHATGPT_WEB_RETIRED_ERROR_CODE,
   CHATGPT_WEB_RETIRED_MESSAGE,
   isCommonChatGptWebRetiredProviderId,
-} from "@shiguang-gateway/contracts/chatgpt-web-retirement";
-import { errorResponse } from "@shiguang-gateway/open-sse/utils/error";
+} from "@orbit/contracts/chatgpt-web-retirement";
+import { errorResponse } from "@orbit/inference/utils/error";
 
 function rejectRetiredCommonChatGptWebProvider(providerId: unknown): Response | null {
   return isCommonChatGptWebRetiredProviderId(providerId)

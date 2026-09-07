@@ -69,9 +69,9 @@ export async function resolveDynamicAudioProviders(
 ): Promise<AudioProvider[]> {
   try {
     const [{ getCachedProviderNodes }, { isFeatureFlagEnabled }, registry] = await Promise.all([
-      load("@shiguang-gateway/core-domain/db/read-cache"),
-      load("@shiguang-gateway/core-domain/runtime/feature-flags"),
-      load("@shiguang-gateway/open-sse/config/audioRegistry"),
+      load("@orbit/core/db/read-cache"),
+      load("@orbit/core/runtime/feature-flags"),
+      load("@orbit/inference/config/audioRegistry"),
     ]);
     const nodes = await getCachedProviderNodes();
     if (!Array.isArray(nodes)) return [];

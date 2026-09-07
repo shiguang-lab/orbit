@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { parseJobCommand } from "@shiguang-gateway/contracts/job-command";
+import { parseJobCommand } from "@orbit/contracts/job-command";
 import { executeWorkerJobCommand, type WorkerJobCommandRegistry } from "../src/jobs/command-server.js";
 
 test("job command contract rejects unversioned and malformed commands", () => {

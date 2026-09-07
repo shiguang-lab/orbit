@@ -1,11 +1,11 @@
-import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { buildErrorBody, sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import {
   InspectorCustomHostSchema,
   addCustomHost,
   addDNSEntries,
   getCachedPassword,
   listCustomHosts,
-} from "@shiguang-gateway/core-domain/control/traffic-inspector";
+} from "@orbit/core/control/traffic-inspector";
 
 export async function listHosts(): Promise<Response> {
   try {

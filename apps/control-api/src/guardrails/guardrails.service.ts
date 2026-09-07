@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { z } from "zod";
-import { registerDefaultGuardrails } from "@shiguang-gateway/core-domain/control/guardrails";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { createErrorResponse } from "@shiguang-gateway/core-domain/shared/error-response";
-import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
+import { registerDefaultGuardrails } from "@orbit/core/control/guardrails";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { createErrorResponse } from "@orbit/utils/errors/api-response";
+import { validateBody, isValidationFailure } from "@orbit/core/shared/validation/helpers";
+import { CORS_HEADERS } from "@orbit/contracts/cors";
 
 const TestRequestSchema = z.object({
   input: z.union([z.string(), z.record(z.string(), z.unknown()), z.array(z.unknown())]),

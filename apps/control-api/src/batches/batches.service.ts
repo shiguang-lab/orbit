@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { getBatch, listBatches } from "@shiguang-gateway/core-domain/db/batches";
+import { getBatch, listBatches } from "@orbit/core/db/batches";
 
 @Injectable()
 export class BatchesService {

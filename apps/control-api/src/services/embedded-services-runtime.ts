@@ -7,8 +7,8 @@ import {
   ServiceSupervisor,
   type ServiceStatus,
   getServiceProviderPlugin,
-} from "@shiguang-gateway/core-domain/control/embedded-services-lifecycle";
-import { getOrCreateApiKey } from "@shiguang-gateway/core-domain/embedded-services/api-key";
+} from "@orbit/core/control/embedded-services-lifecycle";
+import { getOrCreateApiKey } from "@orbit/core/embedded-services/api-key";
 import {
   resolveNineRouterSpawnArgs as nineRouterSpawnArgs,
   resolveCliproxySpawnArgs as cliproxySpawnArgs,
@@ -19,8 +19,8 @@ import {
   BIFROST_DEFAULT_PORT,
   resolveDarioSpawnArgs as darioSpawnArgs,
   DARIO_DEFAULT_PORT,
-} from "@shiguang-gateway/core-domain/control/embedded-services-install";
-import { resolveDedicatedCliproxyapiApiKey } from "@shiguang-gateway/open-sse/handlers/chat-core/cliproxyapi-credentials";
+} from "@orbit/core/control/embedded-services-install";
+import { resolveDedicatedCliproxyapiApiKey } from "@orbit/inference/handlers/chat-core/cliproxyapi-credentials";
 import {
   scheduleServiceModelSync,
   stopServiceModelSync,

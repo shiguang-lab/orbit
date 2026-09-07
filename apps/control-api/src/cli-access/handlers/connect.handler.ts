@@ -1,15 +1,15 @@
 import { z } from "zod";
-import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/compliance/audit-log";
-import { getCachedSettings } from "@shiguang-gateway/core-domain/db/settings";
+import { getAuditRequestContext, logAuditEvent } from "@orbit/core/compliance/audit-log";
+import { getCachedSettings } from "@orbit/core/db/settings";
 import {
   ensurePersistentManagementPasswordHash,
   getStoredManagementPassword,
   verifyManagementPassword,
-} from "@shiguang-gateway/core-domain/control/management-password";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+} from "@orbit/core/control/management-password";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 import { checkLoginGuard, clearLoginAttempts, recordLoginFailure } from "../../auth/login.guard.js";
-import { createAccessToken } from "@shiguang-gateway/core-domain/control/cli-access-tokens";
-import { ACCESS_SCOPES } from "@shiguang-gateway/core-domain/control/cli-access-scopes";
+import { createAccessToken } from "@orbit/core/control/cli-access-tokens";
+import { ACCESS_SCOPES } from "@orbit/core/control/cli-access-scopes";
 
 /**
  * POST /api/cli/connect — remote-mode bootstrap.

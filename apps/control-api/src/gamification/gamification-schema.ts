@@ -1,5 +1,5 @@
-import { ensureGamificationSchema as ensureSchema } from "@shiguang-gateway/db-schema";
-import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
+import { ensureGamificationSchema as ensureSchema } from "@orbit/contracts/db-schema";
+import { getDbInstance } from "@orbit/core/db/connection";
 
 export function ensureGamificationSchema(): void {
   ensureSchema(getDbInstance());

@@ -1,14 +1,14 @@
 import { Injectable } from "@nestjs/common";
-import { getCachedSettings } from "@shiguang-gateway/core-domain/db/read-cache";
-import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
+import { getCachedSettings } from "@orbit/core/db/read-cache";
+import { getProviderConnections } from "@orbit/core/db/provider-connections";
 import { readRunningBuildSha } from "./build-sha.js";
-import { buildHealthPayload } from "@shiguang-gateway/core-domain/metrics/observability";
-import { APP_CONFIG } from "@shiguang-gateway/core-domain/shared/app-config";
-import { AI_PROVIDERS } from "@shiguang-gateway/core-domain/catalog/providers";
+import { buildHealthPayload } from "@orbit/core/metrics/observability";
+import { APP_CONFIG } from "@orbit/core/shared/app-config";
+import { AI_PROVIDERS } from "@orbit/providers/catalog";
 import {
   createCodexAccountPool,
   getCodexParentAccountDiagnostic,
-} from "@shiguang-gateway/open-sse/services/codexAccount/index";
+} from "@orbit/inference/services/codexAccount/index";
 import { executeEdgeRuntimeCommand, readEdgeRuntimeHealth } from "../edge-runtime/client.js";
 
 const HEALTH_PAYLOAD_TTL_MS = 1_000;

@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 import { IssueAgentService, RecordedTriageTimeoutError } from "./issue-agent.service.js";
 

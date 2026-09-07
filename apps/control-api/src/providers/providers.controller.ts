@@ -1,4 +1,4 @@
-import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
+import { toWebRequest } from "@orbit/http/web-handler";
 import {
   Body,
   Controller,
@@ -19,15 +19,15 @@ import { POST as testProviderConnection } from "./handlers/provider-test/provide
 import { ProviderPolicyService } from "./provider-policy.service.js";
 import { ProviderClientService } from "./provider-client.service.js";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { isAuthenticated } from "@orbit/core/control/authenticated";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { buildErrorBody, sanitizeErrorMessage } from "@orbit/inference/utils/error";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 import {
   updateCcAliasSettingSchema,
   updateInterceptionRulesSchema,
   updateParamFilterConfigSchema,
-} from "@shiguang-gateway/core-domain/control/provider-validation-schemas";
+} from "@orbit/core/control/provider-validation-schemas";
 import {
   listProviders,
   createProvider,
@@ -45,6 +45,7 @@ import {
   GET as getProviderDetail,
   PUT as updateProviderDetail,
 } from "./handlers/provider-detail.js";
+import { getProviderCatalog } from "./handlers/provider-catalog.js";
 import { POST as loginProvider } from "./handlers/provider-login/provider-login.js";
 
 @Controller("api")
@@ -84,6 +85,11 @@ export class ProvidersController {
   @Post("providers/import")
   import(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
     return this.routes.dispatch(request, reply, importProviders);
+  }
+
+  @Get("providers/catalog")
+  catalog(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+    return this.routes.dispatch(request, reply, getProviderCatalog);
   }
 
   @Get("providers/:id")

@@ -3,15 +3,15 @@ import {
   getJobProjection,
   listJobProjections,
   listJobRunProjections,
-} from "@shiguang-gateway/core-domain/control/jobs";
-import { createErrorResponse } from "@shiguang-gateway/core-domain/shared/error-response";
+} from "@orbit/core/control/jobs";
+import { createErrorResponse } from "@orbit/utils/errors/api-response";
 import {
   JOB_COMMAND_PROTOCOL_VERSION,
   WORKER_JOB_COMMAND_AUTH_HEADER,
   WORKER_JOB_COMMAND_PATH,
   type JobCommand,
   type JobCommandResponse,
-} from "@shiguang-gateway/contracts/job-command";
+} from "@orbit/contracts/job-command";
 
 function workerCommandUrl(): URL {
   const base = process.env.SHIGUANG_GATEWAY_WORKER_COMMAND_URL?.trim() || "http://127.0.0.1:8791";

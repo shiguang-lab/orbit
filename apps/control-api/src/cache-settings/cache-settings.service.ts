@@ -2,11 +2,11 @@ import { Injectable } from "@nestjs/common";
 import {
   getDatabaseSettings,
   updateDatabaseSettings,
-} from "@shiguang-gateway/core-domain/db/database-settings";
-import { getSettings } from "@shiguang-gateway/core-domain/db/settings";
+} from "@orbit/core/db/database-settings";
+import { getSettings } from "@orbit/core/db/settings";
 import { updatePersistedRuntimeSettings } from "../settings/runtime-settings-persistence.js";
-import { getCacheMetrics, resetCacheMetrics } from "@shiguang-gateway/core-domain/cache/services";
-import { clearAllLKGP } from "@shiguang-gateway/core-domain/control/lkgp-cache";
+import { getCacheMetrics, resetCacheMetrics } from "@orbit/core/cache/services";
+import { clearAllLKGP } from "@orbit/core/control/lkgp-cache";
 
 const CACHE_CONFIG_KEYS = [
   "semanticCacheEnabled",

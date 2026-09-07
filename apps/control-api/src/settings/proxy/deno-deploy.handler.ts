@@ -1,10 +1,10 @@
 import { randomBytes } from "node:crypto";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { createErrorResponse, createErrorResponseFromUnknown } from "@shiguang-gateway/core-domain/shared/error-response";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { createErrorResponse, createErrorResponseFromUnknown } from "@orbit/utils/errors/api-response";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 import { denoDeploySchema } from "../free-proxy-schemas.js";
-import { createProxy } from "@shiguang-gateway/core-domain/db/proxy-registry";
-import { encrypt } from "@shiguang-gateway/core-domain/db/encryption";
+import { createProxy } from "@orbit/core/db/proxy-registry";
+import { encrypt } from "@orbit/core/db/encryption";
 import { isPrivateRelayHostname } from "./proxy-relay.js";
 
 const DENO_API_BASE = process.env.DENO_DEPLOY_API_BASE || "https://api.deno.com/v2";

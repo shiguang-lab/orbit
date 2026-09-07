@@ -1,5 +1,5 @@
-import { handleCorsOptions } from "@shiguang-gateway/core-domain/shared/cors";
-import { handleInternalUsageCommandHttpRequest } from "@shiguang-gateway/open-sse/services/internalUsageCommand";
+import { handleCorsOptions } from "@orbit/core/shared/cors";
+import { handleInternalUsageCommandHttpRequest } from "@orbit/inference/services/internalUsageCommand";
 
 export function OPTIONS(): Response {
   return handleCorsOptions();

@@ -1,16 +1,16 @@
 import { z } from "zod";
-import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
+import { CORS_HEADERS } from "@orbit/contracts/cors";
 import { handleCorsOptions } from "../common/cors.js";
-import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/runtime/api-key-policy";
-import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/services/auth";
-import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
+import { enforceApiKeyPolicy } from "@orbit/core/runtime/api-key-policy";
+import { extractApiKey, isValidApiKey } from "@orbit/inference/services/auth";
+import { buildErrorBody } from "@orbit/inference/utils/error";
 import {
   isVideoBridgeDrilldownRemoteAccessEnabled,
   VIDEO_DRILLDOWN_VARIANTS,
   VideoDrilldownLifecycle,
   VideoDrilldownCache,
   type VideoDrilldownVariant,
-} from "@shiguang-gateway/core-domain/edge/video-bridge-drilldown";
+} from "@orbit/core/edge/video-bridge-drilldown";
 
 const sharedLifecycle = new VideoDrilldownLifecycle({
   cache: new VideoDrilldownCache({

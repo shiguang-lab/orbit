@@ -6,7 +6,7 @@ import { resolveDataDir } from "./dataPaths.js";
  *
  * This module intentionally only resolves environment-backed values.  It has no
  * logger or persistence dependency, so each deployable application can consume
- * the same policy without reaching into core-domain.
+ * the same policy without reaching into core.
  */
 const DEFAULT_APP_LOG_RETENTION_DAYS = 7;
 const DEFAULT_CALL_LOG_RETENTION_DAYS = 7;

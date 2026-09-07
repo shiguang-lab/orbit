@@ -9,9 +9,9 @@ import {
   updateAssignments,
   updateCompressionCombo,
   type CompressionCombo,
-} from "@shiguang-gateway/core-domain/control/compression-combos";
-import { getCompressionSettings } from "@shiguang-gateway/core-domain/control/compression-settings";
-import { deriveDefaultPlan } from "@shiguang-gateway/open-sse/services/compression/deriveDefaultPlan";
+} from "@orbit/core/control/compression-combos";
+import { getCompressionSettings } from "@orbit/core/control/compression-settings";
+import { deriveDefaultPlan } from "@orbit/inference/services/compression/deriveDefaultPlan";
 
 /** Use cases for named compression pipelines and their routing-combo assignments. */
 @Injectable()

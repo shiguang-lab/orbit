@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getBridgeStats } from "@shiguang-gateway/core-domain/guardrails/modality-bridge-stats";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { getBridgeStats } from "@orbit/core/guardrails/modality-bridge-stats";
 
 @Injectable()
 export class VideoBridgeStatsService {

@@ -1,5 +1,5 @@
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { isAuthenticated } from "@orbit/core/control/authenticated";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import type { SkillsShProvider } from "../providers/skills-sh.provider.js";
 
 export async function GET(request: Request, skillsSh: SkillsShProvider) {

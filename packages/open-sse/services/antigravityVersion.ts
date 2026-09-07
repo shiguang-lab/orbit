@@ -1,2 +1,0 @@
-/** Compatibility facade; catalog support ownership lives in @shiguang-gateway/provider-catalog. */
-export { ANTIGRAVITY_CLI_FALLBACK_VERSION, ANTIGRAVITY_IDE_FALLBACK_VERSION, ANTIGRAVITY_VERSION_CACHE_TTL_MS, ANTIGRAVITY_VERSION_FETCH_TIMEOUT_MS, clearAntigravityVersionCaches, getCachedAntigravityCliVersion, getCachedAntigravityIdeVersion, resolveAntigravityCliVersion, resolveAntigravityIdeVersion, seedAntigravityCliVersionCache, seedAntigravityIdeVersionCache } from "@shiguang-gateway/provider-catalog/support/services/antigravityVersion";

@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { getFile, getFileContent, listFiles } from "@shiguang-gateway/core-domain/db/files";
+import { getFile, getFileContent, listFiles } from "@orbit/core/db/files";
 
 @Injectable()
 export class FilesService {

@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 
-import { readBackupSchedule, writeBackupSchedule } from "@shiguang-gateway/core-domain/backup/runtime";
+import { readBackupSchedule, writeBackupSchedule } from "@orbit/core/backup/runtime";
 import {
   runBackupScheduleTick,
   startBackupScheduleJob,

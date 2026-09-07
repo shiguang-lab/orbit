@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import test from "node:test";
-import { edgeRuntimeCommandSchema } from "@shiguang-gateway/contracts/edge-runtime-command";
+import { edgeRuntimeCommandSchema } from "@orbit/contracts/edge-runtime-command";
 
 const repoRoot = resolve(import.meta.dirname, "../../..");
 const read = (path: string) => readFileSync(resolve(repoRoot, path), "utf8");
@@ -112,9 +112,9 @@ test("edge owns runtime state and control uses the authenticated command client"
     "apps/control-api/src/db-backups/db-backups.service.ts",
   ]) {
     const source = read(path);
-    assert.doesNotMatch(source, /open-sse\/services\/(?:accountFallback|rateLimitManager|requestDedup|quotaMonitor|sessionManager|accountSemaphore|webSessionPoolHealth|signatureCache)/, path);
-    assert.doesNotMatch(source, /core-domain\/resilience\/circuit-breaker/, path);
-    assert.doesNotMatch(source, /open-sse\/(?:services\/(?:modelDeprecation|systemPrompt|thinkingBudget|taskAwareRouter|backgroundTaskDetector|ipFilter|payloadRules|tier-resolver)|executors\/cliproxyapi)/, path);
+    assert.doesNotMatch(source, /inference\/services\/(?:accountFallback|rateLimitManager|requestDedup|quotaMonitor|sessionManager|accountSemaphore|webSessionPoolHealth|signatureCache)/, path);
+    assert.doesNotMatch(source, /core\/resilience\/circuit-breaker/, path);
+    assert.doesNotMatch(source, /inference\/(?:services\/(?:modelDeprecation|systemPrompt|thinkingBudget|taskAwareRouter|backgroundTaskDetector|ipFilter|payloadRules|tier-resolver)|executors\/cliproxyapi)/, path);
   }
   assert.doesNotMatch(read("apps/control-api/src/proxies/proxies.service.ts"), /\bclearDispatcherCache\b/);
   const proxySettings = read("apps/control-api/src/settings/proxy/proxy-settings.service.ts");
@@ -132,7 +132,7 @@ test("edge owns runtime state and control uses the authenticated command client"
   ]) {
     assert.doesNotMatch(
       read(path),
-      /open-sse\/services\/(?:providerLimits|codexResetCredits)/,
+      /inference\/services\/(?:providerLimits|codexResetCredits)/,
       path,
     );
   }
@@ -142,20 +142,20 @@ test("edge owns runtime state and control uses the authenticated command client"
     "apps/control-api/src/combos/handlers/duplicate.ts",
   ]) {
     const source = read(path);
-    assert.doesNotMatch(source, /open-sse\/services\/autoCombo\//, path);
+    assert.doesNotMatch(source, /inference\/services\/autoCombo\//, path);
     assert.match(source, /command: ["']auto-combos\.(?:snapshot|materialize)["']/, path);
   }
   const autoProjection = read("apps/edge-gateway/src/runtime-control/auto-combo-projection.ts");
-  assert.match(autoProjection, /open-sse\/services\/autoCombo\/virtualFactory/);
+  assert.match(autoProjection, /inference\/services\/autoCombo\/virtualFactory/);
   assert.match(autoProjection, /prepareVirtualAutoComboInputs\(\{ includeResolvedCapabilities: true \}\)/);
-  const providerHealthMatrix = read("packages/core-domain/src/lib/monitoring/providerHealthMatrix.ts");
+  const providerHealthMatrix = read("packages/core/src/lib/monitoring/providerHealthMatrix.ts");
   assert.doesNotMatch(providerHealthMatrix, /from ["'][^"']*circuitBreaker/);
   assert.match(providerHealthMatrix, /runtime\.getAllCircuitBreakerStatuses\(\)/);
 });
 
 test("control persists request settings before asking the edge process to apply them", () => {
   const persistence = read("apps/control-api/src/settings/runtime-settings-persistence.ts");
-  const settingsDb = read("packages/core-domain/src/lib/db/settings.ts");
+  const settingsDb = read("packages/core/src/lib/db/settings.ts");
   const edgeRuntime = read("apps/edge-gateway/src/runtime-control/runtime-control.service.ts");
 
   assert.match(persistence, /updateSettings\(updates, \{ applyRuntime: false \}\)/);

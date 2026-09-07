@@ -1,11 +1,11 @@
 "use server";
 
-import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth as requireCliToolsAuth } from "@orbit/core/control/management-auth";
 import {
   CLI_TOOL_IDS,
   getCliPrimaryConfigPath,
   getCliRuntimeStatus,
-} from "@shiguang-gateway/core-domain/cli/runtime";
+} from "@orbit/core/cli/runtime";
 
 export async function GET(
   request: Request,

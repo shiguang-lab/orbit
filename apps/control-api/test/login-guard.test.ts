@@ -10,7 +10,7 @@ import {
   recordLoginFailure,
   resetLoginGuardForTests,
 } from "../src/auth/login.guard.js";
-import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
+import { getDbInstance } from "@orbit/core/db/connection";
 
 const originalDateNow = Date.now;
 const enabled = { enabled: true };

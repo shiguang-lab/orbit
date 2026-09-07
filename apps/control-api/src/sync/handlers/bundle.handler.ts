@@ -1,6 +1,6 @@
-import { buildConfigSyncEnvelope } from "@shiguang-gateway/core-domain/control/sync-bundle";
-import { getSyncTokenFromRequest, markSyncTokenUsed, validateSyncToken } from "@shiguang-gateway/core-domain/control/sync-tokens";
-import { createErrorResponse, createErrorResponseFromUnknown } from "@shiguang-gateway/core-domain/shared/error-response";
+import { buildConfigSyncEnvelope } from "@orbit/core/control/sync-bundle";
+import { getSyncTokenFromRequest, markSyncTokenUsed, validateSyncToken } from "@orbit/core/control/sync-tokens";
+import { createErrorResponse, createErrorResponseFromUnknown } from "@orbit/utils/errors/api-response";
 
 function matchesEtag(request: Request, version: string) {
   const ifNoneMatch = request.headers.get("if-none-match");

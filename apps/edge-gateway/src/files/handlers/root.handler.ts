@@ -1,4 +1,4 @@
-import { createFile, listFiles, formatFileResponse, countFiles } from "@shiguang-gateway/core-domain/db/files";
+import { createFile, listFiles, formatFileResponse, countFiles } from "@orbit/core/db/files";
 import { getApiKeyRequestScope } from "../../common/api-key-scope.js";
 import { CORS_HEADERS, handleCorsOptions, jsonResponse } from "../../common/cors.js";
 

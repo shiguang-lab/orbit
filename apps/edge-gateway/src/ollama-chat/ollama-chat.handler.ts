@@ -1,7 +1,7 @@
-import { handleChat } from "@shiguang-gateway/open-sse/handlers/chat";
+import { handleChat } from "@orbit/inference/handlers/chat";
 import { withChatAdmission } from "../chat-admission.js";
-import { initTranslators } from "@shiguang-gateway/open-sse/translator";
-import { transformToOllama } from "@shiguang-gateway/open-sse/utils/ollamaTransform";
+import { initTranslators } from "@orbit/inference/translator";
+import { transformToOllama } from "@orbit/inference/utils/ollamaTransform";
 
 let initialized = false;
 

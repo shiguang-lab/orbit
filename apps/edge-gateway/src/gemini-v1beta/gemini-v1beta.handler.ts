@@ -1,13 +1,13 @@
 import { z } from "zod";
 import { GET as getModels, OPTIONS as modelsOptions } from "./v1beta-models.js";
 import { convertGeminiToInternal } from "./gemini-request.js";
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
-import { buildClientRawRequest, handleChat } from "@shiguang-gateway/open-sse/handlers/chat";
-import { initTranslators } from "@shiguang-gateway/open-sse/translator";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
+import { buildClientRawRequest, handleChat } from "@orbit/inference/handlers/chat";
+import { initTranslators } from "@orbit/inference/translator";
 import {
   convertOpenAIResponseToGemini,
   transformOpenAISSEToGeminiSSE,
-} from "@shiguang-gateway/open-sse/translator/response/openai-to-gemini-sse";
+} from "@orbit/inference/translator/response/openai-to-gemini-sse";
 
 let initialized = false;
 

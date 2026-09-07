@@ -20,25 +20,25 @@
  * no real timers, no real DB, no real network.
  */
 
-import { logger } from "@shiguang-gateway/runtime-logging";
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
-import { getExecutor } from "@shiguang-gateway/open-sse/executors/index";
-import type { BaseExecutor } from "@shiguang-gateway/open-sse/executors/base";
-import { getCodexUsage } from "@shiguang-gateway/open-sse/services/usage/codex";
+import { logger } from "@orbit/utils/logging";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
+import { getExecutor } from "@orbit/inference/executors/index";
+import type { BaseExecutor } from "@orbit/inference/executors/base";
+import { getCodexUsage } from "@orbit/inference/services/usage/codex";
 import {
   getSettings,
-} from "@shiguang-gateway/core-domain/db/settings";
+} from "@orbit/core/db/settings";
 import {
   getProviderConnections,
   updateProviderConnection,
-} from "@shiguang-gateway/core-domain/db/provider-connections";
+} from "@orbit/core/db/provider-connections";
 import {
   isConnectionUnavailableToAuxiliaryActivity,
-} from "@shiguang-gateway/core-domain/shared/connection-isolation";
+} from "@orbit/core/shared/connection-isolation";
 import {
   getCircuitBreaker,
-} from "@shiguang-gateway/core-domain/resilience/circuit-breaker";
-import { refreshAndUpdateCredentials } from "@shiguang-gateway/open-sse/services/providerLimits";
+} from "@orbit/core/resilience/circuit-breaker";
+import { refreshAndUpdateCredentials } from "@orbit/inference/services/providerLimits";
 import {
   QUOTA_AUTOPING_FAILURE_COOLDOWN_MS,
   QUOTA_AUTOPING_PROVIDERS,

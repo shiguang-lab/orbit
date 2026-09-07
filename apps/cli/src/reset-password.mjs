@@ -19,7 +19,7 @@
  */
 
 import { createInterface } from "node:readline";
-import { resolveDataDir, resolveStoragePath } from "@shiguang-gateway/config/dataPaths";
+import { resolveDataDir, resolveStoragePath } from "@orbit/config/dataPaths";
 import { openSqliteDatabase, readManagementPasswordState } from "./cli/sqlite.mjs";
 import { resetManagementPasswordInDatabase } from "./cli/maintenance/reset-password-store.mjs";
 import { isServerUp } from "./cli/api.mjs";

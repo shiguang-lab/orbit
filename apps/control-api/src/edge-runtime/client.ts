@@ -2,8 +2,8 @@ import type {
   EdgeRuntimeCommand,
   EdgeRuntimeCommandPayload,
   EdgeRuntimeHealthSnapshot,
-} from "@shiguang-gateway/contracts/edge-runtime-command";
-import { getInternalServiceAuthHeaders } from "@shiguang-gateway/auth/internal-service";
+} from "@orbit/contracts/edge-runtime-command";
+import { getInternalServiceAuthHeaders } from "@orbit/auth/internal-service";
 
 function edgeGatewayBaseUrl(): string {
   const configured = process.env.EDGE_GATEWAY_URL?.trim();
@@ -56,4 +56,28 @@ export async function executeEdgeRuntimeCommand<T = unknown>(
 
 export function readEdgeRuntimeHealth(): Promise<EdgeRuntimeHealthSnapshot> {
   return executeEdgeRuntimeCommand({ command: "health.snapshot" });
+}
+
+/** Read the edge-owned task store using the caller's verified management identity. */
+export async function readCloudAgentTasks(request: Request): Promise<Response> {
+  const target = new URL("/api/v1/agents/tasks", edgeGatewayBaseUrl());
+  target.search = new URL(request.url).search;
+  const headers = new Headers({ Accept: "application/json" });
+  for (const name of ["x-sg-identity", "authorization", "x-api-key", "x-goog-api-key"]) {
+    const value = request.headers.get(name);
+    if (value) headers.set(name, value);
+  }
+  try {
+    const response = await fetch(target, {
+      headers,
+      redirect: "error",
+      signal: AbortSignal.timeout(15_000),
+    });
+    return new Response(response.body, {
+      status: response.status,
+      headers: { "content-type": response.headers.get("content-type") ?? "application/json", "cache-control": "no-store" },
+    });
+  } catch {
+    return Response.json({ error: "Cloud agent task service unavailable" }, { status: 502 });
+  }
 }

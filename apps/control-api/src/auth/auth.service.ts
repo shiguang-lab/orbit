@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { issueDashboardCsrfToken } from "@shiguang-gateway/auth";
+import { issueDashboardCsrfToken } from "@orbit/auth";
 
-import { isDashboardSessionAuthenticated } from "@shiguang-gateway/auth/dashboard-session";
+import { isDashboardSessionAuthenticated } from "@orbit/auth/dashboard-session";
 
 @Injectable()
 export class AuthService {

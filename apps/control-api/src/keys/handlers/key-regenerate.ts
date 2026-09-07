@@ -1,6 +1,6 @@
-import { regenerateApiKey } from "@shiguang-gateway/core-domain/db/api-keys";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import * as log from "@shiguang-gateway/core-domain/sse/logger";
+import { regenerateApiKey } from "@orbit/core/db/api-keys";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import * as log from "@orbit/core/sse/logger";
 import { json } from "./response.js";
 
 export async function POST(request: Request, { params }: { params: { id: string } }) {

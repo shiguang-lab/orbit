@@ -1,4 +1,4 @@
-import { createProviderConnection } from "@shiguang-gateway/core-domain/control/oauth-persistence";
+import { createProviderConnection } from "@orbit/core/control/oauth-persistence";
 import { parseTraeCallbackQuery } from "./parse-callback.js";
 
 function callbackCopy(request: Request, success: boolean) {

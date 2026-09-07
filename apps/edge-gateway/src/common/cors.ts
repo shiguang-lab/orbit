@@ -1,4 +1,4 @@
-import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
+import { CORS_HEADERS } from "@orbit/contracts/cors";
 
 export { CORS_HEADERS };
 

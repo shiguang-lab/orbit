@@ -1,11 +1,11 @@
 "use server";
 
-import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { listBackups, restoreBackup, deleteBackup } from "@shiguang-gateway/core-domain/cli/backups";
-import { ensureCliConfigWriteAllowed } from "@shiguang-gateway/core-domain/cli/runtime";
-import { cliBackupMutationSchema } from "@shiguang-gateway/core-domain/control/cli-tools-validation-schemas";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { requireManagementAuth as requireCliToolsAuth } from "@orbit/core/control/management-auth";
+import { listBackups, restoreBackup, deleteBackup } from "@orbit/core/cli/backups";
+import { ensureCliConfigWriteAllowed } from "@orbit/core/cli/runtime";
+import { cliBackupMutationSchema } from "@orbit/core/control/cli-tools-validation-schemas";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 
 const VALID_TOOLS = ["claude", "codex", "droid", "grok-build", "openclaw", "cline", "kilo", "qwen"];
 

@@ -1,17 +1,17 @@
 import fs from "fs/promises";
 import path from "path";
-import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth as requireCliToolsAuth } from "@orbit/core/control/management-auth";
 import {
   ensureCliConfigWriteAllowed,
   getCliPrimaryConfigPath,
   getCliRuntimeStatus,
-} from "@shiguang-gateway/core-domain/cli/runtime";
-import { createBackup } from "@shiguang-gateway/core-domain/cli/backups";
+} from "@orbit/core/cli/runtime";
+import { createBackup } from "@orbit/core/cli/backups";
 import { saveCliToolLastConfigured, deleteCliToolLastConfigured } from "../cli-tool-state.js";
-import { cliModelConfigSchema } from "@shiguang-gateway/core-domain/control/cli-tools-config-validation";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { resolveApiKey } from "@shiguang-gateway/core-domain/shared/api-key-resolver";
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+import { cliModelConfigSchema } from "@orbit/core/control/cli-tools-config-validation";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
+import { resolveApiKey } from "@orbit/core/shared/api-key-resolver";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 
 const TOOL_ID = "pi";
 

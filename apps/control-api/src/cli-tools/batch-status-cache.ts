@@ -1,7 +1,7 @@
 // In-memory mtime-based cache for batch CLI tool status results.
 // Cache invalidated when mtime changes or its short TTL expires.
 
-import type { ToolBatchStatus } from "@shiguang-gateway/core-domain/shared/types/cliBatchStatus";
+import type { ToolBatchStatus } from "@orbit/core/shared/types/cliBatchStatus";
 
 export interface CacheEntry {
   mtimeMs: number;

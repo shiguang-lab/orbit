@@ -8,7 +8,7 @@ import {
   csrfPlugin,
   type EngineAuthAdapter,
   LocalAuthBroker,
-} from "@shiguang-gateway/auth";
+} from "@orbit/auth";
 import { installControlLocalOnlyGuard } from "./control-local-only.guard.js";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
@@ -64,7 +64,7 @@ export class ControlSecurityService implements OnModuleInit {
     const authzEngine: EngineAuthAdapter = {
       isValidApiKey: async (apiKey) => {
         try {
-          const { isValidApiKey } = await load("@shiguang-gateway/open-sse/services/auth");
+          const { isValidApiKey } = await load("@orbit/inference/services/auth");
           return await isValidApiKey(apiKey);
         } catch {
           return false;
@@ -72,7 +72,7 @@ export class ControlSecurityService implements OnModuleInit {
       },
       getApiKeyMetadata: async (apiKey) => {
         try {
-          const { getApiKeyMetadata } = await load("@shiguang-gateway/core-domain/db/api-keys");
+          const { getApiKeyMetadata } = await load("@orbit/core/db/api-keys");
           const meta = await getApiKeyMetadata(apiKey);
           return meta ? { scopes: meta.scopes ?? [], name: meta.name } : null;
         } catch {
@@ -81,7 +81,7 @@ export class ControlSecurityService implements OnModuleInit {
       },
       isCliTokenAuthValid: async (request) => {
         try {
-          const { isCliTokenAuthValid } = await load("@shiguang-gateway/core-domain/control/cli-token-auth");
+          const { isCliTokenAuthValid } = await load("@orbit/core/control/cli-token-auth");
           const headers = new Headers();
           for (const [name, value] of Object.entries(request.headers)) {
             if (typeof value === "string") headers.set(name, value);
@@ -96,7 +96,7 @@ export class ControlSecurityService implements OnModuleInit {
       },
       getSettings: async () => {
         try {
-          const { getSettings } = await load("@shiguang-gateway/core-domain/db/settings");
+          const { getSettings } = await load("@orbit/core/db/settings");
           return await getSettings();
         } catch {
           return {};

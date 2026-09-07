@@ -1,56 +1,56 @@
-import { handleImageGeneration } from "@shiguang-gateway/open-sse/handlers/imageGeneration";
-import { withInjectionGuard } from "@shiguang-gateway/core-domain/middleware/prompt-injection";
+import { handleImageGeneration } from "@orbit/inference/handlers/imageGeneration";
+import { withInjectionGuard } from "@orbit/core/middleware/prompt-injection";
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
-} from "@shiguang-gateway/open-sse/services/auth";
+} from "@orbit/inference/services/auth";
 import {
   parseImageModel,
   getImageProvider,
   getImageModelEntry,
   modalitiesRequireImageInput,
-} from "@shiguang-gateway/open-sse/config/imageRegistry";
-import { errorResponse, unavailableResponse } from "@shiguang-gateway/open-sse/utils/error";
-import { HTTP_STATUS as OPEN_SSE_HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants";
+} from "@orbit/inference/config/imageRegistry";
+import { errorResponse, unavailableResponse } from "@orbit/inference/utils/error";
+import { HTTP_STATUS as OPEN_SSE_HTTP_STATUS } from "@orbit/inference/config/constants";
 const HTTP_STATUS = {
   ...OPEN_SSE_HTTP_STATUS,
   GONE: 410,
   SERVICE_UNAVAILABLE: 503,
 } as const;
-import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
-import * as log from "@shiguang-gateway/core-domain/sse/logger";
-import { toJsonErrorPayload } from "@shiguang-gateway/core-domain/shared/upstream-error";
-import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/runtime/api-key-policy";
-import { v1ImageGenerationSchema } from "@shiguang-gateway/core-domain/edge/image-generation-validation";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { isAllRateLimitedCredentials } from "@orbit/inference/services/credential-selection";
+import * as log from "@orbit/core/sse/logger";
+import { toJsonErrorPayload } from "@orbit/core/shared/upstream-error";
+import { enforceApiKeyPolicy } from "@orbit/core/runtime/api-key-policy";
+import { v1ImageGenerationSchema } from "@orbit/core/edge/image-generation-validation";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 
-import { getComboByName } from "@shiguang-gateway/core-domain/db/combos";
-import { resolveProxyForConnection } from "@shiguang-gateway/core-domain/db/settings";
-import { getAllCustomModels } from "@shiguang-gateway/core-domain/db/models";
+import { getComboByName } from "@orbit/core/db/combos";
+import { resolveProxyForConnection } from "@orbit/core/db/settings";
+import { getAllCustomModels } from "@orbit/core/db/models";
 import { resolveImageRouteModel } from "../image-route-model.js";
 import {
   isMicrosoftDesignerWebProviderRetiredError,
   isMicrosoftDesignerWebRetiredProviderId,
   MICROSOFT_DESIGNER_WEB_RETIRED_MESSAGE,
-} from "@shiguang-gateway/contracts/designer-web-retirement";
+} from "@orbit/contracts/designer-web-retirement";
 import {
   resolveLocalSyncedEndpointRoute,
   type LocalSyncedEndpointRoute,
-} from "@shiguang-gateway/core-domain/edge/synced-endpoint-routing";
-import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
-import { attachShiguangGatewayMetaHeaders } from "@shiguang-gateway/core-domain/edge/gateway-response-meta";
-import { calculateModalCost } from "@shiguang-gateway/core-domain/pricing/cost-calculator";
-import { generateRequestId } from "@shiguang-gateway/core-domain/runtime/request-id";
-import { getSpecialtyModelsResponse } from "@shiguang-gateway/open-sse/catalog/specialty";
+} from "@orbit/core/edge/synced-endpoint-routing";
+import { runWithProxyContext } from "@orbit/inference/utils/proxyFetch";
+import { attachShiguangGatewayMetaHeaders } from "@orbit/core/edge/gateway-response-meta";
+import { calculateModalCost } from "@orbit/core/pricing/cost-calculator";
+import { generateRequestId } from "@orbit/core/runtime/request-id";
+import { getSpecialtyModelsResponse } from "@orbit/inference/catalog/specialty";
 import { enforceClientApiRouteAuth } from "../../common/client-api-route-auth.js";
-import { runWithCallLogApiKeyContext } from "@shiguang-gateway/core-domain/usage/call-log-api-key-context";
-import { executeImageWithCredentialFallback } from "@shiguang-gateway/open-sse/services/imageCredentialRetry";
-import { AUTHZ_HEADER_PEER_LOCALITY } from "@shiguang-gateway/core-domain/shared/authz-headers";
+import { runWithCallLogApiKeyContext } from "@orbit/core/usage/call-log-api-key-context";
+import { executeImageWithCredentialFallback } from "@orbit/inference/services/imageCredentialRetry";
+import { AUTHZ_HEADER_PEER_LOCALITY } from "@orbit/core/shared/authz-headers";
 import {
   assertCommonChatGptWebModelAvailable,
   CHATGPT_WEB_RETIRED_ERROR_CODE,
   isCommonChatGptWebRetirementError,
-} from "@shiguang-gateway/contracts/chatgpt-web-retirement";
+} from "@orbit/contracts/chatgpt-web-retirement";
 
 export const dynamic = "force-dynamic";
 
@@ -162,7 +162,7 @@ async function postHandler(request: Request, _context?: unknown) {
   if (body.model && typeof body.model === "string" && !body.model.includes("/")) {
     const combo = await getComboByName(body.model as string);
     if (combo) {
-      const { executeImageCombo } = await import("@shiguang-gateway/open-sse/services/imageCombo");
+      const { executeImageCombo } = await import("@orbit/inference/services/imageCombo");
       return executeImageCombo(body.model as string, body, { request, policy }, startTime, log);
     }
   }

@@ -1,2 +1,0 @@
-/** Compatibility facade; catalog support ownership lives in @shiguang-gateway/provider-catalog. */
-export { ANTIGRAVITY_BOOTSTRAP_BASE_URLS, ANTIGRAVITY_DISCOVERY_BASE_URLS, ANTIGRAVITY_ONBOARD_PATH, ANTIGRAVITY_RUNTIME_BASE_URLS, getAntigravityFetchAvailableModelsUrls, getAntigravityModelsDiscoveryUrls, getAntigravityOnboardUrls } from "@shiguang-gateway/provider-catalog/support/config/antigravityUpstream";

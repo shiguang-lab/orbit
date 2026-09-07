@@ -1,7 +1,7 @@
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getCachedProviderConnectionById } from "@shiguang-gateway/core-domain/db/read-cache";
-import { createProviderConnection, updateProviderConnection } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { sanitizeProviderSpecificDataForResponse } from "@shiguang-gateway/open-sse/oauth/provider-auth-import";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { getCachedProviderConnectionById } from "@orbit/core/db/read-cache";
+import { createProviderConnection, updateProviderConnection } from "@orbit/core/db/provider-connections";
+import { sanitizeProviderSpecificDataForResponse } from "@orbit/inference/oauth/provider-auth-import";
 import { CommandCodeAuthRepository } from "../command-code-auth.repository.js";
 import { commandCodeApplySchema, noStoreJson, stateHash } from "./shared.handler.js";
 

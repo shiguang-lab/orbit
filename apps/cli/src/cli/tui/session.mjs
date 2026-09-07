@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, rmSync } from "node:fs";
 import { join } from "node:path";
-import { resolveDataDir } from "@shiguang-gateway/config/dataPaths";
+import { resolveDataDir } from "@orbit/config/dataPaths";
 
 function sessionsDir() {
   const dir = join(resolveDataDir(), "repl-sessions");

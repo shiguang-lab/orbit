@@ -1,7 +1,7 @@
-import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getCliRuntimeStatus, CLI_TOOL_IDS } from "@shiguang-gateway/core-domain/cli/runtime";
+import { requireManagementAuth as requireCliToolsAuth } from "@orbit/core/control/management-auth";
+import { getCliRuntimeStatus, CLI_TOOL_IDS } from "@orbit/core/cli/runtime";
 import { getAllCliToolLastConfigured } from "../cli-tool-state.js";
-import { checkToolConfigStatus } from "@shiguang-gateway/core-domain/cli/config-status";
+import { checkToolConfigStatus } from "@orbit/core/cli/config-status";
 
 /**
  * GET /api/cli-tools/status

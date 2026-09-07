@@ -1,7 +1,7 @@
 import { Controller, Delete, Get, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { isAuthenticated } from "@orbit/core/control/authenticated";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 import { MonitoringHealthService } from "./monitoring-health.service.js";
 

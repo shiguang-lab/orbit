@@ -1,39 +1,39 @@
 import { z } from "zod";
-import type { ProviderCredentialRefreshResult } from "@shiguang-gateway/contracts/edge-runtime-command";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import type { ProviderCredentialRefreshResult } from "@orbit/contracts/edge-runtime-command";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 import {
   getCachedProviderConnectionById,
-} from "@shiguang-gateway/core-domain/db/read-cache";
-import { updateProviderConnection } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { isCloudEnabled, resolveProxyForConnection } from "@shiguang-gateway/core-domain/db/settings";
-import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
-import { syncToCloud } from "@shiguang-gateway/core-domain/sync/cloud";
-import { validateProviderApiKey } from "@shiguang-gateway/open-sse/services/provider-validation";
-import { getCliRuntimeStatus } from "@shiguang-gateway/core-domain/cli/runtime";
-import { buildQoderCliNotFoundHint } from "@shiguang-gateway/open-sse/services/qoder-cli-resolve";
-import { getRotatingRefreshGroup } from "@shiguang-gateway/provider-catalog/refresh-token-policy";
-import { saveCallLog } from "@shiguang-gateway/core-domain/usage/call-logs";
-import { shouldHideLogs } from "@shiguang-gateway/core-domain/control/token-health-check";
+} from "@orbit/core/db/read-cache";
+import { updateProviderConnection } from "@orbit/core/db/provider-connections";
+import { isCloudEnabled, resolveProxyForConnection } from "@orbit/core/db/settings";
+import { getConsistentMachineId } from "@orbit/core/shared/utils/machineId";
+import { syncToCloud } from "@orbit/core/sync/cloud";
+import { validateProviderApiKey } from "@orbit/inference/services/provider-validation";
+import { getCliRuntimeStatus } from "@orbit/core/cli/runtime";
+import { buildQoderCliNotFoundHint } from "@orbit/inference/services/qoder-cli-resolve";
+import { getRotatingRefreshGroup } from "@orbit/providers/refresh-token-policy";
+import { saveCallLog } from "@orbit/core/usage/call-logs";
+import { shouldHideLogs } from "@orbit/core/control/token-health-check";
 import { executeEdgeRuntimeCommand } from "../../../edge-runtime/client.js";
-import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
+import { runWithProxyContext } from "@orbit/inference/utils/proxyFetch";
 import {
   buildGitLabDuoProbeBody,
   buildGitLabDuoProbeHeaders,
   buildGitLabOAuthEndpoints,
   resolveGitLabOAuthBaseUrl,
   shouldFallbackToPublicCodeSuggestions,
-} from "@shiguang-gateway/core-domain/control/oauth-gitlab";
-import { isOpenAICompatibleProvider, providerAllowsOptionalApiKey } from "@shiguang-gateway/core-domain/catalog/providers";
+} from "@orbit/core/control/oauth-gitlab";
+import { isOpenAICompatibleProvider, providerAllowsOptionalApiKey } from "@orbit/providers/catalog";
 import { shouldUseApiKeyConnectionTest } from "./webSessionTestDispatch.js";
 import { testCodexAppServerConnection, makeDiagnosis } from "./codexAppServerHealth.js";
-import { recoverKeyHealth } from "@shiguang-gateway/open-sse/services/api-key-rotator";
-import { storedInstantToEpochMs } from "@shiguang-gateway/contracts/runtime-settings";
-import { isConnectionUnavailableToAuxiliaryActivity } from "@shiguang-gateway/core-domain/shared/connection-isolation";
+import { recoverKeyHealth } from "@orbit/inference/services/api-key-rotator";
+import { storedInstantToEpochMs } from "@orbit/contracts/runtime-settings";
+import { isConnectionUnavailableToAuxiliaryActivity } from "@orbit/core/shared/connection-isolation";
 import { classifyAmbiguousOrAuthError, type ClassifyFailureArgs } from "./mistralAmbiguousAuth.js";
 import { buildApiKeyConnectionTestResult } from "./apiKeyTestResult.js";
 import { classifyOAuthProbeInconclusive, OAUTH_TEST_CONFIG } from "./oauthTestConfig.js";
-import { isGeoBlockedError } from "@shiguang-gateway/core-domain/domain/provider-error-classifier";
-import * as retirement from "@shiguang-gateway/core-domain/shared/chatgpt-web-retirement-response";
+import { isGeoBlockedError } from "@orbit/core/domain/provider-error-classifier";
+import * as retirement from "@orbit/core/shared/chatgpt-web-retirement-response";
 
 // Match the API-key path's 30s timeout so a hung OAuth upstream cannot block the test queue.
 const OAUTH_TEST_TIMEOUT_MS = 30_000;

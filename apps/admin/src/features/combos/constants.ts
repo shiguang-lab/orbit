@@ -510,7 +510,7 @@ export function hasKimiCodingPreset(combos: Array<{ name?: string | null }>): bo
 
 /* ---------------- Step Helpers ---------------- */
 
-export function getStepDisplayName(step: import("@shiguang-gateway/contracts").ComboStep): string {
+export function getStepDisplayName(step: import("@orbit/contracts").ComboStep): string {
   if ("model" in step && typeof step.model === "string") return step.model;
   if ("comboName" in step && typeof step.comboName === "string") return `combo:${step.comboName}`;
   if ("modelPattern" in step && typeof step.modelPattern === "string")
@@ -518,12 +518,12 @@ export function getStepDisplayName(step: import("@shiguang-gateway/contracts").C
   return "unknown";
 }
 
-export function getStepProvider(step: import("@shiguang-gateway/contracts").ComboStep): string | undefined {
+export function getStepProvider(step: import("@orbit/contracts").ComboStep): string | undefined {
   if ("providerId" in step && typeof step.providerId === "string") return step.providerId;
   return undefined;
 }
 
-export function getStepConnection(step: import("@shiguang-gateway/contracts").ComboStep): string | undefined {
+export function getStepConnection(step: import("@orbit/contracts").ComboStep): string | undefined {
   if ("connectionId" in step && typeof step.connectionId === "string") return step.connectionId;
   return undefined;
 }

@@ -5,7 +5,7 @@ import { listTools } from "./handlers/tools.handler.js";
 import {
   handleMcpSSE,
   handleMcpStreamableHTTP,
-} from "@shiguang-gateway/open-sse/mcp-server/httpTransport";
+} from "@orbit/inference/mcp-server/httpTransport";
 
 @Injectable()
 export class McpService {

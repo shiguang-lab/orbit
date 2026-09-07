@@ -1,9 +1,9 @@
 "use server";
 
-import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getMitmAlias, setMitmAliasAll } from "@shiguang-gateway/core-domain/db/mitm-aliases";
-import { cliMitmAliasUpdateSchema } from "@shiguang-gateway/core-domain/control/cli-tools-validation-schemas";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { requireManagementAuth as requireCliToolsAuth } from "@orbit/core/control/management-auth";
+import { getMitmAlias, setMitmAliasAll } from "@orbit/core/db/mitm-aliases";
+import { cliMitmAliasUpdateSchema } from "@orbit/core/control/cli-tools-validation-schemas";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 import { hasInvalidReasoningEffort, normalizeAliasMappings } from "../../mitm-alias.js";
 
 // GET - Get MITM aliases for a tool

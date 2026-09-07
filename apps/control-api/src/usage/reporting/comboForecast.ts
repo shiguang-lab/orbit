@@ -1,9 +1,9 @@
-import { getComboForecastUsageRows, type ComboForecastUsageRow } from "@shiguang-gateway/core-domain/usage/reporting-support/combo-forecast";
-import { getCombos, getComboById } from "@shiguang-gateway/core-domain/db/combos";
-import { getPricingForModel } from "@shiguang-gateway/core-domain/db/settings";
-import { getQuotaSnapshots } from "@shiguang-gateway/core-domain/usage/quota-snapshots";
-import { computeCostFromPricing, normalizeModelName } from "@shiguang-gateway/core-domain/pricing/cost-calculator";
-import { resolveNestedComboTargets } from "@shiguang-gateway/open-sse/services/combo";
+import { getComboForecastUsageRows, type ComboForecastUsageRow } from "@orbit/core/usage/reporting-support/combo-forecast";
+import { getCombos, getComboById } from "@orbit/core/db/combos";
+import { getPricingForModel } from "@orbit/core/db/settings";
+import { getQuotaSnapshots } from "@orbit/core/usage/quota-snapshots";
+import { computeCostFromPricing, normalizeModelName } from "@orbit/core/pricing/cost-calculator";
+import { resolveNestedComboTargets } from "@orbit/inference/services/combo";
 import type {
   ComboRecord,
   ComboForecastHorizon,
@@ -14,7 +14,7 @@ import type {
   ComboForecastTarget,
   QuotaSnapshotRow,
   UtilizationTimeRange,
-} from "@shiguang-gateway/core-domain/usage/utilization";
+} from "@orbit/core/usage/utilization";
 
 type JsonRecord = Record<string, unknown>;
 

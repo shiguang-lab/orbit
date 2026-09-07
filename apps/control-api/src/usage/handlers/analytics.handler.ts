@@ -1,8 +1,8 @@
 export const dynamic = "force-dynamic";
-import { getProviderById } from "@shiguang-gateway/core-domain/catalog/providers";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getApiKeys } from "@shiguang-gateway/core-domain/db/api-keys";
-import { getUserDatabaseSettings } from "@shiguang-gateway/core-domain/db/database-settings";
+import { getProviderById } from "@orbit/providers/catalog";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { getApiKeys } from "@orbit/core/db/api-keys";
+import { getUserDatabaseSettings } from "@orbit/core/db/database-settings";
 import {
   buildUnifiedSource,
   buildPresetUnifiedSource,
@@ -20,10 +20,10 @@ import {
   getApiKeyMetadataRows,
   getWeeklyPatternRows,
   getPresetCostModelRows,
-} from "@shiguang-gateway/core-domain/usage/analytics";
-import { getFallbackStats, getErrorTypeBreakdown } from "@shiguang-gateway/core-domain/usage/analytics";
+} from "@orbit/core/usage/analytics";
+import { getFallbackStats, getErrorTypeBreakdown } from "@orbit/core/usage/analytics";
 import { buildByProviderRows } from "../provider-display-names.js";
-import { toNumber } from "@shiguang-gateway/contracts/numeric";
+import { toNumber } from "@orbit/contracts/numeric";
 
 function getRangeStartIso(range: string): string | null {
   const end = new Date();
@@ -405,7 +405,7 @@ export async function GET(request: Request) {
     });
 
     // Fetch pricing data for cost calculation (no rows loaded)
-    const { getPricing } = await import("@shiguang-gateway/core-domain/pricing/db");
+    const { getPricing } = await import("@orbit/core/pricing/db");
     const rawPricingByProvider = (await getPricing()) as PricingByProvider;
 
     // Pre-process pricing data to lowercase keys for O(1) lookups
@@ -418,8 +418,8 @@ export async function GET(request: Request) {
       pricingByProvider[providerKey.toLowerCase()] = lowerProvider;
     }
     const { computeCostFromPricing, getCodexFastCostMultiplier, normalizeModelName } =
-      await import("@shiguang-gateway/core-domain/pricing/cost-calculator");
-    const { PROVIDER_ID_TO_ALIAS } = await import("@shiguang-gateway/provider-catalog/provider-models");
+      await import("@orbit/core/pricing/cost-calculator");
+    const { PROVIDER_ID_TO_ALIAS } = await import("@orbit/providers/provider-models");
 
     const summaryRow = toUsageRow(getUsageSummary(unifiedSource, unifiedParams));
 
@@ -933,7 +933,7 @@ export async function GET(request: Request) {
     console.error("Error computing analytics:", error);
     // Surface the real (sanitized) reason so the dashboard can show it instead of a
     // generic placeholder (#3356). buildErrorBody strips stacks/absolute paths.
-    const { buildErrorBody } = await import("@shiguang-gateway/open-sse/utils/error");
+    const { buildErrorBody } = await import("@orbit/inference/utils/error");
     const message = error instanceof Error ? error.message : String(error);
     return Response.json(buildErrorBody(500, message || "Failed to compute analytics"), {
       status: 500,

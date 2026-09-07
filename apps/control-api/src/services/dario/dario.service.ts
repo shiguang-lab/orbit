@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { getSupervisor, getServiceRow, registerSupervisor, ServiceSupervisor, updateServiceField } from "@shiguang-gateway/core-domain/control/embedded-services-lifecycle";
-import { getOrCreateApiKey } from "@shiguang-gateway/core-domain/embedded-services/api-key";
-import { DARIO_DEFAULT_PORT, getInstalledVersion, getLatestVersion, install, resolveSpawnArgs, update as updateDario } from "@shiguang-gateway/core-domain/control/dario-installer";
-import { createErrorResponse, sanitizeErrorMessage } from "@shiguang-gateway/core-domain/shared/error-response";
-import { InstallError, SERVICE_VERSION_PATTERN } from "@shiguang-gateway/core-domain/control/embedded-services-install";
+import { getSupervisor, getServiceRow, registerSupervisor, ServiceSupervisor, updateServiceField } from "@orbit/core/control/embedded-services-lifecycle";
+import { getOrCreateApiKey } from "@orbit/core/embedded-services/api-key";
+import { DARIO_DEFAULT_PORT, getInstalledVersion, getLatestVersion, install, resolveSpawnArgs, update as updateDario } from "@orbit/core/control/dario-installer";
+import { createErrorResponse, sanitizeErrorMessage } from "@orbit/utils/errors/api-response";
+import { InstallError, SERVICE_VERSION_PATTERN } from "@orbit/core/control/embedded-services-install";
 import { z } from "zod";
 
 const TOOL = "dario";

@@ -1,25 +1,25 @@
-import { handleImageGeneration } from "@shiguang-gateway/open-sse/handlers/imageGeneration";
-import { errorResponse, unavailableResponse } from "@shiguang-gateway/open-sse/utils/error";
-import { HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants";
+import { handleImageGeneration } from "@orbit/inference/handlers/imageGeneration";
+import { errorResponse, unavailableResponse } from "@orbit/inference/utils/error";
+import { HTTP_STATUS } from "@orbit/inference/config/constants";
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
-} from "@shiguang-gateway/open-sse/services/auth";
-import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
-import { getImageProvider } from "@shiguang-gateway/open-sse/config/imageRegistry";
-import * as log from "@shiguang-gateway/core-domain/sse/logger";
-import { toJsonErrorPayload } from "@shiguang-gateway/core-domain/shared/upstream-error";
-import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/runtime/api-key-policy";
-import { v1ImageGenerationSchema } from "@shiguang-gateway/core-domain/edge/image-generation-validation";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+} from "@orbit/inference/services/auth";
+import { isAllRateLimitedCredentials } from "@orbit/inference/services/credential-selection";
+import { getImageProvider } from "@orbit/inference/config/imageRegistry";
+import * as log from "@orbit/core/sse/logger";
+import { toJsonErrorPayload } from "@orbit/core/shared/upstream-error";
+import { enforceApiKeyPolicy } from "@orbit/core/runtime/api-key-policy";
+import { v1ImageGenerationSchema } from "@orbit/core/edge/image-generation-validation";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 import { enforceClientApiRouteAuth } from "../common/client-api-route-auth.js";
-import { runWithCallLogApiKeyContext } from "@shiguang-gateway/core-domain/usage/call-log-api-key-context";
-import { executeImageWithCredentialFallback } from "@shiguang-gateway/open-sse/services/imageCredentialRetry";
+import { runWithCallLogApiKeyContext } from "@orbit/core/usage/call-log-api-key-context";
+import { executeImageWithCredentialFallback } from "@orbit/inference/services/imageCredentialRetry";
 import {
   CHATGPT_WEB_RETIRED_ERROR_CODE,
   CHATGPT_WEB_RETIRED_MESSAGE,
   isCommonChatGptWebRetiredProviderId,
-} from "@shiguang-gateway/contracts/chatgpt-web-retirement";
+} from "@orbit/contracts/chatgpt-web-retirement";
 
 const HTTP = { ...HTTP_STATUS, GONE: 410 } as const;
 

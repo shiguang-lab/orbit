@@ -1,5 +1,5 @@
-import { getApiKeyMetadata, validateApiKey } from "@shiguang-gateway/core-domain/db/api-keys";
-import { hasSelfUsageScope } from "@shiguang-gateway/core-domain/shared/constants/selfServiceScopes";
+import { getApiKeyMetadata, validateApiKey } from "@orbit/core/db/api-keys";
+import { hasSelfUsageScope } from "@orbit/core/shared/constants/selfServiceScopes";
 import { buildApiKeySelfServiceStatus } from "./api-key-self-service.js";
 
 function extractBearerToken(request: Request): string | null {

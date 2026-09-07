@@ -1,4 +1,4 @@
-import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
+import { getDbInstance } from "@orbit/core/db/connection";
 import type { DiscoveryResult } from "./discovery.types.js";
 
 interface DiscoveryRow {

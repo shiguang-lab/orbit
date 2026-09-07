@@ -1,10 +1,10 @@
-import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { buildErrorBody, sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import {
   getHttpProxyHandle,
   getSystemProxyState,
   isTlsInterceptEnabled,
   listCustomHosts,
-} from "@shiguang-gateway/core-domain/control/traffic-inspector";
+} from "@orbit/core/control/traffic-inspector";
 
 export async function captureModes(): Promise<Response> {
   try {

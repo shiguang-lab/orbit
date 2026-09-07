@@ -1,7 +1,7 @@
-import { buildClientRawRequest, handleChat } from "@shiguang-gateway/open-sse/handlers/chat";
+import { buildClientRawRequest, handleChat } from "@orbit/inference/handlers/chat";
 import { withChatAdmission } from "../chat-admission.js";
-import { createInjectionGuard } from "@shiguang-gateway/core-domain/middleware/prompt-injection";
-import { initTranslators } from "@shiguang-gateway/open-sse/translator";
+import { createInjectionGuard } from "@orbit/core/middleware/prompt-injection";
+import { initTranslators } from "@orbit/inference/translator";
 import { CORS_HEADERS } from "../common/cors.js";
 import {
   readCompressionRequestHeader,

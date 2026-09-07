@@ -1,4 +1,4 @@
-import { info, warn } from "@shiguang-gateway/core-domain/sse/logger";
+import { info, warn } from "@orbit/core/sse/logger";
 import { upsertDiscoveryResult } from "./discovery.repository.js";
 import type { DiscoveryResult } from "./discovery.types.js";
 

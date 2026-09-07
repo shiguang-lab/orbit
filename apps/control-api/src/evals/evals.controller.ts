@@ -1,17 +1,17 @@
-import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
+import { toWebRequest } from "@orbit/http/web-handler";
 import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { EvalsService } from "./evals.service.js";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import {
   evalRunSuiteSchema,
   evalSuiteSaveSchema,
   isValidationFailure,
   validateBody,
-} from "@shiguang-gateway/core-domain/evals/validation";
+} from "@orbit/core/evals/validation";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
-const { sanitizeErrorMessage } = await load("@shiguang-gateway/open-sse/utils/error");
+const { sanitizeErrorMessage } = await load("@orbit/inference/utils/error");
 
 @Controller("api/evals")
 export class EvalsController {

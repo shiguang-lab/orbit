@@ -2,9 +2,9 @@ import {
   AI_PROVIDERS,
   INTERNAL_PROXY_ERROR,
   getCatalogDiagnosticsHeaders,
-} from "@shiguang-gateway/core-domain/control/model-management";
-import { getUnifiedModelsResponse } from "@shiguang-gateway/open-sse/catalog/unified";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+} from "@orbit/core/control/model-management";
+import { getUnifiedModelsResponse } from "@orbit/inference/catalog/unified";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 
 /**
  * GET /api/models/catalog

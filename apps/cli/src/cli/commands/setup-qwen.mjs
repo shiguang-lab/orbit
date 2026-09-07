@@ -16,7 +16,7 @@ import {
   mergeQwenCodeEnv,
   mergeQwenCodeSettings,
   normalizeQwenCodeBaseUrl,
-} from "@shiguang-gateway/core-domain/shared/services/qwenCodeConfig";
+} from "@orbit/core/shared/services/qwenCodeConfig";
 import { resolveActiveContext } from "../contexts.mjs";
 import { guardHostConfigTarget } from "../utils/config-home-guard.mjs";
 import { createPrompt, printError, printHeading, printInfo, printSuccess } from "../io.mjs";

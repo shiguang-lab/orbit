@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
+import { isAllRateLimitedCredentials } from "@orbit/inference/services/credential-selection";
 import { rateLimitedProviderResponse } from "../common/provider-rate-limit-response.js";
 
 // Moderation orchestration lives in the edge app.  Keep the legacy domain
@@ -12,7 +12,7 @@ const load = (specifier: string): Promise<any> => import(specifier as string);
 export class ModerationsService {
   async handleModerations(req: Request): Promise<Response> {
     const { withInjectionGuard } = await load(
-      "@shiguang-gateway/core-domain/middleware/prompt-injection"
+      "@orbit/core/middleware/prompt-injection"
     );
 
     const postHandler = async (request: Request): Promise<Response> => {
@@ -25,13 +25,13 @@ export class ModerationsService {
         { isValidationFailure, validateBody },
         { enforceApiKeyPolicy },
       ] = await Promise.all([
-        load("@shiguang-gateway/open-sse/handlers/moderations"),
-        load("@shiguang-gateway/open-sse/services/auth"),
-        load("@shiguang-gateway/open-sse/config/moderationRegistry"),
-        load("@shiguang-gateway/open-sse/utils/error"),
-        load("@shiguang-gateway/core-domain/edge/moderation-validation-schemas"),
-        load("@shiguang-gateway/core-domain/shared/validation/helpers"),
-        load("@shiguang-gateway/core-domain/runtime/api-key-policy"),
+        load("@orbit/inference/handlers/moderations"),
+        load("@orbit/inference/services/auth"),
+        load("@orbit/inference/config/moderationRegistry"),
+        load("@orbit/inference/utils/error"),
+        load("@orbit/core/edge/moderation-validation-schemas"),
+        load("@orbit/core/shared/validation/helpers"),
+        load("@orbit/core/runtime/api-key-policy"),
       ]);
 
       let rawBody: unknown;

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import { rankCandidates } from "../runtime/routing-preview.js";
 
 const candidateSchema = z.object({

@@ -1,19 +1,19 @@
 import { Injectable } from "@nestjs/common";
 import { z } from "zod";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import {
   createProviderConnection,
   getProviderConnections,
-} from "@shiguang-gateway/core-domain/db/provider-connections";
+} from "@orbit/core/db/provider-connections";
 import {
   getEligibleFreeOnboardingProviders,
   selectUnconfiguredFreeOnboardingProviders,
   setupFreeProviderConnections,
   withFreeProviderSetupLock,
 } from "./runtime/free-onboarding.js";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { getCachedCursorAgentAvailability } from "@shiguang-gateway/core-domain/providers/cursor-session";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
+import { getCachedCursorAgentAvailability } from "@orbit/core/providers/cursor-session";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import {
   buildProviderHealthAutopilotReport,
   executeProviderHealthAutopilotAction,

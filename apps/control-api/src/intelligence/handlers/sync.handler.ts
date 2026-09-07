@@ -6,15 +6,15 @@
  * DELETE — Clear all synced arena_elo intelligence data.
  */
 
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import {
   clearSyncedIntelligence,
   getArenaEloSyncStatus,
   intelligenceSyncRequestSchema,
   syncArenaElo,
-} from "@shiguang-gateway/core-domain/control/intelligence-sync";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+} from "@orbit/core/control/intelligence-sync";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 
 export async function POST(request: Request) {
   const authError = await requireManagementAuth(request);

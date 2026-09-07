@@ -1,6 +1,6 @@
 import { Controller, Get, Options, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
+import { isAuthenticated } from "@orbit/core/control/authenticated";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 import { FreeTierService } from "./free-tier.service.js";
 

@@ -1,4 +1,4 @@
-import { AI_PROVIDERS } from "@shiguang-gateway/core-domain/catalog/providers";
+import { AI_PROVIDERS } from "@orbit/providers/catalog";
 import type { ZedCredential } from "./keychain-reader.js";
 
 export interface PartitionedZedCredentials {

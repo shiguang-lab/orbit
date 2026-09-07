@@ -1,15 +1,15 @@
-import { HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants";
-import { errorResponse } from "@shiguang-gateway/open-sse/utils/error";
+import { HTTP_STATUS } from "@orbit/inference/config/constants";
+import { errorResponse } from "@orbit/inference/utils/error";
 import {
   classifyQuality,
   initRoutingObservability,
   recentRoutingEvents,
   routingOtelStats,
   routingQualitySnapshot,
-} from "@shiguang-gateway/open-sse/services/routing";
-import { isDashboardSessionAuthenticated } from "@shiguang-gateway/auth/dashboard-session";
-import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
-import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/services/auth";
+} from "@orbit/inference/services/routing";
+import { isDashboardSessionAuthenticated } from "@orbit/auth/dashboard-session";
+import { isRequireApiKeyEnabled } from "@orbit/core/runtime/feature-flags";
+import { extractApiKey, isValidApiKey } from "@orbit/inference/services/auth";
 
 export function OPTIONS(): Response {
   return new Response(null, {

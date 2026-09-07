@@ -8,7 +8,7 @@ import { CLI_APP_ROOT } from "../src/cli/app-paths.mjs";
 import { startMcpCli } from "../src/mcp-server.mjs";
 
 const repoRoot = dirname(dirname(CLI_APP_ROOT));
-const openSseRoot = join(repoRoot, "packages", "open-sse");
+const openSseRoot = join(repoRoot, "packages", "inference");
 
 test("CLI owns MCP stdio composition and process lifecycle", async () => {
   const processLike = new EventEmitter();
@@ -47,14 +47,14 @@ test("open-sse publishes only a narrow callable MCP factory", () => {
   assert.equal(manifest.exports["./mcp-server/entry"], undefined);
   assert.deepEqual(manifest.exports["./mcp-server/factory"], {
     types: "./dist/types/mcp-server/factory.d.ts",
-    import: "./mcp-server/factory.ts",
+    import: "./src/mcp-server/factory.ts",
   });
-  const factory = readFileSync(join(openSseRoot, "mcp-server", "factory.ts"), "utf8");
+  const factory = readFileSync(join(openSseRoot, "src", "mcp-server", "factory.ts"), "utf8");
   assert.doesNotMatch(factory, /startMcpStdio|process\.|StdioServerTransport|startMcpHeartbeat/);
 
-  const server = readFileSync(join(openSseRoot, "mcp-server", "server.ts"), "utf8");
+  const server = readFileSync(join(openSseRoot, "src", "mcp-server", "server.ts"), "utf8");
   assert.doesNotMatch(server, /startMcpStdio|StdioServerTransport|startMcpHeartbeat|process\.(?:once|on)\(/);
   assert.doesNotMatch(server, /process\.argv\[1\]/);
-  const heartbeat = readFileSync(join(openSseRoot, "mcp-server", "runtimeHeartbeat.ts"), "utf8");
+  const heartbeat = readFileSync(join(openSseRoot, "src", "mcp-server", "runtimeHeartbeat.ts"), "utf8");
   assert.doesNotMatch(heartbeat, /startMcpHeartbeat|setInterval\(/);
 });

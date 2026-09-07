@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { readRequestBodyWithLimit, RequestBodyTooLargeError } from "@shiguang-gateway/core-domain/shared/body-size-guard";
+import { readRequestBodyWithLimit, RequestBodyTooLargeError } from "@orbit/core/shared/body-size-guard";
 
 export const RadarSyncBodySchema = z.object({}).strict().optional();
 export const RADAR_SYNC_BODY_LIMIT_BYTES = 1024;

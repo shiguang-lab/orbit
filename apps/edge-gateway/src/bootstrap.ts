@@ -1,16 +1,16 @@
 import { NestFactory } from "@nestjs/core";
 import { FastifyAdapter } from "@nestjs/platform-fastify";
-import { initializeUsageStorage } from "@shiguang-gateway/core-domain/startup";
-import { initializeProxyLogStorage } from "@shiguang-gateway/core-domain/runtime/proxy-log-lifecycle";
+import { initializeUsageStorage } from "@orbit/core/startup";
+import { initializeProxyLogStorage } from "@orbit/core/runtime/proxy-log-lifecycle";
 import type { FastifyInstance } from "fastify";
-import { installRuntimePorts } from "@shiguang-gateway/open-sse/services/dbRuntimeHooks";
+import { installRuntimePorts } from "@orbit/inference/services/dbRuntimeHooks";
 
 export async function bootstrapEdgeGateway() {
   await initializeUsageStorage();
   installRuntimePorts();
   const [{ installMemoryRuntimePort }, { installQuotaSaturationRuntimePort }] = await Promise.all([
-    import("@shiguang-gateway/open-sse/services/memoryRuntime"),
-    import("@shiguang-gateway/open-sse/services/quota-saturation"),
+    import("@orbit/inference/services/memoryRuntime"),
+    import("@orbit/inference/services/quota-saturation"),
   ]);
   installMemoryRuntimePort();
   installQuotaSaturationRuntimePort();

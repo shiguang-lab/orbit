@@ -133,9 +133,9 @@ async function defaultResolveContext(overrideName) {
 
 /** Lazy-load the antigravity provider + blob codec (TS source via tsx). */
 async function loadDeps() {
-  const { getProvider } = await import("@shiguang-gateway/open-sse/oauth/providers");
+  const { getProvider } = await import("@orbit/inference/oauth/providers");
   const antigravity = getProvider("antigravity");
-  const { encodeCredentialBlob } = await import("@shiguang-gateway/auth/credential-blob");
+  const { encodeCredentialBlob } = await import("@orbit/auth/credential-blob");
   return { antigravity, encodeCredentialBlob };
 }
 

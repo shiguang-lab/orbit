@@ -3,8 +3,8 @@ import {
   clearNotionToken,
   getNotionConfig,
   setNotionToken,
-} from "@shiguang-gateway/core-domain/control/notion-db";
-import { createNotionClient } from "@shiguang-gateway/core-domain/integrations/notion-client";
+} from "@orbit/core/control/notion-db";
+import { createNotionClient } from "@orbit/core/integrations/notion-client";
 
 @Injectable()
 export class NotionSettingsService {

@@ -343,7 +343,7 @@ export function CombosLivePage() {
   const [simulateModalVisible, setSimulateModalVisible] = useState(false);
   const [simulating, setSimulating] = useState(false);
   const [testPrompt, setTestPrompt] = useState("Explain quantum computing in one sentence.");
-  const [testResult, setTestResult] = useState<import("@shiguang-gateway/contracts").ComboTestResponse | null>(null);
+  const [testResult, setTestResult] = useState<import("@orbit/contracts").ComboTestResponse | null>(null);
 
   // 1. Fetch Combos
   const combosQuery = useQuery({

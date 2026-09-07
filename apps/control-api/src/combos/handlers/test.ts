@@ -1,9 +1,9 @@
 import { randomUUID } from "node:crypto";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getComboByName, getCombos } from "@shiguang-gateway/core-domain/db/combos";
-import { pickApiKeyForInternalUse } from "@shiguang-gateway/core-domain/db/api-keys";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { getComboByName, getCombos } from "@orbit/core/db/combos";
+import { pickApiKeyForInternalUse } from "@orbit/core/db/api-keys";
 import { buildComboTestRequestBody, extractComboTestResponseText } from "../combo-test.js";
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 import { z } from "zod";
 
 const testSchema = z.object({
@@ -99,7 +99,7 @@ export async function testCombo(request: Request): Promise<Response> {
     const combo = await getComboByName(validation.data.comboName) as any;
     if (!combo) return Response.json({ error: "Combo not found" }, { status: 404 });
     const allCombos = await getCombos();
-    const { resolveNestedComboTargets } = await load("@shiguang-gateway/open-sse/services/combo");
+    const { resolveNestedComboTargets } = await load("@orbit/inference/services/combo");
     const targets = resolveNestedComboTargets(combo, allCombos) as TestTarget[];
     if (targets.length === 0) return Response.json({ error: "Combo has no models" }, { status: 400 });
 

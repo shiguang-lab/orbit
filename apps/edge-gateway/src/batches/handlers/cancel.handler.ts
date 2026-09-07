@@ -1,4 +1,4 @@
-import { getBatch, updateBatch } from "@shiguang-gateway/core-domain/db/batches";
+import { getBatch, updateBatch } from "@orbit/core/db/batches";
 import { getApiKeyRequestScope } from "../../common/api-key-scope.js";
 import { CORS_HEADERS, handleCorsOptions, jsonResponse } from "../../common/cors.js";
 import { formatBatchResponse } from "./format-batch-response.js";

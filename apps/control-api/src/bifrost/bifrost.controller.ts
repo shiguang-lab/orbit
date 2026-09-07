@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Res } from "@nestjs/common";
 import type { FastifyReply } from "fastify";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import { z } from "zod";
 import { BifrostService } from "./bifrost.service.js";
 

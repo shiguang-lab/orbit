@@ -1,17 +1,17 @@
 import { Injectable } from "@nestjs/common";
-import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
-import { computeFreeProviderRankings } from "@shiguang-gateway/core-domain/control/free-provider-rankings";
-import { getRadarCatalog } from "@shiguang-gateway/core-domain/radar/read";
-import { sumUsageTokensThisMonth } from "@shiguang-gateway/core-domain/usage/summary";
+import { CORS_HEADERS } from "@orbit/contracts/cors";
+import { computeFreeProviderRankings } from "@orbit/core/control/free-provider-rankings";
+import { getRadarCatalog } from "@orbit/core/radar/read";
+import { sumUsageTokensThisMonth } from "@orbit/core/usage/summary";
 import { listNoCredentialProviders } from "./provider-credential-requirement.js";
 import {
   computeFreeModelTotals,
   type FreeModelBudget,
-} from "@shiguang-gateway/provider-catalog/free-model-catalog";
+} from "@orbit/providers/free-model-catalog";
 import {
   FREE_CATALOG_CURATED_AT,
   FREE_MODEL_BUDGETS,
-} from "@shiguang-gateway/provider-catalog/free-model-catalog";
+} from "@orbit/providers/free-model-catalog";
 import { freeProviderRankingsQuerySchema } from "./free-tier.schemas.js";
 
 const CORS = {

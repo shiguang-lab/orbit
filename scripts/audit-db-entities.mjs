@@ -36,7 +36,7 @@ const walk = (dir, out = []) => {
  * or an app implementation makes the catalog easy to bypass accidentally.
  */
 function assertEntitySourceLayout() {
-  const entitiesDir = join(repoRoot, "packages", "db-schema", "src", "entities");
+  const entitiesDir = join(repoRoot, "packages", "contracts", "src", "db-schema", "entities");
   const entries = readdirSync(entitiesDir, { withFileTypes: true });
   const entityFiles = entries
     .filter((entry) => entry.isFile() && entry.name.endsWith(".entity.ts"))
@@ -47,9 +47,9 @@ function assertEntitySourceLayout() {
   }
 
   const declarationsOutsideEntityFiles = [];
-  for (const file of walk(join(repoRoot, "packages", "db-schema", "src"))) {
+  for (const file of walk(join(repoRoot, "packages", "contracts", "src", "db-schema"))) {
     const relativePath = relative(repoRoot, file).split(sep).join("/");
-    const isEntityFile = relativePath.startsWith("packages/db-schema/src/entities/") &&
+    const isEntityFile = relativePath.startsWith("packages/contracts/src/db-schema/entities/") &&
       relativePath.endsWith(".entity.ts");
     if (isEntityFile) continue;
     const source = readFileSync(file, "utf8");
@@ -114,7 +114,7 @@ function collectUsage(entities, appEntries, packageEntries, appConsumers) {
   const allSources = [
     ...appEntries.flatMap((entry) => walk(join(entry.dir, "src")).map((file) => ({ file, unit: entry.manifest?.name, kind: "app" }))),
     ...packageEntries
-      .filter((entry) => entry.manifest?.name !== "@shiguang-gateway/db-schema")
+      .filter((entry) => entry.manifest?.name !== "@orbit/contracts")
       .flatMap((entry) => walk(join(entry.dir, "src")).map((file) => ({ file, unit: entry.manifest?.name, kind: "package" }))),
   ];
   for (const { file, unit, kind } of allSources) {
@@ -171,7 +171,7 @@ function validateExternalWriteAuthorities(entity, tableUsage, appEntries, root =
     const entrypoint = join(root, authority.entrypoint);
     const app = appEntries.find((candidate) => source.startsWith(`${candidate.dir}${sep}`));
     if (!app) throw new Error(`${entity.entityName}: external writer is not inside an app: ${authority.source}`);
-    if (app.manifest.name === `@shiguang-gateway/${entity.owner}`) {
+    if (app.manifest.name === `@orbit/${entity.owner}`) {
       throw new Error(`${entity.entityName}: owner writes must not be declared as external authority: ${authority.source}`);
     }
     if (!allowedModes.has(authority.mode)) throw new Error(`${entity.entityName}: invalid external write mode ${authority.mode}`);
@@ -193,7 +193,7 @@ function validateExternalWriteAuthorities(entity, tableUsage, appEntries, root =
     if (authority.mode === "maintenance" && !/reset|repair|maintenance/.test(authority.entrypoint)) {
       throw new Error(`${entity.entityName}: maintenance authority must use an explicit recovery entrypoint`);
     }
-    if (authority.mode === "migration" && app.manifest.name !== "@shiguang-gateway/importer") {
+    if (authority.mode === "migration" && app.manifest.name !== "@orbit/importer") {
       throw new Error(`${entity.entityName}: migration authority must belong to the importer app`);
     }
     authorizedFiles.add(authority.source);
@@ -204,7 +204,7 @@ function validateExternalWriteAuthorities(entity, tableUsage, appEntries, root =
 function findUnauthorizedExternalWriteFiles(entity, tableUsage, appEntries, root = repoRoot) {
   const authorizedFiles = validateExternalWriteAuthorities(entity, tableUsage, appEntries, root);
   return Object.entries(tableUsage.directApps).flatMap(([app, value]) =>
-    app === `@shiguang-gateway/${entity.owner}`
+    app === `@orbit/${entity.owner}`
       ? []
       : value.writeFiles.filter((file) => !authorizedFiles.has(file)).map((file) => `${app}:${file}`)
   );
@@ -222,8 +222,8 @@ function assertExternalWriteAuthorityGuard() {
     writeFileSync(join(appDir, "commands", "setup.mjs"), "import '../writer.mjs';\nawait isServerUp();\n");
     writeFileSync(join(appDir, "forged", "setup.mjs"), "await isServerUp();\nexport const forged = true;\n");
     writeFileSync(join(root, "scripts", "writer.mjs"), "db.exec('UPDATE provider_connections SET test_status = null');\n");
-    const apps = [{ dir: appDir, manifest: { name: "@shiguang-gateway/cli" } }];
-    const usage = { directApps: { "@shiguang-gateway/cli": { writes: 2, writeFiles: ["apps/cli/writer.mjs", "apps/cli/rogue.mjs"] } } };
+    const apps = [{ dir: appDir, manifest: { name: "@orbit/cli" } }];
+    const usage = { directApps: { "@orbit/cli": { writes: 2, writeFiles: ["apps/cli/writer.mjs", "apps/cli/rogue.mjs"] } } };
     const validAuthority = {
       source: "apps/cli/writer.mjs",
       entrypoint: "apps/cli/commands/setup.mjs",
@@ -261,9 +261,9 @@ try {
     "pnpm",
     [
       "--filter",
-      "@shiguang-gateway/db-schema",
+      "@orbit/contracts",
       "exec",
-      "tsc",
+      "tsc", "--noEmit", "false", "--rootDir", "src",
       "--outDir",
       outputDir,
       "--declaration",
@@ -277,7 +277,7 @@ try {
   );
   if (compile.status !== 0) process.exit(compile.status ?? 1);
 
-  const schema = await import(pathToFileURL(join(outputDir, "index.js")).href);
+  const schema = await import(pathToFileURL(join(outputDir, "db-schema", "index.js")).href);
   const { assertGatewayEntities, GATEWAY_ENTITIES } = schema;
   assertGatewayEntities();
   console.log("db-schema entity catalog: PASS");
@@ -300,7 +300,7 @@ try {
   }
   const consumers = (name) => workspaceAppConsumers(name, appEntries, packageEntries, dependents);
   const usage = collectUsage(GATEWAY_ENTITIES, appEntries, packageEntries, consumers);
-  const sharedConsumers = consumers("@shiguang-gateway/db-schema");
+  const sharedConsumers = consumers("@orbit/contracts");
   console.log(`db-schema sharedConsumers (${sharedConsumers.length}): ${sharedConsumers.join(", ") || "none"}`);
 
   const audit = {};
@@ -310,7 +310,7 @@ try {
     const packageWrites = Object.entries(tableUsage.packageSources).filter(([, value]) => value.writes > 0).map(([pkg]) => pkg);
     const authorizedFiles = validateExternalWriteAuthorities(entity, tableUsage, appEntries);
     const mismatches = findUnauthorizedExternalWriteFiles(entity, tableUsage, appEntries);
-    const ownerHasDirectWrites = directWrites.includes(`@shiguang-gateway/${entity.owner}`);
+    const ownerHasDirectWrites = directWrites.includes(`@orbit/${entity.owner}`);
     const hasAuthorizedExternalWrites = authorizedFiles.size > 0;
     const ownerConsistency = mismatches.length > 0
       ? "FAIL"

@@ -1,5 +1,5 @@
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { MCP_TOOLS, MCP_TOOL_MAP } from "@shiguang-gateway/open-sse/mcp-server/schemas/tools";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { MCP_TOOLS, MCP_TOOL_MAP } from "@orbit/inference/mcp-server/schemas/tools";
 
 export async function listTools(request: Request): Promise<Response> {
   const authError = await requireManagementAuth(request, { acceptMcpConnectScope: true });

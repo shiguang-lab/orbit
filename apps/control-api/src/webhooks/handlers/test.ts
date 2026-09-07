@@ -3,17 +3,17 @@
  * POST — Send a test ping event to a specific webhook and return full diagnostics.
  */
 
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
-import { getWebhook } from "@shiguang-gateway/core-domain/db/webhooks";
-import { decryptMetadata } from "@shiguang-gateway/core-domain/shared/webhook-dispatcher";
-import { buildSlackPayload } from "@shiguang-gateway/core-domain/shared/webhook-integrations/slack";
-import { buildTelegramUrl, buildTelegramPayload } from "@shiguang-gateway/core-domain/shared/webhook-integrations/telegram";
-import { buildDiscordPayload } from "@shiguang-gateway/core-domain/shared/webhook-integrations/discord";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { insertDelivery } from "@shiguang-gateway/core-domain/db/webhook-deliveries";
-import { recordWebhookDelivery } from "@shiguang-gateway/core-domain/db/webhooks";
-import { isPrivateHost, OutboundUrlGuardError } from "@shiguang-gateway/network-guard";
-import { parseAndValidateWebhookUrl } from "@shiguang-gateway/core-domain/network/outbound-url-guard-policy";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
+import { getWebhook } from "@orbit/core/db/webhooks";
+import { decryptMetadata } from "@orbit/core/shared/webhook-dispatcher";
+import { buildSlackPayload } from "@orbit/core/shared/webhook-integrations/slack";
+import { buildTelegramUrl, buildTelegramPayload } from "@orbit/core/shared/webhook-integrations/telegram";
+import { buildDiscordPayload } from "@orbit/core/shared/webhook-integrations/discord";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { insertDelivery } from "@orbit/core/db/webhook-deliveries";
+import { recordWebhookDelivery } from "@orbit/core/db/webhooks";
+import { isPrivateHost, OutboundUrlGuardError } from "@orbit/utils/network";
+import { parseAndValidateWebhookUrl } from "@orbit/core/network/outbound-url-guard-policy";
 import crypto from "crypto";
 
 const MAX_RESPONSE_BODY = 2048;

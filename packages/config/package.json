@@ -1,5 +1,5 @@
 {
-  "name": "@shiguang-gateway/config",
+  "name": "@orbit/config",
   "version": "0.1.0",
   "description": "Environment configuration contracts shared by deployable applications",
   "private": true,
@@ -9,10 +9,6 @@
     ".": {
       "types": "./src/index.ts",
       "import": "./src/index.ts"
-    },
-    "./network/private-host": {
-      "types": "./src/network/private-host.ts",
-      "import": "./src/network/private-host.ts"
     },
     "./timeouts": {
       "types": "./src/timeouts.ts",
@@ -26,16 +22,30 @@
       "types": "./src/oauth.ts",
       "import": "./src/oauth.ts"
     },
+    "./cli/model-profile": {
+      "types": "./types/model-profile.d.ts",
+      "import": "./src/cli/model-profile.mjs"
+    },
+    "./cli/codex": {
+      "types": "./types/codex.d.ts",
+      "import": "./src/cli/codex.mjs"
+    },
+    "./cli/claude": {
+      "types": "./types/claude.d.ts",
+      "import": "./src/cli/claude.mjs"
+    },
     "./logEnv": {
       "types": "./src/logEnv.ts",
       "import": "./src/logEnv.ts"
     }
   },
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test test/*.test.ts"
   },
   "devDependencies": {
     "@types/node": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "tsx": "catalog:"
   }
 }

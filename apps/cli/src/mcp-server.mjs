@@ -10,13 +10,13 @@ const currentFile = fileURLToPath(import.meta.url);
 async function loadMcpRuntime() {
   await import(new URL("./mcpStdioConsoleGuard.mjs", import.meta.url).href);
   const { installRuntimePorts } = await import(
-    "@shiguang-gateway/open-sse/services/dbRuntimeHooks"
+    "@orbit/inference/services/dbRuntimeHooks"
   );
   installRuntimePorts();
   const [{ createMcpServer, getMcpServerRuntimeInfo }, { closeAuditDb }, { StdioServerTransport }] =
     await Promise.all([
-      import("@shiguang-gateway/open-sse/mcp-server/factory"),
-      import("@shiguang-gateway/open-sse/mcp-server/audit"),
+      import("@orbit/inference/mcp-server/factory"),
+      import("@orbit/inference/mcp-server/audit"),
       import("@modelcontextprotocol/sdk/server/stdio.js"),
     ]);
   return {

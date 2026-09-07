@@ -10,7 +10,7 @@ import {
 import { join, sep } from "node:path";
 import { spawnSync } from "node:child_process";
 import { platform } from "node:os";
-import { resolveDataDir } from "@shiguang-gateway/config/dataPaths";
+import { resolveDataDir } from "@orbit/config/dataPaths";
 
 const BETTER_SQLITE3_VERSION = "12.10.1";
 
@@ -31,7 +31,7 @@ export function ensureRuntimeDir() {
       pkgPath,
       JSON.stringify(
         {
-          name: "core-domain",
+          name: "core",
           version: "1.0.0",
           private: true,
           description: "User-writable runtime deps for ShiguangGateway (native binaries)",

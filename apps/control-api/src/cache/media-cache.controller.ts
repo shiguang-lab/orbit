@@ -1,8 +1,8 @@
-import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
+import { toWebRequest } from "@orbit/http/web-handler";
 import { Controller, Get, Inject, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+import { isAuthenticated } from "@orbit/core/control/authenticated";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 import { CacheService } from "./cache.service.js";
 
 @Controller("api/media/cache")

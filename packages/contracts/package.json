@@ -1,5 +1,5 @@
 {
-  "name": "@shiguang-gateway/contracts",
+  "name": "@orbit/contracts",
   "version": "0.1.0",
   "description": "Transport-neutral API and realtime contracts shared by applications",
   "private": true,
@@ -237,6 +237,10 @@
     "./radar-admin-url": {
       "types": "./src/radar-admin-url.ts",
       "import": "./src/radar-admin-url.ts"
+    },
+    "./db-schema": {
+      "types": "./src/db-schema/index.ts",
+      "import": "./src/db-schema/index.ts"
     }
   },
   "scripts": {

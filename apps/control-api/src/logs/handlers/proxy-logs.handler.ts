@@ -1,4 +1,4 @@
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 
 function serverErrorResponse(error: unknown): Response {

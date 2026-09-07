@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { validateBody } from "@orbit/core/shared/validation/helpers";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 
 const deleteCooldownSchema = z

@@ -1,6 +1,6 @@
 import { NestFactory } from "@nestjs/core";
 import type { INestApplicationContext } from "@nestjs/common";
-import { installRuntimePorts } from "@shiguang-gateway/open-sse/services/dbRuntimeHooks";
+import { installRuntimePorts } from "@orbit/inference/services/dbRuntimeHooks";
 
 /** Create the worker's standalone Nest application context. */
 export async function bootstrapWorker(): Promise<INestApplicationContext> {

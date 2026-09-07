@@ -1,5 +1,5 @@
 /**
- * @shiguang-gateway/contracts
+ * @orbit/contracts
  * 前后端(BFF)共享的 API 契约与领域类型。
  * 这些类型与 Shiguang Gateway 后端的接口保持手工镜像(lightweight mirror)，
  * 后端路由变更时优先在此同步。
@@ -88,7 +88,7 @@ export interface CallLogEntry {
  * Stable error envelope used when every credential for a model is cooling down.
  * Keep this transport contract independent from the persistence/domain packages
  * so edge applications can use the streaming error helper without importing
- * the legacy core-domain source tree.
+ * the legacy core source tree.
  */
 export interface ModelCooldownErrorPayload {
   error: {

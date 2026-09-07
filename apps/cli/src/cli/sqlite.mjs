@@ -1,5 +1,5 @@
 import fs from "node:fs";
-import { resolveDataDir, resolveStoragePath } from "@shiguang-gateway/config/dataPaths";
+import { resolveDataDir, resolveStoragePath } from "@orbit/config/dataPaths";
 
 async function loadSqlite() {
   if (process.versions.bun) {
@@ -24,7 +24,7 @@ async function loadSqlite() {
 // Reuse that same cascade here instead of re-deriving it.
 async function openWithSyncDriverFallback(dbPath, options, importError) {
   try {
-    const { tryOpenSync } = await import("@shiguang-gateway/core-domain/cli/sqlite-driver");
+    const { tryOpenSync } = await import("@orbit/core/cli/sqlite-driver");
     const adapter = tryOpenSync(dbPath, options);
     if (adapter) {
       return adapter;

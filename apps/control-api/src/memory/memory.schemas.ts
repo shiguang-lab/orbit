@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { MemoryType } from "@shiguang-gateway/core-domain/memory/runtime";
+import { MemoryType } from "@orbit/core/memory/runtime";
 
 const optionalCustomEmbeddingValue = z.preprocess(
   (value) => (typeof value === "string" && value.trim() === "" ? null : value),

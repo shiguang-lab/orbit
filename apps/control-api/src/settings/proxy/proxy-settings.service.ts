@@ -4,13 +4,13 @@ import {
   getProxyConfig,
   getProxyForLevel,
   setProxyConfig,
-} from "@shiguang-gateway/core-domain/db/proxy-settings";
-import { getProxyAssignments } from "@shiguang-gateway/core-domain/db/proxy-registry";
-import { getProxyById } from "@shiguang-gateway/core-domain/db/proxies";
-import { resolveProxyForConnection } from "@shiguang-gateway/core-domain/db/settings";
-import { updateProxyConfigSchema } from "@shiguang-gateway/core-domain/validation/proxy";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+} from "@orbit/core/db/proxy-settings";
+import { getProxyAssignments } from "@orbit/core/db/proxy-registry";
+import { getProxyById } from "@orbit/core/db/proxies";
+import { resolveProxyForConnection } from "@orbit/core/db/settings";
+import { updateProxyConfigSchema } from "@orbit/core/validation/proxy";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 type ProxyConfigInput = { type?: "http" | "https" | "socks5"; host?: string; port?: number; username?: string; password?: string };
 type UpdateProxyConfigInput = { proxy?: ProxyConfigInput | null; global?: ProxyConfigInput | null; providers?: Record<string, ProxyConfigInput | null>; combos?: Record<string, ProxyConfigInput | null>; keys?: Record<string, ProxyConfigInput | null>; level?: "global" | "provider" | "combo" | "key"; id?: string };

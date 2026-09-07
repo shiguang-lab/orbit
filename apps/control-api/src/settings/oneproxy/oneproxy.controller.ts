@@ -1,7 +1,7 @@
-import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
+import { toWebRequest } from "@orbit/http/web-handler";
 import { Controller, Delete, Get, Inject, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import { OneproxyService } from "./oneproxy.service.js";
 
 /** HTTP transport for the legacy 1proxy settings compatibility endpoints. */

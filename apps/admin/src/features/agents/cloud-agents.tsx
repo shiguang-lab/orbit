@@ -1,4 +1,6 @@
 import {
+  Alert,
+  Button,
   Card,
   Flex,
   Table,
@@ -86,6 +88,16 @@ export function CloudAgentsPage() {
           </Flex>
         </Flex>
       </Card>
+
+      {cloudQuery.isError && (
+        <Alert
+          type="error"
+          showIcon
+          title={tt("云端任务加载失败", "Failed to load cloud agent tasks")}
+          description={cloudQuery.error.message}
+          action={<Button onClick={() => void cloudQuery.refetch()} loading={cloudQuery.isFetching}>{tt("重试", "Retry")}</Button>}
+        />
+      )}
 
       {/* 2. Table */}
       <Card title={tt("云端智能体服务实例", "Cloud Agent Instances")} className={styles.sectionCard} size="small">

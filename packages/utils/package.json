@@ -1,0 +1,66 @@
+{
+  "name": "@orbit/utils",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./errors": {
+      "types": "./src/errors/index.d.ts",
+      "import": "./src/errors/index.ts"
+    },
+    "./errors/error-response": {
+      "types": "./src/errors/error-response.ts",
+      "import": "./src/errors/error-response.ts"
+    },
+    "./logging": {
+      "types": "./src/logging/index.ts",
+      "import": "./src/logging/index.ts"
+    },
+    "./logging/redaction": {
+      "types": "./src/logging/redaction.ts",
+      "import": "./src/logging/redaction.ts"
+    },
+    "./network": {
+      "types": "./src/network/outbound-url-guard.ts",
+      "import": "./src/network/outbound-url-guard.ts"
+    },
+    "./realtime": {
+      "types": "./src/realtime/index.ts",
+      "import": "./src/realtime/index.ts"
+    },
+    "./network/private-host": {
+      "types": "./src/network/private-host.ts",
+      "import": "./src/network/private-host.ts"
+    },
+    "./http/fetch-timeout": {
+      "types": "./src/http/fetch-timeout.ts",
+      "import": "./src/http/fetch-timeout.ts"
+    },
+    "./random": {
+      "types": "./src/random.ts",
+      "import": "./src/random.ts"
+    },
+    "./process": {
+      "types": "./src/process.ts",
+      "import": "./src/process.ts"
+    },
+    "./errors/api-response": {
+      "types": "./src/errors/api-response.ts",
+      "import": "./src/errors/api-response.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test test/*.test.ts"
+  },
+  "dependencies": {
+    "@orbit/contracts": "workspace:*",
+    "@orbit/config": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:"
+  }
+}

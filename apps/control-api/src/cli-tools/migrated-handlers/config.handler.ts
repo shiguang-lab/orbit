@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { generateConfig, generateAllConfigs } from "@shiguang-gateway/core-domain/cli/config-generator";
-import { resolveGatewayBaseUrl } from "@shiguang-gateway/core-domain/shared/utils/resolveGatewayBaseUrl";
+import { requireManagementAuth as requireCliToolsAuth } from "@orbit/core/control/management-auth";
+import { generateConfig, generateAllConfigs } from "@orbit/core/cli/config-generator";
+import { resolveGatewayBaseUrl } from "@orbit/core/shared/utils/resolveGatewayBaseUrl";
 
 const generateConfigSchema = z.object({
   toolId: z.string().min(1),

@@ -27,11 +27,11 @@ import {
   selectCompressionStrategy,
   writeCompressionAnalytics,
   writeCompressionSkip,
-} from "@shiguang-gateway/open-sse/services/codex-responses-ws-runtime";
+} from "@orbit/inference/services/codex-responses-ws-runtime";
 import type {
   CompressionConfig,
   CompressionResult,
-} from "@shiguang-gateway/open-sse/services/codex-responses-ws-runtime";
+} from "@orbit/inference/services/codex-responses-ws-runtime";
 
 const log = logger("RESPONSES_WS_COMPRESSION");
 const compressionLog = {

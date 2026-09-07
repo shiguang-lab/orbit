@@ -1,24 +1,24 @@
 import { Injectable } from "@nestjs/common";
 import {
   getSettings,
-} from "@shiguang-gateway/core-domain/db/settings";
+} from "@orbit/core/db/settings";
 import { getNodeRuntimeSupport } from "./node-runtime-support.js";
-import { normalizeAutoDisableBannedScope } from "@shiguang-gateway/core-domain/resilience/auto-disable-banned";
+import { normalizeAutoDisableBannedScope } from "@orbit/core/resilience/auto-disable-banned";
 import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 import {
   applyPersistedRuntimeSettings,
   updatePersistedRuntimeSettings,
 } from "../runtime-settings-persistence.js";
 import { readIpFilterConfig, writeIpFilterConfig } from "./ip-filter.repository.js";
-import { getCorsStatus } from "@shiguang-gateway/core-domain/shared/cors-status";
+import { getCorsStatus } from "@orbit/core/shared/cors-status";
 import {
   ALWAYS_PROTECTED_API_PATHS,
   LOCAL_ONLY_API_PREFIXES,
   LOCAL_ONLY_MANAGE_SCOPE_BYPASS_PREFIXES,
   SPAWN_CAPABLE_PREFIXES,
-} from "@shiguang-gateway/core-domain/shared/authz-route-policy";
-import { isDashboardSessionAuthenticated, isAuthRequired } from "@shiguang-gateway/core-domain/control/authenticated";
-import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/services/auth";
+} from "@orbit/core/shared/authz-route-policy";
+import { isDashboardSessionAuthenticated, isAuthRequired } from "@orbit/core/control/authenticated";
+import { extractApiKey, isValidApiKey } from "@orbit/inference/services/auth";
 
 export interface AutoDisableAccountsConfig {
   enabled: boolean;

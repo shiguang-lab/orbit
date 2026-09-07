@@ -1,8 +1,8 @@
-import { providerRuntimePorts } from "@shiguang-gateway/core-domain/runtime/provider-ports";
+import { providerRuntimePorts } from "@orbit/core/runtime/provider-ports";
 import {
   getCanonicalModelMetadata,
   type CanonicalModelMetadata,
-} from "@shiguang-gateway/core-domain/catalog/model-metadata";
+} from "@orbit/core/catalog/model-metadata";
 import { resolveFamilyFirstPublishedModelId } from "./family-first-model-ids.js";
 import { getReasoningVariantBaseModelId } from "./reasoning-metadata.js";
 import {

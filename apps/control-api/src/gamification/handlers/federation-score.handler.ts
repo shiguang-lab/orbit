@@ -1,6 +1,6 @@
-import { CORS_HEADERS, handleCorsOptions } from "@shiguang-gateway/core-domain/shared/cors";
-import { updateScore } from "@shiguang-gateway/core-domain/control/gamification";
-import { getConnectedServerByKeyHash } from "@shiguang-gateway/core-domain/control/gamification-db";
+import { CORS_HEADERS, handleCorsOptions } from "@orbit/core/shared/cors";
+import { updateScore } from "@orbit/core/control/gamification";
+import { getConnectedServerByKeyHash } from "@orbit/core/control/gamification-db";
 import { z } from "zod";
 import crypto from "crypto";
 

@@ -2,13 +2,13 @@
  * GET  /api/logs/detail  — List legacy detailed request logs + current enabled flag
  * POST /api/logs/detail — Enable/disable pipeline capture for unified call log artifacts
  */
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import {
   getRequestDetailLogs,
   getRequestDetailLogCount,
   isDetailedLoggingEnabled,
-} from "@shiguang-gateway/core-domain/db/detailed-logs";
-import { getUserDatabaseSettings, updateDatabaseSettings } from "@shiguang-gateway/core-domain/db/database-settings";
+} from "@orbit/core/db/detailed-logs";
+import { getUserDatabaseSettings, updateDatabaseSettings } from "@orbit/core/db/database-settings";
 import { updatePersistedRuntimeSettings } from "../../settings/runtime-settings-persistence.js";
 
 export const dynamic = "force-dynamic";

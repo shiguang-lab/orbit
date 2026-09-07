@@ -1,10 +1,10 @@
-import { getCostSummary, setBudget, checkBudget } from "@shiguang-gateway/core-domain/usage/cost-rules";
+import { getCostSummary, setBudget, checkBudget } from "@orbit/core/usage/cost-rules";
 import {
   isValidationFailure,
   validateBody,
-} from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { setBudgetSchema } from "@shiguang-gateway/core-domain/validation/keys";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+} from "@orbit/core/shared/validation/helpers";
+import { setBudgetSchema } from "@orbit/core/validation/keys";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 
 export async function GET(request: Request) {
   const authError = await requireManagementAuth(request);

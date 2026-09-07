@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { isLoopbackHost } from "@shiguang-gateway/core-domain/shared/authz-route-policy";
+import { isLoopbackHost } from "@orbit/core/shared/authz-route-policy";
 
 export type RemoteOAuthHint =
   | { remoteHost: false }

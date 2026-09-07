@@ -1,7 +1,7 @@
-import { getModelAliases } from "@shiguang-gateway/core-domain/db/model-aliases";
-import { validateApiKey } from "@shiguang-gateway/core-domain/db/api-keys";
-import { cloudResolveAliasSchema } from "@shiguang-gateway/core-domain/control/cloud-validation";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { getModelAliases } from "@orbit/core/db/model-aliases";
+import { validateApiKey } from "@orbit/core/db/api-keys";
+import { cloudResolveAliasSchema } from "@orbit/core/control/cloud-validation";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 
 export async function POST(request: Request) {
   let rawBody: unknown;

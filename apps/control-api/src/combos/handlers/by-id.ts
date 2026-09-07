@@ -4,21 +4,21 @@ import {
   getComboByName,
   getCombos,
   updateCombo,
-} from "@shiguang-gateway/core-domain/db/combos";
-import { isCloudEnabled } from "@shiguang-gateway/core-domain/db/settings";
-import { syncToCloud } from "@shiguang-gateway/core-domain/sync/cloud";
-import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
-import { updateComboSchema } from "@shiguang-gateway/core-domain/validation/combos";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { normalizeComboModels } from "@shiguang-gateway/core-domain/routing/combo-steps";
-import { validateComboDAG, clampComboDepth } from "@shiguang-gateway/open-sse/services/combo";
+} from "@orbit/core/db/combos";
+import { isCloudEnabled } from "@orbit/core/db/settings";
+import { syncToCloud } from "@orbit/core/sync/cloud";
+import { getConsistentMachineId } from "@orbit/core/shared/utils/machineId";
+import { updateComboSchema } from "@orbit/core/validation/combos";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
+import { normalizeComboModels } from "@orbit/core/routing/combo-steps";
+import { validateComboDAG, clampComboDepth } from "@orbit/inference/services/combo";
 import {
   buildComboNameCollisionWarning,
   comboErrorResponse,
   ComboInvariantError,
   validateCompositeTiersConfig,
 } from "../combo-admin.js";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 
 type ComboRow = {
   id?: string;

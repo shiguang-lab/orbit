@@ -18,16 +18,16 @@ shiguang-gateway-monorepo/
 │   ├── worker/        # 同步、定时任务和后台作业
 │   └── importer/      # 冷快照导入与数据库转换 CLI
 ├── packages/
-│   ├── core-domain/ # 无端口监听的领域实现与协议能力
-│   ├── db-schema/   # 跨 app 共享的表名与所有权元数据
-│   ├── http-kernel/ # 仅承载 HTTP 基础设施；路由由 app 负责装配
-│   ├── web-handler-adapter/ # 显式 Web Request handler 到 Fastify 的窄适配
+│   ├── core/ # 无端口监听的领域实现与协议能力
+│   ├── http/ # 仅承载 HTTP 基础设施；路由由 app 负责装配
 │   ├── contracts/    # 前后端共享的 API 类型/契约
 │   ├── config/       # 共享配置
-│   ├── network-guard/ # 纯出站 URL/SSRF 校验原语
+│   ├── utils/        # 错误、日志、网络校验与事件发送工具
 ├── turbo.json        # 任务编排
 └── pnpm-workspace.yaml
 ```
+
+包职责与依赖约束见 [packages/README.md](packages/README.md)。
 
 ## 核心设计：按 app 边界拆分
 
@@ -35,7 +35,7 @@ shiguang-gateway-monorepo/
   和 **worker**（定时任务/后台作业）；每个 `apps/*` 都拥有自己的进程 bootstrap，
   只通过包接口复用实现。
 - 服务只从 `edge-gateway`、`control-api`、`realtime`、`worker` 和 `importer` 启动；仓库不包含旧 BFF 启动器或兼容入口。
-- `packages/core-domain` 只提供无端口监听的领域模块与协议能力；HTTP 端口、生命周期和 surface 选择由所属 app 的固定 bootstrap 负责，`http-kernel` 仅提供传输适配。数据库表结构放在 `packages/db-schema`，纯出站 URL/SSRF 校验放在无框架依赖的 `packages/network-guard`，不得把 app 启动逻辑放回公共包。
+- `packages/core` 只提供无端口监听的领域模块与协议能力；HTTP 端口、生命周期和 surface 选择由所属 app 的固定 bootstrap 负责，`http` 仅提供传输适配。数据库表结构放在 `packages/contracts/src/db-schema`，纯出站 URL/SSRF 校验放在无框架依赖的 `packages/utils/src/network`，不得把 app 启动逻辑放回公共包。
 - app 之间只能通过网络 API 或 `packages/contracts` 交互；禁止跨 app workspace 依赖、跨 app 相对路径和直接引用其他 app 的 `src`。
 - 每次迁移一个领域后，运行 `pnpm audit:app-boundaries` 验证依赖边界，再运行该 app 自己的 typecheck/build 与 smoke 测试。
 - `apps/importer` 将冻结快照导入独立 `shiguang-gateway_data` volume；`scripts/smoke-container-deployment.mjs` 自动验收接口隔离、数据表、原生 SQLite/vector、实时端口和全部 worker scheduler。
@@ -71,11 +71,11 @@ pnpm install
 pnpm build
 
 # 分别启动
-pnpm --filter @shiguang-gateway/edge-gateway dev  # 网关: http://127.0.0.1:8787
-pnpm --filter @shiguang-gateway/control-api dev   # 控制面: http://127.0.0.1:8788
-pnpm --filter @shiguang-gateway/realtime dev      # 实时: http://127.0.0.1:8790 + WS 20132
-pnpm --filter @shiguang-gateway/worker dev        # 后台任务
-pnpm --filter @shiguang-gateway/admin dev         # 管理台: http://127.0.0.1:5173
+pnpm --filter @orbit/edge-gateway dev  # 网关: http://127.0.0.1:8787
+pnpm --filter @orbit/control-api dev   # 控制面: http://127.0.0.1:8788
+pnpm --filter @orbit/realtime dev      # 实时: http://127.0.0.1:8790 + WS 20132
+pnpm --filter @orbit/worker dev        # 后台任务
+pnpm --filter @orbit/admin dev         # 管理台: http://127.0.0.1:5173
 
 # 或 turbo 并行
 pnpm dev
@@ -126,18 +126,16 @@ apps/realtime/src/app.module.ts     # realtime 根模块
 apps/worker/src/main.ts              # 后台作业进程入口
 apps/importer/src/main.ts            # 一次性导入进程入口
 
-packages/http-kernel/src/
-├── http-kernel.module.ts # Nest transport 基础模块
+packages/http/src/
+├── http.module.ts # Nest transport 基础模块
 ├── middleware/           # request-id middleware
 ├── interceptors/         # request-id interceptor
-└── filters/              # API exception filter
-
-packages/web-handler-adapter/src/
+├── filters/              # API exception filter
 └── web-handler-adapter.ts # 显式选中的 Web handler 到 Fastify 的传输适配
 ```
 
 每个服务端 app 都由自己的 `AppModule` 组合模块并通过 Nest lifecycle 注册基础设施、路由和 provider。
-`http-kernel` 不创建 Nest 应用、不监听端口、不持有业务路由，也不接受 edge/control surface 参数。
+`http` 不创建 Nest 应用、不监听端口、不持有业务路由，也不接受 edge/control surface 参数。
 
 ## 迁移进度
 
@@ -154,6 +152,6 @@ packages/web-handler-adapter/src/
 开始迁移前先按 [`MIGRATION_SPEC.md`](./MIGRATION_SPEC.md) 完成原页面、数据源和交互清单盘点。
 
 1. 为该领域在所属 app 下创建 feature module、controller 和 service，由 `AppModule` 显式导入；HTTP 方法使用 Nest 官方装饰器声明。
-2. 数据访问由所属 app 的领域 service 调用 `core-domain` 显式导出；请求 DTO、guards、interceptors 和 providers 跟随该 feature module 注册。
+2. 数据访问由所属 app 的领域 service 调用 `core` 显式导出；请求 DTO、guards、interceptors 和 providers 跟随该 feature module 注册。
 3. handler 通过 controller 显式选择；禁止目录扫描、动态 route import 或 all-surface dispatcher。仍使用 Web `Request`/`Response` 的 handler 只通过 `web-handler-adapter` 做窄传输适配。
 4. 更新 owned-route manifest 后，依次运行边界审计、route parity、所属 app 的 typecheck/build 和 split-deployment smoke。

@@ -1,16 +1,16 @@
 import type {
   CodexImportRefreshValidationResult,
   ProviderCredentialRefreshResult,
-} from "@shiguang-gateway/contracts/edge-runtime-command";
-import { getProviderConnectionById, updateProviderConnection } from "@shiguang-gateway/core-domain/db/provider-connections";
+} from "@orbit/contracts/edge-runtime-command";
+import { getProviderConnectionById, updateProviderConnection } from "@orbit/core/db/provider-connections";
 import {
   getAccessToken,
   resolveCopilotTokenBaseUrl,
   updateProviderCredentials,
-} from "@shiguang-gateway/open-sse/services/credentialTokenRefresh";
-import { refreshCopilotToken } from "@shiguang-gateway/open-sse/services/token-refresh";
-import { rotationGroupFor } from "@shiguang-gateway/open-sse/services/refreshSerializer";
-import { parseKimiJwt } from "@shiguang-gateway/open-sse/utils/kimiJwt";
+} from "@orbit/inference/services/credentialTokenRefresh";
+import { refreshCopilotToken } from "@orbit/inference/services/token-refresh";
+import { rotationGroupFor } from "@orbit/inference/services/refreshSerializer";
+import { parseKimiJwt } from "@orbit/inference/utils/kimiJwt";
 
 type RefreshPurpose = "manual" | "connection-test" | "kimi-manual";
 type Connection = Record<string, any>;

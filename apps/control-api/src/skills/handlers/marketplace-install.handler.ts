@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { GLOBAL_SKILL_OWNER_ID, skillRegistry } from "@shiguang-gateway/core-domain/control/skills-registry";
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { validateBody, isValidationFailure } from "@orbit/core/shared/validation/helpers";
+import { GLOBAL_SKILL_OWNER_ID, skillRegistry } from "@orbit/core/control/skills-registry";
+import { isAuthenticated } from "@orbit/core/control/authenticated";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import type { SkillsProviderSettingsService } from "../providers/skills-provider-settings.service.js";
 
 const marketplaceInstallSchema = z.object({

@@ -6,7 +6,7 @@ import { join } from "node:path";
 
 test("control registers provider ports before loading routes and computes combo context", async () => {
   const bootstrap = await readFile(new URL("../src/bootstrap.ts", import.meta.url), "utf8");
-  assert.match(bootstrap, /import\s*\{\s*installRuntimePorts\s*\}\s*from\s*"@shiguang-gateway\/open-sse\/services\/dbRuntimeHooks"/);
+  assert.match(bootstrap, /import\s*\{\s*installRuntimePorts\s*\}\s*from\s*"@orbit\/inference\/services\/dbRuntimeHooks"/);
   const registration = bootstrap.indexOf("installRuntimePorts();");
   assert.ok(registration >= 0 && registration < bootstrap.indexOf('import("./app.module.js")'));
 
@@ -16,7 +16,7 @@ test("control registers provider ports before loading routes and computes combo 
   process.env.DATA_DIR = dataDir;
   process.env.SQLITE_FILE = join(dataDir, "storage.sqlite");
   try {
-    const { installRuntimePorts } = await import("@shiguang-gateway/open-sse/services/dbRuntimeHooks");
+    const { installRuntimePorts } = await import("@orbit/inference/services/dbRuntimeHooks");
     const { computeComboContextLength } = await import("../src/combos/combo-admin.js");
     const combo = { name: "context-check", models: ["openai/gpt-4o-mini"] };
     assert.throws(() => computeComboContextLength(combo, [combo]), /before runtime registration/);
@@ -25,7 +25,7 @@ test("control registers provider ports before loading routes and computes combo 
     assert.equal(typeof context, "number");
     assert.ok(context! > 0);
   } finally {
-    const { closeDbInstance } = await import("@shiguang-gateway/core-domain/db/runtime-lifecycle");
+    const { closeDbInstance } = await import("@orbit/core/db/runtime-lifecycle");
     closeDbInstance();
     for (const [name, value] of Object.entries(previous)) {
       if (value === undefined) delete process.env[name]; else process.env[name] = value;

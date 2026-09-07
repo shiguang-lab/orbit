@@ -10,16 +10,16 @@
  */
 
 import { z } from "zod";
-import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
-import { HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants";
-import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/services/auth";
+import { buildErrorBody, sanitizeErrorMessage } from "@orbit/inference/utils/error";
+import { HTTP_STATUS } from "@orbit/inference/config/constants";
+import { extractApiKey, isValidApiKey } from "@orbit/inference/services/auth";
 import {
   getPlaygroundPreset,
   updatePlaygroundPreset,
   deletePlaygroundPreset,
-} from "@shiguang-gateway/core-domain/control/playground-presets";
-import { PlaygroundPresetUpdateSchema } from "@shiguang-gateway/core-domain/shared/schemas/playground";
-import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
+} from "@orbit/core/control/playground-presets";
+import { PlaygroundPresetUpdateSchema } from "@orbit/core/shared/schemas/playground";
+import { isRequireApiKeyEnabled } from "@orbit/core/runtime/feature-flags";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Methods": "GET, PUT, DELETE, OPTIONS",

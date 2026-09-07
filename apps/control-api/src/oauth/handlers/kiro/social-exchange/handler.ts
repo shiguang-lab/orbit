@@ -1,19 +1,19 @@
 // @ts-nocheck
 import { z } from "zod";
-import { KiroService } from "@shiguang-gateway/open-sse/oauth/services/kiro";
+import { KiroService } from "@orbit/inference/oauth/services/kiro";
 import {
   createProviderConnection,
   getProviderConnections,
   updateProviderConnection,
-} from "@shiguang-gateway/core-domain/control/oauth-persistence";
-import { isCloudEnabled } from "@shiguang-gateway/core-domain/db/settings";
-import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
-import { syncToCloud } from "@shiguang-gateway/core-domain/sync/cloud";
-import { isAuthRequired, isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
-import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { KIRO_CONFIG } from "@shiguang-gateway/open-sse/oauth/constants";
+} from "@orbit/core/control/oauth-persistence";
+import { isCloudEnabled } from "@orbit/core/db/settings";
+import { getConsistentMachineId } from "@orbit/core/shared/utils/machineId";
+import { syncToCloud } from "@orbit/core/sync/cloud";
+import { isAuthRequired, isAuthenticated } from "@orbit/core/control/authenticated";
+import { validateBody, isValidationFailure } from "@orbit/core/shared/validation/helpers";
+import { KIRO_CONFIG } from "@orbit/inference/oauth/constants";
 import { findKiroConnectionByIdentity } from "../connection-identity.js";
-import { classifyKiroSocialPoll } from "@shiguang-gateway/core-domain/control/oauth-runtime/kiroSocialPoll";
+import { classifyKiroSocialPoll } from "@orbit/core/control/oauth-runtime/kiroSocialPoll";
 
 const socialExchangeSchema = z.object({
   deviceCode: z.string().min(1, "Missing deviceCode or provider"),

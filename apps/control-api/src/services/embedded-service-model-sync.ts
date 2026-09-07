@@ -9,15 +9,15 @@
  * SYNC_INTERVAL_MS. Stops automatically when the service stops.
  */
 
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 import {
   saveServiceModels,
   updateVersionManagerTool,
-} from "@shiguang-gateway/core-domain/control/embedded-services-lifecycle";
+} from "@orbit/core/control/embedded-services-lifecycle";
 import {
   getServiceModels,
   type ServiceModel,
-} from "@shiguang-gateway/core-domain/embedded-services/catalog";
+} from "@orbit/core/embedded-services/catalog";
 
 const SYNC_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 const FETCH_TIMEOUT_MS = 10_000;

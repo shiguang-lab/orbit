@@ -53,7 +53,7 @@ test("authenticated events cross a process boundary and reach dashboard subscrib
       }, body: JSON.stringify({ event: expected[0], payload: {} }) });
       assert.equal(response.status, 403);
     }
-    const publisherUrl = new URL("../../../packages/realtime-publisher/src/index.ts", import.meta.url).href;
+    const publisherUrl = new URL("../../../packages/utils/src/realtime/index.ts", import.meta.url).href;
     await promisify(execFile)(process.execPath, ["--import", "tsx", "--input-type=module", "-e", `
       import { startRealtimePublisher } from ${JSON.stringify(publisherUrl)};
       let emit; const pending = []; const failures = [];

@@ -1,4 +1,4 @@
-import { syncPricingFromSources } from "@shiguang-gateway/core-domain/pricing/sync";
+import { syncPricingFromSources } from "@orbit/core/pricing/sync";
 
 type Timer = ReturnType<typeof setInterval>;
 export interface PricingSyncSchedulerDependencies {

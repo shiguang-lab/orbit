@@ -1,13 +1,13 @@
 import pino from "pino";
 
-import { isModelExcludedByConnection } from "@shiguang-gateway/core-domain/routing/connection-model-rules";
-import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
+import { isModelExcludedByConnection } from "@orbit/core/routing/connection-model-rules";
+import { getProviderConnections } from "@orbit/core/db/provider-connections";
 import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 import {
   createCodexAccountPool,
   inspectCodexAccount,
   resolveCodexAccount,
-} from "@shiguang-gateway/open-sse/services/codexAccount/index";
+} from "@orbit/inference/services/codexAccount/index";
 import type {
   ResilienceAccountExplanation,
   ResilienceExplainState,
@@ -15,7 +15,7 @@ import type {
   ResilienceModelExplanation,
   ResilienceProviderExplanation,
   ResilienceSkipReason,
-} from "@shiguang-gateway/core-domain/usage/utilization";
+} from "@orbit/core/usage/utilization";
 
 type JsonRecord = Record<string, unknown>;
 type RuntimeResilienceSnapshot = { breakers: JsonRecord[]; lockouts: JsonRecord[] };

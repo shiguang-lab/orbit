@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { z } from "zod";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 import {
   MiddlewareHooksRepository,
   type MiddlewareHookConfig,

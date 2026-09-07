@@ -1,11 +1,11 @@
-import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
+import { getProviderConnections } from "@orbit/core/db/provider-connections";
 import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 import {
   normalizeQuotaResponse,
   sanitizeQuotaProvider,
   type QuotaProviderEntry,
   type QuotaTokenStatus,
-} from "@shiguang-gateway/core-domain/quota/provider-response";
+} from "@orbit/core/quota/provider-response";
 
 type ProviderConnectionRecord = Record<string, unknown>;
 

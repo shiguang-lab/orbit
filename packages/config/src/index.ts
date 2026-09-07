@@ -1,5 +1,5 @@
 /**
- * @shiguang-gateway/config
+ * @orbit/config
  * 共享配置：从环境变量解析，BFF 与 admin 复用同一套语义。
  */
 

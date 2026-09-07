@@ -1,16 +1,16 @@
-import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
+import { toWebRequest } from "@orbit/http/web-handler";
 import { Body, Controller, Get, Post, Query, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import {
   isValidationFailure,
   validateBody,
-} from "@shiguang-gateway/core-domain/shared/validation/helpers";
+} from "@orbit/core/shared/validation/helpers";
 import {
   versionManagerInstallSchema,
   versionManagerToolSchema,
-} from "@shiguang-gateway/core-domain/validation/misc";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+} from "@orbit/core/validation/misc";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import { VersionManagerService } from "./version-manager.service.js";
 
 @Controller("api/version-manager")

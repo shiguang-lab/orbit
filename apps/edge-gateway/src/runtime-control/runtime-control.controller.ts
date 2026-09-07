@@ -1,10 +1,10 @@
 import { Body, Controller, Inject, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { edgeRuntimeCommandSchema } from "@shiguang-gateway/contracts/edge-runtime-command";
+import { edgeRuntimeCommandSchema } from "@orbit/contracts/edge-runtime-command";
 import {
   INTERNAL_SERVICE_AUTH_HEADER,
   isInternalServiceRequest,
-} from "@shiguang-gateway/auth/internal-service";
+} from "@orbit/auth/internal-service";
 import { RuntimeControlService } from "./runtime-control.service.js";
 
 @Controller("api/internal/runtime")

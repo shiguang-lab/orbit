@@ -1,13 +1,13 @@
 import { Injectable } from "@nestjs/common";
-import type { Memory, MemoryType } from "@shiguang-gateway/core-domain/memory/runtime";
-import { getSettings } from "@shiguang-gateway/core-domain/db/settings";
+import type { Memory, MemoryType } from "@orbit/core/memory/runtime";
+import { getSettings } from "@orbit/core/db/settings";
 import { executeEdgeRuntimeCommand } from "../edge-runtime/client.js";
 import { updatePersistedRuntimeSettings } from "../settings/runtime-settings-persistence.js";
 import {
   invalidateMemorySettingsCache,
   normalizeMemorySettings,
   toMemorySettingsUpdates,
-} from "@shiguang-gateway/core-domain/memory/settings";
+} from "@orbit/core/memory/settings";
 import type { CreateMemoryInput, UpdateMemoryInput } from "./memory.schemas.js";
 
 type RuntimeMemory = Omit<Memory, "createdAt" | "updatedAt" | "expiresAt" | "lastAccessedAt"> & {

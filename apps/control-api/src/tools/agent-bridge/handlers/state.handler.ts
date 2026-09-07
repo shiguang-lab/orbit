@@ -7,7 +7,7 @@ import {
   getMitmStatus,
   isSudoPasswordRequired,
   resolveMitmDataDir,
-} from "@shiguang-gateway/core-domain/control/agent-bridge";
+} from "@orbit/core/control/agent-bridge";
 import { agentBridgePersistence } from "../agent-bridge.persistence.js";
 import { failure } from "./common.js";
 import fs from "node:fs";

@@ -1,7 +1,7 @@
 import { Controller, Get, Inject, Post, Req, Res } from "@nestjs/common";
 import { Readable } from "node:stream";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
+import { isAuthenticated } from "@orbit/core/control/authenticated";
 import { SystemService, type SystemResult } from "./system.service.js";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 

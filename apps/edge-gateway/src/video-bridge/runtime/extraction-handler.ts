@@ -1,4 +1,4 @@
-import { createErrorResponse } from "@shiguang-gateway/core-domain/shared/error-response";
+import { createErrorResponse } from "@orbit/utils/errors/api-response";
 import {
   currentVideoBridgeBrokerFingerprint,
   VIDEO_BRIDGE_BROKER_PATH,
@@ -11,14 +11,14 @@ import {
   type ExtractedVideoAudio,
   type VideoFocusBounds,
   type VideoSamplingPolicy,
-} from "@shiguang-gateway/core-domain/edge/video-bridge-extraction-runtime";
+} from "@orbit/core/edge/video-bridge-extraction-runtime";
 import {
   createVideoExtractionQueue,
   type VideoExtractionQueue,
   VideoExtractionQueueError,
 } from "./extraction-queue.js";
-import { resolveModelSyncInternalBaseUrl } from "@shiguang-gateway/core-domain/runtime/model-sync-client";
-import { logger } from "@shiguang-gateway/runtime-logging";
+import { resolveModelSyncInternalBaseUrl } from "@orbit/core/runtime/model-sync-client";
+import { logger } from "@orbit/utils/logging";
 
 const log = logger("video-bridge-broker");
 

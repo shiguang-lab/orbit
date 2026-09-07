@@ -1,9 +1,9 @@
 import { z } from "zod";
-import { normalizeCodexImportRecord, flattenCodexImportPayload } from "@shiguang-gateway/core-domain/control/oauth-runtime/services/codexImport";
-import { createProviderConnection } from "@shiguang-gateway/core-domain/control/oauth-persistence";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
-import type { CodexImportRefreshValidationResult } from "@shiguang-gateway/contracts/edge-runtime-command";
+import { normalizeCodexImportRecord, flattenCodexImportPayload } from "@orbit/core/control/oauth-runtime/services/codexImport";
+import { createProviderConnection } from "@orbit/core/control/oauth-persistence";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
+import type { CodexImportRefreshValidationResult } from "@orbit/contracts/edge-runtime-command";
 import { executeEdgeRuntimeCommand } from "../../../../edge-runtime/client.js";
 
 /**

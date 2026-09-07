@@ -6,9 +6,9 @@
  */
 
 import { z } from "zod";
-import { getCombos } from "@shiguang-gateway/core-domain/db/combos";
-import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { getCombos } from "@orbit/core/db/combos";
+import { getProviderConnections } from "@orbit/core/db/provider-connections";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 
 interface SimulateRequest {
   /** Combo ID to simulate */

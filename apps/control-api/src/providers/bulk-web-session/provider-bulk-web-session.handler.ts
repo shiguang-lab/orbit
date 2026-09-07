@@ -13,14 +13,14 @@ import {
   summarizeProviderConnectionForAudit,
   syncToCloud,
   validateBody,
-} from "@shiguang-gateway/core-domain/control/provider-management";
+} from "@orbit/core/control/provider-management";
 import {
   requiresWebSessionCredential,
   getWebSessionCredentialRequirement,
   hasUsableWebSessionCredential,
   resolveWebSessionImportApiKey,
-} from "@shiguang-gateway/contracts/config/webSessionCredentials";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+} from "@orbit/contracts/config/webSessionCredentials";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 
 export async function postBulkWebSession(request: Request) {
   const authError = await requireManagementAuth(request);

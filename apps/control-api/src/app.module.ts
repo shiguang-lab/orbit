@@ -1,7 +1,8 @@
 import { Module } from "@nestjs/common";
 import { RealtimePublisherLifecycleService } from "./realtime-publisher-lifecycle.service.js";
-import { HttpKernelModule } from "@shiguang-gateway/http-kernel";
+import { HttpModule } from "@orbit/http";
 import { ProcessHealthModule } from "./process-health/process-health.module.js";
+import { CloudAgentsModule } from "./cloud-agents/cloud-agents.module.js";
 import { AuthModule } from "./auth/auth.module.js";
 import { GatewayModule } from "./gateway/gateway.module.js";
 import { HealthModule } from "./health/health.module.js";
@@ -114,11 +115,12 @@ import { DatabaseRuntimeLifecycleService } from "./database-runtime-lifecycle.se
 
 @Module({
   imports: [
-    HttpKernelModule,
+    HttpModule,
     ProcessHealthModule,
     InfrastructureModule,
     HealthModule,
     AuthModule,
+    CloudAgentsModule,
     GatewayModule,
     ProvidersModule,
     DiscoveryModule,

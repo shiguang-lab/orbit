@@ -2,7 +2,15 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
-    "types": ["node"]
+    "types": [
+      "node"
+    ],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext"
   },
-  "include": ["src"]
+  "include": [
+    "src",
+    "types",
+    "test"
+  ]
 }

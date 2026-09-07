@@ -7,11 +7,11 @@
  * with the API-key auth model used by `/v1/models` and projects out internal
  * routing details (account/connection ids, weights, internal labels).
  */
-import { getCombos } from "@shiguang-gateway/core-domain/db/combos";
-import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/services/auth";
-import { isDashboardSessionAuthenticated } from "@shiguang-gateway/auth/dashboard-session";
-import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
-import { errorResponse } from "@shiguang-gateway/open-sse/utils/error";
+import { getCombos } from "@orbit/core/db/combos";
+import { extractApiKey, isValidApiKey } from "@orbit/inference/services/auth";
+import { isDashboardSessionAuthenticated } from "@orbit/auth/dashboard-session";
+import { isRequireApiKeyEnabled } from "@orbit/core/runtime/feature-flags";
+import { errorResponse } from "@orbit/inference/utils/error";
 import { projectCombo, type PublicCombo } from "./runtime/project-combo.js";
 
 const HTTP_STATUS = { UNAUTHORIZED: 401, SERVER_ERROR: 500 } as const;

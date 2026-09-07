@@ -15,13 +15,13 @@
  * answer as if they did not exist. Management/operator view sees all tasks.
  */
 
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { isRequireApiKeyEnabled } from "@orbit/core/runtime/feature-flags";
 import {
   extractA2AApiKey,
   isValidA2AApiKey,
   resolveA2AOwner,
-} from "@shiguang-gateway/core-domain/a2a/runtime";
+} from "@orbit/core/a2a/runtime";
 
 export interface A2ARestAuth {
   /** Owner scope for task reads/mutations; undefined = operator view (all tasks). */

@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { createHash } from "node:crypto";
-import { globalTrafficBuffer } from "@shiguang-gateway/core-domain/control/traffic-inspector";
+import { globalTrafficBuffer } from "@orbit/core/control/traffic-inspector";
 import {
   annotateRequest,
   captureHttpProxy,

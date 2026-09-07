@@ -1,12 +1,12 @@
-import { SAFE_OUTBOUND_FETCH_PRESETS, safeOutboundFetch } from "@shiguang-gateway/core-domain/network/safe-outbound-fetch";
-import { getProviderOutboundGuard } from "@shiguang-gateway/core-domain/network/outbound-url-guard-policy";
-import { resolveConolCredentials } from "@shiguang-gateway/open-sse/services/conolAuth";
+import { SAFE_OUTBOUND_FETCH_PRESETS, safeOutboundFetch } from "@orbit/core/network/safe-outbound-fetch";
+import { getProviderOutboundGuard } from "@orbit/core/network/outbound-url-guard-policy";
+import { resolveConolCredentials } from "@orbit/inference/services/conolAuth";
 import {
   CONOL_FALLBACK_MODELS,
   discoverConolModels,
   type ConolModel,
-} from "@shiguang-gateway/open-sse/services/conolModels";
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+} from "@orbit/inference/services/conolModels";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 
 interface DiscoveryWarnings {
   cacheWarning?: string;

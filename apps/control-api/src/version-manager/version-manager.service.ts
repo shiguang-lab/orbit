@@ -5,15 +5,15 @@ import {
   getSupervisor,
   getVersionManagerStatus,
   registerSupervisor,
-} from "@shiguang-gateway/core-domain/control/embedded-services-lifecycle";
-import { getOrCreateApiKey } from "@shiguang-gateway/core-domain/embedded-services/api-key";
+} from "@orbit/core/control/embedded-services-lifecycle";
+import { getOrCreateApiKey } from "@orbit/core/embedded-services/api-key";
 import {
   CLIPROXY_DEFAULT_PORT,
   getCliproxyInstalledVersion as getInstalledVersion,
   getCliproxyLatestVersion as getLatestVersion,
   installCliproxy as install,
   resolveCliproxySpawnArgs as resolveSpawnArgs,
-} from "@shiguang-gateway/core-domain/control/embedded-services-install";
+} from "@orbit/core/control/embedded-services-install";
 
 const TOOL = "cliproxy";
 const SUPERVISOR_TOOLS = new Set([TOOL, "cliproxyapi"]);

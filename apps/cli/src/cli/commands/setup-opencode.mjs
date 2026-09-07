@@ -115,7 +115,7 @@ export async function runSetupOpencodeCommand(opts = {}) {
   let configPath;
   try {
     const { generateOpencodeConfig, resolveOpencodeConfigPath } = await import(
-      "@shiguang-gateway/core-domain/cli/opencode-config"
+      "@orbit/core/cli/opencode-config"
     );
     configPath = resolveOpencodeConfigPath();
 

@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { Injectable } from "@nestjs/common";
 
 type SearchRecord = { id: string; type: "page"; content: string; breadcrumbs: string[]; url: string };
-const docsRoot = path.resolve(fileURLToPath(new URL("../../../../../packages/core-domain/docs", import.meta.url)));
+const docsRoot = path.resolve(fileURLToPath(new URL("../../../../../packages/core/docs", import.meta.url)));
 let indexPromise: Promise<SearchRecord[]> | undefined;
 
 async function walk(dir: string): Promise<string[]> {

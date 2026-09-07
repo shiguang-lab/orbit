@@ -1,3 +1,0 @@
-/** Compatibility facade; catalog ownership lives in @shiguang-gateway/provider-catalog. */
-export { KIMI_CODE_CLI_PLATFORM, KIMI_CODE_CLI_VERSION, KIMI_CODING_ANTHROPIC_URL, KIMI_CODING_BASE_URL, KIMI_CODING_MODELS_URL, KIMI_CODING_OPENAI_URL, buildKimiCodeIdentityHeaders, getKimiCodeCliUserAgent, getKimiCodeCliVersion, getKimiCodeStaticThinkingPolicy, normalizeKimiDeviceId, sanitizeKimiHeaderValue } from "@shiguang-gateway/provider-catalog/providers/registry/kimi/coding/runtime";
-export type { KimiCodeDeviceIdentity, KimiCodeThinkingPolicy } from "@shiguang-gateway/provider-catalog/providers/registry/kimi/coding/runtime";

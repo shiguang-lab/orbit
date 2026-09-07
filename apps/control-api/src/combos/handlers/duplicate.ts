@@ -1,6 +1,6 @@
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { createCombo, getCombos } from "@shiguang-gateway/core-domain/db/combos";
-import { normalizeComboModels } from "@shiguang-gateway/core-domain/routing/combo-steps";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { createCombo, getCombos } from "@orbit/core/db/combos";
+import { normalizeComboModels } from "@orbit/core/routing/combo-steps";
 import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 import { z } from "zod";
 

@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
-import { INTERNAL_SERVICE_AUTH_HEADER } from "@shiguang-gateway/auth/internal-service";
+import { INTERNAL_SERVICE_AUTH_HEADER } from "@orbit/auth/internal-service";
 import { forwardEdgeHttpRequest } from "../src/edge-runtime/client.js";
 
 const appRoot = fileURLToPath(new URL("..", import.meta.url));
@@ -18,13 +18,13 @@ test("control-generated chat requests cross the edge HTTP ownership boundary", (
   ]) {
     const source = read(relativePath);
     assert.match(source, /forwardEdgeHttpRequest/);
-    assert.doesNotMatch(source, /open-sse\/services\/chat-completions-compat/);
+    assert.doesNotMatch(source, /inference\/services\/chat-completions-compat/);
   }
 });
 
 test("model probes rely on edge-owned rate limiting only", () => {
   const source = read("apps/control-api/src/models/model-test.runner.ts");
-  assert.doesNotMatch(source, /open-sse\/services\/rateLimitManager/);
+  assert.doesNotMatch(source, /inference\/services\/rateLimitManager/);
   assert.doesNotMatch(source, /\bwithRateLimit\b/);
   assert.match(source, /AbortController/);
   assert.match(source, /timedOut/);

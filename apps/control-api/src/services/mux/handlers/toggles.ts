@@ -1,6 +1,6 @@
-import { updateServiceField } from "@shiguang-gateway/core-domain/control/embedded-services-lifecycle";
-import { createErrorResponse } from "@shiguang-gateway/core-domain/shared/error-response";
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+import { updateServiceField } from "@orbit/core/control/embedded-services-lifecycle";
+import { createErrorResponse } from "@orbit/utils/errors/api-response";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 import { z } from "zod";
 
 const bodySchema = z.object({ enabled: z.boolean() });

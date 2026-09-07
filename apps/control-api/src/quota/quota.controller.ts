@@ -1,8 +1,8 @@
-import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
+import { toWebRequest } from "@orbit/http/web-handler";
 import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Put, Query, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { QuotaService } from "./quota.service.js";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import {
   GroupCreateSchema,
   GroupRenameSchema,
@@ -11,10 +11,10 @@ import {
   PoolUpdateSchema,
   QuotaPreviewQuerySchema,
 } from "./schemas.js";
-import { logAuditEvent, getAuditRequestContext } from "@shiguang-gateway/core-domain/compliance/audit-log";
+import { logAuditEvent, getAuditRequestContext } from "@orbit/core/compliance/audit-log";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
-const { buildErrorBody } = await load("@shiguang-gateway/open-sse/utils/error");
+const { buildErrorBody } = await load("@orbit/inference/utils/error");
 
 @Controller("api/quota")
 export class QuotaController {

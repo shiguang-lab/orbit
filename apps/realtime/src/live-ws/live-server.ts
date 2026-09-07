@@ -18,27 +18,27 @@
  */
 
 import { WebSocketServer, WebSocket } from "ws";
-import { isAdminIdentity, resolveGatewayIdentity } from "@shiguang-gateway/auth";
+import { isAdminIdentity, resolveGatewayIdentity } from "@orbit/auth";
 import { createServer, type IncomingMessage, type ServerResponse } from "http";
 import { randomUUID } from "crypto";
-import type { WsClientMessage, WsServerMessage, WsEventMessage, WsAuthResult } from "@shiguang-gateway/contracts/realtime";
+import type { WsClientMessage, WsServerMessage, WsEventMessage, WsAuthResult } from "@orbit/contracts/realtime";
 import {
   CHANNEL_EVENTS,
   getChannelForEvent,
   type DashboardEventName,
   type DashboardEventMap,
   type DashboardChannel,
-} from "@shiguang-gateway/contracts/realtime-events";
+} from "@orbit/contracts/realtime-events";
 
 // ── Types ─────────────────────────────────────────────────────────────────
 
-import { emit, on, onAny, getEventHistory, type HistoryEntry } from "@shiguang-gateway/core-domain/events/eventBus";
-import { isInternalServiceRequest } from "@shiguang-gateway/auth/internal-service";
+import { emit, on, onAny, getEventHistory, type HistoryEntry } from "@orbit/core/events/eventBus";
+import { isInternalServiceRequest } from "@orbit/auth/internal-service";
 
 import {
   attachRequestStreamGuards,
   installProcessCrashGuard,
-} from "@shiguang-gateway/core-domain/shared/http-client-abort-guard";
+} from "@orbit/core/shared/http-client-abort-guard";
 
 import {
   buildAllowedOrigins,
@@ -121,10 +121,10 @@ function toWebHeaders(headers: import("http").IncomingMessage["headers"]): Heade
 // connection handling never pays that cost. Kept as a dynamic import (not a
 // top-level static one) to preserve the sidecar's decoupling from the SSE auth
 // graph at module-load time.
-let authModulePromise: Promise<typeof import("@shiguang-gateway/open-sse/services/auth")> | null = null;
-function loadAuthModule(): Promise<typeof import("@shiguang-gateway/open-sse/services/auth")> {
+let authModulePromise: Promise<typeof import("@orbit/inference/services/auth")> | null = null;
+function loadAuthModule(): Promise<typeof import("@orbit/inference/services/auth")> {
   if (!authModulePromise) {
-    authModulePromise = import("@shiguang-gateway/open-sse/services/auth");
+    authModulePromise = import("@orbit/inference/services/auth");
   }
   return authModulePromise;
 }
@@ -344,7 +344,7 @@ function handleInternalEventRequest(req: IncomingMessage, res: ServerResponse): 
 
 async function seedLatestCompressionRunFromDb(): Promise<void> {
   try {
-    const { getLatestCompressionAnalyticsRun } = await import("@shiguang-gateway/core-domain/db/compression-analytics");
+    const { getLatestCompressionAnalyticsRun } = await import("@orbit/core/db/compression-analytics");
     const row = getLatestCompressionAnalyticsRun();
     if (!row) return;
 

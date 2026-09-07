@@ -1,6 +1,6 @@
 import { buildComboHealthAutopilotReport } from "./comboHealthAutopilot.js";
-import { getCombos } from "@shiguang-gateway/core-domain/db/combos";
-import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
+import { getCombos } from "@orbit/core/db/combos";
+import { getProviderConnections } from "@orbit/core/db/provider-connections";
 import { buildComboForecastResponse } from "./comboForecast.js";
 import { buildComboHealthResponse } from "./comboHealth.js";
 import {
@@ -17,9 +17,9 @@ import {
   type ScoringFactors,
   type ScoringWeights,
   validateWeights,
-} from "@shiguang-gateway/open-sse/services/autoCombo/scoring";
-import { getModePack } from "@shiguang-gateway/open-sse/services/autoCombo/modePacks";
-import { getTaskFitness } from "@shiguang-gateway/open-sse/services/autoCombo/taskFitness";
+} from "@orbit/inference/services/autoCombo/scoring";
+import { getModePack } from "@orbit/inference/services/autoCombo/modePacks";
+import { getTaskFitness } from "@orbit/inference/services/autoCombo/taskFitness";
 import type {
   ComboAutopilotCombo,
   ComboAutopilotReport,
@@ -38,7 +38,7 @@ import type {
   ComboScoringInspectorTarget,
   ComboScoringInspectorWeightSource,
   UtilizationTimeRange,
-} from "@shiguang-gateway/core-domain/usage/utilization";
+} from "@orbit/core/usage/utilization";
 
 export interface ComboScoringInspectorOptions {
   range: UtilizationTimeRange;

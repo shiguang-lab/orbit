@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
+import { isAllRateLimitedCredentials } from "@orbit/inference/services/credential-selection";
 import { resolveDynamicAudioProviders } from "./audio-provider-nodes.js";
 import { audioOptionsResponse } from "./audio-options.js";
 import { audioSpeechSchema, formatValidationError } from "./audio-schemas.js";
@@ -16,18 +16,18 @@ export class AudioSpeechService {
 
   async handleAudioSpeech(request: Request): Promise<Response> {
     const { withInjectionGuard } = await load(
-      "@shiguang-gateway/core-domain/middleware/prompt-injection",
+      "@orbit/core/middleware/prompt-injection",
     );
     return withInjectionGuard((guardedRequest: Request) => this.post(guardedRequest))(request);
   }
 
   private async post(request: Request): Promise<Response> {
     const [{ handleAudioSpeech }, { errorResponse }, { getSpeechProvider, parseSpeechModel }, { getProviderCredentialsWithQuotaPreflight, clearRecoveredProviderState }, { enforceApiKeyPolicy }] = await Promise.all([
-      load("@shiguang-gateway/open-sse/handlers/audioSpeech"),
-      load("@shiguang-gateway/open-sse/utils/error"),
-      load("@shiguang-gateway/open-sse/config/audioRegistry"),
-      load("@shiguang-gateway/open-sse/services/auth"),
-      load("@shiguang-gateway/core-domain/runtime/api-key-policy"),
+      load("@orbit/inference/handlers/audioSpeech"),
+      load("@orbit/inference/utils/error"),
+      load("@orbit/inference/config/audioRegistry"),
+      load("@orbit/inference/services/auth"),
+      load("@orbit/core/runtime/api-key-policy"),
     ]);
 
     let rawBody: unknown;
@@ -47,10 +47,10 @@ export class AudioSpeechService {
     // Bare model names may refer to configured speech combos. Combo execution
     // remains an explicit edge application concern rather than a core route.
     if (!body.model.includes("/")) {
-      const { getComboByName } = await load("@shiguang-gateway/core-domain/db/combos");
+      const { getComboByName } = await load("@orbit/core/db/combos");
       const combo = await getComboByName(body.model);
       if (combo) {
-        const { executeSpeechCombo } = await load("@shiguang-gateway/open-sse/services/speechCombo");
+        const { executeSpeechCombo } = await load("@orbit/inference/services/speechCombo");
         return executeSpeechCombo(body.model, body, startTime);
       }
     }
@@ -83,9 +83,9 @@ export class AudioSpeechService {
       await clearRecoveredProviderState(credentials);
       try {
         const [{ calculateModalCost }, { attachShiguangGatewayMetaToResponse }, { generateRequestId }] = await Promise.all([
-          load("@shiguang-gateway/core-domain/pricing/cost-calculator"),
-          load("@shiguang-gateway/core-domain/edge/gateway-response-meta"),
-          load("@shiguang-gateway/core-domain/runtime/request-id"),
+          load("@orbit/core/pricing/cost-calculator"),
+          load("@orbit/core/edge/gateway-response-meta"),
+          load("@orbit/core/runtime/request-id"),
         ]);
         const characters = typeof body.input === "string" ? body.input.length : 0;
         const costUsd = await calculateModalCost("audio", provider, resolvedModel || body.model, { characters });

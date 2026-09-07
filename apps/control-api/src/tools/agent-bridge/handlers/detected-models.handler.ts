@@ -1,4 +1,4 @@
-import { ALL_TARGETS, globalTrafficBuffer } from "@shiguang-gateway/core-domain/control/agent-bridge";
+import { ALL_TARGETS, globalTrafficBuffer } from "@orbit/core/control/agent-bridge";
 import { failure, notFound } from "./common.js";
 
 const VALID_IDS = new Set(ALL_TARGETS.map((target) => target.id));

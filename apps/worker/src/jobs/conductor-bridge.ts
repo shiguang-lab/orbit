@@ -7,10 +7,10 @@
  * event, so an abrupt exit loses nothing — the hub replay converges the mirror.
  */
 
-import { getTaskManager } from "@shiguang-gateway/core-domain/a2a/runtime";
-import { getConductorCursor, setConductorCursor } from "@shiguang-gateway/core-domain/db/conductor-bridge";
+import { getTaskManager } from "@orbit/core/a2a/runtime";
+import { getConductorCursor, setConductorCursor } from "@orbit/core/db/conductor-bridge";
 
-import { createConductorBridge, type ConductorBridge, type ConductorBridgeOptions } from "@shiguang-gateway/core-domain/conductor/bridge";
+import { createConductorBridge, type ConductorBridge, type ConductorBridgeOptions } from "@orbit/core/conductor/bridge";
 
 let bridge: ConductorBridge | null = null;
 

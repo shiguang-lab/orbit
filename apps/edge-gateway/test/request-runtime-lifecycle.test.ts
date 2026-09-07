@@ -8,8 +8,8 @@ const read = (path: string) => readFileSync(resolve(repoRoot, path), "utf8");
 
 test("edge owns and closes the request runtime hot-reload handle", () => {
   const service = read("apps/edge-gateway/src/runtime/edge-runtime.service.ts");
-  const runtime = read("packages/core-domain/src/shared/requestRuntime.ts");
-  const hotReload = read("packages/core-domain/src/lib/config/hotReload.ts");
+  const runtime = read("packages/core/src/shared/requestRuntime.ts");
+  const hotReload = read("packages/core/src/lib/config/hotReload.ts");
 
   assert.match(service, /implements OnModuleInit, OnModuleDestroy/);
   assert.match(service, /this\.requestRuntime = runtime/);

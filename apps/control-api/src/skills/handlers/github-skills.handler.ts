@@ -2,10 +2,10 @@ import { z } from "zod";
 import {
   resolveInstallPath,
   searchGitHubSkills,
-} from "@shiguang-gateway/core-domain/control/skills-github";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+} from "@orbit/core/control/skills-github";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import { matchesSearch } from "../../common/turkish-text.js";
-import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { buildErrorBody, sanitizeErrorMessage } from "@orbit/inference/utils/error";
 
 const installSkillSchema = z.object({
   repoName: z.string().min(1),

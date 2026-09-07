@@ -1,19 +1,19 @@
-import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
+import { toWebRequest } from "@orbit/http/web-handler";
 import { Body, Controller, Get, Param, Post, Put, Query, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import {
   isValidationFailure,
   validateBody,
-} from "@shiguang-gateway/core-domain/shared/validation/helpers";
+} from "@orbit/core/shared/validation/helpers";
 import { rtkConfigSchema } from "../../compression/compression-config-schemas.js";
-import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
+import { buildErrorBody } from "@orbit/inference/utils/error";
 import {
   RTK_TOML_MAX_BYTES,
   RtkTomlCompatibilityError,
   type RtkTomlCompatibilityResult,
-} from "@shiguang-gateway/open-sse/services/compression/engines/rtk/tomlCompatibility";
+} from "@orbit/inference/services/compression/engines/rtk/tomlCompatibility";
 import { CompressionSettingsService } from "./compression.service.js";
 
 const rtkTestSchema = z

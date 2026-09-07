@@ -20,13 +20,15 @@ process.env.SG_IDENTITY_JWKS_FILE = jwks;
 // Use the compiled controller so the test verifies actual Nest route metadata.
 const { AuthController } = await import("../dist/auth/auth.controller.js");
 const { AuthService } = await import("../dist/auth/auth.service.js");
+const { getProviderCatalog } = await import("../dist/providers/handlers/provider-catalog.js");
+const { CloudAgentsModule } = await import("../dist/cloud-agents/cloud-agents.module.js");
 class SessionTestModule {}
-Module({ controllers: [AuthController], providers: [AuthService] })(SessionTestModule);
+Module({ imports: [CloudAgentsModule], controllers: [AuthController], providers: [AuthService] })(SessionTestModule);
 const adapter = new FastifyAdapter();
 const app = await NestFactory.create(SessionTestModule, adapter, { logger: false });
 await app.init();
 const server = adapter.getInstance();
-const { requireManagementAuth } = await import("@shiguang-gateway/core-domain/control/management-auth");
+const { requireManagementAuth } = await import("@orbit/core/control/management-auth");
 server.get("/api/test-management", async (request, reply) => {
   const error = await requireManagementAuth(new Request("https://gateway.example/api/settings", { headers: request.headers as Record<string, string> }));
   if (error) return reply.status(error.status).send(await error.json());
@@ -45,6 +47,9 @@ test("control session route accepts the existing signed SSO product grant", asyn
   assert.equal(response.json().authenticated, true);
   assert.equal(response.json().subject, "user");
   assert.equal(response.headers["cache-control"], "no-store");
+  const catalogResponse = await getProviderCatalog(new Request("https://gateway.example/api/providers/catalog", { headers: { "x-sg-identity": token } }));
+  assert.equal(catalogResponse.status, 200);
+  assert.ok((await catalogResponse.json()).categories.some((category: { key: string }) => category.key === "oauth"));
   assert.equal((await server.inject({ url: "/api/test-management", headers: { "x-sg-identity": token } })).statusCode, 200);
   const csrf = await server.inject({ url: "/api/auth/csrf", headers: { "x-sg-identity": token } });
   assert.equal(csrf.statusCode, 200);
@@ -55,6 +60,7 @@ test("control session route accepts the existing signed SSO product grant", asyn
 test("control session route rejects absent or forged SSO assertions", async () => {
   assert.equal((await server.inject({ url: "/api/auth/session" })).statusCode, 401);
   assert.equal((await server.inject({ url: "/api/auth/session", headers: { "x-sg-identity": "forged" } })).statusCode, 401);
+  assert.equal((await getProviderCatalog(new Request("https://gateway.example/api/providers/catalog", { headers: { "x-sg-identity": "forged" } }))).status, 401);
 });
 
 test("local password and OIDC routes have been removed", async () => {
@@ -94,6 +100,43 @@ test("logout revokes the SSO session and forwards cookie removal", async () => {
     assert.equal((await server.inject({ method: "POST", url: "/api/auth/logout", headers: {
       host: "gateway.example", origin: "https://gateway.example",
     } })).statusCode, 503);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+
+test("cloud agent management route forwards verified SSO identity and preserves edge errors", async () => {
+  const token = await new SignJWT({ sid: "session", roles: [], entitlements: ["omniroute:access"] })
+    .setProtectedHeader({ alg: "RS256", typ: "sg-identity+jwt", kid: "session-test" })
+    .setIssuer("https://shiguanglab.com").setAudience("omniroute-api").setSubject("user")
+    .setIssuedAt().setNotBefore("0s").setExpirationTime("2m").sign(privateKey);
+  const originalFetch = globalThis.fetch;
+  let calls = 0;
+  globalThis.fetch = async (url, init) => {
+    calls++;
+    assert.equal(new URL(String(url)).pathname, "/api/v1/agents/tasks");
+    assert.equal(new URL(String(url)).search, "?limit=100&status=running");
+    assert.equal(new Headers(init?.headers).get("x-sg-identity"), token);
+    assert.equal(new Headers(init?.headers).get("cookie"), null);
+    assert.equal(init?.redirect, "error");
+    return Response.json({ data: [] });
+  };
+  try {
+    assert.equal((await server.inject({ url: "/api/cloud-agents/tasks" })).statusCode, 401);
+    assert.equal((await server.inject({ url: "/api/cloud-agents/tasks", headers: { "x-sg-identity": "forged" } })).statusCode, 401);
+    assert.equal(calls, 0);
+    const request = { url: "/api/cloud-agents/tasks?limit=100&status=running", headers: { "x-sg-identity": token, cookie: "__Secure-sg_session=private" } };
+    const response = await server.inject(request);
+    assert.equal(response.statusCode, 200);
+    assert.deepEqual(response.json(), { data: [] });
+    assert.equal(response.headers["cache-control"], "no-store");
+    for (const status of [401, 403, 500]) {
+      globalThis.fetch = async () => Response.json({ error: "edge task error" }, { status });
+      assert.equal((await server.inject(request)).statusCode, status);
+    }
+    globalThis.fetch = async () => { throw new Error("unreachable"); };
+    assert.equal((await server.inject(request)).statusCode, 502);
   } finally {
     globalThis.fetch = originalFetch;
   }

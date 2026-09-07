@@ -1,10 +1,10 @@
 // @ts-nocheck
-import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
+import { buildErrorBody } from "@orbit/inference/utils/error";
 import {
   purgeCallLogs,
   purgeDetailedLogs,
-} from "@shiguang-gateway/core-domain/db/cleanup";
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
+} from "@orbit/core/db/cleanup";
+import { isAuthenticated } from "@orbit/core/control/authenticated";
 
 export async function POST(request: Request) {
   if (!(await isAuthenticated(request))) {

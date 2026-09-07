@@ -25,7 +25,7 @@ import {
   type UpscaleHandlerResult,
   type UpscaleLogger,
 } from "./shared.js";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 
 const UPSCALE_ENDPOINTS: Record<string, string> = {
   fast: "/v2beta/stable-image/upscale/fast",

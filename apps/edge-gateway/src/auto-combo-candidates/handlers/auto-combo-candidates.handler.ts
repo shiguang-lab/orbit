@@ -1,9 +1,9 @@
 import { z } from "zod";
-import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
+import { buildErrorBody } from "@orbit/inference/utils/error";
 import {
   getAutoComboCandidates,
   isUnknownAutoChannelError,
-} from "@shiguang-gateway/open-sse/handlers/autoComboCandidates";
+} from "@orbit/inference/handlers/autoComboCandidates";
 import { getApiKeyRequestScope } from "../../common/api-key-scope.js";
 import { CORS_HEADERS, handleCorsOptions } from "../../common/cors.js";
 

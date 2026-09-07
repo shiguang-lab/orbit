@@ -1,6 +1,6 @@
-import { CORS_HEADERS, handleCorsOptions } from "@shiguang-gateway/core-domain/shared/cors";
-import { connectServer, disconnectServer, listServers } from "@shiguang-gateway/core-domain/control/gamification";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { CORS_HEADERS, handleCorsOptions } from "@orbit/core/shared/cors";
+import { connectServer, disconnectServer, listServers } from "@orbit/core/control/gamification";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import { z } from "zod";
 
 export async function OPTIONS() {

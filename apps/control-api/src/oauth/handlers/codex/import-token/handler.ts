@@ -1,10 +1,10 @@
 // @ts-nocheck
 import { z } from "zod";
-import { extractCodexAccountInfo } from "@shiguang-gateway/core-domain/control/oauth-runtime/services/codexImport";
-import { parseCodexSessionJson } from "@shiguang-gateway/core-domain/control/oauth-runtime/utils/codexSessionImport";
-import { createProviderConnection } from "@shiguang-gateway/core-domain/control/oauth-persistence";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { extractCodexAccountInfo } from "@orbit/core/control/oauth-runtime/services/codexImport";
+import { parseCodexSessionJson } from "@orbit/core/control/oauth-runtime/utils/codexSessionImport";
+import { createProviderConnection } from "@orbit/core/control/oauth-persistence";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { buildErrorBody, sanitizeErrorMessage } from "@orbit/inference/utils/error";
 
 /**
  * POST /api/oauth/codex/import-token

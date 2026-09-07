@@ -15,7 +15,7 @@
  */
 import { execFile } from "child_process";
 import { promisify } from "util";
-import { warn } from "@shiguang-gateway/core-domain/sse/logger";
+import { warn } from "@orbit/core/sse/logger";
 import { buildNpmExecOptions } from "./npm-utils.js";
 
 const execFileAsync = promisify(execFile);

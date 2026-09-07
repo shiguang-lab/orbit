@@ -14,8 +14,8 @@
  *      as a chat prompt proxied through the ShiguangGateway pipeline.
  */
 import { z } from "zod";
-import { handleChat } from "@shiguang-gateway/open-sse/handlers/chat";
-import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { handleChat } from "@orbit/inference/handlers/chat";
+import { validateBody, isValidationFailure } from "@orbit/core/shared/validation/helpers";
 import {
   extractChatMessage,
   formatTelegramGatewayError,
@@ -27,7 +27,7 @@ import {
   verifyInitData,
   type TelegramUpdate,
 } from "../runtime/index.js";
-import { resolveGatewayBaseUrl } from "@shiguang-gateway/core-domain/shared/utils/resolveGatewayBaseUrl";
+import { resolveGatewayBaseUrl } from "@orbit/core/shared/utils/resolveGatewayBaseUrl";
 
 /**
  * Telegram update bodies are open-ended (many update types, evolving schema),

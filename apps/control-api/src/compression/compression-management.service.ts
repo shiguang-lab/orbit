@@ -3,20 +3,20 @@ import {
   benchmarkEngines,
   compareReports,
   DEFAULT_BENCHMARK_ENGINES,
-} from "@shiguang-gateway/open-sse/services/compression/harness/benchmark";
+} from "@orbit/inference/services/compression/harness/benchmark";
 import {
   registerBuiltinCompressionEngines,
-} from "@shiguang-gateway/open-sse/services/compression/engines/index";
-import { listCompressionEngines } from "@shiguang-gateway/open-sse/services/compression/engines/registry";
+} from "@orbit/inference/services/compression/engines/index";
+import { listCompressionEngines } from "@orbit/inference/services/compression/engines/registry";
 import {
   listCavemanRulePacks,
   listSupportedCompressionLanguages,
-} from "@shiguang-gateway/open-sse/services/compression";
+} from "@orbit/inference/services/compression";
 import {
   retrieveBlock,
-} from "@shiguang-gateway/open-sse/services/compression/engines/ccr/index";
-import { queryBlock } from "@shiguang-gateway/open-sse/services/compression/engines/ccr/ccrQuery";
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+} from "@orbit/inference/services/compression/engines/ccr/index";
+import { queryBlock } from "@orbit/inference/services/compression/engines/ccr/ccrQuery";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 
 @Injectable()
 export class CompressionManagementService {

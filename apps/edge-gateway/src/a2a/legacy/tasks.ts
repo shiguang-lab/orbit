@@ -6,7 +6,7 @@ import {
   getSettings,
   getTaskManager,
   type TaskState,
-} from "@shiguang-gateway/core-domain/a2a/runtime";
+} from "@orbit/core/a2a/runtime";
 import { authorizeA2ATaskRoute } from "./auth.js";
 
 const VALID_TASK_STATES = new Set<TaskState>([

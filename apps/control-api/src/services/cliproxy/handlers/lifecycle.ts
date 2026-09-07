@@ -1,6 +1,6 @@
-import { getSupervisor, getServiceRow } from "@shiguang-gateway/core-domain/control/embedded-services-lifecycle";
-import { getInstalledVersion, getLatestVersion, update as downloadUpdate, CLIPROXY_DEFAULT_PORT, resolvePortPid } from "@shiguang-gateway/core-domain/control/cliproxy";
-import { createErrorResponse, sanitizeErrorMessage } from "@shiguang-gateway/core-domain/shared/error-response";
+import { getSupervisor, getServiceRow } from "@orbit/core/control/embedded-services-lifecycle";
+import { getInstalledVersion, getLatestVersion, update as downloadUpdate, CLIPROXY_DEFAULT_PORT, resolvePortPid } from "@orbit/core/control/cliproxy";
+import { createErrorResponse, sanitizeErrorMessage } from "@orbit/utils/errors/api-response";
 import { getOrInitSupervisor } from "../_lib.js";
 
 const TOOL = "cliproxy";

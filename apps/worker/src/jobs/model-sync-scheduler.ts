@@ -1,8 +1,8 @@
-import { getModelSyncInternalBaseUrl } from "@shiguang-gateway/core-domain/runtime/model-sync-client";
+import { getModelSyncInternalBaseUrl } from "@orbit/core/runtime/model-sync-client";
 import {
   revalidateCodexCatalogsOnStartup,
   runModelSyncCycle,
-} from "@shiguang-gateway/core-domain/runtime/model-sync-operation";
+} from "@orbit/core/runtime/model-sync-operation";
 
 const DEFAULT_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const STARTUP_DELAY_MS = 5_000;

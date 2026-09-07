@@ -20,7 +20,7 @@ import {
   logRoutingDecision,
   resolveA2AOwner,
   SSE_HEADERS,
-} from "@shiguang-gateway/core-domain/a2a/runtime";
+} from "@orbit/core/a2a/runtime";
 
 // ============ A2A v1.0 ↔ v0.3 compatibility layer ============
 // A2A 1.0 renamed the JSON-RPC methods (message/send → SendMessage,

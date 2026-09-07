@@ -1,17 +1,17 @@
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 import {
   getAllCustomModels,
   getAllSyncedAvailableModels,
   getSyncedAvailableModels,
-} from "@shiguang-gateway/core-domain/db/models";
-import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { getResolvedModelCapabilities } from "@shiguang-gateway/core-domain/catalog/model-capabilities";
-import { getSyncedCapabilities } from "@shiguang-gateway/core-domain/catalog/synced-model-capabilities";
+} from "@orbit/core/db/models";
+import { getProviderConnections } from "@orbit/core/db/provider-connections";
+import { getResolvedModelCapabilities } from "@orbit/core/catalog/model-capabilities";
+import { getSyncedCapabilities } from "@orbit/core/catalog/synced-model-capabilities";
 import {
   PROVIDER_MODELS,
   PROVIDER_ID_TO_ALIAS,
-} from "@shiguang-gateway/core-domain/catalog/provider-models";
-import { mergeCustomModelMetadata } from "@shiguang-gateway/core-domain/catalog/response-presentation";
+} from "@orbit/core/catalog/provider-models";
+import { mergeCustomModelMetadata } from "@orbit/core/catalog/response-presentation";
 import {
   GET as getModels,
   OPTIONS,

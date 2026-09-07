@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { isPrivateHost } from "@shiguang-gateway/network-guard";
-import { getProxyCandidates, testProxiesAgainstTarget } from "@shiguang-gateway/open-sse/utils/proxyFallback";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { arePrivateProviderUrlsAllowed } from "@shiguang-gateway/core-domain/network/outbound-url-guard-policy";
+import { isPrivateHost } from "@orbit/utils/network";
+import { getProxyCandidates, testProxiesAgainstTarget } from "@orbit/inference/utils/proxyFallback";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
+import { arePrivateProviderUrlsAllowed } from "@orbit/core/network/outbound-url-guard-policy";
 import { z } from "zod";
 
 const schema = z.object({ targetUrl: z.string().url("Invalid target URL"), proxyUrls: z.array(z.string()).optional() });

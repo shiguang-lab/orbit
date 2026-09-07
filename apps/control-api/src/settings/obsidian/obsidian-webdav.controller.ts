@@ -1,10 +1,10 @@
-import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
+import { toWebRequest } from "@orbit/http/web-handler";
 import { Body, Controller, Delete, Get, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+import { isAuthenticated } from "@orbit/core/control/authenticated";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 import { obsidianVaultSchema } from "./obsidian.schemas.js";
 import { ObsidianSettingsService } from "./obsidian.service.js";
 

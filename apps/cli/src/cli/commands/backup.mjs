@@ -9,7 +9,7 @@ import {
 import { randomBytes } from "node:crypto";
 import { join } from "node:path";
 import { Readable } from "node:stream";
-import { resolveDataDir } from "@shiguang-gateway/config/dataPaths";
+import { resolveDataDir } from "@orbit/config/dataPaths";
 import { getBaseUrl, isServerUp } from "../api.mjs";
 import { t } from "../i18n.mjs";
 import { CLI_TOKEN_HEADER, getCliToken } from "../utils/cliToken.mjs";
@@ -17,7 +17,7 @@ import {
   createBackup,
   readBackupScheduleResult,
   writeBackupSchedule,
-} from "@shiguang-gateway/core-domain/backup/runtime";
+} from "@orbit/core/backup/runtime";
 
 function getBackupDir() {
   return join(resolveDataDir(), "backups");

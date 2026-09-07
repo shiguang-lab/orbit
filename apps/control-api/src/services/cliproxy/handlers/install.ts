@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { InstallError, SERVICE_VERSION_PATTERN } from "@shiguang-gateway/core-domain/control/embedded-services-install";
-import { install } from "@shiguang-gateway/core-domain/control/cliproxy";
-import { createErrorResponse, sanitizeErrorMessage } from "@shiguang-gateway/core-domain/shared/error-response";
+import { InstallError, SERVICE_VERSION_PATTERN } from "@orbit/core/control/embedded-services-install";
+import { install } from "@orbit/core/control/cliproxy";
+import { createErrorResponse, sanitizeErrorMessage } from "@orbit/utils/errors/api-response";
 
 const bodySchema = z.object({
   version: z.string().regex(SERVICE_VERSION_PATTERN, "Invalid version: only letters, digits and . _ + - are allowed").optional().default("latest"),

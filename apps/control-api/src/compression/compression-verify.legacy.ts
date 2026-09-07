@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import { executeEdgeRuntimeCommand } from "../edge-runtime/client.js";
 
 export const dynamic = "force-dynamic";

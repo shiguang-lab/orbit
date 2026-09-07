@@ -1,13 +1,13 @@
-import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
+import { toWebRequest } from "@orbit/http/web-handler";
 import { Body, Controller, Get, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
+import { isAuthenticated } from "@orbit/core/control/authenticated";
 import {
   isValidationFailure,
   validateBody,
-} from "@shiguang-gateway/core-domain/shared/validation/helpers";
+} from "@orbit/core/shared/validation/helpers";
 import { compressionSettingsUpdateSchema } from "../../compression/compression-config-schemas.js";
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 import { CompressionSettingsService } from "./compression.service.js";
 
 /** Historical Caveman settings alias, owned by control-api. */

@@ -9,7 +9,7 @@ import {
   pingRedis,
   runRedisRuntimeCommand,
 } from "./local-redis-runtime.js";
-import { sanitizeErrorMessage } from "@shiguang-gateway/core-domain/shared/error-response";
+import { sanitizeErrorMessage } from "@orbit/utils/errors/api-response";
 
 @Injectable()
 export class LocalRedisService {

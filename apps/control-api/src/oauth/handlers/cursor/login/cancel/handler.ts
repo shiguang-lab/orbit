@@ -1,8 +1,8 @@
 // @ts-nocheck
 import { z } from "zod";
-import { isAuthRequired, isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { cancelCursorLoginSession } from "@shiguang-gateway/open-sse/oauth/services/cursor-login";
+import { isAuthRequired, isAuthenticated } from "@orbit/core/control/authenticated";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
+import { cancelCursorLoginSession } from "@orbit/inference/oauth/services/cursor-login";
 
 const cancelSchema = z.object({
   sessionId: z.string().trim().min(1, "sessionId is required"),

@@ -1,10 +1,10 @@
-import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
-import { setMitmAliasAll } from "@shiguang-gateway/core-domain/db/mitm-aliases";
+import { getDbInstance } from "@orbit/core/db/connection";
+import { setMitmAliasAll } from "@orbit/core/db/mitm-aliases";
 import type {
   AgentBridgeBypassRow,
   AgentBridgeMappingRow,
   AgentBridgeStateRow,
-} from "@shiguang-gateway/core-domain/control/agent-bridge";
+} from "@orbit/core/control/agent-bridge";
 
 interface AgentBridgeStateDbRow {
   agent_id: string;

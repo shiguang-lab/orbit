@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
+import { isAuthenticated } from "@orbit/core/control/authenticated";
 import {
   getRecentSearchLogs,
   getSearchProviderStats,
-} from "@shiguang-gateway/core-domain/db/call-log-stats";
-import { SEARCH_PROVIDERS } from "@shiguang-gateway/open-sse/config/searchRegistry";
+} from "@orbit/core/db/call-log-stats";
+import { SEARCH_PROVIDERS } from "@orbit/inference/config/searchRegistry";
 import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 
 @Injectable()

@@ -12,7 +12,7 @@ import { join } from "node:path";
 import os from "node:os";
 import { printHeading, printInfo, printSuccess, printError } from "../io.mjs";
 import { resolveActiveContext } from "../contexts.mjs";
-import { categoriseModel } from "@shiguang-gateway/cli-profile-config/model-profile";
+import { categoriseModel } from "@orbit/config/cli/model-profile";
 import { guardHostConfigTarget } from "../utils/config-home-guard.mjs";
 
 const API_KEY_REF = "$SHIGUANG_GATEWAY_API_KEY";

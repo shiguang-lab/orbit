@@ -6,10 +6,10 @@
  * and persists extracted credentials to the provider connection.
  */
 
-import { getCachedProviderConnectionById, updateProviderConnection } from "@shiguang-gateway/core-domain/control/provider-connection";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/provider-connection";
-import { clampLoginTimeoutMs } from "@shiguang-gateway/core-domain/control/provider-connection";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { getCachedProviderConnectionById, updateProviderConnection } from "@orbit/core/control/provider-connection";
+import { requireManagementAuth } from "@orbit/core/control/provider-connection";
+import { clampLoginTimeoutMs } from "@orbit/core/control/provider-connection";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 
 const ADOBE_FIREFLY_SLUGS = new Set(["adobe-firefly", "firefly"]);
 const load = (specifier: string): Promise<any> => import(specifier as string);
@@ -127,7 +127,7 @@ async function loginAdobeFirefly(
   // startAdobeFireflyBrowserLogin always kills its Chrome tree in `finally` (no orphans).
   try {
     const { startAdobeFireflyBrowserLogin } = await load(
-      "@shiguang-gateway/open-sse/services/adobeFireflyBrowserLogin"
+      "@orbit/inference/services/adobeFireflyBrowserLogin"
     );
     const pure = await startAdobeFireflyBrowserLogin(timeout, {
       sessionKey: connectionId,
@@ -197,7 +197,7 @@ export async function POST(
   if (providerSlug === "conol-web" || providerSlug === "cnl") {
     try {
       const { startConolBrowserLogin } = await load(
-        "@shiguang-gateway/open-sse/services/conolBrowserLogin"
+        "@orbit/inference/services/conolBrowserLogin"
       );
       const result = await startConolBrowserLogin(
         typeof body.timeout === "number" ? body.timeout : undefined
@@ -237,7 +237,7 @@ export async function POST(
     // Bug: the previous code passed `id` (connection UUID), so the lookup always
     // missed and returned "No extraction config" without launching a browser.
     const { inAppLoginService } = await load(
-      "@shiguang-gateway/open-sse/services/inAppLoginService"
+      "@orbit/inference/services/inAppLoginService"
     );
 
     const result = await inAppLoginService.startLogin(providerSlug || id, {

@@ -87,6 +87,7 @@ export async function requireAuthSession(): Promise<AuthSession | null> {
     headers: { Accept: "application/json" },
   });
   if (response.status === 401) {
+    activeSession = null;
     redirectToUnifiedLogin();
     return null;
   }
@@ -102,6 +103,16 @@ export async function requireAuthSession(): Promise<AuthSession | null> {
   }
   sessionStorage.removeItem(LOGIN_ATTEMPT_KEY);
   return activeSession;
+}
+
+let pendingRevalidation: Promise<AuthSession | null> | null = null;
+
+/** Concurrent API failures share one fresh SSO check; only SSO rejection redirects. */
+export function revalidateAuthSession(): Promise<AuthSession | null> {
+  if (!pendingRevalidation) {
+    pendingRevalidation = requireAuthSession().finally(() => { pendingRevalidation = null; });
+  }
+  return pendingRevalidation;
 }
 
 /** 轻量探测：不跳转，仅返回是否已登录(供组件初始化判断) */

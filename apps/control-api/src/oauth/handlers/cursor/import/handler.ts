@@ -1,15 +1,15 @@
 // @ts-nocheck
-import { CursorService } from "@shiguang-gateway/open-sse/oauth/services/cursor";
-import { credentialsFromCursorTokens } from "@shiguang-gateway/open-sse/oauth/services/cursor-login";
-import { persistCursorConnection } from "@shiguang-gateway/core-domain/control/oauth-runtime/services/persistCursorConnection";
-import { isCloudEnabled } from "@shiguang-gateway/core-domain/db/settings";
-import { syncToCloud } from "@shiguang-gateway/core-domain/sync/cloud";
-import { cursorImportSchema } from "@shiguang-gateway/core-domain/control/oauth-validation";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
-import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
-import { resolveProxyForProvider } from "@shiguang-gateway/core-domain/db/proxies";
+import { CursorService } from "@orbit/inference/oauth/services/cursor";
+import { credentialsFromCursorTokens } from "@orbit/inference/oauth/services/cursor-login";
+import { persistCursorConnection } from "@orbit/core/control/oauth-runtime/services/persistCursorConnection";
+import { isCloudEnabled } from "@orbit/core/db/settings";
+import { syncToCloud } from "@orbit/core/sync/cloud";
+import { cursorImportSchema } from "@orbit/core/control/oauth-validation";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { getConsistentMachineId } from "@orbit/core/shared/utils/machineId";
+import { runWithProxyContext } from "@orbit/inference/utils/proxyFetch";
+import { resolveProxyForProvider } from "@orbit/core/db/proxies";
 
 async function requireOAuthImportAuth(request: Request) {
   // GHSA-mg76: importing a provider connection is a state-mutating admin action;
@@ -78,7 +78,7 @@ export async function POST(request: Request) {
       });
     } else {
       // Access-only import — no refresh; user must re-import when expired.
-      const { createProviderConnection } = await import("@shiguang-gateway/core-domain/control/oauth-persistence");
+      const { createProviderConnection } = await import("@orbit/core/control/oauth-persistence");
       connection = await createProviderConnection({
         provider: "cursor",
         authType: "oauth",

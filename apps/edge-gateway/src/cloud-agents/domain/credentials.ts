@@ -1,5 +1,5 @@
-import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
-import { encrypt, decrypt } from "@shiguang-gateway/core-domain/db/encryption";
+import { getDbInstance } from "@orbit/core/db/connection";
+import { encrypt, decrypt } from "@orbit/core/db/encryption";
 import type { AgentCredentials } from "./baseAgent.js";
 
 /** Provision the edge-owned credentials table before any credential query. */

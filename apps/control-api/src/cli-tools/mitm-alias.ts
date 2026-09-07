@@ -1,7 +1,7 @@
 import {
   normalizeEffort,
   type CanonicalEffort,
-} from "@shiguang-gateway/contracts/reasoning-effort";
+} from "@orbit/contracts/reasoning-effort";
 
 export interface MitmAliasEntry {
   model?: string;

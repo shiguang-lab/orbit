@@ -79,7 +79,7 @@ function start(service) {
     env.LIVE_WS_PORT = "18890";
     env.LIVE_WS_HOST = "127.0.0.1";
   }
-  const child = spawn("pnpm", ["--filter", `@shiguang-gateway/${service.name}`, "start"], {
+  const child = spawn("pnpm", ["--filter", `@orbit/${service.name}`, "start"], {
     cwd: repoRoot,
     env,
     stdio: ["ignore", "pipe", "pipe"],
@@ -185,15 +185,55 @@ try {
   // Use an actual scoped credential in the isolated smoke database. The
   // model catalog must not inherit anonymous management bootstrap access.
   const credentialFile = join(dataDir, "smoke-api-key");
-  const provision = spawnSync("pnpm", ["--filter", "@shiguang-gateway/control-api", "exec", "node", "--import", "tsx", "--input-type=module", "--eval", `
+  const provision = spawnSync("pnpm", ["--filter", "@orbit/control-api", "exec", "node", "--import", "tsx", "--input-type=module", "--eval", `
     import { writeFileSync } from "node:fs";
-    import { createApiKey } from "@shiguang-gateway/core-domain/db/api-keys";
-    createApiKey("split-smoke", "split-smoke", ["read"]).then(key => {
+    import { createApiKey } from "@orbit/core/db/api-keys";
+    createApiKey("split-smoke", "split-smoke", ["read"]).then(async key => {
       writeFileSync(${JSON.stringify(credentialFile)}, key.key, {mode: 0o600});
+      const management = await createApiKey("split-smoke-management", "split-smoke", ["manage"]);
+      writeFileSync(${JSON.stringify(credentialFile + "-management")}, management.key, {mode: 0o600});
     });
   `], { cwd: repoRoot, env: baseEnv, encoding: "utf8", timeout: 30000 });
   if (provision.status !== 0) throw new Error(`smoke credential setup failed: ${provision.stderr}`);
   const catalogHeaders = clientApiHeaders = { authorization: `Bearer ${readFileSync(credentialFile, "utf8")}` };
+  const managementHeaders = { authorization: `Bearer ${readFileSync(credentialFile + "-management", "utf8")}` };
+  await waitHttp(18888, "/api/cloud-agents/tasks", 401);
+  await waitHttp(18888, "/api/cloud-agents/tasks", 403, "GET", catalogHeaders);
+  await waitHttp(18888, "/api/cloud-agents/tasks?limit=100", 200, "GET", managementHeaders);
+  const cloudTasks = await fetch("http://127.0.0.1:18888/api/cloud-agents/tasks?limit=100", { headers: managementHeaders }).then(response => response.json());
+  if (!Array.isArray(cloudTasks.data)) throw new Error("Cloud agent management response must contain task data");
+  await waitHttp(18888, "/api/openapi/spec", 200, "GET", managementHeaders);
+  const openapi = await fetch("http://127.0.0.1:18888/api/openapi/spec", { headers: managementHeaders }).then(response => response.json());
+  if (!openapi.endpoints?.some(endpoint => endpoint.path === "/api/v1/multimodal-embeddings" && endpoint.method === "POST")) {
+    throw new Error("OpenAPI catalog is missing the multimodal embeddings operation");
+  }
+  // Exercise proxy edits only in the isolated smoke database.
+  const proxyUrl = "http://127.0.0.1:18888/api/settings/proxy";
+  const providerProxy = { type: "http", host: "127.0.0.1", port: 18081 };
+  const globalProxy = { type: "socks5", host: "127.0.0.1", port: 18082 };
+  for (const payload of [{ providers: { "smoke-provider": providerProxy } }, { global: globalProxy }, { global: null }]) {
+    const response = await fetch(proxyUrl, { method: "PUT", headers: { ...managementHeaders, "content-type": "application/json" }, body: JSON.stringify(payload) });
+    if (response.status !== 200) throw new Error(`Proxy configuration update failed: ${response.status}`);
+    const stored = await fetch(proxyUrl, { headers: managementHeaders }).then(result => result.json());
+    if (Object.hasOwn(payload, "global") && JSON.stringify(stored.global) !== JSON.stringify(payload.global)) throw new Error("Global proxy did not round-trip");
+    if (JSON.stringify(stored.providers?.["smoke-provider"]) !== JSON.stringify(providerProxy)) throw new Error("Global proxy edit lost provider overrides");
+  }
+  await waitHttp(18888, "/api/search/analytics", 401);
+  await waitHttp(18888, "/api/search/analytics", 403, "GET", catalogHeaders);
+  await waitHttp(18888, "/api/search/analytics", 200, "GET", managementHeaders);
+  await waitHttp(18887, "/api/v1/search/analytics", 404, "GET", managementHeaders);
+  await waitHttp(18888, "/api/v1/search/analytics", 404, "GET", managementHeaders);
+  await waitHttp(18888, "/api/providers/catalog", 401);
+  await waitHttp(18888, "/api/providers/catalog", 403, "GET", catalogHeaders);
+  for (const path of ["/api/providers", "/api/provider-nodes", "/api/providers/catalog"]) {
+    await waitHttp(18888, path, 200, "GET", managementHeaders);
+  }
+  const providerCatalog = await fetch("http://127.0.0.1:18888/api/providers/catalog", { headers: managementHeaders }).then(response => response.json());
+  const apiKeyProviders = providerCatalog.categories.find(category => category.key === "apikey")?.providers;
+  if (!apiKeyProviders?.some(provider => provider.id === "openai" && provider.dashboardSection === "llm") ||
+      !apiKeyProviders.some(provider => provider.id === "openrouter" && provider.dashboardSection === "aggregator")) {
+    throw new Error("Provider catalog is missing registered providers or dashboard metadata");
+  }
   await waitHttp(18887, "/api/v1/models", 401);
   await waitHttp(18887, "/api/v1/models", 200, "GET", catalogHeaders);
   await waitHttp(18887, "/v1/models", 200, "GET", catalogHeaders);

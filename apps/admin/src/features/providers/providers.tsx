@@ -630,15 +630,19 @@ export default function ProvidersPage() {
           <Alert
             type={providersQuery.isError ? "error" : "warning"}
             showIcon
-            title={providersQuery.isError ? "Provider 数据加载失败" : "部分 Provider 元数据加载失败"}
-            description={
-              providersQuery.error instanceof Error
-                ? providersQuery.error.message
-                : "当前仍可查看已保存连接，刷新后将重新获取完整 catalog。"
-            }
+            title={t(providersQuery.isError ? "providersPage.loadFailed" : "providersPage.metadataFailed")}
+            description={[
+              { label: t("providersPage.connectionsSource"), query: providersQuery },
+              { label: t("providersPage.catalogSource"), query: catalogQuery },
+              { label: t("providersPage.nodesSource"), query: nodesQuery },
+            ].filter(({ query }) => query.isError)
+              .map(({ label, query }) => `${label}: ${query.error instanceof Error ? query.error.message : t("providersPage.requestFailed")}`)
+              .join("; ")}
             action={<Button onClick={() => void Promise.all([providersQuery.refetch(), catalogQuery.refetch(), nodesQuery.refetch(), expirationQuery.refetch(), settingsQuery.refetch(), openRouterStatsQuery.refetch()])}>{t("providersPage.retry")}</Button>}
           />
-        ) : providersQuery.isLoading || catalogQuery.isLoading || nodesQuery.isLoading ? (
+        ) : null}
+
+        {providersQuery.isLoading || catalogQuery.isLoading || nodesQuery.isLoading ? (
           <Card><Skeleton active paragraph={{ rows: 6 }} /></Card>
         ) : mode === "compact" ? (
           <Card bodyStyle={{ padding: 0 }}>
@@ -676,6 +680,7 @@ export default function ProvidersPage() {
               togglingId={toggleMutation.isPending ? toggleMutation.variables?.id : undefined}
             />
             {[
+              ["configured", t("providersPage.configured"), t("providersPage.savedConnections")],
               ["oauth", t("providersPage.oauthTitle"), t("providersPage.oauthDescription")],
               ["ide", t("providersPage.ideTitle"), t("providersPage.ideDescription")],
               ["web-cookie", t("providersPage.webCookieTitle"), t("providersPage.webCookieDescription")],

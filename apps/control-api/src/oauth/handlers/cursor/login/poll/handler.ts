@@ -1,18 +1,18 @@
 // @ts-nocheck
 import { z } from "zod";
-import { isAuthRequired, isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { isAuthRequired, isAuthenticated } from "@orbit/core/control/authenticated";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 import {
   credentialsFromCursorTokens,
   peekCursorLoginSession,
   pollCursorAuthOnce,
   consumeCursorLoginSession,
-} from "@shiguang-gateway/open-sse/oauth/services/cursor-login";
-import { persistCursorConnection } from "@shiguang-gateway/core-domain/control/oauth-runtime/services/persistCursorConnection";
-import { isCloudEnabled } from "@shiguang-gateway/core-domain/db/settings";
-import { syncToCloud } from "@shiguang-gateway/core-domain/sync/cloud";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
-import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
+} from "@orbit/inference/oauth/services/cursor-login";
+import { persistCursorConnection } from "@orbit/core/control/oauth-runtime/services/persistCursorConnection";
+import { isCloudEnabled } from "@orbit/core/db/settings";
+import { syncToCloud } from "@orbit/core/sync/cloud";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
+import { getConsistentMachineId } from "@orbit/core/shared/utils/machineId";
 
 const pollSchema = z.object({
   sessionId: z.string().trim().min(1, "sessionId is required"),

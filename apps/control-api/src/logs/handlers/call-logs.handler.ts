@@ -1,12 +1,12 @@
 export const dynamic = "force-dynamic";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getCallLogs } from "@shiguang-gateway/core-domain/usage/call-logs";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { getCallLogs } from "@orbit/core/usage/call-logs";
 import {
   getCompletedDetails,
   getPendingById,
-} from "@shiguang-gateway/core-domain/usage/pending-requests";
-import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { getProviderNodes } from "@shiguang-gateway/core-domain/db/provider-nodes";
+} from "@orbit/core/usage/pending-requests";
+import { getProviderConnections } from "@orbit/core/db/provider-connections";
+import { getProviderNodes } from "@orbit/core/db/provider-nodes";
 import { matchesSearch } from "../../common/turkish-text.js";
 
 type CallLogListRowsInput = {

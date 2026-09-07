@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { getSettings } from "@shiguang-gateway/core-domain/db/settings";
+import { getSettings } from "@orbit/core/db/settings";
 import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 import { updatePersistedRuntimeSettings } from "../runtime-settings-persistence.js";
 

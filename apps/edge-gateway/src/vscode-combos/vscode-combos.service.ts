@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { GET, OPTIONS, POST } from "./vscode-combos.handler.js";
 import { GET as GET_TOKEN, OPTIONS as OPTIONS_TOKEN } from "./token-combos.js";
-import { getUnifiedModelsResponse } from "@shiguang-gateway/open-sse/catalog/unified";
+import { getUnifiedModelsResponse } from "@orbit/inference/catalog/unified";
 
 @Injectable()
 export class VscodeCombosService {

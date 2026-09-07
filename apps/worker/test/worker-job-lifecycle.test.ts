@@ -107,7 +107,7 @@ test("worker-owned scheduler modules resolve from app-local paths", async () => 
   assert.match(registrySource, /import\("\.\/pricing-sync\.js"\)/);
   assert.match(registrySource, /import\("\.\/connection-recovery\.js"\)/);
   assert.match(registrySource, /import\("\.\/proxy-subscription\.js"\)/);
-  assert.doesNotMatch(registrySource, /core-domain\/worker\/database-(?:cleanup|vacuum)-lifecycle/);
-  assert.doesNotMatch(registrySource, /core-domain\/worker\/(?:model|pricing)-sync-lifecycle/);
-  assert.doesNotMatch(registrySource, /core-domain\/worker\/proxy-subscription-lifecycle/);
+  assert.doesNotMatch(registrySource, /core\/worker\/database-(?:cleanup|vacuum)-lifecycle/);
+  assert.doesNotMatch(registrySource, /core\/worker\/(?:model|pricing)-sync-lifecycle/);
+  assert.doesNotMatch(registrySource, /core\/worker\/proxy-subscription-lifecycle/);
 });

@@ -3,18 +3,18 @@
 import fs from "fs/promises";
 import path from "path";
 import { parse as parseToml } from "smol-toml";
-import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth as requireCliToolsAuth } from "@orbit/core/control/management-auth";
 import {
   ensureCliConfigWriteAllowed,
   getCliPrimaryConfigPath,
   getCliRuntimeStatus,
-} from "@shiguang-gateway/core-domain/cli/runtime";
-import { createBackup } from "@shiguang-gateway/core-domain/cli/backups";
+} from "@orbit/core/cli/runtime";
+import { createBackup } from "@orbit/core/cli/backups";
 import { saveCliToolLastConfigured, deleteCliToolLastConfigured } from "../cli-tool-state.js";
-import { cliModelConfigSchema } from "@shiguang-gateway/core-domain/control/cli-tools-validation-schemas";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { resolveApiKey } from "@shiguang-gateway/core-domain/shared/api-key-resolver";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { cliModelConfigSchema } from "@orbit/core/control/cli-tools-validation-schemas";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
+import { resolveApiKey } from "@orbit/core/shared/api-key-resolver";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 
 const TOOL_ID = "jcode";
 

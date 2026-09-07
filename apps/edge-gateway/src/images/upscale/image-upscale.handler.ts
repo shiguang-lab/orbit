@@ -108,17 +108,17 @@ async function readUpscaleBody(request: Request): Promise<Record<string, unknown
 
 async function postHandler(request: Request) {
   const [errorApi, authApi, policyApi, validationApi, validationHelpers, settingsApi, proxyApi, metaApi, pricingApi, requestIdApi, upstreamErrorApi] = await Promise.all([
-    load("@shiguang-gateway/open-sse/utils/error"),
-    load("@shiguang-gateway/open-sse/services/auth"),
-    load("@shiguang-gateway/core-domain/runtime/api-key-policy"),
-    load("@shiguang-gateway/core-domain/edge/image-upscale-validation"),
-    load("@shiguang-gateway/core-domain/shared/validation/helpers"),
-    load("@shiguang-gateway/core-domain/db/settings"),
-    load("@shiguang-gateway/open-sse/utils/proxyFetch"),
-    load("@shiguang-gateway/core-domain/edge/gateway-response-meta"),
-    load("@shiguang-gateway/core-domain/pricing/cost-calculator"),
-    load("@shiguang-gateway/core-domain/runtime/request-id"),
-    load("@shiguang-gateway/core-domain/shared/upstream-error"),
+    load("@orbit/inference/utils/error"),
+    load("@orbit/inference/services/auth"),
+    load("@orbit/core/runtime/api-key-policy"),
+    load("@orbit/core/edge/image-upscale-validation"),
+    load("@orbit/core/shared/validation/helpers"),
+    load("@orbit/core/db/settings"),
+    load("@orbit/inference/utils/proxyFetch"),
+    load("@orbit/core/edge/gateway-response-meta"),
+    load("@orbit/core/pricing/cost-calculator"),
+    load("@orbit/core/runtime/request-id"),
+    load("@orbit/core/shared/upstream-error"),
   ]);
   const { errorResponse, unavailableResponse } = errorApi;
   const { getProviderCredentialsWithQuotaPreflight, clearRecoveredProviderState } = authApi;
@@ -285,6 +285,6 @@ async function postHandler(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const { withInjectionGuard } = await load("@shiguang-gateway/core-domain/middleware/prompt-injection");
+  const { withInjectionGuard } = await load("@orbit/core/middleware/prompt-injection");
   return withInjectionGuard(postHandler)(request);
 }

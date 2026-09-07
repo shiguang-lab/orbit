@@ -47,12 +47,6 @@ export function DiscoveryPage() {
     queryFn: () => discoveryApi.results(),
   });
 
-  if (scanQuery.isLoading) {
-    return <PageSkeleton />;
-  }
-
-  const endpoints = scanQuery.data ?? [];
-
   const importMutation = useMutation({
     mutationFn: (record: DiscoveredEndpoint) => providersApi.create({
       provider: "openai-compatible-chat",
@@ -67,6 +61,12 @@ export function DiscoveryPage() {
     },
     onError: (cause) => messageApi.error(`${tt("导入失败", "Import failed")}：${cause instanceof Error ? cause.message : String(cause)}`),
   });
+
+  if (scanQuery.isLoading) {
+    return <PageSkeleton />;
+  }
+
+  const endpoints = scanQuery.data ?? [];
 
   return (
     <div className={styles.page}>

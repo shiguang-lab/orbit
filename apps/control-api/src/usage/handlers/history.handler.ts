@@ -1,5 +1,5 @@
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getUsageStats } from "@shiguang-gateway/core-domain/usage/stats";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { getUsageStats } from "@orbit/core/usage/stats";
 
 export async function GET(request: Request) {
   const authError = await requireManagementAuth(request);

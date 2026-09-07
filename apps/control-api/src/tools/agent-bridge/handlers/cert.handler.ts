@@ -10,7 +10,7 @@ import {
   resolveMitmSudoPassword,
   setCachedPassword,
   uninstallCert,
-} from "@shiguang-gateway/core-domain/control/agent-bridge";
+} from "@orbit/core/control/agent-bridge";
 import { failure } from "./common.js";
 
 export async function GET(): Promise<Response> {

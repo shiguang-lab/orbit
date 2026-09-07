@@ -1,8 +1,8 @@
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { isCloudEnabled } from "@shiguang-gateway/core-domain/db/settings";
-import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
-import { syncToCloud } from "@shiguang-gateway/core-domain/sync/cloud";
-import { reorderCombos } from "@shiguang-gateway/core-domain/db/combos";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { isCloudEnabled } from "@orbit/core/db/settings";
+import { getConsistentMachineId } from "@orbit/core/shared/utils/machineId";
+import { syncToCloud } from "@orbit/core/sync/cloud";
+import { reorderCombos } from "@orbit/core/db/combos";
 import { z } from "zod";
 
 const reorderSchema = z.object({

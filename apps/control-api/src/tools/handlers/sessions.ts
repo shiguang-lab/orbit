@@ -1,5 +1,5 @@
-import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
-import { InspectorSessionStartSchema } from "@shiguang-gateway/core-domain/control/traffic-inspector";
+import { buildErrorBody, sanitizeErrorMessage } from "@orbit/inference/utils/error";
+import { InspectorSessionStartSchema } from "@orbit/core/control/traffic-inspector";
 import { inspectorSessionsRepository } from "../traffic-inspector/inspector-sessions.repository.js";
 
 export async function listRecordingSessions(): Promise<Response> {

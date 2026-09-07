@@ -27,12 +27,12 @@ import type { IncomingMessage } from "node:http";
 
 import {
   getSupervisor,
-} from "@shiguang-gateway/core-domain/control/embedded-services-lifecycle";
-import { getOrCreateApiKey } from "@shiguang-gateway/core-domain/embedded-services/api-key";
+} from "@orbit/core/control/embedded-services-lifecycle";
+import { getOrCreateApiKey } from "@orbit/core/embedded-services/api-key";
 import {
   attachRequestStreamGuards,
   installProcessCrashGuard,
-} from "@shiguang-gateway/core-domain/shared/http-client-abort-guard";
+} from "@orbit/core/shared/http-client-abort-guard";
 
 const DEFAULT_HOST = "127.0.0.1";
 const DEFAULT_PORT = 20131;

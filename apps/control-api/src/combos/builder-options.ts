@@ -1,23 +1,23 @@
-import { getAllCustomModels, getAllSyncedAvailableModels } from "@shiguang-gateway/core-domain/db/models";
-import { getModelIsHidden } from "@shiguang-gateway/core-domain/db/hidden-models";
-import { getCombos } from "@shiguang-gateway/core-domain/db/combos";
-import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { getProviderNodes } from "@shiguang-gateway/core-domain/db/provider-nodes";
-import { getSettings } from "@shiguang-gateway/core-domain/db/settings";
-import { getAccountDisplayName, getProviderDisplayName } from "@shiguang-gateway/core-domain/catalog/display-names";
-import { getCompatibleFallbackModels } from "@shiguang-gateway/core-domain/catalog/managed-available-models";
-import { getResolvedModelCapabilities } from "@shiguang-gateway/core-domain/catalog/model-capabilities";
-import { getSyncedCapabilities } from "@shiguang-gateway/core-domain/catalog/synced-model-capabilities";
-import { getModelsByProviderId } from "@shiguang-gateway/core-domain/catalog/provider-models";
+import { getAllCustomModels, getAllSyncedAvailableModels } from "@orbit/core/db/models";
+import { getModelIsHidden } from "@orbit/core/db/hidden-models";
+import { getCombos } from "@orbit/core/db/combos";
+import { getProviderConnections } from "@orbit/core/db/provider-connections";
+import { getProviderNodes } from "@orbit/core/db/provider-nodes";
+import { getSettings } from "@orbit/core/db/settings";
+import { getAccountDisplayName, getProviderDisplayName } from "@orbit/core/catalog/display-names";
+import { getCompatibleFallbackModels } from "@orbit/core/catalog/managed-available-models";
+import { getResolvedModelCapabilities } from "@orbit/core/catalog/model-capabilities";
+import { getSyncedCapabilities } from "@orbit/core/catalog/synced-model-capabilities";
+import { getModelsByProviderId } from "@orbit/core/catalog/provider-models";
 import {
   AI_PROVIDERS,
   NOAUTH_PROVIDERS,
   isAnthropicCompatibleProvider,
   isClaudeCodeCompatibleProvider,
   isOpenAICompatibleProvider,
-} from "@shiguang-gateway/core-domain/catalog/providers";
+} from "@orbit/providers/catalog";
 type RegistryModel = any;
-import { appendSyncedEffortVariants } from "@shiguang-gateway/open-sse/utils/syncedEffortVariants";
+import { appendSyncedEffortVariants } from "@orbit/inference/utils/syncedEffortVariants";
 
 type JsonRecord = Record<string, unknown>;
 

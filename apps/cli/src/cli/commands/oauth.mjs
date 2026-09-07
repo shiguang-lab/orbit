@@ -18,7 +18,7 @@ const PROVIDERS_WITH_OAUTH = [
 // is NOT always the backend OAuth provider key the server's /api/oauth/[provider]/...
 // route expects. `claude-code` is the CLI-facing alias for Anthropic's Claude
 // OAuth, which the server registers under the key `claude` (see
-// packages/open-sse/oauth/providers/index.ts). Routing `claude-code` to the unrelated
+// packages/inference/src/oauth/providers/index.ts). Routing `claude-code` to the unrelated
 // `command-code` (CommandCode.ai) provider — as the previous code did — sent
 // the device-flow request to /api/providers/command-code/auth/start, which is
 // gated by requireManagementAuth and returned 401 for a fresh CLI context

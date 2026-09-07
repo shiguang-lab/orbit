@@ -2,12 +2,12 @@ import { spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { chmodSync, mkdirSync, rmSync } from "node:fs";
 import { join } from "node:path";
-import { isConnectionUnavailableToAuxiliaryActivity } from "@shiguang-gateway/core-domain/shared/connection-isolation";
+import { isConnectionUnavailableToAuxiliaryActivity } from "@orbit/core/shared/connection-isolation";
 import {
   getProviderConnectionById,
   updateProviderConnection,
-} from "@shiguang-gateway/core-domain/db/provider-connections";
-import { validateProviderApiKey } from "@shiguang-gateway/open-sse/services/provider-validation";
+} from "@orbit/core/db/provider-connections";
+import { validateProviderApiKey } from "@orbit/inference/services/provider-validation";
 import { VNC_CONFIG, getVncProvider } from "./manifest.js";
 import { harvestFromContainer, harvestToCredentials, waitForCdpReady } from "./harvest.js";
 

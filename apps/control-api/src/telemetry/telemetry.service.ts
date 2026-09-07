@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { buildTelemetryPayload } from "@shiguang-gateway/core-domain/metrics/observability";
-import { getTelemetrySummary } from "@shiguang-gateway/core-domain/metrics/request-telemetry";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { buildTelemetryPayload } from "@orbit/core/metrics/observability";
+import { getTelemetrySummary } from "@orbit/core/metrics/request-telemetry";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import { readEdgeRuntimeHealth } from "../edge-runtime/client.js";
 
 @Injectable()

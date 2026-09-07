@@ -6,20 +6,19 @@ port or selecting a surface at runtime.
 
 | App | Owns | Reads/writes | Acceptance |
 | --- | --- | --- | --- |
-| `edge-gateway` | Public `/v1`, `/v1beta`, A2A, cloud-agent tasks and provider execution; no live-dashboard listener | Provider connections, cloud-agent credentials/tasks, batches/files (through app-owned Nest modules and handlers) | `pnpm --filter @shiguang-gateway/edge-gateway typecheck && pnpm --filter @shiguang-gateway/edge-gateway build && pnpm smoke:split-deployment` |
-| `control-api` | Admin `/api`, authz, CRUD, settings, logs, audit commands, free-proxy catalog/promotion and system version/update controls; local-only provider discovery management; Jobs projections and worker command client; migrated health route group in `apps/control-api/src/routes/api`; named compression-combo CRUD and assignments; AgentBridge state, mappings and bypass administration; Traffic Inspector session CRUD under `apps/control-api/src/tools/traffic-inspector` | Control-plane tables and read-only usage/job projections | `pnpm --filter @shiguang-gateway/control-api typecheck && pnpm --filter @shiguang-gateway/control-api build` |
-| `realtime` | Live dashboard WebSocket transport (`apps/realtime/src/live-ws`) | Event projections only | `pnpm --filter @shiguang-gateway/realtime typecheck && pnpm --filter @shiguang-gateway/realtime build` |
-| `worker` | Schedulers, sync, cleanup and background writes; task manifest/runner and authenticated internal Jobs command endpoint in `apps/worker/src/jobs` | Usage, quota, audit and job tables | `pnpm --filter @shiguang-gateway/worker typecheck && pnpm --filter @shiguang-gateway/worker build && pnpm smoke:worker` |
-| `importer` | One-shot snapshot import and migration | Import target only | `pnpm --filter @shiguang-gateway/importer typecheck && pnpm --filter @shiguang-gateway/importer build` |
-| `admin` | Browser UI; no database access | `contracts` and same-origin APIs | `pnpm --filter @shiguang-gateway/admin typecheck && pnpm --filter @shiguang-gateway/admin build` |
+| `edge-gateway` | Public `/v1`, `/v1beta`, A2A, cloud-agent tasks and provider execution; no live-dashboard listener | Provider connections, cloud-agent credentials/tasks, batches/files (through app-owned Nest modules and handlers) | `pnpm --filter @orbit/edge-gateway typecheck && pnpm --filter @orbit/edge-gateway build && pnpm smoke:split-deployment` |
+| `control-api` | Admin `/api`, authz, CRUD, settings, logs, audit commands, free-proxy catalog/promotion and system version/update controls; local-only provider discovery management; Jobs projections and worker command client; migrated health route group in `apps/control-api/src/routes/api`; named compression-combo CRUD and assignments; AgentBridge state, mappings and bypass administration; Traffic Inspector session CRUD under `apps/control-api/src/tools/traffic-inspector` | Control-plane tables and read-only usage/job projections | `pnpm --filter @orbit/control-api typecheck && pnpm --filter @orbit/control-api build` |
+| `realtime` | Live dashboard WebSocket transport (`apps/realtime/src/live-ws`) | Event projections only | `pnpm --filter @orbit/realtime typecheck && pnpm --filter @orbit/realtime build` |
+| `worker` | Schedulers, sync, cleanup and background writes; task manifest/runner and authenticated internal Jobs command endpoint in `apps/worker/src/jobs` | Usage, quota, audit and job tables | `pnpm --filter @orbit/worker typecheck && pnpm --filter @orbit/worker build && pnpm smoke:worker` |
+| `importer` | One-shot snapshot import and migration | Import target only | `pnpm --filter @orbit/importer typecheck && pnpm --filter @orbit/importer build` |
+| `admin` | Browser UI; no database access | `contracts` and same-origin APIs | `pnpm --filter @orbit/admin typecheck && pnpm --filter @orbit/admin build` |
 
 ## Shared package rule
 
-`packages/contracts`, `packages/config`, `packages/db-schema`, `packages/network-guard`,
-`packages/http-kernel`, `packages/web-handler-adapter` and `packages/error-sanitization`
-are shared dependency leaves. `error-sanitization` contains only transport-neutral
+`packages/contracts`, `packages/config`, `packages/utils` and `packages/http`
+are shared infrastructure packages. `utils/errors` contains framework-independent error responses and
 redaction helpers and is consumed directly by multiple deployable apps.
-`db-schema` contains the canonical ORM-neutral entity metadata under `src/entities/*.entity.ts`:
+`contracts/db-schema` contains the canonical ORM-neutral entity metadata under `src/db-schema/entities/*.entity.ts`:
 physical SQLite table names, verified column definitions, and write ownership. The project currently uses
 raw SQLite adapters rather than TypeORM/Drizzle, so these entities deliberately have no decorators, database
 connection, Nest module, query, or mutation logic. SQL migrations remain the single runtime migration source
@@ -29,25 +28,25 @@ first add a verified entity here, while app-only temporary tables stay app-owned
 Proxy relay deployment backends (Cloudflare Workers, Deno Deploy, and Vercel)
 are control-api-owned Nest handlers under `apps/control-api/src/settings/proxy`;
 provider API calls, polling, relay generation, and proxy registration stay in
-that app rather than in `core-domain`.
+that app rather than in `core`.
 
-Every deployable server app declares `@shiguang-gateway/db-schema` directly and validates the catalog during startup. This keeps the entity contract active at runtime instead of relying only on audit scripts.
-`network-guard` contains pure outbound URL parsing, host classification and SSRF error contracts; it has no
+Every deployable server app declares `@orbit/contracts` directly and validates the catalog during startup. This keeps the entity contract active at runtime instead of relying only on audit scripts.
+`utils/network` contains pure outbound URL parsing, host classification and SSRF error contracts; it has no
 database, framework or application lifecycle dependency. Configuration-backed guard policy remains in the owning
-domain service. `packages/core-domain` contains the provider/protocol domain
+domain service. `packages/core` contains the provider/protocol domain
 implementation and exposes only allow-listed subpaths for app-owned workers,
 realtime adapters, and the remaining migration seams. Worker scheduling policy and task ordering
 live only in `apps/worker/src/jobs`; the package exports implementations, not a
-process-wide scheduler registry. `packages/http-kernel` contains only shared Nest
-transport middleware, filters and interceptors. `packages/web-handler-adapter` adapts
+process-wide scheduler registry. `packages/http` contains only shared Nest
+transport middleware, filters, interceptors and Web handler adapters. Its `web-handler` export adapts
 an explicitly selected Web Request handler to Fastify without route discovery. Each HTTP app constructs
 Nest/Fastify itself; the shared package has no app factory and accepts no app selector.
 Package `src/bin` trees are executable-only entries: they may open a listener only when an owning app
 explicitly spawns them, and application/library imports must never evaluate those files. The AgentBridge
-MITM child entry is `packages/core-domain/src/bin/mitm/server.cjs`, spawned only by the control-owned
+MITM child entry is `packages/core/src/bin/mitm/server.cjs`, spawned only by the control-owned
 MITM manager.
 The free-proxy provider/database primitives are exposed through the explicit
-`core-domain/shared/free-proxies` contract: control owns the HTTP catalog and
+`core/shared/free-proxies` contract: control owns the HTTP catalog and
 promotion module, while worker may invoke the same primitives from its explicit
 free-proxy scheduler entrypoint. Importing the control contract does not start a
 background timer.
@@ -55,9 +54,9 @@ background timer.
 ### Job control boundary
 
 `control-api` serves `/api/jobs` but reads only persisted job/run projections through
-`core-domain/control/jobs`. It never imports or constructs `JobRegistry`. Mutating actions
-use the versioned `@shiguang-gateway/contracts/job-command` protocol and are executed by
-the worker-owned internal endpoint; only that process imports `core-domain/worker/jobs`,
+`core/control/jobs`. It never imports or constructs `JobRegistry`. Mutating actions
+use the versioned `@orbit/contracts/job-command` protocol and are executed by
+the worker-owned internal endpoint; only that process imports `core/worker/jobs`,
 registers handlers and owns timers. The listener defaults to `127.0.0.1:8791` for a local
 deployment; split deployment sets `WORKER_COMMAND_HOST`, `WORKER_COMMAND_PORT`, and
 `SHIGUANG_GATEWAY_WORKER_COMMAND_URL`. Both processes use
@@ -70,18 +69,18 @@ must never be reported as successful control operations.
 `control-api` owns the operator-facing `/api/tunnels/*` routes, their validation, and
 public-safe response projection. Cloudflared, ngrok, and Tailscale host processes are
 owned and executed only by `edge-gateway`, the host serving the public API endpoint.
-Control sends the typed `@shiguang-gateway/contracts/tunnel-command` protocol to the
+Control sends the typed `@orbit/contracts/tunnel-command` protocol to the
 edge-owned `POST /api/internal/tunnels/command` endpoint. This internal endpoint requires
 the shared `SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN`; it is never an operator-facing API.
 Split deployments also set `EDGE_GATEWAY_URL` on control so a control replica cannot
 accidentally operate on its own host. Tailscale install progress is streamed back through
-the authenticated internal hop. Only edge may import `core-domain/edge/tunnels`.
+the authenticated internal hop. Only edge may import `core/edge/tunnels`.
 
 The package rule is enforced by `pnpm audit:package-boundaries --strict`: a package must
 have at least two workspace consumers and must not contain app-owned route trees. The
-current package graph passes this gate; `core-domain` and `open-sse` are classified as
+current package graph passes this gate; `core` and `inference` are classified as
 shared packages with multiple deployable consumers. The stricter
-`pnpm audit:open-sse-boundary` source-layer audit remains a separate migration gate;
+`pnpm audit:inference-boundary` source-layer audit remains a separate migration gate;
 new app-only routes, listeners, or orchestration must not be added to either package.
 
 ## Entity sharing evidence
@@ -89,8 +88,8 @@ new app-only routes, listeners, or orchestration must not be added to either pac
 Run `pnpm audit:db-entities --json` when changing a table definition. The audit
 compiles the canonical entities, resolves transitive workspace consumers, and scans
 `apps/*/src` plus package source for SQL table references. In the current graph,
-`@shiguang-gateway/db-schema` reaches four deployable apps through the remaining
-`core-domain` seam: `control-api`, `edge-gateway`, `realtime`, and `worker`.
+`@orbit/contracts/db-schema` reaches four deployable apps through the remaining
+`core` seam: `control-api`, `edge-gateway`, `realtime`, and `worker`.
 
 The entity write owners are intentionally narrower than those consumers:
 
@@ -110,7 +109,7 @@ or writes them.
 Traffic Inspector session rows are control-api-owned: only the control-plane
 HTTP module creates, updates, and exports recordings. Their DDL is initialized
 by `apps/control-api/src/infrastructure/control-schema.ts`, while the canonical
-entity metadata remains in `packages/db-schema/src/entities/control.entity.ts`.
+entity metadata remains in `packages/contracts/src/db-schema/entities/control.entity.ts`.
 Custom-host rows are managed by control-api but read by the edge MITM repair,
 DNS provisioning, and interception hooks; that concrete cross-app read path is
 why `inspector_custom_hosts` is cataloged alongside the app-owned session
@@ -122,12 +121,12 @@ provider plans, plugins and model capability overrides while edge enforces or ex
 hot-path token/quota ledgers; edge writes compression receipts and per-engine
 breakdowns while control analytics and realtime diagnostics read them; and worker
 syncs model capabilities consumed by edge routing. Gamification tables are initialized from the
-single executor-only helper in `packages/db-schema` by both control and edge because the
+single executor-only helper in `packages/contracts/src/db-schema` by both control and edge because the
 streaming event path writes leaderboard/XP rows while the control API serves management views.
 The replay/relay tables `reasoning_cache`, `session_model_history`, and
 `context_handoffs` are now explicitly promoted because the edge streaming path
 and worker maintenance share them. Likewise `skills` is a shared contract:
-control-api manages definitions while the edge/open-sse execution path reads
+control-api manages definitions while the edge/inference execution path reads
 and records executions. A shared package import alone is not a reason to
 promote an app-private table; each promotion requires concrete cross-app
 read/write evidence.
@@ -138,22 +137,22 @@ surface, so worker is the single write owner. `plugin_analytics` is an
 append-only request-runtime hook log exposed by the MCP/plugin management
 surface; edge is its operational write owner while control-facing readers use
 the shared database contract. These tables are cataloged in
-`packages/db-schema` rather than treated as app-private DDL.
+`packages/contracts/src/db-schema` rather than treated as app-private DDL.
 
 `mcp_tool_audit` follows the same cross-app pattern: the MCP server runtime
 appends invocation records, while control-api exposes read-only audit queries.
 Its canonical columns and edge write ownership are therefore declared in
-`packages/db-schema`; the runtime logger and control query surface remain
+`packages/contracts/src/db-schema`; the runtime logger and control query surface remain
 implemented in their owning apps/packages.
 
 Middleware hooks follow the same split: control-api owns the `middleware_hooks`
-configuration rows, while edge/open-sse loads and executes those definitions.
+configuration rows, while edge/inference loads and executes those definitions.
 The edge request runtime appends `middleware_logs`, and control-api reads those
 records for management and observability. Their canonical columns and ownership
-are declared in `packages/db-schema`; registry execution and query code stay in
+are declared in `packages/contracts/src/db-schema`; registry execution and query code stay in
 the consuming modules.
 
-The SQL scan currently finds table references in `core-domain` rather than direct
+The SQL scan currently finds table references in `core` rather than direct
 app source, so the report labels these rows `PASS-indirect-declared-owner`. This is
 evidence that the package is shared, not proof that the legacy package has already
 enforced each app's write boundary. A domain migration must move its queries and
@@ -163,7 +162,7 @@ temporary table must not be added to `db-schema`.
 Run `pnpm audit:db-schema-coverage -- --strict` for the broader migration inventory.
 It compares static `CREATE TABLE`/`ALTER TABLE` declarations with the canonical
 entity catalog and fails if a deployable server app contains SQL for an uncovered
-table. Remaining package-only declarations are legacy internals in `core-domain`;
+table. Remaining package-only declarations are legacy internals in `core`;
 they must be classified as app-private or promoted into `db-schema` as their owning
 domain is migrated. New tables are rejected from app code until their classification
 is explicit.
@@ -188,7 +187,7 @@ local-corpus source configuration and index lifecycle,
 compression analytics summary and per-engine diagnostics, named compression-combo CRUD/assignment/default-plan routes,
 token-health/synced-models/provider-stats/provider-metrics/provider-nodes list/validation/provider-models, provider validation/observability (OpenRouter stats, quota windows, expiration, health matrix), provider policy settings (Claude Code aliases, parameter filters, web interception rules, tier configuration), client connection export and web-session contract, combo management (builder options, duplicate, metrics, reorder, auto and test), webhook management, memory settings, and complete API-key management groups (including app-owned root handlers, devices, regeneration, reveal, usage limits, key groups, memberships, and permissions), and the edge files, music,
 speech-to-text, embeddings, audio-transcriptions, audio-speech, audio-translations, text-to-speech, image edits/generations/upscale, moderation, rerank, ElevenLabs voices, plus WebSocket handshake routes. Remaining route groups stay in
-`core-domain` until their dependencies can move without reintroducing a
+`core` until their dependencies can move without reintroducing a
 cross-app adapter; each subsequent move must update app registration and rerun
 the parity, import, and split-deployment smoke gates. Provider credential import
 and archive extraction (Claude, Codex, and Agy) are owned by the control

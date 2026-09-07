@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { getProviderConnections, updateProviderConnection } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { getAccountDisplayName } from "@shiguang-gateway/core-domain/catalog/display-names";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { toggleRateLimitSchema } from "@shiguang-gateway/core-domain/validation/misc";
+import { getProviderConnections, updateProviderConnection } from "@orbit/core/db/provider-connections";
+import { getAccountDisplayName } from "@orbit/core/catalog/display-names";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
+import { toggleRateLimitSchema } from "@orbit/core/validation/misc";
 import { executeEdgeRuntimeCommand } from "../edge-runtime/client.js";
 
 type JsonRecord = Record<string, unknown>;

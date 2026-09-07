@@ -1,18 +1,18 @@
 import fs from "fs/promises";
 import path from "path";
 import { z } from "zod";
-import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getCliPrimaryConfigPath } from "@shiguang-gateway/core-domain/cli/runtime";
-import { validateBaseUrl } from "@shiguang-gateway/core-domain/cli/config-generator";
+import { requireManagementAuth as requireCliToolsAuth } from "@orbit/core/control/management-auth";
+import { getCliPrimaryConfigPath } from "@orbit/core/cli/runtime";
+import { validateBaseUrl } from "@orbit/core/cli/config-generator";
 import {
   generateHermesAgentConfig,
   getCurrentHermesAgentRoles,
   HERMES_AGENT_ROLES,
   type HermesAgentRole,
-} from "@shiguang-gateway/core-domain/control/cli-tools-hermes-agent";
-import { getHermesConfigPath } from "@shiguang-gateway/core-domain/control/cli-tools-hermes-home";
-import { getApiKeyById } from "@shiguang-gateway/core-domain/db/api-keys";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+} from "@orbit/core/control/cli-tools-hermes-agent";
+import { getHermesConfigPath } from "@orbit/core/control/cli-tools-hermes-home";
+import { getApiKeyById } from "@orbit/core/db/api-keys";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 
 const hermesAgentSettingsSchema = z.object({
   baseUrl: z.string().min(1, "baseUrl is required"),

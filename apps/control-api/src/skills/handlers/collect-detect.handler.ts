@@ -10,10 +10,10 @@
  *   totalSkills: number
  * }
  */
-import { getCliRuntimeStatus, CLI_TOOL_IDS } from "@shiguang-gateway/core-domain/cli/runtime";
-import { searchGitHubSkills, type GitHubSkillRepo } from "@shiguang-gateway/core-domain/control/skills-github";
-import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { getCliRuntimeStatus, CLI_TOOL_IDS } from "@orbit/core/cli/runtime";
+import { searchGitHubSkills, type GitHubSkillRepo } from "@orbit/core/control/skills-github";
+import { buildErrorBody } from "@orbit/inference/utils/error";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 
 export const dynamic = "force-dynamic";
 

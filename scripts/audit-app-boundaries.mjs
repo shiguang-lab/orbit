@@ -6,7 +6,7 @@
  * Apps are deployable units. They may consume shared packages, but must not
  * import another app or reach into a package's source tree through a relative
  * path. Runtime implementation belongs to an explicit domain package (for
- * example core-domain); the retired legacy runtime split is
+ * example core); the retired legacy runtime split is
  * intentionally rejected.
  */
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
@@ -21,19 +21,19 @@ const sourceExtensions = /\.(?:[cm]?[jt]sx?|json)$/i;
 const ignored = new Set(["node_modules", "dist", ".turbo", ".git"]);
 const legacyNames = ["gateway" + "-runtime", "server" + "-runtime"];
 const quotaCacheLifecycleSpecifier =
-  "@shiguang-gateway/core-domain/quota/cache-lifecycle";
+  "@orbit/core/quota/cache-lifecycle";
 const complianceLifecycleSpecifier =
-  "@shiguang-gateway/core-domain/compliance/lifecycle";
+  "@orbit/core/compliance/lifecycle";
 const sessionAffinityCleanupLifecycleSpecifier =
-  "@shiguang-gateway/core-domain/session-affinity/cleanup-lifecycle";
+  "@orbit/core/session-affinity/cleanup-lifecycle";
 const openRouterProviderStatsLifecycleSpecifier =
-  "@shiguang-gateway/core-domain/catalog/openrouter-provider-stats-lifecycle";
+  "@orbit/core/catalog/openrouter-provider-stats-lifecycle";
 const radarSyncLifecycleSpecifier =
-  "@shiguang-gateway/core-domain/radar/sync-lifecycle";
+  "@orbit/core/radar/sync-lifecycle";
 const guardrailManagementSpecifier =
-  "@shiguang-gateway/core-domain/control/guardrails";
+  "@orbit/core/control/guardrails";
 const preRequestHookExecutionSpecifier =
-  "@shiguang-gateway/core-domain/middleware/pre-request-hook-execution";
+  "@orbit/core/middleware/pre-request-hook-execution";
 const violations = [];
 const edgeRuntimeProxyOwnedControlFiles = new Set([
   "apps/control-api/src/monitoring/monitoring-health.service.ts",
@@ -102,7 +102,7 @@ const packageEntries = existsSync(packagesRoot)
   : [];
 const workspaceByName = new Map([...appEntries, ...packageEntries].filter((entry) => entry.manifest?.name).map((entry) => [entry.manifest.name, entry]));
 const appByName = new Map(appEntries.filter((entry) => entry.manifest?.name).map((entry) => [entry.manifest.name, entry]));
-// Keep package internals behind a small, reviewable surface. The core-domain
+// Keep package internals behind a small, reviewable surface. The core
 // package exposes implementation subpaths only where an app has an explicit
 // ownership contract; all other app imports must go through explicit package
 // contracts. Deployable construction stays in each app.
@@ -151,7 +151,7 @@ const allowedCoreDomainSubpaths = {
     "shared/proxy-health",
     "quota/cache-lifecycle",
   ],
-  "apps/control-api": ["events/eventBus", "startup", "runtime/request", "db/ping", "db/health", "db/call-log-stats", "db/provider-connections", "db/model-aliases", "db/mitm-aliases", "db/hidden-models", "db/proxies", "db/settings", "db/read-cache", "db/local-db", "db/provider-stats", "db/database-stats", "db/vacuum", "catalog/provider-registry", "pricing/db", "pricing/defaults", "pricing/sync", "pricing/provider-prefixes", "pricing/validation", "pricing/modal-cost", "cache/db", "cache/services", "db/compression-analytics", "analytics/auto-routing-db", "analytics/diversity", "db-backups/db", "db-backups/validation", "metrics/combo", "metrics/request-telemetry", "metrics/observability", "metrics/tool-latency", "shared/numeric", "open-sse/utils/error.ts", "open-sse/services/deviceTracker.ts", "control/management-auth", "control/middleware-registry", "control/provider-credentials", "control/lkgp-cache", "control/management-password", "runtime/feature-flags", "control/provider-validation", "control/provider-validation-schemas", "control/oauth-validation", "control/cloud-validation", "control/volcengine-validation", "control/model-context-overrides", "control/model-test-data", "db/provider-nodes", "network/outbound-url-guard-policy", "network/safe-outbound-fetch", "control/authenticated", "control/registered-keys", "control/settings-config", "control/oauth-persistence", "memory/settings", "memory/runtime", "control/database-settings", "logging/proxy-logs", "catalog/openrouter-provider-stats", "control/provider-health-matrix", "resilience/settings", "routing/connection-model-rules", "usage/stats", "usage/model-latency-stats", "usage/request-logs", "usage/pending-requests", "db/detailed-logs", "db/proxy-logs", "logging/environment", "sync/cloud", "control/api-key-exposure", "db/api-key-groups", "usage/api-key-limits", "shared/", "sse/logger", "sse/auth", "evals/db", "evals/runner", "evals/runtime", "evals/validation", "db/api-keys", "db/batches", "plugins/db", "plugins/manager", "plugins/marketplace", "shared/cors", "quota/dimensions", "quota/db", "quota/services", "quota/state", "shared/combo-invariants", "catalog/combo-targets", "catalog/model-metadata", "catalog/provider-models"],
+  "apps/control-api": ["events/eventBus", "startup", "runtime/request", "db/ping", "db/health", "db/call-log-stats", "db/provider-connections", "db/model-aliases", "db/mitm-aliases", "db/hidden-models", "db/proxies", "db/settings", "db/read-cache", "db/local-db", "db/provider-stats", "db/database-stats", "db/vacuum", "catalog/provider-registry", "pricing/db", "pricing/defaults", "pricing/sync", "pricing/provider-prefixes", "pricing/validation", "pricing/modal-cost", "cache/db", "cache/services", "db/compression-analytics", "analytics/auto-routing-db", "analytics/diversity", "db-backups/db", "db-backups/validation", "metrics/combo", "metrics/request-telemetry", "metrics/observability", "metrics/tool-latency", "shared/numeric", "inference/utils/error.ts", "inference/services/deviceTracker.ts", "control/management-auth", "control/middleware-registry", "control/provider-credentials", "control/lkgp-cache", "control/management-password", "runtime/feature-flags", "control/provider-validation", "control/provider-validation-schemas", "control/oauth-validation", "control/cloud-validation", "control/volcengine-validation", "control/model-context-overrides", "control/model-test-data", "db/provider-nodes", "network/outbound-url-guard-policy", "network/safe-outbound-fetch", "control/authenticated", "control/registered-keys", "control/settings-config", "control/oauth-persistence", "memory/settings", "memory/runtime", "control/database-settings", "logging/proxy-logs", "catalog/openrouter-provider-stats", "control/provider-health-matrix", "resilience/settings", "routing/connection-model-rules", "usage/stats", "usage/model-latency-stats", "usage/request-logs", "usage/pending-requests", "db/detailed-logs", "db/proxy-logs", "logging/environment", "sync/cloud", "control/api-key-exposure", "db/api-key-groups", "usage/api-key-limits", "shared/", "sse/logger", "sse/auth", "evals/db", "evals/runner", "evals/runtime", "evals/validation", "db/api-keys", "db/batches", "plugins/db", "plugins/manager", "plugins/marketplace", "shared/cors", "quota/dimensions", "quota/db", "quota/services", "quota/state", "shared/combo-invariants", "catalog/combo-targets", "catalog/model-metadata", "catalog/provider-models"],
   "apps/edge-gateway": [
     "events/eventBus",
     "startup",
@@ -519,7 +519,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
 
 // Route files that have completed a physical ownership move. Keep this list
 // small and explicit: adding an entry is the acceptance record for a domain
-// migration, and the old core-domain copy must be gone.
+// migration, and the old core copy must be gone.
 const migratedRouteOwnership = {
   "apps/control-api": [
     "api/compression/compare/route.ts",
@@ -530,12 +530,8 @@ const migratedRouteOwnership = {
     "api/playground/simulate-route/route.ts",
     "api/playground/presets/route.ts",
     "api/playground/presets/[id]/route.ts",
-    "api/auth/status/route.ts",
     "api/auth/csrf/route.ts",
-    "api/auth/login/route.ts",
     "api/auth/logout/route.ts",
-    "api/auth/oidc/login/route.ts",
-    "api/auth/oidc/callback/route.ts",
     "api/health/route.ts",
     "api/health/ping/route.ts",
     "api/health/degradation/route.ts",
@@ -625,7 +621,7 @@ const migratedRouteOwnership = {
     "api/providers/command-code/auth/callback/route.ts",
     "api/providers/command-code/auth/status/route.ts",
     "api/providers/command-code/auth/apply/route.ts",
-    "api/v1/search/analytics/route.ts",
+    "api/search/analytics/route.ts",
     "api/search/providers/route.ts",
     "api/v1/providers/suggested-models/route.ts",
     "api/v1/providers/[provider]/limits/route.ts",
@@ -731,7 +727,6 @@ const migratedRouteOwnership = {
     "api/settings/purge-usage-history/route.ts",
     "api/settings/auto-disable-accounts/route.ts",
     "api/settings/background-degradation/route.ts",
-    "api/settings/require-login/route.ts",
     "api/settings/ip-filter/route.ts",
     "api/settings/payload-rules/route.ts",
     "api/settings/authz-inventory/route.ts",
@@ -997,23 +992,23 @@ const migratedRouteOwnership = {
 
 // Realtime transport is an app-owned listener. Keep the core package from
 // regressing into a second WebSocket implementation or re-exporting it.
-const coreDomain = packageEntries.find((entry) => entry.manifest?.name === "@shiguang-gateway/core-domain");
+const coreDomain = packageEntries.find((entry) => entry.manifest?.name === "@orbit/core");
 if (coreDomain) {
   const exportsMap = coreDomain.manifest?.exports ?? {};
   for (const exportPath of Object.keys(exportsMap)) {
     if (exportPath.includes("live-server") || exportPath.includes("server/ws")) {
-      add("core-domain-realtime-export", join(coreDomain.dir, "package.json"), exportPath);
+      add("core-realtime-export", join(coreDomain.dir, "package.json"), exportPath);
     }
   }
   const legacyRealtimeDir = join(coreDomain.dir, "src", "server", "ws");
   if (existsSync(legacyRealtimeDir)) {
-    add("core-domain-realtime-implementation", legacyRealtimeDir, "live WebSocket code must live in apps/realtime");
+    add("core-realtime-implementation", legacyRealtimeDir, "live WebSocket code must live in apps/realtime");
   }
   const coreApiRoot = join(coreDomain.dir, "src", "app", "api");
   for (const file of walk(coreApiRoot)) {
     const route = relative(coreApiRoot, file).split(sep).join("/");
     if (/^(live|events|realtime)(\/|$)/.test(route)) {
-      add("core-domain-realtime-route", file, "realtime HTTP/SSE routes must live in apps/realtime");
+      add("core-realtime-route", file, "realtime HTTP/SSE routes must live in apps/realtime");
     }
   }
 }
@@ -1022,32 +1017,32 @@ for (const legacy of legacyNames) {
   const dir = join(packagesRoot, legacy);
   if (existsSync(dir)) add("retired-runtime-directory", dir, `packages/${legacy} must be removed`);
 }
-const retiredCoreVscodeDir = join(packagesRoot, "core-domain", "src", "lib", "vscode");
+const retiredCoreVscodeDir = join(packagesRoot, "core", "src", "lib", "vscode");
 if (existsSync(retiredCoreVscodeDir)) {
-  add("edge-runtime-in-core-domain", retiredCoreVscodeDir, "VS Code transport and presentation runtime belongs in apps/edge-gateway");
+  add("edge-runtime-in-core", retiredCoreVscodeDir, "VS Code transport and presentation runtime belongs in apps/edge-gateway");
 }
 const retiredCoreCliRuntimeFiles = [
-  join(packagesRoot, "core-domain", "src", "lib", "cli-helper", "log-streamer.ts"),
-  join(packagesRoot, "core-domain", "src", "shared", "platform", "windowsProcess.ts"),
+  join(packagesRoot, "core", "src", "lib", "cli-helper", "log-streamer.ts"),
+  join(packagesRoot, "core", "src", "shared", "platform", "windowsProcess.ts"),
 ];
 for (const file of retiredCoreCliRuntimeFiles) {
-  if (existsSync(file)) add("cli-runtime-in-core-domain", file, "CLI-owned runtime belongs in apps/cli");
+  if (existsSync(file)) add("cli-runtime-in-core", file, "CLI-owned runtime belongs in apps/cli");
 }
-const retiredCoreAcpDir = join(packagesRoot, "core-domain", "src", "lib", "acp");
+const retiredCoreAcpDir = join(packagesRoot, "core", "src", "lib", "acp");
 if (existsSync(retiredCoreAcpDir)) {
-  add("control-runtime-in-core-domain", retiredCoreAcpDir, "ACP inventory runtime belongs in apps/control-api");
+  add("control-runtime-in-core", retiredCoreAcpDir, "ACP inventory runtime belongs in apps/control-api");
 }
-const retiredCoreChaosDir = join(packagesRoot, "core-domain", "src", "lib", "chaos");
+const retiredCoreChaosDir = join(packagesRoot, "core", "src", "lib", "chaos");
 if (existsSync(retiredCoreChaosDir)) {
-  add("control-runtime-in-core-domain", retiredCoreChaosDir, "Chaos runtime belongs in apps/control-api");
+  add("control-runtime-in-core", retiredCoreChaosDir, "Chaos runtime belongs in apps/control-api");
 }
-const retiredCorePlaygroundDir = join(packagesRoot, "core-domain", "src", "lib", "playground");
+const retiredCorePlaygroundDir = join(packagesRoot, "core", "src", "lib", "playground");
 if (existsSync(retiredCorePlaygroundDir)) {
-  add("control-runtime-in-core-domain", retiredCorePlaygroundDir, "Playground runtime belongs in apps/control-api or apps/admin");
+  add("control-runtime-in-core", retiredCorePlaygroundDir, "Playground runtime belongs in apps/control-api or apps/admin");
 }
-const retiredCoreTelegramDir = join(packagesRoot, "core-domain", "src", "lib", "telegram");
+const retiredCoreTelegramDir = join(packagesRoot, "core", "src", "lib", "telegram");
 if (existsSync(retiredCoreTelegramDir)) {
-  add("edge-runtime-in-core-domain", retiredCoreTelegramDir, "Telegram ingress runtime belongs in apps/edge-gateway");
+  add("edge-runtime-in-core", retiredCoreTelegramDir, "Telegram ingress runtime belongs in apps/edge-gateway");
 }
 const retiredControlTelegramIngress = [
   join(repoRoot, "apps", "control-api", "src", "telegram", "telegram.controller.ts"),
@@ -1066,91 +1061,91 @@ for (const file of retiredControlTelegramIngress) {
     add("public-telegram-ingress-in-control", file, "POST /api/telegram/update and its chat pipeline belong in apps/edge-gateway");
   }
 }
-const retiredCoreCopilotDir = join(packagesRoot, "core-domain", "src", "lib", "copilot");
+const retiredCoreCopilotDir = join(packagesRoot, "core", "src", "lib", "copilot");
 if (existsSync(retiredCoreCopilotDir)) {
-  add("control-runtime-in-core-domain", retiredCoreCopilotDir, "Copilot runtime belongs in apps/control-api");
+  add("control-runtime-in-core", retiredCoreCopilotDir, "Copilot runtime belongs in apps/control-api");
 }
-const retiredCoreRoutingPreview = join(packagesRoot, "core-domain", "src", "lib", "routing", "adaptiveRouting.ts");
+const retiredCoreRoutingPreview = join(packagesRoot, "core", "src", "lib", "routing", "adaptiveRouting.ts");
 if (existsSync(retiredCoreRoutingPreview)) {
-  add("control-runtime-in-core-domain", retiredCoreRoutingPreview, "Routing preview runtime belongs in apps/control-api");
+  add("control-runtime-in-core", retiredCoreRoutingPreview, "Routing preview runtime belongs in apps/control-api");
 }
-const retiredCoreGatewayStatus = join(packagesRoot, "core-domain", "src", "lib", "gatewayStatus.ts");
+const retiredCoreGatewayStatus = join(packagesRoot, "core", "src", "lib", "gatewayStatus.ts");
 if (existsSync(retiredCoreGatewayStatus)) {
-  add("control-runtime-in-core-domain", retiredCoreGatewayStatus, "Gateway status composition belongs in apps/control-api");
+  add("control-runtime-in-core", retiredCoreGatewayStatus, "Gateway status composition belongs in apps/control-api");
 }
-const retiredCoreFreeOnboarding = join(packagesRoot, "core-domain", "src", "lib", "providers", "freeOnboarding.ts");
+const retiredCoreFreeOnboarding = join(packagesRoot, "core", "src", "lib", "providers", "freeOnboarding.ts");
 if (existsSync(retiredCoreFreeOnboarding)) {
-  add("control-runtime-in-core-domain", retiredCoreFreeOnboarding, "Provider onboarding orchestration belongs in apps/control-api");
+  add("control-runtime-in-core", retiredCoreFreeOnboarding, "Provider onboarding orchestration belongs in apps/control-api");
 }
-const retiredCoreProjectCombo = join(packagesRoot, "core-domain", "src", "lib", "catalog", "projectCombo.ts");
+const retiredCoreProjectCombo = join(packagesRoot, "core", "src", "lib", "catalog", "projectCombo.ts");
 if (existsSync(retiredCoreProjectCombo)) {
-  add("edge-runtime-in-core-domain", retiredCoreProjectCombo, "Client combo projection belongs in apps/edge-gateway");
+  add("edge-runtime-in-core", retiredCoreProjectCombo, "Client combo projection belongs in apps/edge-gateway");
 }
-const retiredCoreRelayBifrostFacade = join(packagesRoot, "core-domain", "src", "lib", "edge", "relayBifrost.ts");
+const retiredCoreRelayBifrostFacade = join(packagesRoot, "core", "src", "lib", "edge", "relayBifrost.ts");
 if (existsSync(retiredCoreRelayBifrostFacade)) {
-  add("redundant-core-domain-facade", retiredCoreRelayBifrostFacade, "Edge handlers must use the shared relay proxy DB contract directly");
+  add("redundant-core-facade", retiredCoreRelayBifrostFacade, "Edge handlers must use the shared relay proxy DB contract directly");
 }
-const retiredCoreProviderTestBatchFacade = join(packagesRoot, "core-domain", "src", "lib", "providers", "testBatch.ts");
+const retiredCoreProviderTestBatchFacade = join(packagesRoot, "core", "src", "lib", "providers", "testBatch.ts");
 if (existsSync(retiredCoreProviderTestBatchFacade)) {
-  add("redundant-core-domain-facade", retiredCoreProviderTestBatchFacade, "Provider batch validation belongs in apps/control-api");
+  add("redundant-core-facade", retiredCoreProviderTestBatchFacade, "Provider batch validation belongs in apps/control-api");
 }
-const retiredCoreUsageDbFacade = join(packagesRoot, "core-domain", "src", "lib", "usageDb.ts");
+const retiredCoreUsageDbFacade = join(packagesRoot, "core", "src", "lib", "usageDb.ts");
 if (existsSync(retiredCoreUsageDbFacade)) {
-  add("redundant-core-domain-facade", retiredCoreUsageDbFacade, "Usage capabilities must use their explicit usage/* contracts");
+  add("redundant-core-facade", retiredCoreUsageDbFacade, "Usage capabilities must use their explicit usage/* contracts");
 }
-const retiredCoreUsageDbDeclaration = join(packagesRoot, "core-domain", "src", "public", "usageDb.d.ts");
+const retiredCoreUsageDbDeclaration = join(packagesRoot, "core", "src", "public", "usageDb.d.ts");
 if (existsSync(retiredCoreUsageDbDeclaration)) {
   add("orphan-public-declaration", retiredCoreUsageDbDeclaration, "The mixed usage database contract is retired");
 }
-const retiredCoreModelsFacade = join(packagesRoot, "core-domain", "src", "models", "index.ts");
+const retiredCoreModelsFacade = join(packagesRoot, "core", "src", "models", "index.ts");
 if (existsSync(retiredCoreModelsFacade)) {
-  add("redundant-core-domain-facade", retiredCoreModelsFacade, "Consumers must use the narrow database and runtime contracts");
+  add("redundant-core-facade", retiredCoreModelsFacade, "Consumers must use the narrow database and runtime contracts");
 }
 for (const retiredProviderDeclaration of ["providerMetadata.d.ts", "providerNodeConstants.d.ts"]) {
-  const file = join(packagesRoot, "core-domain", "src", "public", retiredProviderDeclaration);
+  const file = join(packagesRoot, "core", "src", "public", retiredProviderDeclaration);
   if (existsSync(file)) {
     add("orphan-public-declaration", file, "Provider catalog consumers must use the canonical catalog/providers contract");
   }
 }
-const retiredCoreClientApiAuth = join(packagesRoot, "core-domain", "src", "shared", "utils", "clientApiRouteAuth.ts");
+const retiredCoreClientApiAuth = join(packagesRoot, "core", "src", "shared", "utils", "clientApiRouteAuth.ts");
 if (existsSync(retiredCoreClientApiAuth)) {
-  add("edge-runtime-in-core-domain", retiredCoreClientApiAuth, "Client API route authentication belongs in apps/edge-gateway");
+  add("edge-runtime-in-core", retiredCoreClientApiAuth, "Client API route authentication belongs in apps/edge-gateway");
 }
 const retiredCoreRateLimitSources = [
-  join(packagesRoot, "core-domain", "src", "lib", "edge", "rateLimit.ts"),
-  join(packagesRoot, "core-domain", "src", "lib", "resilience", "rateLimit.ts"),
+  join(packagesRoot, "core", "src", "lib", "edge", "rateLimit.ts"),
+  join(packagesRoot, "core", "src", "lib", "resilience", "rateLimit.ts"),
 ];
 for (const source of retiredCoreRateLimitSources) {
   if (existsSync(source)) {
-    add("mixed-runtime-boundary", source, "Credential selection belongs in open-sse and HTTP adaptation belongs in apps/edge-gateway");
+    add("mixed-runtime-boundary", source, "Credential selection belongs in inference and HTTP adaptation belongs in apps/edge-gateway");
   }
 }
 const retiredCoreEnvRepairSources = [
-  join(packagesRoot, "core-domain", "src", "control", "env-repair.ts"),
-  join(packagesRoot, "core-domain", "scripts", "dev", "sync-env.mjs"),
+  join(packagesRoot, "core", "src", "control", "env-repair.ts"),
+  join(packagesRoot, "core", "scripts", "dev", "sync-env.mjs"),
 ];
 for (const source of retiredCoreEnvRepairSources) {
   if (existsSync(source)) {
-    add("control-runtime-in-core-domain", source, "Environment repair runtime belongs in apps/control-api");
+    add("control-runtime-in-core", source, "Environment repair runtime belongs in apps/control-api");
   }
 }
 const retiredUnreachableCoreSources = [
-  join(packagesRoot, "core-domain", "src", "lib", "batches"),
+  join(packagesRoot, "core", "src", "lib", "batches"),
   ...["builderDraft.ts", "comboSort.ts", "controlCenter.ts", "intelligentRouting.ts"].map((file) =>
-    join(packagesRoot, "core-domain", "src", "lib", "combos", file)),
+    join(packagesRoot, "core", "src", "lib", "combos", file)),
   ...["activityIcons.ts", "timeline.ts"].map((file) =>
-    join(packagesRoot, "core-domain", "src", "lib", "audit", file)),
+    join(packagesRoot, "core", "src", "lib", "audit", file)),
 ];
 for (const source of retiredUnreachableCoreSources) {
   if (existsSync(source) && (statSync(source).isFile() || walk(source).length > 0)) {
-    add("retired-unreachable-core-source", source, "unreachable app-era implementation must not return to core-domain");
+    add("retired-unreachable-core-source", source, "unreachable app-era implementation must not return to core");
   }
 }
 
 // The shared HTTP package must never regain a generic app factory or a
 // caller-selected surface. Those APIs collapse independently deployable apps
 // back into one parameterized runtime.
-const httpKernel = packageEntries.find((entry) => entry.manifest?.name === "@shiguang-gateway/http-kernel");
+const httpKernel = packageEntries.find((entry) => entry.manifest?.name === "@orbit/http");
 if (httpKernel) {
   for (const file of walk(join(httpKernel.dir, "src"))) {
     const source = readFileSync(file, "utf8");
@@ -1158,7 +1153,7 @@ if (httpKernel) {
       add("parameterized-http-app-factory", file, "HTTP app construction belongs to apps/*");
     }
     if (/\bsurface\s*[?:]/.test(source)) {
-      add("http-kernel-surface-selector", file, "shared transport must not select an app boundary");
+      add("http-surface-selector", file, "shared transport must not select an app boundary");
     }
   }
 }
@@ -1203,7 +1198,7 @@ function extractControllerRoutes(controllerFile) {
   return routes;
 }
 
-const coreRouteRoot = join(packagesRoot, "core-domain", "src", "app");
+const coreRouteRoot = join(packagesRoot, "core", "src", "app");
 const legacyA2ARouteRoots = [
   join(coreRouteRoot, "a2a"),
   join(coreRouteRoot, "api", "a2a"),
@@ -1257,7 +1252,7 @@ for (const app of appEntries) {
   }
   for (const file of walk(join(app.dir, "src"))) {
     const source = readFileSync(file, "utf8");
-    if (/import\s+\*\s+as\s+\w+\s+from\s+["']@shiguang-gateway\/open-sse\/utils\/logger["']/.test(source)) {
+    if (/import\s+\*\s+as\s+\w+\s+from\s+["']@orbit\/inference\/utils\/logger["']/.test(source)) {
       add(
         "app-imports-logger-as-ghost-namespace",
         file,
@@ -1266,7 +1261,7 @@ for (const app of appEntries) {
     }
     if (
       rel(app.dir) === "apps/control-api" &&
-      /@shiguang-gateway\/open-sse\/(?:services\/chat-completions-compat|services\/rateLimitManager(?:\/errors)?)/.test(source)
+      /@orbit\/inference\/(?:services\/chat-completions-compat|services\/rateLimitManager(?:\/errors)?)/.test(source)
     ) {
       add(
         "control-invokes-edge-request-runtime-in-process",
@@ -1276,7 +1271,7 @@ for (const app of appEntries) {
     }
     if (
       rel(app.dir) === "apps/control-api" &&
-      /@shiguang-gateway\/open-sse\/services\/(?:token-refresh|credentialTokenRefresh|kimiTokenRefresh)/.test(source)
+      /@orbit\/inference\/services\/(?:token-refresh|credentialTokenRefresh|kimiTokenRefresh)/.test(source)
     ) {
       add(
         "control-refreshes-persisted-provider-credentials",
@@ -1286,7 +1281,7 @@ for (const app of appEntries) {
     }
     if (
       edgeRuntimeProxyOwnedControlFiles.has(rel(file)) &&
-      /@shiguang-gateway\/(?:open-sse\/(?:services\/(?:accountFallback|rateLimitManager|requestDedup|quotaMonitor|sessionManager|accountSemaphore|webSessionPoolHealth|signatureCache|deviceTracker|comboMetrics|toolLatencyTracker|searchCache|reasoningCache|quotaPreflight|modelDeprecation|systemPrompt|thinkingBudget|taskAwareRouter|backgroundTaskDetector|ipFilter|payloadRules|tier-resolver|autoCombo\/(?:virtualFactory|freeAccessQuota|builtinCatalog|modelFamily|autoPrefix|suffixComposition))|executors\/cliproxyapi)|core-domain\/resilience\/circuit-breaker)/.test(source)
+      /@orbit\/(?:inference\/(?:services\/(?:accountFallback|rateLimitManager|requestDedup|quotaMonitor|sessionManager|accountSemaphore|webSessionPoolHealth|signatureCache|deviceTracker|comboMetrics|toolLatencyTracker|searchCache|reasoningCache|quotaPreflight|modelDeprecation|systemPrompt|thinkingBudget|taskAwareRouter|backgroundTaskDetector|ipFilter|payloadRules|tier-resolver|autoCombo\/(?:virtualFactory|freeAccessQuota|builtinCatalog|modelFamily|autoPrefix|suffixComposition))|executors\/cliproxyapi)|core\/resilience\/circuit-breaker)/.test(source)
     ) {
       add(
         "control-imports-edge-runtime-singleton",
@@ -1299,7 +1294,7 @@ for (const app of appEntries) {
         "apps/control-api/src/proxies/proxies.service.ts",
         "apps/control-api/src/settings/proxy/proxy-settings.service.ts",
       ].includes(rel(file)) &&
-      /import\s*\{[^}]*\bclearDispatcherCache\b[^}]*\}\s*from\s*["']@shiguang-gateway\/open-sse\/utils\/proxyDispatcher["']/.test(source)
+      /import\s*\{[^}]*\bclearDispatcherCache\b[^}]*\}\s*from\s*["']@orbit\/inference\/utils\/proxyDispatcher["']/.test(source)
     ) {
       add(
         "control-invalidates-edge-runtime-cache",
@@ -1319,7 +1314,7 @@ for (const app of appEntries) {
     }
     if (
       rel(app.dir) === "apps/control-api" &&
-      /@shiguang-gateway\/open-sse\/services\/(?:providerLimits|codexResetCredits)/.test(source)
+      /@orbit\/inference\/services\/(?:providerLimits|codexResetCredits)/.test(source)
     ) {
       add(
         "control-imports-edge-quota-runtime",
@@ -1329,7 +1324,7 @@ for (const app of appEntries) {
     }
     if (
       rel(app.dir) === "apps/control-api" &&
-      /\bgetJobRegistry\b|@shiguang-gateway\/core-domain\/(?:worker\/jobs|worker\/cloud-sync|control\/(?:cloud-sync-initialize|model-sync-scheduler))/.test(source)
+      /\bgetJobRegistry\b|@orbit\/core\/(?:worker\/jobs|worker\/cloud-sync|control\/(?:cloud-sync-initialize|model-sync-scheduler))/.test(source)
     ) {
       add("control-imports-worker-job-runtime", file, "control-api may only read job projections and send versioned worker commands");
     }
@@ -1382,7 +1377,7 @@ for (const app of appEntries) {
         add(
           "pre-request-hook-execution-imported-by-app",
           file,
-          "open-sse owns pre-request hook execution on the edge request path",
+          "inference owns pre-request hook execution on the edge request path",
         );
       }
       if (specifier.startsWith(".")) {
@@ -1400,14 +1395,14 @@ for (const app of appEntries) {
       const workspace = workspaceByName.get(specifier) ?? [...workspaceByName.entries()].find(([name]) => specifier.startsWith(`${name}/`))?.[1];
       if (workspace && appByName.has(workspace.manifest.name)) add("cross-app-import", file, specifier);
       if (workspace && !declared.has(workspace.manifest.name)) add("undeclared-workspace-import", file, specifier);
-      if (specifier.startsWith("@shiguang-gateway/core-domain/")) {
-        const subpath = specifier.slice("@shiguang-gateway/core-domain/".length);
+      if (specifier.startsWith("@orbit/core/")) {
+        const subpath = specifier.slice("@orbit/core/".length);
         const allowed = allowedCoreDomainSubpaths[rel(app.dir)] ?? [];
         if (!allowed.some((prefix) => subpath === prefix || subpath.startsWith(prefix))) {
-          add("forbidden-core-domain-subpath", file, specifier);
+          add("forbidden-core-subpath", file, specifier);
         }
       }
-      if (rel(app.dir) === "apps/realtime" && /@shiguang-gateway\/core-domain\/(?:live-server|server\/ws|events\/types)/.test(specifier)) {
+      if (rel(app.dir) === "apps/realtime" && /@orbit\/core\/(?:live-server|server\/ws|events\/types)/.test(specifier)) {
         add("realtime-core-protocol-import", file, specifier);
       }
     }
@@ -1520,7 +1515,7 @@ if (existsSync(embeddedWsProxyFile) && existsSync(embeddedRuntimeOwnerFile)) {
 
 // Shared packages must stay below apps; importing an app from packages would
 // create a deployment cycle and silently couple independently deployable units.
-const controlJobsContract = join(packagesRoot, "core-domain", "src", "control", "jobs.ts");
+const controlJobsContract = join(packagesRoot, "core", "src", "control", "jobs.ts");
 if (existsSync(controlJobsContract) && /\bgetJobRegistry\b|\.\.\/lib\/jobRegistry\/index/.test(readFileSync(controlJobsContract, "utf8"))) {
   add("control-job-contract-exposes-worker-runtime", controlJobsContract, "control jobs contract must expose DB projections only");
 }
@@ -1530,7 +1525,7 @@ if (existsSync(workerJobRegistry)) {
   if (/\bdomainModule\s*\(|\bmodulePath\s*:/.test(source)) {
     add("opaque-worker-job-import", workerJobRegistry, "worker jobs must use literal lazy imports so dependency audits can inspect every boundary");
   }
-  if (!/import\("@shiguang-gateway\/core-domain\/worker\/cloud-sync"\)[\s\S]*?exportName:\s*"ensureCloudSyncInitialized"/.test(source)) {
+  if (!/import\("@orbit\/core\/worker\/cloud-sync"\)[\s\S]*?exportName:\s*"ensureCloudSyncInitialized"/.test(source)) {
     add("missing-worker-cloud-sync-owner", workerJobRegistry, "worker must remain the explicit owner of cloud sync and job-registry startup");
   }
   if (!/import\("\.\/model-sync-scheduler\.js"\)[\s\S]*?exportName:\s*"startModelSyncScheduler"/.test(source)) {
@@ -1539,7 +1534,7 @@ if (existsSync(workerJobRegistry)) {
   if (!/import\("\.\/memory-decay\.js"\)[\s\S]*?exportName:\s*"startMemoryDecayScheduler"/.test(source)) {
     add("missing-worker-memory-decay-scheduler", workerJobRegistry, "worker must own memory-decay cadence through its app-local scheduler");
   }
-  if (/core-domain\/worker\/typed-memory-decay/.test(source)) {
+  if (/core\/worker\/typed-memory-decay/.test(source)) {
     add("worker-writes-edge-memory", workerJobRegistry, "worker must trigger memory maintenance through the authenticated edge command");
   }
 }
@@ -1551,11 +1546,11 @@ if (!existsSync(workerMemoryDecay)) {
   if (!/command:\s*["']memory\.decay["']/.test(source) || !/getInternalServiceAuthHeaders/.test(source)) {
     add("worker-memory-decay-bypasses-edge", workerMemoryDecay, "memory decay must use the authenticated edge runtime command");
   }
-  if (/core-domain\/(?:edge\/memory-decay|worker\/typed-memory-decay)|\b(?:DELETE|UPDATE|INSERT)\s+(?:FROM|INTO)?\s*memories\b/i.test(source)) {
+  if (/core\/(?:edge\/memory-decay|worker\/typed-memory-decay)|\b(?:DELETE|UPDATE|INSERT)\s+(?:FROM|INTO)?\s*memories\b/i.test(source)) {
     add("worker-memory-decay-direct-write", workerMemoryDecay, "worker owns only cadence and must not import the edge writer or issue memory SQL");
   }
 }
-const mcpMemoryTools = join(packagesRoot, "open-sse", "mcp-server", "tools", "memoryTools.ts");
+const mcpMemoryTools = join(packagesRoot, "inference", "src", "mcp-server", "tools", "memoryTools.ts");
 if (existsSync(mcpMemoryTools)) {
   const source = readFileSync(mcpMemoryTools, "utf8");
   if (/services\/memoryRuntime|\b(?:createMemory|deleteMemory|updateMemory|listMemories)\b/.test(source)) {
@@ -1565,24 +1560,24 @@ if (existsSync(mcpMemoryTools)) {
     add("mcp-memory-bypasses-edge", mcpMemoryTools, "MCP memory tools must cross the authenticated edge command boundary");
   }
 }
-const controlAuthInit = join(packagesRoot, "core-domain", "src", "control", "auth-init.ts");
+const controlAuthInit = join(packagesRoot, "core", "src", "control", "auth-init.ts");
 if (
   existsSync(controlAuthInit) &&
   /initCloudSync|ensureCloudSyncInitialized|getJobRegistry|startModelSyncScheduler/.test(readFileSync(controlAuthInit, "utf8"))
 ) {
   add("control-init-starts-worker-runtime", controlAuthInit, "control /api/init must not start worker-owned schedulers or the job registry");
 }
-const retiredCoreModelSyncScheduler = join(packagesRoot, "core-domain", "src", "shared", "services", "modelSyncScheduler.ts");
+const retiredCoreModelSyncScheduler = join(packagesRoot, "core", "src", "shared", "services", "modelSyncScheduler.ts");
 if (existsSync(retiredCoreModelSyncScheduler)) {
-  add("worker-scheduler-in-core-domain", retiredCoreModelSyncScheduler, "model-sync timer lifecycle belongs in apps/worker");
+  add("worker-scheduler-in-core", retiredCoreModelSyncScheduler, "model-sync timer lifecycle belongs in apps/worker");
 }
 for (const modelSyncLeaf of ["modelSyncClient.ts", "modelSyncOperation.ts"]) {
-  const file = join(packagesRoot, "core-domain", "src", "shared", "services", modelSyncLeaf);
+  const file = join(packagesRoot, "core", "src", "shared", "services", modelSyncLeaf);
   if (existsSync(file) && /\bset(?:Timeout|Interval)\s*\(/.test(readFileSync(file, "utf8"))) {
     add("model-sync-lifecycle-in-shared-leaf", file, "neutral model-sync client and operation modules must not create timers");
   }
 }
-const coreDomainEntry = packageEntries.find(({ manifest }) => manifest?.name === "@shiguang-gateway/core-domain");
+const coreDomainEntry = packageEntries.find(({ manifest }) => manifest?.name === "@orbit/core");
 if (coreDomainEntry) {
   const proxySubscriptionService = join(
     coreDomainEntry.dir,
@@ -1595,7 +1590,7 @@ if (coreDomainEntry) {
     )
   ) {
     add(
-      "proxy-subscription-lifecycle-in-core-domain",
+      "proxy-subscription-lifecycle-in-core",
       proxySubscriptionService,
       "subscription CRUD and one-shot sync must not start the worker-owned refresh scheduler",
     );
@@ -1761,7 +1756,7 @@ const retiredRedundantCoreExports = [
 ];
 for (const subpath of retiredRedundantCoreExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {
-    add("redundant-core-domain-export", join(coreDomainEntry.dir, "package.json"), subpath);
+    add("redundant-core-export", join(coreDomainEntry.dir, "package.json"), subpath);
   }
 }
 const callLogArtifactsExport = coreDomainEntry?.manifest?.exports?.["./usage/call-log-artifacts"];
@@ -1859,21 +1854,21 @@ const retiredAppOwnedExports = [
 ];
 for (const subpath of retiredAppOwnedExports) {
   if (coreDomainEntry?.manifest?.exports?.[subpath]) {
-    add("app-owned-capability-exported-by-core-domain", join(coreDomainEntry.dir, "package.json"), subpath);
+    add("app-owned-capability-exported-by-core", join(coreDomainEntry.dir, "package.json"), subpath);
   }
 }
 for (const relativeFile of ["src/lib/db/cleanup.ts", "src/lib/db/vacuum.ts"]) {
-  const file = join(coreDomainEntry?.dir ?? join(packagesRoot, "core-domain"), relativeFile);
+  const file = join(coreDomainEntry?.dir ?? join(packagesRoot, "core"), relativeFile);
   if (existsSync(file) && /\b(?:setTimeout|setInterval|clearTimeout|clearInterval)\s*\(/.test(readFileSync(file, "utf8"))) {
     add(
-      "database-maintenance-lifecycle-in-core-domain",
+      "database-maintenance-lifecycle-in-core",
       file,
       "database cleanup and vacuum timers belong to apps/worker/jobs",
     );
   }
 }
 {
-  const file = join(coreDomainEntry?.dir ?? join(packagesRoot, "core-domain"), "src/lib/db/core.ts");
+  const file = join(coreDomainEntry?.dir ?? join(packagesRoot, "core"), "src/lib/db/core.ts");
   const source = existsSync(file) ? readFileSync(file, "utf8") : "";
   if (/\b(?:setInterval|clearInterval)\s*\(/.test(source)) {
     add(
@@ -1906,21 +1901,21 @@ for (const relativeFile of ["src/lib/db/cleanup.ts", "src/lib/db/vacuum.ts"]) {
   }
 }
 for (const relativeFile of ["src/lib/modelsDevSync.ts", "src/lib/pricingSync.ts"]) {
-  const file = join(coreDomainEntry?.dir ?? join(packagesRoot, "core-domain"), relativeFile);
+  const file = join(coreDomainEntry?.dir ?? join(packagesRoot, "core"), relativeFile);
   if (existsSync(file) && /\b(?:setInterval|clearInterval)\s*\(/.test(readFileSync(file, "utf8"))) {
-    add("sync-lifecycle-in-core-domain", file, "model and pricing sync timers belong to apps/worker/jobs");
+    add("sync-lifecycle-in-core", file, "model and pricing sync timers belong to apps/worker/jobs");
   }
 }
 {
-  const file = join(coreDomainEntry?.dir ?? join(packagesRoot, "core-domain"), "src/lib/quota/connectionRecovery.ts");
+  const file = join(coreDomainEntry?.dir ?? join(packagesRoot, "core"), "src/lib/quota/connectionRecovery.ts");
   if (existsSync(file) && /\b(?:setTimeout|setInterval|clearTimeout|clearInterval)\s*\(/.test(readFileSync(file, "utf8"))) {
-    add("connection-recovery-lifecycle-in-core-domain", file, "connection recovery timers belong to apps/worker/jobs");
+    add("connection-recovery-lifecycle-in-core", file, "connection recovery timers belong to apps/worker/jobs");
   }
 }
-const openSseEntry = packageEntries.find(({ manifest }) => manifest?.name === "@shiguang-gateway/open-sse");
+const openSseEntry = packageEntries.find(({ manifest }) => manifest?.name === "@orbit/inference");
 if (openSseEntry?.manifest?.exports?.["./oauth/codex-device-completion"]) {
   add(
-    "control-only-capability-exported-by-open-sse",
+    "control-only-capability-exported-by-inference",
     join(openSseEntry.dir, "package.json"),
     "./oauth/codex-device-completion",
   );
@@ -2002,12 +1997,12 @@ for (const pkg of packageEntries) {
       }
       if (
         specifier === preRequestHookExecutionSpecifier &&
-        pkg.manifest?.name !== "@shiguang-gateway/open-sse"
+        pkg.manifest?.name !== "@orbit/inference"
       ) {
         add(
-          "pre-request-hook-execution-outside-open-sse",
+          "pre-request-hook-execution-outside-inference",
           file,
-          "only open-sse may execute persisted pre-request hooks for the edge request path",
+          "only inference may execute persisted pre-request hooks for the edge request path",
         );
       }
       const workspace = workspaceByName.get(specifier) ?? [...workspaceByName.entries()].find(([name]) => specifier.startsWith(`${name}/`))?.[1];
@@ -2028,14 +2023,14 @@ const report = {
     "apps may depend on shared packages, never another app",
     "apps may not use relative imports into packages or sibling apps",
     "packages may not import apps",
-    "apps may consume only their allow-listed core-domain subpaths",
+    "apps may consume only their allow-listed core subpaths",
     "migrated route files must exist only under their owning app",
     "A2A transport and task routes belong only to apps/edge-gateway",
     "realtime WebSocket implementation and export belong only to apps/realtime",
-    "http-kernel exposes no app factory or surface selector",
+    "http exposes no app factory or surface selector",
     "control-api cannot import the worker-owned JobRegistry runtime",
-    "core-domain control jobs contract cannot expose the worker-owned registry",
-    "migrated app-owned capabilities cannot be re-exported by core-domain",
+    "core control jobs contract cannot expose the worker-owned registry",
+    "migrated app-owned capabilities cannot be re-exported by core",
     "long-running Nest apps own final database shutdown",
     "CLI runtime fallback is read-only; control-api owns runtime configuration mutations",
     "legacy runtime package names are retired",

@@ -1,4 +1,4 @@
-import { syncRadarIntel } from "@shiguang-gateway/core-domain/radar/sync/intel";
+import { syncRadarIntel } from "@orbit/core/radar/sync/intel";
 import { authorize, handleCorsOptions, json, internalError, withRadarSyncBody } from "../common.js";
 export function OPTIONS() { return handleCorsOptions(); }
 export async function POST(request: Request) {

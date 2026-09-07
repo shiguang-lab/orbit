@@ -1,4 +1,4 @@
-import { getCombos } from "@shiguang-gateway/core-domain/db/combos";
+import { getCombos } from "@orbit/core/db/combos";
 import { buildComboHealthAutopilotReport } from "./comboHealthAutopilot.js";
 import { buildComboForecastResponse } from "./comboForecast.js";
 import { buildComboHealthResponse } from "./comboHealth.js";
@@ -8,7 +8,7 @@ import type {
   ComboHealthDashboardResponse,
   ComboRecord,
   UtilizationTimeRange,
-} from "@shiguang-gateway/core-domain/usage/utilization";
+} from "@orbit/core/usage/utilization";
 
 export interface ComboHealthDashboardOptions {
   range: UtilizationTimeRange;

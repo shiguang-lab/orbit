@@ -27,9 +27,9 @@ import {
   setTlsIntercept,
   startHttpProxyServer,
   toggleCustomHost,
-} from "@shiguang-gateway/core-domain/control/traffic-inspector";
-import { InspectorCustomHostSchema } from "@shiguang-gateway/core-domain/control/traffic-inspector";
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+} from "@orbit/core/control/traffic-inspector";
+import { InspectorCustomHostSchema } from "@orbit/core/control/traffic-inspector";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 
 const jsonError = (status: number, message: string): Response =>
   new Response(JSON.stringify(buildErrorBody(status, message)), {
@@ -103,7 +103,7 @@ export async function exportHar(request: Request): Promise<Response> {
   const parsed = InspectorListQuerySchema.safeParse(rawQuery);
   if (!parsed.success) return jsonError(400, parsed.error.issues[0]?.message ?? "Invalid query");
   try {
-    const har = (await import("@shiguang-gateway/core-domain/control/traffic-inspector")).toHar(globalTrafficBuffer.list(parsed.data));
+    const har = (await import("@orbit/core/control/traffic-inspector")).toHar(globalTrafficBuffer.list(parsed.data));
     return new Response(JSON.stringify(har, null, 2), { status: 200, headers: { "content-type": "application/json", "content-disposition": 'attachment; filename="traffic.har"', "cache-control": "no-store" } });
   } catch (error) { return jsonError(500, sanitizeErrorMessage(error) || "HAR export failed"); }
 }

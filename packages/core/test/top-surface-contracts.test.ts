@@ -1,0 +1,58 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import test from "node:test";
+import { fileURLToPath, pathToFileURL } from "node:url";
+
+const packageRoot = fileURLToPath(new URL("..", import.meta.url));
+const repoRoot = path.resolve(packageRoot, "../..");
+const manifest = JSON.parse(fs.readFileSync(path.join(packageRoot, "package.json"), "utf8")) as {
+  exports: Record<string, { types: string; import: string }>;
+};
+
+const contracts = {
+  "./control/oauth-runtime/utils/cliProxyAuthImport": {
+    types: "./src/public/cliProxyAuthImport.d.ts",
+    entry: "./src/control/cliProxyAuthImport.ts",
+    keys: ["scanCliProxyAuthDir", "toConnectionPayload"],
+  },
+  "./conductor/hub-proxy": {
+    types: "./src/public/hubProxy.d.ts",
+    entry: "./src/conductor/hubProxy.ts",
+    keys: ["cancelConductorTask", "getConductorTaskDetail", "getFleetSnapshot"],
+  },
+  "./db/obsidian-config": {
+    types: "./src/public/obsidianConfigDb.d.ts",
+    entry: "./src/db/obsidianConfig.ts",
+    keys: ["clearObsidianToken", "getObsidianBaseUrl", "getObsidianConfig", "getObsidianConfigForApiKey", "getObsidianToken", "setObsidianBaseUrl", "setObsidianToken"],
+  },
+} as const;
+
+function sourceFiles(dir: string): string[] {
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    if (["dist", "node_modules", ".turbo"].includes(entry.name)) return [];
+    const target = path.join(dir, entry.name);
+    return entry.isDirectory() ? sourceFiles(target) : /\.[cm]?[jt]sx?$/.test(entry.name) ? [target] : [];
+  });
+}
+
+test("high-risk public surfaces expose exact consumed runtime keys", async () => {
+  for (const [subpath, contract] of Object.entries(contracts)) {
+    assert.deepEqual(manifest.exports[subpath], { types: contract.types, import: contract.entry });
+    const runtime = await import(pathToFileURL(path.join(packageRoot, contract.entry)).href);
+    assert.deepEqual(Object.keys(runtime).sort(), [...contract.keys].sort(), subpath);
+    const declaration = fs.readFileSync(path.join(packageRoot, contract.types), "utf8");
+    for (const key of contract.keys) assert.match(declaration, new RegExp(`\\b${key}\\b`), key);
+  }
+});
+
+test("the scenario-named Obsidian DB barrel stays retired", () => {
+  assert.equal(manifest.exports["./control/obsidian-db"], undefined);
+  assert.equal(fs.existsSync(path.join(packageRoot, "src/public/obsidianDb.d.ts")), false);
+  for (const root of ["apps", "packages/inference"]) {
+    for (const file of sourceFiles(path.join(repoRoot, root))) {
+      assert.doesNotMatch(fs.readFileSync(file, "utf8"), /core\/control\/obsidian-db/, file);
+    }
+  }
+});

@@ -7,7 +7,7 @@
  *   3. POST the upsample job, poll the BKS result link, return the presigned URL.
  */
 
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import {
   extractUpscaleSourceImage,
   saveUpscaleErrorResult,
@@ -35,8 +35,8 @@ export async function handleAdobeFireflyImageUpscale({
   fetchImpl?: typeof fetch;
 }): Promise<UpscaleHandlerResult> {
   const [{ AdobeFireflyError, resolveAdobeAccessToken, resolveAdobeSourceImageIds }, { adobeFireflyUpscaleImage, resolveAdobeUpscaleModel }] = await Promise.all([
-    load("@shiguang-gateway/open-sse/services/adobeFireflyClient"),
-    load("@shiguang-gateway/open-sse/services/adobeFireflyUpscale"),
+    load("@orbit/inference/services/adobeFireflyClient"),
+    load("@orbit/inference/services/adobeFireflyUpscale"),
   ]);
   const startTime = Date.now();
 

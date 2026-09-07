@@ -1,4 +1,4 @@
-import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
+import { toWebRequest } from "@orbit/http/web-handler";
 import {
   Body,
   Controller,
@@ -13,7 +13,7 @@ import {
   Res,
 } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 import { ProxiesService, type ProxyOperationResult } from "./proxies.service.js";
 

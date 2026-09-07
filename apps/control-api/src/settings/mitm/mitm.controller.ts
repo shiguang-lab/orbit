@@ -1,9 +1,9 @@
-import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
+import { toWebRequest } from "@orbit/http/web-handler";
 import { Body, Controller, Get, Post, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { toPublicSafeTunnelError } from "@shiguang-gateway/core-domain/shared/public-safe-error";
-import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { toPublicSafeTunnelError } from "@orbit/core/shared/public-safe-error";
+import { validateBody, isValidationFailure } from "@orbit/core/shared/validation/helpers";
 import { MitmConflictError, MitmService, MitmValidationError } from "./mitm.service.js";
 import { regenerateMitmSchema, updateMitmSchema } from "./mitm.schemas.js";
 

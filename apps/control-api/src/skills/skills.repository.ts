@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
+import { getDbInstance } from "@orbit/core/db/connection";
 
 /** Writable fields accepted by the control-plane skills update endpoint. */
 export interface SkillPatch {

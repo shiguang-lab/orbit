@@ -1,10 +1,10 @@
-import { getSettings } from "@shiguang-gateway/core-domain/db/settings";
+import { getSettings } from "@orbit/core/db/settings";
 import {
   isModelsDevSyncEnvDisabled,
   isModelsDevSyncEnvForcedOn,
   resolveModelsDevSyncIntervalMs,
   syncModelsDev,
-} from "@shiguang-gateway/core-domain/sync/models-dev";
+} from "@orbit/core/sync/models-dev";
 
 const SETTINGS_POLL_INTERVAL_MS = 1_000;
 type Timer = ReturnType<typeof setInterval>;

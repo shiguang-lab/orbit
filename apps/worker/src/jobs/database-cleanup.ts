@@ -1,8 +1,8 @@
 import {
   cleanupProxyLogs,
   runAutoCleanup,
-} from "@shiguang-gateway/core-domain/db/cleanup-maintenance";
-import { runNow as runVacuumNow } from "@shiguang-gateway/core-domain/db/vacuum";
+} from "@orbit/core/db/cleanup-maintenance";
+import { runNow as runVacuumNow } from "@orbit/core/db/vacuum";
 import { executeMemoryRetentionCleanup } from "./memory-decay.js";
 
 const CLEANUP_INTERVAL_MS = 6 * 60 * 60 * 1000;

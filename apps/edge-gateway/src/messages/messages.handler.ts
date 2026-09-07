@@ -1,14 +1,14 @@
-import { handleChat } from "@shiguang-gateway/open-sse/handlers/chat";
+import { handleChat } from "@orbit/inference/handlers/chat";
 import { withChatAdmission } from "../chat-admission.js";
-import { withInjectionGuard } from "@shiguang-gateway/core-domain/middleware/prompt-injection";
-import { initTranslators } from "@shiguang-gateway/open-sse/translator";
+import { withInjectionGuard } from "@orbit/core/middleware/prompt-injection";
+import { initTranslators } from "@orbit/inference/translator";
 import {
   ANTHROPIC_PING_FRAME,
   withEarlyStreamKeepalive,
-} from "@shiguang-gateway/open-sse/utils/earlyStreamKeepalive";
-import { resolveKeepaliveThreshold } from "@shiguang-gateway/open-sse/utils/keepaliveThreshold";
-import { resolveStreamFlag } from "@shiguang-gateway/open-sse/utils/aiSdkCompat";
-import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
+} from "@orbit/inference/utils/earlyStreamKeepalive";
+import { resolveKeepaliveThreshold } from "@orbit/inference/utils/keepaliveThreshold";
+import { resolveStreamFlag } from "@orbit/inference/utils/aiSdkCompat";
+import { CORS_HEADERS } from "@orbit/contracts/cors";
 
 let initialized = false;
 

@@ -21,7 +21,7 @@ import {
   unlinkFileWithRetry,
   exportAllSummaryRows,
   CALL_LOGS_DIR,
-} from "@shiguang-gateway/core-domain/db-backups/db";
+} from "@orbit/core/db-backups/db";
 import { applyPersistedRuntimeSettings } from "../settings/runtime-settings-persistence.js";
 
 const DEFAULT_MAX_UPLOAD_MB = 100;

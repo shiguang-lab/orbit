@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { z } from "zod";
-import { createRelayToken, deleteRelayToken, getRelayLogs, getRelayToken, getRelayTokens, getRelayUsage, toggleRelayToken, updateRelayToken } from "@shiguang-gateway/core-domain/db/relayProxies";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { createRelayToken, deleteRelayToken, getRelayLogs, getRelayToken, getRelayTokens, getRelayUsage, toggleRelayToken, updateRelayToken } from "@orbit/core/db/relayProxies";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 
 const input = z.object({ name: z.string().trim().min(1, "name is required"), description: z.string().optional(), comboId: z.string().trim().min(1).optional(), allowedModels: z.array(z.string().trim().min(1)).optional(), maxTokensPerRequest: z.number().int().positive().optional(), maxRequestsPerMinute: z.number().int().positive().optional(), maxRequestsPerDay: z.number().int().positive().optional(), maxCostPerDay: z.number().nonnegative().optional(), expiresAt: z.number().int().positive().optional(), metadata: z.record(z.string(), z.unknown()).optional() });
 const patch = input.partial().extend({ enabled: z.boolean().optional() }).refine((v) => Object.keys(v).length > 0, "At least one update field is required");

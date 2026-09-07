@@ -5,15 +5,15 @@
  */
 
 import { z } from "zod";
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
-import { getWebhooks, createWebhook } from "@shiguang-gateway/core-domain/db/webhooks";
-import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { encryptMetadata } from "@shiguang-gateway/core-domain/shared/webhook-dispatcher";
-import { isEncryptionEnabled } from "@shiguang-gateway/core-domain/db/encryption";
-import { parseAndValidateWebhookUrl } from "@shiguang-gateway/core-domain/network/outbound-url-guard-policy";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
+import { getWebhooks, createWebhook } from "@orbit/core/db/webhooks";
+import { validateBody, isValidationFailure } from "@orbit/core/shared/validation/helpers";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { encryptMetadata } from "@orbit/core/shared/webhook-dispatcher";
+import { isEncryptionEnabled } from "@orbit/core/db/encryption";
+import { parseAndValidateWebhookUrl } from "@orbit/core/network/outbound-url-guard-policy";
 
-import { WEBHOOK_EVENT_VALUES } from "@shiguang-gateway/core-domain/shared/webhook-events";
+import { WEBHOOK_EVENT_VALUES } from "@orbit/core/shared/webhook-events";
 
 const WEBHOOK_KINDS = ["slack", "telegram", "discord", "custom"] as const;
 const WEBHOOK_EVENT_VALUES_WITH_WILDCARD = ["*", ...WEBHOOK_EVENT_VALUES] as const;

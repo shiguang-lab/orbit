@@ -5,7 +5,7 @@ import {
   getSupervisor,
   registerSupervisor,
   stopAllSupervisors,
-} from "@shiguang-gateway/core-domain/control/embedded-services-lifecycle";
+} from "@orbit/core/control/embedded-services-lifecycle";
 
 test("control lifecycle stops every registered embedded-service supervisor", async () => {
   const stopped: string[] = [];

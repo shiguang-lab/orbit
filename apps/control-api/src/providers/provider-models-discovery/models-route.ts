@@ -3,92 +3,92 @@ import {
   isAnthropicCompatibleProvider,
   isOpenAICompatibleProvider,
   NOAUTH_PROVIDERS,
-} from "@shiguang-gateway/core-domain/catalog/providers";
-import { getRegistryEntry } from "@shiguang-gateway/open-sse/config/providerRegistry";
-import { getModelsByProviderId } from "@shiguang-gateway/core-domain/catalog/provider-models";
-import { resolveAlibabaProviderModelsUrl } from "@shiguang-gateway/core-domain/providers/alibaba-regions";
-import { getStaticModelsForProvider } from "@shiguang-gateway/open-sse/services/static-models";
-import { providerUsesCuratedModelsOnly } from "@shiguang-gateway/core-domain/control/provider-discovery-support/modelListingCapability";
-import { mergeModelsWithCustomPrecedence } from "@shiguang-gateway/core-domain/control/provider-discovery-support/modelMetadataPrecedence";
-import { getCachedProviderConnectionById } from "@shiguang-gateway/core-domain/db/read-cache";
-import { getModelIsHidden } from "@shiguang-gateway/core-domain/db/hidden-models";
-import { resolveProxyForProvider } from "@shiguang-gateway/core-domain/db/proxies";
+} from "@orbit/providers/catalog";
+import { getRegistryEntry } from "@orbit/inference/config/providerRegistry";
+import { getModelsByProviderId } from "@orbit/core/catalog/provider-models";
+import { resolveAlibabaProviderModelsUrl } from "@orbit/providers/alibaba-regions";
+import { getStaticModelsForProvider } from "@orbit/inference/services/static-models";
+import { providerUsesCuratedModelsOnly } from "@orbit/core/control/provider-discovery-support/modelListingCapability";
+import { mergeModelsWithCustomPrecedence } from "@orbit/core/control/provider-discovery-support/modelMetadataPrecedence";
+import { getCachedProviderConnectionById } from "@orbit/core/db/read-cache";
+import { getModelIsHidden } from "@orbit/core/db/hidden-models";
+import { resolveProxyForProvider } from "@orbit/core/db/proxies";
 import {
   SAFE_OUTBOUND_FETCH_PRESETS,
   SafeOutboundFetchError,
   getSafeOutboundFetchErrorStatus,
   safeOutboundFetch,
-} from "@shiguang-gateway/core-domain/network/safe-outbound-fetch";
+} from "@orbit/core/network/safe-outbound-fetch";
 import {
   getProviderOutboundGuard,
   getProviderValidationGuard,
-} from "@shiguang-gateway/core-domain/network/outbound-url-guard-policy";
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
-import { errorResponse } from "@shiguang-gateway/http-kernel/error-response";
-import { getStaticQoderModels } from "@shiguang-gateway/open-sse/services/qoderCli";
+} from "@orbit/core/network/outbound-url-guard-policy";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
+import { errorResponse } from "@orbit/utils/errors/error-response";
+import { getStaticQoderModels } from "@orbit/inference/services/qoderCli";
 import { deriveConfigFromRegistryModelsUrl } from "./discoveryConfig.js";
-import { resolveZedModels } from "@shiguang-gateway/open-sse/shared/zedAuth";
+import { resolveZedModels } from "@orbit/inference/shared/zedAuth";
 import {
   fetchGitHubCopilotModels,
   fetchGheCopilotModels,
-} from "@shiguang-gateway/open-sse/services/githubCopilotModels";
-import { fetchKiroAvailableModels } from "@shiguang-gateway/open-sse/services/kiroModels";
+} from "@orbit/inference/services/githubCopilotModels";
+import { fetchKiroAvailableModels } from "@orbit/inference/services/kiroModels";
 import {
   buildGlmCodingHeaders,
   buildGlmModelsUrl,
-} from "@shiguang-gateway/open-sse/config/glmProvider";
-import { getImageProvider } from "@shiguang-gateway/open-sse/config/imageRegistry";
-import { getVideoProvider } from "@shiguang-gateway/open-sse/config/videoRegistry";
+} from "@orbit/inference/config/glmProvider";
+import { getImageProvider } from "@orbit/inference/config/imageRegistry";
+import { getVideoProvider } from "@orbit/inference/config/videoRegistry";
 import {
   discoverBedrockNativeModels,
   isBedrockNativeApiError,
-} from "@shiguang-gateway/open-sse/services/bedrock";
+} from "@orbit/inference/services/bedrock";
 import {
   discoverPromptQlModels,
   PROMPTQL_FALLBACK_MODELS,
-} from "@shiguang-gateway/open-sse/services/promptqlModels";
+} from "@orbit/inference/services/promptqlModels";
 import {
   discoverNotionWebModels,
   NOTION_WEB_FALLBACK_MODELS,
-} from "@shiguang-gateway/open-sse/services/notionWebModels";
+} from "@orbit/inference/services/notionWebModels";
 import {
   AZURE_AI_DEFAULT_BASE_URL,
   buildAzureAiModelsUrl,
-} from "@shiguang-gateway/open-sse/config/azureAi";
+} from "@orbit/inference/config/azureAi";
 import {
   DATAROBOT_DEFAULT_BASE_URL,
   buildDataRobotCatalogUrl,
   isDataRobotDeploymentUrl,
-} from "@shiguang-gateway/open-sse/config/datarobot";
-import { OCI_DEFAULT_BASE_URL, buildOciModelsUrl } from "@shiguang-gateway/open-sse/config/oci";
+} from "@orbit/inference/config/datarobot";
+import { OCI_DEFAULT_BASE_URL, buildOciModelsUrl } from "@orbit/inference/config/oci";
 import {
   SAP_DEFAULT_BASE_URL,
   buildSapModelsUrl,
   getSapResourceGroup,
-} from "@shiguang-gateway/open-sse/config/sap";
+} from "@orbit/inference/config/sap";
 import {
   WATSONX_DEFAULT_BASE_URL,
   buildWatsonxModelsUrl,
-} from "@shiguang-gateway/open-sse/config/watsonx";
-import { getEmbeddingProvider } from "@shiguang-gateway/open-sse/config/embeddingRegistry";
-import { getRerankProvider } from "@shiguang-gateway/rerank-catalog";
+} from "@orbit/inference/config/watsonx";
+import { getEmbeddingProvider } from "@orbit/inference/config/embeddingRegistry";
+import { getRerankProvider } from "@orbit/providers/rerank";
 import {
   getSpeechProvider,
   getTranscriptionProvider,
-} from "@shiguang-gateway/open-sse/config/audioRegistry";
+} from "@orbit/inference/config/audioRegistry";
 import {
   getCachedDiscoveredModels,
   isAutoFetchModelsEnabled,
   persistDiscoveredModels,
-} from "@shiguang-gateway/core-domain/control/provider-discovery-support/modelDiscovery";
+} from "@orbit/core/control/provider-discovery-support/modelDiscovery";
 import { buildProviderModelsUrl, getDiscoveryClientVersionOptions } from "./discoveryClientVersion.js";
 import { getAdobeModels } from "./adobeFireflyDiscovery.js";
 import { parseGeminiModelsList } from "./discovery/gemini-models-parser.js";
-import { getSyncedAvailableModels, getCustomModels } from "@shiguang-gateway/core-domain/db/models";
-import { isConnectionUnavailableToAuxiliaryActivity } from "@shiguang-gateway/core-domain/shared/connection-isolation";
-import { fetchCursorAgentModels } from "@shiguang-gateway/core-domain/control/provider-discovery-support/cursorAgent";
-import { fetchCursorAvailableModels } from "@shiguang-gateway/open-sse/oauth/services/cursor-models";
-import { ensureCursorAutoCatalogEntry } from "@shiguang-gateway/core-domain/control/provider-discovery-support/cursorAutoCatalog";
+import { getSyncedAvailableModels, getCustomModels } from "@orbit/core/db/models";
+import { isConnectionUnavailableToAuxiliaryActivity } from "@orbit/core/shared/connection-isolation";
+import { fetchCursorAgentModels } from "@orbit/core/control/provider-discovery-support/cursorAgent";
+import { fetchCursorAvailableModels } from "@orbit/inference/oauth/services/cursor-models";
+import { ensureCursorAutoCatalogEntry } from "@orbit/core/control/provider-discovery-support/cursorAutoCatalog";
 import {
   type JsonRecord,
   asRecord,
@@ -1765,7 +1765,7 @@ export async function getProviderModels(
       let bearerToken: string | null = null;
       try {
         const { parseSAFromApiKey, getAccessToken } =
-          await import("@shiguang-gateway/open-sse/executors/vertex");
+          await import("@orbit/inference/executors/vertex");
         if (accessToken) {
           bearerToken = accessToken;
         } else if (credential) {
@@ -2350,13 +2350,13 @@ export async function getProviderModels(
 
     if (provider === "alibaba" || provider === "alibaba-cn") {
       const { shouldUseLiveAlibabaFreeModelDiscovery } =
-        await import("@shiguang-gateway/open-sse/services/alibabaFreeTier");
+        await import("@orbit/inference/services/alibabaFreeTier");
       const { scheduleAlibabaFreeTierProbeRefresh } =
-        await import("@shiguang-gateway/open-sse/services/alibabaFreeTierDiscovery");
+        await import("@orbit/inference/services/alibabaFreeTierDiscovery");
       const { scheduleAlibabaFreeTierQuotaRefresh, hasAlibabaConsoleFreeTierAuth } =
-        await import("@shiguang-gateway/open-sse/services/alibabaFreeTierQuotaFetcher");
+        await import("@orbit/inference/services/alibabaFreeTierQuotaFetcher");
       const { resolveAlibabaProviderBaseUrl } =
-        await import("@shiguang-gateway/core-domain/providers/alibaba-regions");
+        await import("@orbit/providers/alibaba-regions");
       const providerSpecificData = connection.providerSpecificData as Record<
         string,
         unknown

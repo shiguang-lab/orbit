@@ -1,9 +1,9 @@
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
-import { getProviderCredentials } from "@shiguang-gateway/open-sse/services/auth";
-import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
-import { SEARCH_PROVIDERS, getSearchCredentialFallbacks } from "@shiguang-gateway/open-sse/config/searchRegistry";
-import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
-import { log } from "@shiguang-gateway/open-sse/utils/logger";
+import { isAuthenticated } from "@orbit/core/control/authenticated";
+import { getProviderCredentials } from "@orbit/inference/services/auth";
+import { isAllRateLimitedCredentials } from "@orbit/inference/services/credential-selection";
+import { SEARCH_PROVIDERS, getSearchCredentialFallbacks } from "@orbit/inference/config/searchRegistry";
+import { buildErrorBody } from "@orbit/inference/utils/error";
+import { log } from "@orbit/inference/utils/logger";
 import {
   SearchProviderCatalogResponseSchema,
   type SearchProviderCatalogItem,

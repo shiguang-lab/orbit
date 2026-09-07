@@ -303,22 +303,22 @@ function importedSpecifiers(source) {
 }
 
 function isCoreSourceCliImplementationImport(file, specifier) {
-  if (!rel(file).startsWith("packages/core-domain/src/")) return false;
-  if (specifier === "@shiguang-gateway/cli" || specifier.startsWith("@shiguang-gateway/cli/")) return true;
+  if (!rel(file).startsWith("packages/core/src/")) return false;
+  if (specifier === "@orbit/cli" || specifier.startsWith("@orbit/cli/")) return true;
   if (!specifier.startsWith(".")) return false;
   const target = rel(resolve(dirname(file), specifier));
-  return target.startsWith("packages/core-domain/bin/") || target.startsWith("apps/cli/");
+  return target.startsWith("packages/core/bin/") || target.startsWith("apps/cli/");
 }
 
 if (process.argv.includes("--self-test")) {
   const graph = new Map([
-    ["@shiguang-gateway/core-domain", new Set(["@shiguang-gateway/open-sse"])],
-    ["@shiguang-gateway/open-sse", new Set(["@shiguang-gateway/core-domain"])],
+    ["@orbit/core", new Set(["@orbit/inference"])],
+    ["@orbit/inference", new Set(["@orbit/core"])],
     ["self", new Set(["self"])],
     ["leaf", new Set()],
   ]);
   assert.deepEqual(stronglyConnectedComponents(graph), [
-    ["@shiguang-gateway/core-domain", "@shiguang-gateway/open-sse"],
+    ["@orbit/core", "@orbit/inference"],
     ["leaf"],
     ["self"],
   ]);
@@ -336,10 +336,10 @@ if (process.argv.includes("--self-test")) {
     "../b/x.js",
     "./required.cjs",
   ]);
-  const coreCliConsumer = resolve(repoRoot, "packages/core-domain/src/lib/cli-helper/sync.ts");
+  const coreCliConsumer = resolve(repoRoot, "packages/core/src/lib/cli-helper/sync.ts");
   assert.equal(isCoreSourceCliImplementationImport(coreCliConsumer, "../../../bin/cli/setup.mjs"), true);
-  assert.equal(isCoreSourceCliImplementationImport(coreCliConsumer, "@shiguang-gateway/cli"), true);
-  assert.equal(isCoreSourceCliImplementationImport(coreCliConsumer, "@shiguang-gateway/cli-profile-config/codex"), false);
+  assert.equal(isCoreSourceCliImplementationImport(coreCliConsumer, "@orbit/cli"), true);
+  assert.equal(isCoreSourceCliImplementationImport(coreCliConsumer, "@orbit/config/cli/codex"), false);
   assert.equal(isAppOwnedSource(resolve(repoRoot, "packages/a/src/feature/route.ts")), true);
   assert.equal(isAppOwnedSource(resolve(repoRoot, "packages/a/src/feature/legacy.route.ts")), true);
   assert.equal(isAppOwnedSource(resolve(repoRoot, "packages/a/src/feature/handler.ts")), false);
@@ -405,7 +405,7 @@ if (process.argv.includes("--self-test")) {
     ),
     [],
   );
-  console.log(JSON.stringify({ status: "PASS", checks: ["core-domain/open-sse SCC", "self-loop", "package ownership", "relative import extraction", "core source cannot import CLI implementations", "core CLI cannot cross into core source by relative path", "route basename ownership", "retired dynamic compat dispatcher", "package export condition targets", "package lifecycle ownership"] }, null, 2));
+  console.log(JSON.stringify({ status: "PASS", checks: ["core/inference SCC", "self-loop", "package ownership", "relative import extraction", "core source cannot import CLI implementations", "core CLI cannot cross into core source by relative path", "route basename ownership", "retired dynamic compat dispatcher", "package export condition targets", "package lifecycle ownership"] }, null, 2));
   process.exit(0);
 }
 
@@ -433,6 +433,10 @@ for (const entry of packageEntries) {
   const deps = { ...(entry.manifest?.dependencies ?? {}), ...(entry.manifest?.optionalDependencies ?? {}) };
   for (const dependency of Object.keys(deps)) {
     if (packageNames.has(dependency)) packageDependencyGraph.get(name).add(dependency);
+    if (["@orbit/core", "@orbit/inference", "@orbit/utils"].includes(name)
+      && (dependency === "@orbit/http" || dependency.startsWith("@nestjs/"))) {
+      add("framework-independent-package", join(entry.dir, "package.json"), `${name} must not depend on ${dependency}`);
+    }
   }
 }
 
@@ -464,7 +468,7 @@ for (const entry of packageEntries) {
         add(
           "core-source-imports-cli-implementation",
           file,
-          `core-domain source imports ${specifier}; move shared generators to a focused published package`,
+          `core source imports ${specifier}; move shared generators to a focused published package`,
         );
       }
       if (!specifier.startsWith(".")) continue;
@@ -616,7 +620,7 @@ const result = {
     "packages contain only capabilities shared by multiple workspace units; app-specific code belongs in apps",
     "dependencies and optionalDependencies between workspace packages must form an acyclic graph without self-dependencies",
     "a package may not import another package through a relative source path; use a declared published contract",
-    "core-domain source may not import executable CLI implementations from package bin or apps/cli",
+    "core source may not import executable CLI implementations from package bin or apps/cli",
     "packages may not contain route.ts modules or retired dynamic compat dispatchers",
     "every explicit package export condition must resolve to an existing file",
     "each runtime export target must have one stable public subpath; semantic aliases are forbidden",

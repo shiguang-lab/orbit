@@ -19,8 +19,8 @@ import {
 	getVscodeRawModelDisplayName,
 } from "../vscode-models/vscode-models.handler.js";
 import { withPathTokenApiKey } from "../vscode/runtime/tokenized-request.js";
-import { getCanonicalModelMetadata } from "@shiguang-gateway/core-domain/catalog/model-metadata";
-import { CORS_HEADERS } from "@shiguang-gateway/core-domain/shared/cors";
+import { getCanonicalModelMetadata } from "@orbit/core/catalog/model-metadata";
+import { CORS_HEADERS } from "@orbit/core/shared/cors";
 
 const OLLAMA_COMPAT_VERSION = "0.6.4";
 

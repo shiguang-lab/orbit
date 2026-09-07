@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import {
+  Alert,
   Button,
   Card,
   Col,
@@ -17,10 +18,12 @@ import {
 import { createStyles } from "antd-style";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
-import { systemProxyApi } from "@/entities/api";
+import { systemProxyApi, type OutboundProxyConfig } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Title, Text } = Typography;
+type ProxyFormValues = OutboundProxyConfig & { enabled: boolean };
 
 const useStyles = createStyles(({ token }) => ({
   page: {
@@ -44,9 +47,11 @@ const useStyles = createStyles(({ token }) => ({
 
 export function SystemProxyPage() {
   const { styles } = useStyles();
+  const { tt } = useI18n();
   const queryClient = useQueryClient();
   const [messageApi, contextHolder] = message.useMessage();
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<ProxyFormValues>();
+  const enabled = Form.useWatch("enabled", form);
 
   const proxyQuery = useQuery({
     queryKey: ["system-proxy-config"],
@@ -56,30 +61,34 @@ export function SystemProxyPage() {
   useEffect(() => {
     if (proxyQuery.data) {
       form.setFieldsValue({
-        ...proxyQuery.data,
-        bypassHosts: proxyQuery.data.bypassHosts.join("\n"),
+        enabled: proxyQuery.data.global !== null,
+        type: proxyQuery.data.global?.type ?? "http",
+        host: proxyQuery.data.global?.host ?? "",
+        port: proxyQuery.data.global?.port,
+        username: proxyQuery.data.global?.username ?? "",
+        password: proxyQuery.data.global?.password ?? "",
       });
     }
   }, [proxyQuery.data, form]);
 
   const updateMutation = useMutation({
-    mutationFn: (values: any) =>
-      systemProxyApi.updateConfig({
-        ...values,
-        bypassHosts: typeof values.bypassHosts === "string" ? values.bypassHosts.split("\n").filter(Boolean) : values.bypassHosts,
-      }),
+    mutationFn: ({ enabled, type, host, port, username, password }: ProxyFormValues) =>
+      systemProxyApi.updateConfig(enabled ? { type, host, port, username, password } : null),
     onSuccess: () => {
-      messageApi.success("出站代理网络设置已保存并生效");
+      messageApi.success(tt("全局代理设置已保存", "Global proxy settings saved"));
       void queryClient.invalidateQueries({ queryKey: ["system-proxy-config"] });
     },
-    onError: () => messageApi.error("保存出站代理失败"),
+    onError: (error) => messageApi.error(error.message),
   });
 
   if (proxyQuery.isLoading) {
     return <PageSkeleton />;
   }
 
-  const config = proxyQuery.data;
+  if (proxyQuery.isError) {
+    return <Alert type="error" showIcon title={tt("代理设置加载失败", "Failed to load proxy settings")} description={proxyQuery.error.message} action={<Button onClick={() => void proxyQuery.refetch()}>{tt("重试", "Retry")}</Button>} />;
+  }
+  const config = proxyQuery.data?.global;
 
   return (
     <div className={styles.page}>
@@ -106,14 +115,14 @@ export function SystemProxyPage() {
             <div>
               <Flex align="center" gap={8}>
                 <Title level={4} style={{ margin: 0, fontSize: 17 }}>
-                  系统出站网络代理
+                  {tt("系统出站网络代理", "System outbound proxy")}
                 </Title>
-                <Tag color={config?.enabled ? "success" : "default"}>
-                  {config?.enabled ? "● 代理连接池运行中" : "已直连"}
+                <Tag color={config ? "success" : "default"}>
+                  {config ? tt("全局代理已配置", "Global proxy configured") : tt("全局代理未配置", "No global proxy configured")}
                 </Tag>
               </Flex>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                配置网关向国外 LLM 上游提供商（OpenAI, Claude, DeepSeek, Gemini）发送请求时使用的 HTTP/SOCKS5 出站代理隧道。
+                {tt("配置网关访问上游提供者时使用的全局出站代理。", "Configure the global outbound proxy used to access upstream providers.")}
               </Text>
             </div>
           </Flex>
@@ -124,23 +133,23 @@ export function SystemProxyPage() {
             loading={updateMutation.isPending}
             onClick={() => form.submit()}
           >
-            保存代理设置
+            {tt("保存代理设置", "Save proxy settings")}
           </Button>
         </Flex>
       </Card>
 
       {/* 2. Form */}
-      <Card title="出站代理服务器与认证配置" className={styles.sectionCard} size="small">
+      <Card title={tt("出站代理服务器与认证配置", "Proxy server and authentication")} className={styles.sectionCard}>
         <Form form={form} layout="vertical" onFinish={(v) => updateMutation.mutate(v)}>
           <Row gutter={[16, 0]}>
             <Col xs={24} sm={12}>
-              <Form.Item name="enabled" valuePropName="checked" label="启用出站代理">
-                <Switch checkedChildren="已开启" unCheckedChildren="已直连" />
+              <Form.Item name="enabled" valuePropName="checked" label={tt("配置全局代理", "Configure global proxy")}>
+                <Switch checkedChildren={tt("开启", "On")} unCheckedChildren={tt("关闭", "Off")} />
               </Form.Item>
             </Col>
             <Col xs={24} sm={12}>
-              <Form.Item name="type" label="代理协议类型">
-                <Radio.Group>
+              <Form.Item name="type" label={tt("代理协议类型", "Proxy protocol")}>
+                <Radio.Group disabled={!enabled}>
                   <Radio.Button value="http">HTTP</Radio.Button>
                   <Radio.Button value="https">HTTPS</Radio.Button>
                   <Radio.Button value="socks5">SOCKS5</Radio.Button>
@@ -151,19 +160,22 @@ export function SystemProxyPage() {
 
           <Row gutter={[16, 0]}>
             <Col xs={24} sm={16}>
-              <Form.Item name="server" label="代理服务器地址 (Host / IP)" rules={[{ required: true, message: "请输入代理主机" }]}>
-                <Input placeholder="127.0.0.1 或 proxy.internal.corp" />
+              <Form.Item name="host" label={tt("代理服务器地址", "Proxy host")} rules={[{ required: enabled, whitespace: true, message: tt("请输入代理主机", "Enter a proxy host") }]}>
+                <Input disabled={!enabled} placeholder="proxy.internal.corp" />
               </Form.Item>
             </Col>
             <Col xs={24} sm={8}>
-              <Form.Item name="port" label="代理端口 (Port)" rules={[{ required: true, message: "请输入端口" }]}>
-                <InputNumber min={1} max={65535} style={{ width: "100%" }} placeholder="7890" />
+              <Form.Item name="port" label={tt("代理端口", "Proxy port")} rules={[{ required: enabled, message: tt("请输入端口", "Enter a port") }]}>
+                <InputNumber disabled={!enabled} min={1} max={65535} style={{ width: "100%" }} placeholder="7890" />
               </Form.Item>
             </Col>
           </Row>
 
-          <Form.Item name="bypassHosts" label="绕过代理的目标主机列表 (NO_PROXY，每行一个)">
-            <Input.TextArea rows={4} placeholder={`localhost\n127.0.0.1\n*.internal\n192.168.*`} />
+          <Form.Item name="username" label={tt("代理用户名", "Proxy username")}>
+            <Input disabled={!enabled} autoComplete="off" />
+          </Form.Item>
+          <Form.Item name="password" label={tt("代理密码", "Proxy password")}>
+            <Input.Password disabled={!enabled} autoComplete="new-password" />
           </Form.Item>
         </Form>
       </Card>

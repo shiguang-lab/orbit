@@ -3,53 +3,53 @@ import {
   handleCodexImageEdit,
   handleOpenAIImageEdit,
   handleOpenRouterImageEdit,
-} from "@shiguang-gateway/open-sse/handlers/imageGeneration";
+} from "@orbit/inference/handlers/imageGeneration";
 import {
   handleFalAIImageEdit,
   FAL_IMAGE_EDIT_MAX_REFERENCES,
   isFalImageEditModel,
-} from "@shiguang-gateway/open-sse/handlers/imageGeneration/providers/fal";
-import { createInjectionGuard } from "@shiguang-gateway/core-domain/middleware/prompt-injection";
+} from "@orbit/inference/handlers/imageGeneration/providers/fal";
+import { createInjectionGuard } from "@orbit/core/middleware/prompt-injection";
 import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
-} from "@shiguang-gateway/open-sse/services/auth";
-import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
+} from "@orbit/inference/services/auth";
+import { isAllRateLimitedCredentials } from "@orbit/inference/services/credential-selection";
 const getProviderCredentialsWithQuotaPreflightAny = getProviderCredentialsWithQuotaPreflight as any;
 import {
   parseImageModel,
   getImageProvider,
   getImageModelEntry,
-} from "@shiguang-gateway/open-sse/config/imageRegistry";
-import { errorResponse, unavailableResponse } from "@shiguang-gateway/open-sse/utils/error";
-import { HTTP_STATUS as OPEN_SSE_HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants";
+} from "@orbit/inference/config/imageRegistry";
+import { errorResponse, unavailableResponse } from "@orbit/inference/utils/error";
+import { HTTP_STATUS as OPEN_SSE_HTTP_STATUS } from "@orbit/inference/config/constants";
 const HTTP_STATUS = {
   ...OPEN_SSE_HTTP_STATUS,
   GONE: 410,
   SERVICE_UNAVAILABLE: 503,
 } as const;
-import * as log from "@shiguang-gateway/core-domain/sse/logger";
-import { toJsonErrorPayload } from "@shiguang-gateway/core-domain/shared/upstream-error";
-import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/runtime/api-key-policy";
+import * as log from "@orbit/core/sse/logger";
+import { toJsonErrorPayload } from "@orbit/core/shared/upstream-error";
+import { enforceApiKeyPolicy } from "@orbit/core/runtime/api-key-policy";
 import {
   resolveImageRouteModel,
   extractImageEditInputFromJson,
   validateCodexImageEditReferences,
 } from "../image-route-model.js";
-import { isMicrosoftDesignerWebProviderRetiredError } from "@shiguang-gateway/contracts/designer-web-retirement";
-import { resolveProxyForConnection } from "@shiguang-gateway/core-domain/db/settings";
-import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
-import { isCodexFreePlan } from "@shiguang-gateway/open-sse/executors/codex/tools";
+import { isMicrosoftDesignerWebProviderRetiredError } from "@orbit/contracts/designer-web-retirement";
+import { resolveProxyForConnection } from "@orbit/core/db/settings";
+import { runWithProxyContext } from "@orbit/inference/utils/proxyFetch";
+import { isCodexFreePlan } from "@orbit/inference/executors/codex/tools";
 import {
   getBodySizeLimit,
   readRequestBodyWithLimit,
   RequestBodyTooLargeError,
-} from "@shiguang-gateway/core-domain/shared/body-size-guard";
-import { getCachedSettings } from "@shiguang-gateway/core-domain/db/read-cache";
+} from "@orbit/core/shared/body-size-guard";
+import { getCachedSettings } from "@orbit/core/db/read-cache";
 import {
   CHATGPT_WEB_RETIRED_ERROR_CODE,
   isCommonChatGptWebRetirementError,
-} from "@shiguang-gateway/contracts/chatgpt-web-retirement";
+} from "@orbit/contracts/chatgpt-web-retirement";
 import { z } from "zod";
 
 const adobeLog = {

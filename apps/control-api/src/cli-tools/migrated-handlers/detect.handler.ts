@@ -1,5 +1,5 @@
-import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { detectAllTools, detectTool } from "@shiguang-gateway/core-domain/cli/tool-detector";
+import { requireManagementAuth as requireCliToolsAuth } from "@orbit/core/control/management-auth";
+import { detectAllTools, detectTool } from "@orbit/core/cli/tool-detector";
 
 // GET /api/cli-tools/detect - Detect all installed CLI tools
 export async function GET(request: Request) {

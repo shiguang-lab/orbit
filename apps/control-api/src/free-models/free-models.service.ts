@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { listFreeModels } from "@shiguang-gateway/core-domain/catalog/free-models";
+import { listFreeModels } from "@orbit/core/catalog/free-models";
 
 @Injectable()
 export class FreeModelsService {

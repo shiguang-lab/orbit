@@ -1,6 +1,6 @@
-import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getApiKeys } from "@shiguang-gateway/core-domain/db/api-keys";
-import { maskStoredApiKey } from "@shiguang-gateway/core-domain/control/api-key-exposure";
+import { requireManagementAuth as requireCliToolsAuth } from "@orbit/core/control/management-auth";
+import { getApiKeys } from "@orbit/core/db/api-keys";
+import { maskStoredApiKey } from "@orbit/core/control/api-key-exposure";
 
 // GET /api/cli-tools/keys - List API keys with raw values for authenticated CLI tools UI only
 export async function GET(request: Request) {

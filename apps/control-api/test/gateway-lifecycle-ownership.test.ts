@@ -27,7 +27,7 @@ test("control API does not claim ownership of whole-gateway lifecycle", () => {
 });
 
 test("public API contracts keep the retired lifecycle routes absent", () => {
-  const openApi = read("packages/core-domain/docs/openapi.yaml");
+  const openApi = read("packages/core/docs/openapi.yaml");
   const generatedSystemCommands = read("apps/cli/src/cli/api-commands/system.mjs");
   const adminSource = readSourceTree("apps/admin/src");
 

@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { deleteKeyGroup, getGroupMembers, getKeyGroupWithPermissions, updateKeyGroup } from "@shiguang-gateway/core-domain/db/api-key-groups";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { deleteKeyGroup, getGroupMembers, getKeyGroupWithPermissions, updateKeyGroup } from "@orbit/core/db/api-key-groups";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 import { json } from "./response.js";
 
 const updateKeyGroupSchema = z.object({ name: z.string().trim().min(1, "name cannot be empty").optional(), description: z.string().optional(), isActive: z.boolean().optional() }).refine((value) => Object.keys(value).length > 0, "At least one update field is required");

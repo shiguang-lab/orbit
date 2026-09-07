@@ -1,15 +1,15 @@
 import { Body, Controller, Get, Post, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import {
   isValidationFailure,
   validateBody,
-} from "@shiguang-gateway/core-domain/shared/validation/helpers";
+} from "@orbit/core/shared/validation/helpers";
 import {
   taskRoutingActionSchema,
   updateTaskRoutingSchema,
-} from "@shiguang-gateway/core-domain/validation/routing";
-import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+} from "@orbit/core/validation/routing";
+import { buildErrorBody, sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import { TaskRoutingService } from "./task-routing.service.js";
 
 function toWebRequest(request: FastifyRequest): Request {

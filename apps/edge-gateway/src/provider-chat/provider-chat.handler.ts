@@ -1,8 +1,8 @@
-import { isCommonChatGptWebRetiredProviderId } from "@shiguang-gateway/contracts/chatgpt-web-retirement";
+import { isCommonChatGptWebRetiredProviderId } from "@orbit/contracts/chatgpt-web-retirement";
 import { providerChatBodySchema, type ProviderChatBody } from "./provider-chat.schemas.js";
 
 type ProviderParams = { params: { provider: string } };
-type ChatRuntime = typeof import("@shiguang-gateway/open-sse/handlers/chat");
+type ChatRuntime = typeof import("@orbit/inference/handlers/chat");
 
 let initialized = false;
 
@@ -15,11 +15,11 @@ async function runtime(): Promise<{
   getRegistryEntry: (provider: string) => { id: string; alias?: string } | null;
 }> {
   const [chat, sse, errorApi, constants, registry, admission] = await Promise.all([
-    import("@shiguang-gateway/open-sse/handlers/chat"),
-    import("@shiguang-gateway/open-sse/translator"),
-    import("@shiguang-gateway/open-sse/utils/error"),
-    import("@shiguang-gateway/open-sse/config/constants"),
-    import("@shiguang-gateway/open-sse/config/providerRegistry"),
+    import("@orbit/inference/handlers/chat"),
+    import("@orbit/inference/translator"),
+    import("@orbit/inference/utils/error"),
+    import("@orbit/inference/config/constants"),
+    import("@orbit/inference/config/providerRegistry"),
     import("../chat-admission.js"),
   ]);
   return {

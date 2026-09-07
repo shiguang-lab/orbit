@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { ollamaModels } from "@shiguang-gateway/open-sse/config/ollamaModels";
-import { CORS_HEADERS } from "@shiguang-gateway/core-domain/shared/cors";
+import { ollamaModels } from "@orbit/inference/config/ollamaModels";
+import { CORS_HEADERS } from "@orbit/core/shared/cors";
 
 @Injectable()
 export class TagsService {

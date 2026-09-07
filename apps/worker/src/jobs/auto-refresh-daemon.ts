@@ -1,4 +1,4 @@
-import { autoRefreshDaemon } from "@shiguang-gateway/open-sse/services/auto-refresh-daemon";
+import { autoRefreshDaemon } from "@orbit/inference/services/auto-refresh-daemon";
 
 export function startAutoRefreshDaemon(): void {
   autoRefreshDaemon.start();

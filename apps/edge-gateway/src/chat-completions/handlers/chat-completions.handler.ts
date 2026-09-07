@@ -1,26 +1,26 @@
 import { z } from "zod";
-import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
-import { handleChat, buildClientRawRequest } from "@shiguang-gateway/open-sse/handlers/chat";
-import { generateRequestId } from "@shiguang-gateway/core-domain/runtime/request-id";
-import { errorResponse } from "@shiguang-gateway/open-sse/utils/error";
-import { initTranslators } from "@shiguang-gateway/open-sse/translator";
-import { createInjectionGuard } from "@shiguang-gateway/core-domain/middleware/prompt-injection";
-import { acceptHeaderForcesStream } from "@shiguang-gateway/open-sse/utils/aiSdkCompat";
+import { CORS_HEADERS } from "@orbit/contracts/cors";
+import { handleChat, buildClientRawRequest } from "@orbit/inference/handlers/chat";
+import { generateRequestId } from "@orbit/core/runtime/request-id";
+import { errorResponse } from "@orbit/inference/utils/error";
+import { initTranslators } from "@orbit/inference/translator";
+import { createInjectionGuard } from "@orbit/core/middleware/prompt-injection";
+import { acceptHeaderForcesStream } from "@orbit/inference/utils/aiSdkCompat";
 import {
   OPENAI_CHAT_ERROR_FRAME,
   OPENAI_KEEPALIVE_FRAME,
   OPENAI_STARTUP_FRAME,
   withEarlyStreamKeepalive,
-} from "@shiguang-gateway/open-sse/utils/earlyStreamKeepalive";
-import { resolveKeepaliveThreshold } from "@shiguang-gateway/open-sse/utils/keepaliveThreshold";
+} from "@orbit/inference/utils/earlyStreamKeepalive";
+import { resolveKeepaliveThreshold } from "@orbit/inference/utils/keepaliveThreshold";
 import {
   assertRuntimeModelProviderAvailable,
   isRuntimeProviderRetirementError,
-} from "@shiguang-gateway/contracts/provider-retirement";
+} from "@orbit/contracts/provider-retirement";
 import {
   assertCommonChatGptWebModelAvailable,
   isCommonChatGptWebRetirementError,
-} from "@shiguang-gateway/contracts/chatgpt-web-retirement";
+} from "@orbit/contracts/chatgpt-web-retirement";
 import {
   readCompressionRequestHeader,
   withCompressionHeaderEcho,
@@ -80,8 +80,8 @@ export function OPTIONS(): Response {
 
 export async function POST(request: Request): Promise<Response> {
   const [admissionApi, aliasApi] = await Promise.all([
-    load("@shiguang-gateway/core-domain/shared/middleware/chatBodyAdmission"),
-    load("@shiguang-gateway/core-domain/edge/model-alias-resolver"),
+    load("@orbit/core/shared/middleware/chatBodyAdmission"),
+    load("@orbit/core/edge/model-alias-resolver"),
   ]);
   const { admitChatRequest, admitChatStructure, CHAT_ADMISSION_QUEUE_MAX_MS, releaseChatAdmissionAfterHandler, releaseChatAdmissionWhenDone, resolveSessionId } = admissionApi;
   const { resolveModelAliasWithSeedFallbackOnBody } = aliasApi;

@@ -1,4 +1,4 @@
-import { listCliTools } from "@shiguang-gateway/core-domain/shared/constants/cliTools";
+import { listCliTools } from "@orbit/core/shared/constants/cliTools";
 import { createPrompt, printHeading, printInfo, printSuccess } from "../io.mjs";
 import { openShiguangGatewayDb } from "../sqlite.mjs";
 import {

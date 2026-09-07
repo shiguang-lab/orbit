@@ -2,17 +2,17 @@ import { Injectable, type OnModuleDestroy, type OnModuleInit } from "@nestjs/com
 import {
   installResilienceRuntimeSettingsPort,
   installRuntimeSettingsPort,
-} from "@shiguang-gateway/open-sse/services/runtime-settings-hooks";
-import { hydrateRequestRuntime } from "@shiguang-gateway/core-domain/runtime/request";
-import type { RequestRuntimeHandle } from "@shiguang-gateway/core-domain/runtime/request";
-import { ensureGamificationSchema } from "@shiguang-gateway/db-schema";
-import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
-import { refreshResilienceRuntimeSettings } from "@shiguang-gateway/core-domain/resilience/settings-runtime";
+} from "@orbit/inference/services/runtime-settings-hooks";
+import { hydrateRequestRuntime } from "@orbit/core/runtime/request";
+import type { RequestRuntimeHandle } from "@orbit/core/runtime/request";
+import { ensureGamificationSchema } from "@orbit/contracts/db-schema";
+import { getDbInstance } from "@orbit/core/db/connection";
+import { refreshResilienceRuntimeSettings } from "@orbit/core/resilience/settings-runtime";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
 
 async function registerQuotaFetchers(): Promise<void> {
-  await load("@shiguang-gateway/open-sse/services/quotaTrackersBatch");
+  await load("@orbit/inference/services/quotaTrackersBatch");
   const [
     { registerCodexQuotaFetcher },
     { registerBailianCodingPlanQuotaFetcher },
@@ -24,15 +24,15 @@ async function registerQuotaFetchers(): Promise<void> {
     { registerGrokWebQuotaFetcher },
     { registerGenericQuotaFetchers },
   ] = await Promise.all([
-    load("@shiguang-gateway/open-sse/services/codexQuotaFetcher"),
-    load("@shiguang-gateway/open-sse/services/bailianQuotaFetcher"),
-    load("@shiguang-gateway/open-sse/services/qwenTokenPlanQuotaFetcher"),
-    load("@shiguang-gateway/open-sse/services/crofUsageFetcher"),
-    load("@shiguang-gateway/open-sse/services/deepseekQuotaFetcher"),
-    load("@shiguang-gateway/open-sse/services/openrouterQuotaFetcher"),
-    load("@shiguang-gateway/open-sse/services/opencodeQuotaFetcher"),
-    load("@shiguang-gateway/open-sse/services/grokQuotaFetcher"),
-    load("@shiguang-gateway/open-sse/services/genericQuotaFetcher"),
+    load("@orbit/inference/services/codexQuotaFetcher"),
+    load("@orbit/inference/services/bailianQuotaFetcher"),
+    load("@orbit/inference/services/qwenTokenPlanQuotaFetcher"),
+    load("@orbit/inference/services/crofUsageFetcher"),
+    load("@orbit/inference/services/deepseekQuotaFetcher"),
+    load("@orbit/inference/services/openrouterQuotaFetcher"),
+    load("@orbit/inference/services/opencodeQuotaFetcher"),
+    load("@orbit/inference/services/grokQuotaFetcher"),
+    load("@orbit/inference/services/genericQuotaFetcher"),
   ]);
   registerCodexQuotaFetcher();
   registerBailianCodingPlanQuotaFetcher();

@@ -26,6 +26,9 @@ const frozenBaseline = {
 // route tree. They have no upstream counterpart and are validated separately
 // by the endpoint smoke tests.
 const localApiExtensions = new Set([
+  "search/analytics/route.ts",
+  "cloud-agents/tasks/route.ts",
+  "providers/catalog/route.ts",
   // Signed gateway SSO session, covered by control-api auth-session tests.
   "auth/session/route.ts",
   "media/cache/stats/route.ts",
@@ -42,7 +45,11 @@ const localApiExtensions = new Set([
 // These upstream control-process routes are intentionally retired. In the
 // split runtime they could only terminate control-api, not the gateway stack;
 // full-stack lifecycle is owned by the CLI supervisor.
-const retiredApiRoutes = new Set(["restart/route.ts", "shutdown/route.ts",
+const retiredApiRoutes = new Set([
+  // Search analytics belongs to the SSO management surface.
+  "v1/search/analytics/route.ts",
+  "restart/route.ts",
+  "shutdown/route.ts",
   // Browser authentication is owned exclusively by SSO.
   "auth/login/route.ts",
   "auth/oidc/callback/route.ts",
@@ -81,7 +88,7 @@ const appRouteRoots = ["edge-gateway", "control-api", "realtime"].
   .filter(existsSync);
 const appRouteFiles = appRouteRoots.flatMap((root) => walk(root, (p) => p.endsWith(".ts") && !p.endsWith("index.ts")));
 const appHandlers = appRouteFiles.reduce((sum, p) => sum + (text(p).match(/app\.(?:get|post|put|patch|delete|options|head)\(/g) || []).length, 0);
-const localRuntimeRoutesDir = join(repoRoot, "packages", "core-domain", "src", "app", "api");
+const localRuntimeRoutesDir = join(repoRoot, "packages", "core", "src", "app", "api");
 // Route handlers migrate one domain at a time. Compare normalized API paths
 // across both the remaining domain tree and handlers already owned by apps.
 const localRouteSources = [
@@ -91,7 +98,7 @@ const localRouteSources = [
 ].filter(({ root }) => existsSync(root));
 const localRuntimeRoutes = localRouteSources.flatMap(({ root }) => walk(root, (p) => p.endsWith("route.ts")));
 const officialRootDir = join(orbitRoot, "src", "app");
-const localRootDir = join(repoRoot, "packages", "core-domain", "src", "app");
+const localRootDir = join(repoRoot, "packages", "core", "src", "app");
 const officialRootRoutes = walk(officialRootDir, (p) => p.endsWith("route.ts") && !p.startsWith(`${join(officialRootDir, "api")}/`));
 const localRootRoutes = walk(localRootDir, (p) => p.endsWith("route.ts") && !p.startsWith(`${join(localRootDir, "api")}/`));
 // Route groups are a Next filesystem detail and do not exist in the HTTP URL
@@ -174,7 +181,7 @@ const rootRouteMismatches = referenceAvailable ? [
     : [{ path: "<frozen-root-route-baseline>", side: "hash-mismatch" }]);
 const retiredCompatDispatcherFiles = [
   join(repoRoot, "packages", "web-route-compat"),
-  join(repoRoot, "packages", "web-handler-adapter", "src", "compat-dispatcher.ts"),
+  join(repoRoot, "packages", "http", "src", "compat-dispatcher.ts"),
   join(repoRoot, "apps", "edge-gateway", "src", "routes", "compat", "dispatcher.ts"),
   join(repoRoot, "apps", "control-api", "src", "routes", "compat", "dispatcher.ts"),
 ];

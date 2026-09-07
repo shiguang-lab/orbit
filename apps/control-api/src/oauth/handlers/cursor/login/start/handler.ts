@@ -1,10 +1,10 @@
 // @ts-nocheck
-import { isAuthRequired, isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
+import { isAuthRequired, isAuthenticated } from "@orbit/core/control/authenticated";
 import {
   createCursorLoginSession,
   generateCursorAuthParams,
-} from "@shiguang-gateway/open-sse/oauth/services/cursor-login";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+} from "@orbit/inference/oauth/services/cursor-login";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 
 async function requireOAuthAuth(request: Request) {
   if (!(await isAuthRequired(request))) return null;

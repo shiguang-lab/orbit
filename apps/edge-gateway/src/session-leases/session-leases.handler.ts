@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { isRuntimeProviderRetirementError } from "@shiguang-gateway/contracts/provider-retirement";
-import { isCommonChatGptWebRetirementError } from "@shiguang-gateway/contracts/chatgpt-web-retirement";
+import { isRuntimeProviderRetirementError } from "@orbit/contracts/provider-retirement";
+import { isCommonChatGptWebRetirementError } from "@orbit/contracts/chatgpt-web-retirement";
 
 const generation = z.number().int().positive().safe();
 const actionSchema = z.discriminatedUnion("action", [
@@ -32,20 +32,20 @@ const lifecycle = (lease: Record<string, unknown>) => {
 
 /** CORS preflight for the managed session lease lifecycle. */
 export async function OPTIONS(): Promise<Response> {
-  const { handleCorsOptions } = await load("@shiguang-gateway/core-domain/shared/cors");
+  const { handleCorsOptions } = await load("@orbit/core/shared/cors");
   return handleCorsOptions();
 }
 
 /** POST /v1/session-leases — acquire, renew, or release one exclusive connection lease. */
 export async function POST(request: Request): Promise<Response> {
   const [auth, policyApi, leaseContext, localDb, modelApi, errorApi, contracts] = await Promise.all([
-    load("@shiguang-gateway/open-sse/services/auth"),
-    load("@shiguang-gateway/core-domain/runtime/api-key-policy"),
-    load("@shiguang-gateway/open-sse/services/leaseContext"),
-    load("@shiguang-gateway/core-domain/db/exclusive-connection-leases"),
-    load("@shiguang-gateway/open-sse/services/runtimeModel"),
-    load("@shiguang-gateway/open-sse/utils/error"),
-    load("@shiguang-gateway/contracts/cors"),
+    load("@orbit/inference/services/auth"),
+    load("@orbit/core/runtime/api-key-policy"),
+    load("@orbit/inference/services/leaseContext"),
+    load("@orbit/core/db/exclusive-connection-leases"),
+    load("@orbit/inference/services/runtimeModel"),
+    load("@orbit/inference/utils/error"),
+    load("@orbit/contracts/cors"),
   ]);
   const corsHeaders = contracts.CORS_HEADERS as Record<string, string>;
   const { extractApiKey, isValidApiKey, getProviderCredentialsWithQuotaPreflight } = auth;

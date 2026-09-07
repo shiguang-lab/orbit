@@ -1,4 +1,4 @@
-import { getRadarIntel } from "@shiguang-gateway/core-domain/radar/read";
+import { getRadarIntel } from "@orbit/core/radar/read";
 import { authorize, handleCorsOptions, json, internalError } from "../common.js";
 export function OPTIONS() { return handleCorsOptions(); }
 export async function GET(request: Request) {

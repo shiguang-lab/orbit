@@ -1,7 +1,7 @@
-import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { getResolvedModelCapabilities } from "@shiguang-gateway/core-domain/catalog/model-capabilities";
-import { getCanonicalModelMetadata } from "@shiguang-gateway/core-domain/catalog/model-metadata";
-import { CORS_HEADERS, handleCorsOptions } from "@shiguang-gateway/core-domain/shared/cors";
+import { getProviderConnections } from "@orbit/core/db/provider-connections";
+import { getResolvedModelCapabilities } from "@orbit/core/catalog/model-capabilities";
+import { getCanonicalModelMetadata } from "@orbit/core/catalog/model-metadata";
+import { CORS_HEADERS, handleCorsOptions } from "@orbit/core/shared/cors";
 import {
   buildReasoningConfigSchema,
   buildSupportedReasoningEfforts,

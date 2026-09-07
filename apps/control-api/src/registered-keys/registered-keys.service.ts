@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { z } from "zod";
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
+import { isAuthenticated } from "@orbit/core/control/authenticated";
 import {
   checkQuota,
   getAccountKeyLimit,
@@ -9,8 +9,8 @@ import {
   listRegisteredKeys,
   revokeRegisteredKey,
   setAccountKeyLimit,
-} from "@shiguang-gateway/core-domain/control/registered-keys";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+} from "@orbit/core/control/registered-keys";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 
 const issueKeySchema = z.object({
   name: z.string().min(1).max(120),

@@ -1,16 +1,16 @@
 // @ts-nocheck
-import { KiroService } from "@shiguang-gateway/open-sse/oauth/services/kiro";
+import { KiroService } from "@orbit/inference/oauth/services/kiro";
 import {
   createProviderConnection,
   getProviderConnections,
   updateProviderConnection,
-} from "@shiguang-gateway/core-domain/control/oauth-persistence";
-import { isCloudEnabled } from "@shiguang-gateway/core-domain/db/settings";
-import { syncToCloud } from "@shiguang-gateway/core-domain/sync/cloud";
-import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
-import { kiroApiKeyImportSchema } from "@shiguang-gateway/core-domain/control/oauth-validation";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { isAuthRequired, isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
+} from "@orbit/core/control/oauth-persistence";
+import { isCloudEnabled } from "@orbit/core/db/settings";
+import { syncToCloud } from "@orbit/core/sync/cloud";
+import { getConsistentMachineId } from "@orbit/core/shared/utils/machineId";
+import { kiroApiKeyImportSchema } from "@orbit/core/control/oauth-validation";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
+import { isAuthRequired, isAuthenticated } from "@orbit/core/control/authenticated";
 import { buildKiroImportError } from "../import/handler.js";
 import { buildKiroApiKeyConnectionName, isKiroApiKeyImportClientError } from "./helpers.js";
 import { findKiroConnectionByIdentity } from "../connection-identity.js";

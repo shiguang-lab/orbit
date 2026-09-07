@@ -59,10 +59,10 @@ importers:
       '@lobehub/icons':
         specifier: ^5.16.0
         version: 5.16.0(@lobehub/ui@5.36.4)(@types/react@19.2.18)(antd@6.6.2(luxon@3.7.2)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@shiguang-gateway/config':
+      '@orbit/config':
         specifier: workspace:*
         version: link:../../packages/config
-      '@shiguang-gateway/contracts':
+      '@orbit/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
       '@shiguang2/components':
@@ -126,21 +126,18 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: ^1.30.0
         version: 1.30.0(zod@4.5.4)
-      '@shiguang-gateway/auth':
+      '@orbit/auth':
         specifier: workspace:*
         version: link:../../packages/auth
-      '@shiguang-gateway/cli-profile-config':
-        specifier: workspace:*
-        version: link:../../packages/cli-profile-config
-      '@shiguang-gateway/config':
+      '@orbit/config':
         specifier: workspace:*
         version: link:../../packages/config
-      '@shiguang-gateway/core-domain':
+      '@orbit/core':
         specifier: workspace:*
-        version: link:../../packages/core-domain
-      '@shiguang-gateway/open-sse':
+        version: link:../../packages/core
+      '@orbit/inference':
         specifier: workspace:*
-        version: link:../../packages/open-sse
+        version: link:../../packages/inference
       bcryptjs:
         specifier: ^3.0.3
         version: 3.0.3
@@ -224,48 +221,30 @@ importers:
       '@nestjs/platform-fastify':
         specifier: ^11.2.3
         version: 11.2.3(@fastify/static@8.3.0)(@nestjs/common@11.2.3(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.2.3(@nestjs/common@11.2.3(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))
-      '@shiguang-gateway/auth':
+      '@orbit/auth':
         specifier: workspace:*
         version: link:../../packages/auth
-      '@shiguang-gateway/config':
+      '@orbit/config':
         specifier: workspace:*
         version: link:../../packages/config
-      '@shiguang-gateway/contracts':
+      '@orbit/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
-      '@shiguang-gateway/core-domain':
+      '@orbit/core':
         specifier: workspace:*
-        version: link:../../packages/core-domain
-      '@shiguang-gateway/db-schema':
+        version: link:../../packages/core
+      '@orbit/http':
         specifier: workspace:*
-        version: link:../../packages/db-schema
-      '@shiguang-gateway/error-sanitization':
+        version: link:../../packages/http
+      '@orbit/inference':
         specifier: workspace:*
-        version: link:../../packages/error-sanitization
-      '@shiguang-gateway/http-kernel':
+        version: link:../../packages/inference
+      '@orbit/providers':
         specifier: workspace:*
-        version: link:../../packages/http-kernel
-      '@shiguang-gateway/network-guard':
+        version: link:../../packages/providers
+      '@orbit/utils':
         specifier: workspace:*
-        version: link:../../packages/network-guard
-      '@shiguang-gateway/open-sse':
-        specifier: workspace:*
-        version: link:../../packages/open-sse
-      '@shiguang-gateway/provider-catalog':
-        specifier: workspace:*
-        version: link:../../packages/provider-catalog
-      '@shiguang-gateway/realtime-publisher':
-        specifier: workspace:*
-        version: link:../../packages/realtime-publisher
-      '@shiguang-gateway/rerank-catalog':
-        specifier: workspace:*
-        version: link:../../packages/rerank-catalog
-      '@shiguang-gateway/runtime-logging':
-        specifier: workspace:*
-        version: link:../../packages/runtime-logging
-      '@shiguang-gateway/web-handler-adapter':
-        specifier: workspace:*
-        version: link:../../packages/web-handler-adapter
+        version: link:../../packages/utils
       fastify:
         specifier: 5.12.1
         version: 5.12.1
@@ -319,42 +298,27 @@ importers:
       '@nestjs/platform-fastify':
         specifier: ^11.2.3
         version: 11.2.3(@fastify/static@8.3.0)(@nestjs/common@11.2.3(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.2.3(@nestjs/common@11.2.3(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))
-      '@shiguang-gateway/auth':
+      '@orbit/auth':
         specifier: workspace:*
         version: link:../../packages/auth
-      '@shiguang-gateway/contracts':
+      '@orbit/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
-      '@shiguang-gateway/core-domain':
+      '@orbit/core':
         specifier: workspace:*
-        version: link:../../packages/core-domain
-      '@shiguang-gateway/db-schema':
+        version: link:../../packages/core
+      '@orbit/http':
         specifier: workspace:*
-        version: link:../../packages/db-schema
-      '@shiguang-gateway/error-sanitization':
+        version: link:../../packages/http
+      '@orbit/inference':
         specifier: workspace:*
-        version: link:../../packages/error-sanitization
-      '@shiguang-gateway/http-kernel':
+        version: link:../../packages/inference
+      '@orbit/providers':
         specifier: workspace:*
-        version: link:../../packages/http-kernel
-      '@shiguang-gateway/open-sse':
+        version: link:../../packages/providers
+      '@orbit/utils':
         specifier: workspace:*
-        version: link:../../packages/open-sse
-      '@shiguang-gateway/provider-catalog':
-        specifier: workspace:*
-        version: link:../../packages/provider-catalog
-      '@shiguang-gateway/realtime-publisher':
-        specifier: workspace:*
-        version: link:../../packages/realtime-publisher
-      '@shiguang-gateway/rerank-catalog':
-        specifier: workspace:*
-        version: link:../../packages/rerank-catalog
-      '@shiguang-gateway/runtime-logging':
-        specifier: workspace:*
-        version: link:../../packages/runtime-logging
-      '@shiguang-gateway/web-handler-adapter':
-        specifier: workspace:*
-        version: link:../../packages/web-handler-adapter
+        version: link:../../packages/utils
       fastify:
         specifier: 5.12.1
         version: 5.12.1
@@ -405,24 +369,21 @@ importers:
       '@nestjs/platform-fastify':
         specifier: ^11.2.3
         version: 11.2.3(@fastify/static@8.3.0)(@nestjs/common@11.2.3(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.2.3(@nestjs/common@11.2.3(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))
-      '@shiguang-gateway/auth':
+      '@orbit/auth':
         specifier: workspace:*
         version: link:../../packages/auth
-      '@shiguang-gateway/contracts':
+      '@orbit/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
-      '@shiguang-gateway/core-domain':
+      '@orbit/core':
         specifier: workspace:*
-        version: link:../../packages/core-domain
-      '@shiguang-gateway/db-schema':
+        version: link:../../packages/core
+      '@orbit/http':
         specifier: workspace:*
-        version: link:../../packages/db-schema
-      '@shiguang-gateway/http-kernel':
+        version: link:../../packages/http
+      '@orbit/inference':
         specifier: workspace:*
-        version: link:../../packages/http-kernel
-      '@shiguang-gateway/open-sse':
-        specifier: workspace:*
-        version: link:../../packages/open-sse
+        version: link:../../packages/inference
       fastify:
         specifier: 5.12.1
         version: 5.12.1
@@ -454,33 +415,24 @@ importers:
       '@nestjs/core':
         specifier: ^11.2.3
         version: 11.2.3(@nestjs/common@11.2.3(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      '@shiguang-gateway/auth':
+      '@orbit/auth':
         specifier: workspace:*
         version: link:../../packages/auth
-      '@shiguang-gateway/contracts':
+      '@orbit/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
-      '@shiguang-gateway/core-domain':
+      '@orbit/core':
         specifier: workspace:*
-        version: link:../../packages/core-domain
-      '@shiguang-gateway/db-schema':
+        version: link:../../packages/core
+      '@orbit/inference':
         specifier: workspace:*
-        version: link:../../packages/db-schema
-      '@shiguang-gateway/error-sanitization':
+        version: link:../../packages/inference
+      '@orbit/providers':
         specifier: workspace:*
-        version: link:../../packages/error-sanitization
-      '@shiguang-gateway/open-sse':
+        version: link:../../packages/providers
+      '@orbit/utils':
         specifier: workspace:*
-        version: link:../../packages/open-sse
-      '@shiguang-gateway/provider-catalog':
-        specifier: workspace:*
-        version: link:../../packages/provider-catalog
-      '@shiguang-gateway/realtime-publisher':
-        specifier: workspace:*
-        version: link:../../packages/realtime-publisher
-      '@shiguang-gateway/runtime-logging':
-        specifier: workspace:*
-        version: link:../../packages/runtime-logging
+        version: link:../../packages/utils
       ioredis:
         specifier: ^6.0.0
         version: 6.0.0
@@ -517,7 +469,7 @@ importers:
         specifier: 'catalog:'
         version: 5.8.3
 
-  packages/cli-profile-config:
+  packages/config:
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
@@ -525,15 +477,6 @@ importers:
       tsx:
         specifier: 'catalog:'
         version: 4.23.13
-      typescript:
-        specifier: 'catalog:'
-        version: 5.8.3
-
-  packages/config:
-    devDependencies:
-      '@types/node':
-        specifier: 'catalog:'
-        version: 22.20.1
       typescript:
         specifier: 'catalog:'
         version: 5.8.3
@@ -548,7 +491,7 @@ importers:
         specifier: 'catalog:'
         version: 5.8.3
 
-  packages/core-domain:
+  packages/core:
     dependencies:
       '@aws-sdk/client-bedrock-runtime':
         specifier: ^3.1126.0
@@ -565,39 +508,21 @@ importers:
       '@ngrok/ngrok':
         specifier: ^1.7.0
         version: 1.7.0
-      '@shiguang-gateway/auth':
+      '@orbit/auth':
         specifier: workspace:*
         version: link:../auth
-      '@shiguang-gateway/cli-profile-config':
-        specifier: workspace:*
-        version: link:../cli-profile-config
-      '@shiguang-gateway/config':
+      '@orbit/config':
         specifier: workspace:*
         version: link:../config
-      '@shiguang-gateway/contracts':
+      '@orbit/contracts':
         specifier: workspace:*
         version: link:../contracts
-      '@shiguang-gateway/db-schema':
+      '@orbit/providers':
         specifier: workspace:*
-        version: link:../db-schema
-      '@shiguang-gateway/error-sanitization':
+        version: link:../providers
+      '@orbit/utils':
         specifier: workspace:*
-        version: link:../error-sanitization
-      '@shiguang-gateway/http-kernel':
-        specifier: workspace:*
-        version: link:../http-kernel
-      '@shiguang-gateway/network-guard':
-        specifier: workspace:*
-        version: link:../network-guard
-      '@shiguang-gateway/provider-catalog':
-        specifier: workspace:*
-        version: link:../provider-catalog
-      '@shiguang-gateway/rerank-catalog':
-        specifier: workspace:*
-        version: link:../rerank-catalog
-      '@shiguang-gateway/runtime-logging':
-        specifier: workspace:*
-        version: link:../runtime-logging
+        version: link:../utils
       '@swc/helpers':
         specifier: ^0.5.23
         version: 0.5.23
@@ -799,22 +724,7 @@ importers:
         specifier: ^0.1.9
         version: 0.1.9
 
-  packages/db-schema:
-    devDependencies:
-      '@types/node':
-        specifier: 'catalog:'
-        version: 22.20.1
-      typescript:
-        specifier: 'catalog:'
-        version: 5.8.3
-
-  packages/error-sanitization:
-    devDependencies:
-      typescript:
-        specifier: 'catalog:'
-        version: 5.8.3
-
-  packages/http-kernel:
+  packages/http:
     dependencies:
       '@nestjs/common':
         specifier: ^11.2.3
@@ -822,12 +732,9 @@ importers:
       '@nestjs/core':
         specifier: ^11.2.3
         version: 11.2.3(@nestjs/common@11.2.3(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      '@shiguang-gateway/contracts':
-        specifier: workspace:*
-        version: link:../contracts
-      '@shiguang-gateway/error-sanitization':
-        specifier: workspace:*
-        version: link:../error-sanitization
+      fastify:
+        specifier: 5.12.1
+        version: 5.12.1
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -842,20 +749,7 @@ importers:
         specifier: 'catalog:'
         version: 5.8.3
 
-  packages/network-guard:
-    dependencies:
-      '@shiguang-gateway/config':
-        specifier: workspace:*
-        version: link:../config
-    devDependencies:
-      '@types/node':
-        specifier: 'catalog:'
-        version: 22.20.1
-      typescript:
-        specifier: 'catalog:'
-        version: 5.8.3
-
-  packages/open-sse:
+  packages/inference:
     dependencies:
       '@aws-sdk/client-bedrock-runtime':
         specifier: ^3.1126.0
@@ -866,36 +760,24 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: ^1.30.0
         version: 1.30.0(zod@4.5.4)
-      '@shiguang-gateway/auth':
+      '@orbit/auth':
         specifier: workspace:*
         version: link:../auth
-      '@shiguang-gateway/config':
+      '@orbit/config':
         specifier: workspace:*
         version: link:../config
-      '@shiguang-gateway/contracts':
+      '@orbit/contracts':
         specifier: workspace:*
         version: link:../contracts
-      '@shiguang-gateway/core-domain':
+      '@orbit/core':
         specifier: workspace:*
-        version: link:../core-domain
-      '@shiguang-gateway/error-sanitization':
+        version: link:../core
+      '@orbit/providers':
         specifier: workspace:*
-        version: link:../error-sanitization
-      '@shiguang-gateway/http-kernel':
+        version: link:../providers
+      '@orbit/utils':
         specifier: workspace:*
-        version: link:../http-kernel
-      '@shiguang-gateway/network-guard':
-        specifier: workspace:*
-        version: link:../network-guard
-      '@shiguang-gateway/provider-catalog':
-        specifier: workspace:*
-        version: link:../provider-catalog
-      '@shiguang-gateway/rerank-catalog':
-        specifier: workspace:*
-        version: link:../rerank-catalog
-      '@shiguang-gateway/runtime-logging':
-        specifier: workspace:*
-        version: link:../runtime-logging
+        version: link:../utils
       '@toon-format/toon':
         specifier: ^4.1.1
         version: 4.1.1
@@ -971,12 +853,37 @@ importers:
         specifier: ^0.2.0
         version: 0.2.0
 
-  packages/provider-catalog:
+  packages/providers:
     dependencies:
-      '@shiguang-gateway/config':
+      '@orbit/config':
         specifier: workspace:*
         version: link:../config
-      '@shiguang-gateway/contracts':
+      '@orbit/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      '@orbit/utils':
+        specifier: workspace:*
+        version: link:../utils
+      zod:
+        specifier: 'catalog:'
+        version: 4.5.4
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 22.20.1
+      tsx:
+        specifier: 'catalog:'
+        version: 4.23.13
+      typescript:
+        specifier: 'catalog:'
+        version: 5.8.3
+
+  packages/utils:
+    dependencies:
+      '@orbit/config':
+        specifier: workspace:*
+        version: link:../config
+      '@orbit/contracts':
         specifier: workspace:*
         version: link:../contracts
     devDependencies:
@@ -986,50 +893,6 @@ importers:
       tsx:
         specifier: 'catalog:'
         version: 4.23.13
-      typescript:
-        specifier: 'catalog:'
-        version: 5.8.3
-
-  packages/realtime-publisher:
-    devDependencies:
-      '@types/node':
-        specifier: 'catalog:'
-        version: 22.20.1
-      tsx:
-        specifier: 'catalog:'
-        version: 4.23.13
-      typescript:
-        specifier: 'catalog:'
-        version: 5.8.3
-
-  packages/rerank-catalog:
-    devDependencies:
-      typescript:
-        specifier: 'catalog:'
-        version: 5.8.3
-
-  packages/runtime-logging:
-    dependencies:
-      '@shiguang-gateway/config':
-        specifier: workspace:*
-        version: link:../config
-    devDependencies:
-      '@types/node':
-        specifier: 'catalog:'
-        version: 22.20.1
-      typescript:
-        specifier: 'catalog:'
-        version: 5.8.3
-
-  packages/web-handler-adapter:
-    dependencies:
-      fastify:
-        specifier: 5.12.1
-        version: 5.12.1
-    devDependencies:
-      '@types/node':
-        specifier: 'catalog:'
-        version: 22.20.1
       typescript:
         specifier: 'catalog:'
         version: 5.8.3

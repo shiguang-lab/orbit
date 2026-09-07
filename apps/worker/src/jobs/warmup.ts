@@ -1,20 +1,20 @@
 import {
   getProviderConnections,
-} from "@shiguang-gateway/core-domain/db/provider-connections";
+} from "@orbit/core/db/provider-connections";
 import {
   getSettings,
   resolveProxyForConnection,
-} from "@shiguang-gateway/core-domain/db/settings";
-import { matchesCron } from "@shiguang-gateway/core-domain/jobs/cron-match";
+} from "@orbit/core/db/settings";
+import { matchesCron } from "@orbit/core/jobs/cron-match";
 import {
   TERMINAL_CONNECTION_STATUSES,
-} from "@shiguang-gateway/core-domain/resilience/connection-recovery-policy";
+} from "@orbit/core/resilience/connection-recovery-policy";
 import {
   isConnectionUnavailableToAuxiliaryActivity,
-} from "@shiguang-gateway/core-domain/shared/connection-isolation";
-import { refreshAndUpdateCredentials } from "@shiguang-gateway/open-sse/services/providerLimits";
-import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
-import { logger } from "@shiguang-gateway/runtime-logging";
+} from "@orbit/core/shared/connection-isolation";
+import { refreshAndUpdateCredentials } from "@orbit/inference/services/providerLimits";
+import { runWithProxyContext } from "@orbit/inference/utils/proxyFetch";
+import { logger } from "@orbit/utils/logging";
 import { getCircuitBreakerStore } from "./warmup/circuitBreakerFactory.js";
 import type { WarmupResult, WarmupFailureKind, WarmupTarget } from "./warmup/core.js";
 
@@ -259,7 +259,7 @@ async function executeWarmup(): Promise<void> {
 }
 
 async function getWarmupHeaders(): Promise<Record<string, string>> {
-  const { getClaudeCliHeaders } = await import("@shiguang-gateway/provider-catalog/providers/shared");
+  const { getClaudeCliHeaders } = await import("@orbit/providers/providers/shared");
   return getClaudeCliHeaders();
 }
 

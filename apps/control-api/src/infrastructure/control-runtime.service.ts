@@ -17,8 +17,8 @@ export class ControlRuntimeService implements OnModuleInit {
         .then(() => ensureControlSchema())
         .then(async () => {
           const [{ ensurePersistentManagementPasswordHash }, { getSettings }] = await Promise.all([
-            load("@shiguang-gateway/core-domain/control/management-password"),
-            load("@shiguang-gateway/core-domain/db/settings"),
+            load("@orbit/core/control/management-password"),
+            load("@orbit/core/db/settings"),
           ]);
           const settings = await getSettings();
           await ensurePersistentManagementPasswordHash({

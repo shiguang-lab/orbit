@@ -1,6 +1,6 @@
-import { ensureSecrets } from "@shiguang-gateway/core-domain/startup";
-import { installRuntimeSettingsPort } from "@shiguang-gateway/open-sse/services/runtime-settings-hooks";
-import { assertGatewayEntities } from "@shiguang-gateway/db-schema";
+import { ensureSecrets } from "@orbit/core/startup";
+import { installRuntimeSettingsPort } from "@orbit/inference/services/runtime-settings-hooks";
+import { assertGatewayEntities } from "@orbit/contracts/db-schema";
 import { bootstrapWorker } from "./bootstrap.js";
 
 async function main(): Promise<void> {

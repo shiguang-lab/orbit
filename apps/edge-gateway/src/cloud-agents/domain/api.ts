@@ -1,6 +1,6 @@
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { resolveAllowedOrigin, getCorsStatus } from "@shiguang-gateway/core-domain/shared/cors-status";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { getProviderConnections } from "@orbit/core/db/provider-connections";
+import { resolveAllowedOrigin, getCorsStatus } from "@orbit/core/shared/cors-status";
 import type { AgentCredentials } from "./baseAgent.js";
 import type { CloudAgentTaskRow } from "./db.js";
 

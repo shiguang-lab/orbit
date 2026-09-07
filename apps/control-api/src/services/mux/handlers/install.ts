@@ -1,7 +1,7 @@
-import { InstallError, SERVICE_VERSION_PATTERN } from "@shiguang-gateway/core-domain/control/embedded-services-install";
-import { installMux } from "@shiguang-gateway/core-domain/control/mux";
-import { createErrorResponse } from "@shiguang-gateway/core-domain/shared/error-response";
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+import { InstallError, SERVICE_VERSION_PATTERN } from "@orbit/core/control/embedded-services-install";
+import { installMux } from "@orbit/core/control/mux";
+import { createErrorResponse } from "@orbit/utils/errors/api-response";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 import { z } from "zod";
 
 const bodySchema = z.object({

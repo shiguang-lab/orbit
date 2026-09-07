@@ -1,20 +1,20 @@
 import { z } from "zod";
 
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
-import { createErrorResponse } from "@shiguang-gateway/core-domain/shared/error-response";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
+import { createErrorResponse } from "@orbit/utils/errors/api-response";
 import {
   resolveVideoBridgeDrilldownPrincipal,
   VIDEO_BRIDGE_DRILLDOWN_PATH,
-} from "@shiguang-gateway/core-domain/edge/video-bridge-drilldown";
+} from "@orbit/core/edge/video-bridge-drilldown";
 import {
   VideoDrilldownAbortedError,
   VideoDrilldownCache,
   VideoDrilldownValidationError,
   VIDEO_DRILLDOWN_MAX_ENTRY_BYTES,
   VIDEO_DRILLDOWN_MAX_FRAME_DATA_URI_CHARS,
-} from "@shiguang-gateway/core-domain/edge/video-bridge-drilldown";
-import { resolveModelSyncInternalBaseUrl } from "@shiguang-gateway/core-domain/runtime/model-sync-client";
-import * as log from "@shiguang-gateway/core-domain/sse/logger";
+} from "@orbit/core/edge/video-bridge-drilldown";
+import { resolveModelSyncInternalBaseUrl } from "@orbit/core/runtime/model-sync-client";
+import * as log from "@orbit/core/sse/logger";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

@@ -1,9 +1,9 @@
-import { handleSearch } from "@shiguang-gateway/open-sse/handlers/search";
+import { handleSearch } from "@orbit/inference/handlers/search";
 import {
   getProviderCredentialsWithQuotaPreflight,
   extractApiKey,
   isValidApiKey,
-} from "@shiguang-gateway/open-sse/services/auth";
+} from "@orbit/inference/services/auth";
 import {
   getAllSearchProviders,
   getSearchProvider,
@@ -13,32 +13,32 @@ import {
   isUnconfiguredLoopbackSearchProvider,
   SEARCH_PROVIDERS,
   getSearchCredentialFallbacks,
-} from "@shiguang-gateway/open-sse/config/searchRegistry";
-import { errorResponse } from "@shiguang-gateway/open-sse/utils/error";
-import { HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants";
-import * as log from "@shiguang-gateway/core-domain/sse/logger";
-import { toJsonErrorPayload } from "@shiguang-gateway/core-domain/shared/upstream-error";
-import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/runtime/api-key-policy";
-import { v1SearchSchema } from "@shiguang-gateway/core-domain/edge/search-validation";
+} from "@orbit/inference/config/searchRegistry";
+import { errorResponse } from "@orbit/inference/utils/error";
+import { HTTP_STATUS } from "@orbit/inference/config/constants";
+import * as log from "@orbit/core/sse/logger";
+import { toJsonErrorPayload } from "@orbit/core/shared/upstream-error";
+import { enforceApiKeyPolicy } from "@orbit/core/runtime/api-key-policy";
+import { v1SearchSchema } from "@orbit/core/edge/search-validation";
 import {
   formatValidationMessage,
   isValidationFailure,
   validateBody,
-} from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { recordCost } from "@shiguang-gateway/core-domain/usage/cost-rules";
+} from "@orbit/core/shared/validation/helpers";
+import { recordCost } from "@orbit/core/usage/cost-rules";
 import {
   computeCacheKey,
   getOrCoalesce,
   SEARCH_CACHE_DEFAULT_TTL_MS,
-} from "@shiguang-gateway/open-sse/services/searchCache";
+} from "@orbit/inference/services/searchCache";
 import {
   isAllRateLimitedCredentials,
   type RateLimitedCredentials,
-} from "@shiguang-gateway/open-sse/services/credential-selection";
+} from "@orbit/inference/services/credential-selection";
 import { rateLimitedProviderResponse } from "../common/provider-rate-limit-response.js";
-import { getSettings } from "@shiguang-gateway/core-domain/db/settings";
-import { isProviderBlockedByIdOrAlias } from "@shiguang-gateway/contracts/config/noAuthProviders";
-import { withInjectionGuard } from "@shiguang-gateway/core-domain/middleware/prompt-injection";
+import { getSettings } from "@orbit/core/db/settings";
+import { isProviderBlockedByIdOrAlias } from "@orbit/contracts/config/noAuthProviders";
+import { withInjectionGuard } from "@orbit/core/middleware/prompt-injection";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",

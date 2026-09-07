@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Options, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { CORS_HEADERS } from "@shiguang-gateway/core-domain/shared/cors";
-import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { CORS_HEADERS } from "@orbit/core/shared/cors";
+import { buildErrorBody, sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import { z } from "zod";
 import { QuotaStateService } from "./quota.service.js";
 

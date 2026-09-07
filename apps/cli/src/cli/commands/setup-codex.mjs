@@ -14,7 +14,7 @@
 
 import { join } from "node:path";
 import os from "node:os";
-import { syncCodexProfilesFromModels } from "@shiguang-gateway/cli-profile-config/codex";
+import { syncCodexProfilesFromModels } from "@orbit/config/cli/codex";
 import { printHeading, printInfo, printSuccess, printError } from "../io.mjs";
 import { guardHostConfigTarget } from "../utils/config-home-guard.mjs";
 import { t } from "../i18n.mjs";

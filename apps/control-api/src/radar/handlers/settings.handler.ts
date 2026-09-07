@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { getContributorClaimUrl, getSupporterPlansUrl } from "../radar-links.js";
 import { SUPPORTER_KEY_REGEX } from "../supporter-key.js";
-import { getRadarSettings, setRadarKey, setRadarOptIn } from "@shiguang-gateway/core-domain/radar/store";
+import { getRadarSettings, setRadarKey, setRadarOptIn } from "@orbit/core/radar/store";
 import { authorize, handleCorsOptions, json, internalError } from "../common.js";
 const SettingsBodySchema = z.object({ optIn: z.boolean().optional(), supporterKey: z.string().regex(SUPPORTER_KEY_REGEX, 'Key must match "omr_" + 40 hex chars').nullable().optional() });
 const maskKey = (key: string | null) => key ? `omr_****${key.slice(-4)}` : null;

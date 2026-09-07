@@ -8,38 +8,38 @@ import {
   requestDeviceCode,
   pollForToken,
   resolveBrowserOAuthRedirectUri,
-} from "@shiguang-gateway/open-sse/oauth/providers";
+} from "@orbit/inference/oauth/providers";
 import {
   persistOAuthConnection,
   buildOAuthConnectionCreatePayload,
   findExistingOAuthConnectionMatch,
-} from "@shiguang-gateway/core-domain/control/oauth-runtime/connectionPersistence";
+} from "@orbit/core/control/oauth-runtime/connectionPersistence";
 import { createDeviceFlowTicket, getDeviceFlowTicketStatus } from "../../../device-flow-tickets.js";
 import {
   createProviderConnection,
   updateProviderConnection,
   getProviderConnections,
-} from "@shiguang-gateway/core-domain/control/oauth-persistence";
-import { isCloudEnabled } from "@shiguang-gateway/core-domain/db/settings";
-import { resolveProxyForProvider } from "@shiguang-gateway/core-domain/db/proxies";
-import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
-import { isValidGheUrl } from "@shiguang-gateway/core-domain/shared/provider-specific-data";
-import { AWS_REGION_PATTERN } from "@shiguang-gateway/open-sse/oauth/constants";
+} from "@orbit/core/control/oauth-persistence";
+import { isCloudEnabled } from "@orbit/core/db/settings";
+import { resolveProxyForProvider } from "@orbit/core/db/proxies";
+import { getConsistentMachineId } from "@orbit/core/shared/utils/machineId";
+import { isValidGheUrl } from "@orbit/core/shared/provider-specific-data";
+import { AWS_REGION_PATTERN } from "@orbit/inference/oauth/constants";
 import { antigravityDegradedProjectState } from "../../../antigravity-project-gate.js";
-import { syncToCloud } from "@shiguang-gateway/core-domain/sync/cloud";
+import { syncToCloud } from "@orbit/core/sync/cloud";
 import { startLocalServer } from "../../../callback-listener.js";
-import { runWithProxyContextOrDirect } from "@shiguang-gateway/open-sse/utils/proxyFetch";
+import { runWithProxyContextOrDirect } from "@orbit/inference/utils/proxyFetch";
 import {
   oauthDeviceCompleteSchema,
   oauthExchangeSchema,
   oauthImportTokenSchema,
   oauthPollSchema,
-} from "@shiguang-gateway/core-domain/control/oauth-validation";
-import { jsonObjectSchema } from "@shiguang-gateway/core-domain/validation/misc";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { isAuthRequired, isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
-import { GITLAB_DUO_OAUTH_SETUP_MESSAGE } from "@shiguang-gateway/core-domain/shared/constants/gitlabDuoSetupMessage";
+} from "@orbit/core/control/oauth-validation";
+import { jsonObjectSchema } from "@orbit/core/validation/misc";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
+import { isAuthRequired, isAuthenticated } from "@orbit/core/control/authenticated";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
+import { GITLAB_DUO_OAUTH_SETUP_MESSAGE } from "@orbit/providers/catalog/gitlab-duo-message";
 import { keychainImportOnlyGuard } from "./keychainImportOnly.js";
 import { buildRemoteOAuthHint } from "./remoteOAuthHint.js";
 

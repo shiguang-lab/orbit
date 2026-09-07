@@ -1,4 +1,4 @@
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import { CommandCodeAuthRepository } from "../command-code-auth.repository.js";
 import { commandCodeStateSchema, noStoreJson, stateHash } from "./shared.handler.js";
 

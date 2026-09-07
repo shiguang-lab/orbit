@@ -1,10 +1,10 @@
-import { getApiKeys, createApiKey, pickApiKeyForInternalUse } from "@shiguang-gateway/core-domain/db/api-keys";
-import { isCloudEnabled, updateSettings } from "@shiguang-gateway/core-domain/db/settings";
-import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
-import { syncToCloud, fetchWithTimeout, CLOUD_URL } from "@shiguang-gateway/core-domain/sync/cloud";
-import { cloudSyncActionSchema } from "@shiguang-gateway/core-domain/control/cloud-validation";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+import { getApiKeys, createApiKey, pickApiKeyForInternalUse } from "@orbit/core/db/api-keys";
+import { isCloudEnabled, updateSettings } from "@orbit/core/db/settings";
+import { getConsistentMachineId } from "@orbit/core/shared/utils/machineId";
+import { syncToCloud, fetchWithTimeout, CLOUD_URL } from "@orbit/core/sync/cloud";
+import { cloudSyncActionSchema } from "@orbit/core/control/cloud-validation";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 import fs from "node:fs/promises";
 import path from "node:path";
 import os from "node:os";

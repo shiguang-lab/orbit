@@ -54,7 +54,7 @@ function run(command, args, env = baseEnv) {
 }
 
 function start(filter) {
-  const child = spawn("pnpm", ["--filter", `@shiguang-gateway/${filter}`, "start"], {
+  const child = spawn("pnpm", ["--filter", `@orbit/${filter}`, "start"], {
     cwd: repoRoot,
     env: { ...baseEnv, APP_NAME: filter },
     stdio: "ignore",
@@ -77,7 +77,7 @@ async function waitHttp(port, path, expected = 200, headers = {}) {
 }
 
 try {
-  await run("pnpm", ["--filter", "@shiguang-gateway/importer", "run", "import", "--", "--source-data-dir", sourceDir, "--target-data-dir", dataDir, "--replace"]);
+  await run("pnpm", ["--filter", "@orbit/importer", "run", "import", "--", "--source-data-dir", sourceDir, "--target-data-dir", dataDir, "--replace"]);
   const db = new DatabaseSync(join(dataDir, "storage.sqlite"), { readOnly: true });
   const apiKey = db.prepare(`
     SELECT key FROM api_keys

@@ -18,7 +18,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { getNodeRuntimeSupport, getNodeRuntimeWarning } from "./nodeRuntimeSupport.mjs";
-import { getDefaultDataDir } from "@shiguang-gateway/config/dataPaths";
+import { getDefaultDataDir } from "@orbit/config/dataPaths";
 import { shouldProvisionStorageKey } from "./cli/utils/storageKeyProvision.mjs";
 import { isVersionFastPath } from "./cli/utils/versionFastPath.mjs";
 import { parseEnvValue } from "./cli/utils/parseEnvValue.mjs";
@@ -59,7 +59,7 @@ if (process.argv.includes("--mcp")) {
 // Register tsx so package exports backed by TypeScript source resolve in the
 // workspace application runtime.
 await import("tsx/esm");
-await import("@shiguang-gateway/core-domain/runtime/setup-polyfill");
+await import("@orbit/core/runtime/setup-polyfill");
 
 // Electron persists secrets (JWT_SECRET, API_KEY_SECRET, STORAGE_ENCRYPTION_KEY) to
 // `<DATA_DIR>/server.env` (electron/main.js), never `.env`. Migrating an existing

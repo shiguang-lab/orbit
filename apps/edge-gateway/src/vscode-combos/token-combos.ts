@@ -1,4 +1,4 @@
-import { getCombos } from "@shiguang-gateway/core-domain/db/combos";
+import { getCombos } from "@orbit/core/db/combos";
 import { projectCombo, type PublicCombo } from "../combos/runtime/project-combo.js";
 import { GET as getModels, OPTIONS as modelsOptions } from "../vscode-models/vscode-models.handler.js";
 

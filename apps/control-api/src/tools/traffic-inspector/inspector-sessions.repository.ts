@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
+import { getDbInstance } from "@orbit/core/db/connection";
 
 export interface InspectorSessionRow {
   id: string;

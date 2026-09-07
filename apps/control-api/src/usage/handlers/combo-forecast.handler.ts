@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import { buildComboForecastResponse } from "../reporting/comboForecast.js";
 
 const schema = z.object({ range: z.enum(["1h", "24h", "7d", "30d"]).default("7d"), horizon: z.enum(["24h", "7d", "30d"]).default("30d"), comboId: z.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i).optional() });

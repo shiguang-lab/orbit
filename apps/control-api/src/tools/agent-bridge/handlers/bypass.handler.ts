@@ -1,6 +1,6 @@
 import {
   AgentBridgeBypassUpsertSchema,
-} from "@shiguang-gateway/core-domain/control/agent-bridge";
+} from "@orbit/core/control/agent-bridge";
 import { agentBridgePersistence } from "../agent-bridge.persistence.js";
 import { failure, invalid } from "./common.js";
 

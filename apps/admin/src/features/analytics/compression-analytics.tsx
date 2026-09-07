@@ -104,10 +104,6 @@ export function CompressionAnalyticsPage() {
     staleTime: 15_000,
   });
 
-  if (analyticsQuery.isLoading && !analyticsQuery.data) {
-    return <PageSkeleton />;
-  }
-
   const stats: CompressionAnalyticsSummary = analyticsQuery.data || {
     totalRequests: 0,
     totalTokensSaved: 0,
@@ -199,6 +195,10 @@ export function CompressionAnalyticsPage() {
       fill: PALETTE[(i + 2) % PALETTE.length],
     }));
   }, [providers]);
+
+  if (analyticsQuery.isLoading && !analyticsQuery.data) {
+    return <PageSkeleton />;
+  }
 
   return (
     <div className={styles.page}>

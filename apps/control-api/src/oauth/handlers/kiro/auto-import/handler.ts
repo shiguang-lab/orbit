@@ -1,25 +1,25 @@
 // @ts-nocheck
 import { homedir } from "os";
 import { join } from "path";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { isNextBuildPhase } from "@shiguang-gateway/core-domain/control/build-phase";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { isNextBuildPhase } from "@orbit/core/control/build-phase";
 import {
   createProviderConnection,
   getProviderConnections,
   updateProviderConnection,
-} from "@shiguang-gateway/core-domain/control/oauth-persistence";
-import { isCloudEnabled } from "@shiguang-gateway/core-domain/db/settings";
-import { resolveProxyForProvider } from "@shiguang-gateway/core-domain/db/proxies";
-import { syncToCloud } from "@shiguang-gateway/core-domain/sync/cloud";
-import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
-import { KiroService } from "@shiguang-gateway/open-sse/oauth/services/kiro";
+} from "@orbit/core/control/oauth-persistence";
+import { isCloudEnabled } from "@orbit/core/db/settings";
+import { resolveProxyForProvider } from "@orbit/core/db/proxies";
+import { syncToCloud } from "@orbit/core/sync/cloud";
+import { getConsistentMachineId } from "@orbit/core/shared/utils/machineId";
+import { KiroService } from "@orbit/inference/oauth/services/kiro";
 import { findKiroConnectionByIdentity } from "../connection-identity.js";
-import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
+import { runWithProxyContext } from "@orbit/inference/utils/proxyFetch";
 import {
   emailFromExternalIdpToken,
   isExternalIdpAuthMethod,
   normalizeScope,
-} from "@shiguang-gateway/open-sse/services/kiro-external-idp";
+} from "@orbit/inference/services/kiro-external-idp";
 
 /**
  * GET /api/oauth/kiro/auto-import
@@ -221,7 +221,7 @@ async function tryKiroCliSqlite(): Promise<{
  * The ARN's region segment is preserved verbatim (#2314). #2059 originally
  * forced every ARN's region to us-east-1, which 403s the runtime gateway for
  * IDC accounts that live in a non-us-east-1 region. The OAuth device-code
- * path (packages/open-sse/oauth/providers/kiro.ts) already discovers the correct
+ * path (packages/inference/src/oauth/providers/kiro.ts) already discovers the correct
  * region-matched ARN, so this fallback now mirrors that behavior instead of
  * rewriting it.
  */

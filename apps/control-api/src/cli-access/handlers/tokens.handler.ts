@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { createAccessToken, listAccessTokens } from "@shiguang-gateway/core-domain/control/cli-access-tokens";
-import { ACCESS_SCOPES } from "@shiguang-gateway/core-domain/control/cli-access-scopes";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { createAccessToken, listAccessTokens } from "@orbit/core/control/cli-access-tokens";
+import { ACCESS_SCOPES } from "@orbit/core/control/cli-access-scopes";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 
 /**
  * /api/cli/tokens — manage scoped CLI access tokens. Admin-only: the path is in

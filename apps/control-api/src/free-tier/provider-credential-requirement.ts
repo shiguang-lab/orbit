@@ -1,5 +1,5 @@
-import { NOAUTH_PROVIDERS } from "@shiguang-gateway/contracts/config/providerCatalog";
-import { REGISTRY } from "@shiguang-gateway/provider-catalog/provider-registry";
+import { NOAUTH_PROVIDERS } from "@orbit/contracts/config/providerCatalog";
+import { REGISTRY } from "@orbit/providers/provider-registry";
 
 export type CredentialRequirement = "none" | "optional" | "oauth" | "required";
 

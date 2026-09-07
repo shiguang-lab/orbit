@@ -2,8 +2,8 @@ import {
   createBackup,
   readBackupSchedule,
   writeBackupSchedule,
-} from "@shiguang-gateway/core-domain/backup/runtime";
-import { matchesCron } from "@shiguang-gateway/core-domain/jobs/cron-match";
+} from "@orbit/core/backup/runtime";
+import { matchesCron } from "@orbit/core/jobs/cron-match";
 
 const DEFAULT_INTERVAL_MS = 30_000;
 let timer: NodeJS.Timeout | null = null;

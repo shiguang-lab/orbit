@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { createDecipheriv, scryptSync } from "node:crypto";
 import { isLoopbackUrl } from "../api.mjs";
-import { resolveDataDir, resolveStoragePath } from "@shiguang-gateway/config/dataPaths";
+import { resolveDataDir, resolveStoragePath } from "@orbit/config/dataPaths";
 import { getCliToken, CLI_TOKEN_HEADER } from "../utils/cliToken.mjs";
 import { printHeading } from "../io.mjs";
 import { t } from "../i18n.mjs";
@@ -570,7 +570,7 @@ export async function collectDoctorChecks(context = {}, options = {}) {
   // CLI tool health checks
   try {
     const { collectCliToolChecks } = await import(
-      "@shiguang-gateway/core-domain/cli/doctor-checks"
+      "@orbit/core/cli/doctor-checks"
     );
     const cliChecks = await collectCliToolChecks();
     checks.push(...cliChecks);

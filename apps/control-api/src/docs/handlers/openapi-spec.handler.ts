@@ -1,9 +1,9 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
-import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { load } from "js-yaml";
 
 let cached: { data: unknown; mtime: number } | null = null;
-const candidates = [path.join(process.cwd(), "packages/core-domain/docs/openapi.yaml"), path.join(process.cwd(), "docs/openapi.yaml")];
+const specPath = fileURLToPath(new URL("../../../../../packages/core/docs/openapi.yaml", import.meta.url));
 
 export function generateExampleFromSchema(schema: any, components: any, depth = 0, propertyName = ""): any {
   if (!schema || depth > 3) return null;
@@ -13,7 +13,16 @@ export function generateExampleFromSchema(schema: any, components: any, depth = 
   if (schema.oneOf?.length) return generateExampleFromSchema(schema.oneOf[0], components, depth + 1, propertyName);
   if (schema.anyOf?.length) return generateExampleFromSchema(schema.anyOf[0], components, depth + 1, propertyName);
   if (schema.allOf?.length) return schema.allOf.reduce((a: any, x: any) => ({ ...a, ...(generateExampleFromSchema(x, components, depth + 1, propertyName) || {}) }), {});
-  if (schema.type === "object") { const out: any = {}; for (const key of [...(schema.required || []), ...Object.keys(schema.properties || {}).filter((k) => !(schema.required || []).includes(k)).slice(0, 3)]) out[key] = generateExampleFromSchema(schema.properties[key], components, depth + 1, key); return out; }
+  if (schema.type === "object") {
+    const out: Record<string, unknown> = {};
+    const properties = schema.properties ?? {};
+    const required: string[] = schema.required ?? [];
+    const keys = [...required, ...Object.keys(properties).filter((key) => !required.includes(key)).slice(0, 3)];
+    for (const key of keys) {
+      out[key] = generateExampleFromSchema(properties[key], components, depth + 1, key);
+    }
+    return out;
+  }
   if (schema.type === "array") return schema.items ? [generateExampleFromSchema(schema.items, components, depth + 1, propertyName)] : [];
   if (schema.type === "boolean") return schema.default ?? false;
   if (schema.type === "number" || schema.type === "integer") return schema.minimum ?? 0;
@@ -23,8 +32,7 @@ export function generateExampleFromSchema(schema: any, components: any, depth = 
 
 export function GET(): Response {
   try {
-    const specPath = candidates.find((p) => existsSync(p));
-    if (!specPath) return Response.json({ error: "openapi.yaml not found" }, { status: 404 });
+    if (!existsSync(specPath)) return Response.json({ error: "openapi.yaml not found" }, { status: 404 });
     const mtime = statSync(specPath).mtimeMs;
     if (cached?.mtime === mtime) return Response.json(cached.data);
     const raw: any = load(readFileSync(specPath, "utf8"));

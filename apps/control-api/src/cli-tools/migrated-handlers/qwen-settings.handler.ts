@@ -4,26 +4,26 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import pino from "pino";
 
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 
-import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getApiKeyById } from "@shiguang-gateway/core-domain/db/api-keys";
+import { requireManagementAuth as requireCliToolsAuth } from "@orbit/core/control/management-auth";
+import { getApiKeyById } from "@orbit/core/db/api-keys";
 import { deleteCliToolLastConfigured, saveCliToolLastConfigured } from "../cli-tool-state.js";
-import { createMultiBackup } from "@shiguang-gateway/core-domain/cli/backups";
+import { createMultiBackup } from "@orbit/core/cli/backups";
 import {
   hasShiguangGatewayQwenCodeConfig,
   mergeQwenCodeEnv,
   mergeQwenCodeSettings,
   removeQwenCodeEnv,
   removeQwenCodeSettings,
-} from "@shiguang-gateway/core-domain/shared/services/qwenCodeConfig";
+} from "@orbit/core/shared/services/qwenCodeConfig";
 import {
   ensureCliConfigWriteAllowed,
   getCliConfigPaths,
   getCliRuntimeStatus,
-} from "@shiguang-gateway/core-domain/cli/runtime";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { cliModelConfigSchema } from "@shiguang-gateway/core-domain/control/cli-tools-validation-schemas";
+} from "@orbit/core/cli/runtime";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
+import { cliModelConfigSchema } from "@orbit/core/control/cli-tools-validation-schemas";
 
 const logger = pino({ name: "qwen-code-settings-api" });
 

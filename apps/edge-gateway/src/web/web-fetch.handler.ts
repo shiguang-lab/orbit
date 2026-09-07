@@ -14,7 +14,7 @@
  * performed — a rate-limited/failing explicit provider surfaces its own error.
  */
 
-import { errorResponse, unavailableResponse } from "@shiguang-gateway/open-sse/utils/error";
+import { errorResponse, unavailableResponse } from "@orbit/inference/utils/error";
 import {
   handleWebFetch,
   type WebFetchCredentials,
@@ -23,20 +23,20 @@ import {
   EXPLICIT_ONLY_WEB_FETCH_PROVIDERS,
   ANONYMOUS_CAPABLE_WEB_FETCH_PROVIDERS,
   type WebFetchProviderId,
-} from "@shiguang-gateway/open-sse/handlers/webFetch";
-import * as log from "@shiguang-gateway/core-domain/sse/logger";
+} from "@orbit/inference/handlers/webFetch";
+import * as log from "@orbit/core/sse/logger";
 import {
   extractApiKey,
   isValidApiKey,
   getProviderCredentialsWithQuotaPreflight,
-} from "@shiguang-gateway/open-sse/services/auth";
-import { enforceApiKeyPolicy } from "@shiguang-gateway/core-domain/runtime/api-key-policy";
-import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
+} from "@orbit/inference/services/auth";
+import { enforceApiKeyPolicy } from "@orbit/core/runtime/api-key-policy";
+import { isRequireApiKeyEnabled } from "@orbit/core/runtime/feature-flags";
 import { z } from "zod";
 import {
   isAllRateLimitedCredentials,
   type RateLimitedCredentials,
-} from "@shiguang-gateway/open-sse/services/credential-selection";
+} from "@orbit/inference/services/credential-selection";
 import { rateLimitedProviderResponse } from "../common/provider-rate-limit-response.js";
 
 const CORS_HEADERS = {

@@ -1,4 +1,4 @@
-import type { ProviderCredentialRefreshResult } from "@shiguang-gateway/contracts/edge-runtime-command";
+import type { ProviderCredentialRefreshResult } from "@orbit/contracts/edge-runtime-command";
 import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 
 /** POST /api/providers/[id]/refresh. */

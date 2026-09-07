@@ -1,8 +1,8 @@
 import {
   resolveConnectionRecoveryIntervalMs,
   runConnectionRecoveryTick,
-} from "@shiguang-gateway/core-domain/resilience/connection-recovery";
-import { isAutomatedTestProcess } from "@shiguang-gateway/core-domain/shared/test-process";
+} from "@orbit/core/resilience/connection-recovery";
+import { isAutomatedTestProcess } from "@orbit/utils/process";
 
 const STARTUP_DELAY_MS = 15_000;
 const LOG_PREFIX = "[ConnectionRecovery]";

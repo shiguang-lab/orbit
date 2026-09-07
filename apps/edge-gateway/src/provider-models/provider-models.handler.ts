@@ -1,8 +1,8 @@
-import { getUnifiedModelsResponse } from "@shiguang-gateway/open-sse/catalog/unified";
-import { getServiceModels, isServiceBackendPluginId } from "@shiguang-gateway/core-domain/embedded-services/catalog";
-import { getProviderByAlias, getProviderById } from "@shiguang-gateway/core-domain/catalog/providers";
-import { isCompatibleProviderConnectionId } from "@shiguang-gateway/core-domain/shared/compatible-provider-id";
-import { getRegistryEntry } from "@shiguang-gateway/open-sse/config/providerRegistry";
+import { getUnifiedModelsResponse } from "@orbit/inference/catalog/unified";
+import { getServiceModels, isServiceBackendPluginId } from "@orbit/core/embedded-services/catalog";
+import { getProviderByAlias, getProviderById } from "@orbit/providers/catalog";
+import { isCompatibleProviderConnectionId } from "@orbit/core/shared/compatible-provider-id";
+import { getRegistryEntry } from "@orbit/inference/config/providerRegistry";
 
 /** CORS preflight for provider model discovery. */
 export function OPTIONS(): Response {

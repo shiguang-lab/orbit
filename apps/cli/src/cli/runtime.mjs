@@ -17,7 +17,7 @@ function makeHttpContext(opts) {
 }
 
 async function importDbModules() {
-  const { getCombos } = await import("@shiguang-gateway/core-domain/db/combos");
+  const { getCombos } = await import("@orbit/core/db/combos");
   return { combos: { getCombos } };
 }
 

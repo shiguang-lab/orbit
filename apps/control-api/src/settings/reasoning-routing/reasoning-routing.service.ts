@@ -13,16 +13,16 @@ import {
   type ReasoningRoutingRule,
   type ReasoningRoutingRuleInput,
   type ReasoningRoutingSimulationInput,
-} from "@shiguang-gateway/core-domain/control/reasoning-routing";
+} from "@orbit/core/control/reasoning-routing";
 import {
   getComboForModel,
   getModelInfo,
-} from "@shiguang-gateway/open-sse/services/runtimeModel";
-import { getApiKeyById } from "@shiguang-gateway/core-domain/db/api-keys";
+} from "@orbit/inference/services/runtimeModel";
+import { getApiKeyById } from "@orbit/core/db/api-keys";
 import {
   validateApiKeyRoutingTarget,
   type ApiKeyMetadata,
-} from "@shiguang-gateway/core-domain/runtime/api-key-policy";
+} from "@orbit/core/runtime/api-key-policy";
 
 function permissionMessage(payload: unknown): string {
   if (!payload || typeof payload !== "object") return "The API key cannot access the target";

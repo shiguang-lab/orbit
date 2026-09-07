@@ -25,14 +25,14 @@ export function OPTIONS(): Response {
 export async function POST(request: Request, { params }: ProviderParams): Promise<Response> {
   const [errorApi, constants, registry, auth, embedding, logger, policyApi, validation] =
     await Promise.all([
-      load("@shiguang-gateway/open-sse/utils/error"),
-      load("@shiguang-gateway/open-sse/config/constants"),
-      load("@shiguang-gateway/open-sse/config/providerRegistry"),
-      load("@shiguang-gateway/open-sse/services/auth"),
-      load("@shiguang-gateway/open-sse/handlers/embeddings"),
-      load("@shiguang-gateway/core-domain/sse/logger"),
-      load("@shiguang-gateway/core-domain/runtime/api-key-policy"),
-      load("@shiguang-gateway/core-domain/shared/validation/helpers"),
+      load("@orbit/inference/utils/error"),
+      load("@orbit/inference/config/constants"),
+      load("@orbit/inference/config/providerRegistry"),
+      load("@orbit/inference/services/auth"),
+      load("@orbit/inference/handlers/embeddings"),
+      load("@orbit/core/sse/logger"),
+      load("@orbit/core/runtime/api-key-policy"),
+      load("@orbit/core/shared/validation/helpers"),
     ]);
   const { errorResponse, unavailableResponse } = errorApi;
   const { HTTP_STATUS } = constants;

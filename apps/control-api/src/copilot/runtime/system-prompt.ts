@@ -61,7 +61,7 @@ Client → API Route (/v1/chat/completions)
 \`\`\`
 
 ### Data Layer (SQLite)
-- \`packages/core-domain/src/lib/db/\`: shared persistence capabilities
+- \`packages/core/src/lib/db/\`: shared persistence capabilities
 - \`core.ts\`: Singleton better-sqlite3 with WAL journaling
 - \`migrationRunner.ts\`: Versioned SQL migrations (55+ files)
 - \`localDb.ts\`: Re-export layer only — no logic
@@ -72,8 +72,8 @@ Client → API Route (/v1/chat/completions)
 - **apps/realtime/**: WebSocket and live event delivery
 - **apps/worker/**: scheduled and background jobs
 - **apps/cli/**: command-line entry points and process lifecycle
-- **packages/open-sse/**: shared streaming and provider execution engine
-- **packages/core-domain/**: capabilities shared by multiple deployable apps
+- **packages/inference/**: shared streaming and provider execution engine
+- **packages/core/**: capabilities shared by multiple deployable apps
 
 ---
 

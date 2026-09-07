@@ -18,7 +18,7 @@ import * as upstreamCa from "./handlers/upstream-ca.handler.js";
 import * as upstreamCaTest from "./handlers/upstream-ca-test.handler.js";
 import { ensureAgentBridgeSchema } from "./agent-bridge-schema.js";
 import { agentBridgePersistence } from "./agent-bridge.persistence.js";
-import { configureAgentBridgeStore } from "@shiguang-gateway/core-domain/control/agent-bridge";
+import { configureAgentBridgeStore } from "@orbit/core/control/agent-bridge";
 
 /** AgentBridge use cases; transport stays in AgentBridgeController. */
 @Injectable()

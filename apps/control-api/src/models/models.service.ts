@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { z } from "zod";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getSettings } from "@shiguang-gateway/core-domain/db/settings";
-import { setModelIsHidden } from "@shiguang-gateway/core-domain/db/hidden-models";
-import { isFreeModel, providerHasFreeModels } from "@shiguang-gateway/core-domain/catalog/free-models";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
-import * as log from "@shiguang-gateway/core-domain/sse/logger";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { getSettings } from "@orbit/core/db/settings";
+import { setModelIsHidden } from "@orbit/core/db/hidden-models";
+import { isFreeModel, providerHasFreeModels } from "@orbit/core/catalog/free-models";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
+import * as log from "@orbit/core/sse/logger";
 import {
   DEFAULT_MODEL_TEST_TIMEOUT_MS,
   runSingleModelTest,

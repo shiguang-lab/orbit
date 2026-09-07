@@ -1,4 +1,4 @@
-import { getRegistryEntry } from "@shiguang-gateway/open-sse/config/providerRegistry";
+import { getRegistryEntry } from "@orbit/inference/config/providerRegistry";
 import type { ProviderModelsConfigEntry } from "./discovery/providerModelsConfig.js";
 
 function parseRegistryModelsResponse(data: unknown): unknown[] {

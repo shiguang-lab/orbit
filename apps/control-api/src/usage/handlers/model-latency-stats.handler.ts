@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getModelLatencyStats } from "@shiguang-gateway/core-domain/usage/model-latency-stats";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { getModelLatencyStats } from "@orbit/core/usage/model-latency-stats";
 
 const querySchema = z.object({
   windowHours: z.coerce.number().positive().max(24 * 30).optional(),

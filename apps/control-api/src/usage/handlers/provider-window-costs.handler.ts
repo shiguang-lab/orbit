@@ -1,5 +1,5 @@
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getProviderWindowCostBreakdown } from "@shiguang-gateway/core-domain/usage/provider-window-costs";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { getProviderWindowCostBreakdown } from "@orbit/core/usage/provider-window-costs";
 
 const PROVIDER_RE = /^[a-z0-9._-]{1,80}$/i;
 

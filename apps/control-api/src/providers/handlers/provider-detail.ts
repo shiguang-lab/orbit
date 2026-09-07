@@ -1,37 +1,37 @@
-import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/control/provider-connection";
+import { getAuditRequestContext, logAuditEvent } from "@orbit/core/control/provider-connection";
 import {
   getProviderAuditTarget,
   summarizeProviderConnectionForAudit,
-} from "@shiguang-gateway/core-domain/control/provider-connection";
+} from "@orbit/core/control/provider-connection";
 import {
   getCachedProviderConnectionById,
   updateProviderConnection,
   deleteProviderConnection,
   isCloudEnabled,
-} from "@shiguang-gateway/core-domain/control/provider-connection";
-import { getConsistentMachineId } from "@shiguang-gateway/core-domain/control/provider-connection";
-import { syncToCloud } from "@shiguang-gateway/core-domain/control/provider-connection";
-import { updateProviderConnectionSchema } from "@shiguang-gateway/core-domain/control/provider-connection";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/control/provider-connection";
+} from "@orbit/core/control/provider-connection";
+import { getConsistentMachineId } from "@orbit/core/control/provider-connection";
+import { syncToCloud } from "@orbit/core/control/provider-connection";
+import { updateProviderConnectionSchema } from "@orbit/core/control/provider-connection";
+import { isValidationFailure, validateBody } from "@orbit/core/control/provider-connection";
 import {
   normalizeProviderSpecificData,
   sanitizeProviderSpecificDataForResponse,
-} from "@shiguang-gateway/core-domain/control/provider-connection";
+} from "@orbit/core/control/provider-connection";
 import {
   buildClaudeExtraUsageStateClearUpdate,
   isClaudeExtraUsageBlockEnabled,
-} from "@shiguang-gateway/core-domain/control/provider-connection";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/provider-connection";
-import { isApiKeyRevealEnabled, maskStoredApiKey } from "@shiguang-gateway/core-domain/control/provider-connection";
-import { cleanupProviderModelsAfterConnectionDelete } from "@shiguang-gateway/core-domain/control/provider-connection";
-import { canUpdateProviderApiKey } from "@shiguang-gateway/contracts/config/webSessionCredentials";
+} from "@orbit/core/control/provider-connection";
+import { requireManagementAuth } from "@orbit/core/control/provider-connection";
+import { isApiKeyRevealEnabled, maskStoredApiKey } from "@orbit/core/control/provider-connection";
+import { cleanupProviderModelsAfterConnectionDelete } from "@orbit/core/control/provider-connection";
+import { canUpdateProviderApiKey } from "@orbit/contracts/config/webSessionCredentials";
 import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 import {
   finalizeValidatedChatGptWebCodexSecrets,
   decodeChatGptWebCodexSecrets,
   encodeChatGptWebCodexSecrets,
-} from "@shiguang-gateway/open-sse/services/chatgptWebCodexAdmin";
-import { rejectRetiredCommonChatGptWebProvider } from "@shiguang-gateway/core-domain/control/provider-connection";
+} from "@orbit/inference/services/chatgptWebCodexAdmin";
+import { rejectRetiredCommonChatGptWebProvider } from "@orbit/core/control/provider-connection";
 
 function normalizeCodexLimitPolicy(
   incoming: unknown,

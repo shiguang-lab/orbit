@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { SHOW_OPTIONS, SHOW_POST, TAGS, TAGS_OPTIONS } from "./vscode-ollama.handler.js";
-import { getUnifiedModelsResponse } from "@shiguang-gateway/open-sse/catalog/unified";
+import { getUnifiedModelsResponse } from "@orbit/inference/catalog/unified";
 
 @Injectable()
 export class VscodeOllamaService {

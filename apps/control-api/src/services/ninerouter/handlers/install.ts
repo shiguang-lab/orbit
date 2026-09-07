@@ -3,11 +3,11 @@ import {
   InstallError,
   SERVICE_VERSION_PATTERN,
   installNineRouter,
-} from "@shiguang-gateway/core-domain/control/embedded-services-install";
+} from "@orbit/core/control/embedded-services-install";
 import {
   createErrorResponse,
   sanitizeErrorMessage,
-} from "@shiguang-gateway/core-domain/shared/error-response";
+} from "@orbit/utils/errors/api-response";
 
 const bodySchema = z.object({
   version: z.string().regex(SERVICE_VERSION_PATTERN, "Invalid version: only letters, digits and . _ + - are allowed").optional().default("latest"),

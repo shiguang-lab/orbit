@@ -3,15 +3,15 @@ import {
   deleteApiKey,
   getApiKeyById,
   updateApiKeyPermissions,
-} from "@shiguang-gateway/core-domain/db/api-keys";
-import { isCloudEnabled } from "@shiguang-gateway/core-domain/db/settings";
-import { syncToCloud } from "@shiguang-gateway/core-domain/sync/cloud";
-import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
-import { updateKeyPermissionsSchema } from "@shiguang-gateway/core-domain/validation/keys";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
-import * as log from "@shiguang-gateway/core-domain/sse/logger";
+} from "@orbit/core/db/api-keys";
+import { isCloudEnabled } from "@orbit/core/db/settings";
+import { syncToCloud } from "@orbit/core/sync/cloud";
+import { getConsistentMachineId } from "@orbit/core/shared/utils/machineId";
+import { updateKeyPermissionsSchema } from "@orbit/core/validation/keys";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { buildErrorBody } from "@orbit/inference/utils/error";
+import * as log from "@orbit/core/sse/logger";
 import { json } from "./response.js";
 
 type RouteParams = { params: { id: string } };

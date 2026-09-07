@@ -2,7 +2,7 @@ import { z } from "zod";
 import {
   PoolAllocationSchema,
   QuotaDimensionSchema,
-} from "@shiguang-gateway/core-domain/quota/dimensions";
+} from "@orbit/core/quota/dimensions";
 
 export const GroupCreateSchema = z.object({
   name: z.string().min(1).max(120),

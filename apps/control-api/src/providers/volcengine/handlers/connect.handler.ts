@@ -1,8 +1,8 @@
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import { bindVolcenginePlansFromConsoleCredentials } from "../volcengine-plan.binding.js";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
-import { formatValidationMessage, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { volcenginePlanConnectSchema } from "@shiguang-gateway/core-domain/control/volcengine-validation";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
+import { formatValidationMessage, validateBody } from "@orbit/core/shared/validation/helpers";
+import { volcenginePlanConnectSchema } from "@orbit/core/control/volcengine-validation";
 
 export async function POST(request: Request): Promise<Response> {
   const auth = await requireManagementAuth(request);
@@ -22,7 +22,7 @@ export async function POST(request: Request): Promise<Response> {
   if (phone) {
     try {
       const { volcengineConsoleAutoLoginService } = await import(
-        "@shiguang-gateway/open-sse/services/volcengineConsoleAutoLogin"
+        "@orbit/inference/services/volcengineConsoleAutoLogin"
       );
       const started = await volcengineConsoleAutoLoginService.startLogin(phone, { timeout });
       if (!started.ok) {
@@ -40,7 +40,7 @@ export async function POST(request: Request): Promise<Response> {
 
   // Legacy manual flow: headful browser login on the server machine.
   try {
-    const { inAppLoginService } = await import("@shiguang-gateway/open-sse/services/inAppLoginService");
+    const { inAppLoginService } = await import("@orbit/inference/services/inAppLoginService");
     const login = await inAppLoginService.startLogin("volcengine-console", { timeout });
     if (!login.success || !login.credentials) {
       return Response.json(

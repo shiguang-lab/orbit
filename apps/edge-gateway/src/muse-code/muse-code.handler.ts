@@ -10,7 +10,7 @@
  * modalities, limit, cost.
  */
 
-import { REGISTRY } from "@shiguang-gateway/open-sse/config/providerRegistry";
+import { REGISTRY } from "@orbit/inference/config/providerRegistry";
 
 const MUSECODE_TIMESTAMP = Math.floor(Date.now() / 1000);
 

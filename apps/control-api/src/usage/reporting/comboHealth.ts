@@ -1,7 +1,7 @@
-import { getComboById, getCombos } from "@shiguang-gateway/core-domain/db/combos";
-import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
-import { getQuotaSnapshots } from "@shiguang-gateway/core-domain/usage/quota-snapshots";
-import { resolveNestedComboTargets } from "@shiguang-gateway/open-sse/services/combo";
+import { getComboById, getCombos } from "@orbit/core/db/combos";
+import { getDbInstance } from "@orbit/core/db/connection";
+import { getQuotaSnapshots } from "@orbit/core/usage/quota-snapshots";
+import { resolveNestedComboTargets } from "@orbit/inference/services/combo";
 import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 import type {
   ComboRecord,
@@ -9,7 +9,7 @@ import type {
   ComboHealthResponse,
   QuotaSnapshotRow,
   UtilizationTimeRange,
-} from "@shiguang-gateway/core-domain/usage/utilization";
+} from "@orbit/core/usage/utilization";
 
 type ModelUsageRow = {
   model: string | null;

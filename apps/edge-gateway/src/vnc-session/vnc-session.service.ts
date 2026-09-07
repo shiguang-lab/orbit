@@ -1,5 +1,5 @@
 import { Injectable, type OnApplicationShutdown } from "@nestjs/common";
-import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
+import { buildErrorBody } from "@orbit/inference/utils/error";
 import { getVncSessionCatalog } from "./runtime/catalog.js";
 import {
   deleteVncSession,

@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
+import { isAllRateLimitedCredentials } from "@orbit/inference/services/credential-selection";
 import { rateLimitedProviderResponse } from "../common/provider-rate-limit-response.js";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
@@ -8,7 +8,7 @@ const load = (specifier: string): Promise<any> => import(specifier as string);
 export class MusicService {
   async handleGetGenerations(req?: Request): Promise<Response> {
     const { getSpecialtyModelsResponse } = await load(
-      "@shiguang-gateway/open-sse/catalog/specialty"
+      "@orbit/inference/catalog/specialty"
     );
     return getSpecialtyModelsResponse(
       req,
@@ -19,7 +19,7 @@ export class MusicService {
 
   async handleCreateGeneration(req: Request): Promise<Response> {
     const { withInjectionGuard } = await load(
-      "@shiguang-gateway/core-domain/middleware/prompt-injection"
+      "@orbit/core/middleware/prompt-injection"
     );
 
     const postHandler = async (request: Request): Promise<Response> => {
@@ -32,13 +32,13 @@ export class MusicService {
         { enforceApiKeyPolicy },
         log,
       ] = await Promise.all([
-        load("@shiguang-gateway/open-sse/handlers/musicGeneration"),
-        load("@shiguang-gateway/open-sse/services/auth"),
-        load("@shiguang-gateway/open-sse/config/musicRegistry"),
-        load("@shiguang-gateway/open-sse/utils/error"),
-        load("@shiguang-gateway/core-domain/edge/media-generation"),
-        load("@shiguang-gateway/core-domain/runtime/api-key-policy"),
-        load("@shiguang-gateway/core-domain/sse/logger"),
+        load("@orbit/inference/handlers/musicGeneration"),
+        load("@orbit/inference/services/auth"),
+        load("@orbit/inference/config/musicRegistry"),
+        load("@orbit/inference/utils/error"),
+        load("@orbit/core/edge/media-generation"),
+        load("@orbit/core/runtime/api-key-policy"),
+        load("@orbit/core/sse/logger"),
       ]);
 
       const parsed = await readMediaGenerationBody(request, log, "MUSIC");

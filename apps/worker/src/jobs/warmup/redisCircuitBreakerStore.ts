@@ -3,9 +3,9 @@ import { getWarmupBackoffUntil } from "./backoff.js";
 import {
   markForbidden as sqliteMarkForbidden,
   upsertWarmupState as sqliteUpsertWarmupState,
-} from "@shiguang-gateway/core-domain/db/connection-runtime-state";
-import { logger } from "@shiguang-gateway/runtime-logging";
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+} from "@orbit/core/db/connection-runtime-state";
+import { logger } from "@orbit/utils/logging";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 import type { WarmupResult } from "./core.js";
 
 const log = logger("WarmupCircuitBreaker");

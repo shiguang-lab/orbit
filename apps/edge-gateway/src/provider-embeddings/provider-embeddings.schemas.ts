@@ -1,4 +1,4 @@
-import { v1EmbeddingsSchema } from "@shiguang-gateway/core-domain/edge/embeddings-validation-schemas";
+import { v1EmbeddingsSchema } from "@orbit/core/edge/embeddings-validation-schemas";
 
 /**
  * Request validation for the provider-scoped embeddings endpoint.

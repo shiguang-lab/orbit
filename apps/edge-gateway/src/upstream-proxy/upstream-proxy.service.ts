@@ -3,12 +3,12 @@ import {
   deleteUpstreamProxyConfig,
   getUpstreamProxyConfig,
   upsertUpstreamProxyConfig,
-} from "@shiguang-gateway/core-domain/db/upstream-proxy";
-import { isClaudeCodeCompatibleProvider } from "@shiguang-gateway/core-domain/catalog/providers";
+} from "@orbit/core/db/upstream-proxy";
+import { isClaudeCodeCompatibleProvider } from "@orbit/providers/catalog";
 import {
   isValidationFailure,
   validateBody,
-} from "@shiguang-gateway/core-domain/shared/validation/helpers";
+} from "@orbit/core/shared/validation/helpers";
 import { z } from "zod";
 
 const upstreamProxySchema = z.object({

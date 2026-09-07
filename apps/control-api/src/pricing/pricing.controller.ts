@@ -1,14 +1,14 @@
-import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
+import { toWebRequest } from "@orbit/http/web-handler";
 import { Body, Controller, Delete, Get, Inject, Patch, Post, Req, Res, Query } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { PricingService } from "./pricing.service.js";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import {
   updatePricingSchema,
   pricingSyncRequestSchema,
   validateBody,
   isValidationFailure,
-} from "@shiguang-gateway/core-domain/pricing/validation";
+} from "@orbit/core/pricing/validation";
 
 @Controller("api/pricing")
 export class PricingController {

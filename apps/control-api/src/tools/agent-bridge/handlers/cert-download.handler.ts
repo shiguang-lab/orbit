@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { resolveMitmDataDir } from "@shiguang-gateway/core-domain/control/agent-bridge";
+import { resolveMitmDataDir } from "@orbit/core/control/agent-bridge";
 import { failure } from "./common.js";
 
 export async function GET(): Promise<Response> {

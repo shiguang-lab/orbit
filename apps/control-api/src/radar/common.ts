@@ -1,7 +1,7 @@
-import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
-import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
-import { CORS_HEADERS, handleCorsOptions } from "@shiguang-gateway/core-domain/shared/cors";
+import { buildErrorBody, sanitizeErrorMessage } from "@orbit/inference/utils/error";
+import { isAuthenticated } from "@orbit/core/control/authenticated";
+import { isFeatureFlagEnabled } from "@orbit/core/runtime/feature-flags";
+import { CORS_HEADERS, handleCorsOptions } from "@orbit/core/shared/cors";
 import { radarSyncBodyError, validateRadarSyncBody } from "./sync-request.js";
 
 export { CORS_HEADERS, handleCorsOptions, radarSyncBodyError, validateRadarSyncBody };

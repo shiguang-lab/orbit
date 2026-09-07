@@ -1,5 +1,5 @@
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { buildUnifiedSource, getProviderDailyUsageRows } from "@shiguang-gateway/core-domain/usage/analytics";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { buildUnifiedSource, getProviderDailyUsageRows } from "@orbit/core/usage/analytics";
 
 /**
  * GET /api/usage/requests-by-provider-date — #4009
@@ -74,7 +74,7 @@ function resolveDateWindow(searchParams: URLSearchParams, range: string): DateWi
 }
 
 async function resolveRawCutoffDate(): Promise<string> {
-  const { getUserDatabaseSettings } = await import("@shiguang-gateway/core-domain/db/database-settings");
+  const { getUserDatabaseSettings } = await import("@orbit/core/db/database-settings");
   const dbSettings = getUserDatabaseSettings();
   const rawRetentionDays = dbSettings.aggregation?.rawDataRetentionDays ?? 30;
   const rawCutoff = new Date();
@@ -85,7 +85,7 @@ async function resolveRawCutoffDate(): Promise<string> {
 function errorResponse(error: unknown): Promise<Response> {
   console.error("Error computing requests-by-provider-date:", error);
   const message = error instanceof Error ? error.message : String(error);
-  return import("@shiguang-gateway/open-sse/utils/error").then(({ buildErrorBody }) =>
+  return import("@orbit/inference/utils/error").then(({ buildErrorBody }) =>
     Response.json(buildErrorBody(500, message || "Failed to compute requests-by-provider-date"), {
       status: 500,
     })

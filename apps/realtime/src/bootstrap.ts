@@ -1,7 +1,7 @@
 import { NestFactory } from "@nestjs/core";
 import { FastifyAdapter } from "@nestjs/platform-fastify";
 import type { FastifyInstance } from "fastify";
-import { installRuntimePorts } from "@shiguang-gateway/open-sse/services/dbRuntimeHooks";
+import { installRuntimePorts } from "@orbit/inference/services/dbRuntimeHooks";
 
 /** Construct the realtime application without starting either listening socket. */
 export async function bootstrapRealtime() {

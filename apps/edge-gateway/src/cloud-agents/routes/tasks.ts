@@ -16,7 +16,7 @@ import {
   serializeCloudAgentTask,
 } from "../domain/api.js";
 import { CreateCloudAgentTaskSchema } from "../domain/types.js";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 
 function getLimit(value: string | null): number {
   const parsed = Number.parseInt(value || "50", 10);

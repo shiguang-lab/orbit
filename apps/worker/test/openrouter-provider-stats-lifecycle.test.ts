@@ -7,7 +7,7 @@ import test from "node:test";
 import {
   initOpenRouterProviderStatsSync,
   stopOpenRouterProviderStatsSync,
-} from "@shiguang-gateway/core-domain/catalog/openrouter-provider-stats-lifecycle";
+} from "@orbit/core/catalog/openrouter-provider-stats-lifecycle";
 import { WORKER_JOBS } from "../src/jobs/registry.js";
 
 test("worker registry wires provider stats shutdown to Nest teardown", () => {

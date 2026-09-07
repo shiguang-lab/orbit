@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { buildCacheHealthResponse } from "@shiguang-gateway/core-domain/usage/cache-health";
+import { buildCacheHealthResponse } from "@orbit/core/usage/cache-health";
 
 const querySchema = z.object({
   range: z.enum(["1h", "24h", "7d", "30d"]).default("24h"),

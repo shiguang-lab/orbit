@@ -2,13 +2,13 @@
 import os from "os";
 import path from "path";
 
-import { createProviderConnection } from "@shiguang-gateway/core-domain/control/oauth-persistence";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { createProviderConnection } from "@orbit/core/control/oauth-persistence";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import {
   scanCliProxyAuthDir,
   toConnectionPayload,
-} from "@shiguang-gateway/core-domain/control/oauth-runtime/utils/cliProxyAuthImport";
+} from "@orbit/core/control/oauth-runtime/utils/cliProxyAuthImport";
 
 /**
  * #1934: import OAuth credentials saved by CLIProxyAPI (~/.cli-proxy-api/) so users

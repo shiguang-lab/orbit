@@ -1,6 +1,6 @@
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { extractBearer, ACCESS_TOKEN_PREFIX } from "@shiguang-gateway/core-domain/control/access-token-auth";
-import { verifyAccessToken, getAccessToken } from "@shiguang-gateway/core-domain/control/cli-access-tokens";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { extractBearer, ACCESS_TOKEN_PREFIX } from "@orbit/core/control/access-token-auth";
+import { verifyAccessToken, getAccessToken } from "@orbit/core/control/cli-access-tokens";
 
 /**
  * GET /api/cli/whoami — report the current credential to the CLI.

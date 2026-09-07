@@ -1,14 +1,14 @@
 import { randomUUID } from "node:crypto";
-import { createProviderNode, getProviderNodes, getProviderNodesCount } from "@shiguang-gateway/core-domain/db/provider-nodes";
+import { createProviderNode, getProviderNodes, getProviderNodesCount } from "@orbit/core/db/provider-nodes";
 import {
   OPENAI_COMPATIBLE_PREFIX,
   ANTHROPIC_COMPATIBLE_PREFIX,
   CLAUDE_CODE_COMPATIBLE_PREFIX,
-} from "@shiguang-gateway/core-domain/catalog/providers";
-import { isCcCompatibleProviderEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
-import { createProviderNodeSchema } from "@shiguang-gateway/core-domain/control/provider-validation-schemas";
-import { paginationSchema } from "@shiguang-gateway/core-domain/validation/misc";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+} from "@orbit/providers/catalog";
+import { isCcCompatibleProviderEnabled } from "@orbit/core/runtime/feature-flags";
+import { createProviderNodeSchema } from "@orbit/core/control/provider-validation-schemas";
+import { paginationSchema } from "@orbit/core/validation/misc";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 import { validateProviderNodeBaseUrl } from "./provider-nodes-url-guard.js";
 
 const OPENAI_COMPATIBLE_DEFAULTS = {

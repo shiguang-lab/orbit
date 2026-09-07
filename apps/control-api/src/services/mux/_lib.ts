@@ -5,7 +5,7 @@ import {
   registerSupervisor,
   resolveMuxSpawnArgs,
   ServiceSupervisor,
-} from "@shiguang-gateway/core-domain/control/mux";
+} from "@orbit/core/control/mux";
 
 const TOOL = "mux";
 const PORT = Number.parseInt(process.env.MUX_SERVICE_PORT ?? String(MUX_DEFAULT_PORT), 10);

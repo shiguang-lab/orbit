@@ -12,7 +12,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { spawn } from "node:child_process";
-import { resolveWritableDataDir } from "@shiguang-gateway/config/dataPaths";
+import { resolveWritableDataDir } from "@orbit/config/dataPaths";
 import { findHeadroomBinary } from "./detect.js";
 
 const HEADROOM_DIR = path.join(resolveWritableDataDir(), "headroom");

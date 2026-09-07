@@ -14,19 +14,19 @@ import {
   runJsonMigration,
   updateSettings,
   type LegacyJsonData,
-} from "@shiguang-gateway/core-domain/control/settings-config";
+} from "@orbit/core/control/settings-config";
 import {
   getModelsDevPricing,
   getSyncedCapabilities,
-} from "@shiguang-gateway/core-domain/catalog/synced-model-capabilities";
+} from "@orbit/core/catalog/synced-model-capabilities";
 import {
   getSyncStatus,
   isModelsDevSyncEnvDisabled,
   isModelsDevSyncEnvForcedOn,
   resolveModelsDevSyncIntervalMs,
   syncModelsDev,
-} from "@shiguang-gateway/core-domain/sync/models-dev";
-import { getApiKeys } from "@shiguang-gateway/core-domain/db/api-keys";
+} from "@orbit/core/sync/models-dev";
+import { getApiKeys } from "@orbit/core/db/api-keys";
 import {
   applyPersistedRuntimeSettings,
   updatePersistedRuntimeSettings,
@@ -34,7 +34,7 @@ import {
 import {
   isFreeModel,
   providerHasFreeModels,
-} from "@shiguang-gateway/core-domain/catalog/free-models";
+} from "@orbit/core/catalog/free-models";
 
 const LEGACY_COMBO_RESILIENCE_KEYS = new Set([
   "timeoutMs",

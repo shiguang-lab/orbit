@@ -5,7 +5,7 @@ import {
   getSupervisor,
   registerSupervisor,
   updateServiceField,
-} from "@shiguang-gateway/core-domain/control/embedded-services-lifecycle";
+} from "@orbit/core/control/embedded-services-lifecycle";
 import {
   BIFROST_DEFAULT_PORT,
   getBifrostInstalledVersion,
@@ -13,7 +13,7 @@ import {
   installBifrost,
   resolveBifrostSpawnArgs,
   updateBifrost,
-} from "@shiguang-gateway/core-domain/control/embedded-services-install";
+} from "@orbit/core/control/embedded-services-install";
 
 const TOOL = "bifrost";
 

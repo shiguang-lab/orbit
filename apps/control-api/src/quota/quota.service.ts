@@ -19,7 +19,7 @@ import {
   updatePool,
   deletePool,
   listConsumptionForPool,
-} from "@shiguang-gateway/core-domain/quota/db";
+} from "@orbit/core/quota/db";
 import {
   knownProviders,
   getKnownPlan,
@@ -33,7 +33,7 @@ import {
   getQuotaStore,
   enforceQuotaShare,
   type PoolUsageSnapshot,
-} from "@shiguang-gateway/core-domain/quota/services";
+} from "@orbit/core/quota/services";
 
 @Injectable()
 export class QuotaService {

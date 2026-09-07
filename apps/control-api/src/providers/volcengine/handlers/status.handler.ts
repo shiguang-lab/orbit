@@ -1,6 +1,6 @@
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import { bindVolcenginePlansFromConsoleCredentials } from "../volcengine-plan.binding.js";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 
 /**
  * GET /api/providers/volcengine-plan/connect/[sessionId]/status
@@ -18,7 +18,7 @@ export async function GET(
 
   try {
     const { volcengineConsoleAutoLoginService } =
-      await import("@shiguang-gateway/open-sse/services/volcengineConsoleAutoLogin");
+      await import("@orbit/inference/services/volcengineConsoleAutoLogin");
 
     const session = await volcengineConsoleAutoLoginService.withBinding(sessionId, (credentials) =>
       bindVolcenginePlansFromConsoleCredentials(credentials)

@@ -32,7 +32,7 @@ test("importer app owns and runs the source-data import", () => {
 
     const result = spawnSync(
       "pnpm",
-      ["--filter", "@shiguang-gateway/importer", "run", "import", "--", "--source-data-dir", source, "--target-data-dir", target],
+      ["--filter", "@orbit/importer", "run", "import", "--", "--source-data-dir", source, "--target-data-dir", target],
       { cwd: repoRoot, encoding: "utf8" },
     );
     assert.equal(result.status, 0, result.stderr || result.stdout);
@@ -99,7 +99,7 @@ test("deployable importer source does not escape to root scripts", () => {
   const rootManifest = JSON.parse(readFileSync(join(repoRoot, "package.json"), "utf8"));
   assert.equal(
     rootManifest.scripts["import:source-data"],
-    "pnpm --filter @shiguang-gateway/importer run import",
+    "pnpm --filter @orbit/importer run import",
   );
   assert.match(readFileSync(join(repoRoot, "scripts", "audit-app-boundaries.mjs"), "utf8"), /app-imports-root-script/);
 });

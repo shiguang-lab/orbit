@@ -7,7 +7,7 @@ import {
   stopSession,
   type VncSession,
 } from "./service.js";
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 
 export type VncOperationResult =
   | { value: unknown; error?: never }

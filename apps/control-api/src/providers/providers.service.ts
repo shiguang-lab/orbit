@@ -1,17 +1,17 @@
 import { Injectable } from "@nestjs/common";
-import { getProviderMetrics } from "@shiguang-gateway/core-domain/db/call-log-stats";
-import { toNumber } from "@shiguang-gateway/contracts/numeric";
+import { getProviderMetrics } from "@orbit/core/db/call-log-stats";
+import { toNumber } from "@orbit/contracts/numeric";
 import {
   getModelCallStats,
   getProviderCallStats,
-} from "@shiguang-gateway/core-domain/db/provider-stats";
-import { AI_PROVIDERS } from "@shiguang-gateway/core-domain/catalog/providers";
-import { getTelemetrySummary } from "@shiguang-gateway/core-domain/metrics/request-telemetry";
-import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
+} from "@orbit/core/db/provider-stats";
+import { AI_PROVIDERS } from "@orbit/providers/catalog";
+import { getTelemetrySummary } from "@orbit/core/metrics/request-telemetry";
+import { getProviderConnections } from "@orbit/core/db/provider-connections";
 import {
   getSyncedAvailableModels,
   getAllSyncedAvailableModels,
-} from "@shiguang-gateway/core-domain/db/models";
+} from "@orbit/core/db/models";
 import {
   GET as getProviderModelsHandler,
   POST as addProviderModelHandler,
@@ -32,17 +32,17 @@ import { POST as validateProviderHandler } from "./handlers/provider-validate.js
 import {
   getOpenRouterProviderStats,
   refreshOpenRouterProviderStats,
-} from "@shiguang-gateway/core-domain/catalog/openrouter-provider-stats";
+} from "@orbit/core/catalog/openrouter-provider-stats";
 import {
   buildProviderHealthMatrix,
-} from "@shiguang-gateway/core-domain/control/provider-health-matrix";
-import { resolveProviderAlias } from "@shiguang-gateway/open-sse/services/model";
+} from "@orbit/core/control/provider-health-matrix";
+import { resolveProviderAlias } from "@orbit/inference/services/model";
 import {
   getAllExpirations,
   getExpirationSummary,
 } from "./provider-expiration.js";
-import { resolveResilienceSettings } from "@shiguang-gateway/core-domain/resilience/settings";
-import { getCachedSettings } from "@shiguang-gateway/core-domain/cache/services";
+import { resolveResilienceSettings } from "@orbit/core/resilience/settings";
+import { getCachedSettings } from "@orbit/core/cache/services";
 import { handleProviderRefresh } from "./handlers/provider-refresh.handler.js";
 import { GET as getChatgptWebCodexDoctor } from "./handlers/provider-chatgpt-web-codex-doctor.js";
 import { POST as refreshProviderToken } from "./handlers/provider-refresh-token.js";

@@ -1,6 +1,6 @@
-import { extractApiKey } from "@shiguang-gateway/open-sse/services/auth";
-import { getApiKeyMetadata } from "@shiguang-gateway/core-domain/db/api-keys";
-import { isDashboardSessionAuthenticated } from "@shiguang-gateway/auth/dashboard-session";
+import { extractApiKey } from "@orbit/inference/services/auth";
+import { getApiKeyMetadata } from "@orbit/core/db/api-keys";
+import { isDashboardSessionAuthenticated } from "@orbit/auth/dashboard-session";
 
 export interface ApiKeyRequestScope {
   apiKey: string | null;

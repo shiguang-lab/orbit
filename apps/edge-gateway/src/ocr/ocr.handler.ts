@@ -1,4 +1,4 @@
-import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
+import { isAllRateLimitedCredentials } from "@orbit/inference/services/credential-selection";
 import { rateLimitedProviderResponse } from "../common/provider-rate-limit-response.js";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
@@ -37,14 +37,14 @@ function resolveOcrCredentials<T extends {
 
 async function postHandler(request: Request): Promise<Response> {
   const [ocrHandler, ocrRegistry, auth, errorApi, constants, policyApi, validationApi, validationHelpers] = await Promise.all([
-    load("@shiguang-gateway/open-sse/handlers/ocr"),
-    load("@shiguang-gateway/open-sse/config/ocrRegistry"),
-    load("@shiguang-gateway/open-sse/services/auth"),
-    load("@shiguang-gateway/open-sse/utils/error"),
-    load("@shiguang-gateway/open-sse/config/constants"),
-    load("@shiguang-gateway/core-domain/runtime/api-key-policy"),
-    load("@shiguang-gateway/core-domain/edge/ocr-validation"),
-    load("@shiguang-gateway/core-domain/shared/validation/helpers"),
+    load("@orbit/inference/handlers/ocr"),
+    load("@orbit/inference/config/ocrRegistry"),
+    load("@orbit/inference/services/auth"),
+    load("@orbit/inference/utils/error"),
+    load("@orbit/inference/config/constants"),
+    load("@orbit/core/runtime/api-key-policy"),
+    load("@orbit/core/edge/ocr-validation"),
+    load("@orbit/core/shared/validation/helpers"),
   ]);
 
   const { handleOcr, resolveVertexOcrAccessToken, resolveVertexOcrBaseUrl } = ocrHandler;
@@ -92,6 +92,6 @@ async function postHandler(request: Request): Promise<Response> {
 
 /** POST /v1/ocr — Mistral-compatible document OCR. */
 export async function POST(request: Request): Promise<Response> {
-  const { withInjectionGuard } = await load("@shiguang-gateway/core-domain/middleware/prompt-injection");
+  const { withInjectionGuard } = await load("@orbit/core/middleware/prompt-injection");
   return withInjectionGuard(postHandler)(request);
 }

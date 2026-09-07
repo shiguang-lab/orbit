@@ -5,7 +5,7 @@ import {
   type CreateTaskParams,
   type GetStatusResult,
 } from "../baseAgent.js";
-import { buildJulesApiUrl, JULES_API_BASE_URL } from "@shiguang-gateway/contracts/cloud-agent";
+import { buildJulesApiUrl, JULES_API_BASE_URL } from "@orbit/contracts/cloud-agent";
 import type {
   CloudAgentTask,
   CloudAgentActivity,

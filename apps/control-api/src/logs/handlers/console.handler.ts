@@ -11,10 +11,10 @@
  */
 
 import { readFileSync, existsSync } from "node:fs";
-import { getAppLogFilePath } from "@shiguang-gateway/core-domain/logging/environment";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { getAppLogFilePath } from "@orbit/core/logging/environment";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import { matchesSearch } from "../../common/turkish-text.js";
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 
 const LEVEL_ORDER: Record<string, number> = {
   trace: 5,

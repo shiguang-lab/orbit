@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { addGroupPermission, getGroupPermissions, getKeyGroup, removeGroupPermission } from "@shiguang-gateway/core-domain/db/api-key-groups";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { addGroupPermission, getGroupPermissions, getKeyGroup, removeGroupPermission } from "@orbit/core/db/api-key-groups";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 import { json } from "./response.js";
 type RouteParams = { params: { id: string } };
 const addGroupPermissionSchema = z.object({ modelPattern: z.string().trim().min(1, "modelPattern is required"), accessType: z.enum(["allow", "deny"]), provider: z.string().trim().min(1).optional() });

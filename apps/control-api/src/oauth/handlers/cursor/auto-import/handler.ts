@@ -1,6 +1,6 @@
 // @ts-nocheck
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { tryAgentAuth, tryIdeAuth } from "@shiguang-gateway/core-domain/control/cursor-token-extractor";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { tryAgentAuth, tryIdeAuth } from "@orbit/core/control/cursor-token-extractor";
 
 /**
  * GET /api/oauth/cursor/auto-import

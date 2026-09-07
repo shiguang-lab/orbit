@@ -1,12 +1,12 @@
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import {
   createSubscription,
   firstIssueMessage,
   listSubscriptions,
   proxySubscriptionCreateSchema,
   redactSubscriptionUrl,
-} from "@shiguang-gateway/core-domain/proxy-subscriptions/management";
-import { createErrorResponseFromUnknown } from "@shiguang-gateway/core-domain/shared/error-response";
+} from "@orbit/core/proxy-subscriptions/management";
+import { createErrorResponseFromUnknown } from "@orbit/utils/errors/api-response";
 
 export async function GET(request: Request): Promise<Response> {
   const authError = await requireManagementAuth(request);

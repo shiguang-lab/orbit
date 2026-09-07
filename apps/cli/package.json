@@ -1,5 +1,5 @@
 {
-  "name": "@shiguang-gateway/cli",
+  "name": "@orbit/cli",
   "version": "3.8.51-local",
   "private": true,
   "type": "module",
@@ -20,11 +20,10 @@
     "smoke": "node --import tsx test/smoke.mjs"
   },
   "dependencies": {
-    "@shiguang-gateway/auth": "workspace:*",
-    "@shiguang-gateway/cli-profile-config": "workspace:*",
-    "@shiguang-gateway/config": "workspace:*",
-    "@shiguang-gateway/core-domain": "workspace:*",
-    "@shiguang-gateway/open-sse": "workspace:*",
+    "@orbit/auth": "workspace:*",
+    "@orbit/config": "workspace:*",
+    "@orbit/core": "workspace:*",
+    "@orbit/inference": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.30.0",
     "bcryptjs": "^3.0.3",
     "commander": "^15.0.0",

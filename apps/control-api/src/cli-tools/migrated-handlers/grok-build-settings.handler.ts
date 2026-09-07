@@ -3,17 +3,17 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import pino from "pino";
 import { z } from "zod";
 
-import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { guardCliConfigWrite } from "@shiguang-gateway/core-domain/control/cli-tools-config-guard";
+import { requireManagementAuth as requireCliToolsAuth } from "@orbit/core/control/management-auth";
+import { guardCliConfigWrite } from "@orbit/core/control/cli-tools-config-guard";
 import { deleteCliToolLastConfigured, saveCliToolLastConfigured } from "../cli-tool-state.js";
-import { getResolvedModelCapabilities } from "@shiguang-gateway/core-domain/catalog/model-capabilities";
-import { resolveApiKey } from "@shiguang-gateway/core-domain/shared/api-key-resolver";
-import { createBackup } from "@shiguang-gateway/core-domain/cli/backups";
-import { getCliConfigHome, getCliRuntimeStatus } from "@shiguang-gateway/core-domain/cli/runtime";
+import { getResolvedModelCapabilities } from "@orbit/core/catalog/model-capabilities";
+import { resolveApiKey } from "@orbit/core/shared/api-key-resolver";
+import { createBackup } from "@orbit/core/cli/backups";
+import { getCliConfigHome, getCliRuntimeStatus } from "@orbit/core/cli/runtime";
 import {
   applyGrokBuildConfig,
   GrokBuildConfigConflictError,
@@ -23,7 +23,7 @@ import {
   resolveGrokBuildConfigPath,
   type GrokBuildApplyOptions,
   type GrokSubagentType,
-} from "@shiguang-gateway/core-domain/shared/services/grokBuildConfig";
+} from "@orbit/core/shared/services/grokBuildConfig";
 
 const logger = pino({ name: "grok-build-settings-api" });
 const TOOL_ID = "grok-build";

@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { buildWebSessionContract } from "@shiguang-gateway/open-sse/services/web-session-contract";
+import { getProviderConnections } from "@orbit/core/db/provider-connections";
+import { buildWebSessionContract } from "@orbit/inference/services/web-session-contract";
 
 /** Provider metadata surfaces consumed by dashboard/client integrations. */
 @Injectable()

@@ -2,14 +2,14 @@ import {
   CODEX_CLI_RS_ORIGINATOR,
   getCodexClientVersion,
   getCodexDefaultHeaders,
-} from "@shiguang-gateway/open-sse/config/codexClient";
-import { isCodexDiscoveryModelExcluded } from "@shiguang-gateway/core-domain/control/provider-discovery-support/codexDiscoveryPolicy";
+} from "@orbit/inference/config/codexClient";
+import { isCodexDiscoveryModelExcluded } from "@orbit/core/control/provider-discovery-support/codexDiscoveryPolicy";
 
 export {
   CODEX_DISCOVERY_EXCLUDED_IDS,
   CODEX_DISCOVERY_EXCLUDED_ID_PREFIXES,
   isCodexDiscoveryModelExcluded,
-} from "@shiguang-gateway/core-domain/control/provider-discovery-support/codexDiscoveryPolicy";
+} from "@orbit/core/control/provider-discovery-support/codexDiscoveryPolicy";
 
 export const CODEX_MODELS_URL = "https://chatgpt.com/backend-api/codex/models";
 export const CODEX_GITHUB_MODELS_URL =

@@ -2,7 +2,7 @@
 
 /**
  * Compare SQLite table declarations (CREATE/ALTER TABLE) with the canonical
- * packages/db-schema entity catalog.  This is an inventory check only: SQL
+ * packages/contracts/src/db-schema entity catalog.  This is an inventory check only: SQL
  * migrations remain owned by the domain app and are not rewritten here.
  */
 import { readFileSync, readdirSync, statSync } from "node:fs";
@@ -99,11 +99,11 @@ const outputDir = mkdtempSync(join(os.tmpdir(), "shiguang-db-schema-coverage-"))
 try {
   const compile = spawnSync(
     "pnpm",
-    ["--filter", "@shiguang-gateway/db-schema", "exec", "tsc", "--outDir", outputDir, "--declaration", "false", "--declarationMap", "false", "--sourceMap", "false"],
+    ["--filter", "@orbit/contracts", "exec", "tsc", "--noEmit", "false", "--rootDir", "src", "--outDir", outputDir, "--declaration", "false", "--declarationMap", "false", "--sourceMap", "false"],
     { cwd: repoRoot, stdio: "inherit" },
   );
   if (compile.status !== 0) process.exit(compile.status ?? 1);
-  const schema = await import(new URL(`file://${join(outputDir, "index.js")}`).href);
+  const schema = await import(new URL(`file://${join(outputDir, "db-schema", "index.js")}`).href);
   schema.assertGatewayEntities();
   const canonical = new Set(Object.values(schema.GATEWAY_TABLES).map(normalizeName));
   const uncovered = [...declarations.keys()].filter((table) => !canonical.has(table)).sort();

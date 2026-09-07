@@ -7,13 +7,13 @@
 
 import { execFile, execSync } from "node:child_process";
 import { promisify } from "node:util";
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 
 const execFileAsync = promisify(execFile);
 import { classifyCommand } from "./command-classification.js";
-import { createCombo, getCombos } from "@shiguang-gateway/core-domain/db/combos";
-import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { createApiKey, revokeApiKey, getApiKeys } from "@shiguang-gateway/core-domain/db/api-keys";
+import { createCombo, getCombos } from "@orbit/core/db/combos";
+import { getProviderConnections } from "@orbit/core/db/provider-connections";
+import { createApiKey, revokeApiKey, getApiKeys } from "@orbit/core/db/api-keys";
 import {
   searchSymbols,
   findCallers,
@@ -24,7 +24,7 @@ import {
   isCodeGraphAvailable,
   type CodeGraphQueryResult,
 } from "./codegraph-knowledge.js";
-import { getAllKeyGroups } from "@shiguang-gateway/core-domain/db/api-key-groups";
+import { getAllKeyGroups } from "@orbit/core/db/api-key-groups";
 
 // ── Tool Types ───────────────────────────────────────────────────────────────
 

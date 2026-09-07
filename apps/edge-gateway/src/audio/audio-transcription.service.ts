@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
+import { isAllRateLimitedCredentials } from "@orbit/inference/services/credential-selection";
 import { audioOptionsResponse } from "./audio-options.js";
 import { resolveDynamicAudioProviders, type AudioProvider } from "./audio-provider-nodes.js";
 import { rateLimitedProviderResponse } from "../common/provider-rate-limit-response.js";
@@ -18,19 +18,19 @@ export class AudioTranscriptionService {
     try {
       formData = await request.formData();
     } catch {
-      const { errorResponse } = await load("@shiguang-gateway/open-sse/utils/error");
+      const { errorResponse } = await load("@orbit/inference/utils/error");
       return errorResponse(400, "Invalid multipart form data");
     }
 
     const model = formData.get("model");
     if (!model) {
-      const { errorResponse } = await load("@shiguang-gateway/open-sse/utils/error");
+      const { errorResponse } = await load("@orbit/inference/utils/error");
       return errorResponse(400, "Missing model");
     }
     const modelStr = String(model);
     const [{ enforceApiKeyPolicy }, { errorResponse }] = await Promise.all([
-      load("@shiguang-gateway/core-domain/runtime/api-key-policy"),
-      load("@shiguang-gateway/open-sse/utils/error"),
+      load("@orbit/core/runtime/api-key-policy"),
+      load("@orbit/inference/utils/error"),
     ]);
     const policy = await enforceApiKeyPolicy(request, modelStr);
     if (policy.rejection) return policy.rejection;
@@ -41,14 +41,14 @@ export class AudioTranscriptionService {
     if (!modelStr.includes("/")) {
       try {
         const [{ getComboByName, getCombos }, { getDatabaseSettings }] = await Promise.all([
-          load("@shiguang-gateway/core-domain/db/combos"),
-          load("@shiguang-gateway/core-domain/db/database-settings"),
+          load("@orbit/core/db/combos"),
+          load("@orbit/core/db/database-settings"),
         ]);
         const combo = await getComboByName(modelStr);
         if (combo) {
           const [{ handleComboChat }, { log }] = await Promise.all([
-            load("@shiguang-gateway/open-sse/services/combo"),
-            load("@shiguang-gateway/open-sse/utils/logger"),
+            load("@orbit/inference/services/combo"),
+            load("@orbit/inference/utils/logger"),
           ]);
           let allCombos: any[] = [];
           try {
@@ -77,7 +77,7 @@ export class AudioTranscriptionService {
         }
       } catch (error) {
         try {
-          const { log } = await load("@shiguang-gateway/open-sse/utils/logger");
+          const { log } = await load("@orbit/inference/utils/logger");
           log.error("AUDIO", `Combo resolution failed for ${modelStr}: ${error}`);
         } catch {
           // Combo lookup is optional; the concrete provider path still works.
@@ -98,10 +98,10 @@ export class AudioTranscriptionService {
       { parseTranscriptionModel, getTranscriptionProvider, audioModelAliasCandidates, findAlternateAudioProvider, listAlternateAudioModelIds, missingAudioProviderCredentialsMessage, AUDIO_TRANSCRIPTION_PROVIDERS },
       { errorResponse },
     ] = await Promise.all([
-      load("@shiguang-gateway/open-sse/handlers/audioTranscription"),
-      load("@shiguang-gateway/open-sse/services/auth"),
-      load("@shiguang-gateway/open-sse/config/audioRegistry"),
-      load("@shiguang-gateway/open-sse/utils/error"),
+      load("@orbit/inference/handlers/audioTranscription"),
+      load("@orbit/inference/services/auth"),
+      load("@orbit/inference/config/audioRegistry"),
+      load("@orbit/inference/utils/error"),
     ]);
 
     const dynamicProviders = await resolveDynamicAudioProviders(
@@ -170,8 +170,8 @@ export class AudioTranscriptionService {
       await clearRecoveredProviderState(credentials);
       try {
         const [{ attachShiguangGatewayMetaToResponse }, { generateRequestId }] = await Promise.all([
-          load("@shiguang-gateway/core-domain/edge/gateway-response-meta"),
-          load("@shiguang-gateway/core-domain/runtime/request-id"),
+          load("@orbit/core/edge/gateway-response-meta"),
+          load("@orbit/core/runtime/request-id"),
         ]);
         response = attachShiguangGatewayMetaToResponse(response, {
           provider,

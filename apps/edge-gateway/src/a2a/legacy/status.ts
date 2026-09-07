@@ -1,4 +1,4 @@
-import { getCachedSettings, getTaskManager } from "@shiguang-gateway/core-domain/a2a/runtime";
+import { getCachedSettings, getTaskManager } from "@orbit/core/a2a/runtime";
 import { AgentCardService } from "../../agent-card/agent-card.service.js";
 
 export async function GET(request: Request) {

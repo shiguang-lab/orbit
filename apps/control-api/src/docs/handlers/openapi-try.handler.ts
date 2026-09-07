@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 
 const schema = z.object({ method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"]).default("GET"), path: z.string().min(1).startsWith("/").refine((p) => !p.startsWith("//")).refine((p) => ["/api/", "/v1/", "/v1beta/", "/a2a", "/.well-known/agent.json"].some((x) => p.startsWith(x))), headers: z.record(z.string(), z.string()).default({}), body: z.any().optional() });
 const blocked = new Set(["connection", "content-length", "cookie", "host", "keep-alive", "proxy-authenticate", "proxy-authorization", "te", "trailer", "transfer-encoding", "upgrade", "x-forwarded-for", "x-forwarded-host", "x-forwarded-proto"]);

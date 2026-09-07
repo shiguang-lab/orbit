@@ -3,16 +3,16 @@ import {
   getApiKeysCount,
   createApiKey,
   updateApiKeyPermissions,
-} from "@shiguang-gateway/core-domain/db/api-keys";
-import { isCloudEnabled } from "@shiguang-gateway/core-domain/db/settings";
-import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
-import { syncToCloud } from "@shiguang-gateway/core-domain/sync/cloud";
-import { createKeySchema } from "@shiguang-gateway/core-domain/validation/keys";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { isApiKeyRevealEnabled, maskStoredApiKey } from "@shiguang-gateway/core-domain/control/api-key-exposure";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { normalizeSelfServiceScopesForCreate } from "@shiguang-gateway/core-domain/shared/constants/selfServiceScopes";
-import * as log from "@shiguang-gateway/core-domain/sse/logger";
+} from "@orbit/core/db/api-keys";
+import { isCloudEnabled } from "@orbit/core/db/settings";
+import { getConsistentMachineId } from "@orbit/core/shared/utils/machineId";
+import { syncToCloud } from "@orbit/core/sync/cloud";
+import { createKeySchema } from "@orbit/core/validation/keys";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
+import { isApiKeyRevealEnabled, maskStoredApiKey } from "@orbit/core/control/api-key-exposure";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { normalizeSelfServiceScopesForCreate } from "@orbit/core/shared/constants/selfServiceScopes";
+import * as log from "@orbit/core/sse/logger";
 
 const json = (body: unknown, init?: ResponseInit): Response => Response.json(body, init);
 

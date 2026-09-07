@@ -22,27 +22,27 @@
  *                               same threshold, not independently tunable.
  */
 
-import { deleteProxyById, listProxies, updateProxy } from "@shiguang-gateway/core-domain/db/proxy-registry";
-import { isProxyLogIncludeIps } from "@shiguang-gateway/core-domain/logging/proxy-log-settings";
+import { deleteProxyById, listProxies, updateProxy } from "@orbit/core/db/proxy-registry";
+import { isProxyLogIncludeIps } from "@orbit/core/logging/proxy-log-settings";
 import {
   getRecentEgressSharingSummary,
   type EgressSharingSummary,
   type EgressSharingWarning,
-} from "@shiguang-gateway/core-domain/shared/proxy-egress";
-import { providerRuntimePorts } from "@shiguang-gateway/core-domain/runtime/provider-ports";
+} from "@orbit/core/shared/proxy-egress";
+import { providerRuntimePorts } from "@orbit/core/runtime/provider-ports";
 import { fetch as undiciFetch } from "undici";
 import {
   classifyProbeStatus,
   decideProxyHealthAction,
   type ProxyProbeOutcome,
-} from "@shiguang-gateway/core-domain/shared/proxy-health";
+} from "@orbit/core/shared/proxy-health";
 import {
   resolveProbeConcurrency,
   resolveProbeStaggerMs,
   resolveProbeTarget,
   waitForProbeSlot,
-} from "@shiguang-gateway/core-domain/shared/proxy-health";
-import { resolveProviderProbeTarget } from "@shiguang-gateway/core-domain/shared/proxy-health";
+} from "@orbit/core/shared/proxy-health";
+import { resolveProviderProbeTarget } from "@orbit/core/shared/proxy-health";
 
 // #6246: a HEAD to the public probe target through a legit (often loaded) proxy
 // can exceed a few seconds; the old 5s ceiling produced false negatives that

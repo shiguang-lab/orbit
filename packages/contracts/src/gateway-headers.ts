@@ -2,7 +2,7 @@
  * Response metadata headers emitted by gateway applications.
  *
  * This is a transport contract, not an implementation detail of the legacy
- * core-domain package. Edge, control and streaming components can all depend
+ * core package. Edge, control and streaming components can all depend
  * on the same canonical header names without importing another app's source.
  */
 export const SHIGUANG_GATEWAY_RESPONSE_HEADERS = {

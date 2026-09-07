@@ -1,0 +1,2 @@
+/** Compatibility facade; catalog support ownership lives in @orbit/providers. */
+export { ANTHROPIC_BETA_API_KEY, ANTHROPIC_BETA_CLAUDE_OAUTH, ANTHROPIC_BETA_FULL, ANTHROPIC_VERSION_HEADER, CLAUDE_CLI_BILLING_VERSION, CLAUDE_CLI_BUILD_REVISION, CLAUDE_CLI_STAINLESS_PACKAGE_VERSION, CLAUDE_CLI_STAINLESS_RUNTIME_VERSION, CLAUDE_CLI_USER_AGENT, CLAUDE_CLI_VERSION, FORWARDABLE_CLIENT_BETAS, mergeClientAnthropicBeta, normalizeAnthropicHeaderVariants } from "@orbit/providers/support/config/anthropicHeaders";

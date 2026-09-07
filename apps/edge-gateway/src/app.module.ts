@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { RealtimePublisherLifecycleService } from "./realtime-publisher-lifecycle.service.js";
-import { HttpKernelModule } from "@shiguang-gateway/http-kernel";
+import { HttpModule } from "@orbit/http";
 import { ProcessHealthModule } from "./process-health/process-health.module.js";
 import { EdgeRuntimeModule } from "./runtime/edge-runtime.module.js";
 import { EdgeRoutesModule } from "./routes/edge-routes.module.js";
@@ -68,7 +68,7 @@ import { DatabaseRuntimeLifecycleService } from "./database-runtime-lifecycle.se
 
 @Module({
   imports: [
-    HttpKernelModule,
+    HttpModule,
     ProcessHealthModule,
     EdgeRuntimeModule,
     EdgeRoutesModule,

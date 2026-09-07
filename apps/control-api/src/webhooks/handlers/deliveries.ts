@@ -3,9 +3,9 @@
  * GET — List recent deliveries for a webhook
  */
 
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
-import { getWebhook, getDeliveries } from "@shiguang-gateway/core-domain/db/webhooks";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
+import { getWebhook, getDeliveries } from "@orbit/core/db/webhooks";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   const authError = await requireManagementAuth(request);

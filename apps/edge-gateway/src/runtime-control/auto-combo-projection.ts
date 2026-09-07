@@ -25,10 +25,10 @@ export type AutoComboProjection = {
 /** Build dashboard projections beside the edge-owned auto-combo runtime state. */
 export async function projectAutoComboTemplates(): Promise<{ combos: AutoComboProjection[] }> {
   const [prefix, catalog, suffixes, factory] = await Promise.all([
-    import("@shiguang-gateway/open-sse/services/autoCombo/autoPrefix"),
-    import("@shiguang-gateway/open-sse/services/autoCombo/builtinCatalog"),
-    import("@shiguang-gateway/open-sse/services/autoCombo/suffixComposition"),
-    import("@shiguang-gateway/open-sse/services/autoCombo/virtualFactory"),
+    import("@orbit/inference/services/autoCombo/autoPrefix"),
+    import("@orbit/inference/services/autoCombo/builtinCatalog"),
+    import("@orbit/inference/services/autoCombo/suffixComposition"),
+    import("@orbit/inference/services/autoCombo/virtualFactory"),
   ]);
   const combos: AutoComboProjection[] = [];
   const seenIds = new Set<string>();
@@ -105,9 +105,9 @@ export async function materializeAutoComboTemplate(name: string): Promise<
     }
 > {
   const [catalog, families, factory] = await Promise.all([
-    import("@shiguang-gateway/open-sse/services/autoCombo/builtinCatalog"),
-    import("@shiguang-gateway/open-sse/services/autoCombo/modelFamily"),
-    import("@shiguang-gateway/open-sse/services/autoCombo/virtualFactory"),
+    import("@orbit/inference/services/autoCombo/builtinCatalog"),
+    import("@orbit/inference/services/autoCombo/modelFamily"),
+    import("@orbit/inference/services/autoCombo/virtualFactory"),
   ]);
   const suffix = name.slice("auto/".length);
   const resolved = catalog.resolveBuiltinAutoSpec(name, suffix) as AutoSpec;

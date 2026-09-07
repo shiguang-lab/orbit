@@ -1,5 +1,5 @@
-import { AgentBridgeDnsActionSchema, ALL_TARGETS, addDNSEntry, getCachedPassword, getAgentBridgeStore, isMitmSudoPasswordRequired, normalizeMitmSudoPasswordInput, removeDNSEntry, resolveMitmSudoPassword, setCachedPassword } from "@shiguang-gateway/core-domain/control/agent-bridge";
-import { errorResponse, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { AgentBridgeDnsActionSchema, ALL_TARGETS, addDNSEntry, getCachedPassword, getAgentBridgeStore, isMitmSudoPasswordRequired, normalizeMitmSudoPasswordInput, removeDNSEntry, resolveMitmSudoPassword, setCachedPassword } from "@orbit/core/control/agent-bridge";
+import { errorResponse, sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import { invalid } from "./common.js";
 
 export async function POST(request: Request, context?: { params: Record<string, string> }): Promise<Response> {

@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import type { TunnelCommand, TunnelCommandPayload } from "@shiguang-gateway/contracts/tunnel-command";
-import { getInternalServiceAuthHeaders } from "@shiguang-gateway/auth/internal-service";
+import type { TunnelCommand, TunnelCommandPayload } from "@orbit/contracts/tunnel-command";
+import { getInternalServiceAuthHeaders } from "@orbit/auth/internal-service";
 
 function edgeGatewayBaseUrl(): string {
   const configured = process.env.EDGE_GATEWAY_URL?.trim();

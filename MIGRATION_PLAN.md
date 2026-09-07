@@ -13,14 +13,14 @@
 
 - ✅ 已移除两个混合运行时包；目录与 workspace 包名均已退役。
 - ✅ `edge-gateway` 与 `control-api` 使用各自固定的 bootstrap，不再由入口传入 `surface` 参数。
-- ✅ `realtime`、`worker` 只通过 `core-domain` 的显式子路径加载实时能力和后台调度器。
+- ✅ `realtime`、`worker` 只通过 `core` 的显式子路径加载实时能力和后台调度器。
 - ✅ 所有 HTTP transport 已物理归入 `apps/control-api` 或 `apps/edge-gateway`；`packages/*` 中不存在 `route.ts`、app route catalog 或兼容 dispatcher。
 - ✅ control、edge、realtime、worker 分别持有自己的 listener、timer、watcher、内存状态和关闭链；跨进程运行时状态只通过认证、版本化 command 契约访问。
 - ✅ 路由 parity、HTTP method、鉴权边界和部署拆分由严格审计持续验证；当前 116 个官方 dashboard page 均有本地 React Router 入口。
 - ✅ control-api 的完整 `/api/keys/**` 管理域（密钥 CRUD、设备、重生成、明文查看、用量限制、分组、成员与权限）已物理迁入 `apps/control-api/src/keys/handlers`，并完成 control 401 / edge 404 的拆分部署验收。
-- ✅ edge-gateway 的 `/api/v1/files*` handler 已物理迁入 `apps/edge-gateway/src/files/handlers`，改用 app-owned Response/CORS 适配层；文件持久化仍通过显式 core-domain DB 合约提供。
+- ✅ edge-gateway 的 `/api/v1/files*` handler 已物理迁入 `apps/edge-gateway/src/files/handlers`，改用 app-owned Response/CORS 适配层；文件持久化仍通过显式 core DB 合约提供。
 - ✅ `db-schema` 收敛跨 app 的表名/所有权元数据；查询与写入仍由所属 app 的领域服务负责。
-- ✅ 纯出站 URL/SSRF 校验原语已从 `core-domain/shared/network` 提取到 `packages/network-guard`；依赖数据库/feature flag 的 guard policy 仍由领域包持有。
+- ✅ 纯出站 URL/SSRF 校验原语已从 `core/shared/network` 提取到 `packages/utils/src/network`；依赖数据库/feature flag 的 guard policy 仍由领域包持有。
 - ✅ 每个 app 的 typecheck、部署 smoke 与边界审计已纳入逐域验收；详见 [`DOMAIN_BOUNDARIES.md`](./DOMAIN_BOUNDARIES.md)。
 
 - **已迁移**：官方 dashboard page 路径、本地管理 API 与 edge 数据面路由均已落入对应 app；路由清单以自动审计生成结果为准，不再维护手写“剩余路由”数字。

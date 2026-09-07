@@ -8,7 +8,7 @@
  * Eliminates the ~150 lines of duplicate dispatch logic that previously existed
  * in both route files.
  */
-import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
+import { getProviderConnections } from "@orbit/core/db/provider-connections";
 import { forwardEdgeHttpRequest } from "../../edge-runtime/client.js";
 import { getChaosConfig, type ChaosConfig } from "./config.js";
 

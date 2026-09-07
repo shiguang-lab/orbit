@@ -6,9 +6,9 @@ import {
   getCacheMetrics,
   getCacheTrend,
   getCachedSettings,
-} from "@shiguang-gateway/core-domain/cache/services";
+} from "@orbit/core/cache/services";
 import { executeEdgeRuntimeCommand } from "../edge-runtime/client.js";
-import { listSemanticCacheEntries } from "@shiguang-gateway/core-domain/cache/db";
+import { listSemanticCacheEntries } from "@orbit/core/cache/db";
 
 @Injectable()
 export class CacheService {

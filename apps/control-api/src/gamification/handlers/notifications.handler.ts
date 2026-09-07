@@ -1,6 +1,6 @@
-import { CORS_HEADERS } from "@shiguang-gateway/core-domain/shared/cors";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { createBadgeNotificationStream } from "@shiguang-gateway/core-domain/control/gamification-notifications";
+import { CORS_HEADERS } from "@orbit/core/shared/cors";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { createBadgeNotificationStream } from "@orbit/core/control/gamification-notifications";
 
 /**
  * GET /api/gamification/notifications?apiKeyId=xxx — SSE badge unlock notifications

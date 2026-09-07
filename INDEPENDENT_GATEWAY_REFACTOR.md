@@ -48,13 +48,13 @@ OpenAI 兼容入口，负责 Provider 翻译、流式输出、fallback、token �
 
 | 能力域 | 协议/入口 | 目标实现包 |
 |---|---|---|
-| 聊天与代码代理 | `/v1/chat/completions`、`/v1/messages`、`/v1/responses`、流式 SSE | `apps/edge-gateway` + `packages/core-domain` |
+| 聊天与代码代理 | `/v1/chat/completions`、`/v1/messages`、`/v1/responses`、流式 SSE | `apps/edge-gateway` + `packages/core` |
 | 实时协议 | `/v1/ws`、Responses WebSocket、live dashboard WS（默认 20132） | `apps/realtime` |
-| 模型与多模态 | `/v1/models`、`/v1/embeddings`、`/v1/images/generations`、`/v1/audio/transcriptions`、`/v1/audio/speech`、`/v1/videos/generations`、`/v1/music/generations`、OCR | `apps/edge-gateway` + `packages/provider-catalog` + `packages/open-sse` |
-| 工具型 API | `/v1/search`、web fetch、rerank、moderations、文件/批处理 | `apps/edge-gateway` + `packages/core-domain` |
-| 兼容协议 | `/v1beta` Gemini、Ollama aliases、provider 专用路由、CLI/VS Code aliases | `packages/core-domain` |
-| 路由决策 | 19 种策略、Auto Combo、模型/Provider/账号 fallback、配额预检、工作流阶段路由 | `packages/core-domain` |
-| 请求处理 | role normalization、structured output 转换、think tag、token 计数、响应清洗、系统 prompt、请求去重/缓存 | `packages/core-domain` |
+| 模型与多模态 | `/v1/models`、`/v1/embeddings`、`/v1/images/generations`、`/v1/audio/transcriptions`、`/v1/audio/speech`、`/v1/videos/generations`、`/v1/music/generations`、OCR | `apps/edge-gateway` + `packages/providers` + `packages/inference` |
+| 工具型 API | `/v1/search`、web fetch、rerank、moderations、文件/批处理 | `apps/edge-gateway` + `packages/core` |
+| 兼容协议 | `/v1beta` Gemini、Ollama aliases、provider 专用路由、CLI/VS Code aliases | `packages/core` |
+| 路由决策 | 19 种策略、Auto Combo、模型/Provider/账号 fallback、配额预检、工作流阶段路由 | `packages/core` |
+| 请求处理 | role normalization、structured output 转换、think tag、token 计数、响应清洗、系统 prompt、请求去重/缓存 | `packages/core` |
 
 ### 2.2 Provider 与凭据
 
@@ -169,7 +169,7 @@ sqlite-vec 对应索引重建、全量 route 与 worker 验收，并完成 SQLit
 
 | 发现 | 证据 | 影响 |
 |---|---|---|
-| 源代码来源 | 已将 `src/app/api`、领域、DB、协议和 middleware 纳入 `packages/core-domain`，并将本地 import 重写为相对路径 | 运行时只加载本仓库内容；发布前仍需完成许可证/来源审查 |
+| 源代码来源 | 已将 `src/app/api`、领域、DB、协议和 middleware 纳入 `packages/core`，并将本地 import 重写为相对路径 | 运行时只加载本仓库内容；发布前仍需完成许可证/来源审查 |
 | 路由覆盖 | edge/control app 由 Nest controller 和 app-local handler 直接拥有；审查脚本逐路径和 HTTP method 比较参考/本地集合 | 发布清单继续验证每个 route 的行为契约和真实 provider smoke |
 | 数据同步 | importer app 支持冷快照复制、SQLite integrity check、逐文件 SHA-256 manifest 和可恢复替换；`verify-imported-data.mjs` 校验源/目标文件集合、不可变文件 hash、SQLite 和关键表 | 本机快照及 Docker acceptance 已完成；生产目标仍需执行同一校验 |
 | 凭据与外部状态 | importer 不复制进程锁/内存队列；CLI、keychain、浏览器 profile、隧道 token 需要单独导入或重新授权 | 目标机必须逐 Provider 记录解密/刷新/smoke 结果 |
@@ -181,15 +181,15 @@ sqlite-vec 对应索引重建、全量 route 与 worker 验收，并完成 SQLit
 
 说明：下表中的 `apps/admin` 是仓库当前已有的管理台，原地保留并继续演进，不新建第二套
 Admin。其余应用均是独立进程：端口、信号处理和 surface 配置由各自 `apps/*/src/index.ts`
-负责；`packages/http-kernel` 只提供共享 HTTP 传输原语，不创建应用或持有路由目录；
-各应用拥有业务编排，`packages/core-domain` 仅提供跨应用复用的纯领域能力。
+负责；`packages/http` 只提供共享 HTTP 传输原语，不创建应用或持有路由目录；
+各应用拥有业务编排，`packages/core` 仅提供跨应用复用的纯领域能力。
 
 | 应用 | 首要职责 | 对外端口/边界 | 依赖 |
 |---|---|---|---|
-| `apps/edge-gateway` | OpenAI/Anthropic/Gemini/Ollama 兼容 API、认证、限流、请求 admission、路由执行 | 443（内部 `/v1/*`、`/a2a`、MCP transport） | contracts、core-domain、provider-catalog、open-sse、DB/Redis |
+| `apps/edge-gateway` | OpenAI/Anthropic/Gemini/Ollama 兼容 API、认证、限流、请求 admission、路由执行 | 443（内部 `/v1/*`、`/a2a`、MCP transport） | contracts、core、providers、open-sse、DB/Redis |
 | `apps/control-api` | Admin 管理 API、RBAC、CRUD、导入导出、配置和审计 | 443 `/api/*` | contracts、control-domain、DB、object store |
 | `apps/realtime` | live dashboard、Responses WS、MCP SSE/Streamable HTTP、A2A stream、服务日志 SSE | 443 upgrade/SSE（内部可拆 20132） | event-bus、task-runtime、auth |
-| `apps/worker` | 模型/价格/配额/健康同步、jobs、evals、webhooks、radar、清理和备份 | 仅内部 command/health listener | contracts、core-domain、provider-catalog、DB、Redis |
+| `apps/worker` | 模型/价格/配额/健康同步、jobs、evals、webhooks、radar、清理和备份 | 仅内部 command/health listener | contracts、core、providers、DB、Redis |
 | `apps/admin`（现有，保留） | 当前 React/Vite 管理台；原地改造，只访问同源 `/api`、`/v1` 和 `/live-ws`，不再创建第二套管理台 | 静态资源 | contracts、ui |
 | `apps/importer` | 参考实例快照导入、JSON/SQLite 校验、差异报告和回滚 | CLI | migration、persistence、crypto |
 
@@ -205,12 +205,12 @@ packages/
   contracts/          # 前后端共享 API 类型/契约
   auth/               # 管理面与内部服务认证原语
   db-schema/          # 跨应用数据库实体和唯一 owner 清单
-  provider-catalog/   # Provider/模型静态目录
+  providers/   # Provider/模型静态目录
   open-sse/           # 跨 Provider 执行、协议转换与流式领域能力
-  core-domain/        # 共享领域规则、DB 操作和窄化运行时端口
-  http-kernel/        # HTTP 传输原语；不创建 app 或持有 route catalog
+  core/        # 共享领域规则、DB 操作和窄化运行时端口
+  http/        # HTTP 传输原语；不创建 app 或持有 route catalog
   network-guard/      # 纯 SSRF/出站地址校验
-  runtime-logging/    # 统一日志契约
+  logging/    # 统一日志契约
 ```
 
 包内禁止引用 `apps/*`，应用只能通过包接口组合；Provider executor 不允许直接写管理
@@ -417,7 +417,7 @@ DashScope 兼容 HTTP 接口，不经过 CLI。可执行文件通过 PATH 或 `C
   或生产主机不存在同级 `../Orbit` 时仍可独立验收并检测路由漂移。本地显式提供参考源码时继续
   逐文件对比，发布流程不再对官方 checkout 存在构建时依赖。
 - `pnpm typecheck`、`pnpm build`：PASS（12 个 typecheck 任务、8 个 build 任务）。
-- `pnpm --filter @shiguang-gateway/http-kernel test`：PASS（5/5 CSRF 会话轮换、组织隔离和本地 cookie 隔离用例）。
+- `pnpm --filter @orbit/http test`：PASS（5/5 CSRF 会话轮换、组织隔离和本地 cookie 隔离用例）。
 - `pnpm audit:brand`：PASS（源码、部署配置、镜像/容器命名和可发布目录无旧项目标识）。
 - `pnpm smoke:route-imports`：PASS（700 个本地 route 文件全部可导入；`docs/api/search`
   已改为本地 Markdown 文件索引，不依赖 Next/Fumadocs 虚拟 loader）。
@@ -483,7 +483,7 @@ DashScope 兼容 HTTP 接口，不经过 CLI。可执行文件通过 PATH 或 `C
 - `README.md`：改为独立镜像和 importer 说明。
 - `MIGRATION_PLAN.md`、`MIGRATION_SPEC.md`：从“底层 Orbit 不动”改为“clean-room domain package + parity gate”。
 - `docker-compose.yml`、`deploy/NAS-DEPLOY.md`、`deploy/gateway-caddyfile.md`：移除 `SHIGUANG_GATEWAY_NAS_*`，加入 DB/Redis/object-store、egress deny、health/readiness。
-- `packages/http-kernel/tsconfig.json`、`packages/http-kernel/src/app.ts`：收敛为纯 transport foundation，删除领域引擎适配器与兼容启动器。
+- `packages/http/tsconfig.json`、`packages/http/src/app.ts`：收敛为纯 transport foundation，删除领域引擎适配器与兼容启动器。
 - `apps/admin/vite.config.ts`、`entities/live.ts`：只使用同源 live endpoint，不保留 `100.87.115.78:20132`。
 - `packages/config/src/index.ts`：移除 `orbitApiUrl`，改成 `publicBaseUrl`、`internalServiceUrls` 和显式 Provider endpoints。
 

@@ -12,8 +12,8 @@ import {
   setCachedPassword,
   startMitm,
   stopMitm,
-} from "@shiguang-gateway/core-domain/shared/mitm";
-import { resolveApiKey } from "@shiguang-gateway/core-domain/shared/api-key-resolver";
+} from "@orbit/core/shared/mitm";
+import { resolveApiKey } from "@orbit/core/shared/api-key-resolver";
 
 export const DEFAULT_MITM_PORT = 443;
 export const MITM_PORT_ERROR =

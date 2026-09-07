@@ -1,11 +1,11 @@
-import { getModelAliases, setModelAlias } from "@shiguang-gateway/core-domain/db/model-aliases";
-import { validateApiKey } from "@shiguang-gateway/core-domain/db/api-keys";
-import { isCloudEnabled } from "@shiguang-gateway/core-domain/db/settings";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getConsistentMachineId } from "@shiguang-gateway/core-domain/shared/utils/machineId";
-import { syncToCloud } from "@shiguang-gateway/core-domain/sync/cloud";
-import { cloudModelAliasUpdateSchema } from "@shiguang-gateway/core-domain/control/cloud-validation";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { getModelAliases, setModelAlias } from "@orbit/core/db/model-aliases";
+import { validateApiKey } from "@orbit/core/db/api-keys";
+import { isCloudEnabled } from "@orbit/core/db/settings";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { getConsistentMachineId } from "@orbit/core/shared/utils/machineId";
+import { syncToCloud } from "@orbit/core/sync/cloud";
+import { cloudModelAliasUpdateSchema } from "@orbit/core/control/cloud-validation";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 
 export async function PUT(request: Request) {
   const authError = await requireManagementAuth(request, { alwaysRequireAuth: true, invalidApiKeyStatus: 401 });

@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { countAuditLog, getAuditLog } from "@shiguang-gateway/core-domain/compliance/audit-log";
+import { countAuditLog, getAuditLog } from "@orbit/core/compliance/audit-log";
 
 function page(value: string | undefined, fallback: number, min: number, max: number) {
   const parsed = Number.parseInt(value ?? "", 10);

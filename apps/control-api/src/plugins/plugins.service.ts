@@ -4,9 +4,9 @@ import {
   getPluginByName,
   updatePluginConfig,
   type PluginRow,
-} from "@shiguang-gateway/core-domain/plugins/db";
-import { pluginManager } from "@shiguang-gateway/core-domain/plugins/manager";
-import { listMarketplacePlugins, installMarketplacePlugin } from "@shiguang-gateway/core-domain/plugins/marketplace";
+} from "@orbit/core/plugins/db";
+import { pluginManager } from "@orbit/core/plugins/manager";
+import { listMarketplacePlugins, installMarketplacePlugin } from "@orbit/core/plugins/marketplace";
 
 function formatPlugin(row: any) {
   return {

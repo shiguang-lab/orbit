@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { skillExecutor } from "@shiguang-gateway/core-domain/control/skills-executor";
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
+import { skillExecutor } from "@orbit/core/control/skills-executor";
+import { isAuthenticated } from "@orbit/core/control/authenticated";
 import {
   buildPaginatedResponse,
   parsePaginationParams,
-} from "@shiguang-gateway/core-domain/shared/types/pagination";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+} from "@orbit/core/shared/types/pagination";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 
 const executionSchema = z.object({
   skillName: z.string().min(1),

@@ -24,12 +24,12 @@
  *   }
  */
 import { z } from "zod";
-import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
-import { validateApiKey, getApiKeyMetadata } from "@shiguang-gateway/core-domain/db/api-keys";
+import { validateBody, isValidationFailure } from "@orbit/core/shared/validation/helpers";
+import { buildErrorBody, sanitizeErrorMessage } from "@orbit/inference/utils/error";
+import { validateApiKey, getApiKeyMetadata } from "@orbit/core/db/api-keys";
 import { getChaosConfig } from "../runtime/config.js";
 import { executeChaosRun, type ChaosRunResult } from "../runtime/executor.js";
-import * as log from "@shiguang-gateway/core-domain/sse/logger";
+import * as log from "@orbit/core/sse/logger";
 
 export const dynamic = "force-dynamic";
 

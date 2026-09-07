@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { getProviderConnections } from "@orbit/core/db/provider-connections";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 import {
   getProviderConnectionFamilyIds,
   AI_PROVIDERS,
@@ -16,8 +16,8 @@ import {
   IDE_PROVIDER_IDS,
   OPENAI_COMPATIBLE_PREFIX,
   ANTHROPIC_COMPATIBLE_PREFIX,
-} from "@shiguang-gateway/core-domain/catalog/providers";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+} from "@orbit/providers/catalog";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import { testSingleConnection } from "./handlers/provider-test/provider-test.handler.js";
 import { providersBatchTestSchema } from "./runtime/provider-test-batch-schema.js";
 
@@ -29,23 +29,23 @@ export class ProviderTestBatchService {
     const { mode, providerId, connectionIds } = validation.data;
     const all = await getProviderConnections(mode === "selected" ? undefined : { isActive: true });
     const group = (id: string) =>
-      NOAUTH_PROVIDERS[id]
+      id in NOAUTH_PROVIDERS
         ? "no-auth"
-        : OAUTH_PROVIDERS[id]
+        : id in OAUTH_PROVIDERS
           ? "oauth"
-          : WEB_COOKIE_PROVIDERS[id]
+          : id in WEB_COOKIE_PROVIDERS
             ? "web-cookie"
-            : SEARCH_PROVIDERS[id]
+            : id in SEARCH_PROVIDERS
               ? "search"
-              : AUDIO_ONLY_PROVIDERS[id]
+              : id in AUDIO_ONLY_PROVIDERS
                 ? "audio"
-                : LOCAL_PROVIDERS[id]
+                : id in LOCAL_PROVIDERS
                   ? "local"
-                  : UPSTREAM_PROXY_PROVIDERS[id]
+                  : id in UPSTREAM_PROXY_PROVIDERS
                     ? "upstream-proxy"
-                    : CLOUD_AGENT_PROVIDERS[id]
+                    : id in CLOUD_AGENT_PROVIDERS
                       ? "cloud-agent"
-                      : APIKEY_PROVIDERS[id]
+                      : id in APIKEY_PROVIDERS
                         ? "apikey"
                         : "unknown";
     const compatible = (id: string) => id.startsWith(OPENAI_COMPATIBLE_PREFIX) || id.startsWith(ANTHROPIC_COMPATIBLE_PREFIX);

@@ -14,13 +14,13 @@
  * Anything that does not match falls through unchanged, so existing built-in and
  * already-internal ids keep working.
  */
-import { parseImageModel } from "@shiguang-gateway/open-sse/config/imageRegistry";
-import { resolveComboTargets } from "@shiguang-gateway/open-sse/services/combo";
+import { parseImageModel } from "@orbit/inference/config/imageRegistry";
+import { resolveComboTargets } from "@orbit/inference/services/combo";
 
-import { getCachedProviderNodes } from "@shiguang-gateway/core-domain/db/read-cache";
-import { getComboByName, getCombos } from "@shiguang-gateway/core-domain/db/combos";
-import { assertMicrosoftDesignerWebProviderAvailable } from "@shiguang-gateway/contracts/designer-web-retirement";
-import { assertCommonChatGptWebModelAvailable } from "@shiguang-gateway/contracts/chatgpt-web-retirement";
+import { getCachedProviderNodes } from "@orbit/core/db/read-cache";
+import { getComboByName, getCombos } from "@orbit/core/db/combos";
+import { assertMicrosoftDesignerWebProviderAvailable } from "@orbit/contracts/designer-web-retirement";
+import { assertCommonChatGptWebModelAvailable } from "@orbit/contracts/chatgpt-web-retirement";
 
 /**
  * Rewrite a `prefix/model` custom image model to its internal `<nodeId>/<model>` form.

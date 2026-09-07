@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { addKeyToGroup, getGroupMembers, getKeyGroup, removeKeyFromGroup } from "@shiguang-gateway/core-domain/db/api-key-groups";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { addKeyToGroup, getGroupMembers, getKeyGroup, removeKeyFromGroup } from "@orbit/core/db/api-key-groups";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 import { json } from "./response.js";
 type RouteParams = { params: { id: string } };
 const addKeyToGroupSchema = z.object({ keyId: z.string().trim().min(1, "keyId is required") });

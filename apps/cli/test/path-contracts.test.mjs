@@ -38,7 +38,7 @@ test("update remains a read-only workspace check", async () => {
 
 test("MCP launcher consumes the callable open-sse factory", () => {
   const source = readFileSync(join(CLI_APP_ROOT, "src", "mcp-server.mjs"), "utf8");
-  assert.match(source, /@shiguang-gateway\/open-sse\/mcp-server\/factory/);
+  assert.match(source, /@orbit\/inference\/mcp-server\/factory/);
   assert.doesNotMatch(source, /mcp-server\/entry/);
 });
 

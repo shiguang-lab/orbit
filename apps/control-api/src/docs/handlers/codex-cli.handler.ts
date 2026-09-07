@@ -4,7 +4,7 @@ import path from "node:path";
 
 export async function GET(): Promise<Response> {
   const candidates = [
-    path.join(process.cwd(), "packages/core-domain/docs/guides/CODEX-CLI-CONFIGURATION.md"),
+    path.join(process.cwd(), "packages/core/docs/guides/CODEX-CLI-CONFIGURATION.md"),
     path.join(process.cwd(), "docs/guides/CODEX-CLI-CONFIGURATION.md"),
   ];
   try {

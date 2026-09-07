@@ -1,7 +1,7 @@
-import { getApiKeyById } from "@shiguang-gateway/core-domain/db/api-keys";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
-import * as log from "@shiguang-gateway/core-domain/sse/logger";
+import { getApiKeyById } from "@orbit/core/db/api-keys";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { buildErrorBody, sanitizeErrorMessage } from "@orbit/inference/utils/error";
+import * as log from "@orbit/core/sse/logger";
 import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 import { json } from "./response.js";
 

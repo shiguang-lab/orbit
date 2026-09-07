@@ -56,16 +56,16 @@ jobs:
           pnpm audit:gateway-independence
           pnpm audit:route-contracts
           pnpm audit:brand
-          pnpm --filter @shiguang-gateway/admin test
-          pnpm --filter @shiguang-gateway/auth test
-          pnpm --filter @shiguang-gateway/realtime test
-          pnpm --filter @shiguang-gateway/realtime-publisher test
-          pnpm --filter @shiguang-gateway/importer test
-          pnpm --filter @shiguang-gateway/http-kernel test
-          pnpm --filter @shiguang-gateway/control-api exec node --import tsx --test ../../packages/web-handler-adapter/test/web-request.test.ts
-          pnpm --filter @shiguang-gateway/control-api exec node --import tsx --test test/settings-import-request.test.ts
-          pnpm --filter @shiguang-gateway/control-api exec node --import tsx --test test/auth-session.test.ts test/combo-runtime-registration.test.ts
-          pnpm --filter @shiguang-gateway/edge-gateway exec tsx --test test/dispatcher-module-injection.test.ts
+          pnpm --filter @orbit/admin test
+          pnpm --filter @orbit/auth test
+          pnpm --filter @orbit/realtime test
+          pnpm --filter @orbit/utils test
+          pnpm --filter @orbit/importer test
+          pnpm --filter @orbit/http test
+          pnpm --filter @orbit/control-api exec node --import tsx --test ../../packages/http/test/web-request.test.ts
+          pnpm --filter @orbit/control-api exec node --import tsx --test test/settings-import-request.test.ts
+          pnpm --filter @orbit/control-api exec node --import tsx --test test/auth-session.test.ts test/combo-runtime-registration.test.ts
+          pnpm --filter @orbit/edge-gateway exec tsx --test test/dispatcher-module-injection.test.ts
           pnpm smoke:route-imports
           pnpm smoke:split-deployment
           node --test scripts/smoke-worker-start.test.mjs

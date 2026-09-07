@@ -2,16 +2,16 @@ import {
   deleteProviderNode,
   getProviderNodeById,
   updateProviderNode,
-} from "@shiguang-gateway/core-domain/db/provider-nodes";
+} from "@orbit/core/db/provider-nodes";
 import {
   deleteProviderConnectionsByProvider,
   getProviderConnections,
   updateProviderConnection,
-} from "@shiguang-gateway/core-domain/db/provider-connections";
-import { deleteModelAliasesForProvider } from "@shiguang-gateway/core-domain/db/model-aliases";
-import { isClaudeCodeCompatibleProvider } from "@shiguang-gateway/core-domain/catalog/providers";
-import { updateProviderNodeSchema } from "@shiguang-gateway/core-domain/control/provider-validation-schemas";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+} from "@orbit/core/db/provider-connections";
+import { deleteModelAliasesForProvider } from "@orbit/core/db/model-aliases";
+import { isClaudeCodeCompatibleProvider } from "@orbit/providers/catalog";
+import { updateProviderNodeSchema } from "@orbit/core/control/provider-validation-schemas";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 import { validateProviderNodeBaseUrl } from "./provider-nodes-url-guard.js";
 
 type JsonRecord = Record<string, unknown>;

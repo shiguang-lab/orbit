@@ -1,11 +1,11 @@
 import fs from "fs/promises";
 import path from "path";
-import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { ensureCliConfigWriteAllowed, getCliConfigPaths } from "@shiguang-gateway/core-domain/cli/runtime";
-import { resolveDataDir } from "@shiguang-gateway/core-domain/shared/data-paths";
+import { requireManagementAuth as requireCliToolsAuth } from "@orbit/core/control/management-auth";
+import { ensureCliConfigWriteAllowed, getCliConfigPaths } from "@orbit/core/cli/runtime";
+import { resolveDataDir } from "@orbit/core/shared/data-paths";
 import { compareTr } from "../../common/turkish-text.js";
-import { codexProfileIdSchema, codexProfileNameSchema } from "@shiguang-gateway/core-domain/validation/misc";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { codexProfileIdSchema, codexProfileNameSchema } from "@orbit/core/validation/misc";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 
 const PROFILES_DIR = path.join(resolveDataDir(), "codex-profiles");
 
@@ -234,7 +234,7 @@ export async function PUT(request: Request) {
     }
 
     // Create backup of current config before switching
-    const { createMultiBackup } = await import("@shiguang-gateway/core-domain/cli/backups");
+    const { createMultiBackup } = await import("@orbit/core/cli/backups");
     await createMultiBackup("codex", [paths.config, paths.auth]);
 
     // Ensure codex dir exists

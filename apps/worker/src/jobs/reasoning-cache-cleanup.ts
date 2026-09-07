@@ -1,4 +1,4 @@
-import { cleanupReasoningCache } from "@shiguang-gateway/open-sse/services/reasoningCache";
+import { cleanupReasoningCache } from "@orbit/inference/services/reasoningCache";
 
 const DEFAULT_INTERVAL_MS = 30 * 60 * 1000;
 

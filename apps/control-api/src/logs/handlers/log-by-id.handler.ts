@@ -1,9 +1,9 @@
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getCallLogById } from "@shiguang-gateway/core-domain/usage/call-logs";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { getCallLogById } from "@orbit/core/usage/call-logs";
 import {
   getCompletedDetails,
   getPendingById,
-} from "@shiguang-gateway/core-domain/usage/pending-requests";
+} from "@orbit/core/usage/pending-requests";
 
 // Each logged chunk-array element is one raw network read, timestamp-prefixed
 // for the debug display — NOT one complete SSE `data:` line. A single JSON

@@ -1,11 +1,11 @@
-import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
+import { toWebRequest } from "@orbit/http/web-handler";
 import { Body, Controller, Get, Inject, Post, Req, Res } from "@nestjs/common";
 import { Readable } from "node:stream";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
-import { toPublicSafeTunnelError } from "@shiguang-gateway/core-domain/shared/public-safe-error";
-import { formatValidationMessage, isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { isAuthenticated } from "@orbit/core/control/authenticated";
+import { toPublicSafeTunnelError } from "@orbit/core/shared/public-safe-error";
+import { formatValidationMessage, isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 import { TunnelsService } from "./tunnels.service.js";
 
 const cloudflaredActionSchema = z.object({ action: z.enum(["enable", "disable"]) });

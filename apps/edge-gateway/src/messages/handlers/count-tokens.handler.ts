@@ -1,14 +1,14 @@
-import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
-import { v1CountTokensSchema } from "@shiguang-gateway/core-domain/edge/count-tokens-validation";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { countTextTokens, type TokenizerContext } from "@shiguang-gateway/core-domain/shared/tokenizer";
-import { isRuntimeProviderRetirementError } from "@shiguang-gateway/contracts/provider-retirement";
-import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
-import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
-import { isCommonChatGptWebRetirementError } from "@shiguang-gateway/contracts/chatgpt-web-retirement";
-import { getProviderCredentials } from "@shiguang-gateway/open-sse/services/auth";
-import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
-import * as log from "@shiguang-gateway/core-domain/sse/logger";
+import { CORS_HEADERS } from "@orbit/contracts/cors";
+import { v1CountTokensSchema } from "@orbit/core/edge/count-tokens-validation";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
+import { countTextTokens, type TokenizerContext } from "@orbit/core/shared/tokenizer";
+import { isRuntimeProviderRetirementError } from "@orbit/contracts/provider-retirement";
+import { buildErrorBody } from "@orbit/inference/utils/error";
+import { runWithProxyContext } from "@orbit/inference/utils/proxyFetch";
+import { isCommonChatGptWebRetirementError } from "@orbit/contracts/chatgpt-web-retirement";
+import { getProviderCredentials } from "@orbit/inference/services/auth";
+import { isAllRateLimitedCredentials } from "@orbit/inference/services/credential-selection";
+import * as log from "@orbit/core/sse/logger";
 
 const load = (specifier: string): Promise<any> => import(specifier);
 
@@ -54,10 +54,10 @@ export async function POST(request: Request): Promise<Response> {
 
   try {
     const [modelApi, proxyApi, executorApi, usageApi] = await Promise.all([
-      load("@shiguang-gateway/open-sse/services/runtimeModel"),
-      load("@shiguang-gateway/open-sse/handlers/chatHelpers"),
-      load("@shiguang-gateway/open-sse/executors/index"),
-      load("@shiguang-gateway/open-sse/utils/usageTracking"),
+      load("@orbit/inference/services/runtimeModel"),
+      load("@orbit/inference/handlers/chatHelpers"),
+      load("@orbit/inference/executors/index"),
+      load("@orbit/inference/utils/usageTracking"),
     ]);
     const { getModelInfo } = modelApi;
     const { safeResolveProxy } = proxyApi;

@@ -1,8 +1,8 @@
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import {
   getConversationTurnPage,
-} from "@shiguang-gateway/core-domain/db/agentic-conversations";
-import { resolveTurnDisplayContent } from "@shiguang-gateway/open-sse/services/conversationTurnContent";
+} from "@orbit/core/db/agentic-conversations";
+import { resolveTurnDisplayContent } from "@orbit/inference/services/conversationTurnContent";
 
 export function parseSeqParam(raw: string | null): number | undefined {
   if (raw === null || raw === "") return undefined;

@@ -5,19 +5,19 @@ import {
   setCcAliasModelSetting,
   setCcAliasProviderSetting,
   type CcAliasSetting,
-} from "@shiguang-gateway/core-domain/db/provider-cc-alias";
+} from "@orbit/core/db/provider-cc-alias";
 import {
   deleteInterceptionRules,
   getInterceptionRules,
   setInterceptionRules,
   type ProviderInterceptionRules,
-} from "@shiguang-gateway/core-domain/db/provider-interception-rules";
+} from "@orbit/core/db/provider-interception-rules";
 import {
   deleteParamFilterConfig,
   getParamFilterConfig,
   setParamFilterConfig,
   type ProviderParamFilter,
-} from "@shiguang-gateway/core-domain/db/provider-param-filters";
+} from "@orbit/core/db/provider-param-filters";
 
 /** Provider-local policy configuration used by the control-plane dashboard. */
 @Injectable()

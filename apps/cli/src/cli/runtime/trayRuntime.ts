@@ -93,7 +93,7 @@ function ensureRuntimeDir(): void {
   if (!existsSync(RUNTIME_DIR)) mkdirSync(RUNTIME_DIR, { recursive: true });
   const pkg = join(RUNTIME_DIR, "package.json");
   if (!existsSync(pkg)) {
-    writeFileSync(pkg, JSON.stringify({ name: "core-domain", private: true }), "utf-8");
+    writeFileSync(pkg, JSON.stringify({ name: "core", private: true }), "utf-8");
   }
 }
 

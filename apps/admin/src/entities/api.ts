@@ -4,7 +4,7 @@
  * - 长连接：WS(live) client + SSE helpers
  */
 import { withCsrfHeader } from "@/auth/csrf";
-import { redirectToUnifiedLogin } from "@/auth/session";
+import { revalidateAuthSession } from "@/auth/session";
 import type { SidebarSettings } from "@/app/nav";
 
 const DEV_BYPASS_AUTH =
@@ -67,9 +67,8 @@ export async function api<T>(
   const response = await fetch(url, init);
 
   if (response.status === 401) {
-    // dev bypass 下不跳登录（验证 UI/WS 用）；生产/SSO 形态跳统一登录
-    if (!DEV_BYPASS_AUTH) redirectToUnifiedLogin();
-    throw new ApiError(401, "未登录或会话已过期");
+    // An upstream credential failure is not proof that the SSO session expired.
+    if (!DEV_BYPASS_AUTH) await revalidateAuthSession();
   }
 
   if (!response.ok) {
@@ -710,23 +709,23 @@ export type {
   ComboBuilderOptions,
   ComboTestResultItem,
   ComboTestResponse,
-} from "@shiguang-gateway/contracts";
+} from "@orbit/contracts";
 
 export const combosApi = {
-  list: () => api<import("@shiguang-gateway/contracts").ComboListResponse>("/combos"),
-  get: (id: string) => api<import("@shiguang-gateway/contracts").ComboItem>(`/combos/${encodeURIComponent(id)}`),
-  create: (data: Partial<import("@shiguang-gateway/contracts").ComboItem>) =>
-    api<import("@shiguang-gateway/contracts").ComboItem>("/combos", {
+  list: () => api<import("@orbit/contracts").ComboListResponse>("/combos"),
+  get: (id: string) => api<import("@orbit/contracts").ComboItem>(`/combos/${encodeURIComponent(id)}`),
+  create: (data: Partial<import("@orbit/contracts").ComboItem>) =>
+    api<import("@orbit/contracts").ComboItem>("/combos", {
       method: "POST",
       body: JSON.stringify(data),
     }),
-  update: (id: string, data: Partial<import("@shiguang-gateway/contracts").ComboItem>) =>
-    api<import("@shiguang-gateway/contracts").ComboItem>(`/combos/${encodeURIComponent(id)}`, {
+  update: (id: string, data: Partial<import("@orbit/contracts").ComboItem>) =>
+    api<import("@orbit/contracts").ComboItem>(`/combos/${encodeURIComponent(id)}`, {
       method: "PUT",
       body: JSON.stringify(data),
     }),
-  patch: (id: string, data: Partial<import("@shiguang-gateway/contracts").ComboItem>) =>
-    api<import("@shiguang-gateway/contracts").ComboItem>(`/combos/${encodeURIComponent(id)}`, {
+  patch: (id: string, data: Partial<import("@orbit/contracts").ComboItem>) =>
+    api<import("@orbit/contracts").ComboItem>(`/combos/${encodeURIComponent(id)}`, {
       method: "PATCH",
       body: JSON.stringify(data),
     }),
@@ -735,26 +734,26 @@ export const combosApi = {
       method: "DELETE",
     }),
   reorder: (comboIds: string[]) =>
-    api<{ combos: import("@shiguang-gateway/contracts").ComboItem[] }>("/combos/reorder", {
+    api<{ combos: import("@orbit/contracts").ComboItem[] }>("/combos/reorder", {
       method: "POST",
       body: JSON.stringify({ comboIds }),
     }),
   duplicate: (name: string, strategy?: string) =>
-    api<import("@shiguang-gateway/contracts").ComboItem>("/combos/duplicate", {
+    api<import("@orbit/contracts").ComboItem>("/combos/duplicate", {
       method: "POST",
       body: JSON.stringify({ name, strategy }),
     }),
   test: (comboName: string, prompt?: string) =>
-    api<import("@shiguang-gateway/contracts").ComboTestResponse>("/combos/test", {
+    api<import("@orbit/contracts").ComboTestResponse>("/combos/test", {
       method: "POST",
       body: JSON.stringify({ comboName, ...(prompt?.trim() ? { prompt: prompt.trim() } : {}) }),
     }),
   metrics: (comboName?: string) =>
-    api<{ metrics: Record<string, import("@shiguang-gateway/contracts").ComboMetrics> | import("@shiguang-gateway/contracts").ComboMetrics | null }>(
+    api<{ metrics: Record<string, import("@orbit/contracts").ComboMetrics> | import("@orbit/contracts").ComboMetrics | null }>(
       comboName ? `/combos/metrics?combo=${encodeURIComponent(comboName)}` : "/combos/metrics",
     ),
   builderOptions: () =>
-    api<import("@shiguang-gateway/contracts").ComboBuilderOptions>("/combos/builder/options"),
+    api<import("@orbit/contracts").ComboBuilderOptions>("/combos/builder/options"),
   defaults: () =>
     api<{ comboDefaults?: Record<string, unknown>; providerOverrides?: Record<string, unknown> }>(
       "/settings/combo-defaults",
@@ -2070,7 +2069,7 @@ export interface CloudAgentItem {
 
 export const cloudAgentsApi = {
   list: async (): Promise<CloudAgentItem[]> => {
-    const res = await api<{ data?: Array<Record<string, unknown>> }>("/v1/agents/tasks?limit=100");
+    const res = await api<{ data?: Array<Record<string, unknown>> }>("/cloud-agents/tasks?limit=100");
     return (Array.isArray(res?.data) ? res.data : []).map((task) => ({
       id: String(task.id ?? ""),
       name: String(task.providerId ?? task.provider_id ?? task.id ?? "Cloud task"),
@@ -2225,27 +2224,30 @@ export const webhooksApi = {
 };
 
 // 11. System Outbound Proxy
-export interface SystemProxyConfig {
-  enabled: boolean;
+export interface OutboundProxyConfig {
   type: "http" | "socks5" | "https";
-  server: string;
+  host: string;
   port: number;
-  authRequired: boolean;
   username?: string;
   password?: string;
-  bypassHosts: string[];
-  activeConnections: number;
+}
+
+export interface SystemProxyConfig {
+  global: OutboundProxyConfig | null;
+  providers: Record<string, OutboundProxyConfig>;
+  combos: Record<string, OutboundProxyConfig>;
+  keys: Record<string, OutboundProxyConfig>;
 }
 
 export const systemProxyApi = {
   getConfig: async (): Promise<SystemProxyConfig> => {
     return await api<SystemProxyConfig>("/settings/proxy");
   },
-  updateConfig: async (config: Partial<SystemProxyConfig>): Promise<{ success: boolean }> => {
-    return await api("/settings/proxy", {
+  updateConfig: async (global: OutboundProxyConfig | null): Promise<SystemProxyConfig> => {
+    return await api<SystemProxyConfig>("/settings/proxy", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(config),
+      body: JSON.stringify({ global }),
     });
   },
 };
@@ -2931,7 +2933,7 @@ export interface SearchStats {
 
 export const searchAnalyticsApi = {
   getData: async (): Promise<SearchStats> => {
-    return await api<SearchStats>("/v1/search/analytics");
+    return await api<SearchStats>("/search/analytics");
   },
 };
 

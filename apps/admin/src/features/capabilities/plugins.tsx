@@ -47,15 +47,16 @@ export function PluginsPage() {
     queryFn: () => pluginsApi.list(),
   });
 
+  const toggle = useMutation({
+    mutationFn: ({ name, enabled }: { name: string; enabled: boolean }) => enabled ? pluginsApi.activate(name) : pluginsApi.deactivate(name),
+    onSuccess: () => void client.invalidateQueries({ queryKey: ["plugins-list"] }),
+  });
+
   if (pluginsQuery.isLoading) {
     return <PageSkeleton />;
   }
 
   const plugins = pluginsQuery.data ?? [];
-  const toggle = useMutation({
-    mutationFn: ({ name, enabled }: { name: string; enabled: boolean }) => enabled ? pluginsApi.activate(name) : pluginsApi.deactivate(name),
-    onSuccess: () => void client.invalidateQueries({ queryKey: ["plugins-list"] }),
-  });
 
   return (
     <div className={styles.page}>

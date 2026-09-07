@@ -13,9 +13,9 @@
  * Returns: { ok, results: { target, action, destDir, error? }[] }
  */
 import { z } from "zod";
-import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { sanitizeErrorMessage, buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { validateBody, isValidationFailure } from "@orbit/core/shared/validation/helpers";
+import { sanitizeErrorMessage, buildErrorBody } from "@orbit/inference/utils/error";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 
 const installSchema = z.object({
   repoName: z.string().min(1, "repoName is required"),

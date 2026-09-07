@@ -1,12 +1,12 @@
 import {
   getServiceModels,
-} from "@shiguang-gateway/core-domain/embedded-services/catalog";
-import { getOrCreateApiKey } from "@shiguang-gateway/core-domain/embedded-services/api-key";
+} from "@orbit/core/embedded-services/catalog";
+import { getOrCreateApiKey } from "@orbit/core/embedded-services/api-key";
 import {
   getSupervisor,
-} from "@shiguang-gateway/core-domain/control/embedded-services-lifecycle";
+} from "@orbit/core/control/embedded-services-lifecycle";
 import { syncServiceModels } from "../../embedded-service-model-sync.js";
-import { createErrorResponse, sanitizeErrorMessage } from "@shiguang-gateway/core-domain/shared/error-response";
+import { createErrorResponse, sanitizeErrorMessage } from "@orbit/utils/errors/api-response";
 
 const TOOL = "9router";
 const DEFAULT_PORT = Number.parseInt(process.env.NINEROUTER_PORT ?? "20130", 10);

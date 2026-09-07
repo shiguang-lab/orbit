@@ -50,7 +50,7 @@ function jsonResult(body: unknown, status = 200, headers: Record<string, string>
 function getCurrentVersion(): string {
   try {
     const require = createRequire(import.meta.url);
-    const entry = require.resolve("@shiguang-gateway/core-domain/startup");
+    const entry = require.resolve("@orbit/core/startup");
     const packageRoot = entry.slice(0, entry.lastIndexOf("/src/"));
     return require(`${packageRoot}/package.json`).version as string;
   } catch {

@@ -1,8 +1,8 @@
-import { skillRegistry } from "@shiguang-gateway/core-domain/control/skills-registry";
+import { skillRegistry } from "@orbit/core/control/skills-registry";
 import { z } from "zod";
-import { validateBody, isValidationFailure } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { validateBody, isValidationFailure } from "@orbit/core/shared/validation/helpers";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import type { SkillsRepository } from "../skills.repository.js";
 
 const updateSkillSchema = z.object({

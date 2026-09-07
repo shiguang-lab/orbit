@@ -1,4 +1,4 @@
-import { createResponsesApiTransformStream } from "@shiguang-gateway/open-sse/transformer/responsesTransformer";
+import { createResponsesApiTransformStream } from "@orbit/inference/transformer/responsesTransformer";
 
 export async function transformChatCompletionSseToResponses(rawSse: string): Promise<string> {
   const encoder = new TextEncoder();

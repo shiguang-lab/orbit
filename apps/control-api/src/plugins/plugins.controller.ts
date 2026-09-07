@@ -1,13 +1,13 @@
-import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
+import { toWebRequest } from "@orbit/http/web-handler";
 import { Body, Controller, Delete, Get, Inject, Options, Param, Post, Put, Query, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { PluginsService } from "./plugins.service.js";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { CORS_HEADERS } from "@orbit/contracts/cors";
 import { z } from "zod";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
-const { buildErrorBody } = await load("@shiguang-gateway/open-sse/utils/error");
+const { buildErrorBody } = await load("@orbit/inference/utils/error");
 
 const StatusSchema = z.enum(["installed", "active", "inactive", "error"]).optional();
 const InstallPathSchema = z.object({

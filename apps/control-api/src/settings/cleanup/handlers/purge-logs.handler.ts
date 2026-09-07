@@ -1,7 +1,7 @@
 // @ts-nocheck
-import { getCallLogRetentionDays } from "@shiguang-gateway/core-domain/logging/environment";
-import { deleteCallLogsBefore } from "@shiguang-gateway/core-domain/usage/call-logs";
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
+import { getCallLogRetentionDays } from "@orbit/core/logging/environment";
+import { deleteCallLogsBefore } from "@orbit/core/usage/call-logs";
+import { isAuthenticated } from "@orbit/core/control/authenticated";
 
 export async function POST(request: Request) {
   if (!(await isAuthenticated(request))) {

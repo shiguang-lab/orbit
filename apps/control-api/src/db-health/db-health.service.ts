@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { runManagedDbHealthCheck } from "@shiguang-gateway/core-domain/db/health";
-import { sanitizeErrorMessage } from "@shiguang-gateway/core-domain/shared/error-response";
+import { runManagedDbHealthCheck } from "@orbit/core/db/health";
+import { sanitizeErrorMessage } from "@orbit/utils/errors/api-response";
 
 @Injectable()
 export class DbHealthService {

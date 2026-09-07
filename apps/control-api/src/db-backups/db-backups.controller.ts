@@ -1,15 +1,15 @@
-import { toWebRequest } from "@shiguang-gateway/web-handler-adapter";
+import { toWebRequest } from "@orbit/http/web-handler";
 import { Body, Controller, Delete, Get, Inject, Patch, Post, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import fs from "fs";
 import { DbBackupsService } from "./db-backups.service.js";
-import { isAuthenticated, isAuthRequired } from "@shiguang-gateway/core-domain/control/authenticated";
+import { isAuthenticated, isAuthRequired } from "@orbit/core/control/authenticated";
 import {
   dbBackupCleanupSchema,
   dbBackupRestoreSchema,
   validateBody,
   isValidationFailure,
-} from "@shiguang-gateway/core-domain/db-backups/validation";
+} from "@orbit/core/db-backups/validation";
 
 @Controller("api/db-backups")
 export class DbBackupsController {

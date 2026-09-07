@@ -8,9 +8,9 @@
  */
 
 import { z } from "zod";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { createProviderConnection } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { createProviderConnection } from "@orbit/core/db/provider-connections";
+import { buildErrorBody } from "@orbit/inference/utils/error";
 
 const manualImportSchema = z.object({
   provider: z.string().min(1).max(64),

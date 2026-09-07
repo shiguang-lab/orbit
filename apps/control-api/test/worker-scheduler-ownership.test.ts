@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { initializeControlRuntime } from "@shiguang-gateway/core-domain/control/auth-init";
+import { initializeControlRuntime } from "@orbit/core/control/auth-init";
 import {
   GET as getCloudSyncInitialization,
   POST as initializeCloudSync,

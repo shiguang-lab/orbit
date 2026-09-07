@@ -1,5 +1,5 @@
-import { getCachedPassword, isMitmSudoPasswordRequired, normalizeMitmSudoPasswordInput, repairMitm, resolveMitmSudoPassword, setCachedPassword } from "@shiguang-gateway/core-domain/control/agent-bridge";
-import { errorResponse, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { getCachedPassword, isMitmSudoPasswordRequired, normalizeMitmSudoPasswordInput, repairMitm, resolveMitmSudoPassword, setCachedPassword } from "@orbit/core/control/agent-bridge";
+import { errorResponse, sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import { z } from "zod";
 
 export const RepairBodySchema = z.object({ sudoPassword: z.string().optional() });

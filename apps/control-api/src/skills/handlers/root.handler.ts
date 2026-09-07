@@ -1,8 +1,8 @@
-import { skillRegistry } from "@shiguang-gateway/core-domain/control/skills-registry";
-import { parsePaginationParams, buildPaginatedResponse } from "@shiguang-gateway/core-domain/shared/types/pagination";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { skillRegistry } from "@orbit/core/control/skills-registry";
+import { parsePaginationParams, buildPaginatedResponse } from "@orbit/core/shared/types/pagination";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import { matchesSearch } from "../../common/turkish-text.js";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import type { SkillsProviderSettingsService } from "../providers/skills-provider-settings.service.js";
 
 const POPULAR_BY_PROVIDER = {

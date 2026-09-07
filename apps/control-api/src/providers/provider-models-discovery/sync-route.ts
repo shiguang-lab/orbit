@@ -1,33 +1,33 @@
-import { getCachedProviderConnectionById } from "@shiguang-gateway/core-domain/db/read-cache";
+import { getCachedProviderConnectionById } from "@orbit/core/db/read-cache";
 import {
   deleteImportedCustomModels,
   deleteSyncedAvailableModelsForProvider,
   getSyncedAvailableModelsForConnection,
-} from "@shiguang-gateway/core-domain/db/models";
-import { selectModelsForImport } from "@shiguang-gateway/core-domain/catalog/free-models";
+} from "@orbit/core/db/models";
+import { selectModelsForImport } from "@orbit/core/catalog/free-models";
 import {
   importManagedModels,
   type ManagedModelImportMode,
-} from "@shiguang-gateway/core-domain/control/provider-discovery-support/managedModelImport";
-import { saveCallLog } from "@shiguang-gateway/core-domain/usage/call-logs";
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
+} from "@orbit/core/control/provider-discovery-support/managedModelImport";
+import { saveCallLog } from "@orbit/core/usage/call-logs";
+import { isAuthenticated } from "@orbit/core/control/authenticated";
 import {
   buildModelSyncInternalHeaders,
   fetchModelSyncInternal,
   getModelSyncInternalBaseUrl,
   isModelSyncInternalRequest,
-} from "@shiguang-gateway/core-domain/runtime/model-sync-client";
-import { autoSyncCodexProfilesFromLiveCatalog } from "@shiguang-gateway/core-domain/control/provider-discovery-support/codexProfileAutoSync";
-import { autoSyncClaudeProfilesFromLiveCatalog } from "@shiguang-gateway/core-domain/control/provider-discovery-support/claudeProfileAutoSync";
-import { providerUsesCuratedModelsOnly } from "@shiguang-gateway/core-domain/control/provider-discovery-support/modelListingCapability";
+} from "@orbit/core/runtime/model-sync-client";
+import { autoSyncCodexProfilesFromLiveCatalog } from "@orbit/core/control/provider-discovery-support/codexProfileAutoSync";
+import { autoSyncClaudeProfilesFromLiveCatalog } from "@orbit/core/control/provider-discovery-support/claudeProfileAutoSync";
+import { providerUsesCuratedModelsOnly } from "@orbit/core/control/provider-discovery-support/modelListingCapability";
 import {
   fetchVolcPlanModels,
   providerToVolcPlanKind,
-} from "@shiguang-gateway/core-domain/control/provider-discovery-support/volcenginePlanModelDiscovery";
-import { replaceSyncedAvailableModelsForConnection } from "@shiguang-gateway/core-domain/db/models";
+} from "@orbit/core/control/provider-discovery-support/volcenginePlanModelDiscovery";
+import { replaceSyncedAvailableModelsForConnection } from "@orbit/core/db/models";
 import { getProviderModels } from "./models-route.js";
 import { isDegradedDiscovery } from "./degradedLocalCatalog.js";
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 
 type JsonRecord = Record<string, unknown>;
 

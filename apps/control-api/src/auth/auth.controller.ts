@@ -1,6 +1,6 @@
 import { Controller, Get, Inject, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { handleSession } from "@shiguang-gateway/auth";
+import { handleSession } from "@orbit/auth";
 import { AuthService } from "./auth.service.js";
 
 @Controller("api/auth")

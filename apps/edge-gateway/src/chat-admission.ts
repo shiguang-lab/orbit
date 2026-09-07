@@ -4,7 +4,7 @@ import {
   releaseChatAdmissionAfterHandler,
   resolveSessionId,
   type ChatAdmissionController,
-} from "@shiguang-gateway/core-domain/shared/middleware/chatBodyAdmission";
+} from "@orbit/core/shared/middleware/chatBodyAdmission";
 
 type RouteHandler = (request: Request, ...args: any[]) => Promise<Response> | Response;
 type AdmittedRouteHandler = (request: Request, ...args: any[]) => Promise<Response>;

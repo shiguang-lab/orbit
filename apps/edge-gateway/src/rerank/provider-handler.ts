@@ -2,7 +2,7 @@
 // This adapter preserves the legacy provider-specific payload normalization while the
 // surrounding HTTP orchestration remains strongly typed in the Nest application.
 // @ts-nocheck
-import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
+import { CORS_HEADERS } from "@orbit/contracts/cors";
 /**
  * Rerank Handler
  *
@@ -10,10 +10,10 @@ import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
  * Routes to the appropriate provider based on the model prefix or lookup.
  */
 
-import { getRerankProvider, parseRerankModel, RERANK_PROVIDERS } from "@shiguang-gateway/rerank-catalog";
-import { errorResponse } from "@shiguang-gateway/open-sse/utils/error";
-import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
-import { log } from "@shiguang-gateway/open-sse/utils/logger";
+import { getRerankProvider, parseRerankModel, RERANK_PROVIDERS } from "@orbit/providers/rerank";
+import { errorResponse } from "@orbit/inference/utils/error";
+import { runWithProxyContext } from "@orbit/inference/utils/proxyFetch";
+import { log } from "@orbit/inference/utils/logger";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
 
@@ -204,11 +204,11 @@ export async function handleRerank({
   apiKeyName = null,
 }) {
   const [{ attachShiguangGatewayMetaHeaders }, { calculateModalCost }, { generateRequestId }, { saveCallLog }, { resolveProxyForConnection }] = await Promise.all([
-    load("@shiguang-gateway/core-domain/edge/gateway-response-meta"),
-    load("@shiguang-gateway/core-domain/pricing/cost-calculator"),
-    load("@shiguang-gateway/core-domain/runtime/request-id"),
-    load("@shiguang-gateway/core-domain/usage/call-logs"),
-    load("@shiguang-gateway/core-domain/db/settings"),
+    load("@orbit/core/edge/gateway-response-meta"),
+    load("@orbit/core/pricing/cost-calculator"),
+    load("@orbit/core/runtime/request-id"),
+    load("@orbit/core/usage/call-logs"),
+    load("@orbit/core/db/settings"),
   ]);
   const startTime = Date.now();
   if (!model) return errorResponse(400, "model is required");

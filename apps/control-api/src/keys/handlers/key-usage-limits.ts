@@ -1,7 +1,7 @@
-import { getApiKeyById } from "@shiguang-gateway/core-domain/db/api-keys";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getApiKeyUsageLimitStatus } from "@shiguang-gateway/core-domain/usage/api-key-limits";
-import * as log from "@shiguang-gateway/core-domain/sse/logger";
+import { getApiKeyById } from "@orbit/core/db/api-keys";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { getApiKeyUsageLimitStatus } from "@orbit/core/usage/api-key-limits";
+import * as log from "@orbit/core/sse/logger";
 import { json } from "./response.js";
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {

@@ -10,6 +10,9 @@ const referenceRoot = resolve(process.env.SHIGUANG_GATEWAY_REFERENCE_DIR || join
 const methods = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"];
 const frozenContractSha256 = "3ac7336622ffd70931983b9384371d85f2dab789163b201297be4aea32011d79";
 const localApiExtensions = new Set([
+  "search/analytics/route.ts",
+  "cloud-agents/tasks/route.ts",
+  "providers/catalog/route.ts",
   // Signed gateway SSO session, covered by control-api auth-session tests.
   "auth/session/route.ts",
   "media/cache/stats/route.ts",
@@ -34,6 +37,7 @@ const localApiExtensions = new Set([
 // control routes terminated only the control process while claiming to stop or
 // restart the entire split runtime, so they are intentionally absent.
 const retiredApiRoutes = new Set([
+  "v1/search/analytics/route.ts",
   "restart/route.ts",
   "shutdown/route.ts",
   // Browser authentication is owned exclusively by SSO.
@@ -132,7 +136,7 @@ function walkControllers(dir, out = []) {
 }
 
 const referenceApi = join(referenceRoot, "src", "app", "api");
-const localApi = join(repoRoot, "packages", "core-domain", "src", "app", "api");
+const localApi = join(repoRoot, "packages", "core", "src", "app", "api");
 const localApiRoots = [
   localApi,
   join(repoRoot, "apps", "control-api", "src", "routes", "api"),
@@ -141,10 +145,10 @@ const localApiRoots = [
 
 // A2A is an edge-owned Nest transport. Keep the historical contract in the
 // controller map, but reject any regression that recreates the old Next route
-// files under core-domain (which would register a second transport surface).
+// files under core (which would register a second transport surface).
 const legacyA2ARouteRoots = [
-  join(repoRoot, "packages", "core-domain", "src", "app", "a2a"),
-  join(repoRoot, "packages", "core-domain", "src", "app", "api", "a2a"),
+  join(repoRoot, "packages", "core", "src", "app", "a2a"),
+  join(repoRoot, "packages", "core", "src", "app", "api", "a2a"),
 ];
 const staleA2ARoutes = legacyA2ARouteRoots.flatMap((root) => walk(root));
 const controllerRoots = [
@@ -160,7 +164,7 @@ const controllerFiles = controllerRoots.flatMap((root) => walkControllers(root))
 // is implemented by native Nest fallback handling and remains part of parity.
 const retiredCompatDispatcherFiles = [
   join(repoRoot, "packages", "web-route-compat"),
-  join(repoRoot, "packages", "web-handler-adapter", "src", "compat-dispatcher.ts"),
+  join(repoRoot, "packages", "http", "src", "compat-dispatcher.ts"),
   join(repoRoot, "apps", "edge-gateway", "src", "routes", "compat", "dispatcher.ts"),
   join(repoRoot, "apps", "control-api", "src", "routes", "compat", "dispatcher.ts"),
 ];

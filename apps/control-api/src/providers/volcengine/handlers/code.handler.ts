@@ -1,8 +1,8 @@
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import { bindVolcenginePlansFromConsoleCredentials } from "../volcengine-plan.binding.js";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
-import { formatValidationMessage, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { volcenginePlanCodeSchema } from "@shiguang-gateway/core-domain/control/volcengine-validation";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
+import { formatValidationMessage, validateBody } from "@orbit/core/shared/validation/helpers";
+import { volcenginePlanCodeSchema } from "@orbit/core/control/volcengine-validation";
 
 /**
  * POST /api/providers/volcengine-plan/connect/[sessionId]/code
@@ -33,7 +33,7 @@ export async function POST(
 
   try {
     const { volcengineConsoleAutoLoginService } = await import(
-      "@shiguang-gateway/open-sse/services/volcengineConsoleAutoLogin"
+      "@orbit/inference/services/volcengineConsoleAutoLogin"
     );
 
     if (!volcengineConsoleAutoLoginService.getStatus(sessionId)) {

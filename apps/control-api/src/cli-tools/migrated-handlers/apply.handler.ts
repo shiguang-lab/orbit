@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth as requireCliToolsAuth } from "@orbit/core/control/management-auth";
 import fs from "node:fs";
 import path from "node:path";
-import { generateConfig } from "@shiguang-gateway/core-domain/cli/config-generator";
-import { resolveGatewayBaseUrl } from "@shiguang-gateway/core-domain/shared/utils/resolveGatewayBaseUrl";
-import { guardCliConfigWrite } from "@shiguang-gateway/core-domain/control/cli-tools-config-guard";
-import { getCliPrimaryConfigPath, normalizeCliToolId } from "@shiguang-gateway/core-domain/cli/runtime";
+import { generateConfig } from "@orbit/core/cli/config-generator";
+import { resolveGatewayBaseUrl } from "@orbit/core/shared/utils/resolveGatewayBaseUrl";
+import { guardCliConfigWrite } from "@orbit/core/control/cli-tools-config-guard";
+import { getCliPrimaryConfigPath, normalizeCliToolId } from "@orbit/core/cli/runtime";
 
 const applySchema = z.object({
   toolId: z.string().min(1),

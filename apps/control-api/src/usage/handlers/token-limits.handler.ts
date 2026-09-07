@@ -9,17 +9,17 @@
  * @route /api/usage/token-limits
  */
 
-import { setTokenLimitSchema } from "@shiguang-gateway/core-domain/control/token-limit-validation";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { setTokenLimitSchema } from "@orbit/core/control/token-limit-validation";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
+import { buildErrorBody, sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import {
   listTokenLimits,
   upsertTokenLimit,
   deleteTokenLimit,
   getWindowUsage,
   resetWindowIfElapsed,
-} from "@shiguang-gateway/core-domain/db/token-limits";
-import type { TokenLimit } from "@shiguang-gateway/core-domain/db/token-limits";
+} from "@orbit/core/db/token-limits";
+import type { TokenLimit } from "@orbit/core/db/token-limits";
 
 export async function GET(request: Request) {
   try {

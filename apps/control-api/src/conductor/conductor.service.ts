@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { z } from "zod";
-import { cancelConductorTask, getConductorTaskDetail, getFleetSnapshot } from "@shiguang-gateway/core-domain/conductor/hub-proxy";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { createErrorResponse } from "@shiguang-gateway/core-domain/shared/error-response";
-import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
+import { cancelConductorTask, getConductorTaskDetail, getFleetSnapshot } from "@orbit/core/conductor/hub-proxy";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { createErrorResponse } from "@orbit/utils/errors/api-response";
+import { buildErrorBody } from "@orbit/inference/utils/error";
 import { askFaro } from "./faro-proxy.js";
 
 const askSchema = z.object({ message: z.string().min(1).max(4000) });

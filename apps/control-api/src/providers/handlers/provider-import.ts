@@ -6,10 +6,10 @@ import {
   isValidationFailure, validateBody, normalizeProviderSpecificData, sanitizeProviderSpecificDataForResponse,
   requireManagementAuth, getProxyForLevel, resolveProxyForProvider,
   rejectRetiredCommonChatGptWebProvider,
-} from "@shiguang-gateway/core-domain/control/provider-management";
-import { validateProviderApiKey } from "@shiguang-gateway/open-sse/services/provider-validation";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
-import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
+} from "@orbit/core/control/provider-management";
+import { validateProviderApiKey } from "@orbit/inference/services/provider-validation";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
+import { runWithProxyContext } from "@orbit/inference/utils/proxyFetch";
 
 type ImportEntry = {
   provider: string;

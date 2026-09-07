@@ -55,7 +55,7 @@ export async function assertHostConfigTarget(targetPath, options = {}) {
   let CLI_OVERRIDE_HINT;
   try {
     ({ describeContainerTarget, buildContainerWriteRefusal, CLI_OVERRIDE_HINT } = await import(
-      "@shiguang-gateway/core-domain/cli/container-guard"
+      "@orbit/core/cli/container-guard"
     ));
   } catch {
     // Fail open: a guard that cannot load must not block a legitimate host run.
@@ -101,7 +101,7 @@ export async function assertHostConfigTarget(targetPath, options = {}) {
 export async function isContainerRuntime(deps) {
   try {
     const { isRunningInContainer } = await import(
-      "@shiguang-gateway/core-domain/cli/container-guard"
+      "@orbit/core/cli/container-guard"
     );
     return isRunningInContainer(deps);
   } catch {

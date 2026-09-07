@@ -26,17 +26,17 @@ import {
   parseAndValidateClaudeAuth,
   parseAndValidateCodexAuth,
   sanitizeProviderSpecificDataForResponse,
-} from "@shiguang-gateway/open-sse/oauth/provider-auth-import";
+} from "@orbit/inference/oauth/provider-auth-import";
 import {
   getAuditRequestContext,
   logAuditEvent,
-} from "@shiguang-gateway/core-domain/compliance/audit-log";
+} from "@orbit/core/compliance/audit-log";
 import {
   isValidationFailure,
   validateBody,
-} from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { applyLocalAgyAuthSchema } from "@shiguang-gateway/core-domain/control/oauth-validation";
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+} from "@orbit/core/shared/validation/helpers";
+import { applyLocalAgyAuthSchema } from "@orbit/core/control/oauth-validation";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 
 const ZIP_BODY_LIMIT = 11 * 1024 * 1024;
 

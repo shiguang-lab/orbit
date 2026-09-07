@@ -32,7 +32,7 @@ import {
   type UpscaleHandlerResult,
   type UpscaleLogger,
 } from "./shared.js";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 
 /** Topaz caps a single output edge well below this; keeps a 4x pass on a huge source sane. */
 const MAX_OUTPUT_EDGE = 16000;

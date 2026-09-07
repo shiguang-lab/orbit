@@ -1,7 +1,7 @@
 import {
   getSettingsRevision,
   updateSettings,
-} from "@shiguang-gateway/core-domain/db/settings";
+} from "@orbit/core/db/settings";
 import { executeEdgeRuntimeCommand } from "../edge-runtime/client.js";
 
 export async function applyPersistedRuntimeSettings(): Promise<number> {

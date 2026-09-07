@@ -1,14 +1,14 @@
-import { getCachedProviderConnectionById } from "@shiguang-gateway/core-domain/db/read-cache";
-import { updateProviderConnection } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { tryIdeAuth } from "@shiguang-gateway/core-domain/control/cursor-token-extractor";
+import { getCachedProviderConnectionById } from "@orbit/core/db/read-cache";
+import { updateProviderConnection } from "@orbit/core/db/provider-connections";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { tryIdeAuth } from "@orbit/core/control/cursor-token-extractor";
 import {
   renewCursorConnection,
   buildCursorRenewedUpdate,
   runCursorRenewalExclusive,
   BACKGROUND_IDE_AUTH_TIMEOUT_MS,
-} from "@shiguang-gateway/core-domain/providers/cursor-session";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+} from "@orbit/core/providers/cursor-session";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 
 const MANUAL_REFRESH_COOLDOWN_MS = 30_000;
 const lastManualRefreshAttemptAt = new Map<string, number>();

@@ -19,21 +19,21 @@
 
 import {
   getProviderConnections,
-} from "@shiguang-gateway/core-domain/db/provider-connections";
+} from "@orbit/core/db/provider-connections";
 import {
   setCredentialHealth,
   removeCredentialHealth,
   initCredentialCache,
   getCredentialHealth,
-} from "@shiguang-gateway/core-domain/resilience/credential-health-cache";
+} from "@orbit/core/resilience/credential-health-cache";
 import {
   isCredentialProbeInconclusive,
   resolveInconclusiveProbeRecheckDelayMs,
-} from "@shiguang-gateway/core-domain/shared/credential-probe-policy";
-import { emit } from "@shiguang-gateway/core-domain/events/eventBus";
-import { isAutomatedTestProcess } from "@shiguang-gateway/core-domain/shared/test-process";
-import { SEARCH_VALIDATOR_CONFIGS } from "@shiguang-gateway/open-sse/services/provider-validation/search-providers";
-import { validateProviderApiKey } from "@shiguang-gateway/open-sse/services/provider-validation";
+} from "@orbit/core/shared/credential-probe-policy";
+import { emit } from "@orbit/core/events/eventBus";
+import { isAutomatedTestProcess } from "@orbit/utils/process";
+import { SEARCH_VALIDATOR_CONFIGS } from "@orbit/inference/services/provider-validation/search-providers";
+import { validateProviderApiKey } from "@orbit/inference/services/provider-validation";
 
 // ── Config ────────────────────────────────────────────────────────────────
 

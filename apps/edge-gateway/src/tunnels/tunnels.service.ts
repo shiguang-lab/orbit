@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import type { TunnelCommand } from "@shiguang-gateway/contracts/tunnel-command";
+import type { TunnelCommand } from "@orbit/contracts/tunnel-command";
 import {
   disableTailscaleTunnel,
   enableTailscaleTunnel,
@@ -14,7 +14,7 @@ import {
   startTailscaleLogin,
   stopCloudflaredTunnel,
   stopNgrokTunnel,
-} from "@shiguang-gateway/core-domain/edge/tunnels";
+} from "@orbit/core/edge/tunnels";
 
 @Injectable()
 export class TunnelsService {

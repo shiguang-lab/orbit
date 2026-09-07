@@ -3,8 +3,8 @@ import {
   parseAndValidateNonMetadataUrl,
   parseAndValidatePublicUrl,
   parseOutboundUrl,
-} from "@shiguang-gateway/network-guard";
-import { getProviderValidationGuard } from "@shiguang-gateway/core-domain/network/outbound-url-guard-policy";
+} from "@orbit/utils/network";
+import { getProviderValidationGuard } from "@orbit/core/network/outbound-url-guard-policy";
 
 function guardProviderNodeBaseUrl(baseUrl: string): void {
   const guard = getProviderValidationGuard();

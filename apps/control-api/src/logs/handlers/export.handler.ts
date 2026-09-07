@@ -1,7 +1,7 @@
-import { exportCallLogsSince } from "@shiguang-gateway/core-domain/usage/call-logs";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { exportProxyLogsSince } from "@shiguang-gateway/core-domain/db/proxy-logs";
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
+import { exportCallLogsSince } from "@orbit/core/usage/call-logs";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { exportProxyLogsSince } from "@orbit/core/db/proxy-logs";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 
 /**
  * GET /api/logs/export — export logs as JSON

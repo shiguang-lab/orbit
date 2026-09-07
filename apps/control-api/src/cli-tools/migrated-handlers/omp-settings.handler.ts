@@ -6,11 +6,11 @@ import path from "path";
 import os from "os";
 import fs from "fs/promises";
 import { load as yamlLoad, dump as yamlDump } from "js-yaml";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
-import { cliAuthOnlyConfigSchema } from "@shiguang-gateway/core-domain/control/cli-tools-config-validation";
-import { getOmpCredentials, saveOmpCredentials, deleteOmpCredentials } from "@shiguang-gateway/core-domain/control/cli-tools-omp";
-import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
+import { cliAuthOnlyConfigSchema } from "@orbit/core/control/cli-tools-config-validation";
+import { getOmpCredentials, saveOmpCredentials, deleteOmpCredentials } from "@orbit/core/control/cli-tools-omp";
+import { requireManagementAuth as requireCliToolsAuth } from "@orbit/core/control/management-auth";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import { isJsonObject, type JsonObject } from "./_lib/jsonObject.js";
 
 const execAsync = promisify(exec);

@@ -1,12 +1,12 @@
-import { getComboByName } from "@shiguang-gateway/core-domain/db/combos";
+import { getComboByName } from "@orbit/core/db/combos";
 import { buildComboScoringInspectorResponse } from "./comboScoringInspector.js";
 import { inspectTargetResilience } from "./resilienceExplain.js";
 import type {
   ComboScoringInspectorFactor,
   ComboScoringInspectorTarget,
   ResilienceExplanation,
-} from "@shiguang-gateway/core-domain/usage/utilization";
-import { getCallLogById, getCallLogs } from "@shiguang-gateway/core-domain/usage/call-logs";
+} from "@orbit/core/usage/utilization";
+import { getCallLogById, getCallLogs } from "@orbit/core/usage/call-logs";
 
 type JsonRecord = Record<string, unknown>;
 

@@ -11,25 +11,25 @@ import {
   mergeModelCompatOverride,
   getHiddenModelsByProvider,
   type ModelCompatPatch,
-} from "@shiguang-gateway/core-domain/control/provider-model-store";
+} from "@orbit/core/control/provider-model-store";
 import {
   getModelContextOverrideRecord,
   setModelContextOverride,
   removeModelContextOverride,
-} from "@shiguang-gateway/core-domain/control/model-context-overrides";
+} from "@orbit/core/control/model-context-overrides";
 import {
   deleteManagedAvailableModelAliases,
   deleteManagedAvailableModelAliasesForProvider,
   syncManagedAvailableModelAliases,
-} from "@shiguang-gateway/core-domain/control/provider-model-aliases";
+} from "@orbit/core/control/provider-model-aliases";
 import {
   AI_PROVIDERS,
   isOpenAICompatibleProvider,
   isAnthropicCompatibleProvider,
-} from "@shiguang-gateway/core-domain/catalog/providers";
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
-import { providerModelMutationSchema } from "@shiguang-gateway/core-domain/control/provider-validation-schemas";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+} from "@orbit/providers/catalog";
+import { isAuthenticated } from "@orbit/core/control/authenticated";
+import { providerModelMutationSchema } from "@orbit/core/control/provider-validation-schemas";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 
 function normalizeRequestedModelIds(
   searchParams: URLSearchParams,

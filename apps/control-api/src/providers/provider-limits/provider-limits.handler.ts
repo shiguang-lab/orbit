@@ -1,13 +1,13 @@
 import { z } from "zod";
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
+import { isAuthenticated } from "@orbit/core/control/authenticated";
 import {
   getProviderKeyLimit,
   setProviderKeyLimit,
-} from "@shiguang-gateway/core-domain/control/registered-keys";
+} from "@orbit/core/control/registered-keys";
 import {
   isValidationFailure,
   validateBody,
-} from "@shiguang-gateway/core-domain/shared/validation/helpers";
+} from "@orbit/core/shared/validation/helpers";
 
 const limitsSchema = z.object({
   maxActiveKeys: z.number().int().positive().nullable().optional(),

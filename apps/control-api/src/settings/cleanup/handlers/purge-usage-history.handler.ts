@@ -1,14 +1,14 @@
 import { z } from "zod";
-import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
+import { buildErrorBody } from "@orbit/inference/utils/error";
 import {
   RESET_USAGE_HISTORY_PERIODS,
   resetUsageHistory,
-} from "@shiguang-gateway/core-domain/db/cleanup";
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
+} from "@orbit/core/db/cleanup";
+import { isAuthenticated } from "@orbit/core/control/authenticated";
 import {
   isValidationFailure,
   validateBody,
-} from "@shiguang-gateway/core-domain/shared/validation/helpers";
+} from "@orbit/core/shared/validation/helpers";
 
 const resetUsageHistorySchema = z.object({
   period: z.enum(RESET_USAGE_HISTORY_PERIODS),

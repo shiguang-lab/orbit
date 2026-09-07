@@ -1,4 +1,4 @@
-import { CODEX_FAST_TIER_DEFAULT_SUPPORTED_MODELS } from "@shiguang-gateway/core-domain/edge/codex-fast-tier";
+import { CODEX_FAST_TIER_DEFAULT_SUPPORTED_MODELS } from "@orbit/core/edge/codex-fast-tier";
 import { resolveFamilyFirstPublishedModelId } from "./family-first-model-ids.js";
 import { normalizeServiceTierId, type ServiceTierId } from "./service-tier-labels.js";
 

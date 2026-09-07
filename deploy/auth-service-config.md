@@ -26,6 +26,13 @@ issuer、audience、entitlement 验证。产品不提供独立密码登录页或
 
 `/api/auth/session` 返回 401 时启动一次 SSO 跳转；回跳仍未认证、权限不足或服务故障时
 显示验证错误，由用户重试，不自动循环跳转。退出登录通过 auth-service 撤销 SSO 会话。
+管理台的业务接口返回 401 后，会重新查询 `/api/auth/session`；会话仍有效时保留业务错误，
+只有会话确认失效才启动 SSO 跳转。并发的业务 401 共用一次会话核验。
+
+云端智能体页面使用 `/api/cloud-agents/tasks`，由 control-api 校验管理身份后，携带原签名身份
+请求 edge 的 `/api/v1/agents/tasks`。中央网关的 `/api/v1/*` 协议通道不注入 SSO 身份，
+管理台不能直接依赖该通道获取会话权限。
+
 `SG_AUTH_ORIGIN` 可指定 auth-service 来源，默认 `https://shiguanglab.com`。
 `JWT_SECRET` 仍用于 CSRF 签名等内部能力，须在部署中保持稳定。
 

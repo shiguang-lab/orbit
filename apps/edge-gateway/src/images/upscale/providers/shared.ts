@@ -7,8 +7,8 @@
  * handler exposes.
  */
 
-import { saveCallLog } from "@shiguang-gateway/core-domain/usage/call-logs";
-import { fetchRemoteImage } from "@shiguang-gateway/core-domain/network/remote-image-fetch";
+import { saveCallLog } from "@orbit/core/usage/call-logs";
+import { fetchRemoteImage } from "@orbit/core/network/remote-image-fetch";
 
 export const UPSCALE_CALL_LOG_PATH = "/v1/images/upscale";
 

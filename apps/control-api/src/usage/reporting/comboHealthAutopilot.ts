@@ -1,4 +1,4 @@
-import { getCombos } from "@shiguang-gateway/core-domain/db/combos";
+import { getCombos } from "@orbit/core/db/combos";
 import {
   buildProviderHealthAutopilotReport,
   type ProviderAutopilotReport,
@@ -23,7 +23,7 @@ import type {
   ComboHealthResponse,
   ComboRecord,
   UtilizationTimeRange,
-} from "@shiguang-gateway/core-domain/usage/utilization";
+} from "@orbit/core/usage/utilization";
 
 type JsonRecord = Record<string, unknown>;
 

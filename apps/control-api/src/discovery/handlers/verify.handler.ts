@@ -1,5 +1,5 @@
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { createErrorResponse, createErrorResponseFromUnknown } from "@shiguang-gateway/core-domain/shared/error-response";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { createErrorResponse, createErrorResponseFromUnknown } from "@orbit/utils/errors/api-response";
 import { markDiscoveryResultVerified } from "../discovery.repository.js";
 
 export async function verify(request: Request, id: string): Promise<Response> {

@@ -1,22 +1,22 @@
 import { Injectable } from "@nestjs/common";
 import { z } from "zod";
-import { resolveProviderAlias } from "@shiguang-gateway/open-sse/services/model";
-import { parseReasoningEffortsOverride } from "@shiguang-gateway/core-domain/shared/reasoning-efforts-override";
+import { resolveProviderAlias } from "@orbit/inference/services/model";
+import { parseReasoningEffortsOverride } from "@orbit/core/shared/reasoning-efforts-override";
 import {
   listModelCapabilityOverrides,
   removeModelCapabilityOverride,
   setModelCapabilityOverride,
   type ModelCapabilityOverrideKey,
-} from "@shiguang-gateway/core-domain/control/model-capability-overrides";
+} from "@orbit/core/control/model-capability-overrides";
 import {
   listModelContextOverrides,
   removeModelContextOverride,
   setModelContextOverride,
-} from "@shiguang-gateway/core-domain/control/model-context-overrides";
+} from "@orbit/core/control/model-context-overrides";
 import {
   getProviderPrefixIndex,
   type ProviderPrefixEntry,
-} from "@shiguang-gateway/core-domain/pricing/provider-prefixes";
+} from "@orbit/core/pricing/provider-prefixes";
 
 const overrideKeySchema = z.enum([
   "context_length",

@@ -1,4 +1,4 @@
-import { getWebSessionCredentialRequirement } from "@shiguang-gateway/contracts/config/webSessionCredentials";
+import { getWebSessionCredentialRequirement } from "@orbit/contracts/config/webSessionCredentials";
 
 /**
  * Token-kind web-session providers (`getWebSessionCredentialRequirement(...).kind ===

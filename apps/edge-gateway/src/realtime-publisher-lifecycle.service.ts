@@ -1,7 +1,7 @@
 import { Injectable, type OnModuleInit, type OnApplicationShutdown } from "@nestjs/common";
-import { onAny } from "@shiguang-gateway/core-domain/events/eventBus";
-import { getInternalServiceAuthHeaders } from "@shiguang-gateway/auth/internal-service";
-import { startRealtimePublisher } from "@shiguang-gateway/realtime-publisher";
+import { onAny } from "@orbit/core/events/eventBus";
+import { getInternalServiceAuthHeaders } from "@orbit/auth/internal-service";
+import { startRealtimePublisher } from "@orbit/utils/realtime";
 
 @Injectable()
 export class RealtimePublisherLifecycleService implements OnModuleInit, OnApplicationShutdown {

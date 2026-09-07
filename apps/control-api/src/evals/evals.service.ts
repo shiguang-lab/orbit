@@ -6,10 +6,10 @@ import {
   saveCustomEvalSuite,
   getCustomEvalSuite,
   deleteCustomEvalSuite,
-} from "@shiguang-gateway/core-domain/evals/db";
-import { getApiKeys } from "@shiguang-gateway/core-domain/db/api-keys";
-import { listSuites, getSuite, runSuite, createScorecard } from "@shiguang-gateway/core-domain/evals/runner";
-import { buildEvalTargetOptions, runEvalSuiteAgainstTarget } from "@shiguang-gateway/core-domain/evals/runtime";
+} from "@orbit/core/evals/db";
+import { getApiKeys } from "@orbit/core/db/api-keys";
+import { listSuites, getSuite, runSuite, createScorecard } from "@orbit/core/evals/runner";
+import { buildEvalTargetOptions, runEvalSuiteAgainstTarget } from "@orbit/core/evals/runtime";
 import { forwardEdgeHttpRequest } from "../edge-runtime/client.js";
 import { ensureEvalsSchema } from "./evals-schema.js";
 

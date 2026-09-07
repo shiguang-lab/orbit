@@ -143,10 +143,10 @@ try {
   if (JSON.stringify(evalPayload).includes("Mock output")) throw new Error("eval response contains mock data");
 
   const native = docker(containers.edge, ["node", "-e", [
-    "const Database=require('/app/packages/core-domain/node_modules/better-sqlite3');",
+    "const Database=require('/app/packages/core/node_modules/better-sqlite3');",
     "const db=new Database('/app/data/storage.sqlite',{readonly:true});",
     "if(db.prepare('pragma integrity_check').get().integrity_check!=='ok') process.exit(10);",
-    "const vec=require('/app/packages/core-domain/node_modules/sqlite-vec'); vec.load(db);",
+    "const vec=require('/app/packages/core/node_modules/sqlite-vec'); vec.load(db);",
     "console.log(JSON.stringify({driver:'better-sqlite3',vector:true}));",
   ].join("")]);
   if (!native.includes('"driver":"better-sqlite3"') || !native.includes('"vector":true')) {
@@ -159,11 +159,11 @@ try {
   // workspace-local tsx loader before a real request loses its artifact.
   const artifactProbe = JSON.parse(docker(containers.edge, [
     "node",
-    "--import", "/app/packages/core-domain/node_modules/tsx/dist/loader.mjs",
+    "--import", "/app/packages/core/node_modules/tsx/dist/loader.mjs",
     "--input-type=module",
     "-e",
     [
-      "import { writeCallArtifactAsync } from './packages/core-domain/src/lib/usage/callLogArtifactWriter.ts';",
+      "import { writeCallArtifactAsync } from './packages/core/src/lib/usage/callLogArtifactWriter.ts';",
       "const a={schemaVersion:5,summary:{id:'container-artifact-smoke',timestamp:new Date().toISOString(),method:'POST',path:'/smoke',status:200,model:'smoke',requestedModel:null,provider:'smoke',account:'smoke',connectionId:null,duration:1,tokens:{in:0,out:0,cacheRead:null,cacheWrite:null,reasoning:null,compressed:null},requestType:null,sourceFormat:null,targetFormat:null,apiKeyId:null,apiKeyName:null,comboName:null,comboStepId:null,comboExecutionKey:null},requestBody:{ok:true},responseBody:{ok:true},error:null};",
       "const result=await writeCallArtifactAsync(a); if(!result) process.exit(1); console.log(JSON.stringify(result)); process.exit(0);",
     ].join(" "),
@@ -177,7 +177,7 @@ try {
   ]);
 
   const counts = JSON.parse(docker(containers.edge, ["node", "-e", [
-    "const Database=require('/app/packages/core-domain/node_modules/better-sqlite3');",
+    "const Database=require('/app/packages/core/node_modules/better-sqlite3');",
     "const db=new Database('/app/data/storage.sqlite',{readonly:true});",
     "const names=['provider_connections','api_keys','key_value','jobs','job_runs','a2a_tasks','webhooks'];",
     "const out=Object.fromEntries(names.map(n=>[n,db.prepare('select count(*) as n from '+n).get().n]));",

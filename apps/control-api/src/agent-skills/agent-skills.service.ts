@@ -7,9 +7,9 @@ import {
   getSkillById,
   generateAgentSkills,
   ListQuerySchema,
-} from "@shiguang-gateway/core-domain/control/agent-skills";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
+} from "@orbit/core/control/agent-skills";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { buildErrorBody } from "@orbit/inference/utils/error";
 
 @Injectable()
 export class AgentSkillsService {

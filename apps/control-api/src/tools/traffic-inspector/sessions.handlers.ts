@@ -1,6 +1,6 @@
-import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
-import { InspectorSessionPatchSchema, InspectorSessionRequestAppendSchema } from "@shiguang-gateway/core-domain/control/traffic-inspector";
-import { toHar } from "@shiguang-gateway/core-domain/control/traffic-inspector";
+import { buildErrorBody, sanitizeErrorMessage } from "@orbit/inference/utils/error";
+import { InspectorSessionPatchSchema, InspectorSessionRequestAppendSchema } from "@orbit/core/control/traffic-inspector";
+import { toHar } from "@orbit/core/control/traffic-inspector";
 import { inspectorSessionsRepository } from "./inspector-sessions.repository.js";
 
 const jsonError = (status: number, message: string): Response =>

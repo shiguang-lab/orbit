@@ -11,7 +11,7 @@ import {
   resolveLocalOverrideCredentials,
   resolveVideoModelTarget,
 } from "./video-model-resolution.js";
-import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
+import { isAllRateLimitedCredentials } from "@orbit/inference/services/credential-selection";
 import { rateLimitedProviderResponse } from "../common/provider-rate-limit-response.js";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
@@ -20,14 +20,14 @@ export const dynamic = "force-dynamic";
 
 export async function OPTIONS(): Promise<Response> {
   const { mediaGenerationOptionsResponse } = await load(
-    "@shiguang-gateway/core-domain/edge/media-generation",
+    "@orbit/core/edge/media-generation",
   );
   return mediaGenerationOptionsResponse();
 }
 
 export async function GET(request?: Request): Promise<Response> {
   const [{ getSpecialtyModelsResponse }] = await Promise.all([
-    load("@shiguang-gateway/open-sse/catalog/specialty"),
+    load("@orbit/inference/catalog/specialty"),
   ]);
   return getSpecialtyModelsResponse(
     request,
@@ -55,16 +55,16 @@ async function postHandler(request: Request): Promise<Response> {
       successfulMediaGenerationResponse,
     },
   ] = await Promise.all([
-    load("@shiguang-gateway/open-sse/handlers/videoGeneration"),
-    load("@shiguang-gateway/open-sse/handlers/videoGeneration/googleFlow"),
-    load("@shiguang-gateway/core-domain/middleware/prompt-injection"),
-    load("@shiguang-gateway/open-sse/services/auth"),
-    load("@shiguang-gateway/open-sse/config/videoRegistry"),
-    load("@shiguang-gateway/open-sse/utils/error"),
-    load("@shiguang-gateway/open-sse/config/constants"),
-    load("@shiguang-gateway/core-domain/sse/logger"),
-    load("@shiguang-gateway/core-domain/runtime/api-key-policy"),
-    load("@shiguang-gateway/core-domain/edge/media-generation"),
+    load("@orbit/inference/handlers/videoGeneration"),
+    load("@orbit/inference/handlers/videoGeneration/googleFlow"),
+    load("@orbit/core/middleware/prompt-injection"),
+    load("@orbit/inference/services/auth"),
+    load("@orbit/inference/config/videoRegistry"),
+    load("@orbit/inference/utils/error"),
+    load("@orbit/inference/config/constants"),
+    load("@orbit/core/sse/logger"),
+    load("@orbit/core/runtime/api-key-policy"),
+    load("@orbit/core/edge/media-generation"),
   ]);
 
   const guardedPost = async (guardedRequest: Request): Promise<Response> => {
@@ -77,10 +77,10 @@ async function postHandler(request: Request): Promise<Response> {
     if (policy.rejection) return policy.rejection;
 
     if (body.model && !body.model.includes("/")) {
-      const { getComboByName } = await load("@shiguang-gateway/core-domain/db/combos");
+      const { getComboByName } = await load("@orbit/core/db/combos");
       const combo = await getComboByName(body.model);
       if (combo) {
-        const { executeVideoCombo } = await load("@shiguang-gateway/open-sse/services/videoCombo");
+        const { executeVideoCombo } = await load("@orbit/inference/services/videoCombo");
         return executeVideoCombo(body.model, body, { request: guardedRequest, policy }, startTime, log);
       }
     }

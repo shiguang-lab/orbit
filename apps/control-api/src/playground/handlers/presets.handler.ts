@@ -7,15 +7,15 @@
  * Hard Rule #12: all error paths via buildErrorBody.
  */
 
-import { buildErrorBody, sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
-import { HTTP_STATUS } from "@shiguang-gateway/open-sse/config/constants";
-import { extractApiKey, isValidApiKey } from "@shiguang-gateway/open-sse/services/auth";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { listPlaygroundPresets, createPlaygroundPreset } from "@shiguang-gateway/core-domain/control/playground-presets";
-import { PlaygroundPresetCreateSchema } from "@shiguang-gateway/core-domain/shared/schemas/playground";
-import { isRequireApiKeyEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
-import { paginationSchema } from "@shiguang-gateway/core-domain/validation/misc";
-import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
+import { buildErrorBody, sanitizeErrorMessage } from "@orbit/inference/utils/error";
+import { HTTP_STATUS } from "@orbit/inference/config/constants";
+import { extractApiKey, isValidApiKey } from "@orbit/inference/services/auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { listPlaygroundPresets, createPlaygroundPreset } from "@orbit/core/control/playground-presets";
+import { PlaygroundPresetCreateSchema } from "@orbit/core/shared/schemas/playground";
+import { isRequireApiKeyEnabled } from "@orbit/core/runtime/feature-flags";
+import { paginationSchema } from "@orbit/core/validation/misc";
+import { isValidationFailure, validateBody } from "@orbit/core/shared/validation/helpers";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",

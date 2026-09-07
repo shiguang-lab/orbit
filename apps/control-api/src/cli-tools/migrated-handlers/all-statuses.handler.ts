@@ -3,24 +3,24 @@
 import fs from "fs/promises";
 import pino from "pino";
 
-import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
+import { buildErrorBody } from "@orbit/inference/utils/error";
 
-import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { CLI_TOOLS } from "@shiguang-gateway/core-domain/shared/constants/cliTools";
+import { requireManagementAuth as requireCliToolsAuth } from "@orbit/core/control/management-auth";
+import { CLI_TOOLS } from "@orbit/core/shared/constants/cliTools";
 import {
   getCliConfigHome,
   getCliRuntimeStatus,
   getCliPrimaryConfigPath,
-} from "@shiguang-gateway/core-domain/cli/runtime";
+} from "@orbit/core/cli/runtime";
 import { getAllCliToolLastConfigured } from "../cli-tool-state.js";
-import { checkToolConfigStatus } from "@shiguang-gateway/core-domain/cli/config-status";
-import { findShiguangGatewayQwenCodeModel } from "@shiguang-gateway/core-domain/shared/services/qwenCodeConfig";
+import { checkToolConfigStatus } from "@orbit/core/cli/config-status";
+import { findShiguangGatewayQwenCodeModel } from "@orbit/core/shared/services/qwenCodeConfig";
 import {
   parseGrokBuildConfig,
   resolveGrokBuildConfigPath,
-} from "@shiguang-gateway/core-domain/shared/services/grokBuildConfig";
+} from "@orbit/core/shared/services/grokBuildConfig";
 import { getCached, setCached } from "../batch-status-cache.js";
-import type { ToolBatchStatus, ToolBatchStatusMap } from "@shiguang-gateway/core-domain/shared/types/cliBatchStatus";
+import type { ToolBatchStatus, ToolBatchStatusMap } from "@orbit/core/shared/types/cliBatchStatus";
 
 const logger = pino({ name: "cli-tools-all-statuses-api" });
 

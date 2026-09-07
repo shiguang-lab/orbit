@@ -2,9 +2,9 @@ import { Injectable } from "@nestjs/common";
 import type {
   EdgeRuntimeCommand,
   EdgeRuntimeHealthSnapshot,
-} from "@shiguang-gateway/contracts/edge-runtime-command";
-import { refreshResilienceRuntimeSettings } from "@shiguang-gateway/core-domain/resilience/settings-runtime";
-import { refreshRequestRuntimeSettings } from "@shiguang-gateway/core-domain/runtime/settings-refresh";
+} from "@orbit/contracts/edge-runtime-command";
+import { refreshResilienceRuntimeSettings } from "@orbit/core/resilience/settings-runtime";
+import { refreshRequestRuntimeSettings } from "@orbit/core/runtime/settings-refresh";
 import { LocalProviderHealthService } from "./local-provider-health.service.js";
 
 const FALLBACK_QUOTA_MONITOR_SUMMARY = {
@@ -42,15 +42,15 @@ async function readHealthSnapshot(
     adaptiveAdmissionModule,
     chatAdmissionModule,
   ] = await Promise.all([
-    import("@shiguang-gateway/core-domain/resilience/circuit-breaker"),
-    import("@shiguang-gateway/open-sse/services/rateLimitManager"),
-    import("@shiguang-gateway/open-sse/services/accountFallback"),
-    import("@shiguang-gateway/open-sse/services/requestDedup"),
-    import("@shiguang-gateway/open-sse/services/quotaMonitor"),
-    import("@shiguang-gateway/open-sse/services/sessionManager"),
-    import("@shiguang-gateway/core-domain/resilience/credential-health-cache"),
-    import("@shiguang-gateway/open-sse/services/admission/runtime"),
-    import("@shiguang-gateway/core-domain/shared/middleware/chatBodyAdmission"),
+    import("@orbit/core/resilience/circuit-breaker"),
+    import("@orbit/inference/services/rateLimitManager"),
+    import("@orbit/inference/services/accountFallback"),
+    import("@orbit/inference/services/requestDedup"),
+    import("@orbit/inference/services/quotaMonitor"),
+    import("@orbit/inference/services/sessionManager"),
+    import("@orbit/core/resilience/credential-health-cache"),
+    import("@orbit/inference/services/admission/runtime"),
+    import("@orbit/core/shared/middleware/chatBodyAdmission"),
   ]);
 
   return {
@@ -108,10 +108,10 @@ export class RuntimeControlService {
         return readHealthSnapshot(this.localProviderHealth);
       case "resilience.reset": {
         const { getAllCircuitBreakerStatuses, resetAllCircuitBreakers } = await import(
-          "@shiguang-gateway/core-domain/resilience/circuit-breaker"
+          "@orbit/core/resilience/circuit-breaker"
         );
         const { clearAllModelLockouts } = await import(
-          "@shiguang-gateway/open-sse/services/accountFallback"
+          "@orbit/inference/services/accountFallback"
         );
         const resetCount = getAllCircuitBreakerStatuses().length;
         resetAllCircuitBreakers();
@@ -120,14 +120,14 @@ export class RuntimeControlService {
       }
       case "model-lockouts.list": {
         const { getAllModelLockouts } = await import(
-          "@shiguang-gateway/open-sse/services/accountFallback"
+          "@orbit/inference/services/accountFallback"
         );
         return { items: getAllModelLockouts() };
       }
       case "sessions.snapshot": {
         const [sessions, pools] = await Promise.all([
-          import("@shiguang-gateway/open-sse/services/sessionManager"),
-          import("@shiguang-gateway/open-sse/services/webSessionPoolHealth"),
+          import("@orbit/inference/services/sessionManager"),
+          import("@orbit/inference/services/webSessionPoolHealth"),
         ]);
         return {
           count: sessions.getActiveSessionCount(),
@@ -139,8 +139,8 @@ export class RuntimeControlService {
       }
       case "concurrency.snapshot": {
         const [rateLimits, semaphores] = await Promise.all([
-          import("@shiguang-gateway/open-sse/services/rateLimitManager"),
-          import("@shiguang-gateway/open-sse/services/accountSemaphore"),
+          import("@orbit/inference/services/rateLimitManager"),
+          import("@orbit/inference/services/accountSemaphore"),
         ]);
         return {
           timestamp: new Date().toISOString(),
@@ -149,15 +149,15 @@ export class RuntimeControlService {
         };
       }
       case "concurrency.reset": {
-        const { resetAll } = await import("@shiguang-gateway/open-sse/services/accountSemaphore");
+        const { resetAll } = await import("@orbit/inference/services/accountSemaphore");
         resetAll();
         return { ok: true };
       }
       case "rate-limits.snapshot": {
         const [rateLimits, accountFallback, signatureCache] = await Promise.all([
-          import("@shiguang-gateway/open-sse/services/rateLimitManager"),
-          import("@shiguang-gateway/open-sse/services/accountFallback"),
-          import("@shiguang-gateway/open-sse/services/signatureCache"),
+          import("@orbit/inference/services/rateLimitManager"),
+          import("@orbit/inference/services/accountFallback"),
+          import("@orbit/inference/services/signatureCache"),
         ]);
         return {
           statusByTarget: Object.fromEntries(command.targets.map(({ provider, connectionId }) => [
@@ -171,16 +171,16 @@ export class RuntimeControlService {
         };
       }
       case "rate-limits.toggle": {
-        const rateLimits = await import("@shiguang-gateway/open-sse/services/rateLimitManager");
+        const rateLimits = await import("@orbit/inference/services/rateLimitManager");
         if (command.enabled) rateLimits.enableRateLimitProtection(command.connectionId);
         else rateLimits.disableRateLimitProtection(command.connectionId);
         return { success: true };
       }
       case "provider-health.snapshot": {
         const [breakers, fallback, quota] = await Promise.all([
-          import("@shiguang-gateway/core-domain/resilience/circuit-breaker"),
-          import("@shiguang-gateway/open-sse/services/accountFallback"),
-          import("@shiguang-gateway/open-sse/services/quotaMonitor"),
+          import("@orbit/core/resilience/circuit-breaker"),
+          import("@orbit/inference/services/accountFallback"),
+          import("@orbit/inference/services/quotaMonitor"),
         ]);
         return {
           breakers: breakers.getAllCircuitBreakerStatuses(),
@@ -190,7 +190,7 @@ export class RuntimeControlService {
       }
       case "provider-health.clear": {
         const { clearProviderFailure } = await import(
-          "@shiguang-gateway/open-sse/services/accountFallback"
+          "@orbit/inference/services/accountFallback"
         );
         clearProviderFailure(command.provider);
         return { success: true };
@@ -213,12 +213,12 @@ export class RuntimeControlService {
       }
       case "quota-windows.snapshot": {
         const { getAllProviderQuotaWindows } = await import(
-          "@shiguang-gateway/open-sse/services/quotaPreflight"
+          "@orbit/inference/services/quotaPreflight"
         );
         return { windows: getAllProviderQuotaWindows() };
       }
       case "provider-limits.snapshot": {
-        const limits = await import("@shiguang-gateway/open-sse/services/providerLimits");
+        const limits = await import("@orbit/inference/services/providerLimits");
         return {
           caches: await limits.getSanitizedCachedProviderLimitsMap(),
           intervalMinutes: limits.getProviderLimitsSyncIntervalMinutes(),
@@ -226,7 +226,7 @@ export class RuntimeControlService {
         };
       }
       case "provider-limits.refresh-all": {
-        const limits = await import("@shiguang-gateway/open-sse/services/providerLimits");
+        const limits = await import("@orbit/inference/services/providerLimits");
         try {
           const result = await limits.syncAllProviderLimits({ source: "manual" });
           return {
@@ -243,7 +243,7 @@ export class RuntimeControlService {
         }
       }
       case "provider-limits.refresh-connection": {
-        const limits = await import("@shiguang-gateway/open-sse/services/providerLimits");
+        const limits = await import("@orbit/inference/services/providerLimits");
         try {
           const { usage } = await limits.fetchAndPersistProviderLimits(
             command.connectionId,
@@ -265,7 +265,7 @@ export class RuntimeControlService {
       }
       case "codex-reset-credits.list": {
         const resetCredits = await import(
-          "@shiguang-gateway/open-sse/services/codexResetCredits"
+          "@orbit/inference/services/codexResetCredits"
         );
         try {
           return {
@@ -287,7 +287,7 @@ export class RuntimeControlService {
       }
       case "codex-reset-credits.consume": {
         const resetCredits = await import(
-          "@shiguang-gateway/open-sse/services/codexResetCredits"
+          "@orbit/inference/services/codexResetCredits"
         );
         try {
           return {
@@ -312,14 +312,14 @@ export class RuntimeControlService {
         }
       }
       case "key-devices.snapshot": {
-        const devices = await import("@shiguang-gateway/open-sse/services/deviceTracker");
+        const devices = await import("@orbit/inference/services/deviceTracker");
         return {
           count: devices.getDeviceCount(command.apiKeyId),
           devices: devices.getDeviceDetails(command.apiKeyId),
         };
       }
       case "combo-metrics.snapshot": {
-        const metrics = await import("@shiguang-gateway/open-sse/services/comboMetrics");
+        const metrics = await import("@orbit/inference/services/comboMetrics");
         return {
           metrics: command.combo
             ? metrics.getComboMetrics(command.combo)
@@ -327,14 +327,14 @@ export class RuntimeControlService {
         };
       }
       case "combo-metrics.reset": {
-        const metrics = await import("@shiguang-gateway/open-sse/services/comboMetrics");
+        const metrics = await import("@orbit/inference/services/comboMetrics");
         if (command.combo) metrics.resetComboMetrics(command.combo);
         else metrics.resetAllComboMetrics();
         return { success: true };
       }
       case "provider-diversity.snapshot": {
         const { getDiversityReport } = await import(
-          "@shiguang-gateway/open-sse/services/autoCombo/providerDiversity"
+          "@orbit/inference/services/autoCombo/providerDiversity"
         );
         return getDiversityReport();
       }
@@ -348,31 +348,31 @@ export class RuntimeControlService {
       }
       case "combo-trace.get": {
         const { getComboTrace } = await import(
-          "@shiguang-gateway/open-sse/services/combo/decisionTrace"
+          "@orbit/inference/services/combo/decisionTrace"
         );
         return { trace: getComboTrace(command.invocationId) };
       }
       case "tool-latency.snapshot": {
         const { getToolLatencyByProvider } = await import(
-          "@shiguang-gateway/open-sse/services/toolLatencyTracker"
+          "@orbit/inference/services/toolLatencyTracker"
         );
         return { providers: getToolLatencyByProvider() };
       }
       case "search-cache.snapshot": {
         const { getCacheStats } = await import(
-          "@shiguang-gateway/open-sse/services/searchCache"
+          "@orbit/inference/services/searchCache"
         );
         return getCacheStats();
       }
       case "semantic-cache.snapshot": {
-        const cache = await import("@shiguang-gateway/core-domain/cache/services");
+        const cache = await import("@orbit/core/cache/services");
         return {
           cacheStats: cache.getCacheStats(),
           memoryStats: cache.getMemoryCacheStats(),
         };
       }
       case "semantic-cache.invalidate": {
-        const cache = await import("@shiguang-gateway/core-domain/cache/services");
+        const cache = await import("@orbit/core/cache/services");
         switch (command.operation.scope) {
           case "model": {
             const removed = cache.invalidateByModel(command.operation.model);
@@ -407,25 +407,25 @@ export class RuntimeControlService {
       }
       case "proxy-logs.list": {
         const { getProxyLogs } = await import(
-          "@shiguang-gateway/core-domain/logging/proxy-logs"
+          "@orbit/core/logging/proxy-logs"
         );
         return { logs: getProxyLogs(command.filters) };
       }
       case "proxy-logs.record": {
         const { logProxyEvent } = await import(
-          "@shiguang-gateway/core-domain/logging/proxy-logs"
+          "@orbit/core/logging/proxy-logs"
         );
         return { log: logProxyEvent(command.entry) };
       }
       case "proxy-logs.clear": {
         const { clearProxyLogs } = await import(
-          "@shiguang-gateway/core-domain/logging/proxy-logs"
+          "@orbit/core/logging/proxy-logs"
         );
         clearProxyLogs();
         return { cleared: true };
       }
       case "memory.list": {
-        const memory = await import("@shiguang-gateway/open-sse/services/memoryRuntime");
+        const memory = await import("@orbit/inference/services/memoryRuntime");
         const filters = command.filters as Parameters<typeof memory.memoryManager.list>[0];
         const result = await memory.memoryManager.list(filters);
         const tokensUsed = memory.getMemoryTokensUsed(command.filters.apiKeyId);
@@ -443,7 +443,7 @@ export class RuntimeControlService {
         };
       }
       case "memory.create": {
-        const memory = await import("@shiguang-gateway/open-sse/services/memoryRuntime");
+        const memory = await import("@orbit/inference/services/memoryRuntime");
         const input = {
           ...command.input,
           expiresAt: command.input.expiresAt ? new Date(command.input.expiresAt) : null,
@@ -451,7 +451,7 @@ export class RuntimeControlService {
         return { memory: await memory.memoryManager.create(input) };
       }
       case "memory.search": {
-        const memory = await import("@shiguang-gateway/open-sse/services/memoryRuntime");
+        const memory = await import("@orbit/inference/services/memoryRuntime");
         const settings = await memory.getMemorySettings().catch(() => memory.DEFAULT_MEMORY_SETTINGS);
         const config = {
           ...memory.toMemoryRetrievalConfig(settings, { query: command.query }),
@@ -472,7 +472,7 @@ export class RuntimeControlService {
         };
       }
       case "memory.clear": {
-        const memory = await import("@shiguang-gateway/open-sse/services/memoryRuntime");
+        const memory = await import("@orbit/inference/services/memoryRuntime");
         const typeByCommand = {
           factual: memory.MemoryType.FACTUAL,
           episodic: memory.MemoryType.EPISODIC,
@@ -500,44 +500,44 @@ export class RuntimeControlService {
       }
       case "memory.get": {
         const { memoryManager } = await import(
-          "@shiguang-gateway/open-sse/services/memoryRuntime"
+          "@orbit/inference/services/memoryRuntime"
         );
         return { memory: await memoryManager.get(command.id) };
       }
       case "memory.update": {
         const { memoryManager } = await import(
-          "@shiguang-gateway/open-sse/services/memoryRuntime"
+          "@orbit/inference/services/memoryRuntime"
         );
         const input = command.input as Parameters<typeof memoryManager.update>[1];
         return { updated: await memoryManager.update(command.id, input) };
       }
       case "memory.delete": {
         const { memoryManager } = await import(
-          "@shiguang-gateway/open-sse/services/memoryRuntime"
+          "@orbit/inference/services/memoryRuntime"
         );
         return { deleted: await memoryManager.delete(command.id) };
       }
       case "memory.embedding-providers": {
         const { listEmbeddingProviders } = await import(
-          "@shiguang-gateway/open-sse/services/memoryRuntime"
+          "@orbit/inference/services/memoryRuntime"
         );
         return { providers: await listEmbeddingProviders() };
       }
       case "memory.engine-status": {
         const { engineStatus } = await import(
-          "@shiguang-gateway/open-sse/services/memoryRuntime"
+          "@orbit/inference/services/memoryRuntime"
         );
         return engineStatus();
       }
       case "memory.health": {
         const { verifyExtractionPipeline } = await import(
-          "@shiguang-gateway/open-sse/services/memoryRuntime"
+          "@orbit/inference/services/memoryRuntime"
         );
         return verifyExtractionPipeline("health-check");
       }
       case "memory.retrieve-preview": {
         const { retrievePreview } = await import(
-          "@shiguang-gateway/open-sse/services/memoryRuntime"
+          "@orbit/inference/services/memoryRuntime"
         );
         return retrievePreview(command.apiKeyId, command.query, {
           strategy: command.strategy,
@@ -547,7 +547,7 @@ export class RuntimeControlService {
       }
       case "memory.summarize": {
         const { summarizeMemoriesOlderThan } = await import(
-          "@shiguang-gateway/open-sse/services/memoryRuntime"
+          "@orbit/inference/services/memoryRuntime"
         );
         return summarizeMemoriesOlderThan(
           command.apiKeyId,
@@ -556,7 +556,7 @@ export class RuntimeControlService {
         );
       }
       case "memory.reindex": {
-        const memory = await import("@shiguang-gateway/open-sse/services/memoryRuntime");
+        const memory = await import("@orbit/inference/services/memoryRuntime");
         if (command.force) memory.markAllMemoriesNeedReindex();
         const pending = memory.getReindexPending();
         setImmediate(() => {
@@ -568,18 +568,18 @@ export class RuntimeControlService {
       }
       case "memory.decay": {
         const { sweepDecayedMemories } = await import(
-          "@shiguang-gateway/core-domain/edge/memory-decay"
+          "@orbit/core/edge/memory-decay"
         );
         return sweepDecayedMemories();
       }
       case "memory.retention-cleanup": {
         const { cleanupMemoryEntriesByRetention } = await import(
-          "@shiguang-gateway/core-domain/edge/memory-decay"
+          "@orbit/core/edge/memory-decay"
         );
         return cleanupMemoryEntriesByRetention();
       }
       case "reasoning-cache.snapshot": {
-        const cache = await import("@shiguang-gateway/open-sse/services/reasoningCache");
+        const cache = await import("@orbit/inference/services/reasoningCache");
         return {
           stats: cache.getReasoningCacheServiceStats(),
           entries: cache.getReasoningCacheServiceEntries({
@@ -591,7 +591,7 @@ export class RuntimeControlService {
         };
       }
       case "reasoning-cache.delete": {
-        const cache = await import("@shiguang-gateway/open-sse/services/reasoningCache");
+        const cache = await import("@orbit/inference/services/reasoningCache");
         if (command.toolCallId) {
           return {
             ok: true,
@@ -608,7 +608,7 @@ export class RuntimeControlService {
         };
       }
       case "connection-rate-limits.refresh": {
-        const rateLimits = await import("@shiguang-gateway/open-sse/services/rateLimitManager");
+        const rateLimits = await import("@orbit/inference/services/rateLimitManager");
         rateLimits.refreshConnectionRateLimits(command.connectionId, command.overrides);
         if (command.enabled) rateLimits.enableRateLimitProtection(command.connectionId);
         else rateLimits.disableRateLimitProtection(command.connectionId);
@@ -617,19 +617,19 @@ export class RuntimeControlService {
       case "runtime-cache.invalidate": {
         if (command.target === "proxy-dispatcher") {
           const { clearDispatcherCache } = await import(
-            "@shiguang-gateway/open-sse/utils/proxyDispatcher"
+            "@orbit/inference/utils/proxyDispatcher"
           );
           clearDispatcherCache();
         } else {
           const { clearCliproxyapiUrlCache } = await import(
-            "@shiguang-gateway/open-sse/executors/cliproxyapi"
+            "@orbit/inference/executors/cliproxyapi"
           );
           clearCliproxyapiUrlCache();
         }
         return { success: true };
       }
       case "model-aliases.snapshot": {
-        const aliases = await import("@shiguang-gateway/open-sse/services/modelDeprecation");
+        const aliases = await import("@orbit/inference/services/modelDeprecation");
         return {
           builtIn: aliases.getBuiltInAliases(),
           custom: aliases.getCustomAliases(),
@@ -638,7 +638,7 @@ export class RuntimeControlService {
       }
       case "model-access.classify": {
         const { classifyPaidModelTarget } = await import(
-          "@shiguang-gateway/provider-catalog/free-model-catalog"
+          "@orbit/providers/free-model-catalog"
         );
         return {
           paidTargets: command.targets.filter(
@@ -647,20 +647,20 @@ export class RuntimeControlService {
         };
       }
       case "background-degradation.snapshot": {
-        const runtime = await import("@shiguang-gateway/open-sse/services/backgroundTaskDetector");
+        const runtime = await import("@orbit/inference/services/backgroundTaskDetector");
         return runtime.getBackgroundDegradationConfig();
       }
       case "background-degradation.reset-stats": {
-        const runtime = await import("@shiguang-gateway/open-sse/services/backgroundTaskDetector");
+        const runtime = await import("@orbit/inference/services/backgroundTaskDetector");
         runtime.resetStats();
         return { success: true, stats: runtime.getBackgroundDegradationConfig().stats };
       }
       case "payload-rules.snapshot": {
-        const runtime = await import("@shiguang-gateway/open-sse/services/payloadRules");
+        const runtime = await import("@orbit/inference/services/payloadRules");
         return runtime.getPayloadRulesConfig();
       }
       case "task-routing.snapshot": {
-        const runtime = await import("@shiguang-gateway/open-sse/services/taskAwareRouter");
+        const runtime = await import("@orbit/inference/services/taskAwareRouter");
         return {
           ...runtime.getTaskRoutingConfig(),
           defaultTaskModelMap: runtime.getDefaultTaskModelMap(),
@@ -668,34 +668,34 @@ export class RuntimeControlService {
         };
       }
       case "task-routing.reset-stats": {
-        const runtime = await import("@shiguang-gateway/open-sse/services/taskAwareRouter");
+        const runtime = await import("@orbit/inference/services/taskAwareRouter");
         runtime.resetTaskRoutingStats();
         return { success: true, stats: runtime.getTaskRoutingConfig().stats };
       }
       case "task-routing.detect": {
-        const runtime = await import("@shiguang-gateway/open-sse/services/taskAwareRouter");
+        const runtime = await import("@orbit/inference/services/taskAwareRouter");
         const taskType = runtime.detectTaskType(command.body);
         const config = runtime.getTaskRoutingConfig();
         return { taskType, preferredModel: config.taskModelMap[taskType] || "(no override)" };
       }
       case "ip-filter.snapshot": {
-        const runtime = await import("@shiguang-gateway/open-sse/services/ipFilter");
+        const runtime = await import("@orbit/inference/services/ipFilter");
         return runtime.getIPFilterConfig();
       }
       case "ip-filter.temp-ban": {
-        const runtime = await import("@shiguang-gateway/open-sse/services/ipFilter");
+        const runtime = await import("@orbit/inference/services/ipFilter");
         runtime.tempBanIP(command.ip, command.durationMs, command.reason);
         return runtime.getIPFilterConfig();
       }
       case "ip-filter.remove-temp-ban": {
-        const runtime = await import("@shiguang-gateway/open-sse/services/ipFilter");
+        const runtime = await import("@orbit/inference/services/ipFilter");
         runtime.removeTempBan(command.ip);
         return runtime.getIPFilterConfig();
       }
       case "tier-config.apply": {
         const [{ loadTierConfig }, runtime] = await Promise.all([
-          import("@shiguang-gateway/core-domain/db/tier-config"),
-          import("@shiguang-gateway/open-sse/services/tier-resolver"),
+          import("@orbit/core/db/tier-config"),
+          import("@orbit/inference/services/tier-resolver"),
         ]);
         const config = loadTierConfig();
         runtime.setTierConfig(config);
@@ -703,7 +703,7 @@ export class RuntimeControlService {
       }
       case "model-lockouts.clear": {
         const { clearModelLock, getAllModelLockouts } = await import(
-          "@shiguang-gateway/open-sse/services/accountFallback"
+          "@orbit/inference/services/accountFallback"
         );
         const matches = getAllModelLockouts().filter((entry) =>
           command.all === true ||

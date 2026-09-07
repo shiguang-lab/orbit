@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import test from "node:test";
-import { edgeRuntimeCommandSchema } from "@shiguang-gateway/contracts/edge-runtime-command";
+import { edgeRuntimeCommandSchema } from "@orbit/contracts/edge-runtime-command";
 
 const repoRoot = resolve(import.meta.dirname, "../../..");
 const read = (path: string) => readFileSync(resolve(repoRoot, path), "utf8");

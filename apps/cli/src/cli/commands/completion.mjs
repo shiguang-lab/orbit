@@ -3,7 +3,7 @@ import { join, dirname } from "node:path";
 import { homedir } from "node:os";
 import { t } from "../i18n.mjs";
 import { apiFetch } from "../api.mjs";
-import { resolveDataDir } from "@shiguang-gateway/config/dataPaths";
+import { resolveDataDir } from "@orbit/config/dataPaths";
 import { listManifestTargets } from "../cli-manifest.mjs";
 
 // Target lists shared with `shiguangGateway run` / `shiguangGateway configure` — always

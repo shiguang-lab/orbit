@@ -3,11 +3,11 @@
  *
  * These aggregate views are only used by the control API's operator profile
  * endpoints. Keep them next to the control app instead of exporting them from
- * the shared/core-domain DB facade.
+ * the shared/core DB facade.
  */
 
-import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
-import { calculateLevel } from "@shiguang-gateway/core-domain/gamification/rules";
+import { getDbInstance } from "@orbit/core/db/connection";
+import { calculateLevel } from "@orbit/core/gamification/rules";
 
 export interface UserLevelProfile {
   apiKeyId: string;

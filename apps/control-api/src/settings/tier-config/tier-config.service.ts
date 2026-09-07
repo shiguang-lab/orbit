@@ -2,8 +2,8 @@ import { Injectable } from "@nestjs/common";
 import {
   loadTierConfig,
   saveTierConfig,
-} from "@shiguang-gateway/core-domain/db/tier-config";
-import type { TierConfig } from "@shiguang-gateway/contracts/tier-types";
+} from "@orbit/core/db/tier-config";
+import type { TierConfig } from "@orbit/contracts/tier-types";
 import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 
 export interface TierOverrideUpdate {

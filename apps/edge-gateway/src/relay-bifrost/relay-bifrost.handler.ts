@@ -1,15 +1,15 @@
 import { createHash } from "node:crypto";
 import { z } from "zod";
-import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
+import { CORS_HEADERS } from "@orbit/contracts/cors";
 import { handleCorsOptions } from "../common/cors.js";
-import { createInjectionGuard } from "@shiguang-gateway/core-domain/middleware/prompt-injection";
+import { createInjectionGuard } from "@orbit/core/middleware/prompt-injection";
 import {
   checkRateLimit,
   getRelayTokenByHash,
   recordRelayUsage,
-} from "@shiguang-gateway/core-domain/db/relayProxies";
-import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
-import { getProviderPluginManifestHeader } from "@shiguang-gateway/open-sse/config/providerPluginManifestUrl";
+} from "@orbit/core/db/relayProxies";
+import { buildErrorBody } from "@orbit/inference/utils/error";
+import { getProviderPluginManifestHeader } from "@orbit/inference/config/providerPluginManifestUrl";
 
 const BifrostRequestSchema = z.object({
   model: z.string().min(1, "model is required"),

@@ -1,5 +1,5 @@
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
-import { cancelLoginJob, getLoginJob, startLoginJob, type CliproxyLoginProvider } from "@shiguang-gateway/core-domain/control/cliproxy";
+import { isAuthenticated } from "@orbit/core/control/authenticated";
+import { cancelLoginJob, getLoginJob, startLoginJob, type CliproxyLoginProvider } from "@orbit/core/control/cliproxy";
 
 export async function start(request: Request): Promise<Response> {
   if (!(await isAuthenticated(request))) return Response.json({ error: "Unauthorized" }, { status: 401 });

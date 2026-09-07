@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { handleCursorCliProxy } from "@shiguang-gateway/open-sse/handlers/cursorCliProxy";
+import { handleCursorCliProxy } from "@orbit/inference/handlers/cursorCliProxy";
 
 @Injectable()
 export class CursorCliService {

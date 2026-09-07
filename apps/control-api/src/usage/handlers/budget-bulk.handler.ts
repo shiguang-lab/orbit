@@ -1,6 +1,6 @@
-import { getCostSummary, checkBudget } from "@shiguang-gateway/core-domain/usage/cost-rules";
-import { getApiKeys } from "@shiguang-gateway/core-domain/db/api-keys";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { getCostSummary, checkBudget } from "@orbit/core/usage/cost-rules";
+import { getApiKeys } from "@orbit/core/db/api-keys";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 
 export async function GET(request: Request) {
   const authError = await requireManagementAuth(request);

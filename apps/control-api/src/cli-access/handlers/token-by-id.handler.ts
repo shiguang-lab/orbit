@@ -1,5 +1,5 @@
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { revokeAccessToken } from "@shiguang-gateway/core-domain/control/cli-access-tokens";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { revokeAccessToken } from "@orbit/core/control/cli-access-tokens";
 
 /**
  * DELETE /api/cli/tokens/:id — revoke an access token (by id or display prefix).

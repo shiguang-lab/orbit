@@ -26,12 +26,12 @@ import {
   getFreeProxyStats,
   runFreeProxySyncCycle,
   type FreeProxySyncCycleResult,
-} from "@shiguang-gateway/core-domain/shared/free-proxies";
+} from "@orbit/core/shared/free-proxies";
 import {
   getFreeProxyAutoSyncIntervalMs,
   isFreeProxyAutoSyncEnabled,
-} from "@shiguang-gateway/core-domain/shared/free-proxies";
-export { getFreeProxyAutoSyncIntervalMs, isFreeProxyAutoSyncEnabled } from "@shiguang-gateway/core-domain/shared/free-proxies";
+} from "@orbit/core/shared/free-proxies";
+export { getFreeProxyAutoSyncIntervalMs, isFreeProxyAutoSyncEnabled } from "@orbit/core/shared/free-proxies";
 
 const STARTUP_DELAY_MS = 5_000;
 const LOG_PREFIX = "[FreeProxyAutoSync]";

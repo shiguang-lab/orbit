@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
-import { handleChat } from "@shiguang-gateway/open-sse/handlers/chat";
-import { getComboForModel, getModelInfo } from "@shiguang-gateway/open-sse/services/runtimeModel";
+import { CORS_HEADERS } from "@orbit/contracts/cors";
+import { handleChat } from "@orbit/inference/handlers/chat";
+import { getComboForModel, getModelInfo } from "@orbit/inference/services/runtimeModel";
 import {
   admitChatRequest,
   admitChatStructure,
@@ -10,18 +10,18 @@ import {
   releaseChatAdmissionWhenDone,
   resolveResponsesApiModel,
   resolveSessionId,
-} from "@shiguang-gateway/core-domain/edge/responses-runtime";
-import { createInjectionGuard } from "@shiguang-gateway/core-domain/middleware/prompt-injection";
-import { generateRequestId } from "@shiguang-gateway/core-domain/runtime/request-id";
-import { errorResponse } from "@shiguang-gateway/open-sse/utils/error";
-import { SSE_HEARTBEAT_INTERVAL_MS } from "@shiguang-gateway/open-sse/config/constants";
-import { resolveStreamFlag } from "@shiguang-gateway/open-sse/utils/aiSdkCompat";
+} from "@orbit/core/edge/responses-runtime";
+import { createInjectionGuard } from "@orbit/core/middleware/prompt-injection";
+import { generateRequestId } from "@orbit/core/runtime/request-id";
+import { errorResponse } from "@orbit/inference/utils/error";
+import { SSE_HEARTBEAT_INTERVAL_MS } from "@orbit/inference/config/constants";
+import { resolveStreamFlag } from "@orbit/inference/utils/aiSdkCompat";
 import {
   OPENAI_RESPONSES_ERROR_FRAME,
   withEarlyStreamKeepalive,
-} from "@shiguang-gateway/open-sse/utils/earlyStreamKeepalive";
-import { OPENAI_RESPONSES_IN_PROGRESS_FRAME } from "@shiguang-gateway/open-sse/utils/sseHeartbeat";
-import { resolveKeepaliveThreshold } from "@shiguang-gateway/open-sse/utils/keepaliveThreshold";
+} from "@orbit/inference/utils/earlyStreamKeepalive";
+import { OPENAI_RESPONSES_IN_PROGRESS_FRAME } from "@orbit/inference/utils/sseHeartbeat";
+import { resolveKeepaliveThreshold } from "@orbit/inference/utils/keepaliveThreshold";
 
 const injectionGuard = createInjectionGuard();
 

@@ -179,7 +179,7 @@ export default function HomePage() {
   useEffect(() => { if (typeof settingsQuery.data?.showQuickStartOnHome === "boolean") setShowQuickStart(settingsQuery.data.showQuickStartOnHome); if (typeof settingsQuery.data?.showProviderTopologyOnHome === "boolean") setShowTopology(settingsQuery.data.showProviderTopologyOnHome); }, [settingsQuery.data]);
   const providersQuery = useQuery({ queryKey: ["home", "providers"], queryFn: () => providersApi.list(), staleTime: 15_000, refetchInterval: 30_000 });
   const providerNodesQuery = useQuery({ queryKey: ["home", "provider-nodes"], queryFn: providersApi.listNodes, staleTime: 300_000 });
-  const catalogQuery = useQuery({ queryKey: ["home", "provider-catalog"], queryFn: providersApi.catalog, staleTime: 300_000 });
+  const catalogQuery = useQuery({ queryKey: ["home", "providers"], queryFn: providersApi.catalog, staleTime: 300_000 });
   const metricsQuery = useQuery({ queryKey: ["home", "provider-metrics"], queryFn: () => api<{ metrics: Record<string, Metric>; topology?: Activity }>("/provider-metrics"), enabled: showTopology, staleTime: 2_000, refetchInterval: 3_000 });
   const recentQuery = useQuery({ queryKey: ["home", "recent-requests"], queryFn: () => api<RecentRow[]>("/usage/call-logs?limit=60&excludeTests=1"), enabled: showTopology, staleTime: 2_000, refetchInterval: 3_000 });
   const versionQuery = useQuery({ queryKey: ["home", "version"], queryFn: () => api<{ latest?: string; updateAvailable?: boolean }>("/system/version"), staleTime: 60_000 });

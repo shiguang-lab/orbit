@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import test from "node:test";
-import { edgeRuntimeCommandSchema } from "@shiguang-gateway/contracts/edge-runtime-command";
+import { edgeRuntimeCommandSchema } from "@orbit/contracts/edge-runtime-command";
 import {
   refreshProviderConnectionCredentials,
   type ProviderCredentialRefreshDependencies,
@@ -164,17 +164,17 @@ test("control persisted-connection flows only map the edge command response", ()
     assert.match(source, /command: "provider-credentials\.refresh"/, path);
     assert.doesNotMatch(
       source,
-      /open-sse\/services\/(?:token-refresh|credentialTokenRefresh|kimiTokenRefresh)/,
+      /inference\/services\/(?:token-refresh|credentialTokenRefresh|kimiTokenRefresh)/,
       path,
     );
   }
   const codexImport = read("apps/control-api/src/oauth/handlers/codex/import/handler.ts");
   assert.match(codexImport, /command: "codex-import\.validate-refresh-token"/);
-  assert.doesNotMatch(codexImport, /open-sse\/services\/token-refresh/);
+  assert.doesNotMatch(codexImport, /inference\/services\/token-refresh/);
   const edge = read("apps/edge-gateway/src/runtime-control/provider-credential-refresh.ts");
   assert.match(edge, /getAccessToken/);
   assert.match(edge, /persistCredentials/);
-  const kimiExecutor = read("packages/open-sse/executors/kimi-web.ts");
+  const kimiExecutor = read("packages/inference/src/executors/kimi-web.ts");
   assert.match(kimiExecutor, /getAccessToken\("kimi-web"/);
   assert.doesNotMatch(kimiExecutor, /exchangeKimiRefreshToken/);
 });

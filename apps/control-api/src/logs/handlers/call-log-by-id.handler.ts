@@ -1,5 +1,5 @@
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { getCallLogById } from "@shiguang-gateway/core-domain/usage/call-logs";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { getCallLogById } from "@orbit/core/usage/call-logs";
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {

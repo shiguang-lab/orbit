@@ -37,11 +37,11 @@ const appKinds = {
   importer: { entry: "main.ts", nest: false },
 };
 
-if (existsSync(join(root, "packages/core-domain/bin"))) {
-  fail("cli-app-ownership", join(root, "packages/core-domain/bin"), "CLI executable source belongs in apps/cli");
+if (existsSync(join(root, "packages/core/bin"))) {
+  fail("cli-app-ownership", join(root, "packages/core/bin"), "CLI executable source belongs in apps/cli");
 }
 for (const legacyUiPath of ["src/shared/components", "src/shared/hooks"]) {
-  const path = join(root, "packages/core-domain", legacyUiPath);
+  const path = join(root, "packages/core", legacyUiPath);
   if (existsSync(path)) {
     fail(
       "admin-ui-ownership",
@@ -50,13 +50,13 @@ for (const legacyUiPath of ["src/shared/components", "src/shared/hooks"]) {
     );
   }
 }
-const coreDomainDir = join(root, "packages/core-domain");
+const coreDomainDir = join(root, "packages/core");
 const coreDomainManifest = readJson(join(coreDomainDir, "package.json"));
 if (coreDomainManifest?.dependencies?.next || coreDomainManifest?.dependencies?.["next-intl"]) {
   fail(
     "domain-transport-dependency",
     join(coreDomainDir, "package.json"),
-    "core-domain must not depend on the retired Next.js application transport",
+    "core must not depend on the retired Next.js application transport",
   );
 }
 for (const file of walkFiles(join(coreDomainDir, "src"), (path) => /\.[cm]?[jt]sx?$/.test(path))) {
@@ -105,7 +105,7 @@ for (const [name, shape] of Object.entries(appKinds)) {
   }
   for (const scriptName of ["dev", "start"]) {
     const script = manifest.scripts?.[scriptName];
-    if (typeof script === "string" && script.includes("packages/core-domain/tsconfig")) {
+    if (typeof script === "string" && script.includes("packages/core/tsconfig")) {
       fail("app-local-tsconfig", manifestPath, `${scriptName} must use the app's own tsconfig.json`);
     }
   }
@@ -119,11 +119,11 @@ for (const dir of packageDirs) {
   const manifestPath = join(dir, "package.json");
   const manifest = readJson(manifestPath);
   if (!manifest) { fail("package-package-json", manifestPath); continue; }
-  const expectedName = `@shiguang-gateway/${dir.split(sep).pop()}`;
+  const expectedName = `@orbit/${dir.split(sep).pop()}`;
   if (manifest.name !== expectedName) fail("package-name", manifestPath, `${manifest.name} != ${expectedName}`);
   if (!existsSync(join(dir, "tsconfig.json"))) fail("package-tsconfig", join(dir, "tsconfig.json"));
   if (!manifest.exports) fail("package-exports", manifestPath, "shared packages must expose an explicit entry surface");
-  if (!manifest.scripts?.typecheck && manifest.name !== "@shiguang-gateway/core-domain") {
+  if (!manifest.scripts?.typecheck && manifest.name !== "@orbit/core") {
     fail("package-typecheck-script", manifestPath);
   }
 }
@@ -132,9 +132,9 @@ for (const name of ["gateway-runtime", "server-runtime"]) {
   const dir = join(root, "packages", name);
   if (existsSync(dir)) fail("retired-runtime-package", dir);
 }
-const kernelManifest = readJson(join(root, "packages/http-kernel/package.json"));
+const kernelManifest = readJson(join(root, "packages/http/package.json"));
 if (kernelManifest?.exports && Object.keys(kernelManifest.exports).some((key) => /auth|compat|route/i.test(key))) {
-  fail("http-kernel-scope", join(root, "packages/http-kernel/package.json"), "kernel exports only Nest transport modules");
+  fail("http-scope", join(root, "packages/http/package.json"), "kernel exports only Nest transport modules");
 }
 
 // Package code must consume the data-only CLI capability contract. Reading the
@@ -142,7 +142,7 @@ if (kernelManifest?.exports && Object.keys(kernelManifest.exports).some((key) =>
 // package boundary entirely.
 const cliRegistryParserPath = join(
   root,
-  "packages/core-domain/src/lib/agentSkills/cliRegistryParser.ts"
+  "packages/core/src/lib/agentSkills/cliRegistryParser.ts"
 );
 if (existsSync(cliRegistryParserPath)) {
   const source = readFileSync(cliRegistryParserPath, "utf8");
@@ -154,14 +154,14 @@ if (existsSync(cliRegistryParserPath)) {
   ]) {
     if (pattern.test(source)) fail("cli-capability-contract", cliRegistryParserPath, detail);
   }
-  if (!source.includes("@shiguang-gateway/contracts/cli-capabilities")) {
+  if (!source.includes("@orbit/contracts/cli-capabilities")) {
     fail("cli-capability-contract", cliRegistryParserPath, "must consume the published manifest contract");
   }
 }
 
 const agentSkillsGeneratorPath = join(
   root,
-  "packages/core-domain/src/lib/agentSkills/generator.ts"
+  "packages/core/src/lib/agentSkills/generator.ts"
 );
 if (existsSync(agentSkillsGeneratorPath)) {
   const source = readFileSync(agentSkillsGeneratorPath, "utf8");

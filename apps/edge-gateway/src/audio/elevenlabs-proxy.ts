@@ -1,5 +1,5 @@
-import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
-import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
+import { isAllRateLimitedCredentials } from "@orbit/inference/services/credential-selection";
 import { rateLimitedProviderResponse } from "../common/provider-rate-limit-response.js";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
@@ -49,8 +49,8 @@ export async function proxyElevenLabsRequest(
     { getProviderCredentialsWithQuotaPreflight, clearRecoveredProviderState },
     { buildErrorBody },
   ] = await Promise.all([
-    load("@shiguang-gateway/open-sse/services/auth"),
-    load("@shiguang-gateway/open-sse/utils/error"),
+    load("@orbit/inference/services/auth"),
+    load("@orbit/inference/utils/error"),
   ]);
   const credentials = (await getProviderCredentialsWithQuotaPreflight(
     "elevenlabs",

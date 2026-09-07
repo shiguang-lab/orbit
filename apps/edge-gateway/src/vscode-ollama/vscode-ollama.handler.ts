@@ -1,7 +1,7 @@
 import type { VscodeModelsResolver } from "../vscode-models/vscode-models.handler.js";
-import { getCanonicalModelMetadata } from "@shiguang-gateway/core-domain/catalog/model-metadata";
-import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
-import { CORS_HEADERS, handleCorsOptions } from "@shiguang-gateway/core-domain/shared/cors";
+import { getCanonicalModelMetadata } from "@orbit/core/catalog/model-metadata";
+import { getProviderConnections } from "@orbit/core/db/provider-connections";
+import { CORS_HEADERS, handleCorsOptions } from "@orbit/core/shared/cors";
 import {
   buildReasoningConfigSchema,
   buildSupportedReasoningEfforts,

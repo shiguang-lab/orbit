@@ -1,4 +1,4 @@
-import { generateCert } from "@shiguang-gateway/core-domain/control/agent-bridge";
+import { generateCert } from "@orbit/core/control/agent-bridge";
 import { failure } from "./common.js";
 
 export async function POST(): Promise<Response> {

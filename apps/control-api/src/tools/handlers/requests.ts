@@ -1,5 +1,5 @@
-import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
-import { InspectorListQuerySchema, globalTrafficBuffer } from "@shiguang-gateway/core-domain/control/traffic-inspector";
+import { buildErrorBody } from "@orbit/inference/utils/error";
+import { InspectorListQuerySchema, globalTrafficBuffer } from "@orbit/core/control/traffic-inspector";
 
 export async function listRequests(request: Request): Promise<Response> {
   const url = new URL(request.url);

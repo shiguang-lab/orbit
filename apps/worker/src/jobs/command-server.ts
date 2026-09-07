@@ -8,8 +8,8 @@ import {
   type JobCommand,
   type JobCommandFailureCode,
   type JobCommandResponse,
-} from "@shiguang-gateway/contracts/job-command";
-import { getJobRegistry } from "@shiguang-gateway/core-domain/jobs/runtime-registry";
+} from "@orbit/contracts/job-command";
+import { getJobRegistry } from "@orbit/core/jobs/runtime-registry";
 
 export interface WorkerJobCommandRegistry {
   hasHandler(id: string): boolean;

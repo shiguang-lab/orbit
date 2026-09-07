@@ -1,5 +1,5 @@
-import type { ProviderCredentialRefreshResult } from "@shiguang-gateway/contracts/edge-runtime-command";
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import type { ProviderCredentialRefreshResult } from "@orbit/contracts/edge-runtime-command";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 
 /** POST /api/providers/:id/refresh-token. */

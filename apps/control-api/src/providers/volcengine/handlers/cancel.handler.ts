@@ -1,4 +1,4 @@
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 
 /**
  * POST /api/providers/volcengine-plan/connect/[sessionId]/cancel
@@ -15,7 +15,7 @@ export async function POST(
 
   try {
     const { volcengineConsoleAutoLoginService } =
-      await import("@shiguang-gateway/open-sse/services/volcengineConsoleAutoLogin");
+      await import("@orbit/inference/services/volcengineConsoleAutoLogin");
     const session = await volcengineConsoleAutoLoginService.cancel(sessionId);
     if (!session) {
       return Response.json(

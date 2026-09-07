@@ -1,4 +1,4 @@
-import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 
 /** GET /api/combos/auto. Enumerate supported virtual auto-combo templates. */

@@ -121,7 +121,7 @@ function ensureRuntimeDir() {
   if (!existsSync(pkg)) {
     writeFileSync(
       pkg,
-      JSON.stringify({ name: "core-domain", private: true, type: "commonjs" }),
+      JSON.stringify({ name: "core", private: true, type: "commonjs" }),
       "utf-8"
     );
   }
