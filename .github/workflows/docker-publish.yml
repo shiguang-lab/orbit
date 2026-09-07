@@ -69,6 +69,7 @@ jobs:
           pnpm smoke:route-imports
           pnpm smoke:split-deployment
           node --test scripts/smoke-worker-start.test.mjs
+          node --test scripts/compose-auth-contract.test.mjs
           pnpm smoke:worker
           pnpm smoke:agent-skills
 

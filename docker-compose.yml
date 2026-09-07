@@ -31,6 +31,7 @@ services:
       SQLITE_FILE: /app/data/storage.sqlite
       JWT_SECRET: ${JWT_SECRET:?Set a stable JWT_SECRET}
       API_KEY_SECRET: ${API_KEY_SECRET:?Set a stable API_KEY_SECRET}
+      REQUIRE_API_KEY: ${REQUIRE_API_KEY:-true}
       SHIGUANG_GATEWAY_WORKER_COMMAND_TOKEN: ${SHIGUANG_GATEWAY_WORKER_COMMAND_TOKEN:-}
       SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN: ${SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN:?Set a shared internal service token}
       SHIGUANG_GATEWAY_REALTIME_EVENT_URL: http://shiguang-gateway-realtime:20132/__shiguangGateway_event
