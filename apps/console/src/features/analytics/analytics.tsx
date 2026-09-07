@@ -157,7 +157,7 @@ function downloadFile(content: string, filename: string, mimeType: string) {
 
 function exportCsvReport(data: UsageAnalyticsPayload, range: string) {
   const lines: string[] = [];
-  lines.push("# ShiguangGateway 成本与消耗分析报告");
+  lines.push("# 智枢 成本与消耗分析报告");
   lines.push(`# 导出时间: ${new Date().toISOString()}`);
   lines.push(`# 统计周期: ${range}`);
   lines.push("");

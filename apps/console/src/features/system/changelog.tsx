@@ -17,10 +17,10 @@ export default function ChangelogPage() {
       <Descriptions.Item label={tt("版本", "Version")}>{String(value.version ?? "—")}</Descriptions.Item>
       <Descriptions.Item label={tt("构建", "Build")}>{String(value.build ?? "—")}</Descriptions.Item>
       <Descriptions.Item label={tt("提交", "Commit")}>{String(value.commit ?? "—")}</Descriptions.Item>
-      <Descriptions.Item label={tt("Runtime", "Runtime")}>{String(value.runtime ?? "独立 ShiguangGateway runtime")}</Descriptions.Item>
+      <Descriptions.Item label={tt("Runtime", "Runtime")}>{String(value.runtime ?? "独立智枢运行时")}</Descriptions.Item>
     </Descriptions>
     <Typography.Paragraph type="secondary" style={{ marginTop: 16, marginBottom: 0 }}>
-      {tt("发布说明由本地 control 提供；部署时不依赖官方 Shiguang Gateway 网络。", "Release metadata is served by the local control; deployment does not depend on the official Shiguang Gateway network.")}
+      {tt("发布说明由本地 control 提供；部署时不依赖官方 Orbit 网络。", "Release metadata is served by the local control; deployment does not depend on the official Orbit network.")}
     </Typography.Paragraph>
   </Card>;
 }

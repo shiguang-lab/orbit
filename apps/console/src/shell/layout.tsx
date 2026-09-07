@@ -1,6 +1,6 @@
 /**
  * 应用外壳：antd Layout（Sider 菜单 + Header + Content/Outlet）。
- * 菜单图标与线上 ShiguangGateway Shiguang Gateway 侧栏保持一致。
+ * 菜单图标与线上 Orbit 侧栏保持一致。
  */
 import {
   App,
@@ -388,7 +388,7 @@ export function Shell() {
           {!collapsed && (
             <div className={styles.sidebarBrandCopy}>
               <Typography.Text strong className={styles.brandTitle}>
-                {locale === "zh-CN" ? "时光网关" : "Shiguang Gateway"}
+                {locale === "zh-CN" ? "智枢" : "Orbit"}
               </Typography.Text>
               <Typography.Text type="secondary" className={styles.brandSubtitle}>
                 {t("shell.brandSubtitle")}

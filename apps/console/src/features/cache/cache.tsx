@@ -950,7 +950,7 @@ export function CachePage() {
                   {t(
                     "cache.semanticCacheSectionDesc",
                     undefined,
-                    "ShiguangGateway 本地维护的确定性响应缓存。开启后，重复的非流式、temperature=0 请求可以直接在本地极速命中，不再访问上游 provider，节省 100% 费用与延迟。"
+                    "智枢本地维护的确定性响应缓存。开启后，重复的非流式、temperature=0 请求可以直接在本地极速命中，不再访问上游 provider，节省 100% 费用与延迟。"
                   )}
                 </Text>
               </div>
@@ -976,7 +976,7 @@ export function CachePage() {
                 {t(
                   "cache.semanticCacheDisabledDesc",
                   undefined,
-                  "Semantic Cache 当前已禁用。重新在设置中开启之前，ShiguangGateway 不会再做本地响应复用。"
+                  "Semantic Cache 当前已禁用。重新在设置中开启之前，智枢不会再做本地响应复用。"
                 )}
               </div>
             )}

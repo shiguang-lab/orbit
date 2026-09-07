@@ -173,7 +173,7 @@ export const OFFICIAL_ENDPOINTS: EndpointCardDef[] = [
     defaultModel: "tts-1",
     exampleBody: {
       model: "tts-1",
-      input: "Welcome to ShiguangGateway Gateway!",
+      input: "Welcome to Orbit Gateway!",
       voice: "alloy",
     },
   },
@@ -192,7 +192,7 @@ export const OFFICIAL_ENDPOINTS: EndpointCardDef[] = [
     descriptionEn: "Unified web search relay across Tavily, Google, Bing and other engines.",
     defaultModel: "tavily-search",
     exampleBody: {
-      query: "ShiguangGateway AI Gateway latest features",
+      query: "Orbit AI Gateway latest features",
       max_results: 5,
     },
   },
@@ -213,7 +213,7 @@ export const OFFICIAL_ENDPOINTS: EndpointCardDef[] = [
     exampleBody: {
       model: "bge-reranker-large",
       query: "What is intelligent combo routing?",
-      documents: ["ShiguangGateway provides weighted, priority and dynamic decision routing", "Today is sunny and good for travel"],
+      documents: ["Orbit provides weighted, priority and dynamic decision routing", "Today is sunny and good for travel"],
     },
   },
   {

@@ -109,7 +109,7 @@ export function ProviderInterceptionSection({
       <div className={styles.hintText}>
         {t(
           "providers.interceptionSectionHint",
-          "将此提供者的原生 web_search / web_fetch 工具调用路由到 ShiguangGateway 自身的搜索和获取端点，而不是让提供者原生运行它们。默认关闭 — 现有行为保持不变。"
+          "将此提供者的原生 web_search / web_fetch 工具调用路由到 智枢 自身的搜索和获取端点，而不是让提供者原生运行它们。默认关闭 — 现有行为保持不变。"
         )}
       </div>
 
@@ -117,7 +117,7 @@ export function ProviderInterceptionSection({
         <div className={styles.labelColumn}>
           <span className={styles.itemTitle}>{t("providers.interceptSearchLabel", "拦截 web_search")}</span>
           <span className={styles.itemHint}>
-            {t("providers.interceptSearchHint", "将原生的 web_search 工具调用重写为 ShiguangGateway 的 /v1/search。")}
+            {t("providers.interceptSearchHint", "将原生的 web_search 工具调用重写为 智枢 的 /v1/search。")}
           </span>
         </div>
         <Switch checked={interceptSearch} onChange={handleToggleSearch} loading={loading} />
@@ -127,7 +127,7 @@ export function ProviderInterceptionSection({
         <div className={styles.labelColumn}>
           <span className={styles.itemTitle}>{t("providers.interceptFetchLabel", "拦截 web_fetch")}</span>
           <span className={styles.itemHint}>
-            {t("providers.interceptFetchHint", "将原生的 web_fetch 工具调用重写为 ShiguangGateway 的 /v1/web/fetch。")}
+            {t("providers.interceptFetchHint", "将原生的 web_fetch 工具调用重写为 智枢 的 /v1/web/fetch。")}
           </span>
         </div>
         <Switch checked={interceptFetch} onChange={handleToggleFetch} loading={loading} />

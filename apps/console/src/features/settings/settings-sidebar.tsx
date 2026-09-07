@@ -607,7 +607,7 @@ export function SettingsSidebarPage() {
               <Text type="secondary" style={{ fontSize: 12 }}>
                 {tt(
                   "自定义智枢管理控制台侧栏的分组排序、页面可见性与角色预设，所有改动即时生效并写入配置。",
-                  "Customize Shiguang Gateway admin sidebar grouping, sorting, visibility, and role presets. All changes take effect immediately."
+                  "Customize Orbit admin sidebar grouping, sorting, visibility, and role presets. All changes take effect immediately."
                 )}
               </Text>
             </div>

@@ -129,22 +129,22 @@ const BADGE_ZH_DICT: Record<string, { name: string; description: string; criteri
   "first-token": {
     name: "首个 Token",
     description: "完成了您的首次 API 请求",
-    criteria: "通过 ShiguangGateway 完成您的首次 API 请求。",
+    criteria: "通过 智枢 完成您的首次 API 请求。",
   },
   "token-consumer": {
     name: "Token 消费者",
     description: "完成了 1,000 次 API 请求",
-    criteria: "通过 ShiguangGateway 完成 1,000 次 API 请求。",
+    criteria: "通过 智枢 完成 1,000 次 API 请求。",
   },
   "token-machine": {
     name: "Token 机器",
     description: "完成了 10,000 次 API 请求",
-    criteria: "通过 ShiguangGateway 完成 10,000 次 API 请求。",
+    criteria: "通过 智枢 完成 10,000 次 API 请求。",
   },
   "token-whale": {
     name: "Token 巨鲸",
     description: "完成了 100,000 次 API 请求",
-    criteria: "通过 ShiguangGateway 完成 100,000 次 API 请求。",
+    criteria: "通过 智枢 完成 100,000 次 API 请求。",
   },
   "generous": {
     name: "慷慨分享",
@@ -199,22 +199,22 @@ const BADGE_ZH_DICT: Record<string, { name: string; description: string; criteri
   "daily-user": {
     name: "每日用户",
     description: "连续 3 天活跃运行",
-    criteria: "连续 3 天使用 ShiguangGateway。",
+    criteria: "连续 3 天使用 智枢。",
   },
   "weekly-warrior": {
     name: "每周勇士",
     description: "连续 7 天活跃运行",
-    criteria: "连续 7 天使用 ShiguangGateway。",
+    criteria: "连续 7 天使用 智枢。",
   },
   "monthly-master": {
     name: "每月大师",
     description: "连续 30 天活跃运行",
-    criteria: "连续 30 天使用 ShiguangGateway。",
+    criteria: "连续 30 天使用 智枢。",
   },
   "unstoppable": {
     name: "势不可挡",
     description: "连续 365 天持续活跃",
-    criteria: "连续 365 天持续使用 ShiguangGateway。",
+    criteria: "连续 365 天持续使用 智枢。",
   },
   "early-adopter": {
     name: "早期采用者",

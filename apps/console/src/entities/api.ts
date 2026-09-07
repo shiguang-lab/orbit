@@ -3816,7 +3816,7 @@ export const mcpApi = {
     ]);
     const tools = Array.isArray(toolCatalog.tools) ? toolCatalog.tools : [];
     return [{
-      id: "local-mcp", name: "ShiguangGateway MCP", transport: String(status.transport ?? "stdio") as McpServerItem["transport"],
+      id: "local-mcp", name: "Orbit MCP", transport: String(status.transport ?? "stdio") as McpServerItem["transport"],
       commandOrUrl: String(status.heartbeatPath ?? "in-process"), toolsCount: tools.length, promptsCount: 0, resourcesCount: 0,
       status: status.online === true ? "connected" : "disconnected", pingMs: 0, tools,
     }];

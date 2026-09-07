@@ -259,8 +259,8 @@ export function RadarPage() {
             <Flex justify="space-between" align="center" wrap gap={12} style={{ marginTop: 6 }}>
               <div>
                 {tt(
-                  "开启后，ShiguangGateway 将定期通过数字签名下载全球最新免费模型元数据与配额规则（完全本地隐私，绝不上传任何请求与密钥）。",
-                  "When enabled, ShiguangGateway periodically fetches digitally signed global free LLM metadata and quota rules (strictly local privacy, no requests or keys uploaded)."
+                  "开启后，智枢 将定期通过数字签名下载全球最新免费模型元数据与配额规则（完全本地隐私，绝不上传任何请求与密钥）。",
+                  "When enabled, Orbit periodically fetches digitally signed global free LLM metadata and quota rules (strictly local privacy, no requests or keys uploaded)."
                 )}
               </div>
               <Button type="primary" size="middle" loading={activateMutation.isPending} onClick={() => activateMutation.mutate({ optIn: true })}>

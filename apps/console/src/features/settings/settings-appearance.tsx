@@ -173,7 +173,7 @@ export function SettingsAppearancePage() {
                 <Form.Item label={tt("系统主品牌强调色", "Primary Accent Color")} name="primaryColor">
                   <Select
                     options={[
-                      { label: tt("智枢科技蓝 (#3B82F6)", "Shiguang Gateway Blue (#3B82F6)"), value: "#3B82F6" },
+                      { label: tt("智枢科技蓝 (#3B82F6)", "Orbit Blue (#3B82F6)"), value: "#3B82F6" },
                       { label: tt("极客深靛青 (#6366F1)", "Indigo (#6366F1)"), value: "#6366F1" },
                       { label: tt("灵动赛博紫 (#A855F7)", "Cyber Purple (#A855F7)"), value: "#A855F7" },
                       { label: tt("极光森林绿 (#10B981)", "Forest Green (#10B981)"), value: "#10B981" },

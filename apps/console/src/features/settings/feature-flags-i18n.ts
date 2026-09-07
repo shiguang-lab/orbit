@@ -128,7 +128,7 @@ export const FEATURE_FLAG_TRANSLATIONS_ZH: Record<string, LocalizedFlagText> = {
   },
   RADAR_ENABLED: {
     label: "模型雷达 (Radar)",
-    description: "开启 ShiguangGateway 模型雷达模块与目录订阅同步功能界面。",
+    description: "开启 智枢 模型雷达模块与目录订阅同步功能界面。",
   },
 
   // ── Runtime ──
