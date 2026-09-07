@@ -1581,6 +1581,10 @@
     "./runtime/model-sync-operation": {
       "types": "./src/public/modelSyncOperation.d.ts",
       "import": "./src/shared/services/modelSyncOperation.ts"
+    },
+    "./control/service-nodes": {
+      "types": "./src/public/serviceNodes.d.ts",
+      "import": "./src/control/service-nodes.ts"
     }
   },
   "dependencies": {

@@ -128,6 +128,8 @@ function buildSpawnArgsFactory(
 
 export async function bootstrapEmbeddedServices(): Promise<void> {
   for (const cfg of SERVICES) {
+    // A configured manager owns the NAS CPA process and its credential directory.
+    if (cfg.tool === "cliproxy" && process.env.ORBIT_CLIPROXY_MANAGER_ENDPOINT) continue;
     if (getSupervisor(cfg.tool)) continue;
 
     const row = await getVersionManagerTool(cfg.tool);

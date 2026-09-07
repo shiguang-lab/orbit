@@ -1,10 +1,10 @@
-import { Controller, Delete, Get, Options, Patch, Post, Put, Req, Res } from "@nestjs/common";
+import { Inject, Controller, Delete, Get, Options, Patch, Post, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 import { RadarService } from "./radar.service.js";
 @Controller("api/radar")
 export class RadarController {
-  constructor(private readonly routes: WebRouteDispatcher, private readonly radar: RadarService) {}
+  constructor(@Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher, @Inject(RadarService) private readonly radar: RadarService) {}
   @Options("catalog") optionsCatalog(@Req() q: FastifyRequest, @Res() r: FastifyReply) { return this.routes.dispatch(q, r, () => import("./handlers/catalog.handler.js").then((m) => m.OPTIONS())); }
   @Get("catalog") catalog(@Req() q: FastifyRequest, @Res() r: FastifyReply) { return this.routes.dispatch(q, r, (x) => this.radar.catalog(x)); }
   @Options("referrals") optionsReferrals(@Req() q: FastifyRequest, @Res() r: FastifyReply) { return this.routes.dispatch(q, r, () => import("./handlers/referrals.handler.js").then((m) => m.OPTIONS())); }

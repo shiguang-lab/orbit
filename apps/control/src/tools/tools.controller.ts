@@ -1,11 +1,11 @@
-import { Controller, Delete, Get, Post, Req, Res } from "@nestjs/common";
+import { Inject, Controller, Delete, Get, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 import { ToolsService } from "./tools.service.js";
 
 @Controller("api/tools")
 export class ToolsController {
-  constructor(private readonly service: ToolsService, private readonly routes: WebRouteDispatcher) {}
+  constructor(@Inject(ToolsService) private readonly service: ToolsService, @Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher) {}
 
   @Get("traffic-inspector/capture-modes")
   captureModes(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {

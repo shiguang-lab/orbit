@@ -30,6 +30,21 @@ const verifier = new SgIdentityVerifier({
 });
 const identityResolutionCache = new WeakMap<object, Promise<ResolvedSgIdentity | null>>();
 
+export function isLocalDevMode(): boolean {
+  if (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "test") {
+    return false;
+  }
+  return process.env.SG_DEV_IDENTITY === "1" || process.env.NODE_ENV === "development";
+}
+
+export const DEV_ADMIN_IDENTITY: ResolvedSgIdentity = {
+  sub: "local-dev-admin",
+  sessionId: "dev-session",
+  displayName: "本地开发者 (Dev Admin)",
+  roles: ["system:admin", "orbit:admin"],
+  entitlements: ["orbit:access", requiredEntitlement],
+};
+
 /** 已验签身份须具备管理员角色或当前部署配置的产品授权。 */
 export function isAdminIdentity(identity: ResolvedSgIdentity | null): boolean {
   if (!identity || !identity.sub) return false;
@@ -45,7 +60,12 @@ export async function resolveGatewayIdentity(
 
   const raw = request.headers["x-sg-identity"];
   const headerValue = Array.isArray(raw) ? raw[0] : raw;
-  if (!headerValue) return null;
+  if (!headerValue) {
+    if (isLocalDevMode()) {
+      return DEV_ADMIN_IDENTITY;
+    }
+    return null;
+  }
   // 生产：JWKS 签名校验。同一个请求中的鉴权与 CSRF 共享验签结果。
   const resolution = verifier.verify(headerValue);
   identityResolutionCache.set(request, resolution);
@@ -58,7 +78,7 @@ export async function handleSession(
   reply: FastifyReply,
 ): Promise<FastifyReply> {
   reply.header("cache-control", "no-store");
-  // 1. 生产/网关形态：X-SG-Identity(JWKS 验签)
+  // 1. 生产/网关形态：X-SG-Identity(JWKS 验签)；本地开发：自动 mock 管理员身份
   const identity = await resolveGatewayIdentity(request);
   if (identity) {
     if (!isAdminIdentity(identity)) {
@@ -68,7 +88,7 @@ export async function handleSession(
       authenticated: true,
       subject: identity.sub,
       displayName: identity.displayName ?? identity.sub,
-      email: null,
+      email: identity.sub === "local-dev-admin" ? "dev@orbit.local" : null,
       roles: identity.roles,
       platformRoles: identity.roles.filter((r) => r.includes("admin")),
       entitlements: identity.entitlements,

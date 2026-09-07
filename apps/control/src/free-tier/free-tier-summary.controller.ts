@@ -1,4 +1,4 @@
-import { Controller, Get, Options, Req, Res } from "@nestjs/common";
+import { Inject, Controller, Get, Options, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { isAuthenticated } from "@orbit/core/control/authenticated";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
@@ -7,8 +7,8 @@ import { FreeTierService } from "./free-tier.service.js";
 @Controller("api/free-tier/summary")
 export class FreeTierSummaryController {
   constructor(
-    private readonly service: FreeTierService,
-    private readonly routes: WebRouteDispatcher,
+    @Inject(FreeTierService) private readonly service: FreeTierService,
+    @Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher,
   ) {}
 
   @Options()

@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param, Post, Put, Req, Res } from "@nestjs/common";
+import { Controller, Delete, Get, Inject, Param, Post, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 import { SkillsService } from "./skills.service.js";
@@ -6,7 +6,10 @@ import * as executions from "./handlers/executions.handler.js";
 
 @Controller("api/skills")
 export class SkillsController {
-  constructor(private readonly routes: WebRouteDispatcher, private readonly skills: SkillsService) {}
+  constructor(
+    @Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher,
+    @Inject(SkillsService) private readonly skills: SkillsService,
+  ) {}
 
   @Get()
   list(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {

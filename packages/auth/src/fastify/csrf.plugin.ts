@@ -5,7 +5,7 @@
  */
 import { createHash, createHmac } from "node:crypto";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import { resolveGatewayIdentity } from "../gateway-session.js";
+import { isLocalDevMode, resolveGatewayIdentity } from "../gateway-session.js";
 
 export const DASHBOARD_CSRF_HEADER = "x-orbit-csrf";
 
@@ -19,7 +19,7 @@ export interface DashboardCsrfToken {
 }
 
 function getJwtSecret(): Buffer | null {
-  const secret = process.env.JWT_SECRET?.trim();
+  const secret = process.env.JWT_SECRET?.trim() || (isLocalDevMode() ? "dev-secret-change-me" : null);
   return secret ? Buffer.from(secret, "utf8") : null;
 }
 
@@ -118,7 +118,7 @@ export function csrfPlugin(app: FastifyInstance, opts: { devMode?: boolean } = {
     if ((typeof authorization === "string" && authorization.startsWith("Bearer ")) ||
       (typeof apiKeyHeader === "string" && apiKeyHeader.trim().length > 0)) return;
     // 本地开发模式(SG_DEV_IDENTITY=1 或 broker 已配置)：豁免(仅本地，生产绝不可用)
-    if (opts.devMode) return;
+    if (opts.devMode ?? isLocalDevMode()) return;
 
     if (!(await validateDashboardCsrfToken(request))) {
       return reply.status(403).send({

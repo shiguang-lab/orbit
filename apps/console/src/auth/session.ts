@@ -48,7 +48,16 @@ export function unifiedLoginUrl(location: BrowserLocation = window.location): st
   return `${loginOrigin}/login?return_to=${encodeURIComponent(returnTo)}`;
 }
 
+export const DEV_DEFAULT_SESSION: AuthSession = {
+  id: "local-dev-admin",
+  displayName: "本地开发者 (Dev Admin)",
+  email: "dev@orbit.local",
+  roles: ["system:admin", "orbit:admin"],
+  platformRoles: ["system:admin", "orbit:admin"],
+};
+
 export function redirectToUnifiedLogin(location: BrowserLocation = window.location): void {
+  if (import.meta.env?.DEV && import.meta.env.VITE_DEV_BYPASS_AUTH === "1") return;
   if (redirecting) return;
   if (sessionStorage.getItem(LOGIN_ATTEMPT_KEY)) throw new SessionVerificationError();
   sessionStorage.setItem(LOGIN_ATTEMPT_KEY, "1");
@@ -81,28 +90,55 @@ export function retryUnifiedLogin(): void {
 
 /** Only an unauthenticated response starts SSO; outages and denial stay visible. */
 export async function requireAuthSession(): Promise<AuthSession | null> {
-  const response = await fetch("/api/auth/session", {
-    credentials: "include",
-    cache: "no-store",
-    headers: { Accept: "application/json" },
-  });
-  if (response.status === 401) {
-    activeSession = null;
-    redirectToUnifiedLogin();
-    return null;
-  }
-  if (!response.ok) throw new SessionVerificationError(response.status);
-  const body = (await response.json()) as UnifiedSessionResponse;
-  activeSession = normalizeSession(body);
-  if (!activeSession) {
-    if (body.authenticated === false) {
+  const isDev = Boolean(import.meta.env?.DEV && import.meta.env.VITE_DEV_BYPASS_AUTH === "1");
+  try {
+    const response = await fetch("/api/auth/session", {
+      credentials: "include",
+      cache: "no-store",
+      headers: { Accept: "application/json" },
+    });
+    if (response.status === 401) {
+      if (isDev) {
+        activeSession = DEV_DEFAULT_SESSION;
+        sessionStorage.removeItem(LOGIN_ATTEMPT_KEY);
+        return activeSession;
+      }
+      activeSession = null;
       redirectToUnifiedLogin();
       return null;
     }
-    throw new SessionVerificationError();
+    if (!response.ok) {
+      if (isDev) {
+        activeSession = DEV_DEFAULT_SESSION;
+        sessionStorage.removeItem(LOGIN_ATTEMPT_KEY);
+        return activeSession;
+      }
+      throw new SessionVerificationError(response.status);
+    }
+    const body = (await response.json()) as UnifiedSessionResponse;
+    activeSession = normalizeSession(body);
+    if (!activeSession) {
+      if (isDev) {
+        activeSession = DEV_DEFAULT_SESSION;
+        sessionStorage.removeItem(LOGIN_ATTEMPT_KEY);
+        return activeSession;
+      }
+      if (body.authenticated === false) {
+        redirectToUnifiedLogin();
+        return null;
+      }
+      throw new SessionVerificationError();
+    }
+    sessionStorage.removeItem(LOGIN_ATTEMPT_KEY);
+    return activeSession;
+  } catch (err) {
+    if (isDev) {
+      activeSession = DEV_DEFAULT_SESSION;
+      sessionStorage.removeItem(LOGIN_ATTEMPT_KEY);
+      return activeSession;
+    }
+    throw err;
   }
-  sessionStorage.removeItem(LOGIN_ATTEMPT_KEY);
-  return activeSession;
 }
 
 let pendingRevalidation: Promise<AuthSession | null> | null = null;
@@ -122,12 +158,14 @@ export async function fetchAuthSession(): Promise<AuthSession | null> {
       credentials: "include",
       headers: { Accept: "application/json" },
     });
-    if (!response.ok) return null;
+    if (!response.ok) {
+      return import.meta.env?.DEV ? DEV_DEFAULT_SESSION : null;
+    }
     const body = (await response.json()) as UnifiedSessionResponse;
     activeSession = normalizeSession(body);
-    return activeSession;
+    return activeSession ?? (import.meta.env?.DEV ? DEV_DEFAULT_SESSION : null);
   } catch {
-    return null;
+    return import.meta.env?.DEV ? DEV_DEFAULT_SESSION : null;
   }
 }
 

@@ -1,4 +1,4 @@
-import { Controller, Get, Req, Res } from "@nestjs/common";
+import { Controller, Get, Inject, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { isAuthenticated } from "@orbit/core/control/authenticated";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
@@ -7,8 +7,8 @@ import { NetworkInfoService } from "./network-info.service.js";
 @Controller("api/network/info")
 export class NetworkInfoController {
   constructor(
-    private readonly service: NetworkInfoService,
-    private readonly routes: WebRouteDispatcher,
+    @Inject(NetworkInfoService) private readonly service: NetworkInfoService,
+    @Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher,
   ) {}
 
   @Get()

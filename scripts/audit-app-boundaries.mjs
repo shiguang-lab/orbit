@@ -324,7 +324,7 @@ allowedCoreDomainSubpaths["apps/control"].push(
   "domain/provider-error-classifier",
   "usage/reporting-support/",
 );
-allowedCoreDomainSubpaths["apps/control"].push("db/models");
+allowedCoreDomainSubpaths["apps/control"].push("db/models", "control/service-nodes");
 allowedCoreDomainSubpaths["apps/control"].push(
   "cli/runtime",
   "cli/backups",

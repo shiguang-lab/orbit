@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Req, Res } from "@nestjs/common";
+import { Inject, Controller, Get, Param, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 import { initializeControlRuntime, issueDahlTokens } from "@orbit/core/control/auth-init";
@@ -6,7 +6,7 @@ import { completeCodexDeviceFlow, getCodexDeviceTicket } from "../oauth/codex-de
 
 @Controller()
 export class AuthInitController {
-  constructor(private readonly routes: WebRouteDispatcher) {}
+  constructor(@Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher) {}
 
   private response(result: { status: number; body: unknown }) { return Response.json(result.body, { status: result.status }); }
 

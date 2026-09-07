@@ -10,7 +10,7 @@ import { POST as previewRoute } from "./handlers/route-preview.handler.js";
 export class GatewayController {
   constructor(
     @Inject(GatewayService) private readonly gatewayService: GatewayService,
-    private readonly routes: WebRouteDispatcher,
+    @Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher,
   ) {}
 
   @Post("gateway/route/preview")

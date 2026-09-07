@@ -5,4 +5,5 @@
 export * from "../lib/services/installers/cliproxy.ts";
 export * from "../lib/services/cliproxyAccountHealth.ts";
 export * from "../lib/services/cliproxyapi/loginManager.ts";
+export * from "../lib/services/cliproxyInstances.ts";
 export { resolvePortPid } from "../lib/services/portProbe.ts";

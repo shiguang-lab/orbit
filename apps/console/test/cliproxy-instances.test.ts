@@ -1,0 +1,56 @@
+import assert from "node:assert/strict";
+import { test } from "node:test";
+import { createServer } from "vite";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { MemoryRouter } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+test("Each manager is one instance, including managers with no CLIProxyAPI process", async () => {
+  const vite = await createServer({ root: new URL("..", import.meta.url).pathname, server: { middlewareMode: true, hmr: false }, optimizeDeps: { noDiscovery: true, include: [] } });
+  const client = new QueryClient({ defaultOptions: { queries: { staleTime: Infinity, retry: false } } });
+  const originalStorage = Object.getOwnPropertyDescriptor(globalThis, "localStorage");
+  let view = "list";
+  Object.defineProperty(globalThis, "localStorage", { configurable: true, value: { getItem: (key: string) => key === "cliproxy-instance-view" ? view : key === "orbit-admin-locale" ? JSON.stringify({ state: { locale: "en-US" } }) : null } });
+  try {
+    const { default: Page } = await vite.ssrLoadModule("/src/features/services/cliproxy-instances.tsx");
+    const instance = { id: "same-id", name: "NAS process", port: 18317, version: "v7.2.153", state: "running", desiredState: "running", healthy: true, latencyMs: 2, restartCount: 0 };
+    const node = { id: "nas", name: "NAS instance", endpoint: "http://nas-manager:8792", online: true, lastSeenAt: "2026-09-07T12:00:00Z", report: { instances: [instance], jobs: [], metrics: {}, managerVersion: "0.1.0" } };
+    const remote = { ...node, id: "remote", scopePrefix: "cpa-remote", name: "Remote instance", endpoint: "http://remote-manager:8792", report: { ...node.report, instances: [{ ...instance, name: "Remote process", port: 28317, credentials: [{ id: "remote-account.json", name: "Remote credential", provider: "xai", disabled: false, routable: true, models: ["shared"] }] }] } };
+    const empty = { ...node, id: "unreported", name: "Not deployed yet", online: false, report: null };
+    client.setQueryData(["service-nodes"], [node, remote, empty]);
+    const render = (path: string) => renderToStaticMarkup(createElement(QueryClientProvider, { client }, createElement(MemoryRouter, { initialEntries: [path] }, createElement(Page))));
+    const collection = render("/dashboard/providers/services?tab=cliproxy");
+    assert.match(collection, /NAS instance/);
+    assert.match(collection, /Remote instance/);
+    assert.match(collection, /<table/);
+    assert.match(collection, /Not deployed yet/);
+    assert.doesNotMatch(collection, /NAS process|Remote process|Connect manager|Manage servers|before creating instances/);
+    assert.doesNotMatch(collection, /Back to instances|Inference API key|Management Key/);
+    view = "cards";
+    const cards = render("/dashboard/providers/services?tab=cliproxy");
+    assert.match(cards, /NAS instance/);
+    assert.match(cards, /Remote instance/);
+    assert.doesNotMatch(cards, /<table/);
+    const detail = render("/dashboard/providers/services?tab=cliproxy&instance=remote");
+    assert.match(detail, /Remote instance/);
+    assert.match(detail, /28317/);
+    assert.match(detail, /cpa-remote/);
+    assert.match(detail, /Remote credential/);
+    assert.doesNotMatch(detail, /NAS instance|18317/);
+    assert.match(detail, />(Back|返回)</);
+    for (const [en, zh] of [["Credentials", "凭据"], ["Model Mapping", "模型映射"], ["Logs", "日志"], ["Runtime", "运行状态"], ["Automation", "自动化"]]) assert.ok(detail.includes(en) || detail.includes(zh), en);
+    const undeployed = render("/dashboard/providers/services?tab=cliproxy&instance=unreported");
+    assert.match(undeployed, /Not deployed yet/);
+    assert.match(undeployed, /(Instance is disconnected|实例尚未连接)/);
+    assert.match(undeployed, /(Remove instance|移除实例)/);
+    const missing = render("/dashboard/providers/services?tab=cliproxy&instance=unknown");
+    assert.match(missing, /(Instance not found|实例不存在)/);
+    assert.doesNotMatch(missing, /NAS instance|Remote instance/);
+  } finally {
+    if (originalStorage) Object.defineProperty(globalThis, "localStorage", originalStorage);
+    else Reflect.deleteProperty(globalThis, "localStorage");
+    client.clear();
+    await vite.close();
+  }
+});

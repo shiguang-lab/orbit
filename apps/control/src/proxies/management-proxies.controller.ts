@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Patch, Post, Put, Req, Res } from "@nestjs/common";
+import { Inject, Controller, Delete, Get, Patch, Post, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 import { ProxiesService } from "./proxies.service.js";
@@ -7,8 +7,8 @@ import { ProxiesService } from "./proxies.service.js";
 @Controller("api/v1/management/proxies")
 export class ManagementProxiesController {
   constructor(
-    private readonly routes: WebRouteDispatcher,
-    private readonly service: ProxiesService,
+    @Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher,
+    @Inject(ProxiesService) private readonly service: ProxiesService,
   ) {}
 
   @Get()

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, Res } from "@nestjs/common";
+import { Controller, Get, Inject, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
@@ -11,7 +11,10 @@ const enabled = () => new Set(["1", "true", "yes", "on"]).has((process.env.ORBIT
 
 @Controller("api/issue-agent")
 export class IssueAgentController {
-  constructor(private readonly routes: WebRouteDispatcher, private readonly service: IssueAgentService) {}
+  constructor(
+    @Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher,
+    @Inject(IssueAgentService) private readonly service: IssueAgentService,
+  ) {}
   @Get("runs")
   get(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, async () => Response.json({ ok: true, enabled: enabled(), supportedModes: ["recorded-triage"], execution: "disabled-by-default" })); }
   @Post("runs")

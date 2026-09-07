@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/theme/ThemeProvider";
 import { router } from "@/app/router";
 import "@/styles/global.css";
 import {
+  DEV_DEFAULT_SESSION,
   retryUnifiedLogin,
   requireAuthSession,
   type AuthSession,
@@ -34,10 +35,14 @@ function AppRoot() {
     let cancelled = false;
     void requireAuthSession()
       .then((s) => {
-        if (!cancelled) setSession(s);
+        if (!cancelled) setSession(s ?? (import.meta.env.DEV ? DEV_DEFAULT_SESSION : null));
       })
       .catch(() => {
         if (!cancelled) {
+          if (import.meta.env.DEV) {
+            setSession(DEV_DEFAULT_SESSION);
+            return;
+          }
           setSessionError(true);
           setSession(null);
         }
@@ -55,7 +60,7 @@ function AppRoot() {
     );
   }
 
-  if (sessionError) {
+  if (sessionError && !import.meta.env.DEV) {
     return (
       <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: 24 }}>
         <Space direction="vertical">

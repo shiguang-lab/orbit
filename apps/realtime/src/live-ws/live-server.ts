@@ -18,7 +18,7 @@
  */
 
 import { WebSocketServer, WebSocket } from "ws";
-import { isAdminIdentity, resolveGatewayIdentity } from "@orbit/auth";
+import { isAdminIdentity, isLocalDevMode, resolveGatewayIdentity } from "@orbit/auth";
 import { createServer, type IncomingMessage, type ServerResponse } from "http";
 import { randomUUID } from "crypto";
 import type { WsClientMessage, WsServerMessage, WsEventMessage, WsAuthResult } from "@orbit/contracts/realtime";
@@ -152,6 +152,9 @@ async function authorizeConnection(request: import("http").IncomingMessage): Pro
   const token = extractBearerToken(request) || extractAltTokenHeader(request);
 
   if (!token) {
+    if (isLocalDevMode()) {
+      return { authorized: true, sessionId };
+    }
     return { authorized: false, sessionId, error: "Missing token" };
   }
 

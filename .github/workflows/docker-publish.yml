@@ -43,6 +43,12 @@ jobs:
           node-version: 22
           cache: pnpm
 
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: apps/cliproxy-manager/go.mod
+          cache: false
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -53,6 +59,9 @@ jobs:
 
       - name: Run independence and runtime smoke gates
         run: |
+          pnpm --filter @orbit/cliproxy-manager test
+          pnpm --filter @orbit/control exec tsx --test test/service-nodes.test.ts
+          node --test scripts/ops/import-cliproxy.test.mjs
           pnpm audit:gateway-independence
           pnpm audit:route-contracts
           pnpm audit:brand
@@ -92,6 +101,9 @@ jobs:
             image: worker
           - target: importer
             image: importer
+          - target: cliproxy-manager
+            image: cliproxy-manager
+            context: ./apps/cliproxy-manager
     permissions:
       contents: read
       packages: write
@@ -144,10 +156,10 @@ jobs:
       - name: Build ${{ matrix.target }} image
         uses: docker/build-push-action@v6
         with:
-          context: .
+          context: ${{ matrix.context || '.' }}
           target: ${{ matrix.target }}
           # NAS deployment target is x86_64; keeping one platform avoids
-          # exhausting GitHub-hosted runner disk while building six services.
+          # exhausting GitHub-hosted runner disk while building the services.
           platforms: linux/amd64
           push: ${{ !contains(fromJSON('["gateway", "control", "realtime", "worker"]'), matrix.target) }}
           load: ${{ contains(fromJSON('["gateway", "control", "realtime", "worker"]'), matrix.target) }}
@@ -228,9 +240,10 @@ jobs:
             `ghcr.io/shiguang-lab/orbit-realtime:${{ github.ref_name }}`
             `ghcr.io/shiguang-lab/orbit-worker:${{ github.ref_name }}`
             `ghcr.io/shiguang-lab/orbit-importer:${{ github.ref_name }}`
+            `ghcr.io/shiguang-lab/orbit-cliproxy-manager:${{ github.ref_name }}`
 
-            NAS deployment downloads the `-nas-deploy.tar.gz` asset, sets all six
-            `ORBIT_*_IMAGE` variables and the stable encryption/auth secrets,
+            NAS deployment downloads the `-nas-deploy.tar.gz` asset, sets the six runtime image variables and optional manager image,
+            preserves the stable encryption/auth secrets,
             then runs `docker compose pull && docker compose up -d`.
           files: |
             release-assets/orbit-${{ github.ref_name }}.source.tar.gz

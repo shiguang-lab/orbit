@@ -1180,9 +1180,19 @@ async function loadAdvertisedModelsForSelfHostedConnections(
   const selfHostedProviders = new Set(
     connections
       .map((c) => c.provider)
-      .filter((p): p is string => typeof p === "string" && isSelfHostedChatProvider(p))
+      .filter((p): p is string =>
+        typeof p === "string" &&
+        (isSelfHostedChatProvider(p) || p.startsWith("openai-compatible-cliproxy-"))
+      )
   );
   if (selfHostedProviders.size === 0) return advertised;
+  // Managed credentials advertise an explicit model set. Missing or malformed
+  // metadata must not turn into an unrestricted credential.
+  for (const connection of connections) {
+    if (connection.provider?.startsWith("openai-compatible-cliproxy-")) {
+      advertised.set(connection.id, new Set());
+    }
+  }
 
   await Promise.all(
     [...selfHostedProviders].map(async (providerId) => {
@@ -1217,6 +1227,7 @@ export async function getProviderCredentials(
   requestedModel: string | null = null,
   options: CredentialSelectionOptions = {}
 ) {
+  const managedCliproxyScope = provider.startsWith("openai-compatible-cliproxy-");
   if (isMicrosoftDesignerWebRetiredProviderId(provider)) {
     invalidateManagedLease(options, "AUTHORIZATION_CHANGED");
     log.warn("AUTH", "Retired provider credential selection denied");
@@ -1282,6 +1293,7 @@ export async function getProviderCredentials(
       typeof options.forcedConnectionId === "string" && options.forcedConnectionId.trim().length > 0
         ? options.forcedConnectionId.trim()
         : null;
+    const strictManagedCredential = managedCliproxyScope && !!forcedConnectionId;
     const excludedConnectionIds = normalizeExcludedConnectionIds(
       excludeConnectionId,
       options.excludeConnectionIds
@@ -1331,7 +1343,7 @@ export async function getProviderCredentials(
 
     // #5903: an active session-affinity pin outranks a per-request reset-aware
     // forcedConnectionId (see sessionAffinityPin leaf for the full rationale).
-    if (!options.lease) {
+    if (!options.lease && !strictManagedCredential) {
       forcedConnectionId =
         applySessionAffinityPin({
           forcedConnectionId,
@@ -1348,18 +1360,20 @@ export async function getProviderCredentials(
         }) ?? forcedConnectionId;
     }
 
-    forcedConnectionId = resolveForcedConnectionForCredentialPool({
-      forcedConnectionId,
-      excludedConnectionIds,
-      connections,
-      allowRateLimitedConnections,
-      bypassQuotaPolicy,
-      isQuotaExhausted: (connectionId) =>
-        isQuotaExhaustedForRequest(connectionId, provider, requestedModel),
-      isQuotaPolicyBlocked: (connection) =>
-        evaluateQuotaLimitPolicy(provider, connection as ProviderConnectionView, requestedModel)
-          .blocked,
-    });
+    if (!strictManagedCredential) {
+      forcedConnectionId = resolveForcedConnectionForCredentialPool({
+        forcedConnectionId,
+        excludedConnectionIds,
+        connections,
+        allowRateLimitedConnections,
+        bypassQuotaPolicy,
+        isQuotaExhausted: (connectionId) =>
+          isQuotaExhaustedForRequest(connectionId, provider, requestedModel),
+        isQuotaPolicyBlocked: (connection) =>
+          evaluateQuotaLimitPolicy(provider, connection as ProviderConnectionView, requestedModel)
+            .blocked,
+      });
+    }
 
     if (forcedConnectionId) {
       connections = connections.filter((conn) => conn.id === forcedConnectionId);

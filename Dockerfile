@@ -18,7 +18,8 @@ RUN --mount=type=cache,id=orbit-pnpm-store,target=/root/.local/share/pnpm/store 
 # COPY includes ignored build output when building from a developer checkout.
 # Remove it before compiling so stale legacy route bundles cannot enter the image.
 RUN find apps packages -type d -name dist -prune -exec rm -rf {} +
-RUN pnpm build
+# The Go CLIProxyAPI instance manager has its own multi-architecture Dockerfile.
+RUN pnpm build --filter='!@orbit/cliproxy-manager'
 # Create a deployable production tree instead of copying the complete workspace
 # (including console/docs/build tooling) into every server image. The legacy mode
 # is required because this workspace uses linked, rather than injected, packages.

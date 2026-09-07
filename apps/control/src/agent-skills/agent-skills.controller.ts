@@ -1,11 +1,14 @@
-import { Controller, Get, Param, Post, Req, Res } from "@nestjs/common";
+import { Controller, Get, Inject, Param, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 import { AgentSkillsService } from "./agent-skills.service.js";
 
 @Controller("api/agent-skills")
 export class AgentSkillsController {
-  constructor(private readonly routes: WebRouteDispatcher, private readonly skills: AgentSkillsService) {}
+  constructor(
+    @Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher,
+    @Inject(AgentSkillsService) private readonly skills: AgentSkillsService,
+  ) {}
 
   @Get()
   list(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {

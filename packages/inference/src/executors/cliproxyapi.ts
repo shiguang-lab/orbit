@@ -1,20 +1,5 @@
-/**
- * CLIProxyAPI Executor — routes requests to a local CLIProxyAPI instance.
- *
- * Always uses the OpenAI-compatible /v1/chat/completions endpoint. CLIProxyAPI
- * internally detects Claude models and routes them through its Claude executor
- * with full emulation (CCH signing, billing header, system prompt, uTLS,
- * multi-account rotation, device profile learning, etc.).
- *
- * The UI toggle (cliproxyapiMode in providerSpecificData) controls WHETHER
- * to use CLIProxyAPI as the backend, not the wire format. Response format
- * is always OpenAI-compatible, so chatCore's SSE parsing works unchanged.
- *
- * Activation:
- *   1. Per-provider upstream_proxy_config (mode=cliproxyapi or fallback)
- *   2. Per-connection cliproxyapiMode toggle in providerSpecificData (UI)
- */
-
+import { resolveCliproxyManagerTarget } from "./cliproxyManagerTarget.ts";
+/** CLIProxyAPI native-format execution through a registered manager credential route. */
 import {
   BaseExecutor,
   mergeUpstreamExtraHeaders,
@@ -26,8 +11,6 @@ import { getProviderPluginManifestHeader } from "../config/providerPluginManifes
 import { cloakThirdPartyToolNames } from "../services/claudeCodeToolRemapper.ts";
 import { sanitizeClaudeToolSchemas } from "../translator/helpers/schemaCoercion.ts";
 
-const DEFAULT_PORT = 8317;
-const DEFAULT_HOST = "127.0.0.1";
 const HEALTH_CHECK_TIMEOUT_MS = 5000;
 
 // Anthropic's reserved tool-name namespace: ^mcp_[^_].* triggers their
@@ -115,67 +98,6 @@ function applyMcpToolNameRewrite(body: Record<string, unknown>): Map<string, str
   return reverseMap;
 }
 
-// Cached URL from settings (loaded once, invalidated on settings change via clearCliproxyapiUrlCache)
-let _cachedSettingsUrl: { url: string; ts: number } | null = null;
-const URL_CACHE_TTL_MS = 60_000;
-
-export function clearCliproxyapiUrlCache() {
-  _cachedSettingsUrl = null;
-}
-
-// Pre-load settings URL at module init so the sync path has a cache hit.
-// This runs once when the executor module is first imported.
-(async () => {
-  try {
-    const { getSettings } = await import("@orbit/core/db/settings");
-    const settings = await getSettings();
-    if (typeof settings.cliproxyapi_url === "string" && settings.cliproxyapi_url.trim()) {
-      _cachedSettingsUrl = { url: settings.cliproxyapi_url.trim(), ts: Date.now() };
-    }
-  } catch { /* env vars will be used as fallback */ }
-})();
-
-/**
- * Resolve CLIProxyAPI base URL. Priority:
- *   1. Settings table `cliproxyapi_url` (set via UI)
- *   2. Environment variables CLIPROXYAPI_HOST / CLIPROXYAPI_PORT
- *   3. Defaults (127.0.0.1:8317)
- */
-async function resolveCliproxyapiBaseUrl(): Promise<string> {
-  // Check settings cache first
-  if (_cachedSettingsUrl && Date.now() - _cachedSettingsUrl.ts < URL_CACHE_TTL_MS) {
-    return _cachedSettingsUrl.url;
-  }
-
-  try {
-    const { getSettings } = await import("@orbit/core/db/settings");
-    const settings = await getSettings();
-    if (typeof settings.cliproxyapi_url === "string" && settings.cliproxyapi_url.trim()) {
-      const url = settings.cliproxyapi_url.trim();
-      _cachedSettingsUrl = { url, ts: Date.now() };
-      return url;
-    }
-  } catch { /* fall through to env vars */ }
-
-  const host = process.env.CLIPROXYAPI_HOST || DEFAULT_HOST;
-  const port = parseInt(process.env.CLIPROXYAPI_PORT || String(DEFAULT_PORT), 10);
-  const url = `http://${host}:${port}`;
-  _cachedSettingsUrl = { url, ts: Date.now() };
-  return url;
-}
-
-// Sync wrapper for backward compatibility (health checks, tests)
-function resolveCliproxyapiBaseUrlSync(): string {
-  if (_cachedSettingsUrl && Date.now() - _cachedSettingsUrl.ts < URL_CACHE_TTL_MS) {
-    return _cachedSettingsUrl.url;
-  }
-  const host = process.env.CLIPROXYAPI_HOST || DEFAULT_HOST;
-  const port = parseInt(process.env.CLIPROXYAPI_PORT || String(DEFAULT_PORT), 10);
-  return `http://${host}:${port}`;
-}
-
-export { resolveCliproxyapiBaseUrl };
-
 /**
  * Check if a connection has CLIProxyAPI deep mode enabled via UI toggle.
  * Used by chatCore's resolveExecutorWithProxy to decide routing.
@@ -187,27 +109,12 @@ export function isCliproxyapiDeepModeEnabled(
 }
 
 export class CliproxyapiExecutor extends BaseExecutor {
-  private readonly upstreamBaseUrl: string;
-
-  constructor(baseUrl?: string) {
-    const effectiveBase = baseUrl ?? resolveCliproxyapiBaseUrlSync();
-    super("cliproxyapi", {
-      id: "cliproxyapi",
-      baseUrl: effectiveBase + "/v1/chat/completions",
-      headers: { "Content-Type": "application/json" },
-    });
-    this.upstreamBaseUrl = effectiveBase;
+  constructor() {
+    super("cliproxyapi", { id: "cliproxyapi", baseUrl: "", headers: { "Content-Type": "application/json" } });
   }
 
-  buildUrl(
-    _model: string,
-    _stream: boolean,
-    _urlIndex = 0,
-    _credentials: ProviderCredentials | null = null
-  ): string {
-    // Default endpoint when called without body context (kept for back-compat).
-    // execute() picks the right endpoint from the body shape; see selectEndpoint().
-    return `${this.upstreamBaseUrl}/v1/chat/completions`;
+  buildUrl(): string {
+    throw new Error("CLIProxyAPI requires a registered manager credential route");
   }
 
   /**
@@ -386,15 +293,14 @@ export class CliproxyapiExecutor extends BaseExecutor {
     log?: any;
     upstreamExtraHeaders?: Record<string, string> | null;
   }) {
-    // Resolve URL dynamically so settings table cliproxyapi_url is respected.
-    // Uses 60s cache to avoid DB reads on every request.
-    const baseUrl = await resolveCliproxyapiBaseUrl();
+    const baseUrl = await resolveCliproxyManagerTarget(input.credentials);
+    const effectiveModel = input.model;
     const endpoint = this.selectEndpoint(input.body);
     const url = `${baseUrl}${endpoint}`;
     const shape = endpoint === "/v1/messages" ? "anthropic" : "openai";
-    const headers = this.buildHeaders(input.credentials, input.stream);
+    const headers = this.buildHeaders(null, input.stream);
     const transformedBody = this.transformRequest(
-      input.model,
+      effectiveModel,
       input.body,
       input.stream,
       input.credentials
@@ -406,7 +312,7 @@ export class CliproxyapiExecutor extends BaseExecutor {
       ? mergeAbortSignals(input.signal, timeoutSignal)
       : timeoutSignal;
 
-    input.log?.info?.("CPA", `CLIProxyAPI → ${url} (model: ${input.model}, shape: ${shape})`);
+    input.log?.info?.("CPA", `CLIProxyAPI (${input.credentials.providerSpecificData?.cliproxyManagerId}) → ${url} (model: ${effectiveModel}, shape: ${shape})`);
 
     // _toolNameMap and _namespaceToolIdentityMap are in-memory channels to
     // chatCore for response-side tool name restoration; never send them over
@@ -423,6 +329,7 @@ export class CliproxyapiExecutor extends BaseExecutor {
       headers,
       body: wireBody,
       signal: combinedSignal,
+      redirect: "error",
     });
 
     if (response.status === HTTP_STATUS.RATE_LIMITED) {
@@ -442,10 +349,11 @@ export class CliproxyapiExecutor extends BaseExecutor {
    * advertised model list), which is the closest thing CPA has to a
    * liveness probe and works on every CPA version we've tested.
    */
-  async healthCheck(): Promise<{ ok: boolean; latencyMs: number; error?: string }> {
+  async healthCheck(credentials?: ProviderCredentials): Promise<{ ok: boolean; latencyMs: number; error?: string }> {
     const start = Date.now();
     try {
-      const baseUrl = await resolveCliproxyapiBaseUrl();
+      if (!credentials) throw new Error("Select a CLIProxyAPI instance and credential");
+      const baseUrl = await resolveCliproxyManagerTarget(credentials);
       const res = await fetch(`${baseUrl}/v1/models`, {
         signal: AbortSignal.timeout(HEALTH_CHECK_TIMEOUT_MS),
       });
@@ -462,6 +370,10 @@ export class CliproxyapiExecutor extends BaseExecutor {
       };
     }
   }
+}
+
+export function clearCliproxyapiUrlCache(): void {
+  // No-op: CLIProxyAPI targets are now resolved dynamically per credential.
 }
 
 export default CliproxyapiExecutor;

@@ -1508,6 +1508,8 @@ export interface CliproxyAccountItem {
   lastTestedAt?: string;
   latencyMs?: number;
   errorMessage?: string;
+  instanceId?: string;
+  instanceName?: string;
 }
 
 function normalizeCliproxyAccount(value: unknown): CliproxyAccountItem | null {
@@ -1539,8 +1541,10 @@ function normalizeCliproxyAccount(value: unknown): CliproxyAccountItem | null {
     : typeof raw.error_message === "string"
       ? raw.error_message
       : undefined;
+  const instanceId = typeof raw.instanceId === "string" ? raw.instanceId : undefined;
+  const instanceName = typeof raw.instanceName === "string" ? raw.instanceName : undefined;
 
-  return { id, name, provider, status, lastTestedAt, latencyMs, errorMessage };
+  return { id, name, provider, status, lastTestedAt, latencyMs, errorMessage, instanceId, instanceName };
 }
 
 export interface NinerouterModelItem {
@@ -1549,19 +1553,6 @@ export interface NinerouterModelItem {
   provider: string;
   contextLength?: number;
   isAvailable?: boolean;
-}
-
-export interface CliproxyLoginJob {
-  id: string;
-  provider: "codex" | "claude" | "antigravity" | "kimi" | "xai" | "gemini" | "qwen" | "github-copilot";
-  status: "starting" | "awaiting_user" | "success" | "failed" | "timeout" | "canceled";
-  authUrl?: string;
-  userCode?: string;
-  prompt?: string;
-  error?: string;
-  startedAt: number;
-  expiresAt: number;
-  terminalCommand: string;
 }
 
 export const embeddedServicesApi = {
@@ -1613,8 +1604,9 @@ export const embeddedServicesApi = {
     await Promise.all(requests);
     return { success: true };
   },
-  getLogs: async (name: string): Promise<string[]> => {
-    const res = await api<any>(`/services/${encodeURIComponent(name)}/logs`);
+  getLogs: async (name: string, instanceId?: string): Promise<string[]> => {
+    const query = instanceId ? `?instanceId=${encodeURIComponent(instanceId)}` : "";
+    const res = await api<any>(`/services/${encodeURIComponent(name)}/logs${query}`);
     if (Array.isArray(res)) return res;
     if (Array.isArray(res?.logs)) return res.logs;
     if (typeof res?.logs === "string") return res.logs.split("\n");
@@ -1622,8 +1614,9 @@ export const embeddedServicesApi = {
   },
   clearLogs: (name: string) =>
     api<{ success: boolean }>(`/services/${encodeURIComponent(name)}/logs`, { method: "DELETE" }),
-  getCliproxyAccounts: async (): Promise<CliproxyAccountItem[]> => {
-    const res = await api<any>("/services/cliproxy/accounts");
+  getCliproxyAccounts: async (instanceId?: string): Promise<CliproxyAccountItem[]> => {
+    const query = instanceId ? `?instanceId=${encodeURIComponent(instanceId)}` : "";
+    const res = await api<any>(`/services/cliproxy/accounts${query}`);
     const rawAccounts = Array.isArray(res) ? res : res?.accounts;
     if (!Array.isArray(rawAccounts)) return [];
     return rawAccounts
@@ -1635,28 +1628,6 @@ export const embeddedServicesApi = {
       `/services/cliproxy/accounts/${encodeURIComponent(id)}/test`,
       { method: "POST" }
     ),
-  startCliproxyLogin: (provider: string): Promise<CliproxyLoginJob> =>
-    api<CliproxyLoginJob>("/services/cliproxy/login/start", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ provider }),
-    }),
-  getCliproxyLoginJob: (jobId: string): Promise<CliproxyLoginJob> =>
-    api<CliproxyLoginJob>(`/services/cliproxy/login/${encodeURIComponent(jobId)}`),
-  cancelCliproxyLogin: (jobId: string): Promise<{ success: boolean }> =>
-    api<{ success: boolean }>(`/services/cliproxy/login/${encodeURIComponent(jobId)}/cancel`, {
-      method: "POST",
-    }),
-  getCliproxyModelMappings: async (): Promise<Record<string, string>> => {
-    const res = await api<any>("/services/cliproxy/model-mappings");
-    return res?.mappings || res || {};
-  },
-  updateCliproxyModelMappings: (mappings: Record<string, string>) =>
-    api<{ success: boolean }>("/services/cliproxy/model-mappings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mappings }),
-    }),
   get9RouterModels: async (): Promise<NinerouterModelItem[]> => {
     const res = await api<any>("/services/9router/models");
     return Array.isArray(res) ? res : Array.isArray(res?.models) ? res.models : [];

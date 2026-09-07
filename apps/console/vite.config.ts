@@ -31,6 +31,7 @@ export default defineConfig(({ mode }) => {
         "/api/auth": { target: controlTarget, changeOrigin: false },
         // 管理 API → control(Fastify + 本地 runtime)
         "/api": { target: controlTarget, changeOrigin: true },
+        "/internal/service-nodes": { target: controlTarget, changeOrigin: true },
         // 长连接 WS；生产环境由同源反向代理转发到本地 realtime 服务。
         "/live-ws": {
           target: env.ORBIT_LIVE_WS_TARGET ?? "ws://127.0.0.1:20132",

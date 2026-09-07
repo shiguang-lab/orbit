@@ -1,3 +1,4 @@
+import { resolveCliproxyManagerTarget } from "./cliproxyManagerTarget.ts";
 import { createHash } from "node:crypto";
 
 import { BaseExecutor, type ExecuteInput } from "./base.ts";
@@ -155,6 +156,12 @@ export class DefaultExecutor extends BaseExecutor {
     void urlIndex;
     if (this.provider?.startsWith?.("openai-compatible-")) {
       const psd = credentials?.providerSpecificData;
+      if (this.provider.startsWith("openai-compatible-cliproxy-")) {
+        if (!psd?.baseUrl || psd.managedBy !== "cliproxy-manager" || !psd.cliproxyCredentialId) {
+          throw new Error("CLIProxyAPI credential route is missing");
+        }
+        return `${psd.baseUrl.replace(/\/$/, "")}/${psd._orbitForceResponsesUpstream === true ? "responses" : "chat/completions"}`;
+      }
       const baseUrl = psd?.baseUrl || "https://api.openai.com/v1";
       const normalized = baseUrl.replace(/\/$/, "");
       const customPath = typeof psd?.chatPath === "string" && psd.chatPath ? psd.chatPath : null;
@@ -1021,6 +1028,12 @@ export class DefaultExecutor extends BaseExecutor {
   }
 
   async execute(input: ExecuteInput) {
+    if (this.provider.startsWith("openai-compatible-cliproxy-")) {
+      const baseUrl = await resolveCliproxyManagerTarget(input.credentials);
+      input = { ...input, credentials: { ...input.credentials, apiKey: undefined, accessToken: undefined,
+        providerSpecificData: { ...input.credentials.providerSpecificData, baseUrl: `${baseUrl}/v1` },
+      } };
+    }
     // #6846 Phase 1: per-connection concurrency cap for nvidia — no-op for every
     // other provider (returns null immediately, no semaphore key allocated).
     const releaseNvidiaSlot = await acquireNvidiaConcurrencySlot(

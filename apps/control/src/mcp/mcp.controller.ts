@@ -1,11 +1,11 @@
-import { Controller, Delete, Get, Post, Req, Res } from "@nestjs/common";
+import { Inject, Controller, Delete, Get, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 import { McpService } from "./mcp.service.js";
 
 @Controller("api/mcp")
 export class McpController {
-  constructor(private readonly routes: WebRouteDispatcher, private readonly service: McpService) {}
+  constructor(@Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher, @Inject(McpService) private readonly service: McpService) {}
 
   @Get("audit")
   audit(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {

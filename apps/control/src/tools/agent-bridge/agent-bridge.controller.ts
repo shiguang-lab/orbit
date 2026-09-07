@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Patch, Post, Put, Param, Req, Res } from "@nestjs/common";
+import { Inject, Controller, Delete, Get, Patch, Post, Put, Param, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../../common/web-route.dispatcher.js";
 import { AgentBridgeService } from "./agent-bridge.service.js";
@@ -6,7 +6,7 @@ import { AgentBridgeService } from "./agent-bridge.service.js";
 /** Control-plane AgentBridge administration endpoints. */
 @Controller("api/tools/agent-bridge")
 export class AgentBridgeController {
-  constructor(private readonly routes: WebRouteDispatcher, private readonly service: AgentBridgeService) {}
+  constructor(@Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher, @Inject(AgentBridgeService) private readonly service: AgentBridgeService) {}
 
   @Get("config") configGet(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, () => this.service.configGet()); }
   @Post("config") configPost(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, (r) => this.service.configPost(r)); }

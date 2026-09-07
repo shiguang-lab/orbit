@@ -1,11 +1,11 @@
-import { Controller, Delete, Get, Patch, Post, Req, Res } from "@nestjs/common";
+import { Inject, Controller, Delete, Get, Patch, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 import { ResilienceService } from "./resilience.service.js";
 
 @Controller("api/resilience")
 export class ResilienceController {
-  constructor(private readonly routes: WebRouteDispatcher, private readonly resilience: ResilienceService) {}
+  constructor(@Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher, @Inject(ResilienceService) private readonly resilience: ResilienceService) {}
 
   @Get()
   get(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {

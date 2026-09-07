@@ -1,11 +1,11 @@
-import { Controller, Delete, Get, Options, Post, Req, Res } from "@nestjs/common";
+import { Inject, Controller, Delete, Get, Options, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 import { GamificationService } from "./gamification.service.js";
 
 @Controller("api/gamification")
 export class GamificationController {
-  constructor(private readonly routes: WebRouteDispatcher, private readonly gamification: GamificationService) {}
+  constructor(@Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher, @Inject(GamificationService) private readonly gamification: GamificationService) {}
 
   @Options("anomalies") optionsAnomalies(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, () => import("./handlers/anomalies.handler.js").then((m) => m.OPTIONS())); }
   @Get("anomalies") anomalies(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, (r) => this.gamification.anomalies(r)); }

@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Req, Res } from "@nestjs/common";
+import { Inject, Controller, Get, Param, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../../common/web-route.dispatcher.js";
 import { ProviderCredentialFilesService } from "./provider-credential-files.service.js";
@@ -6,8 +6,8 @@ import { ProviderCredentialFilesService } from "./provider-credential-files.serv
 @Controller("api/providers")
 export class ProviderCredentialFilesController {
   constructor(
-    private readonly files: ProviderCredentialFilesService,
-    private readonly routes: WebRouteDispatcher,
+    @Inject(ProviderCredentialFilesService) private readonly files: ProviderCredentialFilesService,
+    @Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher,
   ) {}
 
   @Post(":id/claude-auth/apply-local")

@@ -1453,6 +1453,15 @@ async function handleSingleModelChat(
     runtimeOptions.allowedConnectionIds ?? null
   );
 
+  // A fixed manager credential remains a hard boundary across retries, even
+  // when the generic cooldown machinery drops a temporary connection pin.
+  if (provider.startsWith("openai-compatible-cliproxy-") && hasForcedConnection) {
+    effectiveAllowedConnections = intersectAllowedConnectionIds(
+      effectiveAllowedConnections,
+      [runtimeOptions.forcedConnectionId!.trim()]
+    );
+  }
+
   // A4: quota-exclusive keys must only use the pool's connection(s).
   if (apiKeyInfo?.allowedQuotas && apiKeyInfo.allowedQuotas.length > 0) {
     const quotaScope = await resolveQuotaKeyScope(apiKeyInfo.allowedQuotas);
@@ -2116,7 +2125,11 @@ async function handleSingleModelChat(
       // Combo targets never emergency-hop: the combo is the operator's fallback policy
       // (target-level orchestration plus the global fallback #689 after it), and a
       // per-target hop burns extra upstream calls against exhausted providers (#1731).
-      if (!runtimeOptions.emergencyFallbackTried && !comboName) {
+      if (
+        !runtimeOptions.emergencyFallbackTried &&
+        !comboName &&
+        !provider.startsWith("openai-compatible-cliproxy-")
+      ) {
         const fallbackDecision = shouldUseFallback(
           Number(result.status || 0),
           String(result.error || ""),

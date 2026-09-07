@@ -3,6 +3,7 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import {
   isDashboardSessionAuthenticated,
 } from "../dashboard-session.js";
+import { isLocalDevMode } from "../gateway-session.js";
 export { getCookieValueFromHeader } from "../dashboard-session.js";
 import {
   hasManageScope,
@@ -53,7 +54,7 @@ export function authzPlugin(app: FastifyInstance, opts: AuthzOptions = {}): void
     if (isPublicReadonly(pathname, method)) return;
 
     // 本地开发模式(SG_DEV_IDENTITY=1 或 broker 已配置)：放行(仅本地，生产绝不可用)
-    if (opts.devMode) return;
+    if (opts.devMode ?? isLocalDevMode()) return;
 
     // 1. Verified dashboard SSO session
     if (await isDashboardSessionAuthenticated(request)) return;

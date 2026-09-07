@@ -45,7 +45,10 @@
     "start:edge": "pnpm --filter @orbit/gateway start",
     "start:control": "pnpm --filter @orbit/control start",
     "start:realtime": "pnpm --filter @orbit/realtime start",
-    "start:worker": "pnpm --filter @orbit/worker start"
+    "start:worker": "pnpm --filter @orbit/worker start",
+    "dev:cliproxy-manager": "pnpm --filter @orbit/cliproxy-manager dev",
+    "test:cliproxy-manager": "pnpm --filter @orbit/cliproxy-manager test",
+    "smoke:cliproxy-manager": "node scripts/smoke-cliproxy-manager.mjs"
   },
   "devDependencies": {
     "turbo": "^2.6.1",

@@ -70,6 +70,8 @@ import {
   SkillExecutionEntity,
   SyncTokenEntity,
   UpstreamProxyConfigEntity,
+  CliproxyInstanceEntity,
+  ServiceNodeEntity,
 } from "./entities/control.entity.js";
 import {
   AgenticConversationEntity,
@@ -284,6 +286,8 @@ export const GATEWAY_TABLES = {
   requestDetailLogs: "request_detail_logs",
   sessionAccountAffinity: "session_account_affinity",
   versionManager: "version_manager",
+  cliproxyInstances: "cliproxy_instances",
+  serviceNodes: "service_nodes",
 } as const;
 
 export type GatewayTable = (typeof GATEWAY_TABLES)[keyof typeof GATEWAY_TABLES];
@@ -434,6 +438,8 @@ export const TABLE_OWNERSHIP: readonly TableRef[] = [
   { table: GATEWAY_TABLES.requestDetailLogs, owner: "gateway", access: "read-write" },
   { table: GATEWAY_TABLES.sessionAccountAffinity, owner: "gateway", access: "read-write" },
   { table: GATEWAY_TABLES.versionManager, owner: "control", access: "read-write" },
+  { table: GATEWAY_TABLES.cliproxyInstances, owner: "control", access: "read-write" },
+  { table: GATEWAY_TABLES.serviceNodes, owner: "control", access: "read-write" },
 ];
 
 /**
@@ -578,6 +584,8 @@ export const GATEWAY_ENTITIES = {
   requestDetailLogs: RequestDetailLogEntity,
   sessionAccountAffinity: SessionAccountAffinityEntity,
   versionManager: VersionManagerEntity,
+  cliproxyInstances: CliproxyInstanceEntity,
+  serviceNodes: ServiceNodeEntity,
 } satisfies Record<keyof typeof GATEWAY_TABLES, EntityDefinition>;
 
 /** Runtime guard used by architecture checks and tests. */

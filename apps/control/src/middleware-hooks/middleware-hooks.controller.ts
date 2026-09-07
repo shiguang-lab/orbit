@@ -1,11 +1,14 @@
-import { Controller, Delete, Get, Param, Post, Put, Req, Res } from "@nestjs/common";
+import { Controller, Delete, Get, Inject, Param, Post, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 import { MiddlewareHooksService } from "./middleware-hooks.service.js";
 
 @Controller("api/middleware/hooks")
 export class MiddlewareHooksController {
-  constructor(private readonly routes: WebRouteDispatcher, private readonly hooks: MiddlewareHooksService) {}
+  constructor(
+    @Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher,
+    @Inject(MiddlewareHooksService) private readonly hooks: MiddlewareHooksService,
+  ) {}
 
   @Get() list(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, (r) => this.hooks.list(r)); }
   @Post() create(@Req() req: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(req, reply, (r) => this.hooks.create(r)); }

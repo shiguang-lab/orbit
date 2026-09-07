@@ -1,0 +1,11 @@
+{
+  "name": "@orbit/cliproxy-manager",
+  "version": "0.2.0",
+  "private": true,
+  "scripts": {
+    "dev": "go run ./cmd/cliproxy-manager",
+    "build": "go build -trimpath -o dist/orbit-cliproxy-manager ./cmd/cliproxy-manager",
+    "typecheck": "go vet ./...",
+    "test": "go test -race ./..."
+  }
+}

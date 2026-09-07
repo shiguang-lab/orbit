@@ -1,11 +1,11 @@
-import { All, Controller, Delete, Get, Post, Put, Req, Res } from "@nestjs/common";
+import { Inject, All, Controller, Delete, Get, Post, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 import { CliToolsService } from "./cli-tools.service.js";
 
 @Controller("api/cli-tools")
 export class CliToolsController {
-  constructor(private readonly routes: WebRouteDispatcher, private readonly cliTools: CliToolsService) {}
+  constructor(@Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher, @Inject(CliToolsService) private readonly cliTools: CliToolsService) {}
 
   @Get("deepseek-tui-settings")
   deepseekTuiGet(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {

@@ -1,11 +1,14 @@
-import { Controller, Get, Post, Req, Res } from "@nestjs/common";
+import { Controller, Get, Inject, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../../common/web-route.dispatcher.js";
 import { NinerouterService } from "./ninerouter.service.js";
 
 @Controller("api/services/9router")
 export class NinerouterController {
-  constructor(private readonly service: NinerouterService, private readonly routes: WebRouteDispatcher) {}
+  constructor(
+    @Inject(NinerouterService) private readonly service: NinerouterService,
+    @Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher,
+  ) {}
 
   @Get("status") status(@Req() request: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(request, reply, (r) => this.service.status(r)); }
   @Get("models") models(@Req() request: FastifyRequest, @Res() reply: FastifyReply) { return this.routes.dispatch(request, reply, (r) => this.service.models(r)); }

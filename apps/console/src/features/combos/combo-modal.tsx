@@ -1,3 +1,4 @@
+import { useI18n } from "@/i18n";
 import { useEffect, useMemo, useState } from "react";
 import {
   Alert,
@@ -327,6 +328,7 @@ export function ComboModal({
   onSave,
   loading = false,
 }: ComboModalProps) {
+  const { tt } = useI18n();
   const { styles } = useStyles();
   const isEdit = Boolean(combo?.id);
   const [configMode, setConfigMode] = useState<"guided" | "expert">("guided");
@@ -1273,7 +1275,7 @@ export function ComboModal({
                   <Row gutter={[10, 10]} align="middle">
                     <Col xs={24} sm={8}>
                       <Select
-                        placeholder="1. 选择提供者"
+                        placeholder={tt("1. 选择提供商 / 实例", "1. Select provider / instance")}
                         value={addProviderId || undefined}
                         onChange={(val) => {
                           setAddProviderId(val);
@@ -1305,14 +1307,14 @@ export function ComboModal({
                     </Col>
                     <Col xs={24} sm={5}>
                       <Select
-                        placeholder="账户范围 (可选)"
+                        placeholder={tt("3. 选择凭据（可选）", "3. Select credential (optional)")}
                         disabled={!addProviderId || availableConnections.length === 0}
                         value={addConnectionId || undefined}
                         onChange={(val) => setAddConnectionId(val)}
                         style={{ width: "100%" }}
                         allowClear
                         options={[
-                          { value: "", label: "自动运行时分配账户" },
+                          { value: "", label: tt("自动选择可用凭据", "Select available credential automatically") },
                           ...availableConnections.map((c) => ({
                             value: c.id,
                             label: c.label || `账户 ${c.id.slice(0, 8)}`,
@@ -1337,7 +1339,7 @@ export function ComboModal({
                   {!addConnectionId && addProviderId && availableConnections.length > 1 && (
                     <div className={styles.allowlistBox}>
                       <Text type="secondary" style={{ fontSize: 11, display: "block", marginBottom: 6 }}>
-                        账户白名单限制（留空则在所有可用活跃账户中轮询；选中时仅在勾选的子集中轮询）:
+                        {tt("允许的凭据范围：留空使用此实例或提供商的全部可用凭据；选中后仅在该范围内调度和重试。", "Allowed credentials: leave empty to use all available credentials in this instance or provider; selection and retries stay within the chosen set.")}
                       </Text>
                       <Checkbox.Group
                         value={addAllowedConnectionIds}

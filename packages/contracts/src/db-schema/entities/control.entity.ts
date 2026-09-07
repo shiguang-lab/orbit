@@ -1153,3 +1153,42 @@ export const UpstreamProxyConfigEntity: EntityDefinition = {
     column("fallback_backend", "TEXT", { nullable: false, default: "'cliproxyapi'" }),
   ],
 };
+
+/** Cliproxy instances table for multi-instance and distributed deployments. */
+export const CliproxyInstanceEntity: EntityDefinition = {
+  entityName: "CliproxyInstance",
+  tableName: "cliproxy_instances",
+  owner: "control",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("name", "TEXT", { nullable: false }),
+    column("endpoint", "TEXT", { nullable: false }),
+    column("management_key", "TEXT"),
+    column("type", "TEXT", { nullable: false, default: "'remote_agent'" }),
+    column("enabled", "INTEGER", { nullable: false, default: "1" }),
+    column("weight", "INTEGER", { nullable: false, default: "100" }),
+    column("tags", "TEXT", { nullable: false, default: "'[]'" }),
+    column("model_mappings", "TEXT", { nullable: false, default: "'{}'" }),
+    column("status", "TEXT", { nullable: false, default: "'unknown'" }),
+    column("last_health_check", "TEXT"),
+    column("latency_ms", "INTEGER"),
+    column("version", "TEXT"),
+    column("accounts_count", "INTEGER", { nullable: false, default: "0" }),
+    column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+    column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }),
+  ],
+};
+
+
+/** Node credentials and the last authenticated monitoring snapshot. */
+export const ServiceNodeEntity: EntityDefinition = {
+  entityName: "ServiceNode", tableName: "service_nodes", owner: "control",
+  columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }),
+    column("name", "TEXT", { nullable: false }),
+    column("endpoint", "TEXT", { nullable: false }),
+    column("latest_report", "TEXT"),
+    column("last_seen_at", "TEXT"),
+    column("created_at", "TEXT", { nullable: false }),
+  ],
+};

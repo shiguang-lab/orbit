@@ -1,4 +1,4 @@
-import { Controller, Get, Options, Req, Res } from "@nestjs/common";
+import { Inject, Controller, Get, Options, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../../common/web-route.dispatcher.js";
 import { SuggestedModelsService } from "./suggested-models.service.js";
@@ -6,8 +6,8 @@ import { SuggestedModelsService } from "./suggested-models.service.js";
 @Controller("api/v1/providers/suggested-models")
 export class SuggestedModelsController {
   constructor(
-    private readonly routes: WebRouteDispatcher,
-    private readonly service: SuggestedModelsService,
+    @Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher,
+    @Inject(SuggestedModelsService) private readonly service: SuggestedModelsService,
   ) {}
 
   @Options()

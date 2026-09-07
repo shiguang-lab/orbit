@@ -20,6 +20,8 @@ export {
   handleSession,
   isAdminIdentity,
   resolveGatewayIdentity,
+  isLocalDevMode,
+  DEV_ADMIN_IDENTITY,
   type ResolvedIdentity,
   type SessionOptions,
 } from "./gateway-session.js";

@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Req, Res } from "@nestjs/common";
+import { Inject, Controller, Get, Param, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../../common/web-route.dispatcher.js";
 import { VolcenginePlanService } from "./volcengine-plan.service.js";
@@ -6,8 +6,8 @@ import { VolcenginePlanService } from "./volcengine-plan.service.js";
 @Controller("api/providers/volcengine-plan/connect")
 export class VolcenginePlanController {
   constructor(
-    private readonly routes: WebRouteDispatcher,
-    private readonly plans: VolcenginePlanService,
+    @Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher,
+    @Inject(VolcenginePlanService) private readonly plans: VolcenginePlanService,
   ) {}
 
   @Post()

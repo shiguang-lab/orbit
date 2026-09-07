@@ -1,0 +1,17 @@
+services:
+  cliproxy-manager:
+    build: .
+    image: orbit-cliproxy-manager:local
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 45s
+    env_file: manager.env
+    ports:
+      - "${CLIPROXY_MANAGER_BIND:-127.0.0.1}:8792:8792"
+    volumes:
+      - node_data:/data
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+volumes:
+  node_data:

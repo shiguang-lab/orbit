@@ -1,4 +1,4 @@
-import { Controller, Post, Req, Res } from "@nestjs/common";
+import { Controller, Inject, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import { requireManagementAuth } from "@orbit/core/control/management-auth";
@@ -11,7 +11,10 @@ const schema = z.object({ messages: z.array(z.object({ role: z.enum(["user", "as
 
 @Controller("api/copilot")
 export class CopilotController {
-  constructor(private readonly routes: WebRouteDispatcher, private readonly service: CopilotService) {}
+  constructor(
+    @Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher,
+    @Inject(CopilotService) private readonly service: CopilotService,
+  ) {}
 
   @Post("chat")
   chat(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {

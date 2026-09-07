@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param, Post, Req, Res } from "@nestjs/common";
+import { Inject, Controller, Delete, Get, Param, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 import { DiscoveryService } from "./discovery.service.js";
@@ -7,8 +7,8 @@ import { DiscoveryService } from "./discovery.service.js";
 @Controller("api/discovery")
 export class DiscoveryController {
   constructor(
-    private readonly routes: WebRouteDispatcher,
-    private readonly service: DiscoveryService,
+    @Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher,
+    @Inject(DiscoveryService) private readonly service: DiscoveryService,
   ) {}
 
   @Get("results")

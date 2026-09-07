@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Head, Options, Param, Patch, Post, Put, Req, Res } from "@nestjs/common";
+import { Controller, Delete, Get, Head, Inject, Options, Param, Patch, Post, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { proxyRequest } from "./embedded-service-proxy.js";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
@@ -7,7 +7,7 @@ type EmbedParams = { name: string; "*"?: string };
 
 @Controller("dashboard/providers/services/:name/embed")
 export class EmbeddedServiceProxyController {
-  constructor(private readonly routes: WebRouteDispatcher) {}
+  constructor(@Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher) {}
 
   private dispatch(request: FastifyRequest, reply: FastifyReply, params: EmbedParams) {
     const path = params["*"]?.split("/").filter(Boolean) ?? [];

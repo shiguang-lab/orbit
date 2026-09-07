@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param, Patch, Post, Put, Req, Res } from "@nestjs/common";
+import { Inject, Controller, Delete, Get, Param, Patch, Post, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../../common/web-route.dispatcher.js";
 import { appendSessionRequest, deleteSession, exportSessionHar, getSession, patchSession } from "./sessions.handlers.js";
@@ -7,7 +7,7 @@ import { TrafficInspectorService } from "./traffic-inspector.service.js";
 /** Session persistence endpoints for the control-plane Traffic Inspector. */
 @Controller("api/tools/traffic-inspector")
 export class TrafficInspectorController {
-  constructor(private readonly routes: WebRouteDispatcher, private readonly service: TrafficInspectorService) {}
+  constructor(@Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher, @Inject(TrafficInspectorService) private readonly service: TrafficInspectorService) {}
 
   @Get("sessions/:id")
   sessionGet(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply) {

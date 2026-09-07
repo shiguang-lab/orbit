@@ -181,3 +181,40 @@ volume 覆盖现有数据。
 - Redis、S3/MinIO、PostgreSQL、Qdrant 和 Chromium 是可选的扩展基础设施，不能替代 SQLite
   初始快照，也不能在未完成迁移/一致性演练前直接宣称 HA 已支持。
 - Provider 上游 API 仍按管理员配置访问；这属于业务上游，不是网关运行时依赖。
+
+## CLIProxyAPI 实例管理
+
+NAS 运行 `apps/cliproxy-manager`，在「嵌入式服务 → CLIProxyAPI」中作为一个实例显示。
+在 `.env` 设置以下变量后执行 `docker compose pull && docker compose up -d`：
+
+```dotenv
+COMPOSE_PROFILES=node
+ORBIT_CLIPROXY_MANAGER_IMAGE=ghcr.io/shiguang-lab/orbit-cliproxy-manager:sha-<commit>
+ORBIT_CLIPROXY_MANAGER_ENDPOINT=http://orbit-cliproxy-manager:8792
+ORBIT_CLIPROXY_MANAGER_ID=nas
+ORBIT_CLIPROXY_MANAGER_NAME=NAS
+CLIPROXY_MANAGER_ID=nas
+CLIPROXY_MANAGER_NAME=NAS
+```
+
+Control 启动时自动登记 NAS，并停用原本由 Control 启动的 CLIProxyAPI。实例地址只在 Docker 内网使用，
+无需在控制台配置访问密钥。安装生成的 CLIProxyAPI 内部密钥只保存在 manager 数据卷中。
+
+接管现有 CLIProxyAPI 时，先停止旧进程并备份 SQLite、配置、凭据和程序，再运行离线导入脚本：
+
+```bash
+node scripts/ops/import-cliproxy.mjs \
+  --source-config /source/services/cliproxy/config.yaml \
+  --source-auth-dir /source/services/cliproxy/auth \
+  --source-binary /source/bin/cliproxyapi \
+  --target-dir /data --id nas --name NAS --version 7.2.147
+```
+
+脚本应在包含 Control 依赖的镜像内运行，源数据卷只读挂载到 `/source`，新的 `orbit-node-data` 卷挂载到 `/data`。
+它保留原业务配置和凭据，重新设置 manager 管理的监听地址、目录和内部认证，并记录文件校验值；
+目标实例已存在时拒绝覆盖。导入后将新卷属主设为 `10001:10001` 再启动 manager。
+版本参数应与实际源程序一致。回滚前停止 manager，恢复备份的配置与镜像；不得同时运行两份相同 OAuth 凭据。
+
+部署后验证 NAS 自动注册、凭据和模型目录、页面列表/卡片与详情，以及经 `cpa-nas` scope 的真实推理。
+自动启动和暴露到供应商开关通过 manager 持久化；关闭暴露后该实例不参与模型路由。
+详细接口见 [实例管理说明](../apps/cliproxy-manager/README.md)。

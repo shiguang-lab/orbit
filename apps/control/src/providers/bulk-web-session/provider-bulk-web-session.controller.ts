@@ -1,4 +1,4 @@
-import { Controller, Post, Req, Res } from "@nestjs/common";
+import { Inject, Controller, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../../common/web-route.dispatcher.js";
 import { ProviderBulkWebSessionService } from "./provider-bulk-web-session.service.js";
@@ -6,8 +6,8 @@ import { ProviderBulkWebSessionService } from "./provider-bulk-web-session.servi
 @Controller("api/providers")
 export class ProviderBulkWebSessionController {
   constructor(
-    private readonly service: ProviderBulkWebSessionService,
-    private readonly routes: WebRouteDispatcher,
+    @Inject(ProviderBulkWebSessionService) private readonly service: ProviderBulkWebSessionService,
+    @Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher,
   ) {}
 
   @Post("bulk-web-session")

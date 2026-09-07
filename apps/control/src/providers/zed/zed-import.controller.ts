@@ -1,4 +1,4 @@
-import { Controller, Post, Req, Res } from "@nestjs/common";
+import { Inject, Controller, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../../common/web-route.dispatcher.js";
 import { ZedImportService } from "./zed-import.service.js";
@@ -6,8 +6,8 @@ import { ZedImportService } from "./zed-import.service.js";
 @Controller("api/providers/zed")
 export class ZedImportController {
   constructor(
-    private readonly routes: WebRouteDispatcher,
-    private readonly zed: ZedImportService,
+    @Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher,
+    @Inject(ZedImportService) private readonly zed: ZedImportService,
   ) {}
 
   @Post("discover")

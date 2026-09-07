@@ -7,6 +7,7 @@ import {
   authzPlugin,
   csrfPlugin,
   type EngineAuthAdapter,
+  isLocalDevMode,
   LocalAuthBroker,
 } from "@orbit/auth";
 import { installControlLocalOnlyGuard } from "./control-local-only.guard.js";
@@ -104,8 +105,9 @@ export class ControlSecurityService implements OnModuleInit {
       },
     };
 
-    authzPlugin(app, { engine: authzEngine });
-    csrfPlugin(app);
+    const isDevMode = isLocalDevMode();
+    authzPlugin(app, { engine: authzEngine, devMode: isDevMode });
+    csrfPlugin(app, { devMode: isDevMode });
     await this.registerAdminShell(app);
   }
 

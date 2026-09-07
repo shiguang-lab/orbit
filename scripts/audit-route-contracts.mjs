@@ -33,6 +33,22 @@ const localApiExtensions = new Set([
   // historical public Next route contract and is not exposed by control.
   "internal/tunnels/command/route.ts",
   "internal/runtime/command/route.ts",
+  // CLIProxyAPI instance management and credential routing extensions.
+  "internal/service-nodes/[id]/report/route.ts",
+  "service-nodes/route.ts",
+  "service-nodes/[id]/route.ts",
+  "service-nodes/[id]/refresh/route.ts",
+  "service-nodes/[id]/instances/route.ts",
+  "service-nodes/[id]/instances/[instanceId]/route.ts",
+  "service-nodes/[id]/instances/[instanceId]/actions/route.ts",
+  "service-nodes/[id]/instances/[instanceId]/logs/route.ts",
+  "service-nodes/[id]/instances/[instanceId]/accounts/route.ts",
+  "service-nodes/[id]/instances/[instanceId]/management/route.ts",
+  "service-nodes/[id]/jobs/[jobId]/route.ts",
+  "services/cliproxy/instances/route.ts",
+  "services/cliproxy/instances/[id]/route.ts",
+  "services/cliproxy/instances/[id]/probe/route.ts",
+  "services/cliproxy/model-mappings/route.ts",
 ]);
 // Whole-runtime lifecycle belongs to the external CLI supervisor. The former
 // control routes terminated only the control process while claiming to stop or

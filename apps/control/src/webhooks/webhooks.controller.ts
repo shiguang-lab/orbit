@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Req, Res } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../common/web-route.dispatcher.js";
 import { WebhooksService } from "./webhooks.service.js";
@@ -6,8 +6,8 @@ import { WebhooksService } from "./webhooks.service.js";
 @Controller("api/webhooks")
 export class WebhooksController {
   constructor(
-    private readonly routes: WebRouteDispatcher,
-    private readonly webhooks: WebhooksService,
+    @Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher,
+    @Inject(WebhooksService) private readonly webhooks: WebhooksService,
   ) {}
 
   @Get()

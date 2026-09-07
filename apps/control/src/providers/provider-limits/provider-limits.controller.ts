@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Put, Req, Res } from "@nestjs/common";
+import { Inject, Controller, Get, Param, Put, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { WebRouteDispatcher } from "../../common/web-route.dispatcher.js";
 import { ProviderLimitsService } from "./provider-limits.service.js";
@@ -6,8 +6,8 @@ import { ProviderLimitsService } from "./provider-limits.service.js";
 @Controller("api/v1/providers/:provider/limits")
 export class ProviderLimitsController {
   constructor(
-    private readonly routes: WebRouteDispatcher,
-    private readonly service: ProviderLimitsService,
+    @Inject(WebRouteDispatcher) private readonly routes: WebRouteDispatcher,
+    @Inject(ProviderLimitsService) private readonly service: ProviderLimitsService,
   ) {}
 
   @Get()

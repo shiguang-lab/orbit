@@ -1,3 +1,4 @@
+import { ServiceNodesModule } from "./service-nodes/service-nodes.module.js";
 import { Module } from "@nestjs/common";
 import { RealtimePublisherLifecycleService } from "./realtime-publisher-lifecycle.service.js";
 import { HttpModule } from "@orbit/http";
@@ -116,6 +117,7 @@ import { DatabaseRuntimeLifecycleService } from "./database-runtime-lifecycle.se
 @Module({
   imports: [
     HttpModule,
+    ServiceNodesModule,
     ProcessHealthModule,
     InfrastructureModule,
     HealthModule,

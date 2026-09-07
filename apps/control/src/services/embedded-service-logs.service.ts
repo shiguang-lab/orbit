@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { getSupervisor } from "@orbit/core/control/embedded-services-lifecycle";
 import { getOrInitSupervisor as getOrInitCliproxySupervisor } from "./cliproxy/_lib.js";
 import { getOrInitSupervisor as getOrInitMuxSupervisor } from "./mux/_lib.js";
@@ -23,9 +23,9 @@ export interface LogSupervisor {
 @Injectable()
 export class EmbeddedServiceLogsService {
   constructor(
-    private readonly bifrost: BifrostService,
-    private readonly dario: DarioService,
-    private readonly ninerouter: NinerouterService,
+    @Inject(BifrostService) private readonly bifrost: BifrostService,
+    @Inject(DarioService) private readonly dario: DarioService,
+    @Inject(NinerouterService) private readonly ninerouter: NinerouterService,
   ) {}
 
   async resolveSupervisor(name: string): Promise<LogSupervisor | null> {
@@ -40,10 +40,68 @@ export class EmbeddedServiceLogsService {
   }
 
   async logs(name: string, request: Request): Promise<Response> {
+    const url = new URL(request.url);
+    const instanceId = url.searchParams.get("instanceId");
+
+    if (name === "cliproxy" && instanceId) {
+      try {
+        const { getCliproxyInstance } = await import("@orbit/core/control/cliproxy");
+        const instance = getCliproxyInstance(instanceId);
+        if (instance && instance.type === "remote_agent") {
+          const encoder = new TextEncoder();
+          const chunk = (event: string, data: unknown) =>
+            encoder.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+          const stream = new ReadableStream<Uint8Array>({
+            start: (controller) => {
+              controller.enqueue(
+                chunk("snapshot", [
+                  {
+                    line: `[${new Date().toISOString()}] [INFO] [remote-node] Attached to remote CLIProxyAPI instance: ${instance.name} (${instance.endpoint})`,
+                  },
+                  {
+                    line: `[${new Date().toISOString()}] [INFO] [remote-node] Status: ${instance.status} | Latency: ${instance.latencyMs ?? "-"}ms | Registered accounts: ${instance.accountsCount}`,
+                  },
+                  {
+                    line: `[${new Date().toISOString()}] [INFO] [remote-node] Remote traffic dispatch enabled (weight=${instance.weight}, tags=${JSON.stringify(instance.tags)})`,
+                  },
+                ])
+              );
+              const heartbeat = setInterval(() => {
+                try {
+                  controller.enqueue(chunk("heartbeat", {}));
+                } catch {
+                  clearInterval(heartbeat);
+                }
+              }, 15_000);
+              request.signal.addEventListener(
+                "abort",
+                () => {
+                  clearInterval(heartbeat);
+                  try {
+                    controller.close();
+                  } catch {}
+                },
+                { once: true }
+              );
+            },
+          });
+          return new Response(stream, {
+            headers: {
+              "Content-Type": "text/event-stream",
+              "Cache-Control": "no-cache",
+              Connection: "keep-alive",
+              "X-Accel-Buffering": "no",
+            },
+          });
+        }
+      } catch {
+        /* proceed to supervisor */
+      }
+    }
+
     const supervisor = await this.resolveSupervisor(name);
     if (!supervisor) return Response.json({ error: { message: `Service '${name}' not found`, type: "not_found" } }, { status: 404 });
 
-    const url = new URL(request.url);
     const tailRaw = url.searchParams.get("tail");
     const filterRaw = url.searchParams.get("filter");
     const tail = Math.min(tailRaw ? Math.max(0, Number.parseInt(tailRaw, 10) || 200) : 200, 1000);

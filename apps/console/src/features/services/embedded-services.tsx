@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import CliproxyInstances from "./cliproxy-instances";
 import { useSearchParams } from "react-router-dom";
 import {
   Alert,
@@ -8,13 +8,9 @@ import {
   Col,
   Empty,
   Flex,
-  Input,
-  Modal,
   Popconfirm,
   Row,
-  Select,
   Space,
-  Spin,
   Switch,
   Table,
   Tabs,
@@ -27,8 +23,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
 import {
   embeddedServicesApi,
-  type CliproxyAccountItem,
-  type CliproxyLoginJob,
   type NinerouterModelItem,
 } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
@@ -83,17 +77,6 @@ const SERVICES_META: Record<
     color: "#10b981",
   },
 };
-
-const CLIPROXY_LOGIN_PROVIDERS = [
-  { value: "codex", label: "OpenAI Codex" },
-  { value: "claude", label: "Claude Code" },
-  { value: "antigravity", label: "Google / Antigravity" },
-  { value: "kimi", label: "Kimi / Moonshot" },
-  { value: "xai", label: "xAI / Grok" },
-  { value: "gemini", label: "Google Gemini" },
-  { value: "qwen", label: "Qwen / 通义千问" },
-  { value: "github-copilot", label: "GitHub Copilot" },
-] as const;
 
 const useStyles = createStyles(({ token }) => ({
   page: {
@@ -170,6 +153,21 @@ const useStyles = createStyles(({ token }) => ({
     overflowX: "auto",
     border: "1px solid rgba(255,255,255,0.08)",
     margin: 0,
+  },
+  instanceCard: {
+    borderRadius: 6,
+    border: `1px solid ${token.colorBorderSecondary}`,
+    background: token.colorBgContainer,
+    padding: "8px 12px",
+    cursor: "pointer",
+    transition: "all 0.2s ease",
+    "&:hover": {
+      borderColor: token.colorPrimary,
+    },
+  },
+  instanceCardActive: {
+    borderColor: token.colorPrimary,
+    background: token.colorPrimaryBg,
   },
   statusRow: {
     width: "100%",
@@ -249,18 +247,11 @@ function getFriendlyServiceError(error: unknown, port: number, fallback: string)
   return view ? `${view.title}：${view.description}` : raw || fallback;
 }
 
-export function EmbeddedServicesPage() {
+function OtherEmbeddedService({ activeTab }: { activeTab: ServiceTab }) {
   const { styles } = useStyles();
   const { tt } = useI18n();
   const queryClient = useQueryClient();
-  const [searchParams, setSearchParams] = useSearchParams();
   const [messageApi, contextHolder] = message.useMessage();
-
-  const activeTab = (searchParams.get("tab") as ServiceTab) || "cliproxy";
-
-  const handleTabChange = (key: string) => {
-    setSearchParams({ tab: key });
-  };
 
   // Status Query
   const statusQuery = useQuery({
@@ -303,7 +294,7 @@ export function EmbeddedServicesPage() {
       return result;
     },
     onSuccess: async () => {
-      messageApi.success(`${SERVICES_META[activeTab].label} 已成功启动`);
+      messageApi.success(`${SERVICES_META[activeTab].label} 已启动`);
       await refreshLifecycle();
     },
     onError: (error) =>
@@ -311,7 +302,11 @@ export function EmbeddedServicesPage() {
   });
 
   const stopMutation = useMutation({
-    mutationFn: () => embeddedServicesApi.stop(activeTab),
+    mutationFn: async () => {
+      const result = await embeddedServicesApi.stop(activeTab);
+      if (result.state === "error") throw new Error(result.lastError || "服务停止失败");
+      return result;
+    },
     onSuccess: async () => {
       messageApi.success(`${SERVICES_META[activeTab].label} 已停止`);
       await refreshLifecycle();
@@ -356,135 +351,6 @@ export function EmbeddedServicesPage() {
     onError: (error) =>
       messageApi.error(error instanceof Error ? error.message : "更新服务配置失败"),
   });
-
-  // Cliproxy State
-  const cliproxyAccountsQuery = useQuery({
-    queryKey: ["cliproxy-accounts"],
-    queryFn: () => embeddedServicesApi.getCliproxyAccounts(),
-    enabled: activeTab === "cliproxy",
-  });
-
-  const cliproxyMappingsQuery = useQuery({
-    queryKey: ["cliproxy-mappings"],
-    queryFn: () => embeddedServicesApi.getCliproxyModelMappings(),
-    enabled: activeTab === "cliproxy",
-  });
-
-  const [testTestingId, setTestTestingId] = useState<string | null>(null);
-  const handleTestAccount = async (id: string) => {
-    setTestTestingId(id);
-    try {
-      const res = await embeddedServicesApi.testCliproxyAccount(id);
-      if (res.success) {
-        messageApi.success(`账号连通性正常（延迟: ${res.latencyMs || 120}ms）`);
-      } else {
-        messageApi.warning(`连通性异常: ${res.error || "请求超时"}`);
-      }
-      void queryClient.invalidateQueries({ queryKey: ["cliproxy-accounts"] });
-    } catch {
-      messageApi.error("测试连通性请求失败");
-    } finally {
-      setTestTestingId(null);
-    }
-  };
-
-  // Model Mapping Editor Modal
-  const [mappingModalOpen, setMappingModalOpen] = useState(false);
-  const [modelMappings, setModelMappings] = useState<Record<string, string>>({});
-
-  useEffect(() => {
-    if (cliproxyMappingsQuery.data) {
-      setModelMappings(cliproxyMappingsQuery.data);
-    }
-  }, [cliproxyMappingsQuery.data]);
-
-  const handleSaveModelMappings = async () => {
-    try {
-      await embeddedServicesApi.updateCliproxyModelMappings(modelMappings);
-      messageApi.success("模型重映射规则已保存");
-      setMappingModalOpen(false);
-      void queryClient.invalidateQueries({ queryKey: ["cliproxy-mappings"] });
-    } catch {
-      messageApi.error("保存模型映射失败");
-    }
-  };
-
-  // Controlled Web Login State
-  const [loginModalOpen, setLoginModalOpen] = useState(false);
-  const [loginProvider, setLoginProvider] = useState<string>("codex");
-  const [loginJob, setLoginJob] = useState<CliproxyLoginJob | null>(null);
-  const [loginStarting, setLoginStarting] = useState(false);
-  const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const handleStartLogin = async () => {
-    setLoginStarting(true);
-    try {
-      const job = await embeddedServicesApi.startCliproxyLogin(loginProvider);
-      setLoginJob(job);
-      if (job.status === "failed") {
-        messageApi.error(job.error || "启动登录失败");
-      }
-    } catch (err) {
-      messageApi.error(err instanceof Error ? err.message : "请求发起登录失败");
-    } finally {
-      setLoginStarting(false);
-    }
-  };
-
-  const handleCancelLogin = async () => {
-    if (!loginJob) return;
-    try {
-      await embeddedServicesApi.cancelCliproxyLogin(loginJob.id);
-      messageApi.info("已取消登录流程");
-      setLoginJob((prev) => (prev ? { ...prev, status: "canceled" } : null));
-    } catch {
-      messageApi.error("取消登录失败");
-    }
-  };
-
-  useEffect(() => {
-    if (
-      loginModalOpen &&
-      loginJob &&
-      (loginJob.status === "starting" || loginJob.status === "awaiting_user")
-    ) {
-      pollTimerRef.current = setInterval(async () => {
-        if (Date.now() >= loginJob.expiresAt) {
-          setLoginJob((prev) => prev ? {
-            ...prev,
-            status: "timeout",
-            error: "登录流程已超时（5 分钟未完成）。请重试。",
-          } : null);
-          void embeddedServicesApi.cancelCliproxyLogin(loginJob.id).catch(() => undefined);
-          return;
-        }
-        try {
-          const updated = await embeddedServicesApi.getCliproxyLoginJob(loginJob.id);
-          setLoginJob(updated);
-          if (updated.status === "success") {
-            messageApi.success("登录成功！新凭据已自动持久化并导入系统。");
-            void queryClient.invalidateQueries({ queryKey: ["cliproxy-accounts"] });
-            void queryClient.invalidateQueries({ queryKey: ["providers"] });
-          } else if (updated.status === "failed" || updated.status === "timeout") {
-            messageApi.error(updated.error || "登录未完成或超时");
-          }
-        } catch {
-          // Continue polling
-        }
-      }, 2000);
-    } else {
-      if (pollTimerRef.current) {
-        clearInterval(pollTimerRef.current);
-        pollTimerRef.current = null;
-      }
-    }
-    return () => {
-      if (pollTimerRef.current) {
-        clearInterval(pollTimerRef.current);
-        pollTimerRef.current = null;
-      }
-    };
-  }, [loginModalOpen, loginJob, queryClient, messageApi]);
 
   // 9Router Models Query
   const ninerouterModelsQuery = useQuery({
@@ -590,27 +456,6 @@ export function EmbeddedServicesPage() {
           </Button>
         </Flex>
       </Card>
-
-      {/* Main Tab Navigation (Zero bottom margin) */}
-      <Tabs
-        activeKey={activeTab}
-        onChange={handleTabChange}
-        type="card"
-        style={{ margin: 0, padding: 0 }}
-        tabBarStyle={{ margin: 0, marginBottom: 8 }}
-        items={(Object.keys(SERVICES_META) as ServiceTab[]).map((tabKey) => {
-          const m = SERVICES_META[tabKey];
-          return {
-            key: tabKey,
-            label: (
-              <Flex align="center" gap={6}>
-                <MaterialIcon name={m.icon} size={16} />
-                <span>{m.label}</span>
-              </Flex>
-            ),
-          };
-        })}
-      />
 
       {/* ROW 1: 服务运行时状态 (Left 50%) + 自动化与安全凭据 (Right 50%) (100% Equal Height & Full Width) */}
       <Row gutter={[10, 10]} align="stretch" style={{ width: "100%", margin: 0 }}>
@@ -799,7 +644,7 @@ export function EmbeddedServicesPage() {
                 </div>
                 <Switch
                   checked={status?.providerExpose ?? false}
-                  disabled={!isInstalled || lifecyclePending || (activeTab !== "cliproxy" && activeTab !== "9router")}
+                  disabled={!isInstalled || lifecyclePending || activeTab !== "9router"}
                   loading={configMutation.isPending}
                   onChange={(val) =>
                     configMutation.mutate({
@@ -817,133 +662,6 @@ export function EmbeddedServicesPage() {
 
       {/* ROW 2: 业务主要功能 (Left 50%) + 辅助配置/接入方式 (Right 50%) (100% Equal Height & Full Width) */}
       <Row gutter={[10, 10]} align="stretch" style={{ width: "100%", margin: 0 }}>
-        {activeTab === "cliproxy" && (
-          <>
-            <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
-              <Card
-                title="已挂载 CLI 凭据与账号健康度"
-                className={styles.sectionCard}
-                size="small"
-                style={{ width: "100%", flex: 1 }}
-                styles={{ body: { flex: 1, padding: 8, display: "flex", flexDirection: "column" } }}
-                extra={
-                  <Button
-                    size="small"
-                    icon={<MaterialIcon name="add" size={14} />}
-                    disabled={!isInstalled || lifecyclePending}
-                    onClick={() => {
-                      setLoginJob(null);
-                      setLoginModalOpen(true);
-                    }}
-                  >
-                    挂载新凭据
-                  </Button>
-                }
-              >
-                <Table<CliproxyAccountItem>
-                  rowKey="id"
-                  size="small"
-                  pagination={false}
-                  scroll={{ y: 150 }}
-                  dataSource={cliproxyAccountsQuery.data ?? []}
-                  columns={[
-                    {
-                      title: "账号 / 凭据来源",
-                      key: "name",
-                      render: (_, record) => (
-                        <div>
-                          <Text strong style={{ fontSize: 12 }}>{record.name}</Text>
-                          <div style={{ fontSize: 10, color: "var(--ant-color-text-secondary)" }}>ID: {record.id}</div>
-                        </div>
-                      ),
-                    },
-                    {
-                      title: "提供商",
-                      dataIndex: "provider",
-                      key: "provider",
-                      width: 90,
-                      render: (p: string) => <Tag color="blue">{p.toUpperCase()}</Tag>,
-                    },
-                    {
-                      title: "状态",
-                      key: "status",
-                      width: 80,
-                      render: (_, record) => (
-                        <Tag color={record.status === "active" ? "success" : "error"}>
-                          {record.status === "active" ? "在线" : "失效"}
-                        </Tag>
-                      ),
-                    },
-                    {
-                      title: "延迟",
-                      dataIndex: "latencyMs",
-                      key: "latencyMs",
-                      width: 70,
-                      render: (lat?: number) => (
-                        <span style={{ fontFamily: "monospace", color: "#10b981", fontWeight: 600, fontSize: 11 }}>
-                          {lat ? `${lat}ms` : "—"}
-                        </span>
-                      ),
-                    },
-                    {
-                      title: "操作",
-                      key: "action",
-                      width: 65,
-                      render: (_, record) => (
-                        <Button
-                          size="small"
-                          loading={testTestingId === record.id}
-                          onClick={() => handleTestAccount(record.id)}
-                        >
-                          测试
-                        </Button>
-                      ),
-                    },
-                  ]}
-                />
-              </Card>
-            </Col>
-
-            <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
-              <Card
-                title={tt("智能模型映射", "Model Mapping")}
-                className={styles.sectionCard}
-                size="small"
-                style={{ width: "100%", flex: 1 }}
-                styles={{ body: { flex: 1, display: "flex", flexDirection: "column", padding: "10px 14px" } }}
-                extra={
-                  <Button size="small" type="primary" onClick={() => setMappingModalOpen(true)}>
-                    编辑映射规则
-                  </Button>
-                }
-              >
-                <Paragraph type="secondary" style={{ fontSize: 11, margin: "0 0 6px 0" }}>
-                  配置客户端请求模型到 CLI 上游真实模型的自动重写：
-                </Paragraph>
-                <div style={{ display: "flex", flexDirection: "column", gap: 6, flex: 1, maxHeight: 110, overflowY: "auto", paddingRight: 2 }}>
-                  {Object.entries(modelMappings).length === 0 ? (
-                    <Empty description="暂无自定义模型映射" style={{ padding: "8px 0" }} />
-                  ) : (
-                    Object.entries(modelMappings).map(([from, to]) => (
-                      <Flex key={from} justify="space-between" align="center" style={{ padding: "4px 8px", background: "rgba(255,255,255,0.02)", borderRadius: 4, border: "1px solid var(--ant-color-border-secondary)", fontSize: 12 }}>
-                        <Text strong style={{ fontFamily: "monospace", color: "#818cf8" }}>{from}</Text>
-                        <MaterialIcon name="arrow_forward" size={12} style={{ color: "rgba(255,255,255,0.3)" }} />
-                        <Text strong style={{ fontFamily: "monospace", color: "#34d399" }}>{to}</Text>
-                      </Flex>
-                    ))
-                  )}
-                </div>
-                <div style={{ marginTop: 8, paddingTop: 6, borderTop: "1px solid var(--ant-color-border-secondary)" }}>
-                  <Text type="secondary" style={{ fontSize: 11 }}>终端导出指引：</Text>
-                  <pre className={styles.codeSnippet} style={{ marginTop: 4 }}>
-                    {`export OPENAI_BASE_URL="http://127.0.0.1:${status?.port || 8317}/v1"`}
-                  </pre>
-                </div>
-              </Card>
-            </Col>
-          </>
-        )}
-
         {activeTab === "9router" && (
           <>
             <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
@@ -1178,150 +896,42 @@ export function EmbeddedServicesPage() {
         </pre>
       </Card>
 
-      {/* Edit Model Mappings Modal */}
-      <Modal
-        title="编辑 CLIProxyAPI 模型重映射"
-        open={mappingModalOpen}
-        onOk={handleSaveModelMappings}
-        onCancel={() => setMappingModalOpen(false)}
-        width={540}
-      >
-        <Space direction="vertical" style={{ width: "100%", marginTop: 12 }}>
-          <Text type="secondary" style={{ fontSize: 12 }}>
-            添加或修改请求模型到实际目标模型的别名重写：
-          </Text>
-          {Object.entries(modelMappings).map(([k, v], idx) => (
-            <Flex key={idx} gap={8} align="center">
-              <Input
-                placeholder="请求模型 (如 gpt-4o)"
-                value={k}
-                onChange={(e) => {
-                  const newMappings = { ...modelMappings };
-                  delete newMappings[k];
-                  newMappings[e.target.value] = v;
-                  setModelMappings(newMappings);
-                }}
-              />
-              <MaterialIcon name="arrow_forward" size={16} />
-              <Input
-                placeholder="目标模型 (如 claude-3-5-sonnet)"
-                value={v}
-                onChange={(e) => {
-                  setModelMappings({ ...modelMappings, [k]: e.target.value });
-                }}
-              />
-              <Button
-                danger
-                type="text"
-                icon={<MaterialIcon name="delete" size={16} />}
-                onClick={() => {
-                  const newMappings = { ...modelMappings };
-                  delete newMappings[k];
-                  setModelMappings(newMappings);
-                }}
-              />
-            </Flex>
-          ))}
-          <Button
-            type="dashed"
-            block
-            icon={<MaterialIcon name="add" size={14} />}
-            onClick={() => {
-              setModelMappings({ ...modelMappings, [`custom-model-${Object.keys(modelMappings).length + 1}`]: "gpt-4o" });
-            }}
-          >
-            添加新映射项
-          </Button>
-        </Space>
-      </Modal>
-
-      <Modal
-        title="挂载 CLI 凭据"
-        open={loginModalOpen}
-        onCancel={() => setLoginModalOpen(false)}
-        footer={null}
-        width={560}
-        destroyOnClose={false}
-      >
-        <Space direction="vertical" size={12} style={{ width: "100%", marginTop: 12 }}>
-          <Text type="secondary">
-            登录进程运行在 CLIProxyAPI 所在主机。凭据会由 CLIProxyAPI 写入其持久化凭据目录，浏览器不会接触 access token。
-          </Text>
-          <Flex gap={8} align="center">
-            <Select
-              value={loginProvider}
-              onChange={(value: string) => setLoginProvider(value)}
-              options={[...CLIPROXY_LOGIN_PROVIDERS]}
-              style={{ flex: 1 }}
-              disabled={loginStarting || Boolean(loginJob && ["starting", "awaiting_user"].includes(loginJob.status))}
-            />
-            <Button type="primary" onClick={() => void handleStartLogin()} loading={loginStarting}>
-              开始登录
-            </Button>
-          </Flex>
-
-          {loginJob && (
-            <Card size="small" title="登录状态" styles={{ body: { padding: 12 } }}>
-              <Space direction="vertical" size={8} style={{ width: "100%" }}>
-                <Flex justify="space-between" align="center">
-                  <Text>
-                    {loginJob.status === "starting" && "正在启动登录进程…"}
-                    {loginJob.status === "awaiting_user" && "等待你在浏览器中完成授权"}
-                    {loginJob.status === "success" && "登录成功，凭据已导入"}
-                    {loginJob.status === "failed" && "登录失败"}
-                    {loginJob.status === "timeout" && "登录超时"}
-                    {loginJob.status === "canceled" && "登录已取消"}
-                  </Text>
-                  {(loginJob.status === "starting" || loginJob.status === "awaiting_user") && <Spin size="small" />}
-                </Flex>
-
-                {loginJob.authUrl && (
-                  <Button
-                    type="link"
-                    icon={<MaterialIcon name="open_in_new" size={14} />}
-                    href={loginJob.authUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{ padding: 0, textAlign: "left", whiteSpace: "normal", height: "auto" }}
-                  >
-                    打开授权页面
-                  </Button>
-                )}
-                {loginJob.userCode && (
-                  <Flex justify="space-between" align="center" gap={8}>
-                    <Text>设备码：</Text>
-                    <Text code copyable>{loginJob.userCode}</Text>
-                  </Flex>
-                )}
-                {loginJob.prompt && !loginJob.authUrl && !loginJob.userCode && (
-                  <Text type="secondary" style={{ whiteSpace: "pre-wrap" }}>{loginJob.prompt}</Text>
-                )}
-                {loginJob.error && <Alert type="error" showIcon message={loginJob.error} />}
-                {(loginJob.status === "starting" || loginJob.status === "awaiting_user") && (
-                  <Flex justify="space-between" align="center">
-                    <Text type="secondary" style={{ fontSize: 12 }}>
-                      有效期至 {new Date(loginJob.expiresAt).toLocaleTimeString()}
-                    </Text>
-                    <Button danger size="small" onClick={() => void handleCancelLogin()}>
-                      取消登录
-                    </Button>
-                  </Flex>
-                )}
-                {loginJob.terminalCommand && loginJob.status !== "success" && (
-                  <div>
-                    <Text type="secondary" style={{ fontSize: 12 }}>无法使用浏览器时，可在 CLIProxyAPI 主机执行：</Text>
-                    <Text code copyable={{ text: loginJob.terminalCommand }} style={{ display: "block", marginTop: 4, fontSize: 11 }}>
-                      {loginJob.terminalCommand}
-                    </Text>
-                  </div>
-                )}
-              </Space>
-            </Card>
-          )}
-        </Space>
-      </Modal>
     </div>
   );
 }
 
+export function EmbeddedServicesPage() {
+  const [params, setParams] = useSearchParams();
+  const selected = params.get("tab") ?? "cliproxy";
+  const activeTab = selected in SERVICES_META ? (selected as ServiceTab) : "cliproxy";
+  return (
+    <div style={{ width: "100%", maxWidth: "100%", overflowX: "hidden", display: "flex", flexDirection: "column", gap: 12 }}>
+      <Tabs
+        activeKey={activeTab}
+        onChange={(tab) => setParams({ tab })}
+        items={Object.entries(SERVICES_META).map(([key, meta]) => ({
+          key,
+          label: (
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <MaterialIcon name={meta.icon} size={16} style={{ color: meta.color }} />
+              <span>{meta.label}</span>
+            </span>
+          ),
+        }))}
+        style={{ marginBottom: 0 }}
+      />
+      {activeTab === "cliproxy" ? (
+        <CliproxyInstances
+          key={
+            params.has("instance")
+              ? `${params.get("instance")}/${params.get("process") ?? ""}`
+              : "collection"
+          }
+        />
+      ) : (
+        <OtherEmbeddedService key={activeTab} activeTab={activeTab} />
+      )}
+    </div>
+  );
+}
 export default EmbeddedServicesPage;
