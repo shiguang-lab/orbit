@@ -4,6 +4,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
+      "env": ["VITE_AUTH_MODE", "VITE_UNIFIED_LOGIN_ORIGIN"],
       "outputs": ["dist/**"]
     },
     "dev": {

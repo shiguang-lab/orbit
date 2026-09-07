@@ -29,6 +29,7 @@ const ssoDocuments = new Set([
   "deploy/SSO-INTEGRATION.md", "deploy/auth-service-config.md",
 ]);
 const ssoTests = new Set([
+  "apps/control-api/test/auth-session.test.ts",
   "packages/auth/test/configured-entitlement.test.ts",
   "apps/realtime/test/live-server-sso.test.ts",
 ]);

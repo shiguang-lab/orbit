@@ -26,6 +26,8 @@ const frozenBaseline = {
 // route tree. They have no upstream counterpart and are validated separately
 // by the endpoint smoke tests.
 const localApiExtensions = new Set([
+  // Signed gateway SSO session, covered by control-api auth-session tests.
+  "auth/session/route.ts",
   "media/cache/stats/route.ts",
   "media/cache/purge/route.ts",
   "a2a/route.ts",

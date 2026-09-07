@@ -18,7 +18,8 @@ RUN --mount=type=cache,id=shiguang-gateway-pnpm-store,target=/root/.local/share/
 # COPY includes ignored build output when building from a developer checkout.
 # Remove it before compiling so stale legacy route bundles cannot enter the image.
 RUN find apps packages -type d -name dist -prune -exec rm -rf {} +
-RUN pnpm build
+ARG VITE_AUTH_MODE=shiguang
+RUN VITE_AUTH_MODE="$VITE_AUTH_MODE" pnpm build
 # Create a deployable production tree instead of copying the complete workspace
 # (including admin/docs/build tooling) into every server image. The legacy mode
 # is required because this workspace uses linked, rather than injected, packages.

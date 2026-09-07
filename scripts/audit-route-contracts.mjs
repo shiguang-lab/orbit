@@ -10,6 +10,8 @@ const referenceRoot = resolve(process.env.SHIGUANG_GATEWAY_REFERENCE_DIR || join
 const methods = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"];
 const frozenContractSha256 = "83173aff965fddda925fc9ae256b7131731aa5d2c5fd73aa05bd3c54fe8f19d2";
 const localApiExtensions = new Set([
+  // Signed gateway SSO session, covered by control-api auth-session tests.
+  "auth/session/route.ts",
   "media/cache/stats/route.ts",
   "media/cache/purge/route.ts",
   // `/a2a` is a protocol root (not part of Next's `app/api` tree); it is
