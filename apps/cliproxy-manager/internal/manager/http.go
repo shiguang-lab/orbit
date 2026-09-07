@@ -197,6 +197,11 @@ func (m *Manager) proxy(w http.ResponseWriter, r *http.Request, management bool)
 		req.URL.RawPath = ""
 		req.Host = target.Host
 		req.Header.Del("Cookie")
+		// CLIProxyAPI management trusts the loopback peer, not the external caller.
+		// A nil value also prevents ReverseProxy from adding X-Forwarded-For.
+		req.Header["X-Forwarded-For"] = nil
+		req.Header.Del("X-Real-IP")
+		req.Header.Del("Forwarded")
 		req.Header.Del("X-Management-Key")
 		req.Header.Del("X-API-Key")
 		req.Header.Del("X-Goog-Api-Key")

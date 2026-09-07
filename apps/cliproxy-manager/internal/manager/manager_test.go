@@ -39,6 +39,12 @@ func TestMain(m *testing.M) {
 		_ = json.Unmarshal(data, &config)
 		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if strings.HasPrefix(r.URL.Path, "/v0/management/") {
+				for _, header := range []string{"X-Forwarded-For", "X-Real-IP", "Forwarded"} {
+					if r.Header.Get(header) != "" {
+						w.WriteHeader(403)
+						return
+					}
+				}
 				if r.Header.Get("Authorization") != "Bearer "+config.Management.Key {
 					w.WriteHeader(401)
 					return
@@ -231,6 +237,18 @@ func TestInternalHTTPAndPrivateUpstreamCredentials(t *testing.T) {
 	resp.Body.Close()
 	if resp.StatusCode != 200 {
 		t.Fatal("inference proxy failed")
+	}
+	req, _ = http.NewRequest("GET", server.URL+"/v1/instances/secure/management/oauth-model-alias", nil)
+	req.Header.Set("X-Forwarded-For", "192.0.2.1")
+	req.Header.Set("X-Real-IP", "192.0.2.1")
+	req.Header.Set("Forwarded", "for=192.0.2.1")
+	resp, err = http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp.Body.Close()
+	if resp.StatusCode != 200 {
+		t.Fatalf("loopback management returned %d", resp.StatusCode)
 	}
 	for _, path := range []string{"config", "config.yaml", "api-keys"} {
 		req, _ := http.NewRequest("GET", server.URL+"/v1/instances/secure/management/"+path, nil)

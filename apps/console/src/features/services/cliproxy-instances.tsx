@@ -55,6 +55,7 @@ import {
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/zh-cn";
 import { useSearchParams } from "react-router-dom";
 import { api } from "@/entities/api";
 import { useI18n } from "@/i18n";
@@ -241,6 +242,8 @@ const useStyles = createStyles(({ token, css }) => ({
 }));
 
 interface Instance {
+  pid?: number;
+  startedAt?: string;
   autoStart?: boolean;
   providerExpose?: boolean;
   id: string;
@@ -303,7 +306,7 @@ const instancePath = (node: string, instance: string) =>
   `${base}/${encodeURIComponent(node)}/instances/${encodeURIComponent(instance)}`;
 
 export default function CliproxyInstances() {
-  const { tt } = useI18n();
+  const { tt, locale } = useI18n();
   const { message } = App.useApp();
   const { styles } = useStyles();
   const { token } = theme.useToken();
@@ -452,7 +455,7 @@ export default function CliproxyInstances() {
     )?.latencyMs;
     const port = instances[0]?.port;
     const lastSeenText = item.lastSeenAt
-      ? dayjs(item.lastSeenAt).fromNow()
+      ? dayjs(item.lastSeenAt).locale(locale === "zh-CN" ? "zh-cn" : "en").fromNow()
       : item.online
         ? tt("刚刚", "Just now")
         : tt("从未连通", "Never");
@@ -854,7 +857,7 @@ export default function CliproxyInstances() {
                                   <Typography.Text className={styles.statusLabel} type="secondary">
                                     {tt("进程 PID:", "Process PID:")}
                                   </Typography.Text>
-                                  <Typography.Text code>{instance.id && !instance.id.endsWith("-default") ? instance.id : "—"}</Typography.Text>
+                                  <Typography.Text code>{instance.pid || "—"}</Typography.Text>
                                 </Flex>
                                 <Flex className={styles.statusRow} justify="space-between" align="center">
                                   <Typography.Text className={styles.statusLabel} type="secondary">
@@ -871,8 +874,8 @@ export default function CliproxyInstances() {
                                     {tt("启动时间:", "Started At:")}
                                   </Typography.Text>
                                   <Typography.Text style={{ fontSize: 11 }}>
-                                    {node.lastSeenAt
-                                      ? dayjs(node.lastSeenAt).format("YYYY/M/D HH:mm:ss")
+                                    {instance.startedAt
+                                      ? dayjs(instance.startedAt).format("YYYY/M/D HH:mm:ss")
                                       : "—"}
                                   </Typography.Text>
                                 </Flex>
@@ -1870,7 +1873,7 @@ export default function CliproxyInstances() {
                       >
                         <Typography.Text
                           type="secondary"
-                          style={{ fontSize: 12 }}
+                          style={{ fontSize: 12, whiteSpace: "nowrap" }}
                         >
                           {lastSeenText}
                         </Typography.Text>
@@ -2137,7 +2140,7 @@ export default function CliproxyInstances() {
                       >
                         <Typography.Text
                           type="secondary"
-                          style={{ fontSize: 12 }}
+                          style={{ fontSize: 12, whiteSpace: "nowrap" }}
                         >
                           {lastSeenText}
                         </Typography.Text>
