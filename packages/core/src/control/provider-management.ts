@@ -1,7 +1,7 @@
 /**
- * Public provider-management capability surface for control-api.
+ * Public provider-management capability surface for control.
  *
- * The HTTP transport lives in apps/control-api; this facade keeps the app
+ * The HTTP transport lives in apps/control; this facade keeps the app
  * from reaching into core implementation paths while preserving the
  * provider connection/domain contracts used by the management handlers.
  */

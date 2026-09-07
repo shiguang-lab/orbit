@@ -95,7 +95,7 @@ test("gamification DB, rules, and request lifecycle ownership stay separated", (
   assert.equal(exports.includes("./src/lib/db/gamification.ts"), false);
 
   const forbiddenControl = /@orbit\/core\/control\/gamification(?:-db|-notifications)?(?=["'])/;
-  for (const root of ["apps/edge-gateway", "apps/realtime", "apps/worker", "packages/inference"]) {
+  for (const root of ["apps/gateway", "apps/realtime", "apps/worker", "packages/inference"]) {
     for (const file of sourceFiles(path.join(repoRoot, root))) {
       assert.doesNotMatch(fs.readFileSync(file, "utf8"), forbiddenControl, file);
     }
@@ -105,6 +105,6 @@ test("gamification DB, rules, and request lifecycle ownership stay separated", (
     .filter((file) => fs.readFileSync(file, "utf8").includes("core/control/gamification-notifications"))
     .map((file) => path.relative(repoRoot, file).split(path.sep).join("/"));
   assert.deepEqual(notificationConsumers, [
-    "apps/control-api/src/gamification/handlers/notifications.handler.ts",
+    "apps/control/src/gamification/handlers/notifications.handler.ts",
   ]);
 });

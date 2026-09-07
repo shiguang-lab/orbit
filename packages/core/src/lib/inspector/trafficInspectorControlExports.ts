@@ -1,7 +1,7 @@
 /**
  * Control-plane capabilities for the Traffic Inspector.
  *
- * Transport handlers live in apps/control-api; this package surface only
+ * Transport handlers live in apps/control; this package surface only
  * exposes the shared inspector state and persistence primitives used by the
  * control app and the edge MITM runtime.
  */

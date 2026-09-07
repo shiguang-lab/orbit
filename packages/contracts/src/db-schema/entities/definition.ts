@@ -8,7 +8,7 @@
  */
 export type SqliteColumnType = "TEXT" | "INTEGER" | "REAL" | "BLOB";
 
-export type EntityOwner = "control-api" | "edge-gateway" | "realtime" | "worker";
+export type EntityOwner = "control" | "gateway" | "realtime" | "worker";
 
 export type ExternalWriteMode = "bootstrap" | "maintenance" | "migration";
 

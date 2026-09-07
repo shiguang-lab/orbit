@@ -114,7 +114,7 @@ Events not in this list appear only in the Audit Log.
 Edit `src/lib/audit/highLevelActions.ts` and add the action string to
 `HIGH_LEVEL_ACTIONS`. This requires a PR (the list is code, not DB-configurable).
 Presentation details such as icons and relative timestamps belong to the Admin
-activity feature in `apps/admin/src/features/activity/`.
+activity feature in `apps/console/src/features/activity/`.
 
 ---
 

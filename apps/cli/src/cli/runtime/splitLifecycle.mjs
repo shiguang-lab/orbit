@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { cleanupPidFile, isPidRunning, readPidFile, sleep, writePidFile } from "../utils/pid.mjs";
 
-export const SPLIT_SERVICE_NAMES = ["edge-gateway", "control-api", "realtime", "worker"];
+export const SPLIT_SERVICE_NAMES = ["gateway", "control", "realtime", "worker"];
 const WORKSPACE_ROOT = fileURLToPath(new URL("../../../../../", import.meta.url));
 
 function port(value, fallback) {
@@ -33,12 +33,12 @@ export function resolveSplitPlan(opts = {}, env = process.env, workspaceRoot = W
   });
 
   return [
-    service("edge-gateway", {
+    service("gateway", {
       EDGE_GATEWAY_HOST: edgeHost,
       EDGE_GATEWAY_PORT: String(edgePort),
       SHIGUANG_GATEWAY_ENABLE_LIVE_WS: "false",
     }, { kind: "http", port: edgePort, path: "/healthz" }),
-    service("control-api", {
+    service("control", {
       CONTROL_API_HOST: "127.0.0.1",
       CONTROL_API_PORT: String(controlPort),
       EDGE_GATEWAY_URL: edgeUrl,

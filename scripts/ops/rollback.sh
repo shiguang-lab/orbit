@@ -11,7 +11,7 @@ Usage: scripts/ops/rollback.sh <release-tag> [--compose-file <path>]
        [--image-prefix <registry/repository-prefix>] [--yes|-y] [-h|--help]
 
 Pins all six split images to the same published release tag, pulls them, and
-recreates the active admin, edge, control, realtime, and worker services with
+recreates the active console, gateway, control, realtime, and worker services with
 docker-compose.yml. The migration-profile importer image is pulled but not started.
 The image variables apply to this invocation only; set the same six values in
 .env before a later manual `docker compose up`.
@@ -51,8 +51,8 @@ case "$RELEASE_REF" in
   *) IMAGE_SUFFIX=":$RELEASE_REF" ;;
 esac
 
-export SHIGUANG_GATEWAY_ADMIN_IMAGE="${IMAGE_PREFIX}-admin${IMAGE_SUFFIX}"
-export SHIGUANG_GATEWAY_EDGE_IMAGE="${IMAGE_PREFIX}-edge${IMAGE_SUFFIX}"
+export SHIGUANG_GATEWAY_CONSOLE_IMAGE="${IMAGE_PREFIX}-console${IMAGE_SUFFIX}"
+export SHIGUANG_GATEWAY_GATEWAY_IMAGE="${IMAGE_PREFIX}-gateway${IMAGE_SUFFIX}"
 export SHIGUANG_GATEWAY_CONTROL_IMAGE="${IMAGE_PREFIX}-control${IMAGE_SUFFIX}"
 export SHIGUANG_GATEWAY_REALTIME_IMAGE="${IMAGE_PREFIX}-realtime${IMAGE_SUFFIX}"
 export SHIGUANG_GATEWAY_WORKER_IMAGE="${IMAGE_PREFIX}-worker${IMAGE_SUFFIX}"
@@ -61,7 +61,7 @@ export SHIGUANG_GATEWAY_IMPORTER_IMAGE="${IMAGE_PREFIX}-importer${IMAGE_SUFFIX}"
 ops_require_cmd docker
 docker compose -f "$COMPOSE_FILE" --profile migration config >/dev/null
 ops_log "compose: $COMPOSE_FILE"
-ops_log "image family: ${IMAGE_PREFIX}-{admin,edge,control,realtime,worker,importer}${IMAGE_SUFFIX}"
+ops_log "image family: ${IMAGE_PREFIX}-{console,gateway,control,realtime,worker,importer}${IMAGE_SUFFIX}"
 ops_confirm "Pull and recreate the split deployment at $RELEASE_REF?" || ops_die "aborted"
 
 docker compose -f "$COMPOSE_FILE" --profile migration pull

@@ -719,7 +719,7 @@ src/lib/a2a/
     ├── smartRouting.ts    # Smart routing skill (routes via /v1/chat/completions)
     └── quotaManagement.ts # Quota management skill (natural-language quota queries)
 
-apps/edge-gateway/src/a2a/
+apps/gateway/src/a2a/
 ├── a2a.module.ts          # Nest module — the single A2A registration surface
 ├── a2a-*.controller.ts     # JSON-RPC and REST transport controllers
 └── a2a.service.ts         # Edge-owned application service

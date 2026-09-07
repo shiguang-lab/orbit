@@ -29,7 +29,7 @@ const ssoDocuments = new Set([
   "deploy/SSO-INTEGRATION.md", "deploy/auth-service-config.md",
 ]);
 const ssoTests = new Set([
-  "apps/control-api/test/auth-session.test.ts",
+  "apps/control/test/auth-session.test.ts",
   "packages/auth/test/configured-entitlement.test.ts",
   "apps/realtime/test/live-server-sso.test.ts",
 ]);
@@ -77,7 +77,7 @@ function selfTest() {
   assert.equal(containsRetiredIdentifier("packages/auth/src/session.ts", `"${audience}"`), true);
   assert.equal(containsRetiredIdentifier("deploy/other.md", `\`${entitlement}\``), true);
   assert.equal(containsRetiredIdentifier(`apps/${retiredToken}/index.ts`, ""), true);
-  assert.equal(containsRetiredIdentifier("apps/admin/index.ts", "ShiguangGateway"), false);
+  assert.equal(containsRetiredIdentifier("apps/console/index.ts", "ShiguangGateway"), false);
   console.log("brand SSO exception self-test: PASS");
 }
 

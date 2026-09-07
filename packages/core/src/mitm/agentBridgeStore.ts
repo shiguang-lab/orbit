@@ -1,9 +1,9 @@
 /**
  * Persistence port used by the MITM runtime.
  *
- * Agent Bridge tables are owned by control-api.  The MITM runtime is shared
+ * Agent Bridge tables are owned by control.  The MITM runtime is shared
  * infrastructure, so it consumes this small port instead of importing the
- * control application's SQLite CRUD modules.  control-api registers its
+ * control application's SQLite CRUD modules.  control registers its
  * implementation during module initialisation.
  */
 import type {

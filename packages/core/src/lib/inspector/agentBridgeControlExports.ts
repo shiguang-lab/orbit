@@ -1,9 +1,9 @@
 /**
  * Control-plane AgentBridge capabilities.
  *
- * The HTTP transport is owned by apps/control-api.  This explicit package
+ * The HTTP transport is owned by apps/control.  This explicit package
  * surface keeps the shared MITM implementation and its persistence port behind
- * a reviewable boundary while control-api owns the SQLite adapter and Nest
+ * a reviewable boundary while control owns the SQLite adapter and Nest
  * controllers/modules.
  */
 export {

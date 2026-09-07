@@ -1,4 +1,4 @@
--- AgentBridge persistence is control-api-owned and is bootstrapped by
--- apps/control-api/src/tools/agent-bridge/agent-bridge-schema.ts.  Keep this
+-- AgentBridge persistence is control-owned and is bootstrapped by
+-- apps/control/src/tools/agent-bridge/agent-bridge-schema.ts.  Keep this
 -- historical migration as a no-op so existing migration ledgers retain the
 -- version while fresh non-control runtimes do not receive control-only tables.

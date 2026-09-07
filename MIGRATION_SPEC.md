@@ -4,7 +4,7 @@
 
 ## 1. 重构边界
 
-- **允许重构**：Admin Web、control-api/edge-gateway HTTP 路由、前后端契约、鉴权接入和页面展示组件。
+- **允许重构**：Admin Web、control/gateway HTTP 路由、前后端契约、鉴权接入和页面展示组件。
 - **领域实现**：数据库模型、Provider、业务规则、计算逻辑和持久化语义必须由本仓库维护；不得保留远程官方服务或历史兼容启动器。
 - API 服务直接调用本地领域包；参考项目只用于一次性盘点和数据导入，绝不参与运行时。
 - 页面改动必须同步调整领域服务和数据契约，不得以兼容分支掩盖未完成迁移。
@@ -15,7 +15,7 @@
 
 1. 原页面 UI 与全部交互状态；
 2. 原页面依赖的所有 HTTP、SSE、WebSocket 和轮询数据源；
-3. 对应的 control-api/edge-gateway 路由、鉴权、参数校验、错误处理与数据脱敏；
+3. 对应的 control/gateway 路由、鉴权、参数校验、错误处理与数据脱敏；
 4. API 服务到本地领域包的调用；
 5. 前后端共享契约和必要的测试、构建及浏览器验证。
 
@@ -58,7 +58,7 @@
 
 ## 5. API 服务要求
 
-- Admin Web 只访问 control-api/edge-gateway，不直接访问数据库或第三方管理接口。
+- Admin Web 只访问 control/gateway，不直接访问数据库或第三方管理接口。
 - API 路由应覆盖原页面实际使用的全部接口，并保持对前端可观察的业务语义一致。
 - API 服务负责 HTTP 边界能力：鉴权、CSRF、参数校验、错误信封、requestId、数据投影、脱敏以及领域服务编排。
 - 数据查询和业务决策必须调用本地领域包；不得通过远程官方 API 或 NAS proxy，也不得保留历史兼容路径。
@@ -69,7 +69,7 @@
 标准数据链路（独立部署）：
 
 ```text
-Admin Web -> control-api/edge-gateway/realtime -> http -> 本地领域包 -> 数据库/Provider
+Admin Web -> control/gateway/realtime -> http -> 本地领域包 -> 数据库/Provider
 ```
 
 源数据迁移通过 `pnpm import:source-data` 冷快照导入；不得把导入源地址、管理 key 或外部 host 写入运行时配置。
@@ -117,7 +117,7 @@ Admin Web -> control-api/edge-gateway/realtime -> http -> 本地领域包 -> 数
 页面只有同时满足以下条件才算迁移完成：
 
 - 菜单和路由可进入真实页面，不是 placeholder；
-- 页面所有数据来自 control-api/edge-gateway，浏览器网络请求中没有绕过 API 的业务接口；
+- 页面所有数据来自 control/gateway，浏览器网络请求中没有绕过 API 的业务接口；
 - API 已连接本地领域服务和真实数据，未使用 Mock 或硬编码替代；
 - 页面功能、数据逻辑、状态和异常分支与原项目一致；
 - 原页面的弹窗、抽屉、向导、Tab、批量操作和详情入口均已覆盖；
@@ -132,17 +132,17 @@ Admin Web -> control-api/edge-gateway/realtime -> http -> 本地领域包 -> 数
 
 - **原页面源码**：`Orbit/src/app/(dashboard)/dashboard/providers/page.tsx`、`providerPageUtils.ts` 及 `components/ProviderCard.tsx`、`ProviderSummaryCard.tsx`。
 - **原页面数据源**：`/api/providers`、`/api/provider-nodes`、`/api/providers/expiration`、`/api/settings`、`/api/providers/openrouter-stats`；创建/编辑/删除/测试继续使用对应 `/api/providers*` 路由。
-- **当前 API 链路**：上述接口由 control-api/edge-gateway 的本地领域服务和 `DATA_DIR` 数据库提供；Admin 永远只访问 API，不读取数据库或远程服务。
+- **当前 API 链路**：上述接口由 control/gateway 的本地领域服务和 `DATA_DIR` 数据库提供；Admin 永远只访问 API，不读取数据库或远程服务。
 - **页面结构**：Admin 使用 antd 标准 `Card`、`Alert`、`Segmented`、`Table`、`List`、`Switch`、`Empty` 等组件，按原页面分区展示：API 密钥兼容提供者（含 Anthropic/OpenAI 添加入口）、OAuth、IDE、Web Cookie、LLM、聚合器与网关、企业与云、嵌入与重排序、图像、视频、免鉴权、本地、搜索、网页抓取、音频、代理和云代理；Provider 卡片在宽屏下保持四列栅格。catalog 只作为配置驱动元数据，不作为伪造连接数据。
-- **详情迁移范围**：`/dashboard/providers/:id` 已接入连接详情、凭证编辑（脱敏）、启停、删除、单连接测试、模型读取/自定义模型增删、参数过滤规则和搜索/网页抓取拦截规则；对应 control-api 通过 `providers.ts` 与本地数据库/领域服务连接。
-- **详情迁移**：`apps/admin/src/features/providers/provider-detail.tsx` 按 catalog/serviceKinds/node 数据分流实现标准 API、OAuth/Web Cookie/IDE、端点、免鉴权、搜索/Web Fetch、上游代理详情；连接表、测试、启停、删除、模型目录、参数过滤器、拦截规则和 Web Fetch Playground 均经 control-api 接入。详情路由按 Provider ID 聚合连接，编辑路由按连接 ID 单独处理。
+- **详情迁移范围**：`/dashboard/providers/:id` 已接入连接详情、凭证编辑（脱敏）、启停、删除、单连接测试、模型读取/自定义模型增删、参数过滤规则和搜索/网页抓取拦截规则；对应 control 通过 `providers.ts` 与本地数据库/领域服务连接。
+- **详情迁移**：`apps/console/src/features/providers/provider-detail.tsx` 按 catalog/serviceKinds/node 数据分流实现标准 API、OAuth/Web Cookie/IDE、端点、免鉴权、搜索/Web Fetch、上游代理详情；连接表、测试、启停、删除、模型目录、参数过滤器、拦截规则和 Web Fetch Playground 均经 control 接入。详情路由按 Provider ID 聚合连接，编辑路由按连接 ID 单独处理。
 - **验收边界**：列表页不再以单一自定义 provider 分组替代原分区统计；OAuth/CLI/浏览器授权的专属导入向导、模型实时发现/同步高级操作、节点编辑和其余原页面弹窗仍需按本规范补齐对应 API 后，才可将 Providers 菜单项从“进行中”改为“已迁移”。
 
 ## 10.1 首页迁移记录
 
 - **原页面源码**：`Orbit/src/app/(dashboard)/home/page.tsx`、`dashboard/HomePageClient.tsx`、`home/HomeRecentRequests.tsx`、`dashboard/HomeProviderTopologySection.tsx`。
 - **线上结构**：顶部合作伙伴/公告 Banner、Quick Start 四步卡片、Provider Topology 拓扑、Recent Requests 实时列表；拓扑和请求列表受 Appearance 设置控制，并使用轮询与 WebSocket 请求流。
-- **当前实现**：`apps/admin/src/features/home/home.tsx` 使用 antd + antd-style 复刻上述结构；公告 Banner 支持本地持久化关闭，Quick Start 保持四步 2×2 布局，Provider Topology 使用 `@xyflow/react` 按既有布局、Handle/Edge 状态优先级、Provider/catalog/provider-nodes 图标与标签、实时指标和自动 fitView 进行实现，节点可点击进入 Provider 详情；连接健康状态遵循领域服务语义，最近使用只由全局 `lastProvider` 标记；Recent Requests 使用 control-api 日志数据与公共 Scrollbar，左右卡片等高且列表内部滚动。首页不额外添加非需求的系统状态卡片，也不渲染重复的页面标题。
+- **当前实现**：`apps/console/src/features/home/home.tsx` 使用 antd + antd-style 复刻上述结构；公告 Banner 支持本地持久化关闭，Quick Start 保持四步 2×2 布局，Provider Topology 使用 `@xyflow/react` 按既有布局、Handle/Edge 状态优先级、Provider/catalog/provider-nodes 图标与标签、实时指标和自动 fitView 进行实现，节点可点击进入 Provider 详情；连接健康状态遵循领域服务语义，最近使用只由全局 `lastProvider` 标记；Recent Requests 使用 control 日志数据与公共 Scrollbar，左右卡片等高且列表内部滚动。首页不额外添加非需求的系统状态卡片，也不渲染重复的页面标题。
 - **服务链路**：首页投影由所属 app 注册的 route adapter 暴露，并通过 `http` transport 调用 `core` 的 `/api/models`、`/api/provider-metrics`、`/api/usage/call-logs`、`/api/system/version`；`http/src/routes` 不是运行时路由根，Web 永远不得直连领域模块或数据库。
 - **安全边界**：版本接口只返回版本投影，日志/指标不返回敏感凭证；首页实时 WS 仅在拓扑开启时建立，避免无条件连接和后台轮询。
 - **有意差异**：Orbit 的 Electron 自动更新和服务端升级 SSE 依赖桌面/部署运行时，Admin Web 当前仅展示版本状态，不提供升级按钮；接入前必须单独迁移并增加确认和权限校验。

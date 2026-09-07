@@ -126,7 +126,7 @@ async function main() {
 
   let failure;
   try {
-    const edge = start("edge-gateway");
+    const edge = start("gateway");
     await waitHttp(edge);
     const worker = start("worker");
     const deadline = Date.now() + 20_000;

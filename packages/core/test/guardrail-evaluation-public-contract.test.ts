@@ -84,6 +84,6 @@ test("mutable guardrail registry aliases stay retired", () => {
     "packages/inference/src/handlers/chatCore/postCallGuardrailContext.ts",
   ]);
   assert.deepEqual(managementConsumers, [
-    "apps/control-api/src/guardrails/guardrails.service.ts",
+    "apps/control/src/guardrails/guardrails.service.ts",
   ]);
 });

@@ -62,7 +62,7 @@ boolean w konfiguracji kompresji:
 - Typ: `ContextEditingConfig { enabled: boolean }` w
   `open-sse/services/compression/types.ts`.
 - Domyślnie: `DEFAULT_CONTEXT_EDITING_CONFIG = { enabled: false }`.
-- Schemat Zod: `contextEditingConfigSchema` w `apps/control-api/src/compression/compression-config-schemas.ts`.
+- Schemat Zod: `contextEditingConfigSchema` w `apps/control/src/compression/compression-config-schemas.ts`.
 - Przechowywanie: zapisywane wraz z pozostałymi ustawieniami kompresji (normalizacja w
   `src/lib/db/compression.ts`).
 

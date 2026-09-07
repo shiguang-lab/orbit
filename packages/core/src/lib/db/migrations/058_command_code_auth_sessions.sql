@@ -1,4 +1,4 @@
--- Command Code auth session state is owned and initialized by apps/control-api.
+-- Command Code auth session state is owned and initialized by apps/control.
 -- Keep this migration as a history marker for databases upgraded from the
 -- legacy package-owned migration runner; non-control runtimes must not create
 -- this control-plane table.

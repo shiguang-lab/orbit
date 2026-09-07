@@ -80,8 +80,8 @@ test("compliance aliases stay retired and lifecycle remains worker-only", () => 
 
   const lifecycleImport = "@orbit/core/compliance/lifecycle";
   for (const root of [
-    "apps/control-api",
-    "apps/edge-gateway",
+    "apps/control",
+    "apps/gateway",
     "apps/realtime",
     "packages/inference",
   ]) {

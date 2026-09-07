@@ -160,7 +160,7 @@ shiguang-gateway setup-goose        shiguang-gateway setup-qwen         shiguang
 
 ## 3. ACP 代理 (/dashboard/acp-agents)
 
-此页面（从 `/dashboard/agents` 重命名）显示控制 API 检测到的本机 CLI。目录由 `apps/control-api/src/acp/runtime/agent-registry.ts` 维护，与 `CLI_TOOLS` **不相同**；它不会启动或管理代理进程。
+此页面（从 `/dashboard/agents` 重命名）显示控制 API 检测到的本机 CLI。目录由 `apps/control/src/acp/runtime/agent-registry.ts` 维护，与 `CLI_TOOLS` **不相同**；它不会启动或管理代理进程。
 
 ---
 

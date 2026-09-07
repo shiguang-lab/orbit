@@ -1,10 +1,10 @@
 import { column, type EntityDefinition } from "./definition.js";
 
-/** Middleware hook definitions managed by control-api and executed by edge/open-sse. */
+/** Middleware hook definitions managed by control and executed by edge/open-sse. */
 export const MiddlewareHookEntity: EntityDefinition = {
   entityName: "MiddlewareHook",
   tableName: "middleware_hooks",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("name", "TEXT", { nullable: false, primaryKey: true }),
     column("description", "TEXT", { nullable: false, default: "''" }),
@@ -20,19 +20,19 @@ export const MiddlewareHookEntity: EntityDefinition = {
   ],
 };
 
-/** Radar feed/cache tables are read by control-api and the worker scheduler. */
-export const RadarFeedCacheEntity: EntityDefinition = { entityName: "RadarFeedCache", tableName: "radar_feed_cache", owner: "control-api", columns: [column("id", "INTEGER", { nullable: false, primaryKey: true }), column("version", "TEXT"), column("generated_at", "TEXT"), column("tier", "TEXT"), column("payload", "TEXT"), column("signature", "TEXT"), column("fetched_at", "TEXT")] };
-export const RadarSettingsEntity: EntityDefinition = { entityName: "RadarSettings", tableName: "radar_settings", owner: "control-api", columns: [column("id", "INTEGER", { nullable: false, primaryKey: true }), column("opt_in", "INTEGER", { nullable: false, default: "0" }), column("supporter_key_encrypted", "TEXT"), column("updated_at", "TEXT")] };
-export const RadarReferralsCacheEntity: EntityDefinition = { entityName: "RadarReferralsCache", tableName: "radar_referrals_cache", owner: "control-api", columns: [column("id", "INTEGER", { nullable: false, primaryKey: true }), column("generated_at", "TEXT"), column("tier", "TEXT"), column("payload", "TEXT"), column("signature", "TEXT"), column("fetched_at", "TEXT")] };
-export const RadarOffersCacheEntity: EntityDefinition = { entityName: "RadarOffersCache", tableName: "radar_offers_cache", owner: "control-api", columns: [column("id", "INTEGER", { nullable: false, primaryKey: true }), column("version", "TEXT", { nullable: false }), column("tier", "TEXT", { nullable: false }), column("payload", "TEXT", { nullable: false }), column("signature", "TEXT", { nullable: false }), column("fetched_at", "TEXT", { nullable: false })] };
-export const RadarIntelCacheEntity: EntityDefinition = { entityName: "RadarIntelCache", tableName: "radar_intel_cache", owner: "control-api", columns: [column("id", "INTEGER", { nullable: false, primaryKey: true }), column("version", "TEXT", { nullable: false }), column("tier", "TEXT", { nullable: false }), column("payload", "TEXT", { nullable: false }), column("signature", "TEXT", { nullable: false }), column("supporter_identity", "TEXT", { nullable: false }), column("fetched_at", "TEXT", { nullable: false, default: "datetime('now')" })] };
-export const RadarLocalModelStateEntity: EntityDefinition = { entityName: "RadarLocalModelState", tableName: "radar_local_model_state", owner: "control-api", columns: [column("provider", "TEXT", { nullable: false, primaryKey: true }), column("model_id", "TEXT", { nullable: false, primaryKey: true }), column("display_name", "TEXT"), column("enabled", "INTEGER"), column("tombstoned", "INTEGER", { nullable: false, default: "0" }), column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" })] };
+/** Radar feed/cache tables are read by control and the worker scheduler. */
+export const RadarFeedCacheEntity: EntityDefinition = { entityName: "RadarFeedCache", tableName: "radar_feed_cache", owner: "control", columns: [column("id", "INTEGER", { nullable: false, primaryKey: true }), column("version", "TEXT"), column("generated_at", "TEXT"), column("tier", "TEXT"), column("payload", "TEXT"), column("signature", "TEXT"), column("fetched_at", "TEXT")] };
+export const RadarSettingsEntity: EntityDefinition = { entityName: "RadarSettings", tableName: "radar_settings", owner: "control", columns: [column("id", "INTEGER", { nullable: false, primaryKey: true }), column("opt_in", "INTEGER", { nullable: false, default: "0" }), column("supporter_key_encrypted", "TEXT"), column("updated_at", "TEXT")] };
+export const RadarReferralsCacheEntity: EntityDefinition = { entityName: "RadarReferralsCache", tableName: "radar_referrals_cache", owner: "control", columns: [column("id", "INTEGER", { nullable: false, primaryKey: true }), column("generated_at", "TEXT"), column("tier", "TEXT"), column("payload", "TEXT"), column("signature", "TEXT"), column("fetched_at", "TEXT")] };
+export const RadarOffersCacheEntity: EntityDefinition = { entityName: "RadarOffersCache", tableName: "radar_offers_cache", owner: "control", columns: [column("id", "INTEGER", { nullable: false, primaryKey: true }), column("version", "TEXT", { nullable: false }), column("tier", "TEXT", { nullable: false }), column("payload", "TEXT", { nullable: false }), column("signature", "TEXT", { nullable: false }), column("fetched_at", "TEXT", { nullable: false })] };
+export const RadarIntelCacheEntity: EntityDefinition = { entityName: "RadarIntelCache", tableName: "radar_intel_cache", owner: "control", columns: [column("id", "INTEGER", { nullable: false, primaryKey: true }), column("version", "TEXT", { nullable: false }), column("tier", "TEXT", { nullable: false }), column("payload", "TEXT", { nullable: false }), column("signature", "TEXT", { nullable: false }), column("supporter_identity", "TEXT", { nullable: false }), column("fetched_at", "TEXT", { nullable: false, default: "datetime('now')" })] };
+export const RadarLocalModelStateEntity: EntityDefinition = { entityName: "RadarLocalModelState", tableName: "radar_local_model_state", owner: "control", columns: [column("provider", "TEXT", { nullable: false, primaryKey: true }), column("model_id", "TEXT", { nullable: false, primaryKey: true }), column("display_name", "TEXT"), column("enabled", "INTEGER"), column("tombstoned", "INTEGER", { nullable: false, default: "0" }), column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" })] };
 
 /** Automated provider-discovery findings managed by the control plane. */
 export const DiscoveryResultEntity: EntityDefinition = {
   entityName: "DiscoveryResult",
   tableName: "discovery_results",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
     column("provider_id", "TEXT", { nullable: false }),
@@ -53,19 +53,19 @@ export const DiscoveryResultEntity: EntityDefinition = {
 export const SettingsEntity: EntityDefinition = {
   entityName: "Settings",
   tableName: "key_value",
-  owner: "control-api",
+  owner: "control",
   externalWriteAuthorities: [
     {
       source: "apps/cli/src/cli/bootstrap-store.mjs",
       entrypoint: "apps/cli/src/cli/commands/setup.mjs",
       mode: "bootstrap",
-      reason: "Initialize login settings before the control-api is available.",
+      reason: "Initialize login settings before the control is available.",
     },
     {
       source: "apps/cli/src/cli/maintenance/reset-password-store.mjs",
       entrypoint: "apps/cli/src/reset-password.mjs",
       mode: "maintenance",
-      reason: "Recover an administrator password while the control-api is unavailable.",
+      reason: "Recover an administrator password while the control is unavailable.",
     },
   ],
   columns: [
@@ -75,11 +75,11 @@ export const SettingsEntity: EntityDefinition = {
   ],
 };
 
-/** Shared password-login lockouts coordinated across control-api replicas. */
+/** Shared password-login lockouts coordinated across control replicas. */
 export const AuthLoginAttemptEntity: EntityDefinition = {
   entityName: "AuthLoginAttempt",
   tableName: "auth_login_attempts",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("client_key", "TEXT", { nullable: false, primaryKey: true }),
     column("failure_count", "INTEGER", { nullable: false }),
@@ -92,7 +92,7 @@ export const AuthLoginAttemptEntity: EntityDefinition = {
 export const ConfigAuditLogEntity: EntityDefinition = {
   entityName: "ConfigAuditLog",
   tableName: "config_audit_log",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("timestamp", "TEXT", { nullable: false }),
@@ -112,7 +112,7 @@ export const ConfigAuditLogEntity: EntityDefinition = {
 export const PlaygroundPresetEntity: EntityDefinition = {
   entityName: "PlaygroundPreset",
   tableName: "playground_presets",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("name", "TEXT", { nullable: false }),
@@ -128,7 +128,7 @@ export const PlaygroundPresetEntity: EntityDefinition = {
 export const PluginMetricEntity: EntityDefinition = {
   entityName: "PluginMetric",
   tableName: "plugin_metrics",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("plugin_name", "TEXT", { nullable: false, primaryKey: true }),
     column("event", "TEXT", { nullable: false, primaryKey: true }),
@@ -148,7 +148,7 @@ export const PluginMetricEntity: EntityDefinition = {
 export const PluginAnalyticsEntity: EntityDefinition = {
   entityName: "PluginAnalytics",
   tableName: "plugin_analytics",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
     column("plugin_name", "TEXT", { nullable: false }),
@@ -160,11 +160,11 @@ export const PluginAnalyticsEntity: EntityDefinition = {
   ],
 };
 
-/** Skill definitions are managed by control-api and injected/executed by edge. */
+/** Skill definitions are managed by control and injected/executed by edge. */
 export const SkillEntity: EntityDefinition = {
   entityName: "Skill",
   tableName: "skills",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("api_key_id", "TEXT", { nullable: false }),
@@ -187,7 +187,7 @@ export const SkillEntity: EntityDefinition = {
 export const SkillExecutionEntity: EntityDefinition = {
   entityName: "SkillExecution",
   tableName: "skill_executions",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("skill_id", "TEXT", { nullable: false }),
@@ -205,13 +205,13 @@ export const SkillExecutionEntity: EntityDefinition = {
 export const ProviderConnectionEntity: EntityDefinition = {
   entityName: "ProviderConnection",
   tableName: "provider_connections",
-  owner: "control-api",
+  owner: "control",
   externalWriteAuthorities: [
     {
       source: "apps/cli/src/cli/bootstrap-store.mjs",
       entrypoint: "apps/cli/src/cli/commands/setup.mjs",
       mode: "bootstrap",
-      reason: "Initialize the first provider before the control-api is available.",
+      reason: "Initialize the first provider before the control is available.",
     },
     {
       source: "apps/cli/src/cli/commands/reset-encrypted-columns.mjs",
@@ -252,7 +252,7 @@ export const ProviderConnectionEntity: EntityDefinition = {
 export const ProviderNodeEntity: EntityDefinition = {
   entityName: "ProviderNode",
   tableName: "provider_nodes",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }), column("type", "TEXT", { nullable: false }),
     column("name", "TEXT", { nullable: false }), column("prefix", "TEXT"), column("api_type", "TEXT"),
@@ -265,7 +265,7 @@ export const ProviderNodeEntity: EntityDefinition = {
 export const ApiKeyEntity: EntityDefinition = {
   entityName: "ApiKey",
   tableName: "api_keys",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }), column("name", "TEXT", { nullable: false }),
     column("key", "TEXT", { nullable: false }), column("machine_id", "TEXT"),
@@ -286,7 +286,7 @@ export const ApiKeyEntity: EntityDefinition = {
 export const RegisteredKeyEntity: EntityDefinition = {
   entityName: "RegisteredKey",
   tableName: "registered_keys",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("key", "TEXT", { nullable: false }),
@@ -313,7 +313,7 @@ export const RegisteredKeyEntity: EntityDefinition = {
 export const ProviderKeyLimitEntity: EntityDefinition = {
   entityName: "ProviderKeyLimit",
   tableName: "provider_key_limits",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("provider", "TEXT", { nullable: false, primaryKey: true }),
     column("max_active_keys", "INTEGER"),
@@ -331,7 +331,7 @@ export const ProviderKeyLimitEntity: EntityDefinition = {
 export const AccountKeyLimitEntity: EntityDefinition = {
   entityName: "AccountKeyLimit",
   tableName: "account_key_limits",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("account_id", "TEXT", { nullable: false, primaryKey: true }),
     column("max_active_keys", "INTEGER"),
@@ -348,7 +348,7 @@ export const AccountKeyLimitEntity: EntityDefinition = {
 export const ComboEntity: EntityDefinition = {
   entityName: "Combo",
   tableName: "combos",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }), column("name", "TEXT", { nullable: false }),
     column("data", "TEXT", { nullable: false }), column("created_at", "TEXT", { nullable: false }),
@@ -358,11 +358,11 @@ export const ComboEntity: EntityDefinition = {
   ],
 };
 
-/** Named compression pipelines managed by control-api and consumed by edge runtime. */
+/** Named compression pipelines managed by control and consumed by edge runtime. */
 export const CompressionComboEntity: EntityDefinition = {
   entityName: "CompressionCombo",
   tableName: "compression_combos",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("name", "TEXT", { nullable: false }),
@@ -381,7 +381,7 @@ export const CompressionComboEntity: EntityDefinition = {
 export const CompressionComboAssignmentEntity: EntityDefinition = {
   entityName: "CompressionComboAssignment",
   tableName: "compression_combo_assignments",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("compression_combo_id", "TEXT", { nullable: false }),
@@ -393,7 +393,7 @@ export const CompressionComboAssignmentEntity: EntityDefinition = {
 export const ModelComboMappingEntity: EntityDefinition = {
   entityName: "ModelComboMapping",
   tableName: "model_combo_mappings",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }), column("pattern", "TEXT", { nullable: false }),
     column("combo_id", "TEXT", { nullable: false }), column("priority", "INTEGER", { default: "0" }),
@@ -405,7 +405,7 @@ export const ModelComboMappingEntity: EntityDefinition = {
 export const WebhookEntity: EntityDefinition = {
   entityName: "Webhook",
   tableName: "webhooks",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }), column("url", "TEXT", { nullable: false }),
     column("events", "TEXT", { nullable: false, default: "'[\"*\"]'" }), column("secret", "TEXT"),
@@ -416,11 +416,11 @@ export const WebhookEntity: EntityDefinition = {
   ],
 };
 
-/** Delivery audit rows emitted by the shared webhook dispatcher and exposed by control-api. */
+/** Delivery audit rows emitted by the shared webhook dispatcher and exposed by control. */
 export const WebhookDeliveryEntity: EntityDefinition = {
   entityName: "WebhookDelivery",
   tableName: "webhook_deliveries",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
     column("webhook_id", "TEXT", { nullable: false }),
@@ -437,7 +437,7 @@ export const WebhookDeliveryEntity: EntityDefinition = {
 export const KeyGroupEntity: EntityDefinition = {
   entityName: "KeyGroup",
   tableName: "key_groups",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }), column("name", "TEXT", { nullable: false }),
     column("description", "TEXT", { nullable: false, default: "''" }), column("is_active", "INTEGER", { nullable: false, default: "1" }),
@@ -445,11 +445,11 @@ export const KeyGroupEntity: EntityDefinition = {
   ],
 };
 
-/** Model allow/deny rules managed with API-key groups by control-api. */
+/** Model allow/deny rules managed with API-key groups by control. */
 export const GroupModelPermissionEntity: EntityDefinition = {
   entityName: "GroupModelPermission",
   tableName: "group_model_permissions",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("group_id", "TEXT", { nullable: false }),
@@ -460,11 +460,11 @@ export const GroupModelPermissionEntity: EntityDefinition = {
   ],
 };
 
-/** API-key to group membership edges managed by control-api. */
+/** API-key to group membership edges managed by control. */
 export const KeyGroupMemberEntity: EntityDefinition = {
   entityName: "KeyGroupMember",
   tableName: "key_group_members",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("key_id", "TEXT", { nullable: false, primaryKey: true }),
     column("group_id", "TEXT", { nullable: false, primaryKey: true }),
@@ -476,7 +476,7 @@ export const KeyGroupMemberEntity: EntityDefinition = {
 export const ApiKeyTokenLimitEntity: EntityDefinition = {
   entityName: "ApiKeyTokenLimit",
   tableName: "api_key_token_limits",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("api_key_id", "TEXT", { nullable: false }),
@@ -495,7 +495,7 @@ export const ApiKeyTokenLimitEntity: EntityDefinition = {
 export const ProviderPlanEntity: EntityDefinition = {
   entityName: "ProviderPlan",
   tableName: "provider_plans",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("connection_id", "TEXT", { nullable: false, primaryKey: true }),
     column("provider", "TEXT", { nullable: false }),
@@ -509,7 +509,7 @@ export const ProviderPlanEntity: EntityDefinition = {
 export const ProxyRegistryEntity: EntityDefinition = {
   entityName: "ProxyRegistry",
   tableName: "proxy_registry",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("name", "TEXT", { nullable: false }),
@@ -538,7 +538,7 @@ export const ProxyRegistryEntity: EntityDefinition = {
 export const ProxyAssignmentEntity: EntityDefinition = {
   entityName: "ProxyAssignment",
   tableName: "proxy_assignments",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
     column("proxy_id", "TEXT", { nullable: false }),
@@ -553,7 +553,7 @@ export const ProxyAssignmentEntity: EntityDefinition = {
 export const ProxyScopeRotationEntity: EntityDefinition = {
   entityName: "ProxyScopeRotation",
   tableName: "proxy_scope_rotation",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("scope", "TEXT", { nullable: false, primaryKey: true }),
     column("scope_id", "TEXT", { nullable: false, primaryKey: true }),
@@ -568,7 +568,7 @@ export const ProxyScopeRotationEntity: EntityDefinition = {
 export const ProxySubscriptionEntity: EntityDefinition = {
   entityName: "ProxySubscription",
   tableName: "proxy_subscriptions",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("name", "TEXT", { nullable: false }),
@@ -593,7 +593,7 @@ export const ProxySubscriptionEntity: EntityDefinition = {
 export const PluginEntity: EntityDefinition = {
   entityName: "Plugin",
   tableName: "plugins",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("name", "TEXT", { nullable: false }),
@@ -623,7 +623,7 @@ export const PluginEntity: EntityDefinition = {
 export const ModelContextOverrideEntity: EntityDefinition = {
   entityName: "ModelContextOverride",
   tableName: "model_context_overrides",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("provider", "TEXT", { nullable: false, primaryKey: true }),
     column("model_id", "TEXT", { nullable: false, primaryKey: true }),
@@ -636,7 +636,7 @@ export const ModelContextOverrideEntity: EntityDefinition = {
 export const ModelCapabilityOverrideEntity: EntityDefinition = {
   entityName: "ModelCapabilityOverride",
   tableName: "model_capability_overrides",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("provider", "TEXT", { nullable: false, primaryKey: true }),
     column("model_id", "TEXT", { nullable: false, primaryKey: true }),
@@ -650,7 +650,7 @@ export const ModelCapabilityOverrideEntity: EntityDefinition = {
 export const TierConfigEntity: EntityDefinition = {
   entityName: "TierConfig",
   tableName: "tier_config",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("key", "TEXT", { nullable: false, primaryKey: true }),
     column("value", "TEXT", { nullable: false }),
@@ -662,7 +662,7 @@ export const TierConfigEntity: EntityDefinition = {
 export const TierAssignmentEntity: EntityDefinition = {
   entityName: "TierAssignment",
   tableName: "tier_assignments",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("provider", "TEXT", { nullable: false, primaryKey: true }),
     column("model", "TEXT", { nullable: false, primaryKey: true }),
@@ -680,7 +680,7 @@ export const TierAssignmentEntity: EntityDefinition = {
 export const FreeProxyEntity: EntityDefinition = {
   entityName: "FreeProxy",
   tableName: "free_proxies",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("source", "TEXT", { nullable: false }),
@@ -703,7 +703,7 @@ export const FreeProxyEntity: EntityDefinition = {
 export const FreeProxySyncErrorEntity: EntityDefinition = {
   entityName: "FreeProxySyncError",
   tableName: "free_proxy_sync_errors",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("source", "TEXT", { nullable: false, primaryKey: true }),
     column("errors", "TEXT", { nullable: false }),
@@ -715,7 +715,7 @@ export const FreeProxySyncErrorEntity: EntityDefinition = {
 export const ReasoningRoutingRuleEntity: EntityDefinition = {
   entityName: "ReasoningRoutingRule",
   tableName: "reasoning_routing_rules",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("name", "TEXT", { nullable: false }),
@@ -746,7 +746,7 @@ export const ReasoningRoutingRuleEntity: EntityDefinition = {
 export const QuotaGroupEntity: EntityDefinition = {
   entityName: "QuotaGroup",
   tableName: "quota_groups",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("name", "TEXT", { nullable: false }),
@@ -758,7 +758,7 @@ export const QuotaGroupEntity: EntityDefinition = {
 export const QuotaPoolEntity: EntityDefinition = {
   entityName: "QuotaPool",
   tableName: "quota_pools",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("connection_id", "TEXT", { nullable: false }),
@@ -772,7 +772,7 @@ export const QuotaPoolEntity: EntityDefinition = {
 export const QuotaAllocationEntity: EntityDefinition = {
   entityName: "QuotaAllocation",
   tableName: "quota_allocations",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("pool_id", "TEXT", { nullable: false, primaryKey: true }),
     column("api_key_id", "TEXT", { nullable: false, primaryKey: true }),
@@ -787,7 +787,7 @@ export const QuotaAllocationEntity: EntityDefinition = {
 export const QuotaPoolConnectionEntity: EntityDefinition = {
   entityName: "QuotaPoolConnection",
   tableName: "quota_pool_connections",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("pool_id", "TEXT", { nullable: false, primaryKey: true }),
     column("connection_id", "TEXT", { nullable: false, primaryKey: true }),
@@ -799,7 +799,7 @@ export const QuotaPoolConnectionEntity: EntityDefinition = {
 export const QuotaAllocationModelCapEntity: EntityDefinition = {
   entityName: "QuotaAllocationModelCap",
   tableName: "quota_allocation_model_caps",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("pool_id", "TEXT", { nullable: false, primaryKey: true }),
     column("api_key_id", "TEXT", { nullable: false, primaryKey: true }),
@@ -813,7 +813,7 @@ export const QuotaAllocationModelCapEntity: EntityDefinition = {
 export const GamificationLeaderboardEntity: EntityDefinition = {
   entityName: "GamificationLeaderboard",
   tableName: "leaderboard",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("api_key_id", "TEXT", { nullable: false, primaryKey: true }),
     column("scope", "TEXT", { nullable: false, primaryKey: true, default: "'global'" }),
@@ -825,7 +825,7 @@ export const GamificationLeaderboardEntity: EntityDefinition = {
 export const GamificationUserLevelEntity: EntityDefinition = {
   entityName: "GamificationUserLevel",
   tableName: "user_levels",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("api_key_id", "TEXT", { nullable: false, primaryKey: true }),
     column("total_xp", "INTEGER", { nullable: false, default: "0" }),
@@ -837,7 +837,7 @@ export const GamificationUserLevelEntity: EntityDefinition = {
 export const GamificationBadgeDefinitionEntity: EntityDefinition = {
   entityName: "GamificationBadgeDefinition",
   tableName: "badge_definitions",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("name", "TEXT", { nullable: false }),
@@ -854,7 +854,7 @@ export const GamificationBadgeDefinitionEntity: EntityDefinition = {
 export const GamificationUserBadgeEntity: EntityDefinition = {
   entityName: "GamificationUserBadge",
   tableName: "user_badges",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("api_key_id", "TEXT", { nullable: false, primaryKey: true }),
     column("badge_id", "TEXT", { nullable: false, primaryKey: true }),
@@ -865,7 +865,7 @@ export const GamificationUserBadgeEntity: EntityDefinition = {
 export const GamificationXpAuditLogEntity: EntityDefinition = {
   entityName: "GamificationXpAuditLog",
   tableName: "xp_audit_log",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
     column("api_key_id", "TEXT", { nullable: false }),
@@ -879,7 +879,7 @@ export const GamificationXpAuditLogEntity: EntityDefinition = {
 export const GamificationTokenLedgerEntity: EntityDefinition = {
   entityName: "GamificationTokenLedger",
   tableName: "token_ledger",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
     column("from_api_key_id", "TEXT", { nullable: false }),
@@ -894,7 +894,7 @@ export const GamificationTokenLedgerEntity: EntityDefinition = {
 export const GamificationInviteTokenEntity: EntityDefinition = {
   entityName: "GamificationInviteToken",
   tableName: "invite_tokens",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("code", "TEXT", { nullable: false }),
@@ -913,7 +913,7 @@ export const GamificationInviteTokenEntity: EntityDefinition = {
 export const GamificationCommunityServerEntity: EntityDefinition = {
   entityName: "GamificationCommunityServer",
   tableName: "community_servers",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("name", "TEXT", { nullable: false }),
@@ -930,7 +930,7 @@ export const GamificationCommunityServerEntity: EntityDefinition = {
 export const EvalSuiteEntity: EntityDefinition = {
   entityName: "EvalSuite",
   tableName: "eval_suites",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("name", "TEXT", { nullable: false }),
@@ -943,7 +943,7 @@ export const EvalSuiteEntity: EntityDefinition = {
 export const EvalCaseEntity: EntityDefinition = {
   entityName: "EvalCase",
   tableName: "eval_cases",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("suite_id", "TEXT", { nullable: false }),
@@ -959,11 +959,11 @@ export const EvalCaseEntity: EntityDefinition = {
   ],
 };
 
-/** Evaluation run history is written by control-api and read by routing. */
+/** Evaluation run history is written by control and read by routing. */
 export const EvalRunEntity: EntityDefinition = {
   entityName: "EvalRun",
   tableName: "eval_runs",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("run_group_id", "TEXT"),
@@ -989,7 +989,7 @@ export const EvalRunEntity: EntityDefinition = {
 export const ModelAssessmentEntity: EntityDefinition = {
   entityName: "ModelAssessment",
   tableName: "model_assessments",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("model_id", "TEXT", { nullable: false }),
@@ -1016,11 +1016,11 @@ export const ModelAssessmentEntity: EntityDefinition = {
   ],
 };
 
-/** Historical assessment executions written by control-api. */
+/** Historical assessment executions written by control. */
 export const AssessmentRunEntity: EntityDefinition = {
   entityName: "AssessmentRun",
   tableName: "assessment_runs",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("started_at", "TEXT", { nullable: false }),
@@ -1039,7 +1039,7 @@ export const AssessmentRunEntity: EntityDefinition = {
 export const ComboHealthEntity: EntityDefinition = {
   entityName: "ComboHealth",
   tableName: "combo_health",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("combo_id", "TEXT", { nullable: false, primaryKey: true }),
     column("healthy_model_count", "INTEGER", { default: "0" }),
@@ -1052,11 +1052,11 @@ export const ComboHealthEntity: EntityDefinition = {
   ],
 };
 
-/** Self-healing actions applied to routing combos by control-api. */
+/** Self-healing actions applied to routing combos by control. */
 export const HealActionEntity: EntityDefinition = {
   entityName: "HealAction",
   tableName: "heal_actions",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("combo_id", "TEXT", { nullable: false }),
@@ -1071,11 +1071,11 @@ export const HealActionEntity: EntityDefinition = {
   ],
 };
 
-/** Traffic Inspector recording sessions are managed by control-api. */
+/** Traffic Inspector recording sessions are managed by control. */
 export const InspectorSessionEntity: EntityDefinition = {
   entityName: "InspectorSession",
   tableName: "inspector_sessions",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("name", "TEXT"),
@@ -1086,11 +1086,11 @@ export const InspectorSessionEntity: EntityDefinition = {
   ],
 };
 
-/** Requests persisted as part of a control-api Traffic Inspector session. */
+/** Requests persisted as part of a control Traffic Inspector session. */
 export const InspectorSessionRequestEntity: EntityDefinition = {
   entityName: "InspectorSessionRequest",
   tableName: "inspector_session_requests",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("session_id", "TEXT", { nullable: false, primaryKey: true }),
     column("seq", "INTEGER", { nullable: false, primaryKey: true }),
@@ -1098,11 +1098,11 @@ export const InspectorSessionRequestEntity: EntityDefinition = {
   ],
 };
 
-/** Custom host allowlist managed by control-api and consumed by edge MITM. */
+/** Custom host allowlist managed by control and consumed by edge MITM. */
 export const InspectorCustomHostEntity: EntityDefinition = {
   entityName: "InspectorCustomHost",
   tableName: "inspector_custom_hosts",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("host", "TEXT", { nullable: false, primaryKey: true }),
     column("enabled", "INTEGER", { nullable: false, default: "1" }),
@@ -1113,11 +1113,11 @@ export const InspectorCustomHostEntity: EntityDefinition = {
   ],
 };
 
-/** Scoped configuration-sync credentials issued by control-api. */
+/** Scoped configuration-sync credentials issued by control. */
 export const SyncTokenEntity: EntityDefinition = {
   entityName: "SyncToken",
   tableName: "sync_tokens",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("name", "TEXT", { nullable: false }),
@@ -1131,14 +1131,14 @@ export const SyncTokenEntity: EntityDefinition = {
 };
 
 /**
- * Per-provider upstream proxy policy managed by control-api and read by the
+ * Per-provider upstream proxy policy managed by control and read by the
  * edge streaming executors.  The `family` and `fallback_backend` columns are
  * included because later migrations extend the original table shape.
  */
 export const UpstreamProxyConfigEntity: EntityDefinition = {
   entityName: "UpstreamProxyConfig",
   tableName: "upstream_proxy_config",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
     column("provider_id", "TEXT", { nullable: false }),

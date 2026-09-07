@@ -26,7 +26,7 @@ const controlPort = Number(process.env.SHIGUANG_GATEWAY_CONTROL_PORT ?? 8788);
 const realtimePort = Number(process.env.SHIGUANG_GATEWAY_REALTIME_PORT ?? 8790);
 const liveWsPort = Number(process.env.SHIGUANG_GATEWAY_LIVE_WS_PORT ?? 20132);
 const containers = {
-  edge: process.env.SHIGUANG_GATEWAY_EDGE_CONTAINER ?? "shiguang-gateway-edge",
+  edge: process.env.SHIGUANG_GATEWAY_EDGE_CONTAINER ?? "shiguang-gateway-gateway",
   control: process.env.SHIGUANG_GATEWAY_CONTROL_CONTAINER ?? "shiguang-gateway-control",
   realtime: process.env.SHIGUANG_GATEWAY_REALTIME_CONTAINER ?? "shiguang-gateway-realtime",
   worker: process.env.SHIGUANG_GATEWAY_WORKER_CONTAINER ?? "shiguang-gateway-worker",
@@ -126,7 +126,7 @@ try {
   }
 
   // Surface isolation: client protocol paths stay on edge, management paths
-  // stay on control, and unknown protocol paths never become the admin SPA.
+  // stay on control, and unknown protocol paths never become the console SPA.
   await waitHttp(edgePort, "/api/providers", 404, auth);
   await waitHttp(controlPort, "/api/v1/models", 404, auth);
   await waitHttp(controlPort, "/v1/models", 404, auth);
@@ -200,8 +200,8 @@ try {
 
   const logs = Object.values(containers).map(dockerLogs).join("\n");
   for (const [surface, marker] of [
-    ["edge-gateway", "[edge-gateway] request services initialized"],
-    ["control-api", "[control-api] control runtime initialized"],
+    ["gateway", "[gateway] request services initialized"],
+    ["control", "[control] control runtime initialized"],
   ]) {
     if (!logs.includes(marker)) {
       throw new Error(`runtime initialization missing for ${surface}`);

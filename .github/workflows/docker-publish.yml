@@ -56,16 +56,16 @@ jobs:
           pnpm audit:gateway-independence
           pnpm audit:route-contracts
           pnpm audit:brand
-          pnpm --filter @orbit/admin test
+          pnpm --filter @orbit/console test
           pnpm --filter @orbit/auth test
           pnpm --filter @orbit/realtime test
           pnpm --filter @orbit/utils test
           pnpm --filter @orbit/importer test
           pnpm --filter @orbit/http test
-          pnpm --filter @orbit/control-api exec node --import tsx --test ../../packages/http/test/web-request.test.ts
-          pnpm --filter @orbit/control-api exec node --import tsx --test test/settings-import-request.test.ts
-          pnpm --filter @orbit/control-api exec node --import tsx --test test/auth-session.test.ts test/combo-runtime-registration.test.ts
-          pnpm --filter @orbit/edge-gateway exec tsx --test test/dispatcher-module-injection.test.ts
+          pnpm --filter @orbit/control exec node --import tsx --test ../../packages/http/test/web-request.test.ts
+          pnpm --filter @orbit/control exec node --import tsx --test test/settings-import-request.test.ts
+          pnpm --filter @orbit/control exec node --import tsx --test test/auth-session.test.ts test/combo-runtime-registration.test.ts
+          pnpm --filter @orbit/gateway exec tsx --test test/dispatcher-module-injection.test.ts
           pnpm smoke:route-imports
           pnpm smoke:split-deployment
           node --test scripts/smoke-worker-start.test.mjs
@@ -80,11 +80,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - target: admin
-            image: admin
-          - target: edge-gateway
-            image: edge
-          - target: control-api
+          - target: console
+            image: console
+          - target: gateway
+            image: gateway
+          - target: control
             image: control
           - target: realtime
             image: realtime
@@ -149,8 +149,8 @@ jobs:
           # NAS deployment target is x86_64; keeping one platform avoids
           # exhausting GitHub-hosted runner disk while building six services.
           platforms: linux/amd64
-          push: ${{ !contains(fromJSON('["edge-gateway", "control-api", "realtime", "worker"]'), matrix.target) }}
-          load: ${{ contains(fromJSON('["edge-gateway", "control-api", "realtime", "worker"]'), matrix.target) }}
+          push: ${{ !contains(fromJSON('["gateway", "control", "realtime", "worker"]'), matrix.target) }}
+          load: ${{ contains(fromJSON('["gateway", "control", "realtime", "worker"]'), matrix.target) }}
           provenance: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: |
@@ -163,7 +163,7 @@ jobs:
           cache-to: type=gha,scope=shiguang-gateway-${{ matrix.target }},mode=min
 
       - name: Start built runtime image before publishing
-        if: contains(fromJSON('["edge-gateway", "control-api", "realtime", "worker"]'), matrix.target)
+        if: contains(fromJSON('["gateway", "control", "realtime", "worker"]'), matrix.target)
         env:
           TARGET: ${{ matrix.target }}
           IMAGE_TAGS: ${{ steps.meta.outputs.tags }}
@@ -172,7 +172,7 @@ jobs:
           node scripts/smoke-built-image.mjs "$TARGET" "$first_tag"
 
       - name: Push verified local image tags
-        if: contains(fromJSON('["edge-gateway", "control-api", "realtime", "worker"]'), matrix.target)
+        if: contains(fromJSON('["gateway", "control", "realtime", "worker"]'), matrix.target)
         env:
           IMAGE_TAGS: ${{ steps.meta.outputs.tags }}
         run: |
@@ -222,8 +222,8 @@ jobs:
 
             Container images (one per deployable service):
 
-            `ghcr.io/shiguang-lab/shiguang-gateway-admin:${{ github.ref_name }}`
-            `ghcr.io/shiguang-lab/shiguang-gateway-edge:${{ github.ref_name }}`
+            `ghcr.io/shiguang-lab/shiguang-gateway-console:${{ github.ref_name }}`
+            `ghcr.io/shiguang-lab/shiguang-gateway-gateway:${{ github.ref_name }}`
             `ghcr.io/shiguang-lab/shiguang-gateway-control:${{ github.ref_name }}`
             `ghcr.io/shiguang-lab/shiguang-gateway-realtime:${{ github.ref_name }}`
             `ghcr.io/shiguang-lab/shiguang-gateway-worker:${{ github.ref_name }}`

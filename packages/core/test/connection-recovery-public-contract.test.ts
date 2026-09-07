@@ -73,10 +73,10 @@ test("scenario-specific connection recovery aliases stay retired", () => {
 test("retired connection recovery lifecycle is absent from app consumers", () => {
   const lifecycleImport = /core\/worker\/connection-recovery-lifecycle/;
   for (const root of [
-    "apps/admin",
+    "apps/console",
     "apps/cli",
-    "apps/control-api",
-    "apps/edge-gateway",
+    "apps/control",
+    "apps/gateway",
     "apps/importer",
     "apps/realtime",
     "packages/inference",

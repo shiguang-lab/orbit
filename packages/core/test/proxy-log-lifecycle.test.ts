@@ -46,31 +46,31 @@ test("importing the proxy logger does not open its database", () => {
 
 test("edge exclusively owns proxy-log startup and shutdown ordering", () => {
   const edgeBootstrap = fs.readFileSync(
-    path.join(repoRoot, "apps/edge-gateway/src/bootstrap.ts"),
+    path.join(repoRoot, "apps/gateway/src/bootstrap.ts"),
     "utf8",
   );
   assert.ok(
     edgeBootstrap.indexOf("services/dbRuntimeHooks") <
       edgeBootstrap.indexOf("initializeProxyLogStorage()"),
-    "edge-gateway must register runtime ports before hydrating proxy logs",
+    "gateway must register runtime ports before hydrating proxy logs",
   );
   assert.ok(
     edgeBootstrap.indexOf("initializeProxyLogStorage()") <
       edgeBootstrap.indexOf('await import("./app.module.js")'),
-    "edge-gateway must hydrate proxy logs before loading handlers",
+    "gateway must hydrate proxy logs before loading handlers",
   );
 
   const edgeShutdown = fs.readFileSync(
-    path.join(repoRoot, "apps/edge-gateway/src/database-runtime-lifecycle.service.ts"),
+    path.join(repoRoot, "apps/gateway/src/database-runtime-lifecycle.service.ts"),
     "utf8",
   );
   assert.ok(
     edgeShutdown.indexOf("closeProxyLogStorage()") < edgeShutdown.indexOf("closeDbInstance()"),
-    "edge-gateway must flush proxy logs before closing SQLite",
+    "gateway must flush proxy logs before closing SQLite",
   );
 
   for (const file of ["bootstrap.ts", "database-runtime-lifecycle.service.ts"]) {
-    const controlSource = fs.readFileSync(path.join(repoRoot, "apps/control-api/src", file), "utf8");
+    const controlSource = fs.readFileSync(path.join(repoRoot, "apps/control/src", file), "utf8");
     assert.doesNotMatch(controlSource, /(?:initialize|close)ProxyLogStorage/);
   }
 });

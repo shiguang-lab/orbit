@@ -1,5 +1,5 @@
 /**
- * Provider-model persistence contract used by control-api.
+ * Provider-model persistence contract used by control.
  *
  * The HTTP handlers live in the control app. This module intentionally exposes
  * only the storage operations that cross the app/package boundary; route

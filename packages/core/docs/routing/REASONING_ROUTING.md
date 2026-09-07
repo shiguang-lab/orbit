@@ -20,7 +20,7 @@ The management API is exposed by these routes:
 - `POST` at `/api/settings/reasoning-routing-rules/simulate`
 
 The HTTP surface is implemented by the standard Nest feature under
-`apps/control-api/src/settings/reasoning-routing`. All routes use
+`apps/control/src/settings/reasoning-routing`. All routes use
 `requireManagementAuth`. Shared persistence and request-path policy evaluation are
 published through the explicit `@orbit/core/control/reasoning-routing`
 contract. Inputs are validated with the schemas in

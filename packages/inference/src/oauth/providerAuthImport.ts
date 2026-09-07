@@ -2,7 +2,7 @@
  * Provider credential import primitives used by the control-plane HTTP app.
  *
  * The transport (Nest controllers, authentication and response shaping) lives
- * in apps/control-api.  This narrow contract keeps the provider-specific file
+ * in apps/control.  This narrow contract keeps the provider-specific file
  * formats and persistence use-cases behind a package export while the legacy
  * local-login routes are migrated separately.
  */

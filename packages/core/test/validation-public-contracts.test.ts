@@ -212,7 +212,7 @@ test("the shared validation schema catch-all stays retired", () => {
   assert.equal(fs.existsSync(path.join(packageRoot, "src/public/keyValidationSchemas.d.ts")), false);
 
   const forbidden = /@orbit\/core\/shared\/validation\/schemas(?=["'])/;
-  for (const root of ["apps/control-api", "apps/edge-gateway", "packages/inference"]) {
+  for (const root of ["apps/control", "apps/gateway", "packages/inference"]) {
     for (const file of sourceFiles(path.join(repoRoot, root))) {
       assert.doesNotMatch(fs.readFileSync(file, "utf8"), forbidden, file);
     }

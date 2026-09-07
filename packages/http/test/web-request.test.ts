@@ -71,7 +71,7 @@ test("multipart buffers retain the boundary and file contents", async () => {
 });
 
 test("HTTP apps never cast a Node request into a Web Request", () => {
-  for (const app of ["control-api", "edge-gateway"]) {
+  for (const app of ["control", "gateway"]) {
     const directory = fileURLToPath(new URL(`../../../apps/${app}/src/`, import.meta.url));
     for (const file of readdirSync(directory, { recursive: true }).map(String).filter(file => file.endsWith(".ts"))) {
       assert.doesNotMatch(readFileSync(`${directory}${file}`, "utf8"), /\.raw\s+as\s+(?:unknown\s+as\s+)?Request\b/, file);

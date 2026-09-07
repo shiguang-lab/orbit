@@ -14,7 +14,7 @@ const DEFAULT_HOST = "127.0.0.1";
 
 /**
  * Default origins allowed to open a WebSocket against the local dashboard.
- * These match the independent edge-gateway HTTP listener at port 8787.
+ * These match the independent gateway HTTP listener at port 8787.
  */
 export const DEFAULT_ALLOWED_ORIGINS: readonly string[] = Object.freeze([
   "http://127.0.0.1:8787",

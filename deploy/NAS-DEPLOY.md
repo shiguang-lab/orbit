@@ -6,8 +6,8 @@ Orbit 不在运行时依赖链中。应用当前仍以导入的 SQLite 快照作
 
 ```text
 浏览器 → Access Gateway/反向代理 → NAS:8787 → 独立 Admin nginx:8080
-                                             ├→ control-api:8788 (管理 API)
-                                             ├→ edge-gateway:8787 (模型 API)
+                                             ├→ control:8788 (管理 API)
+                                             ├→ gateway:8787 (模型 API)
                                              └→ realtime:20132 (WS/SSE)
                                       ├→ /app/data/storage.sqlite (当前快照权威库)
                                       ├→ PostgreSQL（独立持久化服务）
@@ -25,15 +25,15 @@ cd /volume1/docker/shiguang-gateway
 # 将本仓库的 docker-compose.yml、.env.example 与 deploy/ 目录复制到此目录
 cp .env.example .env
 vi .env   # 设置六个 SHIGUANG_GATEWAY_*_IMAGE 及 JWT/API key/加密密钥
-docker build --target admin -t shiguang-gateway-admin:local .
-docker build --target edge-gateway -t shiguang-gateway-edge:local .
-docker build --target control-api -t shiguang-gateway-control:local .
+docker build --target console -t shiguang-gateway-console:local .
+docker build --target gateway -t shiguang-gateway-gateway:local .
+docker build --target control -t shiguang-gateway-control:local .
 docker build --target realtime -t shiguang-gateway-realtime:local .
 docker build --target worker -t shiguang-gateway-worker:local .
 docker build --target importer -t shiguang-gateway-importer:local .
 docker compose up -d
 docker compose ps
-docker compose logs -f shiguang-gateway-edge
+docker compose logs -f shiguang-gateway-gateway
 ```
 
 健康检查：`/livez`、`/healthz` 和 `/api/health`。
@@ -153,7 +153,7 @@ docker compose up -d --remove-orphans
 scripts/ops/rollback.sh <previous-release-tag>
 ```
 
-该脚本会设置六个 compose image 变量、拉取完整镜像族，并只重建常驻的 admin、edge、control、
+该脚本会设置六个 compose image 变量、拉取完整镜像族，并只重建常驻的 console、edge、control、
 realtime 与 worker；migration profile 下的 importer 只拉取、不启动。变量只作用于本次脚本调用，
 后续手工执行 `docker compose up` 前还应把同一 tag 的六个地址持久化到 `.env`。若按 digest 固定镜像，六个
 repository 的 digest 各不相同，应直接分别更新 `.env` 中六个 `SHIGUANG_GATEWAY_*_IMAGE`，不能向
@@ -164,7 +164,7 @@ volume 覆盖现有数据。
 
 生产域名为 `llm-gateway.shiguanglab.com`，Caddy 只连接 NAS 主机的统一入口
 `100.87.115.78:8787`：Web、`/api/*`、`/v1` 与 `/v1/*` 均由该入口转发到独立 Admin nginx
-（其内部再连接 control-api/edge/realtime）。`8788`、`20132` 仅 Docker 内网可达，不能写入
+（其内部再连接 control/edge/realtime）。`8788`、`20132` 仅 Docker 内网可达，不能写入
 生产 Caddy upstream。健康检查和切换前端到后端的逐端口验收见
 [`gateway-caddyfile.md`](./gateway-caddyfile.md)。
 

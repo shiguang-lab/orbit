@@ -2,7 +2,7 @@
  * Control-plane contract for reasoning-routing rule administration.
  *
  * Persistence and policy evaluation are shared with the edge request path,
- * while HTTP transport and authentication belong to apps/control-api.
+ * while HTTP transport and authentication belong to apps/control.
  */
 export {
   createReasoningRoutingRule,

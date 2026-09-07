@@ -13,7 +13,7 @@ import { column, type EntityDefinition } from "./definition.js";
 export const GatewayMigrationsEntity: EntityDefinition = {
   entityName: "GatewayMigrations",
   tableName: "_shiguanggateway_migrations",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("version", "TEXT", { nullable: false, primaryKey: true }),
     column("name", "TEXT", { nullable: false }),
@@ -21,11 +21,11 @@ export const GatewayMigrationsEntity: EntityDefinition = {
   ],
 };
 
-/** Agent Bridge control-plane state; DDL/CRUD remains in control-api. */
+/** Agent Bridge control-plane state; DDL/CRUD remains in control. */
 export const AgentBridgeStateEntity: EntityDefinition = {
   entityName: "AgentBridgeState",
   tableName: "agent_bridge_state",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("agent_id", "TEXT", { nullable: false, primaryKey: true }),
     column("dns_enabled", "INTEGER", { nullable: false, default: "0" }),
@@ -39,7 +39,7 @@ export const AgentBridgeStateEntity: EntityDefinition = {
 export const AgentBridgeMappingEntity: EntityDefinition = {
   entityName: "AgentBridgeMapping",
   tableName: "agent_bridge_mappings",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("agent_id", "TEXT", { nullable: false, primaryKey: true }),
     column("source_model", "TEXT", { nullable: false, primaryKey: true }),
@@ -51,7 +51,7 @@ export const AgentBridgeMappingEntity: EntityDefinition = {
 export const AgentBridgeBypassEntity: EntityDefinition = {
   entityName: "AgentBridgeBypass",
   tableName: "agent_bridge_bypass",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("pattern", "TEXT", { nullable: false, primaryKey: true }),
     column("source", "TEXT", { nullable: false }),
@@ -63,7 +63,7 @@ export const AgentBridgeBypassEntity: EntityDefinition = {
 export const CloudAgentCredentialsEntity: EntityDefinition = {
   entityName: "CloudAgentCredentials",
   tableName: "cloud_agent_credentials",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("provider_id", "TEXT", { nullable: false, primaryKey: true }),
     column("api_key_encrypted", "TEXT", { nullable: false }),
@@ -75,7 +75,7 @@ export const CloudAgentCredentialsEntity: EntityDefinition = {
 export const CloudAgentTaskEntity: EntityDefinition = {
   entityName: "CloudAgentTask",
   tableName: "cloud_agent_tasks",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("provider_id", "TEXT", { nullable: false }),
@@ -96,7 +96,7 @@ export const CloudAgentTaskEntity: EntityDefinition = {
 export const ApiKeyContextSourceEntity: EntityDefinition = {
   entityName: "ApiKeyContextSource",
   tableName: "api_key_context_sources",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("api_key_id", "TEXT", { nullable: false, primaryKey: true }),
     column("source_type", "TEXT", { nullable: false, primaryKey: true }),
@@ -112,7 +112,7 @@ export const ApiKeyContextSourceEntity: EntityDefinition = {
 export const AutoCandidateOverrideEntity: EntityDefinition = {
   entityName: "AutoCandidateOverride",
   tableName: "auto_candidate_overrides",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("api_key_id", "TEXT", { nullable: false }),
@@ -126,7 +126,7 @@ export const AutoCandidateOverrideEntity: EntityDefinition = {
 export const CliAccessTokenEntity: EntityDefinition = {
   entityName: "CliAccessToken",
   tableName: "cli_access_tokens",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("token_hash", "TEXT", { nullable: false }),
@@ -143,7 +143,7 @@ export const CliAccessTokenEntity: EntityDefinition = {
 export const ComboAdaptationStateEntity: EntityDefinition = {
   entityName: "ComboAdaptationState",
   tableName: "combo_adaptation_state",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
     column("combo_id", "TEXT", { nullable: false }),
@@ -161,7 +161,7 @@ export const ComboAdaptationStateEntity: EntityDefinition = {
 export const CommandCodeAuthSessionEntity: EntityDefinition = {
   entityName: "CommandCodeAuthSession",
   tableName: "command_code_auth_sessions",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("state_hash", "TEXT", { nullable: false }),
@@ -179,7 +179,7 @@ export const CommandCodeAuthSessionEntity: EntityDefinition = {
 export const CompressionRunTelemetryEntity: EntityDefinition = {
   entityName: "CompressionRunTelemetry",
   tableName: "compression_run_telemetry",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
     column("timestamp", "INTEGER", { nullable: false }),
@@ -200,7 +200,7 @@ export const CompressionRunTelemetryEntity: EntityDefinition = {
 export const ConnectionRuntimeStateEntity: EntityDefinition = {
   entityName: "ConnectionRuntimeState",
   tableName: "connection_runtime_state",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("connection_id", "TEXT", { nullable: false, primaryKey: true }),
     column("refresh_circuit_streak", "INTEGER", { default: "0" }),
@@ -220,14 +220,14 @@ export const ConnectionRuntimeStateEntity: EntityDefinition = {
 export const DbMetaEntity: EntityDefinition = {
   entityName: "DbMeta",
   tableName: "db_meta",
-  owner: "control-api",
+  owner: "control",
   columns: [column("key", "TEXT", { nullable: false, primaryKey: true }), column("value", "TEXT")],
 };
 
 export const DomainBudgetEntity: EntityDefinition = {
   entityName: "DomainBudget",
   tableName: "domain_budgets",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("api_key_id", "TEXT", { nullable: false, primaryKey: true }),
     column("daily_limit_usd", "REAL", { nullable: false }),
@@ -246,7 +246,7 @@ export const DomainBudgetEntity: EntityDefinition = {
 export const DomainBudgetResetLogEntity: EntityDefinition = {
   entityName: "DomainBudgetResetLog",
   tableName: "domain_budget_reset_logs",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
     column("api_key_id", "TEXT", { nullable: false }),
@@ -262,7 +262,7 @@ export const DomainBudgetResetLogEntity: EntityDefinition = {
 export const DomainCostHistoryEntity: EntityDefinition = {
   entityName: "DomainCostHistory",
   tableName: "domain_cost_history",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
     column("api_key_id", "TEXT", { nullable: false }),
@@ -274,14 +274,14 @@ export const DomainCostHistoryEntity: EntityDefinition = {
 export const DomainFallbackChainEntity: EntityDefinition = {
   entityName: "DomainFallbackChain",
   tableName: "domain_fallback_chains",
-  owner: "control-api",
+  owner: "control",
   columns: [column("model", "TEXT", { nullable: false, primaryKey: true }), column("chain", "TEXT", { nullable: false })],
 };
 
 export const DomainLockoutStateEntity: EntityDefinition = {
   entityName: "DomainLockoutState",
   tableName: "domain_lockout_state",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("identifier", "TEXT", { nullable: false, primaryKey: true }),
     column("attempts", "TEXT", { nullable: false }),
@@ -292,7 +292,7 @@ export const DomainLockoutStateEntity: EntityDefinition = {
 export const DomainCircuitBreakerEntity: EntityDefinition = {
   entityName: "DomainCircuitBreaker",
   tableName: "domain_circuit_breakers",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("name", "TEXT", { nullable: false, primaryKey: true }),
     column("state", "TEXT", { nullable: false, default: "'CLOSED'" }),
@@ -305,7 +305,7 @@ export const DomainCircuitBreakerEntity: EntityDefinition = {
 export const ExclusiveConnectionLeaseEntity: EntityDefinition = {
   entityName: "ExclusiveConnectionLease",
   tableName: "exclusive_connection_leases",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
     column("lease_owner_hash", "TEXT", { nullable: false }),
@@ -325,7 +325,7 @@ export const ExclusiveConnectionLeaseEntity: EntityDefinition = {
 export const PromptTemplateEntity: EntityDefinition = {
   entityName: "PromptTemplate",
   tableName: "prompt_templates",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
     column("slug", "TEXT", { nullable: false }),
@@ -342,7 +342,7 @@ export const PromptTemplateEntity: EntityDefinition = {
 export const RequestDetailLogEntity: EntityDefinition = {
   entityName: "RequestDetailLog",
   tableName: "request_detail_logs",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("call_log_id", "TEXT"),
@@ -362,7 +362,7 @@ export const RequestDetailLogEntity: EntityDefinition = {
 export const SessionAccountAffinityEntity: EntityDefinition = {
   entityName: "SessionAccountAffinity",
   tableName: "session_account_affinity",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("session_key", "TEXT", { nullable: false, primaryKey: true }),
     column("provider", "TEXT", { nullable: false, primaryKey: true }),
@@ -376,7 +376,7 @@ export const SessionAccountAffinityEntity: EntityDefinition = {
 export const VersionManagerEntity: EntityDefinition = {
   entityName: "VersionManager",
   tableName: "version_manager",
-  owner: "control-api",
+  owner: "control",
   columns: [
     column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
     column("tool", "TEXT", { nullable: false }),

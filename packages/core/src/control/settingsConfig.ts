@@ -1,7 +1,7 @@
 /**
  * Shared data operations used by the control-plane settings configuration
  * endpoints.  This module intentionally contains no HTTP/Nest concerns;
- * transport and authorization stay in apps/control-api.
+ * transport and authorization stay in apps/control.
  */
 export { getSettings, updateSettings } from "../lib/db/settings.ts";
 export { getProviderConnections } from "../lib/db/providers.ts";

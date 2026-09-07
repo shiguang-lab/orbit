@@ -8,12 +8,12 @@ The ACP surface is a control-plane inventory for locally installed coding CLIs. 
 
 ## Ownership
 
-- HTTP endpoint: `apps/control-api/src/acp/`
-- Detection runtime: `apps/control-api/src/acp/runtime/agent-registry.ts`
+- HTTP endpoint: `apps/control/src/acp/`
+- Detection runtime: `apps/control/src/acp/runtime/agent-registry.ts`
 - Persistent custom definitions: control settings
 - Dashboard: `/dashboard/acp-agents`
 
-The runtime belongs to `control-api` because no other deployable application consumes it. Shared packages do not expose an ACP process manager or agent registry.
+The runtime belongs to `control` because no other deployable application consumes it. Shared packages do not expose an ACP process manager or agent registry.
 
 ## Supported operations
 

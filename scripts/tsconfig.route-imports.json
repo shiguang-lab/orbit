@@ -4,5 +4,5 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "include": ["../apps/control-api/src", "../apps/edge-gateway/src", "../packages"]
+  "include": ["../apps/control/src", "../apps/gateway/src", "../packages"]
 }

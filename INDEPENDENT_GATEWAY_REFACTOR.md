@@ -26,13 +26,13 @@ SQLite 快照、白名单外部状态和每个启用 Provider 的真实上游 sm
 1. 先把官方 Orbit 作为只读上游快照，导入本项目自己的数据库和密钥体系。
 2. 路由、进程生命周期和运行时状态归入对应 `apps/*`；仅把跨应用复用的协议、目录、
    纯领域能力和基础设施契约保留在 `packages/*`，删除 `../Orbit` path 与 NAS proxy。
-3. `edge-gateway`、`control-api`、`realtime` 和 worker 通过窄化、版本化的 package 契约协作，
+3. `gateway`、`control`、`realtime` 和 worker 通过窄化、版本化的 package 契约协作，
    各自拥有独立 bootstrap、监听端口、后台资源和关闭链路。
 4. 切换期间进行官方 Orbit 与独立实例的只读/影子对比；切换后在网络层阻断官方地址，
    CI 继续用自动审查脚本防止依赖回流。
 
 当前实现已将 HTTP transport 物理归入 deployable apps：`packages/*` 中不存在 `route.ts`，
-`control-api` 由 142 个 controller、`edge-gateway` 由 72 个 controller 组合各自路由。
+`control` 由 142 个 controller、`gateway` 由 72 个 controller 组合各自路由。
 共享包不再保存 app route catalog、进程启动器或兼容 dispatcher；跨进程状态通过认证的内部
 command 契约访问。`pnpm audit:gateway-independence`、`pnpm audit:brand`、数据校验和部署 smoke
 负责阻止路由或运行时所有权回流；Provider 真实上游可用性仍取决于部署环境提供的凭据和网络。
@@ -48,10 +48,10 @@ OpenAI 兼容入口，负责 Provider 翻译、流式输出、fallback、token �
 
 | 能力域 | 协议/入口 | 目标实现包 |
 |---|---|---|
-| 聊天与代码代理 | `/v1/chat/completions`、`/v1/messages`、`/v1/responses`、流式 SSE | `apps/edge-gateway` + `packages/core` |
+| 聊天与代码代理 | `/v1/chat/completions`、`/v1/messages`、`/v1/responses`、流式 SSE | `apps/gateway` + `packages/core` |
 | 实时协议 | `/v1/ws`、Responses WebSocket、live dashboard WS（默认 20132） | `apps/realtime` |
-| 模型与多模态 | `/v1/models`、`/v1/embeddings`、`/v1/images/generations`、`/v1/audio/transcriptions`、`/v1/audio/speech`、`/v1/videos/generations`、`/v1/music/generations`、OCR | `apps/edge-gateway` + `packages/providers` + `packages/inference` |
-| 工具型 API | `/v1/search`、web fetch、rerank、moderations、文件/批处理 | `apps/edge-gateway` + `packages/core` |
+| 模型与多模态 | `/v1/models`、`/v1/embeddings`、`/v1/images/generations`、`/v1/audio/transcriptions`、`/v1/audio/speech`、`/v1/videos/generations`、`/v1/music/generations`、OCR | `apps/gateway` + `packages/providers` + `packages/inference` |
+| 工具型 API | `/v1/search`、web fetch、rerank、moderations、文件/批处理 | `apps/gateway` + `packages/core` |
 | 兼容协议 | `/v1beta` Gemini、Ollama aliases、provider 专用路由、CLI/VS Code aliases | `packages/core` |
 | 路由决策 | 19 种策略、Auto Combo、模型/Provider/账号 fallback、配额预检、工作流阶段路由 | `packages/core` |
 | 请求处理 | role normalization、structured output 转换、think tag、token 计数、响应清洗、系统 prompt、请求去重/缓存 | `packages/core` |
@@ -75,7 +75,7 @@ OpenAI 兼容入口，负责 Provider 翻译、流式输出、fallback、token �
 1. **Auth/Security**：`auth`、`admin`、`policies`、CSRF、JWT/OIDC、API key scope、
    IP filter、SSRF/outbound URL guard、guardrails、审计。
 2. **Providers/Models**：`providers`、`provider-nodes`、`provider-models`、`models`、
-   `provider-metrics`、`provider-stats`、`synced-available-models` 已进入 control-api，`oauth`、`codex`、
+   `provider-metrics`、`provider-stats`、`synced-available-models` 已进入 control，`oauth`、`codex`、
    `cursor-cli`、`dahl`、`upstream-proxy`。
 3. **Routing/Resilience**：`combos`、`model-combo-mappings`、`fallback`、`routing`、
    `resilience`、`rate-limit`、`rate-limits`、`headroom`、`session-pools`、`token-health`。
@@ -179,21 +179,21 @@ sqlite-vec 对应索引重建、全量 route 与 worker 验收，并完成 SQLit
 
 ### 4.1 可部署应用
 
-说明：下表中的 `apps/admin` 是仓库当前已有的管理台，原地保留并继续演进，不新建第二套
+说明：下表中的 `apps/console` 是仓库当前已有的管理台，原地保留并继续演进，不新建第二套
 Admin。其余应用均是独立进程：端口、信号处理和 surface 配置由各自 `apps/*/src/index.ts`
 负责；`packages/http` 只提供共享 HTTP 传输原语，不创建应用或持有路由目录；
 各应用拥有业务编排，`packages/core` 仅提供跨应用复用的纯领域能力。
 
 | 应用 | 首要职责 | 对外端口/边界 | 依赖 |
 |---|---|---|---|
-| `apps/edge-gateway` | OpenAI/Anthropic/Gemini/Ollama 兼容 API、认证、限流、请求 admission、路由执行 | 443（内部 `/v1/*`、`/a2a`、MCP transport） | contracts、core、providers、open-sse、DB/Redis |
-| `apps/control-api` | Admin 管理 API、RBAC、CRUD、导入导出、配置和审计 | 443 `/api/*` | contracts、control-domain、DB、object store |
+| `apps/gateway` | OpenAI/Anthropic/Gemini/Ollama 兼容 API、认证、限流、请求 admission、路由执行 | 443（内部 `/v1/*`、`/a2a`、MCP transport） | contracts、core、providers、open-sse、DB/Redis |
+| `apps/control` | Admin 管理 API、RBAC、CRUD、导入导出、配置和审计 | 443 `/api/*` | contracts、control-domain、DB、object store |
 | `apps/realtime` | live dashboard、Responses WS、MCP SSE/Streamable HTTP、A2A stream、服务日志 SSE | 443 upgrade/SSE（内部可拆 20132） | event-bus、task-runtime、auth |
 | `apps/worker` | 模型/价格/配额/健康同步、jobs、evals、webhooks、radar、清理和备份 | 仅内部 command/health listener | contracts、core、providers、DB、Redis |
-| `apps/admin`（现有，保留） | 当前 React/Vite 管理台；原地改造，只访问同源 `/api`、`/v1` 和 `/live-ws`，不再创建第二套管理台 | 静态资源 | contracts、ui |
+| `apps/console`（现有，保留） | 当前 React/Vite 管理台；原地改造，只访问同源 `/api`、`/v1` 和 `/live-ws`，不再创建第二套管理台 | 静态资源 | contracts、ui |
 | `apps/importer` | 参考实例快照导入、JSON/SQLite 校验、差异报告和回滚 | CLI | migration、persistence、crypto |
 
-当前交付采用 `edge-gateway`、`control-api`、`realtime`、`worker`、`importer`、`admin`
+当前交付采用 `gateway`、`control`、`realtime`、`worker`、`importer`、`console`
 六个显式镜像 target。每个服务独立容器、独立健康检查和独立扩缩容；共享的只是版本化
 workspace 包，不共享进程启动器。
 
@@ -412,7 +412,7 @@ DashScope 兼容 HTTP 接口，不经过 CLI。可执行文件通过 PATH 或 `C
 
 - `pnpm audit:gateway-independence`：PASS（689 API parity + 2 个登记的本地 media-cache 扩展、9 根路由，102 组；37 个 app-owned route 文件、16 个 app Fastify handlers，0 外部/NAS 引用）。
 - `pnpm audit:route-contracts`：PASS（689 个 parity route 文件的 HTTP method export 集合与参考快照一致；2 个 media-cache 扩展单独登记）。
-- `pnpm audit:admin-routes`：PASS（官方 116 个 dashboard 页面全部有本地 React Router 入口；本地共 131 条路由，包含兼容别名和本地扩展）。插件配置页已接入真实 GET/PUT 配置接口，插件启用/停用使用真实 activate/deactivate 接口。
+- `pnpm audit:console-routes`：PASS（官方 116 个 dashboard 页面全部有本地 React Router 入口；本地共 131 条路由，包含兼容别名和本地扩展）。插件配置页已接入真实 GET/PUT 配置接口，插件启用/停用使用真实 activate/deactivate 接口。
 - 上述两个 parity gate 已内置冻结的 route-path/root-path/HTTP-method SHA-256 基线；CI、镜像发布机
   或生产主机不存在同级 `../Orbit` 时仍可独立验收并检测路由漂移。本地显式提供参考源码时继续
   逐文件对比，发布流程不再对官方 checkout 存在构建时依赖。
@@ -484,7 +484,7 @@ DashScope 兼容 HTTP 接口，不经过 CLI。可执行文件通过 PATH 或 `C
 - `MIGRATION_PLAN.md`、`MIGRATION_SPEC.md`：从“底层 Orbit 不动”改为“clean-room domain package + parity gate”。
 - `docker-compose.yml`、`deploy/NAS-DEPLOY.md`、`deploy/gateway-caddyfile.md`：移除 `SHIGUANG_GATEWAY_NAS_*`，加入 DB/Redis/object-store、egress deny、health/readiness。
 - `packages/http/tsconfig.json`、`packages/http/src/app.ts`：收敛为纯 transport foundation，删除领域引擎适配器与兼容启动器。
-- `apps/admin/vite.config.ts`、`entities/live.ts`：只使用同源 live endpoint，不保留 `100.87.115.78:20132`。
+- `apps/console/vite.config.ts`、`entities/live.ts`：只使用同源 live endpoint，不保留 `100.87.115.78:20132`。
 - `packages/config/src/index.ts`：移除 `orbitApiUrl`，改成 `publicBaseUrl`、`internalServiceUrls` 和显式 Provider endpoints。
 
 ## 9. 参考资料与依据

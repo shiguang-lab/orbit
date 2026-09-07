@@ -91,6 +91,6 @@ test("entity audit validates each exceptional writer and its command entrypoint"
   });
   assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
   assert.match(result.stdout, /external write authority self-test: PASS \(forged entrypoint, undeclared file, out-of-app source\)/);
-  assert.match(result.stdout, /settings -> owner=control-api, ownerConsistency=PASS-direct\+authorized-external/);
-  assert.match(result.stdout, /providerConnections -> owner=control-api, ownerConsistency=PASS-indirect\+authorized-external/);
+  assert.match(result.stdout, /settings -> owner=control, ownerConsistency=PASS-direct\+authorized-external/);
+  assert.match(result.stdout, /providerConnections -> owner=control, ownerConsistency=PASS-indirect\+authorized-external/);
 });

@@ -95,8 +95,8 @@ test("scenario aliases stay retired and stats lifecycle remains worker-only", ()
   const lifecycleImport =
     "@orbit/core/catalog/openrouter-provider-stats-lifecycle";
   for (const root of [
-    "apps/control-api",
-    "apps/edge-gateway",
+    "apps/control",
+    "apps/gateway",
     "apps/realtime",
     "packages/inference",
   ]) {

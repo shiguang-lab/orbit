@@ -1,6 +1,6 @@
 /**
  * Shared model-management capabilities consumed by the control-plane app.
- * HTTP routing, request parsing, and response orchestration belong to control-api.
+ * HTTP routing, request parsing, and response orchestration belong to control.
  */
 export {
   deleteModelAlias,

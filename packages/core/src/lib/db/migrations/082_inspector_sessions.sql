@@ -1,3 +1,3 @@
--- Inspector session tables are owned and initialized by apps/control-api.
+-- Inspector session tables are owned and initialized by apps/control.
 -- Keep this migration as a history marker for databases upgraded from the
 -- legacy package-owned migration runner.

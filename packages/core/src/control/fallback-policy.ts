@@ -1,4 +1,4 @@
-/** Transport-neutral fallback-chain management used by control-api. */
+/** Transport-neutral fallback-chain management used by control. */
 export {
   getAllFallbackChains,
   registerFallback,

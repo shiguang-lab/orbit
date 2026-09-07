@@ -20,7 +20,7 @@ RUN --mount=type=cache,id=shiguang-gateway-pnpm-store,target=/root/.local/share/
 RUN find apps packages -type d -name dist -prune -exec rm -rf {} +
 RUN pnpm build
 # Create a deployable production tree instead of copying the complete workspace
-# (including admin/docs/build tooling) into every server image. The legacy mode
+# (including console/docs/build tooling) into every server image. The legacy mode
 # is required because this workspace uses linked, rather than injected, packages.
 RUN --mount=type=cache,id=shiguang-gateway-pnpm-store,target=/root/.local/share/pnpm/store \
     pnpm deploy --legacy --filter @orbit/worker --prod /app/runtime
@@ -30,8 +30,8 @@ RUN --mount=type=cache,id=shiguang-gateway-pnpm-store,target=/root/.local/share/
 # .pnpm store; app-local link trees below then resolve all direct dependencies
 # without copying the complete development workspace.
 RUN --mount=type=cache,id=shiguang-gateway-pnpm-store,target=/root/.local/share/pnpm/store \
-    pnpm deploy --legacy --filter @orbit/edge-gateway --prod /app/runtime-edge \
-    && pnpm deploy --legacy --filter @orbit/control-api --prod /app/runtime-control \
+    pnpm deploy --legacy --filter @orbit/gateway --prod /app/runtime-edge \
+    && pnpm deploy --legacy --filter @orbit/control --prod /app/runtime-control \
     && pnpm deploy --legacy --filter @orbit/realtime --prod /app/runtime-realtime \
     && pnpm deploy --legacy --filter @orbit/importer --prod /app/runtime-importer \
     && mkdir -p /app/runtime/node_modules/.pnpm \
@@ -70,7 +70,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
 WORKDIR /app
 ENV NODE_ENV=production \
     TSX_TSCONFIG_PATH=/app/packages/http/tsconfig.json \
-    APP_NAME=edge-gateway \
+    APP_NAME=gateway \
     EDGE_GATEWAY_HOST=0.0.0.0 \
     EDGE_GATEWAY_PORT=8787 \
     CONTROL_API_HOST=0.0.0.0 \
@@ -83,29 +83,29 @@ ENV NODE_ENV=production \
     SQLITE_FILE=/app/data/storage.sqlite \
     NODE_OPTIONS=--enable-source-maps
 COPY --from=build --chown=node:node /app/runtime/ ./
-COPY --from=build --chown=node:node /app/apps/edge-gateway/dist ./apps/edge-gateway/dist
-COPY --from=build --chown=node:node /app/apps/control-api/dist ./apps/control-api/dist
+COPY --from=build --chown=node:node /app/apps/gateway/dist ./apps/gateway/dist
+COPY --from=build --chown=node:node /app/apps/control/dist ./apps/control/dist
 COPY --from=build --chown=node:node /app/apps/realtime/dist ./apps/realtime/dist
 COPY --from=build --chown=node:node /app/apps/worker/dist ./apps/worker/dist
 COPY --from=build --chown=node:node /app/apps/importer/dist ./apps/importer/dist
 # Each app has a small pnpm link tree for its direct dependencies (for
 # example realtime imports fastify directly). Keep these link trees while the
 # package contents remain shared in the deployed production store above.
-COPY --from=build --chown=node:node /app/apps/edge-gateway/node_modules ./apps/edge-gateway/node_modules
-COPY --from=build --chown=node:node /app/apps/control-api/node_modules ./apps/control-api/node_modules
+COPY --from=build --chown=node:node /app/apps/gateway/node_modules ./apps/gateway/node_modules
+COPY --from=build --chown=node:node /app/apps/control/node_modules ./apps/control/node_modules
 COPY --from=build --chown=node:node /app/apps/realtime/node_modules ./apps/realtime/node_modules
 COPY --from=build --chown=node:node /app/apps/worker/node_modules ./apps/worker/node_modules
 COPY --from=build --chown=node:node /app/apps/importer/node_modules ./apps/importer/node_modules
 # App and package links resolve to this complete canonical runtime package tree.
 COPY --from=build --chown=node:node /app/runtime-packages ./packages
 COPY --from=build --chown=node:node /app/tsconfig.base.json ./tsconfig.base.json
-COPY --from=build --chown=node:node /app/apps/edge-gateway/package.json ./apps/edge-gateway/package.json
-COPY --from=build --chown=node:node /app/apps/control-api/package.json ./apps/control-api/package.json
+COPY --from=build --chown=node:node /app/apps/gateway/package.json ./apps/gateway/package.json
+COPY --from=build --chown=node:node /app/apps/control/package.json ./apps/control/package.json
 COPY --from=build --chown=node:node /app/apps/realtime/package.json ./apps/realtime/package.json
 COPY --from=build --chown=node:node /app/apps/worker/package.json ./apps/worker/package.json
 COPY --from=build --chown=node:node /app/apps/importer/package.json ./apps/importer/package.json
-# Edge-owned route modules are loaded from source by the tsx catch-all loader.
-COPY --from=build --chown=node:node /app/apps/edge-gateway/src/routes ./apps/edge-gateway/src/routes
+# Gateway-owned route modules are loaded from source by the tsx catch-all loader.
+COPY --from=build --chown=node:node /app/apps/gateway/src/routes ./apps/gateway/src/routes
 # Validate the final image filesystem, not the build workspace: all production
 # dependencies must resolve, every workspace link and export must exist.
 RUN node <<'NODE'
@@ -121,7 +121,7 @@ for (const dir of packageDirs) {
   try { fs.unlinkSync(link); } catch (error) { if (error.code !== 'ENOENT') throw error; }
   fs.symlinkSync(dir, link);
 }
-const appDirs = ['edge-gateway', 'control-api', 'realtime', 'worker', 'importer'].map(name => path.join('/app/apps', name));
+const appDirs = ['gateway', 'control', 'realtime', 'worker', 'importer'].map(name => path.join('/app/apps', name));
 let checkedDependencies = 0;
 let checkedExports = 0;
 for (const dir of [...appDirs, ...packageDirs]) {
@@ -158,15 +158,15 @@ RUN mkdir -p /app/data && chown node:node /app/data
 USER node
 EXPOSE 8787 8788 8790 20132
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
-  CMD node -e "const p=process.env.APP_NAME; const port=p==='edge-gateway'?process.env.EDGE_GATEWAY_PORT:p==='control-api'?process.env.CONTROL_API_PORT:p==='realtime'?process.env.REALTIME_PORT:p==='worker'?(process.env.WORKER_COMMAND_PORT||'8791'):null; if(!port) process.exit(1); fetch('http://127.0.0.1:'+port+'/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+  CMD node -e "const p=process.env.APP_NAME; const port=p==='gateway'?process.env.EDGE_GATEWAY_PORT:p==='control'?process.env.CONTROL_API_PORT:p==='realtime'?process.env.REALTIME_PORT:p==='worker'?(process.env.WORKER_COMMAND_PORT||'8791'):null; if(!port) process.exit(1); fetch('http://127.0.0.1:'+port+'/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 
-FROM runtime-base AS edge-gateway
-ENV APP_NAME=edge-gateway
-CMD ["node", "--import", "tsx", "apps/edge-gateway/dist/main.js"]
+FROM runtime-base AS gateway
+ENV APP_NAME=gateway
+CMD ["node", "--import", "tsx", "apps/gateway/dist/main.js"]
 
-FROM runtime-base AS control-api
-ENV APP_NAME=control-api
-CMD ["node", "--import", "tsx", "apps/control-api/dist/main.js"]
+FROM runtime-base AS control
+ENV APP_NAME=control
+CMD ["node", "--import", "tsx", "apps/control/dist/main.js"]
 
 FROM runtime-base AS realtime
 ENV APP_NAME=realtime
@@ -180,10 +180,10 @@ FROM runtime-base AS importer
 ENV APP_NAME=importer
 ENTRYPOINT ["node", "--import", "tsx", "apps/importer/dist/main.js"]
 
-# The published single tag is the edge image. Production compose uses the
+# The published single tag is the gateway image. Production compose uses the
 # explicit targets above for each independently deployable service.
-FROM edge-gateway AS default
+FROM gateway AS default
 
-FROM nginx:1.27-alpine AS admin
-COPY --from=build /app/apps/admin/dist /usr/share/nginx/html
-COPY deploy/admin-nginx.conf /etc/nginx/conf.d/default.conf
+FROM nginx:1.27-alpine AS console
+COPY --from=build /app/apps/console/dist /usr/share/nginx/html
+COPY deploy/console-nginx.conf /etc/nginx/conf.d/default.conf

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# scripts/ops/cold-start-bench.sh — measure an edge-gateway cold start against target
+# scripts/ops/cold-start-bench.sh — measure an gateway cold start against target
 # budgets (container start → HTTP listening ≤ 800 ms; first warm
 # TTFB ≤ 200 ms). Boots the server on a throwaway port, times until
 # /healthz answers 200, measures a warm request, and reports PASS/FAIL.
@@ -13,7 +13,7 @@ Usage: scripts/ops/cold-start-bench.sh [--port <n>] [--start-cmd "<cmd>"] [--url
                                [--listen-budget-ms <n>] [--ttfb-budget-ms <n>] [-h|--help]
 
 Runs an explicit split-deployment start command, times cold-start to the first
-/healthz 200 from edge-gateway, measures
+/healthz 200 from gateway, measures
 warm TTFB, and compares against the cold-start budgets
 (listen ≤ 800 ms, TTFB ≤ 200 ms). Exits non-zero if a budget is exceeded.
 

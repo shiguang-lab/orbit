@@ -35,7 +35,7 @@ function sourceFiles(dir: string): string[] {
   });
 }
 
-test("edge/tunnels exposes only the tunnel command operations consumed by edge-gateway", async () => {
+test("edge/tunnels exposes only the tunnel command operations consumed by gateway", async () => {
   const entry = manifest.exports["./edge/tunnels"];
   assert.deepEqual(entry, {
     types: "./src/public/edgeTunnels.d.ts",
@@ -79,5 +79,5 @@ test("wide tunnel implementation targets and helpers stay private", () => {
   const consumers = sourceFiles(path.join(repoRoot, "apps"))
     .filter((file) => fs.readFileSync(file, "utf8").includes("@orbit/core/edge/tunnels"))
     .map((file) => path.relative(repoRoot, file).split(path.sep).join("/"));
-  assert.deepEqual(consumers, ["apps/edge-gateway/src/tunnels/tunnels.service.ts"]);
+  assert.deepEqual(consumers, ["apps/gateway/src/tunnels/tunnels.service.ts"]);
 });

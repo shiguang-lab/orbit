@@ -9,7 +9,7 @@ test("runtime tsconfig respects the OAuth package export over its same-named dir
     const providers = await import('@orbit/inference/oauth/providers');
     console.log(JSON.stringify({ target, exchangeTokens: typeof providers.exchangeTokens }));
   `], {
-    cwd: fileURLToPath(new URL("../../../apps/control-api", import.meta.url)),
+    cwd: fileURLToPath(new URL("../../../apps/control", import.meta.url)),
     env: { ...process.env, TSX_TSCONFIG_PATH: fileURLToPath(new URL("../tsconfig.json", import.meta.url)) },
     encoding: "utf8",
   });

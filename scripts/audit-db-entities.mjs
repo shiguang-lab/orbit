@@ -185,7 +185,7 @@ function validateExternalWriteAuthorities(entity, tableUsage, appEntries, root =
       throw new Error(`${entity.entityName}: ${authority.entrypoint} does not reach ${authority.source}`);
     }
     if ((authority.mode === "bootstrap" || authority.mode === "maintenance") && !/await\s+isServerUp\s*\(/.test(readFileSync(entrypoint, "utf8"))) {
-      throw new Error(`${entity.entityName}: offline authority must guard against a running control-api: ${authority.entrypoint}`);
+      throw new Error(`${entity.entityName}: offline authority must guard against a running control: ${authority.entrypoint}`);
     }
     if (authority.mode === "bootstrap" && !/\/setup(?:\.|\/)/.test(authority.entrypoint)) {
       throw new Error(`${entity.entityName}: bootstrap authority must use an explicit setup entrypoint`);
@@ -230,7 +230,7 @@ function assertExternalWriteAuthorityGuard() {
       mode: "bootstrap",
       reason: "Initialize an isolated database before runtime ownership begins.",
     };
-    const entity = { entityName: "ProviderConnection", owner: "control-api", externalWriteAuthorities: [validAuthority] };
+    const entity = { entityName: "ProviderConnection", owner: "control", externalWriteAuthorities: [validAuthority] };
     const undeclared = findUnauthorizedExternalWriteFiles(entity, usage, apps, root);
     if (undeclared.length !== 1 || !undeclared[0].endsWith("apps/cli/rogue.mjs")) {
       throw new Error("external authority self-test did not reject an undeclared write file");

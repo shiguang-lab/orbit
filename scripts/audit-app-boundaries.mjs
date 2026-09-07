@@ -36,38 +36,38 @@ const preRequestHookExecutionSpecifier =
   "@orbit/core/middleware/pre-request-hook-execution";
 const violations = [];
 const edgeRuntimeProxyOwnedControlFiles = new Set([
-  "apps/control-api/src/monitoring/monitoring-health.service.ts",
-  "apps/control-api/src/resilience/handlers/reset.handler.ts",
-  "apps/control-api/src/resilience/handlers/model-cooldowns.handler.ts",
-  "apps/control-api/src/resilience/handlers/resilience.handler.ts",
-  "apps/control-api/src/settings/handlers/root.handler.ts",
-  "apps/control-api/src/sessions/sessions.service.ts",
-  "apps/control-api/src/admin/admin-concurrency.service.ts",
-  "apps/control-api/src/rate-limits/rate-limits.service.ts",
-  "apps/control-api/src/resilience/handlers/connections.handler.ts",
-  "apps/control-api/src/providers/provider-health-autopilot.ts",
-  "apps/control-api/src/gateway/runtime/gateway-status.ts",
-  "apps/control-api/src/gateway/gateway.service.ts",
-  "apps/control-api/src/telemetry/telemetry.service.ts",
-  "apps/control-api/src/usage/handlers/quota.handler.ts",
-  "apps/control-api/src/usage/reporting/resilienceExplain.ts",
-  "apps/control-api/src/usage/reporting/comboScoringInspector.ts",
-  "apps/control-api/src/providers/handlers/provider-detail.ts",
-  "apps/control-api/src/keys/handlers/key-devices.ts",
-  "apps/control-api/src/providers/providers.service.ts",
-  "apps/control-api/src/cache/cache.service.ts",
-  "apps/control-api/src/combos/handlers/metrics.ts",
-  "apps/control-api/src/combos/handlers/auto.ts",
-  "apps/control-api/src/combos/handlers/duplicate.ts",
-  "apps/control-api/src/usage/reporting/comboHealth.ts",
-  "apps/control-api/src/search/stats/search-stats.service.ts",
-  "apps/control-api/src/settings/model-aliases/model-aliases.service.ts",
-  "apps/control-api/src/settings/settings.service.ts",
-  "apps/control-api/src/settings/task-routing/task-routing.service.ts",
-  "apps/control-api/src/settings/security/security.service.ts",
-  "apps/control-api/src/settings/tier-config/tier-config.service.ts",
-  "apps/control-api/src/settings/config/settings-config.service.ts",
-  "apps/control-api/src/db-backups/db-backups.service.ts",
+  "apps/control/src/monitoring/monitoring-health.service.ts",
+  "apps/control/src/resilience/handlers/reset.handler.ts",
+  "apps/control/src/resilience/handlers/model-cooldowns.handler.ts",
+  "apps/control/src/resilience/handlers/resilience.handler.ts",
+  "apps/control/src/settings/handlers/root.handler.ts",
+  "apps/control/src/sessions/sessions.service.ts",
+  "apps/control/src/admin/admin-concurrency.service.ts",
+  "apps/control/src/rate-limits/rate-limits.service.ts",
+  "apps/control/src/resilience/handlers/connections.handler.ts",
+  "apps/control/src/providers/provider-health-autopilot.ts",
+  "apps/control/src/gateway/runtime/gateway-status.ts",
+  "apps/control/src/gateway/gateway.service.ts",
+  "apps/control/src/telemetry/telemetry.service.ts",
+  "apps/control/src/usage/handlers/quota.handler.ts",
+  "apps/control/src/usage/reporting/resilienceExplain.ts",
+  "apps/control/src/usage/reporting/comboScoringInspector.ts",
+  "apps/control/src/providers/handlers/provider-detail.ts",
+  "apps/control/src/keys/handlers/key-devices.ts",
+  "apps/control/src/providers/providers.service.ts",
+  "apps/control/src/cache/cache.service.ts",
+  "apps/control/src/combos/handlers/metrics.ts",
+  "apps/control/src/combos/handlers/auto.ts",
+  "apps/control/src/combos/handlers/duplicate.ts",
+  "apps/control/src/usage/reporting/comboHealth.ts",
+  "apps/control/src/search/stats/search-stats.service.ts",
+  "apps/control/src/settings/model-aliases/model-aliases.service.ts",
+  "apps/control/src/settings/settings.service.ts",
+  "apps/control/src/settings/task-routing/task-routing.service.ts",
+  "apps/control/src/settings/security/security.service.ts",
+  "apps/control/src/settings/tier-config/tier-config.service.ts",
+  "apps/control/src/settings/config/settings-config.service.ts",
+  "apps/control/src/db-backups/db-backups.service.ts",
 ]);
 
 const readJson = (file) => {
@@ -151,8 +151,8 @@ const allowedCoreDomainSubpaths = {
     "shared/proxy-health",
     "quota/cache-lifecycle",
   ],
-  "apps/control-api": ["events/eventBus", "startup", "runtime/request", "db/ping", "db/health", "db/call-log-stats", "db/provider-connections", "db/model-aliases", "db/mitm-aliases", "db/hidden-models", "db/proxies", "db/settings", "db/read-cache", "db/local-db", "db/provider-stats", "db/database-stats", "db/vacuum", "catalog/provider-registry", "pricing/db", "pricing/defaults", "pricing/sync", "pricing/provider-prefixes", "pricing/validation", "pricing/modal-cost", "cache/db", "cache/services", "db/compression-analytics", "analytics/auto-routing-db", "analytics/diversity", "db-backups/db", "db-backups/validation", "metrics/combo", "metrics/request-telemetry", "metrics/observability", "metrics/tool-latency", "shared/numeric", "inference/utils/error.ts", "inference/services/deviceTracker.ts", "control/management-auth", "control/middleware-registry", "control/provider-credentials", "control/lkgp-cache", "control/management-password", "runtime/feature-flags", "control/provider-validation", "control/provider-validation-schemas", "control/oauth-validation", "control/cloud-validation", "control/volcengine-validation", "control/model-context-overrides", "control/model-test-data", "db/provider-nodes", "network/outbound-url-guard-policy", "network/safe-outbound-fetch", "control/authenticated", "control/registered-keys", "control/settings-config", "control/oauth-persistence", "memory/settings", "memory/runtime", "control/database-settings", "logging/proxy-logs", "catalog/openrouter-provider-stats", "control/provider-health-matrix", "resilience/settings", "routing/connection-model-rules", "usage/stats", "usage/model-latency-stats", "usage/request-logs", "usage/pending-requests", "db/detailed-logs", "db/proxy-logs", "logging/environment", "sync/cloud", "control/api-key-exposure", "db/api-key-groups", "usage/api-key-limits", "shared/", "sse/logger", "sse/auth", "evals/db", "evals/runner", "evals/runtime", "evals/validation", "db/api-keys", "db/batches", "plugins/db", "plugins/manager", "plugins/marketplace", "shared/cors", "quota/dimensions", "quota/db", "quota/services", "quota/state", "shared/combo-invariants", "catalog/combo-targets", "catalog/model-metadata", "catalog/provider-models"],
-  "apps/edge-gateway": [
+  "apps/control": ["events/eventBus", "startup", "runtime/request", "db/ping", "db/health", "db/call-log-stats", "db/provider-connections", "db/model-aliases", "db/mitm-aliases", "db/hidden-models", "db/proxies", "db/settings", "db/read-cache", "db/local-db", "db/provider-stats", "db/database-stats", "db/vacuum", "catalog/provider-registry", "pricing/db", "pricing/defaults", "pricing/sync", "pricing/provider-prefixes", "pricing/validation", "pricing/modal-cost", "cache/db", "cache/services", "db/compression-analytics", "analytics/auto-routing-db", "analytics/diversity", "db-backups/db", "db-backups/validation", "metrics/combo", "metrics/request-telemetry", "metrics/observability", "metrics/tool-latency", "shared/numeric", "inference/utils/error.ts", "inference/services/deviceTracker.ts", "control/management-auth", "control/middleware-registry", "control/provider-credentials", "control/lkgp-cache", "control/management-password", "runtime/feature-flags", "control/provider-validation", "control/provider-validation-schemas", "control/oauth-validation", "control/cloud-validation", "control/volcengine-validation", "control/model-context-overrides", "control/model-test-data", "db/provider-nodes", "network/outbound-url-guard-policy", "network/safe-outbound-fetch", "control/authenticated", "control/registered-keys", "control/settings-config", "control/oauth-persistence", "memory/settings", "memory/runtime", "control/database-settings", "logging/proxy-logs", "catalog/openrouter-provider-stats", "control/provider-health-matrix", "resilience/settings", "routing/connection-model-rules", "usage/stats", "usage/model-latency-stats", "usage/request-logs", "usage/pending-requests", "db/detailed-logs", "db/proxy-logs", "logging/environment", "sync/cloud", "control/api-key-exposure", "db/api-key-groups", "usage/api-key-limits", "shared/", "sse/logger", "sse/auth", "evals/db", "evals/runner", "evals/runtime", "evals/validation", "db/api-keys", "db/batches", "plugins/db", "plugins/manager", "plugins/marketplace", "shared/cors", "quota/dimensions", "quota/db", "quota/services", "quota/state", "shared/combo-invariants", "catalog/combo-targets", "catalog/model-metadata", "catalog/provider-models"],
+  "apps/gateway": [
     "events/eventBus",
     "startup",
     "runtime/request",
@@ -246,8 +246,8 @@ const allowedCoreDomainSubpaths = {
   ],
 };
 
-allowedCoreDomainSubpaths["apps/control-api"] = allowedCoreDomainSubpaths[
-  "apps/control-api"
+allowedCoreDomainSubpaths["apps/control"] = allowedCoreDomainSubpaths[
+  "apps/control"
 ].filter(
   (subpath) =>
     subpath !== "control/compliance" &&
@@ -256,7 +256,7 @@ allowedCoreDomainSubpaths["apps/control-api"] = allowedCoreDomainSubpaths[
     subpath !== "control/database-settings" &&
     subpath !== "db/local-db",
 );
-allowedCoreDomainSubpaths["apps/control-api"].push(
+allowedCoreDomainSubpaths["apps/control"].push(
   "validation/proxy",
   "validation/keys",
   "validation/combos",
@@ -296,36 +296,36 @@ allowedCoreDomainSubpaths["apps/worker"].push("session-affinity/cleanup-lifecycl
 allowedCoreDomainSubpaths["apps/worker"].push("catalog/openrouter-provider-stats-lifecycle");
 allowedCoreDomainSubpaths["apps/worker"].push("radar/sync-lifecycle");
 allowedCoreDomainSubpaths["apps/worker"].push("db/health");
-allowedCoreDomainSubpaths["apps/edge-gateway"] = allowedCoreDomainSubpaths[
-  "apps/edge-gateway"
+allowedCoreDomainSubpaths["apps/gateway"] = allowedCoreDomainSubpaths[
+  "apps/gateway"
 ].filter(
   (subpath) => subpath !== "edge/video-bridge-stats" && subpath !== "edge/local-db",
 );
-allowedCoreDomainSubpaths["apps/edge-gateway"].push("guardrails/modality-bridge-stats");
-allowedCoreDomainSubpaths["apps/edge-gateway"].push(
+allowedCoreDomainSubpaths["apps/gateway"].push("guardrails/modality-bridge-stats");
+allowedCoreDomainSubpaths["apps/gateway"].push(
   "db/database-settings",
   "db/exclusive-connection-leases",
   "db/models",
 );
 
-for (const app of ["apps/control-api", "apps/edge-gateway"]) {
+for (const app of ["apps/control", "apps/gateway"]) {
   allowedCoreDomainSubpaths[app] = allowedCoreDomainSubpaths[app].filter(
     (subpath) => subpath !== "pricing/modal-cost",
   );
   allowedCoreDomainSubpaths[app].push("pricing/cost-calculator");
 }
 
-for (const app of ["apps/control-api", "apps/edge-gateway", "apps/realtime", "apps/worker"]) {
+for (const app of ["apps/control", "apps/gateway", "apps/realtime", "apps/worker"]) {
   allowedCoreDomainSubpaths[app].push("db/runtime-lifecycle");
 }
 
-allowedCoreDomainSubpaths["apps/control-api"].push("db/health");
-allowedCoreDomainSubpaths["apps/control-api"].push(
+allowedCoreDomainSubpaths["apps/control"].push("db/health");
+allowedCoreDomainSubpaths["apps/control"].push(
   "domain/provider-error-classifier",
   "usage/reporting-support/",
 );
-allowedCoreDomainSubpaths["apps/control-api"].push("db/models");
-allowedCoreDomainSubpaths["apps/control-api"].push(
+allowedCoreDomainSubpaths["apps/control"].push("db/models");
+allowedCoreDomainSubpaths["apps/control"].push(
   "cli/runtime",
   "cli/backups",
   "cli/config-status",
@@ -337,53 +337,53 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "control/cli-token-auth",
   "db/tier-config",
 );
-allowedCoreDomainSubpaths["apps/edge-gateway"].push("runtime/model-sync-client");
-allowedCoreDomainSubpaths["apps/edge-gateway"].push("edge/memory-decay");
-allowedCoreDomainSubpaths["apps/edge-gateway"].push("runtime/settings-refresh");
-allowedCoreDomainSubpaths["apps/edge-gateway"].push("cache/services");
-allowedCoreDomainSubpaths["apps/edge-gateway"].push(
+allowedCoreDomainSubpaths["apps/gateway"].push("runtime/model-sync-client");
+allowedCoreDomainSubpaths["apps/gateway"].push("edge/memory-decay");
+allowedCoreDomainSubpaths["apps/gateway"].push("runtime/settings-refresh");
+allowedCoreDomainSubpaths["apps/gateway"].push("cache/services");
+allowedCoreDomainSubpaths["apps/gateway"].push(
   "db/tier-config",
   "resilience/settings-runtime",
   "resilience/circuit-breaker",
   "resilience/credential-health-cache",
 );
-allowedCoreDomainSubpaths["apps/control-api"].push("runtime/model-sync-client");
-allowedCoreDomainSubpaths["apps/control-api"].push("runtime/api-key-policy");
-allowedCoreDomainSubpaths["apps/control-api"].push("db/files");
-allowedCoreDomainSubpaths["apps/control-api"].push("db/connection");
-allowedCoreDomainSubpaths["apps/edge-gateway"].push("db/connection");
-allowedCoreDomainSubpaths["apps/control-api"].push("runtime/proxy-log-lifecycle");
-allowedCoreDomainSubpaths["apps/edge-gateway"].push("runtime/proxy-log-lifecycle");
-allowedCoreDomainSubpaths["apps/control-api"].push("control/guardrails", "control/auth-init");
-allowedCoreDomainSubpaths["apps/control-api"].push("control/assessment", "control/policies");
-allowedCoreDomainSubpaths["apps/control-api"].push("control/provider-management");
-allowedCoreDomainSubpaths["apps/control-api"].push("control/provider-connection");
-allowedCoreDomainSubpaths["apps/control-api"].push(
+allowedCoreDomainSubpaths["apps/control"].push("runtime/model-sync-client");
+allowedCoreDomainSubpaths["apps/control"].push("runtime/api-key-policy");
+allowedCoreDomainSubpaths["apps/control"].push("db/files");
+allowedCoreDomainSubpaths["apps/control"].push("db/connection");
+allowedCoreDomainSubpaths["apps/gateway"].push("db/connection");
+allowedCoreDomainSubpaths["apps/control"].push("runtime/proxy-log-lifecycle");
+allowedCoreDomainSubpaths["apps/gateway"].push("runtime/proxy-log-lifecycle");
+allowedCoreDomainSubpaths["apps/control"].push("control/guardrails", "control/auth-init");
+allowedCoreDomainSubpaths["apps/control"].push("control/assessment", "control/policies");
+allowedCoreDomainSubpaths["apps/control"].push("control/provider-management");
+allowedCoreDomainSubpaths["apps/control"].push("control/provider-connection");
+allowedCoreDomainSubpaths["apps/control"].push(
   "control/provider-discovery-support/",
   "control/fallback-policy",
   "catalog/no-auth-providers",
   "providers/alibaba-regions",
 );
-allowedCoreDomainSubpaths["apps/control-api"].push("control/skills-github", "control/skills-executor");
+allowedCoreDomainSubpaths["apps/control"].push("control/skills-github", "control/skills-executor");
 // Host tunnel processes belong to the public edge runtime. Control may only
 // reach them through the authenticated internal tunnel command contract.
-allowedCoreDomainSubpaths["apps/edge-gateway"].push("edge/tunnels");
-allowedCoreDomainSubpaths["apps/edge-gateway"].push(
+allowedCoreDomainSubpaths["apps/gateway"].push("edge/tunnels");
+allowedCoreDomainSubpaths["apps/gateway"].push(
   "shared/public-safe-error",
 );
-allowedCoreDomainSubpaths["apps/control-api"].push("control/jobs");
-allowedCoreDomainSubpaths["apps/edge-gateway"].push(
+allowedCoreDomainSubpaths["apps/control"].push("control/jobs");
+allowedCoreDomainSubpaths["apps/gateway"].push(
   "validation/translator",
   "catalog/provider-models",
   "catalog/response-presentation",
   "catalog/model-capabilities",
   "catalog/synced-model-capabilities",
 );
-allowedCoreDomainSubpaths["apps/control-api"].push("control/free-provider-rankings");
-allowedCoreDomainSubpaths["apps/control-api"].push(
+allowedCoreDomainSubpaths["apps/control"].push("control/free-provider-rankings");
+allowedCoreDomainSubpaths["apps/control"].push(
   "control/intelligence-sync",
 );
-allowedCoreDomainSubpaths["apps/control-api"].push(
+allowedCoreDomainSubpaths["apps/control"].push(
   "usage/analytics",
   "quota/provider-response",
   "db/token-limits",
@@ -392,20 +392,20 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "usage/combo-health",
 );
 
-allowedCoreDomainSubpaths["apps/control-api"].push(
+allowedCoreDomainSubpaths["apps/control"].push(
   "control/token-health-check",
   "control/oauth-gitlab",
   "lib/providers/chatgptWebRetirementResponse",
   "conductor/hub-proxy",
 );
-allowedCoreDomainSubpaths["apps/control-api"].push(
+allowedCoreDomainSubpaths["apps/control"].push(
   "control/cli-access-tokens",
   "control/cli-access-scopes",
   "control/access-token-auth",
   "control/provider-model-store",
   "control/provider-model-aliases",
 );
-allowedCoreDomainSubpaths["apps/control-api"].push(
+allowedCoreDomainSubpaths["apps/control"].push(
   "catalog/display-names",
   "catalog/managed-available-models",
   "catalog/model-capabilities",
@@ -494,16 +494,16 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "pricing/provider-prefixes",
   "shared/reasoning-efforts-override",
 );
-allowedCoreDomainSubpaths["apps/control-api"].push("catalog/providers");
-allowedCoreDomainSubpaths["apps/control-api"].push(
+allowedCoreDomainSubpaths["apps/control"].push("catalog/providers");
+allowedCoreDomainSubpaths["apps/control"].push(
   "resilience/circuit-breaker",
   "control/model-availability",
   "resilience/connection-recovery-policy",
 );
-allowedCoreDomainSubpaths["apps/control-api"].push("control/guardrails");
-allowedCoreDomainSubpaths["apps/control-api"].push("db/relayProxies", "shared/validation");
-allowedCoreDomainSubpaths["apps/control-api"].push("db/cc-discovery-metrics");
-allowedCoreDomainSubpaths["apps/control-api"].push(
+allowedCoreDomainSubpaths["apps/control"].push("control/guardrails");
+allowedCoreDomainSubpaths["apps/control"].push("db/relayProxies", "shared/validation");
+allowedCoreDomainSubpaths["apps/control"].push("db/cc-discovery-metrics");
+allowedCoreDomainSubpaths["apps/control"].push(
   "control/playground-presets",
   "db/combos",
   "shared/schemas/playground",
@@ -511,8 +511,8 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "cli/config-generator",
   "cli/tool-detector",
 );
-allowedCoreDomainSubpaths["apps/control-api"].push("control/provider-management");
-allowedCoreDomainSubpaths["apps/control-api"].push(
+allowedCoreDomainSubpaths["apps/control"].push("control/provider-management");
+allowedCoreDomainSubpaths["apps/control"].push(
   "control/embedded-services-lifecycle",
   "control/embedded-services-install",
 );
@@ -521,7 +521,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
 // small and explicit: adding an entry is the acceptance record for a domain
 // migration, and the old core copy must be gone.
 const migratedRouteOwnership = {
-  "apps/control-api": [
+  "apps/control": [
     "api/compression/compare/route.ts",
     "api/compression/engines/route.ts",
     "api/compression/language-packs/route.ts",
@@ -927,7 +927,7 @@ const migratedRouteOwnership = {
     "api/batches/route.ts",
     "api/batches/[id]/route.ts",
   ],
-  "apps/edge-gateway": [
+  "apps/gateway": [
     // A2A protocol and task-management routes are owned by the edge Nest app.
     // The old Next route tree must stay empty; the controller contract is the
     // single registration surface for both canonical and /api aliases.
@@ -1019,7 +1019,7 @@ for (const legacy of legacyNames) {
 }
 const retiredCoreVscodeDir = join(packagesRoot, "core", "src", "lib", "vscode");
 if (existsSync(retiredCoreVscodeDir)) {
-  add("edge-runtime-in-core", retiredCoreVscodeDir, "VS Code transport and presentation runtime belongs in apps/edge-gateway");
+  add("edge-runtime-in-core", retiredCoreVscodeDir, "VS Code transport and presentation runtime belongs in apps/gateway");
 }
 const retiredCoreCliRuntimeFiles = [
   join(packagesRoot, "core", "src", "lib", "cli-helper", "log-streamer.ts"),
@@ -1030,56 +1030,56 @@ for (const file of retiredCoreCliRuntimeFiles) {
 }
 const retiredCoreAcpDir = join(packagesRoot, "core", "src", "lib", "acp");
 if (existsSync(retiredCoreAcpDir)) {
-  add("control-runtime-in-core", retiredCoreAcpDir, "ACP inventory runtime belongs in apps/control-api");
+  add("control-runtime-in-core", retiredCoreAcpDir, "ACP inventory runtime belongs in apps/control");
 }
 const retiredCoreChaosDir = join(packagesRoot, "core", "src", "lib", "chaos");
 if (existsSync(retiredCoreChaosDir)) {
-  add("control-runtime-in-core", retiredCoreChaosDir, "Chaos runtime belongs in apps/control-api");
+  add("control-runtime-in-core", retiredCoreChaosDir, "Chaos runtime belongs in apps/control");
 }
 const retiredCorePlaygroundDir = join(packagesRoot, "core", "src", "lib", "playground");
 if (existsSync(retiredCorePlaygroundDir)) {
-  add("control-runtime-in-core", retiredCorePlaygroundDir, "Playground runtime belongs in apps/control-api or apps/admin");
+  add("control-runtime-in-core", retiredCorePlaygroundDir, "Playground runtime belongs in apps/control or apps/console");
 }
 const retiredCoreTelegramDir = join(packagesRoot, "core", "src", "lib", "telegram");
 if (existsSync(retiredCoreTelegramDir)) {
-  add("edge-runtime-in-core", retiredCoreTelegramDir, "Telegram ingress runtime belongs in apps/edge-gateway");
+  add("edge-runtime-in-core", retiredCoreTelegramDir, "Telegram ingress runtime belongs in apps/gateway");
 }
 const retiredControlTelegramIngress = [
-  join(repoRoot, "apps", "control-api", "src", "telegram", "telegram.controller.ts"),
-  join(repoRoot, "apps", "control-api", "src", "telegram", "telegram.service.ts"),
-  join(repoRoot, "apps", "control-api", "src", "telegram", "telegram.module.ts"),
-  join(repoRoot, "apps", "control-api", "src", "telegram", "handlers", "update.handler.ts"),
-  join(repoRoot, "apps", "control-api", "src", "telegram", "runtime", "bot-api.ts"),
-  join(repoRoot, "apps", "control-api", "src", "telegram", "runtime", "chat-proxy.ts"),
-  join(repoRoot, "apps", "control-api", "src", "telegram", "runtime", "config.ts"),
-  join(repoRoot, "apps", "control-api", "src", "telegram", "runtime", "error-message.ts"),
-  join(repoRoot, "apps", "control-api", "src", "telegram", "runtime", "index.ts"),
-  join(repoRoot, "apps", "control-api", "src", "telegram", "runtime", "init-data.ts"),
+  join(repoRoot, "apps", "control", "src", "telegram", "telegram.controller.ts"),
+  join(repoRoot, "apps", "control", "src", "telegram", "telegram.service.ts"),
+  join(repoRoot, "apps", "control", "src", "telegram", "telegram.module.ts"),
+  join(repoRoot, "apps", "control", "src", "telegram", "handlers", "update.handler.ts"),
+  join(repoRoot, "apps", "control", "src", "telegram", "runtime", "bot-api.ts"),
+  join(repoRoot, "apps", "control", "src", "telegram", "runtime", "chat-proxy.ts"),
+  join(repoRoot, "apps", "control", "src", "telegram", "runtime", "config.ts"),
+  join(repoRoot, "apps", "control", "src", "telegram", "runtime", "error-message.ts"),
+  join(repoRoot, "apps", "control", "src", "telegram", "runtime", "index.ts"),
+  join(repoRoot, "apps", "control", "src", "telegram", "runtime", "init-data.ts"),
 ];
 for (const file of retiredControlTelegramIngress) {
   if (existsSync(file)) {
-    add("public-telegram-ingress-in-control", file, "POST /api/telegram/update and its chat pipeline belong in apps/edge-gateway");
+    add("public-telegram-ingress-in-control", file, "POST /api/telegram/update and its chat pipeline belong in apps/gateway");
   }
 }
 const retiredCoreCopilotDir = join(packagesRoot, "core", "src", "lib", "copilot");
 if (existsSync(retiredCoreCopilotDir)) {
-  add("control-runtime-in-core", retiredCoreCopilotDir, "Copilot runtime belongs in apps/control-api");
+  add("control-runtime-in-core", retiredCoreCopilotDir, "Copilot runtime belongs in apps/control");
 }
 const retiredCoreRoutingPreview = join(packagesRoot, "core", "src", "lib", "routing", "adaptiveRouting.ts");
 if (existsSync(retiredCoreRoutingPreview)) {
-  add("control-runtime-in-core", retiredCoreRoutingPreview, "Routing preview runtime belongs in apps/control-api");
+  add("control-runtime-in-core", retiredCoreRoutingPreview, "Routing preview runtime belongs in apps/control");
 }
 const retiredCoreGatewayStatus = join(packagesRoot, "core", "src", "lib", "gatewayStatus.ts");
 if (existsSync(retiredCoreGatewayStatus)) {
-  add("control-runtime-in-core", retiredCoreGatewayStatus, "Gateway status composition belongs in apps/control-api");
+  add("control-runtime-in-core", retiredCoreGatewayStatus, "Gateway status composition belongs in apps/control");
 }
 const retiredCoreFreeOnboarding = join(packagesRoot, "core", "src", "lib", "providers", "freeOnboarding.ts");
 if (existsSync(retiredCoreFreeOnboarding)) {
-  add("control-runtime-in-core", retiredCoreFreeOnboarding, "Provider onboarding orchestration belongs in apps/control-api");
+  add("control-runtime-in-core", retiredCoreFreeOnboarding, "Provider onboarding orchestration belongs in apps/control");
 }
 const retiredCoreProjectCombo = join(packagesRoot, "core", "src", "lib", "catalog", "projectCombo.ts");
 if (existsSync(retiredCoreProjectCombo)) {
-  add("edge-runtime-in-core", retiredCoreProjectCombo, "Client combo projection belongs in apps/edge-gateway");
+  add("edge-runtime-in-core", retiredCoreProjectCombo, "Client combo projection belongs in apps/gateway");
 }
 const retiredCoreRelayBifrostFacade = join(packagesRoot, "core", "src", "lib", "edge", "relayBifrost.ts");
 if (existsSync(retiredCoreRelayBifrostFacade)) {
@@ -1087,7 +1087,7 @@ if (existsSync(retiredCoreRelayBifrostFacade)) {
 }
 const retiredCoreProviderTestBatchFacade = join(packagesRoot, "core", "src", "lib", "providers", "testBatch.ts");
 if (existsSync(retiredCoreProviderTestBatchFacade)) {
-  add("redundant-core-facade", retiredCoreProviderTestBatchFacade, "Provider batch validation belongs in apps/control-api");
+  add("redundant-core-facade", retiredCoreProviderTestBatchFacade, "Provider batch validation belongs in apps/control");
 }
 const retiredCoreUsageDbFacade = join(packagesRoot, "core", "src", "lib", "usageDb.ts");
 if (existsSync(retiredCoreUsageDbFacade)) {
@@ -1109,7 +1109,7 @@ for (const retiredProviderDeclaration of ["providerMetadata.d.ts", "providerNode
 }
 const retiredCoreClientApiAuth = join(packagesRoot, "core", "src", "shared", "utils", "clientApiRouteAuth.ts");
 if (existsSync(retiredCoreClientApiAuth)) {
-  add("edge-runtime-in-core", retiredCoreClientApiAuth, "Client API route authentication belongs in apps/edge-gateway");
+  add("edge-runtime-in-core", retiredCoreClientApiAuth, "Client API route authentication belongs in apps/gateway");
 }
 const retiredCoreRateLimitSources = [
   join(packagesRoot, "core", "src", "lib", "edge", "rateLimit.ts"),
@@ -1117,7 +1117,7 @@ const retiredCoreRateLimitSources = [
 ];
 for (const source of retiredCoreRateLimitSources) {
   if (existsSync(source)) {
-    add("mixed-runtime-boundary", source, "Credential selection belongs in inference and HTTP adaptation belongs in apps/edge-gateway");
+    add("mixed-runtime-boundary", source, "Credential selection belongs in inference and HTTP adaptation belongs in apps/gateway");
   }
 }
 const retiredCoreEnvRepairSources = [
@@ -1126,7 +1126,7 @@ const retiredCoreEnvRepairSources = [
 ];
 for (const source of retiredCoreEnvRepairSources) {
   if (existsSync(source)) {
-    add("control-runtime-in-core", source, "Environment repair runtime belongs in apps/control-api");
+    add("control-runtime-in-core", source, "Environment repair runtime belongs in apps/control");
   }
 }
 const retiredUnreachableCoreSources = [
@@ -1205,7 +1205,7 @@ const legacyA2ARouteRoots = [
 ];
 for (const legacyRoot of legacyA2ARouteRoots) {
   for (const file of walk(legacyRoot)) {
-    add("duplicate-core-a2a-route", file, "A2A transport is owned by apps/edge-gateway; legacy Next routes must be removed");
+    add("duplicate-core-a2a-route", file, "A2A transport is owned by apps/gateway; legacy Next routes must be removed");
   }
 }
 for (const [appPath, routePaths] of Object.entries(migratedRouteOwnership)) {
@@ -1219,14 +1219,14 @@ for (const [appPath, routePaths] of Object.entries(migratedRouteOwnership)) {
     }
   }
   if (
-    appPath === "apps/control-api" &&
+    appPath === "apps/control" &&
     (implementedRoutes.has("telegram/update/route.ts") ||
       implementedRoutes.has("api/telegram/update/route.ts"))
   ) {
     add(
       "public-telegram-ingress-in-control",
       appDir,
-      "POST /api/telegram/update belongs exclusively to apps/edge-gateway",
+      "POST /api/telegram/update belongs exclusively to apps/gateway",
     );
   }
 
@@ -1260,7 +1260,7 @@ for (const app of appEntries) {
       );
     }
     if (
-      rel(app.dir) === "apps/control-api" &&
+      rel(app.dir) === "apps/control" &&
       /@orbit\/inference\/(?:services\/chat-completions-compat|services\/rateLimitManager(?:\/errors)?)/.test(source)
     ) {
       add(
@@ -1270,7 +1270,7 @@ for (const app of appEntries) {
       );
     }
     if (
-      rel(app.dir) === "apps/control-api" &&
+      rel(app.dir) === "apps/control" &&
       /@orbit\/inference\/services\/(?:token-refresh|credentialTokenRefresh|kimiTokenRefresh)/.test(source)
     ) {
       add(
@@ -1291,8 +1291,8 @@ for (const app of appEntries) {
     }
     if (
       [
-        "apps/control-api/src/proxies/proxies.service.ts",
-        "apps/control-api/src/settings/proxy/proxy-settings.service.ts",
+        "apps/control/src/proxies/proxies.service.ts",
+        "apps/control/src/settings/proxy/proxy-settings.service.ts",
       ].includes(rel(file)) &&
       /import\s*\{[^}]*\bclearDispatcherCache\b[^}]*\}\s*from\s*["']@orbit\/inference\/utils\/proxyDispatcher["']/.test(source)
     ) {
@@ -1303,7 +1303,7 @@ for (const app of appEntries) {
       );
     }
     if (
-      rel(file) === "apps/control-api/src/cache/cache.service.ts" &&
+      rel(file) === "apps/control/src/cache/cache.service.ts" &&
       /\b(?:getCacheStats|clearCache|invalidateByModel|invalidateBySignature|invalidateStale|clearMemoryCache|getMemoryCacheStats)\b/.test(source)
     ) {
       add(
@@ -1313,7 +1313,7 @@ for (const app of appEntries) {
       );
     }
     if (
-      rel(app.dir) === "apps/control-api" &&
+      rel(app.dir) === "apps/control" &&
       /@orbit\/inference\/services\/(?:providerLimits|codexResetCredits)/.test(source)
     ) {
       add(
@@ -1323,10 +1323,10 @@ for (const app of appEntries) {
       );
     }
     if (
-      rel(app.dir) === "apps/control-api" &&
+      rel(app.dir) === "apps/control" &&
       /\bgetJobRegistry\b|@orbit\/core\/(?:worker\/jobs|worker\/cloud-sync|control\/(?:cloud-sync-initialize|model-sync-scheduler))/.test(source)
     ) {
-      add("control-imports-worker-job-runtime", file, "control-api may only read job projections and send versioned worker commands");
+      add("control-imports-worker-job-runtime", file, "control may only read job projections and send versioned worker commands");
     }
     if (legacyNames.some((name) => source.includes(name))) add("retired-runtime-reference", file);
     for (const match of source.matchAll(importRe)) {
@@ -1366,11 +1366,11 @@ for (const app of appEntries) {
           "only the worker may own Radar background synchronization lifecycle",
         );
       }
-      if (specifier === guardrailManagementSpecifier && rel(app.dir) !== "apps/control-api") {
+      if (specifier === guardrailManagementSpecifier && rel(app.dir) !== "apps/control") {
         add(
-          "guardrail-management-outside-control-api",
+          "guardrail-management-outside-control",
           file,
-          "only control-api may register or inspect the mutable guardrail registry",
+          "only control may register or inspect the mutable guardrail registry",
         );
       }
       if (specifier === preRequestHookExecutionSpecifier) {
@@ -1409,7 +1409,7 @@ for (const app of appEntries) {
   }
 }
 
-for (const appPath of ["apps/control-api", "apps/edge-gateway", "apps/realtime", "apps/worker"]) {
+for (const appPath of ["apps/control", "apps/gateway", "apps/realtime", "apps/worker"]) {
   const lifecycleFile = join(repoRoot, appPath, "src", "database-runtime-lifecycle.service.ts");
   const appModuleFile = join(repoRoot, appPath, "src", "app.module.ts");
   if (!existsSync(lifecycleFile)) {
@@ -1428,19 +1428,19 @@ for (const appPath of ["apps/control-api", "apps/edge-gateway", "apps/realtime",
 
 const controlLocalProviderHealth = join(
   repoRoot,
-  "apps/control-api/src/monitoring/local-provider-health.service.ts",
+  "apps/control/src/monitoring/local-provider-health.service.ts",
 );
 const edgeLocalProviderHealth = join(
   repoRoot,
-  "apps/edge-gateway/src/runtime-control/local-provider-health.service.ts",
+  "apps/gateway/src/runtime-control/local-provider-health.service.ts",
 );
 const edgeRuntimeControlModule = join(
   repoRoot,
-  "apps/edge-gateway/src/runtime-control/runtime-control.module.ts",
+  "apps/gateway/src/runtime-control/runtime-control.module.ts",
 );
 const edgeRuntimeControlService = join(
   repoRoot,
-  "apps/edge-gateway/src/runtime-control/runtime-control.service.ts",
+  "apps/gateway/src/runtime-control/runtime-control.service.ts",
 );
 if (existsSync(controlLocalProviderHealth)) {
   add(
@@ -1485,11 +1485,11 @@ if (!existsSync(edgeLocalProviderHealth)) {
 
 const embeddedWsProxyFile = join(
   repoRoot,
-  "apps/control-api/src/services/embedded-service-ws-proxy.ts",
+  "apps/control/src/services/embedded-service-ws-proxy.ts",
 );
 const embeddedRuntimeOwnerFile = join(
   repoRoot,
-  "apps/control-api/src/services/embedded-services-runtime.service.ts",
+  "apps/control/src/services/embedded-services-runtime.service.ts",
 );
 if (existsSync(embeddedWsProxyFile) && existsSync(embeddedRuntimeOwnerFile)) {
   const proxySource = readFileSync(embeddedWsProxyFile, "utf8");
@@ -1932,14 +1932,14 @@ if (openSseEntry?.manifest?.exports?.["./oauth/codex-device-completion"]) {
     add(
       "cli-runtime-exposes-db-mutations",
       cliRuntime,
-      "CLI runtime fallback may expose read-only queries only; runtime mutations belong to control-api",
+      "CLI runtime fallback may expose read-only queries only; runtime mutations belong to control",
     );
   }
   if (/\bdb\.combos\.(?:createCombo|deleteComboByName|setActiveCombo|updateCombo)\s*\(/.test(comboSource)) {
     add(
       "cli-combo-writes-control-owned-db",
       cliCombo,
-      "CLI combo mutations must use the control-api and fail when it is offline",
+      "CLI combo mutations must use the control and fail when it is offline",
     );
   }
 }
@@ -2025,14 +2025,14 @@ const report = {
     "packages may not import apps",
     "apps may consume only their allow-listed core subpaths",
     "migrated route files must exist only under their owning app",
-    "A2A transport and task routes belong only to apps/edge-gateway",
+    "A2A transport and task routes belong only to apps/gateway",
     "realtime WebSocket implementation and export belong only to apps/realtime",
     "http exposes no app factory or surface selector",
-    "control-api cannot import the worker-owned JobRegistry runtime",
+    "control cannot import the worker-owned JobRegistry runtime",
     "core control jobs contract cannot expose the worker-owned registry",
     "migrated app-owned capabilities cannot be re-exported by core",
     "long-running Nest apps own final database shutdown",
-    "CLI runtime fallback is read-only; control-api owns runtime configuration mutations",
+    "CLI runtime fallback is read-only; control owns runtime configuration mutations",
     "legacy runtime package names are retired",
   ],
   violations,

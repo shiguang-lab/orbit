@@ -32,7 +32,7 @@ test("usage modules do not initialize storage or schedule rotation during import
 
 test("edge bootstrap waits for usage storage before loading request modules", () => {
   const bootstrapSource = fs.readFileSync(
-    path.join(packageRoot, "../../apps/edge-gateway/src/bootstrap.ts"),
+    path.join(packageRoot, "../../apps/gateway/src/bootstrap.ts"),
     "utf8",
   );
   const initializationIndex = bootstrapSource.indexOf("await initializeUsageStorage()");

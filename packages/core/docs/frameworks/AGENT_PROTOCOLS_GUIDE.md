@@ -6,7 +6,7 @@ lastUpdated: 2026-06-28
 
 # Agent Protocols Guide
 
-> **Source:** `apps/edge-gateway/src/a2a/`, `apps/control-api/src/{acp,cloud-agents}/`
+> **Source:** `apps/gateway/src/a2a/`, `apps/control/src/{acp,cloud-agents}/`
 > **Last updated:** 2026-06-28 — v3.8.40
 
 ShiguangGateway exposes three different agent-related surfaces. They look similar at first glance but solve different problems. Use this page to pick the right one.
@@ -72,7 +72,7 @@ See [A2A-SERVER.md](./A2A-SERVER.md) for transport details, agent card structure
 ## 2. ACP — CLI Agents Registry
 
 **ShiguangGateway endpoint:** `GET /api/acp/agents`
-**Source:** `apps/control-api/src/acp/`
+**Source:** `apps/control/src/acp/`
 
 ### What it is
 
@@ -281,4 +281,4 @@ curl http://localhost:20128/api/v1/agents/tasks/<task-id> \
 - [CLI-TOOLS.md](../reference/CLI-TOOLS.md) — External CLI integrations (uses ACP)
 - [SKILLS.md](./SKILLS.md) — Skills framework (different from A2A skills — local execution sandbox)
 - [API_REFERENCE.md](../reference/API_REFERENCE.md#agents-protocol) — endpoint reference
-- Source: `apps/edge-gateway/src/a2a/`, `apps/control-api/src/{acp,cloud-agents}/`
+- Source: `apps/gateway/src/a2a/`, `apps/control/src/{acp,cloud-agents}/`

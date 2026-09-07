@@ -284,7 +284,7 @@ shiguang-gateway run gemini --model glm/glm-5.2 -- --skip-trust -p "hello"
 Gemini's workspace-trust guard still applies in headless mode — pass
 `--skip-trust` (or trust the directory interactively) yourself; the launcher
 deliberately does not bypass it. This launcher is distinct from the **ACP
-inventory** (`apps/control-api/src/acp/runtime/agent-registry.ts`), which powers
+inventory** (`apps/control/src/acp/runtime/agent-registry.ts`), which powers
 installation detection on `/dashboard/acp-agents` and does not launch agents.
 
 ---

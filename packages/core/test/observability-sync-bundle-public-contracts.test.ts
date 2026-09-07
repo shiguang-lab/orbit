@@ -67,5 +67,5 @@ test("wide targets and obsolete sync-bundle consumers stay retired", () => {
   const consumers = sourceFiles(path.join(repoRoot, "apps"))
     .filter((file) => fs.readFileSync(file, "utf8").includes("core/control/sync-bundle"))
     .map((file) => path.relative(repoRoot, file).split(path.sep).join("/"));
-  assert.deepEqual(consumers, ["apps/control-api/src/sync/handlers/bundle.handler.ts"]);
+  assert.deepEqual(consumers, ["apps/control/src/sync/handlers/bundle.handler.ts"]);
 });

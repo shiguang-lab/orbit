@@ -32,8 +32,8 @@ test("split plan maps CLI ports and internal service URLs", () => {
   }, { JWT_SECRET: "test", EDGE_GATEWAY_HOST: "0.0.0.0" }, "/workspace");
 
   assert.deepEqual(plan.map(({ name, health }) => [name, health.port]), [
-    ["edge-gateway", 19001],
-    ["control-api", 19002],
+    ["gateway", 19001],
+    ["control", 19002],
     ["realtime", 19003],
     ["worker", 19004],
   ]);
@@ -53,10 +53,10 @@ test("service spawn invokes the app-local tsx entrypoint", () => {
   }), spawned);
   assert.equal(invocation[0], process.execPath);
   assert.deepEqual(invocation[1], [
-    "/workspace/apps/edge-gateway/node_modules/tsx/dist/cli.mjs",
+    "/workspace/apps/gateway/node_modules/tsx/dist/cli.mjs",
     "--tsconfig",
-    "/workspace/apps/edge-gateway/tsconfig.json",
-    "/workspace/apps/edge-gateway/src/main.ts",
+    "/workspace/apps/gateway/tsconfig.json",
+    "/workspace/apps/gateway/src/main.ts",
   ]);
   assert.equal(invocation[2].detached, true);
   assert.equal(invocation[2].stdio, "ignore");
@@ -79,11 +79,11 @@ test("startup waits for edge before starting dependants and persists daemon PIDs
   });
 
   assert.deepEqual(events.slice(0, 3), [
-    "spawn:edge-gateway",
-    `pid:${pidServiceName("edge-gateway")}:100`,
-    "health:edge-gateway",
+    "spawn:gateway",
+    `pid:${pidServiceName("gateway")}:100`,
+    "health:gateway",
   ]);
-  assert.equal(events.indexOf("health:edge-gateway") < events.indexOf("spawn:control-api"), true);
+  assert.equal(events.indexOf("health:gateway") < events.indexOf("spawn:control"), true);
   assert.equal(result.length, 4);
   assert.deepEqual([...children.values()].map((value) => value.unrefCalls), [1, 1, 1, 1]);
 });
@@ -113,17 +113,17 @@ test("startup refuses to overwrite a live daemon PID", async () => {
   const plan = resolveSplitPlan({}, {}, "/workspace");
   let spawned = false;
   await assert.rejects(startSplitServices(plan, {}, {
-    readPidFile(key) { return key === pidServiceName("control-api") ? 8123 : null; },
+    readPidFile(key) { return key === pidServiceName("control") ? 8123 : null; },
     isPidRunning: () => true,
     spawnService() { spawned = true; },
-  }), /control-api is already running \(PID 8123\)/);
+  }), /control is already running \(PID 8123\)/);
   assert.equal(spawned, false);
 });
 
 test("stop terminates split services in reverse dependency order", async () => {
   const pids = new Map([
-    [pidServiceName("edge-gateway"), 1],
-    [pidServiceName("control-api"), 2],
+    [pidServiceName("gateway"), 1],
+    [pidServiceName("control"), 2],
     [pidServiceName("realtime"), 3],
     [pidServiceName("worker"), 4],
   ]);
@@ -134,8 +134,8 @@ test("stop terminates split services in reverse dependency order", async () => {
     stopPid: async (pid, name) => stopped.push([name, pid]),
     cleanupPidFile: (key) => cleaned.push(key),
   });
-  assert.deepEqual(stopped, [["worker", 4], ["realtime", 3], ["control-api", 2], ["edge-gateway", 1]]);
-  assert.deepEqual(result.map(({ name }) => name), ["worker", "realtime", "control-api", "edge-gateway"]);
+  assert.deepEqual(stopped, [["worker", 4], ["realtime", 3], ["control", 2], ["gateway", 1]]);
+  assert.deepEqual(result.map(({ name }) => name), ["worker", "realtime", "control", "gateway"]);
   assert.equal(cleaned.length, 4);
 });
 

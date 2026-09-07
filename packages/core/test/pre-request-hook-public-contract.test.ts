@@ -75,16 +75,16 @@ test("legacy registry and in-memory management entries stay retired", () => {
   assert.match(registry, /recordHookExecution\(hook\.name/);
   assert.match(registry, /insertHookLog\(/);
 
-  for (const file of sourceFiles(path.join(repoRoot, "apps/control-api/src"))) {
+  for (const file of sourceFiles(path.join(repoRoot, "apps/control/src"))) {
     const source = fs.readFileSync(file, "utf8");
     assert.doesNotMatch(source, /pre-request-hook-(?:execution|management)/, file);
   }
   const controlRepository = fs.readFileSync(
-    path.join(repoRoot, "apps/control-api/src/middleware-hooks/middleware-hooks.repository.ts"),
+    path.join(repoRoot, "apps/control/src/middleware-hooks/middleware-hooks.repository.ts"),
     "utf8",
   );
   const controlService = fs.readFileSync(
-    path.join(repoRoot, "apps/control-api/src/middleware-hooks/middleware-hooks.service.ts"),
+    path.join(repoRoot, "apps/control/src/middleware-hooks/middleware-hooks.service.ts"),
     "utf8",
   );
   assert.match(controlRepository, /FROM middleware_logs/);

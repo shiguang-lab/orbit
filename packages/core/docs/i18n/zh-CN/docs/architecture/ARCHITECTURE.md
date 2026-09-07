@@ -433,7 +433,7 @@ Jules）封装在统一的基于 DB 的任务生命周期之后。所有任务�
 - 模型可用性快照：`src/domain/modelAvailability.ts`
 - 服务商过期追踪：`src/domain/providerExpiration.ts`
 - 配额缓存：`src/domain/quotaCache.ts`
-- 降级状态：`apps/control-api/src/health/degradation.ts`
+- 降级状态：`apps/control/src/health/degradation.ts`
 - 配置审计：`src/domain/configAudit.ts`
 - ShiguangGateway 响应元数据构建器：`src/domain/shiguang-gatewayResponseMeta.ts`
 - 评估子系统：`src/domain/assessment/` — 周期性评估任务

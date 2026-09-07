@@ -158,7 +158,7 @@ Auth: optional (`REQUIRE_API_KEY`). Errors via `buildErrorBody()` (Hard Rule #12
 | `src/app/(dashboard)/dashboard/playground/hooks/useStreamMetrics.ts`       | Client-side metric hook                             |
 | `src/app/(dashboard)/dashboard/playground/hooks/usePresets.ts`             | Presets CRUD hook                                   |
 | `src/app/(dashboard)/dashboard/playground/hooks/useImprovePrompt.ts`       | Improve-prompt hook                                 |
-| `apps/control-api/src/playground/runtime/prompt-improver.ts`                | Meta-prompt builder                                 |
+| `apps/control/src/playground/runtime/prompt-improver.ts`                | Meta-prompt builder                                 |
 | `src/lib/db/playgroundPresets.ts`                                          | DB module (CRUD)                                    |
 | `src/app/api/playground/improve-prompt/route.ts`                           | Improve-prompt REST route                           |
 | `src/app/api/playground/presets/route.ts`                                  | Presets list + create                               |
@@ -182,5 +182,5 @@ Auth: optional (`REQUIRE_API_KEY`). Errors via `buildErrorBody()` (Hard Rule #12
 
 - Master plan: `_tasks/features-v3.8.6/refactorpages/_orchestration/master-plan-group-C.md`
 - Feature plan: `_tasks/features-v3.8.6/refactorpages/17-playground-studio-redesign.plan.md`
-- Prompt improver: `apps/control-api/src/playground/runtime/prompt-improver.ts`
+- Prompt improver: `apps/control/src/playground/runtime/prompt-improver.ts`
 - Search Tools Studio: `docs/frameworks/SEARCH_TOOLS_STUDIO.md`

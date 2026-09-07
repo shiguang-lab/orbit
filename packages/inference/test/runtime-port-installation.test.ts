@@ -43,8 +43,8 @@ test("runtime settings port does not register at import time", async () => {
 
 test("application owners call installers and app modules have no side-effect hook imports", () => {
   const dbOwners = [
-    "apps/control-api/src/bootstrap.ts",
-    "apps/edge-gateway/src/bootstrap.ts",
+    "apps/control/src/bootstrap.ts",
+    "apps/gateway/src/bootstrap.ts",
     "apps/realtime/src/bootstrap.ts",
     "apps/worker/src/bootstrap.ts",
   ];
@@ -55,7 +55,7 @@ test("application owners call installers and app modules have no side-effect hoo
   }
 
   const settingsOwners = [
-    "apps/edge-gateway/src/runtime/edge-runtime.service.ts",
+    "apps/gateway/src/runtime/edge-runtime.service.ts",
     "apps/worker/src/main.ts",
   ];
   for (const relativePath of settingsOwners) {
@@ -65,12 +65,12 @@ test("application owners call installers and app modules have no side-effect hoo
   }
 
   const edgeRuntime = fs.readFileSync(
-    path.join(repoRoot, "apps/edge-gateway/src/runtime/edge-runtime.service.ts"),
+    path.join(repoRoot, "apps/gateway/src/runtime/edge-runtime.service.ts"),
     "utf8",
   );
   assert.match(edgeRuntime, /\binstallResilienceRuntimeSettingsPort\(\)/);
   const controlRuntime = fs.readFileSync(
-    path.join(repoRoot, "apps/control-api/src/infrastructure/control-runtime.service.ts"),
+    path.join(repoRoot, "apps/control/src/infrastructure/control-runtime.service.ts"),
     "utf8",
   );
   assert.doesNotMatch(
@@ -78,13 +78,13 @@ test("application owners call installers and app modules have no side-effect hoo
     /@orbit\/inference|\binstallRuntimeSettingsPort\b|\binstallResilienceRuntimeSettingsPort\b|\bhydrateRequestRuntime\b/,
   );
   assert.doesNotMatch(
-    fs.readFileSync(path.join(repoRoot, "apps/control-api/src/bootstrap.ts"), "utf8"),
+    fs.readFileSync(path.join(repoRoot, "apps/control/src/bootstrap.ts"), "utf8"),
     /\binstallMemoryRuntimePort\b/,
   );
 
   for (const relativePath of [
-    "apps/control-api/src/app.module.ts",
-    "apps/edge-gateway/src/app.module.ts",
+    "apps/control/src/app.module.ts",
+    "apps/gateway/src/app.module.ts",
     "apps/realtime/src/app.module.ts",
     "apps/worker/src/app.module.ts",
   ]) {

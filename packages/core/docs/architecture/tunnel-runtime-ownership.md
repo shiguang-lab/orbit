@@ -1,9 +1,9 @@
 # Tunnel runtime ownership
 
 Cloudflared, ngrok, and Tailscale expose the edge gateway's public API endpoint, so their
-processes and host-level commands are owned by `apps/edge-gateway`.
+processes and host-level commands are owned by `apps/gateway`.
 
-`apps/control-api` owns the authenticated operator-facing `/api/tunnels/*` routes, input
+`apps/control` owns the authenticated operator-facing `/api/tunnels/*` routes, input
 validation, and public-safe error projection. It must not import or invoke the tunnel runtime.
 Instead it sends a typed `@orbit/contracts/tunnel-command` request to
 `POST /api/internal/tunnels/command` on the edge gateway. The edge endpoint rejects requests

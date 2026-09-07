@@ -26,8 +26,8 @@ test("logger public runtime and declaration expose the same exact keys", () => {
 
 test("workspace consumers use the real log object instead of ghost namespace methods", () => {
   for (const relativePath of [
-    "apps/control-api/src/search/providers/handlers/search-providers.handler.ts",
-    "apps/edge-gateway/src/rerank/provider-handler.ts",
+    "apps/control/src/search/providers/handlers/search-providers.handler.ts",
+    "apps/gateway/src/rerank/provider-handler.ts",
   ]) {
     const source = fs.readFileSync(path.join(repoRoot, relativePath), "utf8");
     assert.match(source, /import \{ log \} from "@orbit\/inference\/utils\/logger"/);

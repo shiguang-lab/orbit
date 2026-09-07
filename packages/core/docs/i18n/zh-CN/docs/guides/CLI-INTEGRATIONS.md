@@ -224,7 +224,7 @@ shiguang-gateway run gemini --model glm/glm-5.2 -- --skip-trust -p "hello"
 
 Gemini 的工作区信任保护在无头模式下仍然适用——自己传递
 `--skip-trust`（或交互式信任目录）；启动器故意不绕过它。这个启动器与 **ACP
-清单**（`apps/control-api/src/acp/runtime/agent-registry.ts`）不同，后者为
+清单**（`apps/control/src/acp/runtime/agent-registry.ts`）不同，后者为
 `/dashboard/acp-agents` 提供安装检测，不会启动代理。
 
 ---

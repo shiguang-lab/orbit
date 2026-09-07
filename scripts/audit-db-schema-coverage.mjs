@@ -119,7 +119,7 @@ try {
   // server apps and SQL-looking lines so UI strings such as "users" do not
   // turn into false positives.
   const appFiles = walk(join(repoRoot, "apps"))
-    .filter((file) => !file.includes(`${join("apps", "admin")}${join("", "")}`));
+    .filter((file) => !file.includes(`${join("apps", "console")}${join("", "")}`));
   const directAppEvidence = new Map();
   for (const table of uncovered) {
     const token = new RegExp(`\\b${table.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\b`, "i");

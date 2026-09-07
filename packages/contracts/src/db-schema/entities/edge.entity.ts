@@ -2,7 +2,7 @@ import { column, type EntityDefinition } from "./definition.js";
 
 /** Conversational memory records written only by the edge request runtime. */
 export const MemoryEntity: EntityDefinition = {
-  entityName: "Memory", tableName: "memories", owner: "edge-gateway", columns: [
+  entityName: "Memory", tableName: "memories", owner: "gateway", columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }), column("api_key_id", "TEXT", { nullable: false }), column("session_id", "TEXT"), column("type", "TEXT", { nullable: false }), column("key", "TEXT"), column("content", "TEXT", { nullable: false }), column("metadata", "TEXT"), column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }), column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }), column("expires_at", "TEXT"), column("memory_id", "INTEGER"), column("needs_reindex", "INTEGER", { nullable: false, default: "0" }), column("access_count", "INTEGER", { nullable: false, default: "0" }), column("last_accessed_at", "TEXT"),
   ],
 };
@@ -11,7 +11,7 @@ export const MemoryEntity: EntityDefinition = {
 export const MiddlewareLogEntity: EntityDefinition = {
   entityName: "MiddlewareLog",
   tableName: "middleware_logs",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("hook_name", "TEXT", { nullable: false }),
@@ -31,7 +31,7 @@ export const MiddlewareLogEntity: EntityDefinition = {
 export const ReasoningCacheEntity: EntityDefinition = {
   entityName: "ReasoningCache",
   tableName: "reasoning_cache",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("tool_call_id", "TEXT", { nullable: false, primaryKey: true }),
     column("provider", "TEXT", { nullable: false }),
@@ -51,7 +51,7 @@ export const ReasoningCacheEntity: EntityDefinition = {
 export const SessionModelHistoryEntity: EntityDefinition = {
   entityName: "SessionModelHistory",
   tableName: "session_model_history",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
     column("session_id", "TEXT", { nullable: false }),
@@ -71,7 +71,7 @@ export const SessionModelHistoryEntity: EntityDefinition = {
 export const ContextHandoffEntity: EntityDefinition = {
   entityName: "ContextHandoff",
   tableName: "context_handoffs",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true, default: "lower(hex(randomblob(8)))" }),
     column("session_id", "TEXT", { nullable: false }),
@@ -93,7 +93,7 @@ export const ContextHandoffEntity: EntityDefinition = {
 
 /**
  * Persistent semantic responses written by the edge request pipeline and
- * inspected/invalidated by control-api cache operations.
+ * inspected/invalidated by control cache operations.
  *
  * `semantic_cache` is created by the core SQLite bootstrap and is intentionally
  * represented here as a shared contract; query and cache policy code remains
@@ -102,7 +102,7 @@ export const ContextHandoffEntity: EntityDefinition = {
 export const SemanticCacheEntity: EntityDefinition = {
   entityName: "SemanticCache",
   tableName: "semantic_cache",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("signature", "TEXT", { nullable: false }),
@@ -120,7 +120,7 @@ export const SemanticCacheEntity: EntityDefinition = {
 export const CacheMetricEntity: EntityDefinition = {
   entityName: "CacheMetric",
   tableName: "cache_metrics",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("key", "TEXT", { nullable: false, primaryKey: true }),
     column("value", "INTEGER", { nullable: false, default: "0" }),
@@ -131,7 +131,7 @@ export const CacheMetricEntity: EntityDefinition = {
 export const FileEntity: EntityDefinition = {
   entityName: "File",
   tableName: "files",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }), column("bytes", "INTEGER", { nullable: false }),
     column("created_at", "INTEGER", { nullable: false }), column("filename", "TEXT", { nullable: false }),
@@ -143,7 +143,7 @@ export const FileEntity: EntityDefinition = {
 export const BatchEntity: EntityDefinition = {
   entityName: "Batch",
   tableName: "batches",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }), column("endpoint", "TEXT", { nullable: false }),
     column("completion_window", "TEXT", { nullable: false }), column("status", "TEXT", { nullable: false }),
@@ -162,7 +162,7 @@ export const BatchEntity: EntityDefinition = {
 export const BatchItemCheckpointEntity: EntityDefinition = {
   entityName: "BatchItemCheckpoint",
   tableName: "batch_item_checkpoints",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("batch_id", "TEXT", { nullable: false, primaryKey: true }),
     column("line_number", "INTEGER", { nullable: false, primaryKey: true }),
@@ -179,7 +179,7 @@ export const BatchItemCheckpointEntity: EntityDefinition = {
 export const AgenticConversationEntity: EntityDefinition = {
   entityName: "AgenticConversation",
   tableName: "agentic_conversations",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("api_key_id", "TEXT"),
@@ -196,7 +196,7 @@ export const AgenticConversationEntity: EntityDefinition = {
 export const ConversationTurnNodeEntity: EntityDefinition = {
   entityName: "ConversationTurnNode",
   tableName: "conversation_turn_nodes",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("conversation_id", "TEXT", { nullable: false }),
@@ -213,7 +213,7 @@ export const ConversationTurnNodeEntity: EntityDefinition = {
 export const ApiKeyTokenCounterEntity: EntityDefinition = {
   entityName: "ApiKeyTokenCounter",
   tableName: "api_key_token_counters",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("limit_id", "TEXT", { nullable: false, primaryKey: true }),
     column("window_start", "TEXT", { nullable: false, primaryKey: true }),
@@ -225,7 +225,7 @@ export const ApiKeyTokenCounterEntity: EntityDefinition = {
 export const ApiKeyTokenLimitResetLogEntity: EntityDefinition = {
   entityName: "ApiKeyTokenLimitResetLog",
   tableName: "api_key_token_limit_reset_logs",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
     column("limit_id", "TEXT", { nullable: false }),
@@ -239,7 +239,7 @@ export const ApiKeyTokenLimitResetLogEntity: EntityDefinition = {
 export const ProviderQuotaStateEntity: EntityDefinition = {
   entityName: "ProviderQuotaState",
   tableName: "provider_quota_state",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("connection_id", "TEXT", { nullable: false, primaryKey: true }),
     column("model", "TEXT", { nullable: false, primaryKey: true }),
@@ -255,7 +255,7 @@ export const ProviderQuotaStateEntity: EntityDefinition = {
 export const QuotaConsumptionEntity: EntityDefinition = {
   entityName: "QuotaConsumption",
   tableName: "quota_consumption",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("api_key_id", "TEXT", { nullable: false, primaryKey: true }),
     column("dimension_key", "TEXT", { nullable: false, primaryKey: true }),
@@ -276,7 +276,7 @@ export const QuotaConsumptionEntity: EntityDefinition = {
 export const CompressionAnalyticsEntity: EntityDefinition = {
   entityName: "CompressionAnalytics",
   tableName: "compression_analytics",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
     column("timestamp", "TEXT", { nullable: false }),
@@ -313,7 +313,7 @@ export const CompressionAnalyticsEntity: EntityDefinition = {
 export const CompressionEngineBreakdownEntity: EntityDefinition = {
   entityName: "CompressionEngineBreakdown",
   tableName: "compression_engine_breakdown",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
     column("timestamp", "TEXT", { nullable: false }),
@@ -330,7 +330,7 @@ export const CompressionEngineBreakdownEntity: EntityDefinition = {
 export const RelayTokenEntity: EntityDefinition = {
   entityName: "RelayToken",
   tableName: "relay_tokens",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("name", "TEXT", { nullable: false }),
@@ -356,7 +356,7 @@ export const RelayTokenEntity: EntityDefinition = {
 export const RelayRateLimitEntity: EntityDefinition = {
   entityName: "RelayRateLimit",
   tableName: "relay_rate_limits",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("token_id", "TEXT", { nullable: false, primaryKey: true }),
     column("window_start", "INTEGER", { nullable: false, primaryKey: true }),
@@ -369,7 +369,7 @@ export const RelayRateLimitEntity: EntityDefinition = {
 export const RelayLogEntity: EntityDefinition = {
   entityName: "RelayLog",
   tableName: "relay_logs",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
     column("token_id", "TEXT", { nullable: false }),
@@ -390,12 +390,12 @@ export const RelayLogEntity: EntityDefinition = {
 /**
  * Append-only audit records emitted by the MCP server runtime and queried by
  * the control-plane MCP management surface. The runtime lives in the edge
- * deployment dependency graph, while control-api only reads these rows.
+ * deployment dependency graph, while control only reads these rows.
  */
 export const McpToolAuditEntity: EntityDefinition = {
   entityName: "McpToolAudit",
   tableName: "mcp_tool_audit",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
     column("tool_name", "TEXT", { nullable: false }),
@@ -418,7 +418,7 @@ export const McpToolAuditEntity: EntityDefinition = {
 export const A2aTaskEntity: EntityDefinition = {
   entityName: "A2aTask",
   tableName: "a2a_tasks",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("state", "TEXT", { nullable: false, default: "'submitted'" }),
@@ -442,7 +442,7 @@ export const A2aTaskEntity: EntityDefinition = {
 export const A2aTaskEventEntity: EntityDefinition = {
   entityName: "A2aTaskEvent",
   tableName: "a2a_task_events",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
     column("task_id", "TEXT", { nullable: false }),
@@ -456,7 +456,7 @@ export const A2aTaskEventEntity: EntityDefinition = {
 export const RoutingDecisionEntity: EntityDefinition = {
   entityName: "RoutingDecision",
   tableName: "routing_decisions",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
     column("request_id", "TEXT"),
@@ -479,7 +479,7 @@ export const RoutingDecisionEntity: EntityDefinition = {
 export const CcrBlockEntity: EntityDefinition = {
   entityName: "CcrBlock",
   tableName: "ccr_blocks",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("principal_id", "TEXT", { nullable: false, primaryKey: true }),
     column("hash", "TEXT", { nullable: false, primaryKey: true }),
@@ -499,7 +499,7 @@ export const CcrBlockEntity: EntityDefinition = {
 export const CompressionCacheStatsEntity: EntityDefinition = {
   entityName: "CompressionCacheStats",
   tableName: "compression_cache_stats",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }),
     column("provider", "TEXT", { nullable: false }),
@@ -518,7 +518,7 @@ export const CompressionCacheStatsEntity: EntityDefinition = {
 export const MemoryVecMetaEntity: EntityDefinition = {
   entityName: "MemoryVecMeta",
   tableName: "memory_vec_meta",
-  owner: "edge-gateway",
+  owner: "gateway",
   columns: [
     column("id", "INTEGER", { nullable: false, primaryKey: true }),
     column("active_dim", "INTEGER"),

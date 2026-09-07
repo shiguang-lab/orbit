@@ -6,12 +6,12 @@ port or selecting a surface at runtime.
 
 | App | Owns | Reads/writes | Acceptance |
 | --- | --- | --- | --- |
-| `edge-gateway` | Public `/v1`, `/v1beta`, A2A, cloud-agent tasks and provider execution; no live-dashboard listener | Provider connections, cloud-agent credentials/tasks, batches/files (through app-owned Nest modules and handlers) | `pnpm --filter @orbit/edge-gateway typecheck && pnpm --filter @orbit/edge-gateway build && pnpm smoke:split-deployment` |
-| `control-api` | Admin `/api`, authz, CRUD, settings, logs, audit commands, free-proxy catalog/promotion and system version/update controls; local-only provider discovery management; Jobs projections and worker command client; migrated health route group in `apps/control-api/src/routes/api`; named compression-combo CRUD and assignments; AgentBridge state, mappings and bypass administration; Traffic Inspector session CRUD under `apps/control-api/src/tools/traffic-inspector` | Control-plane tables and read-only usage/job projections | `pnpm --filter @orbit/control-api typecheck && pnpm --filter @orbit/control-api build` |
+| `gateway` | Public `/v1`, `/v1beta`, A2A, cloud-agent tasks and provider execution; no live-dashboard listener | Provider connections, cloud-agent credentials/tasks, batches/files (through app-owned Nest modules and handlers) | `pnpm --filter @orbit/gateway typecheck && pnpm --filter @orbit/gateway build && pnpm smoke:split-deployment` |
+| `control` | Admin `/api`, authz, CRUD, settings, logs, audit commands, free-proxy catalog/promotion and system version/update controls; local-only provider discovery management; Jobs projections and worker command client; migrated health route group in `apps/control/src/routes/api`; named compression-combo CRUD and assignments; AgentBridge state, mappings and bypass administration; Traffic Inspector session CRUD under `apps/control/src/tools/traffic-inspector` | Control-plane tables and read-only usage/job projections | `pnpm --filter @orbit/control typecheck && pnpm --filter @orbit/control build` |
 | `realtime` | Live dashboard WebSocket transport (`apps/realtime/src/live-ws`) | Event projections only | `pnpm --filter @orbit/realtime typecheck && pnpm --filter @orbit/realtime build` |
 | `worker` | Schedulers, sync, cleanup and background writes; task manifest/runner and authenticated internal Jobs command endpoint in `apps/worker/src/jobs` | Usage, quota, audit and job tables | `pnpm --filter @orbit/worker typecheck && pnpm --filter @orbit/worker build && pnpm smoke:worker` |
 | `importer` | One-shot snapshot import and migration | Import target only | `pnpm --filter @orbit/importer typecheck && pnpm --filter @orbit/importer build` |
-| `admin` | Browser UI; no database access | `contracts` and same-origin APIs | `pnpm --filter @orbit/admin typecheck && pnpm --filter @orbit/admin build` |
+| `console` | Browser UI; no database access | `contracts` and same-origin APIs | `pnpm --filter @orbit/console typecheck && pnpm --filter @orbit/console build` |
 
 ## Shared package rule
 
@@ -26,7 +26,7 @@ under the database owner; SQL queries and mutations stay in the owning domain se
 first add a verified entity here, while app-only temporary tables stay app-owned and are not exported from this package.
 
 Proxy relay deployment backends (Cloudflare Workers, Deno Deploy, and Vercel)
-are control-api-owned Nest handlers under `apps/control-api/src/settings/proxy`;
+are control-owned Nest handlers under `apps/control/src/settings/proxy`;
 provider API calls, polling, relay generation, and proxy registration stay in
 that app rather than in `core`.
 
@@ -53,7 +53,7 @@ background timer.
 
 ### Job control boundary
 
-`control-api` serves `/api/jobs` but reads only persisted job/run projections through
+`control` serves `/api/jobs` but reads only persisted job/run projections through
 `core/control/jobs`. It never imports or constructs `JobRegistry`. Mutating actions
 use the versioned `@orbit/contracts/job-command` protocol and are executed by
 the worker-owned internal endpoint; only that process imports `core/worker/jobs`,
@@ -66,9 +66,9 @@ must never be reported as successful control operations.
 
 ### Tunnel control boundary
 
-`control-api` owns the operator-facing `/api/tunnels/*` routes, their validation, and
+`control` owns the operator-facing `/api/tunnels/*` routes, their validation, and
 public-safe response projection. Cloudflared, ngrok, and Tailscale host processes are
-owned and executed only by `edge-gateway`, the host serving the public API endpoint.
+owned and executed only by `gateway`, the host serving the public API endpoint.
 Control sends the typed `@orbit/contracts/tunnel-command` protocol to the
 edge-owned `POST /api/internal/tunnels/command` endpoint. This internal endpoint requires
 the shared `SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN`; it is never an operator-facing API.
@@ -89,28 +89,28 @@ Run `pnpm audit:db-entities --json` when changing a table definition. The audit
 compiles the canonical entities, resolves transitive workspace consumers, and scans
 `apps/*/src` plus package source for SQL table references. In the current graph,
 `@orbit/contracts/db-schema` reaches four deployable apps through the remaining
-`core` seam: `control-api`, `edge-gateway`, `realtime`, and `worker`.
+`core` seam: `control`, `gateway`, `realtime`, and `worker`.
 
 The entity write owners are intentionally narrower than those consumers:
 
 | Owner | Entities |
 | --- | --- |
-| `control-api` | settings, configAuditLog, playgroundPresets, pluginMetrics, middleware_hooks, evalSuites/evalCases/evalRuns, providerConnections, providerNodes, apiKeys, apiKeyGroups, combos, compressionCombos, compressionComboAssignments, modelComboMappings, webhooks, apiKeyTokenLimits, providerPlans, plugins, modelContextOverrides, modelCapabilityOverrides, tierConfig, tierAssignments, freeProxies, freeProxySyncErrors, reasoningRoutingRules, quotaGroups, quotaPools, quotaAllocations, quotaPoolConnections, quotaAllocationModelCaps, gamification leaderboard/user levels/badges/invites/community servers, inspectorSessions/inspectorSessionRequests/inspectorCustomHosts, discovery_results |
-| `edge-gateway` | batches, files, agenticConversations, conversationTurnNodes, apiKeyTokenCounters, apiKeyTokenLimitResetLogs, providerQuotaState, quotaConsumption, compressionAnalytics, compressionEngineBreakdown, pluginAnalytics, middleware_logs, mcpToolAudit |
+| `control` | settings, configAuditLog, playgroundPresets, pluginMetrics, middleware_hooks, evalSuites/evalCases/evalRuns, providerConnections, providerNodes, apiKeys, apiKeyGroups, combos, compressionCombos, compressionComboAssignments, modelComboMappings, webhooks, apiKeyTokenLimits, providerPlans, plugins, modelContextOverrides, modelCapabilityOverrides, tierConfig, tierAssignments, freeProxies, freeProxySyncErrors, reasoningRoutingRules, quotaGroups, quotaPools, quotaAllocations, quotaPoolConnections, quotaAllocationModelCaps, gamification leaderboard/user levels/badges/invites/community servers, inspectorSessions/inspectorSessionRequests/inspectorCustomHosts, discovery_results |
+| `gateway` | batches, files, agenticConversations, conversationTurnNodes, apiKeyTokenCounters, apiKeyTokenLimitResetLogs, providerQuotaState, quotaConsumption, compressionAnalytics, compressionEngineBreakdown, pluginAnalytics, middleware_logs, mcpToolAudit |
 | `worker` | usageHistory, callLogs, proxyLogs, quotaSnapshots, auditLogs, memories, jobs, modelCapabilities, modelIntelligence |
 
 AgentBridge's `agent_bridge_state`, `agent_bridge_mappings`, and
-`agent_bridge_bypass` tables are intentionally app-private control-api
+`agent_bridge_bypass` tables are intentionally app-private control
 storage. Their DDL lives in
-`apps/control-api/src/tools/agent-bridge/agent-bridge-schema.ts`; they are not
+`apps/control/src/tools/agent-bridge/agent-bridge-schema.ts`; they are not
 exported as shared `db-schema` entities because no other deployable app reads
 or writes them.
 
-Traffic Inspector session rows are control-api-owned: only the control-plane
+Traffic Inspector session rows are control-owned: only the control-plane
 HTTP module creates, updates, and exports recordings. Their DDL is initialized
-by `apps/control-api/src/infrastructure/control-schema.ts`, while the canonical
+by `apps/control/src/infrastructure/control-schema.ts`, while the canonical
 entity metadata remains in `packages/contracts/src/db-schema/entities/control.entity.ts`.
-Custom-host rows are managed by control-api but read by the edge MITM repair,
+Custom-host rows are managed by control but read by the edge MITM repair,
 DNS provisioning, and interception hooks; that concrete cross-app read path is
 why `inspector_custom_hosts` is cataloged alongside the app-owned session
 tables rather than treated as a private package table.
@@ -126,7 +126,7 @@ streaming event path writes leaderboard/XP rows while the control API serves man
 The replay/relay tables `reasoning_cache`, `session_model_history`, and
 `context_handoffs` are now explicitly promoted because the edge streaming path
 and worker maintenance share them. Likewise `skills` is a shared contract:
-control-api manages definitions while the edge/inference execution path reads
+control manages definitions while the edge/inference execution path reads
 and records executions. A shared package import alone is not a reason to
 promote an app-private table; each promotion requires concrete cross-app
 read/write evidence.
@@ -140,14 +140,14 @@ the shared database contract. These tables are cataloged in
 `packages/contracts/src/db-schema` rather than treated as app-private DDL.
 
 `mcp_tool_audit` follows the same cross-app pattern: the MCP server runtime
-appends invocation records, while control-api exposes read-only audit queries.
+appends invocation records, while control exposes read-only audit queries.
 Its canonical columns and edge write ownership are therefore declared in
 `packages/contracts/src/db-schema`; the runtime logger and control query surface remain
 implemented in their owning apps/packages.
 
-Middleware hooks follow the same split: control-api owns the `middleware_hooks`
+Middleware hooks follow the same split: control owns the `middleware_hooks`
 configuration rows, while edge/inference loads and executes those definitions.
-The edge request runtime appends `middleware_logs`, and control-api reads those
+The edge request runtime appends `middleware_logs`, and control reads those
 records for management and observability. Their canonical columns and ownership
 are declared in `packages/contracts/src/db-schema`; registry execution and query code stay in
 the consuming modules.

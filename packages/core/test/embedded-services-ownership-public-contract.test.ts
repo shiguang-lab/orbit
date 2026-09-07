@@ -84,9 +84,9 @@ test("wide and cross-process supervisor aliases stay retired", () => {
   }
 });
 
-test("supervisor and installer contracts are control-api-only", () => {
+test("supervisor and installer contracts are control-only", () => {
   const forbidden = /core\/control\/embedded-services-(?:lifecycle|install)/;
-  for (const root of ["apps/edge-gateway", "apps/worker", "apps/realtime", "packages/inference"]) {
+  for (const root of ["apps/gateway", "apps/worker", "apps/realtime", "packages/inference"]) {
     for (const file of sourceFiles(path.join(repoRoot, root))) {
       assert.doesNotMatch(fs.readFileSync(file, "utf8"), forbidden, file);
     }

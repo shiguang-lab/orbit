@@ -24,8 +24,8 @@ const baseEnv = {
   LOG_LEVEL: "silent",
 };
 const services = [
-  { name: "edge-gateway", port: 18887, live: false },
-  { name: "control-api", port: 18888, live: false },
+  { name: "gateway", port: 18887, live: false },
+  { name: "control", port: 18888, live: false },
   { name: "realtime", port: 18889, live: true },
 ];
 const workerService = { name: "worker", port: 18891, live: false };
@@ -33,7 +33,7 @@ const children = [];
 let clientApiHeaders = {};
 
 const tunnelControllerSource = readFileSync(
-  join(repoRoot, "apps/control-api/src/tunnels/tunnels.controller.ts"),
+  join(repoRoot, "apps/control/src/tunnels/tunnels.controller.ts"),
   "utf8",
 );
 if (!tunnelControllerSource.includes("encoder.encode(`event: ${event}\\ndata: ${JSON.stringify(payload)}\\n\\n`)")) {
@@ -55,14 +55,14 @@ function assertServicesRunning() {
 
 function start(service) {
   const env = { ...baseEnv };
-  if (service.name === "edge-gateway") {
+  if (service.name === "gateway") {
     env.EDGE_GATEWAY_PORT = String(service.port);
     env.EDGE_GATEWAY_HOST = "127.0.0.1";
     // Deliberately enable the legacy flag on an isolated port: edge must not
     // start a dashboard listener after realtime owns that responsibility.
     env.SHIGUANG_GATEWAY_ENABLE_LIVE_WS = "true";
     env.LIVE_WS_PORT = "18991";
-  } else if (service.name === "control-api") {
+  } else if (service.name === "control") {
     env.CONTROL_API_PORT = String(service.port);
     env.CONTROL_API_HOST = "127.0.0.1";
     env.EDGE_GATEWAY_URL = "http://127.0.0.1:18887";
@@ -176,7 +176,7 @@ try {
     body: JSON.stringify({ version: 1, command: "ngrok.status" }),
   });
   if (!tunnelStatus.ok) {
-    const edgeOutput = services.find((service) => service.name === "edge-gateway")?.output ?? "";
+    const edgeOutput = services.find((service) => service.name === "gateway")?.output ?? "";
     throw new Error(
       `authenticated edge tunnel command failed: ${tunnelStatus.status} ${await tunnelStatus.text()}\n${edgeOutput}`,
     );
@@ -185,7 +185,7 @@ try {
   // Use an actual scoped credential in the isolated smoke database. The
   // model catalog must not inherit anonymous management bootstrap access.
   const credentialFile = join(dataDir, "smoke-api-key");
-  const provision = spawnSync("pnpm", ["--filter", "@orbit/control-api", "exec", "node", "--import", "tsx", "--input-type=module", "--eval", `
+  const provision = spawnSync("pnpm", ["--filter", "@orbit/control", "exec", "node", "--import", "tsx", "--input-type=module", "--eval", `
     import { writeFileSync } from "node:fs";
     import { createApiKey } from "@orbit/core/db/api-keys";
     createApiKey("split-smoke", "split-smoke", ["read"]).then(async key => {

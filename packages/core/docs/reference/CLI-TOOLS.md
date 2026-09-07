@@ -196,7 +196,7 @@ Autonomous agents that appear in `/dashboard/cli-agents`:
 
 ## 3. ACP Agents (/dashboard/acp-agents)
 
-This page (renamed from `/dashboard/agents`) shows locally installed CLIs detected by the control API. The catalog is maintained in `apps/control-api/src/acp/runtime/agent-registry.ts` and is **not** the same as `CLI_TOOLS`; it does not launch or manage agent processes.
+This page (renamed from `/dashboard/agents`) shows locally installed CLIs detected by the control API. The catalog is maintained in `apps/control/src/acp/runtime/agent-registry.ts` and is **not** the same as `CLI_TOOLS`; it does not launch or manage agent processes.
 
 ---
 

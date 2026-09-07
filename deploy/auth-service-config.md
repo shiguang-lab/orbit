@@ -29,7 +29,7 @@ issuer、audience、entitlement 验证。产品不提供独立密码登录页或
 管理台的业务接口返回 401 后，会重新查询 `/api/auth/session`；会话仍有效时保留业务错误，
 只有会话确认失效才启动 SSO 跳转。并发的业务 401 共用一次会话核验。
 
-云端智能体页面使用 `/api/cloud-agents/tasks`，由 control-api 校验管理身份后，携带原签名身份
+云端智能体页面使用 `/api/cloud-agents/tasks`，由 control 校验管理身份后，携带原签名身份
 请求 edge 的 `/api/v1/agents/tasks`。中央网关的 `/api/v1/*` 协议通道不注入 SSO 身份，
 管理台不能直接依赖该通道获取会话权限。
 
@@ -86,7 +86,7 @@ LOCAL_BROKER_POLICIES=[{"productId":"asset-hub","audience":"asset-hub-api","requ
 - `LOCAL_BROKER_ENABLED` **默认 false**，线上若没开，`/api/auth/local-broker` 返回 **404**，
   本地 Broker 模式返回不可用错误，不会使用模拟身份。
 - `LOCAL_BROKER_POLICIES` 里**必须含 shiguang-gateway** 条目，否则返回 `invalid_product`。
-- 配好后，本地 admin/API 开发环境显式设置 `SG_LOCAL_BROKER_ENABLED=true`，再配置真实 shiguang
+- 配好后，本地 console/API 开发环境显式设置 `SG_LOCAL_BROKER_ENABLED=true`，再配置真实 shiguang
   账号(`SG_BROKER_USERNAME/PASSWORD`)即可用线上签名身份。未开启时须经 Access Gateway 注入身份。
 - 本地 broker 请求的 Origin 与 asset-hub 一致用 `authTarget`(shiguanglab.com)，匹配全局 PUBLIC_ORIGIN。
 
@@ -107,7 +107,7 @@ API 服务侧已按此约定默认(可通过环境变量覆盖)：
 
 ShiguangGateway 是单管理员系统(无 org/多用户)。接入后：
 - **网关层**：校验当前产品要求的 entitlement，不假设所有已登录用户自动拥有它。
-- **control-api 层**：验签时校验配置的 audience 和 entitlement；管理会话认可该 entitlement
+- **control 层**：验签时校验配置的 audience 和 entitlement；管理会话认可该 entitlement
   或管理员角色。现有部署配置为 `omniroute:access`，代码默认值为 `shiguang-gateway:access`。
 
 若只想让白名单用户管理 ShiguangGateway，应在 auth-service 策略层配置 subject/email 白名单

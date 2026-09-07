@@ -15,8 +15,8 @@
 | `/live-ws` | 切换前需单独核验 | `100.87.115.78:8787`，经 Admin nginx 转发至独立 realtime |
 
 新拓扑只保留一个 NAS 主机 Web/API 入口 `8787`。`shiguang-gateway-control:8788`、
-`shiguang-gateway-edge:8787`、`shiguang-gateway-realtime:20132` 均为 Docker 内网地址，
-不供生产 Caddy 直接访问，也不分别发布到 NAS 主机。Admin 是独立 nginx 镜像；control-api
+`shiguang-gateway-gateway:8787`、`shiguang-gateway-realtime:20132` 均为 Docker 内网地址，
+不供生产 Caddy 直接访问，也不分别发布到 NAS 主机。Admin 是独立 nginx 镜像；control
 只提供管理 API，不托管 Admin 静态资源。
 
 ## Caddy host 块
@@ -105,7 +105,7 @@ handle @llmGateway {
 `SG_IDENTITY_ENTITLEMENT=omniroute:access`，使新服务校验现有 auth-service 签发的断言。
 
 登录回跳白名单必须包含 `https://llm-gateway.shiguanglab.com`。登录成功后还需验证
-`X-SG-Identity` 的签名、issuer、audience、entitlement 与 control-api 配置一致。缺少产品策略、
+`X-SG-Identity` 的签名、issuer、audience、entitlement 与 control 配置一致。缺少产品策略、
 授权项、回跳白名单或真实鉴权验证结果时，阻塞上线；不得开启
 `SG_DEV_IDENTITY` / `SG_LOCAL_BROKER_ENABLED` 绕过验证。
 

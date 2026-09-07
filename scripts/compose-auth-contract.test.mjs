@@ -4,7 +4,7 @@ import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
-const runtimeServices = ["edge", "control", "realtime", "worker"].map(name => `shiguang-gateway-${name}`);
+const runtimeServices = ["gateway", "control", "realtime", "worker"].map(name => `shiguang-gateway-${name}`);
 function resolvedServices(override) {
   const env = { ...process.env, SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN: "compose-contract-test-only" };
   delete env.REQUIRE_API_KEY;

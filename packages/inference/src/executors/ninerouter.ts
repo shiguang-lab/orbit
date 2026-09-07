@@ -132,7 +132,7 @@ export class NineRouterExecutor extends BaseExecutor {
   }
 
   async execute(input: ExecuteInput) {
-    // The edge runtime is a separate process from control-api, so its supervisor
+    // The edge runtime is a separate process from control, so its supervisor
     // registry is necessarily empty. Resolve the endpoint from environment/DB and
     // verify the actual process over its health endpoint instead.
     const persisted = await getServiceRow("9router");

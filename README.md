@@ -11,9 +11,9 @@ ShiguangGateway 独立部署 monorepo（管理台 + 网关 + 控制面 + 实时�
 ```
 shiguang-gateway-monorepo/
 ├── apps/
-│   ├── admin/         # React 19 + Vite 管理台（现有，保留）
-│   ├── edge-gateway/  # 对外模型协议与请求入口
-│   ├── control-api/   # 管理 API、RBAC、配置和审计
+│   ├── console/         # React 19 + Vite 管理台（现有，保留）
+│   ├── gateway/  # 对外模型协议与请求入口
+│   ├── control/   # 管理 API、RBAC、配置和审计
 │   ├── realtime/      # WebSocket/SSE 实时服务
 │   ├── worker/        # 同步、定时任务和后台作业
 │   └── importer/      # 冷快照导入与数据库转换 CLI
@@ -31,10 +31,10 @@ shiguang-gateway-monorepo/
 
 ## 核心设计：按 app 边界拆分
 
-- 生产入口拆为 **edge-gateway**（模型协议）、**control-api**（管理面）、**realtime**（SSE/WS）
+- 生产入口拆为 **gateway**（模型协议）、**control**（管理面）、**realtime**（SSE/WS）
   和 **worker**（定时任务/后台作业）；每个 `apps/*` 都拥有自己的进程 bootstrap，
   只通过包接口复用实现。
-- 服务只从 `edge-gateway`、`control-api`、`realtime`、`worker` 和 `importer` 启动；仓库不包含旧 BFF 启动器或兼容入口。
+- 服务只从 `gateway`、`control`、`realtime`、`worker` 和 `importer` 启动；仓库不包含旧 BFF 启动器或兼容入口。
 - `packages/core` 只提供无端口监听的领域模块与协议能力；HTTP 端口、生命周期和 surface 选择由所属 app 的固定 bootstrap 负责，`http` 仅提供传输适配。数据库表结构放在 `packages/contracts/src/db-schema`，纯出站 URL/SSRF 校验放在无框架依赖的 `packages/utils/src/network`，不得把 app 启动逻辑放回公共包。
 - app 之间只能通过网络 API 或 `packages/contracts` 交互；禁止跨 app workspace 依赖、跨 app 相对路径和直接引用其他 app 的 `src`。
 - 每次迁移一个领域后，运行 `pnpm audit:app-boundaries` 验证依赖边界，再运行该 app 自己的 typecheck/build 与 smoke 测试。
@@ -71,11 +71,11 @@ pnpm install
 pnpm build
 
 # 分别启动
-pnpm --filter @orbit/edge-gateway dev  # 网关: http://127.0.0.1:8787
-pnpm --filter @orbit/control-api dev   # 控制面: http://127.0.0.1:8788
+pnpm --filter @orbit/gateway dev  # 网关: http://127.0.0.1:8787
+pnpm --filter @orbit/control dev   # 控制面: http://127.0.0.1:8788
 pnpm --filter @orbit/realtime dev      # 实时: http://127.0.0.1:8790 + WS 20132
 pnpm --filter @orbit/worker dev        # 后台任务
-pnpm --filter @orbit/admin dev         # 管理台: http://127.0.0.1:5173
+pnpm --filter @orbit/console dev         # 管理台: http://127.0.0.1:5173
 
 # 或 turbo 并行
 pnpm dev
@@ -95,8 +95,8 @@ pnpm dev
 分别构建 `linux/amd64` 与 `linux/arm64` 多架构镜像：
 
 ```text
-ghcr.io/shiguang-lab/shiguang-gateway-admin:<tag-or-digest>
-ghcr.io/shiguang-lab/shiguang-gateway-edge:<tag-or-digest>
+ghcr.io/shiguang-lab/shiguang-gateway-console:<tag-or-digest>
+ghcr.io/shiguang-lab/shiguang-gateway-gateway:<tag-or-digest>
 ghcr.io/shiguang-lab/shiguang-gateway-control:<tag-or-digest>
 ghcr.io/shiguang-lab/shiguang-gateway-realtime:<tag-or-digest>
 ghcr.io/shiguang-lab/shiguang-gateway-worker:<tag-or-digest>
@@ -113,13 +113,13 @@ ghcr.io/shiguang-lab/shiguang-gateway-importer:<tag-or-digest>
 ## 服务结构
 
 ```
-apps/edge-gateway/src/main.ts       # edge 进程入口、端口与信号
-apps/edge-gateway/src/app.module.ts # edge 根模块
-apps/edge-gateway/src/*/*.module.ts # audio/images/files 等 feature modules
+apps/gateway/src/main.ts       # edge 进程入口、端口与信号
+apps/gateway/src/app.module.ts # edge 根模块
+apps/gateway/src/*/*.module.ts # audio/images/files 等 feature modules
 
-apps/control-api/src/main.ts        # control 进程入口、端口与信号
-apps/control-api/src/app.module.ts  # control 根模块
-apps/control-api/src/*/*.module.ts  # health/providers/keys/pricing 等 feature modules
+apps/control/src/main.ts        # control 进程入口、端口与信号
+apps/control/src/app.module.ts  # control 根模块
+apps/control/src/*/*.module.ts  # health/providers/keys/pricing 等 feature modules
 
 apps/realtime/src/main.ts           # realtime 进程入口与端口
 apps/realtime/src/app.module.ts     # realtime 根模块
@@ -141,8 +141,8 @@ packages/http/src/
 
 | 组 | 状态 |
 |---|---|
-| control 管理 API | ✅ Nest feature modules，物理位于 `apps/control-api/src` |
-| edge 模型与协议 API | ✅ Nest feature modules，物理位于 `apps/edge-gateway/src` |
+| control 管理 API | ✅ Nest feature modules，物理位于 `apps/control/src` |
+| edge 模型与协议 API | ✅ Nest feature modules，物理位于 `apps/gateway/src` |
 | realtime WS/SSE | ✅ 物理位于 `apps/realtime/src` |
 | worker schedulers | ✅ 由 `apps/worker/src/jobs` 显式启动和停止 |
 | 旧 App Router route tree / 动态 dispatcher | ✅ 已移除；严格 route parity 由 controller contract 审计 |

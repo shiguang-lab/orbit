@@ -388,7 +388,7 @@ Cloud Agents wraps third-party hosted code-agent platforms (Codex Cloud, Devin,
 Jules) behind a uniform DB-backed task lifecycle. All task creation/inspection
 endpoints require management authentication.
 
-- Module root: `apps/edge-gateway/src/cloud-agents/domain/` (`baseAgent.ts`, `registry.ts`, `api.ts`,
+- Module root: `apps/gateway/src/cloud-agents/domain/` (`baseAgent.ts`, `registry.ts`, `api.ts`,
   `types.ts`, `db.ts`, plus per-agent subdirectories under `agents/`)
 - Per-agent implementations: `agents/codex/`, `agents/devin/`, `agents/jules/`
 - Public endpoints: `/api/v1/agents/tasks/*` (list/create/get/cancel)
@@ -432,7 +432,7 @@ have to assemble lockout/budget/fallback logic themselves.
 - Model availability snapshots: `src/domain/modelAvailability.ts`
 - Provider expiration tracking: `src/domain/providerExpiration.ts`
 - Quota cache: `src/domain/quotaCache.ts`
-- Degradation state: `apps/control-api/src/health/degradation.ts`
+- Degradation state: `apps/control/src/health/degradation.ts`
 - Configuration audit: `src/domain/configAudit.ts`
 - ShiguangGateway response metadata builder: `src/domain/shiguang-gatewayResponseMeta.ts`
 - Assessment subsystem: `src/domain/assessment/` — periodic evaluation jobs

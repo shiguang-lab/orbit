@@ -7,7 +7,7 @@ import { tmpdir } from "node:os";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const repoRoot = fileURLToPath(new URL("../", import.meta.url));
-const appNames = ["control-api", "edge-gateway"];
+const appNames = ["control", "gateway"];
 
 export async function discoverRouteModules(root = repoRoot) {
   async function walk(dir, out = []) {

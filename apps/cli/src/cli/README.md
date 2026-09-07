@@ -64,7 +64,7 @@ Options:
 ### `withRuntime(fn, opts)` — `runtime.mjs`
 
 Provides server-first reads with a read-only DB fallback. Mutating commands use
-`withHttp()` so control-api remains the runtime database owner.
+`withHttp()` so control remains the runtime database owner.
 
 ```js
 import { withRuntime } from "./runtime.mjs";
@@ -78,7 +78,7 @@ await withRuntime(async (ctx) => {
 });
 ```
 
-- `withHttp(fn)` — throws `ServerOfflineError` (exit 3) when control-api is offline
+- `withHttp(fn)` — throws `ServerOfflineError` (exit 3) when control is offline
 
 ### `t(key, vars)` — `i18n.mjs`
 

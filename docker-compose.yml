@@ -1,11 +1,11 @@
 services:
-  shiguang-gateway-admin:
-    image: ${SHIGUANG_GATEWAY_ADMIN_IMAGE:-shiguang-gateway-admin:local}
-    build: { context: ., target: admin }
-    container_name: shiguang-gateway-admin
+  shiguang-gateway-console:
+    image: ${SHIGUANG_GATEWAY_CONSOLE_IMAGE:-shiguang-gateway-console:local}
+    build: { context: ., target: console }
+    container_name: shiguang-gateway-console
     restart: unless-stopped
     ports:
-      - "${SHIGUANG_GATEWAY_ADMIN_PORT:-8787}:8080"
+      - "${SHIGUANG_GATEWAY_CONSOLE_PORT:-8787}:8080"
     networks: [gateway-infra]
     depends_on:
       shiguang-gateway-control:
@@ -18,15 +18,15 @@ services:
       timeout: 5s
       retries: 3
 
-  shiguang-gateway-edge:
-    image: ${SHIGUANG_GATEWAY_EDGE_IMAGE:-shiguang-gateway-edge:local}
-    build: { context: ., target: edge-gateway }
-    container_name: shiguang-gateway-edge
+  shiguang-gateway-gateway:
+    image: ${SHIGUANG_GATEWAY_GATEWAY_IMAGE:-shiguang-gateway-gateway:local}
+    build: { context: ., target: gateway }
+    container_name: shiguang-gateway-gateway
     restart: unless-stopped
     init: true
     environment: &gateway-env
       NODE_ENV: production
-      APP_NAME: edge-gateway
+      APP_NAME: gateway
       DATA_DIR: /app/data
       SQLITE_FILE: /app/data/storage.sqlite
       JWT_SECRET: ${JWT_SECRET:?Set a stable JWT_SECRET}
@@ -39,8 +39,8 @@ services:
       # value implicitly after migration; use the documented key-rotation flow.
       STORAGE_ENCRYPTION_KEY: ${STORAGE_ENCRYPTION_KEY:?Set a stable STORAGE_ENCRYPTION_KEY}
       PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://127.0.0.1:8787}
-      INTERNAL_BASE_URL: ${INTERNAL_BASE_URL:-http://shiguang-gateway-edge:8787}
-      SHIGUANG_GATEWAY_BASE_URL: ${SHIGUANG_GATEWAY_BASE_URL:-http://shiguang-gateway-edge:8787}
+      INTERNAL_BASE_URL: ${INTERNAL_BASE_URL:-http://shiguang-gateway-gateway:8787}
+      SHIGUANG_GATEWAY_BASE_URL: ${SHIGUANG_GATEWAY_BASE_URL:-http://shiguang-gateway-gateway:8787}
       EDGE_GATEWAY_HOST: 0.0.0.0
       EDGE_GATEWAY_PORT: 8787
       SHIGUANG_GATEWAY_ENABLE_LIVE_WS: "false"
@@ -67,16 +67,16 @@ services:
 
   shiguang-gateway-control:
     image: ${SHIGUANG_GATEWAY_CONTROL_IMAGE:-shiguang-gateway-control:local}
-    build: { context: ., target: control-api }
+    build: { context: ., target: control }
     container_name: shiguang-gateway-control
     restart: unless-stopped
     init: true
     environment:
       <<: *gateway-env
-      APP_NAME: control-api
+      APP_NAME: control
       CONTROL_API_HOST: 0.0.0.0
       CONTROL_API_PORT: 8788
-      EDGE_GATEWAY_URL: http://shiguang-gateway-edge:8787
+      EDGE_GATEWAY_URL: http://shiguang-gateway-gateway:8787
       INTERNAL_BASE_URL: ${INTERNAL_BASE_URL:-http://shiguang-gateway-control:8788}
       SHIGUANG_GATEWAY_WORKER_COMMAND_URL: ${SHIGUANG_GATEWAY_WORKER_COMMAND_URL:-http://shiguang-gateway-worker:8791}
     volumes:
@@ -84,7 +84,7 @@ services:
       - shiguang-gateway_home:/home/node
     networks: [gateway-infra]
     depends_on:
-      shiguang-gateway-edge:
+      shiguang-gateway-gateway:
         condition: service_healthy
 
   shiguang-gateway-realtime:
@@ -106,7 +106,7 @@ services:
       - shiguang-gateway_home:/home/node
     networks: [gateway-infra]
     depends_on:
-      shiguang-gateway-edge:
+      shiguang-gateway-gateway:
         condition: service_healthy
 
   shiguang-gateway-worker:
@@ -125,7 +125,7 @@ services:
       - shiguang-gateway_home:/home/node
     networks: [gateway-infra]
     depends_on:
-      shiguang-gateway-edge:
+      shiguang-gateway-gateway:
         condition: service_healthy
 
   shiguang-gateway-importer:

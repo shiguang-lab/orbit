@@ -4,9 +4,9 @@ import { spawnSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 
 const [target, image] = process.argv.slice(2);
-const ports = { "edge-gateway": 8787, "control-api": 8788, realtime: 8790, worker: 8791 };
+const ports = { "gateway": 8787, "control": 8788, realtime: 8790, worker: 8791 };
 if (!Object.hasOwn(ports, target) || !image) {
-  console.error("Usage: node scripts/smoke-built-image.mjs <edge-gateway|control-api|realtime|worker> <local-image>");
+  console.error("Usage: node scripts/smoke-built-image.mjs <gateway|control|realtime|worker> <local-image>");
   process.exit(2);
 }
 const name = `gateway-image-smoke-${randomUUID()}`;
@@ -52,7 +52,7 @@ try {
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
   if (!healthySince || Date.now() - healthySince < 5000) throw new Error(`${target} did not remain healthy`);
-  if (target === "control-api") {
+  if (target === "control") {
     const authProbe = `fetch('http://127.0.0.1:8788/api/providers/test-batch', {
       method:'POST', headers:{'content-type':'application/json'},
       body:JSON.stringify({mode:'selected',connectionIds:[]}), signal:AbortSignal.timeout(5000)

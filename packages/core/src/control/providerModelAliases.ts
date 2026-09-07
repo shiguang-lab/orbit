@@ -1,4 +1,4 @@
-/** Explicit provider-model alias operations consumed by control-api. */
+/** Explicit provider-model alias operations consumed by control. */
 export {
   deleteManagedAvailableModelAliases,
   deleteManagedAvailableModelAliasesForProvider,

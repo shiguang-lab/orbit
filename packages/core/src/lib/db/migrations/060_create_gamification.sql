@@ -1,6 +1,6 @@
 -- Migration 060 (retained for migration-history compatibility).
 --
--- Gamification tables are owned and initialized by control-api's
+-- Gamification tables are owned and initialized by control's
 -- GamificationModule. Keeping this migration as a no-op ensures databases
--- that already recorded version 060 remain valid while fresh control-api
+-- that already recorded version 060 remain valid while fresh control
 -- instances create the same schema at module startup.

@@ -29,7 +29,7 @@ const localApiExtensions = new Set([
   "search/analytics/route.ts",
   "cloud-agents/tasks/route.ts",
   "providers/catalog/route.ts",
-  // Signed gateway SSO session, covered by control-api auth-session tests.
+  // Signed gateway SSO session, covered by control auth-session tests.
   "auth/session/route.ts",
   "media/cache/stats/route.ts",
   "media/cache/purge/route.ts",
@@ -43,7 +43,7 @@ const localApiExtensions = new Set([
   "internal/runtime/command/route.ts",
 ]);
 // These upstream control-process routes are intentionally retired. In the
-// split runtime they could only terminate control-api, not the gateway stack;
+// split runtime they could only terminate control, not the gateway stack;
 // full-stack lifecycle is owned by the CLI supervisor.
 const retiredApiRoutes = new Set([
   // Search analytics belongs to the SSO management surface.
@@ -83,7 +83,7 @@ const officialRoutePaths = new Set(officialRoutes.map((p) => normalizeRoutePath(
 // Runtime route roots belong to deployable apps. The HTTP kernel only exposes
 // transport primitives; its source tree must never be counted as a route
 // catalog or parity source.
-const appRouteRoots = ["edge-gateway", "control-api", "realtime"].
+const appRouteRoots = ["gateway", "control", "realtime"].
   map((name) => join(repoRoot, "apps", name, "src", "routes"))
   .filter(existsSync);
 const appRouteFiles = appRouteRoots.flatMap((root) => walk(root, (p) => p.endsWith(".ts") && !p.endsWith("index.ts")));
@@ -93,8 +93,8 @@ const localRuntimeRoutesDir = join(repoRoot, "packages", "core", "src", "app", "
 // across both the remaining domain tree and handlers already owned by apps.
 const localRouteSources = [
   { root: localRuntimeRoutesDir, pathRoot: localRuntimeRoutesDir },
-  { root: join(repoRoot, "apps", "control-api", "src", "routes", "api"), pathRoot: join(repoRoot, "apps", "control-api", "src", "routes", "api") },
-  { root: join(repoRoot, "apps", "edge-gateway", "src", "routes", "api"), pathRoot: join(repoRoot, "apps", "edge-gateway", "src", "routes", "api") },
+  { root: join(repoRoot, "apps", "control", "src", "routes", "api"), pathRoot: join(repoRoot, "apps", "control", "src", "routes", "api") },
+  { root: join(repoRoot, "apps", "gateway", "src", "routes", "api"), pathRoot: join(repoRoot, "apps", "gateway", "src", "routes", "api") },
 ].filter(({ root }) => existsSync(root));
 const localRuntimeRoutes = localRouteSources.flatMap(({ root }) => walk(root, (p) => p.endsWith("route.ts")));
 const officialRootDir = join(orbitRoot, "src", "app");
@@ -161,7 +161,7 @@ function extractControllerRoutes(controllerFile) {
   return routes;
 }
 
-const controllerFiles = ["control-api", "edge-gateway"].flatMap((name) =>
+const controllerFiles = ["control", "gateway"].flatMap((name) =>
   walk(join(repoRoot, "apps", name, "src"), (p) => p.endsWith(".controller.ts"))
 );
 const controllerRoutePaths = controllerFiles.flatMap((f) => [...extractControllerRoutes(f)]);
@@ -182,8 +182,8 @@ const rootRouteMismatches = referenceAvailable ? [
 const retiredCompatDispatcherFiles = [
   join(repoRoot, "packages", "web-route-compat"),
   join(repoRoot, "packages", "http", "src", "compat-dispatcher.ts"),
-  join(repoRoot, "apps", "edge-gateway", "src", "routes", "compat", "dispatcher.ts"),
-  join(repoRoot, "apps", "control-api", "src", "routes", "compat", "dispatcher.ts"),
+  join(repoRoot, "apps", "gateway", "src", "routes", "compat", "dispatcher.ts"),
+  join(repoRoot, "apps", "control", "src", "routes", "compat", "dispatcher.ts"),
 ];
 const dynamicCompatDispatcherRemoved = retiredCompatDispatcherFiles.every((path) => !existsSync(path));
 const nativeFallbackContracts = dynamicCompatDispatcherRemoved
@@ -211,7 +211,7 @@ const routePathMismatches = referenceAvailable ? [
   ...[...comparableLocalRoutePaths].filter((p) => !comparableOfficialRoutePaths.has(p)).map((path) => ({ path, side: "extra-local" })),
 ].sort((a, b) => a.path.localeCompare(b.path)) :
   (frozenParityRoutePaths.size === frozenBaseline.apiRouteFiles && hashPaths(frozenParityRoutePaths) === frozenBaseline.apiPathSha256 ? [] : [{ path: "<frozen-api-route-baseline>", side: "hash-mismatch" }]);
-const requiredApps = ["admin", "edge-gateway", "control-api", "realtime", "worker", "importer"];
+const requiredApps = ["console", "gateway", "control", "realtime", "worker", "importer"];
 const missingApps = requiredApps.filter((name) => !existsSync(join(repoRoot, "apps", name, "package.json")));
 
 const allSourceFiles = [

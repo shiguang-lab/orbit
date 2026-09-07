@@ -2,10 +2,10 @@
 
 > **归档文档**：本文件只保留 2026-09-04 的页面差异记录，不是当前实现或发布验收依据。
 > 当前验收以 [`INDEPENDENT_GATEWAY_REFACTOR.md`](./INDEPENDENT_GATEWAY_REFACTOR.md) 和自动 smoke 结果为准；
-> 当前 Admin 仅访问本地 `control-api`，模型流量仅访问本地 `edge-gateway`。
+> 当前 Admin 仅访问本地 `control`，模型流量仅访问本地 `gateway`。
 
 > 审计日期：2026-09-04（历史基线，以下问题清单不是最终发布状态）
-> 归档时的实现快照包含 `apps/admin`、`apps/control-api`、`apps/edge-gateway`、`apps/realtime` 和 `apps/worker`；仓库当前不包含 BFF 或兼容启动器。
+> 归档时的实现快照包含 `apps/console`、`apps/control`、`apps/gateway`、`apps/realtime` 和 `apps/worker`；仓库当前不包含 BFF 或兼容启动器。
 > 官方基准：`https://model.publib.cn`（实机版本 v3.8.51）与同级源码 `../Orbit`
 > 目标：逐菜单、逐子页面识别真实接入、部分 Mock、纯 Mock、接口契约错误和页面缺失，并给出下一阶段可直接执行的任务拆分。
 
@@ -50,7 +50,7 @@
 
 本次结论来自三组证据：
 
-1. 对照当前路由和菜单：`apps/admin/src/app/nav.tsx`、`apps/admin/src/app/router.tsx`。
+1. 对照当前路由和菜单：`apps/console/src/app/nav.tsx`、`apps/console/src/app/router.tsx`。
 2. 对照官方菜单、页面、组件和请求：`../Orbit/src/shared/constants/sidebarVisibility/sections.ts`、`../Orbit/src/app/(dashboard)`。
 3. 在 2026-09-04 对本地 Web/API 做 endpoint smoke test，并在参考 Web 实机打开关键页面做结构对拍。
 
@@ -59,7 +59,7 @@
 ```text
 Admin Web :5173
     -> /api
-Local control-api/edge-gateway
+Local control/gateway
     -> local domain services
 Configured Provider upstreams
 ```
@@ -276,20 +276,20 @@ Configured Provider upstreams
 
 ### 5.1 明确前端模拟
 
-- `apps/admin/src/features/agents/cli-code.tsx`：已改为真实 `/v1/chat/completions`；仍未实现官方 CLI 工具检测/配置向导，见 WEB-P1-01。
-- `apps/admin/src/features/devtools/search-tools.tsx`：历史版本固定搜索结果，无真实搜索请求（当前已改为调用 `/v1/search`）。
-- `apps/admin/src/features/other/media.tsx`：历史版本用固定模型、延迟和 Unsplash 图片（当前图像/语音已调用真实 Provider API；视频/音乐/转录无契约时会明确失败）。
-- `apps/admin/src/features/combos/combos-live.tsx`：已改为调用本地 `/combos/test`；拓扑在真实测试前保持待命，不伪造 200/熔断状态；尚未接入 WebSocket 订阅。
-- `apps/admin/src/features/context/engine-detail.tsx`：已改为调用本地 `/compression/preview`，并从本地遥测读取统计；样例原文仍用于用户输入初始值，不代表压缩结果。
-- `apps/admin/src/features/cache/cache.tsx`：`MOCK_SEMANTIC_ENTRIES` 和本地删除。
+- `apps/console/src/features/agents/cli-code.tsx`：已改为真实 `/v1/chat/completions`；仍未实现官方 CLI 工具检测/配置向导，见 WEB-P1-01。
+- `apps/console/src/features/devtools/search-tools.tsx`：历史版本固定搜索结果，无真实搜索请求（当前已改为调用 `/v1/search`）。
+- `apps/console/src/features/other/media.tsx`：历史版本用固定模型、延迟和 Unsplash 图片（当前图像/语音已调用真实 Provider API；视频/音乐/转录无契约时会明确失败）。
+- `apps/console/src/features/combos/combos-live.tsx`：已改为调用本地 `/combos/test`；拓扑在真实测试前保持待命，不伪造 200/熔断状态；尚未接入 WebSocket 订阅。
+- `apps/console/src/features/context/engine-detail.tsx`：已改为调用本地 `/compression/preview`，并从本地遥测读取统计；样例原文仍用于用户输入初始值，不代表压缩结果。
+- `apps/console/src/features/cache/cache.tsx`：`MOCK_SEMANTIC_ENTRIES` 和本地删除。
 
 ### 5.2 失败时伪装成功或返回固定数据
 
-- `apps/admin/src/entities/api.ts` 的 compression config、context combos、exclusions：失败后读写 localStorage。
+- `apps/console/src/entities/api.ts` 的 compression config、context combos、exclusions：失败后读写 localStorage。
 - 同文件的 context assignments、language packs、quota groups、9router models：保留固定 fallback。
-- `apps/admin/src/features/quota-share/quota-share.tsx`：固定 `GroupDemo`。
-- `apps/admin/src/features/endpoints/mcp-dashboard.tsx`：固定 audit records fallback。
-- `apps/admin/src/features/endpoints/a2a-dashboard.tsx`：固定 tasks fallback。
+- `apps/console/src/features/quota-share/quota-share.tsx`：固定 `GroupDemo`。
+- `apps/console/src/features/endpoints/mcp-dashboard.tsx`：固定 audit records fallback。
+- `apps/console/src/features/endpoints/a2a-dashboard.tsx`：固定 tasks fallback。
 - 历史 Radar 路由曾使用进程内 `radarSettings`、`radar*Cache`、`getBaselineEntries()` 及固定 referral/offer/intel 数据；该实现不属于当前发布代码。
 
 视图偏好类 localStorage（主题、表格布局、提示关闭状态）不属于业务 Mock，不应一刀切删除。
@@ -472,16 +472,16 @@ CLI/Devtools  Compression  Costs  Agentic  Audit  Batch/Media
 - Ant Design Button、Input、Select、Segmented、DatePicker 等交互控件使用默认 `middle` 尺寸；除微型徽标外不新增 `size="small"`。
 - 所有用户可见文案通过 `useI18n()`/`tt()` 提供；中文模式不直接拼接括号英文。
 - `.shell-content-inner` 保持 `overflowX: "hidden"` 与 `maxWidth: "100%"`，桌面和窄屏均无非预期横向滚动。
-- 通过 Admin、control-api typecheck、API tests 和 production build。
+- 通过 Admin、control typecheck、API tests 和 production build。
 - 在官方 Web 与当前 Web 完成桌面截图/AX 结构对拍，并记录保留的 UI 优化。
 
 建议验证命令：
 
 ```bash
-pnpm --filter @orbit/admin typecheck
-pnpm --filter @orbit/control-api typecheck
+pnpm --filter @orbit/console typecheck
+pnpm --filter @orbit/control typecheck
 pnpm --filter @orbit/http test
-pnpm --filter @orbit/admin build
+pnpm --filter @orbit/console build
 ```
 
 ## 10. 第一批可直接领取的任务包

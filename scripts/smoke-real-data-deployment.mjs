@@ -87,8 +87,8 @@ try {
   db.close();
   if (typeof apiKey !== "string" || !apiKey) throw new Error("imported snapshot has no active management API key for authenticated smoke");
   const auth = { authorization: `Bearer ${apiKey}` };
-  start("edge-gateway");
-  start("control-api");
+  start("gateway");
+  start("control");
   await waitHttp(18907, "/healthz");
   await waitHttp(18908, "/healthz");
   await waitHttp(18907, "/.well-known/agent.json");

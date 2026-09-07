@@ -95,7 +95,7 @@ test("Radar scheduler lifecycle remains worker-owned", () => {
     workerFiles.filter((file) => fs.readFileSync(file, "utf8").includes(lifecycleImport)).length,
     1,
   );
-  for (const app of ["control-api", "edge-gateway", "realtime"]) {
+  for (const app of ["control", "gateway", "realtime"]) {
     for (const file of sourceFiles(path.join(repoRoot, "apps", app, "src"))) {
       assert.doesNotMatch(fs.readFileSync(file, "utf8"), /core\/radar\/sync-lifecycle/, file);
     }

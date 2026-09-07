@@ -182,7 +182,7 @@ await withRuntime(async ({ kind, api, db }) => {
   the server is down; they never silently fall back to SQLite.
 - The only direct database writes are explicitly declared first-run bootstrap,
   offline recovery, and staged importer operations. Each refuses to run against
-  a live control-api and is checked by the DB entity ownership audit.
+  a live control and is checked by the DB entity ownership audit.
 - **Never** write raw SQL in commands — always go through `src/lib/db/` modules.
   The Semgrep rule at `.semgrep/rules/cli-no-sqlite.yaml` enforces this at commit time.
 

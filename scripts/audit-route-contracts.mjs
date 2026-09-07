@@ -13,7 +13,7 @@ const localApiExtensions = new Set([
   "search/analytics/route.ts",
   "cloud-agents/tasks/route.ts",
   "providers/catalog/route.ts",
-  // Signed gateway SSO session, covered by control-api auth-session tests.
+  // Signed gateway SSO session, covered by control auth-session tests.
   "auth/session/route.ts",
   "media/cache/stats/route.ts",
   "media/cache/purge/route.ts",
@@ -21,15 +21,15 @@ const localApiExtensions = new Set([
   // intentionally represented by the edge Nest controller and omitted from
   // the historical API route reference set.
   "a2a/route.ts",
-  // Documentation search is a root web surface now owned by edge-gateway;
+  // Documentation search is a root web surface now owned by gateway;
   // it is intentionally represented by a Nest controller rather than the
   // historical Next app route.
   "docs/api/search/route.ts",
-  // Agent Card discovery is now served by edge-gateway's Nest controller.
+  // Agent Card discovery is now served by gateway's Nest controller.
   ".well-known/agent.json/route.ts",
   ".well-known/agent-card.json/route.ts",
   // Private, token-authenticated control-to-edge command surface. It has no
-  // historical public Next route contract and is not exposed by control-api.
+  // historical public Next route contract and is not exposed by control.
   "internal/tunnels/command/route.ts",
   "internal/runtime/command/route.ts",
 ]);
@@ -112,7 +112,7 @@ function extractControllerContracts(controllerFile) {
         const isClientV1 = fullPath.startsWith("v1/") || fullPath.startsWith("v1beta/");
         // `/v1/me/status` is a bearer-key self-service read endpoint whose
         // historical contract declares GET only; do not synthesize OPTIONS.
-        const implicitOptions = isClientV1 && !controllerFile.includes("/apps/control-api/") && routePath !== "v1/me/status/route.ts";
+        const implicitOptions = isClientV1 && !controllerFile.includes("/apps/control/") && routePath !== "v1/me/status/route.ts";
         if (!map.has(routePath)) map.set(routePath, implicitOptions ? new Set(["OPTIONS"]) : new Set());
         map.get(routePath).add(verb);
       }
@@ -139,8 +139,8 @@ const referenceApi = join(referenceRoot, "src", "app", "api");
 const localApi = join(repoRoot, "packages", "core", "src", "app", "api");
 const localApiRoots = [
   localApi,
-  join(repoRoot, "apps", "control-api", "src", "routes", "api"),
-  join(repoRoot, "apps", "edge-gateway", "src", "routes", "api"),
+  join(repoRoot, "apps", "control", "src", "routes", "api"),
+  join(repoRoot, "apps", "gateway", "src", "routes", "api"),
 ].filter(existsSync);
 
 // A2A is an edge-owned Nest transport. Keep the historical contract in the
@@ -152,8 +152,8 @@ const legacyA2ARouteRoots = [
 ];
 const staleA2ARoutes = legacyA2ARouteRoots.flatMap((root) => walk(root));
 const controllerRoots = [
-  join(repoRoot, "apps", "control-api", "src"),
-  join(repoRoot, "apps", "edge-gateway", "src"),
+  join(repoRoot, "apps", "control", "src"),
+  join(repoRoot, "apps", "gateway", "src"),
 ].filter(existsSync);
 
 const refFiles = walk(referenceApi);
@@ -165,8 +165,8 @@ const controllerFiles = controllerRoots.flatMap((root) => walkControllers(root))
 const retiredCompatDispatcherFiles = [
   join(repoRoot, "packages", "web-route-compat"),
   join(repoRoot, "packages", "http", "src", "compat-dispatcher.ts"),
-  join(repoRoot, "apps", "edge-gateway", "src", "routes", "compat", "dispatcher.ts"),
-  join(repoRoot, "apps", "control-api", "src", "routes", "compat", "dispatcher.ts"),
+  join(repoRoot, "apps", "gateway", "src", "routes", "compat", "dispatcher.ts"),
+  join(repoRoot, "apps", "control", "src", "routes", "compat", "dispatcher.ts"),
 ];
 const nativeFallbackContracts = retiredCompatDispatcherFiles.every((path) => !existsSync(path))
   ? ["[...gatewayApiCatchAll]/route.ts", "v1/[...gatewayCatchAll]/route.ts"]

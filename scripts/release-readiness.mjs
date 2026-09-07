@@ -51,7 +51,7 @@ runCommand("workspace-build", "pnpm", ["build"]);
 run("source-independent", "audit-gateway-independence.mjs", ["--strict"]);
 run("app-boundaries", "audit-app-boundaries.mjs", ["--strict"]);
 run("package-boundaries", "audit-package-boundaries.mjs", ["--strict"]);
-run("admin-route-parity", "audit-admin-routes.mjs", ["--strict"]);
+run("console-route-parity", "audit-console-routes.mjs", ["--strict"]);
 run("route-contracts", "audit-route-contracts.mjs", ["--strict"]);
 
 if (!sourceData || !targetData) {

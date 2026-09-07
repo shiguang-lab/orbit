@@ -1,6 +1,6 @@
 /**
  * Provider connection capabilities consumed by the control-plane application.
- * HTTP routing and response orchestration remain in apps/control-api.
+ * HTTP routing and response orchestration remain in apps/control.
  */
 export { clampLoginTimeoutMs } from "../lib/api/loginTimeout.js";
 export { requireManagementAuth } from "../lib/api/requireManagementAuth.js";

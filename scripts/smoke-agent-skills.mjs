@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-// Verifies the control-api-owned Agent Skills surface reads the package-local
+// Verifies the control-owned Agent Skills surface reads the package-local
 // SKILL.md and never needs the upstream Orbit/GitHub fallback.
 const { AgentSkillsService } = await import(
-  "../apps/control-api/src/agent-skills/agent-skills.service.ts"
+  "../apps/control/src/agent-skills/agent-skills.service.ts"
 );
 const response = await new AgentSkillsService().raw("omni-auth");
 const body = await response.text();

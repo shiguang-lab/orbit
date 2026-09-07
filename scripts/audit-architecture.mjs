@@ -28,10 +28,10 @@ const walkFiles = (dir, predicate, out = []) => {
 };
 
 const appKinds = {
-  admin: { entry: "main.tsx", nest: false },
+  console: { entry: "main.tsx", nest: false },
   cli: { entry: "shiguang-gateway.mjs", nest: false },
-  "control-api": { entry: "main.ts", nest: true },
-  "edge-gateway": { entry: "main.ts", nest: true },
+  "control": { entry: "main.ts", nest: true },
+  "gateway": { entry: "main.ts", nest: true },
   realtime: { entry: "main.ts", nest: true },
   worker: { entry: "main.ts", nest: true },
   importer: { entry: "main.ts", nest: false },
@@ -44,9 +44,9 @@ for (const legacyUiPath of ["src/shared/components", "src/shared/hooks"]) {
   const path = join(root, "packages/core", legacyUiPath);
   if (existsSync(path)) {
     fail(
-      "admin-ui-ownership",
+      "console-ui-ownership",
       path,
-      "React UI components and hooks belong in apps/admin, not the server-side domain package",
+      "React UI components and hooks belong in apps/console, not the server-side domain package",
     );
   }
 }

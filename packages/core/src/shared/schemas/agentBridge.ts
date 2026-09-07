@@ -40,7 +40,7 @@ export type AgentBridgeStateRow = z.infer<typeof AgentBridgeStateRowSchema>;
 export type AgentBridgeMappingRow = z.infer<typeof AgentBridgeMappingRowSchema>;
 export type AgentBridgeBypassRow = z.infer<typeof AgentBridgeBypassRowSchema>;
 
-/** Portable operator configuration; the persistence/application logic lives in control-api. */
+/** Portable operator configuration; the persistence/application logic lives in control. */
 export const AgentBridgeConfigSchema = z.object({
   version: z.literal(1),
   bypassPatterns: z.array(z.string()),
