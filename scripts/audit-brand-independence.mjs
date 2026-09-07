@@ -23,12 +23,15 @@ const ignored = new Set(["node_modules", "dist", ".turbo", ".git"]);
 const failures = [];
 
 // The deployed SSO contract is independent of the product's display branding.
-// Only these documents and this regression fixture may spell its exact values.
+// Only these documents and regression fixtures may spell its exact values.
 const ssoDocuments = new Set([
   "deploy/NAS-DEPLOY.md", "deploy/gateway-caddyfile.md",
   "deploy/SSO-INTEGRATION.md", "deploy/auth-service-config.md",
 ]);
-const entitlementTest = "packages/auth/test/configured-entitlement.test.ts";
+const ssoTests = new Set([
+  "packages/auth/test/configured-entitlement.test.ts",
+  "apps/realtime/test/live-server-sso.test.ts",
+]);
 function containsRetiredIdentifier(rel, text) {
   if (new RegExp(retiredToken, "i").test(rel)) return true;
   let inspected = text;
@@ -45,7 +48,7 @@ function containsRetiredIdentifier(rel, text) {
       "^\\s*SG_IDENTITY_(?:AUDIENCE=" + retiredToken + "-api|ENTITLEMENT=" +
       retiredToken + ":access)\\s*$", "gm"
     ), "");
-  } else if (rel === entitlementTest) {
+  } else if (ssoTests.has(rel)) {
     inspected = inspected.replace(new RegExp('"' + retiredToken + '(?:-api|:access)"', "g"), "");
   }
   return new RegExp(retiredToken, "i").test(inspected);
@@ -64,8 +67,12 @@ function selfTest() {
     assert.equal(containsRetiredIdentifier(rel, `\`${retiredToken}:admin\``), true);
     assert.equal(containsRetiredIdentifier(rel, `header_up X-SG-Audience ${retiredToken}-other`), true);
   }
-  assert.equal(containsRetiredIdentifier(entitlementTest, `session(["${entitlement}"], "${audience}")`), false);
-  assert.equal(containsRetiredIdentifier(entitlementTest, `"${retiredToken}:admin"`), true);
+  for (const rel of ssoTests) {
+    assert.equal(containsRetiredIdentifier(rel, `session(["${entitlement}"], "${audience}")`), false);
+    assert.equal(containsRetiredIdentifier(rel, `"${retiredToken}:admin"`), true);
+    assert.equal(containsRetiredIdentifier(rel, `Welcome to ${retiredToken}`), true);
+  }
+  assert.equal(containsRetiredIdentifier("apps/realtime/test/other.test.ts", `"${audience}"`), true);
   assert.equal(containsRetiredIdentifier("packages/auth/src/session.ts", `"${audience}"`), true);
   assert.equal(containsRetiredIdentifier("deploy/other.md", `\`${entitlement}\``), true);
   assert.equal(containsRetiredIdentifier(`apps/${retiredToken}/index.ts`, ""), true);
