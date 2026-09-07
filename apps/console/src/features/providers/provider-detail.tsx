@@ -367,7 +367,7 @@ export default function ProviderDetailPage() {
         setOauthSession({ redirectUri: "", codeVerifier: payload.codeVerifier });
         setOauthDevice({ deviceCode: payload.device_code, verificationUrl, codeVerifier: payload.codeVerifier, interval: Math.max(3, payload.interval || 5) });
         setOauthOpen(true);
-        window.open(verificationUrl, "orbit-oauth", "width=600,height=720");
+        window.open(verificationUrl, "_blank", "noopener,noreferrer");
         return;
       }
       const redirectUri = resolveOAuthRedirectUri(providerId, window.location);
@@ -377,7 +377,7 @@ export default function ProviderDetailPage() {
       if (!payload?.authUrl) throw new Error(payload?.error || "无法启动授权流程");
       setOauthSession({ redirectUri: payload.redirectUri || redirectUri, codeVerifier: payload.codeVerifier });
       setOauthOpen(true);
-      window.open(payload.authUrl, "orbit-oauth", "width=600,height=720");
+      window.open(payload.authUrl, "_blank", "noopener,noreferrer");
     } catch (error) {
       const message = error instanceof Error ? error.message : "无法启动授权流程";
       setOauthError(message);
@@ -1685,7 +1685,7 @@ export default function ProviderDetailPage() {
               value={oauthCallbackUrl}
               onChange={(event) => setOauthCallbackUrl(event.target.value)}
               autoSize={{ minRows: 3, maxRows: 5 }}
-              placeholder="粘贴 http://127.0.0.1:20128/callback?code=...&state=..."
+              placeholder="粘贴浏览器地址栏中的 callback?code=...&state=... 完整地址"
             />
           </>}
           {oauthError && <Alert showIcon type="error" message={oauthError} />}

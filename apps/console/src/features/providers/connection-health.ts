@@ -18,7 +18,7 @@ export function getConnectionHealth(connection: ProviderConnection, now = Date.n
 
 export function resolveOAuthRedirectUri(providerId: string, location: Pick<Location, "origin" | "port">): string {
   if (providerId === "agy" || providerId === "antigravity") {
-    return `http://127.0.0.1:${location.port || "20128"}/callback`;
+    return `http://127.0.0.1:${location.port || "8787"}/callback`;
   }
   return `${location.origin}/callback`;
 }
