@@ -36,7 +36,7 @@
     "smoke:real-data": "node scripts/smoke-real-data-deployment.mjs",
     "smoke:container-deployment": "node scripts/smoke-container-deployment.mjs",
     "smoke:agent-skills": "pnpm --filter @shiguang-gateway/core-domain exec tsx --tsconfig tsconfig.json ../../scripts/smoke-agent-skills.mjs",
-    "smoke:route-imports": "pnpm --filter @shiguang-gateway/core-domain exec tsx --tsconfig tsconfig.json ../../scripts/smoke-route-imports.mjs",
+    "smoke:route-imports": "node --test scripts/smoke-route-imports.test.mjs && pnpm --filter @shiguang-gateway/control-api exec tsx --tsconfig ../../scripts/tsconfig.route-imports.json ../../scripts/smoke-route-imports.mjs",
     "dev:admin": "pnpm --filter @shiguang-gateway/admin dev",
     "dev:edge": "pnpm --filter @shiguang-gateway/edge-gateway dev",
     "dev:control": "pnpm --filter @shiguang-gateway/control-api dev",
