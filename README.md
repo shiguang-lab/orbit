@@ -1,6 +1,6 @@
-# shiguang-gateway-monorepo
+# Orbit
 
-ShiguangGateway 独立部署 monorepo（管理台 + 网关 + 控制面 + 实时服务 + worker）。
+智枢（Orbit）独立部署 monorepo（管理台 + 网关 + 控制面 + 实时服务 + worker）。
 
 页面迁移必须遵守 [`MIGRATION_SPEC.md`](./MIGRATION_SPEC.md)：Web 与本地 API 作为一个单元联合迁移，保持既有数据源、业务逻辑和 UI 行为。运行时使用仓库内的独立能力实现，不依赖外部同级源码或远程服务。
 
@@ -9,7 +9,7 @@ ShiguangGateway 独立部署 monorepo（管理台 + 网关 + 控制面 + 实时�
 ## 目标架构
 
 ```
-shiguang-gateway-monorepo/
+orbit/
 ├── apps/
 │   ├── console/         # React 19 + Vite 管理台（现有，保留）
 │   ├── gateway/  # 对外模型协议与请求入口
@@ -38,7 +38,7 @@ shiguang-gateway-monorepo/
 - `packages/core` 只提供无端口监听的领域模块与协议能力；HTTP 端口、生命周期和 surface 选择由所属 app 的固定 bootstrap 负责，`http` 仅提供传输适配。数据库表结构放在 `packages/contracts/src/db-schema`，纯出站 URL/SSRF 校验放在无框架依赖的 `packages/utils/src/network`，不得把 app 启动逻辑放回公共包。
 - app 之间只能通过网络 API 或 `packages/contracts` 交互；禁止跨 app workspace 依赖、跨 app 相对路径和直接引用其他 app 的 `src`。
 - 每次迁移一个领域后，运行 `pnpm audit:app-boundaries` 验证依赖边界，再运行该 app 自己的 typecheck/build 与 smoke 测试。
-- `apps/importer` 将冻结快照导入独立 `shiguang-gateway_data` volume；`scripts/smoke-container-deployment.mjs` 自动验收接口隔离、数据表、原生 SQLite/vector、实时端口和全部 worker scheduler。
+- `apps/importer` 将冻结快照导入独立数据卷；`scripts/smoke-container-deployment.mjs` 自动验收接口隔离、数据表、原生 SQLite/vector、实时端口和全部 worker scheduler。
 - 参考仓库仅作为审查基线；升级必须重新复制快照并通过 `pnpm audit:gateway-independence`。
 - 发布机不需要 checkout 官方仓库：独立性/路由契约审查内置冻结 SHA-256 基线；设置
   `SHIGUANG_GATEWAY_REFERENCE_DIR` 时才会额外执行逐文件参考对比。
@@ -81,7 +81,7 @@ pnpm --filter @orbit/console dev         # 管理台: http://127.0.0.1:5173
 pnpm dev
 ```
 
-浏览器只使用 shiguang SSO；生产请设置稳定的 `JWT_SECRET`、`API_KEY_SECRET`，并由 Access Gateway 注入签名身份。
+浏览器只使用统一 SSO；生产请设置稳定的 `JWT_SECRET`、`API_KEY_SECRET`，并由 Access Gateway 注入签名身份。
 需要联调真实
 拾光身份时，将 `SG_LOCAL_BROKER_ENABLED=true` 并配置 `SG_BROKER_USERNAME/PASSWORD`。
 本地 Broker 注入真实签名身份并接受相同的验证；生产启动会拒绝本地 Broker 配置。
@@ -106,7 +106,7 @@ ghcr.io/shiguang-lab/orbit-importer:<tag-or-digest>
 推送 `v*` tag 还会自动创建 GitHub Release，附带源码 tar/zip、包含 `deploy/` 目录的 NAS
 部署包和 `SHA256SUMS.txt` 校验文件；Release 中六个镜像的 tag 与 Git tag 一致。
 
-每个应用镜像只对应一个显式 target，运行数据写入独立的 `shiguang-gateway_data` volume，
+每个应用镜像只对应一个显式 target，运行数据写入独立数据卷，
 不需要在 NAS 安装 Node/pnpm。首次部署前执行 importer 导入冷快照，完整步骤见
 [`deploy/NAS-DEPLOY.md`](./deploy/NAS-DEPLOY.md)。
 
