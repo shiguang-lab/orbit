@@ -116,9 +116,13 @@ docker compose --profile migration run --rm shiguang-gateway-importer
 
 Importer 会复制 `storage.sqlite`、WAL/SHM、备份、call logs、规则、任务文件和已安装的嵌入式
 服务制品，执行 SQLite `integrity_check`，并写入 `gateway-import-manifest.json`（逐文件 SHA-256）。
-API key/OAuth
-refresh、CLI auth、OS keychain、浏览器 profile、隧道 token 和嵌入式服务二进制不在 SQLite
-内，必须按迁移清单单独导入或重新授权。
+Provider API key、OAuth access token 和 refresh token 保存在 SQLite 的
+`provider_connections` 中，随数据库迁移。加密字段必须使用源实例原有的
+`STORAGE_ENCRYPTION_KEY` 解密；各服务应继承同一密钥，不能在切换时生成新密钥替换。
+CLI auth 文件、OS keychain、浏览器 profile、隧道状态和外部 CLI 二进制可能位于数据库之外，
+应按启用 Provider 的实际依赖迁移。外部状态 allowlist 中源端本来不存在的可选文件，不代表
+数据库凭据丢失，也不意味着所有连接都要重新授权。只有实际凭据缺失、无法恢复解密密钥，
+或上游已撤销授权时，才需要为受影响的连接重新授权。
 
 导入后必须执行 `SHIGUANG_GATEWAY_SOURCE_DATA_DIR=/volume1/docker/shiguang-gateway/data pnpm audit:provider-config`
 以及 `SHIGUANG_GATEWAY_SOURCE_DATA_DIR=/volume1/docker/shiguang-gateway/data pnpm smoke:provider-matrix`。任何启用
@@ -164,9 +168,11 @@ volume 覆盖现有数据。
 生产 Caddy upstream。健康检查和切换前端到后端的逐端口验收见
 [`gateway-caddyfile.md`](./gateway-caddyfile.md)。
 
-统一认证标识固定为产品 `shiguang-gateway`、Audience `shiguang-gateway-api`、授权项
-`shiguang-gateway:access`。上线前必须确认 auth-service 已追加授权项并通过真实 forward-auth
-验证；当前 NAS `DEFAULT_ENTITLEMENTS` 尚未包含该授权项，认证配置未完成前阻塞切换。生产绝不可设置
+本次替换部署复用现有统一认证：产品 `omniroute`、Audience `omniroute-api`、授权项
+`omniroute:access`。在部署环境设置 `SG_IDENTITY_AUDIENCE=omniroute-api` 和
+`SG_IDENTITY_ENTITLEMENT=omniroute:access`，并与 Caddy 的 forward-auth 请求保持一致。
+更换业务镜像不要求 auth-service 新增 `shiguang-gateway:access` 或用户重新取得权限；
+上线验收仍需通过真实登录和 forward-auth 验证。生产绝不可设置
 `SG_DEV_IDENTITY` 或 `SG_LOCAL_BROKER_ENABLED`。
 
 ## 运维边界

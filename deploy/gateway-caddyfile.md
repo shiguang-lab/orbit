@@ -68,9 +68,9 @@ handle @llmGateway {
                 header_up -Connection
                 header_up -Upgrade
                 header_up X-SG-Gateway-Token {$GATEWAY_SHARED_TOKEN}
-                header_up X-SG-Product-ID shiguang-gateway
-                header_up X-SG-Audience shiguang-gateway-api
-                header_up X-SG-Required-Entitlements shiguang-gateway:access
+                header_up X-SG-Product-ID omniroute
+                header_up X-SG-Audience omniroute-api
+                header_up X-SG-Required-Entitlements omniroute:access
                 copy_headers X-SG-Identity
             }
             reverse_proxy http://100.87.115.78:8787
@@ -96,13 +96,17 @@ handle @llmGateway {
 
 | 配置 | 值 |
 |---|---|
-| 产品 | `shiguang-gateway` |
-| Audience | `shiguang-gateway-api` |
-| Required entitlement | `shiguang-gateway:access` |
+| 产品 | `omniroute` |
+| Audience | `omniroute-api` |
+| Required entitlement | `omniroute:access` |
+
+本次替换部署复用原有产品策略和用户授权，不要求新增 `shiguang-gateway:access`。
+部署环境设置 `SG_IDENTITY_AUDIENCE=omniroute-api` 和
+`SG_IDENTITY_ENTITLEMENT=omniroute:access`，使新服务校验现有 auth-service 签发的断言。
 
 登录回跳白名单必须包含 `https://llm-gateway.shiguanglab.com`。登录成功后还需验证
 `X-SG-Identity` 的签名、issuer、audience、entitlement 与 control-api 配置一致。缺少产品策略、
-授权项、回跳白名单或真实鉴权验证结果时，阻塞上线；不得回退旧产品标识或开启
+授权项、回跳白名单或真实鉴权验证结果时，阻塞上线；不得开启
 `SG_DEV_IDENTITY` / `SG_LOCAL_BROKER_ENABLED` 绕过验证。
 
 ## 切换顺序与边界
