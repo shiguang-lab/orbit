@@ -59,6 +59,7 @@ jobs:
           pnpm --filter @shiguang-gateway/admin test
           pnpm --filter @shiguang-gateway/auth test
           pnpm --filter @shiguang-gateway/realtime test
+          pnpm --filter @shiguang-gateway/realtime-publisher test
           pnpm --filter @shiguang-gateway/importer test
           pnpm --filter @shiguang-gateway/http-kernel test
           pnpm smoke:route-imports

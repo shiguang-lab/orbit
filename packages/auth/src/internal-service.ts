@@ -20,8 +20,10 @@ export function getInternalServiceAuthHeaders(): Record<string, string> {
 export function isInternalServiceRequest(request: Request): boolean {
   const expected = configuredToken();
   const provided = request.headers.get(INTERNAL_SERVICE_AUTH_HEADER)?.trim() || "";
-  if (!expected || !provided || expected.length !== provided.length) return false;
-  return timingSafeEqual(Buffer.from(provided, "utf8"), Buffer.from(expected, "utf8"));
+  if (!expected || !provided) return false;
+  const actualBytes = Buffer.from(provided, "utf8");
+  const expectedBytes = Buffer.from(expected, "utf8");
+  return actualBytes.length === expectedBytes.length && timingSafeEqual(actualBytes, expectedBytes);
 }
 
 export function isTrustedLoopbackInternalServiceRequest(request?: Request | null): boolean {

@@ -16,6 +16,8 @@ test("requires a configured matching token", () => {
   assert.deepEqual(getInternalServiceAuthHeaders(), { [INTERNAL_SERVICE_AUTH_HEADER]: "shared-secret" });
   assert.equal(isInternalServiceRequest(new Request("http://internal/", { headers: { [INTERNAL_SERVICE_AUTH_HEADER]: "shared-secret" } })), true);
   assert.equal(isInternalServiceRequest(new Request("http://internal/", { headers: { [INTERNAL_SERVICE_AUTH_HEADER]: "wrong-secret" } })), false);
+  process.env.SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN = "a";
+  assert.equal(isInternalServiceRequest(new Request("http://internal/", { headers: { [INTERNAL_SERVICE_AUTH_HEADER]: "é" } })), false);
 });
 
 test("loads a token file and separately requires loopback locality", async () => {

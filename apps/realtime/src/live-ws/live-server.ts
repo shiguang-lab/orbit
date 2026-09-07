@@ -34,6 +34,7 @@ import {
 // ── Types ─────────────────────────────────────────────────────────────────
 
 import { emit, on, onAny, getEventHistory, type HistoryEntry } from "@shiguang-gateway/core-domain/events/eventBus";
+import { isInternalServiceRequest } from "@shiguang-gateway/auth/internal-service";
 
 import {
   attachRequestStreamGuards,
@@ -333,17 +334,13 @@ function subscribeToEventBus(): () => void {
   });
 }
 
-function isLoopbackRequest(req: IncomingMessage): boolean {
-  const addr = req.socket.remoteAddress;
-  return addr === "127.0.0.1" || addr === "::1" || addr === "::ffff:127.0.0.1";
-}
-
 function handleInternalEventRequest(req: IncomingMessage, res: ServerResponse): void {
   if (req.method !== "POST" || req.url !== "/__shiguangGateway_event") {
     res.writeHead(404).end();
     return;
   }
-  if (!isLoopbackRequest(req)) {
+  const internalRequest = new Request("http://realtime/__shiguangGateway_event", { headers: toWebHeaders(req.headers) });
+  if (!isInternalServiceRequest(internalRequest)) {
     res.writeHead(403, { "content-type": "application/json" }).end(JSON.stringify({ ok: false }));
     return;
   }
