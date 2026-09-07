@@ -321,6 +321,8 @@ export default function CliproxyInstances() {
   );
   const [mountModalOpen, setMountModalOpen] = useState(false);
   const [mappingModalOpen, setMappingModalOpen] = useState(false);
+  const [configOpen, setConfigOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const [enrolling, setEnrolling] = useState(false);
   const [creating, setCreating] = useState<string>();
   const [operation, setOperation] = useState<{
@@ -581,17 +583,18 @@ export default function CliproxyInstances() {
       stop: tt("停止", "Stop"),
       restart: tt("重启", "Restart"),
     })[action] ?? action;
-  const doAction = async () => {
-    if (!operation) return;
-    const targetNode = operation.nodeId;
+  const doAction = async (target = operation) => {
+    if (!target) return;
+    const targetNode = target.nodeId;
     const job = await api<Job>(
-      `${instancePath(targetNode, operation.instance.id)}/actions`,
+      `${instancePath(targetNode, target.instance.id)}/actions`,
       {
         method: "POST",
-        body: JSON.stringify({ action: operation.action, version }),
+        body: JSON.stringify({ action: target.action, version }),
       },
     );
     setOperation(undefined);
+    setHistoryOpen(true);
     message.success(
       tt(
         "操作已提交，可在操作记录中查看结果",
@@ -775,6 +778,16 @@ export default function CliproxyInstances() {
                     }))}
                   />
                 )}
+                {instance?.version && (
+                  <Button disabled={!node.online || busy} onClick={() => {
+                    setVersion("latest");
+                    setOperation({ instance, action: "upgrade", nodeId: node.id, nodeName: node.name });
+                  }}>{tt("升级", "Upgrade")}</Button>
+                )}
+                <Button disabled={!instance?.healthy || !node.online} onClick={() => setConfigOpen(true)}>
+                  {tt("运行配置", "Runtime settings")}
+                </Button>
+                <Button onClick={() => setHistoryOpen(true)}>{tt("操作记录", "Operation history")}</Button>
                 <Button
                   icon={<ReloadOutlined />}
                   loading={busy}
@@ -909,8 +922,7 @@ export default function CliproxyInstances() {
                                         title={tt("确定要停止此内嵌服务吗？", "Stop this service?")}
                                         description={tt("停止后相关模型的本地代理路由将暂停服务。", "Local proxy routes will be paused after stopping.")}
                                         onConfirm={() => {
-                                          setOperation({ instance, action: "stop", nodeId: node.id, nodeName: node.name });
-                                          void mutation.mutate(doAction);
+                                          mutation.mutate(() => doAction({ instance, action: "stop", nodeId: node.id, nodeName: node.name }));
                                         }}
                                         okText={tt("确认停止", "Stop")}
                                         cancelText={tt("取消", "Cancel")}
@@ -931,7 +943,6 @@ export default function CliproxyInstances() {
                                         disabled={!node.online}
                                         onClick={() => {
                                           setOperation({ instance, action: "restart", nodeId: node.id, nodeName: node.name });
-                                          void mutation.mutate(doAction);
                                         }}
                                         style={{ flex: 1 }}
                                       >
@@ -947,7 +958,6 @@ export default function CliproxyInstances() {
                                         disabled={!node.online}
                                         onClick={() => {
                                           setOperation({ instance, action: "start", nodeId: node.id, nodeName: node.name });
-                                          void mutation.mutate(doAction);
                                         }}
                                         style={{ flex: 1 }}
                                       >
@@ -959,7 +969,6 @@ export default function CliproxyInstances() {
                                         disabled={!node.online}
                                         onClick={() => {
                                           setOperation({ instance, action: "restart", nodeId: node.id, nodeName: node.name });
-                                          void mutation.mutate(doAction);
                                         }}
                                         style={{ flex: 1 }}
                                       >
@@ -1612,6 +1621,26 @@ export default function CliproxyInstances() {
                 </div>
               </Modal>
 
+              <Modal title={tt("运行配置", "Runtime settings")} open={configOpen}
+                onCancel={() => setConfigOpen(false)} footer={null} destroyOnClose>
+                <InstanceSettings nodeId={node.id} instanceId={instance.id}
+                  enabled={Boolean(configOpen && node.online && instance.healthy)} mode="config" />
+              </Modal>
+              <Drawer title={tt("操作记录", "Operation history")} open={historyOpen}
+                onClose={() => setHistoryOpen(false)} width={720}>
+                <Table<Job> rowKey="id" pagination={false}
+                  dataSource={(node.report?.jobs ?? []).filter(job => job.instanceId === instance.id)
+                    .slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt))}
+                  columns={[
+                    { title: tt("操作", "Action"), dataIndex: "action", render: actionText },
+                    { title: tt("状态", "Status"), dataIndex: "status", render: (status: string) => ({
+                      queued: tt("排队中", "Queued"), running: tt("执行中", "Running"),
+                      succeeded: tt("成功", "Succeeded"), failed: tt("失败", "Failed"),
+                    })[status] ?? status },
+                    { title: tt("提交时间", "Created at"), dataIndex: "createdAt", render: (value: string) => dayjs(value).format("YYYY-MM-DD HH:mm:ss") },
+                    { title: tt("错误", "Error"), dataIndex: "error" },
+                  ]} />
+              </Drawer>
               {/* Modal for Edit Model Mapping Rules */}
               <Modal
                 title={
