@@ -81,7 +81,20 @@ const useStyles = createStyles(({ token }) => ({
   connectionFeatures: { flex: "1 1 280px", minWidth: 240 },
   connectionActions: { flex: "0 1 auto", marginInlineStart: "auto", justifyContent: "flex-end" },
   actionButton: { minHeight: 28, paddingInline: 10, fontSize: 13, fontWeight: 500 },
-  statusTag: { minHeight: 28, marginInlineEnd: 0, paddingInline: 10, justifyContent: "center", borderColor: "currentColor", fontSize: 13, fontWeight: 500 },
+  statusTag: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    height: 28,
+    minHeight: 28,
+    lineHeight: 1,
+    marginInlineEnd: 0,
+    paddingInline: 10,
+    fontSize: 13,
+    fontWeight: 500,
+    borderRadius: 6,
+    border: "none",
+  },
 }));
 
 type DetailKind = "compatible" | "search" | "webfetch" | "upstream-proxy" | "no-auth" | "oauth" | "web-cookie" | "ide" | "standard";
@@ -142,11 +155,11 @@ function classify(providerId: string, info: (ProviderCatalogEntry & { category: 
 
 function connectionStatus(connection: ProviderConnection, t: (key: string, fallback?: string) => string, className?: string) {
   const health = getConnectionHealth(connection);
-  if (health === "disabled") return <Tag className={className}>{t("providers.statusDisabled", "已禁用")}</Tag>;
-  if (health === "error") return <Tag className={className} color="error">{t("providers.statusError", "异常")}</Tag>;
-  if (health === "warning") return <Tag className={className} color="warning">{t("providers.statusWarning", "需检查")}</Tag>;
-  if (health === "connected") return <Tag className={className} color="success">{t("providers.statusConnected", "已连接")}</Tag>;
-  return <Tag className={className} color="processing">{t("providers.statusUntested", "未测试")}</Tag>;
+  if (health === "disabled") return <Tag bordered={false} color="default" className={className}>{t("providers.statusDisabled", "已禁用")}</Tag>;
+  if (health === "error") return <Tag bordered={false} className={className} color="error">{t("providers.statusError", "异常")}</Tag>;
+  if (health === "warning") return <Tag bordered={false} className={className} color="warning">{t("providers.statusWarning", "需检查")}</Tag>;
+  if (health === "connected") return <Tag bordered={false} className={className} color="success">{t("providers.statusConnected", "已连接")}</Tag>;
+  return <Tag bordered={false} className={className} color="processing">{t("providers.statusUntested", "未测试")}</Tag>;
 }
 
 function maskAccountName(value: string | null | undefined): string {
