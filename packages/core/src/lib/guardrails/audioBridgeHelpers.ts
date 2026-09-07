@@ -198,7 +198,7 @@ async function resolveAudioBytes(
   return { bytes: Buffer.from(part.ref, "base64") };
 }
 
-/** Build the exact multipart body ShiguangGateway's own transcription route expects. */
+/** Build the exact multipart body Orbit's own transcription route expects. */
 function buildTranscriptionMultipartBody(
   bytes: Buffer,
   format: string,
@@ -210,7 +210,7 @@ function buildTranscriptionMultipartBody(
   // open-sse tsconfig, and this body is passed straight to fetch() below (#11654).
 ): { body: Buffer<ArrayBuffer>; boundary: string } {
   const fileName = `audio.${format.replace(/[^a-z0-9]/g, "") || "wav"}`;
-  const boundary = `----ShiguangGatewayAudioBridge${randomUUID().replace(/-/g, "")}`;
+  const boundary = `----OrbitAudioBridge${randomUUID().replace(/-/g, "")}`;
   const CRLF = "\r\n";
   const extraFieldParts = Object.entries(extraFields).map(([name, value]) =>
     Buffer.from(
@@ -238,7 +238,7 @@ function buildTranscriptionMultipartBody(
 }
 
 /**
- * Send one audio part through ShiguangGateway's existing multipart transcription
+ * Send one audio part through Orbit's existing multipart transcription
  * route (the one Audio Bridge transcription boundary) and return the parsed
  * JSON response. `extraFields` lets callers request provider extras (e.g.
  * `response_format=verbose_json`) without duplicating this HTTP client.
@@ -309,7 +309,7 @@ async function sendAudioTranscriptionRequest(
   }
 }
 
-/** Send one audio part through ShiguangGateway's existing multipart transcription route. */
+/** Send one audio part through Orbit's existing multipart transcription route. */
 export async function callAudioTranscription(
   part: AudioPart,
   config: AudioTranscriptionConfig,

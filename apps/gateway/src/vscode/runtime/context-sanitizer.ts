@@ -219,7 +219,7 @@ function sanitizeValue(
 }
 
 function shouldSanitizeVscodeContext(): boolean {
-  return process.env.SHIGUANG_GATEWAY_VSCODE_SANITIZE_CONTEXT !== "0";
+  return process.env.ORBIT_VSCODE_SANITIZE_CONTEXT !== "0";
 }
 
 export function sanitizeVscodeRequestBody<T>(body: T): VscodeContextSanitizerResult<T> {

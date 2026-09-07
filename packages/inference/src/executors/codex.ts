@@ -385,31 +385,31 @@ function ensureCodexReasoningSummary(body: Record<string, unknown>): void {
 }
 
 function consumeResponsesStoreMarker(body: Record<string, unknown>): unknown {
-  const marker = body._shiguangGatewayResponsesStore;
-  delete body._shiguangGatewayResponsesStore;
+  const marker = body._orbitResponsesStore;
+  delete body._orbitResponsesStore;
   return marker;
 }
 
 /**
- * Global Codex WebSocket kill-switch (feature flag SHIGUANG_GATEWAY_CODEX_WS_ENABLED,
+ * Global Codex WebSocket kill-switch (feature flag ORBIT_CODEX_WS_ENABLED,
  * default ON). Fail-open: if the flag store is unreachable (e.g. DB not yet
  * ready), treat as enabled so codex routing is never broken by the read itself.
  */
 function isCodexWsGloballyEnabled(): boolean {
   try {
-    return isFeatureFlagEnabled("SHIGUANG_GATEWAY_CODEX_WS_ENABLED");
+    return isFeatureFlagEnabled("ORBIT_CODEX_WS_ENABLED");
   } catch {
     return true;
   }
 }
 
 /**
- * Global Codex app-server kill-switch (feature flag SHIGUANG_GATEWAY_CODEX_APP_SERVER_ENABLED,
+ * Global Codex app-server kill-switch (feature flag ORBIT_CODEX_APP_SERVER_ENABLED,
  * default ON). Fail-open, mirroring isCodexWsGloballyEnabled.
  */
 function isCodexAppServerGloballyEnabled(): boolean {
   try {
-    return isFeatureFlagEnabled("SHIGUANG_GATEWAY_CODEX_APP_SERVER_ENABLED");
+    return isFeatureFlagEnabled("ORBIT_CODEX_APP_SERVER_ENABLED");
   } catch {
     return true;
   }
@@ -436,7 +436,7 @@ export function isCodexResponsesWebSocketRequired(_model: string, credentials: u
   // transport — even per-connection codexTransport=websocket falls back to the
   // HTTP Responses SSE endpoint.
   if (!isCodexWsGloballyEnabled()) return false;
-  // ShiguangGateway is an HTTP→SSE gateway — WebSocket transport is unnecessary and
+  // Orbit is an HTTP→SSE gateway — WebSocket transport is unnecessary and
   // breaks when upstream requests go through an HTTP proxy (403 on WS upgrade).
   // Default to the standard HTTP Responses SSE endpoint for all Codex models.
   // Users who need WebSocket can opt in via the provider codexTransport setting.
@@ -524,7 +524,7 @@ function toCodexResponseFailedEvent(parsed: Record<string, unknown>): Record<str
 // 502 "Unknown error" / "Invalid state: Controller is already closed".
 // Default ON (#11014). Opt out with 0/false/no/off if a client consumes them.
 export function codexDropNonstandardEvents(): boolean {
-  const v = process.env.SHIGUANG_GATEWAY_CODEX_DROP_NONSTANDARD_EVENTS;
+  const v = process.env.ORBIT_CODEX_DROP_NONSTANDARD_EVENTS;
   if (v === undefined || v.trim() === "") return true;
   const n = v.trim().toLowerCase();
   if (n === "0" || n === "false" || n === "no" || n === "off") return false;
@@ -743,7 +743,7 @@ export function encodeResponseSseEvent(raw: string): { sse: string; terminal: bo
   // check below never caught codex.rate_limits — over WS the frame carries a
   // non-empty JSON payload (`{"type":"codex.rate_limits", ...}`), so
   // `!payload.trim()` is false. Match by event type instead. Default ON via
-  // SHIGUANG_GATEWAY_CODEX_DROP_NONSTANDARD_EVENTS (#11014); the HTTP transport is handled
+  // ORBIT_CODEX_DROP_NONSTANDARD_EVENTS (#11014); the HTTP transport is handled
   // separately by filterNonstandardCodexSse, since super.execute forwards the
   // upstream stream verbatim and never runs this function).
   if (eventType.startsWith("codex.") && codexDropNonstandardEvents()) {
@@ -1436,7 +1436,7 @@ export class CodexExecutor extends BaseExecutor {
     }
 
     // Delete session_id and conversation_id from the body.
-    // These are often injected by ShiguangGateway's fallback logic for store=true,
+    // These are often injected by Orbit's fallback logic for store=true,
     // but the upstream Codex API strictly rejects them as unsupported parameters.
     delete body.session_id;
     delete body.conversation_id;
@@ -1483,8 +1483,8 @@ export class CodexExecutor extends BaseExecutor {
       // must survive this allowlist filter or upstream rejects with "X-OpenAI-Internal-
       // Codex-Responses-Lite requires `parallel_tool_calls` to be false."
       "parallel_tool_calls",
-      // Internal markers used by ShiguangGateway pipeline
-      "_shiguangGatewayResponsesStore",
+      // Internal markers used by Orbit pipeline
+      "_orbitResponsesStore",
     ]);
 
     for (const key of Object.keys(body)) {

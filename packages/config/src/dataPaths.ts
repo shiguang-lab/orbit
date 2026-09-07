@@ -3,7 +3,7 @@ import os from "node:os";
 import fs from "node:fs";
 
 /** Canonical application data-path policy shared by server-side applications. */
-export const APP_NAME = "shiguangGateway";
+export const APP_NAME = "orbit";
 
 function fallbackHomeDir() {
   const envHome = process.env.HOME || process.env.USERPROFILE;
@@ -81,7 +81,7 @@ export function resolveWritableDataDir({ isCloud = false }: { isCloud?: boolean 
   if (
     !process.env.DATA_DIR &&
     isTestContext() &&
-    process.env.SHIGUANG_GATEWAY_ALLOW_DEFAULT_DATA_DIR !== "1"
+    process.env.ORBIT_ALLOW_DEFAULT_DATA_DIR !== "1"
   ) {
     if (!testContextDataDir) {
       testContextDataDir = fs.mkdtempSync(path.join(os.tmpdir(), `${APP_NAME}-testctx-`));

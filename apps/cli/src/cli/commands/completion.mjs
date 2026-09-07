@@ -6,7 +6,7 @@ import { apiFetch } from "../api.mjs";
 import { resolveDataDir } from "@orbit/config/dataPaths";
 import { listManifestTargets } from "../cli-manifest.mjs";
 
-// Target lists shared with `shiguangGateway run` / `shiguangGateway configure` — always
+// Target lists shared with `orbit run` / `orbit configure` — always
 // derived from the canonical manifest so the completion scripts cannot drift.
 const RUN_TARGET_WORDS = listManifestTargets("run").join(" ");
 const CONFIGURE_TARGET_WORDS = listManifestTargets("configure").join(" ");
@@ -22,8 +22,8 @@ function readCache() {
     const raw = JSON.parse(readFileSync(cachePath(), "utf8"));
     if (raw && typeof raw.ts === "number" && Date.now() - raw.ts < CACHE_TTL_MS) return raw;
   } catch (err) {
-    if (process.env.SHIGUANG_GATEWAY_DEBUG_COMPLETION) {
-      console.error("[shiguangGateway completion] readCache failed:", err?.message ?? err);
+    if (process.env.ORBIT_DEBUG_COMPLETION) {
+      console.error("[orbit completion] readCache failed:", err?.message ?? err);
     }
   }
   return null;
@@ -52,8 +52,8 @@ async function refreshCache(opts = {}) {
       models = (Array.isArray(j) ? j : j.data || []).map((m) => m.id).filter(Boolean);
     }
   } catch (err) {
-    if (process.env.SHIGUANG_GATEWAY_DEBUG_COMPLETION) {
-      console.error("[shiguangGateway completion] refreshCache failed:", err?.message ?? err);
+    if (process.env.ORBIT_DEBUG_COMPLETION) {
+      console.error("[orbit completion] refreshCache failed:", err?.message ?? err);
     }
   }
   const data = { combos, providers, models, ts: Date.now() };
@@ -61,8 +61,8 @@ async function refreshCache(opts = {}) {
     mkdirSync(dirname(cachePath()), { recursive: true });
     writeFileSync(cachePath(), JSON.stringify(data));
   } catch (err) {
-    if (process.env.SHIGUANG_GATEWAY_DEBUG_COMPLETION) {
-      console.error("[shiguangGateway completion] writeCache failed:", err?.message ?? err);
+    if (process.env.ORBIT_DEBUG_COMPLETION) {
+      console.error("[orbit completion] writeCache failed:", err?.message ?? err);
     }
   }
   return data;
@@ -77,38 +77,38 @@ function detectShell() {
 
 function installPath(shell) {
   const home = homedir();
-  if (shell === "zsh") return join(home, ".zsh", "completions", "_shiguangGateway");
-  if (shell === "fish") return join(home, ".config", "fish", "completions", "shiguangGateway.fish");
-  return join(home, ".bash_completion.d", "shiguangGateway");
+  if (shell === "zsh") return join(home, ".zsh", "completions", "_orbit");
+  if (shell === "fish") return join(home, ".config", "fish", "completions", "orbit.fish");
+  return join(home, ".bash_completion.d", "orbit");
 }
 
 function generateZshScript() {
-  return `#compdef shiguangGateway
+  return `#compdef orbit
 
-# ShiguangGateway zsh completion (dynamic)
-_shiguangGateway_get_cache() {
+# Orbit zsh completion (dynamic)
+_orbit_get_cache() {
   local key="$1"
-  local cache="$HOME/.shiguangGateway/completion-cache.json"
+  local cache="$HOME/.orbit/completion-cache.json"
   local now=$(date +%s 2>/dev/null || echo 0)
   local mtime=0
   if [[ -f "$cache" ]]; then
     mtime=$(stat -c %Y "$cache" 2>/dev/null || stat -f %m "$cache" 2>/dev/null || echo 0)
   fi
   if [[ $((now - mtime)) -gt 3600 ]]; then
-    shiguangGateway completion refresh --quiet >/dev/null 2>&1
+    orbit completion refresh --quiet >/dev/null 2>&1
   fi
   if command -v python3 &>/dev/null && [[ -f "$cache" ]]; then
     python3 -c "import json,sys;d=json.load(open('$cache'));print(' '.join(d.get('$key',[])))" 2>/dev/null
   fi
 }
 
-_shiguangGateway() {
+_orbit() {
   local -a commands
   commands=(
-    'serve:Start the ShiguangGateway server'
+    'serve:Start the Orbit server'
     'stop:Stop the server'
     'restart:Restart the server'
-    'setup:Configure ShiguangGateway'
+    'setup:Configure Orbit'
     'doctor:Run health diagnostics'
     'status:Show server status'
     'logs:View application logs'
@@ -135,12 +135,12 @@ _shiguangGateway() {
     'completion:Shell completion'
     'memory:Manage memory store'
     'skills:Manage skills'
-    'connect:Connect to a local or remote ShiguangGateway server'
+    'connect:Connect to a local or remote Orbit server'
     'contexts:Manage local and remote server contexts'
     'configure:Configure a supported AI CLI'
-    'launch:Launch an AI CLI through ShiguangGateway'
-    'launch-codex:Launch Codex through ShiguangGateway'
-    'run:Run a supported AI CLI through ShiguangGateway'
+    'launch:Launch an AI CLI through Orbit'
+    'launch-codex:Launch Codex through Orbit'
+    'run:Run a supported AI CLI through Orbit'
     'runtime:Inspect CLI runtime capabilities'
     'repair:Repair native runtime dependencies'
   )
@@ -157,7 +157,7 @@ _shiguangGateway() {
           case $words[2] in
             switch|delete|show)
               local -a combos
-              combos=($(_shiguangGateway_get_cache combos))
+              combos=($(_orbit_get_cache combos))
               _describe 'combo' combos ;;
             *) _arguments '1:subcommand:(list switch create delete show suggest)' ;;
           esac ;;
@@ -165,7 +165,7 @@ _shiguangGateway() {
           case $words[2] in
             add|remove|test)
               local -a providers
-              providers=($(_shiguangGateway_get_cache providers))
+              providers=($(_orbit_get_cache providers))
               _describe 'provider' providers ;;
             *) _arguments '1:subcommand:(available list test test-all validate rotate status add import auth remove edit metrics metric)' ;;
           esac ;;
@@ -190,40 +190,40 @@ _shiguangGateway() {
       case $state in
         models)
           local -a models
-          models=($(_shiguangGateway_get_cache models))
+          models=($(_orbit_get_cache models))
           _describe 'model' models ;;
         combos)
           local -a combos
-          combos=($(_shiguangGateway_get_cache combos))
+          combos=($(_orbit_get_cache combos))
           _describe 'combo' combos ;;
       esac ;;
   esac
 }
 
-compdef _shiguangGateway shiguangGateway
+compdef _orbit orbit
 `;
 }
 
 function generateBashScript() {
   return `#!/bin/bash
-# ShiguangGateway CLI bash completion (dynamic)
+# Orbit CLI bash completion (dynamic)
 
-_shiguangGateway_get_cache() {
+_orbit_get_cache() {
   local key="$1"
-  local cache="$HOME/.shiguangGateway/completion-cache.json"
+  local cache="$HOME/.orbit/completion-cache.json"
   local now
   now=$(date +%s 2>/dev/null || echo 0)
   local mtime=0
   [[ -f "$cache" ]] && mtime=$(stat -c %Y "$cache" 2>/dev/null || stat -f %m "$cache" 2>/dev/null || echo 0)
   if (( now - mtime > 3600 )); then
-    shiguangGateway completion refresh --quiet >/dev/null 2>&1
+    orbit completion refresh --quiet >/dev/null 2>&1
   fi
   if command -v python3 &>/dev/null && [[ -f "$cache" ]]; then
     python3 -c "import json,sys;d=json.load(open('$cache'));print(' '.join(d.get('$key',[])))" 2>/dev/null
   fi
 }
 
-_shiguangGateway() {
+_orbit() {
   local cur prev cmds
   COMPREPLY=()
   cur="\${COMP_WORDS[COMP_CWORD]}"
@@ -243,65 +243,65 @@ _shiguangGateway() {
     runtime)     COMPREPLY=($(compgen -W "check repair clean" -- "\${cur}")); return 0 ;;
     --model)
       local models
-      models=$(_shiguangGateway_get_cache models)
+      models=$(_orbit_get_cache models)
       COMPREPLY=($(compgen -W "\${models}" -- "\${cur}")); return 0 ;;
     --combo)
       local combos
-      combos=$(_shiguangGateway_get_cache combos)
+      combos=$(_orbit_get_cache combos)
       COMPREPLY=($(compgen -W "\${combos}" -- "\${cur}")); return 0 ;;
     switch|delete)
       local combos
-      combos=$(_shiguangGateway_get_cache combos)
+      combos=$(_orbit_get_cache combos)
       COMPREPLY=($(compgen -W "\${combos}" -- "\${cur}")); return 0 ;;
     *)
       COMPREPLY=($(compgen -W "\${cmds} --help --version --output --quiet" -- "\${cur}")); return 0 ;;
   esac
 }
 
-complete -F _shiguangGateway shiguangGateway
+complete -F _orbit orbit
 `;
 }
 
 function generateFishScript() {
-  return `# ShiguangGateway CLI fish completion (dynamic)
-complete -c shiguangGateway -f
+  return `# Orbit CLI fish completion (dynamic)
+complete -c orbit -f
 
 set -l commands serve stop restart setup doctor status logs providers config keys models combo chat stream completion dashboard open backup restore health quota cache mcp a2a tunnel env memory skills connect contexts configure launch launch-codex update test run runtime repair
 
 for cmd in $commands
-  complete -c shiguangGateway -n '__fish_is_nth_token 1' -a $cmd
+  complete -c orbit -n '__fish_is_nth_token 1' -a $cmd
 end
 
 # Subcommands
-complete -c shiguangGateway -n '__fish_seen_subcommand_from combo' -a 'list switch create delete show suggest'
-complete -c shiguangGateway -n '__fish_seen_subcommand_from keys' -a 'add list remove regenerate revoke reveal usage'
-complete -c shiguangGateway -n '__fish_seen_subcommand_from providers' -a 'available list test test-all validate rotate status add import auth remove edit metrics metric'
-complete -c shiguangGateway -n '__fish_seen_subcommand_from config' -a 'list get set validate contexts'
-complete -c shiguangGateway -n '__fish_seen_subcommand_from completion' -a 'zsh bash fish install refresh'
-complete -c shiguangGateway -n '__fish_seen_subcommand_from open' -a 'combos providers api-manager cli-tools agents settings logs memory skills evals audit cost resilience'
-complete -c shiguangGateway -n '__fish_seen_subcommand_from contexts' -a 'list add use current show remove rename export import migrate'
-complete -c shiguangGateway -n '__fish_seen_subcommand_from configure' -a '${CONFIGURE_TARGET_WORDS}'
-complete -c shiguangGateway -n '__fish_seen_subcommand_from run' -a '${RUN_TARGET_WORDS}'
-complete -c shiguangGateway -n '__fish_seen_subcommand_from runtime' -a 'check repair clean'
+complete -c orbit -n '__fish_seen_subcommand_from combo' -a 'list switch create delete show suggest'
+complete -c orbit -n '__fish_seen_subcommand_from keys' -a 'add list remove regenerate revoke reveal usage'
+complete -c orbit -n '__fish_seen_subcommand_from providers' -a 'available list test test-all validate rotate status add import auth remove edit metrics metric'
+complete -c orbit -n '__fish_seen_subcommand_from config' -a 'list get set validate contexts'
+complete -c orbit -n '__fish_seen_subcommand_from completion' -a 'zsh bash fish install refresh'
+complete -c orbit -n '__fish_seen_subcommand_from open' -a 'combos providers api-manager cli-tools agents settings logs memory skills evals audit cost resilience'
+complete -c orbit -n '__fish_seen_subcommand_from contexts' -a 'list add use current show remove rename export import migrate'
+complete -c orbit -n '__fish_seen_subcommand_from configure' -a '${CONFIGURE_TARGET_WORDS}'
+complete -c orbit -n '__fish_seen_subcommand_from run' -a '${RUN_TARGET_WORDS}'
+complete -c orbit -n '__fish_seen_subcommand_from runtime' -a 'check repair clean'
 
 # Dynamic completions from cache (requires python3)
-function __shiguangGateway_cache_get
+function __orbit_cache_get
   set -l key $argv[1]
-  set -l cache "$HOME/.shiguangGateway/completion-cache.json"
+  set -l cache "$HOME/.orbit/completion-cache.json"
   set -l now (date +%s 2>/dev/null; or echo 0)
   set -l mtime 0
   test -f $cache; and set mtime (stat -c %Y $cache 2>/dev/null; or stat -f %m $cache 2>/dev/null; or echo 0)
   if test (math $now - $mtime) -gt 3600
-    shiguangGateway completion refresh --quiet >/dev/null 2>&1
+    orbit completion refresh --quiet >/dev/null 2>&1
   end
   if command -q python3; and test -f $cache
     python3 -c "import json,sys;d=json.load(open('$cache'));print('\\n'.join(d.get('$key',[])))" 2>/dev/null
   end
 end
 
-complete -c shiguangGateway -n '__fish_seen_subcommand_from combo; and __fish_seen_subcommand_from switch delete' -a '(__shiguangGateway_cache_get combos)'
-complete -c shiguangGateway -l model -a '(__shiguangGateway_cache_get models)'
-complete -c shiguangGateway -l combo -a '(__shiguangGateway_cache_get combos)'
+complete -c orbit -n '__fish_seen_subcommand_from combo; and __fish_seen_subcommand_from switch delete' -a '(__orbit_cache_get combos)'
+complete -c orbit -l model -a '(__orbit_cache_get models)'
+complete -c orbit -l combo -a '(__orbit_cache_get combos)'
 `;
 }
 
@@ -359,7 +359,7 @@ export function registerCompletion(program) {
       }
     });
 
-  // Backward-compat: `shiguangGateway completion <shell>` (positional arg form)
+  // Backward-compat: `orbit completion <shell>` (positional arg form)
   comp
     .command("<shell>")
     .description("Print completion script for shell (bash, zsh, fish)")

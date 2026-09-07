@@ -60,7 +60,7 @@ export function buildDroidCustomModels(
 
   const entries: DroidCustomModelEntry[] = models.map((model, index) => ({
     model,
-    id: `custom:ShiguangGateway-${index}`,
+    id: `custom:Orbit-${index}`,
     index,
     baseUrl: opts.baseUrl,
     apiKey: opts.apiKey,
@@ -75,15 +75,15 @@ export function buildDroidCustomModels(
     entries.unshift({ ...defaultEntry, index: 0 });
     entries.forEach((entry, index) => {
       entry.index = index;
-      entry.id = `custom:ShiguangGateway-${index}`;
+      entry.id = `custom:Orbit-${index}`;
     });
   }
 
   return entries;
 }
 
-export function isShiguangGatewayCustomModel(
+export function isOrbitCustomModel(
   entry: { id?: unknown } | null | undefined,
 ): boolean {
-  return typeof entry?.id === "string" && entry.id.startsWith("custom:ShiguangGateway");
+  return typeof entry?.id === "string" && entry.id.startsWith("custom:Orbit");
 }

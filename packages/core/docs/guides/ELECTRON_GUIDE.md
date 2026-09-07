@@ -9,7 +9,7 @@ lastUpdated: 2026-06-28
 > **Source of truth:** `electron/` workspace
 > **Last updated:** 2026-06-28 — v3.8.40
 
-ShiguangGateway ships a cross-platform desktop app (Windows / macOS / Linux) built on
+Orbit ships a cross-platform desktop app (Windows / macOS / Linux) built on
 **Electron 41** + **electron-builder 26.10**. The desktop app spawns the Next.js
 standalone server as a child process, points a `BrowserWindow` at it, and adds a
 system tray, auto-updater, IPC bridge, and zero-config secret bootstrap.
@@ -46,8 +46,8 @@ Confirmed from `electron/package.json`:
 | `electron-updater` | `^6.8.5`                                                  |
 | `better-sqlite3`   | root `^13.0.2` (Node-API prebuilds — no Electron rebuild) |
 | App version        | `3.8.0`                                                   |
-| App id             | `online.shiguang-gateway.desktop`                                |
-| Product name       | `ShiguangGateway`                                               |
+| App id             | `online.orbit.desktop`                                |
+| Product name       | `Orbit`                                               |
 
 ## Scripts (root `package.json`)
 
@@ -159,28 +159,28 @@ On first launch, the main process auto-generates and persists missing secrets:
 
 Persisted to `<DATA_DIR>/server.env`. `DATA_DIR` resolves to:
 
-- Windows: `%APPDATA%\shiguang-gateway`
-- Linux: `$XDG_CONFIG_HOME/shiguang-gateway` or `~/.shiguang-gateway`
-- macOS: `~/.shiguang-gateway`
+- Windows: `%APPDATA%\orbit`
+- Linux: `$XDG_CONFIG_HOME/orbit` or `~/.orbit`
+- macOS: `~/.orbit`
 
 ## Window & Tray
 
 - `BrowserWindow`: 1400×900 (min 1024×700), `backgroundColor: "#0a0a0a"`.
 - macOS: `titleBarStyle: "hiddenInset"`, traffic-light at `{ x: 16, y: 16 }`.
 - Windows/Linux: native title bar.
-- Close button minimizes to tray; the tray menu has **Open ShiguangGateway**, **Open Dashboard** (external browser), **Server Port** submenu, **Check for Updates**, **Quit**.
+- Close button minimizes to tray; the tray menu has **Open Orbit**, **Open Dashboard** (external browser), **Server Port** submenu, **Check for Updates**, **Quit**.
 
 ## Content Security Policy
 
 Set via `session.defaultSession.webRequest.onHeadersReceived`. Notable directives:
 
 - `frame-ancestors 'none'`, `object-src 'none'`, `child-src 'none'`
-- `connect-src 'self' http://localhost:* http://127.0.0.1:* ws://localhost:* ws://127.0.0.1:* https://*.shiguang-gateway.online https://*.shiguang-gateway.dev`
+- `connect-src 'self' http://localhost:* http://127.0.0.1:* ws://localhost:* ws://127.0.0.1:* https://*.orbit.online https://*.orbit.dev`
 - Dev mode adds `'unsafe-eval'` to `script-src` only
 
 ## Auto-update
 
-Uses `electron-updater` with the GitHub provider (`diegosouzapw/ShiguangGateway`).
+Uses `electron-updater` with the GitHub provider (`diegosouzapw/Orbit`).
 
 - `autoDownload = false`, `autoInstallOnAppQuit = true`
 - Events forwarded to renderer via `update-status` IPC:
@@ -252,11 +252,11 @@ AppImage signing is optional — set `LINUX_GPG_KEY` if signing.
 
 Artifacts land in `electron/dist-electron/`:
 
-- `ShiguangGateway.Setup.X.Y.Z.exe`, `ShiguangGateway X.Y.Z.exe` (Windows)
-- `ShiguangGateway-X.Y.Z-mac.dmg`, `ShiguangGateway-X.Y.Z-arm64-mac.dmg` (macOS)
-- `ShiguangGateway-X.Y.Z.AppImage`, `shiguang-gateway-desktop_X.Y.Z_amd64.deb` (Linux)
+- `Orbit.Setup.X.Y.Z.exe`, `Orbit X.Y.Z.exe` (Windows)
+- `Orbit-X.Y.Z-mac.dmg`, `Orbit-X.Y.Z-arm64-mac.dmg` (macOS)
+- `Orbit-X.Y.Z.AppImage`, `orbit-desktop_X.Y.Z_amd64.deb` (Linux)
 
-Releases are published to GitHub Releases (`diegosouzapw/ShiguangGateway`), which is also where `electron-updater` checks for new versions.
+Releases are published to GitHub Releases (`diegosouzapw/Orbit`), which is also where `electron-updater` checks for new versions.
 
 ## Troubleshooting
 

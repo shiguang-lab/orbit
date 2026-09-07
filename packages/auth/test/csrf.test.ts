@@ -7,10 +7,10 @@ import Fastify from "fastify";
 import { exportJWK, generateKeyPair, SignJWT } from "jose";
 
 const issuer = "https://shiguanglab.com";
-const audience = "shiguang-gateway-api";
-const entitlement = "shiguang-gateway:access";
+const audience = "orbit-api";
+const entitlement = "orbit:access";
 const keyId = "csrf-test-key";
-const testRoot = await mkdtemp(join(tmpdir(), "shiguang-gateway-csrf-"));
+const testRoot = await mkdtemp(join(tmpdir(), "orbit-csrf-"));
 const jwksFile = join(testRoot, "jwks.json");
 const { privateKey, publicKey } = await generateKeyPair("RS256");
 const publicJwk = await exportJWK(publicKey);

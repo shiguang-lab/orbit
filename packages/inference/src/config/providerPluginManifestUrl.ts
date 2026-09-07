@@ -1,4 +1,4 @@
-export const PROVIDER_PLUGIN_MANIFEST_HEADER = "X-ShiguangGateway-Provider-Manifest-Url";
+export const PROVIDER_PLUGIN_MANIFEST_HEADER = "X-Orbit-Provider-Manifest-Url";
 export const PROVIDER_PLUGIN_MANIFEST_PATH = "/api/v1/provider-plugin-manifest";
 
 function trimTrailingSlash(value: string): string {
@@ -6,7 +6,7 @@ function trimTrailingSlash(value: string): string {
 }
 
 export function resolveProviderPluginManifestUrl(origin?: string | null): string {
-  const configured = process.env.SHIGUANG_GATEWAY_PROVIDER_MANIFEST_URL?.trim();
+  const configured = process.env.ORBIT_PROVIDER_MANIFEST_URL?.trim();
   if (configured) return configured;
 
   if (origin) {
@@ -15,7 +15,7 @@ export function resolveProviderPluginManifestUrl(origin?: string | null): string
 
   const host = process.env.HOST || "127.0.0.1";
   const port = process.env.PORT || process.env.DASHBOARD_PORT || process.env.API_PORT || "8787";
-  const protocol = process.env.SHIGUANG_GATEWAY_PUBLIC_PROTOCOL || "http";
+  const protocol = process.env.ORBIT_PUBLIC_PROTOCOL || "http";
   return `${protocol}://${host}:${port}${PROVIDER_PLUGIN_MANIFEST_PATH}`;
 }
 

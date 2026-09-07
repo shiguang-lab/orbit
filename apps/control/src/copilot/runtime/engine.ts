@@ -1,5 +1,5 @@
 /**
- * ShiguangGateway Copilot — Chat Engine
+ * Orbit Copilot — Chat Engine
  *
  * Processes user messages, classifies intent, executes tools,
  * queries CodeGraph, invokes CLI commands, or responds with
@@ -39,7 +39,7 @@ function getKnowledgeResponse(query: string): string | null {
     /architecture|arquitectura|pipeline/.test(q) ||
     (q.includes("request") && (q.includes("flow") || q.includes("path")))
   ) {
-    return `## ShiguangGateway Architecture
+    return `## Orbit Architecture
 
 The request pipeline flows through:
 1. **API Route** → CORS → Zod validation → Auth (optional)
@@ -78,14 +78,14 @@ Combos chain multiple targets (provider+model) with a strategy:
 - \`context-relay\`: Relay context between models
 - \`lkgp\`: Last Known Good Provider
 
-Use \`createCombo\` tool or \`runShiguangGatewayCli\` to create them.`;
+Use \`createCombo\` tool or \`runOrbitCli\` to create them.`;
   }
 
   // Provider questions
   if (/provider|proveedor/.test(q)) {
     return `## Providers (212+)
 
-ShiguangGateway supports 212+ providers across categories:
+Orbit supports 212+ providers across categories:
 - **Free**: Qoder AI, Kiro AI
 - **OAuth** (14): Claude Code, Antigravity, Codex, GitHub Copilot, Cursor, Kimi Coding, Devin Desktop, etc.
 - **API Key** (120+): OpenAI, Anthropic, Gemini, DeepSeek, Groq, xAI, Mistral, etc.
@@ -114,7 +114,7 @@ Use \`listProviders\` to see your configured ones.`;
   if (/codigo|código|codebase|cómo funciona|how does|where is|dónde está/.test(q)) {
     return `## Codebase Investigation
 
-I can use CodeGraph to explore the ShiguangGateway codebase. Just ask me:
+I can use CodeGraph to explore the Orbit codebase. Just ask me:
 - "Busca la función handleChatCore"
 - "Quién llama a sanitizeMessage?"
 - "Qué funciones hay en combo.ts?"
@@ -212,14 +212,14 @@ const INTENT_PATTERNS: Array<{
   // ── CLI executor ──
   {
     pattern: /^(?:cli|terminal|ejecuta|run|exec)\s+(.+)/i,
-    tool: "runShiguangGatewayCli",
+    tool: "runOrbitCli",
     extractArgs: (m) => ({ command: m[1].trim() }),
   },
 
   // ── Health / status ──
   {
     pattern: /^(?:health|status|salud|estado)$/i,
-    tool: "runShiguangGatewayCli",
+    tool: "runOrbitCli",
     extractArgs: () => ({ command: "health" }),
   },
 
@@ -244,7 +244,7 @@ function classifyIntent(text: string): { tool: string; args: Record<string, unkn
 // ── Help Response ────────────────────────────────────────────────────────────
 
 function getHelpResponse(): string {
-  return `## ShiguangGateway Copilot — Comandos disponibles
+  return `## Orbit Copilot — Comandos disponibles
 
 ### Configuración
 - "Lista los providers" → \`listProviders\`
@@ -262,12 +262,12 @@ function getHelpResponse(): string {
 - "Lista los archivos indexados" → \`listCodeGraphFiles\`
 
 ### CLI
-- "CLI health" → ejecuta \`shiguangGateway health\`
-- "CLI list-combos" → ejecuta \`shiguangGateway list-combos\`
-- "CLI set-budget 10" → ejecuta \`shiguangGateway set-budget 10\`
+- "CLI health" → ejecuta \`orbit health\`
+- "CLI list-combos" → ejecuta \`orbit list-combos\`
+- "CLI set-budget 10" → ejecuta \`orbit set-budget 10\`
 
 ### Conocimiento
-- "Cómo funciona ShiguangGateway?" → explica la arquitectura
+- "Cómo funciona Orbit?" → explica la arquitectura
 - "Qué son los combos?" → explica routing
 - "Cómo debuggeo un error?" → troubleshooting
 
@@ -298,7 +298,7 @@ export async function processCopilotChat(request: CopilotRequest): Promise<Copil
     }
     // Fallback: respond with help
     return {
-      message: `I understand you want help with ShiguangGateway.\n\n${getHelpResponse()}`,
+      message: `I understand you want help with Orbit.\n\n${getHelpResponse()}`,
     };
   }
 
@@ -346,14 +346,14 @@ Puedes decirme algo como:
   }
 
   // Handle CLI executor — pass the full command
-  if (intent.tool === "runShiguangGatewayCli") {
-    const tool = getCopilotTool("runShiguangGatewayCli");
+  if (intent.tool === "runOrbitCli") {
+    const tool = getCopilotTool("runOrbitCli");
     if (!tool) return { message: "Error: CLI executor not found." };
 
     const result = await tool.handler(intent.args);
     return {
       message: result,
-      toolCalls: [{ name: "runShiguangGatewayCli", args: intent.args, result }],
+      toolCalls: [{ name: "runOrbitCli", args: intent.args, result }],
     };
   }
 

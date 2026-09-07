@@ -14,7 +14,7 @@ export interface IssueAgentAuditResult {
 }
 
 function defaultDataDir(): string {
-  return process.env.DATA_DIR || join(homedir(), ".shiguangGateway");
+  return process.env.DATA_DIR || join(homedir(), ".orbit");
 }
 
 export async function appendIssueAgentAuditRecord(

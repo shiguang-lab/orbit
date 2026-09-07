@@ -1,6 +1,6 @@
 /**
  * Learned Reasoning-Effort Caps — reactive capability memory for providers/models
- * ShiguangGateway has no static registry entry for (custom OpenAI-compatible connections,
+ * Orbit has no static registry entry for (custom OpenAI-compatible connections,
  * or any registered provider whose registry entry carries no reasoning metadata).
  *
  * Same shape as `learnedThinkingCaps.ts` (thinking_budget), generalized from a

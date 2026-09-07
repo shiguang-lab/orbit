@@ -19,7 +19,7 @@ export interface HyperAgentModel {
   subagent: "fable" | "opus" | "sonnet" | "haiku";
   /** Agent runtime for Claude family models. */
   runtimeId?: string;
-  /** Context window for ShiguangGateway getTokenLimit / compression (Claude-family → 1M). */
+  /** Context window for Orbit getTokenLimit / compression (Claude-family → 1M). */
   contextLength?: number;
 }
 

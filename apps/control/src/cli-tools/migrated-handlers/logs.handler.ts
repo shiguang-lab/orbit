@@ -2,7 +2,7 @@
  * CLI Log Stream API — GET /api/cli-tools/logs
  *
  * Reads the application log file and returns matching entries.
- * Called by the CLI `shiguangGateway logs` command via
+ * Called by the CLI `orbit logs` command via
  * `apps/cli/src/cli/runtime/log-streamer.mjs`.
  *
  * Query params:

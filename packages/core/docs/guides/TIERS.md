@@ -1,18 +1,18 @@
 ---
-title: "ShiguangGateway Tiers — User Guide"
+title: "Orbit Tiers — User Guide"
 version: 3.8.40
 lastUpdated: 2026-06-28
 ---
 
-# ShiguangGateway Tiers — User Guide
+# Orbit Tiers — User Guide
 
-ShiguangGateway organizes the 207+ supported providers into 3 economic tiers. Each
+Orbit organizes the 207+ supported providers into 3 economic tiers. Each
 request travels through them in order until one returns successfully — you
 get the cheapest viable response without ever writing fallback code.
 
 ## Tier 1 — Subscription
 
-**Providers you already pay for.** ShiguangGateway uses every drop of quota before
+**Providers you already pay for.** Orbit uses every drop of quota before
 it expires.
 
 | Provider                            | Why Tier 1                                   |

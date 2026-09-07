@@ -38,7 +38,7 @@ const memoryThreads = new Map<string, ThreadBinding>();
 const THREAD_CACHE_MAX = 200;
 
 function threadCachePath(): string | null {
-  const dataDir = process.env.DATA_DIR || process.env.SHIGUANG_GATEWAY_DATA_DIR;
+  const dataDir = process.env.DATA_DIR || process.env.ORBIT_DATA_DIR;
   if (!dataDir) return null;
   return join(dataDir, "promptql-thread-sessions.json");
 }

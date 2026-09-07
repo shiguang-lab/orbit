@@ -17,8 +17,8 @@ const postSchema = z.object({
   trigger: z.enum(["scheduled", "on_demand", "on_provider_change", "on_error", "startup"]).optional().default("on_demand"),
 });
 
-const runtimeBaseUrl = process.env.SHIGUANG_GATEWAY_BASE_URL ?? process.env.INTERNAL_BASE_URL ?? "http://127.0.0.1:8787";
-const runtimeApiKey = process.env.SHIGUANG_GATEWAY_API_KEY ?? process.env.API_KEY ?? "";
+const runtimeBaseUrl = process.env.ORBIT_BASE_URL ?? process.env.INTERNAL_BASE_URL ?? "http://127.0.0.1:8787";
+const runtimeApiKey = process.env.ORBIT_API_KEY ?? process.env.API_KEY ?? "";
 const runtimeV1BaseUrl = `${runtimeBaseUrl.replace(/\/$/, "")}${/\/v1$/i.test(runtimeBaseUrl) ? "" : "/v1"}`;
 
 @Injectable()

@@ -11,8 +11,8 @@ Manage provider connections from the CLI: list available/configured providers, a
 ## Quick install
 
 ```bash
-npm install -g shiguang-gateway   # or: npx shiguang-gateway
-shiguang-gateway --version
+npm install -g orbit   # or: npx orbit
+orbit --version
 ```
 
 ## Subcommands
@@ -24,7 +24,7 @@ Manage provider connections (use
 **Example:**
 
 ```bash
-shiguang-gateway provider-cmd provider [subcommand]
+orbit provider-cmd provider [subcommand]
 ```
 
 ### `providers`
@@ -32,12 +32,12 @@ shiguang-gateway provider-cmd provider [subcommand]
 **Example:**
 
 ```bash
-shiguang-gateway providers
+orbit providers
 ```
 
 ### `providers available`
 
-Show available providers in the ShiguangGateway catalog
+Show available providers in the Orbit catalog
 
 **Flags:**
 
@@ -49,7 +49,7 @@ Show available providers in the ShiguangGateway catalog
 **Example:**
 
 ```bash
-shiguang-gateway providers available
+orbit providers available
 ```
 
 ### `providers list`
@@ -63,7 +63,7 @@ List configured provider connections
 **Example:**
 
 ```bash
-shiguang-gateway providers list
+orbit providers list
 ```
 
 ### `providers test <idOrName>`
@@ -77,7 +77,7 @@ Test a configured provider connection
 **Example:**
 
 ```bash
-shiguang-gateway providers test <idOrName>
+orbit providers test <idOrName>
 ```
 
 ### `providers test-all`
@@ -91,7 +91,7 @@ Test all active provider connections
 **Example:**
 
 ```bash
-shiguang-gateway providers test-all
+orbit providers test-all
 ```
 
 ### `providers validate`
@@ -105,7 +105,7 @@ Validate local provider configuration without calling upstream
 **Example:**
 
 ```bash
-shiguang-gateway providers validate
+orbit providers validate
 ```
 
 ### `providers rotate <idOrName>`
@@ -122,7 +122,7 @@ shiguang-gateway providers validate
 **Example:**
 
 ```bash
-shiguang-gateway providers rotate <idOrName>
+orbit providers rotate <idOrName>
 ```
 
 ### `providers status`
@@ -135,7 +135,7 @@ shiguang-gateway providers rotate <idOrName>
 **Example:**
 
 ```bash
-shiguang-gateway providers status
+orbit providers status
 ```
 
 ### `providers metrics`
@@ -154,7 +154,7 @@ shiguang-gateway providers status
 **Example:**
 
 ```bash
-shiguang-gateway providers metrics
+orbit providers metrics
 ```
 
 ### `providers metric <connectionId> <metric>`
@@ -166,7 +166,7 @@ shiguang-gateway providers metrics
 **Example:**
 
 ```bash
-shiguang-gateway providers metric <connectionId> <metric>
+orbit providers metric <connectionId> <metric>
 ```
 
 ### `test-provider test [provider] [model]`
@@ -183,23 +183,23 @@ shiguang-gateway providers metric <connectionId> <metric>
 **Example:**
 
 ```bash
-shiguang-gateway test-provider test [provider] [model]
+orbit test-provider test [provider] [model]
 ```
 
 <!-- skill:custom-start -->
-<!-- Migrated from skills/shiguang-gateway-cli-providers/SKILL.md (preserved curated content) -->
+<!-- Migrated from skills/orbit-cli-providers/SKILL.md (preserved curated content) -->
 
-# ShiguangGateway — CLI Providers & Keys
+# Orbit — CLI Providers & Keys
 
-Requires the `shiguang-gateway` CLI. See [CLI entry-point skill](https://raw.githubusercontent.com/diegosouzapw/ShiguangGateway/main/skills/shiguang-gateway-cli/SKILL.md) for install + global flags.
+Requires the `orbit` CLI. See [CLI entry-point skill](https://raw.githubusercontent.com/diegosouzapw/Orbit/main/skills/orbit-cli/SKILL.md) for install + global flags.
 
 ## Provider catalog (available providers)
 
 ```bash
-shiguang-gateway providers available                        # Full ShiguangGateway provider catalog
-shiguang-gateway providers available --search openai        # Filter by id, name, alias
-shiguang-gateway providers available --category api-key     # Filter by category
-shiguang-gateway providers available --json                 # Machine-readable JSON
+orbit providers available                        # Full Orbit provider catalog
+orbit providers available --search openai        # Filter by id, name, alias
+orbit providers available --category api-key     # Filter by category
+orbit providers available --json                 # Machine-readable JSON
 ```
 
 Categories: `api-key`, `oauth`, `free`, `local`, `combo`.
@@ -207,46 +207,46 @@ Categories: `api-key`, `oauth`, `free`, `local`, `combo`.
 ## Configured provider connections
 
 ```bash
-shiguang-gateway providers list                             # Connections in your DB
-shiguang-gateway providers list --json
+orbit providers list                             # Connections in your DB
+orbit providers list --json
 ```
 
 ## Testing connections
 
 ```bash
-shiguang-gateway providers test <id|name>                   # Test one configured connection
-shiguang-gateway providers test-all                         # Test every active connection (TUI progress)
-shiguang-gateway providers validate                         # Local-only structural validation (no HTTP)
+orbit providers test <id|name>                   # Test one configured connection
+orbit providers test-all                         # Test every active connection (TUI progress)
+orbit providers validate                         # Local-only structural validation (no HTTP)
 ```
 
 `test-all` opens an interactive TUI that shows live pass/fail per connection. Use `--json` to get a machine-readable result:
 
 ```bash
-shiguang-gateway providers test-all --json
+orbit providers test-all --json
 ```
 
-## API key management (ShiguangGateway keys)
+## API key management (Orbit keys)
 
-These manage the ShiguangGateway API keys issued under **API Manager** — not provider credentials.
+These manage the Orbit API keys issued under **API Manager** — not provider credentials.
 
 ```bash
-shiguang-gateway keys list                                  # List all ShiguangGateway API keys
-shiguang-gateway keys add <provider> [apiKey]               # Add an API key for a provider
-shiguang-gateway keys remove <provider>                     # Remove an API key
-shiguang-gateway keys regenerate <id>                       # Regenerate (rotate) a key
-shiguang-gateway keys revoke <id>                           # Revoke a key (disables it)
-shiguang-gateway keys reveal <id>                           # Show the full key value
-shiguang-gateway keys usage <id>                            # Show usage stats for a key
+orbit keys list                                  # List all Orbit API keys
+orbit keys add <provider> [apiKey]               # Add an API key for a provider
+orbit keys remove <provider>                     # Remove an API key
+orbit keys regenerate <id>                       # Regenerate (rotate) a key
+orbit keys revoke <id>                           # Revoke a key (disables it)
+orbit keys reveal <id>                           # Show the full key value
+orbit keys usage <id>                            # Show usage stats for a key
 
-shiguang-gateway keys rotate <id>                           # Rotate + revoke old key atomically
-shiguang-gateway keys expiration list                       # List key expiration times
+orbit keys rotate <id>                           # Rotate + revoke old key atomically
+orbit keys expiration list                       # List key expiration times
 ```
 
 ### Key policies
 
 ```bash
-shiguang-gateway keys policy show <id>                      # Show rate-limit / permission policy
-shiguang-gateway keys policy set <id> \
+orbit keys policy show <id>                      # Show rate-limit / permission policy
+orbit keys policy set <id> \
   --rate-limit 100 \
   --rate-window minute \
   --permissions chat,models                          # Set policy on a key
@@ -255,33 +255,33 @@ shiguang-gateway keys policy set <id> \
 ## Models
 
 ```bash
-shiguang-gateway models                                     # List all models (all providers)
-shiguang-gateway models openai                              # Filter by provider
-shiguang-gateway models --search gpt                        # Search by name
-shiguang-gateway models --json                              # JSON output
+orbit models                                     # List all models (all providers)
+orbit models openai                              # Filter by provider
+orbit models --search gpt                        # Search by name
+orbit models --json                              # JSON output
 ```
 
 ## OAuth providers
 
 ```bash
-shiguang-gateway oauth list                                 # List OAuth-configured providers
-shiguang-gateway oauth login <provider>                     # Start browser-based OAuth flow
-shiguang-gateway oauth logout <provider>                    # Revoke OAuth token
-shiguang-gateway oauth status <provider>                    # Show token state + expiry
-shiguang-gateway oauth refresh <provider>                   # Force token refresh
+orbit oauth list                                 # List OAuth-configured providers
+orbit oauth login <provider>                     # Start browser-based OAuth flow
+orbit oauth logout <provider>                    # Revoke OAuth token
+orbit oauth status <provider>                    # Show token state + expiry
+orbit oauth refresh <provider>                   # Force token refresh
 ```
 
-For OAuth providers (Gemini, Windsurf, Antigravity, etc.) the `login` command opens the ShiguangGateway dashboard OAuth flow in your browser.
+For OAuth providers (Gemini, Windsurf, Antigravity, etc.) the `login` command opens the Orbit dashboard OAuth flow in your browser.
 
 ## Provider nodes (multi-account routing)
 
 Provider nodes let you attach multiple API keys / accounts to one logical provider for round-robin or failover.
 
 ```bash
-shiguang-gateway nodes list <provider>                      # List nodes for a provider
-shiguang-gateway nodes add <provider> --api-key <key>       # Add a node
-shiguang-gateway nodes remove <provider> <nodeId>           # Remove a node
-shiguang-gateway nodes test <provider> <nodeId>             # Test one node
+orbit nodes list <provider>                      # List nodes for a provider
+orbit nodes add <provider> --api-key <key>       # Add a node
+orbit nodes remove <provider> <nodeId>           # Remove a node
+orbit nodes test <provider> <nodeId>             # Test one node
 ```
 
 ## Routing combos (CLI)
@@ -289,39 +289,39 @@ shiguang-gateway nodes test <provider> <nodeId>             # Test one node
 Create and manage routing combos from the terminal:
 
 ```bash
-shiguang-gateway combo list                                 # List all combos
-shiguang-gateway combo create <name> \
+orbit combo list                                 # List all combos
+orbit combo create <name> \
   --strategy priority \
   --targets anthropic/claude-opus-4-7,openai/gpt-4o  # Create combo
-shiguang-gateway combo switch <name>                        # Activate a combo as default
-shiguang-gateway combo delete <name>                        # Delete a combo
-shiguang-gateway combo suggest --task "code review"         # Ask ShiguangGateway to recommend a combo
+orbit combo switch <name>                        # Activate a combo as default
+orbit combo delete <name>                        # Delete a combo
+orbit combo suggest --task "code review"         # Ask Orbit to recommend a combo
 ```
 
-For the full REST API for combos see [shiguang-gateway-routing skill](https://raw.githubusercontent.com/diegosouzapw/ShiguangGateway/main/skills/shiguang-gateway-routing/SKILL.md).
+For the full REST API for combos see [orbit-routing skill](https://raw.githubusercontent.com/diegosouzapw/Orbit/main/skills/orbit-routing/SKILL.md).
 
 ## Quota & usage
 
 ```bash
-shiguang-gateway quota                                      # Provider quota usage + reset times
-shiguang-gateway usage                                      # Request + token usage summary
-shiguang-gateway cost                                       # Cost breakdown (by provider/model)
+orbit quota                                      # Provider quota usage + reset times
+orbit usage                                      # Request + token usage summary
+orbit cost                                       # Cost breakdown (by provider/model)
 ```
 
 ## Compression (CLI)
 
 ```bash
-shiguang-gateway compression status                         # Current compression mode + savings stats
-shiguang-gateway compression set --mode rtk                 # Enable RTK compression
-shiguang-gateway compression set --mode stacked             # Enable stacked (RTK + Caveman)
-shiguang-gateway compression set --mode off                 # Disable compression
-shiguang-gateway compression preview --mode rtk --text "..."  # Preview savings for sample text
+orbit compression status                         # Current compression mode + savings stats
+orbit compression set --mode rtk                 # Enable RTK compression
+orbit compression set --mode stacked             # Enable stacked (RTK + Caveman)
+orbit compression set --mode off                 # Disable compression
+orbit compression preview --mode rtk --text "..."  # Preview savings for sample text
 ```
 
 ## Health
 
 ```bash
-shiguang-gateway health                                     # Detailed health: circuit breakers, cache, memory
+orbit health                                     # Detailed health: circuit breakers, cache, memory
 ```
 
 ## Errors

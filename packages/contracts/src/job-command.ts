@@ -1,6 +1,6 @@
 export const JOB_COMMAND_PROTOCOL_VERSION = 1 as const;
 export const WORKER_JOB_COMMAND_PATH = "/internal/jobs/commands/v1" as const;
-export const WORKER_JOB_COMMAND_AUTH_HEADER = "x-shiguang-worker-command-token" as const;
+export const WORKER_JOB_COMMAND_AUTH_HEADER = "x-orbit-worker-command-token" as const;
 
 export type JobCommand =
   | { version: typeof JOB_COMMAND_PROTOCOL_VERSION; command: "run-now"; jobId: string }

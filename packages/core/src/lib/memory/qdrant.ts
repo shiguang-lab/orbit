@@ -97,7 +97,7 @@ export function normalizeQdrantConfig(settings: Record<string, unknown>): Qdrant
       ? settings.qdrantCollection.trim()
       : null) ??
     envCollection ??
-    "shiguangGateway_memory";
+    "orbit_memory";
   const embeddingModel =
     (typeof settings.qdrantEmbeddingModel === "string" &&
     settings.qdrantEmbeddingModel.trim().length > 0
@@ -311,7 +311,7 @@ export async function upsertSemanticMemoryPoint(input: {
       : null;
 
     const payload = {
-      kind: "shiguangGateway_memory",
+      kind: "orbit_memory",
       memoryId: input.id,
       apiKeyId: input.apiKeyId || "",
       sessionId: input.sessionId || "",
@@ -385,7 +385,7 @@ export async function searchSemanticMemory(
           ...(searchParams ? { params: searchParams } : {}),
           filter: {
             must: [
-              { key: "kind", match: { value: "shiguangGateway_memory" } },
+              { key: "kind", match: { value: "orbit_memory" } },
               ...(scope?.apiKeyId ? [{ key: "apiKeyId", match: { value: scope.apiKeyId } }] : []),
               ...(scope?.sessionId
                 ? [{ key: "sessionId", match: { value: String(scope.sessionId) } }]
@@ -470,7 +470,7 @@ export async function cleanupSemanticMemoryPoints(input: {
     const cutoffUnix = nowUnix - retentionDays * 24 * 60 * 60;
 
     const filter: Record<string, unknown> = {
-      must: [{ key: "kind", match: { value: "shiguangGateway_memory" } }],
+      must: [{ key: "kind", match: { value: "orbit_memory" } }],
       should: [
         { key: "expiresAtUnix", range: { lt: nowUnix } },
         { key: "createdAtUnix", range: { lt: cutoffUnix } },

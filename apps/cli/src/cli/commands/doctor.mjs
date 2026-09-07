@@ -11,7 +11,7 @@ import { t } from "../i18n.mjs";
 import { readDatabaseHealth, readEncryptedCredentialSamples } from "../sqlite.mjs";
 import { CLI_APP_ROOT } from "../app-paths.mjs";
 
-const STATIC_SALT = "shiguangGateway-field-encryption-v1";
+const STATIC_SALT = "orbit-field-encryption-v1";
 const KEY_LENGTH = 32;
 const CHECK_TIMEOUT_MS = 2000;
 
@@ -82,7 +82,7 @@ function checkConfig(dataDir) {
 }
 
 function resolveMigrationsDir() {
-  const configured = process.env.SHIGUANG_GATEWAY_MIGRATIONS_DIR;
+  const configured = process.env.ORBIT_MIGRATIONS_DIR;
   return configured && fs.existsSync(configured) ? configured : null;
 }
 
@@ -335,10 +335,10 @@ async function checkNativeBinary(rootDir = CLI_APP_ROOT) {
 }
 
 function checkMemory() {
-  const configured = process.env.SHIGUANG_GATEWAY_MEMORY_MB || "512";
+  const configured = process.env.ORBIT_MEMORY_MB || "512";
   const memoryMb = Number.parseInt(configured, 10);
   if (!Number.isFinite(memoryMb) || memoryMb < 64 || memoryMb > 16384) {
-    return fail("Memory", `Invalid SHIGUANG_GATEWAY_MEMORY_MB: ${configured}`, { configured });
+    return fail("Memory", `Invalid ORBIT_MEMORY_MB: ${configured}`, { configured });
   }
 
   const total = os.totalmem();
@@ -378,12 +378,12 @@ function formatHostForUrl(host) {
 }
 
 function resolveLivenessUrl(options = {}) {
-  const explicitUrl = options.livenessUrl || process.env.SHIGUANG_GATEWAY_DOCTOR_LIVENESS_URL;
+  const explicitUrl = options.livenessUrl || process.env.ORBIT_DOCTOR_LIVENESS_URL;
   if (explicitUrl) return explicitUrl;
 
   const port = parsePort(process.env.PORT || "8787", 8787);
   const dashboardPort = parsePort(process.env.DASHBOARD_PORT || String(port), port);
-  const host = String(options.livenessHost || process.env.SHIGUANG_GATEWAY_DOCTOR_HOST || "127.0.0.1")
+  const host = String(options.livenessHost || process.env.ORBIT_DOCTOR_HOST || "127.0.0.1")
     .trim()
     .replace(/^https?:\/\//, "")
     .replace(/\/.*$/, "");
@@ -428,7 +428,7 @@ async function checkServerLiveness(options = {}) {
   } catch {
     const port = parsePort(process.env.PORT || "8787", 8787);
     const dashboardPort = parsePort(process.env.DASHBOARD_PORT || String(port), port);
-    const host = String(options.livenessHost || process.env.SHIGUANG_GATEWAY_DOCTOR_HOST || "127.0.0.1")
+    const host = String(options.livenessHost || process.env.ORBIT_DOCTOR_HOST || "127.0.0.1")
       .trim()
       .replace(/^https?:\/\//, "")
       .replace(/\/.*$/, "");
@@ -457,7 +457,7 @@ async function checkServerLiveness(options = {}) {
 }
 
 export async function checkMachineTokenAuth(options = {}) {
-  if (process.env.SHIGUANG_GATEWAY_DISABLE_CLI_TOKEN === "true") {
+  if (process.env.ORBIT_DISABLE_CLI_TOKEN === "true") {
     return warn("CLI machine token", "CLI machine-token authentication is disabled", {
       derived: false,
       accepted: false,
@@ -519,7 +519,7 @@ export async function checkMachineTokenAuth(options = {}) {
     if (response.status === 401 || response.status === 403) {
       return warn(
         "CLI machine token",
-        "Server rejected the local machine token; if the CLI and server are on different hosts or container boundaries, run `shiguangGateway connect <host> --key <oma_live_...>`",
+        "Server rejected the local machine token; if the CLI and server are on different hosts or container boundaries, run `orbit connect <host> --key <oma_live_...>`",
         {
           url,
           status: response.status,
@@ -624,7 +624,7 @@ export async function runDoctorCommand(opts = {}, context = {}) {
   if (isJson) {
     console.log(JSON.stringify(result, null, 2));
   } else {
-    printHeading("ShiguangGateway Doctor");
+    printHeading("Orbit Doctor");
     console.log(`Data dir: ${result.dataDir}`);
     console.log(`Database: ${result.dbPath}\n`);
     for (const check of result.checks) {

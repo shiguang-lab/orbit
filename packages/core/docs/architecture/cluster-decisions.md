@@ -8,15 +8,15 @@ lastUpdated: 2026-06-28
 
 **Status:** proposal (awaiting @diegosouzapw review)
 **Date:** 2026-06-20
-**Refs:** [#3932](https://github.com/diegosouzapw/ShiguangGateway/issues/3932), PR #4381
+**Refs:** [#3932](https://github.com/diegosouzapw/Orbit/issues/3932), PR #4381
 
 ## TL;DR
 
-Two opt-in compose profiles (`memory`, `bifrost`) for the existing 8-service deployment in [`docker-compose.yml`](../../docker-compose.yml). Default-up behaviour is **unchanged**: 3 × `shiguang-gateway` replicas + Caddy + Redis + CliproxyAPI. The two new profiles add Qdrant and Bifrost as optional sidecars, gated by `docker compose --profile <name> up`. **No existing service is removed or replaced.**
+Two opt-in compose profiles (`memory`, `bifrost`) for the existing 8-service deployment in [`docker-compose.yml`](../../docker-compose.yml). Default-up behaviour is **unchanged**: 3 × `orbit` replicas + Caddy + Redis + CliproxyAPI. The two new profiles add Qdrant and Bifrost as optional sidecars, gated by `docker compose --profile <name> up`. **No existing service is removed or replaced.**
 
 ## Why this is conservative
 
-ShiguangGateway's existing deployment shape is already lean and proven:
+Orbit's existing deployment shape is already lean and proven:
 
 - **`redis:7-alpine`** handles the rate-limit/cache workload at production scale.
 - **SQLite + sqlite-vec + FTS5** cover local memory + vector + text-search (see [`src/lib/memory/vectorStore.ts:108`](../../src/lib/memory/vectorStore.ts)).
@@ -32,14 +32,14 @@ The two profiles here are **scale-out options for deployments that hit the SQLit
 **When to flip on:**
 
 - > 1M embeddings per deployment (sqlite-vec starts to slow at scale).
-- Multi-replica deployment that needs shared vector state across `shiguang-gateway-1/2/3`.
+- Multi-replica deployment that needs shared vector state across `orbit-1/2/3`.
 - You already have an external Qdrant cluster (Qdrant Cloud, on-prem).
 
 **What it adds:**
 
 | Service  | Image                   | Ports       | Notes                                                 |
 | -------- | ----------------------- | ----------- | ----------------------------------------------------- |
-| `qdrant` | `qdrant/qdrant:v1.12.4` | `6333` HTTP | HNSW index; persistent volume `shiguang-gateway_qdrant_data` |
+| `qdrant` | `qdrant/qdrant:v1.12.4` | `6333` HTTP | HNSW index; persistent volume `orbit_qdrant_data` |
 
 **Activation:** flip `qdrantEnabled = true` in the Settings UI **or** set `QDRANT_HOST=qdrant` env. See [`src/lib/memory/qdrant.ts:60`](../../src/lib/memory/qdrant.ts) for the precedence rules (settings table → env var → default).
 
@@ -49,15 +49,15 @@ The two profiles here are **scale-out options for deployments that hit the SQLit
 
 **When to flip on:**
 
-- You run ≥3 `shiguang-gateway` replicas and want provider rotation centralised in a single Go process.
+- You run ≥3 `orbit` replicas and want provider rotation centralised in a single Go process.
 - You want a single audit/logging surface for upstream-provider requests across all replicas.
-- You want horizontal scaling of the Tier-1 routing layer independent of the ShiguangGateway replicas.
+- You want horizontal scaling of the Tier-1 routing layer independent of the Orbit replicas.
 
 **What it adds:**
 
 | Service   | Image                             | Ports  | Notes                                                                   |
 | --------- | --------------------------------- | ------ | ----------------------------------------------------------------------- |
-| `bifrost` | `ghcr.io/maximhq/bifrost:v1.6.11` | `8080` | Go-based Tier-1 router; persistent logs volume `shiguang-gateway_bifrost_logs` |
+| `bifrost` | `ghcr.io/maximhq/bifrost:v1.6.11` | `8080` | Go-based Tier-1 router; persistent logs volume `orbit_bifrost_logs` |
 
 **Activation:** set `BIFROST_BASE_URL=http://bifrost:8080` in `.env.example`. The existing sidecar proxy route at [`src/app/api/v1/relay/chat/completions/bifrost/route.ts`](../../src/app/api/v1/relay/chat/completions/bifrost/route.ts) (added in PR #4381) will pick this up automatically.
 
@@ -70,7 +70,7 @@ The original issue thread floated a larger cluster rewrite. After auditing the a
 | Component                            | Verdict  | Reason                                                                                                 |
 | ------------------------------------ | -------- | ------------------------------------------------------------------------------------------------------ |
 | **Dragonfly**                        | **DROP** | `redis:7-alpine` is already fine for the rate-limit workload at production scale; no ceiling to break. |
-| **NATS**                             | **DROP** | Each `shiguang-gateway` replica is a single Node.js process; no multi-process pub/sub workload exists.        |
+| **NATS**                             | **DROP** | Each `orbit` replica is a single Node.js process; no multi-process pub/sub workload exists.        |
 | **PostgreSQL**                       | **DROP** | SQLite + sqlite-vec + FTS5 cover all 3 use cases; 97 migrations + Electron packaging block migration.  |
 | **Neo4j**                            | **DROP** | Routing is a 5-table join; recursive CTE on SQLite is sufficient.                                      |
 | **MinIO**                            | **DROP** | No multi-MB blob workload; images/audio are passthrough proxies.                                       |

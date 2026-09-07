@@ -332,7 +332,7 @@ export function extractExternalSessionId(
   const raw =
     h.get("x-session-id") ?? // Preferred: hyphenated (passes through Nginx)
     h.get("x_session_id") ?? // Underscore variant (direct HTTP / custom clients)
-    h.get("x-shiguangGateway-session") ?? // ShiguangGateway-specific form
+    h.get("x-orbit-session") ?? // Orbit-specific form
     h.get("session-id") ?? // Bare session-id
     null;
   if (!raw || !raw.trim()) return null;

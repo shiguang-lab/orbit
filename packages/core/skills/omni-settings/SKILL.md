@@ -22,7 +22,7 @@ Returns the extended memory settings including 7 new fields added in plan 21 (em
 
 ```bash
 curl https://localhost:20128/api/settings/memory \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### PUT /api/settings/memory
@@ -33,7 +33,7 @@ Update any subset of the extended memory settings. All fields are optional; only
 
 ```bash
 curl -X PUT https://localhost:20128/api/settings/memory \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -46,7 +46,7 @@ Returns current Qdrant configuration. The `apiKey` field is never returned raw â
 
 ```bash
 curl https://localhost:20128/api/settings/qdrant \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### PUT /api/settings/qdrant
@@ -57,7 +57,7 @@ Update Qdrant configuration. Pass `apiKey: ""` to remove the stored key. Schema:
 
 ```bash
 curl -X PUT https://localhost:20128/api/settings/qdrant \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -70,7 +70,7 @@ Performs a liveness check against the configured Qdrant instance. Returns latenc
 
 ```bash
 curl https://localhost:20128/api/settings/qdrant/health \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### POST /api/settings/qdrant/search
@@ -81,7 +81,7 @@ Performs a test semantic search against the Qdrant collection. Useful for valida
 
 ```bash
 curl -X POST https://localhost:20128/api/settings/qdrant/search \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -94,7 +94,7 @@ Removes Qdrant points for memories that have expired or exceeded the configured 
 
 ```bash
 curl -X POST https://localhost:20128/api/settings/qdrant/cleanup \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -107,7 +107,7 @@ Returns the list of embedding models available for use with Qdrant.
 
 ```bash
 curl https://localhost:20128/api/settings/qdrant/embedding-models \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### GET /api/settings
@@ -116,7 +116,7 @@ Get application settings
 
 ```bash
 curl https://localhost:20128/api/settings \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### PATCH /api/settings
@@ -125,7 +125,7 @@ Update settings
 
 ```bash
 curl -X PATCH https://localhost:20128/api/settings \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -138,7 +138,7 @@ Deletes `call_logs`, legacy `request_detail_logs`, and local request artifact fi
 
 ```bash
 curl -X POST https://localhost:20128/api/settings/purge-request-history \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -149,7 +149,7 @@ Get global compression settings
 
 ```bash
 curl https://localhost:20128/api/settings/compression \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### PUT /api/settings/compression
@@ -158,7 +158,7 @@ Update global compression settings
 
 ```bash
 curl -X PUT https://localhost:20128/api/settings/compression \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -169,7 +169,7 @@ Get the MCP tool-output accessibility (trimming) config
 
 ```bash
 curl https://localhost:20128/api/settings/compression/mcp-accessibility \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### PUT /api/settings/compression/mcp-accessibility
@@ -180,7 +180,7 @@ Partial-merge update. Numeric floors (e.g. a maxTextChars below the truncation-t
 
 ```bash
 curl -X PUT https://localhost:20128/api/settings/compression/mcp-accessibility \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -197,7 +197,7 @@ Requires a dashboard management session cookie when management auth is enabled.
 
 ```bash
 curl https://localhost:20128/api/settings/payload-rules \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### PUT /api/settings/payload-rules
@@ -212,7 +212,7 @@ Requires a dashboard management session cookie when management auth is enabled.
 
 ```bash
 curl -X PUT https://localhost:20128/api/settings/payload-rules \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -223,7 +223,7 @@ Get combo default settings
 
 ```bash
 curl https://localhost:20128/api/settings/combo-defaults \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### GET /api/settings/proxy
@@ -232,7 +232,7 @@ Get proxy settings
 
 ```bash
 curl https://localhost:20128/api/settings/proxy \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### PATCH /api/settings/proxy
@@ -241,7 +241,7 @@ Update proxy settings
 
 ```bash
 curl -X PATCH https://localhost:20128/api/settings/proxy \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -252,7 +252,7 @@ Test proxy connection
 
 ```bash
 curl -X POST https://localhost:20128/api/settings/proxy/test \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -263,7 +263,7 @@ Toggle login requirement
 
 ```bash
 curl -X POST https://localhost:20128/api/settings/require-login \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -276,7 +276,7 @@ Returns the current IP filter settings including blacklist, whitelist, and temp 
 
 ```bash
 curl https://localhost:20128/api/settings/ip-filter \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### PUT /api/settings/ip-filter
@@ -288,7 +288,7 @@ Configure IP filtering with blacklist/whitelist modes, add/remove individual IPs
 
 ```bash
 curl -X PUT https://localhost:20128/api/settings/ip-filter \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -301,7 +301,7 @@ Returns the current system prompt injection settings.
 
 ```bash
 curl https://localhost:20128/api/settings/system-prompt \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### PUT /api/settings/system-prompt
@@ -310,7 +310,7 @@ Update system prompt configuration
 
 ```bash
 curl -X PUT https://localhost:20128/api/settings/system-prompt \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -323,7 +323,7 @@ Returns the current thinking/reasoning budget settings for AI models.
 
 ```bash
 curl https://localhost:20128/api/settings/thinking-budget \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### PUT /api/settings/thinking-budget
@@ -332,7 +332,7 @@ Update thinking budget configuration
 
 ```bash
 curl -X PUT https://localhost:20128/api/settings/thinking-budget \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -345,7 +345,7 @@ Returns models in Ollama /api/tags format for Ollama client compatibility
 
 ```bash
 curl https://localhost:20128/api/tags \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### GET /api/settings/quota-store
@@ -356,7 +356,7 @@ Redis URL is masked in the response (shows only scheme+host).
 
 ```bash
 curl https://localhost:20128/api/settings/quota-store \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### PUT /api/settings/quota-store
@@ -365,7 +365,7 @@ Update quota store driver settings
 
 ```bash
 curl -X PUT https://localhost:20128/api/settings/quota-store \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -378,7 +378,7 @@ Dashboard-only. Purges stored usage-history records.
 
 ```bash
 curl -X POST https://localhost:20128/api/settings/purge-usage-history \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -406,7 +406,7 @@ Example â€” keep client-controlled reasoning (Codex/Desktop):
 
 ```bash
 curl -X PUT https://localhost:20128/api/settings/thinking-budget \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"mode":"passthrough","customBudget":10240,"effortLevel":"medium"}'
 ```

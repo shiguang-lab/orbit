@@ -6,16 +6,16 @@ export function registerProvider(program) {
     .allowExcessArguments()
     .action(() => {
       console.log(`
-  Use \`shiguangGateway providers\` for the full provider management interface:
+  Use \`orbit providers\` for the full provider management interface:
 
-    shiguangGateway providers available   — show provider catalog
-    shiguangGateway providers list        — list configured connections
-    shiguangGateway providers test <name> — test a provider connection
-    shiguangGateway providers test-all    — test all active connections
-    shiguangGateway providers validate    — validate local configuration
-    shiguangGateway providers add <id>    — add an API-key connection
-    shiguangGateway providers auth <id>   — start an existing OAuth flow
-    shiguangGateway providers remove <id> — remove a connection (requires confirmation)
+    orbit providers available   — show provider catalog
+    orbit providers list        — list configured connections
+    orbit providers test <name> — test a provider connection
+    orbit providers test-all    — test all active connections
+    orbit providers validate    — validate local configuration
+    orbit providers add <id>    — add an API-key connection
+    orbit providers auth <id>   — start an existing OAuth flow
+    orbit providers remove <id> — remove a connection (requires confirmation)
 `);
     });
 }

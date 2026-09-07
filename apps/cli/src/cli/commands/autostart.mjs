@@ -4,12 +4,12 @@ import { emit } from "../output.mjs";
 export function registerAutostart(program) {
   const cmd = program
     .command("autostart")
-    .description(t("autostart.description") || "Manage ShiguangGateway autostart at login");
+    .description(t("autostart.description") || "Manage Orbit autostart at login");
 
   // #3331 — autostart could previously only be toggled from the tray
-  // (`serve --tray`) or the Electron Appearance tab; a plain `shiguangGateway serve`
+  // (`serve --tray`) or the Electron Appearance tab; a plain `orbit serve`
   // user had no path. These subcommands (with `on`/`off`/`true`/`false`
-  // aliases, e.g. `shiguangGateway autostart on`) make it a first-class CLI action.
+  // aliases, e.g. `orbit autostart on`) make it a first-class CLI action.
   cmd
     .command("enable")
     .aliases(["on", "true"])

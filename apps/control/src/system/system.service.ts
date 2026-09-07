@@ -23,7 +23,7 @@ import {
   isNewer,
   resolveLatestVersionCached,
 } from "./version-check.js";
-import { resolveGlobalShiguangGatewayPath } from "./global-package-path.js";
+import { resolveGlobalOrbitPath } from "./global-package-path.js";
 import { restartRunningServer } from "./process-manager-restart.js";
 // #5542 — On Windows npm is `npm.cmd`; Node ≥24 refuses to execFile a `.cmd` without
 // a shell (nodejs/node#52554 → "spawn npm ENOENT"). buildNpmExecOptions enables the
@@ -60,9 +60,9 @@ function getCurrentVersion(): string {
 
 /**
  * Shared restart step for both npm-mode update flows (source-checkout and global-install
- * below). #11885: this used to hardcode `pm2 restart shiguangGateway` in each branch separately
+ * below). #11885: this used to hardcode `pm2 restart orbit` in each branch separately
  * and silently report "skipped" — reading like a completed update — whenever pm2 wasn't
- * the process manager. `restartRunningServer()` tries ShiguangGateway's own PID-file-managed
+ * the process manager. `restartRunningServer()` tries Orbit's own PID-file-managed
  * supervisor first, then pm2, and this wrapper turns its honest "restart-required" outcome
  * into an SSE step the dashboard renders as a warning instead of a false "done".
  */
@@ -316,13 +316,13 @@ async function updateVersion(): Promise<SystemResult> {
           controller.close();
           return;
         }
-        send({ step: "install", status: "running", message: `Installing shiguangGateway@${latest}...` });
+        send({ step: "install", status: "running", message: `Installing orbit@${latest}...` });
           await execFileAsync(
             "npm",
-            ["install", "-g", `shiguangGateway@${latest}`, "--ignore-scripts", "--legacy-peer-deps"],
+            ["install", "-g", `orbit@${latest}`, "--ignore-scripts", "--legacy-peer-deps"],
             buildNpmExecOptions(process.platform, { cwd: PROJECT_ROOT, timeoutMs: 300_000 })
           );
-        send({ step: "install", status: "done", message: `Installed shiguangGateway@${latest}` });
+        send({ step: "install", status: "done", message: `Installed orbit@${latest}` });
 
         // Step 2: Rebuild native modules (critical for better-sqlite3)
         send({
@@ -330,7 +330,7 @@ async function updateVersion(): Promise<SystemResult> {
           status: "running",
           message: "Rebuilding native modules (better-sqlite3)...",
         });
-        const omniPath = await resolveGlobalShiguangGatewayPath();
+        const omniPath = await resolveGlobalOrbitPath();
         await execFileAsync(
           "npm",
           ["rebuild", "better-sqlite3"],

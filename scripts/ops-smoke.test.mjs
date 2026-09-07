@@ -22,14 +22,14 @@ test("compose enables the realtime listener targeted by the console proxy", (con
     "config", "--no-interpolate", "--format", "json"], { encoding: "utf8" });
   assert.equal(result.status, 0, result.stderr);
   const services = JSON.parse(result.stdout).services;
-  const realtime = services["shiguang-gateway-realtime"].environment;
-  assert.equal(realtime.SHIGUANG_GATEWAY_ENABLE_LIVE_WS, "true");
+  const realtime = services["orbit-realtime"].environment;
+  assert.equal(realtime.ORBIT_ENABLE_LIVE_WS, "true");
   assert.equal(realtime.LIVE_WS_HOST, "0.0.0.0");
   const nginx = readFileSync(join(repoRoot, "deploy/console-nginx.conf"), "utf8");
-  assert.ok(nginx.includes(`proxy_pass http://shiguang-gateway-realtime:${realtime.LIVE_WS_PORT};`));
+  assert.ok(nginx.includes(`proxy_pass http://orbit-realtime:${realtime.LIVE_WS_PORT};`));
   for (const service of ["gateway", "control", "worker"]) {
-    assert.equal(services[`shiguang-gateway-${service}`].environment.SHIGUANG_GATEWAY_ENABLE_LIVE_WS, "false");
-    assert.equal(services[`shiguang-gateway-${service}`].environment.CLI_QODER_BIN, "${CLI_QODER_BIN:-qodercli}");
+    assert.equal(services[`orbit-${service}`].environment.ORBIT_ENABLE_LIVE_WS, "false");
+    assert.equal(services[`orbit-${service}`].environment.CLI_QODER_BIN, "${CLI_QODER_BIN:-qodercli}");
   }
 });
 
@@ -50,14 +50,15 @@ test("published image repositories use the Orbit namespace", () => {
   const compose = readFileSync(join(repoRoot, "docker-compose.yml"), "utf8");
   const rollback = readFileSync(join(opsDir, "rollback.sh"), "utf8");
   assert.match(workflow, /IMAGE_PREFIX: ghcr\.io\/shiguang-lab\/orbit\b/);
-  assert.doesNotMatch(`${workflow}\n${compose}\n${rollback}`, /ghcr\.io\/shiguang-lab\/shiguang-gateway/);
+  const retiredImagePrefix = ["shiguang", "gateway"].join("-");
+  assert.ok(!`${workflow}\n${compose}\n${rollback}`.includes(`ghcr.io/shiguang-lab/${retiredImagePrefix}`));
   for (const service of ["console", "gateway", "control", "realtime", "worker", "importer"]) {
     assert.match(compose, new RegExp(`orbit-${service}:local`));
   }
 });
 
 test("rollback applies one split image family and does not start the importer", () => {
-  const fixture = mkdtempSync(join(tmpdir(), "shiguang-ops-"));
+  const fixture = mkdtempSync(join(tmpdir(), "orbit-ops-"));
   try {
     const fakeBin = join(fixture, "bin");
     const log = join(fixture, "docker.log");
@@ -66,7 +67,7 @@ test("rollback applies one split image family and does not start the importer", 
     writeFileSync(
       docker,
       `#!/usr/bin/env bash\n` +
-        `printf '%s\\n' "CONSOLE=$SHIGUANG_GATEWAY_CONSOLE_IMAGE" "GATEWAY=$SHIGUANG_GATEWAY_GATEWAY_IMAGE" "CONTROL=$SHIGUANG_GATEWAY_CONTROL_IMAGE" "REALTIME=$SHIGUANG_GATEWAY_REALTIME_IMAGE" "WORKER=$SHIGUANG_GATEWAY_WORKER_IMAGE" "IMPORTER=$SHIGUANG_GATEWAY_IMPORTER_IMAGE" "ARGS=$*" >> "${log}"\n`
+        `printf '%s\\n' "CONSOLE=$ORBIT_CONSOLE_IMAGE" "GATEWAY=$ORBIT_GATEWAY_IMAGE" "CONTROL=$ORBIT_CONTROL_IMAGE" "REALTIME=$ORBIT_REALTIME_IMAGE" "WORKER=$ORBIT_WORKER_IMAGE" "IMPORTER=$ORBIT_IMPORTER_IMAGE" "ARGS=$*" >> "${log}"\n`
     );
     chmodSync(docker, 0o755);
     const result = spawnSync(

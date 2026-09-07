@@ -45,4 +45,4 @@ The version command is treated as untrusted input. It must invoke the configured
 
 ## What ACP does not do
 
-ACP does not launch a CLI, write prompts to stdin, collect stdout, or manage process sessions. To run a local coding CLI against ShiguangGateway, use the app-owned CLI launcher documented in [CLI Integrations](../guides/CLI-INTEGRATIONS.md). For remote task execution, use the cloud-agent APIs described in [Agent Protocols Guide](./AGENT_PROTOCOLS_GUIDE.md).
+ACP does not launch a CLI, write prompts to stdin, collect stdout, or manage process sessions. To run a local coding CLI against Orbit, use the app-owned CLI launcher documented in [CLI Integrations](../guides/CLI-INTEGRATIONS.md). For remote task execution, use the cloud-agent APIs described in [Agent Protocols Guide](./AGENT_PROTOCOLS_GUIDE.md).

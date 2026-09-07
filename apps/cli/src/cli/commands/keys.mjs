@@ -3,7 +3,7 @@ import {
   getProviderApiKey,
   listProviderConnections,
 } from "../provider-store.mjs";
-import { openShiguangGatewayDb } from "../sqlite.mjs";
+import { openOrbitDb } from "../sqlite.mjs";
 import { loadAvailableProviders } from "../provider-catalog.mjs";
 import { apiFetch, isServerUp } from "../api.mjs";
 import { t } from "../i18n.mjs";
@@ -207,7 +207,7 @@ export async function runKeysListCommand(opts = {}) {
     } catch {}
   }
 
-  const { db } = await openShiguangGatewayDb();
+  const { db } = await openOrbitDb();
   try {
     const connections = listProviderConnections(db).filter(
       (c) => c.authType === "apikey" && c.apiKey

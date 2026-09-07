@@ -69,7 +69,7 @@ test("legacy registry and in-memory management entries stay retired", () => {
   );
   assert.doesNotMatch(
     registry,
-    /__shiguangGatewayPreRequestRegistry|loadHooksFromConfig|initPreRequestRegistry|clearAllHooks/,
+    /__orbitPreRequestRegistry|loadHooksFromConfig|initPreRequestRegistry|clearAllHooks/,
   );
   assert.match(registry, /getEnabledMiddlewareHooks\(\)/);
   assert.match(registry, /recordHookExecution\(hook\.name/);

@@ -1,12 +1,12 @@
 ---
-title: "📖 Setup Guide — ShiguangGateway"
+title: "📖 Setup Guide — Orbit"
 version: 3.8.50
 lastUpdated: 2026-08-18
 ---
 
-# 📖 Setup Guide — ShiguangGateway
+# 📖 Setup Guide — Orbit
 
-> Complete setup reference for ShiguangGateway. For the quick version, see the [Quick Start in README](../README.md#-quick-start).
+> Complete setup reference for Orbit. For the quick version, see the [Quick Start in README](../README.md#-quick-start).
 
 ## Table of Contents
 
@@ -25,8 +25,8 @@ lastUpdated: 2026-08-18
 ### npm (recommended)
 
 ```bash
-npm install -g shiguang-gateway
-shiguang-gateway
+npm install -g orbit
+orbit
 ```
 
 Dashboard opens at `http://localhost:20128` and API base URL is `http://localhost:20128/v1`.
@@ -34,8 +34,8 @@ Dashboard opens at `http://localhost:20128` and API base URL is `http://localhos
 ### pnpm
 
 ```bash
-pnpm add -g shiguang-gateway@latest --allow-build=better-sqlite3 --allow-build=@swc/core
-shiguang-gateway
+pnpm add -g orbit@latest --allow-build=better-sqlite3 --allow-build=@swc/core
+orbit
 ```
 
 > **pnpm users:** the `--allow-build` flag is required to enable native build scripts for `better-sqlite3` and `@swc/core`. The `pnpm approve-builds -g` command is not supported for global installs on pnpm v11.
@@ -43,11 +43,11 @@ shiguang-gateway
 ### Arch Linux (AUR)
 
 ```bash
-yay -S shiguang-gateway-bin
-systemctl --user enable --now shiguang-gateway.service
+yay -S orbit-bin
+systemctl --user enable --now orbit.service
 ```
 
-The [AUR package](https://aur.archlinux.org/packages/shiguang-gateway-bin) installs ShiguangGateway and provides a systemd user service.
+The [AUR package](https://aur.archlinux.org/packages/orbit-bin) installs Orbit and provides a systemd user service.
 
 ### From Source
 
@@ -56,7 +56,7 @@ npm install
 PORT=20128 DASHBOARD_PORT=20129 NEXT_PUBLIC_BASE_URL=http://localhost:20129 npm run dev
 ```
 
-> **Windows note:** By default, ShiguangGateway uses `%APPDATA%\shiguang-gateway` when the legacy `%USERPROFILE%\.shiguang-gateway` directory is not present. Set `DATA_DIR` to choose a different data-directory location.
+> **Windows note:** By default, Orbit uses `%APPDATA%\orbit` when the legacy `%USERPROFILE%\.orbit` directory is not present. Set `DATA_DIR` to choose a different data-directory location.
 
 > **Note:** `npm install` auto-generates `.env` from `.env.example` on first run. Subsequent installs will not overwrite an existing `.env`, so customizations are preserved. To re-seed, delete `.env` before re-running.
 
@@ -66,7 +66,7 @@ See the [Docker Guide](./DOCKER_GUIDE.md) for complete Docker setup including Co
 
 ### Desktop App (Electron)
 
-ShiguangGateway ships a desktop wrapper built on Electron 41 + electron-builder 26.10. Available scripts (workspace root):
+Orbit ships a desktop wrapper built on Electron 41 + electron-builder 26.10. Available scripts (workspace root):
 
 ```bash
 npm run electron:dev          # Run desktop with hot-reload
@@ -84,56 +84,56 @@ Releases of the desktop installers are attached to GitHub Releases. For the full
 For unattended setups (Docker, Kubernetes, CI), use:
 
 ```bash
-shiguang-gateway setup --non-interactive
-shiguang-gateway providers test-batch
+orbit setup --non-interactive
+orbit providers test-batch
 ```
 
-Combined with env vars (`INITIAL_PASSWORD`, `SHIGUANG_GATEWAY_WS_BRIDGE_SECRET`, etc.), this lets you spin up an ShiguangGateway instance fully scriptable.
+Combined with env vars (`INITIAL_PASSWORD`, `ORBIT_WS_BRIDGE_SECRET`, etc.), this lets you spin up an Orbit instance fully scriptable.
 
 ### CLI Options
 
 | Command                 | Description                                                    |
 | ----------------------- | -------------------------------------------------------------- |
-| `shiguang-gateway`             | Start server (`PORT=20128`, API and dashboard on same port)    |
-| `shiguang-gateway setup`       | Guided CLI onboarding for password and first provider          |
-| `shiguang-gateway doctor`      | Run local health checks without starting the server            |
-| `shiguang-gateway providers`   | Discover, list, validate, and test providers from CLI          |
-| `shiguang-gateway config`      | CLI tool configuration — list, get, set, validate configs      |
-| `shiguang-gateway status`      | Offline status dashboard — version, DB, tools, config          |
-| `shiguang-gateway logs`        | Stream usage logs from the API (supports `--follow`)           |
-| `shiguang-gateway update`      | Check for or apply ShiguangGateway updates                           |
-| `shiguang-gateway provider`    | Manage provider connections — add, list, remove, test, default |
-| `shiguang-gateway --port 3000` | Set canonical/API port to 3000                                 |
-| `shiguang-gateway --mcp`       | Start MCP server (stdio transport)                             |
-| `shiguang-gateway --no-open`   | Don't auto-open browser                                        |
-| `shiguang-gateway --help`      | Show help                                                      |
+| `orbit`             | Start server (`PORT=20128`, API and dashboard on same port)    |
+| `orbit setup`       | Guided CLI onboarding for password and first provider          |
+| `orbit doctor`      | Run local health checks without starting the server            |
+| `orbit providers`   | Discover, list, validate, and test providers from CLI          |
+| `orbit config`      | CLI tool configuration — list, get, set, validate configs      |
+| `orbit status`      | Offline status dashboard — version, DB, tools, config          |
+| `orbit logs`        | Stream usage logs from the API (supports `--follow`)           |
+| `orbit update`      | Check for or apply Orbit updates                           |
+| `orbit provider`    | Manage provider connections — add, list, remove, test, default |
+| `orbit --port 3000` | Set canonical/API port to 3000                                 |
+| `orbit --mcp`       | Start MCP server (stdio transport)                             |
+| `orbit --no-open`   | Don't auto-open browser                                        |
+| `orbit --help`      | Show help                                                      |
 
 Headless setup can be scripted with flags or environment variables:
 
 ```bash
-shiguang-gateway setup --non-interactive --password "$SHIGUANG_GATEWAY_PASSWORD"
-shiguang-gateway setup --non-interactive --add-provider --provider openai --api-key "$OPENAI_API_KEY"
-shiguang-gateway setup --non-interactive --add-provider --provider openai --api-key "$OPENAI_API_KEY" --test-provider
+orbit setup --non-interactive --password "$ORBIT_PASSWORD"
+orbit setup --non-interactive --add-provider --provider openai --api-key "$OPENAI_API_KEY"
+orbit setup --non-interactive --add-provider --provider openai --api-key "$OPENAI_API_KEY" --test-provider
 ```
 
 Run local diagnostics without opening the dashboard:
 
 ```bash
-shiguang-gateway doctor
-shiguang-gateway doctor --json
-shiguang-gateway doctor --no-liveness
+orbit doctor
+orbit doctor --json
+orbit doctor --no-liveness
 ```
 
 Manage providers from SSH or scripts without opening the dashboard:
 
 ```bash
-shiguang-gateway providers available
-shiguang-gateway providers available --search openai
-shiguang-gateway providers available --category api-key
-shiguang-gateway providers list
-shiguang-gateway providers test <id-or-name>
-shiguang-gateway providers test-all
-shiguang-gateway providers validate
+orbit providers available
+orbit providers available --search openai
+orbit providers available --category api-key
+orbit providers list
+orbit providers test <id-or-name>
+orbit providers test-all
+orbit providers validate
 ```
 
 ---
@@ -167,30 +167,30 @@ Works with Claude Code, Codex CLI, Cursor, Cline, OpenClaw, OpenCode, and OpenAI
 
 #### Auto-configure with `setup-*`
 
-Instead of pasting the base URL and key by hand, let ShiguangGateway write each tool's
+Instead of pasting the base URL and key by hand, let Orbit write each tool's
 own config from the live model catalog. One command per tool:
 
 ```bash
-shiguang-gateway setup-codex        # ~/.codex/<name>.config.toml profiles
-shiguang-gateway setup-claude       # ~/.claude/profiles/<name>/settings.json
-shiguang-gateway setup-opencode     # ~/.config/opencode/opencode.json (openai-compatible)
-shiguang-gateway setup-cline        # Cline CLI + VS Code extension settings
-shiguang-gateway setup-kilo         # Kilo Code
-shiguang-gateway setup-continue     # ~/.continue/config.yaml (Continue / cn)
-shiguang-gateway setup-cursor       # prints Cursor's in-app steps
-shiguang-gateway setup-roo          # Roo Code import + autoImport pointer
-shiguang-gateway setup-crush        # ~/.config/crush/crush.json
-shiguang-gateway setup-goose        # ~/.config/goose/config.yaml
-shiguang-gateway setup-aider        # ~/.aider.conf.yml
-shiguang-gateway setup-qwen         # ~/.qwen/settings.json + ~/.qwen/.env
+orbit setup-codex        # ~/.codex/<name>.config.toml profiles
+orbit setup-claude       # ~/.claude/profiles/<name>/settings.json
+orbit setup-opencode     # ~/.config/opencode/opencode.json (openai-compatible)
+orbit setup-cline        # Cline CLI + VS Code extension settings
+orbit setup-kilo         # Kilo Code
+orbit setup-continue     # ~/.continue/config.yaml (Continue / cn)
+orbit setup-cursor       # prints Cursor's in-app steps
+orbit setup-roo          # Roo Code import + autoImport pointer
+orbit setup-crush        # ~/.config/crush/crush.json
+orbit setup-goose        # ~/.config/goose/config.yaml
+orbit setup-aider        # ~/.aider.conf.yml
+orbit setup-qwen         # ~/.qwen/settings.json + ~/.qwen/.env
 ```
 
 Each accepts `--remote <url> --api-key <key>` to configure a local tool against a
-**remote** ShiguangGateway, plus `--dry-run` to preview. To launch a CLI with the right
+**remote** Orbit, plus `--dry-run` to preview. To launch a CLI with the right
 env injected and no config written at all, use the generic launcher
-`shiguang-gateway run <target>` (claude, codex, aider, goose, opencode, qwen, gemini);
-the legacy per-tool launchers `shiguang-gateway launch` (Claude Code) and
-`shiguang-gateway launch-codex` (Codex) remain available.
+`orbit run <target>` (claude, codex, aider, goose, opencode, qwen, gemini);
+the legacy per-tool launchers `orbit launch` (Claude Code) and
+`orbit launch-codex` (Codex) remain available.
 
 For the full table (what each command writes, every flag, local vs remote, base-URL
 `/v1` conventions), see **[CLI Integrations](./CLI-INTEGRATIONS.md)**.
@@ -206,18 +206,18 @@ For detailed per-tool configuration (Claude Code, Codex CLI, Cursor, Cline, Open
 Start MCP transport in stdio mode:
 
 ```bash
-shiguang-gateway --mcp
+orbit --mcp
 ```
 
 Recommended validation flow:
 
 ```bash
 # 1. Start MCP server
-shiguang-gateway --mcp
+orbit --mcp
 
 # 2. From your MCP client, call:
-shiguang-gateway_get_health        # Should return system health
-shiguang-gateway_list_combos       # Should return active combos
+orbit_get_health        # Should return system health
+orbit_list_combos       # Should return active combos
 
 # 3. Or run the full E2E suite:
 npm run test:protocols:e2e
@@ -228,7 +228,7 @@ npm run test:protocols:e2e
 **Claude Code:**
 
 ```bash
-claude mcp add-server shiguang-gateway --type http --url http://localhost:20128/api/mcp/stream
+claude mcp add-server orbit --type http --url http://localhost:20128/api/mcp/stream
 ```
 
 **Cursor / Cline:**
@@ -238,8 +238,8 @@ Add to your MCP settings:
 ```json
 {
   "mcpServers": {
-    "shiguang-gateway": {
-      "command": "shiguang-gateway",
+    "orbit": {
+      "command": "orbit",
       "args": ["--mcp"],
       "env": {}
     }
@@ -278,15 +278,15 @@ For most deployments, you only need these two variables:
 | Variable                 | Default                       | Purpose                                                                                                                                      |
 | ------------------------ | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | `REQUEST_TIMEOUT_MS`     | `600000`                      | Shared baseline for upstream response-start timeout, hidden Undici timeouts, TLS fingerprint requests, and API bridge request/proxy timeouts |
-| `STREAM_IDLE_TIMEOUT_MS` | inherits `REQUEST_TIMEOUT_MS` | Maximum gap between streaming chunks before ShiguangGateway aborts the SSE stream                                                                  |
+| `STREAM_IDLE_TIMEOUT_MS` | inherits `REQUEST_TIMEOUT_MS` | Maximum gap between streaming chunks before Orbit aborts the SSE stream                                                                  |
 
 Backward compatibility is preserved: existing `FETCH_TIMEOUT_MS`, `API_BRIDGE_PROXY_TIMEOUT_MS`, and other per-layer timeout vars still work and override the shared baseline.
 
 ### Provider-Specific Notes
 
-For Claude Code-compatible upstreams (`anthropic-compatible-cc-*`), ShiguangGateway derives the outbound `X-Stainless-Timeout` header from the resolved fetch timeout so provider-side read timeouts stay aligned with your env configuration.
+For Claude Code-compatible upstreams (`anthropic-compatible-cc-*`), Orbit derives the outbound `X-Stainless-Timeout` header from the resolved fetch timeout so provider-side read timeouts stay aligned with your env configuration.
 
-For third-party Claude Code-compatible reverse proxies, ShiguangGateway keeps the default `anthropic-beta` set conservative and, when `Client Cache Control` is left on `Auto`, only forwards client-provided `cache_control` markers. Enable the per-connection "Enable redact-thinking beta" toggle only when the upstream specifically requires redacted Claude thinking streams.
+For third-party Claude Code-compatible reverse proxies, Orbit keeps the default `anthropic-beta` set conservative and, when `Client Cache Control` is left on `Auto`, only forwards client-provided `cache_control` markers. Enable the per-connection "Enable redact-thinking beta" toggle only when the upstream specifically requires redacted Claude thinking streams.
 
 ### Advanced Timeout Overrides
 
@@ -304,11 +304,11 @@ For third-party Claude Code-compatible reverse proxies, ShiguangGateway keeps th
 | `API_BRIDGE_SERVER_KEEPALIVE_TIMEOUT_MS` | `5000`                                     | Keep-alive timeout on the API bridge server                          |
 | `API_BRIDGE_SERVER_SOCKET_TIMEOUT_MS`    | `0`                                        | Socket inactivity timeout on the API bridge server (`0` disables it) |
 
-> **Note:** For streaming requests, `FETCH_TIMEOUT_MS` only covers connection setup / waiting for the first upstream response. Once the stream is active, ShiguangGateway will only abort on an actual stall (`STREAM_IDLE_TIMEOUT_MS`) or Undici body inactivity (`FETCH_BODY_TIMEOUT_MS`).
+> **Note:** For streaming requests, `FETCH_TIMEOUT_MS` only covers connection setup / waiting for the first upstream response. Once the stream is active, Orbit will only abort on an actual stall (`STREAM_IDLE_TIMEOUT_MS`) or Undici body inactivity (`FETCH_BODY_TIMEOUT_MS`).
 
 ### Reverse Proxy Compatibility
 
-If you run ShiguangGateway behind Nginx, Caddy, Cloudflare, or another reverse proxy, make sure the proxy timeouts are also higher than your ShiguangGateway stream/fetch timeouts.
+If you run Orbit behind Nginx, Caddy, Cloudflare, or another reverse proxy, make sure the proxy timeouts are also higher than your Orbit stream/fetch timeouts.
 
 ---
 
@@ -317,7 +317,7 @@ If you run ShiguangGateway behind Nginx, Caddy, Cloudflare, or another reverse p
 Run API and Dashboard on separate ports for advanced scenarios (reverse proxy, container networking):
 
 ```bash
-PORT=20128 DASHBOARD_PORT=20129 shiguang-gateway
+PORT=20128 DASHBOARD_PORT=20129 orbit
 # API:       http://localhost:20128/v1
 # Dashboard: http://localhost:20129
 ```
@@ -326,11 +326,11 @@ PORT=20128 DASHBOARD_PORT=20129 shiguang-gateway
 
 ## Void Linux (xbps-src) Template
 
-For Void Linux users, you can build a native package using `xbps-src`. Save this block as `srcpkgs/shiguang-gateway/template`:
+For Void Linux users, you can build a native package using `xbps-src`. Save this block as `srcpkgs/orbit/template`:
 
 ```bash
-# Template file for 'shiguang-gateway'
-pkgname=shiguang-gateway
+# Template file for 'orbit'
+pkgname=orbit
 version=3.8.0
 revision=1
 hostmakedepends="nodejs python3 make"
@@ -338,13 +338,13 @@ depends="openssl"
 short_desc="Universal AI gateway with smart routing for multiple LLM providers"
 maintainer="zenobit <zenobit@disroot.org>"
 license="MIT"
-homepage="https://github.com/diegosouzapw/ShiguangGateway"
-distfiles="https://github.com/diegosouzapw/ShiguangGateway/archive/refs/tags/v${version}.tar.gz"
+homepage="https://github.com/diegosouzapw/Orbit"
+distfiles="https://github.com/diegosouzapw/Orbit/archive/refs/tags/v${version}.tar.gz"
 # Regenerate the checksum for each release with:
-#   curl -L -o /tmp/shiguang-gateway.tar.gz "https://github.com/diegosouzapw/ShiguangGateway/archive/refs/tags/v${version}.tar.gz" && sha256sum /tmp/shiguang-gateway.tar.gz
+#   curl -L -o /tmp/orbit.tar.gz "https://github.com/diegosouzapw/Orbit/archive/refs/tags/v${version}.tar.gz" && sha256sum /tmp/orbit.tar.gz
 checksum=PLACEHOLDER_REGENERATE_PER_RELEASE
-system_accounts="_shiguang-gateway"
-shiguang-gateway_homedir="/var/lib/shiguang-gateway"
+system_accounts="_orbit"
+orbit_homedir="/var/lib/orbit"
 export NODE_ENV=production
 export npm_config_engine_strict=false
 export npm_config_loglevel=error
@@ -384,25 +384,25 @@ do_check() {
 }
 
 do_install() {
-	vmkdir usr/lib/shiguang-gateway/.next
-	vcopy .next/standalone/. usr/lib/shiguang-gateway/.next/standalone
+	vmkdir usr/lib/orbit/.next
+	vcopy .next/standalone/. usr/lib/orbit/.next/standalone
 
 	for _d in \
 		.next/standalone/.next/server/app/dashboard \
 		.next/standalone/.next/server/app/dashboard/settings \
 		.next/standalone/.next/server/app/dashboard/providers; do
-		touch "${DESTDIR}/usr/lib/shiguang-gateway/${_d}/.keep"
+		touch "${DESTDIR}/usr/lib/orbit/${_d}/.keep"
 	done
 
-	cat > "${WRKDIR}/shiguang-gateway" <<'EOF'
+	cat > "${WRKDIR}/orbit" <<'EOF'
 #!/bin/sh
 export PORT="${PORT:-20128}"
-export DATA_DIR="${DATA_DIR:-${XDG_DATA_HOME:-${HOME}/.local/share}/shiguang-gateway}"
+export DATA_DIR="${DATA_DIR:-${XDG_DATA_HOME:-${HOME}/.local/share}/orbit}"
 export APP_LOG_TO_FILE="${APP_LOG_TO_FILE:-false}"
 mkdir -p "${DATA_DIR}"
-exec node /usr/lib/shiguang-gateway/.next/standalone/server.js "$@"
+exec node /usr/lib/orbit/.next/standalone/server.js "$@"
 EOF
-	vbin "${WRKDIR}/shiguang-gateway"
+	vbin "${WRKDIR}/orbit"
 }
 
 post_install() {
@@ -416,7 +416,7 @@ post_install() {
 
 | Command                  | Action                                                                              |
 | ------------------------ | ----------------------------------------------------------------------------------- |
-| `npm run uninstall`      | Removes the system app but **keeps your DB and configurations** in `~/.shiguang-gateway`.  |
+| `npm run uninstall`      | Removes the system app but **keeps your DB and configurations** in `~/.orbit`.  |
 | `npm run uninstall:full` | Removes the app AND permanently **erases all configurations, keys, and databases**. |
 
 > For detailed uninstall instructions across all methods, see [UNINSTALL.md](./UNINSTALL.md).

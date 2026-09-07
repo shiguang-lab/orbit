@@ -17,7 +17,7 @@ import { readJsoncConfig } from "./_lib/jsoncConfig.js";
 import { errorCode, parseJsonObject, type JsonObject } from "./_lib/jsonObject.js";
 import {
   buildDroidCustomModels,
-  isShiguangGatewayCustomModel,
+  isOrbitCustomModel,
   normalizeDroidModelList,
 } from "./droid-settings/custom-models.js";
 
@@ -34,12 +34,12 @@ const getDroidDir = () => path.dirname(getDroidSettingsPath());
 // "installed but not configured" instead of a 500 misread as "not installed".
 const readSettings = async () => readJsoncConfig(getDroidSettingsPath());
 
-// Check if settings has ShiguangGateway customModels.
-// Multi-model entries are stored as `custom:ShiguangGateway-0`, `custom:ShiguangGateway-1`, …
+// Check if settings has Orbit customModels.
+// Multi-model entries are stored as `custom:Orbit-0`, `custom:Orbit-1`, …
 // (Ported from upstream PR decolua/9router#618.)
-const hasShiguangGatewayConfig = (settings: any) => {
+const hasOrbitConfig = (settings: any) => {
   if (!settings || !settings.customModels) return false;
-  return settings.customModels.some(isShiguangGatewayCustomModel);
+  return settings.customModels.some(isOrbitCustomModel);
 };
 
 // GET - Check droid CLI and read current settings
@@ -76,7 +76,7 @@ export async function GET(request: Request) {
       runtimeMode: runtime.runtimeMode,
       reason: runtime.reason,
       settings,
-      hasShiguangGateway: hasShiguangGatewayConfig(settings),
+      hasOrbit: hasOrbitConfig(settings),
       settingsPath: getDroidSettingsPath(),
     });
   } catch (error) {
@@ -85,7 +85,7 @@ export async function GET(request: Request) {
   }
 }
 
-// POST - Update ShiguangGateway customModels (merge with existing settings)
+// POST - Update Orbit customModels (merge with existing settings)
 export async function POST(request: Request) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
@@ -157,19 +157,19 @@ export async function POST(request: Request) {
     }
 
     // Ensure customModels array exists
-    // Remove every existing ShiguangGateway config (multi-model: index 0..N)
+    // Remove every existing Orbit config (multi-model: index 0..N)
     const currentCustomModels: unknown[] = Array.isArray(settings.customModels)
       ? settings.customModels
       : [];
     const retainedCustomModels = currentCustomModels.filter(
       (model) =>
-        typeof model !== "object" || model === null || !isShiguangGatewayCustomModel(model)
+        typeof model !== "object" || model === null || !isOrbitCustomModel(model)
     );
 
     // Normalize baseUrl to ensure /v1 suffix
     const normalizedBaseUrl = baseUrl.endsWith("/v1") ? baseUrl : `${baseUrl}/v1`;
 
-    // Build and prepend ShiguangGateway entries (one per requested model)
+    // Build and prepend Orbit entries (one per requested model)
     const newEntries = buildDroidCustomModels(modelList, {
       baseUrl: normalizedBaseUrl,
       apiKey: apiKey || "your_api_key",
@@ -198,7 +198,7 @@ export async function POST(request: Request) {
   }
 }
 
-// DELETE - Remove ShiguangGateway customModels only (keep other settings)
+// DELETE - Remove Orbit customModels only (keep other settings)
 export async function DELETE(request: Request) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
@@ -229,11 +229,11 @@ export async function DELETE(request: Request) {
       throw error;
     }
 
-    // Remove ShiguangGateway customModels (every index, multi-model)
+    // Remove Orbit customModels (every index, multi-model)
     if (Array.isArray(settings.customModels)) {
       const retainedCustomModels = settings.customModels.filter(
         (model) =>
-          typeof model !== "object" || model === null || !isShiguangGatewayCustomModel(model)
+          typeof model !== "object" || model === null || !isOrbitCustomModel(model)
       );
       settings.customModels = retainedCustomModels;
 
@@ -255,7 +255,7 @@ export async function DELETE(request: Request) {
 
     return Response.json({
       success: true,
-      message: "ShiguangGateway settings removed successfully",
+      message: "Orbit settings removed successfully",
     });
   } catch (error) {
     console.log("Error resetting droid settings:", error);

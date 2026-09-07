@@ -61,8 +61,8 @@ function envFlagEnabled(name: string): boolean {
 const scheduler = createConnectionRecoveryScheduler({
   runTick: runConnectionRecoveryTick,
   resolveIntervalMs: resolveConnectionRecoveryIntervalMs,
-  disabled: () => envFlagEnabled("SHIGUANG_GATEWAY_DISABLE_CONNECTION_RECOVERY") ||
-    envFlagEnabled("SHIGUANG_GATEWAY_DISABLE_BACKGROUND_SERVICES") ||
+  disabled: () => envFlagEnabled("ORBIT_DISABLE_CONNECTION_RECOVERY") ||
+    envFlagEnabled("ORBIT_DISABLE_BACKGROUND_SERVICES") ||
     process.env.NEXT_PHASE === "phase-production-build" || isAutomatedTestProcess(),
   setTimeout,
   clearTimeout,

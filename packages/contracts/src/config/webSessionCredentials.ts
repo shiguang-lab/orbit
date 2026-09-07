@@ -288,15 +288,15 @@ export const WEB_SESSION_CREDENTIAL_REQUIREMENTS = {
     storageKeys: ["token"],
     hintKey: "zaiWebCredentialHint",
     hintFallback:
-      'Copy only the "token" value from chat.z.ai Local Storage. Do not copy a Cookie header. ShiguangGateway uses its browser transport to obtain the per-request CAPTCHA proof.',
+      'Copy only the "token" value from chat.z.ai Local Storage. Do not copy a Cookie header. Orbit uses its browser transport to obtain the per-request CAPTCHA proof.',
     guideSteps: [
       "Open chat.z.ai and sign in.",
       "Open DevTools → Application → Local Storage → https://chat.z.ai.",
       'Find the row named "token" and copy only its value. Do not copy any Cookie header.',
-      "Paste the token below and check the connection. ShiguangGateway handles the per-request CAPTCHA through its browser transport.",
+      "Paste the token below and check the connection. Orbit handles the per-request CAPTCHA through its browser transport.",
     ],
     guideNote:
-      "Treat the token like a password. Browser transport is enabled by default; do not set SHIGUANG_GATEWAY_BROWSER_POOL=off for this connection. If Z.ai signs you out or the token expires, repeat these steps with the new value.",
+      "Treat the token like a password. Browser transport is enabled by default; do not set ORBIT_BROWSER_POOL=off for this connection. If Z.ai signs you out or the token expires, repeat these steps with the new value.",
   },
   lmarena: {
     kind: "cookie",

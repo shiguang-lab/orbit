@@ -8,7 +8,7 @@
  * worker:
  *   - NEXT_PHASE === "phase-production-build": set by Next.js on the main build
  *     process, but Next.js build WORKERS sometimes drop it from process.env.
- *   - SHIGUANG_GATEWAY_BUILDING === "1": set by scripts/build/build-next-isolated.mjs
+ *   - ORBIT_BUILDING === "1": set by scripts/build/build-next-isolated.mjs
  *     and inherited by every spawned build worker, so it survives where
  *     NEXT_PHASE does not (#10060).
  *   - npm_lifecycle_event === "build": set by npm when the process was launched
@@ -20,7 +20,7 @@
 export function isNextBuildPhase(): boolean {
   return (
     process.env.NEXT_PHASE === "phase-production-build" ||
-    process.env.SHIGUANG_GATEWAY_BUILDING === "1" ||
+    process.env.ORBIT_BUILDING === "1" ||
     process.env.npm_lifecycle_event === "build"
   );
 }

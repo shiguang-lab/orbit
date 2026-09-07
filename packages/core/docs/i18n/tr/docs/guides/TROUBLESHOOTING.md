@@ -10,17 +10,17 @@ lastUpdated: 2026-08-23
 
 ---
 
-ShiguangGateway için sık karşılaşılan sorunlar ve çözümleri.
+Orbit için sık karşılaşılan sorunlar ve çözümleri.
 
 ---
 
 ## Hızlı Başvuru
 
-**ShiguangGateway'ta yeni misiniz?** Buradan başlayın — sorunların %90'ını çözer:
+**Orbit'ta yeni misiniz?** Buradan başlayın — sorunların %90'ını çözer:
 
 | Gördüğüm Durum           | Ne Anlama Geliyor                   | Ne Yapılmalı                                                                                      |
 | ------------------------ | ----------------------------------- | ------------------------------------------------------------------------------------------------- |
-| "Bağlanamıyor"           | ShiguangGateway çalışmıyor                | `shiguang-gateway` veya `docker restart shiguang-gateway` çalıştırın                                            |
+| "Bağlanamıyor"           | Orbit çalışmıyor                | `orbit` veya `docker restart orbit` çalıştırın                                            |
 | "Geçersiz API Anahtarı"  | Anahtarınız yanlış veya süresi doldu| Sağlayıcının web sitesinden anahtarı yeniden kopyalayın                                           |
 | "Hız Sınırı Aşıldı"      | Çok fazla istek gönderiyorsunuz     | 1 dakika bekleyin veya otomatik geri dönüş için `model: "auto"` kullanın                          |
 | "Kota Aşıldı"            | Ücretsiz/ücretli kotanız bitti      | Daha fazla sağlayıcı bağlayın veya ücretsiz sağlayıcıları kullanın                               |
@@ -39,10 +39,10 @@ ShiguangGateway için sık karşılaşılan sorunlar ve çözümleri.
 | İlk giriş çalışmıyor                                       | `.env` dosyasında `INITIAL_PASSWORD` ayarlayın (sabit kodlanmış varsayılan yoktur)                                                                          |
 | Pano yanlış portta açılıyor                                | `PORT=20128` ve `NEXT_PUBLIC_BASE_URL=http://localhost:20128` ayarlayın                                                                                    |
 | Diske günlük yazılmıyor                                    | `APP_LOG_TO_FILE=true` ayarlayın ve çağrı günlüğü kaydının etkin olduğunu doğrulayın                                                                       |
-| EACCES: permission denied                                  | `~/.shiguang-gateway` dizinini geçersiz kılmak için `DATA_DIR=/yazilabilir/dizin/yolu` ayarlayın                                                                   |
+| EACCES: permission denied                                  | `~/.orbit` dizinini geçersiz kılmak için `DATA_DIR=/yazilabilir/dizin/yolu` ayarlayın                                                                   |
 | Yönlendirme stratejisi kaydedilmiyor                       | En son v3.x sürümüne güncelleyin                                                                                                                            |
 | Giriş çökmesi / boş sayfa                                  | Node.js sürümünü kontrol edin (Node.js `>=22.22.2 <23` veya `>=24.0.0 <27` desteklenir)                                                                     |
-| `dlopen` / `slice is not valid mach-o file` (macOS)        | `cd $(npm root -g)/shiguang-gateway/app && npm rebuild better-sqlite3 && shiguang-gateway` çalıştırın                                                                     |
+| `dlopen` / `slice is not valid mach-o file` (macOS)        | `cd $(npm root -g)/orbit/app && npm rebuild better-sqlite3 && orbit` çalıştırın                                                                     |
 | Proxy "fetch failed"                                       | Proxy yapılandırmasının doğru düzeyde ayarlandığından emin olun                                                                                             |
 | Docker `curl: (56) Recv failure: Connection reset by peer` | Docker port bağlamanız IPv6'ya düşüyor olabilir. IPv4'ü zorlamak için `-p 127.0.0.1:20128:20128` kullanın veya `curl -4` ile test edin                     |
 | Antivirüs `README.md` dosyasını karantinaya alıyor         | Yanlış pozitif (false positive) alarmdır, güvenle geri yükleyebilirsiniz                                                                                    |

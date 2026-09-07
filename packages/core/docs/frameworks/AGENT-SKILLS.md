@@ -1,15 +1,15 @@
 ---
-title: "ShiguangGateway Agent Skills Catalog"
+title: "Orbit Agent Skills Catalog"
 version: 3.8.50
 lastUpdated: 2026-08-02
 ---
 
-# ShiguangGateway Agent Skills Catalog
+# Orbit Agent Skills Catalog
 
 > **Source of truth:** `src/lib/agentSkills/` (catalog, generator, parsers) + `skills/` directory (SKILL.md files)
 > **Last updated:** 2026-08-02 — v3.8.50
 
-Agent Skills are structured SKILL.md files that teach external agents, MCP clients, and A2A orchestrators how to use ShiguangGateway's REST API and CLI. Unlike [Omni Skills](./SKILLS.md) (which are LLM tool definitions executed inside ShiguangGateway), Agent Skills are a _documentation catalog_ — static markdown that can be fed directly into agent context.
+Agent Skills are structured SKILL.md files that teach external agents, MCP clients, and A2A orchestrators how to use Orbit's REST API and CLI. Unlike [Omni Skills](./SKILLS.md) (which are LLM tool definitions executed inside Orbit), Agent Skills are a _documentation catalog_ — static markdown that can be fed directly into agent context.
 
 ---
 
@@ -20,7 +20,7 @@ The catalog contains **45 Agent Skills** (23 REST API + 21 CLI + 1 configuration
 - A **canonical ID** (`omni-auth`, `cli-serve`, etc.)
 - A **SKILL.md** file in `skills/{id}/SKILL.md` with YAML frontmatter (`name`, `description`) + rich markdown body
 - **REST endpoints** (API skills) or **CLI subcommands** (CLI skills) derived from the OpenAPI spec and CLI registry
-- A **GitHub raw URL** for live fetch: `https://raw.githubusercontent.com/diegosouzapw/ShiguangGateway/refs/heads/main/skills/{id}/SKILL.md`
+- A **GitHub raw URL** for live fetch: `https://raw.githubusercontent.com/diegosouzapw/Orbit/refs/heads/main/skills/{id}/SKILL.md`
 
 ---
 
@@ -118,9 +118,9 @@ Three MCP tools are registered under scope `read:catalog`:
 
 | Tool                              | Description                                        |
 | :-------------------------------- | :------------------------------------------------- |
-| `shiguang-gateway_agent_skills_list`     | List skills (optional `category` / `area` filters) |
-| `shiguang-gateway_agent_skills_get`      | Get metadata + SKILL.md for one skill by `id`      |
-| `shiguang-gateway_agent_skills_coverage` | Coverage stats (API/CLI have/total)                |
+| `orbit_agent_skills_list`     | List skills (optional `category` / `area` filters) |
+| `orbit_agent_skills_get`      | Get metadata + SKILL.md for one skill by `id`      |
+| `orbit_agent_skills_coverage` | Coverage stats (API/CLI have/total)                |
 
 See [MCP-SERVER.md](./MCP-SERVER.md) for scope wiring and authentication.
 
@@ -179,27 +179,27 @@ See [A2A-SERVER.md](./A2A-SERVER.md) for protocol details.
 
 | ID                   | Area               | CLI Command Root        |
 | :------------------- | :----------------- | :---------------------- |
-| `cli-serve`          | cli-serve          | `shiguang-gateway serve`       |
-| `cli-health`         | cli-health         | `shiguang-gateway health`      |
-| `cli-providers`      | cli-providers      | `shiguang-gateway providers`   |
-| `cli-keys`           | cli-keys           | `shiguang-gateway keys`        |
-| `cli-models`         | cli-models         | `shiguang-gateway models`      |
-| `cli-chat`           | cli-chat           | `shiguang-gateway chat`        |
-| `cli-routing`        | cli-routing        | `shiguang-gateway routing`     |
-| `cli-resilience`     | cli-resilience     | `shiguang-gateway resilience`  |
-| `cli-compression`    | cli-compression    | `shiguang-gateway compression` |
-| `cli-contexts`       | cli-contexts       | `shiguang-gateway contexts`    |
-| `cli-cost-usage`     | cli-cost-usage     | `shiguang-gateway cost`        |
-| `cli-mcp`            | cli-mcp            | `shiguang-gateway mcp`         |
-| `cli-a2a`            | cli-a2a            | `shiguang-gateway a2a`         |
-| `cli-tunnel`         | cli-tunnel         | `shiguang-gateway tunnel`      |
-| `cli-backup-sync`    | cli-backup-sync    | `shiguang-gateway backup`      |
-| `cli-policy-audit`   | cli-policy-audit   | `shiguang-gateway policy`      |
-| `cli-batches`        | cli-batches        | `shiguang-gateway batch`       |
-| `cli-eval`           | cli-eval           | `shiguang-gateway eval`        |
-| `cli-plugins-skills` | cli-plugins-skills | `shiguang-gateway plugins`     |
-| `cli-setup`          | cli-setup          | `shiguang-gateway setup`       |
-| `cli-skill-collector` | cli-setup          | `shiguang-gateway skills`      |
+| `cli-serve`          | cli-serve          | `orbit serve`       |
+| `cli-health`         | cli-health         | `orbit health`      |
+| `cli-providers`      | cli-providers      | `orbit providers`   |
+| `cli-keys`           | cli-keys           | `orbit keys`        |
+| `cli-models`         | cli-models         | `orbit models`      |
+| `cli-chat`           | cli-chat           | `orbit chat`        |
+| `cli-routing`        | cli-routing        | `orbit routing`     |
+| `cli-resilience`     | cli-resilience     | `orbit resilience`  |
+| `cli-compression`    | cli-compression    | `orbit compression` |
+| `cli-contexts`       | cli-contexts       | `orbit contexts`    |
+| `cli-cost-usage`     | cli-cost-usage     | `orbit cost`        |
+| `cli-mcp`            | cli-mcp            | `orbit mcp`         |
+| `cli-a2a`            | cli-a2a            | `orbit a2a`         |
+| `cli-tunnel`         | cli-tunnel         | `orbit tunnel`      |
+| `cli-backup-sync`    | cli-backup-sync    | `orbit backup`      |
+| `cli-policy-audit`   | cli-policy-audit   | `orbit policy`      |
+| `cli-batches`        | cli-batches        | `orbit batch`       |
+| `cli-eval`           | cli-eval           | `orbit eval`        |
+| `cli-plugins-skills` | cli-plugins-skills | `orbit plugins`     |
+| `cli-setup`          | cli-setup          | `orbit setup`       |
+| `cli-skill-collector` | cli-setup          | `orbit skills`      |
 
 ### Configuration workflow (1)
 
@@ -215,17 +215,17 @@ See [A2A-SERVER.md](./A2A-SERVER.md) for protocol details.
 
 ```bash
 # Get the full catalog
-curl "http://your-shiguang-gateway/api/agent-skills" | jq '.skills[] | {id, name, category}'
+curl "http://your-orbit/api/agent-skills" | jq '.skills[] | {id, name, category}'
 
 # Get SKILL.md for context injection
-curl "http://your-shiguang-gateway/api/agent-skills/omni-providers/raw" > omni-providers.md
+curl "http://your-orbit/api/agent-skills/omni-providers/raw" > omni-providers.md
 ```
 
 ### 2. Discovery via MCP
 
 ```typescript
 // In a Claude Desktop / Cursor MCP client:
-const result = await client.callTool("shiguang-gateway_agent_skills_list", { category: "api" });
+const result = await client.callTool("orbit_agent_skills_list", { category: "api" });
 // result.skills → array of AgentSkill with rawUrl for each
 ```
 
@@ -234,7 +234,7 @@ const result = await client.callTool("shiguang-gateway_agent_skills_list", { cat
 ```python
 import requests
 
-resp = requests.post("http://your-shiguang-gateway/a2a", json={
+resp = requests.post("http://your-orbit/a2a", json={
     "jsonrpc": "2.0", "id": "1",
     "method": "message/send",
     "params": {"skill": "list-capabilities", "messages": [{"role": "user", "content": "list"}]}
@@ -246,7 +246,7 @@ table = resp.json()["result"]["artifacts"][0]["content"]
 ### 4. Direct GitHub raw fetch (no server required)
 
 ```bash
-BASE="https://raw.githubusercontent.com/diegosouzapw/ShiguangGateway/refs/heads/main/skills"
+BASE="https://raw.githubusercontent.com/diegosouzapw/Orbit/refs/heads/main/skills"
 curl "${BASE}/omni-providers/SKILL.md"
 ```
 
@@ -311,7 +311,7 @@ curl "http://localhost:20128/api/agent-skills/coverage"
 ## Related
 
 - [SKILLS.md](./SKILLS.md) — Omni Skills framework (LLM tool injection + marketplace)
-- [MCP-SERVER.md](./MCP-SERVER.md) — MCP tool catalog (`shiguang-gateway_agent_skills_*` tools)
+- [MCP-SERVER.md](./MCP-SERVER.md) — MCP tool catalog (`orbit_agent_skills_*` tools)
 - [A2A-SERVER.md](./A2A-SERVER.md) — A2A protocol (`list-capabilities` skill)
 - `src/lib/agentSkills/` — catalog, generator, parsers
 - `skills/` — generated SKILL.md files (45 entries)

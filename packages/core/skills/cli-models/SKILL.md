@@ -11,8 +11,8 @@ Query available AI models, list model aliases, and browse the full model catalog
 ## Quick install
 
 ```bash
-npm install -g shiguang-gateway   # or: npx shiguang-gateway
-shiguang-gateway --version
+npm install -g orbit   # or: npx orbit
+orbit --version
 ```
 
 ## Subcommands
@@ -27,5 +27,5 @@ shiguang-gateway --version
 **Example:**
 
 ```bash
-shiguang-gateway models [provider]
+orbit models [provider]
 ```

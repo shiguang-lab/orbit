@@ -141,12 +141,12 @@ const omitApiKeys = (settings: ReturnType<typeof parseGrokBuildConfig>) => ({
   >,
 });
 
-const hasShiguangGatewayConfig = (settings: ReturnType<typeof parseGrokBuildConfig>): boolean =>
-  settings.default === "shiguangGateway" &&
+const hasOrbitConfig = (settings: ReturnType<typeof parseGrokBuildConfig>): boolean =>
+  settings.default === "orbit" &&
   settings.model?.base_url !== null &&
   settings.model?.api_backend === "chat_completions";
 
-/** Return Grok Build runtime and ShiguangGateway config status. */
+/** Return Grok Build runtime and Orbit config status. */
 export async function GET(request: Request): Promise<Response> {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
@@ -168,7 +168,7 @@ export async function GET(request: Request): Promise<Response> {
       ...runtime,
       config: publicSettings,
       settings: publicSettings,
-      hasShiguangGateway: hasShiguangGatewayConfig(settings),
+      hasOrbit: hasOrbitConfig(settings),
       apiKeyConfigured,
       configPath,
     });
@@ -178,7 +178,7 @@ export async function GET(request: Request): Promise<Response> {
   }
 }
 
-/** Apply ShiguangGateway model slots to Grok Build. */
+/** Apply Orbit model slots to Grok Build. */
 export async function POST(request: Request): Promise<Response> {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
@@ -222,7 +222,7 @@ export async function POST(request: Request): Promise<Response> {
       success: true,
       message: "Grok Build settings applied successfully!",
       configPath,
-      modelSlot: "shiguangGateway",
+      modelSlot: "orbit",
     });
   } catch (error) {
     if (error instanceof GrokBuildConfigConflictError) {
@@ -233,7 +233,7 @@ export async function POST(request: Request): Promise<Response> {
   }
 }
 
-/** Remove ShiguangGateway model slots from Grok Build. */
+/** Remove Orbit model slots from Grok Build. */
 export async function DELETE(request: Request): Promise<Response> {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
@@ -258,7 +258,7 @@ export async function DELETE(request: Request): Promise<Response> {
 
     return Response.json({
       success: true,
-      message: "ShiguangGateway model slots removed from Grok Build",
+      message: "Orbit model slots removed from Grok Build",
     });
   } catch (error) {
     logger.error({ err: error }, "Failed to reset Grok Build settings");

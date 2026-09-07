@@ -71,7 +71,7 @@ export const CAVEMAN_INSTRUCTION_BY_LANGUAGE = {
   },
 } as const;
 
-const CAVEMAN_OUTPUT_MARKER = "[ShiguangGateway Caveman Output Mode]";
+const CAVEMAN_OUTPUT_MARKER = "[Orbit Caveman Output Mode]";
 
 export function shouldBypassCavemanOutputMode(messages: ChatMessage[]): string | null {
   const text = messages

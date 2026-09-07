@@ -10,7 +10,7 @@ lastUpdated: 2026-08-23
 
 ---
 
-Tüm ShiguangGateway API uç noktaları için eksiksiz referans dokümantasyonu.
+Tüm Orbit API uç noktaları için eksiksiz referans dokümantasyonu.
 
 ---
 
@@ -56,15 +56,15 @@ Content-Type: application/json
 
 | Başlık                   | Yön       | Açıklama                                                                                                                                                                                           |
 | ------------------------ | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `X-ShiguangGateway-No-Cache`   | İstek     | Önbelleği atlamak için `true` ayarlayın                                                                                                                                                            |
-| `x-shiguang-gateway-no-memory`  | İstek     | Bu istek için bellek ve yetenek enjeksiyonunu atlamak için `true` ayarlayın                                                                                                                        |
-| `X-ShiguangGateway-Progress`   | İstek     | İlerleme olayları için `true` ayarlayın                                                                                                                                                            |
+| `X-Orbit-No-Cache`   | İstek     | Önbelleği atlamak için `true` ayarlayın                                                                                                                                                            |
+| `x-orbit-no-memory`  | İstek     | Bu istek için bellek ve yetenek enjeksiyonunu atlamak için `true` ayarlayın                                                                                                                        |
+| `X-Orbit-Progress`   | İstek     | İlerleme olayları için `true` ayarlayın                                                                                                                                                            |
 | `X-Session-Id`           | İstek     | Harici oturum yakınlığı için yapışkan oturum anahtarı                                                                                                                                              |
 | `Idempotency-Key`        | İstek     | Tekilleştirme anahtarı (5 saniyelik pencere)                                                                                                                                                       |
-| `X-ShiguangGateway-Cache`      | Yanıt     | `HIT` veya `MISS` (akışsız modda)                                                                                                                                                                  |
-| `X-ShiguangGateway-Idempotent` | Yanıt     | İstek tekilleştirilmişse `true`                                                                                                                                                                    |
-| `X-ShiguangGateway-Version`    | Yanıt     | ShiguangGateway derleme sürümü (her zaman bulunur)                                                                                                                                                       |
-| `X-ShiguangGateway-Decision`   | Yanıt     | Yönlendirme izi: `strategy=<ad>; provider=<alias>; latency_ms=<n>`                                                                                                                                 |
+| `X-Orbit-Cache`      | Yanıt     | `HIT` veya `MISS` (akışsız modda)                                                                                                                                                                  |
+| `X-Orbit-Idempotent` | Yanıt     | İstek tekilleştirilmişse `true`                                                                                                                                                                    |
+| `X-Orbit-Version`    | Yanıt     | Orbit derleme sürümü (her zaman bulunur)                                                                                                                                                       |
+| `X-Orbit-Decision`   | Yanıt     | Yönlendirme izi: `strategy=<ad>; provider=<alias>; latency_ms=<n>`                                                                                                                                 |
 
 ---
 
@@ -107,7 +107,7 @@ Authorization: Bearer your-api-key
 Content-Type: application/json
 
 {
-  "query": "ShiguangGateway AI gateway nedir?",
+  "query": "Orbit AI gateway nedir?",
   "provider": "perplexity"
 }
 ```

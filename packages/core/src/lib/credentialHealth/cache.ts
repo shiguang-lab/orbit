@@ -39,7 +39,7 @@ const MAX_ENTRIES = 500;
 // ── State (globalThis singleton) ──────────────────────────────────────────
 
 declare global {
-  var __shiguangGatewayCredentialCache:
+  var __orbitCredentialCache:
     | {
         initialized: boolean;
         cache: Map<string, CredentialCacheEntry>;
@@ -48,13 +48,13 @@ declare global {
 }
 
 function getCacheState() {
-  if (!globalThis.__shiguangGatewayCredentialCache) {
-    globalThis.__shiguangGatewayCredentialCache = {
+  if (!globalThis.__orbitCredentialCache) {
+    globalThis.__orbitCredentialCache = {
       initialized: false,
       cache: new Map(),
     };
   }
-  return globalThis.__shiguangGatewayCredentialCache;
+  return globalThis.__orbitCredentialCache;
 }
 
 // ── Public API ────────────────────────────────────────────────────────────

@@ -1,4 +1,4 @@
-// Parses the `--models` / `--model` options for `shiguangGateway combo create` (#10954).
+// Parses the `--models` / `--model` options for `orbit combo create` (#10954).
 //
 // Root cause of #10954: `combo create` only ever registered `--strategy`; the
 // HTTP body for the control-owned POST /api/combos mutation.

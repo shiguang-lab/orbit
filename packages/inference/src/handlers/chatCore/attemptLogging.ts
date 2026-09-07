@@ -22,7 +22,7 @@ import { attachLogMeta } from "./cacheUsageMeta.ts";
 
 /**
  * Extract the OpenAI Responses API response id this attempt produced, so it
- * can be indexed for ShiguangGateway-native `previous_response_id` continuation
+ * can be indexed for Orbit-native `previous_response_id` continuation
  * (see src/lib/db/responsesContinuationStore.ts). Only meaningful when the
  * client actually used the Responses endpoint -- a Chat Completions
  * `chatcmpl-*` id must never be mistaken for a Responses response id.
@@ -85,7 +85,7 @@ export type PersistAttemptLogsContext = {
   noLogEnabled: unknown;
   correlationId?: string | null;
   modelPinned?: boolean;
-  /** #8249: caller-supplied X-ShiguangGateway-Session-Id header, only set when the header was
+  /** #8249: caller-supplied X-Orbit-Session-Id header, only set when the header was
    * explicitly present (never synthesized from skillRequestId) — persisted as call_logs.session_tag
    * for per-session cost attribution. */
   sessionTag?: string | null;

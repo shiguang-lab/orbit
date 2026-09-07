@@ -34,7 +34,7 @@ export class Assessor {
 
   constructor(
     apiKey: string,
-    baseUrl: string = process.env.SHIGUANG_GATEWAY_BASE_URL ?? process.env.INTERNAL_BASE_URL ?? "http://127.0.0.1:8787/v1",
+    baseUrl: string = process.env.ORBIT_BASE_URL ?? process.env.INTERNAL_BASE_URL ?? "http://127.0.0.1:8787/v1",
     config: Partial<AssessmentConfig> = {}
   ) {
     this.apiKey = apiKey;

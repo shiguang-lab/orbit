@@ -18,7 +18,7 @@ type RedisLike = {
   persist: (key: string) => Promise<unknown>;
 };
 
-const KEY_PREFIX = "shiguangGateway:warmup:cb:";
+const KEY_PREFIX = "orbit:warmup:cb:";
 
 export class RedisCircuitBreakerStore implements CircuitBreakerStore {
   constructor(private redis: RedisLike) {}

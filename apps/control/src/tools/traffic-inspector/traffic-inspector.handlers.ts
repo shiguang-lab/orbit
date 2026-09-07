@@ -148,8 +148,8 @@ export async function annotateRequest(request: Request, id: string): Promise<Res
 export async function replayRequest(id: string): Promise<Response> {
   const entry = globalTrafficBuffer.get(id) as { path: string; method: string; requestBody?: string | null; requestHeaders: Record<string, string> } | null;
   if (!entry) return jsonError(404, "Request not found");
-  const base = process.env.SHIGUANG_GATEWAY_BASE_URL ?? process.env.INTERNAL_BASE_URL ?? "http://127.0.0.1:8787";
-  const replayHeaders: Record<string, string> = { "content-type": "application/json", "x-shiguangGateway-source": "inspector-replay" };
+  const base = process.env.ORBIT_BASE_URL ?? process.env.INTERNAL_BASE_URL ?? "http://127.0.0.1:8787";
+  const replayHeaders: Record<string, string> = { "content-type": "application/json", "x-orbit-source": "inspector-replay" };
   const auth = entry.requestHeaders.authorization ?? entry.requestHeaders.Authorization;
   if (auth && !auth.includes("***")) replayHeaders.authorization = auth;
   try {

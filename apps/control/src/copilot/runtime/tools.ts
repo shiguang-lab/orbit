@@ -1,7 +1,7 @@
 /**
- * ShiguangGateway Copilot — Tool definitions
+ * Orbit Copilot — Tool definitions
  *
- * Tools the copilot can execute to configure ShiguangGateway on behalf of the user,
+ * Tools the copilot can execute to configure Orbit on behalf of the user,
  * query the codebase via CodeGraph, and execute CLI commands for full control.
  */
 
@@ -61,11 +61,11 @@ function formatCodeGraphResult(result: CodeGraphQueryResult): string {
   );
 }
 
-// ── Helper: check if shiguang-gateway CLI is available ──────────────────────────────
+// ── Helper: check if orbit CLI is available ──────────────────────────────
 
-function getShiguangGatewayCliPath(): string | null {
+function getOrbitCliPath(): string | null {
   try {
-    const result = execSync("which shiguang-gateway 2>/dev/null || command -v shiguang-gateway 2>/dev/null", {
+    const result = execSync("which orbit 2>/dev/null || command -v orbit 2>/dev/null", {
       encoding: "utf-8",
       timeout: 3000,
     }).trim();
@@ -251,7 +251,7 @@ export const COPILOT_TOOLS: CopilotTool[] = [
   {
     name: "searchCodeGraph",
     description:
-      "Search for symbols in the ShiguangGateway codebase by name (functions, classes, types, variables). Use this to understand how the app works internally.",
+      "Search for symbols in the Orbit codebase by name (functions, classes, types, variables). Use this to understand how the app works internally.",
     parameters: [
       {
         name: "query",
@@ -294,7 +294,7 @@ export const COPILOT_TOOLS: CopilotTool[] = [
   {
     name: "findCallees",
     description:
-      "Find all functions/symbols that a specific function calls. Useful for understanding dependencies and code flow within ShiguangGateway.",
+      "Find all functions/symbols that a specific function calls. Useful for understanding dependencies and code flow within Orbit.",
     parameters: [
       {
         name: "symbol",
@@ -362,15 +362,15 @@ export const COPILOT_TOOLS: CopilotTool[] = [
 
   // ── CLI Execution Tool ──
   {
-    name: "runShiguangGatewayCli",
+    name: "runOrbitCli",
     description:
-      "Execute an 'shiguangGateway' CLI command to configure or query the ShiguangGateway app. Gives complete control over the app — use for advanced operations not covered by other tools. Common commands: shiguangGateway list-keys, shiguangGateway switch-combo [id], shiguangGateway set-budget 10, shiguangGateway set-strategy [id] priority, shiguangGateway health, shiguangGateway mcp (starts MCP server), shiguangGateway db-health, shiguangGateway reset-password.",
+      "Execute an 'orbit' CLI command to configure or query the Orbit app. Gives complete control over the app — use for advanced operations not covered by other tools. Common commands: orbit list-keys, orbit switch-combo [id], orbit set-budget 10, orbit set-strategy [id] priority, orbit health, orbit mcp (starts MCP server), orbit db-health, orbit reset-password.",
     parameters: [
       {
         name: "command",
         type: "string",
         description:
-          "CLI command arguments (everything after 'shiguangGateway'). Example: 'list-keys', 'switch-combo abc123', 'health'",
+          "CLI command arguments (everything after 'orbit'). Example: 'list-keys', 'switch-combo abc123', 'health'",
         required: true,
       },
     ],
@@ -378,8 +378,8 @@ export const COPILOT_TOOLS: CopilotTool[] = [
       const cmd = args.command as string;
       if (!cmd) return "Please provide a command to execute.";
 
-      const cliPath = getShiguangGatewayCliPath();
-      if (!cliPath) return "shiguangGateway CLI not found in PATH. Install ShiguangGateway first.";
+      const cliPath = getOrbitCliPath();
+      if (!cliPath) return "orbit CLI not found in PATH. Install Orbit first.";
 
       try {
         const trimmedCmd = cmd.trim();

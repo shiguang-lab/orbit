@@ -22,7 +22,7 @@ export function resolveSplitPlan(opts = {}, env = process.env, workspaceRoot = W
   const realtimePort = port(opts.realtimePort ?? env.REALTIME_PORT, 8790);
   const workerPort = port(opts.workerCommandPort ?? env.WORKER_COMMAND_PORT, 8791);
   const liveWsPort = port(opts.liveWsPort ?? env.LIVE_WS_PORT, 20132);
-  const edgeHost = env.EDGE_GATEWAY_HOST ?? env.SHIGUANG_GATEWAY_SERVER_HOST ?? "127.0.0.1";
+  const edgeHost = env.EDGE_GATEWAY_HOST ?? env.ORBIT_SERVER_HOST ?? "127.0.0.1";
   const base = { ...env, NODE_ENV: env.NODE_ENV ?? "production" };
   const edgeUrl = `http://127.0.0.1:${edgePort}`;
   const service = (name, serviceEnv, health) => ({
@@ -36,26 +36,26 @@ export function resolveSplitPlan(opts = {}, env = process.env, workspaceRoot = W
     service("gateway", {
       EDGE_GATEWAY_HOST: edgeHost,
       EDGE_GATEWAY_PORT: String(edgePort),
-      SHIGUANG_GATEWAY_ENABLE_LIVE_WS: "false",
+      ORBIT_ENABLE_LIVE_WS: "false",
     }, { kind: "http", port: edgePort, path: "/healthz" }),
     service("control", {
       CONTROL_API_HOST: "127.0.0.1",
       CONTROL_API_PORT: String(controlPort),
       EDGE_GATEWAY_URL: edgeUrl,
-      SHIGUANG_GATEWAY_WORKER_COMMAND_URL: `http://127.0.0.1:${workerPort}`,
+      ORBIT_WORKER_COMMAND_URL: `http://127.0.0.1:${workerPort}`,
     }, { kind: "http", port: controlPort, path: "/healthz" }),
     service("realtime", {
       REALTIME_HOST: "127.0.0.1",
       REALTIME_PORT: String(realtimePort),
       LIVE_WS_HOST: "127.0.0.1",
       LIVE_WS_PORT: String(liveWsPort),
-      SHIGUANG_GATEWAY_ENABLE_LIVE_WS: "true",
+      ORBIT_ENABLE_LIVE_WS: "true",
     }, { kind: "http", port: realtimePort, path: "/healthz" }),
     service("worker", {
       WORKER_COMMAND_HOST: "127.0.0.1",
       WORKER_COMMAND_PORT: String(workerPort),
       INTERNAL_BASE_URL: edgeUrl,
-      SHIGUANG_GATEWAY_BASE_URL: edgeUrl,
+      ORBIT_BASE_URL: edgeUrl,
     }, { kind: "tcp", port: workerPort }),
   ];
 }

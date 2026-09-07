@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
   buildDroidCustomModels,
-  isShiguangGatewayCustomModel,
+  isOrbitCustomModel,
   normalizeDroidModelList,
 } from "../src/cli-tools/migrated-handlers/droid-settings/custom-models.js";
 
@@ -22,7 +22,7 @@ test("builds the established Factory Droid entry shape", () => {
   }), [
     {
       model: "model-a",
-      id: "custom:ShiguangGateway-0",
+      id: "custom:Orbit-0",
       index: 0,
       baseUrl: "http://127.0.0.1:8787/v1",
       apiKey: "secret",
@@ -33,7 +33,7 @@ test("builds the established Factory Droid entry shape", () => {
     },
     {
       model: "model-b",
-      id: "custom:ShiguangGateway-1",
+      id: "custom:Orbit-1",
       index: 1,
       baseUrl: "http://127.0.0.1:8787/v1",
       apiKey: "secret",
@@ -53,9 +53,9 @@ test("promotes an active model and regenerates indexes and ids", () => {
   });
 
   assert.deepEqual(entries.map(({ model, index, id }) => ({ model, index, id })), [
-    { model: "model-c", index: 0, id: "custom:ShiguangGateway-0" },
-    { model: "model-a", index: 1, id: "custom:ShiguangGateway-1" },
-    { model: "model-b", index: 2, id: "custom:ShiguangGateway-2" },
+    { model: "model-c", index: 0, id: "custom:Orbit-0" },
+    { model: "model-a", index: 1, id: "custom:Orbit-1" },
+    { model: "model-b", index: 2, id: "custom:Orbit-2" },
   ]);
 });
 
@@ -74,9 +74,9 @@ test("keeps input order for an empty or unknown active model and rejects an empt
   );
 });
 
-test("recognizes only ShiguangGateway-owned custom model ids", () => {
-  assert.equal(isShiguangGatewayCustomModel({ id: "custom:ShiguangGateway-0" }), true);
-  assert.equal(isShiguangGatewayCustomModel({ id: "custom:Other-0" }), false);
-  assert.equal(isShiguangGatewayCustomModel({ id: 42 }), false);
-  assert.equal(isShiguangGatewayCustomModel(null), false);
+test("recognizes only Orbit-owned custom model ids", () => {
+  assert.equal(isOrbitCustomModel({ id: "custom:Orbit-0" }), true);
+  assert.equal(isOrbitCustomModel({ id: "custom:Other-0" }), false);
+  assert.equal(isOrbitCustomModel({ id: 42 }), false);
+  assert.equal(isOrbitCustomModel(null), false);
 });

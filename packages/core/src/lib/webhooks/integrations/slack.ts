@@ -36,7 +36,7 @@ export function buildSlackPayload(
         elements: [
           {
             type: "mrkdwn",
-            text: `ShiguangGateway · ${new Date().toISOString()}`,
+            text: `Orbit · ${new Date().toISOString()}`,
           },
         ],
       },

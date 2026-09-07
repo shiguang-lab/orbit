@@ -18,8 +18,8 @@ type CostEntry = {
   tokens: number;
 };
 
-const SHIGUANG_GATEWAY_BASE_URL = resolveGatewayBaseUrl();
-const SHIGUANG_GATEWAY_API_KEY = process.env.SHIGUANG_GATEWAY_API_KEY || "";
+const ORBIT_BASE_URL = resolveGatewayBaseUrl();
+const ORBIT_API_KEY = process.env.ORBIT_API_KEY || "";
 
 function detectRange(task: A2ATask): string {
   const metadataRange = task.input.metadata?.range;
@@ -34,10 +34,10 @@ function detectRange(task: A2ATask): string {
 }
 
 async function costFetch(path: string): Promise<AnalyticsRecord> {
-  const url = `${SHIGUANG_GATEWAY_BASE_URL}${path}`;
+  const url = `${ORBIT_BASE_URL}${path}`;
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
-    ...(SHIGUANG_GATEWAY_API_KEY ? { Authorization: `Bearer ${SHIGUANG_GATEWAY_API_KEY}` } : {}),
+    ...(ORBIT_API_KEY ? { Authorization: `Bearer ${ORBIT_API_KEY}` } : {}),
   };
   const response = await fetch(url, { headers, signal: AbortSignal.timeout(15000) });
   if (!response.ok) {

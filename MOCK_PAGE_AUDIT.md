@@ -1,4 +1,4 @@
-# ShiguangGateway Web 官方对齐审计与下一阶段任务书
+# Orbit Web 官方对齐审计与下一阶段任务书
 
 > **归档文档**：本文件只保留 2026-09-04 的页面差异记录，不是当前实现或发布验收依据。
 > 当前验收以 [`INDEPENDENT_GATEWAY_REFACTOR.md`](./INDEPENDENT_GATEWAY_REFACTOR.md) 和自动 smoke 结果为准；
@@ -11,7 +11,7 @@
 
 **最新修订**：批处理页面已改用 `/v1/files` multipart 上传、`/v1/batches` 创建/列表/取消；MCP、A2A、Memory、Audit 页面 helper 已改用本地 `/mcp/status`、`/mcp/tools`、`/a2a/tasks`、`/memory`、`/compliance/audit-log`；成本根路由已恢复为真实成本驾驶舱入口；Resilience 设置改用 `/resilience` 专用 GET/PATCH 契约。下表保留历史基线，未列出的官方字段和子路由仍需继续完成。
 
-**当前代码复核（2026-09-04）**：历史表格不应直接作为当前缺陷清单使用。当前发布审查已对本地 689 个 API route、9 个根 route、Admin helper、容器部署、worker scheduler 和真实数据导入重新执行；代码扫描未发现生产 mock fallback 文件，真实容器/接口结果以 `INDEPENDENT_SHIGUANG_GATEWAY_REFACTOR.md` 的最新门禁记录为准。仍然不能把“路由存在”当作所有页面交互已通过浏览器对拍；Provider 上游配置、外部登录状态和 clean-room 重写仍是发布前置条件。
+**当前代码复核（2026-09-04）**：历史表格不应直接作为当前缺陷清单使用。当前发布审查已对本地 689 个 API route、9 个根 route、Admin helper、容器部署、worker scheduler 和真实数据导入重新执行；代码扫描未发现生产 mock fallback 文件，真实容器/接口结果以 `INDEPENDENT_ORBIT_REFACTOR.md` 的最新门禁记录为准。仍然不能把“路由存在”当作所有页面交互已通过浏览器对拍；Provider 上游配置、外部登录状态和 clean-room 重写仍是发布前置条件。
 
 ## 1. 结论先行
 

@@ -22,9 +22,9 @@ export const APIKEY_PROVIDERS_FRONTIER = {
     textIcon: "RK",
     website: "https://docs.reka.ai/chat/overview",
     authHint:
-      "Use your Reka API key. ShiguangGateway supports the OpenAI-compatible base URL https://api.reka.ai/v1 and sends both Authorization and X-Api-Key headers for compatibility.",
+      "Use your Reka API key. Orbit supports the OpenAI-compatible base URL https://api.reka.ai/v1 and sends both Authorization and X-Api-Key headers for compatibility.",
     apiHint:
-      "Reka Chat is OpenAI-compatible on /v1. ShiguangGateway probes /v1/models and routes chat traffic to /v1/chat/completions.",
+      "Reka Chat is OpenAI-compatible on /v1. Orbit probes /v1/models and routes chat traffic to /v1/chat/completions.",
     hasFree: true,
     freeNote: "$10/month recurring free API credits",
   },
@@ -236,7 +236,7 @@ export const APIKEY_PROVIDERS_FRONTIER = {
     textIcon: "NO",
     website: "https://portal.nousresearch.com/help",
     authHint:
-      "Use your Nous Portal API key. ShiguangGateway targets the official OpenAI-compatible inference endpoint at https://inference-api.nousresearch.com/v1.",
+      "Use your Nous Portal API key. Orbit targets the official OpenAI-compatible inference endpoint at https://inference-api.nousresearch.com/v1.",
     apiHint:
       "Nous exposes an OpenAI-compatible /v1 surface with a large remote /models catalog. The /chat/completions endpoint requires a valid API key for programmatic inference.",
     hasFree: true,
@@ -305,7 +305,7 @@ export const APIKEY_PROVIDERS_FRONTIER = {
     authHint:
       "Use your META_API_KEY env var as a Bearer token. Muse Code CLI uses the OpenAI Responses API wire format (POST /responses).",
     apiHint:
-      "Muse Code is OpenAI-compatible. ShiguangGateway routes chat traffic through the Responses API and exposes the proprietary model catalog at /v1/muse-code/models.",
+      "Muse Code is OpenAI-compatible. Orbit routes chat traffic through the Responses API and exposes the proprietary model catalog at /v1/muse-code/models.",
     passthroughModels: true,
     hasFree: false,
   },

@@ -43,7 +43,7 @@ export interface DetectedTool {
     {
       model: string;
       provider?: string;
-      usingShiguangGateway: boolean;
+      usingOrbit: boolean;
     }
   >;
 }
@@ -86,7 +86,7 @@ function isConfigured(content: string, baseUrl: string): boolean {
   } catch {
     // Keep the literal configured value as the only match when it is not a URL.
   }
-  return [...aliases].some((value) => content.includes(value)) || content.includes("SHIGUANG_GATEWAY_BASE_URL");
+  return [...aliases].some((value) => content.includes(value)) || content.includes("ORBIT_BASE_URL");
 }
 
 // #968/#7279: on native Windows, npm installs CLI wrappers (claude/codex/opencode/…)
@@ -196,13 +196,13 @@ export async function detectTool(id: string): Promise<DetectedTool | null> {
       Object.entries(roles).forEach(([role, info]) => {
         const configuredBaseUrl = resolveGatewayBaseUrl();
         const usingOmni =
-          info?.provider === "shiguangGateway" ||
+          info?.provider === "orbit" ||
           (info?.base_url ? isConfigured(info.base_url, configuredBaseUrl) : false);
 
         richRoles[role] = {
           model: info.model,
           provider: info.provider,
-          usingShiguangGateway: usingOmni,
+          usingOrbit: usingOmni,
         };
       });
 

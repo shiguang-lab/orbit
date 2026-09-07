@@ -7,7 +7,7 @@ processes and host-level commands are owned by `apps/gateway`.
 validation, and public-safe error projection. It must not import or invoke the tunnel runtime.
 Instead it sends a typed `@orbit/contracts/tunnel-command` request to
 `POST /api/internal/tunnels/command` on the edge gateway. The edge endpoint rejects requests
-without the shared `SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN`; this endpoint is not an operator
+without the shared `ORBIT_INTERNAL_SERVICE_TOKEN`; this endpoint is not an operator
 API and must never be exposed as a public management surface.
 
 Both services must receive the same internal-service token and control must resolve the edge

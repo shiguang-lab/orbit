@@ -16,6 +16,6 @@ export const useThemeMode = create<ThemeModeState>()(
       toggle: () => set({ mode: get().mode === "dark" ? "light" : "dark" }),
       setMode: (mode) => set({ mode }),
     }),
-    { name: "shiguangGateway-admin-theme" },
+    { name: "orbit-admin-theme" },
   ),
 );

@@ -8,7 +8,7 @@ import {
   getProviderApiKey,
   listProviderConnections,
 } from "../provider-store.mjs";
-import { openShiguangGatewayDb } from "../sqlite.mjs";
+import { openOrbitDb } from "../sqlite.mjs";
 import { t } from "../i18n.mjs";
 import { registerProviderCrud } from "./provider-crud.mjs";
 
@@ -241,7 +241,7 @@ export async function runAvailableCommand(opts = {}) {
   if (opts.json) {
     console.log(JSON.stringify({ count: providers.length, categories, providers }, null, 2));
   } else {
-    printHeading("ShiguangGateway Available Providers");
+    printHeading("Orbit Available Providers");
     printAvailableProviderTable(providers, categories);
   }
 
@@ -249,13 +249,13 @@ export async function runAvailableCommand(opts = {}) {
 }
 
 export async function runListCommand(opts = {}) {
-  const { db } = await openShiguangGatewayDb();
+  const { db } = await openOrbitDb();
   try {
     const connections = listProviderConnections(db).map(publicConnection);
     if (opts.json) {
       console.log(JSON.stringify({ providers: connections }, null, 2));
     } else {
-      printHeading("ShiguangGateway Providers");
+      printHeading("Orbit Providers");
       printProviderTable(connections);
     }
     return 0;
@@ -270,7 +270,7 @@ export async function runTestCommand(selector, opts = {}) {
     return 1;
   }
 
-  const { db } = await openShiguangGatewayDb();
+  const { db } = await openOrbitDb();
   try {
     const connection = findProviderConnection(db, selector);
     if (!connection) {
@@ -294,7 +294,7 @@ export async function runTestCommand(selector, opts = {}) {
 
 export async function runTestAllCommand(opts = {}) {
   const serverUp = await isServerUp();
-  const { db } = await openShiguangGatewayDb();
+  const { db } = await openOrbitDb();
   try {
     const connections = listProviderConnections(db);
     const results = [];
@@ -314,7 +314,7 @@ export async function runTestAllCommand(opts = {}) {
     if (opts.json) {
       console.log(JSON.stringify({ results }, null, 2));
     } else {
-      printHeading("ShiguangGateway Provider Tests");
+      printHeading("Orbit Provider Tests");
       for (const result of results) {
         const label = result.valid
           ? "\x1b[32mOK\x1b[0m"
@@ -334,13 +334,13 @@ export async function runTestAllCommand(opts = {}) {
 }
 
 export async function runValidateCommand(opts = {}) {
-  const { db } = await openShiguangGatewayDb();
+  const { db } = await openOrbitDb();
   try {
     const results = listProviderConnections(db).map(validateConnection);
     if (opts.json) {
       console.log(JSON.stringify({ results }, null, 2));
     } else {
-      printHeading("ShiguangGateway Provider Validation");
+      printHeading("Orbit Provider Validation");
       if (results.length === 0) {
         console.log("No providers configured.");
       }
@@ -363,7 +363,7 @@ export async function runProvidersRotateCommand(selector, opts = {}) {
   }
 
   // --- Resolve connection ---
-  const { db } = await openShiguangGatewayDb();
+  const { db } = await openOrbitDb();
   let connection;
   try {
     connection = findProviderConnection(db, selector);
@@ -529,7 +529,7 @@ export function registerProviders(program) {
 
   providers
     .command("available")
-    .description("Show available providers in the ShiguangGateway catalog")
+    .description("Show available providers in the Orbit catalog")
     .option("--json", "Print machine-readable JSON")
     .option("--search <query>", "Filter by id, name, alias, or category")
     .option("-q, --q <query>", "Alias for --search")

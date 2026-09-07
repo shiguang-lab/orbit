@@ -14,7 +14,7 @@ User-Agent, `anthropic-beta` flags, Stainless SDK headers, etc.).
 
 ## Quick start — use the native `agentrouter` provider (recommended)
 
-For most users, **no special setup is required**. ShiguangGateway ships a built-in
+For most users, **no special setup is required**. Orbit ships a built-in
 `agentrouter` provider with the full Claude Code wire image already baked in (see
 `open-sse/config/providerRegistry.ts` → `agentrouter`). To use it:
 
@@ -36,7 +36,7 @@ base URL, chat path, or header set.
 
 ## Advanced: connecting via the Claude Code compatible provider type
 
-ShiguangGateway also supports AgentRouter (and similar relays) through the **Claude Code
+Orbit also supports AgentRouter (and similar relays) through the **Claude Code
 compatible** provider type (`anthropic-compatible-cc-*`), which speaks the
 Anthropic Messages API with the correct wire image. A generic
 `openai-compatible-chat` provider pointing at `https://agentrouter.org` will
@@ -49,14 +49,14 @@ Code.
 
 - An AgentRouter account and API key. New signups get free credits via the affiliate
   link in the project [README](../README.md).
-- ShiguangGateway running with the `ENABLE_CC_COMPATIBLE_PROVIDER` feature flag enabled
+- Orbit running with the `ENABLE_CC_COMPATIBLE_PROVIDER` feature flag enabled
   (see below).
 
 ## 1. Enable the CC-compatible provider type
 
 The Claude Code compatible provider type is gated behind a feature flag because it
 sends traffic that closely mirrors the official Claude Code client. Enable it by
-setting an environment variable before starting ShiguangGateway:
+setting an environment variable before starting Orbit:
 
 ```bash
 ENABLE_CC_COMPATIBLE_PROVIDER=true
@@ -65,12 +65,12 @@ ENABLE_CC_COMPATIBLE_PROVIDER=true
 Docker example:
 
 ```bash
-docker run -d --name shiguang-gateway \
+docker run -d --name orbit \
   --restart unless-stopped \
   -p 20128:20128 \
-  -v shiguang-gateway-data:/app/data \
+  -v orbit-data:/app/data \
   -e ENABLE_CC_COMPATIBLE_PROVIDER=true \
-  diegosouzapw/shiguang-gateway:latest
+  diegosouzapw/orbit:latest
 ```
 
 After restarting, the dashboard exposes an **Add Claude Code Compatible** option in
@@ -164,7 +164,7 @@ allow a subset of models (e.g. `claude-opus-4-6`). Other model IDs return
 `unauthorized_client_error` even though the key is valid. Check which models your
 plan covers in the AgentRouter dashboard.
 
-**`Invalid JSON response from provider (reset after Ns)` from the shiguang-gateway logs** —
+**`Invalid JSON response from provider (reset after Ns)` from the orbit logs** —
 The upstream returned a non-JSON body (typically an HTML error page from the WAF).
 This usually means the request never reached the AgentRouter backend — recheck that
 the provider ID starts with `anthropic-compatible-cc-` (note the trailing dash —
@@ -179,7 +179,7 @@ created with the `agentrouter` prefix, it can own the `agentrouter/<model>` mode
 IDs (and combos may reference it by node ID), so traffic routes to that provider —
 which sends a generic User-Agent and gets rejected — instead of the built-in
 `agentrouter` provider that already ships the correct wire image. Check where the
-model actually resolves in the shiguang-gateway logs (`ROUTING` tag shows
+model actually resolves in the orbit logs (`ROUTING` tag shows
 `agentrouter/<model> → <providerId>/<model>`); if `<providerId>` is not
 `agentrouter`, consolidate on the native provider: point combos at
 `agentrouter/<model>` (providerId `agentrouter`) and delete the duplicate

@@ -7,13 +7,13 @@ import { join } from "node:path";
 import { spawn } from "node:child_process";
 import { DatabaseSync } from "node:sqlite";
 
-const sourceDir = process.env.SHIGUANG_GATEWAY_SOURCE_DATA_DIR;
+const sourceDir = process.env.ORBIT_SOURCE_DATA_DIR;
 if (!sourceDir) {
-  console.error("SHIGUANG_GATEWAY_SOURCE_DATA_DIR is required for the real-data deployment smoke");
+  console.error("ORBIT_SOURCE_DATA_DIR is required for the real-data deployment smoke");
   process.exit(2);
 }
 const repoRoot = new URL("../", import.meta.url).pathname.replace(/\/$/, "");
-const dataDir = await mkdtemp(join(tmpdir(), "shiguangGateway-real-data-smoke-"));
+const dataDir = await mkdtemp(join(tmpdir(), "orbit-real-data-smoke-"));
 let envText;
 try {
   envText = await readFile(join(sourceDir, ".env"), "utf8");
@@ -37,7 +37,7 @@ const baseEnv = {
   EDGE_GATEWAY_PORT: "18907",
   CONTROL_API_HOST: "127.0.0.1",
   CONTROL_API_PORT: "18908",
-  SHIGUANG_GATEWAY_ENABLE_LIVE_WS: "false",
+  ORBIT_ENABLE_LIVE_WS: "false",
   LOG_LEVEL: "silent",
 };
 const children = [];

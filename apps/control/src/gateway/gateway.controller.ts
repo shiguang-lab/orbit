@@ -28,7 +28,7 @@ export class GatewayController {
       const status = await this.gatewayService.getGatewayStatus();
       return reply.send(status);
     } catch {
-      return reply.status(500).send({ error: "Failed to build ShiguangGateway status" });
+      return reply.status(500).send({ error: "Failed to build Orbit status" });
     }
   }
 }

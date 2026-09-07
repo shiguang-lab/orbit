@@ -1,4 +1,4 @@
-/** Configure Qwen Code's OpenAI-compatible provider for ShiguangGateway. */
+/** Configure Qwen Code's OpenAI-compatible provider for Orbit. */
 
 import {
   chmodSync,
@@ -28,7 +28,7 @@ export function resolveQwenTarget(opts = {}) {
 
   if (!root || !(opts.apiKey ?? opts["api-key"])) {
     try {
-      context = resolveActiveContext(opts.context ?? process.env.SHIGUANG_GATEWAY_CONTEXT);
+      context = resolveActiveContext(opts.context ?? process.env.ORBIT_CONTEXT);
     } catch {
       // An active context is optional for local setup.
     }
@@ -45,8 +45,8 @@ export function resolveQwenTarget(opts = {}) {
     opts["api-key"] ??
     context?.accessToken ??
     context?.apiKey ??
-    process.env.SHIGUANG_GATEWAY_API_KEY ??
-    "sk_shiguangGateway";
+    process.env.ORBIT_API_KEY ??
+    "sk_orbit";
 
   return { baseUrl: normalizeQwenCodeBaseUrl(root), apiKey };
 }
@@ -100,13 +100,13 @@ export async function runSetupQwenCommand(opts = {}) {
     opts.configPath ?? opts["config-path"] ?? path.join(os.homedir(), ".qwen", "settings.json");
   const envPath = opts.envPath ?? opts["env-path"] ?? path.join(path.dirname(settingsPath), ".env");
 
-  printHeading("ShiguangGateway → Qwen Code (OpenAI-compatible)");
+  printHeading("Orbit → Qwen Code (OpenAI-compatible)");
   printInfo(`baseUrl: ${baseUrl}`);
 
   for (const target of [settingsPath, envPath]) {
     const guard = await guardHostConfigTarget(target, {
       toolLabel: "Qwen Code",
-      hostCommand: "shiguangGateway setup-qwen",
+      hostCommand: "orbit setup-qwen",
       allowContainerWrite: Boolean(opts.allowContainerWrite ?? opts["allow-container-write"]),
       dryRun,
     });
@@ -140,7 +140,7 @@ export async function runSetupQwenCommand(opts = {}) {
     if (dryRun) {
       console.log(`\n${settingsText}`);
       printInfo(`[dry-run] settings → ${settingsPath}`);
-      printInfo(`[dry-run] credential → ${envPath} (SHIGUANG_GATEWAY_API_KEY)`);
+      printInfo(`[dry-run] credential → ${envPath} (ORBIT_API_KEY)`);
       return 0;
     }
 
@@ -149,7 +149,7 @@ export async function runSetupQwenCommand(opts = {}) {
     writeAtomic(settingsPath, settingsText);
     writeAtomic(envPath, envText, 0o600);
     printSuccess(`Wrote ${settingsPath}`);
-    printSuccess(`Updated ${envPath} (SHIGUANG_GATEWAY_API_KEY only)`);
+    printSuccess(`Updated ${envPath} (ORBIT_API_KEY only)`);
     printInfo('Run: qwen   (or headless: qwen -p "reply OK")');
     return 0;
   } catch (error) {
@@ -161,10 +161,10 @@ export async function runSetupQwenCommand(opts = {}) {
 export function registerSetupQwen(program) {
   program
     .command("setup-qwen")
-    .description("Configure Qwen Code's upstream V4 modelProviders format for ShiguangGateway")
-    .option("--port <port>", "Local ShiguangGateway port (ignored when --remote is set)", "8787")
-    .option("--remote <url>", "Remote ShiguangGateway URL")
-    .option("--api-key <key>", "ShiguangGateway API key")
+    .description("Configure Qwen Code's upstream V4 modelProviders format for Orbit")
+    .option("--port <port>", "Local Orbit port (ignored when --remote is set)", "8787")
+    .option("--remote <url>", "Remote Orbit URL")
+    .option("--api-key <key>", "Orbit API key")
     .option("--model <id>", "Model id for Qwen Code")
     .option("--config-path <path>", "Qwen Code settings.json path")
     .option("--env-path <path>", "Qwen Code .env path")

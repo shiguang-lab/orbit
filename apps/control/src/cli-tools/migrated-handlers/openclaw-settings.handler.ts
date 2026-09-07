@@ -29,11 +29,11 @@ const getOpenClawDir = () => path.dirname(getOpenClawSettingsPath());
 // "installed but not configured" instead of a 500 misread as "not installed".
 const readSettings = async () => readJsoncConfig<JsonObject>(getOpenClawSettingsPath());
 
-// Check if settings has ShiguangGateway config
-const hasShiguangGatewayConfig = (settings: JsonObject | null) => {
+// Check if settings has Orbit config
+const hasOrbitConfig = (settings: JsonObject | null) => {
   if (!isJsonObject(settings?.models)) return false;
   if (!isJsonObject(settings.models.providers)) return false;
-  return !!settings.models.providers.shiguangGateway;
+  return !!settings.models.providers.orbit;
 };
 
 // GET - Check openclaw CLI and read current settings
@@ -70,7 +70,7 @@ export async function GET(request: Request) {
       runtimeMode: runtime.runtimeMode,
       reason: runtime.reason,
       settings,
-      hasShiguangGateway: hasShiguangGatewayConfig(settings),
+      hasOrbit: hasOrbitConfig(settings),
       settingsPath: getOpenClawSettingsPath(),
     });
   } catch (error) {
@@ -79,7 +79,7 @@ export async function GET(request: Request) {
   }
 }
 
-// POST - Update ShiguangGateway settings (merge with existing settings)
+// POST - Update Orbit settings (merge with existing settings)
 export async function POST(request: Request) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
@@ -149,10 +149,10 @@ export async function POST(request: Request) {
     const normalizedBaseUrl = baseUrl.endsWith("/v1") ? baseUrl : `${baseUrl}/v1`;
 
     // Update agents.defaults.model.primary
-    defaultModel.primary = `shiguangGateway/${model}`;
+    defaultModel.primary = `orbit/${model}`;
 
-    // Update models.providers.shiguangGateway
-    providers.shiguangGateway = {
+    // Update models.providers.orbit
+    providers.orbit = {
       baseUrl: normalizedBaseUrl,
       apiKey: apiKey || "your_api_key",
       api: "openai-completions",
@@ -185,7 +185,7 @@ export async function POST(request: Request) {
   }
 }
 
-// DELETE - Remove ShiguangGateway settings only (keep other settings)
+// DELETE - Remove Orbit settings only (keep other settings)
 export async function DELETE(request: Request) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
@@ -216,11 +216,11 @@ export async function DELETE(request: Request) {
       throw error;
     }
 
-    // Remove ShiguangGateway from models.providers
+    // Remove Orbit from models.providers
     const models = isJsonObject(settings.models) ? settings.models : null;
     const providers = isJsonObject(models?.providers) ? models.providers : null;
     if (models && providers) {
-      delete providers.shiguangGateway;
+      delete providers.orbit;
 
       // Remove providers object if empty
       if (Object.keys(providers).length === 0) {
@@ -228,11 +228,11 @@ export async function DELETE(request: Request) {
       }
     }
 
-    // Reset agents.defaults.model.primary if it uses shiguangGateway
+    // Reset agents.defaults.model.primary if it uses orbit
     const agents = isJsonObject(settings.agents) ? settings.agents : null;
     const defaults = isJsonObject(agents?.defaults) ? agents.defaults : null;
     const defaultModel = isJsonObject(defaults?.model) ? defaults.model : null;
-    if (typeof defaultModel?.primary === "string" && defaultModel.primary.startsWith("shiguangGateway/")) {
+    if (typeof defaultModel?.primary === "string" && defaultModel.primary.startsWith("orbit/")) {
       delete defaultModel.primary;
     }
 
@@ -248,7 +248,7 @@ export async function DELETE(request: Request) {
 
     return Response.json({
       success: true,
-      message: "ShiguangGateway settings removed successfully",
+      message: "Orbit settings removed successfully",
     });
   } catch (error) {
     console.log("Error resetting openclaw settings:", error);

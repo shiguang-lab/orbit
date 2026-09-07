@@ -37,7 +37,7 @@ done
 [ -n "$ID" ] || ops_die "snapshot id required (see --help)"
 ops_require_cmd sqlite3
 snap="$(ops_find_snapshot "$ID")"
-[ -f "$SHIGUANG_GATEWAY_SQLITE" ] || ops_die "no live DB at $SHIGUANG_GATEWAY_SQLITE (use scripts/ops/restore-data.sh for a full restore)"
+[ -f "$ORBIT_SQLITE" ] || ops_die "no live DB at $ORBIT_SQLITE (use scripts/ops/restore-data.sh for a full restore)"
 
 # Policy definition tables present in BOTH the snapshot and the live DB. GLOB
 # keeps `_` literal; we drop usage counters / logs so accounting isn't rewound.
@@ -50,12 +50,12 @@ while IFS= read -r t; do tables+=("$t"); done < <(
 [ "${#tables[@]}" -gt 0 ] || ops_die "snapshot has no api_key* policy tables"
 
 ops_log "policy tables to restore: ${tables[*]}"
-ops_confirm "Replace ${#tables[@]} policy table(s) in $SHIGUANG_GATEWAY_SQLITE from $snap?" || ops_die "aborted"
+ops_confirm "Replace ${#tables[@]} policy table(s) in $ORBIT_SQLITE from $snap?" || ops_die "aborted"
 
 # Safety snapshot of the live DB before mutating it.
-safety="$SHIGUANG_GATEWAY_BACKUPS_DIR/pre-policy-restore_$(date -u +%Y%m%dT%H%M%SZ)"
+safety="$ORBIT_BACKUPS_DIR/pre-policy-restore_$(date -u +%Y%m%dT%H%M%SZ)"
 mkdir -p "$safety"
-sqlite3 "$SHIGUANG_GATEWAY_SQLITE" "VACUUM INTO '$safety/storage.sqlite'"
+sqlite3 "$ORBIT_SQLITE" "VACUUM INTO '$safety/storage.sqlite'"
 ops_log "live DB saved to $safety"
 
 # Replace each policy table inside a single transaction, attaching the snapshot
@@ -64,7 +64,7 @@ sql="ATTACH DATABASE '$snap/storage.sqlite' AS snap;
 PRAGMA foreign_keys=OFF;
 BEGIN;"
 for t in "${tables[@]}"; do
-  if [ -n "$(sqlite3 "$SHIGUANG_GATEWAY_SQLITE" "SELECT 1 FROM sqlite_master WHERE type='table' AND name='$t' LIMIT 1;")" ]; then
+  if [ -n "$(sqlite3 "$ORBIT_SQLITE" "SELECT 1 FROM sqlite_master WHERE type='table' AND name='$t' LIMIT 1;")" ]; then
     sql="$sql
 DELETE FROM main.\"$t\";
 INSERT INTO main.\"$t\" SELECT * FROM snap.\"$t\";"
@@ -76,5 +76,5 @@ sql="$sql
 COMMIT;
 DETACH DATABASE snap;"
 
-printf '%s\n' "$sql" | sqlite3 "$SHIGUANG_GATEWAY_SQLITE"
-ops_log "policies restored from $snap — restart ShiguangGateway to apply"
+printf '%s\n' "$sql" | sqlite3 "$ORBIT_SQLITE"
+ops_log "policies restored from $snap — restart Orbit to apply"

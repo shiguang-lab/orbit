@@ -8,14 +8,14 @@ import {
 } from "../src/jobs/memory-decay.js";
 
 test("memory decay command uses the authenticated edge endpoint", async () => {
-  const previousToken = process.env.SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN;
-  process.env.SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN = "worker-edge-test-token";
+  const previousToken = process.env.ORBIT_INTERNAL_SERVICE_TOKEN;
+  process.env.ORBIT_INTERNAL_SERVICE_TOKEN = "worker-edge-test-token";
   try {
     const result = await executeMemoryDecay(async (input, init) => {
       assert.equal(String(input), "http://127.0.0.1:8787/api/internal/runtime/command");
       assert.equal(init?.method, "POST");
       assert.equal(
-        new Headers(init?.headers).get("x-shiguang-gateway-internal-service-token"),
+        new Headers(init?.headers).get("x-orbit-internal-service-token"),
         "worker-edge-test-token",
       );
       assert.deepEqual(JSON.parse(String(init?.body)), { version: 1, command: "memory.decay" });
@@ -23,8 +23,8 @@ test("memory decay command uses the authenticated edge endpoint", async () => {
     });
     assert.deepEqual(result, { decayed: 1, deletedIds: ["memory-1"] });
   } finally {
-    if (previousToken === undefined) delete process.env.SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN;
-    else process.env.SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN = previousToken;
+    if (previousToken === undefined) delete process.env.ORBIT_INTERNAL_SERVICE_TOKEN;
+    else process.env.ORBIT_INTERNAL_SERVICE_TOKEN = previousToken;
   }
 });
 

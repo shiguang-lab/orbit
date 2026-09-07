@@ -4,7 +4,7 @@ title: CORS Configuration & Security
 
 # CORS Configuration & Security
 
-ShiguangGateway controls which **browser origins** may read cross-origin responses
+Orbit controls which **browser origins** may read cross-origin responses
 from a single, centralized allowlist. The model is **fail-closed by default**:
 no origin is allowed until you opt one in. This page documents how the allowlist
 resolves, what `CORS_ALLOW_ALL=true` actually exposes (and, importantly, what it
@@ -46,13 +46,13 @@ in this order:
 ## Threat model — what `CORS_ALLOW_ALL=true` really exposes
 
 The generic OWASP warning ("wildcard CORS = any site can call your API") is worth
-taking seriously, but ShiguangGateway's exposure is **narrower than the generic case**,
+taking seriously, but Orbit's exposure is **narrower than the generic case**,
 because of one concrete implementation fact:
 
 > **The central `applyCorsHeaders()` never emits
 > `Access-Control-Allow-Credentials`.** A browser will not expose a _credentialed_
 > (cookie-bearing) cross-origin response unless the server sends
-> `Access-Control-Allow-Credentials: true`. ShiguangGateway's shared CORS path never
+> `Access-Control-Allow-Credentials: true`. Orbit's shared CORS path never
 > does.
 
 What that means per surface, even with `CORS_ALLOW_ALL=true`:
@@ -92,7 +92,7 @@ separately from this CORS guidance.
   CORS_ALLOWED_ORIGINS="https://app.example.com, https://admin.example.com"
   ```
 
-- If ShiguangGateway runs behind a reverse proxy / tunnel (nginx, Caddy, Cloudflare
+- If Orbit runs behind a reverse proxy / tunnel (nginx, Caddy, Cloudflare
   Tunnel, Tailscale), CORS is **not** your only control — the loopback route
   guard still protects spawn-capable routes (see
   [ROUTE_GUARD_TIERS](./ROUTE_GUARD_TIERS.md)). Do not forge
@@ -108,7 +108,7 @@ separately from this CORS guidance.
 You rarely need the wildcard even in dev. Allow just the dev servers you use:
 
 ```bash
-# Vite (5173) + Next.js (3000) dev servers calling a local ShiguangGateway
+# Vite (5173) + Next.js (3000) dev servers calling a local Orbit
 CORS_ALLOWED_ORIGINS="http://localhost:5173, http://localhost:3000"
 ```
 
@@ -128,14 +128,14 @@ restart.
   management/dashboard origins out of any permissive config; they must stay exactly
   fail-closed.
 
-## Example: reverse proxy in front of ShiguangGateway
+## Example: reverse proxy in front of Orbit
 
-CORS is enforced by ShiguangGateway itself, so the proxy generally should **not** add or
+CORS is enforced by Orbit itself, so the proxy generally should **not** add or
 rewrite `Access-Control-*` headers (double headers break browsers). Terminate TLS
-and forward — let ShiguangGateway answer preflight:
+and forward — let Orbit answer preflight:
 
 ```nginx
-# nginx — forward to ShiguangGateway; do NOT inject Access-Control-* here
+# nginx — forward to Orbit; do NOT inject Access-Control-* here
 location / {
     proxy_pass http://127.0.0.1:20128;
     proxy_set_header Host $host;
@@ -144,7 +144,7 @@ location / {
 }
 ```
 
-Set the allowed browser origins in ShiguangGateway (`CORS_ALLOWED_ORIGINS` or the
+Set the allowed browser origins in Orbit (`CORS_ALLOWED_ORIGINS` or the
 Security tab), not in the proxy.
 
 ## Source files

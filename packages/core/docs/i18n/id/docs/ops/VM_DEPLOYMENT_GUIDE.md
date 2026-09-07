@@ -1,10 +1,10 @@
-# ShiguangGateway — Panduan Deployment di VM dengan Cloudflare (Bahasa Indonesia)
+# Orbit — Panduan Deployment di VM dengan Cloudflare (Bahasa Indonesia)
 
 🌐 **Languages:** 🇺🇸 [English](../../../../docs/VM_DEPLOYMENT_GUIDE.md) · 🇸🇦 [ar](../../ar/docs/VM_DEPLOYMENT_GUIDE.md) · 🇧🇬 [bg](../../bg/docs/VM_DEPLOYMENT_GUIDE.md) · 🇧🇩 [bn](../../bn/docs/VM_DEPLOYMENT_GUIDE.md) · 🇨🇿 [cs](../../cs/docs/VM_DEPLOYMENT_GUIDE.md) · 🇩🇰 [da](../../da/docs/VM_DEPLOYMENT_GUIDE.md) · 🇩🇪 [de](../../de/docs/VM_DEPLOYMENT_GUIDE.md) · 🇪🇸 [es](../../es/docs/VM_DEPLOYMENT_GUIDE.md) · 🇮🇷 [fa](../../fa/docs/VM_DEPLOYMENT_GUIDE.md) · 🇫🇮 [fi](../../fi/docs/VM_DEPLOYMENT_GUIDE.md) · 🇫🇷 [fr](../../fr/docs/VM_DEPLOYMENT_GUIDE.md) · 🇮🇳 [gu](../../gu/docs/VM_DEPLOYMENT_GUIDE.md) · 🇮🇱 [he](../../he/docs/VM_DEPLOYMENT_GUIDE.md) · 🇮🇳 [hi](../../hi/docs/VM_DEPLOYMENT_GUIDE.md) · 🇭🇺 [hu](../../hu/docs/VM_DEPLOYMENT_GUIDE.md) · 🇮🇩 [id](../../id/docs/VM_DEPLOYMENT_GUIDE.md) · 🇮🇹 [it](../../it/docs/VM_DEPLOYMENT_GUIDE.md) · 🇯🇵 [ja](../../ja/docs/VM_DEPLOYMENT_GUIDE.md) · 🇰🇷 [ko](../../ko/docs/VM_DEPLOYMENT_GUIDE.md) · 🇮🇳 [mr](../../mr/docs/VM_DEPLOYMENT_GUIDE.md) · 🇲🇾 [ms](../../ms/docs/VM_DEPLOYMENT_GUIDE.md) · 🇳🇱 [nl](../../nl/docs/VM_DEPLOYMENT_GUIDE.md) · 🇳🇴 [no](../../no/docs/VM_DEPLOYMENT_GUIDE.md) · 🇵🇭 [phi](../../phi/docs/VM_DEPLOYMENT_GUIDE.md) · 🇵🇱 [pl](../../pl/docs/VM_DEPLOYMENT_GUIDE.md) · 🇵🇹 [pt](../../pt/docs/VM_DEPLOYMENT_GUIDE.md) · 🇧🇷 [pt-BR](../../pt-BR/docs/VM_DEPLOYMENT_GUIDE.md) · 🇷🇴 [ro](../../ro/docs/VM_DEPLOYMENT_GUIDE.md) · 🇷🇺 [ru](../../ru/docs/VM_DEPLOYMENT_GUIDE.md) · 🇸🇰 [sk](../../sk/docs/VM_DEPLOYMENT_GUIDE.md) · 🇸🇪 [sv](../../sv/docs/VM_DEPLOYMENT_GUIDE.md) · 🇰🇪 [sw](../../sw/docs/VM_DEPLOYMENT_GUIDE.md) · 🇮🇳 [ta](../../ta/docs/VM_DEPLOYMENT_GUIDE.md) · 🇮🇳 [te](../../te/docs/VM_DEPLOYMENT_GUIDE.md) · 🇹🇭 [th](../../th/docs/VM_DEPLOYMENT_GUIDE.md) · 🇹🇷 [tr](../../tr/docs/VM_DEPLOYMENT_GUIDE.md) · 🇺🇦 [uk-UA](../../uk-UA/docs/VM_DEPLOYMENT_GUIDE.md) · 🇵🇰 [ur](../../ur/docs/VM_DEPLOYMENT_GUIDE.md) · 🇻🇳 [vi](../../vi/docs/VM_DEPLOYMENT_GUIDE.md) · 🇨🇳 [zh-CN](../../zh-CN/docs/VM_DEPLOYMENT_GUIDE.md)
 
 ---
 
-Panduan lengkap untuk menginstal dan mengkonfigurasi ShiguangGateway pada sebuah VM (VPS) dengan domain yang dikelola melalui Cloudflare.
+Panduan lengkap untuk menginstal dan mengkonfigurasi Orbit pada sebuah VM (VPS) dengan domain yang dikelola melalui Cloudflare.
 
 ---
 
@@ -82,18 +82,18 @@ ufw enable
 
 ---
 
-## 2. Instal ShiguangGateway
+## 2. Instal Orbit
 
 ### 2.1 Buat direktori konfigurasi
 
 ```bash
-mkdir -p /opt/shiguang-gateway
+mkdir -p /opt/orbit
 ```
 
 ### 2.2 Buat file variabel lingkungan
 
 ```bash
-cat > /opt/shiguang-gateway/.env << 'EOF'
+cat > /opt/orbit/.env << 'EOF'
 # === Security ===
 JWT_SECRET=CHANGE-TO-A-UNIQUE-64-CHAR-SECRET-KEY
 INITIAL_PASSWORD=YourSecurePassword123!
@@ -117,8 +117,8 @@ BASE_URL=https://llms.seudominio.com
 NEXT_PUBLIC_BASE_URL=https://llms.seudominio.com
 
 # === Cloud Sync (optional) ===
-# CLOUD_URL=https://cloud.shiguang-gateway.online
-# NEXT_PUBLIC_CLOUD_URL=https://cloud.shiguang-gateway.online
+# CLOUD_URL=https://cloud.orbit.online
+# NEXT_PUBLIC_CLOUD_URL=https://cloud.orbit.online
 EOF
 ```
 
@@ -127,22 +127,22 @@ EOF
 ### 2.3 Jalankan container
 
 ```bash
-docker pull diegosouzapw/shiguang-gateway:latest
+docker pull diegosouzapw/orbit:latest
 
 docker run -d \
-  --name shiguang-gateway \
+  --name orbit \
   --restart unless-stopped \
-  --env-file /opt/shiguang-gateway/.env \
+  --env-file /opt/orbit/.env \
   -p 20128:20128 \
-  -v shiguang-gateway-data:/app/data \
-  diegosouzapw/shiguang-gateway:latest
+  -v orbit-data:/app/data \
+  diegosouzapw/orbit:latest
 ```
 
 ### 2.4 Verifikasi bahwa container berjalan
 
 ```bash
-docker ps | grep shiguang-gateway
-docker logs shiguang-gateway --tail 20
+docker ps | grep orbit
+docker logs orbit --tail 20
 ```
 
 Seharusnya menampilkan: `[DB] SQLite database ready` dan `listening on port 20128`.
@@ -175,7 +175,7 @@ chmod 600 /etc/nginx/ssl/origin.key
 ### 3.2 Konfigurasi Nginx
 
 ```bash
-cat > /etc/nginx/sites-available/shiguang-gateway << 'NGINX'
+cat > /etc/nginx/sites-available/orbit << 'NGINX'
 # Default server — blocks direct access via IP
 server {
     listen 80 default_server;
@@ -188,7 +188,7 @@ server {
     return 444;
 }
 
-# ShiguangGateway — HTTPS
+# Orbit — HTTPS
 server {
     listen 443 ssl;
     listen [::]:443 ssl;
@@ -230,7 +230,7 @@ server {
 NGINX
 ```
 
-Jaga agar timeout stream reverse-proxy tetap selaras dengan variabel lingkungan timeout ShiguangGateway Anda. Jika Anda menaikkan
+Jaga agar timeout stream reverse-proxy tetap selaras dengan variabel lingkungan timeout Orbit Anda. Jika Anda menaikkan
 `FETCH_TIMEOUT_MS` / `STREAM_IDLE_TIMEOUT_MS`, naikkan juga `proxy_read_timeout` / `proxy_send_timeout`
 di atas nilai yang sama.
 
@@ -240,8 +240,8 @@ di atas nilai yang sama.
 # Remove default configuration
 rm -f /etc/nginx/sites-enabled/default
 
-# Enable ShiguangGateway
-ln -sf /etc/nginx/sites-available/shiguang-gateway /etc/nginx/sites-enabled/shiguang-gateway
+# Enable Orbit
+ln -sf /etc/nginx/sites-available/orbit /etc/nginx/sites-enabled/orbit
 
 # Test and reload
 nginx -t && systemctl reload nginx
@@ -285,40 +285,40 @@ curl -sI https://llms.seudominio.com/health
 ### Upgrade ke versi baru
 
 ```bash
-docker pull diegosouzapw/shiguang-gateway:latest
-docker stop shiguang-gateway && docker rm shiguang-gateway
-docker run -d --name shiguang-gateway --restart unless-stopped \
-  --env-file /opt/shiguang-gateway/.env \
+docker pull diegosouzapw/orbit:latest
+docker stop orbit && docker rm orbit
+docker run -d --name orbit --restart unless-stopped \
+  --env-file /opt/orbit/.env \
   -p 20128:20128 \
-  -v shiguang-gateway-data:/app/data \
-  diegosouzapw/shiguang-gateway:latest
+  -v orbit-data:/app/data \
+  diegosouzapw/orbit:latest
 ```
 
 ### Lihat log
 
 ```bash
-docker logs -f shiguang-gateway          # Real-time stream
-docker logs shiguang-gateway --tail 50   # Last 50 lines
+docker logs -f orbit          # Real-time stream
+docker logs orbit --tail 50   # Last 50 lines
 ```
 
 ### Pencadangan database secara manual
 
 ```bash
 # Copy data from the volume to the host
-docker cp shiguang-gateway:/app/data ./backup-$(date +%F)
+docker cp orbit:/app/data ./backup-$(date +%F)
 
 # Or compress the entire volume
-docker run --rm -v shiguang-gateway-data:/data -v $(pwd):/backup \
-  alpine tar czf /backup/shiguang-gateway-data-$(date +%F).tar.gz /data
+docker run --rm -v orbit-data:/data -v $(pwd):/backup \
+  alpine tar czf /backup/orbit-data-$(date +%F).tar.gz /data
 ```
 
 ### Pulihkan dari cadangan
 
 ```bash
-docker stop shiguang-gateway
-docker run --rm -v shiguang-gateway-data:/data -v $(pwd):/backup \
-  alpine sh -c "rm -rf /data/* && tar xzf /backup/shiguang-gateway-data-YYYY-MM-DD.tar.gz -C /"
-docker start shiguang-gateway
+docker stop orbit
+docker run --rm -v orbit-data:/data -v $(pwd):/backup \
+  alpine sh -c "rm -rf /data/* && tar xzf /backup/orbit-data-YYYY-MM-DD.tar.gz -C /"
+docker start orbit
 ```
 
 ---
@@ -387,13 +387,13 @@ Untuk akses jarak jauh melalui Cloudflare Workers (tanpa mengekspos VM secara la
 
 ```bash
 # In the local repository
-cd shiguang-gatewayCloud
+cd orbitCloud
 npm install
 npx wrangler login
 npx wrangler deploy
 ```
 
-Lihat dokumentasi lengkap di [shiguang-gatewayCloud/README.md](../shiguang-gatewayCloud/README.md).
+Lihat dokumentasi lengkap di [orbitCloud/README.md](../orbitCloud/README.md).
 
 ---
 
@@ -404,4 +404,4 @@ Lihat dokumentasi lengkap di [shiguang-gatewayCloud/README.md](../shiguang-gatew
 | 22    | SSH         | Publik (dengan fail2ban)        |
 | 80    | nginx HTTP  | Redirect → HTTPS                |
 | 443   | nginx HTTPS | Melalui Cloudflare Proxy        |
-| 20128 | ShiguangGateway   | Hanya localhost (melalui nginx) |
+| 20128 | Orbit   | Hanya localhost (melalui nginx) |

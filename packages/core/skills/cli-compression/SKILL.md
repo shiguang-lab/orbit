@@ -11,8 +11,8 @@ Configure and test prompt compression from the CLI. Manage RTK filters, Caveman 
 ## Quick install
 
 ```bash
-npm install -g shiguang-gateway   # or: npx shiguang-gateway
-shiguang-gateway --version
+npm install -g orbit   # or: npx orbit
+orbit --version
 ```
 
 ## Subcommands
@@ -22,7 +22,7 @@ shiguang-gateway --version
 **Example:**
 
 ```bash
-shiguang-gateway compression
+orbit compression
 ```
 
 ### `compression status`
@@ -30,7 +30,7 @@ shiguang-gateway compression
 **Example:**
 
 ```bash
-shiguang-gateway compression status
+orbit compression status
 ```
 
 ### `compression configure`
@@ -45,7 +45,7 @@ shiguang-gateway compression status
 **Example:**
 
 ```bash
-shiguang-gateway compression configure
+orbit compression configure
 ```
 
 ### `compression engine`
@@ -53,7 +53,7 @@ shiguang-gateway compression configure
 **Example:**
 
 ```bash
-shiguang-gateway compression engine
+orbit compression engine
 ```
 
 ### `compression set <name>`
@@ -61,7 +61,7 @@ shiguang-gateway compression engine
 **Example:**
 
 ```bash
-shiguang-gateway compression set <name>
+orbit compression set <name>
 ```
 
 ### `compression get`
@@ -69,7 +69,7 @@ shiguang-gateway compression set <name>
 **Example:**
 
 ```bash
-shiguang-gateway compression get
+orbit compression get
 ```
 
 ### `compression combos`
@@ -77,7 +77,7 @@ shiguang-gateway compression get
 **Example:**
 
 ```bash
-shiguang-gateway compression combos
+orbit compression combos
 ```
 
 ### `compression list`
@@ -85,7 +85,7 @@ shiguang-gateway compression combos
 **Example:**
 
 ```bash
-shiguang-gateway compression list
+orbit compression list
 ```
 
 ### `compression stats`
@@ -97,7 +97,7 @@ shiguang-gateway compression list
 **Example:**
 
 ```bash
-shiguang-gateway compression stats
+orbit compression stats
 ```
 
 ### `compression rules`
@@ -105,7 +105,7 @@ shiguang-gateway compression stats
 **Example:**
 
 ```bash
-shiguang-gateway compression rules
+orbit compression rules
 ```
 
 ### `compression list`
@@ -113,7 +113,7 @@ shiguang-gateway compression rules
 **Example:**
 
 ```bash
-shiguang-gateway compression list
+orbit compression list
 ```
 
 ### `compression add`
@@ -125,7 +125,7 @@ shiguang-gateway compression list
 **Example:**
 
 ```bash
-shiguang-gateway compression add
+orbit compression add
 ```
 
 ### `compression remove <id>`
@@ -137,7 +137,7 @@ shiguang-gateway compression add
 **Example:**
 
 ```bash
-shiguang-gateway compression remove <id>
+orbit compression remove <id>
 ```
 
 ### `compression language-packs`
@@ -145,7 +145,7 @@ shiguang-gateway compression remove <id>
 **Example:**
 
 ```bash
-shiguang-gateway compression language-packs
+orbit compression language-packs
 ```
 
 ### `compression preview`
@@ -153,5 +153,5 @@ shiguang-gateway compression language-packs
 **Example:**
 
 ```bash
-shiguang-gateway compression preview
+orbit compression preview
 ```

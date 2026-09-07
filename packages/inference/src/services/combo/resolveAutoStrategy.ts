@@ -67,11 +67,11 @@ export interface ResolveAutoStrategyDeps {
   relayOptions?: {
     bypassProviderQuotaPolicy?: boolean;
     sessionId?: string | null;
-    /** Per-request X-ShiguangGateway-Mode value (#6024/#6025). */
+    /** Per-request X-Orbit-Mode value (#6024/#6025). */
     mode?: string | null;
-    /** Per-request X-ShiguangGateway-Budget value in USD (#6023). */
+    /** Per-request X-Orbit-Budget value in USD (#6023). */
     budgetCap?: number | null;
-    /** Per-request X-ShiguangGateway-Budget-Fallback value ("cheapest" | "strict") — #3470. */
+    /** Per-request X-Orbit-Budget-Fallback value ("cheapest" | "strict") — #3470. */
     budgetFallback?: "cheapest" | "strict" | null;
   } | null;
   resilienceSettings: ResilienceSettings;
@@ -208,8 +208,8 @@ export async function resolveAutoStrategyOrder(
     slaPolicy,
   } = parseAutoConfig(combo, eligibleTargets);
 
-  // Per-request overrides (#6023 / #6024 / #6025 / #3470): X-ShiguangGateway-Budget,
-  // X-ShiguangGateway-Budget-Fallback and X-ShiguangGateway-Mode headers (threaded via
+  // Per-request overrides (#6023 / #6024 / #6025 / #3470): X-Orbit-Budget,
+  // X-Orbit-Budget-Fallback and X-Orbit-Mode headers (threaded via
   // relayOptions) take precedence over the combo's stored config for this single
   // request. Unknown/garbage header values are ignored so the saved config is
   // preserved.
@@ -222,7 +222,7 @@ export async function resolveAutoStrategyOrder(
   // #7008: `weights` must track the *effective* (post-override) modePack, not just
   // the combo's stored one. `selectAutoProvider()` (engine.ts) already re-derives
   // weights internally from the `modePack` it's given, so it correctly reacts to a
-  // per-request X-ShiguangGateway-Mode override — but `scoreAutoTargets()` (the fallback
+  // per-request X-Orbit-Mode override — but `scoreAutoTargets()` (the fallback
   // ranking below) has no such re-derivation and only ever sees whatever `weights`
   // it's handed. Without this recompute, a request overriding e.g. `quality-first`
   // to `ship-fast` would select its primary target under ship-fast weights but rank

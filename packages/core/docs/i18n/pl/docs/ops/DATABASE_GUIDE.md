@@ -6,7 +6,7 @@ lastUpdated: 2026-06-28
 
 # Przewodnik po schemacie bazy danych i operacjach
 
-> **TL;DR**: ShiguangGateway używa **SQLite z journalingiem WAL** jako głównego magazynu, z szyfrowaniem **AES-256-GCM** w spoczynku dla wrażliwych pól. Ten przewodnik obejmuje schemat, migracje, kopie zapasowe/odzyskiwanie oraz runbooki operacyjne.
+> **TL;DR**: Orbit używa **SQLite z journalingiem WAL** jako głównego magazynu, z szyfrowaniem **AES-256-GCM** w spoczynku dla wrażliwych pól. Ten przewodnik obejmuje schemat, migracje, kopie zapasowe/odzyskiwanie oraz runbooki operacyjne.
 
 **Źródła:**
 
@@ -21,7 +21,7 @@ lastUpdated: 2026-06-28
 
 ## Dlaczego SQLite?
 
-ShiguangGateway wybrał SQLite zamiast PostgreSQL/MySQL z kilku powodów:
+Orbit wybrał SQLite zamiast PostgreSQL/MySQL z kilku powodów:
 
 | Czynnik              | SQLite                                    | PostgreSQL                                  |
 | -------------------- | ----------------------------------------- | ------------------------------------------- |
@@ -32,7 +32,7 @@ ShiguangGateway wybrał SQLite zamiast PostgreSQL/MySQL z kilku powodów:
 | **Kopia zapasowa**   | Kopia pojedynczego pliku                  | `pg_dump` lub snapshot systemu plików       |
 | **Przypadek użycia** | Instalacja per-użytkownik, osadzona       | Multi-tenant SaaS                           |
 
-Dla wdrożeń **jednoużytkownikowych, jednainstancyjnych** (główny przypadek użycia ShiguangGateway) SQLite jest prostszy i szybszy.
+Dla wdrożeń **jednoużytkownikowych, jednainstancyjnych** (główny przypadek użycia Orbit) SQLite jest prostszy i szybszy.
 
 ### Journaling WAL
 
@@ -57,9 +57,9 @@ Plik SQLite jest przechowywany w:
 
 | OS      | Ścieżka                                                      |
 | ------- | ------------------------------------------------------------ |
-| Linux   | `~/.shiguang-gateway/storage.sqlite`                                |
-| macOS   | `~/.shiguang-gateway/storage.sqlite`                                |
-| Windows | `%USERPROFILE%\.shiguang-gateway\storage.sqlite`                    |
+| Linux   | `~/.orbit/storage.sqlite`                                |
+| macOS   | `~/.orbit/storage.sqlite`                                |
+| Windows | `%USERPROFILE%\.orbit\storage.sqlite`                    |
 | Docker  | `/app/data/storage.sqlite` (konfigurowalne przez `DATA_DIR`) |
 
 Pliki towarzyszące:
@@ -71,14 +71,14 @@ Pliki towarzyszące:
 **Nadpisanie lokalizacji:**
 
 ```bash
-DATA_DIR=/custom/path shiguang-gateway
+DATA_DIR=/custom/path orbit
 ```
 
 ---
 
 ## Architektura modułów domenowych
 
-Baza ShiguangGateway ma **94 moduły domenowe** w `src/lib/db/`. Każdy moduł:
+Baza Orbit ma **94 moduły domenowe** w `src/lib/db/`. Każdy moduł:
 
 - Posiada jedną lub więcej konkretnych tabel
 - Eksportuje typowane funkcje CRUD
@@ -87,7 +87,7 @@ Baza ShiguangGateway ma **94 moduły domenowe** w `src/lib/db/`. Każdy moduł:
 
 ### 94 moduły DB
 
-ShiguangGateway ma **94 pliki modułów** w `src/lib/db/`. Poniżej próbka kluczowych modułów; pełna lista w listingu katalogu:
+Orbit ma **94 pliki modułów** w `src/lib/db/`. Poniżej próbka kluczowych modułów; pełna lista w listingu katalogu:
 
 | Moduł                   | Tabele                                                         | Odpowiedzialność                                                               |
 | ----------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------ |
@@ -183,7 +183,7 @@ Pełna lista ~30+ tabel jest w `src/lib/db/migrations/`.
 
 ## Migracje
 
-ShiguangGateway używa **wersjonowanych, idempotentnych migracji** w `src/lib/db/migrations/`. Każda migracja to pojedynczy plik SQL o nazwie `NNN_description.sql`.
+Orbit używa **wersjonowanych, idempotentnych migracji** w `src/lib/db/migrations/`. Każda migracja to pojedynczy plik SQL o nazwie `NNN_description.sql`.
 
 ### Nazewnictwo migracji
 
@@ -199,7 +199,7 @@ ShiguangGateway używa **wersjonowanych, idempotentnych migracji** w `src/lib/db
 
 Przy starcie `migrationRunner.ts`:
 
-1. Tworzy tabelę `_shiguang-gateway_migrations`, jeśli nie istnieje
+1. Tworzy tabelę `_orbit_migrations`, jeśli nie istnieje
 2. Odpytuje już zastosowane migracje
 3. Stosuje nowe migracje po kolei, każdą w transakcji
 4. Zapisuje każdą zastosowaną migrację ze znacznikiem czasu
@@ -253,7 +253,7 @@ UPDATE combos SET priority = 100 WHERE priority IS NULL;
 CREATE INDEX IF NOT EXISTS idx_combos_priority ON combos(priority);
 ```
 
-> **Zmiany niekompatybilne wstecz** (np. usuwanie kolumn) są trudne. ShiguangGateway NIE wspiera downgrade — po zastosowaniu migracji zmiana schematu jest trwała. Planuj odpowiednio.
+> **Zmiany niekompatybilne wstecz** (np. usuwanie kolumn) są trudne. Orbit NIE wspiera downgrade — po zastosowaniu migracji zmiana schematu jest trwała. Planuj odpowiednio.
 
 ---
 
@@ -307,7 +307,7 @@ Ze względów wydajnościowych w plaintexcie przechowywane są:
 
 ## Zastrzeżenia dotyczące szyfrowania (v3.8.16+)
 
-ShiguangGateway używa **`migrateLegacyEncryptedString()`**, aby przezroczyście obsługiwać dwa schematy szyfrowania:
+Orbit używa **`migrateLegacyEncryptedString()`**, aby przezroczyście obsługiwać dwa schematy szyfrowania:
 
 - **Legacy** (pre-v3.5.0): „szyfrowanie” oparte na XOR (nie prawdziwa kryptografia)
 - **Current**: AES-256-GCM z właściwym IV i auth tag
@@ -343,7 +343,7 @@ Cache jest unieważniany przy każdym zapisie do odpowiadającej tabeli.
 
 ```bash
 # Use the CLI to create a local backup
-shiguang-gateway backup create --name pre-migration
+orbit backup create --name pre-migration
 
 # Or via the API
 curl -X PUT http://localhost:20128/api/db-backups \
@@ -363,7 +363,7 @@ Plik kopii zapasowej obejmuje:
 
 ```bash
 # Via CLI
-shiguang-gateway restore pre-migration
+orbit restore pre-migration
 
 # Via API
 curl -X POST http://localhost:20128/api/db-backups/restore \
@@ -378,7 +378,7 @@ curl -X POST http://localhost:20128/api/db-backups/restore \
 
 ```bash
 # Enable automated daily backups via CLI
-shiguang-gateway backup auto enable --cron "0 2 * * *" --retention 7
+orbit backup auto enable --cron "0 2 * * *" --retention 7
 ```
 
 Harmonogram jest wykonywany po stronie serwera przez zadanie w tle, które tyka co 30 sekund
@@ -386,17 +386,17 @@ Harmonogram jest wykonywany po stronie serwera przez zadanie w tle, które tyka 
 
 | Zmienna                                     | Domyślnie | Opis                                                                                                         |
 | ------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------ |
-| `SHIGUANG_GATEWAY_BACKUP_SCHEDULE_JOB_INTERVAL_MS` | `30000`   | Interwał ticka w ms (min `5000`). Musi być krótszy niż 60 s, aby niezawodnie trafiać w pasującą minutę cron. |
+| `ORBIT_BACKUP_SCHEDULE_JOB_INTERVAL_MS` | `30000`   | Interwał ticka w ms (min `5000`). Musi być krótszy niż 60 s, aby niezawodnie trafiać w pasującą minutę cron. |
 
 ### Gorąca kopia SQLite
 
 Dla kopii na żywo bez przestoju:
 
 ```bash
-sqlite3 ~/.shiguang-gateway/storage.sqlite ".backup /backups/shiguang-gateway-hot.db"
+sqlite3 ~/.orbit/storage.sqlite ".backup /backups/orbit-hot.db"
 ```
 
-Używa online backup API SQLite — bezpieczne podczas działania ShiguangGateway.
+Używa online backup API SQLite — bezpieczne podczas działania Orbit.
 
 ---
 
@@ -439,10 +439,10 @@ PRAGMA mmap_size = 268435456;  -- 256MB
 
 ### Kompaktowanie
 
-Długo działające instancje ShiguangGateway zyskują na okazjonalnym `VACUUM`:
+Długo działające instancje Orbit zyskują na okazjonalnym `VACUUM`:
 
 ```bash
-sqlite3 ~/.shiguang-gateway/storage.sqlite "VACUUM;"
+sqlite3 ~/.orbit/storage.sqlite "VACUUM;"
 ```
 
 Uruchamiaj miesięcznie w oknach niskiego ruchu. (Tryb WAL zmniejsza potrzebę, ale jej nie eliminuje.)
@@ -477,7 +477,7 @@ Returns:
 Uruchom `PRAGMA integrity_check`, aby wykryć korupcję:
 
 ```bash
-sqlite3 ~/.shiguang-gateway/storage.sqlite "PRAGMA integrity_check;"
+sqlite3 ~/.orbit/storage.sqlite "PRAGMA integrity_check;"
 # Should print: ok
 ```
 
@@ -493,15 +493,15 @@ Brakuje pliku `-wal`, ale `-shm` i główna DB są nienaruszone:
 
 ```bash
 # Recovers automatically on next open
-shiguang-gateway
+orbit
 ```
 
 Jeśli SQLite nie może odzyskać automatycznie:
 
 ```bash
-sqlite3 ~/.shiguang-gateway/storage.sqlite ".recover" > recovered.sql
+sqlite3 ~/.orbit/storage.sqlite ".recover" > recovered.sql
 sqlite3 recovered.db < recovered.sql
-mv recovered.db ~/.shiguang-gateway/storage.sqlite
+mv recovered.db ~/.orbit/storage.sqlite
 ```
 
 ### Scenariusz 2: Uszkodzony główny plik DB
@@ -509,7 +509,7 @@ mv recovered.db ~/.shiguang-gateway/storage.sqlite
 Przywróć z kopii zapasowej:
 
 ```bash
-shiguang-gateway sync pull --merge   # or: shiguang-gateway backup restore <backup-id>
+orbit sync pull --merge   # or: orbit backup restore <backup-id>
 ```
 
 ### Scenariusz 3: Utracony klucz szyfrowania
@@ -524,7 +524,7 @@ SQLite zwróci błędy `SQLITE_FULL`. Zwolnij miejsce na dysku, potem:
 
 ```bash
 # Checkpoint WAL to free up space
-sqlite3 ~/.shiguang-gateway/storage.sqlite "PRAGMA wal_checkpoint(TRUNCATE);"
+sqlite3 ~/.orbit/storage.sqlite "PRAGMA wal_checkpoint(TRUNCATE);"
 ```
 
 ---
@@ -534,13 +534,13 @@ sqlite3 ~/.shiguang-gateway/storage.sqlite "PRAGMA wal_checkpoint(TRUNCATE);"
 ### Podgląd tabeli
 
 ```bash
-sqlite3 ~/.shiguang-gateway/storage.sqlite "SELECT * FROM api_keys LIMIT 5;"
+sqlite3 ~/.orbit/storage.sqlite "SELECT * FROM api_keys LIMIT 5;"
 ```
 
 ### Liczba wierszy we wszystkich tabelach
 
 ```bash
-sqlite3 ~/.shiguang-gateway/storage.sqlite <<EOF
+sqlite3 ~/.orbit/storage.sqlite <<EOF
 SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';
 EOF
 ```
@@ -548,14 +548,14 @@ EOF
 ### Reset (wyczyszczenie) wszystkich danych
 
 ```bash
-# Stop ShiguangGateway first
-shiguang-gateway stop
+# Stop Orbit first
+orbit stop
 
 # Delete the DB file
-rm ~/.shiguang-gateway/storage.sqlite*
+rm ~/.orbit/storage.sqlite*
 
 # Restart (will recreate empty DB)
-shiguang-gateway
+orbit
 ```
 
 Dla **selektywnego** resetu (zachowaj providerów, wyczyść użycie):
@@ -569,7 +569,7 @@ DELETE FROM proxy_logs WHERE timestamp < datetime('now', '-30 day');
 ### Eksport pojedynczej tabeli
 
 ```bash
-sqlite3 ~/.shiguang-gateway/storage.sqlite <<EOF
+sqlite3 ~/.orbit/storage.sqlite <<EOF
 .mode csv
 .output api_keys.csv
 SELECT * FROM api_keys;
@@ -586,7 +586,7 @@ Inny proces trzyma blokadę zapisu. Albo:
 
 - Poczekaj, aż drugi proces skończy (sprawdź `lsof | grep storage.sqlite`)
 - Zabij drugi proces
-- Jeśli problem się utrzymuje, zrestartuj ShiguangGateway
+- Jeśli problem się utrzymuje, zrestartuj Orbit
 
 ### "Foreign key constraint failed"
 
@@ -616,10 +616,10 @@ PRAGMA mmap_size = 0;
 
 Migracja działała w transakcji, więc powinna się wycofać. Jeśli nie:
 
-1. **Zatrzymaj ShiguangGateway** (zapobiegaj dalszym próbom)
+1. **Zatrzymaj Orbit** (zapobiegaj dalszym próbom)
 2. **Sprawdź stan DB** przez `sqlite3`
 3. **Napraw ręcznie** częściową migrację
-4. **Uruchom ponownie** ShiguangGateway (migracja zostanie ponowiona)
+4. **Uruchom ponownie** Orbit (migracja zostanie ponowiona)
 
 Aby temu zapobiec, zawsze testuj migracje najpierw na kopii.
 

@@ -1,15 +1,15 @@
 import crypto from "node:crypto";
 
-const BUILTIN_DEFAULT_SALT = "shiguangGateway-cli-auth-v1";
-export const CLI_TOKEN_HEADER = "x-shiguangGateway-cli-token";
+const BUILTIN_DEFAULT_SALT = "orbit-cli-auth-v1";
+export const CLI_TOKEN_HEADER = "x-orbit-cli-token";
 
 let _cached = null;
 let _cachedSalt = null;
 
 /** Mirrors getActiveSalt() in src/lib/machineToken.ts so a rotated
- *  SHIGUANG_GATEWAY_CLI_SALT reaches the CLI too (docs/security/CLI_TOKEN.md). */
+ *  ORBIT_CLI_SALT reaches the CLI too (docs/security/CLI_TOKEN.md). */
 function getActiveSalt() {
-  return process.env.SHIGUANG_GATEWAY_CLI_SALT || BUILTIN_DEFAULT_SALT;
+  return process.env.ORBIT_CLI_SALT || BUILTIN_DEFAULT_SALT;
 }
 
 export function deriveCliToken(machineIdModule, salt) {

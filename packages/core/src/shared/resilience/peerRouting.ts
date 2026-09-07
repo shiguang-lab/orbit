@@ -2,13 +2,13 @@ const DEFAULT_MAX_PEER_HOPS = 4;
 const MAX_TRACE_HEADER_LENGTH = 2048;
 const INSTANCE_ID_PATTERN = /^[A-Za-z0-9._:-]{1,64}$/;
 
-export const SHIGUANG_GATEWAY_PEER_TRACE_HEADER = "X-ShiguangGateway-Peer-Trace";
+export const ORBIT_PEER_TRACE_HEADER = "X-Orbit-Peer-Trace";
 
 type HeaderSource = Headers | Record<string, unknown> | null | undefined;
 type PeerEnvironment = {
-  SHIGUANG_GATEWAY_INSTANCE_ID?: string;
-  SHIGUANG_GATEWAY_PEER_URLS?: string;
-  SHIGUANG_GATEWAY_PEER_MAX_HOPS?: string;
+  ORBIT_INSTANCE_ID?: string;
+  ORBIT_PEER_URLS?: string;
+  ORBIT_PEER_MAX_HOPS?: string;
 };
 
 export type PeerRequestRejection = {
@@ -28,12 +28,12 @@ function readHeader(headers: HeaderSource, name: string): string | null {
 }
 
 function getInstanceId(env: PeerEnvironment): string | null {
-  const value = env.SHIGUANG_GATEWAY_INSTANCE_ID?.trim() ?? "";
+  const value = env.ORBIT_INSTANCE_ID?.trim() ?? "";
   return INSTANCE_ID_PATTERN.test(value) ? value : null;
 }
 
 function getMaxPeerHops(env: PeerEnvironment): number {
-  const parsed = Number.parseInt(env.SHIGUANG_GATEWAY_PEER_MAX_HOPS ?? "", 10);
+  const parsed = Number.parseInt(env.ORBIT_PEER_MAX_HOPS ?? "", 10);
   return Number.isInteger(parsed) && parsed > 0 && parsed <= 32 ? parsed : DEFAULT_MAX_PEER_HOPS;
 }
 
@@ -55,14 +55,14 @@ function normalizePeerUrl(value: string): URL | null {
   }
 }
 
-export function isConfiguredShiguangGatewayPeer(
+export function isConfiguredOrbitPeer(
   targetUrl: string,
   env: PeerEnvironment = process.env as PeerEnvironment
 ): boolean {
   const target = normalizePeerUrl(targetUrl);
   if (!target) return false;
 
-  return (env.SHIGUANG_GATEWAY_PEER_URLS ?? "")
+  return (env.ORBIT_PEER_URLS ?? "")
     .split(",")
     .map(normalizePeerUrl)
     .some((peer) => {
@@ -81,17 +81,17 @@ export function inspectPeerRequest(
   const instanceId = getInstanceId(env);
   if (!instanceId) return null;
 
-  const trace = parsePeerTrace(readHeader(headers, SHIGUANG_GATEWAY_PEER_TRACE_HEADER));
+  const trace = parsePeerTrace(readHeader(headers, ORBIT_PEER_TRACE_HEADER));
   if (trace.includes(instanceId)) {
     return {
       code: "peer_loop_detected",
-      message: "ShiguangGateway peer routing loop detected",
+      message: "Orbit peer routing loop detected",
     };
   }
   if (trace.length >= getMaxPeerHops(env)) {
     return {
       code: "peer_hop_limit_exceeded",
-      message: "ShiguangGateway peer routing hop limit exceeded",
+      message: "Orbit peer routing hop limit exceeded",
     };
   }
   return null;
@@ -110,7 +110,7 @@ export function rejectPeerRequest<T>(
 }
 
 /**
- * Append this instance to the peer trace for an explicitly allowlisted ShiguangGateway URL.
+ * Append this instance to the peer trace for an explicitly allowlisted Orbit URL.
  * Returns true when the header was applied. Other upstream providers are untouched.
  */
 export function applyPeerTraceHeader(
@@ -120,14 +120,14 @@ export function applyPeerTraceHeader(
   env: PeerEnvironment = process.env as PeerEnvironment
 ): boolean {
   const instanceId = getInstanceId(env);
-  if (!instanceId || !isConfiguredShiguangGatewayPeer(targetUrl, env)) return false;
+  if (!instanceId || !isConfiguredOrbitPeer(targetUrl, env)) return false;
 
-  const trace = parsePeerTrace(readHeader(clientHeaders, SHIGUANG_GATEWAY_PEER_TRACE_HEADER));
+  const trace = parsePeerTrace(readHeader(clientHeaders, ORBIT_PEER_TRACE_HEADER));
   if (!trace.includes(instanceId)) trace.push(instanceId);
-  const traceHeaderLower = SHIGUANG_GATEWAY_PEER_TRACE_HEADER.toLowerCase();
+  const traceHeaderLower = ORBIT_PEER_TRACE_HEADER.toLowerCase();
   for (const key of Object.keys(outgoingHeaders)) {
     if (key.toLowerCase() === traceHeaderLower) delete outgoingHeaders[key];
   }
-  outgoingHeaders[SHIGUANG_GATEWAY_PEER_TRACE_HEADER] = trace.join(",");
+  outgoingHeaders[ORBIT_PEER_TRACE_HEADER] = trace.join(",");
   return true;
 }

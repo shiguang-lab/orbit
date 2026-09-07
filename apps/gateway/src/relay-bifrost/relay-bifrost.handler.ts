@@ -18,7 +18,7 @@ const BifrostRequestSchema = z.object({
 }).passthrough();
 const JSON_CORS_HEADERS = { ...CORS_HEADERS, "Content-Type": "application/json" } as const;
 const BIFROST_BASE_URL = process.env.BIFROST_BASE_URL?.replace(/\/$/, "");
-const BIFROST_API_KEY = process.env.BIFROST_API_KEY || process.env.SHIGUANG_GATEWAY_BIFROST_KEY;
+const BIFROST_API_KEY = process.env.BIFROST_API_KEY || process.env.ORBIT_BIFROST_KEY;
 const BIFROST_TIMEOUT_MS = Number(process.env.BIFROST_TIMEOUT_MS || "30000");
 const BIFROST_STREAMING_ENABLED = process.env.BIFROST_STREAMING_ENABLED !== "0";
 const BIFROST_ENABLED = process.env.BIFROST_ENABLED !== "0";

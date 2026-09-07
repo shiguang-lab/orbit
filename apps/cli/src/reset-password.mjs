@@ -5,13 +5,13 @@
  *
  * Usage:
  *   node bin/reset-password.mjs
- *   shiguangGateway reset-password
+ *   orbit reset-password
  *
  * Non-interactive / scripted usage (piped stdin, e.g. CI or Docker):
- *   printf 'NewPass123\nNewPass123\n' | shiguangGateway reset-password
- *   printf 'NewPass123' | shiguangGateway reset-password --password-stdin
+ *   printf 'NewPass123\nNewPass123\n' | orbit reset-password
+ *   printf 'NewPass123' | orbit reset-password --password-stdin
  *
- * Resets the admin password for ShiguangGateway.
+ * Resets the admin password for Orbit.
  * Prompts for a new password (interactive TTY) or reads it from stdin
  * (non-TTY) and updates the database directly.
  *
@@ -85,18 +85,18 @@ async function collectPassword() {
   }
 }
 
-console.log("\n🔑 ShiguangGateway — Password Reset\n");
+console.log("\n🔑 Orbit — Password Reset\n");
 
 async function main() {
   if (await isServerUp()) {
-    throw new Error("Stop ShiguangGateway before running this offline recovery command.");
+    throw new Error("Stop Orbit before running this offline recovery command.");
   }
 
   // Check if database exists
   const passwordState = await readManagementPasswordState(DB_PATH);
   if (!passwordState.exists) {
     console.error(`❌ Database not found at: ${DB_PATH}`);
-    console.error(`   Make sure ShiguangGateway has been started at least once.`);
+    console.error(`   Make sure Orbit has been started at least once.`);
     console.error(`   Or set DATA_DIR env var to your data directory.\n`);
     process.exit(1);
   }
@@ -128,13 +128,13 @@ async function main() {
   }
 
   console.log("\n✅ Password reset successfully!");
-  console.log("   Restart ShiguangGateway for changes to take effect.\n");
+  console.log("   Restart Orbit for changes to take effect.\n");
 }
 
 main()
   .then(() => {
-    // Explicit exit(0) so a caller that imports this module (src/shiguang-gateway.mjs
-    // routes `shiguangGateway reset-password` here) terminates cleanly instead of
+    // Explicit exit(0) so a caller that imports this module (src/orbit.mjs
+    // routes `orbit reset-password` here) terminates cleanly instead of
     // hanging / exiting with code 13 on an unsettled wrapper await. On POSIX,
     // console.log to a pipe is synchronous, so the success line is already
     // flushed by the time we exit.

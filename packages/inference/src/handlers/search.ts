@@ -1186,7 +1186,7 @@ async function zaiSearchExecute(params: {
     },
   });
 
-  const client = new Client({ name: "shiguangGateway-search", version: "1.0" }, { capabilities: {} });
+  const client = new Client({ name: "orbit-search", version: "1.0" }, { capabilities: {} });
 
   const { signal } = params;
 

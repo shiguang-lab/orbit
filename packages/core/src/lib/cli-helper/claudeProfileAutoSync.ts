@@ -21,11 +21,11 @@ type SyncResult =
     };
 
 function isAutoSyncEnabled() {
-  // Opt-in, default OFF. Backed by the SHIGUANG_GATEWAY_AUTO_SYNC_CLAUDE_PROFILES feature flag
+  // Opt-in, default OFF. Backed by the ORBIT_AUTO_SYNC_CLAUDE_PROFILES feature flag
   // (resolver precedence: DB/dashboard-toggle override > env > default "false"), so a
   // provider model sync never silently writes ~/.claude/profiles/<name>/settings.json
   // unless the operator turned it on — via the providers-dashboard toggle or the env var.
-  return isFeatureFlagEnabled("SHIGUANG_GATEWAY_AUTO_SYNC_CLAUDE_PROFILES");
+  return isFeatureFlagEnabled("ORBIT_AUTO_SYNC_CLAUDE_PROFILES");
 }
 
 function forwardAuthHeaders(request: Request): Record<string, string> {
@@ -74,7 +74,7 @@ export async function autoSyncClaudeProfilesFromLiveCatalog(
   }
   const claudeHome = path.dirname(claudePaths.settings);
 
-  // Each generated profile points ANTHROPIC_BASE_URL at the ShiguangGateway this server serves.
+  // Each generated profile points ANTHROPIC_BASE_URL at the Orbit this server serves.
   // Strip a trailing /v1 (Claude Code appends the version segment itself).
   const profileBaseUrl = internalBase.replace(/\/v1$/, "");
 

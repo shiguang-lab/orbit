@@ -16,9 +16,9 @@ export type RuntimePorts = {
 };
 
 export function getRuntimePorts(): RuntimePorts {
-  // SHIGUANG_GATEWAY_PORT preserves the user's canonical PORT in wrapped runtimes
+  // ORBIT_PORT preserves the user's canonical PORT in wrapped runtimes
   // where Next.js requires process.env.PORT to be the dashboard listener port.
-  const basePort = parsePort(process.env.SHIGUANG_GATEWAY_PORT || process.env.EDGE_GATEWAY_PORT || process.env.PORT, DEFAULT_PORT);
+  const basePort = parsePort(process.env.ORBIT_PORT || process.env.EDGE_GATEWAY_PORT || process.env.PORT, DEFAULT_PORT);
   const apiPortExplicit = !!process.env.API_PORT;
   const dashboardPortExplicit = !!process.env.DASHBOARD_PORT;
 

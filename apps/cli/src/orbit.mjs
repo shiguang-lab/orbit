@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * ShiguangGateway CLI entry point.
+ * Orbit CLI entry point.
  *
  * Special bypasses (handled before Commander):
  *   --version / -V (alone)    Fast-path: print the version and exit, skipping the
@@ -32,7 +32,7 @@ const ROOT = join(__dirname, "..");
 // polyfill import, env-file loading, or Commander's command registration (~70
 // modules — DB, providers, OAuth, etc.) run. None of that work is needed to answer
 // "what version is this" — mirrors upstream 9router PR #2414 (fast-path help/version
-// ahead of expensive self-heal hooks), adapted to ShiguangGateway's Commander CLI where the
+// ahead of expensive self-heal hooks), adapted to Orbit's Commander CLI where the
 // equivalent expensive work is eager command registration rather than npm-install-based
 // runtime self-healing. `--help` is intentionally NOT fast-pathed here: its output is
 // generated dynamically from every registered subcommand, so skipping registration
@@ -102,7 +102,7 @@ function loadEnvFile() {
   addEnvPath(join(process.cwd(), ".env"));
   // Skip the repo-checkout .env when explicitly requested (used by isolation tests
   // that need a deterministic environment without the development repo's defaults).
-  if (process.env.SHIGUANG_GATEWAY_CLI_SKIP_REPO_ENV !== "1") {
+  if (process.env.ORBIT_CLI_SKIP_REPO_ENV !== "1") {
     addEnvPath(join(ROOT, ".env"));
   }
 
@@ -174,13 +174,13 @@ loadEnvFile();
   ensureAndroidCacheDir();
 }
 
-// Generate STORAGE_ENCRYPTION_KEY if not set (persisted to ~/.shiguangGateway/.env)
+// Generate STORAGE_ENCRYPTION_KEY if not set (persisted to ~/.orbit/.env)
 // This ensures the key survives across upgrades and is not regenerated on each install.
 // See the independent runtime deployment guide.
 //
 // Only provision for commands that actually touch encrypted storage. Purely
 // informational invocations (`--version`, `--help`, `help`) must not create a
-// key or write ~/.shiguangGateway/.env — running a read-only command should never
+// key or write ~/.orbit/.env — running a read-only command should never
 // mutate the data dir.
 if (shouldProvisionStorageKey(process.argv)) {
   const { randomBytes } = await import("node:crypto");
@@ -191,9 +191,9 @@ if (shouldProvisionStorageKey(process.argv)) {
   if (!process.env.STORAGE_ENCRYPTION_KEY) {
     // Persist the key into DATA_DIR when set — that's the directory mounted as a volume in
     // Docker (where storage.sqlite lives), so the key survives `docker down` / `docker pull`.
-    // Writing only to ~/.shiguangGateway (the container home, not a volume) silently lost the key on
+    // Writing only to ~/.orbit (the container home, not a volume) silently lost the key on
     // container recreation, leaving the persisted encrypted DB undecryptable (regression of #1622).
-    const dataDir = process.env.DATA_DIR || join(homedir(), ".shiguangGateway");
+    const dataDir = process.env.DATA_DIR || join(homedir(), ".orbit");
     const envPath = join(dataDir, ".env");
     const dbPath = join(dataDir, "storage.sqlite");
 
@@ -241,7 +241,7 @@ if (shouldProvisionStorageKey(process.argv)) {
 {
   const langIdx = process.argv.findIndex((a) => a === "--lang");
   const langArg = langIdx >= 0 ? process.argv[langIdx + 1] : null;
-  const langEnv = process.env.SHIGUANG_GATEWAY_LANG;
+  const langEnv = process.env.ORBIT_LANG;
   const chosen = langArg || langEnv;
   if (chosen) {
     const { setLocale } = await import(pathToFileURL(join(ROOT, "src", "cli", "i18n.mjs")).href);

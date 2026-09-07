@@ -14,12 +14,12 @@ test("normalizes surrounding whitespace and every trailing slash", () => {
 test("builds the exact discovery settings fragment and floors a valid context window", () => {
   assert.equal(buildClaudeDiscoverySettingsSnippet({
     baseUrl: " https://gateway.example/// ",
-    apiKeyPlaceholder: "${SHIGUANG_API_KEY}",
+    apiKeyPlaceholder: "${ORBIT_API_KEY}",
     autoCompactWindow: 128000.9,
   }), JSON.stringify({
     env: {
       ANTHROPIC_BASE_URL: "https://gateway.example",
-      ANTHROPIC_AUTH_TOKEN: "${SHIGUANG_API_KEY}",
+      ANTHROPIC_AUTH_TOKEN: "${ORBIT_API_KEY}",
       CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY: "1",
       CLAUDE_CODE_AUTO_COMPACT_WINDOW: "128000",
     },

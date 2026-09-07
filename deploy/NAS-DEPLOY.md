@@ -1,4 +1,4 @@
-# ShiguangGateway 独立实例部署
+# Orbit 独立实例部署
 
 该部署包运行仓库内置的独立网关 runtime。应用容器与 PostgreSQL、Redis 分开编排；官方
 Orbit 不在运行时依赖链中。应用当前仍以导入的 SQLite 快照作为权威库，PostgreSQL 负责
@@ -17,14 +17,14 @@ Orbit 不在运行时依赖链中。应用当前仍以导入的 SQLite 快照作
 ## 首次部署
 
 先按“独立基础设施（NAS）”章节启动 PostgreSQL/Redis 项目，确保 external 网络
-`shiguang-gateway-infra` 已存在；再执行以下应用部署命令。
+`orbit-infra` 已存在；再执行以下应用部署命令。
 
 ```bash
-mkdir -p /volume1/docker/shiguang-gateway
-cd /volume1/docker/shiguang-gateway
+mkdir -p /volume1/docker/orbit
+cd /volume1/docker/orbit
 # 将本仓库的 docker-compose.yml、.env.example 与 deploy/ 目录复制到此目录
 cp .env.example .env
-vi .env   # 设置六个 SHIGUANG_GATEWAY_*_IMAGE 及 JWT/API key/加密密钥
+vi .env   # 设置六个 ORBIT_*_IMAGE 及 JWT/API key/加密密钥
 docker build --target console -t orbit-console:local .
 docker build --target gateway -t orbit-gateway:local .
 docker build --target control -t orbit-control:local .
@@ -33,7 +33,7 @@ docker build --target worker -t orbit-worker:local .
 docker build --target importer -t orbit-importer:local .
 docker compose up -d
 docker compose ps
-docker compose logs -f shiguang-gateway-gateway
+docker compose logs -f orbit-gateway
 ```
 
 健康检查：`/livez`、`/healthz` 和 `/api/health`。
@@ -44,20 +44,20 @@ PostgreSQL 与 Redis 不再嵌入应用镜像，也不与应用进程共享文�
 固定凭据（密码不会写入仓库）：
 
 ```bash
-mkdir -p /volume1/docker/shiguang-gateway-infra
-cp deploy/docker-compose.infrastructure.yml /volume1/docker/shiguang-gateway-infra/compose.yml
-cp -R deploy/postgres-init /volume1/docker/shiguang-gateway-infra/postgres-init
-cp deploy/.env.infrastructure.example /volume1/docker/shiguang-gateway-infra/.env
-cd /volume1/docker/shiguang-gateway-infra
+mkdir -p /volume1/docker/orbit-infra
+cp deploy/docker-compose.infrastructure.yml /volume1/docker/orbit-infra/compose.yml
+cp -R deploy/postgres-init /volume1/docker/orbit-infra/postgres-init
+cp deploy/.env.infrastructure.example /volume1/docker/orbit-infra/.env
+cd /volume1/docker/orbit-infra
 vi .env   # 替换 POSTGRES_PASSWORD；生产保持 INFRA_BIND_ADDRESS=127.0.0.1
 docker compose -f compose.yml up -d
 docker compose -f compose.yml ps
 # NAS ACLs can block bind-mounted init directories; run the idempotent bootstrap explicitly.
-docker exec -i shiguang-gateway-postgres psql -U shiguang_gateway -d shiguang_gateway < postgres-init/001-schema.sql
+docker exec -i orbit-postgres psql -U orbit -d orbit < postgres-init/001-schema.sql
 ```
 
-该 compose 使用独立 named volume（`shiguang-gateway-postgres`、`shiguang-gateway-redis`）
-和同名内网 `shiguang-gateway-infra`。应用 compose 将该网络声明为 external，必须先启动本基础设施
+该 compose 使用独立 named volume（`orbit-postgres`、`orbit-redis`）
+和同名内网 `orbit-infra`。应用 compose 将该网络声明为 external，必须先启动本基础设施
 项目再启动应用；应用通过
 `REDIS_URL=redis://redis:6379` 和 `QUOTA_STORE_REDIS_URL=redis://redis:6379` 使用 Redis。
 Redis 只存限流、配额和事件等可重建状态，不替代数据库权威数据。
@@ -70,9 +70,9 @@ Redis 只存限流、配额和事件等可重建状态，不替代数据库权�
 `--replace-schema`，避免误覆盖 NAS 上的其他数据库：
 
 ```bash
-POSTGRES_URL='postgresql://shiguang_gateway:密码@127.0.0.1:25432/shiguang_gateway' \
+POSTGRES_URL='postgresql://orbit:密码@127.0.0.1:25432/orbit' \
   pnpm infra:migrate-postgres -- \
-  --source-sqlite /volume1/docker/shiguang-gateway/frozen/storage.sqlite \
+  --source-sqlite /volume1/docker/orbit/frozen/storage.sqlite \
   --replace-schema
 ```
 
@@ -99,19 +99,19 @@ psql "$POSTGRES_URL" -c 'select table_name, source_rows, imported_rows from gate
 pnpm install
 pnpm import:source-data \
   --source-data-dir /path/to/frozen-source-data \
-  --target-data-dir /volume1/docker/shiguang-gateway/data
+  --target-data-dir /volume1/docker/orbit/data
 
 # 如果启用的 OpenAI-compatible 连接在快照中缺少 endpoint，先准备 provider-config.json：
 # {"<connection-id>": {"baseUrl": "https://真实上游/v1", "defaultModel": "模型名"}}
 pnpm import:source-data \
   --source-data-dir /path/to/frozen-source-data \
-  --target-data-dir /volume1/docker/shiguang-gateway/data \
+  --target-data-dir /volume1/docker/orbit/data \
   --provider-config-file /path/to/provider-config.json
 
-# 或使用镜像内置 importer（将源目录挂载为 SHIGUANG_GATEWAY_SOURCE_DATA_DIR）：
-SHIGUANG_GATEWAY_SOURCE_DATA_DIR=/volume1/docker/shiguang-gateway/frozen \
-SHIGUANG_GATEWAY_SOURCE_HOME_DIR=/volume1/docker/shiguang-gateway/source-home \
-docker compose --profile migration run --rm shiguang-gateway-importer
+# 或使用镜像内置 importer（将源目录挂载为 ORBIT_SOURCE_DATA_DIR）：
+ORBIT_SOURCE_DATA_DIR=/volume1/docker/orbit/frozen \
+ORBIT_SOURCE_HOME_DIR=/volume1/docker/orbit/source-home \
+docker compose --profile migration run --rm orbit-importer
 ```
 
 Importer 会复制 `storage.sqlite`、WAL/SHM、备份、call logs、规则、任务文件和已安装的嵌入式
@@ -124,8 +124,8 @@ CLI auth 文件、OS keychain、浏览器 profile、隧道状态和外部 CLI �
 数据库凭据丢失，也不意味着所有连接都要重新授权。只有实际凭据缺失、无法恢复解密密钥，
 或上游已撤销授权时，才需要为受影响的连接重新授权。
 
-导入后必须执行 `SHIGUANG_GATEWAY_SOURCE_DATA_DIR=/volume1/docker/shiguang-gateway/data pnpm audit:provider-config`
-以及 `SHIGUANG_GATEWAY_SOURCE_DATA_DIR=/volume1/docker/shiguang-gateway/data pnpm smoke:provider-matrix`。任何启用
+导入后必须执行 `ORBIT_SOURCE_DATA_DIR=/volume1/docker/orbit/data pnpm audit:provider-config`
+以及 `ORBIT_SOURCE_DATA_DIR=/volume1/docker/orbit/data pnpm smoke:provider-matrix`。任何启用
 Provider 缺 endpoint、凭据失效或真实上游请求失败，均阻止切换；不得用默认 URL、测试 URL
 或伪造成功状态绕过门禁。
 
@@ -140,7 +140,7 @@ NAS 实测基线（2026-09-05 最新冷快照）为 15 个连接（14 个启用�
 ## 升级与回滚
 
 生产使用本仓库构建并推送的六个不可变镜像 tag/digest。将 `.env` 中六个
-`SHIGUANG_GATEWAY_*_IMAGE` 分别设置为对应 registry 地址后执行：
+`ORBIT_*_IMAGE` 分别设置为对应 registry 地址后执行：
 
 ```bash
 docker compose pull
@@ -156,8 +156,8 @@ scripts/ops/rollback.sh <previous-release-tag>
 该脚本会设置六个 compose image 变量、拉取完整镜像族，并只重建常驻的 console、edge、control、
 realtime 与 worker；migration profile 下的 importer 只拉取、不启动。变量只作用于本次脚本调用，
 后续手工执行 `docker compose up` 前还应把同一 tag 的六个地址持久化到 `.env`。若按 digest 固定镜像，六个
-repository 的 digest 各不相同，应直接分别更新 `.env` 中六个 `SHIGUANG_GATEWAY_*_IMAGE`，不能向
-脚本传一个共享 digest。升级前后保留 `shiguang-gateway_data` volume 和 importer manifest，禁止用空
+repository 的 digest 各不相同，应直接分别更新 `.env` 中六个 `ORBIT_*_IMAGE`，不能向
+脚本传一个共享 digest。升级前后保留 `orbit_data` volume 和 importer manifest，禁止用空
 volume 覆盖现有数据。
 
 ## 反向代理与 SSO
@@ -171,7 +171,7 @@ volume 覆盖现有数据。
 本次替换部署复用现有统一认证：产品 `omniroute`、Audience `omniroute-api`、授权项
 `omniroute:access`。在部署环境设置 `SG_IDENTITY_AUDIENCE=omniroute-api` 和
 `SG_IDENTITY_ENTITLEMENT=omniroute:access`，并与 Caddy 的 forward-auth 请求保持一致。
-更换业务镜像不要求 auth-service 新增 `shiguang-gateway:access` 或用户重新取得权限；
+更换业务镜像不要求 auth-service 新增 `orbit:access` 或用户重新取得权限；
 上线验收仍需通过真实登录和 forward-auth 验证。生产绝不可设置
 `SG_DEV_IDENTITY` 或 `SG_LOCAL_BROKER_ENABLED`。
 

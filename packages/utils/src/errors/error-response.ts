@@ -170,7 +170,7 @@ export function providerCircuitOpenResponse(
       headers: {
         "Content-Type": "application/json",
         "Retry-After": String(retryAfterSec),
-        "X-ShiguangGateway-Provider-Breaker": "open",
+        "X-Orbit-Provider-Breaker": "open",
       },
     }
   );

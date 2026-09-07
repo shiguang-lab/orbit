@@ -23,7 +23,7 @@ import {
 // ── State (globalThis singleton) ──────────────────────────────────────────
 
 declare global {
-  var __shiguangGatewayEventBus:
+  var __orbitEventBus:
     | {
         initialized: boolean;
         listeners: Map<DashboardEventName, Set<Function>>;
@@ -36,8 +36,8 @@ declare global {
 }
 
 function getBusState() {
-  if (!globalThis.__shiguangGatewayEventBus) {
-    globalThis.__shiguangGatewayEventBus = {
+  if (!globalThis.__orbitEventBus) {
+    globalThis.__orbitEventBus = {
       initialized: false,
       listeners: new Map(),
       wildcardListeners: new Set(),
@@ -46,7 +46,7 @@ function getBusState() {
       emitCount: 0,
     };
   }
-  return globalThis.__shiguangGatewayEventBus;
+  return globalThis.__orbitEventBus;
 }
 
 // ── Event History ─────────────────────────────────────────────────────────

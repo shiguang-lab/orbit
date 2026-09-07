@@ -1,7 +1,7 @@
 /**
  * links.ts — pure config for the two Radar "get a supporter key" outbound
  * links (F4/T7): the contributor-claim (GitHub OAuth) flow and the
- * supporter-plans (payment) page on the private radar.shiguangGateway.online
+ * supporter-plans (payment) page on the private radar.orbit.online
  * server.
  *
  * DELIBERATELY DB-FREE and side-effect-free — same shape as the
@@ -22,10 +22,10 @@
 import { parseRadarAdminUrl } from "@orbit/contracts/radar-admin-url";
 
 /** Default contributor-claim entry point — starts the GitHub OAuth flow. */
-const DEFAULT_CONTRIBUTOR_CLAIM_URL = "https://radar.shiguangGateway.online/auth/github";
+const DEFAULT_CONTRIBUTOR_CLAIM_URL = "https://radar.orbit.online/auth/github";
 
 /** Default supporter plans/payment page. */
-const DEFAULT_SUPPORTER_PLANS_URL = "https://radar.shiguangGateway.online/planos";
+const DEFAULT_SUPPORTER_PLANS_URL = "https://radar.orbit.online/planos";
 
 /**
  * URL that starts the "I'm a contributor" GitHub OAuth claim flow.

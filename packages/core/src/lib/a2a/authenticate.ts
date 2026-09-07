@@ -21,7 +21,7 @@ function tokensMatch(provided: string, expected: string): boolean {
 
 /**
  * Whether the request may use the A2A surface at all. Mirrors the JSON-RPC
- * posture: when a client key is required, demand a valid ShiguangGateway key;
+ * posture: when a client key is required, demand a valid Orbit key;
  * otherwise honor the legacy explicit A2A key; otherwise stay keyless (the
  * same local-first default as /v1).
  */
@@ -31,7 +31,7 @@ export async function authenticateA2ARequest(req: Request): Promise<boolean> {
     return apiKey ? await isValidA2AApiKey(apiKey) : false;
   }
 
-  const configuredKey = process.env.SHIGUANG_GATEWAY_API_KEY;
+  const configuredKey = process.env.ORBIT_API_KEY;
   if (configuredKey) {
     return apiKey ? tokensMatch(apiKey, configuredKey) : false;
   }

@@ -6,7 +6,7 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 
 const repoRoot = resolve(import.meta.dirname, "..");
-const referenceRoot = resolve(process.env.SHIGUANG_GATEWAY_REFERENCE_DIR || join(repoRoot, "..", "Orbit"));
+const referenceRoot = resolve(process.env.ORBIT_REFERENCE_DIR || join(repoRoot, "..", "Orbit"));
 const methods = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"];
 const frozenContractSha256 = "841ea8446a1078da3c38e9d3e26a98b64d4d402dc72c1017554e50e2c789934a";
 const frozenRouteCount = 681;

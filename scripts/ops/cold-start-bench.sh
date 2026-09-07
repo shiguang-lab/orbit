@@ -60,11 +60,11 @@ else
   [ -n "$START_CMD" ] || ops_die "--start-cmd is required when --url is not provided"
   ops_log "booting: $START_CMD"
   start_ms="$(now_ms)"
-  PORT="$PORT" bash -c "$START_CMD" >/tmp/shiguang-gateway-coldstart.log 2>&1 &
+  PORT="$PORT" bash -c "$START_CMD" >/tmp/orbit-coldstart.log 2>&1 &
   SERVER_PID="$!"
   deadline=$(($(now_ms) + 30000))
   until ping_ok "$BASE_URL"; do
-    kill -0 "$SERVER_PID" 2>/dev/null || ops_die "server process exited during boot (see /tmp/shiguang-gateway-coldstart.log)"
+    kill -0 "$SERVER_PID" 2>/dev/null || ops_die "server process exited during boot (see /tmp/orbit-coldstart.log)"
     [ "$(now_ms)" -gt "$deadline" ] && ops_die "edge gateway did not answer /healthz within 30s"
     sleep 0.05
   done

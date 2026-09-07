@@ -947,7 +947,7 @@ export function SettingsGeneralPage() {
                 {tt("数据库文件路径", "Database File Path")}
               </Text>
               <Text strong style={{ fontSize: 13, wordBreak: "break-all" }}>
-                {health?.dbPath || "~/.shiguangGateway/storage.sqlite"}
+                {health?.dbPath || "~/.orbit/storage.sqlite"}
               </Text>
             </Flex>
           </Card>

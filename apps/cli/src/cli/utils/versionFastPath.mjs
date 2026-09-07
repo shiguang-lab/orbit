@@ -6,13 +6,13 @@
  * Scope is intentionally narrow — only a single, unambiguous `--version`/`-V`
  * argument fast-paths. Anything else (extra args, a subcommand, `--help`,
  * global options like `--lang`/`--output` alongside it) falls through to the
- * normal Commander flow. Unlike `--version`, ShiguangGateway's `--help` output is
+ * normal Commander flow. Unlike `--version`, Orbit's `--help` output is
  * generated dynamically from every registered subcommand, so skipping
  * registration would change (truncate) the help text — that flag is
  * deliberately NOT fast-pathed here.
  *
  * Mirrors the intent of upstream 9router PR #2414 (fast-path help/version
- * before expensive self-heal hooks), adapted to ShiguangGateway's Commander-based
+ * before expensive self-heal hooks), adapted to Orbit's Commander-based
  * CLI where the equivalent expensive work is eager command registration
  * rather than npm-install-based runtime self-healing.
  *

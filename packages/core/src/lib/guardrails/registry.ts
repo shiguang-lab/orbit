@@ -92,7 +92,7 @@ export function resolveDisabledGuardrails({
       ? (apiKeyInfo as Record<string, unknown>).disabledGuardrails
       : undefined;
   const headerDisabled =
-    getHeaderValue(headers, "x-shiguangGateway-disabled-guardrails") ||
+    getHeaderValue(headers, "x-orbit-disabled-guardrails") ||
     getHeaderValue(headers, "x-disabled-guardrails");
 
   return [...coerceDisabledGuardrails(apiKeyDisabled)]

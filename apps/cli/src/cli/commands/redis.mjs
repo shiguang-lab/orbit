@@ -7,9 +7,9 @@ import { t } from "../i18n.mjs";
 const execFile = promisify(execFileCb);
 
 const DEFAULT_IMAGE = "docker.io/redis:7-alpine";
-const DEFAULT_NAME = "shiguangGateway-redis";
+const DEFAULT_NAME = "orbit-redis";
 const DEFAULT_PORT = "6379";
-const DEFAULT_VOLUME = "shiguangGateway-redis-data";
+const DEFAULT_VOLUME = "orbit-redis-data";
 // The launcher starts Redis without AUTH unless --password is given, so the
 // published port stays on loopback. `-p 6379:6379` would bind 0.0.0.0 and hand
 // the whole LAN an unauthenticated Redis.
@@ -122,7 +122,7 @@ export function registerRedis(program) {
     .command("redis")
     .description(
       t("redis.description") ||
-        "Launch a 1-click local Redis container (Podman or Docker) for ShiguangGateway caching and quota tracking"
+        "Launch a 1-click local Redis container (Podman or Docker) for Orbit caching and quota tracking"
     );
 
   redis
@@ -263,7 +263,7 @@ export async function runRedisUpCommand(opts = {}) {
   try {
     await execFile(runtime, args);
     success(`Container '${name}' is now running on redis://${bind}:${port}`);
-    info(`Set SHIGUANG_GATEWAY_REDIS_URL=redis://${bind}:${port} in your .env to wire ShiguangGateway to it.`);
+    info(`Set ORBIT_REDIS_URL=redis://${bind}:${port} in your .env to wire Orbit to it.`);
     if (bind !== DEFAULT_BIND && !opts.password) {
       info(
         `Warning: '${bind}' publishes Redis beyond loopback without AUTH. Re-run with --password <secret>.`
@@ -344,7 +344,7 @@ export async function runRedisStatusCommand(opts = {}) {
     );
   }
   if (!running) {
-    info(`Run 'shiguangGateway redis up' to launch it.`);
+    info(`Run 'orbit redis up' to launch it.`);
   }
   return 0;
 }

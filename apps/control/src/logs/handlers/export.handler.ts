@@ -34,7 +34,7 @@ export async function GET(request: Request) {
       rows = exportProxyLogsSince(since);
     }
 
-    const filename = `shiguangGateway-${tableName}-${hours}h-${new Date().toISOString().slice(0, 10)}.json`;
+    const filename = `orbit-${tableName}-${hours}h-${new Date().toISOString().slice(0, 10)}.json`;
 
     return new Response(
       JSON.stringify({ logs: rows, count: rows.length, hours, type: logType }, null, 2),

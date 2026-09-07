@@ -1,12 +1,12 @@
 ---
-title: "ShiguangGateway Documentation"
+title: "Orbit Documentation"
 version: 3.8.40
 lastUpdated: 2026-06-28
 ---
 
-# ShiguangGateway Documentation
+# Orbit Documentation
 
-Navigable index of the ShiguangGateway documentation set. Topics are grouped by intent so you can find what you need quickly.
+Navigable index of the Orbit documentation set. Topics are grouped by intent so you can find what you need quickly.
 
 > Looking for the project overview, install steps, or release notes? See the root [README.md](../README.md), [ROADMAP.md](../ROADMAP.md), [CHANGELOG.md](../CHANGELOG.md), and [CONTRIBUTING.md](../CONTRIBUTING.md).
 
@@ -14,34 +14,34 @@ Navigable index of the ShiguangGateway documentation set. Topics are grouped by 
 
 ## For Non-Tech Users
 
-Simple guides for using ShiguangGateway — no technical background needed.
+Simple guides for using Orbit — no technical background needed.
 
 ### getting-started/
 
-- [QUICK-START.md](getting-started/QUICK-START.md) — install and run ShiguangGateway in 3 minutes.
-- [AUTO-COMBO-GUIDE.md](getting-started/AUTO-COMBO-GUIDE.md) — let ShiguangGateway pick the best AI for you.
+- [QUICK-START.md](getting-started/QUICK-START.md) — install and run Orbit in 3 minutes.
+- [AUTO-COMBO-GUIDE.md](getting-started/AUTO-COMBO-GUIDE.md) — let Orbit pick the best AI for you.
 - [PROVIDERS-GUIDE.md](getting-started/PROVIDERS-GUIDE.md) — how to connect AI providers.
 - [FREE-TIERS-GUIDE.md](getting-started/FREE-TIERS-GUIDE.md) — get free AI with no credit card.
 - [WEB-COOKIE-GUIDE.md](getting-started/WEB-COOKIE-GUIDE.md) — web cookie providers (session-credential setup).
 
 ### guides/
 
-- [SETUP_GUIDE.md](guides/SETUP_GUIDE.md) — first-time setup of ShiguangGateway.
+- [SETUP_GUIDE.md](guides/SETUP_GUIDE.md) — first-time setup of Orbit.
 - [USER_GUIDE.md](guides/USER_GUIDE.md) — daily usage of the dashboard and API.
 - [THINKING_BUDGET.md](guides/THINKING_BUDGET.md) — thinking/reasoning budget modes (passthrough vs auto-strip).
 - [FEATURES.md](guides/FEATURES.md) — dashboard feature gallery.
-- [TIERS.md](guides/TIERS.md) — ShiguangGateway tiers explained (user guide).
+- [TIERS.md](guides/TIERS.md) — Orbit tiers explained (user guide).
 - [USAGE_QUOTA_GUIDE.md](guides/USAGE_QUOTA_GUIDE.md) — usage, quota & spend tracking.
 - [COST_TRACKING.md](guides/COST_TRACKING.md) — cost and spend tracking.
 - [FREE_PROVIDER_RANKINGS.md](guides/FREE_PROVIDER_RANKINGS.md) — free provider rankings (Arena ELO).
-- [DOCKER_GUIDE.md](guides/DOCKER_GUIDE.md) — running ShiguangGateway under Docker, including runtime RAM for coding agents.
+- [DOCKER_GUIDE.md](guides/DOCKER_GUIDE.md) — running Orbit under Docker, including runtime RAM for coding agents.
 - [ELECTRON_GUIDE.md](guides/ELECTRON_GUIDE.md) — desktop (Electron) builds.
 - [TERMUX_GUIDE.md](guides/TERMUX_GUIDE.md) — running on Android via Termux.
 - [PWA_GUIDE.md](guides/PWA_GUIDE.md) — installing the dashboard as a PWA.
-- [REMOTE-MODE.md](guides/REMOTE-MODE.md) — exposing ShiguangGateway remotely + scoped tokens.
+- [REMOTE-MODE.md](guides/REMOTE-MODE.md) — exposing Orbit remotely + scoped tokens.
 - [CLI-INTEGRATIONS.md](guides/CLI-INTEGRATIONS.md) — master table of `setup-*` CLI integrations.
-- [CLAUDE-CODE-CONFIGURATION.md](guides/CLAUDE-CODE-CONFIGURATION.md) — Claude Code CLI with ShiguangGateway.
-- [CODEX-CLI-CONFIGURATION.md](guides/CODEX-CLI-CONFIGURATION.md) — Codex CLI with ShiguangGateway.
+- [CLAUDE-CODE-CONFIGURATION.md](guides/CLAUDE-CODE-CONFIGURATION.md) — Claude Code CLI with Orbit.
+- [CODEX-CLI-CONFIGURATION.md](guides/CODEX-CLI-CONFIGURATION.md) — Codex CLI with Orbit.
 - [KIRO_SETUP.md](guides/KIRO_SETUP.md) — Kiro setup.
 - [ANTIGRAVITY-ONBOARDING.md](guides/ANTIGRAVITY-ONBOARDING.md) — Antigravity (Google One AI) onboarding.
 - [MANAGEMENT-AUTH.md](guides/MANAGEMENT-AUTH.md) — management authentication.
@@ -171,7 +171,7 @@ Provider-specific integration guides.
 
 ## comparison/
 
-- [SHIGUANG_GATEWAY_VS_ALTERNATIVES.md](comparison/SHIGUANG_GATEWAY_VS_ALTERNATIVES.md) — how ShiguangGateway compares to alternatives.
+- [ORBIT_VS_ALTERNATIVES.md](comparison/ORBIT_VS_ALTERNATIVES.md) — how Orbit compares to alternatives.
 
 ## ops/
 

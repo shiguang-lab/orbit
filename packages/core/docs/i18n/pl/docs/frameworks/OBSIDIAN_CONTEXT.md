@@ -15,7 +15,7 @@ lastUpdated: 2026-06-28
 
 ## Czym to jest
 
-ShiguangGateway łączy się z vaultem **Obsidian** jako **źródłem kontekstu** — lokalną bazą
+Orbit łączy się z vaultem **Obsidian** jako **źródłem kontekstu** — lokalną bazą
 wiedzy w Markdown, którą agenci odczytują i zapisują przez wbudowany serwer MCP.
 Integracja komunikuje się z wtyczką społecznościową **Obsidian Local REST API**
 działającą wewnątrz aplikacji desktopowej, dzięki czemu agenci mogą wyszukiwać notatki,
@@ -79,7 +79,7 @@ i waliduje token, wywołując endpoint statusu Local REST API przed zapisem.
 
 `src/app/api/settings/obsidian/webdav/route.ts` zarządza opcjonalną synchronizacją
 vaultu opartą na WebDAV (sterowaną przez `src/lib/obsidianSync.ts`). Włączenie
-wskazuje ShiguangGateway na lokalny katalog vaultu i generuje losową parę username/password WebDAV:
+wskazuje Orbit na lokalny katalog vaultu i generuje losową parę username/password WebDAV:
 
 ```bash
 # Enable WebDAV sync for a vault directory (mints username/password)
@@ -106,8 +106,8 @@ tego klucza (`source: "api_key"`), a w przeciwnym razie spada do konfiguracji gl
 
 Zdefiniowane w `open-sse/mcp-server/tools/obsidianTools.ts`. Token/base-URL są
 rozwiązywane per wywołanie (najpierw per-API-key, potem global). Narzędzia trafiające
-w **serwer sync** ShiguangGateway (cztery narzędzia `obsidian_sync_*`) dodatkowo wymagają
-tokenu auth sync skonfigurowanego w ustawieniach ShiguangGateway.
+w **serwer sync** Orbit (cztery narzędzia `obsidian_sync_*`) dodatkowo wymagają
+tokenu auth sync skonfigurowanego w ustawieniach Orbit.
 
 ### Narzędzia odczytu (`read:obsidian`)
 
@@ -124,7 +124,7 @@ tokenu auth sync skonfigurowanego w ustawieniach ShiguangGateway.
 | `obsidian_get_periodic_note` | Periodyczna notatka daily/weekly/monthly dla daty (dziś, jeśli pominięto).                   |
 | `obsidian_get_tags`          | Lista wszystkich tagów vaultu z ich częstotliwościami.                                       |
 | `obsidian_list_commands`     | Lista dostępnych ID komend Obsidian (użyj z `obsidian_execute_command`).                     |
-| `obsidian_sync_status`       | Status serwera sync ShiguangGateway: running, nazwa vaultu, port, uptime, last sync.               |
+| `obsidian_sync_status`       | Status serwera sync Orbit: running, nazwa vaultu, port, uptime, last sync.               |
 | `obsidian_sync_conflicts`    | Lista nierozwiązanych konfliktów sync (path, conflict path, detected-at).                    |
 
 ### Narzędzia zapisu (`write:obsidian`)
@@ -151,8 +151,8 @@ tokenu auth sync skonfigurowanego w ustawieniach ShiguangGateway.
 
 Narzędzia odczytu wymagają `read:obsidian`; narzędzia zapisu wymagają `write:obsidian`.
 Egzekwowanie jest identyczne jak w Notion — obsługiwane przez `withScopeEnforcement()` w
-`open-sse/mcp-server/server.ts`, bramkowane przez `SHIGUANG_GATEWAY_MCP_ENFORCE_SCOPES=true`, z
-dozwolonymi scope pochodzącymi z `SHIGUANG_GATEWAY_MCP_SCOPES` lub kontekstu scope klucza API. Zobacz
+`open-sse/mcp-server/server.ts`, bramkowane przez `ORBIT_MCP_ENFORCE_SCOPES=true`, z
+dozwolonymi scope pochodzącymi z `ORBIT_MCP_SCOPES` lub kontekstu scope klucza API. Zobacz
 [MCP-SERVER.md](./MCP-SERVER.md).
 
 ## Endpointy

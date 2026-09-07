@@ -41,23 +41,23 @@ orbit/
 - `apps/importer` 将冻结快照导入独立数据卷；`scripts/smoke-container-deployment.mjs` 自动验收接口隔离、数据表、原生 SQLite/vector、实时端口和全部 worker scheduler。
 - 参考仓库仅作为审查基线；升级必须重新复制快照并通过 `pnpm audit:gateway-independence`。
 - 发布机不需要 checkout 官方仓库：独立性/路由契约审查内置冻结 SHA-256 基线；设置
-  `SHIGUANG_GATEWAY_REFERENCE_DIR` 时才会额外执行逐文件参考对比。
+  `ORBIT_REFERENCE_DIR` 时才会额外执行逐文件参考对比。
 
 ## 数据源
 
 - 独立实例只读写自身 `DATA_DIR`（默认 `/app/data`）中的 SQLite、日志和制品。
 - 从参考实例导入冷快照：`pnpm import:source-data --source-data-dir /path/to/frozen-data --target-data-dir /path/to/data --source-home-dir /path/to/source-home --target-home-dir /home/node`。工具复制 SQLite/WAL/备份/日志/规则文件，并按白名单迁移 CLI/OAuth、浏览器和隧道状态；执行 `integrity_check` 并生成 SHA-256 manifest。
-- 导入后对待发布目标库运行 `SHIGUANG_GATEWAY_SOURCE_DATA_DIR=/path/to/target-data pnpm audit:provider-config`；启用的 OpenAI-compatible 连接必须提供真实 HTTPS `baseUrl`。如源快照缺少该配置，可使用不含密钥的覆盖文件（按连接 ID 映射 `baseUrl`、可选 `defaultModel`/`providerSpecificData`）导入：
+- 导入后对待发布目标库运行 `ORBIT_SOURCE_DATA_DIR=/path/to/target-data pnpm audit:provider-config`；启用的 OpenAI-compatible 连接必须提供真实 HTTPS `baseUrl`。如源快照缺少该配置，可使用不含密钥的覆盖文件（按连接 ID 映射 `baseUrl`、可选 `defaultModel`/`providerSpecificData`）导入：
   `pnpm import:source-data --source-data-dir /path/to/frozen-data --target-data-dir /path/to/data --provider-config-file /path/to/provider-config.json`。覆盖文件摘要和应用范围会写入 manifest，随后仍必须通过真实 `pnpm smoke:provider-matrix`。
 - CLI/OAuth/keychain/browser/tunnel 凭据需要按文档单独导入或重新授权；没有真实源快照时不能声称数据已同步。
 
 发布前必须运行严格门禁（未提供目标数据卷或真实 Provider 上游时会失败；源端不存在的可选外部凭据会被记录为需重新授权，不会伪装成已迁移）：
 
 ```bash
-SHIGUANG_GATEWAY_SOURCE_DATA_DIR=/path/to/source \
-SHIGUANG_GATEWAY_TARGET_DATA_DIR=/path/to/target \
-SHIGUANG_GATEWAY_IMPORT_MANIFEST=/path/to/target/gateway-import-manifest.json \
-SHIGUANG_GATEWAY_TARGET_HOME_DIR=/path/to/target-home \
+ORBIT_SOURCE_DATA_DIR=/path/to/source \
+ORBIT_TARGET_DATA_DIR=/path/to/target \
+ORBIT_IMPORT_MANIFEST=/path/to/target/gateway-import-manifest.json \
+ORBIT_TARGET_HOME_DIR=/path/to/target-home \
 RUN_DEPLOYMENT_SMOKE=1 pnpm audit:release-readiness
 ```
 

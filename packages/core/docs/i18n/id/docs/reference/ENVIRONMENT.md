@@ -4,7 +4,7 @@
 
 ---
 
-> Referensi lengkap untuk setiap variabel lingkungan yang dikenali oleh ShiguangGateway.
+> Referensi lengkap untuk setiap variabel lingkungan yang dikenali oleh Orbit.
 > Untuk template pengaturan cepat, lihat [`.env.example`](../.env.example).
 
 ---
@@ -65,25 +65,25 @@ echo "INITIAL_PASSWORD=$(openssl rand -base64 16)"
 
 ## 2. Penyimpanan & Database
 
-ShiguangGateway menggunakan **SQLite** (melalui `better-sqlite3`) untuk semua persistensi data. Variabel-variabel ini mengontrol lokasi data, enkripsi, dan siklus hidup data.
+Orbit menggunakan **SQLite** (melalui `better-sqlite3`) untuk semua persistensi data. Variabel-variabel ini mengontrol lokasi data, enkripsi, dan siklus hidup data.
 
 | Variable                         | Default              | Source File                                     | Deskripsi                                                                                                              |
 | -------------------------------- | -------------------- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `DATA_DIR`                       | `~/.shiguang-gateway/`      | `src/lib/db/core.ts`                            | Direktori utama untuk DB SQLite, cadangan, dan file data. Override untuk volume Docker atau path khusus.               |
+| `DATA_DIR`                       | `~/.orbit/`      | `src/lib/db/core.ts`                            | Direktori utama untuk DB SQLite, cadangan, dan file data. Override untuk volume Docker atau path khusus.               |
 | `STORAGE_ENCRYPTION_KEY`         | _(empty = disabled)_ | `src/lib/db/encryption.ts`                      | Kunci AES untuk enkripsi penuh database SQLite saat disimpan. Buat dengan `openssl rand -hex 32`.                      |
 | `STORAGE_ENCRYPTION_KEY_VERSION` | `v1`                 | `scripts/bootstrap-env.mjs`, `electron/main.js` | Label versi untuk kunci enkripsi. Naikkan nilainya saat melakukan rotasi kunci agar mendukung dekripsi cadangan lama.  |
 | `DISABLE_SQLITE_AUTO_BACKUP`     | `false`              | `src/lib/db/backup.ts`                          | Saat bernilai `true`, melewati pencadangan database otomatis yang berjalan sebelum migrasi pada setiap startup.        |
-| `SHIGUANG_GATEWAY_CRYPT_KEY`            | _(unset)_            | `src/lib/db/encryption.ts`                      | **Alias legacy** untuk `STORAGE_ENCRYPTION_KEY`. Diterima sebagai fallback ketika variabel utama tidak ada.            |
-| `SHIGUANG_GATEWAY_API_KEY_BASE64`       | _(unset)_            | `src/lib/db/encryption.ts`                      | **Alias legacy** (bentuk yang dikodekan Base64) diterima sebagai fallback. Didekode secara otomatis sebelum digunakan. |
+| `ORBIT_CRYPT_KEY`            | _(unset)_            | `src/lib/db/encryption.ts`                      | **Alias legacy** untuk `STORAGE_ENCRYPTION_KEY`. Diterima sebagai fallback ketika variabel utama tidak ada.            |
+| `ORBIT_API_KEY_BASE64`       | _(unset)_            | `src/lib/db/encryption.ts`                      | **Alias legacy** (bentuk yang dikodekan Base64) diterima sebagai fallback. Didekode secara otomatis sebelum digunakan. |
 
 ### Skenario
 
 | Skenario                    | Konfigurasi                                                                                  |
 | --------------------------- | -------------------------------------------------------------------------------------------- |
-| **Pengembangan lokal**      | Biarkan semua nilai default. DB berada di `~/.shiguang-gateway/shiguang-gateway.db`.                       |
+| **Pengembangan lokal**      | Biarkan semua nilai default. DB berada di `~/.orbit/orbit.db`.                       |
 | **Docker**                  | `DATA_DIR=/data` + mount volume di `/data`.                                                  |
 | **Terenkripsi saat simpan** | Set `STORAGE_ENCRYPTION_KEY` + simpan cadangan kuncinya! Kehilangan kunci = kehilangan data. |
-| **CI/Testing**              | `DATA_DIR=/tmp/shiguang-gateway-test` — bersifat sementara, tidak perlu enkripsi.                   |
+| **CI/Testing**              | `DATA_DIR=/tmp/orbit-test` — bersifat sementara, tidak perlu enkripsi.                   |
 
 ---
 
@@ -97,7 +97,7 @@ ShiguangGateway menggunakan **SQLite** (melalui `better-sqlite3`) untuk semua pe
 | `DASHBOARD_PORT`      | _(unset)_    | `src/lib/runtime/ports.ts` | Jika diatur, menyajikan Dashboard UI pada port terpisah ini.                             |
 | `PROD_DASHBOARD_PORT` | `20130`      | `docker-compose.prod.yml`  | Port yang dipublikasikan di sisi host untuk Dashboard dalam mode produksi Docker.        |
 | `PROD_API_PORT`       | `20131`      | `docker-compose.prod.yml`  | Port yang dipublikasikan di sisi host untuk API dalam mode produksi Docker.              |
-| `SHIGUANG_GATEWAY_PORT`      | _(unset)_    | `src/lib/runtime/ports.ts` | Mengambil prioritas di atas `PORT` saat berjalan di dalam Electron atau wrapper lainnya. |
+| `ORBIT_PORT`      | _(unset)_    | `src/lib/runtime/ports.ts` | Mengambil prioritas di atas `PORT` saat berjalan di dalam Electron atau wrapper lainnya. |
 | `NODE_ENV`            | `production` | Next.js core               | Mengontrol verbositas logging, caching, ekspos detail error, dan optimasi Next.js.       |
 
 ### Mode Port
@@ -154,7 +154,7 @@ MAX_BODY_SIZE_BYTES=5242880    # Batas 5 MB
 
 ## 5. Sanitasi Input & Perlindungan PII
 
-ShiguangGateway menyediakan pertahanan dua lapis: pemindaian injeksi di sisi permintaan dan penghapusan PII di sisi respons.
+Orbit menyediakan pertahanan dua lapis: pemindaian injeksi di sisi permintaan dan penghapusan PII di sisi respons.
 
 ### Sisi Permintaan: Penjaga Injeksi Prompt
 
@@ -202,7 +202,7 @@ ShiguangGateway menyediakan pertahanan dua lapis: pemindaian injeksi di sisi per
 | `NEXT_PUBLIC_APP_URL`   | _(unset)_                | `src/shared/services/cloudSyncScheduler.ts` | Fallback legacy untuk `NEXT_PUBLIC_BASE_URL`.                                                                         |
 
 > [!IMPORTANT]
-> Saat melakukan deployment di balik reverse proxy (nginx, Caddy), `NEXT_PUBLIC_BASE_URL` **harus** diatur ke URL publik Anda (misalnya, `https://shiguang-gateway.example.com`). Tanpa ini, callback OAuth akan gagal karena redirect_uri tidak akan cocok.
+> Saat melakukan deployment di balik reverse proxy (nginx, Caddy), `NEXT_PUBLIC_BASE_URL` **harus** diatur ke URL publik Anda (misalnya, `https://orbit.example.com`). Tanpa ini, callback OAuth akan gagal karena redirect_uri tidak akan cocok.
 
 ---
 
@@ -232,14 +232,14 @@ Arahkan panggilan provider LLM upstream melalui proxy HTTP atau SOCKS5 untuk kon
 
 ## 9. Integrasi Alat CLI
 
-Mengontrol bagaimana ShiguangGateway menemukan dan menjalankan sidecar CLI (Claude Code, Codex, dll.).
+Mengontrol bagaimana Orbit menemukan dan menjalankan sidecar CLI (Claude Code, Codex, dll.).
 
 | Variable                  | Default    | Source File                         | Deskripsi                                                                        |
 | ------------------------- | ---------- | ----------------------------------- | -------------------------------------------------------------------------------- |
 | `CLI_MODE`                | `auto`     | `src/shared/services/cliRuntime.ts` | `auto` = cari di PATH sistem; `manual` = gunakan hanya path eksplisit.           |
 | `CLI_EXTRA_PATHS`         | _(unset)_  | `src/shared/services/cliRuntime.ts` | Entri PATH tambahan untuk penemuan biner CLI (dipisahkan titik dua).             |
 | `CLI_CONFIG_HOME`         | _(unset)_  | `src/shared/services/cliRuntime.ts` | Override direktori home untuk membaca konfigurasi CLI (`~/.claude`, `~/.codex`). |
-| `CLI_ALLOW_CONFIG_WRITES` | `false`    | `src/shared/services/cliRuntime.ts` | Izinkan ShiguangGateway menulis file konfigurasi CLI (penyegaran token, data sesi).    |
+| `CLI_ALLOW_CONFIG_WRITES` | `false`    | `src/shared/services/cliRuntime.ts` | Izinkan Orbit menulis file konfigurasi CLI (penyegaran token, data sesi).    |
 | `CLI_CLAUDE_BIN`          | `claude`   | `src/shared/services/cliRuntime.ts` | Path kustom ke biner CLI Claude.                                                 |
 | `CLI_CODEX_BIN`           | `codex`    | `src/shared/services/cliRuntime.ts` | Path kustom ke biner CLI Codex.                                                  |
 | `CLI_DROID_BIN`           | `droid`    | `src/shared/services/cliRuntime.ts` | Path kustom ke biner CLI Droid.                                                  |
@@ -252,7 +252,7 @@ Mengontrol bagaimana ShiguangGateway menemukan dan menjalankan sidecar CLI (Clau
 ### Contoh Docker
 
 ```bash
-# Mount biner host ke kontainer dan beri tahu ShiguangGateway lokasinya:
+# Mount biner host ke kontainer dan beri tahu Orbit lokasinya:
 CLI_EXTRA_PATHS=/host-cli/bin
 CLI_CONFIG_HOME=/root
 CLI_ALLOW_CONFIG_WRITES=true
@@ -265,28 +265,28 @@ CLI_CLAUDE_BIN=/host-cli/bin/claude
 
 | Variable                                | Default          | Source File                                 | Deskripsi                                                                                                                         |
 | --------------------------------------- | ---------------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| `SHIGUANG_GATEWAY_BASE_URL`                    | deteksi otomatis | `open-sse/mcp-server/server.ts`             | URL eksplisit agar alat MCP/A2A dapat menjangkau ShiguangGateway. Menimpa deteksi otomatis localhost.                                   |
-| `SHIGUANG_GATEWAY_API_KEY`                     | _(unset)_        | MCP/A2A modules                             | Kunci API untuk panggilan alat MCP internal dan skill A2A.                                                                        |
-| `SHIGUANG_GATEWAY_API_KEY_ID`                  | _(unset)_        | `open-sse/mcp-server/audit.ts`              | ID kunci untuk atribusi log audit MCP.                                                                                            |
-| `ROUTER_API_KEY`                        | _(unset)_        | Legacy                                      | Alias legacy untuk `SHIGUANG_GATEWAY_API_KEY`.                                                                                           |
-| `SHIGUANG_GATEWAY_MCP_ENFORCE_SCOPES`          | `false`          | `open-sse/mcp-server/server.ts`             | Terapkan kontrol akses berbasis scope pada panggilan alat MCP.                                                                    |
-| `SHIGUANG_GATEWAY_MCP_SCOPES`                  | _(all)_          | `open-sse/mcp-server/server.ts`             | Scope yang dipisahkan koma: `admin`, `combos`, `health`, `models`, `routing`, `budget`, `metrics`, `pricing`, `memory`, `skills`. |
+| `ORBIT_BASE_URL`                    | deteksi otomatis | `open-sse/mcp-server/server.ts`             | URL eksplisit agar alat MCP/A2A dapat menjangkau Orbit. Menimpa deteksi otomatis localhost.                                   |
+| `ORBIT_API_KEY`                     | _(unset)_        | MCP/A2A modules                             | Kunci API untuk panggilan alat MCP internal dan skill A2A.                                                                        |
+| `ORBIT_API_KEY_ID`                  | _(unset)_        | `open-sse/mcp-server/audit.ts`              | ID kunci untuk atribusi log audit MCP.                                                                                            |
+| `ROUTER_API_KEY`                        | _(unset)_        | Legacy                                      | Alias legacy untuk `ORBIT_API_KEY`.                                                                                           |
+| `ORBIT_MCP_ENFORCE_SCOPES`          | `false`          | `open-sse/mcp-server/server.ts`             | Terapkan kontrol akses berbasis scope pada panggilan alat MCP.                                                                    |
+| `ORBIT_MCP_SCOPES`                  | _(all)_          | `open-sse/mcp-server/server.ts`             | Scope yang dipisahkan koma: `admin`, `combos`, `health`, `models`, `routing`, `budget`, `metrics`, `pricing`, `memory`, `skills`. |
 | `MODEL_SYNC_INTERVAL_HOURS`             | `24`             | `apps/worker/src/jobs/model-sync-scheduler.ts` | Interval sinkronisasi katalog model dalam jam.                                                                                    |
 | `PROVIDER_LIMITS_SYNC_INTERVAL_MINUTES` | `70`             | `src/server-init.ts`                        | Interval polling batas rate dan kuota provider.                                                                                   |
-| `SHIGUANG_GATEWAY_DISABLE_BACKGROUND_SERVICES` | `false`          | `src/instrumentation-node.ts`               | Nonaktifkan semua layanan latar belakang (sinkronisasi, harga, pembaruan model). Berguna untuk CI/pengujian.                      |
-| `SHIGUANG_GATEWAY_BOOTSTRAPPED`                | `false`          | `src/app/(dashboard)/dashboard/page.tsx`    | Diatur ke `true` oleh skrip bootstrap setelah pengaturan awal. Mengontrol visibilitas wizard pengaturan.                          |
-| `SHIGUANG_GATEWAY_ALLOW_BODY_PROJECT_OVERRIDE` | `0`              | `open-sse/executors/antigravity.ts`         | Escape hatch: izinkan body permintaan untuk menimpa field proyek Antigravity.                                                     |
+| `ORBIT_DISABLE_BACKGROUND_SERVICES` | `false`          | `src/instrumentation-node.ts`               | Nonaktifkan semua layanan latar belakang (sinkronisasi, harga, pembaruan model). Berguna untuk CI/pengujian.                      |
+| `ORBIT_BOOTSTRAPPED`                | `false`          | `src/app/(dashboard)/dashboard/page.tsx`    | Diatur ke `true` oleh skrip bootstrap setelah pengaturan awal. Mengontrol visibilitas wizard pengaturan.                          |
+| `ORBIT_ALLOW_BODY_PROJECT_OVERRIDE` | `0`              | `open-sse/executors/antigravity.ts`         | Escape hatch: izinkan body permintaan untuk menimpa field proyek Antigravity.                                                     |
 
 ### Jembatan CLI OAuth (Internal)
 
 | Variable            | Default          | Source File                     | Deskripsi                                            |
 | ------------------- | ---------------- | ------------------------------- | ---------------------------------------------------- |
-| `SHIGUANG_GATEWAY_SERVER`  | deteksi otomatis | `src/lib/oauth/config/index.ts` | URL server untuk jembatan autentikasi CLI↔ShiguangGateway. |
-| `SHIGUANG_GATEWAY_TOKEN`   | _(unset)_        | `src/lib/oauth/config/index.ts` | Token autentikasi untuk jembatan CLI.                |
-| `SHIGUANG_GATEWAY_USER_ID` | `cli`            | `src/lib/oauth/config/index.ts` | ID pengguna untuk sesi jembatan CLI.                 |
-| `SERVER_URL`        | _(unset)_        | `src/lib/oauth/config/index.ts` | Alias legacy untuk `SHIGUANG_GATEWAY_SERVER`.               |
-| `CLI_TOKEN`         | _(unset)_        | `src/lib/oauth/config/index.ts` | Alias legacy untuk `SHIGUANG_GATEWAY_TOKEN`.                |
-| `CLI_USER_ID`       | _(unset)_        | `src/lib/oauth/config/index.ts` | Alias legacy untuk `SHIGUANG_GATEWAY_USER_ID`.              |
+| `ORBIT_SERVER`  | deteksi otomatis | `src/lib/oauth/config/index.ts` | URL server untuk jembatan autentikasi CLI↔Orbit. |
+| `ORBIT_TOKEN`   | _(unset)_        | `src/lib/oauth/config/index.ts` | Token autentikasi untuk jembatan CLI.                |
+| `ORBIT_USER_ID` | `cli`            | `src/lib/oauth/config/index.ts` | ID pengguna untuk sesi jembatan CLI.                 |
+| `SERVER_URL`        | _(unset)_        | `src/lib/oauth/config/index.ts` | Alias legacy untuk `ORBIT_SERVER`.               |
+| `CLI_TOKEN`         | _(unset)_        | `src/lib/oauth/config/index.ts` | Alias legacy untuk `ORBIT_TOKEN`.                |
+| `CLI_USER_ID`       | _(unset)_        | `src/lib/oauth/config/index.ts` | Alias legacy untuk `ORBIT_USER_ID`.              |
 
 ---
 
@@ -313,7 +313,7 @@ Kredensial bawaan untuk **pengembangan localhost**. Untuk deployment jarak jauh,
 | `QODER_OAUTH_CLIENT_ID`           | Qoder                   | —                                                                              |
 | `QODER_PERSONAL_ACCESS_TOKEN`     | Qoder                   | Fallback kunci API langsung (melewati OAuth).                                  |
 | `QODER_CLI_WORKSPACE`             | Qoder                   | ID workspace untuk CLI Qoder.                                                  |
-| `SHIGUANG_GATEWAY_QODER_WORKSPACE`       | Qoder                   | Alias untuk `QODER_CLI_WORKSPACE`.                                             |
+| `ORBIT_QODER_WORKSPACE`       | Qoder                   | Alias untuk `QODER_CLI_WORKSPACE`.                                             |
 
 > [!WARNING]
 >
@@ -353,7 +353,7 @@ process.env[`${PROVIDER_ID}_USER_AGENT`]
 
 ## 13. Kompatibilitas Fingerprint CLI
 
-Saat diaktifkan, ShiguangGateway mengatur ulang urutan header HTTP dan field body JSON agar cocok dengan tanda tangan persis dari alat CLI resmi. Hal ini mengurangi risiko pemblokiran akun sambil mempertahankan IP proxy Anda.
+Saat diaktifkan, Orbit mengatur ulang urutan header HTTP dan field body JSON agar cocok dengan tanda tangan persis dari alat CLI resmi. Hal ini mengurangi risiko pemblokiran akun sambil mempertahankan IP proxy Anda.
 
 **Sumber:** `open-sse/config/cliFingerprints.ts`, `open-sse/executors/base.ts`
 
@@ -483,7 +483,7 @@ Sistem logging menulis ke stdout dan file log yang dirotasi. Semua konfigurasi d
 
 | Variable                   | Default              | Deskripsi                                                                                                                 |
 | -------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `SHIGUANG_GATEWAY_MEMORY_MB`      | `512`                | Batas heap V8 saat runtime. Docker standalone dan `shiguang-gateway serve` menggunakannya untuk mengatur `--max-old-space-size`. |
+| `ORBIT_MEMORY_MB`      | `512`                | Batas heap V8 saat runtime. Docker standalone dan `orbit serve` menggunakannya untuk mengatur `--max-old-space-size`. |
 | `PROMPT_CACHE_MAX_SIZE`    | `50`                 | Maksimum entri prompt sistem yang dicache.                                                                                |
 | `PROMPT_CACHE_MAX_BYTES`   | `2097152` (2 MB)     | Ukuran total cache prompt maksimum.                                                                                       |
 | `PROMPT_CACHE_TTL_MS`      | `300000` (5 menit)   | TTL entri cache prompt.                                                                                                   |
@@ -497,7 +497,7 @@ Sistem logging menulis ke stdout dan file log yang dirotasi. Semua konfigurasi d
 ### Contoh Docker RAM Rendah
 
 ```bash
-SHIGUANG_GATEWAY_MEMORY_MB=128
+ORBIT_MEMORY_MB=128
 PROMPT_CACHE_MAX_SIZE=20
 PROMPT_CACHE_MAX_BYTES=524288        # 512 KB
 SEMANTIC_CACHE_MAX_SIZE=25
@@ -568,7 +568,7 @@ Sinkronisasi data harga model secara otomatis dari sumber eksternal.
 | `CURSOR_PROTOBUF_DEBUG`          | _(unset)_ | `open-sse/utils/cursorProtobuf.ts`        | Atur ke `1` untuk membuang detail decode/encode protobuf Cursor.                      |
 | `CURSOR_STREAM_DEBUG`            | _(unset)_ | `open-sse/executors/cursor.ts`            | Atur ke `1` untuk membuang data stream SSE Cursor mentah.                             |
 | `DEBUG_RESPONSES_SSE_TO_JSON`    | _(unset)_ | `open-sse/handlers/responseTranslator.ts` | Atur ke `true` untuk mencatat log detail translasi SSE→JSON Responses API.            |
-| `NEXT_PUBLIC_SHIGUANG_GATEWAY_E2E_MODE` | _(unset)_ | E2E test harness                          | Atur ke `true` untuk mengaktifkan mode pengujian E2E (autentikasi santai, test hook). |
+| `NEXT_PUBLIC_ORBIT_E2E_MODE` | _(unset)_ | E2E test harness                          | Atur ke `true` untuk mengaktifkan mode pengujian E2E (autentikasi santai, test hook). |
 
 ---
 
@@ -608,9 +608,9 @@ API_PORT=20129
 NODE_ENV=production
 AUTH_COOKIE_SECURE=true
 REQUIRE_API_KEY=true
-NEXT_PUBLIC_BASE_URL=https://shiguang-gateway.example.com
+NEXT_PUBLIC_BASE_URL=https://orbit.example.com
 BASE_URL=http://localhost:20128
-SHIGUANG_GATEWAY_MEMORY_MB=512
+ORBIT_MEMORY_MB=512
 CORS_ORIGIN=https://your-frontend.example.com
 ```
 
@@ -621,7 +621,7 @@ JWT_SECRET=test-jwt-secret-for-ci
 API_KEY_SECRET=test-api-key-secret-for-ci
 INITIAL_PASSWORD=testpass
 NODE_ENV=production
-SHIGUANG_GATEWAY_DISABLE_BACKGROUND_SERVICES=true
+ORBIT_DISABLE_BACKGROUND_SERVICES=true
 APP_LOG_TO_FILE=false
 ```
 
@@ -634,9 +634,9 @@ STORAGE_ENCRYPTION_KEY=<generated>
 PORT=20128
 AUTH_COOKIE_SECURE=true
 REQUIRE_API_KEY=true
-NEXT_PUBLIC_BASE_URL=https://shiguang-gateway.example.com
+NEXT_PUBLIC_BASE_URL=https://orbit.example.com
 BASE_URL=http://127.0.0.1:20128
-CORS_ORIGIN=https://shiguang-gateway.example.com
+CORS_ORIGIN=https://orbit.example.com
 ENABLE_TLS_FINGERPRINT=true
 CLI_COMPAT_ALL=1
 ```
@@ -650,7 +650,7 @@ Variabel-variabel berikut muncul di versi sebelumnya dari `.env.example` tetapi 
 | Variable                                              | Alasan                                                                                                                       |
 | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | `STORAGE_DRIVER=sqlite`                               | Tidak pernah dibaca oleh file sumber mana pun. SQLite adalah satu-satunya driver yang didukung — tidak diperlukan pemilihan. |
-| `INSTANCE_NAME=shiguang-gateway`                             | Ada di template docs/env lama tetapi tidak digunakan saat runtime. Mungkin kembali dalam fitur multi-instansi di masa depan. |
+| `INSTANCE_NAME=orbit`                             | Ada di template docs/env lama tetapi tidak digunakan saat runtime. Mungkin kembali dalam fitur multi-instansi di masa depan. |
 | `SQLITE_MAX_SIZE_MB=2048`                             | Tidak dirujuk dalam kode sumber. Ukuran database tidak dibatasi secara artifisial.                                           |
 | `SQLITE_CLEAN_LEGACY_FILES=true`                      | Tidak dirujuk dalam kode sumber. Pembersihan legacy kemungkinan telah dihapus.                                               |
 | `CLI_ROO_BIN`                                         | Tidak terdaftar di `src/shared/services/cliRuntime.ts`.                                                                      |

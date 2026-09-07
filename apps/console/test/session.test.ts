@@ -29,7 +29,7 @@ test("service failures, denied access and malformed responses do not redirect to
 });
 
 test("a failed SSO round trip stops instead of automatically redirecting again", async () => {
-  storage.set("shiguang-gateway:sso-redirect", "1");
+  storage.set("orbit:sso-redirect", "1");
   globalThis.fetch = async () => new Response("{}", { status: 401 });
   await assert.rejects(requireAuthSession);
   assert.equal(redirects.length, 0);

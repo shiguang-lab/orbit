@@ -4,9 +4,9 @@ import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
-const runtimeServices = ["gateway", "control", "realtime", "worker"].map(name => `shiguang-gateway-${name}`);
+const runtimeServices = ["gateway", "control", "realtime", "worker"].map(name => `orbit-${name}`);
 function resolvedServices(override) {
-  const env = { ...process.env, SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN: "compose-contract-test-only" };
+  const env = { ...process.env, ORBIT_INTERNAL_SERVICE_TOKEN: "compose-contract-test-only" };
   delete env.REQUIRE_API_KEY;
   if (override !== undefined) env.REQUIRE_API_KEY = override;
   const result = spawnSync("docker", ["compose", "--env-file", ".env.example", "config", "--format", "json"], {

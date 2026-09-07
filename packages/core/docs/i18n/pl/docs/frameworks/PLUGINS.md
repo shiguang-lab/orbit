@@ -1,37 +1,37 @@
 ---
-title: "System wtyczek CLI ShiguangGateway"
+title: "System wtyczek CLI Orbit"
 version: 3.8.40
 lastUpdated: 2026-06-28
 ---
 
-# System wtyczek CLI ShiguangGateway
+# System wtyczek CLI Orbit
 
-Rozszerzaj CLI `shiguang-gateway` bez modyfikowania jego rdzenia. Wtyczki stosują konwencję nazewnictwa `shiguang-gateway-cmd-*`, podobnie jak `gh extension` lub `kubectl plugin`.
+Rozszerzaj CLI `orbit` bez modyfikowania jego rdzenia. Wtyczki stosują konwencję nazewnictwa `orbit-cmd-*`, podobnie jak `gh extension` lub `kubectl plugin`.
 
 ## Szybki start
 
 ```bash
 # Install a plugin from npm
-shiguang-gateway plugin install stripe
+orbit plugin install stripe
 
 # Install a local plugin in development
-shiguang-gateway plugin install ./my-plugin
+orbit plugin install ./my-plugin
 
 # List installed plugins
-shiguang-gateway plugin list
+orbit plugin list
 
 # Scaffold a new plugin
-shiguang-gateway plugin scaffold myplugin
-cd shiguang-gateway-cmd-myplugin
-shiguang-gateway plugin install .
+orbit plugin scaffold myplugin
+cd orbit-cmd-myplugin
+orbit plugin install .
 ```
 
 ## Anatomia wtyczki
 
-Wtyczka to pakiet npm o nazwie `shiguang-gateway-cmd-<name>` (lub `@scope/shiguang-gateway-cmd-<name>`).
+Wtyczka to pakiet npm o nazwie `orbit-cmd-<name>` (lub `@scope/orbit-cmd-<name>`).
 
 ```
-shiguang-gateway-cmd-myplugin/
+orbit-cmd-myplugin/
 ├── package.json     # must have "type": "module" and "main": "index.mjs"
 ├── index.mjs        # exports register(program, ctx) + optional meta
 └── README.md
@@ -41,12 +41,12 @@ shiguang-gateway-cmd-myplugin/
 
 ```json
 {
-  "name": "shiguang-gateway-cmd-myplugin",
+  "name": "orbit-cmd-myplugin",
   "version": "0.1.0",
   "type": "module",
   "main": "index.mjs",
-  "engines": { "shiguang-gateway": ">=4.0.0" },
-  "keywords": ["shiguang-gateway-plugin", "shiguang-gateway-cmd"]
+  "engines": { "orbit": ">=4.0.0" },
+  "keywords": ["orbit-plugin", "orbit-cmd"]
 }
 ```
 
@@ -56,8 +56,8 @@ shiguang-gateway-cmd-myplugin/
 export const meta = {
   name: "myplugin",
   version: "0.1.0",
-  description: "My plugin for ShiguangGateway",
-  shiguang-gatewayApi: ">=4.0.0",
+  description: "My plugin for Orbit",
+  orbitApi: ">=4.0.0",
 };
 
 export function register(program, ctx) {
@@ -83,7 +83,7 @@ Obiekt `ctx` przekazywany do `register(program, ctx)`:
 
 | Property                     | Type             | Description                                                 |
 | ---------------------------- | ---------------- | ----------------------------------------------------------- |
-| `ctx.apiFetch(path, opts)`   | `async function` | Uwierzytelniony fetch do serwera ShiguangGateway                  |
+| `ctx.apiFetch(path, opts)`   | `async function` | Uwierzytelniony fetch do serwera Orbit                  |
 | `ctx.emit(data, opts)`       | `function`       | Wyjście w formacie table/json/jsonl/csv wg flagi `--output` |
 | `ctx.t(key)`                 | `async function` | Wyszukiwanie tłumaczenia i18n                               |
 | `ctx.withSpinner(label, fn)` | `async function` | Opakowuje async fn w spinner ora                            |
@@ -94,21 +94,21 @@ Obiekt `ctx` przekazywany do `register(program, ctx)`:
 
 Wtyczki są wykrywane z:
 
-1. `~/.shiguang-gateway/plugins/<name>/` — instalacje lokalne użytkownika
-2. `SHIGUANG_GATEWAY_PLUGIN_PATH` env var — niestandardowy katalog
+1. `~/.orbit/plugins/<name>/` — instalacje lokalne użytkownika
+2. `ORBIT_PLUGIN_PATH` env var — niestandardowy katalog
 
 Błędy ładowania są przechwytywane i wypisywane jako ostrzeżenia — uszkodzona wtyczka nigdy nie zawiesza CLI.
 
 ## Bezpieczeństwo
 
-Wtyczki działają z tymi samymi uprawnieniami procesu Node.js co `shiguang-gateway`. Instaluj wtyczki wyłącznie ze źródeł, którym ufasz. `shiguang-gateway plugin install` wyświetla wyraźne ostrzeżenie i wymaga `--yes` albo interaktywnego potwierdzenia.
+Wtyczki działają z tymi samymi uprawnieniami procesu Node.js co `orbit`. Instaluj wtyczki wyłącznie ze źródeł, którym ufasz. `orbit plugin install` wyświetla wyraźne ostrzeżenie i wymaga `--yes` albo interaktywnego potwierdzenia.
 
 ## Publikowanie
 
-1. Upewnij się, że `package.json` ma `"keywords": ["shiguang-gateway-plugin"]`
+1. Upewnij się, że `package.json` ma `"keywords": ["orbit-plugin"]`
 2. `npm publish` jak zwykle
-3. Użytkownicy odkrywają wtyczki przez `shiguang-gateway plugin search <query>` (przeszukuje rejestr npm)
+3. Użytkownicy odkrywają wtyczki przez `orbit plugin search <query>` (przeszukuje rejestr npm)
 
 ## Przykładowa wtyczka
 
-Zobacz [`examples/shiguang-gateway-cmd-hello/`](../../examples/shiguang-gateway-cmd-hello/index.mjs) — minimalny działający przykład z `meta` + `register()`.
+Zobacz [`examples/orbit-cmd-hello/`](../../examples/orbit-cmd-hello/index.mjs) — minimalny działający przykład z `meta` + `register()`.

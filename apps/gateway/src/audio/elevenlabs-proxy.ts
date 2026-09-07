@@ -8,7 +8,7 @@ const ELEVENLABS_API_BASE = "https://api.elevenlabs.io/v1";
 export const ELEVENLABS_CORS_HEADERS = {
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
   "Access-Control-Allow-Headers":
-    "Content-Type, Authorization, x-api-key, anthropic-version, x-shiguangGateway-connection, X-ShiguangGateway-Lease-Owner, X-ShiguangGateway-Lease-Generation, x-internal-test, accept",
+    "Content-Type, Authorization, x-api-key, anthropic-version, x-orbit-connection, X-Orbit-Lease-Owner, X-Orbit-Lease-Generation, x-internal-test, accept",
 } as const;
 const ALLOWED_RESPONSE_HEADERS = [
   "content-type",

@@ -868,7 +868,7 @@ interface LocaleState {
 export const useLocaleStore = create<LocaleState>()(
   persist(
     (set) => ({ locale: detectLocale(), setLocale: (locale) => set({ locale }) }),
-    { name: "shiguangGateway-admin-locale" },
+    { name: "orbit-admin-locale" },
   ),
 );
 

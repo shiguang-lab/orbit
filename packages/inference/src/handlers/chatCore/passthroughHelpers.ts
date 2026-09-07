@@ -68,7 +68,7 @@ export function shouldUseNativeOpenAICompatibleResponsesPassthrough({
   if (sourceFormat !== FORMATS.OPENAI_RESPONSES) return false;
   if (providerSpecificData && typeof providerSpecificData === "object") {
     const psd = providerSpecificData as Record<string, unknown>;
-    if (psd.apiType === "responses" || psd._shiguangGatewayForceResponsesUpstream === true) {
+    if (psd.apiType === "responses" || psd._orbitForceResponsesUpstream === true) {
       return true;
     }
   }

@@ -25,9 +25,9 @@ export const CLAUDE_CODE_TARGET: MitmTarget = {
   setupTutorial: {
     steps: [
       "Install Claude Code (Anthropic CLI)",
-      "Install ShiguangGateway's root certificate",
+      "Install Orbit's root certificate",
       "Enable DNS routing for Claude Code",
-      "Run `claude` — requests are now proxied via ShiguangGateway",
+      "Run `claude` — requests are now proxied via Orbit",
     ],
     detection: { command: "which claude", platform: "all" },
   },

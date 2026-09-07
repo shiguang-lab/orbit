@@ -128,7 +128,7 @@ export async function validateDeepSeekWebProvider({ apiKey }: any) {
     // DeepSeek's web endpoint can report auth rejection as HTTP 200 with an
     // application-level error envelope. Code 40003 is the observed
     // "Authorization Failed" signal. Preserve the real HTTP behavior while
-    // returning an auth-classifiable status to ShiguangGateway's connection-test
+    // returning an auth-classifiable status to Orbit's connection-test
     // layer so it is not collapsed into a generic upstream_error.
     if (Number(json?.code) === 40003) {
       return {

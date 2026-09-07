@@ -31,7 +31,7 @@ const REQUIRED_TABLES = ["provider_connections", "provider_nodes", "combos", "ap
 export function resolveMaxUploadSizeBytes(
   env: NodeJS.ProcessEnv = process.env
 ): number {
-  const raw = env.SHIGUANG_GATEWAY_DB_IMPORT_MAX_MB;
+  const raw = env.ORBIT_DB_IMPORT_MAX_MB;
   const parsed = raw === undefined ? NaN : Number(raw);
   const mb =
     Number.isFinite(parsed) && parsed >= 1
@@ -87,7 +87,7 @@ export class DbBackupsService {
     }
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-    const exportFilename = `shiguangGateway-backup-${timestamp}.sqlite`;
+    const exportFilename = `orbit-backup-${timestamp}.sqlite`;
     const tmpDir = os.tmpdir();
     const tmpPath = path.join(tmpDir, exportFilename);
 
@@ -105,8 +105,8 @@ export class DbBackupsService {
 
     const db = getDbInstance();
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
-    const tempDir = path.join(os.tmpdir(), `shiguangGateway-export-${timestamp}`);
-    const zipPath = path.join(os.tmpdir(), `shiguangGateway-full-backup-${timestamp}.zip`);
+    const tempDir = path.join(os.tmpdir(), `orbit-export-${timestamp}`);
+    const zipPath = path.join(os.tmpdir(), `orbit-full-backup-${timestamp}.zip`);
 
     try {
       fs.mkdirSync(tempDir, { recursive: true });
@@ -132,7 +132,7 @@ export class DbBackupsService {
       const metadata = {
         exportedAt: new Date().toISOString(),
         version: process.env.npm_package_version || "unknown",
-        format: "shiguangGateway-full-backup-v1",
+        format: "orbit-full-backup-v1",
         contents: [
           "storage.sqlite - Full database",
           "settings.json - Key-value settings",
@@ -157,7 +157,7 @@ export class DbBackupsService {
 
       return {
         archiveBuffer,
-        filename: `shiguangGateway-full-backup-${timestamp}.tar.gz`,
+        filename: `orbit-full-backup-${timestamp}.tar.gz`,
       };
     } catch (innerError) {
       try {
@@ -180,7 +180,7 @@ export class DbBackupsService {
     if (fileSize > maxUploadSize) {
       throw new Error(
         `File too large. Maximum allowed size is ${maxUploadSize / (1024 * 1024)} MB. ` +
-        `Set SHIGUANG_GATEWAY_DB_IMPORT_MAX_MB to raise it, or VACUUM the database before exporting.`
+        `Set ORBIT_DB_IMPORT_MAX_MB to raise it, or VACUUM the database before exporting.`
       );
     }
 
@@ -188,7 +188,7 @@ export class DbBackupsService {
       throw new Error("File too small to be a valid SQLite database.");
     }
 
-    const tmpPath = path.join(os.tmpdir(), `shiguangGateway-import-${Date.now()}.sqlite`);
+    const tmpPath = path.join(os.tmpdir(), `orbit-import-${Date.now()}.sqlite`);
     fs.writeFileSync(tmpPath, fileBuffer);
 
     let testDb: any = null;
@@ -202,7 +202,7 @@ export class DbBackupsService {
       const tables = getTableNamesFromAdapter(testDb);
       const missingTables = REQUIRED_TABLES.filter((t) => !tables.includes(t));
       if (missingTables.length > 0) {
-        throw new Error(`Invalid ShiguangGateway database. Missing tables: ${missingTables.join(", ")}`);
+        throw new Error(`Invalid Orbit database. Missing tables: ${missingTables.join(", ")}`);
       }
 
       testDb.close();

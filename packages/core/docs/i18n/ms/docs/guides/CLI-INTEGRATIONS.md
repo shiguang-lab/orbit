@@ -6,26 +6,26 @@
 
 ---
 
-title: "Integrasi CLI — arahkan mana-mana CLI pengkodan ke ShiguangGateway"
+title: "Integrasi CLI — arahkan mana-mana CLI pengkodan ke Orbit"
 version: 3.8.50
 lastUpdated: 2026-08-18
 ---
 
 # Integrasi CLI
 
-ShiguangGateway menyediakan sekumpulan perintah `setup-*` yang mengkonfigurasi CLI pengkodan
-(Codex, Claude Code, OpenCode, Cline, …) untuk menggunakan ShiguangGateway sebagai backend-nya — jadi
-alat ini berkomunikasi dengan **satu** titik akhir dan ShiguangGateway mengarahkan ke penyedia yang tepat dengan
-auto-fallback. Setiap perintah membaca katalog model **langsung** dari ShiguangGateway yang sedang berjalan
+Orbit menyediakan sekumpulan perintah `setup-*` yang mengkonfigurasi CLI pengkodan
+(Codex, Claude Code, OpenCode, Cline, …) untuk menggunakan Orbit sebagai backend-nya — jadi
+alat ini berkomunikasi dengan **satu** titik akhir dan Orbit mengarahkan ke penyedia yang tepat dengan
+auto-fallback. Setiap perintah membaca katalog model **langsung** dari Orbit yang sedang berjalan
 (lokal atau jauh) dan menulis fail konfigurasi alat itu sendiri di **komputer anda**. Kunci API dirujuk oleh pembolehubah persekitaran di mana sahaja alat itu menyokongnya. Perintah yang mengekalkan fail persekitaran tempatan alat dicatat di bawah.
 
-Terdapat juga pelancar generik — `shiguang-gateway run <target>` — yang melancarkan
+Terdapat juga pelancar generik — `orbit run <target>` — yang melancarkan
 `claude`, `codex`, `aider`, `goose`, `opencode`, `qwen` atau `gemini` dengan
 persekitaran yang betul disuntik, tanpa menulis sebarang konfigurasi. Sasaran dan aliasnya datang dari manifest kanonik `bin/cli/cli-manifest.mjs`
 (`claude-code|cc|anthropic`, `codex-cli|openai-codex|openai`, `goose-cli`,
-`open-code`, `qwen-code`, `gemini-cli`), dan `shiguang-gateway completion` menawarkan
+`open-code`, `qwen-code`, `gemini-cli`), dan `orbit completion` menawarkan
 kata sasaran yang sama yang diperoleh dari manifest. Pelancar per-alat yang lama —
-`shiguang-gateway launch` (Claude Code) dan `shiguang-gateway launch-codex` (Codex) — masih
+`orbit launch` (Claude Code) dan `orbit launch-codex` (Codex) — masih
 tersedia.
 
 Pendaftaran penyedia tersedia dari konteks lokal/jauh yang sama. Perintah
@@ -33,11 +33,11 @@ API-first di bawah mengekalkan pengesahan pengurusan terpisah dari kelayakan pen
 dan tidak pernah mencetak kelayakan dalam output terstruktur:
 
 ```bash
-shiguang-gateway providers add glm --credential-env GLM_API_KEY --name work
-shiguang-gateway providers import ./providers.json --dry-run --json
-shiguang-gateway providers auth openai
-shiguang-gateway providers edit <connection-id> --default-model glm/glm-5.2
-shiguang-gateway providers remove <connection-id> --yes
+orbit providers add glm --credential-env GLM_API_KEY --name work
+orbit providers import ./providers.json --dry-run --json
+orbit providers auth openai
+orbit providers edit <connection-id> --default-model glm/glm-5.2
+orbit providers remove <connection-id> --yes
 ```
 
 Untuk skrip, lebih baik menggunakan `--credential-stdin` atau `--credential-env`; `--credential`
@@ -49,7 +49,7 @@ penyelaman mendalam per-alat:
 
 - [Konfigurasi Claude Code](./CLAUDE-CODE-CONFIGURATION.md)
 - [Konfigurasi Codex CLI](./CODEX-CLI-CONFIGURATION.md)
-- [Mod Jauh](./REMOTE-MODE.md) — mengendalikan ShiguangGateway jauh (VPS / Tailnet) dari komputer riba anda
+- [Mod Jauh](./REMOTE-MODE.md) — mengendalikan Orbit jauh (VPS / Tailnet) dari komputer riba anda
 - [VS Code Copilot Chat](./VSCODE-COPILOT.md) — sambungan OmniCopilot; ia juga boleh menjalankan
   perintah `setup-*` ini untuk anda dari dalam editor
 
@@ -57,7 +57,7 @@ penyelaman mendalam per-alat:
 
 ## Jadual Utama
 
-Setiap perintah menghormati **konteks aktif** (ditetapkan dengan `shiguang-gateway connect`, lihat
+Setiap perintah menghormati **konteks aktif** (ditetapkan dengan `orbit connect`, lihat
 [Mod Jauh](./REMOTE-MODE.md)) atau bendera eksplisit `--remote <url> --api-key <key>`.
 "Tempatan vs jauh" di bawah bermaksud: tanpa bendera ia menyasarkan `http://localhost:20128`;
 dengan `--remote` (atau konteks jauh yang aktif) ia mengambil katalog dari pelayan itu
@@ -65,27 +65,27 @@ dan menulis konfigurasi secara lokal.
 
 | Perintah                   | Alat                            | Apa yang ditulis                                                                                                                                                                  | Bendera utama                                                                                                                              | Tempatan vs jauh |
 | -------------------------- | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ---------------- |
-| `shiguang-gateway setup-codex`    | OpenAI Codex CLI                | `~/.codex/<name>.config.toml` — satu profil bagi setiap model teks yang serasi (`codex --profile <name>`)                                                                         | `--remote` `--api-key` `--only` `--dry-run` `--port` `--codex-home`                                                                        | Kedua            |
-| `shiguang-gateway setup-claude`   | Claude Code                     | `~/.claude/profiles/<name>/settings.json` — satu profil bagi setiap model yang sepadan (`CLAUDE_CONFIG_DIR`)                                                                      | `--remote` `--api-key` `--only` `--dry-run` `--port` `--claude-home`                                                                       | Kedua            |
-| `shiguang-gateway setup-opencode` | OpenCode (serasi dengan openai) | `~/.config/opencode/opencode.json` — penyedia `shiguang-gateway` dengan setiap model katalog (`opencode -m shiguang-gateway/<model>`)                                                           | `--remote` `--api-key` `--only` `--model` `--dry-run` `--port`                                                                             | Kedua            |
-| `shiguang-gateway setup-cline`    | Cline                           | `~/.cline/data/{globalState,secrets}.json` (mod CLI) + mencetak tetapan sambungan VS Code                                                                                         | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--cline-dir`                                                                | Kedua            |
-| `shiguang-gateway setup-kilo`     | Kilo Code                       | `~/.local/share/kilo/auth.json` (CLI) + menggabungkan `kilocode.*` ke dalam `settings.json` VS Code jika ada                                                                      | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--auth-path` `--vscode-settings`                                            | Kedua            |
-| `shiguang-gateway setup-continue` | Continue / `cn` CLI             | `~/.continue/config.yaml` — model `provider: openai`, kunci melalui `${{ secrets.SHIGUANG_GATEWAY_API_KEY }}`                                                                            | `--remote` `--api-key` `--only` `--dry-run` `--port` `--config-path`                                                                       | Kedua            |
-| `shiguang-gateway setup-cursor`   | Cursor                          | Tiada — mencetak langkah dalam aplikasi (konfigurasi Cursor adalah SQLite yang tidak telus)                                                                                       | `--remote` `--api-key` `--only` `--port`                                                                                                   | Kedua            |
-| `shiguang-gateway setup-roo`      | Roo Code                        | `~/.shiguang-gateway/roo-settings.json` (dok import) + menetapkan `roo-cline.autoImportSettingsPath` jika `settings.json` VS Code wujud                                                  | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--import-path` `--vscode-settings`                                          | Kedua            |
-| `shiguang-gateway setup-crush`    | Crush                           | `~/.config/crush/crush.json` — penyedia `openai-compat`, kunci melalui `$SHIGUANG_GATEWAY_API_KEY`                                                                                       | `--remote` `--api-key` `--only` `--dry-run` `--port` `--config-path`                                                                       | Kedua            |
-| `shiguang-gateway setup-goose`    | Goose                           | `~/.config/goose/config.yaml` (`GOOSE_PROVIDER`/`OPENAI_HOST`/`GOOSE_MODEL`) + mencetak resipi env                                                                                | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--config-path`                                                              | Kedua            |
-| `shiguang-gateway setup-aider`    | Aider                           | `~/.aider.conf.yml` (`openai-api-base` + `model: openai/<id>`) + mencetak resipi env                                                                                              | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--config-path`                                                              | Kedua            |
-| `shiguang-gateway setup-qwen`     | Qwen Code                       | `~/.qwen/settings.json` — array `modelProviders.openai` V4 + `SHIGUANG_GATEWAY_API_KEY` dalam `~/.qwen/.env`                                                                             | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--config-path` `--env-path`                                                 | Kedua            |
-| `shiguang-gateway run <target>`   | Pelancaran runtime (generik)    | Tiada — melancarkan `claude`/`codex`/`aider`/`goose`/`opencode`/`qwen`/`gemini` dengan persekitaran dan argumen yang betul; Qwen dan Gemini menggunakan rumah terpencil sementara | `--remote` `--base-url` `--context` `--provider` `--model` `--api-key` `--api-key-env` `--dry-run` `--json` `--port` `--profile` `--token` | Kedua            |
-| `shiguang-gateway launch`         | Claude Code                     | Tiada — melancarkan `claude` dengan `ANTHROPIC_BASE_URL`/`ANTHROPIC_AUTH_TOKEN` disuntik                                                                                          | `--remote` `--api-key` `--token` `--profile` `--port`                                                                                      | Kedua            |
-| `shiguang-gateway launch-codex`   | OpenAI Codex CLI                | Tiada — melancarkan `codex` dengan penyedia `shiguang-gateway` disuntik melalui bendera `-c`                                                                                             | `--remote` `--api-key` `--profile` (`-p`) `--port`                                                                                         | Kedua            |
+| `orbit setup-codex`    | OpenAI Codex CLI                | `~/.codex/<name>.config.toml` — satu profil bagi setiap model teks yang serasi (`codex --profile <name>`)                                                                         | `--remote` `--api-key` `--only` `--dry-run` `--port` `--codex-home`                                                                        | Kedua            |
+| `orbit setup-claude`   | Claude Code                     | `~/.claude/profiles/<name>/settings.json` — satu profil bagi setiap model yang sepadan (`CLAUDE_CONFIG_DIR`)                                                                      | `--remote` `--api-key` `--only` `--dry-run` `--port` `--claude-home`                                                                       | Kedua            |
+| `orbit setup-opencode` | OpenCode (serasi dengan openai) | `~/.config/opencode/opencode.json` — penyedia `orbit` dengan setiap model katalog (`opencode -m orbit/<model>`)                                                           | `--remote` `--api-key` `--only` `--model` `--dry-run` `--port`                                                                             | Kedua            |
+| `orbit setup-cline`    | Cline                           | `~/.cline/data/{globalState,secrets}.json` (mod CLI) + mencetak tetapan sambungan VS Code                                                                                         | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--cline-dir`                                                                | Kedua            |
+| `orbit setup-kilo`     | Kilo Code                       | `~/.local/share/kilo/auth.json` (CLI) + menggabungkan `kilocode.*` ke dalam `settings.json` VS Code jika ada                                                                      | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--auth-path` `--vscode-settings`                                            | Kedua            |
+| `orbit setup-continue` | Continue / `cn` CLI             | `~/.continue/config.yaml` — model `provider: openai`, kunci melalui `${{ secrets.ORBIT_API_KEY }}`                                                                            | `--remote` `--api-key` `--only` `--dry-run` `--port` `--config-path`                                                                       | Kedua            |
+| `orbit setup-cursor`   | Cursor                          | Tiada — mencetak langkah dalam aplikasi (konfigurasi Cursor adalah SQLite yang tidak telus)                                                                                       | `--remote` `--api-key` `--only` `--port`                                                                                                   | Kedua            |
+| `orbit setup-roo`      | Roo Code                        | `~/.orbit/roo-settings.json` (dok import) + menetapkan `roo-cline.autoImportSettingsPath` jika `settings.json` VS Code wujud                                                  | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--import-path` `--vscode-settings`                                          | Kedua            |
+| `orbit setup-crush`    | Crush                           | `~/.config/crush/crush.json` — penyedia `openai-compat`, kunci melalui `$ORBIT_API_KEY`                                                                                       | `--remote` `--api-key` `--only` `--dry-run` `--port` `--config-path`                                                                       | Kedua            |
+| `orbit setup-goose`    | Goose                           | `~/.config/goose/config.yaml` (`GOOSE_PROVIDER`/`OPENAI_HOST`/`GOOSE_MODEL`) + mencetak resipi env                                                                                | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--config-path`                                                              | Kedua            |
+| `orbit setup-aider`    | Aider                           | `~/.aider.conf.yml` (`openai-api-base` + `model: openai/<id>`) + mencetak resipi env                                                                                              | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--config-path`                                                              | Kedua            |
+| `orbit setup-qwen`     | Qwen Code                       | `~/.qwen/settings.json` — array `modelProviders.openai` V4 + `ORBIT_API_KEY` dalam `~/.qwen/.env`                                                                             | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--config-path` `--env-path`                                                 | Kedua            |
+| `orbit run <target>`   | Pelancaran runtime (generik)    | Tiada — melancarkan `claude`/`codex`/`aider`/`goose`/`opencode`/`qwen`/`gemini` dengan persekitaran dan argumen yang betul; Qwen dan Gemini menggunakan rumah terpencil sementara | `--remote` `--base-url` `--context` `--provider` `--model` `--api-key` `--api-key-env` `--dry-run` `--json` `--port` `--profile` `--token` | Kedua            |
+| `orbit launch`         | Claude Code                     | Tiada — melancarkan `claude` dengan `ANTHROPIC_BASE_URL`/`ANTHROPIC_AUTH_TOKEN` disuntik                                                                                          | `--remote` `--api-key` `--token` `--profile` `--port`                                                                                      | Kedua            |
+| `orbit launch-codex`   | OpenAI Codex CLI                | Tiada — melancarkan `codex` dengan penyedia `orbit` disuntik melalui bendera `-c`                                                                                             | `--remote` `--api-key` `--profile` (`-p`) `--port`                                                                                         | Kedua            |
 
 Nota mengenai bendera (disahkan dalam sumber perintah):
 
-- `--remote <url>` — mengambil katalog dari ShiguangGateway jauh (menimpa `--port`
+- `--remote <url>` — mengambil katalog dari Orbit jauh (menimpa `--port`
   dan konteks aktif). `--api-key <key>` membekalkan kelayakan untuk pelayan itu
-  (secara default kepada pembolehubah persekitaran `SHIGUANG_GATEWAY_API_KEY`, atau token konteks aktif).
+  (secara default kepada pembolehubah persekitaran `ORBIT_API_KEY`, atau token konteks aktif).
 - `--only <patterns>` — substring yang dipisahkan dengan koma; hanya simpan ID model yang sepadan
   (contohnya `--only glm,kimi`). Tersedia pada `setup-codex`, `setup-claude`,
   `setup-opencode`, `setup-continue`, `setup-cursor`, `setup-crush`.
@@ -96,17 +96,17 @@ Nota mengenai bendera (disahkan dalam sumber perintah):
   penemuan model automatik: Cline, Kilo, Roo, Goose, Qwen, Aider. Alat-alat tersebut
   juga menerima `--yes` untuk larian non-interaktif (yang kemudian memerlukan `--model`).
   `setup-opencode` mengambil `--model` untuk menetapkan model teratas lalai.
-- `--model <id>` pada `shiguang-gateway run` mengikuti pengkabelan per-sasaran manifest
+- `--model <id>` pada `orbit run` mengikuti pengkabelan per-sasaran manifest
   (`bin/cli/cli-manifest.mjs`): **aider** menerima `--model openai/<id>` dan
-  **opencode** `--model shiguang-gateway/<id>` (awalan hanya ditambah apabila id
+  **opencode** `--model orbit/<id>` (awalan hanya ditambah apabila id
   tidak sudah membawanya); **qwen** dan **gemini** menerima id secara langsung;
   **claude** mendapatkannya melalui `ANTHROPIC_MODEL`, **goose** melalui `GOOSE_MODEL`, dan
-  **codex** melalui argumen `-c model_providers.shiguang-gateway.*`. **Qwen adalah satu-satunya sasaran run
-  yang memerlukan `--model`** — `shiguang-gateway run qwen` tanpa itu keluar
+  **codex** melalui argumen `-c model_providers.orbit.*`. **Qwen adalah satu-satunya sasaran run
+  yang memerlukan `--model`** — `orbit run qwen` tanpa itu keluar
   `2` dengan ralat eksplisit.
-- `--port <port>` — port ShiguangGateway lokal (default `20128`, diabaikan apabila `--remote`
+- `--port <port>` — port Orbit lokal (default `20128`, diabaikan apabila `--remote`
   ditetapkan). Terdapat pada semua `setup-*` dan kedua-dua pelancar.
-- Kod keluar `shiguang-gateway run`: kod keluar CLI anak disebarkan
+- Kod keluar `orbit run`: kod keluar CLI anak disebarkan
   secara langsung; `2` = argumen tidak sah (sasaran tidak disokong, `--model` yang diperlukan hilang, pengawal kontena); `127` = binari sasaran tidak ada dalam `PATH`;
   `130`/`143`/`129` apabila pelancaran dihentikan oleh `SIGINT`/`SIGTERM`/`SIGHUP`;
   `1` = kegagalan pelancaran runtime yang lain.
@@ -118,9 +118,9 @@ Pemilih interaktif juga dikongsi oleh resipi penyediaan:
 
 ```bash
 # Pilih dari katalog model lokal atau jauh yang aktif dan konfigurasikan sasaran.
-shiguang-gateway configure claude
-shiguang-gateway configure opencode --provider glm
-shiguang-gateway configure qwen --model qwen/qwen3.8-max-preview --yes
+orbit configure claude
+orbit configure opencode --provider glm
+orbit configure qwen --model qwen/qwen3.8-max-preview --yes
 ```
 
 `configure` kini menyerahkan kepada resipi yang diuji untuk `codex`, `claude`,
@@ -129,7 +129,7 @@ MITM, dan panduan kekal sebagai aliran `setup-*`/manual yang jelas dan
 tidak dipersembahkan sebagai sasaran yang boleh dilancarkan.
 
 > `setup-opencode` adalah integrasi OpenCode yang **ringan dan serasi dengan openai**.
-> Terdapat juga integrasi plugin yang lebih kaya — `shiguang-gateway setup opencode` — yang
+> Terdapat juga integrasi plugin yang lebih kaya — `orbit setup opencode` — yang
 > memasang `@orbit/opencode-plugin`. Mereka adalah perintah yang berbeza; jadual
 > di atas mendokumentasikan `setup-opencode`.
 
@@ -137,76 +137,76 @@ tidak dipersembahkan sebagai sasaran yang boleh dilancarkan.
 
 ## Penggunaan tempatan
 
-Dengan ShiguangGateway berjalan di `localhost:20128`, hanya jalankan arahan persediaan untuk alat anda. Katalog diambil dari pelayan tempatan.
+Dengan Orbit berjalan di `localhost:20128`, hanya jalankan arahan persediaan untuk alat anda. Katalog diambil dari pelayan tempatan.
 
 ```bash
 # Codex: tulis profil bagi setiap model yang sepadan ke ~/.codex/
-shiguang-gateway setup-codex
+orbit setup-codex
 codex --profile glm52            # gunakan profil yang dihasilkan
 
 # Claude Code: tulis profil bagi setiap model, kemudian lancarkan satu
-shiguang-gateway setup-claude
-shiguang-gateway launch --profile glm52
+orbit setup-claude
+orbit launch --profile glm52
 
 # OpenCode: tulis penyedia yang serasi dengan openai dengan semua model katalog
-shiguang-gateway setup-opencode
-export SHIGUANG_GATEWAY_API_KEY=sk-...  # dirujuk melalui {env:SHIGUANG_GATEWAY_API_KEY}, tidak pernah di cakera
-opencode -m shiguang-gateway/glm/glm-5.2 "..."
+orbit setup-opencode
+export ORBIT_API_KEY=sk-...  # dirujuk melalui {env:ORBIT_API_KEY}, tidak pernah di cakera
+opencode -m orbit/glm/glm-5.2 "..."
 
 # Alat tanpa penemuan automatik memerlukan model yang jelas:
-shiguang-gateway setup-aider --model glm/glm-5.2
-shiguang-gateway setup-qwen --model qwen/qwen3.8-max-preview
+orbit setup-aider --model glm/glm-5.2
+orbit setup-qwen --model qwen/qwen3.8-max-preview
 
 # Pratonton tanpa menulis apa-apa:
-shiguang-gateway setup-continue --dry-run
+orbit setup-continue --dry-run
 ```
 
 Lancarkan tanpa menulis sebarang konfigurasi (hanya suntikan env):
 
 ```bash
-shiguang-gateway launch                 # Claude Code → ShiguangGateway tempatan
-shiguang-gateway launch-codex           # Codex CLI → ShiguangGateway tempatan
-shiguang-gateway launch-codex --profile glm52
-shiguang-gateway run claude --model openai/gpt-5.4
-shiguang-gateway run codex --model openai/gpt-5.4 --dry-run --json
-shiguang-gateway run aider --model glm/glm-5.2 -- --message "reply OK"
-shiguang-gateway run goose --model glm/glm-5.2
-shiguang-gateway run opencode --model glm/glm-5.2 -- run "reply OK"
-shiguang-gateway run qwen --model glm/glm-5.2 -- -p "reply OK"
-shiguang-gateway run gemini --model glm/glm-5.2 -- --skip-trust -p "reply OK"
+orbit launch                 # Claude Code → Orbit tempatan
+orbit launch-codex           # Codex CLI → Orbit tempatan
+orbit launch-codex --profile glm52
+orbit run claude --model openai/gpt-5.4
+orbit run codex --model openai/gpt-5.4 --dry-run --json
+orbit run aider --model glm/glm-5.2 -- --message "reply OK"
+orbit run goose --model glm/glm-5.2
+orbit run opencode --model glm/glm-5.2 -- run "reply OK"
+orbit run qwen --model glm/glm-5.2 -- -p "reply OK"
+orbit run gemini --model glm/glm-5.2 -- --skip-trust -p "reply OK"
 
 # Laluan arahan yang jelas: lalui apa sahaja yang datang selepas --
-shiguang-gateway run claude -- --print-system-prompt "review this diff"
+orbit run claude -- --print-system-prompt "review this diff"
 ```
 
 ---
 
 ## Penggunaan jauh
 
-Arahkan mana-mana arahan persediaan ke ShiguangGateway jauh dengan `--remote` + `--api-key`. Katalog diambil dari jauh; konfigurasi ditulis di mesin tempatan anda.
+Arahkan mana-mana arahan persediaan ke Orbit jauh dengan `--remote` + `--api-key`. Katalog diambil dari jauh; konfigurasi ditulis di mesin tempatan anda.
 
 ```bash
 # OpenCode terhadap VPS jauh, simpan hanya model glm/kimi
-shiguang-gateway setup-opencode --remote http://192.168.0.15:20128 --api-key oma_live_xxx \
+orbit setup-opencode --remote http://192.168.0.15:20128 --api-key oma_live_xxx \
   --only glm,kimi
-opencode -m shiguang-gateway/glm/glm-5.2 "..."   # eksport SHIGUANG_GATEWAY_API_KEY terlebih dahulu
+opencode -m orbit/glm/glm-5.2 "..."   # eksport ORBIT_API_KEY terlebih dahulu
 
 # Profil Codex dari katalog jauh
-shiguang-gateway setup-codex --remote http://192.168.0.15:20128 --api-key oma_live_xxx
+orbit setup-codex --remote http://192.168.0.15:20128 --api-key oma_live_xxx
 
 # Lancarkan CLI terus terhadap jauh
-shiguang-gateway launch       --remote http://192.168.0.15:20128 --api-key oma_live_xxx
-shiguang-gateway launch-codex --remote http://192.168.0.15:20128 --api-key oma_live_xxx
+orbit launch       --remote http://192.168.0.15:20128 --api-key oma_live_xxx
+orbit launch-codex --remote http://192.168.0.15:20128 --api-key oma_live_xxx
 ```
 
 Daripada menghantar `--remote`/`--api-key` setiap kali, log masuk sekali dan biarkan
 **konteks aktif** membekalkannya secara automatik:
 
 ```bash
-shiguang-gateway connect 192.168.0.15        # mencipta token terhad, menyimpan konteks
-shiguang-gateway setup-codex                 # ← kini menggunakan katalog jauh
-shiguang-gateway setup-opencode              # ← sama
-shiguang-gateway launch                      # ← Claude Code terhadap jauh
+orbit connect 192.168.0.15        # mencipta token terhad, menyimpan konteks
+orbit setup-codex                 # ← kini menggunakan katalog jauh
+orbit setup-opencode              # ← sama
+orbit launch                      # ← Claude Code terhadap jauh
 ```
 
 Lihat [Mod Jauh](./REMOTE-MODE.md) untuk konteks, skop, dan pengurusan token.
@@ -215,7 +215,7 @@ Lihat [Mod Jauh](./REMOTE-MODE.md) untuk konteks, skop, dan pengurusan token.
 
 ## Konvensyen URL Asas (alat yang memerlukan `/v1`)
 
-ShiguangGateway mendedahkan permukaan OpenAI di `/v1`, permukaan Anthropic di akar,
+Orbit mendedahkan permukaan OpenAI di `/v1`, permukaan Anthropic di akar,
 dan permukaan Gemini asli di `/v1beta`. Setiap integrasi disambungkan kepada bentuk yang
 diharapkan oleh alatnya (disahkan dalam sumber arahan):
 
@@ -226,7 +226,7 @@ diharapkan oleh alatnya (disahkan dalam sumber arahan):
 | `setup-aider` (`OPENAI_API_BASE`)                                          | akar                  | Tidak — LiteLLM menambah `/v1/chat/completions` |
 | `setup-kilo`, `setup-roo`, `setup-continue`, `setup-crush`, `setup-cursor` | dengan `/v1`          | Ya                                              |
 | `setup-claude` (`ANTHROPIC_BASE_URL`), `launch`                            | akar                  | Tidak — Claude Code menambah `/v1/messages`     |
-| `setup-codex`, `launch-codex` (`model_providers.shiguang-gateway.base_url`)       | dengan `/v1`          | Ya                                              |
+| `setup-codex`, `launch-codex` (`model_providers.orbit.base_url`)       | dengan `/v1`          | Ya                                              |
 | `setup-qwen` (`modelProviders.openai[].baseUrl`)                           | dengan `/v1`          | Ya                                              |
 | `run gemini` (`GOOGLE_GEMINI_BASE_URL`)                                    | akar                  | Tidak — SDK menambah `/v1beta/models/…`         |
 
@@ -234,42 +234,42 @@ diharapkan oleh alatnya (disahkan dalam sumber arahan):
 
 ## Menjaga kebergantungan asli semasa kemas kini: `--include=optional`
 
-Apabila anda mengemas kini dengan `shiguang-gateway update` (selepas mengesahkan, atau dengan `--apply`),
-ShiguangGateway menjalankan pemasangan dengan `--include=optional` yang telah disertakan:
+Apabila anda mengemas kini dengan `orbit update` (selepas mengesahkan, atau dengan `--apply`),
+Orbit menjalankan pemasangan dengan `--include=optional` yang telah disertakan:
 
 ```bash
-npm install -g shiguang-gateway@latest --include=optional
+npm install -g orbit@latest --include=optional
 ```
 
-Ini **bukan** bendera yang anda berikan kepada `shiguang-gateway update` — ia sentiasa digunakan oleh
+Ini **bukan** bendera yang anda berikan kepada `orbit update` — ia sentiasa digunakan oleh
 pengemas kini. Ia menjamin bahawa `optionalDependencies` (`better-sqlite3`, `keytar`,
 `tls-client`, tumpukan LLMLingua SLM) kekal selepas kemas kini walaupun konfigurasi npm anda
 mempunyai `omit=optional` yang ditetapkan, yang sebaliknya akan secara senyap membuang pemacu SQLite
 asli dan pengikatan OS-keyring. Untuk melihat arahan yang tepat tanpa melaksanakan:
 
 ```bash
-shiguang-gateway update --dry-run
-# [DRY RUN] Akan dijalankan: npm install -g shiguang-gateway@latest --include=optional
+orbit update --dry-run
+# [DRY RUN] Akan dijalankan: npm install -g orbit@latest --include=optional
 ```
 
-Bendera lain untuk `shiguang-gateway update` (disahkan dalam sumber): `--check` (keluar 1 jika
+Bendera lain untuk `orbit update` (disahkan dalam sumber): `--check` (keluar 1 jika
 ketinggalan), `--apply` (pasang tanpa meminta), `--changelog`, `--no-backup`,
 `--yes`.
 
 ---
 
-## Google Gemini CLI melalui `shiguang-gateway run gemini`
+## Google Gemini CLI melalui `orbit run gemini`
 
 Kontrak disahkan terhadap `@google/gemini-cli` 0.50.0: CLI menghormati
 `GOOGLE_GEMINI_BASE_URL` dan mengeluarkan `POST /v1beta/models/<model>:generateContent`
 (dan `:streamGenerateContent?alt=sse`) terhadapnya — tepat seperti permukaan
-Gemini asli ShiguangGateway (`/v1beta`). `shiguang-gateway run gemini` menyambungkannya secara automatik:
+Gemini asli Orbit (`/v1beta`). `orbit run gemini` menyambungkannya secara automatik:
 
-- `GOOGLE_GEMINI_BASE_URL` → URL asas ShiguangGateway yang aktif (akar, tiada `/v1`);
-- `GEMINI_API_KEY` → kelayakan ShiguangGateway yang diselesaikan (pilihan/env/konteks);
+- `GOOGLE_GEMINI_BASE_URL` → URL asas Orbit yang aktif (akar, tiada `/v1`);
+- `GEMINI_API_KEY` → kelayakan Orbit yang diselesaikan (pilihan/env/konteks);
 - **`GEMINI_CLI_HOME` yang terasing sementara** yang `.gemini/settings.json`
   memilih pengesahan `gemini-api-key`, jadi sesi Google OAuth yang disimpan (Code Assist)
-  tidak pernah menggantikan pelancaran yang diarahkan oleh ShiguangGateway — dibuang selepas keluar;
+  tidak pernah menggantikan pelancaran yang diarahkan oleh Orbit — dibuang selepas keluar;
 - **kebersihan env**: env anak dibersihkan daripada `GOOGLE_API_KEY`,
   `GOOGLE_GENAI_USE_VERTEXAI` dan `GOOGLE_GENAI_USE_GCA` (yang akan mengalihkan
   pengesahan ke Vertex/Code Assist), dan `GEMINI_DEFAULT_AUTH_TYPE=gemini-api-key` ditetapkan
@@ -278,7 +278,7 @@ Gemini asli ShiguangGateway (`/v1beta`). `shiguang-gateway run gemini` menyambun
 - suntikan `--model <id>` dari `--provider`/`--model`.
 
 ```bash
-shiguang-gateway run gemini --model glm/glm-5.2 -- --skip-trust -p "hello"
+orbit run gemini --model glm/glm-5.2 -- --skip-trust -p "hello"
 ```
 
 Pengawal kepercayaan ruang kerja Gemini masih terpakai dalam mod tanpa kepala — berikan
@@ -293,7 +293,7 @@ dengan sengaja tidak mengabaikannya. Pelancar ini berbeza daripada **pendaftaran
 
 Pelan pelancaran deterministik regresi dijalankan dalam CI (`tests/unit/cli/run-command.test.ts`,
 `tests/unit/cli/run-execution.test.ts`). Untuk mengesahkan binari SEBENAR terhadap pelayan
-ShiguangGateway SEBENAR, terdapat alat pilihan di
+Orbit SEBENAR, terdapat alat pilihan di
 `tests/integration/upstream-cli-smoke.int.test.ts`. Ia tidak pernah dijalankan secara automatik
 (setiap sub-uji akan dilepaskan kecuali `RUN_CLI_SMOKE=1`), menghantar kelayakan melalui nama
 env-var (tidak pernah melalui nilai), menyunting rentetan berbentuk kunci daripada sebarang output
@@ -302,21 +302,21 @@ sebagai pengesahan / hulu / konfigurasi dan bukannya boolean kosong:
 
 ```bash
 RUN_CLI_SMOKE=1 \
-SHIGUANG_GATEWAY_SMOKE_BASE_URL="http://localhost:20128" \
-SHIGUANG_GATEWAY_SMOKE_MODEL="<provider/model>" \
-SHIGUANG_GATEWAY_SMOKE_API_KEY_ENV="SHIGUANG_GATEWAY_API_KEY" \
+ORBIT_SMOKE_BASE_URL="http://localhost:20128" \
+ORBIT_SMOKE_MODEL="<provider/model>" \
+ORBIT_SMOKE_API_KEY_ENV="ORBIT_API_KEY" \
 node --import tsx/esm --test tests/integration/upstream-cli-smoke.int.test.ts
 ```
 
-Pilihan: `SHIGUANG_GATEWAY_SMOKE_TARGETS="codex,opencode,qwen"` mengehadkan sapuan;
-`SHIGUANG_GATEWAY_SMOKE_TIMEOUT_MS` menggantikan had masa 120s bagi setiap sasaran.
+Pilihan: `ORBIT_SMOKE_TARGETS="codex,opencode,qwen"` mengehadkan sapuan;
+`ORBIT_SMOKE_TIMEOUT_MS` menggantikan had masa 120s bagi setiap sasaran.
 
 ---
 
 ## Lihat juga
 
 - [Konfigurasi Claude Code](./CLAUDE-CODE-CONFIGURATION.md) — panduan mendalam mengenai Claude Code
-- [Konfigurasi Codex CLI](./CODEX-CLI-CONFIGURATION.md) — penyetupan asas `[model_providers.shiguang-gateway]` sekali sahaja
+- [Konfigurasi Codex CLI](./CODEX-CLI-CONFIGURATION.md) — penyetupan asas `[model_providers.orbit]` sekali sahaja
 - [Mod Jauh](./REMOTE-MODE.md) — konteks, token akses terhad, mengendalikan pelayan jauh
 - [Rujukan Alat CLI](../reference/CLI-TOOLS.md) — katalog penuh alat yang disokong + halaman papan pemuka
 - [Panduan Persediaan](./SETUP_GUIDE.md) — kaedah pemasangan dan pengenalan pertama kali

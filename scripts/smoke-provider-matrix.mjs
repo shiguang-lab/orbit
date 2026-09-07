@@ -4,10 +4,10 @@
 import { DatabaseSync } from "node:sqlite";
 import path from "node:path";
 
-const sourceDir = process.env.SHIGUANG_GATEWAY_SOURCE_DATA_DIR;
-const controlUrl = (process.env.SHIGUANG_GATEWAY_CONTROL_URL ?? "http://127.0.0.1:8788").replace(/\/$/, "");
+const sourceDir = process.env.ORBIT_SOURCE_DATA_DIR;
+const controlUrl = (process.env.ORBIT_CONTROL_URL ?? "http://127.0.0.1:8788").replace(/\/$/, "");
 if (!sourceDir) {
-  console.error("SHIGUANG_GATEWAY_SOURCE_DATA_DIR is required");
+  console.error("ORBIT_SOURCE_DATA_DIR is required");
   process.exit(2);
 }
 const db = new DatabaseSync(path.join(sourceDir, "storage.sqlite"), { readOnly: true });

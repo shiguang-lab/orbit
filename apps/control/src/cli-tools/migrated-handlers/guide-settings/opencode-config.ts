@@ -72,10 +72,10 @@ export const buildOpenCodeProviderConfig = ({
 
   return {
     npm: "@ai-sdk/openai-compatible",
-    name: "ShiguangGateway",
+    name: "Orbit",
     options: {
       baseURL: normalizedBaseUrl,
-      apiKey: apiKey || "sk_shiguangGateway",
+      apiKey: apiKey || "sk_orbit",
     },
     models: modelsRecord,
   };
@@ -98,8 +98,8 @@ export const buildOpenCodeV2ProviderConfig = (
 
 export const buildOpenCodeConfigDocument = (input: OpenCodeConfigInput) => ({
   $schema: "https://opencode.ai/config.json",
-  provider: { shiguangGateway: buildOpenCodeProviderConfig(input) },
-  providers: { shiguangGateway: buildOpenCodeV2ProviderConfig(input) },
+  provider: { orbit: buildOpenCodeProviderConfig(input) },
+  providers: { orbit: buildOpenCodeV2ProviderConfig(input) },
 });
 
 export const mergeOpenCodeConfig = (
@@ -128,11 +128,11 @@ export const mergeOpenCodeConfig = (
     $schema: safeConfig.$schema || "https://opencode.ai/config.json",
     provider: {
       ...safeProvider,
-      shiguangGateway: buildOpenCodeProviderConfig(input),
+      orbit: buildOpenCodeProviderConfig(input),
     },
     providers: {
       ...safeProviders,
-      shiguangGateway: buildOpenCodeV2ProviderConfig(input),
+      orbit: buildOpenCodeV2ProviderConfig(input),
     },
   };
 };
@@ -171,12 +171,12 @@ export const mergeOpenCodeConfigText = (
   );
   nextText = applyEdits(nextText, schemaEdits);
 
-  const providerEdits = modify(nextText, ["provider", "shiguangGateway"], providerConfig, {
+  const providerEdits = modify(nextText, ["provider", "orbit"], providerConfig, {
     formattingOptions: { insertSpaces: true, tabSize: 2 },
   });
   nextText = applyEdits(nextText, providerEdits);
 
-  const v2ProviderEdits = modify(nextText, ["providers", "shiguangGateway"], v2ProviderConfig, {
+  const v2ProviderEdits = modify(nextText, ["providers", "orbit"], v2ProviderConfig, {
     formattingOptions: { insertSpaces: true, tabSize: 2 },
   });
   return applyEdits(nextText, v2ProviderEdits);

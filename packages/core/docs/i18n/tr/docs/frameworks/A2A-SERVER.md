@@ -1,16 +1,16 @@
 ---
-title: "ShiguangGateway A2A Sunucu Dokümantasyonu"
+title: "Orbit A2A Sunucu Dokümantasyonu"
 version: 3.8.50
 lastUpdated: 2026-08-23
 ---
 
-# ShiguangGateway A2A Sunucu Dokümantasyonu (Türkçe)
+# Orbit A2A Sunucu Dokümantasyonu (Türkçe)
 
 🌐 **Languages:** 🇺🇸 [English](../../../../docs/frameworks/A2A-SERVER.md) · 🇸🇦 [ar](../../ar/docs/frameworks/A2A-SERVER.md) · 🇧🇬 [bg](../../bg/docs/frameworks/A2A-SERVER.md) · 🇧🇩 [bn](../../bn/docs/frameworks/A2A-SERVER.md) · 🇨🇿 [cs](../../cs/docs/frameworks/A2A-SERVER.md) · 🇩🇰 [da](../../da/docs/frameworks/A2A-SERVER.md) · 🇩🇪 [de](../../de/docs/frameworks/A2A-SERVER.md) · 🇪🇸 [es](../../es/docs/frameworks/A2A-SERVER.md) · 🇮🇷 [fa](../../fa/docs/frameworks/A2A-SERVER.md) · 🇫🇮 [fi](../../fi/docs/frameworks/A2A-SERVER.md) · 🇫🇷 [fr](../../fr/docs/frameworks/A2A-SERVER.md) · 🇮🇳 [gu](../../gu/docs/frameworks/A2A-SERVER.md) · 🇮🇱 [he](../../he/docs/frameworks/A2A-SERVER.md) · 🇮🇳 [hi](../../hi/docs/frameworks/A2A-SERVER.md) · 🇭🇺 [hu](../../hu/docs/frameworks/A2A-SERVER.md) · 🇮🇩 [id](../../id/docs/frameworks/A2A-SERVER.md) · 🇮🇹 [it](../../it/docs/frameworks/A2A-SERVER.md) · 🇯🇵 [ja](../../ja/docs/frameworks/A2A-SERVER.md) · 🇰🇷 [ko](../../ko/docs/frameworks/A2A-SERVER.md) · 🇮🇳 [mr](../../mr/docs/frameworks/A2A-SERVER.md) · 🇲🇾 [ms](../../ms/docs/frameworks/A2A-SERVER.md) · 🇳🇱 [nl](../../nl/docs/frameworks/A2A-SERVER.md) · 🇳🇴 [no](../../no/docs/frameworks/A2A-SERVER.md) · 🇵🇭 [phi](../../phi/docs/frameworks/A2A-SERVER.md) · 🇵🇱 [pl](../../pl/docs/frameworks/A2A-SERVER.md) · 🇵🇹 [pt](../../pt/docs/frameworks/A2A-SERVER.md) · 🇧🇷 [pt-BR](../../pt-BR/docs/frameworks/A2A-SERVER.md) · 🇷🇴 [ro](../../ro/docs/frameworks/A2A-SERVER.md) · 🇷🇺 [ru](../../ru/docs/frameworks/A2A-SERVER.md) · 🇸🇰 [sk](../../sk/docs/frameworks/A2A-SERVER.md) · 🇸🇪 [sv](../../sv/docs/frameworks/A2A-SERVER.md) · 🇰🇪 [sw](../../sw/docs/frameworks/A2A-SERVER.md) · 🇮🇳 [ta](../../ta/docs/frameworks/A2A-SERVER.md) · 🇮🇳 [te](../../te/docs/frameworks/A2A-SERVER.md) · 🇹🇭 [th](../../th/docs/frameworks/A2A-SERVER.md) · 🇹🇷 [tr](../../tr/docs/frameworks/A2A-SERVER.md) · 🇺🇦 [uk-UA](../../uk-UA/docs/frameworks/A2A-SERVER.md) · 🇵🇰 [ur](../../ur/docs/frameworks/A2A-SERVER.md) · 🇻🇳 [vi](../../vi/docs/frameworks/A2A-SERVER.md) · 🇨🇳 [zh-CN](../../zh-CN/docs/frameworks/A2A-SERVER.md)
 
 ---
 
-> Agent-to-Agent Protokolü v0.3 — Akıllı bir yönlendirme ajanı olarak ShiguangGateway
+> Agent-to-Agent Protokolü v0.3 — Akıllı bir yönlendirme ajanı olarak Orbit
 
 A2A yüzeyinin iki arayüzü vardır:
 
@@ -25,7 +25,7 @@ Görevler `A2ATaskManager` (`src/lib/a2a/taskManager.ts`, varsayılan 5 dakikal�
 curl http://localhost:20128/.well-known/agent.json
 ```
 
-ShiguangGateway'un yeteneklerini, becerilerini ve kimlik doğrulama gereksinimlerini açıklayan Ajan Kartını (Agent Card) döndürür.
+Orbit'un yeteneklerini, becerilerini ve kimlik doğrulama gereksinimlerini açıklayan Ajan Kartını (Agent Card) döndürür.
 
 ---
 
@@ -34,7 +34,7 @@ ShiguangGateway'un yeteneklerini, becerilerini ve kimlik doğrulama gereksinimle
 Tüm `/a2a` istekleri `Authorization` başlığı aracılığıyla bir API anahtarı gerektirir:
 
 ```
-Authorization: Bearer SIZIN_SHIGUANG_GATEWAY_API_ANAHTARINIZ
+Authorization: Bearer SIZIN_ORBIT_API_ANAHTARINIZ
 ```
 
 Sunucuda hiçbir API anahtarı yapılandırılmamışsa, kimlik doğrulama atlanır.

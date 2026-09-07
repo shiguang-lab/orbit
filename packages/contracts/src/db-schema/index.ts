@@ -149,7 +149,7 @@ export * from "./gamification.js";
 export * from "./proxy.js";
 
 export const GATEWAY_TABLES = {
-  gatewayMigrations: "_shiguanggateway_migrations",
+  gatewayMigrations: "_orbit_migrations",
   settings: "key_value",
   authLoginAttempts: "auth_login_attempts",
   middlewareHooks: "middleware_hooks",

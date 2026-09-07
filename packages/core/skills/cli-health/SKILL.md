@@ -11,8 +11,8 @@ Check server health, component status, and live metrics from the CLI. Run `healt
 ## Quick install
 
 ```bash
-npm install -g shiguang-gateway   # or: npx shiguang-gateway
-shiguang-gateway --version
+npm install -g orbit   # or: npx orbit
+orbit --version
 ```
 
 ## Subcommands
@@ -28,7 +28,7 @@ shiguang-gateway --version
 **Example:**
 
 ```bash
-shiguang-gateway doctor
+orbit doctor
 ```
 
 ### `health`
@@ -42,7 +42,7 @@ shiguang-gateway doctor
 **Example:**
 
 ```bash
-shiguang-gateway health
+orbit health
 ```
 
 ### `health components`
@@ -56,7 +56,7 @@ List health components and their status
 **Example:**
 
 ```bash
-shiguang-gateway health components
+orbit health components
 ```
 
 ### `health watch`
@@ -70,12 +70,12 @@ Live dashboard — refresh every N seconds
 **Example:**
 
 ```bash
-shiguang-gateway health watch
+orbit health watch
 ```
 
 ### `status`
 
-Show ShiguangGateway status dashboard
+Show Orbit status dashboard
 
 **Flags:**
 
@@ -84,5 +84,5 @@ Show ShiguangGateway status dashboard
 **Example:**
 
 ```bash
-shiguang-gateway status
+orbit status
 ```

@@ -4,7 +4,7 @@
 
 ---
 
-Complete reference for all ShiguangGateway API endpoints.
+Complete reference for all Orbit API endpoints.
 
 ---
 
@@ -42,16 +42,16 @@ Content-Type: application/json
 
 | Header                   | Direction | Description                                      |
 | ------------------------ | --------- | ------------------------------------------------ |
-| `X-ShiguangGateway-No-Cache`   | Request   | Set to `true` to bypass cache                    |
-| `X-ShiguangGateway-Progress`   | Request   | Set to `true` for progress events                |
+| `X-Orbit-No-Cache`   | Request   | Set to `true` to bypass cache                    |
+| `X-Orbit-Progress`   | Request   | Set to `true` for progress events                |
 | `X-Session-Id`           | Request   | Sticky session key for external session affinity |
 | `x_session_id`           | Request   | Underscore variant also accepted (direct HTTP)   |
 | `Idempotency-Key`        | Request   | Dedup key (5s window)                            |
 | `X-Request-Id`           | Request   | Alternative dedup key                            |
-| `X-ShiguangGateway-Cache`      | Response  | `HIT` or `MISS` (non-streaming)                  |
-| `X-ShiguangGateway-Idempotent` | Response  | `true` if deduplicated                           |
-| `X-ShiguangGateway-Progress`   | Response  | `enabled` if progress tracking on                |
-| `X-ShiguangGateway-Session-Id` | Response  | Effective session ID used by ShiguangGateway           |
+| `X-Orbit-Cache`      | Response  | `HIT` or `MISS` (non-streaming)                  |
+| `X-Orbit-Idempotent` | Response  | `true` if deduplicated                           |
+| `X-Orbit-Progress`   | Response  | `enabled` if progress tracking on                |
+| `X-Orbit-Session-Id` | Response  | Effective session ID used by Orbit           |
 
 > Nginx note: if you rely on underscore headers (for example `x_session_id`), enable `underscores_in_headers on;`.
 
@@ -350,7 +350,7 @@ Repairs missing or corrupted OAuth environment variables for a specific provider
 {
   "success": true,
   "repaired": ["CLAUDE_CODE_OAUTH_CLIENT_ID", "CLAUDE_CODE_OAUTH_CLIENT_SECRET"],
-  "backupPath": "/home/user/.shiguang-gateway/backups/env-repair-2026-04-11.bak"
+  "backupPath": "/home/user/.orbit/backups/env-repair-2026-04-11.bak"
 }
 ```
 

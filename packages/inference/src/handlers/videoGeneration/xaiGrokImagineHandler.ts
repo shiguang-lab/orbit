@@ -28,7 +28,7 @@ interface XaiVideoLog {
   error: (scope: string, message: string) => void;
 }
 
-/** Map the ShiguangGateway video body onto xAI's create-job payload. */
+/** Map the Orbit video body onto xAI's create-job payload. */
 function buildXaiVideoPayload(model: string, prompt: string, body: XaiVideoBody) {
   const payload: Record<string, unknown> = { model, prompt };
   if (typeof body.image === "string") payload.image = body.image;

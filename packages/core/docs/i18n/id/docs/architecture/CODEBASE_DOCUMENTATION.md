@@ -1,18 +1,18 @@
-# shiguang-gateway — Codebase Documentation (Bahasa Indonesia)
+# orbit — Codebase Documentation (Bahasa Indonesia)
 
 🌐 **Languages:** 🇺🇸 [English](../../../../docs/CODEBASE_DOCUMENTATION.md) · 🇸🇦 [ar](../../ar/docs/CODEBASE_DOCUMENTATION.md) · 🇧🇬 [bg](../../bg/docs/CODEBASE_DOCUMENTATION.md) · 🇧🇩 [bn](../../bn/docs/CODEBASE_DOCUMENTATION.md) · 🇨🇿 [cs](../../cs/docs/CODEBASE_DOCUMENTATION.md) · 🇩🇰 [da](../../da/docs/CODEBASE_DOCUMENTATION.md) · 🇩🇪 [de](../../de/docs/CODEBASE_DOCUMENTATION.md) · 🇪🇸 [es](../../es/docs/CODEBASE_DOCUMENTATION.md) · 🇮🇷 [fa](../../fa/docs/CODEBASE_DOCUMENTATION.md) · 🇫🇮 [fi](../../fi/docs/CODEBASE_DOCUMENTATION.md) · 🇫🇷 [fr](../../fr/docs/CODEBASE_DOCUMENTATION.md) · 🇮🇳 [gu](../../gu/docs/CODEBASE_DOCUMENTATION.md) · 🇮🇱 [he](../../he/docs/CODEBASE_DOCUMENTATION.md) · 🇮🇳 [hi](../../hi/docs/CODEBASE_DOCUMENTATION.md) · 🇭🇺 [hu](../../hu/docs/CODEBASE_DOCUMENTATION.md) · 🇮🇩 [id](../../id/docs/CODEBASE_DOCUMENTATION.md) · 🇮🇹 [it](../../it/docs/CODEBASE_DOCUMENTATION.md) · 🇯🇵 [ja](../../ja/docs/CODEBASE_DOCUMENTATION.md) · 🇰🇷 [ko](../../ko/docs/CODEBASE_DOCUMENTATION.md) · 🇮🇳 [mr](../../mr/docs/CODEBASE_DOCUMENTATION.md) · 🇲🇾 [ms](../../ms/docs/CODEBASE_DOCUMENTATION.md) · 🇳🇱 [nl](../../nl/docs/CODEBASE_DOCUMENTATION.md) · 🇳🇴 [no](../../no/docs/CODEBASE_DOCUMENTATION.md) · 🇵🇭 [phi](../../phi/docs/CODEBASE_DOCUMENTATION.md) · 🇵🇱 [pl](../../pl/docs/CODEBASE_DOCUMENTATION.md) · 🇵🇹 [pt](../../pt/docs/CODEBASE_DOCUMENTATION.md) · 🇧🇷 [pt-BR](../../pt-BR/docs/CODEBASE_DOCUMENTATION.md) · 🇷🇴 [ro](../../ro/docs/CODEBASE_DOCUMENTATION.md) · 🇷🇺 [ru](../../ru/docs/CODEBASE_DOCUMENTATION.md) · 🇸🇰 [sk](../../sk/docs/CODEBASE_DOCUMENTATION.md) · 🇸🇪 [sv](../../sv/docs/CODEBASE_DOCUMENTATION.md) · 🇰🇪 [sw](../../sw/docs/CODEBASE_DOCUMENTATION.md) · 🇮🇳 [ta](../../ta/docs/CODEBASE_DOCUMENTATION.md) · 🇮🇳 [te](../../te/docs/CODEBASE_DOCUMENTATION.md) · 🇹🇭 [th](../../th/docs/CODEBASE_DOCUMENTATION.md) · 🇹🇷 [tr](../../tr/docs/CODEBASE_DOCUMENTATION.md) · 🇺🇦 [uk-UA](../../uk-UA/docs/CODEBASE_DOCUMENTATION.md) · 🇵🇰 [ur](../../ur/docs/CODEBASE_DOCUMENTATION.md) · 🇻🇳 [vi](../../vi/docs/CODEBASE_DOCUMENTATION.md) · 🇨🇳 [zh-CN](../../zh-CN/docs/CODEBASE_DOCUMENTATION.md)
 
 ---
 
-> Panduan lengkap dan ramah-pemula untuk router proxy AI multi-penyedia **shiguang-gateway**.
+> Panduan lengkap dan ramah-pemula untuk router proxy AI multi-penyedia **orbit**.
 
 ---
 
-## 1. Apa Itu shiguang-gateway?
+## 1. Apa Itu orbit?
 
-shiguang-gateway adalah sebuah **router proxy** yang berada di antara klien AI (Claude CLI, Codex, Cursor IDE, dll.) dan penyedia AI (Anthropic, Google, OpenAI, AWS, GitHub, dll.). Ia memecahkan satu masalah besar:
+orbit adalah sebuah **router proxy** yang berada di antara klien AI (Claude CLI, Codex, Cursor IDE, dll.) dan penyedia AI (Anthropic, Google, OpenAI, AWS, GitHub, dll.). Ia memecahkan satu masalah besar:
 
-> **Klien AI yang berbeda berbicara "bahasa" yang berbeda (format API), dan penyedia AI yang berbeda pun mengharapkan "bahasa" yang berbeda pula.** shiguang-gateway menerjemahkan di antara mereka secara otomatis.
+> **Klien AI yang berbeda berbicara "bahasa" yang berbeda (format API), dan penyedia AI yang berbeda pun mengharapkan "bahasa" yang berbeda pula.** orbit menerjemahkan di antara mereka secara otomatis.
 
 Bayangkan seperti penerjemah universal di Perserikatan Bangsa-Bangsa — delegasi mana pun dapat berbicara dalam bahasa apa pun, dan penerjemah mengubahnya untuk delegasi lainnya.
 
@@ -29,7 +29,7 @@ graph LR
         D[OpenAI-compatible]
     end
 
-    subgraph shiguang-gateway
+    subgraph orbit
         E[Handler Layer]
         F[Translator Layer]
         G[Executor Layer]
@@ -79,7 +79,7 @@ Artinya Anda hanya membutuhkan **N penerjemah** (satu per format), bukan **N²**
 ## 3. Struktur Proyek
 
 ```
-shiguang-gateway/
+orbit/
 ├── open-sse/                  ← Library proxy inti (portabel, framework-agnostic)
 │   ├── index.js               ← Titik masuk utama, mengekspor segalanya
 │   ├── config/                ← Konfigurasi & konstanta

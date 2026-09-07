@@ -82,14 +82,14 @@ export class AudioSpeechService {
     if (response?.ok) {
       await clearRecoveredProviderState(credentials);
       try {
-        const [{ calculateModalCost }, { attachShiguangGatewayMetaToResponse }, { generateRequestId }] = await Promise.all([
+        const [{ calculateModalCost }, { attachOrbitMetaToResponse }, { generateRequestId }] = await Promise.all([
           load("@orbit/core/pricing/cost-calculator"),
           load("@orbit/core/edge/gateway-response-meta"),
           load("@orbit/core/runtime/request-id"),
         ]);
         const characters = typeof body.input === "string" ? body.input.length : 0;
         const costUsd = await calculateModalCost("audio", provider, resolvedModel || body.model, { characters });
-        response = attachShiguangGatewayMetaToResponse(response, {
+        response = attachOrbitMetaToResponse(response, {
           provider,
           model: resolvedModel || body.model,
           costUsd,

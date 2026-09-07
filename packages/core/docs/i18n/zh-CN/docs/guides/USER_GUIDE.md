@@ -6,7 +6,7 @@ lastUpdated: 2026-06-28
 
 # 用户指南
 
-配置服务商、创建 Combo、集成 CLI 工具和部署 ShiguangGateway 的完整指南。
+配置服务商、创建 Combo、集成 CLI 工具和部署 Orbit 的完整指南。
 
 ---
 
@@ -134,9 +134,9 @@ Models:
   cc/claude-haiku-4-5-20251001
 ```
 
-**技巧：** 复杂任务用 Opus，追求速度用 Sonnet。ShiguangGateway 为每个模型单独追踪配额！
+**技巧：** 复杂任务用 Opus，追求速度用 Sonnet。Orbit 为每个模型单独追踪配额！
 
-Claude 和 Claude Code 兼容路由对 Opus 和 Sonnet 模型保留 `max` 思考级别。Haiku 模型不接受 `max` 级别，ShiguangGateway 会在发送到上游之前将该请求降级为较高的思考预算。
+Claude 和 Claude Code 兼容路由对 Opus 和 Sonnet 模型保留 `max` 思考级别。Haiku 模型不接受 `max` 级别，Orbit 会在发送到上游之前将该请求降级为较高的思考预算。
 
 #### OpenAI Codex (Plus/Pro)
 
@@ -257,7 +257,7 @@ Cost: currently listed as $0; terms and availability may change
 ```
 Settings → Models → Advanced:
   OpenAI API Base URL: http://localhost:20128/v1
-  OpenAI API Key: [from shiguang-gateway dashboard]
+  OpenAI API Key: [from orbit dashboard]
   Model: cc/claude-opus-4-7
 ```
 
@@ -269,7 +269,7 @@ Settings → Models → Advanced:
 {
   "env": {
     "ANTHROPIC_BASE_URL": "http://localhost:20128",
-    "ANTHROPIC_AUTH_TOKEN": "your-shiguang-gateway-api-key"
+    "ANTHROPIC_AUTH_TOKEN": "your-orbit-api-key"
   }
 }
 ```
@@ -280,7 +280,7 @@ Settings → Models → Advanced:
 
 ```bash
 export OPENAI_BASE_URL="http://localhost:20128"
-export OPENAI_API_KEY="your-shiguang-gateway-api-key"
+export OPENAI_API_KEY="your-orbit-api-key"
 codex "your prompt"
 ```
 
@@ -292,14 +292,14 @@ codex "your prompt"
 {
   "agents": {
     "defaults": {
-      "model": { "primary": "shiguang-gateway/if/kimi-k2" }
+      "model": { "primary": "orbit/if/kimi-k2" }
     }
   },
   "models": {
     "providers": {
-      "shiguang-gateway": {
+      "orbit": {
         "baseUrl": "http://localhost:20128/v1",
-        "apiKey": "your-shiguang-gateway-api-key",
+        "apiKey": "your-orbit-api-key",
         "api": "openai-completions",
         "models": [{ "id": "if/kimi-k2", "name": "kimi-k2" }]
       }
@@ -326,42 +326,42 @@ Model: cc/claude-opus-4-7
 ### 全局 npm 安装（推荐）
 
 ```bash
-npm install -g shiguang-gateway
+npm install -g orbit
 
 # Create config directory
-mkdir -p ~/.shiguang-gateway
+mkdir -p ~/.orbit
 
 # Create .env file (see .env.example)
-cp .env.example ~/.shiguang-gateway/.env
+cp .env.example ~/.orbit/.env
 
 # Start server
-shiguang-gateway
+orbit
 # Or with custom port:
-shiguang-gateway --port 3000
+orbit --port 3000
 ```
 
-CLI 自动从 `~/.shiguang-gateway/.env` 或 `./.env` 加载环境变量。
+CLI 自动从 `~/.orbit/.env` 或 `./.env` 加载环境变量。
 
 ### 卸载
 
-当你不再需要 ShiguangGateway 时，我们提供了两个快速脚本来干净地移除：
+当你不再需要 Orbit 时，我们提供了两个快速脚本来干净地移除：
 
 | 命令                     | 作用                                                     |
 | ------------------------ | -------------------------------------------------------- |
-| `npm run uninstall`      | 移除系统应用，但**保留 `~/.shiguang-gateway` 中的数据库和配置** |
+| `npm run uninstall`      | 移除系统应用，但**保留 `~/.orbit` 中的数据库和配置** |
 | `npm run uninstall:full` | 移除应用并**永久删除���有配置、密钥和数据库**            |
 
-> 注意：运行这些命令需要进入 ShiguangGateway 项目目录（如果你 clone 了项目）。如果全局安装，直接运行 `npm uninstall -g shiguang-gateway` 即可。
+> 注意：运行这些命令需要进入 Orbit 项目目录（如果你 clone 了项目）。如果全局安装，直接运行 `npm uninstall -g orbit` 即可。
 
 ### VPS 部署
 
 ```bash
-git clone https://github.com/diegosouzapw/ShiguangGateway.git
-cd ShiguangGateway && npm install && npm run build
+git clone https://github.com/diegosouzapw/Orbit.git
+cd Orbit && npm install && npm run build
 
 export JWT_SECRET="your-secure-secret-change-this"
 export INITIAL_PASSWORD="your-password"
-export DATA_DIR="/var/lib/shiguang-gateway"
+export DATA_DIR="/var/lib/orbit"
 export PORT="20128"
 export HOSTNAME="0.0.0.0"
 export NODE_ENV="production"
@@ -369,7 +369,7 @@ export NEXT_PUBLIC_BASE_URL="http://localhost:20128"
 export API_KEY_SECRET="endpoint-proxy-api-key-secret"
 
 npm run start
-# Or: pm2 start npm --name shiguang-gateway -- start
+# Or: pm2 start npm --name orbit -- start
 ```
 
 ### PM2 部署（低内存）
@@ -378,10 +378,10 @@ npm run start
 
 ```bash
 # With 512MB limit (default)
-pm2 start npm --name shiguang-gateway -- start
+pm2 start npm --name orbit -- start
 
 # Or with custom memory limit
-SHIGUANG_GATEWAY_MEMORY_MB=512 pm2 start npm --name shiguang-gateway -- start
+ORBIT_MEMORY_MB=512 pm2 start npm --name orbit -- start
 
 # Or using ecosystem.config.js
 pm2 start ecosystem.config.js
@@ -393,12 +393,12 @@ pm2 start ecosystem.config.js
 module.exports = {
   apps: [
     {
-      name: "shiguang-gateway",
+      name: "orbit",
       script: "npm",
       args: "start",
       env: {
         NODE_ENV: "production",
-        SHIGUANG_GATEWAY_MEMORY_MB: "512",
+        ORBIT_MEMORY_MB: "512",
         JWT_SECRET: "your-secret",
         INITIAL_PASSWORD: "your-password",
       },
@@ -413,24 +413,24 @@ module.exports = {
 
 ```bash
 # Build image (default = runner-cli with codex/claude/droid preinstalled)
-docker build -t shiguang-gateway:cli .
+docker build -t orbit:cli .
 
 # Portable mode (recommended)
-docker run -d --name shiguang-gateway -p 20128:20128 --env-file ./.env -v shiguang-gateway-data:/app/data shiguang-gateway:cli
+docker run -d --name orbit -p 20128:20128 --env-file ./.env -v orbit-data:/app/data orbit:cli
 ```
 
 关于集成了 CLI 二进制文件的主机集成模式，请参阅主文档中的 Docker 章节。
 
 ### Void Linux (xbps-src)
 
-Void Linux 用户可使用 `xbps-src` 交叉编译框架原生打包安装 ShiguangGateway。这种方式可自动化完成 Node.js 独立构建及所需的 `better-sqlite3` 原生绑定。
+Void Linux 用户可使用 `xbps-src` 交叉编译框架原生打包安装 Orbit。这种方式可自动化完成 Node.js 独立构建及所需的 `better-sqlite3` 原生绑定。
 
 <details>
 <summary><b>查看 xbps-src 模板</b></summary>
 
 ```bash
-# Template file for 'shiguang-gateway'
-pkgname=shiguang-gateway
+# Template file for 'orbit'
+pkgname=orbit
 version=3.8.0
 revision=1
 hostmakedepends="nodejs python3 make"
@@ -438,11 +438,11 @@ depends="openssl"
 short_desc="Universal AI gateway with smart routing for multiple LLM providers"
 maintainer="zenobit <zenobit@disroot.org>"
 license="MIT"
-homepage="https://github.com/diegosouzapw/ShiguangGateway"
-distfiles="https://github.com/diegosouzapw/ShiguangGateway/archive/refs/tags/v${version}.tar.gz"
+homepage="https://github.com/diegosouzapw/Orbit"
+distfiles="https://github.com/diegosouzapw/Orbit/archive/refs/tags/v${version}.tar.gz"
 checksum=009400afee90a9f32599d8fe734145cfd84098140b7287990183dde45ae2245b
-system_accounts="_shiguang-gateway"
-shiguang-gateway_homedir="/var/lib/shiguang-gateway"
+system_accounts="_orbit"
+orbit_homedir="/var/lib/orbit"
 export NODE_ENV=production
 export npm_config_engine_strict=false
 export npm_config_loglevel=error
@@ -492,26 +492,26 @@ do_check() {
 }
 
 do_install() {
-	vmkdir usr/lib/shiguang-gateway/.next
-	vcopy .next/standalone/. usr/lib/shiguang-gateway/.next/standalone
+	vmkdir usr/lib/orbit/.next
+	vcopy .next/standalone/. usr/lib/orbit/.next/standalone
 
 	# Prevent removal of empty Next.js app router dirs by the post-install hook
 	for _d in \
 		.next/standalone/.next/server/app/dashboard \
 		.next/standalone/.next/server/app/dashboard/settings \
 		.next/standalone/.next/server/app/dashboard/providers; do
-		touch "${DESTDIR}/usr/lib/shiguang-gateway/${_d}/.keep"
+		touch "${DESTDIR}/usr/lib/orbit/${_d}/.keep"
 	done
 
-	cat > "${WRKDIR}/shiguang-gateway" <<'EOF'
+	cat > "${WRKDIR}/orbit" <<'EOF'
 #!/bin/sh
 export PORT="${PORT:-20128}"
-export DATA_DIR="${DATA_DIR:-${XDG_DATA_HOME:-${HOME}/.local/share}/shiguang-gateway}"
+export DATA_DIR="${DATA_DIR:-${XDG_DATA_HOME:-${HOME}/.local/share}/orbit}"
 export APP_LOG_TO_FILE="${APP_LOG_TO_FILE:-false}"
 mkdir -p "${DATA_DIR}"
-exec node /usr/lib/shiguang-gateway/.next/standalone/server.js "$@"
+exec node /usr/lib/orbit/.next/standalone/server.js "$@"
 EOF
-	vbin "${WRKDIR}/shiguang-gateway"
+	vbin "${WRKDIR}/orbit"
 }
 
 post_install() {
@@ -525,14 +525,14 @@ post_install() {
 
 | 变量                                    | 默认值                               | 说明                                                                   |
 | --------------------------------------- | ------------------------------------ | ---------------------------------------------------------------------- |
-| `JWT_SECRET`                            | `shiguang-gateway-default-secret-change-me` | JWT 签名密钥（**生产环境必须修改**）                                   |
+| `JWT_SECRET`                            | `orbit-default-secret-change-me` | JWT 签名密钥（**生产环境必须修改**）                                   |
 | `INITIAL_PASSWORD`                      | `CHANGEME`                           | 首次登录密码                                                           |
-| `DATA_DIR`                              | `~/.shiguang-gateway`                       | 数据目录（数据库、用量、日志）                                         |
+| `DATA_DIR`                              | `~/.orbit`                       | 数据目录（数据库、用量、日志）                                         |
 | `PORT`                                  | 框架默认                             | 服务端口（示例中使用 `20128`）                                         |
 | `HOSTNAME`                              | 框架默认                             | 绑定主机（Docker 默认为 `0.0.0.0`）                                    |
 | `NODE_ENV`                              | 运行时默认                           | 部署时设为 `production`                                                |
 | `NEXT_PUBLIC_BASE_URL`                  | `http://localhost:20128`             | 面向前端和服务器公开的基础 URL（替代旧版 `BASE_URL`）                  |
-| `NEXT_PUBLIC_CLOUD_URL`                 | `https://shiguang-gateway.dev`              | Cloud Sync 端点基础 URL（替代旧版 `CLOUD_URL`）                        |
+| `NEXT_PUBLIC_CLOUD_URL`                 | `https://orbit.dev`              | Cloud Sync 端点基础 URL（替代旧版 `CLOUD_URL`）                        |
 | `API_KEY_SECRET`                        | `endpoint-proxy-api-key-secret`      | 生成 API Key 的 HMAC 密钥                                              |
 | `REQUIRE_API_KEY`                       | `false`                              | 对 `/v1/*` 强制使用 Bearer API Key                                     |
 | `ALLOW_API_KEY_REVEAL`                  | `false`                              | 允许已认证的 Dashboard 用户按需显示完整 API Key 值                     |
@@ -542,7 +542,7 @@ post_install() {
 | `AUTH_COOKIE_SECURE`                    | `false`                              | 强制 `Secure` auth Cookie（在 HTTPS 反向代理之后）                     |
 | `CLOUDFLARED_BIN`                       | 未设置                               | 使用已有的 `cloudflared` 二进制文件，而非托管下载                      |
 | `CLOUDFLARED_PROTOCOL`                  | `http2`                              | 托管 Quick Tunnel 的传输协议（`http2`、`quic` 或 `auto`）              |
-| `SHIGUANG_GATEWAY_MEMORY_MB`                   | `512`                                | Node.js 堆内存上限（MB）                                               |
+| `ORBIT_MEMORY_MB`                   | `512`                                | Node.js 堆内存上限（MB）                                               |
 | `PROMPT_CACHE_MAX_SIZE`                 | `50`                                 | 提示缓存条目上限                                                       |
 | `SEMANTIC_CACHE_MAX_SIZE`               | `100`                                | 语义缓存条目上限                                                       |
 
@@ -602,7 +602,7 @@ post_install() {
 
 **其他兼容服务商**（精选）: `cohere`, `databricks`, `snowflake`, `together`, `vertex`, `alibaba`, `alibaba-cn`, `bedrock` (via `aws-bedrock`), `azure-ai`, `openrouter`（透传目录）, `siliconflow`, `hyperbolic`, `huggingface`, `featherless-ai`, `cloudflare-ai`, `scaleway`, `deepinfra`, `vercel-ai-gateway`, `bazaarlink`, `friendliai`, `nous-research`, `reka`, `volcengine`, `ai21`, `gigachat`。每个服务商在 `providerRegistry.ts` 中维护各自的模型列表，当服务商暴露 `/models` 端点时可自动同步。
 
-**模型 ID 说明：** ShiguangGateway 使用服务商原生的 ID（`claude-opus-4-8`、`gpt-5.5`、`glm-5.1`、`MiniMax-M2.7`、`kimi-k2.5`、`grok-4.20-0309-reasoning`）。部分 ID 带有带点版本号，这是因为上游 API 要求如此。如果某模型未在上方列出，运行 `shiguang-gateway models --search <term>` 或调用 `GET /api/models/catalog` 确认可用性。
+**模型 ID 说明：** Orbit 使用服务商原生的 ID（`claude-opus-4-8`、`gpt-5.5`、`glm-5.1`、`MiniMax-M2.7`、`kimi-k2.5`、`grok-4.20-0309-reasoning`）。部分 ID 带有带点版本号，这是因为上游 API 要求如此。如果某模型未在上方列出，运行 `orbit models --search <term>` 或调用 `GET /api/models/catalog` 确认可用性。
 
 </details>
 
@@ -680,7 +680,7 @@ curl http://localhost:20128/api/models/catalog
 - 在 Docker 和其他自托管部署中，前往 **Dashboard → Endpoints** 使用
 - 创建一个临时的 `https://*.trycloudflare.com` URL，将流量转发到当前的 OpenAI 兼容 `/v1` 端点
 - 首次启用时按需安装 `cloudflared`；后续重启复用同一托管二进制文件
-- Quick Tunnel 在 ShiguangGateway 或容器重启后不会自动恢复；需要时从 Dashboard 重新启用
+- Quick Tunnel 在 Orbit 或容器重启后不会自动恢复；需要时从 Dashboard 重新启用
 - Tunnel URL 是临时的，每次停止/启动 Tunnel 都会变化
 - 托管 Quick Tunnel 默认使用 HTTP/2 传输，以避免在受限容器中产生 QUIC UDP 缓冲区噪音
 - 如需覆盖托管传输选择，设置 `CLOUDFLARED_PROTOCOL=quic` 或 `auto`
@@ -689,15 +689,15 @@ curl http://localhost:20128/api/models/catalog
 
 ### LLM 网关智能（Phase 9）
 
-- **语义缓存** — 自动缓存非流式、temperature=0 的响应（通过 `X-ShiguangGateway-No-Cache: true` 绕过）
+- **语义缓存** — 自动缓存非流式、temperature=0 的响应（通过 `X-Orbit-No-Cache: true` 绕过）
 - **请求幂等** — 通过 `Idempotency-Key` 或 `X-Request-Id` 头在 5 秒内对请求去重
-- **进度追踪** — 通过 `X-ShiguangGateway-Progress: true` 头选择加入 SSE `event: progress` 事件
+- **进度追踪** — 通过 `X-Orbit-Progress: true` 头选择加入 SSE `event: progress` 事件
 
 ---
 
 ### 翻译器实验场
 
-通过 **Dashboard → Translator** 访问。调试和可视化 ShiguangGateway 如何在服务商之间转换 API 请求。
+通过 **Dashboard → Translator** 访问。调试和可视化 Orbit 如何在服务商之间转换 API 请求。
 
 | 模式             | 用途                                                |
 | ---------------- | --------------------------------------------------- |
@@ -750,7 +750,7 @@ curl http://localhost:20128/api/models/catalog
 X-Session-Id: your-session-key
 ```
 
-ShiguangGateway 也接受 `x_session_id`，并在 `X-ShiguangGateway-Session-Id` 中返回生效的会话 Key。
+Orbit 也接受 `x_session_id`，并在 `X-Orbit-Session-Id` 中返回生效的会话 Key。
 
 如果你使用 Nginx 发送下划线形式的头，启用：
 
@@ -786,7 +786,7 @@ Chain: production-fallback
 
 通过 **Dashboard → Settings → Resilience** 配置。
 
-ShiguangGateway 通过五个组件实现服务商级容灾：
+Orbit 通过五个组件实现服务商级容灾：
 
 1. **请求队列与限流** — 系统级请求整形：
    - **每分钟请求数 (RPM)** — 每个账户每分钟最大请求数
@@ -811,7 +811,7 @@ ShiguangGateway 通过五个组件实现服务商级容灾：
 
    服务商熔断器运行时状态仅在 **Dashboard → Health** 上显示。
 
-4. **等待冷却** — 如果所有候选连接都已在冷却中，ShiguangGateway 可以等待最早完成的冷却，然后自动重试同一个客户端请求。
+4. **等待冷却** — 如果所有候选连接都已在冷却中，Orbit 可以等待最早完成的冷却，然后自动重试同一个客户端请求。
 
 5. **速率限制自动检测** — 当上游服务商返回明确的等待窗口时，如果该设置已启用，这些提示会覆盖本地连接冷却。
 
@@ -845,7 +845,7 @@ curl -X POST http://localhost:20128/api/db-backups/import \
 
 **用途：**
 
-- 在机器之间迁移 ShiguangGateway
+- 在机器之间迁移 Orbit
 - 为灾难恢复创建外部备份
 - 在团队成员之间共享配置（全部导出 → 分享归档）
 
@@ -894,7 +894,7 @@ curl http://localhost:20128/api/usage/budget
 
 ### 音频转录
 
-ShiguangGateway 通过 OpenAI 兼容端点支持音频转录：
+Orbit 通过 OpenAI 兼容端点支持音频转录：
 
 ```bash
 POST /v1/audio/transcriptions
@@ -957,7 +957,7 @@ Combo 目标超时默认继承当前请求超时。仅在需要更短的按目�
 
 零延时 Combo 优化是可选功能。保持 **Zero-latency optimizations** 禁用可避免这些延时特性竞跑容灾目标、基于 TTFT 历史跳过目标或压缩容灾请求；启用后允许配置的对冲、预测性 TTFT 跳过和主动容灾压缩，以路由/请求的保真度换取更低的尾部延时。
 
-当上游服务商要求严格的 `max_tokens`/`maxOutputTokens` 限制时，禁用 **Reasoning token buffer**。启用后，Combo 路由仅对已知输出上限的模型添加推理模型 Headroom，当安全的缓冲值超出客户端 Token 限制时保持其不变。如果客户端限制已高于已知上限，ShiguangGateway 在发送上游请求前会将其限制到该上限。
+当上游服务商要求严格的 `max_tokens`/`maxOutputTokens` 限制时，禁用 **Reasoning token buffer**。启用后，Combo 路由仅对已知输出上限的模型添加推理模型 Headroom，当安全的缓冲值超出客户端 Token 限制时保持其不变。如果客户端限制已高于已知上限，Orbit 在发送上游请求前会将其限制到该上限。
 
 ---
 
@@ -980,7 +980,7 @@ Combo 目标超时默认继承当前请求超时。仅在需要更短的按目�
 
 ## 🤖 自动路由（零配置）
 
-ShiguangGateway 内置了一个**得分驱动的自动路由器**，可跨所有已连接的服务商为每个请求选择最佳模型 — 无需维护 Combo。只需使用 `auto/*` 前缀发送请求，ShiguangGateway 即可即时构建虚拟 Combo，按延时、费用、成功率、上下文适配度、任务匹配度、近期故障、配额和熔断器状态对候选模型进行评分。
+Orbit 内置了一个**得分驱动的自动路由器**，可跨所有已连接的服务商为每个请求选择最佳模型 — 无需维护 Combo。只需使用 `auto/*` 前缀发送请求，Orbit 即可即时构建虚拟 Combo，按延时、费用、成功率、上下文适配度、任务匹配度、近期故障、配额和熔断器状态对候选模型进行评分。
 
 | 前缀           | 优化目标                                                               |
 | -------------- | ---------------------------------------------------------------------- |
@@ -996,7 +996,7 @@ ShiguangGateway 内置了一个**得分驱动的自动路由器**，可跨所有
 
 ```bash
 curl -X POST http://localhost:20128/v1/chat/completions \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_KEY" \
+  -H "Authorization: Bearer $ORBIT_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "model": "auto/coding",
@@ -1011,13 +1011,13 @@ curl -X POST http://localhost:20128/v1/chat/completions \
 
 ## 🔌 MCP 与 A2A 集成
 
-ShiguangGateway 同时是一个 **MCP 服务端**（Model Context Protocol）和一个 **A2A 服务端**（Agent-to-Agent JSON-RPC 2.0）。任何兼容 MCP 的 IDE 或代理主机都可以直接调用 ShiguangGateway 工具 — 无需额外包装。
+Orbit 同时是一个 **MCP 服务端**（Model Context Protocol）和一个 **A2A 服务端**（Agent-to-Agent JSON-RPC 2.0）。任何兼容 MCP 的 IDE 或代理主机都可以直接调用 Orbit 工具 — 无需额外包装。
 
 ### MCP 传输方式
 
 - **SSE**: `http://localhost:20128/api/mcp/sse`
 - **Streamable HTTP**: `http://localhost:20128/api/mcp/stream`
-- **stdio**: `shiguang-gateway --mcp`（适用于偏好 stdio 的 IDE 插件）
+- **stdio**: `orbit --mcp`（适用于偏好 stdio 的 IDE 插件）
 
 ### 连接 Claude Desktop
 
@@ -1026,8 +1026,8 @@ ShiguangGateway 同时是一个 **MCP 服务端**（Model Context Protocol）和
 ```json
 {
   "mcpServers": {
-    "shiguang-gateway": {
-      "command": "shiguang-gateway",
+    "orbit": {
+      "command": "orbit",
       "args": ["--mcp"]
     }
   }
@@ -1046,7 +1046,7 @@ MCP 当前定义 32 个命名权限域。每个 Bearer Key 可限制到特定权
 
 ## 🧠 技能系统
 
-ShiguangGateway 暴露一个可扩展的**技能框架** (`src/lib/skills/`)，使代理和 A2A 端点可以运行领域特定的例程（如 `code-review`、`summarize`、`extract-facts`、`web-research`）。
+Orbit 暴露一个可扩展的**技能框架** (`src/lib/skills/`)，使代理和 A2A 端点可以运行领域特定的例程（如 `code-review`、`summarize`、`extract-facts`、`web-research`）。
 
 - **市场 UI** — 通过 **Dashboard → Skills** 浏览和安装技能
 - **按 Key 的权限域** — 限制哪些 API Key 可调用哪些技能
@@ -1058,7 +1058,7 @@ ShiguangGateway 暴露一个可扩展的**技能框架** (`src/lib/skills/`)，�
 
 ## 💾 记忆系统
 
-ShiguangGateway 通过混合检索持久化**长期对话记忆**：
+Orbit 通过混合检索持久化**长期对话记忆**：
 
 - **SQLite FTS5** 用于对历史轮次进行关键词搜索
 - **Qdrant 向量存储**（可选）用于语义召回
@@ -1071,11 +1071,11 @@ ShiguangGateway 通过混合检索持久化**长期对话记忆**：
 
 ## 🔔 Webhook
 
-订阅 ShiguangGateway 事件，实现实时监控和自动化。
+订阅 Orbit 事件，实现实时监控和自动化。
 
 - 在 **Dashboard → Webhooks** 中创建 Webhook，配置目标 URL 和 HMAC 签名密钥
 - 可用事件：`request.completed`、`request.failed`、`provider.unavailable`、`budget.exceeded`、`combo.switched`、`circuit_breaker.opened`、`circuit_breaker.closed`
-- 每个载荷包含 `X-ShiguangGateway-Signature`（HMAC-SHA256）供验证
+- 每个载荷包含 `X-Orbit-Signature`（HMAC-SHA256）供验证
 - 重试：3 次尝试，指数退避，然后进入死信队列
 
 完整 Schema 见 [WEBHOOKS.md](../frameworks/WEBHOOKS.md)。
@@ -1084,11 +1084,11 @@ ShiguangGateway 通过混合检索持久化**长期对话记忆**：
 
 ## ☁️ 云代理
 
-ShiguangGateway 集成了云编程代理（**OpenAI Codex Cloud**、**Devin**、**Jules**、**Antigravity**），使你能够在处理本地路由的同一 Dashboard 中派发长时间运行的任务。
+Orbit 集成了云编程代理（**OpenAI Codex Cloud**、**Devin**、**Jules**、**Antigravity**），使你能够在处理本地路由的同一 Dashboard 中派发长时间运行的任务。
 
 - 在 **Dashboard → Cloud Agents** 中创建任务，或通过 `POST /api/v1/agents/tasks`
 - 按任务追踪状态、日志和产物
-- 每个服务商使用自备 API Key — 凭据永不离开 ShiguangGateway 实例
+- 每个服务商使用自备 API Key — 凭据永不离开 Orbit 实例
 
 完整参考：[CLOUD_AGENT.md](../frameworks/CLOUD_AGENT.md)。
 
@@ -1096,30 +1096,30 @@ ShiguangGateway 集成了云编程代理（**OpenAI Codex Cloud**、**Devin**、
 
 ## 🛠️ 编程式管理
 
-你可以通过 HTTP，使用具有 `manage` 权限域的 **Bearer Key** 来管理 ShiguangGateway 的每一项资源（服务商、Combo、Key、设置）。
+你可以通过 HTTP，使用具有 `manage` 权限域的 **Bearer Key** 来管理 Orbit 的每一项资源（服务商、Combo、Key、设置）。
 
 在 **Dashboard → API Keys → New Key → Scope: manage** 中生成 Key，然后：
 
 ```bash
 # List providers
 curl http://localhost:20128/api/providers \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_MANAGE_KEY"
+  -H "Authorization: Bearer $ORBIT_MANAGE_KEY"
 
 # Add a provider connection
 curl -X POST http://localhost:20128/api/providers \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_MANAGE_KEY" \
+  -H "Authorization: Bearer $ORBIT_MANAGE_KEY" \
   -H "Content-Type: application/json" \
   -d '{ "provider": "openai", "apiKey": "sk-...", "name": "main" }'
 
 # Create a combo
 curl -X POST http://localhost:20128/api/combos \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_MANAGE_KEY" \
+  -H "Authorization: Bearer $ORBIT_MANAGE_KEY" \
   -H "Content-Type: application/json" \
   -d '{ "name": "premium", "strategy": "priority", "models": [{ "model": "cc/claude-opus-4-7" }, { "model": "glm/glm-5.1" }] }'
 
 # List/create API keys
-curl http://localhost:20128/api/keys -H "Authorization: Bearer $SHIGUANG_GATEWAY_MANAGE_KEY"
-curl -X POST http://localhost:20128/api/keys -H "Authorization: Bearer $SHIGUANG_GATEWAY_MANAGE_KEY" \
+curl http://localhost:20128/api/keys -H "Authorization: Bearer $ORBIT_MANAGE_KEY"
+curl -X POST http://localhost:20128/api/keys -H "Authorization: Bearer $ORBIT_MANAGE_KEY" \
   -d '{ "name": "ci-bot", "scopes": ["chat"] }'
 ```
 
@@ -1129,38 +1129,38 @@ curl -X POST http://localhost:20128/api/keys -H "Authorization: Bearer $SHIGUANG
 
 ## 💻 内置 CLI
 
-ShiguangGateway 内置了 CLI 工具（`shiguang-gateway …`），用于设置、诊断和运行时控制。这与 Dashboard 中的「CLI Tools」页面是**分开的**，后者用于配置第三方 CLI（Claude Code、Cursor、Codex、Cline 等）使之能够对接 ShiguangGateway。
+Orbit 内置了 CLI 工具（`orbit …`），用于设置、诊断和运行时控制。这与 Dashboard 中的「CLI Tools」页面是**分开的**，后者用于配置第三方 CLI（Claude Code、Cursor、Codex、Cline 等）使之能够对接 Orbit。
 
 ```bash
-shiguang-gateway setup                    # 交互式向导（密码、服务商、Combo）
-shiguang-gateway setup --non-interactive  # 适合 CI 环境
-shiguang-gateway doctor                   # 健康诊断（数据目录、数据库、服务商、端口）
-shiguang-gateway providers available      # 列出支持的服务商
-shiguang-gateway providers list           # 列出已配置的连接
-shiguang-gateway providers test <id>      # 实时测试服务商连接
-shiguang-gateway combos list              # 列出 Combo
-shiguang-gateway combos switch <name>     # 设置默认 Combo
-shiguang-gateway models                   # 列出可用模型（--json、--search）
-shiguang-gateway keys add | list | remove # 从终端管理 API Key
-shiguang-gateway backup                   # 快照配置 + 数据库
-shiguang-gateway restore [<timestamp>]    # 从快照恢复
-shiguang-gateway health                   # 详细健康信息（熔断器、缓存、内存）
-shiguang-gateway quota                    # 服务商配额用量
-shiguang-gateway mcp status               # MCP 服务端状态
-shiguang-gateway a2a status               # A2A 服务端状态
-shiguang-gateway tunnel list|create|stop  # Cloudflare/Tailscale/ngrok 隧道
-shiguang-gateway reset-password           # 重置管理员密码
-shiguang-gateway --mcp                    # 通过 stdio 启动 MCP 服务端
-shiguang-gateway --port 3000              # 在自定义端口启动服务端
+orbit setup                    # 交互式向导（密码、服务商、Combo）
+orbit setup --non-interactive  # 适合 CI 环境
+orbit doctor                   # 健康诊断（数据目录、数据库、服务商、端口）
+orbit providers available      # 列出支持的服务商
+orbit providers list           # 列出已配置的连接
+orbit providers test <id>      # 实时测试服务商连接
+orbit combos list              # 列出 Combo
+orbit combos switch <name>     # 设置默认 Combo
+orbit models                   # 列出可用模型（--json、--search）
+orbit keys add | list | remove # 从终端管理 API Key
+orbit backup                   # 快照配置 + 数据库
+orbit restore [<timestamp>]    # 从快照恢复
+orbit health                   # 详细健康信息（熔断器、缓存、内存）
+orbit quota                    # 服务商配额用量
+orbit mcp status               # MCP 服务端状态
+orbit a2a status               # A2A 服务端状态
+orbit tunnel list|create|stop  # Cloudflare/Tailscale/ngrok 隧道
+orbit reset-password           # 重置管理员密码
+orbit --mcp                    # 通过 stdio 启动 MCP 服务端
+orbit --port 3000              # 在自定义端口启动服务端
 ```
 
-提示：将 `shiguang-gateway doctor --json` 与你的监控工具结合，用于对不健康的服务商连接发出告警。
+提示：将 `orbit doctor --json` 与你的监控工具结合，用于对不健康的服务商连接发出告警。
 
 ---
 
 ## 🖥️ 桌面应用 (Electron)
 
-ShiguangGateway 提供适用于 Windows、macOS 和 Linux 的原生桌面应用。
+Orbit 提供适用于 Windows、macOS 和 Linux 的原生桌面应用。
 
 ### 安装
 
@@ -1203,7 +1203,7 @@ npm run build:linux    # Linux (.AppImage)
 
 | 变量                  | 默认值  | 说明                              |
 | --------------------- | ------- | --------------------------------- |
-| `SHIGUANG_GATEWAY_PORT`      | `20128` | 服务端端口                        |
-| `SHIGUANG_GATEWAY_MEMORY_MB` | `512`   | Node.js 堆内存上限（64–16384 MB） |
+| `ORBIT_PORT`      | `20128` | 服务端端口                        |
+| `ORBIT_MEMORY_MB` | `512`   | Node.js 堆内存上限（64–16384 MB） |
 
 📖 完整文档：[`electron/README.md`](../../electron/README.md)

@@ -20,10 +20,10 @@ export const CURSOR_TARGET: MitmTarget = {
   ],
   setupTutorial: {
     steps: [
-      "Install ShiguangGateway's root certificate",
+      "Install Orbit's root certificate",
       "Enable DNS routing for Cursor",
       "Restart Cursor IDE",
-      "Done — Cursor traffic now routes through ShiguangGateway",
+      "Done — Cursor traffic now routes through Orbit",
     ],
     detection: { command: "which cursor", platform: "all" },
   },

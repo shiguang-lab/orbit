@@ -74,7 +74,7 @@ export async function postVncSession(connectionId: string, second?: string, acti
       return { value: {
         session: publicVncSession(session),
         note:
-          "The viewer is loopback-only. Open it on the ShiguangGateway host or forward its port over SSH, then harvest the session.",
+          "The viewer is loopback-only. Open it on the Orbit host or forward its port over SSH, then harvest the session.",
       } };
     }
 

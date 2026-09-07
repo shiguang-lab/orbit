@@ -8,7 +8,7 @@ import { requireManagementAuth as requireCliToolsAuth } from "@orbit/core/contro
 import { getComboModelProvider } from "@orbit/core/routing/combo-steps";
 import { resolveGatewayBaseUrl } from "@orbit/core/shared/utils/resolveGatewayBaseUrl";
 
-const SHIGUANG_GATEWAY_BASE_URL = resolveGatewayBaseUrl();
+const ORBIT_BASE_URL = resolveGatewayBaseUrl();
 
 export async function GET(request: Request) {
   const authError = await requireCliToolsAuth(request);
@@ -17,8 +17,8 @@ export async function GET(request: Request) {
   try {
     // Fetch current health and combos to determine best provider ordering
     const [healthRes, combosRes] = await Promise.allSettled([
-      fetch(`${SHIGUANG_GATEWAY_BASE_URL}/api/monitoring/health`, { signal: AbortSignal.timeout(5000) }),
-      fetch(`${SHIGUANG_GATEWAY_BASE_URL}/api/combos`, { signal: AbortSignal.timeout(5000) }),
+      fetch(`${ORBIT_BASE_URL}/api/monitoring/health`, { signal: AbortSignal.timeout(5000) }),
+      fetch(`${ORBIT_BASE_URL}/api/combos`, { signal: AbortSignal.timeout(5000) }),
     ]);
 
     const health = healthRes.status === "fulfilled" ? await healthRes.value.json() : {};
@@ -64,7 +64,7 @@ export async function GET(request: Request) {
         allow_fallbacks: true,
       },
       generated_at: new Date().toISOString(),
-      source: "shiguangGateway-auto-combo",
+      source: "orbit-auto-combo",
     });
   } catch {
     return Response.json({
@@ -73,7 +73,7 @@ export async function GET(request: Request) {
         allow_fallbacks: true,
       },
       generated_at: new Date().toISOString(),
-      source: "shiguangGateway-fallback",
+      source: "orbit-fallback",
     });
   }
 }

@@ -1,5 +1,5 @@
 /**
- * shiguangGateway setup-aider — configure Aider (aider.chat) for ShiguangGateway.
+ * orbit setup-aider — configure Aider (aider.chat) for Orbit.
  *
  * Aider (LiteLLM under the hood) talks to an OpenAI-compatible endpoint via env
  * `OPENAI_API_BASE` (ROOT url — LiteLLM appends /v1/chat/completions) + the model
@@ -27,7 +27,7 @@ export function resolveAiderTarget(opts = {}) {
   else {
     try {
       root = stripToRoot(
-        resolveActiveContext(opts.context ?? process.env.SHIGUANG_GATEWAY_CONTEXT)?.baseUrl
+        resolveActiveContext(opts.context ?? process.env.ORBIT_CONTEXT)?.baseUrl
       );
     } catch {
       /* none */
@@ -37,13 +37,13 @@ export function resolveAiderTarget(opts = {}) {
   let apiKey = opts.apiKey ?? opts["api-key"];
   if (!apiKey) {
     try {
-      const c = resolveActiveContext(opts.context ?? process.env.SHIGUANG_GATEWAY_CONTEXT);
+      const c = resolveActiveContext(opts.context ?? process.env.ORBIT_CONTEXT);
       apiKey = c?.accessToken || c?.apiKey;
     } catch {
       /* none */
     }
   }
-  if (!apiKey) apiKey = process.env.SHIGUANG_GATEWAY_API_KEY || "";
+  if (!apiKey) apiKey = process.env.ORBIT_API_KEY || "";
   return { apiBase: root, apiKey };
 }
 
@@ -59,7 +59,7 @@ export function buildAiderConfig(existing, { apiBase, model }) {
 export function buildAiderRecipe({ apiBase, model }) {
   return [
     `export OPENAI_API_BASE=${apiBase}`,
-    "export OPENAI_API_KEY=$SHIGUANG_GATEWAY_API_KEY",
+    "export OPENAI_API_KEY=$ORBIT_API_KEY",
     `aider --model openai/${model}`,
     `# headless:  aider --model openai/${model} --message "reply OK" --yes`,
   ].join("\n");
@@ -96,13 +96,13 @@ export async function runSetupAiderCommand(opts = {}) {
 
   const guard = await guardHostConfigTarget(configPath, {
     toolLabel: "Aider",
-    hostCommand: "shiguangGateway setup-aider",
+    hostCommand: "orbit setup-aider",
     allowContainerWrite: Boolean(opts.allowContainerWrite ?? opts["allow-container-write"]),
     dryRun,
   });
   if (guard !== 0) return guard;
 
-  printHeading("ShiguangGateway → Aider (openai-compatible via LiteLLM)");
+  printHeading("Orbit → Aider (openai-compatible via LiteLLM)");
   printInfo(`OPENAI_API_BASE: ${apiBase}   (no /v1 — LiteLLM appends it)`);
 
   let model = opts.model;
@@ -145,10 +145,10 @@ export async function runSetupAiderCommand(opts = {}) {
 export function registerSetupAider(program) {
   program
     .command("setup-aider")
-    .description("Configure Aider for ShiguangGateway: write ~/.aider.conf.yml + print the env recipe")
-    .option("--port <port>", "Local ShiguangGateway port (ignored when --remote is set)", "8787")
-    .option("--remote <url>", "Remote ShiguangGateway URL, e.g. http://192.168.0.15:8787")
-    .option("--api-key <key>", "ShiguangGateway API key (defaults to SHIGUANG_GATEWAY_API_KEY env var)")
+    .description("Configure Aider for Orbit: write ~/.aider.conf.yml + print the env recipe")
+    .option("--port <port>", "Local Orbit port (ignored when --remote is set)", "8787")
+    .option("--remote <url>", "Remote Orbit URL, e.g. http://192.168.0.15:8787")
+    .option("--api-key <key>", "Orbit API key (defaults to ORBIT_API_KEY env var)")
     .option("--model <id>", "Model id (the openai/ prefix is added automatically)")
     .option("--config-path <path>", ".aider.conf.yml path (default: ~/.aider.conf.yml)")
     .option("--yes", "Non-interactive: do not prompt (requires --model)")

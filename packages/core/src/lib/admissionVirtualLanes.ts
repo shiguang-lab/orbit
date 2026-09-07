@@ -1,7 +1,7 @@
 import { providerRuntimePorts } from "../runtime/providerRuntimePorts.js";
 import { getFeatureFlagOverride } from "./db/featureFlags.js";
 
-export const ADAPTIVE_VIRTUAL_LANES_FLAG_KEY = "SHIGUANG_GATEWAY_CHAT_VIRTUAL_LANES";
+export const ADAPTIVE_VIRTUAL_LANES_FLAG_KEY = "ORBIT_CHAT_VIRTUAL_LANES";
 
 export type AdaptiveVirtualLanesFlagState = {
   enabled: boolean;

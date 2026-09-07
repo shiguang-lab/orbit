@@ -38,7 +38,7 @@
  *
  * Cache: in-memory TTL (60s for success, 5 min for 404).
  *
- * Override: set SHIGUANG_GATEWAY_OPENCODE_QUOTA_URL to a working endpoint. If
+ * Override: set ORBIT_OPENCODE_QUOTA_URL to a working endpoint. If
  * OpenCode ships a public endpoint (likely in the form of the merged PR
  * #16513), the maintainer can update the default.
  *
@@ -52,9 +52,9 @@ import { resolveOpenCodeGoDashboardConfig } from "./opencodeOllamaUsage.ts";
 
 // OpenCode quota endpoint — same key works across opencode, opencode-go, opencode-zen
 // Default points at /zen/go/v1/quota which returns 404 today (no public quota API yet,
-// tracked in anomalyco/opencode#16017).  Set SHIGUANG_GATEWAY_OPENCODE_QUOTA_URL to override.
+// tracked in anomalyco/opencode#16017).  Set ORBIT_OPENCODE_QUOTA_URL to override.
 const OPENCODE_QUOTA_URL =
-  process.env.SHIGUANG_GATEWAY_OPENCODE_QUOTA_URL ?? "https://opencode.ai/zen/go/v1/quota";
+  process.env.ORBIT_OPENCODE_QUOTA_URL ?? "https://opencode.ai/zen/go/v1/quota";
 
 // Cache TTL — matches Codex / DeepSeek / Bailian pattern (60s)
 const CACHE_TTL_MS = 60_000;
@@ -410,7 +410,7 @@ async function fetchLiveOpencodeQuota(
           _warned404Urls.add(OPENCODE_QUOTA_URL);
           console.warn(
             `[opencodeQuotaFetcher] ${OPENCODE_QUOTA_URL} returned 404 — opencode-go usage API is not yet public. ` +
-              `Set SHIGUANG_GATEWAY_OPENCODE_QUOTA_URL to a working endpoint, or follow ` +
+              `Set ORBIT_OPENCODE_QUOTA_URL to a working endpoint, or follow ` +
               `https://github.com/anomalyco/opencode/issues/16017 for upstream status.`
           );
         }

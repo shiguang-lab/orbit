@@ -4,7 +4,7 @@ title: Wykrywanie bana konta / zakazanych słów kluczowych
 
 # Wykrywanie bana konta / zakazanych słów kluczowych
 
-ShiguangGateway skanuje odpowiedzi błędów upstream pod kątem sygnałów wskazujących, że
+Orbit skanuje odpowiedzi błędów upstream pod kątem sygnałów wskazujących, że
 **konto providera jest trwale martwe** (zawieszone / dezaktywowane / zbanowane
 za ToS) i po dopasowaniu przenosi to połączenie w **terminalny stan `banned`**,
 tak aby nie było już wybierane do requestów. To właśnie konfiguruje karta ustawień

@@ -90,7 +90,7 @@ export class SettingsConfigController {
       const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
       return reply
         .header("Content-Type", "application/json")
-        .header("Content-Disposition", `attachment; filename="shiguangGateway-legacy-backup-${timestamp}.json"`)
+        .header("Content-Disposition", `attachment; filename="orbit-legacy-backup-${timestamp}.json"`)
         .send(JSON.stringify(data, null, 2));
     } catch (error) {
       console.error("[API] Error exporting JSON backup:", error);
@@ -157,7 +157,7 @@ export class SettingsConfigController {
             ...SAFE_OUTBOUND_FETCH_PRESETS.validationRead,
             guard: "public-only",
             timeoutMs: 5000,
-            headers: { "User-Agent": "ShiguangGateway/2.0" },
+            headers: { "User-Agent": "Orbit/2.0" },
           });
           if (response.ok) {
             const contentType = response.headers.get("content-type") || "";

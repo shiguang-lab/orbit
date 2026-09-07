@@ -8,7 +8,7 @@
  * treated as secrets.
  * https://developers.google.com/identity/protocols/oauth2/native-app
  *
- * ShiguangGateway embeds them so users who do not configure `.env` still get a
+ * Orbit embeds them so users who do not configure `.env` still get a
  * working OAuth flow out of the box. The literals, however, trip pattern
  * scanners (AIza..., GOCSPX-..., ...googleusercontent.com) and produce
  * noisy false-positive alerts on every release.
@@ -24,7 +24,7 @@
  * overrides do not require migration.
  */
 
-const MASK = "shiguangGateway-public-v1";
+const MASK = "orbit-public-v1";
 
 const RAW_VALUE_PATTERN =
   /^(AIza[A-Za-z0-9_-]{20,}|GOCSPX-[A-Za-z0-9_-]+|\d+-[a-z0-9]{32}\.apps\.googleusercontent\.com|Iv1\.[a-f0-9]+)$/;

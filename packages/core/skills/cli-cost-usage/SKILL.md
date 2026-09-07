@@ -11,8 +11,8 @@ View cost breakdowns, token usage, and call logs from the CLI. Filter by provide
 ## Quick install
 
 ```bash
-npm install -g shiguang-gateway   # or: npx shiguang-gateway
-shiguang-gateway --version
+npm install -g orbit   # or: npx orbit
+orbit --version
 ```
 
 ## Subcommands
@@ -31,7 +31,7 @@ shiguang-gateway --version
 **Example:**
 
 ```bash
-shiguang-gateway cost
+orbit cost
 ```
 
 ### `pricing`
@@ -39,7 +39,7 @@ shiguang-gateway cost
 **Example:**
 
 ```bash
-shiguang-gateway pricing
+orbit pricing
 ```
 
 ### `pricing sync`
@@ -52,7 +52,7 @@ shiguang-gateway pricing
 **Example:**
 
 ```bash
-shiguang-gateway pricing sync
+orbit pricing sync
 ```
 
 ### `pricing list`
@@ -66,7 +66,7 @@ shiguang-gateway pricing sync
 **Example:**
 
 ```bash
-shiguang-gateway pricing list
+orbit pricing list
 ```
 
 ### `pricing get <model>`
@@ -74,7 +74,7 @@ shiguang-gateway pricing list
 **Example:**
 
 ```bash
-shiguang-gateway pricing get <model>
+orbit pricing get <model>
 ```
 
 ### `pricing defaults`
@@ -82,7 +82,7 @@ shiguang-gateway pricing get <model>
 **Example:**
 
 ```bash
-shiguang-gateway pricing defaults
+orbit pricing defaults
 ```
 
 ### `pricing show`
@@ -90,7 +90,7 @@ shiguang-gateway pricing defaults
 **Example:**
 
 ```bash
-shiguang-gateway pricing show
+orbit pricing show
 ```
 
 ### `pricing set`
@@ -105,7 +105,7 @@ shiguang-gateway pricing show
 **Example:**
 
 ```bash
-shiguang-gateway pricing set
+orbit pricing set
 ```
 
 ### `pricing diff`
@@ -117,7 +117,7 @@ shiguang-gateway pricing set
 **Example:**
 
 ```bash
-shiguang-gateway pricing diff
+orbit pricing diff
 ```
 
 ### `usage`
@@ -125,7 +125,7 @@ shiguang-gateway pricing diff
 **Example:**
 
 ```bash
-shiguang-gateway usage
+orbit usage
 ```
 
 ### `usage analytics`
@@ -138,7 +138,7 @@ shiguang-gateway usage
 **Example:**
 
 ```bash
-shiguang-gateway usage analytics
+orbit usage analytics
 ```
 
 ### `usage budget`
@@ -146,7 +146,7 @@ shiguang-gateway usage analytics
 **Example:**
 
 ```bash
-shiguang-gateway usage budget
+orbit usage budget
 ```
 
 ### `usage list`
@@ -154,7 +154,7 @@ shiguang-gateway usage budget
 **Example:**
 
 ```bash
-shiguang-gateway usage list
+orbit usage list
 ```
 
 ### `usage get [scope]`
@@ -162,7 +162,7 @@ shiguang-gateway usage list
 **Example:**
 
 ```bash
-shiguang-gateway usage get [scope]
+orbit usage get [scope]
 ```
 
 ### `usage set <amount>`
@@ -175,7 +175,7 @@ shiguang-gateway usage get [scope]
 **Example:**
 
 ```bash
-shiguang-gateway usage set <amount>
+orbit usage set <amount>
 ```
 
 ### `usage reset [scope]`
@@ -183,7 +183,7 @@ shiguang-gateway usage set <amount>
 **Example:**
 
 ```bash
-shiguang-gateway usage reset [scope]
+orbit usage reset [scope]
 ```
 
 ### `usage quota`
@@ -196,7 +196,7 @@ shiguang-gateway usage reset [scope]
 **Example:**
 
 ```bash
-shiguang-gateway usage quota
+orbit usage quota
 ```
 
 ### `usage logs`
@@ -212,7 +212,7 @@ shiguang-gateway usage quota
 **Example:**
 
 ```bash
-shiguang-gateway usage logs
+orbit usage logs
 ```
 
 ### `usage utilization`
@@ -224,7 +224,7 @@ shiguang-gateway usage logs
 **Example:**
 
 ```bash
-shiguang-gateway usage utilization
+orbit usage utilization
 ```
 
 ### `usage history`
@@ -236,7 +236,7 @@ shiguang-gateway usage utilization
 **Example:**
 
 ```bash
-shiguang-gateway usage history
+orbit usage history
 ```
 
 ### `usage proxy-logs`
@@ -248,5 +248,5 @@ shiguang-gateway usage history
 **Example:**
 
 ```bash
-shiguang-gateway usage proxy-logs
+orbit usage proxy-logs
 ```

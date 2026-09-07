@@ -6,22 +6,22 @@
 
 ---
 
-title: "CLI Eszközök — ShiguangGateway"
+title: "CLI Eszközök — Orbit"
 version: 3.8.50
 lastUpdated: 2026-08-18
 ---
 
-# CLI Eszközök — ShiguangGateway
+# CLI Eszközök — Orbit
 
 Utolsó frissítés: 2026-08-18
 
-Az ShiguangGateway három kategóriájú CLI eszközt integrál, amelyek három dedikált irányítópult oldalon találhatók:
+Az Orbit három kategóriájú CLI eszközt integrál, amelyek három dedikált irányítópult oldalon találhatók:
 
 | Oldal            | Útvonal                 | Fogalom                                                                                     | Szám                  |
 | ---------------- | ----------------------- | ------------------------------------------------------------------------------------------- | --------------------- |
-| **CLI Kódok**    | `/dashboard/cli-code`   | Kódoló eszközök, amelyeket az ShiguangGateway-ra irányít (Ügyfél → CLI → ShiguangGateway → Szolgáltató) | 26                    |
-| **CLI Ügynökök** | `/dashboard/cli-agents` | Autonóm ügynökök, amelyeket az ShiguangGateway-ra irányít (ugyanaz az áramlás, szélesebb kör)     | 8                     |
-| **ACP Ügynökök** | `/dashboard/acp-agents` | CLI-k, amelyeket az ShiguangGateway háttérben indít stdio/ACP-n keresztül (fordított áramlás)     | lásd a nyilvántartást |
+| **CLI Kódok**    | `/dashboard/cli-code`   | Kódoló eszközök, amelyeket az Orbit-ra irányít (Ügyfél → CLI → Orbit → Szolgáltató) | 26                    |
+| **CLI Ügynökök** | `/dashboard/cli-agents` | Autonóm ügynökök, amelyeket az Orbit-ra irányít (ugyanaz az áramlás, szélesebb kör)     | 8                     |
+| **ACP Ügynökök** | `/dashboard/acp-agents` | CLI-k, amelyeket az Orbit háttérben indít stdio/ACP-n keresztül (fordított áramlás)     | lásd a nyilvántartást |
 
 A régi útvonalak 308-as átirányítással működnek: `/dashboard/cli-tools` → `/dashboard/cli-code`, `/dashboard/agents` → `/dashboard/acp-agents`.
 
@@ -33,14 +33,14 @@ A régi útvonalak 308-as átirányítással működnek: `/dashboard/cli-tools` 
 CLI Kódok / CLI Ügynökök (fogyasztási áramlás):
 Claude / Codex / OpenCode / Cline / KiloCode / Continue / Hermes Ügynök / Goose / ...
            │
-           ▼  (mind az ShiguangGateway-ra mutat)
+           ▼  (mind az Orbit-ra mutat)
     http://YOUR_SERVER:20128/v1
            │
-           ▼  (az ShiguangGateway a megfelelő szolgáltatóhoz irányít)
+           ▼  (az Orbit a megfelelő szolgáltatóhoz irányít)
     Anthropic / OpenAI / Gemini / DeepSeek / Groq / Mistral / ...
 
 ACP Ügynökök (fordított indítási áramlás):
-    Ügyfél kérés → ShiguangGateway → CLI indítása stdio/ACP-n keresztül → válasz
+    Ügyfél kérés → Orbit → CLI indítása stdio/ACP-n keresztül → válasz
 ```
 
 **Előnyök:**
@@ -54,26 +54,26 @@ ACP Ügynökök (fordított indítási áramlás):
 
 ## Automatikus konfigurálás `setup-*`-pal
 
-Nem kell kézzel megírnia minden eszköz konfigurációját. Az ShiguangGateway egy `setup-*`
+Nem kell kézzel megírnia minden eszköz konfigurációját. Az Orbit egy `setup-*`
 parancsot biztosít minden támogatott CLI-hez, amely beolvassa az **élő** modell katalógust egy futó
-ShiguangGateway-ból (helyi vagy távoli) és megírja az eszköz saját konfigurációját az Ön gépén:
+Orbit-ból (helyi vagy távoli) és megírja az eszköz saját konfigurációját az Ön gépén:
 
 ```bash
-shiguang-gateway setup-codex        shiguang-gateway setup-claude       shiguang-gateway setup-opencode
-shiguang-gateway setup-cline        shiguang-gateway setup-kilo         shiguang-gateway setup-continue
-shiguang-gateway setup-cursor       shiguang-gateway setup-roo          shiguang-gateway setup-crush
-shiguang-gateway setup-goose        shiguang-gateway setup-qwen         shiguang-gateway setup-aider
+orbit setup-codex        orbit setup-claude       orbit setup-opencode
+orbit setup-cline        orbit setup-kilo         orbit setup-continue
+orbit setup-cursor       orbit setup-roo          orbit setup-crush
+orbit setup-goose        orbit setup-qwen         orbit setup-aider
 ```
 
 Mindegyik elfogadja a `--remote <url> --api-key <key>` (helyi eszköz konfigurálása egy
-távoli ShiguangGateway-hoz), `--dry-run` (előnézet írás nélkül), és `--port`. Azok az eszközök,
+távoli Orbit-hoz), `--dry-run` (előnézet írás nélkül), és `--port`. Azok az eszközök,
 amelyek nem rendelkeznek modell automatikus felfedezéssel (Cline, Kilo, Roo, Goose, Aider, Qwen)
 `--model <id>`-t (és `--yes`-t interaktív futtatásokhoz) igényelnek. A CLI indításához a
 megfelelő környezeti változókkal és anélkül, hogy bármilyen konfigurációt írnánk, használja a
-generikus `shiguang-gateway run <target>` indítót (claude, codex, aider, goose, opencode, qwen,
+generikus `orbit run <target>` indítót (claude, codex, aider, goose, opencode, qwen,
 gemini — a célok és álnév a `bin/cli/cli-manifest.mjs`-ből származnak); a régi
-eszközspecifikus indítók `shiguang-gateway launch` (Claude Code) és `shiguang-gateway launch-codex`
-(Codex) továbbra is elérhetők. A Gemini CLI csak indításra használható: ez egy `shiguang-gateway run`
+eszközspecifikus indítók `orbit launch` (Claude Code) és `orbit launch-codex`
+(Codex) továbbra is elérhetők. A Gemini CLI csak indításra használható: ez egy `orbit run`
 cél, de nincs `setup-*`/`configure` receptje.
 
 > **Teljes hivatkozás:** a mester táblázat — mit ír minden parancs, minden zászló,
@@ -82,23 +82,23 @@ cél, de nincs `setup-*`/`configure` receptje.
 
 ### Ezek futtatása egy konténerben
 
-A `setup-*` parancs, amelyet az ShiguangGateway konténerében hajtanak végre, a
+A `setup-*` parancs, amelyet az Orbit konténerében hajtanak végre, a
 konténer saját otthonába ír, amelyet egyetlen gazda CLI sem olvas, és amely a
-konténerrel együtt eltűnik. Az ShiguangGateway ezt észleli, és `2`-t ad vissza utasításokkal a
+konténerrel együtt eltűnik. Az Orbit ezt észleli, és `2`-t ad vissza utasításokkal a
 helyett, hogy írná. Két támogatott lehetőség — telepítse a CLI-t a gazdán, és
-`shiguang-gateway connect`-el csatlakozzon a konténerhez, vagy kössön be a konfigurációs könyvtárakat és állítsa be
+`orbit connect`-el csatlakozzon a konténerhez, vagy kössön be a konfigurációs könyvtárakat és állítsa be
 `CLI_CONFIG_HOME`-t (a compose `host` profil). Minden `setup-*` parancs, plusz
-`shiguang-gateway configure` és `shiguang-gateway config set`, elfogadja a
+`orbit configure` és `orbit config set`, elfogadja a
 `--allow-container-write`-t, amikor a konténer saját CLI-jeinek konfigurálása az, amit
-valójában jelentett; `SHIGUANG_GATEWAY_ALLOW_CONTAINER_CONFIG_WRITE=true` ugyanezt teszi a
+valójában jelentett; `ORBIT_ALLOW_CONTAINER_CONFIG_WRITE=true` ugyanezt teszi a
 szerver számára. Lásd
-[Docker Útmutató → Gazda CLI eszközök konfigurálása](../guides/DOCKER_GUIDE.md#configuring-host-cli-tools-when-shiguang-gateway-runs-in-docker).
+[Docker Útmutató → Gazda CLI eszközök konfigurálása](../guides/DOCKER_GUIDE.md#configuring-host-cli-tools-when-orbit-runs-in-docker).
 
 Az irányítópult **alkalmazási végpontja** (`POST /api/cli-tools/apply`) érvényesíti a
 ugyanazt a védelmet: egy konténerben, ha a cél nem kötetbe van szerelve a
 gazdától, akkor **`422`** válasz érkezik `containerEphemeralTarget: true`-val, a biztonságos hiba
 szöveggel és — a gazda recepttel rendelkező eszközök esetén (claude, codex, opencode, cline,
-kilo, continue) — egy `hostSetupCommand`-dal (pl. `shiguang-gateway setup-opencode`), amelyet a
+kilo, continue) — egy `hostSetupCommand`-dal (pl. `orbit setup-opencode`), amelyet a
 gazdán kell futtatni; semmi sem íródik. A `dryRun: true` továbbra is működik konténer
 módban, és visszaadja a generált tartalmat + cél útvonalat anélkül, hogy a lemezt érintené, így
 előnézetet készíthet az irányítópulton, és alkalmazhatja a gazdán. Ez a viselkedés
@@ -133,8 +133,8 @@ nyilatkozati forrása, és egy drift teszt tartja őket összhangban:
 | -------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
 | **Katalógusba véve** | Megjelenik a műszerfal katalógusában (név, szállító, dokumentáció, konfigurációs típus) | `src/shared/constants/cliTools.ts` (`CLI_TOOLS`)                   |
 | **Észlelhető**       | Bináris/config észlelés, egészségügyi ellenőrzések, konfigurációs utak                  | `src/shared/services/cliRuntime.ts` (`CLI_TOOLS` futási katalógus) |
-| **Konfigurálható**   | Támogatott az `shiguang-gateway configure <cli>` (beállítási recept létezik)                   | `bin/cli/cli-manifest.mjs` (`configure: true`)                     |
-| **Indítható**        | Támogatott az `shiguang-gateway run <target>` (env/args injekció definiálva)                   | `bin/cli/cli-manifest.mjs` (`run: true`)                           |
+| **Konfigurálható**   | Támogatott az `orbit configure <cli>` (beállítási recept létezik)                   | `bin/cli/cli-manifest.mjs` (`configure: true`)                     |
+| **Indítható**        | Támogatott az `orbit run <target>` (env/args injekció definiálva)                   | `bin/cli/cli-manifest.mjs` (`run: true`)                           |
 
 A `bin/cli/cli-manifest.mjs` a CLI parancsok kanonikus végrehajtható manifesztje: `run`, `configure` és a shell-befejező generátorok mind származtatják a
 céllistáikat, az alias feloldást (például `kilocode`/`kilo-code`/`kilo_cli` → `kilo`)
@@ -197,7 +197,7 @@ Azok az eszközök, amelyeknél `baseUrlSupport: "részleges"` egy "⚠ Alap URL
 
 ## 3. ACP Ügynökök (/dashboard/acp-agents)
 
-Ez az oldal (átnevezve a `/dashboard/agents`-ről) azokat a CLI-ket mutatja, amelyeket az ShiguangGateway **indíthat** háttér végrehajtási motorokként stdio/ACP protokollon keresztül. A katalógust külön karbantartják a `src/lib/acp/registry.ts` fájlban, és **nem** ugyanaz, mint a `CLI_TOOLS`.
+Ez az oldal (átnevezve a `/dashboard/agents`-ről) azokat a CLI-ket mutatja, amelyeket az Orbit **indíthat** háttér végrehajtási motorokként stdio/ACP protokollon keresztül. A katalógust külön karbantartják a `src/lib/acp/registry.ts` fájlban, és **nem** ugyanaz, mint a `CLI_TOOLS`.
 
 ---
 
@@ -260,7 +260,7 @@ Az új eszközök, amelyek `configType: "custom"` beállítással rendelkeznek, 
 | `POST /api/cli-tools/codewhale-settings`    | CodeWhale (OPENAI_BASE_URL, elsődleges + régi `~/.deepseek` szinkronizálás) |
 | `POST /api/cli-tools/smelt-settings`        | Smelt                                                                       |
 | `POST /api/cli-tools/pi-settings`           | Pi kódoló ügynök                                                            |
-| `POST /api/cli-tools/grok-build-settings`   | Grok Build (~/.grok/config.toml, `[model.shiguang-gateway]`)                       |
+| `POST /api/cli-tools/grok-build-settings`   | Grok Build (~/.grok/config.toml, `[model.orbit]`)                       |
 | `POST /api/cli-tools/qwen-settings`         | Qwen Code (`~/.qwen/settings.json` + dedikált `.env` kulcs)                 |
 
 Minden útvonal a `sanitizeErrorMessage()`-t használja a hiba válaszokhoz (Kemény Szabály #12).
@@ -320,7 +320,7 @@ Teljes PT-BR és EN fordítások állnak rendelkezésre. 39 másik nyelv automat
 
 ## 9. Gyors kezdés
 
-### 1. lépés — Szerezz egy ShiguangGateway API kulcsot
+### 1. lépés — Szerezz egy Orbit API kulcsot
 
 1. Nyisd meg a `/dashboard/api-manager` → **API kulcs létrehozása**
 2. Adj neki egy nevet (pl. `cli-tools`) és válaszd ki az összes engedélyt
@@ -353,7 +353,7 @@ npm install -g kilocode
 # Qwen Code
 npm install -g @qwen-code/qwen-code
 
-# Google Gemini CLI (elindítható az `shiguang-gateway run gemini` → /v1beta felületen)
+# Google Gemini CLI (elindítható az `orbit run gemini` → /v1beta felületen)
 npm install -g @google/gemini-cli
 
 # Aider
@@ -384,14 +384,14 @@ cargo install smelt  # Rust-alapú
 ### 4. lépés — Állítsd be a globális környezeti változókat
 
 ```bash
-# ShiguangGateway Univerzális Végpont
+# Orbit Univerzális Végpont
 export OPENAI_BASE_URL="http://localhost:20128/v1"
-export OPENAI_API_KEY="sk-your-shiguang-gateway-key"
+export OPENAI_API_KEY="sk-your-orbit-key"
 export ANTHROPIC_BASE_URL="http://localhost:20128"
-export ANTHROPIC_AUTH_TOKEN="sk-your-shiguang-gateway-key"
+export ANTHROPIC_AUTH_TOKEN="sk-your-orbit-key"
 # A Gemini CLI a GOOGLE_GEMINI_BASE_URL-t a ROOT-nál olvassa (az SDK automatikusan hozzáfűzi a /v1beta/...-t)
 export GOOGLE_GEMINI_BASE_URL="http://localhost:20128"
-export GEMINI_API_KEY="sk-your-shiguang-gateway-key"
+export GEMINI_API_KEY="sk-your-orbit-key"
 ```
 
 > **Távoli szerver** esetén cseréld le a `localhost:20128`-at a szerver IP-címére vagy domainjére,
@@ -409,7 +409,7 @@ mkdir -p ~/.claude && cat > ~/.claude/settings.json << EOF
 {
   "env": {
     "ANTHROPIC_BASE_URL": "http://localhost:20128",
-    "ANTHROPIC_AUTH_TOKEN": "sk-your-shiguang-gateway-key"
+    "ANTHROPIC_AUTH_TOKEN": "sk-your-orbit-key"
   }
 }
 EOF
@@ -425,20 +425,20 @@ Használj egységes Anthropic átjáró gyökeret a Claude Code-hoz. Ne fűzd ho
 
 A modern Codex (v0.137+) csak a `~/.codex/config.toml`-t olvassa — a régi
 `config.yaml` a hagyományos npm CLI-hez tartozik, és csendben figyelmen kívül hagyják. Az API
-kulcs a `SHIGUANG_GATEWAY_API_KEY` környezeti változóban (`env_key`) marad, soha
+kulcs a `ORBIT_API_KEY` környezeti változóban (`env_key`) marad, soha
 nem a fájlban:
 
 ```bash
 mkdir -p ~/.codex && cat > ~/.codex/config.toml << EOF
-model_provider = "shiguang-gateway"
+model_provider = "orbit"
 
-[model_providers.shiguang-gateway]
-name                 = "ShiguangGateway"
+[model_providers.orbit]
+name                 = "Orbit"
 base_url             = "http://localhost:20128/v1"
-env_key              = "SHIGUANG_GATEWAY_API_KEY"
+env_key              = "ORBIT_API_KEY"
 requires_openai_auth = false
 EOF
-export SHIGUANG_GATEWAY_API_KEY="sk-your-shiguang-gateway-key"
+export ORBIT_API_KEY="sk-your-orbit-key"
 ```
 
 Teljes hivatkozás (profilok, `wire_api`, kontextusablakok): [CODEX-CLI-CONFIGURATION.md](../guides/CODEX-CLI-CONFIGURATION.md).
@@ -454,12 +454,12 @@ mkdir -p ~/.config/opencode && cat > ~/.config/opencode/opencode.json << EOF
 {
   "\$schema": "https://opencode.ai/config.json",
   "provider": {
-    "shiguang-gateway": {
+    "orbit": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "ShiguangGateway",
+      "name": "Orbit",
       "options": {
         "baseURL": "http://localhost:20128/v1",
-        "apiKey": "sk-your-shiguang-gateway-key"
+        "apiKey": "sk-your-orbit-key"
       },
       "models": {
         "claude-sonnet-4-5": { "name": "claude-sonnet-4-5" },
@@ -474,7 +474,7 @@ EOF
 
 **Teszt:** `opencode`
 
-> Használj `opencode run "your prompt" --model shiguang-gateway/claude-sonnet-4-5-thinking --variant high`
+> Használj `opencode run "your prompt" --model orbit/claude-sonnet-4-5-thinking --variant high`
 > a gondolkodási variánsok küldésére.
 
 ---
@@ -488,7 +488,7 @@ mkdir -p ~/.cline/data && cat > ~/.cline/data/globalState.json << EOF
 {
   "apiProvider": "openai",
   "openAiBaseUrl": "http://localhost:20128/v1",
-  "openAiApiKey": "sk-your-shiguang-gateway-key"
+  "openAiApiKey": "sk-your-orbit-key"
 }
 EOF
 ```
@@ -496,7 +496,7 @@ EOF
 **VS Code mód:**
 Cline kiterjesztés beállításai → API Szolgáltató: `OpenAI Compatible` → Alap URL: `http://localhost:20128/v1`
 
-Vagy használd az ShiguangGateway dashboardot → **CLI Eszközök → Cline → Konfiguráció alkalmazása**.
+Vagy használd az Orbit dashboardot → **CLI Eszközök → Cline → Konfiguráció alkalmazása**.
 
 ---
 
@@ -505,7 +505,7 @@ Vagy használd az ShiguangGateway dashboardot → **CLI Eszközök → Cline →
 **CLI mód:**
 
 ```bash
-kilocode --api-base http://localhost:20128/v1 --api-key sk-your-shiguang-gateway-key
+kilocode --api-base http://localhost:20128/v1 --api-key sk-your-orbit-key
 ```
 
 **VS Code beállítások:**
@@ -513,11 +513,11 @@ kilocode --api-base http://localhost:20128/v1 --api-key sk-your-shiguang-gateway
 ```json
 {
   "kilo-code.openAiBaseUrl": "http://localhost:20128/v1",
-  "kilo-code.apiKey": "sk-your-shiguang-gateway-key"
+  "kilo-code.apiKey": "sk-your-orbit-key"
 }
 ```
 
-Vagy használd az ShiguangGateway dashboardot → **CLI Eszközök → KiloCode → Konfiguráció alkalmazása**.
+Vagy használd az Orbit dashboardot → **CLI Eszközök → KiloCode → Konfiguráció alkalmazása**.
 
 ---
 
@@ -527,11 +527,11 @@ Szerkeszd a `~/.continue/config.yaml` fájlt:
 
 ```yaml
 models:
-  - name: ShiguangGateway
+  - name: Orbit
     provider: openai
     model: auto
     apiBase: http://localhost:20128/v1
-    apiKey: sk-your-shiguang-gateway-key
+    apiKey: sk-your-orbit-key
     default: true
 ```
 
@@ -541,25 +541,25 @@ Indítsd újra a VS Code-ot a szerkesztés után.
 
 #### VS Code Insiders (`chatLanguageModels.json`)
 
-Használj ezt, amikor a VS Code Insiders egyedi végpont modellekhez van konfigurálva, és szeretnéd, hogy az ShiguangGateway működjön egyedi fejlécmező nélkül.
+Használj ezt, amikor a VS Code Insiders egyedi végpont modellekhez van konfigurálva, és szeretnéd, hogy az Orbit működjön egyedi fejlécmező nélkül.
 
 **Ajánlott hely:**
 
 - Linux: `~/.config/Code - Insiders/User/chatLanguageModels.json`
 - Windows: `%APPDATA%/Code - Insiders/User/chatLanguageModels.json`
 
-**Példa a tokenizált ShiguangGateway alias használatával:**
+**Példa a tokenizált Orbit alias használatával:**
 
 ```json
 [
   {
     "vendor": "customendpoint",
     "id": "auto",
-    "name": "ShiguangGateway Auto",
+    "name": "Orbit Auto",
     "family": "gpt-4",
     "version": "1.0.0",
-    "url": "http://localhost:20128/api/v1/vscode/sk-your-shiguang-gateway-key/chat/completions",
-    "modelsUrl": "http://localhost:20128/api/v1/vscode/sk-your-shiguang-gateway-key/models",
+    "url": "http://localhost:20128/api/v1/vscode/sk-your-orbit-key/chat/completions",
+    "modelsUrl": "http://localhost:20128/api/v1/vscode/sk-your-orbit-key/models",
     "requestFormat": "openai-chat-completions",
     "contextWindow": 256000,
     "maxOutputTokens": 32768,
@@ -572,7 +572,7 @@ Használj ezt, amikor a VS Code Insiders egyedi végpont modellekhez van konfigu
 
 **Megjegyzések:**
 
-- Cseréld le a `sk-your-shiguang-gateway-key`-t egy ShiguangGateway-ban létrehozott API kulcsra.
+- Cseréld le a `sk-your-orbit-key`-t egy Orbit-ban létrehozott API kulcsra.
 - Az `url` mezőnek a `/api/v1/vscode/{token}/chat/completions`-ra kell mutatnia.
 - A `modelsUrl` mezőnek a `/api/v1/vscode/{token}/models`-ra kell mutatnia.
 - Előnyben részesítsd a normál `/v1` + Bearer fejléc folyamatot, amikor az ügyfél támogatja az egyedi fejléceket.
@@ -586,40 +586,40 @@ Használj ezt, amikor a VS Code Insiders egyedi végpont modellekhez van konfigu
 # Jelentkezz be az AWS/Kiro fiókodba:
 kiro-cli login
 
-# A CLI saját hitelesítést használ — az ShiguangGateway nem szükséges a Kiro CLI háttérként.
-# Használj kiro-cli-t az ShiguangGateway mellett más eszközökhöz.
+# A CLI saját hitelesítést használ — az Orbit nem szükséges a Kiro CLI háttérként.
+# Használj kiro-cli-t az Orbit mellett más eszközökhöz.
 kiro-cli status
 ```
 
-A **Kiro IDE** asztali alkalmazáshoz használd az ShiguangGateway által kitetett MITM végpontot
+A **Kiro IDE** asztali alkalmazáshoz használd az Orbit által kitetett MITM végpontot
 a `/dashboard/cli-tools → Kiro` alatt.
 
 ---
 
-## 10. Belső ShiguangGateway CLI
+## 10. Belső Orbit CLI
 
-Az `shiguang-gateway` bináris parancsokat biztosít a szerver életciklusához, beállításhoz, diagnosztikához és szolgáltatókezeléshez. Belépési pont: `bin/shiguang-gateway.mjs`.
+Az `orbit` bináris parancsokat biztosít a szerver életciklusához, beállításhoz, diagnosztikához és szolgáltatókezeléshez. Belépési pont: `bin/orbit.mjs`.
 
 ```bash
-shiguang-gateway                              # Szerver indítása (alapértelmezett port 20128)
-shiguang-gateway setup                        # Interaktív beállító varázsló
-shiguang-gateway doctor                       # Konfiguráció, DB, portok, futásidő ellenőrzése
-shiguang-gateway providers list               # Konfigurált szolgáltató kapcsolatok
-shiguang-gateway providers test-all           # Minden aktív kapcsolat tesztelése
-shiguang-gateway reset-password               # Az admin jelszó visszaállítása
-shiguang-gateway logs                         # Kérésnaplók streamelése
-shiguang-gateway health                       # Részletes egészségügyi állapot (megszakítók, cache, memória)
-shiguang-gateway --version                    # Verzió kiírása
-shiguang-gateway --help                       # Minden parancs megjelenítése
+orbit                              # Szerver indítása (alapértelmezett port 20128)
+orbit setup                        # Interaktív beállító varázsló
+orbit doctor                       # Konfiguráció, DB, portok, futásidő ellenőrzése
+orbit providers list               # Konfigurált szolgáltató kapcsolatok
+orbit providers test-all           # Minden aktív kapcsolat tesztelése
+orbit reset-password               # Az admin jelszó visszaállítása
+orbit logs                         # Kérésnaplók streamelése
+orbit health                       # Részletes egészségügyi állapot (megszakítók, cache, memória)
+orbit --version                    # Verzió kiírása
+orbit --help                       # Minden parancs megjelenítése
 ```
 
 ### Beállítás és Inicializálás
 
 ```bash
-shiguang-gateway setup                        # Interaktív beállító varázsló
-shiguang-gateway setup --non-interactive      # CI/automatizálási mód (környezeti változók + zászlók olvasása)
-shiguang-gateway setup --password '<value>'   # Admin jelszó közvetlen beállítása
-shiguang-gateway setup --add-provider \
+orbit setup                        # Interaktív beállító varázsló
+orbit setup --non-interactive      # CI/automatizálási mód (környezeti változók + zászlók olvasása)
+orbit setup --password '<value>'   # Admin jelszó közvetlen beállítása
+orbit setup --add-provider \
   --provider openai \
   --api-key '<value>' \
   --test-provider                      # Szolgáltató hozzáadása és tesztelése egy lépésben
@@ -629,21 +629,21 @@ A nem interaktív beállításhoz elismert környezeti változók:
 
 | Var                 | Cél                                                                               |
 | ------------------- | --------------------------------------------------------------------------------- |
-| `SHIGUANG_GATEWAY_API_KEY` | Szolgáltató API kulcs (a `--api-key`-hez kötve a Commander `.env()`-on keresztül) |
-| `DATA_DIR`          | Felülírja az ShiguangGateway adatkönyvtárat                                             |
+| `ORBIT_API_KEY` | Szolgáltató API kulcs (a `--api-key`-hez kötve a Commander `.env()`-on keresztül) |
+| `DATA_DIR`          | Felülírja az Orbit adatkönyvtárat                                             |
 
 Minden egyéb nem interaktív bemenet zászlóként kerül átadásra, nem környezeti változóként:
 `--password`, `--provider`, `--provider-name`, `--provider-base-url`, `--default-model`
-(lásd a fenti `shiguang-gateway setup` opciókat).
+(lásd a fenti `orbit setup` opciókat).
 
 ### Diagnosztika
 
 ```bash
-shiguang-gateway doctor                       # Konfiguráció, DB, portok, futásidő, memória, élő állapot ellenőrzése
-shiguang-gateway doctor --json                # Géppel olvasható JSON
-shiguang-gateway doctor --no-liveness         # Az HTTP egészségügyi próba kihagyása
-shiguang-gateway doctor --host 0.0.0.0        # Az élő állapot gazdagép felülírása
-shiguang-gateway doctor --liveness-url <url>  # Teljes egészségügyi végpont URL felülírása
+orbit doctor                       # Konfiguráció, DB, portok, futásidő, memória, élő állapot ellenőrzése
+orbit doctor --json                # Géppel olvasható JSON
+orbit doctor --no-liveness         # Az HTTP egészségügyi próba kihagyása
+orbit doctor --host 0.0.0.0        # Az élő állapot gazdagép felülírása
+orbit doctor --liveness-url <url>  # Teljes egészségügyi végpont URL felülírása
 ```
 
 A doctor ezeket az ellenőrzéseket futtatja: `Konfiguráció`, `Adatbázis`, `Tárolás/titkosítás`,
@@ -653,46 +653,46 @@ A doctor ezeket az ellenőrzéseket futtatja: `Konfiguráció`, `Adatbázis`, `T
 ### Szolgáltatókezelés
 
 ```bash
-shiguang-gateway providers available                       # ShiguangGateway szolgáltató katalógus
-shiguang-gateway providers available --search openai       # Katalógus szűrése id/név/alias/kategória szerint
-shiguang-gateway providers available --category api-key    # Szűrés kategória szerint (api-key, oauth, ingyenes, ...)
-shiguang-gateway providers available --json                # Géppel olvasható JSON
+orbit providers available                       # Orbit szolgáltató katalógus
+orbit providers available --search openai       # Katalógus szűrése id/név/alias/kategória szerint
+orbit providers available --category api-key    # Szűrés kategória szerint (api-key, oauth, ingyenes, ...)
+orbit providers available --json                # Géppel olvasható JSON
 
-shiguang-gateway providers list                            # Konfigurált szolgáltató kapcsolatok
-shiguang-gateway providers list --json
+orbit providers list                            # Konfigurált szolgáltató kapcsolatok
+orbit providers list --json
 
-shiguang-gateway providers test <id|name>                  # Egy konfigurált kapcsolat tesztelése
-shiguang-gateway providers test-all                        # Minden aktív kapcsolat tesztelése
-shiguang-gateway providers validate                        # Csak helyi struktúra érvényesítése
-shiguang-gateway providers add <provider> --credential-env PROVIDER_KEY
-shiguang-gateway providers import ./providers.json --dry-run --json
-shiguang-gateway providers auth <provider>                 # Meglévő OAuth folyamat
-shiguang-gateway providers edit <id|name> --default-model <model>
-shiguang-gateway providers remove <id|name> --yes
+orbit providers test <id|name>                  # Egy konfigurált kapcsolat tesztelése
+orbit providers test-all                        # Minden aktív kapcsolat tesztelése
+orbit providers validate                        # Csak helyi struktúra érvényesítése
+orbit providers add <provider> --credential-env PROVIDER_KEY
+orbit providers import ./providers.json --dry-run --json
+orbit providers auth <provider>                 # Meglévő OAuth folyamat
+orbit providers edit <id|name> --default-model <model>
+orbit providers remove <id|name> --yes
 ```
 
 `providers add/import/auth/edit/remove` API-első, ezért az aktív helyi vagy távoli kontextus ellen dolgozik. A hitelesítő adatok bevitele
 `--credential-stdin` vagy `--credential-env` használatával történjen; a `--dry-run --json` csak
-a cenzúrázott jelenlétet/formát jelenti. A `providers available` olvassa az ShiguangGateway katalógust;
+a cenzúrázott jelenlétet/formát jelenti. A `providers available` olvassa az Orbit katalógust;
 a `providers list/test/test-all/validate` megőrzi helyi SQLite viselkedését és
 nem igényli a szerver futását.
 
 ### Helyreállítás és Visszaállítás
 
 ```bash
-shiguang-gateway reset-password                # Az admin jelszó visszaállítása (más néven: shiguang-gateway-reset-password)
-shiguang-gateway reset-encrypted-columns       # Figyelmeztetés megjelenítése + száraz futás titkosított hitelesítő adatok visszaállításához
-shiguang-gateway reset-encrypted-columns --force  # Valóban nullázza a titkosított hitelesítő adatokat SQLite-ban
+orbit reset-password                # Az admin jelszó visszaállítása (más néven: orbit-reset-password)
+orbit reset-encrypted-columns       # Figyelmeztetés megjelenítése + száraz futás titkosított hitelesítő adatok visszaállításához
+orbit reset-encrypted-columns --force  # Valóban nullázza a titkosított hitelesítő adatokat SQLite-ban
 ```
 
 ### Hitelesítő adatok exportálása (⚠ óvatosan kezelendő)
 
 ```bash
-shiguang-gateway auth export                                 # Figyelmeztetés + megerősítési kapu — nincs DB hozzáférés
-shiguang-gateway auth export --force                          # Minden kapcsolat DEKRIPTÁLT hitelesítő adatainak exportálása stdout-ra JSON formátumban
-shiguang-gateway auth export --force --id <id>                 # Csak a megfelelő kapcsolat exportálása
-shiguang-gateway auth export --force --format env               # SHIGUANG_GATEWAY_<PROVIDER>_<FIELD>=<value> sorok kiadása
-shiguang-gateway auth export --force --out creds.json           # Fájlba írás (0600 jogosultságokkal létrehozva)
+orbit auth export                                 # Figyelmeztetés + megerősítési kapu — nincs DB hozzáférés
+orbit auth export --force                          # Minden kapcsolat DEKRIPTÁLT hitelesítő adatainak exportálása stdout-ra JSON formátumban
+orbit auth export --force --id <id>                 # Csak a megfelelő kapcsolat exportálása
+orbit auth export --force --format env               # ORBIT_<PROVIDER>_<FIELD>=<value> sorok kiadása
+orbit auth export --force --out creds.json           # Fájlba írás (0600 jogosultságokkal létrehozva)
 ```
 
 `auth export` **csak helyi** (közvetlen SQLite olvasás, nincs HTTP útvonal) és szándékosan kiírja/írja
@@ -701,36 +701,36 @@ adatbázisból, és semmi sem dekódolható `--force` nélkül. A stderr figyelm
 
 ### Egyéb alparancsok
 
-Ezek egy futó ShiguangGateway szervert feltételeznek, hacsak másként nincs megjegyezve:
+Ezek egy futó Orbit szervert feltételeznek, hacsak másként nincs megjegyezve:
 
 ```bash
-shiguang-gateway status                       # Átfogó futásidő állapot
-shiguang-gateway logs                         # Kérésnaplók streamelése (--json, --search, --follow)
-shiguang-gateway config show                  # Jelenlegi konfiguráció megjelenítése
+orbit status                       # Átfogó futásidő állapot
+orbit logs                         # Kérésnaplók streamelése (--json, --search, --follow)
+orbit config show                  # Jelenlegi konfiguráció megjelenítése
 
-shiguang-gateway provider list                # Elérhető szolgáltatók listázása (a providers list aliasa)
-shiguang-gateway provider add                 # Az ShiguangGateway regisztrálása szolgáltatóként egy eszközön
-shiguang-gateway keys add | list | remove     # API kulcsok kezelése
-shiguang-gateway models [provider]            # Modellek listázása (--json, --search)
-shiguang-gateway combo list | switch | create | delete
+orbit provider list                # Elérhető szolgáltatók listázása (a providers list aliasa)
+orbit provider add                 # Az Orbit regisztrálása szolgáltatóként egy eszközön
+orbit keys add | list | remove     # API kulcsok kezelése
+orbit models [provider]            # Modellek listázása (--json, --search)
+orbit combo list | switch | create | delete
 
-shiguang-gateway backup                       # Konfiguráció + DB pillanatkép
-shiguang-gateway restore                      # Visszaállítás egy korábbi pillanatképből
+orbit backup                       # Konfiguráció + DB pillanatkép
+orbit restore                      # Visszaállítás egy korábbi pillanatképből
 
-shiguang-gateway health                       # Részletes egészségügyi állapot (megszakítók, cache, memória)
-shiguang-gateway quota                        # Szolgáltató kvóta használat
-shiguang-gateway cache                        # Cache állapot
-shiguang-gateway cache clear                  # Szemantikai + aláírás cache törlése
+orbit health                       # Részletes egészségügyi állapot (megszakítók, cache, memória)
+orbit quota                        # Szolgáltató kvóta használat
+orbit cache                        # Cache állapot
+orbit cache clear                  # Szemantikai + aláírás cache törlése
 
-shiguang-gateway mcp status | restart         # MCP szerver állapot / újraindítás
-shiguang-gateway a2a status | card            # A2A szerver állapot / ügynök kártya
+orbit mcp status | restart         # MCP szerver állapot / újraindítás
+orbit a2a status | card            # A2A szerver állapot / ügynök kártya
 
-shiguang-gateway tunnel list | create | stop  # Alagutak kezelése (cloudflare/tailscale/ngrok)
-shiguang-gateway env show | get <k> | set <k> <v>  # Környezeti változók ellenőrzése / beállítása (ideiglenes)
+orbit tunnel list | create | stop  # Alagutak kezelése (cloudflare/tailscale/ngrok)
+orbit env show | get <k> | set <k> <v>  # Környezeti változók ellenőrzése / beállítása (ideiglenes)
 
-shiguang-gateway test                         # Szolgáltató kapcsolódási füstteszt
-shiguang-gateway update                       # Frissítések ellenőrzése
-shiguang-gateway completion                   # Shell kiegészítés generálása
+orbit test                         # Szolgáltató kapcsolódási füstteszt
+orbit update                       # Frissítések ellenőrzése
+orbit completion                   # Shell kiegészítés generálása
 ```
 
 ### Gyakori zászlók
@@ -759,7 +759,7 @@ shiguang-gateway completion                   # Shell kiegészítés generálás
 | `/v1/audio/speech`         | Szöveg-beszéd                        | ElevenLabs, OpenAI TTS                         |
 | `/v1/audio/transcriptions` | Beszéd-szöveg                        | Deepgram, AssemblyAI                           |
 
-Kész példa, amely tartalmaz egy tokenizált ShiguangGateway URL-t:
+Kész példa, amely tartalmaz egy tokenizált Orbit URL-t:
 
 ```txt
 Token példa: sk-a3ab3c080beaee3a-69f4a4-070d71af
@@ -778,7 +778,7 @@ Ollama chat: http://localhost:20128/api/v1/vscode/sk-a3ab3c080beaee3a-69f4a4-070
 
 | Hiba                                     | Ok                               | Megoldás                                                     |
 | ---------------------------------------- | -------------------------------- | ------------------------------------------------------------ |
-| `Connection refused`                     | ShiguangGateway nem fut                | `shiguang-gateway serve`                                            |
+| `Connection refused`                     | Orbit nem fut                | `orbit serve`                                            |
 | `401 Unauthorized`                       | Hibás API kulcs                  | Ellenőrizze a `/dashboard/api-manager`-ben                   |
 | `No combo configured`                    | Nincs aktív routing kombináció   | Állítsa be a `/dashboard/combos`-ban                         |
 | CLI azt mutatja, hogy "nincs telepítve"  | Bináris nem található a PATH-ban | Ellenőrizze a `which <command>`-ot                           |

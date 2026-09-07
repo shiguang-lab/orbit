@@ -1,8 +1,8 @@
 import {
-  attachShiguangGatewayMetaHeaders,
-  buildShiguangGatewayResponseMetaHeaders,
+  attachOrbitMetaHeaders,
+  buildOrbitResponseMetaHeaders,
 } from "@orbit/core/edge/gateway-response-meta";
-import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "@orbit/contracts/gateway-headers";
+import { ORBIT_RESPONSE_HEADERS } from "@orbit/contracts/gateway-headers";
 import { defaultLogger } from "../../utils/logger.ts";
 
 const STREAMING_RESPONSE_HEADER_DENYLIST = new Set([
@@ -44,14 +44,14 @@ const DEFAULT_FORWARDED_HEADER_BUDGET_BYTES = 768;
 
 /**
  * Resolve the forwarded upstream response-header budget from an optional string value
- * (typically `process.env.SHIGUANG_GATEWAY_FORWARDING_HEADER_BUDGET_BYTES`). Returns the
+ * (typically `process.env.ORBIT_FORWARDING_HEADER_BUDGET_BYTES`). Returns the
  * default of 768 when the input is unset, empty, or non-positive.
  * Extracted as a pure function so unit tests can pass values directly without
  * module-cache manipulation.
  */
 export function resolveForwardedHeaderBudget(env?: string): number {
   const parsed = Number.parseInt(
-    String(env ?? process.env.SHIGUANG_GATEWAY_FORWARDING_HEADER_BUDGET_BYTES),
+    String(env ?? process.env.ORBIT_FORWARDING_HEADER_BUDGET_BYTES),
     10
   );
   return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_FORWARDED_HEADER_BUDGET_BYTES;
@@ -59,9 +59,9 @@ export function resolveForwardedHeaderBudget(env?: string): number {
 
 /**
  * Keep upstream-derived headers comfortably below common reverse-proxy response-header limits.
- * This budget includes each header name, separator, value, and trailing CRLF. ShiguangGateway's own
+ * This budget includes each header name, separator, value, and trailing CRLF. Orbit's own
  * response metadata and framework/security headers are added separately.
- * Override with `SHIGUANG_GATEWAY_FORWARDING_HEADER_BUDGET_BYTES`.
+ * Override with `ORBIT_FORWARDING_HEADER_BUDGET_BYTES`.
  */
 export const MAX_FORWARDED_UPSTREAM_RESPONSE_HEADER_BYTES = resolveForwardedHeaderBudget();
 const MAX_LOGGED_DROPPED_RESPONSE_HEADERS = 20;
@@ -98,8 +98,8 @@ function responseHeaderWireBytes(name: string, value: string): number {
   return responseHeaderEncoder.encode(`${name}: ${value}\r\n`).byteLength;
 }
 
-function isShiguangGatewayInternalHeader(headerName: string): boolean {
-  return headerName.toLowerCase().startsWith("x-shiguangGateway-");
+function isOrbitInternalHeader(headerName: string): boolean {
+  return headerName.toLowerCase().startsWith("x-orbit-");
 }
 
 function getForwardingPriority(headerName: string): number {
@@ -151,7 +151,7 @@ function getForwardingPriority(headerName: string): number {
  * `x-middleware-next`, `x-middleware-override-headers`,
  * `x-middleware-set-cookie`, and the `x-middleware-request-*` family.
  *
- * If ShiguangGateway re-emits those headers from an App Router route handler, Next
+ * If Orbit re-emits those headers from an App Router route handler, Next
  * 16's `app-route` runtime
  * interprets `x-middleware-rewrite` as a `NextResponse.rewrite()` call and
  * throws `NextResponse.rewrite() was used in a app route handler` — turning a
@@ -189,7 +189,7 @@ export function stripNextMiddlewareControlHeaders(headers: Headers): void {
 
 export function buildStreamingResponseHeaders(
   providerHeaders: Headers,
-  meta: Parameters<typeof buildShiguangGatewayResponseMetaHeaders>[0],
+  meta: Parameters<typeof buildOrbitResponseMetaHeaders>[0],
   log: ResponseHeaderLogger = defaultLogger
 ): Record<string, string> {
   const connectionScopedHeaders = new Set(
@@ -213,7 +213,7 @@ export function buildStreamingResponseHeaders(
       STREAMING_RESPONSE_HEADER_DENYLIST.has(normalized) ||
       connectionScopedHeaders.has(normalized) ||
       isNextMiddlewareControlHeader(normalized) ||
-      isShiguangGatewayInternalHeader(normalized) ||
+      isOrbitInternalHeader(normalized) ||
       // Forwarded separately below, outside the byte budget.
       normalized === CODEX_TURN_STATE_RESPONSE_HEADER
     ) {
@@ -276,13 +276,13 @@ export function buildStreamingResponseHeaders(
     "Cache-Control": "no-cache, no-transform",
     Connection: "keep-alive",
     "X-Accel-Buffering": "no",
-    [SHIGUANG_GATEWAY_RESPONSE_HEADERS.cache]: "MISS",
+    [ORBIT_RESPONSE_HEADERS.cache]: "MISS",
   };
   const codexTurnState = providerHeaders.get(CODEX_TURN_STATE_RESPONSE_HEADER)?.trim();
   if (codexTurnState) {
     responseHeaders[CODEX_TURN_STATE_RESPONSE_HEADER] = codexTurnState;
   }
-  attachShiguangGatewayMetaHeaders(responseHeaders, meta);
+  attachOrbitMetaHeaders(responseHeaders, meta);
   return responseHeaders;
 }
 

@@ -6,10 +6,10 @@
 
 ## Güvenlik Açıklarını Bildirme
 
-ShiguangGateway'ta bir güvenlik açığı keşfederseniz, lütfen sorumlu bir şekilde bildirin:
+Orbit'ta bir güvenlik açığı keşfederseniz, lütfen sorumlu bir şekilde bildirin:
 
 1. **KESİNLİKLE** herkese açık bir GitHub issue'su açmayın
-2. [GitHub Security Advisories](https://github.com/diegosouzapw/ShiguangGateway/security/advisories/new) kullanın
+2. [GitHub Security Advisories](https://github.com/diegosouzapw/Orbit/security/advisories/new) kullanın
 3. Şunları ekleyin: açıklama, yeniden oluşturma adımları ve olası etki
 
 ## Yanıt Zaman Çizelgesi
@@ -32,7 +32,7 @@ ShiguangGateway'ta bir güvenlik açığı keşfederseniz, lütfen sorumlu bir �
 
 ## Güvenlik Mimarisi
 
-ShiguangGateway çok katmanlı bir güvenlik modeli uygular:
+Orbit çok katmanlı bir güvenlik modeli uygular:
 
 ```
 Request → CORS → Authz pipeline (classify → policies → enforce)
@@ -69,7 +69,7 @@ STORAGE_ENCRYPTION_KEY=$(openssl rand -hex 32)
 
 ### 🛡️ Güvenlik Önlemleri Çerçevesi (Guardrails Framework)
 
-ShiguangGateway, öncelik sırasına göre sıralanmış 3 yerleşik güvenlik önlemi içeren, çalışırken yeniden yüklenebilir bir **güvenlik önlemleri kayıt defteri** (`src/lib/guardrails/`) ile gelir:
+Orbit, öncelik sırasına göre sıralanmış 3 yerleşik güvenlik önlemi içeren, çalışırken yeniden yüklenebilir bir **güvenlik önlemleri kayıt defteri** (`src/lib/guardrails/`) ile gelir:
 
 | Güvenlik Önlemi    | Öncelik | Amaç                                                                                    |
 | ------------------ | ------- | --------------------------------------------------------------------------------------- |
@@ -77,7 +77,7 @@ ShiguangGateway, öncelik sırasına göre sıralanmış 3 yerleşik güvenlik �
 | `pii-masker`       | 10      | Çağrı öncesi ve sonrası PII (kişisel veri) maskeleme (e-posta, telefon, CPF, CNPJ, kredi kartı, SSN) |
 | `prompt-injection` | 20      | Geçersiz kılma / rol ele geçirme / jailbreak / sızıntı kalıplarını algılar              |
 
-Özel güvenlik önlemleri `registerGuardrail(new MyGuardrail())` aracılığıyla kaydedilir. Model hata durumunda açıktır (fail-open; istisnalar trafiği asla engellemez). İstek başına devre dışı bırakma `x-shiguang-gateway-disabled-guardrails` başlığı ile yapılır. → Bkz. [`docs/security/GUARDRAILS.md`](docs/security/GUARDRAILS.md).
+Özel güvenlik önlemleri `registerGuardrail(new MyGuardrail())` aracılığıyla kaydedilir. Model hata durumunda açıktır (fail-open; istisnalar trafiği asla engellemez). İstek başına devre dışı bırakma `x-orbit-disabled-guardrails` başlığı ile yapılır. → Bkz. [`docs/security/GUARDRAILS.md`](docs/security/GUARDRAILS.md).
 
 ### 🧠 İstem Enjeksiyonu Koruması (Prompt Injection Guard)
 
@@ -182,15 +182,15 @@ Sunucu `changeme`, `secret` veya `password` gibi bilinen zayıf değerleri açı
 
 ```bash
 docker run -d \
-  --name shiguang-gateway \
+  --name orbit \
   --restart unless-stopped \
   --read-only \
   -p 20128:20128 \
-  -v shiguang-gateway-data:/app/data \
+  -v orbit-data:/app/data \
   -e JWT_SECRET="$(openssl rand -base64 48)" \
   -e API_KEY_SECRET="$(openssl rand -hex 32)" \
   -e STORAGE_ENCRYPTION_KEY="$(openssl rand -hex 32)" \
-  diegosouzapw/shiguang-gateway:latest
+  diegosouzapw/orbit:latest
 ```
 
 ---
@@ -222,7 +222,7 @@ Bu kurallar araçlar ve inceleyiciler tarafından zorunlu kılınmıştır:
 
 ## Tedarik Zinciri Tarayıcı Bulguları (Socket.dev / Snyk / Benzeri)
 
-Yayımlanan `shiguang-gateway` npm paketi, Next.js `output: "standalone"` derlemesini paketler; bu da belgelenmiş ayrıcalıklı özellikler (MITM, Zed içe aktarma, Cloud Sync, gömülü servis süpervizörü) dahil her rota işleyicisinin `.next/server/*.js` küçültülmüş yığınlarında yer alması anlamına gelir. Sezgisel tedarik zinciri tarayıcıları bu yığınları sıklıkla kötü amaçlı yazılım imzalarıyla eşleştirebilir.
+Yayımlanan `orbit` npm paketi, Next.js `output: "standalone"` derlemesini paketler; bu da belgelenmiş ayrıcalıklı özellikler (MITM, Zed içe aktarma, Cloud Sync, gömülü servis süpervizörü) dahil her rota işleyicisinin `.next/server/*.js` küçültülmüş yığınlarında yer alması anlamına gelir. Sezgisel tedarik zinciri tarayıcıları bu yığınları sıklıkla kötü amaçlı yazılım imzalarıyla eşleştirebilir.
 
 Her bulgu kategorisi için proje yöneticisi onay beyanı tutulmaktadır:
 
@@ -230,7 +230,7 @@ Her bulgu kategorisi için proje yöneticisi onay beyanı tutulmaktadır:
   bulgu başına harita: kaynak dosya ↔ işaretlenen yığın ↔ davranış ↔ v3.8.6'da uygulanan hafifletme.
 - İşaretlenen her fonksiyondaki kaynak içi `SECURITY-AUDITOR-NOTE:` blokları aynı belgeye işaret eder.
 
-Geliştirme hattında uyarıları esnetemeyen kullanıcılar için: `SHIGUANG_GATEWAY_BUILD_PROFILE=minimal npm run build` ile derleme yapın. Bu, dört hassas modülü çalışma zamanında HTTP 503 `feature-disabled` döndüren taslaklarla değiştirir; böylece ayrıcalıklı kod yolları pakette fiziksel olarak bulunmaz. Yayımlama tarifi için bkz. [`docs/security/SOCKET_DEV_FINDINGS.md`](docs/security/SOCKET_DEV_FINDINGS.md).
+Geliştirme hattında uyarıları esnetemeyen kullanıcılar için: `ORBIT_BUILD_PROFILE=minimal npm run build` ile derleme yapın. Bu, dört hassas modülü çalışma zamanında HTTP 503 `feature-disabled` döndüren taslaklarla değiştirir; böylece ayrıcalıklı kod yolları pakette fiziksel olarak bulunmaz. Yayımlama tarifi için bkz. [`docs/security/SOCKET_DEV_FINDINGS.md`](docs/security/SOCKET_DEV_FINDINGS.md).
 
 ## Referanslar
 

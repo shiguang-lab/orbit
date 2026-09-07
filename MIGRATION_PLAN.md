@@ -1,4 +1,4 @@
-# ShiguangGateway 菜单迁移计划
+# Orbit 菜单迁移计划
 
 > 所有页面必须遵守 [`MIGRATION_SPEC.md`](./MIGRATION_SPEC.md) 的 Web/API 联合迁移规范。
 > 迁移是对原 UI 和接口行为的等价翻译，只允许排列、对齐、大小等小范围优化；业务能力直接落在本仓库的领域包中。

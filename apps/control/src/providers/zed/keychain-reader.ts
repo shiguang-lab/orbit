@@ -85,7 +85,7 @@ const ZED_SERVICE_PATTERNS = [
 ];
 
 /**
- * Maps Zed service names to ShiguangGateway provider IDs
+ * Maps Zed service names to Orbit provider IDs
  */
 function extractProviderFromService(service: string): string {
   const lower = service.toLowerCase();

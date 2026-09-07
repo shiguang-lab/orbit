@@ -1,4 +1,4 @@
 -- 036: Aggressive compression config
 -- Aggressive config is stored as a kv key in key_value(namespace='compression', key='aggressive')
--- No schema change needed; this migration registers the version in _shiguang-gateway_migrations
+-- No schema change needed; this migration registers the version in _orbit_migrations
 SELECT 1;

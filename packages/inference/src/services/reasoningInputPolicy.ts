@@ -357,7 +357,7 @@ export function createReasoningTransportIncompatibleError(): Error & {
   return error;
 }
 
-export const REASONING_FALLBACK_HEADER = "x-shiguangGateway-reasoning-fallback";
+export const REASONING_FALLBACK_HEADER = "x-orbit-reasoning-fallback";
 
 function readFallbackHeader(
   headers: Headers | Record<string, unknown> | null | undefined
@@ -380,8 +380,8 @@ function readFallbackHeader(
  * Resolves the action taken when inbound continuation reasoning is incompatible with the selected
  * target's reasoning transport. Combo steps keep their explicit configuration. Single-target
  * requests default to "drop" so replayed summary-only reasoning from agentic clients does not
- * hard-fail every continuation turn; an operator (SHIGUANG_GATEWAY_SINGLE_TARGET_REASONING_FALLBACK=reject)
- * or caller (x-shiguangGateway-reasoning-fallback: reject) may explicitly enforce "reject".
+ * hard-fail every continuation turn; an operator (ORBIT_SINGLE_TARGET_REASONING_FALLBACK=reject)
+ * or caller (x-orbit-reasoning-fallback: reject) may explicitly enforce "reject".
  */
 export function resolveIncompatibleReasoningAction(options: {
   reasoningTransportFallback?: string | null;
@@ -398,7 +398,7 @@ export function resolveIncompatibleReasoningAction(options: {
 
   const envRaw = (
     options.env ?? process.env
-  ).SHIGUANG_GATEWAY_SINGLE_TARGET_REASONING_FALLBACK?.trim().toLowerCase();
+  ).ORBIT_SINGLE_TARGET_REASONING_FALLBACK?.trim().toLowerCase();
   if (envRaw === "reject") return "reject";
   if (envRaw === "drop") return "drop";
 

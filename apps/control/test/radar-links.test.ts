@@ -25,8 +25,8 @@ afterEach(() => {
 test("preserves public Radar link defaults and raw environment overrides", () => {
   delete process.env.RADAR_CONTRIBUTOR_CLAIM_URL;
   delete process.env.RADAR_SUPPORTER_PLANS_URL;
-  assert.equal(getContributorClaimUrl(), "https://radar.shiguangGateway.online/auth/github");
-  assert.equal(getSupporterPlansUrl(), "https://radar.shiguangGateway.online/planos");
+  assert.equal(getContributorClaimUrl(), "https://radar.orbit.online/auth/github");
+  assert.equal(getSupporterPlansUrl(), "https://radar.orbit.online/planos");
 
   process.env.RADAR_CONTRIBUTOR_CLAIM_URL = "https://example.test/claim";
   process.env.RADAR_SUPPORTER_PLANS_URL = "https://example.test/plans";

@@ -1,9 +1,9 @@
 /**
- * shiguangGateway setup-cline — configure the Cline AI coding agent to use ShiguangGateway.
+ * orbit setup-cline — configure the Cline AI coding agent to use Orbit.
  *
  * Cline's VS Code extension keeps its config in VS Code's opaque globalStorage
  * (not file-writable). Its CLI/standalone mode reads ~/.cline/data/. This command
- * writes the CLI-mode files (matching the ShiguangGateway dashboard) AND prints the
+ * writes the CLI-mode files (matching the Orbit dashboard) AND prints the
  * Base URL / model to paste into the VS Code extension UI.
  *
  * Cline uses the OpenAI-compatible provider: openAiBaseUrl is the ROOT URL
@@ -30,7 +30,7 @@ export function resolveClineTarget(opts = {}) {
   else {
     try {
       baseUrl = stripToRoot(
-        resolveActiveContext(opts.context ?? process.env.SHIGUANG_GATEWAY_CONTEXT)?.baseUrl
+        resolveActiveContext(opts.context ?? process.env.ORBIT_CONTEXT)?.baseUrl
       );
     } catch {
       /* none */
@@ -41,17 +41,17 @@ export function resolveClineTarget(opts = {}) {
   let apiKey = opts.apiKey ?? opts["api-key"];
   if (!apiKey) {
     try {
-      const c = resolveActiveContext(opts.context ?? process.env.SHIGUANG_GATEWAY_CONTEXT);
+      const c = resolveActiveContext(opts.context ?? process.env.ORBIT_CONTEXT);
       apiKey = c?.accessToken || c?.apiKey;
     } catch {
       /* none */
     }
   }
-  if (!apiKey) apiKey = process.env.SHIGUANG_GATEWAY_API_KEY || "";
+  if (!apiKey) apiKey = process.env.ORBIT_API_KEY || "";
   return { baseUrl, apiKey };
 }
 
-/** Merge ShiguangGateway openai-compatible settings into Cline's globalState (Plan + Act). */
+/** Merge Orbit openai-compatible settings into Cline's globalState (Plan + Act). */
 export function buildClineGlobalState(existing, { baseUrl, model }) {
   const gs = { ...(existing || {}) };
   gs.actModeApiProvider = "openai";
@@ -66,7 +66,7 @@ export function buildClineGlobalState(existing, { baseUrl, model }) {
 
 /** Merge the API key into Cline's secrets (Cline has no env-var reference). */
 export function buildClineSecrets(existing, { apiKey }) {
-  return { ...(existing || {}), openAiApiKey: apiKey || "sk_shiguangGateway" };
+  return { ...(existing || {}), openAiApiKey: apiKey || "sk_orbit" };
 }
 
 function readJson(path) {
@@ -99,13 +99,13 @@ export async function runSetupClineCommand(opts = {}) {
 
   const guard = await guardHostConfigTarget(clineDir, {
     toolLabel: "Cline",
-    hostCommand: "shiguangGateway setup-cline",
+    hostCommand: "orbit setup-cline",
     allowContainerWrite: Boolean(opts.allowContainerWrite ?? opts["allow-container-write"]),
     dryRun,
   });
   if (guard !== 0) return guard;
 
-  printHeading("ShiguangGateway → Cline (OpenAI-compatible)");
+  printHeading("Orbit → Cline (OpenAI-compatible)");
   printInfo(`Server: ${baseUrl}`);
 
   // Resolve the model (Cline needs one explicit id — no auto-discovery).
@@ -146,7 +146,7 @@ export async function runSetupClineCommand(opts = {}) {
         2
       )
     );
-    console.log(`\n── [dry-run] ${secPath} ── (openAiApiKey: ${apiKey ? "set" : "sk_shiguangGateway"})`);
+    console.log(`\n── [dry-run] ${secPath} ── (openAiApiKey: ${apiKey ? "set" : "sk_orbit"})`);
   } else {
     if (!existsSync(clineDir)) mkdirSync(clineDir, { recursive: true });
     writeFileSync(gsPath, JSON.stringify(globalState, null, 2) + "\n", "utf8");
@@ -160,7 +160,7 @@ export async function runSetupClineCommand(opts = {}) {
     "\nFor the Cline VS Code extension, set these in its Settings → API (OpenAI Compatible):"
   );
   printInfo(`  Base URL:  ${baseUrl}        (NOT /v1 — Cline appends it)`);
-  printInfo(`  API Key:   <your SHIGUANG_GATEWAY_API_KEY>`);
+  printInfo(`  API Key:   <your ORBIT_API_KEY>`);
   printInfo(`  Model:     ${model}`);
   return 0;
 }
@@ -169,11 +169,11 @@ export function registerSetupCline(program) {
   program
     .command("setup-cline")
     .description(
-      "Configure Cline for ShiguangGateway: write ~/.cline/data (CLI mode) + print VS Code extension settings"
+      "Configure Cline for Orbit: write ~/.cline/data (CLI mode) + print VS Code extension settings"
     )
-    .option("--port <port>", "Local ShiguangGateway port (ignored when --remote is set)", "8787")
-    .option("--remote <url>", "Remote ShiguangGateway URL, e.g. http://192.168.0.15:8787")
-    .option("--api-key <key>", "ShiguangGateway API key (defaults to SHIGUANG_GATEWAY_API_KEY env var)")
+    .option("--port <port>", "Local Orbit port (ignored when --remote is set)", "8787")
+    .option("--remote <url>", "Remote Orbit URL, e.g. http://192.168.0.15:8787")
+    .option("--api-key <key>", "Orbit API key (defaults to ORBIT_API_KEY env var)")
     .option("--model <id>", "Model id for Cline (required unless picked interactively)")
     .option("--cline-dir <dir>", "Cline data dir (default: ~/.cline/data)")
     .option("--yes", "Non-interactive: do not prompt (requires --model)")

@@ -11,8 +11,8 @@
  *   - A 20 RPM rolling window (true rolling — timestamps pruned to the last 60s,
  *     not a fixed-bucket reset).
  *
- * Bucketed by ACCOUNT, not by connection/key — multiple ShiguangGateway connections
- * that share one upstream OpenRouter account must share one window. ShiguangGateway's
+ * Bucketed by ACCOUNT, not by connection/key — multiple Orbit connections
+ * that share one upstream OpenRouter account must share one window. Orbit's
  * `provider_connections` are per-key, so callers resolve an account bucket key
  * via `resolveAccountKey()`: an explicit `providerSpecificData.openrouterAccountKey`
  * groups keys under one account; otherwise each connection gets its own bucket

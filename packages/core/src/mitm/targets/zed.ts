@@ -20,10 +20,10 @@ export const ZED_TARGET: MitmTarget = {
   ],
   setupTutorial: {
     steps: [
-      "Install ShiguangGateway's root certificate",
+      "Install Orbit's root certificate",
       "Enable DNS routing for Zed",
       "Restart Zed",
-      "Done — Zed traffic now routes through ShiguangGateway",
+      "Done — Zed traffic now routes through Orbit",
     ],
     detection: { command: "which zed", platform: "all" },
   },

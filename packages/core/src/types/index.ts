@@ -1,5 +1,5 @@
 /**
- * ShiguangGateway Core Types
+ * Orbit Core Types
  *
  * Central re-export for all domain types.
  * Import from "./index.ts" in any file.

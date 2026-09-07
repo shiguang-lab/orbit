@@ -1,6 +1,6 @@
-# apps/cli/src/cli — ShiguangGateway CLI internals
+# apps/cli/src/cli — Orbit CLI internals
 
-This directory contains the CLI runtime, helpers, and commands for the `shiguang-gateway` binary.
+This directory contains the CLI runtime, helpers, and commands for the `orbit` binary.
 
 ## Structure
 
@@ -15,7 +15,7 @@ apps/cli/src/cli/
 ├── output.mjs              ← emit() — table/json/jsonl/csv + printSuccess/printError
 ├── io.mjs                  ← ask() / askSecret() — interactive prompts
 ├── data-dir.mjs            ← resolveDataDir() / resolveStoragePath()
-├── sqlite.mjs              ← openShiguangGatewayDb() — DB bootstrap
+├── sqlite.mjs              ← openOrbitDb() — DB bootstrap
 ├── encryption.mjs          ← encrypt/decrypt credentials
 ├── provider-catalog.mjs    ← static provider catalog
 ├── provider-store.mjs      ← read-only provider_connections queries
@@ -41,7 +41,7 @@ apps/cli/src/cli/
 
 ### `apiFetch(path, opts)` — `api.mjs`
 
-All HTTP calls to the ShiguangGateway server must go through this wrapper.
+All HTTP calls to the Orbit server must go through this wrapper.
 
 ```js
 import { apiFetch } from "./api.mjs";
@@ -53,8 +53,8 @@ const data = await res.json();
 
 Options:
 
-- `baseUrl` — override base URL (default: `SHIGUANG_GATEWAY_BASE_URL` env or `localhost:8787`)
-- `apiKey` — override API key (default: `SHIGUANG_GATEWAY_API_KEY`)
+- `baseUrl` — override base URL (default: `ORBIT_BASE_URL` env or `localhost:8787`)
+- `apiKey` — override API key (default: `ORBIT_API_KEY`)
 - `method`, `body`, `headers` — standard fetch options
 - `timeout` — per-attempt ms (default: `30000`)
 - `retry` — `false` to disable (default: enabled)
@@ -91,7 +91,7 @@ console.log(t("common.serverOffline"));
 console.log(t("setup.testFailed", { error: err.message }));
 ```
 
-Locale detection order: `SHIGUANG_GATEWAY_LANG` → `LC_ALL` → `LC_MESSAGES` → `LANG` → `en`.
+Locale detection order: `ORBIT_LANG` → `LC_ALL` → `LC_MESSAGES` → `LANG` → `en`.
 
 ### `emit(data, opts)` — `output.mjs`
 
@@ -110,23 +110,23 @@ process.exit(EXIT_CODES.SERVER_OFFLINE);
 The CLI displays text in the user's language. Detection order:
 
 1. `--lang <code>` flag on the command line
-2. `SHIGUANG_GATEWAY_LANG` environment variable
+2. `ORBIT_LANG` environment variable
 3. System env: `LC_ALL` → `LC_MESSAGES` → `LANG`
 4. Fallback: `en`
 
 **Set permanently:**
 
 ```bash
-shiguang-gateway config lang set pt-BR       # saves to ~/.shiguang-gateway/.env
-shiguang-gateway config lang list            # show all 42 available locales
-shiguang-gateway config lang get             # show currently active locale
+orbit config lang set pt-BR       # saves to ~/.orbit/.env
+orbit config lang list            # show all 42 available locales
+orbit config lang get             # show currently active locale
 ```
 
 **One-time override:**
 
 ```bash
-shiguang-gateway --lang de providers list    # run in German, not persisted
-SHIGUANG_GATEWAY_LANG=ja shiguang-gateway status    # same effect via env
+orbit --lang de providers list    # run in German, not persisted
+ORBIT_LANG=ja orbit status    # same effect via env
 ```
 
 **Adding a new locale**: add its code to `locale-catalog.mjs`, then run:

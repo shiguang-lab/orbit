@@ -1,5 +1,5 @@
 {
   "redis": {
-    "description": "ShiguangGateway ক্যাশিং এবং কোটা ট্র্যাকিংয়ের জন্য এক ক্লিকে স্থানীয় Redis কন্টেইনার (Podman বা Docker) চালু করুন"
+    "description": "Orbit ক্যাশিং এবং কোটা ট্র্যাকিংয়ের জন্য এক ক্লিকে স্থানীয় Redis কন্টেইনার (Podman বা Docker) চালু করুন"
   }
 }

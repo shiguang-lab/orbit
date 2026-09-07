@@ -363,7 +363,7 @@ async function fetchProviderModelsForSync(request: Request, connectionId: string
     "?refresh=true&excludeCustom=true";
   const headers = {
     cookie: request.headers.get("cookie") || "",
-    "x-shiguangGateway-model-surface": "chat",
+    "x-orbit-model-surface": "chat",
     ...buildModelSyncInternalHeaders(),
   };
 

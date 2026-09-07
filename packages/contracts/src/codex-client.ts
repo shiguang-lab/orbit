@@ -1,5 +1,5 @@
-// Kept in lockstep with the codex CLI actually installed in the Shiguang Gateway image
-// (bin/shiguang-gateway-fix.Containerfile installs `codex` latest; app-server runtime is
+// Kept in lockstep with the codex CLI actually installed in the Orbit image
+// (bin/orbit-fix.Containerfile installs `codex` latest; app-server runtime is
 // 0.149.0 as of 2026-08-22). When the image's codex is bumped, refresh this so the
 // fingerprint OpenAI sees from the OAuth/Responses face matches the real client
 // version. Overridable per-deployment via the CODEX_CLIENT_VERSION env.

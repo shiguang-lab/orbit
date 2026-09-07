@@ -1,6 +1,6 @@
 # Przewodnik po darmowych planach: darmowe AI bez karty kredytowej
 
-> **TL;DR**: ShiguangGateway ma 153 wpisy katalogu oznaczone free/no-auth. Ściśle kwantyfikowany budżet obejmuje 39 pul / 452 wpisy modeli. Podłącz wielu providerów, aby rozszerzyć pokrycie fallbacku; dostępność, limity i warunki zależą od upstreamu.
+> **TL;DR**: Orbit ma 153 wpisy katalogu oznaczone free/no-auth. Ściśle kwantyfikowany budżet obejmuje 39 pul / 452 wpisy modeli. Podłącz wielu providerów, aby rozszerzyć pokrycie fallbacku; dostępność, limity i warunki zależą od upstreamu.
 
 ---
 
@@ -8,7 +8,7 @@
 
 Wielu providerów AI oferuje **darmowe użycie** — bez karty kredytowej. To jak darmowe próbki w sklepie spożywczym. Możesz wypróbować produkt bez płacenia.
 
-ShiguangGateway **agreguje** te darmowe plany w jeden endpoint. Zamiast rejestrować się w 10 różnych serwisach, podłączasz je wszystkie do ShiguangGateway i używasz `model: "auto"`, aby automatycznie wybrać najlepszą darmową opcję dla każdego żądania.
+Orbit **agreguje** te darmowe plany w jeden endpoint. Zamiast rejestrować się w 10 różnych serwisach, podłączasz je wszystkie do Orbit i używasz `model: "auto"`, aby automatycznie wybrać najlepszą darmową opcję dla każdego żądania.
 
 ---
 
@@ -56,7 +56,7 @@ Ci providerzy mają **darmowe plany** z określonymi limitami:
 
 ## Jak łączyć darmowe plany
 
-Siła ShiguangGateway to **stackowanie darmowych planów**. Zamiast polegać na jednym providerze, podłączasz wielu darmowych providerów i pozwalasz ShiguangGateway automatycznie wybrać najlepszego dla każdego żądania.
+Siła Orbit to **stackowanie darmowych planów**. Zamiast polegać na jednym providerze, podłączasz wielu darmowych providerów i pozwalasz Orbit automatycznie wybrać najlepszego dla każdego żądania.
 
 ### Przykład: szersze pokrycie darmowego tieru
 
@@ -68,7 +68,7 @@ nieograniczonej przepustowości ani gwarantowanej dostępności:
 3. **Pollinations** — bez klucza (wiele modeli)
 4. **LongCat** — 10M tokenów jednorazowo (wymaga KYC; nie odnawia się)
 
-Następnie użyj `model: "auto"`, a ShiguangGateway:
+Następnie użyj `model: "auto"`, a Orbit:
 
 - Najpierw spróbuje Kiro (najlepsza jakość)
 - Jeśli Kiro jest zajęty → spróbuje OpenCode Free
@@ -177,15 +177,15 @@ Podłącz 3–4 darmowych providerów, aby uzyskać najlepsze doświadczenie.
 
 ---
 
-## Jak ShiguangGateway usprawnia darmowe plany
+## Jak Orbit usprawnia darmowe plany
 
 ### 1. Automatyczny fallback
 
-Jeśli jeden darmowy provider jest zajęty lub niedostępny, ShiguangGateway automatycznie próbuje następnego. Nie musisz nic robić.
+Jeśli jeden darmowy provider jest zajęty lub niedostępny, Orbit automatycznie próbuje następnego. Nie musisz nic robić.
 
 ### 2. Inteligentny routing
 
-ShiguangGateway wybiera **najlepszego darmowego providera** dla każdego żądania na podstawie:
+Orbit wybiera **najlepszego darmowego providera** dla każdego żądania na podstawie:
 
 - Szybkość — który provider jest teraz najszybszy?
 - Jakość — który provider najlepiej pasuje do tego zadania?
@@ -193,11 +193,11 @@ ShiguangGateway wybiera **najlepszego darmowego providera** dla każdego żądan
 
 ### 3. Oszczędność tokenów
 
-Funkcja **compression** w ShiguangGateway oszczędza 15–95% tokenów. Dzięki temu darmowy limit starcza **5–20× dłużej**.
+Funkcja **compression** w Orbit oszczędza 15–95% tokenów. Dzięki temu darmowy limit starcza **5–20× dłużej**.
 
 ### 4. Obsługa wielu kont
 
-Jeśli masz wiele kont u tego samego providera, ShiguangGateway traktuje każde jako osobnego kandydata. To podwaja lub potroja Twój darmowy limit.
+Jeśli masz wiele kont u tego samego providera, Orbit traktuje każde jako osobnego kandydata. To podwaja lub potroja Twój darmowy limit.
 
 ---
 
@@ -253,7 +253,7 @@ produkcyjne. Dla krytycznych obciążeń użyj monitorowanego i odpowiedniego ko
 
 Możliwe kompromisy obejmują limity, kolejki, KYC, weryfikację karty, szkolenie na promptach,
 słabszą prywatność, brak SLA, zmienność modeli, ograniczenia geograficzne, płatne przekroczenia
-oraz ryzyko związane z zasadami konta. ShiguangGateway pokazuje dostępne metadane — decyzję podejmujesz
+oraz ryzyko związane z zasadami konta. Orbit pokazuje dostępne metadane — decyzję podejmujesz
 Ty.
 
 ### „Jak uzyskać większy darmowy limit?”
@@ -272,7 +272,7 @@ Ty.
 
 ## Co dalej?
 
-- **[Przewodnik Auto-Combo](./AUTO-COMBO-GUIDE.md)** — pozwól ShiguangGateway wybrać najlepsze AI
+- **[Przewodnik Auto-Combo](./AUTO-COMBO-GUIDE.md)** — pozwól Orbit wybrać najlepsze AI
 - **[Przewodnik po providerach](./PROVIDERS-GUIDE.md)** — podłącz więcej providerów
 - **[Rozwiązywanie problemów](./TROUBLESHOOTING.md)** — napraw typowe problemy
 - **[Referencja darmowych planów](../reference/FREE_TIERS.md)** — pełna lista darmowych planów

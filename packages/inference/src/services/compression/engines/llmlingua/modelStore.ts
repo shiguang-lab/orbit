@@ -29,7 +29,7 @@ export interface TransformersEnvLike {
 
 /** Base data dir. Mirrors rtk's getDataDir() at engines/rtk/filterLoader.ts. */
 function getDataDir(): string {
-  return process.env.DATA_DIR || path.join(os.homedir(), ".shiguangGateway");
+  return process.env.DATA_DIR || path.join(os.homedir(), ".orbit");
 }
 
 /** Resolve (and ensure) the model cache dir: `${DATA_DIR}/models/llmlingua`. Mirrors rtk's getDataDir(). */

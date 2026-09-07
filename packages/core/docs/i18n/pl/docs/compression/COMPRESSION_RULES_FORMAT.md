@@ -170,7 +170,7 @@ Plik zaufania projektu:
 }
 ```
 
-Nadpisanie środowiskowe `SHIGUANG_GATEWAY_RTK_TRUST_PROJECT_FILTERS=1` ufa filtrom projektu bez hasha
+Nadpisanie środowiskowe `ORBIT_RTK_TRUST_PROJECT_FILTERS=1` ufa filtrom projektu bez hasha
 i powinno być ograniczone do kontrolowanego lokalnego developmentu.
 
 ## Reguły bezpieczeństwa

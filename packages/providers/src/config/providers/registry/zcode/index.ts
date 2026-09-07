@@ -14,7 +14,7 @@ export const ZCODE_MODELS = GLM_SHARED_MODELS.filter(
 
 /**
  * Local ZCode app-server backend. Authentication remains in the user's local
- * ZCode profile (`builtin:zai-coding-plan`); ShiguangGateway does not receive or
+ * ZCode profile (`builtin:zai-coding-plan`); Orbit does not receive or
  * persist the Z.ai credential.
  */
 export const zcodeProvider: RegistryEntry = {

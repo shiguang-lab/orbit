@@ -310,7 +310,7 @@ const CLI_TOOLS: Record<string, any> = {
     },
   },
   // Config path reconciled with bin/cli/commands/setup-crush.mjs::resolveCrushTarget's
-  // default (~/.config/crush/crush.json) so the dashboard and `shiguangGateway setup-crush`
+  // default (~/.config/crush/crush.json) so the dashboard and `orbit setup-crush`
   // agree on one canonical config location.
   crush: {
     defaultCommand: "crush",
@@ -1086,7 +1086,7 @@ export const ensureCliConfigWriteAllowed = (
     return "CLI config writes are disabled (CLI_ALLOW_CONFIG_WRITES=false)";
   }
   if (!targetPath) return null;
-  if (parseBoolean(process.env.SHIGUANG_GATEWAY_ALLOW_CONTAINER_CONFIG_WRITE, false)) return null;
+  if (parseBoolean(process.env.ORBIT_ALLOW_CONTAINER_CONFIG_WRITE, false)) return null;
   if (!describeContainerTarget(targetPath, options.containerDeps).ephemeral) return null;
   return buildContainerWriteRefusal(targetPath, {
     toolLabel: options.toolLabel,

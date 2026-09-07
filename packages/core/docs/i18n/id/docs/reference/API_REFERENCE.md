@@ -4,7 +4,7 @@
 
 ---
 
-Referensi lengkap untuk semua titik akhir API ShiguangGateway.
+Referensi lengkap untuk semua titik akhir API Orbit.
 
 ---
 
@@ -42,16 +42,16 @@ Content-Type: application/json
 
 | Header                   | Arah      | Deskripsi                                                    |
 | ------------------------ | --------- | ------------------------------------------------------------ |
-| `X-ShiguangGateway-No-Cache`   | Permintaan | Atur ke `true` untuk melewati cache                          |
-| `X-ShiguangGateway-Progress`   | Permintaan | Atur ke `true` untuk event progres                           |
+| `X-Orbit-No-Cache`   | Permintaan | Atur ke `true` untuk melewati cache                          |
+| `X-Orbit-Progress`   | Permintaan | Atur ke `true` untuk event progres                           |
 | `X-Session-Id`           | Permintaan | Kunci sesi tetap untuk afinitas sesi eksternal               |
 | `x_session_id`           | Permintaan | Varian garis bawah juga diterima (HTTP langsung)             |
 | `Idempotency-Key`        | Permintaan | Kunci deduplikasi (jendela 5 detik)                          |
 | `X-Request-Id`           | Permintaan | Kunci deduplikasi alternatif                                 |
-| `X-ShiguangGateway-Cache`      | Respons   | `HIT` atau `MISS` (non-streaming)                            |
-| `X-ShiguangGateway-Idempotent` | Respons   | `true` jika dideduplikasi                                    |
-| `X-ShiguangGateway-Progress`   | Respons   | `enabled` jika pelacakan progres aktif                       |
-| `X-ShiguangGateway-Session-Id` | Respons   | ID sesi efektif yang digunakan ShiguangGateway                     |
+| `X-Orbit-Cache`      | Respons   | `HIT` atau `MISS` (non-streaming)                            |
+| `X-Orbit-Idempotent` | Respons   | `true` jika dideduplikasi                                    |
+| `X-Orbit-Progress`   | Respons   | `enabled` jika pelacakan progres aktif                       |
+| `X-Orbit-Session-Id` | Respons   | ID sesi efektif yang digunakan Orbit                     |
 
 > Catatan Nginx: jika Anda mengandalkan header bergaris bawah (misalnya `x_session_id`), aktifkan `underscores_in_headers on;`.
 
@@ -350,7 +350,7 @@ Memperbaiki variabel lingkungan OAuth yang hilang atau rusak untuk penyedia tert
 {
   "success": true,
   "repaired": ["CLAUDE_CODE_OAUTH_CLIENT_ID", "CLAUDE_CODE_OAUTH_CLIENT_SECRET"],
-  "backupPath": "/home/user/.shiguang-gateway/backups/env-repair-2026-04-11.bak"
+  "backupPath": "/home/user/.orbit/backups/env-repair-2026-04-11.bak"
 }
 ```
 

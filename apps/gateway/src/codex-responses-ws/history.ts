@@ -64,7 +64,7 @@ function getRequestPath(body: JsonRecord): string {
   if (explicitPath) return explicitPath;
   try {
     const requestUrl = toStringOrNull(body.requestUrl) || "/v1/responses";
-    return new URL(requestUrl, "http://shiguangGateway.local").pathname;
+    return new URL(requestUrl, "http://orbit.local").pathname;
   } catch {
     return "/v1/responses";
   }
@@ -77,7 +77,7 @@ function getServiceTier(requestBody: JsonRecord): string | null {
 function getAuthRequest(body: JsonRecord): Request {
   const requestUrl = typeof body.requestUrl === "string" ? body.requestUrl : "/api/v1/responses";
   const headers = isRecord(body.headers) ? body.headers : {};
-  const url = new URL(requestUrl, "http://shiguangGateway.local");
+  const url = new URL(requestUrl, "http://orbit.local");
   const requestHeaders = new Headers();
   for (const [key, value] of Object.entries(headers)) {
     if (typeof value === "string") requestHeaders.set(key, value);

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "ShiguangGateway Caveman Rule Pack",
+  "title": "Orbit Caveman Rule Pack",
   "type": "object",
   "required": ["language", "category", "rules"],
   "properties": {

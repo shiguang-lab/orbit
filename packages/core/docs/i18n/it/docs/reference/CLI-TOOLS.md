@@ -6,22 +6,22 @@
 
 ---
 
-title: "Strumenti CLI — ShiguangGateway"
+title: "Strumenti CLI — Orbit"
 version: 3.8.50
 lastUpdated: 2026-08-18
 ---
 
-# Strumenti CLI — ShiguangGateway
+# Strumenti CLI — Orbit
 
 Ultimo aggiornamento: 2026-08-18
 
-ShiguangGateway si integra con tre categorie di strumenti CLI distribuiti su tre pagine di dashboard dedicate:
+Orbit si integra con tre categorie di strumenti CLI distribuiti su tre pagine di dashboard dedicate:
 
 | Pagina         | Percorso                | Concetto                                                                          | Conteggio     |
 | -------------- | ----------------------- | --------------------------------------------------------------------------------- | ------------- |
-| **CLI Code's** | `/dashboard/cli-code`   | Strumenti di codifica che punti a ShiguangGateway (Client → CLI → ShiguangGateway → Provider) | 26            |
-| **CLI Agents** | `/dashboard/cli-agents` | Agenti autonomi che punti a ShiguangGateway (stesso flusso, ambito più ampio)           | 8             |
-| **ACP Agents** | `/dashboard/acp-agents` | CLI che ShiguangGateway genera come backend tramite stdio/ACP (flusso inverso)          | vedi registro |
+| **CLI Code's** | `/dashboard/cli-code`   | Strumenti di codifica che punti a Orbit (Client → CLI → Orbit → Provider) | 26            |
+| **CLI Agents** | `/dashboard/cli-agents` | Agenti autonomi che punti a Orbit (stesso flusso, ambito più ampio)           | 8             |
+| **ACP Agents** | `/dashboard/acp-agents` | CLI che Orbit genera come backend tramite stdio/ACP (flusso inverso)          | vedi registro |
 
 I percorsi legacy reindirizzano tramite 308: `/dashboard/cli-tools` → `/dashboard/cli-code`, `/dashboard/agents` → `/dashboard/acp-agents`.
 
@@ -33,14 +33,14 @@ I percorsi legacy reindirizzano tramite 308: `/dashboard/cli-tools` → `/dashbo
 CLI Code's / CLI Agents (flusso di consumo):
 Claude / Codex / OpenCode / Cline / KiloCode / Continue / Hermes Agent / Goose / ...
            │
-           ▼  (tutti puntano a ShiguangGateway)
+           ▼  (tutti puntano a Orbit)
     http://YOUR_SERVER:20128/v1
            │
-           ▼  (ShiguangGateway instrada al provider giusto)
+           ▼  (Orbit instrada al provider giusto)
     Anthropic / OpenAI / Gemini / DeepSeek / Groq / Mistral / ...
 
 ACP Agents (flusso di generazione inverso):
-    Richiesta del client → ShiguangGateway → genera CLI tramite stdio/ACP → risposta
+    Richiesta del client → Orbit → genera CLI tramite stdio/ACP → risposta
 ```
 
 **Vantaggi:**
@@ -54,27 +54,27 @@ ACP Agents (flusso di generazione inverso):
 
 ## Configurazione automatica con `setup-*`
 
-Non è necessario scrivere a mano la configurazione di ogni strumento. ShiguangGateway fornisce un comando `setup-*`
-per ogni CLI supportata che legge il catalogo di modelli **live** da un ShiguangGateway in esecuzione
+Non è necessario scrivere a mano la configurazione di ogni strumento. Orbit fornisce un comando `setup-*`
+per ogni CLI supportata che legge il catalogo di modelli **live** da un Orbit in esecuzione
 (locale o remoto) e scrive la configurazione dello strumento sulla tua macchina:
 
 ```bash
-shiguang-gateway setup-codex        shiguang-gateway setup-claude       shiguang-gateway setup-opencode
-shiguang-gateway setup-cline        shiguang-gateway setup-kilo         shiguang-gateway setup-continue
-shiguang-gateway setup-cursor       shiguang-gateway setup-roo          shiguang-gateway setup-crush
-shiguang-gateway setup-goose        shiguang-gateway setup-qwen         shiguang-gateway setup-aider
+orbit setup-codex        orbit setup-claude       orbit setup-opencode
+orbit setup-cline        orbit setup-kilo         orbit setup-continue
+orbit setup-cursor       orbit setup-roo          orbit setup-crush
+orbit setup-goose        orbit setup-qwen         orbit setup-aider
 ```
 
 Ognuno accetta `--remote <url> --api-key <key>` (configura uno strumento locale contro un
-ShiguangGateway remoto), `--dry-run` (anteprima senza scrivere), e `--port`. Gli strumenti
+Orbit remoto), `--dry-run` (anteprima senza scrivere), e `--port`. Gli strumenti
 senza auto-scoperta del modello (Cline, Kilo, Roo, Goose, Aider, Qwen) richiedono
 `--model <id>` (e `--yes` per esecuzioni non interattive). Per avviare una CLI con
 l'ambiente corretto iniettato e senza alcuna configurazione scritta, utilizza il generico
-lanciatore `shiguang-gateway run <target>` (claude, codex, aider, goose, opencode, qwen,
+lanciatore `orbit run <target>` (claude, codex, aider, goose, opencode, qwen,
 gemini — i target e gli alias provengono da `bin/cli/cli-manifest.mjs`); i lanciatori
-legacy per ogni strumento `shiguang-gateway launch` (Claude Code) e `shiguang-gateway launch-codex`
+legacy per ogni strumento `orbit launch` (Claude Code) e `orbit launch-codex`
 (Codex) rimangono disponibili. La CLI di Gemini è solo per il lancio: è un target di
-`shiguang-gateway run` ma non ha ricetta `setup-*`/`configure`.
+`orbit run` ma non ha ricetta `setup-*`/`configure`.
 
 > **Riferimento completo:** la tabella principale — cosa scrive ogni comando, ogni flag,
 > locale vs remoto, e quali strumenti richiedono un suffisso `/v1` — si trova in
@@ -82,21 +82,21 @@ legacy per ogni strumento `shiguang-gateway launch` (Claude Code) e `shiguang-ga
 
 ### Esecuzione di questi all'interno di un contenitore
 
-Un comando `setup-*` eseguito all'interno del contenitore ShiguangGateway scrive nella
+Un comando `setup-*` eseguito all'interno del contenitore Orbit scrive nella
 home del contenitore stesso, che nessuna CLI host legge e che scompare con il
-contenitore. ShiguangGateway rileva ciò e termina con `2` fornendo istruzioni piuttosto che
+contenitore. Orbit rileva ciò e termina con `2` fornendo istruzioni piuttosto che
 scrivere. Due modi supportati per procedere: installare la CLI sull'host e
-`shiguang-gateway connect` al contenitore, oppure montare in binding le directory di configurazione e impostare
+`orbit connect` al contenitore, oppure montare in binding le directory di configurazione e impostare
 `CLI_CONFIG_HOME` (il profilo `host` di compose). Ogni comando `setup-*`, più
-`shiguang-gateway configure` e `shiguang-gateway config set`, accetta
+`orbit configure` e `orbit config set`, accetta
 `--allow-container-write` quando configurare le CLI del contenitore è ciò che intendevi;
-`SHIGUANG_GATEWAY_ALLOW_CONTAINER_CONFIG_WRITE=true` fa lo stesso per il server. Vedi
-[Guida Docker → Configurazione degli strumenti CLI host](../guides/DOCKER_GUIDE.md#configuring-host-cli-tools-when-shiguang-gateway-runs-in-docker).
+`ORBIT_ALLOW_CONTAINER_CONFIG_WRITE=true` fa lo stesso per il server. Vedi
+[Guida Docker → Configurazione degli strumenti CLI host](../guides/DOCKER_GUIDE.md#configuring-host-cli-tools-when-orbit-runs-in-docker).
 
 L'**endpoint di applicazione** della dashboard (`POST /api/cli-tools/apply`) applica la
 stessa protezione: in un contenitore, una scrittura il cui target non è montato in binding dall'
 host risponde **`422`** con `containerEphemeralTarget: true`, il testo di errore sicuro e — per gli strumenti con una ricetta host (claude, codex, opencode, cline,
-kilo, continue) — un `hostSetupCommand` (ad esempio `shiguang-gateway setup-opencode`) da eseguire
+kilo, continue) — un `hostSetupCommand` (ad esempio `orbit setup-opencode`) da eseguire
 sull'host invece; nulla viene scritto. `dryRun: true` continua a funzionare in modalità contenitore
 e restituisce il contenuto generato + il percorso target senza toccare il disco, quindi
 puoi visualizzare dalla dashboard e applicare sull'host. Questo comportamento è
@@ -132,8 +132,8 @@ fonte dichiarativa, e un test di drift li mantiene allineati:
 | ----------------- | ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
 | **Catalogato**    | Appare nel catalogo del dashboard (nome, fornitore, documentazione, tipo di configurazione) | `src/shared/constants/cliTools.ts` (`CLI_TOOLS`)                  |
 | **Rilevabile**    | Rilevamento binario/configurazione, controlli di salute, percorsi di configurazione         | `src/shared/services/cliRuntime.ts` (`CLI_TOOLS` runtime catalog) |
-| **Configurabile** | Supportato da `shiguang-gateway configure <cli>` (esiste una ricetta di configurazione)            | `bin/cli/cli-manifest.mjs` (`configure: true`)                    |
-| **Avviabile**     | Supportato da `shiguang-gateway run <target>` (iniezione di env/args definita)                     | `bin/cli/cli-manifest.mjs` (`run: true`)                          |
+| **Configurabile** | Supportato da `orbit configure <cli>` (esiste una ricetta di configurazione)            | `bin/cli/cli-manifest.mjs` (`configure: true`)                    |
+| **Avviabile**     | Supportato da `orbit run <target>` (iniezione di env/args definita)                     | `bin/cli/cli-manifest.mjs` (`run: true`)                          |
 
 `bin/cli/cli-manifest.mjs` è il manifesto eseguibile canonico per i comandi CLI
 superfici: `run`, `configure` e i generatori di completamento della shell derivano tutti le loro
@@ -197,7 +197,7 @@ Agenti autonomi che appaiono in `/dashboard/cli-agents`:
 
 ## 3. Agenti ACP (/dashboard/acp-agents)
 
-Questa pagina (rinominata da `/dashboard/agents`) mostra le CLI che ShiguangGateway può **generare** come motori di esecuzione backend tramite il protocollo stdio/ACP. Il catalogo è mantenuto separatamente in `src/lib/acp/registry.ts` e **non** è lo stesso di `CLI_TOOLS`.
+Questa pagina (rinominata da `/dashboard/agents`) mostra le CLI che Orbit può **generare** come motori di esecuzione backend tramite il protocollo stdio/ACP. Il catalogo è mantenuto separatamente in `src/lib/acp/registry.ts` e **non** è lo stesso di `CLI_TOOLS`.
 
 ---
 
@@ -260,7 +260,7 @@ I nuovi strumenti con `configType: "custom"` hanno percorsi API di impostazioni 
 | `POST /api/cli-tools/codewhale-settings`    | CodeWhale (OPENAI_BASE_URL, primary + legacy `~/.deepseek` sync) |
 | `POST /api/cli-tools/smelt-settings`        | Smelt                                                            |
 | `POST /api/cli-tools/pi-settings`           | Agente di codifica Pi                                            |
-| `POST /api/cli-tools/grok-build-settings`   | Grok Build (~/.grok/config.toml, `[model.shiguang-gateway]`)            |
+| `POST /api/cli-tools/grok-build-settings`   | Grok Build (~/.grok/config.toml, `[model.orbit]`)            |
 | `POST /api/cli-tools/qwen-settings`         | Qwen Code (`~/.qwen/settings.json` + chiave `.env` dedicata)     |
 
 Tutti i percorsi utilizzano `sanitizeErrorMessage()` per le risposte di errore (Regola Ferrea #12).
@@ -320,7 +320,7 @@ Traduzioni complete in PT-BR e EN sono fornite. 39 altre lingue ricadono automat
 
 ## 9. Guida Rapida
 
-### Passo 1 — Ottieni una Chiave API ShiguangGateway
+### Passo 1 — Ottieni una Chiave API Orbit
 
 1. Apri `/dashboard/api-manager` → **Crea Chiave API**
 2. Dagli un nome (es. `cli-tools`) e seleziona tutte le autorizzazioni
@@ -353,7 +353,7 @@ npm install -g kilocode
 # Qwen Code
 npm install -g @qwen-code/qwen-code
 
-# Google Gemini CLI (lanciabile tramite `shiguang-gateway run gemini` → /v1beta surface)
+# Google Gemini CLI (lanciabile tramite `orbit run gemini` → /v1beta surface)
 npm install -g @google/gemini-cli
 
 # Aider
@@ -384,14 +384,14 @@ cargo install smelt  # Basato su Rust
 ### Passo 4 — Imposta Variabili Ambientali Globali
 
 ```bash
-# ShiguangGateway Universal Endpoint
+# Orbit Universal Endpoint
 export OPENAI_BASE_URL="http://localhost:20128/v1"
-export OPENAI_API_KEY="sk-your-shiguang-gateway-key"
+export OPENAI_API_KEY="sk-your-orbit-key"
 export ANTHROPIC_BASE_URL="http://localhost:20128"
-export ANTHROPIC_AUTH_TOKEN="sk-your-shiguang-gateway-key"
+export ANTHROPIC_AUTH_TOKEN="sk-your-orbit-key"
 # Gemini CLI legge GOOGLE_GEMINI_BASE_URL alla RADICE (il suo SDK aggiunge /v1beta/... da solo)
 export GOOGLE_GEMINI_BASE_URL="http://localhost:20128"
-export GEMINI_API_KEY="sk-your-shiguang-gateway-key"
+export GEMINI_API_KEY="sk-your-orbit-key"
 ```
 
 > Per un **server remoto** sostituisci `localhost:20128` con l'IP o il dominio del server,
@@ -409,7 +409,7 @@ mkdir -p ~/.claude && cat > ~/.claude/settings.json << EOF
 {
   "env": {
     "ANTHROPIC_BASE_URL": "http://localhost:20128",
-    "ANTHROPIC_AUTH_TOKEN": "sk-your-shiguang-gateway-key"
+    "ANTHROPIC_AUTH_TOKEN": "sk-your-orbit-key"
   }
 }
 EOF
@@ -425,20 +425,20 @@ Usa la radice del gateway unificato di Anthropic per Claude Code. Non aggiungere
 
 Il Codex moderno (v0.137+) legge solo `~/.codex/config.toml` — il vecchio
 `config.yaml` appartiene al CLI npm legacy ed è silenziosamente ignorato. La chiave API
-rimane nella variabile ambientale `SHIGUANG_GATEWAY_API_KEY` (`env_key`), mai
+rimane nella variabile ambientale `ORBIT_API_KEY` (`env_key`), mai
 all'interno del file:
 
 ```bash
 mkdir -p ~/.codex && cat > ~/.codex/config.toml << EOF
-model_provider = "shiguang-gateway"
+model_provider = "orbit"
 
-[model_providers.shiguang-gateway]
-name                 = "ShiguangGateway"
+[model_providers.orbit]
+name                 = "Orbit"
 base_url             = "http://localhost:20128/v1"
-env_key              = "SHIGUANG_GATEWAY_API_KEY"
+env_key              = "ORBIT_API_KEY"
 requires_openai_auth = false
 EOF
-export SHIGUANG_GATEWAY_API_KEY="sk-your-shiguang-gateway-key"
+export ORBIT_API_KEY="sk-your-orbit-key"
 ```
 
 Riferimento completo (profili, `wire_api`, finestre di contesto): [CODEX-CLI-CONFIGURATION.md](../guides/CODEX-CLI-CONFIGURATION.md).
@@ -454,12 +454,12 @@ mkdir -p ~/.config/opencode && cat > ~/.config/opencode/opencode.json << EOF
 {
   "\$schema": "https://opencode.ai/config.json",
   "provider": {
-    "shiguang-gateway": {
+    "orbit": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "ShiguangGateway",
+      "name": "Orbit",
       "options": {
         "baseURL": "http://localhost:20128/v1",
-        "apiKey": "sk-your-shiguang-gateway-key"
+        "apiKey": "sk-your-orbit-key"
       },
       "models": {
         "claude-sonnet-4-5": { "name": "claude-sonnet-4-5" },
@@ -474,7 +474,7 @@ EOF
 
 **Test:** `opencode`
 
-> Usa `opencode run "your prompt" --model shiguang-gateway/claude-sonnet-4-5-thinking --variant high`
+> Usa `opencode run "your prompt" --model orbit/claude-sonnet-4-5-thinking --variant high`
 > per inviare varianti di pensiero.
 
 ---
@@ -488,7 +488,7 @@ mkdir -p ~/.cline/data && cat > ~/.cline/data/globalState.json << EOF
 {
   "apiProvider": "openai",
   "openAiBaseUrl": "http://localhost:20128/v1",
-  "openAiApiKey": "sk-your-shiguang-gateway-key"
+  "openAiApiKey": "sk-your-orbit-key"
 }
 EOF
 ```
@@ -496,7 +496,7 @@ EOF
 **Modalità VS Code:**
 Impostazioni dell'estensione Cline → Fornitore API: `OpenAI Compatible` → URL di base: `http://localhost:20128/v1`
 
-Oppure usa il dashboard di ShiguangGateway → **CLI Tools → Cline → Applica Config**.
+Oppure usa il dashboard di Orbit → **CLI Tools → Cline → Applica Config**.
 
 ---
 
@@ -505,7 +505,7 @@ Oppure usa il dashboard di ShiguangGateway → **CLI Tools → Cline → Applica
 **Modalità CLI:**
 
 ```bash
-kilocode --api-base http://localhost:20128/v1 --api-key sk-your-shiguang-gateway-key
+kilocode --api-base http://localhost:20128/v1 --api-key sk-your-orbit-key
 ```
 
 **Impostazioni VS Code:**
@@ -513,11 +513,11 @@ kilocode --api-base http://localhost:20128/v1 --api-key sk-your-shiguang-gateway
 ```json
 {
   "kilo-code.openAiBaseUrl": "http://localhost:20128/v1",
-  "kilo-code.apiKey": "sk-your-shiguang-gateway-key"
+  "kilo-code.apiKey": "sk-your-orbit-key"
 }
 ```
 
-Oppure usa il dashboard di ShiguangGateway → **CLI Tools → KiloCode → Applica Config**.
+Oppure usa il dashboard di Orbit → **CLI Tools → KiloCode → Applica Config**.
 
 ---
 
@@ -527,11 +527,11 @@ Modifica `~/.continue/config.yaml`:
 
 ```yaml
 models:
-  - name: ShiguangGateway
+  - name: Orbit
     provider: openai
     model: auto
     apiBase: http://localhost:20128/v1
-    apiKey: sk-your-shiguang-gateway-key
+    apiKey: sk-your-orbit-key
     default: true
 ```
 
@@ -541,25 +541,25 @@ Riavvia VS Code dopo la modifica.
 
 #### VS Code Insiders (`chatLanguageModels.json`)
 
-Usa questo quando VS Code Insiders è configurato per modelli di endpoint personalizzati e desideri che ShiguangGateway funzioni senza un campo di intestazione personalizzato.
+Usa questo quando VS Code Insiders è configurato per modelli di endpoint personalizzati e desideri che Orbit funzioni senza un campo di intestazione personalizzato.
 
 **Posizione consigliata:**
 
 - Linux: `~/.config/Code - Insiders/User/chatLanguageModels.json`
 - Windows: `%APPDATA%/Code - Insiders/User/chatLanguageModels.json`
 
-**Esempio usando l'alias tokenizzato di ShiguangGateway:**
+**Esempio usando l'alias tokenizzato di Orbit:**
 
 ```json
 [
   {
     "vendor": "customendpoint",
     "id": "auto",
-    "name": "ShiguangGateway Auto",
+    "name": "Orbit Auto",
     "family": "gpt-4",
     "version": "1.0.0",
-    "url": "http://localhost:20128/api/v1/vscode/sk-your-shiguang-gateway-key/chat/completions",
-    "modelsUrl": "http://localhost:20128/api/v1/vscode/sk-your-shiguang-gateway-key/models",
+    "url": "http://localhost:20128/api/v1/vscode/sk-your-orbit-key/chat/completions",
+    "modelsUrl": "http://localhost:20128/api/v1/vscode/sk-your-orbit-key/models",
     "requestFormat": "openai-chat-completions",
     "contextWindow": 256000,
     "maxOutputTokens": 32768,
@@ -572,7 +572,7 @@ Usa questo quando VS Code Insiders è configurato per modelli di endpoint person
 
 **Note:**
 
-- Sostituisci `sk-your-shiguang-gateway-key` con una chiave API creata in ShiguangGateway.
+- Sostituisci `sk-your-orbit-key` con una chiave API creata in Orbit.
 - Il campo `url` dovrebbe puntare a `/api/v1/vscode/{token}/chat/completions`.
 - Il campo `modelsUrl` dovrebbe puntare a `/api/v1/vscode/{token}/models`.
 - Preferisci il normale flusso `/v1` + intestazione Bearer quando il client supporta intestazioni personalizzate.
@@ -586,40 +586,40 @@ Usa questo quando VS Code Insiders è configurato per modelli di endpoint person
 # Accedi al tuo account AWS/Kiro:
 kiro-cli login
 
-# Il CLI utilizza la propria autenticazione — ShiguangGateway non è necessario come backend per il Kiro CLI stesso.
-# Usa kiro-cli insieme a ShiguangGateway per altri strumenti.
+# Il CLI utilizza la propria autenticazione — Orbit non è necessario come backend per il Kiro CLI stesso.
+# Usa kiro-cli insieme a Orbit per altri strumenti.
 kiro-cli status
 ```
 
-Per l'app desktop **Kiro IDE**, usa l'endpoint MITM esposto da ShiguangGateway
+Per l'app desktop **Kiro IDE**, usa l'endpoint MITM esposto da Orbit
 sotto `/dashboard/cli-tools → Kiro`.
 
 ---
 
-## 10. ShiguangGateway CLI Interno
+## 10. Orbit CLI Interno
 
-Il binario `shiguang-gateway` fornisce comandi per il ciclo di vita del server, configurazione, diagnostica e gestione dei provider. Punto di ingresso: `bin/shiguang-gateway.mjs`.
+Il binario `orbit` fornisce comandi per il ciclo di vita del server, configurazione, diagnostica e gestione dei provider. Punto di ingresso: `bin/orbit.mjs`.
 
 ```bash
-shiguang-gateway                              # Avvia il server (porta predefinita 20128)
-shiguang-gateway setup                        # Procedura guidata di configurazione interattiva
-shiguang-gateway doctor                       # Controlla configurazione, DB, porte, runtime
-shiguang-gateway providers list               # Connessioni ai provider configurati
-shiguang-gateway providers test-all           # Testa ogni connessione attiva
-shiguang-gateway reset-password               # Reimposta la password dell'amministratore
-shiguang-gateway logs                         # Flusso dei log delle richieste
-shiguang-gateway health                       # Salute dettagliata (interruttori, cache, memoria)
-shiguang-gateway --version                    # Stampa la versione
-shiguang-gateway --help                       # Mostra tutti i comandi
+orbit                              # Avvia il server (porta predefinita 20128)
+orbit setup                        # Procedura guidata di configurazione interattiva
+orbit doctor                       # Controlla configurazione, DB, porte, runtime
+orbit providers list               # Connessioni ai provider configurati
+orbit providers test-all           # Testa ogni connessione attiva
+orbit reset-password               # Reimposta la password dell'amministratore
+orbit logs                         # Flusso dei log delle richieste
+orbit health                       # Salute dettagliata (interruttori, cache, memoria)
+orbit --version                    # Stampa la versione
+orbit --help                       # Mostra tutti i comandi
 ```
 
 ### Configurazione e Inizializzazione
 
 ```bash
-shiguang-gateway setup                        # Procedura guidata di configurazione interattiva
-shiguang-gateway setup --non-interactive      # Modalità CI/automazione (legge variabili d'ambiente + flag)
-shiguang-gateway setup --password '<value>'   # Imposta direttamente la password dell'amministratore
-shiguang-gateway setup --add-provider \
+orbit setup                        # Procedura guidata di configurazione interattiva
+orbit setup --non-interactive      # Modalità CI/automazione (legge variabili d'ambiente + flag)
+orbit setup --password '<value>'   # Imposta direttamente la password dell'amministratore
+orbit setup --add-provider \
   --provider openai \
   --api-key '<value>' \
   --test-provider                      # Aggiungi e testa un provider in un colpo solo
@@ -629,21 +629,21 @@ Variabili d'ambiente riconosciute per la configurazione non interattiva:
 
 | Var                 | Scopo                                                                        |
 | ------------------- | ---------------------------------------------------------------------------- |
-| `SHIGUANG_GATEWAY_API_KEY` | Chiave API del provider (collegata a `--api-key` tramite Commander `.env()`) |
-| `DATA_DIR`          | Sovrascrivi la directory dei dati di ShiguangGateway                               |
+| `ORBIT_API_KEY` | Chiave API del provider (collegata a `--api-key` tramite Commander `.env()`) |
+| `DATA_DIR`          | Sovrascrivi la directory dei dati di Orbit                               |
 
 Tutti gli altri input non interattivi sono passati come flag, non come variabili d'ambiente:
 `--password`, `--provider`, `--provider-name`, `--provider-base-url`, `--default-model`
-(vedi le opzioni `shiguang-gateway setup` sopra).
+(vedi le opzioni `orbit setup` sopra).
 
 ### Diagnostica
 
 ```bash
-shiguang-gateway doctor                       # Controlla configurazione, DB, porte, runtime, memoria, liveness
-shiguang-gateway doctor --json                # JSON leggibile dalla macchina
-shiguang-gateway doctor --no-liveness         # Salta il probe di salute HTTP
-shiguang-gateway doctor --host 0.0.0.0        # Sovrascrivi l'host di liveness
-shiguang-gateway doctor --liveness-url <url>  # Sovrascrivi l'URL dell'endpoint di salute completo
+orbit doctor                       # Controlla configurazione, DB, porte, runtime, memoria, liveness
+orbit doctor --json                # JSON leggibile dalla macchina
+orbit doctor --no-liveness         # Salta il probe di salute HTTP
+orbit doctor --host 0.0.0.0        # Sovrascrivi l'host di liveness
+orbit doctor --liveness-url <url>  # Sovrascrivi l'URL dell'endpoint di salute completo
 ```
 
 Il doctor esegue questi controlli: `Configurazione`, `Database`, `Storage/crittografia`,
@@ -653,47 +653,47 @@ Il doctor esegue questi controlli: `Configurazione`, `Database`, `Storage/critto
 ### Gestione dei Provider
 
 ```bash
-shiguang-gateway providers available                       # Catalogo dei provider di ShiguangGateway
-shiguang-gateway providers available --search openai       # Filtra il catalogo per id/nome/alias/categoria
-shiguang-gateway providers available --category api-key    # Filtra per categoria (api-key, oauth, free, ...)
-shiguang-gateway providers available --json                # JSON leggibile dalla macchina
+orbit providers available                       # Catalogo dei provider di Orbit
+orbit providers available --search openai       # Filtra il catalogo per id/nome/alias/categoria
+orbit providers available --category api-key    # Filtra per categoria (api-key, oauth, free, ...)
+orbit providers available --json                # JSON leggibile dalla macchina
 
-shiguang-gateway providers list                            # Connessioni ai provider configurati
-shiguang-gateway providers list --json
+orbit providers list                            # Connessioni ai provider configurati
+orbit providers list --json
 
-shiguang-gateway providers test <id|name>                  # Testa una connessione configurata
-shiguang-gateway providers test-all                        # Testa ogni connessione attiva
-shiguang-gateway providers validate                        # Validazione strutturale solo locale
-shiguang-gateway providers add <provider> --credential-env PROVIDER_KEY
-shiguang-gateway providers import ./providers.json --dry-run --json
-shiguang-gateway providers auth <provider>                 # Flusso OAuth esistente
-shiguang-gateway providers edit <id|name> --default-model <model>
-shiguang-gateway providers remove <id|name> --yes
+orbit providers test <id|name>                  # Testa una connessione configurata
+orbit providers test-all                        # Testa ogni connessione attiva
+orbit providers validate                        # Validazione strutturale solo locale
+orbit providers add <provider> --credential-env PROVIDER_KEY
+orbit providers import ./providers.json --dry-run --json
+orbit providers auth <provider>                 # Flusso OAuth esistente
+orbit providers edit <id|name> --default-model <model>
+orbit providers remove <id|name> --yes
 ```
 
 `providers add/import/auth/edit/remove` sono API-first e quindi funzionano contro
 il contesto locale o remoto attivo. L'input delle credenziali dovrebbe utilizzare
 `--credential-stdin` o `--credential-env`; `--dry-run --json` riporta solo
-la presenza/forma redatta. `providers available` legge il catalogo di ShiguangGateway;
+la presenza/forma redatta. `providers available` legge il catalogo di Orbit;
 `providers list/test/test-all/validate` mantengono il loro comportamento locale SQLite e
 non richiedono che il server sia in esecuzione.
 
 ### Recupero e Ripristino
 
 ```bash
-shiguang-gateway reset-password                # Reimposta la password dell'amministratore (anche: shiguang-gateway-reset-password)
-shiguang-gateway reset-encrypted-columns       # Mostra avviso + dry-run per il ripristino delle credenziali crittografate
-shiguang-gateway reset-encrypted-columns --force  # Annulla effettivamente le credenziali crittografate in SQLite
+orbit reset-password                # Reimposta la password dell'amministratore (anche: orbit-reset-password)
+orbit reset-encrypted-columns       # Mostra avviso + dry-run per il ripristino delle credenziali crittografate
+orbit reset-encrypted-columns --force  # Annulla effettivamente le credenziali crittografate in SQLite
 ```
 
 ### Esportazione delle Credenziali (⚠ maneggiare con cura)
 
 ```bash
-shiguang-gateway auth export                                 # Mostra avviso + gate di conferma — nessun accesso al DB
-shiguang-gateway auth export --force                          # Esporta TUTTE le credenziali DECRITTOGRAFATE delle connessioni su stdout come JSON
-shiguang-gateway auth export --force --id <id>                 # Esporta solo la connessione corrispondente
-shiguang-gateway auth export --force --format env               # Emmette righe SHIGUANG_GATEWAY_<PROVIDER>_<FIELD>=<value>
-shiguang-gateway auth export --force --out creds.json           # Scrive in un file (creato con permessi 0600)
+orbit auth export                                 # Mostra avviso + gate di conferma — nessun accesso al DB
+orbit auth export --force                          # Esporta TUTTE le credenziali DECRITTOGRAFATE delle connessioni su stdout come JSON
+orbit auth export --force --id <id>                 # Esporta solo la connessione corrispondente
+orbit auth export --force --format env               # Emmette righe ORBIT_<PROVIDER>_<FIELD>=<value>
+orbit auth export --force --out creds.json           # Scrive in un file (creato con permessi 0600)
 ```
 
 `auth export` è **solo locale** (lettura diretta di SQLite, nessun percorso HTTP) e stampa/scrive
@@ -705,36 +705,36 @@ impostato. Un campo che non riesce a decrittografare (chiave obsoleta, ciphertex
 
 ### Altri sottocomandi
 
-Questi presuppongono un server ShiguangGateway in esecuzione, a meno che non sia indicato diversamente:
+Questi presuppongono un server Orbit in esecuzione, a meno che non sia indicato diversamente:
 
 ```bash
-shiguang-gateway status                       # Stato completo del runtime
-shiguang-gateway logs                         # Flusso dei log delle richieste (--json, --search, --follow)
-shiguang-gateway config show                  # Mostra la configurazione attuale
+orbit status                       # Stato completo del runtime
+orbit logs                         # Flusso dei log delle richieste (--json, --search, --follow)
+orbit config show                  # Mostra la configurazione attuale
 
-shiguang-gateway provider list                # Elenca i provider disponibili (alias di providers list)
-shiguang-gateway provider add                 # Registra ShiguangGateway come provider su uno strumento
-shiguang-gateway keys add | list | remove     # Gestisci le chiavi API
-shiguang-gateway models [provider]            # Elenca i modelli (--json, --search)
-shiguang-gateway combo list | switch | create | delete
+orbit provider list                # Elenca i provider disponibili (alias di providers list)
+orbit provider add                 # Registra Orbit come provider su uno strumento
+orbit keys add | list | remove     # Gestisci le chiavi API
+orbit models [provider]            # Elenca i modelli (--json, --search)
+orbit combo list | switch | create | delete
 
-shiguang-gateway backup                       # Snapshot della configurazione + DB
-shiguang-gateway restore                      # Ripristina da uno snapshot precedente
+orbit backup                       # Snapshot della configurazione + DB
+orbit restore                      # Ripristina da uno snapshot precedente
 
-shiguang-gateway health                       # Salute dettagliata (interruttori, cache, memoria)
-shiguang-gateway quota                        # Utilizzo del quota del provider
-shiguang-gateway cache                        # Stato della cache
-shiguang-gateway cache clear                  # Pulisci le cache semantiche + di firma
+orbit health                       # Salute dettagliata (interruttori, cache, memoria)
+orbit quota                        # Utilizzo del quota del provider
+orbit cache                        # Stato della cache
+orbit cache clear                  # Pulisci le cache semantiche + di firma
 
-shiguang-gateway mcp status | restart         # Stato del server MCP / riavvio
-shiguang-gateway a2a status | card            # Stato del server A2A / scheda agente
+orbit mcp status | restart         # Stato del server MCP / riavvio
+orbit a2a status | card            # Stato del server A2A / scheda agente
 
-shiguang-gateway tunnel list | create | stop  # Gestisci i tunnel (cloudflare/tailscale/ngrok)
-shiguang-gateway env show | get <k> | set <k> <v>  # Ispeziona / imposta variabili d'ambiente (temporanee)
+orbit tunnel list | create | stop  # Gestisci i tunnel (cloudflare/tailscale/ngrok)
+orbit env show | get <k> | set <k> <v>  # Ispeziona / imposta variabili d'ambiente (temporanee)
 
-shiguang-gateway test                         # Test di connettività del provider
-shiguang-gateway update                       # Controlla gli aggiornamenti
-shiguang-gateway completion                   # Genera completamento della shell
+orbit test                         # Test di connettività del provider
+orbit update                       # Controlla gli aggiornamenti
+orbit completion                   # Genera completamento della shell
 ```
 
 ### Flag comuni
@@ -763,7 +763,7 @@ shiguang-gateway completion                   # Genera completamento della shell
 | `/v1/audio/speech`         | Da testo a voce                     | ElevenLabs, OpenAI TTS                   |
 | `/v1/audio/transcriptions` | Da voce a testo                     | Deepgram, AssemblyAI                     |
 
-Esempi pronti per essere incollati con un URL ShiguangGateway tokenizzato:
+Esempi pronti per essere incollati con un URL Orbit tokenizzato:
 
 ```txt
 Esempio di token: sk-a3ab3c080beaee3a-69f4a4-070d71af
@@ -782,7 +782,7 @@ Chat Ollama: http://localhost:20128/api/v1/vscode/sk-a3ab3c080beaee3a-69f4a4-070
 
 | Errore                                                  | Causa                          | Soluzione                                                     |
 | ------------------------------------------------------- | ------------------------------ | ------------------------------------------------------------- |
-| `Connection refused`                                    | ShiguangGateway non in esecuzione    | `shiguang-gateway serve`                                             |
+| `Connection refused`                                    | Orbit non in esecuzione    | `orbit serve`                                             |
 | `401 Unauthorized`                                      | Chiave API errata              | Controlla in `/dashboard/api-manager`                         |
 | `No combo configured`                                   | Nessun combo di routing attivo | Configura in `/dashboard/combos`                              |
 | CLI mostra "not installed"                              | Binario non nel PATH           | Controlla `which <command>`                                   |

@@ -4,7 +4,7 @@
 
 ---
 
-Panduan lengkap untuk mengonfigurasi penyedia, membuat combo, mengintegrasikan alat CLI, dan menerapkan ShiguangGateway.
+Panduan lengkap untuk mengonfigurasi penyedia, membuat combo, mengintegrasikan alat CLI, dan menerapkan Orbit.
 
 ---
 
@@ -123,7 +123,7 @@ Models:
   cc/claude-haiku-4-5-20251001
 ```
 
-**Tips Pro:** Gunakan Opus untuk tugas kompleks, Sonnet untuk kecepatan. ShiguangGateway melacak kuota per model!
+**Tips Pro:** Gunakan Opus untuk tugas kompleks, Sonnet untuk kecepatan. Orbit melacak kuota per model!
 
 #### OpenAI Codex (Plus/Pro)
 
@@ -233,7 +233,7 @@ Cost: saat ini $0 dalam batas penyedia; ketentuan dan ketersediaan dapat berubah
 ```
 Settings → Models → Advanced:
   OpenAI API Base URL: http://localhost:20128/v1
-  OpenAI API Key: [dari dasbor shiguang-gateway]
+  OpenAI API Key: [dari dasbor orbit]
   Model: cc/claude-opus-4-7
 ```
 
@@ -244,7 +244,7 @@ Edit `~/.claude/config.json`:
 ```json
 {
   "anthropic_api_base": "http://localhost:20128/v1",
-  "anthropic_api_key": "your-shiguang-gateway-api-key"
+  "anthropic_api_key": "your-orbit-api-key"
 }
 ```
 
@@ -252,7 +252,7 @@ Edit `~/.claude/config.json`:
 
 ```bash
 export OPENAI_BASE_URL="http://localhost:20128"
-export OPENAI_API_KEY="your-shiguang-gateway-api-key"
+export OPENAI_API_KEY="your-orbit-api-key"
 codex "your prompt"
 ```
 
@@ -264,14 +264,14 @@ Edit `~/.openclaw/openclaw.json`:
 {
   "agents": {
     "defaults": {
-      "model": { "primary": "shiguang-gateway/if/glm-4.7" }
+      "model": { "primary": "orbit/if/glm-4.7" }
     }
   },
   "models": {
     "providers": {
-      "shiguang-gateway": {
+      "orbit": {
         "baseUrl": "http://localhost:20128/v1",
-        "apiKey": "your-shiguang-gateway-api-key",
+        "apiKey": "your-orbit-api-key",
         "api": "openai-completions",
         "models": [{ "id": "if/glm-4.7", "name": "glm-4.7" }]
       }
@@ -298,42 +298,42 @@ Model: cc/claude-opus-4-7
 ### Instalasi npm Global (Direkomendasikan)
 
 ```bash
-npm install -g shiguang-gateway
+npm install -g orbit
 
 # Create config directory
-mkdir -p ~/.shiguang-gateway
+mkdir -p ~/.orbit
 
 # Create .env file (see .env.example)
-cp .env.example ~/.shiguang-gateway/.env
+cp .env.example ~/.orbit/.env
 
 # Start server
-shiguang-gateway
+orbit
 # Or with custom port:
-shiguang-gateway --port 3000
+orbit --port 3000
 ```
 
-CLI secara otomatis memuat `.env` dari `~/.shiguang-gateway/.env` atau `./.env`.
+CLI secara otomatis memuat `.env` dari `~/.orbit/.env` atau `./.env`.
 
 ### Menghapus Instalasi
 
-Saat Anda tidak lagi memerlukan ShiguangGateway, kami menyediakan dua skrip cepat untuk penghapusan bersih:
+Saat Anda tidak lagi memerlukan Orbit, kami menyediakan dua skrip cepat untuk penghapusan bersih:
 
 | Perintah                 | Tindakan                                                                                       |
 | ------------------------ | ---------------------------------------------------------------------------------------------- |
-| `npm run uninstall`      | Menghapus aplikasi dari sistem tetapi **menyimpan DB dan konfigurasi** di `~/.shiguang-gateway`.      |
+| `npm run uninstall`      | Menghapus aplikasi dari sistem tetapi **menyimpan DB dan konfigurasi** di `~/.orbit`.      |
 | `npm run uninstall:full` | Menghapus aplikasi DAN secara permanen **menghapus semua konfigurasi, kunci, dan basis data**. |
 
-> Catatan: Untuk menjalankan perintah ini, navigasikan ke folder proyek ShiguangGateway (jika Anda telah meng-clone-nya) dan jalankan. Atau, jika diinstal secara global, Anda cukup menjalankan `npm uninstall -g shiguang-gateway`.
+> Catatan: Untuk menjalankan perintah ini, navigasikan ke folder proyek Orbit (jika Anda telah meng-clone-nya) dan jalankan. Atau, jika diinstal secara global, Anda cukup menjalankan `npm uninstall -g orbit`.
 
 ### Penerapan VPS
 
 ```bash
-git clone https://github.com/diegosouzapw/ShiguangGateway.git
-cd ShiguangGateway && npm install && npm run build
+git clone https://github.com/diegosouzapw/Orbit.git
+cd Orbit && npm install && npm run build
 
 export JWT_SECRET="your-secure-secret-change-this"
 export INITIAL_PASSWORD="your-password"
-export DATA_DIR="/var/lib/shiguang-gateway"
+export DATA_DIR="/var/lib/orbit"
 export PORT="20128"
 export HOSTNAME="0.0.0.0"
 export NODE_ENV="production"
@@ -341,7 +341,7 @@ export NEXT_PUBLIC_BASE_URL="http://localhost:20128"
 export API_KEY_SECRET="endpoint-proxy-api-key-secret"
 
 npm run start
-# Or: pm2 start npm --name shiguang-gateway -- start
+# Or: pm2 start npm --name orbit -- start
 ```
 
 ### Penerapan PM2 (Memori Rendah)
@@ -350,10 +350,10 @@ Untuk server dengan RAM terbatas, gunakan opsi batas memori:
 
 ```bash
 # With 512MB limit (default)
-pm2 start npm --name shiguang-gateway -- start
+pm2 start npm --name orbit -- start
 
 # Or with custom memory limit
-SHIGUANG_GATEWAY_MEMORY_MB=512 pm2 start npm --name shiguang-gateway -- start
+ORBIT_MEMORY_MB=512 pm2 start npm --name orbit -- start
 
 # Or using ecosystem.config.js
 pm2 start ecosystem.config.js
@@ -365,12 +365,12 @@ Buat `ecosystem.config.js`:
 module.exports = {
   apps: [
     {
-      name: "shiguang-gateway",
+      name: "orbit",
       script: "npm",
       args: "start",
       env: {
         NODE_ENV: "production",
-        SHIGUANG_GATEWAY_MEMORY_MB: "512",
+        ORBIT_MEMORY_MB: "512",
         JWT_SECRET: "your-secret",
         INITIAL_PASSWORD: "your-password",
       },
@@ -385,24 +385,24 @@ module.exports = {
 
 ```bash
 # Build image (default = runner-cli with codex/claude/droid preinstalled)
-docker build -t shiguang-gateway:cli .
+docker build -t orbit:cli .
 
 # Portable mode (recommended)
-docker run -d --name shiguang-gateway -p 20128:20128 --env-file ./.env -v shiguang-gateway-data:/app/data shiguang-gateway:cli
+docker run -d --name orbit -p 20128:20128 --env-file ./.env -v orbit-data:/app/data orbit:cli
 ```
 
 Untuk mode integrasi host dengan binari CLI, lihat bagian Docker di dokumentasi utama.
 
 ### Void Linux (xbps-src)
 
-Pengguna Void Linux dapat mengemas dan menginstal ShiguangGateway secara native menggunakan framework kompilasi silang `xbps-src`. Ini mengotomasi build standalone Node.js beserta binding native `better-sqlite3` yang diperlukan.
+Pengguna Void Linux dapat mengemas dan menginstal Orbit secara native menggunakan framework kompilasi silang `xbps-src`. Ini mengotomasi build standalone Node.js beserta binding native `better-sqlite3` yang diperlukan.
 
 <details>
 <summary><b>Lihat template xbps-src</b></summary>
 
 ```bash
-# Template file for 'shiguang-gateway'
-pkgname=shiguang-gateway
+# Template file for 'orbit'
+pkgname=orbit
 version=3.2.4
 revision=1
 hostmakedepends="nodejs python3 make"
@@ -410,11 +410,11 @@ depends="openssl"
 short_desc="Universal AI gateway with smart routing for multiple LLM providers"
 maintainer="zenobit <zenobit@disroot.org>"
 license="MIT"
-homepage="https://github.com/diegosouzapw/ShiguangGateway"
-distfiles="https://github.com/diegosouzapw/ShiguangGateway/archive/refs/tags/v${version}.tar.gz"
+homepage="https://github.com/diegosouzapw/Orbit"
+distfiles="https://github.com/diegosouzapw/Orbit/archive/refs/tags/v${version}.tar.gz"
 checksum=009400afee90a9f32599d8fe734145cfd84098140b7287990183dde45ae2245b
-system_accounts="_shiguang-gateway"
-shiguang-gateway_homedir="/var/lib/shiguang-gateway"
+system_accounts="_orbit"
+orbit_homedir="/var/lib/orbit"
 export NODE_ENV=production
 export npm_config_engine_strict=false
 export npm_config_loglevel=error
@@ -464,26 +464,26 @@ do_check() {
 }
 
 do_install() {
-	vmkdir usr/lib/shiguang-gateway/.next
-	vcopy .next/standalone/. usr/lib/shiguang-gateway/.next/standalone
+	vmkdir usr/lib/orbit/.next
+	vcopy .next/standalone/. usr/lib/orbit/.next/standalone
 
 	# Prevent removal of empty Next.js app router dirs by the post-install hook
 	for _d in \
 		.next/standalone/.next/server/app/dashboard \
 		.next/standalone/.next/server/app/dashboard/settings \
 		.next/standalone/.next/server/app/dashboard/providers; do
-		touch "${DESTDIR}/usr/lib/shiguang-gateway/${_d}/.keep"
+		touch "${DESTDIR}/usr/lib/orbit/${_d}/.keep"
 	done
 
-	cat > "${WRKDIR}/shiguang-gateway" <<'EOF'
+	cat > "${WRKDIR}/orbit" <<'EOF'
 #!/bin/sh
 export PORT="${PORT:-20128}"
-export DATA_DIR="${DATA_DIR:-${XDG_DATA_HOME:-${HOME}/.local/share}/shiguang-gateway}"
+export DATA_DIR="${DATA_DIR:-${XDG_DATA_HOME:-${HOME}/.local/share}/orbit}"
 export APP_LOG_TO_FILE="${APP_LOG_TO_FILE:-false}"
 mkdir -p "${DATA_DIR}"
-exec node /usr/lib/shiguang-gateway/.next/standalone/server.js "$@"
+exec node /usr/lib/orbit/.next/standalone/server.js "$@"
 EOF
-	vbin "${WRKDIR}/shiguang-gateway"
+	vbin "${WRKDIR}/orbit"
 }
 
 post_install() {
@@ -497,14 +497,14 @@ post_install() {
 
 | Variabel                                | Default                              | Deskripsi                                                                                                                  |
 | --------------------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
-| `JWT_SECRET`                            | `shiguang-gateway-default-secret-change-me` | Rahasia penandatanganan JWT (**ubah di produksi**)                                                                         |
+| `JWT_SECRET`                            | `orbit-default-secret-change-me` | Rahasia penandatanganan JWT (**ubah di produksi**)                                                                         |
 | `INITIAL_PASSWORD`                      | `123456`                             | Kata sandi login pertama                                                                                                   |
-| `DATA_DIR`                              | `~/.shiguang-gateway`                       | Direktori data (db, penggunaan, log)                                                                                       |
+| `DATA_DIR`                              | `~/.orbit`                       | Direktori data (db, penggunaan, log)                                                                                       |
 | `PORT`                                  | default framework                    | Port layanan (`20128` dalam contoh)                                                                                        |
 | `HOSTNAME`                              | default framework                    | Host bind (Docker default ke `0.0.0.0`)                                                                                    |
 | `NODE_ENV`                              | default runtime                      | Atur `production` untuk penerapan                                                                                          |
 | `BASE_URL`                              | `http://localhost:20128`             | URL berbasis sisi server internal                                                                                          |
-| `CLOUD_URL`                             | `https://shiguang-gateway.dev`              | Cloud sinkronisasi titik akhir berbasis URL                                                                                |
+| `CLOUD_URL`                             | `https://orbit.dev`              | Cloud sinkronisasi titik akhir berbasis URL                                                                                |
 | `API_KEY_SECRET`                        | `endpoint-proxy-api-key-secret`      | Rahasia HMAC untuk kunci API yang dihasilkan                                                                               |
 | `REQUIRE_API_KEY`                       | `false`                              | Wajibkan kunci API Bearer di `/v1/*`                                                                                       |
 | `ALLOW_API_KEY_REVEAL`                  | `false`                              | Izinkan Api Manager menyalin kunci API lengkap sesuai permintaan                                                           |
@@ -514,7 +514,7 @@ post_install() {
 | `AUTH_COOKIE_SECURE`                    | `false`                              | Paksa cookie auth `Secure` (di belakang reverse proxy HTTPS)                                                               |
 | `CLOUDFLARED_BIN`                       | tidak diatur                         | Gunakan binari `cloudflared` yang sudah ada alih-alih unduhan terkelola                                                    |
 | `CLOUDFLARED_PROTOCOL`                  | `http2`                              | Transport untuk Quick Tunnel terkelola (`http2`, `quic`, atau `auto`)                                                      |
-| `SHIGUANG_GATEWAY_MEMORY_MB`                   | `512`                                | Batas heap Node.js dalam MB                                                                                                |
+| `ORBIT_MEMORY_MB`                   | `512`                                | Batas heap Node.js dalam MB                                                                                                |
 | `PROMPT_CACHE_MAX_SIZE`                 | `50`                                 | Entri cache prompt maksimum                                                                                                |
 | `SEMANTIC_CACHE_MAX_SIZE`               | `100`                                | Entri cache semantik maksimum                                                                                              |
 
@@ -638,7 +638,7 @@ Mengembalikan model yang dikelompokkan berdasarkan penyedia dengan tipe (`chat`,
 - Tersedia di **Dashboard → Endpoints** untuk penerapan Docker dan self-hosted lainnya
 - Membuat URL `https://*.trycloudflare.com` sementara yang diteruskan ke endpoint `/v1` Anda yang kompatibel dengan OpenAI
 - Aktifkan pertama kali untuk menginstal `cloudflared` hanya saat diperlukan; restart berikutnya menggunakan kembali binari terkelola yang sama
-- Quick Tunnel tidak dipulihkan otomatis setelah ShiguangGateway atau container di-restart; aktifkan kembali dari dasbor bila diperlukan
+- Quick Tunnel tidak dipulihkan otomatis setelah Orbit atau container di-restart; aktifkan kembali dari dasbor bila diperlukan
 - URL tunnel bersifat sementara dan berubah setiap kali Anda menghentikan/memulai tunnel
 - Managed Quick Tunnel secara default menggunakan transport HTTP/2 untuk menghindari peringatan buffer UDP QUIC yang mengganggu di container terbatas
 - Atur `CLOUDFLARED_PROTOCOL=quic` atau `auto` jika ingin mengubah pilihan transport terkelola
@@ -646,15 +646,15 @@ Mengembalikan model yang dikelompokkan berdasarkan penyedia dengan tipe (`chat`,
 
 ### Kecerdasan LLM Gateway (Fase 9)
 
-- **Cache Semantik** — Otomatis menyimpan respons non-streaming, temperature=0 (lewati dengan `X-ShiguangGateway-No-Cache: true`)
+- **Cache Semantik** — Otomatis menyimpan respons non-streaming, temperature=0 (lewati dengan `X-Orbit-No-Cache: true`)
 - **Idempotensitas Permintaan** — Mendeduplikasi permintaan dalam 5 detik melalui header `Idempotency-Key` atau `X-Request-Id`
-- **Pelacakan Progres** — Event SSE `event: progress` yang bisa diaktifkan melalui header `X-ShiguangGateway-Progress: true`
+- **Pelacakan Progres** — Event SSE `event: progress` yang bisa diaktifkan melalui header `X-Orbit-Progress: true`
 
 ---
 
 ### Translator Playground
 
-Akses melalui **Dashboard → Translator**. Debug dan visualisasikan bagaimana ShiguangGateway menerjemahkan permintaan API antar penyedia.
+Akses melalui **Dashboard → Translator**. Debug dan visualisasikan bagaimana Orbit menerjemahkan permintaan API antar penyedia.
 
 | Mode             | Tujuan                                                                                         |
 | ---------------- | ---------------------------------------------------------------------------------------------- |
@@ -692,7 +692,7 @@ Untuk afinitas sesi eksternal (misalnya, agen Claude Code/Codex di belakang prox
 X-Session-Id: your-session-key
 ```
 
-ShiguangGateway juga menerima `x_session_id` dan mengembalikan kunci sesi efektif di `X-ShiguangGateway-Session-Id`.
+Orbit juga menerima `x_session_id` dan mengembalikan kunci sesi efektif di `X-Orbit-Session-Id`.
 
 Jika Anda menggunakan Nginx dan mengirim header berbentuk garis bawah, aktifkan:
 
@@ -728,7 +728,7 @@ Chain: production-fallback
 
 Konfigurasikan melalui **Dasbor → Pengaturan → Ketahanan**.
 
-ShiguangGateway mengimplementasikan ketahanan tingkat penyedia dengan lima komponen:
+Orbit mengimplementasikan ketahanan tingkat penyedia dengan lima komponen:
 
 1. **Antrian & Kecepatan Permintaan** — Pembentukan permintaan tingkat sistem:
    - **Permintaan Per Menit (RPM)** — Permintaan maksimum per menit per akun
@@ -751,7 +751,7 @@ ShiguangGateway mengimplementasikan ketahanan tingkat penyedia dengan lima kompo
 
    Status waktu proses pemutus penyedia hanya ditampilkan di **Dasbor → Kesehatan**.
 
-4. **Tunggu Cooldown** — Jika setiap kandidat koneksi sudah cooldown, ShiguangGateway dapat menunggu cooldown paling awal dan mencoba kembali permintaan klien yang sama secara otomatis.
+4. **Tunggu Cooldown** — Jika setiap kandidat koneksi sudah cooldown, Orbit dapat menunggu cooldown paling awal dan mencoba kembali permintaan klien yang sama secara otomatis.
 
 5. **Deteksi Otomatis Batas Kecepatan** — Saat penyedia upstream mengembalikan jendela tunggu eksplisit, petunjuk tersebut akan menggantikan jeda pakai koneksi lokal saat pengaturan diaktifkan.
 
@@ -785,7 +785,7 @@ curl -X POST http://localhost:20128/api/db-backups/import \
 
 **Use Cases:**
 
-- Migrasi ShiguangGateway antar mesin
+- Migrasi Orbit antar mesin
 - Buat cadangan eksternal untuk pemulihan bencana
 - Bagikan konfigurasi antar anggota tim (ekspor semua → bagikan arsip)
 
@@ -831,7 +831,7 @@ curl http://localhost:20128/api/usage/budget
 
 ### Transkripsi Audio
 
-ShiguangGateway mendukung transkripsi audio melalui titik akhir yang kompatibel dengan OpenAI:
+Orbit mendukung transkripsi audio melalui titik akhir yang kompatibel dengan OpenAI:
 
 ```bash
 POST /v1/audio/transcriptions
@@ -887,7 +887,7 @@ Akses melalui **Dasbor → Kesehatan**. Ikhtisar kesehatan sistem real-time deng
 
 ## 🖥️ Aplikasi Desktop (Elektron)
 
-ShiguangGateway tersedia sebagai aplikasi desktop asli untuk Windows, macOS, dan Linux.
+Orbit tersedia sebagai aplikasi desktop asli untuk Windows, macOS, dan Linux.
 
 ### Instal
 
@@ -930,7 +930,7 @@ Output → `electron/dist-electron/`
 
 | Variable              | Default | Description                      |
 | --------------------- | ------- | -------------------------------- |
-| `SHIGUANG_GATEWAY_PORT`      | `20128` | Server port                      |
-| `SHIGUANG_GATEWAY_MEMORY_MB` | `512`   | Node.js heap limit (64–16384 MB) |
+| `ORBIT_PORT`      | `20128` | Server port                      |
+| `ORBIT_MEMORY_MB` | `512`   | Node.js heap limit (64–16384 MB) |
 
 📖 Full documentation: [`electron/README.md`](../electron/README.md)

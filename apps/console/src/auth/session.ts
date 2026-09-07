@@ -1,6 +1,6 @@
 /** Dashboard sign-in is owned by the unified SSO service. */
 const DEFAULT_LOGIN_ORIGIN = "https://shiguanglab.com";
-const LOGIN_ATTEMPT_KEY = "shiguang-gateway:sso-redirect";
+const LOGIN_ATTEMPT_KEY = "orbit:sso-redirect";
 
 type BrowserLocation = Pick<
   Location,

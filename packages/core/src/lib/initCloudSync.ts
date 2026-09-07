@@ -16,12 +16,12 @@ export function shouldSkipCloudSyncInitialization(
     return true;
   }
 
-  const raw = env.SHIGUANG_GATEWAY_DISABLE_BACKGROUND_SERVICES;
+  const raw = env.ORBIT_DISABLE_BACKGROUND_SERVICES;
   if (raw && new Set(["1", "true", "yes", "on"]).has(raw.trim().toLowerCase())) {
     return true;
   }
 
-  return isAutomatedTestProcess(argv, env) && env.SHIGUANG_GATEWAY_ENABLE_RUNTIME_BACKGROUND_TASKS !== "1";
+  return isAutomatedTestProcess(argv, env) && env.ORBIT_ENABLE_RUNTIME_BACKGROUND_TASKS !== "1";
 }
 
 export async function ensureCloudSyncInitialized() {

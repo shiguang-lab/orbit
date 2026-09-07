@@ -1,10 +1,10 @@
 ---
-title: "🐳 Docker Guide — ShiguangGateway"
+title: "🐳 Docker Guide — Orbit"
 version: 3.8.40
 lastUpdated: 2026-06-28
 ---
 
-# 🐳 Docker Guide — ShiguangGateway
+# 🐳 Docker Guide — Orbit
 
 > Complete Docker deployment reference. For a quick start, see the [README Docker section](../README.md#-docker).
 
@@ -14,7 +14,7 @@ lastUpdated: 2026-06-28
 - [With Environment File](#with-environment-file)
 - [Docker Compose](#docker-compose)
 - [Available Profiles](#available-profiles)
-- [Configuring host CLI tools when ShiguangGateway runs in Docker](#configuring-host-cli-tools-when-shiguang-gateway-runs-in-docker)
+- [Configuring host CLI tools when Orbit runs in Docker](#configuring-host-cli-tools-when-orbit-runs-in-docker)
 - [Redis Sidecar](#redis-sidecar)
 - [Production Compose](#production-compose)
 - [Dockerfile Stages](#dockerfile-stages)
@@ -31,12 +31,12 @@ lastUpdated: 2026-06-28
 
 ```bash
 docker run -d \
-  --name shiguang-gateway \
+  --name orbit \
   --restart unless-stopped \
   --stop-timeout 40 \
   -p 20128:20128 \
-  -v shiguang-gateway-data:/app/data \
-  diegosouzapw/shiguang-gateway:latest
+  -v orbit-data:/app/data \
+  diegosouzapw/orbit:latest
 ```
 
 ## With Environment File
@@ -46,13 +46,13 @@ docker run -d \
 cp .env.example .env
 
 docker run -d \
-  --name shiguang-gateway \
+  --name orbit \
   --restart unless-stopped \
   --stop-timeout 40 \
   --env-file .env \
   -p 20128:20128 \
-  -v shiguang-gateway-data:/app/data \
-  diegosouzapw/shiguang-gateway:latest
+  -v orbit-data:/app/data \
+  diegosouzapw/orbit:latest
 ```
 
 ## Docker Compose
@@ -73,40 +73,40 @@ docker compose --profile cli --profile cliproxyapi up -d
 
 ## Available Profiles
 
-ShiguangGateway ships four Compose profiles. Pick the one that matches your environment.
+Orbit ships four Compose profiles. Pick the one that matches your environment.
 
 | Profile          | Service          | When to use                                                                                                                       | Command                                      |
 | ---------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| `base` (default) | `shiguang-gateway-base` | Headless server / minimal runtime, no provider CLIs bundled                                                                       | `docker compose --profile base up -d`        |
-| `cli`            | `shiguang-gateway-cli`  | Agentic workflows that call `shiguang-gateway providers/setup/doctor` and bundled CLIs (Codex, Claude Code, Droid, OpenClaw)             | `docker compose --profile cli up -d`         |
-| `host`           | `shiguang-gateway-host` | Linux hosts that want `network_mode`-like access to host CLIs by mounting `~/.local/bin`, `~/.codex`, `~/.claude`, etc. read-only | `docker compose --profile host up -d`        |
+| `base` (default) | `orbit-base` | Headless server / minimal runtime, no provider CLIs bundled                                                                       | `docker compose --profile base up -d`        |
+| `cli`            | `orbit-cli`  | Agentic workflows that call `orbit providers/setup/doctor` and bundled CLIs (Codex, Claude Code, Droid, OpenClaw)             | `docker compose --profile cli up -d`         |
+| `host`           | `orbit-host` | Linux hosts that want `network_mode`-like access to host CLIs by mounting `~/.local/bin`, `~/.codex`, `~/.claude`, etc. read-only | `docker compose --profile host up -d`        |
 | `cliproxyapi`    | `cliproxyapi`    | Run the [CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI) sidecar on port `8317` for upstream CLI proxying              | `docker compose --profile cliproxyapi up -d` |
 
 > Multiple profiles can be combined: `docker compose --profile cli --profile cliproxyapi up -d`.
 
-## Configuring host CLI tools when ShiguangGateway runs in Docker
+## Configuring host CLI tools when Orbit runs in Docker
 
-`shiguang-gateway setup-codex`, `setup-claude`, `config set <tool>` and the dashboard's
+`orbit setup-codex`, `setup-claude`, `config set <tool>` and the dashboard's
 **Save config** button all write files like `~/.codex/*.config.toml`. Those paths
 only mean something on the machine where the CLI actually runs. Run them inside
 the container and the write lands in the container's own home (`/home/node` —
 the image runs `USER node`), where no host CLI will ever read it and where it is
 discarded the moment the container is recreated.
 
-ShiguangGateway detects this and refuses the write with instructions instead of
+Orbit detects this and refuses the write with instructions instead of
 reporting a success you cannot use: the CLI exits `2`, and the API answers `422`
 with `containerEphemeralTarget: true`.
 
-### Recommended: run the CLI on the host, ShiguangGateway in Docker
+### Recommended: run the CLI on the host, Orbit in Docker
 
 The container serves the API; the CLI configures your host tools.
 
 ```bash
 docker compose --profile base up -d
 
-npm install -g shiguang-gateway
-shiguang-gateway connect http://localhost:20128   # point the CLI at the container
-shiguang-gateway setup-codex                      # writes the real ~/.codex on your host
+npm install -g orbit
+orbit connect http://localhost:20128   # point the CLI at the container
+orbit setup-codex                      # writes the real ~/.codex on your host
 ```
 
 This is the right choice when Codex, Claude Code, Cursor or similar run on your
@@ -127,7 +127,7 @@ volumes:
   - ~/.claude:/host-home/.claude:rw
 ```
 
-A bind mount is what makes the path trustworthy: ShiguangGateway reads
+A bind mount is what makes the path trustworthy: Orbit reads
 `/proc/self/mountinfo` and allows writes to mounted paths (and to directories
 whose children are mounts, which is exactly the `/host-home` shape above) while
 still refusing unmounted ones.
@@ -136,21 +136,21 @@ still refusing unmounted ones.
 
 When the CLIs genuinely live inside the container (the `cli` profile), the write
 is intentional. Pass `--allow-container-write` to any `setup-*` command, or set
-`SHIGUANG_GATEWAY_ALLOW_CONTAINER_CONFIG_WRITE=true` for the server. The write proceeds
+`ORBIT_ALLOW_CONTAINER_CONFIG_WRITE=true` for the server. The write proceeds
 with a warning that it will not survive the container.
 
 ## Redis Sidecar
 
-ShiguangGateway relies on Redis to back the distributed rate limiter and shared cache. The `redis` service is **always defined** in `docker-compose.yml` (it has no profile gate) and starts alongside any other profile.
+Orbit relies on Redis to back the distributed rate limiter and shared cache. The `redis` service is **always defined** in `docker-compose.yml` (it has no profile gate) and starts alongside any other profile.
 
 | Detail               | Value                                       |
 | -------------------- | ------------------------------------------- |
 | Image                | `redis:7-alpine`                            |
-| Container name       | `shiguang-gateway-redis`                           |
+| Container name       | `orbit-redis`                           |
 | Internal port        | `6379`                                      |
 | Host port (override) | `REDIS_PORT` (defaults to `6379`)           |
 | Host bind (override) | `REDIS_BIND_HOST` (defaults to `127.0.0.1`) |
-| Volume               | `shiguang-gateway-redis-data` → `/data`            |
+| Volume               | `orbit-redis-data` → `/data`            |
 | Healthcheck          | `redis-cli ping` (10s interval)             |
 
 Related environment variables:
@@ -180,9 +180,9 @@ For an isolated production snapshot running alongside dev, use `docker-compose.p
 | File                   | `docker-compose.prod.yml`                                                          |
 | Default dashboard port | `PROD_DASHBOARD_PORT=20130` (mapped to internal `${DASHBOARD_PORT:-20128}`)        |
 | Default API port       | `PROD_API_PORT=20131`                                                              |
-| Image                  | `shiguang-gateway:prod` (built from `runner-cli` target)                                  |
-| Redis container        | `shiguang-gateway-redis-prod` (`redis:8.6.2`, dedicated `redis-prod-data` volume)         |
-| Data volume            | `shiguang-gateway-prod-data` (named, persisted across rebuilds)                           |
+| Image                  | `orbit:prod` (built from `runner-cli` target)                                  |
+| Redis container        | `orbit-redis-prod` (`redis:8.6.2`, dedicated `redis-prod-data` volume)         |
+| Data volume            | `orbit-prod-data` (named, persisted across rebuilds)                           |
 | Healthchecks           | `node healthcheck.mjs` + `redis-cli ping`, with `depends_on` gated on Redis health |
 
 How to use:
@@ -213,22 +213,22 @@ The repository ships a multi-stage Dockerfile (`Dockerfile`). Three stages are e
 Build a specific target manually:
 
 ```bash
-docker build --target runner-base -t shiguang-gateway:base .
-docker build --target runner-cli  -t shiguang-gateway:cli  .
+docker build --target runner-base -t orbit:base .
+docker build --target runner-cli  -t orbit:cli  .
 ```
 
 ### Build-time resources
 
 Three build args control what the `builder` stage costs. They are build-time only —
-`SHIGUANG_GATEWAY_MEMORY_MB` (below) is a separate, runtime knob.
+`ORBIT_MEMORY_MB` (below) is a separate, runtime knob.
 
 | Build arg                   | Default | Effect                                                                              |
 | --------------------------- | ------- | ----------------------------------------------------------------------------------- |
-| `SHIGUANG_GATEWAY_USE_TURBOPACK`   | `1`     | `0` builds with webpack instead. Lower peak memory, slower.                         |
-| `SHIGUANG_GATEWAY_BUILD_MEMORY_MB` | `6144`  | V8 heap ceiling (`--max-old-space-size`) for the spawned `next build`.              |
-| `SHIGUANG_GATEWAY_BUILD_WORKERS`   | `2`     | Feeds `CIRCLE_NODE_TOTAL`; Next derives `workers = N - 1` for page-data collection. |
+| `ORBIT_USE_TURBOPACK`   | `1`     | `0` builds with webpack instead. Lower peak memory, slower.                         |
+| `ORBIT_BUILD_MEMORY_MB` | `6144`  | V8 heap ceiling (`--max-old-space-size`) for the spawned `next build`.              |
+| `ORBIT_BUILD_WORKERS`   | `2`     | Feeds `CIRCLE_NODE_TOTAL`; Next derives `workers = N - 1` for page-data collection. |
 
-`SHIGUANG_GATEWAY_BUILD_WORKERS` is the one to raise on a big builder and the one to
+`ORBIT_BUILD_WORKERS` is the one to raise on a big builder and the one to
 suspect when a constrained build dies **after** `✓ Compiled successfully`. Each
 page-data worker is its own process, and so is the parent `next build` itself;
 a live VPS reproduction (issue #7518) measured each process's peak RSS at
@@ -243,22 +243,22 @@ does the arithmetic against the measured figure and fails if either knob
 outgrows the runner.
 
 Turbopack compiles in native Rust memory that lives **outside** the V8 heap, so
-`SHIGUANG_GATEWAY_BUILD_MEMORY_MB` does not bound it. On a host with a memory ceiling the
+`ORBIT_BUILD_MEMORY_MB` does not bound it. On a host with a memory ceiling the
 build is then SIGKILLed by the OOM killer with no error text at all — it simply
 stops mid-`Creating an optimized production build`, which reads like a hang rather
 than an out-of-memory. If the build host is constrained, switch bundlers:
 
 ```bash
 docker build --target runner-base \
-  --build-arg SHIGUANG_GATEWAY_USE_TURBOPACK=0 \
-  -t shiguang-gateway:base .
+  --build-arg ORBIT_USE_TURBOPACK=0 \
+  -t orbit:base .
 ```
 
 `webpackBuildWorker` is enabled, so `next build` runs a parent **and** a worker
-process and each honours `SHIGUANG_GATEWAY_BUILD_MEMORY_MB` separately. Size the container
+process and each honours `ORBIT_BUILD_MEMORY_MB` separately. Size the container
 ceiling above roughly twice that value, not once.
 
-Measured on this tree (`--target runner-base`, `SHIGUANG_GATEWAY_BUILD_MEMORY_MB=6144`):
+Measured on this tree (`--target runner-base`, `ORBIT_BUILD_MEMORY_MB=6144`):
 
 | Bundler   | Container ceiling | Result                        |
 | --------- | ----------------- | ----------------------------- |
@@ -268,34 +268,34 @@ Measured on this tree (`--target runner-base`, `SHIGUANG_GATEWAY_BUILD_MEMORY_MB
 
 ### Runtime defaults
 
-Defaults exported by `runner-base`: `PORT=20128`, `HOSTNAME=0.0.0.0`, `SHIGUANG_GATEWAY_MEMORY_MB=1024`, `NODE_OPTIONS=--max-old-space-size=1024`, `DATA_DIR=/app/data`, `SHIGUANG_GATEWAY_MIGRATIONS_DIR=/app/migrations`.
+Defaults exported by `runner-base`: `PORT=20128`, `HOSTNAME=0.0.0.0`, `ORBIT_MEMORY_MB=1024`, `NODE_OPTIONS=--max-old-space-size=1024`, `DATA_DIR=/app/data`, `ORBIT_MIGRATIONS_DIR=/app/migrations`.
 
 Memory behavior in Docker:
 
-- The image sets `SHIGUANG_GATEWAY_MEMORY_MB=1024` and derives `NODE_OPTIONS=--max-old-space-size=1024` from it.
-- The actual server process is started by the standalone launcher, which reads `SHIGUANG_GATEWAY_MEMORY_MB` and appends `--max-old-space-size=<SHIGUANG_GATEWAY_MEMORY_MB>`.
-- Node uses the last repeated `--max-old-space-size` value, so setting `SHIGUANG_GATEWAY_MEMORY_MB` controls the effective Docker heap limit.
+- The image sets `ORBIT_MEMORY_MB=1024` and derives `NODE_OPTIONS=--max-old-space-size=1024` from it.
+- The actual server process is started by the standalone launcher, which reads `ORBIT_MEMORY_MB` and appends `--max-old-space-size=<ORBIT_MEMORY_MB>`.
+- Node uses the last repeated `--max-old-space-size` value, so setting `ORBIT_MEMORY_MB` controls the effective Docker heap limit.
 - Because the image always sets it, the launcher's own RAM-calibrated fallback never applies under Docker. Raise it explicitly for the workload (table below). `2048` is still too small for coding-agent `/v1/responses`.
 
 ### Runtime RAM for coding agents
 
-The 1 GiB Docker default is a dashboard/light-chat floor, not a production size. Long `POST /v1/responses` bodies (hundreds of messages, tens of tools) retain multiple in-memory graphs during compression. Two overlapping ~3 MiB / ~750k-token requests have aborted V8 at a **12 GiB** old-space (`FATAL ERROR: Reached heap limit`) and also hit a 16 GiB cgroup OOM. See [#7849](https://github.com/diegosouzapw/ShiguangGateway/issues/7849).
+The 1 GiB Docker default is a dashboard/light-chat floor, not a production size. Long `POST /v1/responses` bodies (hundreds of messages, tens of tools) retain multiple in-memory graphs during compression. Two overlapping ~3 MiB / ~750k-token requests have aborted V8 at a **12 GiB** old-space (`FATAL ERROR: Reached heap limit`) and also hit a 16 GiB cgroup OOM. See [#7849](https://github.com/diegosouzapw/Orbit/issues/7849).
 
 Size **cgroup `--memory` above the heap** — native buffers, SQLite, and compression intermediates sit outside V8.
 
-| Workload                             | `SHIGUANG_GATEWAY_MEMORY_MB`  | Container / cgroup   | Notes                                                                                       |
+| Workload                             | `ORBIT_MEMORY_MB`  | Container / cgroup   | Notes                                                                                       |
 | ------------------------------------ | ---------------------- | -------------------- | ------------------------------------------------------------------------------------------- |
 | Dashboard, one light chat            | `1024` (image default) | ≥2 GiB               |                                                                                             |
 | One coding agent (Claude/Codex/Grok) | `8192`                 | ≥10 GiB              | Typical single-session `/v1/responses`                                                      |
 | Two concurrent long `/v1/responses`  | `10240`–`12288`        | ≥12–16 GiB           | Measured V8 abort at ~12 GiB heap                                                           |
 | Three+ concurrent long contexts      | do not on one process  | serialize / more RAM | Default heavyweight admission is 1 in-flight; raising it without RAM reintroduces the abort |
 
-`shiguang-gateway serve` on bare metal calibrates ~35% of RAM (clamped `[512, 4096]`) when `SHIGUANG_GATEWAY_MEMORY_MB` is **unset**. Docker always sets `1024`, so that calibration never runs in the official image.
+`orbit serve` on bare metal calibrates ~35% of RAM (clamped `[512, 4096]`) when `ORBIT_MEMORY_MB` is **unset**. Docker always sets `1024`, so that calibration never runs in the official image.
 
 ```bash
-docker run -d --name shiguang-gateway --restart unless-stopped --stop-timeout 40 \
-  -e SHIGUANG_GATEWAY_MEMORY_MB=8192 --memory=10g \
-  -p 127.0.0.1:20128:20128 -v shiguang-gateway-data:/app/data diegosouzapw/shiguang-gateway:latest
+docker run -d --name orbit --restart unless-stopped --stop-timeout 40 \
+  -e ORBIT_MEMORY_MB=8192 --memory=10g \
+  -p 127.0.0.1:20128:20128 -v orbit-data:/app/data diegosouzapw/orbit:latest
 ```
 
 ## Critical Environment Variables
@@ -304,24 +304,24 @@ Beyond the defaults documented in [ENVIRONMENT.md](../reference/ENVIRONMENT.md),
 
 | Variable                      | Purpose                                                                                                                                                                    | Default                  |
 | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
-| `SHIGUANG_GATEWAY_WS_BRIDGE_SECRET`  | Shared secret for the WebSocket bridge. **Required in production** — set to a strong random string.                                                                        | unset (must be provided) |
+| `ORBIT_WS_BRIDGE_SECRET`  | Shared secret for the WebSocket bridge. **Required in production** — set to a strong random string.                                                                        | unset (must be provided) |
 | `REDIS_URL`                   | Connection string for the rate limiter / cache backend                                                                                                                     | `redis://redis:6379`     |
 | `REDIS_PORT`                  | Host-side port for the bundled Redis container                                                                                                                             | `6379`                   |
 | `REDIS_BIND_HOST`             | Host interface the bundled Redis port is published on (loopback unless you add AUTH)                                                                                       | `127.0.0.1`              |
-| `AUTO_UPDATE_HOST_REPO_DIR`   | Host path mounted into `cli` profile at `/workspace/shiguang-gateway` for self-update workflows                                                                                   | `.` (current directory)  |
-| `SHIGUANG_GATEWAY_MEMORY_MB`         | Runtime Node heap ceiling for the Docker standalone server; overrides the image default above. Coding agents: `8192`+ (see [runtime RAM](#runtime-ram-for-coding-agents)). | `1024`                   |
+| `AUTO_UPDATE_HOST_REPO_DIR`   | Host path mounted into `cli` profile at `/workspace/orbit` for self-update workflows                                                                                   | `.` (current directory)  |
+| `ORBIT_MEMORY_MB`         | Runtime Node heap ceiling for the Docker standalone server; overrides the image default above. Coding agents: `8192`+ (see [runtime RAM](#runtime-ram-for-coding-agents)). | `1024`                   |
 | `DASHBOARD_PORT` / `API_PORT` | Override exposed ports for dashboard (20128) and API (20129)                                                                                                               | `20128` / `20129`        |
-| `SHIGUANG_GATEWAY_BASE_PATH`         | URL subpath when the app is published behind a reverse proxy (e.g. `/shiguang-gateway`)                                                                                           | _(empty = root)_         |
-| `NEXT_PUBLIC_BASE_URL`        | Public browser origin including the subpath (e.g. `https://host/shiguang-gateway`)                                                                                                | unset                    |
+| `ORBIT_BASE_PATH`         | URL subpath when the app is published behind a reverse proxy (e.g. `/orbit`)                                                                                           | _(empty = root)_         |
+| `NEXT_PUBLIC_BASE_URL`        | Public browser origin including the subpath (e.g. `https://host/orbit`)                                                                                                | unset                    |
 | `PROD_DASHBOARD_PORT`         | Host-side dashboard port for `docker-compose.prod.yml`                                                                                                                     | `20130`                  |
 | `CLIPROXYAPI_PORT`            | Host-side port for the `cliproxyapi` sidecar                                                                                                                               | `8317`                   |
 
 ## Reverse Proxy on a Subpath (Traefik / nginx)
 
-Next.js `basePath` is compiled into the standalone bundle. ShiguangGateway records the baked
+Next.js `basePath` is compiled into the standalone bundle. Orbit records the baked
 value in a sentinel file at the app root (written during `npm run build`; read by
 `scripts/docker/ensure-docker-base-path.mjs`) and compares it with
-`SHIGUANG_GATEWAY_BASE_PATH` when the container starts. When they differ and the image was
+`ORBIT_BASE_PATH` when the container starts. When they differ and the image was
 built for the domain root, the entrypoint rewrites the standalone manifests, the
 embedded `basePath`/`assetPrefix` literals (Next 16 renders SSR asset URLs from
 `assetPrefix` alone — the patcher mirrors the subpath into it), the baked
@@ -335,41 +335,41 @@ Set both variables in `.env`, then rebuild so the image and runtime agree:
 
 ```bash
 # .env
-SHIGUANG_GATEWAY_BASE_PATH=/shiguang-gateway
-NEXT_PUBLIC_BASE_URL=https://myhostname.example.com/shiguang-gateway
+ORBIT_BASE_PATH=/orbit
+NEXT_PUBLIC_BASE_URL=https://myhostname.example.com/orbit
 ```
 
 ```bash
 docker compose --profile base up -d --build
 ```
 
-`docker-compose.yml` forwards `SHIGUANG_GATEWAY_BASE_PATH` as a Docker build-arg and as a
+`docker-compose.yml` forwards `ORBIT_BASE_PATH` as a Docker build-arg and as a
 runtime environment variable.
 
 ### Pre-built root image + runtime subpath
 
-Published `diegosouzapw/shiguang-gateway:*` images are built for the domain root. You can still
-set `SHIGUANG_GATEWAY_BASE_PATH` at runtime; the container patches the bundle once on startup.
+Published `diegosouzapw/orbit:*` images are built for the domain root. You can still
+set `ORBIT_BASE_PATH` at runtime; the container patches the bundle once on startup.
 Pair it with the matching public origin:
 
 ```yaml
 services:
-  shiguang-gateway:
-    image: diegosouzapw/shiguang-gateway:latest
+  orbit:
+    image: diegosouzapw/orbit:latest
     environment:
-      SHIGUANG_GATEWAY_BASE_PATH: /shiguang-gateway
-      NEXT_PUBLIC_BASE_URL: https://myhostname.example.com/shiguang-gateway
+      ORBIT_BASE_PATH: /orbit
+      NEXT_PUBLIC_BASE_URL: https://myhostname.example.com/orbit
 ```
 
 Configure the reverse proxy to forward the **full** external path (do not strip the
-prefix). Traefik should route `PathPrefix(`/shiguang-gateway`)` to the container without
-`StripPrefix`, so Next.js receives `/shiguang-gateway/...` and serves assets from
-`/shiguang-gateway/_next/...`.
+prefix). Traefik should route `PathPrefix(`/orbit`)` to the container without
+`StripPrefix`, so Next.js receives `/orbit/...` and serves assets from
+`/orbit/_next/...`.
 
 The Docker healthcheck probes the lightweight `/healthz` lifecycle endpoint prefixed
-with the active `SHIGUANG_GATEWAY_BASE_PATH`. `/api/monitoring/health` remains available for
+with the active `ORBIT_BASE_PATH`. `/api/monitoring/health` remains available for
 human/dashboard diagnostics; to point the container HEALTHCHECK back at it (for example
-for deep health enforcement), set `SHIGUANG_GATEWAY_HEALTHCHECK_PATH=/api/monitoring/health`.
+for deep health enforcement), set `ORBIT_HEALTHCHECK_PATH=/api/monitoring/health`.
 That path is a **deep** check (DB + monitoring summary) — appropriate for Docker's
 infrequent `HEALTHCHECK` if you opt back in, but **not** for Kubernetes `livenessProbe`
 intervals.
@@ -391,22 +391,22 @@ liveness if HTTP probes time out. Full probe guidance:
 
 ## Docker Compose with Caddy (HTTPS Auto-TLS)
 
-ShiguangGateway can be securely exposed using Caddy's automatic SSL provisioning. Ensure your domain's DNS A record points to your server's IP.
+Orbit can be securely exposed using Caddy's automatic SSL provisioning. Ensure your domain's DNS A record points to your server's IP.
 
 ```yaml
 services:
-  shiguang-gateway:
-    image: diegosouzapw/shiguang-gateway:latest
-    container_name: shiguang-gateway
+  orbit:
+    image: diegosouzapw/orbit:latest
+    container_name: orbit
     restart: unless-stopped
     volumes:
-      - shiguang-gateway-data:/app/data
+      - orbit-data:/app/data
     environment:
       - PORT=20128
       # Browser-facing origin for OAuth callbacks, dashboard links, and generated public URLs.
       - NEXT_PUBLIC_BASE_URL=https://your-domain.com
       # Internal server-to-server URL for scheduled jobs / self-fetches.
-      - BASE_URL=http://shiguang-gateway:20128
+      - BASE_URL=http://orbit:20128
       - AUTH_COOKIE_SECURE=true
 
   caddy:
@@ -416,17 +416,17 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    command: caddy reverse-proxy --from https://your-domain.com --to http://shiguang-gateway:20128
+    command: caddy reverse-proxy --from https://your-domain.com --to http://orbit:20128
 
 volumes:
-  shiguang-gateway-data:
+  orbit-data:
 ```
 
-Caddy sets the standard forwarding headers for the upstream container. ShiguangGateway uses
+Caddy sets the standard forwarding headers for the upstream container. Orbit uses
 `NEXT_PUBLIC_BASE_URL` as the canonical public origin for OAuth callbacks and generated public
 links; authenticated dashboard writes use same-origin requests plus session-bound CSRF
-protection. Only enable `SHIGUANG_GATEWAY_TRUST_PROXY` for advanced deployments where you intentionally
-want ShiguangGateway to derive the public origin from trusted forwarded headers instead of explicit
+protection. Only enable `ORBIT_TRUST_PROXY` for advanced deployments where you intentionally
+want Orbit to derive the public origin from trusted forwarded headers instead of explicit
 configuration.
 
 ## Cloudflare Quick Tunnel
@@ -438,24 +438,24 @@ Endpoint tunnel panels (Cloudflare, Tailscale, ngrok) can be shown or hidden fro
 ### Tunnel Notes
 
 - Quick Tunnel URLs are temporary and change after every restart.
-- Quick Tunnels are not auto-restored after an ShiguangGateway or container restart. Re-enable them from the dashboard when needed.
+- Quick Tunnels are not auto-restored after an Orbit or container restart. Re-enable them from the dashboard when needed.
 - Managed install currently supports Linux, macOS, and Windows on `x64` / `arm64`.
 - Managed Quick Tunnels default to HTTP/2 transport to avoid noisy QUIC UDP buffer warnings in constrained container environments. Set `CLOUDFLARED_PROTOCOL=quic` or `auto` if you want a different transport.
 - Docker images bundle system CA roots and pass them to managed `cloudflared`, which avoids TLS trust failures when the tunnel bootstraps inside the container.
-- Set `CLOUDFLARED_BIN=/absolute/path/to/cloudflared` if you want ShiguangGateway to use an existing binary instead of downloading one.
+- Set `CLOUDFLARED_BIN=/absolute/path/to/cloudflared` if you want Orbit to use an existing binary instead of downloading one.
 
 ## Image Tags
 
 | Image                    | Tag      | Size   | Description                                          |
 | ------------------------ | -------- | ------ | ---------------------------------------------------- |
-| `diegosouzapw/shiguang-gateway` | `latest` | ~250MB | Highest **published** stable SemVer (not git `main`) |
-| `diegosouzapw/shiguang-gateway` | `3.8.0`  | ~250MB | Pin this class of tag for GitOps                     |
+| `diegosouzapw/orbit` | `latest` | ~250MB | Highest **published** stable SemVer (not git `main`) |
+| `diegosouzapw/orbit` | `3.8.0`  | ~250MB | Pin this class of tag for GitOps                     |
 
 Multi-platform manifest: `linux/amd64` + `linux/arm64` native (Apple Silicon, AWS Graviton, Raspberry Pi). Docker selects the matching architecture automatically; pass `--platform linux/amd64` if you need to force AMD64 emulation on ARM hosts.
 
 ### Release Channels
 
-ShiguangGateway publishes separate Docker channels for stable releases, active release-branch testing, and development builds.
+Orbit publishes separate Docker channels for stable releases, active release-branch testing, and development builds.
 
 | Channel                         | Source                              | Mutability                  | Recommended use                                                                                                       |
 | ------------------------------- | ----------------------------------- | --------------------------- | --------------------------------------------------------------------------------------------------------------------- |
@@ -469,16 +469,16 @@ ShiguangGateway publishes separate Docker channels for stable releases, active r
 The `next` channel is rebuilt on every push to the current default `release/v*` branch and is published for both AMD64 and ARM64. Older maintenance branches cannot overwrite it. The channel provides a pullable image for fixes that have merged into the active release branch before the next stable tag is cut.
 
 ```bash
-docker pull diegosouzapw/shiguang-gateway:next
-docker pull diegosouzapw/shiguang-gateway:next-web
+docker pull diegosouzapw/orbit:next
+docker pull diegosouzapw/orbit:next-web
 ```
 
 For Docker Compose, override the image tag used by the selected profile, then pull and recreate the service:
 
 ```yaml
 services:
-  shiguang-gateway:
-    image: diegosouzapw/shiguang-gateway:next
+  orbit:
+    image: diegosouzapw/orbit:next
 ```
 
 ```bash
@@ -491,14 +491,14 @@ docker compose up -d
 `next` is a floating pre-release channel. It may change on any push to the active release branch and is **not supported for production use**. Pin the image digest while evaluating a specific build:
 
 ```bash
-docker pull diegosouzapw/shiguang-gateway:next
-docker image inspect diegosouzapw/shiguang-gateway:next --format '{{index .RepoDigests 0}}'
+docker pull diegosouzapw/orbit:next
+docker image inspect diegosouzapw/orbit:next --format '{{index .RepoDigests 0}}'
 ```
 
-Before testing, back up the ShiguangGateway data volume or bind-mounted data directory. To roll back, restore the previously used stable version or digest and recreate the container:
+Before testing, back up the Orbit data volume or bind-mounted data directory. To roll back, restore the previously used stable version or digest and recreate the container:
 
 ```bash
-docker pull diegosouzapw/shiguang-gateway:<stable-version>
+docker pull diegosouzapw/orbit:<stable-version>
 docker compose up -d
 ```
 
@@ -515,12 +515,12 @@ A release-branch build can never move `latest`; only an eligible stable semantic
 
 ## Availability: default SQLite is single-replica
 
-Stock Docker / Kubernetes ShiguangGateway is **one Node process + one SQLite writer**. High availability is **not supported** on that topology.
+Stock Docker / Kubernetes Orbit is **one Node process + one SQLite writer**. High availability is **not supported** on that topology.
 
 | Constraint                            | Consequence                                                                                                                                                                                                                                                                                             |
 | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Single writer                         | Do **not** run multiple replicas against the same SQLite file. That corrupts the DB.                                                                                                                                                                                                                    |
-| Recreate / restart / HEALTHCHECK kill | **Full outage** of in-flight SSE, dashboard sessions, and in-memory state. Every connected client drops. New requests during the empty-endpoint window get a reverse-proxy **`502 Bad Gateway: Unknown error`**, not ShiguangGateway JSON — clients cannot distinguish this from a provider failure (#11015). |
+| Recreate / restart / HEALTHCHECK kill | **Full outage** of in-flight SSE, dashboard sessions, and in-memory state. Every connected client drops. New requests during the empty-endpoint window get a reverse-proxy **`502 Bad Gateway: Unknown error`**, not Orbit JSON — clients cannot distinguish this from a provider failure (#11015). |
 | Same event loop as `/healthz`         | A busy catalog or compression tick can delay probes; a short timeout then restarts the **only** replica.                                                                                                                                                                                                |
 
 **Probe matrix** (see also [Kubernetes probe recommendations](../ops/MONITORING_GUIDE.md#kubernetes-probe-recommendations)):
@@ -544,7 +544,7 @@ spec:
     spec:
       terminationGracePeriodSeconds: 90
       containers:
-        - name: shiguang-gateway
+        - name: orbit
           lifecycle:
             preStop:
               exec:
@@ -562,11 +562,11 @@ spec:
 
 `preStop` sleep lets kube drop Service endpoints before SIGTERM so **new** traffic stops hitting the dying process. In-flight `/v1/responses` SSE is drained up to `SHUTDOWN_TIMEOUT_MS` (default 30s) via heavyweight admission leases (#11015). New requests that still reach the process get `503` + `Retry-After: 5`. The Recreate empty-endpoint gap until the replacement is Ready remains a hard outage — that is the SQLite topology, not a probe misconfig.
 
-External Postgres / multi-writer HA is **not** a documented stock path. If you need HA, keep a single replica or run a topology the project has tested and documented separately. The Postgres/MySQL work lives in [#8075](https://github.com/diegosouzapw/ShiguangGateway/issues/8075). Until that ships, the only supported way to multiply **large** `/v1/responses` capacity is N independent processes (next section), not `replicas > 1` on one volume.
+External Postgres / multi-writer HA is **not** a documented stock path. If you need HA, keep a single replica or run a topology the project has tested and documented separately. The Postgres/MySQL work lives in [#8075](https://github.com/diegosouzapw/Orbit/issues/8075). Until that ships, the only supported way to multiply **large** `/v1/responses` capacity is N independent processes (next section), not `replicas > 1` on one volume.
 
 ## Scale-out: N independent processes
 
-One Node process is **one V8 heap**. Two overlapping ~3 MiB / ~750k-token coding-agent `POST /v1/responses` (RTK + Caveman) abort that heap at ~12 Gi (`FATAL ERROR: Reached heap limit`) and can OOM a 16 Gi cgroup. See [#7849](https://github.com/diegosouzapw/ShiguangGateway/issues/7849). Heavyweight chat admission is gated by an auto-derived ingest byte budget (`SHIGUANG_GATEWAY_CHAT_MAX_INFLIGHT_BYTES`, `src/shared/middleware/admissionBudget.ts`) sized from that same V8/cgroup ceiling -- it already scales itself to the process's real memory, so overriding it upward (or setting the legacy `SHIGUANG_GATEWAY_CHAT_MAX_HEAVY_IN_FLIGHT` request-count cap) on an already-sized process reintroduces the abort. Small chats, `/healthz`, `/v1/models`, and MCP are **not** in that cap.
+One Node process is **one V8 heap**. Two overlapping ~3 MiB / ~750k-token coding-agent `POST /v1/responses` (RTK + Caveman) abort that heap at ~12 Gi (`FATAL ERROR: Reached heap limit`) and can OOM a 16 Gi cgroup. See [#7849](https://github.com/diegosouzapw/Orbit/issues/7849). Heavyweight chat admission is gated by an auto-derived ingest byte budget (`ORBIT_CHAT_MAX_INFLIGHT_BYTES`, `src/shared/middleware/admissionBudget.ts`) sized from that same V8/cgroup ceiling -- it already scales itself to the process's real memory, so overriding it upward (or setting the legacy `ORBIT_CHAT_MAX_HEAVY_IN_FLIGHT` request-count cap) on an already-sized process reintroduces the abort. Small chats, `/healthz`, `/v1/models`, and MCP are **not** in that cap.
 
 To go beyond two concurrent **large** jobs **today**:
 
@@ -584,34 +584,34 @@ Compose sketch (two heaps, two volumes — not `deploy.replicas: 2`):
 
 ```yaml
 services:
-  shiguang-gateway-a:
-    image: diegosouzapw/shiguang-gateway:3.8.49
+  orbit-a:
+    image: diegosouzapw/orbit:3.8.49
     environment:
       DATA_DIR: /app/data
-      SHIGUANG_GATEWAY_MEMORY_MB: "12288"
+      ORBIT_MEMORY_MB: "12288"
       QUOTA_STORE_DRIVER: redis
       QUOTA_STORE_REDIS_URL: redis://redis:6379
-    volumes: [shiguang-gateway-a-data:/app/data]
+    volumes: [orbit-a-data:/app/data]
     ports: ["20128:20128"]
-  shiguang-gateway-b:
-    image: diegosouzapw/shiguang-gateway:3.8.49
+  orbit-b:
+    image: diegosouzapw/orbit:3.8.49
     environment:
       DATA_DIR: /app/data
-      SHIGUANG_GATEWAY_MEMORY_MB: "12288"
+      ORBIT_MEMORY_MB: "12288"
       QUOTA_STORE_DRIVER: redis
       QUOTA_STORE_REDIS_URL: redis://redis:6379
-    volumes: [shiguang-gateway-b-data:/app/data]
+    volumes: [orbit-b-data:/app/data]
     ports: ["20138:20128"]
 volumes:
-  shiguang-gateway-a-data:
-  shiguang-gateway-b-data:
+  orbit-a-data:
+  orbit-b-data:
 ```
 
-In-process density (compression off the HTTP isolate) is [#11023](https://github.com/diegosouzapw/ShiguangGateway/issues/11023). One logical cluster on shared durable state is [#8075](https://github.com/diegosouzapw/ShiguangGateway/issues/8075).
+In-process density (compression off the HTTP isolate) is [#11023](https://github.com/diegosouzapw/Orbit/issues/11023). One logical cluster on shared durable state is [#8075](https://github.com/diegosouzapw/Orbit/issues/8075).
 
 ## Important Notes
 
-- **SQLite WAL Mode:** `docker stop` should be allowed to finish so ShiguangGateway can checkpoint the latest changes back into `storage.sqlite`. The bundled Compose files already set a 40s stop grace period. If you run the image directly, keep `--stop-timeout 40`.
+- **SQLite WAL Mode:** `docker stop` should be allowed to finish so Orbit can checkpoint the latest changes back into `storage.sqlite`. The bundled Compose files already set a 40s stop grace period. If you run the image directly, keep `--stop-timeout 40`.
 - **`DISABLE_SQLITE_AUTO_BACKUP`:** Set to `true` if backups are managed externally.
 - **Data Persistence:** Always mount a volume to `/app/data` to persist your database, keys, and configurations across container restarts.
 - **Port Configuration:** Override `PORT` environment variable to change the default `20128` port.

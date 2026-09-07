@@ -218,7 +218,7 @@ function QuotaConceptCard() {
   );
 }
 
-// 2. Available Endpoints Card (matching Shiguang Gateway's QuotaEndpointsCard)
+// 2. Available Endpoints Card (matching Orbit's QuotaEndpointsCard)
 function QuotaEndpointsCard({
   groups,
   pools,

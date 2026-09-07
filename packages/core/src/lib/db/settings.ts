@@ -184,7 +184,7 @@ export async function getSettings() {
     hideEndpointTailscaleFunnel: false,
     hideEndpointNgrokTunnel: false,
     preferClaudeCodeForUnprefixedClaudeModels: isTruthyEnvFlag(
-      process.env.SHIGUANG_GATEWAY_PREFER_CLAUDE_CODE_FOR_UNPREFIXED_CLAUDE_MODELS
+      process.env.ORBIT_PREFER_CLAUDE_CODE_FOR_UNPREFIXED_CLAUDE_MODELS
     ),
     // Opt-in (default "off"): short-circuits Claude Code's `--permission-mode auto`
     // internal security-classifier request with a synthetic `<block>no</block>` ALLOW
@@ -285,7 +285,7 @@ export async function getSettings() {
 
   // Rebrand the legacy default without requiring a database migration. A
   // deliberately configured custom name remains untouched.
-  if (settings.instanceName === "ShiguangGateway") {
+  if (settings.instanceName === "Orbit") {
     settings.instanceName = APP_CONFIG.name;
   }
 

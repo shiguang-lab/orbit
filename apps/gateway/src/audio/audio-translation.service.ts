@@ -80,11 +80,11 @@ export class AudioTranslationService {
     if (response?.ok) {
       await clearRecoveredProviderState(credentials);
       try {
-        const [{ attachShiguangGatewayMetaToResponse }, { generateRequestId }] = await Promise.all([
+        const [{ attachOrbitMetaToResponse }, { generateRequestId }] = await Promise.all([
           load("@orbit/core/edge/gateway-response-meta"),
           load("@orbit/core/runtime/request-id"),
         ]);
-        response = attachShiguangGatewayMetaToResponse(response, {
+        response = attachOrbitMetaToResponse(response, {
           provider,
           model: resolvedModel,
           costUsd: 0,

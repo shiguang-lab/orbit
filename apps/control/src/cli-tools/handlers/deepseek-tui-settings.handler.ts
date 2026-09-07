@@ -22,13 +22,13 @@ const getDeepseekTuiConfigPath = (): string =>
 const getDeepseekTuiDir = () => path.dirname(getDeepseekTuiConfigPath());
 
 /**
- * Render the ShiguangGateway config block in DeepSeek TUI TOML format.
+ * Render the Orbit config block in DeepSeek TUI TOML format.
  * DeepSeek TUI reads OPENAI_BASE_URL and OPENAI_API_KEY from its config.
  * Reference: https://github.com/hunterbown/deepseek-tui
  */
 function renderDeepseekTuiConfig(baseUrl: string, apiKey: string, model: string): string {
   return [
-    "# DeepSeek TUI config — managed by ShiguangGateway (plan 14)",
+    "# DeepSeek TUI config — managed by Orbit (plan 14)",
     "",
     "[openai]",
     `base_url = "${baseUrl}"`,
@@ -39,11 +39,11 @@ function renderDeepseekTuiConfig(baseUrl: string, apiKey: string, model: string)
 }
 
 /**
- * Check if the config file contains ShiguangGateway settings.
+ * Check if the config file contains Orbit settings.
  */
-const hasShiguangGatewayConfig = (content: string | null): boolean => {
+const hasOrbitConfig = (content: string | null): boolean => {
   if (!content) return false;
-  return content.includes("managed by ShiguangGateway");
+  return content.includes("managed by Orbit");
 };
 
 // Read current config.toml
@@ -90,7 +90,7 @@ export async function GET(request: Request) {
       runtimeMode: runtime.runtimeMode,
       reason: runtime.reason,
       config,
-      hasShiguangGateway: hasShiguangGatewayConfig(config),
+      hasOrbit: hasOrbitConfig(config),
       configPath: getDeepseekTuiConfigPath(),
     });
   } catch (err) {
@@ -101,7 +101,7 @@ export async function GET(request: Request) {
   }
 }
 
-// POST — write ShiguangGateway settings to DeepSeek TUI config.toml
+// POST — write Orbit settings to DeepSeek TUI config.toml
 export async function POST(request: Request) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
@@ -165,7 +165,7 @@ export async function POST(request: Request) {
   }
 }
 
-// DELETE — remove DeepSeek TUI ShiguangGateway config
+// DELETE — remove DeepSeek TUI Orbit config
 export async function DELETE(request: Request) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;

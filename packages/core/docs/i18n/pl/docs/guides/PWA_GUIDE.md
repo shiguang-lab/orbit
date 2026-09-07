@@ -6,11 +6,11 @@ lastUpdated: 2026-06-28
 
 # Przewodnik po Progressive Web App (PWA)
 
-ShiguangGateway jest dostarczany jako w pełni instalowalna Progressive Web App. Gdy otworzysz dashboard w dowolnej przeglądarce mobilnej — Android (Chrome) lub iOS (Safari) — możesz wybrać „Dodaj do ekranu głównego” i uzyskać doświadczenie zbliżone do natywnej aplikacji, bez sklepu z aplikacjami.
+Orbit jest dostarczany jako w pełni instalowalna Progressive Web App. Gdy otworzysz dashboard w dowolnej przeglądarce mobilnej — Android (Chrome) lub iOS (Safari) — możesz wybrać „Dodaj do ekranu głównego” i uzyskać doświadczenie zbliżone do natywnej aplikacji, bez sklepu z aplikacjami.
 
 ## Czym jest PWA?
 
-Progressive Web App zamienia webowy dashboard ShiguangGateway w coś, co wygląda i działa jak natywna aplikacja mobilna. Po zainstalowaniu:
+Progressive Web App zamienia webowy dashboard Orbit w coś, co wygląda i działa jak natywna aplikacja mobilna. Po zainstalowaniu:
 
 - Uruchamia się z ekranu głównego z własną ikoną
 - Otwiera się na pełnym ekranie — bez paska adresu przeglądarki ani interfejsu kart
@@ -22,26 +22,26 @@ Progressive Web App zamienia webowy dashboard ShiguangGateway w coś, co wygląd
 
 ### Android (Chrome)
 
-1. Otwórz dashboard ShiguangGateway w Chrome: `http://YOUR_IP:20128`
-2. Chrome automatycznie pokaże baner **"Add ShiguangGateway to Home screen"**, albo:
+1. Otwórz dashboard Orbit w Chrome: `http://YOUR_IP:20128`
+2. Chrome automatycznie pokaże baner **"Add Orbit to Home screen"**, albo:
    - Stuknij menu **⋮** (trzy kropki) → **"Add to Home screen"** lub **"Install app"**
 3. Potwierdź monity
-4. ShiguangGateway pojawi się na ekranie głównym jako samodzielna aplikacja
+4. Orbit pojawi się na ekranie głównym jako samodzielna aplikacja
 
 ### iOS (Safari)
 
-1. Otwórz dashboard ShiguangGateway w Safari: `http://YOUR_IP:20128`
+1. Otwórz dashboard Orbit w Safari: `http://YOUR_IP:20128`
 2. Stuknij przycisk **Share** (kwadrat ze strzałką)
 3. Przewiń w dół i stuknij **"Add to Home Screen"**
-4. Nadaj nazwę (domyślnie „ShiguangGateway”) i stuknij **Add**
-5. ShiguangGateway pojawi się na ekranie głównym z ikoną aplikacji
+4. Nadaj nazwę (domyślnie „Orbit”) i stuknij **Add**
+5. Orbit pojawi się na ekranie głównym z ikoną aplikacji
 
 ### Desktop (Chrome / Edge)
 
-1. Otwórz dashboard ShiguangGateway
-2. Kliknij **ikona instalacji** na pasku adresu (lub ⋮ → "Install ShiguangGateway...")
+1. Otwórz dashboard Orbit
+2. Kliknij **ikona instalacji** na pasku adresu (lub ⋮ → "Install Orbit...")
 3. Potwierdź monity
-4. ShiguangGateway otworzy się jako samodzielne okno — bez kart i paska adresu
+4. Orbit otworzy się jako samodzielne okno — bez kart i paska adresu
 
 ## Funkcje
 
@@ -51,7 +51,7 @@ Manifest jest skonfigurowany z `display: "fullscreen"`, co oznacza, że zainstal
 
 ### Wsparcie offline
 
-ShiguangGateway zawiera service worker (`sw.js`), który zapewnia inteligentne buforowanie:
+Orbit zawiera service worker (`sw.js`), który zapewnia inteligentne buforowanie:
 
 | Typ zasobu                                             | Strategia                          | Zachowanie                                                                   |
 | ------------------------------------------------------ | ---------------------------------- | ---------------------------------------------------------------------------- |
@@ -72,7 +72,7 @@ Gdy sieć jest niedostępna i użytkownik przechodzi na nową stronę, service w
 
 ### Ikony aplikacji
 
-ShiguangGateway dostarcza ikony zoptymalizowane pod każdą platformę:
+Orbit dostarcza ikony zoptymalizowane pod każdą platformę:
 
 | Plik                   | Rozmiar          | Używane przez                           |
 | ---------------------- | ---------------- | --------------------------------------- |
@@ -95,9 +95,9 @@ Generowany przez Next.js przez `src/app/manifest.ts`:
 
 ```json
 {
-  "name": "ShiguangGateway",
-  "short_name": "ShiguangGateway",
-  "description": "ShiguangGateway is an AI gateway for multi-provider LLMs. One endpoint for all your AI providers.",
+  "name": "Orbit",
+  "short_name": "Orbit",
+  "description": "Orbit is an AI gateway for multi-provider LLMs. One endpoint for all your AI providers.",
   "start_url": "/",
   "scope": "/",
   "display": "fullscreen",
@@ -118,7 +118,7 @@ Zwykły service worker (bez zależności frameworkowych) z:
 - **Faza install**: wstępnie buforuje app shell (root, strona offline, manifest, ikony)
 - **Faza activate**: czyści stare wersje cache i przejmuje wszystkie klienty
 - **Faza fetch**: inteligentne routowanie według typu żądania (nawigacja, zasób statyczny, API)
-- **Wersjonowanie cache**: `shiguang-gateway-pwa-v2` — zwiększ tę wartość, aby wymusić świeży cache przy aktualizacji
+- **Wersjonowanie cache**: `orbit-pwa-v2` — zwiększ tę wartość, aby wymusić świeży cache przy aktualizacji
 
 ### Metadane layoutu (`src/app/layout.tsx`)
 
@@ -142,9 +142,9 @@ Znajduje się w `src/shared/components/PwaRegister.tsx`. Ten komponent kliencki:
 
 ## Użycie z Termux (Android)
 
-Przy uruchamianiu ShiguangGateway na Androidzie przez Termux PWA działa bezproblemowo:
+Przy uruchamianiu Orbit na Androidzie przez Termux PWA działa bezproblemowo:
 
-1. Uruchom ShiguangGateway w Termux: `npx shiguang-gateway`
+1. Uruchom Orbit w Termux: `npx orbit`
 2. Otwórz Chrome na tym samym telefonie: `http://localhost:20128`
 3. Zainstaluj PWA przez "Add to Home Screen"
 4. PWA łączy się z lokalnym serwerem Termux — wszystko działa na urządzeniu
@@ -153,7 +153,7 @@ Ta kombinacja oznacza, że telefon z Androidem jest jednocześnie **serwerem** (
 
 ## Użycie z innych urządzeń
 
-Zainstaluj PWA na dowolnym urządzeniu, które ma dostęp przeglądarkowy do serwera ShiguangGateway:
+Zainstaluj PWA na dowolnym urządzeniu, które ma dostęp przeglądarkowy do serwera Orbit:
 
 - **Inny telefon/tablet**: przejdź do `http://PHONE_IP:20128` i zainstaluj PWA
 - **Laptop**: otwórz Chrome/Edge i zainstaluj jako desktopowe PWA

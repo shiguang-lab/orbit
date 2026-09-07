@@ -19,7 +19,7 @@ const logToFile = getAppLogToFile();
 const logFilePath = resolve(getAppLogFilePath());
 
 declare global {
-  var __shiguangGatewayConsoleInterceptorInit: boolean | undefined;
+  var __orbitConsoleInterceptorInit: boolean | undefined;
 }
 
 type ConsoleMethod = (...args: unknown[]) => void;
@@ -268,7 +268,7 @@ export function initConsoleInterceptor(): void {
   // in structuredLogger, which happen regardless of whether console interception is enabled.
   installStdioErrorGuard();
 
-  if (!logToFile || globalThis.__shiguangGatewayConsoleInterceptorInit) return;
+  if (!logToFile || globalThis.__orbitConsoleInterceptorInit) return;
 
   try {
     ensureDir();
@@ -277,7 +277,7 @@ export function initConsoleInterceptor(): void {
     return;
   }
 
-  globalThis.__shiguangGatewayConsoleInterceptorInit = true;
+  globalThis.__orbitConsoleInterceptorInit = true;
 
   // Capture the raw method references first, so reset() can restore the exact functions that
   // were installed before patching. The bound copies below are for calling, not restoring —
@@ -340,6 +340,6 @@ export const __consoleInterceptorInternals = {
     errorWriteCount = 0;
     errorWindowStart = Date.now();
     missingDirNoticeEmitted = false;
-    globalThis.__shiguangGatewayConsoleInterceptorInit = undefined;
+    globalThis.__orbitConsoleInterceptorInit = undefined;
   },
 };

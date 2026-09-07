@@ -291,8 +291,8 @@ function validateRuntimeConfig(config: TunnelRuntimeConfig) {
     throw new Error("Tunnel Runtime-Key is missing or too large");
   }
   for (const value of [
-    config.alias ?? "shiguangGateway-chatgpt-web-codex",
-    config.profile ?? "shiguangGateway",
+    config.alias ?? "orbit-chatgpt-web-codex",
+    config.profile ?? "orbit",
   ]) {
     if (!/^[A-Za-z0-9._-]+$/.test(value)) throw new Error("Tunnel alias/profile is invalid");
   }
@@ -309,8 +309,8 @@ export async function startTunnelRuntime(config: TunnelRuntimeConfig): Promise<C
   );
   atomicWriteFile(runtimeKeyFile, config.runtimeKey.trim());
   runtimeKeyFiles.add(runtimeKeyFile);
-  const alias = config.alias ?? "shiguangGateway-chatgpt-web-codex";
-  const profile = config.profile ?? "shiguangGateway";
+  const alias = config.alias ?? "orbit-chatgpt-web-codex";
+  const profile = config.profile ?? "orbit";
   const mcpCommand = buildChatGptWebCodexMcpCommand(config.brokerSocketPath);
   return spawn(
     binary,
@@ -388,8 +388,8 @@ export async function getTunnelRuntimeStatus(
 ): Promise<TunnelRuntimeStatus> {
   const binary = await ensureTunnelClientInstalled();
   const paths = tunnelClientPaths();
-  const alias = config.alias ?? "shiguangGateway-chatgpt-web-codex";
-  const profile = config.profile ?? "shiguangGateway";
+  const alias = config.alias ?? "orbit-chatgpt-web-codex";
+  const profile = config.profile ?? "orbit";
   const result = spawnSync(
     binary,
     [
@@ -415,8 +415,8 @@ function runtimeIdentity(config: TunnelRuntimeConfig): string {
     .update(
       JSON.stringify({
         tunnelId: config.tunnelId,
-        alias: config.alias ?? "shiguangGateway-chatgpt-web-codex",
-        profile: config.profile ?? "shiguangGateway",
+        alias: config.alias ?? "orbit-chatgpt-web-codex",
+        profile: config.profile ?? "orbit",
         brokerSocketPath: config.brokerSocketPath,
       })
     )
@@ -475,9 +475,9 @@ export async function stopChatGptWebCodexTunnelRuntime(): Promise<void> {
       [
         "runtimes",
         "stop",
-        "shiguangGateway-chatgpt-web-codex",
+        "orbit-chatgpt-web-codex",
         "--profile",
-        "shiguangGateway",
+        "orbit",
         "--profile-dir",
         paths.profileDir,
         "--json",

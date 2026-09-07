@@ -572,7 +572,7 @@ export function exportAllSummaryRows(): ExportAllRows {
  * Queries an **already-opened** SQLite adapter for the list of table names.
  *
  * Used by the import route to validate that a candidate database contains the
- * required ShiguangGateway tables before replacing the live database.
+ * required Orbit tables before replacing the live database.
  *
  * Accepting an adapter as a parameter (rather than calling getDbInstance()) is
  * intentional: the import route opens a *temporary* database for validation,

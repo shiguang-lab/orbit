@@ -6,7 +6,7 @@ lastUpdated: 2026-08-13
 
 # Monitoring & Observability Guide
 
-> **TL;DR**: ShiguangGateway ships with built-in health monitoring, provider autopilot, quota tracking, and observability hooks. This guide covers the dashboard, alerts, and troubleshooting.
+> **TL;DR**: Orbit ships with built-in health monitoring, provider autopilot, quota tracking, and observability hooks. This guide covers the dashboard, alerts, and troubleshooting.
 
 **Sources:**
 
@@ -22,7 +22,7 @@ lastUpdated: 2026-08-13
 
 ## Overview
 
-ShiguangGateway has **3 layers of monitoring**:
+Orbit has **3 layers of monitoring**:
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -39,7 +39,7 @@ ShiguangGateway has **3 layers of monitoring**:
 │  Layer 3: Live Observability (runtime snapshots)               │
 │  ├─ observability.ts — circuit breakers, sessions, quota       │
 │  ├─ tokenHealthCheck.ts — OAuth token refresh health          │
-│  └─ MCP tools: shiguang-gateway_get_health, shiguang-gateway_get_session_snapshot │
+│  └─ MCP tools: orbit_get_health, orbit_get_session_snapshot │
 └──────────────────────────────────────────────────────────────┘
 ```
 
@@ -103,7 +103,7 @@ Per-combo:
 
 ## Health Check API
 
-ShiguangGateway exposes **two** HTTP health surfaces. They are not interchangeable for orchestrators.
+Orbit exposes **two** HTTP health surfaces. They are not interchangeable for orchestrators.
 
 | Path | Purpose | Weight | Use for |
 | --- | --- | --- | --- |
@@ -157,7 +157,7 @@ Response:
 
 ### Kubernetes probe recommendations
 
-ShiguangGateway is a **single Node process** (one event loop). Stock Docker `HEALTHCHECK` targets lightweight `/healthz`. `/api/monitoring/health` is **too heavy** for kubelet liveness intervals.
+Orbit is a **single Node process** (one event loop). Stock Docker `HEALTHCHECK` targets lightweight `/healthz`. `/api/monitoring/health` is **too heavy** for kubelet liveness intervals.
 
 | Probe | Recommended target | Notes |
 | --- | --- | --- |
@@ -200,7 +200,7 @@ livenessProbe:
 
 **Do not** point kubelet **liveness** at `/api/monitoring/health`. That path does real DB/monitoring work and will false-positive under load.
 
-Related: [#10052](https://github.com/diegosouzapw/ShiguangGateway/issues/10052) (probes while the event loop is busy), [#9685](https://github.com/diegosouzapw/ShiguangGateway/issues/9685) / [#10055](https://github.com/diegosouzapw/ShiguangGateway/pull/10055) (catalog pricing hog), [#10117](https://github.com/diegosouzapw/ShiguangGateway/issues/10117) (compression token-count hog).
+Related: [#10052](https://github.com/diegosouzapw/Orbit/issues/10052) (probes while the event loop is busy), [#9685](https://github.com/diegosouzapw/Orbit/issues/9685) / [#10055](https://github.com/diegosouzapw/Orbit/pull/10055) (catalog pricing hog), [#10117](https://github.com/diegosouzapw/Orbit/issues/10117) (compression token-count hog).
 
 
 ### Optional request-path work (memory, skills, token refresh)
@@ -392,7 +392,7 @@ Token health check configuration is handled internally by `tokenHealthCheck.ts`.
 
 ### Built-in Channels
 
-ShiguangGateway supports **3 alert channels**:
+Orbit supports **3 alert channels**:
 
 | Channel          | Setup         | Use case                     |
 | ---------------- | ------------- | ---------------------------- |
@@ -473,7 +473,7 @@ For now, scrape `/api/monitoring/health` with any HTTP-based monitoring system (
 
 ### Customize the Health Dashboard
 
-Create a `~/.shiguang-gateway/dashboard.json`:
+Create a `~/.orbit/dashboard.json`:
 
 ```json
 {
@@ -508,7 +508,7 @@ Create a `~/.shiguang-gateway/dashboard.json`:
 ### "Quota says healthy but I see 429s"
 
 - 429 means the provider says you've used your quota
-- ShiguangGateway's quota tracking may be **stale** — the provider's truth is upstream
+- Orbit's quota tracking may be **stale** — the provider's truth is upstream
 - Quota data refreshes automatically via the internal quota monitor
 
 ### "Combo is failing but all targets look healthy"
@@ -519,9 +519,9 @@ Create a `~/.shiguang-gateway/dashboard.json`:
 
 ### "Database health check is failing"
 
-- Run `sqlite3 ~/.shiguang-gateway/storage.sqlite "PRAGMA integrity_check;"`
+- Run `sqlite3 ~/.orbit/storage.sqlite "PRAGMA integrity_check;"`
 - If "ok" — false alarm, the health check is being too strict
-- If anything else — **stop ShiguangGateway** and follow the [disaster recovery guide](./DATABASE_GUIDE.md#disaster-recovery)
+- If anything else — **stop Orbit** and follow the [disaster recovery guide](./DATABASE_GUIDE.md#disaster-recovery)
 
 ### "Memory heap pressure is critical"
 

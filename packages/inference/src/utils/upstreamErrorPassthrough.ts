@@ -6,7 +6,7 @@
  * via buildErrorBody() truncates the message and breaks that recovery. For
  * upstream-originated 4xx errors the body is the provider's public API message —
  * not our internals — so it is safe and required to relay it verbatim.
- * ShiguangGateway-generated errors MUST keep using buildErrorBody() (Hard Rule #12).
+ * Orbit-generated errors MUST keep using buildErrorBody() (Hard Rule #12).
  */
 const PASSTHROUGH_MIN = 400;
 const PASSTHROUGH_MAX = 499;
@@ -14,7 +14,7 @@ const PASSTHROUGH_MAX = 499;
 // echoes; keep those sanitized. 400/404/408/413/422/429 carry the capability and
 // quota wording the client needs.
 const EXCLUDED_STATUSES = new Set([401, 403, 407]);
-const INTERNAL_LEAK_RE = /\sat\s\/|node_modules|shiguangGateway\//i;
+const INTERNAL_LEAK_RE = /\sat\s\/|node_modules|orbit\//i;
 // #10898-sec / secret-in-error hardening: some providers echo the offending
 // request (including an Authorization header or api key) inside a 400/422/429
 // validation body. Passthrough relays the body VERBATIM (the Claude Code

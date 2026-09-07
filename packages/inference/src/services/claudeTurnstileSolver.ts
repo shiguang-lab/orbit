@@ -91,7 +91,7 @@ export async function solveTurnstile(options?: {
     const context = await browser.newContext({
       userAgent: CLAUDE_WEB_FINGERPRINT.userAgent,
       viewport: { width: 1280, height: 720 },
-      ignoreHTTPSErrors: process.env.SHIGUANG_GATEWAY_TURNSTILE_IGNORE_TLS_ERRORS === "true",
+      ignoreHTTPSErrors: process.env.ORBIT_TURNSTILE_IGNORE_TLS_ERRORS === "true",
     });
 
     page = await context.newPage();

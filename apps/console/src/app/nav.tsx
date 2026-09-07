@@ -1,6 +1,6 @@
 /**
  * 侧栏导航配置：模块级常量，路由匹配 selectedKeys。
- * 图标名称与线上 ShiguangGateway Shiguang Gateway 侧栏保持一致，使用本地 Material Symbols 字体渲染。
+ * 图标名称与线上 Orbit Orbit 侧栏保持一致，使用本地 Material Symbols 字体渲染。
  */
 import type { CSSProperties } from "react";
 import { translate, type AppLocale } from "@/i18n";
@@ -186,7 +186,7 @@ export function MaterialIcon({ name, size = 16, className, style }: { name: stri
 }
 
 /**
- * Complete dashboard inventory mirrored from Shiguang Gateway's sidebar source.
+ * Complete dashboard inventory mirrored from Orbit's sidebar source.
  */
 export const NAV_SECTIONS: NavSection[] = [
   {

@@ -1,14 +1,14 @@
 ---
-title: "ShiguangGateway — 控制台功能画廊"
+title: "Orbit — 控制台功能画廊"
 version: 3.8.40
 lastUpdated: 2026-06-28
 ---
 
-# ShiguangGateway — 控制台功能画廊
+# Orbit — 控制台功能画廊
 
 🌐 **Main README translations:** 🇺🇸 [English](../../guides/FEATURES.md) | 🇧🇷 [Português (Brasil)](../../i18n/pt-BR/docs/guides/FEATURES.md) | 🇪🇸 [Español](../../i18n/es/docs/guides/FEATURES.md) | 🇫🇷 [Français](../../i18n/fr/docs/guides/FEATURES.md) | 🇮🇹 [Italiano](../../i18n/it/docs/guides/FEATURES.md) | 🇷🇺 [Русский](../../i18n/ru/docs/guides/FEATURES.md) | 🇨🇳 [中文 (简体)](../../i18n/zh-CN/docs/guides/FEATURES.md) | 🇩🇪 [Deutsch](../../i18n/de/docs/guides/FEATURES.md) | 🇮🇳 [हिन्दी](../../i18n/in/docs/guides/FEATURES.md) | 🇹🇭 [ไทย](../../i18n/th/docs/guides/FEATURES.md) | 🇺🇦 [Українська](../../i18n/uk-UA/docs/guides/FEATURES.md) | 🇸🇦 [العربية](../../i18n/ar/docs/guides/FEATURES.md) | 🇯🇵 [日本語](../../i18n/ja/docs/guides/FEATURES.md) | 🇻🇳 [Tiếng Việt](../../i18n/vi/docs/guides/FEATURES.md) | 🇧🇬 [Български](../../i18n/bg/docs/guides/FEATURES.md) | 🇩🇰 [Dansk](../../i18n/da/docs/guides/FEATURES.md) | 🇫🇮 [Suomi](../../i18n/fi/docs/guides/FEATURES.md) | 🇮🇱 [עברית](../../i18n/he/docs/guides/FEATURES.md) | 🇭🇺 [Magyar](../../i18n/hu/docs/guides/FEATURES.md) | 🇮🇩 [Bahasa Indonesia](../../i18n/id/docs/guides/FEATURES.md) | 🇰🇷 [한국어](../../i18n/ko/docs/guides/FEATURES.md) | 🇲🇾 [Bahasa Melayu](../../i18n/ms/docs/guides/FEATURES.md) | 🇳🇱 [Nederlands](../../i18n/nl/docs/guides/FEATURES.md) | 🇳🇴 [Norsk](../../i18n/no/docs/guides/FEATURES.md) | 🇵🇹 [Português (Portugal)](../../i18n/pt/docs/guides/FEATURES.md) | 🇷🇴 [Română](../../i18n/ro/docs/guides/FEATURES.md) | 🇵🇱 [Polski](../../i18n/pl/docs/guides/FEATURES.md) | 🇸🇰 [Slovenčina](../../i18n/sk/docs/guides/FEATURES.md) | 🇸🇪 [Svenska](../../i18n/sv/docs/guides/FEATURES.md) | 🇵🇭 [Filipino](../../i18n/phi/docs/guides/FEATURES.md) | 🇨🇿 [Čeština](../../i18n/cs/docs/guides/FEATURES.md)
 
-ShiguangGateway 控制台各功能区的可视化指南。
+Orbit 控制台各功能区的可视化指南。
 
 > 📅 **最近更新：** 2026-06-28 — **v3.8.40**
 
@@ -38,7 +38,7 @@ v3.7.x → v3.8.0 版本周期引入了零配置自动路由、新的服务商�
 - 🚦 **按服务商的 429 分类** + `useUpstream429BreakerHints` 开关 — 利用上游速率限制提示实现更精细的熔断行为
 - 🩺 **模型冷却控制台** — 观察每个模型的锁定状态，并通过 UI 手动恢复
 - 🔒 **MITM 动态 Linux 证书检测** — 跨 Debian/Ubuntu、Fedora/RHEL、Arch 等发行版
-- 💻 **CLI 增强套件** — 20+ 命令，包括 `shiguang-gateway providers`、`shiguang-gateway combos`、`shiguang-gateway doctor`、`shiguang-gateway setup`
+- 💻 **CLI 增强套件** — 20+ 命令，包括 `orbit providers`、`orbit combos`、`orbit doctor`、`orbit setup`
 - 🔍 **Qdrant 嵌入模型发现** — 自动探测向量存储模型
 - 🔑 **带 `manage` 权限域的 API Key / Bearer Key** — 通过 API 以编程方式执行管理操作
 - 🏥 **Combo 目标健康分析** + **结构化 Combo 构建器** — 按目标健康分析 + UI 构建器，用于组装 `(服务商, 模型, 连接)` 步骤
@@ -53,7 +53,7 @@ v3.7.x → v3.8.0 版本周期引入了零配置自动路由、新的服务商�
 
 管理 AI 服务商连接：OAuth 服务商（Claude Code、Codex）、API Key 服务商（Groq、DeepSeek、OpenRouter）和免费服务商（Qoder、Qwen、Kiro）。Kiro 账户包含积分余额追踪——剩余积分、总额度和续期日期可在 控制台 → 用量 中查看。
 
-OpenRouter 连接可以在 高级设置 中存储每个连接的 `preset`。设置后，除非客户端请求已提供自己的 `preset`，否则 ShiguangGateway 会将其作为 OpenRouter 的顶层请求字段发送，例如 `"preset": "email-copywriter"`。
+OpenRouter 连接可以在 高级设置 中存储每个连接的 `preset`。设置后，除非客户端请求已提供自己的 `preset`，否则 Orbit 会将其作为 OpenRouter 的顶层请求字段发送，例如 `"preset": "email-copywriter"`。
 
 ![服务商控制台](../../screenshots/01-providers.png)
 
@@ -148,7 +148,7 @@ CLI 智能体发现与管理控制台。以网格形式展示 17 个内置智能
 
 ## 🔗 Context Relay _(v3.5.5+)_
 
-一种 Combo 策略，在会话中途发生账户轮换时保持连续性。活跃账户配额耗尽前，ShiguangGateway 在后台生成结构化的交接摘要。后续请求切换到其他账户后，摘要以系统消息形式注入，使新账户以完整上下文继续服务。
+一种 Combo 策略，在会话中途发生账户轮换时保持连续性。活跃账户配额耗尽前，Orbit 在后台生成结构化的交接摘要。后续请求切换到其他账户后，摘要以系统消息形式注入，使新账户以完整上下文继续服务。
 
 支持 Combo 级别或全局配置：
 
@@ -216,7 +216,7 @@ OAuth 服务商的一键"环境修复"操作，恢复缺失的环境变量并修
 
 | 命令                     | 操作                                                                |
 | ------------------------ | ------------------------------------------------------------------- |
-| `npm run uninstall`      | 移除系统应用，但**保留数据库和配置**在 `~/.shiguang-gateway`。              |
+| `npm run uninstall`      | 移除系统应用，但**保留数据库和配置**在 `~/.orbit`。              |
 | `npm run uninstall:full` | 移除应用，并永久**清除所有配置、密钥和数据库**。                    |
 
 ---
@@ -257,7 +257,7 @@ OAuth 服务商的一键"环境修复"操作，恢复缺失的环境变量并修
 
 ## 🖥️ 桌面应用
 
-面向 Windows、macOS 和 Linux 的原生 Electron 桌面应用。以独立应用程序形式运行 ShiguangGateway，集成系统托盘、离线支持、自动更新和一键安装。
+面向 Windows、macOS 和 Linux 的原生 Electron 桌面应用。以独立应用程序形式运行 Orbit，集成系统托盘、离线支持、自动更新和一键安装。
 
 关键功能：
 
@@ -276,7 +276,7 @@ OAuth 服务商的一键"环境修复"操作，恢复缺失的环境变量并修
 
 ## 🌐 V1 WebSocket Bridge _(v3.6.6+)_
 
-ShiguangGateway 现通过 `/v1/ws` 升级端点支持 OpenAI 兼容的 WebSocket 客户端。自定义 `scripts/dev/v1-ws-bridge.mjs` 服务器包装 Next.js，将 WS 连接升级为全双工流式会话。认证使用与 HTTP 请求相同的 API Key 或会话 Cookie。
+Orbit 现通过 `/v1/ws` 升级端点支持 OpenAI 兼容的 WebSocket 客户端。自定义 `scripts/dev/v1-ws-bridge.mjs` 服务器包装 Next.js，将 WS 连接升级为全双工流式会话。认证使用与 HTTP 请求相同的 API Key 或会话 Cookie。
 
 关键行为：
 
@@ -302,7 +302,7 @@ ShiguangGateway 现通过 `/v1/ws` 升级端点支持 OpenAI 兼容的 WebSocket
 
 **GLM Thinking（`glmt`）** 现作为一线服务商注册：最大输出 Token 65,536、Thinking 预算 24,576、默认超时 900 秒、Claude 兼容 API 格式，并与 GLM 系列共享用量同步。
 
-**混合 Token 计数**也在 v3.6.6 中落地：当 Claude 兼容的服务商暴露 `/messages/count_tokens` 端点时，ShiguangGateway 在大请求前调用该端点，并提供优雅的估算回退。
+**混合 Token 计数**也在 v3.6.6 中落地：当 Claude 兼容的服务商暴露 `/messages/count_tokens` 端点时，Orbit 在大请求前调用该端点，并提供优雅的估算回退。
 
 ---
 

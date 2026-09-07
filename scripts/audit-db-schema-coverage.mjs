@@ -95,7 +95,7 @@ for (const file of files) {
   }
 }
 
-const outputDir = mkdtempSync(join(os.tmpdir(), "shiguang-db-schema-coverage-"));
+const outputDir = mkdtempSync(join(os.tmpdir(), "orbit-db-schema-coverage-"));
 try {
   const compile = spawnSync(
     "pnpm",

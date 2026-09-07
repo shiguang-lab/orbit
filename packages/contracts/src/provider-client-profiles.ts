@@ -28,7 +28,7 @@ export function normalizeAntigravityClientProfile(value: unknown): AntigravityCl
       return normalized;
     }
     // Read-only compatibility for values persisted before the official CLI profile
-    // replaced ShiguangGateway's synthetic harness/sdk naming. New writes are validated
+    // replaced Orbit's synthetic harness/sdk naming. New writes are validated
     // against ANTIGRAVITY_CLIENT_PROFILE_VALUES and cannot reintroduce these aliases.
     if (normalized === "harness" || normalized === "sdk") {
       return "cli";

@@ -25,10 +25,10 @@ const ENDPOINTS = [
 ];
 
 const INSTRUCTIONS = [
-  "1. Install ShiguangGateway's root certificate",
+  "1. Install Orbit's root certificate",
   "2. Start the MITM proxy via Dashboard or CLI",
   "3. Configure model mappings in Dashboard → AgentBridge → Antigravity",
-  "4. Open Antigravity IDE — API calls will be routed through ShiguangGateway",
+  "4. Open Antigravity IDE — API calls will be routed through Orbit",
 ];
 
 export const ANTIGRAVITY_TARGET: MitmTarget = {
@@ -73,7 +73,7 @@ export const ANTIGRAVITY_MITM_PROFILE: MitmTarget & {
 } = {
   ...ANTIGRAVITY_TARGET,
   description:
-    "Intercepts Antigravity IDE requests to cloudcode-pa.googleapis.com and routes them through ShiguangGateway.",
+    "Intercepts Antigravity IDE requests to cloudcode-pa.googleapis.com and routes them through Orbit.",
   targetHost: HOSTS[0],
   targetPort: 443,
   localPort: 443,

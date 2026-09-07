@@ -10,7 +10,7 @@ let timer: NodeJS.Timeout | null = null;
 let tickInFlight: Promise<boolean> | null = null;
 
 function getIntervalMs(): number {
-  const parsed = Number(process.env.SHIGUANG_GATEWAY_BACKUP_SCHEDULE_JOB_INTERVAL_MS);
+  const parsed = Number(process.env.ORBIT_BACKUP_SCHEDULE_JOB_INTERVAL_MS);
   return Number.isFinite(parsed) && parsed >= 5_000 ? parsed : DEFAULT_INTERVAL_MS;
 }
 

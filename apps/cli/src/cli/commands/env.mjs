@@ -1,6 +1,6 @@
 import { t } from "../i18n.mjs";
 
-const SHIGUANG_GATEWAY_ENV_VARS = [
+const ORBIT_ENV_VARS = [
   "PORT",
   "API_PORT",
   "DASHBOARD_PORT",
@@ -10,15 +10,15 @@ const SHIGUANG_GATEWAY_ENV_VARS = [
   "NODE_ENV",
   "REQUEST_TIMEOUT_MS",
   "ENABLE_SOCKS5_PROXY",
-  "SHIGUANG_GATEWAY_API_KEY",
-  "SHIGUANG_GATEWAY_BASE_URL",
-  "SHIGUANG_GATEWAY_HTTP_TIMEOUT_MS",
+  "ORBIT_API_KEY",
+  "ORBIT_BASE_URL",
+  "ORBIT_HTTP_TIMEOUT_MS",
 ];
 
 const ENV_DEFAULTS = {
   PORT: "8787",
   DASHBOARD_PORT: "8787",
-  DATA_DIR: "~/.shiguangGateway",
+  DATA_DIR: "~/.orbit",
   NODE_ENV: "production",
 };
 
@@ -52,7 +52,7 @@ export function registerEnv(program) {
 
 export async function runEnvShowCommand(opts = {}) {
   const current = {};
-  for (const key of SHIGUANG_GATEWAY_ENV_VARS) {
+  for (const key of ORBIT_ENV_VARS) {
     if (process.env[key] !== undefined) current[key] = process.env[key];
   }
 
@@ -82,7 +82,7 @@ export async function runEnvShowCommand(opts = {}) {
 
 export async function runEnvGetCommand(key) {
   if (!key) {
-    console.error("Key is required. Usage: shiguangGateway env get <key>");
+    console.error("Key is required. Usage: orbit env get <key>");
     return 1;
   }
   console.log(process.env[key] || "");
@@ -91,7 +91,7 @@ export async function runEnvGetCommand(key) {
 
 export async function runEnvSetCommand(key, value) {
   if (!key || value === undefined) {
-    console.error("Usage: shiguangGateway env set <key> <value>");
+    console.error("Usage: orbit env set <key> <value>");
     return 1;
   }
   process.env[key] = String(value);

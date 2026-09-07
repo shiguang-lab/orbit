@@ -149,7 +149,7 @@ export function parseAndValidateNonMetadataUrl(input: string | URL) {
 // `getProviderOutboundGuard`, `getProviderValidationGuard`, and `parseAndValidateWebhookUrl`
 // live in the owning domain's outbound URL policy module, NOT here. Those helpers need
 // `@/shared/utils/featureFlags` (which transitively pulls in the DB layer), and this file is
-// loaded by the packaged CLI (`shiguangGateway setup-opencode` → cli-helper/config-generator/
+// loaded by the packaged CLI (`orbit setup-opencode` → cli-helper/config-generator/
 // opencode.ts) where no `tsconfig.json` is present to resolve the `@/*` path alias. Keeping
 // this module free of ANY `@/`-aliased import is what makes it safe to load from the CLI.
 // Do not add a `@/`-aliased import here — see docs/security/… (packaging) and #7682.

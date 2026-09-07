@@ -34,7 +34,7 @@ export async function runUpdateCommand() {
     return 1;
   }
 
-  printHeading("ShiguangGateway Update");
+  printHeading("Orbit Update");
   console.log(`  Current version: ${current}`);
   printSuccess("Version check complete (read-only).");
   printInfo("This private CLI is updated with the workspace package manager from the repository root.");

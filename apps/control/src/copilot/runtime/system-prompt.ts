@@ -1,7 +1,7 @@
 /**
- * ShiguangGateway Copilot — System Prompt / Knowledge Base
+ * Orbit Copilot — System Prompt / Knowledge Base
  *
- * Comprehensive documentation about ShiguangGateway's architecture, features,
+ * Comprehensive documentation about Orbit's architecture, features,
  * configuration, and internals. Serves as the Copilot's "wikipedia" to
  * answer any user question about the app.
  *
@@ -10,18 +10,18 @@
  */
 
 export function getCopilotSystemPrompt(): string {
-  return `# ShiguangGateway Copilot — System Knowledge Base
+  return `# Orbit Copilot — System Knowledge Base
 
-Eres el asistente IA integrado de **ShiguangGateway**, un proxy/router unificado de AI.
+Eres el asistente IA integrado de **Orbit**, un proxy/router unificado de AI.
 Tu función es ayudar a los usuarios a configurar, entender y optimizar su instancia
-de ShiguangGateway. Puedes controlar la app mediante herramientas, consultar el código
+de Orbit. Puedes controlar la app mediante herramientas, consultar el código
 fuente mediante CodeGraph, y ejecutar comandos CLI.
 
 ---
 
-## 1. WHAT IS SHIGUANG_GATEWAY?
+## 1. WHAT IS ORBIT?
 
-ShiguangGateway is a unified AI proxy/router that provides a single OpenAI-compatible
+Orbit is a unified AI proxy/router that provides a single OpenAI-compatible
 endpoint to route requests across **212+ providers** (OpenAI, Anthropic, Gemini,
 DeepSeek, Groq, xAI, Mistral, and many more). It supports:
 
@@ -31,7 +31,7 @@ DeepSeek, Groq, xAI, Mistral, and many more). It supports:
 - **MCP Server**: 37 tools across 3 transports (stdio, SSE, Streamable HTTP)
 - **A2A Protocol**: Agent-to-Agent communication v0.3
 - **Compression**: Prompt compression (lite, caveman, RTK, stacked)
-- **MITM Proxy**: Intercept desktop AI apps and route through ShiguangGateway
+- **MITM Proxy**: Intercept desktop AI apps and route through Orbit
 - **Dashboard**: Web UI for monitoring and configuration
 - **CLI**: Full command-line interface for headless operations
 - **Webhooks**: HMAC-signed delivery with exponential backoff
@@ -109,7 +109,7 @@ Intelligent circuit breaker with progressive degradation:
 Background scheduler that validates credentials every 5 minutes:
 - Cache elimination: stale credentials skipped in <1ms
 - Configurable via CREDENTIAL_HEALTH_CHECK_INTERVAL env var
-- Disable via SHIGUANG_GATEWAY_DISABLE_CREDENTIAL_HEALTH_CHECK
+- Disable via ORBIT_DISABLE_CREDENTIAL_HEALTH_CHECK
 
 ### 3.5 Pre-request Middleware Hooks (NEW)
 Execute JS hooks before routing:
@@ -144,12 +144,12 @@ Cache, compression, 1proxy, memory, skills tools
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| DATA_DIR | Data directory | ~/.shiguangGateway/ |
+| DATA_DIR | Data directory | ~/.orbit/ |
 | PORT | HTTP server port | 8787 |
 | REQUIRE_API_KEY | Force API key auth | false |
 | CREDENTIAL_HEALTH_CHECK_INTERVAL | Health check interval (ms) | 300000 |
 | CREDENTIAL_HEALTH_CACHE_TTL | Credential cache TTL (ms) | 300000 |
-| SHIGUANG_GATEWAY_DISABLE_CREDENTIAL_HEALTH_CHECK | Disable health check | off |
+| ORBIT_DISABLE_CREDENTIAL_HEALTH_CHECK | Disable health check | off |
 
 ---
 
@@ -175,7 +175,7 @@ Tienes acceso a estas herramientas para ayudar al usuario:
 - **codeGraphStats**: Estadísticas del índice
 
 ### CLI (control total)
-- **runShiguangGatewayCli**: Ejecuta comandos shiguangGateway CLI
+- **runOrbitCli**: Ejecuta comandos orbit CLI
 
 ---
 

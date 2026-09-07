@@ -6,22 +6,22 @@
 
 ---
 
-title: "CLI Tools — ShiguangGateway"
+title: "CLI Tools — Orbit"
 version: 3.8.50
 lastUpdated: 2026-08-18
 ---
 
-# CLI Tools — ShiguangGateway
+# CLI Tools — Orbit
 
 Ultima actualizare: 2026-08-18
 
-ShiguangGateway se integrează cu trei categorii de instrumente CLI distribuite pe trei pagini dedicate în tablou:
+Orbit se integrează cu trei categorii de instrumente CLI distribuite pe trei pagini dedicate în tablou:
 
 | Pagină         | Rută                    | Concept                                                                                           | Număr          |
 | -------------- | ----------------------- | ------------------------------------------------------------------------------------------------- | -------------- |
-| **CLI Code's** | `/dashboard/cli-code`   | Instrumente de codare pe care le îndreptați către ShiguangGateway (Client → CLI → ShiguangGateway → Provider) | 26             |
-| **CLI Agents** | `/dashboard/cli-agents` | Agenți autonomi pe care le îndreptați către ShiguangGateway (aceeași flux, domeniu mai larg)            | 8              |
-| **ACP Agents** | `/dashboard/acp-agents` | CLI-uri pe care ShiguangGateway le generează ca backend prin stdio/ACP (flux invers)                    | vezi registrul |
+| **CLI Code's** | `/dashboard/cli-code`   | Instrumente de codare pe care le îndreptați către Orbit (Client → CLI → Orbit → Provider) | 26             |
+| **CLI Agents** | `/dashboard/cli-agents` | Agenți autonomi pe care le îndreptați către Orbit (aceeași flux, domeniu mai larg)            | 8              |
+| **ACP Agents** | `/dashboard/acp-agents` | CLI-uri pe care Orbit le generează ca backend prin stdio/ACP (flux invers)                    | vezi registrul |
 
 Rutele vechi redirecționează prin 308: `/dashboard/cli-tools` → `/dashboard/cli-code`, `/dashboard/agents` → `/dashboard/acp-agents`.
 
@@ -33,14 +33,14 @@ Rutele vechi redirecționează prin 308: `/dashboard/cli-tools` → `/dashboard/
 CLI Code's / CLI Agents (flux de consum):
 Claude / Codex / OpenCode / Cline / KiloCode / Continue / Hermes Agent / Goose / ...
            │
-           ▼  (toate indică către ShiguangGateway)
+           ▼  (toate indică către Orbit)
     http://YOUR_SERVER:20128/v1
            │
-           ▼  (ShiguangGateway direcționează către providerul corect)
+           ▼  (Orbit direcționează către providerul corect)
     Anthropic / OpenAI / Gemini / DeepSeek / Groq / Mistral / ...
 
 ACP Agents (flux de generare invers):
-    Cerere client → ShiguangGateway → generează CLI prin stdio/ACP → răspuns
+    Cerere client → Orbit → generează CLI prin stdio/ACP → răspuns
 ```
 
 **Beneficii:**
@@ -54,26 +54,26 @@ ACP Agents (flux de generare invers):
 
 ## Configurare automată cu `setup-*`
 
-Nu trebuie să scrieți manual configurația fiecărui instrument. ShiguangGateway oferă un `setup-*`
+Nu trebuie să scrieți manual configurația fiecărui instrument. Orbit oferă un `setup-*`
 comandă pentru fiecare CLI suportat care citește catalogul de modele **live** de la un
-ShiguangGateway în funcțiune (local sau remote) și scrie configurația proprie a instrumentului pe mașina dumneavoastră:
+Orbit în funcțiune (local sau remote) și scrie configurația proprie a instrumentului pe mașina dumneavoastră:
 
 ```bash
-shiguang-gateway setup-codex        shiguang-gateway setup-claude       shiguang-gateway setup-opencode
-shiguang-gateway setup-cline        shiguang-gateway setup-kilo         shiguang-gateway setup-continue
-shiguang-gateway setup-cursor       shiguang-gateway setup-roo          shiguang-gateway setup-crush
-shiguang-gateway setup-goose        shiguang-gateway setup-qwen         shiguang-gateway setup-aider
+orbit setup-codex        orbit setup-claude       orbit setup-opencode
+orbit setup-cline        orbit setup-kilo         orbit setup-continue
+orbit setup-cursor       orbit setup-roo          orbit setup-crush
+orbit setup-goose        orbit setup-qwen         orbit setup-aider
 ```
 
 Fiecare acceptă `--remote <url> --api-key <key>` (configurează un instrument local împotriva unui
-ShiguangGateway remote), `--dry-run` (previzualizare fără a scrie), și `--port`. Instrumentele
+Orbit remote), `--dry-run` (previzualizare fără a scrie), și `--port`. Instrumentele
 fără descoperire automată a modelului (Cline, Kilo, Roo, Goose, Aider, Qwen) necesită
 `--model <id>` (și `--yes` pentru execuții non-interactive). Pentru a lansa un CLI cu
 variabila de mediu corect injectată și fără a scrie deloc configurația, folosiți generic
-`shiguang-gateway run <target>` launcher (claude, codex, aider, goose, opencode, qwen,
+`orbit run <target>` launcher (claude, codex, aider, goose, opencode, qwen,
 gemini — țintele și aliasurile provin din `bin/cli/cli-manifest.mjs`); launcher-urile vechi
-per-instrument `shiguang-gateway launch` (Claude Code) și `shiguang-gateway launch-codex`
-(Codex) rămân disponibile. CLI-ul Gemini este doar pentru lansare: este un `shiguang-gateway run`
+per-instrument `orbit launch` (Claude Code) și `orbit launch-codex`
+(Codex) rămân disponibile. CLI-ul Gemini este doar pentru lansare: este un `orbit run`
 țintă dar nu are rețetă `setup-*`/`configure`.
 
 > **Referință completă:** tabelul principal — ce scrie fiecare comandă, fiecare flag,
@@ -82,21 +82,21 @@ per-instrument `shiguang-gateway launch` (Claude Code) și `shiguang-gateway lau
 
 ### Rularea acestora într-un container
 
-O comandă `setup-*` executată în interiorul containerului ShiguangGateway scrie în
+O comandă `setup-*` executată în interiorul containerului Orbit scrie în
 home-ul propriu al containerului, pe care niciun CLI gazdă nu îl citește și care dispare odată cu
-containerul. ShiguangGateway detectează acest lucru și iese cu `2` cu instrucțiuni în loc să scrie. Două moduri suportate de a continua — instalați CLI-ul pe gazdă și
-`shiguang-gateway connect` la container, sau montați direct directoarele de configurare și setați
+containerul. Orbit detectează acest lucru și iese cu `2` cu instrucțiuni în loc să scrie. Două moduri suportate de a continua — instalați CLI-ul pe gazdă și
+`orbit connect` la container, sau montați direct directoarele de configurare și setați
 `CLI_CONFIG_HOME` (profilul gazdă al compose-ului). Fiecare comandă `setup-*`, plus
-`shiguang-gateway configure` și `shiguang-gateway config set`, acceptă
+`orbit configure` și `orbit config set`, acceptă
 `--allow-container-write` atunci când configurați CLI-urile proprii ale containerului, ceea ce ați
-vrut de fapt; `SHIGUANG_GATEWAY_ALLOW_CONTAINER_CONFIG_WRITE=true` face același lucru pentru
+vrut de fapt; `ORBIT_ALLOW_CONTAINER_CONFIG_WRITE=true` face același lucru pentru
 server. Consultați
-[Docker Guide → Configurarea instrumentelor CLI gazdă](../guides/DOCKER_GUIDE.md#configuring-host-cli-tools-when-shiguang-gateway-runs-in-docker).
+[Docker Guide → Configurarea instrumentelor CLI gazdă](../guides/DOCKER_GUIDE.md#configuring-host-cli-tools-when-orbit-runs-in-docker).
 
 Endpoint-ul de **aplicare** al tabloului (`POST /api/cli-tools/apply`) impune
 aceleași restricții: într-un container, o scriere a cărei țintă nu este montată direct de la
 gazdă răspunde **`422`** cu `containerEphemeralTarget: true`, textul de eroare sigur și — pentru instrumentele cu o rețetă gazdă (claude, codex, opencode, cline,
-kilo, continue) — un `hostSetupCommand` (de exemplu, `shiguang-gateway setup-opencode`) care să fie rulat
+kilo, continue) — un `hostSetupCommand` (de exemplu, `orbit setup-opencode`) care să fie rulat
 pe gazdă în schimb; nimic nu este scris. `dryRun: true` continuă să funcționeze în modul
 container și returnează conținutul generat + calea țintă fără a atinge discul, astfel
 încât să puteți previzualiza din tablou și aplica pe gazdă. Acest comportament este
@@ -131,8 +131,8 @@ Nu fiecare instrument catalogat este detectabil, configurabil sau lansabil. Fiec
 | ---------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
 | **Catalogat**    | Apare în catalogul tabloului de bord (nume, furnizor, documentație, tip de configurare) | `src/shared/constants/cliTools.ts` (`CLI_TOOLS`)                    |
 | **Detectabil**   | Detectarea binarului/configurației, verificări de sănătate, căi de configurare          | `src/shared/services/cliRuntime.ts` (`CLI_TOOLS` catalog de rulare) |
-| **Configurabil** | Suportat de `shiguang-gateway configure <cli>` (rețetă de configurare existentă)               | `bin/cli/cli-manifest.mjs` (`configure: true`)                      |
-| **Lansabil**     | Suportat de `shiguang-gateway run <target>` (injectare env/args definită)                      | `bin/cli/cli-manifest.mjs` (`run: true`)                            |
+| **Configurabil** | Suportat de `orbit configure <cli>` (rețetă de configurare existentă)               | `bin/cli/cli-manifest.mjs` (`configure: true`)                      |
+| **Lansabil**     | Suportat de `orbit run <target>` (injectare env/args definită)                      | `bin/cli/cli-manifest.mjs` (`run: true`)                            |
 
 `bin/cli/cli-manifest.mjs` este manifestul executabil canonic pentru comenzile CLI: `run`, `configure` și generatoarele de completare a shell-ului își derivă toate listele de ținte, rezolvarea aliasurilor (de exemplu `kilocode`/`kilo-code`/`kilo_cli` → `kilo`) și conectarea flag-ului `--model` din acesta. Gardianul de derapaj `tests/unit/cli/cli-manifest-drift.test.ts` afirmă că manifestul, catalogul de rulare, catalogul UI și fiecare suprafață de consumator rămân sincronizate — o țintă adăugată pe o suprafață fără celelalte va face ca suitei să eșueze în loc să derapeze în tăcere.
 
@@ -191,7 +191,7 @@ Agenți autonomi care apar în `/dashboard/cli-agents`:
 
 ## 3. Agenți ACP (/dashboard/acp-agents)
 
-Această pagină (renumită din `/dashboard/agents`) arată CLI-urile pe care ShiguangGateway le poate **spawn** ca motoare de execuție backend prin protocolul stdio/ACP. Catalogul este întreținut separat în `src/lib/acp/registry.ts` și **nu** este același cu `CLI_TOOLS`.
+Această pagină (renumită din `/dashboard/agents`) arată CLI-urile pe care Orbit le poate **spawn** ca motoare de execuție backend prin protocolul stdio/ACP. Catalogul este întreținut separat în `src/lib/acp/registry.ts` și **nu** este același cu `CLI_TOOLS`.
 
 ---
 
@@ -254,7 +254,7 @@ Instrumentele noi cu `configType: "custom"` au rute dedicate API pentru setări:
 | `POST /api/cli-tools/codewhale-settings`    | CodeWhale (OPENAI_BASE_URL, primary + legacy `~/.deepseek` sync) |
 | `POST /api/cli-tools/smelt-settings`        | Smelt                                                            |
 | `POST /api/cli-tools/pi-settings`           | Agent de codare Pi                                               |
-| `POST /api/cli-tools/grok-build-settings`   | Grok Build (~/.grok/config.toml, `[model.shiguang-gateway]`)            |
+| `POST /api/cli-tools/grok-build-settings`   | Grok Build (~/.grok/config.toml, `[model.orbit]`)            |
 | `POST /api/cli-tools/qwen-settings`         | Qwen Code (`~/.qwen/settings.json` + cheie dedicată `.env`)      |
 
 Toate rutele folosesc `sanitizeErrorMessage()` pentru răspunsurile de eroare (Regulă Strictă #12).
@@ -314,7 +314,7 @@ Traduceri complete în PT-BR și EN sunt furnizate. 39 de alte locale revin auto
 
 ## 9. Începere rapidă
 
-### Pasul 1 — Obțineți o cheie API ShiguangGateway
+### Pasul 1 — Obțineți o cheie API Orbit
 
 1. Deschideți `/dashboard/api-manager` → **Creează cheie API**
 2. Oferiți-i un nume (de exemplu, `cli-tools`) și selectați toate permisiunile
@@ -347,7 +347,7 @@ npm install -g kilocode
 # Qwen Code
 npm install -g @qwen-code/qwen-code
 
-# Google Gemini CLI (lansabil prin `shiguang-gateway run gemini` → /v1beta surface)
+# Google Gemini CLI (lansabil prin `orbit run gemini` → /v1beta surface)
 npm install -g @google/gemini-cli
 
 # Aider
@@ -378,14 +378,14 @@ cargo install smelt  # bazat pe Rust
 ### Pasul 4 — Setați variabilele de mediu globale
 
 ```bash
-# Punct de acces universal ShiguangGateway
+# Punct de acces universal Orbit
 export OPENAI_BASE_URL="http://localhost:20128/v1"
-export OPENAI_API_KEY="sk-your-shiguang-gateway-key"
+export OPENAI_API_KEY="sk-your-orbit-key"
 export ANTHROPIC_BASE_URL="http://localhost:20128"
-export ANTHROPIC_AUTH_TOKEN="sk-your-shiguang-gateway-key"
+export ANTHROPIC_AUTH_TOKEN="sk-your-orbit-key"
 # Gemini CLI citește GOOGLE_GEMINI_BASE_URL la RĂDĂCINĂ (SDK-ul său adaugă /v1beta/... singur)
 export GOOGLE_GEMINI_BASE_URL="http://localhost:20128"
-export GEMINI_API_KEY="sk-your-shiguang-gateway-key"
+export GEMINI_API_KEY="sk-your-orbit-key"
 ```
 
 > Pentru un **server remote** înlocuiți `localhost:20128` cu IP-ul sau domeniul serverului,
@@ -403,7 +403,7 @@ mkdir -p ~/.claude && cat > ~/.claude/settings.json << EOF
 {
   "env": {
     "ANTHROPIC_BASE_URL": "http://localhost:20128",
-    "ANTHROPIC_AUTH_TOKEN": "sk-your-shiguang-gateway-key"
+    "ANTHROPIC_AUTH_TOKEN": "sk-your-orbit-key"
   }
 }
 EOF
@@ -419,20 +419,20 @@ Utilizați rădăcina unificată a gateway-ului Anthropic pentru Claude Code. Nu
 
 Codex modern (v0.137+) citește doar `~/.codex/config.toml` — vechiul
 `config.yaml` aparține CLI-ului npm legacy și este ignorat în tăcere. Cheia API
-rămâne în variabila de mediu `SHIGUANG_GATEWAY_API_KEY` (`env_key`), niciodată
+rămâne în variabila de mediu `ORBIT_API_KEY` (`env_key`), niciodată
 în interiorul fișierului:
 
 ```bash
 mkdir -p ~/.codex && cat > ~/.codex/config.toml << EOF
-model_provider = "shiguang-gateway"
+model_provider = "orbit"
 
-[model_providers.shiguang-gateway]
-name                 = "ShiguangGateway"
+[model_providers.orbit]
+name                 = "Orbit"
 base_url             = "http://localhost:20128/v1"
-env_key              = "SHIGUANG_GATEWAY_API_KEY"
+env_key              = "ORBIT_API_KEY"
 requires_openai_auth = false
 EOF
-export SHIGUANG_GATEWAY_API_KEY="sk-your-shiguang-gateway-key"
+export ORBIT_API_KEY="sk-your-orbit-key"
 ```
 
 Referință completă (profiluri, `wire_api`, feronete de context): [CODEX-CLI-CONFIGURATION.md](../guides/CODEX-CLI-CONFIGURATION.md).
@@ -448,12 +448,12 @@ mkdir -p ~/.config/opencode && cat > ~/.config/opencode/opencode.json << EOF
 {
   "\$schema": "https://opencode.ai/config.json",
   "provider": {
-    "shiguang-gateway": {
+    "orbit": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "ShiguangGateway",
+      "name": "Orbit",
       "options": {
         "baseURL": "http://localhost:20128/v1",
-        "apiKey": "sk-your-shiguang-gateway-key"
+        "apiKey": "sk-your-orbit-key"
       },
       "models": {
         "claude-sonnet-4-5": { "name": "claude-sonnet-4-5" },
@@ -468,7 +468,7 @@ EOF
 
 **Test:** `opencode`
 
-> Utilizați `opencode run "your prompt" --model shiguang-gateway/claude-sonnet-4-5-thinking --variant high`
+> Utilizați `opencode run "your prompt" --model orbit/claude-sonnet-4-5-thinking --variant high`
 > pentru a trimite variante de gândire.
 
 ---
@@ -482,7 +482,7 @@ mkdir -p ~/.cline/data && cat > ~/.cline/data/globalState.json << EOF
 {
   "apiProvider": "openai",
   "openAiBaseUrl": "http://localhost:20128/v1",
-  "openAiApiKey": "sk-your-shiguang-gateway-key"
+  "openAiApiKey": "sk-your-orbit-key"
 }
 EOF
 ```
@@ -490,7 +490,7 @@ EOF
 **Mod VS Code:**
 Setările extensiei Cline → Furnizor API: `OpenAI Compatible` → URL de bază: `http://localhost:20128/v1`
 
-Sau utilizați dashboard-ul ShiguangGateway → **CLI Tools → Cline → Aplică Configurația**.
+Sau utilizați dashboard-ul Orbit → **CLI Tools → Cline → Aplică Configurația**.
 
 ---
 
@@ -499,7 +499,7 @@ Sau utilizați dashboard-ul ShiguangGateway → **CLI Tools → Cline → Aplic�
 **Mod CLI:**
 
 ```bash
-kilocode --api-base http://localhost:20128/v1 --api-key sk-your-shiguang-gateway-key
+kilocode --api-base http://localhost:20128/v1 --api-key sk-your-orbit-key
 ```
 
 **Setări VS Code:**
@@ -507,11 +507,11 @@ kilocode --api-base http://localhost:20128/v1 --api-key sk-your-shiguang-gateway
 ```json
 {
   "kilo-code.openAiBaseUrl": "http://localhost:20128/v1",
-  "kilo-code.apiKey": "sk-your-shiguang-gateway-key"
+  "kilo-code.apiKey": "sk-your-orbit-key"
 }
 ```
 
-Sau utilizați dashboard-ul ShiguangGateway → **CLI Tools → KiloCode → Aplică Configurația**.
+Sau utilizați dashboard-ul Orbit → **CLI Tools → KiloCode → Aplică Configurația**.
 
 ---
 
@@ -521,11 +521,11 @@ Editați `~/.continue/config.yaml`:
 
 ```yaml
 models:
-  - name: ShiguangGateway
+  - name: Orbit
     provider: openai
     model: auto
     apiBase: http://localhost:20128/v1
-    apiKey: sk-your-shiguang-gateway-key
+    apiKey: sk-your-orbit-key
     default: true
 ```
 
@@ -535,25 +535,25 @@ Reporniti VS Code după editare.
 
 #### VS Code Insiders (`chatLanguageModels.json`)
 
-Utilizați acest lucru când VS Code Insiders este configurat pentru modele de puncte finale personalizate și doriți ca ShiguangGateway să funcționeze fără un câmp de antet personalizat.
+Utilizați acest lucru când VS Code Insiders este configurat pentru modele de puncte finale personalizate și doriți ca Orbit să funcționeze fără un câmp de antet personalizat.
 
 **Locație recomandată:**
 
 - Linux: `~/.config/Code - Insiders/User/chatLanguageModels.json`
 - Windows: `%APPDATA%/Code - Insiders/User/chatLanguageModels.json`
 
-**Exemplu folosind aliasul tokenizat ShiguangGateway:**
+**Exemplu folosind aliasul tokenizat Orbit:**
 
 ```json
 [
   {
     "vendor": "customendpoint",
     "id": "auto",
-    "name": "ShiguangGateway Auto",
+    "name": "Orbit Auto",
     "family": "gpt-4",
     "version": "1.0.0",
-    "url": "http://localhost:20128/api/v1/vscode/sk-your-shiguang-gateway-key/chat/completions",
-    "modelsUrl": "http://localhost:20128/api/v1/vscode/sk-your-shiguang-gateway-key/models",
+    "url": "http://localhost:20128/api/v1/vscode/sk-your-orbit-key/chat/completions",
+    "modelsUrl": "http://localhost:20128/api/v1/vscode/sk-your-orbit-key/models",
     "requestFormat": "openai-chat-completions",
     "contextWindow": 256000,
     "maxOutputTokens": 32768,
@@ -566,7 +566,7 @@ Utilizați acest lucru când VS Code Insiders este configurat pentru modele de p
 
 **Note:**
 
-- Înlocuiți `sk-your-shiguang-gateway-key` cu o cheie API creată în ShiguangGateway.
+- Înlocuiți `sk-your-orbit-key` cu o cheie API creată în Orbit.
 - Câmpul `url` ar trebui să indice către `/api/v1/vscode/{token}/chat/completions`.
 - Câmpul `modelsUrl` ar trebui să indice către `/api/v1/vscode/{token}/models`.
 - Preferiți fluxul normal `/v1` + antet Bearer atunci când clientul suportă antete personalizate.
@@ -580,40 +580,40 @@ Utilizați acest lucru când VS Code Insiders este configurat pentru modele de p
 # Autentificare în contul dvs. AWS/Kiro:
 kiro-cli login
 
-# CLI-ul folosește propria sa autentificare — ShiguangGateway nu este necesar ca backend pentru Kiro CLI în sine.
-# Utilizați kiro-cli împreună cu ShiguangGateway pentru alte unelte.
+# CLI-ul folosește propria sa autentificare — Orbit nu este necesar ca backend pentru Kiro CLI în sine.
+# Utilizați kiro-cli împreună cu Orbit pentru alte unelte.
 kiro-cli status
 ```
 
-Pentru aplicația desktop **Kiro IDE**, utilizați punctul de acces MITM expus de ShiguangGateway
+Pentru aplicația desktop **Kiro IDE**, utilizați punctul de acces MITM expus de Orbit
 sub `/dashboard/cli-tools → Kiro`.
 
 ---
 
-## 10. CLI Intern ShiguangGateway
+## 10. CLI Intern Orbit
 
-Binary-ul `shiguang-gateway` oferă comenzi pentru ciclul de viață al serverului, configurare, diagnosticare și gestionarea furnizorilor. Punct de intrare: `bin/shiguang-gateway.mjs`.
+Binary-ul `orbit` oferă comenzi pentru ciclul de viață al serverului, configurare, diagnosticare și gestionarea furnizorilor. Punct de intrare: `bin/orbit.mjs`.
 
 ```bash
-shiguang-gateway                              # Pornește serverul (port implicit 20128)
-shiguang-gateway setup                        # Asistent interactiv de configurare
-shiguang-gateway doctor                       # Verifică configurația, DB, porturi, rulare
-shiguang-gateway providers list               # Conexiuni de furnizor configurate
-shiguang-gateway providers test-all           # Testează fiecare conexiune activă
-shiguang-gateway reset-password               # Resetează parola admin
-shiguang-gateway logs                         # Flux de jurnale de cereri
-shiguang-gateway health                       # Sănătate detaliată (disjunctoare, cache, memorie)
-shiguang-gateway --version                    # Afișează versiunea
-shiguang-gateway --help                       # Afișează toate comenzile
+orbit                              # Pornește serverul (port implicit 20128)
+orbit setup                        # Asistent interactiv de configurare
+orbit doctor                       # Verifică configurația, DB, porturi, rulare
+orbit providers list               # Conexiuni de furnizor configurate
+orbit providers test-all           # Testează fiecare conexiune activă
+orbit reset-password               # Resetează parola admin
+orbit logs                         # Flux de jurnale de cereri
+orbit health                       # Sănătate detaliată (disjunctoare, cache, memorie)
+orbit --version                    # Afișează versiunea
+orbit --help                       # Afișează toate comenzile
 ```
 
 ### Configurare & Inițializare
 
 ```bash
-shiguang-gateway setup                        # Asistent interactiv de configurare
-shiguang-gateway setup --non-interactive      # Mod CI/automatizare (citește variabile de mediu + flag-uri)
-shiguang-gateway setup --password '<value>'   # Setează parola admin direct
-shiguang-gateway setup --add-provider \
+orbit setup                        # Asistent interactiv de configurare
+orbit setup --non-interactive      # Mod CI/automatizare (citește variabile de mediu + flag-uri)
+orbit setup --password '<value>'   # Setează parola admin direct
+orbit setup --add-provider \
   --provider openai \
   --api-key '<value>' \
   --test-provider                      # Adaugă și testează un furnizor dintr-o dată
@@ -623,21 +623,21 @@ Variabilele de mediu recunoscute pentru configurarea non-interactivă:
 
 | Var                 | Scop                                                                     |
 | ------------------- | ------------------------------------------------------------------------ |
-| `SHIGUANG_GATEWAY_API_KEY` | Cheia API a furnizorului (legată de `--api-key` prin `.env()` Commander) |
-| `DATA_DIR`          | Suprascrie directorul de date ShiguangGateway                                  |
+| `ORBIT_API_KEY` | Cheia API a furnizorului (legată de `--api-key` prin `.env()` Commander) |
+| `DATA_DIR`          | Suprascrie directorul de date Orbit                                  |
 
 Toate celelalte intrări non-interactive sunt transmise ca flag-uri, nu variabile de mediu:
 `--password`, `--provider`, `--provider-name`, `--provider-base-url`, `--default-model`
-(vezi opțiunile `shiguang-gateway setup` de mai sus).
+(vezi opțiunile `orbit setup` de mai sus).
 
 ### Diagnosticare
 
 ```bash
-shiguang-gateway doctor                       # Verifică configurația, DB, porturi, rulare, memorie, vitalitate
-shiguang-gateway doctor --json                # JSON citibil de mașină
-shiguang-gateway doctor --no-liveness         # Sare peste proba de sănătate HTTP
-shiguang-gateway doctor --host 0.0.0.0        # Suprascrie gazda de vitalitate
-shiguang-gateway doctor --liveness-url <url>  # Suprascriere completă a URL-ului endpoint-ului de sănătate
+orbit doctor                       # Verifică configurația, DB, porturi, rulare, memorie, vitalitate
+orbit doctor --json                # JSON citibil de mașină
+orbit doctor --no-liveness         # Sare peste proba de sănătate HTTP
+orbit doctor --host 0.0.0.0        # Suprascrie gazda de vitalitate
+orbit doctor --liveness-url <url>  # Suprascriere completă a URL-ului endpoint-ului de sănătate
 ```
 
 Doctorul rulează aceste verificări: `Config`, `Database`, `Storage/encryption`,
@@ -647,47 +647,47 @@ Doctorul rulează aceste verificări: `Config`, `Database`, `Storage/encryption`
 ### Gestionarea Furnizorilor
 
 ```bash
-shiguang-gateway providers available                       # Catalogul furnizorilor ShiguangGateway
-shiguang-gateway providers available --search openai       # Filtrează catalogul după id/nume/alias/categorie
-shiguang-gateway providers available --category api-key    # Filtrează după categorie (api-key, oauth, gratuit, ...)
-shiguang-gateway providers available --json                # JSON citibil de mașină
+orbit providers available                       # Catalogul furnizorilor Orbit
+orbit providers available --search openai       # Filtrează catalogul după id/nume/alias/categorie
+orbit providers available --category api-key    # Filtrează după categorie (api-key, oauth, gratuit, ...)
+orbit providers available --json                # JSON citibil de mașină
 
-shiguang-gateway providers list                            # Conexiuni de furnizor configurate
-shiguang-gateway providers list --json
+orbit providers list                            # Conexiuni de furnizor configurate
+orbit providers list --json
 
-shiguang-gateway providers test <id|name>                  # Testează o conexiune configurată
-shiguang-gateway providers test-all                        # Testează fiecare conexiune activă
-shiguang-gateway providers validate                        # Validare structurală locală
-shiguang-gateway providers add <provider> --credential-env PROVIDER_KEY
-shiguang-gateway providers import ./providers.json --dry-run --json
-shiguang-gateway providers auth <provider>                 # Flux OAuth existent
-shiguang-gateway providers edit <id|name> --default-model <model>
-shiguang-gateway providers remove <id|name> --yes
+orbit providers test <id|name>                  # Testează o conexiune configurată
+orbit providers test-all                        # Testează fiecare conexiune activă
+orbit providers validate                        # Validare structurală locală
+orbit providers add <provider> --credential-env PROVIDER_KEY
+orbit providers import ./providers.json --dry-run --json
+orbit providers auth <provider>                 # Flux OAuth existent
+orbit providers edit <id|name> --default-model <model>
+orbit providers remove <id|name> --yes
 ```
 
 `providers add/import/auth/edit/remove` sunt API-first și, prin urmare, funcționează împotriva
 contextului local sau la distanță activ. Introducerea acreditivelor ar trebui să folosească
 `--credential-stdin` sau `--credential-env`; `--dry-run --json` raportează doar
-prezența/forma redactată. `providers available` citește catalogul ShiguangGateway;
+prezența/forma redactată. `providers available` citește catalogul Orbit;
 `providers list/test/test-all/validate` își păstrează comportamentul local SQLite și
 nu necesită ca serverul să fie pornit.
 
 ### Recuperare & Resetare
 
 ```bash
-shiguang-gateway reset-password                # Resetează parola admin (de asemenea: shiguang-gateway-reset-password)
-shiguang-gateway reset-encrypted-columns       # Afișează avertisment + dry-run pentru resetarea acreditivelor criptate
-shiguang-gateway reset-encrypted-columns --force  # De fapt, anulează acreditivele criptate în SQLite
+orbit reset-password                # Resetează parola admin (de asemenea: orbit-reset-password)
+orbit reset-encrypted-columns       # Afișează avertisment + dry-run pentru resetarea acreditivelor criptate
+orbit reset-encrypted-columns --force  # De fapt, anulează acreditivele criptate în SQLite
 ```
 
 ### Export de Acreditive (⚠ manipulați cu grijă)
 
 ```bash
-shiguang-gateway auth export                                 # Afișează avertisment + poartă de confirmare — fără acces la DB
-shiguang-gateway auth export --force                          # Exportă TOATE acreditivele DECRIPTATE ale conexiunilor în stdout ca JSON
-shiguang-gateway auth export --force --id <id>                 # Exportă doar conexiunea corespunzătoare
-shiguang-gateway auth export --force --format env               # Emite linii SHIGUANG_GATEWAY_<PROVIDER>_<FIELD>=<value>
-shiguang-gateway auth export --force --out creds.json           # Scrie într-un fișier (creat cu permisiuni 0600)
+orbit auth export                                 # Afișează avertisment + poartă de confirmare — fără acces la DB
+orbit auth export --force                          # Exportă TOATE acreditivele DECRIPTATE ale conexiunilor în stdout ca JSON
+orbit auth export --force --id <id>                 # Exportă doar conexiunea corespunzătoare
+orbit auth export --force --format env               # Emite linii ORBIT_<PROVIDER>_<FIELD>=<value>
+orbit auth export --force --out creds.json           # Scrie într-un fișier (creat cu permisiuni 0600)
 ```
 
 `auth export` este **local-only** (citire directă SQLite, fără rută HTTP) și intenționat imprimă/scrie
@@ -699,36 +699,36 @@ fie setat. Un câmp care nu reușește să decripteze (cheie învechită, text c
 
 ### Alte subcomenzi
 
-Acestea presupun un server ShiguangGateway în funcțiune, cu excepția cazului în care se menționează altfel:
+Acestea presupun un server Orbit în funcțiune, cu excepția cazului în care se menționează altfel:
 
 ```bash
-shiguang-gateway status                       # Stare cuprinzătoare a rulării
-shiguang-gateway logs                         # Flux de jurnale de cereri (--json, --search, --follow)
-shiguang-gateway config show                  # Afișează configurația curentă
+orbit status                       # Stare cuprinzătoare a rulării
+orbit logs                         # Flux de jurnale de cereri (--json, --search, --follow)
+orbit config show                  # Afișează configurația curentă
 
-shiguang-gateway provider list                # Listează furnizorii disponibili (alias pentru providers list)
-shiguang-gateway provider add                 # Înregistrează ShiguangGateway ca furnizor pe un instrument
-shiguang-gateway keys add | list | remove     # Gestionează cheile API
-shiguang-gateway models [provider]            # Listează modelele (--json, --search)
-shiguang-gateway combo list | switch | create | delete
+orbit provider list                # Listează furnizorii disponibili (alias pentru providers list)
+orbit provider add                 # Înregistrează Orbit ca furnizor pe un instrument
+orbit keys add | list | remove     # Gestionează cheile API
+orbit models [provider]            # Listează modelele (--json, --search)
+orbit combo list | switch | create | delete
 
-shiguang-gateway backup                       # Instantanee configurație + DB
-shiguang-gateway restore                      # Restaurează dintr-o instantanee anterioară
+orbit backup                       # Instantanee configurație + DB
+orbit restore                      # Restaurează dintr-o instantanee anterioară
 
-shiguang-gateway health                       # Sănătate detaliată (disjunctoare, cache, memorie)
-shiguang-gateway quota                        # Utilizarea cotei furnizorului
-shiguang-gateway cache                        # Starea cache-ului
-shiguang-gateway cache clear                  # Șterge cache-urile semantice + semnături
+orbit health                       # Sănătate detaliată (disjunctoare, cache, memorie)
+orbit quota                        # Utilizarea cotei furnizorului
+orbit cache                        # Starea cache-ului
+orbit cache clear                  # Șterge cache-urile semantice + semnături
 
-shiguang-gateway mcp status | restart         # Starea serverului MCP / repornire
-shiguang-gateway a2a status | card            # Starea serverului A2A / card agent
+orbit mcp status | restart         # Starea serverului MCP / repornire
+orbit a2a status | card            # Starea serverului A2A / card agent
 
-shiguang-gateway tunnel list | create | stop  # Gestionează tunelurile (cloudflare/tailscale/ngrok)
-shiguang-gateway env show | get <k> | set <k> <v>  # Inspectează / setează variabilele de mediu (temporar)
+orbit tunnel list | create | stop  # Gestionează tunelurile (cloudflare/tailscale/ngrok)
+orbit env show | get <k> | set <k> <v>  # Inspectează / setează variabilele de mediu (temporar)
 
-shiguang-gateway test                         # Test de conectivitate a furnizorului
-shiguang-gateway update                       # Verifică actualizările
-shiguang-gateway completion                   # Generează completarea shell-ului
+orbit test                         # Test de conectivitate a furnizorului
+orbit update                       # Verifică actualizările
+orbit completion                   # Generează completarea shell-ului
 ```
 
 ### Flag-uri comune
@@ -757,7 +757,7 @@ shiguang-gateway completion                   # Generează completarea shell-ulu
 | `/v1/audio/speech`         | Text-to-speech                        | ElevenLabs, OpenAI TTS                        |
 | `/v1/audio/transcriptions` | Speech-to-text                        | Deepgram, AssemblyAI                          |
 
-Exemple gata de lipit cu un URL tokenizat ShiguangGateway:
+Exemple gata de lipit cu un URL tokenizat Orbit:
 
 ```txt
 Exemplu token: sk-a3ab3c080beaee3a-69f4a4-070d71af
@@ -776,7 +776,7 @@ Chat Ollama: http://localhost:20128/api/v1/vscode/sk-a3ab3c080beaee3a-69f4a4-070
 
 | Eroare                                        | Cauză                        | Soluție                                                   |
 | --------------------------------------------- | ---------------------------- | --------------------------------------------------------- |
-| `Connection refused`                          | ShiguangGateway nu rulează         | `shiguang-gateway serve`                                         |
+| `Connection refused`                          | Orbit nu rulează         | `orbit serve`                                         |
 | `401 Unauthorized`                            | Cheie API greșită            | Verifică în `/dashboard/api-manager`                      |
 | `No combo configured`                         | Niciun combo de rutare activ | Configurează în `/dashboard/combos`                       |
 | CLI arată "not installed"                     | Binariul nu este în PATH     | Verifică `which <command>`                                |

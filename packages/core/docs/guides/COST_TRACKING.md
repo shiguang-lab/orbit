@@ -6,7 +6,7 @@ lastUpdated: 2026-06-28
 
 # Cost & Spend Tracking
 
-How ShiguangGateway estimates, records, and reports the cost of every request — and why the
+How Orbit estimates, records, and reports the cost of every request — and why the
 dashboard number is a **savings tracker**, not a bill.
 
 See also: [User Guide](./USER_GUIDE.md) · [Features Gallery](./FEATURES.md)
@@ -15,11 +15,11 @@ See also: [User Guide](./USER_GUIDE.md) · [Features Gallery](./FEATURES.md)
 
 ## What it is (and what it is not)
 
-ShiguangGateway attributes a per-request USD cost to every completion by multiplying token
+Orbit attributes a per-request USD cost to every completion by multiplying token
 counts by a model's pricing rates. These numbers power the **Costs** dashboard, the
-`shiguang-gateway cost` / `shiguang-gateway usage` CLI, CSV/JSON exports, and per-API-key budgets.
+`orbit cost` / `orbit usage` CLI, CSV/JSON exports, and per-API-key budgets.
 
-> **The dashboard "cost" is a savings tracker, not a bill.** ShiguangGateway never charges you
+> **The dashboard "cost" is a savings tracker, not a bill.** Orbit never charges you
 > — it routes your requests to providers you have already connected (your own
 > subscriptions, free tiers, and API keys). A "$290 total cost" accrued entirely on free
 > models means roughly **$290 you did _not_ pay** a paid API. The figure is an _estimate_
@@ -31,7 +31,7 @@ This framing is stated directly in the project [README](../../README.md) ("the d
 
 Because the number is an estimate:
 
-- It depends on the pricing table ShiguangGateway has for each model. A model with no pricing
+- It depends on the pricing table Orbit has for each model. A model with no pricing
   entry contributes `0` cost (it shows as a "Legacy / Free" row in the explorer).
 - Free-tier and subscription traffic still accrues an _estimated_ cost — that is the
   amount you are saving, not an amount owed.
@@ -49,7 +49,7 @@ Costs come from a pricing table resolved in this precedence order
 2. **Synced external pricing** — fetched from LiteLLM's public
    `model_prices_and_context_window.json` when sync is enabled (stored in a separate
    `pricing_synced` namespace so it never clobbers your overrides).
-3. **Hardcoded defaults** — shipped with ShiguangGateway.
+3. **Hardcoded defaults** — shipped with Orbit.
 
 External pricing sync is **opt-in**, disabled by default. Relevant env vars
 (see [`.env.example`](../../.env.example)):
@@ -90,8 +90,8 @@ Model names are normalized first (provider-path prefixes such as `openai/` or
 
   | Env var                             | Default | Purpose                            |
   | ----------------------------------- | ------- | ---------------------------------- |
-  | `SHIGUANG_GATEWAY_SPEND_FLUSH_INTERVAL_MS` | `60000` | Flush interval in milliseconds.    |
-  | `SHIGUANG_GATEWAY_SPEND_MAX_BUFFER_SIZE`   | `1000`  | Max buffered entries before flush. |
+  | `ORBIT_SPEND_FLUSH_INTERVAL_MS` | `60000` | Flush interval in milliseconds.    |
+  | `ORBIT_SPEND_MAX_BUFFER_SIZE`   | `1000`  | Max buffered entries before flush. |
 
 The dashboard's cost figures are **not** read from a stored per-row dollar amount — they
 are recomputed on the fly from token counts and the current pricing table each time the
@@ -194,50 +194,50 @@ noted.
 
 ## CLI
 
-ShiguangGateway's CLI exposes cost, usage, and pricing commands (registered in
+Orbit's CLI exposes cost, usage, and pricing commands (registered in
 [`apps/cli/src/cli/commands/registry.mjs`](../../../../apps/cli/src/cli/commands/registry.mjs)).
 
-### `shiguang-gateway cost`
+### `orbit cost`
 
 A cost report aggregated from `/api/usage/analytics`.
 
 ```bash
-shiguang-gateway cost                          # last 30d, grouped by provider
-shiguang-gateway cost --period 7d              # last 7 days
-shiguang-gateway cost --group-by model         # group by provider | model | combo | api-key | day
-shiguang-gateway cost --since 2026-06-01 --until 2026-06-13
-shiguang-gateway cost --api-key <key> --limit 50
+orbit cost                          # last 30d, grouped by provider
+orbit cost --period 7d              # last 7 days
+orbit cost --group-by model         # group by provider | model | combo | api-key | day
+orbit cost --since 2026-06-01 --until 2026-06-13
+orbit cost --api-key <key> --limit 50
 ```
 
 Columns: group, requests, tokens in/out, cost (USD), and % of total. A grand total line
 is printed at the end (suppressed with `--quiet` or `--output json`).
 
-### `shiguang-gateway usage`
+### `orbit usage`
 
 ```bash
-shiguang-gateway usage analytics --period 30d [--provider <id>]   # per-provider cost summary
-shiguang-gateway usage logs [--limit 100] [--follow] [--api-key <k>] [--search <q>]
-shiguang-gateway usage quota [--provider <id>] [--check]
-shiguang-gateway usage utilization [--api-key <k>]
-shiguang-gateway usage history [--limit 100]
-shiguang-gateway usage proxy-logs [--limit 100]
+orbit usage analytics --period 30d [--provider <id>]   # per-provider cost summary
+orbit usage logs [--limit 100] [--follow] [--api-key <k>] [--search <q>]
+orbit usage quota [--provider <id>] [--check]
+orbit usage utilization [--api-key <k>]
+orbit usage history [--limit 100]
+orbit usage proxy-logs [--limit 100]
 
 # Budgets
-shiguang-gateway usage budget list
-shiguang-gateway usage budget get [scope]
-shiguang-gateway usage budget set <amount> [--scope global] [--period monthly]
-shiguang-gateway usage budget reset [scope]
+orbit usage budget list
+orbit usage budget get [scope]
+orbit usage budget set <amount> [--scope global] [--period monthly]
+orbit usage budget reset [scope]
 ```
 
-### `shiguang-gateway pricing`
+### `orbit pricing`
 
 ```bash
-shiguang-gateway pricing list [--provider <p>] [--model <m>] [--limit 200]
-shiguang-gateway pricing get <model>
-shiguang-gateway pricing sync [--provider <p>] [--force]   # POST /api/pricing/sync
-shiguang-gateway pricing diff [--model <m>]
-shiguang-gateway pricing defaults show
-shiguang-gateway pricing defaults set [--input <p>] [--output <p>] [--cache-read <p>] [--cache-write <p>]
+orbit pricing list [--provider <p>] [--model <m>] [--limit 200]
+orbit pricing get <model>
+orbit pricing sync [--provider <p>] [--force]   # POST /api/pricing/sync
+orbit pricing diff [--model <m>]
+orbit pricing defaults show
+orbit pricing defaults set [--input <p>] [--output <p>] [--cache-read <p>] [--cache-write <p>]
 ```
 
 > `pricing defaults show` reads `GET /api/pricing/defaults`. To edit individual model
@@ -248,12 +248,12 @@ shiguang-gateway pricing defaults set [--input <p>] [--output <p>] [--cache-read
 ## Troubleshooting
 
 - **All costs show $0 / "Legacy / Free".** The models in use have no pricing entry.
-  Enable external sync (`PRICING_SYNC_ENABLED=true`) and run `shiguang-gateway pricing sync`, or
+  Enable external sync (`PRICING_SYNC_ENABLED=true`) and run `orbit pricing sync`, or
   set prices manually via the Pricing page / `PATCH /api/pricing`.
 - **A historical model is mispriced.** Fix the price (override or re-sync) — cost is
   recomputed from token counts on every analytics read, so estimates update retroactively.
 - **Spend lags behind real time.** Per-key spend is batched; lower
-  `SHIGUANG_GATEWAY_SPEND_FLUSH_INTERVAL_MS` if you need fresher numbers.
+  `ORBIT_SPEND_FLUSH_INTERVAL_MS` if you need fresher numbers.
 
 ---
 

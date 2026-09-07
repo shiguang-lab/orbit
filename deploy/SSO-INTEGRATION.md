@@ -1,6 +1,6 @@
-# ShiguangGateway 统一 SSO 接入总览
+# Orbit 统一 SSO 接入总览
 
-> 目标：ShiguangGateway 管理台接入 shiguang 统一登录 —— 登录页用 shiguang website，
+> 目标：Orbit 管理台接入 shiguang 统一登录 —— 登录页用 shiguang website，
 > 用户信息/权限走网关，control/gateway 终结身份。完全仿 asset-hub。
 
 ## 全链路
@@ -50,8 +50,8 @@
 | 变量 | 默认 | 说明 |
 |---|---|---|
 | `SG_IDENTITY_ISSUER` | `https://shiguanglab.com` | 断言 issuer |
-| `SG_IDENTITY_AUDIENCE` | `shiguang-gateway-api` | 本产品 audience |
-| `SG_IDENTITY_ENTITLEMENT` | `shiguang-gateway:access` | 本产品 entitlement |
+| `SG_IDENTITY_AUDIENCE` | `orbit-api` | 本产品 audience |
+| `SG_IDENTITY_ENTITLEMENT` | `orbit:access` | 本产品 entitlement |
 | `SG_IDENTITY_JWKS_URL` | `https://shiguanglab.com/.well-known/sg-identity-jwks.json` | JWKS 拉取地址 |
 | `SG_IDENTITY_JWKS_FILE` | 空 | 本地 JWKS 文件(离线/测试) |
 | `SG_LOCAL_BROKER_ENABLED` | 空 | `true` 时本地显式启用真实账号 Broker(仅 dev server) |
@@ -70,4 +70,4 @@ control（8788）、realtime（8790）和 worker。Provider、首页统计、设
 ```
 
 生产使用稳定的 `JWT_SECRET`、`API_KEY_SECRET`，并按需配置本节的 shiguang JWKS 变量。生产
-禁止设置 `SG_DEV_IDENTITY`、`SG_LOCAL_BROKER_ENABLED` 及任何 `SHIGUANG_GATEWAY_NAS_*` 变量。
+禁止设置 `SG_DEV_IDENTITY`、`SG_LOCAL_BROKER_ENABLED` 及任何 `ORBIT_NAS_*` 变量。

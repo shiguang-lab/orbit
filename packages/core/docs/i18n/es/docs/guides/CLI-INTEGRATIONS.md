@@ -6,25 +6,25 @@
 
 ---
 
-title: "Integraciones CLI — dirija cualquier CLI de codificación a ShiguangGateway"
+title: "Integraciones CLI — dirija cualquier CLI de codificación a Orbit"
 version: 3.8.50
 lastUpdated: 2026-08-18
 ---
 
 # Integraciones CLI
 
-ShiguangGateway incluye una familia de comandos `setup-*` que configuran un CLI de codificación (Codex, Claude Code, OpenCode, Cline, …) para usar ShiguangGateway como su backend — así que la herramienta se comunica con **un** endpoint y ShiguangGateway dirige a el proveedor correcto con retroceso automático. Cada comando lee el catálogo de modelos **en vivo** de un ShiguangGateway en ejecución (local o remoto) y escribe el archivo de configuración de la herramienta en **tu** máquina. La clave API se referencia mediante una variable de entorno donde la herramienta lo soporte. Los comandos que persisten un archivo de entorno local de la herramienta se anotan a continuación.
+Orbit incluye una familia de comandos `setup-*` que configuran un CLI de codificación (Codex, Claude Code, OpenCode, Cline, …) para usar Orbit como su backend — así que la herramienta se comunica con **un** endpoint y Orbit dirige a el proveedor correcto con retroceso automático. Cada comando lee el catálogo de modelos **en vivo** de un Orbit en ejecución (local o remoto) y escribe el archivo de configuración de la herramienta en **tu** máquina. La clave API se referencia mediante una variable de entorno donde la herramienta lo soporte. Los comandos que persisten un archivo de entorno local de la herramienta se anotan a continuación.
 
-También hay un lanzador genérico — `shiguang-gateway run <target>` — que inicia `claude`, `codex`, `aider`, `goose`, `opencode`, `qwen` o `gemini` con el entorno correcto inyectado, sin escribir ninguna configuración en absoluto. Los objetivos y sus alias provienen del manifiesto canónico `bin/cli/cli-manifest.mjs` (`claude-code|cc|anthropic`, `codex-cli|openai-codex|openai`, `goose-cli`, `open-code`, `qwen-code`, `gemini-cli`), y `shiguang-gateway completion` ofrece las mismas palabras de objetivo derivadas del manifiesto. Los lanzadores por herramienta heredados — `shiguang-gateway launch` (Claude Code) y `shiguang-gateway launch-codex` (Codex) — siguen disponibles.
+También hay un lanzador genérico — `orbit run <target>` — que inicia `claude`, `codex`, `aider`, `goose`, `opencode`, `qwen` o `gemini` con el entorno correcto inyectado, sin escribir ninguna configuración en absoluto. Los objetivos y sus alias provienen del manifiesto canónico `bin/cli/cli-manifest.mjs` (`claude-code|cc|anthropic`, `codex-cli|openai-codex|openai`, `goose-cli`, `open-code`, `qwen-code`, `gemini-cli`), y `orbit completion` ofrece las mismas palabras de objetivo derivadas del manifiesto. Los lanzadores por herramienta heredados — `orbit launch` (Claude Code) y `orbit launch-codex` (Codex) — siguen disponibles.
 
 La incorporación de proveedores está disponible desde el mismo contexto local/remoto. Los comandos API-first a continuación mantienen la autenticación de gestión separada de las credenciales del proveedor y nunca imprimen una credencial en la salida estructurada:
 
 ```bash
-shiguang-gateway providers add glm --credential-env GLM_API_KEY --name work
-shiguang-gateway providers import ./providers.json --dry-run --json
-shiguang-gateway providers auth openai
-shiguang-gateway providers edit <connection-id> --default-model glm/glm-5.2
-shiguang-gateway providers remove <connection-id> --yes
+orbit providers add glm --credential-env GLM_API_KEY --name work
+orbit providers import ./providers.json --dry-run --json
+orbit providers auth openai
+orbit providers edit <connection-id> --default-model glm/glm-5.2
+orbit providers remove <connection-id> --yes
 ```
 
 Para scripts, se prefiere `--credential-stdin` o `--credential-env`; `--credential` se conserva para uso local controlado. `providers remove` requiere `--yes` en un terminal no interactivo, y los cinco comandos honran el contexto activo o las opciones globales `--base-url`/`--api-key`.
@@ -33,7 +33,7 @@ Para la configuración base escrita a mano de una sola vez de las dos integracio
 
 - [Configuración de Claude Code](./CLAUDE-CODE-CONFIGURATION.md)
 - [Configuración de Codex CLI](./CODEX-CLI-CONFIGURATION.md)
-- [Modo Remoto](./REMOTE-MODE.md) — controla un ShiguangGateway remoto (VPS / Tailnet) desde tu laptop
+- [Modo Remoto](./REMOTE-MODE.md) — controla un Orbit remoto (VPS / Tailnet) desde tu laptop
 - [VS Code Copilot Chat](./VSCODE-COPILOT.md) — la extensión OmniCopilot; también puede ejecutar estos
   comandos `setup-*` por ti desde dentro del editor
 
@@ -41,32 +41,32 @@ Para la configuración base escrita a mano de una sola vez de las dos integracio
 
 ## Tabla maestra
 
-Cada comando honra el **contexto activo** (establecido con `shiguang-gateway connect`, vea
+Cada comando honra el **contexto activo** (establecido con `orbit connect`, vea
 [Modo Remoto](./REMOTE-MODE.md)) o las banderas explícitas `--remote <url> --api-key <key>`. "Local vs remoto" a continuación significa: sin banderas se dirige a `http://localhost:20128`; con `--remote` (o un contexto remoto activo) se obtiene el catálogo de ese servidor y se escribe la configuración localmente.
 
 | Comando                    | Herramienta                                   | Lo que escribe                                                                                                                                                    | Banderas clave                                                                                                                             | Local vs remoto |
 | -------------------------- | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | --------------- |
-| `shiguang-gateway setup-codex`    | OpenAI Codex CLI                              | `~/.codex/<name>.config.toml` — un perfil por modelo de texto compatible (`codex --profile <name>`)                                                               | `--remote` `--api-key` `--only` `--dry-run` `--port` `--codex-home`                                                                        | Ambos           |
-| `shiguang-gateway setup-claude`   | Claude Code                                   | `~/.claude/profiles/<name>/settings.json` — un perfil por modelo coincidente (`CLAUDE_CONFIG_DIR`)                                                                | `--remote` `--api-key` `--only` `--dry-run` `--port` `--claude-home`                                                                       | Ambos           |
-| `shiguang-gateway setup-opencode` | OpenCode (compatible con openai)              | `~/.config/opencode/opencode.json` — proveedor `shiguang-gateway` con cada modelo del catálogo (`opencode -m shiguang-gateway/<model>`)                                         | `--remote` `--api-key` `--only` `--model` `--dry-run` `--port`                                                                             | Ambos           |
-| `shiguang-gateway setup-cline`    | Cline                                         | `~/.cline/data/{globalState,secrets}.json` (modo CLI) + imprime la configuración de la extensión de VS Code                                                       | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--cline-dir`                                                                | Ambos           |
-| `shiguang-gateway setup-kilo`     | Kilo Code                                     | `~/.local/share/kilo/auth.json` (CLI) + fusiona `kilocode.*` en `settings.json` de VS Code si está presente                                                       | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--auth-path` `--vscode-settings`                                            | Ambos           |
-| `shiguang-gateway setup-continue` | Continue / `cn` CLI                           | `~/.continue/config.yaml` — modelos `provider: openai`, clave a través de `${{ secrets.SHIGUANG_GATEWAY_API_KEY }}`                                                      | `--remote` `--api-key` `--only` `--dry-run` `--port` `--config-path`                                                                       | Ambos           |
-| `shiguang-gateway setup-cursor`   | Cursor                                        | Nada — imprime los pasos en la aplicación (la configuración de Cursor es opaca SQLite)                                                                            | `--remote` `--api-key` `--only` `--port`                                                                                                   | Ambos           |
-| `shiguang-gateway setup-roo`      | Roo Code                                      | `~/.shiguang-gateway/roo-settings.json` (documento de importación) + establece `roo-cline.autoImportSettingsPath` si existe un `settings.json` de VS Code                | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--import-path` `--vscode-settings`                                          | Ambos           |
-| `shiguang-gateway setup-crush`    | Crush                                         | `~/.config/crush/crush.json` — proveedor `compatible con openai`, clave a través de `$SHIGUANG_GATEWAY_API_KEY`                                                          | `--remote` `--api-key` `--only` `--dry-run` `--port` `--config-path`                                                                       | Ambos           |
-| `shiguang-gateway setup-goose`    | Goose                                         | `~/.config/goose/config.yaml` (`GOOSE_PROVIDER`/`OPENAI_HOST`/`GOOSE_MODEL`) + imprime receta de entorno                                                          | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--config-path`                                                              | Ambos           |
-| `shiguang-gateway setup-aider`    | Aider                                         | `~/.aider.conf.yml` (`openai-api-base` + `model: openai/<id>`) + imprime receta de entorno                                                                        | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--config-path`                                                              | Ambos           |
-| `shiguang-gateway setup-qwen`     | Qwen Code                                     | `~/.qwen/settings.json` — matriz `modelProviders.openai` V4 + `SHIGUANG_GATEWAY_API_KEY` en `~/.qwen/.env`                                                               | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--config-path` `--env-path`                                                 | Ambos           |
-| `shiguang-gateway run <target>`   | Lanzamiento en tiempo de ejecución (genérico) | Nada — inicia `claude`/`codex`/`aider`/`goose`/`opencode`/`qwen`/`gemini` con el entorno y argumentos correctos; Qwen y Gemini utilizan un hogar aislado temporal | `--remote` `--base-url` `--context` `--provider` `--model` `--api-key` `--api-key-env` `--dry-run` `--json` `--port` `--profile` `--token` | Ambos           |
-| `shiguang-gateway launch`         | Claude Code                                   | Nada — inicia `claude` con `ANTHROPIC_BASE_URL`/`ANTHROPIC_AUTH_TOKEN` inyectados                                                                                 | `--remote` `--api-key` `--token` `--profile` `--port`                                                                                      | Ambos           |
-| `shiguang-gateway launch-codex`   | OpenAI Codex CLI                              | Nada — inicia `codex` con el proveedor `shiguang-gateway` inyectado a través de banderas `-c`                                                                            | `--remote` `--api-key` `--profile` (`-p`) `--port`                                                                                         | Ambos           |
+| `orbit setup-codex`    | OpenAI Codex CLI                              | `~/.codex/<name>.config.toml` — un perfil por modelo de texto compatible (`codex --profile <name>`)                                                               | `--remote` `--api-key` `--only` `--dry-run` `--port` `--codex-home`                                                                        | Ambos           |
+| `orbit setup-claude`   | Claude Code                                   | `~/.claude/profiles/<name>/settings.json` — un perfil por modelo coincidente (`CLAUDE_CONFIG_DIR`)                                                                | `--remote` `--api-key` `--only` `--dry-run` `--port` `--claude-home`                                                                       | Ambos           |
+| `orbit setup-opencode` | OpenCode (compatible con openai)              | `~/.config/opencode/opencode.json` — proveedor `orbit` con cada modelo del catálogo (`opencode -m orbit/<model>`)                                         | `--remote` `--api-key` `--only` `--model` `--dry-run` `--port`                                                                             | Ambos           |
+| `orbit setup-cline`    | Cline                                         | `~/.cline/data/{globalState,secrets}.json` (modo CLI) + imprime la configuración de la extensión de VS Code                                                       | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--cline-dir`                                                                | Ambos           |
+| `orbit setup-kilo`     | Kilo Code                                     | `~/.local/share/kilo/auth.json` (CLI) + fusiona `kilocode.*` en `settings.json` de VS Code si está presente                                                       | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--auth-path` `--vscode-settings`                                            | Ambos           |
+| `orbit setup-continue` | Continue / `cn` CLI                           | `~/.continue/config.yaml` — modelos `provider: openai`, clave a través de `${{ secrets.ORBIT_API_KEY }}`                                                      | `--remote` `--api-key` `--only` `--dry-run` `--port` `--config-path`                                                                       | Ambos           |
+| `orbit setup-cursor`   | Cursor                                        | Nada — imprime los pasos en la aplicación (la configuración de Cursor es opaca SQLite)                                                                            | `--remote` `--api-key` `--only` `--port`                                                                                                   | Ambos           |
+| `orbit setup-roo`      | Roo Code                                      | `~/.orbit/roo-settings.json` (documento de importación) + establece `roo-cline.autoImportSettingsPath` si existe un `settings.json` de VS Code                | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--import-path` `--vscode-settings`                                          | Ambos           |
+| `orbit setup-crush`    | Crush                                         | `~/.config/crush/crush.json` — proveedor `compatible con openai`, clave a través de `$ORBIT_API_KEY`                                                          | `--remote` `--api-key` `--only` `--dry-run` `--port` `--config-path`                                                                       | Ambos           |
+| `orbit setup-goose`    | Goose                                         | `~/.config/goose/config.yaml` (`GOOSE_PROVIDER`/`OPENAI_HOST`/`GOOSE_MODEL`) + imprime receta de entorno                                                          | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--config-path`                                                              | Ambos           |
+| `orbit setup-aider`    | Aider                                         | `~/.aider.conf.yml` (`openai-api-base` + `model: openai/<id>`) + imprime receta de entorno                                                                        | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--config-path`                                                              | Ambos           |
+| `orbit setup-qwen`     | Qwen Code                                     | `~/.qwen/settings.json` — matriz `modelProviders.openai` V4 + `ORBIT_API_KEY` en `~/.qwen/.env`                                                               | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--config-path` `--env-path`                                                 | Ambos           |
+| `orbit run <target>`   | Lanzamiento en tiempo de ejecución (genérico) | Nada — inicia `claude`/`codex`/`aider`/`goose`/`opencode`/`qwen`/`gemini` con el entorno y argumentos correctos; Qwen y Gemini utilizan un hogar aislado temporal | `--remote` `--base-url` `--context` `--provider` `--model` `--api-key` `--api-key-env` `--dry-run` `--json` `--port` `--profile` `--token` | Ambos           |
+| `orbit launch`         | Claude Code                                   | Nada — inicia `claude` con `ANTHROPIC_BASE_URL`/`ANTHROPIC_AUTH_TOKEN` inyectados                                                                                 | `--remote` `--api-key` `--token` `--profile` `--port`                                                                                      | Ambos           |
+| `orbit launch-codex`   | OpenAI Codex CLI                              | Nada — inicia `codex` con el proveedor `orbit` inyectado a través de banderas `-c`                                                                            | `--remote` `--api-key` `--profile` (`-p`) `--port`                                                                                         | Ambos           |
 
 Notas sobre las banderas (verificadas en la fuente del comando):
 
-- `--remote <url>` — obtiene el catálogo de un ShiguangGateway remoto (anula `--port`
+- `--remote <url>` — obtiene el catálogo de un Orbit remoto (anula `--port`
   y el contexto activo). `--api-key <key>` proporciona la credencial para ese
-  servidor (por defecto a la variable de entorno `SHIGUANG_GATEWAY_API_KEY`, o el token del contexto activo).
+  servidor (por defecto a la variable de entorno `ORBIT_API_KEY`, o el token del contexto activo).
 - `--only <patterns>` — subcadenas separadas por comas; mantiene solo los IDs de modelo que coinciden
   (por ejemplo, `--only glm,kimi`). Disponible en `setup-codex`, `setup-claude`,
   `setup-opencode`, `setup-continue`, `setup-cursor`, `setup-crush`.
@@ -77,17 +77,17 @@ Notas sobre las banderas (verificadas en la fuente del comando):
   auto-descubrimiento de modelos: Cline, Kilo, Roo, Goose, Qwen, Aider. Esas herramientas
   también aceptan `--yes` para ejecuciones no interactivas (que luego requieren `--model`).
   `setup-opencode` toma `--model` para establecer el modelo predeterminado de nivel superior.
-- `--model <id>` en `shiguang-gateway run` sigue el cableado por objetivo del manifiesto
+- `--model <id>` en `orbit run` sigue el cableado por objetivo del manifiesto
   (`bin/cli/cli-manifest.mjs`): **aider** recibe `--model openai/<id>` y
-  **opencode** `--model shiguang-gateway/<id>` (el prefijo se agrega solo cuando el id
+  **opencode** `--model orbit/<id>` (el prefijo se agrega solo cuando el id
   no lo lleva ya); **qwen** y **gemini** reciben el id tal cual;
   **claude** lo obtiene a través de `ANTHROPIC_MODEL`, **goose** a través de `GOOSE_MODEL`, y
-  **codex** a través de argumentos `-c model_providers.shiguang-gateway.*`. **Qwen es el único objetivo de ejecución
-  que requiere obligatoriamente `--model`** — `shiguang-gateway run qwen` sin él sale
+  **codex** a través de argumentos `-c model_providers.orbit.*`. **Qwen es el único objetivo de ejecución
+  que requiere obligatoriamente `--model`** — `orbit run qwen` sin él sale
   `2` con un error explícito.
-- `--port <port>` — puerto local de ShiguangGateway (por defecto `20128`, ignorado cuando se establece `--remote`).
+- `--port <port>` — puerto local de Orbit (por defecto `20128`, ignorado cuando se establece `--remote`).
   Presente en todos los `setup-*` y ambos lanzadores.
-- Códigos de salida de `shiguang-gateway run`: el propio código de salida del CLI hijo se propaga
+- Códigos de salida de `orbit run`: el propio código de salida del CLI hijo se propaga
   tal cual; `2` = argumentos inválidos (objetivo no soportado, falta `--model` requerido, guardia de contenedor); `127` = el binario objetivo no está en `PATH`;
   `130`/`143`/`129` cuando el lanzamiento se termina por `SIGINT`/`SIGTERM`/`SIGHUP`;
   `1` = otro fallo de lanzamiento en tiempo de ejecución.
@@ -99,9 +99,9 @@ El selector interactivo también se comparte por las recetas de configuración:
 
 ```bash
 # Selecciona del catálogo de modelos local o remoto activo y configura el objetivo.
-shiguang-gateway configure claude
-shiguang-gateway configure opencode --provider glm
-shiguang-gateway configure qwen --model qwen/qwen3.8-max-preview --yes
+orbit configure claude
+orbit configure opencode --provider glm
+orbit configure qwen --model qwen/qwen3.8-max-preview --yes
 ```
 
 `configure` actualmente delega en las recetas probadas para `codex`, `claude`,
@@ -109,7 +109,7 @@ shiguang-gateway configure qwen --model qwen/qwen3.8-max-preview --yes
 MITM, y solo guía permanecen como flujos explícitos `setup-*`/manuales y no se presentan como objetivos lanzables.
 
 > `setup-opencode` es la integración de OpenCode **compatible con openai** y ligera.
-> También hay una integración de plugin más rica — `shiguang-gateway setup opencode` — que
+> También hay una integración de plugin más rica — `orbit setup opencode` — que
 > instala `@orbit/opencode-plugin`. Son comandos diferentes; la tabla
 > anterior documenta `setup-opencode`.
 
@@ -117,75 +117,75 @@ MITM, y solo guía permanecen como flujos explícitos `setup-*`/manuales y no se
 
 ## Uso local
 
-Con ShiguangGateway ejecutándose en `localhost:20128`, solo ejecuta el comando de configuración para tu herramienta. El catálogo se obtiene del servidor local.
+Con Orbit ejecutándose en `localhost:20128`, solo ejecuta el comando de configuración para tu herramienta. El catálogo se obtiene del servidor local.
 
 ```bash
 # Codex: escribe un perfil por modelo coincidente en ~/.codex/
-shiguang-gateway setup-codex
+orbit setup-codex
 codex --profile glm52            # usa un perfil generado
 
 # Claude Code: escribe perfiles por modelo, luego lanza uno
-shiguang-gateway setup-claude
-shiguang-gateway launch --profile glm52
+orbit setup-claude
+orbit launch --profile glm52
 
 # OpenCode: escribe el proveedor compatible con openai con todos los modelos del catálogo
-shiguang-gateway setup-opencode
-export SHIGUANG_GATEWAY_API_KEY=sk-...  # referenciado a través de {env:SHIGUANG_GATEWAY_API_KEY}, nunca en disco
-opencode -m shiguang-gateway/glm/glm-5.2 "..."
+orbit setup-opencode
+export ORBIT_API_KEY=sk-...  # referenciado a través de {env:ORBIT_API_KEY}, nunca en disco
+opencode -m orbit/glm/glm-5.2 "..."
 
 # Herramientas sin auto-descubrimiento necesitan un modelo explícito:
-shiguang-gateway setup-aider --model glm/glm-5.2
-shiguang-gateway setup-qwen --model qwen/qwen3.8-max-preview
+orbit setup-aider --model glm/glm-5.2
+orbit setup-qwen --model qwen/qwen3.8-max-preview
 
 # Vista previa sin escribir nada:
-shiguang-gateway setup-continue --dry-run
+orbit setup-continue --dry-run
 ```
 
 Lanza sin escribir ninguna configuración en absoluto (solo inyección de env):
 
 ```bash
-shiguang-gateway launch                 # Claude Code → ShiguangGateway local
-shiguang-gateway launch-codex           # Codex CLI → ShiguangGateway local
-shiguang-gateway launch-codex --profile glm52
-shiguang-gateway run claude --model openai/gpt-5.4
-shiguang-gateway run codex --model openai/gpt-5.4 --dry-run --json
-shiguang-gateway run aider --model glm/glm-5.2 -- --message "reply OK"
-shiguang-gateway run goose --model glm/glm-5.2
-shiguang-gateway run opencode --model glm/glm-5.2 -- run "reply OK"
-shiguang-gateway run qwen --model glm/glm-5.2 -- -p "reply OK"
-shiguang-gateway run gemini --model glm/glm-5.2 -- --skip-trust -p "reply OK"
+orbit launch                 # Claude Code → Orbit local
+orbit launch-codex           # Codex CLI → Orbit local
+orbit launch-codex --profile glm52
+orbit run claude --model openai/gpt-5.4
+orbit run codex --model openai/gpt-5.4 --dry-run --json
+orbit run aider --model glm/glm-5.2 -- --message "reply OK"
+orbit run goose --model glm/glm-5.2
+orbit run opencode --model glm/glm-5.2 -- run "reply OK"
+orbit run qwen --model glm/glm-5.2 -- -p "reply OK"
+orbit run gemini --model glm/glm-5.2 -- --skip-trust -p "reply OK"
 
 # Ruta de comando explícita: pasa todo lo que venga después de --
-shiguang-gateway run claude -- --print-system-prompt "revisa esta diferencia"
+orbit run claude -- --print-system-prompt "revisa esta diferencia"
 ```
 
 ---
 
 ## Uso remoto
 
-Apunta cualquier comando de configuración a un ShiguangGateway remoto con `--remote` + `--api-key`. El catálogo se obtiene del remoto; la configuración se escribe en tu máquina local.
+Apunta cualquier comando de configuración a un Orbit remoto con `--remote` + `--api-key`. El catálogo se obtiene del remoto; la configuración se escribe en tu máquina local.
 
 ```bash
 # OpenCode contra un VPS remoto, mantener solo modelos glm/kimi
-shiguang-gateway setup-opencode --remote http://192.168.0.15:20128 --api-key oma_live_xxx \
+orbit setup-opencode --remote http://192.168.0.15:20128 --api-key oma_live_xxx \
   --only glm,kimi
-opencode -m shiguang-gateway/glm/glm-5.2 "..."   # exporta SHIGUANG_GATEWAY_API_KEY primero
+opencode -m orbit/glm/glm-5.2 "..."   # exporta ORBIT_API_KEY primero
 
 # Perfiles de Codex desde un catálogo remoto
-shiguang-gateway setup-codex --remote http://192.168.0.15:20128 --api-key oma_live_xxx
+orbit setup-codex --remote http://192.168.0.15:20128 --api-key oma_live_xxx
 
 # Lanza un CLI directamente contra el remoto
-shiguang-gateway launch       --remote http://192.168.0.15:20128 --api-key oma_live_xxx
-shiguang-gateway launch-codex --remote http://192.168.0.15:20128 --api-key oma_live_xxx
+orbit launch       --remote http://192.168.0.15:20128 --api-key oma_live_xxx
+orbit launch-codex --remote http://192.168.0.15:20128 --api-key oma_live_xxx
 ```
 
 En lugar de pasar `--remote`/`--api-key` cada vez, inicia sesión una vez y deja que el **contexto activo** los proporcione automáticamente:
 
 ```bash
-shiguang-gateway connect 192.168.0.15        # genera un token con alcance, almacena el contexto
-shiguang-gateway setup-codex                 # ← ahora usa el catálogo remoto
-shiguang-gateway setup-opencode              # ← lo mismo
-shiguang-gateway launch                      # ← Claude Code contra el remoto
+orbit connect 192.168.0.15        # genera un token con alcance, almacena el contexto
+orbit setup-codex                 # ← ahora usa el catálogo remoto
+orbit setup-opencode              # ← lo mismo
+orbit launch                      # ← Claude Code contra el remoto
 ```
 
 Consulta [Modo Remoto](./REMOTE-MODE.md) para contextos, alcances y gestión de tokens.
@@ -194,7 +194,7 @@ Consulta [Modo Remoto](./REMOTE-MODE.md) para contextos, alcances y gestión de 
 
 ## Convenciones de URL base (que las herramientas quieren `/v1`)
 
-ShiguangGateway expone la superficie de OpenAI en `/v1`, la superficie de Anthropic en la raíz, y una superficie nativa de Gemini en `/v1beta`. Cada integración está conectada a la forma que su herramienta espera (verificado en la fuente del comando):
+Orbit expone la superficie de OpenAI en `/v1`, la superficie de Anthropic en la raíz, y una superficie nativa de Gemini en `/v1beta`. Cada integración está conectada a la forma que su herramienta espera (verificado en la fuente del comando):
 
 | Integración                                                                | URL base escrita | `/v1`?                                    |
 | -------------------------------------------------------------------------- | ---------------- | ----------------------------------------- |
@@ -203,7 +203,7 @@ ShiguangGateway expone la superficie de OpenAI en `/v1`, la superficie de Anthro
 | `setup-aider` (`OPENAI_API_BASE`)                                          | raíz             | No — LiteLLM añade `/v1/chat/completions` |
 | `setup-kilo`, `setup-roo`, `setup-continue`, `setup-crush`, `setup-cursor` | con `/v1`        | Sí                                        |
 | `setup-claude` (`ANTHROPIC_BASE_URL`), `launch`                            | raíz             | No — Claude Code añade `/v1/messages`     |
-| `setup-codex`, `launch-codex` (`model_providers.shiguang-gateway.base_url`)       | con `/v1`        | Sí                                        |
+| `setup-codex`, `launch-codex` (`model_providers.orbit.base_url`)       | con `/v1`        | Sí                                        |
 | `setup-qwen` (`modelProviders.openai[].baseUrl`)                           | con `/v1`        | Sí                                        |
 | `run gemini` (`GOOGLE_GEMINI_BASE_URL`)                                    | raíz             | No — el SDK añade `/v1beta/models/…`      |
 
@@ -211,42 +211,42 @@ ShiguangGateway expone la superficie de OpenAI en `/v1`, la superficie de Anthro
 
 ## Manteniendo las dependencias nativas en la actualización: `--include=optional`
 
-Cuando actualizas con `shiguang-gateway update` (después de confirmar, o con `--apply`),
-ShiguangGateway ejecuta la instalación con `--include=optional` incorporado:
+Cuando actualizas con `orbit update` (después de confirmar, o con `--apply`),
+Orbit ejecuta la instalación con `--include=optional` incorporado:
 
 ```bash
-npm install -g shiguang-gateway@latest --include=optional
+npm install -g orbit@latest --include=optional
 ```
 
-Este **no** es un flag que pasas a `shiguang-gateway update` — siempre se aplica por el
+Este **no** es un flag que pasas a `orbit update` — siempre se aplica por el
 actualizador. Garantiza que las `optionalDependencies` (`better-sqlite3`, `keytar`,
 `tls-client`, la pila LLMLingua SLM) sobrevivan a la actualización incluso si tu configuración de npm
 tiene `omit=optional` establecido, lo que de otro modo eliminaría silenciosamente el controlador nativo de SQLite
 y el enlace del keyring del sistema operativo. Para previsualizar el comando exacto sin aplicar:
 
 ```bash
-shiguang-gateway update --dry-run
-# [DRY RUN] Ejecutaría: npm install -g shiguang-gateway@latest --include=optional
+orbit update --dry-run
+# [DRY RUN] Ejecutaría: npm install -g orbit@latest --include=optional
 ```
 
-Otros flags de `shiguang-gateway update` (verificados en el código fuente): `--check` (salir 1 si
+Otros flags de `orbit update` (verificados en el código fuente): `--check` (salir 1 si
 desactualizado), `--apply` (instalar sin preguntar), `--changelog`, `--no-backup`,
 `--yes`.
 
 ---
 
-## Google Gemini CLI a través de `shiguang-gateway run gemini`
+## Google Gemini CLI a través de `orbit run gemini`
 
 Contrato verificado contra `@google/gemini-cli` 0.50.0: la CLI respeta
 `GOOGLE_GEMINI_BASE_URL` y emite `POST /v1beta/models/<model>:generateContent`
 (y `:streamGenerateContent?alt=sse`) contra él — exactamente la superficie nativa de
-Gemini de ShiguangGateway (`/v1beta`). `shiguang-gateway run gemini` lo conecta automáticamente:
+Gemini de Orbit (`/v1beta`). `orbit run gemini` lo conecta automáticamente:
 
-- `GOOGLE_GEMINI_BASE_URL` → la URL base activa de ShiguangGateway (raíz, sin `/v1`);
-- `GEMINI_API_KEY` → la credencial resuelta de ShiguangGateway (opción/env/contexto);
+- `GOOGLE_GEMINI_BASE_URL` → la URL base activa de Orbit (raíz, sin `/v1`);
+- `GEMINI_API_KEY` → la credencial resuelta de Orbit (opción/env/contexto);
 - un **`GEMINI_CLI_HOME` temporal aislado** cuyo `.gemini/settings.json`
   selecciona la autenticación `gemini-api-key`, por lo que una sesión de Google OAuth almacenada (Code Assist)
-  nunca anula el lanzamiento dirigido por ShiguangGateway — eliminado después de salir;
+  nunca anula el lanzamiento dirigido por Orbit — eliminado después de salir;
 - **higiene del entorno**: el entorno hijo se limpia de `GOOGLE_API_KEY`,
   `GOOGLE_GENAI_USE_VERTEXAI` y `GOOGLE_GENAI_USE_GCA` (que redirigirían
   la autenticación a Vertex/Code Assist), y se establece `GEMINI_DEFAULT_AUTH_TYPE=gemini-api-key` como
@@ -255,7 +255,7 @@ Gemini de ShiguangGateway (`/v1beta`). `shiguang-gateway run gemini` lo conecta 
 - inyección de `--model <id>` desde `--provider`/`--model`.
 
 ```bash
-shiguang-gateway run gemini --model glm/glm-5.2 -- --skip-trust -p "hello"
+orbit run gemini --model glm/glm-5.2 -- --skip-trust -p "hello"
 ```
 
 La guardia de confianza del espacio de trabajo de Gemini aún se aplica en modo sin cabeza — pasa
@@ -270,7 +270,7 @@ integración del protocolo de agente para `/dashboard/acp-agents`.
 
 Las ejecuciones de regresión del plan de lanzamiento determinista se realizan en CI (`tests/unit/cli/run-command.test.ts`,
 `tests/unit/cli/run-execution.test.ts`). Para validar los binarios REALES contra un servidor REAL
-de ShiguangGateway, existe un arnés opcional en
+de Orbit, existe un arnés opcional en
 `tests/integration/upstream-cli-smoke.int.test.ts`. Nunca se ejecuta automáticamente
 (cada sub-prueba se salta a menos que `RUN_CLI_SMOKE=1`), pasa la credencial por la variable de entorno
 NOMBRE (nunca por valor), redacta cadenas con forma de clave de cualquier salida registrada, salta
@@ -279,21 +279,21 @@ autenticación / upstream / configuración en lugar de un booleano simple:
 
 ```bash
 RUN_CLI_SMOKE=1 \
-SHIGUANG_GATEWAY_SMOKE_BASE_URL="http://localhost:20128" \
-SHIGUANG_GATEWAY_SMOKE_MODEL="<provider/model>" \
-SHIGUANG_GATEWAY_SMOKE_API_KEY_ENV="SHIGUANG_GATEWAY_API_KEY" \
+ORBIT_SMOKE_BASE_URL="http://localhost:20128" \
+ORBIT_SMOKE_MODEL="<provider/model>" \
+ORBIT_SMOKE_API_KEY_ENV="ORBIT_API_KEY" \
 node --import tsx/esm --test tests/integration/upstream-cli-smoke.int.test.ts
 ```
 
-Opcional: `SHIGUANG_GATEWAY_SMOKE_TARGETS="codex,opencode,qwen"` restringe el barrido;
-`SHIGUANG_GATEWAY_SMOKE_TIMEOUT_MS` anula el tiempo de espera de 120s por objetivo.
+Opcional: `ORBIT_SMOKE_TARGETS="codex,opencode,qwen"` restringe el barrido;
+`ORBIT_SMOKE_TIMEOUT_MS` anula el tiempo de espera de 120s por objetivo.
 
 ---
 
 ## Ver también
 
 - [Configuración de Claude Code](./CLAUDE-CODE-CONFIGURATION.md) — la guía más profunda de Claude Code
-- [Configuración de Codex CLI](./CODEX-CLI-CONFIGURATION.md) — la configuración base de una sola vez `[model_providers.shiguang-gateway]`
+- [Configuración de Codex CLI](./CODEX-CLI-CONFIGURATION.md) — la configuración base de una sola vez `[model_providers.orbit]`
 - [Modo Remoto](./REMOTE-MODE.md) — contextos, tokens de acceso con alcance, controlando un servidor remoto
 - [Referencia de Herramientas CLI](../reference/CLI-TOOLS.md) — el catálogo completo de herramientas soportadas + páginas del panel de control
 - [Guía de Configuración](./SETUP_GUIDE.md) — métodos de instalación y orientación en el primer uso

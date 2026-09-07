@@ -19,7 +19,7 @@ function boundedToolResult(value: unknown): string {
   const text = stringifyContentValue(value);
   if (text.length <= MAX_TOOL_RESULT_CHARS) return text;
   const removed = text.length - MAX_TOOL_RESULT_CHARS;
-  return `${text.slice(0, MAX_TOOL_RESULT_CHARS)}\n[TRUNCATED ${removed} CHARACTERS BY SHIGUANG_GATEWAY]`;
+  return `${text.slice(0, MAX_TOOL_RESULT_CHARS)}\n[TRUNCATED ${removed} CHARACTERS BY ORBIT]`;
 }
 
 function serializeSystem(system: unknown): string[] {

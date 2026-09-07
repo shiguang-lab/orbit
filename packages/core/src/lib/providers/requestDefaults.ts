@@ -368,7 +368,7 @@ export function buildOpenAIStoreSessionId(sessionId: unknown): string | undefine
     .slice(0, 96);
 
   if (!normalized) return undefined;
-  return `shiguangGateway-session-${normalized}`;
+  return `orbit-session-${normalized}`;
 }
 
 export function ensureOpenAIStoreSessionFallback(

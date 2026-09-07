@@ -9,7 +9,7 @@
 export interface ContainerWriteRefusalOptions {
   /** Human label for the tool being configured, e.g. "Codex". */
   toolLabel?: string;
-  /** The command that would fix it from the host, e.g. "shiguangGateway setup-codex". */
+  /** The command that would fix it from the host, e.g. "orbit setup-codex". */
   hostCommand?: string;
   /** How to override, worded for the surface that is refusing. */
   overrideHint?: string;
@@ -28,7 +28,7 @@ export function isContainerWriteRefusal(message: string | null | undefined): boo
 
 /** Default override hint for server-side (API) callers. */
 export const SERVER_OVERRIDE_HINT =
-  "Set SHIGUANG_GATEWAY_ALLOW_CONTAINER_CONFIG_WRITE=true to configure the container's own CLIs anyway.";
+  "Set ORBIT_ALLOW_CONTAINER_CONFIG_WRITE=true to configure the container's own CLIs anyway.";
 
 /** Default override hint for CLI callers. */
 export const CLI_OVERRIDE_HINT =
@@ -43,14 +43,14 @@ export function buildContainerWriteRefusal(
   const gatewayPort = process.env.EDGE_GATEWAY_PORT || process.env.PORT || "8787";
 
   return [
-    `${REFUSAL_PREFIX} ${subject} to ${targetPath} — ShiguangGateway is running in a container ` +
+    `${REFUSAL_PREFIX} ${subject} to ${targetPath} — Orbit is running in a container ` +
       `and that path is not mounted from the host, so the file would be discarded when the ` +
       `container is recreated and your host CLI would never read it.`,
     "",
     "Configure from the host instead (recommended):",
-    "  npm install -g shiguangGateway",
-    `  shiguangGateway connect http://localhost:${gatewayPort}`,
-    `  ${hostCommand || "shiguangGateway setup-<tool>"}`,
+    "  npm install -g orbit",
+    `  orbit connect http://localhost:${gatewayPort}`,
+    `  ${hostCommand || "orbit setup-<tool>"}`,
     "",
     'Or bind-mount the host config dir into the container (compose profile "host"):',
     '  volumes:     [ "~/.codex:/host-home/.codex:rw" ]',

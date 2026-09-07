@@ -20,7 +20,7 @@ export const GLM_ANTHROPIC_DEFAULT_BASE_URLS = Object.freeze({
 export const GLM_SHARED_MODELS = Object.freeze([
   {
     // GLM-5.3 exposes low|high|max reasoning_effort (default max); -high/-low
-    // are ShiguangGateway aliases resolved by GlmExecutor::parseGlmEffortTier.
+    // are Orbit aliases resolved by GlmExecutor::parseGlmEffortTier.
     // https://docs.z.ai/guides/llm/glm-5.3
     id: "glm-5.3",
     name: "GLM 5.3",

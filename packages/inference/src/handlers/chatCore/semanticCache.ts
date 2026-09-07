@@ -6,9 +6,9 @@ import {
 import { calculateCost } from "@orbit/core/pricing/cost-calculator";
 import { trackPendingRequest } from "@orbit/core/usage/pending-requests";
 import { synthesizeOpenAiSseFromJson } from "../../utils/jsonToSse.ts";
-import { attachShiguangGatewayMetaHeaders } from "@orbit/core/edge/gateway-response-meta";
+import { attachOrbitMetaHeaders } from "@orbit/core/edge/gateway-response-meta";
 import { extractUsageFromResponse } from "../usageExtractor.ts";
-import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "@orbit/contracts/gateway-headers";
+import { ORBIT_RESPONSE_HEADERS } from "@orbit/contracts/gateway-headers";
 
 export async function checkSemanticCache({
   semanticCacheEnabled,
@@ -78,15 +78,15 @@ export async function checkSemanticCache({
       const cachedSse = stream ? synthesizeOpenAiSseFromJson(JSON.stringify(cached)) : "";
       const headers: Record<string, string> = {
         "Content-Type": cachedSse ? "text/event-stream" : "application/json",
-        [SHIGUANG_GATEWAY_RESPONSE_HEADERS.cache]: "HIT",
+        [ORBIT_RESPONSE_HEADERS.cache]: "HIT",
         // Marker for latency measurement tools: this response served from cache
         // has synthetic (near-zero) latency, not real upstream latency.
-        [SHIGUANG_GATEWAY_RESPONSE_HEADERS.cacheLatency]: "synthetic",
+        [ORBIT_RESPONSE_HEADERS.cacheLatency]: "synthetic",
       };
       // A cache HIT serves WITHOUT an upstream call, so the incremental cost billed to
-      // the client is 0 (consumers that sum X-ShiguangGateway-Response-Cost must not charge for
-      // hits). The original/would-have-been cost is surfaced via X-ShiguangGateway-Cost-Saved.
-      attachShiguangGatewayMetaHeaders(headers, {
+      // the client is 0 (consumers that sum X-Orbit-Response-Cost must not charge for
+      // hits). The original/would-have-been cost is surfaced via X-Orbit-Cost-Saved.
+      attachOrbitMetaHeaders(headers, {
         provider,
         model,
         cacheHit: true,

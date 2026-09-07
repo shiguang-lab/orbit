@@ -8,7 +8,7 @@ import { spawnSync } from "node:child_process";
 import os from "node:os";
 
 const repoRoot = fileURLToPath(new URL("..", import.meta.url));
-const outputDir = mkdtempSync(join(os.tmpdir(), "shiguang-db-schema-"));
+const outputDir = mkdtempSync(join(os.tmpdir(), "orbit-db-schema-"));
 
 const sourceExtensions = /\.(?:[cm]?[jt]sx?)$/i;
 const ignored = new Set(["node_modules", "dist", ".turbo", ".git"]);
@@ -211,7 +211,7 @@ function findUnauthorizedExternalWriteFiles(entity, tableUsage, appEntries, root
 }
 
 function assertExternalWriteAuthorityGuard() {
-  const root = mkdtempSync(join(os.tmpdir(), "shiguang-db-authority-test-"));
+  const root = mkdtempSync(join(os.tmpdir(), "orbit-db-authority-test-"));
   try {
     const appDir = join(root, "apps", "cli");
     mkdirSync(join(appDir, "commands"), { recursive: true });

@@ -20,7 +20,7 @@ List routing combos
 
 ```bash
 curl https://localhost:20128/api/combos \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### POST /api/combos
@@ -29,7 +29,7 @@ Create routing combo
 
 ```bash
 curl -X POST https://localhost:20128/api/combos \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -40,7 +40,7 @@ Get combo by ID
 
 ```bash
 curl https://localhost:20128/api/combos/{id} \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### PUT /api/combos/{id}
@@ -51,7 +51,7 @@ Partial update: the body is merged onto the stored combo, so a field left out ke
 
 ```bash
 curl -X PUT https://localhost:20128/api/combos/{id} \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -64,7 +64,7 @@ Partial update: the body is merged onto the stored combo, so a field left out ke
 
 ```bash
 curl -X PATCH https://localhost:20128/api/combos/{id} \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -75,7 +75,7 @@ Delete combo
 
 ```bash
 curl -X DELETE https://localhost:20128/api/combos/{id} \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### GET /api/combos/metrics
@@ -84,7 +84,7 @@ Get combo metrics
 
 ```bash
 curl https://localhost:20128/api/combos/metrics \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### POST /api/combos/test
@@ -93,7 +93,7 @@ Test a combo configuration
 
 ```bash
 curl -X POST https://localhost:20128/api/combos/test \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -106,7 +106,7 @@ Returns all registered fallback chains for model routing.
 
 ```bash
 curl https://localhost:20128/api/fallback/chains \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### POST /api/fallback/chains
@@ -117,7 +117,7 @@ Registers a fallback routing chain for a model.
 
 ```bash
 curl -X POST https://localhost:20128/api/fallback/chains \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -128,7 +128,7 @@ Delete fallback chain
 
 ```bash
 curl -X DELETE https://localhost:20128/api/fallback/chains \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ## Payloads
@@ -136,11 +136,11 @@ curl -X DELETE https://localhost:20128/api/fallback/chains \
 See the full OpenAPI specification at `GET /api/openapi/spec` or `docs/openapi.yaml` for detailed request/response schemas.
 
 <!-- skill:custom-start -->
-<!-- Migrated from skills/shiguang-gateway-routing/SKILL.md (preserved curated content) -->
+<!-- Migrated from skills/orbit-routing/SKILL.md (preserved curated content) -->
 
-# ShiguangGateway — Routing & Combos
+# Orbit — Routing & Combos
 
-Requires `SHIGUANG_GATEWAY_URL` and `SHIGUANG_GATEWAY_KEY`. See [entry-point SKILL](https://raw.githubusercontent.com/diegosouzapw/ShiguangGateway/main/skills/shiguang-gateway/SKILL.md) for setup.
+Requires `ORBIT_URL` and `ORBIT_KEY`. See [entry-point SKILL](https://raw.githubusercontent.com/diegosouzapw/Orbit/main/skills/orbit/SKILL.md) for setup.
 
 ## What is a combo?
 
@@ -149,8 +149,8 @@ A combo is a named group of providers/models with a routing strategy. All reques
 ## List existing combos
 
 ```bash
-curl $SHIGUANG_GATEWAY_URL/api/combos \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_KEY"
+curl $ORBIT_URL/api/combos \
+  -H "Authorization: Bearer $ORBIT_KEY"
 ```
 
 Response includes `id`, `name`, `strategy`, `enabled`, and per-target stats.
@@ -158,8 +158,8 @@ Response includes `id`, `name`, `strategy`, `enabled`, and per-target stats.
 ## Create a combo
 
 ```bash
-curl -X POST $SHIGUANG_GATEWAY_URL/api/combos \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_KEY" \
+curl -X POST $ORBIT_URL/api/combos \
+  -H "Authorization: Bearer $ORBIT_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "name": "my-combo",
@@ -200,8 +200,8 @@ curl -X POST $SHIGUANG_GATEWAY_URL/api/combos \
 Auto-combo scores each candidate on 13 factors every request:
 
 ```bash
-curl -X POST $SHIGUANG_GATEWAY_URL/api/combos \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_KEY" \
+curl -X POST $ORBIT_URL/api/combos \
+  -H "Authorization: Bearer $ORBIT_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "name": "prod-auto",
@@ -217,8 +217,8 @@ curl -X POST $SHIGUANG_GATEWAY_URL/api/combos \
 Then call it with:
 
 ```bash
-curl -X POST $SHIGUANG_GATEWAY_URL/v1/chat/completions \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_KEY" \
+curl -X POST $ORBIT_URL/v1/chat/completions \
+  -H "Authorization: Bearer $ORBIT_KEY" \
   -H "Content-Type: application/json" \
   -d '{ "model": "prod-auto", "messages": [{ "role": "user", "content": "Hello" }] }'
 ```
@@ -227,16 +227,16 @@ curl -X POST $SHIGUANG_GATEWAY_URL/v1/chat/completions \
 
 ```bash
 # Activate
-curl -X PUT $SHIGUANG_GATEWAY_URL/api/combos/{id}/toggle \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_KEY" \
+curl -X PUT $ORBIT_URL/api/combos/{id}/toggle \
+  -H "Authorization: Bearer $ORBIT_KEY" \
   -d '{ "enabled": true }'
 ```
 
 ## Get combo metrics
 
 ```bash
-curl $SHIGUANG_GATEWAY_URL/api/combos/{id}/metrics \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_KEY"
+curl $ORBIT_URL/api/combos/{id}/metrics \
+  -H "Authorization: Bearer $ORBIT_KEY"
 ```
 
 Returns p50/p95/p99 latency, success rate, cost, and per-target breakdown.
@@ -244,22 +244,22 @@ Returns p50/p95/p99 latency, success rate, cost, and per-target breakdown.
 ## Simulate routing (dry run)
 
 ```bash
-curl -X POST $SHIGUANG_GATEWAY_URL/api/routing/simulate \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_KEY" \
+curl -X POST $ORBIT_URL/api/routing/simulate \
+  -H "Authorization: Bearer $ORBIT_KEY" \
   -H "Content-Type: application/json" \
   -d '{ "comboId": "{id}", "messages": [{ "role": "user", "content": "test" }] }'
 ```
 
 Returns which provider would be selected and why — no actual API call is made.
 
-## Via MCP (if ShiguangGateway is your MCP server)
+## Via MCP (if Orbit is your MCP server)
 
 ```
-shiguang-gateway_list_combos     → list all combos
-shiguang-gateway_switch_combo    → enable/disable a combo
-shiguang-gateway_set_routing_strategy → change strategy at runtime
-shiguang-gateway_simulate_route  → dry-run routing decision
-shiguang-gateway_best_combo_for_task → get recommendation by task type
+orbit_list_combos     → list all combos
+orbit_switch_combo    → enable/disable a combo
+orbit_set_routing_strategy → change strategy at runtime
+orbit_simulate_route  → dry-run routing decision
+orbit_best_combo_for_task → get recommendation by task type
 ```
 
 ## Errors

@@ -21,10 +21,10 @@ export const OPEN_CODE_TARGET: MitmTarget = {
   setupTutorial: {
     steps: [
       "Install the OpenCode CLI/IDE",
-      "Install ShiguangGateway's root certificate",
+      "Install Orbit's root certificate",
       "Enable DNS routing for OpenCode",
       "Restart OpenCode",
-      "Done — OpenCode traffic now routes through ShiguangGateway",
+      "Done — OpenCode traffic now routes through Orbit",
     ],
     detection: { command: "which opencode", platform: "all" },
   },

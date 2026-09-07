@@ -2,10 +2,10 @@ import { createHmac } from "crypto";
 import { timingSafeCompare } from "../utils/timingSafeCompare.ts";
 
 const ADMISSION_BYPASS_VALUE = "internal";
-const SELF_LOOP_KEY = "sk_shiguangGateway";
-const FINGERPRINT_KEY = "shiguangGateway-admission-fingerprint-v1";
+const SELF_LOOP_KEY = "sk_orbit";
+const FINGERPRINT_KEY = "orbit-admission-fingerprint-v1";
 
-export const ADMISSION_BYPASS_HEADER = "x-shiguangGateway-admission-bypass";
+export const ADMISSION_BYPASS_HEADER = "x-orbit-admission-bypass";
 
 export function resolveSessionId(request: Request): string {
   const authHeader = request.headers.get("authorization") || "";
@@ -21,7 +21,7 @@ export function resolveSessionId(request: Request): string {
 
 export function resolveSelfLoopBearer(): string {
   return (
-    process.env.SHIGUANG_GATEWAY_API_KEY?.trim() || process.env.ROUTER_API_KEY?.trim() || SELF_LOOP_KEY
+    process.env.ORBIT_API_KEY?.trim() || process.env.ROUTER_API_KEY?.trim() || SELF_LOOP_KEY
   );
 }
 

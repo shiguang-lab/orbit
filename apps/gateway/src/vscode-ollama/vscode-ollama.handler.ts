@@ -67,7 +67,7 @@ function getOllamaModelFamily(model: OpenAiCatalogModel, canonicalFamily?: strin
   const modelFamily = baseModelId.includes("/") ? baseModelId.split("/").slice(1).join("/") : baseModelId;
   if (modelFamily) return modelFamily;
   if (canonicalFamily && canonicalFamily.trim().length > 0) return canonicalFamily.trim();
-  return typeof model.owned_by === "string" && model.owned_by.trim().length > 0 ? model.owned_by.trim() : "shiguangGateway";
+  return typeof model.owned_by === "string" && model.owned_by.trim().length > 0 ? model.owned_by.trim() : "orbit";
 }
 
 function toOllamaTagModel(model: OpenAiCatalogModel) {
@@ -90,7 +90,7 @@ function toOllamaTagModel(model: OpenAiCatalogModel) {
     model: modelId,
     modified_at: "2026-01-01T00:00:00Z",
     size: 0,
-    digest: `shiguangGateway:${modelId}`,
+    digest: `orbit:${modelId}`,
     ...(reasoningEffortValues
       ? {
           supports_reasoning_effort: reasoningEffortValues,

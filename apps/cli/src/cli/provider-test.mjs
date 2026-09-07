@@ -45,7 +45,7 @@ function providerEnvName(provider, suffix) {
   const normalizedProvider = String(provider || "")
     .toUpperCase()
     .replace(/[^A-Z0-9]/g, "_");
-  return `SHIGUANG_GATEWAY_PROVIDER_TEST_${normalizedProvider}_${suffix}`;
+  return `ORBIT_PROVIDER_TEST_${normalizedProvider}_${suffix}`;
 }
 
 function resolveTestModel(input, config) {
@@ -53,7 +53,7 @@ function resolveTestModel(input, config) {
   return (
     input.defaultModel ||
     providerOverride ||
-    process.env.SHIGUANG_GATEWAY_PROVIDER_TEST_MODEL ||
+    process.env.ORBIT_PROVIDER_TEST_MODEL ||
     config.model
   );
 }

@@ -4,7 +4,7 @@
 
 ---
 
-Masalah umum dan solusinya untuk ShiguangGateway.
+Masalah umum dan solusinya untuk Orbit.
 
 ---
 
@@ -15,10 +15,10 @@ Masalah umum dan solusinya untuk ShiguangGateway.
 | Login pertama tidak berfungsi                       | Atur `INITIAL_PASSWORD` di `.env` (tidak ada nilai default yang dikodekan langsung)                                                                              |
 | Dashboard terbuka di port yang salah                | Atur `PORT=20128` dan `NEXT_PUBLIC_BASE_URL=http://localhost:20128`                                                                                              |
 | Tidak ada log yang ditulis ke disk                  | Atur `APP_LOG_TO_FILE=true` dan pastikan pengambilan log panggilan diaktifkan                                                                                    |
-| EACCES: permission denied                           | Atur `DATA_DIR=/path/to/writable/dir` untuk mengganti `~/.shiguang-gateway`                                                                                            |
+| EACCES: permission denied                           | Atur `DATA_DIR=/path/to/writable/dir` untuk mengganti `~/.orbit`                                                                                            |
 | Strategi routing tidak tersimpan                    | Perbarui ke v1.4.11+ (perbaikan skema Zod untuk persistensi pengaturan)                                                                                         |
 | Login crash / halaman kosong                        | Periksa versi Node.js — lihat [Kompatibilitas Node.js](#nodejs-compatibility) di bawah                                                                          |
-| `dlopen` / `slice is not valid mach-o file` (macOS) | Jalankan `cd $(npm root -g)/shiguang-gateway/app && npm rebuild better-sqlite3 && shiguang-gateway` — lihat [Pembangunan ulang modul native macOS](#macos-native-module-rebuild) di bawah |
+| `dlopen` / `slice is not valid mach-o file` (macOS) | Jalankan `cd $(npm root -g)/orbit/app && npm rebuild better-sqlite3 && orbit` — lihat [Pembangunan ulang modul native macOS](#macos-native-module-rebuild) di bawah |
 | Proxy "fetch failed"                                | Pastikan konfigurasi proxy diatur pada tingkat yang tepat — lihat [Masalah Proxy](#proxy-issues) di bawah                                                       |
 
 ---
@@ -29,7 +29,7 @@ Masalah umum dan solusinya untuk ShiguangGateway.
 
 ### Halaman login crash atau menampilkan error "Module self-registration"
 
-**Penyebab:** Anda menjalankan versi Node.js di luar batas runtime aman yang disetujui ShiguangGateway. Kasus paling umum adalah menjalankan Node 20, 22, atau 24 versi patch lama yang berada di bawah batas keamanan yang diperlukan ShiguangGateway.
+**Penyebab:** Anda menjalankan versi Node.js di luar batas runtime aman yang disetujui Orbit. Kasus paling umum adalah menjalankan Node 20, 22, atau 24 versi patch lama yang berada di bawah batas keamanan yang diperlukan Orbit.
 
 **Gejala:**
 
@@ -45,8 +45,8 @@ Masalah umum dan solusinya untuk ShiguangGateway.
    nvm use 24
    ```
 2. Verifikasi versi Anda: `node --version` seharusnya menampilkan `v24.0.0` atau lebih baru pada lini LTS 24.x
-3. Instal ulang ShiguangGateway: `npm install -g shiguang-gateway`
-4. Mulai ulang: `shiguang-gateway`
+3. Instal ulang Orbit: `npm install -g orbit`
+4. Mulai ulang: `orbit`
 
 > **Versi aman yang didukung:** `>=20.20.2 <21`, `>=22.22.2 <23`, atau `>=24.0.0 <25`. Node.js 24.x LTS (Krypton) sepenuhnya didukung.
 
@@ -54,7 +54,7 @@ Masalah umum dan solusinya untuk ShiguangGateway.
 
 <a name="macos-native-module-rebuild"></a>
 
-**Penyebab:** Setelah `npm install -g shiguang-gateway` secara global, biner native `better-sqlite3` di dalam paket mungkin telah dikompilasi untuk arsitektur atau ABI Node.js yang berbeda dari yang berjalan secara lokal. Hal ini umum terjadi di macOS (baik Apple Silicon maupun Intel) ketika biner yang sudah dibangun tidak cocok dengan lingkungan Anda.
+**Penyebab:** Setelah `npm install -g orbit` secara global, biner native `better-sqlite3` di dalam paket mungkin telah dikompilasi untuk arsitektur atau ABI Node.js yang berbeda dari yang berjalan secara lokal. Hal ini umum terjadi di macOS (baik Apple Silicon maupun Intel) ketika biner yang sudah dibangun tidak cocok dengan lingkungan Anda.
 
 **Gejala:**
 
@@ -63,15 +63,15 @@ Masalah umum dan solusinya untuk ShiguangGateway.
 - Contoh lengkap:
 
 ```
-dlopen(/Users/<user>/.nvm/versions/node/v24.14.1/lib/node_modules/shiguang-gateway/app/node_modules/better-sqlite3/build/Release/better_sqlite3.node, 0x0001): tried: '...' (slice is not valid mach-o file)
+dlopen(/Users/<user>/.nvm/versions/node/v24.14.1/lib/node_modules/orbit/app/node_modules/better-sqlite3/build/Release/better_sqlite3.node, 0x0001): tried: '...' (slice is not valid mach-o file)
 ```
 
 **Solusi — bangun ulang untuk lingkungan lokal Anda (tidak perlu downgrade Node.js):**
 
 ```bash
-cd $(npm root -g)/shiguang-gateway/app
+cd $(npm root -g)/orbit/app
 npm rebuild better-sqlite3
-shiguang-gateway
+orbit
 ```
 
 > **Catatan:** Perintah ini mengompilasi ulang binding native terhadap versi Node.js dan arsitektur CPU lokal Anda, mengatasi ketidakcocokan biner. Rentang yang resmi didukung adalah **`>=20.20.2 <21`, `>=22.22.2 <23`, atau `>=24.0.0 <25`** (kolom `engines` di `package.json`). Node.js 24.x LTS (Krypton) sepenuhnya didukung dengan `better-sqlite3` v12.x.
@@ -98,7 +98,7 @@ shiguang-gateway
 
 **Penyebab:** Pada Node.js 22, dispatcher undici@8 tidak kompatibel dengan implementasi `fetch()` bawaan Node.
 
-**Solusi (v3.5.5+):** ShiguangGateway sekarang menggunakan fungsi `fetch()` milik undici sendiri ketika dispatcher proxy aktif, memastikan perilaku yang konsisten. Perbarui ke v3.5.5+.
+**Solusi (v3.5.5+):** Orbit sekarang menggunakan fungsi `fetch()` milik undici sendiri ketika dispatcher proxy aktif, memastikan perilaku yang konsisten. Perbarui ke v3.5.5+.
 
 ---
 
@@ -125,7 +125,7 @@ shiguang-gateway
 
 ### Token OAuth Kedaluwarsa
 
-ShiguangGateway memperbarui token secara otomatis. Jika masalah berlanjut:
+Orbit memperbarui token secara otomatis. Jika masalah berlanjut:
 
 1. Dashboard → Penyedia → Sambungkan Ulang
 2. Hapus dan tambahkan ulang koneksi penyedia
@@ -137,7 +137,7 @@ ShiguangGateway memperbarui token secara otomatis. Jika masalah berlanjut:
 ### Error Sinkronisasi Cloud
 
 1. Pastikan `BASE_URL` mengarah ke instans yang sedang berjalan (misalnya, `http://localhost:20128`)
-2. Pastikan `CLOUD_URL` mengarah ke endpoint cloud Anda (misalnya, `https://shiguang-gateway.dev`)
+2. Pastikan `CLOUD_URL` mengarah ke endpoint cloud Anda (misalnya, `https://orbit.dev`)
 3. Jaga agar nilai `NEXT_PUBLIC_*` selaras dengan nilai sisi server
 
 ### Cloud `stream=false` Mengembalikan 500
@@ -292,13 +292,13 @@ Profil penyedia mendukung pengaturan berikut:
 
 ### Anti-thundering herd
 
-Ketika banyak permintaan bersamaan mengenai penyedia yang dibatasi lajunya, ShiguangGateway menggunakan mutex + auto rate-limiting untuk membuat serialisasi permintaan dan mencegah kegagalan berantai. Ini berjalan otomatis untuk penyedia dengan API key.
+Ketika banyak permintaan bersamaan mengenai penyedia yang dibatasi lajunya, Orbit menggunakan mutex + auto rate-limiting untuk membuat serialisasi permintaan dan mencegah kegagalan berantai. Ini berjalan otomatis untuk penyedia dengan API key.
 
 ---
 
 ## Taksonomi Kegagalan RAG / LLM Opsional (16 masalah)
 
-Beberapa pengguna ShiguangGateway menempatkan gateway di depan tumpukan RAG atau agen. Dalam pengaturan tersebut, umum terjadi pola yang aneh: ShiguangGateway terlihat sehat (penyedia aktif, profil routing baik, tidak ada peringatan batas laju) tetapi jawaban akhir masih salah.
+Beberapa pengguna Orbit menempatkan gateway di depan tumpukan RAG atau agen. Dalam pengaturan tersebut, umum terjadi pola yang aneh: Orbit terlihat sehat (penyedia aktif, profil routing baik, tidak ada peringatan batas laju) tetapi jawaban akhir masih salah.
 
 Dalam praktiknya, insiden ini biasanya berasal dari pipeline RAG downstream, bukan dari gateway itu sendiri.
 
@@ -317,23 +317,23 @@ Idenya sederhana:
 
 1. Saat Anda menyelidiki respons yang buruk, kumpulkan:
    - tugas pengguna dan permintaan
-   - route atau combo penyedia di ShiguangGateway
+   - route atau combo penyedia di Orbit
    - konteks RAG apa pun yang digunakan di downstream (dokumen yang diambil, tool call, dll.)
 2. Petakan insiden ke satu atau dua nomor WFGY ProblemMap (`No.1` … `No.16`).
-3. Simpan nomornya di dashboard, runbook, atau pelacak insiden Anda sendiri di samping log ShiguangGateway.
+3. Simpan nomornya di dashboard, runbook, atau pelacak insiden Anda sendiri di samping log Orbit.
 4. Gunakan halaman WFGY yang sesuai untuk memutuskan apakah Anda perlu mengubah tumpukan RAG, retriever, atau strategi routing Anda.
 
 Teks lengkap dan resep konkret tersedia di sini (lisensi MIT, hanya teks):
 
 [WFGY ProblemMap README](https://github.com/onestardao/WFGY/blob/main/ProblemMap/README.md)
 
-Anda dapat mengabaikan bagian ini jika Anda tidak menjalankan pipeline RAG atau agen di belakang ShiguangGateway.
+Anda dapat mengabaikan bagian ini jika Anda tidak menjalankan pipeline RAG atau agen di belakang Orbit.
 
 ---
 
 ## Masih Terjebak?
 
-- **GitHub Issues**: [github.com/diegosouzapw/ShiguangGateway/issues](https://github.com/diegosouzapw/ShiguangGateway/issues)
+- **GitHub Issues**: [github.com/diegosouzapw/Orbit/issues](https://github.com/diegosouzapw/Orbit/issues)
 - **Arsitektur**: Lihat [`docs/architecture/ARCHITECTURE.md`](ARCHITECTURE.md) untuk detail internal
 - **Referensi API**: Lihat [`docs/reference/API_REFERENCE.md`](API_REFERENCE.md) untuk semua endpoint
 - **Health Dashboard**: Periksa **Dashboard → Health** untuk status sistem secara real-time

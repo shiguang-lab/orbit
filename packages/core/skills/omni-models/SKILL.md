@@ -22,7 +22,7 @@ Returns all models available across configured providers.
 
 ```bash
 curl https://localhost:20128/api/v1/models \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### GET /api/models
@@ -31,7 +31,7 @@ List models (management)
 
 ```bash
 curl https://localhost:20128/api/models \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### POST /api/models/alias
@@ -40,7 +40,7 @@ Create or update a model alias
 
 ```bash
 curl -X POST https://localhost:20128/api/models/alias \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -51,7 +51,7 @@ Get full model catalog
 
 ```bash
 curl https://localhost:20128/api/models/catalog \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ## Payloads

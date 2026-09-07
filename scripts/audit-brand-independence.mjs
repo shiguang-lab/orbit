@@ -10,6 +10,11 @@ import assert from "node:assert/strict";
 
 const root = process.cwd();
 const retiredToken = ["omni", "route"].join("");
+const retiredProductTokens = [
+  ["shiguang", "gateway"].join("-"),
+  ["shiguang", "gateway"].join("_"),
+  ["shiguang", "gateway"].join(""),
+];
 const roots = ["apps", "packages", "scripts", "deploy"];
 const rootFiles = [
   "Dockerfile",
@@ -35,6 +40,11 @@ const ssoTests = new Set([
   "apps/realtime/test/live-server-sso.test.ts",
 ]);
 function containsRetiredIdentifier(rel, text) {
+  const normalizedRel = rel.toLowerCase();
+  const normalizedText = text.toLowerCase();
+  if (retiredProductTokens.some((token) => normalizedRel.includes(token) || normalizedText.includes(token))) {
+    return true;
+  }
   if (new RegExp(retiredToken, "i").test(rel)) return true;
   let inspected = text;
   if (ssoDocuments.has(rel)) {
@@ -78,7 +88,11 @@ function selfTest() {
   assert.equal(containsRetiredIdentifier("packages/auth/src/session.ts", `"${audience}"`), true);
   assert.equal(containsRetiredIdentifier("deploy/other.md", `\`${entitlement}\``), true);
   assert.equal(containsRetiredIdentifier(`apps/${retiredToken}/index.ts`, ""), true);
-  assert.equal(containsRetiredIdentifier("apps/console/index.ts", "ShiguangGateway"), false);
+  for (const token of retiredProductTokens) {
+    assert.equal(containsRetiredIdentifier(`apps/${token}/index.ts`, ""), true);
+    assert.equal(containsRetiredIdentifier("apps/console/index.ts", token), true);
+  }
+  assert.equal(containsRetiredIdentifier("apps/console/index.ts", "Orbit"), false);
   console.log("brand SSO exception self-test: PASS");
 }
 

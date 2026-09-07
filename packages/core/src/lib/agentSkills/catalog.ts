@@ -80,7 +80,7 @@ const PACKAGE_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), 
 
 /** Resolve the packaged skill directory in both source and container layouts. */
 export function getSkillsDir(): string {
-  const configured = process.env.SHIGUANG_GATEWAY_SKILLS_DIR?.trim();
+  const configured = process.env.ORBIT_SKILLS_DIR?.trim();
   if (configured) return path.resolve(configured);
   const packaged = path.join(PACKAGE_ROOT, "skills");
   if (fs.existsSync(packaged)) return packaged;

@@ -1,6 +1,6 @@
 # Developer environment notes
 
-This page explains the project's local `.env` behavior and how to handle environment files and secrets when developing ShiguangGateway.
+This page explains the project's local `.env` behavior and how to handle environment files and secrets when developing Orbit.
 
 ## .env postinstall behavior
 

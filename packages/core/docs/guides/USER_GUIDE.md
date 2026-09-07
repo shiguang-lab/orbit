@@ -8,7 +8,7 @@ lastUpdated: 2026-06-28
 
 🌐 **Languages:** 🇺🇸 [English](./USER_GUIDE.md) | 🇧🇷 [Português (Brasil)](../i18n/pt-BR/docs/guides/USER_GUIDE.md) | 🇪🇸 [Español](../i18n/es/docs/guides/USER_GUIDE.md) | 🇫🇷 [Français](../i18n/fr/docs/guides/USER_GUIDE.md) | 🇮🇹 [Italiano](../i18n/it/docs/guides/USER_GUIDE.md) | 🇷🇺 [Русский](../i18n/ru/docs/guides/USER_GUIDE.md) | 🇨🇳 [中文 (简体)](../i18n/zh-CN/docs/guides/USER_GUIDE.md) | 🇩🇪 [Deutsch](../i18n/de/docs/guides/USER_GUIDE.md) | 🇮🇳 [हिन्दी](../i18n/in/docs/guides/USER_GUIDE.md) | 🇹🇭 [ไทย](../i18n/th/docs/guides/USER_GUIDE.md) | 🇺🇦 [Українська](../i18n/uk-UA/docs/guides/USER_GUIDE.md) | 🇸🇦 [العربية](../i18n/ar/docs/guides/USER_GUIDE.md) | 🇯🇵 [日本語](../i18n/ja/docs/guides/USER_GUIDE.md) | 🇻🇳 [Tiếng Việt](../i18n/vi/docs/guides/USER_GUIDE.md) | 🇧🇬 [Български](../i18n/bg/docs/guides/USER_GUIDE.md) | 🇩🇰 [Dansk](../i18n/da/docs/guides/USER_GUIDE.md) | 🇫🇮 [Suomi](../i18n/fi/docs/guides/USER_GUIDE.md) | 🇮🇱 [עברית](../i18n/he/docs/guides/USER_GUIDE.md) | 🇭🇺 [Magyar](../i18n/hu/docs/guides/USER_GUIDE.md) | 🇮🇩 [Bahasa Indonesia](../i18n/id/docs/guides/USER_GUIDE.md) | 🇰🇷 [한국어](../i18n/ko/docs/guides/USER_GUIDE.md) | 🇲🇾 [Bahasa Melayu](../i18n/ms/docs/guides/USER_GUIDE.md) | 🇳🇱 [Nederlands](../i18n/nl/docs/guides/USER_GUIDE.md) | 🇳🇴 [Norsk](../i18n/no/docs/guides/USER_GUIDE.md) | 🇵🇹 [Português (Portugal)](../i18n/pt/docs/guides/USER_GUIDE.md) | 🇷🇴 [Română](../i18n/ro/docs/guides/USER_GUIDE.md) | 🇵🇱 [Polski](../i18n/pl/docs/guides/USER_GUIDE.md) | 🇸🇰 [Slovenčina](../i18n/sk/docs/guides/USER_GUIDE.md) | 🇸🇪 [Svenska](../i18n/sv/docs/guides/USER_GUIDE.md) | 🇵🇭 [Filipino](../i18n/phi/docs/guides/USER_GUIDE.md) | 🇨🇿 [Čeština](../i18n/cs/docs/guides/USER_GUIDE.md)
 
-Complete guide for configuring providers, creating combos, integrating CLI tools, and deploying ShiguangGateway.
+Complete guide for configuring providers, creating combos, integrating CLI tools, and deploying Orbit.
 
 ---
 
@@ -137,10 +137,10 @@ Models:
   cc/claude-haiku-4-5-20251001
 ```
 
-**Pro Tip:** Use Opus for complex tasks, Sonnet for speed. ShiguangGateway tracks quota per model!
+**Pro Tip:** Use Opus for complex tasks, Sonnet for speed. Orbit tracks quota per model!
 
 Claude and Claude Code-compatible routes preserve `max` thinking effort for Opus and Sonnet
-models. Haiku models do not accept the `max` effort tier, so ShiguangGateway downgrades that
+models. Haiku models do not accept the `max` effort tier, so Orbit downgrades that
 request to a high thinking budget before sending it upstream.
 
 #### OpenAI Codex (Plus/Pro)
@@ -191,7 +191,7 @@ Models:
 
 #### Kimi K2 ($9/month flat)
 
-1. Subscribe: [Moonshot AI](https://platform.kimi.ai?aff=shiguang-gateway)
+1. Subscribe: [Moonshot AI](https://platform.kimi.ai?aff=orbit)
 2. Get API key → Dashboard → Add API Key
 
 **Use:** `kimi/kimi-k2.5` — **Pro Tip:** Fixed $9/month for 10M tokens = $0.90/1M effective cost!
@@ -262,16 +262,16 @@ Cost: currently listed as $0; terms and availability may change
 
 ### Cursor IDE
 
-**Using Cursor as an ShiguangGateway client** (route Cursor chat through ShiguangGateway):
+**Using Cursor as an Orbit client** (route Cursor chat through Orbit):
 
 ```
 Settings → Models → Advanced:
   OpenAI API Base URL: http://localhost:20128/v1
-  OpenAI API Key: [from shiguang-gateway dashboard]
+  OpenAI API Key: [from orbit dashboard]
   Model: cc/claude-opus-4-7
 ```
 
-**Using ShiguangGateway as a Cursor provider** (ShiguangGateway calls Cursor upstream): prefer
+**Using Orbit as a Cursor provider** (Orbit calls Cursor upstream): prefer
 **Dashboard → Providers → Cursor → Login with Cursor**. In Docker, see
 [`docs/providers/CURSOR-DOCKER.md`](../providers/CURSOR-DOCKER.md).
 
@@ -283,7 +283,7 @@ Edit `~/.claude/settings.json`:
 {
   "env": {
     "ANTHROPIC_BASE_URL": "http://localhost:20128",
-    "ANTHROPIC_AUTH_TOKEN": "your-shiguang-gateway-api-key"
+    "ANTHROPIC_AUTH_TOKEN": "your-orbit-api-key"
   }
 }
 ```
@@ -294,7 +294,7 @@ Use the Claude-compatible root endpoint here. Do not append `/v1` to `ANTHROPIC_
 
 ```bash
 export OPENAI_BASE_URL="http://localhost:20128"
-export OPENAI_API_KEY="your-shiguang-gateway-api-key"
+export OPENAI_API_KEY="your-orbit-api-key"
 codex "your prompt"
 ```
 
@@ -306,14 +306,14 @@ Edit `~/.openclaw/openclaw.json`:
 {
   "agents": {
     "defaults": {
-      "model": { "primary": "shiguang-gateway/if/kimi-k2.7-code" }
+      "model": { "primary": "orbit/if/kimi-k2.7-code" }
     }
   },
   "models": {
     "providers": {
-      "shiguang-gateway": {
+      "orbit": {
         "baseUrl": "http://localhost:20128/v1",
-        "apiKey": "your-shiguang-gateway-api-key",
+        "apiKey": "your-orbit-api-key",
         "api": "openai-completions",
         "models": [{ "id": "if/kimi-k2.7-code", "name": "Kimi K2.7 Code" }]
       }
@@ -340,28 +340,28 @@ Model: cc/claude-opus-4-7
 ### Global npm install (Recommended)
 
 ```bash
-npm install -g shiguang-gateway
+npm install -g orbit
 
 # Create config directory
-mkdir -p ~/.shiguang-gateway
+mkdir -p ~/.orbit
 
 # Create .env file (see .env.example)
-cp .env.example ~/.shiguang-gateway/.env
+cp .env.example ~/.orbit/.env
 
 # Start server
-shiguang-gateway
+orbit
 # Or with custom port:
-shiguang-gateway --port 3000
+orbit --port 3000
 ```
 
-The CLI automatically loads `.env` from `~/.shiguang-gateway/.env` or `./.env`.
+The CLI automatically loads `.env` from `~/.orbit/.env` or `./.env`.
 
 ### Tray mode
 
-Start ShiguangGateway in the system tray:
+Start Orbit in the system tray:
 
 ```bash
-shiguang-gateway serve --tray
+orbit serve --tray
 ```
 
 The command returns after the server and tray are ready.
@@ -375,7 +375,7 @@ Use the tray menu for these actions:
 - Open the dashboard.
 - Open `/dashboard/logs`.
 - Change auto-start.
-- Stop ShiguangGateway.
+- Stop Orbit.
 
 Do not combine `--tray` with these options:
 
@@ -388,7 +388,7 @@ These modes require different process ownership.
 Enable startup at the next machine login:
 
 ```bash
-shiguang-gateway autostart enable
+orbit autostart enable
 ```
 
 Auto-start uses tray mode on macOS, Windows, and graphical Linux sessions. Headless Linux uses the existing systemd user service.
@@ -396,29 +396,29 @@ Auto-start uses tray mode on macOS, Windows, and graphical Linux sessions. Headl
 Disable startup at login:
 
 ```bash
-shiguang-gateway autostart disable
+orbit autostart disable
 ```
 
 ### Uninstalling
 
-When you no longer need ShiguangGateway, we provide two quick scripts for a clean removal:
+When you no longer need Orbit, we provide two quick scripts for a clean removal:
 
 | Command                  | Action                                                                              |
 | ------------------------ | ----------------------------------------------------------------------------------- |
-| `npm run uninstall`      | Removes the system app but **keeps your DB and configurations** in `~/.shiguang-gateway`.  |
+| `npm run uninstall`      | Removes the system app but **keeps your DB and configurations** in `~/.orbit`.  |
 | `npm run uninstall:full` | Removes the app AND permanently **erases all configurations, keys, and databases**. |
 
-> Note: To run these commands, navigate to the ShiguangGateway project folder (if you cloned it) and run them. Alternatively, if globally installed, you can simply run `npm uninstall -g shiguang-gateway`.
+> Note: To run these commands, navigate to the Orbit project folder (if you cloned it) and run them. Alternatively, if globally installed, you can simply run `npm uninstall -g orbit`.
 
 ### VPS Deployment
 
 ```bash
-git clone https://github.com/diegosouzapw/ShiguangGateway.git
-cd ShiguangGateway && npm install && npm run build
+git clone https://github.com/diegosouzapw/Orbit.git
+cd Orbit && npm install && npm run build
 
 export JWT_SECRET="your-secure-secret-change-this"
 export INITIAL_PASSWORD="your-password"
-export DATA_DIR="/var/lib/shiguang-gateway"
+export DATA_DIR="/var/lib/orbit"
 export PORT="20128"
 export HOSTNAME="0.0.0.0"
 export NODE_ENV="production"
@@ -426,7 +426,7 @@ export NEXT_PUBLIC_BASE_URL="http://localhost:20128"
 export API_KEY_SECRET="endpoint-proxy-api-key-secret"
 
 npm run start
-# Or: pm2 start npm --name shiguang-gateway -- start
+# Or: pm2 start npm --name orbit -- start
 ```
 
 ### PM2 Deployment (Low Memory)
@@ -435,10 +435,10 @@ For servers with limited RAM, use the memory limit option:
 
 ```bash
 # With 512MB limit (default)
-pm2 start npm --name shiguang-gateway -- start
+pm2 start npm --name orbit -- start
 
 # Or with custom memory limit
-SHIGUANG_GATEWAY_MEMORY_MB=512 pm2 start npm --name shiguang-gateway -- start
+ORBIT_MEMORY_MB=512 pm2 start npm --name orbit -- start
 
 # Or using ecosystem.config.js
 pm2 start ecosystem.config.js
@@ -450,12 +450,12 @@ Create `ecosystem.config.js`:
 module.exports = {
   apps: [
     {
-      name: "shiguang-gateway",
+      name: "orbit",
       script: "npm",
       args: "start",
       env: {
         NODE_ENV: "production",
-        SHIGUANG_GATEWAY_MEMORY_MB: "512",
+        ORBIT_MEMORY_MB: "512",
         JWT_SECRET: "your-secret",
         INITIAL_PASSWORD: "your-password",
       },
@@ -470,24 +470,24 @@ module.exports = {
 
 ```bash
 # Build image (default = runner-cli with codex/claude/droid preinstalled)
-docker build -t shiguang-gateway:cli .
+docker build -t orbit:cli .
 
 # Portable mode (recommended)
-docker run -d --name shiguang-gateway -p 20128:20128 --env-file ./.env -v shiguang-gateway-data:/app/data shiguang-gateway:cli
+docker run -d --name orbit -p 20128:20128 --env-file ./.env -v orbit-data:/app/data orbit:cli
 ```
 
 For host-integrated mode with CLI binaries, see the Docker section in the main docs.
 
 ### Void Linux (xbps-src)
 
-Void Linux users can package and install ShiguangGateway natively using the `xbps-src` cross-compilation framework. This automates the Node.js standalone build along with the required `better-sqlite3` native bindings.
+Void Linux users can package and install Orbit natively using the `xbps-src` cross-compilation framework. This automates the Node.js standalone build along with the required `better-sqlite3` native bindings.
 
 <details>
 <summary><b>View xbps-src template</b></summary>
 
 ```bash
-# Template file for 'shiguang-gateway'
-pkgname=shiguang-gateway
+# Template file for 'orbit'
+pkgname=orbit
 version=3.8.0
 revision=1
 hostmakedepends="nodejs python3 make"
@@ -495,11 +495,11 @@ depends="openssl"
 short_desc="Universal AI gateway with smart routing for multiple LLM providers"
 maintainer="zenobit <zenobit@disroot.org>"
 license="MIT"
-homepage="https://github.com/diegosouzapw/ShiguangGateway"
-distfiles="https://github.com/diegosouzapw/ShiguangGateway/archive/refs/tags/v${version}.tar.gz"
+homepage="https://github.com/diegosouzapw/Orbit"
+distfiles="https://github.com/diegosouzapw/Orbit/archive/refs/tags/v${version}.tar.gz"
 checksum=009400afee90a9f32599d8fe734145cfd84098140b7287990183dde45ae2245b
-system_accounts="_shiguang-gateway"
-shiguang-gateway_homedir="/var/lib/shiguang-gateway"
+system_accounts="_orbit"
+orbit_homedir="/var/lib/orbit"
 export NODE_ENV=production
 export npm_config_engine_strict=false
 export npm_config_loglevel=error
@@ -549,26 +549,26 @@ do_check() {
 }
 
 do_install() {
-	vmkdir usr/lib/shiguang-gateway/.next
-	vcopy .next/standalone/. usr/lib/shiguang-gateway/.next/standalone
+	vmkdir usr/lib/orbit/.next
+	vcopy .next/standalone/. usr/lib/orbit/.next/standalone
 
 	# Prevent removal of empty Next.js app router dirs by the post-install hook
 	for _d in \
 		.next/standalone/.next/server/app/dashboard \
 		.next/standalone/.next/server/app/dashboard/settings \
 		.next/standalone/.next/server/app/dashboard/providers; do
-		touch "${DESTDIR}/usr/lib/shiguang-gateway/${_d}/.keep"
+		touch "${DESTDIR}/usr/lib/orbit/${_d}/.keep"
 	done
 
-	cat > "${WRKDIR}/shiguang-gateway" <<'EOF'
+	cat > "${WRKDIR}/orbit" <<'EOF'
 #!/bin/sh
 export PORT="${PORT:-20128}"
-export DATA_DIR="${DATA_DIR:-${XDG_DATA_HOME:-${HOME}/.local/share}/shiguang-gateway}"
+export DATA_DIR="${DATA_DIR:-${XDG_DATA_HOME:-${HOME}/.local/share}/orbit}"
 export APP_LOG_TO_FILE="${APP_LOG_TO_FILE:-false}"
 mkdir -p "${DATA_DIR}"
-exec node /usr/lib/shiguang-gateway/.next/standalone/server.js "$@"
+exec node /usr/lib/orbit/.next/standalone/server.js "$@"
 EOF
-	vbin "${WRKDIR}/shiguang-gateway"
+	vbin "${WRKDIR}/orbit"
 }
 
 post_install() {
@@ -582,14 +582,14 @@ post_install() {
 
 | Variable                                | Default                              | Description                                                                                               |
 | --------------------------------------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------- |
-| `JWT_SECRET`                            | `shiguang-gateway-default-secret-change-me` | JWT signing secret (**change in production**)                                                             |
+| `JWT_SECRET`                            | `orbit-default-secret-change-me` | JWT signing secret (**change in production**)                                                             |
 | `INITIAL_PASSWORD`                      | `CHANGEME`                           | First login password                                                                                      |
-| `DATA_DIR`                              | `~/.shiguang-gateway`                       | Data directory (db, usage, logs)                                                                          |
+| `DATA_DIR`                              | `~/.orbit`                       | Data directory (db, usage, logs)                                                                          |
 | `PORT`                                  | framework default                    | Service port (`20128` in examples)                                                                        |
 | `HOSTNAME`                              | framework default                    | Bind host (Docker defaults to `0.0.0.0`)                                                                  |
 | `NODE_ENV`                              | runtime default                      | Set `production` for deploy                                                                               |
 | `NEXT_PUBLIC_BASE_URL`                  | `http://localhost:20128`             | Public base URL surfaced to the dashboard and exposed to the server (replaces legacy `BASE_URL`)          |
-| `NEXT_PUBLIC_CLOUD_URL`                 | `https://shiguang-gateway.dev`              | Cloud sync endpoint base URL (replaces legacy `CLOUD_URL`)                                                |
+| `NEXT_PUBLIC_CLOUD_URL`                 | `https://orbit.dev`              | Cloud sync endpoint base URL (replaces legacy `CLOUD_URL`)                                                |
 | `API_KEY_SECRET`                        | `endpoint-proxy-api-key-secret`      | HMAC secret for generated API keys                                                                        |
 | `REQUIRE_API_KEY`                       | `false`                              | Enforce Bearer API key on `/v1/*`                                                                         |
 | `ALLOW_API_KEY_REVEAL`                  | `false`                              | Allow authenticated dashboard users to reveal full stored API key values on demand                        |
@@ -599,7 +599,7 @@ post_install() {
 | `AUTH_COOKIE_SECURE`                    | `false`                              | Force `Secure` auth cookie (behind HTTPS reverse proxy)                                                   |
 | `CLOUDFLARED_BIN`                       | unset                                | Use an existing `cloudflared` binary instead of managed download                                          |
 | `CLOUDFLARED_PROTOCOL`                  | `http2`                              | Transport for managed Quick Tunnels (`http2`, `quic`, or `auto`)                                          |
-| `SHIGUANG_GATEWAY_MEMORY_MB`                   | `512`                                | Node.js heap limit in MB                                                                                  |
+| `ORBIT_MEMORY_MB`                   | `512`                                | Node.js heap limit in MB                                                                                  |
 | `PROMPT_CACHE_MAX_SIZE`                 | `50`                                 | Max prompt cache entries                                                                                  |
 | `SEMANTIC_CACHE_MAX_SIZE`               | `100`                                | Max semantic cache entries                                                                                |
 
@@ -660,7 +660,7 @@ For the full environment variable reference, see the [README](../README.md).
 
 **Other compatible providers** (selected): `cohere`, `databricks`, `snowflake`, `together`, `vertex`, `alibaba`, `alibaba-cn`, `bedrock` (via `aws-bedrock`), `azure-ai`, `openrouter` (passthrough catalog), `siliconflow`, `hyperbolic`, `huggingface`, `featherless-ai`, `cloudflare-ai`, `scaleway`, `deepinfra`, `vercel-ai-gateway`, `bazaarlink`, `friendliai`, `nous-research`, `reka`, `volcengine`, `ai21`, `gigachat`. Each maintains its own model list in `providerRegistry.ts` and can be auto-synced when the provider exposes a `/models` endpoint.
 
-**Note on model IDs:** ShiguangGateway uses provider-native IDs (`claude-opus-4-8`, `gpt-5.5`, `glm-5.1`, `MiniMax-M2.7`, `kimi-k2.5`, `grok-4.20-0309-reasoning`). Some IDs include dotted versions because that is how the upstream API expects them. If a model is not listed above, run `shiguang-gateway models --search <term>` or hit `GET /api/models/catalog` to confirm availability.
+**Note on model IDs:** Orbit uses provider-native IDs (`claude-opus-4-8`, `gpt-5.5`, `glm-5.1`, `MiniMax-M2.7`, `kimi-k2.5`, `grok-4.20-0309-reasoning`). Some IDs include dotted versions because that is how the upstream API expects them. If a model is not listed above, run `orbit models --search <term>` or hit `GET /api/models/catalog` to confirm availability.
 
 </details>
 
@@ -689,35 +689,35 @@ Notes:
 - OpenRouter and OpenAI/Anthropic-compatible providers are managed from **Available Models** only. Manual add, import, and auto-sync all land in the same available-model list, so there is no separate Custom Models section for those providers.
 - The **Custom Models** section is intended for providers that do not expose managed available-model imports.
 
-### Chaining ShiguangGateway Peers
+### Chaining Orbit Peers
 
-Another ShiguangGateway gateway can be added as a **Custom OpenAI-compatible** provider. Use the
+Another Orbit gateway can be added as a **Custom OpenAI-compatible** provider. Use the
 peer's `/v1` base URL and a dedicated, least-privilege API key issued by that peer.
 
 For reciprocal or multi-hop chains, enable the opt-in loop guard on every gateway:
 
 ```bash
 # gateway-a
-SHIGUANG_GATEWAY_INSTANCE_ID=gateway-a
-SHIGUANG_GATEWAY_PEER_URLS=http://gateway-b:20128/v1
-SHIGUANG_GATEWAY_PEER_MAX_HOPS=4
+ORBIT_INSTANCE_ID=gateway-a
+ORBIT_PEER_URLS=http://gateway-b:20128/v1
+ORBIT_PEER_MAX_HOPS=4
 ```
 
 ```bash
 # gateway-b
-SHIGUANG_GATEWAY_INSTANCE_ID=gateway-b
-SHIGUANG_GATEWAY_PEER_URLS=http://gateway-a:20128/v1
-SHIGUANG_GATEWAY_PEER_MAX_HOPS=4
+ORBIT_INSTANCE_ID=gateway-b
+ORBIT_PEER_URLS=http://gateway-a:20128/v1
+ORBIT_PEER_MAX_HOPS=4
 ```
 
 Only requests sent to an explicitly allowlisted peer URL receive the
-`X-ShiguangGateway-Peer-Trace` header. A gateway rejects a repeated instance ID or exhausted hop
+`X-Orbit-Peer-Trace` header. A gateway rejects a repeated instance ID or exhausted hop
 budget with HTTP `508 Loop Detected`; ordinary upstream providers receive no peer metadata.
 
 Peer chaining is not database replication or host failover. Each gateway keeps independent
 SQLite state, caches, rate counters, and sessions. Use a health-checked reverse proxy or client
 failover for active/passive or active/active availability, and never mount one SQLite database
-into multiple running ShiguangGateway instances.
+into multiple running Orbit instances.
 
 ### Dedicated Provider Routes
 
@@ -768,7 +768,7 @@ Returns models grouped by provider with types (`chat`, `embedding`, `image`).
 - Available in **Dashboard → Endpoints** for Docker and other self-hosted deployments
 - Creates a temporary `https://*.trycloudflare.com` URL that forwards to your current OpenAI-compatible `/v1` endpoint
 - First enable installs `cloudflared` only when needed; later restarts reuse the same managed binary
-- Quick Tunnels are not auto-restored after an ShiguangGateway or container restart; re-enable them from the dashboard when needed
+- Quick Tunnels are not auto-restored after an Orbit or container restart; re-enable them from the dashboard when needed
 - Tunnel URLs are ephemeral and change every time you stop/start the tunnel
 - Managed Quick Tunnels default to HTTP/2 transport to avoid noisy QUIC UDP buffer warnings in constrained containers
 - Set `CLOUDFLARED_PROTOCOL=quic` or `auto` if you want to override the managed transport choice
@@ -777,15 +777,15 @@ Returns models grouped by provider with types (`chat`, `embedding`, `image`).
 
 ### LLM Gateway Intelligence (Phase 9)
 
-- **Semantic Cache** — Auto-caches non-streaming, temperature=0 responses (bypass with `X-ShiguangGateway-No-Cache: true`)
+- **Semantic Cache** — Auto-caches non-streaming, temperature=0 responses (bypass with `X-Orbit-No-Cache: true`)
 - **Request Idempotency** — Deduplicates requests within 5s via `Idempotency-Key` or `X-Request-Id` header
-- **Progress Tracking** — Opt-in SSE `event: progress` events via `X-ShiguangGateway-Progress: true` header
+- **Progress Tracking** — Opt-in SSE `event: progress` events via `X-Orbit-Progress: true` header
 
 ---
 
 ### Translator Playground
 
-Access via **Dashboard → Translator**. Debug and visualize how ShiguangGateway translates API requests between providers.
+Access via **Dashboard → Translator**. Debug and visualize how Orbit translates API requests between providers.
 
 | Mode             | Purpose                                                                                |
 | ---------------- | -------------------------------------------------------------------------------------- |
@@ -838,7 +838,7 @@ For external session affinity (for example, Claude Code/Codex agents behind reve
 X-Session-Id: your-session-key
 ```
 
-ShiguangGateway also accepts `x_session_id` and returns the effective session key in `X-ShiguangGateway-Session-Id`.
+Orbit also accepts `x_session_id` and returns the effective session key in `X-Orbit-Session-Id`.
 
 If you use Nginx and send underscore-form headers, enable:
 
@@ -874,7 +874,7 @@ Chain: production-fallback
 
 Configure via **Dashboard → Settings → Resilience**.
 
-ShiguangGateway implements provider-level resilience with five components:
+Orbit implements provider-level resilience with five components:
 
 1. **Request Queue & Pacing** — System-level request shaping:
    - **Requests Per Minute (RPM)** — Maximum requests per minute per account
@@ -899,7 +899,7 @@ ShiguangGateway implements provider-level resilience with five components:
 
    The provider breaker runtime state is shown on **Dashboard → Health** only.
 
-4. **Wait For Cooldown** — If every candidate connection is already cooling down, ShiguangGateway can wait for the earliest cooldown and retry the same client request automatically.
+4. **Wait For Cooldown** — If every candidate connection is already cooling down, Orbit can wait for the earliest cooldown and retry the same client request automatically.
 
 5. **Rate Limit Auto-Detection** — When upstream providers return explicit wait windows, those hints override the local connection cooldown when the setting is enabled.
 
@@ -933,7 +933,7 @@ curl -X POST http://localhost:20128/api/db-backups/import \
 
 **Use Cases:**
 
-- Migrate ShiguangGateway between machines
+- Migrate Orbit between machines
 - Create external backups for disaster recovery
 - Share configurations between team members (export all → share archive)
 
@@ -985,7 +985,7 @@ curl http://localhost:20128/api/usage/budget
 
 ### Audio Transcription
 
-ShiguangGateway supports audio transcription via the OpenAI-compatible endpoint:
+Orbit supports audio transcription via the OpenAI-compatible endpoint:
 
 ```bash
 POST /v1/audio/transcriptions
@@ -1061,7 +1061,7 @@ Disable **Reasoning token buffer** when upstream providers require strict
 `max_tokens` / `maxOutputTokens` limits. When enabled, combo routing only adds reasoning-model
 headroom for models with a known output cap and leaves the client token limit unchanged when the
 safe buffered value would exceed that cap. If the client limit is already above a known cap,
-ShiguangGateway clamps it down to that cap before sending the upstream request.
+Orbit clamps it down to that cap before sending the upstream request.
 
 ---
 
@@ -1084,7 +1084,7 @@ Access via **Dashboard → Health**. Real-time system health overview with 6 car
 
 ## 🤖 Auto-Routing (Zero-config)
 
-ShiguangGateway ships with a **score-driven auto-router** that picks the best model for each request across every connected provider — no combo to maintain. Just send the request with one of the `auto/*` prefixes and ShiguangGateway will assemble a virtual combo on the fly, scoring candidates on latency, cost, success rate, context fit, model fitness for the task, recent failures, quota, and circuit-breaker state.
+Orbit ships with a **score-driven auto-router** that picks the best model for each request across every connected provider — no combo to maintain. Just send the request with one of the `auto/*` prefixes and Orbit will assemble a virtual combo on the fly, scoring candidates on latency, cost, success rate, context fit, model fitness for the task, recent failures, quota, and circuit-breaker state.
 
 | Prefix         | Optimizes for                                                                               |
 | -------------- | ------------------------------------------------------------------------------------------- |
@@ -1100,7 +1100,7 @@ Example:
 
 ```bash
 curl -X POST http://localhost:20128/v1/chat/completions \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_KEY" \
+  -H "Authorization: Bearer $ORBIT_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "model": "auto/coding",
@@ -1115,13 +1115,13 @@ The auto-router is fully described in [AUTO-COMBO.md](../routing/AUTO-COMBO.md) 
 
 ## 🔌 MCP & A2A Integration
 
-ShiguangGateway is both an **MCP server** (Model Context Protocol) and an **A2A server** (Agent-to-Agent JSON-RPC 2.0). Any MCP-compatible IDE or agent host can call ShiguangGateway tools directly — no extra wrapper required.
+Orbit is both an **MCP server** (Model Context Protocol) and an **A2A server** (Agent-to-Agent JSON-RPC 2.0). Any MCP-compatible IDE or agent host can call Orbit tools directly — no extra wrapper required.
 
 ### MCP transports
 
 - **SSE**: `http://localhost:20128/api/mcp/sse`
 - **Streamable HTTP**: `http://localhost:20128/api/mcp/stream`
-- **stdio**: `shiguang-gateway --mcp` (for IDE plugins that prefer stdio)
+- **stdio**: `orbit --mcp` (for IDE plugins that prefer stdio)
 
 ### Connect Claude Desktop
 
@@ -1130,8 +1130,8 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) o
 ```json
 {
   "mcpServers": {
-    "shiguang-gateway": {
-      "command": "shiguang-gateway",
+    "orbit": {
+      "command": "orbit",
       "args": ["--mcp"]
     }
   }
@@ -1150,7 +1150,7 @@ MCP currently defines 32 named scopes. Each Bearer key can be limited to specifi
 
 ## 🧠 Skills System
 
-ShiguangGateway exposes an extensible **skill framework** (`src/lib/skills/`) so agents and the A2A endpoint can run domain-specific routines (e.g. `code-review`, `summarize`, `extract-facts`, `web-research`).
+Orbit exposes an extensible **skill framework** (`src/lib/skills/`) so agents and the A2A endpoint can run domain-specific routines (e.g. `code-review`, `summarize`, `extract-facts`, `web-research`).
 
 - **Marketplace UI** — Browse and install skills from **Dashboard → Skills**
 - **Per-key scopes** — Restrict which API keys can invoke which skills
@@ -1162,7 +1162,7 @@ Full reference: [SKILLS.md](../frameworks/SKILLS.md).
 
 ## 💾 Memory System
 
-ShiguangGateway persists **long-term conversational memory** with hybrid retrieval:
+Orbit persists **long-term conversational memory** with hybrid retrieval:
 
 - **SQLite FTS5** for keyword search across past turns
 - **Qdrant vector store** (optional) for semantic recall
@@ -1175,11 +1175,11 @@ Manage memories in **Dashboard → Memory** (search, edit, export, purge). The H
 
 ## 🔔 Webhooks
 
-Subscribe to ShiguangGateway events for real-time monitoring and automation.
+Subscribe to Orbit events for real-time monitoring and automation.
 
 - Create a webhook in **Dashboard → Webhooks** with target URL and HMAC signing secret
 - Available events: `request.completed`, `request.failed`, `provider.unavailable`, `budget.exceeded`, `combo.switched`, `circuit_breaker.opened`, `circuit_breaker.closed`
-- Every payload includes `X-ShiguangGateway-Signature` (HMAC-SHA256) for verification
+- Every payload includes `X-Orbit-Signature` (HMAC-SHA256) for verification
 - Retries: 3 attempts with exponential backoff, then dead-letter queue
 
 Full schema in [WEBHOOKS.md](../frameworks/WEBHOOKS.md).
@@ -1188,11 +1188,11 @@ Full schema in [WEBHOOKS.md](../frameworks/WEBHOOKS.md).
 
 ## ☁️ Cloud Agents
 
-ShiguangGateway integrates with cloud coding agents (**OpenAI Codex Cloud**, **Devin**, **Jules**, **Antigravity**) so you can dispatch long-running tasks from the same dashboard that handles your local routing.
+Orbit integrates with cloud coding agents (**OpenAI Codex Cloud**, **Devin**, **Jules**, **Antigravity**) so you can dispatch long-running tasks from the same dashboard that handles your local routing.
 
 - Create tasks in **Dashboard → Cloud Agents** or via `POST /api/v1/agents/tasks`
 - Track status, logs, and artifacts per task
-- Bring-your-own API key per provider — credentials never leave the ShiguangGateway instance
+- Bring-your-own API key per provider — credentials never leave the Orbit instance
 
 Full reference: [CLOUD_AGENT.md](../frameworks/CLOUD_AGENT.md).
 
@@ -1200,30 +1200,30 @@ Full reference: [CLOUD_AGENT.md](../frameworks/CLOUD_AGENT.md).
 
 ## 🛠️ Programmatic Management
 
-You can manage every ShiguangGateway resource (providers, combos, keys, settings) over HTTP using a **Bearer key with the `manage` scope**.
+You can manage every Orbit resource (providers, combos, keys, settings) over HTTP using a **Bearer key with the `manage` scope**.
 
 Generate the key in **Dashboard → API Keys → New Key → Scope: manage**, then:
 
 ```bash
 # List providers
 curl http://localhost:20128/api/providers \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_MANAGE_KEY"
+  -H "Authorization: Bearer $ORBIT_MANAGE_KEY"
 
 # Add a provider connection
 curl -X POST http://localhost:20128/api/providers \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_MANAGE_KEY" \
+  -H "Authorization: Bearer $ORBIT_MANAGE_KEY" \
   -H "Content-Type: application/json" \
   -d '{ "provider": "openai", "apiKey": "sk-...", "name": "main" }'
 
 # Create a combo
 curl -X POST http://localhost:20128/api/combos \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_MANAGE_KEY" \
+  -H "Authorization: Bearer $ORBIT_MANAGE_KEY" \
   -H "Content-Type: application/json" \
   -d '{ "name": "premium", "strategy": "priority", "models": [{ "model": "cc/claude-opus-4-7" }, { "model": "glm/glm-5.1" }] }'
 
 # List/create API keys
-curl http://localhost:20128/api/keys -H "Authorization: Bearer $SHIGUANG_GATEWAY_MANAGE_KEY"
-curl -X POST http://localhost:20128/api/keys -H "Authorization: Bearer $SHIGUANG_GATEWAY_MANAGE_KEY" \
+curl http://localhost:20128/api/keys -H "Authorization: Bearer $ORBIT_MANAGE_KEY"
+curl -X POST http://localhost:20128/api/keys -H "Authorization: Bearer $ORBIT_MANAGE_KEY" \
   -d '{ "name": "ci-bot", "scopes": ["chat"] }'
 ```
 
@@ -1233,38 +1233,38 @@ See [API_REFERENCE.md](../reference/API_REFERENCE.md) for the full endpoint cata
 
 ## 💻 Internal CLI
 
-ShiguangGateway ships an internal CLI (`shiguang-gateway …`) for setup, diagnostics, and runtime control. This is **separate from the "CLI Tools" page in the dashboard**, which configures third-party CLIs (Claude Code, Cursor, Codex, Cline, …) so they can talk to ShiguangGateway.
+Orbit ships an internal CLI (`orbit …`) for setup, diagnostics, and runtime control. This is **separate from the "CLI Tools" page in the dashboard**, which configures third-party CLIs (Claude Code, Cursor, Codex, Cline, …) so they can talk to Orbit.
 
 ```bash
-shiguang-gateway setup                    # Interactive wizard (password, providers, combos)
-shiguang-gateway setup --non-interactive  # CI-friendly
-shiguang-gateway doctor                   # Health diagnostics (data dir, DB, providers, ports)
-shiguang-gateway providers available      # List supported providers
-shiguang-gateway providers list           # List configured connections
-shiguang-gateway providers test <id>      # Live test a provider connection
-shiguang-gateway combos list              # List combos
-shiguang-gateway combos switch <name>     # Set default combo
-shiguang-gateway models                   # List available models (--json, --search)
-shiguang-gateway keys add | list | remove # Manage API keys from the terminal
-shiguang-gateway backup                   # Snapshot config + DB
-shiguang-gateway restore [<timestamp>]    # Restore from a snapshot
-shiguang-gateway health                   # Detailed health (breakers, cache, memory)
-shiguang-gateway quota                    # Provider quota usage
-shiguang-gateway mcp status               # MCP server status
-shiguang-gateway a2a status               # A2A server status
-shiguang-gateway tunnel list|create|stop  # Cloudflare/Tailscale/ngrok tunnels
-shiguang-gateway reset-password           # Reset the admin password
-shiguang-gateway --mcp                    # Start MCP server over stdio
-shiguang-gateway --port 3000              # Start the server on a custom port
+orbit setup                    # Interactive wizard (password, providers, combos)
+orbit setup --non-interactive  # CI-friendly
+orbit doctor                   # Health diagnostics (data dir, DB, providers, ports)
+orbit providers available      # List supported providers
+orbit providers list           # List configured connections
+orbit providers test <id>      # Live test a provider connection
+orbit combos list              # List combos
+orbit combos switch <name>     # Set default combo
+orbit models                   # List available models (--json, --search)
+orbit keys add | list | remove # Manage API keys from the terminal
+orbit backup                   # Snapshot config + DB
+orbit restore [<timestamp>]    # Restore from a snapshot
+orbit health                   # Detailed health (breakers, cache, memory)
+orbit quota                    # Provider quota usage
+orbit mcp status               # MCP server status
+orbit a2a status               # A2A server status
+orbit tunnel list|create|stop  # Cloudflare/Tailscale/ngrok tunnels
+orbit reset-password           # Reset the admin password
+orbit --mcp                    # Start MCP server over stdio
+orbit --port 3000              # Start the server on a custom port
 ```
 
-Tip: pair `shiguang-gateway doctor --json` with your monitoring tool to alert on unhealthy provider connections.
+Tip: pair `orbit doctor --json` with your monitoring tool to alert on unhealthy provider connections.
 
 ---
 
 ## 🖥️ Desktop Application (Electron)
 
-ShiguangGateway is available as a native desktop application for Windows, macOS, and Linux.
+Orbit is available as a native desktop application for Windows, macOS, and Linux.
 
 ### Installation
 
@@ -1307,7 +1307,7 @@ Output → `electron/dist-electron/`
 
 | Variable              | Default | Description                      |
 | --------------------- | ------- | -------------------------------- |
-| `SHIGUANG_GATEWAY_PORT`      | `20128` | Server port                      |
-| `SHIGUANG_GATEWAY_MEMORY_MB` | `512`   | Node.js heap limit (64–16384 MB) |
+| `ORBIT_PORT`      | `20128` | Server port                      |
+| `ORBIT_MEMORY_MB` | `512`   | Node.js heap limit (64–16384 MB) |
 
 📖 Full documentation: [`electron/README.md`](../../electron/README.md)

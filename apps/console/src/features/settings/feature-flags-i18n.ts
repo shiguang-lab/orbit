@@ -62,7 +62,7 @@ export const FEATURE_FLAG_TRANSLATIONS_ZH: Record<string, LocalizedFlagText> = {
     label: "认证日志输出账号 ID",
     description: "在 AUTH 认证日志中打印账号前缀标识。默认关闭以避免在共享日志中暴露账号标识。",
   },
-  SHIGUANG_GATEWAY_OIDC_DISABLE_PASSWORD_LOGIN: {
+  ORBIT_OIDC_DISABLE_PASSWORD_LOGIN: {
     label: "OIDC 启用时禁用密码登录",
     description: "启用 OIDC 单点登录时，禁用传统用户名密码登录，仅允许 OIDC 方式登录。",
   },
@@ -84,7 +84,7 @@ export const FEATURE_FLAG_TRANSLATIONS_ZH: Record<string, LocalizedFlagText> = {
     label: "代理自动降级回退",
     description: "当连接未明确分配代理时，自动选择第一个可用注册表代理。默认关闭，防止单个代理成为全局兜底。",
   },
-  SHIGUANG_GATEWAY_CONTROL_PLANE_PROXY_DIRECT_FALLBACK: {
+  ORBIT_CONTROL_PLANE_PROXY_DIRECT_FALLBACK: {
     label: "控制面代理直连回退",
     description: "当预分配代理不可达时，允许 OAuth 授权与提供商验证流程自动降级为直连绕过代理。",
   },
@@ -96,11 +96,11 @@ export const FEATURE_FLAG_TRANSLATIONS_ZH: Record<string, LocalizedFlagText> = {
     label: "禁用 MITM TLS 证书校验",
     description: "禁用 MITM 调试代理的 TLS 证书合法性验证（仅建议调试环境开启，需重启生效）。",
   },
-  SHIGUANG_GATEWAY_ALLOW_PRIVATE_PROVIDER_URLS: {
+  ORBIT_ALLOW_PRIVATE_PROVIDER_URLS: {
     label: "允许私网提供者地址",
     description: "允许添加指向私有或内部专用网络 IP 的模型提供者端点 URL。",
   },
-  SHIGUANG_GATEWAY_ALLOW_LOCAL_PROVIDER_URLS: {
+  ORBIT_ALLOW_LOCAL_PROVIDER_URLS: {
     label: "允许本地提供商 URL",
     description: "允许添加和校验运行在 localhost、局域网及私有 IP 的模型提供者（本地 Ollama/vLLM 必需，默认开启）。",
   },
@@ -136,39 +136,39 @@ export const FEATURE_FLAG_TRANSLATIONS_ZH: Record<string, LocalizedFlagText> = {
     label: "透传时过滤内部思维注释",
     description: "在将 Responses API 透传流发送给客户端之前，自动剔除上游内部注释输出阶段内容。",
   },
-  SHIGUANG_GATEWAY_MCP_ENFORCE_SCOPES: {
+  ORBIT_MCP_ENFORCE_SCOPES: {
     label: "强制执行 MCP 工具权限作用域",
     description: "对 MCP 客户端工具访问强制执行细粒度权限作用域隔离与校验。",
   },
-  SHIGUANG_GATEWAY_MCP_COMPRESS_DESCRIPTIONS: {
+  ORBIT_MCP_COMPRESS_DESCRIPTIONS: {
     label: "压缩 MCP 工具描述",
     description: "自动压缩精简 MCP 工具的 Schema 描述文本以大幅节省上下文 Token 占用。",
   },
-  SHIGUANG_GATEWAY_ENABLE_RUNTIME_BACKGROUND_TASKS: {
+  ORBIT_ENABLE_RUNTIME_BACKGROUND_TASKS: {
     label: "启用运行时后台任务",
     description: "在网关运行时开启异步后台常驻任务与调度处理。",
   },
-  SHIGUANG_GATEWAY_DISABLE_BACKGROUND_SERVICES: {
+  ORBIT_DISABLE_BACKGROUND_SERVICES: {
     label: "禁用所有后台服务",
     description: "禁用配额定期扫描、自动同步等所有后台服务（需重启生效）。",
   },
-  SHIGUANG_GATEWAY_RTK_TRUST_PROJECT_FILTERS: {
+  ORBIT_RTK_TRUST_PROJECT_FILTERS: {
     label: "信任项目级 RTK 过滤器",
     description: "允许直接信任来自项目层级的 RTK 过滤规则无需额外二次校验。",
   },
-  SHIGUANG_GATEWAY_ENABLE_LIVE_WS: {
+  ORBIT_ENABLE_LIVE_WS: {
     label: "实时仪表盘 WebSocket 服务",
     description: "在端口 20132 上启动实时遥测与日志推送 WebSocket 服务（需重启生效）。",
   },
-  SHIGUANG_GATEWAY_CODEX_WS_ENABLED: {
+  ORBIT_CODEX_WS_ENABLED: {
     label: "Codex WebSocket 传输通道",
     description: "允许 Codex 客户端通过 WebSocket 长连接传输 Responses（关闭时自动回退为 HTTP）。",
   },
-  SHIGUANG_GATEWAY_CODEX_APP_SERVER_ENABLED: {
+  ORBIT_CODEX_APP_SERVER_ENABLED: {
     label: "Codex App-Server 协议通道",
     description: "允许 Codex 客户端使用本地 app-server WebSocket JSON-RPC 协议通道。",
   },
-  SHIGUANG_GATEWAY_EMERGENCY_FALLBACK: {
+  ORBIT_EMERGENCY_FALLBACK: {
     label: "紧急免费额度兜底降级",
     description: "当目标模型配额或预算耗尽时，自动将请求紧急降级路由至可用的免费备用模型。",
   },
@@ -196,7 +196,7 @@ export const FEATURE_FLAG_TRANSLATIONS_ZH: Record<string, LocalizedFlagText> = {
     label: "暴露 Claude Code 发现别名",
     description: "在 /v1/models 广播 claude/<provider>/<model> 镜像别名，使 Claude Code 能发现非 Claude 模型。",
   },
-  SHIGUANG_GATEWAY_CHAT_VIRTUAL_LANES: {
+  ORBIT_CHAT_VIRTUAL_LANES: {
     label: "自适应多租户虚拟准入队列",
     description: "开启按租户隔离的自适应虚拟分发队列，防止单个租户并发脉冲打满全局连接池导致其他租户 503（需重启生效）。",
   },
@@ -222,21 +222,21 @@ export const FEATURE_FLAG_TRANSLATIONS_ZH: Record<string, LocalizedFlagText> = {
     label: "自动同步模型定价数据",
     description: "从官方源自动同步最新的 Token 输入输出单价用于成本精算（需环境变量 PRICING_SYNC_ENABLED 配合）。",
   },
-  SHIGUANG_GATEWAY_AUTO_SYNC_CODEX_PROFILES: {
+  ORBIT_AUTO_SYNC_CODEX_PROFILES: {
     label: "自动同步 Codex 配置文件",
     description: "提供商模型目录更新后，自动从实时名录重新生成 ~/.codex/*.config.toml 配置文件（默认关闭）。",
   },
-  SHIGUANG_GATEWAY_AUTO_SYNC_CLAUDE_PROFILES: {
+  ORBIT_AUTO_SYNC_CLAUDE_PROFILES: {
     label: "自动同步 Claude Code 配置文件",
     description: "提供商模型目录更新后，自动从实时名录重新生成 ~/.claude/profiles/ 配置（默认关闭）。",
   },
 
   // ── Health ──
-  SHIGUANG_GATEWAY_DISABLE_LOCAL_HEALTHCHECK: {
+  ORBIT_DISABLE_LOCAL_HEALTHCHECK: {
     label: "禁用本地实例健康探测",
     description: "禁用网关本机本地探测端点的健康状态扫描。",
   },
-  SHIGUANG_GATEWAY_DISABLE_TOKEN_HEALTHCHECK: {
+  ORBIT_DISABLE_TOKEN_HEALTHCHECK: {
     label: "禁用凭证 Token 有效性探测",
     description: "禁用连接凭证 Token 的周期性后台活性健康检测。",
   },

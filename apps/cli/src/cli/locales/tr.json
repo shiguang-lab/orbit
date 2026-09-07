@@ -1,8 +1,8 @@
 {
   "common": {
     "error": "Hata: {message}",
-    "serverOffline": "ShiguangGateway sunucusu çevrimdışı. Başlatın: shiguang-gateway serve",
-    "authRequired": "Kimlik doğrulama gerekli. SHIGUANG_GATEWAY_API_KEY ayarlayın veya çalıştırın: shiguang-gateway setup",
+    "serverOffline": "Orbit sunucusu çevrimdışı. Başlatın: orbit serve",
+    "authRequired": "Kimlik doğrulama gerekli. ORBIT_API_KEY ayarlayın veya çalıştırın: orbit setup",
     "rateLimited": "İstek limiti aşıldı. {seconds}s sonra tekrar deneyin.",
     "timeout": "İstek {ms}ms sonra zaman aşımına uğradı.",
     "success": "Tamamlandı.",
@@ -15,18 +15,18 @@
     "yesOpt": "Onayı atla"
   },
   "program": {
-    "description": "ShiguangGateway — Otomatik Fallback ile Akıllı AI Yönlendirici",
+    "description": "Orbit — Otomatik Fallback ile Akıllı AI Yönlendirici",
     "version": "Sürümü yazdır ve çık",
     "output": "Çıktı formatı (table, json, jsonl, csv)",
     "quiet": "Önemsiz çıktıyı gizle",
     "no_color": "Renkli çıktıyı devre dışı bırak",
     "timeout": "HTTP istek zaman aşımı (milisaniye)",
-    "api_key": "ShiguangGateway sunucusu için API anahtarı",
-    "base_url": "ShiguangGateway sunucusu temel URL'si",
+    "api_key": "Orbit sunucusu için API anahtarı",
+    "base_url": "Orbit sunucusu temel URL'si",
     "context": "Bu komut için sunucu bağlamı/profili",
-    "lang": "CLI görüntüleme dilini ayarla (SHIGUANG_GATEWAY_LANG'ı geçersiz kılar)"
+    "lang": "CLI görüntüleme dilini ayarla (ORBIT_LANG'ı geçersiz kılar)"
   },
   "redis": {
-    "description": "ShiguangGateway önbelleği ve kota takibi için tek tıkla yerel Redis konteyneri (Podman veya Docker) başlatın"
+    "description": "Orbit önbelleği ve kota takibi için tek tıkla yerel Redis konteyneri (Podman veya Docker) başlatın"
   }
 }

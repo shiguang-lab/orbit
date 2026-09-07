@@ -2,7 +2,7 @@
  * GET /v1/combos — API-key safe read of combo metadata.
  *
  * Issue #2300: `/api/combos` is management-gated, which blocks integrations
- * like `opencode-shiguangGateway-auth` that need to enrich combo capabilities from
+ * like `opencode-orbit-auth` that need to enrich combo capabilities from
  * a normal Bearer API key. This endpoint exposes the same public metadata
  * with the API-key auth model used by `/v1/models` and projects out internal
  * routing details (account/connection ids, weights, internal labels).

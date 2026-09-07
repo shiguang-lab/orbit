@@ -508,14 +508,14 @@ export function attachReasoningRuleDirective(
     ...source,
     model: decision.rule.scope === "connection" ? source.model : decision.targetModel,
   };
-  body._shiguangGatewayReasoningRule = {
+  body._orbitReasoningRule = {
     id: decision.rule.id,
     effortMode: decision.rule.effortMode,
     targetEffort: decision.targetEffort,
     budgetAction: decision.targetEffort === "none" ? "remove" : decision.rule.budgetAction,
     budgetTokens: decision.rule.budgetTokens,
   };
-  body._shiguangGatewayReasoningRouteTrace = {
+  body._orbitReasoningRouteTrace = {
     ruleId: decision.rule.id,
     ruleName: decision.rule.name,
     scope: decision.rule.scope,
@@ -533,10 +533,10 @@ export function attachReasoningRuleDirective(
 
 export function applyReasoningRuleDirective(bodyInput: unknown): unknown {
   const source = asRecord(bodyInput);
-  const directive = asRecord(source._shiguangGatewayReasoningRule);
+  const directive = asRecord(source._orbitReasoningRule);
   if (!directive.id) return bodyInput;
   const body = { ...source };
-  delete body._shiguangGatewayReasoningRule;
+  delete body._orbitReasoningRule;
   const effortMode = directive.effortMode;
   const targetEffort = effort(directive.targetEffort);
   if (effortMode === "force" && targetEffort === "none") clearReasoning(body);

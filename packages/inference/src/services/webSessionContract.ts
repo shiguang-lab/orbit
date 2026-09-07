@@ -26,7 +26,7 @@ export interface WebSessionContract {
 
 /**
  * Publish only the canonical, non-secret metadata needed by external
- * credential brokers to capture credentials in the same shape ShiguangGateway
+ * credential brokers to capture credentials in the same shape Orbit
  * accepts. Provider instructions, polling state, and credential values are
  * intentionally excluded.
  */

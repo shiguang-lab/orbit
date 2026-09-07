@@ -1,12 +1,12 @@
-# Auto-Combo: niech ShiguangGateway wybierze najlepsze AI za Ciebie
+# Auto-Combo: niech Orbit wybierze najlepsze AI za Ciebie
 
-> **TL;DR**: Ustaw model na `auto`, a ShiguangGateway automatycznie wybierze najlepszego providera AI dla każdego żądania. Nie wymaga konfiguracji.
+> **TL;DR**: Ustaw model na `auto`, a Orbit automatycznie wybierze najlepszego providera AI dla każdego żądania. Nie wymaga konfiguracji.
 
 ---
 
 ## Co robi
 
-Zamiast wybierać konkretny model AI (np. GPT-4o lub Claude), możesz pozwolić ShiguangGateway **automatycznie wybrać najlepszy** dla każdego żądania. Bierze pod uwagę:
+Zamiast wybierać konkretny model AI (np. GPT-4o lub Claude), możesz pozwolić Orbit **automatycznie wybrać najlepszy** dla każdego żądania. Bierze pod uwagę:
 
 - **Health** — Czy provider działa w tej chwili?
 - **Speed** — Jak szybko odpowiada?
@@ -14,7 +14,7 @@ Zamiast wybierać konkretny model AI (np. GPT-4o lub Claude), możesz pozwolić 
 - **Quality** — Czy dobrze radzi sobie z tym typem zadania?
 - **Capacity** — Czy ma jeszcze dostępny limit (quota)?
 
-ShiguangGateway ocenia wszystkich podłączonych providerów i wybiera najlepszego. Jeśli ten zawiedzie, automatycznie próbuje kolejnego.
+Orbit ocenia wszystkich podłączonych providerów i wybiera najlepszego. Jeśli ten zawiedzie, automatycznie próbuje kolejnego.
 
 ---
 
@@ -26,7 +26,7 @@ ShiguangGateway ocenia wszystkich podłączonych providerów i wybiera najlepsze
 model: "auto"
 ```
 
-**Krok 2**: To wszystko! ShiguangGateway zajmie się resztą.
+**Krok 2**: To wszystko! Orbit zajmie się resztą.
 
 **Krok 3** (opcjonalnie): Użyj wariantu pod konkretne zadania:
 
@@ -72,7 +72,7 @@ curl http://localhost:20128/v1/chat/completions \
 
 ## Jak to działa (wersja uproszczona)
 
-Gdy wysyłasz żądanie z `model: "auto"`, ShiguangGateway:
+Gdy wysyłasz żądanie z `model: "auto"`, Orbit:
 
 1. **Przegląda wszystkich podłączonych providerów** — każdego, którego dodałeś (OpenAI, Anthropic, Google itd.)
 2. **Ocenia każdego** według 5 czynników:
@@ -82,7 +82,7 @@ Gdy wysyłasz żądanie z `model: "auto"`, ShiguangGateway:
    - Jak szybko działa? (speed)
    - Czy dobrze radzi sobie z tym zadaniem? (quality)
 3. **Wybiera najlepszego** — provider z najwyższym wynikiem dostaje Twoje żądanie
-4. **Automatycznie odzyskuje się** — jeśli ten zawiedzie, ShiguangGateway automatycznie próbuje kolejnego
+4. **Automatycznie odzyskuje się** — jeśli ten zawiedzie, Orbit automatycznie próbuje kolejnego
 
 ### System punktacji
 
@@ -116,11 +116,11 @@ Każdy wariant używa innych wag:
 
 ## Jak obsługuje awarie
 
-ShiguangGateway ma **trzy warstwy ochrony**:
+Orbit ma **trzy warstwy ochrony**:
 
 ### 1. Auto-Fallback
 
-Jeśli najlepszy provider zawiedzie, ShiguangGateway automatycznie próbuje kolejnego. Nie musisz nic robić.
+Jeśli najlepszy provider zawiedzie, Orbit automatycznie próbuje kolejnego. Nie musisz nic robić.
 
 ### 2. Self-Healing
 
@@ -132,13 +132,13 @@ Jeśli provider wciąż zawodzi:
 
 ### 3. Emergency Fallback
 
-Jeśli wszyscy providerzy zawiodą, ShiguangGateway jako ostateczność kieruje ruch do stabilnych darmowych providerów (np. Kiro lub Qoder).
+Jeśli wszyscy providerzy zawiodą, Orbit jako ostateczność kieruje ruch do stabilnych darmowych providerów (np. Kiro lub Qoder).
 
 ---
 
 ## Obsługa wielu kont
 
-Jeśli masz wiele kont u tego samego providera (np. dwa klucze OpenAI), ShiguangGateway traktuje każde jako **osobnego kandydata**. To oznacza:
+Jeśli masz wiele kont u tego samego providera (np. dwa klucze OpenAI), Orbit traktuje każde jako **osobnego kandydata**. To oznacza:
 
 - Konto A ma jeszcze quota → użyj go
 - Konto B jest ograniczone rate limitem → pomiń
@@ -150,13 +150,13 @@ Każde konto jest oceniane niezależnie na podstawie własnego health, quota i s
 
 ## Eksploracja banditowa
 
-ShiguangGateway od czasu do czasu **eksploruje** nowych providerów, żeby odkryć lepsze opcje:
+Orbit od czasu do czasu **eksploruje** nowych providerów, żeby odkryć lepsze opcje:
 
 - **Domyślnie**: 5% żądań idzie do losowych providerów
 - **Auto/smart**: 10% eksploracji
 - **Wyłączone**, gdy ponad 50% providerów jest niezdrowych
 
-Dzięki temu ShiguangGateway uczy się, którzy providerzy najlepiej pasują do Twojego wzorca użycia.
+Dzięki temu Orbit uczy się, którzy providerzy najlepiej pasują do Twojego wzorca użycia.
 
 ---
 
@@ -168,11 +168,11 @@ Dzięki temu ShiguangGateway uczy się, którzy providerzy najlepiej pasują do 
 
 ### „Co jeśli provider padnie?”
 
-ShiguangGateway automatycznie go pomija i próbuje kolejnego. Jeśli provider wciąż zawodzi, jest tymczasowo wykluczany (5–30 minut). Nie musisz nic robić.
+Orbit automatycznie go pomija i próbuje kolejnego. Jeśli provider wciąż zawodzi, jest tymczasowo wykluczany (5–30 minut). Nie musisz nic robić.
 
 ### „Czy mogę zobaczyć, który provider został użyty?”
 
-Sprawdź nagłówki odpowiedzi — ShiguangGateway dołącza użytego providera i model w każdej odpowiedzi.
+Sprawdź nagłówki odpowiedzi — Orbit dołącza użytego providera i model w każdej odpowiedzi.
 
 ### „Czy uczy się z mojego użycia?”
 

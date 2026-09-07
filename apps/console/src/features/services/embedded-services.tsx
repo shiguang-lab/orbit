@@ -215,13 +215,13 @@ function getServiceErrorView(error: string | null | undefined, port: number): Se
   const raw = error?.trim();
   if (!raw) return null;
 
-  if (/already serving a healthy response/i.test(raw) || /SHIGUANG_GATEWAY_ADOPT_EXISTING_SERVICE/i.test(raw)) {
+  if (/already serving a healthy response/i.test(raw) || /ORBIT_ADOPT_EXISTING_SERVICE/i.test(raw)) {
     return {
       statusLabel: "端口已有服务",
       title: "检测到已有 CLIProxyAPI 实例",
       description:
         `端口 ${port} 已经有健康服务在响应。为避免误接管其他进程，网关默认不会自动接管它。` +
-        "如果这是你之前启动的 CLIProxyAPI，请在 智枢 进程环境中设置 SHIGUANG_GATEWAY_ADOPT_EXISTING_SERVICE=1 后重启 智枢；否则先停止占用该端口的旧进程，再重试。",
+        "如果这是你之前启动的 CLIProxyAPI，请在 智枢 进程环境中设置 ORBIT_ADOPT_EXISTING_SERVICE=1 后重启 智枢；否则先停止占用该端口的旧进程，再重试。",
       tone: "warning",
     };
   }

@@ -552,7 +552,7 @@ export const MODEL_SPECS: Record<string, ModelSpec> = {
   },
 
   // ââ Z.AI GLM-5.3 (1M context mirrored from 5.2 â same base model; 128K max
-  // output; effort via reasoning_effort param, tiers are ShiguangGateway aliases) ââ
+  // output; effort via reasoning_effort param, tiers are Orbit aliases) ââ
   "glm-5.3": {
     maxOutputTokens: 131072,
     contextWindow: 1000000,

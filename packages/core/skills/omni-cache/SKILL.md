@@ -20,7 +20,7 @@ Get cache statistics
 
 ```bash
 curl https://localhost:20128/api/cache \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### DELETE /api/cache
@@ -29,7 +29,7 @@ Clear all caches
 
 ```bash
 curl -X DELETE https://localhost:20128/api/cache \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### GET /api/cache/stats
@@ -40,7 +40,7 @@ Returns detailed statistics for all cache layers.
 
 ```bash
 curl https://localhost:20128/api/cache/stats \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### DELETE /api/cache/stats
@@ -49,7 +49,7 @@ Clear cache statistics
 
 ```bash
 curl -X DELETE https://localhost:20128/api/cache/stats \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ## Payloads

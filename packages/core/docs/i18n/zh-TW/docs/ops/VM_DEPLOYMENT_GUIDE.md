@@ -1,14 +1,14 @@
 ---
-title: "ShiguangGateway — VM 部署指南（搭配 Cloudflare）"
+title: "Orbit — VM 部署指南（搭配 Cloudflare）"
 version: 3.8.40
 lastUpdated: 2026-06-28
 ---
 
-# ShiguangGateway — VM 部署指南（搭配 Cloudflare）
+# Orbit — VM 部署指南（搭配 Cloudflare）
 
 🌐 **語言:** 🇺🇸 [English](./VM_DEPLOYMENT_GUIDE.md) | 🇧🇷 [Português (Brasil)](../i18n/pt-BR/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇪🇸 [Español](../i18n/es/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇫🇷 [Français](../i18n/fr/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇮🇹 [Italiano](../i18n/it/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇷🇺 [Русский](../i18n/ru/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇨🇳 [中文 (简体)](../i18n/zh-CN/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇩🇪 [Deutsch](../i18n/de/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇮🇳 [हिन्दी](../i18n/in/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇹🇭 [ไทย](../i18n/th/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇺🇦 [Українська](../i18n/uk-UA/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇸🇦 [العربية](../i18n/ar/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇯🇵 [日本語](../i18n/ja/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇻🇳 [Tiếng Việt](../i18n/vi/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇧🇬 [Български](../i18n/bg/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇩🇰 [Dansk](../i18n/da/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇫🇮 [Suomi](../i18n/fi/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇮🇱 [עברית](../i18n/he/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇭🇺 [Magyar](../i18n/hu/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇮🇩 [Bahasa Indonesia](../i18n/id/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇰🇷 [한국어](../i18n/ko/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇲🇾 [Bahasa Melayu](../i18n/ms/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇳🇱 [Nederlands](../i18n/nl/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇳🇴 [Norsk](../i18n/no/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇵🇹 [Português (Portugal)](../i18n/pt/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇷🇴 [Română](../i18n/ro/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇵🇱 [Polski](../i18n/pl/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇸🇰 [Slovenčina](../i18n/sk/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇸🇪 [Svenska](../i18n/sv/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇵🇭 [Filipino](../i18n/phi/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇨🇿 [Čeština](../i18n/cs/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇹🇼 [繁體中文](./VM_DEPLOYMENT_GUIDE.md)
 
-在 VM（VPS）上安裝並設定 ShiguangGateway 的完整指南，搭配經由 Cloudflare 管理的網域。
+在 VM（VPS）上安裝並設定 Orbit 的完整指南，搭配經由 Cloudflare 管理的網域。
 
 ---
 
@@ -86,18 +86,18 @@ ufw enable
 
 ---
 
-## 2. 安裝 ShiguangGateway
+## 2. 安裝 Orbit
 
 ### 2.1 建立設定目錄
 
 ```bash
-mkdir -p /opt/shiguang-gateway
+mkdir -p /opt/orbit
 ```
 
 ### 2.2 建立環境變數檔
 
 ```bash
-cat > /opt/shiguang-gateway/.env << 'EOF'
+cat > /opt/orbit/.env << 'EOF'
 # === 安全性 ===
 JWT_SECRET=CHANGE-TO-A-UNIQUE-64-CHAR-SECRET-KEY
 INITIAL_PASSWORD=YourSecurePassword123!
@@ -105,7 +105,7 @@ API_KEY_SECRET=REPLACE-WITH-ANOTHER-SECRET-KEY
 STORAGE_ENCRYPTION_KEY=REPLACE-WITH-THIRD-SECRET-KEY
 STORAGE_ENCRYPTION_KEY_VERSION=v1
 MACHINE_ID_SALT=CHANGE-TO-A-UNIQUE-SALT
-SHIGUANG_GATEWAY_WS_BRIDGE_SECRET=REPLACE-WITH-WS-BRIDGE-SECRET  # 生產環境必填：Codex Responses WS bridge 使用
+ORBIT_WS_BRIDGE_SECRET=REPLACE-WITH-WS-BRIDGE-SECRET  # 生產環境必填：Codex Responses WS bridge 使用
 
 # === 應用程式 ===
 PORT=20128
@@ -122,11 +122,11 @@ BASE_URL=http://127.0.0.1:20128
 # 瀏覽器端使用的 URL，用於 OAuth 回呼、儀表板連結和產生的公開 URL
 NEXT_PUBLIC_BASE_URL=https://llms.seudominio.com
 # 選擇性：產生的公開資源 URL 的明確公開來源覆寫
-# SHIGUANG_GATEWAY_PUBLIC_BASE_URL=https://llms.seudominio.com
+# ORBIT_PUBLIC_BASE_URL=https://llms.seudominio.com
 
 # === Cloud 同步（選擇性）===
-# CLOUD_URL=https://cloud.shiguang-gateway.online
-# NEXT_PUBLIC_CLOUD_URL=https://cloud.shiguang-gateway.online
+# CLOUD_URL=https://cloud.orbit.online
+# NEXT_PUBLIC_CLOUD_URL=https://cloud.orbit.online
 EOF
 ```
 
@@ -135,22 +135,22 @@ EOF
 ### 2.3 啟動容器
 
 ```bash
-docker pull diegosouzapw/shiguang-gateway:latest
+docker pull diegosouzapw/orbit:latest
 
 docker run -d \
-  --name shiguang-gateway \
+  --name orbit \
   --restart unless-stopped \
-  --env-file /opt/shiguang-gateway/.env \
+  --env-file /opt/orbit/.env \
   -p 20128:20128 \
-  -v shiguang-gateway-data:/app/data \
-  diegosouzapw/shiguang-gateway:latest
+  -v orbit-data:/app/data \
+  diegosouzapw/orbit:latest
 ```
 
 ### 2.4 確認運作中
 
 ```bash
-docker ps | grep shiguang-gateway
-docker logs shiguang-gateway --tail 20
+docker ps | grep orbit
+docker logs orbit --tail 20
 ```
 
 應顯示：`[DB] SQLite database ready` 和 `listening on port 20128`。
@@ -183,7 +183,7 @@ chmod 600 /etc/nginx/ssl/origin.key
 ### 3.2 Nginx 設定
 
 ```bash
-cat > /etc/nginx/sites-available/shiguang-gateway << 'NGINX'
+cat > /etc/nginx/sites-available/orbit << 'NGINX'
 # 預設伺服器 — 封鎖直接透過 IP 存取
 server {
     listen 80 default_server;
@@ -196,7 +196,7 @@ server {
     return 444;
 }
 
-# ShiguangGateway — HTTPS
+# Orbit — HTTPS
 server {
     listen 443 ssl;
     listen [::]:443 ssl;
@@ -239,15 +239,15 @@ server {
 NGINX
 ```
 
-請確保反向代理串流超時時間與你的 ShiguangGateway 超時環境變數保持一致。如果你調高了
+請確保反向代理串流超時時間與你的 Orbit 超時環境變數保持一致。如果你調高了
 `FETCH_TIMEOUT_MS`／`STREAM_IDLE_TIMEOUT_MS`，請同步調高 `proxy_read_timeout`／`proxy_send_timeout`
 至相同閾值以上。
 
-ShiguangGateway 使用 `NEXT_PUBLIC_BASE_URL` 作為 OAuth 回呼和產生公開連結的標準瀏覽器端來源。
+Orbit 使用 `NEXT_PUBLIC_BASE_URL` 作為 OAuth 回呼和產生公開連結的標準瀏覽器端來源。
 已驗證的儀表板寫入操作使用同源請求加上綁定 session 的 CSRF 保護，因此不需要靜態公開基礎 URL。
 上述的 `X-Forwarded-*` 標頭依然是實用的路由後設資料，但在 OAuth 或產生的瀏覽器連結需要公開 URL
-時，它們不能取代明確設定公開 URL。僅在 ShiguangGateway 無法被用戶端直接存取且你的代理伺服器
-會移除／重建傳入的轉發標頭時，才啟用 `SHIGUANG_GATEWAY_TRUST_PROXY`。
+時，它們不能取代明確設定公開 URL。僅在 Orbit 無法被用戶端直接存取且你的代理伺服器
+會移除／重建傳入的轉發標頭時，才啟用 `ORBIT_TRUST_PROXY`。
 
 ### 3.3 啟用並測試
 
@@ -255,8 +255,8 @@ ShiguangGateway 使用 `NEXT_PUBLIC_BASE_URL` 作為 OAuth 回呼和產生公開
 # 移除預設設定
 rm -f /etc/nginx/sites-enabled/default
 
-# 啟用 ShiguangGateway
-ln -sf /etc/nginx/sites-available/shiguang-gateway /etc/nginx/sites-enabled/shiguang-gateway
+# 啟用 Orbit
+ln -sf /etc/nginx/sites-available/orbit /etc/nginx/sites-enabled/orbit
 
 # 測試並重新載入
 nginx -t && systemctl reload nginx
@@ -300,40 +300,40 @@ curl -sI https://llms.seudominio.com/health
 ### 升級至新版本
 
 ```bash
-docker pull diegosouzapw/shiguang-gateway:latest
-docker stop shiguang-gateway && docker rm shiguang-gateway
-docker run -d --name shiguang-gateway --restart unless-stopped \
-  --env-file /opt/shiguang-gateway/.env \
+docker pull diegosouzapw/orbit:latest
+docker stop orbit && docker rm orbit
+docker run -d --name orbit --restart unless-stopped \
+  --env-file /opt/orbit/.env \
   -p 20128:20128 \
-  -v shiguang-gateway-data:/app/data \
-  diegosouzapw/shiguang-gateway:latest
+  -v orbit-data:/app/data \
+  diegosouzapw/orbit:latest
 ```
 
 ### 檢視日誌
 
 ```bash
-docker logs -f shiguang-gateway          # 即時串流
-docker logs shiguang-gateway --tail 50   # 最後 50 行
+docker logs -f orbit          # 即時串流
+docker logs orbit --tail 50   # 最後 50 行
 ```
 
 ### 手動資料庫備份
 
 ```bash
 # 從容器複製資料到主機
-docker cp shiguang-gateway:/app/data ./backup-$(date +%F)
+docker cp orbit:/app/data ./backup-$(date +%F)
 
 # 或壓縮整個磁碟區
-docker run --rm -v shiguang-gateway-data:/data -v $(pwd):/backup \
-  alpine tar czf /backup/shiguang-gateway-data-$(date +%F).tar.gz /data
+docker run --rm -v orbit-data:/data -v $(pwd):/backup \
+  alpine tar czf /backup/orbit-data-$(date +%F).tar.gz /data
 ```
 
 ### 從備份還原
 
 ```bash
-docker stop shiguang-gateway
-docker run --rm -v shiguang-gateway-data:/data -v $(pwd):/backup \
-  alpine sh -c "rm -rf /data/* && tar xzf /backup/shiguang-gateway-data-YYYY-MM-DD.tar.gz -C /"
-docker start shiguang-gateway
+docker stop orbit
+docker run --rm -v orbit-data:/data -v $(pwd):/backup \
+  alpine sh -c "rm -rf /data/* && tar xzf /backup/orbit-data-YYYY-MM-DD.tar.gz -C /"
+docker start orbit
 ```
 
 ---
@@ -402,13 +402,13 @@ netfilter-persistent save
 
 ```bash
 # 在本機儲存庫中
-cd shiguang-gatewayCloud
+cd orbitCloud
 npm install
 npx wrangler login
 npx wrangler deploy
 ```
 
-另請參閱 [TUNNELS_GUIDE.md](./TUNNELS_GUIDE.md) 以了解儲存庫內的 Cloudflare Tunnel 逐步說明。獨立的 `shiguang-gatewayCloud/` worker 位於另一個配套儲存庫中。
+另請參閱 [TUNNELS_GUIDE.md](./TUNNELS_GUIDE.md) 以了解儲存庫內的 Cloudflare Tunnel 逐步說明。獨立的 `orbitCloud/` worker 位於另一個配套儲存庫中。
 
 ---
 
@@ -419,4 +419,4 @@ npx wrangler deploy
 | 22     | SSH         | 公開（搭配 fail2ban）  |
 | 80     | nginx HTTP  | 重新導向 → HTTPS       |
 | 443    | nginx HTTPS | 經由 Cloudflare Proxy  |
-| 20128  | ShiguangGateway   | 僅限本機（經由 nginx） |
+| 20128  | Orbit   | 僅限本機（經由 nginx） |

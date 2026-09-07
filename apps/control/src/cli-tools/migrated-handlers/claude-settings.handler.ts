@@ -59,7 +59,7 @@ export async function GET(request: Request) {
 
     const settings = await readSettings();
     const env = isJsonObject(settings?.env) ? settings.env : null;
-    const hasShiguangGateway = typeof env?.ANTHROPIC_BASE_URL === "string";
+    const hasOrbit = typeof env?.ANTHROPIC_BASE_URL === "string";
 
     return Response.json({
       installed: runtime.installed,
@@ -69,7 +69,7 @@ export async function GET(request: Request) {
       runtimeMode: runtime.runtimeMode,
       reason: runtime.reason,
       settings: settings,
-      hasShiguangGateway: hasShiguangGateway,
+      hasOrbit: hasOrbit,
       settingsPath: getClaudeSettingsPath(),
     });
   } catch (error) {

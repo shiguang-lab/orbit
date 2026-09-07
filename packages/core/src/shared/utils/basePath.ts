@@ -1,5 +1,5 @@
 /**
- * Client/server helpers for Next.js `basePath` / `SHIGUANG_GATEWAY_BASE_PATH` deploys.
+ * Client/server helpers for Next.js `basePath` / `ORBIT_BASE_PATH` deploys.
  *
  * Next.js rewrites Link/router automatically, but absolute browser calls like
  * `fetch("/api/...")` and `new EventSource("/api/...")` do not get the prefix.
@@ -16,21 +16,21 @@ export function normalizeBasePath(value?: string | null): string {
 
 /**
  * Deploy basePath as seen by the client bundle.
- * Set via next.config `env.NEXT_PUBLIC_SHIGUANG_GATEWAY_BASE_PATH` from `SHIGUANG_GATEWAY_BASE_PATH`.
+ * Set via next.config `env.NEXT_PUBLIC_ORBIT_BASE_PATH` from `ORBIT_BASE_PATH`.
  */
 export function getDeployBasePath(
   env: NodeJS.ProcessEnv = typeof process !== "undefined" ? process.env : ({} as NodeJS.ProcessEnv)
 ): string {
   return normalizeBasePath(
-    env.NEXT_PUBLIC_SHIGUANG_GATEWAY_BASE_PATH || env.SHIGUANG_GATEWAY_BASE_PATH || ""
+    env.NEXT_PUBLIC_ORBIT_BASE_PATH || env.ORBIT_BASE_PATH || ""
   );
 }
 
 /**
  * Prefix a same-origin app path with the deploy basePath when needed.
  *
- * - Relative absolute paths: `/api/health/ping` → `/shiguangGateway/api/health/ping`
- * - Absolute same-origin URLs: `https://host/api/x` → `https://host/shiguangGateway/api/x`
+ * - Relative absolute paths: `/api/health/ping` → `/orbit/api/health/ping`
+ * - Absolute same-origin URLs: `https://host/api/x` → `https://host/orbit/api/x`
  * - Already-prefixed paths, external URLs, and protocol-relative URLs are unchanged
  */
 export function withBasePath(

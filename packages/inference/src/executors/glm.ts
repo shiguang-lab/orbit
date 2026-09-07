@@ -508,7 +508,7 @@ export class GlmExecutor extends DefaultExecutor {
       userAgent: clientHeaders["user-agent"] ?? clientHeaders["User-Agent"] ?? null,
       thinkingMarkerHeader:
         clientHeaders[THINKING_MARKER_HEADER] ??
-        clientHeaders["x-shiguangGateway-thinking-marker"] ??
+        clientHeaders["x-orbit-thinking-marker"] ??
         null,
       clientResponseFormat: input.clientResponseFormat ?? null,
     });

@@ -2,7 +2,7 @@
 
 import fs from "fs/promises";
 import { getCliConfigHome, getCliPrimaryConfigPath } from "../../shared/services/cliRuntime.ts";
-import { hasShiguangGatewayQwenCodeConfig } from "../../shared/services/qwenCodeConfig.ts";
+import { hasOrbitQwenCodeConfig } from "../../shared/services/qwenCodeConfig.ts";
 import {
   parseGrokBuildConfig,
   resolveGrokBuildConfigPath,
@@ -12,7 +12,7 @@ import { getRuntimePorts } from "../runtime/ports.ts";
 const { apiPort } = getRuntimePorts();
 
 /**
- * Check if a tool has ShiguangGateway configured by reading its config file directly.
+ * Check if a tool has Orbit configured by reading its config file directly.
  * This replaces the expensive self-referential HTTP calls to /api/cli-tools/*-settings.
  *
  * @param toolId - CLI tool identifier (e.g. "claude", "codex", "cline")
@@ -36,7 +36,7 @@ export async function checkToolConfigStatus(
 
     if (toolId === "grok-build") {
       const settings = parseGrokBuildConfig(content);
-      return settings.default === "shiguangGateway" &&
+      return settings.default === "orbit" &&
         settings.model?.base_url &&
         settings.model.api_backend === "chat_completions"
         ? "configured"
@@ -46,11 +46,11 @@ export async function checkToolConfigStatus(
     // Codex uses TOML config — parse as raw text, not JSON
     if (toolId === "codex") {
       const lower = content.toLowerCase();
-      const hasShiguangGateway =
-        lower.includes("shiguangGateway") ||
+      const hasOrbit =
+        lower.includes("orbit") ||
         lower.includes(`localhost:${apiPort}`) ||
         lower.includes(`127.0.0.1:${apiPort}`);
-      if (!hasShiguangGateway) return "not_configured";
+      if (!hasOrbit) return "not_configured";
 
       // Also verify auth.json has an API key (not masked/empty)
       try {
@@ -70,32 +70,32 @@ export async function checkToolConfigStatus(
 
     if (toolId === "hermes") {
       const lower = content.toLowerCase();
-      const hasShiguangGateway =
-        lower.includes("shiguangGateway") ||
+      const hasOrbit =
+        lower.includes("orbit") ||
         lower.includes(`localhost:${apiPort}`) ||
         lower.includes(`127.0.0.1:${apiPort}`);
-      return hasShiguangGateway ? "configured" : "not_configured";
+      return hasOrbit ? "configured" : "not_configured";
     }
 
     const config = JSON.parse(content) as Record<string, unknown>;
 
-    // Each tool stores ShiguangGateway config differently
+    // Each tool stores Orbit config differently
     switch (toolId) {
       case "claude":
         return (config?.env as Record<string, unknown>)?.ANTHROPIC_BASE_URL
           ? "configured"
           : "not_configured";
       case "qwen":
-        return hasShiguangGatewayQwenCodeConfig(config) ? "configured" : "not_configured";
+        return hasOrbitQwenCodeConfig(config) ? "configured" : "not_configured";
       case "droid":
       case "openclaw":
       case "cline":
       case "kilo": {
-        // Generic check: look for ShiguangGateway-specific markers in the config
+        // Generic check: look for Orbit-specific markers in the config
         const configStr = JSON.stringify(config).toLowerCase();
         if (
-          configStr.includes("shiguangGateway") ||
-          configStr.includes("sk_shiguangGateway") ||
+          configStr.includes("orbit") ||
+          configStr.includes("sk_orbit") ||
           configStr.includes(`localhost:${apiPort}`) ||
           configStr.includes(`127.0.0.1:${apiPort}`)
         ) {

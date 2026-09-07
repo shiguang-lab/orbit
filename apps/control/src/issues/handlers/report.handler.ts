@@ -62,7 +62,7 @@ export async function POST(request: Request): Promise<Response> {
     "",
     details ? "### Details\n```json\n" + JSON.stringify(details, null, 2) + "\n```" : null,
     "",
-    "_Auto-reported by ShiguangGateway Registered Key Issuer_",
+    "_Auto-reported by Orbit Registered Key Issuer_",
   ]
     .filter(Boolean)
     .join("\n");

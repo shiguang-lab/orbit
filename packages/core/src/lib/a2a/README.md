@@ -1,8 +1,8 @@
-# ShiguangGateway A2A Server
+# Orbit A2A Server
 
-> **Agent-to-Agent Protocol v0.3** — Enables any AI agent to use ShiguangGateway as an intelligent routing agent via JSON-RPC 2.0.
+> **Agent-to-Agent Protocol v0.3** — Enables any AI agent to use Orbit as an intelligent routing agent via JSON-RPC 2.0.
 
-The A2A Server exposes ShiguangGateway as a **first-class agent** that other agents can discover, delegate tasks to, and collaborate with using the [A2A Protocol](https://google.github.io/A2A/).
+The A2A Server exposes Orbit as a **first-class agent** that other agents can discover, delegate tasks to, and collaborate with using the [A2A Protocol](https://google.github.io/A2A/).
 
 ---
 
@@ -17,7 +17,7 @@ The A2A Server exposes ShiguangGateway as a **first-class agent** that other age
                        │  2. POST /a2a  (JSON-RPC 2.0)
                        ▼
 ┌──────────────────────────────────────────────────────────────────┐
-│                     ShiguangGateway A2A Server                         │
+│                     Orbit A2A Server                         │
 │  ┌────────────────┐  ┌────────────────┐  ┌───────────────────┐  │
 │  │  Task Manager  │  │  Skill Engine  │  │  SSE Streaming    │  │
 │  │  (lifecycle)   │──│  (registry)    │──│  (real-time)      │  │
@@ -29,7 +29,7 @@ The A2A Server exposes ShiguangGateway as a **first-class agent** that other age
 │                                  └────────────────────────────┘  │
 └──────────────────────────────────────────────────────────────────┘
                        │
-                       ▼  ShiguangGateway Gateway (internal)
+                       ▼  Orbit Gateway (internal)
               /v1/chat/completions, /api/combos, /api/usage/quota
 ```
 
@@ -49,7 +49,7 @@ curl http://localhost:8787/.well-known/agent.json
 
 ```json
 {
-  "name": "ShiguangGateway",
+  "name": "Orbit",
   "description": "Intelligent AI gateway with auto-routing across 50+ providers",
   "url": "http://localhost:8787/a2a",
   "version": "1.8.1",
@@ -61,7 +61,7 @@ curl http://localhost:8787/.well-known/agent.json
     {
       "id": "smart-routing",
       "name": "Smart Routing",
-      "description": "Routes prompts through ShiguangGateway intelligent pipeline",
+      "description": "Routes prompts through Orbit intelligent pipeline",
       "tags": ["routing", "llm", "multi-provider", "cost-optimization"],
       "examples": [
         "Write a hello world in Python",
@@ -184,7 +184,7 @@ curl -X POST http://localhost:8787/a2a \
 
 ### `smart-routing`
 
-Routes prompts through ShiguangGateway's intelligent pipeline with full observability.
+Routes prompts through Orbit's intelligent pipeline with full observability.
 
 **Parameters (in `metadata`):**
 
@@ -248,7 +248,7 @@ submitted ──→ working ──→ completed
 ```python
 """
 A2A Client — Python example.
-Discovers ShiguangGateway agent, sends a task, and processes the result.
+Discovers Orbit agent, sends a task, and processes the result.
 """
 import requests
 import json
@@ -399,14 +399,14 @@ while (true) {
 
 ```python
 """
-LangChain integration — Use ShiguangGateway A2A as a custom LLM.
+LangChain integration — Use Orbit A2A as a custom LLM.
 """
 from langchain.llms.base import BaseLLM
 from langchain.schema import LLMResult, Generation
 import requests
 from typing import List, Optional
 
-class ShiguangGatewayA2A(BaseLLM):
+class OrbitA2A(BaseLLM):
     base_url: str = "http://localhost:8787"
     api_key: str = ""
     model: str = "auto"
@@ -414,7 +414,7 @@ class ShiguangGatewayA2A(BaseLLM):
 
     @property
     def _llm_type(self) -> str:
-        return "shiguang-gateway-a2a"
+        return "orbit-a2a"
 
     def _call(self, prompt: str, stop: Optional[List[str]] = None, **kwargs) -> str:
         response = requests.post(
@@ -446,7 +446,7 @@ class ShiguangGatewayA2A(BaseLLM):
         )
 
 # Usage
-llm = ShiguangGatewayA2A(
+llm = OrbitA2A(
     base_url="http://localhost:8787",
     api_key="your-key",
     model="auto",
@@ -537,17 +537,17 @@ func main() {
 
 ### 🤖 Use Case 1: Multi-Agent Coding Pipeline
 
-An orchestrator agent delegates code generation to ShiguangGateway, then passes the output to a review agent.
+An orchestrator agent delegates code generation to Orbit, then passes the output to a review agent.
 
 ```python
 def coding_pipeline(task: str):
-    # Step 1: Generate code via ShiguangGateway A2A
+    # Step 1: Generate code via Orbit A2A
     code_result = a2a_send("smart-routing", [
         {"role": "user", "content": f"Write production-quality code: {task}"}
     ], metadata={"model": "auto", "role": "coding"})
     code = code_result["artifacts"][0]["content"]
 
-    # Step 2: Review the code via ShiguangGateway A2A (different model)
+    # Step 2: Review the code via Orbit A2A (different model)
     review_result = a2a_send("smart-routing", [
         {"role": "user", "content": f"Review this code for bugs and improvements:\n\n{code}"}
     ], metadata={"model": "auto", "role": "review"})
@@ -562,7 +562,7 @@ def coding_pipeline(task: str):
 
 ### 💡 Use Case 2: Quota-Aware Agent Swarm
 
-Multiple agents share quota through ShiguangGateway, using the quota skill to coordinate.
+Multiple agents share quota through Orbit, using the quota skill to coordinate.
 
 ```python
 async def quota_aware_agent(agent_name: str, task: str):
@@ -700,10 +700,10 @@ def poll_task(task_id: str, timeout: int = 60):
 All `/a2a` requests require a Bearer token via the `Authorization` header:
 
 ```
-Authorization: Bearer YOUR_SHIGUANG_GATEWAY_API_KEY
+Authorization: Bearer YOUR_ORBIT_API_KEY
 ```
 
-If no API key is configured on the server (`SHIGUANG_GATEWAY_API_KEY` is empty), authentication is bypassed.
+If no API key is configured on the server (`ORBIT_API_KEY` is empty), authentication is bypassed.
 
 ---
 
@@ -750,4 +750,4 @@ open-sse/mcp-server/
 
 ## License
 
-Part of [ShiguangGateway](https://github.com/diegosouzapw/ShiguangGateway) — MIT License.
+Part of [Orbit](https://github.com/diegosouzapw/Orbit) — MIT License.

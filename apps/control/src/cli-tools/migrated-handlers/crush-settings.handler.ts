@@ -20,7 +20,7 @@ const TOOL_ID = "crush";
 // Crush (charmbracelet/crush) reads a file-based config, default
 // ~/.config/crush/crush.json — same default `bin/cli/commands/setup-crush.mjs`
 // (resolveCrushTarget / runSetupCrushCommand) writes to, so the dashboard and
-// the `shiguangGateway setup-crush` CLI command agree on one canonical location.
+// the `orbit setup-crush` CLI command agree on one canonical location.
 const getCrushConfigPath = (): string =>
   getCliPrimaryConfigPath(TOOL_ID) ??
   path.join(process.env.HOME ?? "~", ".config", "crush", "crush.json");
@@ -28,8 +28,8 @@ const getCrushConfigPath = (): string =>
 const getCrushDir = () => path.dirname(getCrushConfigPath());
 
 /**
- * Crush's config uses a `providers.<id>` map. ShiguangGateway is registered under
- * the `shiguangGateway` provider id as an `openai-compat` provider — same shape
+ * Crush's config uses a `providers.<id>` map. Orbit is registered under
+ * the `orbit` provider id as an `openai-compat` provider — same shape
  * `buildCrushProvider()`/`mergeCrushConfig()` in setup-crush.mjs produce.
  */
 type CrushProvider = {
@@ -46,15 +46,15 @@ const ensureV1 = (url: string): string => {
   return s.endsWith("/v1") ? s : `${s}/v1`;
 };
 
-const hasShiguangGatewayConfig = (settings: Record<string, unknown> | null): boolean => {
+const hasOrbitConfig = (settings: Record<string, unknown> | null): boolean => {
   if (!settings) return false;
   const providers = settings.providers as Record<string, unknown> | undefined;
-  const shiguangGateway = providers?.shiguangGateway as Record<string, unknown> | undefined;
+  const orbit = providers?.orbit as Record<string, unknown> | undefined;
   return (
-    !!shiguangGateway &&
-    shiguangGateway.type === "openai-compat" &&
-    typeof shiguangGateway.base_url === "string" &&
-    shiguangGateway.base_url.length > 0
+    !!orbit &&
+    orbit.type === "openai-compat" &&
+    typeof orbit.base_url === "string" &&
+    orbit.base_url.length > 0
   );
 };
 
@@ -103,7 +103,7 @@ export async function GET(request: Request) {
       runtimeMode: runtime.runtimeMode,
       reason: runtime.reason,
       config,
-      hasShiguangGateway: hasShiguangGatewayConfig(config),
+      hasOrbit: hasOrbitConfig(config),
       configPath: getCrushConfigPath(),
     });
   } catch (err) {
@@ -111,7 +111,7 @@ export async function GET(request: Request) {
   }
 }
 
-// POST — write ShiguangGateway settings to crush.json (providers.shiguangGateway)
+// POST — write Orbit settings to crush.json (providers.orbit)
 export async function POST(request: Request) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
@@ -162,14 +162,14 @@ export async function POST(request: Request) {
       type: "openai-compat",
       base_url: normalizedBaseUrl,
       api_key: apiKey,
-      models: [{ id: model, name: `ShiguangGateway: ${model}`, context_window: DEFAULT_CONTEXT_WINDOW }],
+      models: [{ id: model, name: `Orbit: ${model}`, context_window: DEFAULT_CONTEXT_WINDOW }],
     };
 
     const updated: Record<string, unknown> = {
       ...existing,
       providers: {
         ...((existing.providers as Record<string, unknown>) || {}),
-        shiguangGateway: provider,
+        orbit: provider,
       },
     };
 
@@ -192,7 +192,7 @@ export async function POST(request: Request) {
   }
 }
 
-// DELETE — remove ShiguangGateway provider from Crush config
+// DELETE — remove Orbit provider from Crush config
 export async function DELETE(request: Request) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
@@ -220,10 +220,10 @@ export async function DELETE(request: Request) {
       throw err;
     }
 
-    // Remove only the ShiguangGateway-managed provider entry — preserve the rest
+    // Remove only the Orbit-managed provider entry — preserve the rest
     // of the user's providers map (Crush supports multiple providers).
     const providers = { ...((existing.providers as Record<string, unknown>) || {}) };
-    delete providers.shiguangGateway;
+    delete providers.orbit;
 
     if (Object.keys(providers).length === 0) {
       delete existing.providers;
@@ -244,7 +244,7 @@ export async function DELETE(request: Request) {
       /* non-critical */
     }
 
-    return Response.json({ success: true, message: "Crush ShiguangGateway settings removed" });
+    return Response.json({ success: true, message: "Crush Orbit settings removed" });
   } catch (err) {
     return Response.json({ error: { message: sanitizeErrorMessage(err) } }, { status: 500 });
   }

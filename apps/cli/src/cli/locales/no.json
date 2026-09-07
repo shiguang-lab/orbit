@@ -1,8 +1,8 @@
 {
   "common": {
     "error": "Feil: {message}",
-    "serverOffline": "ShiguangGateway-serveren er offline. Start med: shiguang-gateway serve",
-    "authRequired": "Autentisering kreves. Angi SHIGUANG_GATEWAY_API_KEY eller kjør: shiguang-gateway setup",
+    "serverOffline": "Orbit-serveren er offline. Start med: orbit serve",
+    "authRequired": "Autentisering kreves. Angi ORBIT_API_KEY eller kjør: orbit setup",
     "rateLimited": "Forespørselgrense overskredet. Prøv igjen om {seconds}s.",
     "timeout": "Forespørselen tidsavbrutt etter {ms}ms.",
     "success": "Ferdig.",
@@ -15,18 +15,18 @@
     "yesOpt": "Hopp over bekreftelse"
   },
   "program": {
-    "description": "ShiguangGateway — Smart AI-ruter med automatisk fallback",
+    "description": "Orbit — Smart AI-ruter med automatisk fallback",
     "version": "Skriv ut versjon og avslutt",
     "output": "Utdataformat (table, json, jsonl, csv)",
     "quiet": "Undertrykk ikke-essensiell utdata",
     "no_color": "Deaktiver farget utdata",
     "timeout": "HTTP-forespørsel timeout i millisekunder",
-    "api_key": "API-nøkkel for ShiguangGateway-serveren",
-    "base_url": "ShiguangGateway-serverens basis-URL",
+    "api_key": "API-nøkkel for Orbit-serveren",
+    "base_url": "Orbit-serverens basis-URL",
     "context": "Serverkontekst/profil for denne kommandoen",
-    "lang": "Angi CLI-visningsspråk (overstyrer SHIGUANG_GATEWAY_LANG)"
+    "lang": "Angi CLI-visningsspråk (overstyrer ORBIT_LANG)"
   },
   "redis": {
-    "description": "Start en lokal Redis-beholder med ett klikk (Podman eller Docker) for ShiguangGateway-hurtigbufring og kvotesporing"
+    "description": "Start en lokal Redis-beholder med ett klikk (Podman eller Docker) for Orbit-hurtigbufring og kvotesporing"
   }
 }

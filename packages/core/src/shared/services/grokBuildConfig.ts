@@ -2,7 +2,7 @@ import path from "node:path";
 
 import { parse as parseToml } from "smol-toml";
 
-export const GROK_MAIN_MODEL_SLOT = "shiguangGateway";
+export const GROK_MAIN_MODEL_SLOT = "orbit";
 export const GROK_SUBAGENT_TYPES = ["general-purpose", "explore", "plan"] as const;
 
 export type GrokSubagentType = (typeof GROK_SUBAGENT_TYPES)[number];
@@ -45,9 +45,9 @@ export function resolveGrokBuildConfigPath(env: NodeJS.ProcessEnv, configHome: s
   return path.join(path.normalize(grokHome), "config.toml");
 }
 
-const UNSET_SENTINEL = "__shiguangGateway_unset__";
-const MANAGED_MARKER = '# shiguangGateway-managed = "true"';
-const LEGACY_DESCRIPTION = "Routed via ShiguangGateway gateway";
+const UNSET_SENTINEL = "__orbit_unset__";
+const MANAGED_MARKER = '# orbit-managed = "true"';
+const LEGACY_DESCRIPTION = "Routed via Orbit gateway";
 const MODELS_SECTION = "models";
 const SUBAGENT_MODELS_SECTION = "subagents.models";
 
@@ -58,9 +58,9 @@ const modelSlot = (type: GrokSubagentType): string => `${GROK_MAIN_MODEL_SLOT}-$
 const sectionRegExp = (section: string): RegExp =>
   new RegExp(`^\\[${escapeRegExp(section)}\\][ \\t]*\\r?\\n((?:(?!\\[)[^\\r\\n]*\\r?\\n?)*)`, "m");
 
-const previousDefaultRegExp = /^# shiguangGateway-prev-default = "([^"]*)"[ \t]*\r?\n?/m;
+const previousDefaultRegExp = /^# orbit-prev-default = "([^"]*)"[ \t]*\r?\n?/m;
 const previousSubagentRegExp = (type: GrokSubagentType): RegExp =>
-  new RegExp(`^# shiguangGateway-prev-subagent-${escapeRegExp(type)} = "([^"]*)"[ \\t]*\\r?\\n?`, "m");
+  new RegExp(`^# orbit-prev-subagent-${escapeRegExp(type)} = "([^"]*)"[ \\t]*\\r?\\n?`, "m");
 
 const getSectionBody = (toml: string, section: string): string | null =>
   toml.match(sectionRegExp(section))?.[1] ?? null;
@@ -176,7 +176,7 @@ const rememberPreviousDefault = (toml: string): string => {
   const current = getSectionString(toml, MODELS_SECTION, "default");
   const previous = !current || current === "grok-build" ? UNSET_SENTINEL : current;
   if (current === GROK_MAIN_MODEL_SLOT) return toml;
-  return insertMarker(toml, `# shiguangGateway-prev-default = ${tomlString(previous)}\n`);
+  return insertMarker(toml, `# orbit-prev-default = ${tomlString(previous)}\n`);
 };
 
 const restorePreviousDefault = (toml: string): string => {
@@ -193,7 +193,7 @@ const rememberPreviousSubagent = (toml: string, type: GrokSubagentType): string 
   if (previousSubagentRegExp(type).test(toml)) return toml;
   const current = getSectionString(toml, SUBAGENT_MODELS_SECTION, type);
   const previous = current ?? UNSET_SENTINEL;
-  return insertMarker(toml, `# shiguangGateway-prev-subagent-${type} = ${tomlString(previous)}\n`);
+  return insertMarker(toml, `# orbit-prev-subagent-${type} = ${tomlString(previous)}\n`);
 };
 
 const restorePreviousSubagent = (toml: string, type: GrokSubagentType): string => {
@@ -217,7 +217,7 @@ const isLegacyOwnedMainSection = (toml: string): boolean => {
     keys.every((key) => allowed.has(key)) &&
     section.model !== null &&
     section.base_url !== null &&
-    section.name === "ShiguangGateway" &&
+    section.name === "Orbit" &&
     section.api_backend === "chat_completions" &&
     getSectionString(toml, `model.${GROK_MAIN_MODEL_SLOT}`, "description") === LEGACY_DESCRIPTION
   );
@@ -231,12 +231,12 @@ const assertMainSlotOwnership = (toml: string): void => {
 
 export class GrokBuildConfigConflictError extends Error {
   constructor() {
-    super("The [model.shiguangGateway] table exists and ShiguangGateway does not own it");
+    super("The [model.orbit] table exists and Orbit does not own it");
     this.name = "GrokBuildConfigConflictError";
   }
 }
 
-/** Parse the Grok Build fields that ShiguangGateway manages. */
+/** Parse the Grok Build fields that Orbit manages. */
 export function parseGrokBuildConfig(toml: string): GrokBuildSettings {
   if (toml.trim()) parseToml(toml);
   const subagentModels = {} as Record<GrokSubagentType, GrokModelConfig | null>;
@@ -254,7 +254,7 @@ export function parseGrokBuildConfig(toml: string): GrokBuildSettings {
   };
 }
 
-/** Apply the ShiguangGateway model slots and preserve unrelated TOML text. */
+/** Apply the Orbit model slots and preserve unrelated TOML text. */
 export function applyGrokBuildConfig(toml: string, options: GrokBuildApplyOptions): string {
   if (toml.trim()) parseToml(toml);
   assertMainSlotOwnership(toml);
@@ -265,7 +265,7 @@ export function applyGrokBuildConfig(toml: string, options: GrokBuildApplyOption
     baseUrl: options.baseUrl,
     apiKey: options.apiKey,
     contextWindow: options.contextWindow,
-    name: "ShiguangGateway",
+    name: "Orbit",
   });
   next = setSectionString(next, MODELS_SECTION, "default", GROK_MAIN_MODEL_SLOT);
 
@@ -281,7 +281,7 @@ export function applyGrokBuildConfig(toml: string, options: GrokBuildApplyOption
           baseUrl: options.baseUrl,
           apiKey: options.apiKey,
           contextWindow: selected.contextWindow,
-          name: `ShiguangGateway ${type}`,
+          name: `Orbit ${type}`,
         });
         next = setSectionString(next, SUBAGENT_MODELS_SECTION, type, slot);
       } else {
@@ -293,7 +293,7 @@ export function applyGrokBuildConfig(toml: string, options: GrokBuildApplyOption
   return next;
 }
 
-/** Remove the ShiguangGateway model slots and restore values that users did not change. */
+/** Remove the Orbit model slots and restore values that users did not change. */
 export function resetGrokBuildConfig(toml: string): string {
   if (toml.trim()) parseToml(toml);
   let next = toml;

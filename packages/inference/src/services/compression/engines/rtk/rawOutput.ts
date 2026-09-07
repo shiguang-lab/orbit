@@ -31,7 +31,7 @@ const SECRET_PATTERNS: Array<[RegExp, string]> = [
 ];
 
 function dataDir(): string {
-  return process.env.DATA_DIR || path.join(os.homedir(), ".shiguangGateway");
+  return process.env.DATA_DIR || path.join(os.homedir(), ".orbit");
 }
 
 function safeId(seed: string): string {

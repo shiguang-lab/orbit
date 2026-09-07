@@ -184,7 +184,7 @@ export function compileChatGptWebPrompt(
       {
         type: "manifest",
         version: 1,
-        format: "shiguangGateway-codex-context-jsonl",
+        format: "orbit-codex-context-jsonl",
         system_count: system.length,
         message_count: messages.length,
       },
@@ -192,13 +192,13 @@ export function compileChatGptWebPrompt(
       ...messages.map((message, index) => ({ type: "message", index, message })),
     ];
     contextAttachments.push({
-      name: "shiguangGateway-codex-context.jsonl",
+      name: "orbit-codex-context.jsonl",
       mimeType: "application/x-ndjson",
       buffer: Buffer.from(`${records.map((record) => JSON.stringify(record)).join("\n")}\n`),
     });
     contextTransport = [
       "<codex_context_attachment>",
-      "Read the complete attached shiguangGateway-codex-context.jsonl file in JSONL order. The first record is its manifest; subsequent records contain the authoritative system and message context.",
+      "Read the complete attached orbit-codex-context.jsonl file in JSONL order. The first record is its manifest; subsequent records contain the authoritative system and message context.",
       "</codex_context_attachment>",
     ];
   }

@@ -54,7 +54,7 @@ export function resolveCodexCatalogAppVersion(
   env: NodeJS.ProcessEnv = process.env,
   options: AppVersionOptions = {}
 ): string | null {
-  for (const value of [env.SHIGUANG_GATEWAY_BUILD_SHA, env.BUILD_SHA]) {
+  for (const value of [env.ORBIT_BUILD_SHA, env.BUILD_SHA]) {
     if (typeof value === "string" && value.trim()) return `build:${value.trim()}`;
   }
 
@@ -70,7 +70,7 @@ export function resolveCodexCatalogAppVersion(
     if (buildId) return `next:${buildId}`;
   }
 
-  const envPackageVersion = env.npm_package_version || env.SHIGUANG_GATEWAY_VERSION;
+  const envPackageVersion = env.npm_package_version || env.ORBIT_VERSION;
   if (typeof envPackageVersion === "string" && envPackageVersion.trim()) {
     return `pkg:${envPackageVersion.trim()}`;
   }

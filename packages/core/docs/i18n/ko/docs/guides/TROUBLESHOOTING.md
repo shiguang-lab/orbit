@@ -4,7 +4,7 @@
 
 ---
 
-Common problems and solutions for ShiguangGateway.
+Common problems and solutions for Orbit.
 
 ---
 
@@ -15,10 +15,10 @@ Common problems and solutions for ShiguangGateway.
 | First login not working                             | Set `INITIAL_PASSWORD` in `.env` (no hardcoded default)                                                                                                  |
 | Dashboard opens on wrong port                       | Set `PORT=20128` and `NEXT_PUBLIC_BASE_URL=http://localhost:20128`                                                                                       |
 | No logs written to disk                             | Set `APP_LOG_TO_FILE=true` and verify call log capture is enabled                                                                                        |
-| EACCES: permission denied                           | Set `DATA_DIR=/path/to/writable/dir` to override `~/.shiguang-gateway`                                                                                          |
+| EACCES: permission denied                           | Set `DATA_DIR=/path/to/writable/dir` to override `~/.orbit`                                                                                          |
 | Routing strategy not saving                         | Update to v1.4.11+ (Zod schema fix for settings persistence)                                                                                             |
 | Login crash / blank page                            | Check Node.js version — see [Node.js Compatibility](#nodejs-compatibility) below                                                                         |
-| `dlopen` / `slice is not valid mach-o file` (macOS) | Run `cd $(npm root -g)/shiguang-gateway/app && npm rebuild better-sqlite3 && shiguang-gateway` — see [macOS native module rebuild](#macos-native-module-rebuild) below |
+| `dlopen` / `slice is not valid mach-o file` (macOS) | Run `cd $(npm root -g)/orbit/app && npm rebuild better-sqlite3 && orbit` — see [macOS native module rebuild](#macos-native-module-rebuild) below |
 | Proxy "fetch failed"                                | Ensure proxy config is set at the correct level — see [Proxy Issues](#proxy-issues) below                                                                |
 
 ---
@@ -29,7 +29,7 @@ Common problems and solutions for ShiguangGateway.
 
 ### Login page crashes or shows "Module self-registration" error
 
-**Cause:** You are running a Node.js version outside ShiguangGateway's approved secure runtime floor. The most common case is running an older Node 20, 22, or 24 patch level that falls below the patched security floor ShiguangGateway requires.
+**Cause:** You are running a Node.js version outside Orbit's approved secure runtime floor. The most common case is running an older Node 20, 22, or 24 patch level that falls below the patched security floor Orbit requires.
 
 **Symptoms:**
 
@@ -45,8 +45,8 @@ Common problems and solutions for ShiguangGateway.
    nvm use 24
    ```
 2. Verify your version: `node --version` should show `v24.0.0` or newer on the 24.x LTS line
-3. Reinstall ShiguangGateway: `npm install -g shiguang-gateway`
-4. Restart: `shiguang-gateway`
+3. Reinstall Orbit: `npm install -g orbit`
+4. Restart: `orbit`
 
 > **Supported secure versions:** `>=20.20.2 <21`, `>=22.22.2 <23`, or `>=24.0.0 <25`. Node.js 24.x LTS (Krypton) is fully supported.
 
@@ -54,7 +54,7 @@ Common problems and solutions for ShiguangGateway.
 
 <a name="macos-native-module-rebuild"></a>
 
-**Cause:** After a global `npm install -g shiguang-gateway`, the `better-sqlite3` native binary inside the package may have been compiled for a different architecture or Node.js ABI than what is running locally. This is common on macOS (both Apple Silicon and Intel) when the pre-built binary does not match your environment.
+**Cause:** After a global `npm install -g orbit`, the `better-sqlite3` native binary inside the package may have been compiled for a different architecture or Node.js ABI than what is running locally. This is common on macOS (both Apple Silicon and Intel) when the pre-built binary does not match your environment.
 
 **Symptoms:**
 
@@ -63,15 +63,15 @@ Common problems and solutions for ShiguangGateway.
 - Full example:
 
 ```
-dlopen(/Users/<user>/.nvm/versions/node/v24.14.1/lib/node_modules/shiguang-gateway/app/node_modules/better-sqlite3/build/Release/better_sqlite3.node, 0x0001): tried: '...' (slice is not valid mach-o file)
+dlopen(/Users/<user>/.nvm/versions/node/v24.14.1/lib/node_modules/orbit/app/node_modules/better-sqlite3/build/Release/better_sqlite3.node, 0x0001): tried: '...' (slice is not valid mach-o file)
 ```
 
 **Fix — rebuild for your local environment (no Node.js downgrade required):**
 
 ```bash
-cd $(npm root -g)/shiguang-gateway/app
+cd $(npm root -g)/orbit/app
 npm rebuild better-sqlite3
-shiguang-gateway
+orbit
 ```
 
 > **Note:** This recompiles the native binding against your local Node.js version and CPU architecture, resolving the binary mismatch. The officially supported range is **`>=20.20.2 <21`, `>=22.22.2 <23`, or `>=24.0.0 <25`** (`engines` field in `package.json`). Node.js 24.x LTS (Krypton) is fully supported with `better-sqlite3` v12.x.
@@ -98,7 +98,7 @@ shiguang-gateway
 
 **Cause:** On Node.js 22, the undici@8 dispatcher is incompatible with Node's built-in `fetch()` implementation.
 
-**Fix (v3.5.5+):** ShiguangGateway now uses undici's own `fetch()` function when a proxy dispatcher is active, ensuring consistent behavior. Update to v3.5.5+.
+**Fix (v3.5.5+):** Orbit now uses undici's own `fetch()` function when a proxy dispatcher is active, ensuring consistent behavior. Update to v3.5.5+.
 
 ---
 
@@ -125,7 +125,7 @@ shiguang-gateway
 
 ### OAuth Token Expired
 
-ShiguangGateway auto-refreshes tokens. If issues persist:
+Orbit auto-refreshes tokens. If issues persist:
 
 1. Dashboard → Provider → Reconnect
 2. Delete and re-add the provider connection
@@ -137,7 +137,7 @@ ShiguangGateway auto-refreshes tokens. If issues persist:
 ### Cloud Sync Errors
 
 1. Verify `BASE_URL` points to your running instance (e.g., `http://localhost:20128`)
-2. Verify `CLOUD_URL` points to your cloud endpoint (e.g., `https://shiguang-gateway.dev`)
+2. Verify `CLOUD_URL` points to your cloud endpoint (e.g., `https://orbit.dev`)
 3. Keep `NEXT_PUBLIC_*` values aligned with server-side values
 
 ### Cloud `stream=false` Returns 500
@@ -292,13 +292,13 @@ Provider profiles support these settings:
 
 ### Anti-thundering herd
 
-When many concurrent requests hit a rate-limited provider, ShiguangGateway uses mutex + auto rate-limiting to serialize requests and prevent cascading failures. This is automatic for API key providers.
+When many concurrent requests hit a rate-limited provider, Orbit uses mutex + auto rate-limiting to serialize requests and prevent cascading failures. This is automatic for API key providers.
 
 ---
 
 ## Optional RAG / LLM failure taxonomy (16 problems)
 
-Some ShiguangGateway users place the gateway in front of RAG or agent stacks. In those setups it is common to see a strange pattern: ShiguangGateway looks healthy (providers up, routing profiles ok, no rate limit alerts) but the final answer is still wrong.
+Some Orbit users place the gateway in front of RAG or agent stacks. In those setups it is common to see a strange pattern: Orbit looks healthy (providers up, routing profiles ok, no rate limit alerts) but the final answer is still wrong.
 
 In practice these incidents usually come from the downstream RAG pipeline, not from the gateway itself.
 
@@ -317,23 +317,23 @@ The idea is simple:
 
 1. When you investigate a bad response, capture:
    - user task and request
-   - route or provider combo in ShiguangGateway
+   - route or provider combo in Orbit
    - any RAG context used downstream (retrieved documents, tool calls, etc)
 2. Map the incident to one or two WFGY ProblemMap numbers (`No.1` … `No.16`).
-3. Store the number in your own dashboard, runbook, or incident tracker next to the ShiguangGateway logs.
+3. Store the number in your own dashboard, runbook, or incident tracker next to the Orbit logs.
 4. Use the corresponding WFGY page to decide whether you need to change your RAG stack, retriever, or routing strategy.
 
 Full text and concrete recipes live here (MIT license, text only):
 
 [WFGY ProblemMap README](https://github.com/onestardao/WFGY/blob/main/ProblemMap/README.md)
 
-You can ignore this section if you do not run RAG or agent pipelines behind ShiguangGateway.
+You can ignore this section if you do not run RAG or agent pipelines behind Orbit.
 
 ---
 
 ## Still Stuck?
 
-- **GitHub Issues**: [github.com/diegosouzapw/ShiguangGateway/issues](https://github.com/diegosouzapw/ShiguangGateway/issues)
+- **GitHub Issues**: [github.com/diegosouzapw/Orbit/issues](https://github.com/diegosouzapw/Orbit/issues)
 - **Architecture**: See [`docs/architecture/ARCHITECTURE.md`](ARCHITECTURE.md) for internal details
 - **API Reference**: See [`docs/reference/API_REFERENCE.md`](API_REFERENCE.md) for all endpoints
 - **Health Dashboard**: Check **Dashboard → Health** for real-time system status

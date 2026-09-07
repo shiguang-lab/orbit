@@ -6,10 +6,10 @@
 
 ## Reporting Vulnerabilities
 
-If you discover a security vulnerability in ShiguangGateway, please report it responsibly:
+If you discover a security vulnerability in Orbit, please report it responsibly:
 
 1. **DO NOT** open a public GitHub issue
-2. Use [GitHub Security Advisories](https://github.com/diegosouzapw/ShiguangGateway/security/advisories/new)
+2. Use [GitHub Security Advisories](https://github.com/diegosouzapw/Orbit/security/advisories/new)
 3. Include: description, reproduction steps, and potential impact
 
 ## Response Timeline
@@ -32,7 +32,7 @@ If you discover a security vulnerability in ShiguangGateway, please report it re
 
 ## Security Architecture
 
-ShiguangGateway implements a multi-layered security model:
+Orbit implements a multi-layered security model:
 
 ```
 Request → CORS → API Key Auth → Prompt Injection Guard → Input Sanitizer → Rate Limiter → Circuit Breaker → Provider
@@ -157,15 +157,15 @@ The server actively rejects known-weak values like `changeme`, `secret`, or `pas
 
 ```bash
 docker run -d \
-  --name shiguang-gateway \
+  --name orbit \
   --restart unless-stopped \
   --read-only \
   -p 20128:20128 \
-  -v shiguang-gateway-data:/app/data \
+  -v orbit-data:/app/data \
   -e JWT_SECRET="$(openssl rand -base64 48)" \
   -e API_KEY_SECRET="$(openssl rand -hex 32)" \
   -e STORAGE_ENCRYPTION_KEY="$(openssl rand -hex 32)" \
-  diegosouzapw/shiguang-gateway:latest
+  diegosouzapw/orbit:latest
 ```
 
 ---

@@ -72,7 +72,7 @@ function getModuleDir(): string {
       dir = parent;
     }
   }
-  return path.join(os.homedir(), ".shiguangGateway");
+  return path.join(os.homedir(), ".orbit");
 }
 
 function getRulesDir(): string {

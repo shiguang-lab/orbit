@@ -1,19 +1,19 @@
 /**
- * ShiguangGateway MCP Advanced Tools — 13 intelligence tools that differentiate
- * ShiguangGateway from all other AI gateways.
+ * Orbit MCP Advanced Tools — 13 intelligence tools that differentiate
+ * Orbit from all other AI gateways.
  *
  * Tools:
- *   1. shiguangGateway_simulate_route     — Dry-run routing simulation
- *   2. shiguangGateway_set_budget_guard   — Session budget with degrade/block/alert
- *   3. shiguangGateway_set_routing_strategy — Runtime strategy switch for combos
- *   4. shiguangGateway_set_resilience_profile — Circuit breaker/retry profiles
- *   5. shiguangGateway_test_combo         — Live test each provider in a combo
- *   6. shiguangGateway_get_provider_metrics — Detailed per-provider metrics
- *   7. shiguangGateway_best_combo_for_task — AI-powered combo recommendation
- *   8. shiguangGateway_explain_route      — Post-hoc routing decision explainer
- *   9. shiguangGateway_get_session_snapshot — Full session state snapshot
- *  10. shiguangGateway_db_health_check   — Diagnose and repair DB state drift
- *  11. shiguangGateway_sync_pricing      — Sync provider pricing from external source
+ *   1. orbit_simulate_route     — Dry-run routing simulation
+ *   2. orbit_set_budget_guard   — Session budget with degrade/block/alert
+ *   3. orbit_set_routing_strategy — Runtime strategy switch for combos
+ *   4. orbit_set_resilience_profile — Circuit breaker/retry profiles
+ *   5. orbit_test_combo         — Live test each provider in a combo
+ *   6. orbit_get_provider_metrics — Detailed per-provider metrics
+ *   7. orbit_best_combo_for_task — AI-powered combo recommendation
+ *   8. orbit_explain_route      — Post-hoc routing decision explainer
+ *   9. orbit_get_session_snapshot — Full session state snapshot
+ *  10. orbit_db_health_check   — Diagnose and repair DB state drift
+ *  11. orbit_sync_pricing      — Sync provider pricing from external source
  */
 
 import { logToolCall } from "../audit.ts";
@@ -31,16 +31,16 @@ import type {
 } from "@orbit/contracts/routing-strategies";
 import { normalizeRoutingStrategy } from "@orbit/contracts/routing-strategies";
 
-const SHIGUANG_GATEWAY_BASE_URL = resolveGatewayBaseUrl();
-const SHIGUANG_GATEWAY_API_KEY = process.env.SHIGUANG_GATEWAY_API_KEY || "";
+const ORBIT_BASE_URL = resolveGatewayBaseUrl();
+const ORBIT_API_KEY = process.env.ORBIT_API_KEY || "";
 
 async function apiFetch(path: string, options: RequestInit = {}): Promise<unknown> {
-  const url = `${SHIGUANG_GATEWAY_BASE_URL}${path}`;
+  const url = `${ORBIT_BASE_URL}${path}`;
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     // Static env key is only a fallback; the per-caller MCP identity forwarded via
     // withMcpHttpAuthContext must win over it (#5819).
-    ...(SHIGUANG_GATEWAY_API_KEY ? { Authorization: `Bearer ${SHIGUANG_GATEWAY_API_KEY}` } : {}),
+    ...(ORBIT_API_KEY ? { Authorization: `Bearer ${ORBIT_API_KEY}` } : {}),
     ...getMcpHttpAuthHeadersForInternalFetch(),
     ...((options.headers as Record<string, string>) || {}),
   };
@@ -318,11 +318,11 @@ export async function handleSimulateRoute(args: {
       },
     };
 
-    await logToolCall("shiguangGateway_simulate_route", args, result, Date.now() - start, true);
+    await logToolCall("orbit_simulate_route", args, result, Date.now() - start, true);
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    await logToolCall("shiguangGateway_simulate_route", args, null, Date.now() - start, false, msg);
+    await logToolCall("orbit_simulate_route", args, null, Date.now() - start, false, msg);
     return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
   }
 }
@@ -363,7 +363,7 @@ export async function handleSetBudgetGuard(args: {
     };
 
     await logToolCall(
-      "shiguangGateway_set_budget_guard",
+      "orbit_set_budget_guard",
       { maxCost: args.maxCost, action: args.action },
       result,
       Date.now() - start,
@@ -372,7 +372,7 @@ export async function handleSetBudgetGuard(args: {
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    await logToolCall("shiguangGateway_set_budget_guard", args, null, Date.now() - start, false, msg);
+    await logToolCall("orbit_set_budget_guard", args, null, Date.now() - start, false, msg);
     return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
   }
 }
@@ -393,7 +393,7 @@ export async function handleSetRoutingStrategy(args: {
     if (!combo) {
       const msg = `Combo '${args.comboId}' not found`;
       await logToolCall(
-        "shiguangGateway_set_routing_strategy",
+        "orbit_set_routing_strategy",
         args,
         null,
         Date.now() - start,
@@ -407,7 +407,7 @@ export async function handleSetRoutingStrategy(args: {
     if (!comboId) {
       const msg = "Matched combo has no id";
       await logToolCall(
-        "shiguangGateway_set_routing_strategy",
+        "orbit_set_routing_strategy",
         args,
         null,
         Date.now() - start,
@@ -465,11 +465,11 @@ export async function handleSetRoutingStrategy(args: {
       },
     };
 
-    await logToolCall("shiguangGateway_set_routing_strategy", args, result, Date.now() - start, true);
+    await logToolCall("orbit_set_routing_strategy", args, result, Date.now() - start, true);
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    await logToolCall("shiguangGateway_set_routing_strategy", args, null, Date.now() - start, false, msg);
+    await logToolCall("orbit_set_routing_strategy", args, null, Date.now() - start, false, msg);
     return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
   }
 }
@@ -487,7 +487,7 @@ export async function handleSetResilienceProfile(args: {
       };
     }
 
-    // Apply to ShiguangGateway via API using the plan-aligned resilience structure.
+    // Apply to Orbit via API using the plan-aligned resilience structure.
     await apiFetch("/api/resilience", {
       method: "PATCH",
       body: JSON.stringify(settings),
@@ -495,12 +495,12 @@ export async function handleSetResilienceProfile(args: {
 
     const result = { applied: true, profile: args.profile, settings };
 
-    await logToolCall("shiguangGateway_set_resilience_profile", args, result, Date.now() - start, true);
+    await logToolCall("orbit_set_resilience_profile", args, result, Date.now() - start, true);
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     await logToolCall(
-      "shiguangGateway_set_resilience_profile",
+      "orbit_set_resilience_profile",
       args,
       null,
       Date.now() - start,
@@ -603,7 +603,7 @@ export async function handleTestCombo(args: { comboId: string; testPrompt: strin
     };
 
     await logToolCall(
-      "shiguangGateway_test_combo",
+      "orbit_test_combo",
       { comboId: args.comboId },
       result.summary,
       Date.now() - start,
@@ -612,7 +612,7 @@ export async function handleTestCombo(args: { comboId: string; testPrompt: strin
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    await logToolCall("shiguangGateway_test_combo", args, null, Date.now() - start, false, msg);
+    await logToolCall("orbit_test_combo", args, null, Date.now() - start, false, msg);
     return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
   }
 }
@@ -658,11 +658,11 @@ export async function handleGetProviderMetrics(args: { provider: string }) {
         : { used: 0, total: null, resetAt: null },
     };
 
-    await logToolCall("shiguangGateway_get_provider_metrics", args, result, Date.now() - start, true);
+    await logToolCall("orbit_get_provider_metrics", args, result, Date.now() - start, true);
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    await logToolCall("shiguangGateway_get_provider_metrics", args, null, Date.now() - start, false, msg);
+    await logToolCall("orbit_get_provider_metrics", args, null, Date.now() - start, false, msg);
     return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
   }
 }
@@ -736,7 +736,7 @@ export async function handleBestComboForTask(args: {
     };
 
     await logToolCall(
-      "shiguangGateway_best_combo_for_task",
+      "orbit_best_combo_for_task",
       args,
       result.recommendedCombo,
       Date.now() - start,
@@ -745,7 +745,7 @@ export async function handleBestComboForTask(args: {
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    await logToolCall("shiguangGateway_best_combo_for_task", args, null, Date.now() - start, false, msg);
+    await logToolCall("orbit_best_combo_for_task", args, null, Date.now() - start, false, msg);
     return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
   }
 }
@@ -799,7 +799,7 @@ export async function handleExplainRoute(args: { requestId: string }) {
         };
 
     await logToolCall(
-      "shiguangGateway_explain_route",
+      "orbit_explain_route",
       args,
       { requestId: args.requestId },
       Date.now() - start,
@@ -808,7 +808,7 @@ export async function handleExplainRoute(args: { requestId: string }) {
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    await logToolCall("shiguangGateway_explain_route", args, null, Date.now() - start, false, msg);
+    await logToolCall("orbit_explain_route", args, null, Date.now() - start, false, msg);
     return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
   }
 }
@@ -826,11 +826,11 @@ export async function handleSyncPricing(args: { sources?: string[]; dryRun?: boo
       })
     );
 
-    await logToolCall("shiguangGateway_sync_pricing", args, result, Date.now() - start, true);
+    await logToolCall("orbit_sync_pricing", args, result, Date.now() - start, true);
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    await logToolCall("shiguangGateway_sync_pricing", args, null, Date.now() - start, false, msg);
+    await logToolCall("orbit_sync_pricing", args, null, Date.now() - start, false, msg);
     return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
   }
 }
@@ -874,7 +874,7 @@ export async function handleGetSessionSnapshot() {
     };
 
     await logToolCall(
-      "shiguangGateway_get_session_snapshot",
+      "orbit_get_session_snapshot",
       {},
       { requestCount: result.requestCount },
       Date.now() - start,
@@ -883,7 +883,7 @@ export async function handleGetSessionSnapshot() {
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    await logToolCall("shiguangGateway_get_session_snapshot", {}, null, Date.now() - start, false, msg);
+    await logToolCall("orbit_get_session_snapshot", {}, null, Date.now() - start, false, msg);
     return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
   }
 }
@@ -897,7 +897,7 @@ export async function handleDbHealthCheck(args: { autoRepair?: boolean }) {
     const result = runManagedDbHealthCheck({ autoRepair });
 
     await logToolCall(
-      "shiguangGateway_db_health_check",
+      "orbit_db_health_check",
       args,
       {
         isHealthy: toBoolean(result.isHealthy, false),
@@ -910,7 +910,7 @@ export async function handleDbHealthCheck(args: { autoRepair?: boolean }) {
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    await logToolCall("shiguangGateway_db_health_check", args, null, Date.now() - start, false, msg);
+    await logToolCall("orbit_db_health_check", args, null, Date.now() - start, false, msg);
     return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
   }
 }
@@ -955,11 +955,11 @@ export async function handleCacheStats() {
         : undefined,
     };
 
-    await logToolCall("shiguangGateway_cache_stats", {}, result, Date.now() - start, true);
+    await logToolCall("orbit_cache_stats", {}, result, Date.now() - start, true);
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    await logToolCall("shiguangGateway_cache_stats", {}, null, Date.now() - start, false, msg);
+    await logToolCall("orbit_cache_stats", {}, null, Date.now() - start, false, msg);
     return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
   }
 }
@@ -992,11 +992,11 @@ export async function handleCacheFlush(args: { signature?: string; model?: strin
       scope,
     };
 
-    await logToolCall("shiguangGateway_cache_flush", args, result, Date.now() - start, true);
+    await logToolCall("orbit_cache_flush", args, result, Date.now() - start, true);
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    await logToolCall("shiguangGateway_cache_flush", args, null, Date.now() - start, false, msg);
+    await logToolCall("orbit_cache_flush", args, null, Date.now() - start, false, msg);
     return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
   }
 }
@@ -1032,11 +1032,11 @@ export async function handleOneproxyFetch(
     }));
 
     const result = { items, total: toNumber(raw.total, items.length) };
-    await logToolCall("shiguangGateway_oneproxy_fetch", args, result, Date.now() - start, true);
+    await logToolCall("orbit_oneproxy_fetch", args, result, Date.now() - start, true);
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    await logToolCall("shiguangGateway_oneproxy_fetch", args, null, Date.now() - start, false, msg);
+    await logToolCall("orbit_oneproxy_fetch", args, null, Date.now() - start, false, msg);
     return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
   }
 }
@@ -1066,11 +1066,11 @@ export async function handleOneproxyRotate(
       latencyMs: raw.latency_ms != null ? toNumber(raw.latency_ms) : null,
     };
 
-    await logToolCall("shiguangGateway_oneproxy_rotate", args, result, Date.now() - start, true);
+    await logToolCall("orbit_oneproxy_rotate", args, result, Date.now() - start, true);
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    await logToolCall("shiguangGateway_oneproxy_rotate", args, null, Date.now() - start, false, msg);
+    await logToolCall("orbit_oneproxy_rotate", args, null, Date.now() - start, false, msg);
     return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
   }
 }
@@ -1108,11 +1108,11 @@ export async function handleOneproxyStats(args: Record<string, never> = {}) {
     };
 
     const result = { stats, status };
-    await logToolCall("shiguangGateway_oneproxy_stats", args, result, Date.now() - start, true);
+    await logToolCall("orbit_oneproxy_stats", args, result, Date.now() - start, true);
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    await logToolCall("shiguangGateway_oneproxy_stats", args, null, Date.now() - start, false, msg);
+    await logToolCall("orbit_oneproxy_stats", args, null, Date.now() - start, false, msg);
     return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
   }
 }

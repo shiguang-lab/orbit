@@ -1,8 +1,8 @@
 {
   "common": {
     "error": "Lỗi: {message}",
-    "serverOffline": "Máy chủ ShiguangGateway đang offline. Khởi động với: shiguang-gateway serve",
-    "authRequired": "Cần xác thực. Đặt SHIGUANG_GATEWAY_API_KEY hoặc chạy: shiguang-gateway setup",
+    "serverOffline": "Máy chủ Orbit đang offline. Khởi động với: orbit serve",
+    "authRequired": "Cần xác thực. Đặt ORBIT_API_KEY hoặc chạy: orbit setup",
     "rateLimited": "Đã vượt giới hạn yêu cầu. Thử lại sau {seconds}s.",
     "timeout": "Yêu cầu hết thời gian sau {ms}ms.",
     "success": "Xong.",
@@ -15,18 +15,18 @@
     "yesOpt": "Bỏ qua xác nhận"
   },
   "program": {
-    "description": "ShiguangGateway — Bộ định tuyến AI thông minh với tự động chuyển đổi dự phòng",
+    "description": "Orbit — Bộ định tuyến AI thông minh với tự động chuyển đổi dự phòng",
     "version": "In phiên bản và thoát",
     "output": "Định dạng đầu ra (table, json, jsonl, csv)",
     "quiet": "Ẩn đầu ra không cần thiết",
     "no_color": "Tắt đầu ra màu sắc",
     "timeout": "Thời gian chờ yêu cầu HTTP tính bằng mili giây",
-    "api_key": "Khóa API cho máy chủ ShiguangGateway",
-    "base_url": "URL cơ sở của máy chủ ShiguangGateway",
+    "api_key": "Khóa API cho máy chủ Orbit",
+    "base_url": "URL cơ sở của máy chủ Orbit",
     "context": "Bối cảnh/hồ sơ máy chủ cho lệnh này",
-    "lang": "Đặt ngôn ngữ hiển thị CLI (ghi đè SHIGUANG_GATEWAY_LANG)"
+    "lang": "Đặt ngôn ngữ hiển thị CLI (ghi đè ORBIT_LANG)"
   },
   "redis": {
-    "description": "Khởi chạy bộ chứa Redis cục bộ bằng một cú nhấp chuột (Podman hoặc Docker) để lưu bộ đệm và theo dõi hạn ngạch của ShiguangGateway"
+    "description": "Khởi chạy bộ chứa Redis cục bộ bằng một cú nhấp chuột (Podman hoặc Docker) để lưu bộ đệm và theo dõi hạn ngạch của Orbit"
   }
 }

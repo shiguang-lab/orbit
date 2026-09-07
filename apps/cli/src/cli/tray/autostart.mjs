@@ -4,11 +4,11 @@ import { homedir } from "node:os";
 import { join, dirname } from "node:path";
 import { CLI_ENTRY } from "../app-paths.mjs";
 
-const APP_LABEL = "com.shiguangGateway.autostart";
-const WIN_REG_VALUE = "ShiguangGateway";
-const WIN_STARTUP_FILE = "ShiguangGateway.vbs";
-const LINUX_SERVICE_NAME = "shiguangGateway.service";
-const LINUX_DESKTOP_NAME = "shiguangGateway.desktop";
+const APP_LABEL = "com.orbit.autostart";
+const WIN_REG_VALUE = "Orbit";
+const WIN_STARTUP_FILE = "Orbit.vbs";
+const LINUX_SERVICE_NAME = "orbit.service";
+const LINUX_DESKTOP_NAME = "orbit.desktop";
 
 export function resolveCliPath(deps = { existsSync, realpathSync }) {
   if (!deps.existsSync(CLI_ENTRY)) return null;
@@ -97,13 +97,13 @@ function tryEnableLinger() {
 function writeLinuxSystemdUnit(cliPath) {
   const unitDir = dirname(linuxSystemdUnitPath());
   mkdirSync(unitDir, { recursive: true });
-  const envFile = join(userHomeDir(), ".shiguangGateway", ".env");
+  const envFile = join(userHomeDir(), ".orbit", ".env");
   const nodeBinDir = dirname(process.execPath);
   const userLocalBin = join(userHomeDir(), ".local", "bin");
   const pathEnv = `${nodeBinDir}:${userLocalBin}:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin`;
   const lines = [
     "[Unit]",
-    "Description=ShiguangGateway AI proxy router",
+    "Description=Orbit AI proxy router",
     "After=network-online.target graphical-session.target",
     "Wants=network-online.target",
     "",
@@ -135,7 +135,7 @@ function writeLinuxDesktopEntry(cliPath) {
     [
       "[Desktop Entry]",
       "Type=Application",
-      "Name=ShiguangGateway",
+      "Name=Orbit",
       "Comment=AI proxy router with auto fallback",
       `Exec=${buildServeExecLine(cliPath, { tray: true })}`,
       "Terminal=false",
@@ -243,7 +243,7 @@ export function isLaunchdAgentLoaded(runList) {
  * managing under our agent label.
  *
  * `launchctl unload`/`load -w` for a user-domain agent sends SIGTERM to the
- * running process. When the running ShiguangGateway cli was itself spawned by the
+ * running process. When the running Orbit cli was itself spawned by the
  * autostart launchd agent (autostart was enabled, then the machine rebooted,
  * then the user clicked the tray "Disable Autostart" item), an unload would
  * kill the very process executing the click handler — the tray icon would
@@ -349,7 +349,7 @@ function winStartupPath() {
 }
 
 /**
- * Builds the VBScript source that launches ShiguangGateway with WSH's Run method
+ * Builds the VBScript source that launches Orbit with WSH's Run method
  * using SW_HIDE (0) so no console window appears.
  *
  * 9Router uses the same pattern: a .vbs file in the Startup folder that calls

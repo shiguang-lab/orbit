@@ -6,22 +6,22 @@
 
 ---
 
-title: "CLI Nástroje — ShiguangGateway"
+title: "CLI Nástroje — Orbit"
 version: 3.8.50
 lastUpdated: 2026-08-18
 ---
 
-# CLI Nástroje — ShiguangGateway
+# CLI Nástroje — Orbit
 
 Poslední aktualizace: 2026-08-18
 
-ShiguangGateway integruje tři kategorie CLI nástrojů rozložené na třech specializovaných stránkách dashboardu:
+Orbit integruje tři kategorie CLI nástrojů rozložené na třech specializovaných stránkách dashboardu:
 
 | Stránka        | Trasa                   | Koncept                                                                                       | Počet       |
 | -------------- | ----------------------- | --------------------------------------------------------------------------------------------- | ----------- |
-| **CLI Kód**    | `/dashboard/cli-code`   | Nástroje pro kódování, které směřujete na ShiguangGateway (Klient → CLI → ShiguangGateway → Poskytovatel) | 26          |
-| **CLI Agenti** | `/dashboard/cli-agents` | Autonomní agenti, které směřujete na ShiguangGateway (stejný tok, širší rozsah)                     | 8           |
-| **ACP Agenti** | `/dashboard/acp-agents` | CLIs, které ShiguangGateway spouští jako backend přes stdio/ACP (obrácený tok)                      | viz registr |
+| **CLI Kód**    | `/dashboard/cli-code`   | Nástroje pro kódování, které směřujete na Orbit (Klient → CLI → Orbit → Poskytovatel) | 26          |
+| **CLI Agenti** | `/dashboard/cli-agents` | Autonomní agenti, které směřujete na Orbit (stejný tok, širší rozsah)                     | 8           |
+| **ACP Agenti** | `/dashboard/acp-agents` | CLIs, které Orbit spouští jako backend přes stdio/ACP (obrácený tok)                      | viz registr |
 
 Zastaralé trasy přesměrovávají přes 308: `/dashboard/cli-tools` → `/dashboard/cli-code`, `/dashboard/agents` → `/dashboard/acp-agents`.
 
@@ -33,14 +33,14 @@ Zastaralé trasy přesměrovávají přes 308: `/dashboard/cli-tools` → `/dash
 CLI Kód / CLI Agenti (tok spotřeby):
 Claude / Codex / OpenCode / Cline / KiloCode / Continue / Hermes Agent / Goose / ...
            │
-           ▼  (vše směřuje na ShiguangGateway)
+           ▼  (vše směřuje na Orbit)
     http://YOUR_SERVER:20128/v1
            │
-           ▼  (ShiguangGateway směruje k správnému poskytovateli)
+           ▼  (Orbit směruje k správnému poskytovateli)
     Anthropic / OpenAI / Gemini / DeepSeek / Groq / Mistral / ...
 
 ACP Agenti (obrácený tok spuštění):
-    Klientský požadavek → ShiguangGateway → spouští CLI přes stdio/ACP → odpověď
+    Klientský požadavek → Orbit → spouští CLI přes stdio/ACP → odpověď
 ```
 
 **Výhody:**
@@ -54,27 +54,27 @@ ACP Agenti (obrácený tok spuštění):
 
 ## Automatická konfigurace s `setup-*`
 
-Nemusíte psát konfiguraci každého nástroje ručně. ShiguangGateway dodává příkaz `setup-*`
+Nemusíte psát konfiguraci každého nástroje ručně. Orbit dodává příkaz `setup-*`
 pro každý podporovaný CLI, který čte **živý** katalog modelů z běžícího
-ShiguangGateway (lokálního nebo vzdáleného) a zapisuje vlastní konfiguraci nástroje na vašem stroji:
+Orbit (lokálního nebo vzdáleného) a zapisuje vlastní konfiguraci nástroje na vašem stroji:
 
 ```bash
-shiguang-gateway setup-codex        shiguang-gateway setup-claude       shiguang-gateway setup-opencode
-shiguang-gateway setup-cline        shiguang-gateway setup-kilo         shiguang-gateway setup-continue
-shiguang-gateway setup-cursor       shiguang-gateway setup-roo          shiguang-gateway setup-crush
-shiguang-gateway setup-goose        shiguang-gateway setup-qwen         shiguang-gateway setup-aider
+orbit setup-codex        orbit setup-claude       orbit setup-opencode
+orbit setup-cline        orbit setup-kilo         orbit setup-continue
+orbit setup-cursor       orbit setup-roo          orbit setup-crush
+orbit setup-goose        orbit setup-qwen         orbit setup-aider
 ```
 
 Každý přijímá `--remote <url> --api-key <key>` (konfigurovat lokální nástroj proti
-vzdálenému ShiguangGateway), `--dry-run` (náhled bez zápisu) a `--port`. Nástroje
+vzdálenému Orbit), `--dry-run` (náhled bez zápisu) a `--port`. Nástroje
 bez automatického objevování modelu (Cline, Kilo, Roo, Goose, Aider, Qwen) berou
 `--model <id>` (a `--yes` pro neinteraktivní běhy). Pro spuštění CLI s
 odpovídajícím prostředím a bez jakéhokoli zápisu konfigurace použijte generický
-`shiguang-gateway run <target>` launcher (claude, codex, aider, goose, opencode, qwen,
+`orbit run <target>` launcher (claude, codex, aider, goose, opencode, qwen,
 gemini — cíle a aliasy pocházejí z `bin/cli/cli-manifest.mjs`); zastaralé
-per-tool launchery `shiguang-gateway launch` (Claude Code) a `shiguang-gateway launch-codex`
+per-tool launchery `orbit launch` (Claude Code) a `orbit launch-codex`
 (Codex) zůstávají k dispozici. Gemini CLI je pouze pro spuštění: je to cíl
-`shiguang-gateway run`, ale nemá žádný `setup-*`/`configure` recept.
+`orbit run`, ale nemá žádný `setup-*`/`configure` recept.
 
 > **Úplná reference:** hlavní tabulka — co každý příkaz zapisuje, každý příznak,
 > lokální vs vzdálený, a které nástroje chtějí příponu `/v1` — se nachází v
@@ -82,23 +82,23 @@ per-tool launchery `shiguang-gateway launch` (Claude Code) a `shiguang-gateway l
 
 ### Spuštění těchto příkazů uvnitř kontejneru
 
-Příkaz `setup-*` provedený uvnitř kontejneru ShiguangGateway zapisuje do
+Příkaz `setup-*` provedený uvnitř kontejneru Orbit zapisuje do
 vlastního domova kontejneru, který žádný hostitelský CLI nečte a který zmizí s
-kontejnerem. ShiguangGateway to detekuje a ukončuje s kódem `2` s instrukcemi místo
+kontejnerem. Orbit to detekuje a ukončuje s kódem `2` s instrukcemi místo
 zápisu. Dva podporované způsoby vpřed — nainstalovat CLI na hostiteli a
-`shiguang-gateway connect` do kontejneru, nebo bind-mount adresáře konfigurace a nastavit
+`orbit connect` do kontejneru, nebo bind-mount adresáře konfigurace a nastavit
 `CLI_CONFIG_HOME` (profil compose `host`). Každý příkaz `setup-*`, plus
-`shiguang-gateway configure` a `shiguang-gateway config set`, přijímá
+`orbit configure` a `orbit config set`, přijímá
 `--allow-container-write`, když je skutečně zamýšleno konfigurovat vlastní CLIs
-kontejneru; `SHIGUANG_GATEWAY_ALLOW_CONTAINER_CONFIG_WRITE=true` dělá to samé pro
+kontejneru; `ORBIT_ALLOW_CONTAINER_CONFIG_WRITE=true` dělá to samé pro
 server. Viz
-[Docker Průvodce → Konfigurace hostitelských CLI nástrojů](../guides/DOCKER_GUIDE.md#configuring-host-cli-tools-when-shiguang-gateway-runs-in-docker).
+[Docker Průvodce → Konfigurace hostitelských CLI nástrojů](../guides/DOCKER_GUIDE.md#configuring-host-cli-tools-when-orbit-runs-in-docker).
 
 **apply endpoint** dashboardu (`POST /api/cli-tools/apply`) vynucuje
 stejnou ochranu: v kontejneru, zápis, jehož cíl není bind-mounted z hostitele,
 odpovídá **`422`** s `containerEphemeralTarget: true`, bezpečným chybovým
 textem a — pro nástroje s hostitelským receptem (claude, codex, opencode, cline,
-kilo, continue) — `hostSetupCommand` (např. `shiguang-gateway setup-opencode`), který
+kilo, continue) — `hostSetupCommand` (např. `orbit setup-opencode`), který
 se má spustit na hostiteli místo; nic není zapsáno. `dryRun: true` stále funguje
 v režimu kontejneru a vrací vygenerovaný obsah + cílovou cestu bez dotyku disku,
 takže si můžete prohlédnout z dashboardu a aplikovat na hostiteli. Toto chování je
@@ -134,8 +134,8 @@ deklarující zdroj a test odchylek je udržuje v souladu:
 | -------------------- | ----------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
 | **Katalogizované**   | Zobrazuje se v katalogu dashboardu (název, dodavatel, dokumentace, typ konfigurace) | `src/shared/constants/cliTools.ts` (`CLI_TOOLS`)                  |
 | **Detekovatelné**    | Detekce binárních/config, kontroly zdraví, cesty k konfiguraci                      | `src/shared/services/cliRuntime.ts` (`CLI_TOOLS` runtime catalog) |
-| **Konfigurovatelné** | Podporováno `shiguang-gateway configure <cli>` (existuje recept na nastavení)              | `bin/cli/cli-manifest.mjs` (`configure: true`)                    |
-| **Spustitelné**      | Podporováno `shiguang-gateway run <target>` (definována injekce env/args)                  | `bin/cli/cli-manifest.mjs` (`run: true`)                          |
+| **Konfigurovatelné** | Podporováno `orbit configure <cli>` (existuje recept na nastavení)              | `bin/cli/cli-manifest.mjs` (`configure: true`)                    |
+| **Spustitelné**      | Podporováno `orbit run <target>` (definována injekce env/args)                  | `bin/cli/cli-manifest.mjs` (`run: true`)                          |
 
 `bin/cli/cli-manifest.mjs` je kanonický spustitelný manifest pro příkazy CLI
 povrchů: `run`, `configure` a generátory shell-completion odvozují své
@@ -199,7 +199,7 @@ Autonomní agenti, kteří se objevují v `/dashboard/cli-agents`:
 
 ## 3. ACP agenti (/dashboard/acp-agents)
 
-Tato stránka (přejmenována z `/dashboard/agents`) zobrazuje CLI, které může ShiguangGateway **vytvářet** jako backendové výkonné enginy prostřednictvím protokolu stdio/ACP. Katalog je udržován odděleně v `src/lib/acp/registry.ts` a **není** stejný jako `CLI_TOOLS`.
+Tato stránka (přejmenována z `/dashboard/agents`) zobrazuje CLI, které může Orbit **vytvářet** jako backendové výkonné enginy prostřednictvím protokolu stdio/ACP. Katalog je udržován odděleně v `src/lib/acp/registry.ts` a **není** stejný jako `CLI_TOOLS`.
 
 ---
 
@@ -262,7 +262,7 @@ Nové nástroje s `configType: "custom"` mají vyhrazené API trasy pro nastaven
 | `POST /api/cli-tools/codewhale-settings`    | CodeWhale (OPENAI_BASE_URL, primární + legacy `~/.deepseek` synchronizace) |
 | `POST /api/cli-tools/smelt-settings`        | Smelt                                                                      |
 | `POST /api/cli-tools/pi-settings`           | Pi kódovací agent                                                          |
-| `POST /api/cli-tools/grok-build-settings`   | Grok Build (~/.grok/config.toml, `[model.shiguang-gateway]`)                      |
+| `POST /api/cli-tools/grok-build-settings`   | Grok Build (~/.grok/config.toml, `[model.orbit]`)                      |
 | `POST /api/cli-tools/qwen-settings`         | Qwen Code (`~/.qwen/settings.json` + vyhrazený `.env` klíč)                |
 
 Všechny trasy používají `sanitizeErrorMessage()` pro chybové odpovědi (Pevné pravidlo #12).
@@ -322,7 +322,7 @@ Nové namespace přidány v plánu 14 F9:
 
 ## 9. Rychlý start
 
-### Krok 1 — Získejte API klíč ShiguangGateway
+### Krok 1 — Získejte API klíč Orbit
 
 1. Otevřete `/dashboard/api-manager` → **Vytvořit API klíč**
 2. Dejte mu název (např. `cli-tools`) a vyberte všechna oprávnění
@@ -355,7 +355,7 @@ npm install -g kilocode
 # Qwen Code
 npm install -g @qwen-code/qwen-code
 
-# Google Gemini CLI (spustitelné přes `shiguang-gateway run gemini` → /v1beta surface)
+# Google Gemini CLI (spustitelné přes `orbit run gemini` → /v1beta surface)
 npm install -g @google/gemini-cli
 
 # Aider
@@ -386,14 +386,14 @@ cargo install smelt  # Založené na Rustu
 ### Krok 4 — Nastavte globální proměnné prostředí
 
 ```bash
-# ShiguangGateway Univerzální koncový bod
+# Orbit Univerzální koncový bod
 export OPENAI_BASE_URL="http://localhost:20128/v1"
-export OPENAI_API_KEY="sk-your-shiguang-gateway-key"
+export OPENAI_API_KEY="sk-your-orbit-key"
 export ANTHROPIC_BASE_URL="http://localhost:20128"
-export ANTHROPIC_AUTH_TOKEN="sk-your-shiguang-gateway-key"
+export ANTHROPIC_AUTH_TOKEN="sk-your-orbit-key"
 # Gemini CLI čte GOOGLE_GEMINI_BASE_URL na ROOT (jeho SDK přidává /v1beta/... samo)
 export GOOGLE_GEMINI_BASE_URL="http://localhost:20128"
-export GEMINI_API_KEY="sk-your-shiguang-gateway-key"
+export GEMINI_API_KEY="sk-your-orbit-key"
 ```
 
 > Pro **vzdálený server** nahraďte `localhost:20128` IP adresou nebo doménou serveru,
@@ -411,7 +411,7 @@ mkdir -p ~/.claude && cat > ~/.claude/settings.json << EOF
 {
   "env": {
     "ANTHROPIC_BASE_URL": "http://localhost:20128",
-    "ANTHROPIC_AUTH_TOKEN": "sk-your-shiguang-gateway-key"
+    "ANTHROPIC_AUTH_TOKEN": "sk-your-orbit-key"
   }
 }
 EOF
@@ -427,20 +427,20 @@ Použijte sjednocený kořen brány Anthropic pro Claude Code. Nepřidávejte zd
 
 Moderní Codex (v0.137+) čte pouze `~/.codex/config.toml` — starý
 `config.yaml` patří k legacy npm CLI a je tiše ignorován. API
-klíč zůstává v proměnné prostředí `SHIGUANG_GATEWAY_API_KEY` (`env_key`), nikdy
+klíč zůstává v proměnné prostředí `ORBIT_API_KEY` (`env_key`), nikdy
 uvnitř souboru:
 
 ```bash
 mkdir -p ~/.codex && cat > ~/.codex/config.toml << EOF
-model_provider = "shiguang-gateway"
+model_provider = "orbit"
 
-[model_providers.shiguang-gateway]
-name                 = "ShiguangGateway"
+[model_providers.orbit]
+name                 = "Orbit"
 base_url             = "http://localhost:20128/v1"
-env_key              = "SHIGUANG_GATEWAY_API_KEY"
+env_key              = "ORBIT_API_KEY"
 requires_openai_auth = false
 EOF
-export SHIGUANG_GATEWAY_API_KEY="sk-your-shiguang-gateway-key"
+export ORBIT_API_KEY="sk-your-orbit-key"
 ```
 
 Úplná reference (profily, `wire_api`, kontextová okna): [CODEX-CLI-CONFIGURATION.md](../guides/CODEX-CLI-CONFIGURATION.md).
@@ -456,12 +456,12 @@ mkdir -p ~/.config/opencode && cat > ~/.config/opencode/opencode.json << EOF
 {
   "\$schema": "https://opencode.ai/config.json",
   "provider": {
-    "shiguang-gateway": {
+    "orbit": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "ShiguangGateway",
+      "name": "Orbit",
       "options": {
         "baseURL": "http://localhost:20128/v1",
-        "apiKey": "sk-your-shiguang-gateway-key"
+        "apiKey": "sk-your-orbit-key"
       },
       "models": {
         "claude-sonnet-4-5": { "name": "claude-sonnet-4-5" },
@@ -476,7 +476,7 @@ EOF
 
 **Test:** `opencode`
 
-> Použijte `opencode run "your prompt" --model shiguang-gateway/claude-sonnet-4-5-thinking --variant high`
+> Použijte `opencode run "your prompt" --model orbit/claude-sonnet-4-5-thinking --variant high`
 > pro odeslání variant myšlení.
 
 ---
@@ -490,7 +490,7 @@ mkdir -p ~/.cline/data && cat > ~/.cline/data/globalState.json << EOF
 {
   "apiProvider": "openai",
   "openAiBaseUrl": "http://localhost:20128/v1",
-  "openAiApiKey": "sk-your-shiguang-gateway-key"
+  "openAiApiKey": "sk-your-orbit-key"
 }
 EOF
 ```
@@ -498,7 +498,7 @@ EOF
 **Režim VS Code:**
 Nastavení rozšíření Cline → Poskytovatel API: `OpenAI Compatible` → Základní URL: `http://localhost:20128/v1`
 
-Nebo použijte dashboard ShiguangGateway → **CLI Tools → Cline → Použít konfiguraci**.
+Nebo použijte dashboard Orbit → **CLI Tools → Cline → Použít konfiguraci**.
 
 ---
 
@@ -507,7 +507,7 @@ Nebo použijte dashboard ShiguangGateway → **CLI Tools → Cline → Použít 
 **Režim CLI:**
 
 ```bash
-kilocode --api-base http://localhost:20128/v1 --api-key sk-your-shiguang-gateway-key
+kilocode --api-base http://localhost:20128/v1 --api-key sk-your-orbit-key
 ```
 
 **Nastavení VS Code:**
@@ -515,11 +515,11 @@ kilocode --api-base http://localhost:20128/v1 --api-key sk-your-shiguang-gateway
 ```json
 {
   "kilo-code.openAiBaseUrl": "http://localhost:20128/v1",
-  "kilo-code.apiKey": "sk-your-shiguang-gateway-key"
+  "kilo-code.apiKey": "sk-your-orbit-key"
 }
 ```
 
-Nebo použijte dashboard ShiguangGateway → **CLI Tools → KiloCode → Použít konfiguraci**.
+Nebo použijte dashboard Orbit → **CLI Tools → KiloCode → Použít konfiguraci**.
 
 ---
 
@@ -529,11 +529,11 @@ Upravte `~/.continue/config.yaml`:
 
 ```yaml
 models:
-  - name: ShiguangGateway
+  - name: Orbit
     provider: openai
     model: auto
     apiBase: http://localhost:20128/v1
-    apiKey: sk-your-shiguang-gateway-key
+    apiKey: sk-your-orbit-key
     default: true
 ```
 
@@ -543,25 +543,25 @@ Po úpravě restartujte VS Code.
 
 #### VS Code Insiders (`chatLanguageModels.json`)
 
-Použijte toto, když je VS Code Insiders nakonfigurován pro vlastní modely koncových bodů a chcete, aby ShiguangGateway fungoval bez vlastního pole hlavičky.
+Použijte toto, když je VS Code Insiders nakonfigurován pro vlastní modely koncových bodů a chcete, aby Orbit fungoval bez vlastního pole hlavičky.
 
 **Doporučené umístění:**
 
 - Linux: `~/.config/Code - Insiders/User/chatLanguageModels.json`
 - Windows: `%APPDATA%/Code - Insiders/User/chatLanguageModels.json`
 
-**Příklad použití tokenizovaného aliasu ShiguangGateway:**
+**Příklad použití tokenizovaného aliasu Orbit:**
 
 ```json
 [
   {
     "vendor": "customendpoint",
     "id": "auto",
-    "name": "ShiguangGateway Auto",
+    "name": "Orbit Auto",
     "family": "gpt-4",
     "version": "1.0.0",
-    "url": "http://localhost:20128/api/v1/vscode/sk-your-shiguang-gateway-key/chat/completions",
-    "modelsUrl": "http://localhost:20128/api/v1/vscode/sk-your-shiguang-gateway-key/models",
+    "url": "http://localhost:20128/api/v1/vscode/sk-your-orbit-key/chat/completions",
+    "modelsUrl": "http://localhost:20128/api/v1/vscode/sk-your-orbit-key/models",
     "requestFormat": "openai-chat-completions",
     "contextWindow": 256000,
     "maxOutputTokens": 32768,
@@ -574,7 +574,7 @@ Použijte toto, když je VS Code Insiders nakonfigurován pro vlastní modely ko
 
 **Poznámky:**
 
-- Nahraďte `sk-your-shiguang-gateway-key` API klíčem vytvořeným v ShiguangGateway.
+- Nahraďte `sk-your-orbit-key` API klíčem vytvořeným v Orbit.
 - Pole `url` by mělo směřovat na `/api/v1/vscode/{token}/chat/completions`.
 - Pole `modelsUrl` by mělo směřovat na `/api/v1/vscode/{token}/models`.
 - Preferujte normální `/v1` + Bearer hlavičkový tok, když klient podporuje vlastní hlavičky.
@@ -588,40 +588,40 @@ Použijte toto, když je VS Code Insiders nakonfigurován pro vlastní modely ko
 # Přihlaste se ke svému účtu AWS/Kiro:
 kiro-cli login
 
-# CLI používá vlastní autentizaci — ShiguangGateway není potřebný jako backend pro Kiro CLI samotné.
-# Používejte kiro-cli spolu s ShiguangGateway pro další nástroje.
+# CLI používá vlastní autentizaci — Orbit není potřebný jako backend pro Kiro CLI samotné.
+# Používejte kiro-cli spolu s Orbit pro další nástroje.
 kiro-cli status
 ```
 
-Pro desktopovou aplikaci **Kiro IDE** použijte MITM koncový bod vystavený ShiguangGateway
+Pro desktopovou aplikaci **Kiro IDE** použijte MITM koncový bod vystavený Orbit
 pod `/dashboard/cli-tools → Kiro`.
 
 ---
 
-## 10. Interní ShiguangGateway CLI
+## 10. Interní Orbit CLI
 
-Binární soubor `shiguang-gateway` poskytuje příkazy pro životní cyklus serveru, nastavení, diagnostiku a správu poskytovatelů. Vstupní bod: `bin/shiguang-gateway.mjs`.
+Binární soubor `orbit` poskytuje příkazy pro životní cyklus serveru, nastavení, diagnostiku a správu poskytovatelů. Vstupní bod: `bin/orbit.mjs`.
 
 ```bash
-shiguang-gateway                              # Spustit server (výchozí port 20128)
-shiguang-gateway setup                        # Interaktivní nastavení
-shiguang-gateway doctor                       # Zkontrolovat konfiguraci, DB, porty, runtime
-shiguang-gateway providers list               # Seznam nakonfigurovaných připojení poskytovatelů
-shiguang-gateway providers test-all           # Otestovat každé aktivní připojení
-shiguang-gateway reset-password               # Resetovat heslo administrátora
-shiguang-gateway logs                         # Streamovat logy požadavků
-shiguang-gateway health                       # Podrobný stav (přerušovače, cache, paměť)
-shiguang-gateway --version                    # Vytisknout verzi
-shiguang-gateway --help                       # Zobrazit všechny příkazy
+orbit                              # Spustit server (výchozí port 20128)
+orbit setup                        # Interaktivní nastavení
+orbit doctor                       # Zkontrolovat konfiguraci, DB, porty, runtime
+orbit providers list               # Seznam nakonfigurovaných připojení poskytovatelů
+orbit providers test-all           # Otestovat každé aktivní připojení
+orbit reset-password               # Resetovat heslo administrátora
+orbit logs                         # Streamovat logy požadavků
+orbit health                       # Podrobný stav (přerušovače, cache, paměť)
+orbit --version                    # Vytisknout verzi
+orbit --help                       # Zobrazit všechny příkazy
 ```
 
 ### Nastavení a inicializace
 
 ```bash
-shiguang-gateway setup                        # Interaktivní nastavení
-shiguang-gateway setup --non-interactive      # CI/automatizační režim (čte proměnné prostředí + příznaky)
-shiguang-gateway setup --password '<value>'   # Nastavit heslo administrátora přímo
-shiguang-gateway setup --add-provider \
+orbit setup                        # Interaktivní nastavení
+orbit setup --non-interactive      # CI/automatizační režim (čte proměnné prostředí + příznaky)
+orbit setup --password '<value>'   # Nastavit heslo administrátora přímo
+orbit setup --add-provider \
   --provider openai \
   --api-key '<value>' \
   --test-provider                      # Přidat a otestovat poskytovatele v jednom kroku
@@ -631,21 +631,21 @@ Rozpoznané proměnné prostředí pro neinteraktivní nastavení:
 
 | Var                 | Účel                                                                   |
 | ------------------- | ---------------------------------------------------------------------- |
-| `SHIGUANG_GATEWAY_API_KEY` | API klíč poskytovatele (svázaný s `--api-key` přes Commander `.env()`) |
-| `DATA_DIR`          | Přepsat adresář dat ShiguangGateway                                          |
+| `ORBIT_API_KEY` | API klíč poskytovatele (svázaný s `--api-key` přes Commander `.env()`) |
+| `DATA_DIR`          | Přepsat adresář dat Orbit                                          |
 
 Všechny ostatní neinteraktivní vstupy jsou předávány jako příznaky, nikoli jako proměnné prostředí:
 `--password`, `--provider`, `--provider-name`, `--provider-base-url`, `--default-model`
-(podívejte se na možnosti `shiguang-gateway setup` výše).
+(podívejte se na možnosti `orbit setup` výše).
 
 ### Diagnostika
 
 ```bash
-shiguang-gateway doctor                       # Zkontrolovat konfiguraci, DB, porty, runtime, paměť, životnost
-shiguang-gateway doctor --json                # Strojově čitelný JSON
-shiguang-gateway doctor --no-liveness         # Přeskočit HTTP health probe
-shiguang-gateway doctor --host 0.0.0.0        # Přepsat hostitele životnosti
-shiguang-gateway doctor --liveness-url <url>  # Úplné přepsání URL koncového bodu zdraví
+orbit doctor                       # Zkontrolovat konfiguraci, DB, porty, runtime, paměť, životnost
+orbit doctor --json                # Strojově čitelný JSON
+orbit doctor --no-liveness         # Přeskočit HTTP health probe
+orbit doctor --host 0.0.0.0        # Přepsat hostitele životnosti
+orbit doctor --liveness-url <url>  # Úplné přepsání URL koncového bodu zdraví
 ```
 
 Doktor provádí tyto kontroly: `Konfigurace`, `Databáze`, `Úložiště/šifrování`,
@@ -655,47 +655,47 @@ Doktor provádí tyto kontroly: `Konfigurace`, `Databáze`, `Úložiště/šifro
 ### Správa poskytovatelů
 
 ```bash
-shiguang-gateway providers available                       # Katalog poskytovatelů ShiguangGateway
-shiguang-gateway providers available --search openai       # Filtrovat katalog podle id/název/alias/kategorie
-shiguang-gateway providers available --category api-key    # Filtrovat podle kategorie (api-key, oauth, free, ...)
-shiguang-gateway providers available --json                # Strojově čitelný JSON
+orbit providers available                       # Katalog poskytovatelů Orbit
+orbit providers available --search openai       # Filtrovat katalog podle id/název/alias/kategorie
+orbit providers available --category api-key    # Filtrovat podle kategorie (api-key, oauth, free, ...)
+orbit providers available --json                # Strojově čitelný JSON
 
-shiguang-gateway providers list                            # Seznam nakonfigurovaných připojení poskytovatelů
-shiguang-gateway providers list --json
+orbit providers list                            # Seznam nakonfigurovaných připojení poskytovatelů
+orbit providers list --json
 
-shiguang-gateway providers test <id|name>                  # Otestovat jedno nakonfigurované připojení
-shiguang-gateway providers test-all                        # Otestovat každé aktivní připojení
-shiguang-gateway providers validate                        # Lokální strukturovaná validace
-shiguang-gateway providers add <provider> --credential-env PROVIDER_KEY
-shiguang-gateway providers import ./providers.json --dry-run --json
-shiguang-gateway providers auth <provider>                 # Existující OAuth tok
-shiguang-gateway providers edit <id|name> --default-model <model>
-shiguang-gateway providers remove <id|name> --yes
+orbit providers test <id|name>                  # Otestovat jedno nakonfigurované připojení
+orbit providers test-all                        # Otestovat každé aktivní připojení
+orbit providers validate                        # Lokální strukturovaná validace
+orbit providers add <provider> --credential-env PROVIDER_KEY
+orbit providers import ./providers.json --dry-run --json
+orbit providers auth <provider>                 # Existující OAuth tok
+orbit providers edit <id|name> --default-model <model>
+orbit providers remove <id|name> --yes
 ```
 
 `providers add/import/auth/edit/remove` jsou API-first a proto fungují proti
 aktivnímu místnímu nebo vzdálenému kontextu. Vstup pro pověření by měl používat
 `--credential-stdin` nebo `--credential-env`; `--dry-run --json` hlásí pouze
-redigovanou přítomnost/tvar. `providers available` čte katalog ShiguangGateway;
+redigovanou přítomnost/tvar. `providers available` čte katalog Orbit;
 `providers list/test/test-all/validate` si zachovávají své místní SQLite chování a
 nevyžadují, aby server běžel.
 
 ### Obnova a reset
 
 ```bash
-shiguang-gateway reset-password                # Resetovat heslo administrátora (také: shiguang-gateway-reset-password)
-shiguang-gateway reset-encrypted-columns       # Zobrazit varování + dry-run pro reset šifrovaných pověření
-shiguang-gateway reset-encrypted-columns --force  # Opravuji šifrovaná pověření v SQLite
+orbit reset-password                # Resetovat heslo administrátora (také: orbit-reset-password)
+orbit reset-encrypted-columns       # Zobrazit varování + dry-run pro reset šifrovaných pověření
+orbit reset-encrypted-columns --force  # Opravuji šifrovaná pověření v SQLite
 ```
 
 ### Export pověření (⚠ zacházejte opatrně)
 
 ```bash
-shiguang-gateway auth export                                 # Zobrazit varování + potvrzovací bránu — žádný přístup k DB
-shiguang-gateway auth export --force                          # ExportOVAT VŠECHNA DEŠIFROVANÁ pověření připojení do stdout jako JSON
-shiguang-gateway auth export --force --id <id>                 # Exportovat pouze odpovídající připojení
-shiguang-gateway auth export --force --format env               # Vydat řádky SHIGUANG_GATEWAY_<PROVIDER>_<FIELD>=<value>
-shiguang-gateway auth export --force --out creds.json           # Zapsat do souboru (vytvořeno s 0600 oprávněními)
+orbit auth export                                 # Zobrazit varování + potvrzovací bránu — žádný přístup k DB
+orbit auth export --force                          # ExportOVAT VŠECHNA DEŠIFROVANÁ pověření připojení do stdout jako JSON
+orbit auth export --force --id <id>                 # Exportovat pouze odpovídající připojení
+orbit auth export --force --format env               # Vydat řádky ORBIT_<PROVIDER>_<FIELD>=<value>
+orbit auth export --force --out creds.json           # Zapsat do souboru (vytvořeno s 0600 oprávněními)
 ```
 
 `auth export` je **pouze lokální** (přímé čtení SQLite, žádná HTTP trasa) a záměrně tiskne/zapisuje
@@ -707,36 +707,36 @@ Pole, které se nepodaří dešifrovat (stará klíč, poškozený ciphertext), 
 
 ### Další podpříkazy
 
-Tyto předpokládají běžící server ShiguangGateway, pokud není uvedeno jinak:
+Tyto předpokládají běžící server Orbit, pokud není uvedeno jinak:
 
 ```bash
-shiguang-gateway status                       # Komplexní stav runtime
-shiguang-gateway logs                         # Streamovat logy požadavků (--json, --search, --follow)
-shiguang-gateway config show                  # Zobrazit aktuální konfiguraci
+orbit status                       # Komplexní stav runtime
+orbit logs                         # Streamovat logy požadavků (--json, --search, --follow)
+orbit config show                  # Zobrazit aktuální konfiguraci
 
-shiguang-gateway provider list                # Seznam dostupných poskytovatelů (alias poskytovatelů seznam)
-shiguang-gateway provider add                 # Registrovat ShiguangGateway jako poskytovatele na nástroji
-shiguang-gateway keys add | list | remove     # Spravovat API klíče
-shiguang-gateway models [provider]            # Seznam modelů (--json, --search)
-shiguang-gateway combo list | switch | create | delete
+orbit provider list                # Seznam dostupných poskytovatelů (alias poskytovatelů seznam)
+orbit provider add                 # Registrovat Orbit jako poskytovatele na nástroji
+orbit keys add | list | remove     # Spravovat API klíče
+orbit models [provider]            # Seznam modelů (--json, --search)
+orbit combo list | switch | create | delete
 
-shiguang-gateway backup                       # Snapshot konfigurace + DB
-shiguang-gateway restore                      # Obnovit z předchozího snapshotu
+orbit backup                       # Snapshot konfigurace + DB
+orbit restore                      # Obnovit z předchozího snapshotu
 
-shiguang-gateway health                       # Podrobný stav (přerušovače, cache, paměť)
-shiguang-gateway quota                        # Využití kvóty poskytovatele
-shiguang-gateway cache                        # Stav cache
-shiguang-gateway cache clear                  # Vymazat sémantické + podpisové cache
+orbit health                       # Podrobný stav (přerušovače, cache, paměť)
+orbit quota                        # Využití kvóty poskytovatele
+orbit cache                        # Stav cache
+orbit cache clear                  # Vymazat sémantické + podpisové cache
 
-shiguang-gateway mcp status | restart         # Stav serveru MCP / restart
-shiguang-gateway a2a status | card            # Stav serveru A2A / agent karta
+orbit mcp status | restart         # Stav serveru MCP / restart
+orbit a2a status | card            # Stav serveru A2A / agent karta
 
-shiguang-gateway tunnel list | create | stop  # Spravovat tunely (cloudflare/tailscale/ngrok)
-shiguang-gateway env show | get <k> | set <k> <v>  # Zkontrolovat / nastavit proměnné prostředí (dočasné)
+orbit tunnel list | create | stop  # Spravovat tunely (cloudflare/tailscale/ngrok)
+orbit env show | get <k> | set <k> <v>  # Zkontrolovat / nastavit proměnné prostředí (dočasné)
 
-shiguang-gateway test                         # Test připojení poskytovatele
-shiguang-gateway update                       # Zkontrolovat aktualizace
-shiguang-gateway completion                   # Generovat shell completion
+orbit test                         # Test připojení poskytovatele
+orbit update                       # Zkontrolovat aktualizace
+orbit completion                   # Generovat shell completion
 ```
 
 ### Běžné příznaky
@@ -765,7 +765,7 @@ shiguang-gateway completion                   # Generovat shell completion
 | `/v1/audio/speech`         | Text na řeč                             | ElevenLabs, OpenAI TTS                |
 | `/v1/audio/transcriptions` | Řeč na text                             | Deepgram, AssemblyAI                  |
 
-Příklady připravené k vložení s tokenizovanou ShiguangGateway URL:
+Příklady připravené k vložení s tokenizovanou Orbit URL:
 
 ```txt
 Token příklad: sk-a3ab3c080beaee3a-69f4a4-070d71af
@@ -784,7 +784,7 @@ Ollama chat: http://localhost:20128/api/v1/vscode/sk-a3ab3c080beaee3a-69f4a4-070
 
 | Chyba                                           | Příčina                           | Oprava                                                    |
 | ----------------------------------------------- | --------------------------------- | --------------------------------------------------------- |
-| `Connection refused`                            | ShiguangGateway neběží                  | `shiguang-gateway serve`                                         |
+| `Connection refused`                            | Orbit neběží                  | `orbit serve`                                         |
 | `401 Unauthorized`                              | Špatný API klíč                   | Zkontrolujte v `/dashboard/api-manager`                   |
 | `No combo configured`                           | Žádná aktivní routovací kombinace | Nastavte v `/dashboard/combos`                            |
 | CLI zobrazuje "not installed"                   | Binární soubor není v PATH        | Zkontrolujte `which <command>`                            |

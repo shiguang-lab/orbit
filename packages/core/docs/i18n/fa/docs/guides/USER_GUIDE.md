@@ -4,7 +4,7 @@
 
 ---
 
-راهنمای کامل پیکربندی ارائه‌دهندگان، ساخت ترکیب‌ها، یکپارچه‌سازی ابزارهای خط فرمان و استقرار ShiguangGateway.
+راهنمای کامل پیکربندی ارائه‌دهندگان، ساخت ترکیب‌ها، یکپارچه‌سازی ابزارهای خط فرمان و استقرار Orbit.
 
 ---
 
@@ -123,7 +123,7 @@ Dashboard → Providers → Connect Claude Code
   cc/claude-haiku-4-5-20251001
 ```
 
-**نکته کاربردی:** برای کارهای پیچیده از Opus و برای سرعت بیشتر از Sonnet استفاده کنید. ShiguangGateway سهمیه هر مدل را جداگانه پایش می‌کند.
+**نکته کاربردی:** برای کارهای پیچیده از Opus و برای سرعت بیشتر از Sonnet استفاده کنید. Orbit سهمیه هر مدل را جداگانه پایش می‌کند.
 
 #### OpenAI Codex (Plus/Pro)
 
@@ -233,7 +233,7 @@ Dashboard → Combos → Create New
 ```
 Settings → Models → Advanced:
   OpenAI API Base URL: http://localhost:20128/v1
-  OpenAI API Key: [from shiguang-gateway dashboard]
+  OpenAI API Key: [from orbit dashboard]
   Model: cc/claude-opus-4-7
 ```
 
@@ -244,7 +244,7 @@ Settings → Models → Advanced:
 ```json
 {
   "anthropic_api_base": "http://localhost:20128/v1",
-  "anthropic_api_key": "your-shiguang-gateway-api-key"
+  "anthropic_api_key": "your-orbit-api-key"
 }
 ```
 
@@ -252,7 +252,7 @@ Settings → Models → Advanced:
 
 ```bash
 export OPENAI_BASE_URL="http://localhost:20128"
-export OPENAI_API_KEY="your-shiguang-gateway-api-key"
+export OPENAI_API_KEY="your-orbit-api-key"
 codex "your prompt"
 ```
 
@@ -264,14 +264,14 @@ codex "your prompt"
 {
   "agents": {
     "defaults": {
-      "model": { "primary": "shiguang-gateway/if/glm-4.7" }
+      "model": { "primary": "orbit/if/glm-4.7" }
     }
   },
   "models": {
     "providers": {
-      "shiguang-gateway": {
+      "orbit": {
         "baseUrl": "http://localhost:20128/v1",
-        "apiKey": "your-shiguang-gateway-api-key",
+        "apiKey": "your-orbit-api-key",
         "api": "openai-completions",
         "models": [{ "id": "if/glm-4.7", "name": "glm-4.7" }]
       }
@@ -298,42 +298,42 @@ Model: cc/claude-opus-4-7
 ### نصب سراسری با npm (پیشنهادی)
 
 ```bash
-npm install -g shiguang-gateway
+npm install -g orbit
 
 # Create config directory
-mkdir -p ~/.shiguang-gateway
+mkdir -p ~/.orbit
 
 # Create .env file (see .env.example)
-cp .env.example ~/.shiguang-gateway/.env
+cp .env.example ~/.orbit/.env
 
 # Start server
-shiguang-gateway
+orbit
 # Or with custom port:
-shiguang-gateway --port 3000
+orbit --port 3000
 ```
 
-ابزار خط فرمان فایل `.env` را به‌طور خودکار از مسیر `~/.shiguang-gateway/.env` یا `./.env` بارگذاری می‌کند.
+ابزار خط فرمان فایل `.env` را به‌طور خودکار از مسیر `~/.orbit/.env` یا `./.env` بارگذاری می‌کند.
 
 ### حذف برنامه
 
-هنگامی که دیگر به ShiguangGateway نیاز ندارید، برای حذف تمیز برنامه دو اسکریپت سریع در اختیار دارید:
+هنگامی که دیگر به Orbit نیاز ندارید، برای حذف تمیز برنامه دو اسکریپت سریع در اختیار دارید:
 
 | دستور                   | عملکرد                                                                                         |
 | ----------------------- | ---------------------------------------------------------------------------------------------- |
-| `npm run uninstall`      | برنامه را از سیستم حذف می‌کند، اما **پایگاه داده و تنظیمات شما** را در `~/.shiguang-gateway` نگه می‌دارد. |
+| `npm run uninstall`      | برنامه را از سیستم حذف می‌کند، اما **پایگاه داده و تنظیمات شما** را در `~/.orbit` نگه می‌دارد. |
 | `npm run uninstall:full` | برنامه را حذف می‌کند و **تمام تنظیمات، کلیدها و پایگاه‌های داده را برای همیشه پاک می‌کند**.       |
 
-> **توجه:** اگر مخزن را کلون کرده‌اید، برای اجرای این دستورها به پوشه پروژه ShiguangGateway بروید. اگر برنامه را به‌صورت سراسری نصب کرده‌اید، می‌توانید از دستور `npm uninstall -g shiguang-gateway` استفاده کنید.
+> **توجه:** اگر مخزن را کلون کرده‌اید، برای اجرای این دستورها به پوشه پروژه Orbit بروید. اگر برنامه را به‌صورت سراسری نصب کرده‌اید، می‌توانید از دستور `npm uninstall -g orbit` استفاده کنید.
 
 ### استقرار روی VPS
 
 ```bash
-git clone https://github.com/diegosouzapw/ShiguangGateway.git
-cd ShiguangGateway && npm install && npm run build
+git clone https://github.com/diegosouzapw/Orbit.git
+cd Orbit && npm install && npm run build
 
 export JWT_SECRET="your-secure-secret-change-this"
 export INITIAL_PASSWORD="your-password"
-export DATA_DIR="/var/lib/shiguang-gateway"
+export DATA_DIR="/var/lib/orbit"
 export PORT="20128"
 export HOSTNAME="0.0.0.0"
 export NODE_ENV="production"
@@ -341,7 +341,7 @@ export NEXT_PUBLIC_BASE_URL="http://localhost:20128"
 export API_KEY_SECRET="endpoint-proxy-api-key-secret"
 
 npm run start
-# Or: pm2 start npm --name shiguang-gateway -- start
+# Or: pm2 start npm --name orbit -- start
 ```
 
 ### استقرار با PM2 (حافظه کم)
@@ -350,10 +350,10 @@ npm run start
 
 ```bash
 # With 512MB limit (default)
-pm2 start npm --name shiguang-gateway -- start
+pm2 start npm --name orbit -- start
 
 # Or with custom memory limit
-SHIGUANG_GATEWAY_MEMORY_MB=512 pm2 start npm --name shiguang-gateway -- start
+ORBIT_MEMORY_MB=512 pm2 start npm --name orbit -- start
 
 # Or using ecosystem.config.js
 pm2 start ecosystem.config.js
@@ -365,12 +365,12 @@ pm2 start ecosystem.config.js
 module.exports = {
   apps: [
     {
-      name: "shiguang-gateway",
+      name: "orbit",
       script: "npm",
       args: "start",
       env: {
         NODE_ENV: "production",
-        SHIGUANG_GATEWAY_MEMORY_MB: "512",
+        ORBIT_MEMORY_MB: "512",
         JWT_SECRET: "your-secret",
         INITIAL_PASSWORD: "your-password",
       },
@@ -385,24 +385,24 @@ module.exports = {
 
 ```bash
 # Build image (default = runner-cli with codex/claude/droid preinstalled)
-docker build -t shiguang-gateway:cli .
+docker build -t orbit:cli .
 
 # Portable mode (recommended)
-docker run -d --name shiguang-gateway -p 20128:20128 --env-file ./.env -v shiguang-gateway-data:/app/data shiguang-gateway:cli
+docker run -d --name orbit -p 20128:20128 --env-file ./.env -v orbit-data:/app/data orbit:cli
 ```
 
 برای استفاده در حالت یکپارچه با میزبان و همراه با فایل‌های اجرایی خط فرمان، بخش Docker در مستندات اصلی را ببینید.
 
 ### Void Linux ‏(xbps-src)
 
-کاربران Void Linux می‌توانند با چارچوب کامپایل چندسکویی `xbps-src`، بسته بومی ShiguangGateway را بسازند و نصب کنند. این فرایند، ساخت مستقل Node.js و اتصال‌های بومی لازم برای `better-sqlite3` را به‌صورت خودکار انجام می‌دهد.
+کاربران Void Linux می‌توانند با چارچوب کامپایل چندسکویی `xbps-src`، بسته بومی Orbit را بسازند و نصب کنند. این فرایند، ساخت مستقل Node.js و اتصال‌های بومی لازم برای `better-sqlite3` را به‌صورت خودکار انجام می‌دهد.
 
 <details>
 <summary><b>مشاهده قالب xbps-src</b></summary>
 
 ```bash
-# Template file for 'shiguang-gateway'
-pkgname=shiguang-gateway
+# Template file for 'orbit'
+pkgname=orbit
 version=3.2.4
 revision=1
 hostmakedepends="nodejs python3 make"
@@ -410,11 +410,11 @@ depends="openssl"
 short_desc="Universal AI gateway with smart routing for multiple LLM providers"
 maintainer="zenobit <zenobit@disroot.org>"
 license="MIT"
-homepage="https://github.com/diegosouzapw/ShiguangGateway"
-distfiles="https://github.com/diegosouzapw/ShiguangGateway/archive/refs/tags/v${version}.tar.gz"
+homepage="https://github.com/diegosouzapw/Orbit"
+distfiles="https://github.com/diegosouzapw/Orbit/archive/refs/tags/v${version}.tar.gz"
 checksum=009400afee90a9f32599d8fe734145cfd84098140b7287990183dde45ae2245b
-system_accounts="_shiguang-gateway"
-shiguang-gateway_homedir="/var/lib/shiguang-gateway"
+system_accounts="_orbit"
+orbit_homedir="/var/lib/orbit"
 export NODE_ENV=production
 export npm_config_engine_strict=false
 export npm_config_loglevel=error
@@ -464,26 +464,26 @@ do_check() {
 }
 
 do_install() {
-	vmkdir usr/lib/shiguang-gateway/.next
-	vcopy .next/standalone/. usr/lib/shiguang-gateway/.next/standalone
+	vmkdir usr/lib/orbit/.next
+	vcopy .next/standalone/. usr/lib/orbit/.next/standalone
 
 	# Prevent removal of empty Next.js app router dirs by the post-install hook
 	for _d in \
 		.next/standalone/.next/server/app/dashboard \
 		.next/standalone/.next/server/app/dashboard/settings \
 		.next/standalone/.next/server/app/dashboard/providers; do
-		touch "${DESTDIR}/usr/lib/shiguang-gateway/${_d}/.keep"
+		touch "${DESTDIR}/usr/lib/orbit/${_d}/.keep"
 	done
 
-	cat > "${WRKDIR}/shiguang-gateway" <<'EOF'
+	cat > "${WRKDIR}/orbit" <<'EOF'
 #!/bin/sh
 export PORT="${PORT:-20128}"
-export DATA_DIR="${DATA_DIR:-${XDG_DATA_HOME:-${HOME}/.local/share}/shiguang-gateway}"
+export DATA_DIR="${DATA_DIR:-${XDG_DATA_HOME:-${HOME}/.local/share}/orbit}"
 export APP_LOG_TO_FILE="${APP_LOG_TO_FILE:-false}"
 mkdir -p "${DATA_DIR}"
-exec node /usr/lib/shiguang-gateway/.next/standalone/server.js "$@"
+exec node /usr/lib/orbit/.next/standalone/server.js "$@"
 EOF
-	vbin "${WRKDIR}/shiguang-gateway"
+	vbin "${WRKDIR}/orbit"
 }
 
 post_install() {
@@ -497,14 +497,14 @@ post_install() {
 
 | متغیر                                   | مقدار پیش‌فرض                        | توضیح                                                                                                    |
 | --------------------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------- |
-| `JWT_SECRET`                            | `shiguang-gateway-default-secret-change-me` | کلید محرمانه امضای JWT؛ **در محیط عملیاتی تغییر دهید**                                                  |
+| `JWT_SECRET`                            | `orbit-default-secret-change-me` | کلید محرمانه امضای JWT؛ **در محیط عملیاتی تغییر دهید**                                                  |
 | `INITIAL_PASSWORD`                      | `123456`                             | گذرواژه نخستین ورود                                                                                      |
-| `DATA_DIR`                              | `~/.shiguang-gateway`                       | پوشه داده‌ها شامل پایگاه داده، میزان مصرف و گزارش‌ها                                                     |
+| `DATA_DIR`                              | `~/.orbit`                       | پوشه داده‌ها شامل پایگاه داده، میزان مصرف و گزارش‌ها                                                     |
 | `PORT`                                  | پیش‌فرض چارچوب                       | درگاه سرویس؛ در مثال‌ها `20128`                                                                          |
 | `HOSTNAME`                              | پیش‌فرض چارچوب                       | میزبان اتصال؛ مقدار پیش‌فرض Docker برابر `0.0.0.0` است                                                  |
 | `NODE_ENV`                              | پیش‌فرض محیط اجرا                    | برای استقرار روی `production` تنظیم کنید                                                                 |
 | `BASE_URL`                              | `http://localhost:20128`             | نشانی پایه داخلی سمت سرور                                                                                |
-| `CLOUD_URL`                             | `https://shiguang-gateway.dev`              | نشانی پایه نقطه پایانی همگام‌سازی ابری                                                                  |
+| `CLOUD_URL`                             | `https://orbit.dev`              | نشانی پایه نقطه پایانی همگام‌سازی ابری                                                                  |
 | `API_KEY_SECRET`                        | `endpoint-proxy-api-key-secret`      | کلید محرمانه HMAC برای تولید کلیدهای API                                                                 |
 | `REQUIRE_API_KEY`                       | `false`                              | الزام کلید Bearer API برای مسیرهای `/v1/*`                                                               |
 | `ALLOW_API_KEY_REVEAL`                  | `false`                              | اجازه به مدیر API برای کپی کامل کلیدهای API در صورت درخواست                                             |
@@ -514,7 +514,7 @@ post_install() {
 | `AUTH_COOKIE_SECURE`                    | `false`                              | اجبار ویژگی `Secure` برای کوکی احراز هویت در پشت پراکسی معکوس HTTPS                                     |
 | `CLOUDFLARED_BIN`                       | تنظیم‌نشده                           | استفاده از فایل اجرایی موجود `cloudflared` به‌جای دانلود مدیریت‌شده                                    |
 | `CLOUDFLARED_PROTOCOL`                  | `http2`                              | روش انتقال برای تونل‌های سریع مدیریت‌شده؛ یکی از `http2`، `quic` یا `auto`                              |
-| `SHIGUANG_GATEWAY_MEMORY_MB`                   | `512`                                | سقف حافظه heap در Node.js بر حسب مگابایت                                                                 |
+| `ORBIT_MEMORY_MB`                   | `512`                                | سقف حافظه heap در Node.js بر حسب مگابایت                                                                 |
 | `PROMPT_CACHE_MAX_SIZE`                 | `50`                                 | حداکثر تعداد ورودی‌های حافظه نهان پرامپت                                                                |
 | `SEMANTIC_CACHE_MAX_SIZE`               | `100`                                | حداکثر تعداد ورودی‌های حافظه نهان معنایی                                                                |
 
@@ -638,7 +638,7 @@ curl http://localhost:20128/api/models/catalog
 - برای Docker و دیگر استقرارهای خودمیزبان از مسیر **Dashboard → Endpoints** در دسترس است.
 - یک نشانی موقت `https://*.trycloudflare.com` می‌سازد که درخواست‌ها را به نقطه پایانی فعلی و سازگار با OpenAI در مسیر `/v1` هدایت می‌کند.
 - در نخستین فعال‌سازی، `cloudflared` فقط در صورت نیاز نصب می‌شود؛ در راه‌اندازی‌های بعدی همان فایل اجرایی مدیریت‌شده دوباره استفاده خواهد شد.
-- تونل‌های سریع پس از راه‌اندازی مجدد ShiguangGateway یا کانتینر، خودکار بازیابی نمی‌شوند؛ در صورت نیاز آن‌ها را دوباره از پیشخوان فعال کنید.
+- تونل‌های سریع پس از راه‌اندازی مجدد Orbit یا کانتینر، خودکار بازیابی نمی‌شوند؛ در صورت نیاز آن‌ها را دوباره از پیشخوان فعال کنید.
 - نشانی تونل‌ها موقتی است و با هر بار توقف و شروع تونل تغییر می‌کند.
 - روش انتقال پیش‌فرض تونل‌های سریع مدیریت‌شده HTTP/2 است تا در کانتینرهای محدود، هشدارهای پرتعداد بافر UDP مربوط به QUIC ایجاد نشود.
 - برای تغییر روش انتقال مدیریت‌شده، مقدار `CLOUDFLARED_PROTOCOL` را روی `quic` یا `auto` قرار دهید.
@@ -646,15 +646,15 @@ curl http://localhost:20128/api/models/catalog
 
 ### هوشمندی درگاه مدل‌های زبانی بزرگ (مرحله ۹)
 
-- **حافظه نهان معنایی** — پاسخ‌های غیرجریانی با `temperature=0` را خودکار ذخیره می‌کند؛ برای عبور از آن از `X-ShiguangGateway-No-Cache: true` استفاده کنید.
+- **حافظه نهان معنایی** — پاسخ‌های غیرجریانی با `temperature=0` را خودکار ذخیره می‌کند؛ برای عبور از آن از `X-Orbit-No-Cache: true` استفاده کنید.
 - **تکرارناپذیری درخواست** — درخواست‌های تکراری در بازه ۵ ثانیه را با سرآیند `Idempotency-Key` یا `X-Request-Id` حذف می‌کند.
-- **پایش پیشرفت** — با سرآیند `X-ShiguangGateway-Progress: true`، رویدادهای اختیاری SSE از نوع `event: progress` را فعال می‌کند.
+- **پایش پیشرفت** — با سرآیند `X-Orbit-Progress: true`، رویدادهای اختیاری SSE از نوع `event: progress` را فعال می‌کند.
 
 ---
 
 ### محیط آزمایش مترجم
 
-از مسیر **Dashboard → Translator** وارد شوید. در این بخش می‌توانید نحوه تبدیل درخواست‌های API بین ارائه‌دهندگان توسط ShiguangGateway را اشکال‌زدایی و مشاهده کنید.
+از مسیر **Dashboard → Translator** وارد شوید. در این بخش می‌توانید نحوه تبدیل درخواست‌های API بین ارائه‌دهندگان توسط Orbit را اشکال‌زدایی و مشاهده کنید.
 
 | حالت                 | کاربرد                                                                                     |
 | -------------------- | ------------------------------------------------------------------------------------------ |
@@ -692,7 +692,7 @@ curl http://localhost:20128/api/models/catalog
 X-Session-Id: your-session-key
 ```
 
-ShiguangGateway مقدار `x_session_id` را نیز می‌پذیرد و کلید مؤثر نشست را در `X-ShiguangGateway-Session-Id` برمی‌گرداند.
+Orbit مقدار `x_session_id` را نیز می‌پذیرد و کلید مؤثر نشست را در `X-Orbit-Session-Id` برمی‌گرداند.
 
 اگر از Nginx استفاده می‌کنید و سرآیندها را با نویسه زیرخط می‌فرستید، گزینه زیر را فعال کنید:
 
@@ -728,7 +728,7 @@ Chain: production-fallback
 
 از مسیر **Dashboard → Settings → Resilience** پیکربندی کنید.
 
-ShiguangGateway تاب‌آوری در سطح ارائه‌دهنده را با پنج مؤلفه پیاده‌سازی می‌کند:
+Orbit تاب‌آوری در سطح ارائه‌دهنده را با پنج مؤلفه پیاده‌سازی می‌کند:
 
 1. **صف و آهنگ درخواست‌ها** — شکل‌دهی درخواست‌ها در سطح سامانه:
    - **درخواست در دقیقه (RPM)** — حداکثر تعداد درخواست در دقیقه برای هر حساب
@@ -751,7 +751,7 @@ ShiguangGateway تاب‌آوری در سطح ارائه‌دهنده را با 
 
    وضعیت زمان اجرای مدارشکن ارائه‌دهنده فقط در **Dashboard → Health** نمایش داده می‌شود.
 
-4. **انتظار برای پایان دوره توقف** — اگر همه اتصال‌های نامزد در دوره انتظار باشند، ShiguangGateway می‌تواند تا پایان نخستین دوره منتظر بماند و همان درخواست کارخواه را خودکار دوباره اجرا کند.
+4. **انتظار برای پایان دوره توقف** — اگر همه اتصال‌های نامزد در دوره انتظار باشند، Orbit می‌تواند تا پایان نخستین دوره منتظر بماند و همان درخواست کارخواه را خودکار دوباره اجرا کند.
 
 5. **تشخیص خودکار محدودیت نرخ** — وقتی ارائه‌دهنده بالادستی بازه انتظار صریحی برمی‌گرداند، در صورت فعال‌بودن این تنظیم، آن راهنما جایگزین دوره انتظار محلی اتصال می‌شود.
 
@@ -785,7 +785,7 @@ curl -X POST http://localhost:20128/api/db-backups/import \
 
 **موارد استفاده:**
 
-- انتقال ShiguangGateway میان دستگاه‌ها
+- انتقال Orbit میان دستگاه‌ها
 - ساخت نسخه پشتیبان بیرونی برای بازیابی پس از خرابی
 - اشتراک‌گذاری پیکربندی میان اعضای تیم با برون‌برد کامل و ارسال بایگانی
 
@@ -831,7 +831,7 @@ curl http://localhost:20128/api/usage/budget
 
 ### رونویسی صوت
 
-ShiguangGateway از رونویسی صوت از طریق نقطه پایانی سازگار با OpenAI پشتیبانی می‌کند:
+Orbit از رونویسی صوت از طریق نقطه پایانی سازگار با OpenAI پشتیبانی می‌کند:
 
 ```bash
 POST /v1/audio/transcriptions
@@ -887,7 +887,7 @@ curl -X POST http://localhost:20128/v1/audio/transcriptions \
 
 ## 🖥️ برنامه دسکتاپ (Electron)
 
-ShiguangGateway به‌صورت برنامه دسکتاپ بومی برای Windows، macOS و Linux در دسترس است.
+Orbit به‌صورت برنامه دسکتاپ بومی برای Windows، macOS و Linux در دسترس است.
 
 ### نصب
 
@@ -930,7 +930,7 @@ npm run build:linux    # Linux (.AppImage)
 
 | متغیر                  | مقدار پیش‌فرض | توضیح                                             |
 | ---------------------- | ------------- | ------------------------------------------------- |
-| `SHIGUANG_GATEWAY_PORT`       | `20128`       | درگاه سرور                                        |
-| `SHIGUANG_GATEWAY_MEMORY_MB`  | `512`         | سقف حافظه heap در Node.js از ۶۴ تا ۱۶۳۸۴ مگابایت |
+| `ORBIT_PORT`       | `20128`       | درگاه سرور                                        |
+| `ORBIT_MEMORY_MB`  | `512`         | سقف حافظه heap در Node.js از ۶۴ تا ۱۶۳۸۴ مگابایت |
 
 📖 مستندات کامل: [`electron/README.md`](../../../../../electron/README.md)

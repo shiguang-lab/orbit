@@ -29,7 +29,7 @@ import {
 } from "./streamHelpers.ts";
 import { rejectEmptyChoicesStream, buildEmptyChoicesStreamError } from "./streamEmptyChoices.ts";
 import { calculateCost } from "@orbit/core/pricing/cost-calculator";
-import { buildShiguangGatewaySseMetadataComment } from "@orbit/core/edge/gateway-response-meta";
+import { buildOrbitSseMetadataComment } from "@orbit/core/edge/gateway-response-meta";
 import { sseCommentsEnabled } from "./sseHeartbeat.ts";
 import {
   createStructuredSSECollector,
@@ -112,7 +112,7 @@ export { backfillResponsesCompletedOutput, stripResponsesLifecycleEcho };
 
 type JsonRecord = Record<string, unknown>;
 
-export const PENDING_REQUEST_CLEARED_MARKER = "__shiguangGatewayPendingRequestCleared";
+export const PENDING_REQUEST_CLEARED_MARKER = "__orbitPendingRequestCleared";
 
 function markPendingRequestCleared(error: Error): Error {
   (error as Error & Record<string, unknown>)[PENDING_REQUEST_CLEARED_MARKER] = true;
@@ -1068,15 +1068,15 @@ export function createSSEStream(options: StreamOptions = {}) {
     controller: TransformStreamDefaultController,
     finalUsage: UsageTokenRecord | Record<string, unknown> | null | undefined
   ) => {
-    // Skip SSE metadata comment lines when SHIGUANG_GATEWAY_SSE_COMMENTS is disabled
+    // Skip SSE metadata comment lines when ORBIT_SSE_COMMENTS is disabled
     // (e.g., "off", "false", "0", "no"). Strict OpenAI-compatible clients that
-    // JSON.parse every SSE line will crash on `: x-shiguangGateway-*` comment lines.
+    // JSON.parse every SSE line will crash on `: x-orbit-*` comment lines.
     if (!sseCommentsEnabled()) return;
 
     const costUsd = finalUsage
       ? await calculateCost(provider, model, normalizeTokenUsage(finalUsage))
       : 0;
-    const comment = buildShiguangGatewaySseMetadataComment({
+    const comment = buildOrbitSseMetadataComment({
       provider,
       model,
       cacheHit: false,
@@ -1738,7 +1738,7 @@ export function createSSEStream(options: StreamOptions = {}) {
                   //
                   // For a malformed empty `choices: []` chunk WITHOUT valid usage we DROP
                   // it (log server-side only). We must NOT inject an assistant-content
-                  // chunk like "[ShiguangGateway] Upstream returned an empty response. Please
+                  // chunk like "[Orbit] Upstream returned an empty response. Please
                   // retry." with finish_reason: "stop" — clients (Goose/opencode) feed that
                   // text back as a turn and spin in a retry loop. This restores the #3400
                   // behavior that #3422 inadvertently reverted (regression #3388/#3502).

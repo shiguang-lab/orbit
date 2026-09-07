@@ -15,8 +15,8 @@ export function registerQuota(program) {
 
   quota
     .command("status")
-    .description("Show truthful ShiguangGateway gateway, quota, pool, and circuit state")
-    .action(async (opts, cmd) => runBoundedJson("/api/shiguangGateway/status", cmd.optsWithGlobals()));
+    .description("Show truthful Orbit gateway, quota, pool, and circuit state")
+    .action(async (opts, cmd) => runBoundedJson("/api/orbit/status", cmd.optsWithGlobals()));
 
   quota
     .command("preview")
@@ -57,8 +57,8 @@ async function runBoundedJson(path, opts, request = {}) {
     acceptNotOk: true,
   });
   const elapsed = Math.round(performance.now() - started);
-  if (process.env.SHIGUANG_GATEWAY_DEBUG === "1") {
-    console.error(`[shiguangGateway] ${request.method ?? "GET"} ${path} completed in ${elapsed}ms`);
+  if (process.env.ORBIT_DEBUG === "1") {
+    console.error(`[orbit] ${request.method ?? "GET"} ${path} completed in ${elapsed}ms`);
   }
   const payload = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
   if (!res.ok) {

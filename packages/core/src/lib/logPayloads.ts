@@ -111,8 +111,8 @@ export function compactStructuredStreamPayload(payload: unknown): unknown {
   }
   const summary = cloneLogPayload(record.summary);
   return summary && typeof summary === "object" && !Array.isArray(summary)
-    ? { ...(summary as JsonRecord), _shiguangGateway_stream: streamMeta }
-    : { summary, _shiguangGateway_stream: streamMeta };
+    ? { ...(summary as JsonRecord), _orbit_stream: streamMeta }
+    : { summary, _orbit_stream: streamMeta };
 }
 
 export function normalizePayloadForLog(payload: unknown): unknown {

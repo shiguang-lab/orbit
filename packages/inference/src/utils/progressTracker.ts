@@ -4,7 +4,7 @@ const decoder = new TextDecoder();
  * Progress Tracker — Phase 9.3
  *
  * Emits SSE `event: progress` events during long streaming responses.
- * Opt-in via X-ShiguangGateway-Progress: true header.
+ * Opt-in via X-Orbit-Progress: true header.
  *
  * Progress events contain:
  *   { tokens_generated, elapsed_ms }
@@ -110,5 +110,5 @@ export function createProgressTransform({
 export function wantsProgress(headers) {
   if (!headers) return false;
   const get = typeof headers.get === "function" ? (k) => headers.get(k) : (k) => headers[k];
-  return get("x-shiguangGateway-progress") === "true";
+  return get("x-orbit-progress") === "true";
 }

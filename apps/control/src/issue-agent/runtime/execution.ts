@@ -33,15 +33,15 @@ function configuredString(value: string | undefined, envName: string): string | 
 }
 
 function resolveModel(input: RecordedTriageExecutionInput): string {
-  const model = configuredString(input.model, "SHIGUANG_GATEWAY_ISSUE_AGENT_MODEL") ?? DEFAULT_MODEL;
-  const provider = configuredString(input.provider, "SHIGUANG_GATEWAY_ISSUE_AGENT_PROVIDER");
+  const model = configuredString(input.model, "ORBIT_ISSUE_AGENT_MODEL") ?? DEFAULT_MODEL;
+  const provider = configuredString(input.provider, "ORBIT_ISSUE_AGENT_PROVIDER");
 
   if (!provider || model.includes("/")) return model;
   return `${provider}/${model}`;
 }
 
 function resolveTimeoutMs(input: RecordedTriageExecutionInput): number {
-  const configured = input.timeoutMs ?? Number(process.env.SHIGUANG_GATEWAY_ISSUE_AGENT_TIMEOUT_MS);
+  const configured = input.timeoutMs ?? Number(process.env.ORBIT_ISSUE_AGENT_TIMEOUT_MS);
   if (!Number.isFinite(configured) || configured <= 0) return DEFAULT_TIMEOUT_MS;
   return Math.min(Math.floor(configured), MAX_TIMEOUT_MS);
 }
@@ -51,7 +51,7 @@ function buildMessages(run: RecordedTriageRun) {
     {
       role: "system",
       content:
-        "You are the ShiguangGateway Issue Agent. Analyze only the recorded GitHub context and produce a concise, actionable triage response. Do not claim to have accessed external state.",
+        "You are the Orbit Issue Agent. Analyze only the recorded GitHub context and produce a concise, actionable triage response. Do not claim to have accessed external state.",
     },
     {
       role: "user",
@@ -80,7 +80,7 @@ export async function executeRecordedTriageChatCompletion(
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   const routingPolicy = configuredString(
     input.routingPolicy,
-    "SHIGUANG_GATEWAY_ISSUE_AGENT_ROUTING_POLICY"
+    "ORBIT_ISSUE_AGENT_ROUTING_POLICY"
   );
 
   try {
@@ -90,7 +90,7 @@ export async function executeRecordedTriageChatCompletion(
         signal: controller.signal,
         headers: {
           "Content-Type": "application/json",
-          ...(routingPolicy ? { "X-ShiguangGateway-Mode": routingPolicy } : {}),
+          ...(routingPolicy ? { "X-Orbit-Mode": routingPolicy } : {}),
         },
         body: JSON.stringify({
           model: resolveModel(input),

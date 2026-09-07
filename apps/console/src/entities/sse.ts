@@ -1,6 +1,6 @@
 /**
  * SSE 订阅工具（参考 asset-hub shared/sse.ts 思路，事件驱动 react-query 失效）。
- * ShiguangGateway 的 SSE 端点：
+ * Orbit 的 SSE 端点：
  *  - GET /api/gamification/stream   → 排行榜推送（message 事件）
  *  - GET /api/gamification/notifications → 徽章解锁（badge_unlock 事件）
  *  - GET /api/services/[name]/logs  → 服务日志流（snapshot/log/heartbeat 事件）

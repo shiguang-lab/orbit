@@ -127,7 +127,7 @@ async function postHandler(request: Request) {
   const { validateBody, isValidationFailure } = validationHelpers;
   const { resolveProxyForConnection } = settingsApi;
   const { runWithProxyContext } = proxyApi;
-  const { attachShiguangGatewayMetaHeaders } = metaApi;
+  const { attachOrbitMetaHeaders } = metaApi;
   const { calculateModalCost } = pricingApi;
   const { generateRequestId } = requestIdApi;
   const { toJsonErrorPayload } = upstreamErrorApi;
@@ -261,7 +261,7 @@ async function postHandler(request: Request) {
     await clearRecoveredProviderState(credentialsResult);
     const costUsd = await calculateModalCost("image", provider, `${provider}/${model}`, { n: 1 });
     const headers = new Headers({ "Content-Type": "application/json" });
-    attachShiguangGatewayMetaHeaders(headers, {
+    attachOrbitMetaHeaders(headers, {
       provider,
       model: `${provider}/${model}`,
       costUsd,

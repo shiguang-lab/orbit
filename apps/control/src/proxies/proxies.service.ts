@@ -121,7 +121,7 @@ async function testSingleProxy(proxy: {
       method,
       signal: controller.signal,
       dispatcher,
-      headers: { "User-Agent": "ShiguangGateway/1.0" },
+      headers: { "User-Agent": "Orbit/1.0" },
     });
     const latencyMs = Date.now() - start;
     const outcome = classifyProbeStatus(response.status);

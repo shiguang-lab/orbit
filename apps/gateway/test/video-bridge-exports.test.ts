@@ -24,7 +24,7 @@ test("video bridge drill-down remote access remains opt-in", () => {
   assert.equal(isVideoBridgeDrilldownRemoteAccessEnabled({}), false);
   assert.equal(
     isVideoBridgeDrilldownRemoteAccessEnabled({
-      SHIGUANG_GATEWAY_VIDEO_BRIDGE_DRILLDOWN_REMOTE_ENABLED: "true",
+      ORBIT_VIDEO_BRIDGE_DRILLDOWN_REMOTE_ENABLED: "true",
     }),
     true,
   );

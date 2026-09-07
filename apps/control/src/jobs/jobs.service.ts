@@ -14,7 +14,7 @@ import {
 } from "@orbit/contracts/job-command";
 
 function workerCommandUrl(): URL {
-  const base = process.env.SHIGUANG_GATEWAY_WORKER_COMMAND_URL?.trim() || "http://127.0.0.1:8791";
+  const base = process.env.ORBIT_WORKER_COMMAND_URL?.trim() || "http://127.0.0.1:8791";
   const url = new URL(WORKER_JOB_COMMAND_PATH, `${base.replace(/\/$/, "")}/`);
   if (!(["http:", "https:"] as string[]).includes(url.protocol) || url.username || url.password) {
     throw new Error("Invalid worker command URL");
@@ -23,7 +23,7 @@ function workerCommandUrl(): URL {
 }
 
 function workerCommandToken(): string {
-  const token = process.env.SHIGUANG_GATEWAY_WORKER_COMMAND_TOKEN?.trim()
+  const token = process.env.ORBIT_WORKER_COMMAND_TOKEN?.trim()
     || process.env.JWT_SECRET?.trim();
   if (!token) throw new Error("Worker command authentication token is not configured");
   return token;
@@ -77,7 +77,7 @@ export class JobsService {
   }
 
   private async sendCommand(command: JobCommand): Promise<Response> {
-    const timeoutMs = Number(process.env.SHIGUANG_GATEWAY_WORKER_COMMAND_TIMEOUT_MS) || 30_000;
+    const timeoutMs = Number(process.env.ORBIT_WORKER_COMMAND_TIMEOUT_MS) || 30_000;
     let response: Response;
     try {
       response = await fetch(workerCommandUrl(), {

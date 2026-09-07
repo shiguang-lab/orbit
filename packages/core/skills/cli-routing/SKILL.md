@@ -11,8 +11,8 @@ Create, list, update, and delete routing combos from the CLI. Test routing strat
 ## Quick install
 
 ```bash
-npm install -g shiguang-gateway   # or: npx shiguang-gateway
-shiguang-gateway --version
+npm install -g orbit   # or: npx orbit
+orbit --version
 ```
 
 ## Subcommands
@@ -31,7 +31,7 @@ shiguang-gateway --version
 **Example:**
 
 ```bash
-shiguang-gateway suggest
+orbit suggest
 ```
 
 ### `combo combo`
@@ -39,7 +39,7 @@ shiguang-gateway suggest
 **Example:**
 
 ```bash
-shiguang-gateway combo combo
+orbit combo combo
 ```
 
 ### `combo list`
@@ -53,7 +53,7 @@ List configured routing combos
 **Example:**
 
 ```bash
-shiguang-gateway combo list
+orbit combo list
 ```
 
 ### `combo switch <name>`
@@ -63,7 +63,7 @@ Activate a routing combo
 **Example:**
 
 ```bash
-shiguang-gateway combo switch <name>
+orbit combo switch <name>
 ```
 
 ### `combo create <name>`
@@ -78,7 +78,7 @@ Create a new routing combo
 **Example:**
 
 ```bash
-shiguang-gateway combo create <name>
+orbit combo create <name>
 ```
 
 ### `combo delete <name>`
@@ -92,5 +92,5 @@ Delete a routing combo
 **Example:**
 
 ```bash
-shiguang-gateway combo delete <name>
+orbit combo delete <name>
 ```

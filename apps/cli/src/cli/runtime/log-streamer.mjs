@@ -1,5 +1,5 @@
 export function createLogStream(options = {}) {
-  const baseUrl = options.baseUrl || process.env.SHIGUANG_GATEWAY_BASE_URL || process.env.INTERNAL_BASE_URL || "http://127.0.0.1:8787";
+  const baseUrl = options.baseUrl || process.env.ORBIT_BASE_URL || process.env.INTERNAL_BASE_URL || "http://127.0.0.1:8787";
   const filters = options.filters || [];
   const follow = options.follow ?? false;
   const timeout = options.timeout || 30000;

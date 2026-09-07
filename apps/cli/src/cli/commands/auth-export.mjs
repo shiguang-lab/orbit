@@ -1,7 +1,7 @@
 import { chmodSync, existsSync, writeFileSync } from "node:fs";
 import { decryptCredential } from "../encryption.mjs";
 import { findProviderConnection, listProviderConnections } from "../provider-store.mjs";
-import { openShiguangGatewayDb } from "../sqlite.mjs";
+import { openOrbitDb } from "../sqlite.mjs";
 import { t } from "../i18n.mjs";
 
 /**
@@ -26,7 +26,7 @@ export function registerAuthExport(program) {
   // parses the bare word `export` as a required positional argument of `auth`, so the
   // action received (exportArgValue, options, command) while expecting (options, command)
   // and crashed with "cmd.optsWithGlobals is not a function". Register `export` as a
-  // proper nested subcommand instead; the CLI surface stays `shiguangGateway auth export`.
+  // proper nested subcommand instead; the CLI surface stays `orbit auth export`.
   program
     .command("auth")
     .description(t("authExport.description"))
@@ -90,7 +90,7 @@ function printConfirmationGate() {
 }
 
 async function loadTargetConnections(id) {
-  const { db } = await openShiguangGatewayDb();
+  const { db } = await openOrbitDb();
   try {
     if (!id) return listProviderConnections(db);
     const connection = findProviderConnection(db, id);
@@ -153,7 +153,7 @@ function formatAsEnv(rows) {
     for (const { key, envSuffix } of CREDENTIAL_FIELDS) {
       const value = row[key];
       if (!value) continue;
-      lines.push(`SHIGUANG_GATEWAY_${providerSegment}_${envSuffix}=${value}`);
+      lines.push(`ORBIT_${providerSegment}_${envSuffix}=${value}`);
     }
   }
   return lines.join("\n");

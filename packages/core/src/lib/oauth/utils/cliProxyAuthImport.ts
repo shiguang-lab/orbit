@@ -16,7 +16,7 @@ import path from "path";
 type JsonRecord = Record<string, unknown>;
 
 /**
- * CLIProxyAPI `type` → ShiguangGateway provider id. Only OAuth-based providers ShiguangGateway
+ * CLIProxyAPI `type` → Orbit provider id. Only OAuth-based providers Orbit
  * supports are mapped; unknown types are skipped during import.
  */
 export const CLIPROXY_TYPE_TO_PROVIDER: Record<string, string> = {

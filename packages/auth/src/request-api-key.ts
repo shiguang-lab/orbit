@@ -76,7 +76,7 @@ export async function isValidGatewayApiKey(
   validateStoredKey: (apiKey: string) => boolean | Promise<boolean>,
 ): Promise<boolean> {
   if (!apiKey) return false;
-  const environmentKey = process.env.SHIGUANG_GATEWAY_API_KEY || process.env.ROUTER_API_KEY;
+  const environmentKey = process.env.ORBIT_API_KEY || process.env.ROUTER_API_KEY;
   if (environmentKey && apiKey === environmentKey) return true;
   return await validateStoredKey(apiKey);
 }

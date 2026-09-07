@@ -56,7 +56,7 @@ interface RadarOffer {
 }
 
 interface RadarIntelFeed {
-  feed: "shiguangGateway-radar-intel";
+  feed: "orbit-radar-intel";
   schemaVersion: 1;
   version: string;
   generatedAt: string;

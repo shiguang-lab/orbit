@@ -1,9 +1,9 @@
 /**
- * shiguangGateway setup-crush — configure Crush (charmbracelet/crush) for ShiguangGateway.
+ * orbit setup-crush — configure Crush (charmbracelet/crush) for Orbit.
  *
  * Crush is a terminal AI agent with a file-based config: ~/.config/crush/crush.json
  * (or ./crush.json). It supports a custom `openai-compat` provider. base_url must
- * include /v1; the api_key may reference an env var (`$SHIGUANG_GATEWAY_API_KEY`) so the
+ * include /v1; the api_key may reference an env var (`$ORBIT_API_KEY`) so the
  * secret stays out of the file. Remote-aware; curated catalog models.
  */
 
@@ -15,7 +15,7 @@ import { resolveActiveContext } from "../contexts.mjs";
 import { categoriseModel } from "@orbit/config/cli/model-profile";
 import { guardHostConfigTarget } from "../utils/config-home-guard.mjs";
 
-const API_KEY_REF = "$SHIGUANG_GATEWAY_API_KEY";
+const API_KEY_REF = "$ORBIT_API_KEY";
 
 function ensureV1(url) {
   const s = String(url || "").replace(/\/+$/, "");
@@ -28,7 +28,7 @@ export function resolveCrushTarget(opts = {}) {
   if (opts.remote) root = String(opts.remote).replace(/\/+$/, "");
   else {
     try {
-      root = resolveActiveContext(opts.context ?? process.env.SHIGUANG_GATEWAY_CONTEXT)?.baseUrl;
+      root = resolveActiveContext(opts.context ?? process.env.ORBIT_CONTEXT)?.baseUrl;
     } catch {
       /* none */
     }
@@ -37,13 +37,13 @@ export function resolveCrushTarget(opts = {}) {
   let apiKey = opts.apiKey ?? opts["api-key"];
   if (!apiKey) {
     try {
-      const c = resolveActiveContext(opts.context ?? process.env.SHIGUANG_GATEWAY_CONTEXT);
+      const c = resolveActiveContext(opts.context ?? process.env.ORBIT_CONTEXT);
       apiKey = c?.accessToken || c?.apiKey;
     } catch {
       /* none */
     }
   }
-  if (!apiKey) apiKey = process.env.SHIGUANG_GATEWAY_API_KEY || "";
+  if (!apiKey) apiKey = process.env.ORBIT_API_KEY || "";
   return { baseUrl: ensureV1(root), apiKey };
 }
 
@@ -53,7 +53,7 @@ export function buildCrushProvider(modelIds, baseUrl) {
   for (const id of modelIds) {
     const cfg = categoriseModel(id);
     if (!cfg) continue;
-    models.push({ id, name: `ShiguangGateway: ${id}`, context_window: cfg.ctx });
+    models.push({ id, name: `Orbit: ${id}`, context_window: cfg.ctx });
   }
   return {
     type: "openai-compat",
@@ -63,10 +63,10 @@ export function buildCrushProvider(modelIds, baseUrl) {
   };
 }
 
-/** Merge the ShiguangGateway provider into an existing crush.json (preserve the rest). */
+/** Merge the Orbit provider into an existing crush.json (preserve the rest). */
 export function mergeCrushConfig(existing, provider) {
   const cfg = existing && typeof existing === "object" ? { ...existing } : {};
-  cfg.providers = { ...(cfg.providers || {}), shiguangGateway: provider };
+  cfg.providers = { ...(cfg.providers || {}), orbit: provider };
   return cfg;
 }
 
@@ -106,13 +106,13 @@ export async function runSetupCrushCommand(opts = {}) {
 
   const guard = await guardHostConfigTarget(configPath, {
     toolLabel: "Crush",
-    hostCommand: "shiguangGateway setup-crush",
+    hostCommand: "orbit setup-crush",
     allowContainerWrite: Boolean(opts.allowContainerWrite ?? opts["allow-container-write"]),
     dryRun,
   });
   if (guard !== 0) return guard;
 
-  printHeading("ShiguangGateway → Crush (openai-compat)");
+  printHeading("Orbit → Crush (openai-compat)");
   printInfo(`base_url: ${baseUrl}`);
 
   let ids;
@@ -120,7 +120,7 @@ export async function runSetupCrushCommand(opts = {}) {
     ids = await fetchModelIds(baseUrl, apiKey);
   } catch (e) {
     printError(`Could not fetch models: ${e.message}`);
-    printInfo("Make sure ShiguangGateway is running and --remote/--api-key are correct.");
+    printInfo("Make sure Orbit is running and --remote/--api-key are correct.");
     return 1;
   }
   if (only) ids = ids.filter((id) => only.some((f) => id.includes(f)));
@@ -136,15 +136,15 @@ export async function runSetupCrushCommand(opts = {}) {
   if (dryRun) {
     console.log("\n" + (out.length > 3500 ? out.slice(0, 3500) + "\n… (truncated)" : out));
     printInfo(
-      `[dry-run] ${provider.models.length} model(s) under providers.shiguangGateway → ${configPath}`
+      `[dry-run] ${provider.models.length} model(s) under providers.orbit → ${configPath}`
     );
     return 0;
   }
   mkdirSync(join(configPath, ".."), { recursive: true });
   writeFileSync(configPath, out, "utf8");
-  printSuccess(`Wrote ${configPath} (${provider.models.length} models under providers.shiguangGateway)`);
+  printSuccess(`Wrote ${configPath} (${provider.models.length} models under providers.orbit)`);
   printInfo(
-    "Provide the key (config references $SHIGUANG_GATEWAY_API_KEY):  export SHIGUANG_GATEWAY_API_KEY=..."
+    "Provide the key (config references $ORBIT_API_KEY):  export ORBIT_API_KEY=..."
   );
   printInfo("Then run:  crush");
   return 0;
@@ -153,10 +153,10 @@ export async function runSetupCrushCommand(opts = {}) {
 export function registerSetupCrush(program) {
   program
     .command("setup-crush")
-    .description("Generate the ShiguangGateway openai-compat provider in ~/.config/crush/crush.json")
-    .option("--port <port>", "Local ShiguangGateway port (ignored when --remote is set)", "8787")
-    .option("--remote <url>", "Remote ShiguangGateway URL, e.g. http://192.168.0.15:8787")
-    .option("--api-key <key>", "ShiguangGateway API key (defaults to SHIGUANG_GATEWAY_API_KEY env var)")
+    .description("Generate the Orbit openai-compat provider in ~/.config/crush/crush.json")
+    .option("--port <port>", "Local Orbit port (ignored when --remote is set)", "8787")
+    .option("--remote <url>", "Remote Orbit URL, e.g. http://192.168.0.15:8787")
+    .option("--api-key <key>", "Orbit API key (defaults to ORBIT_API_KEY env var)")
     .option("--only <patterns>", "Comma-separated substrings — keep only matching model IDs")
     .option("--config-path <path>", "crush.json path (default: ~/.config/crush/crush.json)")
     .option("--dry-run", "Print what would be written without touching the filesystem")

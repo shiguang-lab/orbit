@@ -4,8 +4,8 @@ import { builtinSkills } from "./builtins";
 import { memoryBuiltinHandlers, MEMORY_BUILTIN_TOOL_NAMES } from "./memoryBuiltins";
 import { detectProvider, decodeSkillToolName } from "./injection";
 import {
-  SHIGUANG_GATEWAY_WEB_FETCH_FALLBACK_TOOL_NAME,
-  SHIGUANG_GATEWAY_WEB_SEARCH_FALLBACK_TOOL_NAME,
+  ORBIT_WEB_FETCH_FALLBACK_TOOL_NAME,
+  ORBIT_WEB_SEARCH_FALLBACK_TOOL_NAME,
 } from "@orbit/contracts/gateway-tool-names";
 import { logger } from "@orbit/utils/logging";
 
@@ -32,8 +32,8 @@ interface ExecutionContext {
 }
 
 const BUILTIN_TOOL_ALIASES: Record<string, string> = {
-  [SHIGUANG_GATEWAY_WEB_SEARCH_FALLBACK_TOOL_NAME]: "web_search",
-  [SHIGUANG_GATEWAY_WEB_FETCH_FALLBACK_TOOL_NAME]: "web_fetch",
+  [ORBIT_WEB_SEARCH_FALLBACK_TOOL_NAME]: "web_search",
+  [ORBIT_WEB_FETCH_FALLBACK_TOOL_NAME]: "web_fetch",
 };
 
 const MEMORY_TOOL_NAMES = new Set<string>(MEMORY_BUILTIN_TOOL_NAMES);
@@ -331,7 +331,7 @@ export async function handleToolCallExecution(
       // Anthropic only permits tool_result blocks in user messages. This helper
       // returns a single assistant response, so there is no valid place to put a
       // server-side skill result as tool_result here. Keep client-native tool_use
-      // blocks untouched, remove the ShiguangGateway-handled tool_use blocks, and expose
+      // blocks untouched, remove the Orbit-handled tool_use blocks, and expose
       // their results as plain assistant text instead of corrupting history with
       // assistant-side tool_result blocks. See #2815.
       //

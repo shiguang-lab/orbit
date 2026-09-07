@@ -1,14 +1,14 @@
 ---
-title: "ShiguangGateway — 儀表板功能總覽"
+title: "Orbit — 儀表板功能總覽"
 version: 3.8.40
 lastUpdated: 2026-06-28
 ---
 
-# ShiguangGateway — 儀表板功能總覽
+# Orbit — 儀表板功能總覽
 
 🌐 **主要 README 翻譯：** 🇺🇸 [English](../README.md) | 🇧🇷 [Português (Brasil)](../i18n/pt-BR/README.md) | 🇪🇸 [Español](../i18n/es/README.md) | 🇫🇷 [Français](../i18n/fr/README.md) | 🇮🇹 [Italiano](../i18n/it/README.md) | 🇷🇺 [Русский](../i18n/ru/README.md) | 🇨🇳 [中文 (简体)](../i18n/zh-CN/README.md) | 🇩🇪 [Deutsch](../i18n/de/README.md) | 🇮🇳 [हिन्दी](../i18n/in/README.md) | 🇹🇭 [ไทย](../i18n/th/README.md) | 🇺🇦 [Українська](../i18n/uk-UA/README.md) | 🇸🇦 [العربية](../i18n/ar/README.md) | 🇯🇵 [日本語](../i18n/ja/README.md) | 🇻🇳 [Tiếng Việt](../i18n/vi/README.md) | 🇧🇬 [Български](../i18n/bg/README.md) | 🇩🇰 [Dansk](../i18n/da/README.md) | 🇫🇮 [Suomi](../i18n/fi/README.md) | 🇮🇱 [עברית](../i18n/he/README.md) | 🇭🇺 [Magyar](../i18n/hu/README.md) | 🇮🇩 [Bahasa Indonesia](../i18n/id/README.md) | 🇰🇷 [한국어](../i18n/ko/README.md) | 🇲🇾 [Bahasa Melayu](../i18n/ms/README.md) | 🇳🇱 [Nederlands](../i18n/nl/README.md) | 🇳🇴 [Norsk](../i18n/no/README.md) | 🇵🇹 [Português (Portugal)](../i18n/pt/README.md) | 🇷🇴 [Română](../i18n/ro/README.md) | 🇵🇱 [Polski](../i18n/pl/README.md) | 🇸🇰 [Slovenčina](../i18n/sk/README.md) | 🇸🇪 [Svenska](../i18n/sv/README.md) | 🇵🇭 [Filipino](../i18n/phi/README.md) | 🇨🇿 [Čeština](../i18n/cs/README.md)
 
-ShiguangGateway 儀表板各區塊的視覺化導覽。
+Orbit 儀表板各區塊的視覺化導覽。
 
 > 📅 **最後更新：** 2026-06-28 — **v3.8.40**
 
@@ -38,7 +38,7 @@ v3.7.x → v3.8.0 版本週期新增了零設定自動路由、新提供者、OA
 - 🚦 **各提供者 429 分類** + `useUpstream429BreakerHints` 開關 — 利用上游速率限制提示來微調斷路器行為
 - 🩺 **模型冷卻儀表板** — 觀察各模型的鎖定狀態，並可從 UI 手動重新啟用
 - 🔒 **MITM 動態 Linux 憑證偵測** — 適用於 Debian/Ubuntu、Fedora/RHEL、Arch 及其他發行版
-- 💻 **CLI 增強套件** — 20 多個指令，包含 `shiguang-gateway providers`、`shiguang-gateway combos`、`shiguang-gateway doctor`、`shiguang-gateway setup`
+- 💻 **CLI 增強套件** — 20 多個指令，包含 `orbit providers`、`orbit combos`、`orbit doctor`、`orbit setup`
 - 🔍 **Qdrant 嵌入模型探索** — 自動向量儲存模型探測
 - 🔑 **API 金鑰 / Bearer 金鑰搭配 `manage` 範圍** — 透過 API 以程式方式執行管理操作
 - 🏥 **Combo 目標健康度分析** + **結構化 Combo 建構器** — 各目標健康度及 UI 建構器，用於組合 `(提供者, 模型, 連線)` 步驟
@@ -53,7 +53,7 @@ v3.7.x → v3.8.0 版本週期新增了零設定自動路由、新提供者、OA
 
 管理 AI 提供者連線：OAuth 提供者（Claude Code、Codex）、API 金鑰提供者（Groq、DeepSeek、OpenRouter）以及免費提供者（Qoder、Kiro）。Kiro 帳戶包含額度餘額追蹤——剩餘額度、總配額及續約日期，均可在「儀表板 → 用量」中檢視。
 
-OpenRouter 連線可在「進階設定」中儲存各連線的 `preset`。設定後，ShiguangGateway 會將其作為 OpenRouter 頂層請求欄位發送，例如 `"preset": "email-copywriter"`，除非客戶端請求已提供自己的 `preset`。
+OpenRouter 連線可在「進階設定」中儲存各連線的 `preset`。設定後，Orbit 會將其作為 OpenRouter 頂層請求欄位發送，例如 `"preset": "email-copywriter"`，除非客戶端請求已提供自己的 `preset`。
 
 ![提供者儀表板](../screenshots/01-providers.png)
 
@@ -148,7 +148,7 @@ OpenRouter 連線可在「進階設定」中儲存各連線的 `preset`。設定
 
 ## 🔗 Context Relay _（v3.5.5+）_
 
-一種 Combo 策略，可在對話中途發生帳戶輪換時保持階段連續性。在目前帳戶額度耗盡前，ShiguangGateway 會在背景產生結構化的交接摘要。當下一次請求解析到不同帳戶時，該摘要會作為系統訊息注入，使新帳戶能銜接完整上下文。
+一種 Combo 策略，可在對話中途發生帳戶輪換時保持階段連續性。在目前帳戶額度耗盡前，Orbit 會在背景產生結構化的交接摘要。當下一次請求解析到不同帳戶時，該摘要會作為系統訊息注入，使新帳戶能銜接完整上下文。
 
 可透過 Combo 層級或全域設定調整：
 
@@ -216,7 +216,7 @@ OAuth 提供者的一鍵「修復環境」功能，可恢復遺失的環境變�
 
 | 指令                     | 動作                                                               |
 | ------------------------ | ------------------------------------------------------------------ |
-| `npm run uninstall`      | 移除系統應用程式，但**保留您的資料庫與配置**於 `~/.shiguang-gateway` 中。 |
+| `npm run uninstall`      | 移除系統應用程式，但**保留您的資料庫與配置**於 `~/.orbit` 中。 |
 | `npm run uninstall:full` | 移除應用程式，並**永久清除所有配置、金鑰與資料庫**。               |
 
 ---
@@ -257,7 +257,7 @@ OAuth 提供者的一鍵「修復環境」功能，可恢復遺失的環境變�
 
 ## 🖥️ 桌面應用程式
 
-原生 Electron 桌面應用程式，支援 Windows、macOS 及 Linux。將 ShiguangGateway 作為獨立應用程式執行，包含系統列整合、離線支援、自動更新及一鍵安裝。
+原生 Electron 桌面應用程式，支援 Windows、macOS 及 Linux。將 Orbit 作為獨立應用程式執行，包含系統列整合、離線支援、自動更新及一鍵安裝。
 
 主要功能：
 
@@ -276,7 +276,7 @@ OAuth 提供者的一鍵「修復環境」功能，可恢復遺失的環境變�
 
 ## 🌐 V1 WebSocket 橋接器 _（v3.6.6+）_
 
-ShiguangGateway 現在透過 `/v1/ws` 升級端點支援 **OpenAI 相容的 WebSocket 客戶端**。自訂的 `scripts/dev/v1-ws-bridge.mjs` 伺服器包裝 Next.js，並將 WS 連線升級為完整的雙向串流階段。驗證使用與 HTTP 請求相同的 API 金鑰或階段 Cookie。
+Orbit 現在透過 `/v1/ws` 升級端點支援 **OpenAI 相容的 WebSocket 客戶端**。自訂的 `scripts/dev/v1-ws-bridge.mjs` 伺服器包裝 Next.js，並將 WS 連線升級為完整的雙向串流階段。驗證使用與 HTTP 請求相同的 API 金鑰或階段 Cookie。
 
 主要行為：
 
@@ -302,7 +302,7 @@ ShiguangGateway 現在透過 `/v1/ws` 升級端點支援 **OpenAI 相容的 WebS
 
 **GLM Thinking（`glmt`）** 現已註冊為一級提供者：65,536 最大輸出 token、24,576 思考預算、900 秒預設逾時、Claude 相容 API 格式，及與 GLM 系列的共用用量同步。
 
-**混合 Token 計數** 也在 v3.6.6 中登場：當 Claude 相容提供者暴露 `/messages/count_tokens` 端點時，ShiguangGateway 會在大請求前呼叫它，並附帶優雅的估算備援。
+**混合 Token 計數** 也在 v3.6.6 中登場：當 Claude 相容提供者暴露 `/messages/count_tokens` 端點時，Orbit 會在大請求前呼叫它，並附帶優雅的估算備援。
 
 ---
 

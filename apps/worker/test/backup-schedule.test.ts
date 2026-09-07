@@ -101,7 +101,7 @@ test("worker schedule is single-flight and preserves concurrent configuration ch
       cloudUploaded: null,
       manifest: {
         timestamp: now.toISOString(),
-        version: "shiguangGateway-cli-v1" as const,
+        version: "orbit-cli-v1" as const,
         encrypted: false,
         files: ["settings.json"],
       },

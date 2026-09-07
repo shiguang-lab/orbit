@@ -21,11 +21,11 @@ type SyncResult =
     };
 
 function isAutoSyncEnabled() {
-  // Opt-in, default OFF. Backed by the SHIGUANG_GATEWAY_AUTO_SYNC_CODEX_PROFILES feature flag
+  // Opt-in, default OFF. Backed by the ORBIT_AUTO_SYNC_CODEX_PROFILES feature flag
   // (resolver precedence: DB/dashboard-toggle override > env > default "false"), so a
   // provider model sync never silently writes ~/.codex/*.config.toml unless the operator
   // turned it on — via the providers-dashboard toggle or the env var.
-  return isFeatureFlagEnabled("SHIGUANG_GATEWAY_AUTO_SYNC_CODEX_PROFILES");
+  return isFeatureFlagEnabled("ORBIT_AUTO_SYNC_CODEX_PROFILES");
 }
 
 function forwardAuthHeaders(request: Request): Record<string, string> {

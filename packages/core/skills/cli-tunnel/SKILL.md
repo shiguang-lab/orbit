@@ -11,8 +11,8 @@ Start and stop tunnel connections (ngrok, Cloudflare, custom) from the CLI. Insp
 ## Quick install
 
 ```bash
-npm install -g shiguang-gateway   # or: npx shiguang-gateway
-shiguang-gateway --version
+npm install -g orbit   # or: npx orbit
+orbit --version
 ```
 
 ## Subcommands
@@ -22,7 +22,7 @@ shiguang-gateway --version
 **Example:**
 
 ```bash
-shiguang-gateway tunnel
+orbit tunnel
 ```
 
 ### `tunnel list`
@@ -34,7 +34,7 @@ shiguang-gateway tunnel
 **Example:**
 
 ```bash
-shiguang-gateway tunnel list
+orbit tunnel list
 ```
 
 ### `tunnel create [type]`
@@ -42,7 +42,7 @@ shiguang-gateway tunnel list
 **Example:**
 
 ```bash
-shiguang-gateway tunnel create [type]
+orbit tunnel create [type]
 ```
 
 ### `tunnel stop <type>`
@@ -54,7 +54,7 @@ shiguang-gateway tunnel create [type]
 **Example:**
 
 ```bash
-shiguang-gateway tunnel stop <type>
+orbit tunnel stop <type>
 ```
 
 ### `tunnel status <type>`
@@ -66,7 +66,7 @@ shiguang-gateway tunnel stop <type>
 **Example:**
 
 ```bash
-shiguang-gateway tunnel status <type>
+orbit tunnel status <type>
 ```
 
 ### `tunnel logs <type>`
@@ -78,7 +78,7 @@ shiguang-gateway tunnel status <type>
 **Example:**
 
 ```bash
-shiguang-gateway tunnel logs <type>
+orbit tunnel logs <type>
 ```
 
 ### `tunnel info <type>`
@@ -90,7 +90,7 @@ shiguang-gateway tunnel logs <type>
 **Example:**
 
 ```bash
-shiguang-gateway tunnel info <type>
+orbit tunnel info <type>
 ```
 
 ### `tunnel rotate <type>`
@@ -102,5 +102,5 @@ shiguang-gateway tunnel info <type>
 **Example:**
 
 ```bash
-shiguang-gateway tunnel rotate <type>
+orbit tunnel rotate <type>
 ```

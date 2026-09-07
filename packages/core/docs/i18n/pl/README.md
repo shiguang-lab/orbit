@@ -1,12 +1,12 @@
 <div align="center">
 
-<img src="../../../docs/screenshots/MainShiguangGateway.png" alt="ShiguangGateway Dashboard" width="820"/>
+<img src="../../../docs/screenshots/MainOrbit.png" alt="Orbit Dashboard" width="820"/>
 
 <br/>
 
-# 🚀 ShiguangGateway — Darmowa bramka AI
+# 🚀 Orbit — Darmowa bramka AI
 
-<img src="../../../docs/diagrams/readme-hero.svg" width="100%" alt="ShiguangGateway — Koduj dalej mimo limitów dostawców. Każde narzędzie AI → 329 wpisów katalogu dostawców — 155 oznaczone free/no-auth — przez jeden punkt końcowy. Claude Code, Codex, Cursor, Cline, Copilot i Antigravity mogą korzystać z bezpłatnego dostępu do Claude / GPT / Gemini z automatycznym fallbackiem, zależnie od dostępności i limitów dostawcy. Kaskadowa kompresja RTK + Caveman oszczędza 15–95% kwalifikowanych tokenów (średnio ~89% w sesjach z intensywnym użyciem narzędzi). 329 wpisów katalogu · 155 free/no-auth · ~1,53 mld udokumentowanych tokenów cyklicznych/mies. · 19 strategii routingu · 0 USD na start."/>
+<img src="../../../docs/diagrams/readme-hero.svg" width="100%" alt="Orbit — Koduj dalej mimo limitów dostawców. Każde narzędzie AI → 329 wpisów katalogu dostawców — 155 oznaczone free/no-auth — przez jeden punkt końcowy. Claude Code, Codex, Cursor, Cline, Copilot i Antigravity mogą korzystać z bezpłatnego dostępu do Claude / GPT / Gemini z automatycznym fallbackiem, zależnie od dostępności i limitów dostawcy. Kaskadowa kompresja RTK + Caveman oszczędza 15–95% kwalifikowanych tokenów (średnio ~89% w sesjach z intensywnym użyciem narzędzi). 329 wpisów katalogu · 155 free/no-auth · ~1,53 mld udokumentowanych tokenów cyklicznych/mies. · 19 strategii routingu · 0 USD na start."/>
 
 </div>
 
@@ -16,9 +16,9 @@
 
 </div>
 
-> Ręczne łączenie darmowych pakietów jest uciążliwe — dziesiątki SDK, dziesiątki limitów zapytań (rate limits) i brak wiedzy, ile tak naprawdę Ci pozostało. ShiguangGateway pokazuje **155 wpisy katalogu oznaczone free/no-auth**. Ściśle kwantyfikowany budżet obejmuje **43 pule dostawców / 522 wpisy budżetowe modeli** i jest wyświetlany na żywo w panelu (`/dashboard/free-tiers`).
+> Ręczne łączenie darmowych pakietów jest uciążliwe — dziesiątki SDK, dziesiątki limitów zapytań (rate limits) i brak wiedzy, ile tak naprawdę Ci pozostało. Orbit pokazuje **155 wpisy katalogu oznaczone free/no-auth**. Ściśle kwantyfikowany budżet obejmuje **43 pule dostawców / 522 wpisy budżetowe modeli** i jest wyświetlany na żywo w panelu (`/dashboard/free-tiers`).
 
-<img src="../../../docs/diagrams/free-tier-budget.svg" width="100%" alt="Karta budżetu darmowych pakietów ShiguangGateway: stabilne ~1,53 mld darmowych tokenów miesięcznie, do ~2,15 mld w pierwszym miesiącu dzięki kredytom na start, z udokumentowanych darmowych poziomów 43 pul dostawców / 522 wpisów budżetowych modeli za jednym punktem końcowym. Rzetelne wyliczenia z deduplikacją puli — każda współdzielona pula liczona raz, 15 dostawców oflagowanych ze względu na ToS. Pasek budżetu obejmuje 19 kwantyfikowanych pul, ~626M jednorazowych kredytów startowych oraz dostawców cyklicznych bez opublikowanego limitu tokenów, lecz z limitami szybkości i współbieżności. Zużycie/pozostało na żywo na /dashboard/free-tiers."/>
+<img src="../../../docs/diagrams/free-tier-budget.svg" width="100%" alt="Karta budżetu darmowych pakietów Orbit: stabilne ~1,53 mld darmowych tokenów miesięcznie, do ~2,15 mld w pierwszym miesiącu dzięki kredytom na start, z udokumentowanych darmowych poziomów 43 pul dostawców / 522 wpisów budżetowych modeli za jednym punktem końcowym. Rzetelne wyliczenia z deduplikacją puli — każda współdzielona pula liczona raz, 15 dostawców oflagowanych ze względu na ToS. Pasek budżetu obejmuje 19 kwantyfikowanych pul, ~626M jednorazowych kredytów startowych oraz dostawców cyklicznych bez opublikowanego limitu tokenów, lecz z limitami szybkości i współbieżności. Zużycie/pozostało na żywo na /dashboard/free-tiers."/>
 
 > Animowane podsumowanie strony `/dashboard/free-tiers` na żywo. Pełna metodologia (deduplikacja pul, pakiety kredytów, warunki dostawców): **[docs/reference/FREE_TIERS.md](../../../docs/reference/FREE_TIERS.md)**.
 >
@@ -28,40 +28,40 @@
 
 <h3>
 
-⭐ Dodaj gwiazdkę do repozytorium, jeśli SHIGUANG_GATEWAY pomógł Ci zaoszczędzić pieniądze i ułatwił pracę.
+⭐ Dodaj gwiazdkę do repozytorium, jeśli ORBIT pomógł Ci zaoszczędzić pieniądze i ułatwił pracę.
 
 </h3>
 
-[![Stars](https://img.shields.io/github/stars/diegosouzapw/ShiguangGateway?style=social)](https://github.com/diegosouzapw/ShiguangGateway)
-<a href="https://trendshift.io/repositories/23589" target="_blank"><img src="https://trendshift.io/api/badge/repositories/23589" alt="diegosouzapw%2FShiguangGateway | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
-[![Star History Rank](https://api.star-history.com/badge?repo=diegosouzapw/ShiguangGateway&theme=dark)](https://www.star-history.com/diegosouzapw/shiguang-gateway)
+[![Stars](https://img.shields.io/github/stars/diegosouzapw/Orbit?style=social)](https://github.com/diegosouzapw/Orbit)
+<a href="https://trendshift.io/repositories/23589" target="_blank"><img src="https://trendshift.io/api/badge/repositories/23589" alt="diegosouzapw%2FOrbit | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+[![Star History Rank](https://api.star-history.com/badge?repo=diegosouzapw/Orbit&theme=dark)](https://www.star-history.com/diegosouzapw/orbit)
 
 <br/>
 
 ### 💬 Dołącz do społeczności
 
 [![Discord](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/U47eFqAXCn)
-[![Telegram](https://img.shields.io/badge/Telegram-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/shiguang-gatewayOficial)
+[![Telegram](https://img.shields.io/badge/Telegram-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/orbitOficial)
 [![WhatsApp Global](https://img.shields.io/badge/WhatsApp_Global-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://chat.whatsapp.com/JI7cDQ1GyaiDHhVBpLxf8b?mode=gi_t)
 [![WhatsApp Brasil](https://img.shields.io/badge/WhatsApp_Brasil-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://chat.whatsapp.com/LTSpdFhXTxjH4R6CCNiKWz)
-[![Website](https://img.shields.io/badge/Website-shiguang-gateway.online-blue?logo=google-chrome&logoColor=white)](https://shiguang-gateway.online)
+[![Website](https://img.shields.io/badge/Website-orbit.online-blue?logo=google-chrome&logoColor=white)](https://orbit.online)
 
-**Pytania, wskazówki dotyczące dostawców, plany rozwoju (roadmap) i wsparcie → [Discord](https://discord.gg/U47eFqAXCn) · [Telegram](https://t.me/shiguang-gatewayOficial) · WhatsApp [🌍 Global](https://chat.whatsapp.com/JI7cDQ1GyaiDHhVBpLxf8b?mode=gi_t) / [🇧🇷 Brasil](https://chat.whatsapp.com/LTSpdFhXTxjH4R6CCNiKWz)**
+**Pytania, wskazówki dotyczące dostawców, plany rozwoju (roadmap) i wsparcie → [Discord](https://discord.gg/U47eFqAXCn) · [Telegram](https://t.me/orbitOficial) · WhatsApp [🌍 Global](https://chat.whatsapp.com/JI7cDQ1GyaiDHhVBpLxf8b?mode=gi_t) / [🇧🇷 Brasil](https://chat.whatsapp.com/LTSpdFhXTxjH4R6CCNiKWz)**
 
 <br/>
 
 ### 🧩 Dostępne
 
-[![npm version](https://img.shields.io/npm/v/shiguang-gateway?color=cb3837&logo=npm)](https://www.npmjs.com/package/shiguang-gateway)
-![NPM Monthly](https://img.shields.io/npm/dm/shiguang-gateway?label=npm/month&color=cb3837&logo=npm)
-[![Docker Hub](https://img.shields.io/docker/v/diegosouzapw/shiguang-gateway?label=Docker%20Hub&logo=docker&color=2496ED)](https://hub.docker.com/r/diegosouzapw/shiguang-gateway)
+[![npm version](https://img.shields.io/npm/v/orbit?color=cb3837&logo=npm)](https://www.npmjs.com/package/orbit)
+![NPM Monthly](https://img.shields.io/npm/dm/orbit?label=npm/month&color=cb3837&logo=npm)
+[![Docker Hub](https://img.shields.io/docker/v/diegosouzapw/orbit?label=Docker%20Hub&logo=docker&color=2496ED)](https://hub.docker.com/r/diegosouzapw/orbit)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](../../../LICENSE)
-![Docker Pulls](https://img.shields.io/docker/pulls/diegosouzapw/shiguang-gateway?label=docker%20pulls&logo=docker&color=2496ED)
-![Electron Downloads](https://img.shields.io/github/downloads/diegosouzapw/shiguang-gateway/total?style=flat&label=electron%20downloads&logo=electron&color=47848F)
+![Docker Pulls](https://img.shields.io/docker/pulls/diegosouzapw/orbit?label=docker%20pulls&logo=docker&color=2496ED)
+![Electron Downloads](https://img.shields.io/github/downloads/diegosouzapw/orbit/total?style=flat&label=electron%20downloads&logo=electron&color=47848F)
 
-[**🚀 Szybki start**](#-szybki-start) • [**🎯 Komba**](#-komba-combos--flagowa-funkcja) • [**🌐 Dostawcy**](#-329-wpisów-katalogu-ai--155-free-no-auth) • [**🔌 CLI & MCP**](#-pe%C5%82ne-cli--a2a-i-mcp) • [**🗜️ Kompresja**](#%EF%B8%8F-oszcz%C4%99dzaj-1595-token%C3%B3w--automatycznie) • [**🌍 Strona WWW**](https://shiguang-gateway.online)
+[**🚀 Szybki start**](#-szybki-start) • [**🎯 Komba**](#-komba-combos--flagowa-funkcja) • [**🌐 Dostawcy**](#-329-wpisów-katalogu-ai--155-free-no-auth) • [**🔌 CLI & MCP**](#-pe%C5%82ne-cli--a2a-i-mcp) • [**🗜️ Kompresja**](#%EF%B8%8F-oszcz%C4%99dzaj-1595-token%C3%B3w--automatycznie) • [**🌍 Strona WWW**](https://orbit.online)
 
-[💥 Obietnica](#-obietnica) • [🤔 Dlaczego](#-dlaczego-shiguang-gateway) • [🏆 Co wyróżnia ShiguangGateway](#-co-wyr%C3%B3%C5%BCnia-shiguang-gateway) • [🤖 Zgodne CLI](#-zgodne-cli-i-agenci-koduj%C4%85cy) • [🖥️ Gdzie to działa](#%EF%B8%8F-gdzie-dzia%C5%82a-shiguang-gateway--wsz%C4%99dzie) • [🔒 Prywatność](#-prywatno%C5%9B%C4%87-i-lokalne-dzia%C5%82anie-local-first) • [🎬 W akcji](#-shiguang-gateway-w-akcji) • [📸 Zrzuty ekranu](#-zrzuty-ekranu-z-panelu) • [📧 Wsparcie](#-wsparcie-i-spo%C5%82eczno%C5%9B%C4%87)
+[💥 Obietnica](#-obietnica) • [🤔 Dlaczego](#-dlaczego-orbit) • [🏆 Co wyróżnia Orbit](#-co-wyr%C3%B3%C5%BCnia-orbit) • [🤖 Zgodne CLI](#-zgodne-cli-i-agenci-koduj%C4%85cy) • [🖥️ Gdzie to działa](#%EF%B8%8F-gdzie-dzia%C5%82a-orbit--wsz%C4%99dzie) • [🔒 Prywatność](#-prywatno%C5%9B%C4%87-i-lokalne-dzia%C5%82anie-local-first) • [🎬 W akcji](#-orbit-w-akcji) • [📸 Zrzuty ekranu](#-zrzuty-ekranu-z-panelu) • [📧 Wsparcie](#-wsparcie-i-spo%C5%82eczno%C5%9B%C4%87)
 
 </div>
 
@@ -126,22 +126,22 @@
 
 </div>
 
-<img src="../../../docs/diagrams/promise-pillars.svg" width="100%" alt="Obietnica — Jeden punkt końcowy. 329 wpisów katalogu. ShiguangGateway wybiera najtańsze kwalifikujące się rozwiązanie i próbuje fallbacku, gdy upstream lub quota zawiedzie, zależnie od dostępności trasy. Sześć filarów: odporność · oszczędność do 95% tokenów · 0 USD na start (155 wpisy free/no-auth, warunki i limity zależą od dostawcy) · 33 narzędzia i agenci kodujący przez jedną konfigurację · jeden punkt końcowy · klasa produkcyjna."/>
+<img src="../../../docs/diagrams/promise-pillars.svg" width="100%" alt="Obietnica — Jeden punkt końcowy. 329 wpisów katalogu. Orbit wybiera najtańsze kwalifikujące się rozwiązanie i próbuje fallbacku, gdy upstream lub quota zawiedzie, zależnie od dostępności trasy. Sześć filarów: odporność · oszczędność do 95% tokenów · 0 USD na start (155 wpisy free/no-auth, warunki i limity zależą od dostawcy) · 33 narzędzia i agenci kodujący przez jedną konfigurację · jeden punkt końcowy · klasa produkcyjna."/>
 
 <br/>
 <br/>
 
 <div align="center">
 
-# 🤔 Dlaczego ShiguangGateway?
+# 🤔 Dlaczego Orbit?
 
 </div>
 
-<img src="../../../docs/diagrams/why-pain-fix.svg" width="100%" alt="Dlaczego ShiguangGateway — koniec z żonglowaniem 10 panelami, niedziałającymi kluczami API i niespodziewanymi rachunkami. Dziesięć codziennych problemów vs rozwiązania: wygasające niewykorzystane limity → maksymalizacja subskrypcji; limity zapytań w trakcie kodowania → 4-poziomowe automatyczne przełączanie (Subskrypcja → API → Tanie → Darmowe); wyniki narzędzi marnujące tokeny → kompresja RTK + Caveman (15–95%); drogie API → routing zoptymalizowany pod kątem kosztów; każde narzędzie z osobną konfiguracją → jeden punkt końcowy, jeden panel; blokowanie AI → 3-poziomowe proxy + maskowanie TLS; niedziałające klucze → 3-warstwowa odporność (wyłączniki awaryjne, schładzanie kluczy, blokada modelu); zespół dzielący jedną subskrypcję → pule kluczy z limitami sprawiedliwego podziału (fair-share); prompty przesyłane przez zewnętrzną chmurę → lokalne uruchomienie z kluczami szyfrowanymi AES-256-GCM; brak widoczności wydatków → analityka na żywo (użycie, limit, oszczędności, opóźnienie p95)."/>
+<img src="../../../docs/diagrams/why-pain-fix.svg" width="100%" alt="Dlaczego Orbit — koniec z żonglowaniem 10 panelami, niedziałającymi kluczami API i niespodziewanymi rachunkami. Dziesięć codziennych problemów vs rozwiązania: wygasające niewykorzystane limity → maksymalizacja subskrypcji; limity zapytań w trakcie kodowania → 4-poziomowe automatyczne przełączanie (Subskrypcja → API → Tanie → Darmowe); wyniki narzędzi marnujące tokeny → kompresja RTK + Caveman (15–95%); drogie API → routing zoptymalizowany pod kątem kosztów; każde narzędzie z osobną konfiguracją → jeden punkt końcowy, jeden panel; blokowanie AI → 3-poziomowe proxy + maskowanie TLS; niedziałające klucze → 3-warstwowa odporność (wyłączniki awaryjne, schładzanie kluczy, blokada modelu); zespół dzielący jedną subskrypcję → pule kluczy z limitami sprawiedliwego podziału (fair-share); prompty przesyłane przez zewnętrzną chmurę → lokalne uruchomienie z kluczami szyfrowanymi AES-256-GCM; brak widoczności wydatków → analityka na żywo (użycie, limit, oszczędności, opóźnienie p95)."/>
 
 <div align="center">
 
-<img src="../../../docs/diagrams/tier-cascade.svg" width="100%" alt="Przepływ żądań ShiguangGateway: Twoje IDE lub CLI wywołuje jeden lokalny punkt końcowy; inteligentny router (kompresja RTK + Caveman, 19 strategii routingu, wyłączniki awaryjne, TLS stealth, MCP, A2A, guardrails) próbuje kolejnych poziomów — Subskrypcja, Klucz API, Tanie, Darmowe — gdy limit lub budżet wyczerpie się, zależnie od dostępności upstreamu."/>
+<img src="../../../docs/diagrams/tier-cascade.svg" width="100%" alt="Przepływ żądań Orbit: Twoje IDE lub CLI wywołuje jeden lokalny punkt końcowy; inteligentny router (kompresja RTK + Caveman, 19 strategii routingu, wyłączniki awaryjne, TLS stealth, MCP, A2A, guardrails) próbuje kolejnych poziomów — Subskrypcja, Klucz API, Tanie, Darmowe — gdy limit lub budżet wyczerpie się, zależnie od dostępności upstreamu."/>
 
 </div>
 
@@ -153,11 +153,11 @@
 
 </div>
 
-> **Kombo** to łańcuch modeli, po których ShiguangGateway nawiguje **automatycznie**. Wybucha limit, dostawca ulega awarii lub koszty gwałtownie rosną — kombo bezgłośnie przełącza się na kolejny model. **To właśnie sprawia, że ShiguangGateway jest niezawodny.** 🛡️
+> **Kombo** to łańcuch modeli, po których Orbit nawiguje **automatycznie**. Wybucha limit, dostawca ulega awarii lub koszty gwałtownie rosną — kombo bezgłośnie przełącza się na kolejny model. **To właśnie sprawia, że Orbit jest niezawodny.** 🛡️
 
 ### ⚡ Zero konfiguracji — po prostu użyj `auto`
 
-Nie musisz tworzyć żadnego komba. Ustaw swój model na `auto` (lub jego wariant), a ShiguangGateway zbuduje wirtualne kombo z Twoich połączonych dostawców, oceniane na żywo:
+Nie musisz tworzyć żadnego komba. Ustaw swój model na `auto` (lub jego wariant), a Orbit zbuduje wirtualne kombo z Twoich połączonych dostawców, oceniane na żywo:
 
 | Identyfikator modelu | Pod kątem czego optymalizuje                                                     |
 | -------------------- | -------------------------------------------------------------------------------- |
@@ -209,13 +209,13 @@ Wszystkie **19** strategii — łącz i dopasowuj na każdym kroku komba:
 | 🚦 **Polityka**        | `hard` (blokuj po przekroczeniu) · `soft` (obniż priorytet) · `burst` (użyj wolnego zapasu) |
 | 🧱 **Limit max (Cap)** | bezwzględny limit na klucz, niezależny od trybu                                             |
 
-<img src="../../../docs/diagrams/pool-fair-share.svg" width="100%" alt="Pula kluczy ShiguangGateway 'team-codex': jedno konto Codex Pro dzielone przez 3 klucze w 5-godzinnym oknie. alice waga 50 (do 50% współdzielonego limitu 5h), bob waga 30, ci-bot waga 20. W trybie łagodnym (poniżej 50% zużycia puli) wolne udziały są wypożyczane; gdy pula przekroczy 50%, tryb rygorystyczny ogranicza każdy klucz do jego sprawiedliwego udziału."/>
+<img src="../../../docs/diagrams/pool-fair-share.svg" width="100%" alt="Pula kluczy Orbit 'team-codex': jedno konto Codex Pro dzielone przez 3 klucze w 5-godzinnym oknie. alice waga 50 (do 50% współdzielonego limitu 5h), bob waga 30, ci-bot waga 20. W trybie łagodnym (poniżej 50% zużycia puli) wolne udziały są wypożyczane; gdy pula przekroczy 50%, tryb rygorystyczny ogranicza każdy klucz do jego sprawiedliwego udziału."/>
 
-<sub>Wymuszane na "gorącej ścieżce" **zanim** żądanie opuści ShiguangGateway, z limitami na parę (klucz, model) + zachowaniem sesyjności (session stickiness) dla spójności pamięci podręcznej promptów (teraz z przełącznikiem wyłączania dla komba / globalnie). 📖 [Silnik Quota Sharing](../../../docs/routing/QUOTA_SHARE.md)</sub>
+<sub>Wymuszane na "gorącej ścieżce" **zanim** żądanie opuści Orbit, z limitami na parę (klucz, model) + zachowaniem sesyjności (session stickiness) dla spójności pamięci podręcznej promptów (teraz z przełącznikiem wyłączania dla komba / globalnie). 📖 [Silnik Quota Sharing](../../../docs/routing/QUOTA_SHARE.md)</sub>
 
 ### 🧱 Odporność jest wbudowana (3 niezależne warstwy)
 
-<img src="../../../docs/diagrams/resilience-layers.svg" width="100%" alt="Odporność ShiguangGateway — 3 niezależne, samonaprawiające się warstwy, właściwa warstwa dla właściwego rodzaju awarii. Warstwa 1: wyłącznik awaryjny dostawcy (cały dostawca): aktywuje się tylko przy błędach 408/5xx, progi OAuth 3× / klucz API 5× / lokalny 2×, resetuje się po 60s/30s/15s przechodząc w próbny stan HALF-OPEN, powolne przywracanie; w stanie OPEN kombo przekierowuje ruch do kolejnego dostawcy. Warstwa 2: czas schładzania połączenia (jeden klucz/konto): bazowo 5s dla OAuth / 3s dla klucza API, wykładnicze opóźnienie ×2 z zabezpieczeniem przed kumulacją zapytań (anti-thundering-herd), błąd 429 respektuje nagłówek Retry-After, sukces resetuje stan błędów; schładzany klucz jest pomijany, podczas gdy sąsiednie klucze nadal obsługują ruch. Warstwa 3: blokada modelu (jeden model): błąd 429 dla konkretnego modelu, lokalny błąd 404 lub odmowy dostępu blokują tylko ten model — nigdy całe połączenie. Stany terminalne (zablokowany, wygasły, wyczerpane środki) są przeznaczone dla operatora, nie dla mechanizmów schładzania."/>
+<img src="../../../docs/diagrams/resilience-layers.svg" width="100%" alt="Odporność Orbit — 3 niezależne, samonaprawiające się warstwy, właściwa warstwa dla właściwego rodzaju awarii. Warstwa 1: wyłącznik awaryjny dostawcy (cały dostawca): aktywuje się tylko przy błędach 408/5xx, progi OAuth 3× / klucz API 5× / lokalny 2×, resetuje się po 60s/30s/15s przechodząc w próbny stan HALF-OPEN, powolne przywracanie; w stanie OPEN kombo przekierowuje ruch do kolejnego dostawcy. Warstwa 2: czas schładzania połączenia (jeden klucz/konto): bazowo 5s dla OAuth / 3s dla klucza API, wykładnicze opóźnienie ×2 z zabezpieczeniem przed kumulacją zapytań (anti-thundering-herd), błąd 429 respektuje nagłówek Retry-After, sukces resetuje stan błędów; schładzany klucz jest pomijany, podczas gdy sąsiednie klucze nadal obsługują ruch. Warstwa 3: blokada modelu (jeden model): błąd 429 dla konkretnego modelu, lokalny błąd 404 lub odmowy dostępu blokują tylko ten model — nigdy całe połączenie. Stany terminalne (zablokowany, wygasły, wyczerpane środki) są przeznaczone dla operatora, nie dla mechanizmów schładzania."/>
 
 <sub>📖 [Silnik Auto-Combo](docs/routing/AUTO-COMBO.md) · [Podręcznik odporności](../../../docs/architecture/RESILIENCE_GUIDE.md)</sub>
 
@@ -223,11 +223,11 @@ Wszystkie **19** strategii — łącz i dopasowuj na każdym kroku komba:
 
 <div align="center">
 
-# 🏆 Co wyróżnia ShiguangGateway
+# 🏆 Co wyróżnia Orbit
 
 </div>
 
-| Funkcja                                                   | ShiguangGateway                                                                                          | Inne routery  |
+| Funkcja                                                   | Orbit                                                                                          | Inne routery  |
 | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ------------- |
 | 🌐 Dostawcy                                               | **329 wpisów katalogu**                                                                            | 20–100        |
 | 🆓 Free/no-auth                                           | **155 wpisy katalogu**                                                                             | 1–5           |
@@ -242,7 +242,7 @@ Wszystkie **19** strategii — łącz i dopasowuj na każdym kroku komba:
 | 🖥️ Wieloplatformowość                                     | **Web · Desktop · Termux · PWA**                                                                   | Tylko Web     |
 | 🌍 i18n (lokalizacja)                                     | **43 języki**                                                                                      | 0–4           |
 
-<sub>📊 Szczegółowe porównanie z LiteLLM, OpenRouter i Portkey → [`docs/comparison/SHIGUANG_GATEWAY_VS_ALTERNATIVES.md`](../../../docs/comparison/SHIGUANG_GATEWAY_VS_ALTERNATIVES.md)</sub>
+<sub>📊 Szczegółowe porównanie z LiteLLM, OpenRouter i Portkey → [`docs/comparison/ORBIT_VS_ALTERNATIVES.md`](../../../docs/comparison/ORBIT_VS_ALTERNATIVES.md)</sub>
 
 <br/>
 
@@ -257,13 +257,13 @@ Wszystkie **19** strategii — łącz i dopasowuj na każdym kroku komba:
 - **🗜️ Wzmocnienie kompresji** — domyślnie włączone zabezpieczenie przed nadmiernym rozrostem (inflation guard), pakiety Caveman dla DE / FR / JA + chińskiego (wényán), filtry RTK dla Gradle i .NET. → [Kompresja](../../../docs/compression/COMPRESSION_ENGINES.md)
 - **💸 Rzetelny koszt ryczałtowy** — dostawcy subskrypcyjni / planów kodowania wykazują koszt **0 USD** w analityce; budżet, limit i routing nadal działają szacunkowo. → [Referencja API](docs/reference/API_REFERENCE.md)
 - **⚖️ Routing Quota-Share** — podział obciążenia kont według _dostępnego limitu_: harmonogramowanie DRR, współbieżność na połączenie, wielookienkowe pule, zachowanie sesyjności (session stickiness). → [Podręcznik odporności](../../../docs/architecture/RESILIENCE_GUIDE.md)
-- **🤖 Konfiguracja CLI/agenta jednym poleceniem** — `setup-*` konfiguruje ponad 12 narzędzi programistycznych; `shiguang-gateway launch` / `launch-codex` działają bez konfiguracji. → [Integracje CLI](../../../docs/guides/CLI-INTEGRATIONS.md)
-- **🛰️ Tryb zdalny** — steruj zdalną instancją ShiguangGateway za pomocą tokenów o ograniczonym zakresie (`connect` / `contexts` / `tokens`) + pomocnika OAuth `antigravity` dla instalacji na VPS. → [Tryb zdalny](../../../docs/guides/REMOTE-MODE.md)
+- **🤖 Konfiguracja CLI/agenta jednym poleceniem** — `setup-*` konfiguruje ponad 12 narzędzi programistycznych; `orbit launch` / `launch-codex` działają bez konfiguracji. → [Integracje CLI](../../../docs/guides/CLI-INTEGRATIONS.md)
+- **🛰️ Tryb zdalny** — steruj zdalną instancją Orbit za pomocą tokenów o ograniczonym zakresie (`connect` / `contexts` / `tokens`) + pomocnika OAuth `antigravity` dla instalacji na VPS. → [Tryb zdalny](../../../docs/guides/REMOTE-MODE.md)
 - **🧭 Inteligentniejszy auto-routing** — komba `auto/<kategoria>:<poziom>`, **Fusion** (panel modeli + sędzia), routing uwzględniający specyfikę zadania, nadpisywanie modelu / trybu / budżetu USD per żądanie. → [Auto-Combo](docs/routing/AUTO-COMBO.md)
 - **🗜️ Wtyczkowa kompresja** — 11 modułowych silników + Studia Kompresji: LLMLingua-2, dwupoziomowy Ultra, omniglyph, weryfikacja dokładności (fidelity gate) na każdym kroku, GCF v3.2, edytor z przeciąganiem elementów. → [Kompresja](../../../docs/compression/COMPRESSION_ENGINES.md)
 - **🕵️ Przezroczyste dekodowanie MITM (TPROXY)** — przechwytywanie CLI ignorujących zmienne środowiskowe proxy, z instalatorem CA per-SNI i bazy zaufanych certyfikatów. → [MITM/TPROXY](../../../docs/security/MITM-TPROXY-DECRYPT.md)
-- **💸 Telemetria kosztów wszędzie** — nagłówki kosztu/użycia `X-ShiguangGateway-*` w każdym punkcie końcowym, nagłówek oszczędności z trafień w cache (cache-HIT), limity wydatków USD na klucz. → [Referencja API](docs/reference/API_REFERENCE.md)
-- **🧠 Pamięć pod Twoją kontrolą** — domyślnie wyłączona, opcjonalna kwantyzacja wektorowa int8 + stopniowe wygaszanie (typed decay), nagłówek `x-shiguang-gateway-no-memory` na żądanie. → [Pamięć](../../../docs/frameworks/MEMORY.md)
+- **💸 Telemetria kosztów wszędzie** — nagłówki kosztu/użycia `X-Orbit-*` w każdym punkcie końcowym, nagłówek oszczędności z trafień w cache (cache-HIT), limity wydatków USD na klucz. → [Referencja API](docs/reference/API_REFERENCE.md)
+- **🧠 Pamięć pod Twoją kontrolą** — domyślnie wyłączona, opcjonalna kwantyzacja wektorowa int8 + stopniowe wygaszanie (typed decay), nagłówek `x-orbit-no-memory` na żądanie. → [Pamięć](../../../docs/frameworks/MEMORY.md)
 - **🛡️ Bezpieczeństwo** — ochrona przed wstrzykiwaniem promptów (prompt-injection guard) na każdej trasie LLM (zestaw testów red-team) + darmowe wyszukiwanie w sieci DuckDuckGo jako ostatnia deska ratunku. → [Barierki ochronne](../../../docs/security/GUARDRAILS.md)
 - **🖼️ Nowe punkty końcowe** — `/v1/ocr` (Mistral OCR) i `/v1/audio/translations` (w stylu Whisper) uzupełniają obsługę multimediów. → [Referencja API](docs/reference/API_REFERENCE.md)
 - **🌍 Wdrożenie i administracja** — `basePath` dla reverse-proxy, automatyczne wykrywanie języka przeglądarki, śledzenie urządzeń na klucz, zaufanie MITM bez uprawnień roota, lokalizacja zh-TW. → [Środowisko](docs/reference/ENVIRONMENT.md)
@@ -386,7 +386,7 @@ Wszystkie **19** strategii — łącz i dopasowuj na każdym kroku komba:
 
 <div align="center">
 
-# 🖥️ Gdzie działa ShiguangGateway — wszędzie
+# 🖥️ Gdzie działa Orbit — wszędzie
 
 </div>
 
@@ -394,11 +394,11 @@ Wszystkie **19** strategii — łącz i dopasowuj na każdym kroku komba:
 
 | Platforma                 | Instalacja                               | Najważniejsze cechy                                                           |
 | ------------------------- | ---------------------------------------- | ----------------------------------------------------------------------------- |
-| 📦 **npm (globalnie)**    | `npm install -g shiguang-gateway`               | Jedno polecenie, dowolny system operacyjny                                    |
-| 🐳 **Docker**             | `docker run … diegosouzapw/shiguang-gateway`    | Wielonatywność architektur **AMD64 + ARM64**                                  |
+| 📦 **npm (globalnie)**    | `npm install -g orbit`               | Jedno polecenie, dowolny system operacyjny                                    |
+| 🐳 **Docker**             | `docker run … diegosouzapw/orbit`    | Wielonatywność architektur **AMD64 + ARM64**                                  |
 | 🖥️ **Desktop (Electron)** | `npm run electron:build`                 | Natywne okno + zasobnik systemowy (system tray) — **Windows / macOS / Linux** |
 | 💪 **ARM**                | natywnie `arm64`                         | Raspberry Pi, serwery ARM, Apple Silicon                                      |
-| 📱 **Android (Termux)**   | `pkg install nodejs && npx -y shiguang-gateway` | Działa **na Twoim telefonie**, 24/7, bez roota                                |
+| 📱 **Android (Termux)**   | `pkg install nodejs && npx -y orbit` | Działa **na Twoim telefonie**, 24/7, bez roota                                |
 | 📲 **PWA**                | "Dodaj do ekranu głównego"               | Pełny ekran, offline, instalacja z poziomu przeglądarki                       |
 | 🧩 **Wtyczka OpenCode**   | `@orbit/opencode-provider`           | Natywna integracja z OpenCode                                                 |
 | 🛠️ **Ze źródeł**          | `npm install && npm run dev`             | Modyfikuj kod, współtwórz projekt                                             |
@@ -413,7 +413,7 @@ Wszystkie **19** strategii — łącz i dopasowuj na każdym kroku komba:
 
 </div>
 
-<img src="../../../docs/diagrams/privacy-local.svg" width="100%" alt="Prywatność i lokalne działanie — Twoje klucze, Twoja maszyna, Twoje dane; ShiguangGateway to lokalne proxy, które nigdy nie wysyła danych na zewnętrzne serwery. Jedenaście gwarancji: działa w 100% na Twoim sprzęcie (0 przeskoków do chmury), domyślnie zero telemetrii, zaszyfrowane dane uwierzytelniające (AES-256-GCM), brak konieczności zakładania konta czy rejestracji, wzmocniona bramka (ograniczanie zakresu kluczy API, filtrowanie IP, limity zapytań, ochrona przed wstrzykiwaniem promptów), trasy procesów wyłącznie na adresie pętli zwrotnej (loopback-only), oczyszczanie nagłówków wysyłanych do dostawców nadrzędnych, usuwanie danych osobowych (PII) ściśle na żądanie (opt-in), bezpieczne błędy, które nigdy nie ujawniają szczegółów wewnętrznych, lokalny dziennik audytu w Twojej własnej bazie SQLite oraz w pełni otwartoźródłowy kod na licencji MIT."/>
+<img src="../../../docs/diagrams/privacy-local.svg" width="100%" alt="Prywatność i lokalne działanie — Twoje klucze, Twoja maszyna, Twoje dane; Orbit to lokalne proxy, które nigdy nie wysyła danych na zewnętrzne serwery. Jedenaście gwarancji: działa w 100% na Twoim sprzęcie (0 przeskoków do chmury), domyślnie zero telemetrii, zaszyfrowane dane uwierzytelniające (AES-256-GCM), brak konieczności zakładania konta czy rejestracji, wzmocniona bramka (ograniczanie zakresu kluczy API, filtrowanie IP, limity zapytań, ochrona przed wstrzykiwaniem promptów), trasy procesów wyłącznie na adresie pętli zwrotnej (loopback-only), oczyszczanie nagłówków wysyłanych do dostawców nadrzędnych, usuwanie danych osobowych (PII) ściśle na żądanie (opt-in), bezpieczne błędy, które nigdy nie ujawniają szczegółów wewnętrznych, lokalny dziennik audytu w Twojej własnej bazie SQLite oraz w pełni otwartoźródłowy kod na licencji MIT."/>
 
 <sub>📖 [Autoryzacja](../../../docs/architecture/AUTHZ_GUIDE.md) · [Barierki ochronne](../../../docs/security/GUARDRAILS.md) · [Zgodność](../../../docs/security/COMPLIANCE.md)</sub>
 
@@ -425,28 +425,28 @@ Wszystkie **19** strategii — łącz i dopasowuj na każdym kroku komba:
 
 </div>
 
-> ShiguangGateway to nie tylko serwer — to **kompletny kokpit w wierszu poleceń** z **ponad 80 poleceniami**, plus otwarte protokoły agentów, dzięki którym agent AI może samodzielnie sterować ShiguangGateway.
+> Orbit to nie tylko serwer — to **kompletny kokpit w wierszu poleceń** z **ponad 80 poleceniami**, plus otwarte protokoły agentów, dzięki którym agent AI może samodzielnie sterować Orbit.
 
 ### ⌨️ Prawdziwe CLI (nie tylko `start`)
 
 ```bash
-shiguang-gateway               # uruchom bramkę + panel (port 20128)
-shiguang-gateway chat          # interaktywny klient czatu TUI (polecenia ukośnika: /model /combo /skill /memory)
-shiguang-gateway setup         # kreator pierwszej konfiguracji
-shiguang-gateway doctor        # diagnozuj dostawców, porty, natywne zależności
+orbit               # uruchom bramkę + panel (port 20128)
+orbit chat          # interaktywny klient czatu TUI (polecenia ukośnika: /model /combo /skill /memory)
+orbit setup         # kreator pierwszej konfiguracji
+orbit doctor        # diagnozuj dostawców, porty, natywne zależności
 ```
 
-### 🛰️ Tryb zdalny — uruchom CLI lokalnie, ShiguangGateway na VPS
+### 🛰️ Tryb zdalny — uruchom CLI lokalnie, Orbit na VPS
 
-ShiguangGateway na serwerze? Steruj nim ze swojego laptopa za pomocą **tego samego CLI**. Zaloguj się raz
+Orbit na serwerze? Steruj nim ze swojego laptopa za pomocą **tego samego CLI**. Zaloguj się raz
 za pomocą tokenu dostępu o ograniczonym zakresie; każde kolejne polecenie będzie skierowane do zdalnej maszyny.
 
 ```bash
-shiguang-gateway connect 192.168.0.15            # hasło → token o ograniczonym zakresie, zapisany jako kontekst
-shiguang-gateway models list                     # ← działa na ZDALNYM serwerze
-shiguang-gateway configure codex                 # ← wybiera zdalny model, zapisuje lokalny profil Codex
-shiguang-gateway tokens create --name ci --scope read   # generuj węższe tokeny dla innych maszyn
-shiguang-gateway contexts use default            # ← przełącz z powrotem na serwer lokalny
+orbit connect 192.168.0.15            # hasło → token o ograniczonym zakresie, zapisany jako kontekst
+orbit models list                     # ← działa na ZDALNYM serwerze
+orbit configure codex                 # ← wybiera zdalny model, zapisuje lokalny profil Codex
+orbit tokens create --name ci --scope read   # generuj węższe tokeny dla innych maszyn
+orbit contexts use default            # ← przełącz z powrotem na serwer lokalny
 ```
 
 Tokeny mają zakresy `read` / `write` / `admin`; trasy uruchamiające procesy pozostają ograniczone do pętli zwrotnej (loopback-only).
@@ -454,24 +454,24 @@ Tokeny mają zakresy `read` / `write` / `admin`; trasy uruchamiające procesy po
 
 <div align="center">
 
-<img src="../../../docs/diagrams/cli-terminal.svg" width="100%" alt="Animowany terminal demonstrujący CLI ShiguangGateway — shiguang-gateway providers list, shiguang-gateway combo list, shiguang-gateway health — przechodzący przez obszar ponad 80 poleceń: dostawcy · oauth · klucze · kombo · węzły · modele · pamięć podręczna · kompresja · koszt · użycie · limity · stan techniczny · odporność · telemetria · logi · audyt · mcp · a2a · chmura · pamięć · umiejętności · ewaluacja · tunel · kopia zapasowa · synchronizacja · webhooki · polityka · cennik · tłumacz · symulacja …"/>
+<img src="../../../docs/diagrams/cli-terminal.svg" width="100%" alt="Animowany terminal demonstrujący CLI Orbit — orbit providers list, orbit combo list, orbit health — przechodzący przez obszar ponad 80 poleceń: dostawcy · oauth · klucze · kombo · węzły · modele · pamięć podręczna · kompresja · koszt · użycie · limity · stan techniczny · odporność · telemetria · logi · audyt · mcp · a2a · chmura · pamięć · umiejętności · ewaluacja · tunel · kopia zapasowa · synchronizacja · webhooki · polityka · cennik · tłumacz · symulacja …"/>
 
 </div>
 
-### 🤝 Połącz agenta — i pozwól mu kontrolować samo ShiguangGateway
+### 🤝 Połącz agenta — i pozwól mu kontrolować samo Orbit
 
-Udostępnij ShiguangGateway przez **MCP** lub **A2A**, a każdy zdolny do tego agent autonomicznie otrzyma klucze do całej bramki — routingu, dostawców, kombinacji (combos), pamięci podręcznej, kompresji i pamięci.
+Udostępnij Orbit przez **MCP** lub **A2A**, a każdy zdolny do tego agent autonomicznie otrzyma klucze do całej bramki — routingu, dostawców, kombinacji (combos), pamięci podręcznej, kompresji i pamięci.
 
 | Protokół           | Punkt końcowy                                   | Zastosowanie                                                        |
 | ------------------ | ----------------------------------------------- | ------------------------------------------------------------------- |
-| 🧰 **MCP (stdio)** | `shiguang-gateway --mcp`                               | Podłącz do Claude Desktop, Cursor, dowolnego klienta MCP            |
+| 🧰 **MCP (stdio)** | `orbit --mcp`                               | Podłącz do Claude Desktop, Cursor, dowolnego klienta MCP            |
 | 🌊 **MCP (HTTP)**  | `http://localhost:20128/api/mcp/stream`         | Zdalny MCP — **107 narzędzia**, 32 zakresów, pełna ścieżka audytu   |
 | 📡 **MCP (SSE)**   | `http://localhost:20128/api/mcp/sse`            | Strumieniowy transport MCP                                          |
 | 🤝 **A2A**         | `http://localhost:20128/.well-known/agent.json` | Komunikacja agent-do-agenta, **JSON-RPC 2.0** + SSE, 6 umiejętności |
 
 ```bash
-# Daj Claude Code pełny zestaw narzędzi ShiguangGateway przez MCP:
-claude mcp add-server shiguang-gateway --type http --url http://localhost:20128/api/mcp/stream
+# Daj Claude Code pełny zestaw narzędzi Orbit przez MCP:
+claude mcp add-server orbit --type http --url http://localhost:20128/api/mcp/stream
 ```
 
 <sub>📖 [Serwer MCP](docs/frameworks/MCP-SERVER.md) · [Serwer A2A](docs/frameworks/A2A-SERVER.md) · [Protokoły agentów](../../../docs/frameworks/AGENT_PROTOCOLS_GUIDE.md)</sub>
@@ -484,7 +484,7 @@ claude mcp add-server shiguang-gateway --type http --url http://localhost:20128/
 
 </div>
 
-> **Po co używać wielu tokenów, skoro kilka wystarczy?** Każde żądanie przechodzi przez potok kompresji ShiguangGateway w sposób **przezroczysty** — bez zmian po stronie klienta. Jest to teraz **stos 12 modułowych silników**, które działają po kolei i mogą być dowolnie łączone w ramach każdego komba routingu — bazując na pomysłach z [RTK](https://github.com/rtk-ai/rtk), [Caveman](https://github.com/JuliusBrussee/caveman) (⭐ 90k+), [LLMLingua-2](https://github.com/microsoft/LLMLingua) i [Troglodita](https://github.com/leninejunior/troglodita) (PT-BR).
+> **Po co używać wielu tokenów, skoro kilka wystarczy?** Każde żądanie przechodzi przez potok kompresji Orbit w sposób **przezroczysty** — bez zmian po stronie klienta. Jest to teraz **stos 12 modułowych silników**, które działają po kolei i mogą być dowolnie łączone w ramach każdego komba routingu — bazując na pomysłach z [RTK](https://github.com/rtk-ai/rtk), [Caveman](https://github.com/JuliusBrussee/caveman) (⭐ 90k+), [LLMLingua-2](https://github.com/microsoft/LLMLingua) i [Troglodita](https://github.com/leninejunior/troglodita) (PT-BR).
 
 ### 🧱 Stos 12 silników
 
@@ -536,7 +536,7 @@ Bloki kodu, adresy URL i dane strukturyzowane są **zawsze zachowywane** z dokł
 
 ### 📖 Jak to działa — potok, architektura i matematyka oszczędności
 
-<img src="../../../docs/diagrams/compression-pipeline.svg" width="100%" alt="Potok kompresji ShiguangGateway: żądanie klienta o rozmiarze 10 000 tokenów przechodzi przez 12 ułożonych kaskadowo silników — Session-Dedup, CCR, Lite, RTK, Responses Tool Output, Headroom, Relevance, Caveman, Aggressive, LLMLingua-2, Ultra, OmniGlyph — i dociera do dostawcy mając około 1080 tokenów, co daje do 95% oszczędności. Kod, adresy URL i JSON są zawsze zachowywane z dokładnością co do bajtu."/>
+<img src="../../../docs/diagrams/compression-pipeline.svg" width="100%" alt="Potok kompresji Orbit: żądanie klienta o rozmiarze 10 000 tokenów przechodzi przez 12 ułożonych kaskadowo silników — Session-Dedup, CCR, Lite, RTK, Responses Tool Output, Headroom, Relevance, Caveman, Aggressive, LLMLingua-2, Ultra, OmniGlyph — i dociera do dostawcy mając około 1080 tokenów, co daje do 95% oszczędności. Kod, adresy URL i JSON są zawsze zachowywane z dokładnością co do bajtu."/>
 
 Domyślne kaskadowe kombo uruchamia `RTK → Caveman`. Gdy oba silniki działają na tym samym ładunku narzędzia/kontekstu, oszczędności się kumulują:
 
@@ -557,7 +557,7 @@ Opisane wyżej silniki zmniejszają dane wejściowe. Trzy dodatkowe warstwy kszt
   - **Mniej kodu** — podejście "leniwego seniora" (YAGNI): najmniejsza działająca zmiana, bez nieproszonych struktur kodu.
   - **Zwięzły CJK (文言)** — klasyczny, ultra-zwięzły styl chiński (ograniczony lokalizacyjnie do języka `zh`).
 - **🎯 Adaptacyjny budżet kontekstu** (pokrętło) — zamiast jednego sztywnego progu włączenia/wyłączenia, uruchamia najtańsze i najbardziej bezstratne silniki tylko w takim stopniu, w jakim jest to konieczne, aby zmieścić się w oknie kontekstowym modelu. Polityka: `reserve-output` (domyślna, dopasowana do modelu) · `percentage` · `absolute`. Tryb: `floor` (gwarantowane dopasowanie) · `replace-autotrigger` (wygrywa Twój wyraźny wybór) · `off` (stary próg).
-- **🛞 Miejsce decyzji o kompresji** (priorytet od najwyższego do najniższego) — nagłówek `x-shiguang-gateway-compression` w żądaniu › nadpisanie w kombie routingu › aktywny profil nazwany › adaptacyjny / automatyczny wyzwalacz › domyślne ustawienie panelu › wyłączone. Zastosowany plan jest zwracany w nagłówku odpowiedzi `X-ShiguangGateway-Compression: <tryb>; source=<źródło>`.
+- **🛞 Miejsce decyzji o kompresji** (priorytet od najwyższego do najniższego) — nagłówek `x-orbit-compression` w żądaniu › nadpisanie w kombie routingu › aktywny profil nazwany › adaptacyjny / automatyczny wyzwalacz › domyślne ustawienie panelu › wyłączone. Zastosowany plan jest zwracany w nagłówku odpowiedzi `X-Orbit-Compression: <tryb>; source=<źródło>`.
 
 Wyzwalaj automatycznie według progu tokenów, włącz pokrętło adaptacyjne, przypnij nazwany profil, ustaw jednorazowo dla żądania lub przypisz potok do komba routingu — cokolwiek pasuje do Twojego obciążenia pracy. Opcjonalne środowisko testowe offline (`npm run eval:compression`) ocenia wierność vs oszczędności na przypisanym korpusie przed wdrożeniem zmian.
 
@@ -574,8 +574,8 @@ Wyzwalaj automatycznie według progu tokenów, włącz pokrętło adaptacyjne, p
 **1) Zainstaluj i uruchom**
 
 ```bash
-npm install -g shiguang-gateway
-shiguang-gateway
+npm install -g orbit
+orbit
 ```
 
 Panel pod adresem `http://localhost:20128` · API pod adresem `http://localhost:20128/v1`.
@@ -598,9 +598,9 @@ Model:    auto            (inteligentny routing bez konfiguracji — lub dowolny
 curl http://localhost:20128/v1/models -H "Authorization: Bearer TWÓJ_KLUCZ"
 ```
 
-Powinieneś zobaczyć listę połączonych modeli. 🎉 To wszystko — zacznij kodować, a ShiguangGateway automatycznie zajmie się routingiem i przełączaniem awaryjnym.
+Powinieneś zobaczyć listę połączonych modeli. 🎉 To wszystko — zacznij kodować, a Orbit automatycznie zajmie się routingiem i przełączaniem awaryjnym.
 
-Jeśli Twój klient nie może wysyłać niestandardowych nagłówków, ShiguangGateway udostępnia również stokenizowane aliasy zgodności:
+Jeśli Twój klient nie może wysyłać niestandardowych nagłówków, Orbit udostępnia również stokenizowane aliasy zgodności:
 
 ```txt
 OpenAI catalog:   http://localhost:20128/vscode/TWÓJ_KLUCZ/
@@ -620,8 +620,8 @@ Używaj ich tylko w przypadku klientów, którzy nie mogą dołączyć nagłówk
 **🐳 Docker**
 
 ```bash
-docker run -d --name shiguang-gateway --restart unless-stopped --stop-timeout 40 \
-  -p 20128:20128 -v shiguang-gateway-data:/app/data diegosouzapw/shiguang-gateway:latest
+docker run -d --name orbit --restart unless-stopped --stop-timeout 40 \
+  -p 20128:20128 -v orbit-data:/app/data diegosouzapw/orbit:latest
 ```
 
 **🛠️ Ze źródeł**
@@ -634,13 +634,13 @@ PORT=20128 npm run dev
 **📦 pnpm**
 
 ```bash
-pnpm add -g shiguang-gateway@latest --allow-build=better-sqlite3 --allow-build=@swc/core && shiguang-gateway
+pnpm add -g orbit@latest --allow-build=better-sqlite3 --allow-build=@swc/core && orbit
 ```
 
 **🐧 Arch Linux (AUR)**
 
 ```bash
-yay -S shiguang-gateway-bin && systemctl --user enable --now shiguang-gateway.service
+yay -S orbit-bin && systemctl --user enable --now orbit.service
 ```
 
 **🔧 Nix (Flake)**
@@ -684,7 +684,7 @@ Natywny silnik SQLite (`better-sqlite3`) jest zależnością **opcjonalną**, wi
 Aby całkowicie pominąć natywne przygotowanie po instalacji (CI, tryb bezgłowy/headless lub wolne maszyny):
 
 ```bash
-SHIGUANG_GATEWAY_SKIP_POSTINSTALL=1 npm install -g shiguang-gateway   # CI=1 również to pomija
+ORBIT_SKIP_POSTINSTALL=1 npm install -g orbit   # CI=1 również to pomija
 ```
 
 W celu uzyskania najszybszej instalacji preferuj **pnpm** (magazyn adresowany treścią + twarde dowiązania — patrz wyżej). Dla środowiska bez panelu graficznego (headless) użyj profilu Docker `base` (powyżej) lub podręcznika Termux. CLI i panel webowy są obsługiwane przez ten sam proces na jednym porcie, więc obecnie nie ma osobnego pakietu wyłącznie z CLI.
@@ -693,7 +693,7 @@ W celu uzyskania najszybszej instalacji preferuj **pnpm** (magazyn adresowany tr
 
 <div align="center">
 
-# 🎬 ShiguangGateway w akcji
+# 🎬 Orbit w akcji
 
 </div>
 
@@ -718,7 +718,7 @@ W celu uzyskania najszybszej instalacji preferuj **pnpm** (magazyn adresowany tr
 
 <div align="center">
 
-> 🎬 **Nagrałeś film o ShiguangGateway?** Otwórz [zgłoszenie (issue)](https://github.com/diegosouzapw/ShiguangGateway/issues/new) lub [dyskusję (discussion)](https://github.com/diegosouzapw/ShiguangGateway/discussions) z linkiem — umieścimy go tutaj.
+> 🎬 **Nagrałeś film o Orbit?** Otwórz [zgłoszenie (issue)](https://github.com/diegosouzapw/Orbit/issues/new) lub [dyskusję (discussion)](https://github.com/diegosouzapw/Orbit/discussions) z linkiem — umieścimy go tutaj.
 
 <br/>
 </div>
@@ -744,9 +744,9 @@ W celu uzyskania najszybszej instalacji preferuj **pnpm** (magazyn adresowany tr
 
 > 💬 **Rozmawiaj ze społecznością** — linki do Discorda, Telegrama i WhatsAppa (🌍 / 🇧🇷) znajdują się na [górze tego pliku README](#-do%C5%82%C4%85cz-do-spo%C5%82eczno%C5%9Bci).
 
-- 🌍 **Strona internetowa**: [shiguang-gateway.online](https://shiguang-gateway.online)
-- 🐙 **GitHub**: [github.com/diegosouzapw/ShiguangGateway](https://github.com/diegosouzapw/ShiguangGateway)
-- 🐛 **Zgłoszenia (Issues)**: [zgłoś błąd](https://github.com/diegosouzapw/ShiguangGateway/issues) (dołącz wynik działania komendy `npm run system-info`)
+- 🌍 **Strona internetowa**: [orbit.online](https://orbit.online)
+- 🐙 **GitHub**: [github.com/diegosouzapw/Orbit](https://github.com/diegosouzapw/Orbit)
+- 🐛 **Zgłoszenia (Issues)**: [zgłoś błąd](https://github.com/diegosouzapw/Orbit/issues) (dołącz wynik działania komendy `npm run system-info`)
 - 🤝 **Współtworzenie**: zobacz [CONTRIBUTING.md](CONTRIBUTING.md) lub wybierz zadanie typu `good first issue`
 
 </div>
@@ -771,9 +771,9 @@ W celu uzyskania najszybszej instalacji preferuj **pnpm** (magazyn adresowany tr
 - **Testowanie**: Node.js test runner + Vitest (**ponad 25 000 przypadków testowych** w ponad 3300 plikach — jednostkowe, integracyjne, E2E, bezpieczeństwo, ekosystem)
 - **Platformy**: Desktop (Electron), Android (Termux), PWA (dowolna przeglądarka)
 - **CI/CD**: GitHub Actions (automatyczna publikacja w npm + Docker Hub przy wydaniu wersji)
-- **Strona WWW**: [shiguang-gateway.online](https://shiguang-gateway.online)
-- **Pakiet**: [npmjs.com/package/shiguang-gateway](https://www.npmjs.com/package/shiguang-gateway)
-- **Docker**: [hub.docker.com/r/diegosouzapw/shiguang-gateway](https://hub.docker.com/r/diegosouzapw/shiguang-gateway)
+- **Strona WWW**: [orbit.online](https://orbit.online)
+- **Pakiet**: [npmjs.com/package/orbit](https://www.npmjs.com/package/orbit)
+- **Docker**: [hub.docker.com/r/diegosouzapw/orbit](https://hub.docker.com/r/diegosouzapw/orbit)
 - **Odporność**: Wyłącznik awaryjny (circuit breaker), wykładnicze opóźnienie (exponential backoff), ochrona przed kumulacją zapytań (anti-thundering herd), podszywanie się pod TLS, samonaprawiające się auto-kombo
 
 <div align="center">
@@ -791,8 +791,8 @@ W celu uzyskania najszybszej instalacji preferuj **pnpm** (magazyn adresowany tr
 | [Podręcznik użytkownika](docs/guides/USER_GUIDE.md)                           | Dostawcy, komba, integracja CLI, wdrażanie                                                                         |
 | [Podręcznik instalacji](../../../docs/guides/SETUP_GUIDE.md)                  | Pełne metody instalacji, konfiguracje narzędzi CLI, konfiguracja protokołów, dostrajanie limitów czasu (timeout)   |
 | [Podręcznik narzędzi CLI](docs/reference/CLI-TOOLS.md)                        | Konfiguracja per narzędzie dla Claude Code, Codex, Cursor, Cline, OpenClaw, Kilo, Copilot                          |
-| [Tryb zdalny](../../../docs/guides/REMOTE-MODE.md)                            | Steruj zdalnym ShiguangGateway (VPS) z poziomu CLI na swoim laptopie za pomocą tokenów o ograniczonym zakresie           |
-| [Konfiguracja Claude Code](../../../docs/guides/CLAUDE-CODE-CONFIGURATION.md) | Skieruj Claude Code na ShiguangGateway (lokalnie/zdalnie) za pomocą polecenia launch + profili dla poszczególnych modeli |
+| [Tryb zdalny](../../../docs/guides/REMOTE-MODE.md)                            | Steruj zdalnym Orbit (VPS) z poziomu CLI na swoim laptopie za pomocą tokenów o ograniczonym zakresie           |
+| [Konfiguracja Claude Code](../../../docs/guides/CLAUDE-CODE-CONFIGURATION.md) | Skieruj Claude Code na Orbit (lokalnie/zdalnie) za pomocą polecenia launch + profili dla poszczególnych modeli |
 | [Szybki start](#-szybki-start)                                                | 3-krokowa instalacja → połącz → skonfiguruj                                                                        |
 
 ### 🔧 Administracja i wdrażanie
@@ -803,7 +803,7 @@ W celu uzyskania najszybszej instalacji preferuj **pnpm** (magazyn adresowany tr
 | [Podręcznik Podman](../../../contrib/podman/README.md)     | Integracja Quadlet z systemd, podman-compose, SELinux                             |
 | [Wdrożenie na VM](docs/ops/VM_DEPLOYMENT_GUIDE.md)         | Pełny poradnik: konfiguracja VM + nginx + Cloudflare                              |
 | [Wdrożenie na Fly.io](docs/ops/FLY_IO_DEPLOYMENT_GUIDE.md) | Wdrażanie na Fly.io z trwałą pamięcią masową                                      |
-| [Podręcznik Termux](../../../docs/guides/TERMUX_GUIDE.md)  | Uruchamianie ShiguangGateway na systemie Android za pomocą Termux                       |
+| [Podręcznik Termux](../../../docs/guides/TERMUX_GUIDE.md)  | Uruchamianie Orbit na systemie Android za pomocą Termux                       |
 | [Podręcznik PWA](../../../docs/guides/PWA_GUIDE.md)        | Instalacja Progressive Web App, buforowanie, architektura                         |
 | [Podręcznik odinstalowywania](docs/guides/UNINSTALL.md)    | Czyste usuwanie dla wszystkich metod instalacji                                   |
 | [Konfiguracja środowiska](docs/reference/ENVIRONMENT.md)   | Pełny wykaz zmiennych .env i referencji                                           |
@@ -853,7 +853,7 @@ W celu uzyskania najszybszej instalacji preferuj **pnpm** (magazyn adresowany tr
 
 # ⭐ Główni autorzy
 
-> ShiguangGateway jest kształtowane przez pasjonatów ze społeczności open-source. Te osoby wniosły wyjątkowy wkład, który bezpośrednio wpływa na jakość, stabilność i zasięg projektu. **Dziękujemy.**
+> Orbit jest kształtowane przez pasjonatów ze społeczności open-source. Te osoby wniosły wyjątkowy wkład, który bezpośrednio wpływa na jakość, stabilność i zasięg projektu. **Dziękujemy.**
 
 <table>
   <tr>
@@ -942,7 +942,7 @@ W celu uzyskania najszybszej instalacji preferuj **pnpm** (magazyn adresowany tr
   </tr>
 </table>
 
-> 🙏 Funkcje, poprawki błędów i ulepszenia infrastruktury wprowadzone przez tych autorów stanowią **kluczową część** tego, co czyni ShiguangGateway niezawodnym i bogatym w funkcje. Każde żądanie ściągnięcia (pull request), każdy przypadek testowy i każdy plik tłumaczenia i18n ma znaczenie. Open source tworzą ludzie tacy jak oni.
+> 🙏 Funkcje, poprawki błędów i ulepszenia infrastruktury wprowadzone przez tych autorów stanowią **kluczową część** tego, co czyni Orbit niezawodnym i bogatym w funkcje. Każde żądanie ściągnięcia (pull request), każdy przypadek testowy i każdy plik tłumaczenia i18n ma znaczenie. Open source tworzą ludzie tacy jak oni.
 
 </div>
 
@@ -956,7 +956,7 @@ W celu uzyskania najszybszej instalacji preferuj **pnpm** (magazyn adresowany tr
 
 </div>
 
-[![Contributors](https://contrib.rocks/image?repo=diegosouzapw/ShiguangGateway&max=400&columns=20&anon=1)](https://github.com/diegosouzapw/ShiguangGateway/graphs/contributors)
+[![Contributors](https://contrib.rocks/image?repo=diegosouzapw/Orbit&max=400&columns=20&anon=1)](https://github.com/diegosouzapw/Orbit/graphs/contributors)
 
 ### Jak współtworzyć
 
@@ -981,11 +981,11 @@ gh release create v3.8.2 --title "v3.8.2" --generate-notes
 
 ## 📊 Gwiazdki
 
-<a href="https://www.star-history.com/?repos=diegosouzapw%2FShiguangGateway&type=date&legend=top-left">
+<a href="https://www.star-history.com/?repos=diegosouzapw%2FOrbit&type=date&legend=top-left">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=diegosouzapw/ShiguangGateway&type=date&theme=dark&legend=top-left&sealed_token=XP_ycEjv7s31p1edvhsMOXry51OWYsUjDRWjflSG7jQKRpO9hPGg7i_EHvwhI6QtrARTMH-YGjJhi8sumRYflEJD0DPlH_MMHjizhBYCX8fbHFrHEiNvVA" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=diegosouzapw/ShiguangGateway&type=date&legend=top-left&sealed_token=XP_ycEjv7s31p1edvhsMOXry51OWYsUjDRWjflSG7jQKRpO9hPGg7i_EHvwhI6QtrARTMH-YGjJhi8sumRYflEJD0DPlH_MMHjizhBYCX8fbHFrHEiNvVA" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=diegosouzapw/ShiguangGateway&type=date&legend=top-left&sealed_token=XP_ycEjv7s31p1edvhsMOXry51OWYsUjDRWjflSG7jQKRpO9hPGg7i_EHvwhI6QtrARTMH-YGjJhi8sumRYflEJD0DPlH_MMHjizhBYCX8fbHFrHEiNvVA" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=diegosouzapw/Orbit&type=date&theme=dark&legend=top-left&sealed_token=XP_ycEjv7s31p1edvhsMOXry51OWYsUjDRWjflSG7jQKRpO9hPGg7i_EHvwhI6QtrARTMH-YGjJhi8sumRYflEJD0DPlH_MMHjizhBYCX8fbHFrHEiNvVA" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=diegosouzapw/Orbit&type=date&legend=top-left&sealed_token=XP_ycEjv7s31p1edvhsMOXry51OWYsUjDRWjflSG7jQKRpO9hPGg7i_EHvwhI6QtrARTMH-YGjJhi8sumRYflEJD0DPlH_MMHjizhBYCX8fbHFrHEiNvVA" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=diegosouzapw/Orbit&type=date&legend=top-left&sealed_token=XP_ycEjv7s31p1edvhsMOXry51OWYsUjDRWjflSG7jQKRpO9hPGg7i_EHvwhI6QtrARTMH-YGjJhi8sumRYflEJD0DPlH_MMHjizhBYCX8fbHFrHEiNvVA" />
  </picture>
 </a>
 
@@ -995,11 +995,11 @@ gh release create v3.8.2 --title "v3.8.2" --generate-notes
 
 ## 🌍 StarMapper
 
-<a href="https://starmapper.bruniaux.com/diegosouzapw/shiguang-gateway">
+<a href="https://starmapper.bruniaux.com/diegosouzapw/orbit">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://starmapper.bruniaux.com/api/map-image/diegosouzapw/shiguang-gateway?theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://starmapper.bruniaux.com/api/map-image/diegosouzapw/shiguang-gateway?theme=light" />
-    <img alt="StarMapper" src="https://starmapper.bruniaux.com/api/map-image/diegosouzapw/shiguang-gateway" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://starmapper.bruniaux.com/api/map-image/diegosouzapw/orbit?theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://starmapper.bruniaux.com/api/map-image/diegosouzapw/orbit?theme=light" />
+    <img alt="StarMapper" src="https://starmapper.bruniaux.com/api/map-image/diegosouzapw/orbit" />
   </picture>
 </a>
 </div>
@@ -1012,13 +1012,13 @@ gh release create v3.8.2 --title "v3.8.2" --generate-notes
 
 </div>
 
-ShiguangGateway stoi na barkach gigantów. Projekt powstał jako fork **[9router](https://github.com/decolua/9router)** oraz port na TypeScript projektu w Go **[CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI)** — a stamtąd każdy z poniższych podsystemów był inspirowany projektem open-source, który powstał wcześniej. Każdy z nich ukształtował konkretny element ShiguangGateway. To jest nasze podziękowanie dla nich wszystkich. 🙏
+Orbit stoi na barkach gigantów. Projekt powstał jako fork **[9router](https://github.com/decolua/9router)** oraz port na TypeScript projektu w Go **[CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI)** — a stamtąd każdy z poniższych podsystemów był inspirowany projektem open-source, który powstał wcześniej. Każdy z nich ukształtował konkretny element Orbit. To jest nasze podziękowanie dla nich wszystkich. 🙏
 
 > ⭐ liczba gwiazdek na lipiec 2026 r. — zachęcamy do dodania gwiazdki tym projektom.
 
 ### 🧬 Rodowód i bramka (gateway)
 
-| Projekt                                                                         |    ⭐ | Jak zainspirował ShiguangGateway                                                                                                                                   |
+| Projekt                                                                         |    ⭐ | Jak zainspirował Orbit                                                                                                                                   |
 | ------------------------------------------------------------------------------- | ----: | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **[9router](https://github.com/decolua/9router)** · decolua                     | 22.7k | Oryginalny projekt, na którym opiera się ten fork — rozbudowany tutaj o wielomodalne API i pełne przepisanie na TypeScript.                                  |
 | **[CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI)** · router-for-me | 43.6k | Implementacja w Go, która zainspirowała ten port na JavaScript / TypeScript.                                                                                 |
@@ -1026,7 +1026,7 @@ ShiguangGateway stoi na barkach gigantów. Projekt powstał jako fork **[9router
 
 ### 🗜️ Kompresja kontekstu i tokenów — silniki
 
-| Projekt                                                                       |    ⭐ | Jak zainspirował ShiguangGateway                                                                                                                                                                                                                                      |
+| Projekt                                                                       |    ⭐ | Jak zainspirował Orbit                                                                                                                                                                                                                                      |
 | ----------------------------------------------------------------------------- | ----: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **[Caveman](https://github.com/JuliusBrussee/caveman)** · JuliusBrussee       | 90.8k | Wirusowy projekt "po co używać wielu tokenów, skoro kilka wystarczy" — jego filozofia "mowy jaskiniowca" zasila nasz standardowy tryb kompresji i ponad 30 reguł usuwania wypełniaczy/kondensacji.                                                              |
 | **[RTK – Rust Token Killer](https://github.com/rtk-ai/rtk)** · rtk-ai         | 71.8k | Wydajna kompresja danych wyjściowych komend — zainspirowała nasz silnik RTK, DSL filtrów JSON, odzyskiwanie surowego wyjścia oraz kaskadowy potok RTK → Caveman.                                                                                                |
@@ -1038,7 +1038,7 @@ ShiguangGateway stoi na barkach gigantów. Projekt powstał jako fork **[9router
 
 ### 🧩 Kompaktowe formaty, badania nad tokenami i narzędzia analizujące kod
 
-| Projekt                                                                                        |    ⭐ | Jak zainspirował ShiguangGateway                                                                                                                                                                                                                                             |
+| Projekt                                                                                        |    ⭐ | Jak zainspirował Orbit                                                                                                                                                                                                                                             |
 | ---------------------------------------------------------------------------------------------- | ----: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **[TOON](https://github.com/toon-format/toon)** · toon-format                                  | 24.9k | Token-Oriented Object Notation — jego kolumnowy model oparty na nagłówkach i wierszach ukształtował nasz etap tabelarycznego upakowania.                                                                                                                               |
 | **[GCF – Graph Compact Format](https://github.com/blackwell-systems/gcf)** · Blackwell Systems |    22 | Najpierw zainspirował nasz etap tabelarycznego upakowania; teraz jego bezstratny koder profili ogólnych bez zewnętrznych zależności jest bezpośrednio wbudowany (vendored) jako kodek Headroom (licencja MIT, oznaczenie SPDX), zgodny z wersją v3.2 specyfikacji GCF. |
@@ -1055,7 +1055,7 @@ ShiguangGateway stoi na barkach gigantów. Projekt powstał jako fork **[9router
 
 ### 🧠 Pamięć i RAG
 
-| Projekt                                                            |    ⭐ | Jak zainspirował ShiguangGateway                                                                                                                   |
+| Projekt                                                            |    ⭐ | Jak zainspirował Orbit                                                                                                                   |
 | ------------------------------------------------------------------ | ----: | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | **[Mem0](https://github.com/mem0ai/mem0)** · mem0ai                | 61.2k | Uniwersalna warstwa pamięci — jej model proxy jako granicy zapisu/odczytu ukształtował naszą architekturę pamięci.                           |
 | **[Letta (MemGPT)](https://github.com/letta-ai/letta)** · letta-ai | 23.9k | Agenci stanowi z warstwową pamięcią — zainspirowali nasz warstwowy model Context Control & Recovery (CCR).                                   |
@@ -1063,14 +1063,14 @@ ShiguangGateway stoi na barkach gigantów. Projekt powstał jako fork **[9router
 
 ### 🛰️ Inspekcja ruchu, MITM i przezroczyste proxy
 
-| Projekt                                                                           |   ⭐ | Jak zainspirował ShiguangGateway                                                                                                                                                             |
+| Projekt                                                                           |   ⭐ | Jak zainspirował Orbit                                                                                                                                                             |
 | --------------------------------------------------------------------------------- | ---: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **[llm-interceptor](https://github.com/chouzz/llm-interceptor)** · chouzz         |   49 | Przechwytywanie/analiza MITM ruchu asystent kodowania ↔ LLM — nasz Inspektor Ruchu przenosi jego scalanie SSE, normalizację rozmowy, przepuszczanie hosta i maskowanie sekretów (MIT). |
 | **[ProxyBridge](https://github.com/InterceptSuite/ProxyBridge)** · InterceptSuite | 5.5k | Przezroczysty routing proxy per proces — zainspirował nasze odporne na awarie zamykanie MITM, limity bezczynności gniazd, atrybucję procesów przez `/proc` i przechwytywanie TPROXY.   |
 
 ### 📚 Dane modeli, obserwowalność i UI
 
-| Projekt                                                                    |    ⭐ | Jak zainspirował ShiguangGateway                                                                                                                                |
+| Projekt                                                                    |    ⭐ | Jak zainspirował Orbit                                                                                                                                |
 | -------------------------------------------------------------------------- | ----: | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **[models.dev](https://github.com/anomalyco/models.dev)** · SST / OpenCode |  6.0k | Otwarta baza danych specyfikacji modeli AI, cen i możliwości — synchronizowana natywnie z naszym katalogiem modeli.                                       |
 | **[React Flow / xyflow](https://github.com/xyflow/xyflow)** · xyflow       | 37.7k | Oparta na węzłach biblioteka wykresów zasilająca nasze działające w czasie rzeczywistym Studio Kompresji oraz Studio Komb/Routingu.                       |
@@ -1081,19 +1081,19 @@ ShiguangGateway stoi na barkach gigantów. Projekt powstał jako fork **[9router
 
 ### 🛡️ Bezpieczeństwo
 
-| Projekt                                                                                     |  ⭐ | Jak zainspirował ShiguangGateway                                                                                                                                                           |
+| Projekt                                                                                     |  ⭐ | Jak zainspirował Orbit                                                                                                                                                           |
 | ------------------------------------------------------------------------------------------- | --: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **[awesome-secure-defaults](https://github.com/tldrsec/awesome-secure-defaults)** · tldrsec | 710 | Starannie dobrana lista domyślnie bezpiecznych bibliotek, która kieruje naszymi wyborami w zakresie bezpieczeństwa (Helmet.js, DOMPurify, ssrf-req-filter, safe-regex, Google Tink). |
 
 ### 🧭 Narzędzia uzupełniające
 
-| Projekt                                                                       | Jak współgra z ShiguangGateway                                                                                                                                                                                                                                                          |
+| Projekt                                                                       | Jak współgra z Orbit                                                                                                                                                                                                                                                          |
 | ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **[CodeWebChat](https://github.com/robertpiosik/CodeWebChat)** · robertpiosik | Towarzysz po stronie edytora — rozszerzenie VS Code + przeglądarki, które automatycznie uzupełnia ponad 15 interfejsów webowych chatbotów kontekstem z edytora. Obsługuje ścieżkę darmowego UI webowego obok ścieżki API ShiguangGateway; pozwala skierować swój tryb API na ShiguangGateway. |
+| **[CodeWebChat](https://github.com/robertpiosik/CodeWebChat)** · robertpiosik | Towarzysz po stronie edytora — rozszerzenie VS Code + przeglądarki, które automatycznie uzupełnia ponad 15 interfejsów webowych chatbotów kontekstem z edytora. Obsługuje ścieżkę darmowego UI webowego obok ścieżki API Orbit; pozwala skierować swój tryb API na Orbit. |
 
 ## 💖 Sponsorzy
 
-> **Chcesz się tutaj pojawić?** ShiguangGateway prezentuje sponsorów przed jedną z najszybciej rozwijających się społeczności bramki AI na GitHubie — i publicznie informujemy, dokąd trafia każdy sponsorowany token. Skontaktuj się z nami: [diegosouza.pw@outlook.com](mailto:diegosouza.pw@outlook.com)
+> **Chcesz się tutaj pojawić?** Orbit prezentuje sponsorów przed jedną z najszybciej rozwijających się społeczności bramki AI na GitHubie — i publicznie informujemy, dokąd trafia każdy sponsorowany token. Skontaktuj się z nami: [diegosouza.pw@outlook.com](mailto:diegosouza.pw@outlook.com)
 
 <table>
   <tr>
@@ -1103,7 +1103,7 @@ ShiguangGateway stoi na barkach gigantów. Projekt powstał jako fork **[9router
       <img src="https://img.shields.io/badge/Official_Supporter-1783FF?style=flat-square" alt="Oficjalny wspierający"/>
     </td>
     <td>
-      Dziękujemy firmie <b>Kimi (Moonshot AI)</b> za sponsorowanie tego projektu! Kimi to laboratorium AI stojące za otwartymi rodzinami modeli K2 i K3 — <b>Kimi K3</b> zapewnia okno kontekstowe o rozmiarze 1M tokenów, natywną obsługę wizji oraz możliwości kodowania na najwyższym poziomie za ułamek ceny modeli zamkniętych, i działa od razu z Claude Code, Codex oraz każdym narzędziem programistycznym obsługiwanym przez ShiguangGateway.
+      Dziękujemy firmie <b>Kimi (Moonshot AI)</b> za sponsorowanie tego projektu! Kimi to laboratorium AI stojące za otwartymi rodzinami modeli K2 i K3 — <b>Kimi K3</b> zapewnia okno kontekstowe o rozmiarze 1M tokenów, natywną obsługę wizji oraz możliwości kodowania na najwyższym poziomie za ułamek ceny modeli zamkniętych, i działa od razu z Claude Code, Codex oraz każdym narzędziem programistycznym obsługiwanym przez Orbit.
       <br/><br/>
       <b>Na co przeznaczane jest sponsorowanie:</b> Kredyty API Kimi zasilają nasz potok wydań walidowany przez AI — etap <i>walidacji scalania opartej na Kimi K3</i>, który analizuje każde żądanie ściągnięcia przed jego wysłaniem — oraz codzienne rozwijanie funkcji. Pełna obsługa Kimi jest dostarczana na obu ścieżkach: bezpośredniego <a href="https://platform.kimi.ai">Moonshot API</a> (<code>kimi-k3</code>) oraz <a href="https://www.kimi.com">planu kodowania Kimi Code</a> (OAuth i klucz API). <a href="https://platform.kimi.ai"><b>Pobierz klucz API Moonshot →</b></a>
     </td>
@@ -1112,11 +1112,11 @@ ShiguangGateway stoi na barkach gigantów. Projekt powstał jako fork **[9router
 
 ## ❤️ Wsparcie
 
-ShiguangGateway jest darmowym projektem o otwartym kodzie źródłowym, tworzonym i utrzymywanym jawnie. Jeśli pozwala Ci zaoszczędzić czas lub pieniądze, rozważ wsparcie rozwoju:
+Orbit jest darmowym projektem o otwartym kodzie źródłowym, tworzonym i utrzymywanym jawnie. Jeśli pozwala Ci zaoszczędzić czas lub pieniądze, rozważ wsparcie rozwoju:
 
 - ⭐ **Dodaj gwiazdkę do repozytorium** — to naprawdę pomaga w widoczności
 - 💖 **[Sponsorzy GitHub](https://github.com/sponsors/diegosouzapw)** — finansuj bieżące utrzymanie i nowych dostawców
-- 🐛 **Zgłaszaj błędy i dziel się opiniami** w [Dyskusjach](https://github.com/diegosouzapw/ShiguangGateway/discussions)
+- 🐛 **Zgłaszaj błędy i dziel się opiniami** w [Dyskusjach](https://github.com/diegosouzapw/Orbit/discussions)
 
 ## 📄 Licencja
 
@@ -1127,8 +1127,8 @@ Licencja MIT — szczegóły znajdziesz w pliku [LICENSE](../../../LICENSE).
 <br/>
 <div align="center">
 
-**[⬆ Powrót do góry](#-shiguang-gateway--darmowa-bramka-ai)** · Stworzono z ❤️ dla społeczności AI open-source.
+**[⬆ Powrót do góry](#-orbit--darmowa-bramka-ai)** · Stworzono z ❤️ dla społeczności AI open-source.
 
-<sub>ShiguangGateway v3.8.49 · Node ≥22.22.2 · Licencja MIT · <a href="https://shiguang-gateway.online">shiguang-gateway.online</a></sub>
+<sub>Orbit v3.8.49 · Node ≥22.22.2 · Licencja MIT · <a href="https://orbit.online">orbit.online</a></sub>
 
 </div>

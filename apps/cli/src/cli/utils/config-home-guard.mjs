@@ -3,9 +3,9 @@ import { printError, printInfo } from "../io.mjs";
 /**
  * Container guard for CLI-tool config writes.
  *
- * `shiguangGateway setup-*` writes to `~/.codex`, `~/.claude`, ... — paths that only
+ * `orbit setup-*` writes to `~/.codex`, `~/.claude`, ... — paths that only
  * mean something on the operator's host. Run the same command inside the
- * ShiguangGateway container and the write "succeeds" into an ephemeral layer that no
+ * Orbit container and the write "succeeds" into an ephemeral layer that no
  * host CLI ever reads and that disappears with the container. This guard turns
  * that silent no-op into an actionable refusal.
  *
@@ -20,7 +20,7 @@ export const CONTAINER_WRITE_EXIT_CODE = 2;
 
 function envAllowsContainerWrite(env = process.env) {
   return TRUE_VALUES.has(
-    String(env.SHIGUANG_GATEWAY_ALLOW_CONTAINER_CONFIG_WRITE ?? "")
+    String(env.ORBIT_ALLOW_CONTAINER_CONFIG_WRITE ?? "")
       .trim()
       .toLowerCase()
   );

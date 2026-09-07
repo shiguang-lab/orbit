@@ -369,7 +369,7 @@ function stripLatestAlias(modelId: string | null): string | null {
 const reverseModelsDevProvidersCache = new Map<string, readonly string[]>();
 
 function reverseModelsDevProviders(provider: string): readonly string[] {
-  // models.dev may store capabilities under a different ShiguangGateway provider id
+  // models.dev may store capabilities under a different Orbit provider id
   // that also maps from the same upstream models.dev provider. Build reverse
   // candidates from MODELS_DEV_PROVIDER_MAP (e.g. openai ↔ cx).
   //

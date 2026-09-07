@@ -23,8 +23,8 @@ export const SkillExecuteSchema = z.object({
 });
 
 export const skillTools: Record<string, McpToolDefinition> = {
-  shiguangGateway_skills_list: {
-    name: "shiguangGateway_skills_list",
+  orbit_skills_list: {
+    name: "orbit_skills_list",
     description: "List all registered skills with optional filtering by API key or name",
     scopes: ["read:skills"],
     inputSchema: SkillListSchema,
@@ -54,8 +54,8 @@ export const skillTools: Record<string, McpToolDefinition> = {
     },
   },
 
-  shiguangGateway_skills_enable: {
-    name: "shiguangGateway_skills_enable",
+  orbit_skills_enable: {
+    name: "orbit_skills_enable",
     description: "Enable or disable a specific skill by ID",
     scopes: ["write:skills"],
     inputSchema: SkillEnableSchema,
@@ -70,8 +70,8 @@ export const skillTools: Record<string, McpToolDefinition> = {
     },
   },
 
-  shiguangGateway_skills_execute: {
-    name: "shiguangGateway_skills_execute",
+  orbit_skills_execute: {
+    name: "orbit_skills_execute",
     description: "Execute a skill with provided input and return the result",
     scopes: ["execute:skills"],
     inputSchema: SkillExecuteSchema,
@@ -93,8 +93,8 @@ export const skillTools: Record<string, McpToolDefinition> = {
     },
   },
 
-  shiguangGateway_skills_executions: {
-    name: "shiguangGateway_skills_executions",
+  orbit_skills_executions: {
+    name: "orbit_skills_executions",
     description: "List recent skill execution history",
     scopes: ["read:skills"],
     inputSchema: z.object({

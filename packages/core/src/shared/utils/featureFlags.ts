@@ -132,10 +132,10 @@ export function isArenaEloSyncEnabled(): boolean {
 
 export function isControlPlaneProxyDirectFallbackEnabled(): boolean {
   try {
-    return isFeatureFlagEnabled("SHIGUANG_GATEWAY_CONTROL_PLANE_PROXY_DIRECT_FALLBACK");
+    return isFeatureFlagEnabled("ORBIT_CONTROL_PLANE_PROXY_DIRECT_FALLBACK");
   } catch (error) {
     console.error(
-      "[featureFlags] Failed to resolve SHIGUANG_GATEWAY_CONTROL_PLANE_PROXY_DIRECT_FALLBACK, defaulting to disabled:",
+      "[featureFlags] Failed to resolve ORBIT_CONTROL_PLANE_PROXY_DIRECT_FALLBACK, defaulting to disabled:",
       error instanceof Error ? error.message : error
     );
     return false;

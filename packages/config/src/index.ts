@@ -3,7 +3,7 @@
  * 共享配置：从环境变量解析，BFF 与 admin 复用同一套语义。
  */
 
-export interface ShiguangGatewayConfig {
+export interface OrbitConfig {
   /** Public origin of this independent deployment. */
   publicBaseUrl: string;
   /** Optional internal origin for service-to-service callbacks. */
@@ -14,7 +14,7 @@ export interface ShiguangGatewayConfig {
   devBypassAuth: boolean;
 }
 
-export function resolveConfig(env: Record<string, string | undefined> = {}): ShiguangGatewayConfig {
+export function resolveConfig(env: Record<string, string | undefined> = {}): OrbitConfig {
   return {
     publicBaseUrl: env.PUBLIC_BASE_URL ?? env.VITE_PUBLIC_BASE_URL ?? "http://127.0.0.1:8787",
     internalBaseUrl: env.INTERNAL_BASE_URL ?? "http://127.0.0.1:8787",
@@ -27,7 +27,7 @@ export function resolveConfig(env: Record<string, string | undefined> = {}): Shi
  * Node 侧(BFF)配置：直接读 process.env。
  * 注意：Vite 的 import.meta.env 是浏览器专用，Node 下不可用。
  */
-export function resolveNodeConfig(): ShiguangGatewayConfig {
+export function resolveNodeConfig(): OrbitConfig {
   return resolveConfig(process.env as Record<string, string | undefined>);
 }
 

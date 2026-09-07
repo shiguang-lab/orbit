@@ -1,4 +1,4 @@
-# ShiguangGateway CLI — Internal Conventions
+# Orbit CLI — Internal Conventions
 
 > Status: normative. Source: `_tasks/features-v3.8.0/cli/fase-0-preparacao/0.3-definir-convencoes.md`.
 > This file is the authoritative reference for every new or migrated CLI command.
@@ -10,16 +10,16 @@
 **Standard**: `git`-style nested verbs.
 
 ```
-shiguang-gateway keys add openai sk-xxx
-shiguang-gateway combo switch fastest
-shiguang-gateway memory search "react hooks"
+orbit keys add openai sk-xxx
+orbit combo switch fastest
+orbit memory search "react hooks"
 ```
 
 **Not allowed**:
 
 ```
-shiguang-gateway --add-key openai sk-xxx     # ❌ flag-as-verb
-shiguang-gateway add-key openai sk-xxx       # ❌ hyphen at the top level
+orbit --add-key openai sk-xxx     # ❌ flag-as-verb
+orbit add-key openai sk-xxx       # ❌ hyphen at the top level
 ```
 
 ## 2. Flags
@@ -68,10 +68,10 @@ Helper: `exitWith(code, message?)` from `apps/cli/src/cli/exit.mjs` (added under
 
 All API calls go through `apiFetch(path, opts)` (`apps/cli/src/cli/api.mjs`), which:
 
-- Reads base URL from `SHIGUANG_GATEWAY_BASE_URL` env or `~/.shiguang-gateway/config.json`
+- Reads base URL from `ORBIT_BASE_URL` env or `~/.orbit/config.json`
   (active profile).
-- Injects `Authorization: Bearer ${SHIGUANG_GATEWAY_API_KEY}` when available.
-- Injects `x-shiguang-gateway-cli-token` when applicable (see task 8.12).
+- Injects `Authorization: Bearer ${ORBIT_API_KEY}` when available.
+- Injects `x-orbit-cli-token` when applicable (see task 8.12).
 - Applies a per-attempt timeout (`--timeout 30000`, default 30s).
 - Maps status → exit code (401→4, 429→5, 5xx→1, etc.).
 - Never exposes `err.stack` (CLAUDE.md hard rule #12).
@@ -138,8 +138,8 @@ export const RETRY_DEFAULTS = {
 - Catalogs live in `apps/cli/src/cli/locales/{locale}.json` (nested objects).
   43 files ship out-of-the-box: `en`, `pt-BR`, and 41 additional locales.
   11 locales are scaffold-only (empty `{}`); all keys fall back to `en` automatically.
-- Detection order: `--lang` flag → `SHIGUANG_GATEWAY_LANG` env → `LC_ALL` → `LC_MESSAGES` → `LANG` → `en`.
-- Locale persisted via `config lang set <code>` — saves `SHIGUANG_GATEWAY_LANG` to `~/.shiguang-gateway/.env`.
+- Detection order: `--lang` flag → `ORBIT_LANG` env → `LC_ALL` → `LC_MESSAGES` → `LANG` → `en`.
+- Locale persisted via `config lang set <code>` — saves `ORBIT_LANG` to `~/.orbit/.env`.
 - Missing keys return the key itself (no crash).
 - PRs that add new strings **must** update `en.json` and `pt-BR.json`.
   Other locale files are best-effort; missing keys silently fall back to `en`.
@@ -199,7 +199,7 @@ Commands that mutate state (delete, reset, `--force`) **must**:
 - **Never** log secrets. Mask as `sk-***-xxx` via `maskSecret()` from
   `apps/cli/src/cli/output.mjs`.
 - **Never** accept a secret via positional without warning. Prefer:
-  - env (`SHIGUANG_GATEWAY_*_API_KEY`)
+  - env (`ORBIT_*_API_KEY`)
   - stdin (`--api-key-stdin`)
   - interactive `askSecret()` (echo off — already implemented in `io.mjs`)
 - Secrets must not appear in `--verbose` / `--debug` output.

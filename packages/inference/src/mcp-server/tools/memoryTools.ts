@@ -30,7 +30,7 @@ async function executeMemoryCommand<T>(command: EdgeRuntimeCommand): Promise<T> 
  * `apiKeyId` — otherwise any MCP caller could read, write, or delete another
  * principal's memories by putting a different id in the tool arguments
  * (GHSA-cpv3-xr7r-xf8q, IDOR). The caller is resolved from the per-request HTTP
- * auth headers on SSE / Streamable HTTP transports, or from SHIGUANG_GATEWAY_API_KEY on
+ * auth headers on SSE / Streamable HTTP transports, or from ORBIT_API_KEY on
  * stdio. The explicit argument is only honored as a fallback when no caller can
  * be resolved (a bare local stdio process with no configured key — already
  * trusted), preserving the local-tooling flow. Keeps MCP-stored memories under
@@ -68,8 +68,8 @@ export const MemoryClearSchema = z.object({
 });
 
 export const memoryTools: Record<string, McpToolDefinition> = {
-  shiguangGateway_memory_search: {
-    name: "shiguangGateway_memory_search",
+  orbit_memory_search: {
+    name: "orbit_memory_search",
     description: "Search memories by query, type, or API key with token budget enforcement",
     scopes: ["read:memory"],
     inputSchema: MemorySearchSchema,
@@ -96,8 +96,8 @@ export const memoryTools: Record<string, McpToolDefinition> = {
     },
   },
 
-  shiguangGateway_memory_add: {
-    name: "shiguangGateway_memory_add",
+  orbit_memory_add: {
+    name: "orbit_memory_add",
     description: "Add a new memory entry",
     scopes: ["write:memory"],
     inputSchema: MemoryAddSchema,
@@ -127,8 +127,8 @@ export const memoryTools: Record<string, McpToolDefinition> = {
     },
   },
 
-  shiguangGateway_memory_clear: {
-    name: "shiguangGateway_memory_clear",
+  orbit_memory_clear: {
+    name: "orbit_memory_clear",
     description: "Clear memories for an API key, optionally filtered by type or age",
     scopes: ["write:memory"],
     inputSchema: MemoryClearSchema,

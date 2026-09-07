@@ -1,15 +1,15 @@
 ---
-title: "ShiguangGateway Plugin SDK"
+title: "Orbit Plugin SDK"
 version: 3.8.40
 lastUpdated: 2026-06-28
 ---
 
-# ShiguangGateway Plugin SDK
+# Orbit Plugin SDK
 
 ## Szybki start
 
 ```ts
-import { definePlugin } from "shiguang-gateway/plugins/sdk";
+import { definePlugin } from "orbit/plugins/sdk";
 
 export default definePlugin({
   name: "my-plugin",
@@ -196,7 +196,7 @@ Wartości konfiguracji są utrwalane w bazie danych i dostępne przez stronę ko
 ### Request Logger
 
 ```ts
-import { definePlugin } from "shiguang-gateway/plugins/sdk";
+import { definePlugin } from "orbit/plugins/sdk";
 
 export default definePlugin({
   name: "request-logger",
@@ -209,7 +209,7 @@ export default definePlugin({
 ### Rate Limiter
 
 ```ts
-import { definePlugin, blockRequest } from "shiguang-gateway/plugins/sdk";
+import { definePlugin, blockRequest } from "orbit/plugins/sdk";
 
 const requests = new Map<string, number[]>();
 
@@ -236,7 +236,7 @@ export default definePlugin({
 ### Response Transformer
 
 ```ts
-import { definePlugin } from "shiguang-gateway/plugins/sdk";
+import { definePlugin } from "orbit/plugins/sdk";
 
 export default definePlugin({
   name: "response-transformer",

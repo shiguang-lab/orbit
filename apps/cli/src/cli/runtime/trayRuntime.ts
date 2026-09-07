@@ -4,7 +4,7 @@ import { homedir } from "node:os";
 import { execSync } from "node:child_process";
 import { pathToFileURL } from "node:url";
 
-const RUNTIME_DIR = join(homedir(), ".shiguangGateway", "runtime");
+const RUNTIME_DIR = join(homedir(), ".orbit", "runtime");
 // systray2 is a maintained fork with prebuilt binaries — installed lazily at runtime,
 // not in dependencies, to avoid npm install overhead for users who don't use --tray.
 //
@@ -73,7 +73,7 @@ export async function loadSystray(): Promise<SystrayConstructor | null> {
     } catch (err) {
       // Surface failures to stderr instead of staying silent — anyone hitting
       // a tray problem otherwise has zero diagnostic. (PR #1080)
-      console.warn(`[shiguangGateway] tray runtime install failed: ${(err as Error).message}`);
+      console.warn(`[orbit] tray runtime install failed: ${(err as Error).message}`);
       return null;
     }
   }
@@ -84,7 +84,7 @@ export async function loadSystray(): Promise<SystrayConstructor | null> {
     const mod = await import(systrayModuleSpecifier(RUNTIME_DIR));
     return (mod.default ?? mod.SysTray ?? mod) as SystrayConstructor | null;
   } catch (err) {
-    console.warn(`[shiguangGateway] tray runtime import failed: ${(err as Error).message}`);
+    console.warn(`[orbit] tray runtime import failed: ${(err as Error).message}`);
     return null;
   }
 }

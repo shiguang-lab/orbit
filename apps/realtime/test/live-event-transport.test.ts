@@ -15,15 +15,15 @@ test("authenticated events cross a process boundary and reach dashboard subscrib
   await writeFile(jwksFile, JSON.stringify({ keys: [{ ...await exportJWK(publicKey), kid: "events", alg: "RS256" }] }));
   const token = "realtime-event-service-token";
   Object.assign(process.env, { DATA_DIR: root, SQLITE_FILE: join(root, "storage.sqlite"),
-    SG_IDENTITY_JWKS_FILE: jwksFile, SG_IDENTITY_AUDIENCE: "shiguang-gateway-api", SG_IDENTITY_ENTITLEMENT: "shiguang-gateway:access", SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN: token });
+    SG_IDENTITY_JWKS_FILE: jwksFile, SG_IDENTITY_AUDIENCE: "orbit-api", SG_IDENTITY_ENTITLEMENT: "orbit:access", ORBIT_INTERNAL_SERVICE_TOKEN: token });
   const { startLiveDashboardServer } = await import("../src/live-ws/live-server.js");
   const runtime = await startLiveDashboardServer(0, "127.0.0.1");
   const address = runtime.server.address();
   assert.ok(address && typeof address === "object");
-  const endpoint = `http://127.0.0.1:${address.port}/__shiguangGateway_event`;
-  const identity = await new SignJWT({ sid: "event-session", entitlements: ["shiguang-gateway:access"], roles: [] })
+  const endpoint = `http://127.0.0.1:${address.port}/__orbit_event`;
+  const identity = await new SignJWT({ sid: "event-session", entitlements: ["orbit:access"], roles: [] })
     .setProtectedHeader({ alg: "RS256", typ: "sg-identity+jwt", kid: "events" })
-    .setIssuer("https://shiguanglab.com").setAudience("shiguang-gateway-api").setSubject("event-test-user")
+    .setIssuer("https://shiguanglab.com").setAudience("orbit-api").setSubject("event-test-user")
     .setIssuedAt().setNotBefore("0s").setExpirationTime("2m").sign(privateKey);
   const ws = new WebSocket(`ws://127.0.0.1:${address.port}/live-ws`, {
     origin: "http://127.0.0.1:8787", headers: { "x-sg-identity": identity },
@@ -49,7 +49,7 @@ test("authenticated events cross a process boundary and reach dashboard subscrib
     });
     for (const provided of [undefined, "wrong-token"]) {
       const response = await fetch(endpoint, { method: "POST", headers: {
-        "content-type": "application/json", ...(provided ? { "x-shiguang-gateway-internal-service-token": provided } : {}),
+        "content-type": "application/json", ...(provided ? { "x-orbit-internal-service-token": provided } : {}),
       }, body: JSON.stringify({ event: expected[0], payload: {} }) });
       assert.equal(response.status, 403);
     }
@@ -60,7 +60,7 @@ test("authenticated events cross a process boundary and reach dashboard subscrib
       const publisher = startRealtimePublisher({
         url: ${JSON.stringify(endpoint)},
         subscribe(listener) { emit = listener; return () => { emit = null; }; },
-        headers() { return { 'x-shiguang-gateway-internal-service-token': ${JSON.stringify(token)} }; },
+        headers() { return { 'x-orbit-internal-service-token': ${JSON.stringify(token)} }; },
         onError(error) { failures.push(error); },
         fetch(...args) { const response = fetch(...args); pending.push(response); return response; }
       });

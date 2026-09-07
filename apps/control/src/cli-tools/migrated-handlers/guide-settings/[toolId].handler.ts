@@ -22,21 +22,21 @@ type OpenCodeGuideConfig = BaseGuideConfig & {
 
 /**
  * Where each guide tool's config lands, and the host command that writes the
- * same thing when ShiguangGateway itself runs in a container.
+ * same thing when Orbit itself runs in a container.
  */
 const GUIDE_TOOL_TARGETS: Record<string, { resolve: () => string; hostCommand: string }> = {
   continue: {
     resolve: () => path.join(os.homedir(), ".continue", "config.json"),
-    hostCommand: "shiguangGateway setup-continue",
+    hostCommand: "orbit setup-continue",
   },
   opencode: {
     resolve: () => getOpenCodeConfigPath(),
-    hostCommand: "shiguangGateway setup-opencode",
+    hostCommand: "orbit setup-opencode",
   },
   hermes: {
     resolve: () =>
       getCliPrimaryConfigPath("hermes") || path.join(os.homedir(), ".hermes", "config.yaml"),
-    hostCommand: "shiguangGateway config set hermes",
+    hostCommand: "orbit config set hermes",
   },
 };
 
@@ -141,7 +141,7 @@ async function saveContinueConfig({ baseUrl, apiKey, model }: BaseGuideConfig) {
     // No existing config or invalid JSON — start fresh
   }
 
-  // Build the ShiguangGateway model entry
+  // Build the Orbit model entry
   const normalizedBaseUrl = String(baseUrl || "")
     .trim()
     .replace(/\/+$/, "");
@@ -150,8 +150,8 @@ async function saveContinueConfig({ baseUrl, apiKey, model }: BaseGuideConfig) {
     title: model,
     model: model,
     provider: "openai",
-    apiKey: apiKey || "sk_shiguangGateway",
-    shiguangGatewayManaged: true,
+    apiKey: apiKey || "sk_orbit",
+    orbitManaged: true,
   };
 
   // Merge into existing models array
@@ -164,19 +164,19 @@ async function saveContinueConfig({ baseUrl, apiKey, model }: BaseGuideConfig) {
       .toLowerCase();
   }
 
-  // Check if ShiguangGateway entry already exists and update it, or add new
+  // Check if Orbit entry already exists and update it, or add new
   const existingIdx = models.findIndex(
     (m: unknown) =>
       isJsonObject(m) &&
-      (m.shiguangGatewayManaged === true ||
+      (m.orbitManaged === true ||
         normalizeApiBase(m.apiBase) === normalizedBaseUrl.toLowerCase() ||
-        normalizeApiBase(m.apiBase).includes("shiguangGateway") ||
+        normalizeApiBase(m.apiBase).includes("orbit") ||
         normalizeApiBase(m.apiBase).includes(`localhost:${apiPort}`) ||
         normalizeApiBase(m.apiBase).includes(`127.0.0.1:${apiPort}`) ||
         // eslint-disable-next-line no-restricted-syntax -- teknik string kontrolü, kullanıcı metni araması değil
         String(m.apiKey || "")
           .toLowerCase()
-          .includes("sk_shiguangGateway"))
+          .includes("sk_orbit"))
   );
 
   if (existingIdx >= 0) {
@@ -245,7 +245,7 @@ async function saveOpenCodeConfig({ baseUrl, apiKey, model, models, modelLabels 
  * Save Hermes config to ~/.hermes/config.yaml
  *
  * Hermes stores its primary routing settings in YAML. Preserve any existing
- * keys, but make sure the ShiguangGateway provider entry is present and selected.
+ * keys, but make sure the Orbit provider entry is present and selected.
  */
 async function saveHermesConfig({ baseUrl, apiKey, model }: BaseGuideConfig) {
   const configPath =
@@ -281,20 +281,20 @@ async function saveHermesConfig({ baseUrl, apiKey, model }: BaseGuideConfig) {
   const existingProviders = isJsonObject(existingConfig.providers)
     ? existingConfig.providers
     : {};
-  const existingGateway = isJsonObject(existingProviders.shiguangGateway)
-    ? existingProviders.shiguangGateway
+  const existingGateway = isJsonObject(existingProviders.orbit)
+    ? existingProviders.orbit
     : {};
   const nextConfig = {
     ...existingConfig,
     model: {
       ...existingModel,
       default: selectedModel,
-      provider: "shiguangGateway",
+      provider: "orbit",
       base_url: providerBaseUrl,
     },
     providers: {
       ...existingProviders,
-      shiguangGateway: {
+      orbit: {
         ...existingGateway,
         base_url: providerBaseUrl,
         api_key:

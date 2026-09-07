@@ -1,8 +1,8 @@
 {
   "common": {
     "error": "خطا: {message}",
-    "serverOffline": "سرور ShiguangGateway آفلاین است. با این دستور راه‌اندازی کنید: shiguang-gateway serve",
-    "authRequired": "احراز هویت لازم است. SHIGUANG_GATEWAY_API_KEY را تنظیم کنید یا اجرا کنید: shiguang-gateway setup",
+    "serverOffline": "سرور Orbit آفلاین است. با این دستور راه‌اندازی کنید: orbit serve",
+    "authRequired": "احراز هویت لازم است. ORBIT_API_KEY را تنظیم کنید یا اجرا کنید: orbit setup",
     "rateLimited": "محدودیت درخواست رسیده است. پس از {seconds} ثانیه دوباره تلاش کنید.",
     "timeout": "درخواست پس از {ms}ms منقضی شد.",
     "success": "انجام شد.",
@@ -15,18 +15,18 @@
     "yesOpt": "رد کردن تأیید"
   },
   "program": {
-    "description": "ShiguangGateway — روتر هوشمند هوش مصنوعی با fallback خودکار",
+    "description": "Orbit — روتر هوشمند هوش مصنوعی با fallback خودکار",
     "version": "نمایش نسخه و خروج",
     "output": "فرمت خروجی (table, json, jsonl, csv)",
     "quiet": "حذف خروجی غیر ضروری",
     "no_color": "غیرفعال کردن خروجی رنگی",
     "timeout": "تایم‌اوت درخواست HTTP به میلی‌ثانیه",
-    "api_key": "کلید API برای سرور ShiguangGateway",
-    "base_url": "URL پایه سرور ShiguangGateway",
+    "api_key": "کلید API برای سرور Orbit",
+    "base_url": "URL پایه سرور Orbit",
     "context": "زمینه/پروفایل سرور برای این دستور",
-    "lang": "تنظیم زبان نمایش CLI (SHIGUANG_GATEWAY_LANG را نادیده می‌گیرد)"
+    "lang": "تنظیم زبان نمایش CLI (ORBIT_LANG را نادیده می‌گیرد)"
   },
   "redis": {
-    "description": "راه‌اندازی کانتینر Redis محلی با یک کلیک (Podman یا Docker) برای حافظه پنهان و ردیابی سهمیه ShiguangGateway"
+    "description": "راه‌اندازی کانتینر Redis محلی با یک کلیک (Podman یا Docker) برای حافظه پنهان و ردیابی سهمیه Orbit"
   }
 }

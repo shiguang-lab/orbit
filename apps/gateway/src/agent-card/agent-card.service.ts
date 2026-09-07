@@ -10,7 +10,7 @@ export class AgentCardService {
   }
 
   private baseUrl(request: AgentCardRequest): string {
-    if (process.env.SHIGUANG_GATEWAY_BASE_URL) return process.env.SHIGUANG_GATEWAY_BASE_URL;
+    if (process.env.ORBIT_BASE_URL) return process.env.ORBIT_BASE_URL;
     if (process.env.PUBLIC_BASE_URL) return process.env.PUBLIC_BASE_URL;
     const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host") ?? "127.0.0.1:8787";
     const proto = request.headers.get("x-forwarded-proto") ?? "http";
@@ -63,7 +63,7 @@ export class AgentCardService {
       {
         id: "list-capabilities",
         name: version === "1.0" ? "List Capabilities" : "列出能力",
-        description: version === "1.0" ? "Returns the full catalog of ShiguangGateway agent skills." : "返回 42 个 ShiguangGateway 代理技能的完整目录（22 API + 20 CLI）以及 SKILL.md 文档的原始 URL。",
+        description: version === "1.0" ? "Returns the full catalog of Orbit agent skills." : "返回 42 个 Orbit 代理技能的完整目录（22 API + 20 CLI）以及 SKILL.md 文档的原始 URL。",
         tags: ["discovery", "capabilities"],
         examples: version === "1.0" ? ["What can you do?", "List your skills"] : ["你能做什么？", "列出你的技能", "展示能力"],
       },
@@ -71,7 +71,7 @@ export class AgentCardService {
     ];
     const card = version === "1.0"
       ? {
-          name: "ShiguangGateway AI Gateway",
+          name: "Orbit AI Gateway",
           description: "Intelligent AI routing gateway with 36+ providers, smart fallback, quota tracking, format translation, and auto-managed combos. Routes AI requests to the optimal provider based on cost, latency, quota availability, and task requirements.",
           url: `${baseUrl}/a2a`, version: versionValue,
           supportedInterfaces: [{ url: `${baseUrl}/a2a`, protocolBinding: "JSONRPC", protocolVersion: "1.0" }, { url: `${baseUrl}/a2a`, protocolBinding: "JSONRPC", protocolVersion: "0.3" }],
@@ -79,7 +79,7 @@ export class AgentCardService {
           security: { schemes: ["api-key"], apiKeyHeader: "Authorization" },
         }
       : {
-          name: "ShiguangGateway AI 网关",
+          name: "Orbit AI 网关",
           description: "智能 AI 路由网关，支持 36+ 个提供者、智能回退、配额跟踪、格式转换和自动管理组合。根据成本、延迟、配额可用性和任务要求将 AI 请求路由到最优提供者。",
           url: `${baseUrl}/a2a`, version: versionValue, capabilities: { streaming: true, pushNotifications: false }, skills: commonSkills,
           authentication: { schemes: ["api-key"], apiKeyHeader: "Authorization" },

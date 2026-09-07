@@ -1,8 +1,8 @@
 {
   "common": {
     "error": "Error: {message}",
-    "serverOffline": "ShiguangGateway server is offline. Start it with: shiguang-gateway serve",
-    "authRequired": "Authentication required. Set SHIGUANG_GATEWAY_API_KEY or run: shiguang-gateway setup",
+    "serverOffline": "Orbit server is offline. Start it with: orbit serve",
+    "authRequired": "Authentication required. Set ORBIT_API_KEY or run: orbit setup",
     "rateLimited": "Rate limit exceeded. Retry after {seconds}s.",
     "timeout": "Request timed out after {ms}ms.",
     "success": "Done.",
@@ -15,7 +15,7 @@
     "yesOpt": "Skip confirmation prompt"
   },
   "setup": {
-    "title": "ShiguangGateway Setup",
+    "title": "Orbit Setup",
     "passwordPrompt": "Admin password",
     "providerPrompt": "Default provider (leave blank to skip)",
     "done": "Setup complete",
@@ -30,19 +30,19 @@
     "opencode": "Install and configure the bundled @orbit/opencode-plugin for OpenCode"
   },
   "doctor": {
-    "title": "ShiguangGateway Doctor",
+    "title": "Orbit Doctor",
     "dbOk": "Database: OK ({path})",
-    "dbMissing": "Database: not initialized — run `shiguang-gateway setup`",
+    "dbMissing": "Database: not initialized — run `orbit setup`",
     "portOk": "Port {port}: available",
     "portConflict": "Port {port}: in use by another process",
     "encryptionOk": "Encryption key: configured",
-    "encryptionMissing": "Encryption key missing — run `shiguang-gateway setup`",
+    "encryptionMissing": "Encryption key missing — run `orbit setup`",
     "allGood": "All checks passed.",
     "warnings": "{count} warning(s) — see above."
   },
   "providers": {
     "title": "Providers",
-    "noProviders": "No providers configured. Run: shiguang-gateway setup",
+    "noProviders": "No providers configured. Run: orbit setup",
     "testing": "Testing {name}...",
     "available": "{count} provider(s) available",
     "connected": "Connected",
@@ -71,7 +71,7 @@
       "dryRunOpt": "Print what would change without writing",
       "confirmPrompt": "Replace API key for connection \"{name}\" ({id})? [y/N] ",
       "dryRunResult": "[dry-run] Would rotate key for \"{name}\" ({id}). No changes made.",
-      "oauthHint": "OAuth connection — run: shiguang-gateway oauth {provider}",
+      "oauthHint": "OAuth connection — run: orbit oauth {provider}",
       "envVarEmpty": "Environment variable {var} is not set or is empty.",
       "success": "Key rotated for \"{name}\". Run `providers test {id}` to verify.",
       "testPassed": "Post-rotation test passed.",
@@ -82,7 +82,7 @@
       "providerOpt": "Filter by provider name",
       "header": "ID         Provider       Name                     Expiry Status  Test Status  Cooldown Until",
       "noData": "No provider connection data available.",
-      "requiresServer": "providers status requires the ShiguangGateway server to be running."
+      "requiresServer": "providers status requires the Orbit server to be running."
     }
   },
   "keys": {
@@ -90,8 +90,8 @@
     "addDescription": "Add or update an API key for a provider",
     "listDescription": "List all configured API keys",
     "removeDescription": "Remove an API key for a provider",
-    "regenerateDescription": "Regenerate an ShiguangGateway API key",
-    "revokeDescription": "Revoke an ShiguangGateway API key",
+    "regenerateDescription": "Regenerate an Orbit API key",
+    "revokeDescription": "Revoke an Orbit API key",
     "revealDescription": "Reveal the unmasked API key value",
     "usageDescription": "Show recent usage for an API key",
     "usageLimitOpt": "Number of recent requests",
@@ -142,7 +142,7 @@
     "warning": "⚠ This prints/writes DECRYPTED plaintext API keys and OAuth tokens. Make sure your screen, shell history, and any output file stay private.",
     "confirmHeading": "⚠ WARNING: this exports DECRYPTED provider credentials in plaintext",
     "confirmBody": "This command decrypts and prints/writes apiKey, accessToken, refreshToken, and\nidToken for the selected connection(s). Treat the output as a secret.",
-    "confirmFooter": "To confirm, run:\n  shiguang-gateway auth export --force",
+    "confirmFooter": "To confirm, run:\n  orbit auth export --force",
     "missingKey": "STORAGE_ENCRYPTION_KEY is required to export credentials.",
     "notFound": "Connection not found: {id}",
     "invalidFormat": "Invalid format: {format}. Use json or env."
@@ -220,10 +220,10 @@
     "reasoning": "Reasoning effort level (low|medium|high)",
     "thinking": "Extended thinking token budget",
     "explain": "Print fallback tree and cost range to stderr",
-    "noCombo": "No matching combo found. Configure one with: shiguang-gateway combo create"
+    "noCombo": "No matching combo found. Configure one with: orbit combo create"
   },
   "chat": {
-    "description": "Send a one-shot chat prompt to ShiguangGateway",
+    "description": "Send a one-shot chat prompt to Orbit",
     "file": "Read prompt from file",
     "stdin": "Read prompt from stdin",
     "system": "System prompt",
@@ -236,14 +236,14 @@
     "combo": "Force a specific combo by name",
     "responses_api": "Use /v1/responses instead of /v1/chat/completions",
     "stream": "Stream response incrementally",
-    "no_history": "Do not save to ~/.shiguang-gateway/cli-history.jsonl",
+    "no_history": "Do not save to ~/.orbit/cli-history.jsonl",
     "error": {
       "empty_prompt": "Error: prompt is required (positional arg, --file, or --stdin)"
     }
   },
   "serve": {
-    "description": "Start the ShiguangGateway server (default action)",
-    "starting": "Starting ShiguangGateway server on port {port}...",
+    "description": "Start the Orbit server (default action)",
+    "starting": "Starting Orbit server on port {port}...",
     "ready": "Ready at http://localhost:{port}",
     "stopping": "Stopping server (PID {pid})...",
     "stopped": "Server stopped.",
@@ -256,12 +256,12 @@
     "max_restarts": "Max crash restarts within 30s before giving up (default: 2)",
     "tray": "Start in the system tray (desktop only, opt-in)",
     "no_tray": "Disable system tray icon",
-    "tls_cert": "Path to a TLS certificate (PEM) to serve HTTPS (also SHIGUANG_GATEWAY_TLS_CERT)",
-    "tls_key": "Path to the TLS private key (PEM) to serve HTTPS (also SHIGUANG_GATEWAY_TLS_KEY)"
+    "tls_cert": "Path to a TLS certificate (PEM) to serve HTTPS (also ORBIT_TLS_CERT)",
+    "tls_key": "Path to the TLS private key (PEM) to serve HTTPS (also ORBIT_TLS_KEY)"
   },
   "backup": {
     "title": "Backup",
-    "description": "Create a backup of ShiguangGateway data",
+    "description": "Create a backup of Orbit data",
     "creating": "Creating backup...",
     "done": "Backup saved to {path}",
     "noFiles": "No files to backup (database not initialized)",
@@ -273,7 +273,7 @@
     "noBackups": "No backups found.",
     "notFound": "Backup not found: {name}",
     "confirmRestore": "Overwrite current data with backup from {ts}?",
-    "createDescription": "Create a backup of ShiguangGateway data",
+    "createDescription": "Create a backup of Orbit data",
     "nameOpt": "Custom backup name",
     "cloudOpt": "Upload backup to cloud storage",
     "encryptOpt": "Encrypt backup with AES-256-GCM",
@@ -291,14 +291,14 @@
       "statusDescription": "Show current backup schedule status",
       "cronOpt": "Cron expression for schedule (default: daily at 3am)",
       "enabled": "Automatic backup enabled (cron: {cron}).",
-      "hint": "  The schedule is read by shiguang-gateway serve on startup.",
+      "hint": "  The schedule is read by orbit serve on startup.",
       "disabled": "Automatic backup disabled.",
       "notConfigured": "No backup schedule configured."
     }
   },
   "health": {
     "description": "Check server health and component status",
-    "noServer": "Server not running. Start with: shiguang-gateway serve",
+    "noServer": "Server not running. Start with: orbit serve",
     "title": "Health",
     "status": "Status: {status}",
     "uptime": "Uptime: {uptime}",
@@ -307,21 +307,21 @@
   },
   "quota": {
     "description": "Show provider quota usage",
-    "noServer": "Server not running. Start with: shiguang-gateway serve",
+    "noServer": "Server not running. Start with: orbit serve",
     "noData": "No quota information available."
   },
   "cache": {
     "description": "Manage response cache",
-    "noServer": "Server not running. Start with: shiguang-gateway serve",
+    "noServer": "Server not running. Start with: orbit serve",
     "cleared": "Cache cleared.",
     "clearFailed": "Failed to clear cache."
   },
   "redis": {
-    "description": "Launch a 1-click local Redis container (Podman or Docker) for ShiguangGateway caching and quota tracking"
+    "description": "Launch a 1-click local Redis container (Podman or Docker) for Orbit caching and quota tracking"
   },
   "test": {
     "description": "Test a provider connection",
-    "noServer": "Server not running. Start with: shiguang-gateway serve",
+    "noServer": "Server not running. Start with: orbit serve",
     "testing": "Testing {provider} / {model}...",
     "passed": "Connection successful!",
     "failed": "Connection failed: {error}",
@@ -333,7 +333,7 @@
     "saved": "Results saved to {path}",
     "compareTitle": "Model Comparison",
     "compareMinTwo": "At least two models required for --compare (comma-separated)",
-    "noProviders": "No providers configured. Add one with: shiguang-gateway keys add"
+    "noProviders": "No providers configured. Add one with: orbit keys add"
   },
   "update": {
     "checking": "Checking for updates...",
@@ -405,7 +405,7 @@
     }
   },
   "policy": {
-    "description": "Manage ShiguangGateway authorization policies",
+    "description": "Manage Orbit authorization policies",
     "list": {
       "description": "List policies",
       "kind": "Filter by kind (allow|deny|rate-limit|cost-cap)",
@@ -442,7 +442,7 @@
     }
   },
   "compression": {
-    "description": "Configure and inspect the ShiguangGateway compression pipeline",
+    "description": "Configure and inspect the Orbit compression pipeline",
     "status": {
       "description": "Show current compression status and settings"
     },
@@ -496,18 +496,18 @@
     "confirmRotate": "Rotate tunnel {type}? (a new URL will be generated)"
   },
   "stop": {
-    "description": "Stop the ShiguangGateway server",
+    "description": "Stop the Orbit server",
     "stopping": "Stopping server (PID {pid})...",
     "stopped": "Server stopped.",
     "notRunning": "No server is running.",
     "portFallback": "No PID file found, attempting port-based stop..."
   },
   "restart": {
-    "description": "Restart the ShiguangGateway server",
-    "restarting": "Restarting ShiguangGateway server..."
+    "description": "Restart the Orbit server",
+    "restarting": "Restarting Orbit server..."
   },
   "dashboard": {
-    "description": "Open the ShiguangGateway dashboard in a browser",
+    "description": "Open the Orbit dashboard in a browser",
     "opening": "Opening dashboard at {url}",
     "urlOnly": "Print dashboard URL without opening browser",
     "tui": "Open interactive TUI dashboard (terminal UI, 7 tabs)"
@@ -515,7 +515,7 @@
   "models": {
     "description": "List available models (requires server)",
     "search": "Filter models by id, name, provider, or description",
-    "noServer": "Server not running. Start with: shiguang-gateway serve",
+    "noServer": "Server not running. Start with: orbit serve",
     "noModels": "No models found."
   },
   "audit": {
@@ -547,7 +547,7 @@
     }
   },
   "skills": {
-    "description": "Manage ShiguangGateway skills (sandbox, builtin, custom, hybrid, skillssh)",
+    "description": "Manage Orbit skills (sandbox, builtin, custom, hybrid, skillssh)",
     "list": {
       "description": "List installed skills",
       "type": "Filter by type (sandbox|custom|builtin|hybrid|skillssh)",
@@ -620,7 +620,7 @@
     }
   },
   "memory": {
-    "description": "Manage ShiguangGateway conversational memory (FTS5 + vector)",
+    "description": "Manage Orbit conversational memory (FTS5 + vector)",
     "search": {
       "description": "Search memory entries by semantic query",
       "type": "Filter by memory type (user|feedback|project|reference)",
@@ -778,7 +778,7 @@
     }
   },
   "webhooks": {
-    "description": "Manage ShiguangGateway webhooks",
+    "description": "Manage Orbit webhooks",
     "events": {
       "description": "List all available webhook event types"
     },
@@ -810,16 +810,16 @@
     }
   },
   "program": {
-    "description": "ShiguangGateway — Smart AI Router with Auto Fallback",
+    "description": "Orbit — Smart AI Router with Auto Fallback",
     "version": "Print version and exit",
     "output": "Output format (table, json, jsonl, csv)",
     "quiet": "Suppress non-essential output",
     "no_color": "Disable colored output",
     "timeout": "HTTP request timeout in milliseconds",
-    "api_key": "API key for ShiguangGateway server",
-    "base_url": "ShiguangGateway server base URL",
+    "api_key": "API key for Orbit server",
+    "base_url": "Orbit server base URL",
     "context": "Server context/profile to use for this command",
-    "lang": "Set CLI display language (overrides SHIGUANG_GATEWAY_LANG)"
+    "lang": "Set CLI display language (overrides ORBIT_LANG)"
   },
   "files": {
     "description": "Manage files (upload, list, get, download, delete)",
@@ -1068,7 +1068,7 @@
     }
   },
   "openapi": {
-    "description": "Access and test the ShiguangGateway OpenAPI spec",
+    "description": "Access and test the Orbit OpenAPI spec",
     "dump": {
       "description": "Dump OpenAPI spec to stdout or file",
       "format": "Output format: yaml|json (default: yaml)",
@@ -1138,7 +1138,7 @@
     }
   },
   "open": {
-    "description": "Open a specific ShiguangGateway dashboard page in the browser",
+    "description": "Open a specific Orbit dashboard page in the browser",
     "url": "Print URL only, do not open browser"
   },
   "telemetry": {
@@ -1155,7 +1155,7 @@
     }
   },
   "sync": {
-    "description": "Sync configuration between ShiguangGateway instances",
+    "description": "Sync configuration between Orbit instances",
     "push": {
       "description": "Push config to cloud or remote instance",
       "target": "Target (cloud or context:name)",
@@ -1211,10 +1211,10 @@
       "listTitle": "Available Languages",
       "current": "Language: {code} ({name})",
       "saved": "Language set to {code} ({name}).",
-      "noCode": "Language code required. Run 'shiguang-gateway config lang list' to see available codes.",
-      "unknown": "Unknown language code: {code}. Run 'shiguang-gateway config lang list' to see available codes.",
+      "noCode": "Language code required. Run 'orbit config lang list' to see available codes.",
+      "unknown": "Unknown language code: {code}. Run 'orbit config lang list' to see available codes.",
       "alreadySet": "Language is already set to {code}.",
-      "envHint": "Tip: you can also set SHIGUANG_GATEWAY_LANG={code} in your environment."
+      "envHint": "Tip: you can also set ORBIT_LANG={code} in your environment."
     }
   },
   "completion": {
@@ -1231,7 +1231,7 @@
     "filter": "Filter by level (error,warn,info) — comma-separated",
     "lines": "Number of lines to fetch",
     "timeout": "Connection timeout in ms",
-    "baseUrl": "ShiguangGateway API base URL",
+    "baseUrl": "Orbit API base URL",
     "requestId": "Filter by request ID",
     "apiKey": "Filter by API key",
     "combo": "Filter by combo name",
@@ -1247,10 +1247,10 @@
     "description": "Control the system tray icon",
     "show": "Show the tray icon (if server is running with --tray)",
     "hide": "Hide the tray icon",
-    "quit": "Quit ShiguangGateway via tray"
+    "quit": "Quit Orbit via tray"
   },
   "autostart": {
-    "description": "Manage ShiguangGateway autostart at boot (Linux: systemd user service)",
+    "description": "Manage Orbit autostart at boot (Linux: systemd user service)",
     "enable": "Enable autostart at boot",
     "disable": "Disable autostart at boot",
     "toggle": "Toggle autostart at boot",
@@ -1272,7 +1272,7 @@
     "resume": "Resume a saved session by name"
   },
   "plugin": {
-    "description": "Manage CLI plugins (shiguang-gateway-cmd-*)",
+    "description": "Manage CLI plugins (orbit-cmd-*)",
     "list": "List installed plugins",
     "install": "Install a plugin from npm or local path",
     "remove": "Remove an installed plugin",
@@ -1282,19 +1282,19 @@
     "scaffold": "Scaffold a new plugin boilerplate"
   },
   "launch": {
-    "description": "Launch Claude Code pointed at ShiguangGateway (local or remote, with --profile)",
+    "description": "Launch Claude Code pointed at Orbit (local or remote, with --profile)",
     "token": "Token the Claude client should send (ANTHROPIC_AUTH_TOKEN)",
-    "notRunning": "ShiguangGateway is not reachable at {port}. Start it with 'shiguang-gateway serve'.",
+    "notRunning": "Orbit is not reachable at {port}. Start it with 'orbit serve'.",
     "notFound": "The 'claude' CLI was not found in PATH."
   },
   "run": {
-    "description": "Launch a supported CLI target through ShiguangGateway"
+    "description": "Launch a supported CLI target through Orbit"
   },
   "setupClaude": {
-    "description": "Generate ~/.claude/profiles Claude Code profiles from the ShiguangGateway model catalog"
+    "description": "Generate ~/.claude/profiles Claude Code profiles from the Orbit model catalog"
   },
   "connect": {
-    "description": "Connect to a remote ShiguangGateway server and enter remote mode"
+    "description": "Connect to a remote Orbit server and enter remote mode"
   },
   "tokens": {
     "description": "Manage scoped CLI access tokens (remote mode)"
@@ -1303,10 +1303,10 @@
     "description": "Pick a provider+model from the active server and configure a supported local CLI"
   },
   "launchCodex": {
-    "description": "Launch Codex CLI pointed at ShiguangGateway (local or remote VPS)"
+    "description": "Launch Codex CLI pointed at Orbit (local or remote VPS)"
   },
   "setupCodex": {
-    "description": "Generate ~/.codex profile files from ShiguangGateway live model catalog"
+    "description": "Generate ~/.codex profile files from Orbit live model catalog"
   },
   "packs": {
     "description": "Manage optional runtime packs (ML / browser automation)",
@@ -1319,7 +1319,7 @@
     "errUnknown": "unknown pack: {name}",
     "errNoIndex": "pack index not found; pass --source <dir> holding the pack payload (desktop bundles ship it next to the app)",
     "installed": "pack \"{name}\" installed and verified at {dir}",
-    "restartHint": "restart the ShiguangGateway server (or desktop app) so the runtime picks the pack up",
+    "restartHint": "restart the Orbit server (or desktop app) so the runtime picks the pack up",
     "removed": "pack \"{name}\" removed",
     "notInstalled": "pack \"{name}\" was not installed",
     "verifyOk": "all installed packs verified",

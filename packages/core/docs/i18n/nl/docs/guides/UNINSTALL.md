@@ -1,16 +1,16 @@
-# ShiguangGateway — Uninstall Guide (Nederlands)
+# Orbit — Uninstall Guide (Nederlands)
 
 🌐 **Languages:** 🇺🇸 [English](../../../../docs/UNINSTALL.md) · 🇸🇦 [ar](../../ar/docs/UNINSTALL.md) · 🇧🇬 [bg](../../bg/docs/UNINSTALL.md) · 🇧🇩 [bn](../../bn/docs/UNINSTALL.md) · 🇨🇿 [cs](../../cs/docs/UNINSTALL.md) · 🇩🇰 [da](../../da/docs/UNINSTALL.md) · 🇩🇪 [de](../../de/docs/UNINSTALL.md) · 🇪🇸 [es](../../es/docs/UNINSTALL.md) · 🇮🇷 [fa](../../fa/docs/UNINSTALL.md) · 🇫🇮 [fi](../../fi/docs/UNINSTALL.md) · 🇫🇷 [fr](../../fr/docs/UNINSTALL.md) · 🇮🇳 [gu](../../gu/docs/UNINSTALL.md) · 🇮🇱 [he](../../he/docs/UNINSTALL.md) · 🇮🇳 [hi](../../hi/docs/UNINSTALL.md) · 🇭🇺 [hu](../../hu/docs/UNINSTALL.md) · 🇮🇩 [id](../../id/docs/UNINSTALL.md) · 🇮🇹 [it](../../it/docs/UNINSTALL.md) · 🇯🇵 [ja](../../ja/docs/UNINSTALL.md) · 🇰🇷 [ko](../../ko/docs/UNINSTALL.md) · 🇮🇳 [mr](../../mr/docs/UNINSTALL.md) · 🇲🇾 [ms](../../ms/docs/UNINSTALL.md) · 🇳🇱 [nl](../../nl/docs/UNINSTALL.md) · 🇳🇴 [no](../../no/docs/UNINSTALL.md) · 🇵🇭 [phi](../../phi/docs/UNINSTALL.md) · 🇵🇱 [pl](../../pl/docs/UNINSTALL.md) · 🇵🇹 [pt](../../pt/docs/UNINSTALL.md) · 🇧🇷 [pt-BR](../../pt-BR/docs/UNINSTALL.md) · 🇷🇴 [ro](../../ro/docs/UNINSTALL.md) · 🇷🇺 [ru](../../ru/docs/UNINSTALL.md) · 🇸🇰 [sk](../../sk/docs/UNINSTALL.md) · 🇸🇪 [sv](../../sv/docs/UNINSTALL.md) · 🇰🇪 [sw](../../sw/docs/UNINSTALL.md) · 🇮🇳 [ta](../../ta/docs/UNINSTALL.md) · 🇮🇳 [te](../../te/docs/UNINSTALL.md) · 🇹🇭 [th](../../th/docs/UNINSTALL.md) · 🇹🇷 [tr](../../tr/docs/UNINSTALL.md) · 🇺🇦 [uk-UA](../../uk-UA/docs/UNINSTALL.md) · 🇵🇰 [ur](../../ur/docs/UNINSTALL.md) · 🇻🇳 [vi](../../vi/docs/UNINSTALL.md) · 🇨🇳 [zh-CN](../../zh-CN/docs/UNINSTALL.md)
 
 ---
 
-This guide covers how to cleanly remove ShiguangGateway from your system.
+This guide covers how to cleanly remove Orbit from your system.
 
 ---
 
 ## Quick Uninstall (v3.6.2+)
 
-ShiguangGateway provides two built-in scripts for clean removal:
+Orbit provides two built-in scripts for clean removal:
 
 ### Keep Your Data
 
@@ -18,7 +18,7 @@ ShiguangGateway provides two built-in scripts for clean removal:
 npm run uninstall
 ```
 
-This removes the ShiguangGateway application but **preserves** your database, configurations, API keys, and provider settings in `~/.shiguang-gateway/`. Use this if you plan to reinstall later and want to keep your setup.
+This removes the Orbit application but **preserves** your database, configurations, API keys, and provider settings in `~/.orbit/`. Use this if you plan to reinstall later and want to keep your setup.
 
 ### Full Removal
 
@@ -32,7 +32,7 @@ This removes the application **and permanently erases** all data:
 - Provider configurations and API keys
 - Backup files
 - Log files
-- All files in the `~/.shiguang-gateway/` directory
+- All files in the `~/.orbit/` directory
 
 > ⚠️ **Warning:** `npm run uninstall:full` is irreversible. All your provider connections, combos, API keys, and usage history will be permanently deleted.
 
@@ -44,31 +44,31 @@ This removes the application **and permanently erases** all data:
 
 ```bash
 # Remove the global package
-npm uninstall -g shiguang-gateway
+npm uninstall -g orbit
 
 # (Optional) Remove data directory
-rm -rf ~/.shiguang-gateway
+rm -rf ~/.orbit
 ```
 
 ### pnpm Global Install
 
 ```bash
-pnpm uninstall -g shiguang-gateway
-rm -rf ~/.shiguang-gateway
+pnpm uninstall -g orbit
+rm -rf ~/.orbit
 ```
 
 ### Docker
 
 ```bash
 # Stop and remove the container
-docker stop shiguang-gateway
-docker rm shiguang-gateway
+docker stop orbit
+docker rm orbit
 
 # Remove the volume (deletes all data)
-docker volume rm shiguang-gateway-data
+docker volume rm orbit-data
 
 # (Optional) Remove the image
-docker rmi diegosouzapw/shiguang-gateway:latest
+docker rmi diegosouzapw/orbit:latest
 ```
 
 ### Docker Compose
@@ -85,42 +85,42 @@ docker compose down -v
 
 **Windows:**
 
-- Open `Settings → Apps → ShiguangGateway → Uninstall`
+- Open `Settings → Apps → Orbit → Uninstall`
 - Or run the NSIS uninstaller from the install directory
 
 **macOS:**
 
-- Drag `ShiguangGateway.app` from `/Applications` to Trash
-- Remove data: `rm -rf ~/Library/Application Support/shiguang-gateway`
+- Drag `Orbit.app` from `/Applications` to Trash
+- Remove data: `rm -rf ~/Library/Application Support/orbit`
 
 **Linux:**
 
 - Remove the AppImage file
-- Remove data: `rm -rf ~/.shiguang-gateway`
+- Remove data: `rm -rf ~/.orbit`
 
 ### Source Install (git clone)
 
 ```bash
 # Remove the cloned directory
-rm -rf /path/to/shiguang-gateway
+rm -rf /path/to/orbit
 
 # (Optional) Remove data directory
-rm -rf ~/.shiguang-gateway
+rm -rf ~/.orbit
 ```
 
 ---
 
 ## Data Directories
 
-ShiguangGateway stores data in the following locations by default:
+Orbit stores data in the following locations by default:
 
 | Platform      | Default Path                  | Override                  |
 | ------------- | ----------------------------- | ------------------------- |
-| Linux         | `~/.shiguang-gateway/`               | `DATA_DIR` env var        |
-| macOS         | `~/.shiguang-gateway/`               | `DATA_DIR` env var        |
-| Windows       | `%APPDATA%/shiguang-gateway/`        | `DATA_DIR` env var        |
+| Linux         | `~/.orbit/`               | `DATA_DIR` env var        |
+| macOS         | `~/.orbit/`               | `DATA_DIR` env var        |
+| Windows       | `%APPDATA%/orbit/`        | `DATA_DIR` env var        |
 | Docker        | `/app/data/` (mounted volume) | `DATA_DIR` env var        |
-| XDG-compliant | `$XDG_CONFIG_HOME/shiguang-gateway/` | `XDG_CONFIG_HOME` env var |
+| XDG-compliant | `$XDG_CONFIG_HOME/orbit/` | `XDG_CONFIG_HOME` env var |
 
 ### Files in the data directory
 
@@ -141,17 +141,17 @@ After uninstalling, verify there are no remaining files:
 
 ```bash
 # Check for global npm package
-npm list -g shiguang-gateway 2>/dev/null
+npm list -g orbit 2>/dev/null
 
 # Check for data directory
-ls -la ~/.shiguang-gateway/ 2>/dev/null
+ls -la ~/.orbit/ 2>/dev/null
 
 # Check for running processes
-pgrep -f shiguang-gateway
+pgrep -f orbit
 ```
 
 If any process is still running, stop it:
 
 ```bash
-pkill -f shiguang-gateway
+pkill -f orbit
 ```

@@ -9,7 +9,7 @@ test("publishes authenticated event envelopes and treats HTTP rejection as failu
   const server = createServer(async (req, res) => {
     let body = "";
     for await (const chunk of req) body += chunk;
-    requests.push({ token: req.headers["x-shiguang-gateway-internal-service-token"], body: JSON.parse(body) });
+    requests.push({ token: req.headers["x-orbit-internal-service-token"], body: JSON.parse(body) });
     res.writeHead(requests.length === 1 ? 202 : 403).end();
   });
   await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
@@ -20,7 +20,7 @@ test("publishes authenticated event envelopes and treats HTTP rejection as failu
   const publisher = startRealtimePublisher({
     url: `http://127.0.0.1:${address.port}/events`,
     subscribe: (callback) => { listener = callback; return () => { subscribed = false; }; },
-    headers: () => ({ "x-shiguang-gateway-internal-service-token": "test-token" }),
+    headers: () => ({ "x-orbit-internal-service-token": "test-token" }),
     onError: (error) => errors.push(error),
   });
   try {

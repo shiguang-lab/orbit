@@ -23,14 +23,14 @@ const getSmeltConfigPath = (): string =>
 const getSmeltDir = () => path.dirname(getSmeltConfigPath());
 
 /**
- * Check if the config file contains ShiguangGateway settings.
+ * Check if the config file contains Orbit settings.
  */
-const hasShiguangGatewayConfig = (settings: Record<string, unknown> | null): boolean => {
+const hasOrbitConfig = (settings: Record<string, unknown> | null): boolean => {
   if (!settings) return false;
   return (
     typeof settings.baseUrl === "string" &&
     settings.baseUrl.length > 0 &&
-    settings._managedBy === "shiguangGateway"
+    settings._managedBy === "orbit"
   );
 };
 
@@ -79,7 +79,7 @@ export async function GET(request: Request) {
       runtimeMode: runtime.runtimeMode,
       reason: runtime.reason,
       config,
-      hasShiguangGateway: hasShiguangGatewayConfig(config),
+      hasOrbit: hasOrbitConfig(config),
       configPath: getSmeltConfigPath(),
     });
   } catch (err) {
@@ -90,7 +90,7 @@ export async function GET(request: Request) {
   }
 }
 
-// POST — write ShiguangGateway settings to Smelt config.json
+// POST — write Orbit settings to Smelt config.json
 export async function POST(request: Request) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
@@ -139,14 +139,14 @@ export async function POST(request: Request) {
       /* No existing config */
     }
 
-    // Merge ShiguangGateway settings (smelt uses OpenAI-compatible config)
+    // Merge Orbit settings (smelt uses OpenAI-compatible config)
     const normalizedBaseUrl = baseUrl.endsWith("/v1") ? baseUrl : `${baseUrl}/v1`;
     const updated: Record<string, unknown> = {
       ...existing,
       baseUrl: normalizedBaseUrl,
       apiKey,
       model,
-      _managedBy: "shiguangGateway",
+      _managedBy: "orbit",
     };
 
     await fs.writeFile(configPath, JSON.stringify(updated, null, 2), "utf-8");
@@ -171,7 +171,7 @@ export async function POST(request: Request) {
   }
 }
 
-// DELETE — remove ShiguangGateway settings from Smelt config
+// DELETE — remove Orbit settings from Smelt config
 export async function DELETE(request: Request) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
@@ -199,7 +199,7 @@ export async function DELETE(request: Request) {
       throw err;
     }
 
-    // Remove ShiguangGateway-managed fields
+    // Remove Orbit-managed fields
     delete existing.baseUrl;
     delete existing.apiKey;
     delete existing.model;
@@ -218,7 +218,7 @@ export async function DELETE(request: Request) {
       /* non-critical */
     }
 
-    return Response.json({ success: true, message: "Smelt ShiguangGateway settings removed" });
+    return Response.json({ success: true, message: "Smelt Orbit settings removed" });
   } catch (err) {
     return Response.json(
       { error: { message: sanitizeErrorMessage(err) } },

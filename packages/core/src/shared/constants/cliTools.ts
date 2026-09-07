@@ -13,7 +13,7 @@ export const CLI_TOOLS: Record<string, CliCatalogEntry> = {
     name: "Claude Code",
     image: "/providers/claude.svg",
     color: "#D97757",
-    description: "Anthropic Claude Code CLI — ANTHROPIC_BASE_URL points to ShiguangGateway",
+    description: "Anthropic Claude Code CLI — ANTHROPIC_BASE_URL points to Orbit",
     docsUrl: "https://docs.anthropic.com/en/docs/claude-code/overview",
     configType: "env",
     category: "code",
@@ -76,7 +76,7 @@ export const CLI_TOOLS: Record<string, CliCatalogEntry> = {
     name: "OpenAI Codex CLI",
     image: "/providers/codex.svg",
     color: "#10A37F",
-    description: "OpenAI Codex CLI — OpenAI-compatible base URL targets ShiguangGateway",
+    description: "OpenAI Codex CLI — OpenAI-compatible base URL targets Orbit",
     docsUrl: "https://github.com/openai/codex",
     configType: "custom",
     category: "code",
@@ -301,7 +301,7 @@ export const CLI_TOOLS: Record<string, CliCatalogEntry> = {
       },
       {
         type: "warning",
-        text: 'Thinking variant example: opencode run "implement this feature" --model shiguangGateway/claude-sonnet-4-5-thinking --variant high',
+        text: 'Thinking variant example: opencode run "implement this feature" --model orbit/claude-sonnet-4-5-thinking --variant high',
       },
     ],
     guideSteps: [
@@ -320,9 +320,9 @@ export const CLI_TOOLS: Record<string, CliCatalogEntry> = {
       code: `{
   "$schema": "https://opencode.ai/config.json",
   "provider": {
-    "shiguangGateway": {
+    "orbit": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "ShiguangGateway",
+      "name": "Orbit",
       "options": {
         "baseURL": "{{baseUrl}}",
         "apiKey": "{{apiKey}}"
@@ -368,7 +368,7 @@ export const CLI_TOOLS: Record<string, CliCatalogEntry> = {
       {
         step: 5,
         title: "Save Provider Block",
-        desc: "Use the JSON block below as the OpenAI-compatible provider definition for ShiguangGateway.",
+        desc: "Use the JSON block below as the OpenAI-compatible provider definition for Orbit.",
       },
     ],
     codeBlock: {
@@ -427,7 +427,7 @@ export const CLI_TOOLS: Record<string, CliCatalogEntry> = {
     name: "Qwen Code",
     image: "/providers/qwen.svg",
     color: "#10B981",
-    description: "Qwen Code CLI — current V4 OpenAI-compatible model provider via ShiguangGateway",
+    description: "Qwen Code CLI — current V4 OpenAI-compatible model provider via Orbit",
     docsUrl: "https://qwenlm.github.io/qwen-code-docs/en/users/configuration/model-providers/",
     configType: "guide",
     category: "code",
@@ -439,11 +439,11 @@ export const CLI_TOOLS: Record<string, CliCatalogEntry> = {
     notes: [
       {
         type: "info",
-        text: "ShiguangGateway is registered under modelProviders.openai using Qwen Code's current bare-array V4 format.",
+        text: "Orbit is registered under modelProviders.openai using Qwen Code's current bare-array V4 format.",
       },
       {
         type: "info",
-        text: "The API key is stored only as SHIGUANG_GATEWAY_API_KEY in ~/.qwen/.env, leaving your existing provider credentials untouched.",
+        text: "The API key is stored only as ORBIT_API_KEY in ~/.qwen/.env, leaving your existing provider credentials untouched.",
       },
     ],
     guideSteps: [
@@ -464,8 +464,8 @@ export const CLI_TOOLS: Record<string, CliCatalogEntry> = {
     "openai": [
       {
         "id": "{{model}}",
-        "name": "{{model}} (ShiguangGateway)",
-        "envKey": "SHIGUANG_GATEWAY_API_KEY",
+        "name": "{{model}} (Orbit)",
+        "envKey": "ORBIT_API_KEY",
         "baseUrl": "{{baseUrl}}"
       }
     ]
@@ -597,7 +597,7 @@ aider --openai-api-base "{{baseUrl}}" --model "{{model}}"`,
    * A self-improving RLM coding harness (TypeScript) whose LLM toolkit
    * (prime-agent-ai) supports "any OpenAI-compatible API" + a dedicated
    * "OpenAI Codex (ChatGPT Plus/Pro OAuth)" provider, so it can point at
-   * ShiguangGateway's OpenAI-compatible base URL like codex/forge. Installed via
+   * Orbit's OpenAI-compatible base URL like codex/forge. Installed via
    * `curl -fsSL https://app.primeintellect.ai/prime-agent/install.sh | sh`;
    * provider chosen at first run via `/login`.
    */
@@ -774,7 +774,7 @@ OPENAI_API_KEY: "{{apiKey}}"`,
     image: "/providers/cli-generic.svg",
     color: "#111111",
     docsUrl: "https://github.com/can1357/oh-my-pi",
-    description: "Oh My Pi terminal coding agent via ShiguangGateway",
+    description: "Oh My Pi terminal coding agent via Orbit",
     configType: "custom",
     category: "agent",
     vendor: "OSS",
@@ -784,7 +784,7 @@ OPENAI_API_KEY: "{{apiKey}}"`,
     notes: [
       {
         type: "info",
-        text: "Oh My Pi reads custom OpenAI-compatible providers from ~/.omp/agent/models.yml. ShiguangGateway adds itself as a provider with auto-discovery — models appear automatically in omp's /model menu.",
+        text: "Oh My Pi reads custom OpenAI-compatible providers from ~/.omp/agent/models.yml. Orbit adds itself as a provider with auto-discovery — models appear automatically in omp's /model menu.",
       },
       {
         type: "warning",
@@ -808,11 +808,11 @@ OPENAI_API_KEY: "{{apiKey}}"`,
     notes: [
       {
         type: "info",
-        text: "Letta CLI uses pi-ai which sends OpenAI-compatible requests. ShiguangGateway configures it as an OpenAI provider with custom base URL.",
+        text: "Letta CLI uses pi-ai which sends OpenAI-compatible requests. Orbit configures it as an OpenAI provider with custom base URL.",
       },
       {
         type: "info",
-        text: "CLI (Local Mode): ShiguangGateway auto-configures ~/.letta/lc-local-backend/providers/auth.json. Use 'letta --info' to check if local mode is enabled.",
+        text: "CLI (Local Mode): Orbit auto-configures ~/.letta/lc-local-backend/providers/auth.json. Use 'letta --info' to check if local mode is enabled.",
       },
       {
         type: "warning",

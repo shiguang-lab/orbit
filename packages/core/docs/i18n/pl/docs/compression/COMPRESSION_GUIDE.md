@@ -1,16 +1,16 @@
 ---
-title: "🗜️ Przewodnik po kompresji promptów — ShiguangGateway"
+title: "🗜️ Przewodnik po kompresji promptów — Orbit"
 version: 3.8.40
 lastUpdated: 2026-06-28
 ---
 
-# 🗜️ Przewodnik po kompresji promptów — ShiguangGateway
+# 🗜️ Przewodnik po kompresji promptów — Orbit
 
 > Oszczędzaj automatycznie 15–95% kwalifikującego się kontekstu. Szybki przegląd: [sekcja Compression w README](../README.md#%EF%B8%8F-prompt-compression--save-15-95-eligible-tokens-automatically).
 
 ## Przegląd
 
-ShiguangGateway implementuje modularny potok kompresji promptów, który działa **proaktywnie** zanim żądania trafią do upstreamowych providerów. Oszczędności tokenów zachodzą więc przejrzyście — bez zmian w Twoim workflow.
+Orbit implementuje modularny potok kompresji promptów, który działa **proaktywnie** zanim żądania trafią do upstreamowych providerów. Oszczędności tokenów zachodzą więc przejrzyście — bez zmian w Twoim workflow.
 
 ```
 Client Request
@@ -120,15 +120,15 @@ combo kompresji przypisane do combo routingu.
 
 ## Matematyka oszczędności upstream
 
-ShiguangGateway dokumentuje oszczędności kompresji z dwóch źródeł: benchmarków projektów upstream oraz
-własnej kompozycji silników ShiguangGateway.
+Orbit dokumentuje oszczędności kompresji z dwóch źródeł: benchmarków projektów upstream oraz
+własnej kompozycji silników Orbit.
 
 | Source  | Upstream README number used here                                                                                      |
 | ------- | --------------------------------------------------------------------------------------------------------------------- |
 | Caveman | `~75%` fewer output tokens, `65%` benchmark average output savings, `22-87%` range, and `~46%` input compression tool |
 | RTK     | `60-90%` command-output savings; sample session `~118,000 -> ~23,900` tokens, or `79.7%` saved (`~80%`)               |
 
-Dla nakładających się payloadów narzędzi/kontekstu domyślne combo ShiguangGateway układa silniki w stos:
+Dla nakładających się payloadów narzędzi/kontekstu domyślne combo Orbit układa silniki w stos:
 
 ```txt
 RTK -> Caveman
@@ -200,7 +200,7 @@ opisanego wyżej. Oba miejsca zapisują przez ten sam endpoint `PUT /api/combos/
 
 ### Nadpisanie per żądanie
 
-Wyślij nagłówek żądania `x-shiguang-gateway-compression`, aby nadpisać plan kompresji dla pojedynczego
+Wyślij nagłówek żądania `x-orbit-compression`, aby nadpisać plan kompresji dla pojedynczego
 żądania. Ma najwyższy priorytet — wygrywa z nadpisaniem combo routingu, aktywnym profilem,
 auto-triggerem i panelem Default. Nieznane wartości są ignorowane (żądanie nigdy nie jest odrzucane), a
 globalny przełącznik główny nadal blokuje wszystko: gdy kompresja jest globalnie wyłączona, nagłówek nie może
@@ -213,7 +213,7 @@ jej włączyć. Wartości:
 | `engine:<id>` | Pojedynczy silnik, gdy włączony, np. `engine:rtk`.                     |
 | `<combo>`     | Nazwane combo — najpierw po nazwie (bez wielkości liter), potem po id. |
 
-Zastosowany plan jest zwracany w nagłówku odpowiedzi `X-ShiguangGateway-Compression: <mode>; source=<source>`,
+Zastosowany plan jest zwracany w nagłówku odpowiedzi `X-Orbit-Compression: <mode>; source=<source>`,
 gdzie `<source>` to jedno z: `request-header`, `routing-override`, `active-profile`,
 `auto-trigger`, `default` lub `off`.
 
@@ -303,7 +303,7 @@ Tryb RTK jest inspirowany przez **[RTK - Rust Token Killer](https://github.com/r
 
 ## Zaawansowane systemy kompresji
 
-Poza 7 standardowymi trybami ShiguangGateway zawiera kilka zaawansowanych systemów kompresji,
+Poza 7 standardowymi trybami Orbit zawiera kilka zaawansowanych systemów kompresji,
 które działają automatycznie w zależności od kontekstu.
 
 ### Kompresja świadoma cache

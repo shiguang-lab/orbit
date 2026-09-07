@@ -13,11 +13,11 @@ lastUpdated: 2026-06-28
 
 ## What it is
 
-ShiguangGateway can connect to a **Notion** workspace as a **context source** — a read/write
+Orbit can connect to a **Notion** workspace as a **context source** — a read/write
 knowledge base that agents reach through the built-in MCP server. Once a Notion
 integration token is configured, the MCP tools let an LLM search pages and databases,
 read page content and block trees, query databases with filters/sorts, and append new
-blocks — all proxied through ShiguangGateway (with retry, timeout, and error classification)
+blocks — all proxied through Orbit (with retry, timeout, and error classification)
 so the model never touches the Notion API directly.
 
 The integration is a thin, hardened wrapper over the official Notion REST API
@@ -42,7 +42,7 @@ dashboard (`ObsidianSourceCard`'s sibling `NotionSourceCard`), or via the settin
 > [!NOTE]
 > The token is a **Notion internal integration token**. Create an integration at
 > <https://www.notion.com/my-integrations>, then share the pages/databases you want
-> ShiguangGateway to access with that integration (Notion's permission model is share-based,
+> Orbit to access with that integration (Notion's permission model is share-based,
 > not workspace-wide).
 
 ### Configure via REST
@@ -61,7 +61,7 @@ curl -X DELETE http://localhost:20128/api/settings/notion
 ```
 
 All three methods require dashboard authentication (`isAuthenticated`). On `POST`,
-ShiguangGateway saves the token and immediately runs a 1-result test search; if Notion
+Orbit saves the token and immediately runs a 1-result test search; if Notion
 returns an error object the token is cleared and the call fails with `400`.
 
 ## MCP tools (6)
@@ -96,8 +96,8 @@ time via `getNotionToken()`; if none is configured the tool throws
 
 The read tools require `read:notion` and the write tool requires `write:notion`.
 Scopes are enforced by `withScopeEnforcement()` in
-`open-sse/mcp-server/server.ts` only when `SHIGUANG_GATEWAY_MCP_ENFORCE_SCOPES=true`; the
-caller's allowed scopes come from `SHIGUANG_GATEWAY_MCP_SCOPES` (comma-separated) or the
+`open-sse/mcp-server/server.ts` only when `ORBIT_MCP_ENFORCE_SCOPES=true`; the
+caller's allowed scopes come from `ORBIT_MCP_SCOPES` (comma-separated) or the
 authenticated API key's scope context. See [MCP-SERVER.md](./MCP-SERVER.md) for the
 full scope model.
 

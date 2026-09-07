@@ -1,7 +1,7 @@
 /**
  * Shared Jina AI integration helpers.
  *
- * ShiguangGateway keeps two dashboard cards because the hosts differ:
+ * Orbit keeps two dashboard cards because the hosts differ:
  *   - jina-ai      Foundation API  https://api.jina.ai
  *   - jina-reader  Reader          https://r.jina.ai
  *

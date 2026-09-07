@@ -105,7 +105,7 @@ export interface NpmExecOptions {
  * Enabling the shell means the shell — not `execFile` — splits the command line,
  * so NO runtime value may be interpolated into argv (Hard Rule #13). The install
  * prefix (a DATA_DIR path that can legitimately contain spaces, e.g.
- * `C:\Users\John Doe\.shiguangGateway\…`) is therefore exported as the
+ * `C:\Users\John Doe\.orbit\…`) is therefore exported as the
  * `npm_config_prefix` environment variable — npm's documented env form of
  * `--prefix` — never as an argv entry. With the prefix moved to the environment
  * and the version constrained by {@link SERVICE_VERSION_PATTERN}, every remaining

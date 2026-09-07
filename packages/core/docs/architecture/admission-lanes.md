@@ -6,7 +6,7 @@ lastUpdated: 2026-08-10
 
 # Admission lanes (#9654) — two lane systems, what gates each, where each reports
 
-ShiguangGateway has **two** process-local lane systems with different scopes. They are
+Orbit has **two** process-local lane systems with different scopes. They are
 complementary; operators should know which one they are looking at.
 
 ## 1. Byte-level process-wide admission (`chatBodyAdmission.ts`)
@@ -26,8 +26,8 @@ complementary; operators should know which one they are looking at.
   before this fix) collapsed coding-agent fan-out (multiple subagents/CLIs,
   bodies routinely > 256 KB) to an effective concurrency of ~1, which 503'd
   under completely normal load. It now binds only when an operator explicitly
-  sets `SHIGUANG_GATEWAY_CHAT_MAX_HEAVY_IN_FLIGHT`. Left unset, admission is instead
-  gated by `SHIGUANG_GATEWAY_CHAT_MAX_INFLIGHT_BYTES` — a budget auto-derived from the
+  sets `ORBIT_CHAT_MAX_HEAVY_IN_FLIGHT`. Left unset, admission is instead
+  gated by `ORBIT_CHAT_MAX_INFLIGHT_BYTES` — a budget auto-derived from the
   process's real memory ceiling (`src/shared/middleware/admissionBudget.ts`):
   25% of the tighter of the V8 heap limit and any cgroup/container limit,
   divided by an 8x transient-amplification factor, clamped between 8 MiB and
@@ -41,11 +41,11 @@ complementary; operators should know which one they are looking at.
   `503 resource_pressure` under `critical` pressure, before any bytes are even
   ingested.
 - **Tuning:**
-  - `SHIGUANG_GATEWAY_CHAT_MAX_INFLIGHT_BYTES` — override for the auto-derived byte budget
-  - `SHIGUANG_GATEWAY_CHAT_MAX_HEAVY_IN_FLIGHT` — legacy request-count cap, opt-in only
-  - `SHIGUANG_GATEWAY_CHAT_ADMISSION_QUEUE_MS` — queue-wait before 503 (default 2000)
-  - `SHIGUANG_GATEWAY_CHAT_ADMISSION_MAX_QUEUED_BYTES` — queued-bytes heap valve (default 4 MB)
-  - `SHIGUANG_GATEWAY_CHAT_VIRTUAL_TTL_MS` / `SHIGUANG_GATEWAY_CHAT_VIRTUAL_MAX_SESSIONS` — deprecated
+  - `ORBIT_CHAT_MAX_INFLIGHT_BYTES` — override for the auto-derived byte budget
+  - `ORBIT_CHAT_MAX_HEAVY_IN_FLIGHT` — legacy request-count cap, opt-in only
+  - `ORBIT_CHAT_ADMISSION_QUEUE_MS` — queue-wait before 503 (default 2000)
+  - `ORBIT_CHAT_ADMISSION_MAX_QUEUED_BYTES` — queued-bytes heap valve (default 4 MB)
+  - `ORBIT_CHAT_VIRTUAL_TTL_MS` / `ORBIT_CHAT_VIRTUAL_MAX_SESSIONS` — deprecated
     no-ops since #10110 (accepted for config compatibility, ignored)
 - **Reports:** `GET /api/monitoring/health` → `chatAdmission` (#11244) — including
   the #503-fanout additions `inflightBytes`, `maxInflightBytes`, `budgetSource`
@@ -57,10 +57,10 @@ complementary; operators should know which one they are looking at.
 
 - **Scope:** tenant-key admission for provider dispatch — queue cost, latency-guided
   limit adaptation, lane queueing, and lane metrics.
-- **Gate:** **opt-in.** Disabled unless `SHIGUANG_GATEWAY_CHAT_VIRTUAL_LANES=true`. Without it,
+- **Gate:** **opt-in.** Disabled unless `ORBIT_CHAT_VIRTUAL_LANES=true`. Without it,
   the adaptive controller keeps the shared queue behavior (criterion 1 of #9654 only
   holds once an operator enables lanes).
-- **Tuning:** `SHIGUANG_GATEWAY_CHAT_VIRTUAL_LANES` + adaptive config (`maxQueueCount`,
+- **Tuning:** `ORBIT_CHAT_VIRTUAL_LANES` + adaptive config (`maxQueueCount`,
   `maxQueueCost`, `defaultMaxWaitMs`, …).
 - **Reports:** `GET /api/monitoring/health` → `adaptiveAdmission` → `laneCount`,
   `laneQueuedCount`, `laneQueuedCost`, `laneTenants` (opaque lane IDs, never raw
@@ -75,7 +75,7 @@ against the **parent's** tenant lane.
 
 - **Scope:** every fan-out target dispatched by combo, fusion, and the chaos engine.
   System 1 (byte-level) is unaffected — it never probes fan-out targets.
-- **Gate:** **opt-in with system 2.** A no-op when `SHIGUANG_GATEWAY_CHAT_VIRTUAL_LANES`
+- **Gate:** **opt-in with system 2.** A no-op when `ORBIT_CHAT_VIRTUAL_LANES`
   is unset — the parent request already holds the shared-queue lease in that mode,
   so probing would double-count and reject combo targets.
 - **Semantics:**
@@ -111,7 +111,7 @@ against the **parent's** tenant lane.
 - `adaptiveAdmission.laneCount` / `laneTenants` → **adaptive virtual lanes** (system 2).
 - `adaptiveAdmission.virtualLanes === true` → the fan-out probes of section 3 are
   also active. A payload with `virtualLanes` missing or `false` means
-  `SHIGUANG_GATEWAY_CHAT_VIRTUAL_LANES` is unset — the byte-level lanes (system 1) are
+  `ORBIT_CHAT_VIRTUAL_LANES` is unset — the byte-level lanes (system 1) are
   still active, but nothing under `adaptiveAdmission` (and no fan-out gating) is
   in effect until it is enabled.
 

@@ -5,7 +5,7 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
-const referenceRoot = resolve(process.env.SHIGUANG_GATEWAY_REFERENCE_DIR || join(root, "..", "Orbit"));
+const referenceRoot = resolve(process.env.ORBIT_REFERENCE_DIR || join(root, "..", "Orbit"));
 const dashboardRoot = join(referenceRoot, "src", "app", "(dashboard)", "dashboard");
 const routerFile = join(root, "apps", "console", "src", "app", "router.tsx");
 

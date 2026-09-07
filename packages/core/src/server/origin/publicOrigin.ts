@@ -19,7 +19,7 @@ export interface BrowserMutationOriginVerdict {
 }
 
 const PUBLIC_BASE_URL_ENV = [
-  "SHIGUANG_GATEWAY_PUBLIC_BASE_URL",
+  "ORBIT_PUBLIC_BASE_URL",
   "NEXT_PUBLIC_BASE_URL",
   "NEXT_PUBLIC_APP_URL",
 ] as const;
@@ -117,7 +117,7 @@ function sanitizeForwardedHost(host: string | null): string | null {
 }
 
 function trustProxyMode(): "none" | "loopback" | "private" {
-  const raw = process.env.SHIGUANG_GATEWAY_TRUST_PROXY?.trim().toLowerCase();
+  const raw = process.env.ORBIT_TRUST_PROXY?.trim().toLowerCase();
   if (!raw || ["0", "false", "none", "off", "no", "disable", "disabled"].includes(raw)) {
     return "none";
   }
@@ -132,7 +132,7 @@ export function trustsForwardedHeaders(request: Request): boolean {
 
   const peer = resolveStampedPeer(
     request.headers.get(PEER_IP_HEADER),
-    process.env.SHIGUANG_GATEWAY_PEER_STAMP_TOKEN
+    process.env.ORBIT_PEER_STAMP_TOKEN
   );
   const locality = classifyHostLocality(peer);
   if (mode === "loopback") return locality === "loopback";
@@ -195,7 +195,7 @@ function requestUrlProtocol(request: Request): "http" | "https" {
 function directLocalHostOrigin(request: Request): string | null {
   const peer = resolveStampedPeer(
     request.headers.get(PEER_IP_HEADER),
-    process.env.SHIGUANG_GATEWAY_PEER_STAMP_TOKEN
+    process.env.ORBIT_PEER_STAMP_TOKEN
   );
   if (classifyHostLocality(peer) === "remote") return null;
 

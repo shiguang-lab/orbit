@@ -48,7 +48,7 @@ test("retry responses preserve protocol headers and payload shapes", async () =>
   const circuit = providerCircuitOpenResponse("example", 4);
   assert.equal(circuit.status, 503);
   assert.equal(circuit.headers.get("retry-after"), "4");
-  assert.equal(circuit.headers.get("x-shiguanggateway-provider-breaker"), "open");
+  assert.equal(circuit.headers.get("x-orbit-provider-breaker"), "open");
   assert.deepEqual(await circuit.json(), {
     error: {
       message: "Provider example circuit breaker is open",

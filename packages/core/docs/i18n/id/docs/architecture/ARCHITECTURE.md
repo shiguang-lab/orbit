@@ -1,4 +1,4 @@
-# Arsitektur ShiguangGateway (Bahasa Indonesia)
+# Arsitektur Orbit (Bahasa Indonesia)
 
 🌐 **Languages:** 🇺🇸 [English](../../../../docs/ARCHITECTURE.md) · 🇸🇦 [ar](../../ar/docs/ARCHITECTURE.md) · 🇧🇬 [bg](../../bg/docs/ARCHITECTURE.md) · 🇧🇩 [bn](../../bn/docs/ARCHITECTURE.md) · 🇨🇿 [cs](../../cs/docs/ARCHITECTURE.md) · 🇩🇰 [da](../../da/docs/ARCHITECTURE.md) · 🇩🇪 [de](../../de/docs/ARCHITECTURE.md) · 🇪🇸 [es](../../es/docs/ARCHITECTURE.md) · 🇮🇷 [fa](../../fa/docs/ARCHITECTURE.md) · 🇫🇮 [fi](../../fi/docs/ARCHITECTURE.md) · 🇫🇷 [fr](../../fr/docs/ARCHITECTURE.md) · 🇮🇳 [gu](../../gu/docs/ARCHITECTURE.md) · 🇮🇱 [he](../../he/docs/ARCHITECTURE.md) · 🇮🇳 [hi](../../hi/docs/ARCHITECTURE.md) · 🇭🇺 [hu](../../hu/docs/ARCHITECTURE.md) · 🇮🇩 [id](../../id/docs/ARCHITECTURE.md) · 🇮🇹 [it](../../it/docs/ARCHITECTURE.md) · 🇯🇵 [ja](../../ja/docs/ARCHITECTURE.md) · 🇰🇷 [ko](../../ko/docs/ARCHITECTURE.md) · 🇮🇳 [mr](../../mr/docs/ARCHITECTURE.md) · 🇲🇾 [ms](../../ms/docs/ARCHITECTURE.md) · 🇳🇱 [nl](../../nl/docs/ARCHITECTURE.md) · 🇳🇴 [no](../../no/docs/ARCHITECTURE.md) · 🇵🇭 [phi](../../phi/docs/ARCHITECTURE.md) · 🇵🇱 [pl](../../pl/docs/ARCHITECTURE.md) · 🇵🇹 [pt](../../pt/docs/ARCHITECTURE.md) · 🇧🇷 [pt-BR](../../pt-BR/docs/ARCHITECTURE.md) · 🇷🇴 [ro](../../ro/docs/ARCHITECTURE.md) · 🇷🇺 [ru](../../ru/docs/ARCHITECTURE.md) · 🇸🇰 [sk](../../sk/docs/ARCHITECTURE.md) · 🇸🇪 [sv](../../sv/docs/ARCHITECTURE.md) · 🇰🇪 [sw](../../sw/docs/ARCHITECTURE.md) · 🇮🇳 [ta](../../ta/docs/ARCHITECTURE.md) · 🇮🇳 [te](../../te/docs/ARCHITECTURE.md) · 🇹🇭 [th](../../th/docs/ARCHITECTURE.md) · 🇹🇷 [tr](../../tr/docs/ARCHITECTURE.md) · 🇺🇦 [uk-UA](../../uk-UA/docs/ARCHITECTURE.md) · 🇵🇰 [ur](../../ur/docs/ARCHITECTURE.md) · 🇻🇳 [vi](../../vi/docs/ARCHITECTURE.md) · 🇨🇳 [zh-CN](../../zh-CN/docs/ARCHITECTURE.md)
 
@@ -8,7 +8,7 @@ _Last updated: 2026-04-15_
 
 ## Ringkasan Eksekutif
 
-ShiguangGateway adalah gateway routing AI lokal dan dasbor yang dibangun di atas Next.js.
+Orbit adalah gateway routing AI lokal dan dasbor yang dibangun di atas Next.js.
 Sistem ini menyediakan satu endpoint yang kompatibel dengan OpenAI (`/v1/*`) dan merutekan lalu lintas ke berbagai penyedia upstream dengan kemampuan translasi, fallback, pembaruan token, dan pelacakan penggunaan.
 
 Kemampuan inti:
@@ -128,7 +128,7 @@ flowchart LR
         BROWSER[Browser Dashboard]
     end
 
-    subgraph Router[ShiguangGateway Local Process]
+    subgraph Router[Orbit Local Process]
         API[V1 Compatibility API\n/v1/*]
         DASH[Dashboard + Management API\n/api/*]
         CORE[SSE + Translation Core\nopen-sse + src/sse]
@@ -291,7 +291,7 @@ DB status utama (SQLite):
 
 - Infrastruktur inti: `src/lib/db/core.ts` (better-sqlite3, migrasi, WAL)
 - Fasad re-ekspor: `src/lib/localDb.ts` (lapisan kompatibilitas tipis untuk pemanggil)
-- File: `${DATA_DIR}/storage.sqlite` (atau `$XDG_CONFIG_HOME/shiguang-gateway/storage.sqlite` jika diatur, jika tidak `~/.shiguang-gateway/storage.sqlite`)
+- File: `${DATA_DIR}/storage.sqlite` (atau `$XDG_CONFIG_HOME/orbit/storage.sqlite` jika diatur, jika tidak `~/.orbit/storage.sqlite`)
 - Entitas (tabel + namespace KV): providerConnections, providerNodes, modelAliases, combos, apiKeys, settings, pricing, **customModels**, **proxyConfig**, **ipFilter**, **thinkingBudget**, **systemPrompt**
 
 Persistensi penggunaan:
@@ -587,7 +587,7 @@ flowchart LR
         Browser[Dashboard Browser]
     end
 
-    subgraph ContainerOrProcess[ShiguangGateway Runtime]
+    subgraph ContainerOrProcess[Orbit Runtime]
         Next[Next.js Server\nPORT=20128]
         Core[SSE Core + Executors]
         MainDB[(storage.sqlite)]
@@ -838,7 +838,7 @@ Detailed request payload capture stores up to four JSON payload stages per route
 - permintaan mentah diterima dari klien
 - permintaan yang diterjemahkan sebenarnya dikirim ke hulu
 - respons penyedia direkonstruksi sebagai JSON; tanggapan yang dialirkan dipadatkan ke ringkasan akhir ditambah metadata aliran
-- respons klien akhir yang dikembalikan oleh ShiguangGateway; tanggapan yang dialirkan disimpan dalam bentuk ringkasan ringkas yang sama
+- respons klien akhir yang dikembalikan oleh Orbit; tanggapan yang dialirkan disimpan dalam bentuk ringkasan ringkas yang sama
 
 ## Batasan yang Sensitif terhadap Keamanan
 
@@ -865,7 +865,7 @@ Variabel lingkungan yang aktif digunakan oleh kode:
 
 ## Catatan Arsitektur yang Diketahui
 
-1. `usageDb` dan `localDb` berbagi kebijakan direktori dasar yang sama (`DATA_DIR` -> `XDG_CONFIG_HOME/shiguang-gateway` -> `~/.shiguang-gateway`) dengan migrasi file lama.
+1. `usageDb` dan `localDb` berbagi kebijakan direktori dasar yang sama (`DATA_DIR` -> `XDG_CONFIG_HOME/orbit` -> `~/.orbit`) dengan migrasi file lama.
 2. `/api/v1/route.ts` mendelegasikan ke pembuat katalog terpadu yang sama yang digunakan oleh `/api/v1/models` (`src/app/api/v1/models/catalog.ts`) untuk menghindari penyimpangan semantik.
 3. Pencatat permintaan menulis header/isi lengkap saat diaktifkan; memperlakukan direktori log sebagai sensitif.
 4. Perilaku cloud bergantung pada `NEXT_PUBLIC_BASE_URL` yang benar dan jangkauan titik akhir cloud.
@@ -880,7 +880,7 @@ Variabel lingkungan yang aktif digunakan oleh kode:
 ## Daftar Periksa Verifikasi Operasional
 
 - Bangun dari sumber: `npm run build`
-- Bangun gambar Docker: `docker build -t shiguang-gateway .`
+- Bangun gambar Docker: `docker build -t orbit .`
 - Mulai layanan dan verifikasi:
 - `GET /api/settings`
 - `GET /api/v1/models`

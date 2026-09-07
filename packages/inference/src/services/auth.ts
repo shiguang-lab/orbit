@@ -725,9 +725,9 @@ async function loadNoAuthProviderSpecificData(providerId: string): Promise<JsonR
 }
 function providerCanUseSyntheticNoAuthFallback(providerId: string): boolean {
   // The embedded CLIProxyAPI data plane is intentionally exposed without a
-  // separate ShiguangGateway provider key. Its own upstream account credentials are
+  // separate Orbit provider key. Its own upstream account credentials are
   // managed by CLIProxyAPI, so normal routing must still be able to select it
-  // when no provider_connections row exists in ShiguangGateway.
+  // when no provider_connections row exists in Orbit.
   if (providerId === "cliproxyapi") return true;
 
   const providerDef = getProviderById(providerId) as
@@ -3252,7 +3252,7 @@ export async function clearRecoveredProviderState(
 }
 /**
  * Validate API key (optional - for local use can skip).
- * Feature #1350: Supports SHIGUANG_GATEWAY_API_KEY / ROUTER_API_KEY env vars as
+ * Feature #1350: Supports ORBIT_API_KEY / ROUTER_API_KEY env vars as
  * persistent passthrough keys that always validate, surviving Docker
  * restarts and backup restores without DB dependency.
  */

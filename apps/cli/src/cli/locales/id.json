@@ -1,8 +1,8 @@
 {
   "common": {
     "error": "Kesalahan: {message}",
-    "serverOffline": "Server ShiguangGateway sedang offline. Mulai dengan: shiguang-gateway serve",
-    "authRequired": "Autentikasi diperlukan. Setel SHIGUANG_GATEWAY_API_KEY atau jalankan: shiguang-gateway setup",
+    "serverOffline": "Server Orbit sedang offline. Mulai dengan: orbit serve",
+    "authRequired": "Autentikasi diperlukan. Setel ORBIT_API_KEY atau jalankan: orbit setup",
     "rateLimited": "Batas permintaan terlampaui. Coba lagi dalam {seconds}d.",
     "timeout": "Permintaan habis waktu setelah {ms}ms.",
     "success": "Selesai.",
@@ -15,18 +15,18 @@
     "yesOpt": "Lewati konfirmasi"
   },
   "program": {
-    "description": "ShiguangGateway — Router AI Cerdas dengan Fallback Otomatis",
+    "description": "Orbit — Router AI Cerdas dengan Fallback Otomatis",
     "version": "Cetak versi dan keluar",
     "output": "Format keluaran (table, json, jsonl, csv)",
     "quiet": "Sembunyikan output yang tidak penting",
     "no_color": "Nonaktifkan output berwarna",
     "timeout": "Batas waktu permintaan HTTP dalam milidetik",
-    "api_key": "Kunci API untuk server ShiguangGateway",
-    "base_url": "URL dasar server ShiguangGateway",
+    "api_key": "Kunci API untuk server Orbit",
+    "base_url": "URL dasar server Orbit",
     "context": "Konteks/profil server untuk perintah ini",
-    "lang": "Atur bahasa tampilan CLI (menggantikan SHIGUANG_GATEWAY_LANG)"
+    "lang": "Atur bahasa tampilan CLI (menggantikan ORBIT_LANG)"
   },
   "redis": {
-    "description": "Luncurkan kontainer Redis lokal dengan satu klik (Podman atau Docker) untuk caching dan pelacakan kuota ShiguangGateway"
+    "description": "Luncurkan kontainer Redis lokal dengan satu klik (Podman atau Docker) untuk caching dan pelacakan kuota Orbit"
   }
 }

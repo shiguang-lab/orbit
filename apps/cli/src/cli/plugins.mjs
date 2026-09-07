@@ -3,10 +3,10 @@ import { join } from "node:path";
 import { homedir } from "node:os";
 import { pathToFileURL } from "node:url";
 
-const PLUGIN_PREFIX_RE = /^(@[^/]+\/)?shiguangGateway-cmd-/;
+const PLUGIN_PREFIX_RE = /^(@[^/]+\/)?orbit-cmd-/;
 
 function getPluginDirs() {
-  return [join(homedir(), ".shiguangGateway", "plugins"), process.env.SHIGUANG_GATEWAY_PLUGIN_PATH].filter(
+  return [join(homedir(), ".orbit", "plugins"), process.env.ORBIT_PLUGIN_PATH].filter(
     Boolean
   );
 }

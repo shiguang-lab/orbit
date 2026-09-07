@@ -39,7 +39,7 @@ Koko testimatriisin näkemiseksi katso `CONTRIBUTING.md` → "Testien suorittami
 
 ## Projekti lyhyesti
 
-**ShiguangGateway** — yhtenäinen AI-proxy/reititin. Yksi päätepiste, 329 LLM-toimittajaa, automaattinen varajärjestelmä.
+**Orbit** — yhtenäinen AI-proxy/reititin. Yksi päätepiste, 329 LLM-toimittajaa, automaattinen varajärjestelmä.
 
 | Kerros          | Sijainti                | Tarkoitus                                                                 |
 | --------------- | ----------------------- | ------------------------------------------------------------------------- |
@@ -80,7 +80,7 @@ API-reitit noudattavat johdonmukaista kaavaa: `Reitti → CORS-esivalmistelu →
 
 ## Resilienssin Suorituskykytila
 
-ShiguangGateway:lla on kolme liittyvää mutta erilaista tilapäisen epäonnistumisen mekanismia. Pidä niiden
+Orbit:lla on kolme liittyvää mutta erilaista tilapäisen epäonnistumisen mekanismia. Pidä niiden
 alueet erillään reitityskäyttäytymisen vianetsinnässä. Katso
 [3-kerroksinen resilienssikaavio](./docs/diagrams/exported/resilience-3layers.svg)
 (lähde: [docs/diagrams/resilience-3layers.mmd](./docs/diagrams/resilience-3layers.mmd))
@@ -389,7 +389,7 @@ git push -u origin feat/your-feature
 - **TypeScript**: 5.9+, kohde ES2022, moduuli esnext, resoluutio bundler
 - **Polkualias**: `@/*` → `src/`, `@orbit/inference` → `open-sse/`, `@orbit/inference/*` → `open-sse/*`
 - **Oletusportti**: 20128 (API + dashboard samalla portilla)
-- **Tietohakemisto**: `DATA_DIR` ympäristömuuttuja, oletuksena `~/.shiguang-gateway/`
+- **Tietohakemisto**: `DATA_DIR` ympäristömuuttuja, oletuksena `~/.orbit/`
 - **Avain ympäristömuuttujat**: `PORT`, `JWT_SECRET`, `API_KEY_SECRET`, `INITIAL_PASSWORD`, `REQUIRE_API_KEY`, `APP_LOG_LEVEL`
 - Asetus: `cp .env.example .env` ja sitten luo `JWT_SECRET` (`openssl rand -base64 48`) ja `API_KEY_SECRET` (`openssl rand -hex 32`)
 
@@ -412,4 +412,4 @@ git push -u origin feat/your-feature
 13. Älä koskaan merkkijonointerpoloi ulkoisia polkuja tai suoritusaikaisia arvoja shell-skripteihin, jotka annetaan `exec()`/`spawn()` — siirrä sen sijaan `env`-vaihtoehdon kautta. Viite: `src/mitm/cert/install.ts::updateNssDatabases`.
 14. Älä koskaan hylkää CodeQL / Secret-Scanning -ilmoitusta ilman (a) ensin tarkistamalla yllä olevat kaaviodokumentit nähdäksesi, soveltuuko apuri, ja (b) kirjaamalla tekninen perustelu hylkäyskommenttiin. Ennakkotapaus: `js/stack-trace-exposure`, joka nostettiin kutsupaikoissa, jotka jo ohjaavat `sanitizeErrorMessage()` kautta, on tunnettu CodeQL-rajoitus (räätälöityjä puhdistimia ei tunnisteta) — hylkää `false positive` viitaten `docs/security/ERROR_SANITIZATION.md`.
 15. Älä koskaan paljasta reittejä, jotka käynnistävät lapsiprosesseja (`/api/mcp/`, `/api/cli-tools/runtime/`) ilman `isLocalOnlyPath()` luokittelua `src/server/authz/routeGuard.ts`. Loopback-valvonta tapahtuu ehdottomasti ennen mitään todennustarkistusta — vuotanut JWT tunnelin kautta ei voi laukaista prosessin käynnistämistä. Katso `docs/security/ROUTE_GUARD_TIERS.md`.
-16. Älä koskaan sisällytä `Co-Authored-By`-liitteitä, jotka antavat kunnian tekoälyavustajalle, LLM:lle tai automaatiotilille (esim. nimet, joissa esiintyy "Claude", "GPT", "Copilot", "Bot"; sähköpostit osoitteissa `anthropic.com` / `openai.com` / bottien omistamissa `noreply.github.com`-osoitteissa). Tällaiset liitteet ohjaavat commit-attribuution bottitilille GitHubissa, piilottaen oikean kirjoittajan (`diegosouzapw`) PR-historiassa. Inhimilliset avustajat — mukaan lukien upstream-PR:n kirjoittajat ja issue-raportoijat, joita portataan ShiguangGatewayen — VOIVAT ja PITÄISI saada kunnian vakiomuotoisilla `Co-authored-by: Name <email>`-liitteillä; upstream-port-työnkulut (`/port-upstream-features`, `/port-upstream-issues`) riippuvat tästä.
+16. Älä koskaan sisällytä `Co-Authored-By`-liitteitä, jotka antavat kunnian tekoälyavustajalle, LLM:lle tai automaatiotilille (esim. nimet, joissa esiintyy "Claude", "GPT", "Copilot", "Bot"; sähköpostit osoitteissa `anthropic.com` / `openai.com` / bottien omistamissa `noreply.github.com`-osoitteissa). Tällaiset liitteet ohjaavat commit-attribuution bottitilille GitHubissa, piilottaen oikean kirjoittajan (`diegosouzapw`) PR-historiassa. Inhimilliset avustajat — mukaan lukien upstream-PR:n kirjoittajat ja issue-raportoijat, joita portataan Orbiten — VOIVAT ja PITÄISI saada kunnian vakiomuotoisilla `Co-authored-by: Name <email>`-liitteillä; upstream-port-työnkulut (`/port-upstream-features`, `/port-upstream-issues`) riippuvat tästä.

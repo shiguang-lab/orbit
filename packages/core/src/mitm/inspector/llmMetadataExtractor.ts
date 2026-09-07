@@ -165,8 +165,8 @@ export function extractLlmMetadata(req: InterceptedRequest): LlmMetadata | null 
   const streamed = isSseRequest(req);
   const mappedTo =
     req.mappedModel ??
-    req.requestHeaders["x-shiguangGateway-mapped"] ??
-    req.requestHeaders["X-ShiguangGateway-Mapped"] ??
+    req.requestHeaders["x-orbit-mapped"] ??
+    req.requestHeaders["X-Orbit-Mapped"] ??
     null;
 
   return {

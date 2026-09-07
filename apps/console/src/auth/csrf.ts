@@ -1,12 +1,12 @@
 /**
- * CSRF 保护：移植自 ShiguangGateway Shiguang Gateway src/shared/utils/dashboardCsrf.ts。
+ * CSRF 保护：移植自 Orbit Orbit src/shared/utils/dashboardCsrf.ts。
  *
- * ShiguangGateway 管理接口使用网关签名的 X-SG-Identity 会话；
- * mutating 请求需带 x-shiguangGateway-csrf 头。
+ * Orbit 管理接口使用网关签名的 X-SG-Identity 会话；
+ * mutating 请求需带 x-orbit-csrf 头。
  * token 从 GET /api/auth/csrf 获取，按 expiresAt 缓存 + 单飞去重。
  */
 
-export const DASHBOARD_CSRF_HEADER = "x-shiguangGateway-csrf";
+export const DASHBOARD_CSRF_HEADER = "x-orbit-csrf";
 
 interface CsrfResponse {
   token: string;

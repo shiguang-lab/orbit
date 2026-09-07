@@ -262,13 +262,13 @@ function toRecord(value: unknown): JsonRecord {
 }
 
 function isConfiguredEnvApiKey(key: string): boolean {
-  const envKey = process.env.SHIGUANG_GATEWAY_API_KEY || process.env.ROUTER_API_KEY;
+  const envKey = process.env.ORBIT_API_KEY || process.env.ROUTER_API_KEY;
   return Boolean(envKey && key === envKey);
 }
 
 function isRedisAuthCacheEnabled(): boolean {
   return (
-    process.env.SHIGUANG_GATEWAY_DISABLE_REDIS_AUTH_CACHE !== "1" &&
+    process.env.ORBIT_DISABLE_REDIS_AUTH_CACHE !== "1" &&
     process.env.NODE_ENV !== "test" &&
     process.env.DISABLE_SQLITE_AUTO_BACKUP !== "true"
   );
@@ -532,7 +532,7 @@ export async function getExclusiveLeaseConnectionIds(): Promise<Set<string>> {
 }
 
 /**
- * Select an API key for internal ShiguangGateway operations (combo health checks,
+ * Select an API key for internal Orbit operations (combo health checks,
  * cloud-sync verify pings, etc.).
  *
  * Naive selection of `getApiKeys()[0]` is unsafe because the first row is
@@ -1317,7 +1317,7 @@ export async function getApiKeyMetadata(
   // persistent env-var key support (persistent passthrough keys) (#1350)
   if (isConfiguredEnvApiKey(key)) {
     // ─── Env-key management-scope bypass ──────────────────────────────────
-    // The deployment-time env key (`SHIGUANG_GATEWAY_API_KEY` / `ROUTER_API_KEY`)
+    // The deployment-time env key (`ORBIT_API_KEY` / `ROUTER_API_KEY`)
     // is granted the "manage" scope unconditionally. This is intentional:
     //
     //   1. The env key never exists in the SQLite `api_keys` table, so the

@@ -6,7 +6,7 @@ lastUpdated: 2026-06-28
 
 # Feature Flags
 
-> Runtime toggles that change ShiguangGateway's behavior **without a redeploy**.
+> Runtime toggles that change Orbit's behavior **without a redeploy**.
 > Every flag listed here is defined in
 > [`src/shared/constants/featureFlagDefinitions.ts`](../../src/shared/constants/featureFlagDefinitions.ts)
 > — the single source of truth. The dashboard and the REST API both read from
@@ -70,10 +70,10 @@ used when neither a DB override nor an environment variable is present.
 | `ENABLE_TLS_FINGERPRINT`                        | boolean | `false` | ✓       | Enable TLS fingerprint stealth mode.                                                                                                                                                          |
 | `ONEPROXY_ENABLED`                              | boolean | `true`  |         | Enable 1proxy request proxying.                                                                                                                                                               |
 | `PROXY_AUTO_SELECT_ENABLED`                     | boolean | `false` |         | When no proxy is assigned to a connection, auto-select the first working proxy from the registry. Off by default (otherwise any registry proxy becomes a global fallback — #3332).            |
-| `SHIGUANG_GATEWAY_CONTROL_PLANE_PROXY_DIRECT_FALLBACK` | boolean | `false` |         | Allow OAuth and provider validation flows to bypass a pinned proxy and connect directly when proxy reachability pre-checks fail. Off by default because this can change egress IP.            |
+| `ORBIT_CONTROL_PLANE_PROXY_DIRECT_FALLBACK` | boolean | `false` |         | Allow OAuth and provider validation flows to bypass a pinned proxy and connect directly when proxy reachability pre-checks fail. Off by default because this can change egress IP.            |
 | `MITM_DISABLE_TLS_VERIFY`                       | boolean | `false` | ✓       | Disable TLS certificate verification for the MITM proxy. **Danger.**                                                                                                                          |
-| `SHIGUANG_GATEWAY_ALLOW_PRIVATE_PROVIDER_URLS`         | boolean | `false` |         | Allow provider URLs pointing to private/internal networks.                                                                                                                                    |
-| `SHIGUANG_GATEWAY_ALLOW_LOCAL_PROVIDER_URLS`           | boolean | `true`  |         | Allow adding/validating providers on local/private addresses (127.0.0.1, localhost, LAN). On by default (local-first); disable for strict public-only blocking. Cloud-metadata stays blocked. |
+| `ORBIT_ALLOW_PRIVATE_PROVIDER_URLS`         | boolean | `false` |         | Allow provider URLs pointing to private/internal networks.                                                                                                                                    |
+| `ORBIT_ALLOW_LOCAL_PROVIDER_URLS`           | boolean | `true`  |         | Allow adding/validating providers on local/private addresses (127.0.0.1, localhost, LAN). On by default (local-first); disable for strict public-only blocking. Cloud-metadata stays blocked. |
 | `ENABLE_CC_COMPATIBLE_PROVIDER`                 | boolean | `false` | ✓       | Enable Claude Code compatible provider mode.                                                                                                                                                  |
 
 ### Policies (3)
@@ -82,21 +82,21 @@ used when neither a DB override nor an environment variable is present.
 | ----------------------------------------- | ------- | ---------- | ------- | ---------------------------------------------------------------------- |
 | `TOOL_POLICY_MODE`                        | enum    | `disabled` |         | Tool-use policy enforcement mode. Values: `disabled`, `warn`, `block`. |
 | `RATE_LIMIT_AUTO_ENABLE`                  | boolean | `false`    |         | Automatically enable rate limiting based on usage patterns.            |
-| `DISABLE_CONTEXT_WINDOW_CHECKS`           | boolean | `false`    |         | Skip ShiguangGateway's local context-window / max-input-token check for direct single-model requests. Upstream limits still apply. |
+| `DISABLE_CONTEXT_WINDOW_CHECKS`           | boolean | `false`    |         | Skip Orbit's local context-window / max-input-token check for direct single-model requests. Upstream limits still apply. |
 
 ### Runtime (11)
 
 | Key                                         | Type    | Default | Restart | Description                                                                                                                                         |
 | ------------------------------------------- | ------- | ------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `EXPOSE_CC_DISCOVERY_ALIASES`               | boolean | `false` |         | Advertise `claude/<provider>/<model>` mirror ids on `/v1/models` so Claude Code gateway model discovery lists non-Claude models. Global level of the three-level gate (env wins over the dashboard override). See [Claude Code configuration](../guides/CLAUDE-CODE-CONFIGURATION.md#discovery-aliases--surface-non-claude-models-in-the-model-picker). |
-| `SHIGUANG_GATEWAY_MCP_ENFORCE_SCOPES`              | boolean | `true`  |         | Enforce scope restrictions on MCP tool access.                                                                                                      |
-| `SHIGUANG_GATEWAY_MCP_COMPRESS_DESCRIPTIONS`       | boolean | `false` |         | Compress MCP tool descriptions to reduce token usage.                                                                                               |
-| `SHIGUANG_GATEWAY_ENABLE_RUNTIME_BACKGROUND_TASKS` | boolean | `false` |         | Enable background task processing at runtime.                                                                                                       |
-| `SHIGUANG_GATEWAY_DISABLE_BACKGROUND_SERVICES`     | boolean | `false` | ✓       | Disable all background services (quota refresh, sync, etc).                                                                                         |
-| `SHIGUANG_GATEWAY_RTK_TRUST_PROJECT_FILTERS`       | boolean | `false` |         | Trust project-level RTK filters without validation.                                                                                                 |
-| `SHIGUANG_GATEWAY_ENABLE_LIVE_WS`                  | boolean | `true`  | ✓       | Start the real-time dashboard WebSocket server on import (port 20129 by default).                                                                   |
-| `SHIGUANG_GATEWAY_CODEX_WS_ENABLED`                | boolean | `true`  |         | Allow Codex to use the Responses-over-WebSocket transport. When off, Codex falls back to HTTP Responses.                                            |
-| `SHIGUANG_GATEWAY_EMERGENCY_FALLBACK`              | boolean | `true`  |         | Route budget-exhausted requests to the emergency free fallback provider/model. (See [Emergency Budget Fallback](#emergency-budget-fallback) below.) |
+| `ORBIT_MCP_ENFORCE_SCOPES`              | boolean | `true`  |         | Enforce scope restrictions on MCP tool access.                                                                                                      |
+| `ORBIT_MCP_COMPRESS_DESCRIPTIONS`       | boolean | `false` |         | Compress MCP tool descriptions to reduce token usage.                                                                                               |
+| `ORBIT_ENABLE_RUNTIME_BACKGROUND_TASKS` | boolean | `false` |         | Enable background task processing at runtime.                                                                                                       |
+| `ORBIT_DISABLE_BACKGROUND_SERVICES`     | boolean | `false` | ✓       | Disable all background services (quota refresh, sync, etc).                                                                                         |
+| `ORBIT_RTK_TRUST_PROJECT_FILTERS`       | boolean | `false` |         | Trust project-level RTK filters without validation.                                                                                                 |
+| `ORBIT_ENABLE_LIVE_WS`                  | boolean | `true`  | ✓       | Start the real-time dashboard WebSocket server on import (port 20129 by default).                                                                   |
+| `ORBIT_CODEX_WS_ENABLED`                | boolean | `true`  |         | Allow Codex to use the Responses-over-WebSocket transport. When off, Codex falls back to HTTP Responses.                                            |
+| `ORBIT_EMERGENCY_FALLBACK`              | boolean | `true`  |         | Route budget-exhausted requests to the emergency free fallback provider/model. (See [Emergency Budget Fallback](#emergency-budget-fallback) below.) |
 | `MODEL_CATALOG_INCLUDE_NAMES`               | boolean | `true`  |         | Include display-friendly name fields in `/v1/models` responses. Disable for clients that expect model IDs only.                                     |
 | `ARENA_ELO_SYNC_ENABLED`                    | boolean | `true`  |         | Enable periodic Arena AI leaderboard ELO sync for model intelligence rankings.                                                                      |
 
@@ -112,8 +112,8 @@ used when neither a DB override nor an environment variable is present.
 
 | Key                                   | Type    | Default | Description                                              |
 | ------------------------------------- | ------- | ------- | -------------------------------------------------------- |
-| `SHIGUANG_GATEWAY_DISABLE_LOCAL_HEALTHCHECK` | boolean | `false` | Disable the local instance health check endpoint.        |
-| `SHIGUANG_GATEWAY_DISABLE_TOKEN_HEALTHCHECK` | boolean | `false` | Disable the token validation health check.               |
+| `ORBIT_DISABLE_LOCAL_HEALTHCHECK` | boolean | `false` | Disable the local instance health check endpoint.        |
+| `ORBIT_DISABLE_TOKEN_HEALTHCHECK` | boolean | `false` | Disable the token validation health check.               |
 | `SKILLS_SANDBOX_NETWORK_ENABLED`      | boolean | `false` | Enable network access in the skills sandbox environment. |
 
 > [!NOTE]
@@ -209,19 +209,19 @@ value. Returns `{ cleared: <count>, message: "..." }`.
 
 > [!NOTE]
 > Flags with `requiresRestart: true` only take effect after a process reload.
-> Restart the complete split runtime with `shiguang-gateway restart`; process
+> Restart the complete split runtime with `orbit restart`; process
 > lifecycle is owned by the external CLI supervisor, not the control API.
 
 ---
 
 ## Emergency Budget Fallback
 
-`SHIGUANG_GATEWAY_EMERGENCY_FALLBACK` (category `runtime`, default `true`) controls the
+`ORBIT_EMERGENCY_FALLBACK` (category `runtime`, default `true`) controls the
 emergency free-fallback path in
 [`open-sse/services/emergencyFallback.ts`](../../inference/services/emergencyFallback.ts).
 When enabled, requests that exhaust their budget are routed to a free fallback
 provider/model instead of failing outright. Set it to `false` (or `0`) — via the
-dashboard toggle, a DB override, or the `SHIGUANG_GATEWAY_EMERGENCY_FALLBACK`
+dashboard toggle, a DB override, or the `ORBIT_EMERGENCY_FALLBACK`
 environment variable — to disable the behavior and let budget-exhausted requests
 fail. (Surfaced as a dashboard toggle in PRs #3741 / #3752.)
 

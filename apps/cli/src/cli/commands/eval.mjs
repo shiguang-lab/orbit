@@ -151,7 +151,7 @@ export async function runEvalRun(suiteId, opts, cmd) {
         runId: run.id,
         suiteId: opts.suite,
         baseUrl: globalOpts.baseUrl ?? "http://localhost:8787",
-        apiKey: globalOpts.apiKey ?? process.env.SHIGUANG_GATEWAY_API_KEY,
+        apiKey: globalOpts.apiKey ?? process.env.ORBIT_API_KEY,
       });
     } else {
       process.stderr.write("\nWatching run... (Ctrl+C to detach)\n");

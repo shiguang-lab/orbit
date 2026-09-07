@@ -7,7 +7,7 @@
 
 import { CORS_HEADERS } from "../utils/cors.ts";
 import { errorResponse } from "../utils/error.ts";
-import { attachShiguangGatewayMetaHeaders } from "@orbit/core/edge/gateway-response-meta";
+import { attachOrbitMetaHeaders } from "@orbit/core/edge/gateway-response-meta";
 import { generateRequestId } from "@orbit/contracts/request-id";
 import { saveCallLog } from "@orbit/core/usage/call-logs";
 
@@ -86,7 +86,7 @@ export async function handleJinaFoundationProxy(
     }
 
     const headers = new Headers({ ...CORS_HEADERS, "Content-Type": "application/json" });
-    attachShiguangGatewayMetaHeaders(headers, {
+    attachOrbitMetaHeaders(headers, {
       provider,
       model: options.model || provider,
       costUsd: 0,

@@ -1,4 +1,4 @@
-// Memory system type definitions for ShiguangGateway
+// Memory system type definitions for Orbit
 // These types support the memory management system for AI agents
 
 /**

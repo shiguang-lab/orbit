@@ -4,7 +4,7 @@ import { MaterialIcon } from "@/app/nav";
 
 const { Text, Title, Paragraph } = Typography;
 
-export const COMBO_USAGE_GUIDE_STORAGE_KEY = "shiguangGateway:combos:hide-usage-guide";
+export const COMBO_USAGE_GUIDE_STORAGE_KEY = "orbit:combos:hide-usage-guide";
 
 const COMBO_WIZARD_STEPS = [
   {

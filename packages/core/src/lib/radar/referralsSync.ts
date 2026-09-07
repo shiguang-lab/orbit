@@ -33,7 +33,7 @@ import type { RadarSettingsSnapshot } from "./sync";
  * Default feed base URL — same default/override convention as `sync.ts`
  * (`RADAR_FEED_URL` env var points forks/self-hosters at their own server).
  */
-const DEFAULT_FEED_BASE_URL = "https://radar.shiguangGateway.online";
+const DEFAULT_FEED_BASE_URL = "https://radar.orbit.online";
 
 const SYNC_TIMEOUT_MS = 30_000;
 
@@ -92,7 +92,7 @@ export interface ReferralsSyncDeps {
 // ---------------------------------------------------------------------------
 
 /**
- * Parse & validate the `x-shiguangGateway-feed-tier` response header.
+ * Parse & validate the `x-orbit-feed-tier` response header.
  *
  * Unlike the catalog feed, the referrals feed body carries no `tier` field
  * at all (there is only ever one signed artifact per `generatedAt`, and the
@@ -243,7 +243,7 @@ export async function syncRadarReferrals(
       rawBytes = buffered;
     }
 
-    const signature = res.headers.get("x-shiguangGateway-feed-signature") ?? "";
+    const signature = res.headers.get("x-orbit-feed-signature") ?? "";
 
     // Step 5: Verify signature — same pinned Ed25519 key(s) as the catalog feed.
     const sigValid = verifyFeedBytes(rawBytes, signature);
@@ -282,7 +282,7 @@ export async function syncRadarReferrals(
     // for this feed, so the header is the only source; absent/garbage header
     // degrades to the least-privileged "community" default.
     const servedTier =
-      parseServedTierHeader(res.headers.get("x-shiguangGateway-feed-tier")) ?? "community";
+      parseServedTierHeader(res.headers.get("x-orbit-feed-tier")) ?? "community";
 
     // Step 9: Cache the result
     const cacheEntry: RadarReferralsCacheEntry = {

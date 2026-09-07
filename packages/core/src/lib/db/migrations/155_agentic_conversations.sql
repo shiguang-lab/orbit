@@ -8,7 +8,7 @@
 
 CREATE TABLE IF NOT EXISTS agentic_conversations (
   id TEXT PRIMARY KEY,               -- 'conv_' + uuid, or the raw client
-                                      -- X-ShiguangGateway-Session-Id value when supplied
+                                      -- X-Orbit-Session-Id value when supplied
   api_key_id TEXT,
   fingerprint_hash TEXT NOT NULL,     -- fast candidate lookup
   last_message_count INTEGER NOT NULL,

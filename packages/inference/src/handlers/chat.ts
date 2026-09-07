@@ -394,7 +394,7 @@ async function handleChatImplementation(
   const sourceFormat = detectFormatFromUrl(body, request.url);
 
   // Early guard: an invalid `messages` field is rejected here with a clear
-  // ShiguangGateway-level 400 before any routing or upstream call (#5110, #6402).
+  // Orbit-level 400 before any routing or upstream call (#5110, #6402).
   // Without this guard, schema-invalid bodies fell through to model resolution
   // and surfaced as a misleading 404 `model_not_found` from chatHelpers.ts (#6402).
   // Cases covered:
@@ -597,7 +597,7 @@ async function handleChatImplementation(
   const externalSessionId = extractExternalSessionId(request.headers);
   const sessionId = externalSessionId || generateStableSessionId(body);
   const sessionAffinityKey = extractSessionAffinityKey(body, request.headers) || sessionId;
-  const requestedConnectionId = request.headers.get("x-shiguangGateway-connection")?.trim() || null;
+  const requestedConnectionId = request.headers.get("x-orbit-connection")?.trim() || null;
   if (sessionId) {
     touchSession(sessionId);
   }
@@ -629,15 +629,15 @@ async function handleChatImplementation(
   const bypassProviderQuotaPolicy = hasProviderQuotaBypassScope(apiKeyInfo?.scopes);
   telemetry.endPhase();
 
-  // ShiguangGateway-native `previous_response_id` continuation: reconstruct the
+  // Orbit-native `previous_response_id` continuation: reconstruct the
   // full input server-side before ANY downstream validation/translation
   // sees this request, so everything after this point (message-shape
   // guards, token-budget checks, provider translation) treats it exactly
   // like an ordinary full-history request. This works regardless of
   // whether the eventually-selected upstream provider itself understands
-  // Responses-API state -- ShiguangGateway always forwards the full reconstructed
+  // Responses-API state -- Orbit always forwards the full reconstructed
   // history upstream, exactly as it does today for a non-continued request.
-  // Client<->ShiguangGateway traffic shrinks to the new delta; ShiguangGateway<->
+  // Client<->Orbit traffic shrinks to the new delta; Orbit<->
   // provider traffic is unchanged. See src/lib/db/responsesContinuationStore.ts.
   //
   // Skipped entirely when the operator has set responsesPreviousResponseIdMode
@@ -745,7 +745,7 @@ async function handleChatImplementation(
   // incoming HTTP request, before combo dispatch / credential retries, so
   // every attempt for this request shares the same id and the
   // agentic_conversations row is only touched once.
-  const clientConversationHeader = request.headers.get("x-shiguangGateway-session-id")?.trim() || null;
+  const clientConversationHeader = request.headers.get("x-orbit-session-id")?.trim() || null;
   let conversationId: string | null = null;
   try {
     ({ conversationId } = await resolveConversationId({
@@ -1670,7 +1670,7 @@ async function handleSingleModelChat(
 
         const breakerFailureStatus = Number(lastStatus ?? credentials?.lastErrorCode);
         // lastError is a string here — check for the proxy_unreachable tag embedded by
-        // tagProxyUnreachable (proxyFetch.ts) and ShiguangGateway's own queue timeouts. Both mean
+        // tagProxyUnreachable (proxyFetch.ts) and Orbit's own queue timeouts. Both mean
         // we never reached the provider, so they must not trip the provider breaker.
         const isNetworkError =
           typeof lastError === "string" &&
@@ -1764,7 +1764,7 @@ async function handleSingleModelChat(
         comboStrategy === "context-relay" &&
         comboName &&
         runtimeOptions.sessionId &&
-        body?._shiguangGatewaySkipContextRelay !== true
+        body?._orbitSkipContextRelay !== true
       ) {
         const handoff = getHandoff(runtimeOptions.sessionId, comboName);
         if (handoff && handoff.fromAccount !== credentials.connectionId) {
@@ -1808,7 +1808,7 @@ async function handleSingleModelChat(
           ...(workspaceId ? { workspaceId } : {}),
         });
       }
-      if (runtimeOptions.sessionId && body?._shiguangGatewayInternalRequest !== "context-handoff") {
+      if (runtimeOptions.sessionId && body?._orbitInternalRequest !== "context-handoff") {
         touchSession(runtimeOptions.sessionId, credentials.connectionId);
         startQuotaMonitor(
           runtimeOptions.sessionId,
@@ -2312,7 +2312,7 @@ async function handleSingleModelChat(
             }
           );
 
-      // An explicit pin (combo step `connectionId` / `x-shiguangGateway-connection`) is an
+      // An explicit pin (combo step `connectionId` / `x-orbit-connection`) is an
       // operator instruction, not a suggestion: the account cooldown above is still
       // recorded, but selection must NOT silently rotate to a sibling account of the
       // same provider. Pinned steps fall through to combo orchestration, which moves

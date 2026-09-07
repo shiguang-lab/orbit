@@ -1,7 +1,7 @@
 /**
  * Extract a human-readable message from a parsed API error body.
  *
- * ShiguangGateway API error bodies follow the shape produced by
+ * Orbit API error bodies follow the shape produced by
  * `comboErrorResponse`/`buildErrorBody`:
  *
  *   { error: { message: string, details?: Array<{ message?: string }> } }

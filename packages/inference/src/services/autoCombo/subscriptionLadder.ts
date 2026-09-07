@@ -2,7 +2,7 @@
  * Subscription-first routing: the rung model, its two groupings, and the
  * reset re-entry rules.
  *
- * ShiguangGateway already answers "is this model free?" (`paidModelFilter.ts`) and
+ * Orbit already answers "is this model free?" (`paidModelFilter.ts`) and
  * "can this connection ever bill me?" (`strictZeroCostFilter.ts`). Both fail
  * CLOSED — an exhausted free pool is an empty pool, never a step up to a paid
  * option. And every paid-side mechanism (`cost-optimized`, `budgetCap`,

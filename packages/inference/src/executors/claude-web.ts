@@ -196,7 +196,7 @@ function forceBrowserTransport(): boolean {
 }
 
 function browserFallbackEnabled(): boolean {
-  return forceBrowserTransport() || isEnabledFlag(process.env.SHIGUANG_GATEWAY_BROWSER_POOL);
+  return forceBrowserTransport() || isEnabledFlag(process.env.ORBIT_BROWSER_POOL);
 }
 
 function makeCompletionUrl(turn: PreparedClaudeWebTurn, organizationId: string): string {

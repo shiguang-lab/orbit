@@ -3,7 +3,7 @@
  *
  * In-memory, process-global counters for vision, audio, and video bridge
  * activity plus the builder for the
- * `x-shiguangGateway-modality-bridge` response header, which tells clients that
+ * `x-orbit-modality-bridge` response header, which tells clients that
  * their request payload was transparently transformed into text.
  * Reroutes do NOT get a header — the payload was untouched, only the model
  * changed, and that is already visible in the response body's `model` field.

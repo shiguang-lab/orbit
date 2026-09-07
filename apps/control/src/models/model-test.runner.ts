@@ -163,12 +163,12 @@ export function buildInternalChatRequest(
       "Content-Type": "application/json",
       // Reuse the existing strict-mode internal bypass for live health checks.
       "X-Internal-Test": "combo-health-check",
-      "X-ShiguangGateway-No-Cache": "true",
+      "X-Orbit-No-Cache": "true",
       // #6240: a connection test must be clean — never let the operator's globally-enabled
       // Output Styles (e.g. "Ultra terse") leak a system prompt into a test-model call.
-      "X-ShiguangGateway-Compression": "off",
+      "X-Orbit-Compression": "off",
       "X-Request-Id": `model-test-${randomUUID()}`,
-      ...(connectionId ? { "X-ShiguangGateway-Connection": connectionId } : {}),
+      ...(connectionId ? { "X-Orbit-Connection": connectionId } : {}),
     },
     body: JSON.stringify(testBody),
     signal,
@@ -185,10 +185,10 @@ export function buildInternalRerankRequest(
     headers: {
       "Content-Type": "application/json",
       "X-Internal-Test": "combo-health-check",
-      "X-ShiguangGateway-No-Cache": "true",
-      "X-ShiguangGateway-Compression": "off",
+      "X-Orbit-No-Cache": "true",
+      "X-Orbit-Compression": "off",
       "X-Request-Id": `model-test-${randomUUID()}`,
-      ...(connectionId ? { "X-ShiguangGateway-Connection": connectionId } : {}),
+      ...(connectionId ? { "X-Orbit-Connection": connectionId } : {}),
     },
     body: JSON.stringify(testBody),
     signal,
@@ -204,7 +204,7 @@ function buildTinyWavFile(): File {
         0x00, 0x00, 0x02, 0x00, 0x10, 0x00, 0x64, 0x61, 0x74, 0x61, 0x00, 0x00, 0x00, 0x00,
       ]),
     ],
-    "shiguangGateway-model-test.wav",
+    "orbit-model-test.wav",
     { type: "audio/wav" }
   );
 }
@@ -222,10 +222,10 @@ export function buildInternalAudioTranscriptionRequest(
     method: "POST",
     headers: {
       "X-Internal-Test": "combo-health-check",
-      "X-ShiguangGateway-No-Cache": "true",
-      "X-ShiguangGateway-Compression": "off",
+      "X-Orbit-No-Cache": "true",
+      "X-Orbit-Compression": "off",
       "X-Request-Id": `model-test-${randomUUID()}`,
-      ...(connectionId ? { "X-ShiguangGateway-Connection": connectionId } : {}),
+      ...(connectionId ? { "X-Orbit-Connection": connectionId } : {}),
     },
     body: formData,
     signal,
@@ -242,10 +242,10 @@ function buildInternalEmbeddingRequest(
     headers: {
       "Content-Type": "application/json",
       "X-Internal-Test": "combo-health-check",
-      "X-ShiguangGateway-No-Cache": "true",
-      "X-ShiguangGateway-Compression": "off",
+      "X-Orbit-No-Cache": "true",
+      "X-Orbit-Compression": "off",
       "X-Request-Id": `model-test-${randomUUID()}`,
-      ...(connectionId ? { "X-ShiguangGateway-Connection": connectionId } : {}),
+      ...(connectionId ? { "X-Orbit-Connection": connectionId } : {}),
     },
     body: JSON.stringify(testBody),
     signal,
@@ -457,9 +457,9 @@ export async function runSingleModelTest(
   const testBody = isRerank
     ? {
         model: fullModelStr,
-        query: "What is ShiguangGateway?",
+        query: "What is Orbit?",
         documents: [
-          "ShiguangGateway routes AI requests across configured providers.",
+          "Orbit routes AI requests across configured providers.",
           "This document is unrelated to the test query.",
         ],
         top_n: 1,

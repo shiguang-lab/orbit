@@ -465,7 +465,7 @@ async function describeWithVisionModel(
           producerModel = model;
         },
         prompt,
-        routeThroughShiguangGateway: true,
+        routeThroughOrbit: true,
         signal,
         timeoutMs: runtime.timeoutMs,
         fetchImpl: undiciFetch as unknown as typeof fetch,

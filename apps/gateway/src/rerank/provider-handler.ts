@@ -203,7 +203,7 @@ export async function handleRerank({
   apiKeyId = null,
   apiKeyName = null,
 }) {
-  const [{ attachShiguangGatewayMetaHeaders }, { calculateModalCost }, { generateRequestId }, { saveCallLog }, { resolveProxyForConnection }] = await Promise.all([
+  const [{ attachOrbitMetaHeaders }, { calculateModalCost }, { generateRequestId }, { saveCallLog }, { resolveProxyForConnection }] = await Promise.all([
     load("@orbit/core/edge/gateway-response-meta"),
     load("@orbit/core/pricing/cost-calculator"),
     load("@orbit/core/runtime/request-id"),
@@ -322,7 +322,7 @@ export async function handleRerank({
     }).catch(() => {});
 
     const headers = new Headers({ ...CORS_HEADERS, "Content-Type": "application/json" });
-    attachShiguangGatewayMetaHeaders(headers, {
+    attachOrbitMetaHeaders(headers, {
       provider: providerId,
       model: modelId,
       costUsd,

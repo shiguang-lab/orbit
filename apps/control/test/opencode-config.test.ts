@@ -16,7 +16,7 @@ test("normalizes provider values, models, labels, and defaults", () => {
 
   assert.deepEqual(config.options, {
     baseURL: "https://gateway.example/v1",
-    apiKey: "sk_shiguangGateway",
+    apiKey: "sk_orbit",
   });
   assert.deepEqual(Object.keys(config.models), ["model-a", "model-b"]);
   assert.equal(config.models["model-a"].name, "Model A");
@@ -33,8 +33,8 @@ test("creates the established document for an empty config", () => {
   assert.equal(text.endsWith("\n"), false);
   const parsed = JSON.parse(text);
   assert.equal(parsed.$schema, "https://opencode.ai/config.json");
-  assert.equal(parsed.provider.shiguangGateway.options.baseURL, "http://127.0.0.1:8787/v1");
-  assert.equal(parsed.providers.shiguangGateway.settings.apiKey, "secret");
+  assert.equal(parsed.provider.orbit.options.baseURL, "http://127.0.0.1:8787/v1");
+  assert.equal(parsed.providers.orbit.settings.apiKey, "secret");
 });
 
 test("preserves JSONC comments, trailing commas, unrelated fields, and existing schema", () => {
@@ -64,15 +64,15 @@ test("preserves JSONC comments, trailing commas, unrelated fields, and existing 
   assert.equal(parsed.$schema, "https://example.test/custom-schema.json");
   assert.equal(parsed.provider.other.name, "Other");
   assert.equal(parsed.providers.otherV2.name, "Other v2");
-  assert.equal(parsed.provider.shiguangGateway.models["model-a"].name, "model-a");
-  assert.equal(parsed.providers.shiguangGateway.models["model-a"].name, "model-a");
+  assert.equal(parsed.provider.orbit.models["model-a"].name, "model-a");
+  assert.equal(parsed.providers.orbit.models["model-a"].name, "model-a");
 });
 
 test("replaces only managed provider entries in an existing document", () => {
   const existing = JSON.stringify({
     untouched: { enabled: true },
-    provider: { other: { value: 1 }, shiguangGateway: { stale: true } },
-    providers: { other: { value: 2 }, shiguangGateway: { stale: true } },
+    provider: { other: { value: 1 }, orbit: { stale: true } },
+    providers: { other: { value: 2 }, orbit: { stale: true } },
   }, null, 4);
 
   const result = mergeOpenCodeConfigText(existing, {
@@ -84,8 +84,8 @@ test("replaces only managed provider entries in an existing document", () => {
   assert.deepEqual(parsed.untouched, { enabled: true });
   assert.deepEqual(parsed.provider.other, { value: 1 });
   assert.deepEqual(parsed.providers.other, { value: 2 });
-  assert.equal(parsed.provider.shiguangGateway.stale, undefined);
-  assert.equal(parsed.providers.shiguangGateway.stale, undefined);
+  assert.equal(parsed.provider.orbit.stale, undefined);
+  assert.equal(parsed.providers.orbit.stale, undefined);
 });
 
 test("rejects invalid JSONC and non-object roots instead of overwriting them", () => {

@@ -77,11 +77,11 @@ export function registerBackup(program) {
       if (exitCode !== 0) process.exit(exitCode);
     });
 
-  // Legacy: `shiguangGateway backup` without a subcommand still creates a backup
+  // Legacy: `orbit backup` without a subcommand still creates a backup
   // (documented as the canonical usage in USER_GUIDE.md / CLI-TOOLS.md /
   // AGENT-SKILLS.md). No flags are declared here — declaring the same
   // option names as `create`/`auto enable` here previously shadowed them
-  // (#8512), and no doc shows `shiguangGateway backup` invoked with flags.
+  // (#8512), and no doc shows `orbit backup` invoked with flags.
   backup.action(async (opts) => {
     const exitCode = await runBackupCommand(opts);
     if (exitCode !== 0) process.exit(exitCode);
@@ -163,14 +163,14 @@ async function _uploadBackupToCloud(backupPath, info) {
     return 1;
   }
   try {
-    const boundary = `shiguangGateway-backup-${Date.now().toString(36)}-${randomBytes(8).toString("hex")}`;
+    const boundary = `orbit-backup-${Date.now().toString(36)}-${randomBytes(8).toString("hex")}`;
     const headers = new Headers({
       accept: "application/json",
       "content-type": `multipart/form-data; boundary=${boundary}`,
     });
-    const apiKey = process.env.SHIGUANG_GATEWAY_API_KEY;
+    const apiKey = process.env.ORBIT_API_KEY;
     if (apiKey) headers.set("authorization", `Bearer ${apiKey}`);
-    const cliToken = process.env.SHIGUANG_GATEWAY_CLI_TOKEN ?? (await getCliToken());
+    const cliToken = process.env.ORBIT_CLI_TOKEN ?? (await getCliToken());
     if (cliToken) headers.set(CLI_TOKEN_HEADER, cliToken);
 
     const controller = new AbortController();
@@ -280,7 +280,7 @@ export async function runRestoreCommand(backupId, opts = {}) {
 
     try {
       const dirs = readdirSync(backupDir)
-        .filter((f) => f.startsWith("shiguangGateway-backup-"))
+        .filter((f) => f.startsWith("orbit-backup-"))
         .sort()
         .reverse();
 
@@ -293,12 +293,12 @@ export async function runRestoreCommand(backupId, opts = {}) {
         const infoPath = join(backupDir, dir, "backup-info.json");
         if (existsSync(infoPath)) {
           const info = JSON.parse(readFileSync(infoPath, "utf8"));
-          const id = dir.replace("shiguangGateway-backup-", "");
+          const id = dir.replace("orbit-backup-", "");
           const dateStr = new Date(info.timestamp).toLocaleString();
           console.log(`  ${id}`);
           console.log(`\x1b[2m    ${dateStr} — ${info.files?.length || 0} files\x1b[0m`);
         } else {
-          console.log(`\x1b[2m  ${dir.replace("shiguangGateway-backup-", "")}\x1b[0m`);
+          console.log(`\x1b[2m  ${dir.replace("orbit-backup-", "")}\x1b[0m`);
         }
       }
     } catch (err) {
@@ -308,12 +308,12 @@ export async function runRestoreCommand(backupId, opts = {}) {
       return 1;
     }
 
-    if (!backupId) console.log("\nUsage: shiguangGateway restore <backup-id>");
+    if (!backupId) console.log("\nUsage: orbit restore <backup-id>");
     return 0;
   }
 
   const safeBackupId = String(backupId).replace(/[/\\]/g, "_");
-  const backupPath = join(backupDir, `shiguangGateway-backup-${safeBackupId}`);
+  const backupPath = join(backupDir, `orbit-backup-${safeBackupId}`);
   if (!existsSync(backupPath)) {
     console.error(t("backup.notFound", { name: backupId }));
     return 1;

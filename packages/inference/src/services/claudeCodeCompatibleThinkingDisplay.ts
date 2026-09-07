@@ -1,4 +1,4 @@
-const COPILOT_REASONING_SUMMARY_MARKER = "_shiguangGatewayCopilotReasoningSummary";
+const COPILOT_REASONING_SUMMARY_MARKER = "_orbitCopilotReasoningSummary";
 
 export function applyClaudeCodeCompatibleThinkingDisplay(
   thinking: Record<string, unknown>,

@@ -195,7 +195,7 @@ function exportCsvReport(data: UsageAnalyticsPayload, range: string) {
   }
 
   const dateStr = dayjs().format("YYYYMMDD-HHmmss");
-  downloadFile(lines.join("\n"), `shiguangGateway-costs-${range}-${dateStr}.csv`, "text/csv;charset=utf-8");
+  downloadFile(lines.join("\n"), `orbit-costs-${range}-${dateStr}.csv`, "text/csv;charset=utf-8");
 }
 
 /* ───────────── Chart Components ───────────── */
@@ -1012,7 +1012,7 @@ export default function AnalyticsPage() {
                   icon={<MaterialIcon name="code" size={16} />}
                   onClick={() => {
                     const jsonStr = JSON.stringify(data, null, 2);
-                    downloadFile(jsonStr, `shiguangGateway-costs-${range}-${dayjs().format("YYYYMMDD")}.json`, "application/json");
+                    downloadFile(jsonStr, `orbit-costs-${range}-${dayjs().format("YYYYMMDD")}.json`, "application/json");
                   }}
                 >
                   导出 JSON

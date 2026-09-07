@@ -57,7 +57,7 @@ export async function mcpCallTool(name, args = {}, options = {}) {
       params: {
         protocolVersion: "2024-11-05",
         capabilities: {},
-        clientInfo: { name: "shiguangGateway-cli", version: "1.0" },
+        clientInfo: { name: "orbit-cli", version: "1.0" },
       },
     },
     { timeout, stream: options.stream },

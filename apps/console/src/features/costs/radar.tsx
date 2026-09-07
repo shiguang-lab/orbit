@@ -310,12 +310,12 @@ export function RadarPage() {
             </Flex>
 
             <Space size={16}>
-              <a href={settings.contributorClaimUrl || "https://radar.shiguangGateway.online/auth/github"} target="_blank" rel="noreferrer">
+              <a href={settings.contributorClaimUrl || "https://radar.orbit.online/auth/github"} target="_blank" rel="noreferrer">
                 <Text type="secondary" style={{ fontSize: 12 }}>
                   {tt("🎁 贡献者免费领取 Key →", "🎁 Contributor Free Key →")}
                 </Text>
               </a>
-              <a href={settings.supporterPlansUrl || "https://radar.shiguangGateway.online/planos"} target="_blank" rel="noreferrer">
+              <a href={settings.supporterPlansUrl || "https://radar.orbit.online/planos"} target="_blank" rel="noreferrer">
                 <Text type="secondary" style={{ fontSize: 12 }}>
                   {tt("💎 了解 Supporter 赞助权益 →", "💎 Supporter Perks →")}
                 </Text>

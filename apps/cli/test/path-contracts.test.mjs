@@ -18,13 +18,13 @@ import { getCurrentVersion, runUpdateCommand } from "../src/cli/commands/update.
 
 test("CLI-owned paths and version do not depend on cwd", async () => {
   const previous = process.cwd();
-  const elsewhere = mkdtempSync(join(tmpdir(), "shiguang-cli-cwd-"));
+  const elsewhere = mkdtempSync(join(tmpdir(), "orbit-cli-cwd-"));
   try {
     process.chdir(elsewhere);
     const manifest = JSON.parse(readFileSync(CLI_PACKAGE_JSON, "utf8"));
     assert.equal(readCliVersion(), manifest.version);
     assert.equal(await getCurrentVersion(), manifest.version);
-    assert.equal(CLI_ENTRY, join(CLI_APP_ROOT, "src", "shiguang-gateway.mjs"));
+    assert.equal(CLI_ENTRY, join(CLI_APP_ROOT, "src", "orbit.mjs"));
     assert.equal(CLI_LOCALES_DIR, join(CLI_APP_ROOT, "src", "cli", "locales"));
   } finally {
     process.chdir(previous);
@@ -45,14 +45,14 @@ test("MCP launcher consumes the callable open-sse factory", () => {
 test("autostart always targets the app-owned CLI entry", () => {
   assert.equal(resolveCliPath(), CLI_ENTRY);
   assert.equal(resolveCliPath({ existsSync: () => false, realpathSync: (path) => path }), null);
-  const line = buildServeExecLine("/workspace with spaces/apps/cli/src/shiguang-gateway.mjs", {
+  const line = buildServeExecLine("/workspace with spaces/apps/cli/src/orbit.mjs", {
     tray: true,
   });
-  assert.match(line, /shiguang-gateway\.mjs" serve --no-open --tray$/);
+  assert.match(line, /orbit\.mjs" serve --no-open --tray$/);
 });
 
 test("locale generation uses the app catalog and an injected destination", () => {
-  const directory = mkdtempSync(join(tmpdir(), "shiguang-cli-locales-"));
+  const directory = mkdtempSync(join(tmpdir(), "orbit-cli-locales-"));
   try {
     const result = generateLocales({
       locales: [{ code: "zz", english: "Test" }],

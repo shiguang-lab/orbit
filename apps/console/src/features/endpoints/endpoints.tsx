@@ -27,7 +27,7 @@ import { PageSkeleton } from "@/shared/components/PageSkeleton";
 import { useI18n } from "@/i18n";
 
 const { Text, Title, Paragraph } = Typography;
-const CUSTOM_PUBLIC_URL_STORAGE_KEY = "shiguangGateway.endpoints.customPublicUrl";
+const CUSTOM_PUBLIC_URL_STORAGE_KEY = "orbit.endpoints.customPublicUrl";
 
 function readStoredCustomPublicUrl(): string {
   if (typeof window === "undefined") return "";
@@ -133,7 +133,7 @@ export default function EndpointsPage() {
   // Tailscale Tsnet State
   const [tailscaleModalOpen, setTailscaleModalOpen] = useState(false);
   const [tailscaleAuthKey, setTailscaleAuthKey] = useState("");
-  const [tailscaleHostname, setTailscaleHostname] = useState("shiguangGateway-gateway");
+  const [tailscaleHostname, setTailscaleHostname] = useState("orbit-gateway");
   const [tailscaleEphemeral, setTailscaleEphemeral] = useState(false);
 
   // Network info query
@@ -781,7 +781,7 @@ export default function EndpointsPage() {
                   <Text type="secondary">{tt("MagicDNS 域名:", "MagicDNS Domain:")}</Text>
                   <Text code copyable>
                     {tailscaleStatusQuery.data?.magicDns ||
-                      `${tailscaleStatusQuery.data?.hostname || "shiguangGateway"}.ts.net`}
+                      `${tailscaleStatusQuery.data?.hostname || "orbit"}.ts.net`}
                   </Text>
                 </Flex>
                 <Flex justify="space-between">
@@ -862,7 +862,7 @@ export default function EndpointsPage() {
                 {tt("自定义节点主机名", "Custom Hostname")}
               </Text>
               <Input
-                placeholder="shiguangGateway-gateway"
+                placeholder="orbit-gateway"
                 value={tailscaleHostname}
                 onChange={(e) => setTailscaleHostname(e.target.value)}
               />
@@ -889,7 +889,7 @@ export default function EndpointsPage() {
                 onClick={() =>
                   connectTailscale.mutate({
                     authKey: tailscaleAuthKey.trim(),
-                    hostname: tailscaleHostname.trim() || "shiguangGateway-gateway",
+                    hostname: tailscaleHostname.trim() || "orbit-gateway",
                     ephemeral: tailscaleEphemeral,
                   })
                 }

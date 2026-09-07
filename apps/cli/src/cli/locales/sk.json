@@ -1,8 +1,8 @@
 {
   "common": {
     "error": "Chyba: {message}",
-    "serverOffline": "Server ShiguangGateway je offline. Spustite: shiguang-gateway serve",
-    "authRequired": "Vyžaduje sa overenie. Nastavte SHIGUANG_GATEWAY_API_KEY alebo spustite: shiguang-gateway setup",
+    "serverOffline": "Server Orbit je offline. Spustite: orbit serve",
+    "authRequired": "Vyžaduje sa overenie. Nastavte ORBIT_API_KEY alebo spustite: orbit setup",
     "rateLimited": "Prekročený limit požiadaviek. Skúste za {seconds}s.",
     "timeout": "Požiadavka vypršala po {ms}ms.",
     "success": "Hotovo.",
@@ -15,18 +15,18 @@
     "yesOpt": "Preskočiť potvrdenie"
   },
   "program": {
-    "description": "ShiguangGateway — Inteligentný AI router s automatickým prepínaním",
+    "description": "Orbit — Inteligentný AI router s automatickým prepínaním",
     "version": "Vypísať verziu a skončiť",
     "output": "Formát výstupu (table, json, jsonl, csv)",
     "quiet": "Potlačiť nepodstatný výstup",
     "no_color": "Zakázať farebný výstup",
     "timeout": "Časový limit HTTP požiadaviek v milisekundách",
-    "api_key": "API kľúč pre server ShiguangGateway",
-    "base_url": "Základná URL servera ShiguangGateway",
+    "api_key": "API kľúč pre server Orbit",
+    "base_url": "Základná URL servera Orbit",
     "context": "Kontext/profil servera pre tento príkaz",
-    "lang": "Nastaviť jazyk zobrazenia CLI (prepíše SHIGUANG_GATEWAY_LANG)"
+    "lang": "Nastaviť jazyk zobrazenia CLI (prepíše ORBIT_LANG)"
   },
   "redis": {
-    "description": "Spustiť miestny kontajner Redis jedným kliknutím (Podman alebo Docker) na ukladanie do vyrovnávacej pamäte a sledovanie kvót ShiguangGateway"
+    "description": "Spustiť miestny kontajner Redis jedným kliknutím (Podman alebo Docker) na ukladanie do vyrovnávacej pamäte a sledovanie kvót Orbit"
   }
 }

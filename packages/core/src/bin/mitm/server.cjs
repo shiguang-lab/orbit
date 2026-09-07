@@ -10,7 +10,7 @@ const os = require("os");
 // This file runs as a standalone CommonJS process and cannot import the ES module.
 function getDataDir() {
   if (process.env.DATA_DIR) return path.resolve(process.env.DATA_DIR.trim());
-  return path.join(os.homedir(), ".shiguangGateway");
+  return path.join(os.homedir(), ".orbit");
 }
 
 // Configuration
@@ -40,7 +40,7 @@ const parsedIdleTimeout = Number.parseInt(process.env.MITM_IDLE_TIMEOUT_MS || "6
 const MITM_IDLE_TIMEOUT_MS =
   Number.isInteger(parsedIdleTimeout) && parsedIdleTimeout > 0 ? parsedIdleTimeout : 60000;
 const ROUTER_BASE_URL = (
-  process.env.SHIGUANG_GATEWAY_BASE_URL ||
+  process.env.ORBIT_BASE_URL ||
   process.env.BASE_URL ||
   process.env.INTERNAL_BASE_URL ||
   "http://127.0.0.1:8787"
@@ -145,7 +145,7 @@ const standaloneRoutingShim = require("../../mitm/_internal/standaloneRouting.cj
 // Inspector capture (D4 fallback). The standalone proxy intercepts AgentBridge
 // traffic inline (no MitmHandlerBase / agentBridgeHook), so it posts captured
 // entries to the local-only ingest endpoint to make them visible in the Traffic
-// Inspector. The token is injected by manager.ts (same value the ShiguangGateway
+// Inspector. The token is injected by manager.ts (same value the Orbit
 // process uses); absent token → capture is silently skipped.
 const INGEST_TOKEN = process.env.INSPECTOR_INTERNAL_INGEST_TOKEN || "";
 // Cap captured bodies to keep proxy memory bounded (the buffer truncates again).
@@ -406,7 +406,7 @@ function getSqliteDb() {
 /**
  * Resolve the stored alias override for a source model: `{ model?, reasoningEffort? }`.
  * `normalizeAliasMappings` upgrades legacy plain-string mappings into the structured
- * shape. The route-only namespace is reserved for client-facing ShiguangGateway model ids;
+ * shape. The route-only namespace is reserved for client-facing Orbit model ids;
  * fall back to `mitmAlias` until a route-alias writer is available.
  */
 function getMappedOverride(model, agentId = "antigravity") {
@@ -422,7 +422,7 @@ async function passthrough(req, res, bodyBuffer) {
   const targetHost = getTargetHost(req);
   const targetIP = await resolveTargetIP(targetHost);
 
-  // Defense-in-depth loop guard (Gap 14). The x-shiguangGateway-source header is the
+  // Defense-in-depth loop guard (Gap 14). The x-orbit-source header is the
   // primary guard; this is a structural backstop for when it is stripped: if
   // the upstream resolves to ourselves (loopback on our own listen port),
   // forwarding would re-enter this server forever. Refuse instead of looping.
@@ -500,7 +500,7 @@ function captureToInspector(o) {
 
 async function intercept(req, res, bodyBuffer, override, sourceModel) {
   // C2 — Inject AgentBridge correlation headers per master plan §3.5.
-  // The ShiguangGateway router uses these to distinguish AgentBridge traffic from
+  // The Orbit router uses these to distinguish AgentBridge traffic from
   // other inbound clients and to record the originating IDE agent id.
   // Resolve agent id from the Host header against the target map; defensive
   // fallback to "unknown" when the host is somehow not in the map.
@@ -548,8 +548,8 @@ async function intercept(req, res, bodyBuffer, override, sourceModel) {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${API_KEY}`,
-        "x-shiguangGateway-source": "agent-bridge",
-        "x-shiguangGateway-agent": agentId,
+        "x-orbit-source": "agent-bridge",
+        "x-orbit-agent": agentId,
       },
       body: JSON.stringify(body),
     });
@@ -561,7 +561,7 @@ async function intercept(req, res, bodyBuffer, override, sourceModel) {
       const errText = await response.text().catch(() => "");
       respBody = errText.slice(0, INGEST_MAX_BODY);
       respSize = Buffer.byteLength(errText);
-      throw new Error(`ShiguangGateway ${response.status}: ${errText}`);
+      throw new Error(`Orbit ${response.status}: ${errText}`);
     }
 
     res.writeHead(200, {
@@ -649,8 +649,8 @@ async function startMitmServer() {
 
     if (bodyBuffer.length > 0) saveRequestLog(req.url, bodyBuffer);
 
-    if (req.headers["x-shiguangGateway-source"] === "shiguangGateway") {
-      vlog(1, `[MITM] → PASSTHROUGH (ShiguangGateway source loop)`);
+    if (req.headers["x-orbit-source"] === "orbit") {
+      vlog(1, `[MITM] → PASSTHROUGH (Orbit source loop)`);
       return passthrough(req, res, bodyBuffer);
     }
 

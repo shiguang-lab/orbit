@@ -1,4 +1,4 @@
-# Współtworzenie ShiguangGateway
+# Współtworzenie Orbit
 
 Dziękujemy za zainteresowanie współtworzeniem projektu! Ten przewodnik zawiera wszystko, czego potrzebujesz, aby zacząć.
 
@@ -15,8 +15,8 @@ Dziękujemy za zainteresowanie współtworzeniem projektu! Ten przewodnik zawier
 ### Klonowanie i instalacja
 
 ```bash
-git clone https://github.com/diegosouzapw/ShiguangGateway.git
-cd ShiguangGateway
+git clone https://github.com/diegosouzapw/Orbit.git
+cd Orbit
 npm install
 ```
 
@@ -89,7 +89,7 @@ npm run build
 `npm run build:release` dodatkowo najpierw czyści oba katalogi i zapisuje
 `dist/BUILD_SHA` (= `git rev-parse --short HEAD`) jako sentinel integralności deployu.
 
-> **Uwaga o deployu VPS:** zdalny katalog obrazu `/usr/lib/node_modules/shiguang-gateway/app/`
+> **Uwaga o deployu VPS:** zdalny katalog obrazu `/usr/lib/node_modules/orbit/app/`
 > pozostaje bez zmian. Skille deployu robią rsync zawartości `dist/` do tego katalogu.
 > Zmieniła się tylko ścieżka wyjścia builda w repozytorium (`app/` → `dist/`).
 
@@ -308,7 +308,7 @@ tests/
 docs/
 ├── adr/                     # Architecture Decision Records
 ├── architecture/            # System architecture & resilience
-├── comparison/              # ShiguangGateway vs alternatives
+├── comparison/              # Orbit vs alternatives
 ├── compression/             # Compression guides & rules
 ├── dev/                     # Development guides
 ├── diagrams/                # Architecture diagrams
@@ -399,5 +399,5 @@ Następnie użyj skilli `/deploy-vps-*-cc`, które robią rsync `dist/` do zdaln
 - **Dokumentacja API**: Zobacz [`docs/reference/API_REFERENCE.md`](docs/reference/API_REFERENCE.md)
 - **Dokumenty bezpieczeństwa**: [`docs/security/CLI_TOKEN.md`](docs/security/CLI_TOKEN.md), [`docs/security/ROUTE_GUARD_TIERS.md`](docs/security/ROUTE_GUARD_TIERS.md), [`docs/security/ERROR_SANITIZATION.md`](docs/security/ERROR_SANITIZATION.md), [`docs/security/PUBLIC_CREDS.md`](docs/security/PUBLIC_CREDS.md)
 - **Dokumenty ops**: [`docs/ops/SQLITE_RUNTIME.md`](docs/ops/SQLITE_RUNTIME.md)
-- **Issues**: [github.com/diegosouzapw/ShiguangGateway/issues](https://github.com/diegosouzapw/ShiguangGateway/issues)
+- **Issues**: [github.com/diegosouzapw/Orbit/issues](https://github.com/diegosouzapw/Orbit/issues)
 - **ADR-y**: Zobacz `docs/adr/` dla architectural decision records

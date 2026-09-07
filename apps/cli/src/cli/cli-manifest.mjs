@@ -1,5 +1,5 @@
 /**
- * Canonical executable manifest for the ShiguangGateway CLI command surfaces.
+ * Canonical executable manifest for the Orbit CLI command surfaces.
  *
  * One entry per canonical target id. `run.mjs`, `configure.mjs` and
  * `completion.mjs` derive their target lists, alias resolution and model-flag
@@ -12,8 +12,8 @@
  * every consumer surface stay in sync.
  *
  * Capability semantics:
- * - `run`: launchable through `shiguangGateway run <target>`.
- * - `configure`: supported by the `shiguangGateway configure <target>` picker.
+ * - `run`: launchable through `orbit run <target>`.
+ * - `configure`: supported by the `orbit configure <target>` picker.
  * - `runModel`: how `run` injects `--model` for the target (`null` when the
  *   model travels via env/provider args instead of a CLI flag).
  */
@@ -31,7 +31,7 @@ export const CLI_TARGET_MANIFEST = Object.freeze({
     aliases: Object.freeze(["codex-cli", "openai-codex", "openai"]),
     run: true,
     configure: true,
-    runModel: null, // injected via -c model_providers.shiguangGateway.* args
+    runModel: null, // injected via -c model_providers.orbit.* args
   }),
   aider: Object.freeze({
     description: "Aider",
@@ -52,7 +52,7 @@ export const CLI_TARGET_MANIFEST = Object.freeze({
     aliases: Object.freeze(["open-code"]),
     run: true,
     configure: true,
-    runModel: Object.freeze({ flag: "--model", prefix: "shiguangGateway/" }),
+    runModel: Object.freeze({ flag: "--model", prefix: "orbit/" }),
   }),
   qwen: Object.freeze({
     description: "Qwen Code",
@@ -63,7 +63,7 @@ export const CLI_TARGET_MANIFEST = Object.freeze({
   }),
   gemini: Object.freeze({
     // Launch contract verified against @google/gemini-cli 0.50.0:
-    // GOOGLE_GEMINI_BASE_URL points the SDK at ShiguangGateway's /v1beta surface,
+    // GOOGLE_GEMINI_BASE_URL points the SDK at Orbit's /v1beta surface,
     // GEMINI_API_KEY + isolated GEMINI_CLI_HOME (settings selectedType
     // "gemini-api-key") force API-key auth over any stored OAuth session.
     description: "Google Gemini CLI",

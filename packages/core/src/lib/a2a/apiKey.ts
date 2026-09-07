@@ -16,7 +16,7 @@ export function extractA2AApiKey(request: Request): string | null {
 
 export async function isValidA2AApiKey(apiKey: string): Promise<boolean> {
   if (!apiKey) return false;
-  const configuredKey = process.env.SHIGUANG_GATEWAY_API_KEY || process.env.ROUTER_API_KEY;
+  const configuredKey = process.env.ORBIT_API_KEY || process.env.ROUTER_API_KEY;
   if (configuredKey && apiKey === configuredKey) return true;
   return validateApiKey(apiKey);
 }

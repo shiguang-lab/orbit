@@ -39,7 +39,7 @@ Pour la matrice de tests complète, voir `CONTRIBUTING.md` → "Exécution des t
 
 ## Projet en un coup d'œil
 
-**ShiguangGateway** — proxy/router AI unifié. Un point de terminaison, 329 fournisseurs LLM, retour automatique.
+**Orbit** — proxy/router AI unifié. Un point de terminaison, 329 fournisseurs LLM, retour automatique.
 
 | Couche            | Emplacement             | Objectif                                                                  |
 | ----------------- | ----------------------- | ------------------------------------------------------------------------- |
@@ -82,7 +82,7 @@ Les routes API suivent un modèle cohérent : `Route → pré-vérification CORS
 
 ## État d'Exécution de Résilience
 
-ShiguangGateway a trois mécanismes de défaillance temporaire liés mais distincts. Gardez leur portée séparée lors du débogage du comportement de routage. Voir le
+Orbit a trois mécanismes de défaillance temporaire liés mais distincts. Gardez leur portée séparée lors du débogage du comportement de routage. Voir le
 [diagramme de résilience à 3 couches](./docs/diagrams/exported/resilience-3layers.svg)
 (source : [docs/diagrams/resilience-3layers.mmd](./docs/diagrams/resilience-3layers.mmd))
 pour une vue d'ensemble.
@@ -389,7 +389,7 @@ git push -u origin feat/your-feature
 - **TypeScript** : 5.9+, cible ES2022, module esnext, résolution bundler
 - **Alias de chemin** : `@/*` → `src/`, `@orbit/inference` → `open-sse/`, `@orbit/inference/*` → `open-sse/*`
 - **Port par défaut** : 20128 (API + tableau de bord sur le même port)
-- **Répertoire de données** : variable d'environnement `DATA_DIR`, par défaut `~/.shiguang-gateway/`
+- **Répertoire de données** : variable d'environnement `DATA_DIR`, par défaut `~/.orbit/`
 - **Variables d'environnement clés** : `PORT`, `JWT_SECRET`, `API_KEY_SECRET`, `INITIAL_PASSWORD`, `REQUIRE_API_KEY`, `APP_LOG_LEVEL`
 - Configuration : `cp .env.example .env` puis générez `JWT_SECRET` (`openssl rand -base64 48`) et `API_KEY_SECRET` (`openssl rand -hex 32`)
 
@@ -412,4 +412,4 @@ git push -u origin feat/your-feature
 13. Ne jamais interpoler des chemins externes ou des valeurs d'exécution dans des scripts shell passés à `exec()`/`spawn()` — passez plutôt par l'option `env`. Référence : `src/mitm/cert/install.ts::updateNssDatabases`.
 14. Ne jamais ignorer une alerte CodeQL / Secret-Scanning sans (a) d'abord vérifier la documentation des modèles ci-dessus pour voir si l'assistant s'applique, et (b) enregistrer la justification technique dans le commentaire de rejet. Précédent : `js/stack-trace-exposure` soulevé sur des sites d'appel qui passent déjà par `sanitizeErrorMessage()` est une limitation connue de CodeQL (les assainisseurs personnalisés ne sont pas reconnus) — rejeter comme `faux positif` en faisant référence à `docs/security/ERROR_SANITIZATION.md`.
 15. Ne jamais exposer des routes qui lancent des processus enfants (`/api/mcp/`, `/api/cli-tools/runtime/`) sans classification `isLocalOnlyPath()` dans `src/server/authz/routeGuard.ts`. L'application de la boucle de retour se produit inconditionnellement avant toute vérification d'authentification — un JWT divulgué via un tunnel ne peut pas déclencher le lancement de processus. Voir `docs/security/ROUTE_GUARD_TIERS.md`.
-16. Ne jamais inclure de bandeaux `Co-Authored-By` qui créditent un assistant IA, un LLM ou un compte d'automatisation (par ex. noms contenant "Claude", "GPT", "Copilot", "Bot" ; e-mails à `anthropic.com` / `openai.com` / adresses `noreply.github.com` détenues par des bots). De tels bandeaux redirigent l'attribution des commits vers le compte du bot sur GitHub, masquant le véritable auteur (`diegosouzapw`) dans l'historique de la PR. Les contributeurs humains — y compris les auteurs de PR upstream et les rapporteurs d'issues portés dans ShiguangGateway — PEUVENT et DOIVENT être crédités avec des bandeaux standard `Co-authored-by: Name <email>` ; les workflows de port upstream (`/port-upstream-features`, `/port-upstream-issues`) en dépendent.
+16. Ne jamais inclure de bandeaux `Co-Authored-By` qui créditent un assistant IA, un LLM ou un compte d'automatisation (par ex. noms contenant "Claude", "GPT", "Copilot", "Bot" ; e-mails à `anthropic.com` / `openai.com` / adresses `noreply.github.com` détenues par des bots). De tels bandeaux redirigent l'attribution des commits vers le compte du bot sur GitHub, masquant le véritable auteur (`diegosouzapw`) dans l'historique de la PR. Les contributeurs humains — y compris les auteurs de PR upstream et les rapporteurs d'issues portés dans Orbit — PEUVENT et DOIVENT être crédités avec des bandeaux standard `Co-authored-by: Name <email>` ; les workflows de port upstream (`/port-upstream-features`, `/port-upstream-issues`) en dépendent.

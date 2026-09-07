@@ -29,7 +29,7 @@ import {
 } from "./errors.js";
 import { isPrivateHost, isCloudMetadataHost } from "@orbit/utils/network";
 import { calculateCost } from "@orbit/core/pricing/cost-calculator";
-import { attachShiguangGatewayMetaHeaders } from "@orbit/core/edge/gateway-response-meta";
+import { attachOrbitMetaHeaders } from "@orbit/core/edge/gateway-response-meta";
 import { generateRequestId } from "@orbit/core/runtime/request-id";
 import { resolveLocalSyncedEndpointRoute } from "@orbit/core/edge/synced-endpoint-routing";
 
@@ -400,7 +400,7 @@ export async function createEmbeddingResponse(
     responseHeaders.set("Content-Type", "application/json");
     const usage = (result.data as { usage?: Record<string, number> })?.usage ?? null;
     const costUsd = usage ? await calculateCost(provider, effectiveModel ?? "", usage) : 0;
-    attachShiguangGatewayMetaHeaders(responseHeaders, {
+    attachOrbitMetaHeaders(responseHeaders, {
       provider,
       model: effectiveModel,
       usage,

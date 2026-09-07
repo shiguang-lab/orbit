@@ -4,7 +4,7 @@ title: "Bramki łańcucha dostaw (Supply-Chain Gates)"
 
 # Bramki łańcucha dostaw (Supply-Chain Gates) (Phase 8 · Block A)
 
-ShiguangGateway publikuje artefakty npm + Docker. Te bramki zapewniają provenance,
+Orbit publikuje artefakty npm + Docker. Te bramki zapewniają provenance,
 inwentaryzację (SBOM) oraz skanowanie CVE — wszystko OSS, wpięte w workflowy release.
 Postawa **advisory-first** — na razie raportują, na blokujące przechodzą po 1.
 zielonym release.

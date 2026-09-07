@@ -683,7 +683,7 @@ function wrapInCloudCodeEnvelope(model, cloudCodeRequest, credentials = null) {
 
   if (!projectId) {
     console.warn(
-      `[ShiguangGateway] Antigravity account is missing projectId. ` +
+      `[Orbit] Antigravity account is missing projectId. ` +
         `Attempting request with empty project — reconnect OAuth to resolve.`
     );
     projectId = "";

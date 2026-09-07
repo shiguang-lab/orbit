@@ -9,7 +9,7 @@
     }
   },
   "scripts": {
-    "cli": "pnpm --filter @orbit/cli exec node src/shiguang-gateway.mjs",
+    "cli": "pnpm --filter @orbit/cli exec node src/orbit.mjs",
     "build": "turbo run build",
     "dev": "turbo run dev",
     "typecheck": "turbo run typecheck",

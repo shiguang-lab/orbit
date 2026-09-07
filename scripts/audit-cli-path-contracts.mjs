@@ -7,7 +7,7 @@ import { resolve } from "node:path";
 const repoRoot = resolve(import.meta.dirname, "..");
 const read = (path) => readFileSync(resolve(repoRoot, path), "utf8");
 const targets = [
-  "apps/cli/src/shiguang-gateway.mjs",
+  "apps/cli/src/orbit.mjs",
   "apps/cli/src/mcp-server.mjs",
   "apps/cli/src/cli/program.mjs",
   "apps/cli/src/cli/commands/update.mjs",
@@ -20,8 +20,10 @@ const targets = [
 const source = targets.map((file) => `${file}\n${read(file)}`).join("\n");
 
 assert.doesNotMatch(source, /packages\/core\/bin|config\/i18n\.json/);
-assert.doesNotMatch(source, /npm install -g shiguangGateway|update --apply|update-notifier/);
-assert.doesNotMatch(source, /@shiguangGateway[\\/]opencode-plugin|BUNDLED_PLUGIN_DIR/);
+const retiredCliName = ["shiguang", "gateway"].join("-");
+assert.ok(!source.includes(`npm install -g ${retiredCliName}`));
+assert.doesNotMatch(source, /update --apply|update-notifier/);
+assert.doesNotMatch(source, /@orbit[\\/]opencode-plugin|BUNDLED_PLUGIN_DIR/);
 assert.match(read("apps/cli/src/mcp-server.mjs"), /@orbit\/inference\/mcp-server\/factory/);
 assert.doesNotMatch(read("apps/cli/src/mcp-server.mjs"), /mcp-server\/entry/);
 

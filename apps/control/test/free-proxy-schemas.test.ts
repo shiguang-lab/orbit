@@ -49,14 +49,14 @@ test("preserves deploy defaults and credential validation", () => {
   assert.equal(denoDeploySchema.parse({
     denoToken: "ddo_abcdefghijklmnop",
     orgDomain: "gateway.deno.net",
-  }).projectName, "shiguangGateway-deno-relay");
+  }).projectName, "orbit-deno-relay");
   assert.equal(vercelDeploySchema.parse({
     token: "abcdefghijklmnopqrstuvwxyz",
-  }).projectName, "shiguangGateway-relay");
+  }).projectName, "orbit-relay");
   assert.equal(cloudflareDeploySchema.parse({
     accountId: "abcdef0123456789",
     apiToken: "abcdefghijklmnopqrstuvwxyz",
-  }).projectName, "shiguangGateway-relay");
+  }).projectName, "orbit-relay");
 
   assert.equal(denoDeploySchema.safeParse({ denoToken: "sk-invalid!", orgDomain: "bad host" }).success, false);
   assert.equal(vercelDeploySchema.safeParse({ token: "short" }).success, false);

@@ -59,8 +59,8 @@ use the versioned `@orbit/contracts/job-command` protocol and are executed by
 the worker-owned internal endpoint; only that process imports `core/worker/jobs`,
 registers handlers and owns timers. The listener defaults to `127.0.0.1:8791` for a local
 deployment; split deployment sets `WORKER_COMMAND_HOST`, `WORKER_COMMAND_PORT`, and
-`SHIGUANG_GATEWAY_WORKER_COMMAND_URL`. Both processes use
-`SHIGUANG_GATEWAY_WORKER_COMMAND_TOKEN`, falling back to their shared `JWT_SECRET`.
+`ORBIT_WORKER_COMMAND_URL`. Both processes use
+`ORBIT_WORKER_COMMAND_TOKEN`, falling back to their shared `JWT_SECRET`.
 Unreachable, unauthenticated, disabled, unregistered and rejected commands are non-2xx and
 must never be reported as successful control operations.
 
@@ -71,7 +71,7 @@ public-safe response projection. Cloudflared, ngrok, and Tailscale host processe
 owned and executed only by `gateway`, the host serving the public API endpoint.
 Control sends the typed `@orbit/contracts/tunnel-command` protocol to the
 edge-owned `POST /api/internal/tunnels/command` endpoint. This internal endpoint requires
-the shared `SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN`; it is never an operator-facing API.
+the shared `ORBIT_INTERNAL_SERVICE_TOKEN`; it is never an operator-facing API.
 Split deployments also set `EDGE_GATEWAY_URL` on control so a control replica cannot
 accidentally operate on its own host. Tailscale install progress is streamed back through
 the authenticated internal hop. Only edge may import `core/edge/tunnels`.

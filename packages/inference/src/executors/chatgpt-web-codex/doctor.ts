@@ -46,7 +46,7 @@ export async function getChatGptWebCodexDoctorStatus(connection: {
     storageState = existsSync(paths.storageStatePath);
     login = browserLoginStateExists({
       mode: "browser-only",
-      appName: "ShiguangGateway Codex",
+      appName: "Orbit Codex",
       storageStatePath: paths.storageStatePath,
       brokerSocketPath: paths.brokerSocketPath,
       ...(chrome ? { chromeExecutablePath: chrome } : {}),

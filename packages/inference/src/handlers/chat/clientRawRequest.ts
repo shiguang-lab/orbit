@@ -14,8 +14,8 @@ import { cloneBoundedForLog } from "../../utils/requestLogger.ts";
 export function buildClientRawRequest(request: Request, body: unknown) {
   const url = new URL(request.url);
   const headers = Object.fromEntries(request.headers.entries());
-  delete headers["x-shiguangGateway-lease-owner"];
-  delete headers["x-shiguangGateway-lease-generation"];
+  delete headers["x-orbit-lease-owner"];
+  delete headers["x-orbit-lease-generation"];
   return {
     endpoint: url.pathname,
     // #7847: bounded, not a full deep clone. Every consumer of clientRawRequest.body is

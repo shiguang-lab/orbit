@@ -1,12 +1,12 @@
-export function attachShiguangGatewayMetaHeaders(
+export function attachOrbitMetaHeaders(
   headers: Headers | Record<string, string>,
   metadata: Record<string, unknown>,
 ): void;
-export function buildShiguangGatewayResponseMetaHeaders(
+export function buildOrbitResponseMetaHeaders(
   metadata: Record<string, unknown>,
 ): Record<string, string>;
-export function buildShiguangGatewaySseMetadataComment(metadata: Record<string, unknown>): string;
-export function attachShiguangGatewayMetaToResponse(
+export function buildOrbitSseMetadataComment(metadata: Record<string, unknown>): string;
+export function attachOrbitMetaToResponse(
   response: Response,
   metadata: Record<string, unknown>,
 ): Response;

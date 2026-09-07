@@ -1,14 +1,14 @@
 /**
- * shiguangGateway setup-claude — Remote-aware Claude Code profile generator.
+ * orbit setup-claude — Remote-aware Claude Code profile generator.
  *
  * Claude Code has no native profile files (unlike Codex). The idiomatic way to
  * keep multiple named configs is `CLAUDE_CONFIG_DIR` — a separate config dir per
  * profile (its own settings.json, credentials, history, cache). This command
- * fetches the live /v1/models catalog from a (possibly remote) ShiguangGateway and
+ * fetches the live /v1/models catalog from a (possibly remote) Orbit and
  * writes `~/.claude/profiles/<name>/settings.json` for each supported model,
  * reusing the SAME profile names as `setup-codex` (glm52, kimi-k27, …).
  *
- * Launch a profile with:  shiguangGateway launch --profile <name>
+ * Launch a profile with:  orbit launch --profile <name>
  * (which injects ANTHROPIC_AUTH_TOKEN from the active context — the token is
  * never written to disk). Or export ANTHROPIC_AUTH_TOKEN and run:
  *   CLAUDE_CONFIG_DIR=~/.claude/profiles/<name> claude
@@ -30,17 +30,17 @@ export async function runSetupClaudeCommand(opts = {}) {
   const baseUrl = (opts.remote ?? `http://localhost:${port}`)
     .replace(/\/+$/, "")
     .replace(/\/v1$/, "");
-  const apiKey = opts.apiKey ?? opts["api-key"] ?? process.env.SHIGUANG_GATEWAY_API_KEY ?? "";
+  const apiKey = opts.apiKey ?? opts["api-key"] ?? process.env.ORBIT_API_KEY ?? "";
   const claudeHome = opts.claudeHome ?? opts["claude-home"] ?? join(os.homedir(), ".claude");
   const profilesRoot = join(claudeHome, "profiles");
   const dryRun = Boolean(opts.dryRun ?? opts["dry-run"]);
 
-  printHeading("ShiguangGateway → Claude Code profile generator");
+  printHeading("Orbit → Claude Code profile generator");
   printInfo(`Connecting to ${baseUrl} …`);
 
   const guard = await guardHostConfigTarget(profilesRoot, {
     toolLabel: "Claude Code",
-    hostCommand: "shiguangGateway setup-claude",
+    hostCommand: "orbit setup-claude",
     allowContainerWrite: Boolean(opts.allowContainerWrite ?? opts["allow-container-write"]),
     dryRun,
   });
@@ -70,8 +70,8 @@ export async function runSetupClaudeCommand(opts = {}) {
   } catch (err) {
     printError(`Failed to fetch models: ${err.message}`);
     printInfo(
-      "Make sure ShiguangGateway is running and the --remote URL is correct.\n" +
-        "You may also need --api-key if ShiguangGateway requires authentication."
+      "Make sure Orbit is running and the --remote URL is correct.\n" +
+        "You may also need --api-key if Orbit requires authentication."
     );
     return 1;
   }
@@ -93,7 +93,7 @@ export async function runSetupClaudeCommand(opts = {}) {
     printSuccess(`${written} Claude Code profiles written to ${profilesRoot}`);
     if (skipped > 0) printInfo(`${skipped} models skipped (no matching profile pattern)`);
     console.log("\nTo use a profile:");
-    console.log("  shiguangGateway launch --profile <name>     # e.g. shiguangGateway launch --profile glm52");
+    console.log("  orbit launch --profile <name>     # e.g. orbit launch --profile glm52");
     console.log(
       "  # or: CLAUDE_CONFIG_DIR=~/.claude/profiles/<name> claude  (export ANTHROPIC_AUTH_TOKEN first)"
     );
@@ -108,12 +108,12 @@ export function registerSetupClaude(program) {
   program
     .command("setup-claude")
     .description(
-      "Fetch the live model catalog from ShiguangGateway (local or remote VPS) and generate " +
+      "Fetch the live model catalog from Orbit (local or remote VPS) and generate " +
         "~/.claude/profiles/<name>/ Claude Code profiles (CLAUDE_CONFIG_DIR) for each model"
     )
-    .option("--port <port>", "Local ShiguangGateway port (ignored when --remote is set)", "8787")
-    .option("--remote <url>", "Remote ShiguangGateway URL, e.g. http://192.168.0.15:8787")
-    .option("--api-key <key>", "ShiguangGateway API key (defaults to SHIGUANG_GATEWAY_API_KEY env var)")
+    .option("--port <port>", "Local Orbit port (ignored when --remote is set)", "8787")
+    .option("--remote <url>", "Remote Orbit URL, e.g. http://192.168.0.15:8787")
+    .option("--api-key <key>", "Orbit API key (defaults to ORBIT_API_KEY env var)")
     .option("--claude-home <dir>", "Claude home dir (default: ~/.claude)")
     .option(
       "--only <patterns>",

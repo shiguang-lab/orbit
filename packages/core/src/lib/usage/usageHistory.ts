@@ -145,7 +145,7 @@ function normalizePendingMetadata(metadata?: PendingRequestMetadata): PendingReq
 // ──────────────── Pending Requests (in-memory) ────────────────
 
 declare global {
-  var __shiguangGatewayUsageHistoryPendingState:
+  var __orbitUsageHistoryPendingState:
     | {
         pendingRequests: {
           byModel: Record<string, number>;
@@ -158,14 +158,14 @@ declare global {
 }
 
 // Reuse the SAME object/Map across Next.js dev HMR module re-evaluations —
-// same pattern (and reason) as src/lib/db/core.ts's `globalThis.__shiguangGatewayDb`.
+// same pattern (and reason) as src/lib/db/core.ts's `globalThis.__orbitDb`.
 // Without this, an edit anywhere in this module's dependency graph resets
 // in-flight request tracking to empty mid-stream, so a live poll against
 // getPendingById() (RequestLoggerDetail.tsx's Conversation Context section)
 // silently stops seeing partialAssistantText for a request that started
 // before the reload — the request keeps streaming fine, but the *next*
 // module instance's pendingById has never heard of it.
-const pendingState = (globalThis.__shiguangGatewayUsageHistoryPendingState ??= {
+const pendingState = (globalThis.__orbitUsageHistoryPendingState ??= {
   pendingRequests: {
     byModel: Object.create(null) as Record<string, number>,
     byAccount: Object.create(null) as Record<string, Record<string, number>>,

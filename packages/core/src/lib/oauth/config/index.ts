@@ -2,7 +2,7 @@
  * OAuth CLI Configuration
  *
  * Provides server credentials for OAuth CLI services to communicate
- * with the running ShiguangGateway server when saving tokens.
+ * with the running Orbit server when saving tokens.
  */
 
 import { getRuntimePorts } from "../../runtime/ports.ts";
@@ -24,8 +24,8 @@ function getDefaultApiServer() {
  */
 export function getServerCredentials(): ServerCredentials {
   return {
-    server: process.env.SHIGUANG_GATEWAY_SERVER || process.env.SERVER_URL || getDefaultApiServer(),
-    token: process.env.SHIGUANG_GATEWAY_TOKEN || process.env.CLI_TOKEN || "",
-    userId: process.env.SHIGUANG_GATEWAY_USER_ID || process.env.CLI_USER_ID || "cli",
+    server: process.env.ORBIT_SERVER || process.env.SERVER_URL || getDefaultApiServer(),
+    token: process.env.ORBIT_TOKEN || process.env.CLI_TOKEN || "",
+    userId: process.env.ORBIT_USER_ID || process.env.CLI_USER_ID || "cli",
   };
 }

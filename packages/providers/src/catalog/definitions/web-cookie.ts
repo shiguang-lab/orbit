@@ -12,7 +12,7 @@ export const WEB_COOKIE_PROVIDERS = {
     textIcon: "CC",
     website: "https://chatgpt.com",
     authHint:
-      "Paste the full ChatGPT Cookie header. ShiguangGateway verifies it in an isolated headless browser profile.",
+      "Paste the full ChatGPT Cookie header. Orbit verifies it in an isolated headless browser profile.",
     subscriptionRisk: true,
     riskNoticeVariant: "webCookie",
     toolCalling: "native",
@@ -139,7 +139,7 @@ export const WEB_COOKIE_PROVIDERS = {
     textIcon: "M365",
     website: "https://m365.cloud.microsoft/chat",
     authHint:
-      "Sign in at m365.cloud.microsoft/chat, then open DevTools → Network → filter 'WS' → click the Chathub WebSocket connection. Copy both the access_token query parameter AND the account-specific Chathub path segment from its request URL (wss://…/Chathub/<path>?…&access_token=…). It is NOT an Authorization: Bearer header on an XHR/Fetch request. The token is short-lived; this is an unofficial integration. Optional: store a refresh_token in providerSpecificData.refreshToken (any Microsoft device-code/refresh flow for the substrate.office.com/sydney scopes) and ShiguangGateway pre-flight-refreshes the access token itself — otherwise re-capture after every ~75 min expiry.",
+      "Sign in at m365.cloud.microsoft/chat, then open DevTools → Network → filter 'WS' → click the Chathub WebSocket connection. Copy both the access_token query parameter AND the account-specific Chathub path segment from its request URL (wss://…/Chathub/<path>?…&access_token=…). It is NOT an Authorization: Bearer header on an XHR/Fetch request. The token is short-lived; this is an unofficial integration. Optional: store a refresh_token in providerSpecificData.refreshToken (any Microsoft device-code/refresh flow for the substrate.office.com/sydney scopes) and Orbit pre-flight-refreshes the access token itself — otherwise re-capture after every ~75 min expiry.",
     subscriptionRisk: true,
     riskNoticeVariant: "webCookie",
   },
@@ -201,7 +201,7 @@ export const WEB_COOKIE_PROVIDERS = {
     freeNote:
       "Free model comparison platform (formerly LMArena) at arena.ai — Direct-chat catalog of chat models (GPT, Claude, Gemini, Llama, …). No subscription required.",
     authHint:
-      "Paste the full Cookie header from arena.ai (DevTools → Network → request → Cookie). Include arena-auth-prod-v1.0/.1… and cf_clearance/__cf_bm when present. ShiguangGateway uses Chrome TLS impersonation; if Arena still 403s, set providerSpecificData.recaptchaV3Token from a live browser session.",
+      "Paste the full Cookie header from arena.ai (DevTools → Network → request → Cookie). Include arena-auth-prod-v1.0/.1… and cf_clearance/__cf_bm when present. Orbit uses Chrome TLS impersonation; if Arena still 403s, set providerSpecificData.recaptchaV3Token from a live browser session.",
     riskNoticeVariant: "webCookie",
   },
   "yuanbao-web": {
@@ -373,7 +373,7 @@ export const WEB_COOKIE_PROVIDERS = {
     subscriptionRisk: true,
     riskNoticeVariant: "webCookie",
     authHint:
-      'Copy the "token" value from chat.z.ai → DevTools → Application → Local Storage. Do not copy cookies; ShiguangGateway handles the per-request CAPTCHA through its browser transport.',
+      'Copy the "token" value from chat.z.ai → DevTools → Application → Local Storage. Do not copy cookies; Orbit handles the per-request CAPTCHA through its browser transport.',
   },
   promptql: {
     id: "promptql",

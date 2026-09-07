@@ -1,5 +1,5 @@
 /**
- * shiguangGateway setup-cursor — guide Cursor to use ShiguangGateway.
+ * orbit setup-cursor — guide Cursor to use Orbit.
  *
  * Cursor stores its OpenAI key + "Override OpenAI Base URL" in an opaque SQLite
  * DB (state.vscdb) with no documented stable schema — NOT safe to file-write.
@@ -23,7 +23,7 @@ export function resolveCursorTarget(opts = {}) {
   if (opts.remote) root = String(opts.remote).replace(/\/+$/, "");
   else {
     try {
-      root = resolveActiveContext(opts.context ?? process.env.SHIGUANG_GATEWAY_CONTEXT)?.baseUrl;
+      root = resolveActiveContext(opts.context ?? process.env.ORBIT_CONTEXT)?.baseUrl;
     } catch {
       /* none */
     }
@@ -32,13 +32,13 @@ export function resolveCursorTarget(opts = {}) {
   let apiKey = opts.apiKey ?? opts["api-key"];
   if (!apiKey) {
     try {
-      const c = resolveActiveContext(opts.context ?? process.env.SHIGUANG_GATEWAY_CONTEXT);
+      const c = resolveActiveContext(opts.context ?? process.env.ORBIT_CONTEXT);
       apiKey = c?.accessToken || c?.apiKey;
     } catch {
       /* none */
     }
   }
-  if (!apiKey) apiKey = process.env.SHIGUANG_GATEWAY_API_KEY || "";
+  if (!apiKey) apiKey = process.env.ORBIT_API_KEY || "";
   return { apiBase: ensureV1(root), apiKey };
 }
 
@@ -50,7 +50,7 @@ export function buildCursorInstructions({ apiBase, models }) {
     "  1. Cursor → Settings (Cmd/Ctrl + ,) → Models",
     "  2. Enable “Override OpenAI Base URL” and set it to:",
     `       ${apiBase}        (the /v1 suffix is required)`,
-    "  3. Set the OpenAI API Key to your ShiguangGateway key (SHIGUANG_GATEWAY_API_KEY)",
+    "  3. Set the OpenAI API Key to your Orbit key (ORBIT_API_KEY)",
     "  4. Add the model name(s) you want under “Models” (Cursor has no auto-discovery):",
   ];
   const sample = (models && models.length ? models : ["glm/glm-5.2", "kmc/kimi-k2.7"]).slice(0, 8);
@@ -81,7 +81,7 @@ async function fetchModelIds(apiBase, apiKey) {
 
 export async function runSetupCursorCommand(opts = {}) {
   const { apiBase, apiKey } = resolveCursorTarget(opts);
-  printHeading("ShiguangGateway → Cursor");
+  printHeading("Orbit → Cursor");
   printInfo(`Server: ${apiBase}`);
 
   let models = [];
@@ -99,7 +99,7 @@ export async function runSetupCursorCommand(opts = {}) {
   if (await isContainerRuntime()) {
     printInfo(
       "Note: this ran inside a container, so the base URL above is the container's own view. " +
-        "Use the address the host reaches ShiguangGateway on (e.g. the published port) in Cursor's settings."
+        "Use the address the host reaches Orbit on (e.g. the published port) in Cursor's settings."
     );
   }
   return 0;
@@ -109,11 +109,11 @@ export function registerSetupCursor(program) {
   program
     .command("setup-cursor")
     .description(
-      "Print the steps to point Cursor at ShiguangGateway (chat panel; Cursor config is not file-writable)"
+      "Print the steps to point Cursor at Orbit (chat panel; Cursor config is not file-writable)"
     )
-    .option("--port <port>", "Local ShiguangGateway port (ignored when --remote is set)", "8787")
-    .option("--remote <url>", "Remote ShiguangGateway URL, e.g. http://192.168.0.15:8787")
-    .option("--api-key <key>", "ShiguangGateway API key (defaults to SHIGUANG_GATEWAY_API_KEY env var)")
+    .option("--port <port>", "Local Orbit port (ignored when --remote is set)", "8787")
+    .option("--remote <url>", "Remote Orbit URL, e.g. http://192.168.0.15:8787")
+    .option("--api-key <key>", "Orbit API key (defaults to ORBIT_API_KEY env var)")
     .option("--only <patterns>", "Comma-separated substrings — suggest only matching model IDs")
     .action(async (opts) => {
       const code = await runSetupCursorCommand(opts);

@@ -212,7 +212,7 @@ export async function fetchCursorAgentModels(
 
   if (ids.length === 0) {
     if (/Authentication required|Not logged in/i.test(combined)) {
-      throw new Error("cursor-agent is not authenticated; run 'agent login' on the ShiguangGateway host");
+      throw new Error("cursor-agent is not authenticated; run 'agent login' on the Orbit host");
     }
     throw new Error("cursor-agent did not return a model catalog from 'agent --list-models'");
   }

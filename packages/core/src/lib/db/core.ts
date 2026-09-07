@@ -86,7 +86,7 @@ type CriticalTableSpec = {
 export const isCloud = typeof globalThis.caches === "object" && globalThis.caches !== null;
 
 // Next.js build workers sometimes drop NEXT_PHASE from their env, so
-// SHIGUANG_GATEWAY_BUILDING=1 (set by build-next-isolated.mjs and inherited by every
+// ORBIT_BUILDING=1 (set by build-next-isolated.mjs and inherited by every
 // spawned build worker) is the reliable build signal. During build the native
 // better-sqlite3 addon must never load: its Statement destructor aborts with
 // SIGABRT when the worker thread exits (assertion in
@@ -228,7 +228,7 @@ if (!isCloud && !fs.existsSync(DATA_DIR)) {
     console.warn(
       `[DB] Cannot create data directory '${DATA_DIR}': ${msg}\n` +
         `[DB] Set the DATA_DIR environment variable to a writable path, e.g.:\n` +
-        `[DB]   DATA_DIR=/path/to/writable/dir shiguangGateway`
+        `[DB]   DATA_DIR=/path/to/writable/dir orbit`
     );
   }
 }
@@ -514,11 +514,11 @@ const SCHEMA_SQL = `
 // Module-level `let` resets on every webpack recompile, causing connection leaks.
 
 declare global {
-  var __shiguangGatewayDb: SqliteAdapter | undefined;
+  var __orbitDb: SqliteAdapter | undefined;
   // Cycle-breaker counter for the probe-failed/restore cascade. Survives
   // Next.js HMR re-evaluations so concurrent subsystems all see the same
   // count and we abort with a clear error instead of looping forever.
-  var __shiguangGatewayDbProbeRestoreCount: number | undefined;
+  var __orbitDbProbeRestoreCount: number | undefined;
   // Cycle-breaker counter for the OOM-during-probe path (#6835). Unlike the
   // generic corruption path above, an OOM probe failure never renames the
   // file away (intentional — the DB may be perfectly fine, just too large
@@ -526,18 +526,18 @@ declare global {
   // unreachable here. Without an independent cap, every background poller
   // (BATCH, HealthCheck, ProviderLimitsSync, ModelSync) re-throws the same
   // OOM error forever with no terminal diagnostic.
-  var __shiguangGatewayDbOomFailureCount: number | undefined;
+  var __orbitDbOomFailureCount: number | undefined;
 }
 
 function getDb(): SqliteDatabase | null {
-  return globalThis.__shiguangGatewayDb ?? null;
+  return globalThis.__orbitDb ?? null;
 }
 
 function setDb(db: SqliteDatabase | null): void {
   if (db) {
-    globalThis.__shiguangGatewayDb = db;
+    globalThis.__orbitDb = db;
   } else {
-    delete globalThis.__shiguangGatewayDb;
+    delete globalThis.__orbitDb;
   }
 }
 
@@ -1004,8 +1004,8 @@ export function getDbInstance(): SqliteDatabase {
     // globalThis; abort with a clear recovery message after 3 attempts so
     // the user gets a real error instead of a hung "Starting server...".
     if (
-      (globalThis.__shiguangGatewayDbProbeRestoreCount =
-        (globalThis.__shiguangGatewayDbProbeRestoreCount || 0) + 1) > 3
+      (globalThis.__orbitDbProbeRestoreCount =
+        (globalThis.__orbitDbProbeRestoreCount || 0) + 1) > 3
     ) {
       throw new Error(
         `[DB] Aborting startup: probe-failed/restore loop detected after 3 attempts. ` +
@@ -1044,7 +1044,7 @@ export function getDbInstance(): SqliteDatabase {
   // This is needed so the migration runner skips the mass-migration safety abort
   // that would otherwise trigger because heuristic seeding marks some migrations
   // as applied, making the fresh DB look like a wiped existing DB (#1328).
-  // #9934: also classify as fresh a file that `shiguangGateway setup` created with
+  // #9934: also classify as fresh a file that `orbit setup` created with
   // only the clipped skeleton schema (see the probe below) — even though the
   // file exists, it has never had migrations run.
   let isNewDb = !fs.existsSync(sqliteFile);
@@ -1054,8 +1054,8 @@ export function getDbInstance(): SqliteDatabase {
   if (fs.existsSync(sqliteFile)) {
     try {
       const probe = openSqliteDatabase(sqliteFile, { readonly: true });
-      // #9934: init asymmetry — bin/cli/sqlite.mjs::openShiguangGatewayDb (used by
-      // `shiguangGateway setup`) creates storage.sqlite with only the partial inline
+      // #9934: init asymmetry — bin/cli/sqlite.mjs::openOrbitDb (used by
+      // `orbit setup`) creates storage.sqlite with only the partial inline
       // schema (key_value + provider_connections) and never runs migrations.
       // Purely file-existence-based freshness made that file look like an
       // existing DB, so the first `serve` auto-seeded only the 001 marker and
@@ -1146,8 +1146,8 @@ export function getDbInstance(): SqliteDatabase {
         // as the generic path) so repeated polling doesn't hang forever with
         // no actionable terminal diagnostic.
         if (
-          (globalThis.__shiguangGatewayDbOomFailureCount =
-            (globalThis.__shiguangGatewayDbOomFailureCount || 0) + 1) > 3
+          (globalThis.__orbitDbOomFailureCount =
+            (globalThis.__orbitDbOomFailureCount || 0) + 1) > 3
         ) {
           throw new Error(
             `[DB] Aborting startup: persistent out-of-memory probing ${sqliteFile} after 3 attempts. ` +
@@ -1222,12 +1222,12 @@ export function getDbInstance(): SqliteDatabase {
   // Auto-seed 001 as applied (the inline SCHEMA_SQL already created these tables)
   // then run any new migrations (002+)
   db.exec(`
-    CREATE TABLE IF NOT EXISTS _shiguangGateway_migrations (
+    CREATE TABLE IF NOT EXISTS _orbit_migrations (
       version TEXT PRIMARY KEY,
       name TEXT NOT NULL,
       applied_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
-    INSERT OR IGNORE INTO _shiguangGateway_migrations (version, name)
+    INSERT OR IGNORE INTO _orbit_migrations (version, name)
     VALUES ('001', 'initial_schema');
   `);
 
@@ -1386,7 +1386,7 @@ export function getDriverInfo(): DbDriverInfo | null {
  *
  * Call this at process startup (before any call to getDbInstance()) so that
  * if the bundled better-sqlite3 binary is unavailable, the runtime installer
- * can place it in ~/.shiguangGateway/runtime/ without blocking a synchronous caller.
+ * can place it in ~/.orbit/runtime/ without blocking a synchronous caller.
  *
  * Idempotent — safe to call multiple times.
  */

@@ -2,8 +2,8 @@ import { LEASE_OWNER_PATTERN } from "@orbit/core/db/exclusive-connection-leases"
 import { buildErrorBody } from "../utils/error.ts";
 
 export const LEASE_EXCLUSIVE_SCOPE = "lease:exclusive",
-  LEASE_OWNER_HEADER = "X-ShiguangGateway-Lease-Owner",
-  LEASE_GENERATION_HEADER = "X-ShiguangGateway-Lease-Generation";
+  LEASE_OWNER_HEADER = "X-Orbit-Lease-Owner",
+  LEASE_GENERATION_HEADER = "X-Orbit-Lease-Generation";
 
 export type ManagedLeaseRequestContext = { leaseOwnerId: string; generation: number };
 export type ManagedLeaseDispatchContext = {

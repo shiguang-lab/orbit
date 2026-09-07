@@ -2,7 +2,7 @@
  * extraDirs.ts — additional migration directories with a namespaced version space.
  *
  * The runner's own directory (`MIGRATIONS_DIR`) owns the bare numeric version
- * space: `NNN_name.sql` is recorded in `_shiguangGateway_migrations` as `NNN`. That
+ * space: `NNN_name.sql` is recorded in `_orbit_migrations` as `NNN`. That
  * single namespace is fine while one party appends to it, and breaks as soon as a
  * distribution ships its own migrations next to the upstream set — both sides draw
  * from the same numbers, and when they pick the same one the runner records a
@@ -12,7 +12,7 @@
  * This module lets an operator register extra directories, each under its own
  * namespace:
  *
- *   SHIGUANG_GATEWAY_EXTRA_MIGRATIONS_DIRS="ee=/opt/app/enterprise/db/migrations"
+ *   ORBIT_EXTRA_MIGRATIONS_DIRS="ee=/opt/app/enterprise/db/migrations"
  *
  * Entries are separated by `path.delimiter` (`:` on POSIX, `;` on Windows) and a
  * file `NNN_name.sql` found there is recorded as `<namespace>-NNN`, so it can
@@ -29,7 +29,7 @@ import fs from "fs";
 import path from "path";
 
 /** Env var holding `namespace=dir` entries separated by `path.delimiter`. */
-export const EXTRA_MIGRATIONS_DIRS_ENV = "SHIGUANG_GATEWAY_EXTRA_MIGRATIONS_DIRS";
+export const EXTRA_MIGRATIONS_DIRS_ENV = "ORBIT_EXTRA_MIGRATIONS_DIRS";
 
 /**
  * Namespaces become a version prefix (`ee-134`), so they stay lowercase,

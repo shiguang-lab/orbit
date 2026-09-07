@@ -11,8 +11,8 @@ const FORBIDDEN = new Set(
     "keep-alive",
     "proxy-connection",
     // The two RFC 7230 §6.1 hop-by-hop names this list was missing. They belong
-    // to the connection between the client and ShiguangGateway (or its upstream
-    // proxy), never to the request ShiguangGateway makes to the model provider —
+    // to the connection between the client and Orbit (or its upstream
+    // proxy), never to the request Orbit makes to the model provider —
     // forwarding `proxy-authorization` hands that proxy credential to the
     // provider. `apps/control/src/services/embedded-service-proxy.ts` (HOP_BY_HOP),
     // `src/mitm/sanitizeHeaders.ts`, `src/mitm/inspector/httpProxyServer.ts`,

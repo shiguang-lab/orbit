@@ -14,22 +14,22 @@ import { spawnSync } from "node:child_process";
 import process from "node:process";
 import path from "node:path";
 
-const sourceDir = process.env.SHIGUANG_GATEWAY_SOURCE_DATA_DIR;
+const sourceDir = process.env.ORBIT_SOURCE_DATA_DIR;
 if (!sourceDir) {
-  console.error("SHIGUANG_GATEWAY_SOURCE_DATA_DIR is required");
+  console.error("ORBIT_SOURCE_DATA_DIR is required");
   process.exit(2);
 }
-const sourceHomeDir = process.env.SHIGUANG_GATEWAY_SOURCE_HOME_DIR;
+const sourceHomeDir = process.env.ORBIT_SOURCE_HOME_DIR;
 
-const edgePort = Number(process.env.SHIGUANG_GATEWAY_EDGE_PORT ?? 8787);
-const controlPort = Number(process.env.SHIGUANG_GATEWAY_CONTROL_PORT ?? 8788);
-const realtimePort = Number(process.env.SHIGUANG_GATEWAY_REALTIME_PORT ?? 8790);
-const liveWsPort = Number(process.env.SHIGUANG_GATEWAY_LIVE_WS_PORT ?? 20132);
+const edgePort = Number(process.env.ORBIT_EDGE_PORT ?? 8787);
+const controlPort = Number(process.env.ORBIT_CONTROL_PORT ?? 8788);
+const realtimePort = Number(process.env.ORBIT_REALTIME_PORT ?? 8790);
+const liveWsPort = Number(process.env.ORBIT_LIVE_WS_PORT ?? 20132);
 const containers = {
-  edge: process.env.SHIGUANG_GATEWAY_EDGE_CONTAINER ?? "shiguang-gateway-gateway",
-  control: process.env.SHIGUANG_GATEWAY_CONTROL_CONTAINER ?? "shiguang-gateway-control",
-  realtime: process.env.SHIGUANG_GATEWAY_REALTIME_CONTAINER ?? "shiguang-gateway-realtime",
-  worker: process.env.SHIGUANG_GATEWAY_WORKER_CONTAINER ?? "shiguang-gateway-worker",
+  edge: process.env.ORBIT_EDGE_CONTAINER ?? "orbit-gateway",
+  control: process.env.ORBIT_CONTROL_CONTAINER ?? "orbit-control",
+  realtime: process.env.ORBIT_REALTIME_CONTAINER ?? "orbit-realtime",
+  worker: process.env.ORBIT_WORKER_CONTAINER ?? "orbit-worker",
 };
 
 function docker(container, args) {

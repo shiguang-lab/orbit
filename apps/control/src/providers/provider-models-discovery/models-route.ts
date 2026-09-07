@@ -144,7 +144,7 @@ export async function getProviderModels(
     const refresh = searchParams.get("refresh") === "true";
     const chatOnly =
       searchParams.get("chatOnly") === "true" ||
-      request.headers.get("x-shiguangGateway-model-surface")?.toLowerCase() === "chat";
+      request.headers.get("x-orbit-model-surface")?.toLowerCase() === "chat";
 
     const connection = await getCachedProviderConnectionById(id);
     const connectionProvider =

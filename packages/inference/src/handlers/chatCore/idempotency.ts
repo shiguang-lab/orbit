@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { getIdempotencyKey, checkIdempotency } from "@orbit/core/edge/idempotency";
 import { calculateCost } from "@orbit/core/pricing/cost-calculator";
-import { attachShiguangGatewayMetaHeaders } from "@orbit/core/edge/gateway-response-meta";
+import { attachOrbitMetaHeaders } from "@orbit/core/edge/gateway-response-meta";
 import type { EffectiveServiceTier } from "./serviceTier.ts";
 
 type HeadersLike = Headers | Record<string, unknown> | null | undefined;
@@ -157,9 +157,9 @@ export async function checkIdempotencyCache({
       : 0;
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
-      "X-ShiguangGateway-Idempotent": "true",
+      "X-Orbit-Idempotent": "true",
     };
-    attachShiguangGatewayMetaHeaders(headers, {
+    attachOrbitMetaHeaders(headers, {
       provider,
       model,
       cacheHit: false,

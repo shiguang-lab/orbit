@@ -78,11 +78,11 @@ export type ComboRelayOptions = {
   sessionId?: string | null;
   config?: Record<string, unknown> | null;
   bypassProviderQuotaPolicy?: boolean;
-  /** Per-request X-ShiguangGateway-Mode value (auto-combo preset / mode-pack name) — #6024/#6025. */
+  /** Per-request X-Orbit-Mode value (auto-combo preset / mode-pack name) — #6024/#6025. */
   mode?: string | null;
-  /** Per-request X-ShiguangGateway-Budget value (hard cost ceiling in USD) — #6023. */
+  /** Per-request X-Orbit-Budget value (hard cost ceiling in USD) — #6023. */
   budgetCap?: number | null;
-  /** Per-request X-ShiguangGateway-Budget-Fallback value ("cheapest" | "strict") — #3470. */
+  /** Per-request X-Orbit-Budget-Fallback value ("cheapest" | "strict") — #3470. */
   budgetFallback?: "cheapest" | "strict" | null;
   [key: string]: unknown;
 };

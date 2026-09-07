@@ -247,7 +247,7 @@ export function flushProxyLogsSync() {
         const client = (store as any)?.client;
         if (client && typeof client.publish === "function") {
           for (const entry of batch) {
-            client.publish("shiguangGateway:proxy_logs", JSON.stringify(entry)).catch(() => {});
+            client.publish("orbit:proxy_logs", JSON.stringify(entry)).catch(() => {});
           }
         }
       }).catch(() => {});

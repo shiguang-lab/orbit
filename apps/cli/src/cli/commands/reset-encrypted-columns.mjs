@@ -37,13 +37,13 @@ export async function runResetEncryptedColumns(argv) {
   Database: ${dbPath}
 
   \x1b[1mTo confirm, run:\x1b[0m
-    shiguangGateway reset-encrypted-columns --force
+    orbit reset-encrypted-columns --force
     `);
     return 0;
   }
 
   if (await isServerUp()) {
-    console.error("\x1b[31m✖ Stop ShiguangGateway before running this offline recovery command.\x1b[0m");
+    console.error("\x1b[31m✖ Stop Orbit before running this offline recovery command.\x1b[0m");
     return 1;
   }
 

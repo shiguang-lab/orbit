@@ -24,7 +24,7 @@ const getOmpDbPath = () => path.join(getOmpDir(), "agent.db");
 
 export function getOmpCredentials(providerId: string) {
   const Database = getDatabaseClass();
-  if (!Database) return { hasShiguangGateway: false, baseUrl: null, apiKey: null };
+  if (!Database) return { hasOrbit: false, baseUrl: null, apiKey: null };
   const dbPath = getOmpDbPath();
   try {
     const db = new Database(dbPath, databaseOptions(true));
@@ -37,11 +37,11 @@ export function getOmpCredentials(providerId: string) {
 
     if (row?.data) {
       const parsed = JSON.parse(row.data);
-      return { hasShiguangGateway: true, baseUrl: parsed.baseUrl || null, apiKey: parsed.apiKey || null };
+      return { hasOrbit: true, baseUrl: parsed.baseUrl || null, apiKey: parsed.apiKey || null };
     }
-    return { hasShiguangGateway: false, baseUrl: null, apiKey: null };
+    return { hasOrbit: false, baseUrl: null, apiKey: null };
   } catch {
-    return { hasShiguangGateway: false, baseUrl: null, apiKey: null };
+    return { hasOrbit: false, baseUrl: null, apiKey: null };
   }
 }
 

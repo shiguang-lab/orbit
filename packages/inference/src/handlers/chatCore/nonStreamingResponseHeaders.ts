@@ -3,13 +3,13 @@
  * decomposition, #3501).
  *
  * Extracted from handleChatCore's non-streaming success path: build the response header map for a
- * cache-MISS JSON response — the static Content-Type + cache marker, the ShiguangGateway meta headers
+ * cache-MISS JSON response — the static Content-Type + cache marker, the Orbit meta headers
  * (provider/model/latency/usage/cost/request-id), and the optional compression header. Pure builder
  * (returns a fresh map; only mutates the map it owns). Behaviour is byte-identical to the previous
  * inline block, including `latencyMs: now - startTime`.
  */
-import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "@orbit/contracts/gateway-headers";
-import { attachShiguangGatewayMetaHeaders as defaultAttachMeta } from "@orbit/core/edge/gateway-response-meta";
+import { ORBIT_RESPONSE_HEADERS } from "@orbit/contracts/gateway-headers";
+import { attachOrbitMetaHeaders as defaultAttachMeta } from "@orbit/core/edge/gateway-response-meta";
 
 export function buildNonStreamingResponseHeaders(
   args: {
@@ -22,16 +22,16 @@ export function buildNonStreamingResponseHeaders(
     compressionResponseMeta?: string | null | undefined;
     comboStrategy?: string | null | undefined;
   },
-  deps: { attachShiguangGatewayMetaHeaders: typeof defaultAttachMeta; now: () => number } = {
-    attachShiguangGatewayMetaHeaders: defaultAttachMeta,
+  deps: { attachOrbitMetaHeaders: typeof defaultAttachMeta; now: () => number } = {
+    attachOrbitMetaHeaders: defaultAttachMeta,
     now: Date.now,
   }
 ): Record<string, string> {
   const responseHeaders: Record<string, string> = {
     "Content-Type": "application/json",
-    [SHIGUANG_GATEWAY_RESPONSE_HEADERS.cache]: "MISS",
+    [ORBIT_RESPONSE_HEADERS.cache]: "MISS",
   };
-  deps.attachShiguangGatewayMetaHeaders(responseHeaders, {
+  deps.attachOrbitMetaHeaders(responseHeaders, {
     provider: args.provider,
     model: args.model,
     cacheHit: false,
@@ -42,7 +42,7 @@ export function buildNonStreamingResponseHeaders(
     strategy: args.comboStrategy ?? "single",
   });
   if (args.compressionResponseMeta) {
-    responseHeaders[SHIGUANG_GATEWAY_RESPONSE_HEADERS.compression] = args.compressionResponseMeta;
+    responseHeaders[ORBIT_RESPONSE_HEADERS.compression] = args.compressionResponseMeta;
   }
   return responseHeaders;
 }

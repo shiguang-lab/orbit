@@ -7,13 +7,13 @@
  *  - 业务路由注入 broker 的 identityToken 作为 x-sg-identity
  *
  * 前提(auth-service 部署配置)：
- *  - LOCAL_BROKER_POLICIES 需含 shiguang-gateway 产品条目(publicOrigin 指向本地 Gateway origin)
+ *  - LOCAL_BROKER_POLICIES 需含 orbit 产品条目(publicOrigin 指向本地 Gateway origin)
  *  - 提供真实 shiguang 账号(SG_BROKER_USERNAME / SG_BROKER_PASSWORD)
  *
  * broker 不可用时返回不可用状态，由前端显示明确错误，不注入模拟身份。
  */
 const REFRESH_SKEW_MS = 15_000;
-const PRODUCT_ID = "shiguang-gateway";
+const PRODUCT_ID = "orbit";
 
 export interface LocalBrokerSession {
   authenticated: true;

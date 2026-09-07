@@ -1,8 +1,8 @@
 {
   "common": {
     "error": "Fejl: {message}",
-    "serverOffline": "ShiguangGateway-serveren er offline. Start med: shiguang-gateway serve",
-    "authRequired": "Godkendelse kræves. Sæt SHIGUANG_GATEWAY_API_KEY eller kør: shiguang-gateway setup",
+    "serverOffline": "Orbit-serveren er offline. Start med: orbit serve",
+    "authRequired": "Godkendelse kræves. Sæt ORBIT_API_KEY eller kør: orbit setup",
     "rateLimited": "Anmodningsgrænse overskredet. Prøv igen om {seconds}s.",
     "timeout": "Anmodningen timed ud efter {ms}ms.",
     "success": "Færdig.",
@@ -15,18 +15,18 @@
     "yesOpt": "Spring bekræftelse over"
   },
   "program": {
-    "description": "ShiguangGateway — Smart AI-router med automatisk fallback",
+    "description": "Orbit — Smart AI-router med automatisk fallback",
     "version": "Vis version og afslut",
     "output": "Outputformat (table, json, jsonl, csv)",
     "quiet": "Undertryk ikke-essentielt output",
     "no_color": "Deaktiver farvet output",
     "timeout": "HTTP-anmodnings timeout i millisekunder",
-    "api_key": "API-nøgle til ShiguangGateway-serveren",
-    "base_url": "ShiguangGateway-serverens basis-URL",
+    "api_key": "API-nøgle til Orbit-serveren",
+    "base_url": "Orbit-serverens basis-URL",
     "context": "Server-kontekst/profil til denne kommando",
-    "lang": "Angiv CLI-visningssprog (tilsidesætter SHIGUANG_GATEWAY_LANG)"
+    "lang": "Angiv CLI-visningssprog (tilsidesætter ORBIT_LANG)"
   },
   "redis": {
-    "description": "Start en lokal Redis-container med ét klik (Podman eller Docker) til ShiguangGateway-caching og kvoteovervågning"
+    "description": "Start en lokal Redis-container med ét klik (Podman eller Docker) til Orbit-caching og kvoteovervågning"
   }
 }

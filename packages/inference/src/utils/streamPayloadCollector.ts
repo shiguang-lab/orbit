@@ -848,13 +848,13 @@ export function compactStructuredStreamPayload(payload: unknown): unknown {
   if (summary && typeof summary === "object" && !Array.isArray(summary)) {
     return {
       ...(summary as JsonRecord),
-      _shiguangGateway_stream: streamMeta,
+      _orbit_stream: streamMeta,
     };
   }
 
   return {
     summary,
-    _shiguangGateway_stream: streamMeta,
+    _orbit_stream: streamMeta,
   };
 }
 

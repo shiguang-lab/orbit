@@ -10,17 +10,17 @@ lastUpdated: 2026-06-28
 
 🌐 **Languages:** 🇺🇸 [English](../../../../docs/guides/TROUBLESHOOTING.md) | 🇧🇷 [Português (Brasil)](../../pt-BR/docs/guides/TROUBLESHOOTING.md) | 🇪🇸 [Español](../../es/docs/guides/TROUBLESHOOTING.md) | 🇫🇷 [Français](../../fr/docs/guides/TROUBLESHOOTING.md) | 🇮🇹 [Italiano](../../it/docs/guides/TROUBLESHOOTING.md) | 🇷🇺 [Русский](../../ru/docs/guides/TROUBLESHOOTING.md) | 🇨🇳 [中文 (简体)](../../zh-CN/docs/guides/TROUBLESHOOTING.md) | 🇩🇪 [Deutsch](../../de/docs/guides/TROUBLESHOOTING.md) | 🇮🇳 [हिन्दी](../../in/docs/guides/TROUBLESHOOTING.md) | 🇹🇭 [ไทย](../../th/docs/guides/TROUBLESHOOTING.md) | 🇺🇦 [Українська](../../uk-UA/docs/guides/TROUBLESHOOTING.md) | 🇸🇦 [العربية](../../ar/docs/guides/TROUBLESHOOTING.md) | 🇯🇵 [日本語](../../ja/docs/guides/TROUBLESHOOTING.md) | 🇻🇳 [Tiếng Việt](../../vi/docs/guides/TROUBLESHOOTING.md) | 🇧🇬 [Български](../../bg/docs/guides/TROUBLESHOOTING.md) | 🇩🇰 [Dansk](../../da/docs/guides/TROUBLESHOOTING.md) | 🇫🇮 [Suomi](../../fi/docs/guides/TROUBLESHOOTING.md) | 🇮🇱 [עברית](../../he/docs/guides/TROUBLESHOOTING.md) | 🇭🇺 [Magyar](../../hu/docs/guides/TROUBLESHOOTING.md) | 🇮🇩 [Bahasa Indonesia](../../id/docs/guides/TROUBLESHOOTING.md) | 🇰🇷 [한국어](../../ko/docs/guides/TROUBLESHOOTING.md) | 🇲🇾 [Bahasa Melayu](../../ms/docs/guides/TROUBLESHOOTING.md) | 🇳🇱 [Nederlands](../../nl/docs/guides/TROUBLESHOOTING.md) | 🇳🇴 [Norsk](../../no/docs/guides/TROUBLESHOOTING.md) | 🇵🇹 [Português (Portugal)](../../pt/docs/guides/TROUBLESHOOTING.md) | 🇷🇴 [Română](../../ro/docs/guides/TROUBLESHOOTING.md) | 🇵🇱 [Polski](../../pl/docs/guides/TROUBLESHOOTING.md) | 🇸🇰 [Slovenčina](../../sk/docs/guides/TROUBLESHOOTING.md) | 🇸🇪 [Svenska](../../sv/docs/guides/TROUBLESHOOTING.md) | 🇵🇭 [Filipino](../../phi/docs/guides/TROUBLESHOOTING.md) | 🇨🇿 [Čeština](../../cs/docs/guides/TROUBLESHOOTING.md)
 
-ShiguangGateway 常见问题及解决方案。
+Orbit 常见问题及解决方案。
 
 ---
 
 ## 快速参考
 
-**刚接触 ShiguangGateway？** 从这里开始 —— 以下内容可解决 90% 的问题：
+**刚接触 Orbit？** 从这里开始 —— 以下内容可解决 90% 的问题：
 
 | 你看到的提示            | 含义                     | 解决方法                                                                                          |
 | ----------------------- | ------------------------ | ------------------------------------------------------------------------------------------------- |
-| "Can't connect"         | ShiguangGateway 未运行          | 运行 `shiguang-gateway` 或 `docker restart shiguang-gateway`                                                     |
+| "Can't connect"         | Orbit 未运行          | 运行 `orbit` 或 `docker restart orbit`                                                     |
 | "Invalid API key"       | API 密钥错误或已过期      | 从服务商网站重新复制密钥                                                                          |
 | "Rate limit exceeded"   | 请求频率过高              | 等待 1 分钟，或使用 `model: "auto"` 自动容灾                                                     |
 | "Quota exceeded"        | 免费/付费配额已用尽       | 接入更多服务商，或使用免费服务商（Kiro、Pollinations）                                              |
@@ -45,10 +45,10 @@ ShiguangGateway 常见问题及解决方案。
 | 首次登录无法使用                                    | 在 `.env` 中设置 `INITIAL_PASSWORD`（无硬编码默认值）                                                                                                  |
 | 仪表盘打开的端口不对                                | 设置 `PORT=20128` 和 `NEXT_PUBLIC_BASE_URL=http://localhost:20128`                                                                                    |
 | 没有日志写入磁盘                                    | 设置 `APP_LOG_TO_FILE=true` 并确认已启用调用日志捕获                                                                                                  |
-| EACCES: permission denied                           | 设置 `DATA_DIR=/path/to/writable/dir` 覆盖 `~/.shiguang-gateway`                                                                                             |
+| EACCES: permission denied                           | 设置 `DATA_DIR=/path/to/writable/dir` 覆盖 `~/.orbit`                                                                                             |
 | 路由策略无法保存                                    | 更新至最新 v3.x 版本（早期版本中已修复 settings 持久化的 Zod Schema 问题）                                                                            |
 | 登录崩溃 / 空白页面                                 | 检查 Node.js 版本 —— 参见下方的 [Node.js 兼容性](#nodejs-兼容性)                                                                                      |
-| `dlopen` / `slice is not valid mach-o file` (macOS) | 运行 `cd $(npm root -g)/shiguang-gateway/app && npm rebuild better-sqlite3 && shiguang-gateway` —— 参见下方的 [macOS 原生模块重新编译](#macos-原生模块重新编译)         |
+| `dlopen` / `slice is not valid mach-o file` (macOS) | 运行 `cd $(npm root -g)/orbit/app && npm rebuild better-sqlite3 && orbit` —— 参见下方的 [macOS 原生模块重新编译](#macos-原生模块重新编译)         |
 | 代理 "fetch failed"                                 | 请确认代理配置已设置在正确的层级 —— 参见下方的[代理问题](#代理问题)                                                                                  |
 
 ---
@@ -59,7 +59,7 @@ ShiguangGateway 常见问题及解决方案。
 
 ### 登录页面崩溃或显示 "Module self-registration" 错误
 
-**原因：** 你使用的 Node.js 版本不在 ShiguangGateway 批准的安全运行时范围内。最常见的情况是运行的 Node.js 22 或 24 补丁版本过低，未达到 ShiguangGateway 所需的安全补丁基线。
+**原因：** 你使用的 Node.js 版本不在 Orbit 批准的安全运行时范围内。最常见的情况是运行的 Node.js 22 或 24 补丁版本过低，未达到 Orbit 所需的安全补丁基线。
 
 **症状：**
 
@@ -75,8 +75,8 @@ ShiguangGateway 常见问题及解决方案。
    nvm use 24
    ```
 2. 验证版本：`node --version` 应显示 `v24.0.0` 或 24.x LTS 线上的更高版本
-3. 重新安装 ShiguangGateway：`npm install -g shiguang-gateway`
-4. 重启：`shiguang-gateway`
+3. 重新安装 Orbit：`npm install -g orbit`
+4. 重启：`orbit`
 
 > **受支持的安全版本：** `>=22.22.2 <23` 或 `>=24.0.0 <27`。Node.js 24.x LTS (Krypton) 和 Node.js 26 完全支持。
 
@@ -84,7 +84,7 @@ ShiguangGateway 常见问题及解决方案。
 
 <a name="macos-native-module-rebuild"></a>
 
-**原因：** 执行全局 `npm install -g shiguang-gateway` 后，包内的 `better-sqlite3` 原生二进制文件可能被编译为与你本地运行环境不同的架构或 Node.js ABI。这在 macOS 上很常见（Apple Silicon 和 Intel 均如此），当预编译的二进制文件与你的环境不匹配时就会发生。
+**原因：** 执行全局 `npm install -g orbit` 后，包内的 `better-sqlite3` 原生二进制文件可能被编译为与你本地运行环境不同的架构或 Node.js ABI。这在 macOS 上很常见（Apple Silicon 和 Intel 均如此），当预编译的二进制文件与你的环境不匹配时就会发生。
 
 **症状：**
 
@@ -93,15 +93,15 @@ ShiguangGateway 常见问题及解决方案。
 - 完整示例：
 
 ```
-dlopen(/Users/<user>/.nvm/versions/node/v24.14.1/lib/node_modules/shiguang-gateway/app/node_modules/better-sqlite3/build/Release/better_sqlite3.node, 0x0001): tried: '...' (slice is not valid mach-o file)
+dlopen(/Users/<user>/.nvm/versions/node/v24.14.1/lib/node_modules/orbit/app/node_modules/better-sqlite3/build/Release/better_sqlite3.node, 0x0001): tried: '...' (slice is not valid mach-o file)
 ```
 
 **修复 —— 针对本地环境重新编译（无需降级 Node.js）：**
 
 ```bash
-cd $(npm root -g)/shiguang-gateway/app
+cd $(npm root -g)/orbit/app
 npm rebuild better-sqlite3
-shiguang-gateway
+orbit
 ```
 
 > **说明：** 这会针对你的本地 Node.js 版本和 CPU 架构重新编译原生绑定，解决二进制不匹配问题。官方支持的运行时范围为 **`>=22.22.2 <23` 或 `>=24.0.0 <27`**（`bin/nodeRuntimeSupport.mjs` 中的 `SUPPORTED_NODE_RANGE`，与 `package.json` 的 `engines` 字段一致）。Node.js 24.x LTS (Krypton) 和 Node.js 26 在 `better-sqlite3` v12.x 下完全支持。
@@ -128,13 +128,13 @@ shiguang-gateway
 
 **原因：** 在 Node.js 22 上，undici@8 调度器与 Node 内置的 `fetch()` 实现不兼容。
 
-**修复（v3.5.5+）：** ShiguangGateway 现在在代理调度器激活时使用 undici 自身的 `fetch()` 函数，确保行为一致。请更新至 v3.5.5+。
+**修复（v3.5.5+）：** Orbit 现在在代理调度器激活时使用 undici 自身的 `fetch()` 函数，确保行为一致。请更新至 v3.5.5+。
 
 ### WSL 下的 MITM 代理：Windows 主机上的桌面应用未被拦截
 
-**原因：** MITM 代理及其 CA 证书安装在 ShiguangGateway 运行的环境中。在 WSL 下，该环境是 Linux 客户机，而 AI 桌面应用（Kiro、Trae、Copilot、Zed 等）运行在 Windows 主机上。主机应用不信任客户机的证书存储，也不会通过客户机的系统代理路由，因此桌面拦截不会在那里生效。
+**原因：** MITM 代理及其 CA 证书安装在 Orbit 运行的环境中。在 WSL 下，该环境是 Linux 客户机，而 AI 桌面应用（Kiro、Trae、Copilot、Zed 等）运行在 Windows 主机上。主机应用不信任客户机的证书存储，也不会通过客户机的系统代理路由，因此桌面拦截不会在那里生效。
 
-**建议：** 将 ShiguangGateway 以原生方式运行在与你想要拦截的桌面应用相同的操作系统上（Windows 应用在 Windows 上运行；macOS/Linux 同理）。将 ShiguangGateway 留在 WSL 内同时针对主机应用，需要手动在 Windows 主机上信任生成的 CA 证书，并将每个主机应用的网络/代理设置指向 WSL 代理端点 —— 这是一种不受支持、脆弱的配置方案。
+**建议：** 将 Orbit 以原生方式运行在与你想要拦截的桌面应用相同的操作系统上（Windows 应用在 Windows 上运行；macOS/Linux 同理）。将 Orbit 留在 WSL 内同时针对主机应用，需要手动在 Windows 主机上信任生成的 CA 证书，并将每个主机应用的网络/代理设置指向 WSL 代理端点 —— 这是一种不受支持、脆弱的配置方案。
 
 ---
 
@@ -161,7 +161,7 @@ shiguang-gateway
 
 ### OAuth Token 过期
 
-ShiguangGateway 会自动刷新 Token。如果问题持续：
+Orbit 会自动刷新 Token。如果问题持续：
 
 1. 仪表盘 → 服务商 → 重新连接
 2. 删除并重新添加该服务商连接
@@ -183,7 +183,7 @@ ShiguangGateway 会自动刷新 Token。如果问题持续：
 ### 云端同步错误
 
 1. 验证 `BASE_URL` 指向你正在运行的实例（例如 `http://localhost:20128`）
-2. 验证 `CLOUD_URL` 指向你的云端端点（例如 `https://shiguang-gateway.dev`）
+2. 验证 `CLOUD_URL` 指向你的云端端点（例如 `https://orbit.dev`）
 3. 保持 `NEXT_PUBLIC_*` 值与服务器端值一致
 
 ### 云端 `stream=false` 返回 500
@@ -339,13 +339,13 @@ curl http://localhost:20128/api/monitoring/health
 
 ### 防惊群效应
 
-当大量并发请求同时打到一个受速率限制的服务商时，ShiguangGateway 使用互斥锁 + 自动速率限制来串行化请求，防止级联失败。这对 API 密钥类服务商是自动生效的。
+当大量并发请求同时打到一个受速率限制的服务商时，Orbit 使用互斥锁 + 自动速率限制来串行化请求，防止级联失败。这对 API 密钥类服务商是自动生效的。
 
 ---
 
 ## 可选的 RAG / LLM 失败分类法（16 种问题）
 
-部分 ShiguangGateway 用户将网关部署在 RAG 或代理栈之前。在这些场景中，经常会出现一种奇怪的现象：ShiguangGateway 看起来一切正常（服务商在线、路由配置正常、无线速告警），但最终答案仍然不对。
+部分 Orbit 用户将网关部署在 RAG 或代理栈之前。在这些场景中，经常会出现一种奇怪的现象：Orbit 看起来一切正常（服务商在线、路由配置正常、无线速告警），但最终答案仍然不对。
 
 实际上，这些事件通常来自下游的 RAG 流水线，而非网关本身。
 
@@ -364,17 +364,17 @@ curl http://localhost:20128/api/monitoring/health
 
 1. 当你调查一个错误响应时，捕获：
    - 用户任务和请求
-   - ShiguangGateway 中的路由或服务商 Combo
+   - Orbit 中的路由或服务商 Combo
    - 下游使用的任何 RAG 上下文（检索到的文档、工具调用等）
 2. 将该事件映射到一个或两个 WFGY ProblemMap 编号（`No.1` … `No.16`）。
-3. 将编号存储在你自己的仪表盘、runbook 或事件追踪器中，紧邻 ShiguangGateway 日志。
+3. 将编号存储在你自己的仪表盘、runbook 或事件追踪器中，紧邻 Orbit 日志。
 4. 使用对应的 WFGY 页面来判断是需要调整 RAG 栈、检索器还是路由策略。
 
 完整文本和具体方案在此（MIT 许可，纯文本）：
 
 [WFGY ProblemMap README](https://github.com/onestardao/WFGY/blob/main/ProblemMap/README.md)
 
-如果你不在 ShiguangGateway 后面运行 RAG 或代理流水线，可以忽略本节。
+如果你不在 Orbit 后面运行 RAG 或代理流水线，可以忽略本节。
 
 ---
 
@@ -398,7 +398,7 @@ v3.8.0 版本特有的问题及其当前临时方案。如果后续补丁中得�
 
 1. 为你的平台安装 Devin CLI
 2. 在 `.env` 中设置 `CLI_DEVIN_BIN=/usr/local/bin/devin`（或实际路径）
-3. 重启 ShiguangGateway 并从 **仪表盘 → CLI Tools** 重新测试
+3. 重启 Orbit 并从 **仪表盘 → CLI Tools** 重新测试
 
 ### 模型冷却卡住（手动重置）
 
@@ -423,7 +423,7 @@ v3.8.0 版本特有的问题及其当前临时方案。如果后续补丁中得�
 
 **修复：**
 
-- 从 CLI 运行 `shiguang-gateway providers` 重新触发 OAuth 流程，或
+- 从 CLI 运行 `orbit providers` 重新触发 OAuth 流程，或
 - 从 **仪表盘 → Providers → Command Code → Reconnect** 重新运行 OAuth
 
 ### ModelScope 返回过于激进的 429 冷却
@@ -440,20 +440,20 @@ v3.8.0 版本特有的问题及其当前临时方案。如果后续补丁中得�
 - 确认你使用的是 v3.8.0 或更高版本
 - 验证 **Settings → Resilience** 下的 `useUpstream429BreakerHints` 开关已启用
 
-### 生产环境缺少 SHIGUANG_GATEWAY_WS_BRIDGE_SECRET
+### 生产环境缺少 ORBIT_WS_BRIDGE_SECRET
 
 **症状：**
 
 - 在远程生产主机上运行时，每个 Codex/Responses WebSocket bridge 请求都返回 401
 - WebSocket bridge 握手在连接后立即关闭
 
-**原因：** 生产环境中缺少 `SHIGUANG_GATEWAY_WS_BRIDGE_SECRET` 环境变量。
+**原因：** 生产环境中缺少 `ORBIT_WS_BRIDGE_SECRET` 环境变量。
 
 **修复：**
 
 1. 生成一个随机密钥：`openssl rand -hex 32`
-2. 在生产服务器环境中设置 `SHIGUANG_GATEWAY_WS_BRIDGE_SECRET=<random-secret>`（以及任何与该 bridge 通信的客户端）
-3. 重启 ShiguangGateway
+2. 在生产服务器环境中设置 `ORBIT_WS_BRIDGE_SECRET=<random-secret>`（以及任何与该 bridge 通信的客户端）
+3. 重启 Orbit
 
 ### Responses API：后台模式降级为同步
 
@@ -473,7 +473,7 @@ v3.8.0 版本特有的问题及其当前临时方案。如果后续补丁中得�
 
 ## 仍然卡住了？
 
-- **GitHub Issues**: [github.com/diegosouzapw/ShiguangGateway/issues](https://github.com/diegosouzapw/ShiguangGateway/issues)
+- **GitHub Issues**: [github.com/diegosouzapw/Orbit/issues](https://github.com/diegosouzapw/Orbit/issues)
 - **架构**：内部细节请参见 [`docs/architecture/ARCHITECTURE.md`](../../../../docs/architecture/ARCHITECTURE.md)
 - **API 参考**：所有端点请参见 [`docs/reference/API_REFERENCE.md`](../../../../docs/reference/API_REFERENCE.md)
 - **健康仪表盘**：在 **仪表盘 → Health** 中查看实时系统状态

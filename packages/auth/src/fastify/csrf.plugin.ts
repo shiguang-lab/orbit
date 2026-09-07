@@ -1,17 +1,17 @@
 /**
- * CSRF 插件：复刻 Shiguang Gateway src/server/authz/csrf.ts。
- * HMAC-SHA256 token，头名 x-shiguangGateway-csrf，对管理端点写操作校验。
+ * CSRF 插件：复刻 Orbit src/server/authz/csrf.ts。
+ * HMAC-SHA256 token，头名 x-orbit-csrf，对管理端点写操作校验。
  * token 绑定经过 JWKS 验证的稳定 SSO 会话身份。
  */
 import { createHash, createHmac } from "node:crypto";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { resolveGatewayIdentity } from "../gateway-session.js";
 
-export const DASHBOARD_CSRF_HEADER = "x-shiguangGateway-csrf";
+export const DASHBOARD_CSRF_HEADER = "x-orbit-csrf";
 
 const TOKEN_VERSION = "v1";
 const TOKEN_TTL_SECONDS = 10 * 60;
-const TOKEN_CONTEXT = "shiguangGateway-dashboard-csrf-v1";
+const TOKEN_CONTEXT = "orbit-dashboard-csrf-v1";
 
 export interface DashboardCsrfToken {
   token: string;

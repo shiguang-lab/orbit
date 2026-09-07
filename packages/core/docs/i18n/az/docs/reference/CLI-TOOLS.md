@@ -6,22 +6,22 @@
 
 ---
 
-title: "CLI Alətləri — ShiguangGateway"
+title: "CLI Alətləri — Orbit"
 version: 3.8.50
 lastUpdated: 2026-08-18
 ---
 
-# CLI Alətləri — ShiguangGateway
+# CLI Alətləri — Orbit
 
 Sonuncu yeniləmə: 2026-08-18
 
-ShiguangGateway, üç xüsusi idarəetmə səhifəsində yayılmış üç kateqoriyalı CLI alətləri ilə inteqrasiya edir:
+Orbit, üç xüsusi idarəetmə səhifəsində yayılmış üç kateqoriyalı CLI alətləri ilə inteqrasiya edir:
 
 | Səhifə            | Marşrut                 | Konsept                                                                                    | Say              |
 | ----------------- | ----------------------- | ------------------------------------------------------------------------------------------ | ---------------- |
-| **CLI Kodu**      | `/dashboard/cli-code`   | ShiguangGateway-a yönləndirdiyiniz kodlaşdırma alətləri (Müştəri → CLI → ShiguangGateway → Təchizatçı) | 26               |
-| **CLI Agentləri** | `/dashboard/cli-agents` | ShiguangGateway-a yönləndirdiyiniz müstəqil agentlər (eyni axın, daha geniş əhatə)               | 8                |
-| **ACP Agentləri** | `/dashboard/acp-agents` | ShiguangGateway-un stdio/ACP vasitəsilə arxa planda yaratdığı CLİ-lər (tərs axın)                | qeydiyyata baxın |
+| **CLI Kodu**      | `/dashboard/cli-code`   | Orbit-a yönləndirdiyiniz kodlaşdırma alətləri (Müştəri → CLI → Orbit → Təchizatçı) | 26               |
+| **CLI Agentləri** | `/dashboard/cli-agents` | Orbit-a yönləndirdiyiniz müstəqil agentlər (eyni axın, daha geniş əhatə)               | 8                |
+| **ACP Agentləri** | `/dashboard/acp-agents` | Orbit-un stdio/ACP vasitəsilə arxa planda yaratdığı CLİ-lər (tərs axın)                | qeydiyyata baxın |
 
 Köhnə marşrutlar 308 ilə yönləndirilir: `/dashboard/cli-tools` → `/dashboard/cli-code`, `/dashboard/agents` → `/dashboard/acp-agents`.
 
@@ -33,14 +33,14 @@ Köhnə marşrutlar 308 ilə yönləndirilir: `/dashboard/cli-tools` → `/dashb
 CLI Kodu / CLI Agentləri (istehlak axını):
 Claude / Codex / OpenCode / Cline / KiloCode / Continue / Hermes Agent / Goose / ...
            │
-           ▼  (hamısı ShiguangGateway-a yönləndirilir)
+           ▼  (hamısı Orbit-a yönləndirilir)
     http://YOUR_SERVER:20128/v1
            │
-           ▼  (ShiguangGateway düzgün təchizatçıya yönləndirir)
+           ▼  (Orbit düzgün təchizatçıya yönləndirir)
     Anthropic / OpenAI / Gemini / DeepSeek / Groq / Mistral / ...
 
 ACP Agentləri (tərs yaradılma axını):
-    Müştəri tələbi → ShiguangGateway → stdio/ACP vasitəsilə CLİ yaradır → cavab
+    Müştəri tələbi → Orbit → stdio/ACP vasitəsilə CLİ yaradır → cavab
 ```
 
 **Faydaları:**
@@ -54,25 +54,25 @@ ACP Agentləri (tərs yaradılma axını):
 
 ## `setup-*` ilə Avtomatik Konfiqurasiya
 
-Hər alətin konfiqurasiyasını əl ilə yazmağa ehtiyac yoxdur. ShiguangGateway, dəstəklənən hər bir CLİ üçün **canlı** model kataloqunu oxuyan və alətin öz konfiqurasiyasını sizin maşınınıza yazan `setup-*` komandasını təqdim edir:
+Hər alətin konfiqurasiyasını əl ilə yazmağa ehtiyac yoxdur. Orbit, dəstəklənən hər bir CLİ üçün **canlı** model kataloqunu oxuyan və alətin öz konfiqurasiyasını sizin maşınınıza yazan `setup-*` komandasını təqdim edir:
 
 ```bash
-shiguang-gateway setup-codex        shiguang-gateway setup-claude       shiguang-gateway setup-opencode
-shiguang-gateway setup-cline        shiguang-gateway setup-kilo         shiguang-gateway setup-continue
-shiguang-gateway setup-cursor       shiguang-gateway setup-roo          shiguang-gateway setup-crush
-shiguang-gateway setup-goose        shiguang-gateway setup-qwen         shiguang-gateway setup-aider
+orbit setup-codex        orbit setup-claude       orbit setup-opencode
+orbit setup-cline        orbit setup-kilo         orbit setup-continue
+orbit setup-cursor       orbit setup-roo          orbit setup-crush
+orbit setup-goose        orbit setup-qwen         orbit setup-aider
 ```
 
-Hər biri `--remote <url> --api-key <key>` (uzaq ShiguangGateway-a qarşı yerli aləti konfiqurasiya etmək), `--dry-run` (yazmadan önizləmə) və `--port` qəbul edir. Model avtomatik aşkar edilməyən alətlər (Cline, Kilo, Roo, Goose, Aider, Qwen) `--model <id>` (və interaktiv olmayan işlər üçün `--yes`) qəbul edir. Doğru mühitin daxil edildiyi və heç bir konfiqurasiya yazılmadan CLİ başlatmaq üçün, ümumi `shiguang-gateway run <target>` başlatıcısını istifadə edin (claude, codex, aider, goose, opencode, qwen, gemini — hədəflər və təyin etmələr `bin/cli/cli-manifest.mjs`-dən gəlir); köhnə alət başlatmaçıları `shiguang-gateway launch` (Claude Kodu) və `shiguang-gateway launch-codex` (Codex) hələ də mövcuddur. Gemini CLİ yalnız başlatma üçündür: bu `shiguang-gateway run` hədəfidir, lakin `setup-*`/`configure` resepti yoxdur.
+Hər biri `--remote <url> --api-key <key>` (uzaq Orbit-a qarşı yerli aləti konfiqurasiya etmək), `--dry-run` (yazmadan önizləmə) və `--port` qəbul edir. Model avtomatik aşkar edilməyən alətlər (Cline, Kilo, Roo, Goose, Aider, Qwen) `--model <id>` (və interaktiv olmayan işlər üçün `--yes`) qəbul edir. Doğru mühitin daxil edildiyi və heç bir konfiqurasiya yazılmadan CLİ başlatmaq üçün, ümumi `orbit run <target>` başlatıcısını istifadə edin (claude, codex, aider, goose, opencode, qwen, gemini — hədəflər və təyin etmələr `bin/cli/cli-manifest.mjs`-dən gəlir); köhnə alət başlatmaçıları `orbit launch` (Claude Kodu) və `orbit launch-codex` (Codex) hələ də mövcuddur. Gemini CLİ yalnız başlatma üçündür: bu `orbit run` hədəfidir, lakin `setup-*`/`configure` resepti yoxdur.
 
 > **Tam istinad:** ustad cədvəl — hər bir komandanın yazdığı, hər bir bayraq, yerli vs uzaq və hansı alətlərin `/v1` əlavəsinə ehtiyacı olduğu — **[CLI İnteqrasiyaları](../guides/CLI-INTEGRATIONS.md)**-da yerləşir.
 
 ### Bir konteyner içində bunları işlətmək
 
-ShiguangGateway konteyneri içində icra olunan `setup-*` komandası konteynerin öz evinə yazır, bu da heç bir ev sahibi CLİ tərəfindən oxunmur və konteynerlə birlikdə yox olur. ShiguangGateway bunu aşkar edir və yazmadan əvvəl təlimatlarla `2` ilə çıxır. İki dəstəklənən yol — CLİ-ni ev sahibində quraşdırmaq və konteynerə `shiguang-gateway connect` etmək, ya da konfiqurasiya qovluqlarını bağlamaq və `CLI_CONFIG_HOME` təyin etməkdir (compose `host` profili). Hər `setup-*` komandası, eləcə də `shiguang-gateway configure` və `shiguang-gateway config set`, konteynerin öz CLİ-lərini konfiqurasiya etmək istədiyiniz zaman `--allow-container-write` qəbul edir; `SHIGUANG_GATEWAY_ALLOW_CONTAINER_CONFIG_WRITE=true` server üçün eyni şeyi edir. Baxın
-[Docker Bələdçisi → Ev sahibi CLİ alətlərini konfiqurasiya etmək](../guides/DOCKER_GUIDE.md#configuring-host-cli-tools-when-shiguang-gateway-runs-in-docker).
+Orbit konteyneri içində icra olunan `setup-*` komandası konteynerin öz evinə yazır, bu da heç bir ev sahibi CLİ tərəfindən oxunmur və konteynerlə birlikdə yox olur. Orbit bunu aşkar edir və yazmadan əvvəl təlimatlarla `2` ilə çıxır. İki dəstəklənən yol — CLİ-ni ev sahibində quraşdırmaq və konteynerə `orbit connect` etmək, ya da konfiqurasiya qovluqlarını bağlamaq və `CLI_CONFIG_HOME` təyin etməkdir (compose `host` profili). Hər `setup-*` komandası, eləcə də `orbit configure` və `orbit config set`, konteynerin öz CLİ-lərini konfiqurasiya etmək istədiyiniz zaman `--allow-container-write` qəbul edir; `ORBIT_ALLOW_CONTAINER_CONFIG_WRITE=true` server üçün eyni şeyi edir. Baxın
+[Docker Bələdçisi → Ev sahibi CLİ alətlərini konfiqurasiya etmək](../guides/DOCKER_GUIDE.md#configuring-host-cli-tools-when-orbit-runs-in-docker).
 
-İdarəetmə panelinin **tətbiq son nöqtəsi** (`POST /api/cli-tools/apply`) eyni qorumağı tətbiq edir: konteynerdə, ev sahibi tərəfindən bağlanmamış bir yazı **`422`** ilə `containerEphemeralTarget: true` cavabını verir, təhlükəsiz xəta mətni və — ev sahibi resepti olan alətlər üçün (claude, codex, opencode, cline, kilo, continue) — ev sahibində işlətmək üçün `hostSetupCommand` (məsələn, `shiguang-gateway setup-opencode`) təqdim edir; heç nə yazılmır. `dryRun: true` konteyner rejimində işləməyə davam edir və diskə toxunmadan yaradılan məzmunu + hədəf yolunu qaytarır, beləliklə, siz idarəetmə panelindən önizləyə və ev sahibində tətbiq edə bilərsiniz. Bu davranış məqsədli və `tests/unit/api/cli-tools/apply-container-guard.test.ts` ilə geriyə qorunmuşdur — heç vaxt qorumanı aradan qaldıraraq 422-ni "düzəltməyin".
+İdarəetmə panelinin **tətbiq son nöqtəsi** (`POST /api/cli-tools/apply`) eyni qorumağı tətbiq edir: konteynerdə, ev sahibi tərəfindən bağlanmamış bir yazı **`422`** ilə `containerEphemeralTarget: true` cavabını verir, təhlükəsiz xəta mətni və — ev sahibi resepti olan alətlər üçün (claude, codex, opencode, cline, kilo, continue) — ev sahibində işlətmək üçün `hostSetupCommand` (məsələn, `orbit setup-opencode`) təqdim edir; heç nə yazılmır. `dryRun: true` konteyner rejimində işləməyə davam edir və diskə toxunmadan yaradılan məzmunu + hədəf yolunu qaytarır, beləliklə, siz idarəetmə panelindən önizləyə və ev sahibində tətbiq edə bilərsiniz. Bu davranış məqsədli və `tests/unit/api/cli-tools/apply-container-guard.test.ts` ilə geriyə qorunmuşdur — heç vaxt qorumanı aradan qaldıraraq 422-ni "düzəltməyin".
 
 ---
 
@@ -102,8 +102,8 @@ bəyannamə mənbəyi var və bir drift testi onları uyğun saxlayır:
 | ----------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
 | **Kataloqda**                 | Dashboard kataloqunda görünür (ad, vendor, sənədlər, konfiqurasiya tipi)            | `src/shared/constants/cliTools.ts` (`CLI_TOOLS`)                   |
 | **Aşkar edilə bilən**         | İkili/konfiqurasiya aşkar edilməsi, sağlamlıq yoxlamaları, konfiqurasiya yolları    | `src/shared/services/cliRuntime.ts` (`CLI_TOOLS` runtime kataloqu) |
-| **Konfiqurasiya edilə bilən** | `shiguang-gateway configure <cli>` tərəfindən dəstəklənir (quraşdırma resepti mövcuddur)   | `bin/cli/cli-manifest.mjs` (`configure: true`)                     |
-| **İşə salına bilən**          | `shiguang-gateway run <target>` tərəfindən dəstəklənir (env/args inyeksiya müəyyən edilib) | `bin/cli/cli-manifest.mjs` (`run: true`)                           |
+| **Konfiqurasiya edilə bilən** | `orbit configure <cli>` tərəfindən dəstəklənir (quraşdırma resepti mövcuddur)   | `bin/cli/cli-manifest.mjs` (`configure: true`)                     |
+| **İşə salına bilən**          | `orbit run <target>` tərəfindən dəstəklənir (env/args inyeksiya müəyyən edilib) | `bin/cli/cli-manifest.mjs` (`run: true`)                           |
 
 `bin/cli/cli-manifest.mjs` CLI əmri üçün kanonik icra manifestidir
 sahələri: `run`, `configure` və shell-completion generator-ları hamısı
@@ -167,7 +167,7 @@ digər sahələr olmadan əlavə edildikdə, sessiya sükutla drift etmək əvə
 
 ## 3. ACP Agentləri (/dashboard/acp-agents)
 
-Bu səhifə (`/dashboard/agents`-dən adlandırılmışdır) ShiguangGateway-un stdio/ACP protokolu vasitəsilə **yarada biləcəyi** arxa plan icra mühərriklərini göstərir. Kataloq ayrıca `src/lib/acp/registry.ts`-də saxlanılır və `CLI_TOOLS` ilə **eyni deyil**.
+Bu səhifə (`/dashboard/agents`-dən adlandırılmışdır) Orbit-un stdio/ACP protokolu vasitəsilə **yarada biləcəyi** arxa plan icra mühərriklərini göstərir. Kataloq ayrıca `src/lib/acp/registry.ts`-də saxlanılır və `CLI_TOOLS` ilə **eyni deyil**.
 
 ---
 
@@ -230,7 +230,7 @@ interface ToolBatchStatus {
 | `POST /api/cli-tools/codewhale-settings`    | CodeWhale (OPENAI_BASE_URL, əsas + köhnə `~/.deepseek` sinxronizasiya) |
 | `POST /api/cli-tools/smelt-settings`        | Smelt                                                                  |
 | `POST /api/cli-tools/pi-settings`           | Pi kodlaşdırma agenti                                                  |
-| `POST /api/cli-tools/grok-build-settings`   | Grok Build (~/.grok/config.toml, `[model.shiguang-gateway]`)                  |
+| `POST /api/cli-tools/grok-build-settings`   | Grok Build (~/.grok/config.toml, `[model.orbit]`)                  |
 | `POST /api/cli-tools/qwen-settings`         | Qwen Code (`~/.qwen/settings.json` + xüsusi `.env` açarı)              |
 
 Bütün marşrutlar xəta cavabları üçün `sanitizeErrorMessage()` istifadə edir (Sərt Qayda #12).
@@ -290,7 +290,7 @@ Tam PT-BR və EN tərcümələri təqdim edilir. 39 digər dil avtomatik olaraq 
 
 ## 9. Tez Başlama
 
-### Addım 1 — ShiguangGateway API Açarını Alın
+### Addım 1 — Orbit API Açarını Alın
 
 1. `/dashboard/api-manager`-ı açın → **API Açarı Yaradın**
 2. Bir ad verin (məsələn, `cli-tools`) və bütün icazələri seçin
@@ -323,7 +323,7 @@ npm install -g kilocode
 # Qwen Code
 npm install -g @qwen-code/qwen-code
 
-# Google Gemini CLI (launchable via `shiguang-gateway run gemini` → /v1beta surface)
+# Google Gemini CLI (launchable via `orbit run gemini` → /v1beta surface)
 npm install -g @google/gemini-cli
 
 # Aider
@@ -354,14 +354,14 @@ cargo install smelt  # Rust əsaslı
 ### Addım 4 — Qlobal Mühit Dəyişənlərini Təyin Edin
 
 ```bash
-# ShiguangGateway Universal Endpoint
+# Orbit Universal Endpoint
 export OPENAI_BASE_URL="http://localhost:20128/v1"
-export OPENAI_API_KEY="sk-your-shiguang-gateway-key"
+export OPENAI_API_KEY="sk-your-orbit-key"
 export ANTHROPIC_BASE_URL="http://localhost:20128"
-export ANTHROPIC_AUTH_TOKEN="sk-your-shiguang-gateway-key"
+export ANTHROPIC_AUTH_TOKEN="sk-your-orbit-key"
 # Gemini CLI ROOT-da GOOGLE_GEMINI_BASE_URL oxuyur (SDK özü /v1beta/... əlavə edir)
 export GOOGLE_GEMINI_BASE_URL="http://localhost:20128"
-export GEMINI_API_KEY="sk-your-shiguang-gateway-key"
+export GEMINI_API_KEY="sk-your-orbit-key"
 ```
 
 > **Uzaq server** üçün `localhost:20128`-i server IP və ya domen ilə əvəz edin,
@@ -379,7 +379,7 @@ mkdir -p ~/.claude && cat > ~/.claude/settings.json << EOF
 {
   "env": {
     "ANTHROPIC_BASE_URL": "http://localhost:20128",
-    "ANTHROPIC_AUTH_TOKEN": "sk-your-shiguang-gateway-key"
+    "ANTHROPIC_AUTH_TOKEN": "sk-your-orbit-key"
   }
 }
 EOF
@@ -395,20 +395,20 @@ Claude Code üçün birləşdirilmiş Anthropic qapı kökünü istifadə edin. 
 
 Müasir Codex (v0.137+) yalnız `~/.codex/config.toml`-ı oxuyur — köhnə
 `config.yaml` köhnə npm CLI-yə aiddir və səssizcə göz ardı edilir. API
-açarı `SHIGUANG_GATEWAY_API_KEY` mühit dəyişənində (`env_key`) qalır, heç vaxt
+açarı `ORBIT_API_KEY` mühit dəyişənində (`env_key`) qalır, heç vaxt
 faylda deyil:
 
 ```bash
 mkdir -p ~/.codex && cat > ~/.codex/config.toml << EOF
-model_provider = "shiguang-gateway"
+model_provider = "orbit"
 
-[model_providers.shiguang-gateway]
-name                 = "ShiguangGateway"
+[model_providers.orbit]
+name                 = "Orbit"
 base_url             = "http://localhost:20128/v1"
-env_key              = "SHIGUANG_GATEWAY_API_KEY"
+env_key              = "ORBIT_API_KEY"
 requires_openai_auth = false
 EOF
-export SHIGUANG_GATEWAY_API_KEY="sk-your-shiguang-gateway-key"
+export ORBIT_API_KEY="sk-your-orbit-key"
 ```
 
 Tam istinad (profil, `wire_api`, kontekst pəncərələri): [CODEX-CLI-CONFIGURATION.md](../guides/CODEX-CLI-CONFIGURATION.md).
@@ -424,12 +424,12 @@ mkdir -p ~/.config/opencode && cat > ~/.config/opencode/opencode.json << EOF
 {
   "\$schema": "https://opencode.ai/config.json",
   "provider": {
-    "shiguang-gateway": {
+    "orbit": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "ShiguangGateway",
+      "name": "Orbit",
       "options": {
         "baseURL": "http://localhost:20128/v1",
-        "apiKey": "sk-your-shiguang-gateway-key"
+        "apiKey": "sk-your-orbit-key"
       },
       "models": {
         "claude-sonnet-4-5": { "name": "claude-sonnet-4-5" },
@@ -444,7 +444,7 @@ EOF
 
 **Test:** `opencode`
 
-> `opencode run "your prompt" --model shiguang-gateway/claude-sonnet-4-5-thinking --variant high`
+> `opencode run "your prompt" --model orbit/claude-sonnet-4-5-thinking --variant high`
 > istifadə edərək düşüncə variantlarını göndərin.
 
 ---
@@ -458,7 +458,7 @@ mkdir -p ~/.cline/data && cat > ~/.cline/data/globalState.json << EOF
 {
   "apiProvider": "openai",
   "openAiBaseUrl": "http://localhost:20128/v1",
-  "openAiApiKey": "sk-your-shiguang-gateway-key"
+  "openAiApiKey": "sk-your-orbit-key"
 }
 EOF
 ```
@@ -466,7 +466,7 @@ EOF
 **VS Code rejimi:**
 Cline genişləndirmə parametrləri → API Provider: `OpenAI Compatible` → Base URL: `http://localhost:20128/v1`
 
-Yaxud ShiguangGateway dashboardunu istifadə edin → **CLI Alətləri → Cline → Konfiqurasiyanı Tətbiq Et**.
+Yaxud Orbit dashboardunu istifadə edin → **CLI Alətləri → Cline → Konfiqurasiyanı Tətbiq Et**.
 
 ---
 
@@ -475,7 +475,7 @@ Yaxud ShiguangGateway dashboardunu istifadə edin → **CLI Alətləri → Cline
 **CLI rejimi:**
 
 ```bash
-kilocode --api-base http://localhost:20128/v1 --api-key sk-your-shiguang-gateway-key
+kilocode --api-base http://localhost:20128/v1 --api-key sk-your-orbit-key
 ```
 
 **VS Code parametrləri:**
@@ -483,11 +483,11 @@ kilocode --api-base http://localhost:20128/v1 --api-key sk-your-shiguang-gateway
 ```json
 {
   "kilo-code.openAiBaseUrl": "http://localhost:20128/v1",
-  "kilo-code.apiKey": "sk-your-shiguang-gateway-key"
+  "kilo-code.apiKey": "sk-your-orbit-key"
 }
 ```
 
-Yaxud ShiguangGateway dashboardunu istifadə edin → **CLI Alətləri → KiloCode → Konfiqurasiyanı Tətbiq Et**.
+Yaxud Orbit dashboardunu istifadə edin → **CLI Alətləri → KiloCode → Konfiqurasiyanı Tətbiq Et**.
 
 ---
 
@@ -497,11 +497,11 @@ Yaxud ShiguangGateway dashboardunu istifadə edin → **CLI Alətləri → KiloC
 
 ```yaml
 models:
-  - name: ShiguangGateway
+  - name: Orbit
     provider: openai
     model: auto
     apiBase: http://localhost:20128/v1
-    apiKey: sk-your-shiguang-gateway-key
+    apiKey: sk-your-orbit-key
     default: true
 ```
 
@@ -511,25 +511,25 @@ Redaktə etdikdən sonra VS Code-u yenidən başladın.
 
 #### VS Code Insiders (`chatLanguageModels.json`)
 
-Bu, VS Code Insiders xüsusi son nöqtə modelləri üçün konfiqurasiya edildikdə və ShiguangGateway-un xüsusi başlıq sahəsi olmadan işləməsini istədiyiniz zaman istifadə olunur.
+Bu, VS Code Insiders xüsusi son nöqtə modelləri üçün konfiqurasiya edildikdə və Orbit-un xüsusi başlıq sahəsi olmadan işləməsini istədiyiniz zaman istifadə olunur.
 
 **Tövsiyə olunan yer:**
 
 - Linux: `~/.config/Code - Insiders/User/chatLanguageModels.json`
 - Windows: `%APPDATA%/Code - Insiders/User/chatLanguageModels.json`
 
-**Tokenləşdirilmiş ShiguangGateway təxmini istifadə edərək nümunə:**
+**Tokenləşdirilmiş Orbit təxmini istifadə edərək nümunə:**
 
 ```json
 [
   {
     "vendor": "customendpoint",
     "id": "auto",
-    "name": "ShiguangGateway Auto",
+    "name": "Orbit Auto",
     "family": "gpt-4",
     "version": "1.0.0",
-    "url": "http://localhost:20128/api/v1/vscode/sk-your-shiguang-gateway-key/chat/completions",
-    "modelsUrl": "http://localhost:20128/api/v1/vscode/sk-your-shiguang-gateway-key/models",
+    "url": "http://localhost:20128/api/v1/vscode/sk-your-orbit-key/chat/completions",
+    "modelsUrl": "http://localhost:20128/api/v1/vscode/sk-your-orbit-key/models",
     "requestFormat": "openai-chat-completions",
     "contextWindow": 256000,
     "maxOutputTokens": 32768,
@@ -542,7 +542,7 @@ Bu, VS Code Insiders xüsusi son nöqtə modelləri üçün konfiqurasiya edildi
 
 **Qeydlər:**
 
-- `sk-your-shiguang-gateway-key`-i ShiguangGateway-da yaradılmış API açarı ilə əvəz edin.
+- `sk-your-orbit-key`-i Orbit-da yaradılmış API açarı ilə əvəz edin.
 - `url` sahəsi `/api/v1/vscode/{token}/chat/completions`-a işarə etməlidir.
 - `modelsUrl` sahəsi `/api/v1/vscode/{token}/models`-a işarə etməlidir.
 - Müştəri xüsusi başlıqları dəstəklədikdə normal `/v1` + Bearer başlıq axınını üstün tutun.
@@ -556,38 +556,38 @@ Bu, VS Code Insiders xüsusi son nöqtə modelləri üçün konfiqurasiya edildi
 # AWS/Kiro hesabınıza daxil olun:
 kiro-cli login
 
-# CLI öz autentifikasiyasını istifadə edir — Kiro CLI üçün ShiguangGateway arxa planda lazım deyil.
-# Kiro CLI-ni ShiguangGateway ilə yanaşı digər alətlər üçün istifadə edin.
+# CLI öz autentifikasiyasını istifadə edir — Kiro CLI üçün Orbit arxa planda lazım deyil.
+# Kiro CLI-ni Orbit ilə yanaşı digər alətlər üçün istifadə edin.
 kiro-cli status
 ```
 
-**Kiro IDE** masaüstü tətbiqi üçün ShiguangGateway tərəfindən təqdim edilən MITM son nöqtəsini istifadə edin
+**Kiro IDE** masaüstü tətbiqi üçün Orbit tərəfindən təqdim edilən MITM son nöqtəsini istifadə edin
 `/dashboard/cli-tools → Kiro` altında.
 
-## 10. Daxili ShiguangGateway CLI
+## 10. Daxili Orbit CLI
 
-`shiguang-gateway` ikili serverin həyat dövrü, qurulması, diaqnostika və təminatçı idarəetməsi üçün əmrlər təqdim edir. Giriş nöqtəsi: `bin/shiguang-gateway.mjs`.
+`orbit` ikili serverin həyat dövrü, qurulması, diaqnostika və təminatçı idarəetməsi üçün əmrlər təqdim edir. Giriş nöqtəsi: `bin/orbit.mjs`.
 
 ```bash
-shiguang-gateway                              # Serveri başladın (default port 20128)
-shiguang-gateway setup                        # İnteraktiv qurma sehrbazı
-shiguang-gateway doctor                       # Konfiqurasiya, DB, portlar, iş vaxtını yoxlayın
-shiguang-gateway providers list               # Konfiqurasiya edilmiş təminatçı bağlantıları
-shiguang-gateway providers test-all           # Hər aktiv bağlantını test edin
-shiguang-gateway reset-password               # Admin parolunu sıfırlayın
-shiguang-gateway logs                         # İstək loglarını axın edin
-shiguang-gateway health                       # Ətraflı sağlamlıq (qırıcılar, keş, yaddaş)
-shiguang-gateway --version                    # Versiyanı çap edin
-shiguang-gateway --help                       # Bütün əmrləri göstərin
+orbit                              # Serveri başladın (default port 20128)
+orbit setup                        # İnteraktiv qurma sehrbazı
+orbit doctor                       # Konfiqurasiya, DB, portlar, iş vaxtını yoxlayın
+orbit providers list               # Konfiqurasiya edilmiş təminatçı bağlantıları
+orbit providers test-all           # Hər aktiv bağlantını test edin
+orbit reset-password               # Admin parolunu sıfırlayın
+orbit logs                         # İstək loglarını axın edin
+orbit health                       # Ətraflı sağlamlıq (qırıcılar, keş, yaddaş)
+orbit --version                    # Versiyanı çap edin
+orbit --help                       # Bütün əmrləri göstərin
 ```
 
 ### Qurma və İnkşaf
 
 ```bash
-shiguang-gateway setup                        # İnteraktiv qurma sehrbazı
-shiguang-gateway setup --non-interactive      # CI/avtomatlaşdırma rejimi (mühit dəyişənlərini + bayraqları oxuyur)
-shiguang-gateway setup --password '<value>'   # Admin parolunu birbaşa təyin edin
-shiguang-gateway setup --add-provider \
+orbit setup                        # İnteraktiv qurma sehrbazı
+orbit setup --non-interactive      # CI/avtomatlaşdırma rejimi (mühit dəyişənlərini + bayraqları oxuyur)
+orbit setup --password '<value>'   # Admin parolunu birbaşa təyin edin
+orbit setup --add-provider \
   --provider openai \
   --api-key '<value>' \
   --test-provider                      # Bir anda təminatçı əlavə edin və test edin
@@ -597,21 +597,21 @@ shiguang-gateway setup --add-provider \
 
 | Var                 | Məqsəd                                                                       |
 | ------------------- | ---------------------------------------------------------------------------- |
-| `SHIGUANG_GATEWAY_API_KEY` | Təminatçı API açarı (Commander `.env()` vasitəsilə `--api-key` ilə bağlanır) |
-| `DATA_DIR`          | ShiguangGateway məlumat qovluğunu üstələyin                                        |
+| `ORBIT_API_KEY` | Təminatçı API açarı (Commander `.env()` vasitəsilə `--api-key` ilə bağlanır) |
+| `DATA_DIR`          | Orbit məlumat qovluğunu üstələyin                                        |
 
 Bütün digər interaktiv olmayan girişlər bayraqlar kimi ötürülür, mühit dəyişənləri kimi deyil:
 `--password`, `--provider`, `--provider-name`, `--provider-base-url`, `--default-model`
-(baxın `shiguang-gateway setup` seçimlərinə yuxarıda).
+(baxın `orbit setup` seçimlərinə yuxarıda).
 
 ### Diaqnostika
 
 ```bash
-shiguang-gateway doctor                       # Konfiqurasiya, DB, portlar, iş vaxtı, yaddaş, canlılıq yoxlayın
-shiguang-gateway doctor --json                # Maşın oxunaqlı JSON
-shiguang-gateway doctor --no-liveness         # HTTP sağlamlıq probunu atlayın
-shiguang-gateway doctor --host 0.0.0.0        # Canlılıq hostunu üstələyin
-shiguang-gateway doctor --liveness-url <url>  # Tam sağlamlıq son nöqtəsi URL üstələyin
+orbit doctor                       # Konfiqurasiya, DB, portlar, iş vaxtı, yaddaş, canlılıq yoxlayın
+orbit doctor --json                # Maşın oxunaqlı JSON
+orbit doctor --no-liveness         # HTTP sağlamlıq probunu atlayın
+orbit doctor --host 0.0.0.0        # Canlılıq hostunu üstələyin
+orbit doctor --liveness-url <url>  # Tam sağlamlıq son nöqtəsi URL üstələyin
 ```
 
 Doktor bu yoxlamaları aparır: `Konfiqurasiya`, `Veritabanı`, `Saxlama/şifrələmə`,
@@ -621,47 +621,47 @@ Doktor bu yoxlamaları aparır: `Konfiqurasiya`, `Veritabanı`, `Saxlama/şifrə
 ### Təminatçı İdarəetməsi
 
 ```bash
-shiguang-gateway providers available                       # ShiguangGateway təminatçı kataloqu
-shiguang-gateway providers available --search openai       # Kataloqu id/ad/şəxsiyyət/kateqoriya ilə süzgəcdən keçirin
-shiguang-gateway providers available --category api-key    # Kateqoriya ilə süzgəcdən keçirin (api-key, oauth, pulsuz, ...)
-shiguang-gateway providers available --json                # Maşın oxunaqlı JSON
+orbit providers available                       # Orbit təminatçı kataloqu
+orbit providers available --search openai       # Kataloqu id/ad/şəxsiyyət/kateqoriya ilə süzgəcdən keçirin
+orbit providers available --category api-key    # Kateqoriya ilə süzgəcdən keçirin (api-key, oauth, pulsuz, ...)
+orbit providers available --json                # Maşın oxunaqlı JSON
 
-shiguang-gateway providers list                            # Konfiqurasiya edilmiş təminatçı bağlantıları
-shiguang-gateway providers list --json
+orbit providers list                            # Konfiqurasiya edilmiş təminatçı bağlantıları
+orbit providers list --json
 
-shiguang-gateway providers test <id|name>                  # Bir konfiqurasiya edilmiş bağlantını test edin
-shiguang-gateway providers test-all                        # Hər aktiv bağlantını test edin
-shiguang-gateway providers validate                        # Yalnız yerli struktural yoxlama
-shiguang-gateway providers add <provider> --credential-env PROVIDER_KEY
-shiguang-gateway providers import ./providers.json --dry-run --json
-shiguang-gateway providers auth <provider>                 # Mövcud OAuth axını
-shiguang-gateway providers edit <id|name> --default-model <model>
-shiguang-gateway providers remove <id|name> --yes
+orbit providers test <id|name>                  # Bir konfiqurasiya edilmiş bağlantını test edin
+orbit providers test-all                        # Hər aktiv bağlantını test edin
+orbit providers validate                        # Yalnız yerli struktural yoxlama
+orbit providers add <provider> --credential-env PROVIDER_KEY
+orbit providers import ./providers.json --dry-run --json
+orbit providers auth <provider>                 # Mövcud OAuth axını
+orbit providers edit <id|name> --default-model <model>
+orbit providers remove <id|name> --yes
 ```
 
 `providers add/import/auth/edit/remove` API-ilkdir və buna görə də
 aktiv yerli və ya uzaq kontekstə qarşı işləyir. Şifrə girişləri
 `--credential-stdin` və ya `--credential-env` istifadə etməlidir; `--dry-run --json` yalnız
-redaktə edilmiş mövcudluğu/formasını bildirir. `providers available` ShiguangGateway kataloqunu oxuyur;
+redaktə edilmiş mövcudluğu/formasını bildirir. `providers available` Orbit kataloqunu oxuyur;
 `providers list/test/test-all/validate` yerli SQLite davranışını saxlayır və
 serverin işləməsini tələb etmir.
 
 ### Bərpa və Sıfırlama
 
 ```bash
-shiguang-gateway reset-password                # Admin parolunu sıfırlayın (həmçinin: shiguang-gateway-reset-password)
-shiguang-gateway reset-encrypted-columns       # Şifrələnmiş şifrə sıfırlaması üçün xəbərdarlıq + dry-run göstərin
-shiguang-gateway reset-encrypted-columns --force  # SQLite-də şifrələnmiş şifrələri faktiki olaraq sıfırlayın
+orbit reset-password                # Admin parolunu sıfırlayın (həmçinin: orbit-reset-password)
+orbit reset-encrypted-columns       # Şifrələnmiş şifrə sıfırlaması üçün xəbərdarlıq + dry-run göstərin
+orbit reset-encrypted-columns --force  # SQLite-də şifrələnmiş şifrələri faktiki olaraq sıfırlayın
 ```
 
 ### Şifrə İxracı (⚠ diqqətlə idarə edin)
 
 ```bash
-shiguang-gateway auth export                                 # Xəbərdarlıq + təsdiq qapısı göstərin — DB giriş yoxdur
-shiguang-gateway auth export --force                          # BÜTÜN bağlantıların ŞİFRƏLƏNMİŞ şifrələrini stdout-a JSON olaraq ixrac edin
-shiguang-gateway auth export --force --id <id>                 # Yalnız uyğun bağlantını ixrac edin
-shiguang-gateway auth export --force --format env               # SHIGUANG_GATEWAY_<PROVIDER>_<FIELD>=<value> xətləri çıxarın
-shiguang-gateway auth export --force --out creds.json           # Fayla yazın (0600 icazələri ilə yaradılır)
+orbit auth export                                 # Xəbərdarlıq + təsdiq qapısı göstərin — DB giriş yoxdur
+orbit auth export --force                          # BÜTÜN bağlantıların ŞİFRƏLƏNMİŞ şifrələrini stdout-a JSON olaraq ixrac edin
+orbit auth export --force --id <id>                 # Yalnız uyğun bağlantını ixrac edin
+orbit auth export --force --format env               # ORBIT_<PROVIDER>_<FIELD>=<value> xətləri çıxarın
+orbit auth export --force --out creds.json           # Fayla yazın (0600 icazələri ilə yaradılır)
 ```
 
 `auth export` **yalnız yerli** (birbaşa SQLite oxuma, HTTP marşrutu yoxdur) və qəsdən çap edir/yazır
@@ -671,36 +671,36 @@ Veritabanından heç nə oxunmur və heç nə şifrəsi açılmır, `--force` ol
 
 ### Digər alt əmrlər
 
-Bunlar işləyən ShiguangGateway serverini tələb edir, əks halda qeyd edilməmişdir:
+Bunlar işləyən Orbit serverini tələb edir, əks halda qeyd edilməmişdir:
 
 ```bash
-shiguang-gateway status                       # Ətraflı iş vaxtı statusu
-shiguang-gateway logs                         # İstək loglarını axın edin (--json, --search, --follow)
-shiguang-gateway config show                  # Cari konfiqurasiyanı göstərin
+orbit status                       # Ətraflı iş vaxtı statusu
+orbit logs                         # İstək loglarını axın edin (--json, --search, --follow)
+orbit config show                  # Cari konfiqurasiyanı göstərin
 
-shiguang-gateway provider list                # Mövcud təminatçıları siyahıya alın (providers list-in təkrarı)
-shiguang-gateway provider add                 # ShiguangGateway-u bir alətdə təminatçı kimi qeyd edin
-shiguang-gateway keys add | list | remove     # API açarlarını idarə edin
-shiguang-gateway models [provider]            # Modelləri siyahıya alın (--json, --search)
-shiguang-gateway combo list | switch | create | delete
+orbit provider list                # Mövcud təminatçıları siyahıya alın (providers list-in təkrarı)
+orbit provider add                 # Orbit-u bir alətdə təminatçı kimi qeyd edin
+orbit keys add | list | remove     # API açarlarını idarə edin
+orbit models [provider]            # Modelləri siyahıya alın (--json, --search)
+orbit combo list | switch | create | delete
 
-shiguang-gateway backup                       # Konfiqurasiya + DB snapshot
-shiguang-gateway restore                      # Əvvəlki snapshot-dan bərpa edin
+orbit backup                       # Konfiqurasiya + DB snapshot
+orbit restore                      # Əvvəlki snapshot-dan bərpa edin
 
-shiguang-gateway health                       # Ətraflı sağlamlıq (qırıcılar, keş, yaddaş)
-shiguang-gateway quota                        # Təminatçı kvota istifadəsi
-shiguang-gateway cache                        # Keş statusu
-shiguang-gateway cache clear                  # Semantik + imza keşlərini təmizləyin
+orbit health                       # Ətraflı sağlamlıq (qırıcılar, keş, yaddaş)
+orbit quota                        # Təminatçı kvota istifadəsi
+orbit cache                        # Keş statusu
+orbit cache clear                  # Semantik + imza keşlərini təmizləyin
 
-shiguang-gateway mcp status | restart         # MCP server statusu / yenidən başladın
-shiguang-gateway a2a status | card            # A2A server statusu / agent kartı
+orbit mcp status | restart         # MCP server statusu / yenidən başladın
+orbit a2a status | card            # A2A server statusu / agent kartı
 
-shiguang-gateway tunnel list | create | stop  # Tunelləri idarə edin (cloudflare/tailscale/ngrok)
-shiguang-gateway env show | get <k> | set <k> <v>  # Mühit dəyişənlərini yoxlayın / təyin edin (müvəqqəti)
+orbit tunnel list | create | stop  # Tunelləri idarə edin (cloudflare/tailscale/ngrok)
+orbit env show | get <k> | set <k> <v>  # Mühit dəyişənlərini yoxlayın / təyin edin (müvəqqəti)
 
-shiguang-gateway test                         # Təminatçı bağlantısı test
-shiguang-gateway update                       # Yeniləmələri yoxlayın
-shiguang-gateway completion                   # Shell tamamlanmasını yaradın
+orbit test                         # Təminatçı bağlantısı test
+orbit update                       # Yeniləmələri yoxlayın
+orbit completion                   # Shell tamamlanmasını yaradın
 ```
 
 ### Ümumi bayraqlar
@@ -729,7 +729,7 @@ shiguang-gateway completion                   # Shell tamamlanmasını yaradın
 | `/v1/audio/speech`         | Mətn-dan-səs                         | ElevenLabs, OpenAI TTS                |
 | `/v1/audio/transcriptions` | Səs-dan-mətn                         | Deepgram, AssemblyAI                  |
 
-Yerləşdirmək üçün hazır nümunələr tokenləşdirilmiş ShiguangGateway URL ilə:
+Yerləşdirmək üçün hazır nümunələr tokenləşdirilmiş Orbit URL ilə:
 
 ```txt
 Token nümunəsi: sk-a3ab3c080beaee3a-69f4a4-070d71af
@@ -748,7 +748,7 @@ Ollama söhbəti: http://localhost:20128/api/v1/vscode/sk-a3ab3c080beaee3a-69f4a
 
 | Xəta                                                     | Səbəb                            | Həll                                                    |
 | -------------------------------------------------------- | -------------------------------- | ------------------------------------------------------- |
-| `Connection refused`                                     | ShiguangGateway işləmir                | `shiguang-gateway serve`                                       |
+| `Connection refused`                                     | Orbit işləmir                | `orbit serve`                                       |
 | `401 Unauthorized`                                       | Yanlış API açarı                 | `/dashboard/api-manager`-də yoxlayın                    |
 | `No combo configured`                                    | Aktiv yönləndirmə kombosu yoxdur | `/dashboard/combos`-da qurun                            |
 | CLI "quraşdırılmayıb" göstərir                           | İcra faylı PATH-da deyil         | `which <command>`-i yoxlayın                            |

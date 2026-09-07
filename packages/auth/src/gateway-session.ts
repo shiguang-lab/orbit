@@ -18,10 +18,10 @@ export interface ResolvedIdentity {
   entitlements: string[];
 }
 
-const requiredEntitlement = process.env.SG_IDENTITY_ENTITLEMENT ?? "shiguang-gateway:access";
+const requiredEntitlement = process.env.SG_IDENTITY_ENTITLEMENT ?? "orbit:access";
 const verifier = new SgIdentityVerifier({
   issuer: process.env.SG_IDENTITY_ISSUER ?? "https://shiguanglab.com",
-  audience: process.env.SG_IDENTITY_AUDIENCE ?? "shiguang-gateway-api",
+  audience: process.env.SG_IDENTITY_AUDIENCE ?? "orbit-api",
   entitlement: requiredEntitlement,
   jwksUrl:
     process.env.SG_IDENTITY_JWKS_URL ??
@@ -34,7 +34,7 @@ const identityResolutionCache = new WeakMap<object, Promise<ResolvedSgIdentity |
 export function isAdminIdentity(identity: ResolvedSgIdentity | null): boolean {
   if (!identity || !identity.sub) return false;
   const all = new Set([...identity.roles, ...identity.entitlements]);
-  return all.has("system:admin") || all.has("shiguang-gateway:admin") || identity.entitlements.includes(requiredEntitlement);
+  return all.has("system:admin") || all.has("orbit:admin") || identity.entitlements.includes(requiredEntitlement);
 }
 
 export async function resolveGatewayIdentity(

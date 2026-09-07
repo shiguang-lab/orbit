@@ -269,7 +269,7 @@ async function buildNonStreamingResponse(
   for await (const chunk of extractContent(eventStream, signal)) {
     if (chunk.backendUuid) respBackendUuid = chunk.backendUuid;
     if (chunk.error) {
-      // Quota exhaustion → 429 + reset_seconds so ShiguangGateway marks rate_limited_until
+      // Quota exhaustion → 429 + reset_seconds so Orbit marks rate_limited_until
       // and VibeProxy limit badges / rotation skip parse the same shape as model_cooldown.
       const isQuota =
         chunk.errorCode === "quota_exhausted" ||

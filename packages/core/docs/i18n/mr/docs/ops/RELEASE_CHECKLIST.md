@@ -4,7 +4,7 @@
 
 ---
 
-Use this checklist before tagging or publishing a new ShiguangGateway release.
+Use this checklist before tagging or publishing a new Orbit release.
 
 ## Version and Changelog
 

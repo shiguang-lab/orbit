@@ -32,11 +32,11 @@ export async function generateHermesConfig(options: {
   const config = {
     model: {
       default: model,
-      provider: "shiguangGateway",
+      provider: "orbit",
       base_url: `${base}/v1`,
     },
     providers: {
-      shiguangGateway: {
+      orbit: {
         base_url: `${base}/v1`,
         api_key: options.apiKey,
       },

@@ -5,16 +5,15 @@
   "type": "module",
   "sideEffects": true,
   "bin": {
-    "shiguang-gateway": "./src/shiguang-gateway.mjs",
-    "shiguangGateway": "./src/shiguang-gateway.mjs",
-    "shiguang-gateway-reset-password": "./src/reset-password.mjs"
+    "orbit": "./src/orbit.mjs",
+    "orbit-reset-password": "./src/reset-password.mjs"
   },
   "exports": {
     "./program": "./src/cli/program.mjs",
     "./mcp-launcher": "./src/mcp-server.mjs"
   },
   "scripts": {
-    "start": "node src/shiguang-gateway.mjs",
+    "start": "node src/orbit.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit --pretty false",
     "test": "node --import tsx --test test/*.test.mjs test/*.test.ts",
     "smoke": "node --import tsx test/smoke.mjs"

@@ -1,4 +1,4 @@
-# ShiguangGateway Routing Policy
+# Orbit Routing Policy
 
 Routing preserves the existing capability and combo selection logic, then applies allocation, health, circuit, quota, latency, reliability, model preference, and cost preference factors.
 
@@ -6,6 +6,6 @@ The adaptive score is explainable and returns both the selected candidate and al
 
 Route preview is deterministic and performs zero upstream model requests:
 
-`POST /api/shiguang-gateway/route/preview`
+`POST /api/orbit/route/preview`
 
 The response includes candidate scores, factors, reasons, the selected provider, and `liveRequestExecuted: false`.

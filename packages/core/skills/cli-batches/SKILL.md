@@ -11,8 +11,8 @@ Submit and monitor batch inference jobs from the CLI. Upload and manage files fo
 ## Quick install
 
 ```bash
-npm install -g shiguang-gateway   # or: npx shiguang-gateway
-shiguang-gateway --version
+npm install -g orbit   # or: npx orbit
+orbit --version
 ```
 
 ## Subcommands
@@ -22,7 +22,7 @@ shiguang-gateway --version
 **Example:**
 
 ```bash
-shiguang-gateway batches
+orbit batches
 ```
 
 ### `batches list`
@@ -35,7 +35,7 @@ shiguang-gateway batches
 **Example:**
 
 ```bash
-shiguang-gateway batches list
+orbit batches list
 ```
 
 ### `batches get <batchId>`
@@ -43,7 +43,7 @@ shiguang-gateway batches list
 **Example:**
 
 ```bash
-shiguang-gateway batches get <batchId>
+orbit batches get <batchId>
 ```
 
 ### `batches create`
@@ -57,7 +57,7 @@ shiguang-gateway batches get <batchId>
 **Example:**
 
 ```bash
-shiguang-gateway batches create
+orbit batches create
 ```
 
 ### `batches submit`
@@ -70,7 +70,7 @@ shiguang-gateway batches create
 **Example:**
 
 ```bash
-shiguang-gateway batches submit
+orbit batches submit
 ```
 
 ### `batches cancel <batchId>`
@@ -82,7 +82,7 @@ shiguang-gateway batches submit
 **Example:**
 
 ```bash
-shiguang-gateway batches cancel <batchId>
+orbit batches cancel <batchId>
 ```
 
 ### `batches wait <batchId>`
@@ -94,7 +94,7 @@ shiguang-gateway batches cancel <batchId>
 **Example:**
 
 ```bash
-shiguang-gateway batches wait <batchId>
+orbit batches wait <batchId>
 ```
 
 ### `batches output <batchId>`
@@ -106,7 +106,7 @@ shiguang-gateway batches wait <batchId>
 **Example:**
 
 ```bash
-shiguang-gateway batches output <batchId>
+orbit batches output <batchId>
 ```
 
 ### `batches errors <batchId>`
@@ -118,7 +118,7 @@ shiguang-gateway batches output <batchId>
 **Example:**
 
 ```bash
-shiguang-gateway batches errors <batchId>
+orbit batches errors <batchId>
 ```
 
 ### `files`
@@ -126,7 +126,7 @@ shiguang-gateway batches errors <batchId>
 **Example:**
 
 ```bash
-shiguang-gateway files
+orbit files
 ```
 
 ### `files list`
@@ -139,7 +139,7 @@ shiguang-gateway files
 **Example:**
 
 ```bash
-shiguang-gateway files list
+orbit files list
 ```
 
 ### `files get <fileId>`
@@ -147,7 +147,7 @@ shiguang-gateway files list
 **Example:**
 
 ```bash
-shiguang-gateway files get <fileId>
+orbit files get <fileId>
 ```
 
 ### `files upload <path>`
@@ -155,7 +155,7 @@ shiguang-gateway files get <fileId>
 **Example:**
 
 ```bash
-shiguang-gateway files upload <path>
+orbit files upload <path>
 ```
 
 ### `files content <fileId>`
@@ -167,7 +167,7 @@ shiguang-gateway files upload <path>
 **Example:**
 
 ```bash
-shiguang-gateway files content <fileId>
+orbit files content <fileId>
 ```
 
 ### `files delete <fileId>`
@@ -179,5 +179,5 @@ shiguang-gateway files content <fileId>
 **Example:**
 
 ```bash
-shiguang-gateway files delete <fileId>
+orbit files delete <fileId>
 ```

@@ -1,12 +1,12 @@
 ---
-title: "Antigravity (Google One AI) — Onboarding with ShiguangGateway"
+title: "Antigravity (Google One AI) — Onboarding with Orbit"
 version: 3.8.50
 lastUpdated: 2026-07-31
 ---
 
-# ShiguangGateway Antigravity (Google One AI) Onboarding Guide
+# Orbit Antigravity (Google One AI) Onboarding Guide
 
-> **What you get**: Access to Gemini 3.1 Pro, Gemini 3.7 Flash, Claude Sonnet 4.6, and other models through your Google One AI Pro subscription — routed through ShiguangGateway as a unified gateway.
+> **What you get**: Access to Gemini 3.1 Pro, Gemini 3.7 Flash, Claude Sonnet 4.6, and other models through your Google One AI Pro subscription — routed through Orbit as a unified gateway.
 
 **Official references**:
 
@@ -29,7 +29,7 @@ Both providers share the **same Google backend** — identical OAuth client, tok
 | **Google product**   | Antigravity 2.0 / Antigravity IDE         | Antigravity CLI                                     |
 | **Backend**          | Same Google Cloud Code API                | Same Google Cloud Code API                          |
 | **OAuth / Token**    | Same client, same refresh                 | Same client, same refresh                           |
-| **Model catalog**    | Static curated list (ShiguangGateway hardcoded) | Live-probed from Google via `:fetchAvailableModels` |
+| **Model catalog**    | Static curated list (Orbit hardcoded) | Live-probed from Google via `:fetchAvailableModels` |
 | **Claude models**    | Sonnet 4.6, Opus 4.6 (4 variants each)    | Sonnet 4.6, Opus 4.6 (4 variants each)              |
 | **Gemini naming**    | Clean labels (Low/Medium/High)            | Upstream IDs (extra-low/low/agent)                  |
 | **Extra models**     | `gpt-oss-120b-medium`                     | May include additional models from Google           |
@@ -91,11 +91,11 @@ Credits are purchased separately and deducted at standard API pricing.
 
 ### Key Details
 
-- Quota is **account-level shared** — the same Google account in Antigravity IDE, CLI, and ShiguangGateway shares one quota pool
+- Quota is **account-level shared** — the same Google account in Antigravity IDE, CLI, and Orbit shares one quota pool
 - Each Google account has its own independent quota — multiple accounts = multiple quota pools
 - AI Pro users have reported **7-day lockouts** instead of 5-hour resets when weekly baseline is hit (Google confirmed this is by design for high demand)
 
-**When your account is exhausted**: ShiguangGateway automatically retries with the next available account in the combo route. No manual intervention needed.
+**When your account is exhausted**: Orbit automatically retries with the next available account in the combo route. No manual intervention needed.
 
 ---
 
@@ -105,9 +105,9 @@ Every antigravity/agy connection needs a Google Cloud Code `projectId`. Without 
 
 ### Method A: Automatic (Recommended)
 
-ShiguangGateway handles this automatically. When you add a new Google account via Dashboard OAuth:
+Orbit handles this automatically. When you add a new Google account via Dashboard OAuth:
 
-1. ShiguangGateway refreshes the token
+1. Orbit refreshes the token
 2. Calls `loadCodeAssist` to discover the projectId
 3. If no project exists, calls `onboardUser` to create one
 4. Retries `loadCodeAssist` to get the newly created projectId
@@ -130,14 +130,14 @@ agy login
 # This triggers Cloud Code registration and assigns a projectId
 ```
 
-After `agy login` succeeds, refresh the token in ShiguangGateway Dashboard. The projectId will be discovered automatically.
+After `agy login` succeeds, refresh the token in Orbit Dashboard. The projectId will be discovered automatically.
 
 ### How to verify
 
 Check the database:
 
 ```bash
-# Inside ShiguangGateway container
+# Inside Orbit container
 node -e "const db=require('better-sqlite3')('/app/data/storage.sqlite'); \
   console.log(JSON.stringify(db.prepare(\
     'SELECT email,project_id FROM provider_connections WHERE provider=\"agy\"'\
@@ -147,7 +147,7 @@ node -e "const db=require('better-sqlite3')('/app/data/storage.sqlite'); \
 Or check the logs:
 
 ```
-podman logs shiguang-gateway 2>&1 | grep "projectId discovered"
+podman logs orbit 2>&1 | grep "projectId discovered"
 ```
 
 ---
@@ -156,7 +156,7 @@ podman logs shiguang-gateway 2>&1 | grep "projectId discovered"
 
 ### The Problem
 
-Google OAuth requires a valid redirect URI. ShiguangGateway's default uses `http://127.0.0.1:20128/callback` (loopback). This works for local builds but **fails for remote deployments** (e.g., a server accessed via LAN IP).
+Google OAuth requires a valid redirect URI. Orbit's default uses `http://127.0.0.1:20128/callback` (loopback). This works for local builds but **fails for remote deployments** (e.g., a server accessed via LAN IP).
 
 Google rejects redirect URIs that:
 
@@ -167,7 +167,7 @@ Google rejects redirect URIs that:
 
 **Option A: Use the built-in OAuth flow (default)**
 
-- Works when you access ShiguangGateway from `localhost` or `127.0.0.1`
+- Works when you access Orbit from `localhost` or `127.0.0.1`
 - No configuration needed
 
 **Option B: Custom OAuth credentials**
@@ -182,9 +182,9 @@ Google rejects redirect URIs that:
 
 **Option C: Use agy CLI for initial login**
 
-- Run `agy login` on the machine that will access ShiguangGateway
+- Run `agy login` on the machine that will access Orbit
 - The OAuth flow completes locally, tokens are stored
-- Import the connection into ShiguangGateway via Dashboard
+- Import the connection into Orbit via Dashboard
 
 ### Limitations
 
@@ -195,7 +195,7 @@ Google rejects redirect URIs that:
 
 ## 5. Troubleshooting: When Automatic Setup Fails
 
-ShiguangGateway handles projectId discovery and onboarding automatically for most accounts. When it fails, the root cause is usually one of these:
+Orbit handles projectId discovery and onboarding automatically for most accounts. When it fails, the root cause is usually one of these:
 
 ### Account region is blocked
 
@@ -223,7 +223,7 @@ ShiguangGateway handles projectId discovery and onboarding automatically for mos
 
 **Root cause**: The account has never been registered with Google Cloud Code, and the automatic onboarding failed.
 
-**Fix**: Run `agy login` manually to trigger Cloud Code registration, then refresh the token in ShiguangGateway Dashboard.
+**Fix**: Run `agy login` manually to trigger Cloud Code registration, then refresh the token in Orbit Dashboard.
 
 ### Token expired or revoked
 
@@ -270,9 +270,9 @@ Account not working?
 | Change account region | [Google Country Association Form](https://policies.google.com/country-association-form) |
 | agy CLI login         | `agy login`                                                                             |
 | Check projectId in DB | `SELECT email,project_id FROM provider_connections WHERE provider='agy'`                |
-| Check logs            | `podman logs shiguang-gateway 2>&1 \| grep projectId`                                          |
+| Check logs            | `podman logs orbit 2>&1 \| grep projectId`                                          |
 | Refresh token         | Dashboard → Providers → agy → Click refresh icon                                        |
 
 ---
 
-_Last updated: 2026-07-31. Based on ShiguangGateway v3.8.50._
+_Last updated: 2026-07-31. Based on Orbit v3.8.50._

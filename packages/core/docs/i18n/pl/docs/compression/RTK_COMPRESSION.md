@@ -6,7 +6,7 @@ lastUpdated: 2026-06-28
 
 # Kompresja RTK
 
-Kompresja RTK to silnik kompresji ShiguangGateway świadomy poleceń, przeznaczony na wyjście terminala i narzędzi. Jest
+Kompresja RTK to silnik kompresji Orbit świadomy poleceń, przeznaczony na wyjście terminala i narzędzi. Jest
 zaprojektowany pod sesje agentów kodujących, w których większość wzrostu kontekstu pochodzi z logów testów, wyjścia builda,
 szumu menedżerów pakietów, transkryptów shella, wyjścia Dockera, wyjścia gita oraz stack trace'ów.
 
@@ -19,7 +19,7 @@ rtk -> caveman
 Ta kolejność najpierw kompresuje hałaśliwe wyjście maszynowe, a potem pozwala Cavemanowi skondensować pozostałą prozę.
 
 Upstreamowy RTK raportuje `60-90%` oszczędności na wyjściu poleceń. Przykładowa sesja z jego README schodzi z
-`~118,000` standardowych tokenów do `~23,900` tokenów RTK, czyli `79.7%` oszczędności (`~80%`). ShiguangGateway używa
+`~118,000` standardowych tokenów do `~23,900` tokenów RTK, czyli `79.7%` oszczędności (`~80%`). Orbit używa
 tej upstreamowej średniej do kalkulacji oszczędności stacked z kompresją wejścia Cavemana:
 
 ```txt
@@ -56,7 +56,7 @@ RTK ładuje filtry w tej kolejności:
 2. Filtry globalne z `DATA_DIR/rtk/filters.toml` i `DATA_DIR/rtk/filters.json`.
 3. Filtry wbudowane z `open-sse/services/compression/engines/rtk/filters/`.
 
-W tym samym zakresie filtry RTK TOML schema v1 mają pierwszeństwo przed filtrami JSON ShiguangGateway. Wyrażenia TOML
+W tym samym zakresie filtry RTK TOML schema v1 mają pierwszeństwo przed filtrami JSON Orbit. Wyrażenia TOML
 `match_command` są sprawdzane przed matchowaniem typu polecenia, więc zaimportowany filtr specyficzny dla polecenia
 może nadpisać szerszy filtr w tym zakresie. Zakres projektu nadal ma pierwszeństwo przed zakresem globalnym,
 niezależnie od formatu pliku.
@@ -65,7 +65,7 @@ Filtry projektu są celowo objęte bramką zaufania, bo filtry regex mogą zmien
 pokazywane agentom. Plik filtrów projektu jest akceptowany, gdy spełniony jest jeden z warunków:
 
 - `rtkConfig.trustProjectFilters` ma wartość `true`.
-- Ustawiono `SHIGUANG_GATEWAY_RTK_TRUST_PROJECT_FILTERS=1`.
+- Ustawiono `ORBIT_RTK_TRUST_PROJECT_FILTERS=1`.
 - `.rtk/trust.json` zawiera pasujący hash SHA-256 pliku filtrów projektu.
 
 Przykład pliku trust:
@@ -86,7 +86,7 @@ pomijane i raportowane w diagnostyce `/api/context/rtk/filters`. Nieprawidłowe 
 
 ## Zgodność z RTK TOML schema v1
 
-ShiguangGateway potrafi parsować, walidować, testować i instalować deklaratywne pliki filtrów w RTK TOML schema v1.
+Orbit potrafi parsować, walidować, testować i instalować deklaratywne pliki filtrów w RTK TOML schema v1.
 Obsługiwane pola to `description`, `match_command`, `strip_ansi`, `filter_stderr`,
 `strip_lines_matching`, `keep_lines_matching`, `replace`, `match_output`, `truncate_lines_at`,
 `head_lines`, `tail_lines`, `max_lines`, `on_empty` oraz inline testy `[[tests.<filter>]]`.
@@ -95,7 +95,7 @@ Nieznane pola, nieprawidłowe lub niebezpieczne wyrażenia regularne, jednoczesn
 zwalidować do podglądu, ale nie da się go zainstalować ani załadować. Błędy ładowania plików custom pozostają
 fail-open: nieprawidłowy plik jest pomijany, a pozostałe filtry działają dalej.
 
-ShiguangGateway otrzymuje wyjście narzędzi dopiero po tym, jak klient je już przechwycił, więc `filter_stderr = true`
+Orbit otrzymuje wyjście narzędzi dopiero po tym, jak klient je już przechwycił, więc `filter_stderr = true`
 nie może zmienić przechwycenia procesu. Pole jest akceptowane jako no-op, a walidacja zwraca ostrzeżenie.
 To jest celowo opisane jako **zgodność z RTK TOML schema v1**, a nie pełna zgodność
 z executablami RTK, hookami shella, implementacjami poleceń w Rust ani układem trust-store.
@@ -451,7 +451,7 @@ updateEngineConfig("rtk", { intensity: "aggressive" });
 Użyj **Verify Gate** (zob. niżej), aby potwierdzić, że filtr jest bezpieczny przy wybranej intensywności:
 
 ```ts
-import { runRtkFilterTests } from "shiguang-gateway/compression/engines/rtk/verify";
+import { runRtkFilterTests } from "orbit/compression/engines/rtk/verify";
 
 const result = runRtkFilterTests({ intensity: "aggressive" });
 if (!result.passed) {
@@ -566,14 +566,14 @@ wyjście z custom tools nieobjętych domyślnymi.
 Umieść plik w rozpoznawanej lokalizacji:
 
 ```
-~/.shiguang-gateway/rtk/filters/my-filter.json     # User-level
+~/.orbit/rtk/filters/my-filter.json     # User-level
 <project>/.rtk/filters/my-filter.json      # Project-level
 ```
 
 Filtry są ładowane automatycznie przy starcie przez `loadRtkFilters()` w `open-sse/services/compression/engines/rtk/filterLoader.ts`. Loader odkrywa filtry z:
 
 - Katalog wbudowany: `open-sse/services/compression/engines/rtk/filters/`
-- Katalog użytkownika: `~/.shiguang-gateway/rtk/filters/`
+- Katalog użytkownika: `~/.orbit/rtk/filters/`
 - Katalog projektu: `<project>/.rtk/filters/`
 
 Aby ładować filtry programatycznie:
@@ -658,7 +658,7 @@ RTK compress (with rawOutput.enabled=true)
 ### Odzyskiwanie oryginału
 
 ```ts
-import { readRtkRawOutput } from "shiguang-gateway/compression/engines/rtk/rawOutput";
+import { readRtkRawOutput } from "orbit/compression/engines/rtk/rawOutput";
 
 const raw = readRtkRawOutput(pointerId); // pointerId from compression stats
 if (raw) {

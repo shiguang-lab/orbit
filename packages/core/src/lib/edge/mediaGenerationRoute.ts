@@ -1,7 +1,7 @@
 import { errorResponse } from "@orbit/utils/errors/error-response";
 import { HTTP_STATUS } from "@orbit/contracts/http-status";
 
-import { attachShiguangGatewayMetaHeaders } from "../../domain/gatewayResponseMeta.ts";
+import { attachOrbitMetaHeaders } from "../../domain/gatewayResponseMeta.ts";
 import { calculateModalCost } from "../usage/costCalculator.ts";
 import { generateRequestId } from "../../shared/utils/requestId.ts";
 import { toJsonErrorPayload } from "../../shared/utils/upstreamError.ts";
@@ -130,7 +130,7 @@ export async function successfulMediaGenerationResponse({
   const seconds = Number(duration) || 0;
   const costUsd = await calculateModalCost(billingMode, provider, model, { seconds });
   const headers = new Headers({ "Content-Type": "application/json" });
-  attachShiguangGatewayMetaHeaders(headers, {
+  attachOrbitMetaHeaders(headers, {
     provider,
     model,
     costUsd,

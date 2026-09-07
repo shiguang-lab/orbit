@@ -1,7 +1,7 @@
 /**
  * Plugin scanner — discovers plugins from the filesystem.
  *
- * Scans ~/.shiguangGateway/plugins/ for subdirectories containing plugin.json manifests.
+ * Scans ~/.orbit/plugins/ for subdirectories containing plugin.json manifests.
  * Returns validated manifests with directory paths.
  *
  * @module plugins/scanner
@@ -22,11 +22,11 @@ export interface DiscoveredPlugin {
 }
 
 /**
- * Get the default plugin directory: ~/.shiguangGateway/plugins/
+ * Get the default plugin directory: ~/.orbit/plugins/
  */
 export function getDefaultPluginDir(): string {
   const home = process.env.HOME || process.env.USERPROFILE || "/tmp";
-  return join(home, ".shiguangGateway", "plugins");
+  return join(home, ".orbit", "plugins");
 }
 
 /**

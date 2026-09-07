@@ -6,7 +6,7 @@ lastUpdated: 2026-08-23
 
 # Database Schema & Operations Guide
 
-> **TL;DR**: ShiguangGateway uses **SQLite with WAL journaling** as its primary store, with **AES-256-GCM** encryption at rest for sensitive fields. This guide covers the schema, migrations, backup/recovery, and operational runbooks.
+> **TL;DR**: Orbit uses **SQLite with WAL journaling** as its primary store, with **AES-256-GCM** encryption at rest for sensitive fields. This guide covers the schema, migrations, backup/recovery, and operational runbooks.
 
 **Sources:**
 
@@ -21,7 +21,7 @@ lastUpdated: 2026-08-23
 
 ## Why SQLite?
 
-ShiguangGateway chose SQLite over PostgreSQL/MySQL for several reasons:
+Orbit chose SQLite over PostgreSQL/MySQL for several reasons:
 
 | Factor          | SQLite                            | PostgreSQL                        |
 | --------------- | --------------------------------- | --------------------------------- |
@@ -32,7 +32,7 @@ ShiguangGateway chose SQLite over PostgreSQL/MySQL for several reasons:
 | **Backup**      | Single-file copy                  | `pg_dump` or filesystem snapshot  |
 | **Use case**    | Per-user install, embedded        | Multi-tenant SaaS                 |
 
-For **single-user, single-instance** deployments (the primary ShiguangGateway use case), SQLite is simpler and faster.
+For **single-user, single-instance** deployments (the primary Orbit use case), SQLite is simpler and faster.
 
 ### WAL Journaling
 
@@ -52,7 +52,7 @@ The default cache size is **65,536 KiB (64 MiB)**. SQLite interprets a negative
 `cache_size` as an approximate upper bound in KiB and allocates pages on demand.
 **Settings > System & Storage > Cache Size** accepts integer values from **1 to
 1,000,000 KiB**; saving the setting applies it to the live database connection,
-and ShiguangGateway restores the persisted value at startup.
+and Orbit restores the persisted value at startup.
 
 ---
 
@@ -62,9 +62,9 @@ The SQLite file is stored at:
 
 | OS      | Path                                                     |
 | ------- | -------------------------------------------------------- |
-| Linux   | `~/.shiguang-gateway/storage.sqlite`                            |
-| macOS   | `~/.shiguang-gateway/storage.sqlite`                            |
-| Windows | `%USERPROFILE%\.shiguang-gateway\storage.sqlite`                |
+| Linux   | `~/.orbit/storage.sqlite`                            |
+| macOS   | `~/.orbit/storage.sqlite`                            |
+| Windows | `%USERPROFILE%\.orbit\storage.sqlite`                |
 | Docker  | `/app/data/storage.sqlite` (configurable via `DATA_DIR`) |
 
 Companion files:
@@ -76,14 +76,14 @@ Companion files:
 **Override the location:**
 
 ```bash
-DATA_DIR=/custom/path shiguang-gateway
+DATA_DIR=/custom/path orbit
 ```
 
 ---
 
 ## Domain Module Architecture
 
-ShiguangGateway's database has **110 top-level TypeScript modules** in `src/lib/db/`. Each domain module:
+Orbit's database has **110 top-level TypeScript modules** in `src/lib/db/`. Each domain module:
 
 - Owns one or more specific tables
 - Exports typed CRUD functions
@@ -92,7 +92,7 @@ ShiguangGateway's database has **110 top-level TypeScript modules** in `src/lib/
 
 ### The 110 Top-Level DB Modules
 
-ShiguangGateway has **110 top-level TypeScript files** in `src/lib/db/`. Below is a sampling of core modules; see the directory listing for the complete list:
+Orbit has **110 top-level TypeScript files** in `src/lib/db/`. Below is a sampling of core modules; see the directory listing for the complete list:
 
 | Module                  | Tables                                                         | Responsibility                                                            |
 | ----------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------- |
@@ -188,7 +188,7 @@ The full list of ~30+ tables is in `src/lib/db/migrations/`.
 
 ## Migrations
 
-ShiguangGateway uses **versioned, idempotent migrations** in `src/lib/db/migrations/`. Each migration is a single SQL file named `NNN_description.sql`.
+Orbit uses **versioned, idempotent migrations** in `src/lib/db/migrations/`. Each migration is a single SQL file named `NNN_description.sql`.
 
 ### Migration Naming
 
@@ -204,7 +204,7 @@ ShiguangGateway uses **versioned, idempotent migrations** in `src/lib/db/migrati
 
 At startup, `migrationRunner.ts`:
 
-1. Creates `_shiguang-gateway_migrations` table if not exists
+1. Creates `_orbit_migrations` table if not exists
 2. Queries for already-applied migrations
 3. Applies any new migrations in order, each in a transaction
 4. Records each applied migration with timestamp
@@ -258,7 +258,7 @@ UPDATE combos SET priority = 100 WHERE priority IS NULL;
 CREATE INDEX IF NOT EXISTS idx_combos_priority ON combos(priority);
 ```
 
-> **Backwards-incompatible changes** (e.g., dropping columns) are tricky. ShiguangGateway does NOT support downgrade — once a migration is applied, the schema change is permanent. Plan accordingly.
+> **Backwards-incompatible changes** (e.g., dropping columns) are tricky. Orbit does NOT support downgrade — once a migration is applied, the schema change is permanent. Plan accordingly.
 
 ---
 
@@ -312,7 +312,7 @@ For performance reasons, the following are stored in plaintext:
 
 ## Encryption Caveats (v3.8.16+)
 
-ShiguangGateway uses **`migrateLegacyEncryptedString()`** to handle two encryption schemes transparently:
+Orbit uses **`migrateLegacyEncryptedString()`** to handle two encryption schemes transparently:
 
 - **Legacy** (pre-v3.5.0): XOR-based "encryption" (not real crypto)
 - **Current**: AES-256-GCM with proper IV and auth tag
@@ -348,7 +348,7 @@ Cache is invalidated on every write to the corresponding table.
 
 ```bash
 # Use the CLI to create a local backup
-shiguang-gateway backup create --name pre-migration
+orbit backup create --name pre-migration
 
 # Or via the API
 curl -X PUT http://localhost:20128/api/db-backups \
@@ -368,7 +368,7 @@ The backup file includes:
 
 ```bash
 # Via CLI
-shiguang-gateway restore pre-migration
+orbit restore pre-migration
 
 # Via API
 curl -X POST http://localhost:20128/api/db-backups/restore \
@@ -383,7 +383,7 @@ curl -X POST http://localhost:20128/api/db-backups/restore \
 
 ```bash
 # Enable automated daily backups via CLI
-shiguang-gateway backup auto enable --cron "0 2 * * *" --retention 7
+orbit backup auto enable --cron "0 2 * * *" --retention 7
 ```
 
 The schedule is executed server-side by a background job that ticks every 30 seconds
@@ -391,17 +391,17 @@ The schedule is executed server-side by a background job that ticks every 30 sec
 
 | Variable                                    | Default | Description                                                                                                   |
 | ------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------- |
-| `SHIGUANG_GATEWAY_BACKUP_SCHEDULE_JOB_INTERVAL_MS` | `30000` | Tick interval in ms (min `5000`). Must be shorter than 60 s to reliably land inside the matching cron minute. |
+| `ORBIT_BACKUP_SCHEDULE_JOB_INTERVAL_MS` | `30000` | Tick interval in ms (min `5000`). Must be shorter than 60 s to reliably land inside the matching cron minute. |
 
 ### SQLite Hot Backup
 
 For zero-downtime backup of a live DB:
 
 ```bash
-sqlite3 ~/.shiguang-gateway/storage.sqlite ".backup /backups/shiguang-gateway-hot.db"
+sqlite3 ~/.orbit/storage.sqlite ".backup /backups/orbit-hot.db"
 ```
 
-This uses SQLite's online backup API — safe to run while ShiguangGateway is running.
+This uses SQLite's online backup API — safe to run while Orbit is running.
 
 ---
 
@@ -444,10 +444,10 @@ PRAGMA mmap_size = 268435456;  -- 256MB
 
 ### Compaction
 
-Long-running ShiguangGateway instances benefit from occasional `VACUUM`:
+Long-running Orbit instances benefit from occasional `VACUUM`:
 
 ```bash
-sqlite3 ~/.shiguang-gateway/storage.sqlite "VACUUM;"
+sqlite3 ~/.orbit/storage.sqlite "VACUUM;"
 ```
 
 Run monthly during low-traffic windows. (WAL mode reduces the need, but doesn't eliminate it.)
@@ -498,12 +498,12 @@ The response is the `DbHealthCheckResult` produced by `runDbHealthCheck()`
 | `driver.name`     | SQLite driver serving the checked database.                                                                                                    |
 | `driver.degraded` | `true` when writes are not durably backed by the database file — the `sql.js` WASM fallback (whole-file persistence) or an in-memory database. |
 
-The same payload is returned by the `shiguang-gateway_db_health_check` MCP tool.
+The same payload is returned by the `orbit_db_health_check` MCP tool.
 
 Run `PRAGMA integrity_check` to detect corruption:
 
 ```bash
-sqlite3 ~/.shiguang-gateway/storage.sqlite "PRAGMA integrity_check;"
+sqlite3 ~/.orbit/storage.sqlite "PRAGMA integrity_check;"
 # Should print: ok
 ```
 
@@ -519,15 +519,15 @@ The `-wal` file is missing but `-shm` and main DB are intact:
 
 ```bash
 # Recovers automatically on next open
-shiguang-gateway
+orbit
 ```
 
 If SQLite can't auto-recover:
 
 ```bash
-sqlite3 ~/.shiguang-gateway/storage.sqlite ".recover" > recovered.sql
+sqlite3 ~/.orbit/storage.sqlite ".recover" > recovered.sql
 sqlite3 recovered.db < recovered.sql
-mv recovered.db ~/.shiguang-gateway/storage.sqlite
+mv recovered.db ~/.orbit/storage.sqlite
 ```
 
 ### Scenario 2: Main DB File Corrupted
@@ -535,7 +535,7 @@ mv recovered.db ~/.shiguang-gateway/storage.sqlite
 Restore from backup:
 
 ```bash
-shiguang-gateway sync pull --merge   # or: shiguang-gateway backup restore <backup-id>
+orbit sync pull --merge   # or: orbit backup restore <backup-id>
 ```
 
 ### Scenario 3: Encryption Key Lost
@@ -550,7 +550,7 @@ SQLite will return `SQLITE_FULL` errors. Free disk space, then:
 
 ```bash
 # Checkpoint WAL to free up space
-sqlite3 ~/.shiguang-gateway/storage.sqlite "PRAGMA wal_checkpoint(TRUNCATE);"
+sqlite3 ~/.orbit/storage.sqlite "PRAGMA wal_checkpoint(TRUNCATE);"
 ```
 
 ---
@@ -560,13 +560,13 @@ sqlite3 ~/.shiguang-gateway/storage.sqlite "PRAGMA wal_checkpoint(TRUNCATE);"
 ### Inspect a Table
 
 ```bash
-sqlite3 ~/.shiguang-gateway/storage.sqlite "SELECT * FROM api_keys LIMIT 5;"
+sqlite3 ~/.orbit/storage.sqlite "SELECT * FROM api_keys LIMIT 5;"
 ```
 
 ### Count Rows in All Tables
 
 ```bash
-sqlite3 ~/.shiguang-gateway/storage.sqlite <<EOF
+sqlite3 ~/.orbit/storage.sqlite <<EOF
 SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';
 EOF
 ```
@@ -574,14 +574,14 @@ EOF
 ### Reset (Wipe) All Data
 
 ```bash
-# Stop ShiguangGateway first
-shiguang-gateway stop
+# Stop Orbit first
+orbit stop
 
 # Delete the DB file
-rm ~/.shiguang-gateway/storage.sqlite*
+rm ~/.orbit/storage.sqlite*
 
 # Restart (will recreate empty DB)
-shiguang-gateway
+orbit
 ```
 
 For a **selective** reset (keep providers, wipe usage):
@@ -595,7 +595,7 @@ DELETE FROM proxy_logs WHERE timestamp < datetime('now', '-30 day');
 ### Export Single Table
 
 ```bash
-sqlite3 ~/.shiguang-gateway/storage.sqlite <<EOF
+sqlite3 ~/.orbit/storage.sqlite <<EOF
 .mode csv
 .output api_keys.csv
 SELECT * FROM api_keys;
@@ -612,7 +612,7 @@ Another process is holding a write lock. Either:
 
 - Wait for the other process to finish (check `lsof | grep storage.sqlite`)
 - Kill the other process
-- If persistent, restart ShiguangGateway
+- If persistent, restart Orbit
 
 ### "Foreign key constraint failed"
 
@@ -642,10 +642,10 @@ PRAGMA mmap_size = 0;
 
 The migration ran in a transaction, so it should have rolled back. If not:
 
-1. **Stop ShiguangGateway** (prevent further attempts)
+1. **Stop Orbit** (prevent further attempts)
 2. **Check the DB state** with `sqlite3`
 3. **Manually fix** the partial migration
-4. **Re-run** ShiguangGateway (the migration will be retried)
+4. **Re-run** Orbit (the migration will be retried)
 
 To prevent this, always test migrations on a copy first.
 

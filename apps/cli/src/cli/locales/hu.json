@@ -1,8 +1,8 @@
 {
   "common": {
     "error": "Hiba: {message}",
-    "serverOffline": "Az ShiguangGateway szerver offline. Indítsa el: shiguang-gateway serve",
-    "authRequired": "Hitelesítés szükséges. Állítsa be az SHIGUANG_GATEWAY_API_KEY-t vagy futtassa: shiguang-gateway setup",
+    "serverOffline": "Az Orbit szerver offline. Indítsa el: orbit serve",
+    "authRequired": "Hitelesítés szükséges. Állítsa be az ORBIT_API_KEY-t vagy futtassa: orbit setup",
     "rateLimited": "Kérési korlát túllépve. Próbálja újra {seconds}s múlva.",
     "timeout": "A kérés {ms}ms után lejárt.",
     "success": "Kész.",
@@ -15,18 +15,18 @@
     "yesOpt": "Megerősítés kihagyása"
   },
   "program": {
-    "description": "ShiguangGateway — Intelligens AI útválasztó automatikus fallbackkel",
+    "description": "Orbit — Intelligens AI útválasztó automatikus fallbackkel",
     "version": "Verzió kiírása és kilépés",
     "output": "Kimeneti formátum (table, json, jsonl, csv)",
     "quiet": "Nem lényeges kimenet elnyomása",
     "no_color": "Színes kimenet letiltása",
     "timeout": "HTTP kérés időtúllépése ezredmásodpercben",
-    "api_key": "API kulcs az ShiguangGateway szerverhez",
-    "base_url": "Az ShiguangGateway szerver alap URL-je",
+    "api_key": "API kulcs az Orbit szerverhez",
+    "base_url": "Az Orbit szerver alap URL-je",
     "context": "Szerverkontextus/profil ehhez a parancshoz",
-    "lang": "CLI megjelenítési nyelv beállítása (felülírja az SHIGUANG_GATEWAY_LANG-ot)"
+    "lang": "CLI megjelenítési nyelv beállítása (felülírja az ORBIT_LANG-ot)"
   },
   "redis": {
-    "description": "Helyi Redis-tároló indítása egyetlen kattintással (Podman vagy Docker) az ShiguangGateway gyorsítótárazáshoz és kvótafigyeléshez"
+    "description": "Helyi Redis-tároló indítása egyetlen kattintással (Podman vagy Docker) az Orbit gyorsítótárazáshoz és kvótafigyeléshez"
   }
 }

@@ -49,7 +49,7 @@ import { isRuntimeRetiredProviderId } from "@orbit/contracts/provider-retirement
  * persist, edit, import) is covered; the seed is never regenerated once valid,
  * so identities stay put across saves. Pre-seed connections rotate from the
  * legacy connection-id derivation exactly once on their next write — the
- * ShiguangGateway analog of sub2api's migration-225 backfill (v0.1.178, #5696).
+ * Orbit analog of sub2api's migration-225 backfill (v0.1.178, #5696).
  */
 function normalizeConnectionProviderSpecificData(
   provider: string | null,

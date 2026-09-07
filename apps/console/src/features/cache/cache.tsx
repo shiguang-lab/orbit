@@ -172,7 +172,7 @@ export function CachePage() {
     refetchInterval: 10000,
   });
 
-  // 1.2 Cache Health Query (Shiguang Gateway parity)
+  // 1.2 Cache Health Query (Orbit parity)
   const healthQuery = useQuery({
     queryKey: ["cache-health-summary", timeRange],
     queryFn: () => cacheAnalyticsApi.getCacheHealth({ range: timeRange }),
@@ -595,7 +595,7 @@ export function CachePage() {
                   </Col>
                 </Row>
 
-                {/* Shiguang Gateway Parity: Where the writes are concentrated (Outlier Analysis) */}
+                {/* Orbit Parity: Where the writes are concentrated (Outlier Analysis) */}
                 {healthData && (
                   <div className={styles.concentrationCard}>
                     <Flex vertical gap={12}>
@@ -723,7 +723,7 @@ export function CachePage() {
                   </Flex>
                 </div>
 
-                {/* By Model Table (Worst Ratio First - Shiguang Gateway Feature) */}
+                {/* By Model Table (Worst Ratio First - Orbit Feature) */}
                 {healthData && healthData.byModel.length > 0 && (
                   <div className={styles.subCard}>
                     <Flex vertical gap={12}>
@@ -1136,8 +1136,8 @@ export function CachePage() {
                         <span>
                           {t(
                             "cache.behaviorBypass",
-                            { header: "X-ShiguangGateway-No-Cache: true" },
-                            "通过请求头 X-ShiguangGateway-No-Cache: true 可强制绕过缓存直达上游。"
+                            { header: "X-Orbit-No-Cache: true" },
+                            "通过请求头 X-Orbit-No-Cache: true 可强制绕过缓存直达上游。"
                           )}
                         </span>
                       </div>

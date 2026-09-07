@@ -11,8 +11,8 @@ Manage context engineering configurations, RTK filter sets, and conversation ses
 ## Quick install
 
 ```bash
-npm install -g shiguang-gateway   # or: npx shiguang-gateway
-shiguang-gateway --version
+npm install -g orbit   # or: npx orbit
+orbit --version
 ```
 
 ## Subcommands
@@ -22,7 +22,7 @@ shiguang-gateway --version
 **Example:**
 
 ```bash
-shiguang-gateway context-eng
+orbit context-eng
 ```
 
 ### `context-eng analytics`
@@ -34,7 +34,7 @@ shiguang-gateway context-eng
 **Example:**
 
 ```bash
-shiguang-gateway context-eng analytics
+orbit context-eng analytics
 ```
 
 ### `context-eng caveman`
@@ -42,7 +42,7 @@ shiguang-gateway context-eng analytics
 **Example:**
 
 ```bash
-shiguang-gateway context-eng caveman
+orbit context-eng caveman
 ```
 
 ### `context-eng config`
@@ -50,7 +50,7 @@ shiguang-gateway context-eng caveman
 **Example:**
 
 ```bash
-shiguang-gateway context-eng config
+orbit context-eng config
 ```
 
 ### `context-eng show`
@@ -58,7 +58,7 @@ shiguang-gateway context-eng config
 **Example:**
 
 ```bash
-shiguang-gateway context-eng show
+orbit context-eng show
 ```
 
 ### `context-eng set`
@@ -72,7 +72,7 @@ shiguang-gateway context-eng show
 **Example:**
 
 ```bash
-shiguang-gateway context-eng set
+orbit context-eng set
 ```
 
 ### `context-eng rtk`
@@ -80,7 +80,7 @@ shiguang-gateway context-eng set
 **Example:**
 
 ```bash
-shiguang-gateway context-eng rtk
+orbit context-eng rtk
 ```
 
 ### `context-eng config`
@@ -88,7 +88,7 @@ shiguang-gateway context-eng rtk
 **Example:**
 
 ```bash
-shiguang-gateway context-eng config
+orbit context-eng config
 ```
 
 ### `context-eng show`
@@ -96,7 +96,7 @@ shiguang-gateway context-eng config
 **Example:**
 
 ```bash
-shiguang-gateway context-eng show
+orbit context-eng show
 ```
 
 ### `context-eng set`
@@ -109,7 +109,7 @@ shiguang-gateway context-eng show
 **Example:**
 
 ```bash
-shiguang-gateway context-eng set
+orbit context-eng set
 ```
 
 ### `context-eng filters`
@@ -117,7 +117,7 @@ shiguang-gateway context-eng set
 **Example:**
 
 ```bash
-shiguang-gateway context-eng filters
+orbit context-eng filters
 ```
 
 ### `context-eng list`
@@ -125,7 +125,7 @@ shiguang-gateway context-eng filters
 **Example:**
 
 ```bash
-shiguang-gateway context-eng list
+orbit context-eng list
 ```
 
 ### `context-eng add`
@@ -138,7 +138,7 @@ shiguang-gateway context-eng list
 **Example:**
 
 ```bash
-shiguang-gateway context-eng add
+orbit context-eng add
 ```
 
 ### `context-eng remove <id>`
@@ -150,7 +150,7 @@ shiguang-gateway context-eng add
 **Example:**
 
 ```bash
-shiguang-gateway context-eng remove <id>
+orbit context-eng remove <id>
 ```
 
 ### `context-eng test`
@@ -158,7 +158,7 @@ shiguang-gateway context-eng remove <id>
 **Example:**
 
 ```bash
-shiguang-gateway context-eng test
+orbit context-eng test
 ```
 
 ### `context-eng raw-output <id>`
@@ -166,7 +166,7 @@ shiguang-gateway context-eng test
 **Example:**
 
 ```bash
-shiguang-gateway context-eng raw-output <id>
+orbit context-eng raw-output <id>
 ```
 
 ### `context-eng combos`
@@ -174,7 +174,7 @@ shiguang-gateway context-eng raw-output <id>
 **Example:**
 
 ```bash
-shiguang-gateway context-eng combos
+orbit context-eng combos
 ```
 
 ### `context-eng list`
@@ -182,7 +182,7 @@ shiguang-gateway context-eng combos
 **Example:**
 
 ```bash
-shiguang-gateway context-eng list
+orbit context-eng list
 ```
 
 ### `context-eng get <id>`
@@ -190,7 +190,7 @@ shiguang-gateway context-eng list
 **Example:**
 
 ```bash
-shiguang-gateway context-eng get <id>
+orbit context-eng get <id>
 ```
 
 ### `context-eng assignments <id>`
@@ -198,7 +198,7 @@ shiguang-gateway context-eng get <id>
 **Example:**
 
 ```bash
-shiguang-gateway context-eng assignments <id>
+orbit context-eng assignments <id>
 ```
 
 ### `contexts`
@@ -206,7 +206,7 @@ shiguang-gateway context-eng assignments <id>
 **Example:**
 
 ```bash
-shiguang-gateway contexts
+orbit contexts
 ```
 
 ### `contexts list`
@@ -216,7 +216,7 @@ List all contexts
 **Example:**
 
 ```bash
-shiguang-gateway contexts list
+orbit contexts list
 ```
 
 ### `contexts add <name>`
@@ -235,7 +235,7 @@ Add a new context
 **Example:**
 
 ```bash
-shiguang-gateway contexts add <name>
+orbit contexts add <name>
 ```
 
 ### `contexts use <name>`
@@ -245,7 +245,7 @@ Switch active context
 **Example:**
 
 ```bash
-shiguang-gateway contexts use <name>
+orbit contexts use <name>
 ```
 
 ### `contexts current`
@@ -259,7 +259,7 @@ Show the active context (server, auth, scope)
 **Example:**
 
 ```bash
-shiguang-gateway contexts current
+orbit contexts current
 ```
 
 ### `contexts show <name>`
@@ -269,7 +269,7 @@ Show context details
 **Example:**
 
 ```bash
-shiguang-gateway contexts show <name>
+orbit contexts show <name>
 ```
 
 ### `contexts remove <name>`
@@ -283,7 +283,7 @@ Remove a context
 **Example:**
 
 ```bash
-shiguang-gateway contexts remove <name>
+orbit contexts remove <name>
 ```
 
 ### `contexts rename <old> <new>`
@@ -293,7 +293,7 @@ Rename a context
 **Example:**
 
 ```bash
-shiguang-gateway contexts rename <old> <new>
+orbit contexts rename <old> <new>
 ```
 
 ### `contexts export`
@@ -308,7 +308,7 @@ Export contexts to JSON
 **Example:**
 
 ```bash
-shiguang-gateway contexts export
+orbit contexts export
 ```
 
 ### `contexts import <file>`
@@ -322,7 +322,7 @@ Import contexts from a JSON file
 **Example:**
 
 ```bash
-shiguang-gateway contexts import <file>
+orbit contexts import <file>
 ```
 
 ### `contexts migrate`
@@ -336,7 +336,7 @@ Move legacy plaintext context credentials to the OS keychain
 **Example:**
 
 ```bash
-shiguang-gateway contexts migrate
+orbit contexts migrate
 ```
 
 ### `sessions`
@@ -344,7 +344,7 @@ shiguang-gateway contexts migrate
 **Example:**
 
 ```bash
-shiguang-gateway sessions
+orbit sessions
 ```
 
 ### `sessions list`
@@ -359,7 +359,7 @@ shiguang-gateway sessions
 **Example:**
 
 ```bash
-shiguang-gateway sessions list
+orbit sessions list
 ```
 
 ### `sessions show <sessionId>`
@@ -367,7 +367,7 @@ shiguang-gateway sessions list
 **Example:**
 
 ```bash
-shiguang-gateway sessions show <sessionId>
+orbit sessions show <sessionId>
 ```
 
 ### `sessions expire <sessionId>`
@@ -379,7 +379,7 @@ shiguang-gateway sessions show <sessionId>
 **Example:**
 
 ```bash
-shiguang-gateway sessions expire <sessionId>
+orbit sessions expire <sessionId>
 ```
 
 ### `sessions expire-all`
@@ -391,7 +391,7 @@ shiguang-gateway sessions expire <sessionId>
 **Example:**
 
 ```bash
-shiguang-gateway sessions expire-all
+orbit sessions expire-all
 ```
 
 ### `sessions current`
@@ -399,5 +399,5 @@ shiguang-gateway sessions expire-all
 **Example:**
 
 ```bash
-shiguang-gateway sessions current
+orbit sessions current
 ```

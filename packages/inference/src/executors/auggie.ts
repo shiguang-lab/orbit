@@ -11,7 +11,7 @@
  *
  * Authentication:
  *   None. Auggie delegates auth entirely to the user's local `auggie login`
- *   session — ShiguangGateway never sees or stores credentials for this provider.
+ *   session — Orbit never sees or stores credentials for this provider.
  *   The connection is registered `noAuth: true` and `refreshCredentials()` is
  *   a no-op (nothing to refresh).
  *
@@ -374,7 +374,7 @@ export class AuggieExecutor extends BaseExecutor {
     return null;
   }
 
-  /** No-op — auggie has no ShiguangGateway-managed credentials to refresh. */
+  /** No-op — auggie has no Orbit-managed credentials to refresh. */
   async refreshCredentials(
     _credentials: ProviderCredentials
   ): Promise<Partial<ProviderCredentials> | null> {

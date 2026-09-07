@@ -15,7 +15,7 @@ export function buildExecutorClientHeaders(
   const normalized: Record<string, string> = {};
   const isLeaseControlHeader = (key: string) => {
     const lowerKey = key.toLowerCase();
-    return lowerKey === "x-shiguangGateway-lease-owner" || lowerKey === "x-shiguangGateway-lease-generation";
+    return lowerKey === "x-orbit-lease-owner" || lowerKey === "x-orbit-lease-generation";
   };
 
   if (headers instanceof Headers) {

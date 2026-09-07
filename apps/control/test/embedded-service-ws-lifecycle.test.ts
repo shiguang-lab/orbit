@@ -19,11 +19,11 @@ test("embedded WebSocket proxy has idempotent app-owned startup and shutdown", a
 
     const server = await first;
     assert.equal(server.listening, true);
-    assert.equal(globalThis.__shiguangGatewayEmbedWsStarted, true);
+    assert.equal(globalThis.__orbitEmbedWsStarted, true);
 
     await stopEmbedWsProxy();
     assert.equal(server.listening, false);
-    assert.equal(globalThis.__shiguangGatewayEmbedWsStarted, false);
+    assert.equal(globalThis.__orbitEmbedWsStarted, false);
 
     const restartedServer = await initEmbedWsProxy();
     assert.notStrictEqual(restartedServer, server);
@@ -31,7 +31,7 @@ test("embedded WebSocket proxy has idempotent app-owned startup and shutdown", a
 
     await stopEmbedWsProxy();
     assert.equal(restartedServer.listening, false);
-    assert.equal(globalThis.__shiguangGatewayEmbedWsStarted, false);
+    assert.equal(globalThis.__orbitEmbedWsStarted, false);
 
     await stopEmbedWsProxy();
   } finally {

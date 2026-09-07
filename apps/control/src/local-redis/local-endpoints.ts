@@ -18,7 +18,7 @@ export function isLocalRequestAllowed(
   }
   if (
     process.env.NODE_ENV === "production" &&
-    process.env.SHIGUANG_GATEWAY_LOCAL_ENDPOINTS_ENABLED !== "1"
+    process.env.ORBIT_LOCAL_ENDPOINTS_ENABLED !== "1"
   ) {
     return { allowed: false, reason: "disabled in production" };
   }

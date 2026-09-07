@@ -5,10 +5,10 @@ lastUpdated: 2026-08-17
 
 # Embeddings client runbook
 
-Operator notes for `POST /v1/embeddings` when ShiguangGateway sits in front of
+Operator notes for `POST /v1/embeddings` when Orbit sits in front of
 Hindsight 0.9.1 (text-only `encode(list[str])`) and Memorix 1.6.0 (Jina media
-gate). Live-verified 2026-08-17 against ShiguangGateway 3.8.49 at
-`https://shiguang-gateway.jaguar-fish.ts.net/v1`. No secrets below.
+gate). Live-verified 2026-08-17 against Orbit 3.8.49 at
+`https://orbit.jaguar-fish.ts.net/v1`. No secrets below.
 
 ## Working model ids
 
@@ -63,8 +63,8 @@ Expected: either a native Gemini embed with a Google AI Studio key on the
 Repro (redact the bearer):
 
 ```bash
-curl -sS -D- https://shiguang-gateway.example/v1/embeddings \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_API_KEY" \
+curl -sS -D- https://orbit.example/v1/embeddings \
+  -H "Authorization: Bearer $ORBIT_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"model":"gemini-embedding-2","input":["alpha","beta"]}'
 ```
@@ -72,15 +72,15 @@ curl -sS -D- https://shiguang-gateway.example/v1/embeddings \
 Working substitute:
 
 ```bash
-curl -sS https://shiguang-gateway.example/v1/embeddings \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_API_KEY" \
+curl -sS https://orbit.example/v1/embeddings \
+  -H "Authorization: Bearer $ORBIT_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"model":"openrouter/google/gemini-embedding-2","input":["alpha","beta"]}'
 ```
 
 Native `gemini-embedding-2` cannot succeed from GitOps alone. A Google AI
 Studio key must be added as a `gemini` provider connection (dashboard or
-`GEMINI_API_KEY` imported into ShiguangGateway). That secret is not in this repo.
+`GEMINI_API_KEY` imported into Orbit). That secret is not in this repo.
 
 ### Jina multimodal path
 
@@ -101,7 +101,7 @@ Use `POST /v1/embeddings` until an alias exists.
 
 ### Jina / Memorix image object
 
-ShiguangGateway canonical image item (28×28 PNG, 784 pixels — Jina rejects 1×1):
+Orbit canonical image item (28×28 PNG, 784 pixels — Jina rejects 1×1):
 
 ```json
 {
@@ -150,7 +150,7 @@ Actual: HTTP **400**
 
 Hindsight embeddings are text-only (`encode(list[str])`). It does not send
 image objects. Point Hindsight's OpenAI-compatible embeddings base URL at
-ShiguangGateway `/v1` and use a working id from the table above
+Orbit `/v1` and use a working id from the table above
 (`jina-ai/jina-embeddings-v5-omni-small` or
 `openrouter/google/gemini-embedding-2`). Do not set the model to bare
 `gemini-embedding-2` unless a `gemini` API key exists on the gateway.
@@ -158,11 +158,11 @@ ShiguangGateway `/v1` and use a working id from the table above
 ### Memorix 1.6.0
 
 Memorix only treats `baseUrl` matching `/jina\.ai/i` as native media. An
-ShiguangGateway URL stays on the text-only path even when the model is Jina omni.
-That gate is a Memorix client issue. Independently, ShiguangGateway still rejects
+Orbit URL stays on the text-only path even when the model is Jina omni.
+That gate is a Memorix client issue. Independently, Orbit still rejects
 the Jina `{image: "data:..."}` body that Memorix would send if the gate
-opened, so Jina-compatible clients cannot embed images through ShiguangGateway
+opened, so Jina-compatible clients cannot embed images through Orbit
 without the canonical `{type,source}` schema.
 
 Use `jina-ai/jina-embeddings-v5-omni-small` for text. Do not point Memorix
-`base_url` at `https://api.jina.ai` — keep ShiguangGateway as the only hop.
+`base_url` at `https://api.jina.ai` — keep Orbit as the only hop.

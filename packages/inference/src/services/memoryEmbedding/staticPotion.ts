@@ -20,7 +20,7 @@ const HF_BASE =
 function getModelDir(): string {
   const staticCacheDir = process.env.MEMORY_STATIC_CACHE_DIR;
   if (staticCacheDir) return path.join(staticCacheDir, MODEL_NAME);
-  const dataDir = process.env.DATA_DIR ?? path.join(os.homedir(), ".shiguangGateway");
+  const dataDir = process.env.DATA_DIR ?? path.join(os.homedir(), ".orbit");
   return path.join(dataDir, "embeddings", MODEL_NAME);
 }
 

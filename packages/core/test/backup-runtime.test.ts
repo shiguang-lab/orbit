@@ -27,7 +27,7 @@ test("backup runtime creates a manifest, supports exclusion, encryption, and ret
   await createBackup({ dataDir, name: "third", retention: 2 });
   assert.deepEqual(
     fs.readdirSync(path.join(dataDir, "backups")).sort(),
-    ["shiguangGateway-backup-second", "shiguangGateway-backup-third"],
+    ["orbit-backup-second", "orbit-backup-third"],
   );
 });
 

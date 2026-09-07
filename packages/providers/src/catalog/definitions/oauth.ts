@@ -174,7 +174,7 @@ export const OAUTH_PROVIDERS = {
     subscriptionRisk: true,
     riskNoticeVariant: "oauth",
     authHint:
-      "Sign in with your Zed account (native-app sign-in). ShiguangGateway generates a one-time RSA keypair and opens zed.dev to authorize it — on a remote/headless install, copy the resulting 127.0.0.1 callback URL from your browser's address bar and paste it back here. Distinct from the 'Zed IDE' credential-import entry above: this proxies chat completions through Zed's own hosted model aggregator (cloud.zed.dev), fronting Anthropic/OpenAI/Google/xAI models under your Zed plan.",
+      "Sign in with your Zed account (native-app sign-in). Orbit generates a one-time RSA keypair and opens zed.dev to authorize it — on a remote/headless install, copy the resulting 127.0.0.1 callback URL from your browser's address bar and paste it back here. Distinct from the 'Zed IDE' credential-import entry above: this proxies chat completions through Zed's own hosted model aggregator (cloud.zed.dev), fronting Anthropic/OpenAI/Google/xAI models under your Zed plan.",
   },
   trae: {
     id: "trae",
@@ -196,11 +196,11 @@ export const OAUTH_PROVIDERS = {
     textIcon: "KC",
     // Kimi official-partnership aff link (2026-07) — the "Kimi Coding Plan"
     // tracking link. Was previously unset (no header link rendered at all).
-    website: "https://www.kimi.com/code?aff=shiguangGateway",
+    website: "https://www.kimi.com/code?aff=orbit",
     subscriptionRisk: true,
     riskNoticeVariant: "oauth",
     authHint:
-      "Sign in with the same Kimi account used by Kimi Code CLI. ShiguangGateway uses the CLI OAuth flow and Kimi Coding Plan endpoints.",
+      "Sign in with the same Kimi account used by Kimi Code CLI. Orbit uses the CLI OAuth flow and Kimi Coding Plan endpoints.",
   },
   kilocode: {
     id: "kilocode",

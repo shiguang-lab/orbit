@@ -12,7 +12,7 @@ export const zaiProvider: RegistryEntry = {
   authHeader: "x-api-key",
   headers: getAnthropicCompatHeaders(),
   // Real upstream model IDs only. The effort tiers (glm-5.2-high/-max,
-  // glm-5.3-high/-low) are intentionally NOT listed here: they are ShiguangGateway
+  // glm-5.3-high/-low) are intentionally NOT listed here: they are Orbit
   // aliases resolved by the GlmExecutor (parseGlmEffortTier → base model +
   // effort selector). This provider uses the DefaultExecutor, which sends the
   // model ID verbatim, so the aliases would reach z.ai's Anthropic endpoint as

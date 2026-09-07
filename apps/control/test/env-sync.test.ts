@@ -58,7 +58,7 @@ test("full env sync creates the file and generates a machine salt", () => {
     assert.deepEqual(syncEnv({ rootDir: root, quiet: true }), { created: true, added: 2 });
     const content = readFileSync(join(root, ".env"), "utf8");
     assert.match(content, /^PLAIN=value/m);
-    assert.match(content, /^MACHINE_ID_SALT=shiguangGateway-[a-f0-9]{16}$/m);
+    assert.match(content, /^MACHINE_ID_SALT=orbit-[a-f0-9]{16}$/m);
   });
 });
 

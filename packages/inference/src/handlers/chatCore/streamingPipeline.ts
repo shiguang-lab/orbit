@@ -21,7 +21,7 @@ import {
 } from "../../utils/progressTracker.ts";
 import { createPiiSseTransform as defaultPiiSse } from "@orbit/core/edge/streaming-pii";
 import { isFeatureFlagEnabled as defaultFeatureFlag } from "@orbit/core/runtime/feature-flags";
-import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "@orbit/contracts/gateway-headers";
+import { ORBIT_RESPONSE_HEADERS } from "@orbit/contracts/gateway-headers";
 import { SSE_HEARTBEAT_INTERVAL_MS } from "../../config/constants.ts";
 /**
  * Pipeline assembly instrumentation — performance.mark() along the SSE hot path.
@@ -97,7 +97,7 @@ export function assembleStreamingPipeline(
     });
     // Chain: provider → transform → progress → client
     finalStream = piiStream.pipeThrough(progressTransform);
-    args.responseHeaders[SHIGUANG_GATEWAY_RESPONSE_HEADERS.progress] = "enabled";
+    args.responseHeaders[ORBIT_RESPONSE_HEADERS.progress] = "enabled";
   } else {
     finalStream = piiStream;
   }

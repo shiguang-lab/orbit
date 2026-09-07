@@ -46,7 +46,7 @@ const TRUE_ENV_VALUES = new Set(["1", "true", "yes", "on"]);
 // ── State (globalThis singleton) ──────────────────────────────────────────
 
 declare global {
-  var __shiguangGatewayCredentialHC:
+  var __orbitCredentialHC:
     | {
         initialized: boolean;
         sweepTimer: ReturnType<typeof setTimeout> | null;
@@ -64,8 +64,8 @@ declare global {
 }
 
 function getSchedulerState() {
-  if (!globalThis.__shiguangGatewayCredentialHC) {
-    globalThis.__shiguangGatewayCredentialHC = {
+  if (!globalThis.__orbitCredentialHC) {
+    globalThis.__orbitCredentialHC = {
       initialized: false,
       sweepTimer: null,
       sweepInProgress: false,
@@ -73,7 +73,7 @@ function getSchedulerState() {
       perConnTiming: new Map(),
     };
   }
-  return globalThis.__shiguangGatewayCredentialHC;
+  return globalThis.__orbitCredentialHC;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────
@@ -84,7 +84,7 @@ function isBuildProcess(): boolean {
 
 function isCredentialHealthCheckDisabled(): boolean {
   if (isBuildProcess() || isAutomatedTestProcess()) return true;
-  const val = process.env.SHIGUANG_GATEWAY_DISABLE_CREDENTIAL_HEALTH_CHECK;
+  const val = process.env.ORBIT_DISABLE_CREDENTIAL_HEALTH_CHECK;
   return val ? TRUE_ENV_VALUES.has(val.trim().toLowerCase()) : false;
 }
 
@@ -376,7 +376,7 @@ function scheduleSweep(): void {
 /**
  * Start the credential health check scheduler (idempotent).
  * Returns whether the sweep is armed. False when
- * SHIGUANG_GATEWAY_DISABLE_CREDENTIAL_HEALTH_CHECK is set (#11016).
+ * ORBIT_DISABLE_CREDENTIAL_HEALTH_CHECK is set (#11016).
  */
 export function initCredentialHealthCheck(): boolean {
   const state = getSchedulerState();

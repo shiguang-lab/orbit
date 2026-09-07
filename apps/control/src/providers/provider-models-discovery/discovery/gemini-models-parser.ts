@@ -1,7 +1,7 @@
 /**
  * Parses the Google Generative Language `v1beta/models` listing into discovery models.
  *
- * Each model's `supportedGenerationMethods` is mapped to ShiguangGateway endpoints:
+ * Each model's `supportedGenerationMethods` is mapped to Orbit endpoints:
  *   - generateContent / generateAnswer → "chat"
  *   - predict                          → "images"  (Imagen image generation)
  *   - predictLongRunning               → "videos"  (Veo video generation)

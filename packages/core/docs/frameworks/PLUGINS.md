@@ -1,37 +1,37 @@
 ---
-title: "ShiguangGateway CLI Plugin System"
+title: "Orbit CLI Plugin System"
 version: 3.8.40
 lastUpdated: 2026-06-28
 ---
 
-# ShiguangGateway CLI Plugin System
+# Orbit CLI Plugin System
 
-Extend the `shiguang-gateway` CLI without modifying its core. Plugins follow the `shiguang-gateway-cmd-*` naming convention, similar to `gh extension` or `kubectl plugin`.
+Extend the `orbit` CLI without modifying its core. Plugins follow the `orbit-cmd-*` naming convention, similar to `gh extension` or `kubectl plugin`.
 
 ## Quick start
 
 ```bash
 # Install a plugin from npm
-shiguang-gateway plugin install stripe
+orbit plugin install stripe
 
 # Install a local plugin in development
-shiguang-gateway plugin install ./my-plugin
+orbit plugin install ./my-plugin
 
 # List installed plugins
-shiguang-gateway plugin list
+orbit plugin list
 
 # Scaffold a new plugin
-shiguang-gateway plugin scaffold myplugin
-cd shiguang-gateway-cmd-myplugin
-shiguang-gateway plugin install .
+orbit plugin scaffold myplugin
+cd orbit-cmd-myplugin
+orbit plugin install .
 ```
 
 ## Plugin anatomy
 
-A plugin is an npm package named `shiguang-gateway-cmd-<name>` (or `@scope/shiguang-gateway-cmd-<name>`).
+A plugin is an npm package named `orbit-cmd-<name>` (or `@scope/orbit-cmd-<name>`).
 
 ```
-shiguang-gateway-cmd-myplugin/
+orbit-cmd-myplugin/
 ├── package.json     # must have "type": "module" and "main": "index.mjs"
 ├── index.mjs        # exports register(program, ctx) + optional meta
 └── README.md
@@ -41,12 +41,12 @@ shiguang-gateway-cmd-myplugin/
 
 ```json
 {
-  "name": "shiguang-gateway-cmd-myplugin",
+  "name": "orbit-cmd-myplugin",
   "version": "0.1.0",
   "type": "module",
   "main": "index.mjs",
-  "engines": { "shiguang-gateway": ">=4.0.0" },
-  "keywords": ["shiguang-gateway-plugin", "shiguang-gateway-cmd"]
+  "engines": { "orbit": ">=4.0.0" },
+  "keywords": ["orbit-plugin", "orbit-cmd"]
 }
 ```
 
@@ -56,8 +56,8 @@ shiguang-gateway-cmd-myplugin/
 export const meta = {
   name: "myplugin",
   version: "0.1.0",
-  description: "My plugin for ShiguangGateway",
-  shiguang-gatewayApi: ">=4.0.0",
+  description: "My plugin for Orbit",
+  orbitApi: ">=4.0.0",
 };
 
 export function register(program, ctx) {
@@ -83,7 +83,7 @@ The `ctx` object passed to `register(program, ctx)`:
 
 | Property                     | Type             | Description                                        |
 | ---------------------------- | ---------------- | -------------------------------------------------- |
-| `ctx.apiFetch(path, opts)`   | `async function` | Authenticated fetch to the ShiguangGateway server        |
+| `ctx.apiFetch(path, opts)`   | `async function` | Authenticated fetch to the Orbit server        |
 | `ctx.emit(data, opts)`       | `function`       | Output in table/json/jsonl/csv per `--output` flag |
 | `ctx.t(key)`                 | `async function` | i18n translation lookup                            |
 | `ctx.withSpinner(label, fn)` | `async function` | Wraps async fn with ora spinner                    |
@@ -94,21 +94,21 @@ The `ctx` object passed to `register(program, ctx)`:
 
 Plugins are discovered from:
 
-1. `~/.shiguang-gateway/plugins/<name>/` — user-local installs
-2. `SHIGUANG_GATEWAY_PLUGIN_PATH` env var — custom directory
+1. `~/.orbit/plugins/<name>/` — user-local installs
+2. `ORBIT_PLUGIN_PATH` env var — custom directory
 
 Loading errors are caught and printed as warnings — a broken plugin never crashes the CLI.
 
 ## Security
 
-Plugins run with the same Node.js process privileges as `shiguang-gateway`. Only install plugins from sources you trust. `shiguang-gateway plugin install` shows an explicit warning and requires `--yes` or interactive confirmation.
+Plugins run with the same Node.js process privileges as `orbit`. Only install plugins from sources you trust. `orbit plugin install` shows an explicit warning and requires `--yes` or interactive confirmation.
 
 ## Publishing
 
-1. Ensure `package.json` has `"keywords": ["shiguang-gateway-plugin"]`
+1. Ensure `package.json` has `"keywords": ["orbit-plugin"]`
 2. `npm publish` as normal
-3. Users discover via `shiguang-gateway plugin search <query>` (searches npm registry)
+3. Users discover via `orbit plugin search <query>` (searches npm registry)
 
 ## Example plugin
 
-See [`examples/shiguang-gateway-cmd-hello/`](../../examples/shiguang-gateway-cmd-hello/index.mjs) for a minimal working example with `meta` + `register()`.
+See [`examples/orbit-cmd-hello/`](../../examples/orbit-cmd-hello/index.mjs) for a minimal working example with `meta` + `register()`.

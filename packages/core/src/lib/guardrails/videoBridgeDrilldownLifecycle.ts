@@ -62,14 +62,14 @@ function truthyFlag(value: string | undefined): boolean {
 export function isVideoBridgeDrilldownProductionEnabled(
   env: Record<string, string | undefined> = process.env
 ): boolean {
-  return truthyFlag(env.SHIGUANG_GATEWAY_VIDEO_BRIDGE_DRILLDOWN_ENABLED);
+  return truthyFlag(env.ORBIT_VIDEO_BRIDGE_DRILLDOWN_ENABLED);
 }
 
 /** Remote (authenticated API-key) consumption stays off unless an operator opts in. */
 export function isVideoBridgeDrilldownRemoteAccessEnabled(
   env: Record<string, string | undefined> = process.env
 ): boolean {
-  return truthyFlag(env.SHIGUANG_GATEWAY_VIDEO_BRIDGE_DRILLDOWN_REMOTE_ENABLED);
+  return truthyFlag(env.ORBIT_VIDEO_BRIDGE_DRILLDOWN_REMOTE_ENABLED);
 }
 
 interface HandleEntry {

@@ -676,7 +676,7 @@ export class TlsClient {
   }
 }
 
-const TLS_CLIENT_KEY = Symbol.for("shiguangGateway.tlsClient.instance");
+const TLS_CLIENT_KEY = Symbol.for("orbit.tlsClient.instance");
 const scopedGlobal = globalThis as typeof globalThis & {
   [TLS_CLIENT_KEY]?: TlsClient;
 };

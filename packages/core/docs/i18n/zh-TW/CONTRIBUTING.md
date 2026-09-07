@@ -1,4 +1,4 @@
-# 貢獻 ShiguangGateway (中文 (繁體))
+# 貢獻 Orbit (中文 (繁體))
 
 🌐 **語言:** 🇺🇸 [English](../../../CONTRIBUTING.md) · 🇸🇦 [ar](../ar/CONTRIBUTING.md) · 🇧🇬 [bg](../bg/CONTRIBUTING.md) · 🇧🇩 [bn](../bn/CONTRIBUTING.md) · 🇨🇿 [cs](../cs/CONTRIBUTING.md) · 🇩🇰 [da](../da/CONTRIBUTING.md) · 🇩🇪 [de](../de/CONTRIBUTING.md) · 🇪🇸 [es](../es/CONTRIBUTING.md) · 🇮🇷 [fa](../fa/CONTRIBUTING.md) · 🇫🇮 [fi](../fi/CONTRIBUTING.md) · 🇫🇷 [fr](../fr/CONTRIBUTING.md) · 🇮🇳 [gu](../gu/CONTRIBUTING.md) · 🇮🇱 [he](../he/CONTRIBUTING.md) · 🇮🇳 [hi](../hi/CONTRIBUTING.md) · 🇭🇺 [hu](../hu/CONTRIBUTING.md) · 🇮🇩 [id](../id/CONTRIBUTING.md) · 🇮🇹 [it](../it/CONTRIBUTING.md) · 🇯🇵 [ja](../ja/CONTRIBUTING.md) · 🇰🇷 [ko](../ko/CONTRIBUTING.md) · 🇮🇳 [mr](../mr/CONTRIBUTING.md) · 🇲🇾 [ms](../ms/CONTRIBUTING.md) · 🇳🇱 [nl](../nl/CONTRIBUTING.md) · 🇳🇴 [no](../no/CONTRIBUTING.md) · 🇵🇭 [phi](../phi/CONTRIBUTING.md) · 🇵🇱 [pl](../pl/CONTRIBUTING.md) · 🇵🇹 [pt](../pt/CONTRIBUTING.md) · 🇧🇷 [pt-BR](../pt-BR/CONTRIBUTING.md) · 🇷🇴 [ro](../ro/CONTRIBUTING.md) · 🇷🇺 [ru](../ru/CONTRIBUTING.md) · 🇸🇰 [sk](../sk/CONTRIBUTING.md) · 🇸🇪 [sv](../sv/CONTRIBUTING.md) · 🇰🇪 [sw](../sw/CONTRIBUTING.md) · 🇮🇳 [ta](../ta/CONTRIBUTING.md) · 🇮🇳 [te](../te/CONTRIBUTING.md) · 🇹🇭 [th](../th/CONTRIBUTING.md) · 🇹🇷 [tr](../tr/CONTRIBUTING.md) · 🇺🇦 [uk-UA](../uk-UA/CONTRIBUTING.md) · 🇵🇰 [ur](../ur/CONTRIBUTING.md) · 🇻🇳 [vi](../vi/CONTRIBUTING.md) · 🇨🇳 [zh-CN](../zh-CN/CONTRIBUTING.md)
 
@@ -17,8 +17,8 @@
 ### 複製與安裝
 
 ```bash
-git clone https://github.com/diegosouzapw/ShiguangGateway.git
-cd ShiguangGateway
+git clone https://github.com/diegosouzapw/Orbit.git
+cd Orbit
 npm install
 ```
 
@@ -90,7 +90,7 @@ npm run build
 
 `npm run build:release` 會額外先清除兩個目錄，然後寫入 `dist/BUILD_SHA`（= `git rev-parse --short HEAD`）作為部署完整性哨兵。
 
-> **VPS 部署注意：** 遠端映像檔目錄 `/usr/lib/node_modules/shiguang-gateway/app/` 維持不變。部署技能會將 `dist/` 的內容 rsync 到其中。只有儲存庫內的建置輸出路徑改變了（`app/` → `dist/`）。
+> **VPS 部署注意：** 遠端映像檔目錄 `/usr/lib/node_modules/orbit/app/` 維持不變。部署技能會將 `dist/` 的內容 rsync 到其中。只有儲存庫內的建置輸出路徑改變了（`app/` → `dist/`）。
 
 預設 URL：
 
@@ -273,7 +273,7 @@ tests/
 docs/
 ├── adr/                     # 架構決策記錄
 ├── architecture/            # 系統架構與彈性
-├── comparison/              # ShiguangGateway 與替代方案比較
+├── comparison/              # Orbit 與替代方案比較
 ├── compression/             # 壓縮指南與規則
 ├── dev/                     # 開發指南
 ├── diagrams/                # 架構圖
@@ -362,5 +362,5 @@ docs/
 - **API 參考**：參見 [`docs/reference/API_REFERENCE.md`](docs/reference/API_REFERENCE.md)
 - **安全文件**：[`docs/security/CLI_TOKEN.md`](docs/security/CLI_TOKEN.md)、[`docs/security/ROUTE_GUARD_TIERS.md`](docs/security/ROUTE_GUARD_TIERS.md)、[`docs/security/ERROR_SANITIZATION.md`](docs/security/ERROR_SANITIZATION.md)、[`docs/security/PUBLIC_CREDS.md`](docs/security/PUBLIC_CREDS.md)
 - **運維文件**：[`docs/ops/SQLITE_RUNTIME.md`](docs/ops/SQLITE_RUNTIME.md)
-- **問題回報**：[github.com/diegosouzapw/ShiguangGateway/issues](https://github.com/diegosouzapw/ShiguangGateway/issues)
+- **問題回報**：[github.com/diegosouzapw/Orbit/issues](https://github.com/diegosouzapw/Orbit/issues)
 - **ADR**：參見 `docs/adr/` 了解架構決策記錄

@@ -16,9 +16,9 @@ export class LocalRedisService {
   async start() {
     const runtime = await detectRedisContainerRuntime();
     if (!runtime) return { status: 503, body: { ok: false, error: "No container runtime (podman or docker) found on PATH" } };
-    const hostPort = process.env.SHIGUANG_GATEWAY_REDIS_HOST_PORT || "6379";
-    const bindHost = process.env.SHIGUANG_GATEWAY_REDIS_BIND_HOST || REDIS_DEFAULT_BIND_HOST;
-    const image = process.env.SHIGUANG_GATEWAY_REDIS_IMAGE || "docker.io/redis:7-alpine";
+    const hostPort = process.env.ORBIT_REDIS_HOST_PORT || "6379";
+    const bindHost = process.env.ORBIT_REDIS_BIND_HOST || REDIS_DEFAULT_BIND_HOST;
+    const image = process.env.ORBIT_REDIS_IMAGE || "docker.io/redis:7-alpine";
     try {
       const { stdout, stderr } = await runRedisRuntimeCommand(
         runtime,
@@ -47,7 +47,7 @@ export class LocalRedisService {
   }
 
   async status() {
-    const hostPort = process.env.SHIGUANG_GATEWAY_REDIS_HOST_PORT || "6379";
+    const hostPort = process.env.ORBIT_REDIS_HOST_PORT || "6379";
     const runtime = await detectRedisContainerRuntime();
     let container = { exists: false, running: false, reachable: false };
     if (runtime) {

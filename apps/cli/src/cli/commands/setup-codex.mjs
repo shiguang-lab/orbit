@@ -1,13 +1,13 @@
 /**
- * shiguangGateway setup-codex — Remote-aware Codex CLI profile generator.
+ * orbit setup-codex — Remote-aware Codex CLI profile generator.
  *
- * Connects to a running ShiguangGateway instance (local or remote VPS), fetches the
+ * Connects to a running Orbit instance (local or remote VPS), fetches the
  * live model catalog via GET /v1/models, then generates ~/.codex/<name>.config.toml
  * profile files for each model — so you can switch providers with a single flag
  * (`codex --profile glm52`) without editing config files by hand.
  *
  * Primary use-case: configure a local Codex CLI to use models from a VPS.
- *   shiguangGateway setup-codex --remote http://100.67.86.91:8787 --api-key sk-xxx
+ *   orbit setup-codex --remote http://100.67.86.91:8787 --api-key sk-xxx
  *
  * The command is idempotent: re-running updates existing profile files in place.
  */
@@ -28,16 +28,16 @@ import { t } from "../i18n.mjs";
 export async function runSetupCodexCommand(opts = {}) {
   const port = Number(opts.port ?? process.env.PORT ?? 8787) || 8787;
   const baseUrl = (opts.remote ?? `http://localhost:${port}`).replace(/\/v1$/, "");
-  const apiKey = opts.apiKey ?? opts["api-key"] ?? process.env.SHIGUANG_GATEWAY_API_KEY ?? "";
+  const apiKey = opts.apiKey ?? opts["api-key"] ?? process.env.ORBIT_API_KEY ?? "";
   const codexHome = opts.codexHome ?? opts["codex-home"] ?? join(os.homedir(), ".codex");
   const dryRun = Boolean(opts.dryRun ?? opts["dry-run"]);
   const onlyFilter = opts.only ? opts.only.split(",").map((s) => s.trim()) : null;
 
-  printHeading(`ShiguangGateway → Codex CLI profile generator`);
+  printHeading(`Orbit → Codex CLI profile generator`);
 
   const guard = await guardHostConfigTarget(codexHome, {
     toolLabel: "Codex",
-    hostCommand: "shiguangGateway setup-codex",
+    hostCommand: "orbit setup-codex",
     allowContainerWrite: Boolean(opts.allowContainerWrite ?? opts["allow-container-write"]),
     dryRun,
   });
@@ -60,8 +60,8 @@ export async function runSetupCodexCommand(opts = {}) {
   } catch (err) {
     printError(`Failed to fetch models: ${err.message}`);
     printInfo(
-      "Make sure ShiguangGateway is running and the --remote URL is correct.\n" +
-        "You may also need --api-key if ShiguangGateway requires authentication."
+      "Make sure Orbit is running and the --remote URL is correct.\n" +
+        "You may also need --api-key if Orbit requires authentication."
     );
     return 1;
   }
@@ -98,17 +98,17 @@ export function registerSetupCodex(program) {
   program
     .command("setup-codex")
     .description(
-      "Fetch the live model catalog from ShiguangGateway (local or remote VPS) and generate " +
+      "Fetch the live model catalog from Orbit (local or remote VPS) and generate " +
         "~/.codex/<name>.config.toml profiles for each supported model"
     )
-    .option("--port <port>", "Local ShiguangGateway port (ignored when --remote is set)", "8787")
+    .option("--port <port>", "Local Orbit port (ignored when --remote is set)", "8787")
     .option(
       "--remote <url>",
-      "Remote ShiguangGateway URL, e.g. http://100.67.86.91:8787 — fetches models from there"
+      "Remote Orbit URL, e.g. http://100.67.86.91:8787 — fetches models from there"
     )
     .option(
       "--api-key <key>",
-      "ShiguangGateway API key for the remote instance (defaults to SHIGUANG_GATEWAY_API_KEY env var)"
+      "Orbit API key for the remote instance (defaults to ORBIT_API_KEY env var)"
     )
     .option("--codex-home <dir>", "Directory where profile files are written (default: ~/.codex)")
     .option(

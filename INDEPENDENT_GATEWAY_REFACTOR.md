@@ -1,4 +1,4 @@
-# Shiguang Gateway 独立化重构方案与自动审查
+# Orbit 独立化重构方案与自动审查
 
 状态：代码、镜像、数据导入和拆分服务的本地验收已完成；Provider 上游矩阵仍需在目标环境
 提供真实凭据后执行。运行时、数据库、日志、任务、实时通道和管理 API 均由本项目自身提供，
@@ -111,7 +111,7 @@ OpenAI 兼容入口，负责 Provider 翻译、流式输出、fallback、token �
 #### 2.4.1 独立基础设施交付基线
 
 `deploy/docker-compose.infrastructure.yml` 是独立基础设施编排，提供 PostgreSQL 16 与
-Redis 8 两个独立服务、独立 named volume、健康探针及 `shiguang-gateway-infra` 内网。
+Redis 8 两个独立服务、独立 named volume、健康探针及 `orbit-infra` 内网。
 应用 compose 仅连接该网络，不把数据库或 Redis 打进应用镜像。应用当前通过
 `REDIS_URL`/`QUOTA_STORE_REDIS_URL` 使用 Redis 的限流、共享配额和事件能力；Redis 中的键
 均视为可重建状态，不能替代权威数据。
@@ -152,7 +152,7 @@ sqlite-vec 对应索引重建、全量 route 与 worker 验收，并完成 SQLit
 | Redis（ioredis） | 分布式限流、共享 quota counter/cache、事件 fan-out | 不作为权威数据；迁移期间冻结并导出必要 counter，切换后从 DB/outbox 重建 | **保留**，但启用 ACL/TLS、内网绑定；不是 SQLite 的替代品 |
 | `provider-credentials.json`、`~/.codex/auth.json`、`~/.grok/auth.json` 等 CLI 文件 | CLI/OAuth 凭据导入和刷新 | 加密导出、目标机导入并轮换；缺失 refresh token 必须重新登录 | **不以 DB 替代**，需专门凭据迁移 |
 | OS keychain（keytar/Zed 等） | 本机 OAuth/API secret | 显式导出或在目标机重新授权；容器中禁用 keychain 时使用加密文件 | **不以 DB 替代** |
-| `${HOME}/.shiguang-gateway/browser-login-profiles`、Chrome/CDP/Adobe 会话 | 浏览器 Provider cookie、VNC profile、Adobe session | 作为受控密钥材料单独迁移；迁移后做过期检查和 smoke；也可选择重新登录 | **不以 DB 替代** |
+| `${HOME}/.orbit/browser-login-profiles`、Chrome/CDP/Adobe 会话 | 浏览器 Provider cookie、VNC profile、Adobe session | 作为受控密钥材料单独迁移；迁移后做过期检查和 smoke；也可选择重新登录 | **不以 DB 替代** |
 | `promptql-thread-sessions.json`、`notion-web-thread-sessions.json`、`auto_combo_state.json`、`backup-schedule.json`、RTK raw/meta、filter/trust 文件 | 线程粘性、自动组合、备份计划、压缩原始输出和规则 | 纳入文件 manifest；按版本导入，不能靠“重建派生数据”跳过 | 单节点保留；HA 放对象存储/配置库 |
 | Tailscale/cloudflared/ngrok 状态、嵌入式服务安装目录/二进制 | 隧道和 9Router/CLIProxyAPI/Mux/Bifrost/Dario 生命周期 | 不从 SQLite 推断；重新安装并导入各自 token/config，记录版本和 checksum | **替换为自有部署制品**，运行时不得指向官方 Orbit |
 | Provider 上游 API/OAuth/搜索/对象存储 | 实际模型、登录和外部数据来源 | 继续使用用户配置的上游；将 endpoint/凭据纳入自有配置和 egress allowlist | **不属于官方 Orbit 依赖**，不能误称为完全离线 |
@@ -282,7 +282,7 @@ API config bundle 只用于抽样/选择性恢复，不能替代 usage、audit�
    SSE event 序列、usage、routing trace、fallback 次序和副作用。
 9. **切换**：先将独立实例设为 read/write，官方设为 read-only；观察一个完整配额窗口和
    至少 24 小时后台任务，再切 DNS/反向代理。
-10. **断依赖**：删除 `SHIGUANG_GATEWAY_NAS_*`、旧管理 key、官方 host 配置和 proxy route；
+10. **断依赖**：删除 `ORBIT_NAS_*`、旧管理 key、官方 host 配置和 proxy route；
     防火墙 egress deny 官方 Orbit 地址；保留加密只读归档用于回滚，不作为运行时依赖。
 
 ### 5.3 回滚条件
@@ -424,16 +424,16 @@ DashScope 兼容 HTTP 接口，不经过 CLI。可执行文件通过 PATH 或 `C
 - `pnpm smoke:agent-skills`：PASS（46 个 `SKILL.md` 从运行时包本地读取，无官方仓库回退）。
 - `pnpm smoke:split-deployment`：PASS（edge/control/realtime/live WS，含 `/readyz` 和
   `/.well-known/agent.json`）。
-- `SHIGUANG_GATEWAY_SOURCE_DATA_DIR=/path/to/frozen pnpm smoke:real-data`：PASS（从真实冷快照启动
+- `ORBIT_SOURCE_DATA_DIR=/path/to/frozen pnpm smoke:real-data`：PASS（从真实冷快照启动
   独立 edge/control，鉴权读取迁移后的 provider connections、quota pools/groups、evals，
   并返回快照目录当前约 476 个模型；目录中的模型同步可能随 catalog 变化，不能把固定数量
   当作契约）。
 - `pnpm smoke:worker`：PASS（32 个后台 scheduler/registry 模块均实际启动，使用本地
-  `SHIGUANG_GATEWAY_BASE_URL`，未访问官方/NAS endpoint）。
+  `ORBIT_BASE_URL`，未访问官方/NAS endpoint）。
 - `runtime-bootstrap`：edge/control 在各自进程启动时均完成运行时设置、Quota fetcher、
   Guardrails、Skills、Memory backend 和审计初始化；配置热加载不会在 HTTP 进程重复启动
   worker 专属的网络同步任务。
-- `SHIGUANG_GATEWAY_SOURCE_DATA_DIR=<source-data-dir> pnpm smoke:container-deployment`：PASS。
+- `ORBIT_SOURCE_DATA_DIR=<source-data-dir> pnpm smoke:container-deployment`：PASS。
   acceptance stack 使用独立 linux/amd64 镜像启动 edge/control/realtime/worker，返回动态模型目录
   `models=1,671`，验证 `provider_connections=15`、`api_keys=4`、`key_value=498`、`jobs=3`、
   `job_runs=12,143`、A2A/webhook 表，
@@ -443,7 +443,7 @@ DashScope 兼容 HTTP 接口，不经过 CLI。可执行文件通过 PATH 或 `C
   SQLite 文件逐个 hash 一致，源表已有内容在目标库中全部保留）。服务启动后会按设计更新
   provider 健康字段、OAuth token、审计/模型目录、缓存和运行记录；启动后验收使用服务 smoke
   与表计数/完整性检查，不把这些预期运行时写入误判为冷快照丢失。
-- `verify-external-state`：默认模式 PASS（共享 `shiguang-gateway_home` 卷中的 allowlist 状态逐项校验；本机实际
+- `verify-external-state`：默认模式 PASS（共享 `orbit_home` 卷中的 allowlist 状态逐项校验；本机实际
   复制 `.codex/auth.json`，其余源端不存在的项保持显式 `reauth-or-provide-source`，不会把未存在的凭据
   当作已迁移）。如部署策略要求所有可选凭据都存在，可额外运行 `--require-all`；该策略不应把源端
   本来不存在的文件误报为数据丢失。
@@ -460,9 +460,9 @@ DashScope 兼容 HTTP 接口，不经过 CLI。可执行文件通过 PATH 或 `C
   LM Arena、Gemini Web、OpenCode、Kimi、Nara、Free AI、Codex 和 3 个 Google OAuth 连接均通过。
   唯一失败是源 NAS 同样失败的 Qoder 连接：主机没有 `qodercli` 可执行文件，必须先安装 qodercli
   或重新授权，不能用伪造 CLI 绕过。
-- `SHIGUANG_GATEWAY_SOURCE_DATA_DIR=<target-data-dir> pnpm smoke:provider-matrix` 已固化为发布门禁；
+- `ORBIT_SOURCE_DATA_DIR=<target-data-dir> pnpm smoke:provider-matrix` 已固化为发布门禁；
   切换前必须在目标 NAS 上重跑，Qoder 未补齐时门禁保持失败。
-- Docker 镜像已实际构建并运行：`shiguang-gateway:local`（linux/amd64），当前本地 image digest
+- Docker 镜像已实际构建并运行：`orbit:local`（linux/amd64），当前本地 image digest
   `sha256:8d99f24283bd9534365a7e4a725d4c0e163a2dd0cc796e2b0463d6745a36a84d`。镜像内已编译并
   验证 `better-sqlite3` + `sqlite-vec`，并包含 `onnxruntime-node`；发布到 registry 时必须
   重新记录目标 digest（不要直接复用本地 tag）。
@@ -470,7 +470,7 @@ DashScope 兼容 HTTP 接口，不经过 CLI。可执行文件通过 PATH 或 `C
   清理测试文件）；独立 Fastify 入口现以原始 multipart 边界透传到 runtime `Request.formData()`，
   并将入口 body limit 与 runtime 的 512 MiB 文件校验对齐。
 - `pnpm smoke:split-deployment`：PASS（独立 edge、control、realtime、live WS 进程）。
-- `SHIGUANG_GATEWAY_SOURCE_DATA_DIR=... pnpm smoke:real-data`：PASS（从导入快照提供 488 个模型）。
+- `ORBIT_SOURCE_DATA_DIR=... pnpm smoke:real-data`：PASS（从导入快照提供 488 个模型）。
 - `pnpm smoke:worker`：PASS（全部 scheduler 模块加载并启动，使用本地 base URL）。
 - 媒体缓存统计/清理补充为本地 `/api/media/cache/stats` 与 `/api/media/cache/purge`；它们是
   独立实例的增量能力，不改变官方 689-route parity 基线，并由独立性审查脚本显式登记为
@@ -482,7 +482,7 @@ DashScope 兼容 HTTP 接口，不经过 CLI。可执行文件通过 PATH 或 `C
 
 - `README.md`：改为独立镜像和 importer 说明。
 - `MIGRATION_PLAN.md`、`MIGRATION_SPEC.md`：从“底层 Orbit 不动”改为“clean-room domain package + parity gate”。
-- `docker-compose.yml`、`deploy/NAS-DEPLOY.md`、`deploy/gateway-caddyfile.md`：移除 `SHIGUANG_GATEWAY_NAS_*`，加入 DB/Redis/object-store、egress deny、health/readiness。
+- `docker-compose.yml`、`deploy/NAS-DEPLOY.md`、`deploy/gateway-caddyfile.md`：移除 `ORBIT_NAS_*`，加入 DB/Redis/object-store、egress deny、health/readiness。
 - `packages/http/tsconfig.json`、`packages/http/src/app.ts`：收敛为纯 transport foundation，删除领域引擎适配器与兼容启动器。
 - `apps/console/vite.config.ts`、`entities/live.ts`：只使用同源 live endpoint，不保留 `100.87.115.78:20132`。
 - `packages/config/src/index.ts`：移除 `orbitApiUrl`，改成 `publicBaseUrl`、`internalServiceUrls` 和显式 Provider endpoints。
@@ -491,7 +491,7 @@ DashScope 兼容 HTTP 接口，不经过 CLI。可执行文件通过 PATH 或 `C
 
 - 本地官方源码：`../Orbit/docs/architecture/ARCHITECTURE.md`、`../Orbit/docs/reference/API_REFERENCE.md`、
   `../Orbit/docs/reference/ENVIRONMENT.md`、`../Orbit/src/lib/db/migrations/`。
-- 官方 release 架构说明：[ShiguangGateway Architecture](https://github.com/diegosouzapw/ShiguangGateway/blob/release/v3.8.51/docs/architecture/ARCHITECTURE.md)。
-- 官方 API 清单：[API Reference](https://github.com/diegosouzapw/ShiguangGateway/blob/release/v3.8.51/docs/reference/API_REFERENCE.md)。
-- 官方 Docker/WAL/volume 说明：[Docker Guide](https://github.com/diegosouzapw/ShiguangGateway/blob/release/v3.8.51/docs/guides/DOCKER_GUIDE.md)。
-- 官方 A2A task/stream/Agent Card 说明：[A2A README](https://github.com/diegosouzapw/ShiguangGateway/blob/release/v3.8.50/src/lib/a2a/README.md)。
+- 官方 release 架构说明：[Orbit Architecture](https://github.com/diegosouzapw/Orbit/blob/release/v3.8.51/docs/architecture/ARCHITECTURE.md)。
+- 官方 API 清单：[API Reference](https://github.com/diegosouzapw/Orbit/blob/release/v3.8.51/docs/reference/API_REFERENCE.md)。
+- 官方 Docker/WAL/volume 说明：[Docker Guide](https://github.com/diegosouzapw/Orbit/blob/release/v3.8.51/docs/guides/DOCKER_GUIDE.md)。
+- 官方 A2A task/stream/Agent Card 说明：[A2A README](https://github.com/diegosouzapw/Orbit/blob/release/v3.8.50/src/lib/a2a/README.md)。

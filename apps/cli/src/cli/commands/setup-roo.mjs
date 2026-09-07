@@ -1,5 +1,5 @@
 /**
- * shiguangGateway setup-roo — configure Roo Code (RooVeterinaryInc.roo-cline) for ShiguangGateway.
+ * orbit setup-roo — configure Roo Code (RooVeterinaryInc.roo-cline) for Orbit.
  *
  * Roo is a VS Code extension (Cline fork). Its live settings live in opaque VS
  * Code globalStorage, but Roo supports **Settings Import** + an
@@ -8,7 +8,7 @@
  * Code settings.json exists) + prints the UI steps as the guaranteed path.
  *
  * OpenAI-compatible: baseUrl WITH /v1 (Roo appends /chat/completions). The model
- * must support native OpenAI tool-calling (ShiguangGateway does).
+ * must support native OpenAI tool-calling (Orbit does).
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -29,7 +29,7 @@ export function resolveRooTarget(opts = {}) {
   if (opts.remote) root = String(opts.remote).replace(/\/+$/, "");
   else {
     try {
-      root = resolveActiveContext(opts.context ?? process.env.SHIGUANG_GATEWAY_CONTEXT)?.baseUrl;
+      root = resolveActiveContext(opts.context ?? process.env.ORBIT_CONTEXT)?.baseUrl;
     } catch {
       /* none */
     }
@@ -38,13 +38,13 @@ export function resolveRooTarget(opts = {}) {
   let apiKey = opts.apiKey ?? opts["api-key"];
   if (!apiKey) {
     try {
-      const c = resolveActiveContext(opts.context ?? process.env.SHIGUANG_GATEWAY_CONTEXT);
+      const c = resolveActiveContext(opts.context ?? process.env.ORBIT_CONTEXT);
       apiKey = c?.accessToken || c?.apiKey;
     } catch {
       /* none */
     }
   }
-  if (!apiKey) apiKey = process.env.SHIGUANG_GATEWAY_API_KEY || "";
+  if (!apiKey) apiKey = process.env.ORBIT_API_KEY || "";
   return { baseUrl: ensureV1(root), apiKey };
 }
 
@@ -52,12 +52,12 @@ export function resolveRooTarget(opts = {}) {
 export function buildRooImport({ baseUrl, apiKey, model }) {
   return {
     providerProfiles: {
-      currentApiConfigName: "ShiguangGateway",
+      currentApiConfigName: "Orbit",
       apiConfigs: {
-        ShiguangGateway: {
+        Orbit: {
           apiProvider: "openai",
           openAiBaseUrl: baseUrl,
-          openAiApiKey: apiKey || "sk_shiguangGateway",
+          openAiApiKey: apiKey || "sk_orbit",
           openAiModelId: model,
           openAiCustomModelInfo: { supportsImages: false, supportsPromptCache: false },
         },
@@ -101,11 +101,11 @@ export async function runSetupRooCommand(opts = {}) {
   const { baseUrl, apiKey } = resolveRooTarget(opts);
   const dryRun = Boolean(opts.dryRun ?? opts["dry-run"]);
   const importPath =
-    opts.importPath ?? opts["import-path"] ?? join(os.homedir(), ".shiguangGateway", "roo-settings.json");
+    opts.importPath ?? opts["import-path"] ?? join(os.homedir(), ".orbit", "roo-settings.json");
 
   const guard = await guardHostConfigTarget(importPath, {
     toolLabel: "Roo Code",
-    hostCommand: "shiguangGateway setup-roo",
+    hostCommand: "orbit setup-roo",
     allowContainerWrite: Boolean(opts.allowContainerWrite ?? opts["allow-container-write"]),
     dryRun,
   });
@@ -115,7 +115,7 @@ export async function runSetupRooCommand(opts = {}) {
     opts["vscode-settings"] ??
     join(os.homedir(), ".config", "Code", "User", "settings.json");
 
-  printHeading("ShiguangGateway → Roo Code (OpenAI-compatible)");
+  printHeading("Orbit → Roo Code (OpenAI-compatible)");
   printInfo(`Server: ${baseUrl}`);
 
   let model = opts.model;
@@ -149,9 +149,9 @@ export async function runSetupRooCommand(opts = {}) {
           providerProfiles: {
             ...importDoc.providerProfiles,
             apiConfigs: {
-              ShiguangGateway: {
-                ...importDoc.providerProfiles.apiConfigs.ShiguangGateway,
-                openAiApiKey: apiKey ? "set" : "sk_shiguangGateway",
+              Orbit: {
+                ...importDoc.providerProfiles.apiConfigs.Orbit,
+                openAiApiKey: apiKey ? "set" : "sk_orbit",
               },
             },
           },
@@ -176,7 +176,7 @@ export async function runSetupRooCommand(opts = {}) {
 
   printInfo("\nIn the Roo Code panel: Settings → Providers → OpenAI Compatible (guaranteed path):");
   printInfo(`  Base URL:  ${baseUrl}        (Roo expects /v1)`);
-  printInfo(`  API Key:   <your SHIGUANG_GATEWAY_API_KEY>`);
+  printInfo(`  API Key:   <your ORBIT_API_KEY>`);
   printInfo(`  Model:     ${model}`);
   printInfo(`Or use Roo: “Import Settings” → select ${importPath}`);
   return 0;
@@ -186,15 +186,15 @@ export function registerSetupRoo(program) {
   program
     .command("setup-roo")
     .description(
-      "Configure Roo Code for ShiguangGateway: write a Roo import JSON + autoImport pointer + print UI steps"
+      "Configure Roo Code for Orbit: write a Roo import JSON + autoImport pointer + print UI steps"
     )
-    .option("--port <port>", "Local ShiguangGateway port (ignored when --remote is set)", "8787")
-    .option("--remote <url>", "Remote ShiguangGateway URL, e.g. http://192.168.0.15:8787")
-    .option("--api-key <key>", "ShiguangGateway API key (defaults to SHIGUANG_GATEWAY_API_KEY env var)")
+    .option("--port <port>", "Local Orbit port (ignored when --remote is set)", "8787")
+    .option("--remote <url>", "Remote Orbit URL, e.g. http://192.168.0.15:8787")
+    .option("--api-key <key>", "Orbit API key (defaults to ORBIT_API_KEY env var)")
     .option("--model <id>", "Model id for Roo (required unless picked interactively)")
     .option(
       "--import-path <path>",
-      "Roo import JSON path (default: ~/.shiguangGateway/roo-settings.json)"
+      "Roo import JSON path (default: ~/.orbit/roo-settings.json)"
     )
     .option(
       "--vscode-settings <path>",

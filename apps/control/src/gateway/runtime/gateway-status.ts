@@ -30,7 +30,7 @@ function readProviderStatusRows(): ProviderStatusRow[] {
     .all();
 }
 
-export async function buildShiguangGatewayStatus(runtime: {
+export async function buildOrbitStatus(runtime: {
   circuitStatuses: CircuitStatus[] | null;
   quotaSummary: { active: number } | null;
 }) {

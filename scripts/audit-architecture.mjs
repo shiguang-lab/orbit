@@ -29,7 +29,7 @@ const walkFiles = (dir, predicate, out = []) => {
 
 const appKinds = {
   console: { entry: "main.tsx", nest: false },
-  cli: { entry: "shiguang-gateway.mjs", nest: false },
+  cli: { entry: "orbit.mjs", nest: false },
   "control": { entry: "main.ts", nest: true },
   "gateway": { entry: "main.ts", nest: true },
   realtime: { entry: "main.ts", nest: true },

@@ -302,12 +302,12 @@ const DEFAULT_TICK_MS = 60 * 1000; // re-validate elapsed cooldowns every 60s
 const MIN_TICK_MS = 5 * 1000; // floor to avoid hot-looping if misconfigured
 
 /**
- * Resolve the tick interval (ms) from SHIGUANG_GATEWAY_CONNECTION_RECOVERY_INTERVAL_MS,
+ * Resolve the tick interval (ms) from ORBIT_CONNECTION_RECOVERY_INTERVAL_MS,
  * falling back to the 60s default and clamping to a small floor.
  */
 export function resolveConnectionRecoveryIntervalMs(
   rawValue: string | undefined = typeof process !== "undefined"
-    ? process.env.SHIGUANG_GATEWAY_CONNECTION_RECOVERY_INTERVAL_MS
+    ? process.env.ORBIT_CONNECTION_RECOVERY_INTERVAL_MS
     : undefined
 ): number {
   if (!rawValue) return DEFAULT_TICK_MS;

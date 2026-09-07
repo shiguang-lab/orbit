@@ -16,7 +16,7 @@ async function checkHealth(url: string, healthPath?: string): Promise<HealthResu
   try {
     const res = await fetch(`${url}${basePath}`, {
       signal: AbortSignal.timeout(5000),
-      headers: { Authorization: "Bearer shiguangGateway-internal" },
+      headers: { Authorization: "Bearer orbit-internal" },
     });
 
     const latency = Date.now() - start;

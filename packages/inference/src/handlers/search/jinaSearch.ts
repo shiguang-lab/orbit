@@ -1,7 +1,7 @@
 /**
  * Jina Search (s.jina.ai) request builder + response normalizer.
  *
- * Uses the same Bearer token as the Jina Foundation API. ShiguangGateway does not
+ * Uses the same Bearer token as the Jina Foundation API. Orbit does not
  * add a third dashboard card — credentials come from jina-ai / jina-reader /
  * JINA_AI_API_KEY.
  */

@@ -42,7 +42,7 @@ async function testFetch(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "User-Agent": "ShiguangGateway-Webhook/1.0",
+        "User-Agent": "Orbit-Webhook/1.0",
         ...headers,
       },
       body: JSON.stringify(body),
@@ -87,7 +87,7 @@ export async function POST(_: Request, { params }: { params: { id: string } }) {
 
     const kind = webhook.kind ?? "custom";
     const testData = {
-      message: "Test webhook delivery from ShiguangGateway",
+      message: "Test webhook delivery from Orbit",
       webhookId: webhook.id,
     };
     const testPayload = { event: "test.ping", timestamp: new Date().toISOString(), data: testData };

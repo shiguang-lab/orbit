@@ -20,7 +20,7 @@ export const CODEX_TARGET: MitmTarget = {
       "Install the OpenAI Codex CLI",
       "Authenticate with your ChatGPT/Plus credentials",
       "Enable DNS routing for this agent",
-      "Run `codex` — requests are now proxied via ShiguangGateway",
+      "Run `codex` — requests are now proxied via Orbit",
     ],
     detection: { command: "which codex", platform: "all" },
   },

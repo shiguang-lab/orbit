@@ -3,7 +3,7 @@ import { createConnection } from "node:net";
 import { promisify } from "node:util";
 
 export const REDIS_CONTAINER_NAME =
-  process.env.SHIGUANG_GATEWAY_REDIS_CONTAINER_NAME || "shiguangGateway-redis";
+  process.env.ORBIT_REDIS_CONTAINER_NAME || "orbit-redis";
 export const RUNTIME_PREFERENCE = ["podman", "docker"] as const;
 export const REDIS_DEFAULT_BIND_HOST = "127.0.0.1";
 

@@ -11,7 +11,7 @@ lastUpdated: 2026-06-28
 > `src/app/(dashboard)/dashboard/plugins/`
 > **Ostatnia aktualizacja:** 2026-06-28 — v3.8.40
 
-ShiguangGateway dostarcza system wtyczek w stylu WordPressa. Wtyczki to samodzielne
+Orbit dostarcza system wtyczek w stylu WordPressa. Wtyczki to samodzielne
 katalogi — każdy z manifestem `plugin.json` i plikiem wejściowym — które wpinają
 się w potok żądań (`onRequest` / `onResponse` / `onError`) oraz w
 zdarzenia cyklu życia (`onInstall` / `onActivate` / `onDeactivate` / `onUninstall`).
@@ -153,16 +153,16 @@ są przepuszczane.
 
 ### Katalog wtyczek
 
-Wtyczki mieszkają w katalogu danych ShiguangGateway:
+Wtyczki mieszkają w katalogu danych Orbit:
 
 ```
-~/.shiguang-gateway/plugins/<plugin-name>/
+~/.orbit/plugins/<plugin-name>/
   ├─ plugin.json
   └─ index.js          # (or whatever manifest.main points to)
 ```
 
 `getDefaultPluginDir()` (`src/lib/plugins/scanner.ts`) rozwiązuje to do
-`<home>/.shiguang-gateway/plugins`, gdzie `<home>` pochodzi ze zmiennych środowiskowych `HOME` /
+`<home>/.orbit/plugins`, gdzie `<home>` pochodzi ze zmiennych środowiskowych `HOME` /
 `USERPROFILE`. `POST /api/plugins/scan` odkrywa każdy
 podkatalog z prawidłowym `plugin.json` i rejestruje go.
 
@@ -254,7 +254,7 @@ Walidowany przez `PluginManifestSchema` (`src/lib/plugins/manifest.ts`):
 | `main`             | string?   | Entry file; defaults to `index.js`                          |
 | `source`           | enum?     | `local` \| `marketplace` (defaults to `local`)              |
 | `tags`             | string[]? | Search tags                                                 |
-| `requires`         | object?   | `{ shiguang-gateway?, permissions[] }`                             |
+| `requires`         | object?   | `{ orbit?, permissions[] }`                             |
 | `hooks`            | object?   | Booleans declaring which hooks the plugin implements        |
 | `skills`           | object[]? | Optional skill definitions                                  |
 | `enabledByDefault` | boolean?  | Auto-activate on install                                    |
@@ -269,7 +269,7 @@ Uprawnienia pochodzą z enuma
 ```
 install (POST /api/plugins, path)
   → scan/validate manifest → copy to staging → assert main within dir
-  → atomic rename into ~/.shiguang-gateway/plugins/<name> → insert DB row
+  → atomic rename into ~/.orbit/plugins/<name> → insert DB row
   → fire onInstall → if enabledByDefault: activate
 
 activate (POST /api/plugins/{name}/activate)

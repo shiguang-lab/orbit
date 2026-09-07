@@ -2,7 +2,7 @@
  * modelsDevSync/transform — pure data model + transform layer.
  *
  * Extracted verbatim from modelsDevSync.ts. Holds the models.dev data-model
- * types, the provider-id mapping table, and the raw→ShiguangGateway transform
+ * types, the provider-id mapping table, and the raw→Orbit transform
  * functions. Zero imports, no DB access, no module state — pure functions and
  * static data. The host (modelsDevSync.ts) imports these for its sync
  * orchestration and re-exports the originally-public symbols.
@@ -102,11 +102,11 @@ export interface ModelsDevProvider {
 
 export type ModelsDevData = Record<string, ModelsDevProvider>;
 
-// ─── Provider mapping: models.dev provider ID → ShiguangGateway provider IDs/aliases ──
+// ─── Provider mapping: models.dev provider ID → Orbit provider IDs/aliases ──
 //
 // models.dev uses canonical provider IDs (e.g. "openai", "anthropic", "google").
-// ShiguangGateway uses both full IDs and short aliases (e.g. "cc" for claude, "cx" for codex).
-// We map each models.dev provider to ALL ShiguangGateway identifiers that should receive
+// Orbit uses both full IDs and short aliases (e.g. "cc" for claude, "cx" for codex).
+// We map each models.dev provider to ALL Orbit identifiers that should receive
 // its pricing/capability data.
 
 export const MODELS_DEV_PROVIDER_MAP: Record<string, string[]> = {
@@ -141,7 +141,7 @@ export const MODELS_DEV_PROVIDER_MAP: Record<string, string[]> = {
   kilocode: ["kilocode", "kc", "kilo-gateway"],
   "kimi-for-coding": ["kimi-coding", "kmc", "kimi-coding-apikey", "kmca"],
   // The `opencode` models.dev entry used to map only to "opencode-zen" because
-  // that is the historical alias pair. But ShiguangGateway's catalog & combo targets
+  // that is the historical alias pair. But Orbit's catalog & combo targets
   // reference models under BOTH provider IDs:
   //   - `opencode-zen/big-pickle` (alias form)
   //   - `opencode/big-pickle`    (canonical id form, used by live API catalog
@@ -152,7 +152,7 @@ export const MODELS_DEV_PROVIDER_MAP: Record<string, string[]> = {
   // Symmetric mapping keeps both lookup paths populated.
   opencode: ["opencode", "opencode-zen"],
   "opencode-go": ["opencode-go", "opencode-zen"],
-  // Additional providers that may overlap with ShiguangGateway
+  // Additional providers that may overlap with Orbit
   alibaba: ["ali", "alibaba"],
   "alibaba-cn": ["ali-cn", "alibaba-cn", "alibaba-china"],
   "alibaba-coding-plan": ["bcp", "bailian-coding-plan"],
@@ -176,7 +176,7 @@ export const MODELS_DEV_PROVIDER_MAP: Record<string, string[]> = {
 };
 
 /**
- * Map a models.dev provider ID to ShiguangGateway provider IDs.
+ * Map a models.dev provider ID to Orbit provider IDs.
  * Returns array of provider identifiers (may include aliases).
  */
 export function mapProviderId(modelsDevProviderId: string): string[] {
@@ -186,9 +186,9 @@ export function mapProviderId(modelsDevProviderId: string): string[] {
 // ─── Transform: Pricing ──────────────────────────────────
 
 /**
- * Transform models.dev raw data → ShiguangGateway PricingByProvider format.
+ * Transform models.dev raw data → Orbit PricingByProvider format.
  *
- * models.dev costs are already in $/1M tokens (same as ShiguangGateway format).
+ * models.dev costs are already in $/1M tokens (same as Orbit format).
  * Maps: cache_read → cached, cache_write → cache_creation.
  */
 export function transformModelsDevToPricing(raw: ModelsDevData): PricingByProvider {
@@ -218,7 +218,7 @@ export function transformModelsDevToPricing(raw: ModelsDevData): PricingByProvid
         entry.reasoning = model.cost.reasoning;
       }
 
-      // Write to ALL mapped ShiguangGateway providers
+      // Write to ALL mapped Orbit providers
       for (const omniProvider of gatewayRouteProviders) {
         if (!result[omniProvider]) result[omniProvider] = {};
         result[omniProvider][modelId] = entry;

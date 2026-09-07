@@ -1,4 +1,4 @@
-# ShiguangGateway 生产入口与统一认证
+# Orbit 生产入口与统一认证
 
 生产域名固定为 `llm-gateway.shiguanglab.com`。本文件描述待实施的切换方案，不表示 Caddy
 已经发布或业务流量已经切换。
@@ -14,8 +14,8 @@
 | `/v1`、`/v1/*` | `100.87.115.78:20128`，官方实例 | `100.87.115.78:8787`，经 Admin nginx 转发至独立 edge |
 | `/live-ws` | 切换前需单独核验 | `100.87.115.78:8787`，经 Admin nginx 转发至独立 realtime |
 
-新拓扑只保留一个 NAS 主机 Web/API 入口 `8787`。`shiguang-gateway-control:8788`、
-`shiguang-gateway-gateway:8787`、`shiguang-gateway-realtime:20132` 均为 Docker 内网地址，
+新拓扑只保留一个 NAS 主机 Web/API 入口 `8787`。`orbit-control:8788`、
+`orbit-gateway:8787`、`orbit-realtime:20132` 均为 Docker 内网地址，
 不供生产 Caddy 直接访问，也不分别发布到 NAS 主机。Admin 是独立 nginx 镜像；control
 只提供管理 API，不托管 Admin 静态资源。
 
@@ -100,7 +100,7 @@ handle @llmGateway {
 | Audience | `omniroute-api` |
 | Required entitlement | `omniroute:access` |
 
-本次替换部署复用原有产品策略和用户授权，不要求新增 `shiguang-gateway:access`。
+本次替换部署复用原有产品策略和用户授权，不要求新增 `orbit:access`。
 部署环境设置 `SG_IDENTITY_AUDIENCE=omniroute-api` 和
 `SG_IDENTITY_ENTITLEMENT=omniroute:access`，使新服务校验现有 auth-service 签发的断言。
 

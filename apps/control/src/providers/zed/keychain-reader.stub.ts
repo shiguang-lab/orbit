@@ -1,6 +1,6 @@
 /**
  * Stub for the control Zed keychain reader activated by
- * `SHIGUANG_GATEWAY_BUILD_PROFILE=minimal`. The keychain-read code path is removed
+ * `ORBIT_BUILD_PROFILE=minimal`. The keychain-read code path is removed
  * from the built bundle. See SECURITY.md and
  * docs/security/SOCKET_DEV_FINDINGS.md.
  */
@@ -8,8 +8,8 @@ const FEATURE = "zed-keychain-import";
 
 function featureDisabledError(featureName: string): Error {
   return new Error(
-    `Feature "${featureName}" is disabled in this build (SHIGUANG_GATEWAY_BUILD_PROFILE=minimal). ` +
-      "Install the full shiguangGateway artifact instead of shiguangGateway-secure if you need this feature.",
+    `Feature "${featureName}" is disabled in this build (ORBIT_BUILD_PROFILE=minimal). ` +
+      "Install the full orbit artifact instead of orbit-secure if you need this feature.",
   );
 }
 

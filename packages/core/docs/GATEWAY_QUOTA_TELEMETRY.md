@@ -1,6 +1,6 @@
-# ShiguangGateway Quota Telemetry
+# Orbit Quota Telemetry
 
-ShiguangGateway separates provider quota telemetry from Ghostlight accounting.
+Orbit separates provider quota telemetry from Ghostlight accounting.
 
 ## Truthful states
 

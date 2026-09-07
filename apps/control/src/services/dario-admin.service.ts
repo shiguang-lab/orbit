@@ -107,7 +107,7 @@ export class DarioAdminService {
     if (!conn.accessToken || !conn.refreshToken) return json({ error: "Connection is missing an access or refresh token" }, 400);
     const source = String(conn.email || input.connectionId).toLowerCase();
     const safe = source.replace(/[^a-z0-9_.-]/g, "-").replace(/^[^a-z0-9]+/, "") || "gateway";
-    let alias = input.alias || `shiguangGateway-${safe}`.slice(0, 64); if (!aliasPattern.test(alias)) alias = `shiguangGateway-${safe}`.slice(0, 64);
+    let alias = input.alias || `orbit-${safe}`.slice(0, 64); if (!aliasPattern.test(alias)) alias = `orbit-${safe}`.slice(0, 64);
     const expiresRaw = conn.expiresAt as string | number | undefined; const expires = expiresRaw ? new Date(expiresRaw).getTime() : NaN;
     const psd = (conn.providerSpecificData as Record<string, unknown>) || {};
     const creds = { alias, accessToken: conn.accessToken, refreshToken: conn.refreshToken, expiresAt: Number.isFinite(expires) ? expires : Date.now() + 3600_000, scopes: typeof conn.scope === "string" ? conn.scope.trim().split(/\s+/).filter(Boolean) : [], deviceId: typeof psd.deviceId === "string" && psd.deviceId ? psd.deviceId : crypto.randomUUID(), accountUuid: typeof psd.accountUUID === "string" && psd.accountUUID ? psd.accountUUID : crypto.randomUUID() };

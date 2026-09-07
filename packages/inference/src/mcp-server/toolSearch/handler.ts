@@ -3,7 +3,7 @@ import { searchTools } from "./search.ts";
 import { zodToTsSignature } from "./signature.ts";
 
 export function handleToolSearch(args: { query: string; limit?: number }) {
-  const entries = getAllToolDefinitions().filter((t) => t.name !== "shiguangGateway_tool_search");
+  const entries = getAllToolDefinitions().filter((t) => t.name !== "orbit_tool_search");
   const hits = searchTools(entries, args.query, args.limit ?? 8);
   return {
     query: args.query,

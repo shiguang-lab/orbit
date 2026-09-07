@@ -1,16 +1,16 @@
 ---
-title: "🗜️ Prompt Compression Guide — ShiguangGateway"
+title: "🗜️ Prompt Compression Guide — Orbit"
 version: 3.8.40
 lastUpdated: 2026-06-28
 ---
 
-# 🗜️ Prompt Compression Guide — ShiguangGateway
+# 🗜️ Prompt Compression Guide — Orbit
 
 > Save 15-95% on eligible context automatically. For a quick overview, see the [README Compression section](../README.md#%EF%B8%8F-prompt-compression--save-15-95-eligible-tokens-automatically).
 
 ## Overview
 
-ShiguangGateway implements a modular prompt compression pipeline that runs **proactively** before requests hit upstream providers. This means your token savings happen transparently — no changes needed to your workflow.
+Orbit implements a modular prompt compression pipeline that runs **proactively** before requests hit upstream providers. This means your token savings happen transparently — no changes needed to your workflow.
 
 ```
 Client Request
@@ -120,15 +120,15 @@ compression combos assigned to routing combos.
 
 ## Upstream Savings Math
 
-ShiguangGateway documents compression savings from two sources: upstream project benchmarks and
-ShiguangGateway's own engine composition.
+Orbit documents compression savings from two sources: upstream project benchmarks and
+Orbit's own engine composition.
 
 | Source  | Upstream README number used here                                                                                      |
 | ------- | --------------------------------------------------------------------------------------------------------------------- |
 | Caveman | `~75%` fewer output tokens, `65%` benchmark average output savings, `22-87%` range, and `~46%` input compression tool |
 | RTK     | `60-90%` command-output savings; sample session `~118,000 -> ~23,900` tokens, or `79.7%` saved (`~80%`)               |
 
-For overlapping tool/context payloads, the default ShiguangGateway combo stacks the engines:
+For overlapping tool/context payloads, the default Orbit combo stacks the engines:
 
 ```txt
 RTK -> Caveman
@@ -236,7 +236,7 @@ documented above. Both surfaces persist through the same `PUT /api/combos/{id}` 
 
 ### Per-request override
 
-Send the `x-shiguang-gateway-compression` request header to override the compression plan for a single
+Send the `x-orbit-compression` request header to override the compression plan for a single
 request. It has the highest precedence — it beats the routing-combo override, the active profile,
 auto-trigger, and the panel Default. Unknown values are ignored (the request is never rejected) and
 the global master switch still gates everything: when compression is off globally, the header cannot
@@ -249,7 +249,7 @@ turn it on. Values:
 | `engine:<id>` | A single engine when enabled, e.g. `engine:rtk`.                     |
 | `<combo>`     | A named combo, matched by name (case-insensitive) first, then by id. |
 
-The applied plan is echoed back in the `X-ShiguangGateway-Compression: <mode>; source=<source>` response
+The applied plan is echoed back in the `X-Orbit-Compression: <mode>; source=<source>` response
 header, where `<source>` is one of `request-header`, `routing-override`, `active-profile`,
 `auto-trigger`, `default`, or `off`.
 
@@ -339,7 +339,7 @@ RTK mode is inspired by **[RTK - Rust Token Killer](https://github.com/rtk-ai/rt
 
 ## Advanced Compression Systems
 
-Beyond the 7 standard modes, ShiguangGateway includes several advanced compression
+Beyond the 7 standard modes, Orbit includes several advanced compression
 systems that work automatically based on context.
 
 ### Cache-Aware Compression
@@ -473,7 +473,7 @@ together and are injected in catalog order.
 | Style | `id` | What it does | Instruction languages |
 | --- | --- | --- | --- |
 | Terse prose | `terse-prose` | Drop filler/articles/hedging; keep technical substance exact. Same text as the legacy caveman output mode (referenced, not re-typed). | en, pt-BR, ja, id |
-| Less code | `less-code` | YAGNI ladder: smallest working change, no unrequested abstractions. | en only (backlog: [#10426](https://github.com/diegosouzapw/ShiguangGateway/issues/10426)) |
+| Less code | `less-code` | YAGNI ladder: smallest working change, no unrequested abstractions. | en only (backlog: [#10426](https://github.com/diegosouzapw/Orbit/issues/10426)) |
 | Ponytail (lazy senior dev) | `ponytail` | "The best code is the code never written": reuse > rewrite, root cause > symptom, shortest working diff. | en, pt-BR, vi, ja, id |
 | I have ADHD (action-first) | `i-have-adhd` | Action first (command/path/snippet before prose), numbered bounded steps, ONE concrete next step, no preamble/recap/closers. Adapted from [ayghri/i-have-adhd](https://github.com/ayghri/i-have-adhd) (MIT). | en, pt-BR, vi, ja, id |
 | Terse CJK (文言) | `terse-cjk` | Classical-Chinese ultra-terse style. | zh (locale-gated: only offered when the detected language is `zh`) |
@@ -488,7 +488,7 @@ error strings, URLs and identifiers verbatim.
 the selection against the catalog (unknown ids and locale-mismatched styles are
 dropped, never an error), concatenates the selected instructions in catalog order,
 appends the boundaries clause **once**, and front-loads the result into the system
-prompt behind a single idempotency marker (`[ShiguangGateway Output Styles]`) — re-applying
+prompt behind a single idempotency marker (`[Orbit Output Styles]`) — re-applying
 is a no-op. When the detected request language has a translation, the localized
 instruction is injected instead of English.
 

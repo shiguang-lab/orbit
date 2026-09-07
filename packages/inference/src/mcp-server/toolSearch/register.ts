@@ -19,13 +19,13 @@ export function registerToolSearchTool(
   withScopeEnforcement: ScopeEnforcedHandler
 ): void {
   server.registerTool(
-    "shiguangGateway_tool_search",
+    "orbit_tool_search",
     {
       description:
         "Search MCP tools by keyword; returns compact one-line TS signatures for token-efficient discovery.",
       inputSchema: toolSearchInput,
     },
-    withScopeEnforcement("shiguangGateway_tool_search", (args) => {
+    withScopeEnforcement("orbit_tool_search", (args) => {
       const parsed = toolSearchInput.parse(args ?? {});
       const result = handleToolSearch(parsed);
       return Promise.resolve({

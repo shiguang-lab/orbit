@@ -12,7 +12,7 @@ import { column, type EntityDefinition } from "./definition.js";
 /** SQLite migration bookkeeping used by the shared bootstrap runner. */
 export const GatewayMigrationsEntity: EntityDefinition = {
   entityName: "GatewayMigrations",
-  tableName: "_shiguanggateway_migrations",
+  tableName: "_orbit_migrations",
   owner: "control",
   columns: [
     column("version", "TEXT", { nullable: false, primaryKey: true }),

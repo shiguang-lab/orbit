@@ -21,7 +21,7 @@ const FILES_TO_BACKUP = ["storage.sqlite", "settings.json", "combos.json", "prov
 
 export interface BackupManifest {
   timestamp: string;
-  version: "shiguangGateway-cli-v1";
+  version: "orbit-cli-v1";
   encrypted: boolean;
   files: string[];
 }
@@ -93,7 +93,7 @@ function pruneBackups(backupDir: string, retention: number | undefined): void {
   if (!retention || retention <= 0 || !existsSync(backupDir)) return;
   try {
     const directories = readdirSync(backupDir, { withFileTypes: true })
-      .filter((entry) => entry.isDirectory() && entry.name.startsWith("shiguangGateway-backup-"))
+      .filter((entry) => entry.isDirectory() && entry.name.startsWith("orbit-backup-"))
       .map((entry) => entry.name)
       .sort()
       .reverse();
@@ -112,8 +112,8 @@ export async function createBackup(options: CreateBackupOptions = {}): Promise<C
   const timestamp = (options.now ?? new Date()).toISOString();
   const safeName = options.name?.replace(/[/\\]/g, "_");
   const backupName = safeName
-    ? `shiguangGateway-backup-${safeName}`
-    : `shiguangGateway-backup-${timestamp.replace(/[:.]/g, "-").slice(0, 19)}`;
+    ? `orbit-backup-${safeName}`
+    : `orbit-backup-${timestamp.replace(/[:.]/g, "-").slice(0, 19)}`;
   const backupPath = join(backupDir, backupName);
   const exclude = options.exclude ?? [];
   if (options.encrypt && !options.passphrase) {
@@ -160,7 +160,7 @@ export async function createBackup(options: CreateBackupOptions = {}): Promise<C
 
   const manifest: BackupManifest = {
     timestamp,
-    version: "shiguangGateway-cli-v1",
+    version: "orbit-cli-v1",
     encrypted: Boolean(options.encrypt),
     files,
   };

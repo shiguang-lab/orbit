@@ -103,9 +103,9 @@ export function resolveCanonicalProviderId(
   );
 }
 
-/** True when `${prefix}/__shiguangGateway_probe__` parses back to the given providerId. */
+/** True when `${prefix}/__orbit_probe__` parses back to the given providerId. */
 export function prefixRoutesToProvider(prefix: string, providerId: string): boolean {
-  const parsed = parseModel(`${prefix}/__shiguangGateway_probe__`);
+  const parsed = parseModel(`${prefix}/__orbit_probe__`);
   return parsed.provider === providerId;
 }
 

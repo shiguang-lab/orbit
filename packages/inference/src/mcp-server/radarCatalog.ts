@@ -139,7 +139,7 @@ async function handleRadarCatalog(args: {
   try {
     const result = radarCatalogOutput.parse(await getMcpRadarCatalog(args));
     await logToolCall(
-      "shiguangGateway_radar_catalog",
+      "orbit_radar_catalog",
       args,
       { modelCount: result.models.length },
       Date.now() - start,
@@ -148,7 +148,7 @@ async function handleRadarCatalog(args: {
     return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
   } catch (error) {
     const message = sanitizeErrorMessage(error) || "Failed to read Radar catalog";
-    await logToolCall("shiguangGateway_radar_catalog", args, null, Date.now() - start, false, message);
+    await logToolCall("orbit_radar_catalog", args, null, Date.now() - start, false, message);
     return { content: [{ type: "text", text: `Error: ${message}` }], isError: true };
   }
 }
@@ -158,12 +158,12 @@ export function registerRadarCatalogTool(
   withScopeEnforcement: ScopeEnforcer
 ): void {
   server.registerTool(
-    "shiguangGateway_radar_catalog",
+    "orbit_radar_catalog",
     {
       description: "Reads the local signed Radar catalog with optional provider and family filters",
       inputSchema: radarCatalogInput,
     },
-    withScopeEnforcement("shiguangGateway_radar_catalog", (args) =>
+    withScopeEnforcement("orbit_radar_catalog", (args) =>
       handleRadarCatalog(radarCatalogInput.parse(args))
     )
   );

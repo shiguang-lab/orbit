@@ -1,14 +1,14 @@
 ---
-title: "ShiguangGateway Codebase Documentation"
+title: "Orbit Codebase Documentation"
 version: 3.8.40
 lastUpdated: 2026-06-28
 ---
 
-# ShiguangGateway Codebase Documentation
+# Orbit Codebase Documentation
 
 > **Version:** v3.8.0
 > **Last updated:** 2026-06-28
-> **Audience:** Engineers contributing to ShiguangGateway or building integrations on top of it.
+> **Audience:** Engineers contributing to Orbit or building integrations on top of it.
 >
 > For high-level architecture diagrams and the reasoning behind each subsystem, read
 > [ARCHITECTURE.md](./ARCHITECTURE.md). For deep dives on individual subsystems
@@ -43,18 +43,18 @@ Path aliases (`tsconfig.json`):
 - `@orbit/inference/*` → `open-sse/*`
 
 Default HTTP port: **`20128`** (API and dashboard share the same process). Data
-directory is `DATA_DIR` env var, defaulting to `~/.shiguang-gateway/`.
+directory is `DATA_DIR` env var, defaulting to `~/.orbit/`.
 
 ---
 
 ## 2. Repository Layout
 
 ```
-ShiguangGateway/
+Orbit/
 ├── src/                  Next.js application (App Router, libs, domain, server, shared)
 ├── open-sse/             Streaming engine workspace (@orbit/inference)
 ├── electron/             Desktop wrapper (Electron 41 main + preload)
-├── apps/cli/             CLI application (shiguang-gateway, reset-password)
+├── apps/cli/             CLI application (orbit, reset-password)
 ├── tests/                Unit, integration, e2e, protocols-e2e, translator, security, fixtures
 ├── scripts/              Build, sync, check, migration, and runtime helper scripts
 ├── docs/                 Public documentation (this directory)
@@ -300,7 +300,7 @@ table groups the actual directories and notable top-level files.
 | `runtime/`        | Runtime feature detection                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | `search/`         | `executeWebSearch.ts`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | `services/`       | Embedded services framework: `ServiceSupervisor.ts` (generic child-process supervisor with operation lock, ring buffer, health checker), `bootstrap.ts` (process-level registration and auto-start), `registry.ts` (tool → supervisor map), `apiKey.ts` (AES-256-GCM key store), `modelSync.ts` (periodic model sync), `ringBuffer.ts` (5 MB circular log buffer), `healthCheck.ts` (HTTP health probe), `types.ts`, `embedWsProxy.ts` (WebSocket proxy), `installers/{ninerouter,cliproxy}.ts`. See `docs/frameworks/EMBEDDED-SERVICES.md`                                                                                                                                      |
-| `agentSkills/`    | Agent Skills catalog + generator: `catalog.ts` (getCatalog/getSkillById/filterCatalog/computeCoverage), `generator.ts` (generateAgentSkills → writes `skills/{id}/SKILL.md`), `openapiParser.ts` (extracts REST endpoints from OpenAPI spec), `cliRegistryParser.ts` (extracts CLI subcommands from `apps/cli/src/cli/commands/registry.mjs`), `schemas.ts` (Zod: AgentSkillSchema, SkillCoverageSchema, ListQuerySchema, GenerateBodySchema), `types.ts` (AgentSkill, SkillCoverage, SkillMarkdown, GeneratorReport). Consumed by REST routes (`/api/agent-skills/*`), MCP tools (`shiguang-gateway_agent_skills_*`), and A2A skill `list-capabilities`. See [AGENT-SKILLS.md](../frameworks/AGENT-SKILLS.md). |
+| `agentSkills/`    | Agent Skills catalog + generator: `catalog.ts` (getCatalog/getSkillById/filterCatalog/computeCoverage), `generator.ts` (generateAgentSkills → writes `skills/{id}/SKILL.md`), `openapiParser.ts` (extracts REST endpoints from OpenAPI spec), `cliRegistryParser.ts` (extracts CLI subcommands from `apps/cli/src/cli/commands/registry.mjs`), `schemas.ts` (Zod: AgentSkillSchema, SkillCoverageSchema, ListQuerySchema, GenerateBodySchema), `types.ts` (AgentSkill, SkillCoverage, SkillMarkdown, GeneratorReport). Consumed by REST routes (`/api/agent-skills/*`), MCP tools (`orbit_agent_skills_*`), and A2A skill `list-capabilities`. See [AGENT-SKILLS.md](../frameworks/AGENT-SKILLS.md). |
 | `skills/`         | Skill framework: `registry.ts`, `executor.ts`, `interception.ts`, `injection.ts`, `sandbox.ts`, `custom.ts`, `hybrid.ts`, `builtins.ts`, `a2a.ts`, `providerSettings.ts`, `schemas.ts`, `skillssh.ts`, `types.ts`, plus `builtin/browser.ts`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `spend/`          | `batchWriter.ts` (write-behind buffer)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | `sync/`           | `bundle.ts`, `tokens.ts` (Cloud Sync)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
@@ -387,7 +387,7 @@ Pure business logic, no I/O. Imported by routes and handlers.
 | `degradation.ts`                           | Degraded-mode transitions                         |
 | `providerExpiration.ts`                    | Expired account/key detection                     |
 | `quotaCache.ts`                            | Cached quota decisions                            |
-| `responses.ts`, `shiguang-gatewayResponseMeta.ts` | Response shape helpers                            |
+| `responses.ts`, `orbitResponseMeta.ts` | Response shape helpers                            |
 | `configAudit.ts`                           | Config change audit                               |
 | `assessment/`                              | Model assessment (per RFC, partially implemented) |
 | `types.ts`                                 | Shared domain types                               |
@@ -603,7 +603,7 @@ Five npm scripts at the workspace root: `electron:dev`, `electron:build`,
 apps/cli/
 ├── package.json            Executable names, dependencies, and package exports
 └── src/
-    ├── shiguang-gateway.mjs     Main CLI entry (Node ESM)
+    ├── orbit.mjs     Main CLI entry (Node ESM)
     ├── reset-password.mjs       Reset the management password from CLI
     ├── mcp-server.mjs           MCP server launcher (stdio)
     ├── nodeRuntimeSupport.mjs   Node version guard
@@ -625,8 +625,8 @@ apps/cli/
 
 The CLI application exposes these binaries in `apps/cli/package.json` → `bin`:
 
-- `shiguang-gateway` → `apps/cli/src/shiguang-gateway.mjs`
-- `shiguang-gateway-reset-password` → `apps/cli/src/reset-password.mjs`
+- `orbit` → `apps/cli/src/orbit.mjs`
+- `orbit-reset-password` → `apps/cli/src/reset-password.mjs`
 
 ---
 

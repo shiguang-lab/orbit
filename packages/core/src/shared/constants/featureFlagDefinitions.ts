@@ -120,7 +120,7 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     warningLevel: "info",
   },
   {
-    key: "SHIGUANG_GATEWAY_OIDC_DISABLE_PASSWORD_LOGIN",
+    key: "ORBIT_OIDC_DISABLE_PASSWORD_LOGIN",
     label: "Disable Password Login With OIDC",
     description:
       "When OIDC is enabled, disable password login so users can only authenticate via OIDC Single Sign-On. When disabled (default), both password login and OIDC are available.",
@@ -179,11 +179,11 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     warningLevel: "caution",
   },
   {
-    key: "SHIGUANG_GATEWAY_CONTROL_PLANE_PROXY_DIRECT_FALLBACK",
+    key: "ORBIT_CONTROL_PLANE_PROXY_DIRECT_FALLBACK",
     label: "Control-Plane Proxy Direct Fallback",
     description:
       "Allow OAuth and provider validation flows to bypass a pinned proxy and connect directly when proxy reachability pre-checks fail. Off by default because this can change account egress IP.",
-    descriptionI18nKey: "featureFlagShiguangGatewayControlPlaneProxyDirectFallbackDescription",
+    descriptionI18nKey: "featureFlagOrbitControlPlaneProxyDirectFallbackDescription",
     category: "network",
     defaultValue: "false",
     type: "boolean",
@@ -214,10 +214,10 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     warningLevel: "danger",
   },
   {
-    key: "SHIGUANG_GATEWAY_ALLOW_PRIVATE_PROVIDER_URLS",
+    key: "ORBIT_ALLOW_PRIVATE_PROVIDER_URLS",
     label: "Allow Private Provider URLs",
     description: "Allow provider URLs pointing to private/internal networks",
-    descriptionI18nKey: "featureFlagShiguangGatewayAllowPrivateProviderUrlsDescription",
+    descriptionI18nKey: "featureFlagOrbitAllowPrivateProviderUrlsDescription",
     category: "network",
     defaultValue: "false",
     type: "boolean",
@@ -225,11 +225,11 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     warningLevel: "caution",
   },
   {
-    key: "SHIGUANG_GATEWAY_ALLOW_LOCAL_PROVIDER_URLS",
+    key: "ORBIT_ALLOW_LOCAL_PROVIDER_URLS",
     label: "Allow Local Provider URLs",
     description:
-      "Allow adding and validating providers on local/private addresses (127.0.0.1, localhost, LAN, private IP ranges) — needed for local OpenAI-compatible models. Enabled by default (ShiguangGateway is local-first); turn it OFF to enforce strict public-only blocking if you only use public providers. Cloud-metadata endpoints (e.g. 169.254.169.254) stay blocked either way.",
-    descriptionI18nKey: "featureFlagShiguangGatewayAllowLocalProviderUrlsDescription",
+      "Allow adding and validating providers on local/private addresses (127.0.0.1, localhost, LAN, private IP ranges) — needed for local OpenAI-compatible models. Enabled by default (Orbit is local-first); turn it OFF to enforce strict public-only blocking if you only use public providers. Cloud-metadata endpoints (e.g. 169.254.169.254) stay blocked either way.",
+    descriptionI18nKey: "featureFlagOrbitAllowLocalProviderUrlsDescription",
     category: "network",
     defaultValue: "true",
     type: "boolean",
@@ -276,7 +276,7 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     key: "DISABLE_CONTEXT_WINDOW_CHECKS",
     label: "Disable Context Window Checks",
     description:
-      "Skip ShiguangGateway's local context-window and max-input-token check for direct single-model requests. Upstream providers remain responsible for enforcing their actual limits. Off by default.",
+      "Skip Orbit's local context-window and max-input-token check for direct single-model requests. Upstream providers remain responsible for enforcing their actual limits. Off by default.",
     descriptionI18nKey: "featureFlagDisableContextWindowChecksDescription",
     category: "policies",
     defaultValue: "false",
@@ -300,7 +300,7 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     key: "RADAR_ENABLED",
     label: "Radar",
     description:
-      "Enable the ShiguangGateway Radar module (catalog feed screens and sync). Off by default; enabling only unlocks the UI — data sync remains a separate opt-in.",
+      "Enable the Orbit Radar module (catalog feed screens and sync). Off by default; enabling only unlocks the UI — data sync remains a separate opt-in.",
     descriptionI18nKey: "featureFlagRadarEnabledDescription",
     category: "policies",
     defaultValue: "false",
@@ -323,10 +323,10 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     warningLevel: "info",
   },
   {
-    key: "SHIGUANG_GATEWAY_MCP_ENFORCE_SCOPES",
+    key: "ORBIT_MCP_ENFORCE_SCOPES",
     label: "MCP Enforce Scopes",
     description: "Enforce scope restrictions on MCP tool access",
-    descriptionI18nKey: "featureFlagShiguangGatewayMcpEnforceScopesDescription",
+    descriptionI18nKey: "featureFlagOrbitMcpEnforceScopesDescription",
     category: "runtime",
     defaultValue: "true",
     type: "boolean",
@@ -334,10 +334,10 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     warningLevel: "caution",
   },
   {
-    key: "SHIGUANG_GATEWAY_MCP_COMPRESS_DESCRIPTIONS",
+    key: "ORBIT_MCP_COMPRESS_DESCRIPTIONS",
     label: "MCP Compress Descriptions",
     description: "Compress MCP tool descriptions to reduce token usage",
-    descriptionI18nKey: "featureFlagShiguangGatewayMcpCompressDescriptionsDescription",
+    descriptionI18nKey: "featureFlagOrbitMcpCompressDescriptionsDescription",
     category: "runtime",
     defaultValue: "false",
     type: "boolean",
@@ -345,10 +345,10 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     warningLevel: "info",
   },
   {
-    key: "SHIGUANG_GATEWAY_ENABLE_RUNTIME_BACKGROUND_TASKS",
+    key: "ORBIT_ENABLE_RUNTIME_BACKGROUND_TASKS",
     label: "Runtime Background Tasks",
     description: "Enable background task processing at runtime",
-    descriptionI18nKey: "featureFlagShiguangGatewayEnableRuntimeBackgroundTasksDescription",
+    descriptionI18nKey: "featureFlagOrbitEnableRuntimeBackgroundTasksDescription",
     category: "runtime",
     defaultValue: "false",
     type: "boolean",
@@ -356,10 +356,10 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     warningLevel: "info",
   },
   {
-    key: "SHIGUANG_GATEWAY_DISABLE_BACKGROUND_SERVICES",
+    key: "ORBIT_DISABLE_BACKGROUND_SERVICES",
     label: "Disable Background Services",
     description: "Disable all background services (quota refresh, sync, etc)",
-    descriptionI18nKey: "featureFlagShiguangGatewayDisableBackgroundServicesDescription",
+    descriptionI18nKey: "featureFlagOrbitDisableBackgroundServicesDescription",
     category: "runtime",
     defaultValue: "false",
     type: "boolean",
@@ -367,10 +367,10 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     warningLevel: "caution",
   },
   {
-    key: "SHIGUANG_GATEWAY_RTK_TRUST_PROJECT_FILTERS",
+    key: "ORBIT_RTK_TRUST_PROJECT_FILTERS",
     label: "RTK Trust Project Filters",
     description: "Trust project-level filters from RTK without validation",
-    descriptionI18nKey: "featureFlagShiguangGatewayRtkTrustProjectFiltersDescription",
+    descriptionI18nKey: "featureFlagOrbitRtkTrustProjectFiltersDescription",
     category: "runtime",
     defaultValue: "false",
     type: "boolean",
@@ -378,11 +378,11 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     warningLevel: "caution",
   },
   {
-    key: "SHIGUANG_GATEWAY_ENABLE_LIVE_WS",
+    key: "ORBIT_ENABLE_LIVE_WS",
     label: "Live Dashboard WebSocket",
     description:
       "Start the real-time dashboard WebSocket server on import (port 20132, loopback-bound by default). Default: enabled. Set to '0' or 'false' to disable. LAN exposure requires LIVE_WS_HOST=0.0.0.0 + LIVE_WS_ALLOWED_ORIGINS.",
-    descriptionI18nKey: "featureFlagShiguangGatewayEnableLiveWsDescription",
+    descriptionI18nKey: "featureFlagOrbitEnableLiveWsDescription",
     category: "runtime",
     defaultValue: "true",
     type: "boolean",
@@ -390,11 +390,11 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     warningLevel: "info",
   },
   {
-    key: "SHIGUANG_GATEWAY_CODEX_WS_ENABLED",
+    key: "ORBIT_CODEX_WS_ENABLED",
     label: "Codex Responses WebSocket",
     description:
       "Allow Codex to use the Responses-over-WebSocket transport (the codex CLI WS endpoint and codexTransport=websocket). When off, Codex falls back to HTTP Responses.",
-    descriptionI18nKey: "featureFlagShiguangGatewayCodexWsEnabledDescription",
+    descriptionI18nKey: "featureFlagOrbitCodexWsEnabledDescription",
     category: "runtime",
     defaultValue: "true",
     type: "boolean",
@@ -402,11 +402,11 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     warningLevel: "info",
   },
   {
-    key: "SHIGUANG_GATEWAY_CODEX_APP_SERVER_ENABLED",
+    key: "ORBIT_CODEX_APP_SERVER_ENABLED",
     label: "Codex App-Server Transport",
     description:
       "Allow Codex to use the local app-server WebSocket JSON-RPC transport (codexTransport=app-server). When off, connections opted into app-server fall back to Codex's other transports.",
-    descriptionI18nKey: "featureFlagShiguangGatewayCodexAppServerEnabledDescription",
+    descriptionI18nKey: "featureFlagOrbitCodexAppServerEnabledDescription",
     category: "runtime",
     defaultValue: "true",
     type: "boolean",
@@ -414,10 +414,10 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     warningLevel: "info",
   },
   {
-    key: "SHIGUANG_GATEWAY_EMERGENCY_FALLBACK",
+    key: "ORBIT_EMERGENCY_FALLBACK",
     label: "Emergency Fallback",
     description: "Route budget-exhausted requests to the emergency free fallback provider/model.",
-    descriptionI18nKey: "featureFlagShiguangGatewayEmergencyFallbackDescription",
+    descriptionI18nKey: "featureFlagOrbitEmergencyFallbackDescription",
     category: "runtime",
     defaultValue: "true",
     type: "boolean",
@@ -497,10 +497,10 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     warningLevel: "info",
   },
   {
-    key: "SHIGUANG_GATEWAY_CHAT_VIRTUAL_LANES",
+    key: "ORBIT_CHAT_VIRTUAL_LANES",
     label: "Adaptive Virtual Admission Lanes",
     description:
-      "Enable per-tenant adaptive virtual admission lanes for provider dispatch (#9654): one tenant's burst no longer 503s another. The SHIGUANG_GATEWAY_CHAT_VIRTUAL_LANES env var wins over this dashboard override; changes take effect at server restart.",
+      "Enable per-tenant adaptive virtual admission lanes for provider dispatch (#9654): one tenant's burst no longer 503s another. The ORBIT_CHAT_VIRTUAL_LANES env var wins over this dashboard override; changes take effect at server restart.",
     descriptionI18nKey: "featureFlagChatVirtualLanesEnabledDescription",
     category: "runtime",
     defaultValue: "false",
@@ -570,11 +570,11 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     warningLevel: "info",
   },
   {
-    key: "SHIGUANG_GATEWAY_AUTO_SYNC_CODEX_PROFILES",
+    key: "ORBIT_AUTO_SYNC_CODEX_PROFILES",
     label: "Auto-Sync Codex Profiles",
     description:
       "After a provider model sync, automatically (re)write ~/.codex/*.config.toml profile files from the live catalog. Never changes the active/default Codex config. Off by default.",
-    descriptionI18nKey: "featureFlagShiguangGatewayAutoSyncCodexProfilesDescription",
+    descriptionI18nKey: "featureFlagOrbitAutoSyncCodexProfilesDescription",
     category: "cli",
     defaultValue: "false",
     type: "boolean",
@@ -582,11 +582,11 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     warningLevel: "caution",
   },
   {
-    key: "SHIGUANG_GATEWAY_AUTO_SYNC_CLAUDE_PROFILES",
+    key: "ORBIT_AUTO_SYNC_CLAUDE_PROFILES",
     label: "Auto-Sync Claude Code Profiles",
     description:
       "After a provider model sync, automatically (re)write ~/.claude/profiles/<name>/settings.json Claude Code profiles from the live catalog. Never changes the active/default Claude config. Off by default.",
-    descriptionI18nKey: "featureFlagShiguangGatewayAutoSyncClaudeProfilesDescription",
+    descriptionI18nKey: "featureFlagOrbitAutoSyncClaudeProfilesDescription",
     category: "cli",
     defaultValue: "false",
     type: "boolean",
@@ -596,10 +596,10 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
 
   // ──────────────── Health (3) ────────────────
   {
-    key: "SHIGUANG_GATEWAY_DISABLE_LOCAL_HEALTHCHECK",
+    key: "ORBIT_DISABLE_LOCAL_HEALTHCHECK",
     label: "Disable Local Health Check",
     description: "Disable the local instance health check endpoint",
-    descriptionI18nKey: "featureFlagShiguangGatewayDisableLocalHealthcheckDescription",
+    descriptionI18nKey: "featureFlagOrbitDisableLocalHealthcheckDescription",
     category: "health",
     defaultValue: "false",
     type: "boolean",
@@ -607,10 +607,10 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     warningLevel: "info",
   },
   {
-    key: "SHIGUANG_GATEWAY_DISABLE_TOKEN_HEALTHCHECK",
+    key: "ORBIT_DISABLE_TOKEN_HEALTHCHECK",
     label: "Disable Token Health Check",
     description: "Disable the token validation health check",
-    descriptionI18nKey: "featureFlagShiguangGatewayDisableTokenHealthcheckDescription",
+    descriptionI18nKey: "featureFlagOrbitDisableTokenHealthcheckDescription",
     category: "health",
     defaultValue: "false",
     type: "boolean",

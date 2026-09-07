@@ -454,7 +454,7 @@ export class ZaiWebExecutor extends BaseExecutor {
       }),
       auditHeaders: {
         Authorization: "Bearer [REDACTED]",
-        "X-ShiguangGateway-Transport": "browser",
+        "X-Orbit-Transport": "browser",
       },
       auditBody: buildZaiBrowserAuditBody({
         messages: input.messages,

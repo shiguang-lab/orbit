@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Roll a split ShiguangGateway Docker Compose deployment to one published image family.
+# Roll a split Orbit Docker Compose deployment to one published image family.
 set -euo pipefail
 SCRIPT_NAME="rollback"
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/_ops-common.sh"
@@ -26,8 +26,8 @@ EOF
 }
 
 RELEASE_REF=""
-COMPOSE_FILE="${SHIGUANG_GATEWAY_COMPOSE_FILE:-$REPO_ROOT/docker-compose.yml}"
-IMAGE_PREFIX="${SHIGUANG_GATEWAY_IMAGE_PREFIX:-ghcr.io/shiguang-lab/orbit}"
+COMPOSE_FILE="${ORBIT_COMPOSE_FILE:-$REPO_ROOT/docker-compose.yml}"
+IMAGE_PREFIX="${ORBIT_IMAGE_PREFIX:-ghcr.io/shiguang-lab/orbit}"
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -51,12 +51,12 @@ case "$RELEASE_REF" in
   *) IMAGE_SUFFIX=":$RELEASE_REF" ;;
 esac
 
-export SHIGUANG_GATEWAY_CONSOLE_IMAGE="${IMAGE_PREFIX}-console${IMAGE_SUFFIX}"
-export SHIGUANG_GATEWAY_GATEWAY_IMAGE="${IMAGE_PREFIX}-gateway${IMAGE_SUFFIX}"
-export SHIGUANG_GATEWAY_CONTROL_IMAGE="${IMAGE_PREFIX}-control${IMAGE_SUFFIX}"
-export SHIGUANG_GATEWAY_REALTIME_IMAGE="${IMAGE_PREFIX}-realtime${IMAGE_SUFFIX}"
-export SHIGUANG_GATEWAY_WORKER_IMAGE="${IMAGE_PREFIX}-worker${IMAGE_SUFFIX}"
-export SHIGUANG_GATEWAY_IMPORTER_IMAGE="${IMAGE_PREFIX}-importer${IMAGE_SUFFIX}"
+export ORBIT_CONSOLE_IMAGE="${IMAGE_PREFIX}-console${IMAGE_SUFFIX}"
+export ORBIT_GATEWAY_IMAGE="${IMAGE_PREFIX}-gateway${IMAGE_SUFFIX}"
+export ORBIT_CONTROL_IMAGE="${IMAGE_PREFIX}-control${IMAGE_SUFFIX}"
+export ORBIT_REALTIME_IMAGE="${IMAGE_PREFIX}-realtime${IMAGE_SUFFIX}"
+export ORBIT_WORKER_IMAGE="${IMAGE_PREFIX}-worker${IMAGE_SUFFIX}"
+export ORBIT_IMPORTER_IMAGE="${IMAGE_PREFIX}-importer${IMAGE_SUFFIX}"
 
 ops_require_cmd docker
 docker compose -f "$COMPOSE_FILE" --profile migration config >/dev/null
@@ -67,4 +67,4 @@ ops_confirm "Pull and recreate the split deployment at $RELEASE_REF?" || ops_die
 docker compose -f "$COMPOSE_FILE" --profile migration pull
 docker compose -f "$COMPOSE_FILE" up -d --no-build
 ops_log "split deployment rolled back to $RELEASE_REF"
-ops_log "persist this tag in the six SHIGUANG_GATEWAY_*_IMAGE entries before future compose runs"
+ops_log "persist this tag in the six ORBIT_*_IMAGE entries before future compose runs"

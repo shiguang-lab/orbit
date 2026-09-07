@@ -5,14 +5,14 @@
  *
  * A reference checkout is optional read-only input and is never imported by
  * the runtime. Without one, committed route hashes keep CI/release validation
- * self-contained. Set SHIGUANG_GATEWAY_REFERENCE_DIR only for an explicit source compare.
+ * self-contained. Set ORBIT_REFERENCE_DIR only for an explicit source compare.
  */
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative, resolve, sep } from "node:path";
 
 const repoRoot = resolve(import.meta.dirname, "..");
-const orbitRoot = resolve(process.env.SHIGUANG_GATEWAY_REFERENCE_DIR || join(repoRoot, "..", "Orbit"));
+const orbitRoot = resolve(process.env.ORBIT_REFERENCE_DIR || join(repoRoot, "..", "Orbit"));
 const strict = process.argv.includes("--strict");
 const frozenBaseline = {
   apiRouteFiles: 689,
@@ -221,10 +221,13 @@ const allSourceFiles = [
 ].filter((p) => !p.split(sep).includes("dist"));
 const forbidden = [
   { name: "runtime sibling Orbit import", re: /(?:from|import\s*\()\s*["'](?:\.\.\/[^"']*Orbit|\.\.\/\.\.\/\.\.\/Orbit)/, allow: /scripts[\\/]audit-gateway-independence\.mjs$/ },
-  { name: "NAS proxy/runtime target", re: /SHIGUANG_GATEWAY_NAS_API_TARGET|SHIGUANG_GATEWAY_NAS_PROXY_ENABLED|proxyToNas|nasProxy/i },
+  { name: "NAS proxy/runtime target", re: /ORBIT_NAS_API_TARGET|ORBIT_NAS_PROXY_ENABLED|proxyToNas|nasProxy/i },
   { name: "official Orbit host", re: /model\.publib\.cn|100\.87\.115\.78/i },
-  { name: "official Orbit repository/runtime feed", re: /diegosouzapw[\\/]ShiguangGateway|api\.shiguangGateway\.com/i },
-  { name: "legacy Orbit runtime package", re: /@shiguangGateway[\\/]orbit-runtime|packages[\\/]orbit-runtime/i },
+  { name: "official Orbit repository/runtime feed", re: /diegosouzapw[\\/]Orbit|api\.orbit\.com/i },
+  {
+    name: "retired runtime package",
+    re: new RegExp(`(?:@orbit|packages)[\\\\/]${["shiguang", "gateway", "runtime"].join("-")}`, "i"),
+  },
   { name: "legacy Orbit listener port", re: /\b20128\b/ },
 ];
 const violations = [];

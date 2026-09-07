@@ -1,10 +1,10 @@
 /**
- * shiguangGateway setup-continue — configure Continue (continue.dev) for ShiguangGateway.
+ * orbit setup-continue — configure Continue (continue.dev) for Orbit.
  *
  * Continue uses a file-based, mergeable ~/.continue/config.yaml shared by the VS
  * Code / JetBrains extensions AND the `cn` CLI. Models use `provider: openai`
  * with a custom `apiBase` (WITH /v1 — Continue appends /chat/completions) and an
- * `apiKey: ${{ secrets.SHIGUANG_GATEWAY_API_KEY }}` reference (secret never written to
+ * `apiKey: ${{ secrets.ORBIT_API_KEY }}` reference (secret never written to
  * config.yaml). Remote-aware; curated model set with Continue roles.
  */
 
@@ -16,7 +16,7 @@ import { resolveActiveContext } from "../contexts.mjs";
 import { categoriseModel } from "@orbit/config/cli/model-profile";
 import { guardHostConfigTarget } from "../utils/config-home-guard.mjs";
 
-const SECRET_REF = "${{ secrets.SHIGUANG_GATEWAY_API_KEY }}";
+const SECRET_REF = "${{ secrets.ORBIT_API_KEY }}";
 
 function ensureV1(url) {
   const s = String(url || "").replace(/\/+$/, "");
@@ -29,7 +29,7 @@ export function resolveContinueTarget(opts = {}) {
   if (opts.remote) root = String(opts.remote).replace(/\/+$/, "");
   else {
     try {
-      root = resolveActiveContext(opts.context ?? process.env.SHIGUANG_GATEWAY_CONTEXT)?.baseUrl;
+      root = resolveActiveContext(opts.context ?? process.env.ORBIT_CONTEXT)?.baseUrl;
     } catch {
       /* none */
     }
@@ -38,13 +38,13 @@ export function resolveContinueTarget(opts = {}) {
   let apiKey = opts.apiKey ?? opts["api-key"];
   if (!apiKey) {
     try {
-      const c = resolveActiveContext(opts.context ?? process.env.SHIGUANG_GATEWAY_CONTEXT);
+      const c = resolveActiveContext(opts.context ?? process.env.ORBIT_CONTEXT);
       apiKey = c?.accessToken || c?.apiKey;
     } catch {
       /* none */
     }
   }
-  if (!apiKey) apiKey = process.env.SHIGUANG_GATEWAY_API_KEY || "";
+  if (!apiKey) apiKey = process.env.ORBIT_API_KEY || "";
   return { apiBase: ensureV1(root), apiKey };
 }
 
@@ -57,7 +57,7 @@ export function buildContinueModels(modelIds, apiBase) {
     const roles = ["chat", "edit", "apply"];
     if (cfg.effort === "low") roles.push("autocomplete"); // fast tier → autocomplete
     out.push({
-      name: `ShiguangGateway: ${id}`,
+      name: `Orbit: ${id}`,
       provider: "openai",
       model: id,
       apiBase,
@@ -69,7 +69,7 @@ export function buildContinueModels(modelIds, apiBase) {
 }
 
 /**
- * Merge ShiguangGateway models into an existing Continue config object: drop any prior
+ * Merge Orbit models into an existing Continue config object: drop any prior
  * models pointing at this apiBase, keep everything else, append the new set.
  */
 export function mergeContinueConfig(existing, newModels, apiBase) {
@@ -77,7 +77,7 @@ export function mergeContinueConfig(existing, newModels, apiBase) {
   const prior = Array.isArray(cfg.models) ? cfg.models : [];
   const kept = prior.filter((m) => !m || m.apiBase !== apiBase);
   cfg.models = [...kept, ...newModels];
-  if (!cfg.name) cfg.name = "ShiguangGateway Config";
+  if (!cfg.name) cfg.name = "Orbit Config";
   if (!cfg.version) cfg.version = "1.0";
   if (!cfg.schema) cfg.schema = "v1";
   return cfg;
@@ -114,13 +114,13 @@ export async function runSetupContinueCommand(opts = {}) {
 
   const guard = await guardHostConfigTarget(configPath, {
     toolLabel: "Continue",
-    hostCommand: "shiguangGateway setup-continue",
+    hostCommand: "orbit setup-continue",
     allowContainerWrite: Boolean(opts.allowContainerWrite ?? opts["allow-container-write"]),
     dryRun,
   });
   if (guard !== 0) return guard;
 
-  printHeading("ShiguangGateway → Continue (config.yaml)");
+  printHeading("Orbit → Continue (config.yaml)");
   printInfo(`apiBase: ${apiBase}`);
 
   let ids;
@@ -128,7 +128,7 @@ export async function runSetupContinueCommand(opts = {}) {
     ids = await fetchModelIds(apiBase, apiKey);
   } catch (e) {
     printError(e.message);
-    printInfo("Make sure ShiguangGateway is running and --remote/--api-key are correct.");
+    printInfo("Make sure Orbit is running and --remote/--api-key are correct.");
     return 1;
   }
   if (only) ids = ids.filter((id) => only.some((f) => id.includes(f)));
@@ -155,16 +155,16 @@ export async function runSetupContinueCommand(opts = {}) {
 
   if (dryRun) {
     console.log("\n" + (out.length > 3500 ? out.slice(0, 3500) + "\n… (truncated)" : out));
-    printInfo(`[dry-run] ${models.length} ShiguangGateway model(s) → ${configPath}`);
+    printInfo(`[dry-run] ${models.length} Orbit model(s) → ${configPath}`);
     return 0;
   }
 
   mkdirSync(join(configPath, ".."), { recursive: true });
   writeFileSync(configPath, out, "utf8");
-  printSuccess(`Wrote ${configPath} (${models.length} ShiguangGateway models)`);
+  printSuccess(`Wrote ${configPath} (${models.length} Orbit models)`);
   printInfo("\nProvide the key (config.yaml references it, not stores it):");
-  printInfo("  cn CLI:  export SHIGUANG_GATEWAY_API_KEY=...   (read from your shell)");
-  printInfo("  IDE:     echo 'SHIGUANG_GATEWAY_API_KEY=...' >> ~/.continue/.env");
+  printInfo("  cn CLI:  export ORBIT_API_KEY=...   (read from your shell)");
+  printInfo("  IDE:     echo 'ORBIT_API_KEY=...' >> ~/.continue/.env");
   printInfo('Run:  cn -p "reply OK"');
   return 0;
 }
@@ -173,11 +173,11 @@ export function registerSetupContinue(program) {
   program
     .command("setup-continue")
     .description(
-      "Generate ~/.continue/config.yaml (Continue / cn CLI) from the ShiguangGateway model catalog"
+      "Generate ~/.continue/config.yaml (Continue / cn CLI) from the Orbit model catalog"
     )
-    .option("--port <port>", "Local ShiguangGateway port (ignored when --remote is set)", "8787")
-    .option("--remote <url>", "Remote ShiguangGateway URL, e.g. http://192.168.0.15:8787")
-    .option("--api-key <key>", "ShiguangGateway API key (defaults to SHIGUANG_GATEWAY_API_KEY env var)")
+    .option("--port <port>", "Local Orbit port (ignored when --remote is set)", "8787")
+    .option("--remote <url>", "Remote Orbit URL, e.g. http://192.168.0.15:8787")
+    .option("--api-key <key>", "Orbit API key (defaults to ORBIT_API_KEY env var)")
     .option("--only <patterns>", "Comma-separated substrings — keep only matching model IDs")
     .option("--config-path <path>", "config.yaml path (default: ~/.continue/config.yaml)")
     .option("--dry-run", "Print what would be written without touching the filesystem")

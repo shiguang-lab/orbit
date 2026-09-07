@@ -28,7 +28,7 @@ export class MitmController {
         if (!certificate) return reply.status(404).send({ error: "MITM certificate not found" });
         return reply
           .header("Content-Type", "application/x-pem-file")
-          .header("Content-Disposition", 'attachment; filename="shiguangGateway-mitm-ca.crt"')
+          .header("Content-Disposition", 'attachment; filename="orbit-mitm-ca.crt"')
           .send(certificate);
       }
       return reply.send(await this.mitm.getSettings());

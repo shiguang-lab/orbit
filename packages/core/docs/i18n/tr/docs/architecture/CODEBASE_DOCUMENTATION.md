@@ -1,16 +1,16 @@
 ---
-title: "ShiguangGateway Kod Tabanı Dokümantasyonu"
+title: "Orbit Kod Tabanı Dokümantasyonu"
 version: 3.8.50
 lastUpdated: 2026-08-23
 ---
 
-# ShiguangGateway Kod Tabanı Dokümantasyonu (Türkçe)
+# Orbit Kod Tabanı Dokümantasyonu (Türkçe)
 
 🌐 **Languages:** 🇺🇸 [English](../../../../docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇸🇦 [ar](../../ar/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇧🇬 [bg](../../bg/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇧🇩 [bn](../../bn/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇨🇿 [cs](../../cs/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇩🇰 [da](../../da/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇩🇪 [de](../../de/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇪🇸 [es](../../es/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇮🇷 [fa](../../fa/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇫🇮 [fi](../../fi/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇫🇷 [fr](../../fr/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇮🇳 [gu](../../gu/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇮🇱 [he](../../he/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇮🇳 [hi](../../hi/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇭🇺 [hu](../../hu/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇮🇩 [id](../../id/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇮🇹 [it](../../it/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇯🇵 [ja](../../ja/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇰🇷 [ko](../../ko/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇮🇳 [mr](../../mr/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇲🇾 [ms](../../ms/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇳🇱 [nl](../../nl/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇳🇴 [no](../..//no/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇵🇭 [phi](../../phi/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇵🇱 [pl](../../pl/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇵🇹 [pt](../../pt/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇧🇷 [pt-BR](../../pt-BR/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇷🇴 [ro](../../ro/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇷🇺 [ru](../../ru/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇸🇰 [sk](../../sk/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇸🇪 [sv](../../sv/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇰🇪 [sw](../../sw/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇮🇳 [ta](../../ta/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇮🇳 [te](../../te/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇹🇭 [th](../../th/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇹🇷 [tr](../../tr/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇺🇦 [uk-UA](../../uk-UA/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇵🇰 [ur](../../ur/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇻🇳 [vi](../../vi/docs/architecture/CODEBASE_DOCUMENTATION.md) · 🇨🇳 [zh-CN](../../zh-CN/docs/architecture/CODEBASE_DOCUMENTATION.md)
 
 ---
 
-> **Hedef Kitle:** ShiguangGateway'a katkıda bulunan veya üzerine entegrasyonlar oluşturan mühendisler.
+> **Hedef Kitle:** Orbit'a katkıda bulunan veya üzerine entegrasyonlar oluşturan mühendisler.
 >
 > Yüksek düzey mimari diyagramları ve her alt sistemin gerekçeleri için [ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md) dosyasını okuyun.
 
@@ -39,18 +39,18 @@ Yol Takma Adları (`tsconfig.json`):
 - `@orbit/inference` → `open-sse/index.ts`
 - `@orbit/inference/*` → `open-sse/*`
 
-Varsayılan HTTP portu: **`20128`** (API ve pano aynı süreci paylaşır). Veri dizini `DATA_DIR` ortam değişkenidir (varsayılan: `~/.shiguang-gateway/`).
+Varsayılan HTTP portu: **`20128`** (API ve pano aynı süreci paylaşır). Veri dizini `DATA_DIR` ortam değişkenidir (varsayılan: `~/.orbit/`).
 
 ---
 
 ## 2. Depo Düzeni
 
 ```
-ShiguangGateway/
+Orbit/
 ├── src/                  Next.js uygulaması (App Router, kütüphaneler, alan katmanı, sunucu, paylaşılanlar)
 ├── open-sse/             Akış motoru çalışma alanı (@orbit/inference)
 ├── electron/             Masaüstü uygulaması (Electron 41 main + preload)
-├── bin/                  CLI giriş noktaları (shiguang-gateway, reset-password)
+├── bin/                  CLI giriş noktaları (orbit, reset-password)
 ├── tests/                Birim, entegrasyon, e2e, protokol, çevirmen, güvenlik testleri
 ├── scripts/              Derleme, senkronizasyon, kontrol, migrasyon ve çalışma zamanı yardımcı betikleri
 ├── docs/                 Genel dokümantasyon

@@ -15,17 +15,17 @@ type ExecFileLike = (
 type ExistsLike = (target: string) => boolean;
 
 /**
- * Resolve the real install directory of the globally-installed `shiguangGateway` package — the directory
+ * Resolve the real install directory of the globally-installed `orbit` package — the directory
  * that owns `node_modules/better-sqlite3` and so is the correct cwd for `npm rebuild`.
  *
- * Replaces the hardcoded `${globalRoot}/shiguangGateway/app` assumption (Bug 3, security-report v3.8.15):
- * the global package root is `${npm root -g}/shiguangGateway`, not `/shiguangGateway/app`. We probe the real
+ * Replaces the hardcoded `${globalRoot}/orbit/app` assumption (Bug 3, security-report v3.8.15):
+ * the global package root is `${npm root -g}/orbit`, not `/orbit/app`. We probe the real
  * layout (current root first, then the legacy `app/` sub-dir) and fall back to the package root.
  *
  * `execImpl`/`fsExists` are injectable so the resolution logic is unit-testable without a real
  * global install.
  */
-export async function resolveGlobalShiguangGatewayPath(
+export async function resolveGlobalOrbitPath(
   execImpl: ExecFileLike = execFileAsync,
   fsExists: ExistsLike = existsSync
 ): Promise<string> {
@@ -35,7 +35,7 @@ export async function resolveGlobalShiguangGatewayPath(
   });
   const globalRoot = String(result.stdout).trim();
 
-  const packageRoot = path.join(globalRoot, "shiguangGateway");
+  const packageRoot = path.join(globalRoot, "orbit");
   // [current layout, legacy layout] — first whose package.json exists wins.
   const candidates = [packageRoot, path.join(packageRoot, "app")];
 

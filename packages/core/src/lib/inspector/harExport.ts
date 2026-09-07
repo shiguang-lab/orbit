@@ -3,10 +3,10 @@
  *
  * HAR is the standard format consumed by Chrome DevTools, Charles, Fiddler,
  * Postman, and most observability tools. Exporting lets users carry the
- * trace out of ShiguangGateway into their existing workflow.
+ * trace out of Orbit into their existing workflow.
  *
  * Secrets are *always* masked on export, regardless of the UI state — see
- * Hard Rule #1 (no credentials in artefacts). The ShiguangGateway capture source
+ * Hard Rule #1 (no credentials in artefacts). The Orbit capture source
  * (agent-bridge / custom-host / http-proxy / system-proxy) is preserved as
  * `_source`, a custom field allowed by the HAR spec's underscore convention.
  */
@@ -15,7 +15,7 @@ import { maskSecret } from "../../mitm/maskSecrets.ts";
 import type { InterceptedRequest } from "../../mitm/inspector/types.ts";
 
 const HAR_VERSION = "1.2";
-const CREATOR_NAME = "ShiguangGateway Traffic Inspector";
+const CREATOR_NAME = "Orbit Traffic Inspector";
 const CREATOR_VERSION = "3.8.6";
 
 interface HarNameValue {

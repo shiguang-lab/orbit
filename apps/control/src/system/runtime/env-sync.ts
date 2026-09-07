@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * ShiguangGateway — Environment Sync
+ * Orbit — Environment Sync
  *
  * Ensures .env exists and contains the selected keys from .env.example.
  * Runs on installs and can be executed manually via `npm run env:sync`.
@@ -32,7 +32,7 @@ function resolveRootDir(rootDir?: string): string {
 // JWT_SECRET, API_KEY_SECRET and STORAGE_ENCRYPTION_KEY are deliberately NOT
 // here: the server owns them. It restores each one from its durable store, or
 // generates and persists it there on first use — STORAGE_ENCRYPTION_KEY in
-// bin/shiguang-gateway.mjs (guarded by bin/cli/utils/storageKeyProvision.mjs), the
+// bin/orbit.mjs (guarded by bin/cli/utils/storageKeyProvision.mjs), the
 // other two in src/instrumentation-node.ts::ensureSecrets(), which persists to
 // the `secrets` namespace of the database under DATA_DIR.
 //
@@ -44,7 +44,7 @@ function resolveRootDir(rootDir?: string): string {
 // (API_KEY_SECRET). STORAGE_ENCRYPTION_KEY was pulled out first, for the same
 // reason, when it cost users their encrypted credentials (issue #1622).
 const CRYPTO_SECRETS: Record<string, () => string> = {
-  MACHINE_ID_SALT: () => `shiguangGateway-${randomBytes(8).toString("hex")}`,
+  MACHINE_ID_SALT: () => `orbit-${randomBytes(8).toString("hex")}`,
 };
 
 /**
@@ -52,8 +52,8 @@ const CRYPTO_SECRETS: Record<string, () => string> = {
  * Generating a new key would make all previously-encrypted credentials unrecoverable.
  *
  * Note: STORAGE_ENCRYPTION_KEY is no longer auto-generated in postinstall.
- * It's generated at server startup in bin/shiguang-gateway.mjs and persisted to
- * ~/.shiguangGateway/.env to survive across upgrades.
+ * It's generated at server startup in bin/orbit.mjs and persisted to
+ * ~/.orbit/.env to survive across upgrades.
  * See the local deployment guide for the independent runtime environment.
  */
 const ENCRYPTION_BOUND_KEYS = new Set<string>();
@@ -65,13 +65,13 @@ function resolveDataDir(env: NodeJS.ProcessEnv = process.env): string {
 
   if (process.platform === "win32") {
     const appData = env.APPDATA || join(homedir(), "AppData", "Roaming");
-    return join(appData, "shiguangGateway");
+    return join(appData, "orbit");
   }
 
   const xdg = env.XDG_CONFIG_HOME?.trim();
-  if (xdg) return join(resolve(xdg), "shiguangGateway");
+  if (xdg) return join(resolve(xdg), "orbit");
 
-  return join(homedir(), ".shiguangGateway");
+  return join(homedir(), ".orbit");
 }
 
 /**
@@ -340,7 +340,7 @@ export function syncEnv(
         if (ENCRYPTION_BOUND_KEYS.has(key) && dbHasEncrypted) {
           log(
             `⚠️  ${key} NOT generated — encrypted credentials exist in DB. ` +
-              `Restore your previous key via ~/.shiguangGateway/server.env, ~/.shiguangGateway/.env, ` +
+              `Restore your previous key via ~/.orbit/server.env, ~/.orbit/.env, ` +
               `or the STORAGE_ENCRYPTION_KEY environment variable.`
           );
           continue;
@@ -387,7 +387,7 @@ export function syncEnv(
     if (entry.blocked) {
       log(
         `⚠️  ${entry.key} NOT generated — encrypted credentials exist in DB. ` +
-          `Restore your previous key via ~/.shiguangGateway/server.env, ~/.shiguangGateway/.env, ` +
+          `Restore your previous key via ~/.orbit/server.env, ~/.orbit/.env, ` +
           `or the STORAGE_ENCRYPTION_KEY environment variable.`
       );
       continue;

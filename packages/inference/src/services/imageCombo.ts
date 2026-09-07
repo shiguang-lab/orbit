@@ -17,7 +17,7 @@ import {
 } from "./auth.ts";
 import { isAllRateLimitedCredentials } from "@orbit/inference/services/credential-selection";
 import { handleImageGeneration } from "../handlers/imageGeneration.ts";
-import { attachShiguangGatewayMetaHeaders } from "@orbit/core/edge/gateway-response-meta";
+import { attachOrbitMetaHeaders } from "@orbit/core/edge/gateway-response-meta";
 import { generateRequestId } from "@orbit/contracts/request-id";
 import { calculateModalCost } from "@orbit/core/pricing/cost-calculator";
 import { toJsonErrorPayload } from "@orbit/core/shared/upstream-error";
@@ -180,7 +180,7 @@ export async function executeImageCombo(
     );
 
     const headers = new Headers({ "Content-Type": "application/json" });
-    attachShiguangGatewayMetaHeaders(headers, {
+    attachOrbitMetaHeaders(headers, {
       provider: selectedProvider,
       model: selectedModel,
       costUsd,

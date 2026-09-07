@@ -19,7 +19,7 @@ export type ErrorRule = {
 };
 
 // Exponential backoff config for rate limits.
-// Preserve ShiguangGateway's existing 2-minute cap to avoid changing runtime behavior.
+// Preserve Orbit's existing 2-minute cap to avoid changing runtime behavior.
 export const BACKOFF_CONFIG = {
   base: 1000,
   max: 2 * 60 * 1000,

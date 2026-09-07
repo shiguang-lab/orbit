@@ -145,8 +145,8 @@ function parsePatchCommits(raw: string | undefined): string[] {
 }
 
 export function getAutoUpdateConfig(env: NodeJS.ProcessEnv = process.env): AutoUpdateConfig {
-  const dataDir = env.DATA_DIR || "/tmp/shiguangGateway";
-  const repoDir = env.AUTO_UPDATE_REPO_DIR || "/workspace/shiguangGateway";
+  const dataDir = env.DATA_DIR || "/tmp/orbit";
+  const repoDir = env.AUTO_UPDATE_REPO_DIR || "/workspace/orbit";
 
   let mode = normalizeMode(env.AUTO_UPDATE_MODE);
   if (mode === "npm") {
@@ -160,7 +160,7 @@ export function getAutoUpdateConfig(env: NodeJS.ProcessEnv = process.env): AutoU
     repoDir,
     composeFile: env.AUTO_UPDATE_COMPOSE_FILE || path.join(repoDir, "docker-compose.yml"),
     composeProfile: env.AUTO_UPDATE_COMPOSE_PROFILE || "cli",
-    composeService: env.AUTO_UPDATE_SERVICE || "shiguangGateway-cli",
+    composeService: env.AUTO_UPDATE_SERVICE || "orbit-cli",
     gitRemote: env.AUTO_UPDATE_GIT_REMOTE || "origin",
     patchCommits: parsePatchCommits(env.AUTO_UPDATE_PATCH_COMMITS),
     logPath: env.AUTO_UPDATE_LOG_PATH || path.join(dataDir, "logs", "auto-update.log"),
@@ -240,7 +240,7 @@ export async function validateAutoUpdateRuntime(
   if (!(await existsImpl("/var/run/docker.sock"))) {
     return {
       supported: false,
-      reason: "Docker socket is not mounted into the ShiguangGateway container.",
+      reason: "Docker socket is not mounted into the Orbit container.",
       composeCommand: null,
     };
   }
@@ -250,7 +250,7 @@ export async function validateAutoUpdateRuntime(
   } catch {
     return {
       supported: false,
-      reason: "git is not available inside the ShiguangGateway container.",
+      reason: "git is not available inside the Orbit container.",
       composeCommand: null,
     };
   }
@@ -260,7 +260,7 @@ export async function validateAutoUpdateRuntime(
     return {
       supported: false,
       reason:
-        "Neither docker compose nor docker-compose is available inside the ShiguangGateway container.",
+        "Neither docker compose nor docker-compose is available inside the Orbit container.",
       composeCommand: null,
     };
   }
@@ -289,9 +289,9 @@ export function buildNpmUpdateScript(latest: string): string {
     // --include=optional keeps the optionalDependencies (better-sqlite3, keytar,
     // tls-client, and the llmlingua SLM stack) installed on every update so an
     // `omit=optional` config / .npmrc cannot silently drop them.
-    `npm install -g shiguangGateway@${latest} --include=optional --ignore-scripts --legacy-peer-deps`,
+    `npm install -g orbit@${latest} --include=optional --ignore-scripts --legacy-peer-deps`,
     "if command -v pm2 >/dev/null 2>&1; then",
-    "  pm2 restart shiguangGateway || true",
+    "  pm2 restart orbit || true",
     "fi",
     `echo \"[AutoUpdate] Successfully updated to v${latest}.\"`,
   ].join("\n");
@@ -315,7 +315,7 @@ export function buildSourceUpdateScript(latest: string, gitRemote = "origin"): s
     'npm exec --workspace apps/control -- tsx src/system/runtime/env-sync.ts --root-dir "$PWD" 2>/dev/null || true',
     "npm run build",
     "if command -v pm2 >/dev/null 2>&1; then",
-    "  pm2 restart shiguangGateway --update-env || true",
+    "  pm2 restart orbit --update-env || true",
     "fi",
     `echo "[AutoUpdate] Successfully updated to ${targetTag}."`,
   ].join("\n");

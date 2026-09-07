@@ -502,7 +502,7 @@ async function saveCallLogOperation(entry: any): Promise<void> {
       sessionTag: entry.sessionTag || null,
       // OpenAI Responses API response id, when this attempt produced one --
       // indexed so a later request's `previous_response_id` can resolve
-      // this row's artifact for ShiguangGateway-native continuation. See
+      // this row's artifact for Orbit-native continuation. See
       // src/lib/db/responsesContinuationStore.ts.
       responseId: typeof entry.responseId === "string" ? entry.responseId : null,
     };

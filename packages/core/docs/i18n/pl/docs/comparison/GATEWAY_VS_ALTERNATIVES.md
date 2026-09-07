@@ -1,17 +1,17 @@
 ---
-title: "ShiguangGateway vs alternatywy"
+title: "Orbit vs alternatywy"
 version: 3.8.43
 lastUpdated: 2026-07-01
 ---
 
-# ShiguangGateway vs alternatywy
+# Orbit vs alternatywy
 
 Obiektywne porównanie funkcji z popularnymi open-source'owymi routerami AI.
 
 > **Metodologia**: Publiczne repozytoria audytowane w 2026-Q2. Wersje jak podano.
 > Poprawki zgłaszaj przez PR — zależy nam na dokładności.
 
-| Funkcja                                             |                   ShiguangGateway 3.8                    |  LiteLLM 1.x   | OpenRouter (SaaS) |   Portkey   |
+| Funkcja                                             |                   Orbit 3.8                    |  LiteLLM 1.x   | OpenRouter (SaaS) |   Portkey   |
 | --------------------------------------------------- | :------------------------------------------------: | :------------: | :---------------: | :---------: |
 | **Dostawcy**                                        |                      **329**                       |      ~100      |        ~50        |     ~30     |
 | **Dostawcy free-tier**                              |               **155 wpisy katalogu**               |      n/a       |    passthrough    |     n/a     |
@@ -39,7 +39,7 @@ Obiektywne porównanie funkcji z popularnymi open-source'owymi routerami AI.
 | **Wsparcie tuneli (Cloudflared, Tailscale, Ngrok)** |                         ✅                         |       ❌       |        n/a        |     n/a     |
 | **Licencja**                                        |                        MIT                         |      MIT       |    proprietary    | proprietary |
 
-## Kiedy wybrać ShiguangGateway
+## Kiedy wybrać Orbit
 
 - Self-hostujesz i chcesz **maksymalnego pokrycia dostawców** (329 wpisów katalogu, 155 oznaczone free/no-auth)
 - Potrzebujesz **wbudowanego serwera MCP** (narzędzia LLM, pamięć, skills wystawione jako tools)

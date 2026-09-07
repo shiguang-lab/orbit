@@ -6,27 +6,27 @@
 
 ---
 
-title: "CLI Integraatiot — osoita mikä tahansa koodaus CLI ShiguangGatewayen"
+title: "CLI Integraatiot — osoita mikä tahansa koodaus CLI Orbiten"
 version: 3.8.50
 lastUpdated: 2026-08-18
 ---
 
 # CLI Integraatiot
 
-ShiguangGateway toimittaa joukon `setup-*` komentoja, jotka konfiguroivat koodaus
-CLI:n (Codex, Claude Code, OpenCode, Cline, …) käyttämään ShiguangGatewaya taustajärjestelmänään — joten
-työkalu kommunikoi **yksi** päätepiste ja ShiguangGateway ohjaa oikealle palveluntarjoajalle automaattisella varajärjestelmällä. Jokainen komento lukee **live** malliluettelon toimivasta
-ShiguangGateway:sta (paikallinen tai etä) ja kirjoittaa työkalun oman konfiguraatiotiedoston **sinun**
+Orbit toimittaa joukon `setup-*` komentoja, jotka konfiguroivat koodaus
+CLI:n (Codex, Claude Code, OpenCode, Cline, …) käyttämään Orbita taustajärjestelmänään — joten
+työkalu kommunikoi **yksi** päätepiste ja Orbit ohjaa oikealle palveluntarjoajalle automaattisella varajärjestelmällä. Jokainen komento lukee **live** malliluettelon toimivasta
+Orbit:sta (paikallinen tai etä) ja kirjoittaa työkalun oman konfiguraatiotiedoston **sinun**
 koneellesi. API-avain viitataan ympäristömuuttujaan, missä tahansa työkalussa
 se tukee sitä. Komennot, jotka säilyttävät työkalukohtaisen ympäristötiedoston, on merkitty alla.
 
-On myös yleinen käynnistin — `shiguang-gateway run <target>` — joka käynnistää
+On myös yleinen käynnistin — `orbit run <target>` — joka käynnistää
 `claude`, `codex`, `aider`, `goose`, `opencode`, `qwen` tai `gemini` oikealla ympäristöllä ilman, että kirjoitetaan mitään konfiguraatiota. Kohteet ja niiden
 aliasit tulevat kanonisesta manifestista `bin/cli/cli-manifest.mjs`
 (`claude-code|cc|anthropic`, `codex-cli|openai-codex|openai`, `goose-cli`,
-`open-code`, `qwen-code`, `gemini-cli`), ja `shiguang-gateway completion` tarjoaa
+`open-code`, `qwen-code`, `gemini-cli`), ja `orbit completion` tarjoaa
 saman manifestista johdetun kohdesanaston. Perinteiset työkalukohtaiset käynnistimet —
-`shiguang-gateway launch` (Claude Code) ja `shiguang-gateway launch-codex` (Codex) — ovat edelleen
+`orbit launch` (Claude Code) ja `orbit launch-codex` (Codex) — ovat edelleen
 käytettävissä.
 
 Palveluntarjoajan rekrytointi on saatavilla samasta paikallisesta/etäyhteydestä.
@@ -34,11 +34,11 @@ Alla olevat API-ensimmäiset komennot pitävät hallintotodistuksen erillään p
 tunnistetiedoista eivätkä koskaan tulosta tunnistetietoa jäsennellyssä tulosteessa:
 
 ```bash
-shiguang-gateway providers add glm --credential-env GLM_API_KEY --name work
-shiguang-gateway providers import ./providers.json --dry-run --json
-shiguang-gateway providers auth openai
-shiguang-gateway providers edit <connection-id> --default-model glm/glm-5.2
-shiguang-gateway providers remove <connection-id> --yes
+orbit providers add glm --credential-env GLM_API_KEY --name work
+orbit providers import ./providers.json --dry-run --json
+orbit providers auth openai
+orbit providers edit <connection-id> --default-model glm/glm-5.2
+orbit providers remove <connection-id> --yes
 ```
 
 Skripteissä suositaan `--credential-stdin` tai `--credential-env`; `--credential`
@@ -50,7 +50,7 @@ työkalukohtaiset syväsukellukset:
 
 - [Claude Code konfigurointi](./CLAUDE-CODE-CONFIGURATION.md)
 - [Codex CLI konfigurointi](./CODEX-CLI-CONFIGURATION.md)
-- [Etätila](./REMOTE-MODE.md) — ohjaa etä ShiguangGatewaya (VPS / Tailnet) kannettavalta tietokoneeltasi
+- [Etätila](./REMOTE-MODE.md) — ohjaa etä Orbita (VPS / Tailnet) kannettavalta tietokoneeltasi
 - [VS Code Copilot Chat](./VSCODE-COPILOT.md) — OmniCopilot-laajennus; se voi myös suorittaa nämä
   `setup-*` komennot puolestasi editorin sisällä
 
@@ -58,34 +58,34 @@ työkalukohtaiset syväsukellukset:
 
 ## Päätaulukko
 
-Jokainen komento kunnioittaa **aktiivista kontekstia** (asetettu `shiguang-gateway connect`, katso
+Jokainen komento kunnioittaa **aktiivista kontekstia** (asetettu `orbit connect`, katso
 [Etätila](./REMOTE-MODE.md)) tai eksplisiittisiä `--remote <url> --api-key <key>` lippuja.
 "Paikallinen vs etä" alla tarkoittaa: ilman lippuja se kohdistaa `http://localhost:20128`;
 `--remote` (tai aktiivinen etäyhteys) hakee luettelon kyseiseltä palvelimelta ja kirjoittaa konfiguraation paikallisesti.
 
 | Komento                    | Työkalu                        | Mitä se kirjoittaa                                                                                                                                                                | Avainliput                                                                                                                                 | Paikallinen vs etä |
 | -------------------------- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------ |
-| `shiguang-gateway setup-codex`    | OpenAI Codex CLI               | `~/.codex/<name>.config.toml` — yksi profiili per yhteensopiva tekstimalli (`codex --profile <name>`)                                                                             | `--remote` `--api-key` `--only` `--dry-run` `--port` `--codex-home`                                                                        | Molemmat           |
-| `shiguang-gateway setup-claude`   | Claude Code                    | `~/.claude/profiles/<name>/settings.json` — yksi profiili per vastaava malli (`CLAUDE_CONFIG_DIR`)                                                                                | `--remote` `--api-key` `--only` `--dry-run` `--port` `--claude-home`                                                                       | Molemmat           |
-| `shiguang-gateway setup-opencode` | OpenCode (openai-yhteensopiva) | `~/.config/opencode/opencode.json` — `shiguang-gateway` palveluntarjoaja jokaiselle luettelomallille (`opencode -m shiguang-gateway/<model>`)                                                   | `--remote` `--api-key` `--only` `--model` `--dry-run` `--port`                                                                             | Molemmat           |
-| `shiguang-gateway setup-cline`    | Cline                          | `~/.cline/data/{globalState,secrets}.json` (CLI-tila) + tulostaa VS Code laajennuksen asetukset                                                                                   | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--cline-dir`                                                                | Molemmat           |
-| `shiguang-gateway setup-kilo`     | Kilo Code                      | `~/.local/share/kilo/auth.json` (CLI) + yhdistää `kilocode.*` VS Code `settings.json` tiedostoon, jos se on olemassa                                                              | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--auth-path` `--vscode-settings`                                            | Molemmat           |
-| `shiguang-gateway setup-continue` | Continue / `cn` CLI            | `~/.continue/config.yaml` — `provider: openai` mallit, avain kautta `${{ secrets.SHIGUANG_GATEWAY_API_KEY }}`                                                                            | `--remote` `--api-key` `--only` `--dry-run` `--port` `--config-path`                                                                       | Molemmat           |
-| `shiguang-gateway setup-cursor`   | Cursor                         | Ei mitään — tulostaa sovelluksen vaiheet (Cursorin konfiguraatio on läpinäkyvä SQLite)                                                                                            | `--remote` `--api-key` `--only` `--port`                                                                                                   | Molemmat           |
-| `shiguang-gateway setup-roo`      | Roo Code                       | `~/.shiguang-gateway/roo-settings.json` (tuontidokumentti) + asettaa `roo-cline.autoImportSettingsPath`, jos VS Code `settings.json` tiedosto on olemassa                                | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--import-path` `--vscode-settings`                                          | Molemmat           |
-| `shiguang-gateway setup-crush`    | Crush                          | `~/.config/crush/crush.json` — `openai-yhteensopiva` palveluntarjoaja, avain kautta `$SHIGUANG_GATEWAY_API_KEY`                                                                          | `--remote` `--api-key` `--only` `--dry-run` `--port` `--config-path`                                                                       | Molemmat           |
-| `shiguang-gateway setup-goose`    | Goose                          | `~/.config/goose/config.yaml` (`GOOSE_PROVIDER`/`OPENAI_HOST`/`GOOSE_MODEL`) + tulostaa ympäristöreseptin                                                                         | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--config-path`                                                              | Molemmat           |
-| `shiguang-gateway setup-aider`    | Aider                          | `~/.aider.conf.yml` (`openai-api-base` + `model: openai/<id>`) + tulostaa ympäristöreseptin                                                                                       | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--config-path`                                                              | Molemmat           |
-| `shiguang-gateway setup-qwen`     | Qwen Code                      | `~/.qwen/settings.json` — V4 `modelProviders.openai` taulukko + `SHIGUANG_GATEWAY_API_KEY` tiedostossa `~/.qwen/.env`                                                                    | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--config-path` `--env-path`                                                 | Molemmat           |
-| `shiguang-gateway run <target>`   | Ajanotto (yleinen)             | Ei mitään — käynnistää `claude`/`codex`/`aider`/`goose`/`opencode`/`qwen`/`gemini` oikealla ympäristöllä ja argumenteilla; Qwen ja Gemini käyttävät väliaikaista eristettyä kotia | `--remote` `--base-url` `--context` `--provider` `--model` `--api-key` `--api-key-env` `--dry-run` `--json` `--port` `--profile` `--token` | Molemmat           |
-| `shiguang-gateway launch`         | Claude Code                    | Ei mitään — käynnistää `claude` `ANTHROPIC_BASE_URL`/`ANTHROPIC_AUTH_TOKEN` injektoituna                                                                                          | `--remote` `--api-key` `--token` `--profile` `--port`                                                                                      | Molemmat           |
-| `shiguang-gateway launch-codex`   | OpenAI Codex CLI               | Ei mitään — käynnistää `codex` `shiguang-gateway` palveluntarjoaja injektoituna `-c` lippujen kautta                                                                                     | `--remote` `--api-key` `--profile` (`-p`) `--port`                                                                                         | Molemmat           |
+| `orbit setup-codex`    | OpenAI Codex CLI               | `~/.codex/<name>.config.toml` — yksi profiili per yhteensopiva tekstimalli (`codex --profile <name>`)                                                                             | `--remote` `--api-key` `--only` `--dry-run` `--port` `--codex-home`                                                                        | Molemmat           |
+| `orbit setup-claude`   | Claude Code                    | `~/.claude/profiles/<name>/settings.json` — yksi profiili per vastaava malli (`CLAUDE_CONFIG_DIR`)                                                                                | `--remote` `--api-key` `--only` `--dry-run` `--port` `--claude-home`                                                                       | Molemmat           |
+| `orbit setup-opencode` | OpenCode (openai-yhteensopiva) | `~/.config/opencode/opencode.json` — `orbit` palveluntarjoaja jokaiselle luettelomallille (`opencode -m orbit/<model>`)                                                   | `--remote` `--api-key` `--only` `--model` `--dry-run` `--port`                                                                             | Molemmat           |
+| `orbit setup-cline`    | Cline                          | `~/.cline/data/{globalState,secrets}.json` (CLI-tila) + tulostaa VS Code laajennuksen asetukset                                                                                   | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--cline-dir`                                                                | Molemmat           |
+| `orbit setup-kilo`     | Kilo Code                      | `~/.local/share/kilo/auth.json` (CLI) + yhdistää `kilocode.*` VS Code `settings.json` tiedostoon, jos se on olemassa                                                              | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--auth-path` `--vscode-settings`                                            | Molemmat           |
+| `orbit setup-continue` | Continue / `cn` CLI            | `~/.continue/config.yaml` — `provider: openai` mallit, avain kautta `${{ secrets.ORBIT_API_KEY }}`                                                                            | `--remote` `--api-key` `--only` `--dry-run` `--port` `--config-path`                                                                       | Molemmat           |
+| `orbit setup-cursor`   | Cursor                         | Ei mitään — tulostaa sovelluksen vaiheet (Cursorin konfiguraatio on läpinäkyvä SQLite)                                                                                            | `--remote` `--api-key` `--only` `--port`                                                                                                   | Molemmat           |
+| `orbit setup-roo`      | Roo Code                       | `~/.orbit/roo-settings.json` (tuontidokumentti) + asettaa `roo-cline.autoImportSettingsPath`, jos VS Code `settings.json` tiedosto on olemassa                                | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--import-path` `--vscode-settings`                                          | Molemmat           |
+| `orbit setup-crush`    | Crush                          | `~/.config/crush/crush.json` — `openai-yhteensopiva` palveluntarjoaja, avain kautta `$ORBIT_API_KEY`                                                                          | `--remote` `--api-key` `--only` `--dry-run` `--port` `--config-path`                                                                       | Molemmat           |
+| `orbit setup-goose`    | Goose                          | `~/.config/goose/config.yaml` (`GOOSE_PROVIDER`/`OPENAI_HOST`/`GOOSE_MODEL`) + tulostaa ympäristöreseptin                                                                         | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--config-path`                                                              | Molemmat           |
+| `orbit setup-aider`    | Aider                          | `~/.aider.conf.yml` (`openai-api-base` + `model: openai/<id>`) + tulostaa ympäristöreseptin                                                                                       | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--config-path`                                                              | Molemmat           |
+| `orbit setup-qwen`     | Qwen Code                      | `~/.qwen/settings.json` — V4 `modelProviders.openai` taulukko + `ORBIT_API_KEY` tiedostossa `~/.qwen/.env`                                                                    | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--config-path` `--env-path`                                                 | Molemmat           |
+| `orbit run <target>`   | Ajanotto (yleinen)             | Ei mitään — käynnistää `claude`/`codex`/`aider`/`goose`/`opencode`/`qwen`/`gemini` oikealla ympäristöllä ja argumenteilla; Qwen ja Gemini käyttävät väliaikaista eristettyä kotia | `--remote` `--base-url` `--context` `--provider` `--model` `--api-key` `--api-key-env` `--dry-run` `--json` `--port` `--profile` `--token` | Molemmat           |
+| `orbit launch`         | Claude Code                    | Ei mitään — käynnistää `claude` `ANTHROPIC_BASE_URL`/`ANTHROPIC_AUTH_TOKEN` injektoituna                                                                                          | `--remote` `--api-key` `--token` `--profile` `--port`                                                                                      | Molemmat           |
+| `orbit launch-codex`   | OpenAI Codex CLI               | Ei mitään — käynnistää `codex` `orbit` palveluntarjoaja injektoituna `-c` lippujen kautta                                                                                     | `--remote` `--api-key` `--profile` (`-p`) `--port`                                                                                         | Molemmat           |
 
 Huomautuksia lipuista (vahvistettu komennon lähteessä):
 
-- `--remote <url>` — hakee luettelon etä ShiguangGateway:sta (ylittää `--port`
+- `--remote <url>` — hakee luettelon etä Orbit:sta (ylittää `--port`
   ja aktiivisen kontekstin). `--api-key <key>` toimittaa tunnistetiedon kyseiselle
-  palvelimelle (oletuksena `SHIGUANG_GATEWAY_API_KEY` ympäristömuuttuja tai aktiivisen kontekstin token).
+  palvelimelle (oletuksena `ORBIT_API_KEY` ympäristömuuttuja tai aktiivisen kontekstin token).
 - `--only <patterns>` — pilkuilla erotellut alimerkit; säilyttää vain malli-ID:t, jotka vastaavat
   (esim. `--only glm,kimi`). Saatavilla `setup-codex`, `setup-claude`,
   `setup-opencode`, `setup-continue`, `setup-cursor`, `setup-crush`.
@@ -96,16 +96,16 @@ Huomautuksia lipuista (vahvistettu komennon lähteessä):
   mallin automaattista löytämistä: Cline, Kilo, Roo, Goose, Qwen, Aider. Nämä työkalut
   hyväksyvät myös `--yes` ei-interaktiivisiin suorituksiin (jotka sitten vaativat `--model`).
   `setup-opencode` ottaa `--model` asettaakseen oletustason mallin.
-- `--model <id>` komennossa `shiguang-gateway run` seuraa manifestin per-kohde kytkentää
+- `--model <id>` komennossa `orbit run` seuraa manifestin per-kohde kytkentää
   (`bin/cli/cli-manifest.mjs`): **aider** saa `--model openai/<id>` ja
-  **opencode** `--model shiguang-gateway/<id>` (etuliite lisätään vain, kun id
+  **opencode** `--model orbit/<id>` (etuliite lisätään vain, kun id
   ei jo sisällä sitä); **qwen** ja **gemini** saavat id:n sellaisenaan;
   **claude** saa sen `ANTHROPIC_MODEL` kautta, **goose** `GOOSE_MODEL` kautta, ja
-  **codex** `-c model_providers.shiguang-gateway.*` argumenttien kautta. **Qwen on ainoa suorituskohde, joka vaatii ehdottomasti `--model`** — `shiguang-gateway run qwen` ilman sitä poistuu
+  **codex** `-c model_providers.orbit.*` argumenttien kautta. **Qwen on ainoa suorituskohde, joka vaatii ehdottomasti `--model`** — `orbit run qwen` ilman sitä poistuu
   `2` virheellä.
-- `--port <port>` — paikallinen ShiguangGateway portti (oletus `20128`, ohitetaan kun `--remote`
+- `--port <port>` — paikallinen Orbit portti (oletus `20128`, ohitetaan kun `--remote`
   on asetettu). Läsnä kaikissa `setup-*` ja molemmissa käynnistimissä.
-- `shiguang-gateway run` poistumiskoodit: lapsi CLI:n oma poistumiskoodi siirretään
+- `orbit run` poistumiskoodit: lapsi CLI:n oma poistumiskoodi siirretään
   sellaisenaan; `2` = virheelliset argumentit (tuettu kohde puuttuu, vaadittu
   `--model` puuttuu, säilön suoja); `127` = kohdebinaaria ei ole `PATH`:issa;
   `130`/`143`/`129` kun käynnistys päättyy `SIGINT`/`SIGTERM`/`SIGHUP`;
@@ -118,9 +118,9 @@ Interaktiivinen valitsin on myös jaettu asetusreseptien kanssa:
 
 ```bash
 # Valitse aktiivisesta paikallisesta tai etä malliluettelosta ja konfiguroi kohde.
-shiguang-gateway configure claude
-shiguang-gateway configure opencode --provider glm
-shiguang-gateway configure qwen --model qwen/qwen3.8-max-preview --yes
+orbit configure claude
+orbit configure opencode --provider glm
+orbit configure qwen --model qwen/qwen3.8-max-preview --yes
 ```
 
 `configure` tällä hetkellä delegoi testattuihin resepteihin `codex`, `claude`,
@@ -129,7 +129,7 @@ MITM, ja opas vain luettelon merkinnät pysyvät eksplisiittisinä `setup-*`/man
 eivätkä esitetä käynnistettävinä kohteina.
 
 > `setup-opencode` on **kevyt openai-yhteensopiva** OpenCode integraatio.
-> On myös rikkaampi liitännäintegraatio — `shiguang-gateway setup opencode` — joka
+> On myös rikkaampi liitännäintegraatio — `orbit setup opencode` — joka
 > asentaa `@orbit/opencode-plugin`. Ne ovat eri komentoja; taulukko
 > yllä dokumentoi `setup-opencode`.
 
@@ -137,75 +137,75 @@ eivätkä esitetä käynnistettävinä kohteina.
 
 ## Paikallinen käyttö
 
-Kun ShiguangGateway toimii `localhost:20128`, suorita vain asetuskäsky työkalullesi. Luettelo haetaan paikalliselta palvelimelta.
+Kun Orbit toimii `localhost:20128`, suorita vain asetuskäsky työkalullesi. Luettelo haetaan paikalliselta palvelimelta.
 
 ```bash
 # Codex: kirjoita profiili jokaiselle vastaavalle mallille ~/.codex/
-shiguang-gateway setup-codex
+orbit setup-codex
 codex --profile glm52            # käytä luotua profiilia
 
 # Claude Code: kirjoita mallikohtaiset profiilit, sitten käynnistä yksi
-shiguang-gateway setup-claude
-shiguang-gateway launch --profile glm52
+orbit setup-claude
+orbit launch --profile glm52
 
 # OpenCode: kirjoita openai-yhteensopiva tarjoaja kaikilla luettelomalleilla
-shiguang-gateway setup-opencode
-export SHIGUANG_GATEWAY_API_KEY=sk-...  # viitattu {env:SHIGUANG_GATEWAY_API_KEY} kautta, ei koskaan levyllä
-opencode -m shiguang-gateway/glm/glm-5.2 "..."
+orbit setup-opencode
+export ORBIT_API_KEY=sk-...  # viitattu {env:ORBIT_API_KEY} kautta, ei koskaan levyllä
+opencode -m orbit/glm/glm-5.2 "..."
 
 # Työkalut, joissa ei ole automaattista löytämistä, tarvitsevat erillisen mallin:
-shiguang-gateway setup-aider --model glm/glm-5.2
-shiguang-gateway setup-qwen --model qwen/qwen3.8-max-preview
+orbit setup-aider --model glm/glm-5.2
+orbit setup-qwen --model qwen/qwen3.8-max-preview
 
 # Esikatselu ilman mitään kirjoittamista:
-shiguang-gateway setup-continue --dry-run
+orbit setup-continue --dry-run
 ```
 
 Käynnistä ilman mitään konfiguraation kirjoittamista (vain ympäristöinjektio):
 
 ```bash
-shiguang-gateway launch                 # Claude Code → paikallinen ShiguangGateway
-shiguang-gateway launch-codex           # Codex CLI → paikallinen ShiguangGateway
-shiguang-gateway launch-codex --profile glm52
-shiguang-gateway run claude --model openai/gpt-5.4
-shiguang-gateway run codex --model openai/gpt-5.4 --dry-run --json
-shiguang-gateway run aider --model glm/glm-5.2 -- --message "reply OK"
-shiguang-gateway run goose --model glm/glm-5.2
-shiguang-gateway run opencode --model glm/glm-5.2 -- run "reply OK"
-shiguang-gateway run qwen --model glm/glm-5.2 -- -p "reply OK"
-shiguang-gateway run gemini --model glm/glm-5.2 -- --skip-trust -p "reply OK"
+orbit launch                 # Claude Code → paikallinen Orbit
+orbit launch-codex           # Codex CLI → paikallinen Orbit
+orbit launch-codex --profile glm52
+orbit run claude --model openai/gpt-5.4
+orbit run codex --model openai/gpt-5.4 --dry-run --json
+orbit run aider --model glm/glm-5.2 -- --message "reply OK"
+orbit run goose --model glm/glm-5.2
+orbit run opencode --model glm/glm-5.2 -- run "reply OK"
+orbit run qwen --model glm/glm-5.2 -- -p "reply OK"
+orbit run gemini --model glm/glm-5.2 -- --skip-trust -p "reply OK"
 
 # Erityinen komento polku: siirrä kaikki, mikä tulee jälkeen --
-shiguang-gateway run claude -- --print-system-prompt "review this diff"
+orbit run claude -- --print-system-prompt "review this diff"
 ```
 
 ---
 
 ## Etäkäyttö
 
-Suunnittele mikä tahansa asetuskäsky etäiseen ShiguangGatewayen `--remote` + `--api-key`. Luettelo haetaan etäyhteydestä; konfiguraatio kirjoitetaan paikalliselle koneellesi.
+Suunnittele mikä tahansa asetuskäsky etäiseen Orbiten `--remote` + `--api-key`. Luettelo haetaan etäyhteydestä; konfiguraatio kirjoitetaan paikalliselle koneellesi.
 
 ```bash
 # OpenCode etä-VPS:lle, pidä vain glm/kimi mallit
-shiguang-gateway setup-opencode --remote http://192.168.0.15:20128 --api-key oma_live_xxx \
+orbit setup-opencode --remote http://192.168.0.15:20128 --api-key oma_live_xxx \
   --only glm,kimi
-opencode -m shiguang-gateway/glm/glm-5.2 "..."   # vie SHIGUANG_GATEWAY_API_KEY ensin
+opencode -m orbit/glm/glm-5.2 "..."   # vie ORBIT_API_KEY ensin
 
 # Codex-profiilit etäluettelosta
-shiguang-gateway setup-codex --remote http://192.168.0.15:20128 --api-key oma_live_xxx
+orbit setup-codex --remote http://192.168.0.15:20128 --api-key oma_live_xxx
 
 # Käynnistä CLI suoraan etäyhteyteen
-shiguang-gateway launch       --remote http://192.168.0.15:20128 --api-key oma_live_xxx
-shiguang-gateway launch-codex --remote http://192.168.0.15:20128 --api-key oma_live_xxx
+orbit launch       --remote http://192.168.0.15:20128 --api-key oma_live_xxx
+orbit launch-codex --remote http://192.168.0.15:20128 --api-key oma_live_xxx
 ```
 
 Sen sijaan, että siirtäisit `--remote`/`--api-key` joka kerta, kirjaudu sisään kerran ja anna **aktiivisen kontekstin** toimittaa ne automaattisesti:
 
 ```bash
-shiguang-gateway connect 192.168.0.15        # luo rajatun tokenin, tallentaa kontekstin
-shiguang-gateway setup-codex                 # ← nyt käyttää etäluetteloa
-shiguang-gateway setup-opencode              # ← sama
-shiguang-gateway launch                      # ← Claude Code etäyhteyteen
+orbit connect 192.168.0.15        # luo rajatun tokenin, tallentaa kontekstin
+orbit setup-codex                 # ← nyt käyttää etäluetteloa
+orbit setup-opencode              # ← sama
+orbit launch                      # ← Claude Code etäyhteyteen
 ```
 
 Katso [Etätila](./REMOTE-MODE.md) konteksteista, alueista ja tokenin hallinnasta.
@@ -214,7 +214,7 @@ Katso [Etätila](./REMOTE-MODE.md) konteksteista, alueista ja tokenin hallinnast
 
 ## Perus-URL-säännöt (mitkä työkalut haluavat `/v1`)
 
-ShiguangGateway altistaa OpenAI-pinnan `/v1`-osoitteessa, Anthropic-pinnan juuriosoitteessa ja natiivin Gemini-pinnan `/v1beta`-osoitteessa. Jokainen integraatio on kytketty muotoon, jota työkalu odottaa (vahvistettu komennon lähteessä):
+Orbit altistaa OpenAI-pinnan `/v1`-osoitteessa, Anthropic-pinnan juuriosoitteessa ja natiivin Gemini-pinnan `/v1beta`-osoitteessa. Jokainen integraatio on kytketty muotoon, jota työkalu odottaa (vahvistettu komennon lähteessä):
 
 | Integraatio                                                                | Perus-URL kirjoitettu | `/v1`?                                      |
 | -------------------------------------------------------------------------- | --------------------- | ------------------------------------------- |
@@ -223,7 +223,7 @@ ShiguangGateway altistaa OpenAI-pinnan `/v1`-osoitteessa, Anthropic-pinnan juuri
 | `setup-aider` (`OPENAI_API_BASE`)                                          | juuriosoitteessa      | Ei — LiteLLM liittää `/v1/chat/completions` |
 | `setup-kilo`, `setup-roo`, `setup-continue`, `setup-crush`, `setup-cursor` | `/v1`-osoitteella     | Kyllä                                       |
 | `setup-claude` (`ANTHROPIC_BASE_URL`), `launch`                            | juuriosoitteessa      | Ei — Claude Code liittää `/v1/messages`     |
-| `setup-codex`, `launch-codex` (`model_providers.shiguang-gateway.base_url`)       | `/v1`-osoitteella     | Kyllä                                       |
+| `setup-codex`, `launch-codex` (`model_providers.orbit.base_url`)       | `/v1`-osoitteella     | Kyllä                                       |
 | `setup-qwen` (`modelProviders.openai[].baseUrl`)                           | `/v1`-osoitteella     | Kyllä                                       |
 | `run gemini` (`GOOGLE_GEMINI_BASE_URL`)                                    | juuriosoitteessa      | Ei — SDK liittää `/v1beta/models/…`         |
 
@@ -231,14 +231,14 @@ ShiguangGateway altistaa OpenAI-pinnan `/v1`-osoitteessa, Anthropic-pinnan juuri
 
 ## Säilytä natiiviriippuvuudet päivityksessä: `--include=optional`
 
-Kun päivität komennolla `shiguang-gateway update` (vahvistamisen jälkeen tai `--apply`-lipulla),
-ShiguangGateway suorittaa asennuksen `--include=optional` mukana:
+Kun päivität komennolla `orbit update` (vahvistamisen jälkeen tai `--apply`-lipulla),
+Orbit suorittaa asennuksen `--include=optional` mukana:
 
 ```bash
-npm install -g shiguang-gateway@latest --include=optional
+npm install -g orbit@latest --include=optional
 ```
 
-Tämä **ei** ole lippu, jonka annat `shiguang-gateway update` -komennolle — se on aina
+Tämä **ei** ole lippu, jonka annat `orbit update` -komennolle — se on aina
 sovellettuna päivityksessä. Se takaa, että `optionalDependencies` (`better-sqlite3`, `keytar`,
 `tls-client`, LLMLingua SLM -pino) säilyvät päivityksen aikana, vaikka npm-konfiguraatiossasi
 olisi asetettu `omit=optional`, mikä muuten hiljaisesti poistaisi natiivin SQLite
@@ -246,28 +246,28 @@ ohjaimen ja OS-avainrenkaan sidoksen. Jos haluat ennakoida tarkan komennon ilman
 soveltamista:
 
 ```bash
-shiguang-gateway update --dry-run
-# [DRY RUN] Suorittaisi: npm install -g shiguang-gateway@latest --include=optional
+orbit update --dry-run
+# [DRY RUN] Suorittaisi: npm install -g orbit@latest --include=optional
 ```
 
-Muut `shiguang-gateway update` -liput (vahvistettu lähdekoodissa): `--check` (poistu 1, jos
+Muut `orbit update` -liput (vahvistettu lähdekoodissa): `--check` (poistu 1, jos
 vanhentunut), `--apply` (asentaa ilman kehotusta), `--changelog`, `--no-backup`,
 `--yes`.
 
 ---
 
-## Google Gemini CLI komennolla `shiguang-gateway run gemini`
+## Google Gemini CLI komennolla `orbit run gemini`
 
 Sopimus vahvistettu `@google/gemini-cli` 0.50.0: CLI kunnioittaa
 `GOOGLE_GEMINI_BASE_URL` ja lähettää `POST /v1beta/models/<model>:generateContent`
-(ja `:streamGenerateContent?alt=sse`) sitä vastaan — tarkalleen ShiguangGateway:n natiivin
-Gemini-pinnan (`/v1beta`). `shiguang-gateway run gemini` yhdistää tämän automaattisesti:
+(ja `:streamGenerateContent?alt=sse`) sitä vastaan — tarkalleen Orbit:n natiivin
+Gemini-pinnan (`/v1beta`). `orbit run gemini` yhdistää tämän automaattisesti:
 
-- `GOOGLE_GEMINI_BASE_URL` → aktiivinen ShiguangGateway perus-URL (juuri, ei `/v1`);
-- `GEMINI_API_KEY` → ratkaistu ShiguangGateway-todistus (vaihtoehto/env/konteksti);
+- `GOOGLE_GEMINI_BASE_URL` → aktiivinen Orbit perus-URL (juuri, ei `/v1`);
+- `GEMINI_API_KEY` → ratkaistu Orbit-todistus (vaihtoehto/env/konteksti);
 - **väliaikainen eristetty `GEMINI_CLI_HOME`**, jonka `.gemini/settings.json`
   valitsee `gemini-api-key`-todistuksen, joten tallennettu Google OAuth -istunto (Code Assist)
-  ei koskaan ohita ShiguangGateway-ohjattua käynnistystä — poistetaan uloskirjautumisen jälkeen;
+  ei koskaan ohita Orbit-ohjattua käynnistystä — poistetaan uloskirjautumisen jälkeen;
 - **ympäristöhygienia**: lapsiympäristö puhdistetaan `GOOGLE_API_KEY`,
   `GOOGLE_GENAI_USE_VERTEXAI` ja `GOOGLE_GENAI_USE_GCA` (jotka ohjaisivat
   todistusta Vertex/Code Assist:lle), ja `GEMINI_DEFAULT_AUTH_TYPE=gemini-api-key` on
@@ -276,7 +276,7 @@ Gemini-pinnan (`/v1beta`). `shiguang-gateway run gemini` yhdistää tämän auto
 - `--model <id>` injektointi `--provider`/`--model`-lipuista.
 
 ```bash
-shiguang-gateway run gemini --model glm/glm-5.2 -- --skip-trust -p "hello"
+orbit run gemini --model glm/glm-5.2 -- --skip-trust -p "hello"
 ```
 
 Geminin työtilan luottamussuoja on edelleen voimassa headless-tilassa — käytä
@@ -291,7 +291,7 @@ agenttiprotokollan integraationa `/dashboard/acp-agents`.
 
 Deterministinen käynnistys-suunnitelman regressiotestit CI:ssä (`tests/unit/cli/run-command.test.ts`,
 `tests/unit/cli/run-execution.test.ts`). Vahvistaaksesi REAALIT binäärit REAALIN
-ShiguangGateway-palvelimen kanssa, on olemassa valinnainen kehys osoitteessa
+Orbit-palvelimen kanssa, on olemassa valinnainen kehys osoitteessa
 `tests/integration/upstream-cli-smoke.int.test.ts`. Se ei koskaan käynnisty automaattisesti
 (koska jokainen alakoe ohittaa, ellei `RUN_CLI_SMOKE=1`), välittää todistuksen ympäristömuuttujan
 NIMEN kautta (ei koskaan arvon kautta), peittää avainmuotoiset merkkijonot kaikesta tallennetusta
@@ -300,21 +300,21 @@ todistukseksi / upstreamiksi / konfiguraatioksi sen sijaan, että se olisi pelkk
 
 ```bash
 RUN_CLI_SMOKE=1 \
-SHIGUANG_GATEWAY_SMOKE_BASE_URL="http://localhost:20128" \
-SHIGUANG_GATEWAY_SMOKE_MODEL="<provider/model>" \
-SHIGUANG_GATEWAY_SMOKE_API_KEY_ENV="SHIGUANG_GATEWAY_API_KEY" \
+ORBIT_SMOKE_BASE_URL="http://localhost:20128" \
+ORBIT_SMOKE_MODEL="<provider/model>" \
+ORBIT_SMOKE_API_KEY_ENV="ORBIT_API_KEY" \
 node --import tsx/esm --test tests/integration/upstream-cli-smoke.int.test.ts
 ```
 
-Valinnainen: `SHIGUANG_GATEWAY_SMOKE_TARGETS="codex,opencode,qwen"` rajoittaa pyyntiä;
-`SHIGUANG_GATEWAY_SMOKE_TIMEOUT_MS` ohittaa 120s kohdekohtaista aikarajaa.
+Valinnainen: `ORBIT_SMOKE_TARGETS="codex,opencode,qwen"` rajoittaa pyyntiä;
+`ORBIT_SMOKE_TIMEOUT_MS` ohittaa 120s kohdekohtaista aikarajaa.
 
 ---
 
 ## Katso myös
 
 - [Claude Code -konfiguraatio](./CLAUDE-CODE-CONFIGURATION.md) — syvällisempi Claude Code -opas
-- [Codex CLI -konfiguraatio](./CODEX-CLI-CONFIGURATION.md) — kertaluonteinen `[model_providers.shiguang-gateway]` perusasetukset
+- [Codex CLI -konfiguraatio](./CODEX-CLI-CONFIGURATION.md) — kertaluonteinen `[model_providers.orbit]` perusasetukset
 - [Etätila](./REMOTE-MODE.md) — kontekstit, rajatut pääsytunnukset, etäpalvelimen ohjaaminen
 - [CLI Työkalujen viite](../reference/CLI-TOOLS.md) — täydellinen luettelo tuetuista työkaluista + hallintapaneelin sivut
 - [Asennusopas](./SETUP_GUIDE.md) — asennusmenetelmät ja ensimmäisen käytön perehdytys

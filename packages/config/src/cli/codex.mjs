@@ -8,7 +8,7 @@ export function buildProfileToml(modelId, config) {
     `# codex --profile ${config.name}`,
     `# ${modelId}`,
     `model                          = "${modelId}"`,
-    `model_provider                 = "shiguangGateway"`,
+    `model_provider                 = "orbit"`,
   ];
   if (config.effort) lines.push(`model_reasoning_effort         = "${config.effort}"`);
   if (config.summary) lines.push(`model_reasoning_summary        = "detailed"`);

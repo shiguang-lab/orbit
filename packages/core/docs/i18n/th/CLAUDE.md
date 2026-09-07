@@ -39,7 +39,7 @@ npm run test:all
 
 ## โครงการโดยรวม
 
-**ShiguangGateway** — โปรเซสเซอร์/เราเตอร์ AI ที่รวมเป็นหนึ่ง จุดสิ้นสุดเดียว, ผู้ให้บริการ LLM 329 ราย, การสำรองข้อมูลอัตโนมัติ
+**Orbit** — โปรเซสเซอร์/เราเตอร์ AI ที่รวมเป็นหนึ่ง จุดสิ้นสุดเดียว, ผู้ให้บริการ LLM 329 ราย, การสำรองข้อมูลอัตโนมัติ
 
 | เลเยอร์       | ตำแหน่ง                 | วัตถุประสงค์                                                              |
 | ------------- | ----------------------- | ------------------------------------------------------------------------- |
@@ -80,7 +80,7 @@ API routes follow a consistent pattern: `Route → CORS preflight → Zod body v
 
 ## Resilience Runtime State
 
-ShiguangGateway มีกลไกการล้มเหลวชั่วคราวที่เกี่ยวข้องกันสามอย่าง แต่แตกต่างกัน รักษาขอบเขตของพวกเขาแยกกันเมื่อทำการดีบักพฤติกรรมการจัดเส้นทาง ดู
+Orbit มีกลไกการล้มเหลวชั่วคราวที่เกี่ยวข้องกันสามอย่าง แต่แตกต่างกัน รักษาขอบเขตของพวกเขาแยกกันเมื่อทำการดีบักพฤติกรรมการจัดเส้นทาง ดู
 [3-layer resilience diagram](./docs/diagrams/exported/resilience-3layers.svg)
 (แหล่งที่มา: [docs/diagrams/resilience-3layers.mmd](./docs/diagrams/resilience-3layers.mmd))
 สำหรับแผนที่แบบคร่าวๆ
@@ -365,7 +365,7 @@ git push -u origin feat/your-feature
 - **TypeScript**: 5.9+, target ES2022, module esnext, resolution bundler
 - **Path aliases**: `@/*` → `src/`, `@orbit/inference` → `open-sse/`, `@orbit/inference/*` → `open-sse/*`
 - **พอร์ตเริ่มต้น**: 20128 (API + แดชบอร์ดบนพอร์ตเดียวกัน)
-- **ไดเรกทอรีข้อมูล**: `DATA_DIR` env var, ค่าเริ่มต้นเป็น `~/.shiguang-gateway/`
+- **ไดเรกทอรีข้อมูล**: `DATA_DIR` env var, ค่าเริ่มต้นเป็น `~/.orbit/`
 - **ตัวแปรสภาพแวดล้อมหลัก**: `PORT`, `JWT_SECRET`, `API_KEY_SECRET`, `INITIAL_PASSWORD`, `REQUIRE_API_KEY`, `APP_LOG_LEVEL`
 - การตั้งค่า: `cp .env.example .env` จากนั้นสร้าง `JWT_SECRET` (`openssl rand -base64 48`) และ `API_KEY_SECRET` (`openssl rand -hex 32`)
 
@@ -388,4 +388,4 @@ git push -u origin feat/your-feature
 13. อย่าผสมเส้นทางภายนอกหรือค่ารันไทม์ในสคริปต์เชลล์ที่ส่งไปยัง `exec()`/`spawn()` — ส่งผ่านตัวเลือก `env` แทน อ้างอิง: `src/mitm/cert/install.ts::updateNssDatabases`
 14. อย่าปฏิเสธการแจ้งเตือน CodeQL / Secret-Scanning โดยไม่ (a) ตรวจสอบเอกสารรูปแบบข้างต้นก่อนเพื่อดูว่าผู้ช่วยใช้ได้หรือไม่ และ (b) บันทึกเหตุผลทางเทคนิคในความคิดเห็นการปฏิเสธ ตัวอย่าง: `js/stack-trace-exposure` ที่เกิดขึ้นใน callsites ที่ส่งผ่าน `sanitizeErrorMessage()` แล้วเป็นข้อจำกัดที่ทราบของ CodeQL (custom sanitizers ไม่ได้รับการรับรู้) — ปฏิเสธว่าเป็น `false positive` โดยอ้างอิง `docs/security/ERROR_SANITIZATION.md`
 15. อย่าเปิดเผยเส้นทางที่สร้างกระบวนการลูก (`/api/mcp/`, `/api/cli-tools/runtime/`) โดยไม่มีการจำแนกประเภท `isLocalOnlyPath()` ใน `src/server/authz/routeGuard.ts`. การบังคับใช้ loopback เกิดขึ้นโดยไม่มีเงื่อนไขก่อนการตรวจสอบการรับรองใด ๆ — JWT ที่รั่วไหลผ่านอุโมงค์ไม่สามารถกระตุ้นการสร้างกระบวนการได้ ดู `docs/security/ROUTE_GUARD_TIERS.md`
-16. อย่ารวมส่วนต่อท้าย `Co-Authored-By` ที่ให้เครดิตกับ AI assistant, LLM หรือบัญชี automation (เช่น ชื่อที่มี "Claude", "GPT", "Copilot", "Bot"; อีเมลที่ `anthropic.com` / `openai.com` / ที่อยู่ `noreply.github.com` ที่บอทเป็นเจ้าของ) ไว้ในข้อความ commit เด็ดขาด ส่วนต่อท้ายเช่นนี้จะส่ง attribution ของ commit ไปยังบัญชีบอทบน GitHub และซ่อนผู้เขียนจริง (`diegosouzapw`) ในประวัติ PR ผู้ร่วมมือที่เป็นมนุษย์ — รวมถึงผู้เขียน PR upstream และผู้รายงาน issue ที่ถูก port มายัง ShiguangGateway — สามารถและควรได้รับเครดิตด้วยส่วนต่อท้ายมาตรฐาน `Co-authored-by: Name <email>`; workflow upstream-port (`/port-upstream-features`, `/port-upstream-issues`) ขึ้นอยู่กับสิ่งนี้
+16. อย่ารวมส่วนต่อท้าย `Co-Authored-By` ที่ให้เครดิตกับ AI assistant, LLM หรือบัญชี automation (เช่น ชื่อที่มี "Claude", "GPT", "Copilot", "Bot"; อีเมลที่ `anthropic.com` / `openai.com` / ที่อยู่ `noreply.github.com` ที่บอทเป็นเจ้าของ) ไว้ในข้อความ commit เด็ดขาด ส่วนต่อท้ายเช่นนี้จะส่ง attribution ของ commit ไปยังบัญชีบอทบน GitHub และซ่อนผู้เขียนจริง (`diegosouzapw`) ในประวัติ PR ผู้ร่วมมือที่เป็นมนุษย์ — รวมถึงผู้เขียน PR upstream และผู้รายงาน issue ที่ถูก port มายัง Orbit — สามารถและควรได้รับเครดิตด้วยส่วนต่อท้ายมาตรฐาน `Co-authored-by: Name <email>`; workflow upstream-port (`/port-upstream-features`, `/port-upstream-issues`) ขึ้นอยู่กับสิ่งนี้

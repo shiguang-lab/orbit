@@ -204,7 +204,7 @@ export default function ProvidersPage() {
     staleTime: 30_000,
   });
 
-  // Shiguang Gateway's Providers page reads these as independent, best-effort sources.
+  // Orbit's Providers page reads these as independent, best-effort sources.
   // Keep them separate so an unavailable enrichment never hides real connections.
   const expirationQuery = useQuery({
     queryKey: ["providers", "expiration"],

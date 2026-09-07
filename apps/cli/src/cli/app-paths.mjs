@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 
 export const CLI_APP_ROOT = fileURLToPath(new URL("../..", import.meta.url));
 export const CLI_PACKAGE_JSON = fileURLToPath(new URL("../../package.json", import.meta.url));
-export const CLI_ENTRY = fileURLToPath(new URL("../shiguang-gateway.mjs", import.meta.url));
+export const CLI_ENTRY = fileURLToPath(new URL("../orbit.mjs", import.meta.url));
 export const CLI_LOCALES_DIR = fileURLToPath(new URL("./locales", import.meta.url));
 
 export function readCliPackage(readFile = readFileSync) {

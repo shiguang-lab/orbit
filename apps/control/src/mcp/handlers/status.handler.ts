@@ -30,7 +30,7 @@ export async function getStatus(request: Request): Promise<Response> {
     const httpTransport = getMcpHttpStatus();
     const stdioOnline = isMcpHeartbeatOnline(heartbeat, { requireLivePid: true });
     const online = transport === "stdio" ? enabled && stdioOnline : isMcpHttpTransportReady(enabled, transport);
-    const scopesEnforced = process.env.SHIGUANG_GATEWAY_MCP_ENFORCE_SCOPES === "true";
+    const scopesEnforced = process.env.ORBIT_MCP_ENFORCE_SCOPES === "true";
     const lastCall = lastCallPage.entries[0] || null;
     const now = Date.now();
     const heartbeatAt = heartbeat ? new Date(heartbeat.lastHeartbeatAt).getTime() : null;

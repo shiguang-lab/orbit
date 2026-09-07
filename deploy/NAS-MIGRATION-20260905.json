@@ -1,7 +1,7 @@
 {
   "status": "ok",
-  "source": "NAS:/volume1/docker/shiguang-gateway-acceptance-20260905/source-refresh/storage.sqlite",
-  "target": "NAS:shiguang-gateway-postgres/gateway",
+  "source": "NAS:/volume1/docker/orbit-acceptance-20260905/source-refresh/storage.sqlite",
+  "target": "NAS:orbit-postgres/gateway",
   "sourceSha256": "4b5f12c8f41f854102ed71459580db6b27f4c5fd36600200450db0adc68257d5",
   "tables": 133,
   "rows": 59982,

@@ -3,7 +3,7 @@ import crypto from "node:crypto";
 import { getLegacyCliTokenSync, getMachineTokenSync } from "../machineToken.ts";
 import { AUTHZ_HEADER_PEER_LOCALITY } from "../../server/authz/headers.ts";
 
-const HEADER_NAME = "x-shiguangGateway-cli-token";
+const HEADER_NAME = "x-orbit-cli-token";
 
 type RequestWithPeer = Request & {
   ip?: string;
@@ -56,11 +56,11 @@ async function isLocalCliRequest(request: RequestWithPeer): Promise<boolean> {
 }
 
 /**
- * Validates the CLI machine-id token sent by the local shiguangGateway CLI.
- * Only accepted from loopback IPs. Disabled via SHIGUANG_GATEWAY_DISABLE_CLI_TOKEN=true.
+ * Validates the CLI machine-id token sent by the local orbit CLI.
+ * Only accepted from loopback IPs. Disabled via ORBIT_DISABLE_CLI_TOKEN=true.
  */
 export async function isCliTokenAuthValid(request: Request): Promise<boolean> {
-  if (process.env.SHIGUANG_GATEWAY_DISABLE_CLI_TOKEN === "true") return false;
+  if (process.env.ORBIT_DISABLE_CLI_TOKEN === "true") return false;
 
   const token = await readHeader(request, HEADER_NAME);
   if (!token) return false;

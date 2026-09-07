@@ -1,7 +1,7 @@
 import os from "os";
 import path from "path";
 
-const APP_NAME = "shiguangGateway";
+const APP_NAME = "orbit";
 
 function fallbackHomeDir(): string {
   const envHome = process.env.HOME || process.env.USERPROFILE;

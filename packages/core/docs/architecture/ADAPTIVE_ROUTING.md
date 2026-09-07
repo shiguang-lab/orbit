@@ -7,7 +7,7 @@ lastUpdated: 2026-08-20
 # Adaptive Routing: Routing Events, Quality Feedback & Explainability
 
 This document describes the feedback-driven adaptive routing foundation added to
-ShiguangGateway. It is deliberately small: it introduces a typed routing-outcome
+Orbit. It is deliberately small: it introduces a typed routing-outcome
 channel, an online quality signal that feeds the existing auto-combo scorer, an
 optional OpenTelemetry exporter, and an explainability endpoint. It does **not**
 replace the existing resilience stack (circuit breaker, connection cooldown,
@@ -15,7 +15,7 @@ model lockout, health matrix, autopilot) — it complements it.
 
 ## 1. Architectural context
 
-ShiguangGateway is a data plane with a **request hot path** and a **control/intelligence
+Orbit is a data plane with a **request hot path** and a **control/intelligence
 plane**. The hot path must stay fast, memory-efficient, asynchronous, resilient and
 predictable. Evaluation, quality scoring, experiments and historical analysis belong
 to the control plane.
@@ -25,7 +25,7 @@ AI Agent / IDE
       │
       ▼
 ┌─────────────────────┐
-│    ShiguangGateway        │   data plane (fast, sync, in-memory)
+│    Orbit        │   data plane (fast, sync, in-memory)
 │  routing / failover │
 │  health / guardrail │
 │  cache / streaming  │
@@ -120,7 +120,7 @@ Default sinks:
 - `MemoryRoutingEventStore` — bounded (500) ring buffer, newest-first, for the
   explain endpoint.
 - `QualityTracker` consumer — updates the EWMA quality estimate.
-- `OtlpHttpsEventSink` — optional, enabled only when `SHIGUANG_GATEWAY_OTEL_ENDPOINT`
+- `OtlpHttpsEventSink` — optional, enabled only when `ORBIT_OTEL_ENDPOINT`
   (or `OTEL_EXPORTER_OTLP_ENDPOINT`) is set.
 
 ### Measured overhead (honest comparison)
@@ -225,7 +225,7 @@ wired into `createSSEStream` (open-sse/utils/stream.ts):
 - `avgItlMs()` = mean inter-chunk gap (a chunk-latency proxy for ITL).
 
 TTFT/ITL/interrupted flow into the `RoutingEvent` (`ttftMs`, `itlMs`) and are
-exported as GenAI/ShiguangGateway span attributes by the OTel sink.
+exported as GenAI/Orbit span attributes by the OTel sink.
 
 ## 4. OpenTelemetry / GenAI observability
 
@@ -235,13 +235,13 @@ Files: `open-sse/services/routing/otel.ts`
   `@opentelemetry/*` SDK).
 - Spans follow GenAI semantic conventions (`gen_ai.provider.name`,
   `gen_ai.request.model`, `gen_ai.usage.input_tokens/output_tokens`,
-  `gen_ai.completion.finish_reason`, `gen_ai.system`) plus ShiguangGateway routing
+  `gen_ai.completion.finish_reason`, `gen_ai.system`) plus Orbit routing
   attributes (outcome, status, ttft, retries, fallback).
 - `record()` only enqueues into a bounded buffer (O(1)); a background timer
   flushes via `POST {endpoint}/v1/traces` asynchronously. Under overload the
   oldest events are dropped (`dropped` counter) — never backpressure the data
   plane.
-- **Disabled unless configured.** `SHIGUANG_GATEWAY_OTEL_ENDPOINT` (or
+- **Disabled unless configured.** `ORBIT_OTEL_ENDPOINT` (or
   `OTEL_EXPORTER_OTLP_ENDPOINT`) must be set; otherwise the sink is not
   registered and zero OTel code runs.
 
@@ -252,12 +252,12 @@ Files: `open-sse/services/routing/otel.ts`
 - Auth mirrors `/v1/combos` (Bearer API key or dashboard session; anonymous on
   single-user local deployments with `REQUIRE_API_KEY=false`).
 - Combo-level per-invocation traces remain available via the existing
-  `decisionTrace.ts` (header `X-ShiguangGateway-Combo-Trace`).
+  `decisionTrace.ts` (header `X-Orbit-Combo-Trace`).
 - Safety: events carry only routing metadata, never prompts/bodies/credentials.
 
 ## 6. Evaluation-plane integration (Future AGI readiness)
 
-ShiguangGateway treats Future AGI (or any evaluator) as a **potential
+Orbit treats Future AGI (or any evaluator) as a **potential
 intelligence/evaluation backend, not a dependency**. The seams:
 
 - A `RoutingEventSink` can forward events to an evaluator asynchronously.
@@ -314,9 +314,9 @@ fully with the evaluator absent.
 
 | Variable                      | Default     | Effect                                                                          |
 | ----------------------------- | ----------- | ------------------------------------------------------------------------------- |
-| `SHIGUANG_GATEWAY_OTEL_ENDPOINT`     | unset       | When set, enables the OTLP/HTTP traces exporter (e.g. `http://collector:4318`). |
+| `ORBIT_OTEL_ENDPOINT`     | unset       | When set, enables the OTLP/HTTP traces exporter (e.g. `http://collector:4318`). |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | unset       | Fallback alias for the OTLP endpoint.                                           |
-| `OTEL_SERVICE_NAME`           | `shiguang-gateway` | `service.name` resource attribute.                                              |
+| `OTEL_SERVICE_NAME`           | `orbit` | `service.name` resource attribute.                                              |
 
 ## 9. Tests
 

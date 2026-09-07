@@ -925,7 +925,7 @@ export function withSessionHeader(response: Response, sessionId: string | null):
   if (!response || !sessionId) return response;
 
   try {
-    response.headers.set("X-ShiguangGateway-Session-Id", sessionId);
+    response.headers.set("X-Orbit-Session-Id", sessionId);
     return response;
   } catch {
     const cloned = new Response(response.body, {
@@ -933,7 +933,7 @@ export function withSessionHeader(response: Response, sessionId: string | null):
       statusText: response.statusText,
       headers: response.headers,
     });
-    cloned.headers.set("X-ShiguangGateway-Session-Id", sessionId);
+    cloned.headers.set("X-Orbit-Session-Id", sessionId);
     return inheritTrustedLocalRateLimitResponse(response, cloned);
   }
 }
@@ -957,7 +957,7 @@ export function withCorrelationId(response: Response, correlationId: string | nu
 
 /**
  * Modality Bridge transparency (PR-1 Task 9): stamp the
- * `x-shiguangGateway-modality-bridge` header on responses whose request payload was
+ * `x-orbit-modality-bridge` header on responses whose request payload was
  * transparently transformed (e.g. image→text describe). `value` comes from
  * buildModalityBridgeHeader(); null (untouched/rerouted request) is a no-op.
  * Same try-set/clone-fallback shape as withSessionHeader — the clone reuses
@@ -967,7 +967,7 @@ export function withModalityBridgeHeader(response: Response, value: string | nul
   if (!response || !value) return response;
 
   try {
-    response.headers.set("x-shiguangGateway-modality-bridge", value);
+    response.headers.set("x-orbit-modality-bridge", value);
     return response;
   } catch {
     const cloned = new Response(response.body, {
@@ -975,7 +975,7 @@ export function withModalityBridgeHeader(response: Response, value: string | nul
       statusText: response.statusText,
       headers: response.headers,
     });
-    cloned.headers.set("x-shiguangGateway-modality-bridge", value);
+    cloned.headers.set("x-orbit-modality-bridge", value);
     return cloned;
   }
 }
@@ -1004,7 +1004,7 @@ export function withSelectedConnectionHeader(
   if (!response || !connectionId) return response;
 
   try {
-    response.headers.set("X-ShiguangGateway-Selected-Connection-Id", connectionId);
+    response.headers.set("X-Orbit-Selected-Connection-Id", connectionId);
     return response;
   } catch {
     const cloned = new Response(response.body, {
@@ -1012,7 +1012,7 @@ export function withSelectedConnectionHeader(
       statusText: response.statusText,
       headers: response.headers,
     });
-    cloned.headers.set("X-ShiguangGateway-Selected-Connection-Id", connectionId);
+    cloned.headers.set("X-Orbit-Selected-Connection-Id", connectionId);
     return inheritTrustedLocalRateLimitResponse(response, cloned);
   }
 }

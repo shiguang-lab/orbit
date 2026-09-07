@@ -207,7 +207,7 @@ export function cacheReasoningByKey(
 ): void {
   if (!key || !reasoning) return;
   // ponytail: never store the internal replay placeholder — models echo it
-  // and it poisons the cache (upstream echo loop, ShiguangGateway #9573).
+  // and it poisons the cache (upstream echo loop, Orbit #9573).
   if (isInternalReasoningPlaceholder(reasoning)) return;
 
   if (reasoning.length > MAX_ENTRY_BYTES) {

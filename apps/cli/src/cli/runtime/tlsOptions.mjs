@@ -9,18 +9,18 @@ export function resolveTlsOptions(
   { readFileSync = fs.readFileSync, warn = (message) => console.warn(message) } = {}
 ) {
   const certPath =
-    typeof env?.SHIGUANG_GATEWAY_TLS_CERT === "string"
-      ? env.SHIGUANG_GATEWAY_TLS_CERT.trim()
+    typeof env?.ORBIT_TLS_CERT === "string"
+      ? env.ORBIT_TLS_CERT.trim()
       : "";
   const keyPath =
-    typeof env?.SHIGUANG_GATEWAY_TLS_KEY === "string" ? env.SHIGUANG_GATEWAY_TLS_KEY.trim() : "";
+    typeof env?.ORBIT_TLS_KEY === "string" ? env.ORBIT_TLS_KEY.trim() : "";
 
   if (!certPath && !keyPath) return null;
 
   if (!certPath || !keyPath) {
     warn(
-      `[shiguang-gateway][tls] HTTPS not enabled: both SHIGUANG_GATEWAY_TLS_CERT and ` +
-        `SHIGUANG_GATEWAY_TLS_KEY are required (only ${certPath ? "cert" : "key"} provided). ` +
+      `[orbit][tls] HTTPS not enabled: both ORBIT_TLS_CERT and ` +
+        `ORBIT_TLS_KEY are required (only ${certPath ? "cert" : "key"} provided). ` +
         `Serving HTTP.`
     );
     return null;
@@ -32,7 +32,7 @@ export function resolveTlsOptions(
     return { cert, key, certPath, keyPath };
   } catch (error) {
     warn(
-      `[shiguang-gateway][tls] HTTPS not enabled: could not read TLS cert/key ` +
+      `[orbit][tls] HTTPS not enabled: could not read TLS cert/key ` +
         `(${error?.code || error?.message || String(error)}). Serving HTTP.`
     );
     return null;

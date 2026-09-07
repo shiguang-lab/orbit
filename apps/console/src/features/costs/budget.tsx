@@ -59,7 +59,7 @@ export interface BudgetTemplate {
   resetTime: string;
 }
 
-const LS_TEMPLATES = "shiguangGateway:budget:templates";
+const LS_TEMPLATES = "orbit:budget:templates";
 
 const DEFAULT_TEMPLATES: BudgetTemplate[] = [
   {

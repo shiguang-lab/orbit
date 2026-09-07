@@ -108,8 +108,8 @@ export function getNodeRuntimeWarning(version: string = process.versions.node): 
   }
 
   if (support.reason === "unreleased-major") {
-    return `Node.js ${support.nodeVersion} is outside the supported LTS lines. ShiguangGateway currently supports Node.js 22.x, 24.x, 25.x, and 26.x.`;
+    return `Node.js ${support.nodeVersion} is outside the supported LTS lines. Orbit currently supports Node.js 22.x, 24.x, 25.x, and 26.x.`;
   }
 
-  return `Node.js ${support.nodeVersion} is outside ShiguangGateway's approved secure runtime policy.`;
+  return `Node.js ${support.nodeVersion} is outside Orbit's approved secure runtime policy.`;
 }

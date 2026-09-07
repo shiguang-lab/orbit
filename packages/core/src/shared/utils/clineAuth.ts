@@ -11,8 +11,8 @@
 import { APP_CONFIG } from "../constants/appConfig";
 
 const APP_VERSION = APP_CONFIG.version;
-const DEFAULT_CLINE_CLIENT_TYPE = "shiguangGateway";
-const INTERNAL_HEALTH_CHECK_CLIENT_TYPE = "shiguangGateway-internal-health-check";
+const DEFAULT_CLINE_CLIENT_TYPE = "orbit";
+const INTERNAL_HEALTH_CHECK_CLIENT_TYPE = "orbit-internal-health-check";
 
 export interface ClineHeaderContext {
   taskId?: string;

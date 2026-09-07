@@ -6,7 +6,7 @@ lastUpdated: 2026-06-28
 
 # Architektura open-sse
 
-> **TL;DR**: `open-sse/` to rdzeń silnika strumieniowania, który obsługuje każde żądanie LLM w ShiguangGateway. Zawiera ~900 plików implementujących pipeline żądań, executory, serwisy, serwer MCP oraz warstwę tłumaczenia formatów. Ten przewodnik wyjaśnia, jak te elementy współgrają ze sobą.
+> **TL;DR**: `open-sse/` to rdzeń silnika strumieniowania, który obsługuje każde żądanie LLM w Orbit. Zawiera ~900 plików implementujących pipeline żądań, executory, serwisy, serwer MCP oraz warstwę tłumaczenia formatów. Ten przewodnik wyjaśnia, jak te elementy współgrają ze sobą.
 
 **Źródło:** `open-sse/` (pakiet workspace, ~900 plików; 811 `.ts`)
 
@@ -14,10 +14,10 @@ lastUpdated: 2026-06-28
 
 ## Po co osobny pakiet workspace?
 
-`open-sse/` to **samodzielny workspace** w monorepo ShiguangGateway z kilku powodów:
+`open-sse/` to **samodzielny workspace** w monorepo Orbit z kilku powodów:
 
 1. **Reużywalność** — `open-sse` jest publikowany jako `@orbit/inference` na npm, więc inne projekty mogą go używać niezależnie
-2. **Czyste granice** — silnik strumieniowania jest odseparowany od warstwy UI/DB specyficznej dla ShiguangGateway
+2. **Czyste granice** — silnik strumieniowania jest odseparowany od warstwy UI/DB specyficznej dla Orbit
 3. **Wydajność** — silnik nie ma zależności od Next.js, co umożliwia szybsze cold starty w kontekstach CLI/serverless
 4. **Wersjonowanie** — `open-sse` może wydawać releasy we własnym rytmie
 
@@ -421,7 +421,7 @@ Narzędzia są rejestrowane jako samodzielne pliki w `open-sse/mcp-server/tools/
 // open-sse/mcp-server/tools/getHealth.ts
 import { z } from "zod";
 export default {
-  name: "shiguang-gateway_get_health",
+  name: "orbit_get_health",
   description: "Get system health snapshot",
   scope: "read:health",
   inputSchema: z.object({}),
@@ -462,7 +462,7 @@ if (!hasScope(apiKey, "providers:read")) {
 
 ### Po co osobny transformer?
 
-Responses API to nowy format OpenAI ze **stateful conversations** (`previous_response_id`). Gdy klient wysyła żądanie Responses, ShiguangGateway:
+Responses API to nowy format OpenAI ze **stateful conversations** (`previous_response_id`). Gdy klient wysyła żądanie Responses, Orbit:
 
 1. Konwertuje Responses → Chat Completions wewnętrznie
 2. Wysyła do providera (dowolnego wspierającego Chat Completions)

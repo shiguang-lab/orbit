@@ -2,7 +2,7 @@ import { createServer } from "node:http";
 import { randomUUID } from "node:crypto";
 
 /**
- * `shiguangGateway login antigravity` — local OAuth helper for remote installs.
+ * `orbit login antigravity` — local OAuth helper for remote installs.
  *
  * Why this exists: Google's `firstparty/nativeapp` consent for the embedded
  * Antigravity desktop client only releases the authorization code when the
@@ -17,10 +17,10 @@ import { randomUUID } from "node:crypto";
  * dashboard (Antigravity → "Paste credentials"), which decodes it, finalizes the
  * onboarding server-side, and persists the connection.
  *
- * It talks ONLY to Google (no ShiguangGateway server needed locally), so it works even
+ * It talks ONLY to Google (no Orbit server needed locally), so it works even
  * if the remote VPS is firewalled from the user's machine.
  *
- * Push mode: when an active remote context exists (`shiguangGateway connect <host>`), the
+ * Push mode: when an active remote context exists (`orbit connect <host>`), the
  * blob is POSTed straight to that install instead of being printed for a manual
  * copy-paste — every piece was already in place:
  *
@@ -66,7 +66,7 @@ function defaultStartServer(preferredPort) {
       const params = Object.fromEntries(url.searchParams.entries());
       res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
       res.end(
-        "<!doctype html><meta charset=utf-8><title>ShiguangGateway</title>" +
+        "<!doctype html><meta charset=utf-8><title>Orbit</title>" +
           '<body style="font-family:system-ui;padding:2rem">' +
           "<h2>✅ Authorization received</h2>" +
           "<p>Return to your terminal — you can close this tab.</p></body>"
@@ -125,7 +125,7 @@ export async function pushCredentialBlob(provider, blob, deps = {}) {
   }
 }
 
-/** Read the active CLI context (baseUrl + scoped token) written by `shiguangGateway connect`. */
+/** Read the active CLI context (baseUrl + scoped token) written by `orbit connect`. */
 async function defaultResolveContext(overrideName) {
   const { resolveActiveContext } = await import("../contexts.mjs");
   return resolveActiveContext(overrideName);
@@ -246,7 +246,7 @@ export async function runAntigravityLogin(opts = {}, deps = {}) {
   print(
     "\n" +
       "Antigravity authorized. Copy the line below and paste it into your remote\n" +
-      'ShiguangGateway dashboard: Providers → Antigravity → Connect → "Paste credentials".\n' +
+      'Orbit dashboard: Providers → Antigravity → Connect → "Paste credentials".\n' +
       "(This contains a refresh token — treat it like a password.)\n\n" +
       blob +
       "\n\n"
@@ -272,7 +272,7 @@ async function runLoginAntigravity(opts) {
 export function registerLogin(program) {
   const login = program
     .command("login")
-    .description("Local OAuth helpers for remote ShiguangGateway installs (run on your own machine)");
+    .description("Local OAuth helpers for remote Orbit installs (run on your own machine)");
 
   login
     .command("antigravity")

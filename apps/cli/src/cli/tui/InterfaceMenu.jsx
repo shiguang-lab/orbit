@@ -7,7 +7,7 @@ function InterfaceMenuApp({ version, baseUrl, hasUpdate, latestVersion, onChoice
     <Box flexDirection="column" paddingX={2} paddingY={1}>
       <Box borderStyle="double" borderColor="cyan" paddingX={2} paddingY={1} flexDirection="column">
         <Text bold color="cyan">
-          ⚡ ShiguangGateway {version ? `v${version}` : ""}
+          ⚡ Orbit {version ? `v${version}` : ""}
         </Text>
         <Text dimColor>{baseUrl}</Text>
       </Box>

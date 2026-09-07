@@ -83,7 +83,7 @@ export function shouldSwallowUncaught(err, origin) {
  * @param {import("node:http").ServerResponse} res
  */
 export function attachRequestStreamGuards(req, res) {
-  const flag = Symbol.for("shiguangGateway.requestAbortGuard");
+  const flag = Symbol.for("orbit.requestAbortGuard");
   if (req[flag] || res[flag]) return;
   req[flag] = true;
   res[flag] = true;

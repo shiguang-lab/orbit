@@ -302,7 +302,7 @@ export class ChatGptWebCodexExecutor extends BaseExecutor {
       const runtimePaths = connectionRuntimePaths(connectionId);
       const loginConfig = {
         mode: "browser-only" as const,
-        appName: configuredString(providerData, "connectorName", "appName") ?? "ShiguangGateway Codex",
+        appName: configuredString(providerData, "connectorName", "appName") ?? "Orbit Codex",
         ...(chromeExecutablePath ? { chromeExecutablePath } : {}),
         ...(cdpEndpoint ? { cdpEndpoint } : {}),
         storageStatePath,

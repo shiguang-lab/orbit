@@ -30,8 +30,8 @@ function extractBearer(request: Request): string | null {
       if (token) return token;
     }
     // A non-"Bearer <token>" Authorization header (an empty "Bearer ", or a
-    // client's own non-ShiguangGateway token — VS Code Copilot sends one even when the
-    // ShiguangGateway key lives in the URL path of a /vscode tokenized endpoint) must
+    // client's own non-Orbit token — VS Code Copilot sends one even when the
+    // Orbit key lives in the URL path of a /vscode tokenized endpoint) must
     // NOT short-circuit auth. Fall through to x-api-key and the path-scoped URL
     // token below instead of rejecting the request with "Authentication required".
   }

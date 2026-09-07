@@ -10,8 +10,8 @@ export default defineConfig(({ mode }) => {
   const env = { ...loadEnv(mode, repoRoot, ""), ...loadEnv(mode, ".", ""), ...process.env };
   // Independent service targets. The existing BFF remains a compatibility
   // launcher, but new development uses the split control/edge/realtime apps.
-  const controlTarget = env.SHIGUANG_GATEWAY_CONTROL_API_TARGET ?? "http://127.0.0.1:8788";
-  const edgeTarget = env.SHIGUANG_GATEWAY_EDGE_GATEWAY_TARGET ?? "http://127.0.0.1:8787";
+  const controlTarget = env.ORBIT_CONTROL_API_TARGET ?? "http://127.0.0.1:8788";
+  const edgeTarget = env.ORBIT_EDGE_GATEWAY_TARGET ?? "http://127.0.0.1:8787";
 
   return {
     plugins: [react()],
@@ -33,7 +33,7 @@ export default defineConfig(({ mode }) => {
         "/api": { target: controlTarget, changeOrigin: true },
         // 长连接 WS；生产环境由同源反向代理转发到本地 realtime 服务。
         "/live-ws": {
-          target: env.SHIGUANG_GATEWAY_LIVE_WS_TARGET ?? "ws://127.0.0.1:20132",
+          target: env.ORBIT_LIVE_WS_TARGET ?? "ws://127.0.0.1:20132",
           ws: true,
           changeOrigin: true,
         },

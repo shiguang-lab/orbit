@@ -9,7 +9,7 @@ lastUpdated: 2026-06-28
 > **Source of truth:** `src/lib/memory/` and `src/app/api/memory/`
 > **Last updated:** 2026-06-28 — v3.8.40 (off-by-default + int8 quantization catch-up)
 
-ShiguangGateway provides persistent conversational memory keyed by API key (and
+Orbit provides persistent conversational memory keyed by API key (and
 optionally session id). Memories are extracted automatically from LLM responses
 via lightweight regex pattern matching and injected back into subsequent
 requests as a leading system message (or first user message for providers that
@@ -21,7 +21,7 @@ reject the system role).
 > billed — a surprising cost for new installs and for clients that manage their
 > own context. Opt in explicitly under **Settings → Memory** (the
 > `MemorySkillsTab` shows a token-cost warning callout when memory is enabled).
-> A client can opt a single request out with the `x-shiguang-gateway-no-memory`
+> A client can opt a single request out with the `x-orbit-no-memory`
 > request header (`true`/`1`/`yes`) — see the request-header table in
 > [API_REFERENCE.md](../reference/API_REFERENCE.md). A no-memory request sets
 > `memoryOwnerId = null`, which disables **both** memory and skill injection for
@@ -246,7 +246,7 @@ falls back to sqlite-vec → FTS5.
   vectors on first use), and upsert a point with payload `{memoryId,
 apiKeyId, sessionId, key, content, metadata, createdAtUnix, expiresAtUnix}`.
 - `searchSemanticMemory(query, topK, scope)` — embed the query, search the
-  collection filtered by `kind = "shiguang-gateway_memory"` and optionally by
+  collection filtered by `kind = "orbit_memory"` and optionally by
   `apiKeyId` / `sessionId`. Caps `topK` to `[1, 20]`.
 - `deleteSemanticMemoryPoint(id)` — single point delete. Called by
   `deleteMemory()` after the SQLite row is removed (D15).
@@ -376,7 +376,7 @@ facts without storing them.
    returns at least one entry when any matched.
 
 `estimateTokens` is exported and used by retrieval, summarisation, and the MCP
-`shiguang-gateway_memory_search` tool.
+`orbit_memory_search` tool.
 
 ## Injection (`injection.ts`)
 
@@ -432,7 +432,7 @@ See also the "Settings extension" section above for field descriptions.
 | `memoryVectorStore`         | `vectorStore`            | `"auto"` |
 
 Qdrant-related DB keys (`qdrantEnabled`, `qdrantHost`, `qdrantPort`,
-`qdrantApiKey`, `qdrantCollection` default `"shiguang-gateway_memory"`,
+`qdrantApiKey`, `qdrantCollection` default `"orbit_memory"`,
 `qdrantEmbeddingModel` default `"openai/text-embedding-3-small"`) are read by
 `normalizeQdrantConfig()` in `qdrant.ts`.
 
@@ -511,15 +511,15 @@ takes precedence and a derived `page` is computed for the response shape.
 
 When the MCP server is enabled, three memory tools are registered:
 
-- `shiguang-gateway_memory_search` — `{apiKeyId, query?, type?, maxTokens?, limit?}`
+- `orbit_memory_search` — `{apiKeyId, query?, type?, maxTokens?, limit?}`
   → wraps `retrieveMemories()`. As of v3.8.6 (D16), the `strategy` is read
   from `getMemorySettings()` instead of being hardcoded to `"exact"`. If
   `query` is provided and `strategy` is `semantic` or `hybrid`, the vector
   store is used when available.
-- `shiguang-gateway_memory_add` — `{apiKeyId, sessionId?, type, key, content,
+- `orbit_memory_add` — `{apiKeyId, sessionId?, type, key, content,
 metadata?}` → wraps `createMemory()`. Accepts only the 4 canonical types:
   `factual`, `episodic`, `procedural`, `semantic` (D17).
-- `shiguang-gateway_memory_clear` — `{apiKeyId, type?, olderThan?}` → lists matching
+- `orbit_memory_clear` — `{apiKeyId, type?, olderThan?}` → lists matching
   entries, optionally filters by created-before timestamp, then deletes each
   via `deleteMemory()` (which also removes vectors from sqlite-vec + Qdrant).
 
@@ -582,7 +582,7 @@ default TTL 5 min).
 - Entries with a future `expires_at` are filtered out of retrieval; old
   entries beyond `retentionDays` are excluded by the
   `created_at >= cutoff` clause in `retrieveMemories`.
-- For hard deletion, use `DELETE /api/memory/[id]` or `shiguang-gateway_memory_clear`.
+- For hard deletion, use `DELETE /api/memory/[id]` or `orbit_memory_clear`.
 - Extraction is fire-and-forget via `setImmediate`; failures are logged under
   `memory.extraction.background.failed` and never surface to the caller.
 - Verification round-trips (`verifyExtractionPipeline`) clean up their own
@@ -626,7 +626,7 @@ default TTL 5 min).
 
 ## Choosing an Embedding Provider (v3.8.16+)
 
-ShiguangGateway's memory engine supports **four embedding sources** (`src/lib/memory/embedding/`). Each has different trade-offs in **latency, cost, model quality, and setup complexity**.
+Orbit's memory engine supports **four embedding sources** (`src/lib/memory/embedding/`). Each has different trade-offs in **latency, cost, model quality, and setup complexity**.
 
 ### The Four Providers
 
@@ -871,7 +871,7 @@ default, so nothing is compacted automatically. Trigger it via the API:
 
 ```bash
 curl -X POST http://localhost:20128/api/memory/summarize \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_KEY"
+  -H "Authorization: Bearer $ORBIT_KEY"
 ```
 
 To leave it off, simply keep `autoSummarize` at its default (`false`).
@@ -886,7 +886,7 @@ To leave it off, simply keep `autoSummarize` at its default (`false`).
 ```bash
 # Cron-style: summarize at 3am daily
 0 3 * * * curl -X POST http://localhost:20128/api/memory/summarize \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_KEY"
+  -H "Authorization: Bearer $ORBIT_KEY"
 ```
 
 ---

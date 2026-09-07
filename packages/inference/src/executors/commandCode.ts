@@ -135,7 +135,7 @@ const COMMAND_CODE_RESERVED_TOOL_NAMES = new Set(["tool_search"]);
 
 function wireToolName(clientName: string, toolNameMap: Map<string, string>): string {
   if (COMMAND_CODE_RESERVED_TOOL_NAMES.has(clientName)) {
-    const wire = `shiguangGateway_${clientName}`;
+    const wire = `orbit_${clientName}`;
     toolNameMap.set(wire, clientName);
     return wire;
   }

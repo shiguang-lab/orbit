@@ -1,6 +1,6 @@
 /**
  * db/jsonMigration.ts — Shared helper to hydrate an SQLite database from a
- * legacy ShiguangGateway JSON backup object.
+ * legacy Orbit JSON backup object.
  *
  * Used by:
  *  - db/core.ts  (auto-migration at startup when db.json is found)

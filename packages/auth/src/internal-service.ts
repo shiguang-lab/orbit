@@ -1,13 +1,13 @@
 import { timingSafeEqual } from "node:crypto";
 import { readFileSync } from "node:fs";
 
-export const INTERNAL_SERVICE_AUTH_HEADER = "x-shiguang-gateway-internal-service-token";
-const PEER_LOCALITY_HEADER = "x-shiguangGateway-peer-locality";
+export const INTERNAL_SERVICE_AUTH_HEADER = "x-orbit-internal-service-token";
+const PEER_LOCALITY_HEADER = "x-orbit-peer-locality";
 
 function configuredToken(): string {
-  const inlineToken = process.env.SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN?.trim();
+  const inlineToken = process.env.ORBIT_INTERNAL_SERVICE_TOKEN?.trim();
   if (inlineToken) return inlineToken;
-  const tokenFile = process.env.SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN_FILE?.trim();
+  const tokenFile = process.env.ORBIT_INTERNAL_SERVICE_TOKEN_FILE?.trim();
   if (!tokenFile) return "";
   try { return readFileSync(tokenFile, "utf8").trim(); } catch { return ""; }
 }

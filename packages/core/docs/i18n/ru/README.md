@@ -1,4 +1,4 @@
-# 🚀 ShiguangGateway — Бесплатный AI-шлюз (Русский)
+# 🚀 Orbit — Бесплатный AI-шлюз (Русский)
 
 🌐 **Языки:** 🇺🇸 [English](../../../README.md) · 🇸🇦 [ar](../ar/README.md) · 🇧🇬 [bg](../bg/README.md) · 🇧🇩 [bn](../bn/README.md) · 🇨🇿 [cs](../cs/README.md) · 🇩🇰 [da](../da/README.md) · 🇩🇪 [de](../de/README.md) · 🇪🇸 [es](../es/README.md) · 🇮🇷 [fa](../fa/README.md) · 🇫🇮 [fi](../fi/README.md) · 🇫🇷 [fr](../fr/README.md) · 🇮🇳 [gu](../gu/README.md) · 🇮🇱 [he](../he/README.md) · 🇮🇳 [hi](../hi/README.md) · 🇭🇺 [hu](../hu/README.md) · 🇮🇩 [id](../id/README.md) · 🇮🇹 [it](../it/README.md) · 🇯🇵 [ja](../ja/README.md) · 🇰🇷 [ko](../ko/README.md) · 🇮🇳 [mr](../mr/README.md) · 🇲🇾 [ms](../ms/README.md) · 🇳🇱 [nl](../nl/README.md) · 🇳🇴 [no](../no/README.md) · 🇵🇭 [phi](../phi/README.md) · 🇵🇱 [pl](../pl/README.md) · 🇵🇹 [pt](../pt/README.md) · 🇧🇷 [pt-BR](../pt-BR/README.md) · 🇷🇴 [ro](../ro/README.md) · 🇷🇺 [ru](../ru/README.md) · 🇸🇰 [sk](../sk/README.md) · 🇸🇪 [sv](../sv/README.md) · 🇰🇪 [sw](../sw/README.md) · 🇮🇳 [ta](../ta/README.md) · 🇮🇳 [te](../te/README.md) · 🇹🇭 [th](../th/README.md) · 🇹🇷 [tr](../tr/README.md) · 🇺🇦 [uk-UA](../uk-UA/README.md) · 🇵🇰 [ur](../ur/README.md) · 🇻🇳 [vi](../vi/README.md) · 🇨🇳 [zh-CN](../zh-CN/README.md) · 🇹🇼 [zh-TW](../zh-TW/README.md)
 
@@ -6,11 +6,11 @@
 
 <div align="center">
 
-<img src="../../screenshots/MainShiguangGateway.png" alt="Панель ShiguangGateway" width="820"/>
+<img src="../../screenshots/MainOrbit.png" alt="Панель Orbit" width="820"/>
 
 <br/>
 
-# 🚀 ShiguangGateway — Бесплатный AI-шлюз
+# 🚀 Orbit — Бесплатный AI-шлюз
 
 ### Код без остановок. Один endpoint — **329 провайдеров**, **155 free/no-auth**.
 
@@ -38,32 +38,32 @@
 ### 💬 Сообщество
 
 [![Discord](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/U47eFqAXCn)
-[![Telegram](https://img.shields.io/badge/Telegram-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/shiguang-gatewayOficial)
+[![Telegram](https://img.shields.io/badge/Telegram-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/orbitOficial)
 [![WhatsApp Global](https://img.shields.io/badge/WhatsApp_Global-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://chat.whatsapp.com/JI7cDQ1GyaiDHhVBpLxf8b?mode=gi_t)
 [![WhatsApp Brasil](https://img.shields.io/badge/WhatsApp_Brasil-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://chat.whatsapp.com/LTSpdFhXTxjH4R6CCNiKWz)
 
-**Вопросы, советы по провайдерам, roadmap и поддержка → [Discord](https://discord.gg/U47eFqAXCn) · [Telegram](https://t.me/shiguang-gatewayOficial) · WhatsApp [🌍 Global](https://chat.whatsapp.com/JI7cDQ1GyaiDHhVBpLxf8b?mode=gi_t) / [🇧🇷 Brasil](https://chat.whatsapp.com/LTSpdFhXTxjH4R6CCNiKWz)**
+**Вопросы, советы по провайдерам, roadmap и поддержка → [Discord](https://discord.gg/U47eFqAXCn) · [Telegram](https://t.me/orbitOficial) · WhatsApp [🌍 Global](https://chat.whatsapp.com/JI7cDQ1GyaiDHhVBpLxf8b?mode=gi_t) / [🇧🇷 Brasil](https://chat.whatsapp.com/LTSpdFhXTxjH4R6CCNiKWz)**
 
 <br/>
 
-<a href="https://trendshift.io/repositories/23589" target="_blank"><img src="https://trendshift.io/api/badge/repositories/23589" alt="diegosouzapw%2FShiguangGateway | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+<a href="https://trendshift.io/repositories/23589" target="_blank"><img src="https://trendshift.io/api/badge/repositories/23589" alt="diegosouzapw%2FOrbit | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
-[![npm](https://img.shields.io/npm/v/shiguang-gateway?logo=npm&style=flat-square)](https://www.npmjs.com/package/shiguang-gateway)
+[![npm](https://img.shields.io/npm/v/orbit?logo=npm&style=flat-square)](https://www.npmjs.com/package/orbit)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](../../../LICENSE)
-[![Stars](https://img.shields.io/github/stars/diegosouzapw/ShiguangGateway?style=social)](https://github.com/diegosouzapw/ShiguangGateway)
+[![Stars](https://img.shields.io/github/stars/diegosouzapw/Orbit?style=social)](https://github.com/diegosouzapw/Orbit)
 
-[![npm version](https://img.shields.io/npm/v/shiguang-gateway?color=cb3837&logo=npm)](https://www.npmjs.com/package/shiguang-gateway)
-![NPM Monthly](https://img.shields.io/npm/dm/shiguang-gateway?label=npm/month&color=cb3837&logo=npm)
-[![Docker Hub](https://img.shields.io/docker/v/diegosouzapw/shiguang-gateway?label=Docker%20Hub&logo=docker&color=2496ED)](https://hub.docker.com/r/diegosouzapw/shiguang-gateway)
-![Docker Pulls](https://img.shields.io/docker/pulls/diegosouzapw/shiguang-gateway?label=docker%20pulls&logo=docker&color=2496ED)
-![Electron Downloads](https://img.shields.io/github/downloads/diegosouzapw/shiguang-gateway/total?style=flat&label=electron%20downloads&logo=electron&color=47848F)
-[![Website](https://img.shields.io/badge/Website-shiguang-gateway.online-blue?logo=google-chrome&logoColor=white)](https://shiguang-gateway.online)
+[![npm version](https://img.shields.io/npm/v/orbit?color=cb3837&logo=npm)](https://www.npmjs.com/package/orbit)
+![NPM Monthly](https://img.shields.io/npm/dm/orbit?label=npm/month&color=cb3837&logo=npm)
+[![Docker Hub](https://img.shields.io/docker/v/diegosouzapw/orbit?label=Docker%20Hub&logo=docker&color=2496ED)](https://hub.docker.com/r/diegosouzapw/orbit)
+![Docker Pulls](https://img.shields.io/docker/pulls/diegosouzapw/orbit?label=docker%20pulls&logo=docker&color=2496ED)
+![Electron Downloads](https://img.shields.io/github/downloads/diegosouzapw/orbit/total?style=flat&label=electron%20downloads&logo=electron&color=47848F)
+[![Website](https://img.shields.io/badge/Website-orbit.online-blue?logo=google-chrome&logoColor=white)](https://orbit.online)
 
 <br/>
 
-[**🚀 Быстрый старт**](#-быстрый-старт) • [**🎯 Комбо**](#-комбо--главная-фича) • [**🌐 Провайдеры**](#-329-ai-провайдеров--155-free-no-auth) • [**🔌 CLI и MCP**](#-полный-cli--a2a-и-mcp) • [**🗜️ Сжатие**](#️-экономьте-1595-токенов--автоматически) • [**🌍 Сайт**](https://shiguang-gateway.online)
+[**🚀 Быстрый старт**](#-быстрый-старт) • [**🎯 Комбо**](#-комбо--главная-фича) • [**🌐 Провайдеры**](#-329-ai-провайдеров--155-free-no-auth) • [**🔌 CLI и MCP**](#-полный-cli--a2a-и-mcp) • [**🗜️ Сжатие**](#️-экономьте-1595-токенов--автоматически) • [**🌍 Сайт**](https://orbit.online)
 
-[💥 Обещание](#-обещание) • [🤔 Зачем](#-зачем-shiguang-gateway) • [🏆 Чем отличается](#-чем-shiguang-gateway-отличается) • [🤖 Совместимые CLI](#-совместимые-cli-и-агенты) • [🖥️ Где запускать](#️-где-запускается-shiguang-gateway--везде) • [🔒 Приватность](#-приватно-и-local-first) • [🎬 В деле](#-shiguang-gateway-в-деле) • [📚 Дальше](#-узнать-больше) • [📧 Поддержка](#-поддержка-и-сообщество)
+[💥 Обещание](#-обещание) • [🤔 Зачем](#-зачем-orbit) • [🏆 Чем отличается](#-чем-orbit-отличается) • [🤖 Совместимые CLI](#-совместимые-cli-и-агенты) • [🖥️ Где запускать](#️-где-запускается-orbit--везде) • [🔒 Приватность](#-приватно-и-local-first) • [🎬 В деле](#-orbit-в-деле) • [📚 Дальше](#-узнать-больше) • [📧 Поддержка](#-поддержка-и-сообщество)
 
 </div>
 
@@ -75,7 +75,7 @@
 
 </div>
 
-> Собирать free-tier вручную — боль: десятки SDK, лимиты и непонятный остаток. ShiguangGateway показывает **155 записи каталога с меткой free/no-auth**; строго рассчитанный бюджет охватывает **43 пула / 522 бюджетные записи моделей** и отображается live на `/dashboard/free-tiers`.
+> Собирать free-tier вручную — боль: десятки SDK, лимиты и непонятный остаток. Orbit показывает **155 записи каталога с меткой free/no-auth**; строго рассчитанный бюджет охватывает **43 пула / 522 бюджетные записи моделей** и отображается live на `/dashboard/free-tiers`.
 >
 > - **~1.53B free tokens / мес** (steady) — в первый месяц до **~2.15B** с signup-кредитами.
 > - **Честная математика** — каждый shared pool считается **один раз**. «Если крутить rate limit 24/7» выйдет ~10B — такие цифры мы **не** публикуем.
@@ -92,11 +92,11 @@
 
 </div>
 
-> Один endpoint. **329 провайдеров.** Код не останавливается — ShiguangGateway сам выбирает самый дешёвый рабочий вариант.
+> Один endpoint. **329 провайдеров.** Код не останавливается — Orbit сам выбирает самый дешёвый рабочий вариант.
 
 <table>
   <tr>
-    <td width="33%" valign="top"><b>🛡️ Устойчивый fallback</b><br/><sub>При сбое upstream или исчерпании квоты ShiguangGateway пробует следующий допустимый маршрут; доступность зависит от провайдеров.</sub></td>
+    <td width="33%" valign="top"><b>🛡️ Устойчивый fallback</b><br/><sub>При сбое upstream или исчерпании квоты Orbit пробует следующий допустимый маршрут; доступность зависит от провайдеров.</sub></td>
     <td width="33%" valign="top"><b>💸 До 95% токенов</b><br/><sub>RTK + Caveman stacked: 15–95% на сжимаемом (в tool-heavy сессиях в среднем ~89%).</sub></td>
     <td width="33%" valign="top"><b>🆓 Старт с $0</b><br/><sub>155 записей каталога помечены free/no-auth; условия и лимиты зависят от провайдера.</sub></td>
   </tr>
@@ -111,13 +111,13 @@
 
 <div align="center">
 
-# 🤔 Зачем ShiguangGateway?
+# 🤔 Зачем Orbit?
 
 </div>
 
 > Хватит прыгать между десятью кабинетами, мёртвыми ключами и неожиданными счетами.
 
-| ❌ Боль каждый день                           | ✅ Как решает ShiguangGateway                                      |
+| ❌ Боль каждый день                           | ✅ Как решает Orbit                                      |
 | --------------------------------------------- | ------------------------------------------------------------ |
 | 📉 Подписка сгорает неиспользованной          | **Выжимаем подписку** — трекинг квоты, тратим до reset       |
 | 🛑 Rate limit посреди кода                    | **4-tier auto-fallback** — Subscription → API → Cheap → Free |
@@ -135,7 +135,7 @@
                           │ http://localhost:20128/v1
                           ▼
 ┌──────────────────────────────────────────────────────────┐
-│              ShiguangGateway — умный роутер                      │
+│              Orbit — умный роутер                      │
 │  RTK + Caveman · 19 стратегий · circuit breakers          │
 │  TLS stealth · MCP · A2A · guardrails                     │
 └─────────────────────────┬────────────────────────────────┘
@@ -157,11 +157,11 @@
 
 </div>
 
-> **Combo** — цепочка моделей, по которой ShiguangGateway ходит **сам**. Квота кончилась, провайдер упал, цена взлетела — комбо пробует следующий допустимый шаг. Это расширяет покрытие fallback, но не гарантирует доступность upstream. 🛡️
+> **Combo** — цепочка моделей, по которой Orbit ходит **сам**. Квота кончилась, провайдер упал, цена взлетела — комбо пробует следующий допустимый шаг. Это расширяет покрытие fallback, но не гарантирует доступность upstream. 🛡️
 
 ### ⚡ Без настройки — просто `auto`
 
-Комбо создавать не обязательно. Поставьте модель `auto` (или вариант) — ShiguangGateway соберёт виртуальное комбо из подключённых провайдеров:
+Комбо создавать не обязательно. Поставьте модель `auto` (или вариант) — Orbit соберёт виртуальное комбо из подключённых провайдеров:
 
 | Model ID       | На что оптимизирует                                        |
 | -------------- | ---------------------------------------------------------- |
@@ -234,11 +234,11 @@ Combo: "always-on"                         strategy: priority
 
 <div align="center">
 
-# 🏆 Чем ShiguangGateway отличается
+# 🏆 Чем Orbit отличается
 
 </div>
 
-| Фича                      | ShiguangGateway                              | Другие роутеры |
+| Фича                      | Orbit                              | Другие роутеры |
 | ------------------------- | -------------------------------------- | -------------- |
 | 🌐 Провайдеры             | **329**                                | 20–100         |
 | 🆓 Free/no-auth           | **155 записей каталога**               | 1–5            |
@@ -253,7 +253,7 @@ Combo: "always-on"                         strategy: priority
 | 🖥️ Платформы              | **Web · Desktop · Termux · PWA**       | Только web     |
 | 🌍 i18n                   | **43 локали**                          | 0–4            |
 
-<sub>📊 Сравнение с LiteLLM, OpenRouter, Portkey → [`docs/comparison/SHIGUANG_GATEWAY_VS_ALTERNATIVES.md`](../../comparison/SHIGUANG_GATEWAY_VS_ALTERNATIVES.md)</sub>
+<sub>📊 Сравнение с LiteLLM, OpenRouter, Portkey → [`docs/comparison/ORBIT_VS_ALTERNATIVES.md`](../../comparison/ORBIT_VS_ALTERNATIVES.md)</sub>
 
 <br/>
 
@@ -268,13 +268,13 @@ Combo: "always-on"                         strategy: priority
 - **🗜️ Compression hardening** — inflation guard по умолчанию, Caveman packs DE/FR/JA + Chinese (文言), RTK filters для Gradle & .NET.
 - **💸 Honest flat-rate cost** — subscription/coding-plan в analytics = **$0**; budget/quota/routing по-прежнему оценивают.
 - **⚖️ Quota-Share routing** — DRR, concurrency, multi-window buckets, session stickiness.
-- **🤖 One-command CLI setup** — `setup-*` для 12+ tools; `shiguang-gateway launch` / `launch-codex`.
+- **🤖 One-command CLI setup** — `setup-*` для 12+ tools; `orbit launch` / `launch-codex`.
 - **🛰️ Remote mode** — `connect` / `contexts` / `tokens` + OAuth helper для VPS.
 - **🧭 Smarter auto** — `auto/<category>:<tier>`, Fusion, task-aware routing, per-request overrides.
 - **🗜️ Pluggable compression** — 11 engines + Studios, LLMLingua-2, Ultra, fidelity gate, GCF v3.2.
 - **🕵️ MITM decrypt (TPROXY)** — CLI, игнорирующие proxy env; per-SNI CA.
-- **💸 Cost telemetry** — `X-ShiguangGateway-*` headers, cache-HIT savings, per-key USD quotas.
-- **🧠 Memory** — opt-in, int8 quantization, `x-shiguang-gateway-no-memory`.
+- **💸 Cost telemetry** — `X-Orbit-*` headers, cache-HIT savings, per-key USD quotas.
+- **🧠 Memory** — opt-in, int8 quantization, `x-orbit-no-memory`.
 - **🛡️ Security** — prompt-injection guard + DuckDuckGo last-resort search.
 - **🖼️ Endpoints** — `/v1/ocr`, `/v1/audio/translations`.
 - **🤝 Providers & agents** — Cursor Cloud Agent, Grok Build (xAI), Ollama card, Claude Sonnet 5, Zed, Requesty…
@@ -329,17 +329,17 @@ Combo: "always-on"                         strategy: priority
 
 <div align="center">
 
-# 🖥️ Где запускается ShiguangGateway — везде
+# 🖥️ Где запускается Orbit — везде
 
 </div>
 
 | Платформа                 | Установка                                | Плюсы                          |
 | ------------------------- | ---------------------------------------- | ------------------------------ |
-| 📦 **npm (global)**       | `npm install -g shiguang-gateway`               | Одна команда, любая ОС         |
-| 🐳 **Docker**             | `docker run … diegosouzapw/shiguang-gateway`    | **AMD64 + ARM64**              |
+| 📦 **npm (global)**       | `npm install -g orbit`               | Одна команда, любая ОС         |
+| 🐳 **Docker**             | `docker run … diegosouzapw/orbit`    | **AMD64 + ARM64**              |
 | 🖥️ **Desktop (Electron)** | `npm run electron:build`                 | Окно + tray — Win/macOS/Linux  |
 | 💪 **ARM**                | native `arm64`                           | Pi, ARM servers, Apple Silicon |
-| 📱 **Android (Termux)**   | `pkg install nodejs && npx -y shiguang-gateway` | На телефоне 24/7, без root     |
+| 📱 **Android (Termux)**   | `pkg install nodejs && npx -y orbit` | На телефоне 24/7, без root     |
 | 📲 **PWA**                | «Add to Home Screen»                     | Fullscreen, offline            |
 | 🧩 **OpenCode plugin**    | `@orbit/opencode-provider`           | Нативная интеграция            |
 | 🛠️ **Из исходников**      | `npm install && npm run dev`             | Хакинг и контрибьют            |
@@ -354,9 +354,9 @@ Combo: "always-on"                         strategy: priority
 
 </div>
 
-> Ваши ключи, ваша машина, ваши данные. ShiguangGateway — **локальный прокси**, без «звонков домой».
+> Ваши ключи, ваша машина, ваши данные. Orbit — **локальный прокси**, без «звонков домой».
 
-- 🏠 **100% на вашем железе** — npm, Docker, desktop или телефон. Нет cloud-hop ShiguangGateway.
+- 🏠 **100% на вашем железе** — npm, Docker, desktop или телефон. Нет cloud-hop Orbit.
 - 🔐 **Credentials at rest** — API keys и OAuth в **AES-256-GCM**.
 - 🚫 **Zero telemetry по умолчанию** — промпты уходят только выбранным провайдерам.
 - 🛡️ **Жёсткий gateway** — scoping ключей, IP filter, rate limits, prompt-injection guard, loopback-only process routes.
@@ -372,25 +372,25 @@ Combo: "always-on"                         strategy: priority
 
 </div>
 
-> Это не «просто сервер» — **CLI-кокит** с **80+ командами** и открытыми agent-протоколами, чтобы AI управлял ShiguangGateway **сам**.
+> Это не «просто сервер» — **CLI-кокит** с **80+ командами** и открытыми agent-протоколами, чтобы AI управлял Orbit **сам**.
 
 ### ⌨️ Настоящий CLI
 
 ```bash
-shiguang-gateway               # gateway + dashboard (порт 20128)
-shiguang-gateway chat          # TUI-чат (/model /combo /skill /memory)
-shiguang-gateway setup         # мастер первого запуска
-shiguang-gateway doctor        # диагностика провайдеров, портов, native deps
+orbit               # gateway + dashboard (порт 20128)
+orbit chat          # TUI-чат (/model /combo /skill /memory)
+orbit setup         # мастер первого запуска
+orbit doctor        # диагностика провайдеров, портов, native deps
 ```
 
-### 🛰️ Remote mode — CLI здесь, ShiguangGateway на VPS
+### 🛰️ Remote mode — CLI здесь, Orbit на VPS
 
 ```bash
-shiguang-gateway connect 192.168.0.15            # пароль → scoped token
-shiguang-gateway models list                     # ← на REMOTE
-shiguang-gateway configure codex                 # remote model → local Codex profile
-shiguang-gateway tokens create --name ci --scope read
-shiguang-gateway contexts use default            # ← обратно на local
+orbit connect 192.168.0.15            # пароль → scoped token
+orbit models list                     # ← на REMOTE
+orbit configure codex                 # remote model → local Codex profile
+orbit tokens create --name ci --scope read
+orbit contexts use default            # ← обратно на local
 ```
 
 Scopes: `read` / `write` / `admin`. Process-spawning routes — только loopback.
@@ -400,13 +400,13 @@ Scopes: `read` / `write` / `admin`. Process-spawning routes — только loo
 
 | Протокол           | Endpoint                                        | Зачем                                    |
 | ------------------ | ----------------------------------------------- | ---------------------------------------- |
-| 🧰 **MCP (stdio)** | `shiguang-gateway --mcp`                               | Claude Desktop, Cursor, любой MCP client |
+| 🧰 **MCP (stdio)** | `orbit --mcp`                               | Claude Desktop, Cursor, любой MCP client |
 | 🌊 **MCP (HTTP)**  | `http://localhost:20128/api/mcp/stream`         | Remote MCP — **107 tools**, 32 scopes    |
 | 📡 **MCP (SSE)**   | `http://localhost:20128/api/mcp/sse`            | Streaming MCP                            |
 | 🤝 **A2A**         | `http://localhost:20128/.well-known/agent.json` | Agent-to-agent, JSON-RPC 2.0 + SSE       |
 
 ```bash
-claude mcp add-server shiguang-gateway --type http --url http://localhost:20128/api/mcp/stream
+claude mcp add-server orbit --type http --url http://localhost:20128/api/mcp/stream
 ```
 
 <sub>📖 [MCP](../../frameworks/MCP-SERVER.md) · [A2A](../../frameworks/A2A-SERVER.md) · [Agent Protocols](../../frameworks/AGENT_PROTOCOLS_GUIDE.md)</sub>
@@ -463,7 +463,7 @@ average  = 1 − (1 − 0.80) × (1 − 0.46) = 89.2%
 range    = 78.4 – 94.6%
 ```
 
-Precedence (high → low): header `x-shiguang-gateway-compression` › combo override › named profile › adaptive › panel default › off.
+Precedence (high → low): header `x-orbit-compression` › combo override › named profile › adaptive › panel default › off.
 
 📖 [`COMPRESSION_GUIDE.md`](../../compression/COMPRESSION_GUIDE.md) · [`RTK_COMPRESSION.md`](../../compression/RTK_COMPRESSION.md) · [`COMPRESSION_ENGINES.md`](../../compression/COMPRESSION_ENGINES.md)
 
@@ -478,8 +478,8 @@ Precedence (high → low): header `x-shiguang-gateway-compression` › combo ove
 **1) Установка и запуск**
 
 ```bash
-npm install -g shiguang-gateway
-shiguang-gateway
+npm install -g orbit
+orbit
 ```
 
 > 💡 Видите `npm warn ERESOLVE` / peer-dep? [Это безвредно](../../getting-started/TROUBLESHOOTING.md#npm-install-warnings-eresolve--peer--deprecated).
@@ -504,7 +504,7 @@ Model:    auto            (zero-config smart routing — или любой provi
 curl http://localhost:20128/v1/models -H "Authorization: Bearer YOUR_KEY"
 ```
 
-Должны появиться подключённые модели. 🎉 Дальше пишите код — ShiguangGateway сам роутит и делает fallback.
+Должны появиться подключённые модели. 🎉 Дальше пишите код — Orbit сам роутит и делает fallback.
 
 Если клиент **не умеет** custom headers — tokenized aliases:
 
@@ -526,8 +526,8 @@ Ollama tags:      http://localhost:20128/vscode/YOUR_KEY/api/tags
 **🐳 Docker**
 
 ```bash
-docker run -d --name shiguang-gateway --restart unless-stopped --stop-timeout 40 \
-  -p 127.0.0.1:20128:20128 -v shiguang-gateway-data:/app/data diegosouzapw/shiguang-gateway:latest
+docker run -d --name orbit --restart unless-stopped --stop-timeout 40 \
+  -p 127.0.0.1:20128:20128 -v orbit-data:/app/data diegosouzapw/orbit:latest
 ```
 
 **🛠️ Из исходников**
@@ -540,13 +540,13 @@ PORT=20128 npm run dev
 **📦 pnpm**
 
 ```bash
-pnpm add -g shiguang-gateway@latest --allow-build=better-sqlite3 --allow-build=@swc/core && shiguang-gateway
+pnpm add -g orbit@latest --allow-build=better-sqlite3 --allow-build=@swc/core && orbit
 ```
 
 **🐧 Arch Linux (AUR)**
 
 ```bash
-yay -S shiguang-gateway-bin && systemctl --user enable --now shiguang-gateway.service
+yay -S orbit-bin && systemctl --user enable --now orbit.service
 ```
 
 **🔧 Nix (Flake)**
@@ -563,16 +563,16 @@ npm run dev
 
 | Команда                 | Описание                               |
 | ----------------------- | -------------------------------------- |
-| `shiguang-gateway`             | Сервер (`PORT=20128`, API + dashboard) |
-| `shiguang-gateway --port 3000` | Порт 3000                              |
-| `shiguang-gateway --mcp`       | MCP server (stdio)                     |
-| `shiguang-gateway --no-open`   | Не открывать браузер                   |
-| `shiguang-gateway --help`      | Справка                                |
+| `orbit`             | Сервер (`PORT=20128`, API + dashboard) |
+| `orbit --port 3000` | Порт 3000                              |
+| `orbit --mcp`       | MCP server (stdio)                     |
+| `orbit --no-open`   | Не открывать браузер                   |
+| `orbit --help`      | Справка                                |
 
 Split-port:
 
 ```bash
-PORT=20128 DASHBOARD_PORT=20129 shiguang-gateway
+PORT=20128 DASHBOARD_PORT=20129 orbit
 # API:       http://localhost:20128/v1
 # Dashboard: http://localhost:20129
 ```
@@ -581,9 +581,9 @@ PORT=20128 DASHBOARD_PORT=20129 shiguang-gateway
 
 | Команда                      | Действие                                  |
 | ---------------------------- | ----------------------------------------- |
-| `npm run uninstall`          | Убирает app, **сохраняет** `~/.shiguang-gateway` |
+| `npm run uninstall`          | Убирает app, **сохраняет** `~/.orbit` |
 | `npm run uninstall:full`     | Удаляет app **и** все ключи/БД            |
-| `npm uninstall -g shiguang-gateway` | Глобальный npm uninstall                  |
+| `npm uninstall -g orbit` | Глобальный npm uninstall                  |
 
 ### Старт с $0 — Free Stack
 
@@ -601,7 +601,7 @@ IDE/CLI: `http://localhost:20128/v1` · API Key: любая строка (есл
 
 <div align="center">
 
-# 🎬 ShiguangGateway в деле
+# 🎬 Orbit в деле
 
 </div>
 
@@ -624,7 +624,7 @@ IDE/CLI: `http://localhost:20128/v1` · API Key: любая строка (есл
 </table>
 </div>
 
-> 🎬 **Сняли видео про ShiguangGateway?** Откройте [issue](https://github.com/diegosouzapw/ShiguangGateway/issues/new) или [discussion](https://github.com/diegosouzapw/ShiguangGateway/discussions) — добавим в этот раздел.
+> 🎬 **Сняли видео про Orbit?** Откройте [issue](https://github.com/diegosouzapw/Orbit/issues/new) или [discussion](https://github.com/diegosouzapw/Orbit/discussions) — добавим в этот раздел.
 
 <br/>
 
@@ -663,7 +663,7 @@ Combo: "free-tier-fallback"
   2. kr/qwen3-coder-next
 ```
 
-> 💡 «Cost» в дашборде — **tracker экономии**, не счёт ShiguangGateway. ShiguangGateway вам **не** выставляет счета.
+> 💡 «Cost» в дашборде — **tracker экономии**, не счёт Orbit. Orbit вам **не** выставляет счета.
 
 📖 Free catalog → [`docs/reference/FREE_TIERS.md`](../../reference/FREE_TIERS.md)
 
@@ -690,9 +690,9 @@ Combo: "free-tier-fallback"
 <br/>
 
 **Routing:** 19 стратегий · task-aware · thinking budget · wildcards · system prompt injection.
-**Compatibility:** OpenAI ↔ Claude ↔ Gemini ↔ Responses · OAuth PKCE auto-refresh · multi-account · Batch + Files API.  
+**Compatibility:** OpenAI ↔ Claude ↔ Gemini ↔ Responses · OAuth PKCE auto-refresh · multi-account · Batch + Files API.
 **Protocols:** MCP (107 tools) · A2A · ACP · cloud agents.
-**Quality/ops:** Evals · guardrails (PII, injection) · health · p50/p95/p99 · webhooks · audit.  
+**Quality/ops:** Evals · guardrails (PII, injection) · health · p50/p95/p99 · webhooks · audit.
 **Media:** embeddings, images, video, music, STT/TTS, OCR, moderations, rerank.
 
 </details>
@@ -706,13 +706,13 @@ Combo: "free-tier-fallback"
 | ------------------------ | -------------- | -------------------------- |
 | `PORT`                   | `20128`        | API + dashboard            |
 | `REQUIRE_API_KEY`        | `false`        | Требовать API key на `/v1` |
-| `DATA_DIR`               | `~/.shiguang-gateway` | БД и конфиги               |
+| `DATA_DIR`               | `~/.orbit` | БД и конфиги               |
 | `REQUEST_TIMEOUT_MS`     | `600000`       | Базовый timeout            |
 | `STREAM_IDLE_TIMEOUT_MS` | inherits       | Idle gap SSE               |
 
-**ShiguangGateway берёт деньги?** Нет — open-source на вашей машине. Платите только платным провайдерам.  
+**Orbit берёт деньги?** Нет — open-source на вашей машине. Платите только платным провайдерам.
 **Free правда unlimited?** Нет гарантии: даже без опубликованного token cap действуют rate/concurrency/account/region limits и условия провайдера. Комбо из нескольких free/no-auth записей повышает устойчивость, но не отменяет эти ограничения.
-**Сжатие портит качество?** Сжимается **input**; code/URL/JSON protected.  
+**Сжатие портит качество?** Сжимается **input**; code/URL/JSON protected.
 **Регион заблокирован?** Proxy + stealth.
 
 📖 [User Guide](../../guides/USER_GUIDE.md) · [API](../../reference/API_REFERENCE.md) · [Environment](../../reference/ENVIRONMENT.md)
@@ -733,7 +733,7 @@ Combo: "free-tier-fallback"
 | Docker SQLite lock                        | `--stop-timeout 40`                                      |
 | Node runtime                              | Node `>=22.0.0 <23` или `>=24.0.0 <27`                   |
 
-🐛 **Баг?** `npm run system-info` → приложите `system-info.txt` к issue.  
+🐛 **Баг?** `npm run system-info` → приложите `system-info.txt` к issue.
 📖 [`TROUBLESHOOTING.md`](../../guides/TROUBLESHOOTING.md)
 
 </details>
@@ -760,9 +760,9 @@ Combo: "free-tier-fallback"
 
 > 💬 Ссылки Discord / Telegram / WhatsApp — [в шапке README](#-сообщество).
 
-- 🌍 **Сайт:** [shiguang-gateway.online](https://shiguang-gateway.online)
-- 🐙 **GitHub:** [github.com/diegosouzapw/ShiguangGateway](https://github.com/diegosouzapw/ShiguangGateway)
-- 🐛 **Issues:** [сообщить о баге](https://github.com/diegosouzapw/ShiguangGateway/issues) (с `npm run system-info`)
+- 🌍 **Сайт:** [orbit.online](https://orbit.online)
+- 🐙 **GitHub:** [github.com/diegosouzapw/Orbit](https://github.com/diegosouzapw/Orbit)
+- 🐛 **Issues:** [сообщить о баге](https://github.com/diegosouzapw/Orbit/issues) (с `npm run system-info`)
 - 🤝 **Contributing:** [CONTRIBUTING.md](../../../CONTRIBUTING.md) или label `good first issue`
 
 </div>
@@ -801,7 +801,7 @@ Combo: "free-tier-fallback"
 | [User Guide](../../guides/USER_GUIDE.md)       | Провайдеры, комбо, CLI, deploy            |
 | [Setup Guide](../../guides/SETUP_GUIDE.md)     | Установка, CLI tools, protocols, timeouts |
 | [CLI Tools](../../reference/CLI-TOOLS.md)      | Claude Code, Codex, Cursor, Cline…        |
-| [Remote Mode](../../guides/REMOTE-MODE.md)     | CLI с ноутбука → ShiguangGateway на VPS         |
+| [Remote Mode](../../guides/REMOTE-MODE.md)     | CLI с ноутбука → Orbit на VPS         |
 | [Quick Start](../../../README.md#-quick-start) | EN root: install → connect → point        |
 
 ### 🔧 Ops
@@ -857,7 +857,7 @@ Combo: "free-tier-fallback"
 
 Полный гайд: [CONTRIBUTING.md](../../../CONTRIBUTING.md).
 
-[![Contributors](https://contrib.rocks/image?repo=diegosouzapw/ShiguangGateway&max=100&columns=20&anon=1)](https://github.com/diegosouzapw/ShiguangGateway/graphs/contributors)
+[![Contributors](https://contrib.rocks/image?repo=diegosouzapw/Orbit&max=100&columns=20&anon=1)](https://github.com/diegosouzapw/Orbit/graphs/contributors)
 
 ---
 
@@ -865,18 +865,18 @@ Combo: "free-tier-fallback"
 
 ## 📊 Star History
 
-<a href="https://www.star-history.com/?repos=diegosouzapw%2Fshiguang-gateway&type=date&legend=top-left">
+<a href="https://www.star-history.com/?repos=diegosouzapw%2Forbit&type=date&legend=top-left">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=diegosouzapw/shiguang-gateway&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=diegosouzapw/shiguang-gateway&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=diegosouzapw/shiguang-gateway&type=date&legend=top-left" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=diegosouzapw/orbit&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=diegosouzapw/orbit&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=diegosouzapw/orbit&type=date&legend=top-left" />
  </picture>
 </a>
 
 <br/><br/>
 
-**Сделано с ❤️ open-source сообществом · MIT License · [shiguang-gateway.online](https://shiguang-gateway.online)**
+**Сделано с ❤️ open-source сообществом · MIT License · [orbit.online](https://orbit.online)**
 
-⭐ Если ShiguangGateway помог сэкономить — поставьте star репозиторию.
+⭐ Если Orbit помог сэкономить — поставьте star репозиторию.
 
 </div>

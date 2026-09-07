@@ -1,8 +1,8 @@
 {
   "common": {
     "error": "Помилка: {message}",
-    "serverOffline": "Сервер ShiguangGateway відключено. Запустіть: shiguang-gateway serve",
-    "authRequired": "Потрібна автентифікація. Встановіть SHIGUANG_GATEWAY_API_KEY або виконайте: shiguang-gateway setup",
+    "serverOffline": "Сервер Orbit відключено. Запустіть: orbit serve",
+    "authRequired": "Потрібна автентифікація. Встановіть ORBIT_API_KEY або виконайте: orbit setup",
     "rateLimited": "Перевищено ліміт запитів. Повторіть через {seconds}с.",
     "timeout": "Запит завершився через {ms}мс.",
     "success": "Готово.",
@@ -15,18 +15,18 @@
     "yesOpt": "Пропустити підтвердження"
   },
   "program": {
-    "description": "ShiguangGateway — Розумний AI-маршрутизатор з автоматичним перемиканням",
+    "description": "Orbit — Розумний AI-маршрутизатор з автоматичним перемиканням",
     "version": "Вивести версію та вийти",
     "output": "Формат виведення (table, json, jsonl, csv)",
     "quiet": "Приховати несуттєвий вивід",
     "no_color": "Вимкнути кольоровий вивід",
     "timeout": "Тайм-аут HTTP-запитів у мілісекундах",
-    "api_key": "API-ключ для сервера ShiguangGateway",
-    "base_url": "Базовий URL сервера ShiguangGateway",
+    "api_key": "API-ключ для сервера Orbit",
+    "base_url": "Базовий URL сервера Orbit",
     "context": "Контекст/профіль сервера для цієї команди",
-    "lang": "Встановити мову відображення CLI (замінює SHIGUANG_GATEWAY_LANG)"
+    "lang": "Встановити мову відображення CLI (замінює ORBIT_LANG)"
   },
   "redis": {
-    "description": "Запустити локальний контейнер Redis одним натисканням (Podman або Docker) для кешування та відстеження квот ShiguangGateway"
+    "description": "Запустити локальний контейнер Redis одним натисканням (Podman або Docker) для кешування та відстеження квот Orbit"
   }
 }

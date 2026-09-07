@@ -7,7 +7,7 @@ import { verifyAccessToken, getAccessToken } from "@orbit/core/control/cli-acces
  *
  * Requires a valid management credential (read scope is enough — it's a GET).
  * When the caller used a scoped CLI access token, returns its name/scope/expiry
- * so `shiguangGateway connect --key` / `context current` can confirm what they hold.
+ * so `orbit connect --key` / `context current` can confirm what they hold.
  * Other credentials (dashboard session, manage-scope API key, loopback CLI
  * token) report `viaAccessToken: false`.
  */

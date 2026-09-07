@@ -20,7 +20,7 @@ Get RTK compression settings
 
 ```bash
 curl https://localhost:20128/api/context/rtk/config \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### PUT /api/context/rtk/config
@@ -29,7 +29,7 @@ Update RTK compression settings
 
 ```bash
 curl -X PUT https://localhost:20128/api/context/rtk/config \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -40,7 +40,7 @@ List RTK filters and load diagnostics
 
 ```bash
 curl https://localhost:20128/api/context/rtk/filters \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### POST /api/context/rtk/import
@@ -49,7 +49,7 @@ Validate or install an RTK TOML schema v1 filter file
 
 ```bash
 curl -X POST https://localhost:20128/api/context/rtk/import \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -60,7 +60,7 @@ Run RTK compression preview for text
 
 ```bash
 curl -X POST https://localhost:20128/api/context/rtk/test \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -71,7 +71,7 @@ Read retained redacted RTK raw output
 
 ```bash
 curl https://localhost:20128/api/context/rtk/raw-output/{id} \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ## Payloads

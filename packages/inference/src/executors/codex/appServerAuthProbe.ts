@@ -62,7 +62,7 @@ export async function probeCodexAppServerAuth(
       await client.request(
         "initialize",
         {
-          clientInfo: { name: "shiguangGateway-codex-app-server-health", title: null, version: "1.0" },
+          clientInfo: { name: "orbit-codex-app-server-health", title: null, version: "1.0" },
           capabilities: null,
         },
         timeoutMs

@@ -6,7 +6,7 @@ lastUpdated: 2026-07-25
 
 # Termux Headless Setup
 
-ShiguangGateway can run as a headless server on Android through Termux. The Electron desktop app is not supported in Termux, but the web dashboard and OpenAI-compatible API work from the local browser or from other devices on the same network.
+Orbit can run as a headless server on Android through Termux. The Electron desktop app is not supported in Termux, but the web dashboard and OpenAI-compatible API work from the local browser or from other devices on the same network.
 
 ## Prerequisites
 
@@ -18,37 +18,37 @@ pkg upgrade
 pkg install nodejs python build-essential git
 ```
 
-> **Node.js version:** ShiguangGateway requires Node `>=22.22.2 <23 || >=24.0.0 <27` (matches `engines` in `package.json` / `SUPPORTED_NODE_RANGE`). Termux's `nodejs-lts` typically ships Node 20 LTS, which is **no longer supported** — install `pkg install nodejs` (current) instead and verify `node --version` reports a 22.x/24.x+ line.
+> **Node.js version:** Orbit requires Node `>=22.22.2 <23 || >=24.0.0 <27` (matches `engines` in `package.json` / `SUPPORTED_NODE_RANGE`). Termux's `nodejs-lts` typically ships Node 20 LTS, which is **no longer supported** — install `pkg install nodejs` (current) instead and verify `node --version` reports a 22.x/24.x+ line.
 
-If native package compilation fails, rerun the `pkg install` command above and then retry the ShiguangGateway install.
+If native package compilation fails, rerun the `pkg install` command above and then retry the Orbit install.
 
 ## Install
 
 Run the latest published package directly:
 
 ```bash
-npx -y shiguang-gateway@latest
+npx -y orbit@latest
 ```
 
 You can also install it globally:
 
 ```bash
-npm install -g shiguang-gateway
-shiguang-gateway
+npm install -g orbit
+orbit
 ```
 
 ## Run
 
-Start ShiguangGateway in headless server mode:
+Start Orbit in headless server mode:
 
 ```bash
-shiguang-gateway
+orbit
 ```
 
 or:
 
 ```bash
-npx shiguang-gateway
+npx orbit
 ```
 
 The dashboard listens on:
@@ -64,25 +64,25 @@ Open that URL in the Android browser. If you run clients inside Termux, use the 
 For a simple background process:
 
 ```bash
-nohup shiguang-gateway > shiguang-gateway.log 2>&1 &
+nohup orbit > orbit.log 2>&1 &
 ```
 
 To stop it:
 
 ```bash
-pkill -f shiguang-gateway
+pkill -f orbit
 ```
 
 For automatic startup after device boot, install the Termux:Boot add-on and create a boot script:
 
 ```bash
 mkdir -p ~/.termux/boot
-cat > ~/.termux/boot/shiguang-gateway.sh <<'EOF'
+cat > ~/.termux/boot/orbit.sh <<'EOF'
 #!/data/data/com.termux/files/usr/bin/sh
 cd "$HOME"
-nohup shiguang-gateway > "$HOME/shiguang-gateway.log" 2>&1 &
+nohup orbit > "$HOME/orbit.log" 2>&1 &
 EOF
-chmod +x ~/.termux/boot/shiguang-gateway.sh
+chmod +x ~/.termux/boot/orbit.sh
 ```
 
 Android battery optimization can stop long-running background processes. Disable battery optimization for Termux if the server is expected to stay online.
@@ -107,15 +107,15 @@ For example:
 http://192.168.1.50:20128
 ```
 
-Keep the phone and client on the same trusted network. If you expose ShiguangGateway outside the phone, enable API keys and dashboard authentication.
+Keep the phone and client on the same trusted network. If you expose Orbit outside the phone, enable API keys and dashboard authentication.
 
 ## Data Directory
 
-By default ShiguangGateway stores data under the Termux home directory, following the same server-side data path behavior used on Linux. To place the database somewhere explicit:
+By default Orbit stores data under the Termux home directory, following the same server-side data path behavior used on Linux. To place the database somewhere explicit:
 
 ```bash
-export DATA_DIR="$HOME/.shiguang-gateway"
-shiguang-gateway
+export DATA_DIR="$HOME/.orbit"
+orbit
 ```
 
 ## Limitations
@@ -131,7 +131,7 @@ shiguang-gateway
 
 ### Unsupported platform: android (every request returns HTTP 500)
 
-**Symptom:** `shiguang-gateway` / `shiguang-gateway serve` prints `✔ ShiguangGateway is running!`, but every dashboard or API request returns a bare `500 Internal Server Error`. `~/.shiguang-gateway/logs/application/app.log` stays empty, `APP_LOG_LEVEL=debug` prints nothing useful, and the response body is plain text (`Internal Server Error`) with no JSON detail.
+**Symptom:** `orbit` / `orbit serve` prints `✔ Orbit is running!`, but every dashboard or API request returns a bare `500 Internal Server Error`. `~/.orbit/logs/application/app.log` stays empty, `APP_LOG_LEVEL=debug` prints nothing useful, and the response body is plain text (`Internal Server Error`) with no JSON detail.
 
 **Cause:** Some Termux/Node builds report `process.platform === "android"`. Next.js `getCacheDirectory()` does not handle that platform: it requires `~/.cache` (or a generic tmp dir) to _already_ exist, otherwise it fails while loading the instrumentation hook with:
 
@@ -139,16 +139,16 @@ shiguang-gateway
 Error: An error occurred while loading instrumentation hook: Unsupported platform: android
 ```
 
-Because the hook never loads, logging never starts — the 500 looks completely undiagnosable. ShiguangGateway creates `~/.cache` (and sets `XDG_CACHE_HOME` when unset) in the CLI entrypoint before Next.js starts so this probe succeeds on Android/Termux.
+Because the hook never loads, logging never starts — the 500 looks completely undiagnosable. Orbit creates `~/.cache` (and sets `XDG_CACHE_HOME` when unset) in the CLI entrypoint before Next.js starts so this probe succeeds on Android/Termux.
 
 **Supported resolution (no package patching):**
 
 ```bash
 mkdir -p ~/.cache
-shiguang-gateway serve
+orbit serve
 ```
 
-On current ShiguangGateway builds the CLI does this automatically on Android/Termux — a fresh `npx -y shiguang-gateway@latest` / global install should not require the manual step. If you still see the error after upgrading, create `~/.cache` once as above and restart.
+On current Orbit builds the CLI does this automatically on Android/Termux — a fresh `npx -y orbit@latest` / global install should not require the manual step. If you still see the error after upgrading, create `~/.cache` once as above and restart.
 
 **Do not** patch `dist/server.js` to force `process.platform = "linux"`. That kind of package patch is overwritten on every reinstall/upgrade and is unnecessary once the cache directory exists.
 
@@ -163,7 +163,7 @@ pkg install nodejs python build-essential
 Then rerun:
 
 ```bash
-npx -y shiguang-gateway@latest
+npx -y orbit@latest
 ```
 
 ### Port Already In Use
@@ -177,7 +177,7 @@ ss -ltnp | grep 20128
 Stop the old process:
 
 ```bash
-pkill -f shiguang-gateway
+pkill -f orbit
 ```
 
 ### Dashboard Not Reachable From Another Device

@@ -6,22 +6,22 @@
 
 ---
 
-title: "Zana za CLI — ShiguangGateway"
+title: "Zana za CLI — Orbit"
 version: 3.8.50
 lastUpdated: 2026-08-18
 ---
 
-# Zana za CLI — ShiguangGateway
+# Zana za CLI — Orbit
 
 Imesasishwa mwisho: 2026-08-18
 
-ShiguangGateway inajumuisha aina tatu za zana za CLI zilizotawanyika kwenye kurasa tatu za dashibodi maalum:
+Orbit inajumuisha aina tatu za zana za CLI zilizotawanyika kwenye kurasa tatu za dashibodi maalum:
 
 | Ukurasa        | Njia                    | Dhana                                                                                   | Hesabu          |
 | -------------- | ----------------------- | --------------------------------------------------------------------------------------- | --------------- |
-| **CLI Code's** | `/dashboard/cli-code`   | Zana za uandishi unazopointisha kwa ShiguangGateway (Mteja → CLI → ShiguangGateway → Mtoa huduma)   | 26              |
-| **CLI Agents** | `/dashboard/cli-agents` | Wakala huru unazopointisha kwa ShiguangGateway (mchakato sawa, upeo mpana)                    | 8               |
-| **ACP Agents** | `/dashboard/acp-agents` | CLIs ambazo ShiguangGateway inazizalisha kama backend kupitia stdio/ACP (mchakato wa kinyume) | angalia rejista |
+| **CLI Code's** | `/dashboard/cli-code`   | Zana za uandishi unazopointisha kwa Orbit (Mteja → CLI → Orbit → Mtoa huduma)   | 26              |
+| **CLI Agents** | `/dashboard/cli-agents` | Wakala huru unazopointisha kwa Orbit (mchakato sawa, upeo mpana)                    | 8               |
+| **ACP Agents** | `/dashboard/acp-agents` | CLIs ambazo Orbit inazizalisha kama backend kupitia stdio/ACP (mchakato wa kinyume) | angalia rejista |
 
 Njia za zamani zinaelekeza kupitia 308: `/dashboard/cli-tools` → `/dashboard/cli-code`, `/dashboard/agents` → `/dashboard/acp-agents`.
 
@@ -33,14 +33,14 @@ Njia za zamani zinaelekeza kupitia 308: `/dashboard/cli-tools` → `/dashboard/c
 CLI Code's / CLI Agents (mchakato wa matumizi):
 Claude / Codex / OpenCode / Cline / KiloCode / Continue / Hermes Agent / Goose / ...
            │
-           ▼  (zote zinaelekeza kwa ShiguangGateway)
+           ▼  (zote zinaelekeza kwa Orbit)
     http://YOUR_SERVER:20128/v1
            │
-           ▼  (ShiguangGateway inaelekeza kwa mtoa huduma sahihi)
+           ▼  (Orbit inaelekeza kwa mtoa huduma sahihi)
     Anthropic / OpenAI / Gemini / DeepSeek / Groq / Mistral / ...
 
 ACP Agents (mchakato wa kuzalisha kinyume):
-    Ombi la Mteja → ShiguangGateway → inazalisha CLI kupitia stdio/ACP → jibu
+    Ombi la Mteja → Orbit → inazalisha CLI kupitia stdio/ACP → jibu
 ```
 
 **Manufaa:**
@@ -54,26 +54,26 @@ ACP Agents (mchakato wa kuzalisha kinyume):
 
 ## Auto-configure na `setup-*`
 
-Huna haja ya kuandika usanidi wa kila zana kwa mkono. ShiguangGateway inatoa amri ya `setup-*`
-kila CLI inayoungwa mkono ambayo inasoma katalogi ya mifano **hai** kutoka kwa ShiguangGateway inayofanya kazi
+Huna haja ya kuandika usanidi wa kila zana kwa mkono. Orbit inatoa amri ya `setup-*`
+kila CLI inayoungwa mkono ambayo inasoma katalogi ya mifano **hai** kutoka kwa Orbit inayofanya kazi
 (ya ndani au ya mbali) na kuandika usanidi wa zana mwenyewe kwenye mashine yako:
 
 ```bash
-shiguang-gateway setup-codex        shiguang-gateway setup-claude       shiguang-gateway setup-opencode
-shiguang-gateway setup-cline        shiguang-gateway setup-kilo         shiguang-gateway setup-continue
-shiguang-gateway setup-cursor       shiguang-gateway setup-roo          shiguang-gateway setup-crush
-shiguang-gateway setup-goose        shiguang-gateway setup-qwen         shiguang-gateway setup-aider
+orbit setup-codex        orbit setup-claude       orbit setup-opencode
+orbit setup-cline        orbit setup-kilo         orbit setup-continue
+orbit setup-cursor       orbit setup-roo          orbit setup-crush
+orbit setup-goose        orbit setup-qwen         orbit setup-aider
 ```
 
 Kila moja inakubali `--remote <url> --api-key <key>` (kuunda zana ya ndani dhidi ya
-ShiguangGateway ya mbali), `--dry-run` (kuangalia bila kuandika), na `--port`. Zana
+Orbit ya mbali), `--dry-run` (kuangalia bila kuandika), na `--port`. Zana
 bila ugunduzi wa mifano (Cline, Kilo, Roo, Goose, Aider, Qwen) zinahitaji
 `--model <id>` (na `--yes` kwa kazi zisizo za mwingiliano). Ili kuzindua CLI na
 muhimu sahihi iliyowekwa na hakuna usanidi ulioandikwa kabisa, tumia
-mwanzo wa jumla `shiguang-gateway run <target>` (claude, codex, aider, goose, opencode, qwen,
+mwanzo wa jumla `orbit run <target>` (claude, codex, aider, goose, opencode, qwen,
 gemini — malengo na majina yanatoka `bin/cli/cli-manifest.mjs`); mwanzo wa zamani
-wa kila zana `shiguang-gateway launch` (Claude Code) na `shiguang-gateway launch-codex`
-(Codex) bado zinapatikana. Gemini CLI ni ya kuzindua tu: ni lengo la `shiguang-gateway run`
+wa kila zana `orbit launch` (Claude Code) na `orbit launch-codex`
+(Codex) bado zinapatikana. Gemini CLI ni ya kuzindua tu: ni lengo la `orbit run`
 lakini haina mapishi ya `setup-*`/`configure`.
 
 > **Rejeleo kamili:** jedwali kuu — kila amri inayoandika, kila bendera,
@@ -82,22 +82,22 @@ lakini haina mapishi ya `setup-*`/`configure`.
 
 ### Kukimbia hizi ndani ya kontena
 
-Amri ya `setup-*` iliyotekelezwa ndani ya kontena la ShiguangGateway inaandika kwenye
+Amri ya `setup-*` iliyotekelezwa ndani ya kontena la Orbit inaandika kwenye
 nyumba ya kontena yenyewe, ambayo hakuna CLI ya mwenyeji inayosoma na ambayo inatoweka na
-kontena. ShiguangGateway inagundua hilo na inatoka `2` na maagizo badala ya
+kontena. Orbit inagundua hilo na inatoka `2` na maagizo badala ya
 kuandika. Njia mbili zinazoungwa mkono — sakinisha CLI kwenye mwenyeji na
-`shiguang-gateway connect` kwa kontena, au bind-mount saraka za usanidi na kuweka
+`orbit connect` kwa kontena, au bind-mount saraka za usanidi na kuweka
 `CLI_CONFIG_HOME` (profaili ya compose `host`). Kila amri ya `setup-*`, pamoja na
-`shiguang-gateway configure` na `shiguang-gateway config set`, inakubali
-`--allow-container-write` wakati usanidi wa CLIs za kontena mwenyewe ndio unachomaanisha; `SHIGUANG_GATEWAY_ALLOW_CONTAINER_CONFIG_WRITE=true` inafanya vivyo hivyo kwa
+`orbit configure` na `orbit config set`, inakubali
+`--allow-container-write` wakati usanidi wa CLIs za kontena mwenyewe ndio unachomaanisha; `ORBIT_ALLOW_CONTAINER_CONFIG_WRITE=true` inafanya vivyo hivyo kwa
 seva. Tazama
-[Muongozo wa Docker → Kuweka zana za CLI za mwenyeji](../guides/DOCKER_GUIDE.md#configuring-host-cli-tools-when-shiguang-gateway-runs-in-docker).
+[Muongozo wa Docker → Kuweka zana za CLI za mwenyeji](../guides/DOCKER_GUIDE.md#configuring-host-cli-tools-when-orbit-runs-in-docker).
 
 **Kipengele cha kutekeleza** cha dashibodi (`POST /api/cli-tools/apply`) kinathibitisha
 mlinzi sawa: ndani ya kontena, kuandika ambako lengo lake halijabind-mount kutoka kwa
 mwenyeji kunajibu **`422`** na `containerEphemeralTarget: true`, maandiko salama ya kosa
 na — kwa zana zenye mapishi ya mwenyeji (claude, codex, opencode, cline,
-kilo, continue) — `hostSetupCommand` (mfano `shiguang-gateway setup-opencode`) ya kutekeleza
+kilo, continue) — `hostSetupCommand` (mfano `orbit setup-opencode`) ya kutekeleza
 kwenye mwenyeji badala yake; hakuna kitu kinachoandikwa. `dryRun: true` inaendelea kufanya kazi katika
 hali ya kontena na inarudisha yaliyomo yaliyoundwa + njia ya lengo bila kugusa diski, hivyo
 unaweza kuangalia kutoka kwenye dashibodi na kutekeleza kwenye mwenyeji. Tabia hii ni
@@ -132,8 +132,8 @@ Sio kila zana iliyoorodheshwa inaweza kuonekana, kusanidiwa au kuzinduliwa. Kila
 | ------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------- |
 | **Katalogi**              | Inaonekana katika katalogi ya dashibodi (jina, muuzaji, hati, aina ya usanidi) | `src/shared/constants/cliTools.ts` (`CLI_TOOLS`)                  |
 | **Inayoonekana**          | Ugunduzi wa binary/usanidi, ukaguzi wa afya, njia za usanidi                   | `src/shared/services/cliRuntime.ts` (`CLI_TOOLS` runtime catalog) |
-| **Inayoweza kusanidiwa**  | Inasaidiwa na `shiguang-gateway configure <cli>` (mapishi ya usanidi yapo)            | `bin/cli/cli-manifest.mjs` (`configure: true`)                    |
-| **Inayoweza kuzinduliwa** | Inasaidiwa na `shiguang-gateway run <target>` (injection ya env/args imeainishwa)     | `bin/cli/cli-manifest.mjs` (`run: true`)                          |
+| **Inayoweza kusanidiwa**  | Inasaidiwa na `orbit configure <cli>` (mapishi ya usanidi yapo)            | `bin/cli/cli-manifest.mjs` (`configure: true`)                    |
+| **Inayoweza kuzinduliwa** | Inasaidiwa na `orbit run <target>` (injection ya env/args imeainishwa)     | `bin/cli/cli-manifest.mjs` (`run: true`)                          |
 
 `bin/cli/cli-manifest.mjs` ni hati ya kutekeleza ya kawaida kwa amri za CLI
 zinazoonekana: `run`, `configure` na jenereta za kukamilisha shell zote zinapata orodha zao za
@@ -197,7 +197,7 @@ Wakala huru wanaoonekana katika `/dashboard/cli-agents`:
 
 ## 3. Wakala wa ACP (/dashboard/acp-agents)
 
-Ukurasa huu (uliobadilishwa kutoka `/dashboard/agents`) unaonyesha CLIs ambazo ShiguangGateway inaweza **kuanzisha** kama injini za utekelezaji wa nyuma kupitia stdio/ACP protokali. Katalogi inashughulikiwa tofauti katika `src/lib/acp/registry.ts` na **siyo** sawa na `CLI_TOOLS`.
+Ukurasa huu (uliobadilishwa kutoka `/dashboard/agents`) unaonyesha CLIs ambazo Orbit inaweza **kuanzisha** kama injini za utekelezaji wa nyuma kupitia stdio/ACP protokali. Katalogi inashughulikiwa tofauti katika `src/lib/acp/registry.ts` na **siyo** sawa na `CLI_TOOLS`.
 
 ---
 
@@ -260,7 +260,7 @@ Zana mpya zenye `configType: "custom"` zina njia maalum za API za mipangilio:
 | `POST /api/cli-tools/codewhale-settings`    | CodeWhale (OPENAI_BASE_URL, primary + legacy `~/.deepseek` sync) |
 | `POST /api/cli-tools/smelt-settings`        | Smelt                                                            |
 | `POST /api/cli-tools/pi-settings`           | Pi coding agent                                                  |
-| `POST /api/cli-tools/grok-build-settings`   | Grok Build (~/.grok/config.toml, `[model.shiguang-gateway]`)            |
+| `POST /api/cli-tools/grok-build-settings`   | Grok Build (~/.grok/config.toml, `[model.orbit]`)            |
 | `POST /api/cli-tools/qwen-settings`         | Qwen Code (`~/.qwen/settings.json` + dedicated `.env` key)       |
 
 Njia zote zinatumia `sanitizeErrorMessage()` kwa majibu ya makosa (Sheria Kali #12).
@@ -320,7 +320,7 @@ Tafsiri kamili za PT-BR na EN zinapatikana. Lugha 39 nyingine zinarudi kwa EN mo
 
 ## 9. Kuanzia Haraka
 
-### Hatua ya 1 — Pata Funguo ya API ya ShiguangGateway
+### Hatua ya 1 — Pata Funguo ya API ya Orbit
 
 1. Fungua `/dashboard/api-manager` → **Unda Funguo ya API**
 2. Mpe jina (mfano `cli-tools`) na chagua ruhusa zote
@@ -353,7 +353,7 @@ npm install -g kilocode
 # Qwen Code
 npm install -g @qwen-code/qwen-code
 
-# Google Gemini CLI (inaweza kuzinduliwa kupitia `shiguang-gateway run gemini` → /v1beta surface)
+# Google Gemini CLI (inaweza kuzinduliwa kupitia `orbit run gemini` → /v1beta surface)
 npm install -g @google/gemini-cli
 
 # Aider
@@ -384,14 +384,14 @@ cargo install smelt  # Inategemea Rust
 ### Hatua ya 4 — Weka Mabadiliko ya Mazingira ya Ulimwengu
 
 ```bash
-# ShiguangGateway Universal Endpoint
+# Orbit Universal Endpoint
 export OPENAI_BASE_URL="http://localhost:20128/v1"
-export OPENAI_API_KEY="sk-your-shiguang-gateway-key"
+export OPENAI_API_KEY="sk-your-orbit-key"
 export ANTHROPIC_BASE_URL="http://localhost:20128"
-export ANTHROPIC_AUTH_TOKEN="sk-your-shiguang-gateway-key"
+export ANTHROPIC_AUTH_TOKEN="sk-your-orbit-key"
 # Gemini CLI inasoma GOOGLE_GEMINI_BASE_URL kwenye ROOT (SDK yake inaongeza /v1beta/... yenyewe)
 export GOOGLE_GEMINI_BASE_URL="http://localhost:20128"
-export GEMINI_API_KEY="sk-your-shiguang-gateway-key"
+export GEMINI_API_KEY="sk-your-orbit-key"
 ```
 
 > Kwa **seva ya mbali** badilisha `localhost:20128` na IP ya seva au jina la kikoa,
@@ -409,7 +409,7 @@ mkdir -p ~/.claude && cat > ~/.claude/settings.json << EOF
 {
   "env": {
     "ANTHROPIC_BASE_URL": "http://localhost:20128",
-    "ANTHROPIC_AUTH_TOKEN": "sk-your-shiguang-gateway-key"
+    "ANTHROPIC_AUTH_TOKEN": "sk-your-orbit-key"
   }
 }
 EOF
@@ -425,20 +425,20 @@ Tumia lango la pamoja la Anthropic kama mzizi kwa Claude Code. Usiongeze `/v1` h
 
 Codex ya kisasa (v0.137+) inasoma `~/.codex/config.toml` pekee — ya zamani
 `config.yaml` inahusiana na CLI ya zamani ya npm na inapuuziliwa mbali kimya. Funguo ya API
-inasalia katika mabadiliko ya mazingira ya `SHIGUANG_GATEWAY_API_KEY` (`env_key`), kamwe
+inasalia katika mabadiliko ya mazingira ya `ORBIT_API_KEY` (`env_key`), kamwe
 ndani ya faili:
 
 ```bash
 mkdir -p ~/.codex && cat > ~/.codex/config.toml << EOF
-model_provider = "shiguang-gateway"
+model_provider = "orbit"
 
-[model_providers.shiguang-gateway]
-name                 = "ShiguangGateway"
+[model_providers.orbit]
+name                 = "Orbit"
 base_url             = "http://localhost:20128/v1"
-env_key              = "SHIGUANG_GATEWAY_API_KEY"
+env_key              = "ORBIT_API_KEY"
 requires_openai_auth = false
 EOF
-export SHIGUANG_GATEWAY_API_KEY="sk-your-shiguang-gateway-key"
+export ORBIT_API_KEY="sk-your-orbit-key"
 ```
 
 Marejeo kamili (profaili, `wire_api`, madirisha ya muktadha): [CODEX-CLI-CONFIGURATION.md](../guides/CODEX-CLI-CONFIGURATION.md).
@@ -454,12 +454,12 @@ mkdir -p ~/.config/opencode && cat > ~/.config/opencode/opencode.json << EOF
 {
   "\$schema": "https://opencode.ai/config.json",
   "provider": {
-    "shiguang-gateway": {
+    "orbit": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "ShiguangGateway",
+      "name": "Orbit",
       "options": {
         "baseURL": "http://localhost:20128/v1",
-        "apiKey": "sk-your-shiguang-gateway-key"
+        "apiKey": "sk-your-orbit-key"
       },
       "models": {
         "claude-sonnet-4-5": { "name": "claude-sonnet-4-5" },
@@ -474,7 +474,7 @@ EOF
 
 **Jaribu:** `opencode`
 
-> Tumia `opencode run "your prompt" --model shiguang-gateway/claude-sonnet-4-5-thinking --variant high`
+> Tumia `opencode run "your prompt" --model orbit/claude-sonnet-4-5-thinking --variant high`
 > kutuma toleo la kufikiri.
 
 ---
@@ -488,7 +488,7 @@ mkdir -p ~/.cline/data && cat > ~/.cline/data/globalState.json << EOF
 {
   "apiProvider": "openai",
   "openAiBaseUrl": "http://localhost:20128/v1",
-  "openAiApiKey": "sk-your-shiguang-gateway-key"
+  "openAiApiKey": "sk-your-orbit-key"
 }
 EOF
 ```
@@ -496,7 +496,7 @@ EOF
 **Hali ya VS Code:**
 Mipangilio ya kiendelezi cha Cline → Mtoa API: `OpenAI Compatible` → URL ya Msingi: `http://localhost:20128/v1`
 
-Au tumia dashibodi ya ShiguangGateway → **Zana za CLI → Cline → Tumia Mipangilio**.
+Au tumia dashibodi ya Orbit → **Zana za CLI → Cline → Tumia Mipangilio**.
 
 ---
 
@@ -505,7 +505,7 @@ Au tumia dashibodi ya ShiguangGateway → **Zana za CLI → Cline → Tumia Mipa
 **Hali ya CLI:**
 
 ```bash
-kilocode --api-base http://localhost:20128/v1 --api-key sk-your-shiguang-gateway-key
+kilocode --api-base http://localhost:20128/v1 --api-key sk-your-orbit-key
 ```
 
 **Mipangilio ya VS Code:**
@@ -513,11 +513,11 @@ kilocode --api-base http://localhost:20128/v1 --api-key sk-your-shiguang-gateway
 ```json
 {
   "kilo-code.openAiBaseUrl": "http://localhost:20128/v1",
-  "kilo-code.apiKey": "sk-your-shiguang-gateway-key"
+  "kilo-code.apiKey": "sk-your-orbit-key"
 }
 ```
 
-Au tumia dashibodi ya ShiguangGateway → **Zana za CLI → KiloCode → Tumia Mipangilio**.
+Au tumia dashibodi ya Orbit → **Zana za CLI → KiloCode → Tumia Mipangilio**.
 
 ---
 
@@ -527,11 +527,11 @@ Hariri `~/.continue/config.yaml`:
 
 ```yaml
 models:
-  - name: ShiguangGateway
+  - name: Orbit
     provider: openai
     model: auto
     apiBase: http://localhost:20128/v1
-    apiKey: sk-your-shiguang-gateway-key
+    apiKey: sk-your-orbit-key
     default: true
 ```
 
@@ -541,25 +541,25 @@ Restart VS Code baada ya kuhariri.
 
 #### VS Code Insiders (`chatLanguageModels.json`)
 
-Tumia hii wakati VS Code Insiders imewekwa kwa mifano ya mwisho ya mwisho na unataka ShiguangGateway ifanye kazi bila uwanja wa kichwa maalum.
+Tumia hii wakati VS Code Insiders imewekwa kwa mifano ya mwisho ya mwisho na unataka Orbit ifanye kazi bila uwanja wa kichwa maalum.
 
 **Mahali panap推荐:**
 
 - Linux: `~/.config/Code - Insiders/User/chatLanguageModels.json`
 - Windows: `%APPDATA%/Code - Insiders/User/chatLanguageModels.json`
 
-**Mfano ukitumia jina la ShiguangGateway lililotolewa tokeni:**
+**Mfano ukitumia jina la Orbit lililotolewa tokeni:**
 
 ```json
 [
   {
     "vendor": "customendpoint",
     "id": "auto",
-    "name": "ShiguangGateway Auto",
+    "name": "Orbit Auto",
     "family": "gpt-4",
     "version": "1.0.0",
-    "url": "http://localhost:20128/api/v1/vscode/sk-your-shiguang-gateway-key/chat/completions",
-    "modelsUrl": "http://localhost:20128/api/v1/vscode/sk-your-shiguang-gateway-key/models",
+    "url": "http://localhost:20128/api/v1/vscode/sk-your-orbit-key/chat/completions",
+    "modelsUrl": "http://localhost:20128/api/v1/vscode/sk-your-orbit-key/models",
     "requestFormat": "openai-chat-completions",
     "contextWindow": 256000,
     "maxOutputTokens": 32768,
@@ -572,7 +572,7 @@ Tumia hii wakati VS Code Insiders imewekwa kwa mifano ya mwisho ya mwisho na una
 
 **Maelezo:**
 
-- Badilisha `sk-your-shiguang-gateway-key` na funguo ya API iliyoundwa katika ShiguangGateway.
+- Badilisha `sk-your-orbit-key` na funguo ya API iliyoundwa katika Orbit.
 - Sehemu ya `url` inapaswa kuelekeza kwenye `/api/v1/vscode/{token}/chat/completions`.
 - Sehemu ya `modelsUrl` inapaswa kuelekeza kwenye `/api/v1/vscode/{token}/models`.
 - Prefer njia ya kawaida ya `/v1` + kichwa cha Bearer wakati mteja unasaidia vichwa maalum.
@@ -586,40 +586,40 @@ Tumia hii wakati VS Code Insiders imewekwa kwa mifano ya mwisho ya mwisho na una
 # Ingia kwenye akaunti yako ya AWS/Kiro:
 kiro-cli login
 
-# CLI inatumia uthibitisho wake mwenyewe — ShiguangGateway haitahitajika kama nyuma kwa Kiro CLI yenyewe.
-# Tumia kiro-cli pamoja na ShiguangGateway kwa zana nyingine.
+# CLI inatumia uthibitisho wake mwenyewe — Orbit haitahitajika kama nyuma kwa Kiro CLI yenyewe.
+# Tumia kiro-cli pamoja na Orbit kwa zana nyingine.
 kiro-cli status
 ```
 
-Kwa programu ya desktop ya **Kiro IDE**, tumia mwisho wa MITM ulioonyeshwa na ShiguangGateway
+Kwa programu ya desktop ya **Kiro IDE**, tumia mwisho wa MITM ulioonyeshwa na Orbit
 chini ya `/dashboard/cli-tools → Kiro`.
 
 ---
 
-## 10. ShiguangGateway CLI ya Ndani
+## 10. Orbit CLI ya Ndani
 
-Binary ya `shiguang-gateway` inatoa amri za mzunguko wa seva, usanidi, uchunguzi, na usimamizi wa watoa huduma. Kituo cha kuingia: `bin/shiguang-gateway.mjs`.
+Binary ya `orbit` inatoa amri za mzunguko wa seva, usanidi, uchunguzi, na usimamizi wa watoa huduma. Kituo cha kuingia: `bin/orbit.mjs`.
 
 ```bash
-shiguang-gateway                              # Anza seva (bandia port 20128)
-shiguang-gateway setup                        # Mwandiko wa usanidi wa mwingiliano
-shiguang-gateway doctor                       # Angalia usanidi, DB, port, muda wa kukimbia
-shiguang-gateway providers list               # Mifumo ya watoa huduma iliyowekwa
-shiguang-gateway providers test-all           # Jaribu kila muunganisho hai
-shiguang-gateway reset-password               # Weka upya nenosiri la admin
-shiguang-gateway logs                         # Pitia kumbukumbu za maombi
-shiguang-gateway health                       # Afya ya kina (vikwazo, cache, kumbukumbu)
-shiguang-gateway --version                    # Chapisha toleo
-shiguang-gateway --help                       # Onyesha amri zote
+orbit                              # Anza seva (bandia port 20128)
+orbit setup                        # Mwandiko wa usanidi wa mwingiliano
+orbit doctor                       # Angalia usanidi, DB, port, muda wa kukimbia
+orbit providers list               # Mifumo ya watoa huduma iliyowekwa
+orbit providers test-all           # Jaribu kila muunganisho hai
+orbit reset-password               # Weka upya nenosiri la admin
+orbit logs                         # Pitia kumbukumbu za maombi
+orbit health                       # Afya ya kina (vikwazo, cache, kumbukumbu)
+orbit --version                    # Chapisha toleo
+orbit --help                       # Onyesha amri zote
 ```
 
 ### Usanidi & Uanzishaji
 
 ```bash
-shiguang-gateway setup                        # Mwandiko wa usanidi wa mwingiliano
-shiguang-gateway setup --non-interactive      # Hali ya CI/automatiska (inasoma mabadiliko ya mazingira + bendera)
-shiguang-gateway setup --password '<value>'   # Weka nenosiri la admin moja kwa moja
-shiguang-gateway setup --add-provider \
+orbit setup                        # Mwandiko wa usanidi wa mwingiliano
+orbit setup --non-interactive      # Hali ya CI/automatiska (inasoma mabadiliko ya mazingira + bendera)
+orbit setup --password '<value>'   # Weka nenosiri la admin moja kwa moja
+orbit setup --add-provider \
   --provider openai \
   --api-key '<value>' \
   --test-provider                      # Ongeza na jaribu mtoa huduma kwa wakati mmoja
@@ -629,21 +629,21 @@ Mabadiliko ya mazingira yanayotambuliwa kwa usanidi usio wa mwingiliano:
 
 | Var                 | Kusudi                                                                             |
 | ------------------- | ---------------------------------------------------------------------------------- |
-| `SHIGUANG_GATEWAY_API_KEY` | Funguo ya API ya mtoa huduma (imefungwa na `--api-key` kupitia Commander `.env()`) |
-| `DATA_DIR`          | Badilisha saraka ya data ya ShiguangGateway                                              |
+| `ORBIT_API_KEY` | Funguo ya API ya mtoa huduma (imefungwa na `--api-key` kupitia Commander `.env()`) |
+| `DATA_DIR`          | Badilisha saraka ya data ya Orbit                                              |
 
 Mingine yote ya pembejeo zisizo za mwingiliano inapitishwa kama bendera, si mabadiliko ya mazingira:
 `--password`, `--provider`, `--provider-name`, `--provider-base-url`, `--default-model`
-(tazama chaguzi za `shiguang-gateway setup` hapo juu).
+(tazama chaguzi za `orbit setup` hapo juu).
 
 ### Uchunguzi
 
 ```bash
-shiguang-gateway doctor                       # Angalia usanidi, DB, port, muda wa kukimbia, kumbukumbu, uhai
-shiguang-gateway doctor --json                # JSON inayoweza kusomwa na mashine
-shiguang-gateway doctor --no-liveness         # Kosa uchunguzi wa afya ya HTTP
-shiguang-gateway doctor --host 0.0.0.0        # Badilisha mwenyeji wa uhai
-shiguang-gateway doctor --liveness-url <url>  # Badilisha URL ya mwisho wa afya
+orbit doctor                       # Angalia usanidi, DB, port, muda wa kukimbia, kumbukumbu, uhai
+orbit doctor --json                # JSON inayoweza kusomwa na mashine
+orbit doctor --no-liveness         # Kosa uchunguzi wa afya ya HTTP
+orbit doctor --host 0.0.0.0        # Badilisha mwenyeji wa uhai
+orbit doctor --liveness-url <url>  # Badilisha URL ya mwisho wa afya
 ```
 
 Daktari anafanya uchunguzi haya: `Usanidi`, `Hifadhi`, `Hifadhi/kuandika`,
@@ -653,47 +653,47 @@ Daktari anafanya uchunguzi haya: `Usanidi`, `Hifadhi`, `Hifadhi/kuandika`,
 ### Usimamizi wa Watoa Huduma
 
 ```bash
-shiguang-gateway providers available                       # Katalogi ya watoa huduma wa ShiguangGateway
-shiguang-gateway providers available --search openai       # Chuja katalogi kwa id/jina/alias/kikundi
-shiguang-gateway providers available --category api-key    # Chuja kwa kikundi (api-key, oauth, bure, ...)
-shiguang-gateway providers available --json                # JSON inayoweza kusomwa na mashine
+orbit providers available                       # Katalogi ya watoa huduma wa Orbit
+orbit providers available --search openai       # Chuja katalogi kwa id/jina/alias/kikundi
+orbit providers available --category api-key    # Chuja kwa kikundi (api-key, oauth, bure, ...)
+orbit providers available --json                # JSON inayoweza kusomwa na mashine
 
-shiguang-gateway providers list                            # Mifumo ya watoa huduma iliyowekwa
-shiguang-gateway providers list --json
+orbit providers list                            # Mifumo ya watoa huduma iliyowekwa
+orbit providers list --json
 
-shiguang-gateway providers test <id|name>                  # Jaribu muunganisho mmoja uliowekwa
-shiguang-gateway providers test-all                        # Jaribu kila muunganisho hai
-shiguang-gateway providers validate                        # Uthibitisho wa muundo wa ndani pekee
-shiguang-gateway providers add <provider> --credential-env PROVIDER_KEY
-shiguang-gateway providers import ./providers.json --dry-run --json
-shiguang-gateway providers auth <provider>                 # Mchakato wa OAuth uliopo
-shiguang-gateway providers edit <id|name> --default-model <model>
-shiguang-gateway providers remove <id|name> --yes
+orbit providers test <id|name>                  # Jaribu muunganisho mmoja uliowekwa
+orbit providers test-all                        # Jaribu kila muunganisho hai
+orbit providers validate                        # Uthibitisho wa muundo wa ndani pekee
+orbit providers add <provider> --credential-env PROVIDER_KEY
+orbit providers import ./providers.json --dry-run --json
+orbit providers auth <provider>                 # Mchakato wa OAuth uliopo
+orbit providers edit <id|name> --default-model <model>
+orbit providers remove <id|name> --yes
 ```
 
 `providers add/import/auth/edit/remove` ni API-ya kwanza na kwa hivyo inafanya kazi dhidi
 ya muktadha wa ndani au wa mbali. Pembejeo za akidi zinapaswa kutumia
 `--credential-stdin` au `--credential-env`; `--dry-run --json` inaripoti tu
-kuwepo/kichwa kilichofichwa. `providers available` inasoma katalogi ya ShiguangGateway;
+kuwepo/kichwa kilichofichwa. `providers available` inasoma katalogi ya Orbit;
 `providers list/test/test-all/validate` zinabaki na tabia yao ya ndani ya SQLite na
 hazihitaji seva kuwa inakimbia.
 
 ### Urejeleaji & Weka Upya
 
 ```bash
-shiguang-gateway reset-password                # Weka upya nenosiri la admin (pia: shiguang-gateway-reset-password)
-shiguang-gateway reset-encrypted-columns       # Onyesha onyo + jaribio la kuweka upya akidi iliyofichwa
-shiguang-gateway reset-encrypted-columns --force  # Kwa kweli futa akidi zilizofichwa katika SQLite
+orbit reset-password                # Weka upya nenosiri la admin (pia: orbit-reset-password)
+orbit reset-encrypted-columns       # Onyesha onyo + jaribio la kuweka upya akidi iliyofichwa
+orbit reset-encrypted-columns --force  # Kwa kweli futa akidi zilizofichwa katika SQLite
 ```
 
 ### Uhamasishaji wa Akidi (⚠ shughulikia kwa uangalifu)
 
 ```bash
-shiguang-gateway auth export                                 # Onyesha onyo + lango la uthibitisho — hakuna ufikiaji wa DB
-shiguang-gateway auth export --force                          # Hamasisha akidi ZOTE zilizofichwa za muunganisho kwa stdout kama JSON
-shiguang-gateway auth export --force --id <id>                 # Hamasisha tu muunganisho unaolingana
-shiguang-gateway auth export --force --format env               # Tolea mistari ya SHIGUANG_GATEWAY_<PROVIDER>_<FIELD>=<value>
-shiguang-gateway auth export --force --out creds.json           # Andika kwenye faili (iliyoundwa na ruhusa 0600)
+orbit auth export                                 # Onyesha onyo + lango la uthibitisho — hakuna ufikiaji wa DB
+orbit auth export --force                          # Hamasisha akidi ZOTE zilizofichwa za muunganisho kwa stdout kama JSON
+orbit auth export --force --id <id>                 # Hamasisha tu muunganisho unaolingana
+orbit auth export --force --format env               # Tolea mistari ya ORBIT_<PROVIDER>_<FIELD>=<value>
+orbit auth export --force --out creds.json           # Andika kwenye faili (iliyoundwa na ruhusa 0600)
 ```
 
 `auth export` ni **ya ndani pekee** (kusoma moja kwa moja kutoka SQLite, hakuna njia ya HTTP) na kwa makusudi inachapisha/kuandika
@@ -705,36 +705,36 @@ iwe imewekwa. Sehemu ambayo inashindwa kufichuliwa (funguo ya zamani, ciphertext
 
 ### Amri nyingine za chini
 
-Hizi zinadhani seva ya ShiguangGateway inakimbia, isipokuwa ilipobainishwa vinginevyo:
+Hizi zinadhani seva ya Orbit inakimbia, isipokuwa ilipobainishwa vinginevyo:
 
 ```bash
-shiguang-gateway status                       # Hali ya kina ya kukimbia
-shiguang-gateway logs                         # Pitia kumbukumbu za maombi (--json, --search, --follow)
-shiguang-gateway config show                  # Onyesha usanidi wa sasa
+orbit status                       # Hali ya kina ya kukimbia
+orbit logs                         # Pitia kumbukumbu za maombi (--json, --search, --follow)
+orbit config show                  # Onyesha usanidi wa sasa
 
-shiguang-gateway provider list                # Orodha ya watoa huduma wanaopatikana (alias ya providers list)
-shiguang-gateway provider add                 # Register ShiguangGateway kama mtoa huduma kwenye chombo
-shiguang-gateway keys add | list | remove     # Simamia funguo za API
-shiguang-gateway models [provider]            # Orodha ya mifano (--json, --search)
-shiguang-gateway combo list | switch | create | delete
+orbit provider list                # Orodha ya watoa huduma wanaopatikana (alias ya providers list)
+orbit provider add                 # Register Orbit kama mtoa huduma kwenye chombo
+orbit keys add | list | remove     # Simamia funguo za API
+orbit models [provider]            # Orodha ya mifano (--json, --search)
+orbit combo list | switch | create | delete
 
-shiguang-gateway backup                       # Picha ya usanidi + DB
-shiguang-gateway restore                      # Rejesha kutoka picha ya awali
+orbit backup                       # Picha ya usanidi + DB
+orbit restore                      # Rejesha kutoka picha ya awali
 
-shiguang-gateway health                       # Afya ya kina (vikwazo, cache, kumbukumbu)
-shiguang-gateway quota                        # Matumizi ya quota ya mtoa huduma
-shiguang-gateway cache                        # Hali ya cache
-shiguang-gateway cache clear                  # Futa cache za semantiki + saini
+orbit health                       # Afya ya kina (vikwazo, cache, kumbukumbu)
+orbit quota                        # Matumizi ya quota ya mtoa huduma
+orbit cache                        # Hali ya cache
+orbit cache clear                  # Futa cache za semantiki + saini
 
-shiguang-gateway mcp status | restart         # Hali ya seva ya MCP / re-start
-shiguang-gateway a2a status | card            # Hali ya seva ya A2A / kadi ya wakala
+orbit mcp status | restart         # Hali ya seva ya MCP / re-start
+orbit a2a status | card            # Hali ya seva ya A2A / kadi ya wakala
 
-shiguang-gateway tunnel list | create | stop  # Simamia tunnels (cloudflare/tailscale/ngrok)
-shiguang-gateway env show | get <k> | set <k> <v>  # Kagua / weka mabadiliko ya mazingira (ya muda)
+orbit tunnel list | create | stop  # Simamia tunnels (cloudflare/tailscale/ngrok)
+orbit env show | get <k> | set <k> <v>  # Kagua / weka mabadiliko ya mazingira (ya muda)
 
-shiguang-gateway test                         # Jaribio la muunganisho wa mtoa huduma
-shiguang-gateway update                       # Angalia masasisho
-shiguang-gateway completion                   # Tengeneza ukamilifu wa shell
+orbit test                         # Jaribio la muunganisho wa mtoa huduma
+orbit update                       # Angalia masasisho
+orbit completion                   # Tengeneza ukamilifu wa shell
 ```
 
 ### Bendera za Kawaida
@@ -761,7 +761,7 @@ shiguang-gateway completion                   # Tengeneza ukamilifu wa shell
 | `/v1/audio/speech`         | Maandishi hadi sauti                      | ElevenLabs, OpenAI TTS               |
 | `/v1/audio/transcriptions` | Sauti hadi maandiko                       | Deepgram, AssemblyAI                 |
 
-Mifano ya kuandika kwa urahisi yenye URL ya ShiguangGateway iliyotolewa:
+Mifano ya kuandika kwa urahisi yenye URL ya Orbit iliyotolewa:
 
 ```txt
 Mfano wa token: sk-a3ab3c080beaee3a-69f4a4-070d71af
@@ -780,7 +780,7 @@ Mazungumzo ya Ollama: http://localhost:20128/api/v1/vscode/sk-a3ab3c080beaee3a-6
 
 | Kosa                                                       | Sababu                                  | Suluhisho                                                 |
 | ---------------------------------------------------------- | --------------------------------------- | --------------------------------------------------------- |
-| `Connection refused`                                       | ShiguangGateway haifanyi kazi                 | `shiguang-gateway serve`                                         |
+| `Connection refused`                                       | Orbit haifanyi kazi                 | `orbit serve`                                         |
 | `401 Unauthorized`                                         | Funguo ya API si sahihi                 | Angalia katika `/dashboard/api-manager`                   |
 | `No combo configured`                                      | Hakuna combo ya routing inayofanya kazi | Weka katika `/dashboard/combos`                           |
 | CLI inaonyesha "haijasanidi"                               | Binary haipo katika PATH                | Angalia `which <command>`                                 |

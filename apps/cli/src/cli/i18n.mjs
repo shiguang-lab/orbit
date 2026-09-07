@@ -12,7 +12,7 @@ let fallbackCatalog = null;
 
 export function detectLocale() {
   const raw =
-    process.env.SHIGUANG_GATEWAY_LANG ||
+    process.env.ORBIT_LANG ||
     process.env.LC_ALL ||
     process.env.LC_MESSAGES ||
     process.env.LANG ||

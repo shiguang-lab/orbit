@@ -20,12 +20,12 @@ export const GHE_COPILOT_TARGET: MitmTarget = {
   ],
   setupTutorial: {
     steps: [
-      "Configure your GHE Copilot endpoint URL in ShiguangGateway provider settings",
+      "Configure your GHE Copilot endpoint URL in Orbit provider settings",
       "Ensure your GHE instance has Copilot enabled",
       "Sign in to GitHub Enterprise with a Copilot-enabled account",
       "Enable DNS routing for this agent",
       "Restart your IDE (VS Code, JetBrains, etc.)",
-      "Done — GHE Copilot now routes via ShiguangGateway",
+      "Done — GHE Copilot now routes via Orbit",
     ],
     detection: { command: "code --list-extensions", platform: "all" },
   },

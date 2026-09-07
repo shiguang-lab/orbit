@@ -2,7 +2,7 @@
  * Plugin SDK — typed API for plugin developers.
  *
  * Provides `definePlugin()` factory and re-exports all types needed
- * to build ShiguangGateway plugins.
+ * to build Orbit plugins.
  *
  * @module plugins/sdk
  */
@@ -34,11 +34,11 @@ export interface PluginDefinition {
 }
 
 /**
- * Define an ShiguangGateway plugin with type safety.
+ * Define an Orbit plugin with type safety.
  *
  * @example
  * ```ts
- * import { definePlugin } from "shiguangGateway/plugins/sdk";
+ * import { definePlugin } from "orbit/plugins/sdk";
  *
  * export default definePlugin({
  *   name: "my-plugin",

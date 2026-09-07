@@ -39,7 +39,7 @@ or external integration is currently available.
 | Supporter offers                 | Implemented as a separate signed, live-only feed and dashboard page. The client revalidates the closed benefit schema, preserves the last good cache, filters expired entries, and labels partner offers explicitly.     |
 | Intel and supporter recognition  | Implemented as a strict signed live-only feed with Radar-owned ELO, factual catalog freshness/trend, a verified local supporter badge, dashboard page, and local-only CLI status/sync commands.                          |
 | Payments and transactional email | Not implemented in the OSS client. Purchase, donation, receipt review, recovery, and mail delivery belong to the private service; hosted availability still depends on its supervised deploy and provider configuration. |
-| Research-agent workstream        | Not part of this client release. Curated feed contents remain server-side data; no autonomous research agent runs in an ShiguangGateway installation.                                                                          |
+| Research-agent workstream        | Not part of this client release. Curated feed contents remain server-side data; no autonomous research agent runs in an Orbit installation.                                                                          |
 
 ---
 
@@ -105,12 +105,12 @@ Opt-in false  → { status: "opt_out" }    — no network call
 
 When both are on, the sync path is:
 
-1. `GET <feed base URL>/v1/catalog/latest` with `x-shiguang-gateway-radar-schema: 2` and an optional
+1. `GET <feed base URL>/v1/catalog/latest` with `x-orbit-radar-schema: 2` and an optional
    `Authorization: Bearer <supporter key>` header (see below). Servers default to the separately
    signed v1 transition artifact when the schema header is absent, so older installed clients keep
    receiving updates.
 2. Nothing about the request, the operator, or their traffic is uploaded — it is a
-   plain, unauthenticated-by-default GET. ShiguangGateway never posts usage data, provider
+   plain, unauthenticated-by-default GET. Orbit never posts usage data, provider
    configuration, or model traffic to the feed service.
 3. The response is verified, validated, and cached locally (see
    [Security model](#security-model)). Radar has exactly four server-side network paths:
@@ -141,12 +141,12 @@ supporter key. The OSS repo itself never issues one, never runs payment code, an
 destination pages, not in this repo (spec decision D14).
 
 - **"I'm a contributor"** — opens `RADAR_CONTRIBUTOR_CLAIM_URL` (default
-  `https://radar.shiguang-gateway.online/auth/github`), a GitHub OAuth claim flow hosted on
+  `https://radar.orbit.online/auth/github`), a GitHub OAuth claim flow hosted on
   the private radar server. It verifies the visitor's GitHub account and grants a
   supporter key to anyone with 5+ merged pull requests or a top-100 contributor spot
   on the repo.
 - **"Support the project"** — opens `RADAR_SUPPORTER_PLANS_URL` (default
-  `https://radar.shiguang-gateway.online/planos`), the payment/plans page.
+  `https://radar.orbit.online/planos`), the payment/plans page.
 
 Both URLs are resolved server-side (`src/lib/radar/links.ts`, same env-override
 pattern as `RADAR_FEED_URL`) and relayed to the dashboard through the existing
@@ -155,12 +155,12 @@ client component never reads `process.env` itself.
 
 | Var                           | Purpose                                                                                     |
 | ----------------------------- | ------------------------------------------------------------------------------------------- |
-| `RADAR_CONTRIBUTOR_CLAIM_URL` | Overrides the contributor-claim URL (default `https://radar.shiguang-gateway.online/auth/github`). |
-| `RADAR_SUPPORTER_PLANS_URL`   | Overrides the supporter-plans URL (default `https://radar.shiguang-gateway.online/planos`).        |
+| `RADAR_CONTRIBUTOR_CLAIM_URL` | Overrides the contributor-claim URL (default `https://radar.orbit.online/auth/github`). |
+| `RADAR_SUPPORTER_PLANS_URL`   | Overrides the supporter-plans URL (default `https://radar.orbit.online/planos`).        |
 
 ### Recovering a lost supporter key
 
-The hosted service's recovery entry point is `https://radar.shiguang-gateway.online/recover`; it is also
+The hosted service's recovery entry point is `https://radar.orbit.online/recover`; it is also
 linked from the plans page. Recovery remains entirely outside the OSS client because the local
 installation never receives the purchaser/contributor e-mail and cannot reconstruct a raw key from
 its encrypted settings.
@@ -197,13 +197,13 @@ who already has one activates it.
 ### End-to-end activation and guided setup
 
 The private feed service and this OSS client have a deliberately narrow boundary: the service
-issues and validates the supporter key, while the local ShiguangGateway installation encrypts the key,
+issues and validates the supporter key, while the local Orbit installation encrypts the key,
 syncs signed artifacts server-side, and guides provider setup. The assisted validation order is:
 
 1. Obtain a newly issued or recovered key from the contributor claim, plans/checkout, recovery
    journey, or an authorized private server operator. Do not paste the raw key into logs,
    screenshots, issue comments, or command-line arguments.
-2. Enable the `RADAR_ENABLED` feature flag on the local ShiguangGateway installation. This exposes the UI
+2. Enable the `RADAR_ENABLED` feature flag on the local Orbit installation. This exposes the UI
    but remains network-inert until the separate opt-in is saved.
 3. Open `/dashboard/radar`, paste the key, and activate. The browser sends one local
    `POST /api/radar/settings` with `{ optIn: true, supporterKey }`; the key is encrypted locally and
@@ -268,12 +268,12 @@ re-synced.
 ### Fork-friendly env overrides
 
 Two env vars let forks and self-hosters point the client at their own feed instead of
-the default ShiguangGateway service — see
+the default Orbit service — see
 [How to self-host a feed](#how-to-self-host-a-feed) below:
 
 | Var                 | Purpose                                                                                                      |
 | ------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `RADAR_FEED_URL`    | Overrides the feed base URL (default `https://radar.shiguang-gateway.online`).                                      |
+| `RADAR_FEED_URL`    | Overrides the feed base URL (default `https://radar.orbit.online`).                                      |
 | `RADAR_FEED_PUBKEY` | Overrides the pinned public key (base64-DER SPKI or PEM), replacing the built-in array with this single key. |
 
 ### Version floor
@@ -361,13 +361,13 @@ The signed feed **body**'s `tier` field is always `"live"` — the feed service 
 **two signed artifacts per version**: live includes current campaigns and community
 omits them. Each artifact is signed over its own exact bytes. The body still does not
 serve as the entitlement decision; the tier actually selected for a request is carried
-in the **`x-shiguang-gateway-feed-tier` response header**, decided server-side from the request's
+in the **`x-orbit-feed-tier` response header**, decided server-side from the request's
 `Authorization` key.
 
 `syncRadar()` (`src/lib/radar/sync.ts::parseServedTierHeader()`) is the single place
 that resolves the tier a client should trust:
 
-1. Parse `x-shiguang-gateway-feed-tier` with `RadarTierSchema` (Zod) — an absent header, or
+1. Parse `x-orbit-feed-tier` with `RadarTierSchema` (Zod) — an absent header, or
    a value that isn't exactly `"community"` or `"live"`, is treated as **not
    present** (never trusted into the cache/UI as-is; this also covers older feed
    servers that predate the header).
@@ -422,7 +422,7 @@ A feed `enabled: false` remains the safety exception: it wins over a stale local
 Catalog publications use `schemaVersion: 2`. `contextWindow` and each of `tools`, `vision`, and
 `thinking` are independently `number | null` / `boolean | null`: `null` means unknown, while
 `false` means a D16-confirmed official provider source explicitly says the capability is absent.
-Internal ShiguangGateway registry/model-spec flags are never promoted directly to feed facts. The client
+Internal Orbit registry/model-spec flags are never promoted directly to feed facts. The client
 still accepts v1 snapshots; because the old builder used `false` as an absence placeholder, v1 `false` is
 normalized to unknown while v1 `true` remains factual. Unknown schema versions fail closed and the
 last valid cache remains available. Every v2 model with a non-null context/capability must carry a
@@ -442,7 +442,7 @@ The guided UI lives at `/dashboard/radar/combos`. It reads only the local
 `GET /api/radar/catalog` and `GET /api/combos/builder/options` endpoints. It never triggers Radar sync,
 reads provider credentials, or writes directly to the combo database.
 
-MCP clients can read the same local projection with `shiguang-gateway_radar_catalog` (`read:radar`). The
+MCP clients can read the same local projection with `orbit_radar_catalog` (`read:radar`). The
 optional `provider`, `familyId`, and `enabledOnly` filters are evaluated after one local
 `GET /api/radar/catalog` read. Its closed output includes catalog metadata plus provider/model,
 display name, `familyId`, quota, capabilities, enabled state, origin, and `disabledBy`; setup URLs,
@@ -483,7 +483,7 @@ The local Radar route families below back the UI under `src/app/api/radar/`:
 | `/api/radar/local-model-state` | DELETE | Clears editable override fields while preserving any tombstone.                                                       |
 
 **Hard rule: these routes never proxy the feed service.** The browser only ever talks
-to the local ShiguangGateway server. The four modules that touch the Radar service are
+to the local Orbit server. The four modules that touch the Radar service are
 `src/lib/radar/sync.ts` (catalog), `src/lib/radar/referralsSync.ts` (referrals), and
 `src/lib/radar/offersSync.ts` (offers) plus `src/lib/radar/intelSync.ts` (Intel); all run
 server-side, never client-side. This keeps
@@ -516,7 +516,7 @@ off, the operator has not opted in, or no supporter key is configured.
 
 After a successful GET, the client verifies the Ed25519 signature over the exact response bytes,
 validates `RadarOffersFeedSchema`, requires both the signed body and
-`x-shiguang-gateway-feed-tier` header to say `live`, enforces a strictly newer dotted version, and only then
+`x-orbit-feed-tier` header to say `live`, enforces a strictly newer dotted version, and only then
 atomically replaces `radar_offers_cache` (migration `144_radar_offers_cache.sql`). The same 10 MB
 header-plus-stream cap used by the other feeds applies. Signature, schema, tier, replay, size, HTTP,
 and network failures all preserve the last verified cache.
@@ -552,8 +552,8 @@ derives `radar:<sha256(supporter key)>`, stores only that one-way identity, and 
 it never updates leaderboards or reuses `token_share`. `/dashboard/radar/intel` renders the badge
 only from verified local cache metadata.
 
-The CLI exposes `shiguang-gateway radar status` and `shiguang-gateway radar sync`. Both communicate only with the
-local ShiguangGateway API. `status` performs a read-only `GET /api/radar/status`; `sync` sends one
+The CLI exposes `orbit radar status` and `orbit radar sync`. Both communicate only with the
+local Orbit API. `status` performs a read-only `GET /api/radar/status`; `sync` sends one
 `POST /api/radar/sync-all` and prints a result per feed. Neither command reads, accepts, or prints
 the supporter key, and neither contacts the Radar service directly.
 
@@ -572,7 +572,7 @@ The referrals feed removes that delay by syncing on its own, much shorter cadenc
 // GET /v1/referrals/latest response body (Ed25519-signed, same pinned key as
 // the catalog feed):
 {
-  feed: "shiguang-gateway-radar-referrals",
+  feed: "orbit-radar-referrals",
   schemaVersion: 1,
   generatedAt: string,           // ISO — deterministic: max(updatedAt) across referral
                                   // links, so two identical requests produce the exact
@@ -589,7 +589,7 @@ The referrals feed removes that delay by syncing on its own, much shorter cadenc
 
 Unlike the catalog feed, this body carries no `tier` field at all — the server decides
 what to include per-request based on the `Authorization` key, so the
-`x-shiguang-gateway-feed-tier` response header is the ONLY source for the served tier
+`x-orbit-feed-tier` response header is the ONLY source for the served tier
 (`referralsSync.ts::syncRadarReferrals`); an absent/unrecognized header degrades to
 `"community"`, the least-privileged assumption. `RadarReferralsFeedSchema`
 (`src/lib/radar/referralsFeedSchema.ts`) validates the whole body, reusing the same
@@ -714,11 +714,11 @@ service without touching client code:
 
 1. Serve a `GET /v1/catalog/latest` endpoint returning a JSON body that satisfies
    `RadarFeedSchema` (`src/lib/radar/feedSchema.ts`) — top-level `feed:
-"shiguang-gateway-radar"`, `schemaVersion: 2`, `version`, `tier`, `providers`, `models`,
-   `quirks`, and `totals`. Honor `x-shiguang-gateway-radar-schema: 2`; a transition-compatible server
+"orbit-radar"`, `schemaVersion: 2`, `version`, `tier`, `providers`, `models`,
+   `quirks`, and `totals`. Honor `x-orbit-radar-schema: 2`; a transition-compatible server
    should default requests without it to a separately signed v1 artifact.
 2. Sign the exact response bytes with an Ed25519 key pair and return the base64
-   signature in the `x-shiguang-gateway-feed-signature` response header.
+   signature in the `x-orbit-feed-signature` response header.
 3. Set `RADAR_FEED_URL` to the new base URL and `RADAR_FEED_PUBKEY` to the matching
    public key (base64-DER SPKI or PEM) — see the
    [env var reference](../reference/ENVIRONMENT.md#27-radar-feed-self-hosting).
@@ -743,13 +743,13 @@ the catalog feed.
 Supporter offers are another optional artifact. To serve them, implement
 `GET /v1/offers/latest` with the closed `RadarOffersFeedSchema`
 (`src/lib/radar/offersFeedSchema.ts`), require live entitlement, return
-`x-shiguang-gateway-feed-tier: live`, and sign the exact bytes with the same key. A fork that omits this
+`x-orbit-feed-tier: live`, and sign the exact bytes with the same key. A fork that omits this
 endpoint keeps the catalog/referrals behavior unchanged; offer refresh fails non-destructively and
 the last verified local offer cache remains available.
 
 Intel is optional in the same way. A self-hoster can serve `GET /v1/intel/latest` using
 `RadarIntelFeedSchema` (`src/lib/radar/intelFeedSchema.ts`), require live entitlement, return
-`x-shiguang-gateway-feed-tier: live`, and sign the exact bytes with the shared Ed25519 key. Omitting the
+`x-orbit-feed-tier: live`, and sign the exact bytes with the shared Ed25519 key. Omitting the
 endpoint leaves catalog, referrals, and offers unchanged; Intel refresh preserves any last verified
 local snapshot.
 

@@ -1,4 +1,4 @@
-# ShiguangGateway Allocation Handoff
+# Orbit Allocation Handoff
 
 Allocation is not provider quota.
 
@@ -6,4 +6,4 @@ Quota pools define which API keys may consume a provider pool and how hard, soft
 
 The `ensurePool` operation is idempotent: an identical pool is unchanged, a changed allocation is updated, and a missing pool is created. This is intended for automation and bounded API callers.
 
-The read-only status endpoint is `GET /api/shiguang-gateway/status`. The verification command is `npm run shiguang-gateway:verify`; it makes no live model request.
+The read-only status endpoint is `GET /api/orbit/status`. The verification command is `npm run orbit:verify`; it makes no live model request.

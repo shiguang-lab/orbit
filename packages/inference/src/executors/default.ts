@@ -159,7 +159,7 @@ export class DefaultExecutor extends BaseExecutor {
       const normalized = baseUrl.replace(/\/$/, "");
       const customPath = typeof psd?.chatPath === "string" && psd.chatPath ? psd.chatPath : null;
       if (customPath) return `${normalized}${customPath}`;
-      const forceResponses = psd?._shiguangGatewayForceResponsesUpstream === true;
+      const forceResponses = psd?._orbitForceResponsesUpstream === true;
       const path =
         forceResponses || getOpenAICompatibleType(this.provider, psd) === "responses"
           ? "/responses"
@@ -249,7 +249,7 @@ export class DefaultExecutor extends BaseExecutor {
       }
       case "azure-ai": {
         const forceResponses =
-          credentials?.providerSpecificData?._shiguangGatewayForceResponsesUpstream === true;
+          credentials?.providerSpecificData?._orbitForceResponsesUpstream === true;
         const apiType =
           forceResponses || credentials?.providerSpecificData?.apiType === "responses"
             ? "responses"
@@ -268,7 +268,7 @@ export class DefaultExecutor extends BaseExecutor {
       }
       case "oci": {
         const forceResponses =
-          credentials?.providerSpecificData?._shiguangGatewayForceResponsesUpstream === true;
+          credentials?.providerSpecificData?._orbitForceResponsesUpstream === true;
         const apiType =
           forceResponses || credentials?.providerSpecificData?.apiType === "responses"
             ? "responses"
@@ -336,7 +336,7 @@ export class DefaultExecutor extends BaseExecutor {
         const psd = credentials?.providerSpecificData;
         const manualBaseUrl =
           typeof psd?.baseUrl === "string" && psd.baseUrl.trim() ? psd.baseUrl.trim() : null;
-        const forceResponses = psd?._shiguangGatewayForceResponsesUpstream === true;
+        const forceResponses = psd?._orbitForceResponsesUpstream === true;
         const modelTarget = getModelTargetFormat("poe", model);
         const connectionTarget =
           typeof psd?.targetFormat === "string" ? (psd.targetFormat as string) : null;

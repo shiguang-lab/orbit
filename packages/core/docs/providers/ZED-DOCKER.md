@@ -6,7 +6,7 @@ lastUpdated: 2026-06-28
 
 # Zed IDE Integration in Docker Environments
 
-When ShiguangGateway runs inside Docker, the standard "Import from Zed Keychain" flow fails
+When Orbit runs inside Docker, the standard "Import from Zed Keychain" flow fails
 because the container cannot reach the host OS keychain daemon (libsecret on Linux,
 Keychain on macOS, Credential Manager on Windows) and the Zed config directories on the
 host filesystem are not visible inside the container by default.
@@ -22,7 +22,7 @@ Two blocking issues occur inside a container:
    module communicates with the OS keychain service over a Unix socket or D-Bus session.
    Neither is bridged into the container by default, so credential reads always fail.
 
-ShiguangGateway detects the Docker environment via two heuristics:
+Orbit detects the Docker environment via two heuristics:
 
 - Presence of `/.dockerenv` (written by the Docker daemon at container start).
 - The string `docker` appearing in `/proc/1/cgroup` (Linux cgroup v1).
@@ -34,7 +34,7 @@ When either heuristic triggers, the import route returns HTTP 422 with
 
 1. Open **Dashboard → Providers → Zed**.
 2. The **Manual Token Import** panel appears below the keychain import card. When
-   ShiguangGateway detects Docker, this panel expands automatically after the first failed
+   Orbit detects Docker, this panel expands automatically after the first failed
    keychain import attempt.
 3. Select the provider from the dropdown (OpenAI, Anthropic, Google, Mistral, xAI,
    OpenRouter, or DeepSeek).
@@ -81,8 +81,8 @@ non-secret Zed config values (e.g., model preferences).
 ```yaml
 # docker-compose.yml snippet
 services:
-  shiguang-gateway:
-    image: shiguang-gateway:latest
+  orbit:
+    image: orbit:latest
     volumes:
       # Linux host
       - "${HOME}/.config/zed:/host-zed-config:ro"

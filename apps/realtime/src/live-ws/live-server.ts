@@ -297,11 +297,11 @@ function subscribeToEventBus(): () => void {
 }
 
 function handleInternalEventRequest(req: IncomingMessage, res: ServerResponse): void {
-  if (req.method !== "POST" || req.url !== "/__shiguangGateway_event") {
+  if (req.method !== "POST" || req.url !== "/__orbit_event") {
     res.writeHead(404).end();
     return;
   }
-  const internalRequest = new Request("http://realtime/__shiguangGateway_event", { headers: toWebHeaders(req.headers) });
+  const internalRequest = new Request("http://realtime/__orbit_event", { headers: toWebHeaders(req.headers) });
   if (!isInternalServiceRequest(internalRequest)) {
     res.writeHead(403, { "content-type": "application/json" }).end(JSON.stringify({ ok: false }));
     return;
@@ -634,7 +634,7 @@ export interface LiveDashboardServer {
 // Keep this module side-effect free: importing transport code must never bind a
 // port, subscribe to the event bus, or start background timers.
 export function isLiveWsEnabled(): boolean {
-  const v = process.env.SHIGUANG_GATEWAY_ENABLE_LIVE_WS;
+  const v = process.env.ORBIT_ENABLE_LIVE_WS;
   if (v === undefined) return true; // default ON (loopback-bound)
   return v === "1" || v.toLowerCase() === "true";
 }

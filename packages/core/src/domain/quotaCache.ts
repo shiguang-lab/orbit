@@ -94,19 +94,19 @@ interface QuotaCacheState {
 }
 
 declare global {
-  var __shiguangGatewayQuotaCacheState: QuotaCacheState | undefined;
+  var __orbitQuotaCacheState: QuotaCacheState | undefined;
 }
 
 function getState(): QuotaCacheState {
-  if (!globalThis.__shiguangGatewayQuotaCacheState) {
-    globalThis.__shiguangGatewayQuotaCacheState = {
+  if (!globalThis.__orbitQuotaCacheState) {
+    globalThis.__orbitQuotaCacheState = {
       cache: new Map(),
       refreshingSet: new Set(),
       refreshTimer: null,
       tickRunning: false,
     };
   }
-  return globalThis.__shiguangGatewayQuotaCacheState;
+  return globalThis.__orbitQuotaCacheState;
 }
 
 const MAX_CONCURRENT_REFRESHES = 5;

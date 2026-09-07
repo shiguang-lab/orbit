@@ -11,7 +11,7 @@ import { getApiKeyById } from "@orbit/core/db/api-keys";
 import { deleteCliToolLastConfigured, saveCliToolLastConfigured } from "../cli-tool-state.js";
 import { createMultiBackup } from "@orbit/core/cli/backups";
 import {
-  hasShiguangGatewayQwenCodeConfig,
+  hasOrbitQwenCodeConfig,
   mergeQwenCodeEnv,
   mergeQwenCodeSettings,
   removeQwenCodeEnv,
@@ -88,7 +88,7 @@ export async function GET(request: Request): Promise<Response> {
     return Response.json({
       ...runtime,
       settings,
-      hasShiguangGateway: hasShiguangGatewayQwenCodeConfig(settings),
+      hasOrbit: hasOrbitQwenCodeConfig(settings),
       settingsPath: configPaths.settings,
       envPath: configPaths.env,
     });
@@ -137,7 +137,7 @@ export async function POST(request: Request): Promise<Response> {
       const keyRecord = await getApiKeyById(keyId);
       if (keyRecord?.key) apiKey = keyRecord.key;
     }
-    if (!apiKey) apiKey = "sk_shiguangGateway";
+    if (!apiKey) apiKey = "sk_orbit";
 
     const [existingSettings, existingEnv] = await Promise.all([
       readSettings(configPaths.settings),
@@ -162,7 +162,7 @@ export async function POST(request: Request): Promise<Response> {
 
     return Response.json({
       success: true,
-      message: "Qwen Code now routes through ShiguangGateway",
+      message: "Qwen Code now routes through Orbit",
       settingsPath: configPaths.settings,
       envPath: configPaths.env,
     });
@@ -209,7 +209,7 @@ export async function DELETE(request: Request): Promise<Response> {
 
     return Response.json({
       success: true,
-      message: "ShiguangGateway settings removed from Qwen Code",
+      message: "Orbit settings removed from Qwen Code",
     });
   } catch (error) {
     logger.error({ err: error }, "Failed to reset Qwen Code settings");

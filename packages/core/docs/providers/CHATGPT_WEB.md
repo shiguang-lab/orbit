@@ -39,9 +39,9 @@ a local tool connector.
 1. Open the **ChatGPT Web (Codex)** provider and add a connection.
 2. Paste the full ChatGPT Cookie header, tunnel ID, runtime key, and custom connector
    name.
-3. Run the connection check. ShiguangGateway opens a headless Temporary Chat and detects
+3. Run the connection check. Orbit opens a headless Temporary Chat and detects
    whether `pro` is available for the account.
-4. Save the connection. ShiguangGateway replaces the pasted cookie with the verified
+4. Save the connection. Orbit replaces the pasted cookie with the verified
    Playwright storage state and stores it with the runtime key through the encrypted
    credential abstraction.
 
@@ -88,16 +88,16 @@ optional tools, the turn runs read-only and reports the limitation as commentary
 
 ## Headless VPS and Docker
 
-For npm, systemd, and PM2 installs, ShiguangGateway detects common Chrome and Chromium paths.
+For npm, systemd, and PM2 installs, Orbit detects common Chrome and Chromium paths.
 Alternatively, set `CHATGPT_WEB_CODEX_CHROME_PATH`.
 
 The Docker `web` profile starts `chatgpt-web-codex-browser` on the internal Compose
 network. Its CDP port is not published on the host. The protected browser profile volume
-is separate from the ShiguangGateway data volume, and the browser receives enough shared
+is separate from the Orbit data volume, and the browser receives enough shared
 memory. The internal CDP proxy listens only on port `9223` inside the Compose network;
 Chrome remains bound to loopback in the sidecar.
 
-A supervisor lease under `DATA_DIR` prevents multiple ShiguangGateway processes from owning
+A supervisor lease under `DATA_DIR` prevents multiple Orbit processes from owning
 the same tunnel and broker state. A conflict is reported by the doctor.
 
 ## Interactive recovery

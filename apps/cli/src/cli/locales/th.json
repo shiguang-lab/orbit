@@ -1,8 +1,8 @@
 {
   "common": {
     "error": "ข้อผิดพลาด: {message}",
-    "serverOffline": "เซิร์ฟเวอร์ ShiguangGateway ออฟไลน์ เริ่มด้วย: shiguang-gateway serve",
-    "authRequired": "ต้องการการยืนยันตัวตน ตั้งค่า SHIGUANG_GATEWAY_API_KEY หรือรัน: shiguang-gateway setup",
+    "serverOffline": "เซิร์ฟเวอร์ Orbit ออฟไลน์ เริ่มด้วย: orbit serve",
+    "authRequired": "ต้องการการยืนยันตัวตน ตั้งค่า ORBIT_API_KEY หรือรัน: orbit setup",
     "rateLimited": "เกินขีดจำกัดคำขอ ลองใหม่หลังจาก {seconds}วินาที",
     "timeout": "คำขอหมดเวลาหลังจาก {ms}ms",
     "success": "เสร็จสิ้น",
@@ -15,18 +15,18 @@
     "yesOpt": "ข้ามการยืนยัน"
   },
   "program": {
-    "description": "ShiguangGateway — AI Router อัจฉริยะพร้อม Auto Fallback",
+    "description": "Orbit — AI Router อัจฉริยะพร้อม Auto Fallback",
     "version": "แสดงเวอร์ชันและออก",
     "output": "รูปแบบเอาต์พุต (table, json, jsonl, csv)",
     "quiet": "ซ่อนเอาต์พุตที่ไม่จำเป็น",
     "no_color": "ปิดใช้งานเอาต์พุตสี",
     "timeout": "หมดเวลา HTTP request ในมิลลิวินาที",
-    "api_key": "API Key สำหรับ ShiguangGateway server",
-    "base_url": "Base URL ของ ShiguangGateway server",
+    "api_key": "API Key สำหรับ Orbit server",
+    "base_url": "Base URL ของ Orbit server",
     "context": "บริบท/โปรไฟล์ของเซิร์ฟเวอร์สำหรับคำสั่งนี้",
-    "lang": "ตั้งค่าภาษาแสดงผล CLI (แทนที่ SHIGUANG_GATEWAY_LANG)"
+    "lang": "ตั้งค่าภาษาแสดงผล CLI (แทนที่ ORBIT_LANG)"
   },
   "redis": {
-    "description": "เปิดใช้คอนเทนเนอร์ Redis ในเครื่องด้วยการคลิกเดียว (Podman หรือ Docker) สำหรับการแคชและการติดตามโควตาของ ShiguangGateway"
+    "description": "เปิดใช้คอนเทนเนอร์ Redis ในเครื่องด้วยการคลิกเดียว (Podman หรือ Docker) สำหรับการแคชและการติดตามโควตาของ Orbit"
   }
 }

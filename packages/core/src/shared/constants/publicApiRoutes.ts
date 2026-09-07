@@ -26,10 +26,10 @@ const PUBLIC_API_ROUTE_PREFIXES = [
   // auth (503 when TELEGRAM_BOT_TOKEN is unset; 401 on invalid initData
   // HMAC). See apps/gateway/src/telegram/handlers/update.handler.ts. Do not widen.
   "/api/telegram/",
-  // Cursor CLI passthrough (CURSOR_API_ENDPOINT -> ShiguangGateway -> api2.cursor.sh).
+  // Cursor CLI passthrough (CURSOR_API_ENDPOINT -> Orbit -> api2.cursor.sh).
   // The handler enforces its own auth: /auth/exchange_user_api_key requires an
-  // ShiguangGateway API key (validateApiKey); every other path requires the
-  // ShiguangGateway-minted session JWT that exchange returns. See
+  // Orbit API key (validateApiKey); every other path requires the
+  // Orbit-minted session JWT that exchange returns. See
   // open-sse/handlers/cursorCliProxy.ts. Do not widen.
   "/api/cursor-cli/",
 ];

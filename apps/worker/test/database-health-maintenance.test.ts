@@ -61,20 +61,20 @@ test("zero intervals disable each worker-owned maintenance timer", () => {
 });
 
 test("maintenance intervals retain environment configuration", () => {
-  const originalHealth = process.env.SHIGUANG_GATEWAY_DB_HEALTHCHECK_INTERVAL_MS;
-  const originalWal = process.env.SHIGUANG_GATEWAY_WAL_TRUNCATE_INTERVAL_MS;
-  process.env.SHIGUANG_GATEWAY_DB_HEALTHCHECK_INTERVAL_MS = "123";
-  process.env.SHIGUANG_GATEWAY_WAL_TRUNCATE_INTERVAL_MS = "456";
+  const originalHealth = process.env.ORBIT_DB_HEALTHCHECK_INTERVAL_MS;
+  const originalWal = process.env.ORBIT_WAL_TRUNCATE_INTERVAL_MS;
+  process.env.ORBIT_DB_HEALTHCHECK_INTERVAL_MS = "123";
+  process.env.ORBIT_WAL_TRUNCATE_INTERVAL_MS = "456";
   try {
     assert.deepEqual(getDatabaseHealthMaintenanceIntervals(), {
       healthCheckMs: 123,
       walTruncateMs: 456,
     });
   } finally {
-    if (originalHealth === undefined) delete process.env.SHIGUANG_GATEWAY_DB_HEALTHCHECK_INTERVAL_MS;
-    else process.env.SHIGUANG_GATEWAY_DB_HEALTHCHECK_INTERVAL_MS = originalHealth;
-    if (originalWal === undefined) delete process.env.SHIGUANG_GATEWAY_WAL_TRUNCATE_INTERVAL_MS;
-    else process.env.SHIGUANG_GATEWAY_WAL_TRUNCATE_INTERVAL_MS = originalWal;
+    if (originalHealth === undefined) delete process.env.ORBIT_DB_HEALTHCHECK_INTERVAL_MS;
+    else process.env.ORBIT_DB_HEALTHCHECK_INTERVAL_MS = originalHealth;
+    if (originalWal === undefined) delete process.env.ORBIT_WAL_TRUNCATE_INTERVAL_MS;
+    else process.env.ORBIT_WAL_TRUNCATE_INTERVAL_MS = originalWal;
   }
 });
 

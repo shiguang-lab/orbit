@@ -201,7 +201,7 @@ export function extractSessionAffinityKey(
   const headerKey = normalizeSessionKey(
     readHeaderValue(headers, "x-codex-session-id") ??
       readHeaderValue(headers, "x-session-id") ??
-      readHeaderValue(headers, "x-shiguangGateway-session"),
+      readHeaderValue(headers, "x-orbit-session"),
     "header"
   );
   if (headerKey) return headerKey;

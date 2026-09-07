@@ -1,8 +1,8 @@
 {
   "common": {
     "error": "Błąd: {message}",
-    "serverOffline": "Serwer ShiguangGateway jest offline. Uruchom: shiguang-gateway serve",
-    "authRequired": "Wymagane uwierzytelnienie. Ustaw SHIGUANG_GATEWAY_API_KEY lub uruchom: shiguang-gateway setup",
+    "serverOffline": "Serwer Orbit jest offline. Uruchom: orbit serve",
+    "authRequired": "Wymagane uwierzytelnienie. Ustaw ORBIT_API_KEY lub uruchom: orbit setup",
     "rateLimited": "Przekroczono limit żądań. Spróbuj ponownie za {seconds}s.",
     "timeout": "Żądanie przekroczyło czas po {ms}ms.",
     "success": "Gotowe.",
@@ -15,18 +15,18 @@
     "yesOpt": "Pomiń potwierdzenie"
   },
   "program": {
-    "description": "ShiguangGateway — Inteligentny router AI z automatycznym fallbackiem",
+    "description": "Orbit — Inteligentny router AI z automatycznym fallbackiem",
     "version": "Wydrukuj wersję i wyjdź",
     "output": "Format wyjścia (table, json, jsonl, csv)",
     "quiet": "Pomiń nieistotne wyjście",
     "no_color": "Wyłącz kolorowe wyjście",
     "timeout": "Limit czasu żądania HTTP w milisekundach",
-    "api_key": "Klucz API dla serwera ShiguangGateway",
-    "base_url": "Bazowy URL serwera ShiguangGateway",
+    "api_key": "Klucz API dla serwera Orbit",
+    "base_url": "Bazowy URL serwera Orbit",
     "context": "Kontekst/profil serwera dla tego polecenia",
-    "lang": "Ustaw język wyświetlania CLI (nadpisuje SHIGUANG_GATEWAY_LANG)"
+    "lang": "Ustaw język wyświetlania CLI (nadpisuje ORBIT_LANG)"
   },
   "redis": {
-    "description": "Uruchom lokalny kontener Redis jednym kliknięciem (Podman lub Docker) do buforowania i śledzenia limitów ShiguangGateway"
+    "description": "Uruchom lokalny kontener Redis jednym kliknięciem (Podman lub Docker) do buforowania i śledzenia limitów Orbit"
   }
 }

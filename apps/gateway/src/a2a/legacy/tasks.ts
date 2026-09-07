@@ -95,12 +95,12 @@ export function tokensMatch(provided: string, expected: string): boolean {
 
 /**
  * Same authentication semantics as the JSON-RPC A2A implementation: Bearer
- * versus SHIGUANG_GATEWAY_API_KEY; open when no key is configured.
+ * versus ORBIT_API_KEY; open when no key is configured.
  *
  * Exported as a test seam only — not part of the route contract.
  */
 export function authenticateA2A(request: Request): boolean {
-  const configuredKey = process.env.SHIGUANG_GATEWAY_API_KEY;
+  const configuredKey = process.env.ORBIT_API_KEY;
   if (!configuredKey) return true;
   const token = (request.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
   return tokensMatch(token, configuredKey);

@@ -19,7 +19,7 @@ export const NEEDS_CORE_PROTOCOLS = new Set<string>([
 ]);
 
 /**
- * Whether a redacted node summary represents a node that ShiguangGateway cannot
+ * Whether a redacted node summary represents a node that Orbit cannot
  * forward directly and therefore needs a local sing-box / clash core.
  *
  * A node needs a core when it has no usable `type` (i.e. it is not a direct

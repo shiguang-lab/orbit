@@ -8,13 +8,13 @@
  * (stores plaintext for development convenience).
  *
  * KEY DERIVATION CHANGE (v3.7.9):
- * The PRIMARY key is now derived with a static salt ("shiguangGateway-field-encryption-v1").
+ * The PRIMARY key is now derived with a static salt ("orbit-field-encryption-v1").
  * The LEGACY key used a dynamic salt (sha256 hash of the key). Auto-migration
  * re-encrypts any legacy-encrypted tokens on decrypt.
  *
  * Why the change?
  * The dynamic salt `createHash("sha256").update(secret).digest().slice(0, 16)` produced
- * a different derived key than the static salt `"shiguangGateway-field-encryption-v1"`. When the
+ * a different derived key than the static salt `"orbit-field-encryption-v1"`. When the
  * health-check/token-refresh path used one derivation and the main API used another,
  * tokens encrypted by one path became undecryptable by the other, causing:
  * - Persistent decrypt failures
@@ -38,7 +38,7 @@ const KEY_LENGTH = 32;
  */
 const AUTH_TAG_LENGTH = 16;
 const PREFIX = "enc:v1:";
-const STATIC_SALT = "shiguangGateway-field-encryption-v1";
+const STATIC_SALT = "orbit-field-encryption-v1";
 // Credentials created before the independent product rename used the former
 // static salt. Keep a read-only fallback so imported snapshots remain usable.
 const LEGACY_STATIC_SALT = "omni" + "route" + "-field-encryption-v1";

@@ -243,7 +243,7 @@ export async function testSingleProxy(
       signal: controller.signal,
       dispatcher,
       headers: {
-        "User-Agent": "ShiguangGateway/1.0",
+        "User-Agent": "Orbit/1.0",
       },
     });
 

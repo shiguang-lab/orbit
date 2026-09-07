@@ -25,7 +25,7 @@ export const STREAM_IDLE_TIMEOUT_MS = upstreamTimeouts.streamIdleTimeoutMs;
 // Grace period (ms) a client-disconnect finalization waits for the stream's own
 // completion bookkeeping to land before persisting a 499. See #9653 — a client
 // that closes right after reading a fully-completed SSE stream can otherwise
-// race ShiguangGateway's own completion callback, resulting in a false 499 with zero
+// race Orbit's own completion callback, resulting in a false 499 with zero
 // token usage for a request that actually delivered its full response. Set
 // STREAM_DISCONNECT_GRACE_PERIOD_MS=0 to disable and restore the old
 // immediate-fail behavior.
@@ -216,7 +216,7 @@ export const RateLimitReason = {
 // ─── Provider Resilience Profiles ───────────────────────────────────────────
 // Separate behavior for OAuth (low-limit, session-based) vs API Key (high-limit, metered)
 // Circuit-breaker thresholds and reset windows are overridable via
-// SHIGUANG_GATEWAY_CIRCUIT_BREAKER_* env vars so operators can dampen or harden
+// ORBIT_CIRCUIT_BREAKER_* env vars so operators can dampen or harden
 // behavior without recompiling.
 export const PROVIDER_PROFILES = resolveProviderProfiles(process.env);
 
@@ -263,7 +263,7 @@ export const CREDENTIAL_HEALTH_CACHE_TTL = (() => {
  * Stream-recovery tuning (opt-in, see ResilienceSettings.streamRecovery).
  *
  * Ported from free-claude-code's always-on recovery (`core/anthropic/stream_recovery.py`).
- * In ShiguangGateway the holdback is disabled by default because buffering the opening
+ * In Orbit the holdback is disabled by default because buffering the opening
  * window adds up to HOLDBACK_MS of time-to-first-token latency on every stream;
  * operators opt in via STREAM_RECOVERY_ENABLED / the resilience settings.
  *

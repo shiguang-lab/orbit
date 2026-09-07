@@ -4,12 +4,12 @@ title: "Rozwiązywanie runtime SQLite"
 
 # Rozwiązywanie runtime SQLite
 
-ShiguangGateway wybiera sterownik SQLite przy starcie w 5-stopniowym łańcuchu fallback:
+Orbit wybiera sterownik SQLite przy starcie w 5-stopniowym łańcuchu fallback:
 
 1. **Dołączony `better-sqlite3`** (przez `dependencies` w `package.json`)
    — najszybszy, natywny binariusz, instalowany przez `npm install`, gdy dostępne są narzędzia do budowania.
 
-2. **`better-sqlite3` zainstalowany w runtime** (w `~/.shiguang-gateway/runtime/`)
+2. **`better-sqlite3` zainstalowany w runtime** (w `~/.orbit/runtime/`)
    — instalowany leniwie przy pierwszym uruchomieniu **LUB** przez `scripts/build/postinstall.mjs → scripts/postinstall.mjs`.
    Przed załadowaniem waliduje magiczne bajty natywnego pliku `.node` (ELF / Mach-O / PE),
    aby chronić przed uszkodzonymi lub niepasującymi do platformy binariuszami.
@@ -22,19 +22,19 @@ ShiguangGateway wybiera sterownik SQLite przy starcie w 5-stopniowym łańcuchu 
 
 ## Po co ta złożoność?
 
-- **Windows EBUSY**: `npm install -g shiguang-gateway@latest` może się nie udać, jeśli
+- **Windows EBUSY**: `npm install -g orbit@latest` może się nie udać, jeśli
   `better_sqlite3.node` poprzedniej wersji jest zablokowany przez działający proces. Instalacja
-  runtime w `~/.shiguang-gateway/runtime/` omija globalną pamięć podręczną npm.
+  runtime w `~/.orbit/runtime/` omija globalną pamięć podręczną npm.
 - **Brak narzędzi do budowania**: Niektóre środowiska (korporacyjny Windows bez VS Build
   Tools, minimalne obrazy Docker) nie mogą skompilować `better-sqlite3`. Instalator
   runtime pobiera gotowy binariusz z rejestru npm; sterowniki fallback
-  gwarantują, że ShiguangGateway i tak się uruchomi, nawet gdy to się nie uda.
+  gwarantują, że Orbit i tak się uruchomi, nawet gdy to się nie uda.
 - **Systemy air-gapped**: Gdy rejestr npm jest niedostępny, `node:sqlite`
   lub `sql.js` zapewniają podstawową funkcjonalność.
 
 ## Walidacja magicznych bajtów
 
-Przed załadowaniem pliku `.node` zainstalowanego w runtime ShiguangGateway odczytuje pierwsze 8
+Przed załadowaniem pliku `.node` zainstalowanego w runtime Orbit odczytuje pierwsze 8
 bajtów i porównuje je ze znanymi magicznymi sekwencjami platform:
 
 | Platform              | Bytes (hex)   | Label       |
@@ -61,14 +61,14 @@ const info = getDriverInfo();
 
 ```bash
 # Skip postinstall warm-up (for fast CI installs)
-SHIGUANG_GATEWAY_SKIP_POSTINSTALL=1 npm install -g shiguang-gateway
+ORBIT_SKIP_POSTINSTALL=1 npm install -g orbit
 
 # Force-reinstall runtime better-sqlite3
-rm -rf ~/.shiguang-gateway/runtime
-shiguang-gateway  # will reinstall on next start
+rm -rf ~/.orbit/runtime
+orbit  # will reinstall on next start
 
 # Check what driver is active
-shiguang-gateway config db-info  # (if CLI command exists)
+orbit config db-info  # (if CLI command exists)
 ```
 
 ## Odnośniki

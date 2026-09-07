@@ -18,8 +18,8 @@ async function confirm(msg) {
 }
 
 /**
- * Shared repair action used by both `shiguangGateway runtime repair` and the
- * top-level `shiguangGateway repair` alias. Reinstalls better-sqlite3 into the
+ * Shared repair action used by both `orbit runtime repair` and the
+ * top-level `orbit repair` alias. Reinstalls better-sqlite3 into the
  * user-writable runtime directory via the existing engine — no hand-rolled
  * npm-rebuild spawn. Exits with code 1 on failure.
  */
@@ -72,8 +72,8 @@ export function registerRuntime(program) {
     .option("--force", "Force reinstall even if valid")
     .action(runRepairAction);
 
-  // Top-level discoverability alias: `shiguangGateway repair` invokes the SAME action
-  // as `shiguangGateway runtime repair` (no duplicated logic). Surfaced in the
+  // Top-level discoverability alias: `orbit repair` invokes the SAME action
+  // as `orbit runtime repair` (no duplicated logic). Surfaced in the
   // native-error / startup hints so users with a broken better-sqlite3 binding
   // have a single self-heal command that works without a C++ toolchain.
   program

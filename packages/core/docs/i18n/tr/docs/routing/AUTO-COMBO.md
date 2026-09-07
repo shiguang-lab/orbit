@@ -1,10 +1,10 @@
 ---
-title: "ShiguangGateway Auto-Combo Motoru"
+title: "Orbit Auto-Combo Motoru"
 version: 3.8.50
 lastUpdated: 2026-08-23
 ---
 
-# ShiguangGateway Auto-Combo Motoru (Türkçe)
+# Orbit Auto-Combo Motoru (Türkçe)
 
 🌐 **Languages:** 🇺🇸 [English](../../../../docs/routing/AUTO-COMBO.md) · 🇸🇦 [ar](../../ar/docs/routing/AUTO-COMBO.md) · 🇧🇬 [bg](../../bg/docs/routing/AUTO-COMBO.md) · 🇧🇩 [bn](../../bn/docs/routing/AUTO-COMBO.md) · 🇨🇿 [cs](../../cs/docs/routing/AUTO-COMBO.md) · 🇩🇰 [da](../../da/docs/routing/AUTO-COMBO.md) · 🇩🇪 [de](../../de/docs/routing/AUTO-COMBO.md) · 🇪🇸 [es](../../es/docs/routing/AUTO-COMBO.md) · 🇮🇷 [fa](../../fa/docs/routing/AUTO-COMBO.md) · 🇫🇮 [fi](../../fi/docs/routing/AUTO-COMBO.md) · 🇫🇷 [fr](../../fr/docs/routing/AUTO-COMBO.md) · 🇮🇳 [gu](../../gu/docs/routing/AUTO-COMBO.md) · 🇮🇱 [he](../../he/docs/routing/AUTO-COMBO.md) · 🇮🇳 [hi](../../hi/docs/routing/AUTO-COMBO.md) · 🇭🇺 [hu](../../hu/docs/routing/AUTO-COMBO.md) · 🇮🇩 [id](../../id/docs/routing/AUTO-COMBO.md) · 🇮🇹 [it](../../it/docs/routing/AUTO-COMBO.md) · 🇯🇵 [ja](../../ja/docs/routing/AUTO-COMBO.md) · 🇰🇷 [ko](../../ko/docs/routing/AUTO-COMBO.md) · 🇮🇳 [mr](../../mr/docs/routing/AUTO-COMBO.md) · 🇲🇾 [ms](../../ms/docs/routing/AUTO-COMBO.md) · 🇳🇱 [nl](../../nl/docs/routing/AUTO-COMBO.md) · 🇳🇴 [no](../../no/docs/routing/AUTO-COMBO.md) · 🇵🇭 [phi](../../phi/docs/routing/AUTO-COMBO.md) · 🇵🇱 [pl](../../pl/docs/routing/AUTO-COMBO.md) · 🇵🇹 [pt](../../pt/docs/routing/AUTO-COMBO.md) · 🇧🇷 [pt-BR](../../pt-BR/docs/routing/AUTO-COMBO.md) · 🇷🇴 [ro](../../ro/docs/routing/AUTO-COMBO.md) · 🇷🇺 [ru](../../ru/docs/routing/AUTO-COMBO.md) · 🇸🇰 [sk](../../sk/docs/routing/AUTO-COMBO.md) · 🇸🇪 [sv](../../sv/docs/routing/AUTO-COMBO.md) · 🇰🇪 [sw](../../sw/docs/routing/AUTO-COMBO.md) · 🇮🇳 [ta](../../ta/docs/routing/AUTO-COMBO.md) · 🇮🇳 [te](../../te/docs/routing/AUTO-COMBO.md) · 🇹🇭 [th](../../th/docs/routing/AUTO-COMBO.md) · 🇹🇷 [tr](../../tr/docs/routing/AUTO-COMBO.md) · 🇺🇦 [uk-UA](../../uk-UA/docs/routing/AUTO-COMBO.md) · 🇵🇰 [ur](../../ur/docs/routing/AUTO-COMBO.md) · 🇻🇳 [vi](../../vi/docs/routing/AUTO-COMBO.md) · 🇨🇳 [zh-CN](../../zh-CN/docs/routing/AUTO-COMBO.md)
 

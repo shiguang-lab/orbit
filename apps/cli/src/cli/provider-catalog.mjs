@@ -227,7 +227,7 @@ function fallbackAvailableProviders() {
 }
 
 function resolveProviderCatalogPath(rootDir, options = {}) {
-  const configuredPath = options.catalogPath || process.env.SHIGUANG_GATEWAY_PROVIDER_CATALOG_PATH;
+  const configuredPath = options.catalogPath || process.env.ORBIT_PROVIDER_CATALOG_PATH;
   if (configuredPath) {
     return isAbsolute(configuredPath) ? configuredPath : resolve(rootDir, configuredPath);
   }

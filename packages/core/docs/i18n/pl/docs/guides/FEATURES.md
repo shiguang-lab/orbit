@@ -1,14 +1,14 @@
 ---
-title: "ShiguangGateway — Galeria funkcji dashboardu"
+title: "Orbit — Galeria funkcji dashboardu"
 version: 3.8.40
 lastUpdated: 2026-06-28
 ---
 
-# ShiguangGateway — Galeria funkcji dashboardu
+# Orbit — Galeria funkcji dashboardu
 
 🌐 **Tłumaczenia głównego README:** 🇺🇸 [English](../README.md) | 🇧🇷 [Português (Brasil)](../i18n/pt-BR/README.md) | 🇪🇸 [Español](../i18n/es/README.md) | 🇫🇷 [Français](../i18n/fr/README.md) | 🇮🇹 [Italiano](../i18n/it/README.md) | 🇷🇺 [Русский](../i18n/ru/README.md) | 🇨🇳 [中文 (简体)](../i18n/zh-CN/README.md) | 🇩🇪 [Deutsch](../i18n/de/README.md) | 🇮🇳 [हिन्दी](../i18n/in/README.md) | 🇹🇭 [ไทย](../i18n/th/README.md) | 🇺🇦 [Українська](../i18n/uk-UA/README.md) | 🇸🇦 [العربية](../i18n/ar/README.md) | 🇯🇵 [日本語](../i18n/ja/README.md) | 🇻🇳 [Tiếng Việt](../i18n/vi/README.md) | 🇧🇬 [Български](../i18n/bg/README.md) | 🇩🇰 [Dansk](../i18n/da/README.md) | 🇫🇮 [Suomi](../i18n/fi/README.md) | 🇮🇱 [עברית](../i18n/he/README.md) | 🇭🇺 [Magyar](../i18n/hu/README.md) | 🇮🇩 [Bahasa Indonesia](../i18n/id/README.md) | 🇰🇷 [한국어](../i18n/ko/README.md) | 🇲🇾 [Bahasa Melayu](../i18n/ms/README.md) | 🇳🇱 [Nederlands](../i18n/nl/README.md) | 🇳🇴 [Norsk](../i18n/no/README.md) | 🇵🇹 [Português (Portugal)](../i18n/pt/README.md) | 🇷🇴 [Română](../i18n/ro/README.md) | 🇵🇱 [Polski](../i18n/pl/README.md) | 🇸🇰 [Slovenčina](../i18n/sk/README.md) | 🇸🇪 [Svenska](../i18n/sv/README.md) | 🇵🇭 [Filipino](../i18n/phi/README.md) | 🇨🇿 [Čeština](../i18n/cs/README.md)
 
-Wizualny przewodnik po każdej sekcji dashboardu ShiguangGateway.
+Wizualny przewodnik po każdej sekcji dashboardu Orbit.
 
 > 📅 **Ostatnia aktualizacja:** 2026-06-28 — **v3.8.40**
 
@@ -38,7 +38,7 @@ Cykl v3.7.x → v3.8.0 dodał auto-routing bez konfiguracji, nowych providerów,
 - 🚦 **Klasyfikacja 429 per provider** + przełącznik `useUpstream429BreakerHints` — precyzyjniejsze zachowanie breakera z użyciem wskazówek rate-limit z upstreamu
 - 🩺 **Dashboard model cooldowns** — podgląd blokad per model i ręczne ponowne włączanie z UI
 - 🔒 **MITM dynamiczna detekcja certyfikatów Linux** — działa na Debian/Ubuntu, Fedora/RHEL, Arch i innych dystrybucjach
-- 💻 **Pakiet ulepszeń CLI** — ponad 20 poleceń, w tym `shiguang-gateway providers`, `shiguang-gateway combos`, `shiguang-gateway doctor`, `shiguang-gateway setup`
+- 💻 **Pakiet ulepszeń CLI** — ponad 20 poleceń, w tym `orbit providers`, `orbit combos`, `orbit doctor`, `orbit setup`
 - 🔍 **Odkrywanie modeli embeddingów Qdrant** — automatyczna sonda modeli vector-store
 - 🔑 **API Keys / Bearer keys z zakresem `manage`** — operacje administracyjne programowo przez API
 - 🏥 **Analityka zdrowia celów combo** + **strukturalny builder combo** — zdrowie per target i builder UI do składania kroków `(provider, model, connection)`
@@ -53,7 +53,7 @@ Cykl v3.7.x → v3.8.0 dodał auto-routing bez konfiguracji, nowych providerów,
 
 Zarządzaj połączeniami z providerami AI: providerzy OAuth (Claude Code, Codex), providerzy z kluczem API (Groq, DeepSeek, OpenRouter) oraz darmowi providerzy (Qoder, Kiro). Konta Kiro obejmują śledzenie salda kredytów — pozostałe kredyty, całkowity limit i data odnowienia widoczne w Dashboard → Usage.
 
-Połączenia OpenRouter mogą przechowywać per-connection `preset` w Advanced Settings. Gdy jest ustawiony, ShiguangGateway wysyła go jako pole najwyższego poziomu żądania OpenRouter, na przykład `"preset": "email-copywriter"`, chyba że żądanie klienta już dostarczyło własny `preset`.
+Połączenia OpenRouter mogą przechowywać per-connection `preset` w Advanced Settings. Gdy jest ustawiony, Orbit wysyła go jako pole najwyższego poziomu żądania OpenRouter, na przykład `"preset": "email-copywriter"`, chyba że żądanie klienta już dostarczyło własny `preset`.
 
 ![Providers Dashboard](../screenshots/01-providers.png)
 
@@ -153,7 +153,7 @@ Dashboard do odkrywania i zarządzania agentami CLI. Pokazuje siatkę 16 wbudowa
 
 ## 🔗 Context Relay _(v3.5.5+)_
 
-Strategia combo, która zachowuje ciągłość sesji, gdy rotacja konta następuje w trakcie rozmowy. Zanim aktywne konto się wyczerpie, ShiguangGateway generuje w tle strukturalne podsumowanie handoff. Po tym, jak kolejne żądanie rozwiąże się na inne konto, podsumowanie jest wstrzykiwane jako komunikat systemowy, dzięki czemu nowe konto kontynuuje z pełnym kontekstem.
+Strategia combo, która zachowuje ciągłość sesji, gdy rotacja konta następuje w trakcie rozmowy. Zanim aktywne konto się wyczerpie, Orbit generuje w tle strukturalne podsumowanie handoff. Po tym, jak kolejne żądanie rozwiąże się na inne konto, podsumowanie jest wstrzykiwane jako komunikat systemowy, dzięki czemu nowe konto kontynuuje z pełnym kontekstem.
 
 Konfigurowalne przez ustawienia na poziomie combo lub globalne:
 
@@ -222,7 +222,7 @@ Skrypty czystego usuwania dla wszystkich metod instalacji:
 
 | Polecenie                | Działanie                                                                            |
 | ------------------------ | ------------------------------------------------------------------------------------ |
-| `npm run uninstall`      | Usuwa aplikację systemową, ale **zachowuje DB i konfiguracje** w `~/.shiguang-gateway`.     |
+| `npm run uninstall`      | Usuwa aplikację systemową, ale **zachowuje DB i konfiguracje** w `~/.orbit`.     |
 | `npm run uninstall:full` | Usuwa aplikację ORAZ trwale **kasuje wszystkie konfiguracje, klucze i bazy danych**. |
 
 ---
@@ -263,7 +263,7 @@ Twórz, nadawaj zakresy i odwołuj klucze API. Każdy klucz może być ograniczo
 
 ## 🖥️ Aplikacja desktopowa
 
-Natywna aplikacja desktopowa Electron dla Windows, macOS i Linux. Uruchamiaj ShiguangGateway jako samodzielną aplikację z integracją zasobnika systemowego, wsparciem offline, auto-update i instalacją jednym kliknięciem.
+Natywna aplikacja desktopowa Electron dla Windows, macOS i Linux. Uruchamiaj Orbit jako samodzielną aplikację z integracją zasobnika systemowego, wsparciem offline, auto-update i instalacją jednym kliknięciem.
 
 Kluczowe funkcje:
 
@@ -282,7 +282,7 @@ Kluczowe funkcje:
 
 ## 🌐 V1 WebSocket Bridge _(v3.6.6+)_
 
-ShiguangGateway obsługuje teraz **klienty WebSocket zgodne z OpenAI** przez endpoint upgrade `/v1/ws`. Niestandardowy serwer `scripts/dev/v1-ws-bridge.mjs` owija Next.js i upgrade’uje połączenia WS do pełnych dwukierunkowych sesji streamingowych. Uwierzytelnianie używa tego samego klucza API lub cookie sesji co żądania HTTP.
+Orbit obsługuje teraz **klienty WebSocket zgodne z OpenAI** przez endpoint upgrade `/v1/ws`. Niestandardowy serwer `scripts/dev/v1-ws-bridge.mjs` owija Next.js i upgrade’uje połączenia WS do pełnych dwukierunkowych sesji streamingowych. Uwierzytelnianie używa tego samego klucza API lub cookie sesji co żądania HTTP.
 
 Kluczowe zachowania:
 
@@ -308,7 +308,7 @@ Config bundle jest budowany przez `src/lib/sync/bundle.ts`. Konsumenci porównuj
 
 **GLM Thinking (`glmt`)** jest teraz zarejestrowanym providerem pierwszej klasy: 65 536 max output tokens, 24 576 thinking budget, domyślny timeout 900 s, format API zgodny z Claude oraz współdzielona synchronizacja użycia z rodziną GLM.
 
-**Hybrydowe zliczanie tokenów** również wchodzi w v3.6.6: gdy provider zgodny z Claude udostępnia `/messages/count_tokens`, ShiguangGateway wywołuje go przed dużymi żądaniami z łagodnym fallbackiem estymacji.
+**Hybrydowe zliczanie tokenów** również wchodzi w v3.6.6: gdy provider zgodny z Claude udostępnia `/messages/count_tokens`, Orbit wywołuje go przed dużymi żądaniami z łagodnym fallbackiem estymacji.
 
 ---
 

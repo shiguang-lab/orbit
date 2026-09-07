@@ -124,7 +124,7 @@ export async function startDetachedTray(
 ) {
   const token = randomBytes(32).toString("hex");
   const readiness = await createTrayReadinessServer(token);
-  const label = `com.shiguangGateway.tray.${process.pid}.${Date.now()}`;
+  const label = `com.orbit.tray.${process.pid}.${Date.now()}`;
   const workerArgs = buildTrayWorkerArgs({
     port,
     maxRestarts,

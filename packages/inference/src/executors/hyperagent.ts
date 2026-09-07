@@ -169,7 +169,7 @@ function lastUserText(messages: ChatMessage[]): string {
 const memoryThreads = new Map<string, ThreadBinding>();
 
 function threadCachePath(): string | null {
-  const dataDir = process.env.DATA_DIR || process.env.SHIGUANG_GATEWAY_DATA_DIR;
+  const dataDir = process.env.DATA_DIR || process.env.ORBIT_DATA_DIR;
   if (!dataDir) return null;
   return join(dataDir, "hyperagent-thread-sessions.json");
 }

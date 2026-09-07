@@ -120,7 +120,7 @@ function isBuildProcess(): boolean {
 }
 
 function isBackgroundServicesDisabled(): boolean {
-  const raw = process.env.SHIGUANG_GATEWAY_DISABLE_BACKGROUND_SERVICES;
+  const raw = process.env.ORBIT_DISABLE_BACKGROUND_SERVICES;
   if (!raw) return false;
   return ["1", "true", "yes", "on"].includes(raw.trim().toLowerCase());
 }
@@ -167,7 +167,7 @@ async function testOneProxy(proxy: {
       method,
       signal: controller.signal,
       dispatcher,
-      headers: { "User-Agent": "ShiguangGateway/1.0" },
+      headers: { "User-Agent": "Orbit/1.0" },
     });
     return classifyProbeStatus(resp.status);
   } catch {

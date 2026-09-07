@@ -11,8 +11,8 @@ Create and run evaluation suites, watch live benchmark progress, view scorecards
 ## Quick install
 
 ```bash
-npm install -g shiguang-gateway   # or: npx shiguang-gateway
-shiguang-gateway --version
+npm install -g orbit   # or: npx orbit
+orbit --version
 ```
 
 ## Subcommands
@@ -22,7 +22,7 @@ shiguang-gateway --version
 **Example:**
 
 ```bash
-shiguang-gateway eval
+orbit eval
 ```
 
 ### `eval suites`
@@ -30,7 +30,7 @@ shiguang-gateway eval
 **Example:**
 
 ```bash
-shiguang-gateway eval suites
+orbit eval suites
 ```
 
 ### `eval list`
@@ -38,7 +38,7 @@ shiguang-gateway eval suites
 **Example:**
 
 ```bash
-shiguang-gateway eval list
+orbit eval list
 ```
 
 ### `eval get <suiteId>`
@@ -46,7 +46,7 @@ shiguang-gateway eval list
 **Example:**
 
 ```bash
-shiguang-gateway eval get <suiteId>
+orbit eval get <suiteId>
 ```
 
 ### `eval create`
@@ -58,7 +58,7 @@ shiguang-gateway eval get <suiteId>
 **Example:**
 
 ```bash
-shiguang-gateway eval create
+orbit eval create
 ```
 
 ### `eval run <suiteId>`
@@ -74,7 +74,7 @@ shiguang-gateway eval create
 **Example:**
 
 ```bash
-shiguang-gateway eval run <suiteId>
+orbit eval run <suiteId>
 ```
 
 ### `eval list`
@@ -89,7 +89,7 @@ shiguang-gateway eval run <suiteId>
 **Example:**
 
 ```bash
-shiguang-gateway eval list
+orbit eval list
 ```
 
 ### `eval get <runId>`
@@ -97,7 +97,7 @@ shiguang-gateway eval list
 **Example:**
 
 ```bash
-shiguang-gateway eval get <runId>
+orbit eval get <runId>
 ```
 
 ### `eval results <runId>`
@@ -109,7 +109,7 @@ shiguang-gateway eval get <runId>
 **Example:**
 
 ```bash
-shiguang-gateway eval results <runId>
+orbit eval results <runId>
 ```
 
 ### `eval cancel <runId>`
@@ -121,7 +121,7 @@ shiguang-gateway eval results <runId>
 **Example:**
 
 ```bash
-shiguang-gateway eval cancel <runId>
+orbit eval cancel <runId>
 ```
 
 ### `eval scorecard <runId>`
@@ -129,7 +129,7 @@ shiguang-gateway eval cancel <runId>
 **Example:**
 
 ```bash
-shiguang-gateway eval scorecard <runId>
+orbit eval scorecard <runId>
 ```
 
 ### `simulate [prompt]`
@@ -146,33 +146,33 @@ shiguang-gateway eval scorecard <runId>
 **Example:**
 
 ```bash
-shiguang-gateway simulate [prompt]
+orbit simulate [prompt]
 ```
 
 <!-- skill:custom-start -->
-<!-- Migrated from skills/shiguang-gateway-cli-eval/SKILL.md (preserved curated content) -->
+<!-- Migrated from skills/orbit-cli-eval/SKILL.md (preserved curated content) -->
 
-# ShiguangGateway — CLI Evals
+# Orbit — CLI Evals
 
-Requires the `shiguang-gateway` CLI. See [CLI entry-point skill](https://raw.githubusercontent.com/diegosouzapw/ShiguangGateway/main/skills/shiguang-gateway-cli/SKILL.md) for install + global flags.
+Requires the `orbit` CLI. See [CLI entry-point skill](https://raw.githubusercontent.com/diegosouzapw/Orbit/main/skills/orbit-cli/SKILL.md) for install + global flags.
 
 ## What are evals?
 
-Evals are automated test suites that score LLM outputs against expected answers or rubrics. ShiguangGateway stores suites and run results in its local database.
+Evals are automated test suites that score LLM outputs against expected answers or rubrics. Orbit stores suites and run results in its local database.
 
 ## Eval suites
 
 ```bash
-shiguang-gateway eval suites list                       # List all eval suites
-shiguang-gateway eval suites list --json                # JSON output
+orbit eval suites list                       # List all eval suites
+orbit eval suites list --json                # JSON output
 
-shiguang-gateway eval suites get <suiteId>              # Full suite definition
+orbit eval suites get <suiteId>              # Full suite definition
 ```
 
 ### Create a suite
 
 ```bash
-shiguang-gateway eval suites create \
+orbit eval suites create \
   --name "code-quality" \
   --rubric "exact-match" \
   --samples-file ./samples.jsonl                 # JSONL: {input, expected_output}
@@ -190,10 +190,10 @@ Rubric options: `exact-match`, `contains`, `llm-judge`, `regex`.
 ## Run an eval
 
 ```bash
-shiguang-gateway eval suites run <suiteId> \
+orbit eval suites run <suiteId> \
   --model claude-sonnet-4-6                      # Run suite against a specific model
 
-shiguang-gateway eval suites run <suiteId> \
+orbit eval suites run <suiteId> \
   --model gpt-4o \
   --watch                                        # Live TUI progress (EvalWatch)
 ```
@@ -201,26 +201,26 @@ shiguang-gateway eval suites run <suiteId> \
 The run is asynchronous. Use `--watch` for a live terminal dashboard or poll manually:
 
 ```bash
-RUN_ID=$(shiguang-gateway eval suites run <suiteId> --model claude-sonnet-4-6 --output json | jq -r '.id')
-shiguang-gateway eval get $RUN_ID
+RUN_ID=$(orbit eval suites run <suiteId> --model claude-sonnet-4-6 --output json | jq -r '.id')
+orbit eval get $RUN_ID
 ```
 
 ## Manage runs
 
 ```bash
-shiguang-gateway eval list                              # List all eval runs
-shiguang-gateway eval list --json
+orbit eval list                              # List all eval runs
+orbit eval list --json
 
-shiguang-gateway eval get <runId>                       # Run details (status, model, score)
-shiguang-gateway eval results <runId>                   # Per-sample results
-shiguang-gateway eval scorecard <runId>                 # Full scorecard with pass/fail per sample
-shiguang-gateway eval cancel <runId>                    # Cancel a running eval
+orbit eval get <runId>                       # Run details (status, model, score)
+orbit eval results <runId>                   # Per-sample results
+orbit eval scorecard <runId>                 # Full scorecard with pass/fail per sample
+orbit eval cancel <runId>                    # Cancel a running eval
 ```
 
 ## Scorecard output
 
 ```bash
-shiguang-gateway eval scorecard <runId> --output json
+orbit eval scorecard <runId> --output json
 ```
 
 Response fields per sample:
@@ -242,7 +242,7 @@ Run the same suite against multiple models and compare:
 
 ```bash
 for MODEL in claude-sonnet-4-6 gpt-4o gemini-2.0-flash; do
-  shiguang-gateway eval suites run $SUITE_ID --model $MODEL --output json | jq '{model: .model, score: .score}'
+  orbit eval suites run $SUITE_ID --model $MODEL --output json | jq '{model: .model, score: .score}'
 done
 ```
 
@@ -250,14 +250,14 @@ done
 
 ```bash
 # Run and fail CI if score drops below threshold
-SCORE=$(shiguang-gateway eval suites run $SUITE_ID --model claude-sonnet-4-6 --output json | jq -r '.score')
+SCORE=$(orbit eval suites run $SUITE_ID --model claude-sonnet-4-6 --output json | jq -r '.score')
 python3 -c "import sys; score=float('$SCORE'); sys.exit(0 if score >= 0.90 else 1)"
 ```
 
 ## Errors
 
 - `suites create` fails with `invalid rubric` → use one of: `exact-match`, `contains`, `llm-judge`, `regex`
-- `suites run` returns `model not found` → verify model ID with `shiguang-gateway models --search <name>`
-- `eval get` shows `status: failed` → check `shiguang-gateway logs --search eval` for error details
-- `scorecard` returns empty results → the run may still be `running`; poll `shiguang-gateway eval get <runId>` until `status` is `completed`
+- `suites run` returns `model not found` → verify model ID with `orbit models --search <name>`
+- `eval get` shows `status: failed` → check `orbit logs --search eval` for error details
+- `scorecard` returns empty results → the run may still be `running`; poll `orbit eval get <runId>` until `status` is `completed`
 <!-- skill:custom-end -->

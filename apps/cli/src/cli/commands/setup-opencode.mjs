@@ -1,8 +1,8 @@
 /**
- * shiguangGateway setup-opencode — Remote-aware OpenCode provider generator
- * (openai-compatible). This writes the `shiguangGateway` provider into
+ * orbit setup-opencode — Remote-aware OpenCode provider generator
+ * (openai-compatible). This writes the `orbit` provider into
  * the active OpenCode JSON/JSONC config with every catalog model, so you can run
- * `opencode -m shiguangGateway/<model>`.
+ * `opencode -m orbit/<model>`.
  *
  * Reuses the proven server-side generator (config-generator/opencode.ts) for the
  * catalog fetch + merge, then references the API key by env var (never on disk).
@@ -15,7 +15,7 @@ import { printHeading, printInfo, printSuccess, printError } from "../io.mjs";
 import { resolveActiveContext } from "../contexts.mjs";
 import { guardHostConfigTarget } from "../utils/config-home-guard.mjs";
 
-const ENV_KEY_REF = "{env:SHIGUANG_GATEWAY_API_KEY}";
+const ENV_KEY_REF = "{env:ORBIT_API_KEY}";
 const JSON_FORMATTING_OPTIONS = { insertSpaces: true, tabSize: 2 };
 
 /** Resolve baseUrl + (literal) apiKey from flags → active context → localhost. */
@@ -25,7 +25,7 @@ export function resolveOpencodeTarget(opts = {}) {
     baseUrl = String(opts.remote).replace(/\/+$/, "");
   } else {
     try {
-      const c = resolveActiveContext(opts.context ?? process.env.SHIGUANG_GATEWAY_CONTEXT);
+      const c = resolveActiveContext(opts.context ?? process.env.ORBIT_CONTEXT);
       baseUrl = c?.baseUrl;
     } catch {
       /* no context */
@@ -37,13 +37,13 @@ export function resolveOpencodeTarget(opts = {}) {
   let apiKey = opts.apiKey ?? opts["api-key"];
   if (!apiKey) {
     try {
-      const c = resolveActiveContext(opts.context ?? process.env.SHIGUANG_GATEWAY_CONTEXT);
+      const c = resolveActiveContext(opts.context ?? process.env.ORBIT_CONTEXT);
       apiKey = c?.accessToken || c?.apiKey;
     } catch {
       /* no context auth */
     }
   }
-  if (!apiKey) apiKey = process.env.SHIGUANG_GATEWAY_API_KEY || "";
+  if (!apiKey) apiKey = process.env.ORBIT_API_KEY || "";
   return { baseUrl: baseUrl.replace(/\/+$/, ""), apiKey };
 }
 
@@ -51,7 +51,7 @@ export function resolveOpencodeTarget(opts = {}) {
  * Post-process the generator output: reference the API key by env var (keep the
  * secret off disk) and optionally keep only models whose id matches `only`.
  * Pure + testable. Returns the final JSONC string while preserving comments
- * outside the ShiguangGateway-managed fields.
+ * outside the Orbit-managed fields.
  *
  * @param {string} rawJson  output of generateOpencodeConfig
  * @param {{ only?: string[] }} [opts]
@@ -67,12 +67,12 @@ export function postProcessOpencodeConfig(rawJson, opts = {}) {
     throw new Error(`Failed to parse generated OpenCode config${details ? `: ${details}` : ""}`);
   }
 
-  const prov = config.provider?.shiguangGateway;
+  const prov = config.provider?.orbit;
   let json = rawJson;
   if (prov?.options) {
     json = applyEdits(
       json,
-      modify(json, ["provider", "shiguangGateway", "options", "apiKey"], ENV_KEY_REF, {
+      modify(json, ["provider", "orbit", "options", "apiKey"], ENV_KEY_REF, {
         formattingOptions: JSON_FORMATTING_OPTIONS,
       })
     );
@@ -87,7 +87,7 @@ export function postProcessOpencodeConfig(rawJson, opts = {}) {
     models = kept;
     json = applyEdits(
       json,
-      modify(json, ["provider", "shiguangGateway", "models"], kept, {
+      modify(json, ["provider", "orbit", "models"], kept, {
         formattingOptions: JSON_FORMATTING_OPTIONS,
       })
     );
@@ -106,7 +106,7 @@ export async function runSetupOpencodeCommand(opts = {}) {
         .filter(Boolean)
     : null;
 
-  printHeading("ShiguangGateway → OpenCode provider (openai-compatible)");
+  printHeading("Orbit → OpenCode provider (openai-compatible)");
   printInfo(`Connecting to ${baseUrl} …`);
 
   // Deferred import: opencode.ts is TypeScript; tsx is registered by
@@ -121,7 +121,7 @@ export async function runSetupOpencodeCommand(opts = {}) {
 
     const guard = await guardHostConfigTarget(configPath, {
       toolLabel: "OpenCode",
-      hostCommand: "shiguangGateway setup-opencode",
+      hostCommand: "orbit setup-opencode",
       allowContainerWrite: Boolean(opts.allowContainerWrite ?? opts["allow-container-write"]),
       dryRun,
     });
@@ -131,12 +131,12 @@ export async function runSetupOpencodeCommand(opts = {}) {
       baseUrl,
       apiKey,
       model: opts.model,
-      providerId: "shiguangGateway",
+      providerId: "orbit",
       configPath,
     });
   } catch (err) {
     printError(`Failed to generate OpenCode config: ${err?.message || err}`);
-    printInfo("Make sure ShiguangGateway is running and --remote/--api-key are correct.");
+    printInfo("Make sure Orbit is running and --remote/--api-key are correct.");
     return 1;
   }
 
@@ -145,16 +145,16 @@ export async function runSetupOpencodeCommand(opts = {}) {
 
   if (dryRun) {
     console.log(json.length > 4000 ? json.slice(0, 4000) + "\n… (truncated)" : json);
-    printInfo(`[dry-run] ${modelCount} model(s) under provider 'shiguangGateway' → ${configPath}`);
+    printInfo(`[dry-run] ${modelCount} model(s) under provider 'orbit' → ${configPath}`);
     return 0;
   }
 
   if (!existsSync(configDir)) mkdirSync(configDir, { recursive: true });
   writeFileSync(configPath, json, "utf8");
   printSuccess(
-    `${basename(configPath)} updated at ${configPath} (${modelCount} models under 'shiguangGateway')`
+    `${basename(configPath)} updated at ${configPath} (${modelCount} models under 'orbit')`
   );
-  printInfo('Use it:  opencode -m shiguangGateway/<model> "..."   (export SHIGUANG_GATEWAY_API_KEY first)');
+  printInfo('Use it:  opencode -m orbit/<model> "..."   (export ORBIT_API_KEY first)');
   return 0;
 }
 
@@ -162,13 +162,13 @@ export function registerSetupOpencode(program) {
   program
     .command("setup-opencode")
     .description(
-      "Generate the ShiguangGateway openai-compatible provider in the active OpenCode config " +
+      "Generate the Orbit openai-compatible provider in the active OpenCode config " +
         "from the live model catalog (local or remote VPS)"
     )
-    .option("--port <port>", "Local ShiguangGateway port (ignored when --remote is set)", "8787")
-    .option("--remote <url>", "Remote ShiguangGateway URL, e.g. http://192.168.0.15:8787")
-    .option("--api-key <key>", "ShiguangGateway API key (defaults to SHIGUANG_GATEWAY_API_KEY env var)")
-    .option("--model <id>", "Set the default top-level model (shiguangGateway/<id>)")
+    .option("--port <port>", "Local Orbit port (ignored when --remote is set)", "8787")
+    .option("--remote <url>", "Remote Orbit URL, e.g. http://192.168.0.15:8787")
+    .option("--api-key <key>", "Orbit API key (defaults to ORBIT_API_KEY env var)")
+    .option("--model <id>", "Set the default top-level model (orbit/<id>)")
     .option("--only <patterns>", "Comma-separated substrings — keep only matching model IDs")
     .option("--dry-run", "Print what would be written without touching the filesystem")
     .option(

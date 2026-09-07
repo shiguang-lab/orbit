@@ -55,7 +55,7 @@ export async function handleComfyUIImageGeneration({ model, provider, providerCo
     },
     "9": {
       class_type: "SaveImage",
-      inputs: { filename_prefix: "shiguangGateway", images: ["8", 0] },
+      inputs: { filename_prefix: "orbit", images: ["8", 0] },
     },
   };
 

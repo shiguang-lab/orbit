@@ -351,7 +351,7 @@ export class QoderExecutor extends BaseExecutor {
         response: createQoderErrorResponse({
           status: 502,
           message:
-            `Qoder CLI (qodercli) was not found on the ShiguangGateway host (${run.error}). ` +
+            `Qoder CLI (qodercli) was not found on the Orbit host (${run.error}). ` +
             "Install it from https://qoder.com or set CLI_QODER_BIN to its path.",
           code: "cli_not_found",
         }),

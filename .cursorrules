@@ -1,4 +1,4 @@
-# ShiguangGateway UI & Code Standards
+# Orbit UI & Code Standards
 
 - **Ant Design Component Sizing**:
   All Ant Design components (Buttons, Inputs, Select, Segmented, Form Controls) must use the default size (`middle` / default). NEVER configure `size="small"` on buttons, segmented controls, or input fields.

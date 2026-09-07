@@ -62,16 +62,16 @@ test("TLS helper requires a readable certificate and key pair", () => {
   const warn = (message) => warnings.push(message);
   assert.equal(resolveTlsOptions({}, { warn }), null);
   assert.equal(
-    resolveTlsOptions({ SHIGUANG_GATEWAY_TLS_CERT: "/cert.pem" }, { warn }),
+    resolveTlsOptions({ ORBIT_TLS_CERT: "/cert.pem" }, { warn }),
     null
   );
-  assert.match(warnings.pop(), /both SHIGUANG_GATEWAY_TLS_CERT and SHIGUANG_GATEWAY_TLS_KEY/);
+  assert.match(warnings.pop(), /both ORBIT_TLS_CERT and ORBIT_TLS_KEY/);
 
   const reads = [];
   const result = resolveTlsOptions(
     {
-      SHIGUANG_GATEWAY_TLS_CERT: " /cert.pem ",
-      SHIGUANG_GATEWAY_TLS_KEY: " /key.pem ",
+      ORBIT_TLS_CERT: " /cert.pem ",
+      ORBIT_TLS_KEY: " /key.pem ",
     },
     {
       warn,
@@ -91,7 +91,7 @@ test("TLS helper requires a readable certificate and key pair", () => {
 
   assert.equal(
     resolveTlsOptions(
-      { SHIGUANG_GATEWAY_TLS_CERT: "/cert.pem", SHIGUANG_GATEWAY_TLS_KEY: "/key.pem" },
+      { ORBIT_TLS_CERT: "/cert.pem", ORBIT_TLS_KEY: "/key.pem" },
       {
         warn,
         readFileSync() {
@@ -116,7 +116,7 @@ test("native binary detection rejects a mismatched architecture before dlopen", 
     architectures: ["x64"],
   });
 
-  const directory = mkdtempSync(join(tmpdir(), "shiguang-cli-native-"));
+  const directory = mkdtempSync(join(tmpdir(), "orbit-cli-native-"));
   const binaryPath = join(directory, "addon.node");
   try {
     writeFileSync(binaryPath, elfX64);
@@ -149,7 +149,7 @@ test("native binary detection rejects a mismatched architecture before dlopen", 
 });
 
 test("bare --version exits successfully without loading command runtime", () => {
-  const cliPath = fileURLToPath(new URL("../src/shiguang-gateway.mjs", import.meta.url));
+  const cliPath = fileURLToPath(new URL("../src/orbit.mjs", import.meta.url));
   const packagePath = fileURLToPath(new URL("../package.json", import.meta.url));
   const expectedVersion = JSON.parse(readFileSync(packagePath, "utf8")).version;
   const result = spawnSync(process.execPath, [cliPath, "--version"], {

@@ -10,7 +10,7 @@ lastUpdated: 2026-06-28
 > **Ostatnia aktualizacja:** 2026-06-28 — v3.8.40 (pokrycie injection-guard + limit skanu 16 KB + red-team)
 
 Guardrails egzekwują bezpieczeństwo, politykę i transformacje treści na granicy
-między ShiguangGateway a upstream providerami. Każdy guardrail może sprawdzać (oraz
+między Orbit a upstream providerami. Każdy guardrail może sprawdzać (oraz
 opcjonalnie odrzucać, transformować lub adnotować) payloady żądań (`preCall`) i
 odpowiedzi upstream (`postCall`).
 
@@ -189,7 +189,7 @@ zdeduplikowaną listę nazw guardrails, które należy pominąć dla bieżącego
 - `apiKeyInfo.disabledGuardrails`
 - body żądania `disabledGuardrails` (top-level)
 - body żądania `metadata.disabledGuardrails`
-- nagłówek `x-shiguang-gateway-disabled-guardrails` (lub legacy
+- nagłówek `x-orbit-disabled-guardrails` (lub legacy
   `x-disabled-guardrails`)
 
 Wartości mogą być tablicami stringów albo stringiem rozdzielonym przecinkami;
@@ -315,7 +315,7 @@ dispatch) ma dwa joby:
   previous instructions…”, jailbreaki w stylu DAN) asertuje, że odpowiedź niesie
   `error.code === "SECURITY_001"`, tzn. guard faktycznie odrzucił żądanie.
 - **`garak` (advisory)** — uruchamia garak `--probes promptinject,dan,leakreplay`
-  przeciw lokalnej instancji ShiguangGateway (`http://localhost:20128/v1`). Bramkowany
+  przeciw lokalnej instancji Orbit (`http://localhost:20128/v1`). Bramkowany
   secretem providera (`PROMPTFOO_PROVIDER_KEY`); pomija łagodnie i jest sufiksowany
   `|| true`, więc raportuje bez failowania CI.
 

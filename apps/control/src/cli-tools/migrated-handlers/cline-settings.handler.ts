@@ -26,8 +26,8 @@ const readGlobalState = async () => readJsoncConfig<JsonObject>(GLOBAL_STATE_PAT
 // Read secrets.json (same JSONC-tolerant behaviour; defaults to {} for compat).
 const readSecrets = async () => readJsoncConfig<Record<string, unknown>>(SECRETS_PATH, {});
 
-// Check if ShiguangGateway is configured as OpenAI-compatible provider
-const hasShiguangGatewayConfig = (globalState: any) => {
+// Check if Orbit is configured as OpenAI-compatible provider
+const hasOrbitConfig = (globalState: any) => {
   if (!globalState) return false;
   const isOpenAi =
     globalState.actModeApiProvider === "openai" || globalState.planModeApiProvider === "openai";
@@ -36,7 +36,7 @@ const hasShiguangGatewayConfig = (globalState: any) => {
     isOpenAi &&
     (baseUrl.includes("localhost") ||
       baseUrl.includes("127.0.0.1") ||
-      baseUrl.includes("shiguangGateway"))
+      baseUrl.includes("orbit"))
   );
 };
 
@@ -81,7 +81,7 @@ export async function GET(request: Request) {
         openAiModelId: globalState?.openAiModelId,
         planModeOpenAiModelId: globalState?.planModeOpenAiModelId,
       },
-      hasShiguangGateway: hasShiguangGatewayConfig(globalState),
+      hasOrbit: hasOrbitConfig(globalState),
       globalStatePath: GLOBAL_STATE_PATH,
       secretsPath: SECRETS_PATH,
     });
@@ -91,7 +91,7 @@ export async function GET(request: Request) {
   }
 }
 
-// POST - Configure Cline to use ShiguangGateway as OpenAI-compatible provider
+// POST - Configure Cline to use Orbit as OpenAI-compatible provider
 export async function POST(request: Request) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
@@ -165,7 +165,7 @@ export async function POST(request: Request) {
       /* No existing secrets */
     }
 
-    secrets.openAiApiKey = apiKey || "sk_shiguangGateway";
+    secrets.openAiApiKey = apiKey || "sk_orbit";
 
     await fs.writeFile(SECRETS_PATH, JSON.stringify(secrets, null, 2));
 
@@ -187,7 +187,7 @@ export async function POST(request: Request) {
   }
 }
 
-// DELETE - Remove ShiguangGateway OpenAI-compatible provider config
+// DELETE - Remove Orbit OpenAI-compatible provider config
 export async function DELETE(request: Request) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
@@ -247,7 +247,7 @@ export async function DELETE(request: Request) {
 
     return Response.json({
       success: true,
-      message: "ShiguangGateway settings removed from Cline",
+      message: "Orbit settings removed from Cline",
     });
   } catch (error) {
     console.log("Error resetting cline settings:", error);

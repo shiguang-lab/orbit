@@ -24,7 +24,7 @@ export async function GET(request: Request) {
 
   const token = authHeader.slice(7);
   const tokenHash = crypto
-    .pbkdf2Sync(token, "shiguangGateway-federation-salt", 120000, 32, "sha256")
+    .pbkdf2Sync(token, "orbit-federation-salt", 120000, 32, "sha256")
     .toString("hex");
   const server = getConnectedServerByKeyHash(tokenHash);
 

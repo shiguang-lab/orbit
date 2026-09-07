@@ -87,7 +87,7 @@ function compileHookCode(code: string, hookName: string): HookMiddleware {
   let script: vm.Script;
   try {
     script = new vm.Script(`(async () => { ${code} })();`, {
-      filename: `shiguangGateway-hook:${hookName}`,
+      filename: `orbit-hook:${hookName}`,
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Compilation error";

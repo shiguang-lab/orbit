@@ -16,9 +16,9 @@ executor code, OAuth defaults, headers, or process environment state.
 The same manifest is available over HTTP at
 `GET /api/v1/provider-plugin-manifest` for sidecars that run out-of-process.
 
-ShiguangGateway advertises that URL to Bifrost and CLIProxyAPI via the
-`X-ShiguangGateway-Provider-Manifest-Url` request header. Set
-`SHIGUANG_GATEWAY_PROVIDER_MANIFEST_URL` when the sidecar needs a public or container
+Orbit advertises that URL to Bifrost and CLIProxyAPI via the
+`X-Orbit-Provider-Manifest-Url` request header. Set
+`ORBIT_PROVIDER_MANIFEST_URL` when the sidecar needs a public or container
 network URL instead of the local request origin.
 
 ## Refreshing the Manifest
@@ -32,7 +32,7 @@ the sidecar must issue an unconditional request instead of accepting a `304`.
 ## Goal
 
 Move provider metadata toward a plugin contract so the hot request path can
-eventually be owned by a lower-latency sidecar while ShiguangGateway keeps the
+eventually be owned by a lower-latency sidecar while Orbit keeps the
 TypeScript route as the policy gate and fallback. The manifest is additive: it
 does not change request routing by itself.
 
@@ -73,7 +73,7 @@ Suggested migration phases:
 1. Generate and validate the provider plugin manifest from the TS registry.
 2. Teach Bifrost or CLIProxyAPI to import the manifest for API-key/static
    providers.
-3. Route eligible providers through the sidecar behind `SHIGUANG_GATEWAY_RELAY_BACKEND`
+3. Route eligible providers through the sidecar behind `ORBIT_RELAY_BACKEND`
    while keeping TS fallback enabled.
 4. Promote providers only when success rate, p99 latency, streaming behavior,
    and unsupported-param handling match the TS path.

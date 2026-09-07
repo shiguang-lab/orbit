@@ -1,16 +1,16 @@
-# Panduan Deployment ShiguangGateway di Fly.io
+# Panduan Deployment Orbit di Fly.io
 
 🌐 **Languages:** 🇺🇸 [English](../../../../docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇸🇦 [ar](../../ar/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇧🇬 [bg](../../bg/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇧🇩 [bn](../../bn/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇨🇿 [cs](../../cs/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇩🇰 [da](../../da/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇩🇪 [de](../../de/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇪🇸 [es](../../es/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇮🇷 [fa](../../fa/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇫🇮 [fi](../../fi/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇫🇷 [fr](../../fr/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇮🇳 [gu](../../gu/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇮🇱 [he](../../he/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇮🇳 [hi](../../hi/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇭🇺 [hu](../../hu/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇮🇩 [id](../../id/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇮🇹 [it](../../it/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇯🇵 [ja](../../ja/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇰🇷 [ko](../../ko/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇮🇳 [mr](../../mr/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇲🇾 [ms](../../ms/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇳🇱 [nl](../../nl/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇳🇴 [no](../../no/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇵🇭 [phi](../../phi/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇵🇱 [pl](../../pl/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇵🇹 [pt](../../pt/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇧🇷 [pt-BR](../../pt-BR/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇷🇴 [ro](../../ro/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇷🇺 [ru](../../ru/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇸🇰 [sk](../../sk/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇸🇪 [sv](../../sv/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇰🇪 [sw](../../sw/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇮🇳 [ta](../../ta/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇮🇳 [te](../../te/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇹🇭 [th](../../th/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇹🇷 [tr](../../tr/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇺🇦 [uk-UA](../../uk-UA/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇵🇰 [ur](../../ur/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇻🇳 [vi](../../vi/docs/FLY_IO_DEPLOYMENT_GUIDE.md) · 🇨🇳 [zh-CN](../../zh-CN/docs/FLY_IO_DEPLOYMENT_GUIDE.md)
 
 ---
 
-Dokumen ini menjelaskan metode deployment ShiguangGateway di Fly.io yang telah terbukti berhasil, mencakup dua skenario utama:
+Dokumen ini menjelaskan metode deployment Orbit di Fly.io yang telah terbukti berhasil, mencakup dua skenario utama:
 
 - Deployment pertama kali proyek saat ini ke Fly.io
 - Publikasi setelah pembaruan kode berikutnya
 - Referensi alur deployment yang sama untuk proyek baru
 
-Dokumen ini disusun berdasarkan konfigurasi yang telah diverifikasi pada proyek saat ini, dengan nama aplikasi `shiguang-gateway`.
+Dokumen ini disusun berdasarkan konfigurasi yang telah diverifikasi pada proyek saat ini, dengan nama aplikasi `orbit`.
 
 ---
 
@@ -20,7 +20,7 @@ Dokumen ini disusun berdasarkan konfigurasi yang telah diverifikasi pada proyek 
 - Metode deployment: Publikasi langsung dari lokal menggunakan `flyctl`
 - Cara menjalankan: Menggunakan `Dockerfile` dan `fly.toml` yang sudah ada di repositori
 - Persistensi data: Fly Volume yang dipasang ke `/data`
-- Alamat akses: `https://shiguang-gateway.fly.dev/`
+- Alamat akses: `https://orbit.fly.dev/`
 
 ---
 
@@ -29,7 +29,7 @@ Dokumen ini disusun berdasarkan konfigurasi yang telah diverifikasi pada proyek 
 `fly.toml` di repositori saat ini telah dikonfirmasi mengandung item-item kunci berikut:
 
 ```toml
-app = 'shiguang-gateway'
+app = 'orbit'
 primary_region = 'sin'
 
 [[mounts]]
@@ -51,7 +51,7 @@ primary_region = 'sin'
 
 Keterangan:
 
-- `app = 'shiguang-gateway'` menentukan aplikasi Fly mana yang menjadi target deployment
+- `app = 'orbit'` menentukan aplikasi Fly mana yang menjadi target deployment
 - `destination = '/data'` menentukan direktori pemasangan volume persisten
 - Proyek ini mengharuskan `DATA_DIR=/data` disetel; jika tidak, database dan kunci rahasia akan ditulis ke direktori sementara kontainer
 
@@ -89,8 +89,8 @@ flyctl version
 ### 4.1 Ambil Kode dan Masuk ke Direktori
 
 ```powershell
-git clone https://github.com/diegosouzapw/ShiguangGateway.git
-cd ShiguangGateway
+git clone https://github.com/diegosouzapw/Orbit.git
+cd Orbit
 ```
 
 ### 4.2 Konfirmasi Nama Aplikasi
@@ -98,29 +98,29 @@ cd ShiguangGateway
 Buka `fly.toml` dan perhatikan baris berikut:
 
 ```toml
-app = 'shiguang-gateway'
+app = 'orbit'
 ```
 
 Jika Anda berencana melakukan deployment ke aplikasi baru milik sendiri, ubah menjadi nama yang unik secara global, misalnya:
 
 ```toml
-app = 'shiguang-gateway-yourname'
+app = 'orbit-yourname'
 ```
 
 Catatan:
 
 - Di konsol, pastikan Anda melihat aplikasi yang sesuai dengan nilai `app` di `fly.toml`
-- Jika sebelumnya Anda menggunakan nama lain seperti `oroute`, jangan sampai tertukar dengan `shiguang-gateway`
+- Jika sebelumnya Anda menggunakan nama lain seperti `oroute`, jangan sampai tertukar dengan `orbit`
 
 ### 4.3 Buat Aplikasi
 
 Jika aplikasi belum ada:
 
 ```powershell
-flyctl apps create shiguang-gateway
+flyctl apps create orbit
 ```
 
-Jika Anda sudah mengganti nama aplikasi, ganti `shiguang-gateway` dengan nama Anda.
+Jika Anda sudah mengganti nama aplikasi, ganti `orbit` dengan nama Anda.
 
 ### 4.4 Deployment Pertama
 
@@ -136,7 +136,7 @@ Berikut adalah parameter minimum yang direkomendasikan untuk proyek ini di Fly.i
 
 ### 5.1 Parameter yang Telah Diverifikasi
 
-Parameter-parameter berikut telah digunakan secara nyata pada aplikasi `shiguang-gateway` saat ini:
+Parameter-parameter berikut telah digunakan secara nyata pada aplikasi `orbit` saat ini:
 
 - `API_KEY_SECRET`
 - `DATA_DIR`
@@ -180,7 +180,7 @@ Parameter yang disarankan untuk disimpan sebagai Fly Secrets:
 | Nama Variabel          | Nilai yang Direkomendasikan    |
 | ---------------------- | ------------------------------ |
 | `DATA_DIR`             | `/data`                        |
-| `NEXT_PUBLIC_BASE_URL` | `https://shiguang-gateway.fly.dev`    |
+| `NEXT_PUBLIC_BASE_URL` | `https://orbit.fly.dev`    |
 
 Keterangan:
 
@@ -196,7 +196,7 @@ Perintah berikut akan menghasilkan nilai acak yang aman dan menulis semua parame
 Keterangan:
 
 - Tidak menyertakan `INITIAL_PASSWORD`
-- Berlaku untuk proyek saat ini yaitu `shiguang-gateway`
+- Berlaku untuk proyek saat ini yaitu `orbit`
 
 ```powershell
 $apiKeySecret = [Convert]::ToHexString((1..32 | ForEach-Object { Get-Random -Minimum 0 -Maximum 256 })).ToLower()
@@ -210,14 +210,14 @@ flyctl secrets set `
   MACHINE_ID_SALT=$machineIdSalt `
   STORAGE_ENCRYPTION_KEY=$storageKey `
   DATA_DIR=/data `
-  NEXT_PUBLIC_BASE_URL=https://shiguang-gateway.fly.dev `
-  -a shiguang-gateway
+  NEXT_PUBLIC_BASE_URL=https://orbit.fly.dev `
+  -a orbit
 ```
 
 Jika Anda juga ingin menambahkan kata sandi awal:
 
 ```powershell
-flyctl secrets set INITIAL_PASSWORD=kata-sandi-kuat-anda -a shiguang-gateway
+flyctl secrets set INITIAL_PASSWORD=kata-sandi-kuat-anda -a orbit
 ```
 
 ---
@@ -225,12 +225,12 @@ flyctl secrets set INITIAL_PASSWORD=kata-sandi-kuat-anda -a shiguang-gateway
 ## 8. Melihat Parameter Saat Ini
 
 ```powershell
-flyctl secrets list -a shiguang-gateway
+flyctl secrets list -a orbit
 ```
 
 Jika halaman `Secrets` di konsol tidak menampilkan variabel yang Anda harapkan, periksa terlebih dahulu:
 
-- Apakah aplikasi yang sedang dilihat adalah `shiguang-gateway`
+- Apakah aplikasi yang sedang dilihat adalah `orbit`
 - Apakah nilai `app` di `fly.toml` sudah sesuai dengan aplikasi di konsol
 
 ---
@@ -247,14 +247,14 @@ flyctl deploy
 Jika hanya memperbarui parameter tanpa mengubah kode:
 
 ```powershell
-flyctl secrets set KEY=value -a shiguang-gateway
+flyctl secrets set KEY=value -a orbit
 ```
 
 Fly akan melakukan pembaruan mesin secara otomatis dengan rolling update.
 
 ### 9.1 Melacak Pembaruan Repositori Asal dan Mempertahankan `fly.toml` dari Fork
 
-Jika repositori saat ini adalah fork dan Anda ingin menyinkronkan pembaruan dari upstream `https://github.com/diegosouzapw/ShiguangGateway`, ikuti alur berikut.
+Jika repositori saat ini adalah fork dan Anda ingin menyinkronkan pembaruan dari upstream `https://github.com/diegosouzapw/Orbit`, ikuti alur berikut.
 
 Pertama, konfirmasi remote yang ada:
 
@@ -270,7 +270,7 @@ Harus mengandung setidaknya:
 Jika belum ada `upstream`, tambahkan terlebih dahulu:
 
 ```powershell
-git remote add upstream https://github.com/diegosouzapw/ShiguangGateway.git
+git remote add upstream https://github.com/diegosouzapw/Orbit.git
 ```
 
 Sebelum menyinkronkan upstream, ambil commit dan tag terbaru:
@@ -320,8 +320,8 @@ Setelah selesai menyinkronkan repositori asal, ikuti urutan publikasi berikut:
 3. Pulihkan `fly.toml` dari fork
 4. `git push origin main`
 5. `flyctl deploy`
-6. `flyctl status -a shiguang-gateway`
-7. `flyctl logs --no-tail -a shiguang-gateway`
+6. `flyctl status -a orbit`
+7. `flyctl logs --no-tail -a orbit`
 
 Inilah alur yang digunakan saat proyek ini diperbarui ke `v3.4.7`.
 
@@ -332,20 +332,20 @@ Inilah alur yang digunakan saat proyek ini diperbarui ke `v3.4.7`.
 ### 10.1 Lihat Status Aplikasi
 
 ```powershell
-flyctl status -a shiguang-gateway
+flyctl status -a orbit
 ```
 
 ### 10.2 Lihat Log Startup
 
 ```powershell
-flyctl logs --no-tail -a shiguang-gateway
+flyctl logs --no-tail -a orbit
 ```
 
 ### 10.3 Periksa Aksesibilitas Situs
 
 ```powershell
 try {
-  (Invoke-WebRequest -Uri "https://shiguang-gateway.fly.dev" -MaximumRedirection 5 -UseBasicParsing).StatusCode
+  (Invoke-WebRequest -Uri "https://orbit.fly.dev" -MaximumRedirection 5 -UseBasicParsing).StatusCode
 } catch {
   if ($_.Exception.Response) {
     $_.Exception.Response.StatusCode.value__
@@ -384,14 +384,14 @@ Jika yang Anda lihat adalah `/app/data/...`, berarti `DATA_DIR` tidak dikonfigur
 Biasanya ada dua penyebab:
 
 - Anda belum menjalankan `flyctl secrets set`
-- Anda membuka aplikasi yang salah, misalnya `oroute`, bukan `shiguang-gateway`
+- Anda membuka aplikasi yang salah, misalnya `oroute`, bukan `orbit`
 
 ### 12.2 `flyctl deploy` Melaporkan `app not found`
 
 Buat aplikasinya terlebih dahulu:
 
 ```powershell
-flyctl apps create shiguang-gateway
+flyctl apps create orbit
 ```
 
 ### 12.3 Parsing `fly.toml` Gagal
@@ -434,10 +434,10 @@ Berikut adalah perintah yang paling sering digunakan untuk proyek saat ini:
 
 ```powershell
 flyctl auth whoami
-flyctl status -a shiguang-gateway
-flyctl secrets list -a shiguang-gateway
+flyctl status -a orbit
+flyctl secrets list -a orbit
 flyctl deploy
-flyctl logs --no-tail -a shiguang-gateway
+flyctl logs --no-tail -a orbit
 ```
 
 Untuk publikasi rutin biasa, perintah intinya adalah:
@@ -449,7 +449,7 @@ flyctl deploy
 Untuk deployment pertama di lingkungan baru, langkah intinya adalah:
 
 1. `flyctl auth login`
-2. `flyctl apps create shiguang-gateway`
-3. `flyctl secrets set ... -a shiguang-gateway`
+2. `flyctl apps create orbit`
+3. `flyctl secrets set ... -a orbit`
 4. `flyctl deploy`
-5. `flyctl logs --no-tail -a shiguang-gateway`
+5. `flyctl logs --no-tail -a orbit`

@@ -2,7 +2,7 @@
  * A2A Routing Decision Logger
  *
  * Records every routing decision to the `routing_decisions` SQLite table.
- * Used by `shiguangGateway_explain_route` (T03) and future learning router.
+ * Used by `orbit_explain_route` (T03) and future learning router.
  * Retention: 7 days default.
  */
 

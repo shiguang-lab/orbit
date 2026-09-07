@@ -1,12 +1,12 @@
 ---
-title: "Claude Code CLI — konfiguracja z ShiguangGateway"
+title: "Claude Code CLI — konfiguracja z Orbit"
 version: 3.8.40
 lastUpdated: 2026-07-24
 ---
 
-# Claude Code CLI — konfiguracja z ShiguangGateway
+# Claude Code CLI — konfiguracja z Orbit
 
-Skieruj CLI **Claude Code** (`claude`) na ShiguangGateway — lokalnie lub na zdalny VPS —
+Skieruj CLI **Claude Code** (`claude`) na Orbit — lokalnie lub na zdalny VPS —
 z profilami per model, na wzór konfiguracji Codex.
 
 ---
@@ -14,15 +14,15 @@ z profilami per model, na wzór konfiguracji Codex.
 ## Szybki start
 
 ```bash
-# Launch Claude Code against a local ShiguangGateway (auto-detects the active context)
-shiguang-gateway launch
+# Launch Claude Code against a local Orbit (auto-detects the active context)
+orbit launch
 
-# Against a remote ShiguangGateway (after `shiguang-gateway connect <host>`, this is automatic)
-shiguang-gateway launch --remote http://192.168.0.15:20128 --api-key oma_live_xxx
+# Against a remote Orbit (after `orbit connect <host>`, this is automatic)
+orbit launch --remote http://192.168.0.15:20128 --api-key oma_live_xxx
 
 # Generate per-model profiles, then launch one
-shiguang-gateway setup-claude            # writes ~/.claude/profiles/<name>/settings.json
-shiguang-gateway launch --profile glm52  # Claude Code using glm/glm-5.2 via ShiguangGateway
+orbit setup-claude            # writes ~/.claude/profiles/<name>/settings.json
+orbit launch --profile glm52  # Claude Code using glm/glm-5.2 via Orbit
 ```
 
 ---
@@ -35,7 +35,7 @@ endpoint przez zmienne środowiskowe (nie ma flagi `--base-url`):
 | Zmienna                                      | Przeznaczenie                                                                              |
 | -------------------------------------------- | ------------------------------------------------------------------------------------------ |
 | `ANTHROPIC_BASE_URL`                         | Główny URL bramki (Claude Code dopina `/v1/messages`). **Bez sufiksu `/v1`.**              |
-| `ANTHROPIC_AUTH_TOKEN`                       | Wysyłany jako `Authorization: Bearer …` — użyj tokenu dostępu / klucza API ShiguangGateway       |
+| `ANTHROPIC_AUTH_TOKEN`                       | Wysyłany jako `Authorization: Bearer …` — użyj tokenu dostępu / klucza API Orbit       |
 | `ANTHROPIC_API_KEY`                          | Alternatywa: wysyłany jako `x-api-key`. Gdy ustawione obie, wygrywa `ANTHROPIC_AUTH_TOKEN` |
 | `ANTHROPIC_MODEL`                            | Wymusza konkretny model (nadpisuje domyślny wybór z pickera `/model`)                      |
 | `CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY` | `1` → natywny picker `/model` listuje modele `claude*`/`anthropic*` z `/v1/models`         |
@@ -44,8 +44,8 @@ endpoint przez zmienne środowiskowe (nie ma flagi `--base-url`):
 
 > Zmienne środowiskowe są odczytywane **raz przy starcie** — po zmianie zrestartuj Claude Code.
 
-`shiguang-gateway launch` ustawia to wszystko za Ciebie: rozwiązuje bazowy URL + token
-z aktywnego kontekstu (więc `shiguang-gateway connect <vps>`, a potem `shiguang-gateway launch`
+`orbit launch` ustawia to wszystko za Ciebie: rozwiązuje bazowy URL + token
+z aktywnego kontekstu (więc `orbit connect <vps>`, a potem `orbit launch`
 po prostu działa), sprawdza zdrowie serwera i execuje `claude`.
 
 ---
@@ -54,24 +54,24 @@ po prostu działa), sprawdza zdrowie serwera i execuje `claude`.
 
 Discovery modeli bramki w Claude Code listuje tylko identyfikatory zaczynające się od `claude`
 lub `anthropic`, więc przy `CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY=1` natywny
-picker `/model` zwykle pokazuje **tylko** modele Claude/Anthropic z ShiguangGateway — `kimi/kimi-k2.6`
+picker `/model` zwykle pokazuje **tylko** modele Claude/Anthropic z Orbit — `kimi/kimi-k2.6`
 lub `glm/glm-5.2` się nie pojawią, mimo że routują poprawnie.
 
-ShiguangGateway może odzwierciedlić dowolny włączony model (i combo) pod identyfikatorem `claude/…`,
+Orbit może odzwierciedlić dowolny włączony model (i combo) pod identyfikatorem `claude/…`,
 aby przeszedł ten filtr i pojawił się w pickerze:
 
 ```
-kimi/kimi-k2.6            →  claude/kimi/kimi-k2.6      "Kimi K2.6 (ShiguangGateway)"
-glm/glm-5.2              →  claude/glm/glm-5.2         "GLM 5.2 (ShiguangGateway)"
+kimi/kimi-k2.6            →  claude/kimi/kimi-k2.6      "Kimi K2.6 (Orbit)"
+glm/glm-5.2              →  claude/glm/glm-5.2         "GLM 5.2 (Orbit)"
 <combo "custo-otimizado"> →  claude/combo/custo-otimizado
 ```
 
-Gdy wybierzesz jeden z nich w Claude Code, ShiguangGateway zdejmuje opakowanie `claude/`
+Gdy wybierzesz jeden z nich w Claude Code, Orbit zdejmuje opakowanie `claude/`
 z powrotem do prawdziwego id przed routingiem — autentyczny id `claude/<real-claude-model>`
 (właściwy provider Claude OAuth) zawsze pozostaje nietknięty.
 
 **Domyślnie wyłączone** i sterowane trójpoziomową bramką (najbardziej szczegółowy
-wygrywa), więc zwykły ShiguangGateway nie podwaja katalogu dla klientów, które nie używają
+wygrywa), więc zwykły Orbit nie podwaja katalogu dla klientów, które nie używają
 Claude Code:
 
 | Poziom   | Gdzie                                                                                            |
@@ -103,8 +103,8 @@ dla tej instancji, obok przycisku info o aliasach discovery, z przyciskiem kopio
 ```jsonc
 {
   "env": {
-    "ANTHROPIC_BASE_URL": "http://<your ShiguangGateway>:20128",
-    "ANTHROPIC_AUTH_TOKEN": "<your ShiguangGateway API key>",
+    "ANTHROPIC_BASE_URL": "http://<your Orbit>:20128",
+    "ANTHROPIC_AUTH_TOKEN": "<your Orbit API key>",
     "CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY": "1",
   },
 }
@@ -131,7 +131,7 @@ Claude Code **nie ma natywnych plików profili** (w przeciwieństwie do `~/.code
 Idiomatyczny mechanizm to `CLAUDE_CONFIG_DIR` — osobny katalog konfiguracji na
 profil, każdy z własnym `settings.json`, poświadczeniami, historią i cache.
 
-`shiguang-gateway setup-claude` pobiera żywy katalog `/v1/models` i zapisuje jeden
+`orbit setup-claude` pobiera żywy katalog `/v1/models` i zapisuje jeden
 profil na model w `~/.claude/profiles/<name>/settings.json`, używając
 **tych samych nazw co `setup-codex`** (`glm52`, `kimi-k27`, `deepseek-pro`, …):
 
@@ -151,42 +151,42 @@ profil na model w `~/.claude/profiles/<name>/settings.json`, używając
 ```
 
 > **Token autoryzacji nigdy nie jest zapisywany w profilu.** Uruchom z
-> `shiguang-gateway launch --profile <name>` (wstrzykuje `ANTHROPIC_AUTH_TOKEN` z
+> `orbit launch --profile <name>` (wstrzykuje `ANTHROPIC_AUTH_TOKEN` z
 > aktywnego kontekstu) albo sam wyeksportuj `ANTHROPIC_AUTH_TOKEN` i uruchom
 > `CLAUDE_CONFIG_DIR=~/.claude/profiles/<name> claude`.
 
-**Auto-sync po discovery modeli (opt-in).** ShiguangGateway może regenerować te same
+**Auto-sync po discovery modeli (opt-in).** Orbit może regenerować te same
 pliki `~/.claude/profiles/<name>/settings.json` automatycznie, gdy synchronizacja modeli
 providera zmienia żywy katalog — więc nowe/przemianowane modele dostają profile bez ponownego
 uruchamiania komendy. Jest **domyślnie wyłączone**: włącz z **dashboardu CLI Code** („CLI profile
-auto-sync” → Claude Code) albo ustaw `SHIGUANG_GATEWAY_AUTO_SYNC_CLAUDE_PROFILES=true` (honoruje też
+auto-sync” → Claude Code) albo ustaw `ORBIT_AUTO_SYNC_CLAUDE_PROFILES=true` (honoruje też
 `CLI_ALLOW_CONFIG_WRITES`, domyślnie włączone). Po włączeniu zapisuje tylko pliki profili; nigdy
 nie zmienia aktywnej/domyślnej konfiguracji Claude, auth ani `~/.claude/settings.json`.
 
 ### Generowanie i używanie profili
 
 ```bash
-# Local ShiguangGateway
-shiguang-gateway setup-claude
+# Local Orbit
+orbit setup-claude
 
 # Remote VPS (bakes the VPS URL into every profile)
-shiguang-gateway setup-claude --remote http://192.168.0.15:20128 --api-key oma_live_xxx
+orbit setup-claude --remote http://192.168.0.15:20128 --api-key oma_live_xxx
 
 # Only some providers
-shiguang-gateway setup-claude --only glm,kimi
+orbit setup-claude --only glm,kimi
 
 # Preview without writing
-shiguang-gateway setup-claude --dry-run
+orbit setup-claude --dry-run
 
 # Launch a profile
-shiguang-gateway launch --profile kimi-k27
+orbit launch --profile kimi-k27
 ```
 
 ---
 
 ## Poziomy modeli (opcjonalne)
 
-Claude Code routuje do poziomów możliwości. Zmapuj każdy na model ShiguangGateway przez env /
+Claude Code routuje do poziomów możliwości. Zmapuj każdy na model Orbit przez env /
 ustawienia, jeśli chcesz innych providerów per poziom:
 
 ```bash
@@ -201,8 +201,8 @@ W przeciwnym razie pojedynczy `ANTHROPIC_MODEL` (to, co ustawiają profile) jest
 
 ## Tryb zdalny
 
-Po uruchomieniu `shiguang-gateway connect <host>` (zobacz
-[Tryb zdalny](./REMOTE-MODE.md)), `shiguang-gateway launch` i `shiguang-gateway setup-claude`
+Po uruchomieniu `orbit connect <host>` (zobacz
+[Tryb zdalny](./REMOTE-MODE.md)), `orbit launch` i `orbit setup-claude`
 automatycznie celują w ten zdalny serwer i używają jego scoped access token —
 bez dodatkowych flag. Nadpisz per wywołanie przez `--remote` / `--api-key`.
 
@@ -211,7 +211,7 @@ bez dodatkowych flag. Nadpisz per wywołanie przez `--remote` / `--api-key`.
 ## Rozwiązywanie problemów
 
 **Claude Code ignoruje bramkę** — potwierdź, że `ANTHROPIC_BASE_URL` **nie ma
-`/v1`**, i zrestartuj `claude` (env jest odczytywane raz przy starcie). `shiguang-gateway launch`
+`/v1`**, i zrestartuj `claude` (env jest odczytywane raz przy starcie). `orbit launch`
 robi to za Ciebie.
 
 **Picker `/model` jest pusty / brakuje modeli bramki** — wymaga Claude Code
@@ -222,14 +222,14 @@ v2.1.219+ oraz `CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY=1`. W pickerze pojawi
 **`400 Ambiguous model 'claude-…'`** — Claude Code zawsze wysyła **nieprefiksowane**
 ID modeli (np. `claude-opus-4-8`), więc gdy podłączeni są zarówno provider Claude Code (`cc/…`), jak i
 Claude (`claude/…`), gołe id pasuje do dwóch tras i
-ShiguangGateway odmawia zgadywania. Napraw na jeden z dwóch sposobów: przypnij prefiksowane id przez
+Orbit odmawia zgadywania. Napraw na jeden z dwóch sposobów: przypnij prefiksowane id przez
 `ANTHROPIC_MODEL=cc/claude-opus-4-8` albo włącz **Prefer Claude Code for
 unprefixed Claude models** — przełącznik na stronie providera Claude albo
-`SHIGUANG_GATEWAY_PREFER_CLAUDE_CODE_FOR_UNPREFIXED_CLAUDE_MODELS=true` (domyślnie wyłączone;
+`ORBIT_PREFER_CLAUDE_CODE_FOR_UNPREFIXED_CLAUDE_MODELS=true` (domyślnie wyłączone;
 zobacz [Environment](../reference/ENVIRONMENT.md)) — wtedy gołe ID `claude-*`
 idą do Claude Code. Jawne prefiksy providerów zawsze wygrywają.
 
-**Błędy auth** — profil nie przechowuje tokenu. Użyj `shiguang-gateway launch --profile`
+**Błędy auth** — profil nie przechowuje tokenu. Użyj `orbit launch --profile`
 (wstrzykuje go) albo wyeksportuj `ANTHROPIC_AUTH_TOKEN`.
 
 **Profile nie izolują** — każdy profil to osobny `CLAUDE_CONFIG_DIR`;

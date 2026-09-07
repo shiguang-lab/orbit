@@ -12,7 +12,7 @@ import {
   OCR_PROVIDERS,
 } from "../config/ocrRegistry.ts";
 import { errorResponse, redactSensitiveErrorText } from "../utils/error.ts";
-import { attachShiguangGatewayMetaHeaders } from "@orbit/core/edge/gateway-response-meta";
+import { attachOrbitMetaHeaders } from "@orbit/core/edge/gateway-response-meta";
 import { generateRequestId } from "@orbit/contracts/request-id";
 import {
   getAccessToken,
@@ -175,7 +175,7 @@ export async function handleOcr({
 
     const parsed = transformation.parseResponse(data);
     const headers = new Headers({ ...CORS_HEADERS, "Content-Type": "application/json" });
-    attachShiguangGatewayMetaHeaders(headers, {
+    attachOrbitMetaHeaders(headers, {
       provider: providerId,
       model: modelId,
       costUsd: 0,

@@ -1,14 +1,14 @@
 ---
-title: "🌐 Przewodnik po proxy ShiguangGateway"
+title: "🌐 Przewodnik po proxy Orbit"
 version: 3.8.40
 lastUpdated: 2026-06-28
 ---
 
-# 🌐 Przewodnik po proxy ShiguangGateway
+# 🌐 Przewodnik po proxy Orbit
 
 > **Omijaj blokady geograficzne, chroń tożsamość i kieruj ruch AI przez dowolne proxy — bez złożonej konfiguracji.**
 
-ShiguangGateway zawiera pełny system zarządzania proxy, który pozwala kierować ruch do upstreamowych dostawców AI przez proxy HTTP, HTTPS lub SOCKS5. Niezależnie od tego, czy jesteś w zablokowanym regionie, potrzebujesz rotacji IP, czy fingerprintingu stealth — ten przewodnik obejmuje wszystko.
+Orbit zawiera pełny system zarządzania proxy, który pozwala kierować ruch do upstreamowych dostawców AI przez proxy HTTP, HTTPS lub SOCKS5. Niezależnie od tego, czy jesteś w zablokowanym regionie, potrzebujesz rotacji IP, czy fingerprintingu stealth — ten przewodnik obejmuje wszystko.
 
 ---
 
@@ -53,7 +53,7 @@ Nawet poza zablokowanymi regionami proxy są przydatne do:
 
 ```
 ┌───────────────────────────────────────────────────────────────┐
-│                       ShiguangGateway Server                        │
+│                       Orbit Server                        │
 │                                                               │
 │  ┌─────────────┐    ┌──────────────┐    ┌──────────────────┐  │
 │  │ Proxy       │    │ Proxy        │    │ Proxy            │  │
@@ -86,7 +86,7 @@ Nawet poza zablokowanymi regionami proxy są przydatne do:
 
 ## 4-poziomowy system proxy
 
-ShiguangGateway obsługuje konfigurację proxy w **czterech niezależnych zakresach**, rozwiązywanych w kolejności priorytetu:
+Orbit obsługuje konfigurację proxy w **czterech niezależnych zakresach**, rozwiązywanych w kolejności priorytetu:
 
 ```
 Priority Resolution Order (highest → lowest):
@@ -99,7 +99,7 @@ Priority Resolution Order (highest → lowest):
 
 ### Jak działa rozwiązywanie
 
-Gdy ShiguangGateway wysyła żądanie do upstreamowego dostawcy, wywołuje `resolveProxyForConnectionFromRegistry()`, które sprawdza kolejne poziomy w kolejności:
+Gdy Orbit wysyła żądanie do upstreamowego dostawcy, wywołuje `resolveProxyForConnectionFromRegistry()`, które sprawdza kolejne poziomy w kolejności:
 
 1. **Poziom konta** — Czy jest proxy przypisane do tego konkretnego ID połączenia?
 2. **Poziom dostawcy** — Czy jest proxy przypisane do tego dostawcy (np. `openai`)?
@@ -241,7 +241,7 @@ curl -X POST http://localhost:20128/api/v1/management/proxies/bulk-assign \
 
 ### Import/Export
 
-Proxy są uwzględnione w systemie **Backup/Restore**. Gdy eksportujesz konfigurację ShiguangGateway:
+Proxy są uwzględnione w systemie **Backup/Restore**. Gdy eksportujesz konfigurację Orbit:
 
 1. Przejdź do **Dashboard → Settings → Backup**
 2. Kliknij **Export** — rejestr proxy i przypisania są włączone
@@ -251,7 +251,7 @@ Rejestr proxy obsługuje też **upsert po host+port** — jeśli importujesz pro
 
 ### Migracja legacy
 
-Jeśli skonfigurowałeś proxy w starszej wersji (przed rejestrem), ShiguangGateway migruje je automatycznie:
+Jeśli skonfigurowałeś proxy w starszej wersji (przed rejestrem), Orbit migruje je automatycznie:
 
 ```
 Legacy key_value store → proxy_registry + proxy_assignments
@@ -263,9 +263,9 @@ Dzieje się to raz przy pierwszym starcie po upgrade. Użyj `migrateLegacyProxyC
 
 ## 1proxy — darmowy marketplace
 
-> 🆕 **Wkład [@oyi77](https://github.com/oyi77)** — PR [#1847](https://github.com/diegosouzapw/ShiguangGateway/pull/1847) (Issue [#1788](https://github.com/diegosouzapw/ShiguangGateway/issues/1788))
+> 🆕 **Wkład [@oyi77](https://github.com/oyi77)** — PR [#1847](https://github.com/diegosouzapw/Orbit/pull/1847) (Issue [#1788](https://github.com/diegosouzapw/Orbit/issues/1788))
 
-ShiguangGateway integruje się z platformą społecznościową **[1proxy](https://1proxy-api.aitradepulse.com)**, by dać dostęp do **setek darmowych, zwalidowanych proxy** z całego świata. Idealne dla użytkowników bez własnej infrastruktury proxy.
+Orbit integruje się z platformą społecznościową **[1proxy](https://1proxy-api.aitradepulse.com)**, by dać dostęp do **setek darmowych, zwalidowanych proxy** z całego świata. Idealne dla użytkowników bez własnej infrastruktury proxy.
 
 ### Jak to działa
 
@@ -276,7 +276,7 @@ ShiguangGateway integruje się z platformą społecznościową **[1proxy](https:
 └─────────────┘    proxies    └─────────────────┘               └──────────┘
 ```
 
-1. **Sync** — ShiguangGateway pobiera zwalidowane proxy z API 1proxy
+1. **Sync** — Orbit pobiera zwalidowane proxy z API 1proxy
 2. **Store** — Proxy są zapisywane w tej samej tabeli `proxy_registry` z `source = 'oneproxy'`
 3. **Filter** — Filtrowanie po protokole, kraju, quality score
 4. **Rotate** — Wybór najlepszego proxy strategiami quality, random lub sequential
@@ -376,7 +376,7 @@ curl -X DELETE "http://localhost:20128/api/settings/oneproxy?clearAll=1"
 
 ## Antywykrywanie i stealth
 
-ShiguangGateway nie tylko kieruje ruch przez proxy — sprawia, że ruch wygląda na legalny:
+Orbit nie tylko kieruje ruch przez proxy — sprawia, że ruch wygląda na legalny:
 
 ### Spoofing fingerprintu TLS
 
@@ -410,11 +410,11 @@ Odznaka pokazuje też rozwiązane IP proxy do weryfikacji.
 
 ## Tryby upstream proxy
 
-Dla dostawców używających wzorca CLIProxyAPI ShiguangGateway obsługuje trzy tryby upstream proxy:
+Dla dostawców używających wzorca CLIProxyAPI Orbit obsługuje trzy tryby upstream proxy:
 
 | Tryb          | Opis                                              |
 | ------------- | ------------------------------------------------- |
-| `native`      | ShiguangGateway sam obsługuje routing proxy (domyślnie) |
+| `native`      | Orbit sam obsługuje routing proxy (domyślnie) |
 | `cliproxyapi` | Deleguje do zewnętrznej instancji CLIProxyAPI     |
 | `fallback`    | Najpierw native, potem fallback do CLIProxyAPI    |
 
@@ -479,7 +479,7 @@ curl -X PUT "http://localhost:20128/api/upstream-proxy/openai" \
 
 ### Tunnels API
 
-Aby wystawić instancję ShiguangGateway do publicznego internetu (Cloudflare/ngrok/Tailscale) zamiast kierować ruch wychodzący przez proxy, zobacz [TUNNELS_GUIDE.md](./TUNNELS_GUIDE.md). REST API tuneli jest pod `/api/tunnels/{cloudflared,ngrok,tailscale}/*` i jest ortogonalne względem łańcucha outbound proxy opisanego powyżej.
+Aby wystawić instancję Orbit do publicznego internetu (Cloudflare/ngrok/Tailscale) zamiast kierować ruch wychodzący przez proxy, zobacz [TUNNELS_GUIDE.md](./TUNNELS_GUIDE.md). REST API tuneli jest pod `/api/tunnels/{cloudflared,ngrok,tailscale}/*` i jest ortogonalne względem łańcucha outbound proxy opisanego powyżej.
 
 ### 1proxy API
 
@@ -523,7 +523,7 @@ Ustaw `ENABLE_SOCKS5_PROXY=true` w pliku `.env` i zrestartuj.
 
 ### Błędy „socket hang up” przez proxy
 
-To normalne przy tanich proxy zrywających idle connections. ShiguangGateway już to obsługuje przez:
+To normalne przy tanich proxy zrywających idle connections. Orbit już to obsługuje przez:
 
 - Wyłączenie keep-alive na połączeniach proxy (`keepAliveTimeout: 1`)
 - Wyłączenie pipelining (`pipelining: 0`)
@@ -533,7 +533,7 @@ Jeśli problem trwa, spróbuj innego proxy lub użyj rotacji 1proxy.
 
 ### „unsupported_country_region_territory” podczas OAuth
 
-Upewnij się, że proxy jest skonfigurowane **przed** startem flow OAuth. ShiguangGateway kieruje wymianę tokenów OAuth przez skonfigurowane proxy. Najpierw ustaw globalne lub provider-level proxy, potem połącz.
+Upewnij się, że proxy jest skonfigurowane **przed** startem flow OAuth. Orbit kieruje wymianę tokenów OAuth przez skonfigurowane proxy. Najpierw ustaw globalne lub provider-level proxy, potem połącz.
 
 ### Proxy nie jest używane
 
@@ -601,7 +601,7 @@ CREATE TABLE proxy_assignments (
 
 ## Sprawdzanie health proxy (v3.8.16+)
 
-Mechanizm **proxy fast-fail** ShiguangGateway (`src/lib/proxyHealth.ts`) wykrywa martwe proxy w <2s szybkim sprawdzeniem połączenia TCP, potem **cache’uje wynik**, by uniknąć narzutu na każde żądanie.
+Mechanizm **proxy fast-fail** Orbit (`src/lib/proxyHealth.ts`) wykrywa martwe proxy w <2s szybkim sprawdzeniem połączenia TCP, potem **cache’uje wynik**, by uniknąć narzutu na każde żądanie.
 
 ### Jak to działa
 
@@ -637,7 +637,7 @@ Bez tego martwe proxy blokowałoby każde żądanie na pełne `PROXY_TIMEOUT_MS`
 ### Inspekcja health proxy
 
 ```ts
-import { getAllProxyHealthStatuses, invalidateProxyHealth } from "shiguang-gateway/proxyHealth";
+import { getAllProxyHealthStatuses, invalidateProxyHealth } from "orbit/proxyHealth";
 
 const statuses = getAllProxyHealthStatuses();
 for (const s of statuses) {
@@ -666,11 +666,11 @@ Własne porty w URL (`http://host:9999`) zawsze mają pierwszeństwo przed domy�
 
 ## Analityka i observability proxy
 
-ShiguangGateway śledzi użycie per-proxy, by operatorzy mogli diagnozować wzorce routingu, skoki latencji i powtarzające się awarie.
+Orbit śledzi użycie per-proxy, by operatorzy mogli diagnozować wzorce routingu, skoki latencji i powtarzające się awarie.
 
 ### Co jest śledzone
 
-Dla każdego żądania przez skonfigurowane proxy ShiguangGateway zapisuje:
+Dla każdego żądania przez skonfigurowane proxy Orbit zapisuje:
 
 | Metryka      | Opis                                              |
 | ------------ | ------------------------------------------------- |
@@ -686,7 +686,7 @@ Dla każdego żądania przez skonfigurowane proxy ShiguangGateway zapisuje:
 
 ```bash
 # Recent proxy events
-curl -H "Authorization: Bearer $SHIGUANG_GATEWAY_KEY" \
+curl -H "Authorization: Bearer $ORBIT_KEY" \
   "http://localhost:20128/api/usage/proxy-logs?limit=100"
 ```
 
@@ -732,7 +732,7 @@ ORDER BY latency_ms DESC;
 
 ## Drzewo decyzyjne strategii rotacji
 
-Gdy do zakresu przypisano wiele proxy, ShiguangGateway używa **strategii rotacji**, by wybrać, którego użyć na każde żądanie. Strategia jest konfigurowana na poziomie zakresu (global, per-provider, per-account, per-combo).
+Gdy do zakresu przypisano wiele proxy, Orbit używa **strategii rotacji**, by wybrać, którego użyć na każde żądanie. Strategia jest konfigurowana na poziomie zakresu (global, per-provider, per-account, per-combo).
 
 ### Dostępne strategie
 
@@ -775,7 +775,7 @@ evenly)
 ### Konfiguracja strategii rotacji
 
 ```ts
-import { rotateOneproxyProxy } from "shiguang-gateway/oneproxyRotator";
+import { rotateOneproxyProxy } from "orbit/oneproxyRotator";
 
 // In a one-off script
 const proxy = await rotateOneproxyProxy({ strategy: "quality" });
@@ -789,7 +789,7 @@ if (proxy) {
 Przy strategii `sequential` wewnętrzny indeks narasta. Aby zresetować:
 
 ```ts
-import { resetSequentialIndex } from "shiguang-gateway/oneproxyRotator";
+import { resetSequentialIndex } from "orbit/oneproxyRotator";
 
 resetSequentialIndex();
 ```
@@ -805,7 +805,7 @@ Przydatne gdy:
 Gdy proxy systematycznie pada, oznacz je ręcznie, by rotator je pomijał:
 
 ```ts
-import { failOneproxyProxy } from "shiguang-gateway/oneproxyRotator";
+import { failOneproxyProxy } from "orbit/oneproxyRotator";
 
 const removed = await failOneproxyProxy("203.0.113.7", 8080);
 if (removed) {

@@ -38,7 +38,7 @@ import {
   type LocalSyncedEndpointRoute,
 } from "@orbit/core/edge/synced-endpoint-routing";
 import { runWithProxyContext } from "@orbit/inference/utils/proxyFetch";
-import { attachShiguangGatewayMetaHeaders } from "@orbit/core/edge/gateway-response-meta";
+import { attachOrbitMetaHeaders } from "@orbit/core/edge/gateway-response-meta";
 import { calculateModalCost } from "@orbit/core/pricing/cost-calculator";
 import { generateRequestId } from "@orbit/core/runtime/request-id";
 import { getSpecialtyModelsResponse } from "@orbit/inference/catalog/specialty";
@@ -374,7 +374,7 @@ async function postHandler(request: Request, _context?: unknown) {
     );
     const costUsd = await calculateModalCost("image", provider, body.model, { n });
     const headers = new Headers({ "Content-Type": "application/json" });
-    attachShiguangGatewayMetaHeaders(headers, {
+    attachOrbitMetaHeaders(headers, {
       provider,
       model: body.model,
       costUsd,

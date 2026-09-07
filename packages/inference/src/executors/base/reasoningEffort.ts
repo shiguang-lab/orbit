@@ -119,7 +119,7 @@ function withNvidiaGlm52TemplateKwargs(
 }
 
 /**
- * Map ShiguangGateway's reasoning-effort inputs onto the binary thinking switch exposed by
+ * Map Orbit's reasoning-effort inputs onto the binary thinking switch exposed by
  * NVIDIA's hosted GLM-5.2 chat template. This runs before DefaultExecutor's unsupported
  * parameter stripping so a nested `reasoning.effort` is not discarded first, and is also
  * reused by the final provider sanitizer for non-default execution paths.
@@ -156,7 +156,7 @@ export function supportsMaxEffortForProvider(provider: string, model: string): b
     supportsClaudeMaxEffort(resolvedModelId);
   // opencode-go proxies DeepSeek with the native DeepSeek API contract, which
   // accepts {high, max} literally. Without this opt-in, max would be
-  // normalized to xhigh (the ShiguangGateway-internal top tier) and rejected by the
+  // normalized to xhigh (the Orbit-internal top tier) and rejected by the
   // upstream. Scoped to opencode-go deliberately: OpenRouter's DeepSeek path
   // (pi#4055) is the documented inverse and expects xhigh, not max.
   // Ollama Cloud also accepts literal max (for example GLM 5.2 supports
@@ -168,14 +168,14 @@ export function supportsMaxEffortForProvider(provider: string, model: string): b
   const isOllamaCloud = provider === "ollama-cloud";
   const isMoonshotK3 = /^kimi-k3(?:$|-)/i.test(resolvedModelId);
   // Command Code's upstream API accepts the literal DeepSeek/OpenAI effort value
-  // `max`; do not rewrite it to ShiguangGateway's internal `xhigh` spelling.
+  // `max`; do not rewrite it to Orbit's internal `xhigh` spelling.
   const isCommandCode = provider === "command-code";
   return isClaude || isOpencodeGoDeepSeek || isOllamaCloud || isMoonshotK3 || isCommandCode;
 }
 
 // ── Effort carrier helpers (#7044) ──────────────────────────────────────────
-// ShiguangGateway carries the requested effort on up to three shapes:
-//   1. top-level `reasoning_effort`        — OpenAI / ShiguangGateway-internal
+// Orbit carries the requested effort on up to three shapes:
+//   1. top-level `reasoning_effort`        — OpenAI / Orbit-internal
 //   2. `reasoning.effort`                  — OpenAI Responses shape
 //   3. `output_config.effort`              — Anthropic Messages native (Claude Code / Claude passthrough)
 // Carrier (3) was previously invisible to this sanitizer, so a native Claude request
@@ -297,7 +297,7 @@ export function sanitizeReasoningEffortForProvider(
 
   // Command Code accepts the literal top-tier value `max`, while the shared
   // standardization stage may have already represented the client's `max` as
-  // ShiguangGateway's internal `xhigh`. Convert it back before the upstream request.
+  // Orbit's internal `xhigh`. Convert it back before the upstream request.
   if (provider === "command-code" && effortStr === "xhigh") {
     log?.info?.(
       "REASONING_SANITIZE",
@@ -320,7 +320,7 @@ export function sanitizeReasoningEffortForProvider(
 
   // Native DeepSeek (api.deepseek.com) — V4 Pro and Flash use the native
   // {low, high, max} vocabulary, while other model ids retain the {high, max}
-  // floor. ShiguangGateway's internal top tier xhigh maps to DeepSeek's literal max,
+  // floor. Orbit's internal top tier xhigh maps to DeepSeek's literal max,
   // while compatibility-only medium maps to high. `none` is already the OpenAI
   // no-thinking carrier and passes through unchanged.
   if (provider === "deepseek") {
@@ -399,7 +399,7 @@ export function sanitizeReasoningEffortForProvider(
   const supportsMax = supportsMaxEffortForProvider(provider, modelStr);
 
   // ── xhigh handling ──────────────────────────────────────────────────────
-  // xhigh is ShiguangGateway-internal. Map it to the best effort the model accepts.
+  // xhigh is Orbit-internal. Map it to the best effort the model accepts.
   if (effortStr === "xhigh") {
     if (supportsXHigh) return body; // model accepts xhigh natively
     if (supportsMax) {

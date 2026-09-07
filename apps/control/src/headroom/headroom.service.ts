@@ -37,7 +37,7 @@ export class HeadroomService {
       if (!isLoopbackHeadroomUrl(url)) {
         return createErrorResponse({
           status: 400,
-          message: "External Headroom proxies must be started outside ShiguangGateway",
+          message: "External Headroom proxies must be started outside Orbit",
           type: "invalid_request",
         });
       }

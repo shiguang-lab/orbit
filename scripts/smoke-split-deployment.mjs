@@ -9,18 +9,18 @@ import { spawn, spawnSync } from "node:child_process";
 import net from "node:net";
 
 const repoRoot = new URL("../", import.meta.url).pathname.replace(/\/$/, "");
-const dataDir = await mkdtemp(join(tmpdir(), "shiguangGateway-split-smoke-"));
+const dataDir = await mkdtemp(join(tmpdir(), "orbit-split-smoke-"));
 const baseEnv = {
   ...process.env,
   NODE_ENV: "production",
   JWT_SECRET: "split-smoke-jwt-secret-1234567890",
   API_KEY_SECRET: "split-smoke-api-secret-1234567890",
   STORAGE_ENCRYPTION_KEY: "split-smoke-storage-secret-1234567890",
-  SHIGUANG_GATEWAY_WORKER_COMMAND_TOKEN: "split-smoke-worker-command-token",
+  ORBIT_WORKER_COMMAND_TOKEN: "split-smoke-worker-command-token",
   DATA_DIR: dataDir,
   SQLITE_FILE: join(dataDir, "storage.sqlite"),
-  SHIGUANG_GATEWAY_ENABLE_LIVE_WS: "false",
-  SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN: "split-smoke-internal-service-token",
+  ORBIT_ENABLE_LIVE_WS: "false",
+  ORBIT_INTERNAL_SERVICE_TOKEN: "split-smoke-internal-service-token",
   LOG_LEVEL: "silent",
 };
 const services = [
@@ -60,22 +60,22 @@ function start(service) {
     env.EDGE_GATEWAY_HOST = "127.0.0.1";
     // Deliberately enable the legacy flag on an isolated port: edge must not
     // start a dashboard listener after realtime owns that responsibility.
-    env.SHIGUANG_GATEWAY_ENABLE_LIVE_WS = "true";
+    env.ORBIT_ENABLE_LIVE_WS = "true";
     env.LIVE_WS_PORT = "18991";
   } else if (service.name === "control") {
     env.CONTROL_API_PORT = String(service.port);
     env.CONTROL_API_HOST = "127.0.0.1";
     env.EDGE_GATEWAY_URL = "http://127.0.0.1:18887";
-    env.SHIGUANG_GATEWAY_WORKER_COMMAND_URL = "http://127.0.0.1:18891";
+    env.ORBIT_WORKER_COMMAND_URL = "http://127.0.0.1:18891";
   } else if (service.name === "worker") {
     env.WORKER_COMMAND_HOST = "127.0.0.1";
     env.WORKER_COMMAND_PORT = String(service.port);
-    env.SHIGUANG_GATEWAY_BASE_URL = "http://127.0.0.1:18887";
+    env.ORBIT_BASE_URL = "http://127.0.0.1:18887";
     env.INTERNAL_BASE_URL = "http://127.0.0.1:18887";
   } else {
     env.REALTIME_PORT = String(service.port);
     env.REALTIME_HOST = "127.0.0.1";
-    env.SHIGUANG_GATEWAY_ENABLE_LIVE_WS = "true";
+    env.ORBIT_ENABLE_LIVE_WS = "true";
     env.LIVE_WS_PORT = "18890";
     env.LIVE_WS_HOST = "127.0.0.1";
   }
@@ -159,7 +159,7 @@ try {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      "x-shiguang-worker-command-token": baseEnv.SHIGUANG_GATEWAY_WORKER_COMMAND_TOKEN,
+      "x-orbit-worker-command-token": baseEnv.ORBIT_WORKER_COMMAND_TOKEN,
     },
     body: JSON.stringify({ version: 1, command: "run-now", jobId: "missing-split-smoke-job" }),
   });
@@ -171,7 +171,7 @@ try {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      "x-shiguang-gateway-internal-service-token": baseEnv.SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN,
+      "x-orbit-internal-service-token": baseEnv.ORBIT_INTERNAL_SERVICE_TOKEN,
     },
     body: JSON.stringify({ version: 1, command: "ngrok.status" }),
   });

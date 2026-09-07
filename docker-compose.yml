@@ -1,16 +1,16 @@
 services:
-  shiguang-gateway-console:
-    image: ${SHIGUANG_GATEWAY_CONSOLE_IMAGE:-orbit-console:local}
+  orbit-console:
+    image: ${ORBIT_CONSOLE_IMAGE:-orbit-console:local}
     build: { context: ., target: console }
-    container_name: shiguang-gateway-console
+    container_name: orbit-console
     restart: unless-stopped
     ports:
-      - "${SHIGUANG_GATEWAY_CONSOLE_PORT:-8787}:8080"
+      - "${ORBIT_CONSOLE_PORT:-8787}:8080"
     networks: [gateway-infra]
     depends_on:
-      shiguang-gateway-control:
+      orbit-control:
         condition: service_healthy
-      shiguang-gateway-realtime:
+      orbit-realtime:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/healthz"]
@@ -18,10 +18,10 @@ services:
       timeout: 5s
       retries: 3
 
-  shiguang-gateway-gateway:
-    image: ${SHIGUANG_GATEWAY_GATEWAY_IMAGE:-orbit-gateway:local}
+  orbit-gateway:
+    image: ${ORBIT_GATEWAY_IMAGE:-orbit-gateway:local}
     build: { context: ., target: gateway }
-    container_name: shiguang-gateway-gateway
+    container_name: orbit-gateway
     restart: unless-stopped
     init: true
     environment: &gateway-env
@@ -32,31 +32,31 @@ services:
       JWT_SECRET: ${JWT_SECRET:?Set a stable JWT_SECRET}
       API_KEY_SECRET: ${API_KEY_SECRET:?Set a stable API_KEY_SECRET}
       REQUIRE_API_KEY: ${REQUIRE_API_KEY:-true}
-      SHIGUANG_GATEWAY_WORKER_COMMAND_TOKEN: ${SHIGUANG_GATEWAY_WORKER_COMMAND_TOKEN:-}
-      SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN: ${SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN:?Set a shared internal service token}
-      SHIGUANG_GATEWAY_REALTIME_EVENT_URL: http://shiguang-gateway-realtime:20132/__shiguangGateway_event
+      ORBIT_WORKER_COMMAND_TOKEN: ${ORBIT_WORKER_COMMAND_TOKEN:-}
+      ORBIT_INTERNAL_SERVICE_TOKEN: ${ORBIT_INTERNAL_SERVICE_TOKEN:?Set a shared internal service token}
+      ORBIT_REALTIME_EVENT_URL: http://orbit-realtime:20132/__orbit_event
       # Required for decrypting imported provider credentials. Never rotate this
       # value implicitly after migration; use the documented key-rotation flow.
       STORAGE_ENCRYPTION_KEY: ${STORAGE_ENCRYPTION_KEY:?Set a stable STORAGE_ENCRYPTION_KEY}
       PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://127.0.0.1:8787}
-      INTERNAL_BASE_URL: ${INTERNAL_BASE_URL:-http://shiguang-gateway-gateway:8787}
-      SHIGUANG_GATEWAY_BASE_URL: ${SHIGUANG_GATEWAY_BASE_URL:-http://shiguang-gateway-gateway:8787}
+      INTERNAL_BASE_URL: ${INTERNAL_BASE_URL:-http://orbit-gateway:8787}
+      ORBIT_BASE_URL: ${ORBIT_BASE_URL:-http://orbit-gateway:8787}
       EDGE_GATEWAY_HOST: 0.0.0.0
       EDGE_GATEWAY_PORT: 8787
-      SHIGUANG_GATEWAY_ENABLE_LIVE_WS: "false"
+      ORBIT_ENABLE_LIVE_WS: "false"
       LOG_LEVEL: ${LOG_LEVEL:-info}
       CLI_QODER_BIN: ${CLI_QODER_BIN:-qodercli}
       SG_AUTH_ORIGIN: ${SG_AUTH_ORIGIN:-https://shiguanglab.com}
       SG_IDENTITY_ISSUER: ${SG_IDENTITY_ISSUER:-https://shiguanglab.com}
-      SG_IDENTITY_AUDIENCE: ${SG_IDENTITY_AUDIENCE:-shiguang-gateway-api}
-      SG_IDENTITY_ENTITLEMENT: ${SG_IDENTITY_ENTITLEMENT:-shiguang-gateway:access}
+      SG_IDENTITY_AUDIENCE: ${SG_IDENTITY_AUDIENCE:-orbit-api}
+      SG_IDENTITY_ENTITLEMENT: ${SG_IDENTITY_ENTITLEMENT:-orbit:access}
       SG_IDENTITY_JWKS_URL: ${SG_IDENTITY_JWKS_URL:-https://shiguanglab.com/.well-known/sg-identity-jwks.json}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
       QUOTA_STORE_REDIS_URL: ${QUOTA_STORE_REDIS_URL:-redis://redis:6379}
       QUOTA_STORE_DRIVER: ${QUOTA_STORE_DRIVER:-redis}
     volumes:
-      - shiguang-gateway_data:/app/data
-      - shiguang-gateway_home:/home/node
+      - orbit_data:/app/data
+      - orbit_home:/home/node
     networks: [gateway-infra]
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8787/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
@@ -65,10 +65,10 @@ services:
       retries: 3
       start_period: 30s
 
-  shiguang-gateway-control:
-    image: ${SHIGUANG_GATEWAY_CONTROL_IMAGE:-orbit-control:local}
+  orbit-control:
+    image: ${ORBIT_CONTROL_IMAGE:-orbit-control:local}
     build: { context: ., target: control }
-    container_name: shiguang-gateway-control
+    container_name: orbit-control
     restart: unless-stopped
     init: true
     environment:
@@ -76,43 +76,43 @@ services:
       APP_NAME: control
       CONTROL_API_HOST: 0.0.0.0
       CONTROL_API_PORT: 8788
-      EDGE_GATEWAY_URL: http://shiguang-gateway-gateway:8787
-      INTERNAL_BASE_URL: ${INTERNAL_BASE_URL:-http://shiguang-gateway-control:8788}
-      SHIGUANG_GATEWAY_WORKER_COMMAND_URL: ${SHIGUANG_GATEWAY_WORKER_COMMAND_URL:-http://shiguang-gateway-worker:8791}
+      EDGE_GATEWAY_URL: http://orbit-gateway:8787
+      INTERNAL_BASE_URL: ${INTERNAL_BASE_URL:-http://orbit-control:8788}
+      ORBIT_WORKER_COMMAND_URL: ${ORBIT_WORKER_COMMAND_URL:-http://orbit-worker:8791}
     volumes:
-      - shiguang-gateway_data:/app/data
-      - shiguang-gateway_home:/home/node
+      - orbit_data:/app/data
+      - orbit_home:/home/node
     networks: [gateway-infra]
     depends_on:
-      shiguang-gateway-gateway:
+      orbit-gateway:
         condition: service_healthy
 
-  shiguang-gateway-realtime:
-    image: ${SHIGUANG_GATEWAY_REALTIME_IMAGE:-orbit-realtime:local}
+  orbit-realtime:
+    image: ${ORBIT_REALTIME_IMAGE:-orbit-realtime:local}
     build: { context: ., target: realtime }
-    container_name: shiguang-gateway-realtime
+    container_name: orbit-realtime
     restart: unless-stopped
     init: true
     environment:
       <<: *gateway-env
       APP_NAME: realtime
-      SHIGUANG_GATEWAY_ENABLE_LIVE_WS: "true"
+      ORBIT_ENABLE_LIVE_WS: "true"
       REALTIME_HOST: 0.0.0.0
       REALTIME_PORT: 8790
       LIVE_WS_HOST: 0.0.0.0
       LIVE_WS_PORT: 20132
     volumes:
-      - shiguang-gateway_data:/app/data
-      - shiguang-gateway_home:/home/node
+      - orbit_data:/app/data
+      - orbit_home:/home/node
     networks: [gateway-infra]
     depends_on:
-      shiguang-gateway-gateway:
+      orbit-gateway:
         condition: service_healthy
 
-  shiguang-gateway-worker:
-    image: ${SHIGUANG_GATEWAY_WORKER_IMAGE:-orbit-worker:local}
+  orbit-worker:
+    image: ${ORBIT_WORKER_IMAGE:-orbit-worker:local}
     build: { context: ., target: worker }
-    container_name: shiguang-gateway-worker
+    container_name: orbit-worker
     restart: unless-stopped
     init: true
     environment:
@@ -121,33 +121,33 @@ services:
       WORKER_COMMAND_HOST: 0.0.0.0
       WORKER_COMMAND_PORT: 8791
     volumes:
-      - shiguang-gateway_data:/app/data
-      - shiguang-gateway_home:/home/node
+      - orbit_data:/app/data
+      - orbit_home:/home/node
     networks: [gateway-infra]
     depends_on:
-      shiguang-gateway-gateway:
+      orbit-gateway:
         condition: service_healthy
 
-  shiguang-gateway-importer:
-    image: ${SHIGUANG_GATEWAY_IMPORTER_IMAGE:-orbit-importer:local}
+  orbit-importer:
+    image: ${ORBIT_IMPORTER_IMAGE:-orbit-importer:local}
     build: { context: ., target: importer }
-    container_name: shiguang-gateway-importer
+    container_name: orbit-importer
     profiles: [migration]
     entrypoint: ["node", "apps/importer/dist/main.js"]
     command: ["--source-data-dir", "/source", "--target-data-dir", "/app/data", "--replace", "--source-home-dir", "/source-home", "--target-home-dir", "/home/node"]
     environment:
       NODE_ENV: production
     volumes:
-      - shiguang-gateway_data:/app/data
-      - shiguang-gateway_home:/home/node
-      - ${SHIGUANG_GATEWAY_SOURCE_DATA_DIR:-./source-data}:/source:ro
-      - ${SHIGUANG_GATEWAY_SOURCE_HOME_DIR:-./source-home}:/source-home:ro
+      - orbit_data:/app/data
+      - orbit_home:/home/node
+      - ${ORBIT_SOURCE_DATA_DIR:-./source-data}:/source:ro
+      - ${ORBIT_SOURCE_HOME_DIR:-./source-home}:/source-home:ro
 
 volumes:
-  shiguang-gateway_data:
-  shiguang-gateway_home:
+  orbit_data:
+  orbit_home:
 
 networks:
   gateway-infra:
-    name: shiguang-gateway-infra
+    name: orbit-infra
     external: true

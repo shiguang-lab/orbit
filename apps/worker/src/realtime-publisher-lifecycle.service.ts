@@ -9,7 +9,7 @@ export class RealtimePublisherLifecycleService implements OnModuleInit, OnApplic
 
   onModuleInit(): void {
     this.publisher = startRealtimePublisher({
-      url: process.env.SHIGUANG_GATEWAY_REALTIME_EVENT_URL,
+      url: process.env.ORBIT_REALTIME_EVENT_URL,
       subscribe: onAny,
       headers: getInternalServiceAuthHeaders,
       onError: (error) => console.warn("[realtime-publisher] delivery failed:", error instanceof Error ? error.message : String(error)),

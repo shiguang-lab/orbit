@@ -76,7 +76,7 @@ function maskSensitiveHeaders(headers: HeaderInput): Record<string, unknown> {
     "storage-state",
     "storagestate",
     "capability",
-    "x-shiguangGateway-lease-owner",
+    "x-orbit-lease-owner",
   ];
 
   for (const key of Object.keys(masked)) {
@@ -85,7 +85,7 @@ function maskSensitiveHeaders(headers: HeaderInput): Record<string, unknown> {
     if (lowerKey.startsWith("x-ratelimit-")) {
       continue;
     }
-    if (lowerKey === "x-shiguangGateway-lease-owner") {
+    if (lowerKey === "x-orbit-lease-owner") {
       masked[key] = "[REDACTED]";
       continue;
     }
@@ -112,8 +112,8 @@ function createEmptyStreamChunks() {
   };
 }
 
-const TRUNCATED_ARRAY_MARKER = "_shiguangGateway_truncated_array";
-const TRUNCATED_KEYS_MARKER = "_shiguangGateway_truncated_keys";
+const TRUNCATED_ARRAY_MARKER = "_orbit_truncated_array";
+const TRUNCATED_KEYS_MARKER = "_orbit_truncated_keys";
 
 function isTruncatedArrayMarker(value: unknown): boolean {
   return (

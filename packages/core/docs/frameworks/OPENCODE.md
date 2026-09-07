@@ -7,11 +7,11 @@ lastUpdated: 2027-07-27
 # OpenCode Integration
 
 > **Status:** Generally available.
-> **Audience:** Operators wiring OpenCode to an ShiguangGateway deployment.
+> **Audience:** Operators wiring OpenCode to an Orbit deployment.
 > **Source of truth (config schema):** `src/shared/services/opencodeConfig.ts`
 > **Source of truth (npm package):** `@orbit/opencode-provider/` (publishable workspace)
 
-[OpenCode](https://opencode.ai) is an agentic CLI/desktop AI client. It reads its provider catalog from `~/.config/opencode/opencode.json` (or `opencode.jsonc`) and follows the schema at `https://opencode.ai/config.json`. ShiguangGateway exposes itself to OpenCode as one of those providers — every request flows through ShiguangGateway's standard OpenAI-compatible `/v1` surface, so OpenCode automatically benefits from Auto-Combo routing, circuit breakers, key policies, observability, etc.
+[OpenCode](https://opencode.ai) is an agentic CLI/desktop AI client. It reads its provider catalog from `~/.config/opencode/opencode.json` (or `opencode.jsonc`) and follows the schema at `https://opencode.ai/config.json`. Orbit exposes itself to OpenCode as one of those providers — every request flows through Orbit's standard OpenAI-compatible `/v1` surface, so OpenCode automatically benefits from Auto-Combo routing, circuit breakers, key policies, observability, etc.
 
 There are **two supported integration paths**. Pick one — they generate the same config.
 
@@ -19,16 +19,16 @@ There are **two supported integration paths**. Pick one — they generate the sa
 
 ## Path 1 — CLI generator (no npm install)
 
-Recommended for end users. Ships with ShiguangGateway. Writes `opencode.json` in place.
+Recommended for end users. Ships with Orbit. Writes `opencode.json` in place.
 
 ```bash
-# After installing ShiguangGateway (npm i -g @orbit/cli or local clone)
-shiguang-gateway config opencode \
+# After installing Orbit (npm i -g @orbit/cli or local clone)
+orbit config opencode \
   --base-url http://localhost:20128 \
-  --api-key "$SHIGUANG_GATEWAY_API_KEY"
+  --api-key "$ORBIT_API_KEY"
 ```
 
-Behind the scenes the CLI calls `mergeOpenCodeConfigText()` (`src/shared/services/opencodeConfig.ts:104`), so an existing `opencode.json` keeps its other providers and comments. The ShiguangGateway entry is added/replaced atomically.
+Behind the scenes the CLI calls `mergeOpenCodeConfigText()` (`src/shared/services/opencodeConfig.ts:104`), so an existing `opencode.json` keeps its other providers and comments. The Orbit entry is added/replaced atomically.
 
 Resulting file (default model catalog):
 
@@ -36,9 +36,9 @@ Resulting file (default model catalog):
 {
   "$schema": "https://opencode.ai/config.json",
   "provider": {
-    "shiguang-gateway": {
+    "orbit": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "ShiguangGateway",
+      "name": "Orbit",
       "options": {
         "baseURL": "http://localhost:20128/v1",
         "apiKey": "<your-key>",
@@ -66,11 +66,11 @@ npm install --save-dev @orbit/opencode-provider
 
 ```ts
 import { writeFileSync } from "node:fs";
-import { buildShiguangGatewayOpenCodeConfig } from "@orbit/opencode-provider";
+import { buildOrbitOpenCodeConfig } from "@orbit/opencode-provider";
 
-const config = buildShiguangGatewayOpenCodeConfig({
+const config = buildOrbitOpenCodeConfig({
   baseURL: "http://localhost:20128",
-  apiKey: process.env.SHIGUANG_GATEWAY_API_KEY ?? "sk_shiguang-gateway",
+  apiKey: process.env.ORBIT_API_KEY ?? "sk_orbit",
   // Optional: override the model catalog exposed to OpenCode
   models: ["auto", "claude-opus-4-7", "gpt-5.5"],
   modelLabels: { auto: "Auto-Combo" },
@@ -87,13 +87,13 @@ See the [package README](../../@orbit/opencode-provider/README.md) for the full 
 
 ## What the runtime actually does
 
-Both paths produce the same `provider.shiguang-gateway.npm: "@ai-sdk/openai-compatible"`. At runtime, OpenCode loads `@ai-sdk/openai-compatible` (already a transitive dependency of OpenCode) and configures it with `baseURL` + `apiKey`. From there:
+Both paths produce the same `provider.orbit.npm: "@ai-sdk/openai-compatible"`. At runtime, OpenCode loads `@ai-sdk/openai-compatible` (already a transitive dependency of OpenCode) and configures it with `baseURL` + `apiKey`. From there:
 
 ```
 OpenCode UI/agent
    → @ai-sdk/openai-compatible
-      → HTTP POST {baseURL}/chat/completions          (ShiguangGateway OpenAI surface)
-         → ShiguangGateway /v1/chat/completions handler     (open-sse/handlers/chatCore.ts)
+      → HTTP POST {baseURL}/chat/completions          (Orbit OpenAI surface)
+         → Orbit /v1/chat/completions handler     (open-sse/handlers/chatCore.ts)
             → combo routing / Auto-Combo / executor
                → upstream provider
 ```
@@ -105,7 +105,7 @@ The plugin never touches HTTP. It only emits configuration.
 ## Model catalog defaults
 
 ```ts
-export const SHIGUANG_GATEWAY_DEFAULT_OPENCODE_MODELS = [
+export const ORBIT_DEFAULT_OPENCODE_MODELS = [
   "claude-opus-4-5-thinking",
   "claude-sonnet-4-5-thinking",
   "gemini-3.1-pro-high",
@@ -115,8 +115,8 @@ export const SHIGUANG_GATEWAY_DEFAULT_OPENCODE_MODELS = [
 
 You can override via `models: [...]`. Recommended additions:
 
-- `"auto"` — surfaces ShiguangGateway's [Auto-Combo](../routing/AUTO-COMBO.md) zero-config router. Lets OpenCode pick "the best available model" without you hard-coding the catalog.
-- `"<combo-name>"` — any combo you've defined in the dashboard; ShiguangGateway resolves it transparently.
+- `"auto"` — surfaces Orbit's [Auto-Combo](../routing/AUTO-COMBO.md) zero-config router. Lets OpenCode pick "the best available model" without you hard-coding the catalog.
+- `"<combo-name>"` — any combo you've defined in the dashboard; Orbit resolves it transparently.
 
 ---
 
@@ -131,18 +131,18 @@ The helper accepts both forms and emits exactly one `/v1`:
 | `http://localhost:20128/v1`    | `http://localhost:20128/v1` |
 | `http://localhost:20128/v1///` | `http://localhost:20128/v1` |
 
-This deduplication is **the most common breakage** seen in older configs. If you have an `opencode.json` from before v3.8.0 that points at `/v1/v1/...`, re-run the generator or call `createShiguangGatewayProvider` again.
+This deduplication is **the most common breakage** seen in older configs. If you have an `opencode.json` from before v3.8.0 that points at `/v1/v1/...`, re-run the generator or call `createOrbitProvider` again.
 
 ---
 
 ## Authentication modes
 
-| ShiguangGateway setting                           | Recommended `apiKey` value                         |
+| Orbit setting                           | Recommended `apiKey` value                         |
 | ------------------------------------------- | -------------------------------------------------- |
-| `REQUIRE_API_KEY=false` (default for local) | `sk_shiguang-gateway` (literal placeholder)               |
+| `REQUIRE_API_KEY=false` (default for local) | `sk_orbit` (literal placeholder)               |
 | `REQUIRE_API_KEY=true`                      | A real per-user API key from Dashboard → API Keys. |
 
-For Anthropic-style clients that send `x-api-key` + `anthropic-version`, ShiguangGateway's `extractApiKey` also honours the key from `x-api-key`. OpenCode uses the OpenAI surface, so it'll always send `Authorization: Bearer ${apiKey}` — no Anthropic special-case applies here.
+For Anthropic-style clients that send `x-api-key` + `anthropic-version`, Orbit's `extractApiKey` also honours the key from `x-api-key`. OpenCode uses the OpenAI surface, so it'll always send `Authorization: Bearer ${apiKey}` — no Anthropic special-case applies here.
 
 ---
 
@@ -151,15 +151,15 @@ For Anthropic-style clients that send `x-api-key` + `anthropic-version`, Shiguan
 | Symptom                                              | Cause                                                               | Fix                                                                                                  |
 | ---------------------------------------------------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | `404` on every request with URL containing `/v1/v1/` | Stale config from pre-v3.8 plugin that double-suffixed `/v1`.       | Regenerate via Path 1 or 2.                                                                          |
-| `401 Invalid API key`                                | ShiguangGateway has `REQUIRE_API_KEY=true` and the key is unknown.        | Create the key in the dashboard, or set `REQUIRE_API_KEY=false` (local only) and use `sk_shiguang-gateway`. |
-| Model list empty in OpenCode UI                      | All 4 default models are hidden in ShiguangGateway's provider visibility. | Pass `models: ["auto", ...]` to surface ones you've enabled.                                         |
+| `401 Invalid API key`                                | Orbit has `REQUIRE_API_KEY=true` and the key is unknown.        | Create the key in the dashboard, or set `REQUIRE_API_KEY=false` (local only) and use `sk_orbit`. |
+| Model list empty in OpenCode UI                      | All 4 default models are hidden in Orbit's provider visibility. | Pass `models: ["auto", ...]` to surface ones you've enabled.                                         |
 | OpenCode 500 with `cannot read property 'models'`    | Older OpenCode (< 0.1.x) didn't accept inline `models`.             | Upgrade OpenCode to a version that follows the v1 schema (`opencode.ai/config.json`).                |
 
 ---
 
 ## See also
 
-- [API reference](../reference/API_REFERENCE.md) — full ShiguangGateway REST surface
+- [API reference](../reference/API_REFERENCE.md) — full Orbit REST surface
 - [Auto-Combo](../routing/AUTO-COMBO.md) — what `model: "auto"` means
 - [`@orbit/opencode-provider` README](../../@orbit/opencode-provider/README.md)
 - Source: `src/shared/services/opencodeConfig.ts`, `src/lib/cli-helper/config-generator/opencode.ts`, `@orbit/opencode-provider/src/index.ts`

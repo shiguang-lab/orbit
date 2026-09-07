@@ -6,7 +6,7 @@ lastUpdated: 2026-07-20
 
 # Dostawcy Web Cookie
 
-Dostawcy Web Cookie pozwalają ShiguangGateway korzystać z usługi AI przez istniejącą sesję przeglądarki zamiast klucza API. Są przydatne, gdy masz już dostęp do usługi przez stronę internetową i chcesz, aby ShiguangGateway używał tej samej uwierzytelnionej sesji.
+Dostawcy Web Cookie pozwalają Orbit korzystać z usługi AI przez istniejącą sesję przeglądarki zamiast klucza API. Są przydatne, gdy masz już dostęp do usługi przez stronę internetową i chcesz, aby Orbit używał tej samej uwierzytelnionej sesji.
 
 W przeciwieństwie do dostawców z kluczem API, dostawcy Web Cookie uwierzytelniają się za pomocą poświadczeń, które przeglądarka wysyła do witryny.
 
@@ -51,7 +51,7 @@ DevTools
 
 Nagłówek żądania `Cookie` zawiera dokładne informacje uwierzytelniające, których przeglądarka skutecznie użyła.
 
-Dla większości dostawców Web Cookie właśnie tę wartość należy wkleić do ShiguangGateway.
+Dla większości dostawców Web Cookie właśnie tę wartość należy wkleić do Orbit.
 
 ---
 
@@ -65,7 +65,7 @@ Proces konfiguracji jest taki sam dla większości dostawców Web Cookie.
 4. Odśwież stronę.
 5. Otwórz uwierzytelnione żądanie czatu lub rozmowy.
 6. Skopiuj wymagane poświadczenia uwierzytelniające.
-7. Otwórz ShiguangGateway.
+7. Otwórz Orbit.
 8. Przejdź do **Providers → Add Provider**.
 9. Wybierz dostawcę Web Cookie.
 10. Wklej poświadczenia.
@@ -149,7 +149,7 @@ Application
 
 ---
 
-## Ciasteczko działa w przeglądarce, ale nie w ShiguangGateway
+## Ciasteczko działa w przeglądarce, ale nie w Orbit
 
 Niektórzy dostawcy dołączają ciasteczka wysyłane tylko podczas uwierzytelnionych żądań.
 

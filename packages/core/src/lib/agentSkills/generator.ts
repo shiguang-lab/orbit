@@ -135,7 +135,7 @@ function buildApiBody(skill: AgentSkill, sources: BuildSources): string {
           lines.push(`curl ${curlMethod}${curlBase}${op.path} \\`);
           lines.push("  -b cookie.jar \\");
           const hasJsonBody = ["POST", "PUT", "PATCH"].includes(op.method);
-          lines.push(`  -H "x-shiguangGateway-csrf: $CSRF_TOKEN"${hasJsonBody ? " \\" : ""}`);
+          lines.push(`  -H "x-orbit-csrf: $CSRF_TOKEN"${hasJsonBody ? " \\" : ""}`);
           if (hasJsonBody) {
             lines.push('  -H "Content-Type: application/json" \\');
             lines.push("  -d '{}'");
@@ -145,7 +145,7 @@ function buildApiBody(skill: AgentSkill, sources: BuildSources): string {
         const curlMethod = op.method === "GET" ? "" : `-X ${op.method} `;
         const hasJsonBody = ["POST", "PUT", "PATCH"].includes(op.method);
         lines.push(`curl ${curlMethod}${curlBase}${op.path} \\`);
-        lines.push(`  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"${hasJsonBody ? " \\" : ""}`);
+        lines.push(`  -H "Authorization: Bearer $ORBIT_TOKEN"${hasJsonBody ? " \\" : ""}`);
         if (hasJsonBody) {
           lines.push('  -H "Content-Type: application/json" \\');
           lines.push("  -d '{}'");
@@ -178,8 +178,8 @@ function buildCliBody(skill: AgentSkill, sources: BuildSources): string {
 
   lines.push("## Quick install\n");
   lines.push("```bash");
-  lines.push("npm install -g shiguangGateway   # or: npx shiguangGateway");
-  lines.push("shiguangGateway --version");
+  lines.push("npm install -g orbit   # or: npx orbit");
+  lines.push("orbit --version");
   lines.push("```");
   lines.push("");
 
@@ -206,7 +206,7 @@ function buildCliBody(skill: AgentSkill, sources: BuildSources): string {
 
       lines.push("**Example:**\n");
       lines.push("```bash");
-      lines.push(`shiguangGateway ${cmd.name}`);
+      lines.push(`orbit ${cmd.name}`);
       lines.push("```");
       lines.push("");
     }

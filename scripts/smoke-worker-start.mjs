@@ -54,7 +54,7 @@ export async function stopProcessGroup({ child, closed }, {
 }
 
 async function main() {
-  const dataDir = await mkdtemp(join(tmpdir(), "shiguangGateway-worker-smoke-"));
+  const dataDir = await mkdtemp(join(tmpdir(), "orbit-worker-smoke-"));
   const baseEnv = {
     ...process.env,
     NODE_ENV: "production",
@@ -67,13 +67,13 @@ async function main() {
     EDGE_GATEWAY_PORT: "18897",
     WORKER_COMMAND_HOST: "127.0.0.1",
     WORKER_COMMAND_PORT: "18898",
-    SHIGUANG_GATEWAY_BASE_URL: "http://127.0.0.1:18897",
+    ORBIT_BASE_URL: "http://127.0.0.1:18897",
     INTERNAL_BASE_URL: "http://127.0.0.1:18897",
     // Exercise the real scheduler start paths. The empty test database contains
     // no provider credentials, so no upstream request can be issued.
-    SHIGUANG_GATEWAY_DISABLE_BACKGROUND_SERVICES: "0",
-    SHIGUANG_GATEWAY_ENABLE_RUNTIME_BACKGROUND_TASKS: "1",
-    SHIGUANG_GATEWAY_ENABLE_LIVE_WS: "false",
+    ORBIT_DISABLE_BACKGROUND_SERVICES: "0",
+    ORBIT_ENABLE_RUNTIME_BACKGROUND_TASKS: "1",
+    ORBIT_ENABLE_LIVE_WS: "false",
     LOG_LEVEL: "silent",
   };
   const children = [];
@@ -149,7 +149,7 @@ async function main() {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        "x-shiguang-worker-command-token": baseEnv.JWT_SECRET,
+        "x-orbit-worker-command-token": baseEnv.JWT_SECRET,
       },
       body: JSON.stringify({ version: 1, command: "run-now", jobId: "missing" }),
     });

@@ -24,7 +24,7 @@ export function fingerprintCatalogAuthKey(apiKey: string): string {
   if (!apiKey) return "";
   // Memo-map cache key fingerprint, not a password/credential hash — keyed with a fixed
   // context label so it reads as a domain-separated digest rather than a bare password hash.
-  return createHmac("sha256", "shiguangGateway-catalog-cache-fingerprint-v1")
+  return createHmac("sha256", "orbit-catalog-cache-fingerprint-v1")
     .update(apiKey)
     .digest("hex")
     .slice(0, 16);

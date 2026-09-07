@@ -19,7 +19,7 @@ const getSettingsPath = () => path.join(getLettaDir(), "settings.json");
 const getLocalBackendDir = () => path.join(getLettaDir(), "lc-local-backend");
 const getProviderAuthPath = () => path.join(getLocalBackendDir(), "providers", "auth.json");
 const getBackupPath = () =>
-  path.join(getLocalBackendDir(), "providers", "auth.json.shiguangGateway-backup");
+  path.join(getLocalBackendDir(), "providers", "auth.json.orbit-backup");
 
 // ── Provider name in auth.json ─────────────────────────────────────────
 // "lmstudio" provider type has localModelDiscovery: "openai-compatible"
@@ -87,18 +87,18 @@ const readAuthFile = async () => {
   }
 };
 
-// ── Check if a base_url points to ShiguangGateway ──────────────────────────────
-const isShiguangGatewayUrl = (baseUrl: unknown) => {
+// ── Check if a base_url points to Orbit ──────────────────────────────
+const isOrbitUrl = (baseUrl: unknown) => {
   if (typeof baseUrl !== "string") return false;
   const independentPort = process.env.EDGE_GATEWAY_PORT || process.env.PORT || "8787";
-  return baseUrl.includes(`:${independentPort}`) || baseUrl.includes(":3000") || baseUrl.includes("shiguangGateway");
+  return baseUrl.includes(`:${independentPort}`) || baseUrl.includes(":3000") || baseUrl.includes("orbit");
 };
 
-// ── Check if ShiguangGateway is configured ─────────────────────────────────────
-const hasShiguangGatewayConfig = (authFile: LettaAuthFile) => {
+// ── Check if Orbit is configured ─────────────────────────────────────
+const hasOrbitConfig = (authFile: LettaAuthFile) => {
   const provider = authFile.providers[PROVIDER_NAME];
   if (!provider) return false;
-  return isShiguangGatewayUrl(provider.base_url);
+  return isOrbitUrl(provider.base_url);
 };
 
 // ── GET - Check Letta CLI and read current settings ────────────────────
@@ -120,16 +120,16 @@ export async function GET(request: Request) {
     const authFile = await readAuthFile();
     const provider = authFile?.providers?.[PROVIDER_NAME];
 
-    // Detect if lmstudio is already configured for a non-ShiguangGateway endpoint
+    // Detect if lmstudio is already configured for a non-Orbit endpoint
     let lmstudioConflict = false;
-    if (provider && !isShiguangGatewayUrl(provider.base_url)) {
+    if (provider && !isOrbitUrl(provider.base_url)) {
       lmstudioConflict = true;
     }
 
     return Response.json({
       installed: true,
       config: authFile,
-      hasShiguangGateway: hasShiguangGatewayConfig(authFile),
+      hasOrbit: hasOrbitConfig(authFile),
       lmstudioConflict,
       configPath: getProviderAuthPath(),
       letta: {
@@ -145,11 +145,11 @@ export async function GET(request: Request) {
   }
 }
 
-// ── POST - Apply ShiguangGateway as LM Studio provider + switch to local mode ──
+// ── POST - Apply Orbit as LM Studio provider + switch to local mode ──
 /**
  * Steps 1-2 of POST: read the existing Letta auth.json, refuse to clobber a real
  * LM Studio configuration unless `overwrite` is set (409 with conflict info), and back
- * up a non-ShiguangGateway provider before it is overwritten. Extracted to keep POST under
+ * up a non-Orbit provider before it is overwritten. Extracted to keep POST under
  * the complexity gate.
  */
 async function prepareLettaAuthFile(
@@ -171,7 +171,7 @@ async function prepareLettaAuthFile(
   }
 
   const existingProvider = authFile.providers?.[PROVIDER_NAME];
-  if (existingProvider && !isShiguangGatewayUrl(existingProvider.base_url) && !overwrite) {
+  if (existingProvider && !isOrbitUrl(existingProvider.base_url) && !overwrite) {
     // User has lmstudio configured for actual LM Studio — refuse to overwrite
     return {
       conflictResponse: Response.json(
@@ -186,7 +186,7 @@ async function prepareLettaAuthFile(
   }
 
   // Back up existing lmstudio provider before overwriting
-  if (existingProvider && !isShiguangGatewayUrl(existingProvider.base_url)) {
+  if (existingProvider && !isOrbitUrl(existingProvider.base_url)) {
     const backupPath = getBackupPath();
     await fs.writeFile(backupPath, JSON.stringify(existingProvider, null, 2));
   }
@@ -213,7 +213,7 @@ export async function POST(request: Request) {
 
     const normalizedBaseUrl = baseUrl.endsWith("/v1") ? baseUrl : `${baseUrl}/v1`;
 
-    // ── 1-2. Read auth.json, guard non-ShiguangGateway conflicts, back up before overwrite ──
+    // ── 1-2. Read auth.json, guard non-Orbit conflicts, back up before overwrite ──
     const prepared = await prepareLettaAuthFile(overwrite);
     if ("conflictResponse" in prepared) {
       return prepared.conflictResponse;
@@ -237,9 +237,9 @@ export async function POST(request: Request) {
     await fs.writeFile(settingsPath, JSON.stringify(settings, null, 2));
 
     // ── 4. Write lmstudio provider to auth.json ──
-    // Clean up legacy lc-shiguangGateway provider if present
-    if (authFile.providers?.["lc-shiguangGateway"]) {
-      delete authFile.providers["lc-shiguangGateway"];
+    // Clean up legacy lc-orbit provider if present
+    if (authFile.providers?.["lc-orbit"]) {
+      delete authFile.providers["lc-orbit"];
     }
 
     // Create or update lmstudio provider
@@ -258,7 +258,7 @@ export async function POST(request: Request) {
 
     return Response.json({
       success: true,
-      message: "Settings applied. Restart Letta CLI, then use /model to select a ShiguangGateway model.",
+      message: "Settings applied. Restart Letta CLI, then use /model to select a Orbit model.",
       needsRestart: true,
     });
   } catch (error) {
@@ -269,7 +269,7 @@ export async function POST(request: Request) {
   }
 }
 
-// ── DELETE - Remove ShiguangGateway configuration ──────────────────────────────
+// ── DELETE - Remove Orbit configuration ──────────────────────────────
 export async function DELETE(request: Request) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
@@ -304,9 +304,9 @@ export async function DELETE(request: Request) {
       changed = true;
     }
 
-    // Clean up legacy lc-shiguangGateway provider if present
-    if (authFile.providers?.["lc-shiguangGateway"]) {
-      delete authFile.providers["lc-shiguangGateway"];
+    // Clean up legacy lc-orbit provider if present
+    if (authFile.providers?.["lc-orbit"]) {
+      delete authFile.providers["lc-orbit"];
       changed = true;
     }
 
@@ -328,8 +328,8 @@ export async function DELETE(request: Request) {
     }
 
     const message = restored
-      ? "ShiguangGateway config removed. Your original LM Studio provider has been restored. Restart Letta CLI to take effect."
-      : "ShiguangGateway config removed. Restart Letta CLI to take effect.";
+      ? "Orbit config removed. Your original LM Studio provider has been restored. Restart Letta CLI to take effect."
+      : "Orbit config removed. Restart Letta CLI to take effect.";
 
     return Response.json({
       success: true,

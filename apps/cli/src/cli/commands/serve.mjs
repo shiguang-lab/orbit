@@ -39,7 +39,7 @@ export async function runServe(opts = {}, deps = {}) {
   console.log("Starting split runtime: edge, control, realtime, worker...");
   const children = await startSplitServices(plan, { daemon: opts.daemon === true }, deps);
   const [edge, control, realtime, worker] = plan;
-  console.log("\x1b[32m✔ ShiguangGateway split runtime is healthy\x1b[0m");
+  console.log("\x1b[32m✔ Orbit split runtime is healthy\x1b[0m");
   console.log(`  Edge/API:       http://localhost:${edge.health.port}/v1`);
   console.log(`  Control API:    http://localhost:${control.health.port}`);
   console.log(`  Realtime:       http://localhost:${realtime.health.port}`);

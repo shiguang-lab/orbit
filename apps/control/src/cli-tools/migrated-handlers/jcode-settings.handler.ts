@@ -24,11 +24,11 @@ const TOOL_ID = "jcode";
  * wrote a ~/.jcode/config.json that jcode never reads). Reference:
  * https://github.com/1jehuang/jcode#openai-compatible-providers
  *
- * The ShiguangGateway-managed profile is kept inside a marker-delimited block so
+ * The Orbit-managed profile is kept inside a marker-delimited block so
  * apply/reset round-trips without disturbing the rest of the user's config.
  */
-const MANAGED_BEGIN = "# >>> managed by ShiguangGateway (jcode provider profile) >>>";
-const MANAGED_END = "# <<< managed by ShiguangGateway <<<";
+const MANAGED_BEGIN = "# >>> managed by Orbit (jcode provider profile) >>>";
+const MANAGED_END = "# <<< managed by Orbit <<<";
 
 const getJcodeConfigPath = (): string =>
   getCliPrimaryConfigPath(TOOL_ID) ?? path.join(process.env.HOME ?? "~", ".jcode", "config.toml");
@@ -38,7 +38,7 @@ const getJcodeDir = () => path.dirname(getJcodeConfigPath());
 const tomlString = (value: string): string => JSON.stringify(String(value));
 
 /**
- * Render the managed `[providers.shiguangGateway]` block. The API key is stored
+ * Render the managed `[providers.orbit]` block. The API key is stored
  * inline via jcode's `api_key` field; `requires_api_key = false` keeps a
  * keyless local gateway working.
  */
@@ -46,7 +46,7 @@ function renderManagedBlock(baseUrl: string, apiKey: string, model: string): str
   const normalizedBaseUrl = baseUrl.endsWith("/v1") ? baseUrl : `${baseUrl}/v1`;
   const lines = [
     MANAGED_BEGIN,
-    "[providers.shiguangGateway]",
+    "[providers.orbit]",
     'type = "openai-compatible"',
     `base_url = ${tomlString(normalizedBaseUrl)}`,
   ];
@@ -55,7 +55,7 @@ function renderManagedBlock(baseUrl: string, apiKey: string, model: string): str
   return lines.join("\n");
 }
 
-const hasShiguangGatewayConfig = (content: string | null): boolean =>
+const hasOrbitConfig = (content: string | null): boolean =>
   Boolean(content && content.includes(MANAGED_BEGIN));
 
 /** Strip the managed block (including surrounding blank padding) from config text. */
@@ -113,7 +113,7 @@ export async function GET(request: Request) {
       runtimeMode: runtime.runtimeMode,
       reason: runtime.reason,
       config,
-      hasShiguangGateway: hasShiguangGatewayConfig(config),
+      hasOrbit: hasOrbitConfig(config),
       configPath: getJcodeConfigPath(),
     });
   } catch (err) {
@@ -121,7 +121,7 @@ export async function GET(request: Request) {
   }
 }
 
-// POST — write the ShiguangGateway provider profile into jcode's config.toml
+// POST — write the Orbit provider profile into jcode's config.toml
 export async function POST(request: Request) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
@@ -167,18 +167,18 @@ export async function POST(request: Request) {
     }
 
     // Refuse to double-define the table if the user hand-wrote a
-    // [providers.shiguangGateway] profile outside our managed block — duplicate
+    // [providers.orbit] profile outside our managed block — duplicate
     // TOML tables would make the whole config unparseable for jcode.
     const unmanaged = stripManagedBlock(existing);
     try {
       if (unmanaged.trim()) {
         const parsed = parseToml(unmanaged) as { providers?: Record<string, unknown> };
-        if (parsed.providers && Object.hasOwn(parsed.providers, "shiguangGateway")) {
+        if (parsed.providers && Object.hasOwn(parsed.providers, "orbit")) {
           return Response.json(
             {
               error: {
                 message:
-                  "config.toml already defines [providers.shiguangGateway] outside the ShiguangGateway-managed block; remove it or manage it manually",
+                  "config.toml already defines [providers.orbit] outside the Orbit-managed block; remove it or manage it manually",
               },
             },
             { status: 409 }
@@ -190,7 +190,7 @@ export async function POST(request: Request) {
         {
           error: {
             message:
-              "existing ~/.jcode/config.toml is not valid TOML; fix it before applying ShiguangGateway settings",
+              "existing ~/.jcode/config.toml is not valid TOML; fix it before applying Orbit settings",
           },
         },
         { status: 409 }
@@ -213,7 +213,7 @@ export async function POST(request: Request) {
     return Response.json({
       success: true,
       message:
-        "jcode settings applied! Start jcode with `jcode --provider-profile shiguangGateway` or pick the profile with /model.",
+        "jcode settings applied! Start jcode with `jcode --provider-profile orbit` or pick the profile with /model.",
       configPath,
     });
   } catch (err) {
@@ -221,7 +221,7 @@ export async function POST(request: Request) {
   }
 }
 
-// DELETE — remove the ShiguangGateway-managed block from jcode's config.toml
+// DELETE — remove the Orbit-managed block from jcode's config.toml
 export async function DELETE(request: Request) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
@@ -262,7 +262,7 @@ export async function DELETE(request: Request) {
       /* non-critical */
     }
 
-    return Response.json({ success: true, message: "jcode ShiguangGateway settings removed" });
+    return Response.json({ success: true, message: "jcode Orbit settings removed" });
   } catch (err) {
     return Response.json({ error: { message: sanitizeErrorMessage(err) } }, { status: 500 });
   }

@@ -6,7 +6,7 @@
  *   → auth-service 签发 RS256 断言(typ=sg-identity+jwt) → 注入 X-SG-Identity 头
  *   → 产品后端(Gateway) 用共享 JWKS 校验签名 + iss/aud/exp/entitlement
  *
- * Gateway 用 audience=shiguang-gateway-api、entitlement=shiguang-gateway:access(可环境变量覆盖)。
+ * Gateway 用 audience=orbit-api、entitlement=orbit:access(可环境变量覆盖)。
  */
 import {
   createPublicKey,

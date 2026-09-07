@@ -1,8 +1,8 @@
 {
   "common": {
     "error": "エラー: {message}",
-    "serverOffline": "ShiguangGatewayサーバーはオフラインです。起動: shiguang-gateway serve",
-    "authRequired": "認証が必要です。SHIGUANG_GATEWAY_API_KEYを設定するか実行してください: shiguang-gateway setup",
+    "serverOffline": "Orbitサーバーはオフラインです。起動: orbit serve",
+    "authRequired": "認証が必要です。ORBIT_API_KEYを設定するか実行してください: orbit setup",
     "rateLimited": "リクエスト制限を超えました。{seconds}秒後に再試行してください。",
     "timeout": "{ms}ms後にリクエストがタイムアウトしました。",
     "success": "完了。",
@@ -15,18 +15,18 @@
     "yesOpt": "確認をスキップ"
   },
   "program": {
-    "description": "ShiguangGateway — 自動フォールバック付きスマートAIルーター",
+    "description": "Orbit — 自動フォールバック付きスマートAIルーター",
     "version": "バージョンを表示して終了",
     "output": "出力形式 (table, json, jsonl, csv)",
     "quiet": "重要でない出力を抑制",
     "no_color": "カラー出力を無効化",
     "timeout": "HTTPリクエストタイムアウト（ミリ秒）",
-    "api_key": "ShiguangGatewayサーバーのAPIキー",
-    "base_url": "ShiguangGatewayサーバーのベースURL",
+    "api_key": "OrbitサーバーのAPIキー",
+    "base_url": "OrbitサーバーのベースURL",
     "context": "このコマンドで使用するサーバーコンテキスト/プロファイル",
-    "lang": "CLI表示言語を設定（SHIGUANG_GATEWAY_LANGを上書き）"
+    "lang": "CLI表示言語を設定（ORBIT_LANGを上書き）"
   },
   "redis": {
-    "description": "ShiguangGatewayのキャッシュとクォータ追跡用に、ローカルRedisコンテナー（PodmanまたはDocker）をワンクリックで起動"
+    "description": "Orbitのキャッシュとクォータ追跡用に、ローカルRedisコンテナー（PodmanまたはDocker）をワンクリックで起動"
   }
 }

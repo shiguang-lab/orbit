@@ -21,7 +21,7 @@ async function probeEndpoint(url: string): Promise<{ accessible: boolean; status
   try {
     const response = await fetch(url, {
       method: "GET",
-      headers: { "User-Agent": "ShiguangGateway-Discovery/1.0" },
+      headers: { "User-Agent": "Orbit-Discovery/1.0" },
     });
     return { accessible: response.ok, status: response.status };
   } catch {
@@ -34,7 +34,7 @@ function configuredEndpoints(providerId: string, config: Partial<DiscoveryConfig
     providerId
   ];
   if (Array.isArray(configured)) return configured.filter((value): value is string => typeof value === "string");
-  const raw = process.env.SHIGUANG_GATEWAY_DISCOVERY_ENDPOINTS_JSON;
+  const raw = process.env.ORBIT_DISCOVERY_ENDPOINTS_JSON;
   if (!raw) return [];
   try {
     const values = (JSON.parse(raw) as Record<string, unknown>)[providerId];

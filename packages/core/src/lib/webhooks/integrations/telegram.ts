@@ -57,7 +57,7 @@ export function buildTelegramPayload(
   if (latencyMs !== null) lines.push(`Latency: \`${latencyMs}ms\``);
   if (fallbackCount !== null) lines.push(`Fallbacks: \`${fallbackCount}\``);
   if (error) lines.push(`Error: \`${error}\``);
-  lines.push(`_ShiguangGateway · ${new Date().toISOString()}_`);
+  lines.push(`_Orbit · ${new Date().toISOString()}_`);
 
   return {
     chat_id: chatId,

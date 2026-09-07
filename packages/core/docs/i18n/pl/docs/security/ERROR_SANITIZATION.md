@@ -152,7 +152,7 @@ Reguły sanityzacji stosowane do `upstreamDetails`:
 4. Tablice są ograniczane do 32 elementów.
 
 Tylko siedem miejsc wywołania `createErrorResult` dla błędów upstream w `chatCore.ts` przekazuje
-`upstreamErrorBody`. Wewnętrzne błędy ShiguangGateway (awarie parsowania SSE, pusta treść,
+`upstreamErrorBody`. Wewnętrzne błędy Orbit (awarie parsowania SSE, pusta treść,
 bloki guardrail) nie dołączają `upstream_details`.
 
 NIE przekazuj surowego `err.stack`, `err.message` ani żadnego stringa z wyjątku runtime do

@@ -3,7 +3,7 @@
  *
  * Host: `opencode.ai` (Zen endpoint family).
  * Format: OpenAI-compatible Chat Completions — `body.model` is rewritten to
- * the mapped target and the request is forwarded to the ShiguangGateway router.
+ * the mapped target and the request is forwarded to the Orbit router.
  */
 import type { IncomingMessage, ServerResponse } from "node:http";
 import type { AgentId } from "../types";
@@ -30,7 +30,7 @@ export class OpenCodeHandler extends MitmHandlerBase {
 
       if (!upstream.ok) {
         const errText = await upstream.text().catch(() => "");
-        throw new Error(`ShiguangGateway ${upstream.status}: ${errText}`);
+        throw new Error(`Orbit ${upstream.status}: ${errText}`);
       }
 
       let collected = "";

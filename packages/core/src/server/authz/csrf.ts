@@ -4,7 +4,7 @@ import { DASHBOARD_CSRF_HEADER } from "../../shared/constants/dashboardCsrf.ts";
 
 const TOKEN_VERSION = "v1";
 const TOKEN_TTL_SECONDS = 10 * 60;
-const TOKEN_CONTEXT = "shiguangGateway-dashboard-csrf-v1";
+const TOKEN_CONTEXT = "orbit-dashboard-csrf-v1";
 
 export interface DashboardCsrfToken {
   token: string;

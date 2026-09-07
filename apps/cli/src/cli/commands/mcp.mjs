@@ -120,7 +120,7 @@ async function mcpJsonRpcCall(tool, args, { stream = false, globalOpts = {} } = 
       params: {
         protocolVersion: "2024-11-05",
         capabilities: {},
-        clientInfo: { name: "shiguangGateway-cli", version: "1.0" },
+        clientInfo: { name: "orbit-cli", version: "1.0" },
       },
     }),
   });

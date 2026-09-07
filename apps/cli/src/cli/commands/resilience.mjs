@@ -167,7 +167,7 @@ export function registerResilience(program) {
       ])
     )
     .action(async (name, opts, cmd) => {
-      await mcpCallTool("shiguangGateway_set_resilience_profile", { profile: name });
+      await mcpCallTool("orbit_set_resilience_profile", { profile: name });
       process.stdout.write(`Profile: ${name}\n`);
     });
 

@@ -38,9 +38,9 @@ test("split plan maps CLI ports and internal service URLs", () => {
     ["worker", 19004],
   ]);
   assert.equal(plan[1].env.EDGE_GATEWAY_URL, "http://127.0.0.1:19001");
-  assert.equal(plan[1].env.SHIGUANG_GATEWAY_WORKER_COMMAND_URL, "http://127.0.0.1:19004");
+  assert.equal(plan[1].env.ORBIT_WORKER_COMMAND_URL, "http://127.0.0.1:19004");
   assert.equal(plan[2].env.LIVE_WS_PORT, "19005");
-  assert.equal(plan[3].env.SHIGUANG_GATEWAY_BASE_URL, "http://127.0.0.1:19001");
+  assert.equal(plan[3].env.ORBIT_BASE_URL, "http://127.0.0.1:19001");
 });
 
 test("service spawn invokes the app-local tsx entrypoint", () => {

@@ -1,5 +1,5 @@
 import { getProviderAlias } from "@orbit/providers/catalog";
-import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "@orbit/contracts/gateway-headers";
+import { ORBIT_RESPONSE_HEADERS } from "@orbit/contracts/gateway-headers";
 import { APP_CONFIG } from "../shared/constants/appConfig.ts";
 
 type UsageLike = Record<string, unknown> | null | undefined;
@@ -51,7 +51,7 @@ function toHeaderValue(value: string): string {
   return encodeURIComponent(toWellFormedUnicode(withoutControls));
 }
 
-export function getShiguangGatewayTokenCounts(usage: UsageLike): { input: number; output: number } {
+export function getOrbitTokenCounts(usage: UsageLike): { input: number; output: number } {
   if (!usage || typeof usage !== "object") {
     return { input: 0, output: 0 };
   }
@@ -74,24 +74,24 @@ export function getShiguangGatewayTokenCounts(usage: UsageLike): { input: number
   };
 }
 
-export function formatShiguangGatewayCost(costUsd: unknown): string {
+export function formatOrbitCost(costUsd: unknown): string {
   const normalized = toFiniteNumber(costUsd);
   return normalized > 0 ? normalized.toFixed(10) : "0.0000000000";
 }
 
 /**
- * Build the `X-ShiguangGateway-Decision` composite header value: `strategy=<name>;
+ * Build the `X-Orbit-Decision` composite header value: `strategy=<name>;
  * provider=<alias>; latency_ms=<n>`. Returns `null` when both `strategy` and
  * `provider` are absent/blank (mirrors the per-field guard pattern used for the
  * other optional headers). Reuses `getProviderAlias()` for the provider segment
- * (same alias normalization the `X-ShiguangGateway-Provider` header already applies)
+ * (same alias normalization the `X-Orbit-Provider` header already applies)
  * and `toNonNegativeInteger()` for latency. The whole formatted string is passed
  * through `toHeaderValue()` before returning, so a strategy/provider id
  * containing control chars cannot corrupt the header line (Hard Rule #12 — this
  * header only ever carries a routing strategy name, the already-public provider
  * alias, and a latency integer; never an error message, stack trace, or secret).
  */
-export function buildShiguangGatewayDecisionHeaderValue({
+export function buildOrbitDecisionHeaderValue({
   strategy = null,
   provider = null,
   latencyMs = 0,
@@ -112,7 +112,7 @@ export function buildShiguangGatewayDecisionHeaderValue({
   return toHeaderValue(parts.join("; "));
 }
 
-export function buildShiguangGatewayResponseMetaHeaders({
+export function buildOrbitResponseMetaHeaders({
   cacheHit = false,
   costUsd = 0,
   costSavedUsd = undefined,
@@ -130,7 +130,7 @@ export function buildShiguangGatewayResponseMetaHeaders({
    * Cost the cache AVOIDED. A semantic-cache HIT serves at ≈0 incremental cost
    * (`costUsd: 0`) but saved the original call's cost — surface it here so billing
    * consumers don't charge for hits while analytics can still see what was saved.
-   * Emitted as `X-ShiguangGateway-Cost-Saved` only when provided (omitted on normal
+   * Emitted as `X-Orbit-Cost-Saved` only when provided (omitted on normal
    * responses); pass `0` to explicitly mark a free-model HIT that saved nothing.
    */
   costSavedUsd?: unknown;
@@ -141,58 +141,58 @@ export function buildShiguangGatewayResponseMetaHeaders({
   requestId?: string | null;
   /**
    * Routing decision (combo strategy name, or `"single"` for a non-combo
-   * request) surfaced via `X-ShiguangGateway-Decision`. See #6022.
+   * request) surfaced via `X-Orbit-Decision`. See #6022.
    */
   strategy?: string | null;
   usage?: UsageLike;
 }): Record<string, string> {
-  const tokens = getShiguangGatewayTokenCounts(usage);
+  const tokens = getOrbitTokenCounts(usage);
   const headers: Record<string, string> = {
-    [SHIGUANG_GATEWAY_RESPONSE_HEADERS.cacheHit]: toHeaderValue(String(cacheHit)),
-    [SHIGUANG_GATEWAY_RESPONSE_HEADERS.latencyMs]: toHeaderValue(String(toNonNegativeInteger(latencyMs))),
-    [SHIGUANG_GATEWAY_RESPONSE_HEADERS.responseCost]: toHeaderValue(formatShiguangGatewayCost(costUsd)),
-    [SHIGUANG_GATEWAY_RESPONSE_HEADERS.tokensIn]: toHeaderValue(String(tokens.input)),
-    [SHIGUANG_GATEWAY_RESPONSE_HEADERS.tokensOut]: toHeaderValue(String(tokens.output)),
-    [SHIGUANG_GATEWAY_RESPONSE_HEADERS.version]: toHeaderValue(APP_CONFIG.version),
+    [ORBIT_RESPONSE_HEADERS.cacheHit]: toHeaderValue(String(cacheHit)),
+    [ORBIT_RESPONSE_HEADERS.latencyMs]: toHeaderValue(String(toNonNegativeInteger(latencyMs))),
+    [ORBIT_RESPONSE_HEADERS.responseCost]: toHeaderValue(formatOrbitCost(costUsd)),
+    [ORBIT_RESPONSE_HEADERS.tokensIn]: toHeaderValue(String(tokens.input)),
+    [ORBIT_RESPONSE_HEADERS.tokensOut]: toHeaderValue(String(tokens.output)),
+    [ORBIT_RESPONSE_HEADERS.version]: toHeaderValue(APP_CONFIG.version),
   };
 
   if (typeof model === "string" && model.trim().length > 0) {
-    headers[SHIGUANG_GATEWAY_RESPONSE_HEADERS.model] = toHeaderValue(model);
+    headers[ORBIT_RESPONSE_HEADERS.model] = toHeaderValue(model);
   }
 
   if (typeof requestId === "string" && requestId.trim().length > 0) {
-    headers[SHIGUANG_GATEWAY_RESPONSE_HEADERS.requestId] = toHeaderValue(requestId);
+    headers[ORBIT_RESPONSE_HEADERS.requestId] = toHeaderValue(requestId);
   }
 
   if (typeof provider === "string" && provider.trim().length > 0) {
-    headers[SHIGUANG_GATEWAY_RESPONSE_HEADERS.provider] = toHeaderValue(getProviderAlias(provider));
+    headers[ORBIT_RESPONSE_HEADERS.provider] = toHeaderValue(getProviderAlias(provider));
   }
 
   // Cache-saved cost: emitted only when the caller passes a value (cache HITs), so
   // non-cache responses keep their existing header shape. `0` is a valid saved cost.
   if (costSavedUsd != null) {
-    headers[SHIGUANG_GATEWAY_RESPONSE_HEADERS.costSaved] = toHeaderValue(
-      formatShiguangGatewayCost(costSavedUsd)
+    headers[ORBIT_RESPONSE_HEADERS.costSaved] = toHeaderValue(
+      formatOrbitCost(costSavedUsd)
     );
   }
 
   const attempts = toNonNegativeInteger(fallbackAttempts);
   if (attempts > 0) {
-    headers[SHIGUANG_GATEWAY_RESPONSE_HEADERS.fallbackAttempts] = toHeaderValue(String(attempts));
+    headers[ORBIT_RESPONSE_HEADERS.fallbackAttempts] = toHeaderValue(String(attempts));
   }
 
-  const decisionValue = buildShiguangGatewayDecisionHeaderValue({ strategy, provider, latencyMs });
+  const decisionValue = buildOrbitDecisionHeaderValue({ strategy, provider, latencyMs });
   if (decisionValue !== null) {
-    headers[SHIGUANG_GATEWAY_RESPONSE_HEADERS.decision] = decisionValue;
+    headers[ORBIT_RESPONSE_HEADERS.decision] = decisionValue;
   }
 
   return headers;
 }
 
-export function buildShiguangGatewaySseMetadataComment(
-  options: Parameters<typeof buildShiguangGatewayResponseMetaHeaders>[0]
+export function buildOrbitSseMetadataComment(
+  options: Parameters<typeof buildOrbitResponseMetaHeaders>[0]
 ): string {
-  const headers = buildShiguangGatewayResponseMetaHeaders(options);
+  const headers = buildOrbitResponseMetaHeaders(options);
   const lines = Object.entries(headers)
     .filter(([, value]) => typeof value === "string" && value.trim().length > 0)
     .map(([name, value]) => `: ${name.toLowerCase()}=${value}`);
@@ -201,15 +201,15 @@ export function buildShiguangGatewaySseMetadataComment(
 }
 
 /**
- * Single choke-point for attaching the X-ShiguangGateway-* response meta headers.
+ * Single choke-point for attaching the X-Orbit-* response meta headers.
  * Mutates `headers` in place (accepts a Headers instance OR a plain Record).
  * Use at EVERY non-streaming success return so no route forgets the telemetry.
  */
-export function attachShiguangGatewayMetaHeaders(
+export function attachOrbitMetaHeaders(
   headers: Headers | Record<string, string>,
-  meta: Parameters<typeof buildShiguangGatewayResponseMetaHeaders>[0]
+  meta: Parameters<typeof buildOrbitResponseMetaHeaders>[0]
 ): void {
-  const built = buildShiguangGatewayResponseMetaHeaders(meta);
+  const built = buildOrbitResponseMetaHeaders(meta);
   if (headers instanceof Headers) {
     for (const [name, value] of Object.entries(built)) headers.set(name, value);
   } else {
@@ -218,21 +218,21 @@ export function attachShiguangGatewayMetaHeaders(
 }
 
 /**
- * Attach the X-ShiguangGateway-* meta headers onto an already-built Response, ADDING
+ * Attach the X-Orbit-* meta headers onto an already-built Response, ADDING
  * (never replacing) headers so the original Content-Type / body stay intact.
  * Tries to mutate in place; if the Response headers are immutable, clones the
  * Response carrying over body + status + headers (mirrors
  * `chatHelpers.ts::withSessionHeader`). Use for opaque handler-built Responses
  * (audio streams, passthrough proxies) where the body cannot be re-serialized.
  */
-export function attachShiguangGatewayMetaToResponse(
+export function attachOrbitMetaToResponse(
   response: Response,
-  meta: Parameters<typeof buildShiguangGatewayResponseMetaHeaders>[0]
+  meta: Parameters<typeof buildOrbitResponseMetaHeaders>[0]
 ): Response {
   if (!response) return response;
 
   try {
-    attachShiguangGatewayMetaHeaders(response.headers, meta);
+    attachOrbitMetaHeaders(response.headers, meta);
     return response;
   } catch {
     const cloned = new Response(response.body, {
@@ -240,7 +240,7 @@ export function attachShiguangGatewayMetaToResponse(
       statusText: response.statusText,
       headers: response.headers,
     });
-    attachShiguangGatewayMetaHeaders(cloned.headers, meta);
+    attachOrbitMetaHeaders(cloned.headers, meta);
     return cloned;
   }
 }

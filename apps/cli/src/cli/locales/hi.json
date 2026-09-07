@@ -1,8 +1,8 @@
 {
   "common": {
     "error": "त्रुटि: {message}",
-    "serverOffline": "ShiguangGateway सर्वर ऑफलाइन है। शुरू करें: shiguang-gateway serve",
-    "authRequired": "प्रमाणीकरण आवश्यक है। SHIGUANG_GATEWAY_API_KEY सेट करें या चलाएं: shiguang-gateway setup",
+    "serverOffline": "Orbit सर्वर ऑफलाइन है। शुरू करें: orbit serve",
+    "authRequired": "प्रमाणीकरण आवश्यक है। ORBIT_API_KEY सेट करें या चलाएं: orbit setup",
     "rateLimited": "अनुरोध सीमा पार हो गई। {seconds}s बाद पुनः प्रयास करें।",
     "timeout": "{ms}ms के बाद अनुरोध समय समाप्त हुआ।",
     "success": "पूर्ण।",
@@ -15,18 +15,18 @@
     "yesOpt": "पुष्टि छोड़ें"
   },
   "program": {
-    "description": "ShiguangGateway — ऑटो फॉलबैक के साथ स्मार्ट AI राउटर",
+    "description": "Orbit — ऑटो फॉलबैक के साथ स्मार्ट AI राउटर",
     "version": "संस्करण प्रिंट करें और बाहर निकलें",
     "output": "आउटपुट प्रारूप (table, json, jsonl, csv)",
     "quiet": "गैर-आवश्यक आउटपुट दबाएं",
     "no_color": "रंगीन आउटपुट अक्षम करें",
     "timeout": "HTTP अनुरोध टाइमआउट मिलीसेकंड में",
-    "api_key": "ShiguangGateway सर्वर के लिए API कुंजी",
-    "base_url": "ShiguangGateway सर्वर का बेस URL",
+    "api_key": "Orbit सर्वर के लिए API कुंजी",
+    "base_url": "Orbit सर्वर का बेस URL",
     "context": "इस कमांड के लिए सर्वर संदर्भ/प्रोफ़ाइल",
-    "lang": "CLI प्रदर्शन भाषा सेट करें (SHIGUANG_GATEWAY_LANG को ओवरराइड करता है)"
+    "lang": "CLI प्रदर्शन भाषा सेट करें (ORBIT_LANG को ओवरराइड करता है)"
   },
   "redis": {
-    "description": "ShiguangGateway कैशिंग और कोटा ट्रैकिंग के लिए एक क्लिक में स्थानीय Redis कंटेनर (Podman या Docker) लॉन्च करें"
+    "description": "Orbit कैशिंग और कोटा ट्रैकिंग के लिए एक क्लिक में स्थानीय Redis कंटेनर (Podman या Docker) लॉन्च करें"
   }
 }

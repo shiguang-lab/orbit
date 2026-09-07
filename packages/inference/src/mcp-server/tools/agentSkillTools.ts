@@ -27,10 +27,10 @@ export const AgentSkillsCoverageSchema = z.object({});
 // ── Tool Definitions ─────────────────────────────────────────────────────────
 
 export const agentSkillTools = {
-  shiguangGateway_agent_skills_list: {
-    name: "shiguangGateway_agent_skills_list",
+  orbit_agent_skills_list: {
+    name: "orbit_agent_skills_list",
     description:
-      "List ShiguangGateway agent skills with optional filtering by category (api/cli/config) or area. Returns skill metadata including id, name, description, endpoints/commands, and URLs.",
+      "List Orbit agent skills with optional filtering by category (api/cli/config) or area. Returns skill metadata including id, name, description, endpoints/commands, and URLs.",
     inputSchema: AgentSkillsListSchema,
     handler: async (args: z.infer<typeof AgentSkillsListSchema>) => {
       const skills: AgentSkill[] =
@@ -59,8 +59,8 @@ export const agentSkillTools = {
     },
   },
 
-  shiguangGateway_agent_skills_get: {
-    name: "shiguangGateway_agent_skills_get",
+  orbit_agent_skills_get: {
+    name: "orbit_agent_skills_get",
     description:
       "Get detailed metadata and SKILL.md markdown for a single agent skill by its canonical ID. Returns all skill fields plus the raw markdown content.",
     inputSchema: AgentSkillsGetSchema,
@@ -79,8 +79,8 @@ export const agentSkillTools = {
     },
   },
 
-  shiguangGateway_agent_skills_coverage: {
-    name: "shiguangGateway_agent_skills_coverage",
+  orbit_agent_skills_coverage: {
+    name: "orbit_agent_skills_coverage",
     description:
       "Returns the current SKILL.md coverage stats: how many of the 23 API, 21 CLI, and 1 config skill have generated SKILL.md files on the filesystem vs the catalog total.",
     inputSchema: AgentSkillsCoverageSchema,

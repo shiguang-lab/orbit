@@ -33,7 +33,7 @@ function probeWindowsBinary(command) {
 }
 
 /** OpenAI/Codex env keys stripped from the child so a stale OpenAI key/base-url
- *  in the shell can't shadow the shiguangGateway provider (defense-in-depth). Mirrors
+ *  in the shell can't shadow the orbit provider (defense-in-depth). Mirrors
  *  free-claude-code's codex adapter. NOTE: this does NOT silence codex's
  *  `refresh_token` log noise — that comes from a stored OpenAI session in
  *  ~/.codex/auth.json, not the env; it is cosmetic and does not block requests. */
@@ -47,7 +47,7 @@ const STRIPPED_CODEX_ENV_KEYS = [
 ];
 
 /** Placeholder so codex's `env_key` is always satisfied when the backend is open. */
-const NO_AUTH_SENTINEL = "shiguangGateway-no-auth";
+const NO_AUTH_SENTINEL = "orbit-no-auth";
 
 // On Windows the `codex` binary is an npm `.cmd` shim that `spawn` cannot resolve
 // without a shell (bare "codex" → ENOENT). Mirror the qodercli Windows fix (#6263):
@@ -78,7 +78,7 @@ export async function resolveCodexSpawn(platform, opts = {}) {
  * DEP0190 warning). That mangles every launch-codex invocation on Windows, not
  * just the ones with a multi-word user argument: the injected `-c` provider
  * flags carry TOML values whose quotes cmd.exe strips
- * (`model_providers.shiguangGateway.name="ShiguangGateway"` arrives unquoted and no longer
+ * (`model_providers.orbit.name="Orbit"` arrives unquoted and no longer
  * parses as TOML). Quote the args ourselves on that path; off Windows there is
  * no shell, so argv is passed through untouched. Same fix as `launch` (#8837).
  *
@@ -104,7 +104,7 @@ function tomlAssign(key, value) {
 }
 
 /**
- * Resolve the ShiguangGateway root base URL + auth for codex, honouring (in order):
+ * Resolve the Orbit root base URL + auth for codex, honouring (in order):
  * explicit flags → active context (remote mode) → localhost:<port>.
  * @returns {{ baseUrl:string, authToken:string|undefined }}
  */
@@ -116,7 +116,7 @@ export function resolveCodexTarget(opts = {}) {
   } else {
     let fromCtx;
     try {
-      fromCtx = resolveActiveContext(opts.context ?? process.env.SHIGUANG_GATEWAY_CONTEXT)?.baseUrl;
+      fromCtx = resolveActiveContext(opts.context ?? process.env.ORBIT_CONTEXT)?.baseUrl;
     } catch {
       /* no context */
     }
@@ -128,17 +128,17 @@ export function resolveCodexTarget(opts = {}) {
   let authToken = opts.apiKey ?? opts["api-key"];
   if (!authToken) {
     try {
-      const ctx = resolveActiveContext(opts.context ?? process.env.SHIGUANG_GATEWAY_CONTEXT);
+      const ctx = resolveActiveContext(opts.context ?? process.env.ORBIT_CONTEXT);
       authToken = ctx?.accessToken || ctx?.apiKey || undefined;
     } catch {
       /* no context auth */
     }
   }
-  if (!authToken) authToken = process.env.SHIGUANG_GATEWAY_API_KEY;
+  if (!authToken) authToken = process.env.ORBIT_API_KEY;
   return { baseUrl, authToken };
 }
 
-/** Health-check an ShiguangGateway root URL before launching Codex. */
+/** Health-check an Orbit root URL before launching Codex. */
 async function healthCheck(baseUrl, timeoutMs = 3000) {
   try {
     const res = await fetch(`${baseUrl}/api/monitoring/health`, {
@@ -152,7 +152,7 @@ async function healthCheck(baseUrl, timeoutMs = 3000) {
 
 /**
  * Build the env for the Codex child: strip stale OpenAI/Codex creds, then set
- * SHIGUANG_GATEWAY_API_KEY (the provider env_key) to the resolved token or a sentinel.
+ * ORBIT_API_KEY (the provider env_key) to the resolved token or a sentinel.
  * @param {Record<string,string>} baseEnv
  * @param {string|undefined} authToken
  * @returns {Record<string,string>}
@@ -160,36 +160,36 @@ async function healthCheck(baseUrl, timeoutMs = 3000) {
 export function buildCodexEnv(baseEnv, authToken) {
   const env = { ...baseEnv };
   for (const key of STRIPPED_CODEX_ENV_KEYS) delete env[key];
-  env.SHIGUANG_GATEWAY_API_KEY = (authToken && String(authToken).trim()) || NO_AUTH_SENTINEL;
+  env.ORBIT_API_KEY = (authToken && String(authToken).trim()) || NO_AUTH_SENTINEL;
   return env;
 }
 
 /**
- * Codex `-c` flags that define the `shiguangGateway` provider inline, so launch works
+ * Codex `-c` flags that define the `orbit` provider inline, so launch works
  * WITHOUT a pre-existing ~/.codex/config.toml. Mirrors free-claude-code.
- * @param {string} baseUrl  ShiguangGateway root URL (no /v1)
+ * @param {string} baseUrl  Orbit root URL (no /v1)
  * @returns {string[]}
  */
 export function buildCodexProviderArgs(baseUrl, model) {
   const args = [
     "-c",
-    tomlAssign("model_provider", "shiguangGateway"),
+    tomlAssign("model_provider", "orbit"),
     "-c",
-    tomlAssign("model_providers.shiguangGateway.name", "ShiguangGateway"),
+    tomlAssign("model_providers.orbit.name", "Orbit"),
     "-c",
-    tomlAssign("model_providers.shiguangGateway.base_url", `${baseUrl}/v1`),
+    tomlAssign("model_providers.orbit.base_url", `${baseUrl}/v1`),
     "-c",
-    tomlAssign("model_providers.shiguangGateway.env_key", "SHIGUANG_GATEWAY_API_KEY"),
+    tomlAssign("model_providers.orbit.env_key", "ORBIT_API_KEY"),
     "-c",
-    tomlAssign("model_providers.shiguangGateway.wire_api", "responses"),
+    tomlAssign("model_providers.orbit.wire_api", "responses"),
     "-c",
-    tomlAssign("model_providers.shiguangGateway.requires_openai_auth", false),
+    tomlAssign("model_providers.orbit.requires_openai_auth", false),
   ];
 
   if (model) {
     const normalized = String(model).trim();
     if (normalized) {
-      args.push("-c", tomlAssign("model_providers.shiguangGateway.model", normalized));
+      args.push("-c", tomlAssign("model_providers.orbit.model", normalized));
     }
   }
 
@@ -208,7 +208,7 @@ export async function runLaunchCodexCommand(opts = {}, codexArgs = []) {
     console.error(
       (
         t("launch.notRunning") ||
-        "ShiguangGateway is not reachable at {port}. Start it with 'shiguangGateway serve'."
+        "Orbit is not reachable at {port}. Start it with 'orbit serve'."
       ).replace("{port}", baseUrl)
     );
     return 1;
@@ -275,18 +275,18 @@ export function registerLaunchCodex(program) {
   program
     .command("launch-codex")
     .description(
-      t("launchCodex.description") || "Launch Codex CLI pointed at ShiguangGateway (local or remote VPS)"
+      t("launchCodex.description") || "Launch Codex CLI pointed at Orbit (local or remote VPS)"
     )
-    .option("--port <port>", "Local ShiguangGateway port (ignored when --remote is set)", "8787")
+    .option("--port <port>", "Local Orbit port (ignored when --remote is set)", "8787")
     .option(
       "--remote <url>",
-      "Remote ShiguangGateway base URL, e.g. http://192.168.0.15:8787 (overrides --port + context)"
+      "Remote Orbit base URL, e.g. http://192.168.0.15:8787 (overrides --port + context)"
     )
     .option("--profile <name>", "Codex profile to activate (passed as --profile <name>)")
     .option("-p, --p <name>", "Alias for --profile")
     .option(
       "--api-key <key>",
-      "ShiguangGateway API key (overrides SHIGUANG_GATEWAY_API_KEY env var for this invocation)"
+      "Orbit API key (overrides ORBIT_API_KEY env var for this invocation)"
     )
     .allowUnknownOption(true)
     .allowExcessArguments(true)

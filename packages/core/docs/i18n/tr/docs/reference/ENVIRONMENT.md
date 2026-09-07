@@ -10,7 +10,7 @@ lastUpdated: 2026-08-23
 
 ---
 
-> ShiguangGateway tarafından tanınan her ortam değişkeni için eksiksiz başvuru kılavuzu.
+> Orbit tarafından tanınan her ortam değişkeni için eksiksiz başvuru kılavuzu.
 > Hızlı başlangıç şablonu için [`.env.example`](../../../../.env.example) dosyasına bakın.
 
 > [!IMPORTANT]
@@ -54,7 +54,7 @@ Bunlar ilk çalıştırmadan önce **mutlaka** ayarlanmalıdır. Bunlar olmadan 
 | `JWT_SECRET`                 | **Evet**             | _(yok)_           | `src/lib/auth`                                     | Tüm pano oturum çerezlerini (JWT) imzalar ve doğrular. `openssl rand -base64 48` ile üretin.                                                                                                        |
 | `API_KEY_SECRET`             | **Evet**             | _(yok)_           | `src/lib/db/apiKeys.ts`                            | SQLite'ta saklanan API anahtarı değerleri için AES şifreleme anahtarı. `openssl rand -hex 32` ile üretin.                                                                                         |
 | `INITIAL_PASSWORD`           | **Evet**             | `CHANGEME`        | Bootstrap betiği                                   | İlk yönetici pano şifresini belirler. **İlk kullanımdan önce değiştirin.**                                                                                                                         |
-| `SHIGUANG_GATEWAY_WS_BRIDGE_SECRET` | **Evet** (üretimde)  | _(ayarlanmamış)_  | `src/app/api/internal/codex-responses-ws/route.ts` | Dahili Codex Responses WebSocket köprüsü için paylaşılan sır. `openssl rand -base64 32` ile üretin.                                                                                                 |
+| `ORBIT_WS_BRIDGE_SECRET` | **Evet** (üretimde)  | _(ayarlanmamış)_  | `src/app/api/internal/codex-responses-ws/route.ts` | Dahili Codex Responses WebSocket köprüsü için paylaşılan sır. `openssl rand -base64 32` ile üretin.                                                                                                 |
 
 ### Üretim Komutları
 
@@ -63,7 +63,7 @@ Bunlar ilk çalıştırmadan önce **mutlaka** ayarlanmalıdır. Bunlar olmadan 
 echo "JWT_SECRET=$(openssl rand -base64 48)"
 echo "API_KEY_SECRET=$(openssl rand -hex 32)"
 echo "INITIAL_PASSWORD=$(openssl rand -base64 16)"
-echo "SHIGUANG_GATEWAY_WS_BRIDGE_SECRET=$(openssl rand -base64 32)"
+echo "ORBIT_WS_BRIDGE_SECRET=$(openssl rand -base64 32)"
 ```
 
 ---
@@ -72,10 +72,10 @@ echo "SHIGUANG_GATEWAY_WS_BRIDGE_SECRET=$(openssl rand -base64 32)"
 
 | Değişken                         | Varsayılan           | Açıklama                                                                                               |
 | -------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------ |
-| `DATA_DIR`                       | `~/.shiguang-gateway/`      | SQLite veritabanı, yedeklemeler ve veri dosyaları için kök dizin. Docker hacimleri için geçersiz kılın. |
+| `DATA_DIR`                       | `~/.orbit/`      | SQLite veritabanı, yedeklemeler ve veri dosyaları için kök dizin. Docker hacimleri için geçersiz kılın. |
 | `STORAGE_ENCRYPTION_KEY`         | _(boş = devre dışı)_ | SQLite veritabanının diskte AES ile şifrelenmesi için anahtar. `openssl rand -hex 32` ile üretin.     |
 | `DISABLE_SQLITE_AUTO_BACKUP`     | `false`              | `true` olduğunda otomatik başlatma ve yazma öncesi yedeklemeleri atlar.                                |
-| `SHIGUANG_GATEWAY_WAL_TRUNCATE_INTERVAL_MS` | `21600000` (6h)  | Periyodik `wal_checkpoint(TRUNCATE)` aralığı (ms).                                                     |
+| `ORBIT_WAL_TRUNCATE_INTERVAL_MS` | `21600000` (6h)  | Periyodik `wal_checkpoint(TRUNCATE)` aralığı (ms).                                                     |
 
 ---
 

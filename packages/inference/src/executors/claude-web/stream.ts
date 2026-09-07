@@ -465,10 +465,10 @@ function responseHeaders(contentType: string, metadata: Record<string, string>):
     "Cache-Control": "no-cache",
   });
   const headerNames: Record<string, string> = {
-    operation: "X-ShiguangGateway-Claude-Web-Operation",
-    conversation_id: "X-ShiguangGateway-Claude-Web-Conversation-Id",
-    parent_message_uuid: "X-ShiguangGateway-Claude-Web-Parent-Message-Uuid",
-    assistant_message_uuid: "X-ShiguangGateway-Claude-Web-Assistant-Message-Uuid",
+    operation: "X-Orbit-Claude-Web-Operation",
+    conversation_id: "X-Orbit-Claude-Web-Conversation-Id",
+    parent_message_uuid: "X-Orbit-Claude-Web-Parent-Message-Uuid",
+    assistant_message_uuid: "X-Orbit-Claude-Web-Assistant-Message-Uuid",
   };
   for (const [key, headerName] of Object.entries(headerNames)) {
     const value = metadata[key];

@@ -17,7 +17,7 @@ const DEFAULT_IDEMPOTENT_METHODS = ["GET", "HEAD", "OPTIONS", "PUT", "DELETE"];
 // from any real failure. Configurable via env so it can be tuned per-deployment without a code
 // change; default raised from 5000ms to 8000ms to give slow-but-healthy providers headroom.
 function resolveProbeTimeoutMs(): number {
-  const parsed = parseInt(process.env.SHIGUANG_GATEWAY_PROVIDER_PROBE_TIMEOUT_MS || "", 10);
+  const parsed = parseInt(process.env.ORBIT_PROVIDER_PROBE_TIMEOUT_MS || "", 10);
   return Number.isFinite(parsed) && parsed >= 1000 ? parsed : 8000;
 }
 const PROVIDER_PROBE_TIMEOUT_MS = resolveProbeTimeoutMs();

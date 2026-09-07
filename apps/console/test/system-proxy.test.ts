@@ -22,7 +22,7 @@ test("system proxy uses the nested API contract for empty, configured, and disab
       if (init?.method === "PUT") {
         const body = JSON.parse(String(init.body));
         assert.deepEqual(Object.keys(body), ["global"]);
-        assert.equal(new Headers(init.headers).get("x-shiguangGateway-csrf"), "test-csrf");
+        assert.equal(new Headers(init.headers).get("x-orbit-csrf"), "test-csrf");
         config = { ...config, global: body.global };
       }
       return Response.json(config);

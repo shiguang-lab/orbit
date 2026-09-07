@@ -44,8 +44,8 @@ export function isAllAccountsRateLimitedResponse(
   return ALL_ACCOUNTS_RATE_LIMITED_PATTERNS.some((p) => p.test(errorText));
 }
 
-// #1731v2 guard: a provider circuit-breaker-open response (503 + `X-ShiguangGateway-Provider-Breaker`
-// header / `provider_circuit_open` error code, see providerCircuitOpenResponse) is an ShiguangGateway
+// #1731v2 guard: a provider circuit-breaker-open response (503 + `X-Orbit-Provider-Breaker`
+// header / `provider_circuit_open` error code, see providerCircuitOpenResponse) is an Orbit
 // resilience signal, NOT a per-connection upstream failure. It must keep being treated as an
 // ordinary target failure (try the next target, including same-provider ones) — so it must NOT
 // poison exhaustedConnections/exhaustedProviders, otherwise remaining same-provider targets get
@@ -54,7 +54,7 @@ export function isProviderCircuitOpenResult(
   result: { headers?: Headers | null; status?: number },
   errorText: string
 ): boolean {
-  const breakerHeader = result.headers?.get?.("x-shiguangGateway-provider-breaker");
+  const breakerHeader = result.headers?.get?.("x-orbit-provider-breaker");
   if (typeof breakerHeader === "string" && breakerHeader.toLowerCase() === "open") return true;
   return /provider_circuit_open/i.test(errorText);
 }

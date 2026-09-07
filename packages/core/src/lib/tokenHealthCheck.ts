@@ -324,7 +324,7 @@ function isEnvFlagEnabled(name: string): boolean {
 
 export function isHealthCheckDisabled(): boolean {
   return (
-    isEnvFlagEnabled("SHIGUANG_GATEWAY_DISABLE_TOKEN_HEALTHCHECK") ||
+    isEnvFlagEnabled("ORBIT_DISABLE_TOKEN_HEALTHCHECK") ||
     isBuildProcess() ||
     isAutomatedTestProcess()
   );
@@ -332,12 +332,12 @@ export function isHealthCheckDisabled(): boolean {
 
 /**
  * Providers excluded from the PROACTIVE sweep, comma-separated, case-insensitive
- * (e.g. "codex,openai"). Targeted alternative to SHIGUANG_GATEWAY_DISABLE_TOKEN_HEALTHCHECK:
+ * (e.g. "codex,openai"). Targeted alternative to ORBIT_DISABLE_TOKEN_HEALTHCHECK:
  * keeps rotating-token cascade providers (Codex/OpenAI share one Auth0 family) on the
  * reactive 401 path WITHOUT starving short-TTL providers (Kimi-coding) sweep-wide.
  */
 function getHealthCheckSkipProviders(): Set<string> {
-  const raw = process.env.SHIGUANG_GATEWAY_HEALTHCHECK_SKIP_PROVIDERS || "";
+  const raw = process.env.ORBIT_HEALTHCHECK_SKIP_PROVIDERS || "";
   return new Set(
     raw
       .split(",")
@@ -354,7 +354,7 @@ const CACHE_TTL = 30_000; // Cache settings for 30 seconds
 
 export async function shouldHideLogs(): Promise<boolean> {
   if (
-    isEnvFlagEnabled("SHIGUANG_GATEWAY_HIDE_HEALTHCHECK_LOGS") ||
+    isEnvFlagEnabled("ORBIT_HIDE_HEALTHCHECK_LOGS") ||
     isBuildProcess() ||
     isAutomatedTestProcess()
   ) {
@@ -419,20 +419,20 @@ export function clearHealthCheckLogCache() {
 // ── Singleton guard (globalThis survives HMR re-evaluation) ─────────────────
 
 declare global {
-  var __shiguangGatewayTokenHC:
+  var __orbitTokenHC:
     | { initialized: boolean; interval: ReturnType<typeof setInterval> | null; sweeping: boolean }
     | undefined;
 }
 function getHCState() {
-  if (!globalThis.__shiguangGatewayTokenHC) {
-    globalThis.__shiguangGatewayTokenHC = {
+  if (!globalThis.__orbitTokenHC) {
+    globalThis.__orbitTokenHC = {
       initialized: false,
       interval: null,
       initTimeout: null,
       sweeping: false,
     };
   }
-  return globalThis.__shiguangGatewayTokenHC;
+  return globalThis.__orbitTokenHC;
 }
 
 /**
@@ -876,7 +876,7 @@ export async function checkConnection(conn, dependencies: { probeWebCookie: WebC
   // (each refresh consumes the old one and returns a new one). For these, refreshing
   // on a fixed interval — instead of strictly on imminent expiry — burns rotations
   // unnecessarily AND can trigger Auth0's token family revocation (especially OpenAI
-  // Codex). 9router did not have this background sweep; it was introduced in ShiguangGateway
+  // Codex). 9router did not have this background sweep; it was introduced in Orbit
   // and is the root cause of "adding account B invalidates account A" reports.
   // The interval path is kept ONLY for non-rotating providers where token state can
   // drift silently (e.g. cookie-based, opaque sessions without expires_at).

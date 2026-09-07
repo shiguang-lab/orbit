@@ -29,7 +29,7 @@ const dispatch = {
     body: Record<string, unknown>;
     apiKey?: string | null;
   }): Promise<Response> {
-    const baseUrl = process.env.SHIGUANG_GATEWAY_BASE_URL ?? "http://127.0.0.1:8787";
+    const baseUrl = process.env.ORBIT_BASE_URL ?? "http://127.0.0.1:8787";
     const url = `${baseUrl.replace(/\/$/, "")}${endpoint}`;
     const headers = new Headers({ "Content-Type": "application/json" });
     if (apiKey) headers.set("Authorization", `Bearer ${apiKey}`);
@@ -203,7 +203,7 @@ function resolveBatchApiKeyValue(batch: Pick<BatchRecord, "apiKeyId">, apiKeyRow
     return apiKeyRow.key;
   }
   if (batch.apiKeyId === "env-key") {
-    return process.env.SHIGUANG_GATEWAY_API_KEY || process.env.ROUTER_API_KEY || null;
+    return process.env.ORBIT_API_KEY || process.env.ROUTER_API_KEY || null;
   }
   return null;
 }

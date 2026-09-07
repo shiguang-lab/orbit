@@ -5,7 +5,7 @@ export function normalizeClaudeBaseUrl(value: string): string {
 }
 
 export interface ClaudeDiscoverySnippetInput {
-  /** ShiguangGateway root — Claude Code appends `/v1/messages` itself, so no `/v1` suffix. */
+  /** Orbit root — Claude Code appends `/v1/messages` itself, so no `/v1` suffix. */
   baseUrl: string;
   /** Rendered verbatim; the caller passes a placeholder, never a real key. */
   apiKeyPlaceholder: string;

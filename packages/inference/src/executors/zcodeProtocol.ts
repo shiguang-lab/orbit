@@ -298,8 +298,8 @@ export class ZcodeAppServerClient implements ZcodeClientLike {
       if (!child) return;
       child.stdin.write(`${JSON.stringify({
         type: "zcode-hello-ack",
-        version: "shiguangGateway",
-        clientId: `shiguangGateway-${process.pid}`,
+        version: "orbit",
+        clientId: `orbit-${process.pid}`,
       })}\n`);
       this.handshakeDone = true;
     }

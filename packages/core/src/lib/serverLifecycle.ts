@@ -1,23 +1,23 @@
 export type ServerLifecyclePhase = "starting" | "ready" | "stopping";
 
 declare global {
-  var __shiguangGatewayServerLifecycle: ServerLifecyclePhase | undefined;
+  var __orbitServerLifecycle: ServerLifecyclePhase | undefined;
 }
 
 export function getServerLifecyclePhase(): ServerLifecyclePhase {
-  return globalThis.__shiguangGatewayServerLifecycle ?? "starting";
+  return globalThis.__orbitServerLifecycle ?? "starting";
 }
 
 export function markServerStarting(): void {
-  globalThis.__shiguangGatewayServerLifecycle = "starting";
+  globalThis.__orbitServerLifecycle = "starting";
 }
 
 export function markServerReady(): void {
   if (getServerLifecyclePhase() !== "stopping") {
-    globalThis.__shiguangGatewayServerLifecycle = "ready";
+    globalThis.__orbitServerLifecycle = "ready";
   }
 }
 
 export function markServerStopping(): void {
-  globalThis.__shiguangGatewayServerLifecycle = "stopping";
+  globalThis.__orbitServerLifecycle = "stopping";
 }

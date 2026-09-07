@@ -300,7 +300,7 @@ export function zaiImageFileName(mimeType: string, index: number): string {
         : normalized.startsWith("image/")
           ? normalized.slice("image/".length).replace(/[^a-z0-9]/g, "") || "png"
           : "png";
-  return `shiguangGateway-image-${index + 1}.${extension}`;
+  return `orbit-image-${index + 1}.${extension}`;
 }
 
 export function unprefixedModelId(modelId: string): string {

@@ -141,7 +141,7 @@ function buildFtsRows(apiKeyId: string, config: FtsColConfig): MemoryRow[] {
 
 // Loopback rerank URL — localhost only, never routed over the network.
 // nosemgrep: javascript.lang.security.audit.non-literal-regexp.non-literal-regexp
-const RERANK_LOOPBACK_URL = `${(process.env.SHIGUANG_GATEWAY_BASE_URL ?? process.env.INTERNAL_BASE_URL ?? "http://127.0.0.1:8787").replace(/\/$/, "")}/v1/rerank`;
+const RERANK_LOOPBACK_URL = `${(process.env.ORBIT_BASE_URL ?? process.env.INTERNAL_BASE_URL ?? "http://127.0.0.1:8787").replace(/\/$/, "")}/v1/rerank`;
 
 /**
  * Apply reranking via /v1/rerank (loopback-only) if rerankEnabled + rerankProviderModel is set.

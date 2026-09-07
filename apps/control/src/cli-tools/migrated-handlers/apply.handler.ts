@@ -15,19 +15,19 @@ const applySchema = z.object({
   dryRun: z.boolean().optional(),
 });
 
-/** The host-side command that does the same job when ShiguangGateway is containerised. */
+/** The host-side command that does the same job when Orbit is containerised. */
 const HOST_SETUP_COMMANDS: Record<string, string> = {
-  claude: "shiguangGateway setup-claude",
-  codex: "shiguangGateway setup-codex",
-  opencode: "shiguangGateway setup-opencode",
-  cline: "shiguangGateway setup-cline",
-  kilo: "shiguangGateway setup-kilo",
-  continue: "shiguangGateway setup-continue",
+  claude: "orbit setup-claude",
+  codex: "orbit setup-codex",
+  opencode: "orbit setup-opencode",
+  cline: "orbit setup-cline",
+  kilo: "orbit setup-kilo",
+  continue: "orbit setup-continue",
 };
 
 function ensureBackup(configPath: string): string | null {
   if (!fs.existsSync(configPath)) return null;
-  const backupDir = path.join(path.dirname(configPath), ".shiguangGateway.bak");
+  const backupDir = path.join(path.dirname(configPath), ".orbit.bak");
   if (!fs.existsSync(backupDir)) fs.mkdirSync(backupDir, { recursive: true });
   const backupPath = path.join(backupDir, path.basename(configPath) + ".bak");
   fs.copyFileSync(configPath, backupPath);

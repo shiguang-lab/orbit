@@ -6,7 +6,7 @@
  * The base handles the cross-cutting concerns shared by every IDE-agent handler:
  *   - request body capture + secret masking
  *   - source model extraction
- *   - forwarding to the ShiguangGateway router (Next.js API)
+ *   - forwarding to the Orbit router (Next.js API)
  *   - SSE piping
  *   - optional Traffic Inspector hook (F4 — loaded via dynamic import; no-op when
  *     `agentBridgeHook.ts` is not yet present in the build)
@@ -84,7 +84,7 @@ export abstract class MitmHandlerBase {
    * Concrete handlers must:
    *   1. Optionally call `this.hookBufferStart(req, body, mappedModel)`.
    *   2. Build the upstream-bound payload (translate model, format, etc.).
-   *   3. Call `this.fetchRouter(...)` for the ShiguangGateway router round-trip.
+   *   3. Call `this.fetchRouter(...)` for the Orbit router round-trip.
    *   4. Pipe the response back via `this.pipeSSE(...)` for streaming
    *      or write the JSON body directly for non-streaming flows.
    *   5. Call `this.hookBufferUpdate(intercepted)` on completion / error.
@@ -124,8 +124,8 @@ export abstract class MitmHandlerBase {
   }
 
   /**
-   * Forward the prepared body to the ShiguangGateway router (Next.js API).
-   * Adds AgentBridge correlation headers (`x-shiguangGateway-source`, `x-shiguangGateway-agent`)
+   * Forward the prepared body to the Orbit router (Next.js API).
+   * Adds AgentBridge correlation headers (`x-orbit-source`, `x-orbit-agent`)
    * and forwards a sanitized copy of the original request headers (secrets masked,
    * hop-by-hop stripped).
    */
@@ -134,7 +134,7 @@ export abstract class MitmHandlerBase {
     path: string,
     headers: IncomingHttpHeaders,
   ): Promise<Response> {
-    const base = process.env.SHIGUANG_GATEWAY_BASE_URL ?? process.env.INTERNAL_BASE_URL ?? "http://127.0.0.1:8787";
+    const base = process.env.ORBIT_BASE_URL ?? process.env.INTERNAL_BASE_URL ?? "http://127.0.0.1:8787";
     const url = `${base.replace(/\/+$/, "")}${path}`;
     const apiKey = process.env.ROUTER_API_KEY ?? "";
 
@@ -143,8 +143,8 @@ export abstract class MitmHandlerBase {
       headers: {
         "Content-Type": "application/json",
         ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
-        "x-shiguangGateway-source": "agent-bridge",
-        "x-shiguangGateway-agent": this.agentId,
+        "x-orbit-source": "agent-bridge",
+        "x-orbit-agent": this.agentId,
         ...sanitizeHeaders(headers),
       },
       body: typeof body === "string" ? body : JSON.stringify(body),

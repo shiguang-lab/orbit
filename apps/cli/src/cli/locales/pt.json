@@ -1,8 +1,8 @@
 {
   "common": {
     "error": "Erro: {message}",
-    "serverOffline": "O servidor ShiguangGateway está offline. Inicie com: shiguang-gateway serve",
-    "authRequired": "Autenticação necessária. Defina SHIGUANG_GATEWAY_API_KEY ou execute: shiguang-gateway setup",
+    "serverOffline": "O servidor Orbit está offline. Inicie com: orbit serve",
+    "authRequired": "Autenticação necessária. Defina ORBIT_API_KEY ou execute: orbit setup",
     "rateLimited": "Limite de pedidos atingido. Tente novamente em {seconds}s.",
     "timeout": "O pedido expirou após {ms}ms.",
     "success": "Concluído.",
@@ -15,18 +15,18 @@
     "yesOpt": "Ignorar confirmação"
   },
   "program": {
-    "description": "ShiguangGateway — Router de IA inteligente com fallback automático",
+    "description": "Orbit — Router de IA inteligente com fallback automático",
     "version": "Mostrar versão e sair",
     "output": "Formato de saída (table, json, jsonl, csv)",
     "quiet": "Suprimir saída não essencial",
     "no_color": "Desativar saída colorida",
     "timeout": "Timeout de pedidos HTTP em milissegundos",
-    "api_key": "Chave de API para o servidor ShiguangGateway",
-    "base_url": "URL base do servidor ShiguangGateway",
+    "api_key": "Chave de API para o servidor Orbit",
+    "base_url": "URL base do servidor Orbit",
     "context": "Contexto/perfil do servidor para este comando",
-    "lang": "Definir idioma de apresentação do CLI (substitui SHIGUANG_GATEWAY_LANG)"
+    "lang": "Definir idioma de apresentação do CLI (substitui ORBIT_LANG)"
   },
   "redis": {
-    "description": "Iniciar um contentor Redis local com um clique (Podman ou Docker) para cache e rastreio de quotas do ShiguangGateway"
+    "description": "Iniciar um contentor Redis local com um clique (Podman ou Docker) para cache e rastreio de quotas do Orbit"
   }
 }

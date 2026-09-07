@@ -1,15 +1,15 @@
 /**
  * Restart mechanism detection for the npm-mode dashboard "Update" flow.
  *
- * #11885: `src/app/api/system/version/route.ts` hardcoded `pm2 restart shiguangGateway` as the
- * ONLY restart mechanism, at two near-identical branches. ShiguangGateway ships its OWN
- * supervisor (`bin/cli/runtime/processSupervisor.mjs`, started by `shiguangGateway serve` /
- * `shiguangGateway serve --daemon`) with PID-file management (`bin/cli/utils/pid.mjs`) as an
+ * #11885: `src/app/api/system/version/route.ts` hardcoded `pm2 restart orbit` as the
+ * ONLY restart mechanism, at two near-identical branches. Orbit ships its OWN
+ * supervisor (`bin/cli/runtime/processSupervisor.mjs`, started by `orbit serve` /
+ * `orbit serve --daemon`) with PID-file management (`bin/cli/utils/pid.mjs`) as an
  * alternative to pm2 — so on any install that isn't pm2-managed, the restart step
  * silently degraded to a "skipped" status while the install step still reported "done",
  * which reads like a completed live update even though nothing restarted.
  *
- * This module tries ShiguangGateway's own PID-file-managed supervisor first, then falls back
+ * This module tries Orbit's own PID-file-managed supervisor first, then falls back
  * to pm2, and returns an honest "restart-required" outcome instead of a silent no-op
  * when neither is detected.
  */
@@ -21,7 +21,7 @@ function resolveDataDir(): string {
   const configured = process.env.DATA_DIR?.trim();
   if (configured) return path.resolve(configured);
   const home = process.env.HOME || process.env.USERPROFILE || process.cwd();
-  return path.join(home, ".shiguangGateway");
+  return path.join(home, ".orbit");
 }
 
 const execFileAsync = promisify(execFile);
@@ -75,10 +75,10 @@ function defaultExecPm2(args: string[]): Promise<unknown> {
 }
 
 /**
- * Attempt to restart the running ShiguangGateway server.
+ * Attempt to restart the running Orbit server.
  *
  * Order:
- *  1. ShiguangGateway's own PID-file-managed supervisor — SIGTERM the supervised "server"
+ *  1. Orbit's own PID-file-managed supervisor — SIGTERM the supervised "server"
  *     child ONLY, never the supervisor process itself. The supervisor's exit handler
  *     (`ServerSupervisor.handleExit`) treats an unexpected child exit as a crash and
  *     respawns it, which IS the restart we want. SIGTERM to the SUPERVISOR instead
@@ -107,7 +107,7 @@ export async function restartRunningServer(
       return {
         method: "own-supervisor",
         status: "done",
-        message: "Restarted via the ShiguangGateway supervisor (server process recycled).",
+        message: "Restarted via the Orbit supervisor (server process recycled).",
       };
     } catch {
       // Fall through to pm2 / restart-required below.
@@ -115,14 +115,14 @@ export async function restartRunningServer(
   }
 
   try {
-    await execPm2(["restart", "shiguangGateway", "--update-env"]);
+    await execPm2(["restart", "orbit", "--update-env"]);
     return { method: "pm2", status: "done", message: "Service restarted via pm2." };
   } catch {
     return {
       method: "none",
       status: "restart-required",
       message:
-        "Files were updated, but no supported process manager (ShiguangGateway's own supervisor or pm2) was detected — restart the server manually to apply the update.",
+        "Files were updated, but no supported process manager (Orbit's own supervisor or pm2) was detected — restart the server manually to apply the update.",
     };
   }
 }

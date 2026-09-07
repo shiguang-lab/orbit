@@ -2,7 +2,7 @@
  * webFetchExecution.ts — resolves credentials for a web-fetch provider and dispatches
  * to handleWebFetch(), mirroring src/lib/search/executeWebSearch.ts. Consumed by the
  * `web_fetch` builtin skill handler (src/lib/skills/builtins.ts) when the synthetic
- * `shiguangGateway_web_fetch` tool call emitted by webFetchInterception.ts is executed
+ * `orbit_web_fetch` tool call emitted by webFetchInterception.ts is executed
  * (#7339, Phase 4 of #3384).
  */
 

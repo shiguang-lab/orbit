@@ -403,13 +403,13 @@ export interface ApiKeyPolicyResult {
  */
 /** Header carrying the id of the API key a dashboard playground request wants to
  *  test the policy for (never the key secret). */
-const PLAYGROUND_KEY_ID_HEADER = "x-shiguangGateway-playground-key-id";
+const PLAYGROUND_KEY_ID_HEADER = "x-orbit-playground-key-id";
 
 /**
  * Dashboard playground support. An authenticated admin session may test a
  * specific API key's policy (allowed_models, budget, …) WITHOUT putting the key
  * secret on the wire: the browser sends only the key id via
- * `x-shiguangGateway-playground-key-id` and we resolve the secret server-side.
+ * `x-orbit-playground-key-id` and we resolve the secret server-side.
  *
  * Security: honored ONLY for authenticated dashboard sessions, and only as a
  * fallback when no bearer key was presented — so it can never bypass auth or

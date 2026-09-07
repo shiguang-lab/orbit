@@ -28,14 +28,14 @@ export async function discoverRouteModules(root = repoRoot) {
 }
 
 async function main() {
-  const dataDir = await mkdtemp(join(tmpdir(), "shiguangGateway-route-import-"));
+  const dataDir = await mkdtemp(join(tmpdir(), "orbit-route-import-"));
   process.env.NODE_ENV = "test";
   process.env.JWT_SECRET = "route-import-jwt-secret-1234567890";
   process.env.API_KEY_SECRET = "route-import-api-secret-1234567890";
   // Always isolate imports, even if the invoking shell has production paths.
   process.env.DATA_DIR = dataDir;
   process.env.SQLITE_FILE = join(dataDir, "storage.sqlite");
-  process.env.SHIGUANG_GATEWAY_DISABLE_BACKGROUND_SERVICES = "1";
+  process.env.ORBIT_DISABLE_BACKGROUND_SERVICES = "1";
   const failures = [];
   try {
     const apps = await discoverRouteModules();

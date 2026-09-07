@@ -228,7 +228,7 @@ async function maybeInjectResponsesWsMemory(
 }
 
 function getBridgeSecret(): string {
-  return process.env.SHIGUANG_GATEWAY_WS_BRIDGE_SECRET || "";
+  return process.env.ORBIT_WS_BRIDGE_SECRET || "";
 }
 
 function hashBridgeSecret(value: string): Buffer {
@@ -245,7 +245,7 @@ export function bridgeSecretMatches(expectedSecret: string, receivedSecret: stri
 function getAuthRequest(body: JsonRecord): Request {
   const requestUrl = typeof body.requestUrl === "string" ? body.requestUrl : "/api/v1/responses";
   const headers = isRecord(body.headers) ? body.headers : {};
-  const url = new URL(requestUrl, "http://shiguangGateway.local");
+  const url = new URL(requestUrl, "http://orbit.local");
   const requestHeaders = new Headers();
 
   for (const [key, value] of Object.entries(headers)) {
@@ -407,7 +407,7 @@ async function resolveCodexCredentials(
 }
 
 async function resolveCodexRequestContext(body: JsonRecord) {
-  if (!isFeatureFlagEnabled("SHIGUANG_GATEWAY_CODEX_WS_ENABLED")) {
+  if (!isFeatureFlagEnabled("ORBIT_CODEX_WS_ENABLED")) {
     return {
       error: jsonError(503, "codex_ws_disabled", "Codex Responses WebSocket transport is disabled"),
     };
@@ -560,11 +560,11 @@ async function prepare(body: JsonRecord): Promise<Response> {
   let reasoningRouting: JsonRecord | null = null;
   if (reasoningDecision) {
     const withDirective = attachReasoningRuleDirective(responseBodyWithMemory, reasoningDecision);
-    reasoningRouting = isRecord(withDirective._shiguangGatewayReasoningRouteTrace)
-      ? withDirective._shiguangGatewayReasoningRouteTrace
+    reasoningRouting = isRecord(withDirective._orbitReasoningRouteTrace)
+      ? withDirective._orbitReasoningRouteTrace
       : null;
     responseBodyWithMemory = applyReasoningRuleDirective(withDirective) as JsonRecord;
-    delete responseBodyWithMemory._shiguangGatewayReasoningRouteTrace;
+    delete responseBodyWithMemory._orbitReasoningRouteTrace;
   }
   // #8052: the WS bridge previously skipped the whole prompt-compression pipeline that the
   // HTTP/SSE path (chatCore.ts) runs on every request — wire the same core pipeline in here,
@@ -592,7 +592,7 @@ async function prepare(body: JsonRecord): Promise<Response> {
   const headers = normalizeUpstreamHeaders(executor.buildHeaders(credentialsWithFingerprint, true));
 
   // #5611: apply the configured Global/provider proxy to the upstream Codex
-  // Responses WebSocket too. The downstream client→ShiguangGateway hop works, but the
+  // Responses WebSocket too. The downstream client→Orbit hop works, but the
   // upstream wreq-js.websocket() connect previously ignored the Proxy Registry,
   // so a no-direct-egress container failed with a DNS lookup error.
   const proxy = await resolveCodexProxy(provider);
@@ -619,7 +619,7 @@ async function prepare(body: JsonRecord): Promise<Response> {
 
 export async function POST(request: Request): Promise<Response> {
   const expectedSecret = getBridgeSecret();
-  const receivedSecret = request.headers.get("x-shiguangGateway-ws-bridge-secret") || "";
+  const receivedSecret = request.headers.get("x-orbit-ws-bridge-secret") || "";
   if (!bridgeSecretMatches(expectedSecret, receivedSecret)) {
     return jsonError(403, "internal_bridge_forbidden", "Forbidden");
   }

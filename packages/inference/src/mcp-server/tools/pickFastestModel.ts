@@ -11,14 +11,14 @@ import type { AutoRoutingStrategyValue } from "@orbit/contracts/routing-strategi
 import { rankBySpeed, DEFAULT_SPEED_WEIGHTS } from "../../services/autoCombo/speedRanking.ts";
 import type { SpeedCandidate } from "../../services/autoCombo/speedRanking.ts";
 
-const SHIGUANG_GATEWAY_BASE_URL = resolveGatewayBaseUrl();
-const SHIGUANG_GATEWAY_API_KEY = process.env.SHIGUANG_GATEWAY_API_KEY || "";
+const ORBIT_BASE_URL = resolveGatewayBaseUrl();
+const ORBIT_API_KEY = process.env.ORBIT_API_KEY || "";
 
 async function apiFetch(path: string, options: RequestInit = {}): Promise<unknown> {
-  const url = `${SHIGUANG_GATEWAY_BASE_URL}${path}`;
+  const url = `${ORBIT_BASE_URL}${path}`;
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
-    ...(SHIGUANG_GATEWAY_API_KEY ? { Authorization: `Bearer ${SHIGUANG_GATEWAY_API_KEY}` } : {}),
+    ...(ORBIT_API_KEY ? { Authorization: `Bearer ${ORBIT_API_KEY}` } : {}),
     ...getMcpHttpAuthHeadersForInternalFetch(),
     ...((options.headers as Record<string, string>) || {}),
   };
@@ -276,12 +276,12 @@ export async function handlePickFastestModel(args: PickFastestModelArgs) {
       appliedToCombo,
     };
 
-    await logToolCall("shiguangGateway_pick_fastest_model", args, result, Date.now() - start, true);
+    await logToolCall("orbit_pick_fastest_model", args, result, Date.now() - start, true);
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     await logToolCall(
-      "shiguangGateway_pick_fastest_model",
+      "orbit_pick_fastest_model",
       args,
       null,
       Date.now() - start,

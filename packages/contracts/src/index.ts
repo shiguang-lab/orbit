@@ -1,7 +1,7 @@
 /**
  * @orbit/contracts
  * 前后端(BFF)共享的 API 契约与领域类型。
- * 这些类型与 Shiguang Gateway 后端的接口保持手工镜像(lightweight mirror)，
+ * 这些类型与 Orbit 后端的接口保持手工镜像(lightweight mirror)，
  * 后端路由变更时优先在此同步。
  */
 

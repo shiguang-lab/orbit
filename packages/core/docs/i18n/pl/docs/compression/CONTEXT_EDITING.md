@@ -7,13 +7,13 @@ lastUpdated: 2026-06-28
 # Delegowane Context Editing (Anthropic)
 
 Delegowane **Context Editing** to funkcja zarządzania kontekstem dostępna wyłącznie dla Claude.
-W przeciwieństwie do lokalnych silników kompresji ShiguangGateway (Caveman, RTK, LLMLingua, stacked
+W przeciwieństwie do lokalnych silników kompresji Orbit (Caveman, RTK, LLMLingua, stacked
 pipelines) — które przepisują ciało żądania _zanim_ opuści proxy — Context Editing prosi
 **providera**, by usunął nieaktualne bloki tool-use / tool-result z własnego, bieżącego okna
-kontekstu. ShiguangGateway dołącza jedynie parametr w body (`context_management.edits[]`); faktyczne
+kontekstu. Orbit dołącza jedynie parametr w body (`context_management.edits[]`); faktyczne
 czyszczenie wykonuje Claude względem własnego tokenizera.
 
-Z natury jest to zdolność delegowana: inni providerzy odrzucają ten parametr, więc ShiguangGateway
+Z natury jest to zdolność delegowana: inni providerzy odrzucają ten parametr, więc Orbit
 ogranicza go ściśle do Claude oraz relayów zgodnych z Claude Code.
 
 Źródło prawdy: `open-sse/config/contextEditing.ts` (identyfikatory strategii, wstrzykiwanie body,
@@ -22,7 +22,7 @@ ekstrakcja telemetrii), `open-sse/executors/base.ts` (bramka wstrzykiwania + fal
 
 ## Co robi `clear_tool_uses`
 
-ShiguangGateway wstrzykuje pojedynczą edycję do wychodzącego body Anthropic Messages:
+Orbit wstrzykuje pojedynczą edycję do wychodzącego body Anthropic Messages:
 
 ```json
 {
@@ -44,13 +44,13 @@ ShiguangGateway wstrzykuje pojedynczą edycję do wychodzącego body Anthropic M
 - `keep.value: 3` — N najnowszych par tool-use/result pozostaje nienaruszonych
   (`CONTEXT_EDITING_DEFAULT_KEEP_TOOL_USES`).
 
-Beta jest reklamowana nagłówkiem `anthropic-beta: context-management-2025-06-27`, który ShiguangGateway
+Beta jest reklamowana nagłówkiem `anthropic-beta: context-management-2025-06-27`, który Orbit
 już emituje w żądaniach Claude.
 
 Wstrzykiwanie wykonuje `applyContextEditingToBody()` i jest **idempotentne**: jeśli edycja
 `clear_tool_uses` już istnieje w body (dodana wcześniejszym wywołaniem lub dostarczona przez
 klienta), body pozostaje bez zmian. Jeśli obecna jest też edycja `clear_thinking_20251015`,
-ShiguangGateway stabilnie sortuje edycję `clear_thinking` na początek, bo Anthropic wymaga, by
+Orbit stabilnie sortuje edycję `clear_thinking` na początek, bo Anthropic wymaga, by
 `clear_thinking` poprzedzało `clear_tool_uses` w tablicy `edits[]`.
 
 ## Przełącznik włączania per-combo
@@ -149,7 +149,7 @@ Prawdziwy Claude niesie betę w `ANTHROPIC_BETA_BASE` i nie trafia na tę ście�
 
 ## Telemetria `applied_edits`
 
-Po odpowiedzi Claude ShiguangGateway zapisuje, ile kontekstu provider faktycznie usunął. To **nie** jest
+Po odpowiedzi Claude Orbit zapisuje, ile kontekstu provider faktycznie usunął. To **nie** jest
 streamowane — jest wyciągane z body odpowiedzi non-streaming, best-effort, i nigdy nie wpływa na
 odpowiedź (awarie telemetrii są połykane).
 
@@ -179,14 +179,14 @@ etykietą silnika `context-editing`, i jest rozróżnialne od oszczędności RTK
 
 | Aspekt                  | Lokalne silniki (Caveman / RTK / LLMLingua / stacked) | Delegowane Context Editing                   |
 | ----------------------- | ----------------------------------------------------- | -------------------------------------------- |
-| Gdzie działa            | W ShiguangGateway, zanim żądanie opuści proxy               | U providera (Claude), po stronie serwera     |
+| Gdzie działa            | W Orbit, zanim żądanie opuści proxy               | U providera (Claude), po stronie serwera     |
 | Co edytuje              | Tekst promptu / kontekstu / tool-result               | Stare bloki tool-use / tool-result           |
 | Zakres providerów       | Wszyscy providerzy                                    | tylko `claude` + `anthropic-compatible-cc-*` |
 | Przełącznik             | Ustawienia trybu kompresji                            | `contextEditing.enabled`                     |
 | Tryb awarii             | Fail-open (oryginalny tekst)                          | Fallback 400: usuń param, ponów raz          |
 | Telemetria oszczędności | `engine: <engine id>`                                 | `engine: "context-editing"`                  |
 
-Te dwa podejścia są komplementarne: lokalne silniki kompresują bajty wysyłane przez ShiguangGateway;
+Te dwa podejścia są komplementarne: lokalne silniki kompresują bajty wysyłane przez Orbit;
 Context Editing pozwala Claude przycinać bieżący kontekst między turami. Można je włączyć razem.
 
 ## Zobacz też

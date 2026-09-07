@@ -1,28 +1,28 @@
 ---
-title: "ShiguangGateway MCP Server Documentation"
+title: "Orbit MCP Server Documentation"
 version: 3.8.50
 lastUpdated: 2026-08-08
 ---
 
-# ShiguangGateway MCP Server Documentation
+# Orbit MCP Server Documentation
 
 > Model Context Protocol server with 110 tools across routing, cache, compression, memory, skills, proxy, pool, Radar, and context source operations.
 >
-> Source of truth: `open-sse/mcp-server/server.ts` computes **110 unique tools** with `countUniqueMcpTools()`: 45 canonical definitions (including the six CCR lifecycle tools, the agent-skills trio, `shiguang-gateway_radar_catalog`, and `shiguang-gateway_x_search`), plus memory (3), skills (4), GitHub skills (3), pool (6), gamification (8), plugins (8), Notion (6), Obsidian (22), local corpus (3), and two RTK-only compression tools.
+> Source of truth: `open-sse/mcp-server/server.ts` computes **110 unique tools** with `countUniqueMcpTools()`: 45 canonical definitions (including the six CCR lifecycle tools, the agent-skills trio, `orbit_radar_catalog`, and `orbit_x_search`), plus memory (3), skills (4), GitHub skills (3), pool (6), gamification (8), plugins (8), Notion (6), Obsidian (22), local corpus (3), and two RTK-only compression tools.
 
 ## Installation
 
-ShiguangGateway MCP is built-in. Start it with:
+Orbit MCP is built-in. Start it with:
 
 ```bash
-shiguang-gateway --mcp
+orbit --mcp
 ```
 
 Or via the open-sse transport:
 
 ```bash
 # HTTP streamable transport (port 20130)
-shiguang-gateway --dev  # MCP auto-starts on /mcp endpoint
+orbit --dev  # MCP auto-starts on /mcp endpoint
 ```
 
 ## Transports
@@ -68,61 +68,61 @@ Cursor, Cline, and compatible MCP client setup.
 
 | Tool                            | Scopes                | Description                                                                                                                    |
 | :------------------------------ | :-------------------- | :----------------------------------------------------------------------------------------------------------------------------- |
-| `shiguang-gateway_get_health`          | `read:health`         | Uptime, memory, circuit breakers, rate limits, cache stats                                                                     |
-| `shiguang-gateway_list_combos`         | `read:combos`         | All configured combos with strategies (optional metrics)                                                                       |
-| `shiguang-gateway_get_combo_metrics`   | `read:combos`         | Performance metrics for a specific combo                                                                                       |
-| `shiguang-gateway_switch_combo`        | `write:combos`        | Activate or deactivate a combo                                                                                                 |
-| `shiguang-gateway_create_combo`        | `write:combos`        | Create a validated combo through the existing combo API                                                                        |
-| `shiguang-gateway_check_quota`         | `read:quota`          | Quota used/total, percent remaining, reset time, token health                                                                  |
-| `shiguang-gateway_route_request`       | `execute:completions` | Send a chat completion through ShiguangGateway routing                                                                               |
-| `shiguang-gateway_cost_report`         | `read:usage`          | Cost report by period (session/day/week/month)                                                                                 |
-| `shiguang-gateway_list_models_catalog` | `read:models`         | Full model catalog with capabilities, status, pricing                                                                          |
-| `shiguang-gateway_radar_catalog`       | `read:radar`          | Local signed Radar catalog; optional provider/family filters                                                                   |
-| `shiguang-gateway_tool_search`         | `read:tools`          | Discover tools from the registered MCP catalog                                                                                 |
-| `shiguang-gateway_web_search`          | `execute:search`      | Web search through the configured search providers. Not X/Twitter.                                                             |
-| `shiguang-gateway_x_search`            | `execute:search`      | Search X through xAI/SuperGrok, or choose `xquik-search` for Xquik API results. Requires credentials for the selected backend. |
-| `shiguang-gateway_web_fetch`           | `execute:search`      | Fetch web content through the configured fetch providers                                                                       |
+| `orbit_get_health`          | `read:health`         | Uptime, memory, circuit breakers, rate limits, cache stats                                                                     |
+| `orbit_list_combos`         | `read:combos`         | All configured combos with strategies (optional metrics)                                                                       |
+| `orbit_get_combo_metrics`   | `read:combos`         | Performance metrics for a specific combo                                                                                       |
+| `orbit_switch_combo`        | `write:combos`        | Activate or deactivate a combo                                                                                                 |
+| `orbit_create_combo`        | `write:combos`        | Create a validated combo through the existing combo API                                                                        |
+| `orbit_check_quota`         | `read:quota`          | Quota used/total, percent remaining, reset time, token health                                                                  |
+| `orbit_route_request`       | `execute:completions` | Send a chat completion through Orbit routing                                                                               |
+| `orbit_cost_report`         | `read:usage`          | Cost report by period (session/day/week/month)                                                                                 |
+| `orbit_list_models_catalog` | `read:models`         | Full model catalog with capabilities, status, pricing                                                                          |
+| `orbit_radar_catalog`       | `read:radar`          | Local signed Radar catalog; optional provider/family filters                                                                   |
+| `orbit_tool_search`         | `read:tools`          | Discover tools from the registered MCP catalog                                                                                 |
+| `orbit_web_search`          | `execute:search`      | Web search through the configured search providers. Not X/Twitter.                                                             |
+| `orbit_x_search`            | `execute:search`      | Search X through xAI/SuperGrok, or choose `xquik-search` for Xquik API results. Requires credentials for the selected backend. |
+| `orbit_web_fetch`           | `execute:search`      | Fetch web content through the configured fetch providers                                                                       |
 
 ## Advanced Tools (11) — Phase 2
 
 | Tool                               | Scopes                               | Description                                                                               |
 | :--------------------------------- | :----------------------------------- | :---------------------------------------------------------------------------------------- |
-| `shiguang-gateway_simulate_route`         | `read:health`, `read:combos`         | Dry-run routing simulation with fallback tree                                             |
-| `shiguang-gateway_set_budget_guard`       | `write:budget`                       | Session budget with degrade/block/alert action                                            |
-| `shiguang-gateway_set_routing_strategy`   | `write:combos`                       | Update combo strategy at runtime (priority/weighted/auto/etc.)                            |
-| `shiguang-gateway_set_resilience_profile` | `write:resilience`                   | Apply `aggressive` / `balanced` / `conservative` resilience preset                        |
-| `shiguang-gateway_test_combo`             | `execute:completions`, `read:combos` | Live test of every provider in a combo using a real upstream call                         |
-| `shiguang-gateway_get_provider_metrics`   | `read:health`                        | Per-provider metrics with p50/p95/p99 latency and circuit breaker state                   |
-| `shiguang-gateway_best_combo_for_task`    | `read:combos`, `read:health`         | Recommend combo by task type with budget/latency constraints                              |
-| `shiguang-gateway_explain_route`          | `read:health`, `read:usage`          | Explain why a request was routed to a provider (scoring factors + fallbacks)              |
-| `shiguang-gateway_get_session_snapshot`   | `read:usage`                         | Full session snapshot: cost, tokens, top models/providers, errors, budget guard           |
-| `shiguang-gateway_db_health_check`        | `read:health`, `write:resilience`    | Diagnose (and optionally auto-repair) database drift like broken combo refs / orphan rows |
-| `shiguang-gateway_sync_pricing`           | `pricing:write`                      | Sync pricing data from external sources (LiteLLM); supports `dryRun`                      |
+| `orbit_simulate_route`         | `read:health`, `read:combos`         | Dry-run routing simulation with fallback tree                                             |
+| `orbit_set_budget_guard`       | `write:budget`                       | Session budget with degrade/block/alert action                                            |
+| `orbit_set_routing_strategy`   | `write:combos`                       | Update combo strategy at runtime (priority/weighted/auto/etc.)                            |
+| `orbit_set_resilience_profile` | `write:resilience`                   | Apply `aggressive` / `balanced` / `conservative` resilience preset                        |
+| `orbit_test_combo`             | `execute:completions`, `read:combos` | Live test of every provider in a combo using a real upstream call                         |
+| `orbit_get_provider_metrics`   | `read:health`                        | Per-provider metrics with p50/p95/p99 latency and circuit breaker state                   |
+| `orbit_best_combo_for_task`    | `read:combos`, `read:health`         | Recommend combo by task type with budget/latency constraints                              |
+| `orbit_explain_route`          | `read:health`, `read:usage`          | Explain why a request was routed to a provider (scoring factors + fallbacks)              |
+| `orbit_get_session_snapshot`   | `read:usage`                         | Full session snapshot: cost, tokens, top models/providers, errors, budget guard           |
+| `orbit_db_health_check`        | `read:health`, `write:resilience`    | Diagnose (and optionally auto-repair) database drift like broken combo refs / orphan rows |
+| `orbit_sync_pricing`           | `pricing:write`                      | Sync pricing data from external sources (LiteLLM); supports `dryRun`                      |
 
 ## Cache Tools (2)
 
 | Tool                    | Scopes        | Description                                         |
 | :---------------------- | :------------ | :-------------------------------------------------- |
-| `shiguang-gateway_cache_stats` | `read:cache`  | Semantic cache, prompt-cache, and idempotency stats |
-| `shiguang-gateway_cache_flush` | `write:cache` | Flush cache globally or by signature/model          |
+| `orbit_cache_stats` | `read:cache`  | Semantic cache, prompt-cache, and idempotency stats |
+| `orbit_cache_flush` | `write:cache` | Flush cache globally or by signature/model          |
 
 ## Compression Tools (13)
 
 | Tool                                | Scopes              | Description                                                                                                              |
 | :---------------------------------- | :------------------ | :----------------------------------------------------------------------------------------------------------------------- |
-| `shiguang-gateway_compression_status`      | `read:compression`  | Compression settings, analytics summary, and cache-aware stats (includes `analytics.mcpDescriptionCompression` metadata) |
-| `shiguang-gateway_compression_configure`   | `write:compression` | Configure compression mode, threshold, target ratio, system-prompt preservation, MCP description compression toggle      |
-| `shiguang-gateway_set_compression_engine`  | `write:compression` | Pick the active engine (off/caveman/rtk/stacked) and Caveman/RTK intensity                                               |
-| `shiguang-gateway_list_compression_combos` | `read:compression`  | List named compression combos and their engine pipelines                                                                 |
-| `shiguang-gateway_compression_combo_stats` | `read:compression`  | Analytics grouped by compression combo and engine                                                                        |
-| `shiguang-gateway_ccr_store`               | `write:compression` | Store caller-isolated content in the bounded in-memory CCR store and return a marker plus `ccr://` reference             |
-| `shiguang-gateway_ccr_retrieve`            | `read:compression`  | Retrieve CCR content in full or with head, tail, lines, grep, and stats modes                                            |
-| `shiguang-gateway_ccr_inspect`             | `read:compression`  | Inspect caller-owned CCR metadata without returning content                                                              |
-| `shiguang-gateway_ccr_list`                | `read:compression`  | List paginated metadata for caller-owned CCR blocks                                                                      |
-| `shiguang-gateway_ccr_delete`              | `write:compression` | Delete a caller-owned CCR block                                                                                          |
-| `shiguang-gateway_ccr_stats`               | `read:compression`  | Report caller-scoped memory usage, lifecycle counters, and store limits                                                  |
-| `shiguang-gateway_rtk_discover`            | `read:compression`  | Discover recurring noise in opt-in RTK output samples                                                                    |
-| `shiguang-gateway_rtk_learn`               | `read:compression`  | Generate a reviewable RTK filter draft from opt-in samples                                                               |
+| `orbit_compression_status`      | `read:compression`  | Compression settings, analytics summary, and cache-aware stats (includes `analytics.mcpDescriptionCompression` metadata) |
+| `orbit_compression_configure`   | `write:compression` | Configure compression mode, threshold, target ratio, system-prompt preservation, MCP description compression toggle      |
+| `orbit_set_compression_engine`  | `write:compression` | Pick the active engine (off/caveman/rtk/stacked) and Caveman/RTK intensity                                               |
+| `orbit_list_compression_combos` | `read:compression`  | List named compression combos and their engine pipelines                                                                 |
+| `orbit_compression_combo_stats` | `read:compression`  | Analytics grouped by compression combo and engine                                                                        |
+| `orbit_ccr_store`               | `write:compression` | Store caller-isolated content in the bounded in-memory CCR store and return a marker plus `ccr://` reference             |
+| `orbit_ccr_retrieve`            | `read:compression`  | Retrieve CCR content in full or with head, tail, lines, grep, and stats modes                                            |
+| `orbit_ccr_inspect`             | `read:compression`  | Inspect caller-owned CCR metadata without returning content                                                              |
+| `orbit_ccr_list`                | `read:compression`  | List paginated metadata for caller-owned CCR blocks                                                                      |
+| `orbit_ccr_delete`              | `write:compression` | Delete a caller-owned CCR block                                                                                          |
+| `orbit_ccr_stats`               | `read:compression`  | Report caller-scoped memory usage, lifecycle counters, and store limits                                                  |
+| `orbit_rtk_discover`            | `read:compression`  | Discover recurring noise in opt-in RTK output samples                                                                    |
+| `orbit_rtk_learn`               | `read:compression`  | Generate a reviewable RTK filter draft from opt-in samples                                                               |
 
 CCR entries are in-memory only and disappear on restart. Each block is limited to 2 MiB, each
 principal to 16 MiB, and the global store to 64 MiB. Entries default to a 24-hour TTL (maximum
@@ -130,14 +130,14 @@ seven days). Full MCP retrieval is limited to 256 KiB; larger blocks remain avai
 ranged and grep modes. Storage, retrieval, listing, inspection, deletion, and stats are isolated by
 the authenticated API-key principal. Audit records contain hashes and size metadata, never content.
 
-`shiguang-gateway_compression_status` reports MCP description compression separately under
+`orbit_compression_status` reports MCP description compression separately under
 `analytics.mcpDescriptionCompression`. Those values are metadata-size estimates for MCP listable
 descriptions (`tools`, `prompts`, `resources`, and `resourceTemplates`); they are not provider usage
 receipts and are marked with `source: "mcp_metadata_estimate"`.
 
 ### MCP Accessibility Tree Filter (v3.8.0)
 
-Separate from the compression tools above, ShiguangGateway includes a post-execution filter that
+Separate from the compression tools above, Orbit includes a post-execution filter that
 compresses the **tool results** of MCP browser/accessibility tools before they are returned to the
 agent. This filter is not itself a tool — it runs transparently on any tool result that contains
 verbose accessibility-tree or browser-snapshot text (≥2000 chars).
@@ -160,9 +160,9 @@ the runtime compression model behind these tools.
 
 | Tool                        | Scopes         | Description                                                                             |
 | :-------------------------- | :------------- | :-------------------------------------------------------------------------------------- |
-| `shiguang-gateway_oneproxy_fetch`  | `read:proxies` | Fetch free proxies from the 1proxy marketplace (protocol/country/quality/limit filters) |
-| `shiguang-gateway_oneproxy_rotate` | `read:proxies` | Get the next available proxy by strategy (`random` / `quality` / `sequential`)          |
-| `shiguang-gateway_oneproxy_stats`  | `read:proxies` | Pool stats, sync status, distribution by protocol and country                           |
+| `orbit_oneproxy_fetch`  | `read:proxies` | Fetch free proxies from the 1proxy marketplace (protocol/country/quality/limit filters) |
+| `orbit_oneproxy_rotate` | `read:proxies` | Get the next available proxy by strategy (`random` / `quality` / `sequential`)          |
+| `orbit_oneproxy_stats`  | `read:proxies` | Pool stats, sync status, distribution by protocol and country                           |
 
 ## Memory Tools (3)
 
@@ -170,9 +170,9 @@ Defined in `open-sse/mcp-server/tools/memoryTools.ts`. Auth/scope is enforced th
 
 | Tool                      | Scopes         | Description                                                                         |
 | :------------------------ | :------------- | :---------------------------------------------------------------------------------- |
-| `shiguang-gateway_memory_search` | `read:memory`  | Search memories by query / type / API key with token-budget enforcement             |
-| `shiguang-gateway_memory_add`    | `write:memory` | Add a new memory entry (`factual` / `episodic` / `procedural` / `semantic`)         |
-| `shiguang-gateway_memory_clear`  | `write:memory` | Clear memories for an API key, optionally filtered by type or `olderThan` timestamp |
+| `orbit_memory_search` | `read:memory`  | Search memories by query / type / API key with token-budget enforcement             |
+| `orbit_memory_add`    | `write:memory` | Add a new memory entry (`factual` / `episodic` / `procedural` / `semantic`)         |
+| `orbit_memory_clear`  | `write:memory` | Clear memories for an API key, optionally filtered by type or `olderThan` timestamp |
 
 ## Skill Tools (4)
 
@@ -180,10 +180,10 @@ Defined in `open-sse/mcp-server/tools/skillTools.ts`. Backed by `src/lib/skills/
 
 | Tool                          | Scopes           | Description                                                                       |
 | :---------------------------- | :--------------- | :-------------------------------------------------------------------------------- |
-| `shiguang-gateway_skills_list`       | `read:skills`    | List registered skills with optional filtering by API key, name, or enabled state |
-| `shiguang-gateway_skills_enable`     | `write:skills`   | Enable or disable a specific skill by ID                                          |
-| `shiguang-gateway_skills_execute`    | `execute:skills` | Execute a skill with provided input and return the execution record               |
-| `shiguang-gateway_skills_executions` | `read:skills`    | List recent skill execution history                                               |
+| `orbit_skills_list`       | `read:skills`    | List registered skills with optional filtering by API key, name, or enabled state |
+| `orbit_skills_enable`     | `write:skills`   | Enable or disable a specific skill by ID                                          |
+| `orbit_skills_execute`    | `execute:skills` | Execute a skill with provided input and return the execution record               |
+| `orbit_skills_executions` | `read:skills`    | List recent skill execution history                                               |
 
 ## Notion Context Source (6)
 
@@ -219,9 +219,9 @@ Defined in `open-sse/mcp-server/tools/agentSkillTools.ts`. Backed by `src/lib/ag
 
 | Tool                              | Scopes         | Description                                                                                                      |
 | :-------------------------------- | :------------- | :--------------------------------------------------------------------------------------------------------------- |
-| `shiguang-gateway_agent_skills_list`     | `read:catalog` | List all 42 agent skills with optional `category` (api\|cli) and `area` filters; returns metadata + coverage     |
-| `shiguang-gateway_agent_skills_get`      | `read:catalog` | Get full metadata + SKILL.md content for a single skill by canonical `id`                                        |
-| `shiguang-gateway_agent_skills_coverage` | `read:catalog` | Coverage stats: how many of the 22 API and 20 CLI skills have SKILL.md files on the filesystem vs catalog totals |
+| `orbit_agent_skills_list`     | `read:catalog` | List all 42 agent skills with optional `category` (api\|cli) and `area` filters; returns metadata + coverage     |
+| `orbit_agent_skills_get`      | `read:catalog` | Get full metadata + SKILL.md content for a single skill by canonical `id`                                        |
+| `orbit_agent_skills_coverage` | `read:catalog` | Coverage stats: how many of the 22 API and 20 CLI skills have SKILL.md files on the filesystem vs catalog totals |
 
 See [AGENT-SKILLS.md](./AGENT-SKILLS.md) for the full catalog and how external agents consume it.
 
@@ -234,7 +234,7 @@ frameworks ship alongside the MCP server in v3.8.0 and are documented separately
 ### Cloud Agents
 
 Cloud Agents are out-of-process AI coding agents (codex-cloud, devin, jules) wired into
-ShiguangGateway through the same connection model used for LLM providers. They are exposed via
+Orbit through the same connection model used for LLM providers. They are exposed via
 their own REST surface (`/api/v1/agents/*`) and are **not** part of the MCP tool catalog
 — calling a Cloud Agent does not consume an MCP scope.
 
@@ -328,10 +328,10 @@ Over HTTP/SSE, `open-sse/mcp-server/httpTransport.ts` now resolves the caller's 
 and passes it to the MCP SDK's `transport.handleRequest(req, { authInfo })`, so
 `extra.authInfo.scopes` reaching each tool call reflects the Bearer key's own scopes.
 `scopeEnforcement.ts`'s `resolveCallerScopeContext()` already prioritized `authInfo` over
-the `_meta` and `SHIGUANG_GATEWAY_MCP_SCOPES` env fallback — this only populates that first,
+the `_meta` and `ORBIT_MCP_SCOPES` env fallback — this only populates that first,
 highest-priority source, which was previously unfed over HTTP. When no API key resolves
 (no header, invalid key), `authInfo` stays `undefined` and resolution falls through to the
-existing `meta`/env chain unchanged. This does NOT flip `SHIGUANG_GATEWAY_MCP_ENFORCE_SCOPES`'s
+existing `meta`/env chain unchanged. This does NOT flip `ORBIT_MCP_ENFORCE_SCOPES`'s
 default — enforcement still has to be explicitly enabled; this change only makes the
 per-key path take precedence once it is. stdio has no per-caller identity (see
 `mcpCallerIdentity.ts`) and is unaffected — it stays on the `_meta`/env fallback chain.
@@ -342,17 +342,17 @@ per-key path take precedence once it is. stdio has no per-caller identity (see
 
 | Variable                                | Default                            | Purpose                                                                                                                  |
 | :-------------------------------------- | :--------------------------------- | :----------------------------------------------------------------------------------------------------------------------- |
-| `SHIGUANG_GATEWAY_BASE_URL`                    | `http://localhost:20128`           | Base URL the MCP server uses when calling ShiguangGateway internal APIs                                                        |
-| `SHIGUANG_GATEWAY_API_KEY`                     | (empty)                            | API key forwarded as `Authorization: Bearer` to internal API calls                                                       |
-| `SHIGUANG_GATEWAY_MCP_ENFORCE_SCOPES`          | `false` (only `"true"` enables it) | When enabled, missing scopes deny tool calls and log `scope_denied:<reason>` in audit log                                |
-| `SHIGUANG_GATEWAY_MCP_SCOPES`                  | (empty)                            | Comma-separated allowlist of scopes considered "available" by default (used when caller does not provide its own scopes) |
-| `SHIGUANG_GATEWAY_MCP_COMPRESS_DESCRIPTIONS`   | (unset = on)                       | When set to `0/false/off/no`, disables MCP description compression at registration time                                  |
-| `SHIGUANG_GATEWAY_MCP_DESCRIPTION_COMPRESSION` | (unset = on)                       | Alternate alias for the same toggle as above                                                                             |
-| `SHIGUANG_GATEWAY_MCP_FETCH_TIMEOUT_MS`        | `10000`                            | Abort budget for internal management reads (health, resilience, combos, quota, usage)                                    |
-| `SHIGUANG_GATEWAY_MCP_UPSTREAM_TIMEOUT_MS`     | `60000`                            | Abort budget for hops that wait on a provider (`route_request`, `web_search`, `web_fetch`)                               |
+| `ORBIT_BASE_URL`                    | `http://localhost:20128`           | Base URL the MCP server uses when calling Orbit internal APIs                                                        |
+| `ORBIT_API_KEY`                     | (empty)                            | API key forwarded as `Authorization: Bearer` to internal API calls                                                       |
+| `ORBIT_MCP_ENFORCE_SCOPES`          | `false` (only `"true"` enables it) | When enabled, missing scopes deny tool calls and log `scope_denied:<reason>` in audit log                                |
+| `ORBIT_MCP_SCOPES`                  | (empty)                            | Comma-separated allowlist of scopes considered "available" by default (used when caller does not provide its own scopes) |
+| `ORBIT_MCP_COMPRESS_DESCRIPTIONS`   | (unset = on)                       | When set to `0/false/off/no`, disables MCP description compression at registration time                                  |
+| `ORBIT_MCP_DESCRIPTION_COMPRESSION` | (unset = on)                       | Alternate alias for the same toggle as above                                                                             |
+| `ORBIT_MCP_FETCH_TIMEOUT_MS`        | `10000`                            | Abort budget for internal management reads (health, resilience, combos, quota, usage)                                    |
+| `ORBIT_MCP_UPSTREAM_TIMEOUT_MS`     | `60000`                            | Abort budget for hops that wait on a provider (`route_request`, `web_search`, `web_fetch`)                               |
 | `MCP_TOOL_DENY`                         | (unset = no filter)                | Comma-separated tool names to drop from `tools/list` (tool-cardinality reduction — see below)                            |
 | `MCP_TOOL_ALLOW`                        | (unset = no filter)                | Comma-separated tool names to keep exclusively (allow-list mode — see below)                                             |
-| `DATA_DIR`                              | `~/.shiguang-gateway`                     | Heartbeat file is written to `${DATA_DIR}/runtime/mcp-heartbeat.json`                                                    |
+| `DATA_DIR`                              | `~/.orbit`                     | Heartbeat file is written to `${DATA_DIR}/runtime/mcp-heartbeat.json`                                                    |
 
 ---
 
@@ -362,8 +362,8 @@ MCP tool, prompt, and resource registries can compress descriptions at registrat
 
 - Compression runs over the description text using the Caveman ruleset (`getRulesForContext("all", "full")`) with preserved-block extraction (code spans, fenced blocks, etc.) so structural content is not altered.
 - Toggle per-deployment via the `compression.mcpDescriptionCompressionEnabled` value in the `key_value` settings table (default: enabled) — exposed in the UI as **Analytics → MCP description compression**.
-- Toggle process-wide via either `SHIGUANG_GATEWAY_MCP_COMPRESS_DESCRIPTIONS=false` or `SHIGUANG_GATEWAY_MCP_DESCRIPTION_COMPRESSION=false`.
-- Realtime stats are surfaced via `shiguang-gateway_compression_status` under `analytics.mcpDescriptionCompression` and tagged `source: "mcp_metadata_estimate"` to disambiguate from real provider usage receipts.
+- Toggle process-wide via either `ORBIT_MCP_COMPRESS_DESCRIPTIONS=false` or `ORBIT_MCP_DESCRIPTION_COMPRESSION=false`.
+- Realtime stats are surfaced via `orbit_compression_status` under `analytics.mcpDescriptionCompression` and tagged `source: "mcp_metadata_estimate"` to disambiguate from real provider usage receipts.
 
 ---
 
@@ -382,10 +382,10 @@ Description compression shrinks each tool's metadata; **tool-cardinality reducti
 
 ```bash
 # Drop two tools from the catalog
-MCP_TOOL_DENY="shiguang-gateway_get_health,shiguang-gateway_list_combos" shiguang-gateway --mcp
+MCP_TOOL_DENY="orbit_get_health,orbit_list_combos" orbit --mcp
 
 # Announce only the routing + quota tools (allow-list mode)
-MCP_TOOL_ALLOW="shiguang-gateway_route_request,shiguang-gateway_check_quota" shiguang-gateway --mcp
+MCP_TOOL_ALLOW="orbit_route_request,orbit_check_quota" orbit --mcp
 ```
 
 **How filtered tools are removed:** registration always succeeds; a tool the profile rejects is then `.disable()`d on the MCP SDK handle, so it never appears in `tools/list` but the wiring stays intact (clean enable/disable, no re-registration). The profile parser is `readMcpToolProfileFromEnv(process.env)`, which returns `null` (no filtering) when both vars are empty.

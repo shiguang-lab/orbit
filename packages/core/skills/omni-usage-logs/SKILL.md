@@ -20,7 +20,7 @@ Get usage analytics
 
 ```bash
 curl https://localhost:20128/api/usage/analytics \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### GET /api/usage/call-logs
@@ -29,7 +29,7 @@ Get call logs
 
 ```bash
 curl https://localhost:20128/api/usage/call-logs \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### GET /api/usage/call-logs/{id}
@@ -38,7 +38,7 @@ Get a specific call log
 
 ```bash
 curl https://localhost:20128/api/usage/call-logs/{id} \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### GET /api/usage/{connectionId}
@@ -47,7 +47,7 @@ Get usage for a specific connection
 
 ```bash
 curl https://localhost:20128/api/usage/{connectionId} \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### GET /api/usage/history
@@ -56,7 +56,7 @@ Get usage history
 
 ```bash
 curl https://localhost:20128/api/usage/history \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### GET /api/usage/logs
@@ -65,7 +65,7 @@ Get usage logs
 
 ```bash
 curl https://localhost:20128/api/usage/logs \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### GET /api/usage/proxy-logs
@@ -74,7 +74,7 @@ Get proxy logs
 
 ```bash
 curl https://localhost:20128/api/usage/proxy-logs \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### GET /api/usage/request-logs
@@ -83,7 +83,7 @@ Get request logs
 
 ```bash
 curl https://localhost:20128/api/usage/request-logs \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### GET /api/usage/budget
@@ -94,7 +94,7 @@ Returns current budget limits and consumption.
 
 ```bash
 curl https://localhost:20128/api/usage/budget \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### POST /api/usage/budget
@@ -105,7 +105,7 @@ Set or update budget limits for usage tracking.
 
 ```bash
 curl -X POST https://localhost:20128/api/usage/budget \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -123,7 +123,7 @@ Only successful (`status = 200`) calls with a non-null cache column are counted.
 
 ```bash
 curl https://localhost:20128/api/usage/cache-health \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### GET /api/usage/model-latency-stats
@@ -134,7 +134,7 @@ Aggregates `usage_history` rows into per-(provider, model) latency stats (avg/p5
 
 ```bash
 curl https://localhost:20128/api/usage/model-latency-stats \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ## Payloads

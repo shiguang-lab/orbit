@@ -11,8 +11,8 @@ Manage Omni Skills (list, install, test, remove), plugins (create, configure), a
 ## Quick install
 
 ```bash
-npm install -g shiguang-gateway   # or: npx shiguang-gateway
-shiguang-gateway --version
+npm install -g orbit   # or: npx orbit
+orbit --version
 ```
 
 ## Subcommands
@@ -22,7 +22,7 @@ shiguang-gateway --version
 **Example:**
 
 ```bash
-shiguang-gateway memory
+orbit memory
 ```
 
 ### `memory search <query>`
@@ -37,7 +37,7 @@ shiguang-gateway memory
 **Example:**
 
 ```bash
-shiguang-gateway memory search <query>
+orbit memory search <query>
 ```
 
 ### `memory add`
@@ -53,7 +53,7 @@ shiguang-gateway memory search <query>
 **Example:**
 
 ```bash
-shiguang-gateway memory add
+orbit memory add
 ```
 
 ### `memory clear`
@@ -68,7 +68,7 @@ shiguang-gateway memory add
 **Example:**
 
 ```bash
-shiguang-gateway memory clear
+orbit memory clear
 ```
 
 ### `memory list`
@@ -82,7 +82,7 @@ shiguang-gateway memory clear
 **Example:**
 
 ```bash
-shiguang-gateway memory list
+orbit memory list
 ```
 
 ### `memory get <id>`
@@ -90,7 +90,7 @@ shiguang-gateway memory list
 **Example:**
 
 ```bash
-shiguang-gateway memory get <id>
+orbit memory get <id>
 ```
 
 ### `memory delete <id>`
@@ -102,7 +102,7 @@ shiguang-gateway memory get <id>
 **Example:**
 
 ```bash
-shiguang-gateway memory delete <id>
+orbit memory delete <id>
 ```
 
 ### `memory health`
@@ -110,7 +110,7 @@ shiguang-gateway memory delete <id>
 **Example:**
 
 ```bash
-shiguang-gateway memory health
+orbit memory health
 ```
 
 ### `PLUGIN_NAME`
@@ -118,7 +118,7 @@ shiguang-gateway memory health
 **Example:**
 
 ```bash
-shiguang-gateway PLUGIN_NAME
+orbit PLUGIN_NAME
 ```
 
 ### `plugin plugin`
@@ -126,7 +126,7 @@ shiguang-gateway PLUGIN_NAME
 **Example:**
 
 ```bash
-shiguang-gateway plugin plugin
+orbit plugin plugin
 ```
 
 ### `plugin list`
@@ -134,7 +134,7 @@ shiguang-gateway plugin plugin
 **Example:**
 
 ```bash
-shiguang-gateway plugin list
+orbit plugin list
 ```
 
 ### `plugin install <name>`
@@ -146,7 +146,7 @@ shiguang-gateway plugin list
 **Example:**
 
 ```bash
-shiguang-gateway plugin install <name>
+orbit plugin install <name>
 ```
 
 ### `plugin remove <name>`
@@ -158,7 +158,7 @@ shiguang-gateway plugin install <name>
 **Example:**
 
 ```bash
-shiguang-gateway plugin remove <name>
+orbit plugin remove <name>
 ```
 
 ### `plugin info <name>`
@@ -166,7 +166,7 @@ shiguang-gateway plugin remove <name>
 **Example:**
 
 ```bash
-shiguang-gateway plugin info <name>
+orbit plugin info <name>
 ```
 
 ### `plugin search [query]`
@@ -174,7 +174,7 @@ shiguang-gateway plugin info <name>
 **Example:**
 
 ```bash
-shiguang-gateway plugin search [query]
+orbit plugin search [query]
 ```
 
 ### `plugin update [name]`
@@ -182,7 +182,7 @@ shiguang-gateway plugin search [query]
 **Example:**
 
 ```bash
-shiguang-gateway plugin update [name]
+orbit plugin update [name]
 ```
 
 ### `plugin scaffold <name>`
@@ -190,7 +190,7 @@ shiguang-gateway plugin update [name]
 **Example:**
 
 ```bash
-shiguang-gateway plugin scaffold <name>
+orbit plugin scaffold <name>
 ```
 
 ### `marketplace`
@@ -198,7 +198,7 @@ shiguang-gateway plugin scaffold <name>
 **Example:**
 
 ```bash
-shiguang-gateway marketplace
+orbit marketplace
 ```
 
 ### `skills search [query]`
@@ -213,7 +213,7 @@ shiguang-gateway marketplace
 **Example:**
 
 ```bash
-shiguang-gateway skills search [query]
+orbit skills search [query]
 ```
 
 ### `skills info <packageId>`
@@ -221,7 +221,7 @@ shiguang-gateway skills search [query]
 **Example:**
 
 ```bash
-shiguang-gateway skills info <packageId>
+orbit skills info <packageId>
 ```
 
 ### `skills install <packageId>`
@@ -235,7 +235,7 @@ shiguang-gateway skills info <packageId>
 **Example:**
 
 ```bash
-shiguang-gateway skills install <packageId>
+orbit skills install <packageId>
 ```
 
 ### `skills categories`
@@ -243,7 +243,7 @@ shiguang-gateway skills install <packageId>
 **Example:**
 
 ```bash
-shiguang-gateway skills categories
+orbit skills categories
 ```
 
 ### `skills featured`
@@ -251,7 +251,7 @@ shiguang-gateway skills categories
 **Example:**
 
 ```bash
-shiguang-gateway skills featured
+orbit skills featured
 ```
 
 ### `skills skills`
@@ -259,7 +259,7 @@ shiguang-gateway skills featured
 **Example:**
 
 ```bash
-shiguang-gateway skills skills
+orbit skills skills
 ```
 
 ### `skills list`
@@ -274,7 +274,7 @@ shiguang-gateway skills skills
 **Example:**
 
 ```bash
-shiguang-gateway skills list
+orbit skills list
 ```
 
 ### `skills get <id>`
@@ -282,7 +282,7 @@ shiguang-gateway skills list
 **Example:**
 
 ```bash
-shiguang-gateway skills get <id>
+orbit skills get <id>
 ```
 
 ### `skills install`
@@ -297,7 +297,7 @@ shiguang-gateway skills get <id>
 **Example:**
 
 ```bash
-shiguang-gateway skills install
+orbit skills install
 ```
 
 ### `skills enable <id>`
@@ -305,7 +305,7 @@ shiguang-gateway skills install
 **Example:**
 
 ```bash
-shiguang-gateway skills enable <id>
+orbit skills enable <id>
 ```
 
 ### `skills disable <id>`
@@ -317,7 +317,7 @@ shiguang-gateway skills enable <id>
 **Example:**
 
 ```bash
-shiguang-gateway skills disable <id>
+orbit skills disable <id>
 ```
 
 ### `skills delete <id>`
@@ -329,7 +329,7 @@ shiguang-gateway skills disable <id>
 **Example:**
 
 ```bash
-shiguang-gateway skills delete <id>
+orbit skills delete <id>
 ```
 
 ### `skills execute <id>`
@@ -343,7 +343,7 @@ shiguang-gateway skills delete <id>
 **Example:**
 
 ```bash
-shiguang-gateway skills execute <id>
+orbit skills execute <id>
 ```
 
 ### `skills executions`
@@ -357,7 +357,7 @@ shiguang-gateway skills execute <id>
 **Example:**
 
 ```bash
-shiguang-gateway skills executions
+orbit skills executions
 ```
 
 ### `skills skillssh`
@@ -365,7 +365,7 @@ shiguang-gateway skills executions
 **Example:**
 
 ```bash
-shiguang-gateway skills skillssh
+orbit skills skillssh
 ```
 
 ### `skills list`
@@ -373,7 +373,7 @@ shiguang-gateway skills skillssh
 **Example:**
 
 ```bash
-shiguang-gateway skills list
+orbit skills list
 ```
 
 ### `skills install <url>`
@@ -381,5 +381,5 @@ shiguang-gateway skills list
 **Example:**
 
 ```bash
-shiguang-gateway skills install <url>
+orbit skills install <url>
 ```

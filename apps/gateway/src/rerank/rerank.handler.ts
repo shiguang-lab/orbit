@@ -61,7 +61,7 @@ async function postHandler(request: Request, _context: unknown): Promise<Respons
     { isValidationFailure, validateBody },
     { getCachedProviderNodes },
     { saveCallLog },
-    { attachShiguangGatewayMetaHeaders },
+    { attachOrbitMetaHeaders },
     { generateRequestId },
   ] = await Promise.all([
     load("@orbit/inference/services/auth"),
@@ -266,7 +266,7 @@ async function postHandler(request: Request, _context: unknown): Promise<Respons
         }).catch(() => {});
 
         const headers = new Headers({ ...CORS_HEADERS, "Content-Type": "application/json" });
-        attachShiguangGatewayMetaHeaders(headers, {
+        attachOrbitMetaHeaders(headers, {
           provider: prefix,
           model: localModel,
           costUsd: 0,

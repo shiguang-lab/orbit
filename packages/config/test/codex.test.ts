@@ -16,7 +16,7 @@ test("writes the established Codex TOML payload and skips non-text models", asyn
     assert.equal(result.skipped, 1);
     assert.equal(
       readFileSync(join(codexHome, "glm52.config.toml"), "utf8"),
-      '# codex --profile glm52\n# glm/glm-5.2\nmodel                          = "glm/glm-5.2"\nmodel_provider                 = "shiguangGateway"\nmodel_reasoning_effort         = "xhigh"\nmodel_reasoning_summary        = "detailed"\nmodel_context_window           = 131072\nmodel_auto_compact_token_limit = 112000\ntool_output_token_limit        = 32768\n',
+      '# codex --profile glm52\n# glm/glm-5.2\nmodel                          = "glm/glm-5.2"\nmodel_provider                 = "orbit"\nmodel_reasoning_effort         = "xhigh"\nmodel_reasoning_summary        = "detailed"\nmodel_context_window           = 131072\nmodel_auto_compact_token_limit = 112000\ntool_output_token_limit        = 32768\n',
     );
   } finally {
     rmSync(codexHome, { recursive: true, force: true });

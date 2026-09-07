@@ -122,8 +122,8 @@ export async function POST(request: Request): Promise<Response> {
   try {
     // One-line marker for diagnosing 413 / Server-Action interceptions.
     // Logs only when Content-Length is present so debug noise stays low for
-    // typical chat payloads. Opt-in via SHIGUANG_GATEWAY_LOG_REQUEST_SHAPE=1.
-    if (process.env.SHIGUANG_GATEWAY_LOG_REQUEST_SHAPE === "1") {
+    // typical chat payloads. Opt-in via ORBIT_LOG_REQUEST_SHAPE=1.
+    if (process.env.ORBIT_LOG_REQUEST_SHAPE === "1") {
       const ct = contentType;
       const cl = requestContentLengthHeader;
       if (cl && Number(cl) > 256 * 1024) {

@@ -1,14 +1,14 @@
 ---
-title: "ShiguangGateway — Przewodnik wdrożenia na VM z Cloudflare"
+title: "Orbit — Przewodnik wdrożenia na VM z Cloudflare"
 version: 3.8.40
 lastUpdated: 2026-06-28
 ---
 
-# ShiguangGateway — Przewodnik wdrożenia na VM z Cloudflare
+# Orbit — Przewodnik wdrożenia na VM z Cloudflare
 
 🌐 **Languages:** 🇺🇸 [English](./VM_DEPLOYMENT_GUIDE.md) | 🇧🇷 [Português (Brasil)](../i18n/pt-BR/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇪🇸 [Español](../i18n/es/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇫🇷 [Français](../i18n/fr/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇮🇹 [Italiano](../i18n/it/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇷🇺 [Русский](../i18n/ru/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇨🇳 [中文 (简体)](../i18n/zh-CN/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇩🇪 [Deutsch](../i18n/de/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇮🇳 [हिन्दी](../i18n/in/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇹🇭 [ไทย](../i18n/th/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇺🇦 [Українська](../i18n/uk-UA/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇸🇦 [العربية](../i18n/ar/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇯🇵 [日本語](../i18n/ja/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇻🇳 [Tiếng Việt](../i18n/vi/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇧🇬 [Български](../i18n/bg/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇩🇰 [Dansk](../i18n/da/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇫🇮 [Suomi](../i18n/fi/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇮🇱 [עברית](../i18n/he/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇭🇺 [Magyar](../i18n/hu/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇮🇩 [Bahasa Indonesia](../i18n/id/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇰🇷 [한국어](../i18n/ko/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇲🇾 [Bahasa Melayu](../i18n/ms/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇳🇱 [Nederlands](../i18n/nl/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇳🇴 [Norsk](../i18n/no/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇵🇹 [Português (Portugal)](../i18n/pt/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇷🇴 [Română](../i18n/ro/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇵🇱 [Polski](../i18n/pl/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇸🇰 [Slovenčina](../i18n/sk/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇸🇪 [Svenska](../i18n/sv/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇵🇭 [Filipino](../i18n/phi/docs/ops/VM_DEPLOYMENT_GUIDE.md) | 🇨🇿 [Čeština](../i18n/cs/docs/ops/VM_DEPLOYMENT_GUIDE.md)
 
-Kompletny przewodnik instalacji i konfiguracji ShiguangGateway na VM (VPS) z domeną zarządzaną przez Cloudflare.
+Kompletny przewodnik instalacji i konfiguracji Orbit na VM (VPS) z domeną zarządzaną przez Cloudflare.
 
 ---
 
@@ -86,18 +86,18 @@ ufw enable
 
 ---
 
-## 2. Instalacja ShiguangGateway
+## 2. Instalacja Orbit
 
 ### 2.1 Utwórz katalog konfiguracji
 
 ```bash
-mkdir -p /opt/shiguang-gateway
+mkdir -p /opt/orbit
 ```
 
 ### 2.2 Utwórz plik zmiennych środowiskowych
 
 ```bash
-cat > /opt/shiguang-gateway/.env << 'EOF'
+cat > /opt/orbit/.env << 'EOF'
 # === Security ===
 JWT_SECRET=CHANGE-TO-A-UNIQUE-64-CHAR-SECRET-KEY
 INITIAL_PASSWORD=YourSecurePassword123!
@@ -105,7 +105,7 @@ API_KEY_SECRET=REPLACE-WITH-ANOTHER-SECRET-KEY
 STORAGE_ENCRYPTION_KEY=REPLACE-WITH-THIRD-SECRET-KEY
 STORAGE_ENCRYPTION_KEY_VERSION=v1
 MACHINE_ID_SALT=CHANGE-TO-A-UNIQUE-SALT
-SHIGUANG_GATEWAY_WS_BRIDGE_SECRET=REPLACE-WITH-WS-BRIDGE-SECRET  # REQUIRED em produção: usado pelo Codex Responses WS bridge
+ORBIT_WS_BRIDGE_SECRET=REPLACE-WITH-WS-BRIDGE-SECRET  # REQUIRED em produção: usado pelo Codex Responses WS bridge
 
 # === App ===
 PORT=20128
@@ -122,11 +122,11 @@ BASE_URL=http://127.0.0.1:20128
 # Browser-facing URL used for OAuth callbacks, dashboard links, and generated public URLs.
 NEXT_PUBLIC_BASE_URL=https://llms.seudominio.com
 # Optional explicit public origin override for generated public asset URLs.
-# SHIGUANG_GATEWAY_PUBLIC_BASE_URL=https://llms.seudominio.com
+# ORBIT_PUBLIC_BASE_URL=https://llms.seudominio.com
 
 # === Cloud Sync (optional) ===
-# CLOUD_URL=https://cloud.shiguang-gateway.online
-# NEXT_PUBLIC_CLOUD_URL=https://cloud.shiguang-gateway.online
+# CLOUD_URL=https://cloud.orbit.online
+# NEXT_PUBLIC_CLOUD_URL=https://cloud.orbit.online
 EOF
 ```
 
@@ -135,22 +135,22 @@ EOF
 ### 2.3 Uruchom kontener
 
 ```bash
-docker pull diegosouzapw/shiguang-gateway:latest
+docker pull diegosouzapw/orbit:latest
 
 docker run -d \
-  --name shiguang-gateway \
+  --name orbit \
   --restart unless-stopped \
-  --env-file /opt/shiguang-gateway/.env \
+  --env-file /opt/orbit/.env \
   -p 20128:20128 \
-  -v shiguang-gateway-data:/app/data \
-  diegosouzapw/shiguang-gateway:latest
+  -v orbit-data:/app/data \
+  diegosouzapw/orbit:latest
 ```
 
 ### 2.4 Sprawdź, czy działa
 
 ```bash
-docker ps | grep shiguang-gateway
-docker logs shiguang-gateway --tail 20
+docker ps | grep orbit
+docker logs orbit --tail 20
 ```
 
 Powinno pojawić się: `[DB] SQLite database ready` oraz `listening on port 20128`.
@@ -183,7 +183,7 @@ chmod 600 /etc/nginx/ssl/origin.key
 ### 3.2 Konfiguracja Nginx
 
 ```bash
-cat > /etc/nginx/sites-available/shiguang-gateway << 'NGINX'
+cat > /etc/nginx/sites-available/orbit << 'NGINX'
 # Default server — blocks direct access via IP
 server {
     listen 80 default_server;
@@ -196,7 +196,7 @@ server {
     return 444;
 }
 
-# ShiguangGateway — HTTPS
+# Orbit — HTTPS
 server {
     listen 443 ssl;
     listen [::]:443 ssl;
@@ -239,16 +239,16 @@ server {
 NGINX
 ```
 
-Utrzymuj limity czasu strumienia reverse proxy w zgodzie ze zmiennymi timeout ShiguangGateway. Jeśli podniesiesz
+Utrzymuj limity czasu strumienia reverse proxy w zgodzie ze zmiennymi timeout Orbit. Jeśli podniesiesz
 `FETCH_TIMEOUT_MS` / `STREAM_IDLE_TIMEOUT_MS`, podnieś też `proxy_read_timeout` / `proxy_send_timeout`
 powyżej tego samego progu.
 
-ShiguangGateway używa `NEXT_PUBLIC_BASE_URL` jako kanonicznego, przeglądarkowego originu dla callbacków OAuth
+Orbit używa `NEXT_PUBLIC_BASE_URL` jako kanonicznego, przeglądarkowego originu dla callbacków OAuth
 oraz generowanych publicznych linków. Uwierzytelnione zapisy w panelu korzystają z żądań same-origin
 oraz ochrony CSRF powiązanej z sesją, więc nie wymagają statycznego publicznego base URL. Nagłówki
 `X-Forwarded-*` powyżej nadal są przydatnymi metadanymi routingu, ale nie zastępują jawnego publicznego
 URL, gdy OAuth lub generowane linki przeglądarkowe go potrzebują. Włączaj
-`SHIGUANG_GATEWAY_TRUST_PROXY` tylko wtedy, gdy ShiguangGateway nie jest bezpośrednio osiągalny przez klientów, a Twój proxy
+`ORBIT_TRUST_PROXY` tylko wtedy, gdy Orbit nie jest bezpośrednio osiągalny przez klientów, a Twój proxy
 usuwa/przebudowuje przychodzące nagłówki forwarded.
 
 ### 3.3 Włącz i przetestuj
@@ -257,8 +257,8 @@ usuwa/przebudowuje przychodzące nagłówki forwarded.
 # Remove default configuration
 rm -f /etc/nginx/sites-enabled/default
 
-# Enable ShiguangGateway
-ln -sf /etc/nginx/sites-available/shiguang-gateway /etc/nginx/sites-enabled/shiguang-gateway
+# Enable Orbit
+ln -sf /etc/nginx/sites-available/orbit /etc/nginx/sites-enabled/orbit
 
 # Test and reload
 nginx -t && systemctl reload nginx
@@ -302,40 +302,40 @@ curl -sI https://llms.seudominio.com/health
 ### Aktualizacja do nowej wersji
 
 ```bash
-docker pull diegosouzapw/shiguang-gateway:latest
-docker stop shiguang-gateway && docker rm shiguang-gateway
-docker run -d --name shiguang-gateway --restart unless-stopped \
-  --env-file /opt/shiguang-gateway/.env \
+docker pull diegosouzapw/orbit:latest
+docker stop orbit && docker rm orbit
+docker run -d --name orbit --restart unless-stopped \
+  --env-file /opt/orbit/.env \
   -p 20128:20128 \
-  -v shiguang-gateway-data:/app/data \
-  diegosouzapw/shiguang-gateway:latest
+  -v orbit-data:/app/data \
+  diegosouzapw/orbit:latest
 ```
 
 ### Podgląd logów
 
 ```bash
-docker logs -f shiguang-gateway          # Real-time stream
-docker logs shiguang-gateway --tail 50   # Last 50 lines
+docker logs -f orbit          # Real-time stream
+docker logs orbit --tail 50   # Last 50 lines
 ```
 
 ### Ręczna kopia zapasowa bazy danych
 
 ```bash
 # Copy data from the volume to the host
-docker cp shiguang-gateway:/app/data ./backup-$(date +%F)
+docker cp orbit:/app/data ./backup-$(date +%F)
 
 # Or compress the entire volume
-docker run --rm -v shiguang-gateway-data:/data -v $(pwd):/backup \
-  alpine tar czf /backup/shiguang-gateway-data-$(date +%F).tar.gz /data
+docker run --rm -v orbit-data:/data -v $(pwd):/backup \
+  alpine tar czf /backup/orbit-data-$(date +%F).tar.gz /data
 ```
 
 ### Przywracanie z kopii zapasowej
 
 ```bash
-docker stop shiguang-gateway
-docker run --rm -v shiguang-gateway-data:/data -v $(pwd):/backup \
-  alpine sh -c "rm -rf /data/* && tar xzf /backup/shiguang-gateway-data-YYYY-MM-DD.tar.gz -C /"
-docker start shiguang-gateway
+docker stop orbit
+docker run --rm -v orbit-data:/data -v $(pwd):/backup \
+  alpine sh -c "rm -rf /data/* && tar xzf /backup/orbit-data-YYYY-MM-DD.tar.gz -C /"
+docker start orbit
 ```
 
 ---
@@ -404,13 +404,13 @@ Dla zdalnego dostępu przez Cloudflare Workers (bez bezpośredniego wystawiania 
 
 ```bash
 # In the local repository
-cd shiguang-gatewayCloud
+cd orbitCloud
 npm install
 npx wrangler login
 npx wrangler deploy
 ```
 
-Zobacz też [TUNNELS_GUIDE.md](./TUNNELS_GUIDE.md) — przewodnik po Cloudflare Tunnel w tym repozytorium. Samodzielny worker `shiguang-gatewayCloud/` znajduje się w osobnym repozytorium towarzyszącym.
+Zobacz też [TUNNELS_GUIDE.md](./TUNNELS_GUIDE.md) — przewodnik po Cloudflare Tunnel w tym repozytorium. Samodzielny worker `orbitCloud/` znajduje się w osobnym repozytorium towarzyszącym.
 
 ---
 
@@ -421,4 +421,4 @@ Zobacz też [TUNNELS_GUIDE.md](./TUNNELS_GUIDE.md) — przewodnik po Cloudflare 
 | 22    | SSH         | Publiczny (z fail2ban)        |
 | 80    | nginx HTTP  | Przekierowanie → HTTPS        |
 | 443   | nginx HTTPS | Przez Cloudflare Proxy        |
-| 20128 | ShiguangGateway   | Tylko localhost (przez nginx) |
+| 20128 | Orbit   | Tylko localhost (przez nginx) |

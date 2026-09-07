@@ -4,7 +4,7 @@
 
 ---
 
-> Complete reference for every environment variable recognized by ShiguangGateway.
+> Complete reference for every environment variable recognized by Orbit.
 > For a quick-start template, see [`.env.example`](../.env.example).
 
 ---
@@ -65,25 +65,25 @@ echo "INITIAL_PASSWORD=$(openssl rand -base64 16)"
 
 ## 2. Storage & Database
 
-ShiguangGateway uses **SQLite** (via `better-sqlite3`) for all persistence. These variables control data location, encryption, and lifecycle.
+Orbit uses **SQLite** (via `better-sqlite3`) for all persistence. These variables control data location, encryption, and lifecycle.
 
 | Variable                         | Default              | Source File                                     | Description                                                                                                        |
 | -------------------------------- | -------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `DATA_DIR`                       | `~/.shiguang-gateway/`      | `src/lib/db/core.ts`                            | Root directory for SQLite DB, backups, and data files. Override for Docker volumes or custom paths.                |
+| `DATA_DIR`                       | `~/.orbit/`      | `src/lib/db/core.ts`                            | Root directory for SQLite DB, backups, and data files. Override for Docker volumes or custom paths.                |
 | `STORAGE_ENCRYPTION_KEY`         | _(empty = disabled)_ | `src/lib/db/encryption.ts`                      | AES key for full SQLite database encryption at rest. Generate with `openssl rand -hex 32`.                         |
 | `STORAGE_ENCRYPTION_KEY_VERSION` | `v1`                 | `scripts/bootstrap-env.mjs`, `electron/main.js` | Version label for the encryption key. Increment when performing key rotation to support decryption of old backups. |
 | `DISABLE_SQLITE_AUTO_BACKUP`     | `false`              | `src/lib/db/backup.ts`                          | When `true`, skips the automatic database backup that runs before migrations on every startup.                     |
-| `SHIGUANG_GATEWAY_CRYPT_KEY`            | _(unset)_            | `src/lib/db/encryption.ts`                      | **Legacy alias** for `STORAGE_ENCRYPTION_KEY`. Accepted as a fallback when the primary variable is absent.         |
-| `SHIGUANG_GATEWAY_API_KEY_BASE64`       | _(unset)_            | `src/lib/db/encryption.ts`                      | **Legacy alias** (Base64-encoded form) accepted as a fallback. Decoded automatically before use.                   |
+| `ORBIT_CRYPT_KEY`            | _(unset)_            | `src/lib/db/encryption.ts`                      | **Legacy alias** for `STORAGE_ENCRYPTION_KEY`. Accepted as a fallback when the primary variable is absent.         |
+| `ORBIT_API_KEY_BASE64`       | _(unset)_            | `src/lib/db/encryption.ts`                      | **Legacy alias** (Base64-encoded form) accepted as a fallback. Decoded automatically before use.                   |
 
 ### Scenarios
 
 | Scenario              | Configuration                                                                    |
 | --------------------- | -------------------------------------------------------------------------------- |
-| **Local development** | Leave all defaults. DB lives at `~/.shiguang-gateway/shiguang-gateway.db`.                     |
+| **Local development** | Leave all defaults. DB lives at `~/.orbit/orbit.db`.                     |
 | **Docker**            | `DATA_DIR=/data` + mount a volume at `/data`.                                    |
 | **Encrypted at rest** | Set `STORAGE_ENCRYPTION_KEY` + keep backups of the key! Losing it = losing data. |
-| **CI/Testing**        | `DATA_DIR=/tmp/shiguang-gateway-test` — ephemeral, no encryption needed.                |
+| **CI/Testing**        | `DATA_DIR=/tmp/orbit-test` — ephemeral, no encryption needed.                |
 
 ---
 
@@ -97,7 +97,7 @@ ShiguangGateway uses **SQLite** (via `better-sqlite3`) for all persistence. Thes
 | `DASHBOARD_PORT`      | _(unset)_    | `src/lib/runtime/ports.ts` | When set, serves the Dashboard UI on this separate port.                               |
 | `PROD_DASHBOARD_PORT` | `20130`      | `docker-compose.prod.yml`  | Host-side published port for the Dashboard in Docker production mode.                  |
 | `PROD_API_PORT`       | `20131`      | `docker-compose.prod.yml`  | Host-side published port for the API in Docker production mode.                        |
-| `SHIGUANG_GATEWAY_PORT`      | _(unset)_    | `src/lib/runtime/ports.ts` | Takes precedence over `PORT` when running inside Electron or other wrappers.           |
+| `ORBIT_PORT`      | _(unset)_    | `src/lib/runtime/ports.ts` | Takes precedence over `PORT` when running inside Electron or other wrappers.           |
 | `NODE_ENV`            | `production` | Next.js core               | Controls logging verbosity, caching, error detail exposure, and Next.js optimizations. |
 
 ### Port Modes
@@ -154,7 +154,7 @@ MAX_BODY_SIZE_BYTES=5242880    # 5 MB limit
 
 ## 5. Input Sanitization & PII Protection
 
-ShiguangGateway provides a two-layer defense: request-side injection scanning and response-side PII stripping.
+Orbit provides a two-layer defense: request-side injection scanning and response-side PII stripping.
 
 ### Request-Side: Prompt Injection Guard
 
@@ -202,7 +202,7 @@ ShiguangGateway provides a two-layer defense: request-side injection scanning an
 | `NEXT_PUBLIC_APP_URL`   | _(unset)_                | `src/shared/services/cloudSyncScheduler.ts` | Legacy fallback for `NEXT_PUBLIC_BASE_URL`.                                                                     |
 
 > [!IMPORTANT]
-> When deploying behind a reverse proxy (nginx, Caddy), `NEXT_PUBLIC_BASE_URL` **must** be set to your public URL (e.g., `https://shiguang-gateway.example.com`). Without this, OAuth callbacks will fail because the redirect_uri won't match.
+> When deploying behind a reverse proxy (nginx, Caddy), `NEXT_PUBLIC_BASE_URL` **must** be set to your public URL (e.g., `https://orbit.example.com`). Without this, OAuth callbacks will fail because the redirect_uri won't match.
 
 ---
 
@@ -232,14 +232,14 @@ Route upstream LLM provider calls through an HTTP or SOCKS5 proxy for egress con
 
 ## 9. CLI Tool Integration
 
-Controls how ShiguangGateway discovers and launches CLI sidecars (Claude Code, Codex, etc.).
+Controls how Orbit discovers and launches CLI sidecars (Claude Code, Codex, etc.).
 
 | Variable                  | Default    | Source File                         | Description                                                                |
 | ------------------------- | ---------- | ----------------------------------- | -------------------------------------------------------------------------- |
 | `CLI_MODE`                | `auto`     | `src/shared/services/cliRuntime.ts` | `auto` = search system PATH; `manual` = use explicit paths only.           |
 | `CLI_EXTRA_PATHS`         | _(unset)_  | `src/shared/services/cliRuntime.ts` | Additional PATH entries for CLI binary discovery (colon-separated).        |
 | `CLI_CONFIG_HOME`         | _(unset)_  | `src/shared/services/cliRuntime.ts` | Override home directory for reading CLI configs (`~/.claude`, `~/.codex`). |
-| `CLI_ALLOW_CONFIG_WRITES` | `false`    | `src/shared/services/cliRuntime.ts` | Allow ShiguangGateway to write CLI config files (token refresh, session data).   |
+| `CLI_ALLOW_CONFIG_WRITES` | `false`    | `src/shared/services/cliRuntime.ts` | Allow Orbit to write CLI config files (token refresh, session data).   |
 | `CLI_CLAUDE_BIN`          | `claude`   | `src/shared/services/cliRuntime.ts` | Custom path to Claude CLI binary.                                          |
 | `CLI_CODEX_BIN`           | `codex`    | `src/shared/services/cliRuntime.ts` | Custom path to Codex CLI binary.                                           |
 | `CLI_DROID_BIN`           | `droid`    | `src/shared/services/cliRuntime.ts` | Custom path to Droid CLI binary.                                           |
@@ -252,7 +252,7 @@ Controls how ShiguangGateway discovers and launches CLI sidecars (Claude Code, C
 ### Docker Example
 
 ```bash
-# Mount host binaries into the container and tell ShiguangGateway where they are:
+# Mount host binaries into the container and tell Orbit where they are:
 CLI_EXTRA_PATHS=/host-cli/bin
 CLI_CONFIG_HOME=/root
 CLI_ALLOW_CONFIG_WRITES=true
@@ -265,28 +265,28 @@ CLI_CLAUDE_BIN=/host-cli/bin/claude
 
 | Variable                                | Default     | Source File                                 | Description                                                                                                                   |
 | --------------------------------------- | ----------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `SHIGUANG_GATEWAY_BASE_URL`                    | auto-detect | `open-sse/mcp-server/server.ts`             | Explicit URL for MCP/A2A tools to reach ShiguangGateway. Overrides localhost auto-detection.                                        |
-| `SHIGUANG_GATEWAY_API_KEY`                     | _(unset)_   | MCP/A2A modules                             | API key for internal MCP tool and A2A skill calls.                                                                            |
-| `SHIGUANG_GATEWAY_API_KEY_ID`                  | _(unset)_   | `open-sse/mcp-server/audit.ts`              | Key ID for MCP audit log attribution.                                                                                         |
-| `ROUTER_API_KEY`                        | _(unset)_   | Legacy                                      | Legacy alias for `SHIGUANG_GATEWAY_API_KEY`.                                                                                         |
-| `SHIGUANG_GATEWAY_MCP_ENFORCE_SCOPES`          | `false`     | `open-sse/mcp-server/server.ts`             | Enforce scope-based access control on MCP tool calls.                                                                         |
-| `SHIGUANG_GATEWAY_MCP_SCOPES`                  | _(all)_     | `open-sse/mcp-server/server.ts`             | Comma-separated scopes: `admin`, `combos`, `health`, `models`, `routing`, `budget`, `metrics`, `pricing`, `memory`, `skills`. |
+| `ORBIT_BASE_URL`                    | auto-detect | `open-sse/mcp-server/server.ts`             | Explicit URL for MCP/A2A tools to reach Orbit. Overrides localhost auto-detection.                                        |
+| `ORBIT_API_KEY`                     | _(unset)_   | MCP/A2A modules                             | API key for internal MCP tool and A2A skill calls.                                                                            |
+| `ORBIT_API_KEY_ID`                  | _(unset)_   | `open-sse/mcp-server/audit.ts`              | Key ID for MCP audit log attribution.                                                                                         |
+| `ROUTER_API_KEY`                        | _(unset)_   | Legacy                                      | Legacy alias for `ORBIT_API_KEY`.                                                                                         |
+| `ORBIT_MCP_ENFORCE_SCOPES`          | `false`     | `open-sse/mcp-server/server.ts`             | Enforce scope-based access control on MCP tool calls.                                                                         |
+| `ORBIT_MCP_SCOPES`                  | _(all)_     | `open-sse/mcp-server/server.ts`             | Comma-separated scopes: `admin`, `combos`, `health`, `models`, `routing`, `budget`, `metrics`, `pricing`, `memory`, `skills`. |
 | `MODEL_SYNC_INTERVAL_HOURS`             | `24`        | `apps/worker/src/jobs/model-sync-scheduler.ts` | Model catalog sync interval in hours.                                                                                         |
 | `PROVIDER_LIMITS_SYNC_INTERVAL_MINUTES` | `70`        | `src/server-init.ts`                        | Provider rate-limit and quota polling interval.                                                                               |
-| `SHIGUANG_GATEWAY_DISABLE_BACKGROUND_SERVICES` | `false`     | `src/instrumentation-node.ts`               | Disable all background services (sync, pricing, model refresh). Useful for CI/test.                                           |
-| `SHIGUANG_GATEWAY_BOOTSTRAPPED`                | `false`     | `src/app/(dashboard)/dashboard/page.tsx`    | Set `true` by bootstrap script after initial setup. Controls setup wizard visibility.                                         |
-| `SHIGUANG_GATEWAY_ALLOW_BODY_PROJECT_OVERRIDE` | `0`         | `open-sse/executors/antigravity.ts`         | Escape hatch: allow request body to override the Antigravity project field.                                                   |
+| `ORBIT_DISABLE_BACKGROUND_SERVICES` | `false`     | `src/instrumentation-node.ts`               | Disable all background services (sync, pricing, model refresh). Useful for CI/test.                                           |
+| `ORBIT_BOOTSTRAPPED`                | `false`     | `src/app/(dashboard)/dashboard/page.tsx`    | Set `true` by bootstrap script after initial setup. Controls setup wizard visibility.                                         |
+| `ORBIT_ALLOW_BODY_PROJECT_OVERRIDE` | `0`         | `open-sse/executors/antigravity.ts`         | Escape hatch: allow request body to override the Antigravity project field.                                                   |
 
 ### OAuth CLI Bridge (Internal)
 
 | Variable            | Default     | Source File                     | Description                               |
 | ------------------- | ----------- | ------------------------------- | ----------------------------------------- |
-| `SHIGUANG_GATEWAY_SERVER`  | auto-detect | `src/lib/oauth/config/index.ts` | Server URL for CLI↔ShiguangGateway auth bridge. |
-| `SHIGUANG_GATEWAY_TOKEN`   | _(unset)_   | `src/lib/oauth/config/index.ts` | Auth token for CLI bridge.                |
-| `SHIGUANG_GATEWAY_USER_ID` | `cli`       | `src/lib/oauth/config/index.ts` | User ID for CLI bridge sessions.          |
-| `SERVER_URL`        | _(unset)_   | `src/lib/oauth/config/index.ts` | Legacy alias for `SHIGUANG_GATEWAY_SERVER`.      |
-| `CLI_TOKEN`         | _(unset)_   | `src/lib/oauth/config/index.ts` | Legacy alias for `SHIGUANG_GATEWAY_TOKEN`.       |
-| `CLI_USER_ID`       | _(unset)_   | `src/lib/oauth/config/index.ts` | Legacy alias for `SHIGUANG_GATEWAY_USER_ID`.     |
+| `ORBIT_SERVER`  | auto-detect | `src/lib/oauth/config/index.ts` | Server URL for CLI↔Orbit auth bridge. |
+| `ORBIT_TOKEN`   | _(unset)_   | `src/lib/oauth/config/index.ts` | Auth token for CLI bridge.                |
+| `ORBIT_USER_ID` | `cli`       | `src/lib/oauth/config/index.ts` | User ID for CLI bridge sessions.          |
+| `SERVER_URL`        | _(unset)_   | `src/lib/oauth/config/index.ts` | Legacy alias for `ORBIT_SERVER`.      |
+| `CLI_TOKEN`         | _(unset)_   | `src/lib/oauth/config/index.ts` | Legacy alias for `ORBIT_TOKEN`.       |
+| `CLI_USER_ID`       | _(unset)_   | `src/lib/oauth/config/index.ts` | Legacy alias for `ORBIT_USER_ID`.     |
 
 ---
 
@@ -313,7 +313,7 @@ Built-in credentials for **localhost development**. For remote deployments, regi
 | `QODER_OAUTH_CLIENT_ID`           | Qoder                   | —                                                                                 |
 | `QODER_PERSONAL_ACCESS_TOKEN`     | Qoder                   | Direct API key fallback (bypasses OAuth).                                         |
 | `QODER_CLI_WORKSPACE`             | Qoder                   | Workspace ID for Qoder CLI.                                                       |
-| `SHIGUANG_GATEWAY_QODER_WORKSPACE`       | Qoder                   | Alias for `QODER_CLI_WORKSPACE`.                                                  |
+| `ORBIT_QODER_WORKSPACE`       | Qoder                   | Alias for `QODER_CLI_WORKSPACE`.                                                  |
 
 > [!WARNING]
 >
@@ -353,7 +353,7 @@ process.env[`${PROVIDER_ID}_USER_AGENT`]
 
 ## 13. CLI Fingerprint Compatibility
 
-When enabled, ShiguangGateway reorders HTTP headers and JSON body fields to match the exact signature of official CLI tools. This reduces the risk of account flagging while preserving your proxy IP.
+When enabled, Orbit reorders HTTP headers and JSON body fields to match the exact signature of official CLI tools. This reduces the risk of account flagging while preserving your proxy IP.
 
 **Source:** `open-sse/config/cliFingerprints.ts`, `open-sse/executors/base.ts`
 
@@ -483,7 +483,7 @@ The logging system writes to both stdout and rotated log files. All configuratio
 
 | Variable                   | Default            | Description                                                                                          |
 | -------------------------- | ------------------ | ---------------------------------------------------------------------------------------------------- |
-| `SHIGUANG_GATEWAY_MEMORY_MB`      | `512`              | Runtime V8 heap limit. Docker standalone and `shiguang-gateway serve` use it to set `--max-old-space-size`. |
+| `ORBIT_MEMORY_MB`      | `512`              | Runtime V8 heap limit. Docker standalone and `orbit serve` use it to set `--max-old-space-size`. |
 | `PROMPT_CACHE_MAX_SIZE`    | `50`               | Max cached system prompt entries.                                                                    |
 | `PROMPT_CACHE_MAX_BYTES`   | `2097152` (2 MB)   | Max total prompt cache size.                                                                         |
 | `PROMPT_CACHE_TTL_MS`      | `300000` (5 min)   | Prompt cache entry TTL.                                                                              |
@@ -497,7 +497,7 @@ The logging system writes to both stdout and rotated log files. All configuratio
 ### Low-RAM Docker Example
 
 ```bash
-SHIGUANG_GATEWAY_MEMORY_MB=128
+ORBIT_MEMORY_MB=128
 PROMPT_CACHE_MAX_SIZE=20
 PROMPT_CACHE_MAX_BYTES=524288        # 512 KB
 SEMANTIC_CACHE_MAX_SIZE=25
@@ -568,7 +568,7 @@ Automatic model pricing data synchronization from external sources.
 | `CURSOR_PROTOBUF_DEBUG`          | _(unset)_ | `open-sse/utils/cursorProtobuf.ts`        | Set `1` to dump Cursor protobuf decode/encode details.         |
 | `CURSOR_STREAM_DEBUG`            | _(unset)_ | `open-sse/executors/cursor.ts`            | Set `1` to dump raw Cursor SSE stream data.                    |
 | `DEBUG_RESPONSES_SSE_TO_JSON`    | _(unset)_ | `open-sse/handlers/responseTranslator.ts` | Set `true` to log Responses API SSE→JSON translation details.  |
-| `NEXT_PUBLIC_SHIGUANG_GATEWAY_E2E_MODE` | _(unset)_ | E2E test harness                          | Set `true` to enable E2E test mode (relaxed auth, test hooks). |
+| `NEXT_PUBLIC_ORBIT_E2E_MODE` | _(unset)_ | E2E test harness                          | Set `true` to enable E2E test mode (relaxed auth, test hooks). |
 
 ---
 
@@ -608,9 +608,9 @@ API_PORT=20129
 NODE_ENV=production
 AUTH_COOKIE_SECURE=true
 REQUIRE_API_KEY=true
-NEXT_PUBLIC_BASE_URL=https://shiguang-gateway.example.com
+NEXT_PUBLIC_BASE_URL=https://orbit.example.com
 BASE_URL=http://localhost:20128
-SHIGUANG_GATEWAY_MEMORY_MB=512
+ORBIT_MEMORY_MB=512
 CORS_ORIGIN=https://your-frontend.example.com
 ```
 
@@ -621,7 +621,7 @@ JWT_SECRET=test-jwt-secret-for-ci
 API_KEY_SECRET=test-api-key-secret-for-ci
 INITIAL_PASSWORD=testpass
 NODE_ENV=production
-SHIGUANG_GATEWAY_DISABLE_BACKGROUND_SERVICES=true
+ORBIT_DISABLE_BACKGROUND_SERVICES=true
 APP_LOG_TO_FILE=false
 ```
 
@@ -634,9 +634,9 @@ STORAGE_ENCRYPTION_KEY=<generated>
 PORT=20128
 AUTH_COOKIE_SECURE=true
 REQUIRE_API_KEY=true
-NEXT_PUBLIC_BASE_URL=https://shiguang-gateway.example.com
+NEXT_PUBLIC_BASE_URL=https://orbit.example.com
 BASE_URL=http://127.0.0.1:20128
-CORS_ORIGIN=https://shiguang-gateway.example.com
+CORS_ORIGIN=https://orbit.example.com
 ENABLE_TLS_FINGERPRINT=true
 CLI_COMPAT_ALL=1
 ```
@@ -650,7 +650,7 @@ The following variables appeared in previous versions of `.env.example` but have
 | Variable                                              | Reason                                                                                                  |
 | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
 | `STORAGE_DRIVER=sqlite`                               | Never read by any source file. SQLite is the only supported driver — no selection needed.               |
-| `INSTANCE_NAME=shiguang-gateway`                             | Present in old docs/env templates but unused at runtime. May return in a future multi-instance feature. |
+| `INSTANCE_NAME=orbit`                             | Present in old docs/env templates but unused at runtime. May return in a future multi-instance feature. |
 | `SQLITE_MAX_SIZE_MB=2048`                             | Not referenced in source code. Database size is not artificially limited.                               |
 | `SQLITE_CLEAN_LEGACY_FILES=true`                      | Not referenced in source code. Legacy cleanup was likely removed.                                       |
 | `CLI_ROO_BIN`                                         | Not registered in `src/shared/services/cliRuntime.ts`.                                                  |

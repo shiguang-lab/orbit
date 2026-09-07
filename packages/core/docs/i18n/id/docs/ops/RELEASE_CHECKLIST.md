@@ -4,7 +4,7 @@
 
 ---
 
-Gunakan daftar periksa ini sebelum memberi tag atau menerbitkan rilis ShiguangGateway baru.
+Gunakan daftar periksa ini sebelum memberi tag atau menerbitkan rilis Orbit baru.
 
 ## Versi dan Changelog
 

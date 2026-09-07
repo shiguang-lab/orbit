@@ -41,10 +41,10 @@ export async function startMcpCli(options = {}) {
   processLike.once("exit", stopHeartbeatOnce);
   processLike.once("SIGINT", stopHeartbeatOnce);
   processLike.once("SIGTERM", stopHeartbeatOnce);
-  logger.error("[MCP] ShiguangGateway MCP Server starting (stdio transport)...");
+  logger.error("[MCP] Orbit MCP Server starting (stdio transport)...");
   try {
     await server.connect(transport);
-    logger.error("[MCP] ShiguangGateway MCP Server connected and ready.");
+    logger.error("[MCP] Orbit MCP Server connected and ready.");
   } finally {
     if (runtime.closeAuditDb()) {
       logger.error("[MCP] Audit database checkpointed and closed.");

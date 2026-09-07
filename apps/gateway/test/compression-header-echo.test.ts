@@ -5,14 +5,14 @@ import {
   withCompressionHeaderEcho,
 } from "../src/completions/compression-header-echo.js";
 
-const RESPONSE_HEADER = "X-ShiguangGateway-Compression";
+const RESPONSE_HEADER = "X-Orbit-Compression";
 
 test("reads the compression request header and ignores absent or blank values", () => {
   assert.equal(readCompressionRequestHeader(new Request("http://localhost")), null);
   assert.equal(
     readCompressionRequestHeader(
       new Request("http://localhost", {
-        headers: { "X-ShiguangGateway-Compression": "   " },
+        headers: { "X-Orbit-Compression": "   " },
       })
     ),
     null
@@ -20,7 +20,7 @@ test("reads the compression request header and ignores absent or blank values", 
   assert.equal(
     readCompressionRequestHeader(
       new Request("http://localhost", {
-        headers: { "X-ShiguangGateway-Compression": " Engine:SMART " },
+        headers: { "X-Orbit-Compression": " Engine:SMART " },
       })
     ),
     "Engine:SMART"

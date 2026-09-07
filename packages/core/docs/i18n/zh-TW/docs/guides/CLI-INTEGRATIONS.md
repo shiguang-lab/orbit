@@ -6,25 +6,25 @@
 
 ---
 
-title: "CLI 整合 — 將任何編碼 CLI 指向 ShiguangGateway"
+title: "CLI 整合 — 將任何編碼 CLI 指向 Orbit"
 version: 3.8.50
 lastUpdated: 2026-08-18
 ---
 
 # CLI 整合
 
-ShiguangGateway 提供一系列 `setup-*` 命令，用於配置編碼 CLI（Codex、Claude Code、OpenCode、Cline 等）以使用 ShiguangGateway 作為其後端 — 這樣工具只需與 **一個** 端點通信，ShiguangGateway 會自動將請求路由到正確的提供者並進行自動回退。每個命令都從運行中的 ShiguangGateway（本地或遠程）讀取 **實時** 模型目錄，並在 **你的** 機器上寫入工具自己的配置文件。API 密鑰在工具支持的地方通過環境變量引用。持久化工具本地環境文件的命令如下所示。
+Orbit 提供一系列 `setup-*` 命令，用於配置編碼 CLI（Codex、Claude Code、OpenCode、Cline 等）以使用 Orbit 作為其後端 — 這樣工具只需與 **一個** 端點通信，Orbit 會自動將請求路由到正確的提供者並進行自動回退。每個命令都從運行中的 Orbit（本地或遠程）讀取 **實時** 模型目錄，並在 **你的** 機器上寫入工具自己的配置文件。API 密鑰在工具支持的地方通過環境變量引用。持久化工具本地環境文件的命令如下所示。
 
-還有一個通用啟動器 — `shiguang-gateway run <target>` — 它會啟動 `claude`、`codex`、`aider`、`goose`、`opencode`、`qwen` 或 `gemini`，並注入正確的環境，而無需寫入任何配置。目標及其別名來自於標準清單 `bin/cli/cli-manifest.mjs`（`claude-code|cc|anthropic`、`codex-cli|openai-codex|openai`、`goose-cli`、`open-code`、`qwen-code`、`gemini-cli`），而 `shiguang-gateway completion` 提供相同的基於清單的目標詞。舊版每個工具的啟動器 — `shiguang-gateway launch`（Claude Code）和 `shiguang-gateway launch-codex`（Codex） — 仍然可用。
+還有一個通用啟動器 — `orbit run <target>` — 它會啟動 `claude`、`codex`、`aider`、`goose`、`opencode`、`qwen` 或 `gemini`，並注入正確的環境，而無需寫入任何配置。目標及其別名來自於標準清單 `bin/cli/cli-manifest.mjs`（`claude-code|cc|anthropic`、`codex-cli|openai-codex|openai`、`goose-cli`、`open-code`、`qwen-code`、`gemini-cli`），而 `orbit completion` 提供相同的基於清單的目標詞。舊版每個工具的啟動器 — `orbit launch`（Claude Code）和 `orbit launch-codex`（Codex） — 仍然可用。
 
 提供者的入門可以從相同的本地/遠程上下文中進行。下面的 API 首先命令將管理身份驗證與提供者憑據分開，並且從不在結構化輸出中打印憑據：
 
 ```bash
-shiguang-gateway providers add glm --credential-env GLM_API_KEY --name work
-shiguang-gateway providers import ./providers.json --dry-run --json
-shiguang-gateway providers auth openai
-shiguang-gateway providers edit <connection-id> --default-model glm/glm-5.2
-shiguang-gateway providers remove <connection-id> --yes
+orbit providers add glm --credential-env GLM_API_KEY --name work
+orbit providers import ./providers.json --dry-run --json
+orbit providers auth openai
+orbit providers edit <connection-id> --default-model glm/glm-5.2
+orbit providers remove <connection-id> --yes
 ```
 
 對於腳本，建議使用 `--credential-stdin` 或 `--credential-env`；`--credential` 保留用於受控的本地使用。`providers remove` 在非互動終端上需要 `--yes`，所有五個命令都遵循活動上下文或全域的 `--base-url`/`--api-key` 選項。
@@ -33,131 +33,131 @@ shiguang-gateway providers remove <connection-id> --yes
 
 - [Claude Code 配置](./CLAUDE-CODE-CONFIGURATION.md)
 - [Codex CLI 配置](./CODEX-CLI-CONFIGURATION.md)
-- [遠程模式](./REMOTE-MODE.md) — 從你的筆記本電腦驅動遠程 ShiguangGateway（VPS / Tailnet）
+- [遠程模式](./REMOTE-MODE.md) — 從你的筆記本電腦驅動遠程 Orbit（VPS / Tailnet）
 - [VS Code Copilot Chat](./VSCODE-COPILOT.md) — OmniCopilot 擴展；它也可以在編輯器內為你運行這些 `setup-*` 命令
 
 ---
 
 ## 主表
 
-每個命令都遵循 **活動上下文**（通過 `shiguang-gateway connect` 設置，請參見 [遠程模式](./REMOTE-MODE.md)）或明確的 `--remote <url> --api-key <key>` 標誌。下面的 "本地與遠程" 意味著：不帶標誌時，它的目標是 `http://localhost:20128`；帶有 `--remote`（或活動的遠程上下文）時，它從該服務器獲取目錄並在本地寫入配置。
+每個命令都遵循 **活動上下文**（通過 `orbit connect` 設置，請參見 [遠程模式](./REMOTE-MODE.md)）或明確的 `--remote <url> --api-key <key>` 標誌。下面的 "本地與遠程" 意味著：不帶標誌時，它的目標是 `http://localhost:20128`；帶有 `--remote`（或活動的遠程上下文）時，它從該服務器獲取目錄並在本地寫入配置。
 
 | 命令                       | 工具                    | 寫入內容                                                                                                                           | 主要標誌                                                                                                                                   | 本地與遠程 |
 | -------------------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ---------- |
-| `shiguang-gateway setup-codex`    | OpenAI Codex CLI        | `~/.codex/<name>.config.toml` — 每個兼容文本模型的一個配置文件（`codex --profile <name>`）                                         | `--remote` `--api-key` `--only` `--dry-run` `--port` `--codex-home`                                                                        | 兩者       |
-| `shiguang-gateway setup-claude`   | Claude Code             | `~/.claude/profiles/<name>/settings.json` — 每個匹配模型的一個配置文件（`CLAUDE_CONFIG_DIR`）                                      | `--remote` `--api-key` `--only` `--dry-run` `--port` `--claude-home`                                                                       | 兩者       |
-| `shiguang-gateway setup-opencode` | OpenCode（兼容 openai） | `~/.config/opencode/opencode.json` — 包含每個目錄模型的 `shiguang-gateway` 提供者（`opencode -m shiguang-gateway/<model>`）                      | `--remote` `--api-key` `--only` `--model` `--dry-run` `--port`                                                                             | 兩者       |
-| `shiguang-gateway setup-cline`    | Cline                   | `~/.cline/data/{globalState,secrets}.json`（CLI 模式） + 打印 VS Code 擴展設置                                                     | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--cline-dir`                                                                | 兩者       |
-| `shiguang-gateway setup-kilo`     | Kilo Code               | `~/.local/share/kilo/auth.json`（CLI） + 如果存在，將 `kilocode.*` 合併到 VS Code 的 `settings.json`                               | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--auth-path` `--vscode-settings`                                            | 兩者       |
-| `shiguang-gateway setup-continue` | Continue / `cn` CLI     | `~/.continue/config.yaml` — `provider: openai` 模型，密鑰通過 `${{ secrets.SHIGUANG_GATEWAY_API_KEY }}`                                   | `--remote` `--api-key` `--only` `--dry-run` `--port` `--config-path`                                                                       | 兩者       |
-| `shiguang-gateway setup-cursor`   | Cursor                  | 無 — 打印應用內步驟（Cursor 配置是模糊的 SQLite）                                                                                  | `--remote` `--api-key` `--only` `--port`                                                                                                   | 兩者       |
-| `shiguang-gateway setup-roo`      | Roo Code                | `~/.shiguang-gateway/roo-settings.json`（導入文件） + 如果存在 VS Code 的 `settings.json`，設置 `roo-cline.autoImportSettingsPath`        | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--import-path` `--vscode-settings`                                          | 兩者       |
-| `shiguang-gateway setup-crush`    | Crush                   | `~/.config/crush/crush.json` — `openai-compat` 提供者，密鑰通過 `$SHIGUANG_GATEWAY_API_KEY`                                               | `--remote` `--api-key` `--only` `--dry-run` `--port` `--config-path`                                                                       | 兩者       |
-| `shiguang-gateway setup-goose`    | Goose                   | `~/.config/goose/config.yaml`（`GOOSE_PROVIDER`/`OPENAI_HOST`/`GOOSE_MODEL`） + 打印環境配方                                       | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--config-path`                                                              | 兩者       |
-| `shiguang-gateway setup-aider`    | Aider                   | `~/.aider.conf.yml`（`openai-api-base` + `model: openai/<id>`） + 打印環境配方                                                     | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--config-path`                                                              | 兩者       |
-| `shiguang-gateway setup-qwen`     | Qwen Code               | `~/.qwen/settings.json` — V4 `modelProviders.openai` 陣列 + `SHIGUANG_GATEWAY_API_KEY` 在 `~/.qwen/.env`                                  | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--config-path` `--env-path`                                                 | 兩者       |
-| `shiguang-gateway run <target>`   | 運行時啟動（通用）      | 無 — 啟動 `claude`/`codex`/`aider`/`goose`/`opencode`/`qwen`/`gemini`，並帶有正確的環境和參數；Qwen 和 Gemini 使用臨時隔離的主目錄 | `--remote` `--base-url` `--context` `--provider` `--model` `--api-key` `--api-key-env` `--dry-run` `--json` `--port` `--profile` `--token` | 兩者       |
-| `shiguang-gateway launch`         | Claude Code             | 無 — 啟動 `claude`，並注入 `ANTHROPIC_BASE_URL`/`ANTHROPIC_AUTH_TOKEN`                                                             | `--remote` `--api-key` `--token` `--profile` `--port`                                                                                      | 兩者       |
-| `shiguang-gateway launch-codex`   | OpenAI Codex CLI        | 無 — 啟動 `codex`，並通過 `-c` 標誌注入 `shiguang-gateway` 提供者                                                                         | `--remote` `--api-key` `--profile` (`-p`) `--port`                                                                                         | 兩者       |
+| `orbit setup-codex`    | OpenAI Codex CLI        | `~/.codex/<name>.config.toml` — 每個兼容文本模型的一個配置文件（`codex --profile <name>`）                                         | `--remote` `--api-key` `--only` `--dry-run` `--port` `--codex-home`                                                                        | 兩者       |
+| `orbit setup-claude`   | Claude Code             | `~/.claude/profiles/<name>/settings.json` — 每個匹配模型的一個配置文件（`CLAUDE_CONFIG_DIR`）                                      | `--remote` `--api-key` `--only` `--dry-run` `--port` `--claude-home`                                                                       | 兩者       |
+| `orbit setup-opencode` | OpenCode（兼容 openai） | `~/.config/opencode/opencode.json` — 包含每個目錄模型的 `orbit` 提供者（`opencode -m orbit/<model>`）                      | `--remote` `--api-key` `--only` `--model` `--dry-run` `--port`                                                                             | 兩者       |
+| `orbit setup-cline`    | Cline                   | `~/.cline/data/{globalState,secrets}.json`（CLI 模式） + 打印 VS Code 擴展設置                                                     | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--cline-dir`                                                                | 兩者       |
+| `orbit setup-kilo`     | Kilo Code               | `~/.local/share/kilo/auth.json`（CLI） + 如果存在，將 `kilocode.*` 合併到 VS Code 的 `settings.json`                               | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--auth-path` `--vscode-settings`                                            | 兩者       |
+| `orbit setup-continue` | Continue / `cn` CLI     | `~/.continue/config.yaml` — `provider: openai` 模型，密鑰通過 `${{ secrets.ORBIT_API_KEY }}`                                   | `--remote` `--api-key` `--only` `--dry-run` `--port` `--config-path`                                                                       | 兩者       |
+| `orbit setup-cursor`   | Cursor                  | 無 — 打印應用內步驟（Cursor 配置是模糊的 SQLite）                                                                                  | `--remote` `--api-key` `--only` `--port`                                                                                                   | 兩者       |
+| `orbit setup-roo`      | Roo Code                | `~/.orbit/roo-settings.json`（導入文件） + 如果存在 VS Code 的 `settings.json`，設置 `roo-cline.autoImportSettingsPath`        | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--import-path` `--vscode-settings`                                          | 兩者       |
+| `orbit setup-crush`    | Crush                   | `~/.config/crush/crush.json` — `openai-compat` 提供者，密鑰通過 `$ORBIT_API_KEY`                                               | `--remote` `--api-key` `--only` `--dry-run` `--port` `--config-path`                                                                       | 兩者       |
+| `orbit setup-goose`    | Goose                   | `~/.config/goose/config.yaml`（`GOOSE_PROVIDER`/`OPENAI_HOST`/`GOOSE_MODEL`） + 打印環境配方                                       | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--config-path`                                                              | 兩者       |
+| `orbit setup-aider`    | Aider                   | `~/.aider.conf.yml`（`openai-api-base` + `model: openai/<id>`） + 打印環境配方                                                     | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--config-path`                                                              | 兩者       |
+| `orbit setup-qwen`     | Qwen Code               | `~/.qwen/settings.json` — V4 `modelProviders.openai` 陣列 + `ORBIT_API_KEY` 在 `~/.qwen/.env`                                  | `--remote` `--api-key` `--model` `--yes` `--dry-run` `--port` `--config-path` `--env-path`                                                 | 兩者       |
+| `orbit run <target>`   | 運行時啟動（通用）      | 無 — 啟動 `claude`/`codex`/`aider`/`goose`/`opencode`/`qwen`/`gemini`，並帶有正確的環境和參數；Qwen 和 Gemini 使用臨時隔離的主目錄 | `--remote` `--base-url` `--context` `--provider` `--model` `--api-key` `--api-key-env` `--dry-run` `--json` `--port` `--profile` `--token` | 兩者       |
+| `orbit launch`         | Claude Code             | 無 — 啟動 `claude`，並注入 `ANTHROPIC_BASE_URL`/`ANTHROPIC_AUTH_TOKEN`                                                             | `--remote` `--api-key` `--token` `--profile` `--port`                                                                                      | 兩者       |
+| `orbit launch-codex`   | OpenAI Codex CLI        | 無 — 啟動 `codex`，並通過 `-c` 標誌注入 `orbit` 提供者                                                                         | `--remote` `--api-key` `--profile` (`-p`) `--port`                                                                                         | 兩者       |
 
 有關標誌的說明（在命令源中已驗證）：
 
-- `--remote <url>` — 從遠程 ShiguangGateway 獲取目錄（覆蓋 `--port` 和活動上下文）。`--api-key <key>` 提供該服務器的憑據（預設為 `SHIGUANG_GATEWAY_API_KEY` 環境變量，或活動上下文的令牌）。
+- `--remote <url>` — 從遠程 Orbit 獲取目錄（覆蓋 `--port` 和活動上下文）。`--api-key <key>` 提供該服務器的憑據（預設為 `ORBIT_API_KEY` 環境變量，或活動上下文的令牌）。
 - `--only <patterns>` — 以逗號分隔的子字串；僅保留匹配的模型 ID（例如 `--only glm,kimi`）。可用於 `setup-codex`、`setup-claude`、`setup-opencode`、`setup-continue`、`setup-cursor`、`setup-crush`。
 - `--dry-run` — 打印將要寫入的內容，而不觸及文件系統。可用於每個 `setup-*` 命令 **除了** `setup-cursor`（該命令從不寫入文件）。
 - `--model <id>` — 對於沒有模型自動發現的工具是必需的（或交互選擇）：Cline、Kilo、Roo、Goose、Qwen、Aider。這些工具也接受 `--yes` 以進行非交互式運行（這樣則需要 `--model`）。`setup-opencode` 需要 `--model` 來設置預設的頂級模型。
-- `--model <id>` 在 `shiguang-gateway run` 上遵循清單的每個目標接線（`bin/cli/cli-manifest.mjs`）：**aider** 接收 `--model openai/<id>`，**opencode** 接收 `--model shiguang-gateway/<id>`（前綴僅在 ID 不包含時添加）；**qwen** 和 **gemini** 直接接收 ID；**claude** 通過 `ANTHROPIC_MODEL` 獲得，**goose** 通過 `GOOSE_MODEL` 獲得，**codex** 通過 `-c model_providers.shiguang-gateway.*` 參數獲得。**Qwen 是唯一一個強制要求 `--model` 的運行目標** — `shiguang-gateway run qwen` 如果沒有它將以明確錯誤退出 `2`。
-- `--port <port>` — 本地 ShiguangGateway 端口（預設為 `20128`，設置 `--remote` 時忽略）。在所有 `setup-*` 和兩個啟動器上均存在。
-- `shiguang-gateway run` 退出代碼：子 CLI 的自身退出代碼被逐字傳遞；`2` = 無效參數（不支持的目標，缺少必需的 `--model`，容器保護）；`127` = 目標二進制文件不在 `PATH` 中；`130`/`143`/`129` 當啟動被 `SIGINT`/`SIGTERM`/`SIGHUP` 終止時；`1` = 其他運行時啟動失敗。
+- `--model <id>` 在 `orbit run` 上遵循清單的每個目標接線（`bin/cli/cli-manifest.mjs`）：**aider** 接收 `--model openai/<id>`，**opencode** 接收 `--model orbit/<id>`（前綴僅在 ID 不包含時添加）；**qwen** 和 **gemini** 直接接收 ID；**claude** 通過 `ANTHROPIC_MODEL` 獲得，**goose** 通過 `GOOSE_MODEL` 獲得，**codex** 通過 `-c model_providers.orbit.*` 參數獲得。**Qwen 是唯一一個強制要求 `--model` 的運行目標** — `orbit run qwen` 如果沒有它將以明確錯誤退出 `2`。
+- `--port <port>` — 本地 Orbit 端口（預設為 `20128`，設置 `--remote` 時忽略）。在所有 `setup-*` 和兩個啟動器上均存在。
+- `orbit run` 退出代碼：子 CLI 的自身退出代碼被逐字傳遞；`2` = 無效參數（不支持的目標，缺少必需的 `--model`，容器保護）；`127` = 目標二進制文件不在 `PATH` 中；`130`/`143`/`129` 當啟動被 `SIGINT`/`SIGTERM`/`SIGHUP` 終止時；`1` = 其他運行時啟動失敗。
 - 兩個啟動器（`launch`、`launch-codex`）接受 `--profile <name>` 以選擇由 `setup-claude` / `setup-codex` 寫入的配置文件，並傳遞底層 `claude` / `codex` 二進制文件的參數。
 
 互動選擇器也由設置配方共享：
 
 ```bash
 # 從活動的本地或遠程模型目錄中選擇並配置目標。
-shiguang-gateway configure claude
-shiguang-gateway configure opencode --provider glm
-shiguang-gateway configure qwen --model qwen/qwen3.8-max-preview --yes
+orbit configure claude
+orbit configure opencode --provider glm
+orbit configure qwen --model qwen/qwen3.8-max-preview --yes
 ```
 
 `configure` 目前委託給 `codex`、`claude`、`opencode`、`qwen`、`aider`、`goose`、`cline`、`continue` 和 `kilo` 的測試配方。僅限 IDE、MITM 和僅限指南的目錄條目仍然是明確的 `setup-*`/手動流程，並不作為可啟動的目標呈現。
 
 > `setup-opencode` 是 **輕量級的 openai 兼容** OpenCode 整合。
-> 還有一個更豐富的插件整合 — `shiguang-gateway setup opencode` — 它安裝 `@orbit/opencode-plugin`。這是不同的命令；上面的表格記錄了 `setup-opencode`。
+> 還有一個更豐富的插件整合 — `orbit setup opencode` — 它安裝 `@orbit/opencode-plugin`。這是不同的命令；上面的表格記錄了 `setup-opencode`。
 
 ---
 
 ## 本地使用
 
-在 `localhost:20128` 上運行 ShiguangGateway，只需為您的工具運行設置命令。目錄是從本地服務器獲取的。
+在 `localhost:20128` 上運行 Orbit，只需為您的工具運行設置命令。目錄是從本地服務器獲取的。
 
 ```bash
 # Codex: 為每個匹配的模型寫入配置文件到 ~/.codex/
-shiguang-gateway setup-codex
+orbit setup-codex
 codex --profile glm52            # 使用生成的配置文件
 
 # Claude Code: 為每個模型寫入配置文件，然後啟動一個
-shiguang-gateway setup-claude
-shiguang-gateway launch --profile glm52
+orbit setup-claude
+orbit launch --profile glm52
 
 # OpenCode: 寫入與所有目錄模型兼容的 openai 提供者
-shiguang-gateway setup-opencode
-export SHIGUANG_GATEWAY_API_KEY=sk-...  # 通過 {env:SHIGUANG_GATEWAY_API_KEY} 引用，永遠不會寫入磁碟
-opencode -m shiguang-gateway/glm/glm-5.2 "..."
+orbit setup-opencode
+export ORBIT_API_KEY=sk-...  # 通過 {env:ORBIT_API_KEY} 引用，永遠不會寫入磁碟
+opencode -m orbit/glm/glm-5.2 "..."
 
 # 沒有自動發現的工具需要明確的模型：
-shiguang-gateway setup-aider --model glm/glm-5.2
-shiguang-gateway setup-qwen --model qwen/qwen3.8-max-preview
+orbit setup-aider --model glm/glm-5.2
+orbit setup-qwen --model qwen/qwen3.8-max-preview
 
 # 預覽而不寫入任何內容：
-shiguang-gateway setup-continue --dry-run
+orbit setup-continue --dry-run
 ```
 
 在不寫入任何配置的情況下啟動（僅環境注入）：
 
 ```bash
-shiguang-gateway launch                 # Claude Code → 本地 ShiguangGateway
-shiguang-gateway launch-codex           # Codex CLI → 本地 ShiguangGateway
-shiguang-gateway launch-codex --profile glm52
-shiguang-gateway run claude --model openai/gpt-5.4
-shiguang-gateway run codex --model openai/gpt-5.4 --dry-run --json
-shiguang-gateway run aider --model glm/glm-5.2 -- --message "reply OK"
-shiguang-gateway run goose --model glm/glm-5.2
-shiguang-gateway run opencode --model glm/glm-5.2 -- run "reply OK"
-shiguang-gateway run qwen --model glm/glm-5.2 -- -p "reply OK"
-shiguang-gateway run gemini --model glm/glm-5.2 -- --skip-trust -p "reply OK"
+orbit launch                 # Claude Code → 本地 Orbit
+orbit launch-codex           # Codex CLI → 本地 Orbit
+orbit launch-codex --profile glm52
+orbit run claude --model openai/gpt-5.4
+orbit run codex --model openai/gpt-5.4 --dry-run --json
+orbit run aider --model glm/glm-5.2 -- --message "reply OK"
+orbit run goose --model glm/glm-5.2
+orbit run opencode --model glm/glm-5.2 -- run "reply OK"
+orbit run qwen --model glm/glm-5.2 -- -p "reply OK"
+orbit run gemini --model glm/glm-5.2 -- --skip-trust -p "reply OK"
 
 # 明確的命令路徑：傳遞任何在 -- 之後的內容
-shiguang-gateway run claude -- --print-system-prompt "review this diff"
+orbit run claude -- --print-system-prompt "review this diff"
 ```
 
 ---
 
 ## 遠程使用
 
-將任何設置命令指向遠程 ShiguangGateway，使用 `--remote` + `--api-key`。目錄是從遠程獲取的；配置寫入您的本地機器。
+將任何設置命令指向遠程 Orbit，使用 `--remote` + `--api-key`。目錄是從遠程獲取的；配置寫入您的本地機器。
 
 ```bash
 # OpenCode 對遠程 VPS，僅保留 glm/kimi 模型
-shiguang-gateway setup-opencode --remote http://192.168.0.15:20128 --api-key oma_live_xxx \
+orbit setup-opencode --remote http://192.168.0.15:20128 --api-key oma_live_xxx \
   --only glm,kimi
-opencode -m shiguang-gateway/glm/glm-5.2 "..."   # 首先導出 SHIGUANG_GATEWAY_API_KEY
+opencode -m orbit/glm/glm-5.2 "..."   # 首先導出 ORBIT_API_KEY
 
 # 從遠程目錄獲取 Codex 配置文件
-shiguang-gateway setup-codex --remote http://192.168.0.15:20128 --api-key oma_live_xxx
+orbit setup-codex --remote http://192.168.0.15:20128 --api-key oma_live_xxx
 
 # 直接對遠程啟動 CLI
-shiguang-gateway launch       --remote http://192.168.0.15:20128 --api-key oma_live_xxx
-shiguang-gateway launch-codex --remote http://192.168.0.15:20128 --api-key oma_live_xxx
+orbit launch       --remote http://192.168.0.15:20128 --api-key oma_live_xxx
+orbit launch-codex --remote http://192.168.0.15:20128 --api-key oma_live_xxx
 ```
 
 不必每次都傳遞 `--remote`/`--api-key`，只需登錄一次，讓 **活動上下文** 自動提供它們：
 
 ```bash
-shiguang-gateway connect 192.168.0.15        # 創建一個範圍令牌，存儲上下文
-shiguang-gateway setup-codex                 # ← 現在使用遠程目錄
-shiguang-gateway setup-opencode              # ← 同上
-shiguang-gateway launch                      # ← Claude Code 對遠程
+orbit connect 192.168.0.15        # 創建一個範圍令牌，存儲上下文
+orbit setup-codex                 # ← 現在使用遠程目錄
+orbit setup-opencode              # ← 同上
+orbit launch                      # ← Claude Code 對遠程
 ```
 
 請參見 [遠程模式](./REMOTE-MODE.md) 以了解上下文、範圍和令牌管理。
@@ -166,7 +166,7 @@ shiguang-gateway launch                      # ← Claude Code 對遠程
 
 ## 基本 URL 約定（哪些工具需要 `/v1`）
 
-ShiguangGateway 在 `/v1` 上公開 OpenAI 接口，在根目錄上公開 Anthropic 接口，並在 `/v1beta` 上公開原生 Gemini 接口。每個集成都連接到其工具所期望的形式（在命令源中驗證）：
+Orbit 在 `/v1` 上公開 OpenAI 接口，在根目錄上公開 Anthropic 接口，並在 `/v1beta` 上公開原生 Gemini 接口。每個集成都連接到其工具所期望的形式（在命令源中驗證）：
 
 | 集成                                                                       | 寫入的基本 URL | `/v1`?                                   |
 | -------------------------------------------------------------------------- | -------------- | ---------------------------------------- |
@@ -175,7 +175,7 @@ ShiguangGateway 在 `/v1` 上公開 OpenAI 接口，在根目錄上公開 Anthro
 | `setup-aider` (`OPENAI_API_BASE`)                                          | 根             | 否 — LiteLLM 附加 `/v1/chat/completions` |
 | `setup-kilo`, `setup-roo`, `setup-continue`, `setup-crush`, `setup-cursor` | 帶 `/v1`       | 是                                       |
 | `setup-claude` (`ANTHROPIC_BASE_URL`), `launch`                            | 根             | 否 — Claude Code 附加 `/v1/messages`     |
-| `setup-codex`, `launch-codex` (`model_providers.shiguang-gateway.base_url`)       | 帶 `/v1`       | 是                                       |
+| `setup-codex`, `launch-codex` (`model_providers.orbit.base_url`)       | 帶 `/v1`       | 是                                       |
 | `setup-qwen` (`modelProviders.openai[].baseUrl`)                           | 帶 `/v1`       | 是                                       |
 | `run gemini` (`GOOGLE_GEMINI_BASE_URL`)                                    | 根             | 否 — SDK 附加 `/v1beta/models/…`         |
 
@@ -183,36 +183,36 @@ ShiguangGateway 在 `/v1` 上公開 OpenAI 接口，在根目錄上公開 Anthro
 
 ## 保持原生依賴更新： `--include=optional`
 
-當你使用 `shiguang-gateway update` 更新時（在確認後，或使用 `--apply`），
-ShiguangGateway 會自動執行帶有 `--include=optional` 的安裝：
+當你使用 `orbit update` 更新時（在確認後，或使用 `--apply`），
+Orbit 會自動執行帶有 `--include=optional` 的安裝：
 
 ```bash
-npm install -g shiguang-gateway@latest --include=optional
+npm install -g orbit@latest --include=optional
 ```
 
-這**不是**你傳遞給 `shiguang-gateway update` 的標誌 — 它始終由更新器應用。這保證了 `optionalDependencies`（`better-sqlite3`、`keytar`、`tls-client`、LLMLingua SLM 堆疊）在更新過程中存活，即使你的 npm 配置設置了 `omit=optional`，這樣會默默地刪除原生 SQLite 驅動程序和 OS-keyring 綁定。要預覽確切的命令而不應用：
+這**不是**你傳遞給 `orbit update` 的標誌 — 它始終由更新器應用。這保證了 `optionalDependencies`（`better-sqlite3`、`keytar`、`tls-client`、LLMLingua SLM 堆疊）在更新過程中存活，即使你的 npm 配置設置了 `omit=optional`，這樣會默默地刪除原生 SQLite 驅動程序和 OS-keyring 綁定。要預覽確切的命令而不應用：
 
 ```bash
-shiguang-gateway update --dry-run
-# [DRY RUN] 會運行： npm install -g shiguang-gateway@latest --include=optional
+orbit update --dry-run
+# [DRY RUN] 會運行： npm install -g orbit@latest --include=optional
 ```
 
-其他 `shiguang-gateway update` 標誌（在源代碼中驗證）： `--check`（如果過時則退出 1）、`--apply`（無提示安裝）、`--changelog`、`--no-backup`、`--yes`。
+其他 `orbit update` 標誌（在源代碼中驗證）： `--check`（如果過時則退出 1）、`--apply`（無提示安裝）、`--changelog`、`--no-backup`、`--yes`。
 
 ---
 
-## 通過 `shiguang-gateway run gemini` 使用 Google Gemini CLI
+## 通過 `orbit run gemini` 使用 Google Gemini CLI
 
 合約已針對 `@google/gemini-cli` 0.50.0 進行驗證：該 CLI 尊重
 `GOOGLE_GEMINI_BASE_URL` 並對其發出 `POST /v1beta/models/<model>:generateContent`
-（和 `:streamGenerateContent?alt=sse`）— 完全符合 ShiguangGateway 的原生
-Gemini 接口（`/v1beta`）。`shiguang-gateway run gemini` 自動連接這些：
+（和 `:streamGenerateContent?alt=sse`）— 完全符合 Orbit 的原生
+Gemini 接口（`/v1beta`）。`orbit run gemini` 自動連接這些：
 
-- `GOOGLE_GEMINI_BASE_URL` → 當前的 ShiguangGateway 基本 URL（根，不帶 `/v1`）；
-- `GEMINI_API_KEY` → 解決的 ShiguangGateway 憑證（選項/環境/上下文）；
+- `GOOGLE_GEMINI_BASE_URL` → 當前的 Orbit 基本 URL（根，不帶 `/v1`）；
+- `GEMINI_API_KEY` → 解決的 Orbit 憑證（選項/環境/上下文）；
 - 一個**臨時隔離的 `GEMINI_CLI_HOME`**，其 `.gemini/settings.json`
   選擇 `gemini-api-key` 認證，因此存儲的 Google OAuth 會話（代碼助手）
-  永遠不會覆蓋 ShiguangGateway 指導的啟動 — 退出後刪除；
+  永遠不會覆蓋 Orbit 指導的啟動 — 退出後刪除；
 - **環境衛生**：子環境中刪除了 `GOOGLE_API_KEY`、
   `GOOGLE_GENAI_USE_VERTEXAI` 和 `GOOGLE_GENAI_USE_GCA`（這會將
   認證重定向到 Vertex/代碼助手），並設置 `GEMINI_DEFAULT_AUTH_TYPE=gemini-api-key`
@@ -220,7 +220,7 @@ Gemini 接口（`/v1beta`）。`shiguang-gateway run gemini` 自動連接這些�
 - 從 `--provider`/`--model` 注入 `--model <id>`。
 
 ```bash
-shiguang-gateway run gemini --model glm/glm-5.2 -- --skip-trust -p "hello"
+orbit run gemini --model glm/glm-5.2 -- --skip-trust -p "hello"
 ```
 
 Gemini 的工作區信任保護在無頭模式下仍然適用 — 請自行傳遞
@@ -234,7 +234,7 @@ Gemini 的工作區信任保護在無頭模式下仍然適用 — 請自行傳�
 
 確定性啟動計劃回歸在 CI 中運行（`tests/unit/cli/run-command.test.ts`，
 `tests/unit/cli/run-execution.test.ts`）。為了驗證 REAL 二進制文件與 REAL
-ShiguangGateway 服務器的兼容性，存在一個自選的工具在
+Orbit 服務器的兼容性，存在一個自選的工具在
 `tests/integration/upstream-cli-smoke.int.test.ts`。它從不自動運行
 （每個子測試都會跳過，除非設置 `RUN_CLI_SMOKE=1`），通過環境變量
 名稱傳遞憑證（從不通過值），從任何記錄的輸出中刪除關鍵字串，跳過
@@ -243,21 +243,21 @@ ShiguangGateway 服務器的兼容性，存在一個自選的工具在
 
 ```bash
 RUN_CLI_SMOKE=1 \
-SHIGUANG_GATEWAY_SMOKE_BASE_URL="http://localhost:20128" \
-SHIGUANG_GATEWAY_SMOKE_MODEL="<provider/model>" \
-SHIGUANG_GATEWAY_SMOKE_API_KEY_ENV="SHIGUANG_GATEWAY_API_KEY" \
+ORBIT_SMOKE_BASE_URL="http://localhost:20128" \
+ORBIT_SMOKE_MODEL="<provider/model>" \
+ORBIT_SMOKE_API_KEY_ENV="ORBIT_API_KEY" \
 node --import tsx/esm --test tests/integration/upstream-cli-smoke.int.test.ts
 ```
 
-可選：`SHIGUANG_GATEWAY_SMOKE_TARGETS="codex,opencode,qwen"` 限制掃描；
-`SHIGUANG_GATEWAY_SMOKE_TIMEOUT_MS` 覆蓋每個目標的 120 秒超時。
+可選：`ORBIT_SMOKE_TARGETS="codex,opencode,qwen"` 限制掃描；
+`ORBIT_SMOKE_TIMEOUT_MS` 覆蓋每個目標的 120 秒超時。
 
 ---
 
 ## 另請參閱
 
 - [Claude Code 配置](./CLAUDE-CODE-CONFIGURATION.md) — 更深入的 Claude Code 指南
-- [Codex CLI 配置](./CODEX-CLI-CONFIGURATION.md) — 一次性的 `[model_providers.shiguang-gateway]` 基本設置
+- [Codex CLI 配置](./CODEX-CLI-CONFIGURATION.md) — 一次性的 `[model_providers.orbit]` 基本設置
 - [遠端模式](./REMOTE-MODE.md) — 上下文、範圍訪問令牌、驅動遠端伺服器
 - [CLI 工具參考](../reference/CLI-TOOLS.md) — 支援工具 + 儀表板頁面的完整目錄
 - [安裝指南](./SETUP_GUIDE.md) — 安裝方法和首次運行的入門指導

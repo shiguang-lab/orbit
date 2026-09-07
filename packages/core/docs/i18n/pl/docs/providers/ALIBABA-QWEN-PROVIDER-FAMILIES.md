@@ -6,12 +6,12 @@ description: "Regionalny projekt providerów dla produktów Alibaba Model Studio
 # Rodziny providerów Alibaba i Qwen
 
 Ten dokument zapisuje decyzję implementacyjną dla
-[Issue #7854](https://github.com/diegosouzapw/ShiguangGateway/issues/7854). Publiczne produkty są
+[Issue #7854](https://github.com/diegosouzapw/Orbit/issues/7854). Publiczne produkty są
 reprezentowane jako cztery rodziny providerów. Region to dane połączenia, a nie osobny produkt.
 
 ## Decyzja
 
-| Rodzina providera                          | ID ShiguangGateway            | Region globalny | Region Chiny |
+| Rodzina providera                          | ID Orbit            | Region globalny | Region Chiny |
 | ------------------------------------------ | ----------------------- | --------------- | ------------ |
 | Alibaba Cloud Model Studio (pay as you go) | `alibaba`               | Singapore       | Beijing      |
 | Alibaba Cloud Token Plan                   | `bailian-coding-plan`   | Singapore       | Beijing      |

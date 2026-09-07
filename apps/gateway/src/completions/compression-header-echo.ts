@@ -1,8 +1,8 @@
 /**
  * Compression response header echo (#6422).
  *
- * When a request carries `x-shiguangGateway-compression`, docs promise the response echoes
- * `X-ShiguangGateway-Compression: <mode>; source=<source>`. Internal paths (idempotency
+ * When a request carries `x-orbit-compression`, docs promise the response echoes
+ * `X-Orbit-Compression: <mode>; source=<source>`. Internal paths (idempotency
  * cache short-circuit, some combo/fusion assembly paths) build response headers
  * without threading `compressionResponseMeta` — so the promised echo silently
  * disappears. This helper is the outermost safety net: if the response is missing
@@ -10,10 +10,10 @@
  * directly from the request header. Existing header values from the inner pipeline
  * (which carry richer `tokens=...; rules: ...` annotations) are never overwritten.
  */
-import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "@orbit/contracts/gateway-headers";
+import { ORBIT_RESPONSE_HEADERS } from "@orbit/contracts/gateway-headers";
 
-const COMPRESSION_REQUEST_HEADER = "x-shiguangGateway-compression";
-const COMPRESSION_RESPONSE_HEADER = SHIGUANG_GATEWAY_RESPONSE_HEADERS.compression;
+const COMPRESSION_REQUEST_HEADER = "x-orbit-compression";
+const COMPRESSION_RESPONSE_HEADER = ORBIT_RESPONSE_HEADERS.compression;
 
 function normalizeRequestValue(raw: string): string {
   const trimmed = raw.trim();
@@ -36,8 +36,8 @@ export function readCompressionRequestHeader(request: {
 }
 
 /**
- * Wrap a Response so it carries `X-ShiguangGateway-Compression: <mode>; source=request-header`
- * when the request supplied `x-shiguangGateway-compression` and the inner pipeline did not
+ * Wrap a Response so it carries `X-Orbit-Compression: <mode>; source=request-header`
+ * when the request supplied `x-orbit-compression` and the inner pipeline did not
  * already set it. Never overwrites an existing value — the inner pipeline may have
  * attached a richer annotation. A best-effort echo covers idempotency-cache,
  * fusion-envelope, and any other early-return path that dropped the meta.

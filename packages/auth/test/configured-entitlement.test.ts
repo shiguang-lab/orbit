@@ -44,8 +44,8 @@ test("accepts the configured existing product entitlement without an admin role"
 });
 
 test("rejects a different product entitlement or audience", async () => {
-  assert.equal((await session(["shiguang-gateway:access"])).statusCode, 401);
-  assert.equal((await session(["omniroute:access"], "shiguang-gateway-api")).statusCode, 401);
+  assert.equal((await session(["orbit:access"])).statusCode, 401);
+  assert.equal((await session(["omniroute:access"], "orbit-api")).statusCode, 401);
 });
 
 test("SSO passes both Fastify and Web Request business guards", async () => {

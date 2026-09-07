@@ -30,8 +30,8 @@ function readInterval(name: string): number {
 
 export function getDatabaseHealthMaintenanceIntervals(): DatabaseHealthMaintenanceIntervals {
   return {
-    healthCheckMs: readInterval("SHIGUANG_GATEWAY_DB_HEALTHCHECK_INTERVAL_MS"),
-    walTruncateMs: readInterval("SHIGUANG_GATEWAY_WAL_TRUNCATE_INTERVAL_MS"),
+    healthCheckMs: readInterval("ORBIT_DB_HEALTHCHECK_INTERVAL_MS"),
+    walTruncateMs: readInterval("ORBIT_WAL_TRUNCATE_INTERVAL_MS"),
   };
 }
 
@@ -92,7 +92,7 @@ export function createDatabaseHealthMaintenance(
 const maintenance = createDatabaseHealthMaintenance({
   runHealthCheck: () => runManagedDbHealthCheck({
     autoRepair: true,
-    skipIntegrityCheck: process.env.SHIGUANG_GATEWAY_SKIP_DB_HEALTHCHECK === "1",
+    skipIntegrityCheck: process.env.ORBIT_SKIP_DB_HEALTHCHECK === "1",
   }),
   runWalCheckpoint: () => {
     if (runManagedWalCheckpoint("TRUNCATE")) {

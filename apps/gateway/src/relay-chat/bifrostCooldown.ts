@@ -11,7 +11,7 @@ export interface ActiveBifrostCooldown {
 }
 
 export function getBifrostFailureCooldownMs(env: NodeJS.ProcessEnv = process.env): number {
-  const parsed = Number.parseInt(env.SHIGUANG_GATEWAY_BIFROST_FAILURE_COOLDOWN_MS || "", 10);
+  const parsed = Number.parseInt(env.ORBIT_BIFROST_FAILURE_COOLDOWN_MS || "", 10);
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : 5000;
 }
 

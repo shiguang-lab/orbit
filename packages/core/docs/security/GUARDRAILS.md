@@ -11,7 +11,7 @@ lastUpdated: 2026-08-29
 > not yet server-verified — clarified per #11661)
 
 Guardrails enforce safety, policy, and content transformations at the boundary
-between ShiguangGateway and upstream providers. Each guardrail can inspect (and
+between Orbit and upstream providers. Each guardrail can inspect (and
 optionally reject, transform, or annotate) request payloads (`preCall`) and
 upstream responses (`postCall`).
 
@@ -101,7 +101,7 @@ Low-detail sampling degrades OCR accuracy for exactly the text-transcription
 task this prompt asks for, so the describe call itself always asks for high
 detail regardless of what detail level the original inbound request used. This
 only affects the internal describe request body; it does not change how
-ShiguangGateway forwards the caller's own `image_url.detail` on the primary request —
+Orbit forwards the caller's own `image_url.detail` on the primary request —
 that default is applied separately, and only for detected OpenCode clients, in
 `defaultImageDetail()` (`open-sse/handlers/chatCore/upstreamBody.ts`). The
 Anthropic wire-format branch of the describe self-loop has no `detail` field
@@ -179,7 +179,7 @@ read fallback for one release cycle.
 #### Transparency header + stats
 
 Describe-transformed responses carry
-`x-shiguang-gateway-modality-bridge: image->text;model=<visionModel>;parts=<n>`
+`x-orbit-modality-bridge: image->text;model=<visionModel>;parts=<n>`
 (built by `buildModalityBridgeHeader()` in `modalityBridge/bridgeStats.ts`,
 stamped by `withModalityBridgeHeader()` in `src/sse/handlers/chatHelpers.ts`).
 Rerouted requests get **no** header — the payload was untouched and the model
@@ -219,11 +219,11 @@ new page; it no longer owns a second copy of the form. Media Providers also
 links Image-to-Text and Speech-to-Text workflows to the corresponding Modality
 Bridge tabs without removing the existing Speech-to-Text playground.
 
-**Self-loop admission bypass:** when the describe call routes through ShiguangGateway's
+**Self-loop admission bypass:** when the describe call routes through Orbit's
 own `/v1` self-loop (non-standard provider model), the sub-request sends
-`x-shiguang-gateway-admission-bypass: internal` and is authenticated with the resolved
-self-loop credential — the local `sk_shiguang-gateway` sentinel in local mode, or the
-operator-configured `SHIGUANG_GATEWAY_API_KEY` / `ROUTER_API_KEY` env key (#1350) so
+`x-orbit-admission-bypass: internal` and is authenticated with the resolved
+self-loop credential — the local `sk_orbit` sentinel in local mode, or the
+operator-configured `ORBIT_API_KEY` / `ROUTER_API_KEY` env key (#1350) so
 `REQUIRE_API_KEY=true` deployments can still run the describe call. The bypass
 is only honored for those exact credentials, so external clients cannot use the
 header to skip admission.
@@ -277,7 +277,7 @@ key combines the audio reference, the stable `audio-transcription` operation
 label, and selected STT model; failures are never cached. Audio attempts update
 the shared `bridged`, `cacheHits`, `failures`, and `lastUsedAt` counters.
 Transformed responses carry
-`x-shiguang-gateway-modality-bridge: audio->text;model=<sttModel>;parts=<n>`; untouched
+`x-orbit-modality-bridge: audio->text;model=<sttModel>;parts=<n>`; untouched
 requests do not receive an Audio Bridge segment.
 
 Runtime settings are DB-backed and Zod-validated:
@@ -409,7 +409,7 @@ estimate; the script never fabricates either result.
 
 Each frame is limited to 4 MiB, all raw frames together to 23 MiB, and the
 serialized broker response to 32 MiB. A private temporary directory is removed
-in `finally`. ShiguangGateway does not bundle FFmpeg and does not accept a custom
+in `finally`. Orbit does not bundle FFmpeg and does not accept a custom
 executable path. Before captioning, the bridge applies a conservative visual
 deduplication pass: each JPEG is reduced to a 16×16 grayscale buffer and is
 compared only with the last frame retained. For a requested caption budget
@@ -442,7 +442,7 @@ provider-reported tokens, end-to-end wall latency (including sheet composition),
 model-call count, and manifest-defined fact retention. Raw model responses are not
 written to the report; only SHA-256 digests and matched fact IDs are retained. The
 harness makes no network or paid model call unless `--execute-real` is passed and
-`--model`, `SHIGUANG_GATEWAY_BASE_URL`, and `SHIGUANG_GATEWAY_API_KEY` are configured. Without
+`--model`, `ORBIT_BASE_URL`, and `ORBIT_API_KEY` are configured. Without
 that explicit real run, its machine-readable verdict remains `HOLD`; synthetic
 payload/call-count measurements alone are not promotion evidence.
 
@@ -451,12 +451,12 @@ part when they already possess aligned text. Each cue must carry `text`, a
 finite `start`/`end` interval inside the probed duration, and a whitelisted
 `source` (`client`, `embedded`, or `audio-bridge`); `confidence` defaults to
 `1` and must remain between `0` and `1`. Exact duplicate cues are collapsed.
-ShiguangGateway never starts transcription from this metadata: validated cues are
+Orbit never starts transcription from this metadata: validated cues are
 copied into the described result with source, confidence, and interval, and
 are rendered as untrusted observations alongside the frame captions. Invalid,
 out-of-range, or provenance-free text is rejected rather than mixed into the
 caption stream. The `source` field is presently caller-declared, not
-server-verified: ShiguangGateway enforces that the value is one of the three
+server-verified: Orbit enforces that the value is one of the three
 allowed strings, but does not yet cryptographically confirm that an
 `embedded` or `audio-bridge` label actually came from a server-owned
 extraction. Treat `source` as an untrusted hint until that verification
@@ -564,7 +564,7 @@ reason when the runtime is unavailable. The internal extraction endpoint is not
 a public upload API: queue saturation returns `503` plus `Retry-After`, a caller
 disconnect returns `499`, and the fixed broker deadline returns `504`. Converted responses add
 `video->text;model=<visionModel>;parts=<videos>` to the central
-`x-shiguang-gateway-modality-bridge` header without removing Vision or Audio segments.
+`x-orbit-modality-bridge` header without removing Vision or Audio segments.
 
 ### PII Masker (`piiMasker.ts`)
 
@@ -729,7 +729,7 @@ request. Sources (all optional, all merged):
 - `apiKeyInfo.disabledGuardrails`
 - Request body `disabledGuardrails` (top-level)
 - Request body `metadata.disabledGuardrails`
-- Header `x-shiguang-gateway-disabled-guardrails` (or legacy
+- Header `x-orbit-disabled-guardrails` (or legacy
   `x-disabled-guardrails`)
 
 Values may be arrays of strings or a comma-separated string; names are
@@ -880,7 +880,7 @@ dispatch) has two jobs:
   previous instructions…", DAN-style jailbreaks) asserts the response carries
   `error.code === "SECURITY_001"`, i.e. the guard actually rejected the request.
 - **`garak` (advisory)** — runs garak `--probes promptinject,dan,leakreplay`
-  against a local ShiguangGateway instance (`http://localhost:20128/v1`). Gated on a
+  against a local Orbit instance (`http://localhost:20128/v1`). Gated on a
   provider secret (`PROMPTFOO_PROVIDER_KEY`); skips gracefully and is suffixed
   `|| true`, so it reports without failing CI.
 

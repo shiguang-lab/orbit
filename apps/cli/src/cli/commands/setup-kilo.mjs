@@ -1,10 +1,10 @@
 /**
- * shiguangGateway setup-kilo — configure Kilo Code to use ShiguangGateway.
+ * orbit setup-kilo — configure Kilo Code to use Orbit.
  *
  * Kilo Code (kilocode.kilo-code, a Cline/Roo descendant) has two surfaces:
  *   - CLI/standalone mode reads ~/.local/share/kilo/auth.json.
  *   - The VS Code extension reads `kilocode.*` keys from VS Code settings.json.
- * This writes BOTH (matching the ShiguangGateway dashboard) and prints the UI settings.
+ * This writes BOTH (matching the Orbit dashboard) and prints the UI settings.
  *
  * Unlike Cline, Kilo's openAi baseURL INCLUDES /v1 (it appends /chat/completions).
  */
@@ -28,7 +28,7 @@ export function resolveKiloTarget(opts = {}) {
   if (opts.remote) root = String(opts.remote).replace(/\/+$/, "");
   else {
     try {
-      root = resolveActiveContext(opts.context ?? process.env.SHIGUANG_GATEWAY_CONTEXT)?.baseUrl;
+      root = resolveActiveContext(opts.context ?? process.env.ORBIT_CONTEXT)?.baseUrl;
     } catch {
       /* none */
     }
@@ -37,22 +37,22 @@ export function resolveKiloTarget(opts = {}) {
   let apiKey = opts.apiKey ?? opts["api-key"];
   if (!apiKey) {
     try {
-      const c = resolveActiveContext(opts.context ?? process.env.SHIGUANG_GATEWAY_CONTEXT);
+      const c = resolveActiveContext(opts.context ?? process.env.ORBIT_CONTEXT);
       apiKey = c?.accessToken || c?.apiKey;
     } catch {
       /* none */
     }
   }
-  if (!apiKey) apiKey = process.env.SHIGUANG_GATEWAY_API_KEY || "";
+  if (!apiKey) apiKey = process.env.ORBIT_API_KEY || "";
   return { baseUrl: ensureV1(root), apiKey };
 }
 
-/** Merge the ShiguangGateway openai-compatible provider into Kilo's CLI auth.json. */
+/** Merge the Orbit openai-compatible provider into Kilo's CLI auth.json. */
 export function buildKiloAuth(existing, { apiKey, baseUrl, model }) {
   const auth = { ...(existing || {}) };
   auth["openai-compatible"] = {
     ...(auth["openai-compatible"] || {}),
-    apiKey: apiKey || "sk_shiguangGateway",
+    apiKey: apiKey || "sk_orbit",
     baseUrl,
     model,
   };
@@ -63,9 +63,9 @@ export function buildKiloAuth(existing, { apiKey, baseUrl, model }) {
 export function buildKiloVscodeSettings(existing, { apiKey, baseUrl, model }) {
   const s = { ...(existing || {}) };
   s["kilocode.customProvider"] = {
-    name: "ShiguangGateway",
+    name: "Orbit",
     baseURL: baseUrl,
-    apiKey: apiKey || "sk_shiguangGateway",
+    apiKey: apiKey || "sk_orbit",
   };
   s["kilocode.defaultModel"] = model;
   return s;
@@ -107,7 +107,7 @@ export async function runSetupKiloCommand(opts = {}) {
 
   const guard = await guardHostConfigTarget(authPath, {
     toolLabel: "Kilo Code",
-    hostCommand: "shiguangGateway setup-kilo",
+    hostCommand: "orbit setup-kilo",
     allowContainerWrite: Boolean(opts.allowContainerWrite ?? opts["allow-container-write"]),
     dryRun,
   });
@@ -117,7 +117,7 @@ export async function runSetupKiloCommand(opts = {}) {
     opts["vscode-settings"] ??
     join(os.homedir(), ".config", "Code", "User", "settings.json");
 
-  printHeading("ShiguangGateway → Kilo Code (OpenAI-compatible)");
+  printHeading("Orbit → Kilo Code (OpenAI-compatible)");
   printInfo(`Server: ${baseUrl}`);
 
   let model = opts.model;
@@ -155,7 +155,7 @@ export async function runSetupKiloCommand(opts = {}) {
         {
           "openai-compatible": {
             ...auth["openai-compatible"],
-            apiKey: apiKey ? "set" : "sk_shiguangGateway",
+            apiKey: apiKey ? "set" : "sk_orbit",
           },
         },
         null,
@@ -179,7 +179,7 @@ export async function runSetupKiloCommand(opts = {}) {
 
   printInfo("\nFor the Kilo Code VS Code extension, set Settings → Providers → OpenAI Compatible:");
   printInfo(`  Base URL:  ${baseUrl}        (Kilo expects /v1)`);
-  printInfo(`  API Key:   <your SHIGUANG_GATEWAY_API_KEY>`);
+  printInfo(`  API Key:   <your ORBIT_API_KEY>`);
   printInfo(`  Model:     ${model}`);
   return 0;
 }
@@ -188,11 +188,11 @@ export function registerSetupKilo(program) {
   program
     .command("setup-kilo")
     .description(
-      "Configure Kilo Code for ShiguangGateway: write ~/.local/share/kilo/auth.json (CLI) + VS Code kilocode.* settings"
+      "Configure Kilo Code for Orbit: write ~/.local/share/kilo/auth.json (CLI) + VS Code kilocode.* settings"
     )
-    .option("--port <port>", "Local ShiguangGateway port (ignored when --remote is set)", "8787")
-    .option("--remote <url>", "Remote ShiguangGateway URL, e.g. http://192.168.0.15:8787")
-    .option("--api-key <key>", "ShiguangGateway API key (defaults to SHIGUANG_GATEWAY_API_KEY env var)")
+    .option("--port <port>", "Local Orbit port (ignored when --remote is set)", "8787")
+    .option("--remote <url>", "Remote Orbit URL, e.g. http://192.168.0.15:8787")
+    .option("--api-key <key>", "Orbit API key (defaults to ORBIT_API_KEY env var)")
     .option("--model <id>", "Model id for Kilo (required unless picked interactively)")
     .option(
       "--auth-path <path>",

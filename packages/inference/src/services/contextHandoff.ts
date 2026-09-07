@@ -77,7 +77,7 @@ export const DEFAULT_UNIVERSAL_HANDOFF_CONFIG: UniversalHandoffConfig = {
   preserveSystemPrompt: true,
 };
 
-export const SKIP_UNIVERSAL_HANDOFF_FLAG = "_shiguangGatewaySkipUniversalHandoff";
+export const SKIP_UNIVERSAL_HANDOFF_FLAG = "_orbitSkipUniversalHandoff";
 
 export function resolveUniversalHandoffConfig(
   comboConfig: Record<string, unknown> | null | undefined,
@@ -398,8 +398,8 @@ async function generateHandoffAsync(options: {
     stream: false,
     max_tokens: DEFAULT_SUMMARY_RESPONSE_TOKENS,
     temperature: 0.1,
-    _shiguangGatewaySkipContextRelay: true,
-    _shiguangGatewayInternalRequest: "context-handoff",
+    _orbitSkipContextRelay: true,
+    _orbitInternalRequest: "context-handoff",
   };
 
   const response = await options.handleSingleModel(summaryBody, summaryModel);
@@ -709,8 +709,8 @@ async function generateUniversalHandoffAsync(options: {
     stream: false,
     max_tokens: DEFAULT_SUMMARY_RESPONSE_TOKENS,
     temperature: 0.1,
-    _shiguangGatewaySkipContextRelay: true,
-    _shiguangGatewayInternalRequest: "universal-handoff",
+    _orbitSkipContextRelay: true,
+    _orbitInternalRequest: "universal-handoff",
   };
 
   const response = await options.handleSingleModel(summaryBody, summaryModel);

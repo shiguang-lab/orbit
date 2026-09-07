@@ -8,7 +8,7 @@ lastUpdated: 2026-06-28
 
 🌐 **Languages:** 🇺🇸 [English](../API_REFERENCE.md) | 🇧🇷 [Português (Brasil)](../../pt-BR/docs/reference/API_REFERENCE.md) | 🇪🇸 [Español](../../es/docs/reference/API_REFERENCE.md) | 🇫🇷 [Français](../../fr/docs/reference/API_REFERENCE.md) | 🇮🇹 [Italiano](../../it/docs/reference/API_REFERENCE.md) | 🇷🇺 [Русский](../../ru/docs/reference/API_REFERENCE.md) | 🇨🇳 [中文 (简体)](../../zh-CN/docs/reference/API_REFERENCE.md) | 🇩🇪 [Deutsch](../../de/docs/reference/API_REFERENCE.md) | 🇮🇳 [हिन्दी](../../in/docs/reference/API_REFERENCE.md) | 🇹🇭 [ไทย](../../th/docs/reference/API_REFERENCE.md) | 🇺🇦 [Українська](../../uk-UA/docs/reference/API_REFERENCE.md) | 🇸🇦 [العربية](../../ar/docs/reference/API_REFERENCE.md) | 🇯🇵 [日本語](../../ja/docs/reference/API_REFERENCE.md) | 🇻🇳 [Tiếng Việt](../../vi/docs/reference/API_REFERENCE.md) | 🇧🇬 [Български](../../bg/docs/reference/API_REFERENCE.md) | 🇩🇰 [Dansk](../../da/docs/reference/API_REFERENCE.md) | 🇫🇮 [Suomi](../../fi/docs/reference/API_REFERENCE.md) | 🇮🇱 [עברית](../../he/docs/reference/API_REFERENCE.md) | 🇭🇺 [Magyar](../../hu/docs/reference/API_REFERENCE.md) | 🇮🇩 [Bahasa Indonesia](../../id/docs/reference/API_REFERENCE.md) | 🇰🇷 [한국어](../../ko/docs/reference/API_REFERENCE.md) | 🇲🇾 [Bahasa Melayu](../../ms/docs/reference/API_REFERENCE.md) | 🇳🇱 [Nederlands](../../nl/docs/reference/API_REFERENCE.md) | 🇳🇴 [Norsk](../../no/docs/reference/API_REFERENCE.md) | 🇵🇹 [Português (Portugal)](../../pt/docs/reference/API_REFERENCE.md) | 🇷🇴 [Română](../../ro/docs/reference/API_REFERENCE.md) | 🇵🇱 [Polski](../../pl/docs/reference/API_REFERENCE.md) | 🇸🇰 [Slovenčina](../../sk/docs/reference/API_REFERENCE.md) | 🇸🇪 [Svenska](../../sv/docs/reference/API_REFERENCE.md) | 🇵🇭 [Filipino](../../phi/docs/reference/API_REFERENCE.md) | 🇨🇿 [Čeština](../../cs/docs/reference/API_REFERENCE.md)
 
-ShiguangGateway 所有 API 端点的完整参考。
+Orbit 所有 API 端点的完整参考。
 
 ---
 
@@ -62,28 +62,28 @@ Content-Type: application/json
 
 | 请求头                     | 方向   | 说明                                                                                                                            |
 | -------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------- |
-| `X-ShiguangGateway-No-Cache`     | 请求   | 设为 `true` 以绕过缓存                                                                                                          |
-| `x-shiguang-gateway-no-memory`    | 请求   | 设为 `true` 以跳过本请求的记忆 + 技能注入（与 no-cache 镜像；避免每次调用的 Token/成本开销）                                     |
-| `X-ShiguangGateway-Progress`     | 请求   | 设为 `true` 以接收进度事件                                                                                                      |
+| `X-Orbit-No-Cache`     | 请求   | 设为 `true` 以绕过缓存                                                                                                          |
+| `x-orbit-no-memory`    | 请求   | 设为 `true` 以跳过本请求的记忆 + 技能注入（与 no-cache 镜像；避免每次调用的 Token/成本开销）                                     |
+| `X-Orbit-Progress`     | 请求   | 设为 `true` 以接收进度事件                                                                                                      |
 | `X-Session-Id`             | 请求   | 粘性会话 Key，用于外部会话绑定                                                                                                  |
 | `x_session_id`             | 请求   | 下划线变体同样接受（直接 HTTP）                                                                                                 |
 | `Idempotency-Key`          | 请求   | 去重 Key（5 秒窗口）                                                                                                            |
 | `X-Request-Id`             | 请求   | 备用去重 Key                                                                                                                    |
-| `X-ShiguangGateway-Cache`        | 响应   | 缓存 `HIT` 或 `MISS`（非流式）                                                                                                  |
-| `X-ShiguangGateway-Idempotent`   | 响应   | 去重命中时为 `true`                                                                                                             |
-| `X-ShiguangGateway-Progress`     | 响应   | 进度跟踪开启时为 `enabled`                                                                                                      |
-| `X-ShiguangGateway-Session-Id`   | 响应   | ShiguangGateway 使用的有效会话 ID                                                                                                     |
-| `X-ShiguangGateway-Request-Id`   | 响应   | 请求关联 ID（已知时）                                                                                                          |
-| `X-ShiguangGateway-Version`      | 响应   | ShiguangGateway 构建版本号（始终返回）                                                                                                 |
-| `X-ShiguangGateway-Cost-Saved`   | 响应   | 缓存命中时节省的 USD 金额（仅缓存命中时）                                                                                        |
+| `X-Orbit-Cache`        | 响应   | 缓存 `HIT` 或 `MISS`（非流式）                                                                                                  |
+| `X-Orbit-Idempotent`   | 响应   | 去重命中时为 `true`                                                                                                             |
+| `X-Orbit-Progress`     | 响应   | 进度跟踪开启时为 `enabled`                                                                                                      |
+| `X-Orbit-Session-Id`   | 响应   | Orbit 使用的有效会话 ID                                                                                                     |
+| `X-Orbit-Request-Id`   | 响应   | 请求关联 ID（已知时）                                                                                                          |
+| `X-Orbit-Version`      | 响应   | Orbit 构建版本号（始终返回）                                                                                                 |
+| `X-Orbit-Cost-Saved`   | 响应   | 缓存命中时节省的 USD 金额（仅缓存命中时）                                                                                        |
 
 > Nginx 提示：如果依赖下划线请求头（如 `x_session_id`），请启用 `underscores_in_headers on;`。
 
-> **成本遥测请求头：** 非流式成功响应还会携带 `X-ShiguangGateway-*` 成本遥测系列 — `X-ShiguangGateway-Response-Cost`（USD，固定 10 位小数；免费/无定价时为 `0.0000000000`）、`X-ShiguangGateway-Tokens-In` / `X-ShiguangGateway-Tokens-Out`、`X-ShiguangGateway-Model`、`X-ShiguangGateway-Provider`、`X-ShiguangGateway-Latency-Ms`、`X-ShiguangGateway-Cache-Hit` 以及 `X-ShiguangGateway-Fallback-Attempts`（仅在 >0 时返回），外加 `X-ShiguangGateway-Request-Id` 和 `X-ShiguangGateway-Version`。这些请求头由 chat completions、`/v1/responses`、`/v1/messages` **以及媒体端点**发出 — `/v1/embeddings`、`/v1/images/generations`、`/v1/audio/speech`、`/v1/audio/transcriptions`、`/v1/rerank`、`/v1/videos/generations`、`/v1/music/generations` 和 `/v1/moderations`（成本始终为 `0`）。媒体成本按模态计算（按图片、按秒、按字符、按搜索单元），仅在定价可用时计算，否则为 `0`（fail-open）。
+> **成本遥测请求头：** 非流式成功响应还会携带 `X-Orbit-*` 成本遥测系列 — `X-Orbit-Response-Cost`（USD，固定 10 位小数；免费/无定价时为 `0.0000000000`）、`X-Orbit-Tokens-In` / `X-Orbit-Tokens-Out`、`X-Orbit-Model`、`X-Orbit-Provider`、`X-Orbit-Latency-Ms`、`X-Orbit-Cache-Hit` 以及 `X-Orbit-Fallback-Attempts`（仅在 >0 时返回），外加 `X-Orbit-Request-Id` 和 `X-Orbit-Version`。这些请求头由 chat completions、`/v1/responses`、`/v1/messages` **以及媒体端点**发出 — `/v1/embeddings`、`/v1/images/generations`、`/v1/audio/speech`、`/v1/audio/transcriptions`、`/v1/rerank`、`/v1/videos/generations`、`/v1/music/generations` 和 `/v1/moderations`（成本始终为 `0`）。媒体成本按模态计算（按图片、按秒、按字符、按搜索单元），仅在定价可用时计算，否则为 `0`（fail-open）。
 
-> **缓存命中成本语义：** 语义缓存命中时（`X-ShiguangGateway-Cache-Hit: true`），不会发起上游调用，因此 `X-ShiguangGateway-Response-Cost` 为 `0.0000000000`（即命中的**增量**成本）。原始/本应产生的成本单独在 `X-ShiguangGateway-Cost-Saved` 中报告。计费消费者应累加 `X-ShiguangGateway-Response-Cost`（命中成本为零）；缓存分析可聚合 `X-ShiguangGateway-Cost-Saved`。
+> **缓存命中成本语义：** 语义缓存命中时（`X-Orbit-Cache-Hit: true`），不会发起上游调用，因此 `X-Orbit-Response-Cost` 为 `0.0000000000`（即命中的**增量**成本）。原始/本应产生的成本单独在 `X-Orbit-Cost-Saved` 中报告。计费消费者应累加 `X-Orbit-Response-Cost`（命中成本为零）；缓存分析可聚合 `X-Orbit-Cost-Saved`。
 
-### `x-shiguang-gateway-compression`
+### `x-orbit-compression`
 
 按请求覆盖压缩计划。优先级最高 — 高于路由 Combo 覆盖、活动配置、自动触发和面板 Default。取值：
 
@@ -104,7 +104,7 @@ Content-Type: application/json
 应用的计划会回显在响应请求头中：
 
 ```
-X-ShiguangGateway-Compression: <mode>; source=<source>
+X-Orbit-Compression: <mode>; source=<source>
 ```
 
 其中 `<source>` 为以下之一：`request-header`、`routing-override`、`active-profile`、`auto-trigger`、`default` 或 `off`。
@@ -167,10 +167,10 @@ Authorization: Bearer your-api-key
 
 ### No-thinking 模型变体
 
-对于支持 thinking 的 Claude 模型，`/v1/models` 还会列出一个 **no-thinking** 变体，其 id 前缀为 `claude-3-shiguang-gateway-no-thinking/`：
+对于支持 thinking 的 Claude 模型，`/v1/models` 还会列出一个 **no-thinking** 变体，其 id 前缀为 `claude-3-orbit-no-thinking/`：
 
 ```
-claude-3-shiguang-gateway-no-thinking/<provider>/<model>
+claude-3-orbit-no-thinking/<provider>/<model>
 ```
 
 选择此 id（例如在始终附加 `thinking` 块的 Claude Code 配置中）会解析回真实的 `<provider>/<model>`，并抑制推理功能 — 在 `/v1/messages` 路径上使用 `thinking:{type:"disabled"}`，或在 `/v1/chat/completions` 路径上丢弃 `reasoning`/`reasoning_effort` 字段。此变体仅列出给支持 thinking **且**接受 `disabled` 的 Claude 系列模型（因此，仅支持 adaptive 模式且拒绝 `disabled` 的模型不会被列出）。管理员可通过 `ModelSpec.noThinkingAlias` 按模型强制开启或关闭此变体。
@@ -207,7 +207,7 @@ claude-3-shiguang-gateway-no-thinking/<provider>/<model>
 
 所有 POST 路由遵循同一模式：`Bearer your-api-key` + 经 Zod 校验的 JSON 请求体（`v1RerankSchema`、`v1ModerationSchema`、`v1AudioSpeechSchema` 等，参见 `src/shared/validation/schemas.ts`）。Schema 校验失败返回 4xx。
 
-对于无法附加 `Authorization: Bearer ...` 的客户端，ShiguangGateway 也接受通过 URL 传入 API Key：查询字符串兼容方式（`?token=...`、`?apiKey=...`、`?api_key=...`、`?key=...`）或下文介绍的专用 `/api/v1/vscode/{token}/...` 端点。
+对于无法附加 `Authorization: Bearer ...` 的客户端，Orbit 也接受通过 URL 传入 API Key：查询字符串兼容方式（`?token=...`、`?apiKey=...`、`?api_key=...`、`?key=...`）或下文介绍的专用 `/api/v1/vscode/{token}/...` 端点。
 
 ```bash
 # 重排序
@@ -299,8 +299,8 @@ GET /v1/ws?handshake=1
 
 ```bash
 # 与 HTTP API 相同的主机:端口（默认 20128）；升级连接：
-wscat -c "ws://localhost:20128/v1/responses?api_key=<SHIGUANG_GATEWAY_API_KEY>"
-# (或： -H "Authorization: Bearer <SHIGUANG_GATEWAY_API_KEY>")
+wscat -c "ws://localhost:20128/v1/responses?api_key=<ORBIT_API_KEY>"
+# (或： -H "Authorization: Bearer <ORBIT_API_KEY>")
 
 # 第一帧必须是 response.create：
 { "type": "response.create", "model": "gpt-5.5", "input": [ { "role": "user", "content": "hi" } ] }
@@ -312,30 +312,30 @@ Responses-API-over-WebSocket 代理**仅绑定到 `codex`**（ChatGPT 后端）�
 
 #### 模型 id：使用裸 ChatGPT id（不用 `codex/` 前缀）
 
-OpenAI **Codex CLI** 在 `supports_websockets = true` 时会在客户端侧校验模型名称，并**拒绝带服务商前缀的 id**，如 `codex/gpt-5.5`（`The 'codex/gpt-5.5' model is not supported when using Codex with a ChatGPT account`）。请发送**裸** id（如 `gpt-5.5`）。ShiguangGateway 的桥接仅限 codex，因此会通过 `resolveCodexWsModelInfo` 将裸 id 重新解析为 codex 模型后隧道化到上游 — 尽管裸的 `gpt-5.5` 在 HTTP 下会路由到其他服务商。
+OpenAI **Codex CLI** 在 `supports_websockets = true` 时会在客户端侧校验模型名称，并**拒绝带服务商前缀的 id**，如 `codex/gpt-5.5`（`The 'codex/gpt-5.5' model is not supported when using Codex with a ChatGPT account`）。请发送**裸** id（如 `gpt-5.5`）。Orbit 的桥接仅限 codex，因此会通过 `resolveCodexWsModelInfo` 将裸 id 重新解析为 codex 模型后隧道化到上游 — 尽管裸的 `gpt-5.5` 在 HTTP 下会路由到其他服务商。
 
 #### 配置 OpenAI Codex CLI
 
-通过在 `~/.codex/config.toml` 中添加支持 WebSocket 的自定义服务商，将 Codex CLI 指向 ShiguangGateway（使用单独的 `CODEX_HOME` 以避免覆盖已有配置）：
+通过在 `~/.codex/config.toml` 中添加支持 WebSocket 的自定义服务商，将 Codex CLI 指向 Orbit（使用单独的 `CODEX_HOME` 以避免覆盖已有配置）：
 
 ```toml
 model = "gpt-5.5"                 # 裸 id — 不要用 "codex/gpt-5.5"
-model_provider = "shiguang-gateway"
+model_provider = "orbit"
 
-[model_providers.shiguang-gateway]
-name = "ShiguangGateway (WS)"
+[model_providers.orbit]
+name = "Orbit (WS)"
 base_url = "http://localhost:20128/v1"   # 不要加尾部斜杠；WS URL 由此派生（生产环境使用 https/wss）
 wire_api = "responses"                    # 自 2026 年 2 月起仅支持该值
 supports_websockets = true                # 启用 Responses-over-WS 传输
-env_key = "SHIGUANG_GATEWAY_API_KEY"             # 持有 ShiguangGateway API Key（Bearer）
+env_key = "ORBIT_API_KEY"             # 持有 Orbit API Key（Bearer）
 ```
 
 ```bash
-export SHIGUANG_GATEWAY_API_KEY=sk-...           # 一个 ShiguangGateway API Key（若 REQUIRE_API_KEY=false 则任意 Key）
+export ORBIT_API_KEY=sk-...           # 一个 Orbit API Key（若 REQUIRE_API_KEY=false 则任意 Key）
 codex exec "Responda apenas: PONG"
 ```
 
-CLI 将 `base_url + /responses` 升级为 WebSocket，ShiguangGateway 将其隧道化到选定的 codex OAuth 连接。已对本地服务器完成端到端验证：ChatGPT 返回 `codex.rate_limits` + `response.created` 并流式传输补全结果。
+CLI 将 `base_url + /responses` 升级为 WebSocket，Orbit 将其隧道化到选定的 codex OAuth 连接。已对本地服务器完成端到端验证：ChatGPT 返回 `codex.rate_limits` + `response.created` 并流式传输补全结果。
 
 ---
 
@@ -585,7 +585,7 @@ Content-Type: application/json
 {
   "success": true,
   "repaired": ["CLAUDE_CODE_OAUTH_CLIENT_ID", "CLAUDE_CODE_OAUTH_CLIENT_SECRET"],
-  "backupPath": "/home/user/.shiguang-gateway/backups/env-repair-2026-04-11.bak"
+  "backupPath": "/home/user/.orbit/backups/env-repair-2026-04-11.bak"
 }
 ```
 
@@ -672,7 +672,7 @@ curl -X POST https://your-host.example/api/v1/vscode/YOUR_API_KEY/chat/completio
 
 - Token 化别名复用与 `/v1/*` 和 `/api/tags` 相同的处理器；响应格式保持一致。
 - 只要客户端支持自定义请求头，应优先使用 `Authorization: Bearer ...`。
-- 基于 URL 的 Token 可能出现在反向代理日志、浏览器历史和 ShiguangGateway 之外的遥测中。将其作为兼容选项而不是默认的认证方式。
+- 基于 URL 的 Token 可能出现在反向代理日志、浏览器历史和 Orbit 之外的遥测中。将其作为兼容选项而不是默认的认证方式。
 
 ---
 
@@ -780,7 +780,7 @@ DELETE /api/usage/token-limits?id=tl-abc
 
 ## Webhooks
 
-ShiguangGateway 事件（请求完成、配额耗尽、Key 轮换等）的出站 Webhook 订阅。
+Orbit 事件（请求完成、配额耗尽、Key 轮换等）的出站 Webhook 订阅。
 
 | 方法   | 路径                        | 说明                                                          |
 | ------ | --------------------------- | ------------------------------------------------------------- |
@@ -813,7 +813,7 @@ ShiguangGateway 事件（请求完成、配额耗尽、Key 轮换等）的出站
 
 ## Agents 协议
 
-Cloud Agent 任务（Claude Code、Codex Cloud、OpenHands 等）代表 ShiguangGateway 用户远程执行。
+Cloud Agent 任务（Claude Code、Codex Cloud、OpenHands 等）代表 Orbit 用户远程执行。
 
 | 方法   | 路径                            | 说明                                                                                                                                 |
 | ------ | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
@@ -859,7 +859,7 @@ curl -X POST http://localhost:20128/api/v1/agents/tasks \
 
 ## 容灾（扩展）
 
-ShiguangGateway 公开三个独立的临时故障机制；以下管理端点允许管理员读取和覆盖它们：
+Orbit 公开三个独立的临时故障机制；以下管理端点允许管理员读取和覆盖它们：
 
 | 范围               | 状态存储                                      | 读取                                      | 重置 / 清除                                 |
 | ------------------ | --------------------------------------------- | ----------------------------------------- | ------------------------------------------- |
@@ -888,7 +888,7 @@ curl -X DELETE http://localhost:20128/api/resilience/model-cooldowns \
 
 ## Skills
 
-用于通过自定义可执行处理器扩展 ShiguangGateway 的技能框架，以及市场集成。
+用于通过自定义可执行处理器扩展 Orbit 的技能框架，以及市场集成。
 
 | 方法   | 路径                                | 说明                                                                                                                     |
 | ------ | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
@@ -925,7 +925,7 @@ curl -X DELETE http://localhost:20128/api/resilience/model-cooldowns \
 
 ## MCP Server
 
-ShiguangGateway 内置一个 Model Context Protocol 服务器，支持 3 种传输方式（stdio、SSE、streamable-http）及权限域划分的工具。以下 dashboard 端点用于读取状态/审计数据并代理 HTTP 传输。
+Orbit 内置一个 Model Context Protocol 服务器，支持 3 种传输方式（stdio、SSE、streamable-http）及权限域划分的工具。以下 dashboard 端点用于读取状态/审计数据并代理 HTTP 传输。
 
 | 方法   | 路径                     | 说明                                                                                               |
 | ------ | ------------------------ | -------------------------------------------------------------------------------------------------- |
@@ -947,13 +947,13 @@ ShiguangGateway 内置一个 Model Context Protocol 服务器，支持 3 种传�
 
 ## A2A Server
 
-ShiguangGateway 暴露一个 A2A（Agent-to-Agent）JSON-RPC 2.0 端点，并提供 REST 包装以供检查/dashboard 使用。
+Orbit 暴露一个 A2A（Agent-to-Agent）JSON-RPC 2.0 端点，并提供 REST 包装以供检查/dashboard 使用。
 
 ### JSON-RPC
 
 ```bash
 POST /a2a
-Authorization: Bearer your-api-key   # 可选，除非设置了 SHIGUANG_GATEWAY_API_KEY
+Authorization: Bearer your-api-key   # 可选，除非设置了 ORBIT_API_KEY
 Content-Type: application/json
 
 {
@@ -996,7 +996,7 @@ GET /.well-known/agent.json
 | GET    | `/api/a2a/tasks/[id]`          | 查询单个任务                                                                                                  |
 | POST   | `/api/a2a/tasks/[id]/cancel`   | 取消任务                                                                                                     |
 
-**认证：** REST 辅助方法无需管理认证即可运行（dashboard 可读）；JSON-RPC `/a2a` 路由在配置后使用 Bearer `SHIGUANG_GATEWAY_API_KEY`。
+**认证：** REST 辅助方法无需管理认证即可运行（dashboard 可读）；JSON-RPC `/a2a` 路由在配置后使用 Bearer `ORBIT_API_KEY`。
 
 ---
 
@@ -1173,7 +1173,7 @@ GET /.well-known/agent.json
 
 ## CLI 工具管理
 
-管理与 ShiguangGateway 集成的 CLI 工具（antigravity、chipotle、commandCode、devin-cli 等）。完整列表参见 [Provider Reference](./PROVIDER_REFERENCE.md)。
+管理与 Orbit 集成的 CLI 工具（antigravity、chipotle、commandCode、devin-cli 等）。完整列表参见 [Provider Reference](./PROVIDER_REFERENCE.md)。
 
 | 方法 | 路径                                      | 说明                                                                                         |
 | ---- | ----------------------------------------- | -------------------------------------------------------------------------------------------- |
@@ -1286,7 +1286,7 @@ GET /.well-known/agent.json
 
 ## 插件
 
-管理 ShiguangGateway 插件（第三方扩展）。
+管理 Orbit 插件（第三方扩展）。
 
 | 方法   | 路径                               | 说明                                 |
 | ------ | ---------------------------------- | ------------------------------------ |
@@ -1312,7 +1312,7 @@ GET /.well-known/agent.json
 
 ## 安全护栏
 
-检查运行时安全护栏（PII 检测、提示注入检测、视觉桥接）。安全护栏在每次请求中运行；按调用退出通过 `x-shiguang-gateway-disabled-guardrails` 请求头实现 — 没有持久化的启用/禁用地表。
+检查运行时安全护栏（PII 检测、提示注入检测、视觉桥接）。安全护栏在每次请求中运行；按调用退出通过 `x-orbit-disabled-guardrails` 请求头实现 — 没有持久化的启用/禁用地表。
 
 | 方法 | 路径                     | 说明                                                                                   |
 | ---- | ------------------------ | -------------------------------------------------------------------------------------- |

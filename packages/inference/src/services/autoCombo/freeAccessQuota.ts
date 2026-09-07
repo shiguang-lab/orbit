@@ -97,7 +97,7 @@ function sweepIfDue(): void {
  * not for this filter, so their payloads are heterogeneous; this function
  * recognizes the two shapes already used by other read paths in this
  * codebase (`quotas.*.remainingPercentage` / `.total`+`.remaining`, mirroring
- * `quota_shiguangGateway.py`'s own parsing) and returns `null` — never a guess —
+ * `quota_orbit.py`'s own parsing) and returns `null` — never a guess —
  * for anything else. `null` is treated as "not proven safe" by the filter.
  */
 function extractRemainingAllowance(usage: unknown): number | null {

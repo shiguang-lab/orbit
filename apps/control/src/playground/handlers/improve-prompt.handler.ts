@@ -76,7 +76,7 @@ export async function POST(request: Request): Promise<Response> {
   const chatBody = buildImproveChatBody(body);
 
   // 5. Call /v1/chat/completions on ourselves (D8)
-  const baseUrl = process.env.SHIGUANG_GATEWAY_BASE_URL ?? process.env.INTERNAL_BASE_URL ?? `http://127.0.0.1:${process.env.EDGE_GATEWAY_PORT ?? process.env.PORT ?? "8787"}`;
+  const baseUrl = process.env.ORBIT_BASE_URL ?? process.env.INTERNAL_BASE_URL ?? `http://127.0.0.1:${process.env.EDGE_GATEWAY_PORT ?? process.env.PORT ?? "8787"}`;
   const upstreamUrl = `${baseUrl}/v1/chat/completions`;
 
   let upstreamResponse: Response;

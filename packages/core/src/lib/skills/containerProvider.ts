@@ -1,8 +1,8 @@
 /**
- * Container runtime providers for the ShiguangGateway skill sandbox.
+ * Container runtime providers for the Orbit skill sandbox.
  *
  * The sandbox historically hardcoded the `docker` CLI. This module abstracts
- * the container runtime so ShiguangGateway can pick the most performant / native
+ * the container runtime so Orbit can pick the most performant / native
  * runtime available on each host:
  *
  *   - macOS:  Apple Container (`container` CLI)  >  OrbStack (docker shim)  >  Podman  >  Docker
@@ -61,7 +61,7 @@ export interface ContainerProvider {
 //  Helpers
 // ----------------------------------------------------------------
 
-const SANDBOX_NAME = (sandboxId: string) => `shiguangGateway-${sandboxId}`;
+const SANDBOX_NAME = (sandboxId: string) => `orbit-${sandboxId}`;
 
 /**
  * Probe whether a CLI binary exists on PATH.

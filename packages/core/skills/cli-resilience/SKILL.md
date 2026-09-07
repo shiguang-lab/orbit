@@ -11,8 +11,8 @@ Inspect and manage circuit-breaker states, connection cooldowns, quota limits, a
 ## Quick install
 
 ```bash
-npm install -g shiguang-gateway   # or: npx shiguang-gateway
-shiguang-gateway --version
+npm install -g orbit   # or: npx orbit
+orbit --version
 ```
 
 ## Subcommands
@@ -27,17 +27,17 @@ shiguang-gateway --version
 **Example:**
 
 ```bash
-shiguang-gateway quota
+orbit quota
 ```
 
 ### `quota status`
 
-Show truthful ShiguangGateway gateway, quota, pool, and circuit state
+Show truthful Orbit gateway, quota, pool, and circuit state
 
 **Example:**
 
 ```bash
-shiguang-gateway quota status
+orbit quota status
 ```
 
 ### `quota preview`
@@ -51,7 +51,7 @@ Preview allocation enforcement without an upstream request
 **Example:**
 
 ```bash
-shiguang-gateway quota preview
+orbit quota preview
 ```
 
 ### `quota ensure <json>`
@@ -61,7 +61,7 @@ Idempotently create or update a quota pool from a JSON object
 **Example:**
 
 ```bash
-shiguang-gateway quota ensure <json>
+orbit quota ensure <json>
 ```
 
 ### `resilience`
@@ -69,7 +69,7 @@ shiguang-gateway quota ensure <json>
 **Example:**
 
 ```bash
-shiguang-gateway resilience
+orbit resilience
 ```
 
 ### `resilience status`
@@ -81,7 +81,7 @@ shiguang-gateway resilience
 **Example:**
 
 ```bash
-shiguang-gateway resilience status
+orbit resilience status
 ```
 
 ### `resilience breakers`
@@ -93,7 +93,7 @@ shiguang-gateway resilience status
 **Example:**
 
 ```bash
-shiguang-gateway resilience breakers
+orbit resilience breakers
 ```
 
 ### `resilience cooldowns`
@@ -106,7 +106,7 @@ shiguang-gateway resilience breakers
 **Example:**
 
 ```bash
-shiguang-gateway resilience cooldowns
+orbit resilience cooldowns
 ```
 
 ### `resilience lockouts`
@@ -119,7 +119,7 @@ shiguang-gateway resilience cooldowns
 **Example:**
 
 ```bash
-shiguang-gateway resilience lockouts
+orbit resilience lockouts
 ```
 
 ### `resilience reset`
@@ -134,7 +134,7 @@ shiguang-gateway resilience lockouts
 **Example:**
 
 ```bash
-shiguang-gateway resilience reset
+orbit resilience reset
 ```
 
 ### `resilience profile`
@@ -142,7 +142,7 @@ shiguang-gateway resilience reset
 **Example:**
 
 ```bash
-shiguang-gateway resilience profile
+orbit resilience profile
 ```
 
 ### `resilience show`
@@ -150,7 +150,7 @@ shiguang-gateway resilience profile
 **Example:**
 
 ```bash
-shiguang-gateway resilience show
+orbit resilience show
 ```
 
 ### `resilience set`
@@ -158,7 +158,7 @@ shiguang-gateway resilience show
 **Example:**
 
 ```bash
-shiguang-gateway resilience set
+orbit resilience set
 ```
 
 ### `resilience config`
@@ -166,7 +166,7 @@ shiguang-gateway resilience set
 **Example:**
 
 ```bash
-shiguang-gateway resilience config
+orbit resilience config
 ```
 
 ### `resilience show`
@@ -174,7 +174,7 @@ shiguang-gateway resilience config
 **Example:**
 
 ```bash
-shiguang-gateway resilience show
+orbit resilience show
 ```
 
 ### `resilience set`
@@ -188,5 +188,5 @@ shiguang-gateway resilience show
 **Example:**
 
 ```bash
-shiguang-gateway resilience set
+orbit resilience set
 ```

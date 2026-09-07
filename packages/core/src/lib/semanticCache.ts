@@ -7,7 +7,7 @@
  * Two-tier: in-memory LRU (fast) + SQLite (persistent across restarts).
  *
  * Cache key = SHA-256(model + normalized messages + temperature + top_p)
- * Bypass: X-ShiguangGateway-No-Cache: true
+ * Bypass: X-Orbit-No-Cache: true
  *
  * @module lib/semanticCache
  */
@@ -397,7 +397,7 @@ export function isCacheableForRead(
   body: { temperature?: unknown },
   headers: Parameters<typeof getHeaderValue>[0]
 ) {
-  if ((getHeaderValue(headers, "x-shiguangGateway-no-cache") || "").toLowerCase() === "true") {
+  if ((getHeaderValue(headers, "x-orbit-no-cache") || "").toLowerCase() === "true") {
     return false;
   }
   if (typeof body.temperature !== "number" || body.temperature !== 0) return false;
@@ -414,7 +414,7 @@ export function isCacheableForWrite(
   body: { temperature?: unknown },
   headers: Parameters<typeof getHeaderValue>[0]
 ) {
-  if ((getHeaderValue(headers, "x-shiguangGateway-no-cache") || "").toLowerCase() === "true") {
+  if ((getHeaderValue(headers, "x-orbit-no-cache") || "").toLowerCase() === "true") {
     return false;
   }
   if (body.temperature !== 0) return false;

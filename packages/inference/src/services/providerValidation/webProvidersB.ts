@@ -358,7 +358,7 @@ export function extractM365CredentialParts(
   // Accept the current M365 web endpoint (m365.cloud.microsoft, including
   // regional subdomains) plus the two legacy hosts (substrate.office.com,
   // copilot.microsoft.com). The path still carries /m365Copilot/Chathub/<tenant>,
-  // so extraction is unchanged. (ShiguangGateway issue #7078)
+  // so extraction is unchanged. (Orbit issue #7078)
   if (/^wss:\/\//i.test(text)) {
     try {
       const url = new URL(text);

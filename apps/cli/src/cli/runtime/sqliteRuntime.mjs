@@ -5,7 +5,7 @@ import { execSync } from "node:child_process";
 import { pathToFileURL } from "node:url";
 import { validateBinaryMagic, platformBinaryLabel } from "./magicBytes.mjs";
 
-const RUNTIME_DIR = join(homedir(), ".shiguangGateway", "runtime");
+const RUNTIME_DIR = join(homedir(), ".orbit", "runtime");
 // Exported so the packaging coherence guard (tests/unit/pack-boot-runtime-paths.test.ts)
 // can assert this stays on the same major as optionalDependencies.better-sqlite3 (#11242).
 export const BETTER_SQLITE3_VERSION = "better-sqlite3@^13.0.2";
@@ -15,7 +15,7 @@ let resolvedCached = null;
 /**
  * Resolves a SQLite driver through a 5-step fallback chain:
  *   1. Bundled better-sqlite3 (optionalDependency)
- *   2. Runtime-installed better-sqlite3 in ~/.shiguangGateway/runtime/
+ *   2. Runtime-installed better-sqlite3 in ~/.orbit/runtime/
  *   3. Lazy npm install into runtime dir
  *   4. node:sqlite (Node ≥22.5 stdlib)
  *   5. sql.js (bundled WASM, always available)
@@ -57,7 +57,7 @@ export async function loadSqliteRuntime() {
       return resolvedCached;
     }
   } catch (err) {
-    console.warn(`[shiguangGateway] runtime install failed: ${err.message}`);
+    console.warn(`[orbit] runtime install failed: ${err.message}`);
   }
 
   try {
@@ -100,7 +100,7 @@ async function tryLoadRuntimeInstalled() {
       const expected = platformBinaryLabel();
       if (!magic || (magic !== expected && magic !== "macho-le" && magic !== "macho-fat")) {
         console.warn(
-          `[shiguangGateway] runtime sqlite binary magic mismatch (${magic} ≠ ${expected}) — skipping`
+          `[orbit] runtime sqlite binary magic mismatch (${magic} ≠ ${expected}) — skipping`
         );
         return null;
       }

@@ -1,4 +1,4 @@
-# ShiguangGateway Project Guidelines & Rules
+# Orbit Project Guidelines & Rules
 
 ## 1. UI Component Sizing Standards (Ant Design)
 - **Default Sizing Rule**: All Ant Design interactive and input components (including `Button`, `Segmented`, `Input`, `InputNumber`, `Select`, `Cascader`, `DatePicker`, `Radio.Group`, `Checkbox.Group`, etc.) **MUST USE Ant Design's DEFAULT size** (`middle` / default).

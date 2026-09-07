@@ -14,7 +14,7 @@ import { listSemanticCacheEntries } from "@orbit/core/cache/db";
 export class CacheService {
   private mediaCacheDir(): string {
     const home = process.env.HOME || process.env.USERPROFILE || "/home/node";
-    return path.join(home, ".shiguangGateway", "media_cache");
+    return path.join(home, ".orbit", "media_cache");
   }
 
   async getMediaStats() {

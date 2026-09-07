@@ -2,8 +2,8 @@
 // translators. Extracted verbatim from openai-responses.ts (no host imports).
 
 export type JsonRecord = Record<string, unknown>;
-export const RESPONSES_STORE_MARKER = "_shiguangGatewayResponsesStore";
-export const COPILOT_REASONING_SUMMARY_MARKER = "_shiguangGatewayCopilotReasoningSummary";
+export const RESPONSES_STORE_MARKER = "_orbitResponsesStore";
+export const COPILOT_REASONING_SUMMARY_MARKER = "_orbitCopilotReasoningSummary";
 
 // Forward-compatible regex: matches web_search, web_search_20250305, and future versioned names.
 export const WEB_SEARCH_TOOL_TYPES = /^web_search/;

@@ -11,8 +11,8 @@ Run initial setup, configure global CLI settings, manage environment variables, 
 ## Quick install
 
 ```bash
-npm install -g shiguang-gateway   # or: npx shiguang-gateway
-shiguang-gateway --version
+npm install -g orbit   # or: npx orbit
+orbit --version
 ```
 
 ## Subcommands
@@ -22,7 +22,7 @@ shiguang-gateway --version
 **Example:**
 
 ```bash
-shiguang-gateway autostart
+orbit autostart
 ```
 
 ### `autostart enable`
@@ -30,7 +30,7 @@ shiguang-gateway autostart
 **Example:**
 
 ```bash
-shiguang-gateway autostart enable
+orbit autostart enable
 ```
 
 ### `autostart disable`
@@ -38,7 +38,7 @@ shiguang-gateway autostart enable
 **Example:**
 
 ```bash
-shiguang-gateway autostart disable
+orbit autostart disable
 ```
 
 ### `autostart toggle`
@@ -46,7 +46,7 @@ shiguang-gateway autostart disable
 **Example:**
 
 ```bash
-shiguang-gateway autostart toggle
+orbit autostart toggle
 ```
 
 ### `autostart status`
@@ -54,7 +54,7 @@ shiguang-gateway autostart toggle
 **Example:**
 
 ```bash
-shiguang-gateway autostart status
+orbit autostart status
 ```
 
 ### `config`
@@ -64,7 +64,7 @@ Show or update CLI tool configuration
 **Example:**
 
 ```bash
-shiguang-gateway config
+orbit config
 ```
 
 ### `config list`
@@ -78,7 +78,7 @@ List all CLI tools and config status
 **Example:**
 
 ```bash
-shiguang-gateway config list
+orbit config list
 ```
 
 ### `config get <tool>`
@@ -92,7 +92,7 @@ Show current config for a tool
 **Example:**
 
 ```bash
-shiguang-gateway config get <tool>
+orbit config get <tool>
 ```
 
 ### `config set <tool>`
@@ -109,7 +109,7 @@ Write config for a tool
 **Example:**
 
 ```bash
-shiguang-gateway config set <tool>
+orbit config set <tool>
 ```
 
 ### `config validate <tool>`
@@ -124,7 +124,7 @@ Validate config format without writing
 **Example:**
 
 ```bash
-shiguang-gateway config validate <tool>
+orbit config validate <tool>
 ```
 
 ### `config opencode`
@@ -141,7 +141,7 @@ Generate OpenCode config (alias for
 **Example:**
 
 ```bash
-shiguang-gateway config opencode
+orbit config opencode
 ```
 
 ### `config lang`
@@ -149,7 +149,7 @@ shiguang-gateway config opencode
 **Example:**
 
 ```bash
-shiguang-gateway config lang
+orbit config lang
 ```
 
 ### `config get`
@@ -161,7 +161,7 @@ shiguang-gateway config lang
 **Example:**
 
 ```bash
-shiguang-gateway config get
+orbit config get
 ```
 
 ### `config set <code>`
@@ -173,7 +173,7 @@ shiguang-gateway config get
 **Example:**
 
 ```bash
-shiguang-gateway config set <code>
+orbit config set <code>
 ```
 
 ### `config list`
@@ -185,7 +185,7 @@ shiguang-gateway config set <code>
 **Example:**
 
 ```bash
-shiguang-gateway config list
+orbit config list
 ```
 
 ### `env`
@@ -195,7 +195,7 @@ Show and manage environment variables
 **Example:**
 
 ```bash
-shiguang-gateway env
+orbit env
 ```
 
 ### `env show`
@@ -209,7 +209,7 @@ Show current environment variables
 **Example:**
 
 ```bash
-shiguang-gateway env show
+orbit env show
 ```
 
 ### `env get <key>`
@@ -219,7 +219,7 @@ Get a single environment variable
 **Example:**
 
 ```bash
-shiguang-gateway env get <key>
+orbit env get <key>
 ```
 
 ### `env set <key> <value>`
@@ -229,7 +229,7 @@ Set an environment variable (current session only)
 **Example:**
 
 ```bash
-shiguang-gateway env set <key> <value>
+orbit env set <key> <value>
 ```
 
 ### `setup`
@@ -250,7 +250,7 @@ shiguang-gateway env set <key> <value>
 **Example:**
 
 ```bash
-shiguang-gateway setup
+orbit setup
 ```
 
 ### `update`
@@ -267,5 +267,5 @@ shiguang-gateway setup
 **Example:**
 
 ```bash
-shiguang-gateway update
+orbit update
 ```

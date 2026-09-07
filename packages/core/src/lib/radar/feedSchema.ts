@@ -1,5 +1,5 @@
 /**
- * feedSchema.ts — Zod schema for the ShiguangGateway Radar feed payload.
+ * feedSchema.ts — Zod schema for the Orbit Radar feed payload.
  *
  * This is the CLIENT-SIDE mirror of the server's feed schema.  The server
  * is the source of truth; this schema validates whatever we downloaded
@@ -31,7 +31,7 @@ const SeverityEnum = z.enum(["info", "warn"]);
 const TierEnum = z.enum(["community", "live"]);
 
 /**
- * Exported so `sync.ts` can validate the `x-shiguangGateway-feed-tier` response
+ * Exported so `sync.ts` can validate the `x-orbit-feed-tier` response
  * header against the same allowed values, without duplicating the enum.
  */
 export const RadarTierSchema = TierEnum;
@@ -230,7 +230,7 @@ const QuirkSchema = z.object({
 // ---------------------------------------------------------------------------
 
 const RadarFeedV1Schema = z.object({
-  feed: z.literal("shiguangGateway-radar"),
+  feed: z.literal("orbit-radar"),
   schemaVersion: z.literal(1),
   version: z.string(),
   generatedAt: z.string().datetime(),
@@ -238,7 +238,7 @@ const RadarFeedV1Schema = z.object({
   // publish separate exact-byte live/community artifacts for one version,
   // while the selected request tier is still communicated by the header.
   // The tier ACTUALLY served is decided by the server per-request based on
-  // the Authorization key, and is surfaced via the `x-shiguangGateway-feed-tier`
+  // the Authorization key, and is surfaced via the `x-orbit-feed-tier`
   // response header instead. NEVER read this field for UI/display — use the
   // served-tier value that `sync.ts` derives from the header (falling back
   // to this field only when the header is absent, e.g. an older server).

@@ -45,7 +45,7 @@ function pickModelName(entry: Record<string, unknown>, id: string): string {
  * Exported for unit tests.
  *
  * Always ensures catalog id `auto` is present (Cursor often returns wire id `default`
- * only). ShiguangGateway clients request `cu/auto`; resolveRequestedModel maps it to `default`.
+ * only). Orbit clients request `cu/auto`; resolveRequestedModel maps it to `default`.
  */
 export function normalizeCursorAvailableModelsPayload(payload: unknown): CursorAgentModelEntry[] {
   const root = asRecord(payload) ?? {};

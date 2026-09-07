@@ -32,7 +32,7 @@ const parseToml = (content: string) => {
     const trimmed = line.trim();
     if (!trimmed || trimmed.startsWith("#")) return;
 
-    // Section header like [model_providers.shiguangGateway]
+    // Section header like [model_providers.orbit]
     const sectionMatch = trimmed.match(/^\[(.+)\]$/);
     if (sectionMatch) {
       currentSection = sectionMatch[1];
@@ -127,13 +127,13 @@ const readConfig = async () => {
   }
 };
 
-// Check if config has ShiguangGateway settings
-const hasShiguangGatewayConfig = (config: string | null) => {
+// Check if config has Orbit settings
+const hasOrbitConfig = (config: string | null) => {
   if (!config) return false;
   return (
     config.includes("openai_base_url") ||
-    config.includes('model_provider = "shiguangGateway"') ||
-    config.includes("[model_providers.shiguangGateway]")
+    config.includes('model_provider = "orbit"') ||
+    config.includes("[model_providers.orbit]")
   );
 };
 
@@ -171,7 +171,7 @@ export async function GET(request: Request) {
       runtimeMode: runtime.runtimeMode,
       reason: runtime.reason,
       config,
-      hasShiguangGateway: hasShiguangGatewayConfig(config),
+      hasOrbit: hasOrbitConfig(config),
       configPath: getCodexConfigPath(),
     });
   } catch (error) {
@@ -180,7 +180,7 @@ export async function GET(request: Request) {
   }
 }
 
-// POST - Update ShiguangGateway settings (merge with existing config)
+// POST - Update Orbit settings (merge with existing config)
 export async function POST(request: Request) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
@@ -258,7 +258,7 @@ export async function POST(request: Request) {
     // Carry the user's intent forward off the deprecated Codex feature flag (#1327).
     migrateCodexFeatureFlags(parsed);
 
-    // Update only ShiguangGateway related fields (api_key goes to auth.json, not config.toml)
+    // Update only Orbit related fields (api_key goes to auth.json, not config.toml)
     parsed._root.model = model;
 
     if (reasoningEffort && reasoningEffort !== "none") {
@@ -271,10 +271,10 @@ export async function POST(request: Request) {
     const effectiveWireApi = wireApi ?? "responses";
     const normalizedBaseUrl = normalizeCodexBaseUrl(baseUrl, effectiveWireApi);
 
-    // Always create a custom provider to reliably pass wire_api and use SHIGUANG_GATEWAY_API_KEY
-    parsed._root.model_provider = "shiguangGateway";
-    parsed._sections["model_providers.shiguangGateway"] = {
-      name: "ShiguangGateway",
+    // Always create a custom provider to reliably pass wire_api and use ORBIT_API_KEY
+    parsed._root.model_provider = "orbit";
+    parsed._sections["model_providers.orbit"] = {
+      name: "Orbit",
       base_url: normalizedBaseUrl,
       wire_api: effectiveWireApi,
       env_key: "OPENAI_API_KEY",
@@ -327,7 +327,7 @@ export async function POST(request: Request) {
   }
 }
 
-// DELETE - Remove ShiguangGateway settings only (keep other settings)
+// DELETE - Remove Orbit settings only (keep other settings)
 export async function DELETE(request: Request) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
@@ -361,16 +361,16 @@ export async function DELETE(request: Request) {
     // Carry the user's intent forward off the deprecated Codex feature flag (#1327).
     migrateCodexFeatureFlags(parsed);
 
-    // Remove ShiguangGateway related root fields
+    // Remove Orbit related root fields
     delete parsed._root.openai_base_url;
 
-    if (parsed._root.model_provider === "shiguangGateway") {
+    if (parsed._root.model_provider === "orbit") {
       delete parsed._root.model;
       delete parsed._root.model_provider;
     }
 
-    // Remove shiguangGateway provider section
-    delete parsed._sections["model_providers.shiguangGateway"];
+    // Remove orbit provider section
+    delete parsed._sections["model_providers.orbit"];
 
     // Write updated config
     const configContent = toToml(parsed);
@@ -402,7 +402,7 @@ export async function DELETE(request: Request) {
 
     return Response.json({
       success: true,
-      message: "ShiguangGateway settings removed successfully",
+      message: "Orbit settings removed successfully",
     });
   } catch (error) {
     console.log("Error resetting codex settings:", error);

@@ -57,7 +57,7 @@ function bearerHeaders(accessToken: string): Record<string, string> {
   return {
     Accept: "application/json",
     Authorization: `Bearer ${accessToken}`,
-    "User-Agent": "shiguangGateway-cursor-quota",
+    "User-Agent": "orbit-cursor-quota",
   };
 }
 

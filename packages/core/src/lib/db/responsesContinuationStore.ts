@@ -1,10 +1,10 @@
 /**
- * responsesContinuationStore.ts — ShiguangGateway-native `previous_response_id`
+ * responsesContinuationStore.ts — Orbit-native `previous_response_id`
  * virtualization for the OpenAI Responses API.
  *
  * Exposes `previous_response_id` continuation to clients unconditionally,
  * regardless of whether the actual upstream provider for a connection
- * supports Responses-API state at all: ShiguangGateway resolves the response id
+ * supports Responses-API state at all: Orbit resolves the response id
  * back to the full input/output it produced and reconstructs the full
  * request server-side before forwarding upstream (full history, exactly as
  * today) -- the client only ever has to resend the new delta.
@@ -41,7 +41,7 @@ function isPlainRecord(value: unknown): value is Record<string, unknown> {
 // malformed reconstructed request upstream (translator 400:
 // "input item type 'missing' cannot be represented..."), which is worse than
 // the plain cache-miss this function is otherwise designed to fail into.
-const TRUNCATED_ARRAY_MARKER = "_shiguangGateway_truncated_array";
+const TRUNCATED_ARRAY_MARKER = "_orbit_truncated_array";
 
 function containsTruncatedArrayMarker(items: readonly unknown[]): boolean {
   return items.some((item) => isPlainRecord(item) && item[TRUNCATED_ARRAY_MARKER] === true);

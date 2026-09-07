@@ -7,7 +7,7 @@ import { CORS_HEADERS } from "../utils/cors.ts";
 
 import { getModerationProvider, parseModerationModel } from "../config/moderationRegistry.ts";
 import { errorResponse, redactSensitiveErrorText } from "../utils/error.ts";
-import { attachShiguangGatewayMetaHeaders } from "@orbit/core/edge/gateway-response-meta";
+import { attachOrbitMetaHeaders } from "@orbit/core/edge/gateway-response-meta";
 import { generateRequestId } from "@orbit/contracts/request-id";
 
 /**
@@ -70,7 +70,7 @@ export async function handleModeration({ body, credentials }) {
 
     const data = await res.json();
     const headers = new Headers({ ...CORS_HEADERS, "Content-Type": "application/json" });
-    attachShiguangGatewayMetaHeaders(headers, {
+    attachOrbitMetaHeaders(headers, {
       provider: providerId,
       model: modelId,
       costUsd: 0,

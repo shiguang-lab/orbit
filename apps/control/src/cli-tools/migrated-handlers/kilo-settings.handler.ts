@@ -23,10 +23,10 @@ const KILO_CONFIG_DIR = path.join(os.homedir(), ".config", "kilo");
 // "installed but not configured" instead of a 500 misread as "not installed".
 const readAuth = async () => readJsoncConfig<JsonObject>(AUTH_PATH);
 
-// Check if ShiguangGateway OpenAI-compatible provider is configured
-const hasShiguangGatewayConfig = (auth: JsonObject | null) => {
+// Check if Orbit OpenAI-compatible provider is configured
+const hasOrbitConfig = (auth: JsonObject | null) => {
   if (!auth) return false;
-  const routerEntry = auth["openai-compatible"] || auth["shiguangGateway"];
+  const routerEntry = auth["openai-compatible"] || auth["orbit"];
   if (!isJsonObject(routerEntry)) return false;
   const baseUrl =
     typeof routerEntry.baseUrl === "string"
@@ -35,7 +35,7 @@ const hasShiguangGatewayConfig = (auth: JsonObject | null) => {
         ? routerEntry.baseURL
         : "";
   return (
-    baseUrl.includes("localhost") || baseUrl.includes("127.0.0.1") || baseUrl.includes("shiguangGateway")
+    baseUrl.includes("localhost") || baseUrl.includes("127.0.0.1") || baseUrl.includes("orbit")
   );
 };
 
@@ -103,7 +103,7 @@ export async function GET(request: Request) {
         auth: auth ? Object.keys(auth) : [],
         extensionSettings,
       },
-      hasShiguangGateway: hasShiguangGatewayConfig(auth),
+      hasOrbit: hasOrbitConfig(auth),
       authPath: AUTH_PATH,
     });
   } catch (error) {
@@ -112,7 +112,7 @@ export async function GET(request: Request) {
   }
 }
 
-// POST - Configure Kilo Code to use ShiguangGateway as OpenAI-compatible provider
+// POST - Configure Kilo Code to use Orbit as OpenAI-compatible provider
 export async function POST(request: Request) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
@@ -166,10 +166,10 @@ export async function POST(request: Request) {
     // Normalize baseUrl
     const normalizedBaseUrl = baseUrl.endsWith("/v1") ? baseUrl : `${baseUrl}/v1`;
 
-    // Add/update ShiguangGateway as openai-compatible provider
+    // Add/update Orbit as openai-compatible provider
     auth["openai-compatible"] = {
       type: "api-key",
-      apiKey: apiKey || "sk_shiguangGateway",
+      apiKey: apiKey || "sk_orbit",
       baseUrl: normalizedBaseUrl,
       model: model,
     };
@@ -195,9 +195,9 @@ export async function POST(request: Request) {
 
       // Set custom provider config for the extension
       vscodeSettings["kilocode.customProvider"] = {
-        name: "ShiguangGateway",
+        name: "Orbit",
         baseURL: normalizedBaseUrl,
-        apiKey: apiKey || "sk_shiguangGateway",
+        apiKey: apiKey || "sk_orbit",
       };
       vscodeSettings["kilocode.defaultModel"] = model;
 
@@ -224,7 +224,7 @@ export async function POST(request: Request) {
   }
 }
 
-// DELETE - Remove ShiguangGateway config from Kilo
+// DELETE - Remove Orbit config from Kilo
 export async function DELETE(request: Request) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
@@ -250,9 +250,9 @@ export async function DELETE(request: Request) {
       throw error;
     }
 
-    // Remove ShiguangGateway provider
+    // Remove Orbit provider
     delete auth["openai-compatible"];
-    delete auth["shiguangGateway"];
+    delete auth["orbit"];
 
     await fs.writeFile(AUTH_PATH, JSON.stringify(auth, null, 2));
 
@@ -283,7 +283,7 @@ export async function DELETE(request: Request) {
 
     return Response.json({
       success: true,
-      message: "ShiguangGateway settings removed from Kilo Code",
+      message: "Orbit settings removed from Kilo Code",
     });
   } catch (error) {
     console.log("Error resetting kilo settings:", error);

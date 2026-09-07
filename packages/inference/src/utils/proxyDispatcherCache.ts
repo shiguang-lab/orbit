@@ -1,8 +1,8 @@
 import type { Dispatcher } from "undici";
 
-const DISPATCHER_CACHE_KEY = Symbol.for("shiguangGateway.proxyDispatcher.cache");
-const DEFAULT_DISPATCHER_KEY = Symbol.for("shiguangGateway.proxyDispatcher.default");
-const RETRY_DISPATCHER_KEY = Symbol.for("shiguangGateway.proxyDispatcher.retry");
+const DISPATCHER_CACHE_KEY = Symbol.for("orbit.proxyDispatcher.cache");
+const DEFAULT_DISPATCHER_KEY = Symbol.for("orbit.proxyDispatcher.default");
+const RETRY_DISPATCHER_KEY = Symbol.for("orbit.proxyDispatcher.retry");
 
 /** Upper bound on cached per-URL proxy dispatchers; oldest entries are evicted first. */
 const MAX_DISPATCHER_CACHE_ENTRIES = 512;

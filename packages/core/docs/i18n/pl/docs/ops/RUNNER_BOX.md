@@ -15,10 +15,10 @@ manualną dyscypliną; **skrypt janitor je kodyfikuje** (WS3.3 planu jakości):
 ## Instalacja janitora (jednorazowo, na maszynie)
 
 ```bash
-sudo mkdir -p /opt/shiguang-gateway-ops
-sudo cp scripts/ops/runner-janitor.sh /opt/shiguang-gateway-ops/
-sudo chmod +x /opt/shiguang-gateway-ops/runner-janitor.sh
-( sudo crontab -l 2>/dev/null; echo '*/30 * * * * /opt/shiguang-gateway-ops/runner-janitor.sh >> /var/log/runner-janitor.log 2>&1' ) | sudo crontab -
+sudo mkdir -p /opt/orbit-ops
+sudo cp scripts/ops/runner-janitor.sh /opt/orbit-ops/
+sudo chmod +x /opt/orbit-ops/runner-janitor.sh
+( sudo crontab -l 2>/dev/null; echo '*/30 * * * * /opt/orbit-ops/runner-janitor.sh >> /var/log/runner-janitor.log 2>&1' ) | sudo crontab -
 ```
 
 Co robi co 30 min: czyści pozostałości temp runnerów starsze niż 24h, alarmuje przy

@@ -260,7 +260,7 @@ export function parseRtkTomlV1(content: string): RtkTomlCompatibilityResult {
   for (const [id, filter] of Object.entries(parsed.data.filters)) {
     if (filter.filter_stderr) {
       warnings.push(
-        `Filter '${id}': filter_stderr is accepted as a no-op because ShiguangGateway receives already-captured tool output`
+        `Filter '${id}': filter_stderr is accepted as a no-op because Orbit receives already-captured tool output`
       );
     }
   }
@@ -277,7 +277,7 @@ export function parseRtkTomlV1(content: string): RtkTomlCompatibilityResult {
 }
 
 function getDataDir(): string {
-  return process.env.DATA_DIR || path.join(os.homedir(), ".shiguangGateway");
+  return process.env.DATA_DIR || path.join(os.homedir(), ".orbit");
 }
 
 export function getGlobalRtkTomlPath(): string {

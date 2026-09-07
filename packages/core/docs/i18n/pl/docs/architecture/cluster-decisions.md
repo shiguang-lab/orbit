@@ -8,15 +8,15 @@ lastUpdated: 2026-06-28
 
 **Status:** propozycja (oczekuje na review @diegosouzapw)
 **Date:** 2026-06-20
-**Refs:** [#3932](https://github.com/diegosouzapw/ShiguangGateway/issues/3932), PR #4381
+**Refs:** [#3932](https://github.com/diegosouzapw/Orbit/issues/3932), PR #4381
 
 ## TL;DR
 
-Dwa opt-in profile compose (`memory`, `bifrost`) dla istniejącego wdrożenia 8-usługowego w [`docker-compose.yml`](../../docker-compose.yml). Domyślne zachowanie `up` jest **niezmienione**: 3 × repliki `shiguang-gateway` + Caddy + Redis + CliproxyAPI. Dwa nowe profile dodają Qdrant i Bifrost jako opcjonalne sidecary, bramkowane przez `docker compose --profile <name> up`. **Żadna istniejąca usługa nie jest usuwana ani zastępowana.**
+Dwa opt-in profile compose (`memory`, `bifrost`) dla istniejącego wdrożenia 8-usługowego w [`docker-compose.yml`](../../docker-compose.yml). Domyślne zachowanie `up` jest **niezmienione**: 3 × repliki `orbit` + Caddy + Redis + CliproxyAPI. Dwa nowe profile dodają Qdrant i Bifrost jako opcjonalne sidecary, bramkowane przez `docker compose --profile <name> up`. **Żadna istniejąca usługa nie jest usuwana ani zastępowana.**
 
 ## Dlaczego to jest konserwatywne
 
-Istniejący kształt wdrożenia ShiguangGateway jest już szczupły i sprawdzony:
+Istniejący kształt wdrożenia Orbit jest już szczupły i sprawdzony:
 
 - **`redis:7-alpine`** obsługuje obciążenie rate-limit/cache w skali produkcyjnej.
 - **SQLite + sqlite-vec + FTS5** pokrywają lokalną pamięć + wektory + wyszukiwanie tekstowe (zob. [`src/lib/memory/vectorStore.ts:108`](../../src/lib/memory/vectorStore.ts)).
@@ -32,14 +32,14 @@ Te dwa profile to **opcje scale-out dla wdrożeń, które uderzają w sufit SQLi
 **Kiedy włączyć:**
 
 - > 1M embeddingów na wdrożenie (sqlite-vec zaczyna zwalniać przy skali).
-- Wdrożenie multi-replica, które potrzebuje współdzielonego stanu wektorowego między `shiguang-gateway-1/2/3`.
+- Wdrożenie multi-replica, które potrzebuje współdzielonego stanu wektorowego między `orbit-1/2/3`.
 - Masz już zewnętrzny klaster Qdrant (Qdrant Cloud, on-prem).
 
 **Co dodaje:**
 
 | Service  | Image                   | Ports       | Notes                                               |
 | -------- | ----------------------- | ----------- | --------------------------------------------------- |
-| `qdrant` | `qdrant/qdrant:v1.12.4` | `6333` HTTP | Indeks HNSW; trwały wolumen `shiguang-gateway_qdrant_data` |
+| `qdrant` | `qdrant/qdrant:v1.12.4` | `6333` HTTP | Indeks HNSW; trwały wolumen `orbit_qdrant_data` |
 
 **Aktywacja:** ustaw `qdrantEnabled = true` w Settings UI **lub** ustaw env `QDRANT_HOST=qdrant`. Zob. [`src/lib/memory/qdrant.ts:60`](../../src/lib/memory/qdrant.ts) dla reguł pierwszeństwa (tabela settings → zmienna env → domyślna wartość).
 
@@ -49,15 +49,15 @@ Te dwa profile to **opcje scale-out dla wdrożeń, które uderzają w sufit SQLi
 
 **Kiedy włączyć:**
 
-- Uruchamiasz ≥3 repliki `shiguang-gateway` i chcesz scentralizowaną rotację providerów w jednym procesie Go.
+- Uruchamiasz ≥3 repliki `orbit` i chcesz scentralizowaną rotację providerów w jednym procesie Go.
 - Chcesz jedną powierzchnię audit/logging dla żądań upstream-provider we wszystkich replikach.
-- Chcesz skalowania horyzontalnego warstwy routingu Tier-1 niezależnie od replik ShiguangGateway.
+- Chcesz skalowania horyzontalnego warstwy routingu Tier-1 niezależnie od replik Orbit.
 
 **Co dodaje:**
 
 | Service   | Image                            | Ports  | Notes                                                             |
 | --------- | -------------------------------- | ------ | ----------------------------------------------------------------- |
-| `bifrost` | `ghcr.io/maximhq/bifrost:1.5.21` | `8080` | Router Tier-1 w Go; trwały wolumen logów `shiguang-gateway_bifrost_logs` |
+| `bifrost` | `ghcr.io/maximhq/bifrost:1.5.21` | `8080` | Router Tier-1 w Go; trwały wolumen logów `orbit_bifrost_logs` |
 
 **Aktywacja:** ustaw `BIFROST_BASE_URL=http://bifrost:8080` w `.env.example`. Istniejąca trasa proxy sidecara w [`src/app/api/v1/relay/chat/completions/bifrost/route.ts`](../../src/app/api/v1/relay/chat/completions/bifrost/route.ts) (dodana w PR #4381) przejmie to automatycznie.
 
@@ -70,7 +70,7 @@ Oryginalny wątek issue proponował większy rewrite klastra. Po audycie rzeczyw
 | Component                            | Verdict  | Reason                                                                                                                |
 | ------------------------------------ | -------- | --------------------------------------------------------------------------------------------------------------------- |
 | **Dragonfly**                        | **DROP** | `redis:7-alpine` już wystarcza do obciążenia rate-limit w skali produkcyjnej; nie ma sufitu do przebicia.             |
-| **NATS**                             | **DROP** | Każda replika `shiguang-gateway` to pojedynczy proces Node.js; nie ma obciążenia multi-process pub/sub.                      |
+| **NATS**                             | **DROP** | Każda replika `orbit` to pojedynczy proces Node.js; nie ma obciążenia multi-process pub/sub.                      |
 | **PostgreSQL**                       | **DROP** | SQLite + sqlite-vec + FTS5 pokrywają wszystkie 3 przypadki użycia; 97 migracji + pakowanie Electron blokują migrację. |
 | **Neo4j**                            | **DROP** | Routing to join 5 tabel; rekurencyjne CTE na SQLite wystarcza.                                                        |
 | **MinIO**                            | **DROP** | Brak obciążenia blobami multi-MB; images/audio to proxy passthrough.                                                  |

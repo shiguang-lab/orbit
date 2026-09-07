@@ -8,7 +8,7 @@
  * optional compression header. Pure builder (returns a fresh map). Behaviour is byte-identical to
  * the previous inline block.
  */
-import { SHIGUANG_GATEWAY_RESPONSE_HEADERS } from "@orbit/contracts/gateway-headers";
+import { ORBIT_RESPONSE_HEADERS } from "@orbit/contracts/gateway-headers";
 import { buildStreamingResponseHeaders as defaultBuildStreaming } from "./responseHeaders.ts";
 
 export function assembleStreamingResponseHeaders(
@@ -32,10 +32,10 @@ export function assembleStreamingResponseHeaders(
       costUsd: 0,
       strategy: args.comboStrategy ?? "single",
     }),
-    "x-shiguangGateway-request-id": args.pendingRequestId,
+    "x-orbit-request-id": args.pendingRequestId,
   };
   if (args.compressionResponseMeta) {
-    responseHeaders[SHIGUANG_GATEWAY_RESPONSE_HEADERS.compression] = args.compressionResponseMeta;
+    responseHeaders[ORBIT_RESPONSE_HEADERS.compression] = args.compressionResponseMeta;
   }
   return responseHeaders;
 }

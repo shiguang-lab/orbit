@@ -1,5 +1,5 @@
 /**
- * Global Type Declarations for ShiguangGateway
+ * Global Type Declarations for Orbit
  *
  * Ambient declarations for modules and globals that don't ship their own types.
  */
@@ -21,10 +21,10 @@ declare namespace NodeJS {
     PORT?: string;
     API_HOST?: string;
     DASHBOARD_PORT?: string;
-    SHIGUANG_GATEWAY_PUBLIC_BASE_URL?: string;
-    SHIGUANG_GATEWAY_BASE_URL?: string;
-    SHIGUANG_GATEWAY_DISABLE_BACKGROUND_SERVICES?: string;
-    SHIGUANG_GATEWAY_PORT?: string;
+    ORBIT_PUBLIC_BASE_URL?: string;
+    ORBIT_BASE_URL?: string;
+    ORBIT_DISABLE_BACKGROUND_SERVICES?: string;
+    ORBIT_PORT?: string;
     PRICING_SYNC_ENABLED?: string;
     NODE_ENV?: "development" | "production" | "test";
   }

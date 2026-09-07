@@ -14,7 +14,7 @@ export async function GET(): Promise<Response> {
       status: 200,
       headers: {
         "Content-Type": "application/x-pem-file",
-        "Content-Disposition": 'attachment; filename="shiguangGateway-mitm.crt"',
+        "Content-Disposition": 'attachment; filename="orbit-mitm.crt"',
         "Content-Length": String(pem.length),
       },
     });

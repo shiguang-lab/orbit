@@ -3,10 +3,10 @@ title: "Design System & Visual Identity"
 lastUpdated: 2026-07-11
 ---
 
-# ShiguangGateway — Design System & Visual Identity
+# Orbit — Design System & Visual Identity
 
 > **Status:** reference — the standardization described here is **implemented** (phases 1–6: grid wallpaper, primitives, status-color centralization, mono token, DataTable token migration, focus-ring → accent, Checkbox/Textarea primitives, `cn()` → tailwind-merge, grid on every standalone screen, fluid 4K content shell, opaque data-table surfaces). This document is the canonical description of the dashboard's design tokens, components, and conventions; the phase framing below is kept as the rationale for each decision.
-> **Scope:** the ShiguangGateway dashboard (`src/`) and the marketing site (`_mono_repo/shiguang-gatewaySite/`) share **one visual identity** — same graph-paper grid background (32px), same color tokens, standardized components.
+> **Scope:** the Orbit dashboard (`src/`) and the marketing site (`_mono_repo/orbitSite/`) share **one visual identity** — same graph-paper grid background (32px), same color tokens, standardized components.
 >
 > Practical notes for maintainers:
 >
@@ -18,7 +18,7 @@ lastUpdated: 2026-07-11
 
 ## 1. Purpose
 
-The marketing site (`viral.shiguang-gateway.online`, `why.shiguang-gateway.online`, `shiguang-gateway.online`) and the product dashboard should look like **one product**. The site already borrowed its palette from the dashboard — its `css/tokens.css` even says _"Palette mirrors the ShiguangGateway dashboard (src/app/globals.css)"_. So the two are already ~80% aligned at the color level. What's missing on the dashboard:
+The marketing site (`viral.orbit.online`, `why.orbit.online`, `orbit.online`) and the product dashboard should look like **one product**. The site already borrowed its palette from the dashboard — its `css/tokens.css` even says _"Palette mirrors the Orbit dashboard (src/app/globals.css)"_. So the two are already ~80% aligned at the color level. What's missing on the dashboard:
 
 1. The **graph-paper grid wallpaper** the site uses on every page.
 2. A handful of **shared design tokens** the site has but the dashboard lacks (radius scale, brand gradient, `surface-2`, mono font).
@@ -82,7 +82,7 @@ Every brand color and surface already matches the site **by value** (only the na
 
 ### 4.1 What it is
 
-The exact recipe from the site (`_mono_repo/shiguang-gatewaySite/css/base.css`): a **fixed, full-viewport pseudo-element** painting two 1px line gradients, sitting at `z-index:-1` behind all content.
+The exact recipe from the site (`_mono_repo/orbitSite/css/base.css`): a **fixed, full-viewport pseudo-element** painting two 1px line gradients, sitting at `z-index:-1` behind all content.
 
 ```css
 body::before {
@@ -229,4 +229,4 @@ Each phase: `npm run lint` + `npm run typecheck:core` + a visual pass.
 | Status-color sources              | `flow/edgeStyles.ts`, `TokenHealthBadge.tsx`, `DegradationBadge.tsx`, `logTableStyles.ts`                            |
 | `cn` util                         | `src/shared/utils/cn.ts`                                                                                             |
 | Phase 1 guard test                | `tests/unit/design-grid-background.test.ts`                                                                          |
-| Site reference                    | `_mono_repo/shiguang-gatewaySite/css/tokens.css`, `css/base.css`                                                            |
+| Site reference                    | `_mono_repo/orbitSite/css/tokens.css`, `css/base.css`                                                            |

@@ -1,12 +1,12 @@
 /**
- * ShiguangGateway MCP Session Pool Tools — Manage and monitor anonymous web session pools.
+ * Orbit MCP Session Pool Tools — Manage and monitor anonymous web session pools.
  *
  * Tools:
- *   1. shiguangGateway_pool_status   — Get pool stats for one or all providers
- *   2. shiguangGateway_pool_sessions — List per-session details for a provider's pool
- *   3. shiguangGateway_pool_reset    — Shut down and recreate a pool
- *   4. shiguangGateway_pool_warm     — Warm up a pool to a target session count
- *   5. shiguangGateway_pool_health   — Aggregated pool health with breaker state and issues
+ *   1. orbit_pool_status   — Get pool stats for one or all providers
+ *   2. orbit_pool_sessions — List per-session details for a provider's pool
+ *   3. orbit_pool_reset    — Shut down and recreate a pool
+ *   4. orbit_pool_warm     — Warm up a pool to a target session count
+ *   5. orbit_pool_health   — Aggregated pool health with breaker state and issues
  */
 
 import { z } from "zod";
@@ -154,48 +154,48 @@ export async function handleBrowserPoolStatus(): Promise<Record<string, unknown>
 // ─── Tool Registry ─────────────────────────────────────────────────────────
 
 export const poolTools = {
-  shiguangGateway_pool_status: {
-    name: "shiguangGateway_pool_status",
+  orbit_pool_status: {
+    name: "orbit_pool_status",
     description:
       "Returns session pool status for a specific provider or all providers. Includes session counts by state (active/cooldown/dead), request totals, success rate, and throughput.",
     scopes: ["read:health"],
     inputSchema: poolStatusInput,
     handler: (args: z.infer<typeof poolStatusInput>) => handlePoolStatus(args),
   },
-  shiguangGateway_pool_sessions: {
-    name: "shiguangGateway_pool_sessions",
+  orbit_pool_sessions: {
+    name: "orbit_pool_sessions",
     description:
       "Lists all sessions in a provider's pool with per-session details: fingerprint, status, request counts, inflight, cooldown remaining, and age.",
     scopes: ["read:health"],
     inputSchema: poolSessionsInput,
     handler: (args: z.infer<typeof poolSessionsInput>) => handlePoolSessions(args),
   },
-  shiguangGateway_pool_reset: {
-    name: "shiguangGateway_pool_reset",
+  orbit_pool_reset: {
+    name: "orbit_pool_reset",
     description:
       "Shuts down and removes all sessions for a provider's pool. A new pool will be created automatically on the next request.",
     scopes: ["write:resilience"],
     inputSchema: poolResetInput,
     handler: (args: z.infer<typeof poolResetInput>) => handlePoolReset(args),
   },
-  shiguangGateway_pool_warm: {
-    name: "shiguangGateway_pool_warm",
+  orbit_pool_warm: {
+    name: "orbit_pool_warm",
     description:
       "Warms a session pool to the specified session count (1–50). Sessions beyond the current count are created with fresh browser fingerprints.",
     scopes: ["write:resilience"],
     inputSchema: poolWarmInput,
     handler: (args: z.infer<typeof poolWarmInput>) => handlePoolWarm(args),
   },
-  shiguangGateway_pool_health: {
-    name: "shiguangGateway_pool_health",
+  orbit_pool_health: {
+    name: "orbit_pool_health",
     description:
       "Returns aggregated web-session pool health: pool stats + circuit breaker state + per-session details + health status (healthy/degraded/down) + issues list.",
     scopes: ["read:health"],
     inputSchema: poolHealthInput,
     handler: (args: z.infer<typeof poolHealthInput>) => handlePoolHealth(args),
   },
-  shiguangGateway_browser_pool_status: {
-    name: "shiguangGateway_browser_pool_status",
+  orbit_browser_pool_status: {
+    name: "orbit_browser_pool_status",
     description:
       "Returns the stealth browser pool's live status (enabled, active contexts, browser running, stealth available, idle age) plus cumulative lifecycle telemetry: browser launches/failures, context create/reuse/evict/release counts, context-create failures, and shutdowns with the last reason.",
     scopes: ["read:health"],

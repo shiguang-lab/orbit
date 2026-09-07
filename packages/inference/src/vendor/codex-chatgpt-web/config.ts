@@ -1,5 +1,5 @@
 /*
- * ShiguangGateway integration layer for code adapted from miuuyy/codex-chatgpt-web
+ * Orbit integration layer for code adapted from miuuyy/codex-chatgpt-web
  * commit 55592fca0ba19a27f1b769cec8fff61ff340a785 (MIT).
  */
 import {
@@ -35,8 +35,8 @@ export function expandUserPath(value: string): string {
 }
 
 export function getConfigDir(): string {
-  const configured = process.env.DATA_DIR || process.env.SHIGUANG_GATEWAY_DATA_DIR;
-  return resolve(configured?.trim() || join(homedir(), ".shiguangGateway"), "chatgpt-web-codex");
+  const configured = process.env.DATA_DIR || process.env.ORBIT_DATA_DIR;
+  return resolve(configured?.trim() || join(homedir(), ".orbit"), "chatgpt-web-codex");
 }
 
 export function atomicWriteFile(path: string, data: string | Uint8Array): void {

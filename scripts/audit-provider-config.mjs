@@ -4,7 +4,7 @@
 import { DatabaseSync } from "node:sqlite";
 import path from "node:path";
 
-const sourceDir = process.argv[2] ?? process.env.SHIGUANG_GATEWAY_SOURCE_DATA_DIR;
+const sourceDir = process.argv[2] ?? process.env.ORBIT_SOURCE_DATA_DIR;
 if (!sourceDir) {
   console.error("Usage: node scripts/audit-provider-config.mjs <source-data-dir>");
   process.exit(2);

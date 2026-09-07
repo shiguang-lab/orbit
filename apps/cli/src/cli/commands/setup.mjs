@@ -1,6 +1,6 @@
 import { listCliTools } from "@orbit/core/shared/constants/cliTools";
 import { createPrompt, printHeading, printInfo, printSuccess } from "../io.mjs";
-import { openShiguangGatewayDb } from "../sqlite.mjs";
+import { openOrbitDb } from "../sqlite.mjs";
 import {
   getBootstrapSettings as getSettings,
   hashManagementPassword,
@@ -86,7 +86,7 @@ async function resolveProviderInput(opts, prompt, nonInteractive) {
   }
 
   if (!apiKey) {
-    throw new Error("Provider API key is required. Pass --api-key or SHIGUANG_GATEWAY_API_KEY.");
+    throw new Error("Provider API key is required. Pass --api-key or ORBIT_API_KEY.");
   }
 
   if (!name) {
@@ -137,12 +137,12 @@ async function setupProvider(db, opts, prompt, nonInteractive) {
 /**
  * Merge the `setup` subcommand options with the program-level ones.
  *
- * The program declares a global `--api-key` (the ShiguangGateway *server* key, see
+ * The program declares a global `--api-key` (the Orbit *server* key, see
  * apps/cli/src/cli/program.mjs) and `setup` declares its own `--api-key` (the *provider*
  * key). Commander binds the value to the program-level option, so the
  * subcommand's `opts.apiKey` is always `undefined` and `--add-provider` failed
  * with "Provider API key is required" even when `--api-key` was passed. Falling
- * back to the global value also makes `SHIGUANG_GATEWAY_API_KEY` work, which the error
+ * back to the global value also makes `ORBIT_API_KEY` work, which the error
  * message already told users to use.
  *
  * @param {Record<string, unknown>} opts Subcommand options.
@@ -197,7 +197,7 @@ export async function runSetupCommand(opts = {}) {
   }
 
   if (await isServerUp()) {
-    console.error("Setup is an offline bootstrap command. Stop ShiguangGateway before running it.");
+    console.error("Setup is an offline bootstrap command. Stop Orbit before running it.");
     return 1;
   }
 
@@ -205,8 +205,8 @@ export async function runSetupCommand(opts = {}) {
   const prompt = createPrompt();
 
   try {
-    printHeading("ShiguangGateway Setup");
-    const { db, dbPath } = await openShiguangGatewayDb();
+    printHeading("Orbit Setup");
+    const { db, dbPath } = await openOrbitDb();
     printInfo(`Database: ${dbPath}`);
 
     const before = getSettings(db);

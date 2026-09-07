@@ -21,7 +21,7 @@ import {
 } from "./auth.ts";
 import { isAllRateLimitedCredentials } from "@orbit/inference/services/credential-selection";
 import { handleAudioSpeech } from "../handlers/audioSpeech.ts";
-import { attachShiguangGatewayMetaToResponse } from "@orbit/core/edge/gateway-response-meta";
+import { attachOrbitMetaToResponse } from "@orbit/core/edge/gateway-response-meta";
 import { generateRequestId } from "@orbit/contracts/request-id";
 import { calculateModalCost } from "@orbit/core/pricing/cost-calculator";
 import { toJsonErrorPayload } from "@orbit/core/shared/upstream-error";
@@ -134,7 +134,7 @@ export async function executeSpeechCombo(
         resolvedModel || target.modelStr,
         { characters }
       );
-      return attachShiguangGatewayMetaToResponse(response, {
+      return attachOrbitMetaToResponse(response, {
         provider: targetProvider,
         model: resolvedModel || target.modelStr,
         costUsd,

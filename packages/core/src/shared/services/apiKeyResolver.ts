@@ -13,12 +13,12 @@ export async function resolveApiKey(
       /* fall through */
     }
   }
-  return apiKey || "sk_shiguangGateway";
+  return apiKey || "sk_orbit";
 }
 
 /**
  * Get or create a DB-backed API key for CLI tool setup.
- * Returns a valid ShiguangGateway API key (not a placeholder like "sk_shiguangGateway").
+ * Returns a valid Orbit API key (not a placeholder like "sk_orbit").
  * Used when user has not explicitly selected a key from API Keys.
  */
 export async function getOrCreateApiKey(apiKeyId?: string | null): Promise<string> {

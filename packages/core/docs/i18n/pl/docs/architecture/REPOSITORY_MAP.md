@@ -7,14 +7,14 @@ lastUpdated: 2026-06-28
 # Mapa repozytorium
 
 > **Jednowierszowy opis każdego katalogu i pliku w katalogu głównym.**
-> Ostatnia aktualizacja: 2026-06-28 — ShiguangGateway v3.8.40
+> Ostatnia aktualizacja: 2026-06-28 — Orbit v3.8.40
 >
 > Użyj tej mapy, aby szybko nawigować po bazie kodu. Po głębsze analizy przejdź do dedykowanych dokumentów.
 
 ## Drzewo najwyższego poziomu
 
 ```
-ShiguangGateway/
+Orbit/
 ├── src/                  # Aplikacja Next.js 16 (UI + trasy API + libs + domain + server)
 ├── open-sse/             # Workspace silnika streamingu (handlery, executory, translator, serwer MCP)
 ├── electron/             # Nakładka desktopowa (Electron 41 + electron-builder 26.10)
@@ -27,7 +27,7 @@ ShiguangGateway/
 ├── images/               # Zasoby graficzne marketing / README
 ├── @orbit/           # Publikowalne pakiety towarzyszące (opencode-plugin, opencode-provider)
 ├── skills/               # Paczki skilli CLI/agent (cli-* + omni-* + config-codex-cli)
-├── examples/             # Przykładowe pluginy + starter shiguang-gateway-cmd-hello
+├── examples/             # Przykładowe pluginy + starter orbit-cmd-hello
 ├── contrib/              # Wkłady społeczności (podman/)
 ├── .source/              # Konfiguracja źródła Fumadocs (source.config.mjs + server/browser/dynamic)
 ├── .github/              # Workflowy GitHub Actions + szablony issue + szablon PR
@@ -302,7 +302,7 @@ open-sse/
 | Plik             | Cel                                                                                 |
 | ---------------- | ----------------------------------------------------------------------------------- |
 | `main.js`        | Główny proces Electron (BrowserWindow, wbudowany serwer Next.js, tray, auto-update) |
-| `preload.js`     | Most IPC (contextBridge → `window.shiguang-gateway`)                                       |
+| `preload.js`     | Most IPC (contextBridge → `window.orbit`)                                       |
 | `package.json`   | Konfiguracja electron-builder + Electron 41 + zależności electron-builder 26.10     |
 | `assets/`        | Ikony aplikacji (Windows .ico, macOS .icns, Linux .png)                             |
 | `dist-electron/` | Wyjście builda (w .gitignore)                                                       |
@@ -315,7 +315,7 @@ open-sse/
 
 | Plik                                                                                                        | Cel                                                                                                                           |
 | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `shiguang-gateway.mjs`                                                                                             | Główne wejście CLI — `shiguang-gateway serve`, `shiguang-gateway setup`, `shiguang-gateway doctor`, `shiguang-gateway providers`, `shiguang-gateway combos` itd. |
+| `orbit.mjs`                                                                                             | Główne wejście CLI — `orbit serve`, `orbit setup`, `orbit doctor`, `orbit providers`, `orbit combos` itd. |
 | `reset-password.mjs`                                                                                        | Samodzielne CLI resetu hasła                                                                                                  |
 | `cli/commands/setup.mjs`                                                                                    | Interaktywny + nieinteraktywny kreator setupu                                                                                 |
 | `cli/commands/doctor.mjs`                                                                                   | Diagnostyka zdrowia systemu (8+ checków)                                                                                      |
@@ -335,7 +335,7 @@ open-sse/
 
 | Plik                         | Cel                                                                                       |
 | ---------------------------- | ----------------------------------------------------------------------------------------- |
-| `skills/shiguang-gateway*/SKILL.md` | 10 manifestów skilli dla zewnętrznych agentów AI (Claude Desktop, ChatGPT, Cursor, Cline) |
+| `skills/orbit*/SKILL.md` | 10 manifestów skilli dla zewnętrznych agentów AI (Claude Desktop, ChatGPT, Cursor, Cline) |
 
 ---
 
@@ -396,7 +396,7 @@ open-sse/
 | `RELEASE_CHECKLIST.md`      | Pełny flow release (skille, husky, conventional commits, deploy)                     |
 | `COVERAGE_PLAN.md`          | Cele pokrycia i stan bieżący                                                         |
 | `FREE_TIERS.md`             | Wyselekcjonowani providerzy free-tier (48+ free + 11 OAuth)                          |
-| `CLI-TOOLS.md`              | Integracje zewnętrznych CLI + wewnętrzne CLI ShiguangGateway                               |
+| `CLI-TOOLS.md`              | Integracje zewnętrznych CLI + wewnętrzne CLI Orbit                               |
 | `I18N.md`                   | Architektura i18n, dodawanie języka, 30 locale                                       |
 | `UNINSTALL.md`              | Kroki czystej deinstalacji                                                           |
 | `PROVIDER_REFERENCE.md`     | **Auto-generowany** katalog 329 providerów (regen: `npm run gen:provider-reference`) |
@@ -548,7 +548,7 @@ Dostarczane szablony konfiguracji plus zacommitowane bazowe linie quality-gate
 Te katalogi z prefiksem podkreślenia zawierają treść niedostarczaną:
 
 - **`_ideia/`** — notatki projektowe (kategorie defer / notfit / viable)
-- **`_mono_repo/`** — historyczne podprojekty (shiguang-gatewayCloud, shiguang-gatewaySite, vscode-extension)
+- **`_mono_repo/`** — historyczne podprojekty (orbitCloud, orbitSite, vscode-extension)
 - **`_references/`** — klony tylko do odczytu powiązanych projektów OSS (LiteLLM, 9router, ClawRouter, CLIProxyAPI, modelrelay, new-api itd.) do cross-reference podczas developmentu
 - **`_tasks/`** — pliki śledzenia zadań per-release (nieformalne)
 

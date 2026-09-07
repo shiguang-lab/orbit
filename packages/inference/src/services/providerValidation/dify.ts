@@ -74,7 +74,7 @@ export async function validateDifyProvider({
           inputs: {},
           query: "ping",
           response_mode: "blocking",
-          user: "shiguangGateway-key-check",
+          user: "orbit-key-check",
         }),
       },
       false

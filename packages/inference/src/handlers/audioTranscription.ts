@@ -99,7 +99,7 @@ export async function buildMultipartBody(
   fields: Record<string, string>,
   fileFieldName = "file"
 ): Promise<{ body: Uint8Array<ArrayBuffer>; contentType: string }> {
-  const boundary = "----ShiguangGatewayAudioBoundary" + Date.now().toString(36);
+  const boundary = "----OrbitAudioBoundary" + Date.now().toString(36);
   const parts: Uint8Array[] = [];
   const encoder = new TextEncoder();
 

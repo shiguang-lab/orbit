@@ -391,7 +391,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 }
 
 // PATCH /api/providers/[id] - Update connection (partial)
-// The OpenAPI spec and the CLI (`shiguangGateway providers rotate`, generated
+// The OpenAPI spec and the CLI (`orbit providers rotate`, generated
 // api-commands) both use PATCH, but only PUT was implemented — PATCH requests
 // 405'd. PATCH and PUT share the same update semantics here (the schema only
 // applies provided fields), so delegate to the PUT handler.

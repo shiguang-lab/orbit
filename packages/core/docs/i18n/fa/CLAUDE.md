@@ -39,7 +39,7 @@ npm run test:all
 
 ## پروژه در یک نگاه
 
-**ShiguangGateway** — پروکسی/روتر AI یکپارچه. یک نقطه انتهایی، 329 ارائه‌دهنده LLM، بازگشت خودکار.
+**Orbit** — پروکسی/روتر AI یکپارچه. یک نقطه انتهایی، 329 ارائه‌دهنده LLM، بازگشت خودکار.
 
 | لایه          | مکان                    | هدف                                                                       |
 | ------------- | ----------------------- | ------------------------------------------------------------------------- |
@@ -82,7 +82,7 @@ Client → /v1/chat/completions (مسیر Next.js)
 
 ## وضعیت زمان اجرای تاب‌آوری
 
-ShiguangGateway سه مکانیزم موقت شکست مرتبط اما متمایز دارد. دامنه آن‌ها را هنگام اشکال‌زدایی رفتار مسیریابی جدا نگه دارید. برای یک نمای کلی، به
+Orbit سه مکانیزم موقت شکست مرتبط اما متمایز دارد. دامنه آن‌ها را هنگام اشکال‌زدایی رفتار مسیریابی جدا نگه دارید. برای یک نمای کلی، به
 [نقشه تاب‌آوری 3 لایه](./docs/diagrams/exported/resilience-3layers.svg)
 (منبع: [docs/diagrams/resilience-3layers.mmd](./docs/diagrams/resilience-3layers.mmd))
 مراجعه کنید.
@@ -369,7 +369,7 @@ git push -u origin feat/your-feature
 - **TypeScript**: 5.9+، هدف ES2022، ماژول esnext، حل‌گر بسته
 - **آلیاس‌های مسیر**: `@/*` → `src/`، `@orbit/inference` → `open-sse/`، `@orbit/inference/*` → `open-sse/*`
 - **پورت پیش‌فرض**: 20128 (API + داشبورد در همان پورت)
-- **دایرکتوری داده**: متغیر محیطی `DATA_DIR`، به طور پیش‌فرض به `~/.shiguang-gateway/`
+- **دایرکتوری داده**: متغیر محیطی `DATA_DIR`، به طور پیش‌فرض به `~/.orbit/`
 - **متغیرهای کلیدی محیط**: `PORT`, `JWT_SECRET`, `API_KEY_SECRET`, `INITIAL_PASSWORD`, `REQUIRE_API_KEY`, `APP_LOG_LEVEL`
 - راه‌اندازی: `cp .env.example .env` سپس `JWT_SECRET` (`openssl rand -base64 48`) و `API_KEY_SECRET` (`openssl rand -hex 32`) را تولید کنید.
 
@@ -392,4 +392,4 @@ git push -u origin feat/your-feature
 13. هرگز مسیرهای خارجی یا مقادیر زمان اجرا را به صورت رشته‌ای در اسکریپت‌های شل که به `exec()`/`spawn()` منتقل می‌شوند، جاسازی نکنید — به جای آن از گزینه `env` استفاده کنید. مرجع: `src/mitm/cert/install.ts::updateNssDatabases`.
 14. هرگز یک هشدار CodeQL / Secret-Scanning را بدون (الف) بررسی الگوهای مستندات بالا برای دیدن اینکه آیا کمک‌کننده اعمال می‌شود و (ب) ثبت توجیه فنی در نظر dismissal نادیده نگیرید. سابقه: `js/stack-trace-exposure` که در callsites که قبلاً از `sanitizeErrorMessage()` عبور کرده‌اند، یک محدودیت شناخته شده CodeQL است (sanitizers سفارشی شناسایی نمی‌شوند) — به عنوان `false positive` با اشاره به `docs/security/ERROR_SANITIZATION.md` نادیده بگیرید.
 15. هرگز مسیرهایی که فرایندهای فرزند را ایجاد می‌کنند (`/api/mcp/`, `/api/cli-tools/runtime/`) را بدون طبقه‌بندی `isLocalOnlyPath()` در `src/server/authz/routeGuard.ts` افشا نکنید. اجرای loopback بدون قید و شرط قبل از هر بررسی احراز هویت انجام می‌شود — JWT نشت شده از طریق تونل نمی‌تواند فرایند را ایجاد کند. به `docs/security/ROUTE_GUARD_TIERS.md` مراجعه کنید.
-16. هرگز ملحقات `Co-Authored-By` که به دستیار هوش مصنوعی، LLM یا حساب خودکار اعتبار می‌دهد را اضافه نکنید (مثلاً نام‌های شامل "Claude"، "GPT"، "Copilot"، "Bot"؛ ایمیل‌های `anthropic.com` / `openai.com` / آدرس‌های `noreply.github.com` متعلق به بات‌ها). چنین ملحقاتی انتساب commit را به حساب بات در GitHub هدایت می‌کنند و نویسنده واقعی (`diegosouzapw`) را در تاریخچه PR پنهان می‌کنند. همکاران انسانی — از جمله نویسندگان PR upstream و گزارش‌دهندگان issue که به ShiguangGateway پورت می‌شوند — می‌توانند و باید با ملحقات استاندارد `Co-authored-by: Name <email>` اعتبار داده شوند؛ گردش‌کارهای upstream-port (`/port-upstream-features`، `/port-upstream-issues`) به این بستگی دارد.
+16. هرگز ملحقات `Co-Authored-By` که به دستیار هوش مصنوعی، LLM یا حساب خودکار اعتبار می‌دهد را اضافه نکنید (مثلاً نام‌های شامل "Claude"، "GPT"، "Copilot"، "Bot"؛ ایمیل‌های `anthropic.com` / `openai.com` / آدرس‌های `noreply.github.com` متعلق به بات‌ها). چنین ملحقاتی انتساب commit را به حساب بات در GitHub هدایت می‌کنند و نویسنده واقعی (`diegosouzapw`) را در تاریخچه PR پنهان می‌کنند. همکاران انسانی — از جمله نویسندگان PR upstream و گزارش‌دهندگان issue که به Orbit پورت می‌شوند — می‌توانند و باید با ملحقات استاندارد `Co-authored-by: Name <email>` اعتبار داده شوند؛ گردش‌کارهای upstream-port (`/port-upstream-features`، `/port-upstream-issues`) به این بستگی دارد.

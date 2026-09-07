@@ -15,7 +15,7 @@ import { isJsonObject, type JsonObject } from "./_lib/jsonObject.js";
 
 const execAsync = promisify(exec);
 
-const PROVIDER_ID = "shiguangGateway";
+const PROVIDER_ID = "orbit";
 
 const getOmpDir = () => path.join(os.homedir(), ".omp", "agent");
 const getOmpDbPath = () => path.join(getOmpDir(), "agent.db");
@@ -86,7 +86,7 @@ export async function GET(request: Request) {
           },
         },
       },
-      hasShiguangGateway: !!(ymlProvider || creds.hasShiguangGateway),
+      hasOrbit: !!(ymlProvider || creds.hasOrbit),
       configPath: getOmpModelsYmlPath(),
     });
   } catch (error) {
@@ -115,7 +115,7 @@ export async function POST(request: Request) {
     const { baseUrl, apiKey } = validation.data;
 
     const normalizedBaseUrl = baseUrl.endsWith("/v1") ? baseUrl : `${baseUrl}/v1`;
-    const keyRef = apiKey || "sk_shiguangGateway";
+    const keyRef = apiKey || "sk_orbit";
 
     await fs.mkdir(getOmpDir(), { recursive: true });
 
@@ -135,13 +135,13 @@ export async function POST(request: Request) {
 
     await fs.writeFile(getOmpModelsYmlPath(), yamlDump(modelsYml, { lineWidth: -1 }), "utf-8");
 
-    // 2. Write auth_credentials — so omp sees shiguangGateway as "logged in"
+    // 2. Write auth_credentials — so omp sees orbit as "logged in"
     saveOmpCredentials(PROVIDER_ID, keyRef, normalizedBaseUrl);
 
     return Response.json({
       success: true,
       message:
-        "Oh My Pi settings applied! Run omp and all ShiguangGateway models appear under shiguangGateway in /model.",
+        "Oh My Pi settings applied! Run omp and all Orbit models appear under orbit in /model.",
       configPath: getOmpModelsYmlPath(),
     });
   } catch (error) {
@@ -175,7 +175,7 @@ export async function DELETE(request: Request) {
 
     return Response.json({
       success: true,
-      message: "ShiguangGateway removed from Oh My Pi",
+      message: "Orbit removed from Oh My Pi",
     });
   } catch (error) {
     return Response.json(

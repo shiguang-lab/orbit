@@ -25,17 +25,17 @@ export {
   type CodexFingerprintMode,
 } from "@orbit/contracts/codex-fingerprint-seed";
 
-const CODEX_INSTALLATION_SALT = "shiguangGateway-codex-installation";
-const CODEX_SESSION_SEED_PREFIX = "shiguangGateway:codex-session-id:v1:";
-const CODEX_THREAD_SEED_PREFIX = "shiguangGateway:codex-thread-id:v1:";
+const CODEX_INSTALLATION_SALT = "orbit-codex-installation";
+const CODEX_SESSION_SEED_PREFIX = "orbit:codex-session-id:v1:";
+const CODEX_THREAD_SEED_PREFIX = "orbit:codex-thread-id:v1:";
 // v2 derivations are keyed by the persisted per-connection random seed
 // (codexFingerprintSeed) instead of the connection-id chain, mirroring
 // sub2api v0.1.178 (#5696): deterministic derivation stays stable, but the
 // seed is generated per connection so identities never collide across
 // deployments and survive connection export/import.
-const CODEX_INSTALLATION_SEED_PREFIX_V2 = "shiguangGateway:codex-installation:v2:";
-const CODEX_SESSION_SEED_PREFIX_V2 = "shiguangGateway:codex-session-id:v2:";
-const CODEX_THREAD_SEED_PREFIX_V2 = "shiguangGateway:codex-thread-id:v2:";
+const CODEX_INSTALLATION_SEED_PREFIX_V2 = "orbit:codex-installation:v2:";
+const CODEX_SESSION_SEED_PREFIX_V2 = "orbit:codex-session-id:v2:";
+const CODEX_THREAD_SEED_PREFIX_V2 = "orbit:codex-thread-id:v2:";
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export type CodexClientIdentity = {
@@ -199,7 +199,7 @@ export function resolveCodexTurnStateEcho(
 
 /**
  * One identity object for every carrier in one upstream turn.
- * accountKey may be the ShiguangGateway connection id; it is never sent upstream.
+ * accountKey may be the Orbit connection id; it is never sent upstream.
  */
 export function createCodexClientIdentity(
   clientSessionId: string | null,

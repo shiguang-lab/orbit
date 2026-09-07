@@ -153,23 +153,23 @@ function logSwallowedDriverError(driver: string, err: unknown): void {
 }
 
 declare global {
-  var __shiguangGatewaySqlJsAdapters: Map<string, SqliteAdapter> | undefined;
-  var __shiguangGatewaySqlJsInitPromises: Map<string, Promise<SqliteAdapter>> | undefined;
-  var __shiguangGatewaySqlJsPreInitErrors: Map<string, string> | undefined;
+  var __orbitSqlJsAdapters: Map<string, SqliteAdapter> | undefined;
+  var __orbitSqlJsInitPromises: Map<string, Promise<SqliteAdapter>> | undefined;
+  var __orbitSqlJsPreInitErrors: Map<string, string> | undefined;
 }
 
 function getSqlJsCache(): Map<string, SqliteAdapter> {
-  if (!globalThis.__shiguangGatewaySqlJsAdapters) {
-    globalThis.__shiguangGatewaySqlJsAdapters = new Map();
+  if (!globalThis.__orbitSqlJsAdapters) {
+    globalThis.__orbitSqlJsAdapters = new Map();
   }
-  return globalThis.__shiguangGatewaySqlJsAdapters;
+  return globalThis.__orbitSqlJsAdapters;
 }
 
 function getSqlJsPreInitErrorCache(): Map<string, string> {
-  if (!globalThis.__shiguangGatewaySqlJsPreInitErrors) {
-    globalThis.__shiguangGatewaySqlJsPreInitErrors = new Map();
+  if (!globalThis.__orbitSqlJsPreInitErrors) {
+    globalThis.__orbitSqlJsPreInitErrors = new Map();
   }
-  return globalThis.__shiguangGatewaySqlJsPreInitErrors;
+  return globalThis.__orbitSqlJsPreInitErrors;
 }
 
 /**
@@ -191,10 +191,10 @@ export function getSqlJsPreInitError(filePath: string): string | undefined {
  * fs.readFileSync + WASM decode independentemente (#6628 — thundering herd).
  */
 function getSqlJsPendingCache(): Map<string, Promise<SqliteAdapter>> {
-  if (!globalThis.__shiguangGatewaySqlJsInitPromises) {
-    globalThis.__shiguangGatewaySqlJsInitPromises = new Map();
+  if (!globalThis.__orbitSqlJsInitPromises) {
+    globalThis.__orbitSqlJsInitPromises = new Map();
   }
-  return globalThis.__shiguangGatewaySqlJsInitPromises;
+  return globalThis.__orbitSqlJsInitPromises;
 }
 
 /**
@@ -237,7 +237,7 @@ export function createSyncDriverFactory(load: DriverLoader, betterSqliteProbe?: 
 
     // 2. better-sqlite3: preferred native driver on Node.js. Skipped on Bun and
     // during the Next.js production build. Build workers sometimes lose
-    // NEXT_PHASE from process.env, so SHIGUANG_GATEWAY_BUILDING=1 (set by
+    // NEXT_PHASE from process.env, so ORBIT_BUILDING=1 (set by
     // build-next-isolated.mjs and inherited by the build workers) is the primary
     // build signal. Deliberately does NOT check isMainThread: at runtime many
     // worker threads (pino thread-stream, compression workers) legitimately use
@@ -295,7 +295,7 @@ const openSyncDriver = createSyncDriverFactory(requireSqliteDriver, createBetter
  * pack-boot-specific flags keeps this from becoming a general operator override.
  */
 export function isPackBootForcedSqlJsSmoke(env: NodeJS.ProcessEnv): boolean {
-  return env.SHIGUANG_GATEWAY_PACK_BOOT_SMOKE === "1" && env.SHIGUANG_GATEWAY_PACK_BOOT_FORCE_SQLJS === "1";
+  return env.ORBIT_PACK_BOOT_SMOKE === "1" && env.ORBIT_PACK_BOOT_FORCE_SQLJS === "1";
 }
 
 /** Tenta abrir com better-sqlite3 e node:sqlite sincronamente. Retorna null se ambos falharem. */

@@ -1,12 +1,12 @@
 ---
-title: "Dokumentacja ShiguangGateway"
+title: "Dokumentacja Orbit"
 version: 3.8.40
 lastUpdated: 2026-06-28
 ---
 
-# Dokumentacja ShiguangGateway
+# Dokumentacja Orbit
 
-Nawigowalny indeks zestawu dokumentacji ShiguangGateway. Tematy są pogrupowane według celu, abyś szybko znalazł to, czego potrzebujesz.
+Nawigowalny indeks zestawu dokumentacji Orbit. Tematy są pogrupowane według celu, abyś szybko znalazł to, czego potrzebujesz.
 
 > Szukasz przeglądu projektu, kroków instalacji lub informacji o wydaniach? Zobacz główne pliki [README.md](../README.md), [CHANGELOG.md](../CHANGELOG.md) oraz [CONTRIBUTING.md](../CONTRIBUTING.md).
 
@@ -14,33 +14,33 @@ Nawigowalny indeks zestawu dokumentacji ShiguangGateway. Tematy są pogrupowane 
 
 ## Dla użytkowników nietechnicznych
 
-Proste przewodniki po korzystaniu z ShiguangGateway — bez wymaganej wiedzy technicznej.
+Proste przewodniki po korzystaniu z Orbit — bez wymaganej wiedzy technicznej.
 
 ### getting-started/
 
-- [QUICK-START.md](getting-started/QUICK-START.md) — zainstaluj i uruchom ShiguangGateway w 3 minuty.
-- [AUTO-COMBO-GUIDE.md](getting-started/AUTO-COMBO-GUIDE.md) — pozwól ShiguangGateway wybrać dla Ciebie najlepsze AI.
+- [QUICK-START.md](getting-started/QUICK-START.md) — zainstaluj i uruchom Orbit w 3 minuty.
+- [AUTO-COMBO-GUIDE.md](getting-started/AUTO-COMBO-GUIDE.md) — pozwól Orbit wybrać dla Ciebie najlepsze AI.
 - [PROVIDERS-GUIDE.md](getting-started/PROVIDERS-GUIDE.md) — jak podłączyć dostawców AI.
 - [FREE-TIERS-GUIDE.md](getting-started/FREE-TIERS-GUIDE.md) — darmowe AI bez karty kredytowej.
 - [TROUBLESHOOTING.md](getting-started/TROUBLESHOOTING.md) — rozwiązywanie typowych problemów.
 
 ### guides/
 
-- [SETUP_GUIDE.md](guides/SETUP_GUIDE.md) — pierwsza konfiguracja ShiguangGateway.
+- [SETUP_GUIDE.md](guides/SETUP_GUIDE.md) — pierwsza konfiguracja Orbit.
 - [USER_GUIDE.md](guides/USER_GUIDE.md) — codzienne korzystanie z panelu i API.
 - [FEATURES.md](guides/FEATURES.md) — galeria funkcji panelu.
-- [TIERS.md](guides/TIERS.md) — poziomy ShiguangGateway wyjaśnione (przewodnik użytkownika).
+- [TIERS.md](guides/TIERS.md) — poziomy Orbit wyjaśnione (przewodnik użytkownika).
 - [USAGE_QUOTA_GUIDE.md](guides/USAGE_QUOTA_GUIDE.md) — śledzenie użycia, limitów (quota) i wydatków.
 - [COST_TRACKING.md](guides/COST_TRACKING.md) — śledzenie kosztów i wydatków.
 - [FREE_PROVIDER_RANKINGS.md](guides/FREE_PROVIDER_RANKINGS.md) — rankingi darmowych dostawców (Arena ELO).
-- [DOCKER_GUIDE.md](guides/DOCKER_GUIDE.md) — uruchamianie ShiguangGateway w Dockerze.
+- [DOCKER_GUIDE.md](guides/DOCKER_GUIDE.md) — uruchamianie Orbit w Dockerze.
 - [ELECTRON_GUIDE.md](guides/ELECTRON_GUIDE.md) — buildy desktopowe (Electron).
 - [TERMUX_GUIDE.md](guides/TERMUX_GUIDE.md) — uruchamianie na Androidzie przez Termux.
 - [PWA_GUIDE.md](guides/PWA_GUIDE.md) — instalacja panelu jako PWA.
-- [REMOTE-MODE.md](guides/REMOTE-MODE.md) — udostępnianie ShiguangGateway zdalnie + tokeny z zakresem (scoped tokens).
+- [REMOTE-MODE.md](guides/REMOTE-MODE.md) — udostępnianie Orbit zdalnie + tokeny z zakresem (scoped tokens).
 - [CLI-INTEGRATIONS.md](guides/CLI-INTEGRATIONS.md) — główna tabela integracji CLI `setup-*`.
-- [CLAUDE-CODE-CONFIGURATION.md](guides/CLAUDE-CODE-CONFIGURATION.md) — Claude Code CLI z ShiguangGateway.
-- [CODEX-CLI-CONFIGURATION.md](guides/CODEX-CLI-CONFIGURATION.md) — Codex CLI z ShiguangGateway.
+- [CLAUDE-CODE-CONFIGURATION.md](guides/CLAUDE-CODE-CONFIGURATION.md) — Claude Code CLI z Orbit.
+- [CODEX-CLI-CONFIGURATION.md](guides/CODEX-CLI-CONFIGURATION.md) — Codex CLI z Orbit.
 - [KIRO_SETUP.md](guides/KIRO_SETUP.md) — konfiguracja Kiro.
 - [I18N.md](guides/I18N.md) — workflow tłumaczeń i locale.
 - [TROUBLESHOOTING.md](guides/TROUBLESHOOTING.md) — szczegółowa referencja rozwiązywania problemów.
@@ -152,7 +152,7 @@ Przewodniki integracji specyficzne dla dostawców.
 
 ## comparison/
 
-- [SHIGUANG_GATEWAY_VS_ALTERNATIVES.md](comparison/SHIGUANG_GATEWAY_VS_ALTERNATIVES.md) — jak ShiguangGateway wypada na tle alternatyw.
+- [ORBIT_VS_ALTERNATIVES.md](comparison/ORBIT_VS_ALTERNATIVES.md) — jak Orbit wypada na tle alternatyw.
 
 ## ops/
 

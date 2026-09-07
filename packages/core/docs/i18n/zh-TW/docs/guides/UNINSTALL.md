@@ -1,20 +1,20 @@
 ---
-title: "ShiguangGateway — 解除安裝指南"
+title: "Orbit — 解除安裝指南"
 version: 3.8.40
 lastUpdated: 2026-06-28
 ---
 
-# ShiguangGateway — 解除安裝指南
+# Orbit — 解除安裝指南
 
 🌐 **語言：** 🇺🇸 [English](./UNINSTALL.md) | 🇧🇷 [Português (Brasil)](../i18n/pt-BR/docs/guides/UNINSTALL.md) | 🇪🇸 [Español](../i18n/es/docs/guides/UNINSTALL.md) | 🇫🇷 [Français](../i18n/fr/docs/guides/UNINSTALL.md) | 🇮🇹 [Italiano](../i18n/it/docs/guides/UNINSTALL.md) | 🇷🇺 [Русский](../i18n/ru/docs/guides/UNINSTALL.md) | 🇨🇳 [中文 (简体)](../i18n/zh-CN/docs/guides/UNINSTALL.md) | 🇩🇪 [Deutsch](../i18n/de/docs/guides/UNINSTALL.md) | 🇮🇳 [हिन्दी](../i18n/in/docs/guides/UNINSTALL.md) | 🇹🇭 [ไทย](../i18n/th/docs/guides/UNINSTALL.md) | 🇺🇦 [Українська](../i18n/uk-UA/docs/guides/UNINSTALL.md) | 🇸🇦 [العربية](../i18n/ar/docs/guides/UNINSTALL.md) | 🇯🇵 [日本語](../i18n/ja/docs/guides/UNINSTALL.md) | 🇻🇳 [Tiếng Việt](../i18n/vi/docs/guides/UNINSTALL.md) | 🇧🇬 [Български](../i18n/bg/docs/guides/UNINSTALL.md) | 🇩🇰 [Dansk](../i18n/da/docs/guides/UNINSTALL.md) | 🇫🇮 [Suomi](../i18n/fi/docs/guides/UNINSTALL.md) | 🇮🇱 [עברית](../i18n/he/docs/guides/UNINSTALL.md) | 🇭🇺 [Magyar](../i18n/hu/docs/guides/UNINSTALL.md) | 🇮🇩 [Bahasa Indonesia](../i18n/id/docs/guides/UNINSTALL.md) | 🇰🇷 [한국어](../i18n/ko/docs/guides/UNINSTALL.md) | 🇲🇾 [Bahasa Melayu](../i18n/ms/docs/guides/UNINSTALL.md) | 🇳🇱 [Nederlands](../i18n/nl/docs/guides/UNINSTALL.md) | 🇳🇴 [Norsk](../i18n/no/docs/guides/UNINSTALL.md) | 🇵🇹 [Português (Portugal)](../i18n/pt/docs/guides/UNINSTALL.md) | 🇷🇴 [Română](../i18n/ro/docs/guides/UNINSTALL.md) | 🇵🇱 [Polski](../i18n/pl/docs/guides/UNINSTALL.md) | 🇸🇰 [Slovenčina](../i18n/sk/docs/guides/UNINSTALL.md) | 🇸🇪 [Svenska](../i18n/sv/docs/guides/UNINSTALL.md) | 🇵🇭 [Filipino](../i18n/phi/docs/guides/UNINSTALL.md) | 🇨🇿 [Čeština](../i18n/cs/docs/guides/UNINSTALL.md) | 🇹🇼 [繁體中文 (臺灣)](../i18n/zh-TW/docs/guides/UNINSTALL.md)
 
-本指南說明如何從系統中徹底移除 ShiguangGateway。
+本指南說明如何從系統中徹底移除 Orbit。
 
 ---
 
 ## 快速解除安裝（v3.6.2+）
 
-ShiguangGateway 提供兩個內建指令碼來進行乾淨的移除：
+Orbit 提供兩個內建指令碼來進行乾淨的移除：
 
 ### 保留資料
 
@@ -22,7 +22,7 @@ ShiguangGateway 提供兩個內建指令碼來進行乾淨的移除：
 npm run uninstall
 ```
 
-此指令會移除 ShiguangGateway 應用程式，但**保留**您的資料庫、設定檔、API 金鑰及提供者設定於 `~/.shiguang-gateway/`。若您日後打算重新安裝並保留既有設定，請使用此方式。
+此指令會移除 Orbit 應用程式，但**保留**您的資料庫、設定檔、API 金鑰及提供者設定於 `~/.orbit/`。若您日後打算重新安裝並保留既有設定，請使用此方式。
 
 ### 完整移除
 
@@ -36,7 +36,7 @@ npm run uninstall:full
 - 提供者設定與 API 金鑰
 - 備份檔案
 - 日誌檔案
-- `~/.shiguang-gateway/` 目錄中的所有檔案
+- `~/.orbit/` 目錄中的所有檔案
 
 > ⚠️ **警告：** `npm run uninstall:full` 為不可逆操作。所有提供者連線、組合設定、API 金鑰及使用記錄都將永久刪除。
 
@@ -48,31 +48,31 @@ npm run uninstall:full
 
 ```bash
 # 移除全域套件
-npm uninstall -g shiguang-gateway
+npm uninstall -g orbit
 
 # （選擇性）移除資料目錄
-rm -rf ~/.shiguang-gateway
+rm -rf ~/.orbit
 ```
 
 ### pnpm 全域安裝
 
 ```bash
-pnpm uninstall -g shiguang-gateway
-rm -rf ~/.shiguang-gateway
+pnpm uninstall -g orbit
+rm -rf ~/.orbit
 ```
 
 ### Docker
 
 ```bash
 # 停止並移除容器
-docker stop shiguang-gateway
-docker rm shiguang-gateway
+docker stop orbit
+docker rm orbit
 
 # 移除資料卷（刪除所有資料）
-docker volume rm shiguang-gateway-data
+docker volume rm orbit-data
 
 # （選擇性）移除映像檔
-docker rmi diegosouzapw/shiguang-gateway:latest
+docker rmi diegosouzapw/orbit:latest
 ```
 
 ### Docker Compose
@@ -89,42 +89,42 @@ docker compose down -v
 
 **Windows：**
 
-- 開啟 `設定 → 應用程式 → ShiguangGateway → 解除安裝`
+- 開啟 `設定 → 應用程式 → Orbit → 解除安裝`
 - 或從安裝目錄執行 NSIS 解除安裝程式
 
 **macOS：**
 
-- 將 `/Applications` 中的 `ShiguangGateway.app` 拖入垃圾桶
-- 移除資料：`rm -rf ~/Library/Application Support/shiguang-gateway`
+- 將 `/Applications` 中的 `Orbit.app` 拖入垃圾桶
+- 移除資料：`rm -rf ~/Library/Application Support/orbit`
 
 **Linux：**
 
 - 刪除 AppImage 檔案
-- 移除資料：`rm -rf ~/.shiguang-gateway`
+- 移除資料：`rm -rf ~/.orbit`
 
 ### 原始碼安裝（git clone）
 
 ```bash
 # 移除複製的目錄
-rm -rf /path/to/shiguang-gateway
+rm -rf /path/to/orbit
 
 # （選擇性）移除資料目錄
-rm -rf ~/.shiguang-gateway
+rm -rf ~/.orbit
 ```
 
 ---
 
 ## 資料目錄
 
-ShiguangGateway 預設將資料存放於以下位置：
+Orbit 預設將資料存放於以下位置：
 
 | 平台         | 預設路徑                      | 覆蓋方式                   |
 | ------------ | ----------------------------- | -------------------------- |
-| Linux        | `~/.shiguang-gateway/`               | `DATA_DIR` 環境變數        |
-| macOS        | `~/.shiguang-gateway/`               | `DATA_DIR` 環境變數        |
-| Windows      | `%APPDATA%/shiguang-gateway/`        | `DATA_DIR` 環境變數        |
+| Linux        | `~/.orbit/`               | `DATA_DIR` 環境變數        |
+| macOS        | `~/.orbit/`               | `DATA_DIR` 環境變數        |
+| Windows      | `%APPDATA%/orbit/`        | `DATA_DIR` 環境變數        |
 | Docker       | `/app/data/`（掛載資料卷）    | `DATA_DIR` 環境變數        |
-| XDG 相容模式 | `$XDG_CONFIG_HOME/shiguang-gateway/` | `XDG_CONFIG_HOME` 環境變數 |
+| XDG 相容模式 | `$XDG_CONFIG_HOME/orbit/` | `XDG_CONFIG_HOME` 環境變數 |
 
 ### 資料目錄中的檔案
 
@@ -145,17 +145,17 @@ ShiguangGateway 預設將資料存放於以下位置：
 
 ```bash
 # 檢查全域 npm 套件
-npm list -g shiguang-gateway 2>/dev/null
+npm list -g orbit 2>/dev/null
 
 # 檢查資料目錄
-ls -la ~/.shiguang-gateway/ 2>/dev/null
+ls -la ~/.orbit/ 2>/dev/null
 
 # 檢查正在執行的程序
-pgrep -f shiguang-gateway
+pgrep -f orbit
 ```
 
 若仍有程序在執行，請將其停止：
 
 ```bash
-pkill -f shiguang-gateway
+pkill -f orbit
 ```

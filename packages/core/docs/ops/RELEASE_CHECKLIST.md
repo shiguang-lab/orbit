@@ -46,8 +46,8 @@ That is the bypass npm sanctions now that tokens which skip 2FA are being retire
 it restores the fully automatic flow the project had up to v3.8.48 while keeping the
 WS1.3 guarantee (a leaked token cannot publish alone — there is no token).
 
-**One-time setup (owner):** npmjs.com → package `shiguang-gateway` → Settings → *Trusted
-Publisher* → GitHub: owner `diegosouzapw`, repo `ShiguangGateway`, workflow `npm-publish.yml`
+**One-time setup (owner):** npmjs.com → package `orbit` → Settings → *Trusted
+Publisher* → GitHub: owner `diegosouzapw`, repo `Orbit`, workflow `npm-publish.yml`
 (environment: none). Until that exists, the automatic step fails with `ENEEDAUTH`:
 re-dispatch with `publish_mode=staged` (below) or `direct`.
 
@@ -60,7 +60,7 @@ to AFTER the proof, not before it.
 
 **Owner flow after the workflow goes green:**
 
-1. `npm stage list shiguang-gateway` — find the stage id (also printed in the workflow summary).
+1. `npm stage list orbit` — find the stage id (also printed in the workflow summary).
 2. Verify the staged bytes (recommended): `npm stage download <id>`, then install the
    downloaded tarball into a temp prefix and boot it (`npm run check:pack-boot` automates
    the same pack→install→boot verdict in CI).
@@ -72,10 +72,10 @@ to AFTER the proof, not before it.
 legacy immediate `npm publish` (use only if staging itself misbehaves; record why).
 
 **One-time hardening (owner, npmjs.com):** configure the Trusted Publisher for
-`shiguang-gateway` in stage-only mode so a leaked long-lived token cannot `npm publish`
+`orbit` in stage-only mode so a leaked long-lived token cannot `npm publish`
 directly from anywhere — CI can only stage; only the owner's 2FA releases.
 
-**Broken-artifact playbook (unchanged):** `npm deprecate shiguang-gateway@<bad> "<reason> — use <fixed>"`
+**Broken-artifact playbook (unchanged):** `npm deprecate orbit@<bad> "<reason> — use <fixed>"`
 as the default reflex (minutes, reversible); `npm unpublish` only inside the 72h/no-dependents
 window and never as the first move. Docker: never rewrite a version tag — rollback is
 repointing `latest` to the last good digest.
@@ -194,7 +194,7 @@ Breaking changes: add `BREAKING CHANGE:` footer or `!` after the scope (e.g. `fe
 - [ ] `npm run i18n:check` exits 0 — translation state (`.i18n-state.json`) in sync with source docs (no drifted sources in strict mode; warn-mode advisory is acceptable for last-minute doc touch-ups, but should be 0 before tagging)
 - [ ] `npm run i18n:check-ui-coverage` exits 0 — every UI locale at or above the 80% coverage floor
 - [ ] `npm run i18n:sync-ui:dry` reports 0 missing keys across all 43 locales
-- [ ] If source English docs changed, run `npm run i18n:run` (requires `SHIGUANG_GATEWAY_TRANSLATION_API_KEY` in `.env`) before tagging
+- [ ] If source English docs changed, run `npm run i18n:run` (requires `ORBIT_TRANSLATION_API_KEY` in `.env`) before tagging
 - [ ] Translation contributions can be deferred to next release if minor (track in CHANGELOG)
 
 ### Database Migrations
@@ -203,7 +203,7 @@ Breaking changes: add `BREAKING CHANGE:` footer or `!` after the scope (e.g. `fe
   - [ ] Each migration is idempotent (`CREATE TABLE IF NOT EXISTS`, etc.)
   - [ ] Migrations wrapped in transactions
   - [ ] Numbered correctly (no gaps in sequence)
-- [ ] Test on fresh install: delete `~/.shiguang-gateway/shiguang-gateway.db` and run `npm run dev`
+- [ ] Test on fresh install: delete `~/.orbit/orbit.db` and run `npm run dev`
 - [ ] Test on existing install: backup DB, run migration, verify schema
 - [ ] WAL files (`-wal`, `-shm`) handled correctly if migration rewrites tables
 
@@ -238,7 +238,7 @@ The repository uses three distinct output directories — never mix them up:
 | `.build/` | Build intermediates — `next build` output (`distDir`)    | No (gitignored) |
 | `dist/`   | Shippable npm bundle — assembled by `assembleStandalone` | No (gitignored) |
 
-> **Operator note:** the remote VPS image directory remains `/usr/lib/node_modules/shiguang-gateway/app/`.
+> **Operator note:** the remote VPS image directory remains `/usr/lib/node_modules/orbit/app/`.
 > Only the **in-repo** build output moved (`app/` → `dist/`). The deploy skills rsync
 > `dist/` contents into the remote `app/` dir — no VPS path changes required.
 
@@ -358,12 +358,12 @@ Before shipping any release that includes embedded services changes, verify:
 
 Before shipping any v3.8.x release, verify these additional items:
 
-- [ ] `shiguang-gateway --tray` boots on macOS (systray2 installed into `~/.shiguang-gateway/runtime/`)
-- [ ] `shiguang-gateway --tray` boots on Linux (requires DISPLAY; graceful error if not set)
-- [ ] `shiguang-gateway --tray` boots on Windows (PowerShell NotifyIcon, no extra binaries)
-- [ ] `shiguang-gateway config tray enable` creates autostart entry; disable removes it
-- [ ] `npm install -g shiguang-gateway@<this-version>` runs postinstall without fatal exit
-- [ ] Update path keeps optional deps: `shiguang-gateway update --apply` and the auto-updater
+- [ ] `orbit --tray` boots on macOS (systray2 installed into `~/.orbit/runtime/`)
+- [ ] `orbit --tray` boots on Linux (requires DISPLAY; graceful error if not set)
+- [ ] `orbit --tray` boots on Windows (PowerShell NotifyIcon, no extra binaries)
+- [ ] `orbit config tray enable` creates autostart entry; disable removes it
+- [ ] `npm install -g orbit@<this-version>` runs postinstall without fatal exit
+- [ ] Update path keeps optional deps: `orbit update --apply` and the auto-updater
       run `npm install -g … --include=optional` so `optionalDependencies` (better-sqlite3,
       keytar, tls-client, and the llmlingua SLM stack: `@atjsh/llmlingua-2@2.0.5`,
       `js-tiktoken`) survive an update. The ultra `modelPath` SLM tier also needs the
@@ -373,13 +373,13 @@ Before shipping any v3.8.x release, verify these additional items:
       instance — the standalone trace bundles only transformers, not the dynamically-imported
       optionals, so without this the worker would load llmlingua-2 against the root's transformers
       and the SLM tier would silently fail-open.
-- [ ] `shiguang-gateway status` works with no `.env` (CLI token path, loopback only)
+- [ ] `orbit status` works with no `.env` (CLI token path, loopback only)
 - [ ] `curl -X POST http://localhost:20128/api/shutdown` returns 404 (lifecycle is CLI-owned)
 - [ ] `curl -H "host: evil.com" http://localhost:20128/api/mcp/sse` returns 401 (loopback guard)
 - [ ] SQLite runtime resolves to `bundled` on first run (bundled binary valid for platform)
 - [ ] SQLite runtime falls back to `runtime` when `node_modules/better-sqlite3` is deleted
 - [ ] Smart MCP filter compresses real `playwright-mcp browser_snapshot` output (≥50% reduction)
-- [ ] All 10 `skills/shiguang-gateway*/SKILL.md` files are publicly fetchable via raw GitHub URL
+- [ ] All 10 `skills/orbit*/SKILL.md` files are publicly fetchable via raw GitHub URL
 - [ ] Onboarding wizard shows "How It Works" tier tour step on fresh setup
 - [ ] Home dashboard tier coverage widget shows configured/active counts
 

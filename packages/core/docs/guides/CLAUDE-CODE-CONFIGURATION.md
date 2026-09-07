@@ -1,12 +1,12 @@
 ---
-title: "Claude Code CLI — Configuration with ShiguangGateway"
+title: "Claude Code CLI — Configuration with Orbit"
 version: 3.8.40
 lastUpdated: 2026-07-24
 ---
 
-# Claude Code CLI — Configuration with ShiguangGateway
+# Claude Code CLI — Configuration with Orbit
 
-Point the **Claude Code** CLI (`claude`) at ShiguangGateway — local or a remote VPS —
+Point the **Claude Code** CLI (`claude`) at Orbit — local or a remote VPS —
 with per-model profiles, mirroring the Codex setup.
 
 ---
@@ -14,15 +14,15 @@ with per-model profiles, mirroring the Codex setup.
 ## Quick start
 
 ```bash
-# Launch Claude Code against a local ShiguangGateway (auto-detects the active context)
-shiguang-gateway launch
+# Launch Claude Code against a local Orbit (auto-detects the active context)
+orbit launch
 
-# Against a remote ShiguangGateway (after `shiguang-gateway connect <host>`, this is automatic)
-shiguang-gateway launch --remote http://192.168.0.15:20128 --api-key oma_live_xxx
+# Against a remote Orbit (after `orbit connect <host>`, this is automatic)
+orbit launch --remote http://192.168.0.15:20128 --api-key oma_live_xxx
 
 # Generate per-model profiles, then launch one
-shiguang-gateway setup-claude            # writes ~/.claude/profiles/<name>/settings.json
-shiguang-gateway launch --profile glm52  # Claude Code using glm/glm-5.2 via ShiguangGateway
+orbit setup-claude            # writes ~/.claude/profiles/<name>/settings.json
+orbit launch --profile glm52  # Claude Code using glm/glm-5.2 via Orbit
 ```
 
 ---
@@ -35,7 +35,7 @@ endpoint with environment variables (it has no `--base-url` flag):
 | Variable                                     | Purpose                                                                                |
 | -------------------------------------------- | -------------------------------------------------------------------------------------- |
 | `ANTHROPIC_BASE_URL`                         | Gateway root URL (Claude Code appends `/v1/messages`). **No `/v1` suffix.**            |
-| `ANTHROPIC_AUTH_TOKEN`                       | Sent as `Authorization: Bearer …` — use your ShiguangGateway access token / API key          |
+| `ANTHROPIC_AUTH_TOKEN`                       | Sent as `Authorization: Bearer …` — use your Orbit access token / API key          |
 | `ANTHROPIC_API_KEY`                          | Alternative: sent as `x-api-key`. If both set, `ANTHROPIC_AUTH_TOKEN` wins             |
 | `ANTHROPIC_MODEL`                            | Force a specific model (overrides the `/model` picker default)                         |
 | `CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY` | `1` → the native `/model` picker lists `claude*`/`anthropic*` models from `/v1/models` |
@@ -44,8 +44,8 @@ endpoint with environment variables (it has no `--base-url` flag):
 
 > Env vars are read **once at startup** — restart Claude Code after changing them.
 
-`shiguang-gateway launch` sets all of these for you: it resolves the base URL + token
-from the active context (so `shiguang-gateway connect <vps>` then `shiguang-gateway launch`
+`orbit launch` sets all of these for you: it resolves the base URL + token
+from the active context (so `orbit connect <vps>` then `orbit launch`
 just works), health-checks the server, and execs `claude`.
 
 ---
@@ -54,24 +54,24 @@ just works), health-checks the server, and execs `claude`.
 
 Claude Code's gateway model discovery only lists ids that begin with `claude`
 or `anthropic`, so with `CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY=1` the native
-`/model` picker normally shows **only** ShiguangGateway's Claude/Anthropic models — a
+`/model` picker normally shows **only** Orbit's Claude/Anthropic models — a
 `kimi/kimi-k2.6` or `glm/glm-5.2` never appears, even though it routes fine.
 
-ShiguangGateway can mirror any enabled model (and combo) under a `claude/…` id so it
+Orbit can mirror any enabled model (and combo) under a `claude/…` id so it
 passes that filter and shows up in the picker:
 
 ```
-kimi/kimi-k2.6            →  claude/kimi/kimi-k2.6      "Kimi K2.6 (ShiguangGateway)"
-glm/glm-5.2              →  claude/glm/glm-5.2         "GLM 5.2 (ShiguangGateway)"
+kimi/kimi-k2.6            →  claude/kimi/kimi-k2.6      "Kimi K2.6 (Orbit)"
+glm/glm-5.2              →  claude/glm/glm-5.2         "GLM 5.2 (Orbit)"
 <combo "custo-otimizado"> →  claude/combo/custo-otimizado
 ```
 
-When you pick one of these in Claude Code, ShiguangGateway strips the `claude/` wrapper
+When you pick one of these in Claude Code, Orbit strips the `claude/` wrapper
 back to the real id before routing — a genuine `claude/<real-claude-model>` id
 (the actual Claude OAuth provider) is always left untouched.
 
 **This is off by default** and controlled by a three-level gate (most specific
-wins), so a plain ShiguangGateway never doubles its catalog for clients that don't use
+wins), so a plain Orbit never doubles its catalog for clients that don't use
 Claude Code:
 
 | Level    | Where                                                                  |
@@ -103,8 +103,8 @@ for this instance, next to the discovery-alias info button, with a copy button:
 ```jsonc
 {
   "env": {
-    "ANTHROPIC_BASE_URL": "http://<your ShiguangGateway>:20128",
-    "ANTHROPIC_AUTH_TOKEN": "<your ShiguangGateway API key>",
+    "ANTHROPIC_BASE_URL": "http://<your Orbit>:20128",
+    "ANTHROPIC_AUTH_TOKEN": "<your Orbit API key>",
     "CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY": "1",
   },
 }
@@ -131,7 +131,7 @@ Claude Code has **no native profile files** (unlike Codex's `~/.codex/<name>.con
 The idiomatic mechanism is `CLAUDE_CONFIG_DIR` — a separate config directory per
 profile, each with its own `settings.json`, credentials, history and cache.
 
-`shiguang-gateway setup-claude` fetches the live `/v1/models` catalog and writes one
+`orbit setup-claude` fetches the live `/v1/models` catalog and writes one
 profile per model at `~/.claude/profiles/<name>/settings.json`, reusing the
 **same names as `setup-codex`** (`glm52`, `kimi-k27`, `deepseek-pro`, …):
 
@@ -151,42 +151,42 @@ profile per model at `~/.claude/profiles/<name>/settings.json`, reusing the
 ```
 
 > **The auth token is never written to the profile.** Launch with
-> `shiguang-gateway launch --profile <name>` (it injects `ANTHROPIC_AUTH_TOKEN` from the
+> `orbit launch --profile <name>` (it injects `ANTHROPIC_AUTH_TOKEN` from the
 > active context), or export `ANTHROPIC_AUTH_TOKEN` yourself and run
 > `CLAUDE_CONFIG_DIR=~/.claude/profiles/<name> claude`.
 
-**Auto-sync after model discovery (opt-in).** ShiguangGateway can regenerate these same
+**Auto-sync after model discovery (opt-in).** Orbit can regenerate these same
 `~/.claude/profiles/<name>/settings.json` files automatically whenever a provider model
 sync changes the live catalog — so new/renamed models get profiles without re-running the
 command. It is **off by default**: toggle it from the **CLI Code dashboard** ("CLI profile
-auto-sync" → Claude Code), or set `SHIGUANG_GATEWAY_AUTO_SYNC_CLAUDE_PROFILES=true` (it also honors
+auto-sync" → Claude Code), or set `ORBIT_AUTO_SYNC_CLAUDE_PROFILES=true` (it also honors
 `CLI_ALLOW_CONFIG_WRITES`, on by default). When enabled it only writes profile files; it never
 changes your active/default Claude config, auth, or the `~/.claude/settings.json`.
 
 ### Generating + using profiles
 
 ```bash
-# Local ShiguangGateway
-shiguang-gateway setup-claude
+# Local Orbit
+orbit setup-claude
 
 # Remote VPS (bakes the VPS URL into every profile)
-shiguang-gateway setup-claude --remote http://192.168.0.15:20128 --api-key oma_live_xxx
+orbit setup-claude --remote http://192.168.0.15:20128 --api-key oma_live_xxx
 
 # Only some providers
-shiguang-gateway setup-claude --only glm,kimi
+orbit setup-claude --only glm,kimi
 
 # Preview without writing
-shiguang-gateway setup-claude --dry-run
+orbit setup-claude --dry-run
 
 # Launch a profile
-shiguang-gateway launch --profile kimi-k27
+orbit launch --profile kimi-k27
 ```
 
 ---
 
 ## Model tiers (optional)
 
-Claude Code routes to capability tiers. Map each to an ShiguangGateway model via env /
+Claude Code routes to capability tiers. Map each to an Orbit model via env /
 settings if you want different providers per tier:
 
 ```bash
@@ -201,8 +201,8 @@ Otherwise a single `ANTHROPIC_MODEL` (what profiles set) is used for everything.
 
 ## Remote mode
 
-Once you've run `shiguang-gateway connect <host>` (see
-[Remote Mode](./REMOTE-MODE.md)), `shiguang-gateway launch` and `shiguang-gateway setup-claude`
+Once you've run `orbit connect <host>` (see
+[Remote Mode](./REMOTE-MODE.md)), `orbit launch` and `orbit setup-claude`
 automatically target that remote server and use its scoped access token — no
 extra flags needed. Override per-invocation with `--remote` / `--api-key`.
 
@@ -211,7 +211,7 @@ extra flags needed. Override per-invocation with `--remote` / `--api-key`.
 ## Troubleshooting
 
 **Claude Code ignores the gateway** — confirm `ANTHROPIC_BASE_URL` has **no
-`/v1`** and restart `claude` (env is read once at startup). `shiguang-gateway launch`
+`/v1`** and restart `claude` (env is read once at startup). `orbit launch`
 handles this for you.
 
 **`/model` picker is empty / missing gateway models** — needs Claude Code
@@ -222,14 +222,14 @@ v2.1.219+ and `CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY=1`. Only `claude*` /
 **`400 Ambiguous model 'claude-…'`** — Claude Code always sends **unprefixed**
 model IDs (e.g. `claude-opus-4-8`), so when both the Claude Code (`cc/…`) and
 Claude (`claude/…`) providers are connected the bare id matches two routes and
-ShiguangGateway refuses to guess. Fix it either way: pin a prefixed id with
+Orbit refuses to guess. Fix it either way: pin a prefixed id with
 `ANTHROPIC_MODEL=cc/claude-opus-4-8`, or enable **Prefer Claude Code for
 unprefixed Claude models** — the toggle on the Claude provider page, or
-`SHIGUANG_GATEWAY_PREFER_CLAUDE_CODE_FOR_UNPREFIXED_CLAUDE_MODELS=true` (default off;
+`ORBIT_PREFER_CLAUDE_CODE_FOR_UNPREFIXED_CLAUDE_MODELS=true` (default off;
 see [Environment](../reference/ENVIRONMENT.md)) — which routes bare `claude-*`
 IDs to Claude Code instead. Explicit provider prefixes always win.
 
-**Auth errors** — the profile holds no token. Use `shiguang-gateway launch --profile`
+**Auth errors** — the profile holds no token. Use `orbit launch --profile`
 (injects it) or export `ANTHROPIC_AUTH_TOKEN`.
 
 **Profiles don't isolate** — each profile is a distinct `CLAUDE_CONFIG_DIR`;

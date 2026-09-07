@@ -3,7 +3,7 @@
  *
  * Serverless Relay Proxy endpoint.
  * Authenticates via relay token, applies rate limits, then proxies
- * to the internal ShiguangGateway chat completions pipeline.
+ * to the internal Orbit chat completions pipeline.
  */
 
 import { CORS_HEADERS, handleCorsOptions } from "@orbit/core/shared/cors";

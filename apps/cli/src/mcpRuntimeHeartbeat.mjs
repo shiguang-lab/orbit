@@ -8,7 +8,7 @@ function resolveDataDir() {
   const configured = process.env.DATA_DIR;
   return typeof configured === "string" && configured.trim().length > 0
     ? configured.trim()
-    : join(homedir(), ".shiguangGateway");
+    : join(homedir(), ".orbit");
 }
 
 export function startMcpHeartbeat(config) {

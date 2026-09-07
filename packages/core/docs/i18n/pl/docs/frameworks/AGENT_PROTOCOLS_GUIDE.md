@@ -9,15 +9,15 @@ lastUpdated: 2026-06-28
 > **Source:** `src/lib/{a2a,acp,cloudAgent}/`, `src/app/api/{a2a,acp,cloud}/`, `src/app/api/v1/agents/`
 > **Last updated:** 2026-06-28 — v3.8.40
 
-ShiguangGateway udostępnia trzy różne powierzchnie związane z agentami. Na pierwszy rzut oka wyglądają podobnie, ale rozwiązują inne problemy. Ta strona pomaga wybrać właściwą.
+Orbit udostępnia trzy różne powierzchnie związane z agentami. Na pierwszy rzut oka wyglądają podobnie, ale rozwiązują inne problemy. Ta strona pomaga wybrać właściwą.
 
 ## TL;DR
 
 | Surface                       | Best for                                                                                                                                                     | Transport                   | Standard             |
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------- | -------------------- |
 | **A2A — Agent-to-Agent**      | Współpraca między agentami z peerami mówiącymi protokołem A2A                                                                                                | JSON-RPC 2.0 over HTTP      | A2A v0.3 (open spec) |
-| **ACP — CLI Agents Registry** | Wykrywanie / rejestracja / uruchamianie agentów CLI do kodowania zainstalowanych na maszynie użytkownika (Cursor, Cline, Codex CLI, Claude Code, Aider itd.) | HTTP REST                   | ShiguangGateway-specific   |
-| **Cloud Agents**              | Przesyłanie długotrwałych zadań kodowania do zewnętrznych usług chmurowych (Codex Cloud, Devin, Jules, Cursor Cloud)                                         | HTTP REST + DB-backed tasks | ShiguangGateway-specific   |
+| **ACP — CLI Agents Registry** | Wykrywanie / rejestracja / uruchamianie agentów CLI do kodowania zainstalowanych na maszynie użytkownika (Cursor, Cline, Codex CLI, Claude Code, Aider itd.) | HTTP REST                   | Orbit-specific   |
+| **Cloud Agents**              | Przesyłanie długotrwałych zadań kodowania do zewnętrznych usług chmurowych (Codex Cloud, Devin, Jules, Cursor Cloud)                                         | HTTP REST + DB-backed tasks | Orbit-specific   |
 
 Te trzy są niezależne — wybierz dowolny podzbiór.
 
@@ -40,14 +40,14 @@ Do you need a cloud service to do work outside this machine (Codex Cloud / Devin
 ## 1. A2A — Agent-to-Agent
 
 **Spec:** [A2A v0.3](https://a2a-protocol.org)
-**ShiguangGateway endpoint:** `POST /a2a` (JSON-RPC 2.0)
+**Orbit endpoint:** `POST /a2a` (JSON-RPC 2.0)
 **Agent Card:** `GET /.well-known/agent.json`
 
 ### Kiedy używać
 
-- Budowa systemu multi-agent, w którym ShiguangGateway jest jednym z peerów
-- Udostępnianie inteligencji routingu ShiguangGateway (smart-routing, quota-management itd.) agentom w frameworkach takich jak Google ADK lub generycznych siatkach agentów
-- Opakowanie ShiguangGateway za standardową powierzchnią discovery + invocation
+- Budowa systemu multi-agent, w którym Orbit jest jednym z peerów
+- Udostępnianie inteligencji routingu Orbit (smart-routing, quota-management itd.) agentom w frameworkach takich jak Google ADK lub generycznych siatkach agentów
+- Opakowanie Orbit za standardową powierzchnią discovery + invocation
 
 ### Methods
 
@@ -71,12 +71,12 @@ Zobacz [A2A-SERVER.md](./A2A-SERVER.md) po szczegóły transportu, strukturę ag
 
 ## 2. ACP — CLI Agents Registry
 
-**ShiguangGateway endpoint:** `GET /api/acp/agents`
+**Orbit endpoint:** `GET /api/acp/agents`
 **Source:** `src/lib/acp/{index,manager,registry}.ts`
 
 ### Czym jest
 
-ACP to **lokalny inwentarz agentów CLI** ShiguangGateway. Wykrywa, które CLI do kodowania są zainstalowane na hoście (Cursor, Cline, Claude Code, Codex CLI, Continue itd.), ustala ich wersje i udostępnia je w dashboardzie, aby użytkownik mógł skonfigurować każde CLI tak, by wskazywało na ShiguangGateway.
+ACP to **lokalny inwentarz agentów CLI** Orbit. Wykrywa, które CLI do kodowania są zainstalowane na hoście (Cursor, Cline, Claude Code, Codex CLI, Continue itd.), ustala ich wersje i udostępnia je w dashboardzie, aby użytkownik mógł skonfigurować każde CLI tak, by wskazywało na Orbit.
 
 To NIE jest zewnętrzny protokół — to wewnętrzny rejestr napędzający UI „CLI Tools” oraz śledzenie fingerprintów CLI (zobacz [CLI-TOOLS.md](../reference/CLI-TOOLS.md)).
 
@@ -112,22 +112,22 @@ Kształt body dla POST (`customAgentBodySchema` w `src/app/api/acp/agents/route.
 
 ### Przypadki użycia
 
-- Strona dashboardu „CLI Tools” listuje, co jest zainstalowane, i pomaga wskazać każde CLI na ShiguangGateway
-- Custom agenci pozwalają power userom rejestrować wewnętrzne/własnościowe CLI, o których ShiguangGateway domyślnie nie wie
+- Strona dashboardu „CLI Tools” listuje, co jest zainstalowane, i pomaga wskazać każde CLI na Orbit
+- Custom agenci pozwalają power userom rejestrować wewnętrzne/własnościowe CLI, o których Orbit domyślnie nie wie
 - Wynik detekcji zasila macierz fingerprintów `cli-tools`
 
 ### Kiedy NIE używać ACP
 
-- ACP nie _uruchamia_ tasków. Tylko wykrywa + konfiguruje CLI. Aby faktycznie wywołać CLI, uruchamiasz je sam z env vars, które dostarcza ShiguangGateway (`OPENAI_BASE_URL`, `OPENAI_API_KEY` itd.).
+- ACP nie _uruchamia_ tasków. Tylko wykrywa + konfiguruje CLI. Aby faktycznie wywołać CLI, uruchamiasz je sam z env vars, które dostarcza Orbit (`OPENAI_BASE_URL`, `OPENAI_API_KEY` itd.).
 
 ## 3. Cloud Agents
 
-**ShiguangGateway endpoints:** `/api/v1/agents/tasks/*` (lifecycle) + `/api/cloud/*` (plumbing)
+**Orbit endpoints:** `/api/v1/agents/tasks/*` (lifecycle) + `/api/cloud/*` (plumbing)
 **Source:** `src/lib/cloudAgent/`
 
 ### Czym jest
 
-Jednolity interfejs nad zewnętrznymi chmurowymi agentami do kodowania. Przesyłasz prompt + URL repozytorium, ShiguangGateway dysponuje do właściwego cloud agenta, odpytuje status i zwraca wyniki.
+Jednolity interfejs nad zewnętrznymi chmurowymi agentami do kodowania. Przesyłasz prompt + URL repozytorium, Orbit dysponuje do właściwego cloud agenta, odpytuje status i zwraca wyniki.
 
 ### Obsługiwani agenci (3, wszyscy potwierdzeni w `src/lib/cloudAgent/agents/`)
 
@@ -168,16 +168,16 @@ Oba mają „długotrwałe taski”, ale na różnych warstwach:
 
 | Aspect             | A2A                                                                                  | Cloud Agents                                |
 | ------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------- |
-| Standard           | Open A2A v0.3                                                                        | ShiguangGateway-specific                          |
-| Where compute runs | Wewnątrz ShiguangGateway (używa skonfigurowanych combos)                                   | Zewnętrznie (serwery Codex / Devin / Jules) |
+| Standard           | Open A2A v0.3                                                                        | Orbit-specific                          |
+| Where compute runs | Wewnątrz Orbit (używa skonfigurowanych combos)                                   | Zewnętrznie (serwery Codex / Devin / Jules) |
 | Task duration      | Domyślny TTL 5 min (konfigurowalny w `TaskManager`)                                  | Minuty do godzin                            |
 | Repo-aware         | Nie (przekazuje tylko prompty)                                                       | Tak (repo URL + branch)                     |
 | Use case           | Współpraca cross-agent, smart routing as a service                                   | Deleguj „implement feature X in repo Y”     |
-| Auth               | Opcjonalny `SHIGUANG_GATEWAY_API_KEY` dla `/a2a`; management dla helperów REST `/api/a2a/*` | Zawsze management                           |
+| Auth               | Opcjonalny `ORBIT_API_KEY` dla `/a2a`; management dla helperów REST `/api/a2a/*` | Zawsze management                           |
 
 ## Przykłady integracji
 
-### Odkryj capabilities A2A ShiguangGateway
+### Odkryj capabilities A2A Orbit
 
 ```bash
 curl http://localhost:20128/.well-known/agent.json
@@ -185,7 +185,7 @@ curl http://localhost:20128/.well-known/agent.json
 
 Zwraca Agent Card ze wszystkimi 5 skills, transportami i wersją.
 
-### Wywołaj ShiguangGateway jako agenta A2A
+### Wywołaj Orbit jako agenta A2A
 
 ```bash
 curl -X POST http://localhost:20128/a2a \
@@ -256,7 +256,7 @@ curl http://localhost:20128/api/v1/agents/tasks/<task-id> \
 
 ```
                 ┌─────────────────────┐
-                │   ShiguangGateway Core    │
+                │   Orbit Core    │
                 └─────────────────────┘
                   ↑       ↑        ↑
         ┌─────────┘       │        └─────────┐

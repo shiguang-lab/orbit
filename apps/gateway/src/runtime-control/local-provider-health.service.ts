@@ -39,7 +39,7 @@ export class LocalProviderHealthService implements OnModuleInit, OnModuleDestroy
   private stopped = true;
 
   onModuleInit(): void {
-    if (process.env.SHIGUANG_GATEWAY_DISABLE_LOCAL_HEALTHCHECK || process.env.NODE_ENV === "test") return;
+    if (process.env.ORBIT_DISABLE_LOCAL_HEALTHCHECK || process.env.NODE_ENV === "test") return;
     this.stopped = false;
     this.timer = setTimeout(() => void this.sweep(), INITIAL_DELAY_MS);
     this.timer.unref?.();

@@ -137,11 +137,11 @@ export interface RtkFilterDefinition {
   maxLines: number;
   preserveHead: number;
   preserveTail: number;
-  /** Exact RTK TOML schema-v1 head/tail stages. Undefined for ShiguangGateway-native JSON filters. */
+  /** Exact RTK TOML schema-v1 head/tail stages. Undefined for Orbit-native JSON filters. */
   rtkTomlHeadLines?: number;
   rtkTomlTailLines?: number;
   rtkTomlMaxLines?: number;
-  sourceFormat?: "shiguangGateway-json" | "rtk-toml-v1";
+  sourceFormat?: "orbit-json" | "rtk-toml-v1";
   source?: "project" | "global" | "builtin";
   tests: Array<{ name: string; input: string; expected: string; command?: string }>;
 }

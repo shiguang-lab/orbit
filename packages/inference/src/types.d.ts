@@ -1,5 +1,5 @@
 /**
- * Core type definitions for shiguangGateway.
+ * Core type definitions for orbit.
  *
  * These types describe the main data structures flowing through the proxy
  * pipeline: credentials, model info, executor results, and chat parameters.

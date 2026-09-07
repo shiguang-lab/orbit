@@ -22,7 +22,7 @@ Returns system health including uptime, memory, circuit breakers, rate limits
 
 ```bash
 curl https://localhost:20128/api/monitoring/health \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ## Payloads
@@ -30,17 +30,17 @@ curl https://localhost:20128/api/monitoring/health \
 See the full OpenAPI specification at `GET /api/openapi/spec` or `docs/openapi.yaml` for detailed request/response schemas.
 
 <!-- skill:custom-start -->
-<!-- Migrated from skills/shiguang-gateway-monitoring/SKILL.md (preserved curated content) -->
+<!-- Migrated from skills/orbit-monitoring/SKILL.md (preserved curated content) -->
 
-# ShiguangGateway — Monitoring & Health
+# Orbit — Monitoring & Health
 
-Requires `SHIGUANG_GATEWAY_URL` and `SHIGUANG_GATEWAY_KEY`. See [entry-point SKILL](https://raw.githubusercontent.com/diegosouzapw/ShiguangGateway/main/skills/shiguang-gateway/SKILL.md) for setup.
+Requires `ORBIT_URL` and `ORBIT_KEY`. See [entry-point SKILL](https://raw.githubusercontent.com/diegosouzapw/Orbit/main/skills/orbit/SKILL.md) for setup.
 
 ## System health
 
 ```bash
-curl $SHIGUANG_GATEWAY_URL/api/health \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_KEY"
+curl $ORBIT_URL/api/health \
+  -H "Authorization: Bearer $ORBIT_KEY"
 ```
 
 Returns: uptime, memory, active connections, circuit breaker states, rate limit status, cache stats.
@@ -48,7 +48,7 @@ Returns: uptime, memory, active connections, circuit breaker states, rate limit 
 Unauthenticated quick check:
 
 ```bash
-curl $SHIGUANG_GATEWAY_URL/api/health
+curl $ORBIT_URL/api/health
 # → {"ok":true}
 ```
 
@@ -59,8 +59,8 @@ Circuit breakers prevent traffic from hitting failing providers.
 States: `CLOSED` (normal), `OPEN` (blocked), `HALF_OPEN` (probe mode — auto-recovers).
 
 ```bash
-curl $SHIGUANG_GATEWAY_URL/api/monitoring/health \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_KEY"
+curl $ORBIT_URL/api/monitoring/health \
+  -H "Authorization: Bearer $ORBIT_KEY"
 ```
 
 Response includes `circuitBreakers` array with per-provider state and `resetAt` timestamp.
@@ -68,8 +68,8 @@ Response includes `circuitBreakers` array with per-provider state and `resetAt` 
 ## Per-provider metrics (p50/p95/p99)
 
 ```bash
-curl $SHIGUANG_GATEWAY_URL/api/providers/metrics \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_KEY"
+curl $ORBIT_URL/api/providers/metrics \
+  -H "Authorization: Bearer $ORBIT_KEY"
 ```
 
 Response shape per provider:
@@ -85,21 +85,21 @@ Response shape per provider:
 }
 ```
 
-## Via MCP (if ShiguangGateway is your MCP server)
+## Via MCP (if Orbit is your MCP server)
 
 ```
-shiguang-gateway_get_health            → full system health snapshot
-shiguang-gateway_get_provider_metrics  → p50/p95/p99 + circuit state per provider
-shiguang-gateway_get_session_snapshot  → cost, tokens, errors for current session
-shiguang-gateway_check_quota           → quota balance + percent remaining + reset time
-shiguang-gateway_db_health_check       → diagnose + auto-repair database drift
+orbit_get_health            → full system health snapshot
+orbit_get_provider_metrics  → p50/p95/p99 + circuit state per provider
+orbit_get_session_snapshot  → cost, tokens, errors for current session
+orbit_check_quota           → quota balance + percent remaining + reset time
+orbit_db_health_check       → diagnose + auto-repair database drift
 ```
 
 ## Quota check
 
 ```bash
-curl $SHIGUANG_GATEWAY_URL/api/quota \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_KEY"
+curl $ORBIT_URL/api/quota \
+  -H "Authorization: Bearer $ORBIT_KEY"
 ```
 
 Returns used/total tokens and requests per provider/account, with `resetAt` timestamps.
@@ -109,8 +109,8 @@ Returns used/total tokens and requests per provider/account, with `resetAt` time
 Set a session spending limit that degrades or blocks requests when hit:
 
 ```bash
-curl -X POST $SHIGUANG_GATEWAY_URL/api/budget/guard \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_KEY" \
+curl -X POST $ORBIT_URL/api/budget/guard \
+  -H "Authorization: Bearer $ORBIT_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "limitUsd": 5.00,
@@ -127,18 +127,18 @@ curl -X POST $SHIGUANG_GATEWAY_URL/api/budget/guard \
 
 ## MCP audit log
 
-ShiguangGateway logs every MCP tool call to `mcp_audit` table. Query via API:
+Orbit logs every MCP tool call to `mcp_audit` table. Query via API:
 
 ```bash
-curl "$SHIGUANG_GATEWAY_URL/api/mcp/status" \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_KEY"
+curl "$ORBIT_URL/api/mcp/status" \
+  -H "Authorization: Bearer $ORBIT_KEY"
 ```
 
 Returns: server status, heartbeat, recent audit activity summary.
 
 ## Errors
 
-- `503` on health endpoint → ShiguangGateway is starting up; retry in 5s
+- `503` on health endpoint → Orbit is starting up; retry in 5s
 - Circuit breaker `OPEN` → provider is temporarily blocked; check `resetAt` to know when it auto-recovers
 - `429 budget_exceeded` → budget guard limit reached; raise limit or wait for reset
 <!-- skill:custom-end -->

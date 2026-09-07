@@ -297,7 +297,7 @@ export function extractTryCloudflareUrl(text: string) {
 
 /**
  * Normalize an operator-supplied public hostname into an `https://host[:port]`
- * origin. Accepts a bare host (`shiguangGateway.example.com`) or a full URL and
+ * origin. Accepts a bare host (`orbit.example.com`) or a full URL and
  * returns `null` for empty/invalid input.
  */
 export function normalizeCloudflaredHostname(
@@ -321,7 +321,7 @@ export function normalizeCloudflaredHostname(
  * of `CLOUDFLARED_CONFIG` (a path to a locally-managed cloudflared `config.yml`
  * with `tunnel:`, `credentials-file:`, and `ingress:` entries) is what switches
  * the tunnel out of ephemeral quick-tunnel mode. `CLOUDFLARED_HOSTNAME` is an
- * optional override for the public hostname ShiguangGateway reports as the tunnel's
+ * optional override for the public hostname Orbit reports as the tunnel's
  * `publicUrl`/`apiUrl`; when unset it is read from the config's first `ingress`
  * hostname (a named tunnel emits no `*.trycloudflare.com` URL to scrape).
  * Returns `null` when no config is set (quick-tunnel mode).
@@ -340,7 +340,7 @@ export function getCloudflaredNamedTunnelConfig(
 
 /**
  * Extract the first `ingress` hostname from a cloudflared `config.yml` body, so
- * ShiguangGateway can report a named tunnel's public URL without the operator having
+ * Orbit can report a named tunnel's public URL without the operator having
  * to repeat the hostname in `CLOUDFLARED_HOSTNAME`. Skips comments and the
  * catch-all rule; returns `null` when no routable hostname is present.
  */

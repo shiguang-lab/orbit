@@ -6,7 +6,7 @@ lastUpdated: 2026-06-28
 
 # Użycie, limity i śledzenie wydatków
 
-> **TL;DR**: ShiguangGateway śledzi zużycie tokenów każdego żądania, liczy koszt, egzekwuje limity per klucz API i pokazuje analitykę na dashboardzie. Ten przewodnik wyjaśnia, jak to działa.
+> **TL;DR**: Orbit śledzi zużycie tokenów każdego żądania, liczy koszt, egzekwuje limity per klucz API i pokazuje analitykę na dashboardzie. Ten przewodnik wyjaśnia, jak to działa.
 
 **Źródła:**
 
@@ -19,7 +19,7 @@ lastUpdated: 2026-06-28
 
 ## Przegląd
 
-Każde żądanie przechodzące przez ShiguangGateway generuje **rekord użycia**, który rejestruje:
+Każde żądanie przechodzące przez Orbit generuje **rekord użycia**, który rejestruje:
 
 - **Tożsamość**: który klucz API, provider, model, combo
 - **Tokeny**: tokeny promptu, completion, cache, łącznie
@@ -76,11 +76,11 @@ const usage = response.usage || {
 };
 ```
 
-Dla providerów, które nie zwracają usage (niektóre providery web-cookie), ShiguangGateway **szacuje** tokeny heurystyką `~4 chars per token` (zob. `open-sse/services/autoCombo/pipelineRouter.ts`).
+Dla providerów, które nie zwracają usage (niektóre providery web-cookie), Orbit **szacuje** tokeny heurystyką `~4 chars per token` (zob. `open-sse/services/autoCombo/pipelineRouter.ts`).
 
 ### Tokeny z cache
 
-ShiguangGateway śledzi `cached_tokens` osobno od `prompt_tokens`, ponieważ:
+Orbit śledzi `cached_tokens` osobno od `prompt_tokens`, ponieważ:
 
 - Anthropic prompt caching pobiera obniżoną stawkę za tokeny z cache (10% normalnej)
 - Niektórzy providerzy zwracają `cache_read_input_tokens`, które powinny być wyceniane inaczej
@@ -119,7 +119,7 @@ Dane cenowe są automatycznie synchronizowane z LiteLLM przez endpoint `/api/pri
 curl -X POST http://localhost:20128/api/pricing/sync
 ```
 
-Dla modeli bez danych cenowych ShiguangGateway przechodzi na **szacowanie kosztu** wewnętrznymi średnimi stawkami (źródło: dane cenowe LiteLLM).
+Dla modeli bez danych cenowych Orbit przechodzi na **szacowanie kosztu** wewnętrznymi średnimi stawkami (źródło: dane cenowe LiteLLM).
 
 ---
 
@@ -299,14 +299,14 @@ Dwa narzędzia MCP udostępniają dane użycia agentom (zob. `open-sse/mcp-serve
 
 | Narzędzie               | Opis                                            |
 | ----------------------- | ----------------------------------------------- |
-| `shiguang-gateway_cost_report` | Generuje raport kosztów per klucz za dany okres |
-| `shiguang-gateway_check_quota` | Zwraca bieżący status limitu dla klucza API     |
+| `orbit_cost_report` | Generuje raport kosztów per klucz za dany okres |
+| `orbit_check_quota` | Zwraca bieżący status limitu dla klucza API     |
 
 Przykładowe wywołanie agenta:
 
 ```json
 {
-  "tool": "shiguang-gateway_cost_report",
+  "tool": "orbit_cost_report",
   "args": { "period": "week" }
 }
 ```

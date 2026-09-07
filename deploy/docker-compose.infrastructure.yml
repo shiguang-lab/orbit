@@ -1,16 +1,16 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: shiguang-gateway-postgres
+    container_name: orbit-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-shiguang_gateway}
-      POSTGRES_USER: ${POSTGRES_USER:-shiguang_gateway}
+      POSTGRES_DB: ${POSTGRES_DB:-orbit}
+      POSTGRES_USER: ${POSTGRES_USER:-orbit}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
     ports:
       - "${INFRA_BIND_ADDRESS:-127.0.0.1}:${POSTGRES_HOST_PORT:-25432}:5432"
     volumes:
-      - shiguang-gateway-postgres:/var/lib/postgresql/data
+      - orbit-postgres:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 10s
@@ -20,13 +20,13 @@ services:
 
   redis:
     image: redis:8-alpine
-    container_name: shiguang-gateway-redis
+    container_name: orbit-redis
     restart: unless-stopped
     command: ["redis-server", "--appendonly", "yes"]
     ports:
       - "${INFRA_BIND_ADDRESS:-127.0.0.1}:${REDIS_HOST_PORT:-26379}:6379"
     volumes:
-      - shiguang-gateway-redis:/data
+      - orbit-redis:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -35,11 +35,11 @@ services:
     networks: [gateway-infra]
 
 volumes:
-  shiguang-gateway-postgres:
-    name: shiguang-gateway-postgres
-  shiguang-gateway-redis:
-    name: shiguang-gateway-redis
+  orbit-postgres:
+    name: orbit-postgres
+  orbit-redis:
+    name: orbit-redis
 
 networks:
   gateway-infra:
-    name: shiguang-gateway-infra
+    name: orbit-infra

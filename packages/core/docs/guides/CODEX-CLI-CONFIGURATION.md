@@ -1,12 +1,12 @@
 ---
-title: "Codex CLI — Configuration with ShiguangGateway"
+title: "Codex CLI — Configuration with Orbit"
 version: 3.8.50
 lastUpdated: 2026-08-18
 ---
 
-# Codex CLI — Configuration with ShiguangGateway
+# Codex CLI — Configuration with Orbit
 
-Complete guide for using the Codex CLI pointed at ShiguangGateway as an OpenAI-compatible backend.
+Complete guide for using the Codex CLI pointed at Orbit as an OpenAI-compatible backend.
 
 ---
 
@@ -16,7 +16,7 @@ Complete guide for using the Codex CLI pointed at ShiguangGateway as an OpenAI-c
 > `~/.codex/config.yaml` belonged to the legacy npm CLI and is silently ignored.
 > The dashboard generator (`/api/cli-tools/apply`, tool `codex`) writes TOML with a
 > conservative merge — existing keys and other provider blocks are preserved, the
-> API key stays in `SHIGUANG_GATEWAY_API_KEY` (never in the file), and a leftover legacy
+> API key stays in `ORBIT_API_KEY` (never in the file), and a leftover legacy
 > `config.yaml` is reported as a migration note without being touched.
 
 ## Ready-to-paste config.toml
@@ -26,23 +26,23 @@ Replace `<YOUR_HOST>` and `<YOUR_KEY>` with your values:
 ```toml
 # ~/.codex/config.toml
 model                          = "cx/gpt-5.5"
-model_provider                 = "shiguang-gateway"
+model_provider                 = "orbit"
 model_reasoning_effort         = "xhigh"
 model_context_window           = 400000
 model_auto_compact_token_limit = 350000
 tool_output_token_limit        = 32768    # history storage cap per tool call
 
-[model_providers.shiguang-gateway]
-name                 = "ShiguangGateway"
+[model_providers.orbit]
+name                 = "Orbit"
 base_url             = "http://<YOUR_HOST>:20128/v1"
-env_key              = "SHIGUANG_GATEWAY_API_KEY"
+env_key              = "ORBIT_API_KEY"
 requires_openai_auth = false
 wire_api             = "responses"
 ```
 
 ```bash
 # ~/.bashrc or ~/.zshrc — actual key value, never in config.toml
-export SHIGUANG_GATEWAY_API_KEY="<YOUR_KEY>"
+export ORBIT_API_KEY="<YOUR_KEY>"
 ```
 
 ### macOS: Codex bundled inside the ChatGPT app
@@ -62,17 +62,17 @@ command -v codex
 codex --version
 ```
 
-### Local unauthenticated ShiguangGateway: placeholder key is enough
+### Local unauthenticated Orbit: placeholder key is enough
 
 Codex validates that the environment variable named by `env_key` exists
-**before** the first request leaves the CLI. If your **local** ShiguangGateway
+**before** the first request leaves the CLI. If your **local** Orbit
 instance does not require auth, any non-empty placeholder works:
 
 ```bash
-export SHIGUANG_GATEWAY_API_KEY="${SHIGUANG_GATEWAY_API_KEY:-local}"
+export ORBIT_API_KEY="${ORBIT_API_KEY:-local}"
 ```
 
-Use a real key instead when your ShiguangGateway server is protected or remote.
+Use a real key instead when your Orbit server is protected or remote.
 
 > **Common host options**
 >
@@ -88,19 +88,19 @@ Use a real key instead when your ShiguangGateway server is protected or remote.
 
 Codex CLI deprecated `wire_api = "chat"` (Chat Completions) in February 2026 and now **requires** `wire_api = "responses"` (OpenAI Responses API). Setting `wire_api = "chat"` causes an immediate startup crash since v0.138.
 
-Many providers, including GLM and Kimi, still expose only a Chat Completions endpoint. DeepSeek V4 now exposes a native Responses API as well as an Anthropic-compatible endpoint; ShiguangGateway uses Responses by default and lets each DeepSeek connection select Anthropic compatibility.
+Many providers, including GLM and Kimi, still expose only a Chat Completions endpoint. DeepSeek V4 now exposes a native Responses API as well as an Anthropic-compatible endpoint; Orbit uses Responses by default and lets each DeepSeek connection select Anthropic compatibility.
 
-**ShiguangGateway solves this transparently:**
+**Orbit solves this transparently:**
 
 ```
 Codex CLI
   → wire_api = "responses"
-  → POST /v1/responses (ShiguangGateway)
-    → ShiguangGateway selects the provider's native protocol and translates when needed
+  → POST /v1/responses (Orbit)
+    → Orbit selects the provider's native protocol and translates when needed
     → POST /responses (DeepSeek V4) or /chat/completions (Mistral / GLM / Kimi / others)
 ```
 
-You never need a separate translation proxy when using ShiguangGateway. **All models use `wire_api = "responses"`** — ShiguangGateway handles the rest.
+You never need a separate translation proxy when using Orbit. **All models use `wire_api = "responses"`** — Orbit handles the rest.
 
 > **`wire_api` is the default** — the field defaults to `"responses"` and can be omitted entirely from `config.toml`. Only ever set it explicitly if you're documenting intent.
 
@@ -121,7 +121,7 @@ You never need a separate translation proxy when using ShiguangGateway. **All mo
 
 ### Context windows by model
 
-| Model                                | ShiguangGateway ID                         | Context window         | `auto_compact` | `tool_output_limit` |
+| Model                                | Orbit ID                         | Context window         | `auto_compact` | `tool_output_limit` |
 | ------------------------------------ | ------------------------------------ | ---------------------- | -------------- | ------------------- |
 | GPT-5.5                              | `cx/gpt-5.5`                         | 400k reliable (1M max) | 350,000        | 32,768              |
 | Kimi K2.7 (thinking)                 | `kmc/kimi-k2.7`                      | 131,072                | 112,000        | 32,768              |
@@ -149,16 +149,16 @@ You never need a separate translation proxy when using ShiguangGateway. **All mo
 
 ## Model prefix: `cx/`
 
-All Codex models in ShiguangGateway use the `cx/` prefix:
+All Codex models in Orbit use the `cx/` prefix:
 
-| Codex CLI name          | ShiguangGateway model    |
+| Codex CLI name          | Orbit model    |
 | ----------------------- | ------------------ |
 | `cx/gpt-5.5`            | GPT-5.5 standard   |
 | `cx/gpt-5.4`            | GPT-5.4 standard   |
 | `cx/gpt-5.4-mini`       | GPT-5.4 mini       |
 | `cx/gpt-5.1-codex-mini` | GPT-5.1 Codex mini |
 
-Other providers use their own prefix (`kmc/`, `glm/`, `ds/`, `ollamacloud/`, `opencode-go/`, `mistral/`) — the prefix matches the ShiguangGateway provider alias.
+Other providers use their own prefix (`kmc/`, `glm/`, `ds/`, `ollamacloud/`, `opencode-go/`, `mistral/`) — the prefix matches the Orbit provider alias.
 
 ---
 
@@ -188,9 +188,9 @@ model_reasoning_effort = "xhigh"   # or ultra when supported
 model_reasoning_summary = "detailed"  # auto | concise | detailed | none
 ```
 
-### ShiguangGateway Thinking Budget (server setting)
+### Orbit Thinking Budget (server setting)
 
-On the ShiguangGateway host, **Settings → AI → Thinking Budget** must be **`passthrough`** for Codex effort/summary to reach upstream. Mode **`auto` strips** all client `reasoning` / `reasoning_effort` fields and will empty thinking panels even when Codex is configured correctly.
+On the Orbit host, **Settings → AI → Thinking Budget** must be **`passthrough`** for Codex effort/summary to reach upstream. Mode **`auto` strips** all client `reasoning` / `reasoning_effort` fields and will empty thinking panels even when Codex is configured correctly.
 
 Full guide: [THINKING_BUDGET.md](./THINKING_BUDGET.md).
 
@@ -274,49 +274,49 @@ codex -p chat     # cx/gpt-5.5, no effort set (server default)
 
 ---
 
-## Generating profiles automatically with `shiguang-gateway setup-codex`
+## Generating profiles automatically with `orbit setup-codex`
 
-If you run ShiguangGateway on a VPS, you can auto-generate profile files from the live model catalog:
+If you run Orbit on a VPS, you can auto-generate profile files from the live model catalog:
 
 ```bash
-# From a VPS (uses local ShiguangGateway on port 20128)
-shiguang-gateway setup-codex
+# From a VPS (uses local Orbit on port 20128)
+orbit setup-codex
 
 # From any machine — point at your VPS
-shiguang-gateway setup-codex --remote http://100.x.x.x:20128 --api-key sk-xxx
+orbit setup-codex --remote http://100.x.x.x:20128 --api-key sk-xxx
 
 # Preview without writing files
-shiguang-gateway setup-codex --remote http://100.x.x.x:20128 --dry-run
+orbit setup-codex --remote http://100.x.x.x:20128 --dry-run
 
 # Only generate GLM and Kimi profiles
-shiguang-gateway setup-codex --only glm,kimi
+orbit setup-codex --only glm,kimi
 
 # Write to a custom directory
-shiguang-gateway setup-codex --codex-home /path/to/.codex
+orbit setup-codex --codex-home /path/to/.codex
 ```
 
 The command fetches `/v1/models`, uses tuned profiles for known models, falls back to catalog metadata for other compatible text models, and writes `~/.codex/<name>.config.toml` for each. Idempotent — safe to re-run.
 
-ShiguangGateway can also **auto-sync** these same profile files after a successful provider model discovery/import changes the live catalog. This is **opt-in and off by default**: toggle it from the **CLI Code dashboard** ("CLI profile auto-sync" → Codex), or set `SHIGUANG_GATEWAY_AUTO_SYNC_CODEX_PROFILES=true` (it also honors `CLI_ALLOW_CONFIG_WRITES`, on by default). When enabled it only writes separate `~/.codex/*.config.toml` profile files; it never changes the active/default `~/.codex/config.toml`, Codex-lb settings, auth, or provider selection.
+Orbit can also **auto-sync** these same profile files after a successful provider model discovery/import changes the live catalog. This is **opt-in and off by default**: toggle it from the **CLI Code dashboard** ("CLI profile auto-sync" → Codex), or set `ORBIT_AUTO_SYNC_CODEX_PROFILES=true` (it also honors `CLI_ALLOW_CONFIG_WRITES`, on by default). When enabled it only writes separate `~/.codex/*.config.toml` profile files; it never changes the active/default `~/.codex/config.toml`, Codex-lb settings, auth, or provider selection.
 
 ---
 
-## Launching Codex with `shiguang-gateway launch-codex`
+## Launching Codex with `orbit launch-codex`
 
-Health-checks your ShiguangGateway instance before launching Codex:
+Health-checks your Orbit instance before launching Codex:
 
 ```bash
-# Launch against local ShiguangGateway (default port 20128)
-shiguang-gateway launch-codex
+# Launch against local Orbit (default port 20128)
+orbit launch-codex
 
 # Launch with a specific profile
-shiguang-gateway launch-codex --profile kimi-k27
+orbit launch-codex --profile kimi-k27
 
 # Launch against a remote VPS
-shiguang-gateway launch-codex --remote http://100.x.x.x:20128/v1 --api-key sk-xxx
+orbit launch-codex --remote http://100.x.x.x:20128/v1 --api-key sk-xxx
 
 # Pass extra args to codex
-shiguang-gateway launch-codex --profile glm52 -- --yolo "fix this bug"
+orbit launch-codex --profile glm52 -- --yolo "fix this bug"
 ```
 
 Codex is also a target of the two generic manifest-driven entry points
@@ -324,10 +324,10 @@ Codex is also a target of the two generic manifest-driven entry points
 
 ```bash
 # Interactive model picker → writes ~/.codex/<name>.config.toml (TOML, env_key)
-shiguang-gateway configure codex
+orbit configure codex
 
-# Launch codex with the shiguang-gateway provider injected via -c flags (no config written)
-shiguang-gateway run codex
+# Launch codex with the orbit provider injected via -c flags (no config written)
+orbit run codex
 ```
 
 ---
@@ -363,21 +363,21 @@ service_tier = "fast"   # "fast" | "flex"
 ### New `[model_providers.<id>]` fields
 
 ```toml
-[model_providers.shiguang-gateway]
+[model_providers.orbit]
 base_url             = "http://100.x.x.x:20128/v1"
-env_key              = "SHIGUANG_GATEWAY_API_KEY"
+env_key              = "ORBIT_API_KEY"
 requires_openai_auth = false
 
 # Static extra headers on every request
-[model_providers.shiguang-gateway.http_headers]
+[model_providers.orbit.http_headers]
 "X-Custom-Header" = "value"
 
 # Headers read from env vars
-[model_providers.shiguang-gateway.env_http_headers]
+[model_providers.orbit.env_http_headers]
 "X-Trace-Id" = "TRACE_ID"
 
 # Extra URL query params (useful for Azure api-version)
-[model_providers.shiguang-gateway.query_params]
+[model_providers.orbit.query_params]
 "api-version" = "2024-12-01-preview"
 ```
 
@@ -397,13 +397,13 @@ region  = "us-east-1"
 ## Multiple servers
 
 ```toml
-[model_providers.shiguang-gateway-main]
+[model_providers.orbit-main]
 base_url = "http://192.168.0.1:20128/v1"
-env_key  = "SHIGUANG_GATEWAY_API_KEY"
+env_key  = "ORBIT_API_KEY"
 
-[model_providers.shiguang-gateway-tailscale]
+[model_providers.orbit-tailscale]
 base_url = "http://100.x.x.x:20128/v1"
-env_key  = "SHIGUANG_GATEWAY_API_KEY"
+env_key  = "ORBIT_API_KEY"
 ```
 
 ---
@@ -456,14 +456,14 @@ Inside an interactive session:
 
 ## Long-running tasks
 
-Two ShiguangGateway defaults can silently sabotage multi-hour Codex CLI sessions. Neither is a Codex CLI setting — both live on the ShiguangGateway side. Users migrating a config from upstream proxies that pin accounts and disable idle cutoffs often hit both and conclude ShiguangGateway “cannot sustain a long session.”
+Two Orbit defaults can silently sabotage multi-hour Codex CLI sessions. Neither is a Codex CLI setting — both live on the Orbit side. Users migrating a config from upstream proxies that pin accounts and disable idle cutoffs often hit both and conclude Orbit “cannot sustain a long session.”
 
 | Symptom                                                                          | Likely cause                                                       | Knob                     |
 | -------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ------------------------ |
 | Session keeps switching accounts / prompt-cache continuity is lost between turns | Session affinity TTL is `0` (disabled)                             | `sessionAffinityTtlMs`   |
 | Connection dies mid-reasoning with no client-facing prompt                       | Stream idle watchdog fired after 10 minutes with no upstream chunk | `STREAM_IDLE_TIMEOUT_MS` |
 
-Related discussions: [#7126](https://github.com/diegosouzapw/ShiguangGateway/discussions/7126) (long task drops), [#5718](https://github.com/diegosouzapw/ShiguangGateway/discussions/5718) (why affinity defaults off). Tracking: [#7287](https://github.com/diegosouzapw/ShiguangGateway/issues/7287).
+Related discussions: [#7126](https://github.com/diegosouzapw/Orbit/discussions/7126) (long task drops), [#5718](https://github.com/diegosouzapw/Orbit/discussions/5718) (why affinity defaults off). Tracking: [#7287](https://github.com/diegosouzapw/Orbit/issues/7287).
 
 ### 1. Session affinity — pin one conversation to one account
 
@@ -478,7 +478,7 @@ Related discussions: [#7126](https://github.com/diegosouzapw/ShiguangGateway/dis
 
 **What breaks when it stays at 0**
 
-Every turn of a multi-turn Codex conversation is routed independently by the active combo strategy and can land on a **different account per turn**. That breaks upstream session / prompt-cache continuity. ShiguangGateway only consults Codex session headers (`x-codex-session-id` / `x-session-id` / `x-shiguang-gateway-session`) and body fields such as `prompt_cache_key` / `session_id` when the TTL is greater than `0` (`extractSessionAffinityKey` in `src/sse/services/auth.ts`).
+Every turn of a multi-turn Codex conversation is routed independently by the active combo strategy and can land on a **different account per turn**. That breaks upstream session / prompt-cache continuity. Orbit only consults Codex session headers (`x-codex-session-id` / `x-session-id` / `x-orbit-session`) and body fields such as `prompt_cache_key` / `session_id` when the TTL is greater than `0` (`extractSessionAffinityKey` in `src/sse/services/auth.ts`).
 
 **Recommended for a multi-hour single task**
 
@@ -500,13 +500,13 @@ Opt-in is deliberate: disabling affinity favors load-balancing across accounts; 
 
 A Codex reasoning / tool turn that stays silent for more than 10 minutes with **no real upstream chunk** is force-closed by the SSE idle watchdog (`open-sse/utils/stream.ts`). The client often sees a bare connection drop — matching “stopped automatically without any notification.”
 
-Critical detail: ShiguangGateway’s synthetic SSE **heartbeat does not reset** the idle clock. Only a real upstream body chunk updates `lastChunkTime`. A quiet model that is still “thinking” looks identical to a stalled upstream from the watchdog’s point of view.
+Critical detail: Orbit’s synthetic SSE **heartbeat does not reset** the idle clock. Only a real upstream body chunk updates `lastChunkTime`. A quiet model that is still “thinking” looks identical to a stalled upstream from the watchdog’s point of view.
 
 Related Undici body inactivity: `FETCH_BODY_TIMEOUT_MS` (also defaults to the same 10-minute baseline; `0` disables it). For streaming, `FETCH_TIMEOUT_MS` only covers connection setup / first headers — once the stream is active, stalls are governed by `STREAM_IDLE_TIMEOUT_MS` and `FETCH_BODY_TIMEOUT_MS`.
 
 **Recommended for a multi-hour single task**
 
-In the ShiguangGateway process environment (`.env` / compose / systemd):
+In the Orbit process environment (`.env` / compose / systemd):
 
 ```bash
 # Disable stream idle + body inactivity cutoffs for long reasoning turns
@@ -522,20 +522,20 @@ STREAM_IDLE_TIMEOUT_MS=7200000
 FETCH_BODY_TIMEOUT_MS=7200000
 ```
 
-Restart ShiguangGateway after changing these env vars.
+Restart Orbit after changing these env vars.
 
 ### Concrete recipe — multi-hour Codex task
 
 1. **Pin the account:** Dashboard → Settings → Routing → Session affinity → Affinity TTL = `43200` (12h) or `86400` (24h max).
-2. **Raise / disable idle cutoffs** in ShiguangGateway’s environment:
+2. **Raise / disable idle cutoffs** in Orbit’s environment:
 
 ```bash
 STREAM_IDLE_TIMEOUT_MS=0
 FETCH_BODY_TIMEOUT_MS=0
 ```
 
-3. Keep the usual Codex `config.toml` (`wire_api = "responses"`, correct `base_url`, `SHIGUANG_GATEWAY_API_KEY`) — no Codex-side affinity/idle knobs exist for these two behaviors.
-4. Restart ShiguangGateway, then start the long Codex task.
+3. Keep the usual Codex `config.toml` (`wire_api = "responses"`, correct `base_url`, `ORBIT_API_KEY`) — no Codex-side affinity/idle knobs exist for these two behaviors.
+4. Restart Orbit, then start the long Codex task.
 
 ### Defaults decision (#7287)
 
@@ -548,13 +548,13 @@ Flipping either default globally would change behavior for every client of an in
 
 ### Diagnosing idle cuts
 
-When the idle watchdog fires, ShiguangGateway logs a line shaped like:
+When the idle watchdog fires, Orbit logs a line shaped like:
 
 ```text
 [STREAM] Idle timeout: no data from codex for 600000ms (model: cx/gpt-5.5)
 ```
 
-Grep for `Idle timeout: no data from` (or the code `stream_idle_timeout` / error name `StreamIdleTimeoutError`). The provider segment is whatever ShiguangGateway used for that request (`codex`, another provider id, or `provider` if unknown) — it is not always the literal string `codex`.
+Grep for `Idle timeout: no data from` (or the code `stream_idle_timeout` / error name `StreamIdleTimeoutError`). The provider segment is whatever Orbit used for that request (`codex`, another provider id, or `provider` if unknown) — it is not always the literal string `codex`.
 
 ---
 
@@ -564,19 +564,19 @@ Grep for `Idle timeout: no data from` (or the code `stream_idle_timeout` / error
 Remove `wire_api = "chat"` from your config. Set `wire_api = "responses"` or omit the field (defaults to `"responses"` since v0.138).
 
 **`Error: model not found`**
-Verify the model exists in ShiguangGateway with the correct prefix. Use `shiguang-gateway models list` or open `/dashboard/providers/<provider>`.
+Verify the model exists in Orbit with the correct prefix. Use `orbit models list` or open `/dashboard/providers/<provider>`.
 
 **`Authentication error`**
-Confirm `SHIGUANG_GATEWAY_API_KEY` is exported: `echo $SHIGUANG_GATEWAY_API_KEY`.
+Confirm `ORBIT_API_KEY` is exported: `echo $ORBIT_API_KEY`.
 
-**`ERROR: Missing environment variable: SHIGUANG_GATEWAY_API_KEY`**
+**`ERROR: Missing environment variable: ORBIT_API_KEY`**
 Codex validates that the env var exists before making the first request. Export
 a real key for protected servers, or a non-empty placeholder such as
-`SHIGUANG_GATEWAY_API_KEY=local` when your **local** ShiguangGateway instance does not
+`ORBIT_API_KEY=local` when your **local** Orbit instance does not
 require auth. Restart the shell if you added it to `~/.bashrc` or `~/.zshrc`.
 
 **`Connection refused`**
-Verify ShiguangGateway is running and the `base_url` host/port is correct for your network (local vs Tailscale vs VPS).
+Verify Orbit is running and the `base_url` host/port is correct for your network (local vs Tailscale vs VPS).
 
 **Session crashes near context limit**
 Set `model_context_window` and `model_auto_compact_token_limit` explicitly. See the context window table above.
@@ -588,4 +588,4 @@ Lower `model_auto_compact_token_limit` to 80–85% of the window. Never set abov
 Confirm the file exists at `~/.codex/<name>.config.toml` (no `profile-` prefix). Run `ls ~/.codex/*.config.toml`.
 
 **Long Codex task drops mid-run / switches accounts between turns**
-See [Long-running tasks](#long-running-tasks). Enable session affinity (TTL above task length) and raise or disable `STREAM_IDLE_TIMEOUT_MS` / `FETCH_BODY_TIMEOUT_MS`. Grep ShiguangGateway logs for `Idle timeout: no data from`.
+See [Long-running tasks](#long-running-tasks). Enable session affinity (TTL above task length) and raise or disable `STREAM_IDLE_TIMEOUT_MS` / `FETCH_BODY_TIMEOUT_MS`. Grep Orbit logs for `Idle timeout: no data from`.

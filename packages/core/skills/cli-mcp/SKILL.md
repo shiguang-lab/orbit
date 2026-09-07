@@ -11,8 +11,8 @@ Inspect the MCP server status, list registered tools and scopes, run tool invoca
 ## Quick install
 
 ```bash
-npm install -g shiguang-gateway   # or: npx shiguang-gateway
-shiguang-gateway --version
+npm install -g orbit   # or: npx orbit
+orbit --version
 ```
 
 ## Subcommands
@@ -22,7 +22,7 @@ shiguang-gateway --version
 **Example:**
 
 ```bash
-shiguang-gateway mcp
+orbit mcp
 ```
 
 ### `mcp status`
@@ -36,7 +36,7 @@ Show MCP server status
 **Example:**
 
 ```bash
-shiguang-gateway mcp status
+orbit mcp status
 ```
 
 ### `mcp restart`
@@ -46,7 +46,7 @@ Restart the MCP server
 **Example:**
 
 ```bash
-shiguang-gateway mcp restart
+orbit mcp restart
 ```
 
 ### `mcp call <tool> [argsJson]`
@@ -61,7 +61,7 @@ shiguang-gateway mcp restart
 **Example:**
 
 ```bash
-shiguang-gateway mcp call <tool> [argsJson]
+orbit mcp call <tool> [argsJson]
 ```
 
 ### `mcp scopes`
@@ -73,5 +73,5 @@ shiguang-gateway mcp call <tool> [argsJson]
 **Example:**
 
 ```bash
-shiguang-gateway mcp scopes
+orbit mcp scopes
 ```

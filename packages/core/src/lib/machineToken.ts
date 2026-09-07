@@ -13,10 +13,10 @@ try {
   machineIdSync = () => "";
 }
 
-const BUILTIN_DEFAULT_SALT = "shiguangGateway-cli-auth-v1";
+const BUILTIN_DEFAULT_SALT = "orbit-cli-auth-v1";
 
 function getActiveSalt(): string {
-  return process.env.SHIGUANG_GATEWAY_CLI_SALT || BUILTIN_DEFAULT_SALT;
+  return process.env.ORBIT_CLI_SALT || BUILTIN_DEFAULT_SALT;
 }
 
 export function deriveMachineToken(rawId: string, salt: string): string {

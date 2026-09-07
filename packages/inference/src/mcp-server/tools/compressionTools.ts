@@ -1,9 +1,9 @@
 /**
- * ShiguangGateway MCP Compression Tools — Manage and monitor prompt compression.
+ * Orbit MCP Compression Tools — Manage and monitor prompt compression.
  *
  * Tools:
- *   1. shiguangGateway_compression_status   — Get compression config, analytics, and cache stats
- *   2. shiguangGateway_compression_configure — Update compression settings
+ *   1. orbit_compression_status   — Get compression config, analytics, and cache stats
+ *   2. orbit_compression_configure — Update compression settings
  *   3. CCR lifecycle tools             — Store, retrieve, inspect, list, delete, and stats
  */
 
@@ -132,14 +132,14 @@ export async function handleCompressionStatus(
     };
 
     const duration = Date.now() - start;
-    await logToolCall("shiguangGateway_compression_status", args, result, duration, true);
+    await logToolCall("orbit_compression_status", args, result, duration, true);
 
     return result;
   } catch (error) {
     const duration = Date.now() - start;
     const errorMessage = error instanceof Error ? error.message : String(error);
     await logToolCall(
-      "shiguangGateway_compression_status",
+      "orbit_compression_status",
       args,
       { error: errorMessage },
       duration,
@@ -217,14 +217,14 @@ export async function handleCompressionConfigure(
     };
 
     const duration = Date.now() - start;
-    await logToolCall("shiguangGateway_compression_configure", args, result, duration, true);
+    await logToolCall("orbit_compression_configure", args, result, duration, true);
 
     return result;
   } catch (error) {
     const duration = Date.now() - start;
     const errorMessage = error instanceof Error ? error.message : String(error);
     await logToolCall(
-      "shiguangGateway_compression_configure",
+      "orbit_compression_configure",
       args,
       { error: errorMessage },
       duration,
@@ -302,7 +302,7 @@ export async function handleCcrStoreTool(
   if (isCcrStoreRejection(result)) {
     const output = { stored: false as const, reason: result.reason };
     await logToolCall(
-      "shiguangGateway_ccr_store",
+      "orbit_ccr_store",
       auditInput,
       output,
       Date.now() - start,
@@ -316,7 +316,7 @@ export async function handleCcrStoreTool(
     reference: buildCcrReference(result.hash, result.metadata.chars),
     metadata: result.metadata,
   };
-  await logToolCall("shiguangGateway_ccr_store", auditInput, output, Date.now() - start, true);
+  await logToolCall("orbit_ccr_store", auditInput, output, Date.now() - start, true);
   return output;
 }
 
@@ -330,7 +330,7 @@ export async function handleCcrRetrieveTool(
   if (!metadata) {
     const output = { found: false as const, error: "CCR block not found or expired" };
     await logToolCall(
-      "shiguangGateway_ccr_retrieve",
+      "orbit_ccr_retrieve",
       args,
       output,
       Date.now() - start,
@@ -346,7 +346,7 @@ export async function handleCcrRetrieveTool(
       metadata,
       suggestedModes: ["head", "tail", "lines", "grep", "stats"] as const,
     };
-    await logToolCall("shiguangGateway_ccr_retrieve", args, output, Date.now() - start, true);
+    await logToolCall("orbit_ccr_retrieve", args, output, Date.now() - start, true);
     return output;
   }
   const queried = handleCcrRetrieve(args, principal);
@@ -356,7 +356,7 @@ export async function handleCcrRetrieveTool(
       ? { found: true as const, metadata: refreshedMetadata, content: queried.content }
       : { found: true as const, metadata: refreshedMetadata, error: queried.error };
   await logToolCall(
-    "shiguangGateway_ccr_retrieve",
+    "orbit_ccr_retrieve",
     args,
     {
       ...output,
@@ -381,7 +381,7 @@ export async function handleCcrInspectTool(
   const output = metadata
     ? { found: true as const, reference: buildCcrReference(args.hash, metadata.chars), metadata }
     : { found: false as const };
-  await logToolCall("shiguangGateway_ccr_inspect", args, output, Date.now() - start, Boolean(metadata));
+  await logToolCall("orbit_ccr_inspect", args, output, Date.now() - start, Boolean(metadata));
   return output;
 }
 
@@ -399,7 +399,7 @@ export async function handleCcrListTool(
       metadata,
     })),
   };
-  await logToolCall("shiguangGateway_ccr_list", args, output, Date.now() - start, true);
+  await logToolCall("orbit_ccr_list", args, output, Date.now() - start, true);
   return output;
 }
 
@@ -410,7 +410,7 @@ export async function handleCcrDeleteTool(
   const start = Date.now();
   const principal = await resolveCcrPrincipal(extra, ["write:compression"]);
   const output = { deleted: deleteCcrBlock(args.hash, principal) };
-  await logToolCall("shiguangGateway_ccr_delete", args, output, Date.now() - start, true);
+  await logToolCall("orbit_ccr_delete", args, output, Date.now() - start, true);
   return output;
 }
 
@@ -421,7 +421,7 @@ export async function handleCcrStatsTool(
   const start = Date.now();
   const principal = await resolveCcrPrincipal(extra, ["read:compression"]);
   const output = getCcrStoreStats(principal);
-  await logToolCall("shiguangGateway_ccr_stats", args, output, Date.now() - start, true);
+  await logToolCall("orbit_ccr_stats", args, output, Date.now() - start, true);
   return output;
 }
 
@@ -524,7 +524,7 @@ export async function handleRtkDiscover(
   const samples = listRtkCommandSamples({ limit: resolveSampleLimit(args.limit) });
   const candidates = discoverRepeatedNoise(samples);
   const result = { sampleCount: samples.length, candidates };
-  await logToolCall("shiguangGateway_rtk_discover", args, result, Date.now() - start, true);
+  await logToolCall("orbit_rtk_discover", args, result, Date.now() - start, true);
   return result;
 }
 
@@ -539,59 +539,59 @@ export async function handleRtkLearn(
   );
   const filter = suggestFilter(command, matching);
   const result = { command, sampleCount: matching.length, filter };
-  await logToolCall("shiguangGateway_rtk_learn", args, result, Date.now() - start, true);
+  await logToolCall("orbit_rtk_learn", args, result, Date.now() - start, true);
   return result;
 }
 
 export const compressionTools = {
-  shiguangGateway_compression_status: {
-    name: "shiguangGateway_compression_status",
+  orbit_compression_status: {
+    name: "orbit_compression_status",
     description:
       "Returns current compression configuration, strategy, analytics summary (requests compressed, tokens saved, avg ratio), and provider-aware cache statistics.",
     scopes: ["read:compression"],
     inputSchema: compressionStatusInput,
     handler: (args: z.infer<typeof compressionStatusInput>) => handleCompressionStatus(args),
   },
-  shiguangGateway_compression_configure: {
-    name: "shiguangGateway_compression_configure",
+  orbit_compression_configure: {
+    name: "orbit_compression_configure",
     description:
       "Configure compression settings at runtime. Supports enabling/disabling compression, changing strategy (off/lite/standard/aggressive/ultra/rtk/stacked), adjusting maxTokens threshold, targetRatio, auto-trigger mode, system prompt preservation, and MCP description compression.",
     scopes: ["write:compression"],
     inputSchema: compressionConfigureInput,
     handler: (args: z.infer<typeof compressionConfigureInput>) => handleCompressionConfigure(args),
   },
-  shiguangGateway_set_compression_engine: {
-    name: "shiguangGateway_set_compression_engine",
+  orbit_set_compression_engine: {
+    name: "orbit_set_compression_engine",
     description: "Set the active compression engine and Caveman/RTK runtime options.",
     scopes: ["write:compression"],
     inputSchema: setCompressionEngineInput,
     handler: (args: z.infer<typeof setCompressionEngineInput>) => handleSetCompressionEngine(args),
   },
-  shiguangGateway_list_compression_combos: {
-    name: "shiguangGateway_list_compression_combos",
+  orbit_list_compression_combos: {
+    name: "orbit_list_compression_combos",
     description: "List compression combos and their engine pipelines.",
     scopes: ["read:compression"],
     inputSchema: listCompressionCombosInput,
     handler: (_args: z.infer<typeof listCompressionCombosInput>) => handleListCompressionCombos(),
   },
-  shiguangGateway_compression_combo_stats: {
-    name: "shiguangGateway_compression_combo_stats",
+  orbit_compression_combo_stats: {
+    name: "orbit_compression_combo_stats",
     description: "Get compression analytics grouped by engine and compression combo.",
     scopes: ["read:compression"],
     inputSchema: compressionComboStatsInput,
     handler: (args: z.infer<typeof compressionComboStatsInput>) =>
       handleCompressionComboStats(args),
   },
-  shiguangGateway_ccr_store: {
-    name: "shiguangGateway_ccr_store",
+  orbit_ccr_store: {
+    name: "orbit_ccr_store",
     description:
       "Store verbatim content in the caller-isolated in-memory CCR store and return a ccr:// reference plus the compatible CCR marker. Entries expire automatically and are not persisted across restarts.",
     scopes: ["write:compression"],
     inputSchema: ccrStoreInput,
     handler: handleCcrStoreTool,
   },
-  shiguangGateway_ccr_retrieve: {
-    name: "shiguangGateway_ccr_retrieve",
+  orbit_ccr_retrieve: {
+    name: "orbit_ccr_retrieve",
     description:
       "Retrieve the verbatim content block stored by the CCR compression engine. " +
       "When a large block is compressed, a marker `[CCR retrieve hash=<24hex> chars=N]` " +
@@ -602,37 +602,37 @@ export const compressionTools = {
     inputSchema: ccrRetrieveInput,
     handler: handleCcrRetrieveTool,
   },
-  shiguangGateway_ccr_inspect: {
-    name: "shiguangGateway_ccr_inspect",
+  orbit_ccr_inspect: {
+    name: "orbit_ccr_inspect",
     description: "Inspect metadata for a caller-owned CCR block without returning its content.",
     scopes: ["read:compression"],
     inputSchema: ccrInspectInput,
     handler: handleCcrInspectTool,
   },
-  shiguangGateway_ccr_list: {
-    name: "shiguangGateway_ccr_list",
+  orbit_ccr_list: {
+    name: "orbit_ccr_list",
     description: "List paginated metadata for CCR blocks owned by the current caller.",
     scopes: ["read:compression"],
     inputSchema: ccrListInput,
     handler: handleCcrListTool,
   },
-  shiguangGateway_ccr_delete: {
-    name: "shiguangGateway_ccr_delete",
+  orbit_ccr_delete: {
+    name: "orbit_ccr_delete",
     description: "Delete a caller-owned block from the in-memory CCR store.",
     scopes: ["write:compression"],
     inputSchema: ccrDeleteInput,
     handler: handleCcrDeleteTool,
   },
-  shiguangGateway_ccr_stats: {
-    name: "shiguangGateway_ccr_stats",
+  orbit_ccr_stats: {
+    name: "orbit_ccr_stats",
     description:
       "Return caller-scoped CCR entry and byte usage, lifecycle counters, and in-memory store limits.",
     scopes: ["read:compression"],
     inputSchema: ccrStatsInput,
     handler: handleCcrStatsTool,
   },
-  shiguangGateway_rtk_discover: {
-    name: "shiguangGateway_rtk_discover",
+  orbit_rtk_discover: {
+    name: "orbit_rtk_discover",
     description:
       "Mine the opt-in RTK raw-output sample store for recurring noise lines and return them " +
       "as ranked candidates the operator can turn into strip/collapse filters. Read-only; " +
@@ -641,8 +641,8 @@ export const compressionTools = {
     inputSchema: rtkDiscoverInput,
     handler: (args: z.infer<typeof rtkDiscoverInput>) => handleRtkDiscover(args),
   },
-  shiguangGateway_rtk_learn: {
-    name: "shiguangGateway_rtk_learn",
+  orbit_rtk_learn: {
+    name: "orbit_rtk_learn",
     description:
       "Suggest an RTK filter draft for a specific command, learned from that command's captured " +
       "outputs in the opt-in raw-output sample store. Read-only; returns a draft for the operator " +

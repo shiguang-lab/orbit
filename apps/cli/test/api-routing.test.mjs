@@ -5,14 +5,14 @@ import { isControlPlanePath, resolveApiUrl } from "../src/cli/api.mjs";
 
 test("local split routing sends management APIs to control and inference APIs to edge", () => {
   const previous = {
-    base: process.env.SHIGUANG_GATEWAY_BASE_URL,
-    context: process.env.SHIGUANG_GATEWAY_CONTEXT,
-    control: process.env.SHIGUANG_GATEWAY_CONTROL_URL,
+    base: process.env.ORBIT_BASE_URL,
+    context: process.env.ORBIT_CONTEXT,
+    control: process.env.ORBIT_CONTROL_URL,
     port: process.env.PORT,
   };
-  delete process.env.SHIGUANG_GATEWAY_BASE_URL;
-  delete process.env.SHIGUANG_GATEWAY_CONTEXT;
-  process.env.SHIGUANG_GATEWAY_CONTROL_URL = "http://127.0.0.1:19002/";
+  delete process.env.ORBIT_BASE_URL;
+  delete process.env.ORBIT_CONTEXT;
+  process.env.ORBIT_CONTROL_URL = "http://127.0.0.1:19002/";
   process.env.PORT = "19001";
   try {
     assert.equal(isControlPlanePath("/api/providers"), true);
@@ -25,9 +25,9 @@ test("local split routing sends management APIs to control and inference APIs to
     );
   } finally {
     for (const [key, value] of Object.entries({
-      SHIGUANG_GATEWAY_BASE_URL: previous.base,
-      SHIGUANG_GATEWAY_CONTEXT: previous.context,
-      SHIGUANG_GATEWAY_CONTROL_URL: previous.control,
+      ORBIT_BASE_URL: previous.base,
+      ORBIT_CONTEXT: previous.context,
+      ORBIT_CONTROL_URL: previous.control,
       PORT: previous.port,
     })) {
       if (value === undefined) delete process.env[key];

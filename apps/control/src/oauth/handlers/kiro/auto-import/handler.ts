@@ -457,7 +457,7 @@ export function findKiroConnectionByProfileArn(
   return findKiroConnectionByIdentity(connections, { profileArn, ...accountIdentity });
 }
 
-// ── Save to ShiguangGateway DB ──────────────────────────────────────────────────────
+// ── Save to Orbit DB ──────────────────────────────────────────────────────
 
 type SaveAndRespondResult = Awaited<ReturnType<typeof tryKiroCliSqlite>> & {
   // Fields added by tryAwsSsoCache for IDC tokens (#2059)

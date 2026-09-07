@@ -511,7 +511,7 @@ async function sendNotionInferenceRequest(opts: {
       signal: signal ?? undefined,
       // Inference can take a while (tool-autoload + LLM first token).
       timeoutMs:
-        Number.parseInt(process.env.SHIGUANG_GATEWAY_NOTION_TLS_TIMEOUT_MS || "", 10) || 180_000,
+        Number.parseInt(process.env.ORBIT_NOTION_TLS_TIMEOUT_MS || "", 10) || 180_000,
     });
     status = tlsRes.status;
     rawText = tlsRes.text ?? "";

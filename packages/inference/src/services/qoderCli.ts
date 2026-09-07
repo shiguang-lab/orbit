@@ -63,7 +63,7 @@ function getString(value: unknown): string {
 
 export function getQoderCliWorkspace(): string {
   const explicit = String(
-    process.env.QODER_CLI_WORKSPACE || process.env.SHIGUANG_GATEWAY_QODER_WORKSPACE || ""
+    process.env.QODER_CLI_WORKSPACE || process.env.ORBIT_QODER_WORKSPACE || ""
   ).trim();
   if (explicit) return explicit;
   const home = String(process.env.HOME || "").trim();
@@ -71,7 +71,7 @@ export function getQoderCliWorkspace(): string {
 }
 
 /**
- * Isolated `--config-dir` for ShiguangGateway-driven qodercli runs. Keeping it separate
+ * Isolated `--config-dir` for Orbit-driven qodercli runs. Keeping it separate
  * from the operator's own `~/.qoder` avoids polluting an interactive qodercli
  * session and lets each PAT authenticate via `QODER_PERSONAL_ACCESS_TOKEN`
  * without clobbering a browser login. Override with `QODER_CLI_CONFIG_DIR`.
@@ -80,7 +80,7 @@ export function getQoderCliConfigDir(): string {
   const explicit = String(process.env.QODER_CLI_CONFIG_DIR || "").trim();
   if (explicit) return explicit;
   const dataDir = String(process.env.DATA_DIR || "").trim();
-  const base = dataDir || path.join(os.homedir() || os.tmpdir(), ".shiguangGateway");
+  const base = dataDir || path.join(os.homedir() || os.tmpdir(), ".orbit");
   return path.join(base, "qoder-cli");
 }
 
@@ -242,7 +242,7 @@ export async function runQoderCli(options: QoderCliRunOptions): Promise<QoderCli
     "json",
     "--model",
     level,
-    // Disable all built-in tools — ShiguangGateway only wants a plain LM reply, never
+    // Disable all built-in tools — Orbit only wants a plain LM reply, never
     // file-system access or command execution from the proxied CLI.
     "--tools",
     "",
@@ -304,7 +304,7 @@ export function parseQoderCliModelNames(stdout: string): string[] {
 }
 
 /**
- * Resolve an ShiguangGateway model id to the exact value to pass to `qodercli -m`.
+ * Resolve an Orbit model id to the exact value to pass to `qodercli -m`.
  * Pure (no I/O) so it can be unit-tested against a captured model list.
  *
  * Preference order:
@@ -539,7 +539,7 @@ function formatMessage(message: unknown): string {
 export function buildQoderPrompt(body: unknown): string {
   const requestBody = asRecord(body);
   const lines = [
-    "You are answering an ShiguangGateway OpenAI-compatible request through the Qoder CLI transport.",
+    "You are answering an Orbit OpenAI-compatible request through the Qoder CLI transport.",
     "Respond as a plain language model only.",
     "Do not use your own tools, do not inspect files, and do not run commands.",
     "Do not mention the adapter unless the user explicitly asks.",
@@ -735,11 +735,11 @@ export function buildCosyHeadersForValidation(bodyStr: string, token: string) {
   const aesKeyStr = aesKeyBytes.toString("hex").slice(0, 16);
   const aesKeyBuf = Buffer.from(aesKeyStr, "utf8");
 
-  const uid = "shiguangGateway.user@qoder.sh";
+  const uid = "orbit.user@qoder.sh";
   const userInfo = {
     uid: uid,
     security_oauth_token: token,
-    name: "shiguangGateway",
+    name: "orbit",
     aid: "",
     email: uid,
   };
@@ -780,7 +780,7 @@ export function buildCosyHeadersForValidation(bodyStr: string, token: string) {
 // exchanges the PAT for a short-lived job token (`jt-*`) at
 // `openapi.qoder.sh/api/v1/jobToken/exchange`, then carries that `jt-*` in the Cosy
 // envelope for chat. Passing the raw `pt-*` makes Cosy return a generic 500, which
-// ShiguangGateway mis-surfaced as "PAT may not be valid for the chat API". We mirror the
+// Orbit mis-surfaced as "PAT may not be valid for the chat API". We mirror the
 // exchange here and cache the `jt-*` for its lifetime.
 const QODER_JOB_TOKEN_EXCHANGE_URL = "https://openapi.qoder.sh/api/v1/jobToken/exchange";
 // Refresh a little before the ~24h expiry to avoid using a just-expired token.
@@ -948,7 +948,7 @@ export async function validateQoderCliPat({
     return {
       valid: false,
       error:
-        "qodercli timed out while validating the token. Check network/proxy access from the ShiguangGateway host.",
+        "qodercli timed out while validating the token. Check network/proxy access from the Orbit host.",
       unsupported: false,
     };
   }

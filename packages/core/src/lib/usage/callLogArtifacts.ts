@@ -6,7 +6,7 @@ import { getCallLogPipelineMaxSizeBytes, isChatDebugFileEnabled } from "../logEn
 
 const isCloud = typeof globalThis.caches === "object" && globalThis.caches !== null;
 const isBuildPhase =
-  process.env.NEXT_PHASE === "phase-production-build" || process.env.SHIGUANG_GATEWAY_BUILDING === "1";
+  process.env.NEXT_PHASE === "phase-production-build" || process.env.ORBIT_BUILDING === "1";
 const DATA_DIR = resolveDataDir({ isCloud });
 
 export const CALL_LOGS_DIR = isCloud ? null : path.join(DATA_DIR, "call_logs");
@@ -116,7 +116,7 @@ function omitOversizedPipeline(artifact: CallLogArtifact): CallLogArtifact {
     ...artifact,
     pipeline: {
       error: {
-        _shiguangGateway_truncated: true,
+        _orbit_truncated: true,
         reason: SIZE_LIMIT_EXCEEDED_REASON,
       },
     },
@@ -136,7 +136,7 @@ function buildMinimalArtifactForSizeLimit(artifact: CallLogArtifact) {
     error: artifact.error ? OMITTED_FOR_SIZE_LIMIT : null,
     pipeline: {
       error: {
-        _shiguangGateway_truncated: true,
+        _orbit_truncated: true,
         reason: SIZE_LIMIT_EXCEEDED_REASON,
       },
     },
@@ -151,7 +151,7 @@ function serializeFinalSizeLimitFallback(artifact: CallLogArtifact, maxBytes: nu
 
   return JSON.stringify({
     schemaVersion: artifact.schemaVersion,
-    _shiguangGateway_truncated: true,
+    _orbit_truncated: true,
     reason: SIZE_LIMIT_EXCEEDED_REASON,
   });
 }

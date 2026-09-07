@@ -11,11 +11,11 @@ import process from "node:process";
 import path from "node:path";
 
 const repoRoot = path.resolve(import.meta.dirname, "..");
-const sourceData = process.env.SHIGUANG_GATEWAY_SOURCE_DATA_DIR;
-const targetData = process.env.SHIGUANG_GATEWAY_TARGET_DATA_DIR;
-const sourceHome = process.env.SHIGUANG_GATEWAY_SOURCE_HOME_DIR;
-const targetHome = process.env.SHIGUANG_GATEWAY_TARGET_HOME_DIR;
-const manifest = process.env.SHIGUANG_GATEWAY_IMPORT_MANIFEST;
+const sourceData = process.env.ORBIT_SOURCE_DATA_DIR;
+const targetData = process.env.ORBIT_TARGET_DATA_DIR;
+const sourceHome = process.env.ORBIT_SOURCE_HOME_DIR;
+const targetHome = process.env.ORBIT_TARGET_HOME_DIR;
+const manifest = process.env.ORBIT_IMPORT_MANIFEST;
 const runDeployment = process.env.RUN_DEPLOYMENT_SMOKE === "1";
 
 const checks = [];
@@ -55,7 +55,7 @@ run("console-route-parity", "audit-console-routes.mjs", ["--strict"]);
 run("route-contracts", "audit-route-contracts.mjs", ["--strict"]);
 
 if (!sourceData || !targetData) {
-  checks.push({ label: "data-snapshot-inputs", status: "FAIL", reason: "SHIGUANG_GATEWAY_SOURCE_DATA_DIR and SHIGUANG_GATEWAY_TARGET_DATA_DIR are required" });
+  checks.push({ label: "data-snapshot-inputs", status: "FAIL", reason: "ORBIT_SOURCE_DATA_DIR and ORBIT_TARGET_DATA_DIR are required" });
 } else {
   run("data-snapshot", "verify-imported-data.mjs", [sourceData, targetData]);
   // Provider overlays are intentionally applied to the staged target DB. The
@@ -66,7 +66,7 @@ if (!sourceData || !targetData) {
 }
 
 if (!manifest || !targetHome) {
-  checks.push({ label: "external-state-inputs", status: "FAIL", reason: "SHIGUANG_GATEWAY_IMPORT_MANIFEST and SHIGUANG_GATEWAY_TARGET_HOME_DIR are required" });
+  checks.push({ label: "external-state-inputs", status: "FAIL", reason: "ORBIT_IMPORT_MANIFEST and ORBIT_TARGET_HOME_DIR are required" });
 } else {
   // The source home is user-specific. A path that did not exist in the
   // source is not a migration loss (there was nothing to copy); the verifier
@@ -77,10 +77,10 @@ if (!manifest || !targetHome) {
 }
 
 if (runDeployment) {
-  if (!sourceData) checks.push({ label: "container-deployment", status: "FAIL", reason: "SHIGUANG_GATEWAY_SOURCE_DATA_DIR is required" });
-  else run("container-deployment", "smoke-container-deployment.mjs", [], { SHIGUANG_GATEWAY_SOURCE_DATA_DIR: sourceData, ...(sourceHome ? { SHIGUANG_GATEWAY_SOURCE_HOME_DIR: sourceHome } : {}) });
-  if (!targetData) checks.push({ label: "provider-matrix", status: "FAIL", reason: "SHIGUANG_GATEWAY_TARGET_DATA_DIR is required" });
-  else run("provider-matrix", "smoke-provider-matrix.mjs", [], { SHIGUANG_GATEWAY_SOURCE_DATA_DIR: targetData });
+  if (!sourceData) checks.push({ label: "container-deployment", status: "FAIL", reason: "ORBIT_SOURCE_DATA_DIR is required" });
+  else run("container-deployment", "smoke-container-deployment.mjs", [], { ORBIT_SOURCE_DATA_DIR: sourceData, ...(sourceHome ? { ORBIT_SOURCE_HOME_DIR: sourceHome } : {}) });
+  if (!targetData) checks.push({ label: "provider-matrix", status: "FAIL", reason: "ORBIT_TARGET_DATA_DIR is required" });
+  else run("provider-matrix", "smoke-provider-matrix.mjs", [], { ORBIT_SOURCE_DATA_DIR: targetData });
 }
 
 const failed = checks.filter((check) => check.status !== "PASS");

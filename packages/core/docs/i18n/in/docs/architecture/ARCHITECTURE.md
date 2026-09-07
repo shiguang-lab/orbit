@@ -1,4 +1,4 @@
-# ShiguangGateway Architecture (हिन्दी (IN))
+# Orbit Architecture (हिन्दी (IN))
 
 🌐 **Languages:** 🇺🇸 [English](../../../../docs/ARCHITECTURE.md) · 🇪🇸 [es](../../es/docs/ARCHITECTURE.md) · 🇫🇷 [fr](../../fr/docs/ARCHITECTURE.md) · 🇩🇪 [de](../../de/docs/ARCHITECTURE.md) · 🇮🇹 [it](../../it/docs/ARCHITECTURE.md) · 🇷🇺 [ru](../../ru/docs/ARCHITECTURE.md) · 🇨🇳 [zh-CN](../../zh-CN/docs/ARCHITECTURE.md) · 🇯🇵 [ja](../../ja/docs/ARCHITECTURE.md) · 🇰🇷 [ko](../../ko/docs/ARCHITECTURE.md) · 🇸🇦 [ar](../../ar/docs/ARCHITECTURE.md) · 🇮🇳 [hi](../../hi/docs/ARCHITECTURE.md) · 🇮🇳 [in](../../in/docs/ARCHITECTURE.md) · 🇹🇭 [th](../../th/docs/ARCHITECTURE.md) · 🇻🇳 [vi](../../vi/docs/ARCHITECTURE.md) · 🇮🇩 [id](../../id/docs/ARCHITECTURE.md) · 🇲🇾 [ms](../../ms/docs/ARCHITECTURE.md) · 🇳🇱 [nl](../../nl/docs/ARCHITECTURE.md) · 🇵🇱 [pl](../../pl/docs/ARCHITECTURE.md) · 🇸🇪 [sv](../../sv/docs/ARCHITECTURE.md) · 🇳🇴 [no](../../no/docs/ARCHITECTURE.md) · 🇩🇰 [da](../../da/docs/ARCHITECTURE.md) · 🇫🇮 [fi](../../fi/docs/ARCHITECTURE.md) · 🇵🇹 [pt](../../pt/docs/ARCHITECTURE.md) · 🇷🇴 [ro](../../ro/docs/ARCHITECTURE.md) · 🇭🇺 [hu](../../hu/docs/ARCHITECTURE.md) · 🇧🇬 [bg](../../bg/docs/ARCHITECTURE.md) · 🇸🇰 [sk](../../sk/docs/ARCHITECTURE.md) · 🇺🇦 [uk-UA](../../uk-UA/docs/ARCHITECTURE.md) · 🇮🇱 [he](../../he/docs/ARCHITECTURE.md) · 🇵🇭 [phi](../../phi/docs/ARCHITECTURE.md) · 🇧🇷 [pt-BR](../../pt-BR/docs/ARCHITECTURE.md) · 🇨🇿 [cs](../../cs/docs/ARCHITECTURE.md) · 🇹🇷 [tr](../../tr/docs/ARCHITECTURE.md)
 
@@ -8,7 +8,7 @@ _Last updated: 2026-04-15_
 
 ## Executive Summary
 
-ShiguangGateway is a local AI routing gateway and dashboard built on Next.js.
+Orbit is a local AI routing gateway and dashboard built on Next.js.
 It provides a single OpenAI-compatible endpoint (`/v1/*`) and routes traffic across multiple upstream providers with translation, fallback, token refresh, and usage tracking.
 
 Core capabilities:
@@ -128,7 +128,7 @@ flowchart LR
         BROWSER[Browser Dashboard]
     end
 
-    subgraph Router[ShiguangGateway Local Process]
+    subgraph Router[Orbit Local Process]
         API[V1 Compatibility API\n/v1/*]
         DASH[Dashboard + Management API\n/api/*]
         CORE[SSE + Translation Core\nopen-sse + src/sse]
@@ -293,7 +293,7 @@ Primary state DB (SQLite):
 
 - Core infra: `src/lib/db/core.ts` (better-sqlite3, migrations, WAL)
 - Re-export facade: `src/lib/localDb.ts` (thin compatibility layer for callers)
-- file: `${DATA_DIR}/storage.sqlite` (or `$XDG_CONFIG_HOME/shiguang-gateway/storage.sqlite` when set, else `~/.shiguang-gateway/storage.sqlite`)
+- file: `${DATA_DIR}/storage.sqlite` (or `$XDG_CONFIG_HOME/orbit/storage.sqlite` when set, else `~/.orbit/storage.sqlite`)
 - entities (tables + KV namespaces): providerConnections, providerNodes, modelAliases, combos, apiKeys, settings, pricing, **customModels**, **proxyConfig**, **ipFilter**, **thinkingBudget**, **systemPrompt**
 
 Usage persistence:
@@ -589,7 +589,7 @@ flowchart LR
         Browser[Dashboard Browser]
     end
 
-    subgraph ContainerOrProcess[ShiguangGateway Runtime]
+    subgraph ContainerOrProcess[Orbit Runtime]
         Next[Next.js Server\nPORT=20128]
         Core[SSE Core + Executors]
         MainDB[(storage.sqlite)]
@@ -840,7 +840,7 @@ Detailed request payload capture stores up to four JSON payload stages per route
 - raw request received from the client
 - translated request actually sent upstream
 - provider response reconstructed as JSON; streamed responses are compacted to the final summary plus stream metadata
-- final client response returned by ShiguangGateway; streamed responses are stored in the same compact summary form
+- final client response returned by Orbit; streamed responses are stored in the same compact summary form
 
 ## Security-Sensitive Boundaries
 
@@ -867,7 +867,7 @@ Environment variables actively used by code:
 
 ## Known Architectural Notes
 
-1. `usageDb` and `localDb` share the same base directory policy (`DATA_DIR` -> `XDG_CONFIG_HOME/shiguang-gateway` -> `~/.shiguang-gateway`) with legacy file migration.
+1. `usageDb` and `localDb` share the same base directory policy (`DATA_DIR` -> `XDG_CONFIG_HOME/orbit` -> `~/.orbit`) with legacy file migration.
 2. `/api/v1/route.ts` delegates to the same unified catalog builder used by `/api/v1/models` (`src/app/api/v1/models/catalog.ts`) to avoid semantic drift.
 3. Request logger writes full headers/body when enabled; treat log directory as sensitive.
 4. Cloud behavior depends on correct `NEXT_PUBLIC_BASE_URL` and cloud endpoint reachability.
@@ -882,7 +882,7 @@ Environment variables actively used by code:
 ## Operational Verification Checklist
 
 - Build from source: `npm run build`
-- Build Docker image: `docker build -t shiguang-gateway .`
+- Build Docker image: `docker build -t orbit .`
 - Start service and verify:
 - `GET /api/settings`
 - `GET /api/v1/models`

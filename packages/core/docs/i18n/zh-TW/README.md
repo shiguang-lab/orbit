@@ -1,4 +1,4 @@
-# 🚀 ShiguangGateway — 免費 AI 閘道器
+# 🚀 Orbit — 免費 AI 閘道器
 
 🌐 **語言:** 🇺🇸 [English](../../../README.md) · 🇸🇦 [ar](../ar/README.md) · 🇧🇬 [bg](../bg/README.md) · 🇧🇩 [bn](../bn/README.md) · 🇨🇿 [cs](../cs/README.md) · 🇩🇰 [da](../da/README.md) · 🇩🇪 [de](../de/README.md) · 🇪🇸 [es](../es/README.md) · 🇮🇷 [fa](../fa/README.md) · 🇫🇮 [fi](../fi/README.md) · 🇫🇷 [fr](../fr/README.md) · 🇮🇳 [gu](../gu/README.md) · 🇮🇱 [he](../he/README.md) · 🇮🇳 [hi](../hi/README.md) · 🇭🇺 [hu](../hu/README.md) · 🇮🇩 [id](../id/README.md) · 🇮🇹 [it](../it/README.md) · 🇯🇵 [ja](../ja/README.md) · 🇰🇷 [ko](../ko/README.md) · 🇮🇳 [mr](../mr/README.md) · 🇲🇾 [ms](../ms/README.md) · 🇳🇱 [nl](../nl/README.md) · 🇳🇴 [no](../no/README.md) · 🇵🇭 [phi](../phi/README.md) · 🇵🇱 [pl](../pl/README.md) · 🇵🇹 [pt](../pt/README.md) · 🇧🇷 [pt-BR](../pt-BR/README.md) · 🇷🇴 [ro](../ro/README.md) · 🇷🇺 [ru](../ru/README.md) · 🇸🇰 [sk](../sk/README.md) · 🇸🇪 [sv](../sv/README.md) · 🇰🇪 [sw](../sw/README.md) · 🇮🇳 [ta](../ta/README.md) · 🇮🇳 [te](../te/README.md) · 🇹🇭 [th](../th/README.md) · 🇹🇷 [tr](../tr/README.md) · 🇺🇦 [uk-UA](../uk-UA/README.md) · 🇵🇰 [ur](../ur/README.md) · 🇻🇳 [vi](../vi/README.md) · 🇨🇳 [zh-CN](../zh-CN/README.md) · 🇹🇼 [zh-TW](../zh-TW/README.md)
 
@@ -6,11 +6,11 @@
 
 <div align="center">
 
-<img src="../../screenshots/MainShiguangGateway.png" alt="ShiguangGateway 儀表板" width="820"/>
+<img src="../../screenshots/MainOrbit.png" alt="Orbit 儀表板" width="820"/>
 
 <br/>
 
-# 🚀 ShiguangGateway — 免費 AI 閘道器
+# 🚀 Orbit — 免費 AI 閘道器
 
 ### 開發不停歇。只需單一端點，即可將所有 AI 工具串接至 **329 家模型提供者** — **155 個免費／免驗證目錄項目**。
 
@@ -22,7 +22,7 @@
 
 <br/>
 
-**~1.53B 有記錄的免費 Token/月** — 首月透過註冊獎勵最高可達 **~2.15B** — 聚合所有免費層配額，加上沒有公開 Token 上限但仍受速率／並發限制的提供者，再輔以智慧壓縮進一步延長每一分 Token 開銷。([統計方法 →](../../reference/FREE_TIERS.md#tldr--how-much-free-inference-does-shiguang-gateway-actually-aggregate))
+**~1.53B 有記錄的免費 Token/月** — 首月透過註冊獎勵最高可達 **~2.15B** — 聚合所有免費層配額，加上沒有公開 Token 上限但仍受速率／並發限制的提供者，再輔以智慧壓縮進一步延長每一分 Token 開銷。([統計方法 →](../../reference/FREE_TIERS.md#tldr--how-much-free-inference-does-orbit-actually-aggregate))
 
 <br/>
 
@@ -38,37 +38,37 @@
 ### 💬 加入社群
 
 [![Discord](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/U47eFqAXCn)
-[![Telegram](https://img.shields.io/badge/Telegram-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/shiguang-gatewayOficial)
+[![Telegram](https://img.shields.io/badge/Telegram-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/orbitOficial)
 [![WhatsApp Global](https://img.shields.io/badge/WhatsApp_Global-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://chat.whatsapp.com/JI7cDQ1GyaiDHhVBpLxf8b?mode=gi_t)
 [![WhatsApp Brasil](https://img.shields.io/badge/WhatsApp_Brasil-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://chat.whatsapp.com/LTSpdFhXTxjH4R6CCNiKWz)
 
-**問題、提供者技巧、路線圖與支援 → [Discord](https://discord.gg/U47eFqAXCn) · [Telegram](https://t.me/shiguang-gatewayOficial) · WhatsApp [🌍 全球](https://chat.whatsapp.com/JI7cDQ1GyaiDHhVBpLxf8b?mode=gi_t) / [🇧🇷 巴西](https://chat.whatsapp.com/LTSpdFhXTxjH4R6CCNiKWz)**
+**問題、提供者技巧、路線圖與支援 → [Discord](https://discord.gg/U47eFqAXCn) · [Telegram](https://t.me/orbitOficial) · WhatsApp [🌍 全球](https://chat.whatsapp.com/JI7cDQ1GyaiDHhVBpLxf8b?mode=gi_t) / [🇧🇷 巴西](https://chat.whatsapp.com/LTSpdFhXTxjH4R6CCNiKWz)**
 
 <br/>
 
-<a href="https://trendshift.io/repositories/23589" target="_blank"><img src="https://trendshift.io/api/badge/repositories/23589" alt="diegosouzapw%2FShiguangGateway | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+<a href="https://trendshift.io/repositories/23589" target="_blank"><img src="https://trendshift.io/api/badge/repositories/23589" alt="diegosouzapw%2FOrbit | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
-[![npm](https://img.shields.io/npm/v/shiguang-gateway?logo=npm&style=flat-square)](https://www.npmjs.com/package/shiguang-gateway)
+[![npm](https://img.shields.io/npm/v/orbit?logo=npm&style=flat-square)](https://www.npmjs.com/package/orbit)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](../../LICENSE)
 [![Node](https://img.shields.io/badge/node-%E2%89%A522.0.0-brightgreen?style=flat-square)](../../package.json)
-[![Stars](https://img.shields.io/github/stars/diegosouzapw/ShiguangGateway?style=social)](https://github.com/diegosouzapw/ShiguangGateway)
+[![Stars](https://img.shields.io/github/stars/diegosouzapw/Orbit?style=social)](https://github.com/diegosouzapw/Orbit)
 
 <div align="center">
 
-[![npm version](https://img.shields.io/npm/v/shiguang-gateway?color=cb3837&logo=npm)](https://www.npmjs.com/package/shiguang-gateway)
-![NPM Monthly](https://img.shields.io/npm/dm/shiguang-gateway?label=npm/month&color=cb3837&logo=npm)
-[![Docker Hub](https://img.shields.io/docker/v/diegosouzapw/shiguang-gateway?label=Docker%20Hub&logo=docker&color=2496ED)](https://hub.docker.com/r/diegosouzapw/shiguang-gateway)
-![Docker Pulls](https://img.shields.io/docker/pulls/diegosouzapw/shiguang-gateway?label=docker%20pulls&logo=docker&color=2496ED)
-![Electron Downloads](https://img.shields.io/github/downloads/diegosouzapw/shiguang-gateway/total?style=flat&label=electron%20downloads&logo=electron&color=47848F)
-[![Website](https://img.shields.io/badge/Website-shiguang-gateway.online-blue?logo=google-chrome&logoColor=white)](https://shiguang-gateway.online)
+[![npm version](https://img.shields.io/npm/v/orbit?color=cb3837&logo=npm)](https://www.npmjs.com/package/orbit)
+![NPM Monthly](https://img.shields.io/npm/dm/orbit?label=npm/month&color=cb3837&logo=npm)
+[![Docker Hub](https://img.shields.io/docker/v/diegosouzapw/orbit?label=Docker%20Hub&logo=docker&color=2496ED)](https://hub.docker.com/r/diegosouzapw/orbit)
+![Docker Pulls](https://img.shields.io/docker/pulls/diegosouzapw/orbit?label=docker%20pulls&logo=docker&color=2496ED)
+![Electron Downloads](https://img.shields.io/github/downloads/diegosouzapw/orbit/total?style=flat&label=electron%20downloads&logo=electron&color=47848F)
+[![Website](https://img.shields.io/badge/Website-orbit.online-blue?logo=google-chrome&logoColor=white)](https://orbit.online)
 
 </div>
 
 <br/>
 
-[**🚀 快速開始**](#-quick-start) • [**🎯 Combo**](#-combos--the-flagship) • [**🌐 提供者**](#-329-ai-providers--155-freeno-auth) • [**🔌 CLI 與 MCP**](#-full-cli--a2a--mcp) • [**🗜️ 壓縮**](#%EF%B8%8F-save-1595-tokens--automatically) • [**🌍 網站**](https://shiguang-gateway.online)
+[**🚀 快速開始**](#-quick-start) • [**🎯 Combo**](#-combos--the-flagship) • [**🌐 提供者**](#-329-ai-providers--155-freeno-auth) • [**🔌 CLI 與 MCP**](#-full-cli--a2a--mcp) • [**🗜️ 壓縮**](#%EF%B8%8F-save-1595-tokens--automatically) • [**🌍 網站**](https://orbit.online)
 
-[💥 承諾](#-the-promise) • [🤔 為什麼](#-why-shiguang-gateway) • [🏆 優勢](#-what-sets-shiguang-gateway-apart) • [🤖 相容 CLI](#-compatible-clis--coding-agents) • [🖥️ 執行平台](#%EF%B8%8F-where-shiguang-gateway-runs--anywhere) • [🔒 隱私](#-private--local-first) • [🎬 實際展示](#-shiguang-gateway-in-action) • [📚 探索更多](#-explore-more) • [📧 支援](#-support--community)
+[💥 承諾](#-the-promise) • [🤔 為什麼](#-why-orbit) • [🏆 優勢](#-what-sets-orbit-apart) • [🤖 相容 CLI](#-compatible-clis--coding-agents) • [🖥️ 執行平台](#%EF%B8%8F-where-orbit-runs--anywhere) • [🔒 隱私](#-private--local-first) • [🎬 實際展示](#-orbit-in-action) • [📚 探索更多](#-explore-more) • [📧 支援](#-support--community)
 
 </div>
 
@@ -125,7 +125,7 @@
 
 </div>
 
-> 手動堆疊免費層很痛苦 — 數十個 SDK、數十個速率限制，而且你不清楚自己到底有多少配額。ShiguangGateway 將 **43 個提供者池 / 522 個模型預算項目**的**有記錄**免費層聚合為一個真實數字，並在儀表板上即時展示 (`/dashboard/free-tiers`)。
+> 手動堆疊免費層很痛苦 — 數十個 SDK、數十個速率限制，而且你不清楚自己到底有多少配額。Orbit 將 **43 個提供者池 / 522 個模型預算項目**的**有記錄**免費層聚合為一個真實數字，並在儀表板上即時展示 (`/dashboard/free-tiers`)。
 
 - **~1.53B 免費 Token/月**（穩定） — 首月透過註冊獎勵最高可達 **~2.15B**。
 - **跨池去重，真實不虛報** — 每個共享免費池僅計算**一次**，絕不以速率限制數據誇大宣傳。（若全天候無上限累計，數字可達 ~10B，但我們堅持僅發布實際可用的真實數據。）
@@ -144,7 +144,7 @@
 
 </div>
 
-> 單一端點。**329 家提供者。** 讓開發流程暢行無阻 — 由 ShiguangGateway 自動挑選最划算且可行的最佳方案。
+> 單一端點。**329 家提供者。** 讓開發流程暢行無阻 — 由 Orbit 自動挑選最划算且可行的最佳方案。
 
 <table>
   <tr>
@@ -164,13 +164,13 @@
 
 <div align="center">
 
-# 🤔 為什麼選擇 ShiguangGateway？
+# 🤔 為什麼選擇 Orbit？
 
 </div>
 
 > 告別手動切換數十個控制台、API 金鑰過期與預期外帳單的痛點。
 
-| ❌ 日常痛點                            | ✅ ShiguangGateway 的解決方案                                             |
+| ❌ 日常痛點                            | ✅ Orbit 的解決方案                                             |
 | -------------------------------------- | ------------------------------------------------------------------- |
 | 📉 訂閱配額每月用不完白白浪費          | **最大化訂閱價值** — 精準追蹤配額，在重置前善用每一分 Token         |
 | 🛑 Rate Limit 導致開發工作中斷         | **4 層自動切換備援** — 訂閱 → API → 廉價模型 → 免費，毫秒級無感切換 |
@@ -188,7 +188,7 @@
                           │ http://localhost:20128/v1
                           ▼
 ┌──────────────────────────────────────────────────────────┐
-│                  ShiguangGateway — Smart Router                  │
+│                  Orbit — Smart Router                  │
 │  RTK + Caveman compression · 19 routing strategies         │
 │  Circuit breakers · TLS stealth · MCP · A2A · Guardrails   │
 └─────────────────────────┬──────────────────────────────────┘
@@ -210,11 +210,11 @@
 
 </div>
 
-> **Combo** 是 ShiguangGateway 的**自動路由模型鏈結機制**。無論是配額用盡、提供者斷線或成本飆升，Combo 都會嘗試下一個合格候選模型，以提高備援覆蓋；上游可用性不受保證。 🛡️
+> **Combo** 是 Orbit 的**自動路由模型鏈結機制**。無論是配額用盡、提供者斷線或成本飆升，Combo 都會嘗試下一個合格候選模型，以提高備援覆蓋；上游可用性不受保證。 🛡️
 
 ### ⚡ 零設定 — 只需將模型設為 `auto`
 
-無需手動建立 Combo。只要將模型名稱設為 `auto`（或其衍生變體），ShiguangGateway 就會根據您已連線的提供者進行即時動態評分，為您建立虛擬 Combo：
+無需手動建立 Combo。只要將模型名稱設為 `auto`（或其衍生變體），Orbit 就會根據您已連線的提供者進行即時動態評分，為您建立虛擬 Combo：
 
 | 模型 ID        | 最佳化目標                                         |
 | -------------- | -------------------------------------------------- |
@@ -263,11 +263,11 @@ Result: 4 fallback layers reduce downtime; upstream availability is not guarante
 
 <div align="center">
 
-# 🏆 ShiguangGateway 的獨特優勢
+# 🏆 Orbit 的獨特優勢
 
 </div>
 
-| 功能                       | ShiguangGateway                                              | 其他路由器  |
+| 功能                       | Orbit                                              | 其他路由器  |
 | -------------------------- | ------------------------------------------------------ | ----------- |
 | 🌐 提供者數量              | **329**                                                | 20–100      |
 | 🆓 免費／免驗證目錄項目    | **155**                                                | 1–5         |
@@ -282,7 +282,7 @@ Result: 4 fallback layers reduce downtime; upstream availability is not guarante
 | 🖥️ 多平台                  | **Web · 桌面 · Termux · PWA**                          | 僅 Web      |
 | 🌍 國際化                  | **43 種語言環境**                                      | 0–4         |
 
-<sub>📊 與 LiteLLM、OpenRouter 和 Portkey 的詳細比較 → [`docs/comparison/SHIGUANG_GATEWAY_VS_ALTERNATIVES.md`](../../comparison/SHIGUANG_GATEWAY_VS_ALTERNATIVES.md)</sub>
+<sub>📊 與 LiteLLM、OpenRouter 和 Portkey 的詳細比較 → [`docs/comparison/ORBIT_VS_ALTERNATIVES.md`](../../comparison/ORBIT_VS_ALTERNATIVES.md)</sub>
 
 <br/>
 
@@ -295,15 +295,15 @@ Result: 4 fallback layers reduce downtime; upstream availability is not guarante
 > **v3.8.20 → v3.8.38** 的重點更新。完整記錄在 [`CHANGELOG.md`](../../CHANGELOG.md)。
 
 - **⚖️ Quota-Share 路由** — 一種專用 Combo 策略，根據可用配額跨帳戶分配負載：赤字輪詢排程、每個連線的 `max_concurrent` 搭配冷卻等待佇列、多時窗使用量桶（5 小時 / 7 天 / 按模型）、每（金鑰，模型）上限、為提示快取完整性而設的會話黏著性，以及來自上游 Token 使用量標頭的主動飽和偵測。→ [Resilience Guide](../../architecture/RESILIENCE_GUIDE.md)
-- **🛰️ 遠端模式** — 透過範圍存取令牌從任何機器驅動遠端 ShiguangGateway（`shiguang-gateway connect` / `shiguang-gateway contexts` / `shiguang-gateway tokens`）。→ [Remote Mode](../../guides/REMOTE-MODE.md)
+- **🛰️ 遠端模式** — 透過範圍存取令牌從任何機器驅動遠端 Orbit（`orbit connect` / `orbit contexts` / `orbit tokens`）。→ [Remote Mode](../../guides/REMOTE-MODE.md)
 - **🧭 更智慧的 Auto-Routing** — OpenRouter 風格的 `auto/<category>:<tier>` Combo（例如 `auto/coding:fast`、`auto/reasoning:pro`）、**Fusion** 策略（第 16 種 — 並行分發到多個模型，然後透過裁判合成）、**任務感知路由**（按任務類型選擇最佳連線）、每請求 `X-Route-Model` 覆寫、即時 Arena-ELO + models.dev 模型智慧、每步驟帳戶允許清單、提供者萬用字元 Combo 步驟、巢狀 Combo 引用執行、黏性加權選擇和 `web_search` 感知路由。→ [Auto-Combo](../../routing/AUTO-COMBO.md)
-- **🗜️ 可插拔壓縮** — **9 個可組合引擎**的非同步管線，含 Compression Studios、LLMLingua-2 ONNX 引擎和啟發式/SLM 雙層 **Ultra**、RTK、委託 Anthropic Context Editing、**Output Styles**（輸出軸控制：terse-prose / less-code / terse-CJK）、**自適應上下文預算撥盤**（僅升級到足以符合上下文視窗）、每請求 `x-shiguang-gateway-compression` 控制、可選的離線評估工具、一鍵從儀表板管理 **Headroom** 代理生命週期、合成**壓縮遊樂場**（Play 賽道 + A/B 比較）、可選的**每步驟保真度閘門**，以及統一面板搭配命名設定檔 + 活動設定檔選擇器。→ [Compression](../../compression/COMPRESSION_ENGINES.md)
+- **🗜️ 可插拔壓縮** — **9 個可組合引擎**的非同步管線，含 Compression Studios、LLMLingua-2 ONNX 引擎和啟發式/SLM 雙層 **Ultra**、RTK、委託 Anthropic Context Editing、**Output Styles**（輸出軸控制：terse-prose / less-code / terse-CJK）、**自適應上下文預算撥盤**（僅升級到足以符合上下文視窗）、每請求 `x-orbit-compression` 控制、可選的離線評估工具、一鍵從儀表板管理 **Headroom** 代理生命週期、合成**壓縮遊樂場**（Play 賽道 + A/B 比較）、可選的**每步驟保真度閘門**，以及統一面板搭配命名設定檔 + 活動設定檔選擇器。→ [Compression](../../compression/COMPRESSION_ENGINES.md)
 - **🕵️ 透明 MITM 解密（TPROXY）** — 捕獲並轉換忽略代理環境變數的 CLI 流量，配備每個 SNI 的憑證授權機構和信任儲存安裝程式。→ [MITM/TPROXY](../../security/MITM-TPROXY-DECRYPT.md)
-- **💸 全方位成本遙測** — 每個端點（包括媒體）上的 `X-ShiguangGateway-*` 成本/使用量標頭、非 Token 成本引擎、快取命中 `X-ShiguangGateway-Cost-Saved` 標頭，以及每金鑰 USD 支出配額。→ [API Reference](../../reference/API_REFERENCE.md)
-- **🧠 可控記憶** — 可選的 int8 向量量化（Qdrant + sqlite-vec），記憶預設關閉，以及每請求 `x-shiguang-gateway-no-memory` 標頭。→ [Memory](../../frameworks/MEMORY.md)
+- **💸 全方位成本遙測** — 每個端點（包括媒體）上的 `X-Orbit-*` 成本/使用量標頭、非 Token 成本引擎、快取命中 `X-Orbit-Cost-Saved` 標頭，以及每金鑰 USD 支出配額。→ [API Reference](../../reference/API_REFERENCE.md)
+- **🧠 可控記憶** — 可選的 int8 向量量化（Qdrant + sqlite-vec），記憶預設關閉，以及每請求 `x-orbit-no-memory` 標頭。→ [Memory](../../frameworks/MEMORY.md)
 - **🛡️ 安全** — 所有 LLM 路由的提示注入防護（由紅隊測試套件支援），加上免費的 DuckDuckGo 最後手段網路搜尋。→ [Guardrails](../../security/GUARDRAILS.md)
 - **🤝 更多提供者和代理** — Cursor Cloud Agent（第 4 個雲端代理）、CodeBuddy CN（`copilot.tencent.com`）、Google Flow 影片生成提供者、新閘道 **DGrid** 和 **Pioneer AI**（Fastino Labs）、入站 **xAI Grok** 轉換器加上 **Grok Build (xAI)** 附 OAuth 匯入令牌流程、GitHub Copilot 提供者上的 GPT-4 / GPT-4o-mini、多模型 **Factory Droid**、**ZenMux Free**（session-cookie 免費層）、**Alibaba DashScope** 文字轉影片（`wan2.7-t2v`）、更新後的 329 提供者目錄、Vertex AI 媒體生成（語音 / 轉錄 / 音樂 / 影片），以及從 CLIProxyAPI 一鍵匯入帳戶。→ [Providers](../../reference/PROVIDER_REFERENCE.md)
-- **⚡ 本地效能與基礎設施** — 一鍵本地 Redis 啟動器（`shiguang-gateway redis up`，加上儀表板 Redis 面板）、一鍵 **Cloudflare Workers** 和 **Deno Deploy** 中繼部署器接入代理池，以及可選的 Bifrost Go sidecar，用於卸載最熱門的中繼路徑（`BIFROST_BASE_URL`，逾時時自動備援到 TypeScript 路徑）。→ [Environment](../../reference/ENVIRONMENT.md)
+- **⚡ 本地效能與基礎設施** — 一鍵本地 Redis 啟動器（`orbit redis up`，加上儀表板 Redis 面板）、一鍵 **Cloudflare Workers** 和 **Deno Deploy** 中繼部署器接入代理池，以及可選的 Bifrost Go sidecar，用於卸載最熱門的中繼路徑（`BIFROST_BASE_URL`，逾時時自動備援到 TypeScript 路徑）。→ [Environment](../../reference/ENVIRONMENT.md)
 
 <br/>
 
@@ -376,7 +376,7 @@ Result: 4 fallback layers reduce downtime; upstream availability is not guarante
 
 <div align="center">
 
-# 🖥️ ShiguangGateway 的執行平台 — 無所不在
+# 🖥️ Orbit 的執行平台 — 無所不在
 
 </div>
 
@@ -384,11 +384,11 @@ Result: 4 fallback layers reduce downtime; upstream availability is not guarante
 
 | 平台                     | 安裝方式                                     | 亮點                                            |
 | ------------------------ | -------------------------------------------- | ----------------------------------------------- |
-| 📦 **npm（全域）**       | `npm install -g shiguang-gateway`                   | 一條命令，任何作業系統                          |
-| 🐳 **Docker**            | `docker run … diegosouzapw/shiguang-gateway`        | 多架構 **AMD64 + ARM64**                        |
+| 📦 **npm（全域）**       | `npm install -g orbit`                   | 一條命令，任何作業系統                          |
+| 🐳 **Docker**            | `docker run … diegosouzapw/orbit`        | 多架構 **AMD64 + ARM64**                        |
 | 🖥️ **桌面（Electron）**  | `npm run electron:build`                     | 原生視窗 + 系統匣 — **Windows / macOS / Linux** |
 | 💪 **ARM**               | 原生 `arm64`                                 | Raspberry Pi、ARM 伺服器、Apple Silicon         |
-| 📱 **Android（Termux）** | `pkg install nodejs-lts && npx -y shiguang-gateway` | **在手機上**執行，24/7，無需 root               |
+| 📱 **Android（Termux）** | `pkg install nodejs-lts && npx -y orbit` | **在手機上**執行，24/7，無需 root               |
 | 📲 **PWA**               | "新增到主畫面"                               | 全螢幕、離線、可從瀏覽器安裝                    |
 | 🧩 **OpenCode 插件**     | `@orbit/opencode-provider`               | 原生 OpenCode 整合                              |
 | 🛠️ **從原始碼建構**      | `npm install && npm run dev`                 | 參與開發                                        |
@@ -403,9 +403,9 @@ Result: 4 fallback layers reduce downtime; upstream availability is not guarante
 
 </div>
 
-> 您的金鑰、您的機器、您的資料。ShiguangGateway 是**本地代理** — 絕不向外回報。
+> 您的金鑰、您的機器、您的資料。Orbit 是**本地代理** — 絕不向外回報。
 
-- 🏠 **100% 在您的硬體上執行** — npm、Docker、桌面或手機。ShiguangGateway 雲端絕不介入請求路徑。
+- 🏠 **100% 在您的硬體上執行** — npm、Docker、桌面或手機。Orbit 雲端絕不介入請求路徑。
 - 🔐 **憑證靜態加密** — API 金鑰和 OAuth 令牌使用 **AES-256-GCM** 加密。
 - 🚫 **預設零遙測** — 您的提示僅傳送給您選擇的提供者，絕無其他去處。
 - 🛡️ **強化閘道** — API 金鑰範圍限制、IP 過濾、速率限制、提示注入防護、僅回送處理程序路由。
@@ -421,28 +421,28 @@ Result: 4 fallback layers reduce downtime; upstream availability is not guarante
 
 </div>
 
-> ShiguangGateway 不僅僅是伺服器 — 它擁有 **60+ 命令**的**完整命令列控制台**，以及開放的代理協定，讓 AI 代理可以**自行**驅動 ShiguangGateway。
+> Orbit 不僅僅是伺服器 — 它擁有 **60+ 命令**的**完整命令列控制台**，以及開放的代理協定，讓 AI 代理可以**自行**驅動 Orbit。
 
 ### ⌨️ 真正的 CLI（不僅僅是 `start`）
 
 ```bash
-shiguang-gateway               # 啟動閘道 + 儀表板（埠口 20128）
-shiguang-gateway chat          # 互動式 TUI 聊天客戶端（斜線指令：/model /combo /skill /memory）
-shiguang-gateway setup         # 引導式首次執行精靈
-shiguang-gateway doctor        # 診斷提供者、埠口、原生依賴
+orbit               # 啟動閘道 + 儀表板（埠口 20128）
+orbit chat          # 互動式 TUI 聊天客戶端（斜線指令：/model /combo /skill /memory）
+orbit setup         # 引導式首次執行精靈
+orbit doctor        # 診斷提供者、埠口、原生依賴
 ```
 
-### 🛰️ 遠端模式 — 在此執行 CLI，ShiguangGateway 在 VPS 上
+### 🛰️ 遠端模式 — 在此執行 CLI，Orbit 在 VPS 上
 
-ShiguangGateway 在伺服器上？從筆記型電腦使用**相同 CLI** 驅動。登入一次
+Orbit 在伺服器上？從筆記型電腦使用**相同 CLI** 驅動。登入一次
 使用範圍存取令牌；之後每個命令都指向遠端。
 
 ```bash
-shiguang-gateway connect 192.168.0.15            # 密碼 → 範圍令牌，儲存為上下文
-shiguang-gateway models list                     # ← 針對遠端伺服器執行
-shiguang-gateway configure codex                 # ← 選擇遠端模型，寫入本地 Codex 設定檔
-shiguang-gateway tokens create --name ci --scope read   # 為其他機器建立更窄的令牌
-shiguang-gateway contexts use default            # ← 切換回本地伺服器
+orbit connect 192.168.0.15            # 密碼 → 範圍令牌，儲存為上下文
+orbit models list                     # ← 針對遠端伺服器執行
+orbit configure codex                 # ← 選擇遠端模型，寫入本地 Codex 設定檔
+orbit tokens create --name ci --scope read   # 為其他機器建立更窄的令牌
+orbit contexts use default            # ← 切換回本地伺服器
 ```
 
 令牌範圍為 `read` / `write` / `admin`；產生處理程序的路由保持僅回送。
@@ -454,20 +454,20 @@ shiguang-gateway contexts use default            # ← 切換回本地伺服器
 
 </div>
 
-### 🤝 連接代理 — 代理自行控制 ShiguangGateway
+### 🤝 連接代理 — 代理自行控制 Orbit
 
-透過 **MCP** 或 **A2A** 公開 ShiguangGateway，任何有能力的代理即可取得整個閘道的金鑰 — 路由、提供者、Combo、快取、壓縮、記憶 — 自主運作。
+透過 **MCP** 或 **A2A** 公開 Orbit，任何有能力的代理即可取得整個閘道的金鑰 — 路由、提供者、Combo、快取、壓縮、記憶 — 自主運作。
 
 | 協定                | 端點                                            | 用途                                           |
 | ------------------- | ----------------------------------------------- | ---------------------------------------------- |
-| 🧰 **MCP（stdio）** | `shiguang-gateway --mcp`                               | 接入 Claude Desktop、Cursor 等 MCP 客戶端      |
+| 🧰 **MCP（stdio）** | `orbit --mcp`                               | 接入 Claude Desktop、Cursor 等 MCP 客戶端      |
 | 🌊 **MCP（HTTP）**  | `http://localhost:20128/api/mcp/stream`         | 遠端 MCP — **107 工具**、32 範圍、完整稽核軌跡 |
 | 📡 **MCP（SSE）**   | `http://localhost:20128/api/mcp/sse`            | 串流 MCP 傳輸                                  |
 | 🤝 **A2A**          | `http://localhost:20128/.well-known/agent.json` | 代理間通訊，**JSON-RPC 2.0** + SSE，6 技能     |
 
 ```bash
-# 將完整 ShiguangGateway 工具集透過 MCP 提供給 Claude Code：
-claude mcp add-server shiguang-gateway --type http --url http://localhost:20128/api/mcp/stream
+# 將完整 Orbit 工具集透過 MCP 提供給 Claude Code：
+claude mcp add-server orbit --type http --url http://localhost:20128/api/mcp/stream
 ```
 
 <sub>📖 [MCP Server](../../frameworks/MCP-SERVER.md) · [A2A Server](../../frameworks/A2A-SERVER.md) · [Agent Protocols](../../frameworks/AGENT_PROTOCOLS_GUIDE.md)</sub>
@@ -480,7 +480,7 @@ claude mcp add-server shiguang-gateway --type http --url http://localhost:20128/
 
 </div>
 
-> **為什麼用很多 Token 而不用少量 Token？** 每個請求**透明地**通過 ShiguangGateway 的壓縮管線 — 無需變更客戶端。它現在是**9 個可組合引擎的堆疊**，按順序執行，並可依路由 Combo 混合搭配 — 建立在 [RTK](https://github.com/rtk-ai/rtk)、[Caveman](https://github.com/JuliusBrussee/caveman) (⭐ 51K+)、[LLMLingua-2](https://github.com/microsoft/LLMLingua) 和 [Troglodita](https://github.com/leninejunior/troglodita) (PT-BR) 的基礎上。
+> **為什麼用很多 Token 而不用少量 Token？** 每個請求**透明地**通過 Orbit 的壓縮管線 — 無需變更客戶端。它現在是**9 個可組合引擎的堆疊**，按順序執行，並可依路由 Combo 混合搭配 — 建立在 [RTK](https://github.com/rtk-ai/rtk)、[Caveman](https://github.com/JuliusBrussee/caveman) (⭐ 51K+)、[LLMLingua-2](https://github.com/microsoft/LLMLingua) 和 [Troglodita](https://github.com/leninejunior/troglodita) (PT-BR) 的基礎上。
 
 ### 🧱 9 引擎堆疊
 
@@ -528,7 +528,7 @@ claude mcp add-server shiguang-gateway --type http --url http://localhost:20128/
 ### 📖 運作方式 — 管線、架構與節省數學
 
 ```
-Client (10,000 tok) ──▶ ShiguangGateway Compression (9 engines) ──▶ Provider (~1,080 tok, up to 95% saved)
+Client (10,000 tok) ──▶ Orbit Compression (9 engines) ──▶ Provider (~1,080 tok, up to 95% saved)
 ```
 
 預設堆疊 Combo 執行 `RTK → Caveman`。當兩者作用於相同工具/上下文 payload 時，節省效果疊加：
@@ -550,7 +550,7 @@ range    = 78.4 – 94.6%
   - **Less code** — "懶惰資深開發者" YAGNI：最小可行變更，不要求不搭建。
   - **Terse CJK（文言）** — 古典中文極簡風格（僅限 `zh` 語言環境）。
 - **🎯 自適應上下文預算**（_撥盤_）— 不是一個開/關 Token 閾值，而是僅升級最便宜、最無損的引擎，直到**符合模型的上下文視窗**。策略：`reserve-output`（預設，模型感知）· `percentage` · `absolute`。模式：`floor`（保證符合）· `replace-autotrigger`（您的明確選擇優先）· `off`（傳統閾值）。
-- **🎛️ 壓縮決策位置**（_優先級，高 → 低_）— 每請求 `x-shiguang-gateway-compression` 標頭 › 路由 Combo 覆寫 › 活動命名設定檔 › 自適應/自動觸發 › 面板預設 › 關閉。應用的計畫在 `X-ShiguangGateway-Compression: <mode>; source=<source>` 回應標頭中回顯。
+- **🎛️ 壓縮決策位置**（_優先級，高 → 低_）— 每請求 `x-orbit-compression` 標頭 › 路由 Combo 覆寫 › 活動命名設定檔 › 自適應/自動觸發 › 面板預設 › 關閉。應用的計畫在 `X-Orbit-Compression: <mode>; source=<source>` 回應標頭中回顯。
 
 按 Token 閾值自動觸發、切換自適應撥盤、固定命名設定檔、設定一次性每請求、或為每個路由 Combo 指派管線 — 任選適合工作負載的方式。可選的離線**評估工具**（`npm run eval:compression`）在固定語料庫上評分保真度與節省比例。
 
@@ -567,8 +567,8 @@ range    = 78.4 – 94.6%
 **1) 安裝並執行**
 
 ```bash
-npm install -g shiguang-gateway
-shiguang-gateway
+npm install -g orbit
+orbit
 ```
 
 儀表板：`http://localhost:20128` · API：`http://localhost:20128/v1`
@@ -591,9 +591,9 @@ Model:    auto            （零設定智慧路由 — 或任何提供者/模型
 curl http://localhost:20128/v1/models -H "Authorization: Bearer ***"
 ```
 
-您應該會看到已連接的模型列表。🎉 就是這樣 — 開始編碼，ShiguangGateway 會自動路由和備援。
+您應該會看到已連接的模型列表。🎉 就是這樣 — 開始編碼，Orbit 會自動路由和備援。
 
-如果您的客戶端無法傳送自訂標頭，ShiguangGateway 也提供令牌化的相容別名：
+如果您的客戶端無法傳送自訂標頭，Orbit 也提供令牌化的相容別名：
 
 ```txt
 OpenAI catalog:   http://localhost:20128/vscode/YOUR_KEY/
@@ -613,8 +613,8 @@ Ollama tags:      http://localhost:20128/vscode/YOUR_KEY/api/tags
 **🐳 Docker**
 
 ```bash
-docker run -d --name shiguang-gateway --restart unless-stopped --stop-timeout 40 \
-  -p 20128:20128 -v shiguang-gateway-data:/app/data diegosouzapw/shiguang-gateway:latest
+docker run -d --name orbit --restart unless-stopped --stop-timeout 40 \
+  -p 20128:20128 -v orbit-data:/app/data diegosouzapw/orbit:latest
 ```
 
 **🛠️ 從原始碼建構**
@@ -627,13 +627,13 @@ PORT=20128 npm run dev
 **📦 pnpm**
 
 ```bash
-pnpm add -g shiguang-gateway@latest --allow-build=better-sqlite3 --allow-build=@swc/core && shiguang-gateway
+pnpm add -g orbit@latest --allow-build=better-sqlite3 --allow-build=@swc/core && orbit
 ```
 
 **🐧 Arch Linux（AUR）**
 
 ```bash
-yay -S shiguang-gateway-bin && systemctl --user enable --now shiguang-gateway.service
+yay -S orbit-bin && systemctl --user enable --now orbit.service
 ```
 
 **🔧 Nix（Flake）**
@@ -673,7 +673,7 @@ podman compose --profile base up -d --build
 
 <div align="center">
 
-# 🎬 ShiguangGateway 實際展示
+# 🎬 Orbit 實際展示
 
 </div>
 
@@ -698,7 +698,7 @@ podman compose --profile base up -d --build
 
 <div align="center">
 
-> 🎬 **製作了關於 ShiguangGateway 的影片？** 透過連結開啟 [issue](https://github.com/diegosouzapw/ShiguangGateway/issues/new) 或 [discussion](https://github.com/diegosouzapw/ShiguangGateway/discussions) — 我們會在此展示。
+> 🎬 **製作了關於 Orbit 的影片？** 透過連結開啟 [issue](https://github.com/diegosouzapw/Orbit/issues/new) 或 [discussion](https://github.com/diegosouzapw/Orbit/discussions) — 我們會在此展示。
 
 <br/>
 </div>
@@ -733,7 +733,7 @@ podman compose --profile base up -d --build
 | **NVIDIA NIM**    | `nvidia/`   | 129 模型                                        | ~40 RPM                      |
 | **Cerebras**      | `cerebras/` | Qwen3 235B、GPT-OSS 120B                        | 100 萬 Token/天              |
 
-> 💡 儀表板上的"成本"是**節省追蹤器**，不是帳單 — ShiguangGateway 從不向您收費。使用免費模型顯示的"$290 總成本"意味著**節省了 $290**。
+> 💡 儀表板上的"成本"是**節省追蹤器**，不是帳單 — Orbit 從不向您收費。使用免費模型顯示的"$290 總成本"意味著**節省了 $290**。
 
 📖 完整免費目錄 → [`docs/reference/FREE_TIERS.md`](../../reference/FREE_TIERS.md) — 43 個提供者池、522 個模型預算項目、配額與基本 URL。
 
@@ -765,7 +765,7 @@ podman compose --profile base up -d --build
 
 <br/>
 
-🇷🇺 🇨🇳 🇮🇷 🇨🇺 🇹🇷 在被封鎖的地區？ShiguangGateway 的 **3 層代理**（全域 / 每提供者 / 每連線）代理 API 請求、OAuth 流程、連線測試、Token 重新整理和模型同步。
+🇷🇺 🇨🇳 🇮🇷 🇨🇺 🇹🇷 在被封鎖的地區？Orbit 的 **3 層代理**（全域 / 每提供者 / 每連線）代理 API 請求、OAuth 流程、連線測試、Token 重新整理和模型同步。
 
 - **協定：** HTTP/HTTPS、SOCKS5、認證代理
 - **🆓 1proxy 市場** — 數百個免費驗證代理、品質評分、自動輪換
@@ -801,9 +801,9 @@ podman compose --profile base up -d --build
 | ----------------- | -------------- | ------------------------- |
 | `PORT`            | `20128`        | API + 儀表板埠口          |
 | `REQUIRE_API_KEY` | `false`        | 要求所有請求使用 API 金鑰 |
-| `DATA_DIR`        | `~/.shiguang-gateway` | 資料庫和設定儲存位置      |
+| `DATA_DIR`        | `~/.orbit` | 資料庫和設定儲存位置      |
 
-**ShiguangGateway 會向我收費嗎？** 不會 — 它是免費的開源軟體，在您的機器上執行。您只直接向付費提供者付費。ShiguangGateway 沒有帳單系統。
+**Orbit 會向我收費嗎？** 不會 — 它是免費的開源軟體，在您的機器上執行。您只直接向付費提供者付費。Orbit 沒有帳單系統。
 **免費提供者真的無限嗎？** 不能保證 — 有些目錄項目沒有公開 Token 上限，但仍可能受到速率、並發、帳戶、地區或服務條款限制。請在使用前查看提供者條款；在 Combo 中堆疊多個免費／免驗證項目可增加備援，但不代表無限或保證可用。
 **壓縮會損害品質嗎？** 不會 — 它只壓縮**輸入**；程式碼、URL、JSON 始終受保護。
 **在被封鎖 AI 的地區能用嗎？** 可以嘗試 — 3 層代理 + 1proxy 市場可連接目錄中的 329 個提供者，但實際可用性取決於網路、地區與提供者政策。
@@ -852,9 +852,9 @@ podman compose --profile base up -d --build
 
 > 💬 **與社群聊天** — Discord、Telegram 和 WhatsApp（🌍 / 🇧🇷）連結在[本 README 頂部](#-join-the-community)。
 
-- 🌍 **網站**：[shiguang-gateway.online](https://shiguang-gateway.online)
-- 🐙 **GitHub**：[github.com/diegosouzapw/ShiguangGateway](https://github.com/diegosouzapw/ShiguangGateway)
-- 🐛 **Issue**：[回報錯誤](https://github.com/diegosouzapw/ShiguangGateway/issues)（請附上 `npm run system-info` 輸出）
+- 🌍 **網站**：[orbit.online](https://orbit.online)
+- 🐙 **GitHub**：[github.com/diegosouzapw/Orbit](https://github.com/diegosouzapw/Orbit)
+- 🐛 **Issue**：[回報錯誤](https://github.com/diegosouzapw/Orbit/issues)（請附上 `npm run system-info` 輸出）
 - 🤝 **貢獻**：參見 [CONTRIBUTING.md](../../CONTRIBUTING.md) 或選擇 `good first issue`
 
 </div>
@@ -879,9 +879,9 @@ podman compose --profile base up -d --build
 - **測試**：Node.js 測試執行器 + Vitest（**14,965 個測試案例**，涵蓋 517 個檔案 — 單元、整合、E2E、安全、生態系統）
 - **平台**：桌面（Electron）、Android（Termux）、PWA（任何瀏覽器）
 - **CI/CD**：GitHub Actions（發布時自動 npm 發布 + Docker Hub）
-- **網站**：[shiguang-gateway.online](https://shiguang-gateway.online)
-- **套件**：[npmjs.com/package/shiguang-gateway](https://www.npmjs.com/package/shiguang-gateway)
-- **Docker**：[hub.docker.com/r/diegosouzapw/shiguang-gateway](https://hub.docker.com/r/diegosouzapw/shiguang-gateway)
+- **網站**：[orbit.online](https://orbit.online)
+- **套件**：[npmjs.com/package/orbit](https://www.npmjs.com/package/orbit)
+- **Docker**：[hub.docker.com/r/diegosouzapw/orbit](https://hub.docker.com/r/diegosouzapw/orbit)
 - **彈性**：斷路器、指數退避、反奔湧群、TLS 偽造、自動 Combo 自我修復
 
 <div align="center">
@@ -899,8 +899,8 @@ podman compose --profile base up -d --build
 | [User Guide](../../guides/USER_GUIDE.md)                        | 提供者、Combo、CLI 整合、部署                                             |
 | [Setup Guide](../../guides/SETUP_GUIDE.md)                      | 完整安裝方法、CLI 工具設定、協定設定、逾時調整                            |
 | [CLI Tools Guide](../../reference/CLI-TOOLS.md)                 | Claude Code、Codex、Cursor、Cline、OpenClaw、Kilo、Copilot 的個別工具設定 |
-| [Remote Mode](../../guides/REMOTE-MODE.md)                      | 從筆記型電腦 CLI 透過範圍存取令牌驅動遠端 ShiguangGateway（VPS）                |
-| [Claude Code Config](../../guides/CLAUDE-CODE-CONFIGURATION.md) | 將 Claude Code 指向 ShiguangGateway（本地/遠端），附 `launch` + 每模型設定檔    |
+| [Remote Mode](../../guides/REMOTE-MODE.md)                      | 從筆記型電腦 CLI 透過範圍存取令牌驅動遠端 Orbit（VPS）                |
+| [Claude Code Config](../../guides/CLAUDE-CODE-CONFIGURATION.md) | 將 Claude Code 指向 Orbit（本地/遠端），附 `launch` + 每模型設定檔    |
 | [Quick Start](../../README.md#-quick-start)                     | 3 步驟安裝 → 連接 → 設定                                                  |
 
 ### 🔧 維運與部署
@@ -911,7 +911,7 @@ podman compose --profile base up -d --build
 | [Podman Guide](../../contrib/podman/README.md)            | Quadlet systemd 整合、podman-compose、SELinux            |
 | [VM Deployment](../../ops/VM_DEPLOYMENT_GUIDE.md)         | 完整指南：VM + nginx + Cloudflare 設定                   |
 | [Fly.io Deployment](../../ops/FLY_IO_DEPLOYMENT_GUIDE.md) | 部署到 Fly.io，附持久儲存                                |
-| [Termux Guide](../../guides/TERMUX_GUIDE.md)              | 在 Android 上透過 Termux 執行 ShiguangGateway                  |
+| [Termux Guide](../../guides/TERMUX_GUIDE.md)              | 在 Android 上透過 Termux 執行 Orbit                  |
 | [PWA Guide](../../guides/PWA_GUIDE.md)                    | Progressive Web App 安裝、快取、架構                     |
 | [Uninstall Guide](../../guides/UNINSTALL.md)              | 所有安裝方法的完整移除                                   |
 | [Environment Config](../../reference/ENVIRONMENT.md)      | 完整 `.env` 變數和參考                                   |
@@ -959,7 +959,7 @@ podman compose --profile base up -d --build
 
 # ⭐ 頂級貢獻者
 
-> ShiguangGateway 由充滿熱情的開源社群塑造。這些個人做出了卓越貢獻，直接影響了專案的品質、穩定性和影響力。**謝謝你們。**
+> Orbit 由充滿熱情的開源社群塑造。這些個人做出了卓越貢獻，直接影響了專案的品質、穩定性和影響力。**謝謝你們。**
 
 <table>
   <tr>
@@ -1006,7 +1006,7 @@ podman compose --profile base up -d --build
   </tr>
 </table>
 
-> 🙏 這些貢獻者的功能、錯誤修復和基礎設施改進是 ShiguangGateway 可靠且功能豐富的**核心部分**。每一個 Pull Request、每一個測試案例、每一個 i18n 翻譯檔案都很重要。開源是由像他們這樣的人建構的。
+> 🙏 這些貢獻者的功能、錯誤修復和基礎設施改進是 Orbit 可靠且功能豐富的**核心部分**。每一個 Pull Request、每一個測試案例、每一個 i18n 翻譯檔案都很重要。開源是由像他們這樣的人建構的。
 
 </div>
 
@@ -1020,7 +1020,7 @@ podman compose --profile base up -d --build
 
 </div>
 
-[![Contributors](https://contrib.rocks/image?repo=diegosouzapw/ShiguangGateway&max=100&columns=20&anon=1)](https://github.com/diegosouzapw/ShiguangGateway/graphs/contributors)
+[![Contributors](https://contrib.rocks/image?repo=diegosouzapw/Orbit&max=100&columns=20&anon=1)](https://github.com/diegosouzapw/Orbit/graphs/contributors)
 
 ### 如何貢獻
 
@@ -1045,11 +1045,11 @@ gh release create v3.8.2 --title "v3.8.2" --generate-notes
 
 ## 📊 Stars
 
-<a href="https://www.star-history.com/?repos=diegosouzapw%2Fshiguang-gateway&type=date&legend=top-left">
+<a href="https://www.star-history.com/?repos=diegosouzapw%2Forbit&type=date&legend=top-left">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=diegosouzapw/shiguang-gateway&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=diegosouzapw/shiguang-gateway&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=diegosouzapw/shiguang-gateway&type=date&legend=top-left" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=diegosouzapw/orbit&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=diegosouzapw/orbit&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=diegosouzapw/orbit&type=date&legend=top-left" />
  </picture>
 </a>
 </div>
@@ -1060,11 +1060,11 @@ gh release create v3.8.2 --title "v3.8.2" --generate-notes
 
 ## 🌍 StarMapper
 
-<a href="https://starmapper.bruniaux.com/diegosouzapw/shiguang-gateway">
+<a href="https://starmapper.bruniaux.com/diegosouzapw/orbit">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://starmapper.bruniaux.com/api/map-image/diegosouzapw/shiguang-gateway?theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://starmapper.bruniaux.com/api/map-image/diegosouzapw/shiguang-gateway?theme=light" />
-    <img alt="StarMapper" src="https://starmapper.bruniaux.com/api/map-image/diegosouzapw/shiguang-gateway" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://starmapper.bruniaux.com/api/map-image/diegosouzapw/orbit?theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://starmapper.bruniaux.com/api/map-image/diegosouzapw/orbit?theme=light" />
+    <img alt="StarMapper" src="https://starmapper.bruniaux.com/api/map-image/diegosouzapw/orbit" />
   </picture>
 </a>
 </div>
@@ -1077,13 +1077,13 @@ gh release create v3.8.2 --title "v3.8.2" --generate-notes
 
 </div>
 
-ShiguangGateway 站在巨人的肩膀上。它始於 **[9router](https://github.com/decolua/9router)** 的分支和 Go 專案 **[CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI)** 的 TypeScript 移植 — 從那裡開始，下面的每個子系統都受到先行開源專案的啟發。每一個都塑造了 ShiguangGateway 的具體部分。這是我們對它們所有人的感謝。🙏
+Orbit 站在巨人的肩膀上。它始於 **[9router](https://github.com/decolua/9router)** 的分支和 Go 專案 **[CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI)** 的 TypeScript 移植 — 從那裡開始，下面的每個子系統都受到先行開源專案的啟發。每一個都塑造了 Orbit 的具體部分。這是我們對它們所有人的感謝。🙏
 
 > ⭐ 星星數截至 2026 年 6 月 — 去給這些專案一顆星。
 
 ### 🧬 淵源與閘道
 
-| 專案                                                                            | ⭐    | 啟發 ShiguangGateway 的方式                                                                       |
+| 專案                                                                            | ⭐    | 啟發 Orbit 的方式                                                                       |
 | ------------------------------------------------------------------------------- | ----- | ------------------------------------------------------------------------------------------- |
 | **[9router](https://github.com/decolua/9router)** · decolua                     | 17.9k | 此分叉所基於的原始專案 — 此處以多模態 API 和完整的 TypeScript 重寫進行擴展。                |
 | **[CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI)** · router-for-me | 37.8k | 啟發此 JavaScript/TypeScript 移植的 Go 實作。                                               |
@@ -1091,7 +1091,7 @@ ShiguangGateway 站在巨人的肩膀上。它始於 **[9router](https://github.
 
 ### 🗜️ 上下文與 Token 壓縮 — 引擎
 
-| 專案                                                                         | ⭐    | 啟發 ShiguangGateway 的方式                                                                                                                                 |
+| 專案                                                                         | ⭐    | 啟發 Orbit 的方式                                                                                                                                 |
 | ---------------------------------------------------------------------------- | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **[Caveman](https://github.com/JuliusBrussee/caveman)** · JuliusBrussee      | 74.5k | 病毒式"為什麼用很多 Token 而不用少量 Token"專案 — 其原始人語哲學為我們的標準壓縮模式和 30+ 填充詞/濃縮規則提供動力。                                  |
 | **[RTK – Rust Token Killer](https://github.com/rtk-ai/rtk)** · rtk-ai        | 63.6k | 高效能命令輸出壓縮 — 啟發了我們的 RTK 引擎、JSON 過濾器 DSL、原始輸出恢復和堆疊 RTK → Caveman 管線。                                                  |
@@ -1103,7 +1103,7 @@ ShiguangGateway 站在巨人的肩膀上。它始於 **[9router](https://github.
 
 ### 🧩 緊湊格式、Token 研究和程式碼感知工具
 
-| 專案                                                                              | ⭐    | 啟發 ShiguangGateway 的方式                                                                             |
+| 專案                                                                              | ⭐    | 啟發 Orbit 的方式                                                                             |
 | --------------------------------------------------------------------------------- | ----- | ------------------------------------------------------------------------------------------------- |
 | **[TOON](https://github.com/toon-format/toon)** · toon-format                     | 24.6k | Token 導向物件表示法 — 其欄式、標頭+行模型塑造了我們的表格壓縮階段。                              |
 | **[GCF](https://github.com/blackwell-systems/gcf)** · Blackwell Systems           | 11    | 架構感知的"LLM 用 JSON"表示法 — 共同啟發了我們使用 `[N rows]` 標記的無損同構陣列壓縮。            |
@@ -1113,7 +1113,7 @@ ShiguangGateway 站在巨人的肩膀上。它始於 **[9router](https://github.
 
 ### 🧠 記憶與 RAG
 
-| 專案                                                               | ⭐    | 啟發 ShiguangGateway 的方式                                                               |
+| 專案                                                               | ⭐    | 啟發 Orbit 的方式                                                               |
 | ------------------------------------------------------------------ | ----- | ----------------------------------------------------------------------------------- |
 | **[Mem0](https://github.com/mem0ai/mem0)** · mem0ai                | 58.9k | 通用記憶層 — 其代理作為寫入/讀取邊界模型塑造了我們的記憶架構。                      |
 | **[Letta (MemGPT)](https://github.com/letta-ai/letta)** · letta-ai | 23.4k | 具有分層記憶的狀態化代理 — 啟發了我們的 Context Control & Recovery（CCR）分層模型。 |
@@ -1121,14 +1121,14 @@ ShiguangGateway 站在巨人的肩膀上。它始於 **[9router](https://github.
 
 ### 🛰️ 流量檢查、MITM 和透明代理
 
-| 專案                                                                              | ⭐   | 啟發 ShiguangGateway 的方式                                                                                             |
+| 專案                                                                              | ⭐   | 啟發 Orbit 的方式                                                                                             |
 | --------------------------------------------------------------------------------- | ---- | ----------------------------------------------------------------------------------------------------------------- |
 | **[llm-interceptor](https://github.com/chouzz/llm-interceptor)** · chouzz         | 46   | 編碼助手 ↔ LLM 流量的 MITM 攔截/分析 — 我們的 Traffic Inspector 移植其 SSE 合併、對話正規化、主機傳遞和秘密遮罩。 |
 | **[ProxyBridge](https://github.com/InterceptSuite/ProxyBridge)** · InterceptSuite | 5.1k | 透明每程序代理路由 — 啟發了我們的崩潰安全 MITM 拆卸、socket 空閒逾時、`/proc` 程序歸屬和 TPROXY 捕獲。            |
 
 ### 📚 模型資料、可觀測性與 UI
 
-| 專案                                                                       | ⭐    | 啟發 ShiguangGateway 的方式                                                                         |
+| 專案                                                                       | ⭐    | 啟發 Orbit 的方式                                                                         |
 | -------------------------------------------------------------------------- | ----- | --------------------------------------------------------------------------------------------- |
 | **[models.dev](https://github.com/anomalyco/models.dev)** · SST / OpenCode | 5.1k  | AI 模型規格、定價和能力的開放資料庫 — 原生同步到我們的模型目錄。                              |
 | **[React Flow / xyflow](https://github.com/xyflow/xyflow)** · xyflow       | 37.1k | 驅動我們即時 Compression Studio 和 Combo/Routing Studio 的基於節點的圖形函式庫。              |
@@ -1139,17 +1139,17 @@ ShiguangGateway 站在巨人的肩膀上。它始於 **[9router](https://github.
 
 ### 🛡️ 安全
 
-| 專案                                                                                        | ⭐  | 啟發 ShiguangGateway 的方式                                                                                                |
+| 專案                                                                                        | ⭐  | 啟發 Orbit 的方式                                                                                                |
 | ------------------------------------------------------------------------------------------- | --- | -------------------------------------------------------------------------------------------------------------------- |
 | **[awesome-secure-defaults](https://github.com/tldrsec/awesome-secure-defaults)** · tldrsec | 708 | 一個精選的安全預設函式庫列表，引導我們的安全選擇（Helmet.js、DOMPurify、ssrf-req-filter、safe-regex、Google Tink）。 |
 
 ## ❤️ 支援
 
-ShiguangGateway 是免費且開源的，在公開環境中建構和維護。如果它為您節省了時間或金錢，請考慮支援其開發：
+Orbit 是免費且開源的，在公開環境中建構和維護。如果它為您節省了時間或金錢，請考慮支援其開發：
 
 - ⭐ **為倉庫加星** — 這確實有助於提高能見度
 - 💖 **[GitHub Sponsors](https://github.com/sponsors/diegosouzapw)** — 資助持續維護和新提供者
-- 🐛 **在 [Discussions](https://github.com/diegosouzapw/ShiguangGateway/discussions) 中回報錯誤和分享意見回饋**
+- 🐛 **在 [Discussions](https://github.com/diegosouzapw/Orbit/discussions) 中回報錯誤和分享意見回饋**
 
 ## 📄 授權
 
@@ -1159,8 +1159,8 @@ MIT 授權 — 詳情請參見 [LICENSE](../../LICENSE)。
 
 <div align="center">
 
-**[⬆ 回到頂部](#-shiguang-gateway)** · 為開源 AI 社群用心建構。
+**[⬆ 回到頂部](#-orbit)** · 為開源 AI 社群用心建構。
 
-<sub>ShiguangGateway v3.8.24 · Node ≥22.0.0 · MIT License · <a href="https://shiguang-gateway.online">shiguang-gateway.online</a></sub>
+<sub>Orbit v3.8.24 · Node ≥22.0.0 · MIT License · <a href="https://orbit.online">orbit.online</a></sub>
 
 </div>

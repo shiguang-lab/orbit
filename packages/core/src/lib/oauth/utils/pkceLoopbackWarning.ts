@@ -2,7 +2,7 @@
  * #8046: PKCE_CALLBACK_SERVER_PROVIDERS (codex/xai-oauth/grok-cli) register a FIXED
  * loopback redirect_uri (e.g. http://localhost:1455/auth/callback for codex) with the
  * upstream OAuth app. That redirect only resolves on the machine actually running the
- * browser, not on whatever host serves the ShiguangGateway dashboard.
+ * browser, not on whatever host serves the Orbit dashboard.
  *
  * OAuthModal's `isTrueLocalhost` check (hostname === "localhost" || "127.0.0.1") only
  * covers one such case. A dashboard reached via a LAN IP (192.168.*, 10.*, 172.16-31.*)
@@ -67,7 +67,7 @@ export type PkceLoopbackMismatchHint = {
  * - the dashboard port, so the origin becomes true-localhost and the callback-server
  *   branch runs at all (a LAN origin never reaches it);
  * - the provider's fixed callback port, because the PKCE callback server listens on the
- *   ShiguangGateway *server's* loopback while the provider redirects the *browser's* loopback.
+ *   Orbit *server's* loopback while the provider redirects the *browser's* loopback.
  */
 export function buildPkceLoopbackMismatchHint(
   provider: string,
@@ -100,11 +100,11 @@ export function buildPkceLoopbackMismatchHint(
 export function buildPkceLoopbackMismatchWarning(provider: string): string {
   const redirect = PKCE_LOOPBACK_REDIRECT_HINT[provider] ?? "a fixed localhost callback URL";
   return (
-    `ShiguangGateway is being accessed from a LAN IP, not true localhost. ${provider}'s OAuth app ` +
+    `Orbit is being accessed from a LAN IP, not true localhost. ${provider}'s OAuth app ` +
     `is registered with a fixed loopback redirect (${redirect}) that only resolves on the ` +
-    "machine running this browser tab, not on the ShiguangGateway server — the login will silently " +
-    "fail on the provider's side. Open the ShiguangGateway dashboard from true localhost instead " +
-    "(SSH port-forward: ssh -L <port>:127.0.0.1:<port> <user>@<shiguangGateway-host>, then browse to " +
+    "machine running this browser tab, not on the Orbit server — the login will silently " +
+    "fail on the provider's side. Open the Orbit dashboard from true localhost instead " +
+    "(SSH port-forward: ssh -L <port>:127.0.0.1:<port> <user>@<orbit-host>, then browse to " +
     "http://localhost:<port>), or use the token-import flow for this provider if available."
   );
 }

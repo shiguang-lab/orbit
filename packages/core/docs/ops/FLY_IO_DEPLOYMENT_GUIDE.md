@@ -1,18 +1,18 @@
 ---
-title: "ShiguangGateway Fly.io Deployment Guide"
+title: "Orbit Fly.io Deployment Guide"
 version: 3.8.40
 lastUpdated: 2026-06-28
 ---
 
-# ShiguangGateway Fly.io Deployment Guide
+# Orbit Fly.io Deployment Guide
 
-This document describes the actual deployment process for ShiguangGateway on Fly.io, covering two scenarios:
+This document describes the actual deployment process for Orbit on Fly.io, covering two scenarios:
 
 - Deploying the current project to Fly.io for the first time
 - Publishing subsequent code updates
 - New projects following the same deployment workflow
 
-This guide is based on a verified working configuration for the current project. The application name is `shiguang-gateway`.
+This guide is based on a verified working configuration for the current project. The application name is `orbit`.
 
 ---
 
@@ -22,7 +22,7 @@ This guide is based on a verified working configuration for the current project.
 - Deployment method: Local `flyctl` direct publish
 - Runtime: Using the existing `Dockerfile` and `fly.toml` in the repository
 - Data persistence: Fly Volume mounted to `/data`
-- Access URL: `https://shiguang-gateway.fly.dev/`
+- Access URL: `https://orbit.fly.dev/`
 
 ---
 
@@ -31,7 +31,7 @@ This guide is based on a verified working configuration for the current project.
 The `fly.toml` in the current repository has been confirmed to contain the following key items:
 
 ```toml
-app = 'shiguang-gateway'
+app = 'orbit'
 primary_region = 'sin'
 
 [[mounts]]
@@ -53,7 +53,7 @@ primary_region = 'sin'
 
 Notes:
 
-- `app = 'shiguang-gateway'` determines which Fly application the deployment targets
+- `app = 'orbit'` determines which Fly application the deployment targets
 - `destination = '/data'` determines the persistent volume mount directory
 - This project must set `DATA_DIR=/data`, otherwise the database and keys will be written to the container's temporary directory
 
@@ -91,8 +91,8 @@ flyctl version
 ### 4.1 Clone the Code and Enter the Directory
 
 ```powershell
-git clone https://github.com/diegosouzapw/ShiguangGateway.git
-cd ShiguangGateway
+git clone https://github.com/diegosouzapw/Orbit.git
+cd Orbit
 ```
 
 ### 4.2 Confirm the Application Name
@@ -100,29 +100,29 @@ cd ShiguangGateway
 Open `fly.toml` and verify the following line:
 
 ```toml
-app = 'shiguang-gateway'
+app = 'orbit'
 ```
 
 If you are deploying to your own new application, you can change it to a globally unique name, for example:
 
 ```toml
-app = 'shiguang-gateway-yourname'
+app = 'orbit-yourname'
 ```
 
 Note:
 
 - Make sure the application you see in the console matches the `app` value in `fly.toml`
-- If you previously used a different name, such as `oroute`, do not confuse it with `shiguang-gateway`
+- If you previously used a different name, such as `oroute`, do not confuse it with `orbit`
 
 ### 4.3 Create the Application
 
 If the application does not yet exist:
 
 ```powershell
-flyctl apps create shiguang-gateway
+flyctl apps create orbit
 ```
 
-If you changed the application name, replace `shiguang-gateway` with your chosen name.
+If you changed the application name, replace `orbit` with your chosen name.
 
 ### 4.4 First Deploy
 
@@ -138,14 +138,14 @@ This project recommends configuring at least the following parameters on Fly.io.
 
 ### 5.1 Verified Parameters
 
-These parameters have been used in actual deployments on the current `shiguang-gateway` application:
+These parameters have been used in actual deployments on the current `orbit` application:
 
 - `API_KEY_SECRET`
 - `DATA_DIR`
 - `JWT_SECRET`
 - `MACHINE_ID_SALT`
 - `NEXT_PUBLIC_BASE_URL`
-- `SHIGUANG_GATEWAY_WS_BRIDGE_SECRET` (required in production — used for WebSocket bridge authentication)
+- `ORBIT_WS_BRIDGE_SECRET` (required in production — used for WebSocket bridge authentication)
 - `STORAGE_ENCRYPTION_KEY`
 
 ### 5.2 About `INITIAL_PASSWORD`
@@ -173,7 +173,7 @@ The following variables are recommended for Fly Secrets:
 | ----------------------------- | ---------------------- | ----------------------------------------------------- |
 | `API_KEY_SECRET`              | Required               | Used for API Key generation and validation            |
 | `JWT_SECRET`                  | Required               | Used for login sessions and JWT signing               |
-| `SHIGUANG_GATEWAY_WS_BRIDGE_SECRET`  | Required in production | WebSocket bridge authentication secret                |
+| `ORBIT_WS_BRIDGE_SECRET`  | Required in production | WebSocket bridge authentication secret                |
 | `STORAGE_ENCRYPTION_KEY`      | Strongly recommended   | Encrypts sensitive connection information at rest     |
 | `MACHINE_ID_SALT`             | Recommended            | Generates a stable machine identifier                 |
 | `INITIAL_PASSWORD`            | Optional               | Sets the initial backend password at first deployment |
@@ -184,7 +184,7 @@ The following variables are recommended for Fly Secrets:
 | Variable               | Recommended Value           |
 | ---------------------- | --------------------------- |
 | `DATA_DIR`             | `/data`                     |
-| `NEXT_PUBLIC_BASE_URL` | `https://shiguang-gateway.fly.dev` |
+| `NEXT_PUBLIC_BASE_URL` | `https://orbit.fly.dev` |
 
 Notes:
 
@@ -198,10 +198,10 @@ If you need to enable OAuth-based providers (e.g. Antigravity, Gemini, Cursor) o
 1. **Set `NEXT_PUBLIC_BASE_URL` to your public HTTPS domain**
 
    ```powershell
-   flyctl secrets set NEXT_PUBLIC_BASE_URL=https://shiguang-gateway.fly.dev -a shiguang-gateway
+   flyctl secrets set NEXT_PUBLIC_BASE_URL=https://orbit.fly.dev -a orbit
    ```
 
-   If you are using a custom domain, replace it with the corresponding domain (e.g. `https://shiguang-gateway.yourdomain.com`).
+   If you are using a custom domain, replace it with the corresponding domain (e.g. `https://orbit.yourdomain.com`).
 
 2. **Configure the callback URL on the provider console**
 
@@ -212,7 +212,7 @@ If you need to enable OAuth-based providers (e.g. Antigravity, Gemini, Cursor) o
    ```
 
    For example, regardless of Gemini, Antigravity, Cursor, or GitLab Duo:
-   - `https://shiguang-gateway.fly.dev/callback`
+   - `https://orbit.fly.dev/callback`
 
    If `NEXT_PUBLIC_BASE_URL` does not match the callback URL registered with the provider, the OAuth flow will fail at the browser redirect step.
 
@@ -225,7 +225,7 @@ The following commands generate secure random values and write all required para
 Notes:
 
 - Does not include `INITIAL_PASSWORD`
-- Intended for the current project `shiguang-gateway`
+- Intended for the current project `orbit`
 
 ```powershell
 $apiKeySecret = [Convert]::ToHexString((1..32 | ForEach-Object { Get-Random -Minimum 0 -Maximum 256 })).ToLower()
@@ -239,26 +239,26 @@ flyctl secrets set `
   JWT_SECRET=$jwtSecret `
   MACHINE_ID_SALT=$machineIdSalt `
   STORAGE_ENCRYPTION_KEY=$storageKey `
-  SHIGUANG_GATEWAY_WS_BRIDGE_SECRET=$wsBridgeSecret `
+  ORBIT_WS_BRIDGE_SECRET=$wsBridgeSecret `
   DATA_DIR=/data `
-  NEXT_PUBLIC_BASE_URL=https://shiguang-gateway.fly.dev `
-  -a shiguang-gateway
+  NEXT_PUBLIC_BASE_URL=https://orbit.fly.dev `
+  -a orbit
 ```
 
 On Linux / macOS, you can also use `openssl rand -hex 32`:
 
 ```bash
-flyctl secrets set SHIGUANG_GATEWAY_WS_BRIDGE_SECRET=$(openssl rand -hex 32) -a shiguang-gateway
+flyctl secrets set ORBIT_WS_BRIDGE_SECRET=$(openssl rand -hex 32) -a orbit
 ```
 
 Notes:
 
-- `SHIGUANG_GATEWAY_WS_BRIDGE_SECRET` is required in production; missing it will break the WebSocket bridge handshake
+- `ORBIT_WS_BRIDGE_SECRET` is required in production; missing it will break the WebSocket bridge handshake
 
 If you also want to set an initial password:
 
 ```powershell
-flyctl secrets set INITIAL_PASSWORD=your-strong-password -a shiguang-gateway
+flyctl secrets set INITIAL_PASSWORD=your-strong-password -a orbit
 ```
 
 ---
@@ -266,12 +266,12 @@ flyctl secrets set INITIAL_PASSWORD=your-strong-password -a shiguang-gateway
 ## 8. Viewing Current Parameters
 
 ```powershell
-flyctl secrets list -a shiguang-gateway
+flyctl secrets list -a orbit
 ```
 
 If the `Secrets` page in the console does not show the expected variables, check:
 
-- That you are viewing the `shiguang-gateway` application
+- That you are viewing the `orbit` application
 - That the `app` value in `fly.toml` matches the application in the console
 
 ---
@@ -288,14 +288,14 @@ flyctl deploy
 If you only need to update parameters without changing code:
 
 ```powershell
-flyctl secrets set KEY=value -a shiguang-gateway
+flyctl secrets set KEY=value -a orbit
 ```
 
 Fly will automatically perform a rolling update of machines.
 
 ### 9.1 Tracking Upstream Repository Updates While Preserving Your Fork's `fly.toml`
 
-If the current repository is a fork and you want to sync updates from the upstream `https://github.com/diegosouzapw/ShiguangGateway`, follow the workflow below.
+If the current repository is a fork and you want to sync updates from the upstream `https://github.com/diegosouzapw/Orbit`, follow the workflow below.
 
 First, verify your remotes:
 
@@ -311,7 +311,7 @@ You should see at least:
 If `upstream` is not configured, add it:
 
 ```powershell
-git remote add upstream https://github.com/diegosouzapw/ShiguangGateway.git
+git remote add upstream https://github.com/diegosouzapw/Orbit.git
 ```
 
 Before syncing with upstream, fetch the latest commits and tags:
@@ -363,8 +363,8 @@ After syncing with the original repository, follow this recommended release orde
 3. Restore the fork's `fly.toml`
 4. `git push origin main`
 5. `flyctl deploy`
-6. `flyctl status -a shiguang-gateway`
-7. `flyctl logs --no-tail -a shiguang-gateway`
+6. `flyctl status -a orbit`
+7. `flyctl logs --no-tail -a orbit`
 
 This is the actual workflow used when upgrading the current project to `v3.4.7` (the example refers to a historical version; the current actual version is `v3.8.0`).
 
@@ -375,20 +375,20 @@ This is the actual workflow used when upgrading the current project to `v3.4.7` 
 ### 10.1 Check Application Status
 
 ```powershell
-flyctl status -a shiguang-gateway
+flyctl status -a orbit
 ```
 
 ### 10.2 View Startup Logs
 
 ```powershell
-flyctl logs --no-tail -a shiguang-gateway
+flyctl logs --no-tail -a orbit
 ```
 
 ### 10.3 Verify Site Accessibility
 
 ```powershell
 try {
-  (Invoke-WebRequest -Uri "https://shiguang-gateway.fly.dev" -MaximumRedirection 5 -UseBasicParsing).StatusCode
+  (Invoke-WebRequest -Uri "https://orbit.fly.dev" -MaximumRedirection 5 -UseBasicParsing).StatusCode
 } catch {
   if ($_.Exception.Response) {
     $_.Exception.Response.StatusCode.value__
@@ -427,14 +427,14 @@ If you see `/app/data/...` instead, `DATA_DIR` is misconfigured and must be corr
 There are usually two reasons:
 
 - You have not yet run `flyctl secrets set`
-- You are viewing a different application (e.g. `oroute` instead of `shiguang-gateway`)
+- You are viewing a different application (e.g. `oroute` instead of `orbit`)
 
 ### 12.2 `flyctl deploy` Reports `app not found`
 
 Create the application first:
 
 ```powershell
-flyctl apps create shiguang-gateway
+flyctl apps create orbit
 ```
 
 ### 12.3 `fly.toml` Parsing Fails
@@ -477,10 +477,10 @@ The most commonly used commands for subsequent releases are:
 
 ```powershell
 flyctl auth whoami
-flyctl status -a shiguang-gateway
-flyctl secrets list -a shiguang-gateway
+flyctl status -a orbit
+flyctl secrets list -a orbit
 flyctl deploy
-flyctl logs --no-tail -a shiguang-gateway
+flyctl logs --no-tail -a orbit
 ```
 
 For a normal release, the core command is simply:
@@ -492,7 +492,7 @@ flyctl deploy
 For a first-time deployment in a new environment, the core steps are:
 
 1. `flyctl auth login`
-2. `flyctl apps create shiguang-gateway`
-3. `flyctl secrets set ... -a shiguang-gateway`
+2. `flyctl apps create orbit`
+3. `flyctl secrets set ... -a orbit`
 4. `flyctl deploy`
-5. `flyctl logs --no-tail -a shiguang-gateway`
+5. `flyctl logs --no-tail -a orbit`

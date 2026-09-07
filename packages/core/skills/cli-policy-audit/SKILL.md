@@ -11,8 +11,8 @@ Inspect audit logs, manage access policies, view telemetry data, and review requ
 ## Quick install
 
 ```bash
-npm install -g shiguang-gateway   # or: npx shiguang-gateway
-shiguang-gateway --version
+npm install -g orbit   # or: npx orbit
+orbit --version
 ```
 
 ## Subcommands
@@ -22,7 +22,7 @@ shiguang-gateway --version
 **Example:**
 
 ```bash
-shiguang-gateway audit
+orbit audit
 ```
 
 ### `audit tail`
@@ -36,7 +36,7 @@ shiguang-gateway audit
 **Example:**
 
 ```bash
-shiguang-gateway audit tail
+orbit audit tail
 ```
 
 ### `audit search <query>`
@@ -53,7 +53,7 @@ shiguang-gateway audit tail
 **Example:**
 
 ```bash
-shiguang-gateway audit search <query>
+orbit audit search <query>
 ```
 
 ### `audit export <file>`
@@ -68,7 +68,7 @@ shiguang-gateway audit search <query>
 **Example:**
 
 ```bash
-shiguang-gateway audit export <file>
+orbit audit export <file>
 ```
 
 ### `audit stats`
@@ -81,7 +81,7 @@ shiguang-gateway audit export <file>
 **Example:**
 
 ```bash
-shiguang-gateway audit stats
+orbit audit stats
 ```
 
 ### `audit get <id>`
@@ -93,7 +93,7 @@ shiguang-gateway audit stats
 **Example:**
 
 ```bash
-shiguang-gateway audit get <id>
+orbit audit get <id>
 ```
 
 ### `logs`
@@ -116,7 +116,7 @@ shiguang-gateway audit get <id>
 **Example:**
 
 ```bash
-shiguang-gateway logs
+orbit logs
 ```
 
 ### `policy`
@@ -124,7 +124,7 @@ shiguang-gateway logs
 **Example:**
 
 ```bash
-shiguang-gateway policy
+orbit policy
 ```
 
 ### `policy list`
@@ -137,7 +137,7 @@ shiguang-gateway policy
 **Example:**
 
 ```bash
-shiguang-gateway policy list
+orbit policy list
 ```
 
 ### `policy get <id>`
@@ -145,7 +145,7 @@ shiguang-gateway policy list
 **Example:**
 
 ```bash
-shiguang-gateway policy get <id>
+orbit policy get <id>
 ```
 
 ### `policy create`
@@ -153,7 +153,7 @@ shiguang-gateway policy get <id>
 **Example:**
 
 ```bash
-shiguang-gateway policy create
+orbit policy create
 ```
 
 ### `policy update <id>`
@@ -161,7 +161,7 @@ shiguang-gateway policy create
 **Example:**
 
 ```bash
-shiguang-gateway policy update <id>
+orbit policy update <id>
 ```
 
 ### `policy delete <id>`
@@ -173,7 +173,7 @@ shiguang-gateway policy update <id>
 **Example:**
 
 ```bash
-shiguang-gateway policy delete <id>
+orbit policy delete <id>
 ```
 
 ### `policy evaluate`
@@ -186,7 +186,7 @@ shiguang-gateway policy delete <id>
 **Example:**
 
 ```bash
-shiguang-gateway policy evaluate
+orbit policy evaluate
 ```
 
 ### `policy export <file>`
@@ -194,7 +194,7 @@ shiguang-gateway policy evaluate
 **Example:**
 
 ```bash
-shiguang-gateway policy export <file>
+orbit policy export <file>
 ```
 
 ### `policy import <file>`
@@ -206,7 +206,7 @@ shiguang-gateway policy export <file>
 **Example:**
 
 ```bash
-shiguang-gateway policy import <file>
+orbit policy import <file>
 ```
 
 ### `telemetry`
@@ -214,7 +214,7 @@ shiguang-gateway policy import <file>
 **Example:**
 
 ```bash
-shiguang-gateway telemetry
+orbit telemetry
 ```
 
 ### `telemetry summary`
@@ -227,7 +227,7 @@ shiguang-gateway telemetry
 **Example:**
 
 ```bash
-shiguang-gateway telemetry summary
+orbit telemetry summary
 ```
 
 ### `telemetry export`
@@ -240,5 +240,5 @@ shiguang-gateway telemetry summary
 **Example:**
 
 ```bash
-shiguang-gateway telemetry export
+orbit telemetry export
 ```

@@ -13,7 +13,7 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json tsconfig.base.js
 COPY apps ./apps
 COPY packages ./packages
 COPY scripts ./scripts
-RUN --mount=type=cache,id=shiguang-gateway-pnpm-store,target=/root/.local/share/pnpm/store \
+RUN --mount=type=cache,id=orbit-pnpm-store,target=/root/.local/share/pnpm/store \
     pnpm install --frozen-lockfile
 # COPY includes ignored build output when building from a developer checkout.
 # Remove it before compiling so stale legacy route bundles cannot enter the image.
@@ -22,14 +22,14 @@ RUN pnpm build
 # Create a deployable production tree instead of copying the complete workspace
 # (including console/docs/build tooling) into every server image. The legacy mode
 # is required because this workspace uses linked, rather than injected, packages.
-RUN --mount=type=cache,id=shiguang-gateway-pnpm-store,target=/root/.local/share/pnpm/store \
+RUN --mount=type=cache,id=orbit-pnpm-store,target=/root/.local/share/pnpm/store \
     pnpm deploy --legacy --filter @orbit/worker --prod /app/runtime
 # The runtime base is shared by all service targets, so its pnpm store must
 # contain the production dependency closure of every deployable app. Keep the
 # worker deployment as the base and merge the other app closures into its
 # .pnpm store; app-local link trees below then resolve all direct dependencies
 # without copying the complete development workspace.
-RUN --mount=type=cache,id=shiguang-gateway-pnpm-store,target=/root/.local/share/pnpm/store \
+RUN --mount=type=cache,id=orbit-pnpm-store,target=/root/.local/share/pnpm/store \
     pnpm deploy --legacy --filter @orbit/gateway --prod /app/runtime-edge \
     && pnpm deploy --legacy --filter @orbit/control --prod /app/runtime-control \
     && pnpm deploy --legacy --filter @orbit/realtime --prod /app/runtime-realtime \

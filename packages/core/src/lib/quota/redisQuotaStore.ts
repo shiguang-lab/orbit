@@ -2,7 +2,7 @@
  * redisQuotaStore.ts — Optional Redis-backed QuotaStore implementation.
  *
  * Counter keys follow the pattern:
- *   shiguangGateway:quota:<apiKeyId>:<dimensionKey>:<bucketIndex>
+ *   orbit:quota:<apiKeyId>:<dimensionKey>:<bucketIndex>
  *
  * Sliding window is maintained identically to the SQLite driver:
  *   effective = prev × (1 − elapsed/window) + curr
@@ -72,7 +72,7 @@ export function resetRedisClient(): void {
 // Key helpers
 // ---------------------------------------------------------------------------
 
-const KEY_PREFIX = `${process.env.REDIS_KEY_PREFIX?.trim() || "shiguangGateway:"}quota`;
+const KEY_PREFIX = `${process.env.REDIS_KEY_PREFIX?.trim() || "orbit:"}quota`;
 
 function bucketKey(apiKeyId: string, dimensionKey: string, bucketIndex: number): string {
   return `${KEY_PREFIX}:${apiKeyId}:${dimensionKey}:${bucketIndex}`;

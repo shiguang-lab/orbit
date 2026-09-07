@@ -9,9 +9,9 @@ description: "Reference for 9Router, CLIProxyAPI, Mux, and Bifrost"
 > **Last updated:** 2026-07-03
 > **Audience:** Engineers adding, maintaining, or debugging embedded services (9Router, CLIProxyAPI, Mux, Bifrost).
 
-Embedded services are locally-installed process sidecar tools that ShiguangGateway installs, supervises, and
+Embedded services are locally-installed process sidecar tools that Orbit installs, supervises, and
 exposes as first-class routing targets. Unlike external providers (which are reached over the internet
-via API keys), embedded services run on the same machine as ShiguangGateway and communicate over loopback.
+via API keys), embedded services run on the same machine as Orbit and communicate over loopback.
 
 ---
 
@@ -36,16 +36,16 @@ Four services are embedded as of v3.8.44:
 
 | Service         | npm package                                    | Default port | Purpose                                                                                                          |
 | --------------- | ----------------------------------------------- | :----------: | ------------------------------------------------------------------------------------------------------------------ |
-| **9Router**     | `9router`                                      |    20130     | AI router that ShiguangGateway can use as a sub-provider. Models exposed as `9router/{sub}/{model}`                     |
+| **9Router**     | `9router`                                      |    20130     | AI router that Orbit can use as a sub-provider. Models exposed as `9router/{sub}/{model}`                     |
 | **CLIProxyAPI** | `@anthropic/cli-proxy` (via `cliproxy` binary) |     auto     | Local proxy adapter for Anthropic CLI auth flows. Provides fallback routing when OAuth tokens expire              |
 | **Mux**         | `mux` (headless `mux server`)                  |     8322     | Local agent-orchestration daemon (coder/mux). Lifecycle-managed only — not a routing target (no LLM proxying).   |
 | **Bifrost**     | `@maximhq/bifrost`                             |    8080      | Go AI-gateway relay backend. When running, auto-selected by the relay route (`/v1/relay/`)                       |
 
 All four follow the same supervisory model:
 
-- ShiguangGateway installs them under `DATA_DIR/services/{name}/` (isolated from ShiguangGateway's own `package.json`)
-- ShiguangGateway spawns and monitors them as child processes
-- ShiguangGateway injects an ephemeral API key into the child's environment and rotates it without downtime (where applicable)
+- Orbit installs them under `DATA_DIR/services/{name}/` (isolated from Orbit's own `package.json`)
+- Orbit spawns and monitors them as child processes
+- Orbit injects an ephemeral API key into the child's environment and rotates it without downtime (where applicable)
 - All management routes (`/api/services/*`) are **LOCAL_ONLY** — accessible only from loopback (hard rule #17)
 
 ### Key decisions (from design plan)
@@ -55,7 +55,7 @@ All four follow the same supervisory model:
 | Dashboard access to 9Router native UI | Reverse proxy at `/dashboard/providers/services/9router/embed/*`         |
 | Installation mechanism                | `npm install {package}` via `execFile` (no shell interpolation)          |
 | Consumption mode                      | Provider registered as `9router/{sub}/{model}` in routing engine         |
-| API key management                    | ShiguangGateway generates, encrypts at-rest (AES-256-GCM), and injects via env |
+| API key management                    | Orbit generates, encrypts at-rest (AES-256-GCM), and injects via env |
 | Dashboard location                    | `/dashboard/providers/services` (three tabs)                             |
 | Auto-start                            | Toggle per service, default OFF                                          |
 
@@ -216,7 +216,7 @@ Non-loopback requests receive `403 LOCAL_ONLY` regardless of auth token.
 #### `POST /api/services/9router/install`
 
 Install 9Router from npm. Creates `DATA_DIR/services/9router/` with its own
-`package.json` and `node_modules/`. Does not conflict with ShiguangGateway's own deps.
+`package.json` and `node_modules/`. Does not conflict with Orbit's own deps.
 
 **Request body** (all optional):
 
@@ -377,7 +377,7 @@ Returns combined live + DB status including version metadata and API key preview
 #### `POST /api/services/9router/auto-start`
 
 Toggle the auto-start flag. When `enabled: true`, the service starts automatically
-the next time ShiguangGateway boots (if the service is installed).
+the next time Orbit boots (if the service is installed).
 
 **Request body:**
 
@@ -506,7 +506,7 @@ GET|POST|... /dashboard/providers/services/9router/embed/[...path]
 This proxy:
 
 - Forwards the request to `http://127.0.0.1:{port}/{path}` (loopback only)
-- Strips incoming `cookie` and `authorization` headers (no leakage of ShiguangGateway session)
+- Strips incoming `cookie` and `authorization` headers (no leakage of Orbit session)
 - Injects `Authorization: Bearer {apiKey}` for 9Router authentication
 - Strips `set-cookie`, `content-security-policy`, `x-frame-options`, `cross-origin-*` from the response
 - Rewrites HTML responses to inject `<base href>` and normalize absolute paths (`/foo` → `/dashboard/.../embed/foo`)
@@ -542,7 +542,7 @@ matrix.
 ### API key injection
 
 9Router and Mux require an API key/bearer token for their own HTTP endpoints.
-ShiguangGateway:
+Orbit:
 
 1. Generates a key via `crypto.randomBytes(32).toString("base64url")` with a
    service-specific prefix (`nr_` for 9Router, `mx_` for Mux).
@@ -722,7 +722,7 @@ If the embedded service exposes an OpenAI-compatible `/v1/chat/completions` endp
 
 1. Check `GET /api/services/{name}/logs` (or the Logs panel in the dashboard). Look
    for lines like `Error: ENOENT`, `address already in use`, or `Cannot find module`.
-2. Verify `npm` is in PATH: `which npm` from the same user account that runs ShiguangGateway.
+2. Verify `npm` is in PATH: `which npm` from the same user account that runs Orbit.
 3. Verify the service is installed: check `GET /api/services/{name}/status` for
    `installedVersion`. If `null`, run install first.
 4. Check `DATA_DIR/services/{name}/node_modules/` exists and is not empty.
@@ -760,7 +760,7 @@ startup times, increase `healthIntervalMs` to 5000 and `stopTimeoutMs` to 30 000
 3. The port is configurable per service in `bootstrap.ts` via the `port` field.
 
 **Note:** 9Router defaults to port 20130 specifically to avoid colliding with
-ShiguangGateway's default port 20128.
+Orbit's default port 20128.
 
 ---
 
@@ -770,13 +770,13 @@ ShiguangGateway's default port 20128.
 
 **Causes:**
 
-- `DATA_DIR` or its parent is not writable by the ShiguangGateway process.
+- `DATA_DIR` or its parent is not writable by the Orbit process.
 - Running inside Docker rootless without write access to the mapped volume.
 
 **Fix:**
 
-1. Check `DATA_DIR` (default: `~/.shiguang-gateway/`): `ls -la ~/.shiguang-gateway/`
-2. Ensure the ShiguangGateway process user owns the directory: `chown -R $USER ~/.shiguang-gateway/`
+1. Check `DATA_DIR` (default: `~/.orbit/`): `ls -la ~/.orbit/`
+2. Ensure the Orbit process user owns the directory: `chown -R $USER ~/.orbit/`
 3. In Docker, ensure the volume mount has the correct permissions for the container user.
 
 ---
@@ -789,7 +789,7 @@ ShiguangGateway's default port 20128.
 
 1. Confirm npm registry is reachable: `npm ping`.
 2. Check for corporate proxy: `npm config get proxy`, `npm config get https-proxy`.
-3. Try the install manually: `npm install {package}@latest --prefix ~/.shiguang-gateway/services/{name}/`.
+3. Try the install manually: `npm install {package}@latest --prefix ~/.orbit/services/{name}/`.
 4. If behind an air-gap, pre-download the tarball and use `npm install /path/to/tarball.tgz`.
 
 ---
@@ -824,18 +824,18 @@ list. See `docs/security/ROUTE_GUARD_TIERS.md`.
 
 **Q: Will 9Router and CLIProxyAPI be available in production/cloud deployments?**
 
-Yes. Both services follow the same local-first model as ShiguangGateway itself. They run
+Yes. Both services follow the same local-first model as Orbit itself. They run
 on the same machine and communicate over loopback. "Production" here means the VPS
-or local server where ShiguangGateway is deployed, not a remote cloud provider.
+or local server where Orbit is deployed, not a remote cloud provider.
 
 ---
 
 **Q: How do I debug the supervisor?**
 
 1. Tail the SSE log stream: `curl -N http://localhost:20128/api/services/9router/logs`.
-2. Check structured logs in ShiguangGateway's pino output filtered by
+2. Check structured logs in Orbit's pino output filtered by
    `service:supervisor` namespace.
-3. Inspect the DB row: `sqlite3 ~/.shiguang-gateway/shiguang-gateway.db "SELECT * FROM version_manager WHERE tool='9router'"`.
+3. Inspect the DB row: `sqlite3 ~/.orbit/orbit.db "SELECT * FROM version_manager WHERE tool='9router'"`.
 4. Use `GET /api/services/9router/status` to see the current live state, PID, health,
    and `lastError` in one call.
 

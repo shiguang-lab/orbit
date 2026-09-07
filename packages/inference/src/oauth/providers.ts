@@ -66,7 +66,7 @@ function upgradeLoopbackToPublic(redirectUri: string, publicBaseUrl: string): st
  * credentials keep working on out-of-the-box local installs. When operators
  * provide their own Google OAuth client IDs for a remote deployment, prefer the
  * public callback URL documented in .env.example / docs/README so the popup can
- * navigate back to ShiguangGateway instead of stalling on localhost.
+ * navigate back to Orbit instead of stalling on localhost.
  */
 export function resolveBrowserOAuthRedirectUri(
   providerName: string,
@@ -82,7 +82,7 @@ export function resolveBrowserOAuthRedirectUri(
   }
 
   const publicBaseUrl =
-    normalizeBaseUrl(env?.NEXT_PUBLIC_BASE_URL) || normalizeBaseUrl(env?.SHIGUANG_GATEWAY_PUBLIC_BASE_URL);
+    normalizeBaseUrl(env?.NEXT_PUBLIC_BASE_URL) || normalizeBaseUrl(env?.ORBIT_PUBLIC_BASE_URL);
 
   if (!publicBaseUrl) {
     return redirectUri;

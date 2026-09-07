@@ -1,22 +1,22 @@
 ---
-title: "ShiguangGateway — Kaldırma Kılavuzu"
+title: "Orbit — Kaldırma Kılavuzu"
 version: 3.8.50
 lastUpdated: 2026-08-23
 ---
 
-# ShiguangGateway — Kaldırma Kılavuzu (Türkçe)
+# Orbit — Kaldırma Kılavuzu (Türkçe)
 
 🌐 **Languages:** 🇺🇸 [English](../../../../docs/guides/UNINSTALL.md) · 🇸🇦 [ar](../../ar/docs/guides/UNINSTALL.md) · 🇧🇬 [bg](../../bg/docs/guides/UNINSTALL.md) · 🇧🇩 [bn](../../bn/docs/guides/UNINSTALL.md) · 🇨🇿 [cs](../../cs/docs/guides/UNINSTALL.md) · 🇩🇰 [da](../../da/docs/guides/UNINSTALL.md) · 🇩🇪 [de](../../de/docs/guides/UNINSTALL.md) · 🇪🇸 [es](../../es/docs/guides/UNINSTALL.md) · 🇮🇷 [fa](../../fa/docs/guides/UNINSTALL.md) · 🇫🇮 [fi](../../fi/docs/guides/UNINSTALL.md) · 🇫🇷 [fr](../../fr/docs/guides/UNINSTALL.md) · 🇮🇳 [gu](../../gu/docs/guides/UNINSTALL.md) · 🇮🇱 [he](../../he/docs/guides/UNINSTALL.md) · 🇮🇳 [hi](../../hi/docs/guides/UNINSTALL.md) · 🇭🇺 [hu](../../hu/docs/guides/UNINSTALL.md) · 🇮🇩 [id](../../id/docs/guides/UNINSTALL.md) · 🇮🇹 [it](../../it/docs/guides/UNINSTALL.md) · 🇯🇵 [ja](../../ja/docs/guides/UNINSTALL.md) · 🇰🇷 [ko](../../ko/docs/guides/UNINSTALL.md) · 🇮🇳 [mr](../../mr/docs/guides/UNINSTALL.md) · 🇲🇾 [ms](../../ms/docs/guides/UNINSTALL.md) · 🇳🇱 [nl](../../nl/docs/guides/UNINSTALL.md) · 🇳🇴 [no](../../no/docs/guides/UNINSTALL.md) · 🇵🇭 [phi](../../phi/docs/guides/UNINSTALL.md) · 🇵🇱 [pl](../../pl/docs/guides/UNINSTALL.md) · 🇵🇹 [pt](../../pt/docs/guides/UNINSTALL.md) · 🇧🇷 [pt-BR](../../pt-BR/docs/guides/UNINSTALL.md) · 🇷🇴 [ro](../../ro/docs/guides/UNINSTALL.md) · 🇷🇺 [ru](../../ru/docs/guides/UNINSTALL.md) · 🇸🇰 [sk](../../sk/docs/guides/UNINSTALL.md) · 🇸🇪 [sv](../../sv/docs/guides/UNINSTALL.md) · 🇰🇪 [sw](../../sw/docs/guides/UNINSTALL.md) · 🇮🇳 [ta](../../ta/docs/guides/I18N.md) · 🇮🇳 [te](../../te/docs/guides/UNINSTALL.md) · 🇹🇭 [th](../../th/docs/guides/UNINSTALL.md) · 🇹🇷 [tr](../../tr/docs/guides/UNINSTALL.md) · 🇺🇦 [uk-UA](../../uk-UA/docs/guides/UNINSTALL.md) · 🇵🇰 [ur](../../ur/docs/guides/UNINSTALL.md) · 🇻🇳 [vi](../../vi/docs/guides/UNINSTALL.md) · 🇨🇳 [zh-CN](../../zh-CN/docs/guides/UNINSTALL.md)
 
 ---
 
-Bu kılavuz, ShiguangGateway'u sisteminizden nasıl temiz bir şekilde kaldıracağınızı kapsar.
+Bu kılavuz, Orbit'u sisteminizden nasıl temiz bir şekilde kaldıracağınızı kapsar.
 
 ---
 
 ## Hızlı Kaldırma (v3.6.2+)
 
-ShiguangGateway temiz kaldırma için iki yerleşik betik sunar:
+Orbit temiz kaldırma için iki yerleşik betik sunar:
 
 ### Verilerinizi Koruyarak Kaldırma
 
@@ -24,7 +24,7 @@ ShiguangGateway temiz kaldırma için iki yerleşik betik sunar:
 npm run uninstall
 ```
 
-Bu, ShiguangGateway uygulamasını kaldırır ancak `~/.shiguang-gateway/` içindeki veritabanınızı, yapılandırmalarınızı, API anahtarlarınızı ve sağlayıcı ayarlarınızı **korur**. Daha sonra yeniden yüklemeyi planlıyorsanız ve kurulumunuzu saklamak istiyorsanız bunu kullanın.
+Bu, Orbit uygulamasını kaldırır ancak `~/.orbit/` içindeki veritabanınızı, yapılandırmalarınızı, API anahtarlarınızı ve sağlayıcı ayarlarınızı **korur**. Daha sonra yeniden yüklemeyi planlıyorsanız ve kurulumunuzu saklamak istiyorsanız bunu kullanın.
 
 ### Tam Kaldırma (Tüm Verileri Sil)
 
@@ -38,7 +38,7 @@ Bu, uygulamayı kaldırır **ve tüm verileri kalıcı olarak siler**:
 - Sağlayıcı yapılandırmaları ve API anahtarları
 - Yedekleme dosyaları
 - Günlük dosyaları
-- `~/.shiguang-gateway/` dizinindeki tüm dosyalar
+- `~/.orbit/` dizinindeki tüm dosyalar
 
 > ⚠️ **Uyarı:** `npm run uninstall:full` işlemi geri alınamaz. Tüm sağlayıcı bağlantılarınız, kombolarınız, API anahtarlarınız ve kullanım geçmişiniz kalıcı olarak silinir.
 
@@ -50,24 +50,24 @@ Bu, uygulamayı kaldırır **ve tüm verileri kalıcı olarak siler**:
 
 ```bash
 # Global paketi kaldırın
-npm uninstall -g shiguang-gateway
+npm uninstall -g orbit
 
 # (İsteğe bağlı) Veri dizinini silin
-rm -rf ~/.shiguang-gateway
+rm -rf ~/.orbit
 ```
 
 ### Docker
 
 ```bash
 # Konteyneri durdurun ve silin
-docker stop shiguang-gateway
-docker rm shiguang-gateway
+docker stop orbit
+docker rm orbit
 
 # Hacmi kaldırın (tüm verileri siler)
-docker volume rm shiguang-gateway-data
+docker volume rm orbit-data
 
 # (İsteğe bağlı) İmajı silin
-docker rmi diegosouzapw/shiguang-gateway:latest
+docker rmi diegosouzapw/orbit:latest
 ```
 
 ### Docker Compose
@@ -83,12 +83,12 @@ docker compose down -v
 ### Electron Masaüstü Uygulaması
 
 **macOS:**
-- `ShiguangGateway.app` uygulamasını `/Applications` dizininden Çöp Sepetine sürükleyin
-- Verileri silin: `rm -rf ~/Library/Application Support/shiguang-gateway`
+- `Orbit.app` uygulamasını `/Applications` dizininden Çöp Sepetine sürükleyin
+- Verileri silin: `rm -rf ~/Library/Application Support/orbit`
 
 **Windows:**
-- `Ayarlar → Uygulamalar → ShiguangGateway → Kaldır`
+- `Ayarlar → Uygulamalar → Orbit → Kaldır`
 
 **Linux:**
 - AppImage veya paket yöneticisi üzerinden kaldırın
-- Verileri silin: `rm -rf ~/.config/shiguang-gateway`
+- Verileri silin: `rm -rf ~/.config/orbit`

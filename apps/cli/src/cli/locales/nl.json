@@ -1,8 +1,8 @@
 {
   "common": {
     "error": "Fout: {message}",
-    "serverOffline": "ShiguangGateway-server is offline. Start met: shiguang-gateway serve",
-    "authRequired": "Authenticatie vereist. Stel SHIGUANG_GATEWAY_API_KEY in of voer uit: shiguang-gateway setup",
+    "serverOffline": "Orbit-server is offline. Start met: orbit serve",
+    "authRequired": "Authenticatie vereist. Stel ORBIT_API_KEY in of voer uit: orbit setup",
     "rateLimited": "Verzoeklimiet overschreden. Probeer opnieuw na {seconds}s.",
     "timeout": "Verzoek verlopen na {ms}ms.",
     "success": "Klaar.",
@@ -15,18 +15,18 @@
     "yesOpt": "Bevestiging overslaan"
   },
   "program": {
-    "description": "ShiguangGateway — Slimme AI-router met automatische fallback",
+    "description": "Orbit — Slimme AI-router met automatische fallback",
     "version": "Versie afdrukken en afsluiten",
     "output": "Uitvoerformaat (table, json, jsonl, csv)",
     "quiet": "Niet-essentiële uitvoer onderdrukken",
     "no_color": "Gekleurde uitvoer uitschakelen",
     "timeout": "HTTP-verzoek timeout in milliseconden",
-    "api_key": "API-sleutel voor de ShiguangGateway-server",
-    "base_url": "Basis-URL van de ShiguangGateway-server",
+    "api_key": "API-sleutel voor de Orbit-server",
+    "base_url": "Basis-URL van de Orbit-server",
     "context": "Servercontext/profiel voor dit commando",
-    "lang": "CLI-weergavetaal instellen (overschrijft SHIGUANG_GATEWAY_LANG)"
+    "lang": "CLI-weergavetaal instellen (overschrijft ORBIT_LANG)"
   },
   "redis": {
-    "description": "Start een lokale Redis-container met één klik (Podman of Docker) voor ShiguangGateway-caching en quotumtracking"
+    "description": "Start een lokale Redis-container met één klik (Podman of Docker) voor Orbit-caching en quotumtracking"
   }
 }

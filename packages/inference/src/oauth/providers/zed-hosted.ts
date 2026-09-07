@@ -24,27 +24,27 @@ import {
  * (`http://127.0.0.1:<port>/?user_id=...&access_token=...`) — Zed always
  * redirects to loopback + native_app_port, ignoring any path we'd send. When
  * the dashboard itself listens on a loopback port, `buildAuthUrl` reuses it as
- * native_app_port so the redirect lands back on ShiguangGateway (auto-completed via
+ * native_app_port so the redirect lands back on Orbit (auto-completed via
  * the /callback relay); otherwise the dead default port is used and the user
  * completes the flow by pasting the browser's full URL.
  */
 /**
  * Extract the dashboard's loopback port so Zed's browser redirect can land back
- * on ShiguangGateway itself. Zed always redirects to `http://127.0.0.1:<native_app_port>/`
+ * on Orbit itself. Zed always redirects to `http://127.0.0.1:<native_app_port>/`
  * — it ignores any path/redirect_uri — so reusing the dashboard's own loopback
  * port (e.g. 8787) turns the dead "site can't be reached" page into a loadable
  * `/callback` relay (the root page forwards ?user_id=...&access_token=... there).
  *
  * The redirect URI only tells us WHICH HOSTNAME the browser used (loopback vs.
  * LAN/remote) — its scheme and port reflect what the *browser* sees, which can
- * differ from what the ShiguangGateway Node process actually listens on (e.g. a local
+ * differ from what the Orbit Node process actually listens on (e.g. a local
  * TLS-terminating reverse proxy fronting the dashboard on 443 while the real
  * process listens on 8787 in plain HTTP). Trusting the browser-supplied port
  * previously produced `http://127.0.0.1:443/` redirects that nothing serves in
  * plain HTTP. This runs server-side, so once the hostname is confirmed loopback
  * (any scheme — Zed's own redirect is always plain http regardless of how the
  * dashboard was reached), use the server's own authoritative listening port
- * (`getRuntimePorts()`, sourced from SHIGUANG_GATEWAY_PORT/PORT/DASHBOARD_PORT) instead
+ * (`getRuntimePorts()`, sourced from ORBIT_PORT/PORT/DASHBOARD_PORT) instead
  * of re-deriving it from the client-observed scheme/port. Non-loopback redirect
  * URIs (remote/LAN deployments) return null → keep the default port and rely on
  * the manual paste flow.

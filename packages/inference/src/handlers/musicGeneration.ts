@@ -220,7 +220,7 @@ async function handleComfyUIMusicGeneration({ model, provider, providerConfig, b
     "7": {
       class_type: "SaveAudio",
       inputs: {
-        filename_prefix: "shiguangGateway_music",
+        filename_prefix: "orbit_music",
         audio: ["6", 0],
       },
     },

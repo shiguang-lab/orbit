@@ -1,10 +1,10 @@
 ---
-title: "ShiguangGateway Mimarisi"
+title: "Orbit Mimarisi"
 version: 3.8.50
 lastUpdated: 2026-08-23
 ---
 
-# ShiguangGateway Mimarisi (Türkçe)
+# Orbit Mimarisi (Türkçe)
 
 🌐 **Languages:** 🇺🇸 [English](../../../../docs/architecture/ARCHITECTURE.md) · 🇸🇦 [ar](../../ar/docs/architecture/ARCHITECTURE.md) · 🇧🇬 [bg](../../bg/docs/architecture/ARCHITECTURE.md) · 🇧🇩 [bn](../../bn/docs/architecture/ARCHITECTURE.md) · 🇨🇿 [cs](../../cs/docs/architecture/ARCHITECTURE.md) · 🇩🇰 [da](../../da/docs/architecture/ARCHITECTURE.md) · 🇩🇪 [de](../../de/docs/architecture/ARCHITECTURE.md) · 🇪🇸 [es](../../es/docs/architecture/ARCHITECTURE.md) · 🇮🇷 [fa](../../fa/docs/architecture/ARCHITECTURE.md) · 🇫🇮 [fi](../../fi/docs/architecture/ARCHITECTURE.md) · 🇫🇷 [fr](../../fr/docs/architecture/ARCHITECTURE.md) · 🇮🇳 [gu](../../gu/docs/architecture/ARCHITECTURE.md) · 🇮🇱 [he](../../he/docs/architecture/ARCHITECTURE.md) · 🇮🇳 [hi](../../hi/docs/architecture/ARCHITECTURE.md) · 🇭🇺 [hu](../../hu/docs/architecture/ARCHITECTURE.md) · 🇮🇩 [id](../../id/docs/architecture/ARCHITECTURE.md) · 🇮🇹 [it](../../it/docs/architecture/ARCHITECTURE.md) · 🇯🇵 [ja](../../ja/docs/architecture/ARCHITECTURE.md) · 🇰🇷 [ko](../../ko/docs/architecture/ARCHITECTURE.md) · 🇮🇳 [mr](../../mr/docs/architecture/ARCHITECTURE.md) · 🇲🇾 [ms](../../ms/docs/architecture/ARCHITECTURE.md) · 🇳🇱 [nl](../../nl/docs/architecture/ARCHITECTURE.md) · 🇳🇴 [no](../../no/docs/architecture/ARCHITECTURE.md) · 🇵🇭 [phi](../../phi/docs/architecture/ARCHITECTURE.md) · 🇵🇱 [pl](../../pl/docs/architecture/ARCHITECTURE.md) · 🇵🇹 [pt](../../pt/docs/architecture/ARCHITECTURE.md) · 🇧🇷 [pt-BR](../../pt-BR/docs/architecture/ARCHITECTURE.md) · 🇷🇴 [ro](../../ro/docs/architecture/ARCHITECTURE.md) · 🇷🇺 [ru](../../ru/docs/architecture/ARCHITECTURE.md) · 🇸🇰 [sk](../../sk/docs/architecture/ARCHITECTURE.md) · 🇸🇪 [sv](../../sv/docs/architecture/ARCHITECTURE.md) · 🇰🇪 [sw](../../sw/docs/architecture/ARCHITECTURE.md) · 🇮🇳 [ta](../../ta/docs/architecture/ARCHITECTURE.md) · 🇮🇳 [te](../../te/docs/architecture/ARCHITECTURE.md) · 🇹🇭 [th](../../th/docs/architecture/ARCHITECTURE.md) · 🇹🇷 [tr](../../tr/docs/architecture/ARCHITECTURE.md) · 🇺🇦 [uk-UA](../../uk-UA/docs/architecture/ARCHITECTURE.md) · 🇵🇰 [ur](../../ur/docs/architecture/ARCHITECTURE.md) · 🇻🇳 [vi](../../vi/docs/architecture/ARCHITECTURE.md) · 🇨🇳 [zh-CN](../../zh-CN/docs/architecture/ARCHITECTURE.md)
 
@@ -14,7 +14,7 @@ _Son güncelleme: 2026-08-23_
 
 ## Yönetici Özeti
 
-ShiguangGateway, Next.js üzerine inşa edilmiş yerel bir yapay zeka yönlendirme ağ geçidi (AI routing gateway) ve yönetim panosudur.
+Orbit, Next.js üzerine inşa edilmiş yerel bir yapay zeka yönlendirme ağ geçidi (AI routing gateway) ve yönetim panosudur.
 Tek bir OpenAI uyumlu uç nokta (`/v1/*`) sunar ve trafiği format dönüşümü, geri dönüş (fallback), belirteç yenileme ve kullanım takibi ile birden çok yukarı akış sağlayıcısına yönlendirir.
 
 Temel yetenekler:
@@ -171,7 +171,7 @@ flowchart LR
         BROWSER[Tarayıcı Panosu]
     end
 
-    subgraph Router[ShiguangGateway Yerel Süreci]
+    subgraph Router[Orbit Yerel Süreci]
         API[V1 Uyumluluk API'si\n/v1/*]
         DASH[Pano + Yönetim API'si\n/api/*]
         CORE[SSE + Çeviri Çekirdeği\nopen-sse + src/sse]
@@ -305,7 +305,7 @@ Servisler (İş Mantığı):
 
 ## 3) Veritabanı ve Kalıcılık Mimarisi
 
-ShiguangGateway, **SQLite** (better-sqlite3) ve **WAL (Write-Ahead Logging)** günlük kaydı kullanır:
+Orbit, **SQLite** (better-sqlite3) ve **WAL (Write-Ahead Logging)** günlük kaydı kullanır:
 
 - Çekirdek veritabanı tekili: `src/lib/db/core.ts` (`getDbInstance()`)
 - Alan modülleri: `src/lib/db/` altında 120 modül (providers, combos, apiKeys, settings vb.)

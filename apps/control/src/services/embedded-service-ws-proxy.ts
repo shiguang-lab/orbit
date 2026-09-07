@@ -13,7 +13,7 @@
  *   - Target host is always 127.0.0.1 and port comes from the registry — never
  *     from user input. No SSRF risk.
  *   - Server binds to 127.0.0.1 only (loopback) unless EMBED_WS_PROXY_HOST
- *     is set explicitly. The ShiguangGateway LOCAL_ONLY rule is enforced at the
+ *     is set explicitly. The Orbit LOCAL_ONLY rule is enforced at the
  *     dashboard layer; the proxy itself is loopback-only as defence-in-depth.
  *   - Max 50 concurrent connections per service. The 51st request receives 503.
  *   - Idle timeout: 5 minutes without any data → both sockets are destroyed.
@@ -47,7 +47,7 @@ const IDLE_TIMEOUT_MS = 5 * 60 * 1000;
 const STRIPPED_HEADERS = new Set(["cookie", "authorization", "origin"]);
 
 declare global {
-  var __shiguangGatewayEmbedWsStarted: boolean | undefined;
+  var __orbitEmbedWsStarted: boolean | undefined;
 }
 
 let embedWsServer: http.Server | null = null;
@@ -286,7 +286,7 @@ export function initEmbedWsProxy(): Promise<http.Server> {
       server.on("error", (error) => {
         console.warn("[EmbedWsProxy] Server error:", error.message);
       });
-      globalThis.__shiguangGatewayEmbedWsStarted = true;
+      globalThis.__orbitEmbedWsStarted = true;
       const address = server.address();
       const listeningPort = typeof address === "object" && address ? address.port : port;
       console.log(`[EmbedWsProxy] Listening on ${host}:${listeningPort}`);
@@ -297,7 +297,7 @@ export function initEmbedWsProxy(): Promise<http.Server> {
   embedWsStartPromise = startup.catch((error) => {
     if (embedWsServer === server) embedWsServer = null;
     if (embedWsStartPromise) embedWsStartPromise = null;
-    globalThis.__shiguangGatewayEmbedWsStarted = false;
+    globalThis.__orbitEmbedWsStarted = false;
     throw error;
   });
   return embedWsStartPromise;
@@ -311,7 +311,7 @@ export async function stopEmbedWsProxy(): Promise<void> {
   const server = embedWsServer;
   embedWsServer = null;
   embedWsStartPromise = null;
-  globalThis.__shiguangGatewayEmbedWsStarted = false;
+  globalThis.__orbitEmbedWsStarted = false;
 
   for (const sockets of activeConnections.values()) {
     for (const socket of sockets) socket.destroy();

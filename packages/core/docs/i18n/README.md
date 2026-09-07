@@ -1,4 +1,4 @@
-# 🌐 Multilingual Documentation — ShiguangGateway
+# 🌐 Multilingual Documentation — Orbit
 
 Translations of documentation into 42 languages; together with the English source, the UI supports 43 locales. Code blocks remain in English.
 

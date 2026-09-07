@@ -67,7 +67,7 @@ export async function validateChatGptWebCodexProvider({
     ensureConnectionStorageState(validationId, secrets.cookie);
     const capabilities = await inspectBrowserLoginCapabilities({
       mode: "browser-only",
-      appName: "ShiguangGateway Codex",
+      appName: "Orbit Codex",
       ...(chromeExecutablePath ? { chromeExecutablePath } : {}),
       ...(cdpEndpoint ? { cdpEndpoint } : {}),
       storageStatePath: paths.storageStatePath,

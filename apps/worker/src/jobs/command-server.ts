@@ -20,7 +20,7 @@ export interface WorkerJobCommandRegistry {
 const MAX_BODY_BYTES = 16 * 1024;
 
 function configuredToken(): string {
-  const token = process.env.SHIGUANG_GATEWAY_WORKER_COMMAND_TOKEN?.trim()
+  const token = process.env.ORBIT_WORKER_COMMAND_TOKEN?.trim()
     || process.env.JWT_SECRET?.trim();
   if (!token) throw new Error("Worker command authentication token is not configured");
   return token;

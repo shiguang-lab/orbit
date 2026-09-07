@@ -82,7 +82,7 @@ export const APIKEY_PROVIDERS_REGIONAL = {
     // Kimi official-partnership aff link (2026-07) — see KIMI_PROVIDER_IDS in
     // featuredProviders.ts. hiddenFromDashboard, so this rarely renders, but is
     // kept in sync with moonshot's aff link for consistency.
-    website: "https://platform.kimi.ai?aff=shiguangGateway",
+    website: "https://platform.kimi.ai?aff=orbit",
     hiddenFromDashboard: true,
   },
   "kimi-coding-apikey": {
@@ -95,7 +95,7 @@ export const APIKEY_PROVIDERS_REGIONAL = {
     // Kimi official-partnership aff link (2026-07) — folds into the kimi-coding
     // card (PROVIDER_CONNECTION_ALIASES in providerPageUtils.ts) so this rarely
     // renders its own header, but stays in sync with kimi-coding's aff link.
-    website: "https://www.kimi.com/code?aff=shiguangGateway",
+    website: "https://www.kimi.com/code?aff=orbit",
     hiddenFromDashboard: true,
   },
   minimax: {
@@ -188,7 +188,7 @@ export const APIKEY_PROVIDERS_REGIONAL = {
     // Kimi official-partnership aff link (2026-07): the "Kimi API Platform"
     // tracking link — was the unattributed legacy platform.moonshot.ai domain
     // (301s to platform.kimi.ai with no aff tag).
-    website: "https://platform.kimi.ai?aff=shiguangGateway",
+    website: "https://platform.kimi.ai?aff=orbit",
   },
   volcengine: {
     id: "volcengine",
@@ -456,7 +456,7 @@ export const APIKEY_PROVIDERS_REGIONAL = {
     textIcon: "CS",
     website: "https://api.ncloud-docs.com/docs/en/ai-naver-clovastudio-summary",
     apiHint:
-      "CLOVA Studio (HyperCLOVA X) is OpenAI-compatible on /v1/openai. ShiguangGateway probes /v1/openai/models and routes chat traffic to /v1/openai/chat/completions. Uses the current clovastudio.stream.ntruss.com host — the legacy clovastudio.apigw.ntruss.com endpoint is being deprecated.",
+      "CLOVA Studio (HyperCLOVA X) is OpenAI-compatible on /v1/openai. Orbit probes /v1/openai/models and routes chat traffic to /v1/openai/chat/completions. Uses the current clovastudio.stream.ntruss.com host — the legacy clovastudio.apigw.ntruss.com endpoint is being deprecated.",
   },
   internlm: {
     id: "internlm",
@@ -480,7 +480,7 @@ export const APIKEY_PROVIDERS_REGIONAL = {
     hasFree: true,
     freeNote: "500,000 free tokens per day per account (resets 02:00 UTC+8, no rollover)",
     authHint:
-      "Register and create an API key at the Ant Ling API console (https://chat.ant-ling.com/open), then paste it here. ShiguangGateway routes chat traffic to https://api.ant-ling.com/v1/chat/completions; the provider is OpenAI-compatible and also exposes an Anthropic-compatible surface.",
+      "Register and create an API key at the Ant Ling API console (https://chat.ant-ling.com/open), then paste it here. Orbit routes chat traffic to https://api.ant-ling.com/v1/chat/completions; the provider is OpenAI-compatible and also exposes an Anthropic-compatible surface.",
   },
   sarvam: {
     id: "sarvam",
@@ -491,7 +491,7 @@ export const APIKEY_PROVIDERS_REGIONAL = {
     textIcon: "SV",
     website: "https://docs.sarvam.ai",
     apiHint:
-      "Sarvam AI is OpenAI-compatible on /v1. ShiguangGateway probes /v1/models and routes chat traffic to /v1/chat/completions. Models are tuned for Indic languages.",
+      "Sarvam AI is OpenAI-compatible on /v1. Orbit probes /v1/models and routes chat traffic to /v1/chat/completions. Models are tuned for Indic languages.",
     hasFree: true,
     freeNote: "₹1,000 in free signup credits — never expire",
   },

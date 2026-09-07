@@ -1,24 +1,24 @@
 ---
-title: "Tryb zdalny — steruj zdalnym ShiguangGateway z laptopa"
+title: "Tryb zdalny — steruj zdalnym Orbit z laptopa"
 version: 3.8.40
 lastUpdated: 2026-06-28
 ---
 
 # Tryb zdalny
 
-Uruchom CLI `shiguang-gateway` na laptopie, podczas gdy samo ShiguangGateway działa gdzie indziej
+Uruchom CLI `orbit` na laptopie, podczas gdy samo Orbit działa gdzie indziej
 (VPS, serwer domowy, inna maszyna w Tailnet). Logujesz się raz przez
-`shiguang-gateway connect`, a odtąd **każde** polecenie CLI celuje w ten zdalny
+`orbit connect`, a odtąd **każde** polecenie CLI celuje w ten zdalny
 serwer — te same komendy, ten sam wynik, tylko wykonane względem zdalnego hosta.
 
-Nie ma drugiego narzędzia do instalacji: tryb zdalny to zwykłe CLI `shiguang-gateway`
+Nie ma drugiego narzędzia do instalacji: tryb zdalny to zwykłe CLI `orbit`
 plus tokeny dostępu ze **scope**.
 
 ```bash
-npm install -g shiguang-gateway                 # the normal CLI
-shiguang-gateway connect 192.168.0.15           # log in (password → scoped token)
-shiguang-gateway models list                    # ← now lists the REMOTE server's models
-shiguang-gateway configure codex                # ← writes a local Codex profile from the remote catalog
+npm install -g orbit                 # the normal CLI
+orbit connect 192.168.0.15           # log in (password → scoped token)
+orbit models list                    # ← now lists the REMOTE server's models
+orbit configure codex                # ← writes a local Codex profile from the remote catalog
 ```
 
 ---
@@ -26,9 +26,9 @@ shiguang-gateway configure codex                # ← writes a local Codex profi
 ## Jak to działa
 
 ```
-your laptop                              remote ShiguangGateway (VPS)
+your laptop                              remote Orbit (VPS)
 ┌────────────────────┐                   ┌───────────────────────────────┐
-│ shiguang-gateway CLI      │  POST /api/cli/connect  (password → token)         │
+│ orbit CLI      │  POST /api/cli/connect  (password → token)         │
 │  context: vps      │ ───────────────►  │ mints a scoped access token    │
 │  baseUrl, token    │  Authorization: Bearer oma_live_…                  │
 │                    │ ───────────────►  │ every management route, scope- │
@@ -37,8 +37,8 @@ your laptop                              remote ShiguangGateway (VPS)
 └────────────────────┘
 ```
 
-- **Konteksty** przechowują po jednym serwerze (`~/.shiguang-gateway/config.json`, `chmod 600`).
-  `shiguang-gateway contexts use <name>` przełącza aktywny serwer; `default` to lokalny.
+- **Konteksty** przechowują po jednym serwerze (`~/.orbit/config.json`, `chmod 600`).
+  `orbit contexts use <name>` przełącza aktywny serwer; `default` to lokalny.
 - **Tokeny dostępu** (`oma_live_…`) autoryzują polecenia zarządzające. Są
   odrębne od kluczy API do inferencji (`sk-…`, używanych dla `/v1/chat/completions`).
 - Po stronie serwera zapisywany jest tylko hash SHA-256 tokena. Tekst jawny pokazywany jest
@@ -51,7 +51,7 @@ your laptop                              remote ShiguangGateway (VPS)
 ### Hasłem zarządzania (bootstrap)
 
 ```bash
-shiguang-gateway connect 192.168.0.15
+orbit connect 192.168.0.15
 # Management password for http://192.168.0.15:20128: ********
 # ✔ Connected to http://192.168.0.15:20128 — context '192.168.0.15' (scope: admin)
 ```
@@ -60,20 +60,20 @@ Przepływ z hasłem domyślnie wystawia token **admin** (masz hasło, więc
 i tak masz pełną kontrolę). Zawęż scope przez `--scope`:
 
 ```bash
-shiguang-gateway connect 192.168.0.15 --scope write
+orbit connect 192.168.0.15 --scope write
 ```
 
 Opcje: `--port <p>` (gdy host nie ma portu), `--name <ctx>` (nazwa kontekstu),
 `--scope read|write|admin`. Pełny URL jest honorowany bez zmian:
-`shiguang-gateway connect https://omni.example.com`.
+`orbit connect https://omni.example.com`.
 
 ### Wcześniej wygenerowanym tokenem
 
-Wygeneruj token ze scope w dashboardzie (lub przez `shiguang-gateway tokens create`) i
+Wygeneruj token ze scope w dashboardzie (lub przez `orbit tokens create`) i
 wklej go — hasło nie jest potrzebne:
 
 ```bash
-shiguang-gateway connect 192.168.0.15 --key oma_live_xxxxxxxx
+orbit connect 192.168.0.15 --key oma_live_xxxxxxxx
 ```
 
 CLI waliduje go przez `GET /api/cli/whoami` i zapisuje jako aktywny kontekst.
@@ -109,14 +109,14 @@ zatwierdza logowanie**. Na zdalnym VPS ten loopback żyje na
 serwerze, nie na Twojej maszynie, więc ekran zgody **wisi w nieskończoność i nigdy
 nie emituje kodu** — zwykły fallback „wklej URL callbacku” nie ma czego
 wkleić. (To ograniczenie po stronie Google: ten sam hang występuje w każdym proxy
-używającym dołączonego klienta desktop Antigravity, nie tylko w ShiguangGateway.)
+używającym dołączonego klienta desktop Antigravity, nie tylko w Orbit.)
 
 Dashboard wykrywa to, zanim ugrzęźniesz: otwarcie **Providers → Antigravity →
 Connect** z adresu innego niż localhost zamienia ogólne powiadomienie „skopiuj URL callbacku”
 na dwa poniższe rozwiązania, każde z już wypełnionym hostem i portem.
 (Adres LAN się liczy — `192.168.x.x` nie jest localhostem z punktu widzenia tego callbacku.)
 
-Są dwa obsługiwane sposoby podłączenia Antigravity do zdalnego ShiguangGateway.
+Są dwa obsługiwane sposoby podłączenia Antigravity do zdalnego Orbit.
 
 ### Opcja A — lokalny helper logowania (zalecane)
 
@@ -126,16 +126,16 @@ potrzebuje dostępu sieciowego do VPS, więc działa nawet za firewallami.
 
 ```bash
 # On your LOCAL machine (needs Node.js + a browser):
-npx shiguang-gateway login antigravity
+npx orbit login antigravity
 #   ↳ opens the Google consent in your browser, captures the callback on a local
 #     loopback port, exchanges it, and prints a one-line credential blob:
 #
-#   shiguang-gateway-cred-v1.eyJ2IjoxLCJ...
+#   orbit-cred-v1.eyJ2IjoxLCJ...
 ```
 
 Następnie w **zdalnym** dashboardzie: **Providers → Antigravity → Connect** i
-wklej blob `shiguang-gateway-cred-v1.…` w pole **Step 2** (akceptuje albo
-URL callbacku, albo blob poświadczeń). ShiguangGateway dekoduje go, uruchamia onboarding Cloud Code
+wklej blob `orbit-cred-v1.…` w pole **Step 2** (akceptuje albo
+URL callbacku, albo blob poświadczeń). Orbit dekoduje go, uruchamia onboarding Cloud Code
 po stronie serwera i utrwala połączenie.
 
 > Blob zawiera refresh token — traktuj go jak hasło. Jest wysyłany raz
@@ -173,7 +173,7 @@ portu specyficznego dla providera do tunelowania.
 ## Podłączanie Codex / Grok na zdalnej instalacji (providery fixed-loopback)
 
 Codex, xAI (`xai-oauth`) i Grok CLI (`grok-cli`) rejestrują **stały** loopback
-`redirect_uri` w upstreamowej aplikacji OAuth. ShiguangGateway nie może go zmienić — provider
+`redirect_uri` w upstreamowej aplikacji OAuth. Orbit nie może go zmienić — provider
 zawsze odsyła przeglądarkę na ten sam zahardkodowany adres:
 
 | Provider    | Stały callback, na który przekierowuje provider |
@@ -183,7 +183,7 @@ zawsze odsyła przeglądarkę na ten sam zahardkodowany adres:
 | `grok-cli`  | `http://127.0.0.1:56122/callback`               |
 
 `localhost` oznacza tam **maszynę z przeglądarką**, podczas gdy serwer callback PKCE
-ShiguangGateway nasłuchuje na loopbacku **serwera**. Otwórz dashboard pod adresem LAN
+Orbit nasłuchuje na loopbacku **serwera**. Otwórz dashboard pod adresem LAN
 jak `http://192.168.0.15:20128` i te dwa się nie spotkają: kod autoryzacji
 trafia na `localhost:1455` Twojego laptopa, gdzie nic nie nasłuchuje,
 a provider kończy logowanie niepowodzeniem bez pokazania błędu.
@@ -202,7 +202,7 @@ ssh -L 20128:127.0.0.1:20128 -L 1455:127.0.0.1:1455 <user>@192.168.0.15
 Wymagane są dwa forwardy; forward tylko jednego nadal zawodzi:
 
 - **`20128`** (port dashboardu) sprawia, że origin jest prawdziwym localhostem, co w ogóle
-  powoduje, że ShiguangGateway uruchamia serwer callback PKCE — origin LAN nigdy
+  powoduje, że Orbit uruchamia serwer callback PKCE — origin LAN nigdy
   nie wchodzi w tę gałąź.
 - **`1455`** (stały port callback providera) to miejsce, dokąd wraca przeglądarka;
   musi być tunelowane do loopbacku serwera.
@@ -221,11 +221,11 @@ aktywne.
 ## Zarządzanie tokenami
 
 ```bash
-shiguang-gateway tokens create --name "laptop" --scope write [--expires 30]
+orbit tokens create --name "laptop" --scope write [--expires 30]
 #   ↳ prints the secret ONCE — copy it now
-shiguang-gateway tokens list                 # masked: id, name, scope, prefix, status, expiry
-shiguang-gateway tokens revoke <id|prefix>   # revoke immediately
-shiguang-gateway tokens scopes               # explain the three scopes
+orbit tokens list                 # masked: id, name, scope, prefix, status, expiry
+orbit tokens revoke <id|prefix>   # revoke immediately
+orbit tokens scopes               # explain the three scopes
 ```
 
 Polecenia `tokens` wymagają poświadczenia **admin**. Tokenami możesz też zarządzać w
@@ -235,11 +235,11 @@ dashboardzie pod **Settings → Access Tokens** (tworzenie, odwoływanie, kopiow
 
 ## Konfiguracja CLI do kodowania ze zdalnego katalogu
 
-`shiguang-gateway configure` czyta żywy katalog modeli **aktywnego serwera** i zapisuje
+`orbit configure` czyta żywy katalog modeli **aktywnego serwera** i zapisuje
 konfigurację na **Twojej** maszynie.
 
 ```bash
-shiguang-gateway configure codex
+orbit configure codex
 #   Providers: glm, kmc, ollamacloud, opencode-go, …
 #   Provider: glm
 #   Model id: glm/glm-5.2
@@ -247,12 +247,12 @@ shiguang-gateway configure codex
 #   Use it:  codex --profile glm52
 
 # non-interactive
-shiguang-gateway configure codex --provider glm --model glm/glm-5.2 --name glm52
+orbit configure codex --provider glm --model glm/glm-5.2 --name glm52
 ```
 
 Zapisany profil odwołuje się do klucza inferencji przez zmienną env
-(`SHIGUANG_GATEWAY_API_KEY`) — sekret nigdy nie trafia na dysk. Jednorazową
-bazową konfigurację Codex (blok `[model_providers.shiguang-gateway]`) zobacz w
+(`ORBIT_API_KEY`) — sekret nigdy nie trafia na dysk. Jednorazową
+bazową konfigurację Codex (blok `[model_providers.orbit]`) zobacz w
 [CODEX-CLI-CONFIGURATION.md](./CODEX-CLI-CONFIGURATION.md).
 
 ### Polecenia setup per CLI
@@ -262,87 +262,87 @@ kontekst albo `--remote <url> --api-key <key>`):
 
 | CLI         | Polecenie                  | Co zapisuje                                                                                                                                                               |
 | ----------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Codex       | `shiguang-gateway setup-codex`    | profile `~/.codex/<name>.config.toml` (per model)                                                                                                                         |
-| Claude Code | `shiguang-gateway setup-claude`   | `~/.claude/profiles/<name>/settings.json` (per model)                                                                                                                     |
-| OpenCode    | `shiguang-gateway setup-opencode` | `~/.config/opencode/opencode.json` — provider `shiguang-gateway` openai-compatible z każdym modelem z katalogu (uruchom `opencode -m shiguang-gateway/<model>`)                         |
-| Cline       | `shiguang-gateway setup-cline`    | `~/.cline/data/{globalState,secrets}.json` (tryb CLI) + wypisuje ustawienia rozszerzenia VS Code do wklejenia (OpenAI-compatible, Base URL **bez** `/v1`)                 |
-| Kilo Code   | `shiguang-gateway setup-kilo`     | `~/.local/share/kilo/auth.json` (CLI) + ustawienia VS Code `kilocode.*` — OpenAI-compatible, Base URL **z** `/v1`                                                         |
-| Continue    | `shiguang-gateway setup-continue` | `~/.continue/config.yaml` (VS Code/JetBrains + CLI `cn`) — `provider: openai`, `apiBase` **z** `/v1`, klucz przez `${{ secrets.SHIGUANG_GATEWAY_API_KEY }}`                      |
-| Cursor      | `shiguang-gateway setup-cursor`   | wypisuje kroki w aplikacji (Settings → Models → Override OpenAI Base URL **z** `/v1` + klucz + model). Konfiguracja Cursor to nieprzezroczyste SQLite — tylko panel czatu |
-| Roo Code    | `shiguang-gateway setup-roo`      | zapisuje JSON importu Roo (`~/.shiguang-gateway/roo-settings.json`) + ustawia `roo-cline.autoImportSettingsPath` + wypisuje kroki UI (OpenAI-compatible, Base URL **z** `/v1`)   |
-| Crush       | `shiguang-gateway setup-crush`    | `~/.config/crush/crush.json` — provider `openai-compat`, `base_url` **z** `/v1`, klucz przez `$SHIGUANG_GATEWAY_API_KEY`                                                         |
-| Goose       | `shiguang-gateway setup-goose`    | `~/.config/goose/config.yaml` (`GOOSE_PROVIDER=openai` + `OPENAI_HOST` **bez** `/v1` + `GOOSE_MODEL`) + przepis env                                                       |
-| Aider       | `shiguang-gateway setup-aider`    | `~/.aider.conf.yml` (`openai-api-base` **bez** `/v1` + `model: openai/<id>`) + przepis env (`aider --message --yes`)                                                      |
-| Qwen Code   | `shiguang-gateway setup-qwen`     | wpis V4 `modelProviders.openai` w `~/.qwen/settings.json` + `SHIGUANG_GATEWAY_API_KEY` w `~/.qwen/.env`                                                                          |
+| Codex       | `orbit setup-codex`    | profile `~/.codex/<name>.config.toml` (per model)                                                                                                                         |
+| Claude Code | `orbit setup-claude`   | `~/.claude/profiles/<name>/settings.json` (per model)                                                                                                                     |
+| OpenCode    | `orbit setup-opencode` | `~/.config/opencode/opencode.json` — provider `orbit` openai-compatible z każdym modelem z katalogu (uruchom `opencode -m orbit/<model>`)                         |
+| Cline       | `orbit setup-cline`    | `~/.cline/data/{globalState,secrets}.json` (tryb CLI) + wypisuje ustawienia rozszerzenia VS Code do wklejenia (OpenAI-compatible, Base URL **bez** `/v1`)                 |
+| Kilo Code   | `orbit setup-kilo`     | `~/.local/share/kilo/auth.json` (CLI) + ustawienia VS Code `kilocode.*` — OpenAI-compatible, Base URL **z** `/v1`                                                         |
+| Continue    | `orbit setup-continue` | `~/.continue/config.yaml` (VS Code/JetBrains + CLI `cn`) — `provider: openai`, `apiBase` **z** `/v1`, klucz przez `${{ secrets.ORBIT_API_KEY }}`                      |
+| Cursor      | `orbit setup-cursor`   | wypisuje kroki w aplikacji (Settings → Models → Override OpenAI Base URL **z** `/v1` + klucz + model). Konfiguracja Cursor to nieprzezroczyste SQLite — tylko panel czatu |
+| Roo Code    | `orbit setup-roo`      | zapisuje JSON importu Roo (`~/.orbit/roo-settings.json`) + ustawia `roo-cline.autoImportSettingsPath` + wypisuje kroki UI (OpenAI-compatible, Base URL **z** `/v1`)   |
+| Crush       | `orbit setup-crush`    | `~/.config/crush/crush.json` — provider `openai-compat`, `base_url` **z** `/v1`, klucz przez `$ORBIT_API_KEY`                                                         |
+| Goose       | `orbit setup-goose`    | `~/.config/goose/config.yaml` (`GOOSE_PROVIDER=openai` + `OPENAI_HOST` **bez** `/v1` + `GOOSE_MODEL`) + przepis env                                                       |
+| Aider       | `orbit setup-aider`    | `~/.aider.conf.yml` (`openai-api-base` **bez** `/v1` + `model: openai/<id>`) + przepis env (`aider --message --yes`)                                                      |
+| Qwen Code   | `orbit setup-qwen`     | wpis V4 `modelProviders.openai` w `~/.qwen/settings.json` + `ORBIT_API_KEY` w `~/.qwen/.env`                                                                          |
 
 ```bash
 # OpenCode (openai-compatible provider, all catalog models, remote VPS)
-shiguang-gateway setup-opencode --remote http://192.168.0.15:20128 --api-key oma_live_xxx
-shiguang-gateway setup-opencode --only glm,kimi        # keep only matching models
-opencode -m shiguang-gateway/glm/glm-5.2 "..."          # export SHIGUANG_GATEWAY_API_KEY first
+orbit setup-opencode --remote http://192.168.0.15:20128 --api-key oma_live_xxx
+orbit setup-opencode --only glm,kimi        # keep only matching models
+opencode -m orbit/glm/glm-5.2 "..."          # export ORBIT_API_KEY first
 ```
 
-> OpenCode ma też bogatszą integrację **plugin**: `shiguang-gateway setup opencode`
+> OpenCode ma też bogatszą integrację **plugin**: `orbit setup opencode`
 > (teraz świadome trybu zdalnego przez `--remote`) instaluje `@orbit/opencode-plugin`.
 > `setup-opencode` to lekka alternatywa openai-compatible. Klucz API
-> jest odwoływany przez `{env:SHIGUANG_GATEWAY_API_KEY}` — nigdy nie zapisywany na dysk.
+> jest odwoływany przez `{env:ORBIT_API_KEY}` — nigdy nie zapisywany na dysk.
 
 ---
 
 ## Zarządzanie kontekstami (przełączanie między serwerami)
 
-**Kontekst** to zapisany serwer (baseUrl + poświadczenie + scope). `shiguang-gateway connect`
+**Kontekst** to zapisany serwer (baseUrl + poświadczenie + scope). `orbit connect`
 tworzy jeden i czyni go aktywnym; odtąd każde polecenie go celuje. Zarządzaj i
-przełączaj je przez `shiguang-gateway contexts`:
+przełączaj je przez `orbit contexts`:
 
 ```bash
-shiguang-gateway contexts list            # all contexts; the active one is marked ●
-shiguang-gateway contexts current         # the active server, auth status, scope
+orbit contexts list            # all contexts; the active one is marked ●
+orbit contexts current         # the active server, auth status, scope
 ```
 
 ```text
   | Name    | Base URL                  | Auth  | Scope | Description
-● | vps     | http://100.67.86.91:20128 | token | admin | Remote ShiguangGateway (…)
+● | vps     | http://100.67.86.91:20128 | token | admin | Remote Orbit (…)
   | default | http://localhost:20128    | ✗     |       |
 ```
 
 **Przełączanie serwerów** — każde kolejne polecenie podąża za aktywnym kontekstem:
 
 ```bash
-shiguang-gateway contexts use vps         # → all commands now hit the remote VPS
-shiguang-gateway tokens list              #   (runs against the VPS)
+orbit contexts use vps         # → all commands now hit the remote VPS
+orbit tokens list              #   (runs against the VPS)
 
-shiguang-gateway contexts use default     # → back to localhost
-shiguang-gateway tokens list              #   (runs against the local server)
+orbit contexts use default     # → back to localhost
+orbit tokens list              #   (runs against the local server)
 ```
 
 **Dodaj kontekst ręcznie** (zamiast `connect`), podejrzyj lub zmień nazwę:
 
 ```bash
-shiguang-gateway contexts add staging --url https://staging.example.com:20128 \
+orbit contexts add staging --url https://staging.example.com:20128 \
   --access-token oma_live_xxxx --scope write --description "staging box"
-shiguang-gateway contexts show staging    # full details for one context
-shiguang-gateway contexts rename staging stg
+orbit contexts show staging    # full details for one context
+orbit contexts rename staging stg
 ```
 
 **Usuń kontekst** — pyta o potwierdzenie; podaj `--yes`, by pominąć
 (wymagane w skryptach / powłokach nieinteraktywnych, które inaczej bezpiecznie odmawiają):
 
 ```bash
-shiguang-gateway contexts remove stg --yes
+orbit contexts remove stg --yes
 ```
 
 > `default` (localhost) nie może zostać usunięty. Usunięcie aktywnego kontekstu wraca
 > do `default`. Wskazówka: usunięcie kontekstu usuwa tylko **lokalnie** zapisane poświadczenie —
-> odwołaj token na serwerze przez `shiguang-gateway tokens revoke <id>`, by faktycznie
+> odwołaj token na serwerze przez `orbit tokens revoke <id>`, by faktycznie
 > unieważnić dostęp.
 
 **Eksport / import** kontekstów (np. przeniesienie między maszynami — sekrety włącznie,
 więc ostrożnie z plikiem):
 
 ```bash
-shiguang-gateway contexts export --out contexts.json     # default: stdout
-shiguang-gateway contexts import contexts.json            # overwrite; --merge to keep existing
+orbit contexts export --out contexts.json     # default: stdout
+orbit contexts import contexts.json            # overwrite; --merge to keep existing
 ```
 
 ---
@@ -356,22 +356,22 @@ URL `https://…`).
 
 ```bash
 # 1. Connect (password → admin token, saved as a context that becomes active)
-shiguang-gateway connect 192.168.0.15                 # or: --key oma_live_xxxx  (no password)
-shiguang-gateway contexts current                     # shows the remote server + scope
+orbit connect 192.168.0.15                 # or: --key oma_live_xxxx  (no password)
+orbit contexts current                     # shows the remote server + scope
 
 # 2. Use it — management commands now run against the remote
-shiguang-gateway tokens create --name laptop --scope read   # mint a narrower token
-shiguang-gateway tokens list                                 # masked list, from the remote
+orbit tokens create --name laptop --scope read   # mint a narrower token
+orbit tokens list                                 # masked list, from the remote
 
 # 3. Switch back and forth
-shiguang-gateway contexts use default                 # → local
-shiguang-gateway contexts use 192-168-0-15            # → remote again (name from `contexts list`)
+orbit contexts use default                 # → local
+orbit contexts use 192-168-0-15            # → remote again (name from `contexts list`)
 
 # 4. Tear down. NOTE: `contexts remove` only deletes the LOCAL credential —
 #    it does NOT revoke the token on the server. Revoke server-side first if you
 #    want to actually kill access.
-shiguang-gateway tokens revoke <id|prefix>            # kills access on the server
-shiguang-gateway contexts remove 192-168-0-15 --yes   # drop the local context (even if active → falls back to default), no prompt
+orbit tokens revoke <id|prefix>            # kills access on the server
+orbit contexts remove 192-168-0-15 --yes   # drop the local context (even if active → falls back to default), no prompt
 ```
 
 > `--yes` czyni `contexts remove` nieinteraktywnym (wymagane w skryptach/CI; bez tego
@@ -383,10 +383,10 @@ shiguang-gateway contexts remove 192-168-0-15 --yes   # drop the local context (
 ## Uwagi bezpieczeństwa
 
 - Tekst jawny tokena pokazywany jest raz; utrwalany jest tylko hash SHA-256 (jak u kluczy API).
-- `shiguang-gateway connect` korzysta z tej samej blokady brute-force logowania + logowania audytowego.
+- `orbit connect` korzysta z tej samej blokady brute-force logowania + logowania audytowego.
 - Preferuj HTTPS albo Tailnet jako transport; goły host domyślnie używa `http://`
   dla wygody LAN/Tailscale — podaj pełny URL `https://…` dla TLS.
-- Lokalny plik kontekstów to `~/.shiguang-gateway/config.json` (`chmod 600`); tokeny
+- Lokalny plik kontekstów to `~/.orbit/config.json` (`chmod 600`); tokeny
   nigdy nie są wypisywane w logach (maskowane do prefiksu).
 
 ---

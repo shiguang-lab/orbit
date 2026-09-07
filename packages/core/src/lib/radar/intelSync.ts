@@ -10,7 +10,7 @@ import { RadarIntelFeedSchema, type RadarIntelFeed } from "./intelFeedSchema";
 import { compareVersions, type RadarSettingsSnapshot } from "./sync";
 import { verifyFeedBytes } from "./verify";
 
-const DEFAULT_FEED_BASE_URL = "https://radar.shiguangGateway.online";
+const DEFAULT_FEED_BASE_URL = "https://radar.orbit.online";
 const SYNC_TIMEOUT_MS = 30_000;
 const MAX_FEED_BYTES = 10 * 1024 * 1024;
 
@@ -119,7 +119,7 @@ export async function syncRadarIntel(deps: IntelSyncDeps = {}): Promise<IntelSyn
     const rawBytes = await readBoundedBytes(response);
     if (!rawBytes) return { status: "too_large" };
 
-    const signature = response.headers.get("x-shiguangGateway-feed-signature") ?? "";
+    const signature = response.headers.get("x-orbit-feed-signature") ?? "";
     if (!verifyFeedBytes(rawBytes, signature)) return { status: "invalid_signature" };
 
     let feed: RadarIntelFeed;
@@ -128,7 +128,7 @@ export async function syncRadarIntel(deps: IntelSyncDeps = {}): Promise<IntelSyn
     } catch {
       return { status: "invalid_schema" };
     }
-    if (response.headers.get("x-shiguangGateway-feed-tier") !== "live" || feed.tier !== "live") {
+    if (response.headers.get("x-orbit-feed-tier") !== "live" || feed.tier !== "live") {
       return { status: "wrong_tier" };
     }
 

@@ -1,21 +1,21 @@
 /**
  * A2A Skill: Smart Routing
  *
- * Receives a prompt + metadata → routes via ShiguangGateway pipeline →
+ * Receives a prompt + metadata → routes via Orbit pipeline →
  * returns response with routing_explanation, cost_envelope, resilience_trace, policy_verdict.
  */
 
 import type { A2ATask, TaskArtifact } from "../taskManager";
 import { resolveGatewayBaseUrl } from "../../../shared/utils/resolveGatewayBaseUrl.ts";
 
-const SHIGUANG_GATEWAY_BASE_URL = resolveGatewayBaseUrl();
-const SHIGUANG_GATEWAY_API_KEY = process.env.SHIGUANG_GATEWAY_API_KEY || "";
+const ORBIT_BASE_URL = resolveGatewayBaseUrl();
+const ORBIT_API_KEY = process.env.ORBIT_API_KEY || "";
 
 async function routeFetch(path: string, options: RequestInit = {}): Promise<any> {
-  const url = `${SHIGUANG_GATEWAY_BASE_URL}${path}`;
+  const url = `${ORBIT_BASE_URL}${path}`;
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
-    ...(SHIGUANG_GATEWAY_API_KEY ? { Authorization: `Bearer ${SHIGUANG_GATEWAY_API_KEY}` } : {}),
+    ...(ORBIT_API_KEY ? { Authorization: `Bearer ${ORBIT_API_KEY}` } : {}),
   };
   const res = await fetch(url, { ...options, headers, signal: AbortSignal.timeout(30000) });
   if (!res.ok) throw new Error(`API [${res.status}]: ${await res.text().catch(() => "error")}`);

@@ -1,8 +1,8 @@
 /**
  * CLI access-token scopes — the 3-level hierarchy used by remote mode.
  *
- * These tokens authorize the `shiguangGateway` CLI (and dashboard) to run *management*
- * commands against a (possibly remote) ShiguangGateway server. They are distinct from
+ * These tokens authorize the `orbit` CLI (and dashboard) to run *management*
+ * commands against a (possibly remote) Orbit server. They are distinct from
  * inference API keys (`api_keys`), which authorize `/v1/chat/completions` traffic.
  *
  * Hierarchy (admin ⊃ write ⊃ read):

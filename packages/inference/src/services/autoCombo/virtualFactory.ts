@@ -945,13 +945,13 @@ export async function createVirtualAutoComboFromPrepared(
       effectivePool = narrowed;
     } else if (
       !spec?.family &&
-      (process.env.SHIGUANG_GATEWAY_AUTO_FREE_FALLBACK_TO_FULL_POOL === "true" ||
-        process.env.SHIGUANG_GATEWAY_AUTO_FREE_FALLBACK_TO_FULL_POOL === "1")
+      (process.env.ORBIT_AUTO_FREE_FALLBACK_TO_FULL_POOL === "true" ||
+        process.env.ORBIT_AUTO_FREE_FALLBACK_TO_FULL_POOL === "1")
     ) {
       // Opt-in legacy behavior (category/tier only): warn loudly, then keep the full pool.
       log.warn(
         "AUTO",
-        `${label} matched no connected models; falling back to the full pool (SHIGUANG_GATEWAY_AUTO_FREE_FALLBACK_TO_FULL_POOL=true)`
+        `${label} matched no connected models; falling back to the full pool (ORBIT_AUTO_FREE_FALLBACK_TO_FULL_POOL=true)`
       );
     } else {
       // Family combos always degrade to an empty pool when unavailable — a family
@@ -959,7 +959,7 @@ export async function createVirtualAutoComboFromPrepared(
       // no sensible "fall back to the full pool" behavior for it.
       warnEmptyAutoPoolOnce(
         label,
-        `${label} matched no connected models; returning an empty pool.${spec?.family ? "" : ' Set SHIGUANG_GATEWAY_AUTO_FREE_FALLBACK_TO_FULL_POOL=true to restore the legacy "use full pool" behavior.'}`
+        `${label} matched no connected models; returning an empty pool.${spec?.family ? "" : ' Set ORBIT_AUTO_FREE_FALLBACK_TO_FULL_POOL=true to restore the legacy "use full pool" behavior.'}`
       );
       effectivePool = [];
     }
@@ -1068,14 +1068,14 @@ export async function createVirtualAutoComboFromPrepared(
 
   // Chaos mode fans out to the top-N most stable models in parallel. Panel size
   // is capped to keep a single IDE request from fanning out to dozens of providers;
-  // operators can override via env var SHIGUANG_GATEWAY_CHAOS_MAX_PANEL (default 5).
+  // operators can override via env var ORBIT_CHAOS_MAX_PANEL (default 5).
   //
   // Provider diversity: when multiple candidates from the same provider exist, only
   // the highest-scored model per provider is included. This prevents a single
   // provider from monopolizing the panel and gives the IDE truly diverse answers.
   const isChaos = variant === "chaos";
   const CHAOS_MAX_PANEL = (() => {
-    const env = process.env.SHIGUANG_GATEWAY_CHAOS_MAX_PANEL;
+    const env = process.env.ORBIT_CHAOS_MAX_PANEL;
     const parsed = env ? parseInt(env, 10) : 5;
     return Number.isFinite(parsed) && parsed > 0 ? Math.min(parsed, 10) : 5;
   })();
@@ -1121,8 +1121,8 @@ export async function createVirtualAutoComboFromPrepared(
               judgeModel: chaosModels[0]?.model,
               tuning: {
                 panelHardTimeoutMs:
-                  Number(process.env.SHIGUANG_GATEWAY_CHAOS_PANEL_TIMEOUT_MS) || undefined,
-                minPanel: Number(process.env.SHIGUANG_GATEWAY_CHAOS_MIN_PANEL) || undefined,
+                  Number(process.env.ORBIT_CHAOS_PANEL_TIMEOUT_MS) || undefined,
+                minPanel: Number(process.env.ORBIT_CHAOS_MIN_PANEL) || undefined,
               },
             },
           }

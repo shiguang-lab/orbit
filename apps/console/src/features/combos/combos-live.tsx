@@ -417,7 +417,7 @@ export function CombosLivePage() {
       animated: true,
     });
 
-    // 3. Target Cascade Nodes (horizontal cascade matching Shiguang Gateway)
+    // 3. Target Cascade Nodes (horizontal cascade matching Orbit)
     let prevId = "node-strategy";
     // Show active targets in pipeline (top 3-5 or full list)
     const displayModels = models.slice(0, 6);
@@ -486,7 +486,7 @@ export function CombosLivePage() {
     return { nodes: flowNodes, edges: flowEdges };
   }, [activeCombo, connectionMap, testResult]);
 
-  // Fleet Statistics (matching Shiguang Gateway's 3 sets: active / error / inactive)
+  // Fleet Statistics (matching Orbit's 3 sets: active / error / inactive)
   const fleetStats = useMemo(() => {
     const healthyList: string[] = [];
     const errorList: string[] = [];
@@ -658,7 +658,7 @@ export function CombosLivePage() {
           )}
         </Card>
       ) : (
-        /* Fleet Overview Mode: Exact match with Shiguang Gateway's active/error/inactive pill aggregation */
+        /* Fleet Overview Mode: Exact match with Orbit's active/error/inactive pill aggregation */
         <Card className={styles.canvasCard} styles={{ body: { padding: "24px 28px", minHeight: 480 } }}>
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
             {/* Active Set */}

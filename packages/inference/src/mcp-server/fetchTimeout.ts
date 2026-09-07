@@ -4,8 +4,8 @@
  * `gatewayRouteFetch` serves two call shapes with very different latency budgets:
  * fast local management reads (health, resilience, combos, quota, usage) and
  * calls that wait on an upstream provider. A single 10s default aborted
- * `shiguangGateway_route_request` while the upstream request was still in flight,
- * even though `shiguangGateway_web_search` / `shiguangGateway_web_fetch` already carried
+ * `orbit_route_request` while the upstream request was still in flight,
+ * even though `orbit_web_search` / `orbit_web_fetch` already carried
  * their own explicit 60s signal in the same file for exactly that reason.
  *
  * Kept as a pure, dependency-free module so the policy is unit-testable without
@@ -23,8 +23,8 @@ export const MCP_FETCH_TIMEOUT_MS = 10_000;
  */
 export const MCP_UPSTREAM_FETCH_TIMEOUT_MS = 60_000;
 
-export const MCP_FETCH_TIMEOUT_ENV = "SHIGUANG_GATEWAY_MCP_FETCH_TIMEOUT_MS";
-export const MCP_UPSTREAM_FETCH_TIMEOUT_ENV = "SHIGUANG_GATEWAY_MCP_UPSTREAM_TIMEOUT_MS";
+export const MCP_FETCH_TIMEOUT_ENV = "ORBIT_MCP_FETCH_TIMEOUT_MS";
+export const MCP_UPSTREAM_FETCH_TIMEOUT_ENV = "ORBIT_MCP_UPSTREAM_TIMEOUT_MS";
 
 export type McpFetchTimeoutKind = "management" | "upstream";
 
@@ -43,8 +43,8 @@ function readMcpTimeoutOverride(
   // exported constant keys.
   if (env === process.env) {
     return kind === "upstream"
-      ? process.env.SHIGUANG_GATEWAY_MCP_UPSTREAM_TIMEOUT_MS
-      : process.env.SHIGUANG_GATEWAY_MCP_FETCH_TIMEOUT_MS;
+      ? process.env.ORBIT_MCP_UPSTREAM_TIMEOUT_MS
+      : process.env.ORBIT_MCP_FETCH_TIMEOUT_MS;
   }
   return env[kind === "upstream" ? MCP_UPSTREAM_FETCH_TIMEOUT_ENV : MCP_FETCH_TIMEOUT_ENV];
 }

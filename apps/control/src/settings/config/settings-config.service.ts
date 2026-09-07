@@ -129,7 +129,7 @@ export class SettingsConfigService {
       apiKeys,
       _meta: {
         exportedAt: new Date().toISOString(),
-        version: "shiguangGateway-v3-legacy-export",
+        version: "orbit-v3-legacy-export",
         includesHistory: includeHistory,
       },
     };

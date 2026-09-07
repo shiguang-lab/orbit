@@ -2,7 +2,7 @@
  * Latest-version discovery + comparison for the dashboard "Update Available" banner.
  *
  * #4100: the banner is gated on `isNewer(latest, current)`. Previously `latest` came
- * ONLY from `npm info shiguangGateway version --json` (the `npm` CLI binary). When that binary
+ * ONLY from `npm info orbit version --json` (the `npm` CLI binary). When that binary
  * is absent (Docker / desktop / locked-down installs) or the registry is unreachable, the
  * call returned null and the banner silently never rendered — even when an update existed.
  *
@@ -27,13 +27,13 @@ const execFileAsync = promisify(execFile);
  * deployment must not contact an upstream/npm package feed merely to
  * render an update banner; operators can point this at their own registry.
  */
-const NPM_REGISTRY_LATEST_URL = process.env.SHIGUANG_GATEWAY_UPDATE_REGISTRY_URL?.trim() || "";
+const NPM_REGISTRY_LATEST_URL = process.env.ORBIT_UPDATE_REGISTRY_URL?.trim() || "";
 
 /**
  * Optional operator-provided release metadata endpoint. Empty by default so a standalone
  * deployment never contacts an upstream repository.
  */
-const RELEASES_LATEST_URL = process.env.SHIGUANG_GATEWAY_RELEASES_LATEST_URL?.trim() || "";
+const RELEASES_LATEST_URL = process.env.ORBIT_RELEASES_LATEST_URL?.trim() || "";
 
 const LOOKUP_TIMEOUT_MS = 10_000;
 const MAX_VERSION_RESPONSE_BYTES = 16 * 1024;
@@ -62,7 +62,7 @@ export { normalizeVersion, isNewer } from "./version-compare.js";
 export async function getLatestVersionFromNpmCli(
   execFn: typeof execFileAsync = execFileAsync
 ): Promise<string | null> {
-  if (!process.env.SHIGUANG_GATEWAY_UPDATE_PACKAGE?.trim()) return null;
+  if (!process.env.ORBIT_UPDATE_PACKAGE?.trim()) return null;
   try {
     // #5542 — win32 npm is npm.cmd; execFile without a shell throws "spawn npm ENOENT"
     // on Node ≥24 (nodejs/node#52554). buildNpmExecOptions enables the shell on win32.
@@ -73,7 +73,7 @@ export async function getLatestVersionFromNpmCli(
     // the function backing the dashboard's "Update Available" banner.
     const { stdout } = await execFn(
       "npm",
-      ["info", process.env.SHIGUANG_GATEWAY_UPDATE_PACKAGE.trim(), "version", "--json", "--prefer-online"],
+      ["info", process.env.ORBIT_UPDATE_PACKAGE.trim(), "version", "--json", "--prefer-online"],
       buildNpmExecOptions(process.platform, { timeoutMs: LOOKUP_TIMEOUT_MS })
     );
     const parsed = JSON.parse(String(stdout).trim());
@@ -148,7 +148,7 @@ export async function getLatestVersionFromReleaseEndpoint(
     const res = await fetchImpl(RELEASES_LATEST_URL, {
       signal: AbortSignal.timeout(LOOKUP_TIMEOUT_MS),
       headers: {
-        "User-Agent": "shiguangGateway-independent-version-check",
+        "User-Agent": "orbit-independent-version-check",
         Accept: "application/json",
       },
     });

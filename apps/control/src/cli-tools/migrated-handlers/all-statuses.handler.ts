@@ -14,7 +14,7 @@ import {
 } from "@orbit/core/cli/runtime";
 import { getAllCliToolLastConfigured } from "../cli-tool-state.js";
 import { checkToolConfigStatus } from "@orbit/core/cli/config-status";
-import { findShiguangGatewayQwenCodeModel } from "@orbit/core/shared/services/qwenCodeConfig";
+import { findOrbitQwenCodeModel } from "@orbit/core/shared/services/qwenCodeConfig";
 import {
   parseGrokBuildConfig,
   resolveGrokBuildConfigPath,
@@ -60,7 +60,7 @@ async function extractEndpointFromConfig(
         return (env?.ANTHROPIC_BASE_URL as string | undefined) ?? null;
       }
       case "qwen": {
-        const managed = findShiguangGatewayQwenCodeModel(config);
+        const managed = findOrbitQwenCodeModel(config);
         return typeof managed?.baseUrl === "string" ? managed.baseUrl : null;
       }
       case "cline":

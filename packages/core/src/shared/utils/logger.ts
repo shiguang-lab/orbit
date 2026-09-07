@@ -1,5 +1,5 @@
 /**
- * Structured Logger — Pino-based logger for ShiguangGateway
+ * Structured Logger — Pino-based logger for Orbit
  *
  * Usage:
  *   import { logger } from "./logger.ts";
@@ -23,7 +23,7 @@ const isDev = process.env.NODE_ENV !== "production";
 
 const baseConfig: pino.LoggerOptions = {
   level: getAppLogLevel(isDev ? "debug" : "info"),
-  base: { service: "shiguangGateway" },
+  base: { service: "orbit" },
   timestamp: pino.stdTimeFunctions.isoTime,
   formatters: {
     level(label: string) {

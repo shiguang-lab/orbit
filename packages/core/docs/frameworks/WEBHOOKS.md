@@ -9,7 +9,7 @@ lastUpdated: 2026-06-28
 > **Source of truth:** `src/lib/webhookDispatcher.ts`, `src/lib/db/webhooks.ts`, `src/app/api/webhooks/`
 > **Last updated:** 2026-06-28 — v3.8.40
 
-ShiguangGateway can fire HTTP webhooks on platform events. Use them to integrate with
+Orbit can fire HTTP webhooks on platform events. Use them to integrate with
 Slack, PagerDuty, Datadog, internal alerting services, or any HTTP receiver.
 
 The dispatcher signs each delivery with HMAC-SHA256, retries on transient
@@ -59,17 +59,17 @@ per-webhook errors so one bad receiver cannot block the others.
 
 ## HMAC Signing
 
-When a webhook has a `secret`, ShiguangGateway signs the JSON body and sends:
+When a webhook has a `secret`, Orbit signs the JSON body and sends:
 
 ```
 Content-Type: application/json
-User-Agent: ShiguangGateway-Webhook/1.0
+User-Agent: Orbit-Webhook/1.0
 X-Webhook-Event: <event>
 X-Webhook-Timestamp: <ISO-8601>
 X-Webhook-Signature: sha256=<hex HMAC-SHA256(secret, body)>
 ```
 
-> Header names use the `X-Webhook-*` prefix (not `X-ShiguangGateway-*`). The signature
+> Header names use the `X-Webhook-*` prefix (not `X-Orbit-*`). The signature
 > value is `sha256=<hex>` — verify the full prefix.
 
 If `createWebhook` is called without a secret, the DB module generates one
@@ -225,7 +225,7 @@ The dashboard page at `/dashboard/webhooks` (see
   "event": "test.ping",
   "timestamp": "2026-05-13T20:32:00.000Z",
   "data": {
-    "message": "Test webhook delivery from ShiguangGateway",
+    "message": "Test webhook delivery from Orbit",
     "webhookId": "<uuid>"
   }
 }

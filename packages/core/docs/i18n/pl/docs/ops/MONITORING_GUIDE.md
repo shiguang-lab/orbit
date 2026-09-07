@@ -6,7 +6,7 @@ lastUpdated: 2026-06-28
 
 # Przewodnik monitorowania i obserwowalności
 
-> **TL;DR**: ShiguangGateway dostarcza wbudowane monitorowanie kondycji, autopilota providerów, śledzenie limitów (quota) oraz haki obserwowalności. Ten przewodnik obejmuje dashboard, alerty i rozwiązywanie problemów.
+> **TL;DR**: Orbit dostarcza wbudowane monitorowanie kondycji, autopilota providerów, śledzenie limitów (quota) oraz haki obserwowalności. Ten przewodnik obejmuje dashboard, alerty i rozwiązywanie problemów.
 
 **Źródła:**
 
@@ -22,7 +22,7 @@ lastUpdated: 2026-06-28
 
 ## Przegląd
 
-ShiguangGateway ma **3 warstwy monitorowania**:
+Orbit ma **3 warstwy monitorowania**:
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -39,7 +39,7 @@ ShiguangGateway ma **3 warstwy monitorowania**:
 │  Warstwa 3: Live obserwowalność (migawki runtime)             │
 │  ├─ observability.ts — circuit breakery, sesje, quota         │
 │  ├─ tokenHealthCheck.ts — kondycja odświeżania tokenów OAuth  │
-│  └─ Narzędzia MCP: shiguang-gateway_get_health, shiguang-gateway_get_session_snapshot │
+│  └─ Narzędzia MCP: orbit_get_health, orbit_get_session_snapshot │
 └──────────────────────────────────────────────────────────────┘
 ```
 
@@ -318,7 +318,7 @@ Konfiguracja health check tokenów jest obsługiwana wewnętrznie przez `tokenHe
 
 ### Wbudowane kanały
 
-ShiguangGateway obsługuje **3 kanały alertów**:
+Orbit obsługuje **3 kanały alertów**:
 
 | Kanał            | Konfiguracja    | Przypadek użycia               |
 | ---------------- | --------------- | ------------------------------ |
@@ -399,7 +399,7 @@ Na razie scrapuj `/api/monitoring/health` dowolnym systemem monitorowania oparty
 
 ### Dostosowanie dashboardu kondycji
 
-Utwórz `~/.shiguang-gateway/dashboard.json`:
+Utwórz `~/.orbit/dashboard.json`:
 
 ```json
 {
@@ -434,7 +434,7 @@ Utwórz `~/.shiguang-gateway/dashboard.json`:
 ### „Quota pokazuje healthy, a ja widzę 429”
 
 - 429 oznacza, że provider twierdzi, iż wyczerpałeś limit
-- Śledzenie quota w ShiguangGateway może być **nieaktualne** — prawda providera jest upstream
+- Śledzenie quota w Orbit może być **nieaktualne** — prawda providera jest upstream
 - Dane quota odświeżają się automatycznie przez wewnętrzny monitor quota
 
 ### „Combo pada, choć wszystkie targety wyglądają na healthy”
@@ -445,9 +445,9 @@ Utwórz `~/.shiguang-gateway/dashboard.json`:
 
 ### „Health check bazy danych nie przechodzi”
 
-- Uruchom `sqlite3 ~/.shiguang-gateway/storage.sqlite "PRAGMA integrity_check;"`
+- Uruchom `sqlite3 ~/.orbit/storage.sqlite "PRAGMA integrity_check;"`
 - Jeśli "ok" — fałszywy alarm, health check jest zbyt rygorystyczny
-- Jeśli cokolwiek innego — **zatrzymaj ShiguangGateway** i postępuj według [przewodnika disaster recovery](./DATABASE_GUIDE.md#disaster-recovery)
+- Jeśli cokolwiek innego — **zatrzymaj Orbit** i postępuj według [przewodnika disaster recovery](./DATABASE_GUIDE.md#disaster-recovery)
 
 ### „Ciśnienie heapa pamięci jest krytyczne”
 

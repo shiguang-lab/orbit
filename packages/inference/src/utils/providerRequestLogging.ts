@@ -32,7 +32,7 @@ type CaptureState = {
   wrappedInnerFetch: typeof fetch | null;
 };
 
-const CAPTURE_STATE_KEY = Symbol.for("shiguangGateway.providerRequestCapture.state");
+const CAPTURE_STATE_KEY = Symbol.for("orbit.providerRequestCapture.state");
 
 function getCaptureState(): CaptureState {
   const scopedGlobal = globalThis as typeof globalThis & {

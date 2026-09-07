@@ -5,21 +5,21 @@
  * core package. Edge, control and streaming components can all depend
  * on the same canonical header names without importing another app's source.
  */
-export const SHIGUANG_GATEWAY_RESPONSE_HEADERS = {
-  cache: "X-ShiguangGateway-Cache",
-  cacheHit: "X-ShiguangGateway-Cache-Hit",
-  cacheLatency: "X-ShiguangGateway-Cache-Latency",
-  compression: "X-ShiguangGateway-Compression",
-  costSaved: "X-ShiguangGateway-Cost-Saved",
-  decision: "X-ShiguangGateway-Decision",
-  fallbackAttempts: "X-ShiguangGateway-Fallback-Attempts",
-  latencyMs: "X-ShiguangGateway-Latency-Ms",
-  model: "X-ShiguangGateway-Model",
-  progress: "X-ShiguangGateway-Progress",
-  provider: "X-ShiguangGateway-Provider",
-  requestId: "X-ShiguangGateway-Request-Id",
-  responseCost: "X-ShiguangGateway-Response-Cost",
-  tokensIn: "X-ShiguangGateway-Tokens-In",
-  tokensOut: "X-ShiguangGateway-Tokens-Out",
-  version: "X-ShiguangGateway-Version",
+export const ORBIT_RESPONSE_HEADERS = {
+  cache: "X-Orbit-Cache",
+  cacheHit: "X-Orbit-Cache-Hit",
+  cacheLatency: "X-Orbit-Cache-Latency",
+  compression: "X-Orbit-Compression",
+  costSaved: "X-Orbit-Cost-Saved",
+  decision: "X-Orbit-Decision",
+  fallbackAttempts: "X-Orbit-Fallback-Attempts",
+  latencyMs: "X-Orbit-Latency-Ms",
+  model: "X-Orbit-Model",
+  progress: "X-Orbit-Progress",
+  provider: "X-Orbit-Provider",
+  requestId: "X-Orbit-Request-Id",
+  responseCost: "X-Orbit-Response-Cost",
+  tokensIn: "X-Orbit-Tokens-In",
+  tokensOut: "X-Orbit-Tokens-Out",
+  version: "X-Orbit-Version",
 } as const;

@@ -68,7 +68,7 @@ export async function POST(request: Request) {
     const { apiKey: rawApiKey, keyId: rawKeyId, sudoPassword } = validation.data;
     const apiKeyId = rawKeyId ?? null;
     const apiKey = await resolveApiKey(apiKeyId, rawApiKey);
-    if (!apiKey || apiKey === "sk_shiguangGateway") {
+    if (!apiKey || apiKey === "sk_orbit") {
       return Response.json(
         { error: "Missing apiKey: provide a valid apiKey or a resolvable keyId" },
         { status: 400 }

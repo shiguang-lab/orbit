@@ -5,7 +5,7 @@ import { getRuntimePorts } from "../../lib/runtime/ports.ts";
 const { dashboardPort } = getRuntimePorts();
 
 const INTERNAL_BASE_URL = (() => {
-  const configured = process.env.SHIGUANG_GATEWAY_BASE_URL?.trim() || process.env.INTERNAL_BASE_URL?.trim() ||
+  const configured = process.env.ORBIT_BASE_URL?.trim() || process.env.INTERNAL_BASE_URL?.trim() ||
     process.env.BASE_URL?.trim() || process.env.NEXT_PUBLIC_BASE_URL?.trim() || process.env.NEXT_PUBLIC_APP_URL?.trim();
   if (configured) {
     try {

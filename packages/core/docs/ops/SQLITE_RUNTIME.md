@@ -4,12 +4,12 @@ title: "SQLite Runtime Resolution"
 
 # SQLite Runtime Resolution
 
-ShiguangGateway resolves its SQLite driver at startup through a 5-step fallback chain:
+Orbit resolves its SQLite driver at startup through a 5-step fallback chain:
 
 1. **Bundled `better-sqlite3`** (via `dependencies` in `package.json`)
    — fastest, native binary, installed by `npm install` when build tools are present.
 
-2. **Runtime-installed `better-sqlite3`** (in `~/.shiguang-gateway/runtime/`)
+2. **Runtime-installed `better-sqlite3`** (in `~/.orbit/runtime/`)
    — installed lazily on first run **OR** by `scripts/build/postinstall.mjs → scripts/postinstall.mjs`.
    Validates native `.node` magic bytes (ELF / Mach-O / PE) before loading
    to guard against corrupt or wrong-platform binaries.
@@ -22,19 +22,19 @@ ShiguangGateway resolves its SQLite driver at startup through a 5-step fallback 
 
 ## Why this complexity?
 
-- **Windows EBUSY**: `npm install -g shiguang-gateway@latest` can fail if the previous
+- **Windows EBUSY**: `npm install -g orbit@latest` can fail if the previous
   version's `better_sqlite3.node` is locked by a running process. The runtime
-  install in `~/.shiguang-gateway/runtime/` sidesteps the global npm cache.
+  install in `~/.orbit/runtime/` sidesteps the global npm cache.
 - **No build tools**: Some environments (corporate Windows without VS Build
   Tools, minimal Docker images) cannot compile `better-sqlite3`. The runtime
   installer resolves a pre-built binary from the npm registry; the fallback
-  drivers ensure ShiguangGateway still boots even if that fails.
+  drivers ensure Orbit still boots even if that fails.
 - **Air-gapped systems**: If the npm registry is unreachable, `node:sqlite`
   or `sql.js` guarantee baseline functionality.
 
 ## Magic-byte validation
 
-Before loading a runtime-installed `.node` file, ShiguangGateway reads the first 8
+Before loading a runtime-installed `.node` file, Orbit reads the first 8
 bytes and matches against known platform magics:
 
 | Platform              | Bytes (hex)   | Label       |
@@ -61,14 +61,14 @@ const info = getDriverInfo();
 
 ```bash
 # Skip postinstall warm-up (for fast CI installs)
-SHIGUANG_GATEWAY_SKIP_POSTINSTALL=1 npm install -g shiguang-gateway
+ORBIT_SKIP_POSTINSTALL=1 npm install -g orbit
 
 # Force-reinstall runtime better-sqlite3
-rm -rf ~/.shiguang-gateway/runtime
-shiguang-gateway  # will reinstall on next start
+rm -rf ~/.orbit/runtime
+orbit  # will reinstall on next start
 
 # Check what driver is active
-shiguang-gateway config db-info  # (if CLI command exists)
+orbit config db-info  # (if CLI command exists)
 ```
 
 ## Reference
@@ -84,9 +84,9 @@ Implementation:
 ## Single-writer topology (HA unsupported)
 
 The driver fallback chain above still runs in **one process**. Default SQLite
-ShiguangGateway is a **single writer**:
+Orbit is a **single writer**:
 
-- Do not attach two ShiguangGateway replicas to the same `storage.sqlite` file.
+- Do not attach two Orbit replicas to the same `storage.sqlite` file.
 - A container restart, Recreate deploy, OOM kill, or HEALTHCHECK restart drops
   every in-flight SSE session. There is no session drain on the stock path.
 - Orchestrator liveness that treats a slow `/healthz` as dead will kill the only

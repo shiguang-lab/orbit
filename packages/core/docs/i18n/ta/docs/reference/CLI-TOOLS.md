@@ -6,22 +6,22 @@
 
 ---
 
-title: "CLI கருவிகள் — ShiguangGateway"
+title: "CLI கருவிகள் — Orbit"
 version: 3.8.50
 lastUpdated: 2026-08-18
 ---
 
-# CLI கருவிகள் — ShiguangGateway
+# CLI கருவிகள் — Orbit
 
 கடைசி புதுப்பிப்பு: 2026-08-18
 
-ShiguangGateway மூன்று வகை CLI கருவிகளுடன் இணைகிறது, மூன்று தனிப்பட்ட டாஷ்போர்டு பக்கங்களில் பரவியுள்ளது:
+Orbit மூன்று வகை CLI கருவிகளுடன் இணைகிறது, மூன்று தனிப்பட்ட டாஷ்போர்டு பக்கங்களில் பரவியுள்ளது:
 
 | பக்கம்              | பாதை                    | கருத்து                                                                                    | எண்ணிக்கை         |
 | ------------------- | ----------------------- | ------------------------------------------------------------------------------------------ | ----------------- |
-| **CLI குறியீடுகள்** | `/dashboard/cli-code`   | ShiguangGateway-க்கு நீங்கள் குறிக்கிற குறியீட்டு கருவிகள் (Client → CLI → ShiguangGateway → Provider) | 26                |
-| **CLI முகவர்கள்**   | `/dashboard/cli-agents` | ShiguangGateway-க்கு நீங்கள் குறிக்கிற சுயாதீன முகவர்கள் (அதே ஓட்டம், பரந்த அளவு)                | 8                 |
-| **ACP முகவர்கள்**   | `/dashboard/acp-agents` | ShiguangGateway stdio/ACP மூலம் பின்னணி உருவாக்கும் CLI-கள் (மறுபுற ஓட்டம்)                      | பதிவு பார்க்கவும் |
+| **CLI குறியீடுகள்** | `/dashboard/cli-code`   | Orbit-க்கு நீங்கள் குறிக்கிற குறியீட்டு கருவிகள் (Client → CLI → Orbit → Provider) | 26                |
+| **CLI முகவர்கள்**   | `/dashboard/cli-agents` | Orbit-க்கு நீங்கள் குறிக்கிற சுயாதீன முகவர்கள் (அதே ஓட்டம், பரந்த அளவு)                | 8                 |
+| **ACP முகவர்கள்**   | `/dashboard/acp-agents` | Orbit stdio/ACP மூலம் பின்னணி உருவாக்கும் CLI-கள் (மறுபுற ஓட்டம்)                      | பதிவு பார்க்கவும் |
 
 பழைய பாதைகள் 308 மூலம் மறுபடியும் வழி மாற்றப்படுகின்றன: `/dashboard/cli-tools` → `/dashboard/cli-code`, `/dashboard/agents` → `/dashboard/acp-agents`.
 
@@ -33,14 +33,14 @@ ShiguangGateway மூன்று வகை CLI கருவிகளுடன�
 CLI குறியீடுகள் / CLI முகவர்கள் (பயன்பாடு ஓட்டம்):
 Claude / Codex / OpenCode / Cline / KiloCode / Continue / Hermes Agent / Goose / ...
            │
-           ▼  (எல்லாம் ShiguangGateway-க்கு குறிக்கிறது)
+           ▼  (எல்லாம் Orbit-க்கு குறிக்கிறது)
     http://YOUR_SERVER:20128/v1
            │
-           ▼  (ShiguangGateway சரியான வழங்கலுக்கு வழி மாற்றுகிறது)
+           ▼  (Orbit சரியான வழங்கலுக்கு வழி மாற்றுகிறது)
     Anthropic / OpenAI / Gemini / DeepSeek / Groq / Mistral / ...
 
 ACP முகவர்கள் (மறுபுற உருவாக்கும் ஓட்டம்):
-    கிளையன்ட் கோரிக்கை → ShiguangGateway → stdio/ACP மூலம் CLI உருவாக்குகிறது → பதில்
+    கிளையன்ட் கோரிக்கை → Orbit → stdio/ACP மூலம் CLI உருவாக்குகிறது → பதில்
 ```
 
 **நன்மைகள்:**
@@ -54,37 +54,37 @@ ACP முகவர்கள் (மறுபுற உருவாக்கு�
 
 ## `setup-*` உடன் தானாகக் கட்டமைக்கவும்
 
-ஒவ்வொரு கருவியின் கட்டமைப்பை கையால் எழுத வேண்டிய அவசியமில்லை. ShiguangGateway ஒவ்வொரு ஆதரிக்கப்படும் CLI-க்கு `setup-*`
-கமாண்டை வழங்குகிறது, இது ஓர் இயக்கத்தில் உள்ள ShiguangGateway-இல் இருந்து **உயிருடன்** உள்ள மாதிரி பட்டியலைப் படிக்கிறது
+ஒவ்வொரு கருவியின் கட்டமைப்பை கையால் எழுத வேண்டிய அவசியமில்லை. Orbit ஒவ்வொரு ஆதரிக்கப்படும் CLI-க்கு `setup-*`
+கமாண்டை வழங்குகிறது, இது ஓர் இயக்கத்தில் உள்ள Orbit-இல் இருந்து **உயிருடன்** உள்ள மாதிரி பட்டியலைப் படிக்கிறது
 மற்றும் உங்கள் இயந்திரத்தில் கருவியின் சொந்த கட்டமைப்பை எழுதுகிறது:
 
 ```bash
-shiguang-gateway setup-codex        shiguang-gateway setup-claude       shiguang-gateway setup-opencode
-shiguang-gateway setup-cline        shiguang-gateway setup-kilo         shiguang-gateway setup-continue
-shiguang-gateway setup-cursor       shiguang-gateway setup-roo          shiguang-gateway setup-crush
-shiguang-gateway setup-goose        shiguang-gateway setup-qwen         shiguang-gateway setup-aider
+orbit setup-codex        orbit setup-claude       orbit setup-opencode
+orbit setup-cline        orbit setup-kilo         orbit setup-continue
+orbit setup-cursor       orbit setup-roo          orbit setup-crush
+orbit setup-goose        orbit setup-qwen         orbit setup-aider
 ```
 
-ஒவ்வொன்றும் `--remote <url> --api-key <key>` (ஒரு தொலைதூர ShiguangGateway-க்கு எதிராக உள்ளூர் கருவியை கட்டமைக்கவும்), `--dry-run` (எழுதாமல் முன்னோட்டம்), மற்றும் `--port` ஐ ஏற்கிறது. மாதிரி தானாகக் கண்டறியாத கருவிகள் (Cline, Kilo, Roo, Goose, Aider, Qwen) `--model <id>` (மற்றும் `--yes` என்றால் தொடர்பில்லாத ஓட்டங்களுக்கு) எடுக்கின்றன. சரியான சூழலை ஊட்டிய மற்றும் எந்த கட்டமைப்பும் எழுதாத CLI-ஐ தொடங்க, பொதுவான `shiguang-gateway run <target>` லாஞ்சரைப் பயன்படுத்தவும் (claude, codex, aider, goose, opencode, qwen, gemini — இலக்குகள் மற்றும் பெயர்கள் `bin/cli/cli-manifest.mjs` இல் இருந்து வருகின்றன); பழைய ஒவ்வொரு கருவிக்கும் தனித்துவமான லாஞ்சர்கள் `shiguang-gateway launch` (Claude Code) மற்றும் `shiguang-gateway launch-codex` (Codex) கிடைக்கின்றன. Gemini CLI என்பது தொடங்குவதற்கே: இது `shiguang-gateway run` இலக்கு ஆனால் `setup-*`/`configure` செய்முறை இல்லை.
+ஒவ்வொன்றும் `--remote <url> --api-key <key>` (ஒரு தொலைதூர Orbit-க்கு எதிராக உள்ளூர் கருவியை கட்டமைக்கவும்), `--dry-run` (எழுதாமல் முன்னோட்டம்), மற்றும் `--port` ஐ ஏற்கிறது. மாதிரி தானாகக் கண்டறியாத கருவிகள் (Cline, Kilo, Roo, Goose, Aider, Qwen) `--model <id>` (மற்றும் `--yes` என்றால் தொடர்பில்லாத ஓட்டங்களுக்கு) எடுக்கின்றன. சரியான சூழலை ஊட்டிய மற்றும் எந்த கட்டமைப்பும் எழுதாத CLI-ஐ தொடங்க, பொதுவான `orbit run <target>` லாஞ்சரைப் பயன்படுத்தவும் (claude, codex, aider, goose, opencode, qwen, gemini — இலக்குகள் மற்றும் பெயர்கள் `bin/cli/cli-manifest.mjs` இல் இருந்து வருகின்றன); பழைய ஒவ்வொரு கருவிக்கும் தனித்துவமான லாஞ்சர்கள் `orbit launch` (Claude Code) மற்றும் `orbit launch-codex` (Codex) கிடைக்கின்றன. Gemini CLI என்பது தொடங்குவதற்கே: இது `orbit run` இலக்கு ஆனால் `setup-*`/`configure` செய்முறை இல்லை.
 
 > **முழு குறிப்புகள்:** மாஸ்டர் அட்டவணை — ஒவ்வொரு கட்டளை எழுதும், ஒவ்வொரு கொள்கை, உள்ளூர் மற்றும் தொலைதூர, மற்றும் எந்த கருவிகள் `/v1` பின்விளைவுகளை விரும்புகின்றன — **[CLI ஒருங்கிணைப்புகள்](../guides/CLI-INTEGRATIONS.md)** இல் உள்ளது.
 
 ### ஒரு கொண்டெய்னரில் உள்ளே இவற்றை இயக்குதல்
 
-ShiguangGateway கொண்டெய்னரில் செயல்படுத்தப்படும் `setup-*` கட்டளை கொண்டெய்னரின் சொந்த வீட்டில் எழுதுகிறது,
-அது எந்த ஹோஸ்ட் CLI-க்கும் படிக்கப்படாது மற்றும் கொண்டெய்னருடன் மறைந்து விடும். ShiguangGateway அதை கண்டுபிடிக்கிறது
+Orbit கொண்டெய்னரில் செயல்படுத்தப்படும் `setup-*` கட்டளை கொண்டெய்னரின் சொந்த வீட்டில் எழுதுகிறது,
+அது எந்த ஹோஸ்ட் CLI-க்கும் படிக்கப்படாது மற்றும் கொண்டெய்னருடன் மறைந்து விடும். Orbit அதை கண்டுபிடிக்கிறது
 மற்றும் எழுதுவதற்குப் பதிலாக வழிமுறைகளுடன் `2` ஐ வெளியேற்றுகிறது. முன்னேற்றத்திற்கு இரண்டு ஆதரிக்கப்படும் வழிகள் —
-ஹோஸ்டில் CLI-ஐ நிறுவவும் மற்றும் `shiguang-gateway connect` கொண்டெய்னருக்கு, அல்லது கட்டமைப்பு அடைவுகளை பிணைக்கவும்
+ஹோஸ்டில் CLI-ஐ நிறுவவும் மற்றும் `orbit connect` கொண்டெய்னருக்கு, அல்லது கட்டமைப்பு அடைவுகளை பிணைக்கவும்
 மற்றும் `CLI_CONFIG_HOME` ஐ அமைக்கவும் (கொம்போஸ் `host` சுயவிவரம்). ஒவ்வொரு `setup-*` கட்டளையும்,
-மேலும் `shiguang-gateway configure` மற்றும் `shiguang-gateway config set`, கொண்டெய்னரின் சொந்த CLI-களை
+மேலும் `orbit configure` மற்றும் `orbit config set`, கொண்டெய்னரின் சொந்த CLI-களை
 கட்டமைக்க நீங்கள் உண்மையில் பொருத்தமாக இருந்தால் `--allow-container-write` ஐ ஏற்கிறது;
-`SHIGUANG_GATEWAY_ALLOW_CONTAINER_CONFIG_WRITE=true` சேவையகத்திற்காக அதே செய்கிறது.
-[Docker கையேடு → ஹோஸ்ட் CLI கருவிகளை கட்டமைத்தல்](../guides/DOCKER_GUIDE.md#configuring-host-cli-tools-when-shiguang-gateway-runs-in-docker) ஐப் பார்க்கவும்.
+`ORBIT_ALLOW_CONTAINER_CONFIG_WRITE=true` சேவையகத்திற்காக அதே செய்கிறது.
+[Docker கையேடு → ஹோஸ்ட் CLI கருவிகளை கட்டமைத்தல்](../guides/DOCKER_GUIDE.md#configuring-host-cli-tools-when-orbit-runs-in-docker) ஐப் பார்க்கவும்.
 
 டாஷ்போர்டின் **செயல்படுத்தும் முடிவு** (`POST /api/cli-tools/apply`) ஒரே பாதுகாப்பை அமல்படுத்துகிறது:
 ஒரு கொண்டெய்னரில், ஹோஸ்டில் இருந்து பிணைக்கப்படாத இலக்கு எழுதுதல் **`422`** என்ற பதிலுடன்
 `containerEphemeralTarget: true`, பாதுகாப்பான பிழை உரை மற்றும் — ஹோஸ்ட் செய்முறை உள்ள கருவிகளுக்கான
-(claude, codex, opencode, cline, kilo, continue) — `hostSetupCommand` (எடுத்துக்காட்டாக `shiguang-gateway setup-opencode`)
+(claude, codex, opencode, cline, kilo, continue) — `hostSetupCommand` (எடுத்துக்காட்டாக `orbit setup-opencode`)
 ஹோஸ்டில் இயக்க வேண்டும்; எதுவும் எழுதப்படவில்லை. `dryRun: true` கொண்டெய்னர் முறையில் வேலை செய்கிறது
 மற்றும் உருவாக்கப்பட்ட உள்ளடக்கம் + இலக்கு பாதையை டிஸ்க் தொடாமல் திருப்புகிறது,
 எனவே நீங்கள் டாஷ்போர்டில் முன்னோட்டம் காணலாம் மற்றும் ஹோஸ்டில் செயல்படுத்தலாம்.
@@ -119,8 +119,8 @@ ShiguangGateway கொண்டெய்னரில் செயல்பட
 | -------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ |
 | **பட்டியலிடப்பட்ட**  | காட்சியில் பட்டியலிடப்பட்ட கருவி (பெயர், விற்பனையாளர், ஆவணங்கள், கட்டமைப்பு வகை)           | `src/shared/constants/cliTools.ts` (`CLI_TOOLS`)                   |
 | **கண்டறியக்கூடிய**   | பைனரி/கட்டமைப்பு கண்டறிதல், ஆரோக்கிய சோதனைகள், கட்டமைப்பு பாதைகள்                          | `src/shared/services/cliRuntime.ts` (`CLI_TOOLS` இயக்கம் பட்டியல்) |
-| **கட்டமைக்கக்கூடிய** | `shiguang-gateway configure <cli>` மூலம் ஆதரிக்கப்படுகிறது (அமைப்பு செய்முறை உள்ளது)              | `bin/cli/cli-manifest.mjs` (`configure: true`)                     |
-| **தொடங்கக்கூடிய**    | `shiguang-gateway run <target>` மூலம் ஆதரிக்கப்படுகிறது (env/args ஊடுருவல் வரையறுக்கப்பட்டுள்ளது) | `bin/cli/cli-manifest.mjs` (`run: true`)                           |
+| **கட்டமைக்கக்கூடிய** | `orbit configure <cli>` மூலம் ஆதரிக்கப்படுகிறது (அமைப்பு செய்முறை உள்ளது)              | `bin/cli/cli-manifest.mjs` (`configure: true`)                     |
+| **தொடங்கக்கூடிய**    | `orbit run <target>` மூலம் ஆதரிக்கப்படுகிறது (env/args ஊடுருவல் வரையறுக்கப்பட்டுள்ளது) | `bin/cli/cli-manifest.mjs` (`run: true`)                           |
 
 `bin/cli/cli-manifest.mjs` CLI கட்டளை மேற்பரப்புகளுக்கான அதிகாரப்பூர்வ செயல்பாட்டுப் பட்டியல்: `run`, `configure` மற்றும் ஷெல்-முழுமை உருவாக்கிகள் அனைத்தும் அவற்றின்
 இலக்கு பட்டியல்கள், பெயர் தீர்வு (உதாரணமாக `kilocode`/`kilo-code`/`kilo_cli` → `kilo`)
@@ -183,7 +183,7 @@ ShiguangGateway கொண்டெய்னரில் செயல்பட
 
 ## 3. ACP ஏஜென்ட்கள் (/dashboard/acp-agents)
 
-இந்த பக்கம் (`/dashboard/agents` இல் இருந்து மறுபெயரிடப்பட்டது) ShiguangGateway **spawn** செய்யக்கூடிய CLIs ஐ stdio/ACP புரொட்டோக்கால் மூலம் பின்னணி செயலாக்க இயந்திரங்களாகக் காட்டுகிறது. பட்டியல் `src/lib/acp/registry.ts` இல் தனியாக பராமரிக்கப்படுகிறது மற்றும் `CLI_TOOLS` உடன் **ஒரே மாதிரியானது அல்ல**.
+இந்த பக்கம் (`/dashboard/agents` இல் இருந்து மறுபெயரிடப்பட்டது) Orbit **spawn** செய்யக்கூடிய CLIs ஐ stdio/ACP புரொட்டோக்கால் மூலம் பின்னணி செயலாக்க இயந்திரங்களாகக் காட்டுகிறது. பட்டியல் `src/lib/acp/registry.ts` இல் தனியாக பராமரிக்கப்படுகிறது மற்றும் `CLI_TOOLS` உடன் **ஒரே மாதிரியானது அல்ல**.
 
 ---
 
@@ -246,7 +246,7 @@ interface ToolBatchStatus {
 | `POST /api/cli-tools/codewhale-settings`    | CodeWhale (OPENAI_BASE_URL, primary + legacy `~/.deepseek` sync) |
 | `POST /api/cli-tools/smelt-settings`        | Smelt                                                            |
 | `POST /api/cli-tools/pi-settings`           | Pi coding agent                                                  |
-| `POST /api/cli-tools/grok-build-settings`   | Grok Build (~/.grok/config.toml, `[model.shiguang-gateway]`)            |
+| `POST /api/cli-tools/grok-build-settings`   | Grok Build (~/.grok/config.toml, `[model.orbit]`)            |
 | `POST /api/cli-tools/qwen-settings`         | Qwen Code (`~/.qwen/settings.json` + dedicated `.env` key)       |
 
 அனைத்து பாதைகளும் பிழை பதில்களுக்கு `sanitizeErrorMessage()` ஐப் பயன்படுத்துகின்றன (Hard Rule #12).
@@ -306,7 +306,7 @@ interface ToolBatchStatus {
 
 ## 9. விரைவு தொடக்கம்
 
-### படி 1 — ShiguangGateway API விசையை பெறுங்கள்
+### படி 1 — Orbit API விசையை பெறுங்கள்
 
 1. `/dashboard/api-manager` ஐ திறக்கவும் → **API விசை உருவாக்கவும்**
 2. ஒரு பெயரை கொடுக்கவும் (எடுத்துக்காட்டாக `cli-tools`) மற்றும் அனைத்து அனுமதிகளை தேர்ந்தெடுக்கவும்
@@ -339,7 +339,7 @@ npm install -g kilocode
 # Qwen Code
 npm install -g @qwen-code/qwen-code
 
-# Google Gemini CLI (launchable via `shiguang-gateway run gemini` → /v1beta surface)
+# Google Gemini CLI (launchable via `orbit run gemini` → /v1beta surface)
 npm install -g @google/gemini-cli
 
 # Aider
@@ -370,14 +370,14 @@ cargo install smelt  # Rust அடிப்படையிலான
 ### படி 4 — உலகளாவிய சுற்றுப்புற மாறிலிகளை அமைக்கவும்
 
 ```bash
-# ShiguangGateway Universal Endpoint
+# Orbit Universal Endpoint
 export OPENAI_BASE_URL="http://localhost:20128/v1"
-export OPENAI_API_KEY="sk-your-shiguang-gateway-key"
+export OPENAI_API_KEY="sk-your-orbit-key"
 export ANTHROPIC_BASE_URL="http://localhost:20128"
-export ANTHROPIC_AUTH_TOKEN="sk-your-shiguang-gateway-key"
+export ANTHROPIC_AUTH_TOKEN="sk-your-orbit-key"
 # Gemini CLI ROOT இல் GOOGLE_GEMINI_BASE_URL ஐ வாசிக்கிறது (அதன் SDK /v1beta/... ஐ தானாகச் சேர்க்கிறது)
 export GOOGLE_GEMINI_BASE_URL="http://localhost:20128"
-export GEMINI_API_KEY="sk-your-shiguang-gateway-key"
+export GEMINI_API_KEY="sk-your-orbit-key"
 ```
 
 > **தூர சேவையகம்** க்கான `localhost:20128` ஐ சேவையக IP அல்லது டொமைனுடன் மாற்றவும்,
@@ -395,7 +395,7 @@ mkdir -p ~/.claude && cat > ~/.claude/settings.json << EOF
 {
   "env": {
     "ANTHROPIC_BASE_URL": "http://localhost:20128",
-    "ANTHROPIC_AUTH_TOKEN": "sk-your-shiguang-gateway-key"
+    "ANTHROPIC_AUTH_TOKEN": "sk-your-orbit-key"
   }
 }
 EOF
@@ -411,20 +411,20 @@ Claude Code க்கான ஒருங்கிணைந்த Anthropic க�
 
 Modern Codex (v0.137+) `~/.codex/config.toml` ஐ மட்டும் வாசிக்கிறது — பழைய
 `config.yaml` பழமையான npm CLI க்கு சொந்தமாகும் மற்றும் அமைதியாகIgnored. API
-விசை `SHIGUANG_GATEWAY_API_KEY` சுற்றுப்புற மாறிலியில் (`env_key`) இருக்கும், எப்போதும்
+விசை `ORBIT_API_KEY` சுற்றுப்புற மாறிலியில் (`env_key`) இருக்கும், எப்போதும்
 கோப்பின் உள்ளே இல்லை:
 
 ```bash
 mkdir -p ~/.codex && cat > ~/.codex/config.toml << EOF
-model_provider = "shiguang-gateway"
+model_provider = "orbit"
 
-[model_providers.shiguang-gateway]
-name                 = "ShiguangGateway"
+[model_providers.orbit]
+name                 = "Orbit"
 base_url             = "http://localhost:20128/v1"
-env_key              = "SHIGUANG_GATEWAY_API_KEY"
+env_key              = "ORBIT_API_KEY"
 requires_openai_auth = false
 EOF
-export SHIGUANG_GATEWAY_API_KEY="sk-your-shiguang-gateway-key"
+export ORBIT_API_KEY="sk-your-orbit-key"
 ```
 
 முழு குறிப்புகள் (சுயவிவரங்கள், `wire_api`, சூழல் ஜன்னல்கள்): [CODEX-CLI-CONFIGURATION.md](../guides/CODEX-CLI-CONFIGURATION.md).
@@ -440,12 +440,12 @@ mkdir -p ~/.config/opencode && cat > ~/.config/opencode/opencode.json << EOF
 {
   "\$schema": "https://opencode.ai/config.json",
   "provider": {
-    "shiguang-gateway": {
+    "orbit": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "ShiguangGateway",
+      "name": "Orbit",
       "options": {
         "baseURL": "http://localhost:20128/v1",
-        "apiKey": "sk-your-shiguang-gateway-key"
+        "apiKey": "sk-your-orbit-key"
       },
       "models": {
         "claude-sonnet-4-5": { "name": "claude-sonnet-4-5" },
@@ -460,7 +460,7 @@ EOF
 
 **சோதனை:** `opencode`
 
-> `opencode run "your prompt" --model shiguang-gateway/claude-sonnet-4-5-thinking --variant high` ஐ
+> `opencode run "your prompt" --model orbit/claude-sonnet-4-5-thinking --variant high` ஐ
 > சிந்தனை மாறிலிகளை அனுப்ப பயன்படுத்தவும்.
 
 ---
@@ -474,7 +474,7 @@ mkdir -p ~/.cline/data && cat > ~/.cline/data/globalState.json << EOF
 {
   "apiProvider": "openai",
   "openAiBaseUrl": "http://localhost:20128/v1",
-  "openAiApiKey": "sk-your-shiguang-gateway-key"
+  "openAiApiKey": "sk-your-orbit-key"
 }
 EOF
 ```
@@ -482,7 +482,7 @@ EOF
 **VS Code முறை:**
 Cline விரிவாக்க அமைப்புகள் → API வழங்குநர்: `OpenAI Compatible` → அடிப்படை URL: `http://localhost:20128/v1`
 
-அல்லது ShiguangGateway டாஷ்போர்டைப் பயன்படுத்தவும் → **CLI Tools → Cline → Apply Config**.
+அல்லது Orbit டாஷ்போர்டைப் பயன்படுத்தவும் → **CLI Tools → Cline → Apply Config**.
 
 ---
 
@@ -491,7 +491,7 @@ Cline விரிவாக்க அமைப்புகள் → API வழ�
 **CLI முறை:**
 
 ```bash
-kilocode --api-base http://localhost:20128/v1 --api-key sk-your-shiguang-gateway-key
+kilocode --api-base http://localhost:20128/v1 --api-key sk-your-orbit-key
 ```
 
 **VS Code அமைப்புகள்:**
@@ -499,11 +499,11 @@ kilocode --api-base http://localhost:20128/v1 --api-key sk-your-shiguang-gateway
 ```json
 {
   "kilo-code.openAiBaseUrl": "http://localhost:20128/v1",
-  "kilo-code.apiKey": "sk-your-shiguang-gateway-key"
+  "kilo-code.apiKey": "sk-your-orbit-key"
 }
 ```
 
-அல்லது ShiguangGateway டாஷ்போர்டைப் பயன்படுத்தவும் → **CLI Tools → KiloCode → Apply Config**.
+அல்லது Orbit டாஷ்போர்டைப் பயன்படுத்தவும் → **CLI Tools → KiloCode → Apply Config**.
 
 ---
 
@@ -513,11 +513,11 @@ kilocode --api-base http://localhost:20128/v1 --api-key sk-your-shiguang-gateway
 
 ```yaml
 models:
-  - name: ShiguangGateway
+  - name: Orbit
     provider: openai
     model: auto
     apiBase: http://localhost:20128/v1
-    apiKey: sk-your-shiguang-gateway-key
+    apiKey: sk-your-orbit-key
     default: true
 ```
 
@@ -527,25 +527,25 @@ models:
 
 #### VS Code Insiders (`chatLanguageModels.json`)
 
-VS Code Insiders தனிப்பயன் முடிவுகளை உருவாக்கும் போது ShiguangGateway வேலை செய்ய வேண்டும் என்றால் இதைப் பயன்படுத்தவும்.
+VS Code Insiders தனிப்பயன் முடிவுகளை உருவாக்கும் போது Orbit வேலை செய்ய வேண்டும் என்றால் இதைப் பயன்படுத்தவும்.
 
 **பரிந்துரைக்கப்படும் இடம்:**
 
 - Linux: `~/.config/Code - Insiders/User/chatLanguageModels.json`
 - Windows: `%APPDATA%/Code - Insiders/User/chatLanguageModels.json`
 
-**tokenized ShiguangGateway alias ஐப் பயன்படுத்தும் எடுத்துக்காட்டு:**
+**tokenized Orbit alias ஐப் பயன்படுத்தும் எடுத்துக்காட்டு:**
 
 ```json
 [
   {
     "vendor": "customendpoint",
     "id": "auto",
-    "name": "ShiguangGateway Auto",
+    "name": "Orbit Auto",
     "family": "gpt-4",
     "version": "1.0.0",
-    "url": "http://localhost:20128/api/v1/vscode/sk-your-shiguang-gateway-key/chat/completions",
-    "modelsUrl": "http://localhost:20128/api/v1/vscode/sk-your-shiguang-gateway-key/models",
+    "url": "http://localhost:20128/api/v1/vscode/sk-your-orbit-key/chat/completions",
+    "modelsUrl": "http://localhost:20128/api/v1/vscode/sk-your-orbit-key/models",
     "requestFormat": "openai-chat-completions",
     "contextWindow": 256000,
     "maxOutputTokens": 32768,
@@ -558,7 +558,7 @@ VS Code Insiders தனிப்பயன் முடிவுகளை உர�
 
 **குறிப்புகள்:**
 
-- `sk-your-shiguang-gateway-key` ஐ ShiguangGateway இல் உருவாக்கப்பட்ட API விசையுடன் மாற்றவும்.
+- `sk-your-orbit-key` ஐ Orbit இல் உருவாக்கப்பட்ட API விசையுடன் மாற்றவும்.
 - `url` புலம் `/api/v1/vscode/{token}/chat/completions` க்கு குறிக்க வேண்டும்.
 - `modelsUrl` புலம் `/api/v1/vscode/{token}/models` க்கு குறிக்க வேண்டும்.
 - கிளையன்ட் தனிப்பயன் தலைப்புகளை ஆதரிக்கும் போது சாதாரண `/v1` + Bearer தலைப்பு ஓட்டத்தை முன்னுரிமை அளிக்கவும்.
@@ -572,38 +572,38 @@ VS Code Insiders தனிப்பயன் முடிவுகளை உர�
 # உங்கள் AWS/Kiro கணக்கில் உள்நுழைக:
 kiro-cli login
 
-# CLI தனது சொந்த அங்கீகாரத்தை பயன்படுத்துகிறது — Kiro CLI க்கான பின்னணி ShiguangGateway தேவை இல்லை.
-# மற்ற கருவிகளுக்காக ShiguangGateway உடன் kiro-cli ஐப் பயன்படுத்தவும்.
+# CLI தனது சொந்த அங்கீகாரத்தை பயன்படுத்துகிறது — Kiro CLI க்கான பின்னணி Orbit தேவை இல்லை.
+# மற்ற கருவிகளுக்காக Orbit உடன் kiro-cli ஐப் பயன்படுத்தவும்.
 kiro-cli status
 ```
 
-**Kiro IDE** டெஸ்க்டாப் செயலிக்கு, ShiguangGateway மூலம் வெளியிடப்பட்ட MITM முடிவுகளைப் பயன்படுத்தவும்
+**Kiro IDE** டெஸ்க்டாப் செயலிக்கு, Orbit மூலம் வெளியிடப்பட்ட MITM முடிவுகளைப் பயன்படுத்தவும்
 `/dashboard/cli-tools → Kiro` இல்.
 
-## 10. உள்ளக ShiguangGateway CLI
+## 10. உள்ளக Orbit CLI
 
-`shiguang-gateway` பைனரி சர்வர் வாழ்க்கைச்சுழற்சி, அமைப்பு, பரிசோதனை மற்றும் வழங்குநர் மேலாண்மைக்கான கட்டளைகளை வழங்குகிறது. நுழைவுப் புள்ளி: `bin/shiguang-gateway.mjs`.
+`orbit` பைனரி சர்வர் வாழ்க்கைச்சுழற்சி, அமைப்பு, பரிசோதனை மற்றும் வழங்குநர் மேலாண்மைக்கான கட்டளைகளை வழங்குகிறது. நுழைவுப் புள்ளி: `bin/orbit.mjs`.
 
 ```bash
-shiguang-gateway                              # சர்வரை தொடங்கவும் (இயல்புநிலை போர்ட் 20128)
-shiguang-gateway setup                        # தொடர்பான அமைப்பு மந்திரி
-shiguang-gateway doctor                       # கட்டமைப்பு, DB, போர்டுகள், இயக்க நேரத்தைச் சரிபார்க்கவும்
-shiguang-gateway providers list               # கட்டமைக்கப்பட்ட வழங்குநர் இணைப்புகள்
-shiguang-gateway providers test-all           # ஒவ்வொரு செயல்பாட்டிற்கான இணைப்பையும் சோதிக்கவும்
-shiguang-gateway reset-password               # நிர்வாக கடவுச்சொல்லை மீட்டமைக்கவும்
-shiguang-gateway logs                         # கோரிக்கைகள் பதிவுகளை ஒளிபரப்பவும்
-shiguang-gateway health                       # விரிவான ஆரோக்கியம் (பிரேக்கர்கள், கொஞ்சம், நினைவகம்)
-shiguang-gateway --version                    # பதிப்பை அச்சிடவும்
-shiguang-gateway --help                       # அனைத்து கட்டளைகளை காண்பிக்கவும்
+orbit                              # சர்வரை தொடங்கவும் (இயல்புநிலை போர்ட் 20128)
+orbit setup                        # தொடர்பான அமைப்பு மந்திரி
+orbit doctor                       # கட்டமைப்பு, DB, போர்டுகள், இயக்க நேரத்தைச் சரிபார்க்கவும்
+orbit providers list               # கட்டமைக்கப்பட்ட வழங்குநர் இணைப்புகள்
+orbit providers test-all           # ஒவ்வொரு செயல்பாட்டிற்கான இணைப்பையும் சோதிக்கவும்
+orbit reset-password               # நிர்வாக கடவுச்சொல்லை மீட்டமைக்கவும்
+orbit logs                         # கோரிக்கைகள் பதிவுகளை ஒளிபரப்பவும்
+orbit health                       # விரிவான ஆரோக்கியம் (பிரேக்கர்கள், கொஞ்சம், நினைவகம்)
+orbit --version                    # பதிப்பை அச்சிடவும்
+orbit --help                       # அனைத்து கட்டளைகளை காண்பிக்கவும்
 ```
 
 ### அமைப்பு & ஆரம்பிப்பு
 
 ```bash
-shiguang-gateway setup                        # தொடர்பான அமைப்பு மந்திரி
-shiguang-gateway setup --non-interactive      # CI/தானியங்கி முறை (சுற்றுப்புற மாறிகள் + கொடிகள்)
-shiguang-gateway setup --password '<value>'   # நிர்வாக கடவுச்சொல்லை நேரடியாக அமைக்கவும்
-shiguang-gateway setup --add-provider \
+orbit setup                        # தொடர்பான அமைப்பு மந்திரி
+orbit setup --non-interactive      # CI/தானியங்கி முறை (சுற்றுப்புற மாறிகள் + கொடிகள்)
+orbit setup --password '<value>'   # நிர்வாக கடவுச்சொல்லை நேரடியாக அமைக்கவும்
+orbit setup --add-provider \
   --provider openai \
   --api-key '<value>' \
   --test-provider                      # ஒரு அடிப்படையில் வழங்குநரைச் சேர்க்கவும் மற்றும் சோதிக்கவும்
@@ -613,21 +613,21 @@ shiguang-gateway setup --add-provider \
 
 | Var                 | நோக்கம்                                                                              |
 | ------------------- | ------------------------------------------------------------------------------------ |
-| `SHIGUANG_GATEWAY_API_KEY` | வழங்குநர் API விசை (Commander `.env()` மூலம் `--api-key` க்கு கட்டுப்படுத்தப்பட்டது) |
-| `DATA_DIR`          | ShiguangGateway தரவுத்தொகுப்பை மீறவும்                                                     |
+| `ORBIT_API_KEY` | வழங்குநர் API விசை (Commander `.env()` மூலம் `--api-key` க்கு கட்டுப்படுத்தப்பட்டது) |
+| `DATA_DIR`          | Orbit தரவுத்தொகுப்பை மீறவும்                                                     |
 
 மற்ற அனைத்து தொடர்பில்லாத உள்ளீடுகள் கொடிகளாகவே அனுப்பப்படுகின்றன, சுற்றுப்புற மாறிகள் அல்ல:
 `--password`, `--provider`, `--provider-name`, `--provider-base-url`, `--default-model`
-(மேலே உள்ள `shiguang-gateway setup` விருப்பங்களைப் பார்க்கவும்).
+(மேலே உள்ள `orbit setup` விருப்பங்களைப் பார்க்கவும்).
 
 ### பரிசோதனை
 
 ```bash
-shiguang-gateway doctor                       # கட்டமைப்பு, DB, போர்டுகள், இயக்க நேரம், நினைவகம், உயிரியல் நிலை சரிபார்க்கவும்
-shiguang-gateway doctor --json                # இயந்திரம் வாசிக்கக்கூடிய JSON
-shiguang-gateway doctor --no-liveness         # HTTP ஆரோக்கியத்தை தவிர்க்கவும்
-shiguang-gateway doctor --host 0.0.0.0        # உயிரியல் நிலை ஹோஸ்டை மீறவும்
-shiguang-gateway doctor --liveness-url <url>  # முழு ஆரோக்கியம் முடிவுக்கான URL மீறவும்
+orbit doctor                       # கட்டமைப்பு, DB, போர்டுகள், இயக்க நேரம், நினைவகம், உயிரியல் நிலை சரிபார்க்கவும்
+orbit doctor --json                # இயந்திரம் வாசிக்கக்கூடிய JSON
+orbit doctor --no-liveness         # HTTP ஆரோக்கியத்தை தவிர்க்கவும்
+orbit doctor --host 0.0.0.0        # உயிரியல் நிலை ஹோஸ்டை மீறவும்
+orbit doctor --liveness-url <url>  # முழு ஆரோக்கியம் முடிவுக்கான URL மீறவும்
 ```
 
 மருத்துவர் இந்த சரிபார்ப்புகளை இயக்குகிறார்: `கட்டமைப்பு`, `தரவுத்தொகுப்பு`, `சேமிப்பு/குறியாக்கம்`,
@@ -637,47 +637,47 @@ shiguang-gateway doctor --liveness-url <url>  # முழு ஆரோக்க�
 ### வழங்குநர் மேலாண்மை
 
 ```bash
-shiguang-gateway providers available                       # ShiguangGateway வழங்குநர் பட்டியல்
-shiguang-gateway providers available --search openai       # அடையாளம்/பெயர்/மாற்று/வகை மூலம் பட்டியலை வடிகட்டி
-shiguang-gateway providers available --category api-key    # வகை மூலம் வடிகட்டி (api-key, oauth, free, ...)
-shiguang-gateway providers available --json                # இயந்திரம் வாசிக்கக்கூடிய JSON
+orbit providers available                       # Orbit வழங்குநர் பட்டியல்
+orbit providers available --search openai       # அடையாளம்/பெயர்/மாற்று/வகை மூலம் பட்டியலை வடிகட்டி
+orbit providers available --category api-key    # வகை மூலம் வடிகட்டி (api-key, oauth, free, ...)
+orbit providers available --json                # இயந்திரம் வாசிக்கக்கூடிய JSON
 
-shiguang-gateway providers list                            # கட்டமைக்கப்பட்ட வழங்குநர் இணைப்புகள்
-shiguang-gateway providers list --json
+orbit providers list                            # கட்டமைக்கப்பட்ட வழங்குநர் இணைப்புகள்
+orbit providers list --json
 
-shiguang-gateway providers test <id|name>                  # ஒரு கட்டமைக்கப்பட்ட இணைப்பை சோதிக்கவும்
-shiguang-gateway providers test-all                        # ஒவ்வொரு செயல்பாட்டிற்கான இணைப்பையும் சோதிக்கவும்
-shiguang-gateway providers validate                        # உள்ளூர் மட்டுமே கட்டமைப்புப் பரிசோதனை
-shiguang-gateway providers add <provider> --credential-env PROVIDER_KEY
-shiguang-gateway providers import ./providers.json --dry-run --json
-shiguang-gateway providers auth <provider>                 # ஏற்கனவே உள்ள OAuth ஓட்டம்
-shiguang-gateway providers edit <id|name> --default-model <model>
-shiguang-gateway providers remove <id|name> --yes
+orbit providers test <id|name>                  # ஒரு கட்டமைக்கப்பட்ட இணைப்பை சோதிக்கவும்
+orbit providers test-all                        # ஒவ்வொரு செயல்பாட்டிற்கான இணைப்பையும் சோதிக்கவும்
+orbit providers validate                        # உள்ளூர் மட்டுமே கட்டமைப்புப் பரிசோதனை
+orbit providers add <provider> --credential-env PROVIDER_KEY
+orbit providers import ./providers.json --dry-run --json
+orbit providers auth <provider>                 # ஏற்கனவே உள்ள OAuth ஓட்டம்
+orbit providers edit <id|name> --default-model <model>
+orbit providers remove <id|name> --yes
 ```
 
 `providers add/import/auth/edit/remove` API-முதலில் ஆகவே செயல்படுகிறது
 செயல்பாட்டில் உள்ள உள்ளூர் அல்லது தொலைதூர சூழ்நிலைக்கு எதிராக. அங்கீகாரம் உள்ளீடு
 `--credential-stdin` அல்லது `--credential-env` ஐப் பயன்படுத்த வேண்டும்; `--dry-run --json` மட்டும்
-மறைக்கப்பட்ட இருப்பு/வடிவத்தைப் புகாரளிக்கிறது. `providers available` ShiguangGateway பட்டியலைப் படிக்கிறது;
+மறைக்கப்பட்ட இருப்பு/வடிவத்தைப் புகாரளிக்கிறது. `providers available` Orbit பட்டியலைப் படிக்கிறது;
 `providers list/test/test-all/validate` தங்கள் உள்ளூர் SQLite நடத்தைப் பாதுகாக்கின்றன மற்றும்
 சர்வர் இயக்கப்பட வேண்டும் என்பதற்கான தேவையில்லை.
 
 ### மீட்பு & மீட்டமைப்பு
 
 ```bash
-shiguang-gateway reset-password                # நிர்வாக கடவுச்சொல்லை மீட்டமைக்கவும் (மேலும்: shiguang-gateway-reset-password)
-shiguang-gateway reset-encrypted-columns       # குறியாக்கப்பட்ட அங்கீகாரத்தை மீட்டமைக்க எச்சரிக்கையை காண்பிக்கவும் + உலாவி இயக்கவும்
-shiguang-gateway reset-encrypted-columns --force  # SQLite இல் குறியாக்கப்பட்ட அங்கீகாரங்களை உண்மையில் நீக்கவும்
+orbit reset-password                # நிர்வாக கடவுச்சொல்லை மீட்டமைக்கவும் (மேலும்: orbit-reset-password)
+orbit reset-encrypted-columns       # குறியாக்கப்பட்ட அங்கீகாரத்தை மீட்டமைக்க எச்சரிக்கையை காண்பிக்கவும் + உலாவி இயக்கவும்
+orbit reset-encrypted-columns --force  # SQLite இல் குறியாக்கப்பட்ட அங்கீகாரங்களை உண்மையில் நீக்கவும்
 ```
 
 ### அங்கீகாரம் ஏற்றுமதி (⚠ கவனமாக கையாளவும்)
 
 ```bash
-shiguang-gateway auth export                                 # எச்சரிக்கையை காண்பிக்கவும் + உறுதிப்படுத்தல் வாயிலாக — DB அணுகல் இல்லை
-shiguang-gateway auth export --force                          # அனைத்து இணைப்புகளின் DECRYPTED அங்கீகாரங்களை stdout இல் JSON ஆக ஏற்றுமதி செய்யவும்
-shiguang-gateway auth export --force --id <id>                 # பொருந்தும் இணைப்பை மட்டுமே ஏற்றுமதி செய்யவும்
-shiguang-gateway auth export --force --format env               # SHIGUANG_GATEWAY_<PROVIDER>_<FIELD>=<value> வரிகளை வெளியிடவும்
-shiguang-gateway auth export --force --out creds.json           # ஒரு கோப்பிற்கு எழுதவும் (0600 அனுமதிகளுடன் உருவாக்கப்பட்டது)
+orbit auth export                                 # எச்சரிக்கையை காண்பிக்கவும் + உறுதிப்படுத்தல் வாயிலாக — DB அணுகல் இல்லை
+orbit auth export --force                          # அனைத்து இணைப்புகளின் DECRYPTED அங்கீகாரங்களை stdout இல் JSON ஆக ஏற்றுமதி செய்யவும்
+orbit auth export --force --id <id>                 # பொருந்தும் இணைப்பை மட்டுமே ஏற்றுமதி செய்யவும்
+orbit auth export --force --format env               # ORBIT_<PROVIDER>_<FIELD>=<value> வரிகளை வெளியிடவும்
+orbit auth export --force --out creds.json           # ஒரு கோப்பிற்கு எழுதவும் (0600 அனுமதிகளுடன் உருவாக்கப்பட்டது)
 ```
 
 `auth export` என்பது **உள்ளூர் மட்டுமே** (நேரடி SQLite வாசிப்பு, HTTP பாதை இல்லை) மற்றும்
@@ -685,36 +685,36 @@ shiguang-gateway auth export --force --out creds.json           # ஒரு க�
 
 ### பிற துணைக்கட்டளைகள்
 
-இவை ஓடும் ShiguangGateway சர்வரைப் பொறுத்தது, வேறு எதுவும் குறிப்பிடப்படவில்லை:
+இவை ஓடும் Orbit சர்வரைப் பொறுத்தது, வேறு எதுவும் குறிப்பிடப்படவில்லை:
 
 ```bash
-shiguang-gateway status                       # விரிவான இயக்க நேர நிலை
-shiguang-gateway logs                         # கோரிக்கைகள் பதிவுகளை ஒளிபரப்பவும் (--json, --search, --follow)
-shiguang-gateway config show                  # தற்போதைய கட்டமைப்பை காண்பிக்கவும்
+orbit status                       # விரிவான இயக்க நேர நிலை
+orbit logs                         # கோரிக்கைகள் பதிவுகளை ஒளிபரப்பவும் (--json, --search, --follow)
+orbit config show                  # தற்போதைய கட்டமைப்பை காண்பிக்கவும்
 
-shiguang-gateway provider list                # கிடைக்கும் வழங்குநர்களின் பட்டியல் (provides list இன் மாற்று)
-shiguang-gateway provider add                 # ஒரு கருவியில் ShiguangGateway ஐ வழங்குநராக பதிவு செய்யவும்
-shiguang-gateway keys add | list | remove     # API விசைகளை நிர்வகிக்கவும்
-shiguang-gateway models [provider]            # மாதிரிகளை பட்டியலிடவும் (--json, --search)
-shiguang-gateway combo list | switch | create | delete
+orbit provider list                # கிடைக்கும் வழங்குநர்களின் பட்டியல் (provides list இன் மாற்று)
+orbit provider add                 # ஒரு கருவியில் Orbit ஐ வழங்குநராக பதிவு செய்யவும்
+orbit keys add | list | remove     # API விசைகளை நிர்வகிக்கவும்
+orbit models [provider]            # மாதிரிகளை பட்டியலிடவும் (--json, --search)
+orbit combo list | switch | create | delete
 
-shiguang-gateway backup                       # கட்டமைப்பு + DB ஐ புகைப்படம் எடுக்கவும்
-shiguang-gateway restore                      # முந்தைய புகைப்படத்திலிருந்து மீட்டமைக்கவும்
+orbit backup                       # கட்டமைப்பு + DB ஐ புகைப்படம் எடுக்கவும்
+orbit restore                      # முந்தைய புகைப்படத்திலிருந்து மீட்டமைக்கவும்
 
-shiguang-gateway health                       # விரிவான ஆரோக்கியம் (பிரேக்கர்கள், கொஞ்சம், நினைவகம்)
-shiguang-gateway quota                        # வழங்குநர் குவோட்டா பயன்பாடு
-shiguang-gateway cache                        # கொஞ்சம் நிலை
-shiguang-gateway cache clear                  # கருத்தியல் + கையொப்ப கொஞ்சங்களை அழிக்கவும்
+orbit health                       # விரிவான ஆரோக்கியம் (பிரேக்கர்கள், கொஞ்சம், நினைவகம்)
+orbit quota                        # வழங்குநர் குவோட்டா பயன்பாடு
+orbit cache                        # கொஞ்சம் நிலை
+orbit cache clear                  # கருத்தியல் + கையொப்ப கொஞ்சங்களை அழிக்கவும்
 
-shiguang-gateway mcp status | restart         # MCP சர்வர் நிலை / மீட்டமைப்பு
-shiguang-gateway a2a status | card            # A2A சர்வர் நிலை / முகவர் அட்டை
+orbit mcp status | restart         # MCP சர்வர் நிலை / மீட்டமைப்பு
+orbit a2a status | card            # A2A சர்வர் நிலை / முகவர் அட்டை
 
-shiguang-gateway tunnel list | create | stop  # குழாய்களை நிர்வகிக்கவும் (cloudflare/tailscale/ngrok)
-shiguang-gateway env show | get <k> | set <k> <v>  # சுற்றுப்புற மாறிகளை ஆய்வு / அமைக்கவும் (தற்காலிகம்)
+orbit tunnel list | create | stop  # குழாய்களை நிர்வகிக்கவும் (cloudflare/tailscale/ngrok)
+orbit env show | get <k> | set <k> <v>  # சுற்றுப்புற மாறிகளை ஆய்வு / அமைக்கவும் (தற்காலிகம்)
 
-shiguang-gateway test                         # வழங்குநர் இணைப்பு புகை சோதனை
-shiguang-gateway update                       # புதுப்பிப்புகளை சரிபார்க்கவும்
-shiguang-gateway completion                   # கச்சா நிறைவு உருவாக்கவும்
+orbit test                         # வழங்குநர் இணைப்பு புகை சோதனை
+orbit update                       # புதுப்பிப்புகளை சரிபார்க்கவும்
+orbit completion                   # கச்சா நிறைவு உருவாக்கவும்
 ```
 
 ### பொதுவான கொடிகள்
@@ -741,7 +741,7 @@ shiguang-gateway completion                   # கச்சா நிறைவ�
 | `/v1/audio/speech`         | உரை-க்கு-உரை                            | ElevenLabs, OpenAI TTS                |
 | `/v1/audio/transcriptions` | உரை-க்கு-உரை                            | Deepgram, AssemblyAI                  |
 
-ஒன்றிணைக்கப்பட்ட ShiguangGateway URL உடன் ஒட்டுவதற்கான எடுத்துக்காட்டுகள்:
+ஒன்றிணைக்கப்பட்ட Orbit URL உடன் ஒட்டுவதற்கான எடுத்துக்காட்டுகள்:
 
 ```txt
 Token example: sk-a3ab3c080beaee3a-69f4a4-070d71af
@@ -760,7 +760,7 @@ Ollama chat: http://localhost:20128/api/v1/vscode/sk-a3ab3c080beaee3a-69f4a4-070
 
 | பிழை                                         | காரணம்                               | சரி                                                        |
 | -------------------------------------------- | ------------------------------------ | ---------------------------------------------------------- |
-| `Connection refused`                         | ShiguangGateway இயங்கவில்லை                | `shiguang-gateway serve`                                          |
+| `Connection refused`                         | Orbit இயங்கவில்லை                | `orbit serve`                                          |
 | `401 Unauthorized`                           | தவறான API விசை                       | `/dashboard/api-manager` இல் சரிபார்க்கவும்                |
 | `No combo configured`                        | செயல்பாட்டில் உள்ள வழி கூட்டம் இல்லை | `/dashboard/combos` இல் அமைக்கவும்                         |
 | CLI shows "not installed"                    | பைனரி PATH இல் இல்லை                 | `which <command>` இல் சரிபார்க்கவும்                       |

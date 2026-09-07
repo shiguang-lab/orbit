@@ -6,16 +6,16 @@ import { LocalRedisController } from "../src/local-redis/local-redis.controller.
 import type { LocalRedisService } from "../src/local-redis/local-redis.service.js";
 
 const originalNodeEnv = process.env.NODE_ENV;
-const originalEnabled = process.env.SHIGUANG_GATEWAY_LOCAL_ENDPOINTS_ENABLED;
-const originalToken = process.env.SHIGUANG_GATEWAY_LOCAL_ENDPOINTS_TOKEN;
+const originalEnabled = process.env.ORBIT_LOCAL_ENDPOINTS_ENABLED;
+const originalToken = process.env.ORBIT_LOCAL_ENDPOINTS_TOKEN;
 
 afterEach(() => {
   if (originalNodeEnv === undefined) delete process.env.NODE_ENV;
   else process.env.NODE_ENV = originalNodeEnv;
-  if (originalEnabled === undefined) delete process.env.SHIGUANG_GATEWAY_LOCAL_ENDPOINTS_ENABLED;
-  else process.env.SHIGUANG_GATEWAY_LOCAL_ENDPOINTS_ENABLED = originalEnabled;
-  if (originalToken === undefined) delete process.env.SHIGUANG_GATEWAY_LOCAL_ENDPOINTS_TOKEN;
-  else process.env.SHIGUANG_GATEWAY_LOCAL_ENDPOINTS_TOKEN = originalToken;
+  if (originalEnabled === undefined) delete process.env.ORBIT_LOCAL_ENDPOINTS_ENABLED;
+  else process.env.ORBIT_LOCAL_ENDPOINTS_ENABLED = originalEnabled;
+  if (originalToken === undefined) delete process.env.ORBIT_LOCAL_ENDPOINTS_TOKEN;
+  else process.env.ORBIT_LOCAL_ENDPOINTS_TOKEN = originalToken;
 });
 
 function context(peerIp: string, headers: FastifyRequest["headers"] = {}) {
@@ -57,8 +57,8 @@ test("rejects every request carrying proxy-origin headers", () => {
 
 test("never allows a remote peer through enablement, bearer token, or development mode", () => {
   process.env.NODE_ENV = "development";
-  process.env.SHIGUANG_GATEWAY_LOCAL_ENDPOINTS_ENABLED = "1";
-  process.env.SHIGUANG_GATEWAY_LOCAL_ENDPOINTS_TOKEN = "desktop-secret";
+  process.env.ORBIT_LOCAL_ENDPOINTS_ENABLED = "1";
+  process.env.ORBIT_LOCAL_ENDPOINTS_TOKEN = "desktop-secret";
   assert.deepEqual(
     isLocalRequestAllowed(context("203.0.113.5", {
       host: "127.0.0.1:8788",
@@ -74,7 +74,7 @@ test("keeps the production switch as an additional loopback kill switch", () => 
     allowed: false,
     reason: "disabled in production",
   });
-  process.env.SHIGUANG_GATEWAY_LOCAL_ENDPOINTS_ENABLED = "1";
+  process.env.ORBIT_LOCAL_ENDPOINTS_ENABLED = "1";
   assert.deepEqual(isLocalRequestAllowed(context("127.0.0.1")), { allowed: true });
 });
 
@@ -90,8 +90,8 @@ test("keeps request decisions independent without process-global request state",
 
 test("all controller actions pass request context and never execute when denied", async () => {
   process.env.NODE_ENV = "development";
-  process.env.SHIGUANG_GATEWAY_LOCAL_ENDPOINTS_ENABLED = "1";
-  process.env.SHIGUANG_GATEWAY_LOCAL_ENDPOINTS_TOKEN = "desktop-secret";
+  process.env.ORBIT_LOCAL_ENDPOINTS_ENABLED = "1";
+  process.env.ORBIT_LOCAL_ENDPOINTS_TOKEN = "desktop-secret";
   const calls: string[] = [];
   const service = {
     start: async () => { calls.push("start"); return { status: 200, body: { action: "start" } }; },

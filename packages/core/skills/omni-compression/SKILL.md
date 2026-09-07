@@ -20,7 +20,7 @@ Preview compression for a message payload
 
 ```bash
 curl -X POST https://localhost:20128/api/compression/preview \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN" \
+  -H "Authorization: Bearer $ORBIT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -31,7 +31,7 @@ List Caveman compression language packs
 
 ```bash
 curl https://localhost:20128/api/compression/language-packs \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ### GET /api/compression/rules
@@ -40,7 +40,7 @@ List Caveman compression rule metadata
 
 ```bash
 curl https://localhost:20128/api/compression/rules \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_TOKEN"
+  -H "Authorization: Bearer $ORBIT_TOKEN"
 ```
 
 ## Payloads
@@ -48,15 +48,15 @@ curl https://localhost:20128/api/compression/rules \
 See the full OpenAPI specification at `GET /api/openapi/spec` or `docs/openapi.yaml` for detailed request/response schemas.
 
 <!-- skill:custom-start -->
-<!-- Migrated from skills/shiguang-gateway-compression/SKILL.md (preserved curated content) -->
+<!-- Migrated from skills/orbit-compression/SKILL.md (preserved curated content) -->
 
-# ShiguangGateway — Compression
+# Orbit — Compression
 
-Requires `SHIGUANG_GATEWAY_URL` and `SHIGUANG_GATEWAY_KEY`. See [entry-point SKILL](https://raw.githubusercontent.com/diegosouzapw/ShiguangGateway/main/skills/shiguang-gateway/SKILL.md) for setup.
+Requires `ORBIT_URL` and `ORBIT_KEY`. See [entry-point SKILL](https://raw.githubusercontent.com/diegosouzapw/Orbit/main/skills/orbit/SKILL.md) for setup.
 
 ## Overview
 
-ShiguangGateway compresses token payloads before forwarding to providers. No code changes required — set it once, it applies to all requests transparently.
+Orbit compresses token payloads before forwarding to providers. No code changes required — set it once, it applies to all requests transparently.
 
 | Engine                    | Best for                             | Typical savings |
 | ------------------------- | ------------------------------------ | --------------- |
@@ -68,15 +68,15 @@ ShiguangGateway compresses token payloads before forwarding to providers. No cod
 ## Get current settings
 
 ```bash
-curl $SHIGUANG_GATEWAY_URL/api/settings/compression \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_KEY"
+curl $ORBIT_URL/api/settings/compression \
+  -H "Authorization: Bearer $ORBIT_KEY"
 ```
 
 ## Enable RTK (best for coding agents)
 
 ```bash
-curl -X PUT $SHIGUANG_GATEWAY_URL/api/settings/compression \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_KEY" \
+curl -X PUT $ORBIT_URL/api/settings/compression \
+  -H "Authorization: Bearer $ORBIT_KEY" \
   -H "Content-Type: application/json" \
   -d '{ "mode": "rtk", "enabled": true }'
 ```
@@ -84,8 +84,8 @@ curl -X PUT $SHIGUANG_GATEWAY_URL/api/settings/compression \
 ## Enable stacked mode (maximum savings)
 
 ```bash
-curl -X PUT $SHIGUANG_GATEWAY_URL/api/settings/compression \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_KEY" \
+curl -X PUT $ORBIT_URL/api/settings/compression \
+  -H "Authorization: Bearer $ORBIT_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "mode": "stacked",
@@ -97,8 +97,8 @@ curl -X PUT $SHIGUANG_GATEWAY_URL/api/settings/compression \
 ## Enable Caveman (prose / chat)
 
 ```bash
-curl -X PUT $SHIGUANG_GATEWAY_URL/api/settings/compression \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_KEY" \
+curl -X PUT $ORBIT_URL/api/settings/compression \
+  -H "Authorization: Bearer $ORBIT_KEY" \
   -H "Content-Type: application/json" \
   -d '{ "mode": "standard", "enabled": true }'
 ```
@@ -108,8 +108,8 @@ Caveman intensities: `lite` (safe), `standard` (balanced), `aggressive` (long se
 ## Preview compression before enabling
 
 ```bash
-curl -X POST $SHIGUANG_GATEWAY_URL/api/compression/preview \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_KEY" \
+curl -X POST $ORBIT_URL/api/compression/preview \
+  -H "Authorization: Bearer $ORBIT_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "mode": "rtk",
@@ -121,11 +121,11 @@ Response includes `compressed`, `original_length`, `compressed_length`, `savings
 
 ## MCP accessibility-tree filter (browser agent use)
 
-When ShiguangGateway is used with browser/Playwright MCP tools, it automatically compresses verbose accessibility-tree tool results. Enabled by default; configure thresholds:
+When Orbit is used with browser/Playwright MCP tools, it automatically compresses verbose accessibility-tree tool results. Enabled by default; configure thresholds:
 
 ```bash
-curl -X PUT $SHIGUANG_GATEWAY_URL/api/settings/compression \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_KEY" \
+curl -X PUT $ORBIT_URL/api/settings/compression \
+  -H "Authorization: Bearer $ORBIT_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "mcpAccessibility": {
@@ -144,8 +144,8 @@ curl -X PUT $SHIGUANG_GATEWAY_URL/api/settings/compression \
 Caveman supports language-aware rules for pt-BR, es, de, fr, ja:
 
 ```bash
-curl -X PUT $SHIGUANG_GATEWAY_URL/api/settings/compression \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_KEY" \
+curl -X PUT $ORBIT_URL/api/settings/compression \
+  -H "Authorization: Bearer $ORBIT_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "mode": "standard",
@@ -159,16 +159,16 @@ curl -X PUT $SHIGUANG_GATEWAY_URL/api/settings/compression \
 ## Via MCP
 
 ```
-shiguang-gateway_compression_status     → current settings + savings analytics
-shiguang-gateway_compression_configure  → update mode/threshold/language
-shiguang-gateway_set_compression_engine → switch engine at runtime
+orbit_compression_status     → current settings + savings analytics
+orbit_compression_configure  → update mode/threshold/language
+orbit_set_compression_engine → switch engine at runtime
 ```
 
 ## Disable compression
 
 ```bash
-curl -X PUT $SHIGUANG_GATEWAY_URL/api/settings/compression \
-  -H "Authorization: Bearer $SHIGUANG_GATEWAY_KEY" \
+curl -X PUT $ORBIT_URL/api/settings/compression \
+  -H "Authorization: Bearer $ORBIT_KEY" \
   -d '{ "enabled": false }'
 ```
 

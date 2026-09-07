@@ -19,7 +19,7 @@ import { RadarReferralSchema } from "./feedSchema";
 // ---------------------------------------------------------------------------
 
 export const RadarReferralsFeedSchema = z.object({
-  feed: z.literal("shiguangGateway-radar-referrals"),
+  feed: z.literal("orbit-radar-referrals"),
   schemaVersion: z.literal(1),
   generatedAt: z.string().datetime(),
   referrals: z.object({

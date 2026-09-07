@@ -1,4 +1,4 @@
-# scripts/ops/_ops-common.sh — shared helpers for the ShiguangGateway ops scripts.
+# scripts/ops/_ops-common.sh — shared helpers for the Orbit ops scripts.
 #
 # Sourced (not executed) by rollback.sh / snapshot-data.sh / restore-data.sh /
 # restore-policies.sh / cold-start-bench.sh — the self-hoster incident-recovery
@@ -12,11 +12,11 @@
 # Recompute the data-dir-derived paths. Called once on source, and again by
 # scripts that accept a --data-dir override.
 ops_set_data_dir() {
-  SHIGUANG_GATEWAY_DATA_DIR="$1"
-  SHIGUANG_GATEWAY_SQLITE="${SHIGUANG_GATEWAY_DATA_DIR}/storage.sqlite"
-  SHIGUANG_GATEWAY_BACKUPS_DIR="${DB_BACKUPS_DIR:-${SHIGUANG_GATEWAY_DATA_DIR}/db_backups}"
+  ORBIT_DATA_DIR="$1"
+  ORBIT_SQLITE="${ORBIT_DATA_DIR}/storage.sqlite"
+  ORBIT_BACKUPS_DIR="${DB_BACKUPS_DIR:-${ORBIT_DATA_DIR}/db_backups}"
 }
-ops_set_data_dir "${DATA_DIR:-$HOME/.shiguangGateway}"
+ops_set_data_dir "${DATA_DIR:-$HOME/.orbit}"
 
 ops_log() { printf '[%s] %s\n' "${SCRIPT_NAME:-ops}" "$*" >&2; }
 ops_die() {
@@ -53,18 +53,18 @@ ops_find_snapshot() {
   for cand in \
     "$id" \
     "$id/" \
-    "$SHIGUANG_GATEWAY_BACKUPS_DIR/$id" \
-    "$SHIGUANG_GATEWAY_BACKUPS_DIR/snapshot_$id"; do
+    "$ORBIT_BACKUPS_DIR/$id" \
+    "$ORBIT_BACKUPS_DIR/snapshot_$id"; do
     if [ -f "${cand%/}/storage.sqlite" ]; then
       printf '%s\n' "${cand%/}"
       return 0
     fi
   done
   # Fall back to a prefix match against snapshot_* dirs (e.g. a short sha/date).
-  if [ -d "$SHIGUANG_GATEWAY_BACKUPS_DIR" ]; then
-    for cand in "$SHIGUANG_GATEWAY_BACKUPS_DIR"/snapshot_*"$id"*; do
+  if [ -d "$ORBIT_BACKUPS_DIR" ]; then
+    for cand in "$ORBIT_BACKUPS_DIR"/snapshot_*"$id"*; do
       [ -f "$cand/storage.sqlite" ] && { printf '%s\n' "$cand"; return 0; }
     done
   fi
-  ops_die "no snapshot matching '$id' under $SHIGUANG_GATEWAY_BACKUPS_DIR (run scripts/ops/snapshot-data.sh first)"
+  ops_die "no snapshot matching '$id' under $ORBIT_BACKUPS_DIR (run scripts/ops/snapshot-data.sh first)"
 }

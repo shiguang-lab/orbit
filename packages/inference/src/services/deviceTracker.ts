@@ -13,7 +13,7 @@
  *
  * Ported from upstream 9router#931 (thanks @mugnimaestra) — original stored
  * a global singleton keyed by the raw API key string; this port keys by
- * `apiKeyInfo.id` (ShiguangGateway never threads the raw key value down to
+ * `apiKeyInfo.id` (Orbit never threads the raw key value down to
  * `chatCore`) and expires records on access.
  */
 

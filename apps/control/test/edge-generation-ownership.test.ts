@@ -35,7 +35,7 @@ test("model probes rely on edge-owned rate limiting only", () => {
 test("edge HTTP forwarding preserves path, auth, abort signal, and raw response", async () => {
   const originalFetch = globalThis.fetch;
   const originalEdgeUrl = process.env.EDGE_GATEWAY_URL;
-  const originalInternalToken = process.env.SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN;
+  const originalInternalToken = process.env.ORBIT_INTERNAL_SERVICE_TOKEN;
   const controller = new AbortController();
   const edgeResponse = new Response("data: edge-owned\n\n", {
     headers: { "Content-Type": "text/event-stream" },
@@ -44,7 +44,7 @@ test("edge HTTP forwarding preserves path, auth, abort signal, and raw response"
   let capturedInit: RequestInit | undefined;
 
   process.env.EDGE_GATEWAY_URL = "http://edge.internal:8787/";
-  process.env.SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN = "test-internal-token";
+  process.env.ORBIT_INTERNAL_SERVICE_TOKEN = "test-internal-token";
   globalThis.fetch = async (input, init) => {
     capturedUrl = String(input);
     capturedInit = init;
@@ -80,7 +80,7 @@ test("edge HTTP forwarding preserves path, auth, abort signal, and raw response"
     globalThis.fetch = originalFetch;
     if (originalEdgeUrl === undefined) delete process.env.EDGE_GATEWAY_URL;
     else process.env.EDGE_GATEWAY_URL = originalEdgeUrl;
-    if (originalInternalToken === undefined) delete process.env.SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN;
-    else process.env.SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN = originalInternalToken;
+    if (originalInternalToken === undefined) delete process.env.ORBIT_INTERNAL_SERVICE_TOKEN;
+    else process.env.ORBIT_INTERNAL_SERVICE_TOKEN = originalInternalToken;
   }
 });

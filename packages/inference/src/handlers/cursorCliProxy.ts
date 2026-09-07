@@ -8,9 +8,9 @@
  * `/agent.v1.AgentService/RunSSE` (text/event-stream), OTLP traces on
  * `/v1/traces`, and the API-key bootstrap `POST /auth/exchange_user_api_key`.
  *
- * Pointing the CLI at ShiguangGateway therefore only needs a thin forwarder:
- *   1. `/auth/exchange_user_api_key` authenticates the CLI with an ShiguangGateway
- *      API key and hands back an ShiguangGateway-minted session JWT. The CLI reads
+ * Pointing the CLI at Orbit therefore only needs a thin forwarder:
+ *   1. `/auth/exchange_user_api_key` authenticates the CLI with an Orbit
+ *      API key and hands back an Orbit-minted session JWT. The CLI reads
  *      `exp` from whatever JWT it receives and re-exchanges when the token is
  *      opaque or expired, so the minted token must be a real JWT with `exp`.
  *   2. Every other path verifies that JWT, resolves an active `cursor-api`
@@ -37,7 +37,7 @@ import {
 import { sanitizeErrorMessage } from "../utils/error.ts";
 
 export const CURSOR_CLI_PROXY_PREFIX = "/api/cursor-cli";
-export const CURSOR_CLI_SESSION_ISSUER = "shiguangGateway";
+export const CURSOR_CLI_SESSION_ISSUER = "orbit";
 export const CURSOR_CLI_SESSION_AUDIENCE = "cursor-cli";
 export const CURSOR_CLI_SESSION_TTL_SECONDS = 60 * 60;
 export const CURSOR_CLI_REQUEST_TYPE = "cursor-cli";
@@ -179,7 +179,7 @@ async function authenticateExchange(
   return connectError(
     HTTP_STATUS.UNAUTHORIZED,
     "unauthenticated",
-    "CURSOR_API_KEY must be an ShiguangGateway API key when ShiguangGateway requires API keys"
+    "CURSOR_API_KEY must be an Orbit API key when Orbit requires API keys"
   );
 }
 
@@ -259,7 +259,7 @@ async function resolveUpstreamConnection(
     return connectError(
       HTTP_STATUS.SERVICE_UNAVAILABLE,
       "unavailable",
-      "No active Cursor API connection configured in ShiguangGateway"
+      "No active Cursor API connection configured in Orbit"
     );
   }
   let lastError: unknown = null;
@@ -401,7 +401,7 @@ async function handleExchange(
       startedAt,
       principal: null,
       connectionId: null,
-      error: "ShiguangGateway API key rejected",
+      error: "Orbit API key rejected",
     });
     return principal;
   }
@@ -441,7 +441,7 @@ async function handleForward(
     return connectError(
       HTTP_STATUS.UNAUTHORIZED,
       "unauthenticated",
-      "Missing or expired ShiguangGateway Cursor CLI session token"
+      "Missing or expired Orbit Cursor CLI session token"
     );
   }
 

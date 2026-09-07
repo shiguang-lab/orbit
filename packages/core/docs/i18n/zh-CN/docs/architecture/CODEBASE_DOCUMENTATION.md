@@ -1,10 +1,10 @@
-# ShiguangGateway 代码库文档（中文 (简体)）
+# Orbit 代码库文档（中文 (简体)）
 
 🌐 **Languages:** 🇺🇸 [English](../../../../docs/CODEBASE_DOCUMENTATION.md) · 🇸🇦 [ar](../../ar/docs/CODEBASE_DOCUMENTATION.md) · 🇧🇬 [bg](../../bg/docs/CODEBASE_DOCUMENTATION.md) · 🇧🇩 [bn](../../bn/docs/CODEBASE_DOCUMENTATION.md) · 🇨🇿 [cs](../../cs/docs/CODEBASE_DOCUMENTATION.md) · 🇩🇰 [da](../../da/docs/CODEBASE_DOCUMENTATION.md) · 🇩🇪 [de](../../de/docs/CODEBASE_DOCUMENTATION.md) · 🇪🇸 [es](../../es/docs/CODEBASE_DOCUMENTATION.md) · 🇮🇷 [fa](../../fa/docs/CODEBASE_DOCUMENTATION.md) · 🇫🇮 [fi](../../fi/docs/CODEBASE_DOCUMENTATION.md) · 🇫🇷 [fr](../../fr/docs/CODEBASE_DOCUMENTATION.md) · 🇮🇳 [gu](../../gu/docs/CODEBASE_DOCUMENTATION.md) · 🇮🇱 [he](../../he/docs/CODEBASE_DOCUMENTATION.md) · 🇮🇳 [hi](../../hi/docs/CODEBASE_DOCUMENTATION.md) · 🇭🇺 [hu](../../hu/docs/CODEBASE_DOCUMENTATION.md) · 🇮🇩 [id](../../id/docs/CODEBASE_DOCUMENTATION.md) · 🇮🇹 [it](../../it/docs/CODEBASE_DOCUMENTATION.md) · 🇯🇵 [ja](../../ja/docs/CODEBASE_DOCUMENTATION.md) · 🇰🇷 [ko](../../ko/docs/CODEBASE_DOCUMENTATION.md) · 🇮🇳 [mr](../../mr/docs/CODEBASE_DOCUMENTATION.md) · 🇲🇾 [ms](../../ms/docs/CODEBASE_DOCUMENTATION.md) · 🇳🇱 [nl](../../nl/docs/CODEBASE_DOCUMENTATION.md) · 🇳🇴 [no](../../no/docs/CODEBASE_DOCUMENTATION.md) · 🇵🇭 [phi](../../phi/docs/CODEBASE_DOCUMENTATION.md) · 🇵🇱 [pl](../../pl/docs/CODEBASE_DOCUMENTATION.md) · 🇵🇹 [pt](../../pt/docs/CODEBASE_DOCUMENTATION.md) · 🇧🇷 [pt-BR](../../pt-BR/docs/CODEBASE_DOCUMENTATION.md) · 🇷🇴 [ro](../../ro/docs/CODEBASE_DOCUMENTATION.md) · 🇷🇺 [ru](../../ru/docs/CODEBASE_DOCUMENTATION.md) · 🇸🇰 [sk](../../sk/docs/CODEBASE_DOCUMENTATION.md) · 🇸🇪 [sv](../../sv/docs/CODEBASE_DOCUMENTATION.md) · 🇰🇪 [sw](../../sw/docs/CODEBASE_DOCUMENTATION.md) · 🇮🇳 [ta](../../ta/docs/CODEBASE_DOCUMENTATION.md) · 🇮🇳 [te](../../te/docs/CODEBASE_DOCUMENTATION.md) · 🇹🇭 [th](../../th/docs/CODEBASE_DOCUMENTATION.md) · 🇹🇷 [tr](../../tr/docs/CODEBASE_DOCUMENTATION.md) · 🇺🇦 [uk-UA](../../uk-UA/docs/CODEBASE_DOCUMENTATION.md) · `... [other locales]`
 
 ---
 
-> ShiguangGateway 代码库工程参考文档，面向贡献者和集成开发者。
+> Orbit 代码库工程参考文档，面向贡献者和集成开发者。
 
 ---
 
@@ -29,18 +29,18 @@
 - `@orbit/inference` → `open-sse/index.ts`
 - `@orbit/inference/*` → `open-sse/*`
 
-默认 HTTP 端口：**`20128`**（API 和仪表盘共享同一进程）。数据目录由 `DATA_DIR` 环境变量指定，默认为 `~/.shiguang-gateway/`。
+默认 HTTP 端口：**`20128`**（API 和仪表盘共享同一进程）。数据目录由 `DATA_DIR` 环境变量指定，默认为 `~/.orbit/`。
 
 ---
 
 ## 2. 仓库布局
 
 ```
-ShiguangGateway/
+Orbit/
 ├── src/                  Next.js 应用（App Router、库、领域层、服务端、共享模块）
 ├── open-sse/             流式传输引擎工作空间（@orbit/inference）
 ├── electron/             桌面端封装（Electron 41 主进程 + preload）
-├── bin/                  CLI 入口点（shiguang-gateway、reset-password）
+├── bin/                  CLI 入口点（orbit、reset-password）
 ├── tests/                单元、集成、端到端、协议端到端、翻译器、安全、测试夹具
 ├── scripts/              构建、同步、检查、迁移及运行时辅助脚本
 ├── docs/                 公开文档（本目录）
@@ -283,7 +283,7 @@ v1/
 | `runtime/`        | 运行时特性检测                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `search/`         | `executeWebSearch.ts`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | `services/`       | 嵌入式服务框架：`ServiceSupervisor.ts`（通用子进程管理器，带操作锁、环形缓冲区、健康检查器）、`bootstrap.ts`（进程级注册和自动启动）、`registry.ts`（工具 → 管理器映射）、`apiKey.ts`（AES-256-GCM Key 存储）、`modelSync.ts`（定期模型同步）、`ringBuffer.ts`（5 MB 环形日志缓冲）、`healthCheck.ts`（HTTP 健康探测）、`types.ts`、`embedWsProxy.ts`（WebSocket 代理）、`installers/{ninerouter,cliproxy}.ts`。详见 `docs/frameworks/EMBEDDED-SERVICES.md`                                                                                                                                                                                      |
-| `agentSkills/`    | Agent Skills 目录 + 生成器：`catalog.ts`（getCatalog/getSkillById/filterCatalog/computeCoverage）、`generator.ts`（generateAgentSkills → 写入 `skills/{id}/SKILL.md`）、`openapiParser.ts`（从 OpenAPI 规范提取 REST 端点）、`cliRegistryParser.ts`（从 bin/cli-registry 提取 CLI 子命令）、`schemas.ts`（Zod：AgentSkillSchema、SkillCoverageSchema、ListQuerySchema、GenerateBodySchema）、`types.ts`（AgentSkill、SkillCoverage、SkillMarkdown、GeneratorReport）。被 REST 路由（`/api/agent-skills/*`）、MCP 工具（`shiguang-gateway_agent_skills_*`）和 A2A 技能 `list-capabilities` 消费。参见 [AGENT-SKILLS.md](../frameworks/AGENT-SKILLS.md)。 |
+| `agentSkills/`    | Agent Skills 目录 + 生成器：`catalog.ts`（getCatalog/getSkillById/filterCatalog/computeCoverage）、`generator.ts`（generateAgentSkills → 写入 `skills/{id}/SKILL.md`）、`openapiParser.ts`（从 OpenAPI 规范提取 REST 端点）、`cliRegistryParser.ts`（从 bin/cli-registry 提取 CLI 子命令）、`schemas.ts`（Zod：AgentSkillSchema、SkillCoverageSchema、ListQuerySchema、GenerateBodySchema）、`types.ts`（AgentSkill、SkillCoverage、SkillMarkdown、GeneratorReport）。被 REST 路由（`/api/agent-skills/*`）、MCP 工具（`orbit_agent_skills_*`）和 A2A 技能 `list-capabilities` 消费。参见 [AGENT-SKILLS.md](../frameworks/AGENT-SKILLS.md)。 |
 | `skills/`         | 技能框架：`registry.ts`、`executor.ts`、`interception.ts`、`injection.ts`、`sandbox.ts`、`custom.ts`、`hybrid.ts`、`builtins.ts`、`a2a.ts`、`providerSettings.ts`、`schemas.ts`、`skillssh.ts`、`types.ts`，以及 `builtin/browser.ts`                                                                                                                                                                                                                                                                                                                                                                                                            |
 | `spend/`          | `batchWriter.ts`（写后缓冲）                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `sync/`           | `bundle.ts`、`tokens.ts`（云同步）                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
@@ -369,7 +369,7 @@ v1/
 | `degradation.ts`                           | 降级模式切换                  |
 | `providerExpiration.ts`                    | 过期账户/Key 检测             |
 | `quotaCache.ts`                            | 缓存配额决策                  |
-| `responses.ts`、`shiguang-gatewayResponseMeta.ts` | 响应格式辅助工具              |
+| `responses.ts`、`orbitResponseMeta.ts` | 响应格式辅助工具              |
 | `configAudit.ts`                           | 配置变更审计                  |
 | `assessment/`                              | 模型评估（按 RFC，部分实现）  |
 | `types.ts`                                 | 共享领域类型                  |
@@ -578,7 +578,7 @@ electron/
 
 ```
 bin/
-├── shiguang-gateway.mjs           主 CLI 入口（Node ESM）
+├── orbit.mjs           主 CLI 入口（Node ESM）
 ├── reset-password.mjs      通过 CLI 重置管理密码
 ├── mcp-server.mjs          MCP 服务器启动器（stdio）
 ├── nodeRuntimeSupport.mjs  Node 版本守卫
@@ -601,8 +601,8 @@ bin/
 
 `package.json` → `bin` 中暴露两个二进制文件：
 
-- `shiguang-gateway` → `bin/shiguang-gateway.mjs`
-- `shiguang-gateway-reset-password` → `bin/reset-password.mjs`
+- `orbit` → `bin/orbit.mjs`
+- `orbit-reset-password` → `bin/reset-password.mjs`
 
 ---
 

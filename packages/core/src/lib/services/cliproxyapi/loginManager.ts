@@ -177,7 +177,7 @@ export async function startLoginJob(provider: CliproxyLoginProvider): Promise<Cl
   }
 
   const jobId = `job_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-  const terminalCommand = `docker exec -it shiguangGateway /app/data/bin/cliproxyapi -config /app/data/services/cliproxy/config.yaml ${providerMeta.flag}`;
+  const terminalCommand = `docker exec -it orbit /app/data/bin/cliproxyapi -config /app/data/services/cliproxy/config.yaml ${providerMeta.flag}`;
 
   const job: InternalJob = {
     id: jobId,

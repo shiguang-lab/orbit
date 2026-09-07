@@ -1,10 +1,10 @@
 ---
-title: "🐳 Przewodnik Docker — ShiguangGateway"
+title: "🐳 Przewodnik Docker — Orbit"
 version: 3.8.40
 lastUpdated: 2026-06-28
 ---
 
-# 🐳 Przewodnik Docker — ShiguangGateway
+# 🐳 Przewodnik Docker — Orbit
 
 > Kompletne odniesienie do wdrożenia w Dockerze. Szybki start: [sekcja Docker w README](../README.md#-docker).
 
@@ -29,12 +29,12 @@ lastUpdated: 2026-06-28
 
 ```bash
 docker run -d \
-  --name shiguang-gateway \
+  --name orbit \
   --restart unless-stopped \
   --stop-timeout 40 \
   -p 20128:20128 \
-  -v shiguang-gateway-data:/app/data \
-  diegosouzapw/shiguang-gateway:latest
+  -v orbit-data:/app/data \
+  diegosouzapw/orbit:latest
 ```
 
 ## Z plikiem środowiskowym
@@ -44,13 +44,13 @@ docker run -d \
 cp .env.example .env
 
 docker run -d \
-  --name shiguang-gateway \
+  --name orbit \
   --restart unless-stopped \
   --stop-timeout 40 \
   --env-file .env \
   -p 20128:20128 \
-  -v shiguang-gateway-data:/app/data \
-  diegosouzapw/shiguang-gateway:latest
+  -v orbit-data:/app/data \
+  diegosouzapw/orbit:latest
 ```
 
 ## Docker Compose
@@ -71,28 +71,28 @@ docker compose --profile cli --profile cliproxyapi up -d
 
 ## Dostępne profile
 
-ShiguangGateway dostarcza cztery profile Compose. Wybierz ten, który pasuje do Twojego środowiska.
+Orbit dostarcza cztery profile Compose. Wybierz ten, który pasuje do Twojego środowiska.
 
 | Profil            | Usługa           | Kiedy używać                                                                                                                              | Polecenie                                    |
 | ----------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| `base` (domyślny) | `shiguang-gateway-base` | Serwer headless / minimalne runtime, bez dołączonych CLI providerów                                                                       | `docker compose --profile base up -d`        |
-| `cli`             | `shiguang-gateway-cli`  | Przepływy agentowe wywołujące `shiguang-gateway providers/setup/doctor` oraz dołączone CLI (Codex, Claude Code, Droid, OpenClaw)                 | `docker compose --profile cli up -d`         |
-| `host`            | `shiguang-gateway-host` | Hosty Linux z dostępem do CLI hosta w stylu `network_mode` przez montowanie `~/.local/bin`, `~/.codex`, `~/.claude` itd. tylko do odczytu | `docker compose --profile host up -d`        |
+| `base` (domyślny) | `orbit-base` | Serwer headless / minimalne runtime, bez dołączonych CLI providerów                                                                       | `docker compose --profile base up -d`        |
+| `cli`             | `orbit-cli`  | Przepływy agentowe wywołujące `orbit providers/setup/doctor` oraz dołączone CLI (Codex, Claude Code, Droid, OpenClaw)                 | `docker compose --profile cli up -d`         |
+| `host`            | `orbit-host` | Hosty Linux z dostępem do CLI hosta w stylu `network_mode` przez montowanie `~/.local/bin`, `~/.codex`, `~/.claude` itd. tylko do odczytu | `docker compose --profile host up -d`        |
 | `cliproxyapi`     | `cliproxyapi`    | Uruchomienie sidecara [CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI) na porcie `8317` do proxy CLI upstream                  | `docker compose --profile cliproxyapi up -d` |
 
 > Profile można łączyć: `docker compose --profile cli --profile cliproxyapi up -d`.
 
 ## Sidecar Redis
 
-ShiguangGateway korzysta z Redis jako zaplecza rozproszonego rate limitera i współdzielonej pamięci podręcznej. Usługa `redis` jest **zawsze zdefiniowana** w `docker-compose.yml` (bez bramki profilu) i startuje razem z każdym innym profilem.
+Orbit korzysta z Redis jako zaplecza rozproszonego rate limitera i współdzielonej pamięci podręcznej. Usługa `redis` jest **zawsze zdefiniowana** w `docker-compose.yml` (bez bramki profilu) i startuje razem z każdym innym profilem.
 
 | Szczegół             | Wartość                           |
 | -------------------- | --------------------------------- |
 | Image                | `redis:7-alpine`                  |
-| Container name       | `shiguang-gateway-redis`                 |
+| Container name       | `orbit-redis`                 |
 | Internal port        | `6379`                            |
 | Host port (override) | `REDIS_PORT` (defaults to `6379`) |
-| Volume               | `shiguang-gateway-redis-data` → `/data`  |
+| Volume               | `orbit-redis-data` → `/data`  |
 | Healthcheck          | `redis-cli ping` (10s interval)   |
 
 Powiązane zmienne środowiskowe:
@@ -115,9 +115,9 @@ Dla izolowanego snapshota produkcyjnego działającego obok dev użyj `docker-co
 | File                   | `docker-compose.prod.yml`                                                          |
 | Default dashboard port | `PROD_DASHBOARD_PORT=20130` (mapped to internal `${DASHBOARD_PORT:-20128}`)        |
 | Default API port       | `PROD_API_PORT=20131`                                                              |
-| Image                  | `shiguang-gateway:prod` (built from `runner-cli` target)                                  |
-| Redis container        | `shiguang-gateway-redis-prod` (`redis:8.6.2`, dedicated `redis-prod-data` volume)         |
-| Data volume            | `shiguang-gateway-prod-data` (named, persisted across rebuilds)                           |
+| Image                  | `orbit:prod` (built from `runner-cli` target)                                  |
+| Redis container        | `orbit-redis-prod` (`redis:8.6.2`, dedicated `redis-prod-data` volume)         |
+| Data volume            | `orbit-prod-data` (named, persisted across rebuilds)                           |
 | Healthchecks           | `node healthcheck.mjs` + `redis-cli ping`, with `depends_on` gated on Redis health |
 
 Jak używać:
@@ -148,18 +148,18 @@ Repozytorium dostarcza wieloetapowy Dockerfile (`Dockerfile`). Udostępnione są
 Ręczne zbudowanie wybranego targetu:
 
 ```bash
-docker build --target runner-base -t shiguang-gateway:base .
-docker build --target runner-cli  -t shiguang-gateway:cli  .
+docker build --target runner-base -t orbit:base .
+docker build --target runner-cli  -t orbit:cli  .
 ```
 
-Domyślne wartości eksportowane przez `runner-base`: `PORT=20128`, `HOSTNAME=0.0.0.0`, `NODE_OPTIONS=--max-old-space-size=512`, `DATA_DIR=/app/data`, `SHIGUANG_GATEWAY_MIGRATIONS_DIR=/app/migrations`.
+Domyślne wartości eksportowane przez `runner-base`: `PORT=20128`, `HOSTNAME=0.0.0.0`, `NODE_OPTIONS=--max-old-space-size=512`, `DATA_DIR=/app/data`, `ORBIT_MIGRATIONS_DIR=/app/migrations`.
 
 Zachowanie pamięci w Dockerze:
 
 - `NODE_OPTIONS=--max-old-space-size=512` jest wbudowane w obraz jako fallback.
-- Właściwy proces serwera uruchamia launcher standalone, który czyta `SHIGUANG_GATEWAY_MEMORY_MB` i dopisuje `--max-old-space-size=<SHIGUANG_GATEWAY_MEMORY_MB>`.
-- Node używa ostatniej powtórzonej wartości `--max-old-space-size`, więc ustawienie `SHIGUANG_GATEWAY_MEMORY_MB` kontroluje efektywny limit heapa w Dockerze.
-- Gdy `SHIGUANG_GATEWAY_MEMORY_MB` nie jest ustawione, launcher używa `512`.
+- Właściwy proces serwera uruchamia launcher standalone, który czyta `ORBIT_MEMORY_MB` i dopisuje `--max-old-space-size=<ORBIT_MEMORY_MB>`.
+- Node używa ostatniej powtórzonej wartości `--max-old-space-size`, więc ustawienie `ORBIT_MEMORY_MB` kontroluje efektywny limit heapa w Dockerze.
+- Gdy `ORBIT_MEMORY_MB` nie jest ustawione, launcher używa `512`.
 
 ## Kluczowe zmienne środowiskowe
 
@@ -167,23 +167,23 @@ Poza domyślnymi wartościami opisanymi w [ENVIRONMENT.md](../reference/ENVIRONM
 
 | Zmienna                       | Przeznaczenie                                                                                | Domyślnie                |
 | ----------------------------- | -------------------------------------------------------------------------------------------- | ------------------------ |
-| `SHIGUANG_GATEWAY_WS_BRIDGE_SECRET`  | Współdzielony sekret mostu WebSocket. **Wymagany w produkcji** — ustaw silny, losowy ciąg.   | unset (must be provided) |
+| `ORBIT_WS_BRIDGE_SECRET`  | Współdzielony sekret mostu WebSocket. **Wymagany w produkcji** — ustaw silny, losowy ciąg.   | unset (must be provided) |
 | `REDIS_URL`                   | Connection string zaplecza rate limitera / cache                                             | `redis://redis:6379`     |
 | `REDIS_PORT`                  | Port po stronie hosta dla dołączonego kontenera Redis                                        | `6379`                   |
-| `AUTO_UPDATE_HOST_REPO_DIR`   | Ścieżka hosta montowana w profilu `cli` pod `/workspace/shiguang-gateway` na potrzeby self-update   | `.` (current directory)  |
-| `SHIGUANG_GATEWAY_MEMORY_MB`         | Sufit heapa Node w runtime dla serwera standalone Dockera; nadpisuje fallback obrazu powyżej | `512`                    |
+| `AUTO_UPDATE_HOST_REPO_DIR`   | Ścieżka hosta montowana w profilu `cli` pod `/workspace/orbit` na potrzeby self-update   | `.` (current directory)  |
+| `ORBIT_MEMORY_MB`         | Sufit heapa Node w runtime dla serwera standalone Dockera; nadpisuje fallback obrazu powyżej | `512`                    |
 | `DASHBOARD_PORT` / `API_PORT` | Nadpisanie eksponowanych portów dashboardu (20128) i API (20129)                             | `20128` / `20129`        |
-| `SHIGUANG_GATEWAY_BASE_PATH`         | Podścieżka URL, gdy aplikacja jest publikowana za reverse proxy (np. `/shiguang-gateway`)           | _(empty = root)_         |
-| `NEXT_PUBLIC_BASE_URL`        | Publiczny origin przeglądarki wraz z podścieżką (np. `https://host/shiguang-gateway`)               | unset                    |
+| `ORBIT_BASE_PATH`         | Podścieżka URL, gdy aplikacja jest publikowana za reverse proxy (np. `/orbit`)           | _(empty = root)_         |
+| `NEXT_PUBLIC_BASE_URL`        | Publiczny origin przeglądarki wraz z podścieżką (np. `https://host/orbit`)               | unset                    |
 | `PROD_DASHBOARD_PORT`         | Port dashboardu po stronie hosta dla `docker-compose.prod.yml`                               | `20130`                  |
 | `CLIPROXYAPI_PORT`            | Port po stronie hosta dla sidecara `cliproxyapi`                                             | `8317`                   |
 
 ## Reverse proxy na podścieżce (Traefik / nginx)
 
-Next.js `basePath` jest kompilowany do bundla standalone. ShiguangGateway zapisuje wbudowaną
+Next.js `basePath` jest kompilowany do bundla standalone. Orbit zapisuje wbudowaną
 wartość w pliku-sentinelu w katalogu głównym aplikacji (zapisywany podczas `npm run build`; czytany przez
 `scripts/docker/ensure-docker-base-path.mjs`) i porównuje ją z
-`SHIGUANG_GATEWAY_BASE_PATH` przy starcie kontenera. Gdy się różnią, a obraz był
+`ORBIT_BASE_PATH` przy starcie kontenera. Gdy się różnią, a obraz był
 zbudowany pod root domeny, entrypoint przepisuje manifesty standalone i osadzone
 literały `basePath` zanim uruchomi się `node dev/run-standalone.mjs`.
 
@@ -193,60 +193,60 @@ Ustaw obie zmienne w `.env`, potem przebuduj, aby obraz i runtime były zgodne:
 
 ```bash
 # .env
-SHIGUANG_GATEWAY_BASE_PATH=/shiguang-gateway
-NEXT_PUBLIC_BASE_URL=https://myhostname.example.com/shiguang-gateway
+ORBIT_BASE_PATH=/orbit
+NEXT_PUBLIC_BASE_URL=https://myhostname.example.com/orbit
 ```
 
 ```bash
 docker compose --profile base up -d --build
 ```
 
-`docker-compose.yml` przekazuje `SHIGUANG_GATEWAY_BASE_PATH` jako Docker build-arg oraz jako
+`docker-compose.yml` przekazuje `ORBIT_BASE_PATH` jako Docker build-arg oraz jako
 zmienną środowiskową runtime.
 
 ### Wstępnie zbudowany obraz root + podścieżka w runtime
 
-Opublikowane obrazy `diegosouzapw/shiguang-gateway:*` są budowane pod root domeny. Nadal możesz
-ustawić `SHIGUANG_GATEWAY_BASE_PATH` w runtime; kontener jednorazowo patchuje bundel przy starcie.
+Opublikowane obrazy `diegosouzapw/orbit:*` są budowane pod root domeny. Nadal możesz
+ustawić `ORBIT_BASE_PATH` w runtime; kontener jednorazowo patchuje bundel przy starcie.
 Połącz to z pasującym publicznym originem:
 
 ```yaml
 services:
-  shiguang-gateway:
-    image: diegosouzapw/shiguang-gateway:latest
+  orbit:
+    image: diegosouzapw/orbit:latest
     environment:
-      SHIGUANG_GATEWAY_BASE_PATH: /shiguang-gateway
-      NEXT_PUBLIC_BASE_URL: https://myhostname.example.com/shiguang-gateway
+      ORBIT_BASE_PATH: /orbit
+      NEXT_PUBLIC_BASE_URL: https://myhostname.example.com/orbit
 ```
 
 Skonfiguruj reverse proxy tak, aby przekazywało **pełną** zewnętrzną ścieżkę (nie usuwaj
-prefiksu). Traefik powinien routować `PathPrefix(`/shiguang-gateway`)` do kontenera bez
-`StripPrefix`, żeby Next.js otrzymywał `/shiguang-gateway/...` i serwował assety z
-`/shiguang-gateway/_next/...`.
+prefiksu). Traefik powinien routować `PathPrefix(`/orbit`)` do kontenera bez
+`StripPrefix`, żeby Next.js otrzymywał `/orbit/...` i serwował assety z
+`/orbit/_next/...`.
 
 Healthcheck Dockera sonduje lekki endpoint cyklu życia `/healthz` z prefiksem aktywnego
-`SHIGUANG_GATEWAY_BASE_PATH`. `/api/monitoring/health` pozostaje dostępny do diagnostyki
+`ORBIT_BASE_PATH`. `/api/monitoring/health` pozostaje dostępny do diagnostyki
 człowieka/pulpit; aby ustawić HEALTHCHECK kontenera z powrotem na niego (np. dla
-głębokiej kontroli stanu), ustaw `SHIGUANG_GATEWAY_HEALTHCHECK_PATH=/api/monitoring/health`.
+głębokiej kontroli stanu), ustaw `ORBIT_HEALTHCHECK_PATH=/api/monitoring/health`.
 
 ## Docker Compose z Caddy (HTTPS Auto-TLS)
 
-ShiguangGateway można bezpiecznie udostępnić dzięki automatycznemu provisionowaniu SSL w Caddy. Upewnij się, że rekord DNS A domeny wskazuje na IP Twojego serwera.
+Orbit można bezpiecznie udostępnić dzięki automatycznemu provisionowaniu SSL w Caddy. Upewnij się, że rekord DNS A domeny wskazuje na IP Twojego serwera.
 
 ```yaml
 services:
-  shiguang-gateway:
-    image: diegosouzapw/shiguang-gateway:latest
-    container_name: shiguang-gateway
+  orbit:
+    image: diegosouzapw/orbit:latest
+    container_name: orbit
     restart: unless-stopped
     volumes:
-      - shiguang-gateway-data:/app/data
+      - orbit-data:/app/data
     environment:
       - PORT=20128
       # Browser-facing origin for OAuth callbacks, dashboard links, and generated public URLs.
       - NEXT_PUBLIC_BASE_URL=https://your-domain.com
       # Internal server-to-server URL for scheduled jobs / self-fetches.
-      - BASE_URL=http://shiguang-gateway:20128
+      - BASE_URL=http://orbit:20128
       - AUTH_COOKIE_SECURE=true
 
   caddy:
@@ -256,17 +256,17 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    command: caddy reverse-proxy --from https://your-domain.com --to http://shiguang-gateway:20128
+    command: caddy reverse-proxy --from https://your-domain.com --to http://orbit:20128
 
 volumes:
-  shiguang-gateway-data:
+  orbit-data:
 ```
 
-Caddy ustawia standardowe nagłówki forwardingu dla kontenera upstream. ShiguangGateway używa
+Caddy ustawia standardowe nagłówki forwardingu dla kontenera upstream. Orbit używa
 `NEXT_PUBLIC_BASE_URL` jako kanonicznego publicznego originu dla callbacków OAuth i generowanych publicznych
 linków; uwierzytelnione zapisy dashboardu używają żądań same-origin oraz ochrony CSRF
-związanej z sesją. Włączaj `SHIGUANG_GATEWAY_TRUST_PROXY` tylko w zaawansowanych wdrożeniach, gdzie świadomie
-chcesz, by ShiguangGateway wyprowadzał publiczny origin z zaufanych nagłówków forwarded zamiast z jawnej
+związanej z sesją. Włączaj `ORBIT_TRUST_PROXY` tylko w zaawansowanych wdrożeniach, gdzie świadomie
+chcesz, by Orbit wyprowadzał publiczny origin z zaufanych nagłówków forwarded zamiast z jawnej
 konfiguracji.
 
 ## Cloudflare Quick Tunnel
@@ -278,24 +278,24 @@ Panele tuneli endpointów (Cloudflare, Tailscale, ngrok) można pokazywać lub u
 ### Uwagi o tunelach
 
 - URL-e Quick Tunnel są tymczasowe i zmieniają się po każdym restarcie.
-- Quick Tunnels nie są automatycznie przywracane po restarcie ShiguangGateway ani kontenera. Włącz je ponownie z dashboardu, gdy potrzeba.
+- Quick Tunnels nie są automatycznie przywracane po restarcie Orbit ani kontenera. Włącz je ponownie z dashboardu, gdy potrzeba.
 - Managed install obecnie obsługuje Linux, macOS i Windows na `x64` / `arm64`.
 - Managed Quick Tunnels domyślnie używają transportu HTTP/2, aby uniknąć hałaśliwych ostrzeżeń o buforze QUIC UDP w ograniczonych środowiskach kontenerowych. Ustaw `CLOUDFLARED_PROTOCOL=quic` lub `auto`, jeśli chcesz inny transport.
 - Obrazy Dockera dołączają systemowe korzenie CA i przekazują je do managed `cloudflared`, co unika błędów zaufania TLS przy bootstrapie tunelu wewnątrz kontenera.
-- Ustaw `CLOUDFLARED_BIN=/absolute/path/to/cloudflared`, jeśli chcesz, by ShiguangGateway używał istniejącego binarium zamiast pobierać własne.
+- Ustaw `CLOUDFLARED_BIN=/absolute/path/to/cloudflared`, jeśli chcesz, by Orbit używał istniejącego binarium zamiast pobierać własne.
 
 ## Tagi obrazów
 
 | Obraz                    | Tag      | Rozmiar | Opis                       |
 | ------------------------ | -------- | ------- | -------------------------- |
-| `diegosouzapw/shiguang-gateway` | `latest` | ~250MB  | Najnowsze stabilne wydanie |
-| `diegosouzapw/shiguang-gateway` | `3.8.0`  | ~250MB  | Bieżąca wersja             |
+| `diegosouzapw/orbit` | `latest` | ~250MB  | Najnowsze stabilne wydanie |
+| `diegosouzapw/orbit` | `3.8.0`  | ~250MB  | Bieżąca wersja             |
 
 Manifest multi-platform: natywne `linux/amd64` + `linux/arm64` (Apple Silicon, AWS Graviton, Raspberry Pi). Docker automatycznie wybiera pasującą architekturę; podaj `--platform linux/amd64`, jeśli musisz wymusić emulację AMD64 na hostach ARM.
 
 ## Ważne uwagi
 
-- **Tryb SQLite WAL:** `docker stop` powinien móc się dokończyć, żeby ShiguangGateway mógł zrobić checkpoint najnowszych zmian z powrotem do `storage.sqlite`. Dołączone pliki Compose ustawiają już 40s grace period stopu. Przy bezpośrednim uruchomieniu obrazu zachowaj `--stop-timeout 40`.
+- **Tryb SQLite WAL:** `docker stop` powinien móc się dokończyć, żeby Orbit mógł zrobić checkpoint najnowszych zmian z powrotem do `storage.sqlite`. Dołączone pliki Compose ustawiają już 40s grace period stopu. Przy bezpośrednim uruchomieniu obrazu zachowaj `--stop-timeout 40`.
 - **`DISABLE_SQLITE_AUTO_BACKUP`:** Ustaw na `true`, jeśli backupy są zarządzane zewnętrznie.
 - **Trwałość danych:** Zawsze montuj wolumen pod `/app/data`, aby zachować bazę, klucze i konfiguracje między restartami kontenera.
 - **Konfiguracja portu:** Nadpisz zmienną środowiskową `PORT`, aby zmienić domyślny port `20128`.

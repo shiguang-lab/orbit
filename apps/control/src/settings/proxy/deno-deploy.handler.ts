@@ -185,7 +185,7 @@ export async function deployDeno(request: Request, rawBody: unknown) {
       headers,
       body: JSON.stringify({
         slug: projectName,
-        labels: { "custom.kind": "shiguangGateway-relay" },
+        labels: { "custom.kind": "orbit-relay" },
         config: {
           install: "deno install",
           runtime: { type: "dynamic", entrypoint: "main.ts" },

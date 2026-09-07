@@ -22,7 +22,7 @@ export function getModelSyncInternalBaseUrl(): string {
 export function resolveModelSyncInternalBaseUrl(_candidate?: string): string {
   const { dashboardPort } = getRuntimePorts();
   const configured =
-    process.env.SHIGUANG_GATEWAY_BASE_URL?.trim() || process.env.INTERNAL_BASE_URL?.trim();
+    process.env.ORBIT_BASE_URL?.trim() || process.env.INTERNAL_BASE_URL?.trim();
   if (configured) {
     try {
       const url = new URL(configured);
@@ -37,11 +37,11 @@ export function resolveModelSyncInternalBaseUrl(_candidate?: string): string {
       // Fall through to the loopback default for malformed operator input.
     }
   }
-  const nativeTls = process.env.SHIGUANG_GATEWAY_INTERNAL_SCHEME === "https";
+  const nativeTls = process.env.ORBIT_INTERNAL_SCHEME === "https";
   const origin = nativeTls
     ? `https://localhost:${dashboardPort}`
     : `http://127.0.0.1:${dashboardPort}`;
-  return `${origin}${normalizeInternalBasePath(process.env.SHIGUANG_GATEWAY_BASE_PATH)}`;
+  return `${origin}${normalizeInternalBasePath(process.env.ORBIT_BASE_PATH)}`;
 }
 
 export function createPinnedModelSyncTlsConnector(
@@ -107,15 +107,15 @@ export const fetchModelSyncInternal: typeof fetch = async (input, init = {}) => 
 };
 
 const globalState = globalThis as typeof globalThis & {
-  __shiguangGatewayModelSyncInternalAuthToken?: string;
+  __orbitModelSyncInternalAuthToken?: string;
 };
 
 let internalAuthToken: string | null = null;
 
 function getInternalAuthToken(): string {
   if (!internalAuthToken) {
-    internalAuthToken = globalState.__shiguangGatewayModelSyncInternalAuthToken || randomUUID();
-    globalState.__shiguangGatewayModelSyncInternalAuthToken = internalAuthToken;
+    internalAuthToken = globalState.__orbitModelSyncInternalAuthToken || randomUUID();
+    globalState.__orbitModelSyncInternalAuthToken = internalAuthToken;
   }
   return internalAuthToken;
 }
@@ -129,8 +129,8 @@ export function buildModelSyncInternalHeaders(): Record<string, string> {
 }
 
 export function isModelSyncInternalRequest(request: { headers: Headers }): boolean {
-  if (!internalAuthToken && globalState.__shiguangGatewayModelSyncInternalAuthToken) {
-    internalAuthToken = globalState.__shiguangGatewayModelSyncInternalAuthToken;
+  if (!internalAuthToken && globalState.__orbitModelSyncInternalAuthToken) {
+    internalAuthToken = globalState.__orbitModelSyncInternalAuthToken;
   }
   const headerToken = request.headers.get(MODEL_SYNC_INTERNAL_AUTH_HEADER);
   return Boolean(headerToken && internalAuthToken && headerToken === internalAuthToken);

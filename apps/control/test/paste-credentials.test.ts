@@ -26,7 +26,7 @@ test("round-trips the shared credential blob without changing token fields", () 
   };
 
   const encoded = encodeCredentialBlob(input);
-  assert.match(encoded, /^shiguangGateway-cred-v1\.[A-Za-z0-9_-]+$/);
+  assert.match(encoded, /^orbit-cred-v1\.[A-Za-z0-9_-]+$/);
   assert.deepEqual(decodeCredentialBlob(encoded), {
     provider: "antigravity",
     tokens: input.tokens,

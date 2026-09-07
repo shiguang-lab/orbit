@@ -1,7 +1,7 @@
 {
   "name": "@orbit/inference",
   "version": "3.8.51",
-  "description": "ShiguangGateway streaming engine \u2014 handles provider dispatch, protocol translation, and SSE streaming",
+  "description": "Orbit streaming engine \u2014 handles provider dispatch, protocol translation, and SSE streaming",
   "type": "module",
   "private": true,
   "exports": {

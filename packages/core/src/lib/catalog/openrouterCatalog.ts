@@ -89,7 +89,7 @@ function writeCache(data: CatalogEntry[]): void {
 async function fetchFromAPI(): Promise<CatalogEntry[]> {
   const res = await fetch(OPENROUTER_API_URL, {
     headers: {
-      "User-Agent": "ShiguangGateway/2.0",
+      "User-Agent": "Orbit/2.0",
       Accept: "application/json",
     },
     signal: AbortSignal.timeout(15_000),

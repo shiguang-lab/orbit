@@ -7,14 +7,14 @@ lastUpdated: 2026-06-28
 # Repository Map
 
 > **One-line description for every directory and root file.**
-> Last updated: 2026-06-28 — ShiguangGateway v3.8.40
+> Last updated: 2026-06-28 — Orbit v3.8.40
 >
 > Use this map to navigate the codebase quickly. For deep dives, follow links to dedicated docs.
 
 ## Top-level tree
 
 ```
-ShiguangGateway/
+Orbit/
 ├── src/                  # Next.js 16 application (UI + API routes + libs + domain + server)
 ├── open-sse/             # Streaming engine workspace (handlers, executors, translator, MCP server)
 ├── electron/             # Desktop wrapper (Electron 41 + electron-builder 26.10)
@@ -27,7 +27,7 @@ ShiguangGateway/
 ├── images/               # Marketing / README image assets
 ├── @orbit/           # Publishable companion packages (opencode-plugin, opencode-provider)
 ├── skills/               # CLI/agent skill packs (cli-* + omni-* + config-codex-cli)
-├── examples/             # Sample plugins + shiguang-gateway-cmd-hello starter
+├── examples/             # Sample plugins + orbit-cmd-hello starter
 ├── contrib/              # Community contributions (podman/)
 ├── .source/              # Fumadocs source config (source.config.mjs + server/browser/dynamic)
 ├── .github/              # GitHub Actions workflows + issue templates + PR template
@@ -301,7 +301,7 @@ open-sse/
 | File             | Purpose                                                                           |
 | ---------------- | --------------------------------------------------------------------------------- |
 | `main.js`        | Electron main process (BrowserWindow, embedded Next.js server, tray, auto-update) |
-| `preload.js`     | IPC bridge (contextBridge → `window.shiguang-gateway`)                                   |
+| `preload.js`     | IPC bridge (contextBridge → `window.orbit`)                                   |
 | `package.json`   | electron-builder config + Electron 41 + electron-builder 26.10 deps               |
 | `assets/`        | App icons (Windows .ico, macOS .icns, Linux .png)                                 |
 | `dist-electron/` | Build output (gitignored)                                                         |
@@ -314,7 +314,7 @@ open-sse/
 
 | File                                                                                                        | Purpose                                                                                                                    |
 | ----------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `apps/cli/src/shiguang-gateway.mjs`                                                                                | Main CLI entry — `shiguang-gateway serve`, `shiguang-gateway setup`, `shiguang-gateway doctor`, `shiguang-gateway providers`, `shiguang-gateway combos`, etc. |
+| `apps/cli/src/orbit.mjs`                                                                                | Main CLI entry — `orbit serve`, `orbit setup`, `orbit doctor`, `orbit providers`, `orbit combos`, etc. |
 | `apps/cli/src/reset-password.mjs`                                                                           | Standalone password reset CLI                                                                                              |
 | `cli/commands/setup.mjs`                                                                                    | Interactive + non-interactive setup wizard                                                                                 |
 | `cli/commands/doctor.mjs`                                                                                   | System health diagnostics (8+ checks)                                                                                      |
@@ -334,7 +334,7 @@ open-sse/
 
 | File                         | Purpose                                                                            |
 | ---------------------------- | ---------------------------------------------------------------------------------- |
-| `skills/shiguang-gateway*/SKILL.md` | 10 skill manifests for external AI agents (Claude Desktop, ChatGPT, Cursor, Cline) |
+| `skills/orbit*/SKILL.md` | 10 skill manifests for external AI agents (Claude Desktop, ChatGPT, Cursor, Cline) |
 
 ---
 
@@ -395,7 +395,7 @@ open-sse/
 | `RELEASE_CHECKLIST.md`      | Full release flow (skills, husky, conventional commits, deploy)                       |
 | `COVERAGE_PLAN.md`          | Coverage goals and current state                                                      |
 | `FREE_TIERS.md`             | Curated free-tier providers (48+ free + 11 OAuth)                                     |
-| `CLI-TOOLS.md`              | External CLI integrations + Internal ShiguangGateway CLI                                    |
+| `CLI-TOOLS.md`              | External CLI integrations + Internal Orbit CLI                                    |
 | `I18N.md`                   | i18n architecture, adding a language, 43 locales                                      |
 | `UNINSTALL.md`              | Clean uninstall steps                                                                 |
 | `PROVIDER_REFERENCE.md`     | **Auto-generated** catalog of 338 providers (regen: `npm run gen:provider-reference`) |
@@ -548,7 +548,7 @@ Shipped configuration templates plus the committed quality-gate baselines
 These underscore-prefixed directories hold non-shipping content:
 
 - **`_ideia/`** — design notes (defer / notfit / viable categories)
-- **`_mono_repo/`** — historic subprojects (shiguang-gatewayCloud, shiguang-gatewaySite, vscode-extension)
+- **`_mono_repo/`** — historic subprojects (orbitCloud, orbitSite, vscode-extension)
 - **`_references/`** — read-only clones of related OSS projects (LiteLLM, 9router, ClawRouter, CLIProxyAPI, modelrelay, new-api, etc.) for cross-reference during development
 - **`_tasks/`** — per-release task tracking files (informal)
 

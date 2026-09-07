@@ -39,7 +39,7 @@ Para a matriz completa de testes, veja `CONTRIBUTING.md` → "Executando Testes"
 
 ## Projeto em Resumo
 
-**ShiguangGateway** — proxy/router de IA unificado. Um endpoint, 329 provedores de LLM, fallback automático.
+**Orbit** — proxy/router de IA unificado. Um endpoint, 329 provedores de LLM, fallback automático.
 
 | Camada           | Localização             | Propósito                                                                 |
 | ---------------- | ----------------------- | ------------------------------------------------------------------------- |
@@ -82,7 +82,7 @@ As rotas da API seguem um padrão consistente: `Rota → pré-vôo CORS → vali
 
 ## Estado de Execução de Resiliência
 
-ShiguangGateway possui três mecanismos de falha temporária relacionados, mas distintos. Mantenha seu
+Orbit possui três mecanismos de falha temporária relacionados, mas distintos. Mantenha seu
 escopo separado ao depurar o comportamento de roteamento. Veja o
 [diagrama de resiliência de 3 camadas](./docs/diagrams/exported/resilience-3layers.svg)
 (fonte: [docs/diagrams/resilience-3layers.mmd](./docs/diagrams/resilience-3layers.mmd))
@@ -392,7 +392,7 @@ git push -u origin feat/sua-funcionalidade
 - **TypeScript**: 5.9+, alvo ES2022, módulo esnext, resolução bundler
 - **Aliases de caminho**: `@/*` → `src/`, `@orbit/inference` → `open-sse/`, `@orbit/inference/*` → `open-sse/*`
 - **Porta padrão**: 20128 (API + dashboard na mesma porta)
-- **Diretório de dados**: variável de ambiente `DATA_DIR`, padrão para `~/.shiguang-gateway/`
+- **Diretório de dados**: variável de ambiente `DATA_DIR`, padrão para `~/.orbit/`
 - **Principais variáveis de ambiente**: `PORT`, `JWT_SECRET`, `API_KEY_SECRET`, `INITIAL_PASSWORD`, `REQUIRE_API_KEY`, `APP_LOG_LEVEL`
 - Configuração: `cp .env.example .env` e, em seguida, gere `JWT_SECRET` (`openssl rand -base64 48`) e `API_KEY_SECRET` (`openssl rand -hex 32`)
 
@@ -415,4 +415,4 @@ git push -u origin feat/sua-funcionalidade
 13. Nunca interpolar strings de caminhos externos ou valores de tempo de execução em scripts shell passados para `exec()`/`spawn()` — passe pela opção `env` em vez disso. Referência: `src/mitm/cert/install.ts::updateNssDatabases`.
 14. Nunca desconsidere um alerta de CodeQL / Secret-Scanning sem (a) primeiro verificar a documentação do padrão acima para ver se o helper se aplica, e (b) registrar a justificativa técnica no comentário de desclassificação. Precedente: `js/stack-trace-exposure` levantado em sites de chamada que já roteiam através de `sanitizeErrorMessage()` é uma limitação conhecida do CodeQL (sanitizadores personalizados não reconhecidos) — desconsidere como `falso positivo` referenciando `docs/security/ERROR_SANITIZATION.md`.
 15. Nunca exponha rotas que geram processos filhos (`/api/mcp/`, `/api/cli-tools/runtime/`) sem classificação `isLocalOnlyPath()` em `src/server/authz/routeGuard.ts`. A aplicação de loopback acontece incondicionalmente antes de qualquer verificação de autenticação — JWT vazado via túnel não pode acionar a geração de processos. Veja `docs/security/ROUTE_GUARD_TIERS.md`.
-16. Nunca inclua trailers `Co-Authored-By` que creditem um assistente de IA, LLM ou conta de automação (p. ex. nomes contendo "Claude", "GPT", "Copilot", "Bot"; e-mails em `anthropic.com` / `openai.com` / endereços `noreply.github.com` pertencentes a bots). Esses trailers roteiam a atribuição do commit para a conta do bot no GitHub, ocultando o autor real (`diegosouzapw`) no histórico do PR. Colaboradores humanos — incluindo autores de PRs upstream e relatores de issues sendo portados para o ShiguangGateway — PODEM e DEVEM ser creditados com trailers padrão `Co-authored-by: Name <email>`; os workflows de port upstream (`/port-upstream-features`, `/port-upstream-issues`) dependem disso.
+16. Nunca inclua trailers `Co-Authored-By` que creditem um assistente de IA, LLM ou conta de automação (p. ex. nomes contendo "Claude", "GPT", "Copilot", "Bot"; e-mails em `anthropic.com` / `openai.com` / endereços `noreply.github.com` pertencentes a bots). Esses trailers roteiam a atribuição do commit para a conta do bot no GitHub, ocultando o autor real (`diegosouzapw`) no histórico do PR. Colaboradores humanos — incluindo autores de PRs upstream e relatores de issues sendo portados para o Orbit — PODEM e DEVEM ser creditados com trailers padrão `Co-authored-by: Name <email>`; os workflows de port upstream (`/port-upstream-features`, `/port-upstream-issues`) dependem disso.

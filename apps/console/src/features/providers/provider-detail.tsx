@@ -47,7 +47,7 @@ import { ProviderCcAliasSection } from "./components/ProviderCcAliasSection";
 import { useBreadcrumbTitle } from "@/shell/useBreadcrumbTitle";
 
 const useStyles = createStyles(({ token }) => ({
-  // Shiguang Gateway's dashboard is fluid (capped only by the shell at very wide
+  // Orbit's dashboard is fluid (capped only by the shell at very wide
   // viewports). A local max-width here made the detail page visibly narrower
   // than the Providers list and the official page.
   page: {
@@ -365,7 +365,7 @@ export default function ProviderDetailPage() {
         setOauthSession({ redirectUri: "", codeVerifier: payload.codeVerifier });
         setOauthDevice({ deviceCode: payload.device_code, verificationUrl, codeVerifier: payload.codeVerifier, interval: Math.max(3, payload.interval || 5) });
         setOauthOpen(true);
-        window.open(verificationUrl, "shiguangGateway-oauth", "width=600,height=720");
+        window.open(verificationUrl, "orbit-oauth", "width=600,height=720");
         return;
       }
       const isGoogleLoopback = providerId === "agy" || providerId === "antigravity";
@@ -378,7 +378,7 @@ export default function ProviderDetailPage() {
       if (!payload?.authUrl) throw new Error(payload?.error || "无法启动授权流程");
       setOauthSession({ redirectUri: payload.redirectUri || redirectUri, codeVerifier: payload.codeVerifier });
       setOauthOpen(true);
-      window.open(payload.authUrl, "shiguangGateway-oauth", "width=600,height=720");
+      window.open(payload.authUrl, "orbit-oauth", "width=600,height=720");
     } catch (error) {
       const message = error instanceof Error ? error.message : "无法启动授权流程";
       setOauthError(message);
@@ -864,7 +864,7 @@ export default function ProviderDetailPage() {
       }
     }
 
-    // Embedded services publish their live catalog through Shiguang Gateway's official
+    // Embedded services publish their live catalog through Orbit's official
     // provider-plugin manifest. Keep the public provider prefix out of the
     // row id because ProviderModelsSection adds it when routing/testing.
     for (const m of [
