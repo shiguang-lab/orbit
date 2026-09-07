@@ -3,6 +3,7 @@
  * 菜单图标与线上 ShiguangGateway Shiguang Gateway 侧栏保持一致。
  */
 import {
+  App,
   Layout,
   Menu,
   Button,
@@ -163,6 +164,7 @@ const useStyles = createStyles(({ token }) => ({
 }));
 
 export function Shell() {
+  const { message } = App.useApp();
   const { styles, cx } = useStyles();
   const [collapsed, setCollapsed] = useState(false);
   const [menuSearch, setMenuSearch] = useState("");
@@ -170,7 +172,7 @@ export function Shell() {
   const location = useLocation();
   const navigate = useNavigate();
   const { mode, toggle } = useThemeMode();
-  const { locale, setLocale, t } = useI18n();
+  const { locale, setLocale, t, tt } = useI18n();
   const session = getAuthSession();
   const customTitle = useBreadcrumbTitle((s) => s.customTitle);
   const sidebarSettingsQuery = useQuery({
@@ -290,7 +292,7 @@ export function Shell() {
       label: t("shell.logout"),
       icon: <MaterialIcon name="logout" />,
       onClick: () => {
-        void performLogout();
+        void performLogout().catch(() => message.error(tt("退出登录失败，请重试", "Sign-out failed. Please retry.")));
       },
     },
   ];

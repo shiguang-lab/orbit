@@ -4,7 +4,6 @@ import { lazy, Suspense, type ComponentType, createElement } from "react";
 import { Shell } from "@/shell/layout";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
 import { translate, useI18n } from "@/i18n";
-import LoginPage from "@/features/auth/login";
 
 function withSuspense(Cmp: ComponentType): ComponentType {
   return function LazyWrapper() {
@@ -141,7 +140,6 @@ const ChangelogPage = withSuspense(lazy(() => import("@/features/system/changelo
 const P = (navKey: string, title: string) => placeholder(navKey, title);
 
 export const router = createBrowserRouter([
-  { path: "/login", element: <LoginPage /> },
   {
     path: "/",
     element: <Shell />,

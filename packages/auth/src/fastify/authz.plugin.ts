@@ -1,16 +1,6 @@
-/**
- * 鉴权中间件：复刻 Shiguang Gateway src/lib/api/requireManagementAuth.ts + isDashboardSessionAuthenticated。
- *
- * 迁移策略：
- *  - JWT cookie 校验：直接用 jose 在本 Gateway 内实现(与原逻辑一致：auth_token JWT + JWT_SECRET)。
- *  - API key / CLI token / 引擎侧校验：通过 EngineAuthAdapter 注入(指向本地 runtime 的
- *    isValidApiKey/getApiKeyMetadata/isCliTokenAuthValid 等)，保证与引擎零重复实现。
- *  - 管理 scope 判定：统一复用 management-scopes 契约。
- */
+/** Management APIs accept verified SSO sessions or scoped machine credentials. */
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import { isAdminIdentity, resolveGatewayIdentity } from "../gateway-session.js";
 import {
-  getCookieValueFromHeader,
   isDashboardSessionAuthenticated,
 } from "../dashboard-session.js";
 export { getCookieValueFromHeader } from "../dashboard-session.js";
@@ -34,7 +24,7 @@ export interface EngineAuthAdapter {
 }
 
 export interface AuthzOptions {
-  /** 引擎适配器；缺省时仅支持 JWT cookie(供骨架先跑通) */
+  /** 引擎适配器；缺省时仅支持 SSO 会话 */
   engine?: EngineAuthAdapter;
   /** 所有管理端点强制鉴权(跳过 requireLogin 探测) */
   alwaysRequireAuth?: boolean;
@@ -43,25 +33,9 @@ export interface AuthzOptions {
   remoteSession?: (request: FastifyRequest) => Promise<boolean>;
 }
 
-async function isAuthRequired(options: AuthzOptions, request: FastifyRequest): Promise<boolean> {
-  if (options.alwaysRequireAuth) return true;
-  if (!options.engine) return true; // 无引擎时默认强制
-  try {
-    const settings = await options.engine.getSettings();
-    // requireLogin === true 或配置了密码/OIDC 才需要登录
-    return (
-      settings.requireLogin === true ||
-      typeof settings.password === "string" ||
-      settings.oidcEnabled === true
-    );
-  } catch {
-    return true;
-  }
-}
-
 /**
  * Fastify 插件：对管理路由(/api/* 且非公开)执行鉴权。
- * 与原 central managementPolicy 对齐：JWT cookie → loopback → CLI token → API key(manage scope)。
+ * 与原 central managementPolicy 对齐：SSO 会话 → CLI token → API key(manage scope)。
  */
 export function authzPlugin(app: FastifyInstance, opts: AuthzOptions = {}): void {
   app.decorate("authzEngine", opts.engine ?? null);
@@ -81,15 +55,8 @@ export function authzPlugin(app: FastifyInstance, opts: AuthzOptions = {}): void
     // 本地开发模式(SG_DEV_IDENTITY=1 或 broker 已配置)：放行(仅本地，生产绝不可用)
     if (opts.devMode) return;
 
-    if (!(await isAuthRequired(opts, request))) return;
-
-    // 1. Dashboard JWT cookie
+    // 1. Verified dashboard SSO session
     if (await isDashboardSessionAuthenticated(request)) return;
-
-    // Production SSO requests arrive with a gateway-issued, JWKS-verified
-    // X-SG-Identity header rather than the local auth_token cookie.
-    const gatewayIdentity = await resolveGatewayIdentity(request);
-    if (isAdminIdentity(gatewayIdentity)) return;
 
     if (opts.remoteSession && (await opts.remoteSession(request))) return;
 
@@ -148,9 +115,7 @@ function extractBearerApiKey(headers: FastifyRequest["headers"]): string | null 
 
 /** 公开精确路由(与 src/shared/constants/publicApiRoutes.ts 对齐，取核心) */
 const PUBLIC_API_ROUTES_EXACT = new Set([
-  "/api/auth/login",
   "/api/auth/logout",
-  "/api/auth/status",
   "/api/auth/csrf",
   "/api/auth/session",
   "/api/init",
@@ -162,9 +127,9 @@ const PUBLIC_API_ROUTES_EXACT = new Set([
   "/api/readyz",
 ]);
 
-const PUBLIC_API_ROUTES_PREFIX = ["/api/auth/oidc/", "/api/oauth/"];
+const PUBLIC_API_ROUTES_PREFIX = ["/api/oauth/"];
 
-const PUBLIC_READONLY = new Set(["/api/settings/require-login", "/api/monitoring/health"]);
+const PUBLIC_READONLY = new Set(["/api/monitoring/health"]);
 
 function isPublicApiRoute(pathname: string, method: string): boolean {
   if (PUBLIC_API_ROUTES_EXACT.has(pathname)) return true;

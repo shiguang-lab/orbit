@@ -9,7 +9,6 @@ import {
   updateAutoDisableAccountsSchema,
   updateIpFilterSchema,
   updatePayloadRulesSchema,
-  updateRequireLoginSchema,
 } from "@shiguang-gateway/core-domain/validation/security";
 import { jsonObjectSchema } from "@shiguang-gateway/core-domain/validation/misc";
 import { SettingsSecurityService } from "./security.service.js";
@@ -65,20 +64,6 @@ export class SettingsSecurityController {
     if (isValidationFailure(validation)) return reply.status(400).send({ error: validation.error });
     if (validation.data.action !== "reset-stats") return reply.status(400).send({ error: "Unknown action" });
     return reply.send(await this.security.resetBackgroundStats());
-  }
-
-  @Get("require-login")
-  async getRequireLogin(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    return reply.send(await this.security.getRequireLogin(toWebRequest(request)));
-  }
-
-  @Post("require-login")
-  async updateRequireLogin(@Req() request: FastifyRequest, @Res() reply: FastifyReply, @Body() body: unknown) {
-    const validation = validateBody(updateRequireLoginSchema, body);
-    if (isValidationFailure(validation)) return reply.status(400).send({ error: validation.error });
-    const result = await this.security.updateRequireLogin(toWebRequest(request), validation.data);
-    if (result.unauthorized) return reply.status(401).send({ error: "Unauthorized" });
-    return reply.send({ success: true });
   }
 
   @Get("ip-filter")

@@ -18,7 +18,6 @@
  */
 
 import { WebSocketServer, WebSocket } from "ws";
-import { jwtVerify } from "jose";
 import { isAdminIdentity, resolveGatewayIdentity } from "@shiguang-gateway/auth";
 import { createServer, type IncomingMessage, type ServerResponse } from "http";
 import { randomUUID } from "crypto";
@@ -152,14 +151,7 @@ async function authorizeConnection(request: import("http").IncomingMessage): Pro
   // headers — a single screenshot of the URL bar exposes the API key.
   const token = extractBearerToken(request) || extractAltTokenHeader(request);
 
-  // Browser WebSocket clients cannot set custom Authorization headers. When
-  // LiveWS is exposed same-origin through a reverse proxy, accept the existing
-  // dashboard session cookie before falling back to API-key authentication. Keep
-  // the check local to this sidecar so it does not import Next.js-only modules.
   if (!token) {
-    if (await isDashboardCookieAuthenticated(request)) {
-      return { authorized: true, sessionId };
-    }
     return { authorized: false, sessionId, error: "Missing token" };
   }
 
@@ -184,36 +176,6 @@ function extractAltTokenHeader(request: import("http").IncomingMessage): string 
   const raw = request.headers["x-live-ws-token"];
   if (Array.isArray(raw)) return raw[0] || null;
   return typeof raw === "string" ? raw : null;
-}
-
-export function getCookieValueFromHeader(
-  headers: import("http").IncomingHttpHeaders,
-  name: string
-): string | null {
-  const raw = headers.cookie;
-  const cookieHeader = Array.isArray(raw) ? raw.join("; ") : raw;
-  if (!cookieHeader) return null;
-  const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  // NOTE: \\s (not \s) — this is a plain template literal, so \s would collapse to a
-  // literal "s" and the pattern would only match auth_token when it is the FIRST cookie.
-  // Browsers serialize the Cookie header as "a=1; b=2", so the leading-cookie case
-  // (auth_token preceded by another cookie) must match too (#4004 same-origin proxy auth).
-  const match = cookieHeader.match(new RegExp(`(?:^|;\\s*)${escaped}=([^;]*)`));
-  return match ? decodeURIComponent(match[1]) : null;
-}
-
-async function isDashboardCookieAuthenticated(
-  request: import("http").IncomingMessage
-): Promise<boolean> {
-  const token = getCookieValueFromHeader(request.headers, "auth_token");
-  if (!token || !process.env.JWT_SECRET) return false;
-  try {
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-    await jwtVerify(token, secret);
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 function extractBearerToken(request: import("http").IncomingMessage): string | null {
@@ -483,13 +445,7 @@ export async function startLiveDashboardServer(
   // becomes an uncaughtException that kills the server. Benign aborts are
   // swallowed; genuine errors still crash loudly (#fix-dev-server-aborted).
   installProcessCrashGuard();
-  if (!process.env.JWT_SECRET) {
-    console.warn(
-      "  \x1b[33m⚠ Warning: JWT_SECRET is not set in the environment.\x1b[0m\n" +
-        "    Dashboard cookie-based WebSocket authentication will fail.\n" +
-        "    Please ensure JWT_SECRET is configured in your .env file."
-    );
-  }
+
 
   const server = createServer((req, res) => {
     // Absorb client-abort errors (browser closes the socket during navigation/
@@ -521,7 +477,7 @@ export async function startLiveDashboardServer(
     let activeClientId: string | null = null;
 
     // Clients can send the subscribe frame immediately after the WS open event,
-    // while dashboard cookie/API-key auth is still resolving. Queue those early
+    // while dashboard SSO/API-key auth is still resolving. Queue those early
     // messages so the first subscribe is not dropped.
     ws.on("message", (data) => {
       const raw = data.toString();

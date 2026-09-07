@@ -8,7 +8,7 @@ import { join, relative, resolve } from "node:path";
 const repoRoot = resolve(import.meta.dirname, "..");
 const referenceRoot = resolve(process.env.SHIGUANG_GATEWAY_REFERENCE_DIR || join(repoRoot, "..", "Orbit"));
 const methods = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"];
-const frozenContractSha256 = "83173aff965fddda925fc9ae256b7131731aa5d2c5fd73aa05bd3c54fe8f19d2";
+const frozenContractSha256 = "3ac7336622ffd70931983b9384371d85f2dab789163b201297be4aea32011d79";
 const localApiExtensions = new Set([
   // Signed gateway SSO session, covered by control-api auth-session tests.
   "auth/session/route.ts",
@@ -33,9 +33,15 @@ const localApiExtensions = new Set([
 // Whole-runtime lifecycle belongs to the external CLI supervisor. The former
 // control routes terminated only the control process while claiming to stop or
 // restart the entire split runtime, so they are intentionally absent.
-const retiredMisleadingLifecycleRoutes = new Set([
+const retiredApiRoutes = new Set([
   "restart/route.ts",
   "shutdown/route.ts",
+  // Browser authentication is owned exclusively by SSO.
+  "auth/login/route.ts",
+  "auth/oidc/callback/route.ts",
+  "auth/oidc/login/route.ts",
+  "auth/status/route.ts",
+  "settings/require-login/route.ts",
 ]);
 const normalizeRoutePath = (value) => value.replace(new RegExp("omni" + "route", "gi"), "gateway");
 
@@ -169,7 +175,7 @@ const localPath = (file) => {
 
 const refMap = new Map(refFiles
   .map((file) => [normalizeRoutePath(relative(referenceApi, file).split("\\").join("/")), contract(file)])
-  .filter(([routePath]) => !retiredMisleadingLifecycleRoutes.has(routePath)));
+  .filter(([routePath]) => !retiredApiRoutes.has(routePath)));
 const localMap = new Map();
 
 for (const routePath of nativeFallbackContracts) {
@@ -222,12 +228,12 @@ if (referenceAvailable) {
 } else {
   const serialized = [...localMap].sort(([a], [b]) => a.localeCompare(b)).map(([path, verbs]) => `${path}:${verbs.join(",")}`).join("\n");
   const actualHash = createHash("sha256").update(serialized).digest("hex");
-  if (localMap.size !== 687 || actualHash !== frozenContractSha256) {
+  if (localMap.size !== 682 || actualHash !== frozenContractSha256) {
     mismatches.push({ path: "<frozen-contract-baseline>", expected: [frozenContractSha256], actual: [actualHash] });
   }
 }
-const expectedRouteCount = referenceAvailable ? refMap.size : 687;
-const report = { referenceRoot, referenceAvailable, frozenContractSha256, routeFiles: expectedRouteCount, localRouteFiles: localMap.size, additiveLocalApiExtensions: [...localApiExtensions], retiredMisleadingLifecycleRoutes: [...retiredMisleadingLifecycleRoutes], mismatches,
+const expectedRouteCount = referenceAvailable ? refMap.size : 682;
+const report = { referenceRoot, referenceAvailable, frozenContractSha256, routeFiles: expectedRouteCount, localRouteFiles: localMap.size, additiveLocalApiExtensions: [...localApiExtensions], retiredApiRoutes: [...retiredApiRoutes], mismatches,
   status: localMap.size === expectedRouteCount && mismatches.length === 0 ? "PASS" : "FAIL" };
 console.log(JSON.stringify(report, null, 2));
 if (process.argv.includes("--strict") && report.status !== "PASS") process.exitCode = 1;

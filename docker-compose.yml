@@ -46,7 +46,7 @@ services:
       SHIGUANG_GATEWAY_ENABLE_LIVE_WS: "false"
       LOG_LEVEL: ${LOG_LEVEL:-info}
       CLI_QODER_BIN: ${CLI_QODER_BIN:-qodercli}
-      SHIGUANG_GATEWAY_AUTH_MODE: ${SHIGUANG_GATEWAY_AUTH_MODE:-shiguang}
+      SG_AUTH_ORIGIN: ${SG_AUTH_ORIGIN:-https://shiguanglab.com}
       SG_IDENTITY_ISSUER: ${SG_IDENTITY_ISSUER:-https://shiguanglab.com}
       SG_IDENTITY_AUDIENCE: ${SG_IDENTITY_AUDIENCE:-shiguang-gateway-api}
       SG_IDENTITY_ENTITLEMENT: ${SG_IDENTITY_ENTITLEMENT:-shiguang-gateway:access}

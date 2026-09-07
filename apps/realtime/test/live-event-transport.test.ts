@@ -1,28 +1,32 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { promisify } from "node:util";
 import { test } from "node:test";
-import { SignJWT } from "jose";
+import { SignJWT, generateKeyPair, exportJWK } from "jose";
 import { WebSocket } from "ws";
 
 test("authenticated events cross a process boundary and reach dashboard subscribers once", async () => {
   const root = await mkdtemp(join(tmpdir(), "realtime-events-"));
-  const secret = "realtime-event-cookie-secret";
+  const { publicKey, privateKey } = await generateKeyPair("RS256");
+  const jwksFile = join(root, "jwks.json");
+  await writeFile(jwksFile, JSON.stringify({ keys: [{ ...await exportJWK(publicKey), kid: "events", alg: "RS256" }] }));
   const token = "realtime-event-service-token";
   Object.assign(process.env, { DATA_DIR: root, SQLITE_FILE: join(root, "storage.sqlite"),
-    JWT_SECRET: secret, SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN: token });
+    SG_IDENTITY_JWKS_FILE: jwksFile, SG_IDENTITY_AUDIENCE: "shiguang-gateway-api", SG_IDENTITY_ENTITLEMENT: "shiguang-gateway:access", SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN: token });
   const { startLiveDashboardServer } = await import("../src/live-ws/live-server.js");
   const runtime = await startLiveDashboardServer(0, "127.0.0.1");
   const address = runtime.server.address();
   assert.ok(address && typeof address === "object");
   const endpoint = `http://127.0.0.1:${address.port}/__shiguangGateway_event`;
-  const cookie = await new SignJWT({ sub: "event-test-user" }).setProtectedHeader({ alg: "HS256" })
-    .setExpirationTime("2m").sign(new TextEncoder().encode(secret));
+  const identity = await new SignJWT({ sid: "event-session", entitlements: ["shiguang-gateway:access"], roles: [] })
+    .setProtectedHeader({ alg: "RS256", typ: "sg-identity+jwt", kid: "events" })
+    .setIssuer("https://shiguanglab.com").setAudience("shiguang-gateway-api").setSubject("event-test-user")
+    .setIssuedAt().setNotBefore("0s").setExpirationTime("2m").sign(privateKey);
   const ws = new WebSocket(`ws://127.0.0.1:${address.port}/live-ws`, {
-    origin: "http://127.0.0.1:8787", headers: { cookie: `auth_token=${cookie}` },
+    origin: "http://127.0.0.1:8787", headers: { "x-sg-identity": identity },
   });
   const received: string[] = [];
   const expected = ["request.started", "combo.target.attempt", "credential.health.changed"];

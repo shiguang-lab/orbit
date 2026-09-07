@@ -1,14 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { jwtVerify } from "jose";
 import {
   getSettings,
 } from "@shiguang-gateway/core-domain/db/settings";
-import {
-  hashManagementPassword,
-  hasManagementPasswordConfigured,
-} from "@shiguang-gateway/core-domain/control/management-password";
-import { isAuthenticated } from "@shiguang-gateway/core-domain/control/authenticated";
-import { isFeatureFlagEnabled } from "@shiguang-gateway/core-domain/runtime/feature-flags";
 import { getNodeRuntimeSupport } from "./node-runtime-support.js";
 import { normalizeAutoDisableBannedScope } from "@shiguang-gateway/core-domain/resilience/auto-disable-banned";
 import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
@@ -35,23 +28,6 @@ export interface AutoDisableAccountsConfig {
 
 @Injectable()
 export class SettingsSecurityService {
-  private jwtSecret(): Uint8Array | null {
-    const secret = process.env.JWT_SECRET?.trim();
-    return secret ? new TextEncoder().encode(secret) : null;
-  }
-
-  async checkSessionAuthenticated(request: Request): Promise<boolean> {
-    try {
-      const token = request.headers.get("cookie")?.match(/(?:^|;\s*)auth_token=([^;]+)/)?.[1];
-      const secret = this.jwtSecret();
-      if (!token || !secret) return false;
-      await jwtVerify(decodeURIComponent(token), secret);
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
   nodeCompatibility() {
     const { nodeVersion, nodeCompatible } = getNodeRuntimeSupport();
     return { nodeVersion, nodeCompatible };
@@ -105,50 +81,6 @@ export class SettingsSecurityService {
 
   resetBackgroundStats() {
     return executeEdgeRuntimeCommand({ command: "background-degradation.reset-stats" });
-  }
-
-  async getRequireLogin(request: Request) {
-    const nodeInfo = this.nodeCompatibility();
-    try {
-      const settings = await getSettings();
-      const oidcEnabled = Boolean(settings.oidcEnabled);
-      return {
-        authenticated: await this.checkSessionAuthenticated(request),
-        requireLogin: settings.requireLogin !== false,
-        hasPassword: hasManagementPasswordConfigured(settings),
-        setupComplete: Boolean(settings.setupComplete),
-        oidcEnabled,
-        oidcDisablePasswordLogin:
-          oidcEnabled &&
-          (settings.oidcDisablePasswordLogin === true ||
-            isFeatureFlagEnabled("SHIGUANG_GATEWAY_OIDC_DISABLE_PASSWORD_LOGIN") ||
-            process.env.SHIGUANG_GATEWAY_OIDC_DISABLE_PASSWORD_LOGIN === "true" ||
-            process.env.OIDC_DISABLE_PASSWORD_LOGIN === "true"),
-        ...nodeInfo,
-      };
-    } catch {
-      return {
-        authenticated: false,
-        requireLogin: true,
-        hasPassword: true,
-        setupComplete: true,
-        oidcEnabled: false,
-        oidcDisablePasswordLogin: false,
-        ...nodeInfo,
-      };
-    }
-  }
-
-  async updateRequireLogin(request: Request, body: Record<string, unknown>) {
-    const settings = await getSettings();
-    if (hasManagementPasswordConfigured(settings) && !(await isAuthenticated(request))) {
-      return { unauthorized: true } as const;
-    }
-    const updates: Record<string, unknown> = {};
-    if (typeof body.requireLogin === "boolean") updates.requireLogin = body.requireLogin;
-    if (body.password) updates.password = await hashManagementPassword(String(body.password));
-    await updatePersistedRuntimeSettings(updates);
-    return { unauthorized: false, success: true } as const;
   }
 
   getIpFilter() {

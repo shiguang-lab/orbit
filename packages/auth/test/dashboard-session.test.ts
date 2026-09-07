@@ -17,36 +17,36 @@ async function token(signingSecret = secret): Promise<string> {
     .sign(new TextEncoder().encode(signingSecret));
 }
 
-test("dashboard session verifies auth_token from Web Headers", async () => {
+test("dashboard session rejects retired auth_token from Web Headers", async () => {
   const authToken = await token();
   const request = { headers: new Headers({ cookie: `other=x; auth_token=${authToken}; tail=y` }) };
-  assert.equal(await isDashboardSessionAuthenticated(request, secret), true);
+  assert.equal(await isDashboardSessionAuthenticated(request), false);
 });
 
-test("dashboard session verifies framework cookie accessors", async () => {
+test("dashboard session rejects retired framework cookie accessors", async () => {
   const authToken = await token();
   const request = { cookies: { get: (name: string) => name === "auth_token" ? { value: authToken } : undefined } };
-  assert.equal(await isDashboardSessionAuthenticated(request, secret), true);
+  assert.equal(await isDashboardSessionAuthenticated(request), false);
 });
 
-test("dashboard session supports Node header records", async () => {
+test("dashboard session extracts cookies but does not authenticate them", async () => {
   const authToken = await token();
   assert.equal(getCookieValueFromHeader({ cookie: [`auth_token=${authToken}`] }, "auth_token"), authToken);
   assert.equal(
-    await isDashboardSessionAuthenticated({ headers: { cookie: `auth_token=${authToken}` } }, secret),
-    true,
+    await isDashboardSessionAuthenticated({ headers: { cookie: `auth_token=${authToken}` } }),
+    false,
   );
 });
 
 test("dashboard session rejects missing secrets, missing cookies, and invalid signatures", async () => {
   const invalid = await token("different-secret");
-  assert.equal(await isDashboardSessionAuthenticated({ headers: new Headers() }, secret), false);
+  assert.equal(await isDashboardSessionAuthenticated({ headers: new Headers() }), false);
   assert.equal(
-    await isDashboardSessionAuthenticated({ headers: new Headers({ cookie: `auth_token=${invalid}` }) }, secret),
+    await isDashboardSessionAuthenticated({ headers: new Headers({ cookie: `auth_token=${invalid}` }) }),
     false,
   );
   assert.equal(
-    await isDashboardSessionAuthenticated({ headers: new Headers({ cookie: `auth_token=${invalid}` }) }, undefined),
+    await isDashboardSessionAuthenticated({ headers: new Headers({ cookie: `auth_token=${invalid}` }) }),
     false,
   );
 });

@@ -16,13 +16,6 @@ import {
   validateProxyUrl,
 } from "@shiguang-gateway/core-domain/db/upstream-proxy";
 import { getProviderConnections } from "@shiguang-gateway/core-domain/db/provider-connections";
-import {
-  ensurePersistentManagementPasswordHash,
-  getStoredManagementPassword,
-  hasManagementPasswordConfigured,
-  hashManagementPassword,
-  verifyManagementPassword,
-} from "@shiguang-gateway/core-domain/control/management-password";
 import { isPaidModelTarget } from "@shiguang-gateway/core-domain/catalog/free-models";
 import { getAuditRequestContext, logAuditEvent } from "@shiguang-gateway/core-domain/compliance/audit-log";
 import {
@@ -101,32 +94,6 @@ function parseExpectedRevision(
   }
   return undefined;
 }
-
-/**
- * Settings keys whose change broadens attack surface. Spec §Security:
- * password re-auth is required when any of these is present in a PATCH body.
- *
- * - `localOnlyManageScopeBypassEnabled` / `localOnlyManageScopeBypassPrefixes`:
- *   T-011 bypass kill-switch + per-prefix list. Operator must re-confirm
- *   before broadening the LOCAL_ONLY carve-out.
- * - `requireLogin`: dashboard login enforcement toggle.
- * - `newPassword`: password rotation (existing). Handled by the same gate so
- *   the password-verify only fires ONCE per PATCH.
- *
- * Note: `mcpEnabled` is NOT gated server-side — the dedicated MCP page
- * (/dashboard/mcp) toggles it via patchSetting() without a currentPassword
- * prompt. The Authz section can still prompt client-side for consistency,
- * but the server accepts the change without re-auth.
- */
-const SECURITY_IMPACTING_KEYS = [
-  "localOnlyManageScopeBypassEnabled",
-  "localOnlyManageScopeBypassPrefixes",
-  "requireLogin",
-  "newPassword",
-  "oidcEnabled",
-  "oidcDisablePasswordLogin",
-  "oidcClientSecret",
-] as const;
 
 /**
  * Derive an audit actor string from the inbound request. Falls back to
@@ -249,7 +216,6 @@ export async function GET(request: Request) {
       {
         ...safeSettings,
         settingsRevision,
-        hasPassword: hasManagementPasswordConfigured(settings),
         runtimePorts,
         apiPort: runtimePorts.apiPort,
         dashboardPort: runtimePorts.dashboardPort,
@@ -326,79 +292,12 @@ export async function PATCH(request: Request) {
       }) as typeof body.modelLockout;
     }
 
-    if (body.oidcEnabled === true) {
-      const current = await getSettings();
-      const subjects = Array.isArray(body.oidcAllowedSubjects)
-        ? (body.oidcAllowedSubjects as unknown[])
-        : ((current.oidcAllowedSubjects as unknown[] | undefined) ?? []);
-      const hasAtLeastOne = subjects.some((s) => typeof s === "string" && s.trim().length > 0);
-      if (!hasAtLeastOne) {
-        emitSettingsFailureAudit(request, actor, "OIDC_ALLOWED_SUBJECTS_REQUIRED", attemptedKeys);
-        return Response.json(
-          {
-            error: {
-              code: "OIDC_ALLOWED_SUBJECTS_REQUIRED",
-              message:
-                "oidcAllowedSubjects must contain at least one subject or email when oidcEnabled is true",
-            },
-          },
-          { status: 400 }
-        );
-      }
-    }
-
-    // VALIDATED body so we never trip on stray unknown keys. If any security
-    // key is present, require currentPassword + verify against the stored
-    // bcrypt hash. Dedupes with the previous inline newPassword reauth — the
-    // password is verified at most once per PATCH.
-    const touchedSecurityKeys = SECURITY_IMPACTING_KEYS.filter((k) => k in validation.data);
-    if (touchedSecurityKeys.length > 0) {
-      const settings = await getSettings();
-      // Lazy-hash any plaintext INITIAL_PASSWORD migration BEFORE we read the
-      // stored hash, so the gate works on fresh deploys too.
-      const passwordState = await ensurePersistentManagementPasswordHash({
-        settings,
-        source: "settings.security_impacting_update",
-      });
-      const storedPasswordHash = getStoredManagementPassword(passwordState.settings);
-      // Cold-boot exception: same condition the existing newPassword path
-      // honoured before T-011 — when no password is configured yet AND login
-      // is currently disabled, allow the first write to set policy (incl.
-      // the password itself). Once a hash exists the gate always fires.
-      // #8950: also treat the request as cold boot when newPassword is present
-      // without a stored hash, so the Security tab's two-step flow (enable
-      // requireLogin first, then set password) does not deadlock.
-      const isColdBoot =
-        !storedPasswordHash &&
-        (passwordState.settings.requireLogin === false || Boolean(body.newPassword));
-      if (!isColdBoot) {
-        if (!body.currentPassword) {
-          emitSettingsFailureAudit(request, actor, "PASSWORD_REQUIRED", attemptedKeys);
-          return Response.json(
-            {
-              error: {
-                code: "PASSWORD_REQUIRED",
-                message: "currentPassword required for security-impacting setting changes",
-                keys: touchedSecurityKeys,
-              },
-            },
-            { status: 400 }
-          );
-        }
-        const isValid = await verifyManagementPassword(body.currentPassword, storedPasswordHash);
-        if (!isValid) {
-          emitSettingsFailureAudit(request, actor, "PASSWORD_MISMATCH", attemptedKeys);
-          return Response.json(
-            {
-              error: {
-                code: "PASSWORD_MISMATCH",
-                message: "Invalid current password",
-              },
-            },
-            { status: 401 }
-          );
-        }
-      }
+    const localAuthKeys = Object.keys(body).filter((key) =>
+      key === "password" || key === "newPassword" || key === "currentPassword" ||
+      key === "requireLogin" || key.startsWith("oidc") || key === "bruteForceProtection"
+    );
+    if (localAuthKeys.length) {
+      return Response.json({ error: { code: "SSO_MANAGED_AUTH", message: "Authentication is managed by SSO", keys: localAuthKeys } }, { status: 400 });
     }
 
     // #6540: reject a paid-only webSearchRouteModel target when hidePaidModels
@@ -425,15 +324,6 @@ export async function PATCH(request: Request) {
       }
     }
 
-    // Password rotation: hash the new value AFTER the gate has accepted the
-    // currentPassword (or the cold-boot exception fired). The gate already
-    // included `newPassword` in SECURITY_IMPACTING_KEYS, so no separate
-    // verify happens here — strictly hashing + body rewriting.
-    if (body.newPassword) {
-      body.password = await hashManagementPassword(body.newPassword);
-      delete body.newPassword;
-    }
-    delete body.currentPassword;
     delete body.expectedRevision;
 
     // Snapshot BEFORE the write so the success row can record a real diff.

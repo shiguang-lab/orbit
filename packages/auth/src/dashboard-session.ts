@@ -1,4 +1,4 @@
-import { jwtVerify } from "jose";
+import { isAdminIdentity, resolveGatewayIdentity } from "./gateway-session.js";
 
 export interface DashboardSessionRequest {
   cookies?: {
@@ -28,21 +28,13 @@ export function getCookieValueFromHeader(
   return null;
 }
 
+/** Browser sessions are exclusively verified gateway SSO assertions. */
 export async function isDashboardSessionAuthenticated(
   request?: DashboardSessionRequest | null,
-  jwtSecret: string | undefined = process.env.JWT_SECRET,
 ): Promise<boolean> {
-  if (!jwtSecret) return false;
-
-  const token =
-    request?.cookies?.get?.("auth_token")?.value ||
-    getCookieValueFromHeader(request?.headers, "auth_token");
-  if (!token) return false;
-
-  try {
-    await jwtVerify(token, new TextEncoder().encode(jwtSecret));
-    return true;
-  } catch {
-    return false;
-  }
+  if (!request?.headers) return false;
+  const headers = request.headers instanceof Headers
+    ? Object.fromEntries(request.headers.entries())
+    : request.headers;
+  return isAdminIdentity(await resolveGatewayIdentity({ headers }));
 }

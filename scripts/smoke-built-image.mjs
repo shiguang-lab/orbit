@@ -32,7 +32,6 @@ const env = {
   SHIGUANG_GATEWAY_ENABLE_LIVE_WS: target === "realtime" ? "true" : "false",
   SHIGUANG_GATEWAY_DISABLE_BACKGROUND_SERVICES: "0", SHIGUANG_GATEWAY_ENABLE_RUNTIME_BACKGROUND_TASKS: "1",
   QUOTA_STORE_DRIVER: "sqlite", LOG_LEVEL: "warn",
-  SHIGUANG_GATEWAY_AUTH_MODE: "shiguang",
 };
 try {
   docker(["volume", "create", volume]);

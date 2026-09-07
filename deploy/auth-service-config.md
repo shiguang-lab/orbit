@@ -18,6 +18,20 @@ Caddy 保持上述产品三元组，服务端验签与管理权限判断使用�
 确认原授权存在，并验证登录回跳和受保护 API；配置文件本身不是线上成功证据。
 以下新增产品配置仅适用于主动采用独立 `shiguang-gateway` 身份的部署。
 
+## 浏览器登录链路
+
+管理控制台只使用统一 SSO：浏览器进入统一登录站点，回跳产品域名后由 Access Gateway
+校验会话并注入 `X-SG-Identity`。会话探测、管理 API、CSRF 和 WebSocket 使用相同的
+issuer、audience、entitlement 验证。产品不提供独立密码登录页或 OIDC 回调。
+
+`/api/auth/session` 返回 401 时启动一次 SSO 跳转；回跳仍未认证、权限不足或服务故障时
+显示验证错误，由用户重试，不自动循环跳转。退出登录通过 auth-service 撤销 SSO 会话。
+`SG_AUTH_ORIGIN` 可指定 auth-service 来源，默认 `https://shiguanglab.com`。
+`JWT_SECRET` 仍用于 CSRF 签名等内部能力，须在部署中保持稳定。
+
+本地开发可使用真实账号 Broker，注入相同的签名身份并接受同样的 API 验证；
+不允许生产启用 Broker。本地 Vite 不代理统一登录页。
+
 ## 1. 环境变量变更
 
 文件：auth-service 部署 env(对应 `auth-service/.env.example`，部署值在 `shiguang/deploy` 下)
@@ -63,11 +77,10 @@ LOCAL_BROKER_POLICIES=[{"productId":"asset-hub","audience":"asset-hub-api","requ
 
 注意：
 - `LOCAL_BROKER_ENABLED` **默认 false**，线上若没开，`/api/auth/local-broker` 返回 **404**，
-  ShiguangGateway 默认本地 dev identity 不受影响；显式 Broker 模式会显示不可用错误，
-  不会伪装成线上身份。
+  本地 Broker 模式返回不可用错误，不会使用模拟身份。
 - `LOCAL_BROKER_POLICIES` 里**必须含 shiguang-gateway** 条目，否则返回 `invalid_product`。
 - 配好后，本地 admin/API 开发环境显式设置 `SG_LOCAL_BROKER_ENABLED=true`，再配置真实 shiguang
-  账号(`SG_BROKER_USERNAME/PASSWORD`)即可用线上身份登录；未开启时本地使用 dev identity。
+  账号(`SG_BROKER_USERNAME/PASSWORD`)即可用线上签名身份。未开启时须经 Access Gateway 注入身份。
 - 本地 broker 请求的 Origin 与 asset-hub 一致用 `authTarget`(shiguanglab.com)，匹配全局 PUBLIC_ORIGIN。
 
 ## 2. 各产品一个 audience 的约定

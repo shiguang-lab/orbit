@@ -7,7 +7,6 @@
  * @module shared/utils/apiAuth
  */
 
-import { getSettings } from "../../lib/localDb.ts";
 import { isPublicApiRoute } from "../constants/publicApiRoutes.ts";
 import { extractApiKey } from "@shiguang-gateway/auth";
 import { isDashboardSessionAuthenticated } from "@shiguang-gateway/auth/dashboard-session";
@@ -25,21 +24,6 @@ type RequestLike = {
 };
 
 const LOOPBACK_HOSTNAMES = new Set(["localhost", "::1"]);
-
-function hasConfiguredPassword(settings: Record<string, unknown>): boolean {
-  return typeof settings.password === "string" && settings.password.length > 0;
-}
-function hasConfiguredOidc(settings: Record<string, unknown>): boolean {
-  return (
-    settings.oidcEnabled === true &&
-    typeof settings.oidcIssuer === "string" &&
-    settings.oidcIssuer.trim().length > 0 &&
-    typeof settings.oidcClientId === "string" &&
-    settings.oidcClientId.trim().length > 0 &&
-    typeof settings.oidcClientSecret === "string" &&
-    settings.oidcClientSecret.trim().length > 0
-  );
-}
 
 function getRequestPathname(request: RequestLike | Request | null | undefined): string | null {
   const nextPathname =
@@ -65,14 +49,6 @@ function getRequestPathname(request: RequestLike | Request | null | undefined): 
   } catch {
     return null;
   }
-}
-
-function isOnboardingBootstrapPath(pathname: string | null): boolean {
-  return pathname === "/dashboard/onboarding";
-}
-
-function isRequireLoginBootstrapWritePath(pathname: string | null, method: string): boolean {
-  return pathname === "/api/settings/require-login" && method.toUpperCase() === "POST";
 }
 
 function getRequestMethod(request: RequestLike | Request | null | undefined): string {
@@ -266,51 +242,9 @@ export function isPublicRoute(pathname: string, method = "GET"): boolean {
   return isPublicApiRoute(pathname, method);
 }
 
-/**
- * Check if authentication is required based on settings.
- * If requireLogin is explicitly false, auth is skipped. Fresh installs without
- * a password keep their unauthenticated bootstrap path only on loopback
- * requests; exposed network requests must configure INITIAL_PASSWORD or log in.
- */
+/** Management authentication cannot be disabled by application settings. */
 export async function isAuthRequired(
-  request?: RequestLike | Request | null | undefined
+  _request?: RequestLike | Request | null | undefined
 ): Promise<boolean> {
-  try {
-    const settings = await getSettings();
-    if (settings.requireLogin === false) return false;
-
-    if (
-      !hasConfiguredPassword(settings) &&
-      !hasConfiguredOidc(settings) &&
-      !process.env.INITIAL_PASSWORD
-    ) {
-      if (!request) return false;
-
-      const pathname = getRequestPathname(request);
-      const method = getRequestMethod(request);
-      if (isOnboardingBootstrapPath(pathname)) {
-        return false;
-      }
-
-      if (pathname && isPublicApiRoute(pathname, method)) {
-        return false;
-      }
-
-      if (isRequireLoginBootstrapWritePath(pathname, method)) {
-        return false;
-      }
-
-      return settings.setupComplete === true || !isLoopbackRequest(request);
-    }
-
-    return true;
-  } catch (error: any) {
-    // On error, require auth (secure by default)
-    // Log the error so failures (e.g., SQLITE_BUSY) aren't silent 401s
-    console.error(
-      "[API_AUTH_GUARD] isAuthRequired failed, defaulting to true:",
-      error?.message || error
-    );
-    return true;
-  }
+  return true;
 }

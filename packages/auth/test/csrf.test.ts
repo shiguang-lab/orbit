@@ -147,32 +147,16 @@ test("rejects an SSO assertion without the required stable session id", async ()
   assert.equal(response.statusCode, 401);
 });
 
-test("keeps local cookie sessions isolated", async () => {
-  const issued = await app.inject({
-    method: "GET",
-    url: "/api/auth/csrf",
-    headers: { cookie: "auth_token=local-session-1" },
-  });
-  assert.equal(issued.statusCode, 200);
-  const csrfToken = issued.json<{ token: string }>().token;
+test("retired password cookies cannot issue CSRF tokens", async () => {
+  const issued = await app.inject({ method: "GET", url: "/api/auth/csrf", headers: { cookie: "auth_token=local-session-1" } });
+  assert.equal(issued.statusCode, 401);
+});
 
-  const accepted = await app.inject({
-    method: "POST",
-    url: "/api/protected",
-    headers: {
-      cookie: "auth_token=local-session-1",
-      [DASHBOARD_CSRF_HEADER]: csrfToken,
-    },
-  });
-  const rejected = await app.inject({
-    method: "POST",
-    url: "/api/protected",
-    headers: {
-      cookie: "auth_token=local-session-2",
-      [DASHBOARD_CSRF_HEADER]: csrfToken,
-    },
-  });
-
-  assert.equal(accepted.statusCode, 200);
-  assert.equal(rejected.statusCode, 403);
+test("stale password cookies cannot override the SSO CSRF binding", async () => {
+  const identity = await signIdentity({ sessionId: "session-1", jwtId: "cookie-test" });
+  const csrfToken = await fetchCsrf(identity);
+  const response = await app.inject({ method: "POST", url: "/api/protected", headers: {
+    "x-sg-identity": identity, cookie: "auth_token=stale", [DASHBOARD_CSRF_HEADER]: csrfToken,
+  } });
+  assert.equal(response.statusCode, 200);
 });

@@ -27,10 +27,9 @@
 
 - ✅ `auth` `SgIdentityVerifier`：RS256 + `typ=sg-identity+jwt` + kid 查 JWKS + iss/aud/exp/nbf/iat/entitlement 校验(JWKS 缓存 5min)
 - ✅ control-api `/api/auth/session`：终结 X-SG-Identity，认可管理员角色或配置的产品 entitlement，返回统一会话
-- ✅ 本地开发：dev 启动默认使用 loopback-only `SG_DEV_IDENTITY=1`
 - ✅ 真实账号联调：显式开启 `SG_LOCAL_BROKER_ENABLED=true`
 - ✅ 前端：未登录整页跳 shiguang 登录页(`session.ts`)，无自建登录页
-- ✅ 验证：伪造断言被拒(401)、dev 会话返回(200)、无身份 401
+- ✅ 验证：伪造断言被拒(401)、签名 SSO 会话及业务 API 返回(200)、无身份 401
 
 ## 待部署(需走统一 deploy 流程)
 
@@ -55,7 +54,6 @@
 | `SG_IDENTITY_ENTITLEMENT` | `shiguang-gateway:access` | 本产品 entitlement |
 | `SG_IDENTITY_JWKS_URL` | `https://shiguanglab.com/.well-known/sg-identity-jwks.json` | JWKS 拉取地址 |
 | `SG_IDENTITY_JWKS_FILE` | 空 | 本地 JWKS 文件(离线/测试) |
-| `SG_DEV_IDENTITY` | 空 | `1` 时本地注入 dev 身份(仅开发) |
 | `SG_LOCAL_BROKER_ENABLED` | 空 | `true` 时本地显式启用真实账号 Broker(仅 dev server) |
 | `EDGE_GATEWAY_PORT` | `8787` | edge-gateway 监听端口 |
 | `CONTROL_API_PORT` | `8788` | control-api 监听端口 |

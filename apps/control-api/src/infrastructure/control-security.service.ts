@@ -51,9 +51,15 @@ export class ControlSecurityService implements OnModuleInit {
       loginName: brokerUsername,
       password: brokerPassword,
     });
-    const devMode = process.env.SG_DEV_IDENTITY === "1" || broker.enabled;
-    if (broker.enabled) app.log.info("[control-api] local SSO broker enabled");
-    else if (devMode) app.log.info("[control-api] local dev identity enabled");
+    if (broker.enabled) {
+      if (process.env.NODE_ENV === "production") throw new Error("Local SSO broker is development-only");
+      app.addHook("preHandler", async (request, reply) => {
+        if (!request.url.startsWith("/api/")) return;
+        const identity = await broker.identity();
+        if (!identity) return reply.status(503).send({ error: "local_broker_unavailable" });
+        request.headers["x-sg-identity"] = identity;
+      });
+    }
 
     const authzEngine: EngineAuthAdapter = {
       isValidApiKey: async (apiKey) => {
@@ -98,8 +104,8 @@ export class ControlSecurityService implements OnModuleInit {
       },
     };
 
-    authzPlugin(app, { engine: authzEngine, devMode });
-    csrfPlugin(app, { devMode });
+    authzPlugin(app, { engine: authzEngine });
+    csrfPlugin(app);
     await this.registerAdminShell(app);
   }
 

@@ -81,10 +81,10 @@ pnpm --filter @shiguang-gateway/admin dev         # 管理台: http://127.0.0.1:
 pnpm dev
 ```
 
-本地开发默认使用 loopback-only dev identity，浏览器不需要登录；生产请设置稳定的 `JWT_SECRET`、`API_KEY_SECRET` 并按需启用 shiguang SSO。
+浏览器只使用 shiguang SSO；生产请设置稳定的 `JWT_SECRET`、`API_KEY_SECRET`，并由 Access Gateway 注入签名身份。
 需要联调真实
 拾光身份时，将 `SG_LOCAL_BROKER_ENABLED=true` 并配置 `SG_BROKER_USERNAME/PASSWORD`。
-Broker 模式只在本地 dev server 生效，生产启动会拒绝任何本地绕过配置。
+本地 Broker 注入真实签名身份并接受相同的验证；生产启动会拒绝本地 Broker 配置。
 
 前端 dev server 的 `/api` 代理默认指向控制面(8788)，模型协议指向网关(8787)，长连接 `/live-ws` 指向 realtime(20132)。不需要配置 NAS target 或官方 live server。
 

@@ -1,8 +1,8 @@
 /**
  * CSRF 保护：移植自 ShiguangGateway Shiguang Gateway src/shared/utils/dashboardCsrf.ts。
  *
- * ShiguangGateway 管理接口在本地用 httpOnly cookie(auth_token)，生产经网关使用
- * X-SG-Identity 会话；两种模式的 mutating 请求都需带 x-shiguangGateway-csrf 头。
+ * ShiguangGateway 管理接口使用网关签名的 X-SG-Identity 会话；
+ * mutating 请求需带 x-shiguangGateway-csrf 头。
  * token 从 GET /api/auth/csrf 获取，按 expiresAt 缓存 + 单飞去重。
  */
 
@@ -18,11 +18,9 @@ let cachedExpiresAt = 0;
 let pendingToken: Promise<string> | null = null;
 
 /** 公开/免 CSRF 的路径前缀与精确路径（与后端 publicApiRoutes.ts 对齐，取核心部分） */
-const PUBLIC_PREFIXES = ["/api/auth/oidc/", "/api/v1/"];
+const PUBLIC_PREFIXES = ["/api/v1/"];
 const PUBLIC_EXACT = new Set([
-  "/api/auth/login",
   "/api/auth/logout",
-  "/api/auth/status",
   "/api/auth/csrf",
   "/api/init",
 ]);

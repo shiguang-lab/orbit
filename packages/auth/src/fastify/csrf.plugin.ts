@@ -1,7 +1,7 @@
 /**
  * CSRF 插件：复刻 Shiguang Gateway src/server/authz/csrf.ts。
  * HMAC-SHA256 token，头名 x-shiguangGateway-csrf，对管理端点写操作校验。
- * token 绑定 auth_token cookie，或经过 JWKS 验证的稳定 SSO 会话身份。
+ * token 绑定经过 JWKS 验证的稳定 SSO 会话身份。
  */
 import { createHash, createHmac } from "node:crypto";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
@@ -23,19 +23,7 @@ function getJwtSecret(): Buffer | null {
   return secret ? Buffer.from(secret, "utf8") : null;
 }
 
-function getCookieValue(request: FastifyRequest, name: string): string | null {
-  const cookieHeader = request.headers.cookie ?? "";
-  for (const segment of cookieHeader.split(";")) {
-    const [rawKey, ...rawValue] = segment.split("=");
-    if (rawKey.trim() === name) return rawValue.join("=").trim() || null;
-  }
-  return null;
-}
-
 async function getSessionBinding(request: FastifyRequest): Promise<string | null> {
-  const authToken = getCookieValue(request, "auth_token");
-  if (authToken) return `cookie:${authToken}`;
-
   const identity = await resolveGatewayIdentity(request);
   if (!identity) return null;
   return ["sso", identity.sessionId, identity.sub, identity.organizationId ?? ""].join("\n");
@@ -143,9 +131,7 @@ export function csrfPlugin(app: FastifyInstance, opts: { devMode?: boolean } = {
 
 function csrfExempt(pathname: string): boolean {
   return [
-    "/api/auth/login",
     "/api/auth/logout",
-    "/api/auth/oidc/login",
     "/api/init",
     "/api/cli/connect",
   ].includes(pathname);

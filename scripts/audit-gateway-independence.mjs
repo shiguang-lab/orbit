@@ -42,7 +42,14 @@ const localApiExtensions = new Set([
 // These upstream control-process routes are intentionally retired. In the
 // split runtime they could only terminate control-api, not the gateway stack;
 // full-stack lifecycle is owned by the CLI supervisor.
-const retiredApiRoutes = new Set(["restart/route.ts", "shutdown/route.ts"]);
+const retiredApiRoutes = new Set(["restart/route.ts", "shutdown/route.ts",
+  // Browser authentication is owned exclusively by SSO.
+  "auth/login/route.ts",
+  "auth/oidc/callback/route.ts",
+  "auth/oidc/login/route.ts",
+  "auth/status/route.ts",
+  "settings/require-login/route.ts",
+]);
 // Root A2A transport is intentionally implemented by the edge Nest app; the
 // legacy Next root route is removed as part of that physical migration.
 const localRootRouteExtensions = new Set(["a2a/route.ts"]);

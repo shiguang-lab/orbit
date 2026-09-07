@@ -16,7 +16,6 @@
 
 // Genuine subtrees. Every entry MUST end in "/".
 const PUBLIC_API_ROUTE_PREFIXES = [
-  "/api/auth/oidc/",
   "/api/v1/",
   "/api/oauth/",
   // Public, ticket-gated Codex device-flow completion (validate + persist).
@@ -37,9 +36,7 @@ const PUBLIC_API_ROUTE_PREFIXES = [
 
 // Single routes, public by EXACT path (both spellings) — never by prefix.
 const PUBLIC_API_ROUTES_EXACT = new Set([
-  "/api/auth/login",
   "/api/auth/logout",
-  "/api/auth/status",
   "/api/init",
   "/api/sync/bundle",
   // Remote-mode bootstrap: exchange the management password for a scoped CLI
@@ -65,7 +62,6 @@ const PUBLIC_API_ROUTES_EXACT = new Set([
 const PUBLIC_READONLY_CORS_API_ROUTES = [
   "/api/health/ping",
   "/api/monitoring/health",
-  "/api/settings/require-login",
 ];
 
 // Read-only routes public by EXACT path, WITHOUT the CORS relaxation.
