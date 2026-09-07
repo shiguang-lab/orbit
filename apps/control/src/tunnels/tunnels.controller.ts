@@ -18,7 +18,11 @@ const tailscaleEnableSchema = z.object({
   hostname: z.string().optional(),
   port: z.number().int().min(1).max(65535).optional(),
 });
-const tailscaleLoginSchema = z.object({ hostname: z.string().optional() });
+const tailscaleLoginSchema = z.object({
+  hostname: z.string().optional(),
+  authKey: z.string().optional(),
+  ephemeral: z.boolean().optional(),
+});
 const tailscaleSudoSchema = z.object({ sudoPassword: z.string().optional() });
 
 /** HTTP transport for operator-managed public tunnel processes. */
@@ -91,7 +95,8 @@ export class TunnelsController {
   async tailscaleStatus(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
     if (!(await this.authorize(request, reply))) return;
     try {
-      return reply.send(await this.tunnels.tailscaleStatus());
+      const host = (request.headers["x-forwarded-host"] || request.headers.host) as string | undefined;
+      return reply.send(await this.tunnels.tailscaleStatus(host));
     } catch (error) {
       return reply.status(500).send(toPublicSafeTunnelError(error, "Failed to load the Tailscale status.", "tunnels/tailscale GET"));
     }
@@ -101,7 +106,8 @@ export class TunnelsController {
   async tailscaleCheck(@Req() request: FastifyRequest, @Res() reply: FastifyReply) {
     if (!(await this.authorize(request, reply))) return;
     try {
-      return reply.send(await this.tunnels.tailscaleCheck());
+      const host = (request.headers["x-forwarded-host"] || request.headers.host) as string | undefined;
+      return reply.send(await this.tunnels.tailscaleCheck(host));
     } catch (error) {
       return reply.status(500).send(toPublicSafeTunnelError(error, "Failed to check the Tailscale state.", "tunnels/tailscale/check GET"));
     }

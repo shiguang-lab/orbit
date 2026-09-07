@@ -56,12 +56,12 @@ export class TunnelsService {
       : this.execute({ command: "ngrok.disable" });
   }
 
-  tailscaleStatus() {
-    return this.execute({ command: "tailscale.status" });
+  tailscaleStatus(requestHost?: string | null) {
+    return this.execute({ command: "tailscale.status", ...(requestHost ? { requestHost } : {}) });
   }
 
-  tailscaleCheck() {
-    return this.execute({ command: "tailscale.check" });
+  tailscaleCheck(requestHost?: string | null) {
+    return this.execute({ command: "tailscale.check", ...(requestHost ? { requestHost } : {}) });
   }
 
   tailscaleEnable(input: { sudoPassword?: string; hostname?: string; port?: number }) {
@@ -72,7 +72,7 @@ export class TunnelsService {
     return this.execute({ command: "tailscale.disable", ...input });
   }
 
-  tailscaleLogin(input: { hostname?: string }) {
+  tailscaleLogin(input: { hostname?: string; authKey?: string; ephemeral?: boolean }) {
     return this.execute({ command: "tailscale.login", ...input });
   }
 

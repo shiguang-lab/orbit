@@ -34,6 +34,14 @@ test("advertises the split edge port and separates LAN from Tailscale addresses"
     lanUrls: ["http://192.168.1.20:9100/v1"],
     tailscaleUrl: "https://machine.example.ts.net/v1",
     tailscaleIpUrl: "http://100.64.10.3:9100/v1",
+    port: 9100,
+    tailscaleDetails: {
+      connected: true,
+      ip: "100.64.10.3",
+      magicDns: null,
+      hostname: null,
+      source: "network-interface",
+    },
   });
 });
 
@@ -49,4 +57,34 @@ test("uses a Tailscale request host when the edge status command is unavailable"
   assert.equal(result.localUrl, "http://localhost:8787/v1");
   assert.equal(result.tailscaleUrl, "http://100.100.10.4:9443/v1");
   assert.equal(result.tailscaleIpUrl, "http://100.100.10.4:8787/v1");
+  assert.equal(result.port, 8787);
+  assert.deepEqual(result.tailscaleDetails, {
+    connected: true,
+    ip: "100.100.10.4",
+    magicDns: null,
+    hostname: null,
+    source: "passive-request",
+  });
+});
+
+test("discovers Tailscale from environment variables in NAS deployment", async () => {
+  const result = await resolveNetworkInfo(null, {
+    env: {
+      EDGE_GATEWAY_PORT: "8787",
+      TAILSCALE_IP: "100.87.115.78",
+      TAILSCALE_HOSTNAME: "my-nas",
+      MAGIC_DNS: "my-nas.ts.net",
+    },
+    networkInterfaces: () => ({
+      eth0: [address("172.18.0.2")], // Docker bridge network
+    }),
+  });
+
+  assert.equal(result.localUrl, "http://localhost:8787/v1");
+  assert.equal(result.tailscaleIpUrl, "http://100.87.115.78:8787/v1");
+  assert.equal(result.tailscaleUrl, "https://my-nas.ts.net/v1");
+  assert.equal(result.tailscaleDetails?.connected, true);
+  assert.equal(result.tailscaleDetails?.ip, "100.87.115.78");
+  assert.equal(result.tailscaleDetails?.magicDns, "my-nas.ts.net");
+  assert.equal(result.tailscaleDetails?.source, "env");
 });

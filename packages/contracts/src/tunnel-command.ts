@@ -10,8 +10,8 @@ export const tunnelCommandSchema = z.discriminatedUnion("command", [
   z.object({ ...version, command: z.literal("ngrok.status") }),
   z.object({ ...version, command: z.literal("ngrok.enable"), authToken: optionalSecret }),
   z.object({ ...version, command: z.literal("ngrok.disable") }),
-  z.object({ ...version, command: z.literal("tailscale.status") }),
-  z.object({ ...version, command: z.literal("tailscale.check") }),
+  z.object({ ...version, command: z.literal("tailscale.status"), requestHost: z.string().optional() }),
+  z.object({ ...version, command: z.literal("tailscale.check"), requestHost: z.string().optional() }),
   z.object({
     ...version,
     command: z.literal("tailscale.enable"),
@@ -20,7 +20,13 @@ export const tunnelCommandSchema = z.discriminatedUnion("command", [
     port: z.number().int().min(1).max(65535).optional(),
   }),
   z.object({ ...version, command: z.literal("tailscale.disable"), sudoPassword: optionalSecret }),
-  z.object({ ...version, command: z.literal("tailscale.login"), hostname: z.string().optional() }),
+  z.object({
+    ...version,
+    command: z.literal("tailscale.login"),
+    hostname: z.string().optional(),
+    authKey: optionalSecret,
+    ephemeral: z.boolean().optional(),
+  }),
   z.object({ ...version, command: z.literal("tailscale.start-daemon"), sudoPassword: optionalSecret }),
   z.object({ ...version, command: z.literal("tailscale.install"), sudoPassword: optionalSecret }),
 ]);

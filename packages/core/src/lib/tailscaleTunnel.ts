@@ -80,6 +80,17 @@ export type TailscaleCheckStatus = {
   brewAvailable: boolean;
   lastError: string | null;
   pid: number | null;
+  connected: boolean;
+  ip: string | null;
+  ipv6: string | null;
+  hostname: string | null;
+  magicDns: string | null;
+  tailscaleUrl: string | null;
+  publicUrl: string | null;
+  mode: "tsnet" | "daemon" | "external" | "manual";
+  source: string;
+  socketPath: string | null;
+  backendState: string | null;
 };
 
 export type TailscaleTunnelStatus = TailscaleCheckStatus & {
@@ -243,24 +254,37 @@ const CANDIDATE_NAS_BINARIES = [
   "C:\\Program Files\\Tailscale\\tailscale.exe",
 ].filter((p): p is string => Boolean(p && typeof p === "string"));
 
-const CANDIDATE_NAS_SOCKETS = [
+export const CANDIDATE_NAS_SOCKETS = [
   process.env.TAILSCALE_SOCKET,
   "/var/run/tailscale/tailscaled.sock",
   "/run/tailscale/tailscaled.sock",
   "/host/var/run/tailscale/tailscaled.sock",
   "/host/run/tailscale/tailscaled.sock",
   "/var/run/tailscaled.sock",
+  "/host/var/run/tailscaled.sock",
+  "/tmp/tailscaled.sock",
+  "/host/tmp/tailscaled.sock",
   // Synology DSM 6 / 7 package paths
   "/var/packages/Tailscale/var/tailscaled.sock",
   "/var/packages/Tailscale/etc/tailscaled.sock",
+  "/var/packages/Tailscale/target/var/tailscaled.sock",
   "/volume1/@appdata/Tailscale/tailscaled.sock",
   "/volume2/@appdata/Tailscale/tailscaled.sock",
+  "/volume3/@appdata/Tailscale/tailscaled.sock",
+  "/volume4/@appdata/Tailscale/tailscaled.sock",
   // QNAP QPKG paths
   "/share/CACHEDEV1_DATA/.qpkg/Tailscale/var/tailscaled.sock",
+  "/share/CACHEDEV2_DATA/.qpkg/Tailscale/var/tailscaled.sock",
   "/share/MD0_DATA/.qpkg/Tailscale/var/tailscaled.sock",
+  "/share/MD1_DATA/.qpkg/Tailscale/var/tailscaled.sock",
   path.join(os.homedir(), ".tailscale", "tailscaled.sock"),
   path.join(os.homedir(), "Library/Containers/io.tailscale.ipn.macsys/Data/tailscaled.sock"),
 ].filter((p): p is string => Boolean(p && typeof p === "string"));
+
+// Memory cache for passive request discovery (e.g. Docker bridge mode accessed via Tailscale IP/domain)
+let _lastPassiveTailscaleHost: string | null = null;
+let _lastPassiveTailscaleTimestamp = 0;
+const PASSIVE_TTL_MS = 60 * 60 * 1000; // 1 hour
 
 export function isTailscaleIpv4(ip: string): boolean {
   if (!ip || typeof ip !== "string") return false;
@@ -276,6 +300,28 @@ export function isTailscaleIpv6(ip: string): boolean {
   if (!ip || typeof ip !== "string") return false;
   const normalized = ip.trim().toLowerCase();
   return normalized.startsWith("fd7a:115c:a1e0:") || normalized.startsWith("fd7a:115c:a1e0::");
+}
+
+export function isTailscaleHost(host: string): boolean {
+  if (!host || typeof host !== "string") return false;
+  const cleanHost = host.trim().toLowerCase().split(":")[0].replace(/^\[|\]$/g, "");
+  if (isTailscaleIpv4(cleanHost) || isTailscaleIpv6(cleanHost)) return true;
+  return (
+    cleanHost.endsWith(".ts.net") ||
+    cleanHost.endsWith(".tailscale.net") ||
+    cleanHost.includes(".ts.net") ||
+    cleanHost.includes(".tailscale.net")
+  );
+}
+
+export function recordPassiveTailscaleHost(hostHeader?: string | string[] | null): void {
+  const raw = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader;
+  if (!raw) return;
+  const host = raw.trim();
+  if (isTailscaleHost(host)) {
+    _lastPassiveTailscaleHost = host;
+    _lastPassiveTailscaleTimestamp = Date.now();
+  }
 }
 
 async function queryTailscaleLocalApi(socketPath: string): Promise<JsonRecord | null> {
@@ -378,21 +424,52 @@ function buildExecEnv() {
 }
 
 /**
+ * Probe which tailscaled socket is actually live and responding to LocalAPI.
+ */
+export async function findActiveSocketWithStatus(): Promise<{ socketPath: string; status: JsonRecord } | null> {
+  const now = Date.now();
+  if (_cachedActiveSocket && now - _cachedActiveSocketTimestamp < SOCKET_CACHE_TTL_MS) {
+    try {
+      if (fs.existsSync(_cachedActiveSocket)) {
+        const cachedStatus = await queryTailscaleLocalApi(_cachedActiveSocket);
+        if (cachedStatus) {
+          return { socketPath: _cachedActiveSocket, status: cachedStatus };
+        }
+      }
+    } catch {
+      _cachedActiveSocket = null;
+    }
+  }
+
+  for (const socketPath of CANDIDATE_NAS_SOCKETS) {
+    try {
+      if (fs.existsSync(socketPath)) {
+        const status = await queryTailscaleLocalApi(socketPath);
+        if (status) {
+          _cachedActiveSocket = socketPath;
+          _cachedActiveSocketTimestamp = now;
+          return { socketPath, status };
+        }
+      }
+    } catch {
+      // Continue
+    }
+  }
+  return null;
+}
+
+/**
  * Probe which tailscaled socket is actually live.
  * Priority: system daemon socket → Orbit custom socket.
  * When the system daemon is running (e.g. via systemd), we MUST use its socket
  * because only one tailscaled can hold the TUN device.
  */
 async function getActiveSocketPath(): Promise<string> {
-  const now = Date.now();
-  if (_cachedActiveSocket && now - _cachedActiveSocketTimestamp < SOCKET_CACHE_TTL_MS) {
-    return _cachedActiveSocket;
-  }
+  const active = await findActiveSocketWithStatus();
+  if (active) return active.socketPath;
 
   for (const socketPath of CANDIDATE_NAS_SOCKETS) {
     if (socketPath && fs.existsSync(socketPath)) {
-      _cachedActiveSocket = socketPath;
-      _cachedActiveSocketTimestamp = now;
       return socketPath;
     }
   }
@@ -400,7 +477,7 @@ async function getActiveSocketPath(): Promise<string> {
   // Fallback to Orbit custom socket
   const customSocket = getTailscaleSocketPath();
   _cachedActiveSocket = customSocket;
-  _cachedActiveSocketTimestamp = now;
+  _cachedActiveSocketTimestamp = Date.now();
   return customSocket;
 }
 
@@ -463,55 +540,269 @@ async function readJsonCommand(binaryPath: string, args: string[], timeout = 500
   }
 }
 
-async function getLiveStatusPayload(binaryPath: string | null) {
-  // 1. Try CLI binary if available
-  if (binaryPath) {
-    const result = await readJsonCommand(binaryPath, await buildTailscaleArgs("status", "--json"));
-    if (result) return result;
+export type TailscaleNodeDetails = {
+  connected: boolean;
+  loggedIn: boolean;
+  daemonRunning: boolean;
+  ip: string | null;
+  ipv6: string | null;
+  hostname: string | null;
+  magicDns: string | null;
+  tailscaleUrl: string | null;
+  apiUrl: string | null;
+  mode: "tsnet" | "daemon" | "external" | "manual";
+  source: "env" | "localapi-socket" | "cli" | "network-interface" | "passive-request" | "none";
+  socketPath: string | null;
+  binaryPath: string | null;
+  backendState: string | null;
+  statusPayload: JsonRecord | null;
+};
+
+export async function detectTailscaleNode(
+  binaryPath: string | null,
+  opts: { requestHost?: string | null; port?: number | string } = {},
+): Promise<TailscaleNodeDetails> {
+  const { apiPort } = getRuntimePorts();
+  const port = opts.port || process.env.PORT || process.env.EDGE_GATEWAY_PORT || apiPort;
+
+  // Layer 1: Check environment variables (Explicit NAS Docker configuration)
+  const envUrl = process.env.TAILSCALE_URL?.trim();
+  const envIp = process.env.TAILSCALE_IP?.trim() || (process.env.OMNIROUTE_BIND_HOST && isTailscaleIpv4(process.env.OMNIROUTE_BIND_HOST) ? process.env.OMNIROUTE_BIND_HOST.trim() : null);
+  const envDomain = (process.env.TAILSCALE_HOSTNAME || process.env.TS_DOMAIN || process.env.MAGIC_DNS)?.trim();
+
+  if (envUrl || envIp || envDomain) {
+    let parsedIp = envIp || null;
+    let parsedDns = envDomain || null;
+    if (envUrl) {
+      try {
+        const u = new URL(envUrl);
+        if (isTailscaleIpv4(u.hostname)) {
+          parsedIp = parsedIp || u.hostname;
+        } else if (u.hostname.includes(".")) {
+          parsedDns = parsedDns || u.hostname;
+        }
+      } catch {}
+    }
+    const tailscaleUrl = envUrl || (parsedDns ? `https://${parsedDns}` : `http://${parsedIp}:${port}`);
+    const syntheticPayload: JsonRecord = {
+      BackendState: "Running",
+      Self: {
+        DNSName: parsedDns ? `${parsedDns}.` : "",
+        TailscaleIPs: parsedIp ? [parsedIp] : [],
+        HostName: envDomain || os.hostname(),
+      },
+    };
+    return {
+      connected: true,
+      loggedIn: true,
+      daemonRunning: true,
+      ip: parsedIp,
+      ipv6: null,
+      hostname: envDomain || null,
+      magicDns: parsedDns,
+      tailscaleUrl,
+      apiUrl: `${tailscaleUrl.replace(/\/$/, "")}/v1`,
+      mode: "manual",
+      source: "env",
+      socketPath: null,
+      binaryPath,
+      backendState: "Running",
+      statusPayload: syntheticPayload,
+    };
   }
 
-  // 2. Try probing active socket LocalAPI directly (works in Docker container with mounted socket)
-  const activeSocket = await getActiveSocketPath();
-  if (activeSocket && fs.existsSync(activeSocket)) {
-    const localApiResult = await queryTailscaleLocalApi(activeSocket);
-    if (localApiResult) return localApiResult;
+  // Layer 2: Live Unix socket & LocalAPI probing across NAS paths
+  const activeSocket = await findActiveSocketWithStatus();
+  if (activeSocket) {
+    const { socketPath, status } = activeSocket;
+    const backendState = typeof status.BackendState === "string" ? status.BackendState : "Running";
+    const loggedIn = backendState === "Running";
+    const self = asRecord(status.Self);
+    const rootIps = Array.isArray(status.TailscaleIPs) ? (status.TailscaleIPs as string[]) : [];
+    const selfIps = Array.isArray(self.TailscaleIPs) ? (self.TailscaleIPs as string[]) : [];
+    const tailscaleIps = [...selfIps, ...rootIps];
+    const ipv4 = tailscaleIps.find((ip) => isTailscaleIpv4(ip)) || null;
+    const ipv6 = tailscaleIps.find((ip) => isTailscaleIpv6(ip)) || null;
+    const rawDns = typeof self.DNSName === "string" ? self.DNSName : typeof status.DNSName === "string" ? status.DNSName : null;
+    const magicDns = rawDns ? rawDns.replace(/\.$/, "") : null;
+    const hostName = typeof self.HostName === "string" ? self.HostName : typeof status.HostName === "string" ? status.HostName : null;
+
+    const tailscaleUrl = magicDns
+      ? `https://${magicDns}`
+      : ipv4
+        ? `http://${ipv4}:${port}`
+        : null;
+
+    if (loggedIn && (ipv4 || magicDns)) {
+      return {
+        connected: true,
+        loggedIn: true,
+        daemonRunning: true,
+        ip: ipv4,
+        ipv6,
+        hostname: hostName,
+        magicDns,
+        tailscaleUrl,
+        apiUrl: tailscaleUrl ? `${tailscaleUrl.replace(/\/$/, "")}/v1` : null,
+        mode: "daemon",
+        source: "localapi-socket",
+        socketPath,
+        binaryPath,
+        backendState,
+        statusPayload: status,
+      };
+    }
   }
 
-  // 3. Try checking network interfaces for Tailscale CGNAT IP
+  // Layer 3: Host network interfaces (Host network mode on NAS / Bare metal)
   const interfaces = os.networkInterfaces();
   for (const [ifaceName, addrs] of Object.entries(interfaces)) {
-    const isTsIface = ifaceName.toLowerCase().startsWith("tailscale") || ifaceName.toLowerCase().startsWith("ts") || ifaceName.toLowerCase().startsWith("utun");
+    const isTsIface =
+      ifaceName.toLowerCase().startsWith("tailscale") ||
+      ifaceName.toLowerCase().startsWith("ts") ||
+      ifaceName.toLowerCase().startsWith("utun");
+
     for (const addr of addrs ?? []) {
       if (addr.internal) continue;
       if (addr.family === "IPv4" && (isTailscaleIpv4(addr.address) || (isTsIface && addr.address.startsWith("100.")))) {
-        return {
+        const ip = addr.address;
+        const tailscaleUrl = `http://${ip}:${port}`;
+        const syntheticPayload: JsonRecord = {
           BackendState: "Running",
           Self: {
             DNSName: "",
-            TailscaleIPs: [addr.address],
+            TailscaleIPs: [ip],
             HostName: os.hostname(),
           },
+        };
+        return {
+          connected: true,
+          loggedIn: true,
+          daemonRunning: true,
+          ip,
+          ipv6: null,
+          hostname: os.hostname(),
+          magicDns: null,
+          tailscaleUrl,
+          apiUrl: `${tailscaleUrl}/v1`,
+          mode: "external",
+          source: "network-interface",
+          socketPath: null,
+          binaryPath,
+          backendState: "Running",
+          statusPayload: syntheticPayload,
         };
       }
     }
   }
 
-  // 4. Try environment variables
-  const envIp = process.env.TAILSCALE_IP?.trim();
-  const envDomain = (process.env.TAILSCALE_HOSTNAME || process.env.TS_DOMAIN || process.env.MAGIC_DNS)?.trim();
-  const envUrl = process.env.TAILSCALE_URL?.trim();
-  if (envIp || envDomain || envUrl) {
+  // Layer 4: CLI binary execution
+  if (binaryPath) {
+    const cliStatus = await readJsonCommand(binaryPath, await buildTailscaleArgs("status", "--json"));
+    if (cliStatus) {
+      const backendState = typeof cliStatus.BackendState === "string" ? cliStatus.BackendState : "Running";
+      const loggedIn = backendState === "Running";
+      const self = asRecord(cliStatus.Self);
+      const rootIps = Array.isArray(cliStatus.TailscaleIPs) ? (cliStatus.TailscaleIPs as string[]) : [];
+      const selfIps = Array.isArray(self.TailscaleIPs) ? (self.TailscaleIPs as string[]) : [];
+      const tailscaleIps = [...selfIps, ...rootIps];
+      const ipv4 = tailscaleIps.find((ip) => isTailscaleIpv4(ip)) || null;
+      const ipv6 = tailscaleIps.find((ip) => isTailscaleIpv6(ip)) || null;
+      const rawDns = typeof self.DNSName === "string" ? self.DNSName : null;
+      const magicDns = rawDns ? rawDns.replace(/\.$/, "") : null;
+      const hostName = typeof self.HostName === "string" ? self.HostName : null;
+
+      const tailscaleUrl = magicDns
+        ? `https://${magicDns}`
+        : ipv4
+          ? `http://${ipv4}:${port}`
+          : null;
+
+      if (loggedIn && (ipv4 || magicDns)) {
+        return {
+          connected: true,
+          loggedIn: true,
+          daemonRunning: true,
+          ip: ipv4,
+          ipv6,
+          hostname: hostName,
+          magicDns,
+          tailscaleUrl,
+          apiUrl: tailscaleUrl ? `${tailscaleUrl.replace(/\/$/, "")}/v1` : null,
+          mode: "daemon",
+          source: "cli",
+          socketPath: await getActiveSocketPath(),
+          binaryPath,
+          backendState,
+          statusPayload: cliStatus,
+        };
+      }
+    }
+  }
+
+  // Layer 5: Passive Discovery via Incoming Request or Cached Session
+  if (opts.requestHost) {
+    recordPassiveTailscaleHost(opts.requestHost);
+  }
+  const candidateHost = opts.requestHost || (
+    Date.now() - _lastPassiveTailscaleTimestamp < PASSIVE_TTL_MS
+      ? _lastPassiveTailscaleHost
+      : null
+  );
+
+  if (candidateHost && isTailscaleHost(candidateHost)) {
+    const isHttps = candidateHost.endsWith(".ts.net") || candidateHost.includes(":443");
+    const hasPort = candidateHost.includes(":");
+    const fullHost = hasPort ? candidateHost : `${candidateHost}:${port}`;
+    const cleanHostOnly = candidateHost.split(":")[0];
+    const isIp = isTailscaleIpv4(cleanHostOnly);
+
+    const tailscaleUrl = isHttps
+      ? `https://${candidateHost}`
+      : `http://${fullHost}`;
+
     return {
-      BackendState: "Running",
-      Self: {
-        DNSName: envDomain ? `${envDomain}.` : "",
-        TailscaleIPs: envIp ? [envIp] : [],
-        HostName: envDomain || os.hostname(),
-      },
+      connected: true,
+      loggedIn: true,
+      daemonRunning: true,
+      ip: isIp ? cleanHostOnly : null,
+      ipv6: isTailscaleIpv6(cleanHostOnly) ? cleanHostOnly : null,
+      hostname: isIp ? null : cleanHostOnly,
+      magicDns: isIp ? null : cleanHostOnly,
+      tailscaleUrl,
+      apiUrl: `${tailscaleUrl.replace(/\/$/, "")}/v1`,
+      mode: "external",
+      source: "passive-request",
+      socketPath: null,
+      binaryPath,
+      backendState: "Running",
+      statusPayload: null,
     };
   }
 
-  return null;
+  const pidAlive = isProcessAlive((await readPidFile()) || null);
+  return {
+    connected: false,
+    loggedIn: false,
+    daemonRunning: pidAlive,
+    ip: null,
+    ipv6: null,
+    hostname: null,
+    magicDns: null,
+    tailscaleUrl: null,
+    apiUrl: null,
+    mode: "daemon",
+    source: "none",
+    socketPath: null,
+    binaryPath,
+    backendState: "Stopped",
+    statusPayload: null,
+  };
+}
+
+async function getLiveStatusPayload(binaryPath: string | null) {
+  const node = await detectTailscaleNode(binaryPath);
+  return node.statusPayload;
 }
 
 async function getLiveFunnelPayload(binaryPath: string | null) {
@@ -537,14 +828,17 @@ function isFunnelRunning(payload: unknown) {
 }
 
 export function getTailscaleUrlFromStatusPayload(payload: unknown) {
-  const self = asRecord(asRecord(payload).Self);
-  const dnsName = toNonEmptyString(self.DNSName);
+  const root = asRecord(payload);
+  const self = asRecord(root.Self);
+  const dnsName = toNonEmptyString(self.DNSName) || toNonEmptyString(root.DNSName);
   if (dnsName) {
     const normalized = dnsName.replace(/\.$/, "");
     if (normalized) return `https://${normalized}`;
   }
-  const ips = Array.isArray(self.TailscaleIPs) ? (self.TailscaleIPs as string[]) : [];
-  const ipv4 = ips.find((ip) => isTailscaleIpv4(ip));
+  const selfIps = Array.isArray(self.TailscaleIPs) ? (self.TailscaleIPs as string[]) : [];
+  const rootIps = Array.isArray(root.TailscaleIPs) ? (root.TailscaleIPs as string[]) : [];
+  const allIps = [...selfIps, ...rootIps];
+  const ipv4 = allIps.find((ip) => isTailscaleIpv4(ip));
   if (ipv4) {
     const { apiPort } = getRuntimePorts();
     return `http://${ipv4}:${apiPort}`;
@@ -605,50 +899,66 @@ async function getLiveTunnelUrl(binaryPath: string | null) {
   return getTailscaleUrlFromStatusPayload(payload);
 }
 
-export async function getTailscaleCheckStatus(): Promise<TailscaleCheckStatus> {
+export async function getTailscaleCheckStatus(opts: {
+  requestHost?: string | null;
+  port?: number | string;
+} = {}): Promise<TailscaleCheckStatus> {
   const resolution = await resolveBinary();
-  const [state, statusPayload, funnelPayload, brewAvailable] = await Promise.all([
+  const [state, node, funnelPayload, brewAvailable] = await Promise.all([
     readStateFile(),
-    getLiveStatusPayload(resolution.binaryPath),
+    detectTailscaleNode(resolution.binaryPath, opts),
     getLiveFunnelPayload(resolution.binaryPath),
     hasBrew(),
   ]);
 
-  const liveTunnelUrl = getTailscaleUrlFromStatusPayload(statusPayload);
+  const liveTunnelUrl = node.tailscaleUrl;
   const storedTunnelUrl = toNonEmptyString(state.tunnelUrl);
   const tunnelUrl = liveTunnelUrl || storedTunnelUrl;
-  const loggedIn = isBackendRunning(statusPayload);
-  const daemonRunning = Boolean(statusPayload) || isProcessAlive((await readPidFile()) || null);
+  const loggedIn = node.loggedIn;
+  const daemonRunning = node.daemonRunning || Boolean(node.statusPayload) || isProcessAlive((await readPidFile()) || null);
+  const running = isFunnelRunning(funnelPayload) || Boolean(tunnelUrl);
 
   return {
     supported: isSupportedPlatform(),
-    installed: Boolean(resolution.binaryPath || statusPayload),
+    installed: Boolean(resolution.binaryPath || node.connected || node.daemonRunning || node.statusPayload),
     managedInstall: resolution.managedInstall,
     installSource: resolution.installSource,
     binaryPath: resolution.binaryPath,
     loggedIn,
     daemonRunning,
-    running: isFunnelRunning(funnelPayload) || Boolean(tunnelUrl),
+    running,
     tunnelUrl,
     apiUrl: getTailscaleApiUrl(tunnelUrl),
     platform: os.platform(),
     brewAvailable,
     lastError: getLastError(state),
     pid: await readPidFile(),
+    connected: node.connected,
+    ip: node.ip,
+    ipv6: node.ipv6,
+    hostname: node.hostname,
+    magicDns: node.magicDns,
+    tailscaleUrl: node.tailscaleUrl,
+    publicUrl: node.magicDns ? `https://${node.magicDns}` : node.tailscaleUrl,
+    mode: node.mode,
+    source: node.source,
+    socketPath: node.socketPath,
+    backendState: node.backendState,
   };
 }
 
-export async function getTailscaleTunnelStatus(): Promise<TailscaleTunnelStatus> {
-  const [check, settings] = await Promise.all([getTailscaleCheckStatus(), getSettings()]);
+export async function getTailscaleTunnelStatus(opts: {
+  requestHost?: string | null;
+  port?: number | string;
+} = {}): Promise<TailscaleTunnelStatus> {
+  const [check, settings] = await Promise.all([getTailscaleCheckStatus(opts), getSettings()]);
   const storedSettingUrl =
     typeof settings.tailscaleUrl === "string" && settings.tailscaleUrl.trim()
       ? settings.tailscaleUrl
       : null;
-  const tunnelUrl = check.tunnelUrl || storedSettingUrl;
-  // If live funnel detection fails (e.g. older CLI or socket permission), fall back to
-  // settings.tailscaleEnabled as the authoritative source (set by enableTailscaleTunnel).
-  const funnelActive = check.running || (settings.tailscaleEnabled === true && check.loggedIn);
-  const running = check.loggedIn && funnelActive && Boolean(tunnelUrl);
+  const funnelUrl = check.tunnelUrl || storedSettingUrl;
+  const funnelActive = (check.running && !check.connected) || (settings.tailscaleEnabled === true && check.loggedIn);
+  const running = check.loggedIn && funnelActive && Boolean(funnelUrl);
   const enabled = settings.tailscaleEnabled === true && running;
 
   let phase: TailscaleTunnelPhase = "stopped";
@@ -658,12 +968,15 @@ export async function getTailscaleTunnelStatus(): Promise<TailscaleTunnelStatus>
   else if (check.daemonRunning && !check.loggedIn) phase = "needs_login";
   else if (check.lastError) phase = "error";
 
+  const publicUrl = running ? funnelUrl : check.publicUrl;
+
   return {
     ...check,
     running,
     enabled,
-    tunnelUrl,
-    apiUrl: getTailscaleApiUrl(tunnelUrl),
+    tunnelUrl: funnelUrl,
+    publicUrl,
+    apiUrl: getTailscaleApiUrl(funnelUrl || check.tailscaleUrl),
     phase,
   };
 }
@@ -765,11 +1078,21 @@ export async function startTailscaleDaemon({
 
 export async function startTailscaleLogin({
   hostname,
+  authKey,
 }: {
   hostname?: string;
+  authKey?: string;
 } = {}): Promise<TailscaleLoginResult> {
+  const resolvedAuthKey = toNonEmptyString(authKey) || toNonEmptyString(process.env.TAILSCALE_AUTHKEY);
+  if (resolvedAuthKey) {
+    process.env.TAILSCALE_AUTHKEY = resolvedAuthKey;
+  }
+
   const resolution = await resolveBinary();
   if (!resolution.binaryPath) {
+    if (resolvedAuthKey) {
+      return { alreadyLoggedIn: true };
+    }
     throw new Error("Tailscale is not installed");
   }
 
@@ -779,8 +1102,7 @@ export async function startTailscaleLogin({
   }
 
   const resolvedHostname = toNonEmptyString(hostname) || (await getDefaultHostname());
-  const authKey = toNonEmptyString(process.env.TAILSCALE_AUTHKEY);
-  const spawnArgs = await buildTailscaleArgs(...tailscaleUpArgs(resolvedHostname, authKey ?? undefined));
+  const spawnArgs = await buildTailscaleArgs(...tailscaleUpArgs(resolvedHostname, resolvedAuthKey ?? undefined));
 
   return new Promise((resolve, reject) => {
     const child = spawn(resolution.binaryPath as string, spawnArgs, {

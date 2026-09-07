@@ -280,6 +280,7 @@ export default function EndpointsPage() {
     Boolean(networkQuery.data?.tailscaleUrl) ||
     Boolean(networkQuery.data?.tailscaleIpUrl) ||
     Boolean(tailscaleQuery.data?.running) ||
+    Boolean(networkQuery.data?.tailscaleDetails?.connected) ||
     clientIsOverTailscale;
 
   const effectiveTailscaleUrl = useMemo(() => {
@@ -288,6 +289,7 @@ export default function EndpointsPage() {
     if (tailscaleStatusQuery.data?.tailscaleUrl) return `${tailscaleStatusQuery.data.tailscaleUrl.replace(/\/$/, "")}/v1`;
     if (tailscaleStatusQuery.data?.ip) return `http://${tailscaleStatusQuery.data.ip}:${port}/v1`;
     if (networkQuery.data?.tailscaleIpUrl) return networkQuery.data.tailscaleIpUrl;
+    if (networkQuery.data?.tailscaleDetails?.ip) return `http://${networkQuery.data.tailscaleDetails.ip}:${port}/v1`;
     if (tailscaleQuery.data?.publicUrl) return `${tailscaleQuery.data.publicUrl.replace(/\/$/, "")}/v1`;
     if (clientTailscaleUrl) return clientTailscaleUrl;
     return "";
@@ -775,18 +777,33 @@ export default function EndpointsPage() {
               <Space direction="vertical" size={6} style={{ width: "100%", fontSize: 13 }}>
                 <Flex justify="space-between">
                   <Text type="secondary">{tt("专网分配 IP:", "Tailscale IP:")}</Text>
-                  <Text code copyable>{tailscaleStatusQuery.data?.ip || "100.x.x.x"}</Text>
+                  <Text code copyable>
+                    {tailscaleStatusQuery.data?.ip ||
+                      networkQuery.data?.tailscaleDetails?.ip ||
+                      (networkQuery.data?.tailscaleIpUrl ? new URL(networkQuery.data.tailscaleIpUrl).hostname : null) ||
+                      "100.x.x.x"}
+                  </Text>
                 </Flex>
                 <Flex justify="space-between">
                   <Text type="secondary">{tt("MagicDNS 域名:", "MagicDNS Domain:")}</Text>
                   <Text code copyable>
                     {tailscaleStatusQuery.data?.magicDns ||
-                      `${tailscaleStatusQuery.data?.hostname || "orbit"}.ts.net`}
+                      networkQuery.data?.tailscaleDetails?.magicDns ||
+                      (tailscaleStatusQuery.data?.hostname ? `${tailscaleStatusQuery.data.hostname}.ts.net` : null) ||
+                      tt("未启用", "Disabled")}
                   </Text>
                 </Flex>
                 <Flex justify="space-between">
                   <Text type="secondary">{tt("接入模式:", "Access Mode:")}</Text>
-                  <Tag color="purple">{tt("纯用户态 (Tsnet 免特权运行)", "Userspace (Tsnet unprivileged)")}</Tag>
+                  <Tag color="purple">
+                    {tailscaleStatusQuery.data?.mode === "manual"
+                      ? tt("环境变量配置 (NAS 独立部署)", "Environment Var (NAS Standalone)")
+                      : tailscaleStatusQuery.data?.mode === "external" || networkQuery.data?.tailscaleDetails?.source === "network-interface"
+                        ? tt("宿主网络接口 (NAS Host)", "Host Network (NAS Host)")
+                        : tailscaleStatusQuery.data?.mode === "daemon" || networkQuery.data?.tailscaleDetails?.source === "localapi-socket"
+                          ? tt("守护进程 / LocalAPI 探测", "Daemon / LocalAPI Socket")
+                          : tt("纯用户态 (Tsnet 免特权运行)", "Userspace (Tsnet unprivileged)")}
+                  </Tag>
                 </Flex>
                 <Flex justify="space-between">
                   <Text type="secondary">{tt("完整接入基址:", "Base Access URL:")}</Text>

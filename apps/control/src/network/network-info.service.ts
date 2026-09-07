@@ -8,7 +8,7 @@ export class NetworkInfoService {
 
   read(requestHost?: string | null) {
     return resolveNetworkInfo(requestHost, {
-      getTailscaleStatus: () => this.tunnels.tailscaleStatus(),
+      getTailscaleStatus: () => this.tunnels.tailscaleStatus(requestHost),
     });
   }
 }

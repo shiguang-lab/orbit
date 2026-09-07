@@ -26,8 +26,8 @@ export class TunnelsService {
       case "ngrok.status": return getNgrokTunnelStatus();
       case "ngrok.enable": return startNgrokTunnel(command.authToken);
       case "ngrok.disable": return stopNgrokTunnel();
-      case "tailscale.status": return getTailscaleTunnelStatus();
-      case "tailscale.check": return getTailscaleCheckStatus();
+      case "tailscale.status": return getTailscaleTunnelStatus({ requestHost: command.requestHost });
+      case "tailscale.check": return getTailscaleCheckStatus({ requestHost: command.requestHost });
       case "tailscale.enable": return enableTailscaleTunnel(command);
       case "tailscale.disable": return disableTailscaleTunnel(command);
       case "tailscale.login": return startTailscaleLogin(command);

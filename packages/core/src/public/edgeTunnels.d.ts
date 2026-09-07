@@ -58,6 +58,17 @@ interface TailscaleCheckStatus {
   brewAvailable: boolean;
   lastError: string | null;
   pid: number | null;
+  connected?: boolean;
+  ip?: string | null;
+  ipv6?: string | null;
+  hostname?: string | null;
+  magicDns?: string | null;
+  tailscaleUrl?: string | null;
+  publicUrl?: string | null;
+  mode?: "tsnet" | "daemon" | "external" | "manual";
+  source?: string;
+  socketPath?: string | null;
+  backendState?: string | null;
 }
 
 interface TailscaleTunnelStatus extends TailscaleCheckStatus {
@@ -87,13 +98,13 @@ export declare function stopCloudflaredTunnel(): Promise<CloudflaredTunnelStatus
 export declare function getNgrokTunnelStatus(): Promise<NgrokTunnelStatus>;
 export declare function startNgrokTunnel(authToken?: string): Promise<NgrokTunnelStatus>;
 export declare function stopNgrokTunnel(): Promise<NgrokTunnelStatus>;
-export declare function getTailscaleCheckStatus(): Promise<TailscaleCheckStatus>;
-export declare function getTailscaleTunnelStatus(): Promise<TailscaleTunnelStatus>;
+export declare function getTailscaleCheckStatus(opts?: { requestHost?: string | null; port?: number | string }): Promise<TailscaleCheckStatus>;
+export declare function getTailscaleTunnelStatus(opts?: { requestHost?: string | null; port?: number | string }): Promise<TailscaleTunnelStatus>;
 export declare function enableTailscaleTunnel(input?: { sudoPassword?: string; hostname?: string; port?: number }): Promise<TailscaleEnableResult>;
 export declare function disableTailscaleTunnel(input?: { sudoPassword?: string }): Promise<{
   success: true;
   status: TailscaleTunnelStatus;
 }>;
-export declare function startTailscaleLogin(input?: { hostname?: string }): Promise<TailscaleLoginResult>;
+export declare function startTailscaleLogin(input?: { hostname?: string; authKey?: string }): Promise<TailscaleLoginResult>;
 export declare function startTailscaleDaemon(input?: { sudoPassword?: string }): Promise<TailscaleDaemonStartResult>;
 export declare function installTailscale(input?: { sudoPassword?: string; onProgress?: (message: string) => void }): Promise<void>;
