@@ -14,22 +14,22 @@ export class VolcenginePlanService {
   }
 
   status(request: Request, sessionId: string) {
-    return status.GET(request, { params: Promise.resolve({ sessionId }) });
+    return status.GET(request, { params: { sessionId } });
   }
 
   cancel(request: Request, sessionId: string) {
-    return cancel.POST(request, { params: Promise.resolve({ sessionId }) });
+    return cancel.POST(request, { params: { sessionId } });
   }
 
   code(request: Request, sessionId: string) {
-    return code.POST(request, { params: Promise.resolve({ sessionId }) });
+    return code.POST(request, { params: { sessionId } });
   }
 
   identity(request: Request, sessionId: string) {
-    return identity.POST(request, { params: Promise.resolve({ sessionId }) });
+    return identity.POST(request, { params: { sessionId } });
   }
 
   resend(request: Request, sessionId: string) {
-    return resend.POST(request, { params: Promise.resolve({ sessionId }) });
+    return resend.POST(request, { params: { sessionId } });
   }
 }

@@ -54,10 +54,37 @@ export const SettingsEntity: EntityDefinition = {
   entityName: "Settings",
   tableName: "key_value",
   owner: "control-api",
+  externalWriteAuthorities: [
+    {
+      source: "apps/cli/src/cli/bootstrap-store.mjs",
+      entrypoint: "apps/cli/src/cli/commands/setup.mjs",
+      mode: "bootstrap",
+      reason: "Initialize login settings before the control-api is available.",
+    },
+    {
+      source: "apps/cli/src/cli/maintenance/reset-password-store.mjs",
+      entrypoint: "apps/cli/src/reset-password.mjs",
+      mode: "maintenance",
+      reason: "Recover an administrator password while the control-api is unavailable.",
+    },
+  ],
   columns: [
     column("namespace", "TEXT", { nullable: false, primaryKey: true }),
     column("key", "TEXT", { nullable: false, primaryKey: true }),
     column("value", "TEXT", { nullable: false }),
+  ],
+};
+
+/** Shared password-login lockouts coordinated across control-api replicas. */
+export const AuthLoginAttemptEntity: EntityDefinition = {
+  entityName: "AuthLoginAttempt",
+  tableName: "auth_login_attempts",
+  owner: "control-api",
+  columns: [
+    column("client_key", "TEXT", { nullable: false, primaryKey: true }),
+    column("failure_count", "INTEGER", { nullable: false }),
+    column("first_attempt_at", "INTEGER", { nullable: false }),
+    column("locked_until", "INTEGER"),
   ],
 };
 
@@ -179,6 +206,26 @@ export const ProviderConnectionEntity: EntityDefinition = {
   entityName: "ProviderConnection",
   tableName: "provider_connections",
   owner: "control-api",
+  externalWriteAuthorities: [
+    {
+      source: "apps/cli/src/cli/bootstrap-store.mjs",
+      entrypoint: "apps/cli/src/cli/commands/setup.mjs",
+      mode: "bootstrap",
+      reason: "Initialize the first provider before the control-api is available.",
+    },
+    {
+      source: "apps/cli/src/cli/commands/reset-encrypted-columns.mjs",
+      entrypoint: "apps/cli/src/cli/commands/reset-encrypted-columns.mjs",
+      mode: "maintenance",
+      reason: "Erase undecryptable credentials through the explicit recovery command.",
+    },
+    {
+      source: "apps/importer/src/import-source-data.mjs",
+      entrypoint: "apps/importer/src/main.ts",
+      mode: "migration",
+      reason: "Apply a declared provider overlay to an isolated staged import snapshot.",
+    },
+  ],
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),
     column("provider", "TEXT", { nullable: false }),

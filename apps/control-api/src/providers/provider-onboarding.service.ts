@@ -58,7 +58,14 @@ export class ProviderOnboardingService {
         requestedIds: validation.data.providerIds,
         candidates: getEligibleFreeOnboardingProviders(),
         listExisting: async () => getProviderConnections(),
-        create: (input) => createProviderConnection(input),
+        create: (input) => createProviderConnection({
+          provider: input.provider,
+          authType: input.authType,
+          name: input.name,
+          isActive: input.isActive,
+          testStatus: input.testStatus,
+          ...(input.defaultModel ? { defaultModel: input.defaultModel } : {}),
+        }),
       }));
       return Response.json(result);
     } catch (error) {

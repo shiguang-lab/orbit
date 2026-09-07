@@ -7,13 +7,13 @@
 
 import { parseModelFromRegistry, getAllModelsFromRegistry } from "./registryUtils.ts";
 
-interface MusicModel {
+export interface MusicModel {
   id: string;
   name: string;
   isMarket?: boolean;
 }
 
-interface MusicProvider {
+export interface MusicProvider {
   id: string;
   baseUrl: string;
   statusUrl?: string;

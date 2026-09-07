@@ -4,7 +4,7 @@ import { CODEX_CONFIG } from "../constants/oauth.js";
  * OpenAI Codex Auth Info embedded in id_token JWT
  * The JWT claims contain a custom claim at "https://api.openai.com/auth"
  */
-interface CodexAuthInfo {
+export interface CodexAuthInfo {
   chatgpt_account_id: string;
   chatgpt_plan_type: string;
   chatgpt_user_id: string;

@@ -64,6 +64,11 @@ export interface ProviderRuntimePorts {
   ): T[];
   isObsoleteKiroModelAlias(modelId: unknown): boolean;
   estimateTokens(value: unknown): number;
+  probeWebCookie(input: {
+    provider: string;
+    apiKey?: string;
+    providerSpecificData?: Record<string, unknown>;
+  }): Promise<{ valid: boolean; error?: string | null; errorCode?: string | null; unsupported?: boolean }>;
   getAccessToken(...args: any[]): Promise<any>;
   getTokenRefreshDeprecationNotice(provider: string): {
     migrateTo: string;
@@ -109,6 +114,7 @@ const ports: ProviderRuntimePorts = {
   filterChatSelectableModels: () => missing("filterChatSelectableModels"),
   isObsoleteKiroModelAlias: () => missing("isObsoleteKiroModelAlias"),
   estimateTokens: () => missing("estimateTokens"),
+  probeWebCookie: () => missing("probeWebCookie"),
   getAccessToken: () => missing("getAccessToken"),
   getTokenRefreshDeprecationNotice: () => missing("getTokenRefreshDeprecationNotice"),
   supportsTokenRefresh: () => missing("supportsTokenRefresh"),

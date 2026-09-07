@@ -43,6 +43,7 @@ export async function migrateCodexConnectionDefaultsFromLegacySettings(): Promis
   const updatedConnectionIds: string[] = [];
 
   for (const connection of codexConnections) {
+    if (typeof connection.id !== "string") continue;
     const providerSpecificData = asRecord(connection.providerSpecificData);
     const existingDefaults = getCodexRequestDefaults(providerSpecificData);
     const nextDefaults: JsonRecord = { ...existingDefaults };

@@ -62,25 +62,31 @@ function toTrimmedString(value: unknown): string | null {
   return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;
 }
 
-function toComboLike(combo: ComboInput): ComboLike {
+function toComboLike(combo: unknown): ComboLike {
+  const source = isRecord(combo) ? combo : {};
   return {
-    ...combo,
-    id: toTrimmedString(combo.id) || undefined,
-    name: toTrimmedString(combo.name) || "",
-    models: Array.isArray(combo.models) ? combo.models : [],
-    config: isRecord(combo.config) ? combo.config : null,
-    autoConfig: isRecord(combo.autoConfig) ? combo.autoConfig : null,
+    ...source,
+    id: toTrimmedString(source.id) || undefined,
+    name: toTrimmedString(source.name) || "",
+    models: Array.isArray(source.models) ? source.models : [],
+    config: isRecord(source.config) ? source.config : null,
+    autoConfig: isRecord(source.autoConfig) ? source.autoConfig : null,
     context_cache_protection:
-      typeof combo.context_cache_protection === "boolean" ||
-      typeof combo.context_cache_protection === "number"
-        ? combo.context_cache_protection
+      typeof source.context_cache_protection === "boolean" ||
+      typeof source.context_cache_protection === "number"
+        ? source.context_cache_protection
         : undefined,
-    system_message: typeof combo.system_message === "string" ? combo.system_message : null,
+    system_message: typeof source.system_message === "string" ? source.system_message : null,
   };
 }
 
-function getCombosArray(allCombos: ComboCollectionLike): ComboLike[] {
-  const combos = Array.isArray(allCombos) ? allCombos : allCombos?.combos || [];
+function getCombosArray(allCombos: unknown): ComboLike[] {
+  const source = isRecord(allCombos) ? allCombos : {};
+  const combos = Array.isArray(allCombos)
+    ? allCombos
+    : Array.isArray(source.combos)
+      ? source.combos
+      : [];
   return combos.map((combo) => toComboLike(combo));
 }
 
@@ -290,27 +296,29 @@ function expandRuntimeStep(
 }
 
 export function resolveNestedComboTargets(
-  combo: ComboLike,
-  allCombos: ComboCollectionLike,
+  combo: unknown,
+  allCombos: unknown,
   visited = new Set<string>(),
   depth = 0,
   path: string[] = [],
   maxDepth: number = MAX_COMBO_DEPTH
 ): ResolvedComboTarget[] {
-  const directTargets = (combo.models || [])
-    .map((entry, index) => normalizeRuntimeStep(entry, combo.name, index, null, path))
+  const normalizedCombo = toComboLike(combo);
+  const normalizedCombos = getCombosArray(allCombos);
+  const directTargets = normalizedCombo.models
+    .map((entry, index) => normalizeRuntimeStep(entry, normalizedCombo.name, index, null, path))
     .filter((entry): entry is ResolvedComboTarget => entry?.kind === "model");
 
   if (depth > maxDepth) return directTargets;
-  if (visited.has(combo.name)) return [];
-  visited.add(combo.name);
+  if (visited.has(normalizedCombo.name)) return [];
+  visited.add(normalizedCombo.name);
 
-  const runtimeSteps = getOrderedTopLevelRuntimeSteps(combo, allCombos, path);
+  const runtimeSteps = getOrderedTopLevelRuntimeSteps(normalizedCombo, normalizedCombos, path);
   const resolved: ResolvedComboTarget[] = [];
 
   for (const step of runtimeSteps) {
     if (step.kind === "combo-ref") {
-      resolved.push(...expandRuntimeStep(step, allCombos, new Set(visited), depth, path, maxDepth));
+      resolved.push(...expandRuntimeStep(step, normalizedCombos, new Set(visited), depth, path, maxDepth));
       continue;
     }
     resolved.push(step);

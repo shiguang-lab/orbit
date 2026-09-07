@@ -25,7 +25,7 @@ import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
  */
 export async function POST(
   request: Request,
-  { params }: { params: Promise<{ provider: string }> }
+  { params }: { params: { provider: string } }
 ) {
   // Creating a connection is owner-only — gate behind dashboard auth.
   if ((await isAuthRequired(request)) && !(await isAuthenticated(request))) {
@@ -33,7 +33,7 @@ export async function POST(
   }
 
   try {
-    const { provider } = await params;
+    const { provider } = params;
 
     let rawBody: unknown;
     try {

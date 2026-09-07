@@ -29,7 +29,6 @@ import {
   upsertProxy,
 } from "../db/proxies";
 import { bumpProxyConfigGeneration } from "../db/settings";
-import { isSubscriptionDue } from "./due";
 import { isLocalCoreEndpointAllowed } from "./coreEndpoint";
 import { resolveTargetScopes } from "./scopes";
 import {
@@ -521,11 +520,6 @@ async function syncSubscriptionUnsafe(id: string): Promise<SyncResult> {
     boundProxies = keptIds.length;
   }
 
-  // Ensure the background auto-refresh ticker is running once any subscription
-  // has actually synced. startSubscriptionScheduler is idempotent and a no-op
-  // in the browser and in NODE_ENV=test.
-  startSubscriptionScheduler();
-
   return {
     subscriptionId: id,
     nodes: parsed.nodes.length,
@@ -664,46 +658,4 @@ async function setProxyEnabledFlag(value: boolean): Promise<void> {
     "INSERT OR REPLACE INTO key_value (namespace, key, value) VALUES ('settings', 'proxyEnabled', ?)"
   ).run(JSON.stringify(value));
   bumpProxyConfigGeneration();
-}
-
-// ───────────────────────────── Auto-refresh scheduler ─────────────────────────────
-
-let schedulerStarted = false;
-let schedulerTimer: ReturnType<typeof setInterval> | null = null;
-
-/** Start a background ticker that refreshes enabled subscriptions on their interval. */
-export function startSubscriptionScheduler(): void {
-  if (schedulerStarted) return;
-  if (typeof window !== "undefined") return; // never in the browser
-  if (process.env.NODE_ENV === "test") return; // no timers during tests
-  schedulerStarted = true;
-
-  const tick = async () => {
-    try {
-      const subs = await listSubscriptions();
-      const now = Date.now();
-      for (const s of subs) {
-        if (!isSubscriptionDue(s, now)) continue;
-        try {
-          await syncSubscription(s.id);
-        } catch (e) {
-          console.warn(`[ProxySubscription] refresh failed for ${s.id}: ${e instanceof Error ? e.message : e}`);
-        }
-      }
-    } catch (e) {
-      console.warn(`[ProxySubscription] scheduler tick error: ${e instanceof Error ? e.message : e}`);
-    }
-  };
-
-  // Check every minute; each subscription self-throttles by its interval.
-  schedulerTimer = setInterval(tick, 60_000);
-  if (typeof schedulerTimer.unref === "function") schedulerTimer.unref();
-}
-
-export function stopSubscriptionScheduler(): void {
-  if (schedulerTimer) {
-    clearInterval(schedulerTimer);
-    schedulerTimer = null;
-  }
-  schedulerStarted = false;
 }

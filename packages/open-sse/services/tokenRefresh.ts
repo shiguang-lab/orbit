@@ -53,6 +53,7 @@ import { refreshKiroToken } from "./tokenRefresh/providers/kiro.ts";
 import { refreshQoderToken } from "./tokenRefresh/providers/qoder.ts";
 import { refreshGitHubToken } from "./tokenRefresh/providers/github.ts";
 import { refreshCopilotToken } from "./tokenRefresh/providers/copilot.ts";
+import { exchangeKimiRefreshToken } from "./kimiTokenRefresh.ts";
 
 export {
   refreshCodebuddyCnToken,
@@ -419,6 +420,19 @@ async function _getAccessTokenInternal(provider, credentials, log, proxyConfig: 
         proxyConfig
       );
 
+    case "kimi-web":
+    case "kimi_web": {
+      const result = await exchangeKimiRefreshToken(credentials.refreshToken);
+      if (!result.success || !result.accessToken) return null;
+      return {
+        accessToken: result.accessToken,
+        refreshToken: result.refreshToken || credentials.refreshToken,
+        expiresAt: result.expiresAtSec
+          ? new Date(result.expiresAtSec * 1000).toISOString()
+          : undefined,
+      };
+    }
+
     case "gitlab-duo":
       return await refreshGitLabDuoToken(
         credentials.refreshToken,
@@ -453,6 +467,8 @@ export function supportsTokenRefresh(provider) {
     "amazon-q",
     "cline",
     "kimi-coding",
+    "kimi-web",
+    "kimi_web",
     // Devin auth is not refreshable here: devin-desktop accepts an imported API
     // key (#8228), while devin-cli is local-CLI owned via `devin auth login`
     // (#8407). Neither connection carries a refresh token, so listing either

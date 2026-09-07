@@ -3,10 +3,10 @@ export interface RunResult {
   lastInsertRowid: number | bigint;
 }
 
-export interface PreparedStatement {
+export interface PreparedStatement<Row = unknown> {
   run(...params: unknown[]): RunResult;
-  get(...params: unknown[]): unknown;
-  all(...params: unknown[]): unknown[];
+  get(...params: unknown[]): Row | undefined;
+  all(...params: unknown[]): Row[];
 }
 
 export interface SqliteAdapter {
@@ -16,12 +16,12 @@ export interface SqliteAdapter {
   /** Driver transaction state when exposed by the underlying SQLite implementation. */
   readonly inTransaction?: boolean;
 
-  prepare(sql: string): PreparedStatement;
+  prepare<Row = unknown>(sql: string): PreparedStatement<Row>;
   exec(sql: string): void;
   pragma(pragmaStr: string, options?: { simple?: boolean }): unknown;
 
   /** Retorna uma função que quando chamada executa fn em uma transação DEFERRED */
-  transaction<T>(fn: (...args: unknown[]) => T): (...args: unknown[]) => T;
+  transaction<Args extends unknown[], T>(fn: (...args: Args) => T): (...args: Args) => T;
 
   /** Executa fn em uma transação IMMEDIATE (adquire write lock imediatamente) */
   immediate(fn: () => void): void;

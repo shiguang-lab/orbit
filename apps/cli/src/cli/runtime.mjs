@@ -17,11 +17,8 @@ function makeHttpContext(opts) {
 }
 
 async function importDbModules() {
-  const [combos, recovery] = await Promise.all([
-    import("@shiguang-gateway/core-domain/db/combos"),
-    import("@shiguang-gateway/core-domain/runtime/recovery-db"),
-  ]);
-  return { combos, recovery };
+  const { getCombos } = await import("@shiguang-gateway/core-domain/db/combos");
+  return { combos: { getCombos } };
 }
 
 async function makeDbContext() {
@@ -30,17 +27,9 @@ async function makeDbContext() {
 }
 
 export async function withRuntime(fn, opts = {}) {
-  const requireServer = opts.requireServer === true;
-  const preferDb = opts.preferDb === true;
-
-  if (!preferDb) {
-    const up = await isServerUp(opts);
-    if (up) {
-      return await fn(makeHttpContext(opts));
-    }
-    if (requireServer) {
-      throw new ServerOfflineError();
-    }
+  const up = await isServerUp(opts);
+  if (up) {
+    return await fn(makeHttpContext(opts));
   }
 
   return fn(await makeDbContext());
@@ -50,8 +39,4 @@ export async function withHttp(fn, opts = {}) {
   const up = await isServerUp(opts);
   if (!up) throw new ServerOfflineError();
   return fn(makeHttpContext(opts));
-}
-
-export async function withDb(fn) {
-  return fn(await makeDbContext());
 }

@@ -1,14 +1,14 @@
 import { getMachineId } from "./machine.ts";
 
 // Function to get cloud URL with machine ID
-export function getCloudUrl(machineId) {
+export function getCloudUrl(machineId: string) {
   // Get from environment or default to localhost:8787
   const cloudUrl = process.env.NEXT_PUBLIC_CLOUD_URL || "http://localhost:8787";
   return `${cloudUrl}/${machineId}/v1/chat/completions`;
 }
 
 // Function to call cloud with machine ID
-export async function callCloudWithMachineId(request) {
+export async function callCloudWithMachineId(request: Request) {
   const machineId = await getMachineId();
   if (!machineId) {
     throw new Error("Could not get machine ID");
@@ -34,7 +34,7 @@ export async function callCloudWithMachineId(request) {
 }
 
 // Function to periodically sync provider data to cloud (now a no-op)
-export function startProviderSync(cloudUrl, intervalMs = 900000) {
+export function startProviderSync(_cloudUrl: string, _intervalMs = 900000) {
   // Default 15 minutes
   console.log("Frontend sync is disabled. Use backend sync instead.");
   return null;

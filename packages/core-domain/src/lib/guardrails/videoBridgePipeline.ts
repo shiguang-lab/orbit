@@ -584,8 +584,9 @@ export async function processVideoPart(
     const resultCacheKey = resultCacheIdentity
       ? buildVideoResultCacheKey(contentFingerprint, resultCacheIdentity, part)
       : null;
-    const cachedResult = resultCacheKey
-      ? safeGetCacheEntry(deps.cache, resultCacheKey, context.log)
+    const resultCache = deps.cache;
+    const cachedResult = resultCacheKey && resultCache
+      ? safeGetCacheEntry(resultCache, resultCacheKey, context.log)
       : null;
     if (cachedResult && isVideoResultCacheEntry(cachedResult)) {
       const meta = cachedResult.metadata;
@@ -623,9 +624,9 @@ export async function processVideoPart(
           transcriptCuesApplied: meta.transcriptCuesApplied ?? 0,
         };
       }
-      safeDeleteCacheEntry(deps.cache, resultCacheKey, context.log);
+      if (resultCache && resultCacheKey) safeDeleteCacheEntry(resultCache, resultCacheKey, context.log);
     } else if (cachedResult) {
-      safeDeleteCacheEntry(deps.cache, resultCacheKey, context.log);
+      if (resultCache && resultCacheKey) safeDeleteCacheEntry(resultCache, resultCacheKey, context.log);
     }
 
     const describeAndCache = async (processingSignal: AbortSignal): Promise<DescribedVideo> => {
@@ -643,9 +644,9 @@ export async function processVideoPart(
           );
       if (processingSignal.aborted) throw videoBridgeAbortError();
       const resultCacheBytes = Buffer.byteLength(described.description, "utf8");
-      if (resultCacheKey && resultCacheIdentity) {
+      if (resultCacheKey && resultCacheIdentity && resultCache) {
         safeSetCacheEntry(
-          deps.cache,
+          resultCache,
           resultCacheKey,
           {
             value: described.description,

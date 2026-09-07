@@ -1,6 +1,11 @@
 const MAX_TRANSLATION_EVENTS = 200;
 const DEFAULT_TRANSLATION_EVENT_LIMIT = 50;
 
+type TranslationEvent = Record<string, unknown> & { id: string; timestamp: string };
+declare global {
+  var __translatorEvents: TranslationEvent[] | undefined;
+}
+
 function ensureEventsBuffer() {
   if (!globalThis.__translatorEvents) {
     globalThis.__translatorEvents = [];
@@ -8,7 +13,7 @@ function ensureEventsBuffer() {
   return globalThis.__translatorEvents;
 }
 
-export function logTranslationEvent(event) {
+export function logTranslationEvent(event: Record<string, unknown>) {
   if (!event || typeof event !== "object") return;
 
   const events = ensureEventsBuffer();

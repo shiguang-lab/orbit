@@ -13,7 +13,7 @@ import { CORS_HEADERS } from "@shiguang-gateway/contracts/cors";
 import { getRerankProvider, parseRerankModel, RERANK_PROVIDERS } from "@shiguang-gateway/rerank-catalog";
 import { errorResponse } from "@shiguang-gateway/open-sse/utils/error";
 import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
-import * as log from "@shiguang-gateway/open-sse/utils/logger";
+import { log } from "@shiguang-gateway/open-sse/utils/logger";
 
 const load = (specifier: string): Promise<any> => import(specifier as string);
 

@@ -875,13 +875,12 @@ export async function extractFramesFromLocalVideo(
     throw new Error("Video stream index is invalid");
   }
   const runner = options.runner ?? defaultRunner;
-  const frames = [] as VideoFrameFileList;
-  frames.sampling = {
+  const frames: VideoFrameFileList = Object.assign([], { sampling: {
     candidateCount: sampling.candidateCount,
     ...(sampling.focusWindow ? { focusWindow: sampling.focusWindow } : {}),
     policyEffective: sampling.policyEffective,
     policyRequested: sampling.policyRequested,
-  };
+  } });
 
   for (let index = 0; index < sampling.timestamps.length; index++) {
     const timestampSeconds = sampling.timestamps[index];

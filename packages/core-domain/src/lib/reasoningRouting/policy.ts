@@ -330,7 +330,7 @@ function resolveTargetModel(
   sourceModel: string,
   combo: JsonRecord | null
 ) {
-  if (combo) return typeof combo.name === "string" ? combo.name : rule.targetComboId;
+  if (combo) return typeof combo.name === "string" ? combo.name : (rule.targetComboId ?? sourceModel);
   return rule.targetKind === "model" && rule.targetModel ? rule.targetModel : sourceModel;
 }
 

@@ -40,6 +40,7 @@ import { handleSearch } from "../handlers/search.ts";
 import * as searchCache from "./searchCache.ts";
 import * as webFetchRuntime from "../handlers/webFetch.ts";
 import { reloadAdaptiveAdmissionRuntime } from "./admission/runtime.ts";
+import { validateWebCookieProvider } from "./providerValidation/webCookie.ts";
 
 let runtimePortsInstalled = false;
 
@@ -81,6 +82,7 @@ export function installCoreDomainRuntimePorts(): void {
   filterChatSelectableModels,
   isObsoleteKiroModelAlias,
   estimateTokens,
+  probeWebCookie: validateWebCookieProvider,
   getAccessToken,
   getTokenRefreshDeprecationNotice: getDeprecationNotice,
   supportsTokenRefresh,

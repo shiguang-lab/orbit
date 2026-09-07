@@ -9,7 +9,6 @@ import {
   createCodexAccountPool,
   getCodexParentAccountDiagnostic,
 } from "@shiguang-gateway/open-sse/services/codexAccount/index";
-import { LocalProviderHealthService } from "./local-provider-health.service.js";
 import { executeEdgeRuntimeCommand, readEdgeRuntimeHealth } from "../edge-runtime/client.js";
 
 const HEALTH_PAYLOAD_TTL_MS = 1_000;
@@ -40,7 +39,7 @@ const EMPTY_MONITORING_HEALTH_SNAPSHOT = {
   dedup: { inflightRequests: 0 },
 };
 
-async function buildMonitoringHealthSnapshot(localProviders: Record<string, unknown>): Promise<unknown> {
+async function buildMonitoringHealthSnapshot(): Promise<unknown> {
   const [
     runtimeResult,
     settingsResult,
@@ -62,7 +61,7 @@ async function buildMonitoringHealthSnapshot(localProviders: Record<string, unkn
     rateLimitStatus: runtime.rateLimitStatus as HealthPayloadInput["rateLimitStatus"],
     learnedLimits: runtime.learnedLimits as HealthPayloadInput["learnedLimits"],
     lockouts: runtime.lockouts as HealthPayloadInput["lockouts"],
-    localProviders,
+    localProviders: runtime.localProviders,
     inflightRequests: runtime.inflightRequests,
     quotaMonitorSummary: runtime.quotaMonitorSummary as unknown as HealthPayloadInput["quotaMonitorSummary"],
     quotaMonitorMonitors: runtime.quotaMonitorMonitors as HealthPayloadInput["quotaMonitorMonitors"],
@@ -91,8 +90,6 @@ function publicHealthView(payload: unknown): Record<string, unknown> {
 export class MonitoringHealthService {
   private cache: { payload: unknown; expiresAt: number } | null = null;
 
-  constructor(private readonly localProviderHealth: LocalProviderHealthService) {}
-
   async read(fullView: boolean): Promise<Response> {
     const now = Date.now();
     if (this.cache && now <= this.cache.expiresAt) {
@@ -100,7 +97,7 @@ export class MonitoringHealthService {
     }
 
     try {
-      const payload = await buildMonitoringHealthSnapshot(this.localProviderHealth.getAllHealthStatuses());
+      const payload = await buildMonitoringHealthSnapshot();
       this.cache = { payload, expiresAt: Date.now() + HEALTH_PAYLOAD_TTL_MS };
       return Response.json(fullView ? payload : publicHealthView(payload));
     } catch (error) {

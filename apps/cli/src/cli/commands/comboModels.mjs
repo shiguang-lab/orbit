@@ -1,7 +1,7 @@
 // Parses the `--models` / `--model` options for `shiguangGateway combo create` (#10954).
 //
 // Root cause of #10954: `combo create` only ever registered `--strategy`; the
-// HTTP body (POST /api/combos) and the local-db fallback (db.combos.createCombo)
+// HTTP body for the control-owned POST /api/combos mutation.
 // both hardcoded `models: []`, so every combo created via the CLI came out
 // empty regardless of what the operator intended to route to.
 //

@@ -1,6 +1,7 @@
 import { existsSync } from "node:fs";
 import { resolveDataDir } from "@shiguang-gateway/config/dataPaths";
 import { join } from "node:path";
+import { isServerUp } from "../api.mjs";
 
 const ENCRYPTED_PATTERN = "enc:v1:%";
 const ENCRYPTED_COLUMNS = ["api_key", "access_token", "refresh_token", "id_token"];
@@ -39,6 +40,11 @@ export async function runResetEncryptedColumns(argv) {
     shiguangGateway reset-encrypted-columns --force
     `);
     return 0;
+  }
+
+  if (await isServerUp()) {
+    console.error("\x1b[31m✖ Stop ShiguangGateway before running this offline recovery command.\x1b[0m");
+    return 1;
   }
 
   let db;

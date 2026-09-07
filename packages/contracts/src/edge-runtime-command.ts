@@ -38,6 +38,30 @@ export const edgeRuntimeCommandSchema = z.discriminatedUnion("command", [
   }),
   z.object({ ...version, command: z.literal("provider-health.snapshot") }),
   z.object({ ...version, command: z.literal("provider-health.clear"), provider: z.string().min(1) }),
+  z.object({
+    ...version,
+    command: z.literal("provider-credentials.refresh"),
+    connectionId: z.string().min(1).max(256),
+    purpose: z.enum(["manual", "connection-test", "kimi-manual"]),
+  }),
+  z.object({
+    ...version,
+    command: z.literal("codex-import.validate-refresh-token"),
+    accessToken: z.string().min(1),
+    refreshToken: z.string().min(1),
+  }),
+  z.object({
+    ...version,
+    command: z.literal("compression.verify"),
+    items: z.array(z.object({
+      id: z.string(),
+      original: z.string(),
+      compressed: z.string(),
+    })).min(1).max(20),
+    provider: z.string().min(1),
+    judgeModel: z.string().min(1),
+    costCapUsd: z.number().positive().max(5),
+  }),
   z.object({ ...version, command: z.literal("quota-windows.snapshot") }),
   z.object({ ...version, command: z.literal("provider-limits.snapshot") }),
   z.object({ ...version, command: z.literal("provider-limits.refresh-all") }),
@@ -134,6 +158,22 @@ export const edgeRuntimeCommandSchema = z.discriminatedUnion("command", [
     }),
   }),
   z.object({ ...version, command: z.literal("memory.create"), input: memoryCreateInput }),
+  z.object({
+    ...version,
+    command: z.literal("memory.search"),
+    apiKeyId: z.string().min(1),
+    query: z.string().optional(),
+    type: memoryType.optional(),
+    maxTokens: z.number().int().positive().max(8000).optional(),
+    limit: z.number().int().positive().max(100).optional(),
+  }),
+  z.object({
+    ...version,
+    command: z.literal("memory.clear"),
+    apiKeyId: z.string().min(1),
+    type: memoryType.optional(),
+    olderThan: z.string().datetime().optional(),
+  }),
   z.object({ ...version, command: z.literal("memory.get"), id: z.string().min(1) }),
   z.object({ ...version, command: z.literal("memory.update"), id: z.string().min(1), input: memoryUpdateInput }),
   z.object({ ...version, command: z.literal("memory.delete"), id: z.string().min(1) }),
@@ -157,6 +197,8 @@ export const edgeRuntimeCommandSchema = z.discriminatedUnion("command", [
     dryRun: z.boolean(),
   }),
   z.object({ ...version, command: z.literal("memory.reindex"), force: z.boolean() }),
+  z.object({ ...version, command: z.literal("memory.decay") }),
+  z.object({ ...version, command: z.literal("memory.retention-cleanup") }),
   z.object({
     ...version,
     command: z.literal("reasoning-cache.snapshot"),
@@ -231,6 +273,42 @@ export type EdgeRuntimeCommandPayload = EdgeRuntimeCommand extends infer Command
     : never
   : never;
 
+export type ProviderCredentialRefreshResult =
+  | { outcome: "not-found" }
+  | { outcome: "invalid"; error: string; status: 400 | 422 }
+  | {
+      outcome: "skipped";
+      connectionId: string;
+      provider: string;
+      expiresAt: string | null;
+      message: string;
+    }
+  | {
+      outcome: "reauth-required";
+      error: string;
+      deprecated?: boolean;
+      migrateTo?: string;
+    }
+  | { outcome: "failed"; error: string }
+  | {
+      outcome: "refreshed";
+      connectionId: string;
+      provider: string;
+      expiresAt: string | null;
+      credentials: {
+        accessToken: string;
+        refreshToken?: string;
+        expiresAt?: string;
+        expiresIn?: number;
+      };
+      user?: { userId: string | null; region: string | null; spaceId: string | null };
+    };
+
+export type CodexImportRefreshValidationResult =
+  | { outcome: "valid"; accessToken: string; refreshToken: string }
+  | { outcome: "expired" }
+  | { outcome: "inconclusive" };
+
 export interface EdgeRuntimeHealthSnapshot {
   circuitBreakers: unknown[];
   rateLimitStatus: Record<string, unknown>;
@@ -244,4 +322,5 @@ export interface EdgeRuntimeHealthSnapshot {
   credentialHealth?: unknown;
   adaptiveAdmission: unknown;
   chatAdmission: unknown;
+  localProviders: Record<string, unknown>;
 }

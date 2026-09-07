@@ -10,10 +10,30 @@
 import { parseEnvBoolean } from "./envBoolean.ts";
 import { resolveBlockThreshold, shouldBlockDetections } from "./injectionSeverity.ts";
 
+type InjectionSeverity = "low" | "medium" | "high";
+interface InjectionDetection { pattern: string; severity: InjectionSeverity; match: string }
+interface PiiDetection { type: string; count: number }
+type SanitizerBody = Record<string, unknown>;
+interface SanitizerLogger {
+  warn?: (message: string) => void;
+  info?: (message: string) => void;
+}
+interface SanitizeResult {
+  blocked: boolean;
+  modified: boolean;
+  detections: InjectionDetection[];
+  piiDetections: PiiDetection[];
+  sanitizedBody: SanitizerBody | null;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
 // ─── Prompt Injection Patterns ───────────────────────────────────────
 
 /** @type {Array<{name: string, pattern: RegExp, severity: string}>} */
-const INJECTION_PATTERNS = [
+const INJECTION_PATTERNS: Array<{ name: string; pattern: RegExp; severity: InjectionSeverity }> = [
   {
     name: "system_override",
     pattern:
@@ -139,8 +159,8 @@ function getConfig() {
  * @param {Object} body
  * @returns {string[]}
  */
-function extractMessageContents(body) {
-  const contents = [];
+function extractMessageContents(body: SanitizerBody): string[] {
+  const contents: string[] = [];
 
   const messageSource = body.messages !== undefined ? body.messages : body.input;
   const messages = Array.isArray(messageSource)
@@ -151,13 +171,13 @@ function extractMessageContents(body) {
   for (const msg of messages) {
     if (typeof msg === "string") {
       contents.push(msg);
-    } else if (msg && typeof msg.content === "string") {
+    } else if (isRecord(msg) && typeof msg.content === "string") {
       contents.push(msg.content);
-    } else if (msg && Array.isArray(msg.content)) {
+    } else if (isRecord(msg) && Array.isArray(msg.content)) {
       for (const part of msg.content) {
         if (typeof part === "string") {
           contents.push(part);
-        } else if (part.text) {
+        } else if (isRecord(part) && typeof part.text === "string") {
           contents.push(part.text);
         }
       }
@@ -170,7 +190,7 @@ function extractMessageContents(body) {
   } else if (Array.isArray(body.system)) {
     for (const s of body.system) {
       if (typeof s === "string") contents.push(s);
-      else if (s.text) contents.push(s.text);
+      else if (isRecord(s) && typeof s.text === "string") contents.push(s.text);
     }
   }
 
@@ -185,7 +205,7 @@ function extractMessageContents(body) {
   if (Array.isArray(body.documents))
     for (const d of body.documents) {
       if (typeof d === "string") contents.push(d);
-      else if (d && typeof d.text === "string") contents.push(d.text);
+      else if (isRecord(d) && typeof d.text === "string") contents.push(d.text);
     }
 
   return contents;
@@ -196,8 +216,8 @@ function extractMessageContents(body) {
  * @param {string} text
  * @returns {Array<{pattern: string, severity: string, match: string}>}
  */
-function detectInjection(text) {
-  const detections = [];
+function detectInjection(text: string): InjectionDetection[] {
+  const detections: InjectionDetection[] = [];
   // Bound the regex scan to the first 16 KB — see MAX_INJECTION_SCAN_BYTES
   // (hot-path perf, #3932 / #4041). Slice before the loop so each pattern only
   // ever scans the capped prefix, never the full (possibly hundreds of KB) body.
@@ -222,8 +242,8 @@ function detectInjection(text) {
  * @param {boolean} redact - If true, replaces PII with placeholders
  * @returns {{ text: string, detections: Array<{type: string, count: number}> }}
  */
-function processPII(text, redact = false) {
-  const detections = [];
+function processPII(text: string, redact = false) {
+  const detections: PiiDetection[] = [];
   let processed = text;
 
   for (const rule of PII_PATTERNS) {
@@ -246,10 +266,10 @@ function processPII(text, redact = false) {
  * @param {Object} [logger] - Logger instance (defaults to console)
  * @returns {SanitizeResult}
  */
-export function sanitizeRequest(body, logger = console) {
+export function sanitizeRequest(body: SanitizerBody, logger: SanitizerLogger = console): SanitizeResult {
   const config = getConfig();
 
-  const result = {
+  const result: SanitizeResult = {
     blocked: false,
     modified: false,
     detections: [],
@@ -310,9 +330,10 @@ export function sanitizeRequest(body, logger = console) {
  * @param {Object} body
  * @returns {Object}
  */
-function redactBody(body) {
+function redactBody(body: SanitizerBody): SanitizerBody {
   // Deep clone to avoid mutating original
-  const clone = JSON.parse(JSON.stringify(body));
+  const parsedClone: unknown = JSON.parse(JSON.stringify(body));
+  const clone: SanitizerBody = isRecord(parsedClone) ? parsedClone : {};
   const messageSource = clone.messages !== undefined ? clone.messages : clone.input;
   const messages = Array.isArray(messageSource)
     ? messageSource
@@ -320,7 +341,7 @@ function redactBody(body) {
       ? []
       : [messageSource];
 
-  const redactContentValue = (value) => {
+  const redactContentValue = (value: unknown): unknown => {
     if (typeof value === "string") {
       return processPII(value, true).text;
     }
@@ -329,7 +350,7 @@ function redactBody(body) {
         if (typeof part === "string") {
           return processPII(part, true).text;
         }
-        if (part && typeof part === "object") {
+        if (isRecord(part)) {
           const next = { ...part };
           if (typeof next.text === "string") {
             next.text = processPII(next.text, true).text;
@@ -349,7 +370,7 @@ function redactBody(body) {
     if (typeof msg === "string") {
       return processPII(msg, true).text;
     }
-    if (!msg || typeof msg !== "object") {
+    if (!isRecord(msg)) {
       return msg;
     }
     const next = { ...msg };
@@ -373,7 +394,7 @@ function redactBody(body) {
   } else if (Array.isArray(clone.system)) {
     clone.system = clone.system.map((entry) => {
       if (typeof entry === "string") return processPII(entry, true).text;
-      if (entry && typeof entry === "object") {
+      if (isRecord(entry)) {
         const next = { ...entry };
         if (typeof next.text === "string") next.text = processPII(next.text, true).text;
         if (typeof next.content === "string") next.content = processPII(next.content, true).text;

@@ -147,8 +147,8 @@ export function clearMemoryCache(): void {
  * @returns {string} hex signature
  */
 export function generateSignature(
-  model,
-  conversation,
+  model: string,
+  conversation: unknown,
   temperature = 0,
   topP = 1,
   apiKeyId?: string
@@ -189,10 +189,13 @@ function normalizeConversation(conversation: unknown) {
   }
   if (!Array.isArray(conversation)) return [];
 
-  return conversation.map((item: Record<string, unknown>) => ({
-    role: typeof item?.role === "string" && item.role.trim().length > 0 ? item.role : "user",
-    content: stringifyForSignature(item?.content),
-  }));
+  return conversation.map((item: unknown) => {
+    const record = asRecord(item);
+    return {
+      role: typeof record.role === "string" && record.role.trim().length > 0 ? record.role : "user",
+      content: stringifyForSignature(record.content),
+    };
+  });
 }
 
 // ─── Cache Operations ─────────────────
@@ -203,7 +206,7 @@ function normalizeConversation(conversation: unknown) {
  * @param {string} signature
  * @returns {object|null} Cached response or null
  */
-export function getCachedResponse(signature) {
+export function getCachedResponse(signature: string) {
   // 1. Check memory cache
   const memResult = getMemoryCache().get(signature);
   if (memResult) {
@@ -260,7 +263,13 @@ export function getCachedResponse(signature) {
  * @param {number} tokensSaved - Estimated tokens saved
  * @param {number} [ttlMs] - TTL in ms (default: 1 hour)
  */
-export function setCachedResponse(signature, model, response, tokensSaved = 0, ttlMs = 3600000) {
+export function setCachedResponse(
+  signature: string,
+  model: string,
+  response: unknown,
+  tokensSaved = 0,
+  ttlMs = 3600000
+) {
   const ttl = parseInt(process.env.SEMANTIC_CACHE_TTL_MS || String(ttlMs), 10);
 
   // 1. Memory cache
@@ -384,7 +393,10 @@ export function getCacheStats() {
  * Requires explicit numeric `temperature: 0` — omitted temperature is NOT cached
  * because the provider default may be non-deterministic (e.g. random/creative tasks).
  */
-export function isCacheableForRead(body, headers) {
+export function isCacheableForRead(
+  body: { temperature?: unknown },
+  headers: Parameters<typeof getHeaderValue>[0]
+) {
   if ((getHeaderValue(headers, "x-shiguangGateway-no-cache") || "").toLowerCase() === "true") {
     return false;
   }
@@ -398,7 +410,10 @@ export function isCacheableForRead(body, headers) {
  * Requires explicit `temperature: 0` — omitted temperature is NOT cacheable
  * because the provider default may be non-deterministic.
  */
-export function isCacheableForWrite(body, headers) {
+export function isCacheableForWrite(
+  body: { temperature?: unknown },
+  headers: Parameters<typeof getHeaderValue>[0]
+) {
   if ((getHeaderValue(headers, "x-shiguangGateway-no-cache") || "").toLowerCase() === "true") {
     return false;
   }

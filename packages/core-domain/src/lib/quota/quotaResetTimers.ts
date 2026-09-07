@@ -45,7 +45,7 @@ export function getActiveQuotaResetItems(): QuotaResetItem[] {
       timeRemainingMs: Math.max(0, Number(r.window_reset) - now),
     }));
   } catch (error) {
-    log.error("Failed to query active quota reset items", error);
+    log.error({ err: error }, "Failed to query active quota reset items");
     return [];
   }
 }
@@ -63,7 +63,7 @@ export function resetExpiredQuotaWindows(): number {
       .run(now);
     return result.changes ?? 0;
   } catch (error) {
-    log.error("Failed to reset expired quota windows", error);
+    log.error({ err: error }, "Failed to reset expired quota windows");
     return 0;
   }
 }

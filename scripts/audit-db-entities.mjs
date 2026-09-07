@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 /** Compile and execute the db-schema catalog's internal consistency guard. */
-import { mkdtempSync, readFileSync, readdirSync, rmSync, statSync } from "node:fs";
-import { join, relative, sep } from "node:path";
+import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { dirname, extname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { spawnSync } from "node:child_process";
 import os from "node:os";
@@ -126,9 +126,10 @@ function collectUsage(entities, appEntries, packageEntries, appConsumers) {
       const reads = matches.filter((line) => classifySqlLine(line, entity.tableName) === "read").length;
       const writes = matches.length - reads;
       if (kind === "app") {
-        usage[key].directApps[unit] ??= { reads: 0, writes: 0 };
+        usage[key].directApps[unit] ??= { reads: 0, writes: 0, writeFiles: [] };
         usage[key].directApps[unit].reads += reads;
         usage[key].directApps[unit].writes += writes;
+        if (writes > 0) usage[key].directApps[unit].writeFiles.push(relative(repoRoot, file).split(sep).join("/"));
       } else {
         usage[key].packageSources[unit] ??= { reads: 0, writes: 0, files: [], appConsumers: appConsumers(unit) };
         usage[key].packageSources[unit].reads += reads;
@@ -140,7 +141,121 @@ function collectUsage(entities, appEntries, packageEntries, appConsumers) {
   return usage;
 }
 
+function importedRelativeSources(file) {
+  const source = readFileSync(file, "utf8");
+  const specifiers = [...source.matchAll(/(?:from\s*|import\s*(?:\(\s*)?)["'](\.[^"']+)["']/g)].map((match) => match[1]);
+  return specifiers.flatMap((specifier) => {
+    const candidate = resolve(dirname(file), specifier);
+    if (extname(candidate)) return [candidate];
+    return [candidate, ...sourceExtensionsForResolution.map((extension) => `${candidate}${extension}`)];
+  }).filter((candidate) => {
+    try { return statSync(candidate).isFile(); } catch { return false; }
+  });
+}
+
+const sourceExtensionsForResolution = [".mjs", ".js", ".ts", ".tsx"];
+
+function entrypointReachesSource(entrypoint, target, seen = new Set()) {
+  if (entrypoint === target) return true;
+  if (seen.has(entrypoint)) return false;
+  seen.add(entrypoint);
+  return importedRelativeSources(entrypoint).some((dependency) => entrypointReachesSource(dependency, target, seen));
+}
+
+function validateExternalWriteAuthorities(entity, tableUsage, appEntries, root = repoRoot) {
+  const authorities = entity.externalWriteAuthorities ?? [];
+  const allowedModes = new Set(["bootstrap", "maintenance", "migration"]);
+  const authorizedFiles = new Set();
+  for (const authority of authorities) {
+    const source = join(root, authority.source);
+    const entrypoint = join(root, authority.entrypoint);
+    const app = appEntries.find((candidate) => source.startsWith(`${candidate.dir}${sep}`));
+    if (!app) throw new Error(`${entity.entityName}: external writer is not inside an app: ${authority.source}`);
+    if (app.manifest.name === `@shiguang-gateway/${entity.owner}`) {
+      throw new Error(`${entity.entityName}: owner writes must not be declared as external authority: ${authority.source}`);
+    }
+    if (!allowedModes.has(authority.mode)) throw new Error(`${entity.entityName}: invalid external write mode ${authority.mode}`);
+    if (typeof authority.reason !== "string" || authority.reason.trim().length < 20) {
+      throw new Error(`${entity.entityName}: external writer requires a specific reason: ${authority.source}`);
+    }
+    if (!entrypoint.startsWith(`${app.dir}${sep}`)) throw new Error(`${entity.entityName}: entrypoint must belong to the writer app: ${authority.entrypoint}`);
+    const writeFiles = tableUsage.directApps[app.manifest.name]?.writeFiles ?? [];
+    if (!writeFiles.includes(authority.source)) throw new Error(`${entity.entityName}: declared source has no SQL mutation: ${authority.source}`);
+    if (!entrypointReachesSource(entrypoint, source)) {
+      throw new Error(`${entity.entityName}: ${authority.entrypoint} does not reach ${authority.source}`);
+    }
+    if ((authority.mode === "bootstrap" || authority.mode === "maintenance") && !/await\s+isServerUp\s*\(/.test(readFileSync(entrypoint, "utf8"))) {
+      throw new Error(`${entity.entityName}: offline authority must guard against a running control-api: ${authority.entrypoint}`);
+    }
+    if (authority.mode === "bootstrap" && !/\/setup(?:\.|\/)/.test(authority.entrypoint)) {
+      throw new Error(`${entity.entityName}: bootstrap authority must use an explicit setup entrypoint`);
+    }
+    if (authority.mode === "maintenance" && !/reset|repair|maintenance/.test(authority.entrypoint)) {
+      throw new Error(`${entity.entityName}: maintenance authority must use an explicit recovery entrypoint`);
+    }
+    if (authority.mode === "migration" && app.manifest.name !== "@shiguang-gateway/importer") {
+      throw new Error(`${entity.entityName}: migration authority must belong to the importer app`);
+    }
+    authorizedFiles.add(authority.source);
+  }
+  return authorizedFiles;
+}
+
+function findUnauthorizedExternalWriteFiles(entity, tableUsage, appEntries, root = repoRoot) {
+  const authorizedFiles = validateExternalWriteAuthorities(entity, tableUsage, appEntries, root);
+  return Object.entries(tableUsage.directApps).flatMap(([app, value]) =>
+    app === `@shiguang-gateway/${entity.owner}`
+      ? []
+      : value.writeFiles.filter((file) => !authorizedFiles.has(file)).map((file) => `${app}:${file}`)
+  );
+}
+
+function assertExternalWriteAuthorityGuard() {
+  const root = mkdtempSync(join(os.tmpdir(), "shiguang-db-authority-test-"));
+  try {
+    const appDir = join(root, "apps", "cli");
+    mkdirSync(join(appDir, "commands"), { recursive: true });
+    mkdirSync(join(appDir, "forged"), { recursive: true });
+    mkdirSync(join(root, "scripts"), { recursive: true });
+    writeFileSync(join(appDir, "writer.mjs"), "db.exec('UPDATE provider_connections SET test_status = null');\n");
+    writeFileSync(join(appDir, "rogue.mjs"), "db.exec('DELETE FROM provider_connections');\n");
+    writeFileSync(join(appDir, "commands", "setup.mjs"), "import '../writer.mjs';\nawait isServerUp();\n");
+    writeFileSync(join(appDir, "forged", "setup.mjs"), "await isServerUp();\nexport const forged = true;\n");
+    writeFileSync(join(root, "scripts", "writer.mjs"), "db.exec('UPDATE provider_connections SET test_status = null');\n");
+    const apps = [{ dir: appDir, manifest: { name: "@shiguang-gateway/cli" } }];
+    const usage = { directApps: { "@shiguang-gateway/cli": { writes: 2, writeFiles: ["apps/cli/writer.mjs", "apps/cli/rogue.mjs"] } } };
+    const validAuthority = {
+      source: "apps/cli/writer.mjs",
+      entrypoint: "apps/cli/commands/setup.mjs",
+      mode: "bootstrap",
+      reason: "Initialize an isolated database before runtime ownership begins.",
+    };
+    const entity = { entityName: "ProviderConnection", owner: "control-api", externalWriteAuthorities: [validAuthority] };
+    const undeclared = findUnauthorizedExternalWriteFiles(entity, usage, apps, root);
+    if (undeclared.length !== 1 || !undeclared[0].endsWith("apps/cli/rogue.mjs")) {
+      throw new Error("external authority self-test did not reject an undeclared write file");
+    }
+    const expectFailure = (candidate, pattern) => {
+      let error;
+      try { validateExternalWriteAuthorities(candidate, usage, apps, root); } catch (caught) { error = caught; }
+      if (!(error instanceof Error) || !pattern.test(error.message)) throw new Error(`external authority self-test expected ${pattern}`);
+    };
+    expectFailure(
+      { ...entity, externalWriteAuthorities: [{ ...validAuthority, entrypoint: "apps/cli/forged/setup.mjs" }] },
+      /does not reach/,
+    );
+    expectFailure(
+      { ...entity, externalWriteAuthorities: [{ ...validAuthority, source: "scripts/writer.mjs" }] },
+      /not inside an app/,
+    );
+    console.log("db-schema external write authority self-test: PASS (forged entrypoint, undeclared file, out-of-app source)");
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+}
+
 try {
+  if (process.argv.includes("--self-test")) assertExternalWriteAuthorityGuard();
   assertEntitySourceLayout();
   const compile = spawnSync(
     "pnpm",
@@ -193,11 +308,20 @@ try {
     const tableUsage = usage[key];
     const directWrites = Object.entries(tableUsage.directApps).filter(([, value]) => value.writes > 0).map(([app]) => app);
     const packageWrites = Object.entries(tableUsage.packageSources).filter(([, value]) => value.writes > 0).map(([pkg]) => pkg);
-    const mismatches = directWrites.filter((app) => app !== `@shiguang-gateway/${entity.owner}`);
+    const authorizedFiles = validateExternalWriteAuthorities(entity, tableUsage, appEntries);
+    const mismatches = findUnauthorizedExternalWriteFiles(entity, tableUsage, appEntries);
+    const ownerHasDirectWrites = directWrites.includes(`@shiguang-gateway/${entity.owner}`);
+    const hasAuthorizedExternalWrites = authorizedFiles.size > 0;
     const ownerConsistency = mismatches.length > 0
       ? "FAIL"
-      : directWrites.length > 0
+      : ownerHasDirectWrites && hasAuthorizedExternalWrites
+        ? "PASS-direct+authorized-external"
+        : ownerHasDirectWrites
         ? "PASS-direct"
+        : hasAuthorizedExternalWrites && packageWrites.length > 0
+          ? "PASS-indirect+authorized-external"
+        : hasAuthorizedExternalWrites
+          ? "PASS-authorized-external"
         : packageWrites.length > 0
           ? "PASS-indirect-declared-owner"
           : "UNOBSERVED";

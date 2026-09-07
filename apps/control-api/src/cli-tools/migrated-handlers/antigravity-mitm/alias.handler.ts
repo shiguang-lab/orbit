@@ -7,7 +7,7 @@ import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain
 import { hasInvalidReasoningEffort, normalizeAliasMappings } from "../../mitm-alias.js";
 
 // GET - Get MITM aliases for a tool
-export async function GET(request) {
+export async function GET(request: Request) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
 
@@ -25,13 +25,13 @@ export async function GET(request) {
       aliases: toolName ? normalizeAliasMappings(aliases) : aliases,
     });
   } catch (error) {
-    console.log("Error fetching MITM aliases:", (error as any).message);
+    console.log("Error fetching MITM aliases:", error instanceof Error ? error.message : String(error));
     return Response.json({ error: "Failed to fetch aliases" }, { status: 500 });
   }
 }
 
 // PUT - Save MITM aliases for a specific tool
-export async function PUT(request) {
+export async function PUT(request: Request) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
 
@@ -68,7 +68,7 @@ export async function PUT(request) {
     await setMitmAliasAll(tool, filtered);
     return Response.json({ success: true, aliases: filtered });
   } catch (error) {
-    console.log("Error saving MITM aliases:", (error as any).message);
+    console.log("Error saving MITM aliases:", error instanceof Error ? error.message : String(error));
     return Response.json({ error: "Failed to save aliases" }, { status: 500 });
   }
 }

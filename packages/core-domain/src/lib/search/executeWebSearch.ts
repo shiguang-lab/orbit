@@ -158,7 +158,7 @@ export async function executeWebSearch(
       input.provider
         ? `Unknown search provider: ${input.provider}`
         : `No search providers available. Add an API key for a search provider (${getAllSearchProviders()
-            .map((provider) => provider.id)
+            .map((provider: { id: string }) => provider.id)
             .join(", ")}) in the dashboard.`,
       400
     );

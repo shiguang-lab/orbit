@@ -50,6 +50,9 @@ declare global {
   var __shiguangGatewayEmbedWsStarted: boolean | undefined;
 }
 
+let embedWsServer: http.Server | null = null;
+let embedWsStartPromise: Promise<http.Server> | null = null;
+
 /**
  * Tracks active client sockets per service name.
  * Used to enforce MAX_CONNECTIONS_PER_SERVICE.
@@ -245,15 +248,15 @@ export function resolveEmbedWsHost(): string {
 
 /**
  * Start the embed WebSocket proxy server.
- * Idempotent — safe to call multiple times.
+ * Idempotent — concurrent callers share the same bind attempt.
  */
-export function initEmbedWsProxy(): void {
+export function initEmbedWsProxy(): Promise<http.Server> {
   // Safety net: a client aborting a connection can emit `Error: aborted`/
   // ECONNRESET on the request stream; without this the single missed listener
   // becomes an uncaughtException that kills the server. Benign aborts are
   // swallowed; genuine errors still crash loudly (#fix-dev-server-aborted).
   installProcessCrashGuard();
-  if (globalThis.__shiguangGatewayEmbedWsStarted) return;
+  if (embedWsStartPromise) return embedWsStartPromise;
 
   const host = resolveEmbedWsHost();
   const port = parseInt(process.env.EMBED_WS_PROXY_PORT ?? String(DEFAULT_PORT), 10);
@@ -274,17 +277,50 @@ export function initEmbedWsProxy(): void {
     });
   });
 
-  server.on("error", (err: NodeJS.ErrnoException) => {
-    if (err.code === "EADDRINUSE") {
-      console.warn(`[EmbedWsProxy] Port ${port} is already in use — embed WS proxy disabled.`);
-      return;
-    }
-    console.warn("[EmbedWsProxy] Failed to start:", err.message);
+  embedWsServer = server;
+  const startup = new Promise<http.Server>((resolve, reject) => {
+    const onStartupError = (error: Error) => reject(error);
+    server.once("error", onStartupError);
+    server.listen(port, host, () => {
+      server.off("error", onStartupError);
+      server.on("error", (error) => {
+        console.warn("[EmbedWsProxy] Server error:", error.message);
+      });
+      globalThis.__shiguangGatewayEmbedWsStarted = true;
+      const address = server.address();
+      const listeningPort = typeof address === "object" && address ? address.port : port;
+      console.log(`[EmbedWsProxy] Listening on ${host}:${listeningPort}`);
+      resolve(server);
+    });
   });
 
-  server.listen(port, host, () => {
-    globalThis.__shiguangGatewayEmbedWsStarted = true;
-    console.log(`[EmbedWsProxy] Listening on ${host}:${port}`);
+  embedWsStartPromise = startup.catch((error) => {
+    if (embedWsServer === server) embedWsServer = null;
+    if (embedWsStartPromise) embedWsStartPromise = null;
+    globalThis.__shiguangGatewayEmbedWsStarted = false;
+    throw error;
+  });
+  return embedWsStartPromise;
+}
+
+/** Stop accepting bridges, close active tunnels, and release the listener. */
+export async function stopEmbedWsProxy(): Promise<void> {
+  const pending = embedWsStartPromise;
+  if (pending) await pending.catch(() => undefined);
+
+  const server = embedWsServer;
+  embedWsServer = null;
+  embedWsStartPromise = null;
+  globalThis.__shiguangGatewayEmbedWsStarted = false;
+
+  for (const sockets of activeConnections.values()) {
+    for (const socket of sockets) socket.destroy();
+  }
+  activeConnections.clear();
+
+  if (!server?.listening) return;
+  await new Promise<void>((resolve, reject) => {
+    server.close((error) => error ? reject(error) : resolve());
   });
 }
 

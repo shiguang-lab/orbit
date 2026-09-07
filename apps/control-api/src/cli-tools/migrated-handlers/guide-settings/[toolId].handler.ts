@@ -11,6 +11,14 @@ import { resolveApiKey, getOrCreateApiKey } from "@shiguang-gateway/core-domain/
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 import { guardCliConfigWrite } from "@shiguang-gateway/core-domain/control/cli-tools-config-guard";
 import { mergeOpenCodeConfigText } from "./opencode-config.js";
+import { isJsonObject, parseJsonObject, type JsonObject } from "../_lib/jsonObject.js";
+
+type RouteContext = { params: Record<string, string> };
+type BaseGuideConfig = { baseUrl?: string; apiKey?: string; model?: string };
+type OpenCodeGuideConfig = BaseGuideConfig & {
+  models?: string[];
+  modelLabels?: Record<string, string>;
+};
 
 /**
  * Where each guide tool's config lands, and the host command that writes the
@@ -38,7 +46,7 @@ const GUIDE_TOOL_TARGETS: Record<string, { resolve: () => string; hostCommand: s
  * Save configuration for guide-based tools that have config files.
  * Currently supports: continue, opencode
  */
-export async function GET(request, { params }) {
+export async function GET(request: Request, { params }: RouteContext) {
   // cli-tools routes require the shared management auth guard on every exported handler.
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
@@ -46,7 +54,7 @@ export async function GET(request, { params }) {
   return Response.json({ error: "GET not supported for this tool" }, { status: 400 });
 }
 
-export async function POST(request, { params }) {
+export async function POST(request: Request, { params }: RouteContext) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
 
@@ -65,7 +73,7 @@ export async function POST(request, { params }) {
     );
   }
 
-  const { toolId } = await params;
+  const toolId = String(params.toolId ?? "").trim();
   const validation = validateBody(guideSettingsSaveSchema, rawBody);
   if (isValidationFailure(validation)) {
     return Response.json({ error: validation.error }, { status: 400 });
@@ -116,7 +124,7 @@ export async function POST(request, { params }) {
  * Save Continue config to ~/.continue/config.json
  * Merges with existing config if present.
  */
-async function saveContinueConfig({ baseUrl, apiKey, model }) {
+async function saveContinueConfig({ baseUrl, apiKey, model }: BaseGuideConfig) {
   const { apiPort } = getRuntimePorts();
   const configPath = path.join(os.homedir(), ".continue", "config.json");
   const configDir = path.dirname(configPath);
@@ -125,10 +133,10 @@ async function saveContinueConfig({ baseUrl, apiKey, model }) {
   await fs.mkdir(configDir, { recursive: true });
 
   // Read existing config if any
-  let existingConfig: any = {};
+  let existingConfig: JsonObject = {};
   try {
     const raw = await fs.readFile(configPath, "utf-8");
-    existingConfig = JSON.parse(raw);
+    existingConfig = parseJsonObject(raw);
   } catch {
     // No existing config or invalid JSON — start fresh
   }
@@ -147,7 +155,7 @@ async function saveContinueConfig({ baseUrl, apiKey, model }) {
   };
 
   // Merge into existing models array
-  const models = existingConfig.models || [];
+  const models: unknown[] = Array.isArray(existingConfig.models) ? existingConfig.models : [];
 
   function normalizeApiBase(value: unknown): string {
     return String(value || "")
@@ -158,8 +166,8 @@ async function saveContinueConfig({ baseUrl, apiKey, model }) {
 
   // Check if ShiguangGateway entry already exists and update it, or add new
   const existingIdx = models.findIndex(
-    (m) =>
-      m &&
+    (m: unknown) =>
+      isJsonObject(m) &&
       (m.shiguangGatewayManaged === true ||
         normalizeApiBase(m.apiBase) === normalizedBaseUrl.toLowerCase() ||
         normalizeApiBase(m.apiBase).includes("shiguangGateway") ||
@@ -196,7 +204,7 @@ async function saveContinueConfig({ baseUrl, apiKey, model }) {
  *
  * (#524) OpenCode was silently failing because this handler was missing.
  */
-async function saveOpenCodeConfig({ baseUrl, apiKey, model, models, modelLabels }) {
+async function saveOpenCodeConfig({ baseUrl, apiKey, model, models, modelLabels }: OpenCodeGuideConfig) {
   const configPath = getOpenCodeConfigPath();
   const configDir = path.dirname(configPath);
 
@@ -239,7 +247,7 @@ async function saveOpenCodeConfig({ baseUrl, apiKey, model, models, modelLabels 
  * Hermes stores its primary routing settings in YAML. Preserve any existing
  * keys, but make sure the ShiguangGateway provider entry is present and selected.
  */
-async function saveHermesConfig({ baseUrl, apiKey, model }) {
+async function saveHermesConfig({ baseUrl, apiKey, model }: BaseGuideConfig) {
   const configPath =
     getCliPrimaryConfigPath("hermes") || path.join(os.homedir(), ".hermes", "config.yaml");
   const configDir = path.dirname(configPath);
@@ -258,35 +266,40 @@ async function saveHermesConfig({ baseUrl, apiKey, model }) {
   }
   const selectedModel = model;
 
-  let existingConfig: Record<string, any> = {};
+  let existingConfig: JsonObject = {};
   try {
     const raw = await fs.readFile(configPath, "utf-8");
     const parsed = yaml.load(raw);
-    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
-      existingConfig = parsed as Record<string, any>;
+    if (isJsonObject(parsed)) {
+      existingConfig = parsed;
     }
   } catch {
     // No existing config or unparsable YAML — start fresh.
   }
 
+  const existingModel = isJsonObject(existingConfig.model) ? existingConfig.model : {};
+  const existingProviders = isJsonObject(existingConfig.providers)
+    ? existingConfig.providers
+    : {};
+  const existingGateway = isJsonObject(existingProviders.shiguangGateway)
+    ? existingProviders.shiguangGateway
+    : {};
   const nextConfig = {
     ...existingConfig,
     model: {
-      ...(existingConfig.model || {}),
+      ...existingModel,
       default: selectedModel,
       provider: "shiguangGateway",
       base_url: providerBaseUrl,
     },
     providers: {
-      ...(existingConfig.providers || {}),
+      ...existingProviders,
       shiguangGateway: {
-        ...((existingConfig.providers && existingConfig.providers.shiguangGateway) || {}),
+        ...existingGateway,
         base_url: providerBaseUrl,
         api_key:
           apiKey ||
-          (existingConfig.providers &&
-            existingConfig.providers.shiguangGateway &&
-            existingConfig.providers.shiguangGateway.api_key) ||
+          (typeof existingGateway.api_key === "string" ? existingGateway.api_key : "") ||
           "",
       },
     },

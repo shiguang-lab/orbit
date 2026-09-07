@@ -503,7 +503,7 @@ export async function evaluateBadges(
       case "hidden": {
         // Secret badge: unlocked by having earned all other badges
         const allOtherDefs = definitions.filter(
-          (d) => d.id !== def.id && !JSON.parse(d.criteria).type?.toString().includes("hidden")
+          (d) => d.id !== def.id && !JSON.parse(d.criteria ?? "{}").type?.toString().includes("hidden")
         );
         const allOtherEarned = allOtherDefs.every((d) => earnedIds.has(d.id));
         unlocked = allOtherEarned;

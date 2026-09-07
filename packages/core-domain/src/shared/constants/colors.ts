@@ -39,12 +39,12 @@ export const PROTOCOL_COLORS = {
   bypass: { bg: "#6B7280", text: "#fff", label: "Bypass" },
 };
 
-const PROTOCOL_KEY_ALIASES = {
+const PROTOCOL_KEY_ALIASES: Record<string, string> = {
   "openai-chat": "openai",
   "openai-response": "openai-responses",
 };
 
-function normalizeProtocolKey(protocol) {
+function normalizeProtocolKey(protocol: string) {
   return PROTOCOL_KEY_ALIASES[protocol] || protocol;
 }
 
@@ -97,7 +97,7 @@ export const MODEL_COLORS = [
  * @param {number} index
  * @returns {string} Hex color
  */
-export function getModelColor(index) {
+export function getModelColor(index: number) {
   return MODEL_COLORS[index % MODEL_COLORS.length];
 }
 
@@ -110,7 +110,7 @@ export function getModelColor(index) {
  * @param {number} status - HTTP status code
  * @returns {{ bg: string, text: string }}
  */
-export function getHttpStatusStyle(status) {
+export function getHttpStatusStyle(status: number) {
   if (status >= 200 && status < 300) return { bg: "#059669", text: "#fff" };
   if (status >= 400 && status < 500) return { bg: "#D97706", text: "#fff" };
   if (status >= 500) return { bg: "#DC2626", text: "#fff" };
@@ -123,7 +123,7 @@ export function getHttpStatusStyle(status) {
  * @param {string} status - Status string ("success", "error", "timeout")
  * @returns {{ bg: string, text: string }}
  */
-export function getProxyStatusStyle(status) {
+export function getProxyStatusStyle(status: string) {
   if (status === "success") return { bg: "#059669", text: "#fff" };
   if (status === "error") return { bg: "#DC2626", text: "#fff" };
   if (status === "timeout") return { bg: "#D97706", text: "#fff" };
@@ -136,11 +136,12 @@ export function getProxyStatusStyle(status) {
  * @param {string} fallbackProvider - Provider key to use as a secondary protocol key
  * @returns {{ bg: string, text: string, label: string }}
  */
-export function getProtocolColor(protocol, fallbackProvider) {
+export function getProtocolColor(protocol: string, fallbackProvider: string) {
+  const colors: Record<string, { bg: string; text: string; label: string }> = PROTOCOL_COLORS;
   const normalized = normalizeProtocolKey(protocol);
   return (
-    PROTOCOL_COLORS[normalized] ||
-    PROTOCOL_COLORS[fallbackProvider] || {
+    colors[normalized] ||
+    colors[fallbackProvider] || {
       bg: "#6B7280",
       text: "#fff",
       label: (protocol || fallbackProvider || "-").toUpperCase(),

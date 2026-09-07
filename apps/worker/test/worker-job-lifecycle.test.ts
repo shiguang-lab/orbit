@@ -3,6 +3,10 @@ import fs from "node:fs";
 import test from "node:test";
 import { WORKER_JOBS, type WorkerJob } from "../src/jobs/registry.js";
 import { startWorkerJobs, stopWorkerJobs } from "../src/jobs/runner.js";
+import {
+  startSubscriptionScheduler,
+  stopSubscriptionScheduler,
+} from "../src/jobs/proxy-subscription.js";
 
 test("every worker registry entry has an explicit startup function", () => {
   assert.ok(WORKER_JOBS.every((job) => job.mode === "call" && job.exportName.length > 0 && typeof job.loadModule === "function"));
@@ -34,8 +38,40 @@ test("runner calls explicit start and stop exports", async () => {
   delete state[stateKey];
 });
 
+test("proxy subscription scheduler is app-owned, idempotent, and stoppable", () => {
+  const originalNodeEnv = process.env.NODE_ENV;
+  const originalSetInterval = globalThis.setInterval;
+  const originalClearInterval = globalThis.clearInterval;
+  const fakeTimer = { unref() {} } as NodeJS.Timeout;
+  let starts = 0;
+  let stops = 0;
+  process.env.NODE_ENV = "production";
+  globalThis.setInterval = (() => {
+    starts++;
+    return fakeTimer;
+  }) as typeof setInterval;
+  globalThis.clearInterval = ((timer: NodeJS.Timeout | number | undefined) => {
+    assert.equal(timer, fakeTimer);
+    stops++;
+  }) as typeof clearInterval;
+  try {
+    startSubscriptionScheduler();
+    startSubscriptionScheduler();
+    assert.equal(starts, 1);
+    stopSubscriptionScheduler();
+    stopSubscriptionScheduler();
+    assert.equal(stops, 1);
+  } finally {
+    stopSubscriptionScheduler();
+    globalThis.setInterval = originalSetInterval;
+    globalThis.clearInterval = originalClearInterval;
+    if (originalNodeEnv === undefined) delete process.env.NODE_ENV;
+    else process.env.NODE_ENV = originalNodeEnv;
+  }
+});
+
 test("worker-owned scheduler modules resolve from app-local paths", async () => {
-  const [conductor, proxyHealth, freeProxy, databaseCleanup, databaseVacuum, modelsDev, pricing, connectionRecovery] = await Promise.all([
+  const [conductor, proxyHealth, freeProxy, databaseCleanup, databaseVacuum, modelsDev, pricing, connectionRecovery, proxySubscription] = await Promise.all([
     import("../src/jobs/conductor-bridge.js"),
     import("../src/jobs/proxy-health.js"),
     import("../src/jobs/free-proxy-scheduler.js"),
@@ -44,6 +80,7 @@ test("worker-owned scheduler modules resolve from app-local paths", async () => 
     import("../src/jobs/models-dev-sync.js"),
     import("../src/jobs/pricing-sync.js"),
     import("../src/jobs/connection-recovery.js"),
+    import("../src/jobs/proxy-subscription.js"),
   ]);
   assert.equal(typeof conductor.initConductorBridge, "function");
   assert.equal(typeof conductor.stopConductorBridge, "function");
@@ -61,12 +98,16 @@ test("worker-owned scheduler modules resolve from app-local paths", async () => 
   assert.equal(typeof pricing.stopPricingSyncScheduler, "function");
   assert.equal(typeof connectionRecovery.initConnectionRecoveryScheduler, "function");
   assert.equal(typeof connectionRecovery.stopConnectionRecoveryScheduler, "function");
+  assert.equal(typeof proxySubscription.startSubscriptionScheduler, "function");
+  assert.equal(typeof proxySubscription.stopSubscriptionScheduler, "function");
   const registrySource = fs.readFileSync(new URL("../src/jobs/registry.ts", import.meta.url), "utf8");
   assert.match(registrySource, /import\("\.\/database-cleanup\.js"\)/);
   assert.match(registrySource, /import\("\.\/database-vacuum\.js"\)/);
   assert.match(registrySource, /import\("\.\/models-dev-sync\.js"\)/);
   assert.match(registrySource, /import\("\.\/pricing-sync\.js"\)/);
   assert.match(registrySource, /import\("\.\/connection-recovery\.js"\)/);
+  assert.match(registrySource, /import\("\.\/proxy-subscription\.js"\)/);
   assert.doesNotMatch(registrySource, /core-domain\/worker\/database-(?:cleanup|vacuum)-lifecycle/);
   assert.doesNotMatch(registrySource, /core-domain\/worker\/(?:model|pricing)-sync-lifecycle/);
+  assert.doesNotMatch(registrySource, /core-domain\/worker\/proxy-subscription-lifecycle/);
 });

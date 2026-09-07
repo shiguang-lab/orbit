@@ -7,10 +7,7 @@ import {
   findProviderConnection,
   getProviderApiKey,
   listProviderConnections,
-  updateProviderApiKey,
-  updateProviderTestResult,
 } from "../provider-store.mjs";
-import { encryptCredential } from "../encryption.mjs";
 import { openShiguangGatewayDb } from "../sqlite.mjs";
 import { t } from "../i18n.mjs";
 import { registerProviderCrud } from "./provider-crud.mjs";
@@ -157,6 +154,8 @@ async function testProviderConnectionThroughServer(connection) {
 }
 
 async function runProviderTest(db, connection, { serverUp = false } = {}) {
+  if (serverUp) return testProviderConnectionThroughServer(connection);
+
   // Only API-key connections can be probed with a stored credential. OAuth /
   // no-auth connections have nothing for testProviderApiKey() to send, and
   // getProviderApiKey() throws for them by design — reporting that as a FAILED
@@ -187,7 +186,6 @@ async function runProviderTest(db, connection, { serverUp = false } = {}) {
         skipped: true,
       };
     }
-    updateProviderTestResult(db, connection.id, result);
     return {
       connection: publicConnection(connection),
       ...result,
@@ -198,7 +196,6 @@ async function runProviderTest(db, connection, { serverUp = false } = {}) {
       error: error instanceof Error ? error.message : String(error),
       statusCode: null,
     };
-    updateProviderTestResult(db, connection.id, result);
     return {
       connection: publicConnection(connection),
       ...result,
@@ -281,7 +278,7 @@ export async function runTestCommand(selector, opts = {}) {
       return 1;
     }
 
-    const result = await runProviderTest(db, connection);
+    const result = await runProviderTest(db, connection, { serverUp: await isServerUp() });
     if (opts.json) {
       console.log(JSON.stringify(result, null, 2));
     } else if (result.valid) {
@@ -440,41 +437,25 @@ export async function runProvidersRotateCommand(selector, opts = {}) {
   }
 
   // --- Write ---
-  const serverUp = await isServerUp();
-  if (serverUp) {
-    try {
-      const res = await apiFetch(`/api/providers/${encodeURIComponent(connection.id)}`, {
-        method: "PATCH",
-        body: {
-          apiKey: newKey,
-          testStatus: "unknown",
-          lastError: null,
-          rateLimitedUntil: null,
-          backoffLevel: 0,
-        },
-        retry: false,
-        acceptNotOk: true,
-      });
-      if (!res.ok) {
-        console.error(t("common.error", { message: `HTTP ${res.status}` }));
-        return 1;
-      }
-    } catch {
-      // Fall through to direct DB write
-      const { db: db2 } = await openShiguangGatewayDb();
-      try {
-        updateProviderApiKey(db2, connection.id, encryptCredential(newKey));
-      } finally {
-        db2.close();
-      }
-    }
-  } else {
-    const { db: db2 } = await openShiguangGatewayDb();
-    try {
-      updateProviderApiKey(db2, connection.id, encryptCredential(newKey));
-    } finally {
-      db2.close();
-    }
+  if (!(await isServerUp())) {
+    console.error(t("common.serverOffline"));
+    return 1;
+  }
+  const res = await apiFetch(`/api/providers/${encodeURIComponent(connection.id)}`, {
+    method: "PATCH",
+    body: {
+      apiKey: newKey,
+      testStatus: "unknown",
+      lastError: null,
+      rateLimitedUntil: null,
+      backoffLevel: 0,
+    },
+    retry: false,
+    acceptNotOk: true,
+  });
+  if (!res.ok) {
+    console.error(t("common.error", { message: `HTTP ${res.status}` }));
+    return 1;
   }
 
   console.log(
@@ -483,19 +464,11 @@ export async function runProvidersRotateCommand(selector, opts = {}) {
 
   // --- Post-rotation test ---
   if (!opts.skipTest) {
-    const { db: db3 } = await openShiguangGatewayDb();
-    try {
-      const fresh = findProviderConnection(db3, connection.id);
-      if (fresh) {
-        const result = await runProviderTest(db3, fresh);
-        if (result.valid) {
-          console.log(t("providers.rotate.testPassed"));
-        } else {
-          console.error(t("providers.rotate.testFailed", { error: result.error }));
-        }
-      }
-    } finally {
-      db3.close();
+    const result = await testProviderConnectionThroughServer(connection);
+    if (result.valid) {
+      console.log(t("providers.rotate.testPassed"));
+    } else {
+      console.error(t("providers.rotate.testFailed", { error: result.error }));
     }
   }
 

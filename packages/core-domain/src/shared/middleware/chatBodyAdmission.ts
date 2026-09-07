@@ -1026,13 +1026,13 @@ export async function admitChatRequest(
       totalBytes += value.byteLength;
       if (totalBytes > hardMaxBytes) {
         await reader.cancel("chat request exceeds hard body limit").catch(() => undefined);
-        lease?.release();
+        (lease as ChatAdmissionLease | null)?.release();
         return { admit: false, response: chatAdmissionRejectionResponse(413, hardMaxBytes) };
       }
       if (totalBytes >= largeBodyBytes && !controller.canFitBudget(totalBytes)) {
         controller.recordShed("body_exceeds_budget", sessionId);
         await reader.cancel("chat request exceeds ingest budget").catch(() => undefined);
-        lease?.release();
+        (lease as ChatAdmissionLease | null)?.release();
         return { admit: false, response: bodyExceedsBudgetResponse(controller.maxInflightBytes) };
       }
       if (totalBytes >= largeBodyBytes && !(await reserve(totalBytes))) {
@@ -1042,7 +1042,7 @@ export async function admitChatRequest(
       chunks.push(value);
     }
   } catch (error) {
-    lease?.release();
+    (lease as ChatAdmissionLease | null)?.release();
     throw error;
   } finally {
     reader.releaseLock();

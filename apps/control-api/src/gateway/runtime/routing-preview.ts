@@ -35,8 +35,10 @@ export interface RankedRoutingResult {
   candidates: RoutingExplanation[];
 }
 
-function clamp(value: number, fallback = 0): number {
-  return Number.isFinite(value) ? Math.max(0, Math.min(1, value)) : fallback;
+function clamp(value: number | undefined, fallback = 0): number {
+  return typeof value === "number" && Number.isFinite(value)
+    ? Math.max(0, Math.min(1, value))
+    : fallback;
 }
 
 function quotaFactor(quota: ProviderQuotaStatus): number {

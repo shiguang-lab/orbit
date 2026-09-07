@@ -1,14 +1,11 @@
 import { printHeading } from "../io.mjs";
 import {
-  ensureProviderSchema,
   getProviderApiKey,
   listProviderConnections,
-  removeProviderConnectionByProvider,
-  upsertApiKeyProviderConnection,
 } from "../provider-store.mjs";
 import { openShiguangGatewayDb } from "../sqlite.mjs";
 import { loadAvailableProviders } from "../provider-catalog.mjs";
-import { apiFetch, isServerUp, isRouteUnavailableStatus } from "../api.mjs";
+import { apiFetch, isServerUp } from "../api.mjs";
 import { t } from "../i18n.mjs";
 
 function getValidProviderIds() {
@@ -171,43 +168,26 @@ export async function runKeysAddCommand(provider, apiKey, opts = {}) {
     return 1;
   }
 
-  const serverUp = await isServerUp();
-  if (serverUp) {
-    try {
-      const res = await apiFetch("/api/v1/providers/keys", {
-        method: "POST",
-        body: { provider: providerLower, apiKey: key },
-        retry: false,
-        acceptNotOk: true,
-      });
-      if (res.ok) {
-        console.log(t("keys.added", { provider: providerLower }));
-        return 0;
-      }
-      // A missing route means this server does not implement the endpoint —
-      // fall through to the local SQLite path below rather than stranding the
-      // user. Real client errors still abort.
-      if (res.status >= 400 && res.status < 500 && !isRouteUnavailableStatus(res.status)) {
-        console.error(t("common.error", { message: `HTTP ${res.status}` }));
-        return 1;
-      }
-    } catch {}
+  if (!(await isServerUp())) {
+    console.error(t("common.serverOffline"));
+    return 1;
   }
-
-  const { db } = await openShiguangGatewayDb();
   try {
-    const existing = listProviderConnections(db).find(
-      (c) => c.provider === providerLower && c.authType === "apikey"
-    );
-    upsertApiKeyProviderConnection(db, {
-      provider: providerLower,
-      name: existing?.name || providerLower,
-      apiKey: key,
+    const res = await apiFetch("/api/v1/providers/keys", {
+      method: "POST",
+      body: { provider: providerLower, apiKey: key },
+      retry: false,
+      acceptNotOk: true,
     });
+    if (!res.ok) {
+      console.error(t("common.error", { message: `HTTP ${res.status}` }));
+      return 1;
+    }
     console.log(t("keys.added", { provider: providerLower }));
     return 0;
-  } finally {
-    db.close();
+  } catch (error) {
+    console.error(t("common.error", { message: error instanceof Error ? error.message : String(error) }));
+    return 1;
   }
 }
 
@@ -229,7 +209,6 @@ export async function runKeysListCommand(opts = {}) {
 
   const { db } = await openShiguangGatewayDb();
   try {
-    ensureProviderSchema(db);
     const connections = listProviderConnections(db).filter(
       (c) => c.authType === "apikey" && c.apiKey
     );
@@ -296,32 +275,25 @@ export async function runKeysRemoveCommand(provider, opts = {}) {
     }
   }
 
-  const serverUp = await isServerUp();
-  if (serverUp) {
-    try {
-      const res = await apiFetch(`/api/v1/providers/keys/${encodeURIComponent(providerLower)}`, {
-        method: "DELETE",
-        retry: false,
-        acceptNotOk: true,
-      });
-      if (res.ok) {
-        console.log(t("keys.removed"));
-        return 0;
-      }
-    } catch {}
+  if (!(await isServerUp())) {
+    console.error(t("common.serverOffline"));
+    return 1;
   }
-
-  const { db } = await openShiguangGatewayDb();
   try {
-    const changes = removeProviderConnectionByProvider(db, providerLower);
-    if (changes > 0) {
-      console.log(t("keys.removed"));
-      return 0;
+    const res = await apiFetch(`/api/v1/providers/keys/${encodeURIComponent(providerLower)}`, {
+      method: "DELETE",
+      retry: false,
+      acceptNotOk: true,
+    });
+    if (!res.ok) {
+      console.error(t("common.error", { message: `HTTP ${res.status}` }));
+      return 1;
     }
-    console.log(t("keys.noKeys"));
+    console.log(t("keys.removed"));
     return 0;
-  } finally {
-    db.close();
+  } catch (error) {
+    console.error(t("common.error", { message: error instanceof Error ? error.message : String(error) }));
+    return 1;
   }
 }
 

@@ -12,6 +12,7 @@
  */
 import { isHealthCheckDisabled, sweep } from "../tokenHealthCheck.ts";
 import type { JobRegistry } from "../jobRegistry/registry.ts";
+import { providerRuntimePorts } from "../../runtime/providerRuntimePorts.ts";
 
 const TOKEN_HEALTH_CHECK_INTERVAL_MS = 60_000;
 
@@ -33,7 +34,7 @@ export function registerTokenHealthCheck(registry: JobRegistry): void {
       }
       // Errors are not caught here: safeRun records a thrown error as a failure run
       // with its message, the same as the budget reset job.
-      const swept = await sweep();
+      const swept = await sweep({ probeWebCookie: providerRuntimePorts.probeWebCookie });
       return { success: true, recordsAffected: swept };
     },
   });

@@ -175,6 +175,10 @@ const contracts = {
   },
 } as const;
 
+function declarationEntry(sourceEntry: string): string {
+  return sourceEntry.replace("./src/", "./dist/types/").replace(/\.ts$/, ".d.ts");
+}
+
 function sourceFiles(dir: string): string[] {
   if (!fs.existsSync(dir)) return [];
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -190,7 +194,7 @@ test("validation subpaths expose only their declared runtime contracts", async (
   for (const [subpath, contract] of Object.entries(contracts)) {
     const entry = manifest.exports[subpath];
     assert.deepEqual(entry, {
-      types: contract.entry,
+      types: declarationEntry(contract.entry),
       import: contract.entry,
     });
     implementationPaths.add(contract.entry);

@@ -199,9 +199,12 @@ try {
   }
 
   const logs = Object.values(containers).map(dockerLogs).join("\n");
-  for (const surface of ["edge-gateway", "control-api"]) {
-    if (!logs.includes(`[runtime-bootstrap] ${surface} request runtime initialized`)) {
-      throw new Error(`request runtime bootstrap missing for ${surface}`);
+  for (const [surface, marker] of [
+    ["edge-gateway", "[edge-gateway] request services initialized"],
+    ["control-api", "[control-api] control runtime initialized"],
+  ]) {
+    if (!logs.includes(marker)) {
+      throw new Error(`runtime initialization missing for ${surface}`);
     }
   }
   for (const forbidden of [
@@ -224,7 +227,7 @@ try {
     "cloud-sync-and-job-registry", "quota-cache-refresh", "spend-batch-writer", "quota-auto-ping",
     "connection-recovery", "radar-sync", "embedded-services", "models-dev-sync", "pricing-sync",
     "cleanup", "warmup", "provider-limits", "subscription", "session-affinity-cleanup",
-    "credential-health", "vacuum-scheduler", "audit-log", "audit-log-retention", "memory-backends", "embed-ws-proxy",
+    "credential-health", "vacuum-scheduler", "audit-log", "audit-log-retention", "embed-ws-proxy",
     "conductor-bridge", "arena-elo-sync", "openrouter-provider-stats", "context-window-reconcile",
     "memory-decay", "runtime-config-hot-reload", "reasoning-cache-cleanup", "backup-schedule", "proxy-health",
     "free-proxy-auto-sync", "batch-processor", "auto-refresh-daemon",

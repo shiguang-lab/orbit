@@ -11,7 +11,7 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import crypto from "crypto";
 
-const correlationStore = new AsyncLocalStorage();
+const correlationStore = new AsyncLocalStorage<string>();
 
 /**
  * Generate a unique correlation ID.
@@ -37,7 +37,7 @@ export function getCorrelationId() {
  * @param {Function} fn - Function to run in context
  * @returns {*} Result of fn()
  */
-export function runWithCorrelation(correlationId, fn) {
+export function runWithCorrelation<T>(correlationId: string | null, fn: () => T): T {
   const id = correlationId || generateCorrelationId();
   return correlationStore.run(id, fn);
 }

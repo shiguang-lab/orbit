@@ -120,15 +120,11 @@ function emitGuardrailLog(
   message: string,
   meta?: Record<string, unknown>
 ) {
-  const target = logger?.[level];
-  if (typeof target !== "function") return;
-
   if (logger === console) {
-    target.call(logger, message, meta || "");
+    console[level](message, meta || "");
     return;
   }
-
-  target.call(logger, "GUARDRAIL", message, meta);
+  logger?.[level]?.("GUARDRAIL", message, meta);
 }
 
 function getMode(options: PromptInjectionGuardrailOptions) {
@@ -182,11 +178,12 @@ export function evaluatePromptInjection(
     .map(normalizePatternEntry)
     .filter(Boolean);
 
-  const sanitizerResult = sanitizeRequest(body, {
+  const requestBody = body as Record<string, unknown>;
+  const sanitizerResult = sanitizeRequest(requestBody, {
     info() {},
     warn() {},
-  } as Console);
-  const contents = extractMessageContents(body);
+  });
+  const contents = extractMessageContents(requestBody);
   // Bound the custom-pattern scan to the first 16 KB, matching detectInjection's
   // cap inside sanitizeRequest above (hot-path perf, #3932 / #4041). Injection
   // directives sit near the top; scanning the full join buys only CPU/GC.
@@ -197,7 +194,7 @@ export function evaluatePromptInjection(
       : joinedContents;
   const customDetections = detectWithPatterns(scanText, patterns);
   const existingDetections = new Set(
-    sanitizerResult.detections.map((d: Detection) => `${d.pattern}:${d.match}:${d.severity}`)
+    sanitizerResult.detections.map((d) => `${d.pattern}:${d.match}:${d.severity}`)
   );
 
   for (const detection of customDetections) {

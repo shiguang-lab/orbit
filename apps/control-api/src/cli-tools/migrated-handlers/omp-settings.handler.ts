@@ -11,6 +11,7 @@ import { cliAuthOnlyConfigSchema } from "@shiguang-gateway/core-domain/control/c
 import { getOmpCredentials, saveOmpCredentials, deleteOmpCredentials } from "@shiguang-gateway/core-domain/control/cli-tools-omp";
 import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { isJsonObject, type JsonObject } from "./_lib/jsonObject.js";
 
 const execAsync = promisify(exec);
 
@@ -43,10 +44,11 @@ const checkOmpInstalled = async () => {
   }
 };
 
-const readModelsYml = async () => {
+const readModelsYml = async (): Promise<JsonObject> => {
   try {
     const content = await fs.readFile(getOmpModelsYmlPath(), "utf-8");
-    return yamlLoad(content) || {};
+    const parsed = yamlLoad(content);
+    return isJsonObject(parsed) ? parsed : {};
   } catch {
     return {};
   }
@@ -68,16 +70,19 @@ export async function GET(request: Request) {
 
     const creds = getOmpCredentials(PROVIDER_ID);
     const modelsYml = await readModelsYml();
-    const ymlProvider = modelsYml?.providers?.[PROVIDER_ID];
+    const providers = isJsonObject(modelsYml.providers) ? modelsYml.providers : {};
+    const ymlProvider = isJsonObject(providers[PROVIDER_ID]) ? providers[PROVIDER_ID] : null;
 
     return Response.json({
       installed: true,
       config: {
         providers: {
           [PROVIDER_ID]: {
-            baseUrl: ymlProvider?.baseUrl || creds.baseUrl,
-            apiKey: ymlProvider?.apiKey || creds.apiKey,
-            discovery: ymlProvider?.discovery?.type || null,
+            baseUrl: typeof ymlProvider?.baseUrl === "string" ? ymlProvider.baseUrl : creds.baseUrl,
+            apiKey: typeof ymlProvider?.apiKey === "string" ? ymlProvider.apiKey : creds.apiKey,
+            discovery: isJsonObject(ymlProvider?.discovery) && typeof ymlProvider.discovery.type === "string"
+              ? ymlProvider.discovery.type
+              : null,
           },
         },
       },
@@ -116,9 +121,10 @@ export async function POST(request: Request) {
 
     // 1. Write models.yml — provider config + auto-discovery
     const modelsYml = await readModelsYml();
-    if (!modelsYml.providers) modelsYml.providers = {};
+    const providers = isJsonObject(modelsYml.providers) ? modelsYml.providers : {};
+    modelsYml.providers = providers;
 
-    modelsYml.providers[PROVIDER_ID] = {
+    providers[PROVIDER_ID] = {
       baseUrl: normalizedBaseUrl,
       apiKey: keyRef,
       api: "openai-completions",
@@ -152,9 +158,10 @@ export async function DELETE(request: Request) {
   try {
     // 1. Remove from models.yml
     const modelsYml = await readModelsYml();
-    if (modelsYml?.providers?.[PROVIDER_ID]) {
-      delete modelsYml.providers[PROVIDER_ID];
-      if (Object.keys(modelsYml.providers).length === 0) delete modelsYml.providers;
+    const providers = isJsonObject(modelsYml.providers) ? modelsYml.providers : null;
+    if (providers?.[PROVIDER_ID]) {
+      delete providers[PROVIDER_ID];
+      if (Object.keys(providers).length === 0) delete modelsYml.providers;
       await fs.mkdir(getOmpDir(), { recursive: true });
       if (Object.keys(modelsYml).length === 0) {
         await fs.unlink(getOmpModelsYmlPath()).catch(() => {});

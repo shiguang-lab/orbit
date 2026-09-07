@@ -14,13 +14,18 @@ import { cliMultiModelConfigSchema } from "@shiguang-gateway/core-domain/control
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { resolveApiKey } from "@shiguang-gateway/core-domain/shared/api-key-resolver";
 import { readJsoncConfig } from "./_lib/jsoncConfig.js";
+import { errorCode, parseJsonObject, type JsonObject } from "./_lib/jsonObject.js";
 import {
   buildDroidCustomModels,
   isShiguangGatewayCustomModel,
   normalizeDroidModelList,
 } from "./droid-settings/custom-models.js";
 
-const getDroidSettingsPath = () => getCliPrimaryConfigPath("droid");
+const getDroidSettingsPath = (): string => {
+  const settingsPath = getCliPrimaryConfigPath("droid");
+  if (!settingsPath) throw new Error("Factory Droid config path is unavailable");
+  return settingsPath;
+};
 const getDroidDir = () => path.dirname(getDroidSettingsPath());
 
 // Read current settings.json.
@@ -143,21 +148,23 @@ export async function POST(request: Request) {
     await createBackup("droid", settingsPath);
 
     // Read existing settings or create new
-    let settings: Record<string, any> = {};
+    let settings: JsonObject = {};
     try {
       const existingSettings = await fs.readFile(settingsPath, "utf-8");
-      settings = JSON.parse(existingSettings);
+      settings = parseJsonObject(existingSettings);
     } catch {
       /* No existing settings */
     }
 
     // Ensure customModels array exists
-    if (!settings.customModels) {
-      settings.customModels = [];
-    }
-
     // Remove every existing ShiguangGateway config (multi-model: index 0..N)
-    settings.customModels = settings.customModels.filter((m) => !isShiguangGatewayCustomModel(m));
+    const currentCustomModels: unknown[] = Array.isArray(settings.customModels)
+      ? settings.customModels
+      : [];
+    const retainedCustomModels = currentCustomModels.filter(
+      (model) =>
+        typeof model !== "object" || model === null || !isShiguangGatewayCustomModel(model)
+    );
 
     // Normalize baseUrl to ensure /v1 suffix
     const normalizedBaseUrl = baseUrl.endsWith("/v1") ? baseUrl : `${baseUrl}/v1`;
@@ -168,7 +175,7 @@ export async function POST(request: Request) {
       apiKey: apiKey || "your_api_key",
       activeModel,
     });
-    settings.customModels = [...newEntries, ...settings.customModels];
+    settings.customModels = [...newEntries, ...retainedCustomModels];
 
     // Write settings
     await fs.writeFile(settingsPath, JSON.stringify(settings, null, 2));
@@ -208,12 +215,12 @@ export async function DELETE(request: Request) {
     await createBackup("droid", settingsPath);
 
     // Read existing settings
-    let settings: Record<string, any> = {};
+    let settings: JsonObject = {};
     try {
       const existingSettings = await fs.readFile(settingsPath, "utf-8");
-      settings = JSON.parse(existingSettings);
-    } catch (error: any) {
-      if (error.code === "ENOENT") {
+      settings = parseJsonObject(existingSettings);
+    } catch (error: unknown) {
+      if (errorCode(error) === "ENOENT") {
         return Response.json({
           success: true,
           message: "No settings file to reset",
@@ -223,11 +230,15 @@ export async function DELETE(request: Request) {
     }
 
     // Remove ShiguangGateway customModels (every index, multi-model)
-    if (settings.customModels) {
-      settings.customModels = settings.customModels.filter((m) => !isShiguangGatewayCustomModel(m));
+    if (Array.isArray(settings.customModels)) {
+      const retainedCustomModels = settings.customModels.filter(
+        (model) =>
+          typeof model !== "object" || model === null || !isShiguangGatewayCustomModel(model)
+      );
+      settings.customModels = retainedCustomModels;
 
       // Remove customModels array if empty
-      if (settings.customModels.length === 0) {
+      if (retainedCustomModels.length === 0) {
         delete settings.customModels;
       }
     }

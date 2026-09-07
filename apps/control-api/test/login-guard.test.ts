@@ -3,14 +3,19 @@ import { afterEach, test } from "node:test";
 import {
   checkLoginGuard,
   clearLoginAttempts,
+  ensureLoginGuardSchema,
   getLoginGuardSizeForTests,
+  LoginGuard,
   LOGIN_GUARD_TUNABLES,
   recordLoginFailure,
   resetLoginGuardForTests,
 } from "../src/auth/login.guard.js";
+import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
 
 const originalDateNow = Date.now;
 const enabled = { enabled: true };
+
+ensureLoginGuardSchema();
 
 afterEach(() => {
   Date.now = originalDateNow;
@@ -83,4 +88,21 @@ test("opportunistically prunes expired entries after the map threshold", () => {
   recordLoginFailure("fresh", enabled);
   assert.equal(getLoginGuardSizeForTests(), 1);
   assert.deepEqual(checkLoginGuard("fresh", enabled), { allowed: true });
+});
+
+test("separate guard instances share lockout state through the database", () => {
+  Date.now = () => 20_000;
+  const database = getDbInstance();
+  const firstReplica = new LoginGuard(database);
+  const secondReplica = new LoginGuard(database);
+
+  for (let failure = 1; failure < LOGIN_GUARD_TUNABLES.FAILURE_THRESHOLD; failure += 1) {
+    assert.deepEqual(firstReplica.recordFailure("replicated-client", enabled), { allowed: true });
+  }
+
+  assert.deepEqual(secondReplica.recordFailure("replicated-client", enabled), {
+    allowed: false,
+    retryAfterSeconds: LOGIN_GUARD_TUNABLES.LOCKOUT_MS / 1000,
+  });
+  assert.equal(firstReplica.check("replicated-client", enabled).allowed, false);
 });

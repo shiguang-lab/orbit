@@ -1,4 +1,9 @@
-export function error(...args: unknown[]): void;
-export function info(...args: unknown[]): void;
-export function warn(...args: unknown[]): void;
-export function debug(...args: unknown[]): void;
+export {
+  createLogger,
+  default,
+  defaultLogger,
+  generateRequestId,
+  log,
+  logger,
+  maskKey,
+} from "@shiguang-gateway/runtime-logging";

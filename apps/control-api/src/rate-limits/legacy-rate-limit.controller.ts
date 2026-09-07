@@ -11,6 +11,9 @@ export class LegacyRateLimitController {
   private redirect(request: FastifyRequest, reply: FastifyReply) {
     const host = request.hostname;
     const query = request.raw.url?.split("?")[1];
-    return reply.redirect(308, `${request.protocol}://${host}/api/rate-limits${query ? `?${query}` : ""}`);
+    return reply.redirect(
+      `${request.protocol}://${host}/api/rate-limits${query ? `?${query}` : ""}`,
+      308
+    );
   }
 }

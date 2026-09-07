@@ -113,20 +113,17 @@ export class AudioBridgeGuardrail extends BaseGuardrail {
       recordBridgeUse("audio", { failure: true });
       return null;
     });
-    if (
+    const effectiveTranscripts: Array<string | null> =
       capabilities.supportsAudio === false &&
       transcripts.every((transcript) => transcript === null)
-    ) {
-      for (let index = 0; index < transcripts.length; index++) {
-        transcripts[index] = `[Audio ${index + 1}]: (unavailable — no STT provider connected)`;
-      }
-    }
-    const clipsProcessed = transcripts.filter((value) => value !== null).length;
+        ? transcripts.map((_, index) => `[Audio ${index + 1}]: (unavailable — no STT provider connected)`)
+        : transcripts;
+    const clipsProcessed = effectiveTranscripts.filter((value) => value !== null).length;
     if (clipsProcessed === 0) return { block: false };
 
     return {
       block: false,
-      modifiedPayload: replaceAudioParts(body, limitedParts, transcripts),
+      modifiedPayload: replaceAudioParts(body, limitedParts, effectiveTranscripts),
       meta: {
         clipsProcessed,
         processingTimeMs: Date.now() - startedAt,

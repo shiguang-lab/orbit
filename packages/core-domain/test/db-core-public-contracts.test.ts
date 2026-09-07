@@ -13,7 +13,7 @@ const manifest = JSON.parse(
 const contracts = {
   "./db/connection": ["getDbInstance"],
   "./db/ping": ["pingDb"],
-  "./db/health": ["isNativeSqliteLoadError", "runManagedDbHealthCheck"],
+  "./db/health": ["isNativeSqliteLoadError", "runManagedDbHealthCheck", "runManagedWalCheckpoint"],
   "./db/runtime-lifecycle": ["closeDbInstance"],
 } as const;
 
@@ -66,4 +66,12 @@ test("scenario-specific database core aliases stay retired", () => {
       }
     }
   }
+});
+
+test("database connection acquisition owns no periodic maintenance lifecycle", () => {
+  const source = fs.readFileSync(path.join(packageRoot, "src/lib/db/core.ts"), "utf8");
+  assert.doesNotMatch(source, /\b(?:setInterval|clearInterval)\s*\(/);
+  assert.doesNotMatch(source, /start(?:DbHealthCheck|WalTruncate)Scheduler/);
+  const getDbBody = source.slice(source.indexOf("export function getDbInstance"), source.indexOf("export function pingDb"));
+  assert.doesNotMatch(getDbBody, /\brunDbHealthCheck\s*\(/);
 });

@@ -20,7 +20,11 @@ export class CopilotController {
       if (authError) return authError;
       try {
         const validation = validateBody(schema, await request.json());
-        if (isValidationFailure(validation)) return Response.json(buildErrorBody(400, validation.error), { status: 400 });
+        if (isValidationFailure(validation)) {
+          return Response.json(buildErrorBody(400, validation.error.message, validation.error), {
+            status: 400,
+          });
+        }
         return Response.json(await this.service.process(validation.data));
       } catch (error) {
         return Response.json(buildErrorBody(500, `Copilot error: ${sanitizeErrorMessage(error)}`), { status: 500 });

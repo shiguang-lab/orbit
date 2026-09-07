@@ -1,4 +1,13 @@
-type AutoSpec = { variant?: string; category?: string; tier?: string; family?: string };
+type AutoVariant = "coding" | "fast" | "cheap" | "offline" | "smart" | "lkgp" | "chaos";
+type AutoCategory = "coding" | "reasoning" | "vision" | "chat" | "multimodal";
+type AutoTier = "fast" | "cheap" | "floor" | "free" | "reliable" | "pro" | "subscription" | "thrifty";
+type ModelFamily = "glm" | "minimax" | "mimo" | "zai" | "gemma" | "llama" | "gemini";
+type AutoSpec = {
+  variant?: AutoVariant;
+  category?: AutoCategory;
+  tier?: AutoTier;
+  family?: ModelFamily;
+};
 
 export type AutoComboProjection = {
   id: string;
@@ -23,7 +32,7 @@ export async function projectAutoComboTemplates(): Promise<{ combos: AutoComboPr
   ]);
   const combos: AutoComboProjection[] = [];
   const seenIds = new Set<string>();
-  const add = async (id: string, name: string, variant?: string, spec?: Record<string, unknown>) => {
+  const add = async (id: string, name: string, variant?: AutoVariant, spec?: Record<string, unknown>) => {
     if (seenIds.has(id)) return;
     try {
       const virtual = await factory.createVirtualAutoCombo(variant, spec);
@@ -51,7 +60,7 @@ export async function projectAutoComboTemplates(): Promise<{ combos: AutoComboPr
     await add(id, label, variant);
   }
   for (const modelStr of Object.keys(catalog.AUTO_TEMPLATE_VARIANTS)) {
-    const variant = catalog.AUTO_TEMPLATE_VARIANTS[modelStr];
+    const variant = catalog.AUTO_TEMPLATE_VARIANTS[modelStr] as AutoVariant | undefined;
     await add(
       modelStr,
       variant ? `Auto ${variant.charAt(0).toUpperCase()}${variant.slice(1)}` : "Auto Chat",
@@ -102,15 +111,15 @@ export async function materializeAutoComboTemplate(name: string): Promise<
   ]);
   const suffix = name.slice("auto/".length);
   const resolved = catalog.resolveBuiltinAutoSpec(name, suffix) as AutoSpec;
-  const spec = resolved.category || resolved.variant !== undefined
+  const spec: AutoSpec | null = resolved.category || resolved.variant !== undefined
     ? resolved
     : families.MODEL_FAMILIES.includes(suffix as never)
-      ? { family: suffix }
+      ? { family: suffix as ModelFamily }
       : null;
   if (!spec) return { recognized: false };
 
   const prepared = await factory.prepareVirtualAutoComboInputs({ includeResolvedCapabilities: true });
-  const resolvedSpec = spec.family ? { family: spec.family } : spec;
+  const resolvedSpec: AutoSpec = spec.family ? { family: spec.family } : spec;
   const virtual = await factory.createVirtualAutoComboFromPrepared(
     prepared,
     spec.variant,

@@ -35,13 +35,14 @@ export function successResponse(data: unknown, status = 200, headers: Record<str
  * @returns {Response}
  */
 export function apiErrorResponse(status: number, code: string, message: string, details?: unknown) {
+  const detailFields = details === undefined ? {} : { details };
   return new Response(
     JSON.stringify({
       error: {
         status,
         code,
         message,
-        ...(details && { details }),
+        ...detailFields,
       },
     }),
     {

@@ -15,7 +15,24 @@ export { formatCost };
  * Default pricing per 1M tokens (fallback when no pricing config exists).
  * Values in USD.
  */
-const DEFAULT_PRICING = {
+interface Pricing {
+  input: number;
+  output: number;
+}
+
+interface ChatMessagePart {
+  type: string;
+  text?: string;
+}
+
+interface CostRequestBody {
+  system?: string;
+  messages?: Array<{ role: string; content: string | ChatMessagePart[] }>;
+  max_tokens?: number;
+  maxOutputTokens?: number;
+}
+
+const DEFAULT_PRICING: Record<string, Pricing> = {
   "gpt-4o": { input: 2.5, output: 10.0 },
   "gpt-4o-mini": { input: 0.15, output: 0.6 },
   "gpt-4.1": { input: 2.0, output: 8.0 },
@@ -36,7 +53,7 @@ const DEFAULT_PRICING = {
  * @param {string} text
  * @returns {number} Estimated token count
  */
-export function estimateTokens(text) {
+export function estimateTokens(text: string) {
   if (!text || typeof text !== "string") return 0;
   return Math.ceil(text.length / 4);
 }
@@ -49,7 +66,7 @@ export function estimateTokens(text) {
  * @param {string} [body.system]
  * @returns {number} Estimated input token count
  */
-export function estimateInputTokens(body) {
+export function estimateInputTokens(body: CostRequestBody) {
   if (!body) return 0;
   let total = 0;
 
@@ -84,7 +101,12 @@ export function estimateInputTokens(body) {
  * @param {Object} [params.pricingOverrides] - Custom pricing { input, output } per 1M tokens
  * @returns {{ inputCost: number, outputCost: number, totalCost: number, model: string, inputTokens: number, outputTokens: number }}
  */
-export function estimateCost({ model, inputTokens, maxOutputTokens = 1000, pricingOverrides }) {
+export function estimateCost({ model, inputTokens, maxOutputTokens = 1000, pricingOverrides }: {
+  model: string;
+  inputTokens: number;
+  maxOutputTokens?: number;
+  pricingOverrides?: Pricing;
+}) {
   // Find matching pricing (exact match or prefix match)
   let pricing = pricingOverrides;
   if (!pricing) {
@@ -114,7 +136,7 @@ export function estimateCost({ model, inputTokens, maxOutputTokens = 1000, prici
  * @param {Object} [pricingOverrides] - Optional pricing overrides
  * @returns {{ inputCost: number, outputCost: number, totalCost: number, formatted: string }}
  */
-export function preflightEstimate(body, model, pricingOverrides) {
+export function preflightEstimate(body: CostRequestBody, model: string, pricingOverrides?: Pricing) {
   const inputTokens = estimateInputTokens(body);
   const maxOutput = body.max_tokens || body.maxOutputTokens || 1000;
   const result = estimateCost({ model, inputTokens, maxOutputTokens: maxOutput, pricingOverrides });

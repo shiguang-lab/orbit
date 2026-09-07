@@ -48,13 +48,13 @@ export async function testPlugin(
     if (loaded.plugin.onResponse) {
       hooksToTest.push({
         name: "onResponse",
-        call: () => loaded!.plugin.onResponse!(MOCK_CONTEXT, { choices: [{ message: { content: "test" } }] }),
+        call: async () => await loaded!.plugin.onResponse!(MOCK_CONTEXT, { choices: [{ message: { content: "test" } }] }),
       });
     }
     if (loaded.plugin.onError) {
       hooksToTest.push({
         name: "onError",
-        call: () => loaded!.plugin.onError!(MOCK_CONTEXT, new Error("test error")),
+        call: async () => await loaded!.plugin.onError!(MOCK_CONTEXT, new Error("test error")),
       });
     }
 

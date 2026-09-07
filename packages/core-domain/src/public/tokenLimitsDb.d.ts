@@ -25,10 +25,10 @@ export interface UpsertTokenLimitInput {
   id?: string;
   apiKeyId: string;
   scopeType: TokenLimitScopeType;
-  scopeValue: string;
+  scopeValue?: string;
   tokenLimit: number;
-  resetInterval: BudgetResetInterval;
-  resetTime: string;
+  resetInterval?: BudgetResetInterval;
+  resetTime?: string;
   enabled?: boolean;
 }
 

@@ -65,12 +65,12 @@ export async function OPTIONS(): Promise<Response> {
  */
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ): Promise<Response> {
   const authError = await checkAuth(request);
   if (authError) return authError;
 
-  const { id: rawId } = await params;
+  const { id: rawId } = params;
   const validation = validateId(rawId);
   if (!validation.valid) return validation.error;
   const { id } = validation;
@@ -99,12 +99,12 @@ export async function GET(
  */
 export async function PUT(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ): Promise<Response> {
   const authError = await checkAuth(request);
   if (authError) return authError;
 
-  const { id: rawId } = await params;
+  const { id: rawId } = params;
   const validation = validateId(rawId);
   if (!validation.valid) return validation.error;
   const { id } = validation;
@@ -159,12 +159,12 @@ export async function PUT(
  */
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ): Promise<Response> {
   const authError = await checkAuth(request);
   if (authError) return authError;
 
-  const { id: rawId } = await params;
+  const { id: rawId } = params;
   const validation = validateId(rawId);
   if (!validation.valid) return validation.error;
   const { id } = validation;

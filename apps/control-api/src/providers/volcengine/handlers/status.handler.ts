@@ -9,12 +9,12 @@ import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
  */
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ sessionId: string }> }
+  { params }: { params: { sessionId: string } }
 ): Promise<Response> {
   const auth = await requireManagementAuth(request);
   if (auth) return auth;
 
-  const { sessionId } = await params;
+  const { sessionId } = params;
 
   try {
     const { volcengineConsoleAutoLoginService } =

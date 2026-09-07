@@ -168,7 +168,7 @@ export function createNodeSqliteAdapterFromDatabase(
     get name() {
       return filePath;
     },
-    prepare(sql: string): PreparedStatement {
+    prepare<Row = unknown>(sql: string): PreparedStatement<Row> {
       const stmt = getCached(sql);
       return {
         run(...params: unknown[]): RunResult {
@@ -178,13 +178,13 @@ export function createNodeSqliteAdapterFromDatabase(
             lastInsertRowid: Number(r.lastInsertRowid ?? 0),
           };
         },
-        get(...params: unknown[]): unknown {
-          return toPlainRow(stmt.get(...normalizeBindParams(params)));
+        get(...params: unknown[]): Row | undefined {
+          return toPlainRow(stmt.get(...normalizeBindParams(params))) as Row | undefined;
         },
-        all(...params: unknown[]): unknown[] {
+        all(...params: unknown[]): Row[] {
           return (stmt.all(...normalizeBindParams(params)) as unknown[]).map((row) =>
             toPlainRow(row)
-          );
+          ) as Row[];
         },
       };
     },
@@ -200,11 +200,11 @@ export function createNodeSqliteAdapterFromDatabase(
       }
       return db.prepare(sql).all();
     },
-    transaction<T>(fn: (...args: unknown[]) => T): (...args: unknown[]) => T {
-      return (...args: unknown[]) => {
+    transaction<Args extends unknown[], T>(fn: (...args: Args) => T): (...args: Args) => T {
+      return (...args: Args) => {
         transactionDepth += 1;
         try {
-          return runSavepoint(fn, ...args);
+          return runSavepoint(fn as (...args: unknown[]) => T, ...args);
         } finally {
           transactionDepth -= 1;
         }

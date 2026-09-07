@@ -23,14 +23,19 @@
  * are NOT required — verified by stripping them one at a time against a live
  * session; the upstream returns the same response either way.
  */
-import { BaseExecutor, type ExecuteInput } from "./base.ts";
+import {
+  BaseExecutor,
+  type ExecuteInput,
+  type ExecutorLog,
+  type ProviderCredentials,
+} from "./base.ts";
 import {
   makeExecutorErrorResult as makeErrorResult,
   sanitizeErrorMessage,
 } from "../utils/error.ts";
 import { extractKimiAccessToken } from "@shiguang-gateway/core-domain/edge/web-cookie-auth";
-import { exchangeKimiRefreshToken } from "../services/kimiTokenRefresh.js";
 import { getKimiWebBaseUrl } from "../config/kimiWebRuntime.js";
+import { getAccessToken } from "../services/tokenRefresh.ts";
 import {
   type KimiWebModelConfig,
   resolveKimiWebContextLength,
@@ -260,6 +265,11 @@ export class KimiWebExecutor extends BaseExecutor {
     super("kimi-web", { id: "kimi-web", baseUrl: BASE_URL });
   }
 
+  async refreshCredentials(credentials: ProviderCredentials, log?: ExecutorLog | null) {
+    if (!credentials.refreshToken) return null;
+    return getAccessToken("kimi-web", credentials, log);
+  }
+
   private buildKimiHeaders(accessToken: string): Record<string, string> {
     const headers: Record<string, string> = {
       "Content-Type": "application/connect+json",
@@ -399,26 +409,6 @@ export class KimiWebExecutor extends BaseExecutor {
         body,
         CHAT_URL
       );
-    }
-
-    if (upstream.status === 401) {
-      const refreshToken =
-        credentials?.refreshToken || credentials?.providerSpecificData?.refreshToken;
-      if (refreshToken && typeof refreshToken === "string") {
-        const refreshRes = await exchangeKimiRefreshToken(refreshToken, getKimiWebBaseUrl());
-        if (refreshRes.success && refreshRes.accessToken) {
-          accessToken = refreshRes.accessToken;
-          const retryHeaders = this.buildKimiHeaders(accessToken);
-          try {
-            upstream = await fetch(CHAT_URL, {
-              method: "POST",
-              headers: retryHeaders,
-              body: new Uint8Array(framedBody),
-              signal,
-            });
-          } catch {}
-        }
-      }
     }
 
     if (!upstream.ok) {

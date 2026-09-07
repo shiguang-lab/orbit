@@ -14,20 +14,26 @@ import { cliModelConfigSchema } from "@shiguang-gateway/core-domain/control/cli-
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { resolveApiKey } from "@shiguang-gateway/core-domain/shared/api-key-resolver";
 import { readJsoncConfig } from "./_lib/jsoncConfig.js";
+import { errorCode, isJsonObject, parseJsonObject, type JsonObject } from "./_lib/jsonObject.js";
 
-const getOpenClawSettingsPath = () => getCliPrimaryConfigPath("openclaw");
+const getOpenClawSettingsPath = (): string => {
+  const settingsPath = getCliPrimaryConfigPath("openclaw");
+  if (!settingsPath) throw new Error("OpenClaw config path is unavailable");
+  return settingsPath;
+};
 const getOpenClawDir = () => path.dirname(getOpenClawSettingsPath());
 
 // Read current settings.json.
 // Ported from upstream decolua/9router@6c10edf8: tolerate JSONC (trailing
 // commas) and return null on any parse error so the dashboard renders
 // "installed but not configured" instead of a 500 misread as "not installed".
-const readSettings = async () => readJsoncConfig(getOpenClawSettingsPath());
+const readSettings = async () => readJsoncConfig<JsonObject>(getOpenClawSettingsPath());
 
 // Check if settings has ShiguangGateway config
-const hasShiguangGatewayConfig = (settings: any) => {
-  if (!settings || !settings.models || !settings.models.providers) return false;
-  return !!settings.models.providers["shiguangGateway"];
+const hasShiguangGatewayConfig = (settings: JsonObject | null) => {
+  if (!isJsonObject(settings?.models)) return false;
+  if (!isJsonObject(settings.models.providers)) return false;
+  return !!settings.models.providers.shiguangGateway;
 };
 
 // GET - Check openclaw CLI and read current settings
@@ -119,29 +125,34 @@ export async function POST(request: Request) {
     await createBackup("openclaw", settingsPath);
 
     // Read existing settings or create new
-    let settings: Record<string, any> = {};
+    let settings: JsonObject = {};
     try {
       const existingSettings = await fs.readFile(settingsPath, "utf-8");
-      settings = JSON.parse(existingSettings);
+      settings = parseJsonObject(existingSettings);
     } catch {
       /* No existing settings */
     }
 
     // Ensure structure exists
-    if (!settings.agents) settings.agents = {};
-    if (!settings.agents.defaults) settings.agents.defaults = {};
-    if (!settings.agents.defaults.model) settings.agents.defaults.model = {};
-    if (!settings.models) settings.models = {};
-    if (!settings.models.providers) settings.models.providers = {};
+    const agents = isJsonObject(settings.agents) ? settings.agents : {};
+    settings.agents = agents;
+    const defaults = isJsonObject(agents.defaults) ? agents.defaults : {};
+    agents.defaults = defaults;
+    const defaultModel = isJsonObject(defaults.model) ? defaults.model : {};
+    defaults.model = defaultModel;
+    const models = isJsonObject(settings.models) ? settings.models : {};
+    settings.models = models;
+    const providers = isJsonObject(models.providers) ? models.providers : {};
+    models.providers = providers;
 
     // Normalize baseUrl to ensure /v1 suffix
     const normalizedBaseUrl = baseUrl.endsWith("/v1") ? baseUrl : `${baseUrl}/v1`;
 
     // Update agents.defaults.model.primary
-    settings.agents.defaults.model.primary = `shiguangGateway/${model}`;
+    defaultModel.primary = `shiguangGateway/${model}`;
 
     // Update models.providers.shiguangGateway
-    settings.models.providers["shiguangGateway"] = {
+    providers.shiguangGateway = {
       baseUrl: normalizedBaseUrl,
       apiKey: apiKey || "your_api_key",
       api: "openai-completions",
@@ -191,12 +202,12 @@ export async function DELETE(request: Request) {
     await createBackup("openclaw", settingsPath);
 
     // Read existing settings
-    let settings: Record<string, any> = {};
+    let settings: JsonObject = {};
     try {
       const existingSettings = await fs.readFile(settingsPath, "utf-8");
-      settings = JSON.parse(existingSettings);
-    } catch (error: any) {
-      if (error.code === "ENOENT") {
+      settings = parseJsonObject(existingSettings);
+    } catch (error: unknown) {
+      if (errorCode(error) === "ENOENT") {
         return Response.json({
           success: true,
           message: "No settings file to reset",
@@ -206,18 +217,23 @@ export async function DELETE(request: Request) {
     }
 
     // Remove ShiguangGateway from models.providers
-    if (settings.models && settings.models.providers) {
-      delete settings.models.providers["shiguangGateway"];
+    const models = isJsonObject(settings.models) ? settings.models : null;
+    const providers = isJsonObject(models?.providers) ? models.providers : null;
+    if (models && providers) {
+      delete providers.shiguangGateway;
 
       // Remove providers object if empty
-      if (Object.keys(settings.models.providers).length === 0) {
-        delete settings.models.providers;
+      if (Object.keys(providers).length === 0) {
+        delete models.providers;
       }
     }
 
     // Reset agents.defaults.model.primary if it uses shiguangGateway
-    if (settings.agents?.defaults?.model?.primary?.startsWith("shiguangGateway/")) {
-      delete settings.agents.defaults.model.primary;
+    const agents = isJsonObject(settings.agents) ? settings.agents : null;
+    const defaults = isJsonObject(agents?.defaults) ? agents.defaults : null;
+    const defaultModel = isJsonObject(defaults?.model) ? defaults.model : null;
+    if (typeof defaultModel?.primary === "string" && defaultModel.primary.startsWith("shiguangGateway/")) {
+      delete defaultModel.primary;
     }
 
     // Write updated settings

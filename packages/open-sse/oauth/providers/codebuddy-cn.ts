@@ -12,7 +12,7 @@ import { CODEBUDDY_CN_CONFIG } from "../constants/oauth.js";
  */
 type CodeBuddyConfig = typeof CODEBUDDY_CN_CONFIG;
 
-interface CodeBuddyDeviceCodeResponse {
+export interface CodeBuddyDeviceCodeResponse {
   device_code: string;
   user_code: string;
   verification_uri: string;
@@ -21,14 +21,14 @@ interface CodeBuddyDeviceCodeResponse {
   interval: number;
 }
 
-interface CodeBuddyTokens {
+export interface CodeBuddyTokens {
   access_token: string;
   refresh_token: string;
   token_type: string;
   expires_in?: number;
 }
 
-interface CodeBuddyPollResult {
+export interface CodeBuddyPollResult {
   ok: boolean;
   data: Record<string, unknown> | CodeBuddyTokens;
 }

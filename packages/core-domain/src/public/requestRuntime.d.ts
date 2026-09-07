@@ -1,1 +1,5 @@
-export function hydrateRequestRuntime(): Promise<void>;
+export interface RequestRuntimeHandle {
+  close(): void;
+}
+
+export function hydrateRequestRuntime(): Promise<RequestRuntimeHandle>;

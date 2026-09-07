@@ -17,6 +17,14 @@ export const WCAG_RULES = {
   HEADING_ORDER: "heading-order",
 };
 
+export interface AccessibilityViolation {
+  id: string;
+  description: string;
+  impact: "critical" | "serious" | "moderate" | "minor";
+  help: string;
+  nodes: Array<{ html: string }>;
+}
+
 /**
  * @typedef {Object} Violation
  * @property {string} id - Rule identifier from WCAG_RULES
@@ -32,8 +40,8 @@ export const WCAG_RULES = {
  * @param {string} html - HTML string to audit
  * @returns {Violation[]} List of violations found
  */
-export function auditHTML(html) {
-  const violations = [];
+export function auditHTML(html: string): AccessibilityViolation[] {
+  const violations: AccessibilityViolation[] = [];
 
   // Check images without alt text
   const imgMatches = html.match(/<img\b[^>]*>/gi) || [];
@@ -71,7 +79,7 @@ export function auditHTML(html) {
  * @param {string} hex - Color in #RGB, #RRGGBB, or #RRGGBBAA format
  * @returns {{ r: number, g: number, b: number }|null}
  */
-function parseHexColor(hex) {
+function parseHexColor(hex: string): { r: number; g: number; b: number } | null {
   if (!hex || typeof hex !== "string") return null;
   const clean = hex.replace(/^#/, "");
 
@@ -96,7 +104,7 @@ function parseHexColor(hex) {
  * @param {{ r: number, g: number, b: number }} rgb
  * @returns {number} Relative luminance (0..1)
  */
-function relativeLuminance({ r, g, b }) {
+function relativeLuminance({ r, g, b }: { r: number; g: number; b: number }) {
   const [sR, sG, sB] = [r, g, b].map((c) => {
     const v = c / 255;
     return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
@@ -110,7 +118,7 @@ function relativeLuminance({ r, g, b }) {
  * @param {string} bgHex - Background color (#RRGGBB)
  * @returns {number} Contrast ratio (1..21)
  */
-export function getContrastRatio(fgHex, bgHex) {
+export function getContrastRatio(fgHex: string, bgHex: string) {
   const fg = parseHexColor(fgHex);
   const bg = parseHexColor(bgHex);
   if (!fg || !bg) return 0;
@@ -128,7 +136,7 @@ export function getContrastRatio(fgHex, bgHex) {
  * @param {Violation[]} violations
  * @returns {{ total: number, critical: number, serious: number, moderate: number, minor: number, passed: boolean }}
  */
-export function generateReport(violations) {
+export function generateReport(violations: readonly AccessibilityViolation[]) {
   return {
     total: violations.length,
     critical: violations.filter((v) => v.impact === "critical").length,

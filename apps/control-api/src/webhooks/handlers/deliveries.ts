@@ -7,12 +7,12 @@ import { sanitizeErrorMessage } from "@shiguang-gateway/error-sanitization";
 import { getWebhook, getDeliveries } from "@shiguang-gateway/core-domain/db/webhooks";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 
-export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(request: Request, { params }: { params: { id: string } }) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 
   try {
-    const { id } = await params;
+    const { id } = params;
     const webhook = getWebhook(id);
     if (!webhook) {
       return Response.json({ error: "Webhook not found" }, { status: 404 });

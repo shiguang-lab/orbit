@@ -273,7 +273,7 @@ async function postHandler(request: Request, _context?: unknown) {
         `No credentials for image provider: ${provider}`
       );
     }
-    if (credentials.allRateLimited) {
+    if (isAllRateLimitedCredentials(credentials)) {
       return unavailableResponse(
         HTTP_STATUS.RATE_LIMITED,
         `[${provider}] All accounts rate limited`,
@@ -294,7 +294,7 @@ async function postHandler(request: Request, _context?: unknown) {
         `No credentials for custom image provider: ${provider}`
       );
     }
-    if (credentials.allRateLimited) {
+    if (isAllRateLimitedCredentials(credentials)) {
       return unavailableResponse(
         HTTP_STATUS.RATE_LIMITED,
         `[${provider}] All accounts rate limited`,

@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import test from "node:test";
 import { edgeRuntimeCommandSchema } from "@shiguang-gateway/contracts/edge-runtime-command";
+import { LocalProviderHealthService } from "../src/runtime-control/local-provider-health.service.js";
 import { RuntimeControlService } from "../src/runtime-control/runtime-control.service.js";
 
 const repoRoot = resolve(import.meta.dirname, "../../..");
@@ -26,6 +27,8 @@ const commands = [
     command: "memory.create",
     input: { apiKeyId: "", sessionId: "", type: "factual", key: "test", content: "test" },
   },
+  { version: 1, command: "memory.search", apiKeyId: "key-1", query: "test" },
+  { version: 1, command: "memory.clear", apiKeyId: "key-1" },
   { version: 1, command: "memory.get", id: "memory-1" },
   { version: 1, command: "memory.update", id: "memory-1", input: { content: "updated" } },
   { version: 1, command: "memory.delete", id: "memory-1" },
@@ -43,6 +46,8 @@ const commands = [
   },
   { version: 1, command: "memory.summarize", olderThanDays: 30, dryRun: true },
   { version: 1, command: "memory.reindex", force: false },
+  { version: 1, command: "memory.decay" },
+  { version: 1, command: "memory.retention-cleanup" },
   { version: 1, command: "semantic-cache.snapshot" },
   {
     version: 1,
@@ -150,7 +155,7 @@ test("control consumers proxy instead of importing edge singleton registries", (
 });
 
 test("edge commands operate on the live registry instances", async () => {
-  const runtime = new RuntimeControlService();
+  const runtime = new RuntimeControlService(new LocalProviderHealthService());
   const [devices, combos, diversity, traces, latency, reasoning, quota, semantic] = await Promise.all([
     import("@shiguang-gateway/open-sse/services/deviceTracker"),
     import("@shiguang-gateway/open-sse/services/comboMetrics"),
@@ -273,7 +278,7 @@ test("edge commands operate on the live registry instances", async () => {
 });
 
 test("edge owns proxy-log clearing and memory CRUD state", async () => {
-  const runtime = new RuntimeControlService();
+  const runtime = new RuntimeControlService(new LocalProviderHealthService());
   const { getDbInstance } = await import("@shiguang-gateway/core-domain/db/connection");
 
   await runtime.execute({
@@ -300,7 +305,7 @@ test("edge owns proxy-log clearing and memory CRUD state", async () => {
     .get("owner-test") as { count: number };
   assert.equal(persisted.count, 0, "cleared pending rows must not be flushed back to SQLite");
 
-  const memoryRuntime = await import("@shiguang-gateway/core-domain/worker/memory");
+  const memoryRuntime = await import("@shiguang-gateway/core-domain/edge/memory-runtime");
   await memoryRuntime.initMemoryBackends();
   const created = await runtime.execute({
     version: 1,

@@ -12,4 +12,5 @@ export {
 } from "../lib/memory/injection.ts";
 export { extractFacts } from "../lib/memory/extraction.ts";
 export { createMemory, deleteMemory, listMemories } from "../lib/memory/store.ts";
+export { initMemoryBackends } from "../lib/memory/index.ts";
 export { MemoryType } from "../lib/memory/types.ts";

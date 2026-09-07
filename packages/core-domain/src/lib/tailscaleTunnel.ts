@@ -780,7 +780,7 @@ export async function startTailscaleLogin({
 
   const resolvedHostname = toNonEmptyString(hostname) || (await getDefaultHostname());
   const authKey = toNonEmptyString(process.env.TAILSCALE_AUTHKEY);
-  const spawnArgs = await buildTailscaleArgs(...tailscaleUpArgs(resolvedHostname, authKey));
+  const spawnArgs = await buildTailscaleArgs(...tailscaleUpArgs(resolvedHostname, authKey ?? undefined));
 
   return new Promise((resolve, reject) => {
     const child = spawn(resolution.binaryPath as string, spawnArgs, {

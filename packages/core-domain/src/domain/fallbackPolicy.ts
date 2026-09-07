@@ -18,6 +18,18 @@ import {
   deleteAllFallbackChains,
 } from "../lib/db/domainState";
 
+interface FallbackEntry {
+  provider: string;
+  priority?: number;
+  enabled?: boolean;
+}
+
+interface NormalizedFallbackEntry {
+  provider: string;
+  priority: number;
+  enabled: boolean;
+}
+
 /**
  * @typedef {Object} FallbackEntry
  * @property {string} provider - Provider ID
@@ -26,7 +38,7 @@ import {
  */
 
 /** @type {Map<string, FallbackEntry[]>} In-memory cache backed by SQLite */
-const fallbackChains = new Map();
+const fallbackChains = new Map<string, NormalizedFallbackEntry[]>();
 
 /** @type {boolean} Whether we've loaded from DB yet */
 let _loaded = false;
@@ -53,7 +65,7 @@ function ensureLoaded() {
  * @param {string} model - Model identifier (e.g. "gpt-4o")
  * @param {FallbackEntry[]} chain - Ordered list of fallback providers
  */
-export function registerFallback(model, chain) {
+export function registerFallback(model: string, chain: FallbackEntry[]) {
   ensureLoaded();
   const sorted = [...chain]
     .map((e) => ({
@@ -79,7 +91,7 @@ export function registerFallback(model, chain) {
  * @param {string[]} [excludeProviders=[]] - Providers to skip (e.g. already tried)
  * @returns {FallbackEntry[]} Ordered list of fallback providers
  */
-export function resolveFallbackChain(model, excludeProviders = []) {
+export function resolveFallbackChain(model: string, excludeProviders: string[] = []) {
   ensureLoaded();
   const chain = fallbackChains.get(model);
   if (!chain) return [];
@@ -95,7 +107,7 @@ export function resolveFallbackChain(model, excludeProviders = []) {
  * @param {string[]} [excludeProviders=[]]
  * @returns {string | null} Next provider ID or null if chain exhausted
  */
-export function getNextFallback(model, excludeProviders = []) {
+export function getNextFallback(model: string, excludeProviders: string[] = []) {
   const chain = resolveFallbackChain(model, excludeProviders);
   return chain.length > 0 ? chain[0].provider : null;
 }
@@ -106,7 +118,7 @@ export function getNextFallback(model, excludeProviders = []) {
  * @param {string} model
  * @returns {boolean}
  */
-export function hasFallback(model) {
+export function hasFallback(model: string) {
   ensureLoaded();
   const chain = fallbackChains.get(model);
   return !!chain && chain.some((e) => e.enabled);
@@ -118,7 +130,7 @@ export function hasFallback(model) {
  * @param {string} model
  * @returns {boolean} true if removed
  */
-export function removeFallback(model) {
+export function removeFallback(model: string) {
   ensureLoaded();
   const removed = fallbackChains.delete(model);
   if (removed) {
@@ -139,7 +151,7 @@ export function removeFallback(model) {
 export function getAllFallbackChains() {
   ensureLoaded();
   /** @type {Record<string, FallbackEntry[]>} */
-  const result = {};
+  const result: Record<string, NormalizedFallbackEntry[]> = {};
   for (const [model, chain] of fallbackChains.entries()) {
     result[model] = chain;
   }

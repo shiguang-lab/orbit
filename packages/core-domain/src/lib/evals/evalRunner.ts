@@ -21,6 +21,26 @@ import {
   builtInSuites,
 } from "./evalRunner/builtinSuites";
 
+interface EvalCase {
+  id: string;
+  name: string;
+  model?: string;
+  input: unknown;
+  expected: {
+    strategy: string;
+    value?: string | RegExp;
+    fn?: (actualOutput: string, evalCase: EvalCase) => boolean;
+  };
+  tags?: string[];
+}
+
+interface EvalSuite {
+  id: string;
+  name: string;
+  description?: string;
+  cases: EvalCase[];
+}
+
 /**
  * @typedef {Object} EvalCase
  * @property {string} id - Unique case ID
@@ -53,14 +73,14 @@ import {
  */
 
 /** @type {Map<string, EvalSuite>} */
-const suites = new Map();
+const suites = new Map<string, EvalSuite>();
 
 /**
  * Register an evaluation suite.
  *
  * @param {EvalSuite} suite
  */
-export function registerSuite(suite: any) {
+export function registerSuite(suite: EvalSuite) {
   suites.set(suite.id, suite);
 }
 
@@ -123,12 +143,12 @@ export function listSuites() {
  * @param {string} actualOutput - The actual LLM response text
  * @returns {EvalResult}
  */
-export function evaluateCase(evalCase: any, actualOutput: string) {
+export function evaluateCase(evalCase: EvalCase, actualOutput: string) {
   const start = Date.now();
 
   try {
     let passed = false;
-    const details: Record<string, any> = {};
+    const details: Record<string, unknown> = {};
     details.actualSnippet =
       typeof actualOutput === "string" ? actualOutput.slice(0, 240) : String(actualOutput ?? "");
 

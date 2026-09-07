@@ -93,10 +93,50 @@ export function createQuotaAutoPingState(): QuotaAutoPingState {
   return { running: false, resetCache: {}, failureCache: {} };
 }
 
+function optionalString(value: unknown): string | undefined {
+  return typeof value === "string" ? value : undefined;
+}
+
+function optionalNullableString(value: unknown): string | null | undefined {
+  return value === null || typeof value === "string" ? value : undefined;
+}
+
+function normalizeQuotaAutoPingConnection(value: unknown): QuotaAutoPingConnection | null {
+  if (value === null || typeof value !== "object") return null;
+  const candidate = value as Record<string, unknown>;
+  if (typeof candidate.id !== "string" || typeof candidate.provider !== "string") return null;
+  const providerSpecificData =
+    candidate.providerSpecificData !== null &&
+    typeof candidate.providerSpecificData === "object" &&
+    !Array.isArray(candidate.providerSpecificData)
+      ? candidate.providerSpecificData as JsonRecord
+      : undefined;
+  return {
+    id: candidate.id,
+    provider: candidate.provider,
+    authType: optionalString(candidate.authType),
+    accessToken: optionalString(candidate.accessToken),
+    refreshToken: optionalString(candidate.refreshToken),
+    tokenExpiresAt: optionalNullableString(candidate.tokenExpiresAt),
+    expiresAt: optionalNullableString(candidate.expiresAt),
+    providerSpecificData,
+    rateLimitedUntil: optionalNullableString(candidate.rateLimitedUntil),
+    lastPingAt: optionalNullableString(candidate.lastPingAt),
+    lastPingedResetKey: optionalNullableString(candidate.lastPingedResetKey),
+  };
+}
+
 export function createDefaultQuotaAutoPingDeps(): QuotaAutoPingDeps {
   return {
     getSettings,
-    getProviderConnections,
+    getProviderConnections: async (filter) => {
+      const connections: QuotaAutoPingConnection[] = [];
+      for (const row of await getProviderConnections(filter)) {
+        const connection = normalizeQuotaAutoPingConnection(row);
+        if (connection) connections.push(connection);
+      }
+      return connections;
+    },
     updateProviderConnection,
     refreshAndUpdateCredentials: async (connection) =>
       refreshAndUpdateCredentials(connection as never),

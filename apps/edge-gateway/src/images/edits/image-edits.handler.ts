@@ -14,6 +14,7 @@ import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
 } from "@shiguang-gateway/open-sse/services/auth";
+import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
 const getProviderCredentialsWithQuotaPreflightAny = getProviderCredentialsWithQuotaPreflight as any;
 import {
   parseImageModel,
@@ -50,6 +51,11 @@ import {
   isCommonChatGptWebRetirementError,
 } from "@shiguang-gateway/contracts/chatgpt-web-retirement";
 import { z } from "zod";
+
+const adobeLog = {
+  info: (...args: unknown[]) => log.info(String(args[0] ?? "IMAGE"), String(args[1] ?? "")),
+  error: (...args: unknown[]) => log.error(String(args[0] ?? "IMAGE"), String(args[1] ?? "")),
+};
 
 // JSON edit body (Open WebUI / OpenAI-style). All fields optional — the prompt
 // and resolvable image are enforced after extraction in POST — but the top-level
@@ -244,9 +250,13 @@ async function handleAdobeFireflyEditRequest(params: {
     imageBytes,
     imageMime,
   } = params;
+  const provider = parsed.provider;
+  if (!provider) {
+    return errorResponse(HTTP_STATUS.BAD_REQUEST, "Image model does not identify a provider");
+  }
 
   const credentials = await getProviderCredentialsWithQuotaPreflightAny(
-    parsed.provider,
+    provider,
     null,
     allowedConnections,
     resolvedModel
@@ -254,13 +264,13 @@ async function handleAdobeFireflyEditRequest(params: {
   if (!credentials) {
     return errorResponse(
       HTTP_STATUS.UNAUTHORIZED,
-      `No credentials for provider: ${parsed.provider}`
+      `No credentials for provider: ${provider}`
     );
   }
-  if (credentials.allRateLimited) {
+  if (isAllRateLimitedCredentials(credentials)) {
     return unavailableResponse(
       HTTP_STATUS.RATE_LIMITED,
-      `[${parsed.provider}] All accounts rate limited`,
+      `[${provider}] All accounts rate limited`,
       credentials.retryAfter,
       credentials.retryAfterHuman
     );
@@ -273,7 +283,7 @@ async function handleAdobeFireflyEditRequest(params: {
   }
 
   const result = await handleAdobeFireflyImageGeneration({
-    provider: parsed.provider,
+    provider,
     model: parsed.model,
     providerConfig,
     body: {
@@ -287,7 +297,7 @@ async function handleAdobeFireflyEditRequest(params: {
       images: dataUrls,
     },
     credentials,
-    log,
+    log: adobeLog,
   });
 
   if ((result as { success?: boolean }).success) {
@@ -379,7 +389,11 @@ async function postHandler(request: Request, _context?: unknown) {
       : null;
 
   const parsed = parseImageModel(resolvedModel);
-  const providerConfig = parsed.provider ? getImageProvider(parsed.provider) : null;
+  const provider = parsed.provider;
+  if (!provider) {
+    return errorResponse(HTTP_STATUS.BAD_REQUEST, `Unknown image provider for model "${resolvedModel}"`);
+  }
+  const providerConfig = getImageProvider(provider);
   // Firefly nano/gpt-image accept multiple reference blobs; other non-Codex stay at 1.
   const maxRefsForProvider =
     providerConfig?.format === "adobe-firefly-image"
@@ -412,7 +426,7 @@ async function postHandler(request: Request, _context?: unknown) {
     }
 
     const credentials = await getProviderCredentialsWithQuotaPreflightAny(
-      parsed.provider,
+      provider,
       null,
       allowedConnections,
       resolvedModel
@@ -420,13 +434,13 @@ async function postHandler(request: Request, _context?: unknown) {
     if (!credentials) {
       return errorResponse(
         HTTP_STATUS.UNAUTHORIZED,
-        `No credentials for provider: ${parsed.provider}`
+        `No credentials for provider: ${provider}`
       );
     }
-    if (credentials.allRateLimited) {
+    if (isAllRateLimitedCredentials(credentials)) {
       return unavailableResponse(
         HTTP_STATUS.RATE_LIMITED,
-        `[${parsed.provider}] All accounts rate limited`,
+        `[${provider}] All accounts rate limited`,
         credentials.retryAfter,
         credentials.retryAfterHuman
       );
@@ -449,13 +463,13 @@ async function postHandler(request: Request, _context?: unknown) {
       try {
         proxyInfo = await resolveProxyForConnection(connectionId);
       } catch {
-        log.debug("PROXY", `Failed to resolve proxy for image provider: ${parsed.provider}`);
+        log.debug("PROXY", `Failed to resolve proxy for image provider: ${provider}`);
       }
     }
 
     const editImage = () =>
       handleCodexImageEdit({
-        provider: parsed.provider,
+        provider,
         model: parsed.model,
         providerConfig,
         body: {
@@ -489,7 +503,7 @@ async function postHandler(request: Request, _context?: unknown) {
 
   if (providerConfig?.format === "fal-ai" && isFalImageEditModel(parsed.model)) {
     const credentials = await getProviderCredentialsWithQuotaPreflightAny(
-      parsed.provider,
+      provider,
       null,
       allowedConnections,
       resolvedModel
@@ -497,20 +511,20 @@ async function postHandler(request: Request, _context?: unknown) {
     if (!credentials) {
       return errorResponse(
         HTTP_STATUS.UNAUTHORIZED,
-        `No credentials for provider: ${parsed.provider}`
+        `No credentials for provider: ${provider}`
       );
     }
-    if (credentials.allRateLimited) {
+    if (isAllRateLimitedCredentials(credentials)) {
       return unavailableResponse(
         HTTP_STATUS.RATE_LIMITED,
-        `[${parsed.provider}] All accounts rate limited`,
+        `[${provider}] All accounts rate limited`,
         credentials.retryAfter,
         credentials.retryAfterHuman
       );
     }
 
     const result = await handleFalAIImageEdit({
-      provider: parsed.provider,
+      provider,
       model: parsed.model,
       providerConfig,
       body: {
@@ -524,7 +538,7 @@ async function postHandler(request: Request, _context?: unknown) {
       log,
     });
 
-    if (result.success) {
+    if ("data" in result) {
       await clearRecoveredProviderState(credentials);
       return jsonResponse(result.data);
     }
@@ -556,7 +570,7 @@ async function postHandler(request: Request, _context?: unknown) {
   // /images/edits path used by custom OpenAI-compatible nodes.
   if (providerConfig?.id === "openrouter") {
     const credentials = await getProviderCredentialsWithQuotaPreflightAny(
-      parsed.provider,
+      provider,
       null,
       allowedConnections,
       resolvedModel
@@ -564,20 +578,20 @@ async function postHandler(request: Request, _context?: unknown) {
     if (!credentials) {
       return errorResponse(
         HTTP_STATUS.UNAUTHORIZED,
-        `No credentials for provider: ${parsed.provider}`
+        `No credentials for provider: ${provider}`
       );
     }
-    if (credentials.allRateLimited) {
+    if (isAllRateLimitedCredentials(credentials)) {
       return unavailableResponse(
         HTTP_STATUS.RATE_LIMITED,
-        `[${parsed.provider}] All accounts rate limited`,
+        `[${provider}] All accounts rate limited`,
         credentials.retryAfter,
         credentials.retryAfterHuman
       );
     }
 
     const result = await handleOpenRouterImageEdit({
-      provider: parsed.provider,
+      provider,
       model: parsed.model,
       baseUrl: providerConfig.baseUrl,
       credentials,
@@ -603,7 +617,7 @@ async function postHandler(request: Request, _context?: unknown) {
   if (providerConfig) {
     return errorResponse(
       HTTP_STATUS.BAD_REQUEST,
-      `Image edit is not supported for built-in provider "${parsed.provider}". ` +
+      `Image edit is not supported for built-in provider "${provider}". ` +
         `Use adobe-firefly, codex, or a custom OpenAI-compatible image provider.`
     );
   }
@@ -632,7 +646,7 @@ async function postHandler(request: Request, _context?: unknown) {
       `No credentials for custom image provider: ${customProviderId}`
     );
   }
-  if (credentials.allRateLimited) {
+  if (isAllRateLimitedCredentials(credentials)) {
     return unavailableResponse(
       HTTP_STATUS.RATE_LIMITED,
       `[${customProviderId}] All accounts rate limited`,

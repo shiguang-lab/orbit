@@ -10,7 +10,7 @@ apps/cli/src/cli/
 ├── README.md               ← this file
 ├── program.mjs             ← Commander setup — global flags, registerCommands()
 ├── api.mjs                 ← apiFetch() — all HTTP calls + retry/backoff
-├── runtime.mjs             ← withRuntime() — server-first / DB-fallback
+├── runtime.mjs             ← server-required mutations and read-only DB fallback
 ├── i18n.mjs                ← t() — i18n helper + locale detection
 ├── output.mjs              ← emit() — table/json/jsonl/csv + printSuccess/printError
 ├── io.mjs                  ← ask() / askSecret() — interactive prompts
@@ -18,9 +18,9 @@ apps/cli/src/cli/
 ├── sqlite.mjs              ← openShiguangGatewayDb() — DB bootstrap
 ├── encryption.mjs          ← encrypt/decrypt credentials
 ├── provider-catalog.mjs    ← static provider catalog
-├── provider-store.mjs      ← DB CRUD for provider_connections
+├── provider-store.mjs      ← read-only provider_connections queries
+├── bootstrap-store.mjs     ← offline first-run bootstrap writes
 ├── provider-test.mjs       ← testProviderApiKey()
-├── settings-store.mjs      ← DB CRUD for key_value settings
 ├── locales/
 │   ├── en.json             ← English strings (source of truth, 43 locales)
 │   ├── pt-BR.json          ← Portuguese (Brazil) — fully translated
@@ -63,7 +63,8 @@ Options:
 
 ### `withRuntime(fn, opts)` — `runtime.mjs`
 
-Provides server-first / DB-fallback transparently.
+Provides server-first reads with a read-only DB fallback. Mutating commands use
+`withHttp()` so control-api remains the runtime database owner.
 
 ```js
 import { withRuntime } from "./runtime.mjs";
@@ -77,8 +78,7 @@ await withRuntime(async (ctx) => {
 });
 ```
 
-- `opts.requireServer = true` — throws `ServerOfflineError` (exit 3) if offline
-- `opts.preferDb = true` — always use DB (skip server check)
+- `withHttp(fn)` — throws `ServerOfflineError` (exit 3) when control-api is offline
 
 ### `t(key, vars)` — `i18n.mjs`
 

@@ -1,15 +1,21 @@
 import { listCliTools } from "@shiguang-gateway/core-domain/shared/constants/cliTools";
 import { createPrompt, printHeading, printInfo, printSuccess } from "../io.mjs";
 import { openShiguangGatewayDb } from "../sqlite.mjs";
-import { getSettings, hashManagementPassword, updateSettings } from "../settings-store.mjs";
+import {
+  getBootstrapSettings as getSettings,
+  hashManagementPassword,
+  updateBootstrapProviderTestResult as updateProviderTestResult,
+  updateBootstrapSettings as updateSettings,
+  upsertBootstrapProvider as upsertApiKeyProviderConnection,
+} from "../bootstrap-store.mjs";
 import { testProviderApiKey } from "../provider-test.mjs";
-import { updateProviderTestResult, upsertApiKeyProviderConnection } from "../provider-store.mjs";
 import {
   formatProviderChoices,
   getProviderDisplayName,
   resolveProviderChoice,
 } from "../provider-catalog.mjs";
 import { t } from "../i18n.mjs";
+import { isServerUp } from "../api.mjs";
 
 async function getListCliTools() {
   return listCliTools;
@@ -188,6 +194,11 @@ export async function runSetupCommand(opts = {}) {
       }
     }
     return 0;
+  }
+
+  if (await isServerUp()) {
+    console.error("Setup is an offline bootstrap command. Stop ShiguangGateway before running it.");
+    return 1;
   }
 
   const nonInteractive = opts.nonInteractive ?? false;

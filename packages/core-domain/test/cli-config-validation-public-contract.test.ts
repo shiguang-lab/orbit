@@ -29,7 +29,7 @@ function sourceFiles(dir: string): string[] {
 test("CLI model settings use one focused validation contract", async () => {
   const entry = manifest.exports["./control/cli-tools-config-validation"];
   assert.deepEqual(entry, {
-    types: "./src/control/cliConfigValidation.ts",
+    types: "./dist/types/control/cliConfigValidation.d.ts",
     import: "./src/control/cliConfigValidation.ts",
   });
   const runtime = await import(

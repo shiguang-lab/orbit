@@ -87,7 +87,7 @@ export class StreamTracker {
    * @param {Object} [transitionMeta] - Metadata for this transition
    * @returns {boolean} Whether the transition was valid
    */
-  transition(newState, transitionMeta = {}) {
+  transition(newState: StreamState, transitionMeta: Record<string, unknown> = {}) {
     const allowed = VALID_TRANSITIONS[this.state] || [];
     if (!allowed.includes(newState)) {
       console.warn(
@@ -126,7 +126,7 @@ export class StreamTracker {
    * Record a received chunk.
    * @param {number} bytes - Chunk size in bytes
    */
-  recordChunk(bytes) {
+  recordChunk(bytes: number) {
     this.chunkCount++;
     this.totalBytes += bytes;
   }
@@ -135,7 +135,7 @@ export class StreamTracker {
    * Mark as failed with an error.
    * @param {Error|string} error
    */
-  fail(error) {
+  fail(error: Error | string) {
     this.error = typeof error === "string" ? error : error.message;
     this.transition(STREAM_STATES.FAILED, { error: this.error });
   }
@@ -186,7 +186,7 @@ const completedStreams: ReturnType<StreamTracker["getSummary"]>[] = [];
  * @param {Object} [metadata]
  * @returns {StreamTracker}
  */
-export function createStreamTracker(requestId, metadata) {
+export function createStreamTracker(requestId: string, metadata: StreamMetadata = {}) {
   const tracker = new StreamTracker(requestId, metadata);
   activeStreams.set(requestId, tracker);
   return tracker;
@@ -196,7 +196,7 @@ export function createStreamTracker(requestId, metadata) {
  * Complete (archive) a stream — moves from active to completed history.
  * @param {string} requestId
  */
-export function archiveStream(requestId) {
+export function archiveStream(requestId: string) {
   const tracker = activeStreams.get(requestId);
   if (!tracker) return;
 

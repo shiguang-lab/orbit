@@ -1,5 +1,12 @@
 import { column, type EntityDefinition } from "./definition.js";
 
+/** Conversational memory records written only by the edge request runtime. */
+export const MemoryEntity: EntityDefinition = {
+  entityName: "Memory", tableName: "memories", owner: "edge-gateway", columns: [
+    column("id", "TEXT", { nullable: false, primaryKey: true }), column("api_key_id", "TEXT", { nullable: false }), column("session_id", "TEXT"), column("type", "TEXT", { nullable: false }), column("key", "TEXT"), column("content", "TEXT", { nullable: false }), column("metadata", "TEXT"), column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }), column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }), column("expires_at", "TEXT"), column("memory_id", "INTEGER"), column("needs_reindex", "INTEGER", { nullable: false, default: "0" }), column("access_count", "INTEGER", { nullable: false, default: "0" }), column("last_accessed_at", "TEXT"),
+  ],
+};
+
 /** Append-only middleware execution records emitted by edge/open-sse runtime. */
 export const MiddlewareLogEntity: EntityDefinition = {
   entityName: "MiddlewareLog",

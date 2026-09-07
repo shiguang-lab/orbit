@@ -306,7 +306,7 @@ export async function computeAnalytics(
     for (const m of Object.keys(day)) allModels.add(m);
   }
   const dailyByModel = dailyTrend.map((d) => {
-    const row = { date: d.date };
+    const row: Record<string, string | number> = { date: d.date };
     for (const m of allModels) {
       row[m] = dailyByModelMap[d.date]?.[m] || 0;
     }

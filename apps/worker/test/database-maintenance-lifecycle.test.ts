@@ -15,6 +15,7 @@ test("database cleanup owns startup and periodic timers in the worker", async ()
   const scheduler = createDatabaseCleanupScheduler({
     runCleanup: async () => ({ totalDeleted: ++cleanupRuns, totalErrors: 0, results: {} }),
     cleanupProxyLogs: async () => ({ deleted: 0, errors: 0 }),
+    cleanupMemoryEntries: async () => ({ deleted: 0, errors: 0 }),
     runVacuum: async () => { vacuumRuns++; return { success: true, durationMs: 1 }; },
     setTimeout: (callback, delay) => { callbacks.push(callback); delays.push(delay); return timer(); },
     clearTimeout() {},

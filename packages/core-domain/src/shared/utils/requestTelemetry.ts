@@ -18,6 +18,13 @@ interface PhaseTiming {
 }
 
 const PHASES = ["parse", "validate", "policy", "resolve", "connect", "stream", "finalize"] as const;
+type RequestPhase = (typeof PHASES)[number];
+interface PhaseBreakdown {
+  count: number;
+  p50: number;
+  p95: number;
+  avg: number;
+}
 
 interface TelemetrySummary {
   requestId: string;
@@ -45,7 +52,7 @@ export class RequestTelemetry {
    * Begin a phase measurement.
    * @param {string} phase
    */
-  startPhase(phase) {
+  startPhase(phase: string) {
     if (this._currentPhase) {
       this.endPhase();
     }
@@ -57,15 +64,15 @@ export class RequestTelemetry {
    * End the current phase measurement.
    * @param {Object} [metadata] - Additional metadata
    */
-  endPhase(metadata = {}) {
+  endPhase(metadata: Record<string, unknown> = {}) {
     if (!this._currentPhase) return;
 
     const now = Date.now();
     this.phases.push({
       phase: this._currentPhase,
-      startMs: this._phaseStart - this.startTime,
+      startMs: this._phaseStart! - this.startTime,
       endMs: now - this.startTime,
-      durationMs: now - this._phaseStart,
+      durationMs: now - this._phaseStart!,
       ...metadata,
     });
 
@@ -80,14 +87,14 @@ export class RequestTelemetry {
    * @param {() => Promise<T>} fn
    * @returns {Promise<T>}
    */
-  async measure(phase, fn) {
+  async measure<T>(phase: string, fn: () => Promise<T>): Promise<T> {
     this.startPhase(phase);
     try {
       const result = await fn();
       this.endPhase();
       return result;
     } catch (error) {
-      this.endPhase({ error: error.message });
+      this.endPhase({ error: error instanceof Error ? error.message : String(error) });
       throw error;
     }
   }
@@ -114,14 +121,14 @@ export class RequestTelemetry {
 
 const MAX_HISTORY = 1000;
 /** @type {Array<{ requestId: string, totalMs: number, phases: PhaseTiming[] }>} */
-const history = [];
+const history: TelemetrySummary[] = [];
 
 /**
  * Record a completed request's telemetry.
  * @param {RequestTelemetry} telemetry
  */
-export function recordTelemetry(telemetry) {
-  const summary = telemetry.getSummary();
+export function recordTelemetry(telemetry: RequestTelemetry) {
+  const summary: TelemetrySummary = telemetry.getSummary();
   summary.recordedAt = Date.now();
   history.push(summary);
   while (history.length > MAX_HISTORY) {
@@ -135,7 +142,7 @@ export function recordTelemetry(telemetry) {
  * @param {number} p - Percentile (0-100)
  * @returns {number}
  */
-function percentile(sorted, p) {
+function percentile(sorted: readonly number[], p: number) {
   if (sorted.length === 0) return 0;
   const idx = Math.ceil((p / 100) * sorted.length) - 1;
   return sorted[Math.max(0, idx)];
@@ -160,7 +167,7 @@ export function getTelemetrySummary(windowMs = 300000) {
   const avg = Math.round(totals.reduce((sum, value) => sum + value, 0) / totals.length);
 
   // Phase breakdown
-  const phaseBreakdown = {};
+  const phaseBreakdown: Partial<Record<RequestPhase, PhaseBreakdown>> = {};
   for (const phase of PHASES) {
     const durations = recent
       .flatMap((h) => h.phases.filter((p) => p.phase === phase).map((p) => p.durationMs))

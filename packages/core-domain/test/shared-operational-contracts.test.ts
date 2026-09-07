@@ -31,6 +31,10 @@ const contracts = {
   },
 } as const;
 
+function declarationEntry(sourceEntry: string): string {
+  return sourceEntry.replace("./src/", "./dist/types/").replace(/\.ts$/, ".d.ts");
+}
+
 const retiredSubpaths = [
   "./control/cloud-sync",
   "./usage/provider-limits-support/cloudSync",
@@ -60,7 +64,7 @@ function sourceFiles(dir: string): string[] {
 test("shared operational capabilities use narrow semantic contracts", async () => {
   for (const [subpath, contract] of Object.entries(contracts)) {
     assert.deepEqual(manifest.exports[subpath], {
-      types: contract.entry,
+      types: declarationEntry(contract.entry),
       import: contract.entry,
     });
     const runtime = await import(pathToFileURL(path.join(packageRoot, contract.entry)).href);

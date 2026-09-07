@@ -23,6 +23,7 @@ export const DETECTORS: Record<AgentId, () => DetectionResult> = {
   antigravity: detectAntigravity,
   kiro: detectKiro,
   copilot: detectCopilot,
+  "ghe-copilot": detectCopilot,
   codex: detectCodex,
   cursor: detectCursor,
   zed: detectZed,

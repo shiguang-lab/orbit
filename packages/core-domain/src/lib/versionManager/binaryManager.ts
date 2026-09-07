@@ -103,7 +103,9 @@ async function verifyChecksum(filePath: string, expectedSha256: string): Promise
   const hash = crypto.createHash("sha256");
   await new Promise<void>((resolve, reject) => {
     const stream = createReadStream(filePath);
-    stream.on("data", (data: Buffer) => hash.update(data));
+    stream.on("data", (data: string | Buffer) => {
+      hash.update(data);
+    });
     stream.on("end", resolve);
     stream.on("error", reject);
   });

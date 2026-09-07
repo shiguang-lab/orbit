@@ -12,12 +12,12 @@ import { volcenginePlanCodeSchema } from "@shiguang-gateway/core-domain/control/
  */
 export async function POST(
   request: Request,
-  { params }: { params: Promise<{ sessionId: string }> }
+  { params }: { params: { sessionId: string } }
 ): Promise<Response> {
   const auth = await requireManagementAuth(request);
   if (auth) return auth;
 
-  const { sessionId } = await params;
+  const { sessionId } = params;
   const raw = await request.json().catch(() => ({}));
   // Validate BEFORE the session lookup: a malformed body is the caller's bug
   // regardless of whether the session happens to exist, and answering 404 for

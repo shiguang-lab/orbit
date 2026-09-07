@@ -9,6 +9,7 @@ import { resolve, normalize, isAbsolute } from "path";
 import { listPlugins, getPluginByName, updatePluginConfig } from "@shiguang-gateway/core-domain/plugins/db";
 import { pluginManager } from "@shiguang-gateway/core-domain/edge/plugins-runtime";
 import { validatePluginConfig, type ConfigField } from "@shiguang-gateway/core-domain/edge/plugins-runtime";
+import type { McpToolDefinition } from "./types.ts";
 
 /**
  * Validate a path is safe for plugin installation.
@@ -32,7 +33,7 @@ function validatePluginPath(path: string): string {
   return normalized;
 }
 
-export const pluginTools = [
+export const pluginTools: McpToolDefinition[] = [
   {
     name: "plugin_list",
     description: "List all installed plugins with their status, hooks, and metadata.",

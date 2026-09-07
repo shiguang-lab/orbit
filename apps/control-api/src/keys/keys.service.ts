@@ -43,31 +43,31 @@ export class KeysService {
   }
 
   handleGetKeyById(request: Request, id: string) {
-    return getKeyByIdHandler(request, { params: { id } as any });
+    return getKeyByIdHandler(request, { params: { id } });
   }
 
   handlePatchKeyById(request: Request, id: string) {
-    return patchKeyByIdHandler(request, { params: { id } as any });
+    return patchKeyByIdHandler(request, { params: { id } });
   }
 
   handleDeleteKeyById(request: Request, id: string) {
-    return deleteKeyByIdHandler(request, { params: { id } as any });
+    return deleteKeyByIdHandler(request, { params: { id } });
   }
 
   handleGetKeyDevices(request: Request, id: string) {
-    return getKeyDevicesHandler(request, { params: { id } as any });
+    return getKeyDevicesHandler(request, { params: { id } });
   }
 
   handleRegenerateKey(request: Request, id: string) {
-    return regenerateKeyHandler(request, { params: { id } as any });
+    return regenerateKeyHandler(request, { params: { id } });
   }
 
   handleRevealKey(request: Request, id: string) {
-    return revealKeyHandler(request, { params: { id } as any });
+    return revealKeyHandler(request, { params: { id } });
   }
 
   handleGetKeyUsageLimits(request: Request, id: string) {
-    return getKeyUsageLimitsHandler(request, { params: { id } as any });
+    return getKeyUsageLimitsHandler(request, { params: { id } });
   }
 
   handleGetKeyGroups() {
@@ -79,38 +79,38 @@ export class KeysService {
   }
 
   handleGetKeyGroupById(request: Request, id: string) {
-    return getKeyGroupByIdHandler(request, { params: { id } as any });
+    return getKeyGroupByIdHandler(request, { params: { id } });
   }
 
   handleUpdateKeyGroupById(request: Request, id: string) {
-    return updateKeyGroupByIdHandler(request, { params: { id } as any });
+    return updateKeyGroupByIdHandler(request, { params: { id } });
   }
 
   handleDeleteKeyGroupById(request: Request, id: string) {
-    return deleteKeyGroupByIdHandler(request, { params: { id } as any });
+    return deleteKeyGroupByIdHandler(request, { params: { id } });
   }
 
   handleGetKeyGroupKeys(request: Request, id: string) {
-    return getKeyGroupKeysHandler(request, { params: { id } as any });
+    return getKeyGroupKeysHandler(request, { params: { id } });
   }
 
   handleAddKeyToGroup(request: Request, id: string) {
-    return addKeyToGroupHandler(request, { params: { id } as any });
+    return addKeyToGroupHandler(request, { params: { id } });
   }
 
   handleRemoveKeyFromGroup(request: Request, id: string) {
-    return removeKeyFromGroupHandler(request, { params: { id } as any });
+    return removeKeyFromGroupHandler(request, { params: { id } });
   }
 
   handleGetKeyGroupPermissions(request: Request, id: string) {
-    return getKeyGroupPermissionsHandler(request, { params: { id } as any });
+    return getKeyGroupPermissionsHandler(request, { params: { id } });
   }
 
   handleAddKeyGroupPermission(request: Request, id: string) {
-    return addKeyGroupPermissionHandler(request, { params: { id } as any });
+    return addKeyGroupPermissionHandler(request, { params: { id } });
   }
 
   handleRemoveKeyGroupPermission(request: Request, id: string) {
-    return removeKeyGroupPermissionHandler(request, { params: { id } as any });
+    return removeKeyGroupPermissionHandler(request, { params: { id } });
   }
 }

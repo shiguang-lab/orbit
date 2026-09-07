@@ -101,7 +101,18 @@ export async function POST(request: Request): Promise<Response> {
           action: "provider.validation.ssrf_blocked", actor: "admin", target: provider,
           resourceType: "provider_validation", status: "blocked",
           ipAddress: auditContext.ipAddress || undefined, requestId: auditContext.requestId,
-          metadata: { provider, route: "/api/providers/validate", reason: result.error || "Blocked provider validation target", baseUrl: sanitizeAuditUrl(bodyBaseUrl || providerSpecificData.baseUrl) },
+          metadata: {
+            provider,
+            route: "/api/providers/validate",
+            reason: result.error || "Blocked provider validation target",
+            baseUrl: sanitizeAuditUrl(
+              typeof bodyBaseUrl === "string"
+                ? bodyBaseUrl
+                : typeof providerSpecificData.baseUrl === "string"
+                  ? providerSpecificData.baseUrl
+                  : null
+            ),
+          },
         });
       }
       return Response.json({ error: result.error || "Validation failed" }, { status: result.statusCode });

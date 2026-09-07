@@ -13,6 +13,15 @@
  */
 import { getComboStepTarget, getComboStepWeight } from "../lib/combos/steps.ts";
 
+interface Combo {
+  id?: string;
+  name: string;
+  strategy?: "priority" | "weighted" | "round-robin" | "random" | "least-used" | "cost-optimized";
+  models: Array<string | { model?: string; target?: string; weight?: number }>;
+}
+
+interface NormalizedComboModel { model: string; weight: number }
+
 /** @type {Map<string, number>} Persistent round-robin counters per combo */
 const roundRobinCounters = new Map();
 
@@ -24,7 +33,7 @@ const roundRobinCounters = new Map();
  * @returns {{ model: string, index: number }}
  * @throws {Error} If combo has no models
  */
-export function resolveComboModel(combo: any, context: any = {}) {
+export function resolveComboModel(combo: Combo, context: { modelUsageCounts?: Record<string, number> } = {}) {
   const models = combo.models || [];
   if (models.length === 0) {
     throw new Error(`Combo "${combo.name}" has no models configured`);
@@ -32,7 +41,7 @@ export function resolveComboModel(combo: any, context: any = {}) {
 
   // Normalize models to { model, weight } format
   const normalized = models
-    .map((entry) => ({
+    .map((entry): NormalizedComboModel => ({
       model: getComboStepTarget(entry) || "",
       weight: getComboStepWeight(entry) || 1,
     }))
@@ -98,7 +107,7 @@ export function resolveComboModel(combo: any, context: any = {}) {
  * @param {number} primaryIndex - Index of the primary model
  * @returns {string[]} Remaining models in order
  */
-export function getComboFallbacks(combo, primaryIndex) {
+export function getComboFallbacks(combo: Combo, primaryIndex: number) {
   const models = (combo.models || [])
     .map((entry) => getComboStepTarget(entry))
     .filter((entry): entry is string => !!entry);

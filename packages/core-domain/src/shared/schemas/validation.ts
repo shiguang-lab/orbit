@@ -138,7 +138,7 @@ export const chatCompletionSchema = z.object({
  * @param {unknown} data
  * @returns {{ success: true, data: T } | { success: false, errors: Array<{ path: string, message: string }> }}
  */
-export function validateSchema(schema, data) {
+export function validateSchema<T>(schema: z.ZodType<T>, data: unknown) {
   const result = schema.safeParse(data);
   if (result.success) {
     return { success: true, data: result.data };
@@ -146,7 +146,7 @@ export function validateSchema(schema, data) {
 
   return {
     success: false,
-    errors: result.error.issues.map((issue) => ({
+    errors: result.error.issues.map((issue: z.core.$ZodIssue) => ({
       path: issue.path.join("."),
       message: issue.message,
     })),

@@ -100,6 +100,11 @@ export async function startWorkerJobCommandServer(): Promise<Server> {
   const expectedToken = configuredToken();
   const registry = getJobRegistry();
   const server = createServer(async (req, res) => {
+    if (req.method === "GET" && req.url === "/healthz") {
+      res.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+      res.end(JSON.stringify({ status: "ok", service: "worker" }));
+      return;
+    }
     if (req.method !== "POST" || req.url !== WORKER_JOB_COMMAND_PATH) {
       send(res, 404, failure("not_found", "Command endpoint not found"));
       return;
@@ -130,7 +135,8 @@ export async function startWorkerJobCommandServer(): Promise<Server> {
     }
   });
   const host = process.env.WORKER_COMMAND_HOST?.trim() || "127.0.0.1";
-  const port = Number(process.env.WORKER_COMMAND_PORT) || 8791;
+  const configuredPort = Number(process.env.WORKER_COMMAND_PORT);
+  const port = Number.isInteger(configuredPort) && configuredPort >= 0 ? configuredPort : 8791;
   await new Promise<void>((resolve, reject) => {
     server.once("error", reject);
     server.listen(port, host, () => {

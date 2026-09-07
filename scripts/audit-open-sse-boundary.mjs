@@ -50,9 +50,68 @@ try {
   add("package-manifest", manifestPath, "packages/open-sse/package.json is required");
 }
 
+const buildConfigPath = join(packageDir, "tsconfig.build.json");
+let buildConfig;
+try {
+  buildConfig = JSON.parse(readFileSync(buildConfigPath, "utf8"));
+} catch {
+  add("declaration-build", buildConfigPath, "a valid declaration build configuration is required");
+}
+if (buildConfig) {
+  const options = buildConfig.compilerOptions ?? {};
+  if (options.declaration !== true || options.emitDeclarationOnly !== true || options.noEmit !== false) {
+    add("declaration-build", buildConfigPath, "build must emit declarations without JavaScript");
+  }
+  if (options.rootDir !== "." || options.outDir !== "dist/types") {
+    add("declaration-build", buildConfigPath, "declarations must preserve source paths under dist/types");
+  }
+  for (const forbidden of ["strict", "skipLibCheck", "noCheck"]) {
+    if (Object.hasOwn(options, forbidden)) {
+      add("declaration-build", buildConfigPath, `${forbidden} must not override the package typecheck policy`);
+    }
+  }
+}
+
 if (manifest) {
   if (manifest.private !== true) add("package-private", manifestPath, "open-sse is an internal implementation package and must remain private");
   if (!manifest.exports) add("package-exports", manifestPath, "explicit reviewed package subpaths are required");
+  if (manifest.scripts?.build !== "node scripts/build-declarations.mjs") {
+    add("declaration-build", manifestPath, "open-sse must build clean declarations through scripts/build-declarations.mjs");
+  }
+  if (typeof manifest.scripts?.typecheck !== "string") {
+    add("package-typecheck", manifestPath, "open-sse must expose an explicit typecheck script");
+  }
+
+  const declarationTargetFor = (runtimeTarget) => {
+    const sourceTarget = runtimeTarget.replace(/^\.\//, "");
+    const declarationTarget = sourceTarget
+      .replace(/\.tsx?$/, ".d.ts")
+      .replace(/\.mjs$/, ".d.mts")
+      .replace(/\.cjs$/, ".d.cts")
+      .replace(/\.jsx?$/, ".d.ts");
+    return `./dist/types/${declarationTarget}`;
+  };
+  const declarationsBuilt = existsSync(join(packageDir, "dist", "types"));
+  for (const [subpath, target] of Object.entries(manifest.exports ?? {})) {
+    if (!target || typeof target !== "object" || typeof target.import !== "string" || typeof target.types !== "string") {
+      add("typed-package-export", manifestPath, `${subpath} must define explicit import and generated types targets`);
+      continue;
+    }
+    const expectedTypes = declarationTargetFor(target.import);
+    if (target.types !== expectedTypes) {
+      add("typed-package-export", manifestPath, `${subpath} types must target ${expectedTypes}, received ${target.types}`);
+    }
+    const runtimeFile = join(packageDir, target.import.replace(/^\.\//, ""));
+    if (!existsSync(runtimeFile)) {
+      add("missing-runtime-export", manifestPath, `${subpath} runtime target does not exist: ${target.import}`);
+    }
+    if (declarationsBuilt) {
+      const declarationFile = join(packageDir, target.types.replace(/^\.\//, ""));
+      if (!existsSync(declarationFile)) {
+        add("missing-declaration-export", manifestPath, `${subpath} declaration target was not built: ${target.types}`);
+      }
+    }
+  }
   for (const retired of [
     ".",
     "./config/embeddingRegistryRuntime",

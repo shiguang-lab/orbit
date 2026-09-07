@@ -74,17 +74,17 @@ export function createBunSqliteAdapter(db: BunSqliteDatabaseLike, filePath: stri
       return filePath;
     },
 
-    prepare(sql: string): PreparedStatement {
+    prepare<Row = unknown>(sql: string): PreparedStatement<Row> {
       const statement = db.query(sql);
       return {
         run(...params: unknown[]): RunResult {
           return normalizeRunResult(statement.run(...normalizeParams(params)));
         },
-        get(...params: unknown[]): unknown {
-          return statement.get(...normalizeParams(params));
+        get(...params: unknown[]): Row | undefined {
+          return statement.get(...normalizeParams(params)) as Row | undefined;
         },
-        all(...params: unknown[]): unknown[] {
-          return statement.all(...normalizeParams(params));
+        all(...params: unknown[]): Row[] {
+          return statement.all(...normalizeParams(params)) as Row[];
         },
       };
     },
@@ -102,8 +102,8 @@ export function createBunSqliteAdapter(db: BunSqliteDatabaseLike, filePath: stri
       return statement.all();
     },
 
-    transaction<T>(fn: (...args: unknown[]) => T): (...args: unknown[]) => T {
-      return db.transaction(fn);
+    transaction<Args extends unknown[], T>(fn: (...args: Args) => T): (...args: Args) => T {
+      return db.transaction(fn as (...args: unknown[]) => T) as (...args: Args) => T;
     },
 
     immediate(fn: () => void): void {

@@ -12,6 +12,7 @@ const manifest = JSON.parse(
 
 const canonicalSubpath = "./shared/connection-isolation";
 const canonicalEntry = "./src/shared/connectionIsolation.ts";
+const canonicalTypes = "./dist/types/shared/connectionIsolation.d.ts";
 const retiredSubpaths = [
   "./control/provider-discovery-support/exclusiveLeaseIsolation",
   "./usage/provider-limits-support/exclusiveLeaseIsolation",
@@ -30,7 +31,7 @@ function sourceFiles(dir: string): string[] {
 
 test("connection isolation uses one narrow shared runtime and type contract", async () => {
   assert.deepEqual(manifest.exports[canonicalSubpath], {
-    types: canonicalEntry,
+    types: canonicalTypes,
     import: canonicalEntry,
   });
 

@@ -182,6 +182,8 @@ export class ProvidersService {
     return getAllSyncedAvailableModels();
   }
 
+  async getOpenRouterStats(forceRefresh: true): ReturnType<typeof refreshOpenRouterProviderStats>;
+  async getOpenRouterStats(forceRefresh: false): ReturnType<typeof getOpenRouterProviderStats>;
   async getOpenRouterStats(forceRefresh: boolean) {
     if (forceRefresh) return refreshOpenRouterProviderStats();
     return getOpenRouterProviderStats();
@@ -259,11 +261,11 @@ export class ProvidersService {
   }
 
   async handleUpdateProviderNode(request: Request, id: string) {
-    return updateProviderNodeHandler(request, { params: { id } as any });
+    return updateProviderNodeHandler(request, { params: { id } });
   }
 
   async handleDeleteProviderNode(request: Request, id: string) {
-    return deleteProviderNodeHandler(request, { params: { id } as any });
+    return deleteProviderNodeHandler(request, { params: { id } });
   }
 
   async handleValidateProviderNode(request: Request) {

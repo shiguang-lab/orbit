@@ -14,13 +14,13 @@ import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
 import * as log from "@shiguang-gateway/core-domain/sse/logger";
 import { json } from "./response.js";
 
-type RouteParams = { params: Promise<{ id: string }> };
+type RouteParams = { params: { id: string } };
 
 export async function GET(request: Request, { params }: RouteParams) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
   try {
-    const { id } = await params;
+    const { id } = params;
     const key = await getApiKeyById(id);
     if (!key) return json({ error: "Key not found" }, { status: 404 });
     const keyValue = typeof key.key === "string" ? key.key : null;
@@ -41,7 +41,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     return json({ error: { message: "Invalid request", details: [{ field: "body", message: "Invalid JSON body" }] } }, { status: 400 });
   }
   try {
-    const { id } = await params;
+    const { id } = params;
     const validation = validateBody(updateKeyPermissionsSchema, rawBody);
     if (isValidationFailure(validation)) return json({ error: validation.error }, { status: 400 });
     const data = validation.data;
@@ -73,7 +73,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
   try {
-    const { id } = await params;
+    const { id } = params;
     const deleted = await deleteApiKey(id);
     if (!deleted) return json({ error: "Key not found" }, { status: 404 });
     await syncKeysToCloudIfEnabled();

@@ -17,4 +17,10 @@ export interface DbHealthCheckResult {
 }
 
 export function isNativeSqliteLoadError(error: unknown): boolean;
-export function runManagedDbHealthCheck(options?: { autoRepair?: boolean }): DbHealthCheckResult;
+export function runManagedDbHealthCheck(options?: {
+  autoRepair?: boolean;
+  skipIntegrityCheck?: boolean;
+}): DbHealthCheckResult;
+export function runManagedWalCheckpoint(
+  mode?: "PASSIVE" | "FULL" | "RESTART" | "TRUNCATE",
+): boolean;

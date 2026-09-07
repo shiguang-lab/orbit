@@ -222,8 +222,8 @@ export async function POST(request: Request) {
         return Response.json({
           valid: !!result.valid,
           error: result.valid ? null : result.error || "Invalid API key",
-          warning: result.warning || null,
-          method: result.method || null,
+          warning: "warning" in result ? result.warning || null : null,
+          method: "method" in result ? result.method || null : null,
         });
       }
 
@@ -238,9 +238,9 @@ export async function POST(request: Request) {
         guard: getProviderValidationGuard(),
         method: "GET",
         headers: {
-          "x-api-key": apiKey,
+          ...(apiKey ? { "x-api-key": apiKey } : {}),
           "anthropic-version": "2023-06-01",
-          Authorization: `Bearer ${apiKey}`, // Add Bearer token for hybrid proxies
+          ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
         },
       });
 

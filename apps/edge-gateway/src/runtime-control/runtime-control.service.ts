@@ -5,6 +5,7 @@ import type {
 } from "@shiguang-gateway/contracts/edge-runtime-command";
 import { refreshResilienceRuntimeSettings } from "@shiguang-gateway/core-domain/resilience/settings-runtime";
 import { refreshRequestRuntimeSettings } from "@shiguang-gateway/core-domain/runtime/settings-refresh";
+import { LocalProviderHealthService } from "./local-provider-health.service.js";
 
 const FALLBACK_QUOTA_MONITOR_SUMMARY = {
   active: 0,
@@ -27,7 +28,9 @@ function readValue<T>(label: string, reader: () => T, fallback: T): T {
   }
 }
 
-async function readHealthSnapshot(): Promise<EdgeRuntimeHealthSnapshot> {
+async function readHealthSnapshot(
+  localProviderHealth: LocalProviderHealthService,
+): Promise<EdgeRuntimeHealthSnapshot> {
   const [
     circuitBreakerModule,
     rateLimitModule,
@@ -91,15 +94,18 @@ async function readHealthSnapshot(): Promise<EdgeRuntimeHealthSnapshot> {
       () => chatAdmissionModule.perConnectionAdmissionController.snapshot(),
       null,
     ),
+    localProviders: localProviderHealth.getAllHealthStatuses(),
   };
 }
 
 @Injectable()
 export class RuntimeControlService {
+  constructor(private readonly localProviderHealth: LocalProviderHealthService) {}
+
   async execute(command: EdgeRuntimeCommand): Promise<unknown> {
     switch (command.command) {
       case "health.snapshot":
-        return readHealthSnapshot();
+        return readHealthSnapshot(this.localProviderHealth);
       case "resilience.reset": {
         const { getAllCircuitBreakerStatuses, resetAllCircuitBreakers } = await import(
           "@shiguang-gateway/core-domain/resilience/circuit-breaker"
@@ -188,6 +194,22 @@ export class RuntimeControlService {
         );
         clearProviderFailure(command.provider);
         return { success: true };
+      }
+      case "provider-credentials.refresh": {
+        const { refreshProviderConnectionCredentials } = await import(
+          "./provider-credential-refresh.js"
+        );
+        return refreshProviderConnectionCredentials(command.connectionId, command.purpose);
+      }
+      case "codex-import.validate-refresh-token": {
+        const { validateCodexImportRefreshToken } = await import(
+          "./provider-credential-refresh.js"
+        );
+        return validateCodexImportRefreshToken(command.accessToken, command.refreshToken);
+      }
+      case "compression.verify": {
+        const { executeCompressionVerify } = await import("./compression-verify.js");
+        return executeCompressionVerify(command);
       }
       case "quota-windows.snapshot": {
         const { getAllProviderQuotaWindows } = await import(
@@ -428,6 +450,54 @@ export class RuntimeControlService {
         } as Parameters<typeof memory.memoryManager.create>[0];
         return { memory: await memory.memoryManager.create(input) };
       }
+      case "memory.search": {
+        const memory = await import("@shiguang-gateway/open-sse/services/memoryRuntime");
+        const settings = await memory.getMemorySettings().catch(() => memory.DEFAULT_MEMORY_SETTINGS);
+        const config = {
+          ...memory.toMemoryRetrievalConfig(settings, { query: command.query }),
+          enabled: true,
+          maxTokens: command.maxTokens ?? (
+            settings.enabled ? settings.maxTokens : memory.DEFAULT_MEMORY_SETTINGS.maxTokens
+          ),
+        };
+        const retrieved = await memory.retrieveMemories(command.apiKeyId, config);
+        const filtered = command.type
+          ? retrieved.filter((item) => item.type === command.type)
+          : retrieved;
+        const items = command.limit ? filtered.slice(0, command.limit) : filtered;
+        return {
+          memories: items,
+          count: items.length,
+          totalTokens: items.reduce((sum, item) => sum + Math.ceil(item.content.length / 4), 0),
+        };
+      }
+      case "memory.clear": {
+        const memory = await import("@shiguang-gateway/open-sse/services/memoryRuntime");
+        const typeByCommand = {
+          factual: memory.MemoryType.FACTUAL,
+          episodic: memory.MemoryType.EPISODIC,
+          procedural: memory.MemoryType.PROCEDURAL,
+          semantic: memory.MemoryType.SEMANTIC,
+        } as const;
+        const listed = await memory.listMemories({
+          apiKeyId: command.apiKeyId,
+          type: command.type ? typeByCommand[command.type] : undefined,
+        });
+        const existing = Array.isArray(listed)
+          ? listed
+          : Array.isArray(listed?.data)
+            ? listed.data
+            : [];
+        const cutoff = command.olderThan ? new Date(command.olderThan) : null;
+        const targets = cutoff
+          ? existing.filter((item) => new Date(item.createdAt) < cutoff)
+          : existing;
+        let deletedCount = 0;
+        for (const item of targets) {
+          if (await memory.deleteMemory(item.id)) deletedCount++;
+        }
+        return { deletedCount };
+      }
       case "memory.get": {
         const { memoryManager } = await import(
           "@shiguang-gateway/open-sse/services/memoryRuntime"
@@ -495,6 +565,18 @@ export class RuntimeControlService {
           });
         });
         return { started: true, pending };
+      }
+      case "memory.decay": {
+        const { sweepDecayedMemories } = await import(
+          "@shiguang-gateway/core-domain/edge/memory-decay"
+        );
+        return sweepDecayedMemories();
+      }
+      case "memory.retention-cleanup": {
+        const { cleanupMemoryEntriesByRetention } = await import(
+          "@shiguang-gateway/core-domain/edge/memory-decay"
+        );
+        return cleanupMemoryEntriesByRetention();
       }
       case "reasoning-cache.snapshot": {
         const cache = await import("@shiguang-gateway/open-sse/services/reasoningCache");

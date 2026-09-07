@@ -46,7 +46,7 @@ Related flags:
 - `--quiet` / `-q` — suppress headers/spinners (pipe-friendly).
 - `--no-color` — force ANSI off (auto-detected if `!stdout.isTTY`).
 
-Helper: `emit(rows, opts)` from `bin/cli/output.mjs` handles all four formats.
+Helper: `emit(rows, opts)` from `apps/cli/src/cli/output.mjs` handles all four formats.
 
 ## 4. Exit codes
 
@@ -60,13 +60,13 @@ Helper: `emit(rows, opts)` from `bin/cli/output.mjs` handles all four formats.
 | `5`   | rate limit / quota (429)          |
 | `124` | timeout                           |
 
-Helper: `exitWith(code, message?)` from `bin/cli/exit.mjs` (added under
+Helper: `exitWith(code, message?)` from `apps/cli/src/cli/exit.mjs` (added under
 `output.mjs` if needed) — always uses these constants. **Never** raw
 `process.exit(N)` in command code.
 
 ## 5. HTTP errors + retry/backoff
 
-All API calls go through `apiFetch(path, opts)` (`bin/cli/api.mjs`), which:
+All API calls go through `apiFetch(path, opts)` (`apps/cli/src/cli/api.mjs`), which:
 
 - Reads base URL from `SHIGUANG_GATEWAY_BASE_URL` env or `~/.shiguang-gateway/config.json`
   (active profile).
@@ -135,7 +135,7 @@ export const RETRY_DEFAULTS = {
 ## 6. Internationalization
 
 - Every user-facing string goes through `t("module.key", vars)`.
-- Catalogs live in `bin/cli/locales/{locale}.json` (nested objects).
+- Catalogs live in `apps/cli/src/cli/locales/{locale}.json` (nested objects).
   43 files ship out-of-the-box: `en`, `pt-BR`, and 41 additional locales.
   11 locales are scaffold-only (empty `{}`); all keys fall back to `en` automatically.
 - Detection order: `--lang` flag → `SHIGUANG_GATEWAY_LANG` env → `LC_ALL` → `LC_MESSAGES` → `LANG` → `en`.
@@ -161,7 +161,7 @@ export const RETRY_DEFAULTS = {
 - `--verbose` / `-V` — extra detail on stderr.
 - `--debug` — stack traces, request bodies (dev-mode only; redacts secrets).
 
-## 8. Server-first / DB-fallback
+## 8. Server-owned mutations and read-only fallback
 
 Single helper:
 
@@ -177,13 +177,12 @@ await withRuntime(async ({ kind, api, db }) => {
 
 - `kind: "http"` when server is up (preferred). `api` is `apiFetch` bound to
   the current profile/base-URL.
-- `kind: "db"` when server is offline. `db` exposes typed module exports:
-  - `db.combos` → `src/lib/db/combos.ts` (getCombos, getComboByName, createCombo,
-    deleteComboByName, setActiveCombo, …)
-  - `db.recovery` → `src/lib/db/recovery.ts` (countEncryptedCredentials,
-    resetEncryptedColumns)
-- Mutations that require server **must** error with exit code `3` when the
-  server is down, never silently fall back.
+- `kind: "db"` is available only for offline reads such as listing combos.
+- Runtime mutations use `withHttp()` and **must** error with exit code `3` when
+  the server is down; they never silently fall back to SQLite.
+- The only direct database writes are explicitly declared first-run bootstrap,
+  offline recovery, and staged importer operations. Each refuses to run against
+  a live control-api and is checked by the DB entity ownership audit.
 - **Never** write raw SQL in commands — always go through `src/lib/db/` modules.
   The Semgrep rule at `.semgrep/rules/cli-no-sqlite.yaml` enforces this at commit time.
 
@@ -198,7 +197,7 @@ Commands that mutate state (delete, reset, `--force`) **must**:
 ## 10. Secrets
 
 - **Never** log secrets. Mask as `sk-***-xxx` via `maskSecret()` from
-  `bin/cli/output.mjs`.
+  `apps/cli/src/cli/output.mjs`.
 - **Never** accept a secret via positional without warning. Prefer:
   - env (`SHIGUANG_GATEWAY_*_API_KEY`)
   - stdin (`--api-key-stdin`)
@@ -211,7 +210,7 @@ Commands that mutate state (delete, reset, `--force`) **must**:
   error path).
 - Use `tests/unit/cli-*.test.ts` naming. Prefer `node:test` for CLI suites
   (no extra deps).
-- Coverage target: ≥60% for `bin/cli/commands/`, ≥75% for `bin/cli/` overall
+- Coverage target: ≥60% for `apps/cli/src/cli/commands/`, ≥75% for `apps/cli/src/cli/` overall
   after Fase 8.
 
 ## 12. References

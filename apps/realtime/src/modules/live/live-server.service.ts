@@ -3,11 +3,11 @@ import {
   type OnApplicationBootstrap,
   type OnApplicationShutdown,
 } from "@nestjs/common";
-import type { Server } from "node:http";
+import type { LiveDashboardServer } from "../../live-ws/live-server.js";
 
 @Injectable()
 export class LiveServerService implements OnApplicationBootstrap, OnApplicationShutdown {
-  private server: Server | null = null;
+  private runtime: LiveDashboardServer | null = null;
   private initialization: Promise<void> | null = null;
 
   initialize(): Promise<void> {
@@ -30,12 +30,12 @@ export class LiveServerService implements OnApplicationBootstrap, OnApplicationS
   }
 
   async onApplicationShutdown(): Promise<void> {
-    const server = this.server;
-    this.server = null;
-    if (!server?.listening) return;
-    await new Promise<void>((resolve, reject) => {
-      server.close((error) => error ? reject(error) : resolve());
-    });
+    const initialization = this.initialization;
+    if (initialization) await initialization;
+    const runtime = this.runtime;
+    this.runtime = null;
+    this.initialization = null;
+    await runtime?.close();
   }
 
   private async start(): Promise<void> {
@@ -44,7 +44,7 @@ export class LiveServerService implements OnApplicationBootstrap, OnApplicationS
     // here instead of relying on import-time side effects in the transport
     // implementation, so tests and embedders can construct AppModule safely.
     if (!isLiveWsEnabled()) return;
-    this.server = await startLiveDashboardServer(
+    this.runtime = await startLiveDashboardServer(
       Number(process.env.LIVE_WS_PORT ?? 20132),
       process.env.LIVE_WS_HOST ?? "127.0.0.1",
     );

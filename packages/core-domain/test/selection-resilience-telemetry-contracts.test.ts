@@ -30,6 +30,10 @@ const contracts = {
   },
 } as const;
 
+function declarationEntry(sourceEntry: string): string {
+  return sourceEntry.replace("./src/", "./dist/types/").replace(/\.ts$/, ".d.ts");
+}
+
 const retiredSubpaths = [
   "./shared/shuffle-deck",
   "./runtime/shuffle-deck",
@@ -54,7 +58,7 @@ function sourceFiles(dir: string): string[] {
 test("selection, rate-limit classification, and telemetry use narrow contracts", async () => {
   for (const [subpath, contract] of Object.entries(contracts)) {
     assert.deepEqual(manifest.exports[subpath], {
-      types: contract.entry,
+      types: declarationEntry(contract.entry),
       import: contract.entry,
     });
     const runtime = await import(pathToFileURL(path.join(packageRoot, contract.entry)).href);

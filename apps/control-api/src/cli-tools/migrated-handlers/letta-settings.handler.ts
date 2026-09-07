@@ -9,6 +9,7 @@ import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain
 import { cliAuthOnlyConfigSchema } from "@shiguang-gateway/core-domain/control/cli-tools-config-validation";
 import { requireManagementAuth as requireCliToolsAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { errorCode, isJsonObject, parseJsonObject, type JsonObject } from "./_lib/jsonObject.js";
 
 const execAsync = promisify(exec);
 
@@ -26,6 +27,22 @@ const getBackupPath = () =>
 // Models appear as "lmstudio/<model-id>" in the CLI
 const PROVIDER_NAME = "lmstudio";
 const PROVIDER_TYPE = "lmstudio_openai";
+
+type LettaProvider = JsonObject & { base_url?: string };
+type LettaAuthFile = { version: number; providers: Record<string, LettaProvider> };
+
+function parseLettaAuthFile(content: string): LettaAuthFile {
+  const parsed = parseJsonObject(content);
+  const rawProviders = isJsonObject(parsed.providers) ? parsed.providers : {};
+  const providers: Record<string, LettaProvider> = {};
+  for (const [name, provider] of Object.entries(rawProviders)) {
+    if (isJsonObject(provider)) providers[name] = provider;
+  }
+  return {
+    version: typeof parsed.version === "number" ? parsed.version : 1,
+    providers,
+  };
+}
 
 // ── Check if Letta CLI is installed ────────────────────────────────────
 const checkLettaInstalled = async () => {
@@ -52,9 +69,9 @@ const checkLettaInstalled = async () => {
 const readSettings = async () => {
   try {
     const content = await fs.readFile(getSettingsPath(), "utf-8");
-    return JSON.parse(content);
-  } catch (error) {
-    if (error.code === "ENOENT") return {};
+    return parseJsonObject(content);
+  } catch (error: unknown) {
+    if (errorCode(error) === "ENOENT") return {};
     throw error;
   }
 };
@@ -63,23 +80,22 @@ const readSettings = async () => {
 const readAuthFile = async () => {
   try {
     const content = await fs.readFile(getProviderAuthPath(), "utf-8");
-    return JSON.parse(content);
-  } catch (error) {
-    if (error.code === "ENOENT") return { version: 1, providers: {} };
+    return parseLettaAuthFile(content);
+  } catch (error: unknown) {
+    if (errorCode(error) === "ENOENT") return { version: 1, providers: {} };
     throw error;
   }
 };
 
 // ── Check if a base_url points to ShiguangGateway ──────────────────────────────
-const isShiguangGatewayUrl = (baseUrl) => {
-  if (!baseUrl) return false;
+const isShiguangGatewayUrl = (baseUrl: unknown) => {
+  if (typeof baseUrl !== "string") return false;
   const independentPort = process.env.EDGE_GATEWAY_PORT || process.env.PORT || "8787";
   return baseUrl.includes(`:${independentPort}`) || baseUrl.includes(":3000") || baseUrl.includes("shiguangGateway");
 };
 
 // ── Check if ShiguangGateway is configured ─────────────────────────────────────
-const hasShiguangGatewayConfig = (authFile) => {
-  if (!authFile?.providers) return false;
+const hasShiguangGatewayConfig = (authFile: LettaAuthFile) => {
   const provider = authFile.providers[PROVIDER_NAME];
   if (!provider) return false;
   return isShiguangGatewayUrl(provider.base_url);
@@ -140,16 +156,16 @@ async function prepareLettaAuthFile(
   overwrite: boolean | undefined
 ): Promise<
   | { conflictResponse: Response }
-  | { authFile: { version: number; providers: Record<string, any> }; authPath: string }
+  | { authFile: LettaAuthFile; authPath: string }
 > {
   const localBackendDir = getLocalBackendDir();
   const authPath = getProviderAuthPath();
   await fs.mkdir(path.join(localBackendDir, "providers"), { recursive: true });
 
-  let authFile = { version: 1, providers: {} as Record<string, any> };
+  let authFile: LettaAuthFile = { version: 1, providers: {} };
   try {
     const existing = await fs.readFile(authPath, "utf-8");
-    authFile = JSON.parse(existing);
+    authFile = parseLettaAuthFile(existing);
   } catch {
     /* No existing file */
   }
@@ -209,10 +225,10 @@ export async function POST(request: Request) {
     const lettaDir = getLettaDir();
     await fs.mkdir(lettaDir, { recursive: true });
 
-    let settings = {};
+    let settings: JsonObject = {};
     try {
       const existing = await fs.readFile(settingsPath, "utf-8");
-      settings = JSON.parse(existing);
+      settings = parseJsonObject(existing);
     } catch {
       /* No existing settings */
     }
@@ -261,12 +277,12 @@ export async function DELETE(request: Request) {
     // ── 1. Remove lmstudio provider from auth.json, restore backup if exists ──
     const authPath = getProviderAuthPath();
     const backupPath = getBackupPath();
-    let authFile = { version: 1, providers: {} };
+    let authFile: LettaAuthFile = { version: 1, providers: {} };
     try {
       const existing = await fs.readFile(authPath, "utf-8");
-      authFile = JSON.parse(existing);
-    } catch (error) {
-      if (error.code !== "ENOENT") throw error;
+      authFile = parseLettaAuthFile(existing);
+    } catch (error: unknown) {
+      if (errorCode(error) !== "ENOENT") throw error;
     }
 
     let changed = false;
@@ -276,7 +292,7 @@ export async function DELETE(request: Request) {
       // Check if there's a backup of a pre-existing lmstudio config
       try {
         const backupContent = await fs.readFile(backupPath, "utf-8");
-        const backupProvider = JSON.parse(backupContent);
+        const backupProvider = parseJsonObject(backupContent);
         // Restore the original lmstudio config
         authFile.providers[PROVIDER_NAME] = backupProvider;
         restored = true;
@@ -302,7 +318,7 @@ export async function DELETE(request: Request) {
     const settingsPath = getSettingsPath();
     try {
       const existing = await fs.readFile(settingsPath, "utf-8");
-      const settings = JSON.parse(existing);
+      const settings = parseJsonObject(existing);
       if (settings.preferredBackendMode === "local") {
         settings.preferredBackendMode = "api";
         await fs.writeFile(settingsPath, JSON.stringify(settings, null, 2));

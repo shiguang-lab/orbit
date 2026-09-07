@@ -156,16 +156,28 @@ export function loadFallbackChain(model: string): FallbackChainEntry[] | null {
  * Load all fallback chains.
  * @returns {Record<string, Array<{provider: string, priority: number, enabled: boolean}>>}
  */
-export function loadAllFallbackChains() {
+export function loadAllFallbackChains(): Record<string, FallbackChainEntry[]> {
   const db = getDbInstance();
   const rows = db.prepare("SELECT model, chain FROM domain_fallback_chains").all();
-  const result: Record<string, unknown> = {};
+  const result: Record<string, FallbackChainEntry[]> = {};
   for (const row of rows) {
     const record = asRecord(row);
     const model = typeof record.model === "string" ? record.model : null;
     const chain = typeof record.chain === "string" ? record.chain : null;
     if (!model || !chain) continue;
-    result[model] = JSON.parse(chain);
+    const parsed: unknown = JSON.parse(chain);
+    if (!Array.isArray(parsed)) continue;
+    const entries = parsed.filter(
+      (entry): entry is FallbackChainEntry => {
+        const value = asRecord(entry);
+        return (
+          typeof value.provider === "string" &&
+          typeof value.priority === "number" &&
+          typeof value.enabled === "boolean"
+        );
+      }
+    );
+    result[model] = entries;
   }
   return result;
 }

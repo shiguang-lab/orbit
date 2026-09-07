@@ -8,11 +8,11 @@ import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
  * or response bodies, headers, credentials, account ids, or raw upstream
  * errors. Retention is bounded in-memory (30min TTL, 2000 invocations).
  */
-export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(request: Request, { params }: { params: { id: string } }) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 
-  const { id } = await params;
+  const { id } = params;
   if (!id || !id.startsWith("combo-")) {
     return Response.json({ error: "Invalid invocation id" }, { status: 400 });
   }

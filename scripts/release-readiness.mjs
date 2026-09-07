@@ -32,6 +32,22 @@ function run(label, script, args = [], env = {}) {
   return passed;
 }
 
+function runCommand(label, command, args = [], env = {}) {
+  const result = spawnSync(command, args, {
+    cwd: repoRoot,
+    env: { ...process.env, ...env },
+    encoding: "utf8",
+  });
+  const passed = result.status === 0;
+  checks.push({ label, status: passed ? "PASS" : "FAIL", exitCode: result.status ?? 1 });
+  const output = `${result.stdout ?? ""}${result.stderr ?? ""}`.trim();
+  if (output) process.stdout.write(`\n[${label}]\n${output}\n`);
+  return passed;
+}
+
+runCommand("workspace-typecheck", "pnpm", ["typecheck"]);
+runCommand("workspace-build", "pnpm", ["build"]);
+
 run("source-independent", "audit-gateway-independence.mjs", ["--strict"]);
 run("app-boundaries", "audit-app-boundaries.mjs", ["--strict"]);
 run("package-boundaries", "audit-package-boundaries.mjs", ["--strict"]);

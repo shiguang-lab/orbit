@@ -56,7 +56,7 @@ const CRYPTO_SECRETS: Record<string, () => string> = {
  * ~/.shiguangGateway/.env to survive across upgrades.
  * See the local deployment guide for the independent runtime environment.
  */
-const ENCRYPTION_BOUND_KEYS = new Set([]);
+const ENCRYPTION_BOUND_KEYS = new Set<string>();
 
 // ── Resolve DATA_DIR (mirrors bootstrap-env.mjs / dataPaths.ts) ─────────────
 function resolveDataDir(env: NodeJS.ProcessEnv = process.env): string {

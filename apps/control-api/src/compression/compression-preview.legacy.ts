@@ -65,7 +65,7 @@ function countTokens(text: string): number {
   return countTextTokens(text);
 }
 
-function riskGateStatsOf(result: { stats?: { riskGate?: unknown } }): unknown {
+function riskGateStatsOf(result: { stats?: { riskGate?: unknown } | null }): unknown {
   return result.stats?.riskGate ?? null;
 }
 

@@ -20,7 +20,9 @@
 
 import { createInterface } from "node:readline";
 import { resolveDataDir, resolveStoragePath } from "@shiguang-gateway/config/dataPaths";
-import { readManagementPasswordState, resetManagementPassword } from "./cli/sqlite.mjs";
+import { openSqliteDatabase, readManagementPasswordState } from "./cli/sqlite.mjs";
+import { resetManagementPasswordInDatabase } from "./cli/maintenance/reset-password-store.mjs";
+import { isServerUp } from "./cli/api.mjs";
 
 // Resolve data directory — same logic as the server
 const DATA_DIR = resolveDataDir();
@@ -86,6 +88,10 @@ async function collectPassword() {
 console.log("\n🔑 ShiguangGateway — Password Reset\n");
 
 async function main() {
+  if (await isServerUp()) {
+    throw new Error("Stop ShiguangGateway before running this offline recovery command.");
+  }
+
   // Check if database exists
   const passwordState = await readManagementPasswordState(DB_PATH);
   if (!passwordState.exists) {
@@ -113,7 +119,13 @@ async function main() {
     process.exit(1);
   }
 
-  await resetManagementPassword(password, DB_PATH);
+  const db = await openSqliteDatabase(DB_PATH, { fileMustExist: true });
+  try {
+    db.pragma("journal_mode = WAL");
+    await resetManagementPasswordInDatabase(db, password);
+  } finally {
+    db.close();
+  }
 
   console.log("\n✅ Password reset successfully!");
   console.log("   Restart ShiguangGateway for changes to take effect.\n");

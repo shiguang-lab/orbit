@@ -1,6 +1,6 @@
 import { Option } from "commander";
 import { printHeading } from "../io.mjs";
-import { withRuntime } from "../runtime.mjs";
+import { withHttp, withRuntime } from "../runtime.mjs";
 import { t } from "../i18n.mjs";
 import { apiFetch } from "../api.mjs";
 import { mcpCallTool } from "../mcpClient.mjs";
@@ -242,41 +242,32 @@ export async function runComboSwitchCommand(name, opts = {}) {
   }
 
   try {
-    return await withRuntime(async ({ kind, api, db }) => {
-      if (kind === "http") {
-        const listRes = await api("/api/combos", {
-          retry: false,
-          timeout: 5000,
-          acceptNotOk: true,
-        });
-        if (!listRes.ok) {
-          console.error(`Failed to fetch combo list (HTTP ${listRes.status}).`);
-          return 1;
-        }
-        const data = await listRes.json();
-        const combos = Array.isArray(data) ? data : (data.combos ?? []);
-        const found = combos.find((c) => c.name === name || c.id === name);
-        if (!found) {
-          console.error(`Combo '${name}' not found.`);
-          return 1;
-        }
-        const patchRes = await api("/api/settings", {
-          method: "PATCH",
-          body: { activeCombo: name },
-          retry: false,
-          acceptNotOk: true,
-        });
-        if (!patchRes.ok) {
-          console.error(`Failed to switch combo (HTTP ${patchRes.status}).`);
-          return 1;
-        }
-      } else {
-        const combo = await db.combos.getComboByName(name);
-        if (!combo) {
-          console.error(`Combo '${name}' not found.`);
-          return 1;
-        }
-        db.combos.setActiveCombo(name);
+    return await withHttp(async ({ api }) => {
+      const listRes = await api("/api/combos", {
+        retry: false,
+        timeout: 5000,
+        acceptNotOk: true,
+      });
+      if (!listRes.ok) {
+        console.error(`Failed to fetch combo list (HTTP ${listRes.status}).`);
+        return 1;
+      }
+      const data = await listRes.json();
+      const combos = Array.isArray(data) ? data : (data.combos ?? []);
+      const found = combos.find((c) => c.name === name || c.id === name);
+      if (!found) {
+        console.error(`Combo '${name}' not found.`);
+        return 1;
+      }
+      const patchRes = await api("/api/settings", {
+        method: "PATCH",
+        body: { activeCombo: name },
+        retry: false,
+        acceptNotOk: true,
+      });
+      if (!patchRes.ok) {
+        console.error(`Failed to switch combo (HTTP ${patchRes.status}).`);
+        return 1;
       }
 
       console.log(t("combo.switched", { name }));
@@ -308,27 +299,18 @@ export async function runComboCreateCommand(name, strategy = "priority", opts = 
   }
 
   try {
-    return await withRuntime(async ({ kind, api, db }) => {
-      if (kind === "http") {
-        const res = await api("/api/combos", {
-          method: "POST",
-          body: { name, strategy, enabled: true, models, config: {} },
-          retry: false,
-          acceptNotOk: true,
-        });
-        if (!res.ok) {
-          const body = await res.text().catch(() => "");
-          const msg = body ? ` — ${body}` : "";
-          console.error(`Failed to create combo (HTTP ${res.status})${msg}`);
-          return 1;
-        }
-      } else {
-        const existing = await db.combos.getComboByName(name);
-        if (existing) {
-          console.error(`Combo '${name}' already exists. Delete it first.`);
-          return 1;
-        }
-        await db.combos.createCombo({ name, strategy, enabled: true, models, config: {} });
+    return await withHttp(async ({ api }) => {
+      const res = await api("/api/combos", {
+        method: "POST",
+        body: { name, strategy, enabled: true, models, config: {} },
+        retry: false,
+        acceptNotOk: true,
+      });
+      if (!res.ok) {
+        const body = await res.text().catch(() => "");
+        const msg = body ? ` — ${body}` : "";
+        console.error(`Failed to create combo (HTTP ${res.status})${msg}`);
+        return 1;
       }
 
       console.log(t("combo.created", { name }));
@@ -360,39 +342,31 @@ export async function runComboDeleteCommand(name, opts = {}) {
   }
 
   try {
-    return await withRuntime(async ({ kind, api, db }) => {
-      if (kind === "http") {
-        const listRes = await api("/api/combos", {
-          retry: false,
-          timeout: 5000,
-          acceptNotOk: true,
-        });
-        if (!listRes.ok) {
-          console.error(`Failed to fetch combo list (HTTP ${listRes.status}).`);
-          return 1;
-        }
-        const data = await listRes.json();
-        const combos = Array.isArray(data) ? data : (data.combos ?? []);
-        const found = combos.find((c) => c.name === name || c.id === name);
-        if (!found) {
-          console.error(`Combo '${name}' not found.`);
-          return 1;
-        }
-        const delRes = await api(`/api/combos/${encodeURIComponent(found.id)}`, {
-          method: "DELETE",
-          retry: false,
-          acceptNotOk: true,
-        });
-        if (!delRes.ok) {
-          console.error(`Failed to delete combo (HTTP ${delRes.status}).`);
-          return 1;
-        }
-      } else {
-        const deleted = await db.combos.deleteComboByName(name);
-        if (!deleted) {
-          console.error(`Combo '${name}' not found.`);
-          return 1;
-        }
+    return await withHttp(async ({ api }) => {
+      const listRes = await api("/api/combos", {
+        retry: false,
+        timeout: 5000,
+        acceptNotOk: true,
+      });
+      if (!listRes.ok) {
+        console.error(`Failed to fetch combo list (HTTP ${listRes.status}).`);
+        return 1;
+      }
+      const data = await listRes.json();
+      const combos = Array.isArray(data) ? data : (data.combos ?? []);
+      const found = combos.find((c) => c.name === name || c.id === name);
+      if (!found) {
+        console.error(`Combo '${name}' not found.`);
+        return 1;
+      }
+      const delRes = await api(`/api/combos/${encodeURIComponent(found.id)}`, {
+        method: "DELETE",
+        retry: false,
+        acceptNotOk: true,
+      });
+      if (!delRes.ok) {
+        console.error(`Failed to delete combo (HTTP ${delRes.status}).`);
+        return 1;
       }
 
       console.log(t("combo.deleted", { name }));

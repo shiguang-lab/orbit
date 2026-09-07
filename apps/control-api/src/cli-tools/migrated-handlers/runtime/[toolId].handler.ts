@@ -7,12 +7,15 @@ import {
   getCliRuntimeStatus,
 } from "@shiguang-gateway/core-domain/cli/runtime";
 
-export async function GET(request, { params }) {
+export async function GET(
+  request: Request,
+  { params }: { params: Record<string, string> }
+) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
 
   try {
-    const { toolId } = await params;
+    const { toolId } = params;
     const normalizedToolId = String(toolId || "")
       .trim()
       .toLowerCase();

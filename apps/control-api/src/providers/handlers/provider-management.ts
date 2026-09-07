@@ -19,6 +19,18 @@ import {
 import { finalizeValidatedChatGptWebCodexSecrets } from "@shiguang-gateway/open-sse/services/chatgptWebCodexAdmin";
 import { testSingleConnection } from "./provider-test/provider-test.handler.js";
 
+type ProviderIdentity = { id: string; provider: string };
+
+function getProviderIdentity(connection: Record<string, unknown>): ProviderIdentity | null {
+  return typeof connection.id === "string" && typeof connection.provider === "string"
+    ? { id: connection.id, provider: connection.provider }
+    : null;
+}
+
+function getErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
 function projectCodexAccountPoolWithRoutingQuota(
   connection: Parameters<typeof projectCodexAccountPool>[0],
   now: number
@@ -254,6 +266,13 @@ export async function createProvider(request: Request) {
       isActive: false,
       testStatus: testStatus || "unknown",
     });
+    if (!newConnection) {
+      throw new Error("Provider connection creation returned no persisted record");
+    }
+    const persistedIdentity = getProviderIdentity(newConnection);
+    if (!persistedIdentity) {
+      throw new Error("Provider connection creation returned an invalid persisted record");
+    }
 
     // Auto-trigger model discovery only for an explicit autoFetchModels opt-in.
     // Fire-and-forget: model sync can take seconds and should NOT block the
@@ -282,7 +301,7 @@ export async function createProvider(request: Request) {
           ...(cookieHeader ? { cookie: cookieHeader } : {}),
           ...buildModelSyncInternalHeaders(),
         };
-        const syncUrl = `${internalOrigin}/api/providers/${encodeURIComponent(newConnection.id)}/sync-models?mode=import`;
+        const syncUrl = `${internalOrigin}/api/providers/${encodeURIComponent(persistedIdentity.id)}/sync-models?mode=import`;
         // Intentionally not awaited: this is async/non-blocking work.
         void fetchModelSyncInternal(syncUrl, {
           method: "POST",
@@ -291,17 +310,17 @@ export async function createProvider(request: Request) {
         })
           .then((syncRes) => {
             if (!syncRes.ok) {
-              console.log(`[providers] Auto-sync failed for ${newConnection.id}: ${syncRes.status}`);
+              console.log(`[providers] Auto-sync failed for ${persistedIdentity.id}: ${syncRes.status}`);
             }
           })
           .catch((err) => {
-            console.log(`[providers] Auto-sync error for ${newConnection.id}:`, err?.message || err);
+            console.log(`[providers] Auto-sync error for ${persistedIdentity.id}:`, getErrorMessage(err));
           });
       } catch (syncSetupError: unknown) {
         // Defensive: if URL parsing or header construction itself throws, do
         // not let it break the (already successful) POST response.
         console.log(
-          `[providers] Auto-sync setup failed for ${newConnection.id}:`,
+          `[providers] Auto-sync setup failed for ${persistedIdentity.id}:`,
           syncSetupError instanceof Error ? syncSetupError.message : syncSetupError
         );
       }
@@ -314,10 +333,10 @@ export async function createProvider(request: Request) {
     // seconds (OAuth refresh, upstream round-trip) and must not block the
     // 201 response. testSingleConnection() persists testStatus/lastError/etc.
     // itself, so nothing further is needed here beyond logging failures.
-    void testSingleConnection(newConnection.id).catch((testError: unknown) => {
+    void testSingleConnection(persistedIdentity.id).catch((testError: unknown) => {
       console.log(
-        `[providers] Auto-test failed for ${newConnection.id}:`,
-        (testError as { message?: string })?.message || testError
+        `[providers] Auto-test failed for ${persistedIdentity.id}:`,
+        getErrorMessage(testError)
       );
     });
 
@@ -338,7 +357,7 @@ export async function createProvider(request: Request) {
       await syncToCloudIfEnabled();
     } catch (housekeepingError) {
       console.log(
-        `[providers] syncToCloudIfEnabled failed after connection creation for ${newConnection.id}:`,
+        `[providers] syncToCloudIfEnabled failed after connection creation for ${persistedIdentity.id}:`,
         housekeepingError
       );
     }
@@ -359,7 +378,7 @@ export async function createProvider(request: Request) {
       });
     } catch (auditError) {
       console.log(
-        `[providers] logAuditEvent failed after connection creation for ${newConnection.id}:`,
+        `[providers] logAuditEvent failed after connection creation for ${persistedIdentity.id}:`,
         auditError
       );
     }
@@ -394,9 +413,12 @@ export async function updateProviders(request: Request) {
   try {
     if (isActive) {
       const requestedIds = new Set(ids);
-      const requestedConnections = (
-        await getProviderConnections({}, undefined, undefined, ["id", "provider"])
-      ).filter((connection: { id: string; provider: string }) => requestedIds.has(connection.id));
+      const requestedConnections = (await getProviderConnections(
+        {}, undefined, undefined, ["id", "provider"]
+      )).flatMap((connection) => {
+        const identity = getProviderIdentity(connection);
+        return identity && requestedIds.has(identity.id) ? [identity] : [];
+      });
       for (const connection of requestedConnections) {
         const retirementResponse = rejectRetiredCommonChatGptWebProvider(connection.provider);
         if (retirementResponse) return retirementResponse;
@@ -469,9 +491,12 @@ export async function deleteProviders(request: Request) {
 
   try {
     const requestedIds = new Set(body.ids);
-    const deletedConnections = (
-      await getProviderConnections({}, undefined, undefined, ["id", "provider"])
-    ).filter((connection: { id: string; provider: string }) => requestedIds.has(connection.id));
+    const deletedConnections = (await getProviderConnections(
+      {}, undefined, undefined, ["id", "provider"]
+    )).flatMap((connection) => {
+      const identity = getProviderIdentity(connection);
+      return identity && requestedIds.has(identity.id) ? [identity] : [];
+    });
     const deleted = await deleteProviderConnections(body.ids);
 
     for (const connection of deletedConnections) {

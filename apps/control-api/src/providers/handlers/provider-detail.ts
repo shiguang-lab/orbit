@@ -58,12 +58,12 @@ function normalizeCodexLimitPolicy(
 }
 
 // GET /api/providers/[id] - Get single connection
-export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(request: Request, { params }: { params: { id: string } }) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 
   try {
-    const { id } = await params;
+    const { id } = params;
     const connection = await getCachedProviderConnectionById(id);
 
     if (!connection) {
@@ -94,7 +94,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 }
 
 // PUT /api/providers/[id] - Update connection
-export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function PUT(request: Request, { params }: { params: { id: string } }) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 
@@ -115,7 +115,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   }
 
   try {
-    const { id } = await params;
+    const { id } = params;
     const validation = validateBody(updateProviderConnectionSchema, rawBody);
     if (isValidationFailure(validation)) {
       // never drop an operator's intent silently. Surface the rejected
@@ -395,19 +395,19 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 // api-commands) both use PATCH, but only PUT was implemented — PATCH requests
 // 405'd. PATCH and PUT share the same update semantics here (the schema only
 // applies provided fields), so delegate to the PUT handler.
-export async function PATCH(request: Request, ctx: { params: Promise<{ id: string }> }) {
+export async function PATCH(request: Request, ctx: { params: { id: string } }) {
   return PUT(request, ctx);
 }
 
 // DELETE /api/providers/[id] - Delete connection
-export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(request: Request, { params }: { params: { id: string } }) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 
   const auditContext = getAuditRequestContext(request);
 
   try {
-    const { id } = await params;
+    const { id } = params;
 
     // Fetch connection before deleting to check provider type
     const connection = (await getCachedProviderConnectionById(id)) as Record<string, any> | null;

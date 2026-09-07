@@ -10,7 +10,7 @@ import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
 const VALID_TOOLS = ["claude", "codex", "droid", "grok-build", "openclaw", "cline", "kilo", "qwen"];
 
 // GET /api/cli-tools/backups?tool=claude — list backups
-export async function GET(request) {
+export async function GET(request: Request) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
 
@@ -28,19 +28,19 @@ export async function GET(request) {
     }
 
     // List all tools
-    const result = {};
+    const result: Record<string, Awaited<ReturnType<typeof listBackups>>> = {};
     for (const t of VALID_TOOLS) {
       result[t] = await listBackups(t);
     }
     return Response.json({ backups: result });
   } catch (error) {
-    console.log("Error listing backups:", error.message);
+    console.log("Error listing backups:", error instanceof Error ? error.message : String(error));
     return Response.json({ error: "Failed to list backups" }, { status: 500 });
   }
 }
 
 // POST /api/cli-tools/backups { tool, backupId } — restore a backup
-export async function POST(request) {
+export async function POST(request: Request) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
 
@@ -72,6 +72,10 @@ export async function POST(request) {
     const tool = validation.data.tool || validation.data.toolId;
     const { backupId } = validation.data;
 
+    if (!tool) {
+      return Response.json({ error: "tool is required" }, { status: 400 });
+    }
+
     if (!VALID_TOOLS.includes(tool)) {
       return Response.json({ error: `Invalid tool: ${tool}` }, { status: 400 });
     }
@@ -83,7 +87,7 @@ export async function POST(request) {
       ...result,
     });
   } catch (error) {
-    console.log("Error restoring backup:", error.message);
+    console.log("Error restoring backup:", error instanceof Error ? error.message : String(error));
     return Response.json(
       {
         error:
@@ -96,7 +100,7 @@ export async function POST(request) {
 }
 
 // DELETE /api/cli-tools/backups { tool, backupId } — delete a backup
-export async function DELETE(request) {
+export async function DELETE(request: Request) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
 
@@ -123,6 +127,10 @@ export async function DELETE(request) {
     const tool = validation.data.tool || validation.data.toolId;
     const { backupId } = validation.data;
 
+    if (!tool) {
+      return Response.json({ error: "tool is required" }, { status: 400 });
+    }
+
     if (!VALID_TOOLS.includes(tool)) {
       return Response.json({ error: `Invalid tool: ${tool}` }, { status: 400 });
     }
@@ -134,7 +142,7 @@ export async function DELETE(request) {
       ...result,
     });
   } catch (error) {
-    console.log("Error deleting backup:", error.message);
+    console.log("Error deleting backup:", error instanceof Error ? error.message : String(error));
     return Response.json({ error: "Failed to delete backup" }, { status: 500 });
   }
 }

@@ -56,7 +56,7 @@ export class StreamTracker {
    * Record an incoming SSE chunk.
    * @param {string|Object} chunk - Raw SSE text or parsed data
    */
-  onChunk(chunk) {
+  onChunk(chunk: string | Record<string, unknown>) {
     this._totalChunks++;
 
     if (this._totalChunks === 1) {
@@ -64,7 +64,7 @@ export class StreamTracker {
     }
 
     // Try to extract token count from chunk
-    let data = chunk;
+    let data: string | Record<string, unknown> | null = chunk;
     if (typeof chunk === "string") {
       // Parse SSE if formatted
       if (chunk.startsWith("data: ")) {
@@ -83,22 +83,33 @@ export class StreamTracker {
     }
 
     if (data && typeof data === "object") {
+      const record = data as Record<string, unknown>;
+      const choices = Array.isArray(record.choices) ? record.choices : [];
+      const choice = choices[0] && typeof choices[0] === "object"
+        ? choices[0] as Record<string, unknown>
+        : {};
+      const delta = choice.delta && typeof choice.delta === "object"
+        ? choice.delta as Record<string, unknown>
+        : {};
       // OpenAI format: choices[0].delta.content
-      const content = data.choices?.[0]?.delta?.content;
-      if (content) {
+      const content = delta.content;
+      if (typeof content === "string") {
         // Rough token estimate (~4 chars per token)
         this._totalTokens += Math.ceil(content.length / 4);
       }
 
       // Check for finish reason
-      const reason = data.choices?.[0]?.finish_reason;
-      if (reason) {
+      const reason = choice.finish_reason;
+      if (typeof reason === "string") {
         this._finishReason = reason;
       }
 
       // Usage in final chunk (OpenAI includes this)
-      if (data.usage?.completion_tokens) {
-        this._totalTokens = data.usage.completion_tokens;
+      const usage = record.usage && typeof record.usage === "object"
+        ? record.usage as Record<string, unknown>
+        : {};
+      if (typeof usage.completion_tokens === "number") {
+        this._totalTokens = usage.completion_tokens;
       }
     }
 
@@ -109,7 +120,7 @@ export class StreamTracker {
    * Mark stream as errored.
    * @param {string|Error} error
    */
-  onError(error) {
+  onError(error: string | Error) {
     this._error = typeof error === "string" ? error : error.message;
     this._complete = true;
     this._emitProgress();

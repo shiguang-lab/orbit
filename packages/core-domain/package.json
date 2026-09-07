@@ -3,6 +3,10 @@
   "version": "3.8.51-local",
   "private": true,
   "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json --pretty false",
+    "typecheck": "tsc -p tsconfig.json --noEmit --pretty false"
+  },
   "exports": {
     "./control/intelligence-sync": {
       "types": "./src/public/intelligenceSync.d.ts",
@@ -41,10 +45,22 @@
       "types": "./src/public/eventTypes.d.ts",
       "import": "./src/lib/events/types.ts"
     },
-    "./jobs/runtime-registry": { "types": "./src/public/jobRuntimeRegistry.d.ts", "import": "./src/lib/jobRegistry/index.ts" },
-    "./jobs/cron-match": { "types": "./src/public/cronMatch.d.ts", "import": "./src/lib/jobs/cronMatch.ts" },
-    "./conductor/bridge": { "types": "./src/public/conductorBridge.d.ts", "import": "./src/lib/conductor/bridge.ts" },
-    "./db/conductor-bridge": { "types": "./src/public/conductorCursor.d.ts", "import": "./src/lib/db/conductorBridge.ts" },
+    "./jobs/runtime-registry": {
+      "types": "./src/public/jobRuntimeRegistry.d.ts",
+      "import": "./src/lib/jobRegistry/index.ts"
+    },
+    "./jobs/cron-match": {
+      "types": "./src/public/cronMatch.d.ts",
+      "import": "./src/lib/jobs/cronMatch.ts"
+    },
+    "./conductor/bridge": {
+      "types": "./src/public/conductorBridge.d.ts",
+      "import": "./src/lib/conductor/bridge.ts"
+    },
+    "./db/conductor-bridge": {
+      "types": "./src/public/conductorCursor.d.ts",
+      "import": "./src/lib/db/conductorBridge.ts"
+    },
     "./shared/test-process": {
       "types": "./src/public/testProcess.d.ts",
       "import": "./src/shared/utils/testProcess.ts"
@@ -54,11 +70,11 @@
       "import": "./src/shared/utils/httpClientAbortGuard.mjs"
     },
     "./control/token-health-check": {
-      "types": "./src/lib/tokenHealthCheck.ts",
+      "types": "./dist/types/lib/tokenHealthCheck.d.ts",
       "import": "./src/lib/tokenHealthCheck.ts"
     },
     "./control/oauth-gitlab": {
-      "types": "./src/lib/oauth/gitlab.ts",
+      "types": "./dist/types/lib/oauth/gitlab.d.ts",
       "import": "./src/lib/oauth/gitlab.ts"
     },
     "./conductor/hub-proxy": {
@@ -74,7 +90,7 @@
       "import": "./src/edge/codexResponsesModel.ts"
     },
     "./edge/count-tokens-validation": {
-      "types": "./src/shared/validation/countTokensExports.ts",
+      "types": "./dist/types/shared/validation/countTokensExports.d.ts",
       "import": "./src/shared/validation/countTokensExports.ts"
     },
     "./sse/logger": {
@@ -90,7 +106,7 @@
       "import": "./src/shared/utils/upstreamError.ts"
     },
     "./edge/rerank-validation-schemas": {
-      "types": "./src/shared/validation/rerankExports.ts",
+      "types": "./dist/types/shared/validation/rerankExports.d.ts",
       "import": "./src/shared/validation/rerankExports.ts"
     },
     "./edge/gateway-response-meta": {
@@ -98,7 +114,7 @@
       "import": "./src/domain/gatewayResponseMeta.ts"
     },
     "./edge/embedding-input-limits": {
-      "types": "./src/shared/validation/embeddingInputExports.ts",
+      "types": "./dist/types/shared/validation/embeddingInputExports.d.ts",
       "import": "./src/shared/validation/embeddingInputExports.ts"
     },
     "./edge/jina-native-embedding-input": {
@@ -114,7 +130,7 @@
       "import": "./src/lib/providerModels/reactiveModelSync.ts"
     },
     "./routing/peer-routing": {
-      "types": "./src/routing/peerRouting.ts",
+      "types": "./dist/types/routing/peerRouting.d.ts",
       "import": "./src/routing/peerRouting.ts"
     },
     "./edge/pipeline": {
@@ -126,7 +142,7 @@
       "import": "./src/domain/prompts.ts"
     },
     "./routing/connection-model-rules": {
-      "types": "./src/routing/connectionModelRules.ts",
+      "types": "./dist/types/routing/connectionModelRules.d.ts",
       "import": "./src/routing/connectionModelRules.ts"
     },
     "./edge/tag-router": {
@@ -138,7 +154,7 @@
       "import": "./src/lib/credentialHealth/cache.ts"
     },
     "./routing/reasoning-policy": {
-      "types": "./src/routing/reasoningPolicy.ts",
+      "types": "./dist/types/routing/reasoningPolicy.d.ts",
       "import": "./src/routing/reasoningPolicy.ts"
     },
     "./runtime/feature-flags": {
@@ -146,11 +162,11 @@
       "import": "./src/shared/utils/featureFlags.ts"
     },
     "./edge/embeddings-validation-schemas": {
-      "types": "./src/shared/validation/embeddingsExports.ts",
+      "types": "./dist/types/shared/validation/embeddingsExports.d.ts",
       "import": "./src/shared/validation/embeddingsExports.ts"
     },
     "./edge/batches-validation-schemas": {
-      "types": "./src/shared/validation/batchesExports.ts",
+      "types": "./dist/types/shared/validation/batchesExports.d.ts",
       "import": "./src/shared/validation/batchesExports.ts"
     },
     "./edge/synced-endpoint-routing": {
@@ -170,23 +186,23 @@
       "import": "./src/lib/edge/mediaGenerationRoute.ts"
     },
     "./providers/request-defaults": {
-      "types": "./src/providers/requestDefaults.ts",
+      "types": "./dist/types/providers/requestDefaults.d.ts",
       "import": "./src/providers/requestDefaults.ts"
     },
     "./edge/web-cookie-auth": {
-      "types": "./src/lib/providers/webCookieAuth.ts",
+      "types": "./dist/types/lib/providers/webCookieAuth.d.ts",
       "import": "./src/lib/providers/webCookieAuth.ts"
     },
     "./edge/xai-chat-translator": {
-      "types": "./src/lib/providers/xai/translators/openai-chat.ts",
+      "types": "./dist/types/lib/providers/xai/translators/openai-chat.d.ts",
       "import": "./src/lib/providers/xai/translators/openai-chat.ts"
     },
     "./edge/claude-fast-mode": {
-      "types": "./src/lib/providers/claudeFastMode.ts",
+      "types": "./dist/types/lib/providers/claudeFastMode.d.ts",
       "import": "./src/lib/providers/claudeFastMode.ts"
     },
     "./edge/codex-fast-tier": {
-      "types": "./src/lib/providers/codexFastTier.ts",
+      "types": "./dist/types/lib/providers/codexFastTier.d.ts",
       "import": "./src/lib/providers/codexFastTier.ts"
     },
     "./usage/claude-extra-usage": {
@@ -202,27 +218,27 @@
       "import": "./src/lib/ws/handshake.ts"
     },
     "./edge/moderation-validation-schemas": {
-      "types": "./src/shared/validation/moderationExports.ts",
+      "types": "./dist/types/shared/validation/moderationExports.d.ts",
       "import": "./src/shared/validation/moderationExports.ts"
     },
     "./edge/image-generation-validation": {
-      "types": "./src/shared/validation/imageGenerationExports.ts",
+      "types": "./dist/types/shared/validation/imageGenerationExports.d.ts",
       "import": "./src/shared/validation/imageGenerationExports.ts"
     },
     "./edge/image-upscale-validation": {
-      "types": "./src/shared/validation/imageUpscaleExports.ts",
+      "types": "./dist/types/shared/validation/imageUpscaleExports.d.ts",
       "import": "./src/shared/validation/imageUpscaleExports.ts"
     },
     "./edge/ocr-validation": {
-      "types": "./src/shared/validation/ocrExports.ts",
+      "types": "./dist/types/shared/validation/ocrExports.d.ts",
       "import": "./src/shared/validation/ocrExports.ts"
     },
     "./edge/search-validation": {
-      "types": "./src/shared/validation/searchExports.ts",
+      "types": "./dist/types/shared/validation/searchExports.d.ts",
       "import": "./src/shared/validation/searchExports.ts"
     },
     "./edge/segment-validation": {
-      "types": "./src/shared/validation/segmentExports.ts",
+      "types": "./dist/types/shared/validation/segmentExports.d.ts",
       "import": "./src/shared/validation/segmentExports.ts"
     },
     "./db/compression-analytics": {
@@ -274,15 +290,15 @@
       "import": "./src/lib/db/relayProxies.ts"
     },
     "./usage/analytics": {
-      "types": "./src/usage/analytics.ts",
+      "types": "./dist/types/usage/analytics.d.ts",
       "import": "./src/usage/analytics.ts"
     },
     "./quota/provider-response": {
-      "types": "./src/quota/providerResponse.ts",
+      "types": "./dist/types/quota/providerResponse.d.ts",
       "import": "./src/quota/providerResponse.ts"
     },
     "./control/token-limit-validation": {
-      "types": "./src/control/tokenLimitValidation.ts",
+      "types": "./dist/types/control/tokenLimitValidation.d.ts",
       "import": "./src/control/tokenLimitValidation.ts"
     },
     "./usage/quota-snapshots": {
@@ -374,13 +390,34 @@
       "types": "./src/public/gamificationRules.d.ts",
       "import": "./src/gamification/rules.ts"
     },
-    "./radar/read": { "types": "./src/public/radarRead.d.ts", "import": "./src/radar/read.ts" },
-    "./radar/store": { "types": "./src/public/radarStore.d.ts", "import": "./src/radar/store.ts" },
-    "./radar/sync/catalog": { "types": "./src/public/radarCatalogSync.d.ts", "import": "./src/radar/sync/catalog.ts" },
-    "./radar/sync/referrals": { "types": "./src/public/radarReferralsSync.d.ts", "import": "./src/radar/sync/referrals.ts" },
-    "./radar/sync/offers": { "types": "./src/public/radarOffersSync.d.ts", "import": "./src/radar/sync/offers.ts" },
-    "./radar/sync/intel": { "types": "./src/public/radarIntelSync.d.ts", "import": "./src/radar/sync/intel.ts" },
-    "./radar/sync-lifecycle": { "types": "./src/public/radarSyncLifecycle.d.ts", "import": "./src/radar/syncLifecycle.ts" },
+    "./radar/read": {
+      "types": "./src/public/radarRead.d.ts",
+      "import": "./src/radar/read.ts"
+    },
+    "./radar/store": {
+      "types": "./src/public/radarStore.d.ts",
+      "import": "./src/radar/store.ts"
+    },
+    "./radar/sync/catalog": {
+      "types": "./src/public/radarCatalogSync.d.ts",
+      "import": "./src/radar/sync/catalog.ts"
+    },
+    "./radar/sync/referrals": {
+      "types": "./src/public/radarReferralsSync.d.ts",
+      "import": "./src/radar/sync/referrals.ts"
+    },
+    "./radar/sync/offers": {
+      "types": "./src/public/radarOffersSync.d.ts",
+      "import": "./src/radar/sync/offers.ts"
+    },
+    "./radar/sync/intel": {
+      "types": "./src/public/radarIntelSync.d.ts",
+      "import": "./src/radar/sync/intel.ts"
+    },
+    "./radar/sync-lifecycle": {
+      "types": "./src/public/radarSyncLifecycle.d.ts",
+      "import": "./src/radar/syncLifecycle.ts"
+    },
     "./proxy-subscriptions/management": {
       "types": "./src/public/proxySubscriptionManagement.d.ts",
       "import": "./src/proxySubscriptions/management.ts"
@@ -403,19 +440,28 @@
     "./control/provider-discovery-support/claudeProfileAutoSync": "./src/lib/cli-helper/claudeProfileAutoSync.ts",
     "./control/provider-discovery-support/volcenginePlanModelDiscovery": "./src/lib/providers/volcenginePlanModelDiscovery.ts",
     "./control/provider-discovery-support/modelDiscovery": "./src/lib/providerModels/modelDiscovery.ts",
-    "./control/notion-db": { "types": "./src/public/notionDb.d.ts", "import": "./src/lib/db/notion.ts" },
-    "./db/obsidian-config": { "types": "./src/public/obsidianConfigDb.d.ts", "import": "./src/db/obsidianConfig.ts" },
-    "./control/obsidian-sync": { "types": "./src/public/obsidianSync.d.ts", "import": "./src/lib/obsidianSync.ts" },
+    "./control/notion-db": {
+      "types": "./src/public/notionDb.d.ts",
+      "import": "./src/lib/db/notion.ts"
+    },
+    "./db/obsidian-config": {
+      "types": "./src/public/obsidianConfigDb.d.ts",
+      "import": "./src/db/obsidianConfig.ts"
+    },
+    "./control/obsidian-sync": {
+      "types": "./src/public/obsidianSync.d.ts",
+      "import": "./src/lib/obsidianSync.ts"
+    },
     "./providers/cursor-session": {
-      "types": "./src/providers/cursorSession.ts",
+      "types": "./dist/types/providers/cursorSession.d.ts",
       "import": "./src/providers/cursorSession.ts"
     },
     "./integrations/notion-client": {
-      "types": "./src/integrations/notionClient.ts",
+      "types": "./dist/types/integrations/notionClient.d.ts",
       "import": "./src/integrations/notionClient.ts"
     },
     "./integrations/obsidian-client": {
-      "types": "./src/integrations/obsidianClient.ts",
+      "types": "./dist/types/integrations/obsidianClient.d.ts",
       "import": "./src/integrations/obsidianClient.ts"
     },
     "./embedded-services/catalog": {
@@ -531,7 +577,7 @@
       "import": "./src/lib/oauth/utils/codexSessionImport.ts"
     },
     "./control/model-management": {
-      "types": "./src/control/model-management.ts",
+      "types": "./dist/types/control/model-management.d.ts",
       "import": "./src/control/model-management.ts"
     },
     "./control/traffic-inspector": {
@@ -632,15 +678,21 @@
       "import": "./src/logging/proxyLogSettings.ts"
     },
     "./resilience/connection-recovery-policy": {
-      "types": "./src/resilience/connectionRecoveryPolicy.ts",
+      "types": "./dist/types/resilience/connectionRecoveryPolicy.d.ts",
       "import": "./src/resilience/connectionRecoveryPolicy.ts"
     },
     "./resilience/connection-recovery": {
       "types": "./src/public/connectionRecoveryOperation.d.ts",
       "import": "./src/resilience/connectionRecovery.ts"
     },
-    "./shared/credential-probe-policy": { "types": "./src/public/credentialProbePolicy.d.ts", "import": "./src/lib/credentialHealth/probePolicy.ts" },
-    "./db/connection-runtime-state": { "types": "./src/public/connectionRuntimeState.d.ts", "import": "./src/lib/db/connectionRuntimeState.ts" },
+    "./shared/credential-probe-policy": {
+      "types": "./src/public/credentialProbePolicy.d.ts",
+      "import": "./src/lib/credentialHealth/probePolicy.ts"
+    },
+    "./db/connection-runtime-state": {
+      "types": "./src/public/connectionRuntimeState.d.ts",
+      "import": "./src/lib/db/connectionRuntimeState.ts"
+    },
     "./shared/proxy-egress": {
       "types": "./src/public/proxyEgress.d.ts",
       "import": "./src/shared/proxy-egress.ts"
@@ -654,7 +706,7 @@
       "import": "./src/db/proxyLogs.ts"
     },
     "./logging/environment": {
-      "types": "./src/logging/environment.ts",
+      "types": "./dist/types/logging/environment.d.ts",
       "import": "./src/logging/environment.ts"
     },
     "./shared/api-key-resolver": {
@@ -662,7 +714,7 @@
       "import": "./src/shared/services/apiKeyResolver.ts"
     },
     "./sync/cloud": {
-      "types": "./src/sync/cloud.ts",
+      "types": "./dist/types/sync/cloud.d.ts",
       "import": "./src/sync/cloud.ts"
     },
     "./control/sync-bundle": {
@@ -686,7 +738,7 @@
       "import": "./src/lib/db/apiKeyGroups.ts"
     },
     "./usage/api-key-limits": {
-      "types": "./src/usage/apiKeyLimits.ts",
+      "types": "./dist/types/usage/apiKeyLimits.d.ts",
       "import": "./src/usage/apiKeyLimits.ts"
     },
     "./shared/utils/machineId": {
@@ -698,39 +750,39 @@
       "import": "./src/shared/utils/tiktokenCounter.ts"
     },
     "./validation/proxy": {
-      "types": "./src/validation/proxy.ts",
+      "types": "./dist/types/validation/proxy.d.ts",
       "import": "./src/validation/proxy.ts"
     },
     "./validation/keys": {
-      "types": "./src/validation/keys.ts",
+      "types": "./dist/types/validation/keys.d.ts",
       "import": "./src/validation/keys.ts"
     },
     "./validation/combos": {
-      "types": "./src/validation/combos.ts",
+      "types": "./dist/types/validation/combos.d.ts",
       "import": "./src/validation/combos.ts"
     },
     "./validation/routing": {
-      "types": "./src/validation/routing.ts",
+      "types": "./dist/types/validation/routing.d.ts",
       "import": "./src/validation/routing.ts"
     },
     "./validation/settings": {
-      "types": "./src/validation/settings.ts",
+      "types": "./dist/types/validation/settings.d.ts",
       "import": "./src/validation/settings.ts"
     },
     "./validation/security": {
-      "types": "./src/validation/security.ts",
+      "types": "./dist/types/validation/security.d.ts",
       "import": "./src/validation/security.ts"
     },
     "./validation/misc": {
-      "types": "./src/validation/misc.ts",
+      "types": "./dist/types/validation/misc.d.ts",
       "import": "./src/validation/misc.ts"
     },
     "./validation/translator": {
-      "types": "./src/validation/translator.ts",
+      "types": "./dist/types/validation/translator.d.ts",
       "import": "./src/validation/translator.ts"
     },
     "./shared/validation/schemas/oauth-import": {
-      "types": "./src/shared/validation/schemas/auth.ts",
+      "types": "./dist/types/shared/validation/schemas/auth.d.ts",
       "import": "./src/shared/validation/schemas/auth.ts"
     },
     "./shared/schemas/playground": {
@@ -746,7 +798,7 @@
       "import": "./src/shared/constants/appConfig.ts"
     },
     "./shared/validation/settings-schema": {
-      "types": "./src/shared/validation/settingsSchemas.ts",
+      "types": "./dist/types/shared/validation/settingsSchemas.d.ts",
       "import": "./src/shared/validation/settingsSchemas.ts"
     },
     "./shared/validation/helpers": {
@@ -778,19 +830,19 @@
       "import": "./src/cli/configStatus.ts"
     },
     "./control/provider-validation-schemas": {
-      "types": "./src/shared/validation/providerValidationExports.ts",
+      "types": "./dist/types/shared/validation/providerValidationExports.d.ts",
       "import": "./src/shared/validation/providerValidationExports.ts"
     },
     "./control/oauth-validation": {
-      "types": "./src/shared/validation/oauthExports.ts",
+      "types": "./dist/types/shared/validation/oauthExports.d.ts",
       "import": "./src/shared/validation/oauthExports.ts"
     },
     "./control/cloud-validation": {
-      "types": "./src/shared/validation/cloudExports.ts",
+      "types": "./dist/types/shared/validation/cloudExports.d.ts",
       "import": "./src/shared/validation/cloudExports.ts"
     },
     "./control/volcengine-validation": {
-      "types": "./src/shared/validation/volcenginePlanExports.ts",
+      "types": "./dist/types/shared/validation/volcenginePlanExports.d.ts",
       "import": "./src/shared/validation/volcenginePlanExports.ts"
     },
     "./db/provider-cc-alias": {
@@ -839,7 +891,7 @@
       "import": "./src/db/providerConnectionView.ts"
     },
     "./db/model-compat": {
-      "types": "./src/lib/db/models/compat.ts",
+      "types": "./dist/types/lib/db/models/compat.d.ts",
       "import": "./src/lib/db/models/compat.ts"
     },
     "./db/upstream-proxy": {
@@ -859,7 +911,7 @@
       "import": "./src/db/contextHandoffs.ts"
     },
     "./db/combos": {
-      "types": "./src/db/combos.ts",
+      "types": "./dist/types/db/combos.d.ts",
       "import": "./src/db/combos.ts"
     },
     "./db/active-synced-catalog": {
@@ -867,11 +919,11 @@
       "import": "./src/lib/db/models/activeSyncedCatalog.ts"
     },
     "./catalog/synced-auto-aliases": {
-      "types": "./src/lib/providerModels/syncedAutoAliases.ts",
+      "types": "./dist/types/lib/providerModels/syncedAutoAliases.d.ts",
       "import": "./src/lib/providerModels/syncedAutoAliases.ts"
     },
     "./catalog/reserved-provider-prefixes": {
-      "types": "./src/shared/constants/reservedProviderPrefixes.ts",
+      "types": "./dist/types/shared/constants/reservedProviderPrefixes.d.ts",
       "import": "./src/shared/constants/reservedProviderPrefixes.ts"
     },
     "./db/proxies": {
@@ -943,7 +995,7 @@
       "import": "./src/lib/monitoring/providerHealthMatrix.ts"
     },
     "./shared/connection-isolation": {
-      "types": "./src/shared/connectionIsolation.ts",
+      "types": "./dist/types/shared/connectionIsolation.d.ts",
       "import": "./src/shared/connectionIsolation.ts"
     },
     "./shared/combo-invariants": {
@@ -955,47 +1007,47 @@
       "import": "./src/catalog/visibility.ts"
     },
     "./catalog/alias-backed-models": {
-      "types": "./src/catalog/aliasBackedModels.ts",
+      "types": "./dist/types/catalog/aliasBackedModels.d.ts",
       "import": "./src/catalog/aliasBackedModels.ts"
     },
     "./catalog/synced-coverage": {
-      "types": "./src/catalog/syncedCoverage.ts",
+      "types": "./dist/types/catalog/syncedCoverage.d.ts",
       "import": "./src/catalog/syncedCoverage.ts"
     },
     "./catalog/model-listing-policy": {
-      "types": "./src/catalog/modelListingPolicy.ts",
+      "types": "./dist/types/catalog/modelListingPolicy.d.ts",
       "import": "./src/catalog/modelListingPolicy.ts"
     },
     "./catalog/cursor-auto-entry": {
-      "types": "./src/catalog/cursorAutoEntry.ts",
+      "types": "./dist/types/catalog/cursorAutoEntry.d.ts",
       "import": "./src/catalog/cursorAutoEntry.ts"
     },
     "./catalog/openrouter-catalog": {
-      "types": "./src/catalog/openrouterCatalog.ts",
+      "types": "./dist/types/catalog/openrouterCatalog.d.ts",
       "import": "./src/catalog/openrouterCatalog.ts"
     },
     "./catalog/diagnostics": {
-      "types": "./src/catalog/diagnostics.ts",
+      "types": "./dist/types/catalog/diagnostics.d.ts",
       "import": "./src/catalog/diagnostics.ts"
     },
     "./catalog/supported-endpoints": {
-      "types": "./src/catalog/supportedEndpoints.ts",
+      "types": "./dist/types/catalog/supportedEndpoints.d.ts",
       "import": "./src/catalog/supportedEndpoints.ts"
     },
     "./catalog/provider-prefixes": {
-      "types": "./src/catalog/providerPrefixes.ts",
+      "types": "./dist/types/catalog/providerPrefixes.d.ts",
       "import": "./src/catalog/providerPrefixes.ts"
     },
     "./catalog/combo-capabilities": {
-      "types": "./src/catalog/comboCapabilities.ts",
+      "types": "./dist/types/catalog/comboCapabilities.d.ts",
       "import": "./src/catalog/comboCapabilities.ts"
     },
     "./catalog/vision-capabilities": {
-      "types": "./src/catalog/visionCapabilities.ts",
+      "types": "./dist/types/catalog/visionCapabilities.d.ts",
       "import": "./src/catalog/visionCapabilities.ts"
     },
     "./catalog/codex-discovery-policy": {
-      "types": "./src/catalog/codexDiscoveryPolicy.ts",
+      "types": "./dist/types/catalog/codexDiscoveryPolicy.d.ts",
       "import": "./src/catalog/codexDiscoveryPolicy.ts"
     },
     "./catalog/response-presentation": {
@@ -1010,19 +1062,34 @@
       "types": "./src/public/catalogModelMetadata.d.ts",
       "import": "./src/catalog/modelMetadata.ts"
     },
-    "./catalog/display-names": { "types": "./src/public/catalogDisplayNames.d.ts", "import": "./src/lib/display/names.ts" },
-    "./catalog/managed-available-models": { "types": "./src/public/catalogManagedModels.d.ts", "import": "./src/catalog/managedAvailableModels.ts" },
-    "./catalog/model-capabilities": { "types": "./src/public/catalogModelCapabilities.d.ts", "import": "./src/lib/modelCapabilities.ts" },
+    "./catalog/display-names": {
+      "types": "./src/public/catalogDisplayNames.d.ts",
+      "import": "./src/lib/display/names.ts"
+    },
+    "./catalog/managed-available-models": {
+      "types": "./src/public/catalogManagedModels.d.ts",
+      "import": "./src/catalog/managedAvailableModels.ts"
+    },
+    "./catalog/model-capabilities": {
+      "types": "./src/public/catalogModelCapabilities.d.ts",
+      "import": "./src/lib/modelCapabilities.ts"
+    },
     "./catalog/synced-model-capabilities": {
       "types": "./src/public/catalogSyncedModelCapabilities.d.ts",
       "import": "./src/catalog/syncedModelCapabilities.ts"
     },
-    "./catalog/provider-models": { "types": "./src/public/catalogProviderModels.d.ts", "import": "./src/catalog/providerModels.ts" },
+    "./catalog/provider-models": {
+      "types": "./src/public/catalogProviderModels.d.ts",
+      "import": "./src/catalog/providerModels.ts"
+    },
     "./catalog/no-auth-providers": {
       "types": "./src/public/catalogNoAuthProviders.d.ts",
       "import": "./src/catalog/noAuthProviders.ts"
     },
-    "./catalog/providers": { "types": "./src/public/catalogProviders.d.ts", "import": "./src/catalog/providers.ts" },
+    "./catalog/providers": {
+      "types": "./src/public/catalogProviders.d.ts",
+      "import": "./src/catalog/providers.ts"
+    },
     "./routing/combo-steps": {
       "types": "./src/public/routingComboSteps.d.ts",
       "import": "./src/routing/comboSteps.ts"
@@ -1032,23 +1099,23 @@
       "import": "./src/network/probeOrigin.ts"
     },
     "./shared/fetch-timeout": {
-      "types": "./src/shared/utils/fetchTimeout.ts",
+      "types": "./dist/types/shared/utils/fetchTimeout.d.ts",
       "import": "./src/shared/utils/fetchTimeout.ts"
     },
     "./shared/secure-random": {
-      "types": "./src/shared/utils/secureRandom.ts",
+      "types": "./dist/types/shared/utils/secureRandom.d.ts",
       "import": "./src/shared/utils/secureRandom.ts"
     },
     "./selection/shuffle-deck": {
-      "types": "./src/selection/shuffleDeck.ts",
+      "types": "./dist/types/selection/shuffleDeck.d.ts",
       "import": "./src/selection/shuffleDeck.ts"
     },
     "./shared/terminal-status": {
-      "types": "./src/shared/utils/terminalStatus.ts",
+      "types": "./dist/types/shared/utils/terminalStatus.d.ts",
       "import": "./src/shared/utils/terminalStatus.ts"
     },
     "./resilience/rate-limit-classification": {
-      "types": "./src/resilience/rateLimitClassification.ts",
+      "types": "./dist/types/resilience/rateLimitClassification.d.ts",
       "import": "./src/resilience/rateLimitClassification.ts"
     },
     "./db/provider-stats": {
@@ -1060,27 +1127,27 @@
       "import": "./src/providers/alibabaRegions.ts"
     },
     "./edge/capability-filter": {
-      "types": "./src/shared/constants/capabilities/capabilityFilter.ts",
+      "types": "./dist/types/shared/constants/capabilities/capabilityFilter.d.ts",
       "import": "./src/shared/constants/capabilities/capabilityFilter.ts"
     },
     "./edge/cline-auth": {
-      "types": "./src/shared/utils/clineAuth.ts",
+      "types": "./dist/types/shared/utils/clineAuth.d.ts",
       "import": "./src/shared/utils/clineAuth.ts"
     },
     "./edge/provider-hints": {
-      "types": "./src/shared/utils/providerHints.ts",
+      "types": "./dist/types/shared/utils/providerHints.d.ts",
       "import": "./src/shared/utils/providerHints.ts"
     },
     "./edge/proxy-egress-cache": {
-      "types": "./src/lib/proxyEgress.ts",
+      "types": "./dist/types/lib/proxyEgress.d.ts",
       "import": "./src/lib/proxyEgress.ts"
     },
     "./edge/translation-events": {
-      "types": "./src/lib/translatorEvents.ts",
+      "types": "./dist/types/lib/translatorEvents.d.ts",
       "import": "./src/lib/translatorEvents.ts"
     },
     "./edge/vision-bridge-defaults": {
-      "types": "./src/shared/constants/visionBridgeDefaults.ts",
+      "types": "./dist/types/shared/constants/visionBridgeDefaults.d.ts",
       "import": "./src/shared/constants/visionBridgeDefaults.ts"
     },
     "./edge/memory-runtime": {
@@ -1156,7 +1223,7 @@
       "import": "./src/lib/usage/callLogApiKeyContext.ts"
     },
     "./metrics/request-telemetry": {
-      "types": "./src/metrics/requestTelemetry.ts",
+      "types": "./dist/types/metrics/requestTelemetry.d.ts",
       "import": "./src/metrics/requestTelemetry.ts"
     },
     "./metrics/observability": {
@@ -1231,14 +1298,9 @@
       "types": "./src/public/databaseCleanupMaintenance.d.ts",
       "import": "./src/db/cleanupMaintenance.ts"
     },
-    "./worker/proxy-subscription-lifecycle": {
-      "types": "./src/public/proxySubscriptionLifecycle.d.ts",
-      "import": "./src/worker/proxySubscriptionLifecycle.ts"
-    },
-    "./worker/memory": "./src/lib/memory/index.ts",
     "./worker/arena-elo-sync": "./src/lib/arenaEloSync.ts",
     "./worker/context-window": "./src/lib/contextWindowResolver.ts",
-    "./worker/typed-memory-decay": "./src/lib/memory/typedDecay.ts",
+    "./edge/memory-decay": "./src/lib/memory/typedDecay.ts",
     "./worker/config-hot-reload": "./src/lib/config/hotReload.ts",
     "./backup/runtime": "./src/lib/backup/runtime.ts",
     "./edge/model-alias-resolver": "./src/lib/modelAliasResolver.ts",
@@ -1319,19 +1381,19 @@
     "./runtime/nvidia-validation-model": "./src/lib/providers/nvidiaValidationModel.ts",
     "./runtime/modal-validation": "./src/shared/constants/modal.ts",
     "./cli/doctor-checks": {
-      "types": "./src/public/cliDoctorChecks.ts",
+      "types": "./dist/types/public/cliDoctorChecks.d.ts",
       "import": "./src/public/cliDoctorChecks.ts"
     },
     "./cli/opencode-config": {
-      "types": "./src/public/cliOpencodeConfig.ts",
+      "types": "./dist/types/public/cliOpencodeConfig.d.ts",
       "import": "./src/public/cliOpencodeConfig.ts"
     },
     "./cli/sqlite-driver": {
-      "types": "./src/public/cliSqliteDriver.ts",
+      "types": "./dist/types/public/cliSqliteDriver.d.ts",
       "import": "./src/public/cliSqliteDriver.ts"
     },
     "./cli/container-guard": {
-      "types": "./src/public/cliContainerGuard.ts",
+      "types": "./dist/types/public/cliContainerGuard.d.ts",
       "import": "./src/public/cliContainerGuard.ts"
     },
     "./cli/config-generator": "./src/lib/cli-helper/config-generator/index.ts",
@@ -1344,9 +1406,12 @@
     "./control/cli-tools-mitm": "./src/mitm/systemCommands.ts",
     "./control/cli-tools-mitm-dns": "./src/mitm/dns/dnsConfig.ts",
     "./control/cli-tools-mitm-manager": "./src/mitm/manager.runtime.ts",
-    "./control/cli-tools-validation-schemas": { "types": "./src/public/cliToolsValidationSchemas.d.ts", "import": "./src/lib/cliTools/validationSchemas.ts" },
+    "./control/cli-tools-validation-schemas": {
+      "types": "./src/public/cliToolsValidationSchemas.d.ts",
+      "import": "./src/lib/cliTools/validationSchemas.ts"
+    },
     "./control/cli-tools-config-validation": {
-      "types": "./src/control/cliConfigValidation.ts",
+      "types": "./dist/types/control/cliConfigValidation.d.ts",
       "import": "./src/control/cliConfigValidation.ts"
     },
     "./cache/db": {
@@ -1478,7 +1543,7 @@
       "import": "./src/lib/quota/saturationPort.ts"
     },
     "./quota/dimensions": {
-      "types": "./src/lib/quota/dimensions.ts",
+      "types": "./dist/types/lib/quota/dimensions.d.ts",
       "import": "./src/lib/quota/dimensions.ts"
     },
     "./runtime/provider-settings-port": {
@@ -1522,15 +1587,15 @@
       "import": "./src/shared/types/pagination.ts"
     },
     "./control/provider-management": {
-      "types": "./src/control/provider-management.ts",
+      "types": "./dist/types/control/provider-management.d.ts",
       "import": "./src/control/provider-management.ts"
     },
     "./control/provider-connection": {
-      "types": "./src/control/provider-connection.ts",
+      "types": "./dist/types/control/provider-connection.d.ts",
       "import": "./src/control/provider-connection.ts"
     },
     "./shared/chatgpt-web-retirement-response": {
-      "types": "./src/lib/providers/chatgptWebRetirementResponse.ts",
+      "types": "./dist/types/lib/providers/chatgptWebRetirementResponse.d.ts",
       "import": "./src/lib/providers/chatgptWebRetirementResponse.ts"
     },
     "./quota/cache": {
@@ -1587,6 +1652,7 @@
     "ink-text-input": "^6.0.0",
     "ioredis": "^6.0.0",
     "jose": "^6.2.10",
+    "jsdom": "^26.1.0",
     "js-tiktoken": "^1.0.21",
     "js-yaml": "^5.4.1",
     "jsonc-parser": "^3.3.1",
@@ -1624,5 +1690,13 @@
     "better-sqlite3": "^13.0.2",
     "onnxruntime-node": "1.24.3",
     "sqlite-vec": "^0.1.9"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/jsdom": "^21.1.7",
+    "@types/node": "catalog:",
+    "@types/safe-regex": "^1.1.6",
+    "@types/ws": "^8.18.1",
+    "typescript": "catalog:"
   }
 }

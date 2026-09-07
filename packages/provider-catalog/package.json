@@ -4,6 +4,10 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./refresh-token-policy": {
+      "types": "./src/refresh-token-policy.ts",
+      "import": "./src/refresh-token-policy.ts"
+    },
     "./provider-models": {
       "types": "./src/config/providerModels.ts",
       "import": "./src/config/providerModels.ts"

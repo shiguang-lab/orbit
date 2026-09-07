@@ -71,10 +71,10 @@ export class UsageService {
   getTokenLimits(request: Request) { return getTokenLimits(request); }
   setTokenLimits(request: Request) { return setTokenLimits(request); }
   deleteTokenLimits(request: Request) { return deleteTokenLimits(request); }
-  getConnectionUsage(request: Request, connectionId: string) { return getConnectionUsage(request, { params: Promise.resolve({ connectionId }) }); }
+  getConnectionUsage(request: Request, connectionId: string) { return getConnectionUsage(request, { params: { connectionId } }); }
   getComboHealth(request: Request) { return getComboHealth(request); }
   getQuota(request: Request) { return getQuota(request); }
   getProviderLimits() { return getProviderLimits(); }
   refreshProviderLimits() { return refreshProviderLimits(); }
-  getComboTrace(request: Request, id: string) { return getComboTrace(request, { params: Promise.resolve({ id }) }); }
+  getComboTrace(request: Request, id: string) { return getComboTrace(request, { params: { id } }); }
 }

@@ -99,12 +99,6 @@ export const ProviderQuotaResetEventEntity: EntityDefinition = {
   ],
 };
 
-export const MemoryEntity: EntityDefinition = {
-  entityName: "Memory", tableName: "memories", owner: "worker", columns: [
-    column("id", "TEXT", { nullable: false, primaryKey: true }), column("api_key_id", "TEXT", { nullable: false }), column("session_id", "TEXT"), column("type", "TEXT", { nullable: false }), column("key", "TEXT"), column("content", "TEXT", { nullable: false }), column("metadata", "TEXT"), column("created_at", "TEXT", { nullable: false, default: "datetime('now')" }), column("updated_at", "TEXT", { nullable: false, default: "datetime('now')" }), column("expires_at", "TEXT"), column("memory_id", "INTEGER"), column("needs_reindex", "INTEGER", { nullable: false, default: "0" }), column("access_count", "INTEGER", { nullable: false, default: "0" }), column("last_accessed_at", "TEXT"),
-  ],
-};
-
 export const AuditLogEntity: EntityDefinition = {
   entityName: "AuditLog", tableName: "audit_log", owner: "worker", columns: [
     column("id", "INTEGER", { nullable: false, primaryKey: true, autoIncrement: true }), column("timestamp", "TEXT", { nullable: false, default: "datetime('now')" }), column("action", "TEXT", { nullable: false }), column("actor", "TEXT", { nullable: false, default: "'system'" }), column("target", "TEXT"), column("details", "TEXT"), column("ip_address", "TEXT"), column("resource_type", "TEXT"), column("status", "TEXT"), column("request_id", "TEXT"), column("metadata", "TEXT"),

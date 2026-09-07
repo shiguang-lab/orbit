@@ -39,7 +39,7 @@ interface MagnificGenerationParams {
   log?: { info: (tag: string, msg: string) => void; error: (tag: string, msg: string) => void };
 }
 
-interface MagnificImageResult {
+export interface MagnificImageResult {
   success: boolean;
   status?: number;
   error?: string;

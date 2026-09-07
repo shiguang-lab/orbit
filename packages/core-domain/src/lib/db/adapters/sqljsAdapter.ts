@@ -3,6 +3,35 @@ import fs from "node:fs";
 import path from "node:path";
 import type { SqliteAdapter, PreparedStatement, RunResult } from "./types";
 
+interface SqlJsStatement {
+  bind(values: unknown[] | Record<string, unknown>): void;
+  step(): boolean;
+  getAsObject(): Record<string, unknown>;
+  free(): void;
+}
+
+interface SqlJsResult {
+  columns: string[];
+  values: unknown[][];
+}
+
+interface SqlJsDatabase {
+  prepare(sql: string): SqlJsStatement;
+  run(sql: string): void;
+  exec(sql: string): SqlJsResult[];
+  export(): Uint8Array;
+  close(): void;
+  getRowsModified(): number;
+}
+
+interface SqlJsStatic {
+  Database: new (data?: Uint8Array) => SqlJsDatabase;
+}
+
+interface SqlJsModule {
+  default(options?: { locateFile?: (fileName: string) => string }): Promise<SqlJsStatic>;
+}
+
 const SAVE_DEBOUNCE_MS = 100;
 const CHECKPOINT_INTERVAL_MS = 60_000;
 
@@ -19,7 +48,7 @@ function toPlainRow<T>(row: T): T {
   return { ...(row as Record<string, unknown>) } as T;
 }
 
-let _sqlJsLib: Awaited<ReturnType<(typeof import("sql.js"))["default"]>> | null = null;
+let _sqlJsLib: SqlJsStatic | null = null;
 
 function resolveSqlJsWasmPath(): string {
   // The standalone assembler copies the complete sql.js package into
@@ -114,7 +143,7 @@ async function loadSqlJs(): Promise<typeof _sqlJsLib> {
   const mod = (await import(
     /* webpackIgnore: true */
     moduleName
-  )) as { default: (typeof import("sql.js"))["default"] };
+  )) as SqlJsModule;
   const initSqlJs = mod.default;
   const wasmPath = resolveSqlJsWasmPath();
 
@@ -322,8 +351,8 @@ export async function createSqlJsAdapter(filePath: string): Promise<SqliteAdapte
       return filePath;
     },
 
-    prepare(sql: string): PreparedStatement {
-      return makeStatement(sql);
+    prepare<Row = unknown>(sql: string): PreparedStatement<Row> {
+      return makeStatement(sql) as PreparedStatement<Row>;
     },
 
     exec(sql: string): void {
@@ -343,8 +372,8 @@ export async function createSqlJsAdapter(filePath: string): Promise<SqliteAdapte
       );
     },
 
-    transaction<T>(fn: (...args: unknown[]) => T): (...args: unknown[]) => T {
-      return (...args: unknown[]) => runSavepoint(fn, ...args);
+    transaction<Args extends unknown[], T>(fn: (...args: Args) => T): (...args: Args) => T {
+      return (...args: Args) => runSavepoint(fn as (...args: unknown[]) => T, ...args);
     },
 
     immediate(fn: () => void): void {

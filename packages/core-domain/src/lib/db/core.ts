@@ -848,11 +848,6 @@ function offloadLegacyCallLogDetails(db: SqliteDatabase) {
   }
 }
 
-function shouldRunStartupDbHealthCheck(): boolean {
-  if (process.env.SHIGUANG_GATEWAY_FORCE_DB_HEALTHCHECK === "1") return true;
-  return !isAutomatedTestProcess();
-}
-
 function createManagedDbBackup(db: SqliteDatabase, reason: string): boolean {
   const isTest = isAutomatedTestProcess();
   if (isTest) return false;
@@ -930,102 +925,22 @@ function autoMigrateLegacyEncryptedConnections(db: SqliteDatabase): number {
   return migratedCount;
 }
 
-let dbHealthCheckTimer: NodeJS.Timeout | null = null;
-
-function getDbHealthCheckIntervalMs(): number {
-  const rawValue = process.env.SHIGUANG_GATEWAY_DB_HEALTHCHECK_INTERVAL_MS;
-  if (typeof rawValue === "string" && rawValue.trim().length > 0) {
-    const parsed = Number(rawValue);
-    if (Number.isFinite(parsed) && parsed >= 0) {
-      return parsed;
-    }
-  }
-  return 6 * 60 * 60 * 1000;
-}
-
-function clearDbHealthCheckScheduler() {
-  if (dbHealthCheckTimer) {
-    clearInterval(dbHealthCheckTimer);
-    dbHealthCheckTimer = null;
-  }
-}
-
-function startDbHealthCheckScheduler(db: SqliteDatabase) {
-  clearDbHealthCheckScheduler();
-  if (isCloud || isBuildPhase || isAutomatedTestProcess()) return;
-
-  const intervalMs = getDbHealthCheckIntervalMs();
-  if (intervalMs <= 0) return;
-
-  dbHealthCheckTimer = setInterval(() => {
-    try {
-      if (!db.open) return;
-      runDbHealthCheck(db, {
-        autoRepair: true,
-        skipIntegrityCheck: process.env.SHIGUANG_GATEWAY_SKIP_DB_HEALTHCHECK === "1",
-        expectedSchemaVersion: "1",
-        createBackupBeforeRepair: () => createHealthCheckBackup(db),
-      });
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : String(error);
-      console.warn("[DB] Periodic health-check failed:", message);
-    }
-  }, intervalMs);
-  dbHealthCheckTimer.unref?.();
-}
-
-let walTruncateTimer: NodeJS.Timeout | null = null;
-
-function getWalTruncateIntervalMs(): number {
-  const rawValue = process.env.SHIGUANG_GATEWAY_WAL_TRUNCATE_INTERVAL_MS;
-  if (typeof rawValue === "string" && rawValue.trim().length > 0) {
-    const parsed = Number(rawValue);
-    if (Number.isFinite(parsed) && parsed >= 0) {
-      return parsed;
-    }
-  }
-  return 6 * 60 * 60 * 1000;
-}
-
-function clearWalTruncateScheduler() {
-  if (walTruncateTimer) {
-    clearInterval(walTruncateTimer);
-    walTruncateTimer = null;
-  }
-}
-
-// Auto-checkpoint moves WAL pages back into the main DB file but never shrinks the WAL
-// file itself; only wal_checkpoint(TRUNCATE) does, and a long-running server never closes its DB.
-function startWalTruncateScheduler(db: SqliteDatabase) {
-  clearWalTruncateScheduler();
-  if (isCloud || isBuildPhase || isAutomatedTestProcess()) return;
-
-  const intervalMs = getWalTruncateIntervalMs();
-  if (intervalMs <= 0) return;
-
-  walTruncateTimer = setInterval(() => {
-    try {
-      if (!db.open) return;
-      // TRUNCATE waits for readers; under concurrent write load it can no-op without
-      // shrinking the file. That is expected — it retries on the next tick.
-      if (checkpointDb(db, "TRUNCATE")) {
-        console.log("[DB] Periodic SQLite WAL checkpoint completed (TRUNCATE).");
-      }
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : String(error);
-      console.warn("[DB] Periodic WAL truncate failed:", message);
-    }
-  }, intervalMs);
-  walTruncateTimer.unref?.();
-}
-
-export function runManagedDbHealthCheck(options?: { autoRepair?: boolean }) {
+export function runManagedDbHealthCheck(options?: {
+  autoRepair?: boolean;
+  skipIntegrityCheck?: boolean;
+}) {
   const db = getDbInstance();
   return runDbHealthCheck(db, {
     autoRepair: options?.autoRepair === true,
+    skipIntegrityCheck: options?.skipIntegrityCheck === true,
     expectedSchemaVersion: "1",
     createBackupBeforeRepair: () => createHealthCheckBackup(db),
   });
+}
+
+/** Execute one WAL checkpoint. Scheduling belongs to the worker application. */
+export function runManagedWalCheckpoint(mode: CheckpointMode = "TRUNCATE"): boolean {
+  return checkpointDb(getDbInstance(), mode);
 }
 
 export function getDbInstance(): SqliteDatabase {
@@ -1041,19 +956,18 @@ export function getDbInstance(): SqliteDatabase {
       // node::RemoveEnvironmentCleanupHook, env == nullptr). The DB is never
       // actually queried during build — it only exists so module-eval that
       // touches getDbInstance() at build time does not throw. (#10060)
-      const noopStatement: PreparedStatement = {
-        run: () => ({ changes: 0, lastInsertRowid: 0 }),
-        get: () => undefined,
-        all: () => [],
-      };
       const stubDb: SqliteDatabase = {
         driver: "sql.js",
         open: true,
         name: ":memory:",
-        prepare: () => noopStatement,
+        prepare: <Row = unknown>(): PreparedStatement<Row> => ({
+          run: () => ({ changes: 0, lastInsertRowid: 0 }),
+          get: () => undefined,
+          all: () => [],
+        }),
         exec: () => {},
         pragma: () => undefined,
-        transaction: <T>(fn: (...args: unknown[]) => T) => fn,
+        transaction: <Args extends unknown[], T>(fn: (...args: Args) => T) => fn,
         immediate: (fn: () => void) => fn(),
         backup: async () => {},
         checkpoint: () => {},
@@ -1373,19 +1287,6 @@ export function getDbInstance(): SqliteDatabase {
     "INSERT OR REPLACE INTO db_meta (key, value) VALUES ('schema_version', '1')"
   );
   versionStmt.run();
-  if (shouldRunStartupDbHealthCheck()) {
-    const skipIntegrityCheck = process.env.SHIGUANG_GATEWAY_SKIP_DB_HEALTHCHECK === "1";
-    if (skipIntegrityCheck) {
-      console.log("[DB] Health check skipped (SHIGUANG_GATEWAY_SKIP_DB_HEALTHCHECK=1)");
-    }
-    runDbHealthCheck(db, {
-      autoRepair: true,
-      expectedSchemaVersion: "1",
-      skipIntegrityCheck,
-      createBackupBeforeRepair: () => createHealthCheckBackup(db),
-    });
-  }
-
   setDb(db);
 
   // Re-encrypt any tokens using the legacy dynamic salt to canonical static salt
@@ -1396,8 +1297,6 @@ export function getDbInstance(): SqliteDatabase {
     console.error(`[DB] Legacy encryption migration failed: ${message}`);
   }
 
-  startDbHealthCheckScheduler(db);
-  startWalTruncateScheduler(db);
   // Log the resolved absolute DATA_DIR + SQLITE_FILE once at init so a
   // multi-replica / Docker volume-topology mismatch (each replica opening a
   // different on-disk DB → "phantom"/missing combos & connections) is
@@ -1424,8 +1323,6 @@ export function pingDb(): boolean {
 }
 
 export function closeDbInstance(options?: { checkpointMode?: CheckpointMode | null }): boolean {
-  clearDbHealthCheckScheduler();
-  clearWalTruncateScheduler();
   const db = getDb();
   if (!db) return false;
 
@@ -1706,7 +1603,7 @@ function migrateFromJson(db: SqliteDatabase, jsonPath: string) {
       }
     }
   } catch (err) {
-    console.error("[DB] Migration from db.json failed:", err.message);
+    console.error("[DB] Migration from db.json failed:", err instanceof Error ? err.message : String(err));
   }
 }
 

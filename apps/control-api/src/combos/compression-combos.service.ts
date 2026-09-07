@@ -47,9 +47,25 @@ export class CompressionCombosService {
 
   async defaultPlan() {
     const config = await getCompressionSettings();
-    const engines = config.engines && typeof config.engines === "object" && !Array.isArray(config.engines)
-      ? config.engines as Record<string, { enabled?: boolean; level?: string }>
-      : {};
+    const rawEngines =
+      config.engines && typeof config.engines === "object" && !Array.isArray(config.engines)
+        ? (config.engines as Record<string, unknown>)
+        : {};
+    const engines = Object.fromEntries(
+      Object.entries(rawEngines).map(([id, value]) => {
+        const entry =
+          value && typeof value === "object" && !Array.isArray(value)
+            ? (value as Record<string, unknown>)
+            : {};
+        return [
+          id,
+          {
+            enabled: entry.enabled === true,
+            ...(typeof entry.level === "string" && { level: entry.level }),
+          },
+        ];
+      }),
+    );
     const plan = deriveDefaultPlan(engines, config.enabled !== false);
     return {
       mode: plan.mode,

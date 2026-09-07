@@ -28,8 +28,6 @@ const sessionAffinityCleanupLifecycleSpecifier =
   "@shiguang-gateway/core-domain/session-affinity/cleanup-lifecycle";
 const openRouterProviderStatsLifecycleSpecifier =
   "@shiguang-gateway/core-domain/catalog/openrouter-provider-stats-lifecycle";
-const proxySubscriptionLifecycleSpecifier =
-  "@shiguang-gateway/core-domain/worker/proxy-subscription-lifecycle";
 const radarSyncLifecycleSpecifier =
   "@shiguang-gateway/core-domain/radar/sync-lifecycle";
 const guardrailManagementSpecifier =
@@ -285,6 +283,7 @@ allowedCoreDomainSubpaths["apps/worker"].push(
   "db/cleanup-maintenance",
   "db/files",
   "db/proxy-registry",
+  "proxy-subscriptions/management",
   "db/vacuum",
   "db/vacuum-schedule",
   "pricing/sync",
@@ -295,6 +294,7 @@ allowedCoreDomainSubpaths["apps/worker"].push("compliance/lifecycle");
 allowedCoreDomainSubpaths["apps/worker"].push("session-affinity/cleanup-lifecycle");
 allowedCoreDomainSubpaths["apps/worker"].push("catalog/openrouter-provider-stats-lifecycle");
 allowedCoreDomainSubpaths["apps/worker"].push("radar/sync-lifecycle");
+allowedCoreDomainSubpaths["apps/worker"].push("db/health");
 allowedCoreDomainSubpaths["apps/edge-gateway"] = allowedCoreDomainSubpaths[
   "apps/edge-gateway"
 ].filter(
@@ -337,6 +337,7 @@ allowedCoreDomainSubpaths["apps/control-api"].push(
   "db/tier-config",
 );
 allowedCoreDomainSubpaths["apps/edge-gateway"].push("runtime/model-sync-client");
+allowedCoreDomainSubpaths["apps/edge-gateway"].push("edge/memory-decay");
 allowedCoreDomainSubpaths["apps/edge-gateway"].push("runtime/settings-refresh");
 allowedCoreDomainSubpaths["apps/edge-gateway"].push("cache/services");
 allowedCoreDomainSubpaths["apps/edge-gateway"].push(
@@ -1255,6 +1256,13 @@ for (const app of appEntries) {
   }
   for (const file of walk(join(app.dir, "src"))) {
     const source = readFileSync(file, "utf8");
+    if (/import\s+\*\s+as\s+\w+\s+from\s+["']@shiguang-gateway\/open-sse\/utils\/logger["']/.test(source)) {
+      add(
+        "app-imports-logger-as-ghost-namespace",
+        file,
+        "consume the exported log object; the logger module has no top-level level methods",
+      );
+    }
     if (
       rel(app.dir) === "apps/control-api" &&
       /@shiguang-gateway\/open-sse\/(?:services\/chat-completions-compat|services\/rateLimitManager(?:\/errors)?)/.test(source)
@@ -1263,6 +1271,16 @@ for (const app of appEntries) {
         "control-invokes-edge-request-runtime-in-process",
         file,
         "control-generated requests must use edge HTTP; edge-owned rate limiting must not also run in control",
+      );
+    }
+    if (
+      rel(app.dir) === "apps/control-api" &&
+      /@shiguang-gateway\/open-sse\/services\/(?:token-refresh|credentialTokenRefresh|kimiTokenRefresh)/.test(source)
+    ) {
+      add(
+        "control-refreshes-persisted-provider-credentials",
+        file,
+        "persisted connection refresh exchanges and token persistence belong to the authenticated edge command owner",
       );
     }
     if (
@@ -1345,13 +1363,6 @@ for (const app of appEntries) {
           "only the worker may own OpenRouter provider stats refresh lifecycle",
         );
       }
-      if (specifier === proxySubscriptionLifecycleSpecifier && rel(app.dir) !== "apps/worker") {
-        add(
-          "proxy-subscription-lifecycle-outside-worker",
-          file,
-          "only the worker may own proxy subscription refresh lifecycle",
-        );
-      }
       if (specifier === radarSyncLifecycleSpecifier && rel(app.dir) !== "apps/worker") {
         add(
           "radar-sync-lifecycle-outside-worker",
@@ -1419,6 +1430,93 @@ for (const appPath of ["apps/control-api", "apps/edge-gateway", "apps/realtime",
   }
 }
 
+const controlLocalProviderHealth = join(
+  repoRoot,
+  "apps/control-api/src/monitoring/local-provider-health.service.ts",
+);
+const edgeLocalProviderHealth = join(
+  repoRoot,
+  "apps/edge-gateway/src/runtime-control/local-provider-health.service.ts",
+);
+const edgeRuntimeControlModule = join(
+  repoRoot,
+  "apps/edge-gateway/src/runtime-control/runtime-control.module.ts",
+);
+const edgeRuntimeControlService = join(
+  repoRoot,
+  "apps/edge-gateway/src/runtime-control/runtime-control.service.ts",
+);
+if (existsSync(controlLocalProviderHealth)) {
+  add(
+    "local-provider-health-owned-by-control",
+    controlLocalProviderHealth,
+    "provider node probes must run from the edge request-plane network namespace",
+  );
+}
+if (!existsSync(edgeLocalProviderHealth)) {
+  add("missing-edge-local-provider-health-owner", edgeLocalProviderHealth);
+} else {
+  const source = readFileSync(edgeLocalProviderHealth, "utf8");
+  if (
+    !/implements\s+OnModuleInit\s*,\s*OnModuleDestroy/.test(source) ||
+    !/\bgetCachedProviderNodes\b/.test(source) ||
+    !/\bsetTimeout\s*\(/.test(source) ||
+    !/\bclearTimeout\s*\(/.test(source)
+  ) {
+    add(
+      "invalid-edge-local-provider-health-owner",
+      edgeLocalProviderHealth,
+      "edge must own provider polling state and timer lifecycle",
+    );
+  }
+  const moduleSource = existsSync(edgeRuntimeControlModule)
+    ? readFileSync(edgeRuntimeControlModule, "utf8")
+    : "";
+  const commandSource = existsSync(edgeRuntimeControlService)
+    ? readFileSync(edgeRuntimeControlService, "utf8")
+    : "";
+  if (!/providers\s*:\s*\[[^\]]*LocalProviderHealthService/.test(moduleSource)) {
+    add("unregistered-edge-local-provider-health-owner", edgeRuntimeControlModule);
+  }
+  if (!/localProviders:\s*localProviderHealth\.getAllHealthStatuses\(\)/.test(commandSource)) {
+    add(
+      "local-provider-health-missing-from-edge-command",
+      edgeRuntimeControlService,
+      "control must read the edge-owned snapshot through the authenticated runtime command",
+    );
+  }
+}
+
+const embeddedWsProxyFile = join(
+  repoRoot,
+  "apps/control-api/src/services/embedded-service-ws-proxy.ts",
+);
+const embeddedRuntimeOwnerFile = join(
+  repoRoot,
+  "apps/control-api/src/services/embedded-services-runtime.service.ts",
+);
+if (existsSync(embeddedWsProxyFile) && existsSync(embeddedRuntimeOwnerFile)) {
+  const proxySource = readFileSync(embeddedWsProxyFile, "utf8");
+  const ownerSource = readFileSync(embeddedRuntimeOwnerFile, "utf8");
+  if (!/export\s+async\s+function\s+stopEmbedWsProxy\s*\(/.test(proxySource)) {
+    add(
+      "embedded-ws-listener-without-stop",
+      embeddedWsProxyFile,
+      "the control-owned sidecar listener must expose an idempotent shutdown operation",
+    );
+  }
+  if (
+    !/implements\s+OnModuleInit\s*,\s*OnModuleDestroy/.test(ownerSource) ||
+    !/onModuleDestroy\s*\([^)]*\)[\s\S]*?stopEmbedWsProxy\s*\(/.test(ownerSource)
+  ) {
+    add(
+      "unowned-embedded-ws-listener-lifecycle",
+      embeddedRuntimeOwnerFile,
+      "the Nest lifecycle owner must close the embedded WebSocket listener during shutdown",
+    );
+  }
+}
+
 // Shared packages must stay below apps; importing an app from packages would
 // create a deployment cycle and silently couple independently deployable units.
 const controlJobsContract = join(packagesRoot, "core-domain", "src", "control", "jobs.ts");
@@ -1436,6 +1534,34 @@ if (existsSync(workerJobRegistry)) {
   }
   if (!/import\("\.\/model-sync-scheduler\.js"\)[\s\S]*?exportName:\s*"startModelSyncScheduler"/.test(source)) {
     add("missing-worker-model-sync-owner", workerJobRegistry, "worker must remain the explicit owner of model-sync scheduler startup");
+  }
+  if (!/import\("\.\/memory-decay\.js"\)[\s\S]*?exportName:\s*"startMemoryDecayScheduler"/.test(source)) {
+    add("missing-worker-memory-decay-scheduler", workerJobRegistry, "worker must own memory-decay cadence through its app-local scheduler");
+  }
+  if (/core-domain\/worker\/typed-memory-decay/.test(source)) {
+    add("worker-writes-edge-memory", workerJobRegistry, "worker must trigger memory maintenance through the authenticated edge command");
+  }
+}
+const workerMemoryDecay = join(appsRoot, "worker", "src", "jobs", "memory-decay.ts");
+if (!existsSync(workerMemoryDecay)) {
+  add("missing-worker-memory-decay-client", workerMemoryDecay, "worker needs an app-local edge command scheduler");
+} else {
+  const source = readFileSync(workerMemoryDecay, "utf8");
+  if (!/command:\s*["']memory\.decay["']/.test(source) || !/getInternalServiceAuthHeaders/.test(source)) {
+    add("worker-memory-decay-bypasses-edge", workerMemoryDecay, "memory decay must use the authenticated edge runtime command");
+  }
+  if (/core-domain\/(?:edge\/memory-decay|worker\/typed-memory-decay)|\b(?:DELETE|UPDATE|INSERT)\s+(?:FROM|INTO)?\s*memories\b/i.test(source)) {
+    add("worker-memory-decay-direct-write", workerMemoryDecay, "worker owns only cadence and must not import the edge writer or issue memory SQL");
+  }
+}
+const mcpMemoryTools = join(packagesRoot, "open-sse", "mcp-server", "tools", "memoryTools.ts");
+if (existsSync(mcpMemoryTools)) {
+  const source = readFileSync(mcpMemoryTools, "utf8");
+  if (/services\/memoryRuntime|\b(?:createMemory|deleteMemory|updateMemory|listMemories)\b/.test(source)) {
+    add("mcp-memory-direct-write", mcpMemoryTools, "the CLI-owned MCP executable must use authenticated edge memory commands");
+  }
+  if (!/command:\s*["']memory\.(?:create|search|clear)["']/.test(source) || !/getInternalServiceAuthHeaders/.test(source)) {
+    add("mcp-memory-bypasses-edge", mcpMemoryTools, "MCP memory tools must cross the authenticated edge command boundary");
   }
 }
 const controlAuthInit = join(packagesRoot, "core-domain", "src", "control", "auth-init.ts");
@@ -1457,6 +1583,22 @@ for (const modelSyncLeaf of ["modelSyncClient.ts", "modelSyncOperation.ts"]) {
 }
 const coreDomainEntry = packageEntries.find(({ manifest }) => manifest?.name === "@shiguang-gateway/core-domain");
 if (coreDomainEntry) {
+  const proxySubscriptionService = join(
+    coreDomainEntry.dir,
+    "src/lib/proxySubscription/subscriptionService.ts",
+  );
+  if (
+    existsSync(proxySubscriptionService) &&
+    /\b(?:startSubscriptionScheduler|stopSubscriptionScheduler|setInterval)\b/.test(
+      readFileSync(proxySubscriptionService, "utf8"),
+    )
+  ) {
+    add(
+      "proxy-subscription-lifecycle-in-core-domain",
+      proxySubscriptionService,
+      "subscription CRUD and one-shot sync must not start the worker-owned refresh scheduler",
+    );
+  }
   const serializedExports = JSON.stringify(coreDomainEntry.manifest.exports ?? {});
   for (const declaration of walk(join(coreDomainEntry.dir, "src", "public")).filter((file) => file.endsWith(".d.ts"))) {
     const declarationPath = `./${relative(coreDomainEntry.dir, declaration).split(sep).join("/")}`;
@@ -1635,6 +1777,9 @@ if (
   );
 }
 const retiredAppOwnedExports = [
+  "./worker/memory",
+  "./worker/typed-memory-decay",
+  "./worker/proxy-subscription-lifecycle",
   "./worker/connection-recovery-lifecycle",
   "./worker/model-sync-lifecycle",
   "./worker/pricing-sync-lifecycle",
@@ -1726,6 +1871,39 @@ for (const relativeFile of ["src/lib/db/cleanup.ts", "src/lib/db/vacuum.ts"]) {
     );
   }
 }
+{
+  const file = join(coreDomainEntry?.dir ?? join(packagesRoot, "core-domain"), "src/lib/db/core.ts");
+  const source = existsSync(file) ? readFileSync(file, "utf8") : "";
+  if (/\b(?:setInterval|clearInterval)\s*\(/.test(source)) {
+    add(
+      "database-connection-owns-maintenance-lifecycle",
+      file,
+      "database connection acquisition must not schedule health checks or WAL checkpoints; apps/worker owns those timers",
+    );
+  }
+  const getDbBody = source.slice(
+    source.indexOf("export function getDbInstance"),
+    source.indexOf("export function pingDb"),
+  );
+  if (/\brunDbHealthCheck\s*\(/.test(getDbBody)) {
+    add(
+      "database-connection-runs-health-maintenance",
+      file,
+      "database connection acquisition must not run repair or integrity maintenance; apps/worker owns startup health maintenance",
+    );
+  }
+  const workerRegistry = join(repoRoot, "apps/worker/src/jobs/registry.ts");
+  if (
+    !existsSync(workerRegistry) ||
+    !/name:\s*["']database-health-maintenance["']/.test(readFileSync(workerRegistry, "utf8"))
+  ) {
+    add(
+      "missing-worker-database-health-maintenance",
+      workerRegistry,
+      "worker registry must own database health-check and WAL checkpoint scheduling",
+    );
+  }
+}
 for (const relativeFile of ["src/lib/modelsDevSync.ts", "src/lib/pricingSync.ts"]) {
   const file = join(coreDomainEntry?.dir ?? join(packagesRoot, "core-domain"), relativeFile);
   if (existsSync(file) && /\b(?:setInterval|clearInterval)\s*\(/.test(readFileSync(file, "utf8"))) {
@@ -1745,6 +1923,29 @@ if (openSseEntry?.manifest?.exports?.["./oauth/codex-device-completion"]) {
     join(openSseEntry.dir, "package.json"),
     "./oauth/codex-device-completion",
   );
+}
+{
+  const cliRuntime = join(repoRoot, "apps/cli/src/cli/runtime.mjs");
+  const cliCombo = join(repoRoot, "apps/cli/src/cli/commands/combo.mjs");
+  const runtimeSource = existsSync(cliRuntime) ? readFileSync(cliRuntime, "utf8") : "";
+  const comboSource = existsSync(cliCombo) ? readFileSync(cliCombo, "utf8") : "";
+  if (
+    /runtime\/recovery-db/.test(runtimeSource) ||
+    /\b(?:createCombo|deleteComboByName|setActiveCombo|updateCombo)\b/.test(runtimeSource)
+  ) {
+    add(
+      "cli-runtime-exposes-db-mutations",
+      cliRuntime,
+      "CLI runtime fallback may expose read-only queries only; runtime mutations belong to control-api",
+    );
+  }
+  if (/\bdb\.combos\.(?:createCombo|deleteComboByName|setActiveCombo|updateCombo)\s*\(/.test(comboSource)) {
+    add(
+      "cli-combo-writes-control-owned-db",
+      cliCombo,
+      "CLI combo mutations must use the control-api and fail when it is offline",
+    );
+  }
 }
 for (const pkg of packageEntries) {
   const declared = new Set(Object.keys({ ...(pkg.manifest?.dependencies ?? {}), ...(pkg.manifest?.devDependencies ?? {}), ...(pkg.manifest?.optionalDependencies ?? {}) }));
@@ -1782,13 +1983,6 @@ for (const pkg of packageEntries) {
           "openrouter-provider-stats-lifecycle-in-shared-package",
           file,
           "shared packages may read provider stats but must not own the refresh scheduler",
-        );
-      }
-      if (specifier === proxySubscriptionLifecycleSpecifier) {
-        add(
-          "proxy-subscription-lifecycle-in-shared-package",
-          file,
-          "shared packages may manage subscriptions but must not own their refresh scheduler",
         );
       }
       if (specifier === radarSyncLifecycleSpecifier) {
@@ -1842,6 +2036,7 @@ const report = {
     "core-domain control jobs contract cannot expose the worker-owned registry",
     "migrated app-owned capabilities cannot be re-exported by core-domain",
     "long-running Nest apps own final database shutdown",
+    "CLI runtime fallback is read-only; control-api owns runtime configuration mutations",
     "legacy runtime package names are retired",
   ],
   violations,

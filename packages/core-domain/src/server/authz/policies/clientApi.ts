@@ -1,7 +1,6 @@
 import { isDashboardSessionAuthenticated } from "../../../shared/utils/apiAuth.ts";
 import { isRequireApiKeyEnabled } from "../../../shared/utils/featureFlags.ts";
 import { extractApiKey } from "@shiguang-gateway/auth";
-import { extractGoogApiKeyHeader } from "../../../sse/services/googApiKeyAuth.ts";
 import type { AuthOutcome, PolicyContext, RoutePolicy } from "../context";
 import { allow, reject } from "../context";
 
@@ -12,6 +11,7 @@ function isWsHandshake(ctx: PolicyContext): boolean {
   if (!HANDSHAKE_METHODS.has(ctx.request.method.toUpperCase())) return false;
 
   try {
+    if (!ctx.request.url) return false;
     return new URL(ctx.request.url, "http://localhost").searchParams.get("handshake") === "1";
   } catch {
     return false;
@@ -21,7 +21,8 @@ function isWsHandshake(ctx: PolicyContext): boolean {
 function extractBearer(request: Request): string | null {
   const raw = request.headers.get("authorization") ?? request.headers.get("Authorization");
   const xApiKey = request.headers.get("x-api-key") ?? request.headers.get("X-Api-Key");
-  const xGoogApiKey = extractGoogApiKeyHeader(request.headers);
+  const xGoogApiKey =
+    request.headers.get("x-goog-api-key") ?? request.headers.get("X-Goog-Api-Key");
   if (raw) {
     const trimmed = raw.trim();
     if (trimmed.toLowerCase().startsWith("bearer ")) {

@@ -1,5 +1,5 @@
 import { Injectable, type OnModuleDestroy, type OnModuleInit } from "@nestjs/common";
-import { getCachedProviderNodes } from "@shiguang-gateway/core-domain/control/settings-config";
+import { getCachedProviderNodes } from "@shiguang-gateway/core-domain/db/read-cache";
 
 export interface LocalProviderHealthStatus {
   nodeId: string;
@@ -15,18 +15,22 @@ const BACKOFF_SCHEDULE = [30_000, 60_000, 120_000, 300_000];
 const INITIAL_DELAY_MS = 15_000;
 const CHECK_TIMEOUT_MS = 5_000;
 
-function isLocalhostUrl(baseUrl: string): boolean {
+export function isLocalProviderUrl(baseUrl: string): boolean {
   try {
     const url = new URL(baseUrl);
     if (url.username || url.password) return false;
-    return url.hostname === "localhost" || url.hostname === "127.0.0.1" ||
-      /^172\.(1[6-9]|2[0-9]|3[0-1])\.\d{1,3}\.\d{1,3}$/.test(url.hostname);
+    return url.hostname === "localhost" ||
+      url.hostname === "127.0.0.1" ||
+      url.hostname === "[::1]" ||
+      /^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(url.hostname) ||
+      /^172\.(1[6-9]|2[0-9]|3[0-1])\.\d{1,3}\.\d{1,3}$/.test(url.hostname) ||
+      /^192\.168\.\d{1,3}\.\d{1,3}$/.test(url.hostname);
   } catch {
     return false;
   }
 }
 
-/** Control-plane lifecycle owner for polling locally configured provider nodes. */
+/** Edge lifecycle owner for polling provider nodes reachable from the request-plane network. */
 @Injectable()
 export class LocalProviderHealthService implements OnModuleInit, OnModuleDestroy {
   private readonly statuses = new Map<string, LocalProviderHealthStatus>();
@@ -63,10 +67,11 @@ export class LocalProviderHealthService implements OnModuleInit, OnModuleDestroy
     if (this.sweeping) return;
     this.sweeping = true;
     try {
-      const nodes = (await getCachedProviderNodes()).filter((node) =>
-        typeof node.id === "string" && typeof node.prefix === "string" &&
-        typeof node.baseUrl === "string" && isLocalhostUrl(node.baseUrl)
-      ) as Array<{ id: string; prefix: string; baseUrl: string }>;
+      const candidates = await getCachedProviderNodes() as Array<Record<string, unknown> | null>;
+      const nodes = candidates.filter((node): node is { id: string; prefix: string; baseUrl: string } =>
+        node !== null && typeof node.id === "string" && typeof node.prefix === "string" &&
+        typeof node.baseUrl === "string" && isLocalProviderUrl(node.baseUrl)
+      );
       const activeIds = new Set(nodes.map((node) => node.id));
       for (const id of this.statuses.keys()) if (!activeIds.has(id)) this.statuses.delete(id);
       const results = await Promise.allSettled(nodes.map((node) => this.checkNode(node)));

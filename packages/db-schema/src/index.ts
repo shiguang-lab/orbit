@@ -1,6 +1,7 @@
 /** Database boundary shared by deployable apps. Queries and mutations remain app-owned. */
 import {
   ApiKeyEntity,
+  AuthLoginAttemptEntity,
   ConfigAuditLogEntity,
   ComboEntity,
   CompressionComboEntity,
@@ -97,6 +98,7 @@ import {
   CcrBlockEntity,
   CompressionCacheStatsEntity,
   MemoryVecMetaEntity,
+  MemoryEntity,
   MiddlewareLogEntity,
 } from "./entities/edge.entity.js";
 import {
@@ -104,7 +106,6 @@ import {
   CallLogEntity,
   JobEntity,
   JobRunEntity,
-  MemoryEntity,
   ProxyLogEntity,
   QuotaSnapshotEntity,
   ProviderQuotaResetEventEntity,
@@ -150,6 +151,7 @@ export * from "./proxy.js";
 export const GATEWAY_TABLES = {
   gatewayMigrations: "_shiguanggateway_migrations",
   settings: "key_value",
+  authLoginAttempts: "auth_login_attempts",
   middlewareHooks: "middleware_hooks",
   middlewareLogs: "middleware_logs",
   configAuditLog: "config_audit_log",
@@ -299,6 +301,7 @@ export interface TableRef {
 export const TABLE_OWNERSHIP: readonly TableRef[] = [
   { table: GATEWAY_TABLES.gatewayMigrations, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.settings, owner: "control-api", access: "read-write" },
+  { table: GATEWAY_TABLES.authLoginAttempts, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.middlewareHooks, owner: "control-api", access: "read-write" },
   { table: GATEWAY_TABLES.middlewareLogs, owner: "edge-gateway", access: "read-write" },
   { table: GATEWAY_TABLES.configAuditLog, owner: "control-api", access: "read-write" },
@@ -325,7 +328,7 @@ export const TABLE_OWNERSHIP: readonly TableRef[] = [
   { table: GATEWAY_TABLES.proxyLogs, owner: "worker", access: "read-write" },
   { table: GATEWAY_TABLES.quotaSnapshots, owner: "worker", access: "read-write" },
   { table: GATEWAY_TABLES.auditLogs, owner: "worker", access: "read-write" },
-  { table: GATEWAY_TABLES.memories, owner: "worker", access: "read-write" },
+  { table: GATEWAY_TABLES.memories, owner: "edge-gateway", access: "read-write" },
   { table: GATEWAY_TABLES.batches, owner: "edge-gateway", access: "read-write" },
   { table: GATEWAY_TABLES.batchItemCheckpoints, owner: "edge-gateway", access: "read-write" },
   { table: GATEWAY_TABLES.files, owner: "edge-gateway", access: "read-write" },
@@ -442,6 +445,7 @@ export const TABLE_OWNERSHIP: readonly TableRef[] = [
 export const GATEWAY_ENTITIES = {
   gatewayMigrations: GatewayMigrationsEntity,
   settings: SettingsEntity,
+  authLoginAttempts: AuthLoginAttemptEntity,
   middlewareHooks: MiddlewareHookEntity,
   middlewareLogs: MiddlewareLogEntity,
   configAuditLog: ConfigAuditLogEntity,

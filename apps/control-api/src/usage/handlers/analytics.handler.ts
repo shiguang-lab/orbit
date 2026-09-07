@@ -79,6 +79,14 @@ function toStringValue(value: unknown, fallback = ""): string {
   return typeof value === "string" && value.trim().length > 0 ? value : fallback;
 }
 
+function toUsageRow(row: object): Record<string, unknown> {
+  return Object.fromEntries(Object.entries(row));
+}
+
+function toUsageRows(rows: readonly object[]): UsageRows {
+  return rows.map(toUsageRow);
+}
+
 function roundCost(value: number): number {
   return Math.round(value * 1_000_000) / 1_000_000;
 }
@@ -413,10 +421,10 @@ export async function GET(request: Request) {
       await import("@shiguang-gateway/core-domain/pricing/cost-calculator");
     const { PROVIDER_ID_TO_ALIAS } = await import("@shiguang-gateway/provider-catalog/provider-models");
 
-    const summaryRow = getUsageSummary(unifiedSource, unifiedParams) as Record<string, unknown>;
+    const summaryRow = toUsageRow(getUsageSummary(unifiedSource, unifiedParams));
 
-    const dailyRows = getDailyUsage(unifiedSource, unifiedParams) as UsageRows;
-    const dailyCostRows = getDailyCostRows(unifiedSource, unifiedParams) as UsageRows;
+    const dailyRows = toUsageRows(getDailyUsage(unifiedSource, unifiedParams));
+    const dailyCostRows = toUsageRows(getDailyCostRows(unifiedSource, unifiedParams));
 
     const heatmapStart = new Date();
     heatmapStart.setUTCDate(heatmapStart.getUTCDate() - 364);
@@ -438,30 +446,30 @@ export async function GET(request: Request) {
       });
     }
 
-    const heatmapRows = getHeatmapRows(heatmapConditions, heatmapParams) as UsageRows;
+    const heatmapRows = toUsageRows(getHeatmapRows(heatmapConditions, heatmapParams));
 
-    const modelRows = getModelUsageRows(unifiedSource, unifiedParams) as UsageRows;
+    const modelRows = toUsageRows(getModelUsageRows(unifiedSource, unifiedParams));
 
-    const providerCostRows = getProviderCostRows(unifiedSource, unifiedParams) as UsageRows;
+    const providerCostRows = toUsageRows(getProviderCostRows(unifiedSource, unifiedParams));
 
-    const providerRows = getProviderUsageRows(unifiedSource, unifiedParams) as UsageRows;
+    const providerRows = toUsageRows(getProviderUsageRows(unifiedSource, unifiedParams));
 
     const accountCostWhereClause = whereClause
       .replace(/timestamp/g, "usage_history.timestamp")
       .replace(/api_key_/g, "usage_history.api_key_");
-    const accountCostRows = getAccountCostRows(accountCostWhereClause, params) as UsageRows;
+    const accountCostRows = toUsageRows(getAccountCostRows(accountCostWhereClause, params));
 
-    const accountRows = getAccountUsageRows(accountCostWhereClause, params) as UsageRows;
+    const accountRows = toUsageRows(getAccountUsageRows(accountCostWhereClause, params));
 
     const apiKeyWhereClause = appendWhereCondition(
       whereClause,
       "(api_key_id IS NOT NULL AND api_key_id != '') OR (api_key_name IS NOT NULL AND api_key_name != '')"
     );
-    const apiKeyRows = getApiKeyUsageRows(apiKeyWhereClause, params) as UsageRows;
+    const apiKeyRows = toUsageRows(getApiKeyUsageRows(apiKeyWhereClause, params));
 
-    const serviceTierRows = getServiceTierUsageRows(unifiedSource, unifiedParams) as UsageRows;
+    const serviceTierRows = toUsageRows(getServiceTierUsageRows(unifiedSource, unifiedParams));
 
-    const apiKeyMetadataRows = getApiKeyMetadataRows(apiKeyWhereClause, params) as UsageRows;
+    const apiKeyMetadataRows = toUsageRows(getApiKeyMetadataRows(apiKeyWhereClause, params));
 
     const apiKeyMetadata = new Map<string, { latestName: string; aliases: Set<string> }>();
     for (const row of apiKeyMetadataRows) {
@@ -478,9 +486,9 @@ export async function GET(request: Request) {
       apiKeyMetadata.set(groupKey, existing);
     }
 
-    const weeklyRows = getWeeklyPatternRows(unifiedSource, unifiedParams) as UsageRows;
+    const weeklyRows = toUsageRows(getWeeklyPatternRows(unifiedSource, unifiedParams));
 
-    const fallbackRow = getFallbackStats(whereClause, params) as Record<string, unknown>;
+    const fallbackRow = toUsageRow(getFallbackStats(whereClause, params));
     const errorBreakdown = getErrorTypeBreakdown(whereClause, params);
 
     const summary = {
@@ -899,7 +907,7 @@ export async function GET(request: Request) {
           apiKeyParams: apiKeyParamEntries,
         });
 
-        const presetModelRows = getPresetCostModelRows(pSrc, pParams) as UsageRows;
+        const presetModelRows = toUsageRows(getPresetCostModelRows(pSrc, pParams));
 
         let presetTotalCost = 0;
         for (const row of presetModelRows) {

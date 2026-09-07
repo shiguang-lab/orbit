@@ -81,7 +81,7 @@ export const webRuntimeEnvSchema = z.object({
 
 export type WebRuntimeEnv = z.infer<typeof webRuntimeEnvSchema>;
 
-function formatZodPath(path: Array<string | number>): string {
+function formatZodPath(path: PropertyKey[]): string {
   return path.length > 0 ? String(path[0]) : "env";
 }
 
@@ -97,8 +97,13 @@ export function validateWebRuntimeEnv(
 ): RuntimeEnvValidationResult {
   const secretValidation = validateSecrets(env);
   const schemaValidation = webRuntimeEnvSchema.safeParse(env);
-  const errors = [...secretValidation.errors];
-  const warnings = [...secretValidation.warnings];
+  const normalizeSecretIssue = (issue: { name: string; issue: string; hint?: string }): RuntimeEnvIssue => ({
+    name: issue.name,
+    issue: issue.issue,
+    ...(issue.hint === undefined ? {} : { hint: issue.hint }),
+  });
+  const errors: RuntimeEnvIssue[] = secretValidation.errors.map(normalizeSecretIssue);
+  const warnings: RuntimeEnvIssue[] = secretValidation.warnings.map(normalizeSecretIssue);
 
   if (!schemaValidation.success) {
     errors.push(...getSchemaIssues(schemaValidation.error));

@@ -1,10 +1,7 @@
 import { z } from "zod";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
-import { judgeFidelityBatch } from "@shiguang-gateway/open-sse/services/compression/eval/fidelityCheck";
-import { createPricedJudgeClient } from "./judge-model-client.js";
-import type { ProviderCredentials } from "@shiguang-gateway/open-sse/executors/base";
-import { getProviderCredentials } from "@shiguang-gateway/open-sse/services/auth";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
+import { executeEdgeRuntimeCommand } from "../edge-runtime/client.js";
 
 export const dynamic = "force-dynamic";
 
@@ -36,33 +33,11 @@ export async function POST(req: Request) {
   }
   const { items, provider, judgeModel, costCapUsd } = parsed.data;
   try {
-    const rawCredentials = await getProviderCredentials(provider);
-    if (!rawCredentials) {
-      return Response.json(
-        { error: `No credentials configured for provider "${provider}"` },
-        { status: 400 }
-      );
-    }
-    // Positively require a credential-shaped object before casting. This rejects the
-    // current non-credential return shapes ({allRateLimited}, {allExpired}) AND any
-    // future error shape, instead of denylisting known ones. The success return from
-    // getProviderCredentials is a structural superset of ProviderCredentials; the extra
-    // fields (id, provider, email, etc.) are ignored by the executor adapter.
-    const looksLikeCredentials =
-      typeof rawCredentials === "object" &&
-      rawCredentials !== null &&
-      "connectionId" in rawCredentials &&
-      ("apiKey" in rawCredentials || "accessToken" in rawCredentials);
-    if (!looksLikeCredentials) {
-      return Response.json(
-        { error: `Provider "${provider}" credentials are unavailable` },
-        { status: 503 }
-      );
-    }
-    const credentials = rawCredentials as unknown as ProviderCredentials;
-    const client = createPricedJudgeClient(provider, credentials);
-    const result = await judgeFidelityBatch(client, judgeModel, items, costCapUsd);
-    return Response.json(result);
+    const result = await executeEdgeRuntimeCommand<
+      { ok: true; value: unknown } | { ok: false; status: number; message: string }
+    >({ command: "compression.verify", items, provider, judgeModel, costCapUsd }, { timeoutMs: 120_000 });
+    if (!result.ok) return Response.json({ error: result.message }, { status: result.status });
+    return Response.json(result.value);
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error("[/api/compression/compare/verify]", msg);

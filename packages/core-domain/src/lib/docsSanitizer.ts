@@ -27,7 +27,7 @@ const ALLOWED_ATTR = [
 function getSanitizer(): Sanitizer {
   if (!sanitizer) {
     const window = new JSDOM("").window;
-    sanitizer = createDOMPurify(window as unknown as Window);
+    sanitizer = createDOMPurify(window as unknown as Parameters<typeof createDOMPurify>[0]);
   }
   return sanitizer;
 }

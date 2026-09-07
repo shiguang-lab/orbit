@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { skillRegistry } from "@shiguang-gateway/core-domain/edge/skills-runtime";
 import { skillExecutor } from "@shiguang-gateway/core-domain/edge/skills-runtime";
+import type { McpToolDefinition } from "./types.ts";
 
 export const SkillListSchema = z.object({
   apiKeyId: z.string().optional(),
@@ -21,7 +22,7 @@ export const SkillExecuteSchema = z.object({
   sessionId: z.string().optional(),
 });
 
-export const skillTools = {
+export const skillTools: Record<string, McpToolDefinition> = {
   shiguangGateway_skills_list: {
     name: "shiguangGateway_skills_list",
     description: "List all registered skills with optional filtering by API key or name",

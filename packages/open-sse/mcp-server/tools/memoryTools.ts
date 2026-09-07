@@ -1,13 +1,27 @@
 import { z } from "zod";
-import { retrieveMemories } from "../../services/memoryRuntime.ts";
-import { createMemory, deleteMemory, listMemories } from "../../services/memoryRuntime.ts";
-import { MemoryType } from "../../services/memoryRuntime.ts";
-import {
-  getMemorySettings,
-  toMemoryRetrievalConfig,
-  DEFAULT_MEMORY_SETTINGS,
-} from "../../services/memoryRuntime.ts";
+import type { EdgeRuntimeCommand } from "@shiguang-gateway/contracts/edge-runtime-command";
+import { getInternalServiceAuthHeaders } from "@shiguang-gateway/auth/internal-service";
 import { resolveMcpCallerApiKeyId } from "../mcpCallerIdentity.ts";
+import type { McpToolDefinition } from "./types.ts";
+
+function edgeGatewayBaseUrl(): string {
+  const configured = process.env.EDGE_GATEWAY_URL?.trim();
+  if (configured) return configured.replace(/\/$/, "");
+  const host = (process.env.EDGE_GATEWAY_HOST ?? "127.0.0.1").trim();
+  const reachableHost = host === "0.0.0.0" || host === "::" || host === "[::]" ? "127.0.0.1" : host;
+  return `http://${reachableHost}:${process.env.EDGE_GATEWAY_PORT ?? "8787"}`;
+}
+
+async function executeMemoryCommand<T>(command: EdgeRuntimeCommand): Promise<T> {
+  const response = await fetch(`${edgeGatewayBaseUrl()}/api/internal/runtime/command`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...getInternalServiceAuthHeaders() },
+    body: JSON.stringify(command),
+    signal: AbortSignal.timeout(15_000),
+  });
+  if (!response.ok) throw new Error(`Edge memory command failed (${response.status})`);
+  return response.json() as Promise<T>;
+}
 
 /**
  * Resolve the memory owner id for an MCP tool call.
@@ -50,10 +64,10 @@ export const MemoryAddSchema = z.object({
 export const MemoryClearSchema = z.object({
   apiKeyId: z.string().optional(),
   type: z.enum(["factual", "episodic", "procedural", "semantic"]).optional(),
-  olderThan: z.string().optional(),
+  olderThan: z.string().datetime().optional(),
 });
 
-export const memoryTools = {
+export const memoryTools: Record<string, McpToolDefinition> = {
   shiguangGateway_memory_search: {
     name: "shiguangGateway_memory_search",
     description: "Search memories by query, type, or API key with token budget enforcement",
@@ -61,35 +75,23 @@ export const memoryTools = {
     inputSchema: MemorySearchSchema,
     handler: async (args: z.infer<typeof MemorySearchSchema>) => {
       const apiKeyId = await resolveMemoryOwnerId(args.apiKeyId);
-      // Plan 21 D16/Bug#7 fix: even on the error path the fallback must
-      // respect DEFAULT_MEMORY_SETTINGS.strategy instead of hardcoding "exact".
-      const memorySettings =
-        (await getMemorySettings().catch(() => null)) ?? DEFAULT_MEMORY_SETTINGS;
-      const baseConfig = toMemoryRetrievalConfig(memorySettings, {
+      const data = await executeMemoryCommand<{
+        memories: Array<{ content: string }>;
+        count: number;
+        totalTokens: number;
+      }>({
+        version: 1,
+        command: "memory.search",
+        apiKeyId,
         query: args.query,
+        type: args.type,
+        maxTokens: args.maxTokens,
+        limit: args.limit,
       });
-
-      const config = {
-        ...baseConfig,
-        enabled: true,
-        maxTokens:
-          args.maxTokens ??
-          (memorySettings.enabled ? memorySettings.maxTokens : DEFAULT_MEMORY_SETTINGS.maxTokens),
-      };
-
-      const memories = await retrieveMemories(apiKeyId, config);
-
-      const filtered = args.type ? memories.filter((m) => m.type === args.type) : memories;
-
-      const limited = args.limit ? filtered.slice(0, args.limit) : filtered;
 
       return {
         success: true,
-        data: {
-          memories: limited,
-          count: limited.length,
-          totalTokens: limited.reduce((sum, m) => sum + Math.ceil(m.content.length / 4), 0),
-        },
+        data,
       };
     },
   },
@@ -101,14 +103,18 @@ export const memoryTools = {
     inputSchema: MemoryAddSchema,
     handler: async (args: z.infer<typeof MemoryAddSchema>) => {
       const apiKeyId = await resolveMemoryOwnerId(args.apiKeyId);
-      const memory = await createMemory({
-        apiKeyId,
-        sessionId: args.sessionId || "",
-        type: args.type as MemoryType,
-        key: args.key,
-        content: args.content,
-        metadata: args.metadata || {},
-        expiresAt: null,
+      const { memory } = await executeMemoryCommand<{ memory: unknown }>({
+        version: 1,
+        command: "memory.create",
+        input: {
+          apiKeyId,
+          sessionId: args.sessionId || "",
+          type: args.type,
+          key: args.key,
+          content: args.content,
+          metadata: args.metadata || {},
+          expiresAt: null,
+        },
       });
 
       return {
@@ -128,27 +134,13 @@ export const memoryTools = {
     inputSchema: MemoryClearSchema,
     handler: async (args: z.infer<typeof MemoryClearSchema>) => {
       const apiKeyId = await resolveMemoryOwnerId(args.apiKeyId);
-      const result = await listMemories({
+      const { deletedCount } = await executeMemoryCommand<{ deletedCount: number }>({
+        version: 1,
+        command: "memory.clear",
         apiKeyId,
-        type: args.type as MemoryType | undefined,
+        type: args.type,
+        olderThan: args.olderThan ? new Date(args.olderThan).toISOString() : undefined,
       });
-      const existingMemories = Array.isArray(result)
-        ? result
-        : Array.isArray(result?.data)
-          ? result.data
-          : [];
-
-      let toDelete = existingMemories;
-      if (args.olderThan) {
-        const cutoff = new Date(args.olderThan);
-        toDelete = existingMemories.filter((m) => new Date(m.createdAt) < cutoff);
-      }
-
-      let deletedCount = 0;
-      for (const memory of toDelete) {
-        await deleteMemory(memory.id);
-        deletedCount++;
-      }
 
       return {
         success: true,

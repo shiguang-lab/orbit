@@ -252,36 +252,6 @@ export async function cleanupA2aEvents(): Promise<CleanupResult> {
 }
 
 /**
- * Clean up old memory_entries based on retention settings.
- */
-export async function cleanupMemoryEntries(): Promise<CleanupResult> {
-  const db = getDbInstance();
-  const retention = getRetentionSettings();
-
-  const retentionDays = retention.memoryEntries;
-  const cutoffDate = new Date();
-  cutoffDate.setDate(cutoffDate.getDate() - retentionDays);
-  const cutoffISO = cutoffDate.toISOString();
-
-  const result: CleanupResult = { deleted: 0, errors: 0 };
-
-  try {
-    const stmt = db.prepare("DELETE FROM memories WHERE created_at < ?");
-    const runResult = stmt.run(cutoffISO);
-    result.deleted = runResult.changes;
-
-    console.log(
-      `[Cleanup] Deleted ${result.deleted} memory_entries older than ${retentionDays} days`
-    );
-  } catch (err: unknown) {
-    console.error("[Cleanup] Error cleaning memory_entries:", err);
-    result.errors++;
-  }
-
-  return result;
-}
-
-/**
  * Clean up old domain_cost_history based on retention settings. (#6848)
  * The `timestamp` column stores epoch milliseconds (saveCostEntry default
  * is Date.now()), so the cutoff must be in milliseconds to match. (#9625)
@@ -456,7 +426,6 @@ export async function runAutoCleanup(): Promise<AutoCleanupResult> {
     mcpAudit: await cleanupMcpAudit(),
     configAudit: await cleanupConfigAudit(),
     a2aEvents: await cleanupA2aEvents(),
-    memoryEntries: await cleanupMemoryEntries(),
     domainCostHistory: await cleanupDomainCostHistory(),
     compressionCacheStats: await cleanupCompressionCacheStats(),
     xpAuditLog: await cleanupXpAuditLog(),

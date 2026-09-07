@@ -7,7 +7,13 @@ export class FilesService {
     return listFiles({ limit });
   }
 
-  content(id: string) {
+  content(id: string):
+    | { status: 404; body: { error: { message: string; type: string } } }
+    | {
+        status: 200;
+        file: NonNullable<ReturnType<typeof getFile>>;
+        content: NonNullable<ReturnType<typeof getFileContent>>;
+      } {
     const file = getFile(id);
     if (!file) return { status: 404, body: { error: { message: "File not found", type: "invalid_request_error" } } };
     const content = getFileContent(id);

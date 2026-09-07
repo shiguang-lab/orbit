@@ -6,12 +6,12 @@ import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/man
  */
 export async function POST(
   request: Request,
-  { params }: { params: Promise<{ sessionId: string }> }
+  { params }: { params: { sessionId: string } }
 ): Promise<Response> {
   const auth = await requireManagementAuth(request);
   if (auth) return auth;
 
-  const { sessionId } = await params;
+  const { sessionId } = params;
 
   try {
     const { volcengineConsoleAutoLoginService } =

@@ -13,8 +13,8 @@ export class PlaygroundService {
   presetsGet(request: Request) { return presets.GET(request); }
   presetsPost(request: Request) { return presets.POST(request); }
   presetsOptions() { return presets.OPTIONS(); }
-  presetGet(request: Request, id: string) { return presetById.GET(request, { params: Promise.resolve({ id }) }); }
-  presetPut(request: Request, id: string) { return presetById.PUT(request, { params: Promise.resolve({ id }) }); }
-  presetDelete(request: Request, id: string) { return presetById.DELETE(request, { params: Promise.resolve({ id }) }); }
+  presetGet(request: Request, id: string) { return presetById.GET(request, { params: { id } }); }
+  presetPut(request: Request, id: string) { return presetById.PUT(request, { params: { id } }); }
+  presetDelete(request: Request, id: string) { return presetById.DELETE(request, { params: { id } }); }
   presetOptions() { return presetById.OPTIONS(); }
 }

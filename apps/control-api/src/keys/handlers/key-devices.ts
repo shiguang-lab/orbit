@@ -5,11 +5,11 @@ import * as log from "@shiguang-gateway/core-domain/sse/logger";
 import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 import { json } from "./response.js";
 
-export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(request: Request, { params }: { params: { id: string } }) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
   try {
-    const { id } = await params;
+    const { id } = params;
     const key = await getApiKeyById(id);
     if (!key || typeof key.id !== "string") return json(buildErrorBody(404, "Key not found"), { status: 404 });
     const snapshot = await executeEdgeRuntimeCommand<{ count: number; devices: unknown[] }>({

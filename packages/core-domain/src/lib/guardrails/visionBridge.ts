@@ -476,19 +476,16 @@ export class VisionBridgeGuardrail extends BaseGuardrail {
     // outright (capability_mismatch), so stub text is strictly better than
     // preserving bytes no combo target can consume.
     const allNull = descriptions.every((d) => d === null);
-    if (
+    const effectiveDescriptions: Array<string | null> =
       allNull &&
       (comboVisionBridgeDecision === "process" || comboVisionBridgeDecision === "no-vision")
-    ) {
-      for (let i = 0; i < descriptions.length; i++) {
-        descriptions[i] = `[Image ${i + 1}]: (unavailable — no vision-capable provider connected)`;
-      }
-    }
+        ? descriptions.map((_, index) => `[Image ${index + 1}]: (unavailable — no vision-capable provider connected)`)
+        : descriptions;
 
     // 13. Replace image parts with text descriptions (null → keep original image)
     const modifiedBody = replaceImageParts(
       body as Parameters<typeof replaceImageParts>[0],
-      descriptions
+      effectiveDescriptions
     );
     const processingTime = Date.now() - startTime;
 
@@ -496,9 +493,9 @@ export class VisionBridgeGuardrail extends BaseGuardrail {
       block: false,
       modifiedPayload: modifiedBody,
       meta: {
-        imagesProcessed: descriptions.length,
+        imagesProcessed: effectiveDescriptions.length,
         // Keep meta observability stable: report a human label for failures.
-        descriptions: descriptions.map((d, i) => d ?? `[Image ${i + 1}]: (unavailable)`),
+        descriptions: effectiveDescriptions.map((d, i) => d ?? `[Image ${i + 1}]: (unavailable)`),
         processingTimeMs: processingTime,
         visionModel: config.model,
       },

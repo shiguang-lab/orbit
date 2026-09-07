@@ -3,6 +3,7 @@ import {
   runAutoCleanup,
 } from "@shiguang-gateway/core-domain/db/cleanup-maintenance";
 import { runNow as runVacuumNow } from "@shiguang-gateway/core-domain/db/vacuum";
+import { executeMemoryRetentionCleanup } from "./memory-decay.js";
 
 const CLEANUP_INTERVAL_MS = 6 * 60 * 60 * 1000;
 const STARTUP_DELAY_MS = 30_000;
@@ -11,6 +12,7 @@ type Timer = ReturnType<typeof setTimeout>;
 export interface DatabaseCleanupSchedulerDependencies {
   runCleanup: typeof runAutoCleanup;
   cleanupProxyLogs: typeof cleanupProxyLogs;
+  cleanupMemoryEntries: typeof executeMemoryRetentionCleanup;
   runVacuum: typeof runVacuumNow;
   setTimeout: (callback: () => void, delayMs: number) => Timer;
   clearTimeout: (timer: Timer) => void;
@@ -27,7 +29,8 @@ export function createDatabaseCleanupScheduler(dependencies: DatabaseCleanupSche
     try {
       const result = await dependencies.runCleanup();
       const proxyResult = await dependencies.cleanupProxyLogs();
-      const totalDeleted = result.totalDeleted + proxyResult.deleted;
+      const memoryResult = await dependencies.cleanupMemoryEntries();
+      const totalDeleted = result.totalDeleted + proxyResult.deleted + memoryResult.deleted;
       if (totalDeleted === 0) return;
       dependencies.log.log(`[Cleanup] ${label} cleanup freed ${totalDeleted} rows. Running VACUUM...`);
       const vacuum = await dependencies.runVacuum();
@@ -62,6 +65,7 @@ export function createDatabaseCleanupScheduler(dependencies: DatabaseCleanupSche
 const scheduler = createDatabaseCleanupScheduler({
   runCleanup: runAutoCleanup,
   cleanupProxyLogs,
+  cleanupMemoryEntries: executeMemoryRetentionCleanup,
   runVacuum: runVacuumNow,
   setTimeout,
   clearTimeout,

@@ -225,12 +225,18 @@ function collectFromArray(items: unknown[], format: ParsedSubscription["format"]
   for (const item of items) {
     if (typeof item === "string") {
       const n = nodeFromUri(item.trim());
-      if (n) (isDirect(n) ? nodes : needsCore).push(n);
+      if (n) {
+        if (isDirect(n)) nodes.push(n);
+        else needsCore.push(n);
+      }
       continue;
     }
     if (item && typeof item === "object") {
       const n = nodeFromClashObject(item as Record<string, unknown>);
-      if (n) (isDirect(n) ? nodes : needsCore).push(n);
+      if (n) {
+        if (isDirect(n)) nodes.push(n);
+        else needsCore.push(n);
+      }
     }
   }
   return { nodes, needsCore, format };
@@ -260,7 +266,10 @@ function parseLineList(lines: string[]): ParsedSubscription {
   const needsCore: NeedsCoreNode[] = [];
   for (const line of lines) {
     const n = nodeFromUri(line);
-    if (n) (isDirect(n) ? nodes : needsCore).push(n);
+    if (n) {
+      if (isDirect(n)) nodes.push(n);
+      else needsCore.push(n);
+    }
   }
   return { nodes, needsCore, format: "lines" };
 }

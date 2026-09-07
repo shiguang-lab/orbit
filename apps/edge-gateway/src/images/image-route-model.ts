@@ -43,7 +43,7 @@ export async function resolveImageModelPrefix(modelStr: string): Promise<string>
     const nodes = await getCachedProviderNodes({ type: "openai-compatible" });
     // node.id (internal UUID) is already a valid internal id; only rewrite when a
     // user-defined prefix differs from the node id.
-    const matched = nodes.find((node: { prefix?: unknown }) => node.prefix === prefixPart);
+    const matched = nodes.find((node) => node?.prefix === prefixPart);
     if (matched && typeof matched.id === "string" && matched.id && matched.id !== prefixPart) {
       return `${matched.id}/${rest}`;
     }

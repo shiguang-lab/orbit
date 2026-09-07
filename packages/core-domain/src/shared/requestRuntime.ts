@@ -1,12 +1,16 @@
 import { providerRuntimePorts } from "../runtime/providerRuntimePorts.js";
 
-/** Shared, side-effectful hydration required by every HTTP request process. */
-export async function hydrateRequestRuntime(): Promise<void> {
+export interface RequestRuntimeHandle {
+  close(): void;
+}
+
+/** Shared hydration whose process-local lifecycle is owned by the calling app. */
+export async function hydrateRequestRuntime(): Promise<RequestRuntimeHandle> {
   const load = (specifier: string): Promise<any> => import(specifier as string);
   const [
     { getSettings },
     { applyRuntimeSettings },
-    { startRuntimeConfigHotReload },
+    { startRuntimeConfigHotReload, stopRuntimeConfigHotReload },
     { initMemoryBackends },
     { initAuditLog },
     { registerDefaultGuardrails },
@@ -36,4 +40,5 @@ export async function hydrateRequestRuntime(): Promise<void> {
   registerBuiltinSkills(skillExecutor);
   initAuditLog();
   await initMemoryBackends();
+  return { close: stopRuntimeConfigHotReload };
 }

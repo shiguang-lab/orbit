@@ -28,6 +28,12 @@ import { isSelfHostedChatProvider } from "../../shared/constants/providers.js";
 
 type JsonRecord = Record<string, unknown>;
 
+function asRecord(value: unknown): JsonRecord {
+  return value !== null && typeof value === "object" && !Array.isArray(value)
+    ? value as JsonRecord
+    : {};
+}
+
 export type ManagedModelImportMode = "merge" | "sync";
 
 export type ManagedImportedModel = {
@@ -102,7 +108,7 @@ function normalizeImportedModel(model: JsonRecord): ManagedImportedModel {
 function normalizeImportedModels(
   discoveredModels: readonly SyncedAvailableModel[]
 ): ManagedImportedModel[] {
-  return discoveredModels.map((model) => normalizeImportedModel(model as JsonRecord));
+  return discoveredModels.map((model) => normalizeImportedModel(asRecord(model)));
 }
 
 function isImportedSource(source: unknown): boolean {
@@ -427,12 +433,12 @@ export async function importManagedModels({
   }
 
   const importedChanges = summarizeImportedChanges(
-    previousSyncedAvailableModels as JsonRecord[],
-    discoveredModels as JsonRecord[],
+    previousSyncedAvailableModels.map(asRecord),
+    discoveredModels.map(asRecord),
     importedIds
   );
   const importedModels = collectAddedImportedModels(
-    previousSyncedAvailableModels as JsonRecord[],
+    previousSyncedAvailableModels.map(asRecord),
     candidateImportedModels
   );
 

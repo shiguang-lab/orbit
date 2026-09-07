@@ -28,6 +28,10 @@ import {
   parseRtkTomlV1,
   type RtkTomlCompatibilityResult,
 } from "@shiguang-gateway/open-sse/services/compression/engines/rtk/tomlCompatibility";
+import {
+  DEFAULT_RTK_CONFIG,
+  type RtkConfig,
+} from "@shiguang-gateway/contracts/compression-settings";
 
 const EMPTY_TELEMETRY_SUMMARY = {
   totalRuns: 0,
@@ -54,11 +58,12 @@ export class CompressionSettingsService {
     return settings.rtkConfig;
   }
 
-  async updateRtkConfig(updates: Record<string, unknown>) {
+  async updateRtkConfig(updates: Partial<RtkConfig>) {
     const current = await getCompressionSettings();
     const settings = await updateCompressionSettings({
       rtkConfig: {
-        ...((current.rtkConfig as Record<string, unknown> | undefined) ?? {}),
+        ...DEFAULT_RTK_CONFIG,
+        ...(current.rtkConfig ?? {}),
         ...updates,
       },
     });

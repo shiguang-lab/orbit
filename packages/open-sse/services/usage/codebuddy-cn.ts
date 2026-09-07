@@ -99,7 +99,7 @@ function isRefill(acc: TencentAccount): boolean {
   return Number.isFinite(ce) && Number.isFinite(de) && de - ce > REFILL_GAP_MS;
 }
 
-interface CodeBuddyUsageResult {
+export interface CodeBuddyUsageResult {
   plan?: string;
   quotas?: Record<
     string,

@@ -31,12 +31,12 @@ const updateWebhookSchema = z
   })
   .strict();
 
-export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(_: Request, { params }: { params: { id: string } }) {
   const authError = await requireManagementAuth(_);
   if (authError) return authError;
 
   try {
-    const { id } = await params;
+    const { id } = params;
     const webhook = getWebhook(id);
     if (!webhook) {
       return Response.json({ error: "Webhook not found" }, { status: 404 });
@@ -51,12 +51,12 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
   }
 }
 
-export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function PUT(request: Request, { params }: { params: { id: string } }) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 
   try {
-    const { id } = await params;
+    const { id } = params;
     const rawBody = await request.json();
     const validation = validateBody(updateWebhookSchema, rawBody);
     if (isValidationFailure(validation)) {
@@ -105,12 +105,12 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   }
 }
 
-export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(_: Request, { params }: { params: { id: string } }) {
   const authError = await requireManagementAuth(_);
   if (authError) return authError;
 
   try {
-    const { id } = await params;
+    const { id } = params;
     const deleted = deleteWebhook(id);
     if (!deleted) {
       return Response.json({ error: "Webhook not found" }, { status: 404 });

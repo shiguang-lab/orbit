@@ -12,6 +12,7 @@ const manifest = JSON.parse(
 
 const canonicalSubpath = "./db/combos";
 const canonicalEntry = "./src/db/combos.ts";
+const canonicalTypes = "./dist/types/db/combos.d.ts";
 const runtimeExports = [
   "createCombo",
   "deleteCombo",
@@ -43,7 +44,7 @@ function sourceFiles(dir: string): string[] {
 
 test("db/combos is the single narrow combo persistence contract", async () => {
   assert.deepEqual(manifest.exports[canonicalSubpath], {
-    types: canonicalEntry,
+    types: canonicalTypes,
     import: canonicalEntry,
   });
 

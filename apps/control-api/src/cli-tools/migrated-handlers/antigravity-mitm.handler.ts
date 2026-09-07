@@ -11,7 +11,7 @@ import { isRoot } from "@shiguang-gateway/core-domain/control/cli-tools-mitm";
 import { isSudoPasswordRequired } from "@shiguang-gateway/core-domain/control/cli-tools-mitm-dns";
 
 // GET - Check MITM status
-export async function GET(request) {
+export async function GET(request: Request) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
 
@@ -41,7 +41,7 @@ export async function GET(request) {
 }
 
 // POST - Start MITM proxy
-export async function POST(request) {
+export async function POST(request: Request) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
 
@@ -105,7 +105,7 @@ export async function POST(request) {
 }
 
 // DELETE - Stop MITM proxy
-export async function DELETE(request) {
+export async function DELETE(request: Request) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
 

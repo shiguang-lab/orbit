@@ -88,20 +88,23 @@ export class Assessor {
         return { status: "broken", latencyMs, error: `HTTP ${response.status}` };
       }
 
-      const data = await response.json();
+      const data = (await response.json()) as {
+        choices?: Array<{ message?: { content?: string } }>;
+        usage?: { completion_tokens?: number };
+      };
       const content = data.choices?.[0]?.message?.content?.trim() ?? "";
-      const supportsStreaming = data.usage?.completion_tokens > 0;
+      const supportsStreaming = (data.usage?.completion_tokens ?? 0) > 0;
 
       return { status: "working", latencyMs, content, supportsStreaming };
     } catch (err) {
-      if (err.name === "AbortError") {
+      if (err instanceof Error && err.name === "AbortError") {
         return {
           status: "timeout",
           latencyMs: this.config.probeTimeoutMs,
           error: "Probe timed out",
         };
       }
-      return { status: "broken", latencyMs: 0, error: err.message };
+      return { status: "broken", latencyMs: 0, error: err instanceof Error ? err.message : String(err) };
     } finally {
       clearTimeout(timeout);
     }

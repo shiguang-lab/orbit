@@ -161,12 +161,12 @@ async function loginAdobeFirefly(
 
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ): Promise<Response> {
   const auth = await requireManagementAuth(req);
   if (auth) return auth;
 
-  const { id } = await params;
+  const { id } = params;
   const provider = await getCachedProviderConnectionById(id);
   if (!provider) {
     return Response.json({ success: false, error: "Provider not found" }, { status: 404 });

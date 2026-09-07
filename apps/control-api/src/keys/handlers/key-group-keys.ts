@@ -2,16 +2,16 @@ import { z } from "zod";
 import { addKeyToGroup, getGroupMembers, getKeyGroup, removeKeyFromGroup } from "@shiguang-gateway/core-domain/db/api-key-groups";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { json } from "./response.js";
-type RouteParams = { params: Promise<{ id: string }> };
+type RouteParams = { params: { id: string } };
 const addKeyToGroupSchema = z.object({ keyId: z.string().trim().min(1, "keyId is required") });
 
 export async function GET(_request: Request, { params }: RouteParams) {
-  try { const { id } = await params; if (!getKeyGroup(id)) return json({ error: "Group not found" }, { status: 404 }); return json({ members: getGroupMembers(id) }); }
+  try { const { id } = params; if (!getKeyGroup(id)) return json({ error: "Group not found" }, { status: 404 }); return json({ members: getGroupMembers(id) }); }
   catch { return json({ error: "Failed to list members" }, { status: 500 }); }
 }
 export async function POST(request: Request, { params }: RouteParams) {
   try {
-    const { id } = await params;
+    const { id } = params;
     if (!getKeyGroup(id)) return json({ error: "Group not found" }, { status: 404 });
     const validation = validateBody(addKeyToGroupSchema, await request.json());
     if (isValidationFailure(validation)) return json({ error: validation.error }, { status: 400 });
@@ -21,7 +21,7 @@ export async function POST(request: Request, { params }: RouteParams) {
 }
 export async function DELETE(request: Request, { params }: RouteParams) {
   try {
-    const { id } = await params;
+    const { id } = params;
     const keyId = new URL(request.url).searchParams.get("keyId");
     if (!keyId) return json({ error: "keyId query param required" }, { status: 400 });
     if (!removeKeyFromGroup(keyId, id)) return json({ error: "Key not found in group" }, { status: 404 });

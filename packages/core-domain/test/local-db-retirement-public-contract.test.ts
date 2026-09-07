@@ -81,11 +81,14 @@ const contracts = {
     entry: "./src/db/tokenLimits.ts",
     types: "./src/public/tokenLimitsDb.d.ts",
     runtime: [
+      "deleteTokenLimit",
       "getTokenLimitsForRequest",
       "getWindowUsage",
       "incrementWindowTokens",
+      "listTokenLimits",
       "logTokenLimitReset",
       "resetWindowIfElapsed",
+      "upsertTokenLimit",
     ],
   },
   "./db/webhooks": {

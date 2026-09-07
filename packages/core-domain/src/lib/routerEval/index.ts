@@ -169,7 +169,10 @@ function resolveObservationModelFields(value: RouterObservationInput): {
   expectedModel: string | null;
 } {
   const selectedModel = asString(value.selectedModel ?? value.model);
-  const expectedModel = asString(value.expectedModel ?? value.requestedModel, null);
+  const expectedValue = value.expectedModel ?? value.requestedModel;
+  const expectedModel = typeof expectedValue === "string" && expectedValue.trim().length > 0
+    ? expectedValue
+    : null;
   return { selectedModel: selectedModel || null, expectedModel };
 }
 
@@ -203,7 +206,7 @@ export function toRouterObservation(input: unknown): RouterObservation | null {
 
   return {
     sampleId,
-    routeInput: asRecord(value.routeInput, {}),
+    routeInput: asRecord(value.routeInput),
     configId: asString(value.configId, "default"),
     selectedModel,
     expectedModel,

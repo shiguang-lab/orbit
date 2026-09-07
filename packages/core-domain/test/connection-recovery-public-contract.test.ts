@@ -21,6 +21,10 @@ const contracts = {
     runtime: ["resolveConnectionRecoveryIntervalMs", "runConnectionRecoveryTick"],
   },
 } as const;
+
+function declarationEntry(sourceEntry: string): string {
+  return sourceEntry.replace("./src/", "./dist/types/").replace(/\.ts$/, ".d.ts");
+}
 const retiredSubpaths = [
   "./shared/connection-recovery-policy",
   "./control/resilience-connection-recovery",
@@ -42,7 +46,7 @@ function sourceFiles(dir: string): string[] {
 test("connection recovery policy and run-once operation have distinct narrow contracts", async () => {
   for (const [subpath, contract] of Object.entries(contracts)) {
     assert.deepEqual(manifest.exports[subpath], {
-      types: "types" in contract ? contract.types : contract.entry,
+      types: "types" in contract ? contract.types : declarationEntry(contract.entry),
       import: contract.entry,
     });
     const runtime = await import(pathToFileURL(path.join(packageRoot, contract.entry)).href);

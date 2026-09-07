@@ -9,13 +9,13 @@ import {
 } from "@shiguang-gateway/core-domain/proxy-subscriptions/management";
 import { createErrorResponseFromUnknown } from "@shiguang-gateway/core-domain/shared/error-response";
 
-type RouteContext = { params: Promise<{ id: string }> };
+type RouteContext = { params: { id: string } };
 
 export async function GET(request: Request, context: RouteContext): Promise<Response> {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
   try {
-    const { id } = await context.params;
+    const { id } = context.params;
     const subscription = await getSubscriptionById(id);
     if (!subscription) return Response.json({ error: "Subscription not found" }, { status: 404 });
     return Response.json({ ...subscription, url: redactSubscriptionUrl(subscription.url) });
@@ -28,7 +28,7 @@ export async function PATCH(request: Request, context: RouteContext): Promise<Re
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
   try {
-    const { id } = await context.params;
+    const { id } = context.params;
     const body = await request.json().catch(() => null);
     const parsed = proxySubscriptionUpdateSchema.safeParse(body);
     if (!parsed.success) return Response.json({ error: firstIssueMessage(parsed.error) }, { status: 400 });
@@ -44,7 +44,7 @@ export async function DELETE(request: Request, context: RouteContext): Promise<R
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
   try {
-    const { id } = await context.params;
+    const { id } = context.params;
     const deleted = await deleteSubscription(id);
     if (!deleted) return Response.json({ error: "Subscription not found" }, { status: 404 });
     return Response.json({ deleted: true });

@@ -5,40 +5,40 @@ import ora from "ora";
  * UI Helper Functions
  */
 
-export function success(message) {
+export function success(message: string) {
   console.log(chalk.green(`\n✓ ${message}\n`));
 }
 
-export function error(message) {
+export function error(message: string) {
   console.log(chalk.red(`\n✗ ${message}\n`));
 }
 
-export function info(message) {
+export function info(message: string) {
   console.log(chalk.blue(`\n${message}\n`));
 }
 
-export function warn(message) {
+export function warn(message: string) {
   console.log(chalk.yellow(`\n⚠ ${message}\n`));
 }
 
-export function gray(message) {
+export function gray(message: string) {
   console.log(chalk.gray(message));
 }
 
-export function spinner(text) {
+export function spinner(text: string) {
   return ora(text);
 }
 
-export function printSection(title) {
+export function printSection(title: string) {
   console.log(chalk.blue(`\n${title}\n`));
 }
 
-export function printKeyValue(key, value, isSuccess = false) {
+export function printKeyValue(key: string, value: string, isSuccess = false) {
   const color = isSuccess ? chalk.green : chalk.gray;
   console.log(color(`  ${key}: ${value}`));
 }
 
-export function printList(items, isSuccess = false) {
+export function printList(items: readonly string[], isSuccess = false) {
   const symbol = isSuccess ? "✓" : "✗";
   const color = isSuccess ? chalk.green : chalk.gray;
   items.forEach((item) => {

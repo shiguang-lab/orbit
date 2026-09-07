@@ -74,12 +74,12 @@ async function testFetch(
   }
 }
 
-export async function POST(_: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function POST(_: Request, { params }: { params: { id: string } }) {
   const authError = await requireManagementAuth(_);
   if (authError) return authError;
 
   try {
-    const { id } = await params;
+    const { id } = params;
     const webhook = getWebhook(id);
     if (!webhook) {
       return Response.json({ error: "Webhook not found" }, { status: 404 });

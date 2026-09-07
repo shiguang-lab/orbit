@@ -102,6 +102,12 @@ import {
 
 type JsonRecord = Record<string, unknown>;
 
+function asRecord(value: unknown): JsonRecord {
+  return value !== null && typeof value === "object" && !Array.isArray(value)
+    ? value as JsonRecord
+    : {};
+}
+
 const CONNECTION_CREDENTIAL_FIELDS = ["apiKey", "accessToken", "refreshToken", "idToken"] as const;
 
 /** Thrown when a write would store the dashboard login password as a provider credential. */
@@ -253,7 +259,7 @@ export async function getProviderConnections(
   const raw = useCache
     ? await getCachedRawProviderConnections(filter)
     : await getRawProviderConnections(filter, limit, offset, columns);
-  return raw.map(createLazyRowProxy);
+  return raw.map((row) => createLazyRowProxy(asRecord(row)));
 }
 
 /**

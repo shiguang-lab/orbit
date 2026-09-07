@@ -1,7 +1,5 @@
 import fs from "node:fs";
 import { resolveDataDir, resolveStoragePath } from "@shiguang-gateway/config/dataPaths";
-import { ensureProviderSchema } from "./provider-store.mjs";
-import { ensureSettingsSchema, hashManagementPassword, updateSettings } from "./settings-store.mjs";
 
 async function loadSqlite() {
   if (process.versions.bun) {
@@ -114,7 +112,7 @@ export function createSqliteNativeError(error) {
   return error;
 }
 
-async function openSqliteDatabase(dbPath, options = {}) {
+export async function openSqliteDatabase(dbPath, options = {}) {
   const loaded = await loadSqlite();
   if (loaded.driver === "bun:sqlite" || (process.versions.bun && !loaded.Database)) {
     if (options.fileMustExist && !fs.existsSync(dbPath)) {
@@ -147,9 +145,6 @@ export async function openShiguangGatewayDb() {
   const db = await openSqliteDatabase(dbPath);
 
   db.pragma("journal_mode = WAL");
-  ensureSettingsSchema(db);
-  ensureProviderSchema(db);
-
   return { db, dataDir, dbPath };
 }
 
@@ -237,19 +232,4 @@ export async function readManagementPasswordState(dbPath = resolveStoragePath(re
       hasPassword: typeof password === "string" && password.length > 0,
     };
   });
-}
-
-export async function resetManagementPassword(
-  password,
-  dbPath = resolveStoragePath(resolveDataDir())
-) {
-  const db = await openSqliteDatabase(dbPath);
-  try {
-    db.pragma("journal_mode = WAL");
-    ensureSettingsSchema(db);
-    const hashedPassword = await hashManagementPassword(password);
-    updateSettings(db, { password: hashedPassword, requireLogin: true, setupComplete: true });
-  } finally {
-    db.close();
-  }
 }

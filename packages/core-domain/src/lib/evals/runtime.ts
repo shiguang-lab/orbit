@@ -281,7 +281,7 @@ export async function runEvalSuiteAgainstTarget(input: {
 
   for (const evalCase of suite.cases || []) {
     const execution = await executeEvalCase(
-      (evalCase || {}) as Record<string, unknown>,
+      (evalCase || {}) as unknown as Record<string, unknown>,
       normalizedTarget,
       resolvedApiKey,
       postChatCompletion,

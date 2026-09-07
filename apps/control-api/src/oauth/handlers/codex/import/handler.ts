@@ -1,10 +1,10 @@
-// @ts-nocheck
 import { z } from "zod";
 import { normalizeCodexImportRecord, flattenCodexImportPayload } from "@shiguang-gateway/core-domain/control/oauth-runtime/services/codexImport";
 import { createProviderConnection } from "@shiguang-gateway/core-domain/control/oauth-persistence";
 import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/management-auth";
 import { sanitizeErrorMessage } from "@shiguang-gateway/open-sse/utils/error";
-import { refreshCodexToken, isUnrecoverableRefreshError } from "@shiguang-gateway/open-sse/services/token-refresh";
+import type { CodexImportRefreshValidationResult } from "@shiguang-gateway/contracts/edge-runtime-command";
+import { executeEdgeRuntimeCommand } from "../../../../edge-runtime/client.js";
 
 /**
  * Message returned when the imported record's refresh_token is already dead
@@ -17,11 +17,9 @@ const EXPIRED_SESSION_MESSAGE =
   "(Esta sessão do Codex expirou — rode `codex login` novamente e reimporte.)";
 
 /**
- * Validate a normalized Codex import record's refresh_token against OpenAI's
- * OAuth token endpoint before it is persisted as a connection. Reuses
- * `refreshCodexToken()` (the same rotating-refresh-token exchange used by the
- * runtime token-refresh path) instead of re-implementing the POST — the
- * exchange call itself is free (no model/quota usage).
+ * Validate a normalized Codex import record's refresh_token before it is
+ * persisted. The authenticated edge command performs the exchange inside the
+ * same rotating-token serialization lane as live requests.
  *
  * Returns `null` when the token is valid (or the check was inconclusive, e.g.
  * a transient network error) — the import proceeds normally in that case,
@@ -32,33 +30,29 @@ const EXPIRED_SESSION_MESSAGE =
 async function validateCodexRefreshToken(
   payload: { accessToken: string; refreshToken: string },
 ): Promise<string | null> {
-  let refreshResult: unknown;
+  let refreshResult: CodexImportRefreshValidationResult;
   try {
-    refreshResult = await refreshCodexToken(payload.refreshToken, undefined, null);
+    refreshResult = await executeEdgeRuntimeCommand<CodexImportRefreshValidationResult>({
+      command: "codex-import.validate-refresh-token",
+      accessToken: payload.accessToken,
+      refreshToken: payload.refreshToken,
+    });
   } catch {
     // Network/transport failure: inconclusive, do not block the import.
     return null;
   }
 
-  if (isUnrecoverableRefreshError(refreshResult)) {
+  if (refreshResult.outcome === "expired") {
     return EXPIRED_SESSION_MESSAGE;
   }
 
-  if (
-    refreshResult &&
-    typeof refreshResult === "object" &&
-    typeof (refreshResult as { accessToken?: unknown }).accessToken === "string"
-  ) {
-    const refreshed = refreshResult as { accessToken: string; refreshToken?: string };
-    payload.accessToken = refreshed.accessToken;
-    if (typeof refreshed.refreshToken === "string" && refreshed.refreshToken) {
-      payload.refreshToken = refreshed.refreshToken;
-    }
+  if (refreshResult.outcome === "valid") {
+    payload.accessToken = refreshResult.accessToken;
+    payload.refreshToken = refreshResult.refreshToken;
   }
 
-  // `refreshResult === null` (transient error already logged inside
-  // refreshCodexToken) is inconclusive — fall through and import the
-  // originally-supplied tokens rather than blocking on a network hiccup.
+  // A transient edge/upstream result is inconclusive: import the supplied
+  // credentials rather than blocking on a network hiccup.
   return null;
 }
 
@@ -77,8 +71,8 @@ async function validateCodexRefreshToken(
  */
 
 const bodySchema = z.object({
-  accounts: z.union([z.record(z.unknown()), z.array(z.unknown())], {
-    errorMap: () => ({ message: "accounts must be an object or an array of objects" }),
+  accounts: z.union([z.record(z.string(), z.unknown()), z.array(z.unknown())], {
+    error: "accounts must be an object or an array of objects",
   }),
 });
 
@@ -105,7 +99,7 @@ export async function POST(request: Request) {
   const parsed = bodySchema.safeParse(rawBody);
   if (!parsed.success) {
     return Response.json(
-      { error: parsed.error.errors[0]?.message ?? "Invalid request body" },
+      { error: parsed.error.issues[0]?.message ?? "Invalid request body" },
       { status: 400 },
     );
   }

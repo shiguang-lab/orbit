@@ -13,7 +13,16 @@ import { spawnSync } from "node:child_process";
 import os from "node:os";
 
 const repoRoot = fileURLToPath(new URL("..", import.meta.url));
-const ignored = new Set(["node_modules", ".turbo", ".git", "dist", "build"]);
+const ignored = new Set([
+  "node_modules",
+  ".turbo",
+  ".git",
+  "dist",
+  "build",
+  "test",
+  "tests",
+  "__tests__",
+]);
 const sourceExtensions = new Set([".ts", ".tsx", ".js", ".mjs", ".cjs", ".sql"]);
 
 function walk(dir, out = []) {
@@ -41,7 +50,7 @@ function normalizeName(name) {
 
 const declarationPattern = /\b(?:CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?|ALTER\s+TABLE)\s+([`"[]?[A-Za-z_][A-Za-z0-9_$-]*[`"\]]?)/gi;
 const alterColumnPattern = /\bALTER\s+TABLE\s+([`"[]?[A-Za-z_][A-Za-z0-9_$-]*[`"\]]?)\s+ADD\s+(?:COLUMN\s+)?([`"[]?[A-Za-z_][A-Za-z0-9_$-]*[`"\]]?)/gi;
-const sqlEvidencePattern = /\b(?:CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?|ALTER\s+TABLE|INSERT\s+INTO|UPDATE|DELETE\s+FROM|SELECT[\s\S]{0,160}?\bFROM)\b/i;
+const sqlEvidencePattern = /\b(?:CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?|ALTER\s+TABLE|INSERT\s+INTO|UPDATE\s+[`"[]?[A-Za-z_]|DELETE\s+FROM|SELECT[\s\S]{0,160}?\bFROM)\b/i;
 // Tables that are intentionally private to one deployable app.  They are
 // reported for inventory purposes, but must not be promoted into the shared
 // db-schema catalog: doing so would make an app-only table a package API.

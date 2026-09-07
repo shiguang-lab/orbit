@@ -12,7 +12,7 @@ const manifest = JSON.parse(
 test("MCP server factory is callable and the executable entry stays retired", async () => {
   assert.equal(manifest.exports["./mcp-server/entry"], undefined);
   assert.deepEqual(manifest.exports["./mcp-server/factory"], {
-    types: "./public/mcpServerFactory.d.ts",
+    types: "./dist/types/mcp-server/factory.d.ts",
     import: "./mcp-server/factory.ts",
   });
   const runtime = await import(
@@ -24,9 +24,11 @@ test("MCP server factory is callable and the executable entry stays retired", as
   ]);
 
   const declaration = fs.readFileSync(
-    path.join(packageRoot, "public/mcpServerFactory.d.ts"),
+    path.join(packageRoot, "dist/types/mcp-server/factory.d.ts"),
     "utf8",
   );
-  const declared = [...declaration.matchAll(/export function (\w+)/g)].map((match) => match[1]);
+  const declared = [...declaration.matchAll(/export declare function (\w+)/g)].map(
+    (match) => match[1],
+  );
   assert.deepEqual(declared.sort(), Object.keys(runtime).sort());
 });

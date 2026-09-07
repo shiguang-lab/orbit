@@ -465,7 +465,7 @@ function startHeartbeat(server: WebSocketServer): void {
 export async function startLiveDashboardServer(
   port = DEFAULT_PORT,
   host = DEFAULT_HOST
-): Promise<import("http").Server> {
+): Promise<LiveDashboardServer> {
   // Safety net: a client aborting a connection can emit `Error: aborted`/
   // ECONNRESET on the request stream; without this the single missed listener
   // becomes an uncaughtException that kills the server. Benign aborts are
@@ -489,7 +489,13 @@ export async function startLiveDashboardServer(
   const wss = new WebSocketServer({ server });
 
   // Subscribe to EventBus
-  const unsubscribe = subscribeToEventBus();
+  const unsubscribeFromEventBus = subscribeToEventBus();
+  let eventBusSubscribed = true;
+  const unsubscribe = () => {
+    if (!eventBusSubscribed) return;
+    eventBusSubscribed = false;
+    unsubscribeFromEventBus();
+  };
   await seedLatestCompressionRunFromDb();
 
   // Warm the auth module before accepting clients so the first API-key connection
@@ -607,7 +613,7 @@ export async function startLiveDashboardServer(
     clients.clear();
   });
 
-  return new Promise((resolve, reject) => {
+  await new Promise<void>((resolve, reject) => {
     // Reject on bind failure (e.g. EADDRINUSE when the API bridge already holds
     // 20129) instead of crashing the process — the crash-loop of issue #6324.
     // The listener MUST be on `wss`, not `server`: ws re-emits the server's
@@ -622,9 +628,38 @@ export async function startLiveDashboardServer(
     });
     server.listen(port, host, () => {
       console.log("[LiveWS] Dashboard WebSocket server listening on %s:%d", host, port);
-      resolve(server);
+      resolve();
     });
   });
+
+  let closing: Promise<void> | null = null;
+  return {
+    server,
+    close() {
+      if (closing) return closing;
+      closing = (async () => {
+        // Upgraded sockets are not closed by http.Server.close(). Terminate
+        // them first so shutdown cannot wait indefinitely for a dashboard
+        // client, then close the WebSocket and HTTP listeners in that order.
+        for (const socket of wss.clients) socket.terminate();
+        await new Promise<void>((resolve, reject) => {
+          wss.close((error) => error ? reject(error) : resolve());
+        });
+        unsubscribe();
+        clients.clear();
+        if (!server.listening) return;
+        await new Promise<void>((resolve, reject) => {
+          server.close((error) => error ? reject(error) : resolve());
+        });
+      })();
+      return closing;
+    },
+  };
+}
+
+export interface LiveDashboardServer {
+  server: import("http").Server;
+  close(): Promise<void>;
 }
 
 // The Nest `LiveModule` owns startup/shutdown through `LiveServerService`.

@@ -78,8 +78,10 @@ export class SettingsSecurityService {
     return this.getAutoDisableAccounts();
   }
 
-  getBackgroundDegradation() {
-    return executeEdgeRuntimeCommand({ command: "background-degradation.snapshot" });
+  getBackgroundDegradation(): Promise<Record<string, unknown>> {
+    return executeEdgeRuntimeCommand<Record<string, unknown>>({
+      command: "background-degradation.snapshot",
+    });
   }
 
   async updateBackgroundDegradation(config: Record<string, unknown>) {
@@ -93,7 +95,7 @@ export class SettingsSecurityService {
       });
       if (classification.paidTargets.length > 0) return { blocked: true } as const;
     }
-    const current = await this.getBackgroundDegradation() as Record<string, unknown>;
+    const current = await this.getBackgroundDegradation();
     const persistable = { ...current, ...config };
     delete persistable.stats;
     await updatePersistedRuntimeSettings({ backgroundDegradation: persistable });

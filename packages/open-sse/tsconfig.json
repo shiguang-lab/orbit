@@ -15,5 +15,6 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "paths": {}
   },
-  "include": ["**/*.ts", "**/*.js"]
+  "include": ["**/*.ts", "**/*.js"],
+  "exclude": ["dist"]
 }

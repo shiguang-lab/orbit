@@ -118,6 +118,7 @@ import {
 } from "./discovery/providerModelsConfig.js";
 import {
   buildCodexDiscoveryCatalog,
+  type CodexDiscoveryModel,
   enrichCodexModelsFromGithubCatalog,
   fetchCodexDiscoveryModels,
   fetchCodexGithubCatalogModels,
@@ -514,9 +515,9 @@ export async function getProviderModels(
       }
 
       try {
+        const providerData = asRecord(connection.providerSpecificData);
         const graphqlEndpoint =
-          (typeof connection.providerSpecificData?.graphqlEndpoint === "string" &&
-            connection.providerSpecificData.graphqlEndpoint) ||
+          toNonEmptyString(providerData.graphqlEndpoint) ||
           process.env.PROMPTQL_GRAPHQL_ENDPOINT ||
           "https://data.prompt.ql.app/promptql/playground-v2-hge/v1/graphql";
         const discovered = await discoverPromptQlModels({
@@ -1190,7 +1191,9 @@ export async function getProviderModels(
       const psd = asRecord(connection.providerSpecificData);
       const baseUrl = getProviderBaseUrl(psd) || OCI_DEFAULT_BASE_URL;
       const projectId =
-        connection.projectId || toNonEmptyString(psd.projectId) || toNonEmptyString(psd.project);
+        toNonEmptyString(connection.projectId) ||
+        toNonEmptyString(psd.projectId) ||
+        toNonEmptyString(psd.project);
 
       let response: Response;
       try {
@@ -2066,9 +2069,10 @@ export async function getProviderModels(
         getModelsByProviderId("codex") || [],
         getStaticModelsForProvider("codex") || []
       );
-      const finalizeCodexCatalog = (remoteModels: typeof cachedDiscoveryModels) =>
+      const cachedCodexModels = buildCodexDiscoveryCatalog([], cachedDiscoveryModels);
+      const finalizeCodexCatalog = (remoteModels: CodexDiscoveryModel[]) =>
         buildCodexDiscoveryCatalog(remoteModels, staticCodexCatalog);
-      const cachedCatalogModels = finalizeCodexCatalog(cachedDiscoveryModels);
+      const cachedCatalogModels = finalizeCodexCatalog(cachedCodexModels);
       const cachedIdsMatchFinalCatalog =
         cachedDiscoveryModels.length === cachedCatalogModels.length &&
         cachedDiscoveryModels.every((model, index) => model.id === cachedCatalogModels[index]?.id);
@@ -2099,7 +2103,7 @@ export async function getProviderModels(
 
       const liveModels = await fetchCodexDiscoveryModels({
         accessToken: accessToken || null,
-        providerSpecificData: connection.providerSpecificData,
+        providerSpecificData: asRecord(connection.providerSpecificData),
         fetchImpl: (url, init) =>
           safeOutboundFetch(url, {
             ...SAFE_OUTBOUND_FETCH_PRESETS.modelsDiscovery,

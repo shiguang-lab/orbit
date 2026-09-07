@@ -89,7 +89,7 @@ export function maybeEnrichCompletedDetail(updated: PendingRequestDetail, connec
       try {
         console.warn(
           "[usageHistory] failed to enrich completed detail from artifacts:",
-          e && (e.message || e)
+          e instanceof Error ? e.message : String(e)
         );
       } catch {}
     }

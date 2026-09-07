@@ -24,9 +24,9 @@ export class SkillsService {
   list(request: Request) { return root.GET(request, this.providerSettings); }
   install(request: Request) { return install.POST(request); }
   update(request: Request, id: string) {
-    return byId.PUT(request, { params: Promise.resolve({ id }) }, this.repository);
+    return byId.PUT(request, { params: { id } }, this.repository);
   }
-  remove(request: Request, id: string) { return byId.DELETE(request, { params: Promise.resolve({ id }) }); }
+  remove(request: Request, id: string) { return byId.DELETE(request, { params: { id } }); }
   marketplace(request: Request) { return marketplace.GET(request, this.providerSettings); }
   marketplaceInstall(request: Request) { return marketplaceInstall.POST(request, this.providerSettings); }
   skillssh(request: Request) { return skillssh.GET(request, this.skillsSh); }

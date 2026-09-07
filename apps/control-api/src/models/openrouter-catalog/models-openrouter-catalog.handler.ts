@@ -30,8 +30,23 @@ export async function GET(req: Request) {
     const settings = await getSettings();
     hidePaid = settings?.hidePaidModels === true;
   } catch {}
-  const applyFilter = <T extends { id?: string }>(data: T[]): T[] =>
-    hidePaid ? data.filter((m) => isFreeModel("or", m as { id: string; pricing?: unknown })) : data;
+  const applyFilter = <T extends { id?: string; pricing?: unknown; isFree?: boolean }>(data: T[]): T[] =>
+    hidePaid
+      ? data.filter((model) => {
+          const pricing = model.pricing;
+          return isFreeModel("or", {
+            id: model.id,
+            isFree: model.isFree,
+            pricing:
+              pricing && typeof pricing === "object" && !Array.isArray(pricing)
+                ? {
+                    prompt: (pricing as Record<string, unknown>).prompt as string | number | undefined,
+                    completion: (pricing as Record<string, unknown>).completion as string | number | undefined,
+                  }
+                : undefined,
+          });
+        })
+      : data;
 
   const forceRefresh = new URL(req.url).searchParams.get("refresh") === "true";
 

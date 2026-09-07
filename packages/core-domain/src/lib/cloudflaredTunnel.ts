@@ -676,7 +676,7 @@ async function downloadToFile(
   expectedSha256: string,
   assetName: string
 ) {
-  const response = await proxyFetch(url, { redirect: "follow" });
+  const response = await providerRuntimePorts.proxyFetch(url, { redirect: "follow" });
   if (!response.ok) {
     throw new Error(`Download failed with status ${response.status}`);
   }
@@ -1054,7 +1054,7 @@ export async function startCloudflaredTunnel(): Promise<CloudflaredTunnelStatus>
       status: "error",
       lastError: message,
     });
-    throw new Error(message);
+    throw new Error(message ?? "Failed to start cloudflared tunnel");
   } finally {
     startPromise = null;
   }

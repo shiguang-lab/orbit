@@ -8,12 +8,12 @@ import { revokeAccessToken } from "@shiguang-gateway/core-domain/control/cli-acc
  */
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 
-  const { id } = await params;
+  const { id } = params;
   const revoked = revokeAccessToken(id);
   if (!revoked) {
     return Response.json({ error: "Token not found or already revoked" }, { status: 404 });

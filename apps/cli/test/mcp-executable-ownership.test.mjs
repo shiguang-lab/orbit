@@ -46,7 +46,7 @@ test("open-sse publishes only a narrow callable MCP factory", () => {
   const manifest = JSON.parse(readFileSync(join(openSseRoot, "package.json"), "utf8"));
   assert.equal(manifest.exports["./mcp-server/entry"], undefined);
   assert.deepEqual(manifest.exports["./mcp-server/factory"], {
-    types: "./public/mcpServerFactory.d.ts",
+    types: "./dist/types/mcp-server/factory.d.ts",
     import: "./mcp-server/factory.ts",
   });
   const factory = readFileSync(join(openSseRoot, "mcp-server", "factory.ts"), "utf8");

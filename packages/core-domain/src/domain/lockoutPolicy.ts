@@ -16,6 +16,14 @@ import {
   loadAllLockedIdentifiers,
 } from "../lib/db/domainState";
 
+interface LockoutConfig {
+  maxAttempts: number;
+  lockoutDurationMs: number;
+  attemptWindowMs: number;
+}
+
+interface LockoutState { attempts: number[]; lockedUntil: number | null }
+
 /**
  * @typedef {Object} LockoutConfig
  * @property {number} [maxAttempts=5] - Max failed attempts before lockout
@@ -24,7 +32,7 @@ import {
  */
 
 /** @type {Map<string, { attempts: number[], lockedUntil: number|null }>} In-memory cache */
-const lockoutCache = new Map();
+const lockoutCache = new Map<string, LockoutState>();
 
 /** @type {LockoutConfig} */
 const DEFAULT_CONFIG = {
@@ -38,9 +46,9 @@ const DEFAULT_CONFIG = {
  * @param {string} identifier
  * @returns {{ attempts: number[], lockedUntil: number|null }}
  */
-function getState(identifier) {
+function getState(identifier: string): LockoutState | null {
   if (lockoutCache.has(identifier)) {
-    return lockoutCache.get(identifier);
+    return lockoutCache.get(identifier) ?? null;
   }
 
   try {
@@ -61,7 +69,7 @@ function getState(identifier) {
  * @param {string} identifier
  * @param {{ attempts: number[], lockedUntil: number|null }} state
  */
-function persistState(identifier, state) {
+function persistState(identifier: string, state: LockoutState) {
   lockoutCache.set(identifier, state);
   try {
     saveLockoutState(identifier, state);
@@ -77,7 +85,7 @@ function persistState(identifier, state) {
  * @param {LockoutConfig} [config]
  * @returns {{ locked: boolean, remainingMs?: number, attempts?: number }}
  */
-export function checkLockout(identifier, config = DEFAULT_CONFIG) {
+export function checkLockout(identifier: string, config: LockoutConfig = DEFAULT_CONFIG) {
   const state = getState(identifier);
   if (!state) {
     return { locked: false, attempts: 0 };
@@ -115,7 +123,7 @@ export function checkLockout(identifier, config = DEFAULT_CONFIG) {
  * @param {LockoutConfig} [config]
  * @returns {{ locked: boolean, remainingMs?: number }}
  */
-export function recordFailedAttempt(identifier, config = DEFAULT_CONFIG) {
+export function recordFailedAttempt(identifier: string, config: LockoutConfig = DEFAULT_CONFIG) {
   let state = getState(identifier);
   if (!state) {
     state = { attempts: [], lockedUntil: null };
@@ -147,7 +155,7 @@ export function recordFailedAttempt(identifier, config = DEFAULT_CONFIG) {
  *
  * @param {string} identifier
  */
-export function recordSuccess(identifier) {
+export function recordSuccess(identifier: string) {
   lockoutCache.delete(identifier);
   try {
     deleteLockoutState(identifier);
@@ -161,7 +169,7 @@ export function recordSuccess(identifier) {
  *
  * @param {string} identifier
  */
-export function forceUnlock(identifier) {
+export function forceUnlock(identifier: string) {
   lockoutCache.delete(identifier);
   try {
     deleteLockoutState(identifier);
@@ -193,7 +201,7 @@ export function getLockedIdentifiers() {
     // Use cache only
   }
 
-  const locked = [];
+  const locked: Array<{ identifier: string; lockedUntil: number; remainingMs: number }> = [];
   for (const [id, state] of lockoutCache.entries()) {
     if (state.lockedUntil && state.lockedUntil > now) {
       locked.push({

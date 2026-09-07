@@ -9,23 +9,23 @@
 
 ## 当前状态
 
-### App 边界迁移（2026-09-05）
+### App 边界迁移（2026-09-07）
 
 - ✅ 已移除两个混合运行时包；目录与 workspace 包名均已退役。
 - ✅ `edge-gateway` 与 `control-api` 使用各自固定的 bootstrap，不再由入口传入 `surface` 参数。
 - ✅ `realtime`、`worker` 只通过 `core-domain` 的显式子路径加载实时能力和后台调度器。
-- ✅ control-api 的 health 路由组（`/api/health`、`/api/health/ping`、`/api/health/degradation`）已物理迁入 `apps/control-api/src/routes/api`，并由 app 自己注册与验收。
-- ✅ control-api 的 `/api/auth/status`、`/api/gateway/status`、`/api/token-health` 已物理迁入 `apps/control-api/src/routes/api`；全栈启停由 CLI supervisor 统一持有，不再暴露误导的 `/api/shutdown` 与 `/api/restart`；edge 的 `/api/v1/music/generations`、`/api/v1/speech-to-text`、`/api/v1/voices` 与 `/api/v1/ws` 已物理迁入 `apps/edge-gateway/src/routes/api`。
-- ✅ control-api 的 `/api/provider-stats`、`/api/provider-metrics`、`/api/provider-nodes`、`/api/provider-nodes/validate`、`/api/provider-models` 与 edge 的 `/api/v1/embeddings`、`/api/v1/audio/transcriptions`、`/api/v1/text-to-speech/*`、`/api/v1/moderations`、`/api/v1/rerank` 已物理迁入各自 app 路由树，并完成独立鉴权/路径验收。
+- ✅ 所有 HTTP transport 已物理归入 `apps/control-api` 或 `apps/edge-gateway`；`packages/*` 中不存在 `route.ts`、app route catalog 或兼容 dispatcher。
+- ✅ control、edge、realtime、worker 分别持有自己的 listener、timer、watcher、内存状态和关闭链；跨进程运行时状态只通过认证、版本化 command 契约访问。
+- ✅ 路由 parity、HTTP method、鉴权边界和部署拆分由严格审计持续验证；当前 116 个官方 dashboard page 均有本地 React Router 入口。
 - ✅ control-api 的完整 `/api/keys/**` 管理域（密钥 CRUD、设备、重生成、明文查看、用量限制、分组、成员与权限）已物理迁入 `apps/control-api/src/keys/handlers`，并完成 control 401 / edge 404 的拆分部署验收。
 - ✅ edge-gateway 的 `/api/v1/files*` handler 已物理迁入 `apps/edge-gateway/src/files/handlers`，改用 app-owned Response/CORS 适配层；文件持久化仍通过显式 core-domain DB 合约提供。
 - ✅ `db-schema` 收敛跨 app 的表名/所有权元数据；查询与写入仍由所属 app 的领域服务负责。
 - ✅ 纯出站 URL/SSRF 校验原语已从 `core-domain/shared/network` 提取到 `packages/network-guard`；依赖数据库/feature flag 的 guard policy 仍由领域包持有。
 - ✅ 每个 app 的 typecheck、部署 smoke 与边界审计已纳入逐域验收；详见 [`DOMAIN_BOUNDARIES.md`](./DOMAIN_BOUNDARIES.md)。
 
-- **已迁移**：`/home`、`/dashboard/api-manager`、`/dashboard/combos`（模型组合全量 CRUD、向导/专家模式、Auto 组合目录、Kimi 预设、LKGP/智能路由面板、链路测试及控制中心监控）、`/dashboard/quota` + `/dashboard/costs/quota-share`（提供者配额与限额监控、余量告警、USD/速率限额、共享池向导）。
-- **进行中**：`/dashboard/providers` 列表与按 Provider 类型分流的详情页；OAuth/CLI/浏览器授权向导、节点编辑、模型同步高级操作和其余 Providers 子路由仍需补齐后再标记完成。
-- **待迁移**：其余菜单入口按本规范逐个完成 Web + control-api 联合迁移；未完成页面不得以“已迁移”标记。
+- **已迁移**：官方 dashboard page 路径、本地管理 API 与 edge 数据面路由均已落入对应 app；路由清单以自动审计生成结果为准，不再维护手写“剩余路由”数字。
+- **发布中验证**：OAuth/CLI/浏览器授权与 Provider 上游能力需要在目标环境使用真实凭据逐项 smoke；缺少凭据不能用 mock 或假数据降级为通过。
+- **持续验收**：新增菜单单元继续按本规范完成 Web + control-api/edge 联合变更，并同时更新 owner、契约和测试。
 - **迁移单元模式**：见 `README.md`「迁移新增一个路由组的模式」
 
 ## 菜单分组与迁移顺序
@@ -107,10 +107,8 @@
 - P6(收尾) ≈ 1 周
 - 合计 ≈ 10-14 周(单人)，可并行推进前端与 API 服务
 
-## 立即开始的下一步
+## 当前收尾门禁
 
-**P1 #2 API Manager**(比 Providers 轻，可先打通“菜单+页面+control-api 全链路”样板)：
-1. control-api: `routes/keys.ts`（GET/POST /api/keys, GET/PATCH/DELETE /api/keys/[id], regenerate/reveal/devices/usage-limits）
-2. 领域服务: 增加 keys service（`getApiKeys/createApiKey/...`）
-3. 前端: `features/api-manager/` 页面(列表 + 创建/编辑弹窗 + 权限 scope 编辑)
-4. 注册路由 + 菜单去掉 placeholder
+1. `audit:app-boundaries`、`audit:package-boundaries`、route contracts 与 DB owner/coverage 全部严格通过。
+2. workspace typecheck/build 与多目标 Docker build 通过，镜像健康检查真实覆盖各进程 listener。
+3. split deployment smoke 通过；生产发布再以真实凭据完成启用 Provider 的上游矩阵验证。

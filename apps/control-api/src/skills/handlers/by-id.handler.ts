@@ -10,12 +10,12 @@ const updateSkillSchema = z.object({
   mode: z.enum(["on", "off", "auto"]).optional(),
 });
 
-export async function DELETE(_request: Request, props: { params: Promise<{ id: string }> }) {
+export async function DELETE(_request: Request, props: { params: { id: string } }) {
   const authError = await requireManagementAuth(_request);
   if (authError) return authError;
 
   try {
-    const { id } = await props.params;
+    const { id } = props.params;
     const deleted = await skillRegistry.unregisterById(id);
     if (!deleted) {
       return Response.json({ error: "Skill not found" }, { status: 404 });
@@ -29,14 +29,14 @@ export async function DELETE(_request: Request, props: { params: Promise<{ id: s
 
 export async function PUT(
   request: Request,
-  props: { params: Promise<{ id: string }> },
+  props: { params: { id: string } },
   repository: SkillsRepository,
 ) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
 
   try {
-    const { id } = await props.params;
+    const { id } = props.params;
     const rawBody = await request.json();
     const validation = validateBody(updateSkillSchema, rawBody);
     if (isValidationFailure(validation)) {

@@ -96,7 +96,7 @@ export async function resolveQuotaKeyScope(
   for (const poolId of allowedQuotas) {
     const pool = getPool(poolId);
     if (!pool) continue;
-    groupIdSet.add(pool.groupId);
+    if (typeof pool.groupId === "string") groupIdSet.add(pool.groupId);
   }
 
   // For each distinct group, aggregate ALL pools in that group.

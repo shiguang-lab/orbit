@@ -93,6 +93,9 @@ export async function startProcess(
   });
 
   const pid = child.pid;
+  if (pid === undefined) {
+    throw new Error("cliproxyapi process started without a PID");
+  }
   await setToolStatus("cliproxyapi", "running", pid);
 
   return { pid, port: actualPort };

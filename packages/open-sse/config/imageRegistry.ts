@@ -17,7 +17,7 @@ import {
 } from "../services/adobeFireflyModels.ts";
 import { AI_HORDE_IMAGE_PROVIDER } from "./providers/registry/aihorde/imageModels.ts";
 
-interface ImageModelEntry {
+export interface ImageModelEntry {
   id: string;
   name: string;
   inputModalities?: string[];
@@ -30,7 +30,7 @@ interface ImageModelEntry {
   mediaCapabilities?: Record<string, unknown>;
 }
 
-interface ImageProviderConfig {
+export interface ImageProviderConfig {
   id: string;
   baseUrl: string;
   fallbackUrl?: string;

@@ -11,6 +11,7 @@ import { cliModelConfigSchema } from "@shiguang-gateway/core-domain/control/cli-
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { resolveApiKey } from "@shiguang-gateway/core-domain/shared/api-key-resolver";
 import { readJsoncConfig } from "./_lib/jsoncConfig.js";
+import type { JsonObject } from "./_lib/jsonObject.js";
 
 const CLINE_DATA_DIR = path.join(os.homedir(), ".cline", "data");
 const GLOBAL_STATE_PATH = path.join(CLINE_DATA_DIR, "globalState.json");
@@ -20,7 +21,7 @@ const SECRETS_PATH = path.join(CLINE_DATA_DIR, "secrets.json");
 // Ported from upstream decolua/9router@6c10edf8: tolerate JSONC (trailing
 // commas) and return null on any parse error so the dashboard renders
 // "installed but not configured" instead of a 500 misread as "not installed".
-const readGlobalState = async () => readJsoncConfig(GLOBAL_STATE_PATH);
+const readGlobalState = async () => readJsoncConfig<JsonObject>(GLOBAL_STATE_PATH);
 
 // Read secrets.json (same JSONC-tolerant behaviour; defaults to {} for compat).
 const readSecrets = async () => readJsoncConfig<Record<string, unknown>>(SECRETS_PATH, {});

@@ -120,14 +120,14 @@ async function requireOAuthRouteAuth(request: Request) {
 // GET /api/oauth/[provider]/device-code - Request device code (for device_code flow)
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ provider: string; action: string }> }
+  { params }: { params: { provider: string; action: string } }
 ) {
   // Phase 1 hotfix (2026-05-29): retired PKCE flows return 410 Gone BEFORE auth.
   // The action permanently does not exist for these providers regardless of who
   // is asking — answering 401 first would mislead callers into thinking the
   // route is gated rather than gone. See spec
   try {
-    const earlyParams = await params;
+    const earlyParams = params;
     if (
       RETIRED_PKCE_PROVIDERS.has(earlyParams.provider) &&
       (earlyParams.action === "authorize" ||
@@ -156,7 +156,7 @@ export async function GET(
   if (authResponse) return authResponse;
 
   try {
-    const { provider, action } = await params;
+    const { provider, action } = params;
     const { searchParams } = new URL(request.url);
 
     if (action === "authorize") {
@@ -385,12 +385,12 @@ async function handleStartCallbackServer(
 // POST /api/oauth/[provider]/poll - Poll for token (device_code flow)
 export async function POST(
   request: Request,
-  { params }: { params: Promise<{ provider: string; action: string }> }
+  { params }: { params: { provider: string; action: string } }
 ) {
   // Phase 1 hotfix (2026-05-29): retired PKCE flows return 410 Gone BEFORE auth.
   // See GET handler comment.
   try {
-    const earlyParams = await params;
+    const earlyParams = params;
     if (
       RETIRED_PKCE_PROVIDERS.has(earlyParams.provider) &&
       earlyParams.action === "poll-callback"
@@ -416,7 +416,7 @@ export async function POST(
   if (authResponse) return authResponse;
 
   try {
-    const { provider, action } = await params;
+    const { provider, action } = params;
 
     // Phase 1 hotfix (2026-05-29): retired PKCE flows return 410 Gone before
     // body parsing. Devin Desktop/CLI `poll-callback` is permanently retired;

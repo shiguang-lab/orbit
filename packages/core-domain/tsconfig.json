@@ -1,13 +1,16 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "target": "ES2024",
+    "lib": ["ES2024", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@shiguang-gateway/open-sse": ["../open-sse"],
-      "@shiguang-gateway/open-sse/*": ["../open-sse/*"]
+      "@/*": ["src/*"]
     }
-  }
+  },
+  "include": ["src/**/*.ts", "src/**/*.d.ts"],
+  "exclude": ["dist", "test"]
 }

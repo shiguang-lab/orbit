@@ -73,7 +73,7 @@ export interface CanonicalModelMetadata {
   limits: {
     contextWindow: number | null;
     maxInputTokens: number | null;
-    maxOutputTokens: number;
+    maxOutputTokens: number | null;
     defaultThinkingBudget: number;
     thinkingBudgetCap: number | null;
     thinkingOverhead: number | null;

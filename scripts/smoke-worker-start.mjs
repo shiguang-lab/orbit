@@ -160,7 +160,7 @@ async function main() {
       "quota-auto-ping", "connection-recovery", "radar-sync",
       "models-dev-sync", "pricing-sync", "cleanup", "warmup", "provider-limits",
       "subscription", "session-affinity-cleanup", "credential-health", "vacuum-scheduler",
-      "audit-log", "audit-log-retention", "memory-backends", "conductor-bridge", "arena-elo-sync",
+      "audit-log", "audit-log-retention", "conductor-bridge", "arena-elo-sync",
       "openrouter-provider-stats", "context-window-reconcile", "memory-decay",
       "runtime-config-hot-reload", "reasoning-cache-cleanup", "backup-schedule", "proxy-health", "free-proxy-auto-sync",
       "batch-processor", "auto-refresh-daemon",

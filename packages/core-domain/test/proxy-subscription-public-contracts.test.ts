@@ -28,17 +28,12 @@ const contracts = [
       "updateSubscription",
     ],
   },
-  {
-    subpath: "./worker/proxy-subscription-lifecycle",
-    types: "./src/public/proxySubscriptionLifecycle.d.ts",
-    source: "./src/worker/proxySubscriptionLifecycle.ts",
-    runtimeKeys: ["startSubscriptionScheduler", "stopSubscriptionScheduler"],
-  },
 ] as const;
 
 const retiredAliases = [
   "./control/proxy-subscriptions",
   "./worker/proxy-subscription",
+  "./worker/proxy-subscription-lifecycle",
 ] as const;
 
 function sourceFiles(dir: string): string[] {
@@ -52,15 +47,13 @@ function sourceFiles(dir: string): string[] {
   return files;
 }
 
-test("proxy subscription management and lifecycle expose disjoint exact contracts", async () => {
-  const runtimeKeys: string[][] = [];
+test("proxy subscription management exposes an exact operation-only contract", async () => {
   for (const contract of contracts) {
     const entry = manifest.exports[contract.subpath];
     assert.deepEqual(entry, { types: contract.types, import: contract.source });
 
     const runtime = await import(pathToFileURL(path.join(packageRoot, contract.source)).href);
     const actualRuntimeKeys = Object.keys(runtime).sort();
-    runtimeKeys.push(actualRuntimeKeys);
     assert.deepEqual(actualRuntimeKeys, [...contract.runtimeKeys].sort(), contract.subpath);
 
     const declaration = fs.readFileSync(path.join(packageRoot, contract.types), "utf8");
@@ -69,7 +62,6 @@ test("proxy subscription management and lifecycle expose disjoint exact contract
     ].map((match) => match[1]);
     assert.deepEqual(declaredValues.sort(), [...contract.runtimeKeys].sort(), contract.types);
   }
-  assert.deepEqual(runtimeKeys[0].filter((key) => runtimeKeys[1].includes(key)), []);
 });
 
 test("proxy subscription lifecycle is worker-owned and retired aliases stay absent", () => {
@@ -78,23 +70,18 @@ test("proxy subscription lifecycle is worker-owned and retired aliases stay abse
   const retiredImportPattern = new RegExp(
     `core-domain/(?:${retiredAliases.map((alias) => alias.slice(2).replaceAll("/", "\\/")).join("|")})(?=["'])`,
   );
-  const lifecycleSpecifier =
-    "@shiguang-gateway/core-domain/worker/proxy-subscription-lifecycle";
   const externalFiles = [
     ...sourceFiles(path.join(repoRoot, "apps")),
     ...sourceFiles(path.join(repoRoot, "packages/open-sse")),
-  ];
-  const lifecycleConsumers: string[] = [];
+  ].filter((file) => !file.includes(`${path.sep}test${path.sep}`));
   for (const file of externalFiles) {
     const source = fs.readFileSync(file, "utf8");
     assert.doesNotMatch(source, retiredImportPattern, file);
-    if (source.includes(lifecycleSpecifier)) lifecycleConsumers.push(path.relative(repoRoot, file));
   }
-  assert.deepEqual(lifecycleConsumers, ["apps/worker/src/jobs/registry.ts"]);
 
-  const collectionHandler = fs.readFileSync(
-    path.join(repoRoot, "apps/control-api/src/proxy-subscriptions/handlers/collection.handler.ts"),
+  const service = fs.readFileSync(
+    path.join(packageRoot, "src/lib/proxySubscription/subscriptionService.ts"),
     "utf8",
   );
-  assert.doesNotMatch(collectionHandler, /startSubscriptionScheduler/);
+  assert.doesNotMatch(service, /startSubscriptionScheduler|stopSubscriptionScheduler|setInterval\s*\(/);
 });

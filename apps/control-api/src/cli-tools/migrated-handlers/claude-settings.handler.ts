@@ -15,9 +15,14 @@ import { cliSettingsEnvSchema } from "@shiguang-gateway/core-domain/control/cli-
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { getApiKeyById } from "@shiguang-gateway/core-domain/db/api-keys";
 import { readJsoncConfig } from "./_lib/jsoncConfig.js";
+import { errorCode, isJsonObject, parseJsonObject, type JsonObject } from "./_lib/jsonObject.js";
 
 // Get claude settings path based on OS
-const getClaudeSettingsPath = () => getCliPrimaryConfigPath("claude");
+const getClaudeSettingsPath = (): string => {
+  const settingsPath = getCliPrimaryConfigPath("claude");
+  if (!settingsPath) throw new Error("Claude config path is unavailable");
+  return settingsPath;
+};
 
 // Read current settings.
 // Ported from upstream decolua/9router@6c10edf8: tolerate JSONC (trailing
@@ -25,7 +30,7 @@ const getClaudeSettingsPath = () => getCliPrimaryConfigPath("claude");
 // "installed but not configured" instead of a 500 misread as "not installed".
 const readSettings = async () => {
   const settingsPath = getClaudeSettingsPath();
-  return readJsoncConfig(settingsPath);
+  return readJsoncConfig<JsonObject>(settingsPath);
 };
 
 // GET - Check claude CLI and read current settings
@@ -53,7 +58,8 @@ export async function GET(request: Request) {
     }
 
     const settings = await readSettings();
-    const hasShiguangGateway = !!settings?.env?.ANTHROPIC_BASE_URL;
+    const env = isJsonObject(settings?.env) ? settings.env : null;
+    const hasShiguangGateway = typeof env?.ANTHROPIC_BASE_URL === "string";
 
     return Response.json({
       installed: runtime.installed,
@@ -132,12 +138,12 @@ export async function POST(request: Request) {
     await createBackup("claude", settingsPath);
 
     // Read current settings
-    let currentSettings: Record<string, any> = {};
+    let currentSettings: JsonObject = {};
     try {
       const content = await fs.readFile(settingsPath, "utf-8");
-      currentSettings = JSON.parse(content);
-    } catch (error: any) {
-      if (error.code !== "ENOENT") {
+      currentSettings = parseJsonObject(content);
+    } catch (error: unknown) {
+      if (errorCode(error) !== "ENOENT") {
         throw error;
       }
     }
@@ -148,10 +154,11 @@ export async function POST(request: Request) {
     }
 
     // Merge new env with existing settings
+    const currentEnv = isJsonObject(currentSettings.env) ? currentSettings.env : {};
     const newSettings = {
       ...currentSettings,
       env: {
-        ...(currentSettings.env || {}),
+        ...currentEnv,
         ...env,
       },
     };
@@ -201,12 +208,12 @@ export async function DELETE(request: Request) {
     const settingsPath = getClaudeSettingsPath();
 
     // Read current settings
-    let currentSettings: Record<string, any> = {};
+    let currentSettings: JsonObject = {};
     try {
       const content = await fs.readFile(settingsPath, "utf-8");
-      currentSettings = JSON.parse(content);
-    } catch (error: any) {
-      if (error.code === "ENOENT") {
+      currentSettings = parseJsonObject(content);
+    } catch (error: unknown) {
+      if (errorCode(error) === "ENOENT") {
         return Response.json({
           success: true,
           message: "No settings file to reset",
@@ -219,13 +226,14 @@ export async function DELETE(request: Request) {
     await createBackup("claude", settingsPath);
 
     // Remove specified env fields
-    if (currentSettings.env) {
+    if (isJsonObject(currentSettings.env)) {
+      const env = currentSettings.env;
       RESET_ENV_KEYS.forEach((key) => {
-        delete currentSettings.env[key];
+        delete env[key];
       });
 
       // Clean up empty env object
-      if (Object.keys(currentSettings.env).length === 0) {
+      if (Object.keys(env).length === 0) {
         delete currentSettings.env;
       }
     }

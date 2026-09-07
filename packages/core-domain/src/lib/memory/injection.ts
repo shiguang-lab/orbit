@@ -252,7 +252,15 @@ export function injectMemory(
   // #3890: in a caching context, anchor the injection just before the LAST user message so
   // the cacheable prefix (system prompt + prior turns) is preserved byte-for-byte. Falls
   // back to a leading message when caching is off or there is no user turn to anchor on.
-  const cacheSafeIndex = options.cacheSafe ? messages.findLastIndex((m) => m.role === "user") : -1;
+  let cacheSafeIndex = -1;
+  if (options.cacheSafe) {
+    for (let index = messages.length - 1; index >= 0; index -= 1) {
+      if (messages[index]?.role === "user") {
+        cacheSafeIndex = index;
+        break;
+      }
+    }
+  }
 
   const supportsSystem = providerSupportsSystemMessage(provider);
 

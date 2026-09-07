@@ -1,4 +1,5 @@
 import { getDbInstance } from "@shiguang-gateway/core-domain/db/connection";
+import { ensureLoginGuardSchema } from "../auth/login.guard.js";
 
 /**
  * Tables owned exclusively by control-api.  They intentionally live beside
@@ -76,5 +77,7 @@ CREATE INDEX IF NOT EXISTS idx_inspector_custom_hosts_enabled
 
 /** Ensure all control-api-owned tables exist after the shared runtime starts. */
 export function ensureControlSchema(): void {
-  getDbInstance().exec(CONTROL_SCHEMA_SQL);
+  const database = getDbInstance();
+  database.exec(CONTROL_SCHEMA_SQL);
+  ensureLoginGuardSchema(database);
 }

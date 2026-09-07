@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { ProviderCredentialRefreshResult } from "@shiguang-gateway/contracts/edge-runtime-command";
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import {
   getCachedProviderConnectionById,
@@ -10,9 +11,7 @@ import { syncToCloud } from "@shiguang-gateway/core-domain/sync/cloud";
 import { validateProviderApiKey } from "@shiguang-gateway/open-sse/services/provider-validation";
 import { getCliRuntimeStatus } from "@shiguang-gateway/core-domain/cli/runtime";
 import { buildQoderCliNotFoundHint } from "@shiguang-gateway/open-sse/services/qoder-cli-resolve";
-// Use the shared open-sse token refresh with built-in dedup/race-condition cache
-import { getAccessToken } from "@shiguang-gateway/open-sse/services/token-refresh";
-import { rotationGroupFor } from "@shiguang-gateway/open-sse/services/refreshSerializer";
+import { getRotatingRefreshGroup } from "@shiguang-gateway/provider-catalog/refresh-token-policy";
 import { saveCallLog } from "@shiguang-gateway/core-domain/usage/call-logs";
 import { shouldHideLogs } from "@shiguang-gateway/core-domain/control/token-health-check";
 import { executeEdgeRuntimeCommand } from "../../../edge-runtime/client.js";
@@ -57,7 +56,7 @@ const providerConnectionTestBodySchema = z.object({
   validationModelId: z.string().max(500).optional(),
 });
 
-function toSafeMessage(value: any, fallback = "Unknown error"): string {
+function toSafeMessage(value: unknown, fallback = "Unknown error"): string {
   if (typeof value !== "string") return fallback;
   const trimmed = value.trim();
   return trimmed || fallback;
@@ -181,7 +180,7 @@ function hasQoderToken(connection: any): boolean {
 
 async function getProviderRuntimeStatus(connection: any) {
   const provider = typeof connection?.provider === "string" ? connection.provider : "";
-  let toolId = CLI_RUNTIME_PROVIDER_MAP[provider];
+  let toolId: string | null = CLI_RUNTIME_PROVIDER_MAP[provider] ?? null;
 
   // Issue #2247: detect Qoder in OAuth/CLI-flavored mode with a PAT pasted
   // BEFORE the CLI-runtime early-return below, otherwise the disambiguation
@@ -241,80 +240,19 @@ async function getProviderRuntimeStatus(connection: any) {
   }
 }
 
-/**
- * Refresh OAuth token using the shared open-sse getAccessToken.
- * This shares the in-flight promise cache with the SSE layer,
- * preventing race conditions where two code paths attempt to
- * refresh the same token concurrently.
- *
- * @returns {object} { accessToken, expiresIn, refreshToken } or null if failed
- */
-/**
- * Fallback expiry persisted when a successful refresh returns neither
- * expiresAt nor expiresIn: keeps a NULL expires_at (treated as expired by
- * isTokenExpired) from forcing a token rotation on every subsequent test.
- * 30 minutes — the historical Google/OAuth default window, well inside any
- * realistic token TTL.
- */
-const FALLBACK_REFRESH_EXPIRY_MS = 30 * 60 * 1000;
-
 async function refreshOAuthToken(connection: any) {
-  const { provider, refreshToken } = connection;
-  if (!refreshToken) return null;
-
   try {
-    // Fix B: Pass connectionId + accessToken + expiresAt so getAccessToken enters
-    // the per-connection mutex (Layer 1) instead of falling through to the
-    // token-hash fallback (Layer 2). Without connectionId, parallel dashboard
-    // batch-tests would each acquire a separate Layer-2 lock keyed by token hash
-    // and concurrently POST the same refresh_token to Codex/OpenAI, triggering
-    // refresh_token_reused on rotating providers.
-    const credentials = {
+    const result = await executeEdgeRuntimeCommand<ProviderCredentialRefreshResult>({
+      command: "provider-credentials.refresh",
       connectionId: connection.id,
-      accessToken: connection.accessToken,
-      refreshToken,
-      expiresAt: connection.expiresAt,
-      providerSpecificData: connection.providerSpecificData || {},
-    };
-
-    // Fix A: onPersist runs INSIDE the mutex inside getAccessToken so the DB
-    // write happens before the lock releases. This prevents a concurrent caller
-    // from reading the stale refresh_token between the network call and the DB
-    // update.
-    const result = await getAccessToken(provider, credentials, console, null, async (refreshed) => {
-      if (!refreshed?.accessToken) return;
-      const update: any = {
-        accessToken: refreshed.accessToken,
-      };
-      if (refreshed.refreshToken) update.refreshToken = refreshed.refreshToken;
-      if (refreshed.expiresAt) {
-        update.expiresAt = refreshed.expiresAt;
-        update.tokenExpiresAt = refreshed.expiresAt;
-      } else if (refreshed.expiresIn) {
-        const expiresAt = new Date(Date.now() + refreshed.expiresIn * 1000).toISOString();
-        update.expiresAt = expiresAt;
-        update.tokenExpiresAt = expiresAt;
-      } else {
-        // Upstream returned neither expiresAt nor expiresIn. Persist a
-        // conservative 30-minute expiry so a NULL expiresAt (treated as
-        // expired by isTokenExpired when a refresh token exists) does not
-        // force a token rotation on EVERY subsequent test — the historical
-        // Google/OAuth default window, well inside any realistic token TTL.
-        const expiresAt = new Date(Date.now() + FALLBACK_REFRESH_EXPIRY_MS).toISOString();
-        update.expiresAt = expiresAt;
-        update.tokenExpiresAt = expiresAt;
-      }
-      if (refreshed.providerSpecificData) {
-        update.providerSpecificData = {
-          ...(connection.providerSpecificData || {}),
-          ...refreshed.providerSpecificData,
-        };
-      }
-      await updateProviderConnection(connection.id, update);
+      purpose: "connection-test",
     });
-    return result; // { accessToken, expiresIn, refreshToken } or null
-  } catch (err) {
-    console.error(`Error refreshing ${provider} token:`, (err as any).message);
+    return result.outcome === "refreshed" ? result.credentials : null;
+  } catch (err: unknown) {
+    console.error(
+      `Error refreshing ${connection.provider} token:`,
+      toSafeMessage(err instanceof Error ? err.message : err)
+    );
     return null;
   }
 }
@@ -476,7 +414,7 @@ export async function testOAuthConnection(
   // refresh can cascade-invalidate sibling accounts' refresh_token families
   // (openai/codex#9648). Leave rotation to the reactive, mutex-guarded 401 path.
   const tokenExpired = isTokenExpired(connection);
-  const isRotatingProvider = rotationGroupFor(connection.provider) !== null;
+  const isRotatingProvider = getRotatingRefreshGroup(connection.provider) !== null;
   if (config.refreshable && tokenExpired && connection.refreshToken && !isRotatingProvider) {
     const tokens = await refreshOAuthToken(connection);
     if (tokens) {
@@ -548,18 +486,26 @@ export async function testOAuthConnection(
       typeof config.buildProbe === "function"
         ? await config.buildProbe(connection, accessToken)
         : null;
+    const staticAuthHeader = config.authHeader ?? "Authorization";
+    const staticUrl =
+      (typeof config.getUrl === "function" ? config.getUrl(connection) : config.url) ?? "";
+    if (!builtProbe && (!config.authHeader || !staticUrl)) {
+      const error = "Provider test configuration is incomplete";
+      return {
+        valid: false,
+        error,
+        refreshed,
+        diagnosis: classifyFailure({ error, unsupported: true }),
+      };
+    }
     const headers = builtProbe
       ? builtProbe.headers
       : {
-          [config.authHeader]: `${config.authPrefix}${accessToken}`,
+          [staticAuthHeader]: `${config.authPrefix ?? ""}${accessToken}`,
           ...config.extraHeaders,
         };
 
-    const url = builtProbe
-      ? builtProbe.url
-      : typeof config.getUrl === "function"
-        ? config.getUrl(connection)
-        : config.url;
+    const url = builtProbe?.url ?? staticUrl;
     const fetchInit: RequestInit = {
       method: builtProbe?.method ?? config.method,
       headers,
@@ -601,7 +547,7 @@ export async function testOAuthConnection(
           ? (retryProbe.headers as Record<string, string>)
           : {
               ...headers,
-              [config.authHeader]: `${config.authPrefix}${tokens.accessToken}`,
+              [staticAuthHeader]: `${config.authPrefix ?? ""}${tokens.accessToken}`,
             };
         const retryUrl = retryProbe ? retryProbe.url : url;
         const retryInit: RequestInit = {
@@ -784,7 +730,7 @@ export async function testOAuthConnection(
               }
             : {
                 ...headers,
-                [config.authHeader]: `${config.authPrefix}${tokens.accessToken ?? accessToken}`,
+                [staticAuthHeader]: `${config.authPrefix ?? ""}${tokens.accessToken ?? accessToken}`,
               },
           signal: AbortSignal.timeout(timeoutMs),
         };
@@ -915,14 +861,15 @@ export async function testOAuthConnection(
       statusCode: res.status,
       diagnosis: classifyFailure({ error, statusCode: res.status }),
     };
-  } catch (err) {
+  } catch (err: unknown) {
     // AbortSignal.timeout(...) surfaces as an AbortError/TimeoutError once the probe
     // exceeds its deadline (#1449). Report it with a clear, actionable message instead
     // of leaking the raw "The operation was aborted" text.
-    const isTimeout = err?.name === "TimeoutError" || err?.name === "AbortError";
+    const isTimeout =
+      err instanceof Error && (err.name === "TimeoutError" || err.name === "AbortError");
     const error = isTimeout
       ? `Test timed out after ${Math.round(timeoutMs / 1000)}s`
-      : toSafeMessage(err?.message, "Connection test failed");
+      : toSafeMessage(err instanceof Error ? err.message : err, "Connection test failed");
     return {
       valid: false,
       error,
@@ -1168,16 +1115,6 @@ export async function testSingleConnection(connectionId: string, validationModel
     if (recovered) updateData.providerSpecificData = recovered;
   }
 
-  if (result.refreshed && result.newTokens) {
-    updateData.accessToken = result.newTokens.accessToken;
-    if (result.newTokens.refreshToken) {
-      updateData.refreshToken = result.newTokens.refreshToken;
-    }
-    if (result.newTokens.expiresIn) {
-      updateData.expiresAt = new Date(Date.now() + result.newTokens.expiresIn * 1000).toISOString();
-    }
-  }
-
   // Update status in db
   await updateProviderConnection(connectionId, updateData);
 
@@ -1239,9 +1176,9 @@ export async function testSingleConnection(connectionId: string, validationModel
   };
 }
 
-export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function POST(request: Request, { params }: { params: { id: string } }) {
   try {
-    const { id } = await params;
+    const { id } = params;
 
     let rawBody: unknown = {};
     try {

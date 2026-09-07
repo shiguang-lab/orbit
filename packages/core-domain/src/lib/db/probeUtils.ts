@@ -50,14 +50,10 @@ function syncSleep(ms: number): void {
 /**
  * Type for openSqliteDatabase callback — avoids importing the full SQLite adapter type.
  */
-type OpenDbFn = (
+type OpenDbFn<Adapter extends { driver: string; open: boolean; close(): void }> = (
   filePath: string,
   options?: Record<string, unknown>
-) => {
-  driver: string;
-  open: boolean;
-  close(): void;
-};
+) => Adapter;
 
 /**
  * Retries opening a SQLite database probe when the initial attempt fails with
@@ -69,11 +65,11 @@ type OpenDbFn = (
  * @returns true if the retry succeeded (transient condition resolved)
  *          false if all retries were exhausted or error is non-transient
  */
-export function retryProbeIfTransient(
+export function retryProbeIfTransient<Adapter extends { driver: string; open: boolean; close(): void }>(
   sqliteFile: string,
   probeError: unknown,
-  openDb: OpenDbFn,
-  closeDb: (adapter: { driver: string; open: boolean; close(): void } | null | undefined) => void
+  openDb: OpenDbFn<Adapter>,
+  closeDb: (adapter: Adapter | null | undefined) => void
 ): boolean {
   if (!isTransientProbeError(probeError)) return false;
 

@@ -11,6 +11,7 @@ import { cliModelConfigSchema } from "@shiguang-gateway/core-domain/control/cli-
 import { isValidationFailure, validateBody } from "@shiguang-gateway/core-domain/shared/validation/helpers";
 import { resolveApiKey } from "@shiguang-gateway/core-domain/shared/api-key-resolver";
 import { readJsoncConfig } from "./_lib/jsoncConfig.js";
+import { errorCode, isJsonObject, parseJsonObject, type JsonObject } from "./_lib/jsonObject.js";
 
 const KILO_DATA_DIR = path.join(os.homedir(), ".local", "share", "kilo");
 const AUTH_PATH = path.join(KILO_DATA_DIR, "auth.json");
@@ -20,14 +21,19 @@ const KILO_CONFIG_DIR = path.join(os.homedir(), ".config", "kilo");
 // Ported from upstream decolua/9router@6c10edf8: tolerate JSONC (trailing
 // commas) and return null on any parse error so the dashboard renders
 // "installed but not configured" instead of a 500 misread as "not installed".
-const readAuth = async () => readJsoncConfig(AUTH_PATH);
+const readAuth = async () => readJsoncConfig<JsonObject>(AUTH_PATH);
 
 // Check if ShiguangGateway OpenAI-compatible provider is configured
-const hasShiguangGatewayConfig = (auth) => {
+const hasShiguangGatewayConfig = (auth: JsonObject | null) => {
   if (!auth) return false;
   const routerEntry = auth["openai-compatible"] || auth["shiguangGateway"];
-  if (!routerEntry) return false;
-  const baseUrl = routerEntry.baseUrl || routerEntry.baseURL || "";
+  if (!isJsonObject(routerEntry)) return false;
+  const baseUrl =
+    typeof routerEntry.baseUrl === "string"
+      ? routerEntry.baseUrl
+      : typeof routerEntry.baseURL === "string"
+        ? routerEntry.baseURL
+        : "";
   return (
     baseUrl.includes("localhost") || baseUrl.includes("127.0.0.1") || baseUrl.includes("shiguangGateway")
   );
@@ -60,7 +66,7 @@ export async function GET(request: Request) {
     const auth = await readAuth();
 
     // Read kilo VS Code extension settings if available
-    let extensionSettings = null;
+    let extensionSettings: JsonObject | null = null;
     try {
       const vscodeSettingsPath = path.join(
         os.homedir(),
@@ -107,7 +113,7 @@ export async function GET(request: Request) {
 }
 
 // POST - Configure Kilo Code to use ShiguangGateway as OpenAI-compatible provider
-export async function POST(request) {
+export async function POST(request: Request) {
   const authError = await requireCliToolsAuth(request);
   if (authError) return authError;
 
@@ -149,10 +155,10 @@ export async function POST(request) {
     await createBackup("kilo", AUTH_PATH);
 
     // Read existing auth
-    let auth = {};
+    let auth: JsonObject = {};
     try {
       const existing = await fs.readFile(AUTH_PATH, "utf-8");
-      auth = JSON.parse(existing);
+      auth = parseJsonObject(existing);
     } catch {
       /* No existing auth */
     }
@@ -179,10 +185,10 @@ export async function POST(request) {
         "User",
         "settings.json"
       );
-      let vscodeSettings = {};
+      let vscodeSettings: JsonObject = {};
       try {
         const raw = await fs.readFile(vscodeSettingsPath, "utf-8");
-        vscodeSettings = JSON.parse(raw);
+        vscodeSettings = parseJsonObject(raw);
       } catch {
         /* no existing settings */
       }
@@ -233,12 +239,12 @@ export async function DELETE(request: Request) {
     await createBackup("kilo", AUTH_PATH);
 
     // Read existing auth
-    let auth = {};
+    let auth: JsonObject = {};
     try {
       const existing = await fs.readFile(AUTH_PATH, "utf-8");
-      auth = JSON.parse(existing);
-    } catch (error) {
-      if (error.code === "ENOENT") {
+      auth = parseJsonObject(existing);
+    } catch (error: unknown) {
+      if (errorCode(error) === "ENOENT") {
         return Response.json({ success: true, message: "No settings file to reset" });
       }
       throw error;
@@ -260,7 +266,7 @@ export async function DELETE(request: Request) {
         "settings.json"
       );
       const raw = await fs.readFile(vscodeSettingsPath, "utf-8");
-      const vscodeSettings = JSON.parse(raw);
+      const vscodeSettings = parseJsonObject(raw);
       delete vscodeSettings["kilocode.customProvider"];
       delete vscodeSettings["kilocode.defaultModel"];
       await fs.writeFile(vscodeSettingsPath, JSON.stringify(vscodeSettings, null, 2));

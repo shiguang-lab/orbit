@@ -9,6 +9,6 @@ export class CliAccessService {
   connectPost(request: Request) { return connect.POST(request); }
   tokensGet(request: Request) { return tokens.GET(request); }
   tokensPost(request: Request) { return tokens.POST(request); }
-  tokenDelete(request: Request, id: string) { return tokenById.DELETE(request, { params: Promise.resolve({ id }) }); }
+  tokenDelete(request: Request, id: string) { return tokenById.DELETE(request, { params: { id } }); }
   whoamiGet(request: Request) { return whoami.GET(request); }
 }

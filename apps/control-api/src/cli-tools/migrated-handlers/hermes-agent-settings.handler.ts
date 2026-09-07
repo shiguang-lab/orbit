@@ -7,6 +7,8 @@ import { validateBaseUrl } from "@shiguang-gateway/core-domain/cli/config-genera
 import {
   generateHermesAgentConfig,
   getCurrentHermesAgentRoles,
+  HERMES_AGENT_ROLES,
+  type HermesAgentRole,
 } from "@shiguang-gateway/core-domain/control/cli-tools-hermes-agent";
 import { getHermesConfigPath } from "@shiguang-gateway/core-domain/control/cli-tools-hermes-home";
 import { getApiKeyById } from "@shiguang-gateway/core-domain/db/api-keys";
@@ -19,7 +21,11 @@ const hermesAgentSettingsSchema = z.object({
   selections: z
     .array(
       z.object({
-        role: z.string(),
+        role: z.custom<HermesAgentRole>(
+          (value) =>
+            typeof value === "string" && HERMES_AGENT_ROLES.some((role) => role.id === value),
+          "Unknown Hermes Agent role"
+        ),
         model: z.string(),
       })
     )

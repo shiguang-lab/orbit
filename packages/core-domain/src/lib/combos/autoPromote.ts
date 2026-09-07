@@ -15,6 +15,10 @@
 
 type StepLike = { kind?: unknown; model?: unknown } | string;
 
+function isStepLike(value: unknown): value is StepLike {
+  return typeof value === "string" || (value !== null && typeof value === "object");
+}
+
 /** Extract the model id from a step entry (object or bare string). */
 export function comboStepModelId(step: unknown): string | null {
   if (typeof step === "string") return step.trim().length > 0 ? step : null;
@@ -70,21 +74,19 @@ export async function promoteSuccessfulComboModel(
   if (!combo || !settings || !settings.comboAutoPromoteEnabled) return false;
   const comboId = typeof combo.id === "string" ? combo.id : null;
   if (!comboId) return false;
-  const reordered = promoteModelToFront(
-    Array.isArray(combo.models) ? (combo.models as unknown[]) : null,
-    winningModel
-  );
+  const models = Array.isArray(combo.models) && combo.models.every(isStepLike) ? combo.models : null;
+  const reordered = promoteModelToFront(models, winningModel);
   if (!reordered) return false;
   const label = typeof combo.name === "string" ? combo.name : comboId;
   try {
     await deps.updateCombo(comboId, { models: reordered });
     deps.info?.("COMBO", `Model "${winningModel}" succeeded — promoted to #1 in combo "${label}"`);
     return true;
-  } catch (dbErr: any) {
+  } catch (dbErr: unknown) {
     deps.warn?.(
       "COMBO",
       `Failed to promote model "${winningModel}" in combo "${label}": ${
-        dbErr?.message || "unknown error"
+        dbErr instanceof Error ? dbErr.message : "unknown error"
       }`
     );
     return false;

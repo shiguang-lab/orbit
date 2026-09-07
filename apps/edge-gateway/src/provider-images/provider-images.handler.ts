@@ -5,6 +5,7 @@ import {
   getProviderCredentialsWithQuotaPreflight,
   clearRecoveredProviderState,
 } from "@shiguang-gateway/open-sse/services/auth";
+import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
 import { getImageProvider } from "@shiguang-gateway/open-sse/config/imageRegistry";
 import * as log from "@shiguang-gateway/core-domain/sse/logger";
 import { toJsonErrorPayload } from "@shiguang-gateway/core-domain/shared/upstream-error";
@@ -64,7 +65,7 @@ export async function POST(request: Request, provider: string): Promise<Response
   const requestedModel = body.model.slice(String(rawProvider).length + 1);
   let credentials = await getProviderCredentialsWithQuotaPreflight(rawProvider, null, null, requestedModel);
   if (!credentials) return errorResponse(HTTP.BAD_REQUEST, `No credentials for image provider: ${rawProvider}`);
-  if (credentials.allRateLimited) {
+  if (isAllRateLimitedCredentials(credentials)) {
     return unavailableResponse(HTTP.RATE_LIMITED, `[${rawProvider}] All accounts rate limited`, credentials.retryAfter, credentials.retryAfterHuman);
   }
 

@@ -14,13 +14,13 @@ const contracts = [
   {
     subpath: "./config/embeddingRegistry",
     target: "./exports/config/embeddingRegistry.ts",
-    types: "./public/embeddingRegistry.d.ts",
+    types: "./dist/types/exports/config/embeddingRegistry.d.ts",
     runtimeKeys: ["getAllEmbeddingModels", "getEmbeddingProvider"],
   },
   {
     subpath: "./services/accountFallback",
     target: "./exports/services/accountFallback.ts",
-    types: "./public/accountFallback.d.ts",
+    types: "./dist/types/exports/services/accountFallback.d.ts",
     runtimeKeys: [
       "clearAllModelLockouts",
       "clearModelLock",
@@ -35,7 +35,7 @@ const contracts = [
   {
     subpath: "./services/rateLimitManager",
     target: "./exports/services/rateLimitManager.ts",
-    types: "./public/rateLimitManager.d.ts",
+    types: "./dist/types/exports/services/rateLimitManager.d.ts",
     runtimeKeys: [
       "applyRequestQueueSettings",
       "disableRateLimitProtection",
@@ -75,9 +75,11 @@ test("duplicate-target contracts expose exact external runtime keys", async () =
     assert.deepEqual(Object.keys(runtime).sort(), [...contract.runtimeKeys].sort(), contract.subpath);
 
     const declaration = fs.readFileSync(path.join(packageRoot, contract.types), "utf8");
-    const declaredFunctions = [...declaration.matchAll(/export function (\w+)/g)].map(
-      (match) => match[1],
-    );
+    const runtimeExportList = declaration.match(/export \{([^}]*)\}/)?.[1] ?? "";
+    const declaredFunctions = runtimeExportList
+      .split(",")
+      .map((name) => name.trim())
+      .filter(Boolean);
     assert.deepEqual(declaredFunctions.sort(), [...contract.runtimeKeys].sort(), contract.types);
 
     const matchingTargets = Object.entries(manifest.exports).filter(([, value]) =>

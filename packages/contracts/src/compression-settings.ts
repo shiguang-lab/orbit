@@ -5,7 +5,7 @@ export type CompressionMode = "off" | "lite" | "standard" | "aggressive" | "ultr
 export type CavemanIntensity = "lite" | "full" | "ultra";
 export type RtkIntensity = "minimal" | "standard" | "aggressive";
 export type CompressionEngineId = "lite" | "caveman" | "aggressive" | "ultra" | "rtk" | "session-dedup" | "headroom" | "ccr" | "llmlingua" | "relevance" | "omniglyph" | "codex-responses";
-export interface CompressionPipelineStep { engine: CompressionEngineId; intensity?: CavemanIntensity | RtkIntensity; config?: Record<string, unknown> }
+export interface CompressionPipelineStep { engine: CompressionEngineId; intensity?: string; config?: Record<string, unknown> }
 export interface EngineConfigField {
   key: string;
   type: "boolean" | "number" | "string" | "select" | "multiselect";

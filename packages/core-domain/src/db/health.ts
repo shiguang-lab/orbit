@@ -2,4 +2,5 @@
 export {
   isNativeSqliteLoadError,
   runManagedDbHealthCheck,
+  runManagedWalCheckpoint,
 } from "../lib/db/core.js";

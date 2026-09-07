@@ -87,27 +87,37 @@ export class ProvidersController {
 
   @Get("providers/:id")
   getProvider(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    return this.routes.dispatch(request, reply, getProviderDetail, { id });
+    return this.routes.dispatch(request, reply, (webRequest) =>
+      getProviderDetail(webRequest, { params: { id } })
+    );
   }
 
   @Put("providers/:id")
   updateProvider(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    return this.routes.dispatch(request, reply, updateProviderDetail, { id });
+    return this.routes.dispatch(request, reply, (webRequest) =>
+      updateProviderDetail(webRequest, { params: { id } })
+    );
   }
 
   @Patch("providers/:id")
   patchProvider(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    return this.routes.dispatch(request, reply, updateProviderDetail, { id });
+    return this.routes.dispatch(request, reply, (webRequest) =>
+      updateProviderDetail(webRequest, { params: { id } })
+    );
   }
 
   @Delete("providers/:id")
   deleteProvider(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    return this.routes.dispatch(request, reply, deleteProviderDetail, { id });
+    return this.routes.dispatch(request, reply, (webRequest) =>
+      deleteProviderDetail(webRequest, { params: { id } })
+    );
   }
 
   @Post("providers/:id/login")
   loginProvider(@Param("id") id: string, @Req() request: FastifyRequest, @Res() reply: FastifyReply) {
-    return this.routes.dispatch(request, reply, loginProvider, { id });
+    return this.routes.dispatch(request, reply, (webRequest) =>
+      loginProvider(webRequest, { params: { id } })
+    );
   }
 
   @Get("providers/:id/cc-alias")
@@ -399,8 +409,8 @@ export class ProvidersController {
     }
     try {
       const forceRefresh = new URL(request.raw.url ?? "", "http://localhost").searchParams.get("refresh") === "true";
-      const result = await this.providersService.getOpenRouterStats(forceRefresh);
       if (forceRefresh) {
+        const result = await this.providersService.getOpenRouterStats(true);
         return reply.send({
           object: "list",
           data: result.data,
@@ -411,6 +421,7 @@ export class ProvidersController {
           },
         });
       }
+      const result = await this.providersService.getOpenRouterStats(false);
       return reply.send({
         object: "list",
         data: result.data,
@@ -486,7 +497,7 @@ export class ProvidersController {
     return this.routes.dispatch(
       request,
       reply,
-      (req) => testProviderConnection(req, { params: Promise.resolve({ id }) }),
+      (req) => testProviderConnection(req, { params: { id } }),
       { id },
     );
   }

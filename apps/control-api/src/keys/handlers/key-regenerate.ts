@@ -3,11 +3,11 @@ import { requireManagementAuth } from "@shiguang-gateway/core-domain/control/man
 import * as log from "@shiguang-gateway/core-domain/sse/logger";
 import { json } from "./response.js";
 
-export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function POST(request: Request, { params }: { params: { id: string } }) {
   const authError = await requireManagementAuth(request);
   if (authError) return authError;
   try {
-    const { id } = await params;
+    const { id } = params;
     if (!id) return json({ error: "Missing key ID" }, { status: 400 });
     const result = await regenerateApiKey(id);
     if (!result) return json({ error: "Key not found" }, { status: 404 });

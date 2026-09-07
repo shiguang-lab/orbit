@@ -17,10 +17,10 @@ type CommandResult<T> =
  */
 export async function GET(
   _request: Request,
-  { params }: { params: Promise<{ connectionId: string }> }
+  { params }: { params: { connectionId: string } }
 ) {
   try {
-    const { connectionId } = await params;
+    const { connectionId } = params;
     const result = await executeEdgeRuntimeCommand<CommandResult<unknown>>(
       { command: "provider-limits.refresh-connection", connectionId },
       { timeoutMs: 180_000 },

@@ -755,8 +755,12 @@ async function buildUnifiedModelsResponseCore(
       combo: Parameters<typeof resolveNestedComboTargets>[0],
       targets: ComboCatalogTarget[]
     ) => {
-      const explicitContextLength = isPositiveFiniteNumber(combo.context_length)
-        ? combo.context_length
+      const rawContextLength =
+        combo && typeof combo === "object" && !Array.isArray(combo)
+          ? (combo as Record<string, unknown>).context_length
+          : undefined;
+      const explicitContextLength = isPositiveFiniteNumber(rawContextLength)
+        ? rawContextLength
         : undefined;
 
       const baseMetadata = explicitContextLength ? { context_length: explicitContextLength } : {};
@@ -827,7 +831,7 @@ async function buildUnifiedModelsResponseCore(
       const earlyKeyMeta = await getApiKeyMetadata(earlyApiKey);
       if (earlyKeyMeta?.allowedQuotas && earlyKeyMeta.allowedQuotas.length > 0) {
         const { buildQuotaExclusiveModels } = await import(
-          "@shiguang-gateway/core-domain/catalog/quota-runtime"
+          "@shiguang-gateway/core-domain/quota/services"
         );
         const quotaModels = await buildQuotaExclusiveModels(
           earlyKeyMeta.allowedQuotas,
@@ -1906,7 +1910,7 @@ async function buildUnifiedModelsResponseCore(
       const keyMeta = await getApiKeyMetadata(apiKey);
       if (keyMeta && keyMeta.allowedQuotas && keyMeta.allowedQuotas.length > 0) {
         const { buildQuotaExclusiveModels } = await import(
-          "@shiguang-gateway/core-domain/catalog/quota-runtime"
+          "@shiguang-gateway/core-domain/quota/services"
         );
         finalModels = await buildQuotaExclusiveModels(
           keyMeta.allowedQuotas,

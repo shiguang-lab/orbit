@@ -35,7 +35,7 @@ function sanitizeClaudeCodeCompatibleBaseUrl(baseUrl: string) {
 }
 
 // PUT /api/provider-nodes/[id] - Update provider node
-export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function PUT(request: Request, { params }: { params: { id: string } }) {
   let rawBody: unknown;
   try {
     rawBody = await request.json();
@@ -52,7 +52,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   }
 
   try {
-    const { id } = await params;
+    const { id } = params;
     const validation = validateBody(updateProviderNodeSchema, rawBody);
     if (isValidationFailure(validation)) {
       return Response.json({ error: validation.error }, { status: 400 });
@@ -147,9 +147,9 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 }
 
 // DELETE /api/provider-nodes/[id] - Delete provider node and its connections
-export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
   try {
-    const { id } = await params;
+    const { id } = params;
     const node = await getProviderNodeById(id);
 
     if (!node) {

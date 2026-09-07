@@ -155,7 +155,15 @@ export async function GET(request: Request): Promise<Response> {
           const runtime =
             runtimeResult.status === "fulfilled"
               ? runtimeResult.value
-              : { installed: false, runnable: false, reason: "Timeout" };
+              : {
+                  installed: false,
+                  runnable: false,
+                  command: null,
+                  commandPath: null,
+                  reason: "Timeout",
+                  runtimeMode: "unknown",
+                  requiresBinary: false,
+                };
 
           const configStatus =
             configStatusResult.status === "fulfilled" ? configStatusResult.value : "unknown";
@@ -172,9 +180,9 @@ export async function GET(request: Request): Promise<Response> {
             detection: {
               installed: runtime.installed,
               runnable: runtime.runnable,
-              version: (runtime as Record<string, unknown>).version as string | undefined,
+              version: runtime.version,
               command: runtime.command ?? undefined,
-              commandPath: (runtime as Record<string, unknown>).commandPath as string | undefined,
+              commandPath: runtime.commandPath ?? undefined,
               reason: runtime.reason ?? undefined,
             },
             config: {

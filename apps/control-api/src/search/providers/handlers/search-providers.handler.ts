@@ -3,7 +3,7 @@ import { getProviderCredentials } from "@shiguang-gateway/open-sse/services/auth
 import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
 import { SEARCH_PROVIDERS, getSearchCredentialFallbacks } from "@shiguang-gateway/open-sse/config/searchRegistry";
 import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
-import * as log from "@shiguang-gateway/open-sse/utils/logger";
+import { log } from "@shiguang-gateway/open-sse/utils/logger";
 import {
   SearchProviderCatalogResponseSchema,
   type SearchProviderCatalogItem,
@@ -114,7 +114,9 @@ export async function GET(request: Request): Promise<Response> {
     }));
     return Response.json({ providers, data });
   } catch (error) {
-    log.error("SEARCH_PROVIDERS", "Failed to list providers", error);
+    log.error("SEARCH_PROVIDERS", "Failed to list providers", {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return errorResponse(500, "Failed to list providers");
   }
 }

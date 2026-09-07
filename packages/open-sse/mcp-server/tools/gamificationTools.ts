@@ -5,8 +5,9 @@
  */
 
 import { z } from "zod";
+import type { McpToolDefinition } from "./types.ts";
 
-export const gamificationTools = [
+export const gamificationTools: McpToolDefinition[] = [
   {
     name: "gamification_leaderboard",
     description: "Get leaderboard rankings for a scope (global, weekly, monthly, tokens_shared).",

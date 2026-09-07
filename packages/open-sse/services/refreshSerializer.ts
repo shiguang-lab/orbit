@@ -18,16 +18,7 @@
  * serialized — their refresh_tokens are permanent and there is no cascade.
  */
 
-// Providers mapped to the same string share one serialized lane. Codex and the
-// raw `openai` provider use the same Auth0 backend, so they MUST share a lane.
-const ROTATION_LOCK_GROUP: Record<string, string> = {
-  codex: "openai-auth0",
-  openai: "openai-auth0",
-  claude: "anthropic-oauth",
-  "gitlab-duo": "gitlab-duo",
-  kiro: "kiro",
-  "kimi-coding": "kimi-coding",
-};
+import { getRotatingRefreshGroup } from "@shiguang-gateway/provider-catalog/refresh-token-policy";
 
 // Protective settle gap (ms) between two consecutive sibling refreshes when the
 // env var is unset. Conservative by default; bursts are rare and correctness
@@ -59,7 +50,7 @@ const delay = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve,
 
 /** Returns the serialization group for a provider, or null when it is not a rotating provider. */
 export function rotationGroupFor(provider: string): string | null {
-  return ROTATION_LOCK_GROUP[provider] ?? null;
+  return getRotatingRefreshGroup(provider);
 }
 
 /**

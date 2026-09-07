@@ -63,8 +63,10 @@ export async function handleGetModels(request: Request, dependencies: GetModelsD
           connectionsByProvider.set(key, existing);
         };
         for (const connection of active) {
-          registerConnectionKey(connection.provider, connection);
-          registerConnectionKey(PROVIDER_ID_TO_ALIAS[connection.provider], connection);
+          const provider =
+            typeof connection.provider === "string" ? connection.provider : undefined;
+          registerConnectionKey(provider, connection);
+          registerConnectionKey(provider ? PROVIDER_ID_TO_ALIAS[provider] : undefined, connection);
         }
         const getConnectionsForProvider = (...keys: Array<string | null | undefined>) => {
           const seen = new Set<string>();
@@ -72,8 +74,9 @@ export async function handleGetModels(request: Request, dependencies: GetModelsD
           for (const key of keys) {
             if (!key) continue;
             for (const connection of connectionsByProvider.get(key) || []) {
-              if (!connection?.id || seen.has(connection.id)) continue;
-              seen.add(connection.id);
+              const id = typeof connection?.id === "string" ? connection.id : undefined;
+              if (!id || seen.has(id)) continue;
+              seen.add(id);
               collected.push(connection);
             }
           }
@@ -178,7 +181,7 @@ export async function GET(request: Request) {
 }
 
 // PUT /api/models - Update model alias
-export async function PUT(request) {
+export async function PUT(request: Request) {
   let rawBody;
   try {
     rawBody = await request.json();

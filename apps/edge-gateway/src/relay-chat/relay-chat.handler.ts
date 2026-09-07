@@ -68,7 +68,7 @@ function recordUsage(
     statusCode,
     latencyMs: Date.now() - startTime,
     clientIp,
-    userAgent,
+    userAgent: userAgent ?? undefined,
   });
 }
 

@@ -12,6 +12,7 @@ const manifest = JSON.parse(
 
 const canonicalSubpath = "./routing/connection-model-rules";
 const canonicalEntry = "./src/routing/connectionModelRules.ts";
+const canonicalTypes = "./dist/types/routing/connectionModelRules.d.ts";
 const retiredSubpaths = [
   "./edge/connection-model-rules",
   "./runtime/connection-model-rules",
@@ -31,7 +32,7 @@ function sourceFiles(dir: string): string[] {
 
 test("connection model rules use one narrow routing contract", async () => {
   assert.deepEqual(manifest.exports[canonicalSubpath], {
-    types: canonicalEntry,
+    types: canonicalTypes,
     import: canonicalEntry,
   });
 

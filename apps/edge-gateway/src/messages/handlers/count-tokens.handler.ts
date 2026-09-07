@@ -7,6 +7,7 @@ import { buildErrorBody } from "@shiguang-gateway/open-sse/utils/error";
 import { runWithProxyContext } from "@shiguang-gateway/open-sse/utils/proxyFetch";
 import { isCommonChatGptWebRetirementError } from "@shiguang-gateway/contracts/chatgpt-web-retirement";
 import { getProviderCredentials } from "@shiguang-gateway/open-sse/services/auth";
+import { isAllRateLimitedCredentials } from "@shiguang-gateway/open-sse/services/credential-selection";
 import * as log from "@shiguang-gateway/core-domain/sse/logger";
 
 const load = (specifier: string): Promise<any> => import(specifier);
@@ -73,15 +74,19 @@ export async function POST(request: Request): Promise<Response> {
       null,
       modelInfo.model
     );
-    if (!credentials || credentials.allRateLimited) {
+    if (!credentials || isAllRateLimitedCredentials(credentials)) {
       return estimated;
     }
 
     const executor = await getExecutor(modelInfo.provider);
     // The provider-side count is a real upstream call — it must honor the
     // connection's proxy assignment exactly like chat execution does.
+    const connectionId =
+      "connectionId" in credentials && typeof credentials.connectionId === "string"
+        ? credentials.connectionId
+        : undefined;
     const proxyInfo = await safeResolveProxy(
-      credentials.connectionId,
+      connectionId,
       undefined,
       modelInfo.provider
     );

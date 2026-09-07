@@ -61,13 +61,13 @@ export const dynamic = "force-dynamic";
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ id: string }> | { id: string } }
+  { params }: { params: { id: string } }
 ) {
   const authError = await requireManagementAuth(req);
   if (authError) return authError;
 
   try {
-    const { id } = await params;
+    const { id } = params;
     if (!id) return Response.json({ error: "Missing id" }, { status: 400 });
 
     // Prefer in-flight active pending requests first to avoid races where

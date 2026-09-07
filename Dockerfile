@@ -122,7 +122,7 @@ RUN mkdir -p /app/data && chown node:node /app/data
 USER node
 EXPOSE 8787 8788 8790 20132
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
-  CMD node -e "const p=process.env.APP_NAME; const port=p==='edge-gateway'?process.env.EDGE_GATEWAY_PORT:p==='control-api'?process.env.CONTROL_API_PORT:p==='realtime'?process.env.REALTIME_PORT:null; if(!port) process.exit(0); fetch('http://127.0.0.1:'+port+'/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+  CMD node -e "const p=process.env.APP_NAME; const port=p==='edge-gateway'?process.env.EDGE_GATEWAY_PORT:p==='control-api'?process.env.CONTROL_API_PORT:p==='realtime'?process.env.REALTIME_PORT:p==='worker'?(process.env.WORKER_COMMAND_PORT||'8791'):null; if(!port) process.exit(1); fetch('http://127.0.0.1:'+port+'/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 
 FROM runtime-base AS edge-gateway
 ENV APP_NAME=edge-gateway

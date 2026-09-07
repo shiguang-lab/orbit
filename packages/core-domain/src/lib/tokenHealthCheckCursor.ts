@@ -17,12 +17,21 @@ import {
   buildCursorRenewedUpdate,
   runCursorRenewalExclusive,
 } from "./cursor/renewal.ts";
-import type { buildRefreshFailureUpdate } from "./tokenHealthCheck.ts";
+type RefreshFailureUpdateBuilder = (
+  conn: unknown,
+  now: string,
+  overrides?: {
+    errorCode?: string;
+    lastError?: string;
+    lastErrorType?: string;
+    testStatus?: string;
+  }
+) => Record<string, unknown>;
 
 export async function checkCursorConnectionIfNeeded(params: {
   conn: any;
   now: string;
-  buildRefreshFailureUpdate: typeof buildRefreshFailureUpdate;
+  buildRefreshFailureUpdate: RefreshFailureUpdateBuilder;
   log: (message: string, ...args: any[]) => void;
   logWarn: (message: string, ...args: any[]) => void;
   logError: (message: string, ...args: any[]) => void;

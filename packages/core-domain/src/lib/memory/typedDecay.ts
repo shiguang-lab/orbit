@@ -19,6 +19,7 @@
 import { MemoryType, type Memory } from "./types";
 import { listMemoriesForDecay, deleteMemory } from "./store";
 import { logger } from "@shiguang-gateway/runtime-logging";
+import { getUserDatabaseSettings } from "../db/databaseSettings.js";
 
 const log = logger("MEMORY_TYPED_DECAY");
 
@@ -136,6 +137,42 @@ export interface SweepResult {
 }
 
 /**
+ * Apply the general database retention policy without bypassing vector-store cleanup.
+ * This edge-owned writer intentionally caps each pass; the worker cadence will retry
+ * remaining rows on the next maintenance cycle.
+ */
+export async function cleanupMemoryEntriesByRetention(): Promise<{
+  deleted: number;
+  errors: number;
+  skippedDisabled: boolean;
+  capped: boolean;
+}> {
+  const retention = getUserDatabaseSettings().retention;
+  if (!retention.autoCleanupEnabled) {
+    return { deleted: 0, errors: 0, skippedDisabled: true, capped: false };
+  }
+
+  const cutoff = new Date(Date.now() - retention.memoryEntries * DAY_MS);
+  const candidates = await listMemoriesForDecay({ limit: SWEEP_SCAN_CAP + 1 });
+  const expired = candidates.filter((candidate) => candidate.createdAt < cutoff);
+  const capped = expired.length > SWEEP_SCAN_CAP;
+  let deleted = 0;
+  let errors = 0;
+  for (const candidate of expired.slice(0, SWEEP_SCAN_CAP)) {
+    try {
+      if (await deleteMemory(candidate.id)) deleted++;
+    } catch (error) {
+      errors++;
+      log.warn("memory.retention.delete.fail", {
+        id: candidate.id,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+  return { deleted, errors, skippedDisabled: false, capped };
+}
+
+/**
  * Sweep decayed memories. **Opt-in**: when `config.enabled` is `false` and this is not a
  * dry run, it deletes nothing and returns `skippedDisabled: true`. A dry run classifies
  * candidates without deleting (so an operator can preview). Deletions go through
@@ -199,47 +236,4 @@ export async function sweepDecayedMemories(
     skippedDisabled: false,
     capped,
   };
-}
-
-// --- Optional periodic sweep (mirrors startContextWindowReconcile) ---
-
-let sweepTimer: ReturnType<typeof setInterval> | null = null;
-
-function resolveSweepIntervalMs(env: NodeJS.ProcessEnv = process.env): number {
-  const raw = env.MEMORY_TYPED_DECAY_SWEEP_INTERVAL;
-  if (raw === undefined) return 0; // unset → disabled
-  const seconds = Number(raw);
-  if (!Number.isFinite(seconds) || seconds <= 0) return 0; // 0/invalid → disabled
-  return Math.floor(seconds * 1000);
-}
-
-/**
- * Start the periodic decay sweep. **Doubly opt-in**: it no-ops unless BOTH
- * `MEMORY_TYPED_DECAY_ENABLED=true` (the destructive switch) AND
- * `MEMORY_TYPED_DECAY_SWEEP_INTERVAL>0` are set. Idempotent and best-effort: a sweep
- * error is swallowed (the next tick retries). Never deletes by default.
- */
-export function startMemoryDecaySweep(intervalMs?: number): void {
-  if (sweepTimer) return;
-  const config = resolveTypedDecayConfig();
-  if (!config.enabled) return; // master switch off → never run the destructive sweep
-  const interval = intervalMs ?? resolveSweepIntervalMs();
-  if (!interval || interval <= 0) return;
-
-  const tick = () => {
-    void sweepDecayedMemories({ config }).catch(() => {
-      // Swallow — the sweep is advisory hygiene; the next tick retries.
-    });
-  };
-
-  setTimeout(tick, 0);
-  sweepTimer = setInterval(tick, interval);
-  sweepTimer.unref?.();
-}
-
-export function stopMemoryDecaySweep(): void {
-  if (sweepTimer) {
-    clearInterval(sweepTimer);
-    sweepTimer = null;
-  }
 }

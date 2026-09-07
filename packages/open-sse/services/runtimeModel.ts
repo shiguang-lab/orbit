@@ -600,7 +600,7 @@ export async function getModelInfoOrRetirementResponse(modelId: string) {
  * Check if model is a combo and return the full combo object
  * @returns {Promise<Object|null>} Full combo object or null if not a combo
  */
-export async function getCombo(modelStr) {
+export async function getCombo(modelStr: string): Promise<Record<string, unknown> | null> {
   // Try exact match first (supports combos actually named "combo/ANY")
   let combo = await getComboByName(modelStr);
   if (combo && Array.isArray(combo.models) && combo.models.length > 0) {
