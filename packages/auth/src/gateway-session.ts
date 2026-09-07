@@ -36,10 +36,11 @@ export interface ResolvedIdentity {
   entitlements: string[];
 }
 
+const requiredEntitlement = process.env.SG_IDENTITY_ENTITLEMENT ?? "shiguang-gateway:access";
 const verifier = new SgIdentityVerifier({
   issuer: process.env.SG_IDENTITY_ISSUER ?? "https://shiguanglab.com",
   audience: process.env.SG_IDENTITY_AUDIENCE ?? "shiguang-gateway-api",
-  entitlement: process.env.SG_IDENTITY_ENTITLEMENT ?? "shiguang-gateway:access",
+  entitlement: requiredEntitlement,
   jwksUrl:
     process.env.SG_IDENTITY_JWKS_URL ??
     "https://shiguanglab.com/.well-known/sg-identity-jwks.json",
@@ -47,11 +48,11 @@ const verifier = new SgIdentityVerifier({
 });
 const identityResolutionCache = new WeakMap<FastifyRequest, Promise<ResolvedSgIdentity | null>>();
 
-/** 校验断言是否具备管理权限(system:admin 或 shiguang-gateway 管理角色/entitlement) */
+/** 已验签身份须具备管理员角色或当前部署配置的产品授权。 */
 export function isAdminIdentity(identity: ResolvedSgIdentity | null): boolean {
   if (!identity || !identity.sub) return false;
   const all = new Set([...identity.roles, ...identity.entitlements]);
-  return all.has("system:admin") || all.has("shiguang-gateway:admin") || all.has("shiguang-gateway:access");
+  return all.has("system:admin") || all.has("shiguang-gateway:admin") || identity.entitlements.includes(requiredEntitlement);
 }
 
 export async function resolveGatewayIdentity(
@@ -75,7 +76,7 @@ function resolveDevIdentity(): ResolvedSgIdentity {
     sessionId: "dev-session",
     displayName: "开发管理员",
     roles: ["system:admin"],
-    entitlements: ["shiguang-gateway:access"],
+    entitlements: [requiredEntitlement],
   };
 }
 

@@ -12,21 +12,21 @@
   → 回跳 llm-gateway.shiguanglab.com
   → 前端 fetch /api/auth/session (网关→auth-service 共享会话)
   → 前端调 /api/* → 网关注入 X-SG-Identity(RS256 JWT) → control-api JWKS 校验
-  → control-api 校验 system:admin → 返回统一会话/放行管理操作
+  → control-api 校验当前配置的产品授权 → 返回统一会话/放行管理操作
 ```
 
 ## 三处改动(全部配置化，无 auth-service 代码改动)
 
 | # | 位置 | 改动 | 文档 |
 |---|---|---|---|
-| 1 | **网关 Caddyfile** | 新增 `llm-gateway.shiguanglab.com` host 块(forward_auth + X-SG-Audience/Entitlement + copy_headers) | `deploy/gateway-caddyfile.md` |
-| 2 | **auth-service env** | `DEFAULT_ENTITLEMENTS` 加 `shiguang-gateway:access`；`ALLOWED_RETURN_ORIGINS` 加新域 | `deploy/auth-service-config.md` |
-| 3 | **control-api/edge-gateway 身份校验** | 已实现：共享 `http-kernel` 的 JWKS/session/authz 中间件 | 本仓库代码 |
+| 1 | **网关 Caddyfile** | 更新现有 host 的 upstream 与 `/live-ws` 路由，保留 `omniroute` 产品身份 | `deploy/gateway-caddyfile.md` |
+| 2 | **auth-service env** | 复用原 `omniroute:access` 与原域名回跳配置，无需因替换镜像新增授权 | `deploy/auth-service-config.md` |
+| 3 | **服务身份校验** | 共享 `auth` 包的 JWKS/session/authz 中间件，显式配置原 audience/entitlement | 本仓库代码 |
 
 ## 已完成(代码侧)
 
-- ✅ `http-kernel` `SgIdentityVerifier`：RS256 + `typ=sg-identity+jwt` + kid 查 JWKS + iss/aud/exp/nbf/iat/entitlement 校验(JWKS 缓存 5min)
-- ✅ control-api `/api/auth/session`：终结 X-SG-Identity，校验 `system:admin`/`shiguang-gateway:admin`/`shiguang-gateway:access`，返回统一会话
+- ✅ `auth` `SgIdentityVerifier`：RS256 + `typ=sg-identity+jwt` + kid 查 JWKS + iss/aud/exp/nbf/iat/entitlement 校验(JWKS 缓存 5min)
+- ✅ control-api `/api/auth/session`：终结 X-SG-Identity，认可管理员角色或配置的产品 entitlement，返回统一会话
 - ✅ 本地开发：dev 启动默认使用 loopback-only `SG_DEV_IDENTITY=1`
 - ✅ 真实账号联调：显式开启 `SG_LOCAL_BROKER_ENABLED=true`
 - ✅ 前端：未登录整页跳 shiguang 登录页(`session.ts`)，无自建登录页
@@ -35,13 +35,13 @@
 ## 待部署(需走统一 deploy 流程)
 
 - [ ] 网关 host 块合入生产 Caddyfile 并 `./deploy.sh`
-- [ ] auth-service env 变更并重启
+- [ ] 真实会话确认已有 `omniroute:access` 授权及原域名回跳正常
 - [ ] 新 Admin nginx、control-api、edge-gateway、realtime 接入受控 Docker 网络（Admin 静态资源由独立 Admin nginx 提供，control-api 不托管静态资源）
 - [ ] control-api/edge-gateway 生产环境变量：
   ```bash
   SG_IDENTITY_ISSUER=https://shiguanglab.com
-  SG_IDENTITY_AUDIENCE=shiguang-gateway-api
-  SG_IDENTITY_ENTITLEMENT=shiguang-gateway:access
+  SG_IDENTITY_AUDIENCE=omniroute-api
+  SG_IDENTITY_ENTITLEMENT=omniroute:access
   SG_IDENTITY_JWKS_URL=https://shiguanglab.com/.well-known/sg-identity-jwks.json
   # 生产绝不可设: SG_DEV_IDENTITY
   ```

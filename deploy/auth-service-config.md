@@ -1,12 +1,22 @@
 # ShiguangGateway 接入 shiguang SSO —— auth-service 配置变更
 
 > auth-service 是 shiguang 统一会话/OIDC/JWKS 服务。
-> ShiguangGateway 接入无需改 auth-service 代码，只需新增环境变量(按产品约定)。
+> ShiguangGateway 接入无需改 auth-service 代码；替换现有部署时可以继续使用其产品身份与授权。
 
-**上线阻塞（已核实 NAS 当前配置）**：`ALLOWED_RETURN_ORIGINS` 已包含
-`https://llm-gateway.shiguanglab.com`，但 `DEFAULT_ENTITLEMENTS` 当前只有
-现有官方授权项尚未包含 `shiguang-gateway:access`。必须由 auth-service
-负责人独立追加并重启/验证；在此之前不得把新域名、镜像或 Caddy 配置宣称为已切流。
+## 替换现有 llm-gateway 部署
+
+中央 `deploy/access-gateway/Caddyfile` 的现有产品配置是 `omniroute`、audience
+`omniroute-api`、entitlement `omniroute:access`。新部署继续使用同一产品权限：
+
+```bash
+SG_IDENTITY_AUDIENCE=omniroute-api
+SG_IDENTITY_ENTITLEMENT=omniroute:access
+```
+
+Caddy 保持上述产品三元组，服务端验签与管理权限判断使用同一配置。无需因为代码或镜像
+改名而新增 `shiguang-gateway:access`，也无需为此重启 auth-service。上线仍须以真实会话
+确认原授权存在，并验证登录回跳和受保护 API；配置文件本身不是线上成功证据。
+以下新增产品配置仅适用于主动采用独立 `shiguang-gateway` 身份的部署。
 
 ## 1. 环境变量变更
 
@@ -18,8 +28,8 @@
 DEFAULT_ENTITLEMENTS=superagents:access,huiguang:access,platform:access,asset-hub:access,shiguang-gateway:access
 ```
 
-说明：`X-SG-Required-Entitlements: shiguang-gateway:access` 的 entitlement 必须出现在
-DEFAULT_ENTITLEMENTS 里，否则 forward-auth 决策会把所有用户判为无权限。
+说明：forward-auth 校验会话实际携带的 entitlement。`DEFAULT_ENTITLEMENTS` 用于签发会话，
+仅修改该配置不能证明已有会话已经获得新授权；真实登录验收必须覆盖这一点。
 
 ### ALLOWED_RETURN_ORIGINS(追加 `https://llm-gateway.shiguanglab.com`)
 
@@ -76,8 +86,9 @@ API 服务侧已按此约定默认(可通过环境变量覆盖)：
 ## 3. 权限模型(单管理员后台)
 
 ShiguangGateway 是单管理员系统(无 org/多用户)。接入后：
-- **网关层**：`shiguang-gateway:access` entitlement(所有已登录 shiguang 用户默认具备)
-- **control-api 层**：校验 `system:admin` / `shiguang-gateway:admin` / `shiguang-gateway:access` 才放行管理会话
+- **网关层**：校验当前产品要求的 entitlement，不假设所有已登录用户自动拥有它。
+- **control-api 层**：验签时校验配置的 audience 和 entitlement；管理会话认可该 entitlement
+  或管理员角色。现有部署配置为 `omniroute:access`，代码默认值为 `shiguang-gateway:access`。
 
 若只想让白名单用户管理 ShiguangGateway，应在 auth-service 策略层配置 subject/email 白名单
 (类似原后端 `oidcAllowedSubjects` 机制)，后续可配。
