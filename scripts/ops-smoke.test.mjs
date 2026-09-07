@@ -15,6 +15,23 @@ const commands = [
   "snapshot-data.sh",
 ];
 
+test("compose enables the realtime listener targeted by the admin proxy", (context) => {
+  const available = spawnSync("docker", ["compose", "version"], { encoding: "utf8" });
+  if (available.status !== 0) return context.skip("Docker Compose is required for rendered configuration validation");
+  const result = spawnSync("docker", ["compose", "-f", join(repoRoot, "docker-compose.yml"),
+    "config", "--no-interpolate", "--format", "json"], { encoding: "utf8" });
+  assert.equal(result.status, 0, result.stderr);
+  const services = JSON.parse(result.stdout).services;
+  const realtime = services["shiguang-gateway-realtime"].environment;
+  assert.equal(realtime.SHIGUANG_GATEWAY_ENABLE_LIVE_WS, "true");
+  assert.equal(realtime.LIVE_WS_HOST, "0.0.0.0");
+  const nginx = readFileSync(join(repoRoot, "deploy/admin-nginx.conf"), "utf8");
+  assert.ok(nginx.includes(`proxy_pass http://shiguang-gateway-realtime:${realtime.LIVE_WS_PORT};`));
+  for (const service of ["edge", "control", "worker"]) {
+    assert.equal(services[`shiguang-gateway-${service}`].environment.SHIGUANG_GATEWAY_ENABLE_LIVE_WS, "false");
+  }
+});
+
 test("ops scripts have valid Bash syntax and current usage paths", () => {
   for (const name of commands) {
     const path = join(opsDir, name);

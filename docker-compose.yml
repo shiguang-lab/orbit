@@ -93,6 +93,7 @@ services:
     environment:
       <<: *gateway-env
       APP_NAME: realtime
+      SHIGUANG_GATEWAY_ENABLE_LIVE_WS: "true"
       REALTIME_HOST: 0.0.0.0
       REALTIME_PORT: 8790
       LIVE_WS_HOST: 0.0.0.0
