@@ -5,7 +5,7 @@ import { readFileSync } from "node:fs";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import net from "node:net";
 
 const repoRoot = new URL("../", import.meta.url).pathname.replace(/\/$/, "");
@@ -30,6 +30,7 @@ const services = [
 ];
 const workerService = { name: "worker", port: 18891, live: false };
 const children = [];
+let clientApiHeaders = {};
 
 const tunnelControllerSource = readFileSync(
   join(repoRoot, "apps/control-api/src/tunnels/tunnels.controller.ts"),
@@ -90,13 +91,14 @@ function start(service) {
   children.push({ child, service });
 }
 
-async function waitHttp(port, path, expected = 200, method = "GET") {
+async function waitHttp(port, path, expected = 200, method = "GET", headers) {
+  headers ??= port === 18887 && /^(\/api)?\/v1\//.test(path) && expected !== 401 ? clientApiHeaders : {};
   const deadline = Date.now() + 45_000;
   let last = "";
   while (Date.now() < deadline) {
     assertServicesRunning();
     try {
-      const response = await fetch(`http://127.0.0.1:${port}${path}`, { method });
+      const response = await fetch(`http://127.0.0.1:${port}${path}`, { method, headers });
       if (response.status === expected) return;
       last = `${response.status}`;
     } catch (error) {
@@ -180,12 +182,25 @@ try {
     );
   }
   await waitHttp(18887, "/.well-known/agent.json");
-  await waitHttp(18887, "/api/v1/models");
-  await waitHttp(18887, "/v1/models");
+  // Use an actual scoped credential in the isolated smoke database. The
+  // model catalog must not inherit anonymous management bootstrap access.
+  const credentialFile = join(dataDir, "smoke-api-key");
+  const provision = spawnSync("pnpm", ["--filter", "@shiguang-gateway/control-api", "exec", "node", "--import", "tsx", "--input-type=module", "--eval", `
+    import { writeFileSync } from "node:fs";
+    import { createApiKey } from "@shiguang-gateway/core-domain/db/api-keys";
+    createApiKey("split-smoke", "split-smoke", ["read"]).then(key => {
+      writeFileSync(${JSON.stringify(credentialFile)}, key.key, {mode: 0o600});
+    });
+  `], { cwd: repoRoot, env: baseEnv, encoding: "utf8", timeout: 30000 });
+  if (provision.status !== 0) throw new Error(`smoke credential setup failed: ${provision.stderr}`);
+  const catalogHeaders = clientApiHeaders = { authorization: `Bearer ${readFileSync(credentialFile, "utf8")}` };
+  await waitHttp(18887, "/api/v1/models", 401);
+  await waitHttp(18887, "/api/v1/models", 200, "GET", catalogHeaders);
+  await waitHttp(18887, "/v1/models", 200, "GET", catalogHeaders);
   // The voices route is edge-owned; with an empty smoke database it must
   // reach the real handler and report missing ElevenLabs credentials (401),
   // rather than being served by the control surface or a fallback route.
-  await waitHttp(18887, "/api/v1/voices", 401);
+  await waitHttp(18887, "/api/v1/voices", 401, "GET", clientApiHeaders);
   // GET is intentionally unsupported; a 405 confirms the edge route is
   // present without making an upstream ElevenLabs call.
   await waitHttp(18887, "/api/v1/speech-to-text", 405);
@@ -212,7 +227,7 @@ try {
   await waitHttp(18888, "/api/health");
   await waitHttp(18888, "/api/health/ping");
   await waitHttp(18888, "/api/health/degradation");
-  await waitHttp(18888, "/api/auth/status");
+  await waitHttp(18888, "/api/auth/session", 401);
   await waitHttp(18888, "/api/token-health", 401);
   await waitHttp(18887, "/api/token-health", 404);
   await waitHttp(18888, "/api/synced-available-models", 401);
