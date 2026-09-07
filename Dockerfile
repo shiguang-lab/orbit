@@ -103,6 +103,9 @@ COPY --from=build --chown=node:node /app/packages/db-schema/src ./packages/db-sc
 COPY --from=build --chown=node:node /app/packages/db-schema/package.json ./packages/db-schema/package.json
 COPY --from=build --chown=node:node /app/packages/db-schema/tsconfig.json ./packages/db-schema/tsconfig.json
 COPY --from=build --chown=node:node /app/packages/auth/src ./packages/auth/src
+COPY --from=build --chown=node:node /app/packages/realtime-publisher/src ./packages/realtime-publisher/src
+COPY --from=build --chown=node:node /app/packages/realtime-publisher/package.json ./packages/realtime-publisher/package.json
+COPY --from=build --chown=node:node /app/packages/realtime-publisher/tsconfig.json ./packages/realtime-publisher/tsconfig.json
 COPY --from=build --chown=node:node /app/packages/auth/package.json ./packages/auth/package.json
 COPY --from=build --chown=node:node /app/packages/auth/tsconfig.json ./packages/auth/tsconfig.json
 COPY --from=build --chown=node:node /app/packages/web-handler-adapter/src ./packages/web-handler-adapter/src

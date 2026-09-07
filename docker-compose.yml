@@ -33,6 +33,7 @@ services:
       API_KEY_SECRET: ${API_KEY_SECRET:?Set a stable API_KEY_SECRET}
       SHIGUANG_GATEWAY_WORKER_COMMAND_TOKEN: ${SHIGUANG_GATEWAY_WORKER_COMMAND_TOKEN:-}
       SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN: ${SHIGUANG_GATEWAY_INTERNAL_SERVICE_TOKEN:?Set a shared internal service token}
+      SHIGUANG_GATEWAY_REALTIME_EVENT_URL: http://shiguang-gateway-realtime:20132/__shiguangGateway_event
       # Required for decrypting imported provider credentials. Never rotate this
       # value implicitly after migration; use the documented key-rotation flow.
       STORAGE_ENCRYPTION_KEY: ${STORAGE_ENCRYPTION_KEY:?Set a stable STORAGE_ENCRYPTION_KEY}

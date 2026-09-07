@@ -254,6 +254,9 @@ importers:
       '@shiguang-gateway/provider-catalog':
         specifier: workspace:*
         version: link:../../packages/provider-catalog
+      '@shiguang-gateway/realtime-publisher':
+        specifier: workspace:*
+        version: link:../../packages/realtime-publisher
       '@shiguang-gateway/rerank-catalog':
         specifier: workspace:*
         version: link:../../packages/rerank-catalog
@@ -340,6 +343,9 @@ importers:
       '@shiguang-gateway/provider-catalog':
         specifier: workspace:*
         version: link:../../packages/provider-catalog
+      '@shiguang-gateway/realtime-publisher':
+        specifier: workspace:*
+        version: link:../../packages/realtime-publisher
       '@shiguang-gateway/rerank-catalog':
         specifier: workspace:*
         version: link:../../packages/rerank-catalog
@@ -469,6 +475,9 @@ importers:
       '@shiguang-gateway/provider-catalog':
         specifier: workspace:*
         version: link:../../packages/provider-catalog
+      '@shiguang-gateway/realtime-publisher':
+        specifier: workspace:*
+        version: link:../../packages/realtime-publisher
       '@shiguang-gateway/runtime-logging':
         specifier: workspace:*
         version: link:../../packages/runtime-logging
@@ -970,6 +979,18 @@ importers:
       '@shiguang-gateway/contracts':
         specifier: workspace:*
         version: link:../contracts
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 22.20.1
+      tsx:
+        specifier: 'catalog:'
+        version: 4.23.13
+      typescript:
+        specifier: 'catalog:'
+        version: 5.8.3
+
+  packages/realtime-publisher:
     devDependencies:
       '@types/node':
         specifier: 'catalog:'

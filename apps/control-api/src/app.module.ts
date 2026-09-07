@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { RealtimePublisherLifecycleService } from "./realtime-publisher-lifecycle.service.js";
 import { HttpKernelModule } from "@shiguang-gateway/http-kernel";
 import { ProcessHealthModule } from "./process-health/process-health.module.js";
 import { AuthModule } from "./auth/auth.module.js";
@@ -224,6 +225,6 @@ import { DatabaseRuntimeLifecycleService } from "./database-runtime-lifecycle.se
     IntelligenceModule,
     EmbeddedServiceProxyModule,
   ],
-  providers: [DatabaseRuntimeLifecycleService],
+  providers: [DatabaseRuntimeLifecycleService, RealtimePublisherLifecycleService],
 })
 export class AppModule {}

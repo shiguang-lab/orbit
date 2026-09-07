@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { RealtimePublisherLifecycleService } from "./realtime-publisher-lifecycle.service.js";
 import { HttpKernelModule } from "@shiguang-gateway/http-kernel";
 import { ProcessHealthModule } from "./process-health/process-health.module.js";
 import { EdgeRuntimeModule } from "./runtime/edge-runtime.module.js";
@@ -132,6 +133,6 @@ import { DatabaseRuntimeLifecycleService } from "./database-runtime-lifecycle.se
     TelegramModule,
     RuntimeControlModule,
   ],
-  providers: [DatabaseRuntimeLifecycleService],
+  providers: [DatabaseRuntimeLifecycleService, RealtimePublisherLifecycleService],
 })
 export class AppModule {}
