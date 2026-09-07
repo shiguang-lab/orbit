@@ -105,10 +105,7 @@ import {
   stripNextMiddlewareControlHeaders,
   stripStaleForwardingHeaders,
 } from "./chatCore/responseHeaders.ts";
-import {
-  forwardDashboardEventToLiveWs,
-  maybeSyncClaudeExtraUsageState,
-} from "./chatCore/telemetryHelpers.ts";
+import { maybeSyncClaudeExtraUsageState } from "./chatCore/telemetryHelpers.ts";
 // Re-export the previously inline-defined helpers so existing importers of these
 // symbols from chatCore.ts (tests, sibling modules) keep resolving after the split.
 export {
@@ -1704,7 +1701,6 @@ export async function handleChatCore({
                 timestamp: Date.now(),
               };
               emit("compression.step", stepPayload);
-              void forwardDashboardEventToLiveWs("compression.step", stepPayload);
             } catch (_stepErr) {
               // best-effort live event — never fail the request
             }
@@ -1809,10 +1805,6 @@ export async function handleChatCore({
                 timestamp: Date.now(),
               };
               emit("compression.completed", compressionCompletedPayload);
-              void forwardDashboardEventToLiveWs(
-                "compression.completed",
-                compressionCompletedPayload
-              );
             } catch (_emitErr) {
               // never propagate into the hot path — but log like the sibling
               // fire-and-forget blocks so a throwing event bus isn't fully silent.
