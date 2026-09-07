@@ -125,17 +125,49 @@ async function collectFiles(root, current = root, output = []) {
   return output.sort((a, b) => a.path.localeCompare(b.path));
 }
 
+// Frozen DATA_DIR snapshots may contain the embedded CLI's file symlink.
+// Materialize it so container-absolute links remain valid after relocation.
+async function resolveSnapshotFile(root, filename, seen = new Set()) {
+  const relative = path.relative(root, filename);
+  if (relative === ".." || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) {
+    throw new Error(`snapshot symbolic link escapes source data directory: ${filename}`);
+  }
+  if (seen.has(filename)) throw new Error(`snapshot symbolic link cycle: ${filename}`);
+  seen.add(filename);
+  // Do not traverse directory links, which can hide an escape in an otherwise
+  // lexically internal target. Only links to regular files are supported.
+  let parent = root;
+  for (const part of relative.split(path.sep).slice(0, -1)) {
+    parent = path.join(parent, part);
+    if ((await fs.lstat(parent)).isSymbolicLink()) throw new Error(`snapshot directory symbolic link is not allowed: ${parent}`);
+  }
+  const stat = await fs.lstat(filename);
+  if (stat.isSymbolicLink()) {
+    const link = await fs.readlink(filename);
+    const resolved = link.startsWith("/app/data/")
+      ? path.resolve(root, link.slice("/app/data/".length))
+      : path.resolve(path.dirname(filename), link);
+    return resolveSnapshotFile(root, resolved, seen);
+  }
+  if (!stat.isFile()) throw new Error(`snapshot symbolic link must target a regular file: ${filename}`);
+  return filename;
+}
+
 async function copyTree(source, target, options = {}, relativeRoot = "") {
   await fs.mkdir(target, { recursive: true });
   const entries = await fs.readdir(source, { withFileTypes: true });
   for (const entry of entries) {
     if (options.skipMigrationArtifacts && (/^-?[^/]*-import-manifest\.json$/.test(entry.name) || /^\..*-import-backup-/.test(entry.name))) continue;
-    const from = path.join(source, entry.name);
+    let from = path.join(source, entry.name);
     const to = path.join(target, entry.name);
     const relativePath = relativeRoot ? `${relativeRoot}/${entry.name}` : entry.name;
-    if (entry.isSymbolicLink()) throw new Error(`symbolic links are not allowed in data snapshots: ${entry.name}`);
+    if (entry.isSymbolicLink()) {
+      if (!options.dataRoot) throw new Error(`symbolic links are not allowed in data snapshots: ${entry.name}`);
+      from = await resolveSnapshotFile(options.dataRoot, from);
+      options.transformations?.push({ path: relativePath, kind: "materialized-internal-file-symlink" });
+    }
     if (entry.isDirectory()) await copyTree(from, to, options, relativePath);
-    else if (entry.isFile()) {
+    else if (entry.isFile() || entry.isSymbolicLink()) {
       await fs.copyFile(from, to);
       // Preserve secrets byte-for-byte. Only normalize the explicit bootstrap
       // comment emitted by the legacy installer so the new volume has no old
@@ -275,7 +307,7 @@ try {
 
   await fs.rm(stage, { recursive: true, force: true });
   const transformations = [];
-  await copyTree(source, stage, { skipMigrationArtifacts: true, transformations });
+  await copyTree(source, stage, { skipMigrationArtifacts: true, transformations, dataRoot: source });
   normalizeMigrationLedger(path.join(stage, "storage.sqlite"));
   verifySqliteIntegrity(path.join(stage, "storage.sqlite"));
   providerConfigOverlay = await readProviderConfigOverlay(args.providerConfigFile, path.join(stage, "storage.sqlite"));
