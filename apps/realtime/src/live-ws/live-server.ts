@@ -19,6 +19,7 @@
 
 import { WebSocketServer, WebSocket } from "ws";
 import { jwtVerify } from "jose";
+import { isAdminIdentity, resolveGatewayIdentity } from "@shiguang-gateway/auth";
 import { createServer, type IncomingMessage, type ServerResponse } from "http";
 import { randomUUID } from "crypto";
 import type { WsClientMessage, WsServerMessage, WsEventMessage, WsAuthResult } from "@shiguang-gateway/contracts/realtime";
@@ -130,6 +131,20 @@ function loadAuthModule(): Promise<typeof import("@shiguang-gateway/open-sse/ser
 
 async function authorizeConnection(request: import("http").IncomingMessage): Promise<WsAuthResult> {
   const sessionId = randomUUID().slice(0, 8);
+
+  // The same-origin proxy supplies a signed SSO assertion for browser clients.
+  // A presented assertion must pass the shared issuer/audience/entitlement
+  // checks; never downgrade a rejected assertion to cookie or API-key auth.
+  if (request.headers["x-sg-identity"] !== undefined) {
+    try {
+      const identity = await resolveGatewayIdentity(request);
+      return isAdminIdentity(identity)
+        ? { authorized: true, sessionId }
+        : { authorized: false, sessionId, error: "Invalid gateway identity" };
+    } catch {
+      return { authorized: false, sessionId, error: "Gateway identity verification unavailable" };
+    }
+  }
 
   // Token MUST come from the Authorization header (or X-Live-WS-Token).
   // Query-string tokens leak into access logs, browser history, and Referer

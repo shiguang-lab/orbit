@@ -46,7 +46,7 @@ const verifier = new SgIdentityVerifier({
     "https://shiguanglab.com/.well-known/sg-identity-jwks.json",
   jwksFile: process.env.SG_IDENTITY_JWKS_FILE,
 });
-const identityResolutionCache = new WeakMap<FastifyRequest, Promise<ResolvedSgIdentity | null>>();
+const identityResolutionCache = new WeakMap<object, Promise<ResolvedSgIdentity | null>>();
 
 /** 已验签身份须具备管理员角色或当前部署配置的产品授权。 */
 export function isAdminIdentity(identity: ResolvedSgIdentity | null): boolean {
@@ -56,7 +56,7 @@ export function isAdminIdentity(identity: ResolvedSgIdentity | null): boolean {
 }
 
 export async function resolveGatewayIdentity(
-  request: FastifyRequest,
+  request: Pick<FastifyRequest, "headers">,
 ): Promise<ResolvedSgIdentity | null> {
   const cached = identityResolutionCache.get(request);
   if (cached) return cached;

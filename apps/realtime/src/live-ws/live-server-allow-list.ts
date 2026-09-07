@@ -41,10 +41,14 @@ export function parseCsvEnv(value: string | undefined | null): Set<string> {
 }
 
 /**
- * Build the static origin allow-list from defaults + LIVE_WS_ALLOWED_ORIGINS.
+ * Build the origin allow-list from defaults, PUBLIC_BASE_URL and explicit origins.
  */
 export function buildAllowedOrigins(env: NodeJS.ProcessEnv = process.env): Set<string> {
   const extra = parseCsvEnv(env.LIVE_WS_ALLOWED_ORIGINS);
+  if (env.PUBLIC_BASE_URL) {
+    const publicUrl = new URL(env.PUBLIC_BASE_URL);
+    if (publicUrl.protocol === "https:" || publicUrl.protocol === "http:") extra.add(publicUrl.origin);
+  }
   return new Set([...DEFAULT_ALLOWED_ORIGINS, ...extra]);
 }
 

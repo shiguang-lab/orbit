@@ -399,6 +399,9 @@ importers:
       '@nestjs/platform-fastify':
         specifier: ^11.2.3
         version: 11.2.3(@fastify/static@8.3.0)(@nestjs/common@11.2.3(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.2.3(@nestjs/common@11.2.3(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))
+      '@shiguang-gateway/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@shiguang-gateway/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
