@@ -43,6 +43,7 @@ services:
       EDGE_GATEWAY_PORT: 8787
       SHIGUANG_GATEWAY_ENABLE_LIVE_WS: "false"
       LOG_LEVEL: ${LOG_LEVEL:-info}
+      CLI_QODER_BIN: ${CLI_QODER_BIN:-qodercli}
       SHIGUANG_GATEWAY_AUTH_MODE: ${SHIGUANG_GATEWAY_AUTH_MODE:-shiguang}
       SG_IDENTITY_ISSUER: ${SG_IDENTITY_ISSUER:-https://shiguanglab.com}
       SG_IDENTITY_AUDIENCE: ${SG_IDENTITY_AUDIENCE:-shiguang-gateway-api}

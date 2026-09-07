@@ -29,6 +29,7 @@ test("compose enables the realtime listener targeted by the admin proxy", (conte
   assert.ok(nginx.includes(`proxy_pass http://shiguang-gateway-realtime:${realtime.LIVE_WS_PORT};`));
   for (const service of ["edge", "control", "worker"]) {
     assert.equal(services[`shiguang-gateway-${service}`].environment.SHIGUANG_GATEWAY_ENABLE_LIVE_WS, "false");
+    assert.equal(services[`shiguang-gateway-${service}`].environment.CLI_QODER_BIN, "${CLI_QODER_BIN:-qodercli}");
   }
 });
 

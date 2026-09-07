@@ -125,9 +125,9 @@ async function collectFiles(root, current = root, output = []) {
   return output.sort((a, b) => a.path.localeCompare(b.path));
 }
 
-// Frozen DATA_DIR snapshots may contain the embedded CLI's file symlink.
-// Materialize it so container-absolute links remain valid after relocation.
-async function resolveSnapshotFile(root, filename, seen = new Set()) {
+// Materialize internal file and directory links so container-absolute links
+// remain valid after relocation of a frozen DATA_DIR snapshot.
+async function resolveSnapshotTarget(root, filename, seen = new Set()) {
   const relative = path.relative(root, filename);
   if (relative === ".." || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) {
     throw new Error(`snapshot symbolic link escapes source data directory: ${filename}`);
@@ -135,7 +135,7 @@ async function resolveSnapshotFile(root, filename, seen = new Set()) {
   if (seen.has(filename)) throw new Error(`snapshot symbolic link cycle: ${filename}`);
   seen.add(filename);
   // Do not traverse directory links, which can hide an escape in an otherwise
-  // lexically internal target. Only links to regular files are supported.
+  // lexically internal target. Final directory targets are traversed below.
   let parent = root;
   for (const part of relative.split(path.sep).slice(0, -1)) {
     parent = path.join(parent, part);
@@ -147,13 +147,15 @@ async function resolveSnapshotFile(root, filename, seen = new Set()) {
     const resolved = link.startsWith("/app/data/")
       ? path.resolve(root, link.slice("/app/data/".length))
       : path.resolve(path.dirname(filename), link);
-    return resolveSnapshotFile(root, resolved, seen);
+    return resolveSnapshotTarget(root, resolved, seen);
   }
-  if (!stat.isFile()) throw new Error(`snapshot symbolic link must target a regular file: ${filename}`);
+  if (!stat.isFile() && !stat.isDirectory()) throw new Error(`snapshot symbolic link must target a regular file or directory: ${filename}`);
   return filename;
 }
 
-async function copyTree(source, target, options = {}, relativeRoot = "") {
+async function copyTree(source, target, options = {}, relativeRoot = "", ancestors = new Set()) {
+  if (ancestors.has(source)) throw new Error(`snapshot directory symbolic link cycle: ${source}`);
+  const branch = new Set(ancestors).add(source);
   await fs.mkdir(target, { recursive: true });
   const entries = await fs.readdir(source, { withFileTypes: true });
   for (const entry of entries) {
@@ -163,10 +165,10 @@ async function copyTree(source, target, options = {}, relativeRoot = "") {
     const relativePath = relativeRoot ? `${relativeRoot}/${entry.name}` : entry.name;
     if (entry.isSymbolicLink()) {
       if (!options.dataRoot) throw new Error(`symbolic links are not allowed in data snapshots: ${entry.name}`);
-      from = await resolveSnapshotFile(options.dataRoot, from);
-      options.transformations?.push({ path: relativePath, kind: "materialized-internal-file-symlink" });
+      from = await resolveSnapshotTarget(options.dataRoot, from);
+      options.transformations?.push({ path: relativePath, kind: "materialized-internal-symlink" });
     }
-    if (entry.isDirectory()) await copyTree(from, to, options, relativePath);
+    if (entry.isDirectory() || (entry.isSymbolicLink() && (await fs.stat(from)).isDirectory())) await copyTree(from, to, options, relativePath, branch);
     else if (entry.isFile() || entry.isSymbolicLink()) {
       await fs.copyFile(from, to);
       // Preserve secrets byte-for-byte. Only normalize the explicit bootstrap

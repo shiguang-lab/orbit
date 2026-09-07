@@ -25,6 +25,10 @@ test("importer app owns and runs the source-data import", () => {
     writeFileSync(join(source, "bin", "cliproxyapi-version", "cli-proxy-api"), "executable-content", { mode: 0o755 });
     symlinkSync("/app/data/bin/cliproxyapi-version/cli-proxy-api", join(source, "bin", "cliproxyapi"));
     symlinkSync("cliproxyapi", join(source, "bin", "relative-cli"));
+    mkdirSync(join(source, "qoder-cli", "logs", "runs", "latest-run"), { recursive: true });
+    writeFileSync(join(source, "qoder-cli", "logs", "runs", "latest-run", "run.log"), "log-content");
+    symlinkSync("runs/latest-run", join(source, "qoder-cli", "logs", "latest"));
+    symlinkSync("/app/data/qoder-cli/logs/runs/latest-run", join(source, "qoder-cli", "logs", "absolute-latest"));
 
     const result = spawnSync(
       "pnpm",
@@ -43,12 +47,16 @@ test("importer app owns and runs the source-data import", () => {
       assert.equal(lstatSync(copied).mode & 0o111, 0o111);
       assert.ok(manifest.files.some((file) => file.path === `bin/${name}`));
     }
+    for (const name of ["latest", "absolute-latest"]) {
+      assert.equal(lstatSync(join(target, "qoder-cli", "logs", name)).isSymbolicLink(), false);
+      assert.equal(readFileSync(join(target, "qoder-cli", "logs", name, "run.log"), "utf8"), "log-content");
+    }
   } finally {
     rmSync(workspace, { recursive: true, force: true });
   }
 });
 
-for (const scenario of ["escape", "container-escape", "cycle", "directory-escape"]) {
+for (const scenario of ["escape", "container-escape", "cycle", "directory-escape", "directory-cycle"]) {
   test(`importer rejects ${scenario} links before replacing target data`, () => {
     const workspace = mkdtempSync(join(tmpdir(), "source-data-links-"));
     const source = join(workspace, "source");
@@ -61,7 +69,10 @@ for (const scenario of ["escape", "container-escape", "cycle", "directory-escape
       db.exec("CREATE TABLE sample (id INTEGER)");
       db.close();
       writeFileSync(join(workspace, "outside"), "outside");
-      if (scenario === "cycle") {
+      if (scenario === "directory-cycle") {
+        mkdirSync(join(source, "logs"));
+        symlinkSync("..", join(source, "logs", "parent"));
+      } else if (scenario === "cycle") {
         symlinkSync("second", join(source, "link"));
         symlinkSync("link", join(source, "second"));
       } else if (scenario === "directory-escape") {
