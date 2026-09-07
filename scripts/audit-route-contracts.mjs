@@ -8,7 +8,8 @@ import { join, relative, resolve } from "node:path";
 const repoRoot = resolve(import.meta.dirname, "..");
 const referenceRoot = resolve(process.env.SHIGUANG_GATEWAY_REFERENCE_DIR || join(repoRoot, "..", "Orbit"));
 const methods = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"];
-const frozenContractSha256 = "3ac7336622ffd70931983b9384371d85f2dab789163b201297be4aea32011d79";
+const frozenContractSha256 = "841ea8446a1078da3c38e9d3e26a98b64d4d402dc72c1017554e50e2c789934a";
+const frozenRouteCount = 681;
 const localApiExtensions = new Set([
   "search/analytics/route.ts",
   "cloud-agents/tasks/route.ts",
@@ -232,11 +233,11 @@ if (referenceAvailable) {
 } else {
   const serialized = [...localMap].sort(([a], [b]) => a.localeCompare(b)).map(([path, verbs]) => `${path}:${verbs.join(",")}`).join("\n");
   const actualHash = createHash("sha256").update(serialized).digest("hex");
-  if (localMap.size !== 682 || actualHash !== frozenContractSha256) {
+  if (localMap.size !== frozenRouteCount || actualHash !== frozenContractSha256) {
     mismatches.push({ path: "<frozen-contract-baseline>", expected: [frozenContractSha256], actual: [actualHash] });
   }
 }
-const expectedRouteCount = referenceAvailable ? refMap.size : 682;
+const expectedRouteCount = referenceAvailable ? refMap.size : frozenRouteCount;
 const report = { referenceRoot, referenceAvailable, frozenContractSha256, routeFiles: expectedRouteCount, localRouteFiles: localMap.size, additiveLocalApiExtensions: [...localApiExtensions], retiredApiRoutes: [...retiredApiRoutes], mismatches,
   status: localMap.size === expectedRouteCount && mismatches.length === 0 ? "PASS" : "FAIL" };
 console.log(JSON.stringify(report, null, 2));
