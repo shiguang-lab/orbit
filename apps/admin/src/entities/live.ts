@@ -1,11 +1,12 @@
 /**
- * 实时 WebSocket client：移植自 ShiguangGateway Shiguang Gateway src/hooks/useLiveDashboard.ts 的核心逻辑。
+ * 实时 WebSocket client：通过同源反向代理复用管理页面的登录会话。
  *
- * 链路：GET /api/v1/ws?handshake=1 发现 live.publicUrl/path/port → new WebSocket →
+ * 链路：同源 /live-ws → new WebSocket →
  * 发 {type:"subscribe", channels} → 收 {type:"event", channel, event, data} / {type:"welcome", data:backlog} →
  * 15s ping 心跳 + 指数退避重连。
  */
 import { useCallback, useEffect, useRef, useState } from "react";
+import { buildDashboardLiveUrl } from "./live-url";
 
 export type LiveChannel = "requests" | "combo" | "credentials" | "compression";
 
@@ -16,25 +17,8 @@ export interface LiveEvent {
   timestamp?: number;
 }
 
-interface WsHandshakeInfo {
-  publicUrl?: string;
-  port?: number;
-  path?: string;
-  protocol?: string;
-  channels?: string[];
-  auth?: string;
-  heartbeatMs?: number;
-}
-
-interface WsHandshakeResponse {
-  live?: WsHandshakeInfo;
-  error?: { code?: string; message?: string };
-}
-
 export interface LiveDashboardOptions {
   channels?: LiveChannel[];
-  apiKey?: string;
-  wsUrl?: string;
   enabled?: boolean;
 }
 
@@ -43,37 +27,8 @@ export type LiveConnectionStatus = "connecting" | "open" | "closed" | "error";
 const RETRY_BACKOFF = [1000, 2000, 4000, 8000, 16000, 30000];
 const HEARTBEAT_INTERVAL = 15_000;
 
-async function discoverLiveWs(): Promise<WsHandshakeInfo | null> {
-  try {
-    const response = await fetch("/api/v1/ws?handshake=1", { credentials: "same-origin" });
-    if (!response.ok) return null;
-    const body = (await response.json()) as WsHandshakeResponse;
-    return body.live ?? null;
-  } catch {
-    return null;
-  }
-}
-
-function buildWsUrl(info: WsHandshakeInfo | null, apiKey?: string): string {
-  const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-  // 优先 handshake 返回的公网 URL；否则默认 host + 端口/路径
-  if (info?.publicUrl) {
-    const base = info.publicUrl.replace(/^wss?:\/\//, "");
-    const path = info.path && !info.publicUrl.endsWith(info.path) ? info.path : "";
-    const url = `${protocol}//${base}${path || ""}`;
-    return apiKey ? `${url}?token=${encodeURIComponent(apiKey)}` : url;
-  }
-  const host = window.location.hostname;
-  const port = info?.port ?? 20132;
-  const path = info?.path ?? "/live-ws";
-  const url = `${protocol}//${host}:${port}${path}`;
-  return apiKey ? `${url}?token=${encodeURIComponent(apiKey)}` : url;
-}
-
 export function useLiveDashboard({
   channels = ["requests", "combo", "credentials"],
-  apiKey,
-  wsUrl,
   enabled = true,
 }: LiveDashboardOptions = {}) {
   const [status, setStatus] = useState<LiveConnectionStatus>("closed");
@@ -84,14 +39,10 @@ export function useLiveDashboard({
   const attemptRef = useRef(0);
   const enabledRef = useRef(enabled);
   const channelsRef = useRef(channels);
-  const apiKeyRef = useRef(apiKey);
-  const wsUrlRef = useRef(wsUrl);
   const listenersRef = useRef<Set<(event: LiveEvent) => void>>(new Set());
 
   enabledRef.current = enabled;
   channelsRef.current = channels;
-  apiKeyRef.current = apiKey;
-  wsUrlRef.current = wsUrl;
 
   const onEvent = useCallback((event: LiveEvent) => {
     setLastEvent(event);
@@ -105,16 +56,12 @@ export function useLiveDashboard({
     };
   }, []);
 
-  const connect = useCallback(async () => {
+  const connect = useCallback(() => {
     if (!enabledRef.current) return;
     // 已在连接中则跳过
     if (wsRef.current?.readyState === WebSocket.OPEN) return;
 
-    let info: WsHandshakeInfo | null = null;
-    if (!wsUrlRef.current) {
-      info = await discoverLiveWs();
-    }
-    const url = wsUrlRef.current ?? buildWsUrl(info, apiKeyRef.current);
+    const url = buildDashboardLiveUrl(window.location.href);
     setStatus("connecting");
 
     const ws = new WebSocket(url);

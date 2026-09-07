@@ -56,6 +56,10 @@ jobs:
           pnpm audit:gateway-independence
           pnpm audit:route-contracts
           pnpm audit:brand
+          pnpm --filter @shiguang-gateway/admin test
+          pnpm --filter @shiguang-gateway/auth test
+          pnpm --filter @shiguang-gateway/realtime test
+          pnpm --filter @shiguang-gateway/importer test
           pnpm --filter @shiguang-gateway/http-kernel test
           pnpm smoke:route-imports
           pnpm smoke:split-deployment
