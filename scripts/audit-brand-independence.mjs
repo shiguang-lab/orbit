@@ -6,6 +6,7 @@
  */
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
+import assert from "node:assert/strict";
 
 const root = process.cwd();
 const retiredToken = ["omni", "route"].join("");
@@ -21,6 +22,59 @@ const rootFiles = [
 const ignored = new Set(["node_modules", "dist", ".turbo", ".git"]);
 const failures = [];
 
+// The deployed SSO contract is independent of the product's display branding.
+// Only these documents and this regression fixture may spell its exact values.
+const ssoDocuments = new Set([
+  "deploy/NAS-DEPLOY.md", "deploy/gateway-caddyfile.md",
+  "deploy/SSO-INTEGRATION.md", "deploy/auth-service-config.md",
+]);
+const entitlementTest = "packages/auth/test/configured-entitlement.test.ts";
+function containsRetiredIdentifier(rel, text) {
+  if (new RegExp(retiredToken, "i").test(rel)) return true;
+  let inspected = text;
+  if (ssoDocuments.has(rel)) {
+    inspected = inspected.replace(new RegExp(
+      "`(?:" + retiredToken + "(?:-api|:access)?|SG_IDENTITY_AUDIENCE=" + retiredToken +
+      "-api|SG_IDENTITY_ENTITLEMENT=" + retiredToken + ":access)`", "g"
+    ), "");
+    inspected = inspected.replace(new RegExp(
+      "^\\s*header_up X-SG-(?:Product-ID " + retiredToken + "|Audience " + retiredToken +
+      "-api|Required-Entitlements " + retiredToken + ":access)\\s*$", "gm"
+    ), "");
+    inspected = inspected.replace(new RegExp(
+      "^\\s*SG_IDENTITY_(?:AUDIENCE=" + retiredToken + "-api|ENTITLEMENT=" +
+      retiredToken + ":access)\\s*$", "gm"
+    ), "");
+  } else if (rel === entitlementTest) {
+    inspected = inspected.replace(new RegExp('"' + retiredToken + '(?:-api|:access)"', "g"), "");
+  }
+  return new RegExp(retiredToken, "i").test(inspected);
+}
+
+function selfTest() {
+  const audience = `${retiredToken}-api`;
+  const entitlement = `${retiredToken}:access`;
+  for (const rel of ssoDocuments) {
+    assert.equal(containsRetiredIdentifier(rel, `Product \`${retiredToken}\`, audience \`${audience}\`, entitlement \`${entitlement}\``), false);
+    assert.equal(containsRetiredIdentifier(rel, `\`SG_IDENTITY_AUDIENCE=${audience}\` \`SG_IDENTITY_ENTITLEMENT=${entitlement}\``), false);
+    assert.equal(containsRetiredIdentifier(rel, `SG_IDENTITY_AUDIENCE=${audience}\nSG_IDENTITY_ENTITLEMENT=${entitlement}`), false);
+    assert.equal(containsRetiredIdentifier(rel, `header_up X-SG-Product-ID ${retiredToken}\nheader_up X-SG-Audience ${audience}\nheader_up X-SG-Required-Entitlements ${entitlement}`), false);
+    assert.equal(containsRetiredIdentifier(rel, `Welcome to ${retiredToken}`), true);
+    assert.equal(containsRetiredIdentifier(rel, `\`${retiredToken}-runtime\``), true);
+    assert.equal(containsRetiredIdentifier(rel, `\`${retiredToken}:admin\``), true);
+    assert.equal(containsRetiredIdentifier(rel, `header_up X-SG-Audience ${retiredToken}-other`), true);
+  }
+  assert.equal(containsRetiredIdentifier(entitlementTest, `session(["${entitlement}"], "${audience}")`), false);
+  assert.equal(containsRetiredIdentifier(entitlementTest, `"${retiredToken}:admin"`), true);
+  assert.equal(containsRetiredIdentifier("packages/auth/src/session.ts", `"${audience}"`), true);
+  assert.equal(containsRetiredIdentifier("deploy/other.md", `\`${entitlement}\``), true);
+  assert.equal(containsRetiredIdentifier(`apps/${retiredToken}/index.ts`, ""), true);
+  assert.equal(containsRetiredIdentifier("apps/admin/index.ts", "ShiguangGateway"), false);
+  console.log("brand SSO exception self-test: PASS");
+}
+
+if (process.argv.includes("--self-test")) selfTest();
+
 function walk(path) {
   if (!existsSync(path)) return;
   const info = statSync(path);
@@ -30,7 +84,7 @@ function walk(path) {
       const bytes = readFileSync(path);
       if (bytes.includes(0)) return;
       const text = bytes.toString("utf8");
-      if (new RegExp(retiredToken, "i").test(rel) || new RegExp(retiredToken, "i").test(text)) {
+      if (containsRetiredIdentifier(rel, text)) {
         failures.push(rel);
       }
     } catch {
