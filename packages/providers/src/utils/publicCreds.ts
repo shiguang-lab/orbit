@@ -127,68 +127,67 @@ export function decodePublicCredBytes(bytes: readonly number[]): string {
 const EMBEDDED_DEFAULTS = {
   // Gemini / Code Assist — google oauth client (public, PKCE)
   gemini_id: [
-    89, 85, 95, 91, 71, 90, 77, 68, 92, 30, 73, 64, 79, 3, 6, 91, 75, 2, 3, 0, 29, 28, 13, 0, 1, 5,
-    77, 0, 30, 17, 4, 4, 90, 8, 21, 30, 30, 92, 11, 4, 12, 88, 65, 90, 31, 90, 4, 93, 0, 6, 76, 11,
-    6, 12, 74, 26, 84, 26, 30, 11, 27, 17, 0, 27, 0, 0, 67, 4, 91, 1, 3, 4,
+    89, 74, 83, 91, 65, 24, 72, 69, 91, 95, 80, 86, 0, 25, 94, 87, 20, 22, 91, 27, 93, 2, 17, 16, 2, 25,
+    90, 72, 69, 80, 30, 20, 84, 8, 2, 30, 24, 24, 6, 5, 11, 82, 30, 67, 91, 65, 19, 18, 25, 7, 3, 23,
+    26, 13, 11, 5, 6, 88, 5, 84, 29, 17, 13, 7, 0, 72, 30, 1, 76, 15, 6, 14,
   ],
   gemini_alt: [
-    40, 34, 45, 58, 34, 55, 88, 64, 16, 101, 23, 56, 50, 1, 68, 82, 66, 65, 98, 4, 64, 9, 12, 36,
-    89, 54, 1, 80, 78, 28, 45, 36, 31, 17, 15,
+    40, 61, 33, 58, 36, 117, 93, 65, 23, 36, 14, 46, 125, 27, 28, 94, 29, 85, 58, 31, 0, 23, 16, 52,
+    90, 42, 22, 24, 21, 93, 55, 52, 17, 17, 24,
   ],
   // Antigravity — google oauth client (public)
   antigravity_id: [
-    94, 93, 89, 88, 66, 95, 67, 68, 83, 29, 69, 76, 83, 65, 29, 14, 69, 5, 66, 6, 3, 92, 1, 64, 94,
-    25, 23, 23, 72, 66, 70, 87, 26, 29, 12, 65, 25, 91, 7, 89, 9, 93, 66, 92, 16, 4, 75, 76, 0, 5,
-    17, 66, 14, 12, 66, 17, 93, 10, 24, 29, 12, 0, 12, 26, 26, 17, 72, 30, 1, 76, 15, 6, 14,
+    94, 66, 85, 88, 68, 29, 70, 69, 84, 92, 92, 90, 28, 91, 69, 2, 26, 17, 26, 29, 67, 66, 29, 80, 93,
+    5, 0, 95, 19, 3, 92, 71, 20, 29, 27, 65, 31, 31, 10, 88, 14, 87, 29, 69, 84, 31, 92, 3, 25, 4,
+    94, 94, 18, 13, 3, 14, 15, 72, 3, 66, 10, 0, 1, 6, 26, 89, 21, 27, 22, 66, 10, 12, 64,
   ],
   antigravity_alt: [
-    40, 34, 45, 58, 34, 55, 88, 63, 80, 21, 54, 34, 48, 88, 81, 85, 97, 18, 125, 37, 92, 3, 37, 48,
-    87, 6, 44, 38, 25, 10, 67, 19, 40, 40, 5,
+    40, 61, 33, 58, 36, 117, 93, 62, 87, 84, 47, 52, 127, 66, 9, 89, 62, 6, 37, 62, 28, 29, 57, 32,
+    84, 26, 59, 110, 66, 75, 89, 3, 38, 40, 18,
   ],
   // Claude Code CLI — anthropic oauth client (public, PKCE)
   claude_id: [
-    86, 9, 95, 10, 64, 90, 69, 21, 72, 72, 70, 68, 0, 65, 93, 87, 73, 79, 28, 87, 85, 11, 13, 95,
-    90, 76, 64, 81, 73, 65, 76, 84, 94, 15, 86, 72,
+    86, 22, 83, 10, 70, 24, 64, 20, 79, 9, 95, 82, 79, 91, 5, 91, 22, 91, 68, 76, 21, 21, 17, 79,
+    89, 80, 87, 25, 18, 0, 86, 68, 80, 15, 65, 72,
   ],
   // Codex CLI — openai oauth client (public, PKCE)
   codex_id: [
-    14, 29, 30, 54, 55, 34, 26, 21, 8, 104, 53, 47, 85, 95, 15, 83, 110, 29, 105, 14, 53, 30, 94,
-    26, 29, 20, 26, 11,
+    14, 2, 18, 54, 49, 96, 31, 20, 15, 41, 44, 57, 26, 69, 87, 95, 49, 9, 49, 21, 117, 0, 66, 10,
+    30, 8, 13, 67,
   ],
   // Kimi coding CLI — moonshot oauth client (public)
   kimi_id: [
-    94, 90, 11, 92, 20, 89, 66, 69, 72, 73, 65, 76, 86, 65, 93, 7, 75, 20, 28, 86, 90, 94, 95, 95,
-    90, 64, 69, 83, 78, 18, 65, 90, 15, 89, 90, 21,
+    94, 69, 7, 92, 18, 27, 71, 68, 79, 8, 88, 90, 25, 91, 5, 11, 20, 0, 68, 77, 26, 64, 67, 79,
+    89, 92, 82, 27, 21, 83, 91, 74, 1, 89, 77, 21,
   ],
   // GitHub Copilot CLI — github oauth app id (public, device flow)
-  github_copilot_id: [38, 27, 95, 71, 16, 90, 69, 67, 4, 29, 72, 22, 90, 91, 12, 0, 75, 19, 8, 87],
+  github_copilot_id: [38, 4, 83, 71, 22, 24, 64, 66, 3, 92, 81, 0, 21, 65, 84, 12, 20, 7, 80, 76],
   // Grok Build CLI (xAI) — public oauth client id (import-token flow)
   grok_id: [
-    13, 92, 15, 89, 66, 91, 76, 70, 72, 29, 71, 70, 3, 65, 93, 84, 72, 23, 28, 87, 92, 88, 15, 95,
-    91, 22, 71, 87, 20, 66, 67, 86, 13, 81, 81, 21,
+    13, 67, 3, 89, 68, 25, 73, 71, 79, 92, 94, 80, 76, 91, 5, 88, 23, 3, 68, 76, 28, 70, 19, 79,
+    88, 10, 80, 31, 79, 3, 89, 70, 3, 81, 70, 21,
   ],
-  // Openference OAuth — public PKCE client id. The plaintext equals the first
-  // nine bytes of MASK, so its XOR-masked representation is nine zero bytes.
-  openference_id: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  // Openference OAuth — public PKCE client id
+  openference_id: [0, 31, 12, 0, 6, 66, 5, 1, 7],
   // Trae Cloud IDE — public oauth client id
-  trae_id: [10, 3, 95, 6, 10, 22, 66, 3, 11, 90, 72, 31, 91, 2],
+  trae_id: [10, 28, 83, 6, 12, 84, 71, 2, 12, 27, 81, 9, 20, 24],
   // Microsoft 365 Copilot web (m365.cloud.microsoft) — public SPA client id
   // observed in browser tokens and M365-Copilot2API. Not a per-user secret.
   m365_oauth_client_id: [
-    12, 93, 15, 11, 74, 12, 16, 77, 72, 72, 73, 20, 82, 65, 93, 81, 72, 65, 28, 13, 93, 88, 93, 95,
-    92, 70, 16, 81, 31, 66, 17, 4, 88, 88, 5, 28,
+    12, 66, 3, 11, 76, 78, 21, 76, 79, 9, 80, 2, 29, 91, 5, 93, 23, 85, 68, 22, 29, 70, 65, 79,
+    95, 90, 7, 25, 68, 3, 11, 20, 86, 88, 18, 28,
   ],
   // Adobe Firefly web (firefly.adobe.com) — public x-api-key + IMS client_id
   // (`clio-playground-web`). Captured from live browser generate/discovery calls.
   // Not a per-user secret; every Firefly SPA session sends the same value.
   // (Express still uses `projectx_webapp` — see adobe_firefly_express_client_id.)
-  adobe_firefly_api_key: [12, 1, 7, 6, 95, 31, 25, 21, 28, 74, 2, 26, 23, 2, 13, 78, 90, 19, 83],
+  adobe_firefly_api_key: [12, 30, 11, 6, 89, 93, 28, 20, 27, 11, 27, 12, 88, 24, 85, 66, 5, 7, 11],
   // Adobe Express fallback IMS client_id for cookie exchange when Firefly
   // clio-playground-web refresh fails (older Express cookies).
-  adobe_firefly_express_client_id: [31, 31, 1, 3, 23, 12, 1, 12, 58, 90, 21, 23, 3, 28, 25],
+  adobe_firefly_express_client_id: [31, 0, 13, 3, 17, 78, 4, 13, 61, 27, 12, 1, 76, 6, 65],
   // Firefly credits balance endpoint public x-api-key (`SunbreakWebUI1`) from
   // GET firefly.adobe.io/v1/credits/balance browser traffic.
-  adobe_firefly_balance_api_key: [60, 24, 0, 11, 0, 10, 20, 31, 50, 72, 18, 32, 43, 93],
+  adobe_firefly_balance_api_key: [60, 7, 12, 11, 6, 72, 17, 30, 53, 9, 11, 54, 100, 71],
 } as const;
 
 export type EmbeddedDefaultKey = keyof typeof EMBEDDED_DEFAULTS;
