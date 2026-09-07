@@ -39,6 +39,31 @@ RUN --mount=type=cache,id=shiguang-gateway-pnpm-store,target=/root/.local/share/
          cp -a "$closure/node_modules/.pnpm/." /app/runtime/node_modules/.pnpm/; \
        done
 
+# Collect every workspace package with the same runtime layout. Preserve pnpm's
+# relative links; omit unrelated documentation/tests from ordinary packages.
+RUN node <<'NODE'
+const fs = require('node:fs');
+const path = require('node:path');
+for (const name of fs.readdirSync('/app/packages')) {
+  const source = path.join('/app/packages', name);
+  if (!fs.existsSync(path.join(source, 'package.json'))) continue;
+  const target = path.join('/app/runtime-packages', name);
+  fs.mkdirSync(target, { recursive: true });
+  const runtimeEntries = new Set(['package.json', 'src', 'dist', 'types', 'node_modules']);
+  function includeExports(value) {
+    if (typeof value === 'string' && value.startsWith('./')) runtimeEntries.add(value.slice(2).split('/')[0]);
+    else if (value && typeof value === 'object') for (const child of Object.values(value)) includeExports(child);
+  }
+  includeExports(JSON.parse(fs.readFileSync(path.join(source, 'package.json'), 'utf8')).exports);
+  const entries = name === 'open-sse' ? fs.readdirSync(source) : fs.readdirSync(source)
+    .filter(entry => runtimeEntries.has(entry) || /^tsconfig.*\.json$/.test(entry));
+  for (const entry of entries) fs.cpSync(path.join(source, entry), path.join(target, entry), { recursive: true, verbatimSymlinks: true });
+}
+const openapi = '/app/runtime-packages/core-domain/docs';
+fs.mkdirSync(openapi, { recursive: true });
+fs.copyFileSync('/app/packages/core-domain/docs/openapi.yaml', path.join(openapi, 'openapi.yaml'));
+NODE
+
 FROM node:22-bookworm-slim AS runtime-base
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
     && rm -rf /var/lib/apt/lists/*
@@ -71,58 +96,64 @@ COPY --from=build --chown=node:node /app/apps/control-api/node_modules ./apps/co
 COPY --from=build --chown=node:node /app/apps/realtime/node_modules ./apps/realtime/node_modules
 COPY --from=build --chown=node:node /app/apps/worker/node_modules ./apps/worker/node_modules
 COPY --from=build --chown=node:node /app/apps/importer/node_modules ./apps/importer/node_modules
-# The compiled OpenAPI route reads this path from process.cwd(). Keep the
-# single runtime asset while leaving the rest of the 158 MB source/docs tree out.
-COPY --from=build --chown=node:node /app/packages/core-domain/docs/openapi.yaml ./packages/core-domain/docs/openapi.yaml
-# tsx follows the HTTP kernel tsconfig while resolving its remaining
-# TypeScript source imports, so retain only the small config files it needs.
+# App and package links resolve to this complete canonical runtime package tree.
+COPY --from=build --chown=node:node /app/runtime-packages ./packages
 COPY --from=build --chown=node:node /app/tsconfig.base.json ./tsconfig.base.json
-COPY --from=build --chown=node:node /app/packages/http-kernel/tsconfig.json ./packages/http-kernel/tsconfig.json
-COPY --from=build --chown=node:node /app/packages/core-domain/tsconfig.json ./packages/core-domain/tsconfig.json
-COPY --from=build --chown=node:node /app/packages/http-kernel/src ./packages/http-kernel/src
-COPY --from=build --chown=node:node /app/packages/core-domain/src ./packages/core-domain/src
-COPY --from=build --chown=node:node /app/packages/open-sse ./packages/open-sse
+COPY --from=build --chown=node:node /app/apps/edge-gateway/package.json ./apps/edge-gateway/package.json
+COPY --from=build --chown=node:node /app/apps/control-api/package.json ./apps/control-api/package.json
+COPY --from=build --chown=node:node /app/apps/realtime/package.json ./apps/realtime/package.json
+COPY --from=build --chown=node:node /app/apps/worker/package.json ./apps/worker/package.json
+COPY --from=build --chown=node:node /app/apps/importer/package.json ./apps/importer/package.json
 # Edge-owned route modules are loaded from source by the tsx catch-all loader.
 COPY --from=build --chown=node:node /app/apps/edge-gateway/src/routes ./apps/edge-gateway/src/routes
-COPY --from=build --chown=node:node /app/packages/http-kernel/package.json ./packages/http-kernel/package.json
-COPY --from=build --chown=node:node /app/packages/core-domain/package.json ./packages/core-domain/package.json
-COPY --from=build --chown=node:node /app/packages/http-kernel/node_modules ./packages/http-kernel/node_modules
-COPY --from=build --chown=node:node /app/packages/core-domain/node_modules ./packages/core-domain/node_modules
-COPY --from=build --chown=node:node /app/packages/auth/node_modules ./packages/auth/node_modules
-COPY --from=build --chown=node:node /app/packages/web-handler-adapter/node_modules ./packages/web-handler-adapter/node_modules
-COPY --from=build --chown=node:node /app/packages/contracts/src ./packages/contracts/src
-COPY --from=build --chown=node:node /app/packages/contracts/package.json ./packages/contracts/package.json
-COPY --from=build --chown=node:node /app/packages/contracts/tsconfig.json ./packages/contracts/tsconfig.json
-COPY --from=build --chown=node:node /app/packages/config/src ./packages/config/src
-COPY --from=build --chown=node:node /app/packages/config/package.json ./packages/config/package.json
-COPY --from=build --chown=node:node /app/packages/config/tsconfig.json ./packages/config/tsconfig.json
-COPY --from=build --chown=node:node /app/packages/cli-profile-config/src ./packages/cli-profile-config/src
-COPY --from=build --chown=node:node /app/packages/cli-profile-config/package.json ./packages/cli-profile-config/package.json
-COPY --from=build --chown=node:node /app/packages/cli-profile-config/tsconfig.json ./packages/cli-profile-config/tsconfig.json
-COPY --from=build --chown=node:node /app/packages/db-schema/src ./packages/db-schema/src
-COPY --from=build --chown=node:node /app/packages/db-schema/package.json ./packages/db-schema/package.json
-COPY --from=build --chown=node:node /app/packages/db-schema/tsconfig.json ./packages/db-schema/tsconfig.json
-COPY --from=build --chown=node:node /app/packages/auth/src ./packages/auth/src
-COPY --from=build --chown=node:node /app/packages/realtime-publisher/src ./packages/realtime-publisher/src
-COPY --from=build --chown=node:node /app/packages/realtime-publisher/package.json ./packages/realtime-publisher/package.json
-COPY --from=build --chown=node:node /app/packages/realtime-publisher/tsconfig.json ./packages/realtime-publisher/tsconfig.json
-COPY --from=build --chown=node:node /app/packages/auth/package.json ./packages/auth/package.json
-COPY --from=build --chown=node:node /app/packages/auth/tsconfig.json ./packages/auth/tsconfig.json
-COPY --from=build --chown=node:node /app/packages/web-handler-adapter/src ./packages/web-handler-adapter/src
-COPY --from=build --chown=node:node /app/packages/web-handler-adapter/package.json ./packages/web-handler-adapter/package.json
-COPY --from=build --chown=node:node /app/packages/web-handler-adapter/tsconfig.json ./packages/web-handler-adapter/tsconfig.json
-RUN rm -f /app/node_modules/@shiguang-gateway/http-kernel /app/node_modules/@shiguang-gateway/core-domain /app/node_modules/@shiguang-gateway/open-sse \
-    /app/node_modules/@shiguang-gateway/auth /app/node_modules/@shiguang-gateway/web-handler-adapter \
-    /app/node_modules/@shiguang-gateway/contracts /app/node_modules/@shiguang-gateway/config \
-    /app/node_modules/@shiguang-gateway/db-schema \
-    && ln -s /app/packages/http-kernel /app/node_modules/@shiguang-gateway/http-kernel \
-    && ln -s /app/packages/core-domain /app/node_modules/@shiguang-gateway/core-domain \
-    && ln -s /app/packages/open-sse /app/node_modules/@shiguang-gateway/open-sse \
-    && ln -s /app/packages/auth /app/node_modules/@shiguang-gateway/auth \
-    && ln -s /app/packages/web-handler-adapter /app/node_modules/@shiguang-gateway/web-handler-adapter \
-    && ln -s /app/packages/contracts /app/node_modules/@shiguang-gateway/contracts \
-    && ln -s /app/packages/config /app/node_modules/@shiguang-gateway/config \
-    && ln -s /app/packages/db-schema /app/node_modules/@shiguang-gateway/db-schema
+# Validate the final image filesystem, not the build workspace: all production
+# dependencies must resolve, every workspace link and export must exist.
+RUN node <<'NODE'
+const fs = require('node:fs');
+const path = require('node:path');
+const { createRequire } = require('node:module');
+const packageDirs = fs.readdirSync('/app/packages').map(name => path.join('/app/packages', name))
+  .filter(dir => fs.existsSync(path.join(dir, 'package.json')));
+for (const dir of packageDirs) {
+  const { name } = JSON.parse(fs.readFileSync(path.join(dir, 'package.json'), 'utf8'));
+  const link = path.join('/app/node_modules', name);
+  fs.mkdirSync(path.dirname(link), { recursive: true });
+  try { fs.unlinkSync(link); } catch (error) { if (error.code !== 'ENOENT') throw error; }
+  fs.symlinkSync(dir, link);
+}
+const appDirs = ['edge-gateway', 'control-api', 'realtime', 'worker', 'importer'].map(name => path.join('/app/apps', name));
+let checkedDependencies = 0;
+let checkedExports = 0;
+for (const dir of [...appDirs, ...packageDirs]) {
+  const manifestPath = path.join(dir, 'package.json');
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  const requireFrom = createRequire(manifestPath);
+  for (const name of Object.keys(manifest.dependencies || {})) {
+    const candidates = requireFrom.resolve.paths(name) || [];
+    const found = candidates.map(base => path.join(base, name, 'package.json')).find(file => fs.existsSync(file));
+    if (!found) throw new Error('Missing production dependency ' + manifest.name + ' -> ' + name);
+    checkedDependencies++;
+  }
+  const scope = path.join(dir, 'node_modules', '@shiguang-gateway');
+  if (fs.existsSync(scope)) for (const name of fs.readdirSync(scope)) {
+    const link = path.join(scope, name);
+    if (!fs.existsSync(path.join(link, 'package.json'))) throw new Error('Broken workspace link: ' + link);
+    fs.realpathSync(link);
+  }
+  function checkExports(value) {
+    if (typeof value === 'string') {
+      if (!value.startsWith('./') || !fs.existsSync(path.join(dir, value))) {
+        throw new Error('Missing export ' + manifest.name + ' -> ' + value);
+      }
+      checkedExports++;
+    } else if (value && typeof value === 'object') {
+      for (const child of Object.values(value)) checkExports(child);
+    }
+  }
+  checkExports(manifest.exports);
+}
+console.log(JSON.stringify({ workspacePackages: packageDirs.length, checkedDependencies, checkedExports, status: 'PASS' }));
+NODE
 RUN mkdir -p /app/data && chown node:node /app/data
 USER node
 EXPOSE 8787 8788 8790 20132

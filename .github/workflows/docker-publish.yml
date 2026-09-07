@@ -62,6 +62,7 @@ jobs:
           pnpm --filter @shiguang-gateway/realtime-publisher test
           pnpm --filter @shiguang-gateway/importer test
           pnpm --filter @shiguang-gateway/http-kernel test
+          pnpm --filter @shiguang-gateway/edge-gateway exec tsx --test test/dispatcher-module-injection.test.ts
           pnpm smoke:route-imports
           pnpm smoke:split-deployment
           node --test scripts/smoke-worker-start.test.mjs
@@ -136,7 +137,7 @@ jobs:
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Build and push ${{ matrix.target }} image
+      - name: Build ${{ matrix.target }} image
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -144,7 +145,9 @@ jobs:
           # NAS deployment target is x86_64; keeping one platform avoids
           # exhausting GitHub-hosted runner disk while building six services.
           platforms: linux/amd64
-          push: true
+          push: ${{ !contains(fromJSON('["edge-gateway", "control-api", "realtime", "worker"]'), matrix.target) }}
+          load: ${{ contains(fromJSON('["edge-gateway", "control-api", "realtime", "worker"]'), matrix.target) }}
+          provenance: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: |
             org.opencontainers.image.title=ShiguangGateway Independent
@@ -154,6 +157,25 @@ jobs:
           # Export only the final cache chain. mode=max duplicated every large
           # pnpm/Docker layer and exhausted the hosted runner disk.
           cache-to: type=gha,scope=shiguang-gateway-${{ matrix.target }},mode=min
+
+      - name: Start built runtime image before publishing
+        if: contains(fromJSON('["edge-gateway", "control-api", "realtime", "worker"]'), matrix.target)
+        env:
+          TARGET: ${{ matrix.target }}
+          IMAGE_TAGS: ${{ steps.meta.outputs.tags }}
+        run: |
+          first_tag="${IMAGE_TAGS%%$'\n'*}"
+          node scripts/smoke-built-image.mjs "$TARGET" "$first_tag"
+
+      - name: Push verified local image tags
+        if: contains(fromJSON('["edge-gateway", "control-api", "realtime", "worker"]'), matrix.target)
+        env:
+          IMAGE_TAGS: ${{ steps.meta.outputs.tags }}
+        run: |
+          set -euo pipefail
+          while IFS= read -r tag; do
+            if [[ -n "$tag" ]]; then docker push "$tag"; fi
+          done <<< "$IMAGE_TAGS"
 
   release:
     name: Build GitHub Release assets

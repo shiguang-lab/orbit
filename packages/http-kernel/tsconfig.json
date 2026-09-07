@@ -13,9 +13,7 @@
     "emitDecoratorMetadata": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["../core-domain/src/*"],
-      "@shiguang-gateway/open-sse": ["../open-sse"],
-      "@shiguang-gateway/open-sse/*": ["../open-sse/*"]
+      "@/*": ["../core-domain/src/*"]
     }
   },
   "include": ["src"]
