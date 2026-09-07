@@ -25,12 +25,12 @@ cd /volume1/docker/shiguang-gateway
 # 将本仓库的 docker-compose.yml、.env.example 与 deploy/ 目录复制到此目录
 cp .env.example .env
 vi .env   # 设置六个 SHIGUANG_GATEWAY_*_IMAGE 及 JWT/API key/加密密钥
-docker build --target console -t shiguang-gateway-console:local .
-docker build --target gateway -t shiguang-gateway-gateway:local .
-docker build --target control -t shiguang-gateway-control:local .
-docker build --target realtime -t shiguang-gateway-realtime:local .
-docker build --target worker -t shiguang-gateway-worker:local .
-docker build --target importer -t shiguang-gateway-importer:local .
+docker build --target console -t orbit-console:local .
+docker build --target gateway -t orbit-gateway:local .
+docker build --target control -t orbit-control:local .
+docker build --target realtime -t orbit-realtime:local .
+docker build --target worker -t orbit-worker:local .
+docker build --target importer -t orbit-importer:local .
 docker compose up -d
 docker compose ps
 docker compose logs -f shiguang-gateway-gateway

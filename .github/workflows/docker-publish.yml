@@ -1,4 +1,4 @@
-name: Publish ShiguangGateway Independent image
+name: Publish Orbit images
 
 on:
   push:
@@ -20,7 +20,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  IMAGE_PREFIX: ghcr.io/shiguang-lab/shiguang-gateway
+  IMAGE_PREFIX: ghcr.io/shiguang-lab/orbit
 
 jobs:
   verify:
@@ -154,7 +154,7 @@ jobs:
           provenance: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: |
-            org.opencontainers.image.title=ShiguangGateway Independent
+            org.opencontainers.image.title=Orbit
             org.opencontainers.image.source=https://github.com/shiguang-lab/shiguang-gateway
             org.opencontainers.image.revision=${{ github.sha }}
           cache-from: type=gha,scope=shiguang-gateway-${{ matrix.target }}
@@ -200,17 +200,17 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p release-assets/nas-deploy
-          git archive --format=tar.gz --prefix="shiguang-gateway-${VERSION}/" HEAD \
-            -o "release-assets/shiguang-gateway-${VERSION}.source.tar.gz"
-          git archive --format=zip --prefix="shiguang-gateway-${VERSION}/" HEAD \
-            -o "release-assets/shiguang-gateway-${VERSION}.source.zip"
+          git archive --format=tar.gz --prefix="orbit-${VERSION}/" HEAD \
+            -o "release-assets/orbit-${VERSION}.source.tar.gz"
+          git archive --format=zip --prefix="orbit-${VERSION}/" HEAD \
+            -o "release-assets/orbit-${VERSION}.source.zip"
           cp docker-compose.yml .env.example deploy/NAS-DEPLOY.md release-assets/nas-deploy/
           mkdir -p release-assets/nas-deploy/deploy/postgres-init
           cp deploy/docker-compose.infrastructure.yml deploy/.env.infrastructure.example release-assets/nas-deploy/deploy/
           cp deploy/postgres-init/*.sql release-assets/nas-deploy/deploy/postgres-init/
-          tar -czf "release-assets/shiguang-gateway-${VERSION}-nas-deploy.tar.gz" \
+          tar -czf "release-assets/orbit-${VERSION}-nas-deploy.tar.gz" \
             -C release-assets/nas-deploy .
-          (cd release-assets && sha256sum shiguang-gateway-*.source.tar.gz shiguang-gateway-*.source.zip shiguang-gateway-*-nas-deploy.tar.gz > SHA256SUMS.txt)
+          (cd release-assets && sha256sum orbit-*.source.tar.gz orbit-*.source.zip orbit-*-nas-deploy.tar.gz > SHA256SUMS.txt)
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -218,23 +218,23 @@ jobs:
           tag_name: ${{ github.ref_name }}
           generate_release_notes: true
           body: |
-            ## Shiguang Gateway
+            ## Orbit
 
             Container images (one per deployable service):
 
-            `ghcr.io/shiguang-lab/shiguang-gateway-console:${{ github.ref_name }}`
-            `ghcr.io/shiguang-lab/shiguang-gateway-gateway:${{ github.ref_name }}`
-            `ghcr.io/shiguang-lab/shiguang-gateway-control:${{ github.ref_name }}`
-            `ghcr.io/shiguang-lab/shiguang-gateway-realtime:${{ github.ref_name }}`
-            `ghcr.io/shiguang-lab/shiguang-gateway-worker:${{ github.ref_name }}`
-            `ghcr.io/shiguang-lab/shiguang-gateway-importer:${{ github.ref_name }}`
+            `ghcr.io/shiguang-lab/orbit-console:${{ github.ref_name }}`
+            `ghcr.io/shiguang-lab/orbit-gateway:${{ github.ref_name }}`
+            `ghcr.io/shiguang-lab/orbit-control:${{ github.ref_name }}`
+            `ghcr.io/shiguang-lab/orbit-realtime:${{ github.ref_name }}`
+            `ghcr.io/shiguang-lab/orbit-worker:${{ github.ref_name }}`
+            `ghcr.io/shiguang-lab/orbit-importer:${{ github.ref_name }}`
 
             NAS deployment downloads the `-nas-deploy.tar.gz` asset, sets all six
             `SHIGUANG_GATEWAY_*_IMAGE` variables and the stable encryption/auth secrets,
             then runs `docker compose pull && docker compose up -d`.
           files: |
-            release-assets/shiguang-gateway-${{ github.ref_name }}.source.tar.gz
-            release-assets/shiguang-gateway-${{ github.ref_name }}.source.zip
-            release-assets/shiguang-gateway-${{ github.ref_name }}-nas-deploy.tar.gz
+            release-assets/orbit-${{ github.ref_name }}.source.tar.gz
+            release-assets/orbit-${{ github.ref_name }}.source.zip
+            release-assets/orbit-${{ github.ref_name }}-nas-deploy.tar.gz
             release-assets/SHA256SUMS.txt
           fail_on_unmatched_files: true

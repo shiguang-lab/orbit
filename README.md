@@ -95,12 +95,12 @@ pnpm dev
 分别构建 `linux/amd64` 与 `linux/arm64` 多架构镜像：
 
 ```text
-ghcr.io/shiguang-lab/shiguang-gateway-console:<tag-or-digest>
-ghcr.io/shiguang-lab/shiguang-gateway-gateway:<tag-or-digest>
-ghcr.io/shiguang-lab/shiguang-gateway-control:<tag-or-digest>
-ghcr.io/shiguang-lab/shiguang-gateway-realtime:<tag-or-digest>
-ghcr.io/shiguang-lab/shiguang-gateway-worker:<tag-or-digest>
-ghcr.io/shiguang-lab/shiguang-gateway-importer:<tag-or-digest>
+ghcr.io/shiguang-lab/orbit-console:<tag-or-digest>
+ghcr.io/shiguang-lab/orbit-gateway:<tag-or-digest>
+ghcr.io/shiguang-lab/orbit-control:<tag-or-digest>
+ghcr.io/shiguang-lab/orbit-realtime:<tag-or-digest>
+ghcr.io/shiguang-lab/orbit-worker:<tag-or-digest>
+ghcr.io/shiguang-lab/orbit-importer:<tag-or-digest>
 ```
 
 推送 `v*` tag 还会自动创建 GitHub Release，附带源码 tar/zip、包含 `deploy/` 目录的 NAS

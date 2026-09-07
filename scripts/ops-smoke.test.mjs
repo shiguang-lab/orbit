@@ -45,6 +45,17 @@ test("ops scripts have valid Bash syntax and current usage paths", () => {
   }
 });
 
+test("published image repositories use the Orbit namespace", () => {
+  const workflow = readFileSync(join(repoRoot, ".github", "workflows", "docker-publish.yml"), "utf8");
+  const compose = readFileSync(join(repoRoot, "docker-compose.yml"), "utf8");
+  const rollback = readFileSync(join(opsDir, "rollback.sh"), "utf8");
+  assert.match(workflow, /IMAGE_PREFIX: ghcr\.io\/shiguang-lab\/orbit\b/);
+  assert.doesNotMatch(`${workflow}\n${compose}\n${rollback}`, /ghcr\.io\/shiguang-lab\/shiguang-gateway/);
+  for (const service of ["console", "gateway", "control", "realtime", "worker", "importer"]) {
+    assert.match(compose, new RegExp(`orbit-${service}:local`));
+  }
+});
+
 test("rollback applies one split image family and does not start the importer", () => {
   const fixture = mkdtempSync(join(tmpdir(), "shiguang-ops-"));
   try {
@@ -66,7 +77,7 @@ test("rollback applies one split image family and does not start the importer", 
     assert.equal(result.status, 0, result.stderr);
     const output = readFileSync(log, "utf8");
     for (const service of ["console", "gateway", "control", "realtime", "worker", "importer"]) {
-      assert.match(output, new RegExp(`-${service}:v3\\.8\\.50`));
+      assert.match(output, new RegExp(`ghcr\\.io/shiguang-lab/orbit-${service}:v3\\.8\\.50`));
     }
     assert.match(output, /ARGS=compose .* --profile migration pull/);
     assert.match(output, /ARGS=compose .* up -d --no-build/);

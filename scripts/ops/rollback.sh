@@ -18,7 +18,7 @@ The image variables apply to this invocation only; set the same six values in
 
 Defaults:
   --compose-file  ./docker-compose.yml
-  --image-prefix  ghcr.io/shiguang-lab/shiguang-gateway
+  --image-prefix  ghcr.io/shiguang-lab/orbit
 
 Examples:
   scripts/ops/rollback.sh v3.8.50
@@ -27,7 +27,7 @@ EOF
 
 RELEASE_REF=""
 COMPOSE_FILE="${SHIGUANG_GATEWAY_COMPOSE_FILE:-$REPO_ROOT/docker-compose.yml}"
-IMAGE_PREFIX="${SHIGUANG_GATEWAY_IMAGE_PREFIX:-ghcr.io/shiguang-lab/shiguang-gateway}"
+IMAGE_PREFIX="${SHIGUANG_GATEWAY_IMAGE_PREFIX:-ghcr.io/shiguang-lab/orbit}"
 
 while [ $# -gt 0 ]; do
   case "$1" in
