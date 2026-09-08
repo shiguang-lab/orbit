@@ -90,9 +90,8 @@ pnpm dev
 
 ## 镜像发布与 NAS 部署
 
-仓库已提供 GHCR 发布流程：推送 `main` 会更新 `latest`，推送 `v*` tag
-会发布版本 tag、提交 SHA tag，并同步更新 `latest`。工作流按 Dockerfile 的显式 target
-分别构建 `linux/amd64` 与 `linux/arm64` 多架构镜像：
+仓库只通过 `v*` Git Tag 触发正式发布；推送 `main` 不发布镜像。工作流按 Dockerfile 的显式
+target 构建 `linux/amd64` 镜像，发布版本 Tag、提交 SHA Tag，并同步更新 `latest`：
 
 ```text
 ghcr.io/shiguang-lab/orbit-console:<tag-or-digest>
@@ -101,10 +100,12 @@ ghcr.io/shiguang-lab/orbit-control:<tag-or-digest>
 ghcr.io/shiguang-lab/orbit-realtime:<tag-or-digest>
 ghcr.io/shiguang-lab/orbit-worker:<tag-or-digest>
 ghcr.io/shiguang-lab/orbit-importer:<tag-or-digest>
+ghcr.io/shiguang-lab/orbit-cliproxy-manager:<tag-or-digest>
 ```
 
-推送 `v*` tag 还会自动创建 GitHub Release，附带源码 tar/zip、包含 `deploy/` 目录的 NAS
-部署包和 `SHA256SUMS.txt` 校验文件；Release 中六个镜像的 tag 与 Git tag 一致。
+七个镜像全部发布成功后，工作流自动创建 GitHub Release，附带源码 tar/zip、包含 `deploy/`
+目录的 NAS 部署包和 `SHA256SUMS.txt` 校验文件。发布前检查、Tag 创建、结果核对和 NAS 更新步骤见
+[`RELEASE.md`](./RELEASE.md)。
 
 每个应用镜像只对应一个显式 target，运行数据写入独立数据卷，
 不需要在 NAS 安装 Node/pnpm。首次部署前执行 importer 导入冷快照，完整步骤见

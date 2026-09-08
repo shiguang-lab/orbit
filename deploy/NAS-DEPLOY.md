@@ -24,7 +24,7 @@ mkdir -p /volume1/docker/orbit
 cd /volume1/docker/orbit
 # 将本仓库的 docker-compose.yml、.env.example 与 deploy/ 目录复制到此目录
 cp .env.example .env
-vi .env   # 设置六个 ORBIT_*_IMAGE 及 JWT/API key/加密密钥
+vi .env   # 设置七个 ORBIT_*_IMAGE 及 JWT/API key/加密密钥
 docker build --target console -t orbit-console:local .
 docker build --target gateway -t orbit-gateway:local .
 docker build --target control -t orbit-control:local .
@@ -139,7 +139,7 @@ NAS 实测基线（2026-09-05 最新冷快照）为 15 个连接（14 个启用�
 
 ## 升级与回滚
 
-生产使用本仓库构建并推送的六个不可变镜像 tag/digest。将 `.env` 中六个
+生产使用本仓库构建并推送的七个不可变镜像 tag/digest。将 `.env` 中七个
 `ORBIT_*_IMAGE` 分别设置为对应 registry 地址后执行：
 
 ```bash
@@ -147,16 +147,16 @@ docker compose pull
 docker compose up -d --remove-orphans
 ```
 
-按同一个已发布 tag 回滚六个 split 镜像时，在仓库根执行：
+按同一个已发布 tag 回滚七个应用镜像时，在仓库根执行：
 
 ```bash
 scripts/ops/rollback.sh <previous-release-tag>
 ```
 
-该脚本会设置六个 compose image 变量、拉取完整镜像族，并只重建常驻的 console、edge、control、
-realtime 与 worker；migration profile 下的 importer 只拉取、不启动。变量只作用于本次脚本调用，
-后续手工执行 `docker compose up` 前还应把同一 tag 的六个地址持久化到 `.env`。若按 digest 固定镜像，六个
-repository 的 digest 各不相同，应直接分别更新 `.env` 中六个 `ORBIT_*_IMAGE`，不能向
+该脚本会设置应用 compose 的镜像变量、拉取完整镜像族，并只重建常驻的 console、edge、control、
+realtime、worker 和 cliproxy-manager；migration profile 下的 importer 只拉取、不启动。变量只作用于本次脚本调用，
+后续手工执行 `docker compose up` 前还应把同一 tag 的七个地址持久化到 `.env`。若按 digest 固定镜像，七个
+repository 的 digest 各不相同，应直接分别更新 `.env` 中七个 `ORBIT_*_IMAGE`，不能向
 脚本传一个共享 digest。升级前后保留 `orbit_data` volume 和 importer manifest，禁止用空
 volume 覆盖现有数据。
 

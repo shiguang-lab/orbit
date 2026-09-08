@@ -235,7 +235,7 @@ jobs:
             `ghcr.io/shiguang-lab/orbit-importer:${{ github.ref_name }}`
             `ghcr.io/shiguang-lab/orbit-cliproxy-manager:${{ github.ref_name }}`
 
-            NAS deployment downloads the `-nas-deploy.tar.gz` asset, sets the six runtime image variables and optional manager image,
+            NAS deployment downloads the `-nas-deploy.tar.gz` asset, sets the seven application image variables,
             preserves the stable encryption/auth secrets,
             then runs `docker compose pull && docker compose up -d`.
           files: |
