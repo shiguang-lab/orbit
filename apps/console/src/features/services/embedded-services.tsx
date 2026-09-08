@@ -84,7 +84,7 @@ const useStyles = createStyles(({ token }) => ({
     flex: 1,
     display: "flex",
     flexDirection: "column",
-    gap: 8,
+    gap: 12,
     minHeight: 0,
     overflowY: "auto",
     paddingRight: 2,
@@ -458,8 +458,8 @@ function OtherEmbeddedService({ activeTab }: { activeTab: ServiceTab }) {
       </Card>
 
       {/* ROW 1: 服务运行时状态 (Left 50%) + 自动化与安全凭据 (Right 50%) (100% Equal Height & Full Width) */}
-      <Row gutter={[10, 10]} align="stretch" style={{ width: "100%", margin: 0 }}>
-        <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
+      <Row gutter={[12, 12]} align="stretch">
+        <Col xs={24} md={12} style={{ display: "flex" }}>
           <Card
             title="服务运行时状态"
             className={styles.sectionCard}
@@ -606,7 +606,7 @@ function OtherEmbeddedService({ activeTab }: { activeTab: ServiceTab }) {
           </Card>
         </Col>
 
-        <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
+        <Col xs={24} md={12} style={{ display: "flex" }}>
           <Card
             title="自动化与安全凭据"
             className={styles.sectionCard}
@@ -661,10 +661,10 @@ function OtherEmbeddedService({ activeTab }: { activeTab: ServiceTab }) {
       </Row>
 
       {/* ROW 2: 业务主要功能 (Left 50%) + 辅助配置/接入方式 (Right 50%) (100% Equal Height & Full Width) */}
-      <Row gutter={[10, 10]} align="stretch" style={{ width: "100%", margin: 0 }}>
+      <Row gutter={[12, 12]} align="stretch">
         {activeTab === "9router" && (
           <>
-            <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
+            <Col xs={24} md={12} style={{ display: "flex" }}>
               <Card
                 title="9Router 内嵌控制台"
                 className={styles.sectionCard}
@@ -698,7 +698,7 @@ function OtherEmbeddedService({ activeTab }: { activeTab: ServiceTab }) {
               </Card>
             </Col>
 
-            <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
+            <Col xs={24} md={12} style={{ display: "flex" }}>
               <Card
                 title="9Router 已发现模型"
                 className={styles.sectionCard}
@@ -745,7 +745,7 @@ function OtherEmbeddedService({ activeTab }: { activeTab: ServiceTab }) {
 
         {activeTab === "mux" && (
           <>
-            <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
+            <Col xs={24} md={12} style={{ display: "flex" }}>
               <Card
                 title="Mux 多路复用流控制中心"
                 className={styles.sectionCard}
@@ -759,7 +759,7 @@ function OtherEmbeddedService({ activeTab }: { activeTab: ServiceTab }) {
                 />
               </Card>
             </Col>
-            <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
+            <Col xs={24} md={12} style={{ display: "flex" }}>
               <Card
                 title="并发流与信道负载均衡"
                 className={styles.sectionCard}
@@ -780,7 +780,7 @@ function OtherEmbeddedService({ activeTab }: { activeTab: ServiceTab }) {
 
         {activeTab === "bifrost" && (
           <>
-            <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
+            <Col xs={24} md={12} style={{ display: "flex" }}>
               <Card
                 title="Bifrost 隧道连接网格"
                 className={styles.sectionCard}
@@ -794,7 +794,7 @@ function OtherEmbeddedService({ activeTab }: { activeTab: ServiceTab }) {
                 />
               </Card>
             </Col>
-            <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
+            <Col xs={24} md={12} style={{ display: "flex" }}>
               <Card
                 title="跨境加速与握手优化策略"
                 className={styles.sectionCard}
@@ -815,7 +815,7 @@ function OtherEmbeddedService({ activeTab }: { activeTab: ServiceTab }) {
 
         {activeTab === "dario" && (
           <>
-            <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
+            <Col xs={24} md={12} style={{ display: "flex" }}>
               <Card
                 title="Dario 凭据隔离凭证库"
                 className={styles.sectionCard}
@@ -829,7 +829,7 @@ function OtherEmbeddedService({ activeTab }: { activeTab: ServiceTab }) {
                 />
               </Card>
             </Col>
-            <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
+            <Col xs={24} md={12} style={{ display: "flex" }}>
               <Card
                 title="OAuth 会话防劫持与 Token 自动续期"
                 className={styles.sectionCard}
@@ -909,6 +909,8 @@ export function EmbeddedServicesPage() {
       <Tabs
         activeKey={activeTab}
         onChange={(tab) => setParams({ tab })}
+        tabBarStyle={{ marginBottom: 0 }}
+        style={{ marginBottom: 0 }}
         items={Object.entries(SERVICES_META).map(([key, meta]) => ({
           key,
           label: (
@@ -918,7 +920,6 @@ export function EmbeddedServicesPage() {
             </span>
           ),
         }))}
-        style={{ marginBottom: 0 }}
       />
       {activeTab === "cliproxy" ? (
         <CliproxyInstances

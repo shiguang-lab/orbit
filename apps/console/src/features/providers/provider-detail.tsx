@@ -162,13 +162,29 @@ function connectionStatus(connection: ProviderConnection, t: (key: string, fallb
   return <Tag bordered={false} className={className} color="processing">{t("providers.statusUntested", "未测试")}</Tag>;
 }
 
-function maskAccountName(value: string | null | undefined): string {
+export function cleanAccountName(value: string | null | undefined): string {
   const raw = String(value ?? "").trim();
-  if (!raw || !raw.includes("@")) return raw;
-  const at = raw.lastIndexOf("@");
-  const user = raw.slice(0, at);
-  const domain = raw.slice(at + 1);
-  if (user.length <= 2) return raw;
+  if (!raw) return "";
+  if (raw.includes("@")) {
+    let s = raw.replace(/\.json$/i, "");
+    s = s.replace(/-(?:plus|pro|team|enterprise|free|default)$/i, "");
+    const atIndex = s.lastIndexOf("@");
+    const user = s.slice(0, atIndex);
+    const domain = s.slice(atIndex + 1);
+    const cleanedUser = user.replace(/^[a-zA-Z0-9]+-[a-f0-9]{4,32}-/, "");
+    const cleanedDomain = domain.replace(/\.json$/i, "").replace(/-(?:plus|pro|team|enterprise|free|default)$/i, "");
+    return `${cleanedUser}@${cleanedDomain}`;
+  }
+  return raw.replace(/\.json$/i, "").replace(/^[a-zA-Z0-9]+-[a-f0-9]{4,32}-/, "");
+}
+
+function maskAccountName(value: string | null | undefined): string {
+  const cleaned = cleanAccountName(value);
+  if (!cleaned || !cleaned.includes("@")) return cleaned;
+  const at = cleaned.lastIndexOf("@");
+  const user = cleaned.slice(0, at);
+  const domain = cleaned.slice(at + 1);
+  if (user.length <= 2) return cleaned;
   if (user.length <= 5) return `${user.slice(0, 2)}***@${domain}`;
   const maskedUser = `${user.slice(0, 3)}***${user.slice(-2)}`;
   return `${maskedUser}@${domain}`;
@@ -316,7 +332,16 @@ export default function ProviderDetailPage() {
   const visibleConnections = useMemo(() => {
     const query = accountSearch.trim().toLocaleLowerCase();
     return connections.filter((connection) => {
-      const matchesQuery = !query || [connection.name, connection.id, connection.authType].some((value) => String(value ?? "").toLocaleLowerCase().includes(query));
+      const specific = (
+        typeof connection.providerSpecificData === "object" && connection.providerSpecificData !== null
+          ? connection.providerSpecificData
+          : typeof connection.providerSpecificData === "string"
+            ? (() => { try { return JSON.parse(connection.providerSpecificData); } catch { return {}; } })()
+            : {}
+      ) as Record<string, unknown>;
+      const specificEmail = cleanAccountName(specific?.accountEmail as string | undefined);
+      const cleanName = cleanAccountName(connection.name);
+      const matchesQuery = !query || [connection.name, cleanName, specificEmail, connection.id, connection.authType].some((value) => String(value ?? "").toLocaleLowerCase().includes(query));
       const isError = getConnectionHealth(connection) === "error";
       const matchesHealth = healthFilter === "all" || (healthFilter === "active" && connection.isActive !== false && !isError) || (healthFilter === "error" && isError) || (healthFilter === "disabled" && connection.isActive === false) || (healthFilter === "banned" && connection.testStatus === "banned") || (healthFilter === "exhausted" && connection.testStatus === "credits_exhausted");
       return matchesQuery && matchesHealth;
@@ -1100,6 +1125,11 @@ export default function ProviderDetailPage() {
                 {t("providers.connectionsCount", { count: connections.length })}
               </Tag>
             )}
+            {isCliproxyManaged && (
+              <Tag color="cyan" style={{ fontSize: 12, padding: "2px 8px" }}>
+                嵌入式服务
+              </Tag>
+            )}
             {info?.notice?.apiKeyUrl && (
               <a
                 href={info.notice.apiKeyUrl}
@@ -1114,31 +1144,7 @@ export default function ProviderDetailPage() {
           </div>
         </div>
 
-        {isCliproxyManaged ? (
-          <Card
-            className={styles.protocol}
-            title={node?.name ?? "CLIProxyAPI 节点端点"}
-            extra={<Tag color="cyan">嵌入式服务</Tag>}
-          >
-            <Descriptions size="small" column={{ xs: 1, sm: 2 }}>
-              <Descriptions.Item label="节点名称">{node?.name ?? providerId}</Descriptions.Item>
-              <Descriptions.Item label="API 类型">{node?.apiType ?? "chat"}</Descriptions.Item>
-              <Descriptions.Item label="Base URL">{node?.baseUrl ?? "自动探测"}</Descriptions.Item>
-              <Descriptions.Item label="模型路径">{node?.modelsPath ?? "/v1/models"}</Descriptions.Item>
-            </Descriptions>
-            <Alert
-              type="info"
-              showIcon
-              style={{ marginTop: 12 }}
-              message="此端点的账号与可用模型由对应节点自动上报同步；如需挂载新账号或重新授权，请前往「嵌入式服务」管理。"
-              action={
-                <Button size="small" type="primary" ghost onClick={() => navigate("/dashboard/services")}>
-                  前往嵌入式服务
-                </Button>
-              }
-            />
-          </Card>
-        ) : kind === "compatible" ? (
+        {isCliproxyManaged ? null : kind === "compatible" ? (
           <Card className={styles.protocol} title={providerId.startsWith("anthropic-compatible-") ? "Anthropic 兼容端点" : "OpenAI 兼容端点"} extra={<Tag color="orange">兼容协议</Tag>}>
             <Descriptions size="small" column={{ xs: 1, sm: 2 }}>
               <Descriptions.Item label="端点名称">{node?.name ?? info?.name ?? providerId}</Descriptions.Item>
@@ -1378,7 +1384,18 @@ export default function ProviderDetailPage() {
                     className={styles.headerActionButton}
                     type="primary"
                     icon={<MaterialIcon name="open_in_new" />}
-                    onClick={() => navigate("/dashboard/services")}
+                    onClick={() => {
+                      const cliproxyNodeId = providerId.startsWith("openai-compatible-cliproxy-")
+                        ? providerId.replace("openai-compatible-cliproxy-", "")
+                        : node?.prefix?.startsWith("cpa-")
+                          ? node.prefix.replace(/^cpa-/, "")
+                          : "";
+                      if (cliproxyNodeId) {
+                        navigate(`/dashboard/providers/services?tab=cliproxy&instance=${encodeURIComponent(cliproxyNodeId)}`);
+                      } else {
+                        navigate("/dashboard/providers/services?tab=cliproxy");
+                      }
+                    }}
                   >
                     管理节点账号
                   </Button>
@@ -1570,11 +1587,18 @@ export default function ProviderDetailPage() {
                   <div className={styles.connectionNameRow}>
                     <MaterialIcon className={styles.connectionNameIcon} name="lock" size={16} />
                     {(() => {
-                      const specific = row.providerSpecificData as Record<string, unknown> | undefined;
+                      const specific = (
+                        typeof row.providerSpecificData === "object" && row.providerSpecificData !== null
+                          ? row.providerSpecificData
+                          : typeof row.providerSpecificData === "string"
+                            ? (() => { try { return JSON.parse(row.providerSpecificData); } catch { return {}; } })()
+                            : {}
+                      ) as Record<string, unknown>;
                       const rawAccount = (specific?.accountEmail as string | undefined) || row.name;
+                      const cleanAccount = cleanAccountName(rawAccount);
                       return (
-                        <Typography.Text strong ellipsis={{ tooltip: rawAccount }}>
-                          {maskAccountName(rawAccount)}
+                        <Typography.Text strong ellipsis={{ tooltip: cleanAccount }}>
+                          {maskAccountName(cleanAccount)}
                         </Typography.Text>
                       );
                     })()}

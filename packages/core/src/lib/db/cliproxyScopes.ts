@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { getDbInstance } from "./core.ts";
 import { invalidateDbCache, invalidateModelCatalogCache } from "./readCache.ts";
 import { normalizeSyncedAvailableModels } from "./models/synced.ts";
+import { isImageModelId } from "../providerModels/syncedEndpointRouting.ts";
 
 export function cliproxyScopeId(instanceId: string): string {
   return `openai-compatible-cliproxy-${instanceId}`;
@@ -24,6 +25,19 @@ interface CatalogProcess {
   healthy: boolean;
   providerExpose?: boolean;
   credentials?: CatalogCredential[] | null;
+}
+
+export function extractAccountEmail(name: string | null | undefined): string | null {
+  const raw = String(name ?? "").trim();
+  if (!raw || !raw.includes("@")) return null;
+  let s = raw.replace(/\.json$/i, "");
+  s = s.replace(/-(?:plus|pro|team|enterprise|free|default)$/i, "");
+  const atIndex = s.lastIndexOf("@");
+  const user = s.slice(0, atIndex);
+  const domain = s.slice(atIndex + 1);
+  const cleanedUser = user.replace(/^[a-zA-Z0-9]+-[a-f0-9]{4,32}-/, "");
+  const cleanedDomain = domain.replace(/\.json$/i, "").replace(/-(?:plus|pro|team|enterprise|free|default)$/i, "");
+  return `${cleanedUser}@${cleanedDomain}`;
 }
 
 // Called in the service-node report transaction. One provider node per manager,
@@ -69,16 +83,19 @@ export function syncCliproxyScope(
         credential.routable &&
         !credential.disabled;
       const baseUrl = `${node.endpoint}/v1/instances/${encodeURIComponent(process.id)}/credentials/${encodeURIComponent(credential.id)}/inference/v1`;
+      const resolvedEmail =
+        extractAccountEmail(credential.email) ||
+        extractAccountEmail(credential.name) ||
+        (credential.email && credential.email.trim() ? credential.email.trim() : null);
       const accountName =
-        credential.email && credential.email.trim()
-          ? credential.email.trim()
-          : credential.name;
+        resolvedEmail ||
+        credential.name.replace(/\.json$/i, "").replace(/^[a-zA-Z0-9]+-[a-f0-9]{4,32}-/, "");
       const metadata = JSON.stringify({
         cliproxyManagerId: node.id,
         cliproxyProcessId: process.id,
         cliproxyCredentialId: credential.id,
         credentialName: credential.name,
-        accountEmail: credential.email || null,
+        accountEmail: resolvedEmail,
         upstreamProvider: credential.provider,
         baseUrl,
         apiType: "chat",
@@ -92,14 +109,18 @@ export function syncCliproxyScope(
           provider_specific_data=excluded.provider_specific_data, updated_at=excluded.updated_at`,
       ).run(id, provider, accountName, active ? 1 : 0, metadata, now, now);
       const models = normalizeSyncedAvailableModels(
-        credential.models.map((model) => ({
-          id: model,
-          name: model,
-          source: "imported",
-          apiFormat: "openai",
-          supportedEndpoints: ["chat", "responses"],
-        })),
+        credential.models.map((model) => {
+          const isImage = isImageModelId(model);
+          return {
+            id: model,
+            name: model,
+            source: "imported",
+            apiFormat: isImage ? "images" : "openai",
+            supportedEndpoints: isImage ? ["images", "images/generations"] : ["chat", "responses"],
+          };
+        }),
       );
+
       db.prepare(
         "INSERT OR REPLACE INTO key_value (namespace,key,value) VALUES ('syncedAvailableModels',?,?)",
       ).run(`${provider}:${id}`, JSON.stringify(active ? models : []));

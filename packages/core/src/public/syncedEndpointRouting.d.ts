@@ -4,6 +4,8 @@ export type LocalSyncedEndpointRoute = {
   connectionIds: string[];
 };
 
+export function isImageModelId(modelId: string | null | undefined): boolean;
+
 export function resolveLocalSyncedEndpointRoute(
   modelStr: string,
   endpoint: "embeddings" | "images",

@@ -19,7 +19,9 @@ import {
   Row,
   Segmented,
   Select,
+  Skeleton,
   Space,
+  Spin,
   Switch,
   Table,
   Tabs,
@@ -29,6 +31,7 @@ import {
   Upload,
   theme,
 } from "antd";
+
 import { createStyles } from "antd-style";
 import {
   ApartmentOutlined,
@@ -787,10 +790,14 @@ export default function CliproxyInstances() {
     );
   };
   return (
-    <Space
-      direction="vertical"
-      size={20}
-      style={{ width: "100%", maxWidth: "100%", overflowX: "hidden" }}
+    <div
+      style={{
+        width: "100%",
+        maxWidth: "100%",
+        display: "flex",
+        flexDirection: "column",
+        gap: 12,
+      }}
     >
       {query.error && (
         <Alert type="error" showIcon message={query.error.message} />
@@ -879,10 +886,9 @@ export default function CliproxyInstances() {
           )}
           {node && instance ? (
             <>
-              <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%" }}>
-                        {/* ROW 1: 服务运行时状态 (Left 50%) + 自动化与安全凭据 (Right 50%) (100% Equal Height & Full Width) */}
-                        <Row gutter={[10, 10]} align="stretch" style={{ width: "100%", margin: 0 }}>
-                          <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
+              {/* ROW 1: 服务运行时状态 (Left 50%) + 自动化与安全凭据 (Right 50%) (100% Equal Height & Full Width) */}
+              <Row gutter={[12, 12]} align="stretch">
+                <Col xs={24} md={12} style={{ display: "flex" }}>
                             <Card
                               title={tt("服务运行时状态", "Service Runtime Status")}
                               className={styles.sectionCard}
@@ -1049,7 +1055,7 @@ export default function CliproxyInstances() {
                             </Card>
                           </Col>
 
-                          <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
+                          <Col xs={24} md={12} style={{ display: "flex" }}>
                             <Card
                               title={tt("自动化与安全凭据", "Automation & Security")}
                               className={styles.sectionCard}
@@ -1107,8 +1113,8 @@ export default function CliproxyInstances() {
                         </Row>
 
                         {/* ROW 2: 已挂载 CLI 凭据与账号健康度 (Left 50%) + 智能模型映射 (Right 50%) */}
-                        <Row gutter={[10, 10]} align="stretch" style={{ width: "100%", margin: 0 }}>
-                          <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
+                        <Row gutter={[12, 12]} align="stretch">
+                          <Col xs={24} md={12} style={{ display: "flex" }}>
                             <Card
                               title={tt("已挂载 CLI 凭据与账号健康度", "Mounted CLI Credentials & Account Health")}
                               className={styles.sectionCard}
@@ -1185,7 +1191,7 @@ export default function CliproxyInstances() {
                             </Card>
                           </Col>
 
-                          <Col xs={24} md={12} style={{ display: "flex", padding: 5 }}>
+                          <Col xs={24} md={12} style={{ display: "flex" }}>
                             <Card
                               title={tt("智能模型映射", "Smart Model Mapping")}
                               className={styles.sectionCard}
@@ -1286,7 +1292,6 @@ export default function CliproxyInstances() {
                             )}
                           </pre>
                         </Card>
-                      </div>
 
               {/* Modal for Mount Credential */}
               <Modal
@@ -1729,16 +1734,18 @@ export default function CliproxyInstances() {
                 </div>
               </Modal>
             </>
+          ) : query.isLoading ? (
+            <Card style={{ marginTop: 12, borderRadius: 10 }}>
+              <Skeleton active avatar paragraph={{ rows: 6 }} />
+            </Card>
           ) : (
             <Empty
               description={
-                query.isLoading
-                  ? tt("正在加载实例", "Loading instance")
-                  : node
-                    ? node.online
-                      ? tt("未检测到 CLIProxyAPI 进程", "No CLIProxyAPI process detected")
-                      : tt("实例尚未连接", "Instance is disconnected")
-                    : tt("实例不存在", "Instance not found")
+                node
+                  ? node.online
+                    ? tt("未检测到 CLIProxyAPI 进程", "No CLIProxyAPI process detected")
+                    : tt("实例尚未连接", "Instance is disconnected")
+                  : tt("实例不存在", "Instance not found")
               }
             >
               {node?.online && (
@@ -1748,6 +1755,7 @@ export default function CliproxyInstances() {
               )}
             </Empty>
           )}
+
         </>
       ) : (
         <>
@@ -1829,7 +1837,17 @@ export default function CliproxyInstances() {
               rowKey="id"
               dataSource={rows}
               loading={query.isLoading}
+              locale={{
+                emptyText: query.isLoading ? (
+                  <div style={{ padding: "40px 0" }}>
+                    <Spin tip={tt("正在加载实例...", "Loading instances...")} />
+                  </div>
+                ) : (
+                  <Empty description={tt("暂无实例", "No instances")} />
+                ),
+              }}
               pagination={{ pageSize: 10, hideOnSinglePage: true }}
+
               onRow={(item) => ({
                 onClick: () => openInstance(item),
                 style: { cursor: "pointer" },
@@ -2032,9 +2050,54 @@ export default function CliproxyInstances() {
                 },
               ]}
             />
+          ) : query.isLoading ? (
+            <div className={styles.instanceGrid}>
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className={styles.instanceCard} style={{ cursor: "default" }}>
+                  <div className={styles.cardHeader}>
+                    <Flex align="center" gap={12} style={{ flex: 1, minWidth: 0 }}>
+                      <Skeleton.Avatar active shape="square" size={36} />
+                      <Flex vertical gap={6} style={{ flex: 1, minWidth: 0 }}>
+                        <Skeleton.Input active size="small" style={{ width: 130, height: 20 }} />
+                        <Skeleton.Input active size="small" style={{ width: 70, height: 16 }} />
+                      </Flex>
+                    </Flex>
+                    <Skeleton.Button active size="small" style={{ width: 46, height: 22 }} />
+                  </div>
+                  <div className={styles.cardBody}>
+                    <div className={styles.endpointBox}>
+                      <Skeleton.Input active size="small" style={{ width: "100%", height: 16 }} />
+                    </div>
+                    <div className={styles.metricsGrid}>
+                      <div className={styles.metricCell}>
+                        <Skeleton.Input active size="small" style={{ width: 32, height: 12 }} />
+                        <Skeleton.Input active size="small" style={{ width: 48, height: 16 }} />
+                      </div>
+                      <div className={styles.metricCell}>
+                        <Skeleton.Input active size="small" style={{ width: 32, height: 12 }} />
+                        <Skeleton.Input active size="small" style={{ width: 48, height: 16 }} />
+                      </div>
+                      <div className={styles.metricCell}>
+                        <Skeleton.Input active size="small" style={{ width: 32, height: 12 }} />
+                        <Skeleton.Input active size="small" style={{ width: 48, height: 16 }} />
+                      </div>
+                    </div>
+                  </div>
+                  <div className={styles.cardFooter}>
+                    <Skeleton.Input active size="small" style={{ width: 64, height: 16 }} />
+                    <Space size={6}>
+                      <Skeleton.Button active size="small" style={{ width: 48, height: 24 }} />
+                      <Skeleton.Button active size="small" style={{ width: 48, height: 24 }} />
+                      <Skeleton.Button active size="small" style={{ width: 48, height: 24 }} />
+                    </Space>
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : rows.length ? (
             <div className={styles.instanceGrid}>
               {rows.map((item) => {
+
                 const {
                   totalCredentials,
                   totalModels,
@@ -2290,14 +2353,9 @@ export default function CliproxyInstances() {
               })}
             </div>
           ) : (
-            <Empty
-              description={
-                query.isLoading
-                  ? tt("正在加载实例", "Loading instances")
-                  : tt("暂无实例", "No instances")
-              }
-            />
+            <Empty description={tt("暂无实例", "No instances")} />
           )}
+
         </>
       )}
       <Modal
@@ -2444,7 +2502,7 @@ export default function CliproxyInstances() {
           {detail?.text || tt("暂无记录", "No records")}
         </pre>
       </Drawer>
-    </Space>
+    </div>
   );
 }
 

@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-09-08T10:40:45.844Z",
+  "fetchedAt": "2026-09-08T14:22:05.651Z",
   "data": [
     {
       "slug": "tencent/fp8",
@@ -44,14 +44,6 @@
       "popularityRank": 4
     },
     {
-      "slug": "gmicloud/fp8",
-      "displayName": "gmicloud/fp8",
-      "modelCount": 6,
-      "totalTokens": 6429323575838,
-      "totalRequests": 213656931,
-      "popularityRank": 5
-    },
-    {
       "slug": "digitalocean",
       "displayName": "DigitalOcean",
       "byokEnabled": true,
@@ -65,7 +57,7 @@
       "modelCount": 3,
       "totalTokens": 6310078134205,
       "totalRequests": 575960276,
-      "popularityRank": 6
+      "popularityRank": 5
     },
     {
       "slug": "google-ai-studio",
@@ -82,7 +74,7 @@
       "modelCount": 17,
       "totalTokens": 5001938027543,
       "totalRequests": 388903968,
-      "popularityRank": 7
+      "popularityRank": 6
     },
     {
       "slug": "nvidia",
@@ -99,7 +91,7 @@
       "modelCount": 7,
       "totalTokens": 4081078654561,
       "totalRequests": 42666305,
-      "popularityRank": 8
+      "popularityRank": 7
     },
     {
       "slug": "claude-on-aws",
@@ -117,7 +109,23 @@
       "modelCount": 9,
       "totalTokens": 3420154020972,
       "totalRequests": 87000051,
+      "popularityRank": 8
+    },
+    {
+      "slug": "streamlake/fp8",
+      "displayName": "streamlake/fp8",
+      "modelCount": 3,
+      "totalTokens": 3331783597248,
+      "totalRequests": 48498518,
       "popularityRank": 9
+    },
+    {
+      "slug": "gmicloud/fp8",
+      "displayName": "gmicloud/fp8",
+      "modelCount": 4,
+      "totalTokens": 3133466996293,
+      "totalRequests": 167041150,
+      "popularityRank": 10
     },
     {
       "slug": "deepinfra/fp4",
@@ -125,7 +133,7 @@
       "modelCount": 7,
       "totalTokens": 2606080457136,
       "totalRequests": 88779641,
-      "popularityRank": 10
+      "popularityRank": 11
     },
     {
       "slug": "openai",
@@ -143,7 +151,7 @@
       "modelCount": 69,
       "totalTokens": 2134213217431,
       "totalRequests": 50602800,
-      "popularityRank": 11
+      "popularityRank": 12
     },
     {
       "slug": "morph/fp4",
@@ -151,7 +159,25 @@
       "modelCount": 2,
       "totalTokens": 1962643272360,
       "totalRequests": 31392765,
-      "popularityRank": 12
+      "popularityRank": 13
+    },
+    {
+      "slug": "alibaba",
+      "displayName": "Alibaba Cloud Int.",
+      "headquarters": "SG",
+      "statusPageUrl": "https://status.alibabacloud.com/",
+      "byokEnabled": true,
+      "dataPolicy": {
+        "training": false,
+        "retainsPrompts": true,
+        "termsOfServiceURL": "https://www.alibabacloud.com/help/en/legal/latest/alibaba-cloud-international-website-product-terms-of-service-v-3-8-0",
+        "privacyPolicyURL": "https://www.alibabacloud.com/help/en/legal/latest/alibaba-cloud-international-website-privacy-policy"
+      },
+      "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.alibabacloud.com/&size=256",
+      "modelCount": 39,
+      "totalTokens": 1870120521807,
+      "totalRequests": 212786347,
+      "popularityRank": 14
     },
     {
       "slug": "azure/us",
@@ -159,7 +185,7 @@
       "modelCount": 2,
       "totalTokens": 1869335071556,
       "totalRequests": 25074635,
-      "popularityRank": 13
+      "popularityRank": 15
     },
     {
       "slug": "meta",
@@ -176,7 +202,7 @@
       "modelCount": 6,
       "totalTokens": 1570340130449,
       "totalRequests": 21928548,
-      "popularityRank": 14
+      "popularityRank": 16
     },
     {
       "slug": "coreweave/fp4",
@@ -184,7 +210,7 @@
       "modelCount": 1,
       "totalTokens": 1451953447896,
       "totalRequests": 28260844,
-      "popularityRank": 15
+      "popularityRank": 17
     },
     {
       "slug": "poolside/fp4",
@@ -192,7 +218,7 @@
       "modelCount": 2,
       "totalTokens": 1345728593496,
       "totalRequests": 16210024,
-      "popularityRank": 16
+      "popularityRank": 18
     },
     {
       "slug": "upstage/zdr",
@@ -200,7 +226,7 @@
       "modelCount": 1,
       "totalTokens": 1296437861301,
       "totalRequests": 46180785,
-      "popularityRank": 17
+      "popularityRank": 19
     },
     {
       "slug": "google-vertex/eu",
@@ -208,7 +234,7 @@
       "modelCount": 3,
       "totalTokens": 1195168227349,
       "totalRequests": 381381331,
-      "popularityRank": 18
+      "popularityRank": 20
     },
     {
       "slug": "novita",
@@ -226,7 +252,7 @@
       "modelCount": 4,
       "totalTokens": 1077650277430,
       "totalRequests": 32248984,
-      "popularityRank": 19
+      "popularityRank": 21
     },
     {
       "slug": "nvidia/nvfp4",
@@ -234,25 +260,7 @@
       "modelCount": 1,
       "totalTokens": 1050553856371,
       "totalRequests": 15985557,
-      "popularityRank": 20
-    },
-    {
-      "slug": "deepseek",
-      "displayName": "DeepSeek",
-      "headquarters": "CN",
-      "statusPageUrl": "https://status.deepseek.com/",
-      "byokEnabled": true,
-      "dataPolicy": {
-        "training": true,
-        "retainsPrompts": true,
-        "termsOfServiceURL": "https://chat.deepseek.com/downloads/DeepSeek%20Terms%20of%20Use.html",
-        "privacyPolicyURL": "https://chat.deepseek.com/downloads/DeepSeek%20Privacy%20Policy.html"
-      },
-      "iconUrl": "/images/icons/DeepSeek.png",
-      "modelCount": 1,
-      "totalTokens": 1041219928857,
-      "totalRequests": 35733578,
-      "popularityRank": 21
+      "popularityRank": 22
     },
     {
       "slug": "deepinfra/fp8",
@@ -260,24 +268,6 @@
       "modelCount": 17,
       "totalTokens": 941213110721,
       "totalRequests": 200749268,
-      "popularityRank": 22
-    },
-    {
-      "slug": "alibaba",
-      "displayName": "Alibaba Cloud Int.",
-      "headquarters": "SG",
-      "statusPageUrl": "https://status.alibabacloud.com/",
-      "byokEnabled": true,
-      "dataPolicy": {
-        "training": false,
-        "retainsPrompts": true,
-        "termsOfServiceURL": "https://www.alibabacloud.com/help/en/legal/latest/alibaba-cloud-international-website-product-terms-of-service-v-3-8-0",
-        "privacyPolicyURL": "https://www.alibabacloud.com/help/en/legal/latest/alibaba-cloud-international-website-privacy-policy"
-      },
-      "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.alibabacloud.com/&size=256",
-      "modelCount": 38,
-      "totalTokens": 828900592950,
-      "totalRequests": 177052769,
       "popularityRank": 23
     },
     {
@@ -395,8 +385,8 @@
       "popularityRank": 35
     },
     {
-      "slug": "chutes/int4",
-      "displayName": "chutes/int4",
+      "slug": "baidu/fp4",
+      "displayName": "baidu/fp4",
       "modelCount": 1,
       "totalTokens": 190687723660,
       "totalRequests": 9494879,
@@ -446,20 +436,12 @@
       "popularityRank": 39
     },
     {
-      "slug": "streamlake/fp8",
-      "displayName": "streamlake/fp8",
-      "modelCount": 2,
-      "totalTokens": 96873056267,
-      "totalRequests": 6289231,
-      "popularityRank": 40
-    },
-    {
       "slug": "deepinfra/bf16",
       "displayName": "deepinfra/bf16",
       "modelCount": 10,
       "totalTokens": 68977983400,
       "totalRequests": 16829348,
-      "popularityRank": 41
+      "popularityRank": 40
     },
     {
       "slug": "siliconflow/int4",
@@ -467,7 +449,7 @@
       "modelCount": 1,
       "totalTokens": 68008824591,
       "totalRequests": 6111181,
-      "popularityRank": 42
+      "popularityRank": 41
     },
     {
       "slug": "streamlake",
@@ -485,6 +467,14 @@
       "modelCount": 2,
       "totalTokens": 66022855453,
       "totalRequests": 28003499,
+      "popularityRank": 42
+    },
+    {
+      "slug": "baidu/fp8",
+      "displayName": "baidu/fp8",
+      "modelCount": 1,
+      "totalTokens": 60946038564,
+      "totalRequests": 4406494,
       "popularityRank": 43
     },
     {
@@ -701,22 +691,6 @@
       "popularityRank": 63
     },
     {
-      "slug": "nex-agi",
-      "displayName": "Nex AGI",
-      "headquarters": "CN",
-      "byokEnabled": false,
-      "dataPolicy": {
-        "training": false,
-        "retainsPrompts": true,
-        "privacyPolicyURL": "https://api.nex-agi.cn/privacy-policy"
-      },
-      "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://nex.sii.edu.cn/en/&size=256",
-      "modelCount": 1,
-      "totalTokens": 8834494865,
-      "totalRequests": 1434132,
-      "popularityRank": 64
-    },
-    {
       "slug": "groq",
       "displayName": "Groq",
       "headquarters": "US",
@@ -732,7 +706,7 @@
       "modelCount": 1,
       "totalTokens": 7545232821,
       "totalRequests": 3357250,
-      "popularityRank": 65
+      "popularityRank": 64
     },
     {
       "slug": "google-vertex/us-central1",
@@ -740,7 +714,7 @@
       "modelCount": 1,
       "totalTokens": 6440518416,
       "totalRequests": 12026023,
-      "popularityRank": 66
+      "popularityRank": 65
     },
     {
       "slug": "novita/bf16",
@@ -748,7 +722,7 @@
       "modelCount": 4,
       "totalTokens": 6146174630,
       "totalRequests": 1330813,
-      "popularityRank": 67
+      "popularityRank": 66
     },
     {
       "slug": "nextbit/int4",
@@ -756,7 +730,7 @@
       "modelCount": 3,
       "totalTokens": 6069371047,
       "totalRequests": 3104161,
-      "popularityRank": 68
+      "popularityRank": 67
     },
     {
       "slug": "xai",
@@ -774,7 +748,7 @@
       "modelCount": 8,
       "totalTokens": 5163948787,
       "totalRequests": 881013,
-      "popularityRank": 69
+      "popularityRank": 68
     },
     {
       "slug": "crusoe/fp8",
@@ -782,7 +756,7 @@
       "modelCount": 1,
       "totalTokens": 5003760253,
       "totalRequests": 772131,
-      "popularityRank": 70
+      "popularityRank": 69
     },
     {
       "slug": "z-ai/fp8",
@@ -790,7 +764,7 @@
       "modelCount": 2,
       "totalTokens": 4929452371,
       "totalRequests": 289171,
-      "popularityRank": 71
+      "popularityRank": 70
     },
     {
       "slug": "fireworks",
@@ -808,7 +782,7 @@
       "modelCount": 1,
       "totalTokens": 4759372292,
       "totalRequests": 400304,
-      "popularityRank": 72
+      "popularityRank": 71
     },
     {
       "slug": "amazon-bedrock",
@@ -826,7 +800,7 @@
       "modelCount": 4,
       "totalTokens": 4712385153,
       "totalRequests": 1303749,
-      "popularityRank": 73
+      "popularityRank": 72
     },
     {
       "slug": "perplexity",
@@ -844,7 +818,7 @@
       "modelCount": 5,
       "totalTokens": 4128722709,
       "totalRequests": 2950703,
-      "popularityRank": 74
+      "popularityRank": 73
     },
     {
       "slug": "google-vertex",
@@ -862,7 +836,7 @@
       "modelCount": 8,
       "totalTokens": 3886089844,
       "totalRequests": 1439660,
-      "popularityRank": 75
+      "popularityRank": 74
     },
     {
       "slug": "z-ai",
@@ -879,7 +853,7 @@
       "modelCount": 1,
       "totalTokens": 3372237567,
       "totalRequests": 157677,
-      "popularityRank": 76
+      "popularityRank": 75
     },
     {
       "slug": "parasail/fp8",
@@ -887,7 +861,7 @@
       "modelCount": 2,
       "totalTokens": 3196736089,
       "totalRequests": 1857582,
-      "popularityRank": 77
+      "popularityRank": 76
     },
     {
       "slug": "seed",
@@ -904,7 +878,7 @@
       "modelCount": 8,
       "totalTokens": 3127728178,
       "totalRequests": 261104,
-      "popularityRank": 78
+      "popularityRank": 77
     },
     {
       "slug": "cloudflare",
@@ -922,7 +896,7 @@
       "modelCount": 4,
       "totalTokens": 2351593283,
       "totalRequests": 1262060,
-      "popularityRank": 79
+      "popularityRank": 78
     },
     {
       "slug": "mistral/eu",
@@ -930,7 +904,7 @@
       "modelCount": 1,
       "totalTokens": 2220755255,
       "totalRequests": 92390,
-      "popularityRank": 80
+      "popularityRank": 79
     },
     {
       "slug": "nebius/fp8",
@@ -938,7 +912,7 @@
       "modelCount": 2,
       "totalTokens": 2041769765,
       "totalRequests": 640338,
-      "popularityRank": 81
+      "popularityRank": 80
     },
     {
       "slug": "google-ai-studio/global",
@@ -946,7 +920,7 @@
       "modelCount": 2,
       "totalTokens": 1833755581,
       "totalRequests": 684914,
-      "popularityRank": 82
+      "popularityRank": 81
     },
     {
       "slug": "black-forest-labs",
@@ -962,15 +936,7 @@
       "modelCount": 4,
       "totalTokens": 1667461382,
       "totalRequests": 250667,
-      "popularityRank": 83
-    },
-    {
-      "slug": "nex-agi/fp8",
-      "displayName": "nex-agi/fp8",
-      "modelCount": 1,
-      "totalTokens": 1620691788,
-      "totalRequests": 59508,
-      "popularityRank": 84
+      "popularityRank": 82
     },
     {
       "slug": "minimax",
@@ -987,7 +953,7 @@
       "modelCount": 8,
       "totalTokens": 1241627045,
       "totalRequests": 310069,
-      "popularityRank": 85
+      "popularityRank": 83
     },
     {
       "slug": "together",
@@ -1005,7 +971,7 @@
       "modelCount": 14,
       "totalTokens": 1025809453,
       "totalRequests": 1200895,
-      "popularityRank": 86
+      "popularityRank": 84
     },
     {
       "slug": "venice/fp16",
@@ -1013,7 +979,7 @@
       "modelCount": 1,
       "totalTokens": 895445393,
       "totalRequests": 270111,
-      "popularityRank": 87
+      "popularityRank": 85
     },
     {
       "slug": "mistral",
@@ -1031,7 +997,7 @@
       "modelCount": 4,
       "totalTokens": 883440020,
       "totalRequests": 609272,
-      "popularityRank": 88
+      "popularityRank": 86
     },
     {
       "slug": "anthropic",
@@ -1049,7 +1015,7 @@
       "modelCount": 12,
       "totalTokens": 825896456,
       "totalRequests": 74052,
-      "popularityRank": 89
+      "popularityRank": 87
     },
     {
       "slug": "deepinfra/fp32",
@@ -1057,7 +1023,7 @@
       "modelCount": 1,
       "totalTokens": 809540684,
       "totalRequests": 926342,
-      "popularityRank": 90
+      "popularityRank": 88
     },
     {
       "slug": "arcee-ai",
@@ -1072,7 +1038,7 @@
       "modelCount": 1,
       "totalTokens": 781075441,
       "totalRequests": 197954,
-      "popularityRank": 91
+      "popularityRank": 89
     },
     {
       "slug": "minimax/fp8",
@@ -1080,7 +1046,7 @@
       "modelCount": 1,
       "totalTokens": 722444209,
       "totalRequests": 59834,
-      "popularityRank": 92
+      "popularityRank": 90
     },
     {
       "slug": "sakana",
@@ -1096,7 +1062,7 @@
       "modelCount": 2,
       "totalTokens": 507592858,
       "totalRequests": 11667,
-      "popularityRank": 93
+      "popularityRank": 91
     },
     {
       "slug": "nextbit/bf16",
@@ -1104,7 +1070,7 @@
       "modelCount": 1,
       "totalTokens": 328673374,
       "totalRequests": 154499,
-      "popularityRank": 94
+      "popularityRank": 92
     },
     {
       "slug": "relace/fp8",
@@ -1112,7 +1078,7 @@
       "modelCount": 1,
       "totalTokens": 323491389,
       "totalRequests": 75205,
-      "popularityRank": 95
+      "popularityRank": 93
     },
     {
       "slug": "krea",
@@ -1129,7 +1095,7 @@
       "modelCount": 3,
       "totalTokens": 250616749,
       "totalRequests": 57678,
-      "popularityRank": 96
+      "popularityRank": 94
     },
     {
       "slug": "mancer/fp8",
@@ -1137,7 +1103,7 @@
       "modelCount": 3,
       "totalTokens": 218267478,
       "totalRequests": 130451,
-      "popularityRank": 97
+      "popularityRank": 95
     },
     {
       "slug": "liquid/bf16",
@@ -1145,7 +1111,7 @@
       "modelCount": 1,
       "totalTokens": 198686537,
       "totalRequests": 93978,
-      "popularityRank": 98
+      "popularityRank": 96
     },
     {
       "slug": "perceptron",
@@ -1162,7 +1128,7 @@
       "modelCount": 1,
       "totalTokens": 195006528,
       "totalRequests": 111977,
-      "popularityRank": 99
+      "popularityRank": 97
     },
     {
       "slug": "upstage",
@@ -1178,7 +1144,7 @@
       "modelCount": 1,
       "totalTokens": 131026459,
       "totalRequests": 93237,
-      "popularityRank": 100
+      "popularityRank": 98
     },
     {
       "slug": "black-forest-labs/us-3",
@@ -1186,7 +1152,7 @@
       "modelCount": 2,
       "totalTokens": 117880256,
       "totalRequests": 12722,
-      "popularityRank": 101
+      "popularityRank": 99
     },
     {
       "slug": "morph",
@@ -1203,7 +1169,7 @@
       "modelCount": 1,
       "totalTokens": 107756002,
       "totalRequests": 11407,
-      "popularityRank": 102
+      "popularityRank": 100
     },
     {
       "slug": "recraft",
@@ -1217,7 +1183,7 @@
       "modelCount": 15,
       "totalTokens": 88664129,
       "totalRequests": 19535,
-      "popularityRank": 103
+      "popularityRank": 101
     },
     {
       "slug": "sourceful",
@@ -1233,7 +1199,7 @@
       "modelCount": 4,
       "totalTokens": 76987079,
       "totalRequests": 15481,
-      "popularityRank": 104
+      "popularityRank": 102
     },
     {
       "slug": "morph/fp8",
@@ -1241,7 +1207,7 @@
       "modelCount": 1,
       "totalTokens": 75353097,
       "totalRequests": 9971,
-      "popularityRank": 105
+      "popularityRank": 103
     },
     {
       "slug": "novita/fp16",
@@ -1249,7 +1215,7 @@
       "modelCount": 1,
       "totalTokens": 35963271,
       "totalRequests": 20964,
-      "popularityRank": 106
+      "popularityRank": 104
     },
     {
       "slug": "reka/fp8",
@@ -1257,7 +1223,7 @@
       "modelCount": 1,
       "totalTokens": 35502383,
       "totalRequests": 5962,
-      "popularityRank": 107
+      "popularityRank": 105
     },
     {
       "slug": "reka/bf16",
@@ -1265,7 +1231,7 @@
       "modelCount": 1,
       "totalTokens": 14257761,
       "totalRequests": 26773,
-      "popularityRank": 108
+      "popularityRank": 106
     },
     {
       "slug": "relace/bf16",
@@ -1273,7 +1239,7 @@
       "modelCount": 1,
       "totalTokens": 13347542,
       "totalRequests": 9036,
-      "popularityRank": 109
+      "popularityRank": 107
     },
     {
       "slug": "fish-audio",
@@ -1289,7 +1255,7 @@
       "modelCount": 5,
       "totalTokens": 10262564,
       "totalRequests": 187392,
-      "popularityRank": 110
+      "popularityRank": 108
     },
     {
       "slug": "deepgram",
@@ -1305,7 +1271,7 @@
       "modelCount": 3,
       "totalTokens": 4538321,
       "totalRequests": 240599,
-      "popularityRank": 111
+      "popularityRank": 109
     },
     {
       "slug": "heygen",
@@ -1322,7 +1288,7 @@
       "modelCount": 1,
       "totalTokens": 0,
       "totalRequests": 1057,
-      "popularityRank": 112
+      "popularityRank": 110
     },
     {
       "slug": "runway",
@@ -1340,7 +1306,7 @@
       "modelCount": 2,
       "totalTokens": 0,
       "totalRequests": 584,
-      "popularityRank": 113
+      "popularityRank": 111
     },
     {
       "slug": "atlas-cloud",
@@ -1356,7 +1322,7 @@
       "modelCount": 5,
       "totalTokens": 0,
       "totalRequests": 12498,
-      "popularityRank": 114
+      "popularityRank": 112
     }
   ]
 }

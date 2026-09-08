@@ -258,13 +258,18 @@ async function postHandler(request: Request, _context?: unknown) {
     );
   }
 
+  const forcedConnectionId = request.headers.get("x-orbit-connection")?.trim() || null;
+  const allowedConnections = forcedConnectionId
+    ? [forcedConnectionId]
+    : syncedEndpointRoute?.connectionIds ?? null;
+
   // Get credentials — skip for local providers (authType: "none")
   let credentials = null;
   if (providerConfig && providerConfig.authType !== "none") {
     credentials = await getProviderCredentialsWithQuotaPreflight(
       provider,
       null,
-      null,
+      forcedConnectionId ? [forcedConnectionId] : null,
       requestedModel
     );
     if (!credentials) {
@@ -285,9 +290,10 @@ async function postHandler(request: Request, _context?: unknown) {
     credentials = await getProviderCredentialsWithQuotaPreflight(
       provider,
       null,
-      syncedEndpointRoute?.connectionIds ?? null,
+      allowedConnections,
       requestedModel
     );
+
     if (!credentials) {
       return errorResponse(
         HTTP_STATUS.BAD_REQUEST,

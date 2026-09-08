@@ -7,6 +7,7 @@ import {
 import { getCustomModels, getProviderNodeById, isConnectionUnavailableToAuxiliaryActivity } from "./model-test-data.js";
 import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import { runAsProbe } from "@orbit/core/network/probe-origin";
+import { isImageModelId } from "@orbit/core/edge/synced-endpoint-routing";
 
 export const DEFAULT_MODEL_TEST_TIMEOUT_MS = 30_000;
 const DOLA_PRO_TEST_TIMEOUT_MS = 90_000;
@@ -252,6 +253,26 @@ function buildInternalEmbeddingRequest(
   });
 }
 
+export function buildInternalImageGenerationRequest(
+  testBody: Record<string, unknown>,
+  signal: AbortSignal,
+  connectionId?: string
+) {
+  return new Request(`${edgeGatewayBaseUrl()}/v1/images/generations`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Internal-Test": "combo-health-check",
+      "X-Orbit-No-Cache": "true",
+      "X-Orbit-Compression": "off",
+      "X-Request-Id": `model-test-${randomUUID()}`,
+      ...(connectionId ? { "X-Orbit-Connection": connectionId } : {}),
+    },
+    body: JSON.stringify(testBody),
+    signal,
+  });
+}
+
 export function detectTestKind(modelStr: string, customModel: any, nodeApiType?: string) {
   const supportedEndpoints = Array.isArray(customModel?.supportedEndpoints)
     ? customModel.supportedEndpoints
@@ -285,8 +306,30 @@ export function detectTestKind(modelStr: string, customModel: any, nodeApiType?:
       lowerModel.includes("text-embed") ||
       lowerModel.includes("jina-clip") ||
       lowerModel.includes("colbert"));
-  return { isRerank, isEmbedding, isAudioTranscription };
+  const isImageGeneration =
+    !isAudioTranscription &&
+    !isRerank &&
+    !isEmbedding &&
+    (apiFormat === "images/generations" ||
+      apiFormat === "image-generation" ||
+      apiFormat === "images" ||
+      apiFormat === "image" ||
+      nodeType === "images/generations" ||
+      nodeType === "image-generation" ||
+      nodeType === "images" ||
+      nodeType === "image" ||
+      customModel?.type === "image" ||
+      supportedEndpoints.some((ep: string) =>
+        typeof ep === "string" &&
+        (ep.includes("images/generations") ||
+          ep.includes("image-generation") ||
+          ep === "images" ||
+          ep === "image")
+      ) ||
+      isImageModelId(modelStr));
+  return { isRerank, isEmbedding, isAudioTranscription, isImageGeneration };
 }
+
 
 /**
  * Parse a Retry-After header value (seconds-as-number or HTTP-date) into seconds.
@@ -448,7 +491,7 @@ export async function runSingleModelTest(
     findCustomModelMetadata(providerId, fullModelStr),
     findProviderNodeApiType(providerId),
   ]);
-  const { isRerank, isEmbedding, isAudioTranscription } = detectTestKind(
+  const { isRerank, isEmbedding, isAudioTranscription, isImageGeneration } = detectTestKind(
     fullModelStr,
     customModel,
     nodeApiType
@@ -467,10 +510,16 @@ export async function runSingleModelTest(
       }
     : isAudioTranscription
       ? { model: fullModelStr }
-      : buildComboTestRequestBody(fullModelStr, isEmbedding, {
-          stream: !isEmbedding && streamChat,
-          maxTokens: !isEmbedding && streamChat ? STREAMING_CHAT_TEST_MAX_TOKENS : undefined,
-        });
+      : isImageGeneration
+        ? {
+            model: fullModelStr,
+            prompt: "test",
+            n: 1,
+          }
+        : buildComboTestRequestBody(fullModelStr, isEmbedding, {
+            stream: !isEmbedding && streamChat,
+            maxTokens: !isEmbedding && streamChat ? STREAMING_CHAT_TEST_MAX_TOKENS : undefined,
+          });
 
   // Per-model AbortController. Track whether this deadline fired so timeout
   // results remain distinct from transport failures.
@@ -488,7 +537,10 @@ export async function runSingleModelTest(
         ? buildInternalRerankRequest(testBody, signal, connectionId)
         : isAudioTranscription
           ? buildInternalAudioTranscriptionRequest(fullModelStr, signal, connectionId)
-          : buildInternalChatRequest(testBody, signal, connectionId);
+          : isImageGeneration
+            ? buildInternalImageGenerationRequest(testBody, signal, connectionId)
+            : buildInternalChatRequest(testBody, signal, connectionId);
+
     return fetch(request.url, {
       method: request.method,
       headers: request.headers,
@@ -571,7 +623,7 @@ export async function runSingleModelTest(
       // deactivated") would run outside runAsProbe and could still reach
       // markAccountUnavailable (#9817).
       const parsedResponse = await runAsProbe(() =>
-        extractModelTestResponseText(res, !isEmbedding && !isRerank && streamChat)
+        extractModelTestResponseText(res, !isEmbedding && !isRerank && !isImageGeneration && streamChat)
       );
       responseText = parsedResponse.text;
       streamError = parsedResponse.error;
@@ -602,7 +654,11 @@ export async function runSingleModelTest(
         ...(quotaFlags.isQuota ? { isQuota: true } : {}),
       };
     }
-    const outputState = classifyModelTestOutput(timedOut, responseText, isEmbedding || isRerank);
+    const outputState = classifyModelTestOutput(
+      timedOut,
+      responseText,
+      isEmbedding || isRerank || isImageGeneration
+    );
     // A streaming response can yield partial text just as the test timeout
     // aborts the underlying request. Partial output does not make an aborted
     // request healthy: the call log correctly records that race as 499, so
@@ -626,7 +682,17 @@ export async function runSingleModelTest(
         responseText: "[Rerank completed successfully]",
       };
     }
+    if (isImageGeneration) {
+      return {
+        modelId: fullModelStr,
+        status: "ok",
+        latencyMs,
+        httpStatus: 200,
+        responseText: responseText || "[Image generated successfully]",
+      };
+    }
     if (outputState === "empty") {
+
       return {
         modelId: fullModelStr,
         status: "error",
