@@ -16,7 +16,7 @@ test("Each manager is one instance, including managers with no CLIProxyAPI proce
     const { default: Page } = await vite.ssrLoadModule("/src/features/services/cliproxy-instances.tsx");
     const instance = { id: "same-id", name: "NAS process", port: 18317, version: "v7.2.153", state: "running", desiredState: "running", healthy: true, latencyMs: 2, restartCount: 0, pid: 43210, startedAt: "2026-09-07T10:00:00Z" };
     const node = { id: "nas", name: "NAS instance", endpoint: "http://nas-manager:8792", online: true, lastSeenAt: "2026-09-07T12:00:00Z", report: { instances: [instance], jobs: [], metrics: {}, managerVersion: "0.1.0" } };
-    const remote = { ...node, id: "remote", scopePrefix: "cpa-remote", name: "Remote instance", endpoint: "http://remote-manager:8792", report: { ...node.report, instances: [{ ...instance, name: "Remote process", port: 28317, credentials: [{ id: "remote-account.json", name: "Remote credential", provider: "xai", disabled: false, routable: true, models: ["shared"] }] }] } };
+    const remote = { ...node, id: "remote", scopePrefix: "cpa-remote", name: "Remote instance", endpoint: "http://remote-manager:8792", report: { ...node.report, instances: [{ ...instance, name: "Remote process", port: 28317, credentials: [{ id: "remote-account.json", name: "Remote credential", email: "remote@example.com", provider: "xai", disabled: false, routable: true, models: ["shared"] }] }] } };
     const empty = { ...node, id: "unreported", name: "Not deployed yet", online: false, report: null };
     client.setQueryData(["service-nodes"], [node, remote, empty]);
     const render = (path: string) => renderToStaticMarkup(createElement(QueryClientProvider, { client }, createElement(MemoryRouter, { initialEntries: [path] }, createElement(Page))));
@@ -36,7 +36,7 @@ test("Each manager is one instance, including managers with no CLIProxyAPI proce
     assert.match(detail, /Remote instance/);
     assert.match(detail, /28317/);
     assert.match(detail, /cpa-remote/);
-    assert.match(detail, /Remote credential/);
+    assert.match(detail, /remote@example\.com/);
     assert.match(detail, /43210/);
     assert.match(detail, /Upgrade|升级/);
     assert.match(detail, /Operation history|操作记录/);
