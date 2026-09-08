@@ -39,7 +39,18 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	cfg := manager.Config{Listen: env("CLIPROXY_MANAGER_LISTEN", "0.0.0.0:8792"), DataDir: env("CLIPROXY_MANAGER_DATA_DIR", "./data"), NodeID: os.Getenv("CLIPROXY_MANAGER_ID"), NodeName: env("CLIPROXY_MANAGER_NAME", hostname), ReportURL: os.Getenv("CLIPROXY_MANAGER_REPORT_URL"), Interval: interval}
+	nodeName := env("CLIPROXY_MANAGER_NAME", hostname)
+	if nodeName == "" {
+		nodeName = "NAS"
+	}
+	cfg := manager.Config{
+		Listen:    env("CLIPROXY_MANAGER_LISTEN", "0.0.0.0:8792"),
+		DataDir:   env("CLIPROXY_MANAGER_DATA_DIR", "./data"),
+		NodeID:    env("CLIPROXY_MANAGER_ID", "nas"),
+		NodeName:  nodeName,
+		ReportURL: os.Getenv("CLIPROXY_MANAGER_REPORT_URL"),
+		Interval:  interval,
+	}
 	m, err := manager.NewManager(cfg, manager.NewInstaller())
 	if err != nil {
 		log.Fatal(err)

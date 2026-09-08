@@ -388,17 +388,21 @@ export default function CliproxyInstances() {
     onError: (error) => message.error(error.message),
   });
 
-  const handleRefreshNode = async (nodeId: string) => {
+  const handleRefreshNode = async (nodeId: string, silent = false) => {
     try {
       await api(`${base}/${encodeURIComponent(nodeId)}/refresh`, {
         method: "POST",
       });
-      message.success(tt("已发送刷新探测请求", "Refresh request sent"));
+      if (!silent) {
+        message.success(tt("已发送刷新探测请求", "Refresh request sent"));
+      }
       void refresh();
     } catch (err) {
-      message.error(
-        err instanceof Error ? err.message : tt("刷新失败", "Refresh failed"),
-      );
+      if (!silent) {
+        message.error(
+          err instanceof Error ? err.message : tt("刷新失败", "Refresh failed"),
+        );
+      }
     }
   };
 
@@ -485,6 +489,7 @@ export default function CliproxyInstances() {
       state?: string;
       user_code?: string;
       status?: string;
+      error?: string;
     }>(
       `${instancePath(credentialTarget.nodeId, credentialTarget.instance.id)}/management`,
       { method: "POST", body: JSON.stringify({ method, path, payload }) },
@@ -537,9 +542,83 @@ export default function CliproxyInstances() {
   useEffect(() => {
     if (authStatus.data?.status === "ok") {
       void credentials.refetch();
-      message.success(tt("账号授权成功！", "Account authorized successfully!"));
+      if (node) {
+        void handleRefreshNode(node.id, true);
+      }
+      void refresh();
+      message.success(
+        tt(
+          "账号授权成功！凭据已自动同步并生效。",
+          "Account authorized successfully! Credentials synced.",
+        ),
+      );
+      const timer = setTimeout(() => {
+        setAuthFlow(undefined);
+        setMountModalOpen(false);
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+    if (authStatus.data?.status === "error") {
+      message.error(
+        authStatus.data?.error ||
+          tt("授权失败或已过期", "Authorization failed or expired"),
+      );
     }
   }, [authStatus.data?.status]);
+
+  const submitCallback = () => {
+    const raw = callbackURL.trim();
+    if (!raw || !authFlow) return;
+
+    let extractedCode = "";
+    let extractedState = authFlow.state;
+
+    try {
+      const urlObj = new URL(raw.includes("://") ? raw : `http://${raw}`);
+      extractedCode = urlObj.searchParams.get("code") || "";
+      const s = urlObj.searchParams.get("state");
+      if (s) extractedState = s;
+
+      if (!extractedCode && urlObj.hash) {
+        const hashParams = new URLSearchParams(
+          urlObj.hash.replace(/^#\/?/, ""),
+        );
+        extractedCode = hashParams.get("code") || "";
+        const hs = hashParams.get("state");
+        if (hs) extractedState = hs;
+      }
+    } catch {
+      if (!raw.includes("?") && !raw.includes("&") && !raw.includes("=")) {
+        extractedCode = raw;
+      }
+    }
+
+    mutation.mutate(async () => {
+      await manageCredential("POST", "oauth-callback", {
+        provider: authProvider,
+        state: extractedState || authFlow.state,
+        code: extractedCode || undefined,
+        redirect_url: raw,
+      });
+      setCallbackURL("");
+      message.info(
+        tt(
+          "已提交回调，正在验证并存储凭据...",
+          "Callback submitted, verifying and saving credentials...",
+        ),
+      );
+      await authStatus.refetch();
+      await credentials.refetch();
+      setTimeout(() => {
+        if (node) void handleRefreshNode(node.id, true);
+        void refresh();
+      }, 1500);
+      setTimeout(() => {
+        if (node) void handleRefreshNode(node.id, true);
+        void refresh();
+      }, 3500);
+    });
+  };
 
   const settingsMutation = useMutation({
     mutationFn: async (settings: { autoStart?: boolean; providerExpose?: boolean }) => {
@@ -1066,10 +1145,23 @@ export default function CliproxyInstances() {
                                   {
                                     title: tt("账号 / 凭据来源", "Account / Source"),
                                     key: "name",
+                                    ellipsis: true,
                                     render: (_, record) => (
-                                      <div>
-                                        <Typography.Text strong style={{ fontSize: 12 }}>{record.name}</Typography.Text>
-                                        <div style={{ fontSize: 10, color: token.colorTextSecondary }}>ID: {record.id}</div>
+                                      <div style={{ minWidth: 0, overflow: "hidden" }}>
+                                        <Typography.Text
+                                          strong
+                                          ellipsis={{ tooltip: record.name }}
+                                          style={{ fontSize: 12, display: "block" }}
+                                        >
+                                          {record.name}
+                                        </Typography.Text>
+                                        <Typography.Text
+                                          type="secondary"
+                                          ellipsis={{ tooltip: `ID: ${record.id}` }}
+                                          style={{ fontSize: 10, display: "block" }}
+                                        >
+                                          ID: {record.id}
+                                        </Typography.Text>
                                       </div>
                                     ),
                                   },
@@ -1077,13 +1169,13 @@ export default function CliproxyInstances() {
                                     title: tt("提供商", "Provider"),
                                     dataIndex: "provider",
                                     key: "provider",
-                                    width: 90,
+                                    width: 80,
                                     render: (p: string) => <Tag color="blue">{(p || "codex").toUpperCase()}</Tag>,
                                   },
                                   {
                                     title: tt("状态", "Status"),
                                     key: "status",
-                                    width: 80,
+                                    width: 75,
                                     render: (_, record) => (
                                       <Tag color={record.disabled ? "default" : record.routable ? "success" : "error"}>
                                         {record.disabled ? tt("已停用", "Disabled") : record.routable ? tt("在线", "Online") : tt("失效", "Offline")}
@@ -1093,7 +1185,7 @@ export default function CliproxyInstances() {
                                   {
                                     title: tt("模型", "Models"),
                                     key: "modelCount",
-                                    width: 70,
+                                    width: 60,
                                     render: (_, record) => (
                                       <span style={{ fontFamily: "monospace", fontWeight: 600, fontSize: 11 }}>
                                         {record.models.length}
@@ -1103,9 +1195,12 @@ export default function CliproxyInstances() {
                                   {
                                     title: tt("操作", "Actions"),
                                     key: "action",
-                                    width: 65,
+                                    width: 80,
+                                    align: "right",
                                     render: () => (
-                                      <Button
+                                        <Button
+                                          type="link"
+                                          style={{ paddingInline: 2 }}
                                         onClick={() => void handleRefreshNode(node.id)}
                                       >
                                         {tt("刷新", "Refresh")}
@@ -1232,6 +1327,9 @@ export default function CliproxyInstances() {
                 onCancel={() => {
                   setMountModalOpen(false);
                   setAuthFlow(undefined);
+                  setCallbackURL("");
+                  if (node) void handleRefreshNode(node.id, true);
+                  void refresh();
                 }}
                 footer={null}
                 destroyOnClose
@@ -1263,8 +1361,8 @@ export default function CliproxyInstances() {
                             <Space direction="vertical" size={14} style={{ width: "100%", padding: "10px 0" }}>
                               <Typography.Text type="secondary">
                                 {tt(
-                                  "选择 AI 提供商并通过官方 OAuth 网页完成一键授权。系统将自动轮询并存储凭据。",
-                                  "Select an AI provider to initiate OAuth login. Tokens are automatically persisted to this instance.",
+                                  "选择 AI 提供商并打开官方 OAuth 网页进行授权。授权完成后，系统将自动检测并同步凭据。",
+                                  "Select an AI provider and open the official OAuth page. Tokens will be automatically detected and synced.",
                                 )}
                               </Typography.Text>
                               <Flex align="center" gap={12} wrap="wrap">
@@ -1281,41 +1379,72 @@ export default function CliproxyInstances() {
                                     { value: "xai", label: "xAI (Grok)" },
                                   ]}
                                 />
-                                <Button
-                                  type="primary"
-                                  disabled={busy || !!authFlow}
-                                  icon={<ThunderboltOutlined />}
-                                  onClick={() =>
-                                    mutation.mutate(async () => {
-                                      const flow = await manageCredential(
-                                        "GET",
-                                        `${authProvider}-auth-url?is_webui=true`,
-                                      );
-                                      if (!flow.url || !flow.state)
-                                        throw new Error(
-                                          tt(
-                                            "实例未返回授权地址",
-                                            "Instance returned no authorization URL",
-                                          ),
+                                {!authFlow ? (
+                                  <Button
+                                    type="primary"
+                                    loading={busy}
+                                    icon={<LinkOutlined />}
+                                    onClick={() =>
+                                      mutation.mutate(async () => {
+                                        const flow = await manageCredential(
+                                          "GET",
+                                          `${authProvider}-auth-url?is_webui=true`,
                                         );
-                                      const url = new URL(flow.url);
-                                      if (url.protocol !== "https:")
-                                        throw new Error(
-                                          tt(
-                                            "授权地址必须使用 HTTPS",
-                                            "Authorization URL must use HTTPS",
-                                          ),
-                                        );
-                                      setAuthFlow({
-                                        url: flow.url,
-                                        state: flow.state,
-                                        user_code: flow.user_code,
-                                      });
-                                    })
-                                  }
-                                >
-                                  {tt("获取授权链接", "Get authorization link")}
-                                </Button>
+                                        if (!flow.url || !flow.state)
+                                          throw new Error(
+                                            tt(
+                                              "实例未返回授权地址",
+                                              "Instance returned no authorization URL",
+                                            ),
+                                          );
+                                        const url = new URL(flow.url);
+                                        if (url.protocol !== "https:")
+                                          throw new Error(
+                                            tt(
+                                              "授权地址必须使用 HTTPS",
+                                              "Authorization URL must use HTTPS",
+                                            ),
+                                          );
+                                        setAuthFlow({
+                                          url: flow.url,
+                                          state: flow.state,
+                                          user_code: flow.user_code,
+                                        });
+                                        window.open(flow.url, "_blank", "noopener,noreferrer");
+                                        message.success(tt("已在新窗口打开授权页面", "Authorization page opened in a new window"));
+                                      })
+                                    }
+                                  >
+                                    {tt("打开授权链接", "Open authorization link")}
+                                  </Button>
+                                ) : (
+                                  <Space size={8}>
+                                    <Button
+                                      icon={<LinkOutlined />}
+                                      onClick={() => {
+                                        window.open(authFlow.url, "_blank", "noopener,noreferrer");
+                                      }}
+                                    >
+                                      {tt("重新打开授权页面", "Reopen auth page")}
+                                    </Button>
+                                    <Button
+                                      type="text"
+                                      danger
+                                      onClick={() => {
+                                        mutation.mutate(async () => {
+                                          await manageCredential(
+                                            "DELETE",
+                                            `oauth-session?state=${encodeURIComponent(authFlow.state)}`,
+                                          );
+                                          setAuthFlow(undefined);
+                                          setCallbackURL("");
+                                        });
+                                      }}
+                                    >
+                                      {tt("取消授权", "Cancel")}
+                                    </Button>
+                                  </Space>
+                                )}
                               </Flex>
 
                               {authFlow && (
@@ -1330,44 +1459,28 @@ export default function CliproxyInstances() {
                                     gap: 12,
                                   }}
                                 >
-                                  <Flex align="center" gap={12} wrap="wrap">
-                                    <Button
-                                      type="primary"
-                                      icon={<LinkOutlined />}
-                                      href={authFlow.url}
-                                      target="_blank"
-                                      rel="noreferrer"
-                                    >
-                                      {tt("打开授权页面", "Open authorization page")}
-                                    </Button>
-                                    <Button
-                                      onClick={() => {
-                                        mutation.mutate(async () => {
-                                          await manageCredential(
-                                            "DELETE",
-                                            `oauth-session?state=${encodeURIComponent(authFlow.state)}`,
-                                          );
-                                          setAuthFlow(undefined);
-                                        });
+                                  {authFlow.user_code && (
+                                    <div
+                                      style={{
+                                        padding: "10px 14px",
+                                        borderRadius: 6,
+                                        background: "rgba(59, 130, 246, 0.08)",
+                                        border: "1px solid rgba(59, 130, 246, 0.2)",
                                       }}
                                     >
-                                      {tt("结束此授权流程", "Close authorization flow")}
-                                    </Button>
-                                  </Flex>
-
-                                  {authFlow.user_code && (
-                                    <Flex align="center" gap={8}>
-                                      <Typography.Text type="secondary">
-                                        {tt("设备验证码（若网页提示输入）：", "User Code: ")}
-                                      </Typography.Text>
-                                      <Typography.Text
-                                        copyable
-                                        code
-                                        style={{ fontSize: 16, fontWeight: "bold", letterSpacing: 2 }}
-                                      >
-                                        {authFlow.user_code}
-                                      </Typography.Text>
-                                    </Flex>
+                                      <Flex align="center" justify="space-between" wrap="wrap" gap={8}>
+                                        <Typography.Text type="secondary" style={{ fontSize: 13 }}>
+                                          {tt("设备验证码（若网页提示输入）：", "Device Code (if prompted): ")}
+                                        </Typography.Text>
+                                        <Typography.Text
+                                          copyable
+                                          code
+                                          style={{ fontSize: 16, fontWeight: "bold", letterSpacing: 2 }}
+                                        >
+                                          {authFlow.user_code}
+                                        </Typography.Text>
+                                      </Flex>
+                                    </div>
                                   )}
 
                                   <Alert
@@ -1386,53 +1499,52 @@ export default function CliproxyInstances() {
                                     }
                                     message={
                                       authStatus.data?.status === "ok"
-                                        ? tt("授权成功", "Authorization completed")
+                                        ? tt("授权成功！正在同步凭据并刷新列表...", "Authorization completed! Syncing credentials...")
                                         : authStatus.data?.status === "error"
-                                          ? tt("授权失败或已过期", "Authorization failed or expired")
+                                          ? tt(`授权失败：${authStatus.data?.error || "已过期"}`, `Authorization failed: ${authStatus.data?.error || "expired"}`)
                                           : tt(
-                                              "等待完成授权；如果跳转到无法打开的本地地址，请将完整回调地址粘贴到下方。",
-                                              "Waiting for authorization. If redirected to an inaccessible localhost address, paste the full callback URL below.",
+                                              "已在新窗口打开授权页面，等待完成授权中... 授权成功后将自动检测并存储凭据。",
+                                              "Authorization page opened. Waiting for completion... Credentials will be saved automatically.",
                                             )
                                     }
                                   />
 
-                                  <div style={{ marginTop: 4 }}>
-                                    <Typography.Text type="secondary" style={{ fontSize: 12, display: "block", marginBottom: 6 }}>
+                                  <div
+                                    style={{
+                                      marginTop: 2,
+                                      padding: "12px 14px",
+                                      borderRadius: 8,
+                                      background: "rgba(255, 255, 255, 0.02)",
+                                      border: `1px solid ${token.colorBorderSecondary}`,
+                                    }}
+                                  >
+                                    <Typography.Paragraph
+                                      type="secondary"
+                                      style={{ fontSize: 12, margin: "0 0 8px 0" }}
+                                    >
                                       {tt(
-                                        "💡 远程 / NAS 提示：如果在无头或远程服务器上授权，网页可能跳转至无法访问的 localhost 地址，请复制浏览器完整回调链接并粘贴至下方：",
-                                        "If redirected to an inaccessible localhost address, paste the full callback URL below.",
+                                        "💡 远程 / NAS 提示：如果在无头或远程服务器上授权，完成登录后若浏览器跳转至无法访问的 localhost 地址，请复制浏览器地址栏中的完整 URL 粘贴至下方：",
+                                        "If authorized on a remote/headless server and redirected to an inaccessible localhost address, copy and paste the full callback URL below:",
                                       )}
-                                    </Typography.Text>
+                                    </Typography.Paragraph>
                                     <Flex gap={8}>
                                       <Input
                                         value={callbackURL}
                                         onChange={(e) => setCallbackURL(e.target.value)}
                                         placeholder={tt(
-                                          "完整回调地址",
-                                          "Full callback URL",
+                                          "粘贴浏览器地址栏中的完整回调地址 (如 http://localhost:1455/...)",
+                                          "Paste full callback URL from browser (e.g. http://localhost:1455/...)",
                                         )}
                                         style={{ flex: 1 }}
+                                        onPressEnter={() => {
+                                          if (callbackURL.trim() && !busy) submitCallback();
+                                        }}
                                       />
                                       <Button
-                                        disabled={!callbackURL || busy}
                                         type="primary"
-                                        onClick={() =>
-                                          mutation.mutate(async () => {
-                                            await manageCredential(
-                                              "POST",
-                                              "oauth-callback",
-                                              {
-                                                provider: authProvider,
-                                                state: authFlow.state,
-                                                redirect_url: callbackURL,
-                                              },
-                                            );
-                                            setCallbackURL("");
-                                            await authStatus.refetch();
-                                            await credentials.refetch();
-                                            void handleRefreshNode(node.id);
-                                          })
-                                        }
+                                        disabled={!callbackURL.trim() || busy}
+                                        loading={busy}
+                                        onClick={() => submitCallback()}
                                       >
                                         {tt("提交回调", "Submit callback")}
                                       </Button>
@@ -1564,9 +1676,11 @@ export default function CliproxyInstances() {
                                   {
                                     title: tt("操作", "Actions"),
                                     align: "right",
+                                    width: 120,
                                     render: (_, record) => (
-                                      <Space size={8}>
+                                      <Space size={4}>
                                         <Button
+                                          type="link"
                                           disabled={busy}
                                           onClick={() =>
                                             mutation.mutate(async () => {
@@ -1603,7 +1717,7 @@ export default function CliproxyInstances() {
                                             })
                                           }
                                         >
-                                          <Button danger>
+                                          <Button type="link" danger disabled={busy}>
                                             {tt("删除", "Delete")}
                                           </Button>
                                         </Popconfirm>
