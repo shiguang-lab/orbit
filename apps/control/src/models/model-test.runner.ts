@@ -489,7 +489,13 @@ export async function runSingleModelTest(
         : isAudioTranscription
           ? buildInternalAudioTranscriptionRequest(fullModelStr, signal, connectionId)
           : buildInternalChatRequest(testBody, signal, connectionId);
-    return fetch(request);
+    return fetch(request.url, {
+      method: request.method,
+      headers: request.headers,
+      body: request.body ?? undefined,
+      signal: request.signal,
+      ...(request.body ? { duplex: "half" } : {}),
+    } as RequestInit);
   };
 
   let res: Response;

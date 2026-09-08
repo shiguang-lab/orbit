@@ -548,6 +548,58 @@ function isCallerAbort(_error: unknown, signal: AbortSignal | null | undefined):
   return signal?.aborted === true;
 }
 
+function isRequestLike(value: unknown): value is Request {
+  return Boolean(
+    value &&
+      typeof value === "object" &&
+      !("searchParams" in value) &&
+      typeof (value as { url?: unknown }).url === "string" &&
+      typeof (value as { method?: unknown }).method === "string"
+  );
+}
+
+function normalizeFetchArgs(
+  input: RequestInfo | URL,
+  options: FetchWithDispatcherOptions = {}
+): {
+  targetUrl: string;
+  normalizedOptions: FetchWithDispatcherOptions;
+  isRequest: boolean;
+} {
+  if (!isRequestLike(input)) {
+    const targetUrl =
+      typeof input === "string"
+        ? input
+        : input instanceof URL
+          ? input.href
+          : String(input);
+    return { targetUrl, normalizedOptions: options, isRequest: false };
+  }
+
+  const req = input as Request;
+  const targetUrl = req.url;
+
+  const merged: FetchWithDispatcherOptions = {
+    method: options.method ?? req.method,
+    headers: options.headers ?? req.headers,
+    signal: options.signal ?? req.signal,
+    body: options.body ?? (req.bodyUsed ? undefined : req.body),
+    redirect: options.redirect ?? req.redirect,
+    credentials: options.credentials ?? req.credentials,
+    integrity: options.integrity ?? req.integrity,
+    keepalive: options.keepalive ?? req.keepalive,
+    referrer: options.referrer ?? req.referrer,
+    referrerPolicy: options.referrerPolicy ?? req.referrerPolicy,
+    ...options,
+  };
+
+  if (merged.body != null && merged.duplex === undefined) {
+    merged.duplex = (req as any).duplex ?? "half";
+  }
+
+  return { targetUrl, normalizedOptions: merged, isRequest: true };
+}
+
 function getTargetUrl(input) {
   if (typeof input === "string") return input;
   if (input && typeof input.url === "string") return input.url;
@@ -736,16 +788,17 @@ async function patchedFetch(
     return originalFetch(input, options);
   }
 
-  if (options?.dispatcher) {
+  const { targetUrl, normalizedOptions } = normalizeFetchArgs(input, options);
+
+  if (normalizedOptions?.dispatcher) {
     // When a dispatcher is present, we MUST use the undici library fetch
     // to ensure version compatibility. Node 22 built-in fetch (undici v6)
     // is incompatible with undici v8 dispatchers (missing onRequestStart, etc.)
     const _undiciDispatcher =
       deps.undiciFetch ?? (undiciFetch as unknown as (...args: unknown[]) => Promise<Response>);
-    return _undiciDispatcher(input, options);
+    return _undiciDispatcher(targetUrl, normalizedOptions);
   }
 
-  const targetUrl = getTargetUrl(input);
   let resolved;
   try {
     resolved = resolveProxyForRequest(targetUrl);
@@ -765,28 +818,28 @@ async function patchedFetch(
       isTlsFingerprintEnabled() &&
       activeTlsClient.available &&
       tlsFingerprintProviderAllowed(tlsStore?.provider, false) &&
-      isTlsRequestEligible(input, options)
+      isTlsRequestEligible(input, normalizedOptions)
     ) {
       try {
         const response = await activeTlsClient.fetch(targetUrl, {
-          method: options.method,
-          headers: options.headers,
-          body: options.body as TlsFetchOptions["body"],
-          redirect: options.redirect,
-          signal: getEffectiveSignal(input, options),
+          method: normalizedOptions.method,
+          headers: normalizedOptions.headers,
+          body: normalizedOptions.body as TlsFetchOptions["body"],
+          redirect: normalizedOptions.redirect,
+          signal: getEffectiveSignal(input, normalizedOptions),
           proxy: null,
           sessionScope: tlsStore?.sessionScope,
         });
         if (tlsStore) tlsStore.used = true;
         return response;
       } catch (error) {
-        if (isCallerAbort(error, getEffectiveSignal(input, options))) throw error;
+        if (isCallerAbort(error, getEffectiveSignal(input, normalizedOptions))) throw error;
         const sessionHadCookies =
           !!error &&
           typeof error === "object" &&
           "sessionHadCookies" in error &&
           error.sessionHadCookies === true;
-        if (!isTlsFallbackReplaySafe(input, options) || sessionHadCookies) {
+        if (!isTlsFallbackReplaySafe(input, normalizedOptions) || sessionHadCookies) {
           throw sanitizeTransportError(
             error,
             sessionHadCookies
@@ -808,10 +861,10 @@ async function patchedFetch(
     if (process.versions.bun) {
       const _nativeFetch =
         (deps.nativeFetch as FetchWithDispatcher | undefined) ?? originalFetchWithDispatcher;
-      return _nativeFetch(input, options);
+      return _nativeFetch(targetUrl, normalizedOptions);
     }
     // Direct undici path: bound response-start, fresh-socket retry, and body guard.
-    const hasNonReplayableBody = requestHasNonReplayableBody(input, options);
+    const hasNonReplayableBody = requestHasNonReplayableBody(input, normalizedOptions);
     const maxAttempts = hasNonReplayableBody ? 1 : 2;
     const _undiciDirect =
       deps.undiciFetch ?? (undiciFetch as unknown as (...args: unknown[]) => Promise<Response>);
@@ -828,9 +881,9 @@ async function patchedFetch(
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       try {
         return await directFetchWithBoundedResponseStart(
-          input,
+          targetUrl,
           {
-            ...options,
+            ...normalizedOptions,
             dispatcher: attempt === 0 ? getDefaultDispatcher() : getRetryDispatcher(),
           },
           _undiciDirect,
@@ -907,7 +960,7 @@ async function patchedFetch(
               if (fallbackProxyUrl) {
                 try {
                   const dispatcher = createProxyDispatcher(fallbackProxyUrl);
-                  return await _undiciDirect(input, { ...options, dispatcher });
+                  return await _undiciDirect(targetUrl, { ...normalizedOptions, dispatcher });
                 } catch {
                   // Proxy also failed — fall through to native fetch
                 }
@@ -919,7 +972,7 @@ async function patchedFetch(
             `[ProxyFetch] Undici dispatcher failed, falling back to native fetch (after retry): ${describeFetchCause(dispatcherError)}`
           );
           try {
-            return await _nativeFallback(input, options);
+            return await _nativeFallback(targetUrl, normalizedOptions);
           } catch (nativeError) {
             // Surface both dispatcher and native causes immediately.
             const detail = `dispatcher=[${describeFetchCause(dispatcherError)}] native=[${describeFetchCause(nativeError)}]`;
@@ -956,9 +1009,8 @@ async function patchedFetch(
       const label = vc.type === "vercel" ? "Vercel relay" : `${vc.type || "Edge"} relay`;
       throw new Error(`${label} configuration error: missing relayAuth`);
     }
-    const targetUrl = getTargetUrl(input);
     const relayHeaders = buildVercelRelayHeaders(targetUrl, vc.relayAuth);
-    const mergedHeaders = new Headers(options?.headers);
+    const mergedHeaders = new Headers(normalizedOptions?.headers);
     for (const [k, v] of Object.entries(relayHeaders)) mergedHeaders.set(k, v);
     // Pass host through proxyUrlForLogs so the same redaction policy applies
     // to relay routing logs (the rest of this module already follows that rule).
@@ -980,7 +1032,7 @@ async function patchedFetch(
     // connections again.
     const _undiciRelay =
       deps.undiciFetch ?? (undiciFetch as unknown as (...args: unknown[]) => Promise<Response>);
-    const hasNonReplayableRelayBody = requestHasNonReplayableBody(input, options);
+    const hasNonReplayableRelayBody = requestHasNonReplayableBody(input, normalizedOptions);
     const maxRelayAttempts = hasNonReplayableRelayBody ? 1 : 2;
     const relayUrl = `https://${vc.host}`;
     let lastRelayError: unknown = null;
@@ -993,10 +1045,10 @@ async function patchedFetch(
       const relayController = new AbortController();
       const relayTimer = setTimeout(() => relayController.abort(), RELAY_FETCH_TIMEOUT_MS);
       const onCallerAbort = () => relayController.abort();
-      options.signal?.addEventListener("abort", onCallerAbort, { once: true });
+      normalizedOptions.signal?.addEventListener("abort", onCallerAbort, { once: true });
       try {
         return await _undiciRelay(relayUrl, {
-          ...options,
+          ...normalizedOptions,
           headers: mergedHeaders,
           duplex: "half",
           dispatcher: attempt === 0 ? RELAY_POOL_AGENT : RELAY_RETRY_AGENT,
@@ -1009,7 +1061,7 @@ async function patchedFetch(
         // The manual relayController fires only on this branch's own timer, so
         // `relayController.signal.aborted` alone cannot be a caller abort; when
         // BOTH fire, the caller abort wins (guarded by the check below).
-        const isRelayTimeout = relayController.signal.aborted && options?.signal?.aborted !== true;
+        const isRelayTimeout = relayController.signal.aborted && normalizedOptions?.signal?.aborted !== true;
         if (isRelayTimeout) {
           const timeoutErr = new Error(
             `[ProxyFetch] Relay timed out after ${RELAY_FETCH_TIMEOUT_MS}ms (${proxyUrlForLogs(relayUrl)})`
@@ -1019,7 +1071,7 @@ async function patchedFetch(
           timeoutErr.statusCode = 504;
           throw timeoutErr;
         }
-        if (isCallerAbort(relayError, options?.signal)) throw relayError;
+        if (isCallerAbort(relayError, normalizedOptions?.signal)) throw relayError;
         const msg = relayError instanceof Error ? relayError.message : String(relayError);
         const errCode = (relayError as { code?: unknown })?.code;
         const isTransportFailure =
@@ -1041,7 +1093,7 @@ async function patchedFetch(
         throw relayError;
       } finally {
         clearTimeout(relayTimer);
-        options.signal?.removeEventListener("abort", onCallerAbort);
+        normalizedOptions.signal?.removeEventListener("abort", onCallerAbort);
       }
     }
     throw lastRelayError;
@@ -1056,29 +1108,29 @@ async function patchedFetch(
     tlsStore.sessionScope.trim().length > 0 &&
     activeTlsClient.available &&
     tlsFingerprintProviderAllowed(tlsStore?.provider, true) &&
-    isTlsRequestEligible(input, options) &&
+    isTlsRequestEligible(input, normalizedOptions) &&
     isWreqProxySupported(proxyUrl)
   ) {
     try {
       const response = await activeTlsClient.fetch(targetUrl, {
-        method: options.method,
-        headers: options.headers,
-        body: options.body as TlsFetchOptions["body"],
-        redirect: options.redirect,
-        signal: getEffectiveSignal(input, options),
+        method: normalizedOptions.method,
+        headers: normalizedOptions.headers,
+        body: normalizedOptions.body as TlsFetchOptions["body"],
+        redirect: normalizedOptions.redirect,
+        signal: getEffectiveSignal(input, normalizedOptions),
         proxy: proxyUrl,
         sessionScope: tlsStore?.sessionScope,
       });
       if (tlsStore) tlsStore.used = true;
       return response;
     } catch (error) {
-      if (isCallerAbort(error, getEffectiveSignal(input, options))) throw error;
+      if (isCallerAbort(error, getEffectiveSignal(input, normalizedOptions))) throw error;
       const sessionHadCookies =
         !!error &&
         typeof error === "object" &&
         "sessionHadCookies" in error &&
         error.sessionHadCookies === true;
-      if (!isTlsFallbackReplaySafe(input, options) || sessionHadCookies) {
+      if (!isTlsFallbackReplaySafe(input, normalizedOptions) || sessionHadCookies) {
         throw sanitizeTransportError(
           error,
           sessionHadCookies
@@ -1099,18 +1151,18 @@ async function patchedFetch(
   // of killing all idle sockets after 1ms or surfacing a bare 502.
   const _undiciProxy =
     deps.undiciFetch ?? (undiciFetch as unknown as (...args: unknown[]) => Promise<Response>);
-  const hasNonReplayableProxyBody = requestHasNonReplayableBody(input, options);
+  const hasNonReplayableProxyBody = requestHasNonReplayableBody(input, normalizedOptions);
   const maxProxyAttempts = hasNonReplayableProxyBody ? 1 : 2;
   let lastProxyError: unknown = null;
   for (let attempt = 0; attempt < maxProxyAttempts; attempt++) {
     try {
-      return await _undiciProxy(input, {
-        ...options,
+      return await _undiciProxy(targetUrl, {
+        ...normalizedOptions,
         dispatcher:
           attempt === 0 ? createProxyDispatcher(proxyUrl) : getProxyRetryDispatcher(proxyUrl),
       });
     } catch (error) {
-      if (isCallerAbort(error, getEffectiveSignal(input, options))) throw error;
+      if (isCallerAbort(error, getEffectiveSignal(input, normalizedOptions))) throw error;
       const msg = error instanceof Error ? error.message : String(error);
       const errCode = (error as { code?: unknown })?.code;
       const isTransportFailure =

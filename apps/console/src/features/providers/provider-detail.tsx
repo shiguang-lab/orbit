@@ -168,10 +168,10 @@ function maskAccountName(value: string | null | undefined): string {
   const at = raw.lastIndexOf("@");
   const user = raw.slice(0, at);
   const domain = raw.slice(at + 1);
-  if (user.length <= 3) return raw;
-  const maskedUser = `${user.slice(0, 3)}${"*".repeat(user.length - 3)}`;
-  const maskedDomain = domain.length <= 3 ? domain : `${"*".repeat(domain.length - 3)}${domain.slice(-3)}`;
-  return `${maskedUser}@${maskedDomain}`;
+  if (user.length <= 2) return raw;
+  if (user.length <= 5) return `${user.slice(0, 2)}***@${domain}`;
+  const maskedUser = `${user.slice(0, 3)}***${user.slice(-2)}`;
+  return `${maskedUser}@${domain}`;
 }
 
 
@@ -307,6 +307,7 @@ export default function ProviderDetailPage() {
   const settingsQuery = useQuery({ queryKey: ["settings", "provider-routing"], queryFn: settingsApi.get, staleTime: 30_000, enabled: connections.length > 1 || kind === "no-auth" });
   const proxyConfigQuery = useQuery({ queryKey: ["settings", "proxy"], queryFn: () => settingsApi.proxyConfig(), staleTime: 30_000, enabled: Boolean(providerId) });
   const node = nodesQuery.data?.nodes.find((item) => item.id === providerId);
+  const isCliproxyManaged = providerId.startsWith("openai-compatible-cliproxy-") || Boolean(node?.prefix?.startsWith("cpa-"));
   const providerProxy = (proxyConfigQuery.data as Record<string, unknown> | undefined)?.providers as Record<string, { host?: string; name?: string }> | undefined;
   const providerProxyHost = providerProxy?.[providerId]?.host;
   const providerDisplayAlias = node?.prefix || (info as any)?.alias || providerId;
@@ -334,10 +335,10 @@ export default function ProviderDetailPage() {
 
   const setCustomTitle = useBreadcrumbTitle((s) => s.setCustomTitle);
   useEffect(() => {
-    const title = info?.name || providerId;
+    const title = node?.name || info?.name || providerId;
     if (title) setCustomTitle(title);
     return () => setCustomTitle(null);
-  }, [info?.name, providerId, setCustomTitle]);
+  }, [info?.name, node?.name, providerId, setCustomTitle]);
 
   useEffect(() => {
     const resetScroll = () => {
@@ -1077,16 +1078,16 @@ export default function ProviderDetailPage() {
               onError={(event) => { event.currentTarget.style.display = "none"; }}
             />}
             <span style={{ position: "absolute", color: info?.color ?? "#1677ff", fontWeight: 600, fontSize: 13 }}>
-              {info?.textIcon ?? providerId.slice(0, 2).toUpperCase()}
+              {info?.textIcon ?? (isCliproxyManaged ? "CPA" : providerId.slice(0, 2).toUpperCase())}
             </span>
           </div>
           <div className={styles.headerRow}>
             <Typography.Title level={4} className={styles.title} style={{ color: info?.color ?? undefined }}>
               {info?.website ? (
                 <a href={info.website} target="_blank" rel="noreferrer" className={styles.titleLink}>
-                  <span>{info?.name ?? providerId}</span><MaterialIcon name="open_in_new" size={15} />
+                  <span>{node?.name ?? info?.name ?? providerId}</span><MaterialIcon name="open_in_new" size={15} />
                 </a>
-              ) : (info?.name ?? providerId)}
+              ) : (node?.name ?? info?.name ?? providerId)}
             </Typography.Title>
             {kind === "upstream-proxy" ? (
               <Tag bordered={false} color="success" style={{ fontSize: 12, padding: "2px 8px" }}>
@@ -1113,15 +1114,41 @@ export default function ProviderDetailPage() {
           </div>
         </div>
 
-        {kind === "compatible" && <Card className={styles.protocol} title={providerId.startsWith("anthropic-compatible-") ? "Anthropic 兼容端点" : "OpenAI 兼容端点"} extra={<Tag color="orange">兼容协议</Tag>}>
-          <Descriptions size="small" column={{ xs: 1, sm: 2 }}>
-            <Descriptions.Item label="端点名称">{node?.name ?? info?.name ?? providerId}</Descriptions.Item>
-            <Descriptions.Item label="API 类型">{node?.apiType ?? "OpenAI Chat Completions"}</Descriptions.Item>
-            <Descriptions.Item label="Base URL">{node?.baseUrl ?? info?.baseUrl ?? "未配置"}</Descriptions.Item>
-            <Descriptions.Item label="模型路径">{node?.modelsPath ?? "/v1/models"}</Descriptions.Item>
-          </Descriptions>
-          <Alert type="info" showIcon style={{ marginTop: 12 }} message="兼容端点的连接凭证和模型列表由端点配置决定；先添加连接，再导入或添加模型。" />
-        </Card>}
+        {isCliproxyManaged ? (
+          <Card
+            className={styles.protocol}
+            title={node?.name ?? "CLIProxyAPI 节点端点"}
+            extra={<Tag color="cyan">嵌入式服务</Tag>}
+          >
+            <Descriptions size="small" column={{ xs: 1, sm: 2 }}>
+              <Descriptions.Item label="节点名称">{node?.name ?? providerId}</Descriptions.Item>
+              <Descriptions.Item label="API 类型">{node?.apiType ?? "chat"}</Descriptions.Item>
+              <Descriptions.Item label="Base URL">{node?.baseUrl ?? "自动探测"}</Descriptions.Item>
+              <Descriptions.Item label="模型路径">{node?.modelsPath ?? "/v1/models"}</Descriptions.Item>
+            </Descriptions>
+            <Alert
+              type="info"
+              showIcon
+              style={{ marginTop: 12 }}
+              message="此端点的账号与可用模型由对应节点自动上报同步；如需挂载新账号或重新授权，请前往「嵌入式服务」管理。"
+              action={
+                <Button size="small" type="primary" ghost onClick={() => navigate("/dashboard/services")}>
+                  前往嵌入式服务
+                </Button>
+              }
+            />
+          </Card>
+        ) : kind === "compatible" ? (
+          <Card className={styles.protocol} title={providerId.startsWith("anthropic-compatible-") ? "Anthropic 兼容端点" : "OpenAI 兼容端点"} extra={<Tag color="orange">兼容协议</Tag>}>
+            <Descriptions size="small" column={{ xs: 1, sm: 2 }}>
+              <Descriptions.Item label="端点名称">{node?.name ?? info?.name ?? providerId}</Descriptions.Item>
+              <Descriptions.Item label="API 类型">{node?.apiType ?? "OpenAI Chat Completions"}</Descriptions.Item>
+              <Descriptions.Item label="Base URL">{node?.baseUrl ?? info?.baseUrl ?? "未配置"}</Descriptions.Item>
+              <Descriptions.Item label="模型路径">{node?.modelsPath ?? "/v1/models"}</Descriptions.Item>
+            </Descriptions>
+            <Alert type="info" showIcon style={{ marginTop: 12 }} message="兼容端点的连接凭证和模型列表由端点配置决定；先添加连接，再导入或添加模型。" />
+          </Card>
+        ) : null}
         {kind === "no-auth" && (
           <Card title="免鉴权提供者">
             <Space align="start" style={{ width: "100%", justifyContent: "space-between" }}>
@@ -1346,6 +1373,15 @@ export default function ProviderDetailPage() {
                   >
                     {t("providers.oauthAuthorize", "OAuth 授权")}
                   </Button>
+                ) : isCliproxyManaged ? (
+                  <Button
+                    className={styles.headerActionButton}
+                    type="primary"
+                    icon={<MaterialIcon name="open_in_new" />}
+                    onClick={() => navigate("/dashboard/services")}
+                  >
+                    管理节点账号
+                  </Button>
                 ) : (
                   <Button
                     className={styles.headerActionButton}
@@ -1531,7 +1567,18 @@ export default function ProviderDetailPage() {
                 )}
                 <Checkbox checked={selectedConnectionIds.includes(row.id)} onChange={(event) => setSelectedConnectionIds((current) => event.target.checked ? [...new Set([...current, row.id])] : current.filter((id) => id !== row.id))} />
                 <Space orientation="vertical" size={0} className={styles.connectionIdentity}>
-                  <div className={styles.connectionNameRow}><MaterialIcon className={styles.connectionNameIcon} name="lock" size={16} /><Typography.Text strong ellipsis={{ tooltip: maskAccountName(row.name) }}>{maskAccountName(row.name)}</Typography.Text></div>
+                  <div className={styles.connectionNameRow}>
+                    <MaterialIcon className={styles.connectionNameIcon} name="lock" size={16} />
+                    {(() => {
+                      const specific = row.providerSpecificData as Record<string, unknown> | undefined;
+                      const rawAccount = (specific?.accountEmail as string | undefined) || row.name;
+                      return (
+                        <Typography.Text strong ellipsis={{ tooltip: rawAccount }}>
+                          {maskAccountName(rawAccount)}
+                        </Typography.Text>
+                      );
+                    })()}
+                  </div>
                 </Space>
                 <Divider type="vertical" className={styles.connectionDivider} />
                 <Space wrap align="center" size={[4, 4]} className={styles.connectionFeatures}>

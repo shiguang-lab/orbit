@@ -311,9 +311,29 @@ export default function ProvidersPage() {
       }
     }
 
+    for (const node of nodesQuery.data?.nodes ?? []) {
+      const key = `compatible:${node.id}`;
+      if (map.has(key)) continue;
+      map.set(key, {
+        key,
+        provider: node.id,
+        displayName: node.name || node.id,
+        category: "compatible",
+        color: "#10A37F",
+        icon: "hub",
+        iconUrl: node.iconUrl,
+        textIcon: "OC",
+        serviceKinds: ["llm"],
+        connections: [],
+        connected: 0,
+        errorCount: 0,
+        warningCount: 0,
+      });
+    }
+
     for (const connection of connections) {
       const matchingKeys = [...map.keys()].filter((key) => key.endsWith(`:${connection.provider}`));
-      const key = matchingKeys[0] ?? `configured:${connection.provider}`;
+      const key = (map.has(`compatible:${connection.provider}`) ? `compatible:${connection.provider}` : matchingKeys[0]) ?? `configured:${connection.provider}`;
       const group = map.get(key) ?? {
         key,
         provider: connection.provider,
@@ -333,26 +353,6 @@ export default function ProvidersPage() {
         group.warningCount += 1;
       }
       map.set(key, group);
-    }
-
-    for (const node of nodesQuery.data?.nodes ?? []) {
-      const key = `compatible:${node.id}`;
-      if (map.has(key)) continue;
-      map.set(key, {
-        key,
-        provider: node.id,
-        displayName: node.name || node.id,
-        category: "compatible",
-        color: "#10A37F",
-        icon: "hub",
-        iconUrl: node.iconUrl,
-        textIcon: "OC",
-        serviceKinds: ["llm"],
-        connections: [],
-        connected: 0,
-        errorCount: 0,
-        warningCount: 0,
-      });
     }
 
     const expirations = expirationQuery.data?.list ?? [];
@@ -398,7 +398,7 @@ export default function ProvidersPage() {
     }
     const compatibleTotal = groups.filter((group) => group.category === "compatible").length;
     if (compatibleTotal > 0) {
-      categories.push({ key: "compatible", label: t("providersPage.category.compatible"), total: compatibleTotal, configured: 0 });
+      categories.push({ key: "compatible", label: t("providersPage.category.compatible"), total: compatibleTotal, configured: connectionCounts.get("compatible") ?? 0 });
     }
     return categories;
   }, [catalogCategories, groups, t]);
@@ -910,9 +910,28 @@ function ProviderCard({ group, onOpen, onTest, testing, onToggle, togglingId }: 
               {group.blocked ? "已禁用" : "免鉴权可用"}
             </Tag>
           ) : group.connections.length > 0 ? (
-            <Tag color={group.errorCount > 0 ? "error" : group.warningCount > 0 ? "warning" : group.connected > 0 ? "success" : "default"} style={{ margin: 0 }}>
-              {group.errorCount > 0 ? t("providersPage.errorCount", { count: group.errorCount }) : group.warningCount > 0 ? t("providersPage.warningCount", { count: group.warningCount }) : group.connected > 0 ? t("providersPage.connectedCount", { count: group.connected }) : t("providersPage.notConnected")}
-            </Tag>
+            <>
+              {group.connected > 0 && (
+                <Tag color="success" style={{ margin: 0 }}>
+                  {t("providersPage.connectedCount", { count: group.connected })}
+                </Tag>
+              )}
+              {group.errorCount > 0 && (
+                <Tag color="error" style={{ margin: 0 }}>
+                  {t("providersPage.errorCount", { count: group.errorCount })}
+                </Tag>
+              )}
+              {group.warningCount > 0 && (
+                <Tag color="warning" style={{ margin: 0 }}>
+                  {t("providersPage.warningCount", { count: group.warningCount })}
+                </Tag>
+              )}
+              {group.connected === 0 && group.errorCount === 0 && group.warningCount === 0 && (
+                <Tag color="default" style={{ margin: 0 }}>
+                  {t("providersPage.notConnected")}
+                </Tag>
+              )}
+            </>
           ) : <Typography.Text type="secondary" style={{ fontSize: 12, lineHeight: "24px" }}>{t("providersPage.noConnections")}</Typography.Text>}
           {group.expiryStatus === "expired" && <Tag color="error" style={{ margin: 0 }}>{t("apiKeys.expired")}</Tag>}
           {group.expiryStatus === "expiring_soon" && <Tag color="warning" style={{ margin: 0 }}>{t("providers.expiringSoonBadge", undefined, "Expiring soon")}</Tag>}

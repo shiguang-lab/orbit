@@ -13,6 +13,7 @@ interface CatalogCredential {
   id: string;
   instanceId: string;
   name: string;
+  email?: string;
   provider: string;
   disabled: boolean;
   routable: boolean;
@@ -68,10 +69,16 @@ export function syncCliproxyScope(
         credential.routable &&
         !credential.disabled;
       const baseUrl = `${node.endpoint}/v1/instances/${encodeURIComponent(process.id)}/credentials/${encodeURIComponent(credential.id)}/inference/v1`;
+      const accountName =
+        credential.email && credential.email.trim()
+          ? credential.email.trim()
+          : credential.name;
       const metadata = JSON.stringify({
         cliproxyManagerId: node.id,
         cliproxyProcessId: process.id,
         cliproxyCredentialId: credential.id,
+        credentialName: credential.name,
+        accountEmail: credential.email || null,
         upstreamProvider: credential.provider,
         baseUrl,
         apiType: "chat",
@@ -83,7 +90,7 @@ export function syncCliproxyScope(
         VALUES (?, ?, 'none', ?, ?, ?, 0, 0, ?, ?)
         ON CONFLICT(id) DO UPDATE SET name=excluded.name, is_active=excluded.is_active,
           provider_specific_data=excluded.provider_specific_data, updated_at=excluded.updated_at`,
-      ).run(id, provider, credential.name, active ? 1 : 0, metadata, now, now);
+      ).run(id, provider, accountName, active ? 1 : 0, metadata, now, now);
       const models = normalizeSyncedAvailableModels(
         credential.models.map((model) => ({
           id: model,
