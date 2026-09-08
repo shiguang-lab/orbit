@@ -2,6 +2,7 @@ import {
   BadGatewayException,
   BadRequestException,
   ConflictException,
+  HttpException,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
@@ -133,8 +134,9 @@ export class ServiceNodesService {
     }
     const text = Buffer.concat(chunks).toString("utf8");
     if (!response.ok)
-      throw new BadGatewayException(
+      throw new HttpException(
         `Node returned HTTP ${response.status}: ${text.slice(0, 500)}`,
+        response.status,
       );
     try {
       return JSON.parse(text);

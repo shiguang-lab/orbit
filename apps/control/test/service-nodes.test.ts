@@ -391,3 +391,31 @@ test("configured NAS automatically registers once across control restarts", asyn
     delete process.env.ORBIT_CLIPROXY_MANAGER_NAME;
   }
 });
+
+test("node HTTP errors retain their status instead of becoming bad gateway", async () => {
+  const server = createServer((_request, response) => {
+    response.writeHead(404, { "Content-Type": "application/json" });
+    response.end(JSON.stringify({ error: "not found" }));
+  });
+  server.listen(0, "127.0.0.1");
+  await once(server, "listening");
+  const address = server.address() as { port: number };
+  const node = store.createServiceNode({
+    id: "status-forwarding",
+    name: "Status forwarding",
+    endpoint: `http://127.0.0.1:${address.port}`,
+  }).node;
+  try {
+    const { ServiceNodesService } = await import("../src/service-nodes/service-nodes.service.js");
+    const service = new ServiceNodesService();
+    await assert.rejects(
+      () => service.request(node.id, "missing"),
+      (error: { getStatus?: () => number }) => error.getStatus?.() === 404,
+    );
+  } finally {
+    store.deleteServiceNode(node.id);
+    server.closeAllConnections();
+    server.close();
+    await once(server, "close");
+  }
+});

@@ -353,22 +353,9 @@ export default function CliproxyInstances() {
   });
   const nodes = query.data ?? [];
   const node = nodes.find((n) => n.id === params.get("instance"));
-  const fallbackInstance: Instance = {
-    id: node ? `${node.id}-default` : "default",
-    name: node ? `${node.name}` : "CLIProxyAPI",
-    port: 8317,
-    version: "",
-    state: node?.online ? "stopped" : "offline",
-    desiredState: "stopped",
-    healthy: false,
-    latencyMs: 0,
-    restartCount: 0,
-    credentials: [],
-  };
   const instance =
     node?.report?.instances.find((i) => i.id === params.get("process")) ??
-    node?.report?.instances[0] ??
-    (node ? fallbackInstance : undefined);
+    node?.report?.instances[0];
   const credentialTarget =
     node && instance ? { nodeId: node.id, instance } : undefined;
   const inDetail = params.has("instance");
@@ -1749,7 +1736,13 @@ export default function CliproxyInstances() {
                   ? tt("正在加载实例", "Loading instance")
                   : tt("实例不存在", "Instance not found")
               }
-            />
+            >
+              {node?.online && (
+                <Button type="primary" onClick={() => setCreating(node.id)}>
+                  {tt("安装 CLIProxyAPI", "Install CLIProxyAPI")}
+                </Button>
+              )}
+            </Empty>
           )}
         </>
       ) : (
@@ -2357,6 +2350,7 @@ export default function CliproxyInstances() {
               {
                 method: "POST",
                 body: JSON.stringify({
+                  id: `${creating}-default`,
                   name: node?.name ?? "CLIProxyAPI",
                   port: values.port,
                 }),
