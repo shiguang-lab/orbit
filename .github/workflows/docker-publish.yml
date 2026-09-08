@@ -2,15 +2,7 @@ name: Publish Orbit images
 
 on:
   push:
-    branches: [main]
-    tags: ["v*", "v*-*"]
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: Image tag to publish (for example 0.1.0)
-        required: false
-        default: latest
-        type: string
+    tags: ["v*"]
 
 permissions:
   contents: read
@@ -142,25 +134,16 @@ jobs:
         shell: bash
         env:
           IMAGE_NAME: ${{ env.IMAGE_PREFIX }}-${{ matrix.image }}
-          EVENT_NAME: ${{ github.event_name }}
-          REF_TYPE: ${{ github.ref_type }}
           REF_NAME: ${{ github.ref_name }}
-          INPUT_TAG: ${{ inputs.tag }}
         run: |
           set -euo pipefail
-          if [[ "$EVENT_NAME" == workflow_dispatch ]]; then
-            primary="${INPUT_TAG:-latest}"
-          elif [[ "$REF_TYPE" == tag ]]; then
-            primary="${REF_NAME#v}"
-          else
-            primary="latest"
-          fi
+          primary="${REF_NAME#v}"
           {
             echo "tags<<EOF"
             echo "$IMAGE_NAME:$primary"
             echo "$IMAGE_NAME:sha-${GITHUB_SHA::12}"
-            if [[ "$REF_TYPE" == tag ]]; then echo "$IMAGE_NAME:$REF_NAME"; fi
-            if [[ "$primary" != latest && "$EVENT_NAME" != workflow_dispatch ]]; then echo "$IMAGE_NAME:latest"; fi
+            echo "$IMAGE_NAME:$REF_NAME"
+            echo "$IMAGE_NAME:latest"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
@@ -207,7 +190,6 @@ jobs:
   release:
     name: Build GitHub Release assets
     needs: publish
-    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
       contents: write
