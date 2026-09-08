@@ -1734,7 +1734,11 @@ export default function CliproxyInstances() {
               description={
                 query.isLoading
                   ? tt("正在加载实例", "Loading instance")
-                  : tt("实例不存在", "Instance not found")
+                  : node
+                    ? node.online
+                      ? tt("未检测到 CLIProxyAPI 进程", "No CLIProxyAPI process detected")
+                      : tt("实例尚未连接", "Instance is disconnected")
+                    : tt("实例不存在", "Instance not found")
               }
             >
               {node?.online && (
