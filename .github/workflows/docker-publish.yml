@@ -99,7 +99,6 @@ jobs:
           - target: worker
             image: worker
             cache_scope: node-runtime
-            cache_scope: node-runtime
           - target: cliproxy-manager
             image: cliproxy-manager
             context: ./apps/cliproxy-manager
