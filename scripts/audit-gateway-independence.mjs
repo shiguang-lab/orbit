@@ -227,7 +227,7 @@ const routePathMismatches = referenceAvailable ? [
   ...[...comparableLocalRoutePaths].filter((p) => !comparableOfficialRoutePaths.has(p)).map((path) => ({ path, side: "extra-local" })),
 ].sort((a, b) => a.path.localeCompare(b.path)) :
   (frozenParityRoutePaths.size === frozenBaseline.apiRouteFiles && hashPaths(frozenParityRoutePaths) === frozenBaseline.apiPathSha256 ? [] : [{ path: "<frozen-api-route-baseline>", side: "hash-mismatch" }]);
-const requiredApps = ["console", "gateway", "control", "realtime", "worker", "importer"];
+const requiredApps = ["console", "gateway", "control", "realtime", "worker"];
 const missingApps = requiredApps.filter((name) => !existsSync(join(repoRoot, "apps", name, "package.json")));
 
 const allSourceFiles = [

@@ -63,9 +63,9 @@ git push origin "$VERSION"
 Tag 推送会触发 `Publish Orbit images`，并按以下顺序执行：
 
 1. `Verify independent runtime`：安装依赖，执行类型检查、构建、测试、架构审计和运行时 smoke。
-2. `publish`：依次构建并发布 console、gateway、control、realtime、worker、importer 和
-   cliproxy-manager 七个 `linux/amd64` 镜像；四个常驻 Node 服务会先启动并通过健康检查再推送。
-3. `Build GitHub Release assets`：七个镜像全部成功后创建 GitHub Release 和部署资产。
+2. `publish`：依次构建并发布 console、gateway、control、realtime、worker 和
+   cliproxy-manager 六个 `linux/amd64` 镜像；四个常驻 Node 服务会先启动并通过健康检查再推送。
+3. `Build GitHub Release assets`：六个镜像全部成功后创建 GitHub Release 和部署资产。
 
 任一验证或镜像任务失败都会阻止 Release 创建。先修复根因并提交到 `main`，再创建新的版本 Tag；
 不要从失败的旧 Tag 发布修改后的代码。
@@ -87,7 +87,6 @@ ghcr.io/shiguang-lab/orbit-gateway
 ghcr.io/shiguang-lab/orbit-control
 ghcr.io/shiguang-lab/orbit-realtime
 ghcr.io/shiguang-lab/orbit-worker
-ghcr.io/shiguang-lab/orbit-importer
 ghcr.io/shiguang-lab/orbit-cliproxy-manager
 ```
 
@@ -108,7 +107,7 @@ sha256sum -c SHA256SUMS.txt
 
 ## 6. 更新 NAS
 
-先备份当前 `.env` 和数据卷，再把 `.env` 中七个 `ORBIT_*_IMAGE` 变量统一更新为本次不可变版本
+先备份当前 `.env` 和数据卷，再把 `.env` 中六个 `ORBIT_*_IMAGE` 变量统一更新为本次不可变版本
 Tag，例如 `v0.1.18`。保留现有 `JWT_SECRET`、`API_KEY_SECRET`、`STORAGE_ENCRYPTION_KEY`、
 数据库、CLIProxyAPI 配置和凭据，不要在升级时重新生成。
 

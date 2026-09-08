@@ -16,7 +16,6 @@ orbit/
 │   ├── control/   # 管理 API、RBAC、配置和审计
 │   ├── realtime/      # WebSocket/SSE 实时服务
 │   ├── worker/        # 同步、定时任务和后台作业
-│   └── importer/      # 冷快照导入与数据库转换 CLI
 ├── packages/
 │   ├── core/ # 无端口监听的领域实现与协议能力
 │   ├── http/ # 仅承载 HTTP 基础设施；路由由 app 负责装配
@@ -34,11 +33,10 @@ orbit/
 - 生产入口拆为 **gateway**（模型协议）、**control**（管理面）、**realtime**（SSE/WS）
   和 **worker**（定时任务/后台作业）；每个 `apps/*` 都拥有自己的进程 bootstrap，
   只通过包接口复用实现。
-- 服务只从 `gateway`、`control`、`realtime`、`worker` 和 `importer` 启动；仓库不包含旧 BFF 启动器或兼容入口。
+- 服务只从 `gateway`、`control`、`realtime` 和 `worker` 启动；仓库不包含旧 BFF 启动器或兼容入口。
 - `packages/core` 只提供无端口监听的领域模块与协议能力；HTTP 端口、生命周期和 surface 选择由所属 app 的固定 bootstrap 负责，`http` 仅提供传输适配。数据库表结构放在 `packages/contracts/src/db-schema`，纯出站 URL/SSRF 校验放在无框架依赖的 `packages/utils/src/network`，不得把 app 启动逻辑放回公共包。
 - app 之间只能通过网络 API 或 `packages/contracts` 交互；禁止跨 app workspace 依赖、跨 app 相对路径和直接引用其他 app 的 `src`。
 - 每次迁移一个领域后，运行 `pnpm audit:app-boundaries` 验证依赖边界，再运行该 app 自己的 typecheck/build 与 smoke 测试。
-- `apps/importer` 将冻结快照导入独立数据卷；`scripts/smoke-container-deployment.mjs` 自动验收接口隔离、数据表、原生 SQLite/vector、实时端口和全部 worker scheduler。
 - 参考仓库仅作为审查基线；升级必须重新复制快照并通过 `pnpm audit:gateway-independence`。
 - 发布机不需要 checkout 官方仓库：独立性/路由契约审查内置冻结 SHA-256 基线；设置
   `ORBIT_REFERENCE_DIR` 时才会额外执行逐文件参考对比。
@@ -46,20 +44,6 @@ orbit/
 ## 数据源
 
 - 独立实例只读写自身 `DATA_DIR`（默认 `/app/data`）中的 SQLite、日志和制品。
-- 从参考实例导入冷快照：`pnpm import:source-data --source-data-dir /path/to/frozen-data --target-data-dir /path/to/data --source-home-dir /path/to/source-home --target-home-dir /home/node`。工具复制 SQLite/WAL/备份/日志/规则文件，并按白名单迁移 CLI/OAuth、浏览器和隧道状态；执行 `integrity_check` 并生成 SHA-256 manifest。
-- 导入后对待发布目标库运行 `ORBIT_SOURCE_DATA_DIR=/path/to/target-data pnpm audit:provider-config`；启用的 OpenAI-compatible 连接必须提供真实 HTTPS `baseUrl`。如源快照缺少该配置，可使用不含密钥的覆盖文件（按连接 ID 映射 `baseUrl`、可选 `defaultModel`/`providerSpecificData`）导入：
-  `pnpm import:source-data --source-data-dir /path/to/frozen-data --target-data-dir /path/to/data --provider-config-file /path/to/provider-config.json`。覆盖文件摘要和应用范围会写入 manifest，随后仍必须通过真实 `pnpm smoke:provider-matrix`。
-- CLI/OAuth/keychain/browser/tunnel 凭据需要按文档单独导入或重新授权；没有真实源快照时不能声称数据已同步。
-
-发布前必须运行严格门禁（未提供目标数据卷或真实 Provider 上游时会失败；源端不存在的可选外部凭据会被记录为需重新授权，不会伪装成已迁移）：
-
-```bash
-ORBIT_SOURCE_DATA_DIR=/path/to/source \
-ORBIT_TARGET_DATA_DIR=/path/to/target \
-ORBIT_IMPORT_MANIFEST=/path/to/target/gateway-import-manifest.json \
-ORBIT_TARGET_HOME_DIR=/path/to/target-home \
-RUN_DEPLOYMENT_SMOKE=1 pnpm audit:release-readiness
-```
 
 ## 运行
 
@@ -99,17 +83,15 @@ ghcr.io/shiguang-lab/orbit-gateway:<tag-or-digest>
 ghcr.io/shiguang-lab/orbit-control:<tag-or-digest>
 ghcr.io/shiguang-lab/orbit-realtime:<tag-or-digest>
 ghcr.io/shiguang-lab/orbit-worker:<tag-or-digest>
-ghcr.io/shiguang-lab/orbit-importer:<tag-or-digest>
 ghcr.io/shiguang-lab/orbit-cliproxy-manager:<tag-or-digest>
 ```
 
-七个镜像全部发布成功后，工作流自动创建 GitHub Release，附带源码 tar/zip、包含 `deploy/`
+六个镜像全部发布成功后，工作流自动创建 GitHub Release，附带源码 tar/zip、包含 `deploy/`
 目录的 NAS 部署包和 `SHA256SUMS.txt` 校验文件。发布前检查、Tag 创建、结果核对和 NAS 更新步骤见
 [`RELEASE.md`](./RELEASE.md)。
 
 每个应用镜像只对应一个显式 target，运行数据写入独立数据卷，
-不需要在 NAS 安装 Node/pnpm。首次部署前执行 importer 导入冷快照，完整步骤见
-[`deploy/NAS-DEPLOY.md`](./deploy/NAS-DEPLOY.md)。
+不需要在 NAS 安装 Node/pnpm。
 
 ## 服务结构
 
@@ -125,7 +107,6 @@ apps/control/src/*/*.module.ts  # health/providers/keys/pricing 等 feature modu
 apps/realtime/src/main.ts           # realtime 进程入口与端口
 apps/realtime/src/app.module.ts     # realtime 根模块
 apps/worker/src/main.ts              # 后台作业进程入口
-apps/importer/src/main.ts            # 一次性导入进程入口
 
 packages/http/src/
 ├── http.module.ts # Nest transport 基础模块

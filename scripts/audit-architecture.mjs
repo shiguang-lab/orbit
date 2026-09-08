@@ -34,7 +34,6 @@ const appKinds = {
   "gateway": { entry: "main.ts", nest: true },
   realtime: { entry: "main.ts", nest: true },
   worker: { entry: "main.ts", nest: true },
-  importer: { entry: "main.ts", nest: false },
 };
 
 if (existsSync(join(root, "packages/core/bin"))) {

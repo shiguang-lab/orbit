@@ -219,12 +219,6 @@ export const ProviderConnectionEntity: EntityDefinition = {
       mode: "maintenance",
       reason: "Erase undecryptable credentials through the explicit recovery command.",
     },
-    {
-      source: "apps/importer/src/import-source-data.mjs",
-      entrypoint: "apps/importer/src/main.ts",
-      mode: "migration",
-      reason: "Apply a declared provider overlay to an isolated staged import snapshot.",
-    },
   ],
   columns: [
     column("id", "TEXT", { nullable: false, primaryKey: true }),

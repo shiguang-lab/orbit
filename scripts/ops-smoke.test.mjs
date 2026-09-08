@@ -52,12 +52,12 @@ test("published image repositories use the Orbit namespace", () => {
   assert.match(workflow, /IMAGE_PREFIX: ghcr\.io\/shiguang-lab\/orbit\b/);
   const retiredImagePrefix = ["shiguang", "gateway"].join("-");
   assert.ok(!`${workflow}\n${compose}\n${rollback}`.includes(`ghcr.io/shiguang-lab/${retiredImagePrefix}`));
-  for (const service of ["console", "gateway", "control", "realtime", "worker", "importer"]) {
+  for (const service of ["console", "gateway", "control", "realtime", "worker"]) {
     assert.match(compose, new RegExp(`orbit-${service}:local`));
   }
 });
 
-test("rollback applies one split image family and does not start the importer", () => {
+test("rollback applies one split image family", () => {
   const fixture = mkdtempSync(join(tmpdir(), "orbit-ops-"));
   try {
     const fakeBin = join(fixture, "bin");
@@ -67,7 +67,7 @@ test("rollback applies one split image family and does not start the importer", 
     writeFileSync(
       docker,
       `#!/usr/bin/env bash\n` +
-        `printf '%s\\n' "CONSOLE=$ORBIT_CONSOLE_IMAGE" "GATEWAY=$ORBIT_GATEWAY_IMAGE" "CONTROL=$ORBIT_CONTROL_IMAGE" "REALTIME=$ORBIT_REALTIME_IMAGE" "WORKER=$ORBIT_WORKER_IMAGE" "IMPORTER=$ORBIT_IMPORTER_IMAGE" "ARGS=$*" >> "${log}"\n`
+        `printf '%s\\n' "CONSOLE=$ORBIT_CONSOLE_IMAGE" "GATEWAY=$ORBIT_GATEWAY_IMAGE" "CONTROL=$ORBIT_CONTROL_IMAGE" "REALTIME=$ORBIT_REALTIME_IMAGE" "WORKER=$ORBIT_WORKER_IMAGE" "ARGS=$*" >> "${log}"\n`
     );
     chmodSync(docker, 0o755);
     const result = spawnSync(
@@ -77,12 +77,11 @@ test("rollback applies one split image family and does not start the importer", 
     );
     assert.equal(result.status, 0, result.stderr);
     const output = readFileSync(log, "utf8");
-    for (const service of ["console", "gateway", "control", "realtime", "worker", "importer"]) {
+    for (const service of ["console", "gateway", "control", "realtime", "worker"]) {
       assert.match(output, new RegExp(`ghcr\\.io/shiguang-lab/orbit-${service}:v3\\.8\\.50`));
     }
-    assert.match(output, /ARGS=compose .* --profile migration pull/);
+    assert.match(output, /ARGS=compose .* pull/);
     assert.match(output, /ARGS=compose .* up -d --no-build/);
-    assert.doesNotMatch(output, /ARGS=.*up.*importer/);
   } finally {
     rmSync(fixture, { recursive: true, force: true });
   }

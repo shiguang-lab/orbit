@@ -193,9 +193,6 @@ function validateExternalWriteAuthorities(entity, tableUsage, appEntries, root =
     if (authority.mode === "maintenance" && !/reset|repair|maintenance/.test(authority.entrypoint)) {
       throw new Error(`${entity.entityName}: maintenance authority must use an explicit recovery entrypoint`);
     }
-    if (authority.mode === "migration" && app.manifest.name !== "@orbit/importer") {
-      throw new Error(`${entity.entityName}: migration authority must belong to the importer app`);
-    }
     authorizedFiles.add(authority.source);
   }
   return authorizedFiles;

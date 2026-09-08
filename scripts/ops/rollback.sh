@@ -10,10 +10,9 @@ usage() {
 Usage: scripts/ops/rollback.sh <release-tag> [--compose-file <path>]
        [--image-prefix <registry/repository-prefix>] [--yes|-y] [-h|--help]
 
-Pins all seven application images to the same published release tag, pulls them, and
+Pins all six application images to the same published release tag, pulls them, and
 recreates the active console, gateway, control, realtime, worker, and CLIProxy manager
-services with docker-compose.yml. The migration-profile importer image is pulled but
-not started. The image variables apply to this invocation only; set the same seven values in
+services with docker-compose.yml. The image variables apply to this invocation only; set the same six values in
 .env before a later manual `docker compose up`.
 
 Defaults:
@@ -56,16 +55,15 @@ export ORBIT_GATEWAY_IMAGE="${IMAGE_PREFIX}-gateway${IMAGE_SUFFIX}"
 export ORBIT_CONTROL_IMAGE="${IMAGE_PREFIX}-control${IMAGE_SUFFIX}"
 export ORBIT_REALTIME_IMAGE="${IMAGE_PREFIX}-realtime${IMAGE_SUFFIX}"
 export ORBIT_WORKER_IMAGE="${IMAGE_PREFIX}-worker${IMAGE_SUFFIX}"
-export ORBIT_IMPORTER_IMAGE="${IMAGE_PREFIX}-importer${IMAGE_SUFFIX}"
 export ORBIT_CLIPROXY_MANAGER_IMAGE="${IMAGE_PREFIX}-cliproxy-manager${IMAGE_SUFFIX}"
 
 ops_require_cmd docker
-docker compose -f "$COMPOSE_FILE" --profile migration config >/dev/null
+docker compose -f "$COMPOSE_FILE" config >/dev/null
 ops_log "compose: $COMPOSE_FILE"
-ops_log "image family: ${IMAGE_PREFIX}-{console,gateway,control,realtime,worker,importer,cliproxy-manager}${IMAGE_SUFFIX}"
+ops_log "image family: ${IMAGE_PREFIX}-{console,gateway,control,realtime,worker,cliproxy-manager}${IMAGE_SUFFIX}"
 ops_confirm "Pull and recreate the split deployment at $RELEASE_REF?" || ops_die "aborted"
 
-docker compose -f "$COMPOSE_FILE" --profile migration pull
+docker compose -f "$COMPOSE_FILE" pull
 docker compose -f "$COMPOSE_FILE" up -d --no-build
 ops_log "split deployment rolled back to $RELEASE_REF"
-ops_log "persist this tag in the seven ORBIT_*_IMAGE entries before future compose runs"
+ops_log "persist this tag in the six ORBIT_*_IMAGE entries before future compose runs"

@@ -188,7 +188,6 @@ try {
   }
 
   if (sourceHomeDir) {
-    // The importer records every allowlisted external credential/profile path
     // in the data manifest. Verify the known source credential is present in
     // the shared runtime home when it exists, without printing its contents.
     const sourceCodexAuth = path.join(sourceHomeDir, ".codex", "auth.json");

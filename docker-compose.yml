@@ -151,21 +151,6 @@ services:
       - no-new-privileges:true
     cap_drop: [ALL]
 
-  orbit-importer:
-    image: ${ORBIT_IMPORTER_IMAGE:-orbit-importer:local}
-    build: { context: ., target: importer }
-    container_name: orbit-importer
-    profiles: [migration]
-    entrypoint: ["node", "apps/importer/dist/main.js"]
-    command: ["--source-data-dir", "/source", "--target-data-dir", "/app/data", "--replace", "--source-home-dir", "/source-home", "--target-home-dir", "/home/node"]
-    environment:
-      NODE_ENV: production
-    volumes:
-      - orbit_data:/app/data
-      - orbit_home:/home/node
-      - ${ORBIT_SOURCE_DATA_DIR:-./source-data}:/source:ro
-      - ${ORBIT_SOURCE_HOME_DIR:-./source-home}:/source-home:ro
-
 volumes:
   orbit_node_data:
     name: orbit-node-data

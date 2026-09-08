@@ -77,7 +77,6 @@ test("retired connection recovery lifecycle is absent from app consumers", () =>
     "apps/cli",
     "apps/control",
     "apps/gateway",
-    "apps/importer",
     "apps/realtime",
     "packages/inference",
   ]) {

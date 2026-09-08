@@ -61,7 +61,6 @@ jobs:
           pnpm --filter @orbit/auth test
           pnpm --filter @orbit/realtime test
           pnpm --filter @orbit/utils test
-          pnpm --filter @orbit/importer test
           pnpm --filter @orbit/http test
           pnpm --filter @orbit/control exec node --import tsx --test ../../packages/http/test/web-request.test.ts
           pnpm --filter @orbit/control exec node --import tsx --test test/settings-import-request.test.ts
@@ -100,8 +99,6 @@ jobs:
           - target: worker
             image: worker
             cache_scope: node-runtime
-          - target: importer
-            image: importer
             cache_scope: node-runtime
           - target: cliproxy-manager
             image: cliproxy-manager
@@ -232,7 +229,6 @@ jobs:
             `ghcr.io/shiguang-lab/orbit-control:${{ github.ref_name }}`
             `ghcr.io/shiguang-lab/orbit-realtime:${{ github.ref_name }}`
             `ghcr.io/shiguang-lab/orbit-worker:${{ github.ref_name }}`
-            `ghcr.io/shiguang-lab/orbit-importer:${{ github.ref_name }}`
             `ghcr.io/shiguang-lab/orbit-cliproxy-manager:${{ github.ref_name }}`
 
             NAS deployment downloads the `-nas-deploy.tar.gz` asset, sets the seven application image variables,
