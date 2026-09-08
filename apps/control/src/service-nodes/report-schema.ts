@@ -30,6 +30,7 @@ export const nodeReportSchema = z.object({
               id: z.string().min(1).max(512),
               instanceId: id,
               name: z.string().min(1).max(512),
+              email: z.string().max(512).optional(),
               provider: z.string().max(128),
               disabled: z.boolean(),
               routable: z.boolean(),

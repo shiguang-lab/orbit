@@ -260,6 +260,7 @@ interface Instance {
   credentials?: {
     id: string;
     name: string;
+    email?: string;
     provider: string;
     routable: boolean;
     disabled: boolean;
@@ -320,6 +321,7 @@ export default function CliproxyInstances() {
       : "list",
   );
   const [mountModalOpen, setMountModalOpen] = useState(false);
+  const [mountTab, setMountTab] = useState("oauth");
   const [mappingModalOpen, setMappingModalOpen] = useState(false);
   const [configOpen, setConfigOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -1143,27 +1145,11 @@ export default function CliproxyInstances() {
                                 dataSource={instance.credentials ?? []}
                                 columns={[
                                   {
-                                    title: tt("账号 / 凭据来源", "Account / Source"),
-                                    key: "name",
+                                    title: tt("账号", "Account"),
+                                    dataIndex: "email",
                                     ellipsis: true,
-                                    render: (_, record) => (
-                                      <div style={{ minWidth: 0, overflow: "hidden" }}>
-                                        <Typography.Text
-                                          strong
-                                          ellipsis={{ tooltip: record.name }}
-                                          style={{ fontSize: 12, display: "block" }}
-                                        >
-                                          {record.name}
-                                        </Typography.Text>
-                                        <Typography.Text
-                                          type="secondary"
-                                          ellipsis={{ tooltip: `ID: ${record.id}` }}
-                                          style={{ fontSize: 10, display: "block" }}
-                                        >
-                                          ID: {record.id}
-                                        </Typography.Text>
-                                      </div>
-                                    ),
+                                    render: (email) =>
+                                      email || <Typography.Text type="secondary">—</Typography.Text>,
                                   },
                                   {
                                     title: tt("提供商", "Provider"),
@@ -1331,7 +1317,31 @@ export default function CliproxyInstances() {
                   if (node) void handleRefreshNode(node.id, true);
                   void refresh();
                 }}
-                footer={null}
+                afterClose={() => setMountTab("oauth")}
+                footer={mountTab === "upload" && node.online && instance.healthy ? (
+                  <Button
+                    type="primary"
+                    icon={<UploadOutlined />}
+                    disabled={!credentialName.endsWith(".json") || !credentialJSON || busy}
+                    onClick={() =>
+                      mutation.mutate(async () => {
+                        await manageCredential(
+                          "POST",
+                          `auth-files?name=${encodeURIComponent(credentialName)}`,
+                          JSON.parse(credentialJSON),
+                        );
+                        setCredentialJSON("");
+                        setCredentialName("");
+                        await credentials.refetch();
+                        void handleRefreshNode(node.id);
+                        setMountModalOpen(false);
+                        message.success(tt("凭据文件已成功导入", "Credential file imported"));
+                      })
+                    }
+                  >
+                    {tt("上传到此实例", "Upload to this instance")}
+                  </Button>
+                ) : null}
                 destroyOnClose
                 width={680}
               >
@@ -1347,7 +1357,8 @@ export default function CliproxyInstances() {
                     />
                   ) : (
                     <Tabs
-                      defaultActiveKey="oauth"
+                      activeKey={mountTab}
+                      onChange={setMountTab}
                       items={[
                         {
                           key: "oauth",
@@ -1365,12 +1376,12 @@ export default function CliproxyInstances() {
                                   "Select an AI provider and open the official OAuth page. Tokens will be automatically detected and synced.",
                                 )}
                               </Typography.Text>
-                              <Flex align="center" gap={12} wrap="wrap">
+                              <Flex align="center" gap={12} style={{ width: "100%" }}>
                                 <Select
                                   value={authProvider}
                                   disabled={!!authFlow}
                                   onChange={setAuthProvider}
-                                  style={{ width: 220 }}
+                                  style={{ flex: 1, minWidth: 0 }}
                                   options={[
                                     { value: "codex", label: "Codex (OpenAI)" },
                                     { value: "anthropic", label: "Claude (Anthropic)" },
@@ -1379,72 +1390,47 @@ export default function CliproxyInstances() {
                                     { value: "xai", label: "xAI (Grok)" },
                                   ]}
                                 />
-                                {!authFlow ? (
-                                  <Button
-                                    type="primary"
-                                    loading={busy}
-                                    icon={<LinkOutlined />}
-                                    onClick={() =>
-                                      mutation.mutate(async () => {
-                                        const flow = await manageCredential(
-                                          "GET",
-                                          `${authProvider}-auth-url?is_webui=true`,
-                                        );
-                                        if (!flow.url || !flow.state)
-                                          throw new Error(
-                                            tt(
-                                              "实例未返回授权地址",
-                                              "Instance returned no authorization URL",
-                                            ),
-                                          );
-                                        const url = new URL(flow.url);
-                                        if (url.protocol !== "https:")
-                                          throw new Error(
-                                            tt(
-                                              "授权地址必须使用 HTTPS",
-                                              "Authorization URL must use HTTPS",
-                                            ),
-                                          );
-                                        setAuthFlow({
-                                          url: flow.url,
-                                          state: flow.state,
-                                          user_code: flow.user_code,
-                                        });
-                                        window.open(flow.url, "_blank", "noopener,noreferrer");
-                                        message.success(tt("已在新窗口打开授权页面", "Authorization page opened in a new window"));
-                                      })
+                                <Button
+                                  type="primary"
+                                  loading={busy}
+                                  icon={<LinkOutlined />}
+                                  onClick={() => {
+                                    if (authFlow) {
+                                      window.open(authFlow.url, "_blank", "noopener,noreferrer");
+                                      return;
                                     }
-                                  >
-                                    {tt("打开授权链接", "Open authorization link")}
-                                  </Button>
-                                ) : (
-                                  <Space size={8}>
-                                    <Button
-                                      icon={<LinkOutlined />}
-                                      onClick={() => {
-                                        window.open(authFlow.url, "_blank", "noopener,noreferrer");
-                                      }}
-                                    >
-                                      {tt("重新打开授权页面", "Reopen auth page")}
-                                    </Button>
-                                    <Button
-                                      type="text"
-                                      danger
-                                      onClick={() => {
-                                        mutation.mutate(async () => {
-                                          await manageCredential(
-                                            "DELETE",
-                                            `oauth-session?state=${encodeURIComponent(authFlow.state)}`,
-                                          );
-                                          setAuthFlow(undefined);
-                                          setCallbackURL("");
-                                        });
-                                      }}
-                                    >
-                                      {tt("取消授权", "Cancel")}
-                                    </Button>
-                                  </Space>
-                                )}
+                                    mutation.mutate(async () => {
+                                      const flow = await manageCredential(
+                                        "GET",
+                                        `${authProvider}-auth-url?is_webui=true`,
+                                      );
+                                      if (!flow.url || !flow.state)
+                                        throw new Error(
+                                          tt(
+                                            "实例未返回授权地址",
+                                            "Instance returned no authorization URL",
+                                          ),
+                                        );
+                                      const url = new URL(flow.url);
+                                      if (url.protocol !== "https:")
+                                        throw new Error(
+                                          tt(
+                                            "授权地址必须使用 HTTPS",
+                                            "Authorization URL must use HTTPS",
+                                          ),
+                                        );
+                                      setAuthFlow({
+                                        url: flow.url,
+                                        state: flow.state,
+                                        user_code: flow.user_code,
+                                      });
+                                      window.open(flow.url, "_blank", "noopener,noreferrer");
+                                      message.success(tt("已在新窗口打开授权页面", "Authorization page opened in a new window"));
+                                    });
+                                  }}
+                                >
+                                  {tt("打开授权链接", "Open authorization link")}
+                                </Button>
                               </Flex>
 
                               {authFlow && (
@@ -1605,28 +1591,6 @@ export default function CliproxyInstances() {
                                   placeholder="{ ... }"
                                 />
                               )}
-                              <Button
-                                type="primary"
-                                icon={<UploadOutlined />}
-                                disabled={!credentialName.endsWith(".json") || !credentialJSON || busy}
-                                onClick={() =>
-                                  mutation.mutate(async () => {
-                                    await manageCredential(
-                                      "POST",
-                                      `auth-files?name=${encodeURIComponent(credentialName)}`,
-                                      JSON.parse(credentialJSON),
-                                    );
-                                    setCredentialJSON("");
-                                    setCredentialName("");
-                                    await credentials.refetch();
-                                    void handleRefreshNode(node.id);
-                                    setMountModalOpen(false);
-                                    message.success(tt("凭据文件已成功导入", "Credential file imported"));
-                                  })
-                                }
-                              >
-                                {tt("上传到此实例", "Upload to this instance")}
-                              </Button>
                             </Space>
                           ),
                         },
@@ -1648,16 +1612,6 @@ export default function CliproxyInstances() {
                                 pagination={{ pageSize: 5, hideOnSinglePage: true }}
                                 columns={[
                                   {
-                                    title: tt("凭据标识", "Credential"),
-                                    dataIndex: "name",
-                                    render: (name) => (
-                                      <Space size={6}>
-                                        <KeyOutlined style={{ color: token.colorPrimary }} />
-                                        <Typography.Text code>{name}</Typography.Text>
-                                      </Space>
-                                    ),
-                                  },
-                                  {
                                     title: tt("账号", "Account"),
                                     dataIndex: "email",
                                     render: (email) =>
@@ -1665,13 +1619,18 @@ export default function CliproxyInstances() {
                                   },
                                   {
                                     title: tt("状态", "Status"),
-                                    render: (_, record) => (
-                                      <Tag color={record.disabled ? "default" : "success"}>
-                                        {record.disabled
-                                          ? tt("已禁用", "Disabled")
-                                          : record.status || tt("已启用", "Enabled")}
-                                      </Tag>
-                                    ),
+                                    render: (_, record) => {
+                                      const status = record.disabled ? "disabled" : record.status;
+                                      const states: Record<string, { color: string; label: string }> = {
+                                        active: { color: "success", label: tt("在线", "Online") },
+                                        disabled: { color: "default", label: tt("已停用", "Disabled") },
+                                        error: { color: "error", label: tt("失效", "Offline") },
+                                      };
+                                      const state = status
+                                        ? states[status] ?? { color: "default", label: tt("未知", "Unknown") }
+                                        : { color: "success", label: tt("已启用", "Enabled") };
+                                      return <Tag color={state.color}>{state.label}</Tag>;
+                                    },
                                   },
                                   {
                                     title: tt("操作", "Actions"),

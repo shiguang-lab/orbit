@@ -1,12 +1,12 @@
 {
-  "fetchedAt": "2026-09-07T15:05:22.329Z",
+  "fetchedAt": "2026-09-08T03:39:22.884Z",
   "data": [
     {
       "slug": "tencent/fp8",
       "displayName": "tencent/fp8",
       "modelCount": 5,
-      "totalTokens": 18666065968026,
-      "totalRequests": 193965094,
+      "totalTokens": 20721430695494,
+      "totalRequests": 212047365,
       "popularityRank": 1
     },
     {
@@ -23,32 +23,32 @@
       },
       "iconUrl": "/images/icons/Azure.svg",
       "modelCount": 45,
-      "totalTokens": 15915819271632,
-      "totalRequests": 916372772,
+      "totalTokens": 17318872165758,
+      "totalRequests": 990514177,
       "popularityRank": 2
-    },
-    {
-      "slug": "relace/fp4",
-      "displayName": "relace/fp4",
-      "modelCount": 2,
-      "totalTokens": 12393672516492,
-      "totalRequests": 368973973,
-      "popularityRank": 3
     },
     {
       "slug": "open-inference/fp8",
       "displayName": "open-inference/fp8",
       "modelCount": 2,
-      "totalTokens": 12359858671538,
-      "totalRequests": 494967610,
+      "totalTokens": 12344611693493,
+      "totalRequests": 501473887,
+      "popularityRank": 3
+    },
+    {
+      "slug": "relace/fp4",
+      "displayName": "relace/fp4",
+      "modelCount": 2,
+      "totalTokens": 12236025209453,
+      "totalRequests": 341011004,
       "popularityRank": 4
     },
     {
       "slug": "gmicloud/fp8",
       "displayName": "gmicloud/fp8",
-      "modelCount": 8,
-      "totalTokens": 11675850977216,
-      "totalRequests": 290328454,
+      "modelCount": 6,
+      "totalTokens": 6429323575838,
+      "totalRequests": 213656931,
       "popularityRank": 5
     },
     {
@@ -63,8 +63,8 @@
       },
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.digitalocean.com&size=256",
       "modelCount": 3,
-      "totalTokens": 6459625117996,
-      "totalRequests": 585981690,
+      "totalTokens": 6310078134205,
+      "totalRequests": 575960276,
       "popularityRank": 6
     },
     {
@@ -80,8 +80,8 @@
       },
       "iconUrl": "/images/icons/GoogleAIStudio.svg",
       "modelCount": 17,
-      "totalTokens": 4938958210132,
-      "totalRequests": 387703574,
+      "totalTokens": 5001938027543,
+      "totalRequests": 388903968,
       "popularityRank": 7
     },
     {
@@ -97,8 +97,8 @@
       },
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.nvidia.com/en-us/&size=256",
       "modelCount": 7,
-      "totalTokens": 3999458174489,
-      "totalRequests": 42588793,
+      "totalTokens": 4081078654561,
+      "totalRequests": 42666305,
       "popularityRank": 8
     },
     {
@@ -115,16 +115,16 @@
       },
       "iconUrl": "/images/icons/Anthropic.svg",
       "modelCount": 9,
-      "totalTokens": 3351269400566,
-      "totalRequests": 85792402,
+      "totalTokens": 3420154020972,
+      "totalRequests": 87000051,
       "popularityRank": 9
     },
     {
-      "slug": "streamlake/fp8",
-      "displayName": "streamlake/fp8",
-      "modelCount": 3,
-      "totalTokens": 2445824051545,
-      "totalRequests": 70416840,
+      "slug": "deepinfra/fp4",
+      "displayName": "deepinfra/fp4",
+      "modelCount": 7,
+      "totalTokens": 2606080457136,
+      "totalRequests": 88779641,
       "popularityRank": 10
     },
     {
@@ -141,66 +141,25 @@
       },
       "iconUrl": "/images/icons/OpenAI.svg",
       "modelCount": 69,
-      "totalTokens": 2039265012719,
-      "totalRequests": 48167948,
+      "totalTokens": 2134213217431,
+      "totalRequests": 50602800,
       "popularityRank": 11
     },
     {
-      "slug": "makora",
-      "displayName": "Makora",
-      "statusPageUrl": "https://makora.statuspage.io",
-      "byokEnabled": false,
-      "dataPolicy": {
-        "training": false,
-        "retainsPrompts": false
-      },
-      "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.makora.com&size=256",
+      "slug": "morph/fp4",
+      "displayName": "morph/fp4",
       "modelCount": 2,
-      "totalTokens": 1979842087652,
-      "totalRequests": 31526624,
+      "totalTokens": 1962643272360,
+      "totalRequests": 31392765,
       "popularityRank": 12
     },
     {
       "slug": "azure/us",
       "displayName": "azure/us",
       "modelCount": 2,
-      "totalTokens": 1777945791585,
-      "totalRequests": 23929478,
+      "totalTokens": 1869335071556,
+      "totalRequests": 25074635,
       "popularityRank": 13
-    },
-    {
-      "slug": "alibaba",
-      "displayName": "Alibaba Cloud Int.",
-      "headquarters": "SG",
-      "statusPageUrl": "https://status.alibabacloud.com/",
-      "byokEnabled": true,
-      "dataPolicy": {
-        "training": false,
-        "retainsPrompts": true,
-        "termsOfServiceURL": "https://www.alibabacloud.com/help/en/legal/latest/alibaba-cloud-international-website-product-terms-of-service-v-3-8-0",
-        "privacyPolicyURL": "https://www.alibabacloud.com/help/en/legal/latest/alibaba-cloud-international-website-privacy-policy"
-      },
-      "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.alibabacloud.com/&size=256",
-      "modelCount": 39,
-      "totalTokens": 1775722153933,
-      "totalRequests": 203394804,
-      "popularityRank": 14
-    },
-    {
-      "slug": "coreweave/fp4",
-      "displayName": "coreweave/fp4",
-      "modelCount": 1,
-      "totalTokens": 1446583598382,
-      "totalRequests": 28757623,
-      "popularityRank": 15
-    },
-    {
-      "slug": "poolside/fp4",
-      "displayName": "poolside/fp4",
-      "modelCount": 2,
-      "totalTokens": 1380695995611,
-      "totalRequests": 16801540,
-      "popularityRank": 16
     },
     {
       "slug": "meta",
@@ -215,33 +174,41 @@
       },
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://ai.meta.com/&size=256",
       "modelCount": 6,
-      "totalTokens": 1257313301870,
-      "totalRequests": 18442947,
-      "popularityRank": 17
+      "totalTokens": 1570340130449,
+      "totalRequests": 21928548,
+      "popularityRank": 14
+    },
+    {
+      "slug": "coreweave/fp4",
+      "displayName": "coreweave/fp4",
+      "modelCount": 1,
+      "totalTokens": 1451953447896,
+      "totalRequests": 28260844,
+      "popularityRank": 15
+    },
+    {
+      "slug": "poolside/fp4",
+      "displayName": "poolside/fp4",
+      "modelCount": 2,
+      "totalTokens": 1345728593496,
+      "totalRequests": 16210024,
+      "popularityRank": 16
     },
     {
       "slug": "upstage/zdr",
       "displayName": "upstage/zdr",
       "modelCount": 1,
-      "totalTokens": 1214209683740,
-      "totalRequests": 70663518,
-      "popularityRank": 18
+      "totalTokens": 1296437861301,
+      "totalRequests": 46180785,
+      "popularityRank": 17
     },
     {
       "slug": "google-vertex/eu",
       "displayName": "google-vertex/eu",
       "modelCount": 3,
-      "totalTokens": 1212394352532,
-      "totalRequests": 379628138,
-      "popularityRank": 19
-    },
-    {
-      "slug": "nvidia/nvfp4",
-      "displayName": "nvidia/nvfp4",
-      "modelCount": 1,
-      "totalTokens": 1077792671514,
-      "totalRequests": 16257818,
-      "popularityRank": 20
+      "totalTokens": 1195168227349,
+      "totalRequests": 381381331,
+      "popularityRank": 18
     },
     {
       "slug": "novita",
@@ -257,25 +224,59 @@
       },
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://novita.ai/&size=256",
       "modelCount": 4,
-      "totalTokens": 1013440090736,
-      "totalRequests": 30043967,
+      "totalTokens": 1077650277430,
+      "totalRequests": 32248984,
+      "popularityRank": 19
+    },
+    {
+      "slug": "novita/fp8",
+      "displayName": "novita/fp8",
+      "modelCount": 7,
+      "totalTokens": 1055768321473,
+      "totalRequests": 38445035,
+      "popularityRank": 20
+    },
+    {
+      "slug": "nvidia/nvfp4",
+      "displayName": "nvidia/nvfp4",
+      "modelCount": 1,
+      "totalTokens": 1050553856371,
+      "totalRequests": 15985557,
       "popularityRank": 21
     },
     {
       "slug": "deepinfra/fp8",
       "displayName": "deepinfra/fp8",
       "modelCount": 17,
-      "totalTokens": 871377100322,
-      "totalRequests": 197140744,
+      "totalTokens": 941213110721,
+      "totalRequests": 200749268,
       "popularityRank": 22
+    },
+    {
+      "slug": "alibaba",
+      "displayName": "Alibaba Cloud Int.",
+      "headquarters": "SG",
+      "statusPageUrl": "https://status.alibabacloud.com/",
+      "byokEnabled": true,
+      "dataPolicy": {
+        "training": false,
+        "retainsPrompts": true,
+        "termsOfServiceURL": "https://www.alibabacloud.com/help/en/legal/latest/alibaba-cloud-international-website-product-terms-of-service-v-3-8-0",
+        "privacyPolicyURL": "https://www.alibabacloud.com/help/en/legal/latest/alibaba-cloud-international-website-privacy-policy"
+      },
+      "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.alibabacloud.com/&size=256",
+      "modelCount": 38,
+      "totalTokens": 828900592950,
+      "totalRequests": 177052769,
+      "popularityRank": 23
     },
     {
       "slug": "xai/zdr",
       "displayName": "xai/zdr",
       "modelCount": 6,
-      "totalTokens": 571748460722,
-      "totalRequests": 28509350,
-      "popularityRank": 23
+      "totalTokens": 554570688972,
+      "totalRequests": 27688369,
+      "popularityRank": 24
     },
     {
       "slug": "deepinfra",
@@ -291,41 +292,41 @@
       },
       "iconUrl": "/images/icons/DeepInfra.webp",
       "modelCount": 21,
-      "totalTokens": 473105459216,
-      "totalRequests": 35279742,
-      "popularityRank": 24
+      "totalTokens": 455276168508,
+      "totalRequests": 35760266,
+      "popularityRank": 25
     },
     {
       "slug": "akashml/bf16",
       "displayName": "akashml/bf16",
       "modelCount": 1,
-      "totalTokens": 461972479660,
-      "totalRequests": 105247464,
-      "popularityRank": 25
-    },
-    {
-      "slug": "darkbloom/fp8",
-      "displayName": "darkbloom/fp8",
-      "modelCount": 1,
-      "totalTokens": 413841178936,
-      "totalRequests": 110461744,
+      "totalTokens": 454994695399,
+      "totalRequests": 105482012,
       "popularityRank": 26
     },
     {
       "slug": "deepinfra/turbo",
       "displayName": "deepinfra/turbo",
       "modelCount": 3,
-      "totalTokens": 384139660064,
-      "totalRequests": 101015808,
+      "totalTokens": 387133949707,
+      "totalRequests": 100408477,
       "popularityRank": 27
     },
     {
-      "slug": "google-vertex/global",
-      "displayName": "google-vertex/global",
-      "modelCount": 18,
-      "totalTokens": 359400866280,
-      "totalRequests": 43760329,
+      "slug": "darkbloom/fp8",
+      "displayName": "darkbloom/fp8",
+      "modelCount": 1,
+      "totalTokens": 376373204387,
+      "totalRequests": 100861030,
       "popularityRank": 28
+    },
+    {
+      "slug": "thinkingmachines/nvfp4",
+      "displayName": "thinkingmachines/nvfp4",
+      "modelCount": 2,
+      "totalTokens": 364514578847,
+      "totalRequests": 5215766,
+      "popularityRank": 29
     },
     {
       "slug": "darkbloom",
@@ -339,64 +340,56 @@
       },
       "iconUrl": "/images/icons/Darkbloom.png",
       "modelCount": 1,
-      "totalTokens": 354129117002,
-      "totalRequests": 100353055,
-      "popularityRank": 29
+      "totalTokens": 359631786657,
+      "totalRequests": 101629706,
+      "popularityRank": 30
+    },
+    {
+      "slug": "google-vertex/global",
+      "displayName": "google-vertex/global",
+      "modelCount": 18,
+      "totalTokens": 357594958966,
+      "totalRequests": 42630362,
+      "popularityRank": 31
     },
     {
       "slug": "darkbloom/fp4",
       "displayName": "darkbloom/fp4",
       "modelCount": 4,
-      "totalTokens": 343376143524,
-      "totalRequests": 33366968,
-      "popularityRank": 30
-    },
-    {
-      "slug": "thinkingmachines/nvfp4",
-      "displayName": "thinkingmachines/nvfp4",
-      "modelCount": 2,
-      "totalTokens": 341285780972,
-      "totalRequests": 5008868,
-      "popularityRank": 31
+      "totalTokens": 355335673144,
+      "totalRequests": 32530735,
+      "popularityRank": 32
     },
     {
       "slug": "gmicloud/bf16",
       "displayName": "gmicloud/bf16",
       "modelCount": 2,
-      "totalTokens": 278357280339,
-      "totalRequests": 7899053,
-      "popularityRank": 32
-    },
-    {
-      "slug": "azure/global",
-      "displayName": "azure/global",
-      "modelCount": 2,
-      "totalTokens": 239777702400,
-      "totalRequests": 32284230,
+      "totalTokens": 264897641865,
+      "totalRequests": 7743354,
       "popularityRank": 33
     },
     {
       "slug": "inceptron/int4",
       "displayName": "inceptron/int4",
       "modelCount": 2,
-      "totalTokens": 236317849607,
-      "totalRequests": 10605753,
+      "totalTokens": 238585174076,
+      "totalRequests": 10689659,
       "popularityRank": 34
+    },
+    {
+      "slug": "azure/global",
+      "displayName": "azure/global",
+      "modelCount": 2,
+      "totalTokens": 237210216353,
+      "totalRequests": 32166302,
+      "popularityRank": 35
     },
     {
       "slug": "atlas-cloud/fp8",
       "displayName": "atlas-cloud/fp8",
       "modelCount": 4,
-      "totalTokens": 194536369624,
-      "totalRequests": 4763259,
-      "popularityRank": 35
-    },
-    {
-      "slug": "deepinfra/fp4",
-      "displayName": "deepinfra/fp4",
-      "modelCount": 6,
-      "totalTokens": 184501551356,
-      "totalRequests": 24388624,
+      "totalTokens": 228061715326,
+      "totalRequests": 5169874,
       "popularityRank": 36
     },
     {
@@ -412,8 +405,8 @@
       },
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://docs.nebius.com/&size=256",
       "modelCount": 1,
-      "totalTokens": 118325083127,
-      "totalRequests": 49367656,
+      "totalTokens": 123138965811,
+      "totalRequests": 48971421,
       "popularityRank": 37
     },
     {
@@ -430,33 +423,41 @@
       },
       "iconUrl": "/images/icons/Cohere.png",
       "modelCount": 8,
-      "totalTokens": 102694314817,
-      "totalRequests": 8927626,
+      "totalTokens": 101632160701,
+      "totalRequests": 9915084,
       "popularityRank": 38
     },
     {
       "slug": "poolside/fp8",
       "displayName": "poolside/fp8",
       "modelCount": 2,
-      "totalTokens": 101478586882,
-      "totalRequests": 2137676,
+      "totalTokens": 100972059186,
+      "totalRequests": 2110429,
       "popularityRank": 39
     },
     {
-      "slug": "siliconflow/int4",
-      "displayName": "siliconflow/int4",
-      "modelCount": 1,
-      "totalTokens": 69253345079,
-      "totalRequests": 6314257,
+      "slug": "streamlake/fp8",
+      "displayName": "streamlake/fp8",
+      "modelCount": 2,
+      "totalTokens": 96873056267,
+      "totalRequests": 6289231,
       "popularityRank": 40
     },
     {
       "slug": "deepinfra/bf16",
       "displayName": "deepinfra/bf16",
       "modelCount": 10,
-      "totalTokens": 68736128515,
-      "totalRequests": 16645983,
+      "totalTokens": 68977983400,
+      "totalRequests": 16829348,
       "popularityRank": 41
+    },
+    {
+      "slug": "siliconflow/int4",
+      "displayName": "siliconflow/int4",
+      "modelCount": 1,
+      "totalTokens": 68008824591,
+      "totalRequests": 6111181,
+      "popularityRank": 42
     },
     {
       "slug": "streamlake",
@@ -472,16 +473,8 @@
       },
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.streamlake.com/&size=256",
       "modelCount": 2,
-      "totalTokens": 65211641936,
-      "totalRequests": 28391109,
-      "popularityRank": 42
-    },
-    {
-      "slug": "mistral/zdr",
-      "displayName": "mistral/zdr",
-      "modelCount": 15,
-      "totalTokens": 52523628209,
-      "totalRequests": 18730140,
+      "totalTokens": 66022855453,
+      "totalRequests": 28003499,
       "popularityRank": 43
     },
     {
@@ -496,73 +489,64 @@
       },
       "iconUrl": "/images/icons/Inception.svg",
       "modelCount": 2,
-      "totalTokens": 50455894633,
-      "totalRequests": 3648466,
+      "totalTokens": 55944578419,
+      "totalRequests": 3912365,
       "popularityRank": 44
+    },
+    {
+      "slug": "mistral/zdr",
+      "displayName": "mistral/zdr",
+      "modelCount": 15,
+      "totalTokens": 50522074704,
+      "totalRequests": 19210861,
+      "popularityRank": 45
     },
     {
       "slug": "amazon-bedrock/eu-west-1",
       "displayName": "amazon-bedrock/eu-west-1",
       "modelCount": 5,
-      "totalTokens": 47424701747,
-      "totalRequests": 14239925,
-      "popularityRank": 45
+      "totalTokens": 44476866053,
+      "totalRequests": 13575834,
+      "popularityRank": 46
     },
     {
       "slug": "siliconflow/fp8",
       "displayName": "siliconflow/fp8",
       "modelCount": 5,
-      "totalTokens": 35289658749,
-      "totalRequests": 4456310,
-      "popularityRank": 46
+      "totalTokens": 34790439410,
+      "totalRequests": 4140279,
+      "popularityRank": 47
     },
     {
       "slug": "parasail/bf16",
       "displayName": "parasail/bf16",
       "modelCount": 6,
-      "totalTokens": 31326895815,
-      "totalRequests": 4296568,
-      "popularityRank": 47
-    },
-    {
-      "slug": "chutes/fp8",
-      "displayName": "chutes/fp8",
-      "modelCount": 1,
-      "totalTokens": 30333170748,
-      "totalRequests": 3126823,
+      "totalTokens": 32164115911,
+      "totalRequests": 4317886,
       "popularityRank": 48
-    },
-    {
-      "slug": "perplexity/int8",
-      "displayName": "perplexity/int8",
-      "modelCount": 2,
-      "totalTokens": 29886212212,
-      "totalRequests": 11775911,
-      "popularityRank": 49
     },
     {
       "slug": "google-vertex/us",
       "displayName": "google-vertex/us",
       "modelCount": 1,
-      "totalTokens": 29885181632,
-      "totalRequests": 21051508,
+      "totalTokens": 28546501609,
+      "totalRequests": 19981401,
+      "popularityRank": 49
+    },
+    {
+      "slug": "chutes/fp8",
+      "displayName": "chutes/fp8",
+      "modelCount": 1,
+      "totalTokens": 27102620317,
+      "totalRequests": 3029449,
       "popularityRank": 50
     },
     {
-      "slug": "parasail",
-      "displayName": "Parasail",
-      "headquarters": "US",
-      "byokEnabled": true,
-      "dataPolicy": {
-        "training": false,
-        "retainsPrompts": false,
-        "termsOfServiceURL": "https://parasail.io/legal/terms-of-service",
-        "privacyPolicyURL": "https://www.parasail.io/legal/privacy-policy"
-      },
-      "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.parasail.io/&size=256",
-      "modelCount": 1,
-      "totalTokens": 26370323991,
-      "totalRequests": 19473187,
+      "slug": "perplexity/int8",
+      "displayName": "perplexity/int8",
+      "modelCount": 2,
+      "totalTokens": 27092435146,
+      "totalRequests": 11679025,
       "popularityRank": 51
     },
     {
@@ -577,16 +561,25 @@
       },
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.voyageai.com&size=256",
       "modelCount": 7,
-      "totalTokens": 24316049717,
-      "totalRequests": 8047836,
+      "totalTokens": 24392279935,
+      "totalRequests": 7946053,
       "popularityRank": 52
     },
     {
-      "slug": "seed/fp8",
-      "displayName": "seed/fp8",
-      "modelCount": 6,
-      "totalTokens": 21423572243,
-      "totalRequests": 5742964,
+      "slug": "parasail",
+      "displayName": "Parasail",
+      "headquarters": "US",
+      "byokEnabled": true,
+      "dataPolicy": {
+        "training": false,
+        "retainsPrompts": false,
+        "termsOfServiceURL": "https://parasail.io/legal/terms-of-service",
+        "privacyPolicyURL": "https://www.parasail.io/legal/privacy-policy"
+      },
+      "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.parasail.io/&size=256",
+      "modelCount": 1,
+      "totalTokens": 23249752039,
+      "totalRequests": 19262168,
       "popularityRank": 53
     },
     {
@@ -602,25 +595,33 @@
       },
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://venice.ai/&size=256",
       "modelCount": 1,
-      "totalTokens": 20935622407,
-      "totalRequests": 1804497,
+      "totalTokens": 21722499943,
+      "totalRequests": 1884404,
       "popularityRank": 54
+    },
+    {
+      "slug": "seed/fp8",
+      "displayName": "seed/fp8",
+      "modelCount": 6,
+      "totalTokens": 20282463941,
+      "totalRequests": 5896381,
+      "popularityRank": 55
     },
     {
       "slug": "google-vertex/us-south1",
       "displayName": "google-vertex/us-south1",
       "modelCount": 1,
-      "totalTokens": 18004922088,
-      "totalRequests": 819551,
-      "popularityRank": 55
+      "totalTokens": 17828025374,
+      "totalRequests": 778308,
+      "popularityRank": 56
     },
     {
       "slug": "venice/fp8",
       "displayName": "venice/fp8",
       "modelCount": 1,
-      "totalTokens": 16577960707,
-      "totalRequests": 5653189,
-      "popularityRank": 56
+      "totalTokens": 15787520310,
+      "totalRequests": 5464181,
+      "popularityRank": 57
     },
     {
       "slug": "phala",
@@ -636,25 +637,9 @@
       },
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://phala.network/&size=256",
       "modelCount": 2,
-      "totalTokens": 16262064536,
-      "totalRequests": 6811108,
-      "popularityRank": 57
-    },
-    {
-      "slug": "novita/fp8",
-      "displayName": "novita/fp8",
-      "modelCount": 6,
-      "totalTokens": 15385614888,
-      "totalRequests": 2842350,
+      "totalTokens": 15310253606,
+      "totalRequests": 6247258,
       "popularityRank": 58
-    },
-    {
-      "slug": "venice/fp4",
-      "displayName": "venice/fp4",
-      "modelCount": 1,
-      "totalTokens": 13316128948,
-      "totalRequests": 1072945,
-      "popularityRank": 59
     },
     {
       "slug": "aion-labs",
@@ -669,16 +654,24 @@
       },
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.aionlabs.ai/&size=256",
       "modelCount": 4,
-      "totalTokens": 13273977858,
-      "totalRequests": 819114,
+      "totalTokens": 13315244370,
+      "totalRequests": 816879,
+      "popularityRank": 59
+    },
+    {
+      "slug": "venice/fp4",
+      "displayName": "venice/fp4",
+      "modelCount": 1,
+      "totalTokens": 13112433700,
+      "totalRequests": 1064779,
       "popularityRank": 60
     },
     {
       "slug": "liquid/fp8",
       "displayName": "liquid/fp8",
       "modelCount": 1,
-      "totalTokens": 12032458835,
-      "totalRequests": 1112836,
+      "totalTokens": 12593316164,
+      "totalRequests": 1169609,
       "popularityRank": 61
     },
     {
@@ -693,8 +686,8 @@
       },
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://nex.sii.edu.cn/en/&size=256",
       "modelCount": 1,
-      "totalTokens": 8802558262,
-      "totalRequests": 1440134,
+      "totalTokens": 8834494865,
+      "totalRequests": 1434132,
       "popularityRank": 62
     },
     {
@@ -711,32 +704,32 @@
       },
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://groq.com/&size=256",
       "modelCount": 1,
-      "totalTokens": 7444487837,
-      "totalRequests": 3326496,
+      "totalTokens": 7545232821,
+      "totalRequests": 3357250,
       "popularityRank": 63
     },
     {
       "slug": "google-vertex/us-central1",
       "displayName": "google-vertex/us-central1",
       "modelCount": 1,
-      "totalTokens": 7203757517,
-      "totalRequests": 11634192,
+      "totalTokens": 6440518416,
+      "totalRequests": 12026023,
       "popularityRank": 64
     },
     {
       "slug": "novita/bf16",
       "displayName": "novita/bf16",
       "modelCount": 4,
-      "totalTokens": 6335664516,
-      "totalRequests": 1286081,
+      "totalTokens": 6146174630,
+      "totalRequests": 1330813,
       "popularityRank": 65
     },
     {
       "slug": "nextbit/int4",
       "displayName": "nextbit/int4",
       "modelCount": 3,
-      "totalTokens": 5643566423,
-      "totalRequests": 3031402,
+      "totalTokens": 6069371047,
+      "totalRequests": 3104161,
       "popularityRank": 66
     },
     {
@@ -753,43 +746,25 @@
       },
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://x.ai/&size=256",
       "modelCount": 8,
-      "totalTokens": 5090063613,
-      "totalRequests": 808887,
+      "totalTokens": 5163948787,
+      "totalRequests": 881013,
       "popularityRank": 67
-    },
-    {
-      "slug": "z-ai/fp8",
-      "displayName": "z-ai/fp8",
-      "modelCount": 2,
-      "totalTokens": 5037663374,
-      "totalRequests": 303884,
-      "popularityRank": 68
     },
     {
       "slug": "crusoe/fp8",
       "displayName": "crusoe/fp8",
       "modelCount": 1,
-      "totalTokens": 4840307753,
-      "totalRequests": 726568,
-      "popularityRank": 69
+      "totalTokens": 5003760253,
+      "totalRequests": 772131,
+      "popularityRank": 68
     },
     {
-      "slug": "amazon-bedrock",
-      "displayName": "Amazon Bedrock",
-      "headquarters": "US",
-      "statusPageUrl": "https://health.aws.amazon.com/health/status",
-      "byokEnabled": true,
-      "dataPolicy": {
-        "training": false,
-        "retainsPrompts": false,
-        "termsOfServiceURL": "https://aws.amazon.com/service-terms/",
-        "privacyPolicyURL": "https://aws.amazon.com/privacy"
-      },
-      "iconUrl": "/images/icons/Bedrock.svg",
-      "modelCount": 4,
-      "totalTokens": 4438405118,
-      "totalRequests": 1262394,
-      "popularityRank": 70
+      "slug": "z-ai/fp8",
+      "displayName": "z-ai/fp8",
+      "modelCount": 2,
+      "totalTokens": 4929452371,
+      "totalRequests": 289171,
+      "popularityRank": 69
     },
     {
       "slug": "fireworks",
@@ -805,8 +780,26 @@
       },
       "iconUrl": "/images/icons/Fireworks.png",
       "modelCount": 1,
-      "totalTokens": 4338778028,
-      "totalRequests": 335481,
+      "totalTokens": 4759372292,
+      "totalRequests": 400304,
+      "popularityRank": 70
+    },
+    {
+      "slug": "amazon-bedrock",
+      "displayName": "Amazon Bedrock",
+      "headquarters": "US",
+      "statusPageUrl": "https://health.aws.amazon.com/health/status",
+      "byokEnabled": true,
+      "dataPolicy": {
+        "training": false,
+        "retainsPrompts": false,
+        "termsOfServiceURL": "https://aws.amazon.com/service-terms/",
+        "privacyPolicyURL": "https://aws.amazon.com/privacy"
+      },
+      "iconUrl": "/images/icons/Bedrock.svg",
+      "modelCount": 4,
+      "totalTokens": 4712385153,
+      "totalRequests": 1303749,
       "popularityRank": 71
     },
     {
@@ -823,8 +816,8 @@
       },
       "iconUrl": "/images/icons/Perplexity.svg",
       "modelCount": 5,
-      "totalTokens": 4150289023,
-      "totalRequests": 2861680,
+      "totalTokens": 4128722709,
+      "totalRequests": 2950703,
       "popularityRank": 72
     },
     {
@@ -841,8 +834,8 @@
       },
       "iconUrl": "/images/icons/GoogleVertex.svg",
       "modelCount": 8,
-      "totalTokens": 3818832098,
-      "totalRequests": 1749106,
+      "totalTokens": 3886089844,
+      "totalRequests": 1439660,
       "popularityRank": 73
     },
     {
@@ -858,16 +851,16 @@
       },
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://z.ai/model-api&size=256",
       "modelCount": 1,
-      "totalTokens": 3553755587,
-      "totalRequests": 156366,
+      "totalTokens": 3372237567,
+      "totalRequests": 157677,
       "popularityRank": 74
     },
     {
       "slug": "parasail/fp8",
       "displayName": "parasail/fp8",
       "modelCount": 2,
-      "totalTokens": 3097465478,
-      "totalRequests": 1855296,
+      "totalTokens": 3196736089,
+      "totalRequests": 1857582,
       "popularityRank": 75
     },
     {
@@ -883,8 +876,8 @@
       },
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://avatars.githubusercontent.com/u/4158466?v=4&size=256",
       "modelCount": 8,
-      "totalTokens": 3090858022,
-      "totalRequests": 261027,
+      "totalTokens": 3127728178,
+      "totalRequests": 261104,
       "popularityRank": 76
     },
     {
@@ -901,41 +894,33 @@
       },
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.cloudflare.com/&size=256",
       "modelCount": 4,
-      "totalTokens": 2698559044,
-      "totalRequests": 1408198,
+      "totalTokens": 2351593283,
+      "totalRequests": 1262060,
       "popularityRank": 77
-    },
-    {
-      "slug": "nebius/fp8",
-      "displayName": "nebius/fp8",
-      "modelCount": 2,
-      "totalTokens": 2526548449,
-      "totalRequests": 785498,
-      "popularityRank": 78
     },
     {
       "slug": "mistral/eu",
       "displayName": "mistral/eu",
       "modelCount": 1,
-      "totalTokens": 2201557350,
-      "totalRequests": 92490,
+      "totalTokens": 2220755255,
+      "totalRequests": 92390,
+      "popularityRank": 78
+    },
+    {
+      "slug": "nebius/fp8",
+      "displayName": "nebius/fp8",
+      "modelCount": 2,
+      "totalTokens": 2041769765,
+      "totalRequests": 640338,
       "popularityRank": 79
     },
     {
       "slug": "google-ai-studio/global",
       "displayName": "google-ai-studio/global",
       "modelCount": 2,
-      "totalTokens": 1869513701,
-      "totalRequests": 698064,
+      "totalTokens": 1833755581,
+      "totalRequests": 684914,
       "popularityRank": 80
-    },
-    {
-      "slug": "nex-agi/fp8",
-      "displayName": "nex-agi/fp8",
-      "modelCount": 1,
-      "totalTokens": 1599706162,
-      "totalRequests": 60729,
-      "popularityRank": 81
     },
     {
       "slug": "black-forest-labs",
@@ -949,8 +934,16 @@
       },
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://bfl.ai&size=256",
       "modelCount": 4,
-      "totalTokens": 1575126859,
-      "totalRequests": 228800,
+      "totalTokens": 1667461382,
+      "totalRequests": 250667,
+      "popularityRank": 81
+    },
+    {
+      "slug": "nex-agi/fp8",
+      "displayName": "nex-agi/fp8",
+      "modelCount": 1,
+      "totalTokens": 1620691788,
+      "totalRequests": 59508,
       "popularityRank": 82
     },
     {
@@ -966,8 +959,8 @@
       },
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://minimaxi.com/&size=256",
       "modelCount": 8,
-      "totalTokens": 1238528042,
-      "totalRequests": 301090,
+      "totalTokens": 1241627045,
+      "totalRequests": 310069,
       "popularityRank": 83
     },
     {
@@ -984,16 +977,16 @@
       },
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.together.ai/&size=256",
       "modelCount": 14,
-      "totalTokens": 1072202942,
-      "totalRequests": 1191773,
+      "totalTokens": 1025809453,
+      "totalRequests": 1200895,
       "popularityRank": 84
     },
     {
       "slug": "venice/fp16",
       "displayName": "venice/fp16",
       "modelCount": 1,
-      "totalTokens": 855208869,
-      "totalRequests": 261462,
+      "totalTokens": 895445393,
+      "totalRequests": 270111,
       "popularityRank": 85
     },
     {
@@ -1010,56 +1003,9 @@
       },
       "iconUrl": "/images/icons/Mistral.png",
       "modelCount": 4,
-      "totalTokens": 795786616,
-      "totalRequests": 585454,
+      "totalTokens": 883440020,
+      "totalRequests": 609272,
       "popularityRank": 86
-    },
-    {
-      "slug": "arcee-ai",
-      "displayName": "Arcee AI",
-      "headquarters": "US",
-      "byokEnabled": true,
-      "dataPolicy": {
-        "training": false,
-        "retainsPrompts": true
-      },
-      "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.arcee.ai/&size=256",
-      "modelCount": 1,
-      "totalTokens": 791244314,
-      "totalRequests": 202972,
-      "popularityRank": 87
-    },
-    {
-      "slug": "deepinfra/fp32",
-      "displayName": "deepinfra/fp32",
-      "modelCount": 1,
-      "totalTokens": 758285290,
-      "totalRequests": 932040,
-      "popularityRank": 88
-    },
-    {
-      "slug": "minimax/fp8",
-      "displayName": "minimax/fp8",
-      "modelCount": 1,
-      "totalTokens": 721839928,
-      "totalRequests": 56558,
-      "popularityRank": 89
-    },
-    {
-      "slug": "sakana",
-      "displayName": "Sakana",
-      "byokEnabled": true,
-      "dataPolicy": {
-        "training": false,
-        "retainsPrompts": true,
-        "termsOfServiceURL": "https://console.sakana.ai/terms-of-service",
-        "privacyPolicyURL": "https://console.sakana.ai/privacy-policy"
-      },
-      "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://sakana.ai/&size=256",
-      "modelCount": 2,
-      "totalTokens": 706509603,
-      "totalRequests": 11827,
-      "popularityRank": 90
     },
     {
       "slug": "anthropic",
@@ -1075,24 +1021,71 @@
       },
       "iconUrl": "/images/icons/Anthropic.svg",
       "modelCount": 12,
-      "totalTokens": 354404073,
-      "totalRequests": 53518,
+      "totalTokens": 825896456,
+      "totalRequests": 74052,
+      "popularityRank": 87
+    },
+    {
+      "slug": "deepinfra/fp32",
+      "displayName": "deepinfra/fp32",
+      "modelCount": 1,
+      "totalTokens": 809540684,
+      "totalRequests": 926342,
+      "popularityRank": 88
+    },
+    {
+      "slug": "arcee-ai",
+      "displayName": "Arcee AI",
+      "headquarters": "US",
+      "byokEnabled": true,
+      "dataPolicy": {
+        "training": false,
+        "retainsPrompts": true
+      },
+      "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.arcee.ai/&size=256",
+      "modelCount": 1,
+      "totalTokens": 781075441,
+      "totalRequests": 197954,
+      "popularityRank": 89
+    },
+    {
+      "slug": "minimax/fp8",
+      "displayName": "minimax/fp8",
+      "modelCount": 1,
+      "totalTokens": 722444209,
+      "totalRequests": 59834,
+      "popularityRank": 90
+    },
+    {
+      "slug": "sakana",
+      "displayName": "Sakana",
+      "byokEnabled": true,
+      "dataPolicy": {
+        "training": false,
+        "retainsPrompts": true,
+        "termsOfServiceURL": "https://console.sakana.ai/terms-of-service",
+        "privacyPolicyURL": "https://console.sakana.ai/privacy-policy"
+      },
+      "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://sakana.ai/&size=256",
+      "modelCount": 2,
+      "totalTokens": 507592858,
+      "totalRequests": 11667,
       "popularityRank": 91
     },
     {
       "slug": "nextbit/bf16",
       "displayName": "nextbit/bf16",
       "modelCount": 1,
-      "totalTokens": 325391552,
-      "totalRequests": 149831,
+      "totalTokens": 328673374,
+      "totalRequests": 154499,
       "popularityRank": 92
     },
     {
       "slug": "relace/fp8",
       "displayName": "relace/fp8",
       "modelCount": 1,
-      "totalTokens": 321053802,
-      "totalRequests": 75024,
+      "totalTokens": 323491389,
+      "totalRequests": 75205,
       "popularityRank": 93
     },
     {
@@ -1108,33 +1101,25 @@
       },
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.krea.ai&size=256",
       "modelCount": 3,
-      "totalTokens": 255256901,
-      "totalRequests": 58787,
+      "totalTokens": 250616749,
+      "totalRequests": 57678,
       "popularityRank": 94
     },
     {
       "slug": "mancer/fp8",
       "displayName": "mancer/fp8",
       "modelCount": 3,
-      "totalTokens": 213366331,
-      "totalRequests": 108659,
+      "totalTokens": 218267478,
+      "totalRequests": 130451,
       "popularityRank": 95
     },
     {
       "slug": "liquid/bf16",
       "displayName": "liquid/bf16",
       "modelCount": 1,
-      "totalTokens": 212959758,
-      "totalRequests": 90580,
+      "totalTokens": 198686537,
+      "totalRequests": 93978,
       "popularityRank": 96
-    },
-    {
-      "slug": "black-forest-labs/us-3",
-      "displayName": "black-forest-labs/us-3",
-      "modelCount": 2,
-      "totalTokens": 205003765,
-      "totalRequests": 17849,
-      "popularityRank": 97
     },
     {
       "slug": "perceptron",
@@ -1149,9 +1134,9 @@
       },
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.perceptron.inc&size=256",
       "modelCount": 1,
-      "totalTokens": 140963335,
-      "totalRequests": 96866,
-      "popularityRank": 98
+      "totalTokens": 195006528,
+      "totalRequests": 111977,
+      "popularityRank": 97
     },
     {
       "slug": "upstage",
@@ -1165,8 +1150,16 @@
       },
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://upstage.ai&size=256",
       "modelCount": 1,
-      "totalTokens": 127677785,
-      "totalRequests": 88889,
+      "totalTokens": 131026459,
+      "totalRequests": 93237,
+      "popularityRank": 98
+    },
+    {
+      "slug": "black-forest-labs/us-3",
+      "displayName": "black-forest-labs/us-3",
+      "modelCount": 2,
+      "totalTokens": 117880256,
+      "totalRequests": 12722,
       "popularityRank": 99
     },
     {
@@ -1182,8 +1175,8 @@
       },
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://morphllm.com&size=256",
       "modelCount": 1,
-      "totalTokens": 110074136,
-      "totalRequests": 11655,
+      "totalTokens": 107756002,
+      "totalRequests": 11407,
       "popularityRank": 100
     },
     {
@@ -1196,17 +1189,9 @@
       },
       "iconUrl": "/images/icons/Recraft.svg",
       "modelCount": 15,
-      "totalTokens": 86636241,
-      "totalRequests": 19037,
+      "totalTokens": 88664129,
+      "totalRequests": 19535,
       "popularityRank": 101
-    },
-    {
-      "slug": "morph/fp8",
-      "displayName": "morph/fp8",
-      "modelCount": 1,
-      "totalTokens": 79026650,
-      "totalRequests": 10465,
-      "popularityRank": 102
     },
     {
       "slug": "sourceful",
@@ -1220,40 +1205,48 @@
       },
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.sourceful.com&size=256",
       "modelCount": 4,
-      "totalTokens": 73798086,
-      "totalRequests": 15044,
-      "popularityRank": 103
+      "totalTokens": 76987079,
+      "totalRequests": 15481,
+      "popularityRank": 102
     },
     {
-      "slug": "reka/fp8",
-      "displayName": "reka/fp8",
+      "slug": "morph/fp8",
+      "displayName": "morph/fp8",
       "modelCount": 1,
-      "totalTokens": 35200987,
-      "totalRequests": 6399,
-      "popularityRank": 104
+      "totalTokens": 75353097,
+      "totalRequests": 9971,
+      "popularityRank": 103
     },
     {
       "slug": "novita/fp16",
       "displayName": "novita/fp16",
       "modelCount": 1,
-      "totalTokens": 34527579,
-      "totalRequests": 21122,
-      "popularityRank": 105
+      "totalTokens": 35963271,
+      "totalRequests": 20964,
+      "popularityRank": 104
     },
     {
-      "slug": "relace/bf16",
-      "displayName": "relace/bf16",
+      "slug": "reka/fp8",
+      "displayName": "reka/fp8",
       "modelCount": 1,
-      "totalTokens": 14460292,
-      "totalRequests": 9039,
-      "popularityRank": 106
+      "totalTokens": 35502383,
+      "totalRequests": 5962,
+      "popularityRank": 105
     },
     {
       "slug": "reka/bf16",
       "displayName": "reka/bf16",
       "modelCount": 1,
-      "totalTokens": 11435328,
-      "totalRequests": 25197,
+      "totalTokens": 14257761,
+      "totalRequests": 26773,
+      "popularityRank": 106
+    },
+    {
+      "slug": "relace/bf16",
+      "displayName": "relace/bf16",
+      "modelCount": 1,
+      "totalTokens": 13347542,
+      "totalRequests": 9036,
       "popularityRank": 107
     },
     {
@@ -1268,8 +1261,8 @@
       },
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://fish.audio/&size=256",
       "modelCount": 5,
-      "totalTokens": 10747974,
-      "totalRequests": 184910,
+      "totalTokens": 10262564,
+      "totalRequests": 187392,
       "popularityRank": 108
     },
     {
@@ -1284,8 +1277,8 @@
       },
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://deepgram.com/&size=256",
       "modelCount": 3,
-      "totalTokens": 4725607,
-      "totalRequests": 235555,
+      "totalTokens": 4538321,
+      "totalRequests": 240599,
       "popularityRank": 109
     },
     {
@@ -1302,7 +1295,7 @@
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://heygen.com&size=256",
       "modelCount": 1,
       "totalTokens": 0,
-      "totalRequests": 1009,
+      "totalRequests": 1057,
       "popularityRank": 110
     },
     {
@@ -1320,7 +1313,7 @@
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://runwayml.com/favicon.ico&size=256",
       "modelCount": 2,
       "totalTokens": 0,
-      "totalRequests": 872,
+      "totalRequests": 584,
       "popularityRank": 111
     },
     {
@@ -1336,7 +1329,7 @@
       "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.atlascloud.ai/&size=256",
       "modelCount": 5,
       "totalTokens": 0,
-      "totalRequests": 13008,
+      "totalRequests": 12498,
       "popularityRank": 112
     }
   ]

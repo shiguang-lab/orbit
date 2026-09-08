@@ -19,6 +19,7 @@ type Credential struct {
 	ID         string   `json:"id"`
 	InstanceID string   `json:"instanceId"`
 	Name       string   `json:"name"`
+	Email      string   `json:"email,omitempty"`
 	Provider   string   `json:"provider"`
 	Disabled   bool     `json:"disabled"`
 	Routable   bool     `json:"routable"`
@@ -71,6 +72,7 @@ func (m *Manager) discover(ctx context.Context, i Instance) ([]Credential, error
 		Files []struct {
 			ID          string `json:"id"`
 			Name        string `json:"name"`
+			Email       string `json:"email"`
 			Provider    string `json:"provider"`
 			Disabled    bool   `json:"disabled"`
 			RuntimeOnly bool   `json:"runtime_only"`
@@ -85,7 +87,7 @@ func (m *Manager) discover(ctx context.Context, i Instance) ([]Credential, error
 	result := make([]Credential, 0, len(files.Files))
 	owners := map[string]int{}
 	for _, file := range files.Files {
-		c := Credential{ID: file.ID, InstanceID: i.ID, Name: file.Name, Provider: file.Provider, Disabled: file.Disabled, Models: []string{}}
+		c := Credential{ID: file.ID, InstanceID: i.ID, Name: file.Name, Email: file.Email, Provider: file.Provider, Disabled: file.Disabled, Models: []string{}}
 		if c.ID == "" || c.Name == "" {
 			return nil, errors.New("credential identity missing")
 		}
