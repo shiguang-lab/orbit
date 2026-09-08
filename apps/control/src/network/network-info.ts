@@ -55,7 +55,7 @@ export async function resolveNetworkInfo(
 
   // Layer 1: Check environment variables (Explicit NAS Docker configuration)
   const envUrl = env.TAILSCALE_URL?.trim();
-  const envIp = env.TAILSCALE_IP?.trim() || (env.OMNIROUTE_BIND_HOST && isTailscaleIpv4(env.OMNIROUTE_BIND_HOST) ? env.OMNIROUTE_BIND_HOST.trim() : null);
+  const envIp = env.TAILSCALE_IP?.trim();
   const envHostname = env.TAILSCALE_HOSTNAME?.trim();
   const envDomain = (env.TS_DOMAIN || env.MAGIC_DNS || envHostname)?.trim();
   if (envUrl || envIp || envDomain) {
