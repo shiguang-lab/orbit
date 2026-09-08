@@ -42,11 +42,11 @@ export function resolveModelSyncInternalBaseUrl(candidate?: string): string {
     (process.env.APP_NAME === "control"
       ? `http://127.0.0.1:${process.env.CONTROL_API_PORT || 8788}`
       : undefined) ||
+    process.env.INTERNAL_BASE_URL?.trim() ||
+    process.env.ORBIT_BASE_URL?.trim() ||
     (process.env.APP_NAME === "worker"
       ? process.env.CONTROL_API_URL?.trim() || "http://orbit-control:8788"
-      : undefined) ||
-    process.env.INTERNAL_BASE_URL?.trim() ||
-    process.env.ORBIT_BASE_URL?.trim();
+      : undefined);
   if (configured) {
     try {
       const url = new URL(configured);
@@ -115,10 +115,14 @@ export const fetchModelSyncInternal: typeof fetch = async (input, init: RequestI
         expectedBase.hostname === "localhost" ||
         expectedBase.hostname === "orbit-control"));
 
+  const isLoopback =
+    (inputUrl.hostname === "127.0.0.1" || inputUrl.hostname === "localhost") &&
+    (expectedBase.hostname === "127.0.0.1" || expectedBase.hostname === "localhost");
+
   if (
     inputUrl.protocol !== expectedBase.protocol ||
     !isHostAllowed ||
-    inputUrl.port !== expectedBase.port ||
+    (!isLoopback && inputUrl.port !== expectedBase.port) ||
     inputUrl.username ||
     inputUrl.password
   ) {

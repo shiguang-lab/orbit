@@ -67,6 +67,7 @@ function start(service) {
     env.CONTROL_API_HOST = "127.0.0.1";
     env.EDGE_GATEWAY_URL = "http://127.0.0.1:18887";
     env.ORBIT_WORKER_COMMAND_URL = "http://127.0.0.1:18891";
+    env.EMBED_WS_PROXY_PORT = "18892";
   } else if (service.name === "worker") {
     env.WORKER_COMMAND_HOST = "127.0.0.1";
     env.WORKER_COMMAND_PORT = String(service.port);
