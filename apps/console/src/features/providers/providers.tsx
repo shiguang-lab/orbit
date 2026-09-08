@@ -874,31 +874,7 @@ function ProviderCard({ group, onOpen, onTest, testing, onToggle, togglingId }: 
         </Flex>
       )}
 
-      {group.errorCount + group.warningCount > 0 && (
-        <Alert
-          type="warning"
-          showIcon
-          icon={<MaterialIcon name="info" />}
-          title={t("providersPage.needsAttention", { count: group.errorCount + group.warningCount })}
-          style={{ marginTop: 10 }}
-        />
-      )}
-      {group.blocked && (
-        <Alert
-          type="warning"
-          showIcon
-          title="此免鉴权 Provider 已在设置中禁用"
-          style={{ marginTop: 10 }}
-        />
-      )}
-      {group.expiryStatus && (
-        <Alert
-          type={group.expiryStatus === "expired" ? "error" : "warning"}
-          showIcon
-          title={group.expiryStatus === "expired" ? "凭证已过期" : "凭证即将过期"}
-          style={{ marginTop: 10 }}
-        />
-      )}
+
       <Flex align="center" justify="space-between" gap={8} style={{ marginTop: "auto", paddingTop: 10, borderTop: "1px solid var(--ant-color-border-secondary)", minHeight: 34 }} onClick={(event) => event.stopPropagation()}>
         <Flex align="center" gap={6} wrap style={{ minHeight: 24, lineHeight: "24px" }}>
           {group.category === "upstream-proxy" ? (

@@ -215,7 +215,7 @@ func (m *Manager) credentialInference(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	path := r.PathValue("path")
-	if r.Method != "POST" || (path != "v1/chat/completions" && path != "v1/responses" && path != "v1/messages") {
+	if r.Method != "POST" || (path != "v1/chat/completions" && path != "v1/responses" && path != "v1/messages" && path != "v1/images/generations" && path != "v1/images/edits") {
 		writeError(w, ErrNotFound)
 		return
 	}

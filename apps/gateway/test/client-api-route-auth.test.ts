@@ -64,3 +64,12 @@ test("client API auth rejects anonymous requests when enforcement is enabled", a
   assert.equal(result?.status, 401);
   assert.match(await result!.text(), /Authentication required/);
 });
+
+test("client API auth allows internal health check bypass", async () => {
+  const internalRequest = new Request("http://localhost/api/v1/images/generations", {
+    headers: { "x-internal-test": "combo-health-check" },
+  });
+  const result = await enforceClientApiRouteAuth(internalRequest, dependencies());
+  assert.equal(result, null);
+});
+

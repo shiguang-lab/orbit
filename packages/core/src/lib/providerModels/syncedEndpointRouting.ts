@@ -1,5 +1,6 @@
 import { getSyncedAvailableModelsByConnection } from "../db/models.ts";
 import { isSelfHostedChatProvider, resolveProviderId } from "@orbit/providers/catalog";
+import { getProviderPrefixIndex } from "../providerNodePrefixes.ts";
 
 export type LocalSyncedEndpointRoute = {
   provider: string;
@@ -39,8 +40,20 @@ export async function resolveLocalSyncedEndpointRoute(
   const slashIndex = modelStr.indexOf("/");
   if (slashIndex <= 0 || slashIndex === modelStr.length - 1) return null;
 
-  const provider = resolveProviderId(modelStr.slice(0, slashIndex));
+  const rawPrefix = modelStr.slice(0, slashIndex);
+  let provider = resolveProviderId(rawPrefix);
   const model = modelStr.slice(slashIndex + 1);
+
+  if (!isSelfHostedChatProvider(provider) && !provider.startsWith("openai-compatible-")) {
+    try {
+      const prefixIndex = await getProviderPrefixIndex();
+      const mapped = prefixIndex.prefixToNode.get(rawPrefix);
+      if (mapped) {
+        provider = mapped;
+      }
+    } catch {}
+  }
+
   if (!isSelfHostedChatProvider(provider) && !provider.startsWith("openai-compatible-")) return null;
 
   const byConnection = await getSyncedAvailableModelsByConnection(provider);

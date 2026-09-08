@@ -38,7 +38,7 @@ test("Each manager is one instance, including managers with no CLIProxyAPI proce
     assert.match(detail, /cpa-remote/);
     assert.match(detail, /remote@example\.com/);
     assert.match(detail, /43210/);
-    assert.match(detail, /Upgrade|升级/);
+    assert.match(detail, /Upgrade|升\s*级/);
     assert.match(detail, /Operation history|操作记录/);
     assert.match(detail, /Runtime settings|运行配置/);
     assert.doesNotMatch(detail, /NAS instance|18317/);

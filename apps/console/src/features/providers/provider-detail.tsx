@@ -1649,10 +1649,10 @@ export default function ProviderDetailPage() {
                   providerDisplayAlias={providerDisplayAlias}
                   models={availableModelRows}
                   modelAliases={aliasesQuery.data || {}}
-                  allowModelImport={kind !== "upstream-proxy" && Boolean(connections.length > 0)}
-                  autoFetchModels={kind !== "upstream-proxy" && autoFetchModelsEnabled}
+                  allowModelImport={(kind !== "upstream-proxy" || providerId === "cliproxyapi") && Boolean(connections.length > 0)}
+                  autoFetchModels={(kind !== "upstream-proxy" || providerId === "cliproxyapi") && autoFetchModelsEnabled}
                   onToggleAutoFetchModels={handleToggleAutoFetchModels}
-                  autoSync={kind !== "upstream-proxy" && autoSyncEnabled}
+                  autoSync={(kind !== "upstream-proxy" || providerId === "cliproxyapi") && autoSyncEnabled}
                   onToggleAutoSync={handleToggleAutoSync}
                   onImportModels={() => syncModelsMutation.mutateAsync().then(() => {})}
                   importingModels={syncModelsMutation.isPending}

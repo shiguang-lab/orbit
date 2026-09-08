@@ -116,7 +116,7 @@ export class ModelsService {
       if (result.statusCode !== undefined) responseBody.statusCode = result.statusCode;
       if (result.rateLimited) responseBody.rateLimited = true;
       if (result.retryAfter !== undefined) responseBody.retryAfter = result.retryAfter;
-      return json(responseBody, result.httpStatus === 401 ? 502 : result.httpStatus);
+      return json(responseBody, 200);
     } catch (error: unknown) {
       return json({ status: "error", error: sanitizeErrorMessage(error) || "Unknown error" }, 500);
     }

@@ -353,11 +353,10 @@ export async function selfFetchWithRetry(
 }
 
 // ---------------------------------------------------------------------------
-// fetchProviderModelsForSync — private orchestrator (uses selfFetchWithRetry)
+// fetchProviderModelsForSync — in-process orchestrator
 // ---------------------------------------------------------------------------
 
 async function fetchProviderModelsForSync(request: Request, connectionId: string) {
-  const safeOrigin = getModelSyncInternalBaseUrl();
   const modelsPath =
     `/api/providers/${encodeURIComponent(connectionId)}/models` +
     "?refresh=true&excludeCustom=true";
@@ -367,24 +366,24 @@ async function fetchProviderModelsForSync(request: Request, connectionId: string
     ...buildModelSyncInternalHeaders(),
   };
 
-  const targetUrl = `${safeOrigin}${modelsPath}`;
-
-  // Wrap fetch so it forwards the required headers on every retry attempt.
-  const fetchWithHeaders: typeof fetch = (input, init) =>
-    fetchModelSyncInternal(input, { ...init, headers, redirect: "error" });
-
-  return selfFetchWithRetry(targetUrl, {
-    fetch: fetchWithHeaders,
-    connectionId,
-    inProcessFallback: () =>
-      getProviderModels(
-        new Request(new URL(modelsPath, "http://localhost").href, {
-          method: "GET",
-          headers,
-        }),
-        { params: { id: connectionId } }
-      ),
-  });
+  // In the control-service runtime, dispatch directly in-process to avoid
+  // loopback HTTP listener boot races, inter-container gateway misdirection,
+  // and unnecessary socket allocations.
+  try {
+    return await getProviderModels(
+      new Request(new URL(modelsPath, "http://localhost").href, {
+        method: "GET",
+        headers,
+      }),
+      { params: { id: connectionId } }
+    );
+  } catch (err) {
+    console.warn(
+      `[ModelSync] In-process model discovery failed for ${connectionId.slice(0, 8)}:`,
+      err
+    );
+    throw err;
+  }
 }
 
 /**

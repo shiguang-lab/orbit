@@ -704,7 +704,9 @@ export async function getProviderModels(
     if (
       isOpenAICompatibleProvider(provider) ||
       isLocalOpenAIStyleProvider(provider) ||
-      isNamedOpenAIStyleProvider(provider)
+      isNamedOpenAIStyleProvider(provider) ||
+      provider === "cliproxyapi" ||
+      provider === "cliproxy"
     ) {
       const cachedResponse = maybeReturnCachedDiscovery();
       if (cachedResponse) return cachedResponse;

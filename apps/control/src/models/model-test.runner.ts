@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { pickApiKeyForInternalUse } from "@orbit/core/db/api-keys";
 import {
   buildComboTestRequestBody,
   extractComboTestResponseText,
@@ -156,12 +157,14 @@ async function findProviderNodeApiType(providerId: string): Promise<string | und
 export function buildInternalChatRequest(
   testBody: Record<string, unknown>,
   signal: AbortSignal,
-  connectionId?: string
+  connectionId?: string,
+  apiKey?: string | null
 ) {
   return new Request(`${edgeGatewayBaseUrl()}/v1/chat/completions`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
       // Reuse the existing strict-mode internal bypass for live health checks.
       "X-Internal-Test": "combo-health-check",
       "X-Orbit-No-Cache": "true",
@@ -179,12 +182,14 @@ export function buildInternalChatRequest(
 export function buildInternalRerankRequest(
   testBody: Record<string, unknown>,
   signal: AbortSignal,
-  connectionId?: string
+  connectionId?: string,
+  apiKey?: string | null
 ) {
   return new Request(`${edgeGatewayBaseUrl()}/v1/rerank`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
       "X-Internal-Test": "combo-health-check",
       "X-Orbit-No-Cache": "true",
       "X-Orbit-Compression": "off",
@@ -213,7 +218,8 @@ function buildTinyWavFile(): File {
 export function buildInternalAudioTranscriptionRequest(
   model: string,
   signal: AbortSignal,
-  connectionId?: string
+  connectionId?: string,
+  apiKey?: string | null
 ) {
   const formData = new FormData();
   formData.set("model", model);
@@ -222,6 +228,7 @@ export function buildInternalAudioTranscriptionRequest(
   return new Request(`${edgeGatewayBaseUrl()}/v1/audio/transcriptions`, {
     method: "POST",
     headers: {
+      ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
       "X-Internal-Test": "combo-health-check",
       "X-Orbit-No-Cache": "true",
       "X-Orbit-Compression": "off",
@@ -237,11 +244,13 @@ function buildInternalEmbeddingRequest(
   testBody: Record<string, unknown>,
   signal: AbortSignal,
   connectionId?: string,
+  apiKey?: string | null
 ) {
   return new Request(`${edgeGatewayBaseUrl()}/v1/embeddings`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
       "X-Internal-Test": "combo-health-check",
       "X-Orbit-No-Cache": "true",
       "X-Orbit-Compression": "off",
@@ -256,12 +265,14 @@ function buildInternalEmbeddingRequest(
 export function buildInternalImageGenerationRequest(
   testBody: Record<string, unknown>,
   signal: AbortSignal,
-  connectionId?: string
+  connectionId?: string,
+  apiKey?: string | null
 ) {
   return new Request(`${edgeGatewayBaseUrl()}/v1/images/generations`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
       "X-Internal-Test": "combo-health-check",
       "X-Orbit-No-Cache": "true",
       "X-Orbit-Compression": "off",
@@ -487,9 +498,10 @@ export async function runSingleModelTest(
   const effectiveTimeoutMs = resolveModelTestTimeoutMs(providerId, fullModelStr, timeoutMs);
 
   const startTime = Date.now();
-  const [customModel, nodeApiType] = await Promise.all([
+  const [customModel, nodeApiType, internalApiKey] = await Promise.all([
     findCustomModelMetadata(providerId, fullModelStr),
     findProviderNodeApiType(providerId),
+    pickApiKeyForInternalUse("combo-health-check").catch(() => null),
   ]);
   const { isRerank, isEmbedding, isAudioTranscription, isImageGeneration } = detectTestKind(
     fullModelStr,
@@ -532,14 +544,14 @@ export async function runSingleModelTest(
 
   const runInner = async (signal: AbortSignal): Promise<Response> => {
     const request = isEmbedding
-      ? buildInternalEmbeddingRequest(testBody, signal, connectionId)
+      ? buildInternalEmbeddingRequest(testBody, signal, connectionId, internalApiKey)
       : isRerank
-        ? buildInternalRerankRequest(testBody, signal, connectionId)
+        ? buildInternalRerankRequest(testBody, signal, connectionId, internalApiKey)
         : isAudioTranscription
-          ? buildInternalAudioTranscriptionRequest(fullModelStr, signal, connectionId)
+          ? buildInternalAudioTranscriptionRequest(fullModelStr, signal, connectionId, internalApiKey)
           : isImageGeneration
-            ? buildInternalImageGenerationRequest(testBody, signal, connectionId)
-            : buildInternalChatRequest(testBody, signal, connectionId);
+            ? buildInternalImageGenerationRequest(testBody, signal, connectionId, internalApiKey)
+            : buildInternalChatRequest(testBody, signal, connectionId, internalApiKey);
 
     return fetch(request.url, {
       method: request.method,

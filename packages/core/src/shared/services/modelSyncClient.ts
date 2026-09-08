@@ -19,10 +19,34 @@ export function getModelSyncInternalBaseUrl(): string {
   return resolveModelSyncInternalBaseUrl();
 }
 
-export function resolveModelSyncInternalBaseUrl(_candidate?: string): string {
-  const { dashboardPort } = getRuntimePorts();
+export function resolveModelSyncInternalBaseUrl(candidate?: string): string {
+  if (candidate?.trim()) {
+    try {
+      const url = new URL(candidate.trim());
+      if (
+        (url.protocol === "http:" || url.protocol === "https:") &&
+        !url.username &&
+        !url.password
+      ) {
+        return `${url.origin}${normalizeInternalBasePath(url.pathname)}`;
+      }
+    } catch {
+      // Fall through to configured settings
+    }
+  }
+
   const configured =
-    process.env.ORBIT_BASE_URL?.trim() || process.env.INTERNAL_BASE_URL?.trim();
+    process.env.CONTROL_API_URL?.trim() ||
+    process.env.ORBIT_CONTROL_URL?.trim() ||
+    (process.env.APP_NAME === "control" ? process.env.INTERNAL_BASE_URL?.trim() : undefined) ||
+    (process.env.APP_NAME === "control"
+      ? `http://127.0.0.1:${process.env.CONTROL_API_PORT || 8788}`
+      : undefined) ||
+    (process.env.APP_NAME === "worker"
+      ? process.env.CONTROL_API_URL?.trim() || "http://orbit-control:8788"
+      : undefined) ||
+    process.env.INTERNAL_BASE_URL?.trim() ||
+    process.env.ORBIT_BASE_URL?.trim();
   if (configured) {
     try {
       const url = new URL(configured);
@@ -37,10 +61,13 @@ export function resolveModelSyncInternalBaseUrl(_candidate?: string): string {
       // Fall through to the loopback default for malformed operator input.
     }
   }
+  const controlPort = Number.parseInt(process.env.CONTROL_API_PORT || "", 10) || 8788;
+  const { dashboardPort } = getRuntimePorts();
+  const port = process.env.APP_NAME === "control" ? controlPort : dashboardPort;
   const nativeTls = process.env.ORBIT_INTERNAL_SCHEME === "https";
   const origin = nativeTls
-    ? `https://localhost:${dashboardPort}`
-    : `http://127.0.0.1:${dashboardPort}`;
+    ? `https://localhost:${port}`
+    : `http://127.0.0.1:${port}`;
   return `${origin}${normalizeInternalBasePath(process.env.ORBIT_BASE_PATH)}`;
 }
 
@@ -77,13 +104,20 @@ const fetchWithDispatcher = undiciFetch as unknown as (
   init: RequestInit & { dispatcher: Dispatcher }
 ) => Promise<Response>;
 
-export const fetchModelSyncInternal: typeof fetch = async (input, init = {}) => {
+export const fetchModelSyncInternal: typeof fetch = async (input, init: RequestInit = {}) => {
   const inputUrl =
     typeof input === "string" || input instanceof URL ? new URL(input) : new URL(input.url);
   const expectedBase = new URL(getModelSyncInternalBaseUrl());
+  const isHostAllowed =
+    inputUrl.hostname === expectedBase.hostname ||
+    ((inputUrl.hostname === "127.0.0.1" || inputUrl.hostname === "localhost") &&
+      (expectedBase.hostname === "127.0.0.1" ||
+        expectedBase.hostname === "localhost" ||
+        expectedBase.hostname === "orbit-control"));
+
   if (
     inputUrl.protocol !== expectedBase.protocol ||
-    inputUrl.hostname !== expectedBase.hostname ||
+    !isHostAllowed ||
     inputUrl.port !== expectedBase.port ||
     inputUrl.username ||
     inputUrl.password
@@ -96,7 +130,18 @@ export const fetchModelSyncInternal: typeof fetch = async (input, init = {}) => 
     throw new TypeError("model sync internal fetch must stay under the configured base path");
   }
 
-  const requestInit = { ...init, redirect: "error" as const };
+  const token = getInternalAuthToken();
+  const forwardHeaders = new Headers(init.headers as HeadersInit | undefined);
+  if (token) {
+    if (!forwardHeaders.has(MODEL_SYNC_INTERNAL_AUTH_HEADER)) {
+      forwardHeaders.set(MODEL_SYNC_INTERNAL_AUTH_HEADER, token);
+    }
+    if (!forwardHeaders.has("x-orbit-internal-service-token")) {
+      forwardHeaders.set("x-orbit-internal-service-token", token);
+    }
+  }
+
+  const requestInit = { ...init, headers: forwardHeaders, redirect: "error" as const };
   if (inputUrl.protocol === "https:") {
     return fetchWithDispatcher(inputUrl, {
       ...requestInit,
@@ -114,7 +159,11 @@ let internalAuthToken: string | null = null;
 
 function getInternalAuthToken(): string {
   if (!internalAuthToken) {
-    internalAuthToken = globalState.__orbitModelSyncInternalAuthToken || randomUUID();
+    internalAuthToken =
+      process.env.ORBIT_INTERNAL_SERVICE_TOKEN?.trim() ||
+      process.env.INTERNAL_SERVICE_TOKEN?.trim() ||
+      globalState.__orbitModelSyncInternalAuthToken ||
+      randomUUID();
     globalState.__orbitModelSyncInternalAuthToken = internalAuthToken;
   }
   return internalAuthToken;
@@ -125,13 +174,28 @@ export function getModelSyncInternalAuthHeaderName(): string {
 }
 
 export function buildModelSyncInternalHeaders(): Record<string, string> {
-  return { [MODEL_SYNC_INTERNAL_AUTH_HEADER]: getInternalAuthToken() };
+  const token = getInternalAuthToken();
+  return {
+    [MODEL_SYNC_INTERNAL_AUTH_HEADER]: token,
+    "x-orbit-internal-service-token": token,
+  };
 }
 
 export function isModelSyncInternalRequest(request: { headers: Headers }): boolean {
+  const headerToken =
+    request.headers.get(MODEL_SYNC_INTERNAL_AUTH_HEADER) ||
+    request.headers.get("x-orbit-internal-service-token");
+  if (!headerToken) return false;
+
+  const sharedToken =
+    process.env.ORBIT_INTERNAL_SERVICE_TOKEN?.trim() ||
+    process.env.INTERNAL_SERVICE_TOKEN?.trim();
+  if (sharedToken && headerToken === sharedToken) {
+    return true;
+  }
+
   if (!internalAuthToken && globalState.__orbitModelSyncInternalAuthToken) {
     internalAuthToken = globalState.__orbitModelSyncInternalAuthToken;
   }
-  const headerToken = request.headers.get(MODEL_SYNC_INTERNAL_AUTH_HEADER);
-  return Boolean(headerToken && internalAuthToken && headerToken === internalAuthToken);
+  return Boolean(internalAuthToken && headerToken === internalAuthToken);
 }

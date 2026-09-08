@@ -1,4 +1,5 @@
 /** Management APIs accept verified SSO sessions or scoped machine credentials. */
+import { timingSafeEqual } from "node:crypto";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import {
   isDashboardSessionAuthenticated,
@@ -55,6 +56,25 @@ export function authzPlugin(app: FastifyInstance, opts: AuthzOptions = {}): void
 
     // 本地开发模式(SG_DEV_IDENTITY=1 或 broker 已配置)：放行(仅本地，生产绝不可用)
     if (opts.devMode ?? isLocalDevMode()) return;
+
+    // 0. 内部微服务调用或模型同步凭据(ORBIT_INTERNAL_SERVICE_TOKEN 或 model-sync 内部请求)
+    const internalServiceToken =
+      process.env.ORBIT_INTERNAL_SERVICE_TOKEN?.trim() ||
+      process.env.INTERNAL_SERVICE_TOKEN?.trim();
+    if (internalServiceToken) {
+      const headerServiceToken = request.headers["x-orbit-internal-service-token"];
+      const headerModelSyncToken = request.headers["x-model-sync-internal-auth"];
+      const provided =
+        (typeof headerServiceToken === "string" ? headerServiceToken.trim() : "") ||
+        (typeof headerModelSyncToken === "string" ? headerModelSyncToken.trim() : "");
+      if (provided) {
+        const expectedBytes = Buffer.from(internalServiceToken, "utf8");
+        const actualBytes = Buffer.from(provided, "utf8");
+        if (expectedBytes.length === actualBytes.length && timingSafeEqual(expectedBytes, actualBytes)) {
+          return;
+        }
+      }
+    }
 
     // 1. Verified dashboard SSO session
     if (await isDashboardSessionAuthenticated(request)) return;

@@ -30,13 +30,13 @@ test("system proxy uses the nested API contract for empty, configured, and disab
     assert.deepEqual(await systemProxyApi.getConfig(), initial);
     const render = () => renderToStaticMarkup(createElement(QueryClientProvider, { client }, createElement(SystemProxyPage)));
     client.setQueryData(["system-proxy-config"], initial);
-    assert.match(render(), /No global proxy configured/);
+    assert.match(render(), /(?:No global proxy configured|全局代理未配置)/);
     assert.doesNotMatch(render(), /NO_PROXY/);
     const configured = await systemProxyApi.updateConfig(proxy);
     assert.deepEqual(configured.global, proxy);
     assert.deepEqual(configured.providers, initial.providers);
     client.setQueryData(["system-proxy-config"], configured);
-    assert.match(render(), /Global proxy configured/);
+    assert.match(render(), /(?:Global proxy configured|全局代理已配置)/);
     assert.deepEqual((await systemProxyApi.updateConfig(null)).global, null);
     assert.deepEqual(config.providers, initial.providers);
   } finally {

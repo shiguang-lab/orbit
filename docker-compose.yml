@@ -81,6 +81,9 @@ services:
       ORBIT_CLIPROXY_MANAGER_NAME: ${ORBIT_CLIPROXY_MANAGER_NAME:-NAS}
       EDGE_GATEWAY_URL: http://orbit-gateway:8787
       INTERNAL_BASE_URL: ${INTERNAL_BASE_URL:-http://orbit-control:8788}
+      ORBIT_BASE_URL: http://orbit-control:8788
+      CONTROL_API_URL: http://orbit-control:8788
+      ORBIT_CONTROL_URL: http://orbit-control:8788
       ORBIT_WORKER_COMMAND_URL: ${ORBIT_WORKER_COMMAND_URL:-http://orbit-worker:8791}
     volumes:
       - orbit_data:/app/data
@@ -123,6 +126,9 @@ services:
       APP_NAME: worker
       WORKER_COMMAND_HOST: 0.0.0.0
       WORKER_COMMAND_PORT: 8791
+      CONTROL_API_URL: http://orbit-control:8788
+      ORBIT_CONTROL_URL: http://orbit-control:8788
+      INTERNAL_BASE_URL: http://orbit-control:8788
     volumes:
       - orbit_data:/app/data
       - orbit_home:/home/node
