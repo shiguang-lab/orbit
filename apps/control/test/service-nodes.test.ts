@@ -139,8 +139,12 @@ test("one instance scope deduplicates models and retains exact credential identi
   const modelTarget = await getModelInfo(`${first.scopePrefix}/shared`);
   assert.equal(modelTarget.provider, first.scopeId);
   assert.equal(modelTarget.model, "shared");
-  const selectedA = connections.find((c) => c.name === "a.json")!;
-  const selectedB = connections.find((c) => c.name === "b.json")!;
+  const selectedA = connections.find(
+    (c) => c.providerSpecificData.cliproxyCredentialId === "a.json",
+  )!;
+  const selectedB = connections.find(
+    (c) => c.providerSpecificData.cliproxyCredentialId === "b.json",
+  )!;
   const selected = await getProviderCredentials(
     first.scopeId,
     null,
