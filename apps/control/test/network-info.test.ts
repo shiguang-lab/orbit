@@ -71,7 +71,7 @@ test("discovers Tailscale from environment variables in NAS deployment", async (
   const result = await resolveNetworkInfo(null, {
     env: {
       EDGE_GATEWAY_PORT: "8787",
-      TAILSCALE_IP: "100.87.115.78",
+      TAILSCALE_IP: "100.64.20.30",
       TAILSCALE_HOSTNAME: "my-nas",
       MAGIC_DNS: "my-nas.ts.net",
     },
@@ -81,10 +81,10 @@ test("discovers Tailscale from environment variables in NAS deployment", async (
   });
 
   assert.equal(result.localUrl, "http://localhost:8787/v1");
-  assert.equal(result.tailscaleIpUrl, "http://100.87.115.78:8787/v1");
+  assert.equal(result.tailscaleIpUrl, "http://100.64.20.30:8787/v1");
   assert.equal(result.tailscaleUrl, "https://my-nas.ts.net/v1");
   assert.equal(result.tailscaleDetails?.connected, true);
-  assert.equal(result.tailscaleDetails?.ip, "100.87.115.78");
+  assert.equal(result.tailscaleDetails?.ip, "100.64.20.30");
   assert.equal(result.tailscaleDetails?.magicDns, "my-nas.ts.net");
   assert.equal(result.tailscaleDetails?.source, "env");
 });
