@@ -383,8 +383,13 @@ export interface ModelCatalogItem {
   [key: string]: unknown;
 }
 
+export interface RuntimeModelCatalogResponse {
+  catalog?: Record<string, { provider?: string; models?: ModelCatalogItem[] }>;
+}
+
 export const modelsApi = {
   list: () => api<{ models?: ModelCatalogItem[] }>("/models"),
+  catalog: () => api<RuntimeModelCatalogResponse>("/models/catalog"),
 };
 export interface FeatureFlagItem {
   key: string;

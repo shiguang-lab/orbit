@@ -28,7 +28,7 @@ import {
 import { createStyles } from "antd-style";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { keysApi, modelsApi, pricingApi, type ApiKeyView, type ApiKeyCreateInput } from "@/entities/api";
+import { keysApi, modelsApi, type ApiKeyView, type ApiKeyCreateInput } from "@/entities/api";
 import { MaterialIcon } from "@/app/nav";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
 import dayjs from "dayjs";
@@ -102,24 +102,19 @@ export default function ApiManagerPage() {
 
   const keys = keysQuery.data?.keys ?? [];
   const allowReveal = keysQuery.data?.allowKeyReveal ?? true;
-  const modelsQuery = useQuery({ queryKey: ["api-key-model-options"], queryFn: modelsApi.list, staleTime: 60_000 });
-  const modelCatalogQuery = useQuery({ queryKey: ["api-key-model-catalog"], queryFn: pricingApi.getCatalog, staleTime: 300_000 });
+  const modelCatalogQuery = useQuery({ queryKey: ["api-key-model-catalog"], queryFn: modelsApi.catalog, staleTime: 60_000 });
   const modelOptions = useMemo(() => {
     const unique = new Map<string, string>();
-    for (const provider of Object.values(modelCatalogQuery.data ?? {})) {
-      for (const model of provider.models ?? []) {
+    for (const group of Object.values(modelCatalogQuery.data?.catalog ?? {})) {
+      for (const model of group.models ?? []) {
         const id = typeof model.id === "string" ? model.id.trim() : "";
         const name = typeof model.name === "string" ? model.name.trim() : "";
-        if (id) unique.set(id, name || id);
+        if (!id) continue;
+        unique.set(id, name || id);
       }
     }
-    for (const model of modelsQuery.data?.models ?? []) {
-      const id = typeof model.id === "string" ? model.id.trim() : "";
-      const name = typeof model.name === "string" ? model.name.trim() : "";
-      if (id && !unique.has(id)) unique.set(id, name || id);
-    }
     return Array.from(unique, ([value, label]) => ({ value, label: label === value ? value : `${label} (${value})` }));
-  }, [modelCatalogQuery.data, modelsQuery.data]);
+  }, [modelCatalogQuery.data]);
 
   // Usage Statistics Query
   const usageQuery = useQuery({
@@ -1310,7 +1305,7 @@ export default function ApiManagerPage() {
                       label={<Text style={{ fontSize: 12 }}>{tt("允许调用的模型", "Allowed models")}</Text>}
                       style={{ marginBottom: 0 }}
                     >
-                      <Select mode="multiple" showSearch optionFilterProp="label" options={modelOptions} loading={modelsQuery.isLoading || modelCatalogQuery.isLoading} placeholder={tt("选择可用模型", "Select models")} notFoundContent={modelsQuery.isLoading || modelCatalogQuery.isLoading ? tt("正在加载模型…", "Loading models…") : tt("暂无可用模型", "No models available")} />
+                      <Select mode="multiple" showSearch optionFilterProp="label" options={modelOptions} loading={modelCatalogQuery.isLoading} placeholder={tt("选择可用模型", "Select models")} notFoundContent={modelCatalogQuery.isLoading ? tt("正在加载模型…", "Loading models…") : tt("暂无可用模型", "No models available")} />
                     </Form.Item>
                   );
                 }
@@ -1321,7 +1316,7 @@ export default function ApiManagerPage() {
                       label={<Text style={{ fontSize: 12 }}>{tt("禁止调用的模型", "Blocked models")}</Text>}
                       style={{ marginBottom: 0 }}
                     >
-                      <Select mode="multiple" showSearch optionFilterProp="label" options={modelOptions} loading={modelsQuery.isLoading || modelCatalogQuery.isLoading} placeholder={tt("选择需排除的模型", "Select models to exclude")} notFoundContent={modelsQuery.isLoading || modelCatalogQuery.isLoading ? tt("正在加载模型…", "Loading models…") : tt("暂无可用模型", "No models available")} />
+                      <Select mode="multiple" showSearch optionFilterProp="label" options={modelOptions} loading={modelCatalogQuery.isLoading} placeholder={tt("选择需排除的模型", "Select models to exclude")} notFoundContent={modelCatalogQuery.isLoading ? tt("正在加载模型…", "Loading models…") : tt("暂无可用模型", "No models available")} />
                     </Form.Item>
                   );
                 }
