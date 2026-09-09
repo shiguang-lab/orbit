@@ -73,9 +73,21 @@ export function resolveBrowserOAuthRedirectUri(
   redirectUri: string,
   env: OAuthRedirectEnv | null | undefined = process.env
 ): string {
+  const provider = PROVIDERS[providerName];
+  if (provider?.fixedPort) {
+    const host = provider.callbackHost || "localhost";
+    const path = provider.callbackPath || "/callback";
+    return `http://${host}:${provider.fixedPort}${path}`;
+  }
+
+  if (providerName === "claude" && provider?.config?.redirectUri) {
+    return provider.config.redirectUri;
+  }
+
   if (!GOOGLE_BROWSER_PROVIDERS.has(providerName)) {
     return redirectUri;
   }
+
 
   if (!hasCustomGoogleOAuthCredentials(providerName, env)) {
     return redirectUri;

@@ -156,7 +156,8 @@ export class ServiceNodesService {
       throw new BadRequestException("Invalid management method or path");
     const parsed = new URL(input.path, "http://instance/");
     const allowed =
-      /^(auth-files(?:\/(?:status|fields|models))?|(?:codex|anthropic|antigravity|kimi|xai)-auth-url|get-auth-status|oauth-callback|oauth-session|oauth-model-alias|oauth-excluded-models|config|proxy-url|request-retry|routing\/strategy)$/;
+      /^(auth-files(?:\/(?:status|fields|models|download))?|(?:codex|anthropic|antigravity|kimi|xai)-auth-url|get-auth-status|oauth-callback|oauth-session|oauth-model-alias|oauth-excluded-models|config|proxy-url|request-retry|routing\/strategy)$/;
+
     if (
       parsed.origin !== "http://instance" ||
       parsed.hash ||

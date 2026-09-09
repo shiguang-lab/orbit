@@ -202,7 +202,7 @@ export default function ProviderDetailPage() {
   const [oauthBusy, setOauthBusy] = useState(false);
   const [oauthError, setOauthError] = useState<string | null>(null);
   const [oauthCallbackUrl, setOauthCallbackUrl] = useState("");
-  const [oauthSession, setOauthSession] = useState<{ redirectUri: string; codeVerifier?: string } | null>(null);
+  const [oauthSession, setOauthSession] = useState<{ redirectUri: string; codeVerifier?: string; connectionId?: string } | null>(null);
   const [oauthDevice, setOauthDevice] = useState<{ deviceCode: string; verificationUrl: string; codeVerifier?: string; interval: number } | null>(null);
   const [accountSearch, setAccountSearch] = useState("");
   const [healthFilter, setHealthFilter] = useState<"all" | "active" | "error" | "disabled" | "banned" | "exhausted">("all");
@@ -390,7 +390,7 @@ export default function ProviderDetailPage() {
     };
   }, [providerId, providerQuery.isLoading]);
 
-  const startOAuth = useCallback(async () => {
+  const startOAuth = useCallback(async (connectionId?: string) => {
     setOauthBusy(true);
     setOauthError(null);
     setOauthCallbackUrl("");
@@ -403,7 +403,7 @@ export default function ProviderDetailPage() {
         if (!payload?.device_code) throw new Error(payload?.error || "无法启动设备授权流程");
         const verificationUrl = payload.verification_uri_complete || payload.verification_uri;
         if (!verificationUrl) throw new Error("授权服务没有返回验证地址");
-        setOauthSession({ redirectUri: "", codeVerifier: payload.codeVerifier });
+        setOauthSession({ redirectUri: "", codeVerifier: payload.codeVerifier, connectionId });
         setOauthDevice({ deviceCode: payload.device_code, verificationUrl, codeVerifier: payload.codeVerifier, interval: Math.max(3, payload.interval || 5) });
         setOauthOpen(true);
         window.open(verificationUrl, "_blank", "noopener,noreferrer");
@@ -414,7 +414,7 @@ export default function ProviderDetailPage() {
         `/oauth/${encodeURIComponent(providerId)}/authorize?redirect_uri=${encodeURIComponent(redirectUri)}`
       );
       if (!payload?.authUrl) throw new Error(payload?.error || "无法启动授权流程");
-      setOauthSession({ redirectUri: payload.redirectUri || redirectUri, codeVerifier: payload.codeVerifier });
+      setOauthSession({ redirectUri: payload.redirectUri || redirectUri, codeVerifier: payload.codeVerifier, connectionId });
       setOauthOpen(true);
       window.open(payload.authUrl, "_blank", "noopener,noreferrer");
     } catch (error) {
@@ -446,20 +446,27 @@ export default function ProviderDetailPage() {
         `/oauth/${encodeURIComponent(providerId)}/exchange`,
         {
           method: "POST",
-          body: JSON.stringify({ code, state, redirectUri: oauthSession.redirectUri, codeVerifier: oauthSession.codeVerifier }),
+          body: JSON.stringify({
+            code,
+            state,
+            redirectUri: oauthSession.redirectUri,
+            codeVerifier: oauthSession.codeVerifier,
+            connectionId: oauthSession.connectionId,
+          }),
         }
       );
       await queryClient.invalidateQueries({ queryKey: ["providers", "detail", providerId] });
       await queryClient.invalidateQueries({ queryKey: ["providers"] });
       setOauthOpen(false);
       setOauthSession(null);
-      messageApi.success("授权连接已添加");
+      messageApi.success(oauthSession.connectionId ? "授权连接已更新" : "授权连接已添加");
     } catch (error) {
       setOauthError(error instanceof Error ? error.message : "授权交换失败");
     } finally {
       setOauthBusy(false);
     }
   }, [messageApi, oauthCallbackUrl, oauthSession, providerId, queryClient]);
+
 
   useEffect(() => {
     if (!oauthOpen || !oauthSession) return;
@@ -1626,7 +1633,8 @@ export default function ProviderDetailPage() {
                   />
                   <Button className={styles.actionButton} size="small" color="blue" variant="filled" loading={testMutation.isPending} icon={<MaterialIcon name="refresh" />} onClick={() => testMutation.mutate(row.id)}>{t("providers.retest")}</Button>
                   {(row.authType === "oauth" || kind === "oauth" || kind === "ide") && <Button className={styles.actionButton} size="small" color="orange" variant="filled" loading={refreshTokenMutation.isPending} icon={<MaterialIcon name="token" />} onClick={() => refreshTokenMutation.mutate(row)}>{t("providers.token")}</Button>}
-                  {(row.authType === "oauth" || kind === "oauth" || kind === "ide") && <Button className={styles.actionButton} size="small" color="gold" variant="filled" icon={<MaterialIcon name="passkey" />} onClick={() => void startOAuth()}>{t("providers.reauthorize")}</Button>}
+                  {(row.authType === "oauth" || kind === "oauth" || kind === "ide") && <Button className={styles.actionButton} size="small" color="gold" variant="filled" icon={<MaterialIcon name="passkey" />} onClick={() => void startOAuth(row.id)}>{t("providers.reauthorize")}</Button>}
+
                   <Button className={styles.actionButton} size="small" variant="filled" icon={<MaterialIcon name="edit" />} onClick={() => navigate(`/dashboard/providers/${providerId}/connections/${row.id}`)}>{t("providers.edit")}</Button>
                   <Button className={styles.actionButton} size="small" variant="filled" icon={<MaterialIcon name="vpn_lock" />} onClick={() => void openProxyConfig(row)}>{t("providers.proxyConfig")}</Button>
                   <Popconfirm title={t("providers.deleteConnectionConfirm")} onConfirm={() => deleteMutation.mutate(row.id)}><Button className={styles.actionButton} size="small" color="danger" variant="filled" icon={<MaterialIcon name="delete" />}>{t("providers.delete")}</Button></Popconfirm>
@@ -1757,24 +1765,38 @@ export default function ProviderDetailPage() {
         </Space>
       </Modal>
       <Modal
-        title={`${info?.name ?? providerId} 授权`}
+        title={`${info?.name ?? providerId} ${oauthSession?.connectionId ? "重新授权" : "授权"}`}
         open={oauthOpen}
         onCancel={() => { if (!oauthBusy) { setOauthOpen(false); setOauthSession(null); setOauthDevice(null); } }}
         footer={<Space><Button onClick={() => { setOauthOpen(false); setOauthSession(null); setOauthDevice(null); }} disabled={oauthBusy}>关闭</Button>{!oauthDevice && <Button type="primary" loading={oauthBusy} disabled={!oauthCallbackUrl.trim() || !oauthSession} onClick={() => void completeOAuth()}>完成授权</Button>}</Space>}
       >
         <Space orientation="vertical" size={12} style={{ width: "100%" }}>
-          {oauthDevice ? <Alert showIcon type="info" message="等待设备授权完成" description={<span>请在新打开的页面完成登录：<Typography.Link href={oauthDevice.verificationUrl} target="_blank" rel="noreferrer">打开验证页面</Typography.Link>。完成后本页会自动轮询并添加连接。</span>} /> : <>
-            <Alert showIcon type="info" message="已打开官方授权页面" description="完成登录后，将浏览器地址栏中的回调地址粘贴到下方；本页面不会显示或保存你的授权令牌。" />
-            <Input.TextArea
-              value={oauthCallbackUrl}
-              onChange={(event) => setOauthCallbackUrl(event.target.value)}
-              autoSize={{ minRows: 3, maxRows: 5 }}
-              placeholder="粘贴浏览器地址栏中的 callback?code=...&state=... 完整地址"
-            />
-          </>}
+          {oauthDevice ? (
+            <Alert showIcon type="info" message="等待设备授权完成" description={<span>请在新打开的页面完成登录：<Typography.Link href={oauthDevice.verificationUrl} target="_blank" rel="noreferrer">打开验证页面</Typography.Link>。完成后本页会自动轮询并添加连接。</span>} />
+          ) : (
+            <>
+              <Alert
+                showIcon
+                type="info"
+                message="已打开官方授权页面"
+                description={
+                  providerId === "codex" || providerId === "openai" || providerId === "xai-oauth" || providerId === "grok-cli" || providerId === "openference" || providerId === "agy" || providerId === "antigravity"
+                    ? "完成登录后，浏览器通常会自动跳转到无法直接打开的本地回环地址（例如 http://localhost:1455/... 或 127.0.0.1，页面显示“无法访问此网站”属正常现象）。请直接复制浏览器地址栏中的完整 URL 地址粘贴到下方输入框，点击“完成授权”。"
+                    : "完成登录后，将浏览器地址栏中的回调地址粘贴到下方；本页面不会显示或保存你的授权令牌。"
+                }
+              />
+              <Input.TextArea
+                value={oauthCallbackUrl}
+                onChange={(event) => setOauthCallbackUrl(event.target.value)}
+                autoSize={{ minRows: 3, maxRows: 5 }}
+                placeholder="粘贴浏览器地址栏中的 callback?code=...&state=... 完整地址"
+              />
+            </>
+          )}
           {oauthError && <Alert showIcon type="error" message={oauthError} />}
         </Space>
       </Modal>
+
     </div>
   );
 }

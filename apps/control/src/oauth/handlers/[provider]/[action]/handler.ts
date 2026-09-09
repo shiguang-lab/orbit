@@ -516,10 +516,17 @@ export async function POST(
       // Resolve proxy for this provider (provider-level → global → direct)
       const proxy = await resolveProxyForProvider(provider);
 
+      // Normalize redirectUri to match the one generated during authorize
+      const effectiveRedirectUri = resolveBrowserOAuthRedirectUri(
+        provider,
+        redirectUri || "http://localhost:8080/callback"
+      );
+
       // Exchange code for tokens (through proxy if configured)
       const tokenData = await runWithProxyContextOrDirect(proxy, () =>
-        exchangeTokens(provider, code, redirectUri, codeVerifier, normalizedState)
+        exchangeTokens(provider, code, effectiveRedirectUri, codeVerifier, normalizedState)
       );
+
 
       // #11284: when Cloud Code projectId discovery failed at connect time,
       // SAVE the connection but mark it degraded (maintainer direction on
