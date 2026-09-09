@@ -230,7 +230,7 @@ export function EvalsPage() {
                 setIsModalOpen(true);
               }}
             >
-              创建自定义套件
+              新建
             </Button>
           </Space>
         </Flex>

@@ -150,7 +150,7 @@ export function BatchPage() {
               icon={<MaterialIcon name="add" size={16} />}
               onClick={() => setCreateModalOpen(true)}
             >
-              {tt("创建批处理作业", "New Batch Task")}
+              {tt("新建", "New")}
             </Button>
           </Space>
         </Flex>

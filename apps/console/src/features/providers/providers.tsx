@@ -568,7 +568,7 @@ export default function ProvidersPage() {
                 ]}
               />
               <Button type="primary" icon={<MaterialIcon name="add" />} onClick={() => navigate("/dashboard/providers/new")}>
-                {t("providersPage.onboarding")}
+                {t("新建", "New")}
               </Button>
               <Button icon={<MaterialIcon name="upload_file" />} onClick={() => setImportOpen(true)}>
                 {t("providersPage.importFile")}
@@ -662,9 +662,9 @@ export default function ProvidersPage() {
               actions={(
                 <Space wrap>
                   {groups.length > 0 && <Button icon={<MaterialIcon name="play_circle" />} onClick={() => testMutation.mutate({ mode: "compatible" })} loading={testMutation.isPending && testMutation.variables.mode === "compatible"}>{t("providers.testAll")}</Button>}
-                  {nodesQuery.data?.ccCompatibleProviderEnabled && <Button type="primary" icon={<MaterialIcon name="add" />} onClick={() => navigate("/dashboard/providers/new?kind=cc-compatible")}>{t("providersPage.addCcCompatible")}</Button>}
-                  <Button type="primary" icon={<MaterialIcon name="add" />} onClick={() => navigate("/dashboard/providers/new?kind=anthropic-compatible")}>{t("providersPage.addAnthropicCompatible")}</Button>
-                  <Button type="primary" icon={<MaterialIcon name="add" />} onClick={() => navigate("/dashboard/providers/new?kind=openai-compatible")}>{t("providersPage.addOpenAiCompatible")}</Button>
+                  {nodesQuery.data?.ccCompatibleProviderEnabled && <Button type="primary" icon={<MaterialIcon name="add" />} onClick={() => navigate("/dashboard/providers/new?kind=cc-compatible")}>{t("新建", "New")}</Button>}
+                  <Button type="primary" icon={<MaterialIcon name="add" />} onClick={() => navigate("/dashboard/providers/new?kind=anthropic-compatible")}>{t("新建", "New")}</Button>
+                  <Button type="primary" icon={<MaterialIcon name="add" />} onClick={() => navigate("/dashboard/providers/new?kind=openai-compatible")}>{t("新建", "New")}</Button>
                 </Space>
               )}
               navigate={navigate}

@@ -273,7 +273,7 @@ export function CompressionCombosPage() {
             icon={<MaterialIcon name="add" size={16} />}
             onClick={handleOpenCreate}
           >
-            新建压缩组合
+            新建
           </Button>
         </Flex>
       </Card>

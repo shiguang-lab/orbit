@@ -385,7 +385,7 @@ export function CombosPage() {
               setModalOpen(true);
             }}
           >
-            {tt("新建组合", "Create Combo")}
+            {tt("新建", "New")}
           </Button>
         </Space>
       </Flex>
@@ -519,7 +519,7 @@ export function CombosPage() {
                     setModalOpen(true);
                   }}
                 >
-                  {tt("创建第一个组合", "Create First Combo")}
+                  {tt("新建", "New")}
                 </Button>
               )}
             </Empty>
@@ -622,4 +622,3 @@ export function CombosPage() {
 }
 
 export default CombosPage;
-

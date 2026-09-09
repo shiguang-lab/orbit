@@ -1828,7 +1828,7 @@ export default function CliproxyInstances() {
                   setEnrolling(true);
                 }}
               >
-                {tt("创建实例", "Create instance")}
+                {tt("新建", "New")}
               </Button>
             </Flex>
           </div>

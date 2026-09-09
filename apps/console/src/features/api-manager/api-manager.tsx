@@ -3,6 +3,7 @@ import {
   Alert,
   Button,
   Card,
+  Collapse,
   Col,
   DatePicker,
   Flex,
@@ -27,7 +28,7 @@ import {
 import { createStyles } from "antd-style";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { keysApi, type ApiKeyView, type ApiKeyCreateInput } from "@/entities/api";
+import { keysApi, modelsApi, type ApiKeyView, type ApiKeyCreateInput } from "@/entities/api";
 import { MaterialIcon } from "@/app/nav";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
 import dayjs from "dayjs";
@@ -101,6 +102,15 @@ export default function ApiManagerPage() {
 
   const keys = keysQuery.data?.keys ?? [];
   const allowReveal = keysQuery.data?.allowKeyReveal ?? true;
+  const modelsQuery = useQuery({ queryKey: ["api-key-model-options"], queryFn: modelsApi.list, staleTime: 60_000 });
+  const modelOptions = useMemo(() => {
+    const unique = new Map<string, string>();
+    for (const model of modelsQuery.data?.models ?? []) {
+      const id = model.id.trim();
+      if (id) unique.set(id, model.name?.trim() || id);
+    }
+    return Array.from(unique, ([value, label]) => ({ value, label: label === value ? value : `${label} (${value})` }));
+  }, [modelsQuery.data]);
 
   // Usage Statistics Query
   const usageQuery = useQuery({
@@ -316,8 +326,8 @@ export default function ApiManagerPage() {
       chaosModeEnabled: Boolean(k.chaosModeEnabled),
       disableNonPublicModels: Boolean(k.disableNonPublicModels),
       modelAccessMode: k.modelAccessMode || "all",
-      allowedModels: (k.allowedModels ?? []).join(", "),
-      blockedModels: (k.blockedModels ?? []).join(", "),
+      allowedModels: k.allowedModels ?? [],
+      blockedModels: k.blockedModels ?? [],
       maxSessions: k.maxSessions ?? null,
       throttleDelayMs: k.throttleDelayMs ?? null,
       usageLimitEnabled: Boolean(k.usageLimitEnabled),
@@ -595,10 +605,10 @@ export default function ApiManagerPage() {
           <Button
             type="primary"
             icon={<MaterialIcon name="add" size={14} />}
-            onClick={() => setAddModalOpen(true)}
+            onClick={() => { createForm.resetFields(); setAddModalOpen(true); }}
             style={{ background: "#8B5CF6", borderColor: "#8B5CF6" }}
           >
-            {tt("新建 API 密钥", "Create API Key")}
+            {tt("新建", "New")}
           </Button>
         </Space>
       </Flex>
@@ -726,7 +736,7 @@ export default function ApiManagerPage() {
         open={addModalOpen}
         onCancel={() => setAddModalOpen(false)}
         title="新建 API 密钥"
-        width={580}
+        width={720}
         onOk={() => createForm.submit()}
         confirmLoading={createMutation.isPending}
         okText="确认创建"
@@ -760,6 +770,7 @@ export default function ApiManagerPage() {
           }}
           style={{ marginTop: 16 }}
         >
+          <div>
           {/* Key Name */}
           <Form.Item
             name="name"
@@ -769,7 +780,9 @@ export default function ApiManagerPage() {
           >
             <Input placeholder="例如: 生产网关客户端 / Cursor 专用" maxLength={200} autoFocus />
           </Form.Item>
+          </div>
 
+          <div>
           {/* Management Access */}
           <div
             style={{
@@ -866,7 +879,9 @@ export default function ApiManagerPage() {
               </Flex>
             </Flex>
           </div>
+          </div>
 
+          <div>
           {/* Security & Advanced Options */}
           <div
             style={{
@@ -908,6 +923,7 @@ export default function ApiManagerPage() {
                 </Form.Item>
               </Flex>
             </Flex>
+          </div>
           </div>
         </Form>
       </Modal>
@@ -974,7 +990,7 @@ export default function ApiManagerPage() {
         open={Boolean(editTarget)}
         onCancel={() => setEditTarget(null)}
         title={`编辑密钥权限与配置 · ${editTarget?.name || ""}`}
-        width={680}
+        width={960}
         onOk={() => editForm.submit()}
         confirmLoading={updateMutation.isPending}
         okText="保存更改"
@@ -1005,12 +1021,8 @@ export default function ApiManagerPage() {
               chaosModeEnabled: Boolean(values.chaosModeEnabled),
               disableNonPublicModels: Boolean(values.disableNonPublicModels),
               modelAccessMode: values.modelAccessMode,
-              allowedModels: values.allowedModels
-                ? values.allowedModels.split(",").map((s: string) => s.trim()).filter(Boolean)
-                : [],
-              blockedModels: values.blockedModels
-                ? values.blockedModels.split(",").map((s: string) => s.trim()).filter(Boolean)
-                : [],
+              allowedModels: values.allowedModels ?? [],
+              blockedModels: values.blockedModels ?? [],
               maxSessions: values.maxSessions ?? null,
               throttleDelayMs: values.throttleDelayMs ?? null,
               usageLimitEnabled: Boolean(values.usageLimitEnabled),
@@ -1021,6 +1033,7 @@ export default function ApiManagerPage() {
           }}
           style={{ marginTop: 12 }}
         >
+          <div>
           {/* Card 1: 密钥基本信息与生命周期 */}
           <div
             style={{
@@ -1081,7 +1094,9 @@ export default function ApiManagerPage() {
               </Col>
             </Row>
           </div>
+          </div>
 
+          <div>
           {/* Card 2: 管理访问权限 */}
           <div
             style={{
@@ -1224,7 +1239,9 @@ export default function ApiManagerPage() {
               </div>
             </Flex>
           </div>
+          </div>
 
+          <div>
           {/* Card 4: 模型访问控制 */}
           <div
             style={{
@@ -1269,10 +1286,10 @@ export default function ApiManagerPage() {
                   return (
                     <Form.Item
                       name="allowedModels"
-                      label={<Text style={{ fontSize: 12 }}>白名单模型 (逗号分隔，支持通配符如 claude-*, gpt-4o*)</Text>}
+                      label={<Text style={{ fontSize: 12 }}>允许调用的模型</Text>}
                       style={{ marginBottom: 0 }}
                     >
-                      <Input placeholder="例如: gpt-4o, claude-3-7-sonnet, deepseek/*" />
+                      <Select mode="multiple" showSearch optionFilterProp="label" options={modelOptions} loading={modelsQuery.isLoading} placeholder="选择可用模型" notFoundContent={modelsQuery.isLoading ? "正在加载模型…" : "暂无可用模型"} />
                     </Form.Item>
                   );
                 }
@@ -1280,10 +1297,10 @@ export default function ApiManagerPage() {
                   return (
                     <Form.Item
                       name="blockedModels"
-                      label={<Text style={{ fontSize: 12 }}>黑名单排除模型 (逗号分隔)</Text>}
+                      label={<Text style={{ fontSize: 12 }}>禁止调用的模型</Text>}
                       style={{ marginBottom: 0 }}
                     >
-                      <Input placeholder="例如: o1-pro, gemini-ultra" />
+                      <Select mode="multiple" showSearch optionFilterProp="label" options={modelOptions} loading={modelsQuery.isLoading} placeholder="选择需排除的模型" notFoundContent={modelsQuery.isLoading ? "正在加载模型…" : "暂无可用模型"} />
                     </Form.Item>
                   );
                 }
@@ -1291,7 +1308,15 @@ export default function ApiManagerPage() {
               }}
             </Form.Item>
           </div>
+          </div>
 
+          <Collapse
+            style={{ marginTop: 16 }}
+            items={[{
+              key: "advanced",
+              label: <Text strong>高级安全与流量控制</Text>,
+              forceRender: true,
+              children: <div>
           {/* Card 5: 安全与性能特性 */}
           <div
             style={{
@@ -1409,6 +1434,9 @@ export default function ApiManagerPage() {
               </Col>
             </Row>
           </div>
+              </div>,
+            }]}
+          />
         </Form>
       </Modal>
     </Flex>

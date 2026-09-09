@@ -221,7 +221,7 @@ export function ComboUsageGuide({ forceOpen = false, onClose, onCreateCombo }: C
               alignItems: "center",
             }}
           >
-            创建您的第一个组合
+            新建
           </Button>
           <Text
             type="secondary"

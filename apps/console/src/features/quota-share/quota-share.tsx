@@ -822,7 +822,7 @@ export function QuotaSharePage() {
             icon={<MaterialIcon name="add" size={16} />}
             onClick={handleOpenCreateWizard}
           >
-            新建配额池
+            新建
           </Button>
         </Flex>
       </Card>

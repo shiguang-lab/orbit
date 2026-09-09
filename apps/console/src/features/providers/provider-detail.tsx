@@ -184,10 +184,8 @@ function maskAccountName(value: string | null | undefined): string {
   const at = cleaned.lastIndexOf("@");
   const user = cleaned.slice(0, at);
   const domain = cleaned.slice(at + 1);
-  if (user.length <= 2) return cleaned;
-  if (user.length <= 5) return `${user.slice(0, 2)}***@${domain}`;
-  const maskedUser = `${user.slice(0, 3)}***${user.slice(-2)}`;
-  return `${maskedUser}@${domain}`;
+  if (user.length <= 4) return cleaned;
+  return `${user.slice(0, 4)}***@${domain}`;
 }
 
 
@@ -1365,7 +1363,7 @@ export default function ProviderDetailPage() {
                       icon={<MaterialIcon name="add" />}
                       onClick={openAddConnection}
                     >
-                      {t("providers.addPat", "添加 PAT")}
+                      {t("新建", "New")}
                     </Button>
                     {providerId === "qoder" && (
                       <Button
@@ -1413,7 +1411,7 @@ export default function ProviderDetailPage() {
                     icon={<MaterialIcon name="add" />}
                     onClick={openAddConnection}
                   >
-                    {t("providers.addConnection", "添加连接")}
+                    {t("新建", "New")}
                   </Button>
                 )}
               </Space>
@@ -1539,7 +1537,7 @@ export default function ProviderDetailPage() {
                   <br />
                   <Space style={{ marginTop: 8 }}>
                     <Button type="primary" icon={<MaterialIcon name="add" />} onClick={openAddConnection}>
-                      {providerSupportsPat ? t("providers.addPat", "添加 PAT") : t("providers.addConnection")}
+                      {t("新建", "New")}
                     </Button>
                     {providerId === "qoder" && (
                       <Button onClick={() => void startOAuth()}>

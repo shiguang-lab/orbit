@@ -1286,7 +1286,7 @@ export function QuotaPage() {
               navigate("/dashboard/costs/quota-share");
             }}
           >
-            新建共享池
+            新建
           </Button>
         }
       >

@@ -124,7 +124,7 @@ export function CliAgentsPage() {
             icon={<MaterialIcon name="add" size={16} />}
             onClick={() => setSpawnModalOpen(true)}
           >
-            {tt("拉起新智能体", "Spawn Agent")}
+            {tt("新建", "New")}
           </Button>
         </Flex>
       </Card>

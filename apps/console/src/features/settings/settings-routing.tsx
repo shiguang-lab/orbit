@@ -320,7 +320,7 @@ export function SettingsRoutingPage() {
                 setAliasModalOpen(true);
               }}
             >
-              {tt("添加别名映射", "Add Alias")}
+              {tt("新建", "New")}
             </Button>
           }
         >
@@ -410,7 +410,7 @@ export function SettingsRoutingPage() {
                 setChainModalOpen(true);
               }}
             >
-              {tt("新建模型降级链", "Add Fallback Chain")}
+              {tt("新建", "New")}
             </Button>
           }
         >
