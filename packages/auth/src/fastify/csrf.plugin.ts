@@ -117,6 +117,19 @@ export function csrfPlugin(app: FastifyInstance, opts: { devMode?: boolean } = {
     const apiKeyHeader = request.headers["x-api-key"];
     if ((typeof authorization === "string" && authorization.startsWith("Bearer ")) ||
       (typeof apiKeyHeader === "string" && apiKeyHeader.trim().length > 0)) return;
+
+    // 内部微服务调用或模型同步凭据放行
+    const internalServiceToken =
+      process.env.ORBIT_INTERNAL_SERVICE_TOKEN?.trim() ||
+      process.env.INTERNAL_SERVICE_TOKEN?.trim();
+    if (internalServiceToken) {
+      const headerServiceToken = request.headers["x-orbit-internal-service-token"];
+      const headerModelSyncToken = request.headers["x-model-sync-internal-auth"];
+      const provided =
+        (typeof headerServiceToken === "string" ? headerServiceToken.trim() : "") ||
+        (typeof headerModelSyncToken === "string" ? headerModelSyncToken.trim() : "");
+      if (provided && provided === internalServiceToken) return;
+    }
     // 本地开发模式(SG_DEV_IDENTITY=1 或 broker 已配置)：豁免(仅本地，生产绝不可用)
     if (opts.devMode ?? isLocalDevMode()) return;
 

@@ -143,6 +143,9 @@ export const fetchModelSyncInternal: typeof fetch = async (input, init: RequestI
     if (!forwardHeaders.has("x-orbit-internal-service-token")) {
       forwardHeaders.set("x-orbit-internal-service-token", token);
     }
+    if (!forwardHeaders.has("authorization")) {
+      forwardHeaders.set("authorization", `Bearer ${token}`);
+    }
   }
 
   const requestInit = { ...init, headers: forwardHeaders, redirect: "error" as const };
@@ -182,6 +185,7 @@ export function buildModelSyncInternalHeaders(): Record<string, string> {
   return {
     [MODEL_SYNC_INTERNAL_AUTH_HEADER]: token,
     "x-orbit-internal-service-token": token,
+    authorization: `Bearer ${token}`,
   };
 }
 

@@ -66,6 +66,7 @@ export async function syncConnectionModels(
           "Content-Type": "application/json",
           ...buildModelSyncInternalHeaders(),
         },
+        body: JSON.stringify({}),
       }
     );
     if (!res.ok) {

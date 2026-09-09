@@ -129,6 +129,8 @@ services:
       CONTROL_API_URL: http://orbit-control:8788
       ORBIT_CONTROL_URL: http://orbit-control:8788
       INTERNAL_BASE_URL: http://orbit-control:8788
+      EDGE_GATEWAY_HOST: orbit-gateway
+      EDGE_GATEWAY_URL: http://orbit-gateway:8787
     volumes:
       - orbit_data:/app/data
       - orbit_home:/home/node
