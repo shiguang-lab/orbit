@@ -106,8 +106,9 @@ export default function ApiManagerPage() {
   const modelOptions = useMemo(() => {
     const unique = new Map<string, string>();
     for (const model of modelsQuery.data?.models ?? []) {
-      const id = model.id.trim();
-      if (id) unique.set(id, model.name?.trim() || id);
+      const id = typeof model.id === "string" ? model.id.trim() : "";
+      const name = typeof model.name === "string" ? model.name.trim() : "";
+      if (id) unique.set(id, name || id);
     }
     return Array.from(unique, ([value, label]) => ({ value, label: label === value ? value : `${label} (${value})` }));
   }, [modelsQuery.data]);
